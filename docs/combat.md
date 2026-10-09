@@ -83,6 +83,12 @@ attack. Stepping back 1 hex is a careful withdrawal and draws no free attack.
 - The printed tables list every weapon. The ranges are design estimates from each
   weapon's effective range in its period.
 
+## Works
+
+Ditches, banks, palisades, gates, stakes, wagons and other works change movement, cover
+and close combat on the battle map. A fighter can spend his attack breaching one. See
+[works.md](works.md).
+
 ## Nerve
 
 Set by experience: green 35, regular 50, veteran 65, or any number your game prefers.

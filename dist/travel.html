@@ -91,6 +91,13 @@ button:disabled{opacity:.45;cursor:default}
 .log:empty{display:none}
 .log li{border-left:3px solid var(--line);padding:1px 0 1px 8px}
 .hover{font:500 .8rem var(--mono);color:var(--muted);min-height:1.3em}
+label.inline{display:inline-flex;align-items:center;gap:6px;margin:0}
+label.check{display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:.88rem;color:var(--ink)}
+label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:4px 6px}
+#in-fmen{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:7px 8px}
+.campmk{pointer-events:none}.campmk .ring{fill:none;stroke:var(--ink);stroke-width:1.6}
+.campmk.fortified .ring{stroke-width:2.6}.campmk.staked .ring{stroke-dasharray:2 2}
+.campmk text{font:700 7px var(--mono);fill:var(--ink);text-anchor:middle;paint-order:stroke;stroke:var(--panel);stroke-width:2.5px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 <style id="terrain-css"></style>
@@ -133,12 +140,18 @@ button:disabled{opacity:.45;cursor:default}
           <div><label for="in-fname">Name</label><input id="in-fname" type="text" placeholder="Scouts"></div>
           <div><label for="in-ftype">Type</label><select id="in-ftype"></select></div>
           <div><label for="in-fside">Side</label><input id="in-fside" type="text" value="Side A"></div>
+          <div><label for="in-fmen">Men</label><input id="in-fmen" type="number" min="1" value="10"></div>
+          <div><label class="check"><input id="in-ftools" type="checkbox" checked> Tools</label></div>
         </div>
         <div class="toolbar" style="margin-top:8px"><button class="small" id="btn-add">Add at the camp</button></div>
       </details>
 
       <h2>Route</h2>
       <div id="force-head" class="muted"></div>
+      <div class="toolbar" id="force-kit">
+        <label class="inline">Men <input id="in-men" type="number" min="1" style="width:5.5em"></label>
+        <label class="inline check"><input id="in-tools" type="checkbox"> Tools (spades, axes)</label>
+      </div>
       <dl class="summary" id="summary"></dl>
       <div class="toolbar">
         <button class="primary" id="btn-hour" title="March for one hour along the route">March 1 hour</button>
@@ -149,7 +162,16 @@ button:disabled{opacity:.45;cursor:default}
         <button class="small" id="btn-clear">Clear route</button>
         <button class="small" id="btn-remove">Remove force</button>
       </div>
-      <ol class="log" id="log" aria-label="March log"></ol>
+      <h2>Camp</h2>
+      <div class="row">
+        <div style="flex:2 1 200px"><label for="sel-camp">Kind of camp</label><select id="sel-camp"></select></div>
+      </div>
+      <p class="muted" id="camp-est" style="margin:0"></p>
+      <div class="toolbar">
+        <button id="btn-camp" title="Spend the time to make this camp here">Make camp</button>
+        <button class="small" id="btn-fight" title="Open the wound roller's battle map with this force (and its camp's works) laid out">Set up a fight here</button>
+      </div>
+      <ol class="log" id="log" aria-label="March and camp log"></ol>
 
       <div id="paint-box" hidden>
         <h2>Paint terrain</h2>
@@ -167,7 +189,7 @@ button:disabled{opacity:.45;cursor:default}
 </div>
 
 <script>
-const DATA = {"generated":"2026-10-09","terrain":{"hours_per_day":8,"day_starts":8,"forces":{"foot":{"name":"On foot","kmh":4},"mounted":{"name":"Mounted","kmh":6},"wagons":{"name":"Baggage wagons","kmh":3,"cannot_enter":["forest","marsh","mountains","heath"]}},"terrain":{"road":{"id":"road","key":"=","name":"Road","cost":1.0,"colour":["#9f8b66","#8f7d58"],"cover":"none","forage":"poor"},"open":{"id":"open","key":".","name":"Open ground","cost":1.5,"colour":["#dfe6c4","#3d4632"],"cover":"none","forage":"fair"},"farmland":{"id":"farmland","key":"f","name":"Farmland","cost":1.5,"colour":["#e9dfa8","#4f4a2c"],"cover":"light","forage":"good"},"heath":{"id":"heath","key":",","name":"Heath","cost":1.75,"colour":["#d4c3cf","#4a3d47"],"cover":"none","forage":"poor"},"forest":{"id":"forest","key":"F","name":"Forest","cost":2.5,"colour":["#8fb487","#24402a"],"cover":"heavy","forage":"fair"},"hills":{"id":"hills","key":"h","name":"Hills","cost":2.0,"colour":["#c9b28a","#5a4b33"],"cover":"light","forage":"fair"},"mountains":{"id":"mountains","key":"M","name":"Mountains","cost":4.0,"colour":["#a39a92","#4d4844"],"cover":"heavy","forage":"none"},"marsh":{"id":"marsh","key":"m","name":"Marsh","cost":3.0,"colour":["#a9c7b8","#2d4842"],"cover":"light","forage":"poor","wet":true},"river":{"id":"river","key":"~","name":"River","cost":null,"colour":["#8db7d6","#25445c"],"cover":"none","forage":"poor","wet":true},"ford":{"id":"ford","key":"d","name":"Ford","cost":2.0,"colour":["#b4d0e0","#35566b"],"cover":"none","forage":"poor","wet":true},"bridge":{"id":"bridge","key":"b","name":"Bridge","cost":1.0,"colour":["#7a6545","#a08a5e"],"cover":"none","forage":"none"},"lake":{"id":"lake","key":"w","name":"Lake or sea","cost":null,"colour":["#7fa9cc","#1f3a52"],"cover":"none","forage":"poor","wet":true},"village":{"id":"village","key":"v","name":"Village","cost":1.0,"colour":["#d9a68a","#6e4836"],"cover":"light","forage":"good"},"town":{"id":"town","key":"T","name":"Town","cost":1.0,"colour":["#c98b74","#7a4535"],"cover":"heavy","forage":"good"}},"place_kinds":{"camp":{"name":"Camp"},"objective":{"name":"Objective"},"village":{"name":"Village"},"town":{"name":"Town"},"landmark":{"name":"Landmark"}}},"maps":{"generic-valley":{"id":"generic-valley","name":"Generic river valley (test map)","hex_km":1,"rows":["....FFFFFFFF.FFF.......www......hhMMMMMM","..FFFFFFFFFFFFFF......wwww......hhhMMMMM","...FFFFFFFFFFFFFF....wwwwwww...hhhhMMMMM",".FFFFFFFFFFFFFFF.....wwwwww....hhhhMMMMM",".FFFFFFFFFFFFFFF.......~www.....hhMMMMMM",".FFFFFFFFFFFFF.F......~w..........MMMMMM","..FFFFFFFFFFFFF.......~...........MMMMMM","..FFFFFFFFFFFF.......~.....T.......MMMMM","...FFFFFFFFFF.......=d======.......M.M..","..FFFFFFFFFFF.....==~......h..h.h.......","...FFFFFFFFF......=.~......hhhhh=h......","...FFFFFFFF......=.~.......hhhh=h.......","....F.FF.FFFFff.f=.~......hhhhh=hh......",".........FFF.fff=f.~.....hhhhh=hhh......","..........FFFfff=f..~...ffhfhh=hhhh.....","...........Ffff=fff.~...ff====hhhh......","...........ffff=fff..b=v===ffhhhhhh.....","...........f===ffff==~.fffffhhhhh..hh...","...........vffffff.=..~.fffffhhhhhhhh...","............fffff.=..~.fffff.hh.hhhhh...","...================..~...fff.....hhhhh..",".,.,..,.............~m...........hhhhh..",".,,,,,,.............m~m...........hhhh..",",,,,,,,,............m~m..........h......",".,,,,,,,,...........m~m.................",",,,,,,,,...........m~m..................",",,,,,,,,,,.........m~m..................",",,,,,,,,..........m~m...................",",,,,,,,,..........m~m...................",".,,,,,,...........~m...................."],"places":[{"name":"Camp","kind":"camp","hex":[3,20]},{"name":"Gallows Ridge","kind":"objective","hex":[32,10],"note":"Where the enemy is drawn up"},{"name":"Brigham","kind":"village","hex":[23,16]},{"name":"Elmstead","kind":"village","hex":[11,18]},{"name":"Kelsey Market","kind":"town","hex":[27,7]},{"name":"Bridge","kind":"landmark","hex":[21,16]},{"name":"Ford","kind":"landmark","hex":[21,8]}],"forces":[{"name":"Our band","type":"foot","side":"Side A","hex":[3,20]},{"name":"Baggage train","type":"wagons","side":"Side A","hex":[4,20]},{"name":"Enemy horse","type":"mounted","side":"Side B","hex":[33,11]}]}}};
+const DATA = {"generated":"2026-10-09","terrain":{"hours_per_day":8,"day_starts":8,"forces":{"foot":{"name":"On foot","kmh":4},"mounted":{"name":"Mounted","kmh":6},"wagons":{"name":"Baggage wagons","kmh":3,"cannot_enter":["forest","marsh","mountains","heath"]}},"terrain":{"road":{"id":"road","key":"=","name":"Road","cost":1.0,"colour":["#9f8b66","#8f7d58"],"cover":"none","forage":"poor"},"open":{"id":"open","key":".","name":"Open ground","cost":1.5,"colour":["#dfe6c4","#3d4632"],"cover":"none","forage":"fair"},"farmland":{"id":"farmland","key":"f","name":"Farmland","cost":1.5,"colour":["#e9dfa8","#4f4a2c"],"cover":"light","forage":"good"},"heath":{"id":"heath","key":",","name":"Heath","cost":1.75,"colour":["#d4c3cf","#4a3d47"],"cover":"none","forage":"poor"},"forest":{"id":"forest","key":"F","name":"Forest","cost":2.5,"colour":["#8fb487","#24402a"],"cover":"heavy","forage":"fair"},"hills":{"id":"hills","key":"h","name":"Hills","cost":2.0,"colour":["#c9b28a","#5a4b33"],"cover":"light","forage":"fair"},"mountains":{"id":"mountains","key":"M","name":"Mountains","cost":4.0,"colour":["#a39a92","#4d4844"],"cover":"heavy","forage":"none"},"marsh":{"id":"marsh","key":"m","name":"Marsh","cost":3.0,"colour":["#a9c7b8","#2d4842"],"cover":"light","forage":"poor","wet":true},"river":{"id":"river","key":"~","name":"River","cost":null,"colour":["#8db7d6","#25445c"],"cover":"none","forage":"poor","wet":true},"ford":{"id":"ford","key":"d","name":"Ford","cost":2.0,"colour":["#b4d0e0","#35566b"],"cover":"none","forage":"poor","wet":true},"bridge":{"id":"bridge","key":"b","name":"Bridge","cost":1.0,"colour":["#7a6545","#a08a5e"],"cover":"none","forage":"none"},"lake":{"id":"lake","key":"w","name":"Lake or sea","cost":null,"colour":["#7fa9cc","#1f3a52"],"cover":"none","forage":"poor","wet":true},"village":{"id":"village","key":"v","name":"Village","cost":1.0,"colour":["#d9a68a","#6e4836"],"cover":"light","forage":"good"},"town":{"id":"town","key":"T","name":"Town","cost":1.0,"colour":["#c98b74","#7a4535"],"cover":"heavy","forage":"good"}},"place_kinds":{"camp":{"name":"Camp"},"objective":{"name":"Objective"},"village":{"name":"Village"},"town":{"name":"Town"},"landmark":{"name":"Landmark"}}},"works":{"work_share":0.75,"camp_area":{"foot":20,"mounted":40,"wagons":40},"camp_area_min":100,"camps":{"bivouac":{"name":"Bivouac","hours":0,"surprise":20,"rest":"poor","desc":"Sleep where you stop. Nothing built and no proper watch."},"watched":{"name":"Watched camp","hours":1,"surprise":0,"rest":"fair","desc":"A cleared site with fires, the baggage drawn up and a sentry roster."},"staked":{"name":"Staked camp","hours":1,"tools":true,"works":["stakes"],"surprise":-10,"rest":"fair","layout":"stakes","desc":"A watched camp ringed with sharpened stakes, like archers' stakes set against horse."},"fortified":{"name":"Fortified camp","hours":1,"tools":true,"works":["ditch","bank","palisade","gate"],"surprise":-20,"rest":"good","layout":"fortified","desc":"Ditch, bank and palisade all round, with a gate."},"quartered":{"name":"Quartered","hours":0.5,"terrain":["village","town"],"surprise":0,"rest":"good","desc":"Billeted in the houses of a village or town."}},"edge_works":{"ditch":{"name":"Ditch","per_metre":2.5,"cross":2,"cover":0,"height":10,"breach":null},"bank":{"name":"Earth bank","per_metre":1.0,"cross":1,"cover":20,"cover_side":"high","height":10,"breach":null},"palisade":{"name":"Palisade","per_metre":1.5,"haul":1.0,"cross":null,"cover":40,"cover_side":"both","blocks_melee":true,"breach":12},"gate":{"name":"Gate","each":6,"cross":0,"cover":40,"cover_side":"both","blocks_melee":true,"breach":20,"gate":true},"wall":{"name":"Stone wall","per_metre":null,"cross":null,"cover":50,"cover_side":"both","height":20,"blocks_melee":true,"breach":null,"note":"Town and castle walls: already there, not built in the field."}},"hex_works":{"stakes":{"name":"Stakes","each":1,"haul":0.5,"enter":1,"no_horse":true,"breach":2},"abatis":{"name":"Abatis","each":4,"haul":4,"enter":2,"cover_here":20,"no_horse":true,"breach":8},"pavise":{"name":"Pavise","each":0,"enter":0,"cover_here":20,"breach":null,"note":"A large standing shield carried by crossbowmen; covers the man behind it."},"wagon":{"name":"Wagon","each":0.25,"enter":null,"cover_behind":40,"no_horse":true,"breach":10,"note":"Wagons drawn up and chained, as in a wagon laager."}}},"maps":{"generic-valley":{"id":"generic-valley","name":"Generic river valley (test map)","hex_km":1,"rows":["....FFFFFFFF.FFF.......www......hhMMMMMM","..FFFFFFFFFFFFFF......wwww......hhhMMMMM","...FFFFFFFFFFFFFF....wwwwwww...hhhhMMMMM",".FFFFFFFFFFFFFFF.....wwwwww....hhhhMMMMM",".FFFFFFFFFFFFFFF.......~www.....hhMMMMMM",".FFFFFFFFFFFFF.F......~w..........MMMMMM","..FFFFFFFFFFFFF.......~...........MMMMMM","..FFFFFFFFFFFF.......~.....T.......MMMMM","...FFFFFFFFFF.......=d======.......M.M..","..FFFFFFFFFFF.....==~......h..h.h.......","...FFFFFFFFF......=.~......hhhhh=h......","...FFFFFFFF......=.~.......hhhh=h.......","....F.FF.FFFFff.f=.~......hhhhh=hh......",".........FFF.fff=f.~.....hhhhh=hhh......","..........FFFfff=f..~...ffhfhh=hhhh.....","...........Ffff=fff.~...ff====hhhh......","...........ffff=fff..b=v===ffhhhhhh.....","...........f===ffff==~.fffffhhhhh..hh...","...........vffffff.=..~.fffffhhhhhhhh...","............fffff.=..~.fffff.hh.hhhhh...","...================..~...fff.....hhhhh..",".,.,..,.............~m...........hhhhh..",".,,,,,,.............m~m...........hhhh..",",,,,,,,,............m~m..........h......",".,,,,,,,,...........m~m.................",",,,,,,,,...........m~m..................",",,,,,,,,,,.........m~m..................",",,,,,,,,..........m~m...................",",,,,,,,,..........m~m...................",".,,,,,,...........~m...................."],"places":[{"name":"Camp","kind":"camp","hex":[3,20]},{"name":"Gallows Ridge","kind":"objective","hex":[32,10],"note":"Where the enemy is drawn up"},{"name":"Brigham","kind":"village","hex":[23,16]},{"name":"Elmstead","kind":"village","hex":[11,18]},{"name":"Kelsey Market","kind":"town","hex":[27,7]},{"name":"Bridge","kind":"landmark","hex":[21,16]},{"name":"Ford","kind":"landmark","hex":[21,8]}],"forces":[{"name":"Our band","type":"foot","side":"Side A","men":12,"tools":true,"hex":[3,20]},{"name":"Baggage train","type":"wagons","side":"Side A","men":6,"tools":true,"hex":[4,20]},{"name":"Enemy horse","type":"mounted","side":"Side B","men":20,"tools":false,"hex":[33,11]}]}}};
 const $ = s => document.querySelector(s);
 const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
 const BYKEY = Object.fromEntries(Object.values(TT).map(t => [t.key, t]));
@@ -247,6 +269,41 @@ function advance(m, path, index, day, used, hours, ftype){
   if (index + 1 < path.length) used = target;
   return { index, day, used };
 }
+// Making camp
+const WK = DATA.works, BATTLE_HEX_M = 2;
+function nearWoods(m, h){
+  const cols = m.rows[0].length, rows = m.rows.length;
+  return [h.slice(), ...neighbours(h, cols, rows)].some(x => terrainAt(m, x).id === "forest");
+}
+function campPerimeter(men, ftype){
+  const area = Math.max(WK.camp_area_min, men * WK.camp_area[ftype]);
+  return 2 * Math.sqrt(3.141592653589793 * area);
+}
+function campHours(m, h, kind, men, ftype, tools){
+  const c = WK.camps[kind], t = terrainAt(m, h);
+  if (c.terrain && !c.terrain.includes(t.id)) return { error: `needs a ${c.terrain.map(x => TT[x].name.toLowerCase()).join(" or ")}` };
+  if (c.tools && !tools) return { error: "needs tools (spades and axes)" };
+  const woods = nearWoods(m, h), per = campPerimeter(men, ftype);
+  let labour = 0;
+  for (const w of c.works || []){
+    if (w in WK.edge_works){
+      const e = WK.edge_works[w];
+      if ("each" in e) labour += e.each;
+      else labour += (e.per_metre + (woods ? 0 : (e.haul || 0))) * per;
+    } else {
+      const x = WK.hex_works[w];
+      labour += (x.each + (woods ? 0 : (x.haul || 0))) * per / BATTLE_HEX_M;
+    }
+  }
+  return { hours: c.hours + labour / (men * WK.work_share), labour, perimeter: per, woods };
+}
+function campDone(day, used, hours){
+  const hpd = TER.hours_per_day;
+  if (used >= hpd - 1e-9){ day += 1; used = 0 }
+  let left = hours;
+  while (used + left > hpd + 1e-9){ left -= hpd - used; day += 1; used = 0 }
+  return { day, used: used + left };
+}
 /* ---------- end of rules shared with gravewounds/travel.py ---------- */
 
 /* ---------- state ---------- */
@@ -261,16 +318,17 @@ function curMap(){                           // the map with any painting applie
 }
 const sameHex = (a, b) => !!(a && b) && a[0] === b[0] && a[1] === b[1];
 function forcesHere(){
-  if (!S.forces[S.mapId]) S.forces[S.mapId] = (baseMap().forces || []).map(f => newForce(f.name, f.type, f.side, f.hex));
+  if (!S.forces[S.mapId]) S.forces[S.mapId] = (baseMap().forces || []).map(f => newForce(f.name, f.type, f.side, f.hex, f.men, f.tools));
+  for (const f of S.forces[S.mapId]){ if (!(f.men >= 1)) f.men = 10; if (typeof f.tools !== "boolean") f.tools = true; if (!("camp" in f)) f.camp = null }
   return S.forces[S.mapId];
 }
-function newForce(name, type, side, hex){
-  return { id: S.seq++, name, type, side: side || "Side A", pos: hex.slice(), waypoints: [], path: null, legs: [], index: 0, day: 1, used: 0, log: [] };
+function newForce(name, type, side, hex, men = 10, tools = true){
+  return { id: S.seq++, name, type, side: side || "Side A", men, tools, camp: null, pos: hex.slice(), waypoints: [], path: null, legs: [], index: 0, day: 1, used: 0, log: [] };
 }
 const selForce = () => { const fs = forcesHere(); return fs.find(f => f.id === S.sel[S.mapId]) || fs[0] || null };
 const sides = () => [...new Set(forcesHere().map(f => f.side))];
 const clock = (used) => { const t = TER.day_starts + used, h = Math.floor(t + 1e-9), mi = Math.round((t - h) * 60); return `${String(h + Math.floor(mi / 60)).padStart(2, "0")}:${String(mi % 60).padStart(2, "0")}` };
-const fmtH = h => { let hh = Math.floor(h + 1e-9), mm = Math.round((h - hh) * 60); if (mm === 60){ hh++; mm = 0 } return hh && mm ? `${hh} h ${mm} min` : hh ? `${hh} h` : `${mm} min` };
+const fmtH = h => { if (h < 1 / 120) return "no time"; let hh = Math.floor(h + 1e-9), mm = Math.round((h - hh) * 60); if (mm === 60){ hh++; mm = 0 } return hh && mm ? `${hh} h ${mm} min` : hh ? `${hh} h` : `${mm} min` };
 const placeAt = h => (baseMap().places || []).find(p => sameHex(p.hex, h));
 const where = h => { const p = placeAt(h); return p ? p.name : `${terrainAt(curMap(), h).name.toLowerCase()} at ${h[0] + 1},${h[1] + 1}` };
 
@@ -305,6 +363,7 @@ function march(f, hours){
   const m = curMap(), from = f.index, d0 = f.day, u0 = f.used >= TER.hours_per_day - 1e-9 ? 0 : f.used;
   const r = advance(m, f.path, f.index, f.day, f.used, hours, f.type);
   const steps = r.index - from;
+  if (steps && f.camp){ f.log.unshift(`Day ${r.day}: breaks camp (${WK.camps[f.camp.kind].name.toLowerCase()}).`); f.camp = null }
   f.index = r.index; f.day = r.day; f.used = r.used; f.pos = f.path[f.index].slice();
   const arrived = f.index >= f.path.length - 1;
   const passed = f.legs.filter(i => i > from && i <= f.index).length;
@@ -312,9 +371,26 @@ function march(f, hours){
   if (arrived){ f.path = null; f.legs = []; f.waypoints = []; f.index = 0 }
   const km = +(steps * curMap().hex_km).toFixed(1);
   f.log.unshift(`Day ${f.day}, ${clock(u0)}–${clock(f.used)}: ${steps ? `marched ${km} km to ${where(f.pos)}` : "could not finish the next hex in the time; halted"}${arrived ? " — arrived" : ""}.`
-    + (f.used >= TER.hours_per_day - 1e-9 && !arrived ? " Camps for the night." : ""));
+    + (f.used >= TER.hours_per_day - 1e-9 && !arrived ? " Halts for the night." : ""));
   f.log = f.log.slice(0, 40);
   S.msg = "";
+}
+
+function makeCamp(f, kind){
+  const r = campHours(curMap(), f.pos, kind, f.men, f.type, f.tools);
+  if (r.error){ S.msg = `${f.name} cannot make a ${WK.camps[kind].name.toLowerCase()} here: it ${r.error}.`; return }
+  const u0 = f.used >= TER.hours_per_day - 1e-9 ? 0 : f.used, d0 = f.used >= TER.hours_per_day - 1e-9 ? f.day + 1 : f.day;
+  const done = campDone(f.day, f.used, r.hours);
+  f.day = done.day; f.used = done.used; f.camp = { kind, hex: f.pos.slice() };
+  f.log.unshift(`Day ${d0}, ${clock(u0)} to day ${f.day}, ${clock(f.used)}: made a ${WK.camps[kind].name.toLowerCase()} at ${where(f.pos)} (${fmtH(r.hours)}${r.labour ? `, ${Math.round(r.labour)} man-hours` : ""}).`);
+  S.msg = "";
+}
+function campText(f, kind){
+  const c = WK.camps[kind], r = campHours(curMap(), f.pos, kind, f.men, f.type, f.tools);
+  if (r.error) return `${c.desc} Not here: it ${r.error}.`;
+  const days = Math.floor(r.hours / TER.hours_per_day);
+  return `${c.desc} ${f.men} men: ${fmtH(r.hours)}${days ? ` (more than ${days} working day${days > 1 ? "s" : ""})` : ""}`
+    + (r.labour ? `, ${Math.round(r.labour)} man-hours for a ${Math.round(r.perimeter)} m perimeter${(c.works || []).some(w => (WK.edge_works[w] || WK.hex_works[w]).haul) ? (r.woods ? ", timber to hand" : ", timber hauled from afar") : ""}` : "") + ".";
 }
 
 /* ---------- drawing ---------- */
@@ -353,6 +429,10 @@ function renderMap(){
       : `<rect class="mk" x="${x - 3.5}" y="${y - 3.5}" width="7" height="7"/>`;
     over += `<g class="place ${p.kind}">${mk}<text x="${(x + 8).toFixed(1)}" y="${(y - 7).toFixed(1)}">${esc(p.name)}</text></g>`;
   }
+  for (const o of forcesHere()) if (o.camp){
+    const [x, y] = xy(o.camp.hex), letter = { bivouac: "B", watched: "W", staked: "S", fortified: "F", quartered: "Q" }[o.camp.kind] || "C";
+    over += `<g class="campmk ${o.camp.kind}"><circle class="ring" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="12.5"/><text x="${(x + 9).toFixed(1)}" y="${(y + 13).toFixed(1)}">${letter}</text></g>`;
+  }
   for (const o of forcesHere()){
     const [x, y] = xy(o.pos), k = sd.indexOf(o.side) % 4;
     over += `<g class="force s${k} ${o === f ? "sel" : ""}" data-id="${o.id}" tabindex="0" role="button" aria-label="${esc(o.name)}, ${esc(FT[o.type].name)}, at ${esc(where(o.pos))}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><title>${esc(o.name)} · ${esc(FT[o.type].name)}</title><circle class="ring" r="10"/><circle class="body" r="7.5"/><text dy="0.35em">${esc(initials(o.name))}</text></g>`;
@@ -367,13 +447,15 @@ function renderSide(){
   $("#forces").innerHTML = fs.map(o => `<li data-id="${o.id}" aria-current="${o === f}" tabindex="0"><span class="dot" style="background:var(--side${sd.indexOf(o.side) % 4})"></span><span><b>${esc(o.name)}</b> <span class="muted">${esc(FT[o.type].name)} · ${esc(o.side)}</span></span><span class="meta">day ${o.day} ${clock(Math.min(o.used, TER.hours_per_day))}</span></li>`).join("") || `<li class="muted">No forces. Add one below.</li>`;
   const on = !!f;
   ["#btn-hour", "#btn-day", "#btn-undo-wp", "#btn-clear", "#btn-remove"].forEach(id => $(id).disabled = !on);
-  if (!f){ $("#force-head").textContent = ""; $("#summary").innerHTML = ""; $("#log").innerHTML = ""; return }
+  ["#btn-camp", "#btn-fight", "#in-men", "#in-tools", "#sel-camp"].forEach(id => $(id).disabled = !on);
+  if (!f){ $("#force-head").textContent = ""; $("#summary").innerHTML = ""; $("#log").innerHTML = ""; $("#camp-est").textContent = ""; return }
   const ft = FT[f.type], hpd = TER.hours_per_day;
   $("#force-head").innerHTML = `<b>${esc(f.name)}</b> at ${esc(where(f.pos))}. ${esc(ft.name)}: ${ft.kmh} km/h on a road, ${hpd} marching hours a day from ${clock(0)}.`
     + (ft.cannot_enter ? ` Cannot enter ${ft.cannot_enter.map(t => TT[t].name.toLowerCase()).join(", ")}.` : "");
   $("#btn-undo-wp").disabled = !f.waypoints.length; $("#btn-clear").disabled = !f.waypoints.length;
   $("#btn-hour").disabled = $("#btn-day").disabled = !(f.path && f.index < f.path.length - 1);
-  let rows = `<dt>Now</dt><dd>Day ${f.day}, ${clock(Math.min(f.used, hpd))}${f.used >= hpd - 1e-9 ? " (camped for the night)" : ""}</dd>`;
+  let rows = `<dt>Now</dt><dd>Day ${f.day}, ${clock(Math.min(f.used, hpd))}${f.used >= hpd - 1e-9 ? " (day's work done)" : ""}</dd>`
+    + (f.camp ? `<dt>Camp</dt><dd>${esc(WK.camps[f.camp.kind].name)}</dd>` : "");
   if (f.path && f.index < f.path.length - 1){
     const rest = f.path.slice(f.index), sch = schedule(m, rest, f.type, f.day, f.used), end = sch[sch.length - 1];
     let hours = 0; for (let i = 0; i + 1 < rest.length; i++) hours += stepHours(m, rest[i], rest[i + 1], f.type);
@@ -384,6 +466,12 @@ function renderSide(){
       + `<dt>Arrives</dt><dd>Day ${end.day}, ${clock(end.used)}${nights ? ` · ${nights} night${nights > 1 ? "s" : ""} on the road` : ""}</dd>`;
   } else rows += `<dt>Route</dt><dd>${S.mode === "plan" ? "Click the map to add a waypoint" : "None"}</dd>`;
   $("#summary").innerHTML = rows;
+  $("#in-men").value = f.men; $("#in-tools").checked = !!f.tools;
+  const kinds = Object.keys(WK.camps), cur = S.campKind && kinds.includes(S.campKind) ? S.campKind : "watched";
+  $("#sel-camp").innerHTML = kinds.map(k => { const r = campHours(m, f.pos, k, f.men, f.type, f.tools);
+    return `<option value="${k}" ${k === cur ? "selected" : ""}>${esc(WK.camps[k].name)}${r.error ? " (not here)" : ` · ${fmtH(r.hours)}`}</option>` }).join("");
+  $("#camp-est").textContent = campText(f, cur);
+  $("#btn-camp").disabled = !!campHours(m, f.pos, cur, f.men, f.type, f.tools).error;
   $("#log").innerHTML = f.log.map(l => `<li>${esc(l)}</li>`).join("");
 }
 function render(){
@@ -407,7 +495,7 @@ function mapYaml(){
   return [`# Painted in the travel page from ${b.id}. Save as data/maps/<id>.yaml and rebuild.`,
     `id: ${b.id}`, `name: ${q(b.name)}`, `hex_km: ${b.hex_km}`, `terrain: |`, ...m.rows.map(r => "    " + r),
     `places:`, ...(b.places || []).map(p => `  - {name: ${q(p.name)}, kind: ${p.kind}, hex: [${p.hex.join(", ")}]${p.note ? `, note: ${q(p.note)}` : ""}}`),
-    `forces:`, ...fs.map(f => `  - {name: ${q(f.name)}, type: ${f.type}, side: ${q(f.side)}, hex: [${f.pos.join(", ")}]}`), ""].join("\n");
+    `forces:`, ...fs.map(f => `  - {name: ${q(f.name)}, type: ${f.type}, side: ${q(f.side)}, men: ${f.men}, tools: ${!!f.tools}, hex: [${f.pos.join(", ")}]}`), ""].join("\n");
 }
 
 /* ---------- wiring ---------- */
@@ -476,8 +564,18 @@ function init(){
     const type = $("#in-ftype").value;
     const name = $("#in-fname").value.trim() || `Force ${S.seq}`;
     if (!passable(m, at, type)){ S.msg = refusal(name, type, at, "start on"); return render() }
-    const f = newForce(name, type, $("#in-fside").value.trim() || "Side A", at);
+    const f = newForce(name, type, $("#in-fside").value.trim() || "Side A", at, Math.max(1, parseInt($("#in-fmen").value, 10) || 10), $("#in-ftools").checked);
     forcesHere().push(f); S.sel[S.mapId] = f.id; $("#in-fname").value = ""; render();
+  };
+  $("#in-men").onchange = e => { const f = selForce(); if (f){ f.men = Math.max(1, parseInt(e.target.value, 10) || f.men); render() } };
+  $("#in-tools").onchange = e => { const f = selForce(); if (f){ f.tools = e.target.checked; render() } };
+  $("#sel-camp").onchange = e => { S.campKind = e.target.value; render() };
+  $("#btn-camp").onclick = () => { const f = selForce(); if (f){ makeCamp(f, $("#sel-camp").value); render() } };
+  $("#btn-fight").onclick = () => {
+    const f = selForce(); if (!f) return;
+    try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", force: { name: f.name, side: f.side, men: f.men, type: f.type },
+      camp: f.camp && sameHex(f.camp.hex, f.pos) ? f.camp.kind : null, place: where(f.pos), day: f.day, time: clock(Math.min(f.used, TER.hours_per_day)) })) }catch(e){}
+    location.href = "roller.html";
   };
   $("#btn-export").onclick = () => { const t = $("#export"); t.hidden = !t.hidden; t.value = mapYaml() };
   $("#btn-download").onclick = () => {

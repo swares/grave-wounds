@@ -242,6 +242,58 @@ def travel_rows(d) -> list[list[str]]:
     return out
 
 
+def camp_rows(d) -> list[list[str]]:
+    """[camp, what it is, needs, hours for 12 / 100 / 1,000 men on foot (timber hauled)]."""
+    from gravewounds import travel as T
+    W = d.works
+    m = {"rows": ["." * 3] * 3, "hex_km": 1}                  # open ground, no woods near
+    vm = {"rows": ["vvv"] * 3, "hex_km": 1}
+    out = []
+    for cid, c in W["camps"].items():
+        needs = ", ".join(x for x in [("tools" if c.get("tools") else ""),
+                                      ("a " + " or ".join(d.terrain["terrain"][t]["name"].lower() for t in c["terrain"]) if c.get("terrain") else "")] if x) or "-"
+        hrs = []
+        for men in (12, 100, 1000):
+            r = T.camp_hours(d, vm if c.get("terrain") else m, [1, 1], cid, men, "foot", True)
+            hrs.append("-" if "error" in r else (f"{r['hours']:.1f} h" if r["hours"] else "none"))
+        out.append([c["name"], c["desc"], needs] + hrs)
+    return out
+
+
+def works_rows(d) -> list[list[str]]:
+    """[work, where, labour, crossing, cover, height, breach]."""
+    W = d.works
+    out = []
+    for wid, w in W["edge_works"].items():
+        lab = f"{w['each']} man-h each" if "each" in w else ("not built in the field" if w.get("per_metre") is None else f"{w['per_metre']:g} man-h/m" + (f" (+{w['haul']:g} hauled)" if w.get("haul") else ""))
+        cross = "barred (open: free)" if w.get("gate") else ("blocks" if w.get("cross") is None else f"+{w['cross']}")
+        cov = f"-{w['cover']}%" + (" (high side)" if w.get("cover_side") == "high" else "") if w.get("cover") else "-"
+        ht = f"-{w['height']}% attacking up" if w.get("height") else ("reach 2 only" if w.get("blocks_melee") else "-")
+        if w.get("height") and w.get("blocks_melee"):
+            ht += "; reach 2 only"
+        out.append([w["name"], "edge", lab, cross, cov, ht, f"{w['breach']} man-rounds" if w.get("breach") else "-"])
+    for wid, w in W["hex_works"].items():
+        lab = f"{w['each']:g} man-h" + (f" (+{w['haul']:g} hauled)" if w.get("haul") else "") if w.get("each") else "carried"
+        cross = "blocks" if w.get("enter") is None else (f"+{w['enter']}" if w["enter"] else "free")
+        cov = (f"-{w['cover_here']}% in it" if w.get("cover_here") else "") or (f"-{w['cover_behind']}% behind it" if w.get("cover_behind") else "-")
+        out.append([w["name"], "hex", lab, cross, cov, "no horses" if w.get("no_horse") else "-", f"{w['breach']} man-rounds" if w.get("breach") else "-"])
+    return out
+
+
+def works_rules(d) -> list[str]:
+    W = d.works
+    return [
+        f"<b>Making camp:</b> a camp's works are built all round a perimeter big enough for the force (about {W['camp_area']['foot']} m2 a man on foot, "
+        f"{W['camp_area']['mounted']} with horses). {int(W['work_share'] * 100)}% of the men work at once; the rest guard and cook. Work uses the force's "
+        "working hours and runs on into the next day. Timber for palisades and stakes takes longer to fetch when no woods are within a hex.",
+        "<b>Works on the battle map:</b> ditches, banks, palisades, gates and walls lie along hex edges; stakes, abatis, pavises and wagons fill a hex. "
+        "Crossing costs extra movement; a palisade, a barred gate or a wall stops movement until breached. Missile attacks on a man right behind a work lose its cover. "
+        "In close combat only reach-2 weapons (spears, bills) strike over a palisade, gate or wall, and a man attacking up at a defender on the high side of a bank, ditch or wall takes its height penalty.",
+        "<b>Breaching:</b> a fighter next to a work can spend his attack on it: one man-round. When the man-rounds reach the work's breach number it is open. "
+        "A gate is opened or barred from inside.",
+    ]
+
+
 def reach_rows(d) -> list[list[str]]:
     """[weapon, reach or range] for every weapon, in data order."""
     out = []
@@ -267,6 +319,7 @@ def travel_bundle(d) -> dict:
     return {
         "generated": date.today().isoformat(),
         "terrain": d.terrain,
+        "works": d.works,
         "maps": {mid: {k: m.get(k) for k in ("id", "name", "hex_km", "rows", "places", "forces")} for mid, m in d.maps.items()},
     }
 
@@ -304,6 +357,7 @@ def bundle(d) -> dict:
         "vocabulary": d.wounds["vocabulary"],
         "tracking": d.wounds["tracking"],
         "combat": d.wounds["combat"],
+        "works": d.works,
         "wounds": wounds,
         "modifiers": list(d.modifiers.values()),
         "called_shot": d.called_shot,
@@ -416,6 +470,10 @@ def markdown(d) -> str:
     out += ["", "### Graze, stop check and morale", ""] + [re.sub("</?b>", "**", x) + "\n" for x in stop_rules(d)]
     out += ["### Battle map", ""] + [re.sub("</?b>", "**", x) + "\n" for x in move_rules(d)]
     out += ["| Weapon | Reach or range (short / medium / long) |", "|---|---|"] + [f"| {a} | {b} |" for a, b in reach_rows(d)] + [""]
+    if d.works.get("camps"):
+        out += ["## Camps and works", ""] + [re.sub("</?b>", "**", x) + "\n" for x in works_rules(d)]
+        out += ["| Camp | What it is | Needs | 12 men | 100 men | 1,000 men |", "|---|---|---|---|---|---|"] + ["| " + " | ".join(r) + " |" for r in camp_rows(d)] + [""]
+        out += ["| Work | Lies on | Labour | Crossing | Cover | Close combat | Breach |", "|---|---|---|---|---|---|---|"] + ["| " + " | ".join(r) + " |" for r in works_rows(d)] + [""]
     if d.terrain["terrain"]:
         ft = d.terrain["forces"]
         out += ["## Travel", ""] + [re.sub("</?b>", "**", x) + "\n" for x in travel_rules(d)]
@@ -766,6 +824,14 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
               Spacer(1, 6), Paragraph("Weapon reach and range", H2),
               Paragraph("Ranges are design estimates from each weapon's effective range in its period.", S), Spacer(1, 3),
               grid(rrows, [2.9 * inch, W - 2.9 * inch], font=7.5)]
+    if d.works.get("camps"):
+        crow = [[Paragraph(x, CH) for x in ["Camp", "What it is", "Needs", "12 men", "100 men", "1,000 men"]]] + [[Paragraph(r[0], C), Paragraph(r[1], C)] + r[2:] for r in camp_rows(d)]
+        wrow = [[Paragraph(x, CH) for x in ["Work", "Lies on", "Labour", "Crossing", "Cover", "Close combat", "Breach"]]] + [[Paragraph(x, C) for x in r] for r in works_rows(d)]
+        story += [PageBreak(), Paragraph("Camps and Works", H1)] + [Paragraph(x, B) for x in works_rules(d)] + [
+                  Spacer(1, 6), Paragraph("Camps (hours to make, on foot, timber hauled)", H2), Spacer(1, 3),
+                  grid(crow, [1.1 * inch, W - 4.6 * inch, 0.9 * inch, 0.85 * inch, 0.85 * inch, 0.9 * inch], font=7.5), Spacer(1, 8),
+                  Paragraph("Medieval works", H2), Spacer(1, 3),
+                  grid(wrow, [0.9 * inch, 0.55 * inch, 1.2 * inch, 0.95 * inch, 1.0 * inch, W - 5.6 * inch, 1.0 * inch], font=7.5)]
     if d.terrain["terrain"]:
         ft = d.terrain["forces"]
         trow = [[Paragraph(x, CH) for x in ["Terrain", "Time"] + [f"{f['name']}<br/>km a day" for f in ft.values()]]] + travel_rows(d)

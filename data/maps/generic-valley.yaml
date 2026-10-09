@@ -46,6 +46,6 @@ places:
   - {name: "Bridge", kind: landmark, hex: [21, 16]}
   - {name: "Ford", kind: landmark, hex: [21, 8]}
 forces:
-  - {name: "Our band", type: foot, side: "Side A", hex: [3, 20]}
-  - {name: "Baggage train", type: wagons, side: "Side A", hex: [4, 20]}
-  - {name: "Enemy horse", type: mounted, side: "Side B", hex: [33, 11]}
+  - {name: "Our band", type: foot, side: "Side A", men: 12, tools: true, hex: [3, 20]}
+  - {name: "Baggage train", type: wagons, side: "Side A", men: 6, tools: true, hex: [4, 20]}
+  - {name: "Enemy horse", type: mounted, side: "Side B", men: 20, tools: false, hex: [33, 11]}

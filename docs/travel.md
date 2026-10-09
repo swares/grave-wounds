@@ -49,6 +49,14 @@ last hour of a day can be partly lost when the next hex is slow going. **March 1
 moves the force one hour along its route. **March to day's end** uses the rest of the
 day's marching hours. The next march starts at 08:00 the following day.
 
+## Making camp
+
+Each force has a number of men and either has tools or doesn't. **Make camp** spends the
+time to make a bivouac, a watched camp, a staked camp, a fortified camp, or quarters in a
+village or town. The time depends on the force's size and tools and on whether woods are
+near. **Set up a fight here** opens the battle map with the camp's works and its men laid
+out. See [works.md](works.md).
+
 ## In the page
 
 - **Forces.** Click a force in the list or on the map to select it. **Add a force** puts a

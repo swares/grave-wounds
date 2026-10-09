@@ -95,6 +95,7 @@ class Data:
     wmult: dict = field(default_factory=dict)       # table id -> weapon id -> [multiplier per location]
     terrain: dict = field(default_factory=dict)     # terrain.yaml: hours_per_day, forces, terrain (id -> type), place_kinds
     maps: dict = field(default_factory=dict)        # travel map id -> map, `rows` = terrain rows as strings
+    works: dict = field(default_factory=dict)       # works.yaml: camps, edge_works, hex_works
     warnings: list = field(default_factory=list)
 
 
@@ -116,6 +117,7 @@ def load(root: str | Path = "data") -> Data:
     conflicts = (_read(root / "conflicts.yaml") or {}).get("conflicts", {}) if (root / "conflicts.yaml").exists() else {}
     terrain = _read(root / "terrain.yaml") if (root / "terrain.yaml").exists() else {"hours_per_day": 8, "forces": {}, "terrain": [], "place_kinds": {}}
     terrain = {**terrain, "terrain": {t["id"]: t for t in terrain["terrain"]}}
+    works = _read(root / "works.yaml") if (root / "works.yaml").exists() else {"camps": {}, "edge_works": {}, "hex_works": {}}
     maps = {}
     for p in sorted((root / "maps").glob("*.yaml")) if (root / "maps").exists() else []:
         m = _read(p)
@@ -138,6 +140,7 @@ def load(root: str | Path = "data") -> Data:
         conflicts=conflicts,
         terrain=terrain,
         maps=maps,
+        works=works,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -387,6 +390,35 @@ def validate(d: Data) -> None:
                 errors.append(f"maps/{mid}: force {fo.get('name')} is off the map")
             elif TT[keys.get(rows[fo['hex'][1]][fo['hex'][0]], 'open')].get("cost") is None:
                 errors.append(f"maps/{mid}: force {fo.get('name')} starts on impassable terrain")
+            if not (isinstance(fo.get("men"), int) and fo["men"] >= 1):
+                errors.append(f"maps/{mid}: force {fo.get('name')} needs men, a whole number of 1 or more")
+            if not isinstance(fo.get("tools"), bool):
+                errors.append(f"maps/{mid}: force {fo.get('name')} needs tools: true or false")
+
+    # camps and works
+    WK = d.works
+    EW, HW = WK.get("edge_works", {}), WK.get("hex_works", {})
+    for k in ("work_share", "camp_area_min"):
+        if not (isinstance(WK.get(k), (int, float)) and WK[k] > 0):
+            errors.append(f"works.yaml: {k} must be positive")
+    for ft in d.terrain["forces"]:
+        if ft not in WK.get("camp_area", {}):
+            errors.append(f"works.yaml: camp_area has no entry for force type {ft}")
+    for cid, c in WK.get("camps", {}).items():
+        for w in c.get("works", []):
+            if w not in EW and w not in HW:
+                errors.append(f"works.yaml: camp {cid} names unknown work {w}")
+        for t in c.get("terrain", []):
+            if t not in TT:
+                errors.append(f"works.yaml: camp {cid} names unknown terrain {t}")
+        if c.get("layout") not in (None, "stakes", "fortified"):
+            errors.append(f"works.yaml: camp {cid} layout must be stakes or fortified")
+    for wid, w in EW.items():
+        if w.get("cover_side", "both") not in ("both", "high"):
+            errors.append(f"works.yaml: {wid} cover_side must be both or high")
+    for wid, w in {**EW, **HW}.items():
+        if w.get("breach") is not None and not (isinstance(w["breach"], int) and w["breach"] >= 1):
+            errors.append(f"works.yaml: {wid} breach must be a whole number of man-rounds or null")
 
     # weapons
     for wid, w in d.weapons.items():

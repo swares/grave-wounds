@@ -3,6 +3,7 @@ severity from the margin of success, the graze, the stop check and team morale.
 Mirrored exactly by the web roller."""
 from __future__ import annotations
 
+import heapq
 import math
 
 from .model import Data
@@ -269,3 +270,193 @@ def free_attackers(d: Data, start, end, steps: int, enemies: list[dict]) -> list
         return []
     return [e["id"] for e in enemies
             if e["able"] and hex_distance(start, e["pos"]) == 1 and hex_distance(end, e["pos"]) != 1]
+
+
+# ---------- works on the battle map ----------
+# works = {"edges": {edge_key: [item, ...]}, "hexes": {hex_key: item}}; an item is
+# {"type", "progress" (man-rounds of breaching done), "open" and "inside" (gates: the hex
+# key of the side it is barred from), "high" (hex key of the high, inner side, for banks,
+# ditches and walls)}.
+
+def hkey(h) -> str:
+    return f"{h[0]},{h[1]}"
+
+
+def edge_key(a, b) -> str:
+    x, y = sorted([list(a), list(b)], key=lambda h: (h[1], h[0]))
+    return hkey(x) + "|" + hkey(y)
+
+
+def _spec(d: Data, kind: str, item: dict) -> dict:
+    return d.works["edge_works" if kind == "edge" else "hex_works"][item["type"]]
+
+
+def intact(d: Data, kind: str, item: dict) -> bool:
+    b = _spec(d, kind, item).get("breach")
+    return not (b and item.get("progress", 0) >= b)
+
+
+def _edge_items(d: Data, works, a, b) -> list:
+    """Intact items on the edge, leaving out open gates."""
+    if not works:
+        return []
+    out = []
+    for it in works.get("edges", {}).get(edge_key(a, b), []):
+        if not intact(d, "edge", it):
+            continue
+        if _spec(d, "edge", it).get("gate") and it.get("open"):
+            continue
+        out.append(it)
+    return out
+
+
+def _hex_item(d: Data, works, h):
+    it = (works or {}).get("hexes", {}).get(hkey(h))
+    return it if it and intact(d, "hex", it) else None
+
+
+def step_cost(d: Data, works, a, b) -> int | None:
+    """Movement to step from hex a to the next hex b: 1, plus crossing the works on the
+    edge and entering the works in b. None if a work stops him."""
+    cost = 1
+    for it in _edge_items(d, works, a, b):
+        s = _spec(d, "edge", it)
+        c = None if s.get("gate") else s.get("cross")      # open gates are already left out
+        if c is None:
+            return None
+        cost += c
+    it = _hex_item(d, works, b)
+    if it:
+        e = _spec(d, "hex", it).get("enter")
+        if e is None:
+            return None
+        cost += e
+    return cost
+
+
+def reachable_works(d: Data, start, steps: int, cols: int, rows: int, enemies, friends, works) -> dict:
+    """Like reachable(), but each step costs step_cost() (works slow or stop him)."""
+    blocked = {tuple(e) for e in enemies}
+    friendly = {tuple(f) for f in friends}
+    best = {tuple(start): 0}
+    heap = [(0, 0, tuple(start))]
+    seq, done = 1, set()
+    while heap:
+        cost, _, h = heapq.heappop(heap)
+        if h in done:
+            continue
+        done.add(h)
+        for n in neighbours(list(h), cols, rows):
+            t = tuple(n)
+            if t in blocked:
+                continue
+            sc = step_cost(d, works, list(h), n)
+            if sc is None or cost + sc > steps:
+                continue
+            if cost + sc < best.get(t, steps + 1):
+                best[t] = cost + sc
+                heapq.heappush(heap, (cost + sc, seq, t))
+                seq += 1
+    return {h: c for h, c in best.items() if h not in friendly or c == 0}
+
+
+def facing(target, attacker, cols: int, rows: int) -> list:
+    """The target's neighbours nearest the attacker: what lies between them."""
+    ns = neighbours(list(target), cols, rows)
+    if not ns:
+        return []
+    best = min(hex_distance(n, attacker) for n in ns)
+    return [n for n in ns if hex_distance(n, attacker) == best]
+
+
+def missile_cover(d: Data, works, attacker, target, cols: int, rows: int) -> dict:
+    """Cover a target has against a missile attack: {cover (% off the attack), work}."""
+    best, what = 0, None
+    it = _hex_item(d, works, target)
+    if it and _spec(d, "hex", it).get("cover_here", 0) > best:
+        best, what = _spec(d, "hex", it)["cover_here"], it["type"]
+    for n in facing(target, attacker, cols, rows):
+        for e in _edge_items(d, works, target, n):
+            s = _spec(d, "edge", e)
+            if s.get("cover_side", "both") == "high" and e.get("high") != hkey(target):
+                continue
+            if s.get("cover", 0) > best:
+                best, what = s["cover"], e["type"]
+        if list(n) != list(attacker):
+            it = _hex_item(d, works, n)
+            if it and _spec(d, "hex", it).get("cover_behind", 0) > best:
+                best, what = _spec(d, "hex", it)["cover_behind"], it["type"]
+    return {"cover": best, "work": what}
+
+
+def melee_across(d: Data, works, attacker, target, reach: int, cols: int, rows: int) -> dict:
+    """A close-combat attack across works: {blocked (only reach 2+ strikes over it),
+    penalty (% off for attacking up at a man on the high side), work}."""
+    cands = [list(attacker)] if hex_distance(attacker, target) == 1 else facing(target, attacker, cols, rows)
+    blocked, penalty, what = False, 0, None
+    for n in cands:
+        pen = 0
+        for e in _edge_items(d, works, target, n):
+            s = _spec(d, "edge", e)
+            if s.get("blocks_melee") and reach < 2 and hex_distance(attacker, target) == 1:
+                blocked, what = True, e["type"]
+            if s.get("height") and e.get("high") == hkey(target):
+                pen += s["height"]
+                what = what or e["type"]
+        penalty = max(penalty, pen)
+    return {"blocked": blocked, "penalty": penalty, "work": what}
+
+
+def camp_radius(d: Data, men: int, ftype: str) -> int:
+    """Hexes from the centre to the edge of a camp for this many men (2 m hexes)."""
+    W = d.works
+    area = max(W["camp_area_min"], men * W["camp_area"][ftype])
+    n = area / (3 ** 0.5 / 2 * 4)
+    r = 0
+    while 3 * r * (r + 1) + 1 < n:
+        r += 1
+    return max(r, 1)
+
+
+def camp_works(d: Data, kind: str, men: int, ftype: str, cols: int, rows: int) -> dict:
+    """Battle-map layout for a camp in the middle of the map: {centre, radius, fits, works}.
+    The camp is cut down to fit the map if it must (fits false)."""
+    layout = d.works["camps"][kind].get("layout")
+    centre = [cols // 2, rows // 2]
+    r = camp_radius(d, men, ftype)
+    extra = 2 if layout == "fortified" else 1
+    fits = True
+
+    def inside(rr):
+        cnt = sum(1 for y in range(rows) for x in range(cols) if hex_distance(centre, [x, y]) <= rr)
+        return cnt == 3 * rr * (rr + 1) + 1
+    while r > 1 and not inside(r + extra):
+        r -= 1
+        fits = False
+    works = {"edges": {}, "hexes": {}}
+    if not layout:
+        return {"centre": centre, "radius": r, "fits": fits, "works": works}
+    gate_in, gate_out = [centre[0] + r, centre[1]], [centre[0] + r + 1, centre[1]]
+    ring = [[x, y] for y in range(rows) for x in range(cols) if hex_distance(centre, [x, y]) == r]
+    outer = [[x, y] for y in range(rows) for x in range(cols) if hex_distance(centre, [x, y]) == r + 1]
+    if layout == "stakes":
+        for h in outer:
+            if h != gate_out:
+                works["hexes"][hkey(h)] = {"type": "stakes", "progress": 0}
+    elif layout == "fortified":
+        for h in ring:
+            for n in neighbours(h, cols, rows):
+                if hex_distance(centre, n) == r + 1:
+                    k = edge_key(h, n)
+                    if h == gate_in and n == gate_out:
+                        works["edges"][k] = [{"type": "gate", "progress": 0, "open": False, "inside": hkey(h)}]
+                    else:
+                        works["edges"][k] = [{"type": "bank", "progress": 0, "high": hkey(h)},
+                                             {"type": "palisade", "progress": 0}]
+        for h in outer:
+            if h == gate_out:
+                continue
+            for n in neighbours(h, cols, rows):
+                if hex_distance(centre, n) == r + 2:
+                    works["edges"][edge_key(h, n)] = [{"type": "ditch", "progress": 0, "high": hkey(h)}]
+    return {"centre": centre, "radius": r, "fits": fits, "works": works}

@@ -4324,6 +4324,34 @@ Penalties add up; each total is capped at -60%.
 | Punji stake | off-map (GM decides) |
 | Fragments, unspecified (shell, grenade, mine) | off-map (GM decides) |
 
+## Camps and works
+
+**Making camp:** a camp's works are built all round a perimeter big enough for the force (about 20 m2 a man on foot, 40 with horses). 75% of the men work at once; the rest guard and cook. Work uses the force's working hours and runs on into the next day. Timber for palisades and stakes takes longer to fetch when no woods are within a hex.
+
+**Works on the battle map:** ditches, banks, palisades, gates and walls lie along hex edges; stakes, abatis, pavises and wagons fill a hex. Crossing costs extra movement; a palisade, a barred gate or a wall stops movement until breached. Missile attacks on a man right behind a work lose its cover. In close combat only reach-2 weapons (spears, bills) strike over a palisade, gate or wall, and a man attacking up at a defender on the high side of a bank, ditch or wall takes its height penalty.
+
+**Breaching:** a fighter next to a work can spend his attack on it: one man-round. When the man-rounds reach the work's breach number it is open. A gate is opened or barred from inside.
+
+| Camp | What it is | Needs | 12 men | 100 men | 1,000 men |
+|---|---|---|---|---|---|
+| Bivouac | Sleep where you stop. Nothing built and no proper watch. | - | none | none | none |
+| Watched camp | A cleared site with fires, the baggage drawn up and a sentry roster. | - | 1.0 h | 1.0 h | 1.0 h |
+| Staked camp | A watched camp ringed with sharpened stakes, like archers' stakes set against horse. | tools | 5.6 h | 2.6 h | 1.5 h |
+| Fortified camp | Ditch, bank and palisade all round, with a gate. | tools | 38.3 h | 13.8 h | 5.0 h |
+| Quartered | Billeted in the houses of a village or town. | a village or town | 0.5 h | 0.5 h | 0.5 h |
+
+| Work | Lies on | Labour | Crossing | Cover | Close combat | Breach |
+|---|---|---|---|---|---|---|
+| Ditch | edge | 2.5 man-h/m | +2 | - | -10% attacking up | - |
+| Earth bank | edge | 1 man-h/m | +1 | -20% (high side) | -10% attacking up | - |
+| Palisade | edge | 1.5 man-h/m (+1 hauled) | blocks | -40% | reach 2 only | 12 man-rounds |
+| Gate | edge | 6 man-h each | barred (open: free) | -40% | reach 2 only | 20 man-rounds |
+| Stone wall | edge | not built in the field | blocks | -50% | -20% attacking up; reach 2 only | - |
+| Stakes | hex | 1 man-h (+0.5 hauled) | +1 | - | no horses | 2 man-rounds |
+| Abatis | hex | 4 man-h (+4 hauled) | +2 | -20% in it | no horses | 8 man-rounds |
+| Pavise | hex | carried | free | -20% in it | - | - |
+| Wagon | hex | 0.25 man-h | blocks | -40% behind it | no horses | 10 man-rounds |
+
 ## Travel
 
 **Travel map:** hexes are usually 1 km. A force marches 8 hours a day from 08:00 at its type's road speed. Crossing from one hex to the next takes the average of the two terrains' time multipliers; rivers and lakes are crossed only at a ford or bridge.

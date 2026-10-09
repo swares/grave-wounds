@@ -14688,6 +14688,155 @@
    }
   ]
  },
+ "works": {
+  "work_share": 0.75,
+  "camp_area": {
+   "foot": 20,
+   "mounted": 40,
+   "wagons": 40
+  },
+  "camp_area_min": 100,
+  "camps": {
+   "bivouac": {
+    "name": "Bivouac",
+    "hours": 0,
+    "surprise": 20,
+    "rest": "poor",
+    "desc": "Sleep where you stop. Nothing built and no proper watch."
+   },
+   "watched": {
+    "name": "Watched camp",
+    "hours": 1,
+    "surprise": 0,
+    "rest": "fair",
+    "desc": "A cleared site with fires, the baggage drawn up and a sentry roster."
+   },
+   "staked": {
+    "name": "Staked camp",
+    "hours": 1,
+    "tools": true,
+    "works": [
+     "stakes"
+    ],
+    "surprise": -10,
+    "rest": "fair",
+    "layout": "stakes",
+    "desc": "A watched camp ringed with sharpened stakes, like archers' stakes set against horse."
+   },
+   "fortified": {
+    "name": "Fortified camp",
+    "hours": 1,
+    "tools": true,
+    "works": [
+     "ditch",
+     "bank",
+     "palisade",
+     "gate"
+    ],
+    "surprise": -20,
+    "rest": "good",
+    "layout": "fortified",
+    "desc": "Ditch, bank and palisade all round, with a gate."
+   },
+   "quartered": {
+    "name": "Quartered",
+    "hours": 0.5,
+    "terrain": [
+     "village",
+     "town"
+    ],
+    "surprise": 0,
+    "rest": "good",
+    "desc": "Billeted in the houses of a village or town."
+   }
+  },
+  "edge_works": {
+   "ditch": {
+    "name": "Ditch",
+    "per_metre": 2.5,
+    "cross": 2,
+    "cover": 0,
+    "height": 10,
+    "breach": null
+   },
+   "bank": {
+    "name": "Earth bank",
+    "per_metre": 1.0,
+    "cross": 1,
+    "cover": 20,
+    "cover_side": "high",
+    "height": 10,
+    "breach": null
+   },
+   "palisade": {
+    "name": "Palisade",
+    "per_metre": 1.5,
+    "haul": 1.0,
+    "cross": null,
+    "cover": 40,
+    "cover_side": "both",
+    "blocks_melee": true,
+    "breach": 12
+   },
+   "gate": {
+    "name": "Gate",
+    "each": 6,
+    "cross": 0,
+    "cover": 40,
+    "cover_side": "both",
+    "blocks_melee": true,
+    "breach": 20,
+    "gate": true
+   },
+   "wall": {
+    "name": "Stone wall",
+    "per_metre": null,
+    "cross": null,
+    "cover": 50,
+    "cover_side": "both",
+    "height": 20,
+    "blocks_melee": true,
+    "breach": null,
+    "note": "Town and castle walls: already there, not built in the field."
+   }
+  },
+  "hex_works": {
+   "stakes": {
+    "name": "Stakes",
+    "each": 1,
+    "haul": 0.5,
+    "enter": 1,
+    "no_horse": true,
+    "breach": 2
+   },
+   "abatis": {
+    "name": "Abatis",
+    "each": 4,
+    "haul": 4,
+    "enter": 2,
+    "cover_here": 20,
+    "no_horse": true,
+    "breach": 8
+   },
+   "pavise": {
+    "name": "Pavise",
+    "each": 0,
+    "enter": 0,
+    "cover_here": 20,
+    "breach": null,
+    "note": "A large standing shield carried by crossbowmen; covers the man behind it."
+   },
+   "wagon": {
+    "name": "Wagon",
+    "each": 0.25,
+    "enter": null,
+    "cover_behind": 40,
+    "no_horse": true,
+    "breach": 10,
+    "note": "Wagons drawn up and chained, as in a wagon laager."
+   }
+  }
+ },
  "wounds": {
   "skull|cut|light": {
    "bleed": 1,

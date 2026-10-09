@@ -23,6 +23,12 @@ one-page rules are in [docs/combat.md](docs/combat.md).
 of terrain, with planned routes, marching days and terrain painting. See
 [docs/travel.md](docs/travel.md).
 
+**Camps and works:** forces make camp on the travel map, from a bivouac to a fortified
+camp. A camp can be sent to the battle map as a fight, with its ditch, bank, palisade,
+gate or stakes laid out. Works can also be built by hand on the battle map, and they
+change movement, cover and close combat and can be breached. See
+[docs/works.md](docs/works.md).
+
 ## Where this started
 
 This repository began as a copy of [HitLoc](https://github.com/swares/HitLoc), the

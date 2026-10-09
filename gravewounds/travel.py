@@ -120,3 +120,63 @@ def advance(d: Data, m: dict, path: list, index: int, day: int, used: float, hou
     if index + 1 < len(path):
         used = target
     return {"index": index, "day": day, "used": used}
+
+
+# ---------- making camp ----------
+
+BATTLE_HEX_M = 2      # the battle map's hex (wounds.yaml combat.move.hex_m); camp works are laid out on it
+
+
+def near_woods(d: Data, m: dict, h) -> bool:
+    """True if the hex or one next to it is forest (timber to hand)."""
+    cols, rows = len(m["rows"][0]), len(m["rows"])
+    return any(terrain_at(d, m, x)["id"] == "forest" for x in [list(h)] + neighbours(list(h), cols, rows))
+
+
+def camp_perimeter(d: Data, men: int, ftype: str) -> float:
+    """Metres round a camp for this many men: a circle of their camp area."""
+    W = d.works
+    area = max(W["camp_area_min"], men * W["camp_area"][ftype])
+    return 2 * (3.141592653589793 * area) ** 0.5
+
+
+def camp_hours(d: Data, m: dict, h, kind: str, men: int, ftype: str, tools: bool) -> dict:
+    """How long this force takes to make this kind of camp here. {hours, labour, perimeter,
+    woods} or {error} if it cannot (no tools, or quartering away from houses)."""
+    W = d.works
+    c = W["camps"][kind]
+    t = terrain_at(d, m, h)
+    if c.get("terrain") and t["id"] not in c["terrain"]:
+        return {"error": f"needs a {' or '.join(d.terrain['terrain'][x]['name'].lower() for x in c['terrain'])}"}
+    if c.get("tools") and not tools:
+        return {"error": "needs tools (spades and axes)"}
+    woods = near_woods(d, m, h)
+    per = camp_perimeter(d, men, ftype)
+    labour = 0.0
+    for w in c.get("works", []):
+        if w in W["edge_works"]:
+            e = W["edge_works"][w]
+            if "each" in e:
+                labour += e["each"]
+            else:
+                labour += (e["per_metre"] + (0 if woods else e.get("haul", 0))) * per
+        else:
+            x = W["hex_works"][w]
+            labour += (x["each"] + (0 if woods else x.get("haul", 0))) * per / BATTLE_HEX_M
+    hours = c["hours"] + labour / (men * W["work_share"])
+    return {"hours": hours, "labour": labour, "perimeter": per, "woods": woods}
+
+
+def camp_done(d: Data, day: int, used: float, hours: float) -> dict:
+    """The force's clock when the camp is finished: work uses its working hours
+    (hours_per_day a day) and runs on into the next day if need be."""
+    hpd = d.terrain["hours_per_day"]
+    if used >= hpd - 1e-9:
+        day += 1
+        used = 0.0
+    left = hours
+    while used + left > hpd + 1e-9:
+        left -= hpd - used
+        day += 1
+        used = 0.0
+    return {"day": day, "used": used + left}
