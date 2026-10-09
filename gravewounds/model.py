@@ -398,7 +398,7 @@ def validate(d: Data) -> None:
     # camps and works
     WK = d.works
     EW, HW = WK.get("edge_works", {}), WK.get("hex_works", {})
-    for k in ("work_share", "camp_area_min"):
+    for k in ("work_share", "camp_area_min", "evening_hours"):
         if not (isinstance(WK.get(k), (int, float)) and WK[k] > 0):
             errors.append(f"works.yaml: {k} must be positive")
     for ft in d.terrain["forces"]:

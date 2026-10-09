@@ -14690,6 +14690,7 @@
  },
  "works": {
   "work_share": 0.75,
+  "evening_hours": 4,
   "camp_area": {
    "foot": 20,
    "mounted": 40,

@@ -168,15 +168,16 @@ def camp_hours(d: Data, m: dict, h, kind: str, men: int, ftype: str, tools: bool
 
 
 def camp_done(d: Data, day: int, used: float, hours: float) -> dict:
-    """The force's clock when the camp is finished: work uses its working hours
-    (hours_per_day a day) and runs on into the next day if need be."""
-    hpd = d.terrain["hours_per_day"]
-    if used >= hpd - 1e-9:
+    """The force's clock when the camp is finished. Camp work can use the day's marching
+    hours and then `evening_hours` more; beyond that it runs on into the next day (and
+    that day's marching hours)."""
+    day_len = d.terrain["hours_per_day"] + d.works["evening_hours"]
+    if used >= day_len - 1e-9:
         day += 1
         used = 0.0
     left = hours
-    while used + left > hpd + 1e-9:
-        left -= hpd - used
+    while used + left > day_len + 1e-9:
+        left -= day_len - used
         day += 1
         used = 0.0
     return {"day": day, "used": used + left}
