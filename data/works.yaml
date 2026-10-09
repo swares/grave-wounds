@@ -1,13 +1,16 @@
 # Camps and defensive works (Grave Wounds). Medieval first; other eras later.
 #
 # Labour is in man-hours. Only a share of a force works at once (`work_share`); the rest
-# stand guard, cook and tend animals. Work uses the force's working hours, the same
-# `hours_per_day` as marching (terrain.yaml), and runs on into the next day if need be.
+# stand guard, cook and tend animals. Camp work can use whatever is left of the day's
+# marching hours (`hours_per_day`, terrain.yaml) and then `evening_hours` more, so a camp
+# made at the end of a march costs no marching time. Beyond that it runs on into the next
+# day, starting with that day's marching hours.
 # All figures are design estimates. Sanity checks: a man with a spade moves very roughly
 # a cubic metre of earth an hour; a Roman legion of about 5,000 men was expected to ditch,
 # bank and palisade its marching camp in a few hours.
 
 work_share: 0.75           # share of the men working on the camp at any one time
+evening_hours: 4           # camp work can go on this long after the day's marching hours
 camp_area:                 # ground a camp needs, m2 a man (tents, fires, lines, wagons)
   foot: 20
   mounted: 40              # horse lines

@@ -25,7 +25,9 @@ axes) or doesn't. Select a force, pick the kind of camp and press **Make camp**.
 3. Divide by the men working. Only three-quarters of them work at once; the rest guard
    and cook.
 
-Work uses the force's working hours, 8 a day, and runs on into the next day if need be.
+Camp work can use whatever is left of the day's 8 marching hours and then 4 evening hours,
+so a camp made at the end of the march costs no marching time. Work beyond that runs on
+into the next day and uses that day's marching hours first.
 The results are realistic, if harsh: a band of 12 can stake its camp in an afternoon but
 would need days to fortify it, while 1,000 men fortify a camp in about 5 hours. That is in
 line with the few hours a Roman legion took for its marching camp.

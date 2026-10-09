@@ -298,10 +298,10 @@ function campHours(m, h, kind, men, ftype, tools){
   return { hours: c.hours + labour / (men * WK.work_share), labour, perimeter: per, woods };
 }
 function campDone(day, used, hours){
-  const hpd = TER.hours_per_day;
-  if (used >= hpd - 1e-9){ day += 1; used = 0 }
+  const dayLen = TER.hours_per_day + WK.evening_hours;
+  if (used >= dayLen - 1e-9){ day += 1; used = 0 }
   let left = hours;
-  while (used + left > hpd + 1e-9){ left -= hpd - used; day += 1; used = 0 }
+  while (used + left > dayLen + 1e-9){ left -= dayLen - used; day += 1; used = 0 }
   return { day, used: used + left };
 }
 /* ---------- end of rules shared with gravewounds/travel.py ---------- */
@@ -379,10 +379,10 @@ function march(f, hours){
 function makeCamp(f, kind){
   const r = campHours(curMap(), f.pos, kind, f.men, f.type, f.tools);
   if (r.error){ S.msg = `${f.name} cannot make a ${WK.camps[kind].name.toLowerCase()} here: it ${r.error}.`; return }
-  const u0 = f.used >= TER.hours_per_day - 1e-9 ? 0 : f.used, d0 = f.used >= TER.hours_per_day - 1e-9 ? f.day + 1 : f.day;
+  const late = f.used >= TER.hours_per_day + WK.evening_hours - 1e-9, u0 = late ? 0 : f.used, d0 = late ? f.day + 1 : f.day;
   const done = campDone(f.day, f.used, r.hours);
   f.day = done.day; f.used = done.used; f.camp = { kind, hex: f.pos.slice() };
-  f.log.unshift(`Day ${d0}, ${clock(u0)} to day ${f.day}, ${clock(f.used)}: made a ${WK.camps[kind].name.toLowerCase()} at ${where(f.pos)} (${fmtH(r.hours)}${r.labour ? `, ${Math.round(r.labour)} man-hours` : ""}).`);
+  f.log.unshift(`Day ${d0}, ${clock(u0)} to day ${f.day}, ${clock(f.used)}: ${kind === "quartered" ? "took quarters" : `made a ${WK.camps[kind].name.toLowerCase()}`} at ${where(f.pos)} (${fmtH(r.hours)}${r.labour ? `, ${Math.round(r.labour)} man-hours` : ""}).`);
   S.msg = "";
 }
 function campText(f, kind){
@@ -444,7 +444,7 @@ function renderMap(){
 }
 function renderSide(){
   const fs = forcesHere(), f = selForce(), sd = sides(), m = curMap();
-  $("#forces").innerHTML = fs.map(o => `<li data-id="${o.id}" aria-current="${o === f}" tabindex="0"><span class="dot" style="background:var(--side${sd.indexOf(o.side) % 4})"></span><span><b>${esc(o.name)}</b> <span class="muted">${esc(FT[o.type].name)} · ${esc(o.side)}</span></span><span class="meta">day ${o.day} ${clock(Math.min(o.used, TER.hours_per_day))}</span></li>`).join("") || `<li class="muted">No forces. Add one below.</li>`;
+  $("#forces").innerHTML = fs.map(o => `<li data-id="${o.id}" aria-current="${o === f}" tabindex="0"><span class="dot" style="background:var(--side${sd.indexOf(o.side) % 4})"></span><span><b>${esc(o.name)}</b> <span class="muted">${esc(FT[o.type].name)} · ${esc(o.side)}</span></span><span class="meta">day ${o.day} ${clock(o.used)}</span></li>`).join("") || `<li class="muted">No forces. Add one below.</li>`;
   const on = !!f;
   ["#btn-hour", "#btn-day", "#btn-undo-wp", "#btn-clear", "#btn-remove"].forEach(id => $(id).disabled = !on);
   ["#btn-camp", "#btn-fight", "#in-men", "#in-tools", "#sel-camp"].forEach(id => $(id).disabled = !on);
@@ -454,7 +454,7 @@ function renderSide(){
     + (ft.cannot_enter ? ` Cannot enter ${ft.cannot_enter.map(t => TT[t].name.toLowerCase()).join(", ")}.` : "");
   $("#btn-undo-wp").disabled = !f.waypoints.length; $("#btn-clear").disabled = !f.waypoints.length;
   $("#btn-hour").disabled = $("#btn-day").disabled = !(f.path && f.index < f.path.length - 1);
-  let rows = `<dt>Now</dt><dd>Day ${f.day}, ${clock(Math.min(f.used, hpd))}${f.used >= hpd - 1e-9 ? " (day's work done)" : ""}</dd>`
+  let rows = `<dt>Now</dt><dd>Day ${f.day}, ${clock(f.used)}${f.used >= hpd - 1e-9 ? " (marching done for the day)" : ""}</dd>`
     + (f.camp ? `<dt>Camp</dt><dd>${esc(WK.camps[f.camp.kind].name)}</dd>` : "");
   if (f.path && f.index < f.path.length - 1){
     const rest = f.path.slice(f.index), sch = schedule(m, rest, f.type, f.day, f.used), end = sch[sch.length - 1];
@@ -574,7 +574,7 @@ function init(){
   $("#btn-fight").onclick = () => {
     const f = selForce(); if (!f) return;
     try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", force: { name: f.name, side: f.side, men: f.men, type: f.type },
-      camp: f.camp && sameHex(f.camp.hex, f.pos) ? f.camp.kind : null, place: where(f.pos), day: f.day, time: clock(Math.min(f.used, TER.hours_per_day)) })) }catch(e){}
+      camp: f.camp && sameHex(f.camp.hex, f.pos) ? f.camp.kind : null, place: where(f.pos), day: f.day, time: clock(f.used) })) }catch(e){}
     location.href = "roller.html";
   };
   $("#btn-export").onclick = () => { const t = $("#export"); t.hidden = !t.hidden; t.value = mapYaml() };

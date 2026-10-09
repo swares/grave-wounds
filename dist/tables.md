@@ -4326,7 +4326,7 @@ Penalties add up; each total is capped at -60%.
 
 ## Camps and works
 
-**Making camp:** a camp's works are built all round a perimeter big enough for the force (about 20 m2 a man on foot, 40 with horses). 75% of the men work at once; the rest guard and cook. Work uses the force's working hours and runs on into the next day. Timber for palisades and stakes takes longer to fetch when no woods are within a hex.
+**Making camp:** a camp's works are built all round a perimeter big enough for the force (about 20 m2 a man on foot, 40 with horses). 75% of the men work at once; the rest guard and cook. Work uses what is left of the day's marching hours and then 4 evening hours, so a camp made after the march costs no marching time; beyond that it runs on into the next day. Timber for palisades and stakes takes longer to fetch when no woods are within a hex.
 
 **Works on the battle map:** ditches, banks, palisades, gates and walls lie along hex edges; stakes, abatis, pavises and wagons fill a hex. Crossing costs extra movement; a palisade, a barred gate or a wall stops movement until breached. Missile attacks on a man right behind a work lose its cover. In close combat only reach-2 weapons (spears, bills) strike over a palisade, gate or wall, and a man attacking up at a defender on the high side of a bank, ditch or wall takes its height penalty.
 
