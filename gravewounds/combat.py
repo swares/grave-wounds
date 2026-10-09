@@ -1,5 +1,6 @@
 """Fighting while wounded: penalties from a fighter's wounds, the optional attack roll,
-and severity from the margin of success. Mirrored exactly by the web roller."""
+severity from the margin of success, the graze, the stop check and team morale.
+Mirrored exactly by the web roller."""
 from __future__ import annotations
 
 import math
@@ -7,8 +8,10 @@ import math
 from .model import Data
 
 
-def penalties(d: Data, wounds: list[dict], blood_frac: float = 1.0, hand: str = "R") -> dict:
-    """wounds: [{loc, fx}] where fx is a composed wound (pain, impair). hand: 'R' or 'L'."""
+def penalties(d: Data, wounds: list[dict], blood_frac: float = 1.0, hand: str = "R",
+              state: str | None = None) -> dict:
+    """wounds: [{loc, fx}] where fx is a composed wound (pain, impair). hand: 'R' or 'L'.
+    state: a stop-check result in force (defend_only, stunned, out) or None."""
     C = d.wounds["combat"]
     T = d.wounds["tracking"]
     attack = defence = 0
@@ -57,6 +60,12 @@ def penalties(d: Data, wounds: list[dict], blood_frac: float = 1.0, hand: str = 
                 notes.append(f"{imp.replace('_', ' ')}{where}" + (f" atk -{a}%" if a else "") + (f" def -{df}%" if df else ""))
     if "off_hand" in flags and any(k == ("grip", "shield_arm") or k == ("hand_useless", "shield_arm") or k == ("arm_useless", "shield_arm") for k in seen):
         flags.add("cannot_wield")
+    if state:
+        rule = C["states"][state]
+        flags.add(state)
+        if rule.get("defence"):
+            defence += rule["defence"]
+            notes.append(f"{rule['name'].lower()} def -{rule['defence']}%")
     return {"attack": min(attack, C["cap"]), "defence": min(defence, C["cap"]),
             "flags": sorted(flags), "notes": notes}
 
@@ -98,3 +107,65 @@ def attack_roll(d: Data, attack: int, roll: int, penalty: int = 0) -> dict:
 def defence_roll(defence: int, roll: int, penalty: int = 0) -> dict:
     eff = max(0, defence - penalty)
     return {"effective": eff, "roll": roll, "defended": roll <= eff}
+
+
+def graze(fx: dict) -> dict:
+    """A grazing hit: the rolled wound with bleed and pain one step lower and no shock."""
+    g = dict(fx)
+    g["bleed"] = max(0, fx["bleed"] - 1)
+    g["pain"] = max(0, fx["pain"] - 1)
+    g["shock"] = False
+    return g
+
+
+def is_graze(d: Data, margin: int | None, critical: bool) -> bool:
+    return margin is not None and not critical and margin <= d.wounds["combat"]["graze_margin"]
+
+
+def stop_target(d: Data, nerve: int, severity: str, pain_steps: int, blood_frac: float = 1.0) -> int:
+    """Number to roll at or under on d100 for a stop check (may be 0 or less)."""
+    C, T = d.wounds["combat"], d.wounds["tracking"]
+    target = nerve - min(pain_steps, T["pain_cap"]) * C["pain_step"]
+    th = next((t for t in sorted(T["thresholds"], key=lambda t: t["at"]) if blood_frac <= t["at"]), None)
+    if th:
+        target -= th.get("penalty", 0)
+    if severity == "critical":
+        target -= C["stop_check"]["critical_penalty"]
+    return target
+
+
+def stop_check(d: Data, nerve: int, severity: str, pain_steps: int, roll: int, blood_frac: float = 1.0) -> dict | None:
+    """Stop check after a wound. None if the severity does not call for one. pain_steps:
+    the fighter's total pain after the wound. Returns the target, the roll, whether he
+    fights on, and on a failure the state and how many rounds it lasts (None: until cleared)."""
+    SC = d.wounds["combat"]["stop_check"]
+    if severity not in SC["severities"]:
+        return None
+    target = stop_target(d, nerve, severity, pain_steps, blood_frac)
+    if roll <= target:
+        return {"target": target, "roll": roll, "passed": True, "fail_by": 0, "state": None, "rounds": None}
+    fail_by = roll - target
+    res = next(r for r in SC["results"] if "upto" not in r or fail_by <= r["upto"])
+    return {"target": target, "roll": roll, "passed": False, "fail_by": fail_by,
+            "state": res["state"], "rounds": res.get("rounds")}
+
+
+def morale_check(d: Data, fighters: list[dict], roll: int) -> dict | None:
+    """Team morale at the end of a round. fighters: one side's [{nerve, down, leader}].
+    None if fewer than the trigger share are down (or no one is left up)."""
+    M = d.wounds["combat"]["morale"]
+    n = len(fighters)
+    down = sum(1 for f in fighters if f["down"])
+    up = [f for f in fighters if not f["down"]]
+    if not n or not up or down / n < M["trigger"]:
+        return None
+    leaders_up = [f for f in up if f.get("leader")]
+    base = max(f["nerve"] for f in (leaders_up or up))
+    target = base
+    if leaders_up:
+        target += M["leader_present"]
+    if any(f.get("leader") and f["down"] for f in fighters):
+        target -= M["leader_down"]
+    if down / n >= M["heavy"]:
+        target -= M["heavy_losses"]
+    return {"target": target, "roll": roll, "down": down, "of": n, "broken": roll > target}

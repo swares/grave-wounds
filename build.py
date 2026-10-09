@@ -161,6 +161,31 @@ COMBAT_STEPS = [
     "Wounds switch situations on by themselves: a defender who cannot stand is <b>Target down</b>, a defender whose shield arm is useless has "
     "<b>No shield</b>, and an attacker on the ground fights as <b>Attacker lower</b>.",
 ]
+def stop_rules(d) -> list[str]:
+    """Graze, stop check and team morale, as short rules for the PDF and Markdown (from wounds.yaml)."""
+    CB = d.wounds["combat"]
+    SC, ST, M = CB["stop_check"], CB["states"], CB["morale"]
+    res = []
+    lo = 1
+    for r in SC["results"]:
+        name = ST[r["state"]]["name"].lower()
+        span = f"by {lo}-{r['upto']}" if "upto" in r else f"by more than {lo - 1}"
+        res.append(f"{span}: <b>{name}</b>" + (f" for {r['rounds']} rounds" if r.get("rounds") else " until helped or the fight ends"))
+        lo = r.get("upto", 0) + 1
+    rat = ", ".join(f"{k} {v}" for k, v in SC["ratings"].items())
+    stunned = ST.get("stunned", {}).get("defence")
+    return [
+        f"<b>Graze:</b> a hit by a margin of {CB['graze_margin']} or less (not a critical) only grazes: the wound's bleed and pain drop one step each and it causes no shock.",
+        f"<b>Stop check:</b> a {' or '.join(SC['severities'])} wound calls for d100 against the fighter's <b>Nerve</b> ({rat}), "
+        f"minus pain and blood-loss penalties, and -{SC['critical_penalty']} more for a critical wound. Equal or under: he fights on. "
+        f"Failed {'; '.join(res)}. Defend only and stunned fighters cannot attack"
+        + (f"; stunned also -{stunned}% defence." if stunned else "."),
+        f"<b>Team morale:</b> at the end of each round, a side with {int(M['trigger'] * 100)}% or more of its fighters down rolls d100 "
+        f"against the best Nerve among those still up (its leader's, if he is up), +{M['leader_present']} with a leader up, "
+        f"-{M['leader_down']} if a leader is down, -{M['heavy_losses']} once {int(M['heavy'] * 100)}% are down. Over: the side breaks and runs or surrenders.",
+    ]
+
+
 CALLED_RULE = "Roll the location twice; keep whichever result lands in the called zone. If both or neither do, keep the first. Your system sets any to-hit penalty."
 
 
@@ -309,7 +334,7 @@ def markdown(d) -> str:
     out += ["", "| Severity by margin | Light | Serious | Critical |", "|---|---|---|---|",
             f"| Default | 0-{mb['default']['serious'] - 1} | {mb['default']['serious']}-{mb['default']['critical'] - 1} | {mb['default']['critical']}+ |"]
     out += [f"| Firearm/explosive, {', '.join(b['zones'])} | 0-{b['serious'] - 1} | {b['serious']}-{b['critical'] - 1} | {b['critical']}+ |" for b in mb.get("ballistic", [])]
-    out += [""]
+    out += ["", "### Graze, stop check and morale", ""] + [re.sub("</?b>", "**", x) + "\n" for x in stop_rules(d)]
 
     out += ["## Armour", ""] + [f"{i}. {re.sub('<[^>]+>', '**', x)}" for i, x in enumerate(ARMOR_STEPS, 1)]
     mcols = [m for m in MECHANISMS if m != "ballistic"]
@@ -648,7 +673,8 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
               Spacer(1, 4),
               Paragraph(f"Automatic situations: defender cannot stand = {d.modifiers[auto['defender_down']]['name']}; "
                         f"defender's shield arm useless = {d.modifiers[auto['defender_no_shield']]['name']}; "
-                        f"attacker on the ground = {d.modifiers[auto['attacker_down']]['name']} (where the table offers them).", S)]
+                        f"attacker on the ground = {d.modifiers[auto['attacker_down']]['name']} (where the table offers them).", S),
+              Spacer(1, 8), KeepTogether([Paragraph("Graze, stop check and team morale", H2)] + [Paragraph(x, S) for x in stop_rules(d)])]
 
     # Armour
     mcols = [m for m in MECHANISMS if m != "ballistic"]

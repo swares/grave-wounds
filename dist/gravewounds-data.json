@@ -14482,6 +14482,58 @@
      "critical": 60
     }
    ]
+  },
+  "graze_margin": 2,
+  "stop_check": {
+   "severities": [
+    "serious",
+    "critical"
+   ],
+   "critical_penalty": 10,
+   "ratings": {
+    "green": 35,
+    "regular": 50,
+    "veteran": 65
+   },
+   "default_rating": "regular",
+   "results": [
+    {
+     "upto": 20,
+     "state": "defend_only",
+     "rounds": 2
+    },
+    {
+     "upto": 40,
+     "state": "stunned",
+     "rounds": 2
+    },
+    {
+     "state": "out"
+    }
+   ]
+  },
+  "states": {
+   "defend_only": {
+    "name": "Defend only",
+    "no_attack": true
+   },
+   "stunned": {
+    "name": "Stunned",
+    "no_attack": true,
+    "defence": 50
+   },
+   "out": {
+    "name": "Out of the fight",
+    "no_attack": true,
+    "out": true
+   }
+  },
+  "morale": {
+   "trigger": 0.25,
+   "heavy": 0.5,
+   "leader_present": 10,
+   "leader_down": 20,
+   "heavy_losses": 20
   }
  },
  "wounds": {
