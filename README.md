@@ -58,3 +58,13 @@ From the design proposal:
 2. Write the one-page combat rules and the stop check, and test them in the roller.
 3. Draft the medieval character generation tables and make a team in 20 minutes.
 4. Playtest one fight with two teams, then a few weeks of camp, march and weather.
+
+## Copyright and trademarks
+
+Grave Wounds' rules, tables and text are its own. The design notes compare it with
+Aftermath!, Rolemaster, Gamma World, Traveller and The Morrow Project, describing how those
+games work in our own words; none of their rules text, tables or art is reproduced here.
+Those names are trademarks of their owners, and Grave Wounds is not affiliated with or
+endorsed by any of them. The wound data comes from published studies, cited in `data/`;
+period pictures are linked from Wikimedia Commons, not copied; maps are drawn from
+Natural Earth (public domain).

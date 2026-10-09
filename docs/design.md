@@ -228,7 +228,7 @@ Each player runs a team of four to six, and a whole team should be made in under
 A character is built in five rolls:
 
 1. **Characteristics:** six of them (Strength, Agility, Endurance, Wits, Nerve, Presence), each 3d6 x 5 for a 15-90 range, or a fixed array for speed.
-2. **Origin:** one d100 roll on the era's origin table: where he comes from, a starting skill, and a trait with a matching drawback (a keen nose that bleeds in the mountains, a soothing voice afraid of thunder).
+2. **Origin:** one d100 roll on the era's origin table: where he comes from, a starting skill, and a trait with a matching drawback (a farrier's son who can shoe a horse but never learned his letters; a former monk who reads Latin but faints at the sight of blood).
 3. **Career terms:** Traveller's idea, kept short. Each term is one d100 roll on the career's table and gives a skill, an event and a chance of an old wound. Leaders take three terms, others one or two. Nobody dies in generation.
 4. **Old wounds:** an old wound is rolled on the era's HitLoc table and leaves a healed mark or a small permanent impairment. The Towton and Sidon skeletons show many men with healed wounds from earlier fights; here they become history you can see on the character sheet.
 5. **Kit:** a package from the team template: armour kit, weapons and gear, as HitLoc's example combatants already define them.
@@ -451,3 +451,5 @@ Next steps:
 - [HitLoc](https://github.com/swares/HitLoc): wound tables, sources and the roller
 
 Aftermath! rules checked against the FGU boxed set. Rolemaster checked against Arms Law & Claw Law (2nd edition) and Character Law & Campaign Law; Rolemaster Unified not seen. Gamma World checked against the first edition (TSR, 1978); Traveller against the Classic Traveller facsimile (1981 edition). The Morrow Project checked against the 4th edition (Morrow Project 4.0) rulebook, and a fan Genesys conversion for its team types.
+
+**Copyright and trademarks.** Aftermath! (Fantasy Games Unlimited), Rolemaster, Arms Law and Character Law (Iron Crown Enterprises), Gamma World (TSR, now Wizards of the Coast), Traveller (GDW, now Far Future Enterprises) and The Morrow Project (Timeline) are trademarks of their owners; Grave Wounds is not affiliated with or endorsed by any of them. The comparisons above describe how those games work, in our own words, to explain design choices; no rules text, tables or art from them are reproduced, and Grave Wounds' rules and numbers are written fresh. Game mechanics as such are not protected by copyright, but their wording and presentation are, so the finished rulebook must keep to its own text and tables.
