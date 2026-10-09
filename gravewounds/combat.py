@@ -110,7 +110,7 @@ def defence_roll(defence: int, roll: int, penalty: int = 0) -> dict:
 
 
 def graze(fx: dict) -> dict:
-    """A grazing hit: the rolled wound with bleed and pain one step lower and no shock."""
+    """A grazing hit: the rolled wound with bleed and pain one step lower and no stop check."""
     g = dict(fx)
     g["bleed"] = max(0, fx["bleed"] - 1)
     g["pain"] = max(0, fx["pain"] - 1)
@@ -134,12 +134,14 @@ def stop_target(d: Data, nerve: int, severity: str, pain_steps: int, blood_frac:
     return target
 
 
-def stop_check(d: Data, nerve: int, severity: str, pain_steps: int, roll: int, blood_frac: float = 1.0) -> dict | None:
-    """Stop check after a wound. None if the severity does not call for one. pain_steps:
-    the fighter's total pain after the wound. Returns the target, the roll, whether he
-    fights on, and on a failure the state and how many rounds it lasts (None: until cleared)."""
+def stop_check(d: Data, nerve: int, severity: str, pain_steps: int, roll: int, blood_frac: float = 1.0,
+               shock: bool = True) -> dict | None:
+    """Stop check after a wound. None if the wound does not call for one (not serious or
+    critical, or no `shock` flag). pain_steps: the fighter's total pain after the wound.
+    Returns the target, the roll, whether he fights on, and on a failure the state and how
+    many rounds it lasts (None: until cleared)."""
     SC = d.wounds["combat"]["stop_check"]
-    if severity not in SC["severities"]:
+    if severity not in SC["severities"] or not shock:
         return None
     target = stop_target(d, nerve, severity, pain_steps, blood_frac)
     if roll <= target:
@@ -148,6 +150,13 @@ def stop_check(d: Data, nerve: int, severity: str, pain_steps: int, roll: int, b
     res = next(r for r in SC["results"] if "upto" not in r or fail_by <= r["upto"])
     return {"target": target, "roll": roll, "passed": False, "fail_by": fail_by,
             "state": res["state"], "rounds": res.get("rounds")}
+
+
+def pain_check(d: Data, nerve: int, pain_steps: int, roll: int, blood_frac: float = 1.0) -> dict | None:
+    """End-of-round stop check for pain above the cap; None if pain is at or under it."""
+    if pain_steps <= d.wounds["tracking"]["pain_cap"]:
+        return None
+    return stop_check(d, nerve, d.wounds["combat"]["stop_check"]["pain_round_as"], pain_steps, roll, blood_frac)
 
 
 def morale_check(d: Data, fighters: list[dict], roll: int) -> dict | None:

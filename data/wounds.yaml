@@ -66,7 +66,7 @@ vocabulary:
     stand:         "Falls and cannot stand unaided"
     move:          "Movement halved"
   flags:
-    shock:    "Shock check: endurance roll or be stunned 1d6 rounds"
+    shock:    "Stop check: d100 against Nerve, or defend only, stunned or out of the fight"
     fracture: "Bone broken: no use of the part until set; pain +1 when used"
     severed:  "Part severed: arterial bleeding until cauterised or tourniqueted"
 
@@ -225,7 +225,7 @@ tracking:
     bind:       {bleed: -1, note: "Bandage / pressure: reduce bleed by 1 (min 0)"}
     tourniquet: {bleed_to: 0, limbs_only: true, note: "Limb only: stops bleeding; limb lost if left on for hours"}
     cauterise:  {bleed_to: 0, pain: +1, note: "Stops bleeding; pain +1"}
-  pain_cap: 3             # total pain penalty steps cap (-30%) before shock check each round
+  pain_cap: 3             # total pain penalty steps cap (-30%); above it, a stop check each round
 
 # Fighting while wounded. Used when the roller (or CLI) makes the attack roll, and to
 # show each casualty's net penalties for your own system.
@@ -270,12 +270,15 @@ combat:
   # Graze: a hit by this margin of success or less (not a critical) only grazes. The wound
   # is rolled as usual, then its bleed and pain drop one step each and it causes no shock.
   graze_margin: 2
-  # Stop check (Grave Wounds): a serious or critical wound calls for d100 against the
-  # fighter's Nerve, minus pain and blood-loss penalties, minus `critical_penalty` for a
+  # Stop check (Grave Wounds): a serious or critical wound that carries the `shock` flag
+  # (most do; some limb wounds do not) calls for d100 against the fighter's Nerve, minus pain and blood-loss penalties, minus `critical_penalty` for a
   # critical wound. Equal or under: he fights on. Over: how far over (fail_by) picks the
   # result, and the result lasts `rounds` rounds (out lasts until cleared).
   stop_check:
     severities: [serious, critical]
+    # Pain above tracking.pain_cap calls for a stop check every round, made as for a
+    # wound of this severity.
+    pain_round_as: serious
     critical_penalty: 10        # on top of the wound's own pain, which already counts
     ratings: {green: 35, regular: 50, veteran: 65}
     default_rating: regular
