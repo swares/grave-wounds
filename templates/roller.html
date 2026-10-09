@@ -10,6 +10,7 @@
   --steel:#3f4f5d; --blood:#8e1b2c; --blood-soft:#f1d9dc; --heat:142,27,44; --map-sea:#d5e1e6; --map-land:#cfc6ab; --map-coast:#8c8670; --map-hl:#b5a47a; --map-dot:#8e1b2c;
   --ok:#2f6b46; --warn:#a86512; --crit:#8e1b2c;
   --side0:#2f5d8a; --side1:#8e1b2c; --side2:#8a5a12; --side3:#2f6b46;
+  --wk-ditch:#5f7a88; --wk-bank:#a37a48; --wk-wood:#4a3320; --wk-gate:#c27a22; --wk-stone:#7f7f7f; --wk-green:#476b35;
   --display:"Alegreya SC",Georgia,serif; --body:"Alegreya Sans","Gill Sans","Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
 }
@@ -17,11 +18,13 @@
   --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
   --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --heat:228,101,118; --map-sea:#1b2a33; --map-land:#3c4237; --map-coast:#66705e; --map-hl:#57604a; --map-dot:#e46576;
   --side0:#8db8e0; --side1:#e8909c; --side2:#e3b46d; --side3:#86cfa1;
+  --wk-ditch:#7fa0b2; --wk-bank:#b48d5a; --wk-wood:#d9b98c; --wk-gate:#f0a54a; --wk-stone:#b5b5b5; --wk-green:#8fbf74;
   --ok:#6cc08d; --warn:#e3a14d; --crit:#e46576; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
   --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --heat:228,101,118; --map-sea:#1b2a33; --map-land:#3c4237; --map-coast:#66705e; --map-hl:#57604a; --map-dot:#e46576;
   --side0:#8db8e0; --side1:#e8909c; --side2:#e3b46d; --side3:#86cfa1;
+  --wk-ditch:#7fa0b2; --wk-bank:#b48d5a; --wk-wood:#d9b98c; --wk-gate:#f0a54a; --wk-stone:#b5b5b5; --wk-green:#8fbf74;
   --ok:#6cc08d; --warn:#e3a14d; --crit:#e46576; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--body);padding-inline:16px;padding-block:20px 40px}
@@ -182,6 +185,23 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
 .mapbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .mapbar .free{background:var(--blood-soft);border-left:3px solid var(--blood);padding:4px 8px;border-radius:2px}
 .mapsize input{width:4.5em}
+.wk{stroke-linecap:round;pointer-events:none}
+.wk-ditch{stroke:var(--wk-ditch);stroke-width:6;stroke-dasharray:3 2}
+.wk-bank{stroke:var(--wk-bank);stroke-width:8}
+.wk-palisade{stroke:var(--wk-wood);stroke-width:3.4}
+.wk-gate{stroke:var(--wk-gate);stroke-width:4.5}
+.wk-gate.open{stroke-width:2;stroke-dasharray:2 3}
+.wk-wall{stroke:var(--wk-stone);stroke-width:7}
+.wk.breached{opacity:.35;stroke-dasharray:1 3}
+.wkh{pointer-events:none;fill:none;stroke:var(--wk-wood);stroke-width:1.8;stroke-linecap:round}
+.wkh-pavise rect{fill:var(--steel);stroke:none}
+.wkh-wagon rect,.wkh-wagon circle{fill:var(--wk-bank);stroke:var(--wk-wood);stroke-width:1.2}
+.wkh-abatis{stroke:var(--wk-green)}
+.wkh.breached{opacity:.3}
+.wk-prog{font:700 8px var(--mono);fill:var(--crit);text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--panel);stroke-width:2.5px}
+.hexmap.building .hex{cursor:cell}
+.workbar .palette{display:flex;flex-wrap:wrap;gap:4px}
+.workbar .palette button{display:inline-flex;align-items:center;gap:4px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -292,8 +312,11 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
     <div class="mapbar" id="map-actions" aria-live="polite"></div>
     <div class="hexmap" id="map" role="group" aria-label="Battle map: hex grid with the fighters"></div>
     <div class="mapkey" id="map-key"></div>
+    <div class="mapbar workbar"><div class="palette" id="work-palette" role="group" aria-label="Work to build"></div>
+      <button class="small" id="btn-clear-works">Clear works</button><span class="muted" id="work-labour"></span></div>
     <div class="mapbar mapsize">
       <button class="small" id="btn-freeplace" aria-pressed="false" title="Move any fighter to any empty hex, for setting up or putting things right">Free placement</button>
+      <button class="small" id="btn-works" aria-pressed="false" title="Lay out ditches, banks, palisades, gates, stakes and wagons">Build works</button>
       <label class="muted">Columns <input id="in-cols" type="number" min="8" max="80"></label>
       <label class="muted">Rows <input id="in-rows" type="number" min="6" max="60"></label>
     </div>
@@ -324,7 +347,7 @@ const d100 = () => 1 + Math.floor(Math.random() * 100);
 const look = (ranges, n) => ranges.find(r => n >= r.lo && n <= r.hi).id;
 const shortName = w => DATA.weapons[w].short || DATA.weapons[w].name.split(" (")[0];
 
-const S = { table: null, weapon: null, hit: null, chars: [], active: 0, attacker: -1, seq: 1, mods: new Set(), called: "", armor: "none", round: 1, log: [], turn: null, broken: {}, pending: [] };
+const S = { table: null, weapon: null, hit: null, chars: [], active: 0, attacker: -1, seq: 1, mods: new Set(), called: "", armor: "none", round: 1, log: [], turn: null, broken: {}, pending: [], works: { edges: {}, hexes: {} } };
 const CMB = DATA.combat;
 const MODS = DATA.modifiers, KITS = Object.fromEntries(DATA.armor.kits.map(k => [k.id, k]));
 const MATS = DATA.armor.materials, LADDER = ["stopped", "light", "serious", "critical"];
@@ -472,6 +495,123 @@ function freeAttackers(start, end, steps, enemies){
   if (steps <= MOVE.careful_step) return [];
   return enemies.filter(e => e.able && hexDistance(start, e.pos) === 1 && hexDistance(end, e.pos) !== 1).map(e => e.id);
 }
+// Works on the battle map: works = {edges: {edgeKey: [item]}, hexes: {hexKey: item}}.
+const WK = DATA.works;
+const hkey = h => h[0] + "," + h[1];
+function edgeKey(a, b){ const [x, y] = [a, b].slice().sort((p, q) => p[1] - q[1] || p[0] - q[0]); return hkey(x) + "|" + hkey(y) }
+const specOf = (kind, item) => (kind === "edge" ? WK.edge_works : WK.hex_works)[item.type];
+function intact(kind, item){ const b = specOf(kind, item).breach; return !(b && (item.progress || 0) >= b) }
+function edgeItems(works, a, b){
+  if (!works) return [];
+  return ((works.edges || {})[edgeKey(a, b)] || []).filter(it => intact("edge", it) && !(specOf("edge", it).gate && it.open));
+}
+function hexItem(works, h){ const it = ((works || {}).hexes || {})[hkey(h)]; return it && intact("hex", it) ? it : null }
+function stepCost(works, a, b){
+  let cost = 1;
+  for (const it of edgeItems(works, a, b)){
+    const s = specOf("edge", it), c = s.gate ? null : s.cross;
+    if (c === null || c === undefined) return null;
+    cost += c;
+  }
+  const it = hexItem(works, b);
+  if (it){ const e = specOf("hex", it).enter; if (e === null || e === undefined) return null; cost += e }
+  return cost;
+}
+function heapPushW(hp, x){ hp.push(x); let i = hp.length - 1; while (i > 0){ const p = (i - 1) >> 1; if (lessW(hp[p], hp[i])) break; [hp[p], hp[i]] = [hp[i], hp[p]]; i = p } }
+function heapPopW(hp){
+  const top = hp[0], last = hp.pop();
+  if (hp.length){ hp[0] = last; let i = 0; for (;;){ const l = 2 * i + 1, r = l + 1; let m = i;
+    if (l < hp.length && lessW(hp[l], hp[m])) m = l; if (r < hp.length && lessW(hp[r], hp[m])) m = r; if (m === i) break; [hp[m], hp[i]] = [hp[i], hp[m]]; i = m } }
+  return top;
+}
+const lessW = (a, b) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);
+function reachableWorks(start, steps, cols, rows, enemies, friends, works){
+  const key = h => h[0] + "," + h[1], blocked = new Set(enemies.map(key)), friendly = new Set(friends.map(key));
+  const best = new Map([[key(start), 0]]), done = new Set(), hp = [[0, 0, start]];
+  let seq = 1;
+  while (hp.length){
+    const [cost, , h] = heapPopW(hp), k = key(h);
+    if (done.has(k)) continue;
+    done.add(k);
+    for (const n of neighbours(h, cols, rows)){
+      const nk = key(n);
+      if (blocked.has(nk)) continue;
+      const sc = stepCost(works, h, n);
+      if (sc === null || cost + sc > steps) continue;
+      if (cost + sc < (best.has(nk) ? best.get(nk) : steps + 1)){ best.set(nk, cost + sc); heapPushW(hp, [cost + sc, seq++, n]) }
+    }
+  }
+  for (const [k, c] of [...best]) if (friendly.has(k) && c) best.delete(k);
+  return best;
+}
+function facing(target, attacker, cols, rows){
+  const ns = neighbours(target, cols, rows);
+  if (!ns.length) return [];
+  const best = Math.min(...ns.map(n => hexDistance(n, attacker)));
+  return ns.filter(n => hexDistance(n, attacker) === best);
+}
+function missileCover(works, attacker, target, cols, rows){
+  let best = 0, what = null;
+  const it = hexItem(works, target);
+  if (it && (specOf("hex", it).cover_here || 0) > best){ best = specOf("hex", it).cover_here; what = it.type }
+  for (const n of facing(target, attacker, cols, rows)){
+    for (const e of edgeItems(works, target, n)){
+      const s = specOf("edge", e);
+      if ((s.cover_side || "both") === "high" && e.high !== hkey(target)) continue;
+      if ((s.cover || 0) > best){ best = s.cover; what = e.type }
+    }
+    if (!(n[0] === attacker[0] && n[1] === attacker[1])){
+      const h = hexItem(works, n);
+      if (h && (specOf("hex", h).cover_behind || 0) > best){ best = specOf("hex", h).cover_behind; what = h.type }
+    }
+  }
+  return { cover: best, work: what };
+}
+function meleeAcross(works, attacker, target, reach, cols, rows){
+  const d1 = hexDistance(attacker, target) === 1;
+  const cands = d1 ? [attacker.slice()] : facing(target, attacker, cols, rows);
+  let blocked = false, penalty = 0, what = null;
+  for (const n of cands){
+    let pen = 0;
+    for (const e of edgeItems(works, target, n)){
+      const s = specOf("edge", e);
+      if (s.blocks_melee && reach < 2 && d1){ blocked = true; what = e.type }
+      if (s.height && e.high === hkey(target)){ pen += s.height; what = what || e.type }
+    }
+    penalty = Math.max(penalty, pen);
+  }
+  return { blocked, penalty, work: what };
+}
+function campRadius(men, ftype){
+  const area = Math.max(WK.camp_area_min, men * WK.camp_area[ftype]), n = area / (Math.sqrt(3) / 2 * 4);
+  let r = 0; while (3 * r * (r + 1) + 1 < n) r++;
+  return Math.max(r, 1);
+}
+function campWorks(kind, men, ftype, cols, rows){
+  const layout = WK.camps[kind].layout, centre = [Math.floor(cols / 2), Math.floor(rows / 2)];
+  let r = campRadius(men, ftype), fits = true;
+  const extra = layout === "fortified" ? 2 : 1;
+  const inside = rr => { let cnt = 0; for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) if (hexDistance(centre, [x, y]) <= rr) cnt++; return cnt === 3 * rr * (rr + 1) + 1 };
+  while (r > 1 && !inside(r + extra)){ r--; fits = false }
+  const works = { edges: {}, hexes: {} };
+  if (!layout) return { centre, radius: r, fits, works };
+  const gateIn = [centre[0] + r, centre[1]], gateOut = [centre[0] + r + 1, centre[1]], same = (a, b) => a[0] === b[0] && a[1] === b[1];
+  const ring = [], outer = [];
+  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++){ const dd = hexDistance(centre, [x, y]); if (dd === r) ring.push([x, y]); else if (dd === r + 1) outer.push([x, y]) }
+  if (layout === "stakes"){
+    for (const h of outer) if (!same(h, gateOut)) works.hexes[hkey(h)] = { type: "stakes", progress: 0 };
+  } else if (layout === "fortified"){
+    for (const h of ring) for (const n of neighbours(h, cols, rows)) if (hexDistance(centre, n) === r + 1){
+      works.edges[edgeKey(h, n)] = same(h, gateIn) && same(n, gateOut) ? [{ type: "gate", progress: 0, open: false, inside: hkey(h) }]
+        : [{ type: "bank", progress: 0, high: hkey(h) }, { type: "palisade", progress: 0 }];
+    }
+    for (const h of outer){
+      if (same(h, gateOut)) continue;
+      for (const n of neighbours(h, cols, rows)) if (hexDistance(centre, n) === r + 2) works.edges[edgeKey(h, n)] = [{ type: "ditch", progress: 0, high: hkey(h) }];
+    }
+  }
+  return { centre, radius: r, fits, works };
+}
 /* ---------- end of rules shared with gravewounds/combat.py ---------- */
 const attackerChar = () => (S.chars && S.attacker >= 0) ? S.chars[S.attacker] : null;
 const defenderChar = () => (S.chars && S.chars.length) ? S.chars[S.active] : null;
@@ -555,7 +695,7 @@ function sevTiers(mech, zone, wid){
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free})) }catch(e){} }
+function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works})) }catch(e){} }
 function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); return true } }catch(e){} return false }
 
 /* ---------- body figure ---------- */
@@ -688,8 +828,12 @@ const sevLabel = id => id === "stopped" ? "Stopped" : DATA.severity.find(x => x.
 function combatLines(c){
   if (!c) return "";
   const a = c.atk, pen = x => x.penalty ? ` (${x.base} − ${x.penalty} wounds)` : "";
-  const rp = c.range ? c.range.penalty : 0, wp = a.penalty - rp;
-  const apen = rp || wp ? ` (${a.base}${wp ? ` − ${wp} wounds` : ""}${rp ? ` − ${rp} ${c.range.band} range` : ""})` : "";
+  const R0 = c.range || {}, rp = R0.penalty || 0, wp = a.penalty - rp;
+  const rangeP = R0.rangePen ?? (R0.cover || R0.height ? 0 : rp);
+  const wkName = t => (WK.edge_works[t] || WK.hex_works[t] || { name: t }).name.toLowerCase();
+  const parts = [wp ? ` − ${wp} wounds` : "", rangeP ? ` − ${rangeP} ${R0.band} range` : "",
+    R0.cover ? ` − ${R0.cover} cover (${wkName(R0.coverWork)})` : "", R0.height ? ` − ${R0.height} fighting up (${wkName(R0.heightWork)})` : ""].join("");
+  const apen = parts ? ` (${a.base}${parts})` : "";
   let out = `<div class="sitline">Attack d100 ${d2(a.roll)} vs ${a.effective}%${apen}: ${a.hit ? `hit, margin ${a.margin}${a.critical ? " · <b>critical</b>, cannot be defended" : ""}` : "miss"}</div>`;
   if (c.def) out += `<div class="sitline">Defence d100 ${d2(c.def.roll)} vs ${c.def.effective}%${pen(c.def)}: ${c.def.defended ? "parried or dodged" : "failed"}</div>`;
   return out;
@@ -717,7 +861,7 @@ function renderResult(){
     <div class="rolls"><span>loc ${d2(r.loc)}${r.loc2 ? "/" + d2(r.loc2) : ""}</span><span>mech ${d2(r.mech)}</span>${r.sev ? `<span>sev ${d2(r.sev)}</span>` : h.combat ? `<span>sev: margin</span>` : `<span>sev: your system</span>`}</div>
     <p class="hitname">${LOC[h.loc].name}</p>
     ${sit ? `<div class="sitline">${sit}</div>` : ""}
-    ${h.range ? `<div class="sitline">${h.range.band === "free attack" ? "Free attack as he leaves contact" : `${hexes(h.range.dist)}: ${h.range.band}${h.range.penalty ? ` range, −${h.range.penalty}%${h.combat ? "" : " (not applied: no attack roll)"}` : ""}`}</div>` : ""}
+    ${h.range ? `<div class="sitline">${h.range.band === "free attack" ? "Free attack as he leaves contact" : `${hexes(h.range.dist)}: ${h.range.band}${h.range.rangePen ? ` range, −${h.range.rangePen}%` : ""}${h.range.cover ? ` · cover behind the ${(WK.edge_works[h.range.coverWork] || WK.hex_works[h.range.coverWork]).name.toLowerCase()}, −${h.range.cover}%` : ""}${h.range.height ? ` · fighting up at the ${WK.edge_works[h.range.heightWork].name.toLowerCase()}, −${h.range.height}%` : ""}${h.range.penalty && !h.combat ? " (not applied: no attack roll)" : ""}`}</div>` : ""}
     ${h.ltable !== h.table ? `<div class="sitline">Close combat: location from ${DATA.tables[h.ltable].label}</div>` : ""}
     <div class="chips"><span class="chip sev-${h.sev === "stopped" ? "light" : h.sev}">${sevLabel(h.sev)}</span>${h.graze ? `<span class="chip graze" title="Hit by the barest margin: bleed and pain one step lower, no stop check">Graze</span>` : ""}<span class="chip">${DATA.mechanisms[h.mech].name}</span><span class="chip">${shortName(h.weapon)}</span></div>
     ${armorLine}
@@ -1067,8 +1211,8 @@ function turnInfo(){                         // the acting fighter's movement th
   if (!S.tm || S.tm.id !== c.id) S.tm = { id: c.id, steps: 0, ran: false, moved: false };
   const { cols, rows } = mapSize(), allow = moveAllowance(c.wounds, c.state ? c.state.id : null);
   const others = S.chars.filter(o => o !== c && o.pos);
-  const reach = S.tm.moved ? new Map() : reachable(c.pos, Math.max(allow.advance, allow.run), cols, rows,
-    others.filter(o => sideOf(o) !== sideOf(c)).map(o => o.pos), others.filter(o => sideOf(o) === sideOf(c)).map(o => o.pos));
+  const reach = S.tm.moved ? new Map() : reachableWorks(c.pos, Math.max(allow.advance, allow.run), cols, rows,
+    others.filter(o => sideOf(o) !== sideOf(c)).map(o => o.pos), others.filter(o => sideOf(o) === sideOf(c)).map(o => o.pos), S.works);
   return { c, allow, reach };
 }
 // Range and reach for the hit about to be rolled: {blocked} or {range} (null when there is no map check).
@@ -1077,19 +1221,35 @@ function rangeCheck(){
   const act = actingChar(), f = (S.free || [])[0];
   if (S.turn && act && !f && a !== act){     // during a turn only the acting fighter attacks (or a free attack)
     if (S.tm && S.tm.id === act.id && S.tm.ran) return { blocked: `${act.name} ran this turn and cannot attack.` };
+    if (S.tm && S.tm.id === act.id && S.tm.worked) return { blocked: `${act.name} spent this turn on the works and cannot attack.` };
     if (cannotAttack(penalties(act))) return { blocked: `${act.name} cannot attack: ${act.state ? CMB.states[act.state.id].name.toLowerCase() : "incapacitated"}.` };
     if (a) return { blocked: `It is ${act.name}'s turn: only he attacks now.` };
   }
   if (!S.turn || !a || !dd || a === dd || !a.pos || !dd.pos) return { range: null };   // the map's rules apply once turns start
   if (f && f.att === a.id && f.def === dd.id) return { range: { dist: 1, band: "free attack", penalty: 0 } };
   if (S.tm && S.tm.id === a.id && S.tm.ran) return { blocked: `${a.name} ran this turn and cannot attack.` };
+  if (S.tm && S.tm.id === a.id && S.tm.worked) return { blocked: `${a.name} spent this turn on the works and cannot attack.` };
   const dist = hexDistance(a.pos, dd.pos), r = weaponReach(S.weapon, dist);
   if (!r) return { blocked: `${dd.name} is ${hexes(dist)} away, out of reach of the ${shortName(S.weapon).toLowerCase()} (${reachText(S.weapon)}).` };
-  return { range: { dist, ...r } };
+  const wk = worksOnAttack(a, dd);
+  if (wk.blocked) return { blocked: wk.blocked };
+  return { range: { dist, ...r, rangePen: r.penalty, ...wk, penalty: r.penalty + (wk.cover || 0) + (wk.height || 0) } };
+}
+// What the works do to an attack by a on dd: cover against missiles, or a palisade or a bank in a close fight.
+function worksOnAttack(a, dd){
+  const { cols, rows } = mapSize(), w = DATA.weapons[S.weapon];
+  if (!a.pos || !dd.pos || w.off_map) return {};
+  if (w.range){
+    const cv = missileCover(S.works, a.pos, dd.pos, cols, rows);
+    return cv.cover ? { cover: cv.cover, coverWork: cv.work } : {};
+  }
+  const mc = meleeAcross(S.works, a.pos, dd.pos, w.reach || 1, cols, rows);
+  if (mc.blocked) return { blocked: `${a.name} cannot strike ${dd.name} over the ${WK.edge_works[mc.work].name.toLowerCase()}: only a weapon with reach 2 (a spear or a bill) reaches over it.` };
+  return mc.penalty ? { height: mc.penalty, heightWork: mc.work } : {};
 }
 function canTarget(a, o){                    // ringed on the map: an enemy the acting fighter can strike now
   if (!a.pos || !o.pos || sideOf(o) === sideOf(a)) return false;
-  return !!weaponReach(S.weapon, hexDistance(a.pos, o.pos));
+  return !!weaponReach(S.weapon, hexDistance(a.pos, o.pos)) && !worksOnAttack(a, o).blocked;
 }
 function restoreActing(){                    // after free attacks: the acting fighter attacks again
   const c = actingChar(); if (!c) return;
@@ -1144,6 +1304,132 @@ function undoMove(){
   Object.assign(S.tm, { moved: false, steps: 0, ran: false, prev: null, queued: 0 });
   renderChars();
 }
+// ----- works: drawing, editing, breaching -----
+const DIRS = ["east", "north-east", "north-west", "west", "south-west", "south-east"];
+const HEX_GLYPH = {
+  stakes: `<path d="M-8 6L-4 -6M-2 6L2 -6M4 6L8 -6"/>`,
+  abatis: `<path d="M-9 6L9 -5M-4 3L-7 -4M1 0L-1 -7M5 -2L8 4"/>`,
+  pavise: `<rect x="-4" y="-7" width="8" height="13" rx="1"/>`,
+  wagon: `<rect x="-11" y="-6" width="22" height="10" rx="1.5"/><circle cx="-6" cy="5" r="2.6"/><circle cx="6" cy="5" r="2.6"/>` };
+const parseHex = k => k.split(",").map(Number);
+function edgeEnds(a, b){
+  const [ax, ay] = hexXY(a), [bx, by] = hexXY(b), mx = (ax + bx) / 2, my = (ay + by) / 2;
+  const dx = bx - ax, dy = by - ay, L = Math.hypot(dx, dy), px = -dy / L * HEX_R / 2, py = dx / L * HEX_R / 2;
+  return [mx - px, my - py, mx + px, my + py, mx, my];
+}
+function worksSvg(){
+  const W = S.works || { edges: {}, hexes: {} }, order = ["ditch", "bank", "wall", "palisade", "gate"];
+  let out = "";
+  for (const [k, items] of Object.entries(W.edges || {})){
+    const [a, b] = k.split("|").map(parseHex), [x1, y1, x2, y2, mx, my] = edgeEnds(a, b);
+    for (const it of items.slice().sort((p, q) => order.indexOf(p.type) - order.indexOf(q.type))){
+      const sp = specOf("edge", it), ok = intact("edge", it);
+      out += `<line class="wk wk-${it.type}${ok ? "" : " breached"}${it.open ? " open" : ""}" x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"><title>${attr(sp.name)}${ok ? "" : " (breached)"}${sp.gate ? (it.open ? " (open)" : " (barred)") : ""}</title></line>`;
+      if (ok && it.progress && sp.breach) out += `<text class="wk-prog" x="${mx.toFixed(1)}" y="${(my - 4).toFixed(1)}">${it.progress}/${sp.breach}</text>`;
+    }
+  }
+  for (const [k, it] of Object.entries(W.hexes || {})){
+    const [x, y] = hexXY(parseHex(k)), sp = specOf("hex", it), ok = intact("hex", it);
+    out += `<g class="wkh wkh-${it.type}${ok ? "" : " breached"}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><title>${attr(sp.name)}${ok ? "" : " (cleared)"}</title>${HEX_GLYPH[it.type] || ""}</g>`;
+    if (ok && it.progress && sp.breach) out += `<text class="wk-prog" x="${x.toFixed(1)}" y="${(y - 9).toFixed(1)}">${it.progress}/${sp.breach}</text>`;
+  }
+  return out;
+}
+function worksLabour(){                      // man-hours to build what is on the map (timber to hand)
+  const W = S.works || {}, edgeM = 2 / Math.sqrt(3);
+  let t = 0;
+  for (const items of Object.values(W.edges || {})) for (const it of items){ const sp = WK.edge_works[it.type]; t += "each" in sp ? sp.each : (sp.per_metre || 0) * edgeM }
+  for (const it of Object.values(W.hexes || {})) t += WK.hex_works[it.type].each || 0;
+  return t;
+}
+function svgPoint(e){
+  const svg = $("#map svg"); if (!svg || !e) return null;
+  const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+  return p.matrixTransform(svg.getScreenCTM().inverse());
+}
+function toggleWork(h, e){                   // works mode: put or take away the chosen work
+  const { cols, rows } = mapSize(), type = S.workType, W = S.works || (S.works = { edges: {}, hexes: {} });
+  W.edges = W.edges || {}; W.hexes = W.hexes || {};
+  if (WK.hex_works[type]){
+    const k = hkey(h);
+    if (W.hexes[k] && W.hexes[k].type === type) delete W.hexes[k]; else W.hexes[k] = { type, progress: 0 };
+    return;
+  }
+  const p = svgPoint(e); if (!p) return;
+  let best = null, bd = Infinity;
+  for (const n of neighbours(h, cols, rows)){ const m = edgeEnds(h, n), dd = Math.hypot(p.x - m[4], p.y - m[5]); if (dd < bd){ bd = dd; best = n } }
+  if (!best) return;
+  const k = edgeKey(h, best), items = (W.edges[k] || []).slice(), i = items.findIndex(it => it.type === type);
+  if (i >= 0) items.splice(i, 1);
+  else {
+    const clash = { palisade: ["gate", "wall"], gate: ["palisade", "wall"], wall: ["palisade", "gate", "bank"], bank: ["wall"] }[type] || [];
+    for (let j = items.length - 1; j >= 0; j--) if (clash.includes(items[j].type)) items.splice(j, 1);
+    const it = { type, progress: 0 };
+    if (["bank", "ditch", "wall"].includes(type)) it.high = hkey(h);       // the side you click is the high side
+    if (type === "gate"){ it.open = false; it.inside = hkey(h) }           // and the side the gate is barred from
+    items.push(it);
+  }
+  if (items.length) W.edges[k] = items; else delete W.edges[k];
+}
+function worksActions(c){                    // breach and gate buttons for the acting fighter
+  const { cols, rows } = mapSize(), out = [];
+  if (!c.pos) return out;
+  const canWork = !cannotAttack(penalties(c)) && !(S.tm && (S.tm.ran || S.tm.worked));
+  neighbours(c.pos, cols, rows).forEach(n => {
+    const dir = DIRS[NEIGHBOURS[c.pos[1] & 1].findIndex(([dc, dr]) => c.pos[0] + dc === n[0] && c.pos[1] + dr === n[1])];
+    const k = edgeKey(c.pos, n), items = ((S.works || {}).edges || {})[k] || [];
+    items.forEach((it, j) => {
+      const sp = specOf("edge", it);
+      if (!intact("edge", it)) return;
+      if (sp.gate){
+        if (it.open) out.push(`<button class="small" data-work="close" data-k="${k}" data-j="${j}">Bar the gate (${dir})</button>`);
+        else if (it.inside === hkey(c.pos)) out.push(`<button class="small" data-work="open" data-k="${k}" data-j="${j}">Open the gate (${dir})</button>`);
+      }
+      if (sp.breach && canWork && !(sp.gate && it.open)) out.push(`<button class="small" data-work="breach" data-k="${k}" data-j="${j}" title="One man-round of axe or fire work; uses his attack">Breach the ${sp.name.toLowerCase()} (${dir}) ${it.progress || 0}/${sp.breach}</button>`);
+    });
+    const hk = hkey(n), hi = ((S.works || {}).hexes || {})[hk];
+    if (hi && intact("hex", hi) && specOf("hex", hi).breach && canWork && !occupant(n))
+      out.push(`<button class="small" data-work="clear" data-k="${hk}" title="One man-round of work; uses his attack">Clear the ${specOf("hex", hi).name.toLowerCase()} (${dir}) ${hi.progress || 0}/${specOf("hex", hi).breach}</button>`);
+  });
+  return out;
+}
+function doWork(act, k, j){
+  const c = actingChar(); if (!c) return;
+  if (act === "open" || act === "close"){
+    const it = S.works.edges[k][j]; it.open = act === "open";
+    (S.pending = S.pending || []).push(`${c.name} ${it.open ? "opens" : "bars"} the gate`);
+  } else {
+    const it = act === "clear" ? S.works.hexes[k] : S.works.edges[k][j], sp = specOf(act === "clear" ? "hex" : "edge", it);
+    it.progress = (it.progress || 0) + 1;
+    S.tm = S.tm || { id: c.id }; S.tm.worked = true;
+    if (S.attacker === S.chars.indexOf(c)) S.attacker = -1;
+    (S.pending = S.pending || []).push(`${c.name} works at the ${sp.name.toLowerCase()} (${it.progress}/${sp.breach})`
+      + (it.progress >= sp.breach ? ` — <span class="ev-warn">${act === "clear" ? "cleared" : "breached"}</span>` : ""));
+  }
+  renderChars();
+}
+function setupHandoff(){                     // a camp or position sent from the travel map
+  const h = S.handoff; if (!h) return;
+  const ft = h.force.type, men = h.force.men, r = campRadius(men, ft);
+  const lay = h.camp && WK.camps[h.camp] ? WK.camps[h.camp].layout : null;
+  const need = 2 * (r + (lay === "fortified" ? 3 : lay ? 2 : 1)) + 6;
+  S.map = { cols: Math.min(80, Math.max(24, need)), rows: Math.min(60, Math.max(16, need)) };
+  const { cols, rows } = S.map;
+  const L = lay ? campWorks(h.camp, men, ft, cols, rows) : { centre: [cols >> 1, rows >> 1], radius: r, fits: true, works: { edges: {}, hexes: {} } };
+  S.works = L.works;
+  const spots = [];
+  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) if (hexDistance(L.centre, [x, y]) <= Math.max(1, L.radius - 1)) spots.push([x, y]);
+  spots.sort((p, q) => hexDistance(L.centre, p) - hexDistance(L.centre, q) || p[1] - q[1] || p[0] - q[0]);
+  const n = Math.min(men, 8);
+  S.chars = Array.from({ length: n }, (_, i) => { const c = newChar(`${h.force.name} ${i + 1}`, "none", null, {}, h.force.side); c.pos = spots[i]; return c });
+  S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0;
+  const campName = h.camp ? WK.camps[h.camp].name.toLowerCase() : "no camp";
+  S.pending = [`Set up from the travel map: ${h.force.name} at ${h.place} (${campName}), day ${h.day}, ${h.time}`];
+  S.mapMsg = `${n < men ? `${n} of ${men} men placed` : `${n} men placed`} inside the ${h.camp ? campName : "position"}${L.fits ? "" : " (cut down to fit the map)"}. Add the attackers with Add; they start at the far edge, facing the gate.`;
+  try{ localStorage.removeItem("gravewounds-handoff") }catch(e){}
+  S.handoff = null;
+  renderChars();
+}
 function renderMap(){
   const { cols, rows } = mapSize(); placeUnplaced();
   const t = turnInfo(), acting = t && t.c, sides = sidesInOrder(), placing = !S.turn || S.freePlace;
@@ -1165,10 +1451,15 @@ function renderMap(){
       + `<title>${attr(c.name)} · ${attr(sideOf(c))}${dist}${isDown(c) ? " · down" : ""}</title><circle class="ring" r="${HEX_R - 1}"/><circle class="body" r="${HEX_R * 0.7}"/><text dy="0.36em">${attr(initials(c.name))}</text></g>`;
   }).join("");
   const W = HEX_W * (cols + 0.5), H = 1.5 * HEX_R * (rows - 1) + 2 * HEX_R;
-  $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" style="max-width:${Math.round(W * 1.6)}px">${hx}${toks}</svg>`;
+  $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" style="max-width:${Math.round(W * 1.6)}px">${hx}<g class="works">${worksSvg()}</g>${toks}</svg>`;
   $("#map").classList.toggle("placing", placing && S.placing != null);
+  $("#map").classList.toggle("building", !!S.workMode);
   // actions and messages
   const bits = [];
+  if (S.handoff){
+    const h = S.handoff;
+    bits.push(`<span class="free"><b>From the travel map:</b> ${attr(h.force.name)} (${h.force.men} men) at ${attr(h.place)}${h.camp ? `, ${attr(WK.camps[h.camp].name.toLowerCase())}` : ""}, day ${h.day} ${h.time}. Set up the fight here? This replaces the fighters and works on this page.</span><button class="small" data-map="handoff">Set up the fight</button><button class="small" data-map="nohandoff">Not now</button>`);
+  }
   const f = (S.free || [])[0];
   if (f){
     const a = S.chars.find(c => c.id === f.att), dd = S.chars.find(c => c.id === f.def);
@@ -1183,20 +1474,27 @@ function renderMap(){
       : attackerChar() === acting ? `${shortName(S.weapon).toLowerCase()} (${reachText(S.weapon)})` : "choose him as attacker to strike";
     bits.push(`<span><b>${attr(acting.name)}</b>: ${moveTxt} · ${atkTxt}</span>`);
     if (!tm.moved && al.advance) bits.push(`<button class="small" data-map="stay">Stay</button>`);
+    bits.push(...worksActions(acting));
     if (tm.moved && tm.prev && (S.free || []).length === tm.prev.free + (tm.queued || 0)) bits.push(`<button class="small" data-map="undo">Undo move</button>`);
     bits.push(`<button class="small" data-map="next">Next fighter</button>`);
   } else {
     bits.push(`<span class="muted">Setting up: click a fighter, then an empty hex, to place him. <b>Next fighter</b> starts the turns; from then on movement, reach and range are enforced.</span>`);
   }
+  if (S.workMode) bits.push(`<span class="muted">Building works: ${WK.edge_works[S.workType] ? "click near the edge of a hex, on the side that should be high (or inside, for a gate)" : "click a hex"} to put or take away a ${attr((WK.edge_works[S.workType] || WK.hex_works[S.workType]).name.toLowerCase())}.</span>`);
   if (S.freePlace && S.turn) bits.push(`<span class="muted">Free placement is on: click a fighter, then an empty hex.</span>`);
   if (S.mapMsg) bits.push(`<span class="muted">${S.mapMsg}</span>`);
   $("#map-actions").innerHTML = bits.join("");
   $("#map-key").innerHTML = sides.map((s, k) => `<span><i style="background:var(--side${k % 4})"></i>${attr(s)}</span>`).join("")
     + `<span><i style="background:var(--ok);opacity:.45"></i>advance and attack</span><span><i style="background:var(--warn);opacity:.4"></i>run, no attack</span>`
     + `<span>dashed ring: in reach · solid ring: defender</span>`;
+  const types = [...Object.keys(WK.edge_works), ...Object.keys(WK.hex_works)];
+  $("#work-palette").innerHTML = types.map(t => `<button type="button" class="small" data-wtype="${t}" aria-pressed="${!!S.workMode && S.workType === t}" title="${attr((WK.edge_works[t] || WK.hex_works[t]).note || (WK.edge_works[t] ? "Along a hex edge" : "Fills a hex"))}"><svg viewBox="-12 -8 24 16" width="22" height="14" aria-hidden="true">${WK.edge_works[t] ? `<line class="wk wk-${t}" x1="-10" y1="0" x2="10" y2="0"/>` : `<g class="wkh wkh-${t}" transform="scale(.7)">${HEX_GLYPH[t] || ""}</g>`}</svg>${attr((WK.edge_works[t] || WK.hex_works[t]).name)}</button>`).join("");
+  const lab = worksLabour();
+  $("#work-labour").textContent = lab ? `Works on this map: about ${Math.round(lab)} man-hours to build (timber to hand).` : "No works on this map.";
   $("#map-scale").textContent = `1 hex = ${MOVE.hex_m} m · a round is 6 seconds · ${cols} × ${rows} hexes`;
   $("#in-cols").value = cols; $("#in-rows").value = rows;
   $("#btn-freeplace").setAttribute("aria-pressed", !!S.freePlace);
+  $("#btn-works").setAttribute("aria-pressed", !!S.workMode);
 }
 function clickToken(id){
   const c = S.chars.find(o => o.id === id); if (!c) return;
@@ -1217,7 +1515,8 @@ function clickToken(id){
   S.mapMsg = S.placing != null ? `Placing ${attr(c.name)}: click an empty hex.` : "";
   renderMap();
 }
-function clickHex(h){
+function clickHex(h, e){
+  if (S.workMode){ toggleWork(h, e); S.mapMsg = ""; return renderChars() }
   if ((!S.turn || S.freePlace) && S.placing != null){
     if (occupant(h)) return;
     const c = S.chars.find(o => o.id === S.placing);
@@ -1405,7 +1704,8 @@ function init(){
   // battle map
   const mapKey = e => {
     const tok = e.target.closest(".tok"), hx = e.target.closest(".hex");
-    if (tok) clickToken(+tok.dataset.id); else if (hx) clickHex(hx.dataset.h.split(",").map(Number));
+    if (S.workMode){ const c = tok && S.chars.find(o => o.id === +tok.dataset.id); const h = c && c.pos ? c.pos : hx ? hx.dataset.h.split(",").map(Number) : null; if (h) clickHex(h, e); return }
+    if (tok) clickToken(+tok.dataset.id); else if (hx) clickHex(hx.dataset.h.split(",").map(Number), e);
   };
   $("#map").addEventListener("click", mapKey);
   $("#map").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); mapKey(e) } });
@@ -1416,7 +1716,13 @@ function init(){
     else if (act === "undo") undoMove();
     else if (act === "next") nextFighter();
     else if (act === "skipfree"){ freeDone("skipped"); renderChars() }
+    else if (act === "handoff") setupHandoff();
+    else if (act === "nohandoff"){ S.handoff = null; try{ localStorage.removeItem("gravewounds-handoff") }catch(e){} renderChars() }
   });
+  $("#map-actions").addEventListener("click", e => { const b = e.target.closest("button[data-work]"); if (b) doWork(b.dataset.work, b.dataset.k, +b.dataset.j) });
+  $("#btn-works").onclick = () => { S.workMode = !S.workMode; S.workType = S.workType || "palisade"; S.placing = null; S.mapMsg = ""; renderChars() };
+  $("#work-palette").addEventListener("click", e => { const b = e.target.closest("button[data-wtype]"); if (b){ S.workType = b.dataset.wtype; S.workMode = true; renderChars() } });
+  $("#btn-clear-works").onclick = () => { S.works = { edges: {}, hexes: {} }; S.mapMsg = "Works cleared."; renderChars() };
   $("#btn-freeplace").onclick = () => { S.freePlace = !S.freePlace; S.placing = null; S.mapMsg = ""; renderChars() };
   const resize = () => {
     const m = mapSize(), cl = (v, lo, hi, d) => Math.min(hi, Math.max(lo, parseInt(v, 10) || d));
@@ -1424,6 +1730,7 @@ function init(){
     renderChars();
   };
   $("#in-cols").onchange = resize; $("#in-rows").onchange = resize;
+  try{ S.handoff = JSON.parse(localStorage.getItem("gravewounds-handoff") || "null") }catch(e){ S.handoff = null }
 
   if (!restore()){
     // Example combatants from this conflict so the tracker shows what it does; remove them any time.

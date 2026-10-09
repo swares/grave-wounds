@@ -1,0 +1,84 @@
+# Camps and defensive works (Grave Wounds). Medieval first; other eras later.
+#
+# Labour is in man-hours. Only a share of a force works at once (`work_share`); the rest
+# stand guard, cook and tend animals. Work uses the force's working hours, the same
+# `hours_per_day` as marching (terrain.yaml), and runs on into the next day if need be.
+# All figures are design estimates. Sanity checks: a man with a spade moves very roughly
+# a cubic metre of earth an hour; a Roman legion of about 5,000 men was expected to ditch,
+# bank and palisade its marching camp in a few hours.
+
+work_share: 0.75           # share of the men working on the camp at any one time
+camp_area:                 # ground a camp needs, m2 a man (tents, fires, lines, wagons)
+  foot: 20
+  mounted: 40              # horse lines
+  wagons: 40
+camp_area_min: 100         # even a handful of men needs a camp this big
+
+# Kinds of camp on the travel map.
+#   hours      - flat time to set up (clear the site, fires, a watch), whatever the force's size
+#   works      - works built all round the camp's perimeter. Labour: each edge work's
+#                per_metre (+ haul if no woods within a hex) x the perimeter, plus `each` for
+#                a gate; each hex work's `each` (+ haul) for every 2 m of perimeter. Divided
+#                by the men working (men x work_share) to give hours, then added to `hours`.
+#   tools      - true if it needs spades and axes
+#   terrain    - only on these terrains (quartering needs buildings)
+#   surprise   - shift to the odds of being caught unawares (for later rules; − is better)
+#   rest       - poor | fair | good: how well the men sleep (for later rules)
+#   layout     - what the battle map draws for it (a ring of stakes, or ditch, bank, palisade
+#                and gate); none for the others
+camps:
+  bivouac:   {name: "Bivouac",        hours: 0,   surprise: 20,  rest: poor,
+              desc: "Sleep where you stop. Nothing built and no proper watch."}
+  watched:   {name: "Watched camp",   hours: 1,   surprise: 0,   rest: fair,
+              desc: "A cleared site with fires, the baggage drawn up and a sentry roster."}
+  staked:    {name: "Staked camp",    hours: 1,   tools: true, works: [stakes], surprise: -10, rest: fair, layout: stakes,
+              desc: "A watched camp ringed with sharpened stakes, like archers' stakes set against horse."}
+  fortified: {name: "Fortified camp", hours: 1,   tools: true, works: [ditch, bank, palisade, gate], surprise: -20, rest: good, layout: fortified,
+              desc: "Ditch, bank and palisade all round, with a gate."}
+  quartered: {name: "Quartered",      hours: 0.5, terrain: [village, town], surprise: 0, rest: good,
+              desc: "Billeted in the houses of a village or town."}
+
+# Works on the battle map (2 m hexes). Linear works sit on hex edges; the rest fill a hex.
+# An edge between two hexes is 2 / sqrt(3) = 1.155 m long.
+#
+# edge works:
+#   per_metre   - man-hours to build a metre of it (`haul`: extra if no woods within a hex
+#                 of the camp, for carrying timber)
+#   cross       - extra movement to cross the edge; null = cannot be crossed (until breached)
+#   cover       - % off missile attacks at a man right behind it
+#   cover_side  - both: either side of it is covered; high: only the high (inner) side
+#   height      - % off a close-combat attack made from the low side at a man on the high side
+#   blocks_melee - true: only weapons with reach 2 or more strike across it
+#   breach      - man-rounds of axe or fire work to open a gap (null: cannot be breached)
+#   gate        - true: can be opened (crossed freely) or barred (as a palisade)
+edge_works:
+  ditch:    {name: "Ditch",         per_metre: 2.5,  cross: 2,    cover: 0,  height: 10, breach: null}
+  bank:     {name: "Earth bank",    per_metre: 1.0,  cross: 1,    cover: 20, cover_side: high, height: 10, breach: null}
+  palisade: {name: "Palisade",      per_metre: 1.5,  haul: 1.0,   cross: null, cover: 40, cover_side: both, blocks_melee: true, breach: 12}
+  gate:     {name: "Gate",          each: 6,         cross: 0,    cover: 40, cover_side: both, blocks_melee: true, breach: 20, gate: true}
+  wall:     {name: "Stone wall",    per_metre: null, cross: null, cover: 50, cover_side: both, height: 20, blocks_melee: true, breach: null,
+             note: "Town and castle walls: already there, not built in the field."}
+
+# hex works:
+#   each        - man-hours to build one hex of it (`haul`: extra if no woods near)
+#   enter       - extra movement to enter the hex; null = cannot be entered (until breached)
+#   cover_here  - % off missile attacks at a man standing in the hex
+#   cover_behind - % off missile attacks at a man in the next hex beyond it
+#   no_horse    - true: horses cannot be ridden into it (for mounted rules later)
+#   breach      - man-rounds to clear it (null: cannot be cleared)
+hex_works:
+  stakes:  {name: "Stakes",            each: 1,  haul: 0.5, enter: 1,    no_horse: true, breach: 2}
+  abatis:  {name: "Abatis",            each: 4,  haul: 4,   enter: 2,    cover_here: 20, no_horse: true, breach: 8}
+  pavise:  {name: "Pavise",            each: 0,  enter: 0,  cover_here: 20, breach: null,
+            note: "A large standing shield carried by crossbowmen; covers the man behind it."}
+  wagon:   {name: "Wagon",             each: 0.25, enter: null, cover_behind: 40, no_horse: true, breach: 10,
+            note: "Wagons drawn up and chained, as in a wagon laager."}
+
+# Where the ideas come from (described in our own words):
+# - Stakes: English archers in the Hundred Years' War planted sharpened stakes in front of
+#   their line against cavalry, Agincourt (1415) being the best-known case.
+# - Wagon laager: the Hussites in the 1420s fought from chained war-wagons; armies on the
+#   move often drew up their baggage wagons as a barrier.
+# - Ditch, bank and palisade: the standard field fortification of camps and siege lines,
+#   from Roman marching camps through the medieval period.
+# - Pavise: the tall shield crossbowmen set up and shot from behind.
