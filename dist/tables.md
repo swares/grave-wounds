@@ -4262,6 +4262,14 @@ Penalties add up; each total is capped at -60%.
 | Firearm/explosive, head, torso | 0-9 | 10-34 | 35+ |
 | Firearm/explosive, arms, legs | 0-29 | 30-59 | 60+ |
 
+### Graze, stop check and morale
+
+**Graze:** a hit by a margin of 2 or less (not a critical) only grazes: the wound's bleed and pain drop one step each and it causes no shock.
+
+**Stop check:** a serious or critical wound calls for d100 against the fighter's **Nerve** (green 35, regular 50, veteran 65), minus pain and blood-loss penalties, and -10 more for a critical wound. Equal or under: he fights on. Failed by 1-20: **defend only** for 2 rounds; by 21-40: **stunned** for 2 rounds; by more than 40: **out of the fight** until helped or the fight ends. Defend only and stunned fighters cannot attack; stunned also -50% defence.
+
+**Team morale:** at the end of each round, a side with 25% or more of its fighters down rolls d100 against the best Nerve among those still up (its leader's, if he is up), +10 with a leader up, -20 if a leader is down, -20 once 50% are down. Over: the side breaks and runs or surrenders.
+
 ## Armour
 
 1. Use armour only on tables marked **armour allowed** (all-hits, baseline, knife and unarmed tables). The other tables already show the effect of what their soldiers wore.

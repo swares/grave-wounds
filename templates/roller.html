@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<title>Historical Wound Roller</title>
+<title>Grave Wounds Roller</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
@@ -137,6 +137,13 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
 .char.dragging{opacity:.45}.char.drop-ok{border-style:dashed}
 .turn-tag{font:700 .68rem var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:3px;background:var(--ink);color:var(--panel)}
 .char.isdown{opacity:.7}
+.siderow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.siderow input[type=text]{width:9em;padding:3px 6px;font-size:.85rem}
+.siderow input[type=number]{width:4.2em;padding:3px 5px;font:600 .85rem var(--mono)}
+.siderow select{width:auto;padding:3px 5px;font-size:.85rem}
+.state{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.85rem;border-left:3px solid var(--warn);padding:2px 0 2px 8px}
+.state.out{border-color:var(--crit)}.state b{color:var(--warn)}.state.out b{color:var(--crit)}
+.chip.graze{border-style:dashed}
 .orderrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:-2px}
 .orderrow button{padding:2px 7px;line-height:1.1}
 .char button:disabled{opacity:.3;cursor:default}
@@ -153,7 +160,7 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
 <div class="wrap">
   <header>
     <div>
-      <h1>Historical Wound Roller</h1>
+      <h1>Grave Wounds Roller</h1>
       <p class="sub">d100 hit locations weighted by real wound records, from the Crusades to Iraq and Afghanistan, plus knife and unarmed fighting. System-agnostic wounds, armour and wounded fighters.</p>
     </div>
     <span class="badge" id="conf">fitted weights</span>
@@ -230,6 +237,7 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
       </div>
       <div class="toolbar">
         <button id="btn-apply">Apply hit to defender</button>
+        <input id="in-stop" type="number" min="1" max="100" placeholder="Stop d100" aria-label="Your d100 for the stop check (blank rolls for you)" title="Stop check: a serious or critical wound rolls d100 against the defender's Nerve. Type your own die or leave blank." style="width:7.5em;flex:0 0 auto">
       </div>
       <p class="muted" id="apply-msg" aria-live="polite" style="margin:0"></p>
       <div class="roundbar" role="group" aria-label="Round tracker">
@@ -238,8 +246,9 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
         <span class="turnno" id="turn-no" aria-live="polite"></span>
         <button id="btn-round" title="End this round: every casualty bleeds one round">Next round</button>
         <button id="btn-minute" title="Ten rounds pass for every casualty">+1 minute</button>
+        <input id="in-morale" type="number" min="1" max="100" placeholder="Morale d100" aria-label="Your d100 for the next morale check (blank rolls for you)" title="Team morale: at the end of a round, a side with a quarter of its fighters down rolls d100. Type your own die for the next check or leave blank." style="width:8.5em;flex:0 0 auto">
         <span class="spacer"></span>
-        <button id="btn-reset-rounds" class="small" title="Start the count again at round 1 and clear the log; wounds stay">Reset count</button>
+        <button id="btn-reset-rounds" class="small" title="Start the count again at round 1, clear the log and rally broken sides; wounds and stop-check results stay">Reset count</button>
       </div>
       <ol class="roundlog" id="round-log" aria-label="What happened each round"></ol>
       <div id="chars" style="display:flex;flex-direction:column;gap:10px"></div>
@@ -272,7 +281,7 @@ const d100 = () => 1 + Math.floor(Math.random() * 100);
 const look = (ranges, n) => ranges.find(r => n >= r.lo && n <= r.hi).id;
 const shortName = w => DATA.weapons[w].short || DATA.weapons[w].name.split(" (")[0];
 
-const S = { table: null, weapon: null, hit: null, chars: [], active: 0, attacker: -1, seq: 1, mods: new Set(), called: "", armor: "none", round: 1, log: [], turn: null };
+const S = { table: null, weapon: null, hit: null, chars: [], active: 0, attacker: -1, seq: 1, mods: new Set(), called: "", armor: "none", round: 1, log: [], turn: null, broken: {}, pending: [] };
 const CMB = DATA.combat;
 const MODS = DATA.modifiers, KITS = Object.fromEntries(DATA.armor.kits.map(k => [k.id, k]));
 const MATS = DATA.armor.materials, LADDER = ["stopped", "light", "serious", "critical"];
@@ -333,8 +342,44 @@ function penalties(c){
     }
   }
   if (flags.has("off_hand") && ["grip|shield_arm", "hand_useless|shield_arm", "arm_useless|shield_arm"].some(k => seen.has(k))) flags.add("cannot_wield");
+  if (c.state){
+    const rule = CMB.states[c.state.id];
+    flags.add(c.state.id);
+    if (rule.defence){ defence += rule.defence; notes.push(`${rule.name.toLowerCase()} def -${rule.defence}%`) }
+  }
   return { attack: Math.min(attack, CMB.cap), defence: Math.min(defence, CMB.cap), flags: [...flags].sort(), notes };
 }
+const cannotAttack = p => !!p && p.flags.some(f => f === "incapacitated" || (CMB.states[f] || {}).no_attack);
+
+/* ---------- graze, stop check and morale: same rules as gravewounds/combat.py ---------- */
+function grazeFx(fx){ return { ...fx, bleed: Math.max(0, fx.bleed - 1), pain: Math.max(0, fx.pain - 1), shock: false } }
+function isGraze(margin, critical){ return margin !== null && margin !== undefined && !critical && margin <= CMB.graze_margin }
+function stopTarget(nerve, severity, painSteps, bloodFrac = 1){
+  let target = nerve - Math.min(painSteps, TRK.pain_cap) * CMB.pain_step;
+  const th = [...TRK.thresholds].sort((a, b) => a.at - b.at).find(t => bloodFrac <= t.at);
+  if (th) target -= th.penalty || 0;
+  if (severity === "critical") target -= CMB.stop_check.critical_penalty;
+  return target;
+}
+function stopCheck(nerve, severity, painSteps, roll, bloodFrac = 1){
+  const SC = CMB.stop_check;
+  if (!SC.severities.includes(severity)) return null;
+  const target = stopTarget(nerve, severity, painSteps, bloodFrac);
+  if (roll <= target) return { target, roll, passed: true, fail_by: 0, state: null, rounds: null };
+  const fail_by = roll - target, res = SC.results.find(r => !("upto" in r) || fail_by <= r.upto);
+  return { target, roll, passed: false, fail_by, state: res.state, rounds: res.rounds ?? null };
+}
+function moraleCheck(fighters, roll){
+  const M = CMB.morale, n = fighters.length, down = fighters.filter(f => f.down).length, up = fighters.filter(f => !f.down);
+  if (!n || !up.length || down / n < M.trigger) return null;
+  const leadersUp = up.filter(f => f.leader);
+  let target = Math.max(...(leadersUp.length ? leadersUp : up).map(f => f.nerve));
+  if (leadersUp.length) target += M.leader_present;
+  if (fighters.some(f => f.leader && f.down)) target -= M.leader_down;
+  if (down / n >= M.heavy) target -= M.heavy_losses;
+  return { target, roll, down, of: n, broken: roll > target };
+}
+/* ---------- end of rules shared with gravewounds/combat.py ---------- */
 const attackerChar = () => (S.chars && S.attacker >= 0) ? S.chars[S.attacker] : null;
 const defenderChar = () => (S.chars && S.chars.length) ? S.chars[S.active] : null;
 function autoMods(){
@@ -417,7 +462,7 @@ function sevTiers(mech, zone, wid){
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn})) }catch(e){} }
+function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending})) }catch(e){} }
 function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); return true } }catch(e){} return false }
 
 /* ---------- body figure ---------- */
@@ -486,6 +531,7 @@ function rollHit(){
   if (atkPct !== null){
     const A = penalties(attackerChar()), D = penalties(defenderChar());
     if (A && A.flags.includes("incapacitated")) return done({ blocked: `${attackerChar().name} is incapacitated and cannot attack.` });
+    if (cannotAttack(A)) return done({ blocked: `${attackerChar().name} cannot attack: ${CMB.states[attackerChar().state.id].name.toLowerCase()}.` });
     if (A && A.flags.includes("cannot_wield") && w.melee !== "unarmed") return done({ blocked: `${attackerChar().name} cannot hold a weapon in either hand.` });
     const ar = attackRoll(atkPct, readDie("#in-atk-roll") ?? d100(), A ? A.attack : 0);
     combat = { atk: ar, def: null };
@@ -522,8 +568,10 @@ function rollHit(){
     final = LADDER[Math.max(0, LADDER.indexOf(sev) - steps)];
     armor = { mat, layers, rc, covered: !!hit, steps, from: sev, to: final };
   }
-  const fx = final === "stopped" ? null : DATA.wounds[`${LOC[loc].class}|${mech}|${final}`];
-  S.hit = { loc, mech, sev: final, rolled: sev, fx, armor, combat, rolls:{loc:rl, loc2:rl2, mech:rm, sev:rs},
+  const grazed = final !== "stopped" && isGraze(margin, crit);
+  const fx0 = final === "stopped" ? null : DATA.wounds[`${LOC[loc].class}|${mech}|${final}`];
+  const fx = fx0 && grazed ? grazeFx(fx0) : fx0;
+  S.hit = { loc, mech, sev: final, rolled: sev, fx, armor, combat, graze: grazed, rolls:{loc:rl, loc2:rl2, mech:rm, sev:rs},
             weapon:S.weapon, table:S.table, ltable:rtid(), mods:orderedMods().map(m => m.short || m.name), called:S.called };
   ["#in-loc","#in-loc2","#in-mech","#in-sev","#in-atk-roll","#in-def-roll"].forEach(id => $(id).value = "");
   renderResult(); shadeFigure(); renderTable();
@@ -571,7 +619,7 @@ function renderResult(){
     <p class="hitname">${LOC[h.loc].name}</p>
     ${sit ? `<div class="sitline">${sit}</div>` : ""}
     ${h.ltable !== h.table ? `<div class="sitline">Close combat: location from ${DATA.tables[h.ltable].label}</div>` : ""}
-    <div class="chips"><span class="chip sev-${h.sev === "stopped" ? "light" : h.sev}">${sevLabel(h.sev)}</span><span class="chip">${DATA.mechanisms[h.mech].name}</span><span class="chip">${shortName(h.weapon)}</span></div>
+    <div class="chips"><span class="chip sev-${h.sev === "stopped" ? "light" : h.sev}">${sevLabel(h.sev)}</span>${h.graze ? `<span class="chip graze" title="Hit by the barest margin: bleed and pain one step lower, no shock">Graze</span>` : ""}<span class="chip">${DATA.mechanisms[h.mech].name}</span><span class="chip">${shortName(h.weapon)}</span></div>
     ${armorLine}
     ${h.fx ? fxList(h.fx) : `<p class="stopped">Armour holds: a bruise, no wound.</p>`}`;
 }
@@ -649,7 +697,7 @@ $("#hist").addEventListener("click", e => {
   const b = e.target.closest("button[data-ex]"); if (!b) return;
   const ex = DATA.conflicts[DATA.tables[S.table].battle].examples;
   const conf = DATA.conflicts[DATA.tables[S.table].battle];
-  (b.dataset.ex === "all" ? ex : [ex[+b.dataset.ex]]).forEach(x => S.chars.push(newChar(x.name, x.kit, x.weapon, FIG.lookFor(conf, x))));
+  (b.dataset.ex === "all" ? ex : [ex[+b.dataset.ex]]).forEach(x => S.chars.push(newChar(x.name, x.kit, x.weapon, FIG.lookFor(conf, x), x.side)));
   selectChar(S.chars.length - 1);
 });
 
@@ -689,7 +737,13 @@ function syncArmor(){
 
 /* ---------- tracker ---------- */
 const bleedPerRound = b => b === 3 ? 3 : b === 2 ? 1 : b === 1 ? 0.1 : 0;
-function newChar(name, kit = "none", weapon = null, look = {}){ return { id: S.seq++, name, kit, weapon, look, init: null, blood: TRK.blood_pool, rounds: 0, wounds: [] } }
+const RATINGS = CMB.stop_check.ratings, DEFAULT_RATING = CMB.stop_check.default_rating;
+function newChar(name, kit = "none", weapon = null, look = {}, side = "Side A"){
+  return { id: S.seq++, name, kit, weapon, look, init: null, blood: TRK.blood_pool, rounds: 0, wounds: [],
+           side, leader: false, rating: DEFAULT_RATING, nerve: RATINGS[DEFAULT_RATING], state: null };
+}
+const nerveOf = c => Number.isFinite(+c.nerve) ? +c.nerve : RATINGS[DEFAULT_RATING];
+const sideOf = c => (c.side || "Side A").trim() || "Side A";
 // Combatant figures (templates/figure.js): armour from the kit, weapon icon, side colours.
 // Period picture of such a combatant on Wikimedia Commons (conflicts.yaml `image`); same URL as gravewounds.model.commons_url
 const commonsUrl = f => "https://commons.wikimedia.org/wiki/File:" + encodeURIComponent(f.replace(/ /g, "_")).replace(/\(/g, "%28").replace(/\)/g, "%29");
@@ -712,10 +766,11 @@ function setAttacker(i){
   if (c && c.weapon && DATA.tables[S.table].weapons.includes(c.weapon)){ S.weapon = c.weapon; fillWeapons(); syncArmor() }
   renderChars();
 }
-const FLAG_TEXT = { down: "on the ground", off_hand: "fighting off-hand", no_shield: "no shield", cannot_wield: "cannot wield", incapacitated: "incapacitated" };
+const FLAG_TEXT = { down: "on the ground", off_hand: "fighting off-hand", no_shield: "no shield", cannot_wield: "cannot wield", incapacitated: "incapacitated",
+  ...Object.fromEntries(Object.entries(CMB.states).map(([k, v]) => [k, v.name.toLowerCase()])) };
 function penLine(p){
   if (!p) return "";
-  const flags = p.flags.map(f => `<span class="flag ${f === "incapacitated" || f === "cannot_wield" ? "bad" : ""}">${FLAG_TEXT[f] || f}</span>`).join("");
+  const flags = p.flags.map(f => `<span class="flag ${f === "incapacitated" || f === "cannot_wield" || f === "out" ? "bad" : ""}">${FLAG_TEXT[f] || f}</span>`).join("");
   return `<div class="pen" title="${p.notes.join("; ") || "no penalties"}"><span>Attack <b>−${p.attack}%</b></span><span>Defence <b>−${p.defence}%</b></span>${flags}</div>`;
 }
 function applyAttackerWeapon(){
@@ -789,18 +844,47 @@ function advance(rounds){
     lines.push(`${c.name}: \u2212${lost} Blood (${c.blood}/${TRK.blood_pool})` +
       (changed ? `, <span class="${cls}">now ${thLabel(after.th)}</span>` : "") + condStr);
   });
+  S.chars.forEach(c => {                     // stop-check results wear off
+    if (!c.state || c.state.rounds == null) return;
+    c.state.rounds -= rounds;
+    if (c.state.rounds <= 0){ lines.push(`${c.name}: no longer ${CMB.states[c.state.id].name.toLowerCase()}`); c.state = null }
+  });
+  lines.push(...moraleChecks());
   S.round += rounds;
   const label = rounds === 1 ? `Round ${from}` : `Rounds ${from}\u2013${S.round - 1}`;
-  S.log.unshift({ label, lines: lines.length ? lines : ["no bleeding"] });
+  const all = [...(S.pending || []), ...lines]; S.pending = [];
+  S.log.unshift({ label, lines: all.length ? all : ["no bleeding"] });
   S.log = S.log.slice(0, 12);
   renderChars();
+}
+// Team morale at the end of a round: each side with a quarter of its fighters down checks.
+function moraleChecks(){
+  const out = [], sides = [...new Set(S.chars.map(sideOf))];
+  S.broken = S.broken || {};
+  if (sides.length < 2) return out;          // morale needs two sides
+  let own = readDie("#in-morale");
+  for (const side of sides){
+    if (S.broken[side]) continue;
+    const team = S.chars.filter(c => sideOf(c) === side);
+    const roll = own ?? d100();
+    const m = moraleCheck(team.map(c => ({ nerve: nerveOf(c), down: isDown(c), leader: !!c.leader })), roll);
+    if (!m) continue;
+    own = null; $("#in-morale").value = "";
+    if (m.broken) S.broken[side] = true;
+    out.push(`Morale, ${side} (${m.down} of ${m.of} down): d100 ${d2(m.roll)} vs ${m.target} \u2014 `
+      + (m.broken ? `<span class="ev-bad">breaks: runs or surrenders</span>` : "holds"));
+  }
+  return out;
 }
 /* ---------- turn order ----------
    S.chars is the turn order: highest initiative first. Equal initiatives keep the order
    you give them (drag or the arrow buttons); a move past a different initiative snaps back,
    so to act earlier, raise the number. Wounds don't change the order: the slowing they
    would cause is shown beside the number for you to apply if your system does. */
-const isDown = c => { const th = charStats(c).th; return !!(th && (th.down || th.incapacitated)) || penalties(c).flags.includes("incapacitated") };
+// Down: cannot fight on (blood loss, an incapacitating wound, or out of the fight after a stop check).
+const isDown = c => { const th = charStats(c).th; return !!(th && (th.down || th.incapacitated)) || penalties(c).flags.some(f => f === "incapacitated" || f === "out") };
+// Out of the action this round: down, or on a side that has broken.
+const isOut = c => isDown(c) || !!(S.broken || {})[sideOf(c)];
 const initOf = c => Number.isFinite(+c.init) ? +c.init : 0;
 function reorder(arr){                       // replace S.chars, keeping attacker/defender by id
   const att = attackerChar(), def = defenderChar();
@@ -819,37 +903,43 @@ function moveChar(from, to){                 // only within equal initiative
 }
 function nextFighter(){
   if (!S.chars.length) return;
-  const up = S.chars.filter(c => !isDown(c));
-  if (!up.length){ S.turn = null; $("#apply-msg").textContent = "Everyone is down: no one left to act."; renderChars(); return }
+  const up = S.chars.filter(c => !isOut(c));
+  if (!up.length){ S.turn = null; $("#apply-msg").textContent = "No one is left fighting."; renderChars(); return }
   const cur = S.chars.findIndex(c => c.id === S.turn);
-  let next = S.chars.slice(cur + 1).find(c => !isDown(c));
+  let next = S.chars.slice(cur + 1).find(c => !isOut(c));
   if (!next){                                // past the last fighter: the round ends
     if (cur >= 0) advance(1);
-    next = S.chars.find(c => !isDown(c));
+    next = S.chars.find(c => !isOut(c));
     if (!next){ S.turn = null; renderChars(); return }
   }
   S.turn = next.id;
   const i = S.chars.indexOf(next);
+  if (cannotAttack(penalties(next))){         // defend only or stunned: his turn passes without an attack
+    if (S.attacker === i) S.attacker = -1;
+    $("#apply-msg").textContent = `${next.name}'s turn: ${CMB.states[next.state.id].name.toLowerCase()}, so no attack.`;
+    renderChars(); return;
+  }
   if (S.attacker !== i) setAttacker(i); else renderChars();   // the fighter whose turn it is attacks
 }
 function renderRounds(){
   $("#round-no").textContent = `Round ${S.round}`;
   const t = S.chars.find(c => c.id === S.turn);
   $("#turn-no").innerHTML = t ? `Acting: <b>${t.name}</b>` : S.chars.length > 1 ? "Order: highest initiative first" : "";
-  $("#round-log").innerHTML = S.log.map(e => `<li><b>${e.label}</b><br>${e.lines.join("<br>")}</li>`).join("");
+  const now = (S.pending || []).length ? [{ label: `Round ${S.round} so far`, lines: S.pending }] : [];
+  $("#round-log").innerHTML = [...now, ...S.log].map(e => `<li><b>${e.label}</b><br>${e.lines.join("<br>")}</li>`).join("");
 }
 function renderChars(){
   sortChars();
   if (S.turn != null && !S.chars.some(c => c.id === S.turn)) S.turn = null;
-  const att = attackerChar();                // an incapacitated fighter can't stay the attacker
-  if (att && penalties(att).flags.includes("incapacitated")) S.attacker = -1;
+  const att = attackerChar();                // a fighter who cannot attack can't stay the attacker
+  if (att && cannotAttack(penalties(att))) S.attacker = -1;
   $("#chars").innerHTML = S.chars.map((c, i) => {
     const st = charStats(c);
     const painCls = st.pain > TRK.pain_cap ? "crit" : st.pain >= 2 ? "warn" : "";
     const lethCls = ["minutes","rounds","instant"].includes(st.worst) ? "crit" : st.worst !== "none" ? "warn" : "";
-    const isAtt = i === S.attacker, isDef = i === S.active, isTurn = c.id === S.turn, down = isDown(c);
+    const isAtt = i === S.attacker, isDef = i === S.active, isTurn = c.id === S.turn, down = isDown(c), broken = !!(S.broken || {})[sideOf(c)];
     const cp = penalties(c), slow = cp.attack, tieUp = i > 0 && initOf(S.chars[i - 1]) === initOf(c), tieDn = i < S.chars.length - 1 && initOf(S.chars[i + 1]) === initOf(c);
-    const incap = cp.flags.includes("incapacitated");
+    const incap = cannotAttack(cp);
     return `<div class="char ${isDef ? "active" : ""} ${isAtt ? "attacker" : ""} ${isTurn ? "turn" : ""} ${down ? "isdown" : ""}" data-i="${i}">
       <div class="orderrow"><span class="grip" draggable="true" title="Drag to reorder fighters with the same initiative" aria-hidden="true">⋮⋮</span>
         <label class="order" title="Initiative: higher acts first. Use your game's number (reaction, speed, a roll).">Init
@@ -857,9 +947,17 @@ function renderChars(){
         ${slow ? `<span class="order slow" title="Wound penalty (shown only; the order is not changed)">wounds −${slow}%</span>` : ""}
         <button class="small" data-act="up" ${tieUp ? "" : "disabled"} aria-label="Act before the fighter above (same initiative)">▲</button>
         <button class="small" data-act="down" ${tieDn ? "" : "disabled"} aria-label="Act after the fighter below (same initiative)">▼</button>
-        ${isTurn ? `<span class="turn-tag">Acting</span>` : down ? `<span class="turn-tag" style="background:var(--muted)">Down</span>` : ""}</div>
+        ${isTurn ? `<span class="turn-tag">Acting</span>` : down ? `<span class="turn-tag" style="background:var(--muted)">Down</span>` : broken ? `<span class="turn-tag" style="background:var(--crit)">Broken</span>` : ""}</div>
+      <div class="siderow">
+        <label class="order" title="Side: fighters with the same side name check morale together">Side
+          <input type="text" data-act="side" value="${attr(sideOf(c))}" aria-label="Side for ${attr(c.name)}"></label>
+        <button class="small" data-act="leader" aria-pressed="${!!c.leader}" title="This side's leader: +${CMB.morale.leader_present} to morale while he is up, \u2212${CMB.morale.leader_down} if he falls">${c.leader ? "Leader" : "Make leader"}</button>
+        <label class="order" title="Nerve: stop checks and morale roll d100 against this">Nerve
+          <select data-act="rating" aria-label="Experience for ${attr(c.name)}">${Object.keys(RATINGS).map(r => `<option value="${r}" ${c.rating === r ? "selected" : ""}>${r}</option>`).join("")}<option value="custom" ${c.rating === "custom" ? "selected" : ""}>custom</option></select>
+          <input type="number" data-act="nerve" value="${nerveOf(c)}" aria-label="Nerve for ${attr(c.name)}"></label></div>
+      ${c.state ? `<div class="state ${c.state.id === "out" ? "out" : ""}"><span><b>${CMB.states[c.state.id].name}</b>${c.state.rounds != null ? ` \u00b7 ${c.state.rounds} round${c.state.rounds === 1 ? "" : "s"} left` : " \u00b7 until helped or the fight ends"}</span><button class="small" data-act="clearstate">Clear</button></div>` : ""}
       <div class="charhead"><strong>${c.name}</strong>
-        <button class="small" data-act="attacker" aria-pressed="${isAtt}" ${incap ? 'disabled title="Fighter is incapacitated"' : ""}>${isAtt ? "Attacking" : "Attacker"}</button>
+        <button class="small" data-act="attacker" aria-pressed="${isAtt}" ${incap ? 'disabled title="This fighter cannot attack now"' : ""}>${isAtt ? "Attacking" : "Attacker"}</button>
         <button class="small" data-act="select" aria-pressed="${isDef}">${isDef ? "Defending" : "Defender"}</button>
         <button class="small" data-act="hand" title="Weapon hand">${(c.hand || "R") === "R" ? "Right-handed" : "Left-handed"}</button>
         <button class="small" data-act="remove">Remove</button></div>
@@ -885,6 +983,9 @@ $("#chars").addEventListener("click", e => {
   if (act === "select"){ selectChar(ci) }
   else if (act === "attacker"){ setAttacker(ci) }
   else if (act === "hand"){ c.hand = (c.hand || "R") === "R" ? "L" : "R"; renderChars() }
+  else if (act === "leader"){                // one leader per side
+    const was = !!c.leader; S.chars.forEach(x => { if (sideOf(x) === sideOf(c)) x.leader = false }); c.leader = !was; renderChars() }
+  else if (act === "clearstate"){ c.state = null; renderChars() }
   else if (act === "up" || act === "down"){ if (moveChar(ci, act === "up" ? ci - 1 : ci + 1)) renderChars() }
   else if (act === "remove"){
     S.chars.splice(ci, 1);
@@ -895,6 +996,14 @@ $("#chars").addEventListener("click", e => {
   else { const j = +b.closest("li").dataset.j; treat(c, c.wounds[j], act) }
 });
 $("#chars").addEventListener("change", e => {
+  const el = e.target.closest('[data-act="side"],[data-act="rating"],[data-act="nerve"]');
+  if (el){
+    const c = S.chars[+el.closest(".char").dataset.i], act = el.dataset.act;
+    if (act === "side") c.side = el.value.trim() || "Side A";
+    if (act === "rating" && el.value !== "custom"){ c.rating = el.value; c.nerve = RATINGS[el.value] }
+    if (act === "nerve"){ c.nerve = el.value === "" ? RATINGS[DEFAULT_RATING] : +el.value; c.rating = Object.keys(RATINGS).find(r => RATINGS[r] === c.nerve) || "custom" }
+    renderChars(); return;
+  }
   const inp = e.target.closest('input[data-act="init"]'); if (!inp) return;
   const c = S.chars[+inp.closest(".char").dataset.i];
   c.init = inp.value === "" ? null : +inp.value;
@@ -913,7 +1022,20 @@ $("#chars").addEventListener("change", e => {
     const to = +el.dataset.i; const f = from; from = -1; if (moveChar(f, to)) renderChars(); else renderChars() });
   $("#chars").addEventListener("dragend", () => { from = -1; document.querySelectorAll(".char.dragging,.char.drop-ok").forEach(x => x.classList.remove("dragging", "drop-ok")) });
 }
-function applyHit(c, h){ if (!h.fx) return false; c.wounds.push({ loc:h.loc, mech:h.mech, sev:h.sev, fx: JSON.parse(JSON.stringify(h.fx)), treated:"" }); return true }
+function applyHit(c, h){ if (!h.fx) return false; c.wounds.push({ loc:h.loc, mech:h.mech, sev:h.sev, graze: !!h.graze, fx: JSON.parse(JSON.stringify(h.fx)), treated:"" }); return true }
+// Stop check for a wound just applied. Returns a line for the log, or "" if none was needed.
+function applyStopCheck(c, sev){
+  if (penalties(c).flags.includes("out")) return "";
+  const pain = c.wounds.reduce((a, w) => a + w.fx.pain, 0);
+  const r = stopCheck(nerveOf(c), sev, pain, readDie("#in-stop") ?? d100(), c.blood / TRK.blood_pool);
+  $("#in-stop").value = "";
+  if (!r) return "";
+  const head = `${c.name}: stop check d100 ${d2(r.roll)} vs ${r.target}`;
+  if (r.passed) return `${head} \u2014 fights on`;
+  const order = Object.keys(CMB.states), cur = c.state ? order.indexOf(c.state.id) : -1, now = order.indexOf(r.state);
+  if (now > cur || (now === cur && (r.rounds ?? Infinity) > (c.state.rounds ?? Infinity))) c.state = { id: r.state, rounds: r.rounds };
+  return `${head} (failed by ${r.fail_by}) \u2014 <span class="${r.state === "out" ? "ev-bad" : "ev-warn"}">${CMB.states[r.state].name.toLowerCase()}${r.rounds ? ` for ${r.rounds} rounds` : ""}</span>`;
+}
 
 /* ---------- wiring ---------- */
 function fillWeapons(){
@@ -949,21 +1071,26 @@ function init(){
     if (!S.hit) return;
     if (!S.chars.length) S.chars.push(newChar(`Combatant ${S.seq}`));
     const c = S.chars[S.active], h = S.hit;
-    $("#apply-msg").textContent = h.miss || h.defended || h.blocked ? `No hit landed: nothing to add to ${c.name}.`
-      : applyHit(c, h) ? `Added ${LOC[h.loc].name.toLowerCase()} wound to ${c.name}.`
-      : `Armour stopped that blow: nothing to add to ${c.name}.`;
+    let msg, line = "";
+    if (h.miss || h.defended || h.blocked) msg = `No hit landed: nothing to add to ${c.name}.`;
+    else if (applyHit(c, h)){
+      msg = `Added ${h.graze ? "grazing " : ""}${LOC[h.loc].name.toLowerCase()} wound to ${c.name}.`;
+      line = applyStopCheck(c, h.sev);
+      (S.pending = S.pending || []).push(`${c.name}: ${h.graze ? "grazed" : h.sev} ${LOC[h.loc].name.toLowerCase()}`, ...(line ? [line] : []));
+    } else msg = `Armour stopped that blow: nothing to add to ${c.name}.`;
+    $("#apply-msg").innerHTML = msg + (line ? `<br>${line}` : "");
     renderChars();
   };
   $("#btn-next").onclick = nextFighter;
   $("#btn-round").onclick = () => { S.turn = null; advance(1) };      // a new round: no one has acted yet
   $("#btn-minute").onclick = () => { S.turn = null; advance(10) };
-  $("#btn-reset-rounds").onclick = () => { S.round = 1; S.log = []; S.turn = null; renderChars() };
+  $("#btn-reset-rounds").onclick = () => { S.round = 1; S.log = []; S.pending = []; S.turn = null; S.broken = {}; renderChars() };
 
   if (!restore()){
     // Example combatants from this conflict so the tracker shows what it does; remove them any time.
     const conf = DATA.conflicts[DATA.tables[S.table].battle] || {}, ex = conf.examples || [];
     const pick = [ex[0], ex[ex.length - 1]].filter(Boolean);
-    S.chars = pick.map(x => newChar("Example: " + x.name, x.kit, x.weapon, FIG.lookFor(conf, x)));
+    S.chars = pick.map(x => newChar("Example: " + x.name, x.kit, x.weapon, FIG.lookFor(conf, x), x.side));
     if (S.chars.length){
       selectChar(0);
       if (S.chars.length > 1) setAttacker(S.chars.length - 1);

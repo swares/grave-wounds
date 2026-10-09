@@ -267,3 +267,35 @@ combat:
     ballistic:
       - {zones: [head, torso], serious: 10, critical: 35}
       - {zones: [arms, legs], serious: 30, critical: 60}
+  # Graze: a hit by this margin of success or less (not a critical) only grazes. The wound
+  # is rolled as usual, then its bleed and pain drop one step each and it causes no shock.
+  graze_margin: 2
+  # Stop check (Grave Wounds): a serious or critical wound calls for d100 against the
+  # fighter's Nerve, minus pain and blood-loss penalties, minus `critical_penalty` for a
+  # critical wound. Equal or under: he fights on. Over: how far over (fail_by) picks the
+  # result, and the result lasts `rounds` rounds (out lasts until cleared).
+  stop_check:
+    severities: [serious, critical]
+    critical_penalty: 10        # on top of the wound's own pain, which already counts
+    ratings: {green: 35, regular: 50, veteran: 65}
+    default_rating: regular
+    results:
+      - {upto: 20, state: defend_only, rounds: 2}
+      - {upto: 40, state: stunned, rounds: 2}
+      - {state: out}
+  # What each result does. no_attack: cannot attack; defence: extra defence penalty (%);
+  # out: out of the fight (skipped in the turn order, cannot attack or defend).
+  states:
+    defend_only: {name: "Defend only", no_attack: true}
+    stunned: {name: "Stunned", no_attack: true, defence: 50}
+    out: {name: "Out of the fight", no_attack: true, out: true}
+  # Team morale (Grave Wounds): at the end of each round, a side with at least `trigger`
+  # of its fighters down checks d100 against the best Nerve among its fighters still up
+  # (its leader's, if he is up). +leader_present if a leader is up; -leader_down if a
+  # leader is down; -heavy_losses once `heavy` of the side is down. Over: the side breaks.
+  morale:
+    trigger: 0.25
+    heavy: 0.5
+    leader_present: 10
+    leader_down: 20
+    heavy_losses: 20

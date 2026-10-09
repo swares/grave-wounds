@@ -14,6 +14,10 @@ Morrow Project, Gamma World and Traveller.
 [docs/design.md](docs/design.md). It includes a comparison with Aftermath!, Rolemaster,
 Gamma World, Traveller and The Morrow Project. The first playtest era is medieval.
 
+**First playable piece:** the roller now runs the Grave Wounds stop check, graze and team
+morale. Each fighter has a side, a leader flag and a Nerve rating. The one-page rules are in
+[docs/combat.md](docs/combat.md).
+
 ## Where this started
 
 This repository began as a copy of [HitLoc](https://github.com/swares/HitLoc), the
@@ -55,7 +59,7 @@ python -m gravewounds roll --table towton-1461-all-hits --weapon bill -n 3
 From the design proposal (the rule changes from the rulebook comparison are agreed and
 written in):
 
-1. Write the one-page combat rules and the stop check, and test them in the roller.
+1. Playtest the stop check, graze and morale in the roller and tune their numbers.
 2. Draft the medieval character generation tables and make a team in 20 minutes.
 3. Playtest one fight with two teams, then a few weeks of camp, march and weather.
 

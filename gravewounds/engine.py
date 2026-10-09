@@ -325,10 +325,14 @@ def roll_hit(d: Data, table_id: str, weapon_id: str, severity: str | None = None
         armour = {"material": material, "layers": layers, "cover_roll": r_cov,
                   "covered": hit is not None, "steps": steps, "from": severity, "to": final}
 
+    from .combat import graze, is_graze
+    grazed = is_graze(d, margin, critical)
+    fx = None if final == "stopped" else compose_wound(d, loc_id, mech, final)
     return {
         "table": resolve_table(d, table_id, weapon_id),
         "rolls": {"location": r_loc, "location2": r_loc2, "mechanism": r_mech, "severity": r_sev},
         "location": loc_id, "location_name": d.loc[loc_id]["name"],
         "mechanism": mech, "severity": final, "armor": armour,
-        "effects": None if final == "stopped" else compose_wound(d, loc_id, mech, final),
+        "effects": None if final == "stopped" else (graze(fx) if grazed else fx),
+        "graze": grazed and final != "stopped",
     }
