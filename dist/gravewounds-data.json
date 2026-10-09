@@ -14332,7 +14332,7 @@
    "move": "Movement halved"
   },
   "flags": {
-   "shock": "Shock check: endurance roll or be stunned 1d6 rounds",
+   "shock": "Stop check: d100 against Nerve, or defend only, stunned or out of the fight",
    "fracture": "Bone broken: no use of the part until set; pain +1 when used",
    "severed": "Part severed: arterial bleeding until cauterised or tourniqueted"
   }
@@ -14489,6 +14489,7 @@
     "serious",
     "critical"
    ],
+   "pain_round_as": "serious",
    "critical_penalty": 10,
    "ratings": {
     "green": 35,

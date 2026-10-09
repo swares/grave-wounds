@@ -38,7 +38,7 @@ def rng(lo: int, hi: int) -> str:
 def short_effect(d, e: dict) -> str:
     parts = [f"B{e['bleed']}", f"P{e['pain']}"]
     if e["shock"]:
-        parts.append("Shock")
+        parts.append("Stop check")
     if e["fracture"]:
         parts.append("Fracture")
     if e["severed"]:
@@ -161,6 +161,10 @@ COMBAT_STEPS = [
     "Wounds switch situations on by themselves: a defender who cannot stand is <b>Target down</b>, a defender whose shield arm is useless has "
     "<b>No shield</b>, and an attacker on the ground fights as <b>Attacker lower</b>.",
 ]
+# How wound flags are named in print: the data's `shock` flag is Grave Wounds' stop check.
+FLAG_LABEL = {"shock": "stop check"}
+
+
 def stop_rules(d) -> list[str]:
     """Graze, stop check and team morale, as short rules for the PDF and Markdown (from wounds.yaml)."""
     CB = d.wounds["combat"]
@@ -175,11 +179,12 @@ def stop_rules(d) -> list[str]:
     rat = ", ".join(f"{k} {v}" for k, v in SC["ratings"].items())
     stunned = ST.get("stunned", {}).get("defence")
     return [
-        f"<b>Graze:</b> a hit by a margin of {CB['graze_margin']} or less (not a critical) only grazes: the wound's bleed and pain drop one step each and it causes no shock.",
-        f"<b>Stop check:</b> a {' or '.join(SC['severities'])} wound calls for d100 against the fighter's <b>Nerve</b> ({rat}), "
+        f"<b>Graze:</b> a hit by a margin of {CB['graze_margin']} or less (not a critical) only grazes: the wound's bleed and pain drop one step each and it calls for no stop check.",
+        f"<b>Stop check:</b> a {' or '.join(SC['severities'])} wound marked for one (most are) calls for d100 against the fighter's <b>Nerve</b> ({rat}), "
         f"minus pain and blood-loss penalties, and -{SC['critical_penalty']} more for a critical wound. Equal or under: he fights on. "
         f"Failed {'; '.join(res)}. Defend only and stunned fighters cannot attack"
-        + (f"; stunned also -{stunned}% defence." if stunned else "."),
+        + (f"; stunned also -{stunned}% defence." if stunned else ".")
+        + f" Pain above {d.wounds['tracking']['pain_cap']} steps calls for a stop check every round.",
         f"<b>Team morale:</b> at the end of each round, a side with {int(M['trigger'] * 100)}% or more of its fighters down rolls d100 "
         f"against the best Nerve among those still up (its leader's, if he is up), +{M['leader_present']} with a leader up, "
         f"-{M['leader_down']} if a leader is down, -{M['heavy_losses']} once {int(M['heavy'] * 100)}% are down. Over: the side breaks and runs or surrenders.",
@@ -383,7 +388,7 @@ def markdown(d) -> str:
     out += [f"- Bleed {k}: {v}" for k, v in V["bleed"].items()]
     out += [f"- Pain {k}: {v}" for k, v in V["pain"].items()]
     out += [f"- **{k.replace('_',' ')}**: {v}" for k, v in V["impair"].items()]
-    out += [f"- **{k}**: {v}" for k, v in V["flags"].items()]
+    out += [f"- **{FLAG_LABEL.get(k, k)}**: {v}" for k, v in V["flags"].items()]
     out += [f"- Lethal **{k}**: {V['lethal'][k]}" for k in V["lethal"]["order"]]
     T = d.wounds["tracking"]
     out += ["", "## Survival tracking (optional)", "", f"Blood pool: {T['blood_pool']} points.", ""]
@@ -721,7 +726,7 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
     key += [[f"B{k}", v] for k, v in V["bleed"].items()]
     key += [[f"P{k}", v] for k, v in V["pain"].items()]
     key += [[k.replace("_", " "), Paragraph(v, C)] for k, v in V["impair"].items()]
-    key += [[k.title(), Paragraph(v, C)] for k, v in V["flags"].items()]
+    key += [[FLAG_LABEL.get(k, k).capitalize(), Paragraph(v, C)] for k, v in V["flags"].items()]
     key += [[f"Lethal: {k}", Paragraph(V["lethal"][k], C)] for k in V["lethal"]["order"]]
     T = d.wounds["tracking"]
     trk = [["Blood", "Effect"]] + [[f"{int(th['at']*100)}%", th["effect"]] for th in T["thresholds"]]
@@ -730,7 +735,7 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
               Spacer(1, 10),
               KeepTogether([Paragraph("Survival Tracking (optional)", H1),
                             Paragraph(f"Each character has <b>{T['blood_pool']} Blood</b>. Bleed drains it; "
-                                      f"total Pain above {T['pain_cap']} forces a shock check each round.", B),
+                                      f"total Pain above {T['pain_cap']} calls for a stop check each round.", B),
                             Spacer(1, 4), grid(trk, [0.8 * inch, W - 0.8 * inch], font=8), Spacer(1, 6),
                             grid(trt, [1.2 * inch, W - 1.2 * inch], font=8)])]
     doc.build(story, onFirstPage=footer, onLaterPages=footer)

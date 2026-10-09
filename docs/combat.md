@@ -18,12 +18,13 @@ the Python engine and the printed tables read them from there, so change them th
 5. **Severity from the margin.** Default: light below 20, serious from 20, critical from
    50 or on a critical roll. Firearms use their own bands by body zone.
 6. **Graze.** A hit by a margin of 2 or less, if not a critical, only grazes. The wound's
-   bleed and pain drop one step each, and it causes no shock.
+   bleed and pain drop one step each, and it calls for no stop check.
 7. **Armour.** The armour on the location lowers severity by its steps against the
    mechanism. A gap in coverage means no armour.
 8. **Wound.** Record it. Its bleed, pain, impairments and lethality clock take effect.
 9. **Stop check.** A serious or critical wound calls for d100 against the fighter's
-   Nerve, minus his pain and blood-loss penalties, and −10 more for a critical wound.
+   Nerve, if the wound is marked for one (most are; some limb wounds are not). The target
+   is Nerve minus his pain and blood-loss penalties, and −10 more for a critical wound.
    - Equal or under: he fights on.
    - Failed by 1–20: **defend only** for 2 rounds.
    - Failed by 21–40: **stunned** for 2 rounds (cannot attack, −50% defence).
@@ -36,6 +37,8 @@ the Python engine and the printed tables read them from there, so change them th
 - **Bleeding.** Every casualty loses Blood at his bleed rate. Blood thresholds bring
   penalties, then collapse, then unconsciousness.
 - **Results wear off.** Defend-only and stunned results count down a round.
+- **Pain.** A fighter whose total pain is above the cap (3 steps, −30%) makes a stop
+  check every round, as for a serious wound.
 - **Team morale.** A side with at least a quarter of its fighters down rolls d100. The
   target is the best Nerve among its fighters still up (its leader's, if he is up), then:
   - +10 if a leader is up

@@ -361,13 +361,17 @@ function stopTarget(nerve, severity, painSteps, bloodFrac = 1){
   if (severity === "critical") target -= CMB.stop_check.critical_penalty;
   return target;
 }
-function stopCheck(nerve, severity, painSteps, roll, bloodFrac = 1){
+function stopCheck(nerve, severity, painSteps, roll, bloodFrac = 1, shock = true){
   const SC = CMB.stop_check;
-  if (!SC.severities.includes(severity)) return null;
+  if (!SC.severities.includes(severity) || !shock) return null;
   const target = stopTarget(nerve, severity, painSteps, bloodFrac);
   if (roll <= target) return { target, roll, passed: true, fail_by: 0, state: null, rounds: null };
   const fail_by = roll - target, res = SC.results.find(r => !("upto" in r) || fail_by <= r.upto);
   return { target, roll, passed: false, fail_by, state: res.state, rounds: res.rounds ?? null };
+}
+function painCheck(nerve, painSteps, roll, bloodFrac = 1){
+  if (painSteps <= TRK.pain_cap) return null;
+  return stopCheck(nerve, CMB.stop_check.pain_round_as, painSteps, roll, bloodFrac);
 }
 function moraleCheck(fighters, roll){
   const M = CMB.morale, n = fighters.length, down = fighters.filter(f => f.down).length, up = fighters.filter(f => !f.down);
@@ -576,13 +580,14 @@ function rollHit(){
   ["#in-loc","#in-loc2","#in-mech","#in-sev","#in-atk-roll","#in-def-roll"].forEach(id => $(id).value = "");
   renderResult(); shadeFigure(); renderTable();
 }
+const FLAG_LABEL = { shock: "stop check" };   // the data's shock flag is the Grave Wounds stop check
 const pips = n => "●".repeat(n) + "○".repeat(3 - n);
 function fxList(fx){
   const li = [];
   li.push(`<li><span class="k">Bleed</span><span><span class="pips">${pips(fx.bleed)}</span> ${V.bleed[fx.bleed]}</span></li>`);
   li.push(`<li><span class="k">Pain</span><span><span class="pips">${pips(fx.pain)}</span> ${V.pain[fx.pain]}</span></li>`);
   fx.impair.forEach(i => li.push(`<li><span class="k">${i.replace("_"," ")}</span><span>${V.impair[i]}</span></li>`));
-  ["shock","fracture","severed"].forEach(f => fx[f] && li.push(`<li><span class="k">${f}</span><span>${V.flags[f]}</span></li>`));
+  ["shock","fracture","severed"].forEach(f => fx[f] && li.push(`<li><span class="k">${FLAG_LABEL[f] || f}</span><span>${V.flags[f]}</span></li>`));
   li.push(`<li><span class="k">Untreated</span><span><b>${V.lethal[fx.lethal]}</b></span></li>`);
   li.push(`<li><span class="k">Infection</span><span>${fx.infection} risk</span></li>`);
   return `<ul class="fx">${li.join("")}</ul>`;
@@ -619,7 +624,7 @@ function renderResult(){
     <p class="hitname">${LOC[h.loc].name}</p>
     ${sit ? `<div class="sitline">${sit}</div>` : ""}
     ${h.ltable !== h.table ? `<div class="sitline">Close combat: location from ${DATA.tables[h.ltable].label}</div>` : ""}
-    <div class="chips"><span class="chip sev-${h.sev === "stopped" ? "light" : h.sev}">${sevLabel(h.sev)}</span>${h.graze ? `<span class="chip graze" title="Hit by the barest margin: bleed and pain one step lower, no shock">Graze</span>` : ""}<span class="chip">${DATA.mechanisms[h.mech].name}</span><span class="chip">${shortName(h.weapon)}</span></div>
+    <div class="chips"><span class="chip sev-${h.sev === "stopped" ? "light" : h.sev}">${sevLabel(h.sev)}</span>${h.graze ? `<span class="chip graze" title="Hit by the barest margin: bleed and pain one step lower, no stop check">Graze</span>` : ""}<span class="chip">${DATA.mechanisms[h.mech].name}</span><span class="chip">${shortName(h.weapon)}</span></div>
     ${armorLine}
     ${h.fx ? fxList(h.fx) : `<p class="stopped">Armour holds: a bruise, no wound.</p>`}`;
 }
@@ -849,6 +854,7 @@ function advance(rounds){
     c.state.rounds -= rounds;
     if (c.state.rounds <= 0){ lines.push(`${c.name}: no longer ${CMB.states[c.state.id].name.toLowerCase()}`); c.state = null }
   });
+  for (let k = 0; k < rounds; k++) lines.push(...painChecks());   // pain past the cap: every round
   lines.push(...moraleChecks());
   S.round += rounds;
   const label = rounds === 1 ? `Round ${from}` : `Rounds ${from}\u2013${S.round - 1}`;
@@ -965,11 +971,11 @@ function renderChars(){
         <div class="wears">Wears: ${kitName(c.kit || "none")}${c.weapon ? " · Fights with: " + DATA.weapons[c.weapon].name : ""}</div>
         ${penLine(cp)}</div></div>
       <div class="bar" title="Blood ${c.blood} of ${TRK.blood_pool}"><i style="width:${Math.max(0, st.frac * 100)}%"></i></div>
-      <div class="stat"><span>Blood <b>${c.blood}</b>/${TRK.blood_pool}</span><span>Bleeding ${st.bleed.toFixed(1)}/round</span><span class="${painCls}">Pain −${Math.min(st.pain, TRK.pain_cap) * 10}%${st.pain > TRK.pain_cap ? " · shock check each round" : ""}</span></div>
+      <div class="stat"><span>Blood <b>${c.blood}</b>/${TRK.blood_pool}</span><span>Bleeding ${st.bleed.toFixed(1)}/round</span><span class="${painCls}">Pain −${Math.min(st.pain, TRK.pain_cap) * 10}%${st.pain > TRK.pain_cap ? " · stop check each round" : ""}</span></div>
       <div class="stat"><span class="${lethCls}">Worst untreated: ${st.worst}</span><span>${st.th ? st.th.effect : "Steady"}</span><span class="muted">${c.rounds} round${c.rounds === 1 ? "" : "s"} elapsed</span></div>
       <ul class="wounds">${c.wounds.map((w, j) => `<li data-j="${j}">
         <div class="w1"><span><b>${LOC[w.loc].name}</b> · ${w.sev} ${w.mech}</span><span class="pips" title="bleed">B${w.fx.bleed} P${w.fx.pain}</span></div>
-        <div class="muted">${[...w.fx.impair.map(x => x.replace("_"," ")), ...["shock","fracture","severed"].filter(f => w.fx[f])].join(", ") || "no impairment"} · lethal: ${w.fx.lethal}</div>
+        <div class="muted">${[...w.fx.impair.map(x => x.replace("_"," ")), ...["shock","fracture","severed"].filter(f => w.fx[f]).map(f => FLAG_LABEL[f] || f)].join(", ") || "no impairment"} · lethal: ${w.fx.lethal}</div>
         <div class="treat"><button class="small" data-act="bind">Bind</button>${["arms","legs"].includes(LOC[w.loc].zone) ? `<button class="small" data-act="tourniquet">Tourniquet</button>` : ""}<button class="small" data-act="cauterise">Cauterise</button>${w.treated ? `<span class="treated">treated: ${w.treated}</span>` : ""}</div>
       </li>`).join("") || `<li class="muted">No wounds yet. Roll a hit and apply it.</li>`}</ul>
     </div>`;
@@ -1024,17 +1030,33 @@ $("#chars").addEventListener("change", e => {
 }
 function applyHit(c, h){ if (!h.fx) return false; c.wounds.push({ loc:h.loc, mech:h.mech, sev:h.sev, graze: !!h.graze, fx: JSON.parse(JSON.stringify(h.fx)), treated:"" }); return true }
 // Stop check for a wound just applied. Returns a line for the log, or "" if none was needed.
-function applyStopCheck(c, sev){
-  if (penalties(c).flags.includes("out")) return "";
-  const pain = c.wounds.reduce((a, w) => a + w.fx.pain, 0);
-  const r = stopCheck(nerveOf(c), sev, pain, readDie("#in-stop") ?? d100(), c.blood / TRK.blood_pool);
-  $("#in-stop").value = "";
-  if (!r) return "";
-  const head = `${c.name}: stop check d100 ${d2(r.roll)} vs ${r.target}`;
+const painOf = c => c.wounds.reduce((a, w) => a + w.fx.pain, 0);
+// Apply a stop-check result to a fighter (a worse result replaces a milder one) and describe it.
+function stopResult(c, r, why){
+  const head = `${c.name}: stop check${why} d100 ${d2(r.roll)} vs ${r.target}`;
   if (r.passed) return `${head} \u2014 fights on`;
   const order = Object.keys(CMB.states), cur = c.state ? order.indexOf(c.state.id) : -1, now = order.indexOf(r.state);
   if (now > cur || (now === cur && (r.rounds ?? Infinity) > (c.state.rounds ?? Infinity))) c.state = { id: r.state, rounds: r.rounds };
   return `${head} (failed by ${r.fail_by}) \u2014 <span class="${r.state === "out" ? "ev-bad" : "ev-warn"}">${CMB.states[r.state].name.toLowerCase()}${r.rounds ? ` for ${r.rounds} rounds` : ""}</span>`;
+}
+// Stop check for a wound just applied (if it calls for one).
+function applyStopCheck(c, w){
+  if (penalties(c).flags.includes("out")) return "";
+  const r = stopCheck(nerveOf(c), w.sev, painOf(c), readDie("#in-stop") ?? d100(), c.blood / TRK.blood_pool, !!w.fx.shock);
+  $("#in-stop").value = "";
+  return r ? stopResult(c, r, "") : "";
+}
+// End of a round: pain above the cap calls for a stop check.
+function painChecks(){
+  const out = [];
+  for (const c of S.chars){
+    if (penalties(c).flags.includes("out")) continue;
+    const r = painCheck(nerveOf(c), painOf(c), readDie("#in-stop") ?? d100(), c.blood / TRK.blood_pool);
+    if (!r) continue;
+    $("#in-stop").value = "";
+    out.push(stopResult(c, r, " (pain)"));
+  }
+  return out;
 }
 
 /* ---------- wiring ---------- */
@@ -1075,7 +1097,7 @@ function init(){
     if (h.miss || h.defended || h.blocked) msg = `No hit landed: nothing to add to ${c.name}.`;
     else if (applyHit(c, h)){
       msg = `Added ${h.graze ? "grazing " : ""}${LOC[h.loc].name.toLowerCase()} wound to ${c.name}.`;
-      line = applyStopCheck(c, h.sev);
+      line = applyStopCheck(c, c.wounds[c.wounds.length - 1]);
       (S.pending = S.pending || []).push(`${c.name}: ${h.graze ? "grazed" : h.sev} ${LOC[h.loc].name.toLowerCase()}`, ...(line ? [line] : []));
     } else msg = `Armour stopped that blow: nothing to add to ${c.name}.`;
     $("#apply-msg").innerHTML = msg + (line ? `<br>${line}` : "");

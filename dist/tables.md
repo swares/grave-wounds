@@ -4264,9 +4264,9 @@ Penalties add up; each total is capped at -60%.
 
 ### Graze, stop check and morale
 
-**Graze:** a hit by a margin of 2 or less (not a critical) only grazes: the wound's bleed and pain drop one step each and it causes no shock.
+**Graze:** a hit by a margin of 2 or less (not a critical) only grazes: the wound's bleed and pain drop one step each and it calls for no stop check.
 
-**Stop check:** a serious or critical wound calls for d100 against the fighter's **Nerve** (green 35, regular 50, veteran 65), minus pain and blood-loss penalties, and -10 more for a critical wound. Equal or under: he fights on. Failed by 1-20: **defend only** for 2 rounds; by 21-40: **stunned** for 2 rounds; by more than 40: **out of the fight** until helped or the fight ends. Defend only and stunned fighters cannot attack; stunned also -50% defence.
+**Stop check:** a serious or critical wound marked for one (most are) calls for d100 against the fighter's **Nerve** (green 35, regular 50, veteran 65), minus pain and blood-loss penalties, and -10 more for a critical wound. Equal or under: he fights on. Failed by 1-20: **defend only** for 2 rounds; by 21-40: **stunned** for 2 rounds; by more than 40: **out of the fight** until helped or the fight ends. Defend only and stunned fighters cannot attack; stunned also -50% defence. Pain above 3 steps calls for a stop check every round.
 
 **Team morale:** at the end of each round, a side with 25% or more of its fighters down rolls d100 against the best Nerve among those still up (its leader's, if he is up), +10 with a leader up, -20 if a leader is down, -20 once 50% are down. Over: the side breaks and runs or surrenders.
 
@@ -4463,21 +4463,21 @@ Edge blow: opens soft tissue; can sever limbs.
 
 | Location | Light | Serious | Critical | Infection |
 |---|---|---|---|---|
-| Skull | B1, P1 | B2, P2, Shock, dazed | B3, P3, Shock, unconscious, Lethal: hours | medium |
-| Face | B1, P1 | B3, P2, vision | B3, P3, Shock, vision, speech, Lethal: days | medium |
-| Neck | B1, P1 | B3, P2, Shock, Lethal: hours | B3, P3, Shock, breath, Lethal: rounds | medium |
-| Chest | B1, P1 | B3, P2, Shock, breath, Lethal: days | B3, P3, Shock, breath, collapse, Lethal: minutes | medium |
-| Abdomen | B1, P1 | B2, P2, Lethal: days | B3, P3, Shock, collapse, Lethal: hours | high |
-| Groin | B1, P2 | B3, P3, Shock, leg | B3, P3, Shock, stand, Lethal: minutes | high |
-| Back Upper | B1, P1 | B2, P2, arm | B3, P3, Shock, breath, collapse, Lethal: hours | medium |
-| Back Lower | B1, P1 | B2, P2, move | B3, P3, Shock, stand, Lethal: days | medium |
-| Shoulder | B1, P1 | B2, P2, arm | B3, P3, Shock, arm useless, Lethal: days | low |
-| Upper Arm | B1, P1 | B2, P2, arm | B3, P3, Shock, SEVERED, arm useless, Lethal: minutes | low |
-| Forearm | B1, P1 | B2, P2, grip | B3, P3, Shock, SEVERED, arm useless, Lethal: minutes | low |
+| Skull | B1, P1 | B2, P2, Stop check, dazed | B3, P3, Stop check, unconscious, Lethal: hours | medium |
+| Face | B1, P1 | B3, P2, vision | B3, P3, Stop check, vision, speech, Lethal: days | medium |
+| Neck | B1, P1 | B3, P2, Stop check, Lethal: hours | B3, P3, Stop check, breath, Lethal: rounds | medium |
+| Chest | B1, P1 | B3, P2, Stop check, breath, Lethal: days | B3, P3, Stop check, breath, collapse, Lethal: minutes | medium |
+| Abdomen | B1, P1 | B2, P2, Lethal: days | B3, P3, Stop check, collapse, Lethal: hours | high |
+| Groin | B1, P2 | B3, P3, Stop check, leg | B3, P3, Stop check, stand, Lethal: minutes | high |
+| Back Upper | B1, P1 | B2, P2, arm | B3, P3, Stop check, breath, collapse, Lethal: hours | medium |
+| Back Lower | B1, P1 | B2, P2, move | B3, P3, Stop check, stand, Lethal: days | medium |
+| Shoulder | B1, P1 | B2, P2, arm | B3, P3, Stop check, arm useless, Lethal: days | low |
+| Upper Arm | B1, P1 | B2, P2, arm | B3, P3, Stop check, SEVERED, arm useless, Lethal: minutes | low |
+| Forearm | B1, P1 | B2, P2, grip | B3, P3, Stop check, SEVERED, arm useless, Lethal: minutes | low |
 | Hand | B0, P1 | B2, P2, grip | B3, P3, SEVERED, hand useless, Lethal: minutes | low |
-| Thigh | B1, P1 | B3, P2, leg | B3, P3, Shock, SEVERED, stand, Lethal: minutes | medium |
-| Knee | B0, P1 | B2, P2, leg | B2, P3, Shock, stand | medium |
-| Lower Leg | B1, P1 | B2, P2, leg | B3, P3, Shock, SEVERED, stand, Lethal: minutes | medium |
+| Thigh | B1, P1 | B3, P2, leg | B3, P3, Stop check, SEVERED, stand, Lethal: minutes | medium |
+| Knee | B0, P1 | B2, P2, leg | B2, P3, Stop check, stand | medium |
+| Lower Leg | B1, P1 | B2, P2, leg | B3, P3, Stop check, SEVERED, stand, Lethal: minutes | medium |
 | Foot | B0, P1 | B2, P2, leg | B3, P3, SEVERED, stand, Lethal: minutes | medium |
 
 ## Wound effects - Pierce
@@ -4486,21 +4486,21 @@ Point or spike: small entry, deep track; internal damage and infection.
 
 | Location | Light | Serious | Critical | Infection |
 |---|---|---|---|---|
-| Skull | B1, P1 | B1, P2, Shock, dazed, Lethal: days | B2, P3, Shock, unconscious, Lethal: minutes | high |
-| Face | B1, P1 | B2, P2, vision, Lethal: days | B2, P3, Shock, vision, speech, Lethal: hours | high |
-| Neck | B1, P1 | B2, P2, Shock, Lethal: minutes | B3, P3, Shock, breath, Lethal: rounds | high |
-| Chest | B1, P1 | B2, P2, Shock, breath, Lethal: hours | B3, P3, Shock, breath, collapse, Lethal: rounds | high |
-| Abdomen | B1, P1 | B1, P2, Lethal: hours | B2, P3, Shock, collapse, Lethal: rounds | high |
-| Groin | B1, P2 | B2, P3, Shock, leg, Lethal: days | B3, P3, Shock, stand, Lethal: rounds | high |
-| Back Upper | B1, P1 | B1, P2, arm, Lethal: days | B2, P3, Shock, breath, collapse, Lethal: rounds | high |
-| Back Lower | B1, P1 | B1, P2, move, Lethal: days | B2, P3, Shock, stand, Lethal: minutes | high |
-| Shoulder | B1, P1 | B1, P2, arm | B2, P3, Shock, arm useless, Lethal: days | medium |
-| Upper Arm | B1, P1 | B1, P2, arm | B3, P3, Shock, arm useless, Lethal: hours | medium |
-| Forearm | B1, P1 | B1, P2, grip | B2, P3, Shock, arm useless, Lethal: hours | medium |
+| Skull | B1, P1 | B1, P2, Stop check, dazed, Lethal: days | B2, P3, Stop check, unconscious, Lethal: minutes | high |
+| Face | B1, P1 | B2, P2, vision, Lethal: days | B2, P3, Stop check, vision, speech, Lethal: hours | high |
+| Neck | B1, P1 | B2, P2, Stop check, Lethal: minutes | B3, P3, Stop check, breath, Lethal: rounds | high |
+| Chest | B1, P1 | B2, P2, Stop check, breath, Lethal: hours | B3, P3, Stop check, breath, collapse, Lethal: rounds | high |
+| Abdomen | B1, P1 | B1, P2, Lethal: hours | B2, P3, Stop check, collapse, Lethal: rounds | high |
+| Groin | B1, P2 | B2, P3, Stop check, leg, Lethal: days | B3, P3, Stop check, stand, Lethal: rounds | high |
+| Back Upper | B1, P1 | B1, P2, arm, Lethal: days | B2, P3, Stop check, breath, collapse, Lethal: rounds | high |
+| Back Lower | B1, P1 | B1, P2, move, Lethal: days | B2, P3, Stop check, stand, Lethal: minutes | high |
+| Shoulder | B1, P1 | B1, P2, arm | B2, P3, Stop check, arm useless, Lethal: days | medium |
+| Upper Arm | B1, P1 | B1, P2, arm | B3, P3, Stop check, arm useless, Lethal: hours | medium |
+| Forearm | B1, P1 | B1, P2, grip | B2, P3, Stop check, arm useless, Lethal: hours | medium |
 | Hand | B0, P1 | B1, P2, grip | B2, P3, hand useless | medium |
-| Thigh | B1, P1 | B2, P2, leg | B3, P3, Shock, stand, Lethal: minutes | high |
-| Knee | B0, P1 | B1, P2, leg | B1, P3, Shock, stand | high |
-| Lower Leg | B1, P1 | B1, P2, leg | B2, P3, Shock, stand, Lethal: hours | high |
+| Thigh | B1, P1 | B2, P2, leg | B3, P3, Stop check, stand, Lethal: minutes | high |
+| Knee | B0, P1 | B1, P2, leg | B1, P3, Stop check, stand | high |
+| Lower Leg | B1, P1 | B1, P2, leg | B2, P3, Stop check, stand, Lethal: hours | high |
 | Foot | B0, P1 | B1, P2, leg | B1, P3, stand | high |
 
 ## Wound effects - Crush
@@ -4509,22 +4509,22 @@ Blunt impact: fractures and shock; less external bleeding.
 
 | Location | Light | Serious | Critical | Infection |
 |---|---|---|---|---|
-| Skull | B0, P1 | B0, P2, Shock, Fracture, dazed | B1, P3, Shock, Fracture, unconscious, Lethal: hours | medium |
-| Face | B0, P1 | B1, P2, Shock, Fracture, vision | B1, P3, Shock, Fracture, vision, speech, Lethal: days | medium |
-| Neck | B0, P1 | B1, P2, Shock, Lethal: hours | B2, P3, Shock, breath, Lethal: rounds | medium |
-| Chest | B0, P1 | B1, P2, Shock, Fracture, breath, Lethal: days | B2, P3, Shock, Fracture, breath, collapse, Lethal: minutes | medium |
-| Abdomen | B0, P1 | B0, P2, Shock, Lethal: days | B1, P3, Shock, collapse, Lethal: hours | high |
-| Groin | B0, P2 | B1, P3, Shock, Fracture, leg | B2, P3, Shock, Fracture, stand, Lethal: minutes | high |
-| Back Upper | B0, P1 | B0, P2, Shock, Fracture, arm | B1, P3, Shock, Fracture, breath, collapse, Lethal: hours | medium |
-| Back Lower | B0, P1 | B0, P2, Shock, Fracture, move | B1, P3, Shock, Fracture, stand, Lethal: days | medium |
-| Shoulder | B0, P1 | B0, P2, Shock, Fracture, arm | B1, P3, Shock, Fracture, arm useless, Lethal: days | low |
-| Upper Arm | B0, P1 | B0, P2, Shock, Fracture, arm | B2, P3, Shock, Fracture, arm useless, Lethal: minutes | low |
-| Forearm | B0, P1 | B0, P2, Shock, Fracture, grip | B1, P3, Shock, Fracture, arm useless, Lethal: hours | low |
-| Hand | B0, P1 | B0, P2, Shock, Fracture, grip | B1, P3, Shock, Fracture, hand useless | low |
-| Thigh | B0, P1 | B1, P2, Shock, Fracture, leg | B2, P3, Shock, Fracture, stand, Lethal: minutes | medium |
-| Knee | B0, P1 | B0, P2, Shock, Fracture, leg | B0, P3, Shock, Fracture, stand | medium |
-| Lower Leg | B0, P1 | B0, P2, Shock, Fracture, leg | B1, P3, Shock, Fracture, stand, Lethal: hours | medium |
-| Foot | B0, P1 | B0, P2, Shock, Fracture, leg | B0, P3, Shock, Fracture, stand | medium |
+| Skull | B0, P1 | B0, P2, Stop check, Fracture, dazed | B1, P3, Stop check, Fracture, unconscious, Lethal: hours | medium |
+| Face | B0, P1 | B1, P2, Stop check, Fracture, vision | B1, P3, Stop check, Fracture, vision, speech, Lethal: days | medium |
+| Neck | B0, P1 | B1, P2, Stop check, Lethal: hours | B2, P3, Stop check, breath, Lethal: rounds | medium |
+| Chest | B0, P1 | B1, P2, Stop check, Fracture, breath, Lethal: days | B2, P3, Stop check, Fracture, breath, collapse, Lethal: minutes | medium |
+| Abdomen | B0, P1 | B0, P2, Stop check, Lethal: days | B1, P3, Stop check, collapse, Lethal: hours | high |
+| Groin | B0, P2 | B1, P3, Stop check, Fracture, leg | B2, P3, Stop check, Fracture, stand, Lethal: minutes | high |
+| Back Upper | B0, P1 | B0, P2, Stop check, Fracture, arm | B1, P3, Stop check, Fracture, breath, collapse, Lethal: hours | medium |
+| Back Lower | B0, P1 | B0, P2, Stop check, Fracture, move | B1, P3, Stop check, Fracture, stand, Lethal: days | medium |
+| Shoulder | B0, P1 | B0, P2, Stop check, Fracture, arm | B1, P3, Stop check, Fracture, arm useless, Lethal: days | low |
+| Upper Arm | B0, P1 | B0, P2, Stop check, Fracture, arm | B2, P3, Stop check, Fracture, arm useless, Lethal: minutes | low |
+| Forearm | B0, P1 | B0, P2, Stop check, Fracture, grip | B1, P3, Stop check, Fracture, arm useless, Lethal: hours | low |
+| Hand | B0, P1 | B0, P2, Stop check, Fracture, grip | B1, P3, Stop check, Fracture, hand useless | low |
+| Thigh | B0, P1 | B1, P2, Stop check, Fracture, leg | B2, P3, Stop check, Fracture, stand, Lethal: minutes | medium |
+| Knee | B0, P1 | B0, P2, Stop check, Fracture, leg | B0, P3, Stop check, Fracture, stand | medium |
+| Lower Leg | B0, P1 | B0, P2, Stop check, Fracture, leg | B1, P3, Stop check, Fracture, stand, Lethal: hours | medium |
+| Foot | B0, P1 | B0, P2, Stop check, Fracture, leg | B0, P3, Stop check, Fracture, stand | medium |
 
 ## Wound effects - Ballistic
 
@@ -4532,22 +4532,22 @@ Bullet, ball or shell fragment: shatters bone, carries cloth and dirt deep into 
 
 | Location | Light | Serious | Critical | Infection |
 |---|---|---|---|---|
-| Skull | B1, P1 | B2, P2, Shock, Fracture, dazed, Lethal: days | B3, P3, Shock, Fracture, unconscious, Lethal: minutes | high |
-| Face | B1, P1 | B3, P2, Shock, Fracture, vision, Lethal: days | B3, P3, Shock, Fracture, vision, speech, Lethal: hours | high |
-| Neck | B1, P1 | B3, P2, Shock, Lethal: minutes | B3, P3, Shock, breath, Lethal: rounds | high |
-| Chest | B1, P1 | B3, P2, Shock, Fracture, breath, Lethal: hours | B3, P3, Shock, Fracture, breath, collapse, Lethal: rounds | high |
-| Abdomen | B1, P1 | B2, P2, Shock, Lethal: hours | B3, P3, Shock, collapse, Lethal: rounds | high |
-| Groin | B1, P2 | B3, P3, Shock, Fracture, leg, Lethal: days | B3, P3, Shock, Fracture, stand, Lethal: rounds | high |
-| Back Upper | B1, P1 | B2, P2, Shock, Fracture, arm, Lethal: days | B3, P3, Shock, Fracture, breath, collapse, Lethal: rounds | high |
-| Back Lower | B1, P1 | B2, P2, Shock, Fracture, move, Lethal: days | B3, P3, Shock, Fracture, stand, Lethal: minutes | high |
-| Shoulder | B1, P1 | B2, P2, Shock, Fracture, arm | B3, P3, Shock, Fracture, arm useless, Lethal: days | medium |
-| Upper Arm | B1, P1 | B2, P2, Shock, Fracture, arm | B3, P3, Shock, Fracture, arm useless, Lethal: hours | medium |
-| Forearm | B1, P1 | B2, P2, Shock, Fracture, grip | B3, P3, Shock, Fracture, arm useless, Lethal: hours | medium |
-| Hand | B0, P1 | B2, P2, Shock, Fracture, grip | B3, P3, Shock, Fracture, hand useless | medium |
-| Thigh | B1, P1 | B3, P2, Shock, Fracture, leg | B3, P3, Shock, Fracture, stand, Lethal: minutes | high |
-| Knee | B0, P1 | B2, P2, Shock, Fracture, leg | B2, P3, Shock, Fracture, stand | high |
-| Lower Leg | B1, P1 | B2, P2, Shock, Fracture, leg | B3, P3, Shock, Fracture, stand, Lethal: hours | high |
-| Foot | B0, P1 | B2, P2, Shock, Fracture, leg | B2, P3, Shock, Fracture, stand | high |
+| Skull | B1, P1 | B2, P2, Stop check, Fracture, dazed, Lethal: days | B3, P3, Stop check, Fracture, unconscious, Lethal: minutes | high |
+| Face | B1, P1 | B3, P2, Stop check, Fracture, vision, Lethal: days | B3, P3, Stop check, Fracture, vision, speech, Lethal: hours | high |
+| Neck | B1, P1 | B3, P2, Stop check, Lethal: minutes | B3, P3, Stop check, breath, Lethal: rounds | high |
+| Chest | B1, P1 | B3, P2, Stop check, Fracture, breath, Lethal: hours | B3, P3, Stop check, Fracture, breath, collapse, Lethal: rounds | high |
+| Abdomen | B1, P1 | B2, P2, Stop check, Lethal: hours | B3, P3, Stop check, collapse, Lethal: rounds | high |
+| Groin | B1, P2 | B3, P3, Stop check, Fracture, leg, Lethal: days | B3, P3, Stop check, Fracture, stand, Lethal: rounds | high |
+| Back Upper | B1, P1 | B2, P2, Stop check, Fracture, arm, Lethal: days | B3, P3, Stop check, Fracture, breath, collapse, Lethal: rounds | high |
+| Back Lower | B1, P1 | B2, P2, Stop check, Fracture, move, Lethal: days | B3, P3, Stop check, Fracture, stand, Lethal: minutes | high |
+| Shoulder | B1, P1 | B2, P2, Stop check, Fracture, arm | B3, P3, Stop check, Fracture, arm useless, Lethal: days | medium |
+| Upper Arm | B1, P1 | B2, P2, Stop check, Fracture, arm | B3, P3, Stop check, Fracture, arm useless, Lethal: hours | medium |
+| Forearm | B1, P1 | B2, P2, Stop check, Fracture, grip | B3, P3, Stop check, Fracture, arm useless, Lethal: hours | medium |
+| Hand | B0, P1 | B2, P2, Stop check, Fracture, grip | B3, P3, Stop check, Fracture, hand useless | medium |
+| Thigh | B1, P1 | B3, P2, Stop check, Fracture, leg | B3, P3, Stop check, Fracture, stand, Lethal: minutes | high |
+| Knee | B0, P1 | B2, P2, Stop check, Fracture, leg | B2, P3, Stop check, Fracture, stand | high |
+| Lower Leg | B1, P1 | B2, P2, Stop check, Fracture, leg | B3, P3, Stop check, Fracture, stand, Lethal: hours | high |
+| Foot | B0, P1 | B2, P2, Stop check, Fracture, leg | B2, P3, Stop check, Fracture, stand | high |
 
 ## Key
 
@@ -4574,7 +4574,7 @@ Bullet, ball or shell fragment: shatters bone, carries cloth and dirt deep into 
 - **leg**: Movement halved; -20% to footwork and dodging
 - **stand**: Falls and cannot stand unaided
 - **move**: Movement halved
-- **shock**: Shock check: endurance roll or be stunned 1d6 rounds
+- **stop check**: Stop check: d100 against Nerve, or defend only, stunned or out of the fight
 - **fracture**: Bone broken: no use of the part until set; pain +1 when used
 - **severed**: Part severed: arterial bleeding until cauterised or tourniqueted
 - Lethal **none**: Not life-threatening by itself

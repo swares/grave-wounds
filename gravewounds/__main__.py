@@ -117,7 +117,7 @@ def _main(argv=None) -> int:
             sev_txt = ar["from"] if ar else h["severity"]
             print(f"{h['location_name']} (d100 {loc_roll}) - "
                   f"{h['mechanism']} (d100 {fmt(rl['mechanism'])}) - {sev_txt}{sev_roll}"
-                  + (" - graze: bleed and pain one step lower, no shock" if h.get("graze") else ""))
+                  + (" - graze: bleed and pain one step lower, no stop check" if h.get("graze") else ""))
             if h["table"] != a.table:
                 print(f"    (close combat: location rolled on {d.tables[h['table']]['name']})")
             if ar:
