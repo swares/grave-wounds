@@ -154,7 +154,7 @@ ARMOR_STEPS = [
 ]
 COMBAT_STEPS = [
     "Pick the <b>attacker</b> and the <b>defender</b>. Add up each one's wound penalties (table below), capped at the limit shown.",
-    "Attacker rolls d100 against <b>attack % minus penalties</b>. Equal or under hits; the <b>margin</b> is the effective chance minus the roll. "
+    "Attacker rolls d100 against <b>attack % minus penalties</b> (on the battle map, also minus any range penalty). Equal or under hits; the <b>margin</b> is the effective chance minus the roll. "
     "A roll at or under a tenth of the effective chance is a <b>critical</b>: it cannot be defended.",
     "If the defender may parry or dodge, they roll d100 against <b>defence % minus penalties</b>; equal or under avoids the blow.",
     "On a hit, roll location and mechanism as usual. <b>Severity comes from the margin</b> (bands below) instead of the severity table.",
@@ -189,6 +189,43 @@ def stop_rules(d) -> list[str]:
         f"against the best Nerve among those still up (its leader's, if he is up), +{M['leader_present']} with a leader up, "
         f"-{M['leader_down']} if a leader is down, -{M['heavy_losses']} once {int(M['heavy'] * 100)}% are down. Over: the side breaks and runs or surrenders.",
     ]
+
+
+def move_rules(d) -> list[str]:
+    """Battle map movement, leaving contact, reach and range, for the PDF and Markdown (from wounds.yaml)."""
+    CB = d.wounds["combat"]
+    M, ST = CB["move"], CB["states"]
+    def lst(xs):
+        xs = [x.replace("_", " ") for x in xs]
+        return xs[0] if len(xs) == 1 else ", ".join(xs[:-1]) + " and " + xs[-1]
+    imp = lambda xs: f"the {lst(xs)} impairment{'s' if len(xs) > 1 else ''}"
+    bands = ", ".join(f"{b['band']} {'-%d%%' % b['penalty'] if b['penalty'] else '+0'}" for b in CB["range"])
+    return [
+        f"<b>Scale:</b> one hex is {M['hex_m']} m and a round is 6 seconds. The map has pointy-top hexes; the roller's default is {M['map']['cols']} x {M['map']['rows']}.",
+        f"<b>A fighter's turn:</b> stay in place, <b>advance</b> up to {M['advance']} hexes and still attack, or <b>run</b> up to {M['run']} hexes and not attack. "
+        "He may pass through friends but not stop on them, and cannot enter an enemy's hex.",
+        f"<b>Wounds and movement:</b> {imp(M['halved_by'])} halve both distances (round down); {imp(M['crawl_by'])} leave only a crawl of "
+        f"{M['crawl']} hex; {imp(M['no_run_by'])} stops him running. A fighter who is {' or '.join(ST[s]['name'].lower() for s in M['no_move_states'])} cannot move. "
+        "Defend only: he may move but not attack.",
+        f"<b>Leaving contact:</b> a fighter who moves more than {M['careful_step']} hex and ends no longer next to an enemy he started beside gives "
+        f"that enemy one free attack, if the enemy is up and able to attack. Stepping back {M['careful_step']} hex is a careful withdrawal and draws none.",
+        f"<b>Reach and range:</b> a close-combat weapon strikes enemies within its reach (1 is the next hex). A missile weapon has short, medium and long "
+        f"range in hexes, with attack modifiers {bands}; no shot past long range. Weapons marked off-map (artillery, mines, stakes) are not aimed on the map: the GM decides whom they hit.",
+    ]
+
+
+def reach_rows(d) -> list[list[str]]:
+    """[weapon, reach or range] for every weapon, in data order."""
+    out = []
+    for w in d.weapons.values():
+        if w.get("off_map"):
+            v = "off-map (GM decides)"
+        elif "reach" in w:
+            v = f"reach {w['reach']}"
+        else:
+            v = " / ".join(str(x) for x in w["range"]) + " hexes (" + " / ".join(str(x * d.wounds["combat"]["move"]["hex_m"]) for x in w["range"]) + " m)"
+        out.append([w["name"], v])
+    return out
 
 
 CALLED_RULE = "Roll the location twice; keep whichever result lands in the called zone. If both or neither do, keep the first. Your system sets any to-hit penalty."
@@ -340,6 +377,8 @@ def markdown(d) -> str:
             f"| Default | 0-{mb['default']['serious'] - 1} | {mb['default']['serious']}-{mb['default']['critical'] - 1} | {mb['default']['critical']}+ |"]
     out += [f"| Firearm/explosive, {', '.join(b['zones'])} | 0-{b['serious'] - 1} | {b['serious']}-{b['critical'] - 1} | {b['critical']}+ |" for b in mb.get("ballistic", [])]
     out += ["", "### Graze, stop check and morale", ""] + [re.sub("</?b>", "**", x) + "\n" for x in stop_rules(d)]
+    out += ["### Battle map", ""] + [re.sub("</?b>", "**", x) + "\n" for x in move_rules(d)]
+    out += ["| Weapon | Reach or range (short / medium / long) |", "|---|---|"] + [f"| {a} | {b} |" for a, b in reach_rows(d)] + [""]
 
     out += ["## Armour", ""] + [f"{i}. {re.sub('<[^>]+>', '**', x)}" for i, x in enumerate(ARMOR_STEPS, 1)]
     mcols = [m for m in MECHANISMS if m != "ballistic"]
@@ -680,6 +719,11 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
                         f"defender's shield arm useless = {d.modifiers[auto['defender_no_shield']]['name']}; "
                         f"attacker on the ground = {d.modifiers[auto['attacker_down']]['name']} (where the table offers them).", S),
               Spacer(1, 8), KeepTogether([Paragraph("Graze, stop check and team morale", H2)] + [Paragraph(x, S) for x in stop_rules(d)])]
+    rrows = [[Paragraph(x, CH) for x in ["Weapon", "Reach or range (short / medium / long)"]]] + [[Paragraph(a, C), b] for a, b in reach_rows(d)]
+    story += [PageBreak(), Paragraph("Battle Map", H1)] + [Paragraph(x, B) for x in move_rules(d)] + [
+              Spacer(1, 6), Paragraph("Weapon reach and range", H2),
+              Paragraph("Ranges are design estimates from each weapon's effective range in its period.", S), Spacer(1, 3),
+              grid(rrows, [2.9 * inch, W - 2.9 * inch], font=7.5)]
 
     # Armour
     mcols = [m for m in MECHANISMS if m != "ballistic"]

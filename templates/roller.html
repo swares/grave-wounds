@@ -9,16 +9,19 @@
   --bg:#e9ecee; --panel:#f6f7f8; --ink:#1b2127; --muted:#5b6670; --line:#c5ccd2;
   --steel:#3f4f5d; --blood:#8e1b2c; --blood-soft:#f1d9dc; --heat:142,27,44; --map-sea:#d5e1e6; --map-land:#cfc6ab; --map-coast:#8c8670; --map-hl:#b5a47a; --map-dot:#8e1b2c;
   --ok:#2f6b46; --warn:#a86512; --crit:#8e1b2c;
+  --side0:#2f5d8a; --side1:#8e1b2c; --side2:#8a5a12; --side3:#2f6b46;
   --display:"Alegreya SC",Georgia,serif; --body:"Alegreya Sans","Gill Sans","Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
   --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --heat:228,101,118; --map-sea:#1b2a33; --map-land:#3c4237; --map-coast:#66705e; --map-hl:#57604a; --map-dot:#e46576;
+  --side0:#8db8e0; --side1:#e8909c; --side2:#e3b46d; --side3:#86cfa1;
   --ok:#6cc08d; --warn:#e3a14d; --crit:#e46576; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
   --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --heat:228,101,118; --map-sea:#1b2a33; --map-land:#3c4237; --map-coast:#66705e; --map-hl:#57604a; --map-dot:#e46576;
+  --side0:#8db8e0; --side1:#e8909c; --side2:#e3b46d; --side3:#86cfa1;
   --ok:#6cc08d; --warn:#e3a14d; --crit:#e46576; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--body);padding-inline:16px;padding-block:20px 40px}
@@ -154,6 +157,30 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
 .roundlog .ev-bad{color:var(--crit);font-weight:700}
 .roundlog .ev-warn{color:var(--warn)}
 .muted{color:var(--muted);font-size:.85rem}
+.hexmap{overflow:auto;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
+.hexmap svg{display:block;width:100%;height:auto;min-width:520px;margin:0 auto}
+.hex{fill:var(--panel);stroke:var(--line);stroke-width:1}
+.hex.h-adv{fill:var(--ok);fill-opacity:.26;cursor:pointer}
+.hex.h-run{fill:var(--warn);fill-opacity:.2;cursor:pointer}
+.hex.h-adv:hover,.hex.h-run:hover,.hex:focus{fill-opacity:.5;outline:none;stroke:var(--ink)}
+.hexmap.placing .hex{cursor:crosshair}
+.tok{cursor:pointer}
+.tok circle.body{stroke:var(--panel);stroke-width:2}
+.tok text{font:700 11px var(--mono);fill:var(--panel);text-anchor:middle;pointer-events:none}
+.tok.s0 circle.body{fill:var(--side0)} .tok.s1 circle.body{fill:var(--side1)} .tok.s2 circle.body{fill:var(--side2)} .tok.s3 circle.body{fill:var(--side3)}
+.tok.out circle.body{fill:var(--muted)}
+.tok.broken{opacity:.45}
+.tok .ring{fill:none;stroke:none;stroke-width:2.5}
+.tok.acting .ring{stroke:var(--ink)}
+.tok.target .ring{stroke:var(--blood);stroke-dasharray:4 3}
+.tok.def .ring{stroke:var(--blood);stroke-dasharray:none}
+.tok.placing .ring{stroke:var(--warn);stroke-dasharray:2 2}
+.tok:focus{outline:none}.tok:focus .ring{stroke:var(--ink);stroke-dasharray:1 2}
+.mapkey{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.8rem;color:var(--muted)}
+.mapkey i{display:inline-block;width:.9em;height:.9em;border-radius:2px;vertical-align:-.1em;margin-right:4px}
+.mapbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mapbar .free{background:var(--blood-soft);border-left:3px solid var(--blood);padding:4px 8px;border-radius:2px}
+.mapsize input{width:4.5em}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -255,6 +282,21 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
       <p class="muted" style="margin:0" id="trk-rule"></p>
     </section>
   </div>
+
+  <section class="panel" aria-labelledby="h-map" id="map-panel">
+    <div class="toolbar" style="justify-content:space-between">
+      <h2 id="h-map">Battle map</h2>
+      <span class="muted" id="map-scale"></span>
+    </div>
+    <div class="mapbar" id="map-actions" aria-live="polite"></div>
+    <div class="hexmap" id="map" role="group" aria-label="Battle map: hex grid with the fighters"></div>
+    <div class="mapkey" id="map-key"></div>
+    <div class="mapbar mapsize">
+      <button class="small" id="btn-freeplace" aria-pressed="false" title="Move any fighter to any empty hex, for setting up or putting things right">Free placement</button>
+      <label class="muted">Columns <input id="in-cols" type="number" min="8" max="80"></label>
+      <label class="muted">Rows <input id="in-rows" type="number" min="6" max="60"></label>
+    </div>
+  </section>
 
   <section class="panel" aria-labelledby="h-hist" id="hist"></section>
 
@@ -383,6 +425,52 @@ function moraleCheck(fighters, roll){
   if (down / n >= M.heavy) target -= M.heavy_losses;
   return { target, roll, down, of: n, broken: roll > target };
 }
+// Battle map. Hexes are [col, row], pointy-top, odd rows shifted right.
+const MOVE = CMB.move;
+function cubeOf([c, r]){ const q = c - (r - (r & 1)) / 2; return [q, r, -q - r] }
+function hexDistance(a, b){ const x = cubeOf(a), y = cubeOf(b); return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2])) }
+const NEIGHBOURS = [[[1, 0], [0, -1], [-1, -1], [-1, 0], [-1, 1], [0, 1]], [[1, 0], [1, -1], [0, -1], [-1, 0], [0, 1], [1, 1]]];
+function neighbours([c, r], cols, rows){
+  return NEIGHBOURS[r & 1].map(([dc, dr]) => [c + dc, r + dr]).filter(([x, y]) => x >= 0 && x < cols && y >= 0 && y < rows);
+}
+function moveAllowance(wounds, state = null){
+  if (MOVE.no_move_states.includes(state)) return { advance: 0, run: 0 };
+  const imp = new Set(wounds.flatMap(w => w.fx.impair || []));
+  if (MOVE.crawl_by.some(i => imp.has(i))) return { advance: MOVE.crawl, run: 0 };
+  let adv = MOVE.advance, run = MOVE.run;
+  if (MOVE.halved_by.some(i => imp.has(i))){ adv = Math.floor(adv / 2); run = Math.floor(run / 2) }
+  if (MOVE.no_run_by.some(i => imp.has(i))) run = 0;
+  return { advance: adv, run };
+}
+// Hexes he can end on within `steps`: Map "col,row" -> cost. Through friends, not onto them; never into an enemy.
+function reachable(start, steps, cols, rows, enemies, friends){
+  const key = h => h[0] + "," + h[1], blocked = new Set(enemies.map(key)), friendly = new Set(friends.map(key));
+  const best = new Map([[key(start), 0]]);
+  let frontier = [start];
+  for (let cost = 1; cost <= steps; cost++){
+    const nxt = [];
+    for (const h of frontier) for (const n of neighbours(h, cols, rows)){
+      const k = key(n);
+      if (blocked.has(k) || best.has(k)) continue;
+      best.set(k, cost); nxt.push(n);
+    }
+    frontier = nxt;
+  }
+  for (const [k, c] of [...best]) if (friendly.has(k) && c) best.delete(k);
+  return best;
+}
+function weaponReach(wid, dist){
+  const w = DATA.weapons[wid];
+  if (w.off_map) return { band: "any", penalty: 0 };
+  if (dist < 1) return null;
+  if ("reach" in w) return dist <= w.reach ? { band: "reach", penalty: 0 } : null;
+  const i = w.range.findIndex(edge => dist <= edge);
+  return i < 0 ? null : { band: CMB.range[i].band, penalty: CMB.range[i].penalty };
+}
+function freeAttackers(start, end, steps, enemies){
+  if (steps <= MOVE.careful_step) return [];
+  return enemies.filter(e => e.able && hexDistance(start, e.pos) === 1 && hexDistance(end, e.pos) !== 1).map(e => e.id);
+}
 /* ---------- end of rules shared with gravewounds/combat.py ---------- */
 const attackerChar = () => (S.chars && S.attacker >= 0) ? S.chars[S.attacker] : null;
 const defenderChar = () => (S.chars && S.chars.length) ? S.chars[S.active] : null;
@@ -466,7 +554,7 @@ function sevTiers(mech, zone, wid){
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending})) }catch(e){} }
+function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free})) }catch(e){} }
 function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); return true } }catch(e){} return false }
 
 /* ---------- body figure ---------- */
@@ -531,19 +619,22 @@ function rollHit(){
   const atkPct = readPct("#in-atk"), defPct = readPct("#in-def");
   let combat = null, margin = null, crit = false;
   const base = { weapon: S.weapon, table: S.table, ltable: rtid(), mods: orderedMods().map(m => m.short || m.name), called: S.called };
-  const done = extra => { S.hit = { ...base, fx: null, ...extra }; ["#in-atk-roll", "#in-def-roll"].forEach(id => $(id).value = ""); renderResult(); shadeFigure(); renderTable() };
+  const done = extra => { S.hit = { ...base, fx: null, ...extra }; ["#in-atk-roll", "#in-def-roll"].forEach(id => $(id).value = ""); renderResult(); if (S.chars.length) renderChars(); else { shadeFigure(); renderTable() } };
+  const rc = rangeCheck(), freeHit = isFreePair();
+  if (rc.blocked) return done({ blocked: rc.blocked });
+  base.range = rc.range;
   if (atkPct !== null){
     const A = penalties(attackerChar()), D = penalties(defenderChar());
     if (A && A.flags.includes("incapacitated")) return done({ blocked: `${attackerChar().name} is incapacitated and cannot attack.` });
     if (cannotAttack(A)) return done({ blocked: `${attackerChar().name} cannot attack: ${CMB.states[attackerChar().state.id].name.toLowerCase()}.` });
     if (A && A.flags.includes("cannot_wield") && w.melee !== "unarmed") return done({ blocked: `${attackerChar().name} cannot hold a weapon in either hand.` });
-    const ar = attackRoll(atkPct, readDie("#in-atk-roll") ?? d100(), A ? A.attack : 0);
-    combat = { atk: ar, def: null };
-    if (!ar.hit) return done({ miss: true, combat });
+    const ar = attackRoll(atkPct, readDie("#in-atk-roll") ?? d100(), (A ? A.attack : 0) + (rc.range ? rc.range.penalty : 0));
+    combat = { atk: ar, def: null, range: rc.range };
+    if (!ar.hit){ if (freeHit) freeDone("miss"); return done({ miss: true, combat }) }
     if (defPct !== null && !ar.critical){
       const dr = defenceRoll(defPct, readDie("#in-def-roll") ?? d100(), D ? D.defence : 0);
       combat.def = dr;
-      if (dr.defended) return done({ defended: true, combat });
+      if (dr.defended){ if (freeHit) freeDone("parried or dodged"); return done({ defended: true, combat }) }
     }
     margin = ar.margin; crit = ar.critical;
   }
@@ -575,7 +666,7 @@ function rollHit(){
   const grazed = final !== "stopped" && isGraze(margin, crit);
   const fx0 = final === "stopped" ? null : DATA.wounds[`${LOC[loc].class}|${mech}|${final}`];
   const fx = fx0 && grazed ? grazeFx(fx0) : fx0;
-  S.hit = { loc, mech, sev: final, rolled: sev, fx, armor, combat, graze: grazed, rolls:{loc:rl, loc2:rl2, mech:rm, sev:rs},
+  S.hit = { loc, mech, sev: final, rolled: sev, fx, armor, combat, graze: grazed, range: rc.range, free: freeHit, rolls:{loc:rl, loc2:rl2, mech:rm, sev:rs},
             weapon:S.weapon, table:S.table, ltable:rtid(), mods:orderedMods().map(m => m.short || m.name), called:S.called };
   ["#in-loc","#in-loc2","#in-mech","#in-sev","#in-atk-roll","#in-def-roll"].forEach(id => $(id).value = "");
   renderResult(); shadeFigure(); renderTable();
@@ -596,7 +687,9 @@ const sevLabel = id => id === "stopped" ? "Stopped" : DATA.severity.find(x => x.
 function combatLines(c){
   if (!c) return "";
   const a = c.atk, pen = x => x.penalty ? ` (${x.base} − ${x.penalty} wounds)` : "";
-  let out = `<div class="sitline">Attack d100 ${d2(a.roll)} vs ${a.effective}%${pen(a)}: ${a.hit ? `hit, margin ${a.margin}${a.critical ? " · <b>critical</b>, cannot be defended" : ""}` : "miss"}</div>`;
+  const rp = c.range ? c.range.penalty : 0, wp = a.penalty - rp;
+  const apen = rp || wp ? ` (${a.base}${wp ? ` − ${wp} wounds` : ""}${rp ? ` − ${rp} ${c.range.band} range` : ""})` : "";
+  let out = `<div class="sitline">Attack d100 ${d2(a.roll)} vs ${a.effective}%${apen}: ${a.hit ? `hit, margin ${a.margin}${a.critical ? " · <b>critical</b>, cannot be defended" : ""}` : "miss"}</div>`;
   if (c.def) out += `<div class="sitline">Defence d100 ${d2(c.def.roll)} vs ${c.def.effective}%${pen(c.def)}: ${c.def.defended ? "parried or dodged" : "failed"}</div>`;
   return out;
 }
@@ -623,6 +716,7 @@ function renderResult(){
     <div class="rolls"><span>loc ${d2(r.loc)}${r.loc2 ? "/" + d2(r.loc2) : ""}</span><span>mech ${d2(r.mech)}</span>${r.sev ? `<span>sev ${d2(r.sev)}</span>` : h.combat ? `<span>sev: margin</span>` : `<span>sev: your system</span>`}</div>
     <p class="hitname">${LOC[h.loc].name}</p>
     ${sit ? `<div class="sitline">${sit}</div>` : ""}
+    ${h.range ? `<div class="sitline">${h.range.band === "free attack" ? "Free attack as he leaves contact" : `${hexes(h.range.dist)}: ${h.range.band}${h.range.penalty ? ` range, −${h.range.penalty}%${h.combat ? "" : " (not applied: no attack roll)"}` : ""}`}</div>` : ""}
     ${h.ltable !== h.table ? `<div class="sitline">Close combat: location from ${DATA.tables[h.ltable].label}</div>` : ""}
     <div class="chips"><span class="chip sev-${h.sev === "stopped" ? "light" : h.sev}">${sevLabel(h.sev)}</span>${h.graze ? `<span class="chip graze" title="Hit by the barest margin: bleed and pain one step lower, no stop check">Graze</span>` : ""}<span class="chip">${DATA.mechanisms[h.mech].name}</span><span class="chip">${shortName(h.weapon)}</span></div>
     ${armorLine}
@@ -918,14 +1012,15 @@ function nextFighter(){
     next = S.chars.find(c => !isOut(c));
     if (!next){ S.turn = null; renderChars(); return }
   }
-  S.turn = next.id;
+  S.turn = next.id; S.tm = null; S.placing = null; S.mapMsg = ""; S.free = [];   // a new turn: unresolved free attacks lapse
   const i = S.chars.indexOf(next);
   if (cannotAttack(penalties(next))){         // defend only or stunned: his turn passes without an attack
     if (S.attacker === i) S.attacker = -1;
     $("#apply-msg").textContent = `${next.name}'s turn: ${CMB.states[next.state.id].name.toLowerCase()}, so no attack.`;
     renderChars(); return;
   }
-  if (S.attacker !== i) setAttacker(i); else renderChars();   // the fighter whose turn it is attacks
+  $("#apply-msg").textContent = `${next.name}'s turn.`;
+  restoreActing(); renderChars();            // the fighter whose turn it is attacks, the nearest enemy defends
 }
 function renderRounds(){
   $("#round-no").textContent = `Round ${S.round}`;
@@ -933,6 +1028,196 @@ function renderRounds(){
   $("#turn-no").innerHTML = t ? `Acting: <b>${t.name}</b>` : S.chars.length > 1 ? "Order: highest initiative first" : "";
   const now = (S.pending || []).length ? [{ label: `Round ${S.round} so far`, lines: S.pending }] : [];
   $("#round-log").innerHTML = [...now, ...S.log].map(e => `<li><b>${e.label}</b><br>${e.lines.join("<br>")}</li>`).join("");
+}
+/* ---------- battle map ----------
+   Each fighter has pos [col, row]. With no turn running (or Free placement on) you place
+   fighters by clicking one and then an empty hex. On a fighter's turn the hexes he can
+   advance to (and still attack) and run to (no attack) are shaded, and the enemies his
+   weapon can reach are ringed. S.tm is this turn's movement; S.free is the queue of free
+   attacks on a fighter who left contact. */
+const HEX_R = 16, HEX_W = Math.sqrt(3) * HEX_R;
+const hexXY = ([c, r]) => [HEX_W * (c + 0.5 * (r & 1)) + HEX_W / 2, 1.5 * HEX_R * r + HEX_R];
+const hexPts = ([x, y]) => [0, 1, 2, 3, 4, 5].map(k => { const a = Math.PI / 180 * (60 * k - 30); return `${(x + HEX_R * Math.cos(a)).toFixed(1)},${(y + HEX_R * Math.sin(a)).toFixed(1)}` }).join(" ");
+const mapSize = () => S.map || (S.map = { cols: MOVE.map.cols, rows: MOVE.map.rows });
+const sidesInOrder = () => [...new Set(S.chars.map(sideOf))];
+const sameHex = (a, b) => !!(a && b) && a[0] === b[0] && a[1] === b[1];
+const occupant = h => S.chars.find(c => sameHex(c.pos, h));
+const actingChar = () => S.chars.find(c => c.id === S.turn) || null;
+const hexes = n => `${n} hex${n === 1 ? "" : "es"} (${n * MOVE.hex_m} m)`;
+const reachText = wid => { const w = DATA.weapons[wid]; return w.off_map ? "not limited by the map" : "reach" in w ? `reach ${w.reach}` : `range ${w.range.join(" / ")} hexes` };
+const initials = n => n.replace(/^Example:\s*/, "").split(/\s+/).filter(Boolean).map(x => x[0]).join("").slice(0, 2).toUpperCase() || "?";
+function placeUnplaced(){                    // new fighters go near their side's edge
+  const { cols, rows } = mapSize(), sides = sidesInOrder();
+  for (const c of S.chars){
+    if (c.pos && c.pos[0] < cols && c.pos[1] < rows && S.chars.find(o => sameHex(o.pos, c.pos)) === c) continue;
+    c.pos = null;
+    const anchor = [[1, rows >> 1], [cols - 2, rows >> 1], [cols >> 1, 1], [cols >> 1, rows - 2]][sides.indexOf(sideOf(c)) % 4];
+    let best = null, bd = Infinity;
+    for (let r = 0; r < rows; r++) for (let col = 0; col < cols; col++){
+      if (occupant([col, r])) continue;
+      const dd = hexDistance(anchor, [col, r]) * 2 + Math.abs(col - anchor[0]);   // fill along the edge first
+      if (dd < bd){ bd = dd; best = [col, r] }
+    }
+    c.pos = best;
+  }
+}
+function turnInfo(){                         // the acting fighter's movement this turn
+  const c = actingChar(); if (!c || !c.pos) return null;
+  if (!S.tm || S.tm.id !== c.id) S.tm = { id: c.id, steps: 0, ran: false, moved: false };
+  const { cols, rows } = mapSize(), allow = moveAllowance(c.wounds, c.state ? c.state.id : null);
+  const others = S.chars.filter(o => o !== c && o.pos);
+  const reach = S.tm.moved ? new Map() : reachable(c.pos, Math.max(allow.advance, allow.run), cols, rows,
+    others.filter(o => sideOf(o) !== sideOf(c)).map(o => o.pos), others.filter(o => sideOf(o) === sideOf(c)).map(o => o.pos));
+  return { c, allow, reach };
+}
+// Range and reach for the hit about to be rolled: {blocked} or {range} (null when there is no map check).
+function rangeCheck(){
+  const a = attackerChar(), dd = defenderChar();
+  if (!S.turn || !a || !dd || a === dd || !a.pos || !dd.pos) return { range: null };   // the map's rules apply once turns start
+  const f = (S.free || [])[0];
+  if (f && f.att === a.id && f.def === dd.id) return { range: { dist: 1, band: "free attack", penalty: 0 } };
+  if (S.tm && S.tm.id === a.id && S.tm.ran) return { blocked: `${a.name} ran this turn and cannot attack.` };
+  const dist = hexDistance(a.pos, dd.pos), r = weaponReach(S.weapon, dist);
+  if (!r) return { blocked: `${dd.name} is ${hexes(dist)} away, out of reach of the ${shortName(S.weapon).toLowerCase()} (${reachText(S.weapon)}).` };
+  return { range: { dist, ...r } };
+}
+function canTarget(a, o){                    // ringed on the map: an enemy the acting fighter can strike now
+  if (!a.pos || !o.pos || sideOf(o) === sideOf(a)) return false;
+  return !!weaponReach(S.weapon, hexDistance(a.pos, o.pos));
+}
+function restoreActing(){                    // after free attacks: the acting fighter attacks again
+  const c = actingChar(); if (!c) return;
+  const i = S.chars.indexOf(c);
+  if (cannotAttack(penalties(c)) || (S.tm && S.tm.ran)){ if (S.attacker === i) S.attacker = -1; return }
+  S.attacker = i; applyAttackerWeapon(); syncArmor();
+  if (S.active === i || sideOf(S.chars[S.active] || c) === sideOf(c)){
+    const foes = S.chars.filter(o => o.pos && sideOf(o) !== sideOf(c) && !isOut(o)).sort((x, y) => hexDistance(c.pos, x.pos) - hexDistance(c.pos, y.pos));
+    if (foes.length) S.active = S.chars.indexOf(foes[0]);
+  }
+  syncDefenderArmour();
+}
+function syncDefenderArmour(){ const d = defenderChar(); if (d && d.kit){ S.armor = d.kit; $("#sel-armor").value = d.kit } }
+function startFreeAttack(){                  // set up the next free attack, or hand back to the acting fighter
+  S.free = (S.free || []).filter(f => S.chars.some(c => c.id === f.att) && S.chars.some(c => c.id === f.def));
+  const f = S.free[0];
+  if (!f){ restoreActing(); return }
+  S.attacker = S.chars.findIndex(c => c.id === f.att); S.active = S.chars.findIndex(c => c.id === f.def);
+  applyAttackerWeapon(); syncDefenderArmour();
+}
+function freeDone(how){                      // the free attack at the head of the queue is resolved
+  const f = (S.free || [])[0]; if (!f) return;
+  const a = S.chars.find(c => c.id === f.att), dd = S.chars.find(c => c.id === f.def);
+  if (how) (S.pending = S.pending || []).push(`${a ? a.name : "?"}: free attack on ${dd ? dd.name : "?"} — ${how}`);
+  S.free.shift(); startFreeAttack();
+}
+const isFreePair = () => { const f = (S.free || [])[0], a = attackerChar(), dd = defenderChar(); return !!(f && a && dd && f.att === a.id && f.def === dd.id) };
+function moveActing(h){
+  const t = turnInfo(); if (!t) return;
+  const cost = t.reach.get(h.join(","));
+  if (!cost) return;
+  const { c, allow } = t, ran = cost > allow.advance;
+  if (ran && cost > allow.run) return;
+  const enemies = S.chars.filter(o => o.pos && sideOf(o) !== sideOf(c))
+    .map(o => ({ id: o.id, pos: o.pos, able: !isOut(o) && !cannotAttack(penalties(o)) }));
+  const free = freeAttackers(c.pos, h, cost, enemies);
+  S.tm.prev = { pos: c.pos.slice(), pending: (S.pending || []).length, free: (S.free || []).length, attacker: S.attacker, active: S.active };
+  c.pos = h.slice(); Object.assign(S.tm, { moved: true, steps: cost, ran, queued: free.length });
+  (S.pending = S.pending || []).push(`${c.name} ${ran ? "runs" : "advances"} ${hexes(cost)}${ran ? ": no attack this turn" : ""}`);
+  if (free.length){
+    S.pending.push(`${c.name} leaves contact: free attack${free.length > 1 ? "s" : ""} from ${free.map(id => S.chars.find(o => o.id === id).name).join(", ")}`);
+    S.free = [...(S.free || []), ...free.map(id => ({ att: id, def: c.id }))];
+  }
+  startFreeAttack();
+  renderChars();
+}
+function undoMove(){
+  const p = S.tm && S.tm.prev, c = actingChar();
+  if (!p || !c || (S.free || []).length !== p.free + (S.tm.queued || 0)) return;
+  c.pos = p.pos; S.pending.length = p.pending; S.free.length = p.free;
+  S.attacker = p.attacker; S.active = p.active;
+  Object.assign(S.tm, { moved: false, steps: 0, ran: false, prev: null, queued: 0 });
+  renderChars();
+}
+function renderMap(){
+  const { cols, rows } = mapSize(); placeUnplaced();
+  const t = turnInfo(), acting = t && t.c, sides = sidesInOrder(), placing = !S.turn || S.freePlace;
+  const canAtk = acting && !cannotAttack(penalties(acting)) && !(S.tm && S.tm.ran) && attackerChar() === acting && !(S.free || []).length;
+  let hx = "";
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){
+    const cost = t && !S.freePlace ? t.reach.get(c + "," + r) : null;
+    const cls = cost ? (cost <= t.allow.advance ? "h-adv" : "h-run") : "";
+    const what = cls === "h-adv" ? "advance" : "run";
+    hx += `<polygon class="hex ${cls}" data-h="${c},${r}" points="${hexPts(hexXY([c, r]))}"${cls ? ` tabindex="0" role="button" aria-label="${what} ${hexes(cost)} to column ${c + 1}, row ${r + 1}"><title>${what} ${hexes(cost)}</title></polygon>` : "/>"}`;
+  }
+  const toks = S.chars.filter(c => c.pos).map(c => {
+    const [x, y] = hexXY(c.pos), i = S.chars.indexOf(c), k = sides.indexOf(sideOf(c)) % 4;
+    const target = canAtk && canTarget(acting, c);
+    const cls = [`s${k}`, isDown(c) ? "out" : "", (S.broken || {})[sideOf(c)] ? "broken" : "", c === acting ? "acting" : "",
+      i === S.active && c !== acting ? "def" : "", target ? "target" : "", S.placing === c.id ? "placing" : ""].join(" ");
+    const dist = acting && c !== acting && acting.pos ? `, ${hexes(hexDistance(acting.pos, c.pos))} from ${acting.name}` : "";
+    return `<g class="tok ${cls}" data-id="${c.id}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})" tabindex="0" role="button" aria-label="${attr(c.name)}, ${attr(sideOf(c))}${dist}${target ? ", in reach" : ""}">`
+      + `<title>${attr(c.name)} · ${attr(sideOf(c))}${dist}${isDown(c) ? " · down" : ""}</title><circle class="ring" r="${HEX_R - 1}"/><circle class="body" r="${HEX_R * 0.7}"/><text dy="0.36em">${attr(initials(c.name))}</text></g>`;
+  }).join("");
+  const W = HEX_W * (cols + 0.5), H = 1.5 * HEX_R * (rows - 1) + 2 * HEX_R;
+  $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" style="max-width:${Math.round(W * 1.6)}px">${hx}${toks}</svg>`;
+  $("#map").classList.toggle("placing", placing && S.placing != null);
+  // actions and messages
+  const bits = [];
+  const f = (S.free || [])[0];
+  if (f){
+    const a = S.chars.find(c => c.id === f.att), dd = S.chars.find(c => c.id === f.def);
+    bits.push(`<span class="free"><b>Free attack:</b> ${attr(a.name)} on ${attr(dd.name)} as he leaves contact. Roll the hit and apply it.</span><button class="small" data-map="skipfree">Skip</button>`);
+  } else if (acting){
+    const tm = S.tm || {}, al = t.allow;
+    const moveTxt = tm.moved ? (tm.steps ? `${tm.ran ? "ran" : "advanced"} ${hexes(tm.steps)}` : "stays in place")
+      : al.advance ? `advance up to ${al.advance}${al.run > al.advance ? `, run up to ${al.run}` : ""} hexes` : "cannot move";
+    const atkTxt = cannotAttack(penalties(acting)) ? `${CMB.states[acting.state.id].name.toLowerCase()}: no attack` : tm.ran ? "no attack after running"
+      : attackerChar() === acting ? `${shortName(S.weapon).toLowerCase()} (${reachText(S.weapon)})` : "choose him as attacker to strike";
+    bits.push(`<span><b>${attr(acting.name)}</b>: ${moveTxt} · ${atkTxt}</span>`);
+    if (!tm.moved && al.advance) bits.push(`<button class="small" data-map="stay">Stay</button>`);
+    if (tm.moved && tm.prev && (S.free || []).length === tm.prev.free + (tm.queued || 0)) bits.push(`<button class="small" data-map="undo">Undo move</button>`);
+    bits.push(`<button class="small" data-map="next">Next fighter</button>`);
+  } else {
+    bits.push(`<span class="muted">Setting up: click a fighter, then an empty hex, to place him. <b>Next fighter</b> starts the turns; from then on movement, reach and range are enforced.</span>`);
+  }
+  if (S.freePlace && S.turn) bits.push(`<span class="muted">Free placement is on: click a fighter, then an empty hex.</span>`);
+  if (S.mapMsg) bits.push(`<span class="muted">${S.mapMsg}</span>`);
+  $("#map-actions").innerHTML = bits.join("");
+  $("#map-key").innerHTML = sides.map((s, k) => `<span><i style="background:var(--side${k % 4})"></i>${attr(s)}</span>`).join("")
+    + `<span><i style="background:var(--ok);opacity:.45"></i>advance and attack</span><span><i style="background:var(--warn);opacity:.4"></i>run, no attack</span>`
+    + `<span>dashed ring: in reach · solid ring: defender</span>`;
+  $("#map-scale").textContent = `1 hex = ${MOVE.hex_m} m · a round is 6 seconds · ${cols} × ${rows} hexes`;
+  $("#in-cols").value = cols; $("#in-rows").value = rows;
+  $("#btn-freeplace").setAttribute("aria-pressed", !!S.freePlace);
+}
+function clickToken(id){
+  const c = S.chars.find(o => o.id === id); if (!c) return;
+  const i = S.chars.indexOf(c), acting = actingChar();
+  S.mapMsg = "";
+  if (S.turn && !S.freePlace){
+    if (c === acting) return renderMap();
+    if ((S.free || []).length){ S.mapMsg = "Resolve or skip the free attack first."; return renderMap() }
+    if (acting && sideOf(c) === sideOf(acting)){ S.mapMsg = `${attr(c.name)} is on ${attr(acting.name)}'s side.`; return renderMap() }
+    if (acting && acting.pos && c.pos){
+      const dist = hexDistance(acting.pos, c.pos), r = weaponReach(S.weapon, dist);
+      S.mapMsg = r ? `Target: ${attr(c.name)}, ${hexes(dist)} away${r.penalty ? ` (${r.band} range, −${r.penalty}%)` : r.band === "short" ? " (short range)" : ""}.`
+                   : `${attr(c.name)} is ${hexes(dist)} away: out of reach.`;
+    }
+    return selectChar(i);
+  }
+  S.placing = S.placing === id ? null : id;
+  S.mapMsg = S.placing != null ? `Placing ${attr(c.name)}: click an empty hex.` : "";
+  renderMap();
+}
+function clickHex(h){
+  if ((!S.turn || S.freePlace) && S.placing != null){
+    if (occupant(h)) return;
+    const c = S.chars.find(o => o.id === S.placing);
+    if (c) c.pos = h;
+    S.placing = null; S.mapMsg = "";
+    return renderChars();
+  }
+  if (S.turn && !S.freePlace){ S.mapMsg = ""; moveActing(h) }
 }
 function renderChars(){
   sortChars();
@@ -980,6 +1265,7 @@ function renderChars(){
       </li>`).join("") || `<li class="muted">No wounds yet. Roll a hit and apply it.</li>`}</ul>
     </div>`;
   }).join("") || `<p class="muted">Add a combatant to start tracking wounds.</p>`;
+  renderMap();
   save();
   renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable();
 }
@@ -1101,12 +1387,35 @@ function init(){
       (S.pending = S.pending || []).push(`${c.name}: ${h.graze ? "grazed" : h.sev} ${LOC[h.loc].name.toLowerCase()}`, ...(line ? [line] : []));
     } else msg = `Armour stopped that blow: nothing to add to ${c.name}.`;
     $("#apply-msg").innerHTML = msg + (line ? `<br>${line}` : "");
+    if (h.free && isFreePair()){ S.hit = { ...h, free: false }; freeDone("") }
     renderChars();
   };
   $("#btn-next").onclick = nextFighter;
-  $("#btn-round").onclick = () => { S.turn = null; advance(1) };      // a new round: no one has acted yet
-  $("#btn-minute").onclick = () => { S.turn = null; advance(10) };
-  $("#btn-reset-rounds").onclick = () => { S.round = 1; S.log = []; S.pending = []; S.turn = null; S.broken = {}; renderChars() };
+  $("#btn-round").onclick = () => { S.turn = null; S.tm = null; S.free = []; advance(1) };      // a new round: no one has acted yet
+  $("#btn-minute").onclick = () => { S.turn = null; S.tm = null; S.free = []; advance(10) };
+  $("#btn-reset-rounds").onclick = () => { S.round = 1; S.log = []; S.pending = []; S.turn = null; S.broken = {}; S.tm = null; S.free = []; renderChars() };
+  // battle map
+  const mapKey = e => {
+    const tok = e.target.closest(".tok"), hx = e.target.closest(".hex");
+    if (tok) clickToken(+tok.dataset.id); else if (hx) clickHex(hx.dataset.h.split(",").map(Number));
+  };
+  $("#map").addEventListener("click", mapKey);
+  $("#map").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); mapKey(e) } });
+  $("#map-actions").addEventListener("click", e => {
+    const b = e.target.closest("button[data-map]"); if (!b) return;
+    const act = b.dataset.map;
+    if (act === "stay"){ S.tm = { ...(S.tm || {}), moved: true, steps: 0, ran: false, prev: null }; renderChars() }
+    else if (act === "undo") undoMove();
+    else if (act === "next") nextFighter();
+    else if (act === "skipfree"){ freeDone("skipped"); renderChars() }
+  });
+  $("#btn-freeplace").onclick = () => { S.freePlace = !S.freePlace; S.placing = null; S.mapMsg = ""; renderChars() };
+  const resize = () => {
+    const m = mapSize(), cl = (v, lo, hi, d) => Math.min(hi, Math.max(lo, parseInt(v, 10) || d));
+    m.cols = cl($("#in-cols").value, 8, 80, m.cols); m.rows = cl($("#in-rows").value, 6, 60, m.rows);
+    renderChars();
+  };
+  $("#in-cols").onchange = resize; $("#in-rows").onchange = resize;
 
   if (!restore()){
     // Example combatants from this conflict so the tracker shows what it does; remove them any time.

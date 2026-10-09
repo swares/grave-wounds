@@ -178,3 +178,94 @@ def morale_check(d: Data, fighters: list[dict], roll: int) -> dict | None:
     if down / n >= M["heavy"]:
         target -= M["heavy_losses"]
     return {"target": target, "roll": roll, "down": down, "of": n, "broken": roll > target}
+
+
+# ---------- battle map: hexes, movement, reach and range ----------
+# Hexes are [col, row] on a pointy-top grid with odd rows shifted right.
+
+def _cube(h) -> tuple[int, int, int]:
+    c, r = h
+    q = c - (r - (r & 1)) // 2
+    return q, r, -q - r
+
+
+def hex_distance(a, b) -> int:
+    (q1, r1, s1), (q2, r2, s2) = _cube(a), _cube(b)
+    return max(abs(q1 - q2), abs(r1 - r2), abs(s1 - s2))
+
+
+_NEIGHBOURS = (((1, 0), (0, -1), (-1, -1), (-1, 0), (-1, 1), (0, 1)),   # even rows
+               ((1, 0), (1, -1), (0, -1), (-1, 0), (0, 1), (1, 1)))     # odd rows
+
+
+def neighbours(h, cols: int, rows: int) -> list[list[int]]:
+    c, r = h
+    out = []
+    for dc, dr in _NEIGHBOURS[r & 1]:
+        n = [c + dc, r + dr]
+        if 0 <= n[0] < cols and 0 <= n[1] < rows:
+            out.append(n)
+    return out
+
+
+def move_allowance(d: Data, wounds: list[dict], state: str | None = None) -> dict:
+    """How far a fighter can go this turn: {advance, run} in hexes (run 0: he cannot run).
+    wounds: [{fx}] as for penalties(). A fighter who is down or incapacitated gets no turn."""
+    M = d.wounds["combat"]["move"]
+    if state in M["no_move_states"]:
+        return {"advance": 0, "run": 0}
+    imp = {i for w in wounds for i in w["fx"].get("impair", [])}
+    if imp & set(M["crawl_by"]):
+        return {"advance": M["crawl"], "run": 0}
+    adv, run = M["advance"], M["run"]
+    if imp & set(M["halved_by"]):
+        adv, run = adv // 2, run // 2
+    if imp & set(M["no_run_by"]):
+        run = 0
+    return {"advance": adv, "run": run}
+
+
+def reachable(start, steps: int, cols: int, rows: int, enemies, friends) -> dict:
+    """Hexes a fighter can end on within `steps` hexes: {(col, row): cost}. He may pass
+    through friends but not stop on them, and cannot enter an enemy's hex. The start is
+    included at cost 0."""
+    blocked = {tuple(e) for e in enemies}
+    friendly = {tuple(f) for f in friends}
+    best = {tuple(start): 0}
+    frontier = [tuple(start)]
+    for cost in range(1, steps + 1):
+        nxt = []
+        for h in frontier:
+            for n in neighbours(h, cols, rows):
+                t = tuple(n)
+                if t in blocked or t in best:
+                    continue
+                best[t] = cost
+                nxt.append(t)
+        frontier = nxt
+    return {h: c for h, c in best.items() if h not in friendly or c == 0}
+
+
+def weapon_reach(d: Data, wid: str, dist: int) -> dict | None:
+    """Can this weapon strike at `dist` hexes? None if not; else {band, penalty}, the
+    attack penalty in %. Off-map weapons are not limited by the map."""
+    w = d.weapons[wid]
+    if w.get("off_map"):
+        return {"band": "any", "penalty": 0}
+    if dist < 1:
+        return None
+    if "reach" in w:
+        return {"band": "reach", "penalty": 0} if dist <= w["reach"] else None
+    for edge, b in zip(w["range"], d.wounds["combat"]["range"]):
+        if dist <= edge:
+            return {"band": b["band"], "penalty": b["penalty"]}
+    return None
+
+
+def free_attackers(d: Data, start, end, steps: int, enemies: list[dict]) -> list:
+    """Enemies who get a free attack on a fighter leaving contact. enemies: [{id, pos,
+    able}]; returns their ids, in the order given."""
+    if steps <= d.wounds["combat"]["move"]["careful_step"]:
+        return []
+    return [e["id"] for e in enemies
+            if e["able"] and hex_distance(start, e["pos"]) == 1 and hex_distance(end, e["pos"]) != 1]
