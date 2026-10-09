@@ -309,6 +309,30 @@ def validate(d: Data) -> None:
             if sev not in c:
                 errors.append(f"wounds.yaml: class {cid} missing severity {sev}")
 
+    # battle map: every weapon has a reach, a range or is off the map
+    CB = d.wounds["combat"]
+    bands = CB.get("range", [])
+    for wid, w in d.weapons.items():
+        kinds = [k for k in ("reach", "range", "off_map") if k in w]
+        if len(kinds) != 1:
+            errors.append(f"weapons.yaml: {wid} needs exactly one of reach, range or off_map (has {kinds or 'none'})")
+        elif "reach" in w and not (isinstance(w["reach"], int) and w["reach"] >= 1):
+            errors.append(f"weapons.yaml: {wid} reach must be a whole number of hexes, 1 or more")
+        elif "range" in w:
+            r = w["range"]
+            if not (isinstance(r, list) and len(r) == len(bands) and all(isinstance(x, int) and x >= 1 for x in r)
+                    and r == sorted(set(r))):
+                errors.append(f"weapons.yaml: {wid} range must be {len(bands)} increasing hex counts, one per band in wounds.yaml combat.range")
+    impairs = set(d.wounds["vocabulary"]["impair"])
+    mv = CB["move"]
+    for k in ("halved_by", "crawl_by", "no_run_by"):
+        for i in mv[k]:
+            if i not in impairs:
+                errors.append(f"wounds.yaml: combat.move.{k} names unknown impairment {i}")
+    for s in mv["no_move_states"]:
+        if s not in CB["states"]:
+            errors.append(f"wounds.yaml: combat.move.no_move_states names unknown state {s}")
+
     # weapons
     for wid, w in d.weapons.items():
         mech = w.get("mechanisms", {})

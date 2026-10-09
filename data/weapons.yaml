@@ -12,6 +12,13 @@
 #                dagger, axe, club, spear, bill, poleaxe, lance, bow, crossbow, sling, long_gun,
 #                bayonet_gun, musket_butt, modern_rifle, machine_gun, smg, pistol, launcher,
 #                grenade, stick_grenade, device, rammer, stake, spade, fist
+# reach        - close combat on the battle map: how many hexes away it can strike (1 =
+#                the next hex; 2 for spears, bills and lances). A hex is 2 m.
+# range        - missile weapons on the battle map: [short, medium, long] in hexes. Each
+#                band has the attack modifier in wounds.yaml combat.range; no shot past long.
+#                Design estimates from the weapon's effective range in its period.
+# off_map      - true for weapons no fighter aims on the map (artillery, mines, stakes,
+#                stray fragments): the GM decides who they hit.
 # melee_table  - for a close-combat weapon: the table it rolls on whenever the current table
 #                is not its own (the table doesn't list it, or lists it but records another
 #                kind of fighting). Overrides melee_fallback below.
@@ -39,6 +46,7 @@ weapons:
     name: "Sword (arming sword)"
     short: "Sword"
     icon: sword
+    reach: 1
     era: medieval
     melee: armed
     melee_table: visby-1361-adjusted
@@ -51,6 +59,7 @@ weapons:
     name: "Axe (hand or long-hafted)"
     short: "Axe"
     icon: axe
+    reach: 1
     era: medieval
     melee: armed
     melee_table: visby-1361-adjusted
@@ -64,6 +73,7 @@ weapons:
     name: "Spiked club / morning star (knout)"
     short: "Spiked club"
     icon: club
+    reach: 1
     era: medieval
     melee: armed
     melee_table: visby-1361-adjusted
@@ -77,6 +87,7 @@ weapons:
     name: "Spear / lance"
     short: "Spear"
     icon: spear
+    reach: 2
     era: medieval
     melee: armed
     melee_table: visby-1361-adjusted
@@ -90,6 +101,7 @@ weapons:
     name: "Bill (English bill, hooked polearm)"
     short: "Bill"
     icon: bill
+    reach: 2
     era: medieval
     melee: armed
     melee_table: towton-1461-all-hits
@@ -104,6 +116,7 @@ weapons:
     name: "Poleaxe (axe, hammer and spike)"
     short: "Poleaxe"
     icon: poleaxe
+    reach: 1
     era: medieval
     melee: armed
     melee_table: towton-1461-all-hits
@@ -121,6 +134,7 @@ weapons:
     name: "Bow (war arrows)"
     short: "Bow"
     icon: bow
+    range: [15, 40, 90]
     era: "ancient-1880s"
     mechanisms: {pierce: 95, cut: 5}
     zone_bias: {}
@@ -136,6 +150,7 @@ weapons:
     name: "Longbow (English war bow, bodkin and broadhead arrows)"
     short: "Longbow"
     icon: bow
+    range: [20, 60, 125]
     era: "medieval"
     mechanisms: {pierce: 95, cut: 5}
     zone_bias: {}
@@ -151,6 +166,7 @@ weapons:
     name: "Crossbow (bolts)"
     short: "Crossbow"
     icon: crossbow
+    range: [15, 50, 100]
     era: "medieval"
     mechanisms: {pierce: 100}
     zone_bias: {}
@@ -166,6 +182,7 @@ weapons:
     name: "Sling (stones, lead bullets)"
     short: "Sling"
     icon: sling
+    range: [10, 30, 60]
     era: "ancient-medieval"
     mechanisms: {crush: 100}
     zone_bias: {head: 1.5, torso: 1.0, arms: 0.9, legs: 0.8}
@@ -182,6 +199,7 @@ weapons:
     name: "Dagger / knife"
     short: "Dagger"
     icon: dagger
+    reach: 1
     era: any
     melee: armed
     mechanisms: {pierce: 70, cut: 30}
@@ -194,6 +212,7 @@ weapons:
     name: "Bayonet (musket or rifle)"
     short: "Bayonet"
     icon: bayonet_gun
+    reach: 1
     era: "1700s-"
     melee: armed
     melee_table: peninsular-1808-14-officers
@@ -207,6 +226,7 @@ weapons:
     name: "Sharpened entrenching tool (spade)"
     short: "Spade"
     icon: spade
+    reach: 1
     era: "1915-"
     melee: armed
     melee_table: visby-1361-adjusted
@@ -221,6 +241,7 @@ weapons:
     name: "Sabre or broadsword"
     short: "Sabre"
     icon: sabre
+    reach: 1
     era: "1700s-1900s"
     melee: armed
     melee_table: peninsular-1808-14-officers
@@ -233,6 +254,7 @@ weapons:
     name: "Cavalry lance"
     short: "Lance"
     icon: lance
+    reach: 2
     era: "1800s-1900s"
     melee: armed
     melee_table: peninsular-1808-14-officers
@@ -245,6 +267,7 @@ weapons:
     name: "Clubbed musket (butt stroke)"
     short: "Musket butt"
     icon: musket_butt
+    reach: 1
     era: "1700s-1900s"
     melee: armed
     melee_table: visby-1361-adjusted
@@ -258,6 +281,7 @@ weapons:
     name: "Punch"
     short: "Punch"
     icon: fist
+    reach: 1
     era: any
     melee: unarmed
     mechanisms: {crush: 100}
@@ -269,6 +293,7 @@ weapons:
     name: "Kick"
     short: "Kick"
     icon: fist
+    reach: 1
     era: any
     melee: unarmed
     mechanisms: {crush: 100}
@@ -280,6 +305,7 @@ weapons:
     name: "Elbow or knee"
     short: "Elbow/knee"
     icon: fist
+    reach: 1
     era: any
     melee: unarmed
     mechanisms: {crush: 75, cut: 25}
@@ -292,6 +318,7 @@ weapons:
     name: "Matchlock musket"
     short: "Matchlock"
     icon: long_gun
+    range: [20, 40, 75]
     era: "1500s-1690s"
     threat: rifle
     mechanisms: {ballistic: 100}
@@ -303,6 +330,7 @@ weapons:
     name: "Wheellock pistol or carbine (cavalry)"
     short: "Pistol/carbine"
     icon: pistol
+    range: [3, 8, 15]
     era: "1530s-1690s"
     threat: pistol
     mechanisms: {ballistic: 100}
@@ -315,6 +343,7 @@ weapons:
     name: "Smoothbore musket (Brown Bess, Charleville)"
     short: "Musket"
     icon: long_gun
+    range: [25, 50, 100]
     era: "1700s-1850s"
     threat: rifle
     mechanisms: {ballistic: 100}
@@ -326,6 +355,7 @@ weapons:
     name: "Flintlock rifle (Pennsylvania, Baker, Jäger)"
     short: "Rifle"
     icon: long_gun
+    range: [50, 100, 150]
     era: "1700s-1840s"
     threat: rifle
     mechanisms: {ballistic: 100}
@@ -337,6 +367,7 @@ weapons:
     name: "Flintlock pistol"
     short: "Pistol"
     icon: pistol
+    range: [3, 8, 15]
     era: "1700s-1840s"
     threat: pistol
     mechanisms: {ballistic: 100}
@@ -348,6 +379,7 @@ weapons:
     name: "Smoothbore artillery (round shot, canister, grape, shell)"
     short: "Artillery"
     icon: rammer
+    off_map: true
     era: "1700s-1850s"
     threat: fragment
     mechanisms: {ballistic: 70, crush: 30}
@@ -360,6 +392,7 @@ weapons:
     name: "Rifle-musket (Minie ball)"
     short: "Rifle-musket"
     icon: long_gun
+    range: [50, 150, 250]
     era: "1860s"
     threat: rifle
     mechanisms: {ballistic: 100}
@@ -371,6 +404,7 @@ weapons:
     name: "Artillery (canister, shell fragments)"
     short: "Artillery"
     icon: rammer
+    off_map: true
     era: "1860s"
     threat: fragment
     mechanisms: {ballistic: 80, crush: 20}
@@ -382,6 +416,7 @@ weapons:
     name: "Revolver"
     short: "Revolver"
     icon: pistol
+    range: [5, 12, 25]
     era: "1850s-"
     threat: pistol
     mechanisms: {ballistic: 100}
@@ -394,6 +429,7 @@ weapons:
     name: "Service rifle (bolt or semi-auto, 1914-53)"
     short: "Rifle"
     icon: long_gun
+    range: [100, 200, 300]
     era: "1914-1953"
     threat: rifle
     mechanisms: {ballistic: 100}
@@ -405,6 +441,7 @@ weapons:
     name: "Assault rifle (M16, AK)"
     short: "Assault rifle"
     icon: modern_rifle
+    range: [50, 150, 250]
     era: "1960s-"
     threat: rifle
     mechanisms: {ballistic: 100}
@@ -416,6 +453,7 @@ weapons:
     name: "Rifle, armour-piercing ammunition"
     short: "AP rifle"
     icon: modern_rifle
+    range: [100, 200, 300]
     era: "1990s-"
     threat: rifle_ap
     mechanisms: {ballistic: 100}
@@ -427,6 +465,7 @@ weapons:
     name: "Machine gun"
     short: "MG"
     icon: machine_gun
+    range: [100, 300, 500]
     era: "1914-"
     threat: rifle
     mechanisms: {ballistic: 100}
@@ -438,6 +477,7 @@ weapons:
     name: "Pistol or submachine gun"
     short: "Pistol/SMG"
     icon: smg
+    range: [25, 50, 100]
     era: "1900s-"
     threat: pistol
     mechanisms: {ballistic: 100}
@@ -449,6 +489,7 @@ weapons:
     name: "Hand grenade"
     short: "Grenade"
     icon: grenade
+    range: [5, 10, 15]
     era: "1914-"
     threat: fragment
     mechanisms: {ballistic: 85, crush: 15}
@@ -460,6 +501,7 @@ weapons:
     name: "Mortar, rocket or artillery"
     short: "Mortar"
     icon: device
+    off_map: true
     era: "1914-"
     threat: fragment
     mechanisms: {ballistic: 85, crush: 15}
@@ -471,6 +513,7 @@ weapons:
     name: "RPG (rocket-propelled grenade)"
     short: "RPG"
     icon: launcher
+    range: [50, 100, 150]
     era: "1960s-"
     threat: fragment
     mechanisms: {ballistic: 70, crush: 30}
@@ -482,6 +525,7 @@ weapons:
     name: "Mine, booby trap or IED"
     short: "Mine/IED"
     icon: device
+    off_map: true
     era: "1914-"
     threat: fragment
     mechanisms: {ballistic: 60, crush: 40}
@@ -494,6 +538,7 @@ weapons:
     name: "Punji stake"
     short: "Punji"
     icon: stake
+    off_map: true
     era: "Vietnam"
     mechanisms: {pierce: 100}
     zone_bias: {head: 0.0, torso: 0.0, arms: 0.0, legs: 1.0}
@@ -505,6 +550,7 @@ weapons:
     name: "Fragments, unspecified (shell, grenade, mine)"
     short: "Frags"
     icon: grenade
+    off_map: true
     era: "1914-"
     threat: fragment
     mechanisms: {ballistic: 85, crush: 15}

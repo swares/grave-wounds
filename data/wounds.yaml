@@ -302,3 +302,29 @@ combat:
     leader_present: 10
     leader_down: 20
     heavy_losses: 20
+  # Battle map (Grave Wounds): a hex grid, pointy-top, odd rows shifted right. A round is
+  # 6 seconds. On his turn a fighter may stay, advance up to `advance` hexes and still
+  # attack, or run up to `run` hexes and not attack. Wounds cut movement: any impairment in
+  # `halved_by` halves both (rounded down); one in `crawl_by` leaves only a crawl of
+  # `crawl` hexes; one in `no_run_by` stops him running. A fighter in a state listed in
+  # `no_move_states` cannot move. He may pass through friends but not stop on them, and
+  # cannot enter an enemy's hex.
+  # Leaving contact: if he moves more than `careful_step` hexes, every enemy next to him
+  # where he started, and not next to him where he ends, may make one free attack on him
+  # (if that enemy is up and able to attack).
+  move:
+    hex_m: 2
+    advance: 4
+    run: 12
+    halved_by: [leg, move]
+    crawl_by: [collapse, stand]
+    crawl: 1
+    no_run_by: [breath]
+    no_move_states: [stunned, out]
+    careful_step: 1
+    map: {cols: 24, rows: 16}
+  # Missile range bands: weapons.yaml `range` gives each band's outer edge in hexes.
+  range:
+    - {band: short, penalty: 0}
+    - {band: medium, penalty: 20}
+    - {band: long, penalty: 40}

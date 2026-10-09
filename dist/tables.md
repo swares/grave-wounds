@@ -4225,7 +4225,7 @@ Modifiers stack in the roller and CLI (one per group). Printed columns below sho
 ## Fighting while wounded
 
 1. Pick the **attacker** and the **defender**. Add up each one's wound penalties (table below), capped at the limit shown.
-2. Attacker rolls d100 against **attack % minus penalties**. Equal or under hits; the **margin** is the effective chance minus the roll. A roll at or under a tenth of the effective chance is a **critical**: it cannot be defended.
+2. Attacker rolls d100 against **attack % minus penalties** (on the battle map, also minus any range penalty). Equal or under hits; the **margin** is the effective chance minus the roll. A roll at or under a tenth of the effective chance is a **critical**: it cannot be defended.
 3. If the defender may parry or dodge, they roll d100 against **defence % minus penalties**; equal or under avoids the blow.
 4. On a hit, roll location and mechanism as usual. **Severity comes from the margin** (bands below) instead of the severity table.
 5. Wounds switch situations on by themselves: a defender who cannot stand is **Target down**, a defender whose shield arm is useless has **No shield**, and an attacker on the ground fights as **Attacker lower**.
@@ -4269,6 +4269,60 @@ Penalties add up; each total is capped at -60%.
 **Stop check:** a serious or critical wound marked for one (most are) calls for d100 against the fighter's **Nerve** (green 35, regular 50, veteran 65), minus pain and blood-loss penalties, and -10 more for a critical wound. Equal or under: he fights on. Failed by 1-20: **defend only** for 2 rounds; by 21-40: **stunned** for 2 rounds; by more than 40: **out of the fight** until helped or the fight ends. Defend only and stunned fighters cannot attack; stunned also -50% defence. Pain above 3 steps calls for a stop check every round.
 
 **Team morale:** at the end of each round, a side with 25% or more of its fighters down rolls d100 against the best Nerve among those still up (its leader's, if he is up), +10 with a leader up, -20 if a leader is down, -20 once 50% are down. Over: the side breaks and runs or surrenders.
+
+### Battle map
+
+**Scale:** one hex is 2 m and a round is 6 seconds. The map has pointy-top hexes; the roller's default is 24 x 16.
+
+**A fighter's turn:** stay in place, **advance** up to 4 hexes and still attack, or **run** up to 12 hexes and not attack. He may pass through friends but not stop on them, and cannot enter an enemy's hex.
+
+**Wounds and movement:** the leg and move impairments halve both distances (round down); the collapse and stand impairments leave only a crawl of 1 hex; the breath impairment stops him running. A fighter who is stunned or out of the fight cannot move. Defend only: he may move but not attack.
+
+**Leaving contact:** a fighter who moves more than 1 hex and ends no longer next to an enemy he started beside gives that enemy one free attack, if the enemy is up and able to attack. Stepping back 1 hex is a careful withdrawal and draws none.
+
+**Reach and range:** a close-combat weapon strikes enemies within its reach (1 is the next hex). A missile weapon has short, medium and long range in hexes, with attack modifiers short +0, medium -20%, long -40%; no shot past long range. Weapons marked off-map (artillery, mines, stakes) are not aimed on the map: the GM decides whom they hit.
+
+| Weapon | Reach or range (short / medium / long) |
+|---|---|
+| Sword (arming sword) | reach 1 |
+| Axe (hand or long-hafted) | reach 1 |
+| Spiked club / morning star (knout) | reach 1 |
+| Spear / lance | reach 2 |
+| Bill (English bill, hooked polearm) | reach 2 |
+| Poleaxe (axe, hammer and spike) | reach 1 |
+| Bow (war arrows) | 15 / 40 / 90 hexes (30 / 80 / 180 m) |
+| Longbow (English war bow, bodkin and broadhead arrows) | 20 / 60 / 125 hexes (40 / 120 / 250 m) |
+| Crossbow (bolts) | 15 / 50 / 100 hexes (30 / 100 / 200 m) |
+| Sling (stones, lead bullets) | 10 / 30 / 60 hexes (20 / 60 / 120 m) |
+| Dagger / knife | reach 1 |
+| Bayonet (musket or rifle) | reach 1 |
+| Sharpened entrenching tool (spade) | reach 1 |
+| Sabre or broadsword | reach 1 |
+| Cavalry lance | reach 2 |
+| Clubbed musket (butt stroke) | reach 1 |
+| Punch | reach 1 |
+| Kick | reach 1 |
+| Elbow or knee | reach 1 |
+| Matchlock musket | 20 / 40 / 75 hexes (40 / 80 / 150 m) |
+| Wheellock pistol or carbine (cavalry) | 3 / 8 / 15 hexes (6 / 16 / 30 m) |
+| Smoothbore musket (Brown Bess, Charleville) | 25 / 50 / 100 hexes (50 / 100 / 200 m) |
+| Flintlock rifle (Pennsylvania, Baker, Jäger) | 50 / 100 / 150 hexes (100 / 200 / 300 m) |
+| Flintlock pistol | 3 / 8 / 15 hexes (6 / 16 / 30 m) |
+| Smoothbore artillery (round shot, canister, grape, shell) | off-map (GM decides) |
+| Rifle-musket (Minie ball) | 50 / 150 / 250 hexes (100 / 300 / 500 m) |
+| Artillery (canister, shell fragments) | off-map (GM decides) |
+| Revolver | 5 / 12 / 25 hexes (10 / 24 / 50 m) |
+| Service rifle (bolt or semi-auto, 1914-53) | 100 / 200 / 300 hexes (200 / 400 / 600 m) |
+| Assault rifle (M16, AK) | 50 / 150 / 250 hexes (100 / 300 / 500 m) |
+| Rifle, armour-piercing ammunition | 100 / 200 / 300 hexes (200 / 400 / 600 m) |
+| Machine gun | 100 / 300 / 500 hexes (200 / 600 / 1000 m) |
+| Pistol or submachine gun | 25 / 50 / 100 hexes (50 / 100 / 200 m) |
+| Hand grenade | 5 / 10 / 15 hexes (10 / 20 / 30 m) |
+| Mortar, rocket or artillery | off-map (GM decides) |
+| RPG (rocket-propelled grenade) | 50 / 100 / 150 hexes (100 / 200 / 300 m) |
+| Mine, booby trap or IED | off-map (GM decides) |
+| Punji stake | off-map (GM decides) |
+| Fragments, unspecified (shell, grenade, mine) | off-map (GM decides) |
 
 ## Armour
 
