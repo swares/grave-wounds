@@ -1015,7 +1015,7 @@ function nextFighter(){
   S.turn = next.id; S.tm = null; S.placing = null; S.mapMsg = ""; S.free = [];   // a new turn: unresolved free attacks lapse
   const i = S.chars.indexOf(next);
   if (cannotAttack(penalties(next))){         // defend only or stunned: his turn passes without an attack
-    if (S.attacker === i) S.attacker = -1;
+    S.attacker = -1;                         // and nobody else's attack carries over into it
     $("#apply-msg").textContent = `${next.name}'s turn: ${CMB.states[next.state.id].name.toLowerCase()}, so no attack.`;
     renderChars(); return;
   }
@@ -1073,8 +1073,13 @@ function turnInfo(){                         // the acting fighter's movement th
 // Range and reach for the hit about to be rolled: {blocked} or {range} (null when there is no map check).
 function rangeCheck(){
   const a = attackerChar(), dd = defenderChar();
+  const act = actingChar(), f = (S.free || [])[0];
+  if (S.turn && act && !f && a !== act){     // during a turn only the acting fighter attacks (or a free attack)
+    if (S.tm && S.tm.id === act.id && S.tm.ran) return { blocked: `${act.name} ran this turn and cannot attack.` };
+    if (cannotAttack(penalties(act))) return { blocked: `${act.name} cannot attack: ${act.state ? CMB.states[act.state.id].name.toLowerCase() : "incapacitated"}.` };
+    if (a) return { blocked: `It is ${act.name}'s turn: only he attacks now.` };
+  }
   if (!S.turn || !a || !dd || a === dd || !a.pos || !dd.pos) return { range: null };   // the map's rules apply once turns start
-  const f = (S.free || [])[0];
   if (f && f.att === a.id && f.def === dd.id) return { range: { dist: 1, band: "free attack", penalty: 0 } };
   if (S.tm && S.tm.id === a.id && S.tm.ran) return { blocked: `${a.name} ran this turn and cannot attack.` };
   const dist = hexDistance(a.pos, dd.pos), r = weaponReach(S.weapon, dist);
@@ -1088,7 +1093,7 @@ function canTarget(a, o){                    // ringed on the map: an enemy the 
 function restoreActing(){                    // after free attacks: the acting fighter attacks again
   const c = actingChar(); if (!c) return;
   const i = S.chars.indexOf(c);
-  if (cannotAttack(penalties(c)) || (S.tm && S.tm.ran)){ if (S.attacker === i) S.attacker = -1; return }
+  if (cannotAttack(penalties(c)) || (S.tm && S.tm.ran)){ S.attacker = -1; return }
   S.attacker = i; applyAttackerWeapon(); syncArmor();
   if (S.active === i || sideOf(S.chars[S.active] || c) === sideOf(c)){
     const foes = S.chars.filter(o => o.pos && sideOf(o) !== sideOf(c) && !isOut(o)).sort((x, y) => hexDistance(c.pos, x.pos) - hexDistance(c.pos, y.pos));
@@ -1167,6 +1172,8 @@ function renderMap(){
   if (f){
     const a = S.chars.find(c => c.id === f.att), dd = S.chars.find(c => c.id === f.def);
     bits.push(`<span class="free"><b>Free attack:</b> ${attr(a.name)} on ${attr(dd.name)} as he leaves contact. Roll the hit and apply it.</span><button class="small" data-map="skipfree">Skip</button>`);
+    const tm = S.tm || {};
+    if (acting && tm.moved && tm.prev && S.free.length === tm.prev.free + (tm.queued || 0)) bits.push(`<button class="small" data-map="undo">Undo move</button>`);
   } else if (acting){
     const tm = S.tm || {}, al = t.allow;
     const moveTxt = tm.moved ? (tm.steps ? `${tm.ran ? "ran" : "advanced"} ${hexes(tm.steps)}` : "stays in place")
