@@ -52,12 +52,12 @@ python -m gravewounds roll --table towton-1461-all-hits --weapon bill -n 3
 
 ## Next steps
 
-From the design proposal:
+From the design proposal (the rule changes from the rulebook comparison are agreed and
+written in):
 
-1. Merge the changes suggested by the rulebook comparison into one list and agree it.
-2. Write the one-page combat rules and the stop check, and test them in the roller.
-3. Draft the medieval character generation tables and make a team in 20 minutes.
-4. Playtest one fight with two teams, then a few weeks of camp, march and weather.
+1. Write the one-page combat rules and the stop check, and test them in the roller.
+2. Draft the medieval character generation tables and make a team in 20 minutes.
+3. Playtest one fight with two teams, then a few weeks of camp, march and weather.
 
 ## Copyright and trademarks
 
