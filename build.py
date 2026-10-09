@@ -1,7 +1,7 @@
 """Build every output from the data folder.
 
     python build.py            -> dist/tables.pdf, dist/tables.md,
-                                  dist/gravewounds-data.json, dist/roller.html,
+                                  dist/gravewounds-data.json, dist/roller.html, dist/travel.html,
                                   index.html (start page for GitHub Pages)
 """
 from __future__ import annotations
@@ -214,6 +214,34 @@ def move_rules(d) -> list[str]:
     ]
 
 
+def travel_rules(d) -> list[str]:
+    T = d.terrain
+    return [
+        f"<b>Travel map:</b> hexes are usually 1 km. A force marches {T['hours_per_day']} hours a day from {T['day_starts']:02d}:00 at its type's road speed. "
+        "Crossing from one hex to the next takes the average of the two terrains' time multipliers; rivers and lakes are crossed only at a ford or bridge.",
+        "A force stops for the night rather than start a hex it cannot finish that day. Wagons cannot enter "
+        + (lambda xs: ", ".join(xs[:-1]) + " or " + xs[-1] if len(xs) > 1 else "".join(xs))([TT_name(d, t) for t in T["forces"].get("wagons", {}).get("cannot_enter", [])]) + ".",
+        "Speeds are for a small, fit band. A large army's column made less ground a day; cut its hours or speed to suit.",
+    ]
+
+
+def TT_name(d, tid: str) -> str:
+    return d.terrain["terrain"][tid]["name"].lower()
+
+
+def travel_rows(d) -> list[list[str]]:
+    """[terrain, time multiplier, km a day for each force type] (whole hexes of that terrain)."""
+    T = d.terrain
+    out = []
+    for t in T["terrain"].values():
+        row = [t["name"], "impassable" if t["cost"] is None else f"x{t['cost']:g}"]
+        for fid, f in T["forces"].items():
+            ok = t["cost"] is not None and t["id"] not in f.get("cannot_enter", [])
+            row.append(f"{f['kmh'] * T['hours_per_day'] / t['cost']:.0f}" if ok else "-")
+        out.append(row)
+    return out
+
+
 def reach_rows(d) -> list[list[str]]:
     """[weapon, reach or range] for every weapon, in data order."""
     out = []
@@ -234,6 +262,15 @@ CALLED_RULE = "Roll the location twice; keep whichever result lands in the calle
 # --------------------------------------------------------------------------
 # Bundle (single source for the web roller)
 # --------------------------------------------------------------------------
+def travel_bundle(d) -> dict:
+    """What the travel page needs: terrain, force types and the maps."""
+    return {
+        "generated": date.today().isoformat(),
+        "terrain": d.terrain,
+        "maps": {mid: {k: m.get(k) for k in ("id", "name", "hex_km", "rows", "places", "forces")} for mid, m in d.maps.items()},
+    }
+
+
 def bundle(d) -> dict:
     tables = {}
     for tid, t in d.tables.items():
@@ -379,6 +416,11 @@ def markdown(d) -> str:
     out += ["", "### Graze, stop check and morale", ""] + [re.sub("</?b>", "**", x) + "\n" for x in stop_rules(d)]
     out += ["### Battle map", ""] + [re.sub("</?b>", "**", x) + "\n" for x in move_rules(d)]
     out += ["| Weapon | Reach or range (short / medium / long) |", "|---|---|"] + [f"| {a} | {b} |" for a, b in reach_rows(d)] + [""]
+    if d.terrain["terrain"]:
+        ft = d.terrain["forces"]
+        out += ["## Travel", ""] + [re.sub("</?b>", "**", x) + "\n" for x in travel_rules(d)]
+        out += ["| Terrain | Time | " + " | ".join(f"{f['name']} km/day" for f in ft.values()) + " |",
+                "|---|---|" + "---|" * len(ft)] + ["| " + " | ".join(r) + " |" for r in travel_rows(d)] + [""]
 
     out += ["## Armour", ""] + [f"{i}. {re.sub('<[^>]+>', '**', x)}" for i, x in enumerate(ARMOR_STEPS, 1)]
     mcols = [m for m in MECHANISMS if m != "ballistic"]
@@ -724,6 +766,13 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
               Spacer(1, 6), Paragraph("Weapon reach and range", H2),
               Paragraph("Ranges are design estimates from each weapon's effective range in its period.", S), Spacer(1, 3),
               grid(rrows, [2.9 * inch, W - 2.9 * inch], font=7.5)]
+    if d.terrain["terrain"]:
+        ft = d.terrain["forces"]
+        trow = [[Paragraph(x, CH) for x in ["Terrain", "Time"] + [f"{f['name']}<br/>km a day" for f in ft.values()]]] + travel_rows(d)
+        story += [PageBreak(), Paragraph("Travel", H1)] + [Paragraph(x, B) for x in travel_rules(d)] + [
+                  Spacer(1, 6), Paragraph("Terrain", H2),
+                  Paragraph("Km a day across whole hexes of each terrain; a road day is the type's speed times its marching hours.", S), Spacer(1, 3),
+                  grid(trow, [1.8 * inch, 0.9 * inch] + [(W - 2.7 * inch) / len(ft)] * len(ft), font=8)]
 
     # Armour
     mcols = [m for m in MECHANISMS if m != "ballistic"]
@@ -906,6 +955,9 @@ def main() -> int:
     html = tpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>"))
     html = html.replace("/*__GRAVEWOUNDS_DATA__*/null", json.dumps(b, separators=(",", ":")))
     (DIST / "roller.html").write_text(html, encoding="utf-8")
+    tb = travel_bundle(d)
+    ttpl = (ROOT / "templates" / "travel.html").read_text(encoding="utf-8")
+    (DIST / "travel.html").write_text(ttpl.replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":"))), encoding="utf-8")
     (ROOT / "index.html").write_text(index_page(d), encoding="utf-8")
     print("Built:", ", ".join(p.name for p in sorted(DIST.iterdir())), "+ index.html")
     return 0

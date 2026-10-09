@@ -4324,6 +4324,31 @@ Penalties add up; each total is capped at -60%.
 | Punji stake | off-map (GM decides) |
 | Fragments, unspecified (shell, grenade, mine) | off-map (GM decides) |
 
+## Travel
+
+**Travel map:** hexes are usually 1 km. A force marches 8 hours a day from 08:00 at its type's road speed. Crossing from one hex to the next takes the average of the two terrains' time multipliers; rivers and lakes are crossed only at a ford or bridge.
+
+A force stops for the night rather than start a hex it cannot finish that day. Wagons cannot enter forest, marsh, mountains or heath.
+
+Speeds are for a small, fit band. A large army's column made less ground a day; cut its hours or speed to suit.
+
+| Terrain | Time | On foot km/day | Mounted km/day | Baggage wagons km/day |
+|---|---|---|---|---|
+| Road | x1 | 32 | 48 | 24 |
+| Open ground | x1.5 | 21 | 32 | 16 |
+| Farmland | x1.5 | 21 | 32 | 16 |
+| Heath | x1.75 | 18 | 27 | - |
+| Forest | x2.5 | 13 | 19 | - |
+| Hills | x2 | 16 | 24 | 12 |
+| Mountains | x4 | 8 | 12 | - |
+| Marsh | x3 | 11 | 16 | - |
+| River | impassable | - | - | - |
+| Ford | x2 | 16 | 24 | 12 |
+| Bridge | x1 | 32 | 48 | 24 |
+| Lake or sea | impassable | - | - | - |
+| Village | x1 | 32 | 48 | 24 |
+| Town | x1 | 32 | 48 | 24 |
+
 ## Armour
 
 1. Use armour only on tables marked **armour allowed** (all-hits, baseline, knife and unarmed tables). The other tables already show the effect of what their soldiers wore.

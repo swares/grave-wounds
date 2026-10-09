@@ -93,6 +93,8 @@ class Data:
     melee_fallback: dict = field(default_factory=dict)
     conflicts: dict = field(default_factory=dict)   # battle group -> history, sides, examples
     wmult: dict = field(default_factory=dict)       # table id -> weapon id -> [multiplier per location]
+    terrain: dict = field(default_factory=dict)     # terrain.yaml: hours_per_day, forces, terrain (id -> type), place_kinds
+    maps: dict = field(default_factory=dict)        # travel map id -> map, `rows` = terrain rows as strings
     warnings: list = field(default_factory=list)
 
 
@@ -112,6 +114,13 @@ def load(root: str | Path = "data") -> Data:
     mods = _read(root / "modifiers.yaml") if (root / "modifiers.yaml").exists() else {"modifiers": []}
     armor = _read(root / "armor.yaml") if (root / "armor.yaml").exists() else {"materials": {}, "slots": {}, "kits": []}
     conflicts = (_read(root / "conflicts.yaml") or {}).get("conflicts", {}) if (root / "conflicts.yaml").exists() else {}
+    terrain = _read(root / "terrain.yaml") if (root / "terrain.yaml").exists() else {"hours_per_day": 8, "forces": {}, "terrain": [], "place_kinds": {}}
+    terrain = {**terrain, "terrain": {t["id"]: t for t in terrain["terrain"]}}
+    maps = {}
+    for p in sorted((root / "maps").glob("*.yaml")) if (root / "maps").exists() else []:
+        m = _read(p)
+        m["rows"] = [r for r in str(m.get("terrain", "")).split("\n") if r.strip()]
+        maps[m["id"]] = m
 
     data = Data(
         root=root,
@@ -127,6 +136,8 @@ def load(root: str | Path = "data") -> Data:
         melee_everywhere=wfile.get("melee_everywhere", []),
         melee_fallback=wfile.get("melee_fallback", {}),
         conflicts=conflicts,
+        terrain=terrain,
+        maps=maps,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -332,6 +343,50 @@ def validate(d: Data) -> None:
     for s in mv["no_move_states"]:
         if s not in CB["states"]:
             errors.append(f"wounds.yaml: combat.move.no_move_states names unknown state {s}")
+
+    # travel: terrain types and maps
+    TT = d.terrain["terrain"]
+    keys = {}
+    for tid, t in TT.items():
+        if len(str(t.get("key", ""))) != 1:
+            errors.append(f"terrain.yaml: {tid} key must be one character")
+        elif t["key"] in keys:
+            errors.append(f"terrain.yaml: {tid} and {keys[t['key']]} share key {t['key']!r}")
+        keys[t["key"]] = tid
+        if t.get("cost") is not None and not (isinstance(t["cost"], (int, float)) and t["cost"] > 0 and round(t["cost"] * 100) == t["cost"] * 100):
+            errors.append(f"terrain.yaml: {tid} cost must be positive with at most two decimals, or null for impassable")
+        if not (isinstance(t.get("colour"), list) and len(t["colour"]) == 2):
+            errors.append(f"terrain.yaml: {tid} colour must be [light, dark]")
+    for fid, f in d.terrain["forces"].items():
+        if not (isinstance(f.get("kmh"), (int, float)) and f["kmh"] > 0):
+            errors.append(f"terrain.yaml: force type {fid} needs a positive kmh")
+        for t in f.get("cannot_enter", []):
+            if t not in TT:
+                errors.append(f"terrain.yaml: force type {fid} cannot_enter names unknown terrain {t}")
+    for mid, m in d.maps.items():
+        rows = m["rows"]
+        if not rows or len({len(r) for r in rows}) != 1:
+            errors.append(f"maps/{mid}: terrain rows must all be the same length")
+            continue
+        bad = sorted({ch for r in rows for ch in r} - set(keys))
+        if bad:
+            errors.append(f"maps/{mid}: unknown terrain keys {bad}")
+        cols, nrows = len(rows[0]), len(rows)
+        inside = lambda h: isinstance(h, list) and len(h) == 2 and 0 <= h[0] < cols and 0 <= h[1] < nrows
+        if not (isinstance(m.get("hex_km"), (int, float)) and m["hex_km"] > 0):
+            errors.append(f"maps/{mid}: hex_km must be positive")
+        for pl in m.get("places", []):
+            if pl.get("kind") not in d.terrain["place_kinds"]:
+                errors.append(f"maps/{mid}: place {pl.get('name')} has unknown kind {pl.get('kind')}")
+            if not inside(pl.get("hex")):
+                errors.append(f"maps/{mid}: place {pl.get('name')} is off the map")
+        for fo in m.get("forces", []):
+            if fo.get("type") not in d.terrain["forces"]:
+                errors.append(f"maps/{mid}: force {fo.get('name')} has unknown type {fo.get('type')}")
+            if not inside(fo.get("hex")):
+                errors.append(f"maps/{mid}: force {fo.get('name')} is off the map")
+            elif TT[keys.get(rows[fo['hex'][1]][fo['hex'][0]], 'open')].get("cost") is None:
+                errors.append(f"maps/{mid}: force {fo.get('name')} starts on impassable terrain")
 
     # weapons
     for wid, w in d.weapons.items():

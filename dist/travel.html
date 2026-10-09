@@ -1,0 +1,483 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grave Wounds Travel Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Travel map: the march from camp to the field. Map | forces, plan and painting */
+:root{
+  --bg:#e9ecee; --panel:#f6f7f8; --ink:#1b2127; --muted:#5b6670; --line:#c5ccd2;
+  --steel:#3f4f5d; --blood:#8e1b2c; --blood-soft:#f1d9dc;
+  --ok:#2f6b46; --warn:#a86512; --crit:#8e1b2c;
+  --side0:#2f5d8a; --side1:#8e1b2c; --side2:#8a5a12; --side3:#2f6b46;
+  --display:"Alegreya SC",Georgia,serif; --body:"Alegreya Sans","Gill Sans","Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
+  --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23;
+  --ok:#6cc08d; --warn:#e3a14d; --crit:#e46576;
+  --side0:#8db8e0; --side1:#e8909c; --side2:#e3b46d; --side3:#86cfa1; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
+  --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23;
+  --ok:#6cc08d; --warn:#e3a14d; --crit:#e46576;
+  --side0:#8db8e0; --side1:#e8909c; --side2:#e3b46d; --side3:#86cfa1; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--body);padding-inline:16px;padding-block:20px 40px;margin:0}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 20px;border-bottom:2px solid var(--ink);padding-bottom:10px}
+h1{font:700 clamp(1.5rem,3.4vw,2.2rem)/1.1 var(--display);margin:0;letter-spacing:.01em}
+h2{font:700 1.05rem/1.2 var(--display);margin:0;letter-spacing:.04em;color:var(--steel)}
+.sub{color:var(--muted);font-size:.92rem;margin:0;max-width:70ch}
+nav a{color:var(--blood);font-size:.9rem;margin-left:14px}
+.grid{display:grid;grid-template-columns:minmax(0,2.3fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:980px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+label{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:3px}
+select,input,button,textarea{font:inherit;color:var(--ink)}
+select,input[type=text],textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:7px 8px}
+textarea{font:12px/1.35 var(--mono);min-height:12rem}
+button{cursor:pointer;border:1px solid var(--steel);background:transparent;border-radius:3px;padding:7px 12px}
+button:hover{background:var(--blood-soft)}
+button.primary{background:var(--blood);border-color:var(--blood);color:var(--panel);font-weight:700}
+button.primary:hover{filter:brightness(1.1);background:var(--blood)}
+button.small{font-size:.8rem;padding:3px 8px}
+button[aria-pressed="true"]{background:var(--blood-soft);border-color:var(--blood);font-weight:700}
+button:disabled{opacity:.45;cursor:default}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 120px;min-width:0}
+.muted{color:var(--muted);font-size:.85rem}
+.msg{font-size:.9rem;border-left:3px solid var(--warn);padding:2px 0 2px 8px}
+.msg:empty{display:none}
+.mapbox{overflow:auto;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
+.mapbox svg{display:block;width:100%;height:auto;min-width:620px;margin:0 auto;touch-action:none;user-select:none}
+.hx{stroke:rgba(0,0,0,.12);stroke-width:.6}
+.mapbox.plan .hx,.mapbox.place .hx{cursor:pointer}
+.mapbox.paint .hx{cursor:crosshair}
+.hx:hover{stroke:var(--ink);stroke-width:1.4}
+.route{fill:none;stroke:var(--blood);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:.9;pointer-events:none}
+.route.other{stroke:var(--muted);stroke-width:2;stroke-dasharray:4 4;opacity:.7}
+.route.done{stroke:var(--muted);stroke-width:3;opacity:.55}
+.wp circle{fill:var(--panel);stroke:var(--blood);stroke-width:2}
+.wp text,.night text{font:700 8px var(--mono);fill:var(--ink);text-anchor:middle;pointer-events:none}
+.wp,.night,.place{pointer-events:none}
+.night rect{fill:var(--ink);opacity:.85}.night text{fill:var(--panel)}
+.place text{font:600 10px var(--body);fill:var(--ink);paint-order:stroke;stroke:var(--panel);stroke-width:3px;stroke-linejoin:round}
+.place .mk{fill:var(--ink);stroke:var(--panel);stroke-width:1.2}
+.place.objective .mk{fill:var(--blood)}
+.force{cursor:pointer}
+.force circle.body{stroke:var(--panel);stroke-width:1.6}
+.force text{font:700 8.5px var(--mono);fill:var(--panel);text-anchor:middle;pointer-events:none}
+.force.s0 circle.body{fill:var(--side0)}.force.s1 circle.body{fill:var(--side1)}.force.s2 circle.body{fill:var(--side2)}.force.s3 circle.body{fill:var(--side3)}
+.force .ring{fill:none;stroke:none;stroke-width:2.2}
+.force.sel .ring{stroke:var(--ink)}
+.force:focus{outline:none}.force:focus .ring{stroke:var(--ink);stroke-dasharray:1 2}
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px 12px;font-size:.82rem}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:2px;border:1px solid var(--line);flex:none}
+.palette{display:flex;flex-wrap:wrap;gap:6px}
+.palette button{display:flex;align-items:center;gap:6px;font-size:.82rem;padding:4px 8px}
+.forces{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.forces li{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:3px;padding:6px 8px;cursor:pointer}
+.forces li[aria-current="true"]{border-color:var(--blood);background:var(--blood-soft)}
+.forces .dot{width:12px;height:12px;border-radius:50%;flex:none}
+.forces .meta{margin-left:auto;font:500 .75rem var(--mono);color:var(--muted)}
+.summary{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:.9rem;margin:0}
+.summary dt{color:var(--muted)}.summary dd{margin:0;font-weight:700}
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;max-height:14rem;overflow-y:auto;font-size:.85rem}
+.log:empty{display:none}
+.log li{border-left:3px solid var(--line);padding:1px 0 1px 8px}
+.hover{font:500 .8rem var(--mono);color:var(--muted);min-height:1.3em}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style id="terrain-css"></style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Grave Wounds Travel Map</h1>
+      <p class="sub">March your forces from camp to the field. Each hex is a kilometre; terrain sets how long it takes. Plan a route with waypoints, then march it an hour or a day at a time.</p>
+    </div>
+    <nav><a href="roller.html">Wound roller</a><a href="../index.html">Start page</a></nav>
+  </header>
+
+  <div class="grid">
+    <section class="panel" aria-labelledby="h-map">
+      <div class="toolbar" style="justify-content:space-between">
+        <h2 id="h-map">Map</h2>
+        <div class="toolbar">
+          <select id="sel-map" aria-label="Map" style="width:auto"></select>
+          <span class="muted" id="map-scale"></span>
+        </div>
+      </div>
+      <div class="toolbar" role="group" aria-label="What clicking the map does">
+        <button class="small" data-mode="plan" aria-pressed="true" title="Click hexes to add waypoints for the selected force">Plan route</button>
+        <button class="small" data-mode="place" aria-pressed="false" title="Click a hex to put the selected force there (clears its route)">Move force</button>
+        <button class="small" data-mode="paint" aria-pressed="false" title="Pick a terrain below, then click or drag on the map">Paint terrain</button>
+      </div>
+      <p class="msg" id="msg" aria-live="polite"></p>
+      <div class="mapbox plan" id="map" role="group" aria-label="Travel map"></div>
+      <div class="hover" id="hover" aria-live="off"></div>
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <aside class="panel" aria-labelledby="h-forces">
+      <h2 id="h-forces">Forces</h2>
+      <ul class="forces" id="forces"></ul>
+      <details>
+        <summary class="muted">Add a force</summary>
+        <div class="row" style="margin-top:8px">
+          <div><label for="in-fname">Name</label><input id="in-fname" type="text" placeholder="Scouts"></div>
+          <div><label for="in-ftype">Type</label><select id="in-ftype"></select></div>
+          <div><label for="in-fside">Side</label><input id="in-fside" type="text" value="Side A"></div>
+        </div>
+        <div class="toolbar" style="margin-top:8px"><button class="small" id="btn-add">Add at the camp</button></div>
+      </details>
+
+      <h2>Route</h2>
+      <div id="force-head" class="muted"></div>
+      <dl class="summary" id="summary"></dl>
+      <div class="toolbar">
+        <button class="primary" id="btn-hour" title="March for one hour along the route">March 1 hour</button>
+        <button id="btn-day" title="March until the day's marching hours are used up">March to day's end</button>
+      </div>
+      <div class="toolbar">
+        <button class="small" id="btn-undo-wp">Remove last waypoint</button>
+        <button class="small" id="btn-clear">Clear route</button>
+        <button class="small" id="btn-remove">Remove force</button>
+      </div>
+      <ol class="log" id="log" aria-label="March log"></ol>
+
+      <div id="paint-box" hidden>
+        <h2>Paint terrain</h2>
+        <div class="palette" id="palette" role="group" aria-label="Terrain to paint"></div>
+        <div class="toolbar">
+          <button class="small" id="btn-export">Show map file</button>
+          <button class="small" id="btn-download">Download map file</button>
+          <button class="small" id="btn-revert">Undo all painting</button>
+        </div>
+        <textarea id="export" hidden aria-label="Map file (YAML) to save into data/maps/" readonly></textarea>
+        <p class="muted" style="margin:0">To keep a painted map, save the file into <code>data/maps/</code> and rebuild.</p>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const DATA = {"generated":"2026-10-09","terrain":{"hours_per_day":8,"day_starts":8,"forces":{"foot":{"name":"On foot","kmh":4},"mounted":{"name":"Mounted","kmh":6},"wagons":{"name":"Baggage wagons","kmh":3,"cannot_enter":["forest","marsh","mountains","heath"]}},"terrain":{"road":{"id":"road","key":"=","name":"Road","cost":1.0,"colour":["#9f8b66","#8f7d58"],"cover":"none","forage":"poor"},"open":{"id":"open","key":".","name":"Open ground","cost":1.5,"colour":["#dfe6c4","#3d4632"],"cover":"none","forage":"fair"},"farmland":{"id":"farmland","key":"f","name":"Farmland","cost":1.5,"colour":["#e9dfa8","#4f4a2c"],"cover":"light","forage":"good"},"heath":{"id":"heath","key":",","name":"Heath","cost":1.75,"colour":["#d4c3cf","#4a3d47"],"cover":"none","forage":"poor"},"forest":{"id":"forest","key":"F","name":"Forest","cost":2.5,"colour":["#8fb487","#24402a"],"cover":"heavy","forage":"fair"},"hills":{"id":"hills","key":"h","name":"Hills","cost":2.0,"colour":["#c9b28a","#5a4b33"],"cover":"light","forage":"fair"},"mountains":{"id":"mountains","key":"M","name":"Mountains","cost":4.0,"colour":["#a39a92","#4d4844"],"cover":"heavy","forage":"none"},"marsh":{"id":"marsh","key":"m","name":"Marsh","cost":3.0,"colour":["#a9c7b8","#2d4842"],"cover":"light","forage":"poor","wet":true},"river":{"id":"river","key":"~","name":"River","cost":null,"colour":["#8db7d6","#25445c"],"cover":"none","forage":"poor","wet":true},"ford":{"id":"ford","key":"d","name":"Ford","cost":2.0,"colour":["#b4d0e0","#35566b"],"cover":"none","forage":"poor","wet":true},"bridge":{"id":"bridge","key":"b","name":"Bridge","cost":1.0,"colour":["#7a6545","#a08a5e"],"cover":"none","forage":"none"},"lake":{"id":"lake","key":"w","name":"Lake or sea","cost":null,"colour":["#7fa9cc","#1f3a52"],"cover":"none","forage":"poor","wet":true},"village":{"id":"village","key":"v","name":"Village","cost":1.0,"colour":["#d9a68a","#6e4836"],"cover":"light","forage":"good"},"town":{"id":"town","key":"T","name":"Town","cost":1.0,"colour":["#c98b74","#7a4535"],"cover":"heavy","forage":"good"}},"place_kinds":{"camp":{"name":"Camp"},"objective":{"name":"Objective"},"village":{"name":"Village"},"town":{"name":"Town"},"landmark":{"name":"Landmark"}}},"maps":{"generic-valley":{"id":"generic-valley","name":"Generic river valley (test map)","hex_km":1,"rows":["....FFFFFFFF.FFF.......www......hhMMMMMM","..FFFFFFFFFFFFFF......wwww......hhhMMMMM","...FFFFFFFFFFFFFF....wwwwwww...hhhhMMMMM",".FFFFFFFFFFFFFFF.....wwwwww....hhhhMMMMM",".FFFFFFFFFFFFFFF.......~www.....hhMMMMMM",".FFFFFFFFFFFFF.F......~w..........MMMMMM","..FFFFFFFFFFFFF.......~...........MMMMMM","..FFFFFFFFFFFF.......~.....T.......MMMMM","...FFFFFFFFFF.......=d======.......M.M..","..FFFFFFFFFFF.....==~......h..h.h.......","...FFFFFFFFF......=.~......hhhhh=h......","...FFFFFFFF......=.~.......hhhh=h.......","....F.FF.FFFFff.f=.~......hhhhh=hh......",".........FFF.fff=f.~.....hhhhh=hhh......","..........FFFfff=f..~...ffhfhh=hhhh.....","...........Ffff=fff.~...ff====hhhh......","...........ffff=fff..b=v===ffhhhhhh.....","...........f===ffff==~.fffffhhhhh..hh...","...........vffffff.=..~.fffffhhhhhhhh...","............fffff.=..~.fffff.hh.hhhhh...","...================..~...fff.....hhhhh..",".,.,..,.............~m...........hhhhh..",".,,,,,,.............m~m...........hhhh..",",,,,,,,,............m~m..........h......",".,,,,,,,,...........m~m.................",",,,,,,,,...........m~m..................",",,,,,,,,,,.........m~m..................",",,,,,,,,..........m~m...................",",,,,,,,,..........m~m...................",".,,,,,,...........~m...................."],"places":[{"name":"Camp","kind":"camp","hex":[3,20]},{"name":"Gallows Ridge","kind":"objective","hex":[32,10],"note":"Where the enemy is drawn up"},{"name":"Brigham","kind":"village","hex":[23,16]},{"name":"Elmstead","kind":"village","hex":[11,18]},{"name":"Kelsey Market","kind":"town","hex":[27,7]},{"name":"Bridge","kind":"landmark","hex":[21,16]},{"name":"Ford","kind":"landmark","hex":[21,8]}],"forces":[{"name":"Our band","type":"foot","side":"Side A","hex":[3,20]},{"name":"Baggage train","type":"wagons","side":"Side A","hex":[4,20]},{"name":"Enemy horse","type":"mounted","side":"Side B","hex":[33,11]}]}}};
+const $ = s => document.querySelector(s);
+const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
+const BYKEY = Object.fromEntries(Object.values(TT).map(t => [t.key, t]));
+
+/* ---------- routes and marching: same rules as gravewounds/travel.py ---------- */
+const NEIGHBOURS = [[[1, 0], [0, -1], [-1, -1], [-1, 0], [-1, 1], [0, 1]], [[1, 0], [1, -1], [0, -1], [-1, 0], [0, 1], [1, 1]]];
+function neighbours([c, r], cols, rows){
+  return NEIGHBOURS[r & 1].map(([dc, dr]) => [c + dc, r + dr]).filter(([x, y]) => x >= 0 && x < cols && y >= 0 && y < rows);
+}
+const terrainAt = (m, h) => BYKEY[m.rows[h[1]][h[0]]];
+function passable(m, h, ftype){
+  const t = terrainAt(m, h);
+  return t.cost !== null && t.cost !== undefined && !(FT[ftype].cannot_enter || []).includes(t.id);
+}
+const stepWeight = (m, a, b) => Math.round(terrainAt(m, a).cost * 100) + Math.round(terrainAt(m, b).cost * 100);
+const stepHours = (m, a, b, ftype) => stepWeight(m, a, b) / 200 * m.hex_km / FT[ftype].kmh;
+function heapPush(hp, x){ hp.push(x); let i = hp.length - 1; while (i > 0){ const p = (i - 1) >> 1; if (less(hp[p], hp[i])) break; [hp[p], hp[i]] = [hp[i], hp[p]]; i = p } }
+function heapPop(hp){
+  const top = hp[0], last = hp.pop();
+  if (hp.length){ hp[0] = last; let i = 0; for (;;){ const l = 2 * i + 1, r = l + 1; let m = i;
+    if (l < hp.length && less(hp[l], hp[m])) m = l; if (r < hp.length && less(hp[r], hp[m])) m = r; if (m === i) break; [hp[m], hp[i]] = [hp[i], hp[m]]; i = m } }
+  return top;
+}
+const less = (a, b) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);
+function route(m, start, goal, ftype){
+  const key = h => h[0] + "," + h[1];
+  if (start[0] === goal[0] && start[1] === goal[1]) return [start.slice()];
+  if (!passable(m, goal, ftype)) return null;
+  const cols = m.rows[0].length, rows = m.rows.length;
+  const best = new Map([[key(start), 0]]), prev = new Map(), done = new Set(), hp = [[0, 0, start]];
+  let seq = 1;
+  while (hp.length){
+    const [dist, , h] = heapPop(hp), k = key(h);
+    if (done.has(k)) continue;
+    done.add(k);
+    if (h[0] === goal[0] && h[1] === goal[1]) break;
+    for (const n of neighbours(h, cols, rows)){
+      if (!passable(m, n, ftype)) continue;
+      const nd = dist + stepWeight(m, h, n), nk = key(n);
+      if (nd < (best.has(nk) ? best.get(nk) : Infinity)){ best.set(nk, nd); prev.set(nk, h); heapPush(hp, [nd, seq++, n]) }
+    }
+  }
+  if (!prev.has(key(goal))) return null;
+  const path = []; let h = goal;
+  while (key(h) !== key(start)){ path.push(h.slice()); h = prev.get(key(h)) }
+  path.push(start.slice());
+  return path.reverse();
+}
+function plan(m, start, waypoints, ftype){
+  let path = [start.slice()], at = start.slice();
+  for (const w of waypoints){
+    const leg = route(m, at, w, ftype);
+    if (!leg) return null;
+    path = path.concat(leg.slice(1)); at = w.slice();
+  }
+  return path;
+}
+function schedule(m, path, ftype, day = 1, used = 0){
+  const hpd = TER.hours_per_day, out = path.length ? [{ hex: path[0].slice(), day, used }] : [];
+  for (let i = 0; i + 1 < path.length; i++){
+    const st = stepHours(m, path[i], path[i + 1], ftype);
+    if (used > 0 && used + st > hpd + 1e-9){ day += 1; used = 0 }
+    used += st;
+    out.push({ hex: path[i + 1].slice(), day, used });
+  }
+  return out;
+}
+function advance(m, path, index, day, used, hours, ftype){
+  const hpd = TER.hours_per_day;
+  if (used >= hpd - 1e-9){ day += 1; used = 0 }
+  const target = Math.min(used + hours, hpd);
+  while (index + 1 < path.length){
+    const st = stepHours(m, path[index], path[index + 1], ftype);
+    if (used + st > target + 1e-9) break;
+    used += st; index += 1;
+  }
+  if (index + 1 < path.length) used = target;
+  return { index, day, used };
+}
+/* ---------- end of rules shared with gravewounds/travel.py ---------- */
+
+/* ---------- state ---------- */
+const KEY = "gravewounds-travel";
+const S = { mapId: Object.keys(DATA.maps)[0], edits: {}, forces: {}, sel: {}, mode: "plan", paint: "forest", seq: 1, msg: "" };
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify({ mapId: S.mapId, edits: S.edits, forces: S.forces, sel: S.sel, seq: S.seq, paint: S.paint })) }catch(e){} }
+function restore(){ try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.mapId && DATA.maps[j.mapId]) Object.assign(S, j) }catch(e){} }
+const baseMap = () => DATA.maps[S.mapId];
+function curMap(){                           // the map with any painting applied
+  const b = baseMap();
+  return { ...b, rows: S.edits[S.mapId] || b.rows };
+}
+const sameHex = (a, b) => !!(a && b) && a[0] === b[0] && a[1] === b[1];
+function forcesHere(){
+  if (!S.forces[S.mapId]) S.forces[S.mapId] = (baseMap().forces || []).map(f => newForce(f.name, f.type, f.side, f.hex));
+  return S.forces[S.mapId];
+}
+function newForce(name, type, side, hex){
+  return { id: S.seq++, name, type, side: side || "Side A", pos: hex.slice(), waypoints: [], path: null, legs: [], index: 0, day: 1, used: 0, log: [] };
+}
+const selForce = () => { const fs = forcesHere(); return fs.find(f => f.id === S.sel[S.mapId]) || fs[0] || null };
+const sides = () => [...new Set(forcesHere().map(f => f.side))];
+const clock = (used) => { const t = TER.day_starts + used, h = Math.floor(t + 1e-9), mi = Math.round((t - h) * 60); return `${String(h + Math.floor(mi / 60)).padStart(2, "0")}:${String(mi % 60).padStart(2, "0")}` };
+const fmtH = h => { let hh = Math.floor(h + 1e-9), mm = Math.round((h - hh) * 60); if (mm === 60){ hh++; mm = 0 } return hh && mm ? `${hh} h ${mm} min` : hh ? `${hh} h` : `${mm} min` };
+const placeAt = h => (baseMap().places || []).find(p => sameHex(p.hex, h));
+const where = h => { const p = placeAt(h); return p ? p.name : `${terrainAt(curMap(), h).name.toLowerCase()} at ${h[0] + 1},${h[1] + 1}` };
+
+// Re-plan a force's route from where it stands now, through its remaining waypoints.
+function replan(f){
+  const m = curMap();
+  if (!f.waypoints.length){ f.path = null; f.legs = []; f.index = 0; return true }
+  const path = plan(m, f.pos, f.waypoints, f.type);
+  if (!path) return false;
+  f.path = path; f.index = 0;
+  f.legs = []; let at = 0;                   // where each waypoint falls on the path
+  for (const w of f.waypoints){ while (!sameHex(path[at], w)) at++; f.legs.push(at) }
+  return true;
+}
+function addWaypoint(f, h){
+  const m = curMap();
+  if (!passable(m, h, f.type)){ S.msg = `${FT[f.type].name} cannot go into ${terrainAt(m, h).name.toLowerCase()}.`; return }
+  f.waypoints.push(h);
+  if (!replan(f)){ f.waypoints.pop(); replan(f); S.msg = `${f.name} cannot reach ${where(h)} from here.`; return }
+  S.msg = "";
+}
+function march(f, hours){
+  if (!f.path || f.index >= f.path.length - 1){ S.msg = `${f.name} has no route to march. Click the map to add a waypoint.`; return }
+  const m = curMap(), from = f.index, d0 = f.day, u0 = f.used >= TER.hours_per_day - 1e-9 ? 0 : f.used;
+  const r = advance(m, f.path, f.index, f.day, f.used, hours, f.type);
+  const steps = r.index - from;
+  f.index = r.index; f.day = r.day; f.used = r.used; f.pos = f.path[f.index].slice();
+  const arrived = f.index >= f.path.length - 1;
+  const passed = f.legs.filter(i => i > from && i <= f.index).length;
+  if (passed){ f.waypoints = f.waypoints.slice(passed); f.legs = f.legs.slice(passed).map(i => i - f.index); f.path = f.path.slice(f.index); f.index = 0 }
+  if (arrived){ f.path = null; f.legs = []; f.waypoints = []; f.index = 0 }
+  const km = +(steps * curMap().hex_km).toFixed(1);
+  f.log.unshift(`Day ${f.day}, ${clock(u0)}–${clock(f.used)}: ${steps ? `marched ${km} km to ${where(f.pos)}` : "could not finish the next hex in the time; halted"}${arrived ? " — arrived" : ""}.`
+    + (f.used >= TER.hours_per_day - 1e-9 && !arrived ? " Camps for the night." : ""));
+  f.log = f.log.slice(0, 40);
+  S.msg = "";
+}
+
+/* ---------- drawing ---------- */
+const R = 12, W = Math.sqrt(3) * R;
+const xy = ([c, r]) => [W * (c + 0.5 * (r & 1)) + W / 2, 1.5 * R * r + R];
+const pts = ([x, y]) => [0, 1, 2, 3, 4, 5].map(k => { const a = Math.PI / 180 * (60 * k - 30); return `${(x + R * Math.cos(a)).toFixed(1)},${(y + R * Math.sin(a)).toFixed(1)}` }).join(" ");
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+const initials = n => n.split(/\s+/).filter(Boolean).map(x => x[0]).join("").slice(0, 2).toUpperCase() || "?";
+function terrainCss(){
+  const rules = (i, pre) => Object.values(TT).map(t => `${pre}.t-${t.id}{fill:${t.colour[i]}}${pre}.sw.t-${t.id}{background:${t.colour[i]}}`).join("");
+  $("#terrain-css").textContent = rules(0, "") + `@media (prefers-color-scheme:dark){${rules(1, ':root:not([data-theme="light"]) ')}}` + rules(1, ':root[data-theme="dark"] ');
+}
+function polyline(path){ return path.map(h => xy(h).map(v => v.toFixed(1)).join(",")).join(" ") }
+function renderMap(){
+  const m = curMap(), cols = m.rows[0].length, rows = m.rows.length, f = selForce(), sd = sides();
+  let hx = "";
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){
+    const t = BYKEY[m.rows[r][c]];
+    hx += `<polygon class="hx t-${t.id}" data-h="${c},${r}" points="${pts(xy([c, r]))}"/>`;
+  }
+  let over = "";
+  for (const o of forcesHere()) if (o !== f && o.path) over += `<polyline class="route other" points="${polyline(o.path.slice(o.index))}"/>`;
+  if (f && f.path){
+    const sch = schedule(m, f.path.slice(f.index), f.type, f.day, f.used);
+    over += `<polyline class="route" points="${polyline(f.path.slice(f.index))}"/>`;
+    sch.forEach((s, i) => {                  // night stops: the last hex reached before the day turns
+      if (i + 1 < sch.length && sch[i + 1].day > s.day){ const [x, y] = xy(s.hex); over += `<g class="night"><rect x="${(x - 9).toFixed(1)}" y="${(y - 15).toFixed(1)}" width="18" height="10" rx="2"/><text x="${x.toFixed(1)}" y="${(y - 7.5).toFixed(1)}">N${s.day}</text></g>` }
+    });
+    f.waypoints.forEach((w, i) => { const [x, y] = xy(w); over += `<g class="wp"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5.5"/><text x="${x.toFixed(1)}" y="${(y + 2.8).toFixed(1)}">${i + 1}</text></g>` });
+  }
+  for (const p of baseMap().places || []){
+    const [x, y] = xy(p.hex);
+    const mk = p.kind === "objective" ? `<path class="mk" d="M${x - 1} ${y + 7}V${y - 8}l8 3-8 3"/>`
+      : p.kind === "camp" ? `<path class="mk" d="M${x - 6} ${y + 5}L${x} ${y - 6}L${x + 6} ${y + 5}Z"/>`
+      : p.kind === "landmark" ? `<circle class="mk" cx="${x}" cy="${y}" r="2.2"/>`
+      : `<rect class="mk" x="${x - 3.5}" y="${y - 3.5}" width="7" height="7"/>`;
+    over += `<g class="place ${p.kind}">${mk}<text x="${(x + 8).toFixed(1)}" y="${(y - 7).toFixed(1)}">${esc(p.name)}</text></g>`;
+  }
+  for (const o of forcesHere()){
+    const [x, y] = xy(o.pos), k = sd.indexOf(o.side) % 4;
+    over += `<g class="force s${k} ${o === f ? "sel" : ""}" data-id="${o.id}" tabindex="0" role="button" aria-label="${esc(o.name)}, ${esc(FT[o.type].name)}, at ${esc(where(o.pos))}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><title>${esc(o.name)} · ${esc(FT[o.type].name)}</title><circle class="ring" r="10"/><circle class="body" r="7.5"/><text dy="0.35em">${esc(initials(o.name))}</text></g>`;
+  }
+  const VW = W * (cols + 0.5), VH = 1.5 * R * (rows - 1) + 2 * R;
+  $("#map").innerHTML = `<svg viewBox="0 0 ${VW.toFixed(1)} ${VH.toFixed(1)}" style="max-width:${Math.round(VW * 1.5)}px">${hx}${over}</svg>`;
+  $("#map").className = `mapbox ${S.mode}`;
+  $("#map-scale").textContent = `${cols} × ${rows} hexes · ${m.hex_km} km a hex`;
+}
+function renderSide(){
+  const fs = forcesHere(), f = selForce(), sd = sides(), m = curMap();
+  $("#forces").innerHTML = fs.map(o => `<li data-id="${o.id}" aria-current="${o === f}" tabindex="0"><span class="dot" style="background:var(--side${sd.indexOf(o.side) % 4})"></span><span><b>${esc(o.name)}</b> <span class="muted">${esc(FT[o.type].name)} · ${esc(o.side)}</span></span><span class="meta">day ${o.day} ${clock(Math.min(o.used, TER.hours_per_day))}</span></li>`).join("") || `<li class="muted">No forces. Add one below.</li>`;
+  const on = !!f;
+  ["#btn-hour", "#btn-day", "#btn-undo-wp", "#btn-clear", "#btn-remove"].forEach(id => $(id).disabled = !on);
+  if (!f){ $("#force-head").textContent = ""; $("#summary").innerHTML = ""; $("#log").innerHTML = ""; return }
+  const ft = FT[f.type], hpd = TER.hours_per_day;
+  $("#force-head").innerHTML = `<b>${esc(f.name)}</b> at ${esc(where(f.pos))}. ${esc(ft.name)}: ${ft.kmh} km/h on a road, ${hpd} marching hours a day from ${clock(0)}.`
+    + (ft.cannot_enter ? ` Cannot enter ${ft.cannot_enter.map(t => TT[t].name.toLowerCase()).join(", ")}.` : "");
+  $("#btn-undo-wp").disabled = !f.waypoints.length; $("#btn-clear").disabled = !f.waypoints.length;
+  $("#btn-hour").disabled = $("#btn-day").disabled = !(f.path && f.index < f.path.length - 1);
+  let rows = `<dt>Now</dt><dd>Day ${f.day}, ${clock(Math.min(f.used, hpd))}${f.used >= hpd - 1e-9 ? " (camped for the night)" : ""}</dd>`;
+  if (f.path && f.index < f.path.length - 1){
+    const rest = f.path.slice(f.index), sch = schedule(m, rest, f.type, f.day, f.used), end = sch[sch.length - 1];
+    let hours = 0; for (let i = 0; i + 1 < rest.length; i++) hours += stepHours(m, rest[i], rest[i + 1], f.type);
+    const nights = end.day - f.day;
+    rows += `<dt>To</dt><dd>${esc(where(rest[rest.length - 1]))}${f.waypoints.length > 1 ? ` (${f.waypoints.length} waypoints)` : ""}</dd>`
+      + `<dt>Distance</dt><dd>${+((rest.length - 1) * m.hex_km).toFixed(1)} km</dd>`
+      + `<dt>Marching</dt><dd>${fmtH(hours)}</dd>`
+      + `<dt>Arrives</dt><dd>Day ${end.day}, ${clock(end.used)}${nights ? ` · ${nights} night${nights > 1 ? "s" : ""} on the road` : ""}</dd>`;
+  } else rows += `<dt>Route</dt><dd>${S.mode === "plan" ? "Click the map to add a waypoint" : "None"}</dd>`;
+  $("#summary").innerHTML = rows;
+  $("#log").innerHTML = f.log.map(l => `<li>${esc(l)}</li>`).join("");
+}
+function render(){
+  renderMap(); renderSide();
+  $("#msg").textContent = S.msg || "";
+  document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === S.mode));
+  $("#paint-box").hidden = S.mode !== "paint";
+  $("#palette").innerHTML = Object.values(TT).map(t => `<button type="button" data-key="${esc(t.key)}" aria-pressed="${S.paint === t.id}" title="${esc(t.name)}${t.cost === null ? ": impassable" : `: ${t.cost}× road time`}"><span class="sw t-${t.id}"></span>${esc(t.name)}</button>`).join("");
+  save();
+}
+function renderLegend(){
+  const sp = Object.values(FT).map(f => `${f.name.toLowerCase()} ${f.kmh} km/h`).join(", ");
+  $("#legend").innerHTML = Object.values(TT).map(t => `<span><span class="sw t-${t.id}"></span>${esc(t.name)} <span class="muted">${t.cost === null ? "impassable" : t.cost === 1 ? "road pace" : `×${t.cost}`}</span></span>`).join("")
+    + `<span class="muted" style="grid-column:1/-1">Times are against road speed (${sp}). A step costs the average of the two hexes' terrain.</span>`;
+}
+
+/* ---------- map export (YAML) ---------- */
+function mapYaml(){
+  const b = baseMap(), m = curMap(), q = s => JSON.stringify(String(s));
+  const fs = forcesHere();
+  return [`# Painted in the travel page from ${b.id}. Save as data/maps/<id>.yaml and rebuild.`,
+    `id: ${b.id}`, `name: ${q(b.name)}`, `hex_km: ${b.hex_km}`, `terrain: |`, ...m.rows.map(r => "    " + r),
+    `places:`, ...(b.places || []).map(p => `  - {name: ${q(p.name)}, kind: ${p.kind}, hex: [${p.hex.join(", ")}]${p.note ? `, note: ${q(p.note)}` : ""}}`),
+    `forces:`, ...fs.map(f => `  - {name: ${q(f.name)}, type: ${f.type}, side: ${q(f.side)}, hex: [${f.pos.join(", ")}]}`), ""].join("\n");
+}
+
+/* ---------- wiring ---------- */
+function hexFrom(e){ const p = e.target.closest(".hx"); return p ? p.dataset.h.split(",").map(Number) : null }
+function paintHex(h){
+  const m = curMap(), key = TT[S.paint].key;
+  if (m.rows[h[1]][h[0]] === key) return false;
+  const rows = m.rows.slice(); rows[h[1]] = rows[h[1]].slice(0, h[0]) + key + rows[h[1]].slice(h[0] + 1);
+  S.edits[S.mapId] = rows;
+  return true;
+}
+function afterPaint(){                        // routes may no longer work on the new ground
+  const lost = [];
+  for (const f of forcesHere()) if (f.waypoints.length && !replan(f)){ f.waypoints = []; f.path = null; f.legs = []; lost.push(f.name) }
+  S.msg = lost.length ? `Route cleared for ${lost.join(", ")}: the painted ground blocks it.` : "";
+}
+function clickHex(h){
+  const f = selForce(); if (!f) return;
+  if (S.mode === "plan") addWaypoint(f, h);
+  else if (S.mode === "place"){
+    if (!passable(curMap(), h, f.type)){ S.msg = `${FT[f.type].name} cannot stand on ${terrainAt(curMap(), h).name.toLowerCase()}.`; return render() }
+    f.pos = h; f.waypoints = []; f.path = null; f.legs = []; f.index = 0; S.msg = `${f.name} moved to ${where(h)}.`;
+  }
+  render();
+}
+let painting = false;
+function init(){
+  restore();
+  terrainCss(); renderLegend();
+  $("#sel-map").innerHTML = Object.values(DATA.maps).map(m => `<option value="${esc(m.id)}">${esc(m.name)}</option>`).join("");
+  $("#sel-map").value = S.mapId;
+  $("#sel-map").onchange = e => { S.mapId = e.target.value; S.msg = ""; render() };
+  $("#in-ftype").innerHTML = Object.entries(FT).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
+  document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { S.mode = b.dataset.mode; S.msg = ""; render() });
+  const mapEl = $("#map");
+  mapEl.addEventListener("click", e => {
+    const fo = e.target.closest(".force");
+    if (fo && S.mode !== "paint"){ S.sel[S.mapId] = +fo.dataset.id; S.msg = ""; return render() }
+    if (S.mode === "paint") return;
+    const h = hexFrom(e); if (h) clickHex(h);
+  });
+  mapEl.addEventListener("keydown", e => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    const fo = e.target.closest(".force"); if (fo){ e.preventDefault(); S.sel[S.mapId] = +fo.dataset.id; render() }
+  });
+  mapEl.addEventListener("pointerdown", e => { if (S.mode !== "paint") return; const h = hexFrom(e); if (!h) return; painting = true; e.preventDefault(); if (paintHex(h)) renderMap() });
+  mapEl.addEventListener("pointermove", e => {
+    const h = hexFrom(e);
+    if (h){ const t = terrainAt(curMap(), h), p = placeAt(h); $("#hover").textContent = `${h[0] + 1},${h[1] + 1} · ${t.name}${t.cost === null ? " (impassable)" : ` (×${t.cost})`}${p ? " · " + p.name : ""}` }
+    if (!painting) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY), hh = el && el.closest && el.closest(".hx");
+    if (hh && paintHex(hh.dataset.h.split(",").map(Number))) renderMap();
+  });
+  window.addEventListener("pointerup", () => { if (painting){ painting = false; afterPaint(); render() } });
+  $("#forces").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li){ S.sel[S.mapId] = +li.dataset.id; S.msg = ""; render() } });
+  $("#forces").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ const li = e.target.closest("li[data-id]"); if (li){ e.preventDefault(); S.sel[S.mapId] = +li.dataset.id; render() } } });
+  $("#palette").addEventListener("click", e => { const b = e.target.closest("button[data-key]"); if (b){ S.paint = BYKEY[b.dataset.key].id; render() } });
+  $("#btn-hour").onclick = () => { const f = selForce(); if (f){ march(f, 1); render() } };
+  $("#btn-day").onclick = () => { const f = selForce(); if (f){ march(f, TER.hours_per_day); render() } };
+  $("#btn-undo-wp").onclick = () => { const f = selForce(); if (f && f.waypoints.length){ f.waypoints.pop(); replan(f); render() } };
+  $("#btn-clear").onclick = () => { const f = selForce(); if (f){ f.waypoints = []; replan(f); render() } };
+  $("#btn-remove").onclick = () => { const f = selForce(); if (f){ S.forces[S.mapId] = forcesHere().filter(o => o !== f); S.sel[S.mapId] = null; render() } };
+  $("#btn-add").onclick = () => {
+    const camp = (baseMap().places || []).find(p => p.kind === "camp"), m = curMap();
+    let at = camp ? camp.hex : [m.rows[0].length >> 1, m.rows.length >> 1];
+    const type = $("#in-ftype").value;
+    if (!passable(m, at, type)){ S.msg = `${FT[type].name} cannot stand at the camp.`; return render() }
+    const f = newForce($("#in-fname").value.trim() || `Force ${S.seq}`, type, $("#in-fside").value.trim() || "Side A", at);
+    forcesHere().push(f); S.sel[S.mapId] = f.id; $("#in-fname").value = ""; render();
+  };
+  $("#btn-export").onclick = () => { const t = $("#export"); t.hidden = !t.hidden; t.value = mapYaml() };
+  $("#btn-download").onclick = () => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([mapYaml()], { type: "text/yaml" })); a.download = `${S.mapId}.yaml`;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+  $("#btn-revert").onclick = () => { delete S.edits[S.mapId]; afterPaint(); render() };
+  render();
+}
+init();
+</script>
