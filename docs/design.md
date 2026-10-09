@@ -1,6 +1,6 @@
 # Grave Wounds: blood, bivouac and weather
 
-Snapshot of the design proposal, Oct 8, 2026. The working copy lives in Claude Docs.
+Snapshot of the design proposal, Oct 9, 2026. The working copy lives in Claude Docs.
 
 Design proposal. Grave Wounds is a d100 roleplaying game where wounds behave like real wounds: where you are hit matters more than how hard, fights end in incapacitation far more often than death, and the dying happens on a clock that first aid can stop. It is built on HitLoc's historical wound data and spans historical eras and post-apocalyptic and spacefaring settings.
 
@@ -35,7 +35,7 @@ Each of the six games got one part of this right; the common failure was paying 
 Everything is d100 roll-under a skill, and in a fight a hit takes at most three rolls, read off one result line.
 
 - **Skill roll:** d100 at or under skill succeeds. Wounds, cover, position and fatigue subtract from skill, as HitLoc's attack and defence penalties already do.
-- **Margin matters:** how far under the skill you rolled grades the result. In a fight the margin raises the wound's severity, so skill buys clean hits, not just more of them.
+- **Margin matters:** how far under the skill you rolled grades the result. In a fight the margin raises the wound's severity, so skill buys clean hits, not just more of them. A hit by the barest margin is a graze: it lands one severity step lighter.
 - **Opposed fights:** attacker rolls, defender may roll to parry, dodge or take cover. A defence success turns the hit into a near miss or a glancing blow.
 
 A fighting turn runs in this order:
@@ -43,8 +43,8 @@ A fighting turn runs in this order:
 1. **Initiative:** fighters act from highest to lowest, the order HitLoc's tracker already keeps.
 2. **Attack:** d100 against weapon skill, minus situation and wound penalties.
 3. **Defence:** optional d100 against parry, dodge or cover.
-4. **Location:** d100 on the era's hit-location table (HitLoc), shifted by aimed shots and the situation.
-5. **Armour:** the armour on that location lowers the severity by its steps against the mechanism; a gap in coverage means no armour.
+4. **Location:** d100 on the era's hit-location table (HitLoc), shifted by aimed shots and the situation. Facing picks the side: a man facing the attacker or turned away is hit left or right 50/50, a man turned sideways on his near side 70% of the time. When only part of him shows (head and shoulders at a window, legs under a wagon), roll on the part that shows.
+5. **Armour:** the armour on that location lowers the severity by its steps against the mechanism; a gap in coverage means no armour. In the modern era, a bullet stopped by soft body armour still leaves a light blunt wound.
 6. **Wound:** severity plus location gives the effects line: bleed, pain, lost function, shock and the lethality clock.
 7. **Status:** the target checks whether he can keep fighting (below), then the round's bleeding and the next fighter.
 
@@ -57,6 +57,7 @@ A fighting turn runs in this order:
 | Exploration turn | 10 minutes | Searching, moving through a site, careful work |
 | Day |  | Weather roll, travel, foraging; recovery checks for fever and poison |
 | Week |  | Recovery checks for wounds and slow illness; training, crafting |
+| Down Time | Weeks to months | Between adventures: long healing, training, rebuilding |
 
 ## The wound model
 
@@ -66,7 +67,7 @@ A wound is three things, each from a roll or a table:
 
 - **Location:** one of 26 (skull left and right, face, neck, chest, abdomen, groin, back, and each shoulder, upper arm, forearm, hand, thigh, knee, lower leg and foot), weighted by the era's real wound records.
 - **Mechanism:** cut, pierce, crush, gunshot, blast fragment or burn, from the weapon.
-- **Severity:** light, serious or critical, from the attack's margin, reduced a step at a time by armour.
+- **Severity:** light, serious or critical, from the attack's margin, reduced a step at a time by armour. Light means a penalty up to -20 or slow bleeding; serious means -21 to -50, faster bleeding or a fracture; critical means worse than -50, heavy bleeding, a shattered bone or a lost organ.
 
 Together they give an effects line, the same five effects HitLoc already uses:
 
@@ -78,9 +79,13 @@ Together they give an effects line, the same five effects HitLoc already uses:
 | Shock, fracture, severed | Immediate stop checks; bones that need setting; limbs that are gone |
 | Lethality clock | Instant, rounds, minutes, hours, days or none: how long until it kills untreated |
 
-**Most hits stop a fighter without killing him.** In the Peninsular War records, 4,129 French officers were wounded against 230 killed outright or dying of wounds; at Bougainville about one gunshot hit in five killed. So every wound forces a **stop check**: d100 against the character's nerve, harder for worse wounds, pain and blood loss. Fail and he goes down, breaks or can only crawl, even if the wound itself is not fatal. That is what ends real fights, and it keeps them short.
+**Most hits stop a fighter without killing him.** In the Peninsular War records, 4,129 French officers were wounded against 230 killed outright or dying of wounds; at Bougainville about one gunshot hit in five killed. So a wound can force a **stop check**: every serious or critical wound (light ones do not) calls for d100 against the character's Nerve, harder for worse wounds, pain and blood loss. Fail by a little and he can only defend for a few turns; by more, he is stunned; by a lot, he is down and out of the fight, even if the wound itself is not fatal. That is what ends real fights, and it keeps them short.
+
+**Sides break before they die.** When a quarter of a side is down, it checks morale each turn: d100 against its leader's Nerve, +10 with a leader present, +10 if he has tactics, +10 for a trained military unit, -20 if the leader has fallen, -20 once half the side is down. Failure means the side breaks and runs or surrenders. Non-player fighters are rated green, regular or veteran, which sets their Nerve.
 
 **Death runs on the clock, and treatment stops it.** A bind slows bleeding; a tourniquet stops a limb bleed; surgery and later medicine change the clock. Days-long clocks bring infection in eras before antibiotics. Recovery takes weeks and can leave a permanent impairment, which is good story for a team game.
+
+**First aid.** There is a first-aid window straight after a fight. First aid fully treats light wounds; on serious and critical ones it only slows things, cutting the bleeding and splinting the fracture. A man alone can lie still and press on his own wound. Fighting, or moving faster than a walk, reopens a treated wound.
 
 ## Lethality dials
 
@@ -117,6 +122,8 @@ A fresh wound enters by severity (critical at Grave or Deadly, serious at Seriou
 - Activity: marching or fighting -20, light work -10, full rest +10.
 - Conditions: cold, wet or filth -10; short of food or clean water -10.
 - Result: success by 30 or more moves two steps toward Healed; a success moves one; a failure holds; a failure by 30 or more moves one step worse. A wound that worsens rolls for infection, using the infection risk HitLoc already gives each location.
+
+**Healing by tissue.** Bone, tendon, organ and head wounds take longer per step than muscle, skin and burns, and a broken bone must be set before it starts to heal. Several wounds at once take as long as the worst plus half the rest. An infected wound does not heal until the infection is beaten. Only a critical wound can leave lasting harm: when it heals, one Endurance roll decides, and joint wounds are the likeliest to leave a stiff knee or a weak hand.
 
 **Disease and poison** come as short profiles, each one line: how it is caught (wound, water, food, contact, air, bite), incubation, how fast it climbs, and whether nursing spreads it. A handful covers most play: wound infection and gangrene, dysentery, camp fever, plague, radiation sickness, and venom or poison. Their numbers are design estimates, labelled as such. The history behind them matters: in the American Civil War about two of every three soldiers who died, died of disease.
 
@@ -160,9 +167,9 @@ A fresh wound enters by severity (critical at Grave or Deadly, serious at Seriou
 
 **Already sick or wounded.** The resist roll is harder for anyone already on the track: -10 at Mending, -20 at Serious or worse, and -10 more if short of food. A nurse tending a disease that spreads to nurses rolls to resist again each week. So a team that camps badly with its wounded gets sicker, which is the decision the downtime rules are meant to force.
 
-**Draft numbers.** When a disease takes hold, a d100 peak roll sets how bad it gets; it then climbs daily to that step before recovery checks begin. Deadly chances follow the deaths per case above; outbreak chances are for a fair camp, before the factors.
+**Draft numbers.** There is no separate peak roll: when the resist roll fails, how badly it failed sets how bad the case gets (fail by a little, it peaks at Serious; by more, Grave; by a lot, Deadly), and each disease's virulence adds to that margin. The case climbs daily to its peak before recovery checks begin. The Peak column below is the first draft, kept as the target odds that the virulence numbers must reproduce; deadly chances follow the deaths per case above, and outbreak chances are for a fair camp, before the factors.
 
-| Disease | Outbreak chance per week | Peak roll | Notes |
+| Disease | Outbreak chance per week | Peak (target odds) | Notes |
 | --- | --- | --- | --- |
 | Bloody flux | 10 | Deadly 01-03, Grave 04-15, else Serious | Turns chronic (stays at Serious) on a failed recovery check by 30 or more |
 | Camp fever (typhus) | 2 | Deadly 01-30, Grave 31-70, else Serious | Mostly a cold-weather and siege disease |
@@ -173,6 +180,12 @@ A fresh wound enters by severity (critical at Grave or Deadly, serious at Seriou
 | Wound fever | Per wound, from HitLoc's infection risk | Deadly chance by location, from the amputation figures | Worse when treatment is delayed |
 
 As a check on the numbers: a fair camp gives a man about a 1 in 20 chance a week of catching the flux, more than double the Union army's average (about one bout per man per year, or 1 in 50 a week), which suits a team on campaign rather than in garrison. A poor camp in summer gives about 1 in 5, near the 14% sick seen at Corunna. The playtest should test both.
+
+**Infection, water and immunity.** A wound can turn infected from a dirty or rusty weapon, a bite, a belly or head wound, or a man who has slept in his armour for days; it shows after 3 to 5 days. Each kind of place has a chance its water is foul (most swamp water, half of a ruined town's, little in open country), feeding the flux and typhoid rolls; boiling makes it safe. A survivor of typhus or plague cannot catch it again; flux and ague give no such protection.
+
+**Poison, radiation and thirst.** The strength of a poison or of radiation sets how hard the Endurance resist roll is. In the after-the-bomb era, radiation is a lifetime dose in rads, cut by shielding (a basement to a tenth, a tank to about a twenty-fifth), with real dose bands from no effect under 100 rads through bone-marrow sickness to death above 3,000. Thirst works like starvation, but twice as fast.
+
+**Fatigue.** Each character has a fatigue track. Steps are spent by a hard pace, a heavy load, rough ground, hand-to-hand fighting (shooting costs none) and blood loss, and spent faster in heat or cold, with wounds, or without sleep; in heavy armour with heavy weapons, a few minutes of fighting is enough. Tired brings a penalty to every action, exhausted means stunned; rest restores a step an hour and sleep three.
 
 **Food and sunlight.** What the team eats, and how much daylight it gets, is tracked once a week as a few marks on the team sheet, not counted meal by meal. Calories decide strength; a handful of key nutrients decide the slow conditions. The weekly forage downtime action is how a team finds what it lacks.
 
@@ -215,7 +228,7 @@ Each player runs a team of four to six, and a whole team should be made in under
 A character is built in five rolls:
 
 1. **Characteristics:** six of them (Strength, Agility, Endurance, Wits, Nerve, Presence), each 3d6 x 5 for a 15-90 range, or a fixed array for speed.
-2. **Origin:** one d100 roll on the era's origin table: where he comes from, a starting skill and a trait.
+2. **Origin:** one d100 roll on the era's origin table: where he comes from, a starting skill, and a trait with a matching drawback (a keen nose that bleeds in the mountains, a soothing voice afraid of thunder).
 3. **Career terms:** Traveller's idea, kept short. Each term is one d100 roll on the career's table and gives a skill, an event and a chance of an old wound. Leaders take three terms, others one or two. Nobody dies in generation.
 4. **Old wounds:** an old wound is rolled on the era's HitLoc table and leaves a healed mark or a small permanent impairment. The Towton and Sidon skeletons show many men with healed wounds from earlier fights; here they become history you can see on the character sheet.
 5. **Kit:** a package from the team template: armour kit, weapons and gear, as HitLoc's example combatants already define them.
@@ -223,6 +236,8 @@ A character is built in five rolls:
 For post-apocalyptic eras, a Gamma World-style **mutation or implant roll** can replace one career term.
 
 **Team templates** set the shape of the team and its kit: a man-at-arms with his archers and servants, a Morrow Project recon team in its vehicle, a merchant crew, a vault scavenging party. **Followers** get a one-line stat block (one skill rating, nerve and kit) so that a team of six stays fast to run in a fight.
+
+A leader's Presence sets how many followers he can keep and how steady they are. When the leader falls, a follower can step up, and the player carries on with him: the team, not the hero, is what survives. For the after-the-bomb era, Morrow-style templates give recon teams of five or six, military teams with a medic, mechanic and negotiator, and science teams. Between adventures, a Down Time scale of weeks or months covers healing, training and rebuilding.
 
 ## Eras and settings
 
@@ -258,7 +273,47 @@ About half of the combat engine already exists in HitLoc; the new work is the ch
 | Team templates and follower stat lines | New |
 | Radiation, disease, burns and vacuum for speculative eras | New |
 | Recovery track, disease and poison profiles, downtime actions | New (each HitLoc wound already has an infection risk) |
+| Team morale, fatigue track, first aid and healing by tissue | New |
 | The rulebook itself, written to be fast to read at the table | New |
+
+## Changes from the rulebook comparison (for approval)
+
+The comparisons below suggested about 27 changes. Merged and de-duplicated, they come to twelve, plus two optional rules; the game each idea comes from is in brackets. Approved Oct 9, 2026: items 1-12 are now written into the rules above; the two optional rules are not.
+
+**Wounds and the stop check**
+
+- [x] **1. Severity bands.** Light: a penalty up to -20 or slow bleeding. Serious: -21 to -50, faster bleeding, or a fracture. Critical: worse than -50, heavy bleeding, a shattered bone or a lost organ. (Rolemaster Campaign Law)
+- [x] **2. Graze.** A hit by the barest margin lands one severity step lighter. (Morrow Project)
+- [x] **3. Stop check: when and what.** Only serious and critical wounds force a stop check. Failing it puts the fighter at must-defend-only, stunned, or down for a number of turns, by how badly it failed. (Aftermath!, Morrow Project, Arms Law)
+- [x] **4. Which side, and cover.** When a man faces the attacker, front or back is 50/50; turned sideways, the near side is hit 70% of the time. When only part of a man shows (head and shoulders in a window, legs under a wagon), roll location on the part that shows. (Aftermath!, Morrow Project)
+- [x] **5. Blunt trauma behind soft armour.** For the modern era, a bullet stopped by soft body armour still bruises. (Morrow Project)
+
+**Bleeding and first aid**
+
+- [x] **6. First aid.** A first-aid window straight after a fight. First aid fully treats light wounds, but only slows serious and critical ones (bleeding cut, fracture splinted). A man can lie still and press on his own wound. Fighting or moving faster than a walk reopens a treated wound. (Aftermath!, Campaign Law, Morrow Project)
+
+**Morale and fatigue**
+
+- [x] **7. Team morale.** When a quarter of a side is down, it checks each turn to stand or break: better with a leader present, a leader with tactics, or a military unit; worse if the leader falls or half the side is down. Non-player fighters are rated green, regular or veteran. (Traveller, Morrow Project)
+- [x] **8. Fatigue track.** Fatigue is spent by pace, load, terrain, hand-to-hand fighting (not shooting) and blood loss, and spent faster in heat or cold, with wounds, or without sleep; heavy armour and weapons tire a fighter within a few minutes of fighting. Tired brings a penalty, exhausted means stunned; rest and sleep restore it. (Morrow Project, Traveller, Campaign Law, Gamma World)
+
+**Healing**
+
+- [x] **9. Healing by tissue.** Bone, tendon, organ and head wounds heal more slowly than muscle, skin and burns; broken bones must be set. Several wounds take as long as the worst plus half the rest. An infected wound does not heal until the infection is beaten. Only critical wounds can leave lasting harm, by one Endurance roll when they heal, and joints are the likeliest. (Arms Law, Campaign Law, Aftermath!, Morrow Project)
+
+**Disease, poison and radiation**
+
+- [x] **10. Disease in one roll, and infection triggers.** How badly the resist roll fails sets how bad the case is, replacing the separate peak roll. Infection comes from dirty weapons, bites, belly and head wounds, and sleeping in armour, and shows after 3-5 days. Each kind of place has a chance its water is foul (swamp, ruined town, open country), and boiling is the remedy. Survivors of typhus and plague cannot catch it again. (Campaign Law, Aftermath!, Morrow Project)
+- [x] **11. Poison, radiation and thirst.** The strength of a poison or radiation sets how hard the resist roll is. For the after-the-bomb era, radiation is a lifetime dose cut by shielding, with real dose bands. Thirst works like starvation but twice as fast. (Gamma World, Morrow Project, Aftermath!)
+
+**Characters and teams**
+
+- [x] **12. Teams.** Each origin roll gives a trait with a matching drawback. Presence sets how many followers a leader can keep, and their morale. When a leader falls, a follower can step up and the player carries on. Morrow-style team templates for the after-the-bomb era, and a Down Time scale between adventures. (Campaign Law, Gamma World, Morrow Project, Aftermath!)
+
+**Optional rules**
+
+- [ ] **Volley fire.** Missiles are fired before melee in each turn. (Arms Law)
+- [ ] **Dying stroke.** A man struck down can still finish his blow. (Gamma World)
 
 ## Checked against the Aftermath! rules
 
