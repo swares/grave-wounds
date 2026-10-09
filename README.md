@@ -19,6 +19,10 @@ morale. Each fighter has a side, a leader flag and a Nerve rating. A hex battle 
 the fighters' positions, with movement, leaving contact, and weapon reach and range. The
 one-page rules are in [docs/combat.md](docs/combat.md).
 
+**Travel map:** `dist/travel.html` marches forces from camp to the field across 1 km hexes
+of terrain, with planned routes, marching days and terrain painting. See
+[docs/travel.md](docs/travel.md).
+
 ## Where this started
 
 This repository began as a copy of [HitLoc](https://github.com/swares/HitLoc), the
@@ -50,7 +54,7 @@ python -m gravewounds roll --table towton-1461-all-hits --weapon bill -n 3
 
 `build.py` writes:
 
-- `dist/roller.html`
+- `dist/roller.html` and `dist/travel.html`
 - `dist/tables.pdf` and `dist/tables.md`
 - `dist/gravewounds-data.json`
 - the start page `index.html`
@@ -62,8 +66,10 @@ written in):
 
 1. Playtest the stop check, graze, morale and battle map in the roller and tune their
    numbers. Cover and elevation come next on the map.
-2. Draft the medieval character generation tables and make a team in 20 minutes.
-3. Playtest one fight with two teams, then a few weeks of camp, march and weather.
+2. Playtest the travel map, then add maps for each campaign and battle. Weather, forage and
+   camp disease will use the terrain's cover, forage and wet notes.
+3. Draft the medieval character generation tables and make a team in 20 minutes.
+4. Playtest one fight with two teams, then a few weeks of camp, march and weather.
 
 ## Copyright and trademarks
 

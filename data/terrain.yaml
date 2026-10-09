@@ -1,0 +1,51 @@
+# Terrain and marching for the travel map (Grave Wounds).
+#
+# A travel map is a hex grid (pointy-top, odd rows shifted right), usually 1 km a hex.
+# A force marches at its type's road speed, for `hours_per_day` marching hours a day.
+# Crossing a hex takes  hex_km / kmh x the average of the two hexes' `cost`  hours,
+# so a step from road into forest is charged half road, half forest.
+#
+# terrain fields:
+#   key      - the one character that paints this terrain in a map file
+#   cost     - time multiplier against marching on a road (1.0); null: impassable
+#   colour   - [light theme, dark theme] fill on the map
+#   cover    - none | light | heavy: concealment for ambush and skirmish (for later rules)
+#   forage   - none | poor | fair | good: what a force can find to eat (for later rules)
+#   wet      - true where standing water and damp raise the risk of fevers (for later rules)
+# The costs are design estimates for men on foot, from the usual rule of thumb that
+# cross-country going takes about half as long again as a road, woods and hills about
+# twice as long and marsh or mountains far longer.
+
+hours_per_day: 8
+day_starts: 8          # hour of the morning the march starts (for the clock shown)
+
+forces:
+  foot:    {name: "On foot", kmh: 4}
+  mounted: {name: "Mounted", kmh: 6}
+  wagons:  {name: "Baggage wagons", kmh: 3, cannot_enter: [forest, marsh, mountains, heath]}
+# Road speeds for a small, fit band. A large army's column, with its halts and its
+# stragglers, typically made less ground a day; cut its marching hours or speed to suit.
+
+terrain:
+  - {id: road,      key: "=", name: "Road",           cost: 1.0,  colour: ["#9f8b66", "#8f7d58"], cover: none,  forage: poor}
+  - {id: open,      key: ".", name: "Open ground",    cost: 1.5,  colour: ["#dfe6c4", "#3d4632"], cover: none,  forage: fair}
+  - {id: farmland,  key: "f", name: "Farmland",       cost: 1.5,  colour: ["#e9dfa8", "#4f4a2c"], cover: light, forage: good}
+  - {id: heath,     key: ",", name: "Heath",          cost: 1.75, colour: ["#d4c3cf", "#4a3d47"], cover: none,  forage: poor}
+  - {id: forest,    key: "F", name: "Forest",         cost: 2.5,  colour: ["#8fb487", "#24402a"], cover: heavy, forage: fair}
+  - {id: hills,     key: "h", name: "Hills",          cost: 2.0,  colour: ["#c9b28a", "#5a4b33"], cover: light, forage: fair}
+  - {id: mountains, key: "M", name: "Mountains",      cost: 4.0,  colour: ["#a39a92", "#4d4844"], cover: heavy, forage: none}
+  - {id: marsh,     key: "m", name: "Marsh",          cost: 3.0,  colour: ["#a9c7b8", "#2d4842"], cover: light, forage: poor, wet: true}
+  - {id: river,     key: "~", name: "River",          cost: null, colour: ["#8db7d6", "#25445c"], cover: none,  forage: poor, wet: true}
+  - {id: ford,      key: "d", name: "Ford",           cost: 2.0,  colour: ["#b4d0e0", "#35566b"], cover: none,  forage: poor, wet: true}
+  - {id: bridge,    key: "b", name: "Bridge",         cost: 1.0,  colour: ["#7a6545", "#a08a5e"], cover: none,  forage: none}
+  - {id: lake,      key: "w", name: "Lake or sea",    cost: null, colour: ["#7fa9cc", "#1f3a52"], cover: none,  forage: poor, wet: true}
+  - {id: village,   key: "v", name: "Village",        cost: 1.0,  colour: ["#d9a68a", "#6e4836"], cover: light, forage: good}
+  - {id: town,      key: "T", name: "Town",           cost: 1.0,  colour: ["#c98b74", "#7a4535"], cover: heavy, forage: good}
+
+# Places on a map: kind sets the marker.
+place_kinds:
+  camp:      {name: "Camp"}
+  objective: {name: "Objective"}
+  village:   {name: "Village"}
+  town:      {name: "Town"}
+  landmark:  {name: "Landmark"}
