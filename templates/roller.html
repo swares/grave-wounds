@@ -1507,7 +1507,7 @@ function clickToken(id){
     if (acting && acting.pos && c.pos){
       const dist = hexDistance(acting.pos, c.pos), r = weaponReach(S.weapon, dist);
       S.mapMsg = r ? `Target: ${attr(c.name)}, ${hexes(dist)} away${r.penalty ? ` (${r.band} range, −${r.penalty}%)` : r.band === "short" ? " (short range)" : ""}.`
-                   : `${attr(c.name)} is ${hexes(dist)} away: out of reach.`;
+                   : `${attr(c.name)} is ${hexes(dist)} away: out of reach. (To move a fighter outside his own turn, turn on Free placement.)`;
     }
     return selectChar(i);
   }
