@@ -455,7 +455,7 @@ function travelResult(){                          // per travel-map force: {kill
     x.killed += a.killed; x.left += a.left; x.died += a.died; x.cases.push(...a.cases);
   });
   for (const x of Object.values(out)) x.lost = x.killed + x.left + x.died;
-  return { battle: S.from.battle, mapId: S.from.mapId, place: S.from.place, forces: out };
+  return { battle: S.from.battle, mapId: S.from.mapId, place: S.from.place, start: S.from.start || null, minutes: Math.max(0, S.exchange - 1), forces: out };
 }
 function backToTravel(){
   try{ localStorage.setItem("gravewounds-field-result", JSON.stringify(travelResult())) }catch(e){ S.msg = "Could not save the result for the travel map (storage is off)."; return render() }

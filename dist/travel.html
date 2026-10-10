@@ -1358,6 +1358,16 @@ function clickForce(id){
   S.sel[S.mapId] = id; S.msg = ""; render();
 }
 let painting = false;
+function battleTime(f, start, hours){          // the force's clock moves on to the battle's end (from its start, if it was behind)
+  if (f.day < start.day || (f.day === start.day && f.used < start.used)){ f.day = start.day; f.used = start.used }
+  if (f.day !== start.day) return;              // its clock was already past the battle's day
+  const end = start.used + hours, ev = WK.evening_hours;
+  if (f.used >= end) return;
+  let left = end - f.used;
+  while (f.used + left > hpdOf(f.day) + ev + 1e-9){ left -= hpdOf(f.day) + ev - f.used; endDay(f) }
+  f.used += left;
+  f.log.unshift(`The battle ended ${dateText(f.day, true)}, ${clock(f.used, f.day)}.`);
+}
 function applyFieldResult(){                 // a battle fought on the field map: the dead come off, the wounded join the sick
   let r = null;
   try{ r = JSON.parse(localStorage.getItem("gravewounds-field-result") || "null") }catch(e){ r = null /* unreadable: nothing to apply */ }
@@ -1371,6 +1381,7 @@ function applyFieldResult(){                 // a battle fought on the field map
     for (const k of Object.keys(h.immune)) h.immune[k] = Math.min(h.immune[k], f.men);
     const note = `Battle at ${r.place}: ${x.lost} dead (${x.killed} killed, ${x.left} left on the field, ${x.died} died of wounds), ${x.cases.length} wounded carried to camp.`;
     f.log.unshift(note);
+    if (r.start) battleTime(f, r.start, (r.minutes || 0) / 60);
     lines.push(`${f.name}: ${x.lost} dead, ${x.cases.length} wounded`);
   }
   S.fought.push(r.battle);
@@ -1464,7 +1475,7 @@ function init(){
     const st = campStatus(dfd, p), lay = st.camp && WK.camps[st.camp.kind].layout;   // the camp's works, as far as they are built
     const camp = lay ? { kind: st.camp.kind, frac: st.done === null ? null : st.done / (st.camp.labour || 1), hauled: !nearWoods(m, dfd.pos), party: columnOf(dfd).length > 1 ? colType(dfd) : null } : null;
     try{ localStorage.setItem("gravewounds-field-handoff", JSON.stringify({ from: "travel", battle: `${S.mapId}:${p.day}:${p.used}:${dfd.id}`, mapId: S.mapId, map: m.name || S.mapId,
-      place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day), forces, camp,
+      place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day), start: { day: p.day, used: p.used }, forces, camp,
       weather: { cond: today.w.cond, wind: today.w.wind, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){ /* storage off: the field map opens without the forces */ }
     location.href = "field.html";
   };

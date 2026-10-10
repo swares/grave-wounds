@@ -18,8 +18,6 @@ When an item is done, delete it here and note it in the pull request that closes
   (the roller takes it up afterwards), a failed stop check puts him down for the rest of
   the battle (no stunned or defend-only), and a duel between two heroes is left to the
   roller.
-- **A battle's time on the travel map.** A battle fought on the field map does not move the
-  forces' clocks; the GM advances them by hand.
 - **Several attacking sides.** On the field map every attacker fights on side B, under the
   first attacker's side name, even if they came from different sides on the travel map.
 - **One clock for all forces.** Each force on the travel map keeps its own clock (kept on
