@@ -46,8 +46,13 @@ A column of forces marching together makes one camp, sized for all its men, and 
 dig (see [travel.md](travel.md)). Their camp's men and area count every force in it.
 
 Because the travel map costs exactly the works the battle map lays out, the camp's
-man-hours on the travel map and on the battle map agree. (A very large camp that has to be
-cut down to fit the battle map is the one exception; the map says so.)
+man-hours on the travel map and on the battle map agree.
+
+**A camp too big for the battle map** (about 700 or more men on foot, at the map's largest
+of 80 × 60 hexes) is laid out at its true size, with its middle moved west. The stretch
+with the gate is on the map, facing the attackers at the east edge, and the rest runs off
+it. The defenders start inside, near the gate. The labour line gives the works on the map
+and the whole camp's figure, which matches the travel map.
 
 **A fight needs the enemy there.** An enemy force must first march to within 1 km of the
 camp (the same or the next hex): select it, and in **Plan route** click the camp's force
