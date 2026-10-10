@@ -474,10 +474,7 @@ function pathLen(units, i, goal, size, limit, field = null){   // least movement
   const occ = occupancy(units.filter((_, k) => k !== i)), u = units[i];
   const best = new Map([[hk(u.pos), 0]]), done = new Set(), open = [[0, u.pos]];
   while (open.length){
-    let m = 0;
-    for (let q = 1; q < open.length; q++) if (open[q][0] < open[m][0]) m = q;
-    const [cost, h] = open[m];
-    open.splice(m, 1);
+    const [cost, h] = popCheapest(open);
     if (done.has(hk(h))) continue;
     if (h[0] === goal[0] && h[1] === goal[1]) return cost;
     done.add(hk(h));
@@ -488,6 +485,11 @@ function pathLen(units, i, goal, size, limit, field = null){   // least movement
     }
   }
   return null;
+}
+function popCheapest(open){                      // take the [cost, hex] with the least cost (the first of equals)
+  let m = 0;
+  for (let q = 1; q < open.length; q++) if (open[q][0] < open[m][0]) m = q;
+  return open.splice(m, 1)[0];
 }
 function stepsFrom(field, u, h, occ, size){       // [hex, cost] for each step the middle hex can take from h
   const out = [];
