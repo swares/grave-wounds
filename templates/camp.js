@@ -79,10 +79,10 @@ function edgeLabour(sp, hauled, em){        // one hex side of a work, or one ga
 function worksLabour(works, hauled = false){  // man-hours to build these works
   const em = edgeMetres();
   let t = 0;
-  for (const items of Object.values((works && works.edges) || {})){
+  for (const items of Object.values(works?.edges || {})){
     for (const it of items) t += edgeLabour(WK.edge_works[it.type], hauled, em);
   }
-  for (const it of Object.values((works && works.hexes) || {})){
+  for (const it of Object.values(works?.hexes || {})){
     const sp = WK.hex_works[it.type];
     t += (sp.each || 0) + (hauled ? sp.haul || 0 : 0);
   }
