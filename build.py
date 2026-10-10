@@ -323,7 +323,9 @@ def works_rules(d) -> list[str]:
         f"{W['camp_area']['mounted']} with horses), with the bank and palisade on its edge and the ditch one ring out. {int(W['work_share'] * 100)}% of the men work at once; the rest guard and cook. Work uses what is left of "
         f"the day's marching hours and then {W['evening_hours']} evening hours, so a camp made after the march costs no marching time; beyond that it runs on "
         "into the next day. Timber for palisades and stakes takes longer to fetch when no woods are within a hex. "
-        f"A fight can be set up only once an enemy force has marched to within {d.terrain['fight_within']} hex of the camp.",
+        f"A fight can be set up only once an enemy force has marched to within {d.terrain['fight_within']} hex of the camp. "
+        "If it arrives before the camp is finished, the GM chooses: attack the works built so far, or wait. Works go up in the order listed, "
+        "each kind all round from the gate before the next.",
         "<b>Works on the battle map:</b> ditches, banks, palisades, gates and walls lie along hex edges; stakes, abatis, pavises and wagons fill a hex. "
         "Crossing costs extra movement; a palisade, a barred gate or a wall stops movement until breached. Missile attacks on a man right behind a work lose its cover. "
         "In close combat only reach-2 weapons (spears, bills) strike over a palisade, gate or wall, and a man attacking up at a defender on the high side of a bank, ditch or wall takes its height penalty.",

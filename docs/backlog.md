@@ -9,28 +9,6 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Camp fights (from PR #15)
 
-### 1. An enemy who arrives early still fights a finished camp
-
-**Now.** A fight starts at the later of the forces' clocks. If the enemy reaches the camp
-while it is still being dug, the fight waits until the camp is done, and the battle map
-lays out the camp complete. In testing, Enemy horse reached Our band's camp at 14:33 on
-20 October; the fortified camp was finished at 19:25 on 24 October, and that is when the
-fight starts.
-
-**Why it matters.** Catching an enemy before his works are up is one of the main reasons
-to march hard, and the rules currently take that away.
-
-**A way to fix it.**
-- Each camp already records when its work started (`from`, added for allies joining a
-  fight), as well as when it will finish.
-- If the attackers arrive first, start the fight at their arrival. Lay the camp out
-  partly built, in proportion to the labour done by then. For example, finish the ditch
-  first, then the bank, then the palisade, with the gate last. Or build the ring
-  section by section from the gate.
-- Ask the GM which: fight now against the unfinished works, or wait and watch.
-- The labour figures are already shared (`works_labour` in `gravewounds/combat.py` and
-  `templates/camp.js`), so a partial layout can be checked against them.
-
 ### 3. A very large camp does not match the travel map's labour
 
 **Now.** The battle map is capped at 80 × 60 hexes. A camp too big for that is shrunk to
@@ -76,8 +54,7 @@ food and tools, open to raids, and it reaches camp after the fighting men.
 ## Deferred earlier
 
 - **One clock for all forces.** Each force on the travel map keeps its own clock (kept on
-  purpose for now). A shared clock would let forces meet on the road, and would make
-  item 1 simpler.
+  purpose for now). A shared clock would let forces meet on the road.
 - **Planned arrivals use today's ground.** The arrival estimate assumes today's mud or snow
   for later days too (see [weather.md](weather.md)). It could use the weather already
   rolled for those days, or show a range.

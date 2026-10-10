@@ -190,6 +190,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
       <div class="toolbar">
         <button id="btn-camp" title="Spend the time to make this camp here">Make camp</button>
         <button class="small" id="btn-fight" title="Open the wound roller's battle map with these forces (and the camp's works) laid out">Set up a fight here</button>
+        <button class="small" id="btn-fight-wait" hidden title="Fight once the camp is finished">Wait for the camp</button>
       </div>
       <p class="muted" id="fight-note" style="margin:0"></p>
       <ol class="log" id="log" aria-label="March and camp log"></ol>
@@ -432,6 +433,19 @@ function campDone(day, used, hours, hpdList = null){
   while (used + left > hpdAt(hpdList, i) + ev + 1e-9){ left -= hpdAt(hpdList, i) + ev - used; day += 1; used = 0; i += 1 }
   return { day, used: used + left };
 }
+function campWorked(start, day, used, hpdList = null){   // hours of camp work from start until (day, used)
+  const ev = WK.evening_hours;
+  let t = 0;
+  for (let k = start.day; k <= day; k++){
+    const cap = hpdAt(hpdList, k - start.day) + ev, begin = k === start.day ? start.used : 0, end = k === day ? used : cap;
+    t += Math.max(0, Math.min(end, cap) - begin);
+  }
+  return t;
+}
+function campLabourDone(camp, day, used, hpdList = null){  // man-hours of the camp's works done by (day, used)
+  if (!camp.start) return camp.labour || 0;
+  return Math.min(camp.labour, Math.max(0, campWorked(camp.start, day, used, hpdList) - camp.setup) * camp.rate);
+}
 // Who fights (as gravewounds.travel.fight_plan)
 const camped = o => !!o.camp && o.camp.hex[0] === o.pos[0] && o.camp.hex[1] === o.pos[1];
 function nearForces(forces, x, sameSide, campedOnly = false){
@@ -444,7 +458,9 @@ function arrived(o){                         // when it got here: when it began 
   return camped(o) && o.camp.from ? o.camp.from : { day: o.day, used: o.used };
 }
 const clockAfter = (o, day, used) => { const a = arrived(o); return a.day > day || (a.day === day && a.used > used) };
-function fightPlan(forces, sel){
+const before = (a, b) => a.day < b.day || (a.day === b.day && a.used < b.used);
+const laterOf = (a, b) => (before(b, a) ? a : b);
+function fightPlan(forces, sel, wait = true){
   const f = forces.find(o => o.id === sel);
   let defender = f;
   if (!camped(f)){                           // fight from a camp within reach: our own side's first
@@ -452,14 +468,13 @@ function fightPlan(forces, sel){
     if (camps.length) defender = camps[0];
   }
   const attackers = nearForces(forces, defender, false);
-  let day = defender.day, used = defender.used;
-  for (const o of attackers){
-    if (!clockAfter(o, day, used)) continue;
-    ({ day, used } = arrived(o));
-  }
+  let now = arrived(defender);
+  for (const o of attackers) now = laterOf(arrived(o), now);
+  const ready = laterOf({ day: defender.day, used: defender.used }, now);
+  const { day, used } = wait ? ready : now, early = before(now, ready);
   const friends = nearForces(forces, defender, true);
   return { defender: defender.id, allies: friends.filter(o => !clockAfter(o, day, used)).map(o => o.id),
-    attackers: attackers.map(o => o.id), late: friends.filter(o => clockAfter(o, day, used)).map(o => o.id), day, used };
+    attackers: attackers.map(o => o.id), late: friends.filter(o => clockAfter(o, day, used)).map(o => o.id), day, used, early };
 }
 /* ---------- end of rules shared with gravewounds/travel.py ---------- */
 
@@ -638,7 +653,8 @@ function makeCamp(f, kind){
   let left = r.hours;
   while (f.used + left > hpdOf(f.day) + ev + 1e-9){ left -= hpdOf(f.day) + ev - f.used; endDay(f) }
   const from = r.change && campHere(f).from ? campHere(f).from : came;   // when it got here and began camping
-  f.used += left; f.camp = { kind, hex: f.pos.slice(), from };
+  const rate = f.men * WK.work_share;          // for how far along the works are at any time
+  f.used += left; f.camp = { kind, hex: f.pos.slice(), from, start: { day: d0, used: u0 }, labour: r.labour, rate, setup: Math.max(0, r.hours - r.labour / rate) };
   let what = "made a " + WK.camps[kind].name.toLowerCase();
   if (kind === "quartered") what = "took quarters";
   else if (r.change) what = "changed its camp to a " + WK.camps[kind].name.toLowerCase();
@@ -719,7 +735,7 @@ function renderSide(){
   const on = !!f;
   ["#btn-hour", "#btn-day", "#btn-undo-wp", "#btn-clear", "#btn-remove"].forEach(id => $(id).disabled = !on);
   ["#btn-camp", "#btn-fight", "#in-men", "#in-tools", "#sel-camp"].forEach(id => $(id).disabled = !on);
-  if (!f){ $("#force-head").textContent = ""; $("#summary").innerHTML = ""; $("#log").innerHTML = ""; $("#camp-est").textContent = ""; $("#fight-note").textContent = ""; return }
+  if (!f){ $("#force-head").textContent = ""; $("#summary").innerHTML = ""; $("#log").innerHTML = ""; $("#camp-est").textContent = ""; $("#fight-note").textContent = ""; $("#btn-fight-wait").hidden = true; return }
   const ft = FT[f.type], hpd = hpdOf(f.day), lv = WXD.fatigue.levels[f.fatigue || 0];
   const slow = lv.march < 100 ? ` (${lv.march}% while ${lv.name.toLowerCase()})` : "";
   $("#force-head").innerHTML = `<b>${esc(f.name)}</b> at ${esc(where(f.pos))}. ${esc(ft.name)}: ${ft.kmh} km/h on a road${slow}; today ${fmtH(hpd)} of marching from ${clock(0, f.day)}.`
@@ -751,8 +767,22 @@ function renderSide(){
 }
 function byId(id){ return forcesHere().find(o => o.id === id) }
 function namesList(xs){ return xs.length < 3 ? xs.join(" and ") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] }
+function campStatus(dfd, p){                 // the defender's camp at the fight's time: {camp, done (man-hours, null if finished), pct}
+  const camp = campHere(dfd);
+  if (!camp || !camp.labour) return { camp, done: null, pct: 100 };
+  const done = campLabourDone(camp, p.day, p.used, camp.start ? hpdList(camp.start.day) : null);
+  if (done >= camp.labour - 1e-6) return { camp, done: null, pct: 100 };
+  return { camp, done, pct: Math.floor(100 * done / camp.labour) };
+}
+function fightOptions(f){                    // the fights on offer: attack now, and wait for the camp if it is unfinished
+  const wait = fightPlan(forcesHere(), f.id, true);
+  if (!wait.early) return [wait];
+  const now = fightPlan(forcesHere(), f.id, false);
+  return campStatus(byId(now.defender), now).done === null ? [now] : [now, wait];
+}
 function fightButton(f){                     // a fight needs an enemy marched to within reach
-  const p = fightPlan(forcesHere(), f.id), dfd = byId(p.defender), b = $("#btn-fight");
+  const opts = fightOptions(f), p = opts[0], dfd = byId(p.defender), b = $("#btn-fight"), bw = $("#btn-fight-wait");
+  bw.hidden = opts.length < 2;
   if (!p.attackers.length){
     b.textContent = "Set up a fight";
     b.disabled = true;
@@ -760,16 +790,24 @@ function fightButton(f){                     // a fight needs an enemy marched t
     $("#fight-note").textContent = `No enemy force is within ${km} km of ${f.name}. March one up first: select it, and in Plan route click ${f.name} to send it there.`;
     return;
   }
-  const here = campHere(dfd), at = here ? "at its " + WK.camps[here.kind].name.toLowerCase() : "where it stands";
+  const st = campStatus(dfd, p), here = st.camp;
+  const campName = here ? WK.camps[here.kind].name.toLowerCase() : "";
+  const at = here ? `at its ${campName}${st.done === null ? "" : " (" + st.pct + "% built)"}` : "where it stands";
   const names = ids => namesList(ids.map(id => byId(id).name));
   const withAllies = p.allies.length ? ` (with ${names(p.allies)})` : "";
-  b.textContent = `Set up the fight: ${names(p.attackers)} against ${dfd.name}${withAllies} ${at}`;
+  b.textContent = `${opts.length > 1 ? "Attack now" : "Set up the fight"}: ${names(p.attackers)} against ${dfd.name}${withAllies} ${at}`;
   b.disabled = false;
   const be = p.late.length > 1 ? "are" : "is";
   const late = p.late.length ? ` ${names(p.late)} ${be} not there yet and will miss it.` : "";
+  const when = q => `${dateText(q.day, true)}, ${clock(q.used, q.day)}`;
+  if (opts.length > 1){
+    bw.textContent = `Wait: fight at the finished camp, ${when(opts[1])}`;
+    $("#fight-note").textContent = `The attackers are there by ${when(p)}, when ${dfd.name}'s ${campName} is ${st.pct}% built. The GM chooses: attack now, or wait until it is finished.${late}`;
+    return;
+  }
   let why = "when the last of the attackers is there";
   if (dfd.day === p.day && dfd.used === p.used) why = here ? `when ${dfd.name} has finished its camp` : `when ${dfd.name} is ready`;
-  $("#fight-note").textContent = `The fight starts ${dateText(p.day, true)}, ${clock(p.used, p.day)}, ${why}.${late}`;
+  $("#fight-note").textContent = `The fight starts ${when(p)}, ${why}.${late}`;
 }
 function nightsText(n){
   if (!n) return "";
@@ -898,17 +936,19 @@ function init(){
   $("#in-tools").onchange = e => { const f = selForce(); if (f){ f.tools = e.target.checked; render() } };
   $("#sel-camp").onchange = e => { S.campKind = e.target.value; render() };
   $("#btn-camp").onclick = () => { const f = selForce(); if (f){ makeCamp(f, $("#sel-camp").value); render() } };
-  $("#btn-fight").onclick = () => {
+  const sendFight = k => {                   // k: which of the fights on offer (0 attack now / the only one, 1 wait)
     const f = selForce(); if (!f) return;
-    const p = fightPlan(forcesHere(), f.id); if (!p.attackers.length) return;
-    const dfd = byId(p.defender), camp = campHere(dfd), m = curMap(), today = dayWeather(p.day);
+    const p = fightOptions(f)[k]; if (!p || !p.attackers.length) return;
+    const dfd = byId(p.defender), st = campStatus(dfd, p), m = curMap(), today = dayWeather(p.day);
     const brief = o => ({ name: o.name, side: o.side, men: o.men, type: o.type, fatigue: o.fatigue || 0, km: +(hexDist(o.pos, dfd.pos) * m.hex_km).toFixed(1) });
     const foes = p.attackers.map(byId).map(brief), allies = p.allies.map(byId).map(brief);
     try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", force: { name: dfd.name, side: dfd.side, men: dfd.men, type: dfd.type, fatigue: dfd.fatigue || 0 },
-      camp: camp ? camp.kind : null, hauled: !nearWoods(m, dfd.pos), foes, allies, place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day),
+      camp: st.camp ? st.camp.kind : null, done: st.done, built: st.pct, hauled: !nearWoods(m, dfd.pos), foes, allies, place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day),
       weather: { cond: today.w.cond, wind: today.w.wind, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){}
     location.href = "roller.html";
   };
+  $("#btn-fight").onclick = () => sendFight(0);
+  $("#btn-fight-wait").onclick = () => sendFight(1);
   const dayNow = () => { const f = selForce(); return f ? f.day : 1 };
   const afterWx = () => {                    // routes may be cut by today's ground
     for (const f of forcesHere()){

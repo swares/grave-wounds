@@ -19,10 +19,12 @@ camp_area_min: 100         # even a handful of men needs a camp this big
 
 # Kinds of camp on the travel map.
 #   hours      - flat time to set up (clear the site, fires, a watch), whatever the force's size
-#   works      - works built all round the camp's perimeter. Labour: each edge work's
-#                per_metre (+ haul if no woods within a hex) x the perimeter, plus `each` for
-#                a gate; each hex work's `each` (+ haul) for every 2 m of perimeter. Divided
-#                by the men working (men x work_share) to give hours, then added to `hours`.
+#   works      - works built all round the camp, in the order they are built: each kind
+#                goes all round, starting from the gate, before the next begins. Labour is
+#                that of the battle map's layout (layout below): each edge work's per_metre
+#                (+ haul if no woods within a hex) for every hex side, `each` for a gate and
+#                for every hex of stakes (+ haul). Divided by the men working
+#                (men x work_share) to give hours, then added to `hours`.
 #   tools      - true if it needs spades and axes
 #   terrain    - only on these terrains (quartering needs buildings)
 #   surprise   - shift to the odds of being caught unawares (for later rules; − is better)
