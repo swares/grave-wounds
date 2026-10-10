@@ -97,12 +97,18 @@ class Data:
     maps: dict = field(default_factory=dict)        # travel map id -> map, `rows` = terrain rows as strings
     works: dict = field(default_factory=dict)       # works.yaml: camps, edge_works, hex_works
     weather: dict = field(default_factory=dict)     # weather.yaml: daylight, conditions, ground, rest, fatigue, climates
+    disease: dict = field(default_factory=dict)     # disease.yaml: camp disease for travel-map forces
     warnings: list = field(default_factory=list)
 
 
 def _read(path: Path):
     with open(path, encoding="utf-8") as fh:
         return yaml.safe_load(fh)
+
+
+def _optional(path: Path, default):
+    """A data file that may be absent (older data sets): its contents, or `default`."""
+    return _read(path) if path.exists() else default
 
 
 def load(root: str | Path = "data") -> Data:
@@ -118,8 +124,9 @@ def load(root: str | Path = "data") -> Data:
     conflicts = (_read(root / "conflicts.yaml") or {}).get("conflicts", {}) if (root / "conflicts.yaml").exists() else {}
     terrain = _read(root / "terrain.yaml") if (root / "terrain.yaml").exists() else {"hours_per_day": 8, "fight_within": 1, "forces": {}, "terrain": [], "place_kinds": {}}
     terrain = {**terrain, "terrain": {t["id"]: t for t in terrain["terrain"]}}
-    works = _read(root / "works.yaml") if (root / "works.yaml").exists() else {"camps": {}, "edge_works": {}, "hex_works": {}}
-    weather = _read(root / "weather.yaml") if (root / "weather.yaml").exists() else {}
+    works = _optional(root / "works.yaml", {"camps": {}, "edge_works": {}, "hex_works": {}})
+    weather = _optional(root / "weather.yaml", {})
+    disease = _optional(root / "disease.yaml", {})
     maps = {}
     for p in sorted((root / "maps").glob("*.yaml")) if (root / "maps").exists() else []:
         m = _read(p)
@@ -144,6 +151,7 @@ def load(root: str | Path = "data") -> Data:
         maps=maps,
         works=works,
         weather=weather,
+        disease=disease,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -435,6 +443,10 @@ def validate(d: Data) -> None:
             if not isinstance(m.get("climate_shift", 0), (int, float)):
                 errors.append(f"maps/{mid}: climate_shift must be a number")
 
+    # camp disease
+    if d.disease:
+        errors += _disease_errors(d, TT)
+
     # camps and works
     WK = d.works
     EW, HW = WK.get("edge_works", {}), WK.get("hex_works", {})
@@ -678,3 +690,48 @@ def validate(d: Data) -> None:
 
     if errors:
         raise DataError("\n".join(errors))
+
+
+DISEASE_FACTORS = {"poor", "good", "staying", "marsh", "town", "upland", "warm", "hot", "cold_wet", "plague"}
+
+
+def _disease_errors(d: Data, terrain: dict) -> list[str]:
+    """disease.yaml: the track, hygiene and care for every camp, terrains, and each disease."""
+    D, errors = d.disease, []
+    steps = D.get("steps", [])
+    if steps[:1] != ["healed"] or len(steps) < 3:
+        errors.append("disease.yaml: steps must start with healed")
+    errors += [f"disease.yaml: {k} must be one of the steps" for k in ("unfit_from", "carried_from") if D.get(k) not in steps]
+    errors += _disease_camp_errors(d)
+    for k, ts in D.get("terrain_factors", {}).items():
+        errors += [f"disease.yaml: terrain_factors.{k} names unknown terrain {t}" for t in ts if t not in terrain]
+    for did, x in D.get("diseases", {}).items():
+        errors += _one_disease_errors(did, x, steps)
+    return errors
+
+
+def _disease_camp_errors(d: Data) -> list[str]:
+    D, errors = d.disease, []
+    for k in ("camp_hygiene", "camp_care"):
+        errors += [f"disease.yaml: {k} has no entry for {camp}" for camp in ["none", *d.works.get("camps", {})] if camp not in D.get(k, {})]
+    if any(v not in D.get("hygiene", []) for v in D.get("camp_hygiene", {}).values()):
+        errors.append("disease.yaml: camp_hygiene must use the hygiene levels")
+    if any(v not in D.get("recovery", {}).get("care", {}) for v in D.get("camp_care", {}).values()):
+        errors.append("disease.yaml: camp_care must use the recovery care levels")
+    return errors
+
+
+def _one_disease_errors(did: str, x: dict, steps: list) -> list[str]:
+    errors = []
+    lo, hi = (x.get("incubation") or [0, -1])[:2]
+    if not (isinstance(lo, int) and isinstance(hi, int) and 1 <= lo <= hi):
+        errors.append(f"disease.yaml: {did} incubation must be [low, high] days")
+    ups = [r.get("upto") for r in x.get("peak", [])]
+    if not ups or ups != sorted(ups) or ups[-1] != 100 or any(r.get("step") not in steps[1:] for r in x["peak"]):
+        errors.append(f"disease.yaml: {did} peak must rise to 100 and name steps past healed")
+    bad = [k for k in [*x.get("mods", {}), *x.get("needs", [])] if k not in DISEASE_FACTORS]
+    if bad:
+        errors.append(f"disease.yaml: {did} uses unknown factors {bad}")
+    if not isinstance(x.get("virulence"), int) or not isinstance(x.get("base"), int):
+        errors.append(f"disease.yaml: {did} base and virulence must be whole numbers")
+    return errors

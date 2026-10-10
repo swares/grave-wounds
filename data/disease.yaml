@@ -1,0 +1,124 @@
+# Camp disease for forces on the travel map (Grave Wounds).
+#
+# This is the force-level form of the sickness rules in docs/design.md ("Recovery, sickness
+# and downtime"): each force counts how many of its men are sick, of what, and how badly,
+# rather than tracking named characters. All numbers are design estimates; the outbreak
+# chances and peak odds are the design doc's, and each disease's `virulence` (taken off
+# every recovery roll) is tuned by simulation so that deaths per case come near the
+# historical figures quoted there (`deaths`), for a man resting in an ordinary camp: field
+# care, not marching, dry. Marching, no camp, wet and cold or filth make it worse.
+# `python3 -m gravewounds disease` re-runs the simulation.
+#
+# The track, from well to dead. A man who fails a recovery check at Deadly dies.
+steps: [healed, mending, serious, grave, deadly]
+unfit_from: serious        # men at this step or worse cannot dig, fight or march under their own power
+carried_from: grave        # men at this step or worse are carried on litters
+endurance: 50              # a typical man's Endurance, for resist and recovery rolls
+
+# Litters slow the march: any litters, and fewer than `bearers` fit men per litter.
+litters:
+  bearers: 2
+  march: 90                # % of the force's speed while it carries any litters
+  short: 50                # % when it has too few fit men to carry them all in turn
+
+# ---------- catching a disease ----------
+# Each disease has a weekly outbreak chance: `base` plus the `mods` that apply that week
+# (below), as in the design doc. The doc rolls it once for a small team, and then every man
+# resists with Endurance. A force is many men, and one roll for all of them makes the toll a
+# lottery (0-50% dead in six weeks of siege), so here each well man rolls on his own each
+# week, at the same odds: outbreak chance x the chance he fails to resist (half, at Endurance
+# 50). A fair camp gives a man about 1 in 20 a week for the flux, a poor summer camp about
+# 1 in 5, as the doc intends. A man carries one disease at a time.
+#
+# Weekly factors, from the force's camp, its hex and the past week's weather:
+#   poor, good   - camp hygiene (fair adds nothing)
+#   staying      - camped in the same place `staying_days` or more
+#   marsh, town, upland - the hex the force is in (terrain lists below)
+#   warm         - the week's mean high at or over `warm_at` (the warm season, for ague)
+#   hot          - the week's highest high at or over `hot_at`
+#   cold_wet     - at least `cold_wet_days` wet days and a mean high at or under `cold_wet_at`
+#   plague       - the GM has plague in the region (a switch on the travel map)
+# A disease with `needs` has no outbreak chance at all unless every factor listed applies.
+hygiene: [poor, fair, good]
+camp_hygiene: {none: fair, bivouac: poor, watched: fair, staked: fair, fortified: fair, quartered: good}
+staying_days: 28
+terrain_factors:
+  marsh: [marsh]
+  town: [town, village]
+  upland: [hills, mountains]
+warm_at: 15
+hot_at: 25
+cold_wet_days: 2
+cold_wet_at: 8
+week_days: 7
+
+# ---------- a case ----------
+# A man who catches a disease shows it after `incubation` days (rolled within the range),
+# at Mending, then climbs one step a day to the peak rolled on `peak` (d100). After that,
+# one recovery check a day (a chronic case: one a week; typhoid: from `checks_from` days after
+# it shows): d100 against Endurance + care + activity + conditions - virulence.
+#   Success by `big` or more: two steps better; success: one better; failure: no change;
+#   failure by `big` or more: one step worse (from Deadly: dead). At Deadly any failure kills.
+camp_care: {none: none, bivouac: field, watched: field, staked: field, fortified: field, quartered: shelter}
+recovery:
+  big: 30
+  care: {none: -20, field: 0, shelter: 10}      # no camp; a camp; quarters in houses
+  activity: {marched: -20, rest: 10}            # marched that day, or not
+  wet_cold: -10                                 # the night's weather was harder than the shelter
+  filth: -10                                    # poor hygiene
+
+diseases:
+  flux:
+    name: "Bloody flux"
+    caught: "Dirty water or food, latrines too near the water"
+    base: 10
+    mods: {poor: 20, good: -5, staying: 10, marsh: 5, upland: -5, hot: 10}
+    incubation: [1, 3]
+    peak: [{upto: 3, step: deadly}, {upto: 15, step: grave}, {upto: 100, step: serious}]
+    chronic: true          # a failed check by `big` at Serious or better leaves it chronic at Serious
+    virulence: 5
+    deaths: 2.6            # % of cases in the records (Union army acute dysentery)
+  typhus:
+    name: "Camp fever (typhus)"
+    caught: "Lice in crowded, unwashed camps"
+    base: 2
+    mods: {poor: 5, good: -5, staying: 10, cold_wet: 10}
+    incubation: [7, 14]
+    peak: [{upto: 30, step: deadly}, {upto: 70, step: grave}, {upto: 100, step: serious}]
+    immune: true           # survivors cannot catch it again
+    virulence: 16
+    deaths: 40             # untreated, usually about 40%
+  typhoid:
+    name: "Typhoid"
+    caught: "Dirty water or food, often from a carrier in camp"
+    base: 2
+    mods: {poor: 5, good: -5, town: 5, hot: 5}
+    incubation: [7, 21]
+    peak: [{upto: 30, step: deadly}, {upto: 60, step: grave}, {upto: 100, step: serious}]
+    checks_from: 14
+    virulence: 15
+    deaths: 36             # Union white troops
+  ague:
+    name: "Ague (malaria)"
+    caught: "Mosquitoes in marshes and low wetlands"
+    base: 15
+    needs: [marsh, warm]
+    mods: {}
+    incubation: [7, 28]
+    peak: [{upto: 2, step: deadly}, {upto: 30, step: grave}, {upto: 100, step: serious}]
+    relapse: 5             # % a week that a man who has had it falls ill again (at Serious), in marsh
+    virulence: -9
+    deaths: 0.8            # Union army: it disabled far more than it killed
+  plague:
+    name: "Plague"
+    caught: "Flea bites; worst in sieges and towns full of rats"
+    base: 5
+    needs: [plague]
+    mods: {staying: 5, town: 5}
+    incubation: [2, 6]
+    peak: [{upto: 50, step: deadly}, {upto: 80, step: grave}, {upto: 100, step: serious}]
+    immune: true
+    virulence: 15
+    deaths: 45             # untreated bubonic, 30-60%
+
+# Left for later (need food tracking or individual wounds): scurvy and wound fever.

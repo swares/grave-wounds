@@ -84,6 +84,35 @@ near. A column makes one camp for all its forces (see *Marching together*). Camp
 day costs no marching time. Once an enemy force has marched to within 1 km, **Set up the fight** opens the battle map
 with the camp's works, its men and the enemy laid out. See [works.md](works.md).
 
+## Disease and camp hygiene
+
+Before antibiotics, disease emptied armies faster than battle. Each force keeps count of
+its sick: who has what, and how bad it is (mending, serious, grave or deadly). The numbers
+are in `data/disease.yaml` and the printed tables, and the design behind them is in
+[design.md](design.md) (*Recovery, sickness and downtime*).
+
+- **Catching it.** Once a week, on the night of each 7th day on the force's clock, every
+  well man may catch bloody flux, camp fever (typhus), typhoid, ague or plague. His chance
+  depends on the camp's **hygiene**, on staying 4 weeks or more in one place, on the ground
+  (marsh, a town or village, hills), and on the past week's weather (hot, warm, or cold and
+  wet). The Health section shows each disease's chance this week. Ague needs warm marsh
+  country, and plague needs **Plague in the region**, a switch by the weather.
+- **Hygiene** comes from the camp: a bivouac is poor, quarters in houses are good, and
+  other camps are fair. The GM can set it per force under **Camp hygiene**.
+- **The course of a case.** A case shows after its incubation, from a day or two for flux
+  to weeks for ague, and climbs to its peak. After that it gets better or worse each
+  night. Rest, a camp and shelter help; marching, no camp, cold wet nights and filth hurt.
+  At deadly, a bad night kills. Survivors of typhus and plague are immune, ague comes back
+  in marsh country, and flux can drag on as a chronic case.
+- **What it costs.** Men at serious or worse do not dig or fight: camps take longer, and
+  only the fit go into a fight. Grave and deadly cases are carried on litters, and the
+  force marches at 90%, or 50% if it has fewer than two fit men a litter. A force with no
+  fit men cannot march at all. Deaths come off the force's strength.
+
+As a guide, six weeks in a poor bivouac costs a company of 200 about a tenth of its men
+dead, with a third unable to march or fight. A siege camp in a hot summer (poor hygiene, staying put) costs about
+a fifth dead. That is near the losses recorded at Harfleur in 1415.
+
 ## Calendar and weather
 
 Days have real dates, and daylight sets each day's marching hours. The weather is rolled

@@ -168,9 +168,10 @@ def camp_perimeter(d: Data, men: int, ftype: str) -> float:
     return (12 * camp_radius(d, men, ftype) + 6) * edge_metres(d)
 
 
-def camp_hours(d: Data, m: dict, h, kind: str, men: int, ftype: str, tools: bool) -> dict:
+def camp_hours(d: Data, m: dict, h, kind: str, men: int, ftype, tools: bool, workers: int | None = None) -> dict:
     """How long this force takes to make this kind of camp here. {hours, labour, perimeter,
-    woods} or {error} if it cannot (no tools, or quartering away from houses). The labour is
+    woods} or {error} if it cannot (no tools, quartering away from houses, or no one fit to dig).
+    The camp is sized for all `men`; `workers` (default: all of them) are the fit men who dig. The labour is
     that of the works the battle map lays out for this camp (gravewounds.combat.camp_works),
     with hauled timber unless there is forest at hand."""
     W = d.works
@@ -185,7 +186,10 @@ def camp_hours(d: Data, m: dict, h, kind: str, men: int, ftype: str, tools: bool
     if c.get("layout"):
         n = camp_map_size(d, kind, men, ftype)
         labour = works_labour(d, camp_works(d, kind, men, ftype, n, n)["works"], not woods)
-    hours = c["hours"] + labour / (men * W["work_share"])
+    workers = men if workers is None else workers
+    if labour and not workers:
+        return {"error": "has no fit men to dig"}
+    hours = c["hours"] + (labour / (workers * W["work_share"]) if labour else 0.0)
     return {"hours": hours, "labour": labour, "perimeter": camp_perimeter(d, men, ftype), "woods": woods}
 
 

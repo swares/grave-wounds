@@ -1,4 +1,4 @@
-"""Command line: python -m gravewounds roll|list|check"""
+"""Command line: python -m gravewounds roll|list|check|disease"""
 from __future__ import annotations
 
 import argparse
@@ -50,6 +50,9 @@ def _main(argv=None) -> int:
 
     sub.add_parser("list", help="list tables and weapons")
     sub.add_parser("check", help="validate the data set")
+    ds = sub.add_parser("disease", help="simulate camp disease cases against the records (deaths per case)")
+    ds.add_argument("-n", type=int, default=8000, help="cases per disease")
+    ds.add_argument("--seed", type=int, default=3)
 
     a = p.parse_args(argv)
     try:
@@ -58,6 +61,15 @@ def _main(argv=None) -> int:
         print("Data errors:\n" + str(e), file=sys.stderr)
         return 1
 
+    if a.cmd == "disease":
+        from .disease import seeded_d100, simulate
+        ctx = {"care": "field", "marched": False, "wet_cold": False, "filth": False}
+        print("Resting in an ordinary camp (field care, not marching, dry):")
+        for did, x in d.disease["diseases"].items():
+            r = simulate(d, did, a.n, ctx, seeded_d100(a.seed))
+            print(f"  {x['name']:<22} deaths {r['deaths']:5.1f}% (records {x['deaths']}%), "
+                  f"sick {r['sick_days']:4.1f} days on average, virulence {x['virulence']}")
+        return 0
     if a.cmd == "check":
         for w in d.warnings:
             print("warning:", w)

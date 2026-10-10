@@ -142,6 +142,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
           <label class="inline muted">Low <input id="in-wxlo" type="number" step="0.5" aria-label="Low, degrees C"></label>
           <label class="inline muted">High <input id="in-wxhi" type="number" step="0.5" aria-label="High, degrees C"></label>
           <button class="small" id="btn-rest" title="End the selected force's day: the night's rest, then the next morning">Rest until next morning</button>
+          <label class="inline check muted"><input id="chk-plague" type="checkbox"> Plague in the region</label>
         </div>
         <ul class="wxpast" id="wx-past" aria-label="Earlier days"></ul>
       </div>
@@ -194,6 +195,11 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <button class="small" id="btn-fight-wait" hidden title="Fight once the camp is finished">Wait for the camp</button>
       </div>
       <p class="muted" id="fight-note" style="margin:0"></p>
+      <h2>Health</h2>
+      <div class="row">
+        <div style="flex:2 1 200px"><label for="sel-hyg">Camp hygiene</label><select id="sel-hyg"></select></div>
+      </div>
+      <p class="muted" id="health-note" style="margin:0"></p>
       <ol class="log" id="log" aria-label="March and camp log"></ol>
 
       <div id="paint-box" hidden>
@@ -212,7 +218,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
 </div>
 
 <script>
-const DATA = {"generated":"2026-10-09","terrain":{"hours_per_day":8,"day_starts":8,"fight_within":1,"forces":{"foot":{"name":"On foot","kmh":4},"mounted":{"name":"Mounted","kmh":6},"wagons":{"name":"Baggage wagons","kmh":3,"cannot_enter":["forest","marsh","mountains","heath"]}},"terrain":{"road":{"id":"road","key":"=","name":"Road","cost":1.0,"colour":["#9f8b66","#8f7d58"],"cover":"none","forage":"poor"},"open":{"id":"open","key":".","name":"Open ground","cost":1.5,"colour":["#dfe6c4","#3d4632"],"cover":"none","forage":"fair"},"farmland":{"id":"farmland","key":"f","name":"Farmland","cost":1.5,"colour":["#e9dfa8","#4f4a2c"],"cover":"light","forage":"good"},"heath":{"id":"heath","key":",","name":"Heath","cost":1.75,"colour":["#d4c3cf","#4a3d47"],"cover":"none","forage":"poor"},"forest":{"id":"forest","key":"F","name":"Forest","cost":2.5,"colour":["#8fb487","#24402a"],"cover":"heavy","forage":"fair"},"hills":{"id":"hills","key":"h","name":"Hills","cost":2.0,"colour":["#c9b28a","#5a4b33"],"cover":"light","forage":"fair"},"mountains":{"id":"mountains","key":"M","name":"Mountains","cost":4.0,"colour":["#a39a92","#4d4844"],"cover":"heavy","forage":"none"},"marsh":{"id":"marsh","key":"m","name":"Marsh","cost":3.0,"colour":["#a9c7b8","#2d4842"],"cover":"light","forage":"poor","wet":true},"river":{"id":"river","key":"~","name":"River","cost":null,"colour":["#8db7d6","#25445c"],"cover":"none","forage":"poor","wet":true},"ford":{"id":"ford","key":"d","name":"Ford","cost":2.0,"colour":["#b4d0e0","#35566b"],"cover":"none","forage":"poor","wet":true},"bridge":{"id":"bridge","key":"b","name":"Bridge","cost":1.0,"colour":["#7a6545","#a08a5e"],"cover":"none","forage":"none"},"lake":{"id":"lake","key":"w","name":"Lake or sea","cost":null,"colour":["#7fa9cc","#1f3a52"],"cover":"none","forage":"poor","wet":true},"village":{"id":"village","key":"v","name":"Village","cost":1.0,"colour":["#d9a68a","#6e4836"],"cover":"light","forage":"good"},"town":{"id":"town","key":"T","name":"Town","cost":1.0,"colour":["#c98b74","#7a4535"],"cover":"heavy","forage":"good"}},"place_kinds":{"camp":{"name":"Camp"},"objective":{"name":"Objective"},"village":{"name":"Village"},"town":{"name":"Town"},"landmark":{"name":"Landmark"}}},"works":{"work_share":0.75,"evening_hours":4,"camp_area":{"foot":20,"mounted":40,"wagons":40},"camp_area_min":100,"camps":{"bivouac":{"name":"Bivouac","hours":0,"surprise":20,"rest":"poor","desc":"Sleep where you stop. Nothing built and no proper watch."},"watched":{"name":"Watched camp","hours":1,"surprise":0,"rest":"fair","desc":"A cleared site with fires, the baggage drawn up and a sentry roster."},"staked":{"name":"Staked camp","hours":1,"tools":true,"works":["stakes"],"surprise":-10,"rest":"fair","layout":"stakes","desc":"A watched camp ringed with sharpened stakes, like archers' stakes set against horse."},"fortified":{"name":"Fortified camp","hours":1,"tools":true,"works":["ditch","bank","palisade","gate"],"surprise":-20,"rest":"good","layout":"fortified","desc":"Ditch, bank and palisade all round, with a gate."},"quartered":{"name":"Quartered","hours":0.5,"terrain":["village","town"],"surprise":0,"rest":"good","desc":"Billeted in the houses of a village or town."}},"edge_works":{"ditch":{"name":"Ditch","per_metre":2.5,"cross":2,"cover":0,"height":10,"breach":null},"bank":{"name":"Earth bank","per_metre":1.0,"cross":1,"cover":20,"cover_side":"high","height":10,"breach":null},"palisade":{"name":"Palisade","per_metre":1.5,"haul":1.0,"cross":null,"cover":40,"cover_side":"both","blocks_melee":true,"breach":12},"gate":{"name":"Gate","each":6,"cross":0,"cover":40,"cover_side":"both","blocks_melee":true,"breach":20,"gate":true},"wall":{"name":"Stone wall","per_metre":null,"cross":null,"cover":50,"cover_side":"both","height":20,"blocks_melee":true,"breach":null,"note":"Town and castle walls: already there, not built in the field."}},"hex_works":{"stakes":{"name":"Stakes","each":1,"haul":0.5,"enter":1,"no_horse":true,"breach":2},"abatis":{"name":"Abatis","each":4,"haul":4,"enter":2,"cover_here":20,"no_horse":true,"breach":8},"pavise":{"name":"Pavise","each":0,"enter":0,"cover_here":20,"breach":null,"note":"A large standing shield carried by crossbowmen; covers the man behind it."},"wagon":{"name":"Wagon","each":0.25,"enter":null,"cover_behind":40,"no_horse":true,"breach":10,"note":"Wagons drawn up and chained, as in a wagon laager."}}},"weather":{"daylight":{"start_after_sunrise":1.0,"stop_before_sunset":1.0,"min_hours":2},"persistence":0.4,"anomaly_carry":0.5,"anomaly":[{"upto":5,"deg":-4},{"upto":15,"deg":-2},{"upto":35,"deg":-1},{"upto":65,"deg":0},{"upto":85,"deg":1},{"upto":95,"deg":2},{"upto":100,"deg":4}],"intensity":[{"upto":60,"rain":"rain","snow":"snow"},{"upto":90,"rain":"heavy_rain","snow":"heavy_snow"},{"upto":100,"rain":"storm","snow":"blizzard"}],"snow_at_or_below":2,"fair_upto":50,"winds":[{"id":"calm","upto":50,"name":"Calm or light air","missile":0,"firearm":0},{"id":"breeze","upto":85,"name":"Breeze","missile":0,"firearm":0},{"id":"strong","upto":97,"name":"Strong wind","missile":10,"firearm":0},{"id":"gale","upto":100,"name":"Gale","missile":20,"firearm":10}],"conditions":{"fair":{"name":"Fair","precip":"none","wet":0,"visibility":null,"hardship":0},"overcast":{"name":"Overcast","precip":"none","wet":0,"visibility":null,"hardship":0},"fog":{"name":"Fog","precip":"none","wet":0,"visibility":25,"hardship":0},"rain":{"name":"Rain","precip":"rain","wet":1,"visibility":150,"hardship":1},"heavy_rain":{"name":"Heavy rain","precip":"rain","wet":2,"visibility":75,"hardship":2},"storm":{"name":"Storm","precip":"rain","wet":2,"visibility":50,"hardship":2,"min_wind":"strong"},"snow":{"name":"Snow","precip":"snow","wet":1,"visibility":75,"hardship":1},"heavy_snow":{"name":"Heavy snow","precip":"snow","wet":1,"visibility":40,"hardship":2},"blizzard":{"name":"Blizzard","precip":"snow","wet":2,"visibility":15,"hardship":3,"min_wind":"gale"}},"ground":{"mud_add":{"rain":1,"heavy_rain":2,"storm":2},"mud_max":3,"mud_dry":1,"mud_dry_warm":2,"warm_at":25,"snow_add":{"snow":1,"heavy_snow":2,"blizzard":3},"snow_max":4,"snow_melt":1,"snow_melt_mild":2,"mild_at":8,"flood_from":["heavy_rain","storm"],"flood_days":2,"deep":2},"march":{"mud":{"road":150,"open":130,"farmland":150,"heath":120,"forest":110,"hills":120,"mountains":110,"marsh":120,"ford":100,"bridge":100,"village":110,"town":100},"snow":{"road":150,"open":150,"farmland":150,"heath":150,"forest":150,"hills":175,"mountains":200,"marsh":150,"ford":150,"bridge":125,"village":125,"town":125},"flooded":["ford"]},"battle":{"deep_step":1,"string_wet":[0,10,20],"misfire":{"match":[0,30,60],"wheel":[0,15,30],"flint":[0,15,30],"percussion":[0,5,10],"cartridge":[0,0,0]}},"rest_levels":["bad","poor","fair","good"],"shelter":{"none":0,"bivouac":0,"watched":1,"staked":1,"fortified":1,"quartered":3},"cold_hardship":[{"low_at_or_below":0,"add":1},{"low_at_or_below":-10,"add":2}],"fatigue":{"levels":[{"name":"Fresh","penalty":0,"march":100},{"name":"Tired","penalty":5,"march":100},{"name":"Weary","penalty":10,"march":90},{"name":"Exhausted","penalty":20,"march":75},{"name":"Spent","penalty":30,"march":0}],"night":{"bad":1,"poor":0,"fair":-1,"good":-2},"heat":[{"high_at_or_over":30,"add":1},{"high_at_or_over":36,"add":2}],"cold":[{"high_at_or_below":-5,"add":1}],"heat_cold_min_hours":4,"heavy_going_hours":6},"climates":{"maritime":{"name":"North-west Europe, maritime","note":"Like England, the Low Countries, the Baltic coast and Gotland.","high":[6,7,9,12,15,18,20,20,17,13,9,7],"low":[1,1,2,4,7,10,12,12,10,7,4,2],"rain":[13,10,11,10,10,9,10,10,10,12,12,12],"fog":[5,4,3,2,2,1,1,2,3,5,5,6]},"continental":{"name":"Central and eastern Europe, continental","note":"Like Bohemia, Poland, Hungary and the Rhine valley.","high":[1,3,8,14,19,22,24,24,19,13,6,2],"low":[-5,-4,-1,3,8,11,13,13,9,4,0,-3],"rain":[9,8,8,8,9,10,10,9,8,7,8,9],"fog":[6,5,3,2,1,1,1,2,4,6,7,7]},"mediterranean":{"name":"Mediterranean and Levant coast","note":"Like Acre, Sidon, Sicily and southern Spain.","high":[18,19,21,25,28,30,32,32,31,28,24,19],"low":[9,9,11,14,17,21,23,24,22,19,14,11],"rain":[10,9,6,3,1,0,0,0,1,3,6,9],"fog":[1,1,1,1,0,0,0,0,0,1,1,1]},"arid":{"name":"Hot desert and steppe","note":"Like Mesopotamia, inland Syria and Egypt.","high":[16,19,24,30,37,42,44,44,41,34,24,18],"low":[4,6,10,15,21,24,26,25,21,16,9,5],"rain":[4,4,4,3,1,0,0,0,0,1,3,4],"fog":[1,1,0,0,0,0,0,0,0,0,1,1]}}},"battle_hex_m":2,"maps":{"generic-valley":{"id":"generic-valley","name":"Generic river valley (test map)","hex_km":1,"rows":["....FFFFFFFF.FFF.......www......hhMMMMMM","..FFFFFFFFFFFFFF......wwww......hhhMMMMM","...FFFFFFFFFFFFFF....wwwwwww...hhhhMMMMM",".FFFFFFFFFFFFFFF.....wwwwww....hhhhMMMMM",".FFFFFFFFFFFFFFF.......~www.....hhMMMMMM",".FFFFFFFFFFFFF.F......~w..........MMMMMM","..FFFFFFFFFFFFF.......~...........MMMMMM","..FFFFFFFFFFFF.......~.....T.......MMMMM","...FFFFFFFFFF.......=d======.......M.M..","..FFFFFFFFFFF.....==~......h..h.h.......","...FFFFFFFFF......=.~......hhhhh=h......","...FFFFFFFF......=.~.......hhhh=h.......","....F.FF.FFFFff.f=.~......hhhhh=hh......",".........FFF.fff=f.~.....hhhhh=hhh......","..........FFFfff=f..~...ffhfhh=hhhh.....","...........Ffff=fff.~...ff====hhhh......","...........ffff=fff..b=v===ffhhhhhh.....","...........f===ffff==~.fffffhhhhh..hh...","...........vffffff.=..~.fffffhhhhhhhh...","............fffff.=..~.fffff.hh.hhhhh...","...================..~...fff.....hhhhh..",".,.,..,.............~m...........hhhhh..",".,,,,,,.............m~m...........hhhh..",",,,,,,,,............m~m..........h......",".,,,,,,,,...........m~m.................",",,,,,,,,...........m~m..................",",,,,,,,,,,.........m~m..................",",,,,,,,,..........m~m...................",",,,,,,,,..........m~m...................",".,,,,,,...........~m...................."],"places":[{"name":"Camp","kind":"camp","hex":[3,20]},{"name":"Gallows Ridge","kind":"objective","hex":[32,10],"note":"Where the enemy is drawn up"},{"name":"Brigham","kind":"village","hex":[23,16]},{"name":"Elmstead","kind":"village","hex":[11,18]},{"name":"Kelsey Market","kind":"town","hex":[27,7]},{"name":"Bridge","kind":"landmark","hex":[21,16]},{"name":"Ford","kind":"landmark","hex":[21,8]}],"forces":[{"name":"Our band","type":"foot","side":"Side A","men":12,"tools":true,"hex":[3,20]},{"name":"Baggage train","type":"wagons","side":"Side A","men":6,"tools":true,"hex":[4,20]},{"name":"Enemy horse","type":"mounted","side":"Side B","men":20,"tools":false,"hex":[33,11]}],"start_date":"1415-10-20","calendar":"julian","latitude":52,"climate":"maritime","climate_shift":-0.5}}};
+const DATA = {"generated":"2026-10-09","terrain":{"hours_per_day":8,"day_starts":8,"fight_within":1,"forces":{"foot":{"name":"On foot","kmh":4},"mounted":{"name":"Mounted","kmh":6},"wagons":{"name":"Baggage wagons","kmh":3,"cannot_enter":["forest","marsh","mountains","heath"]}},"terrain":{"road":{"id":"road","key":"=","name":"Road","cost":1.0,"colour":["#9f8b66","#8f7d58"],"cover":"none","forage":"poor"},"open":{"id":"open","key":".","name":"Open ground","cost":1.5,"colour":["#dfe6c4","#3d4632"],"cover":"none","forage":"fair"},"farmland":{"id":"farmland","key":"f","name":"Farmland","cost":1.5,"colour":["#e9dfa8","#4f4a2c"],"cover":"light","forage":"good"},"heath":{"id":"heath","key":",","name":"Heath","cost":1.75,"colour":["#d4c3cf","#4a3d47"],"cover":"none","forage":"poor"},"forest":{"id":"forest","key":"F","name":"Forest","cost":2.5,"colour":["#8fb487","#24402a"],"cover":"heavy","forage":"fair"},"hills":{"id":"hills","key":"h","name":"Hills","cost":2.0,"colour":["#c9b28a","#5a4b33"],"cover":"light","forage":"fair"},"mountains":{"id":"mountains","key":"M","name":"Mountains","cost":4.0,"colour":["#a39a92","#4d4844"],"cover":"heavy","forage":"none"},"marsh":{"id":"marsh","key":"m","name":"Marsh","cost":3.0,"colour":["#a9c7b8","#2d4842"],"cover":"light","forage":"poor","wet":true},"river":{"id":"river","key":"~","name":"River","cost":null,"colour":["#8db7d6","#25445c"],"cover":"none","forage":"poor","wet":true},"ford":{"id":"ford","key":"d","name":"Ford","cost":2.0,"colour":["#b4d0e0","#35566b"],"cover":"none","forage":"poor","wet":true},"bridge":{"id":"bridge","key":"b","name":"Bridge","cost":1.0,"colour":["#7a6545","#a08a5e"],"cover":"none","forage":"none"},"lake":{"id":"lake","key":"w","name":"Lake or sea","cost":null,"colour":["#7fa9cc","#1f3a52"],"cover":"none","forage":"poor","wet":true},"village":{"id":"village","key":"v","name":"Village","cost":1.0,"colour":["#d9a68a","#6e4836"],"cover":"light","forage":"good"},"town":{"id":"town","key":"T","name":"Town","cost":1.0,"colour":["#c98b74","#7a4535"],"cover":"heavy","forage":"good"}},"place_kinds":{"camp":{"name":"Camp"},"objective":{"name":"Objective"},"village":{"name":"Village"},"town":{"name":"Town"},"landmark":{"name":"Landmark"}}},"works":{"work_share":0.75,"evening_hours":4,"camp_area":{"foot":20,"mounted":40,"wagons":40},"camp_area_min":100,"camps":{"bivouac":{"name":"Bivouac","hours":0,"surprise":20,"rest":"poor","desc":"Sleep where you stop. Nothing built and no proper watch."},"watched":{"name":"Watched camp","hours":1,"surprise":0,"rest":"fair","desc":"A cleared site with fires, the baggage drawn up and a sentry roster."},"staked":{"name":"Staked camp","hours":1,"tools":true,"works":["stakes"],"surprise":-10,"rest":"fair","layout":"stakes","desc":"A watched camp ringed with sharpened stakes, like archers' stakes set against horse."},"fortified":{"name":"Fortified camp","hours":1,"tools":true,"works":["ditch","bank","palisade","gate"],"surprise":-20,"rest":"good","layout":"fortified","desc":"Ditch, bank and palisade all round, with a gate."},"quartered":{"name":"Quartered","hours":0.5,"terrain":["village","town"],"surprise":0,"rest":"good","desc":"Billeted in the houses of a village or town."}},"edge_works":{"ditch":{"name":"Ditch","per_metre":2.5,"cross":2,"cover":0,"height":10,"breach":null},"bank":{"name":"Earth bank","per_metre":1.0,"cross":1,"cover":20,"cover_side":"high","height":10,"breach":null},"palisade":{"name":"Palisade","per_metre":1.5,"haul":1.0,"cross":null,"cover":40,"cover_side":"both","blocks_melee":true,"breach":12},"gate":{"name":"Gate","each":6,"cross":0,"cover":40,"cover_side":"both","blocks_melee":true,"breach":20,"gate":true},"wall":{"name":"Stone wall","per_metre":null,"cross":null,"cover":50,"cover_side":"both","height":20,"blocks_melee":true,"breach":null,"note":"Town and castle walls: already there, not built in the field."}},"hex_works":{"stakes":{"name":"Stakes","each":1,"haul":0.5,"enter":1,"no_horse":true,"breach":2},"abatis":{"name":"Abatis","each":4,"haul":4,"enter":2,"cover_here":20,"no_horse":true,"breach":8},"pavise":{"name":"Pavise","each":0,"enter":0,"cover_here":20,"breach":null,"note":"A large standing shield carried by crossbowmen; covers the man behind it."},"wagon":{"name":"Wagon","each":0.25,"enter":null,"cover_behind":40,"no_horse":true,"breach":10,"note":"Wagons drawn up and chained, as in a wagon laager."}}},"weather":{"daylight":{"start_after_sunrise":1.0,"stop_before_sunset":1.0,"min_hours":2},"persistence":0.4,"anomaly_carry":0.5,"anomaly":[{"upto":5,"deg":-4},{"upto":15,"deg":-2},{"upto":35,"deg":-1},{"upto":65,"deg":0},{"upto":85,"deg":1},{"upto":95,"deg":2},{"upto":100,"deg":4}],"intensity":[{"upto":60,"rain":"rain","snow":"snow"},{"upto":90,"rain":"heavy_rain","snow":"heavy_snow"},{"upto":100,"rain":"storm","snow":"blizzard"}],"snow_at_or_below":2,"fair_upto":50,"winds":[{"id":"calm","upto":50,"name":"Calm or light air","missile":0,"firearm":0},{"id":"breeze","upto":85,"name":"Breeze","missile":0,"firearm":0},{"id":"strong","upto":97,"name":"Strong wind","missile":10,"firearm":0},{"id":"gale","upto":100,"name":"Gale","missile":20,"firearm":10}],"conditions":{"fair":{"name":"Fair","precip":"none","wet":0,"visibility":null,"hardship":0},"overcast":{"name":"Overcast","precip":"none","wet":0,"visibility":null,"hardship":0},"fog":{"name":"Fog","precip":"none","wet":0,"visibility":25,"hardship":0},"rain":{"name":"Rain","precip":"rain","wet":1,"visibility":150,"hardship":1},"heavy_rain":{"name":"Heavy rain","precip":"rain","wet":2,"visibility":75,"hardship":2},"storm":{"name":"Storm","precip":"rain","wet":2,"visibility":50,"hardship":2,"min_wind":"strong"},"snow":{"name":"Snow","precip":"snow","wet":1,"visibility":75,"hardship":1},"heavy_snow":{"name":"Heavy snow","precip":"snow","wet":1,"visibility":40,"hardship":2},"blizzard":{"name":"Blizzard","precip":"snow","wet":2,"visibility":15,"hardship":3,"min_wind":"gale"}},"ground":{"mud_add":{"rain":1,"heavy_rain":2,"storm":2},"mud_max":3,"mud_dry":1,"mud_dry_warm":2,"warm_at":25,"snow_add":{"snow":1,"heavy_snow":2,"blizzard":3},"snow_max":4,"snow_melt":1,"snow_melt_mild":2,"mild_at":8,"flood_from":["heavy_rain","storm"],"flood_days":2,"deep":2},"march":{"mud":{"road":150,"open":130,"farmland":150,"heath":120,"forest":110,"hills":120,"mountains":110,"marsh":120,"ford":100,"bridge":100,"village":110,"town":100},"snow":{"road":150,"open":150,"farmland":150,"heath":150,"forest":150,"hills":175,"mountains":200,"marsh":150,"ford":150,"bridge":125,"village":125,"town":125},"flooded":["ford"]},"battle":{"deep_step":1,"string_wet":[0,10,20],"misfire":{"match":[0,30,60],"wheel":[0,15,30],"flint":[0,15,30],"percussion":[0,5,10],"cartridge":[0,0,0]}},"rest_levels":["bad","poor","fair","good"],"shelter":{"none":0,"bivouac":0,"watched":1,"staked":1,"fortified":1,"quartered":3},"cold_hardship":[{"low_at_or_below":0,"add":1},{"low_at_or_below":-10,"add":2}],"fatigue":{"levels":[{"name":"Fresh","penalty":0,"march":100},{"name":"Tired","penalty":5,"march":100},{"name":"Weary","penalty":10,"march":90},{"name":"Exhausted","penalty":20,"march":75},{"name":"Spent","penalty":30,"march":0}],"night":{"bad":1,"poor":0,"fair":-1,"good":-2},"heat":[{"high_at_or_over":30,"add":1},{"high_at_or_over":36,"add":2}],"cold":[{"high_at_or_below":-5,"add":1}],"heat_cold_min_hours":4,"heavy_going_hours":6},"climates":{"maritime":{"name":"North-west Europe, maritime","note":"Like England, the Low Countries, the Baltic coast and Gotland.","high":[6,7,9,12,15,18,20,20,17,13,9,7],"low":[1,1,2,4,7,10,12,12,10,7,4,2],"rain":[13,10,11,10,10,9,10,10,10,12,12,12],"fog":[5,4,3,2,2,1,1,2,3,5,5,6]},"continental":{"name":"Central and eastern Europe, continental","note":"Like Bohemia, Poland, Hungary and the Rhine valley.","high":[1,3,8,14,19,22,24,24,19,13,6,2],"low":[-5,-4,-1,3,8,11,13,13,9,4,0,-3],"rain":[9,8,8,8,9,10,10,9,8,7,8,9],"fog":[6,5,3,2,1,1,1,2,4,6,7,7]},"mediterranean":{"name":"Mediterranean and Levant coast","note":"Like Acre, Sidon, Sicily and southern Spain.","high":[18,19,21,25,28,30,32,32,31,28,24,19],"low":[9,9,11,14,17,21,23,24,22,19,14,11],"rain":[10,9,6,3,1,0,0,0,1,3,6,9],"fog":[1,1,1,1,0,0,0,0,0,1,1,1]},"arid":{"name":"Hot desert and steppe","note":"Like Mesopotamia, inland Syria and Egypt.","high":[16,19,24,30,37,42,44,44,41,34,24,18],"low":[4,6,10,15,21,24,26,25,21,16,9,5],"rain":[4,4,4,3,1,0,0,0,0,1,3,4],"fog":[1,1,0,0,0,0,0,0,0,0,1,1]}}},"disease":{"steps":["healed","mending","serious","grave","deadly"],"unfit_from":"serious","carried_from":"grave","endurance":50,"litters":{"bearers":2,"march":90,"short":50},"hygiene":["poor","fair","good"],"camp_hygiene":{"none":"fair","bivouac":"poor","watched":"fair","staked":"fair","fortified":"fair","quartered":"good"},"staying_days":28,"terrain_factors":{"marsh":["marsh"],"town":["town","village"],"upland":["hills","mountains"]},"warm_at":15,"hot_at":25,"cold_wet_days":2,"cold_wet_at":8,"week_days":7,"camp_care":{"none":"none","bivouac":"field","watched":"field","staked":"field","fortified":"field","quartered":"shelter"},"recovery":{"big":30,"care":{"none":-20,"field":0,"shelter":10},"activity":{"marched":-20,"rest":10},"wet_cold":-10,"filth":-10},"diseases":{"flux":{"name":"Bloody flux","caught":"Dirty water or food, latrines too near the water","base":10,"mods":{"poor":20,"good":-5,"staying":10,"marsh":5,"upland":-5,"hot":10},"incubation":[1,3],"peak":[{"upto":3,"step":"deadly"},{"upto":15,"step":"grave"},{"upto":100,"step":"serious"}],"chronic":true,"virulence":5,"deaths":2.6},"typhus":{"name":"Camp fever (typhus)","caught":"Lice in crowded, unwashed camps","base":2,"mods":{"poor":5,"good":-5,"staying":10,"cold_wet":10},"incubation":[7,14],"peak":[{"upto":30,"step":"deadly"},{"upto":70,"step":"grave"},{"upto":100,"step":"serious"}],"immune":true,"virulence":16,"deaths":40},"typhoid":{"name":"Typhoid","caught":"Dirty water or food, often from a carrier in camp","base":2,"mods":{"poor":5,"good":-5,"town":5,"hot":5},"incubation":[7,21],"peak":[{"upto":30,"step":"deadly"},{"upto":60,"step":"grave"},{"upto":100,"step":"serious"}],"checks_from":14,"virulence":15,"deaths":36},"ague":{"name":"Ague (malaria)","caught":"Mosquitoes in marshes and low wetlands","base":15,"needs":["marsh","warm"],"mods":{},"incubation":[7,28],"peak":[{"upto":2,"step":"deadly"},{"upto":30,"step":"grave"},{"upto":100,"step":"serious"}],"relapse":5,"virulence":-9,"deaths":0.8},"plague":{"name":"Plague","caught":"Flea bites; worst in sieges and towns full of rats","base":5,"needs":["plague"],"mods":{"staying":5,"town":5},"incubation":[2,6],"peak":[{"upto":50,"step":"deadly"},{"upto":80,"step":"grave"},{"upto":100,"step":"serious"}],"immune":true,"virulence":15,"deaths":45}}},"battle_hex_m":2,"maps":{"generic-valley":{"id":"generic-valley","name":"Generic river valley (test map)","hex_km":1,"rows":["....FFFFFFFF.FFF.......www......hhMMMMMM","..FFFFFFFFFFFFFF......wwww......hhhMMMMM","...FFFFFFFFFFFFFF....wwwwwww...hhhhMMMMM",".FFFFFFFFFFFFFFF.....wwwwww....hhhhMMMMM",".FFFFFFFFFFFFFFF.......~www.....hhMMMMMM",".FFFFFFFFFFFFF.F......~w..........MMMMMM","..FFFFFFFFFFFFF.......~...........MMMMMM","..FFFFFFFFFFFF.......~.....T.......MMMMM","...FFFFFFFFFF.......=d======.......M.M..","..FFFFFFFFFFF.....==~......h..h.h.......","...FFFFFFFFF......=.~......hhhhh=h......","...FFFFFFFF......=.~.......hhhh=h.......","....F.FF.FFFFff.f=.~......hhhhh=hh......",".........FFF.fff=f.~.....hhhhh=hhh......","..........FFFfff=f..~...ffhfhh=hhhh.....","...........Ffff=fff.~...ff====hhhh......","...........ffff=fff..b=v===ffhhhhhh.....","...........f===ffff==~.fffffhhhhh..hh...","...........vffffff.=..~.fffffhhhhhhhh...","............fffff.=..~.fffff.hh.hhhhh...","...================..~...fff.....hhhhh..",".,.,..,.............~m...........hhhhh..",".,,,,,,.............m~m...........hhhh..",",,,,,,,,............m~m..........h......",".,,,,,,,,...........m~m.................",",,,,,,,,...........m~m..................",",,,,,,,,,,.........m~m..................",",,,,,,,,..........m~m...................",",,,,,,,,..........m~m...................",".,,,,,,...........~m...................."],"places":[{"name":"Camp","kind":"camp","hex":[3,20]},{"name":"Gallows Ridge","kind":"objective","hex":[32,10],"note":"Where the enemy is drawn up"},{"name":"Brigham","kind":"village","hex":[23,16]},{"name":"Elmstead","kind":"village","hex":[11,18]},{"name":"Kelsey Market","kind":"town","hex":[27,7]},{"name":"Bridge","kind":"landmark","hex":[21,16]},{"name":"Ford","kind":"landmark","hex":[21,8]}],"forces":[{"name":"Our band","type":"foot","side":"Side A","men":12,"tools":true,"hex":[3,20]},{"name":"Baggage train","type":"wagons","side":"Side A","men":6,"tools":true,"hex":[4,20]},{"name":"Enemy horse","type":"mounted","side":"Side B","men":20,"tools":false,"hex":[33,11]}],"start_date":"1415-10-20","calendar":"julian","latitude":52,"climate":"maritime","climate_shift":-0.5}}};
 const $ = s => document.querySelector(s);
 const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
 const BYKEY = Object.fromEntries(Object.values(TT).map(t => [t.key, t]));
@@ -545,7 +551,7 @@ function nearWoods(m, h){
   return [h.slice(), ...neighbours(h, cols, rows)].some(x => terrainAt(m, x).id === "forest");
 }
 const campPerimeter = (men, ftype) => (12 * campRadius(men, ftype) + 6) * edgeMetres();
-function campHours(m, h, kind, men, ftype, tools){
+function campHours(m, h, kind, men, ftype, tools, workers = null){   // sized for all the men; the fit `workers` dig
   const c = WK.camps[kind], t = terrainAt(m, h);
   if (c.terrain && !c.terrain.includes(t.id)) return { error: `needs a ${c.terrain.map(x => TT[x].name.toLowerCase()).join(" or ")}` };
   if (c.tools && !tools) return { error: "needs tools (spades and axes)" };
@@ -555,7 +561,9 @@ function campHours(m, h, kind, men, ftype, tools){
     const n = campMapSize(kind, men, ftype);
     labour = worksLabour(campWorks(kind, men, ftype, n, n).works, !woods);
   }
-  return { hours: c.hours + labour / (men * WK.work_share), labour, perimeter: campPerimeter(men, ftype), woods };
+  const hands = workers === null ? men : workers;
+  if (labour && !hands) return { error: "has no fit men to dig" };
+  return { hours: c.hours + (labour ? labour / (hands * WK.work_share) : 0), labour, perimeter: campPerimeter(men, ftype), woods };
 }
 function campDone(day, used, hours, hpdList = null){
   const ev = WK.evening_hours;
@@ -608,12 +616,139 @@ function fightPlan(forces, sel, wait = true){
     attackers: attackers.map(o => o.id), late: friends.filter(o => clockAfter(o, day, used)).map(o => o.id), day, used, early };
 }
 /* ---------- end of rules shared with gravewounds/travel.py ---------- */
+/* ---------- camp disease: same rules as gravewounds/disease.py ---------- */
+// A force's health: {cases, immune, had, dead}; cases are the men sick or incubating, one
+// disease each: {d, inc, step, peak (0 once reached), shown, chronic}. rng() returns d100.
+const DZ = DATA.disease;
+const newHealth = () => ({ cases: [], immune: {}, had: {}, dead: 0 });
+const copyHealth = h => ({ cases: h.cases.map(c => ({ ...c })), immune: { ...h.immune }, had: { ...h.had }, dead: h.dead });
+const dzStep = name => DZ.steps.indexOf(name);
+const dzPick = (lo, hi, rng) => lo + (rng() - 1) % (hi - lo + 1);
+function healthCounts(health, men){           // {sick, incubating, unfit, carried, fit}
+  const shown = health.cases.filter(c => c.inc === 0);
+  const unfit = shown.filter(c => c.step >= dzStep(DZ.unfit_from)).length, carried = shown.filter(c => c.step >= dzStep(DZ.carried_from)).length;
+  return { sick: shown.length, incubating: health.cases.length - shown.length, unfit, carried, fit: Math.max(0, men - unfit) };
+}
+function sickMarchPct(fit, carried){          // % of its speed a force keeps while carrying litters
+  const L = DZ.litters;
+  if (carried === 0) return 100;
+  if (fit === 0) return 0;
+  return fit < L.bearers * carried ? L.short : L.march;
+}
+const campHygiene = (gm, campKind) => gm || DZ.camp_hygiene[campKind || "none"];
+const campCare = campKind => DZ.camp_care[campKind || "none"];
+function weekFactors(o){                       // o: {hygiene, camped_days, terrain, highs, wet, plague}
+  const f = [];
+  if (o.hygiene === "poor" || o.hygiene === "good") f.push(o.hygiene);
+  if (o.camped_days >= DZ.staying_days) f.push("staying");
+  for (const [k, ts] of Object.entries(DZ.terrain_factors)) if (ts.includes(o.terrain)) f.push(k);
+  const highs = o.highs;
+  if (highs.length){
+    const mean = highs.reduce((t, x) => t + x, 0) / highs.length;
+    if (mean >= DZ.warm_at) f.push("warm");
+    if (Math.max(...highs) >= DZ.hot_at) f.push("hot");
+    if (o.wet.filter(Boolean).length >= DZ.cold_wet_days && mean <= DZ.cold_wet_at) f.push("cold_wet");
+  }
+  if (o.plague) f.push("plague");
+  return f;
+}
+function outbreakChance(did, factors){
+  const x = DZ.diseases[did];
+  if ((x.needs || []).some(n => !factors.includes(n))) return 0;
+  const add = Object.entries(x.mods).reduce((t, [k, v]) => t + (factors.includes(k) ? v : 0), 0);
+  return Math.max(0, Math.min(100, x.base + add));
+}
+function newCase(did, rng){
+  const x = DZ.diseases[did], inc = dzPick(x.incubation[0], x.incubation[1], rng), roll = rng();
+  return { d: did, inc, step: 0, peak: dzStep(x.peak.find(r => roll <= r.upto).step), shown: 0, chronic: false };
+}
+const catchChance = (did, factors) => outbreakChance(did, factors) * (100 - DZ.endurance) / 100;   // % a well man catches it this week
+const d10000 = rng => (rng() - 1) * 100 + rng();
+function healthWeek(health, men, factors, rng){   // the weekly roll: each well man may catch each disease, then relapses -> {health, events}
+  const h = copyHealth(health), ev = [];
+  for (const did of Object.keys(DZ.diseases)){
+    const p = catchChance(did, factors) * 100;
+    if (p <= 0) continue;
+    const exposed = Math.max(0, men - h.cases.length - (h.immune[did] || 0));
+    let caught = 0;
+    for (let i = 0; i < exposed; i++){
+      if (d10000(rng) > p) continue;
+      h.cases.push(newCase(did, rng));
+      caught++;
+    }
+    if (caught) ev.push({ kind: "caught", d: did, n: caught });
+  }
+  ev.push(...relapses(h, factors, rng));
+  return { health: h, events: ev };
+}
+function relapses(h, factors, rng){           // men who have had a relapsing disease fall ill again, in marsh country
+  const ev = [];
+  for (const [did, x] of Object.entries(DZ.diseases)){
+    if (!x.relapse || !factors.includes("marsh")) continue;
+    let back = 0;
+    for (let i = 0; i < (h.had[did] || 0); i++) if (rng() <= x.relapse) back++;
+    if (!back) continue;
+    h.had[did] -= back;
+    for (let i = 0; i < back; i++) h.cases.push({ d: did, inc: 0, step: dzStep("serious"), peak: 0, shown: 0, chronic: false });
+    ev.push({ kind: "relapse", d: did, n: back });
+  }
+  return ev;
+}
+const checksToday = (x, c) => (c.chronic ? c.shown % 7 === 0 : c.shown >= (x.checks_from || 0));
+function recoverCase(c, target, rng){          // one recovery check: "dead", "healed" or "sick"
+  const x = DZ.diseases[c.d], big = DZ.recovery.big, deadly = DZ.steps.length - 1, m = target - x.virulence - rng();
+  if (m >= big) c.step -= 2;
+  else if (m >= 0) c.step -= 1;
+  else if (c.step === deadly) return "dead";
+  else if (m <= -big){
+    if (x.chronic && c.step <= dzStep("serious")){
+      c.chronic = true;
+      c.step = dzStep("serious");
+    } else c.step += 1;
+  }
+  return c.step <= 0 ? "healed" : "sick";
+}
+function caseDay(c, target, rng, ev){         // one case's day; false if it ends (healed or dead)
+  const x = DZ.diseases[c.d], tally = k => { ev[k][c.d] = (ev[k][c.d] || 0) + 1 };
+  if (c.inc > 0){
+    c.inc -= 1;
+    if (c.inc === 0){
+      c.step = dzStep("mending");
+      tally("shown");
+    }
+    return "sick";
+  }
+  c.shown += 1;
+  if (c.step < c.peak){                         // climbing to its peak, once
+    c.step += 1;
+    if (c.step >= c.peak) c.peak = 0;
+    return "sick";
+  }
+  const out = checksToday(x, c) ? recoverCase(c, target, rng) : "sick";
+  if (out !== "sick") tally(out);
+  return out;
+}
+function healthDay(health, ctx, rng){          // a day passes -> {health, events: {shown, healed, dead}}
+  const R = DZ.recovery;
+  const target = DZ.endurance + R.care[ctx.care] + R.activity[ctx.marched ? "marched" : "rest"] + (ctx.wet_cold ? R.wet_cold : 0) + (ctx.filth ? R.filth : 0);
+  const h = copyHealth(health), ev = { shown: {}, healed: {}, dead: {} }, keep = [];
+  for (const c of h.cases){
+    const out = caseDay(c, target, rng, ev), x = DZ.diseases[c.d];
+    if (out === "sick") keep.push(c);
+    else if (out === "dead") h.dead += 1;
+    else if (x.immune) h.immune[c.d] = (h.immune[c.d] || 0) + 1;
+    else if (x.relapse) h.had[c.d] = (h.had[c.d] || 0) + 1;
+  }
+  h.cases = keep;
+  return { health: h, events: ev };
+}
+/* ---------- end of rules shared with gravewounds/disease.py ---------- */
 
 /* ---------- state ---------- */
 const KEY = "gravewounds-travel";
-const S = { mapId: Object.keys(DATA.maps)[0], edits: {}, forces: {}, sel: {}, mode: "plan", paint: "forest", seq: 1, msg: "", wx: {} };
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify({ mapId: S.mapId, edits: S.edits, forces: S.forces, sel: S.sel, seq: S.seq, paint: S.paint, wx: S.wx })) }catch(e){} }
-function restore(){ try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.mapId && DATA.maps[j.mapId]) Object.assign(S, j) }catch(e){} }
+const S = { mapId: Object.keys(DATA.maps)[0], edits: {}, forces: {}, sel: {}, mode: "plan", paint: "forest", seq: 1, msg: "", wx: {}, plague: {} };
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify({ mapId: S.mapId, edits: S.edits, forces: S.forces, sel: S.sel, seq: S.seq, paint: S.paint, wx: S.wx, plague: S.plague })) }catch(e){} }
+function restore(){ try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.mapId && DATA.maps[j.mapId]) Object.assign(S, j, { plague: j.plague || {} }) }catch(e){ /* nothing saved, or unreadable: start fresh */ } }
 const baseMap = () => DATA.maps[S.mapId];
 function curMap(){                           // the map with any painting applied
   const b = baseMap();
@@ -684,7 +819,12 @@ function setDay(day, patch){
   regroundFrom(day);
 }
 const groundOf = day => dayWeather(day).ground;
-const speedOf = f => WXD.fatigue.levels[f.fatigue || 0].march;
+const healthOf = f => f.health || (f.health = newHealth());
+const fitOf = f => healthCounts(healthOf(f), f.men);
+function speedOf(f){                           // % of road speed: fatigue, and the sick it must carry
+  const c = fitOf(f);
+  return Math.min(WXD.fatigue.levels[f.fatigue || 0].march, sickMarchPct(c.fit, c.carried));
+}
 function groundText(g){
   const bits = [];
   if (g.snow) bits.push(g.snow >= WXD.ground.deep ? "deep snow" : "snow lying");
@@ -701,7 +841,39 @@ function endDay(f){
   const change = after === before ? "" : ` \u2014 ${L[before].name.toLowerCase()} \u2192 ${L[after].name.toLowerCase()}`;
   const where_ = camp ? WK.camps[camp.kind].name.toLowerCase() : "no camp";
   f.log.unshift(`Night of ${dateText(f.day, true)}: ${WXD.rest_levels[rest]} rest (${where_}; ${WXD.conditions[today.w.cond].name.toLowerCase()}, low ${today.w.low} \u00b0C)${change}.`);
+  healthNight(f, today, camp);
   f.fatigue = after; f.day += 1; f.used = 0; f.marched = 0;
+}
+// ----- camp disease (rules in the shared block) -----
+const dzName = did => DZ.diseases[did].name.toLowerCase();
+const dzShort = did => dzName(did).split(" (")[0];    // "camp fever (typhus)" -> "camp fever"
+const tallyText = (o, verb) => Object.entries(o).map(([did, n]) => `${n} ${verb} (${dzShort(did)})`);
+function nightHard(w, kind){                  // the night was harder than the shelter: cold and wet for recovery
+  const cold = Math.max(0, ...WXD.cold_hardship.filter(c => w.low <= c.low_at_or_below).map(c => c.add));
+  return WXD.conditions[w.cond].hardship + cold > WXD.shelter[kind || "none"];
+}
+function healthNight(f, today, camp){         // the sick get better or worse; once a week, the outbreak roll
+  const kind = camp ? camp.kind : null, hyg = campHygiene(f.hygiene || null, kind);
+  const r = healthDay(healthOf(f), { care: campCare(kind), marched: (f.marched || 0) > 0, wet_cold: nightHard(today.w, kind), filth: hyg === "poor" }, roll100);
+  f.health = r.health;
+  const dead = Object.values(r.events.dead).reduce((t, n) => t + n, 0);
+  if (dead) f.men = Math.max(0, f.men - dead);
+  for (const k of Object.keys(f.health.immune)) f.health.immune[k] = Math.min(f.health.immune[k], f.men);
+  const bits = [...tallyText(r.events.shown, "fell ill"), ...tallyText(r.events.dead, "died"), ...tallyText(r.events.healed, "recovered")];
+  if (bits.length) f.log.unshift(`Night of ${dateText(f.day, true)}: ${bits.join("; ")}.`);
+  if (f.day % DZ.week_days === 0) healthWeekFor(f, kind, hyg);
+}
+function weekFactorsFor(f, kind, hyg){        // this week's factors for the force where it is
+  const days = Array.from({ length: DZ.week_days }, (_, i) => f.day - i).filter(dd => dd >= 1).map(dayWeather);
+  const camp = campHere(f);
+  return weekFactors({ hygiene: hyg, camped_days: camp && camp.from ? f.day - camp.from.day + 1 : 0, terrain: terrainAt(curMap(), f.pos).id,
+    highs: days.map(x => x.w.high), wet: days.map(x => WXD.conditions[x.w.cond].precip !== "none"), plague: !!S.plague[S.mapId] });
+}
+function healthWeekFor(f, kind, hyg){
+  const r = healthWeek(healthOf(f), f.men, weekFactorsFor(f, kind, hyg), roll100);
+  f.health = r.health;
+  const bits = r.events.map(e => (e.kind === "caught" ? `${e.n} caught ${dzName(e.d)}` : `${e.n} fell ill with ${dzName(e.d)} again`));
+  f.log.unshift(`Week to ${dateText(f.day, true)}: ${bits.length ? bits.join("; ") + " (not showing yet)" : "no new cases"}.`);
 }
 const fmtH = h => { if (h < 1 / 120) return "no time"; let hh = Math.floor(h + 1e-9), mm = Math.round((h - hh) * 60); if (mm === 60){ hh++; mm = 0 } return hh && mm ? `${hh} h ${mm} min` : hh ? `${hh} h` : `${mm} min` };
 const placeAt = h => (baseMap().places || []).find(p => sameHex(p.hex, h));
@@ -724,6 +896,7 @@ const colType = L => { const c = columnOf(L); return c.length > 1 ? c.map(o => [
 const colSpeed = L => Math.min(...columnOf(L).map(o => speedOf(o)));
 const colMen = L => columnOf(L).reduce((t, o) => t + o.men, 0);
 const colTools = L => columnOf(L).some(o => o.tools);
+const colFit = L => columnOf(L).reduce((t, o) => t + fitOf(o).fit, 0);
 const colName = L => (columnOf(L).length > 1 ? `${L.name}'s column` : L.name);
 function colRefusal(L, h, verb){                // which force in the column cannot go there, and why
   const g = groundOf(L.day), bad = columnOf(L).find(o => !passable(curMap(), h, o.type, g)) || L;
@@ -773,12 +946,16 @@ function addWaypoint(sel, h){                  // a column's route is its leader
   if (!replan(f)){ f.waypoints.pop(); replan(f); S.msg = `${f.name} cannot reach ${where(h)} from here.`; return }
   S.msg = "";
 }
+function noMarchText(f, col){                 // why a column cannot march at all
+  const carry = col.some(o => sickMarchPct(fitOf(o).fit, fitOf(o).carried) === 0);
+  return carry ? `${colName(f)} has no fit men to carry its sick. Rest until some recover.` : `${colName(f)} is too spent to march. Rest until next morning.`;
+}
 function march(sel, hours){                    // the whole column marches together, at its slowest
   const f = leaderOf(sel), col = columnOf(f);
   if (!f.path || f.index >= f.path.length - 1){ S.msg = `${colName(f)} has no route to march. Click the map to add a waypoint.`; return }
   if (f.used >= hpdOf(f.day) - 1e-9) col.forEach(endDay);
   const speed = colSpeed(f);
-  if (!speed){ S.msg = `${colName(f)} is too spent to march. Rest until next morning.`; return }
+  if (!speed){ S.msg = noMarchText(f, col); return }
   const m = curMap(), g = groundOf(f.day);
   if (f.path.slice(f.index + 1).some(h => !passable(m, h, colType(f), g)) && !replan(f)){
     S.msg = `${f.name} cannot get through today (${groundText(g)}). Wait, or add a waypoint to go round.`;
@@ -816,7 +993,7 @@ const campHere = f => (f.camp && sameHex(f.camp.hex, f.pos) ? f.camp : null);
 // again when it changes to another kind (the site, fires and watch are done), and cannot
 // make the same kind twice.
 function campCost(sel, kind){                 // a column makes one camp: all its men dig, any tools serve
-  const f = leaderOf(sel), r = campHours(curMap(), f.pos, kind, colMen(f), colType(f), colTools(f)), old = campHere(f);
+  const f = leaderOf(sel), r = campHours(curMap(), f.pos, kind, colMen(f), colType(f), colTools(f), colFit(f)), old = campHere(f);
   if (r.error) return r;
   if (old && old.kind === kind) return { error: "already has one here", same: true };
   let hours = r.hours;
@@ -832,7 +1009,7 @@ function makeCamp(sel, kind){
   let left = r.hours;
   while (f.used + left > hpdOf(f.day) + ev + 1e-9){ left -= hpdOf(f.day) + ev - f.used; col.forEach(endDay) }
   const from = r.change && campHere(f).from ? campHere(f).from : came;   // when it got here and began camping
-  const rate = colMen(f) * WK.work_share;      // for how far along the works are at any time
+  const rate = Math.max(1, colFit(f)) * WK.work_share;   // the fit men dig: for how far along the works are at any time
   f.used += left; f.camp = { kind, hex: f.pos.slice(), from, start: { day: d0, used: u0 }, labour: r.labour, rate, setup: Math.max(0, r.hours - r.labour / rate) };
   let what = "made a " + WK.camps[kind].name.toLowerCase();
   if (kind === "quartered") what = "took quarters";
@@ -859,7 +1036,8 @@ function campText(sel, kind){
   if (r.error) return `${c.desc} Not here: it ${r.error}.`;
   const done = campDone(f.day, f.used, r.hours, hpdList(f.day));
   const until = done.day === f.day ? "" : ` (done ${dateText(done.day, true)}, ${clock(done.used, done.day)})`;
-  return `${c.desc} ${colMen(f)} men: ${fmtH(r.hours)}${until}`
+  const fit = colFit(f), men = colMen(f) === fit ? `${fit} men` : `${colMen(f)} men (${fit} fit to dig)`;
+  return `${c.desc} ${men}: ${fmtH(r.hours)}${until}`
     + (r.labour ? `, ${Math.round(r.labour)} man-hours for a ${Math.round(r.perimeter)} m perimeter${(c.works || []).some(w => (WK.edge_works[w] || WK.hex_works[w]).haul) ? (r.woods ? ", timber to hand" : ", timber hauled from afar") : ""}` : "") + ".";
 }
 
@@ -915,10 +1093,36 @@ function renderMap(){
   $("#map").className = `mapbox ${S.mode}`;
   $("#map-scale").textContent = `${cols} × ${rows} hexes · ${m.hex_km} km a hex`;
 }
+function sickText(f){                        // who is sick, of what and how badly
+  const by = {};
+  for (const c of healthOf(f).cases.filter(x => x.inc === 0)){
+    const k = DZ.steps[c.step];
+    if (!by[c.d]) by[c.d] = {};
+    by[c.d][k] = (by[c.d][k] || 0) + 1;
+  }
+  const steps = st => DZ.steps.filter(k => st[k]).map(k => st[k] + " " + k).join(", ");    // in track order
+  return Object.entries(by).map(([did, st]) => `${dzName(did)} ${Object.values(st).reduce((t, n) => t + n, 0)} (${steps(st)})`).join("; ");
+}
+function renderHealth(f){
+  const camp = campHere(f), kind = camp ? camp.kind : null, c = fitOf(f), h = healthOf(f);
+  const opts = [["", `From the camp (${campHygiene(null, kind)})`], ...DZ.hygiene.map(x => [x, x[0].toUpperCase() + x.slice(1)])];
+  $("#sel-hyg").innerHTML = opts.map(([v, t]) => `<option value="${v}" ${(f.hygiene || "") === v ? "selected" : ""}>${t}</option>`).join("");
+  const hyg = campHygiene(f.hygiene || null, kind), factors = weekFactorsFor(f, kind, hyg);
+  const chances = Object.keys(DZ.diseases).map(did => [did, catchChance(did, factors)]).filter(([, n]) => n > 0).map(([did, n]) => `${dzName(did)} ${+n.toFixed(1)}%`);
+  const next = f.day + (DZ.week_days - (f.day % DZ.week_days)) % DZ.week_days;
+  const parts = [`${f.men} men, ${c.fit} fit.`];
+  if (c.sick) parts.push(`Sick: ${sickText(f)}.`);
+  if (c.incubating) parts.push(`${c.incubating} caught something and will show it soon.`);
+  if (c.carried) parts.push(`${c.carried} on litters: the march goes at ${sickMarchPct(c.fit, c.carried)}%.`);
+  if (h.dead) parts.push(`${h.dead} dead of disease so far.`);
+  parts.push(`Weekly check: night of ${dateText(next, true)}. Each well man's chance of catching it this week: ${chances.join(", ") || "none"}.`);
+  $("#health-note").textContent = parts.join(" ");
+}
 function forceMeta(o){                       // the forces list's right-hand note
   const tired = o.fatigue ? " \u00b7 " + WXD.fatigue.levels[o.fatigue].name.toLowerCase() : "";
   const withL = o.with && leaderOf(o) !== o ? " \u00b7 with " + esc(leaderOf(o).name) : "";
-  return `${dateText(o.day, true)} ${clock(o.used, o.day)}${tired}${withL}`;
+  const sick = fitOf(o).sick ? ` \u00b7 ${fitOf(o).sick} sick` : "";
+  return `${dateText(o.day, true)} ${clock(o.used, o.day)}${tired}${withL}${sick}`;
 }
 function forceHead(f){                        // who, where and how fast; a column moves at its slowest
   const L = leaderOf(f), col = columnOf(f), hpd = hpdOf(f.day), lv = WXD.fatigue.levels[f.fatigue || 0];
@@ -976,6 +1180,7 @@ function renderSide(){
   $("#btn-camp").disabled = !!campCost(f, cur).error;
   $("#camp-who").textContent = "for " + colName(L);
   fightButton(f);
+  renderHealth(f);
   $("#log").innerHTML = f.log.map(l => `<li>${esc(l)}</li>`).join("");
 }
 function byId(id){ return forcesHere().find(o => o.id === id) }
@@ -1033,6 +1238,7 @@ function nightsText(n){
   return " \u00b7 " + n + " night" + s + " on the road";
 }
 function renderWeather(){
+  $("#chk-plague").checked = !!(S.plague && S.plague[S.mapId]);
   const f = selForce(), day = f ? f.day : 1, d = dayWeather(day), wd = win(day), m = curMap();
   const cl = WXD.climates[m.climate];
   $("#wx-date").textContent = `${dateText(day)} (${m.calendar === "julian" ? "Julian" : "Gregorian"} calendar)`;
@@ -1172,14 +1378,16 @@ function init(){
   $("#in-men").onchange = e => { const f = selForce(); if (f){ f.men = Math.max(1, parseInt(e.target.value, 10) || f.men); render() } };
   $("#in-tools").onchange = e => { const f = selForce(); if (f){ f.tools = e.target.checked; render() } };
   $("#sel-camp").onchange = e => { S.campKind = e.target.value; render() };
+  $("#sel-hyg").onchange = e => { const f = selForce(); if (f){ f.hygiene = e.target.value || null; render() } };
+  $("#chk-plague").onchange = e => { S.plague[S.mapId] = e.target.checked; render() };
   $("#btn-camp").onclick = () => { const f = selForce(); if (f){ makeCamp(f, $("#sel-camp").value); render() } };
   const sendFight = k => {                   // k: which of the fights on offer (0 attack now / the only one, 1 wait)
     const f = selForce(); if (!f) return;
     const p = fightOptions(f)[k]; if (!p || !p.attackers.length) return;
     const dfd = byId(p.defender), st = campStatus(dfd, p), m = curMap(), today = dayWeather(p.day);
-    const brief = o => ({ name: o.name, side: o.side, men: o.men, type: o.type, fatigue: o.fatigue || 0, km: +(hexDist(o.pos, dfd.pos) * m.hex_km).toFixed(1) });
+    const brief = o => ({ name: o.name, side: o.side, men: fitOf(o).fit, type: o.type, fatigue: o.fatigue || 0, km: +(hexDist(o.pos, dfd.pos) * m.hex_km).toFixed(1) });   // the sick stay out of it
     const foes = p.attackers.map(byId).map(brief), allies = p.allies.map(byId).map(brief);
-    try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", force: { name: dfd.name, side: dfd.side, men: dfd.men, type: dfd.type, fatigue: dfd.fatigue || 0 },
+    try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", force: { name: dfd.name, side: dfd.side, men: fitOf(dfd).fit, type: dfd.type, fatigue: dfd.fatigue || 0 },
       camp: st.camp ? st.camp.kind : null, campLabour: st.camp ? st.camp.labour || null : null, party: columnOf(dfd).length > 1 ? colType(dfd) : null, done: st.done, built: st.pct, hauled: !nearWoods(m, dfd.pos), foes, allies, place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day),
       weather: { cond: today.w.cond, wind: today.w.wind, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){}
     location.href = "roller.html";
