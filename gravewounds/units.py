@@ -551,34 +551,9 @@ def exchange(d: Data, units: list, table: str, rng) -> tuple[list, list]:
     (units, log): log lines are {kind (melee, volley, rout, morale), ...}."""
     us = [_copy_unit(u) for u in units]
     lost, dead, dealt, flanked, log = [0] * len(us), [0] * len(us), [0] * len(us), [False] * len(us), []
-    struck = set()                                # units whose front heroes have struck this exchange
-    for s in strikes(d, us):
-        a, b = us[s["att"]], us[s["dfd"]]
-        opts = {"situation": s["situation"], "charge": bool(a.get("charged")) and bool(a.get("mounted")),
-                "shaken": a["state"] == "shaken", "rout": s["rout"], "exposed": _exposure(d, b, s["rout"])}
-        t = _take_hurt(b, melee(d, _side(a, table), _side(b, table), s["men"], rng, **opts))
-        _tally(lost, dead, dealt, s, t)
-        flanked[s["dfd"]] = flanked[s["dfd"]] or s["situation"] in ("flank", "rear")
-        log += _logged({"kind": "rout" if s["rout"] else "melee", **s}, t)
-        if s["att"] not in struck:
-            struck.add(s["att"])
-            for hero in _heroes(a, ("front",)):
-                t = _take_hurt(b, melee(d, _hero_side(a, hero, table), _side(b, table), d.units["heroes"]["tempo"], rng, **opts))
-                _tally(lost, dead, dealt, s, t)
-                log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": s["att"], "dfd": s["dfd"],
-                                "situation": s["situation"]}, t)
-    for v in volleys(d, us):
-        b = us[v["dfd"]]
-        opts = {"factor": form(d, b)["missile_factor"], "exposed": _exposure(d, b, False, True)}
-        t = _take_hurt(b, volley(d, _side(us[v["att"]], table), _side(b, table), v["men"], v["dist"], rng, **opts))
-        _tally(lost, dead, dealt, v, t)
-        log += _logged({"kind": "volley", **v}, t)
-        for hero in _heroes(us[v["att"]], ("ranged",)):
-            if field_range(d, hero["weapon"], v["dist"]) is None:
-                continue
-            t = _take_hurt(b, volley(d, _hero_side(us[v["att"]], hero, table), _side(b, table), d.units["heroes"]["tempo"], v["dist"], rng, **opts))
-            _tally(lost, dead, dealt, v, t)
-            log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": v["att"], "dfd": v["dfd"], "dist": v["dist"]}, t)
+    acc = (lost, dead, dealt)
+    log += _strike_all(d, us, table, rng, acc, flanked)
+    log += _shoot_all(d, us, table, rng, acc)
     occ = occupancy(d, us)
     before = [u["men"] for u in us]
     for i, u in enumerate(us):
@@ -588,6 +563,46 @@ def exchange(d: Data, units: list, table: str, rng) -> tuple[list, list]:
     for u in us:
         u["charged"] = False
     return us, log
+
+
+def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list) -> list:
+    """Every melee, each unit's front heroes striking with its first."""
+    log, struck = [], set()
+    for s in strikes(d, us):
+        a, b = us[s["att"]], us[s["dfd"]]
+        opts = {"situation": s["situation"], "charge": bool(a.get("charged")) and bool(a.get("mounted")),
+                "shaken": a["state"] == "shaken", "rout": s["rout"], "exposed": _exposure(d, b, s["rout"])}
+        t = _take_hurt(b, melee(d, _side(a, table), _side(b, table), s["men"], rng, **opts))
+        _tally(*acc, s, t)
+        flanked[s["dfd"]] = flanked[s["dfd"]] or s["situation"] in ("flank", "rear")
+        log += _logged({"kind": "rout" if s["rout"] else "melee", **s}, t)
+        if s["att"] in struck:
+            continue
+        struck.add(s["att"])
+        for hero in _heroes(a, ("front",)):
+            t = _take_hurt(b, melee(d, _hero_side(a, hero, table), _side(b, table), d.units["heroes"]["tempo"], rng, **opts))
+            _tally(*acc, s, t)
+            log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": s["att"], "dfd": s["dfd"],
+                            "situation": s["situation"]}, t)
+    return log
+
+
+def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple) -> list:
+    """Every volley, each unit's shooting heroes with it."""
+    log = []
+    for v in volleys(d, us):
+        b = us[v["dfd"]]
+        opts = {"factor": form(d, b)["missile_factor"], "exposed": _exposure(d, b, False, True)}
+        t = _take_hurt(b, volley(d, _side(us[v["att"]], table), _side(b, table), v["men"], v["dist"], rng, **opts))
+        _tally(*acc, v, t)
+        log += _logged({"kind": "volley", **v}, t)
+        for hero in _heroes(us[v["att"]], ("ranged",)):
+            if field_range(d, hero["weapon"], v["dist"]) is None:
+                continue
+            t = _take_hurt(b, volley(d, _hero_side(us[v["att"]], hero, table), _side(b, table), d.units["heroes"]["tempo"], v["dist"], rng, **opts))
+            _tally(*acc, v, t)
+            log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": v["att"], "dfd": v["dfd"], "dist": v["dist"]}, t)
+    return log
 
 
 def _copy_unit(u: dict) -> dict:

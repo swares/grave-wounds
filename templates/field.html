@@ -298,9 +298,11 @@ function logLines(log, ex){
   const nm = i => unitName(S.units[i]);
   const out = [{ cls: "head", text: `Exchange ${ex}` }];
   for (const l of log){
-    if (l.kind === "morale"){ out.push({ cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` }); continue }
-    if (l.kind === "herohit"){ out.push({ cls: "hero", text: heroHitText(l) }); continue }
-    if (l.kind === "hero"){ if (l.blows) out.push({ cls: "hero", text: heroLineText(l, nm) }); continue }
+    const line = otherLine(l, nm);
+    if (line !== undefined){
+      if (line) out.push(line);
+      continue;
+    }
     const dead = l.dead ? " (" + l.dead + " dead)" : "", fallen = `${l.hits} hit, ${l.down} down${dead}`;
     if (l.kind === "volley") out.push({ cls: "", text: `${nm(l.att)} shoot at ${nm(l.dfd)}, ${l.dist * FD.units.hex_m} m: ${l.blows} aimed shots, ${fallen}.` });
     else if (l.kind === "rout") out.push({ cls: "", text: `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.` });
@@ -308,6 +310,13 @@ function logLines(log, ex){
   }
   return out;
 }
+function otherLine(l, nm){                       // morale and hero lines (null: nothing to show); undefined for blows by units
+  if (l.kind === "morale") return { cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` };
+  if (l.kind === "herohit") return { cls: "hero", text: heroHitText(l) };
+  if (l.kind === "hero") return l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null;
+  return undefined;
+}
+const nWounds = n => (n === 1 ? "1 wound" : n + " wounds");
 function heroHitText(l){
   const where = FD.locations[l.loc].name.toLowerCase(), how = l.graze ? "a graze" : `a ${l.sev} wound`;
   const fate = { dead: "killed", down: "down, out of the fight", up: "fights on" }[l.state];
@@ -385,7 +394,10 @@ function renderAfter(){
   $("#after").innerHTML = [0, 1].map(k => `<li>${esc(sideAfter(k))}</li>`).join("");
   $("#btn-back").hidden = !S.from || !!S.from.sent;
   $("#btn-heroes-back").hidden = !allHeroes().length || !!S.heroesSent;
-  const hs = allHeroes().map(h => `<li>${esc(h.name)}: ${h.state === "up" ? "came through" : h.state}${h.wounds.length ? `, ${h.wounds.length} wound${h.wounds.length > 1 ? "s" : ""}` : ", unhurt"}.</li>`);
+  const hs = allHeroes().map(h => {
+    const fate = h.state === "up" ? "came through" : h.state, hurt = h.wounds.length ? ", " + nWounds(h.wounds.length) : ", unhurt";
+    return `<li>${esc(h.name)}: ${fate}${hurt}.</li>`;
+  });
   $("#after").innerHTML += hs.join("");
 }
 function renderForces(){
@@ -429,7 +441,8 @@ function addHero(){
   if (role === "ranged" && !("range" in FD.weapons[weapon])){ S.msg = `${c.name} has no missile weapon on these tables: put him in the front rank or behind.`; return render() }
   const num = (id, d) => { const v = Number.parseInt($(id).value, 10); return Number.isFinite(v) ? v : d };
   const q = heroQuality(c);
-  (u.heroes ??= []).push({ id: c.id, name: c.name, role, attack: num("#in-hero-atk", q.attack), defence: num("#in-hero-def", q.defence), nerve: Number.isFinite(+c.nerve) ? +c.nerve : q.nerve,
+  u.heroes ??= [];
+  u.heroes.push({ id: c.id, name: c.name, role, attack: num("#in-hero-atk", q.attack), defence: num("#in-hero-def", q.defence), nerve: Number.isFinite(+c.nerve) ? +c.nerve : q.nerve,
     weapon, kit: FD.kits[c.kit] ? c.kit : "none", leader: $("#chk-hero-leader").checked, state: "up", wounds: [] });
   S.msg = `${c.name} joins ${u.name}${weapon === c.weapon ? "" : ", with the unit's weapon (his own is not on these tables)"}.`;
   render();
@@ -441,7 +454,7 @@ function removeHero(id){
 function renderHeroes(){
   const setup = S.phase === "setup", place = { front: "front rank", ranged: "shooting", behind: "behind" };
   $("#heroes").innerHTML = allHeroes().map(h => {
-    const wounds = h.wounds.length ? ` · ${h.wounds.length} wound${h.wounds.length > 1 ? "s" : ""}` : "";
+    const wounds = h.wounds.length ? " · " + nWounds(h.wounds.length) : "";
     const rm = setup ? `<button class="small" data-hero="${h.id}" aria-label="Remove ${esc(h.name)}">Remove</button>` : "";
     return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(h.unit.name)} (${esc(h.unit.side)}) · ${place[h.role]}${h.leader ? " · leader" : ""}</span></span><span class="meta">${h.attack}/${h.defence}% · ${h.state}${wounds}</span>${rm}</li>`;
   }).join("");

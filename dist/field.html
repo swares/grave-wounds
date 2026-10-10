@@ -287,14 +287,14 @@ function landWound(att, dfd, margin, critical, rng, t){
   if (down) t.down++;
   noteHurt(t, h.severity, h, down);
 }
-function blows(att, dfd, n, atk, dfn, rng, exposed = [], shift = 0){
+function blows(att, dfd, n, atk, dfn, rng, aim = { exposed: [], shift: 0 }){   // aim: the heroes a blow may fall on, and how their defence shifts
   const t = newTally();
   t.blows = n;
   atk = Math.max(0, atk);
   const critAt = Math.floor(atk * FD.combat.critical_fraction);
   for (let i = 0; i < n; i++){
-    const hero = aimedAt(exposed, rng), r = rng.randint(1, 100);
-    if (hero){ heroBlow(att, hero, r, atk, critAt, shift, rng, t); continue }
+    const hero = aimedAt(aim.exposed, rng), r = rng.randint(1, 100);
+    if (hero){ heroBlow(att, hero, { r, atk, critAt, shift: aim.shift }, rng, t); continue }
     if (r > atk){ t.missed++; continue }
     const critical = r <= critAt;
     if (!critical && dfn > 0 && rng.randint(1, 100) <= dfn){ t.parried++; continue }
@@ -313,14 +313,15 @@ function melee(att, dfd, men, rng, opts = {}){
   if (opts.shaken) atk += M.shaken.attack;
   if (opts.rout){ atk += UD.rout.attack; tempo *= UD.rout.tempo; dfn = 0 }
   const shift = dfn > 0 ? dfn - base : -1000;      // a hero's defence moves with his unit's; none if it has none
-  return blows(att, dfd, countBlows(men * tempo, rng), atk, dfn, rng, opts.exposed || [], shift);
+  return blows(att, dfd, countBlows(men * tempo, rng), atk, dfn, rng, { exposed: opts.exposed || [], shift });
 }
-function volley(att, dfd, men, hexes, rng, penalty = 0, factor = 1, exposed = []){
+function volley(att, dfd, men, hexes, rng, opts = {}){   // opts: {penalty, factor, exposed}
+  const penalty = opts.penalty || 0, factor = opts.factor ?? 1;
   const band = fieldRange(att.weapon, hexes);
   if (!band) return null;
   const S = UD.missile, shots = men * (S.rate[att.weapon] ?? S.default_rate) * S.tempo * factor;
   const atk = attackOf(att) - band.penalty - penalty;
-  return blows(att, dfd, countBlows(shots, rng), atk, 0, rng, exposed, -1000);
+  return blows(att, dfd, countBlows(shots, rng), atk, 0, rng, { exposed: opts.exposed || [], shift: -1000 });
 }
 
 // ---------- heroes (as gravewounds/units.py) ----------
@@ -328,7 +329,8 @@ function aimedAt(exposed, rng){                    // the hero a blow falls on, 
   for (const [hero, p] of exposed) if (hero.state === "up" && rng.random() < p) return hero;
   return null;
 }
-function heroBlow(att, hero, r, atk, critAt, shift, rng, t){   // his own parry, then the full wound roll on his kit
+function heroBlow(att, hero, roll, rng, t){   // roll: {r, atk, critAt, shift}; his own parry, then the full wound roll on his kit
+  const { r, atk, critAt, shift } = roll;
   if (r > atk) return;
   const critical = r <= critAt, dfn = hero.defence + shift;
   if (!critical && dfn > 0 && rng.randint(1, 100) <= dfn) return;
@@ -337,7 +339,8 @@ function heroBlow(att, hero, r, atk, critAt, shift, rng, t){   // his own parry,
   hero.wounds.push({ loc: h.loc, mech: h.mech, sev: h.severity, graze: h.graze });
   if (UD.dead_if.includes(h.lethal)) hero.state = "dead";
   else if (h.severity !== "light" && !h.graze && rng.randint(1, 100) > hero.nerve - (h.severity === "critical" ? 10 : 0)) hero.state = "down";
-  (t.heroes ??= []).push({ hero: hero.id, name: hero.name, sev: h.severity, loc: h.loc, graze: h.graze, state: hero.state });
+  t.heroes ??= [];
+  t.heroes.push({ hero: hero.id, name: hero.name, sev: h.severity, loc: h.loc, graze: h.graze, state: hero.state });
 }
 const heroesOf = (u, roles) => (u.heroes || []).filter(h => h.state === "up" && roles.includes(h.role));
 function exposure(u, rout, missile = false){        // [[hero, chance]] for the heroes of u a blow on it may fall on
@@ -539,12 +542,12 @@ function strikeAll(us, table, rng, acc, log){
 function shootAll(us, table, rng, acc, log){
   for (const v of volleys(us)){
     const b = us[v.dfd], exposed = exposure(b, false, true), factor = form(b).missile_factor;
-    let t = takeHurt(b, volley(sideOfUnit(us[v.att], table), sideOfUnit(b, table), v.men, v.dist, rng, 0, factor, exposed));
+    let t = takeHurt(b, volley(sideOfUnit(us[v.att], table), sideOfUnit(b, table), v.men, v.dist, rng, { factor, exposed }));
     tallyLoss(acc, v, t);
     log.push(...logged({ kind: "volley", ...v }, t));
     for (const hero of heroesOf(us[v.att], ["ranged"])){
       if (!fieldRange(hero.weapon, v.dist)) continue;
-      t = takeHurt(b, volley(heroSide(us[v.att], hero, table), sideOfUnit(b, table), UD.heroes.tempo, v.dist, rng, 0, factor, exposed));
+      t = takeHurt(b, volley(heroSide(us[v.att], hero, table), sideOfUnit(b, table), UD.heroes.tempo, v.dist, rng, { factor, exposed }));
       tallyLoss(acc, v, t);
       log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: v.att, dfd: v.dfd, dist: v.dist }, t));
     }
@@ -769,9 +772,11 @@ function logLines(log, ex){
   const nm = i => unitName(S.units[i]);
   const out = [{ cls: "head", text: `Exchange ${ex}` }];
   for (const l of log){
-    if (l.kind === "morale"){ out.push({ cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` }); continue }
-    if (l.kind === "herohit"){ out.push({ cls: "hero", text: heroHitText(l) }); continue }
-    if (l.kind === "hero"){ if (l.blows) out.push({ cls: "hero", text: heroLineText(l, nm) }); continue }
+    const line = otherLine(l, nm);
+    if (line !== undefined){
+      if (line) out.push(line);
+      continue;
+    }
     const dead = l.dead ? " (" + l.dead + " dead)" : "", fallen = `${l.hits} hit, ${l.down} down${dead}`;
     if (l.kind === "volley") out.push({ cls: "", text: `${nm(l.att)} shoot at ${nm(l.dfd)}, ${l.dist * FD.units.hex_m} m: ${l.blows} aimed shots, ${fallen}.` });
     else if (l.kind === "rout") out.push({ cls: "", text: `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.` });
@@ -779,6 +784,13 @@ function logLines(log, ex){
   }
   return out;
 }
+function otherLine(l, nm){                       // morale and hero lines (null: nothing to show); undefined for blows by units
+  if (l.kind === "morale") return { cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` };
+  if (l.kind === "herohit") return { cls: "hero", text: heroHitText(l) };
+  if (l.kind === "hero") return l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null;
+  return undefined;
+}
+const nWounds = n => (n === 1 ? "1 wound" : n + " wounds");
 function heroHitText(l){
   const where = FD.locations[l.loc].name.toLowerCase(), how = l.graze ? "a graze" : `a ${l.sev} wound`;
   const fate = { dead: "killed", down: "down, out of the fight", up: "fights on" }[l.state];
@@ -856,7 +868,10 @@ function renderAfter(){
   $("#after").innerHTML = [0, 1].map(k => `<li>${esc(sideAfter(k))}</li>`).join("");
   $("#btn-back").hidden = !S.from || !!S.from.sent;
   $("#btn-heroes-back").hidden = !allHeroes().length || !!S.heroesSent;
-  const hs = allHeroes().map(h => `<li>${esc(h.name)}: ${h.state === "up" ? "came through" : h.state}${h.wounds.length ? `, ${h.wounds.length} wound${h.wounds.length > 1 ? "s" : ""}` : ", unhurt"}.</li>`);
+  const hs = allHeroes().map(h => {
+    const fate = h.state === "up" ? "came through" : h.state, hurt = h.wounds.length ? ", " + nWounds(h.wounds.length) : ", unhurt";
+    return `<li>${esc(h.name)}: ${fate}${hurt}.</li>`;
+  });
   $("#after").innerHTML += hs.join("");
 }
 function renderForces(){
@@ -900,7 +915,8 @@ function addHero(){
   if (role === "ranged" && !("range" in FD.weapons[weapon])){ S.msg = `${c.name} has no missile weapon on these tables: put him in the front rank or behind.`; return render() }
   const num = (id, d) => { const v = Number.parseInt($(id).value, 10); return Number.isFinite(v) ? v : d };
   const q = heroQuality(c);
-  (u.heroes ??= []).push({ id: c.id, name: c.name, role, attack: num("#in-hero-atk", q.attack), defence: num("#in-hero-def", q.defence), nerve: Number.isFinite(+c.nerve) ? +c.nerve : q.nerve,
+  u.heroes ??= [];
+  u.heroes.push({ id: c.id, name: c.name, role, attack: num("#in-hero-atk", q.attack), defence: num("#in-hero-def", q.defence), nerve: Number.isFinite(+c.nerve) ? +c.nerve : q.nerve,
     weapon, kit: FD.kits[c.kit] ? c.kit : "none", leader: $("#chk-hero-leader").checked, state: "up", wounds: [] });
   S.msg = `${c.name} joins ${u.name}${weapon === c.weapon ? "" : ", with the unit's weapon (his own is not on these tables)"}.`;
   render();
@@ -912,7 +928,7 @@ function removeHero(id){
 function renderHeroes(){
   const setup = S.phase === "setup", place = { front: "front rank", ranged: "shooting", behind: "behind" };
   $("#heroes").innerHTML = allHeroes().map(h => {
-    const wounds = h.wounds.length ? ` · ${h.wounds.length} wound${h.wounds.length > 1 ? "s" : ""}` : "";
+    const wounds = h.wounds.length ? " · " + nWounds(h.wounds.length) : "";
     const rm = setup ? `<button class="small" data-hero="${h.id}" aria-label="Remove ${esc(h.name)}">Remove</button>` : "";
     return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(h.unit.name)} (${esc(h.unit.side)}) · ${place[h.role]}${h.leader ? " · leader" : ""}</span></span><span class="meta">${h.attack}/${h.defence}% · ${h.state}${wounds}</span>${rm}</li>`;
   }).join("");

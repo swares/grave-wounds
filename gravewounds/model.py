@@ -783,6 +783,12 @@ def _units_errors(d: Data) -> list[str]:
     errors += [f"units.yaml: dead_if names unknown lethality {x}" for x in U.get("dead_if", []) if x not in order]
     if not isinstance(U.get("rout", {}).get("exchanges"), int):
         errors.append("units.yaml: rout.exchanges must be a whole number")
+    return errors + _units_extra_errors(d)
+
+
+def _units_extra_errors(d: Data) -> list[str]:
+    """units.yaml: heroes and the aftermath."""
+    U, errors = d.units, []
     if "heroes" in U and not all(isinstance(U["heroes"].get(k), (int, float)) and U["heroes"][k] > 0 for k in ("tempo", "exposure")):
         errors.append("units.yaml: heroes.tempo and heroes.exposure must be positive")
     saved = U.get("aftermath", {}).get("saved", {})

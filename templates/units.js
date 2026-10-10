@@ -79,14 +79,14 @@ function landWound(att, dfd, margin, critical, rng, t){
   if (down) t.down++;
   noteHurt(t, h.severity, h, down);
 }
-function blows(att, dfd, n, atk, dfn, rng, exposed = [], shift = 0){
+function blows(att, dfd, n, atk, dfn, rng, aim = { exposed: [], shift: 0 }){   // aim: the heroes a blow may fall on, and how their defence shifts
   const t = newTally();
   t.blows = n;
   atk = Math.max(0, atk);
   const critAt = Math.floor(atk * FD.combat.critical_fraction);
   for (let i = 0; i < n; i++){
-    const hero = aimedAt(exposed, rng), r = rng.randint(1, 100);
-    if (hero){ heroBlow(att, hero, r, atk, critAt, shift, rng, t); continue }
+    const hero = aimedAt(aim.exposed, rng), r = rng.randint(1, 100);
+    if (hero){ heroBlow(att, hero, { r, atk, critAt, shift: aim.shift }, rng, t); continue }
     if (r > atk){ t.missed++; continue }
     const critical = r <= critAt;
     if (!critical && dfn > 0 && rng.randint(1, 100) <= dfn){ t.parried++; continue }
@@ -105,14 +105,15 @@ function melee(att, dfd, men, rng, opts = {}){
   if (opts.shaken) atk += M.shaken.attack;
   if (opts.rout){ atk += UD.rout.attack; tempo *= UD.rout.tempo; dfn = 0 }
   const shift = dfn > 0 ? dfn - base : -1000;      // a hero's defence moves with his unit's; none if it has none
-  return blows(att, dfd, countBlows(men * tempo, rng), atk, dfn, rng, opts.exposed || [], shift);
+  return blows(att, dfd, countBlows(men * tempo, rng), atk, dfn, rng, { exposed: opts.exposed || [], shift });
 }
-function volley(att, dfd, men, hexes, rng, penalty = 0, factor = 1, exposed = []){
+function volley(att, dfd, men, hexes, rng, opts = {}){   // opts: {penalty, factor, exposed}
+  const penalty = opts.penalty || 0, factor = opts.factor ?? 1;
   const band = fieldRange(att.weapon, hexes);
   if (!band) return null;
   const S = UD.missile, shots = men * (S.rate[att.weapon] ?? S.default_rate) * S.tempo * factor;
   const atk = attackOf(att) - band.penalty - penalty;
-  return blows(att, dfd, countBlows(shots, rng), atk, 0, rng, exposed, -1000);
+  return blows(att, dfd, countBlows(shots, rng), atk, 0, rng, { exposed: opts.exposed || [], shift: -1000 });
 }
 
 // ---------- heroes (as gravewounds/units.py) ----------
@@ -120,7 +121,8 @@ function aimedAt(exposed, rng){                    // the hero a blow falls on, 
   for (const [hero, p] of exposed) if (hero.state === "up" && rng.random() < p) return hero;
   return null;
 }
-function heroBlow(att, hero, r, atk, critAt, shift, rng, t){   // his own parry, then the full wound roll on his kit
+function heroBlow(att, hero, roll, rng, t){   // roll: {r, atk, critAt, shift}; his own parry, then the full wound roll on his kit
+  const { r, atk, critAt, shift } = roll;
   if (r > atk) return;
   const critical = r <= critAt, dfn = hero.defence + shift;
   if (!critical && dfn > 0 && rng.randint(1, 100) <= dfn) return;
@@ -129,7 +131,8 @@ function heroBlow(att, hero, r, atk, critAt, shift, rng, t){   // his own parry,
   hero.wounds.push({ loc: h.loc, mech: h.mech, sev: h.severity, graze: h.graze });
   if (UD.dead_if.includes(h.lethal)) hero.state = "dead";
   else if (h.severity !== "light" && !h.graze && rng.randint(1, 100) > hero.nerve - (h.severity === "critical" ? 10 : 0)) hero.state = "down";
-  (t.heroes ??= []).push({ hero: hero.id, name: hero.name, sev: h.severity, loc: h.loc, graze: h.graze, state: hero.state });
+  t.heroes ??= [];
+  t.heroes.push({ hero: hero.id, name: hero.name, sev: h.severity, loc: h.loc, graze: h.graze, state: hero.state });
 }
 const heroesOf = (u, roles) => (u.heroes || []).filter(h => h.state === "up" && roles.includes(h.role));
 function exposure(u, rout, missile = false){        // [[hero, chance]] for the heroes of u a blow on it may fall on
@@ -331,12 +334,12 @@ function strikeAll(us, table, rng, acc, log){
 function shootAll(us, table, rng, acc, log){
   for (const v of volleys(us)){
     const b = us[v.dfd], exposed = exposure(b, false, true), factor = form(b).missile_factor;
-    let t = takeHurt(b, volley(sideOfUnit(us[v.att], table), sideOfUnit(b, table), v.men, v.dist, rng, 0, factor, exposed));
+    let t = takeHurt(b, volley(sideOfUnit(us[v.att], table), sideOfUnit(b, table), v.men, v.dist, rng, { factor, exposed }));
     tallyLoss(acc, v, t);
     log.push(...logged({ kind: "volley", ...v }, t));
     for (const hero of heroesOf(us[v.att], ["ranged"])){
       if (!fieldRange(hero.weapon, v.dist)) continue;
-      t = takeHurt(b, volley(heroSide(us[v.att], hero, table), sideOfUnit(b, table), UD.heroes.tempo, v.dist, rng, 0, factor, exposed));
+      t = takeHurt(b, volley(heroSide(us[v.att], hero, table), sideOfUnit(b, table), UD.heroes.tempo, v.dist, rng, { factor, exposed }));
       tallyLoss(acc, v, t);
       log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: v.att, dfd: v.dfd, dist: v.dist }, t));
     }
