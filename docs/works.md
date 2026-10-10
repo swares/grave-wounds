@@ -35,11 +35,17 @@ line with the few hours a Roman legion took for its marching camp.
 Each kind of camp also records how hard it is to surprise and how well the men rest. These
 are for later rules on surprise, rest, camp hygiene and disease.
 
-**Set up a fight here** opens the roller's battle map with:
-- the force's camp laid out in the middle, sized for its men
-- up to eight of its men inside the camp
+A force can make each kind of camp once in a place. Changing to another kind there (say, a
+watched camp to a staked camp) costs the new camp's work but not its set-up hour again.
 
-Add the attackers with **Add**. They start at the far edge, facing the gate.
+The Camp section names the selected force. **Set up a fight with … at its camp** opens the
+roller's battle map with:
+- the selected force's camp laid out in the middle, sized for its men
+- up to eight of its men inside the camp, as the defenders
+- the nearest force from another side on the travel map, up to eight of its men, at the
+  far edge facing the way in, as the attackers
+
+**Add** brings in more fighters on the attackers' side.
 
 ## Works on the battle map
 

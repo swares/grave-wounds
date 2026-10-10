@@ -1432,13 +1432,21 @@ function setupHandoff(){                     // a camp or position sent from the
   spots.sort((p, q) => hexDistance(L.centre, p) - hexDistance(L.centre, q) || p[1] - q[1] || p[0] - q[0]);
   const n = Math.min(men, 8);
   S.chars = Array.from({ length: n }, (_, i) => { const c = newChar(`${h.force.name} ${i + 1}`, "none", null, {}, h.force.side); c.pos = spots[i]; return c });
+  // The nearest enemy force on the travel map comes too, waiting at the far edge (side 2's edge).
+  const foe = (h.foes || [])[0], fn = foe ? Math.min(foe.men, 8) : 0;
+  for (let i = 0; i < fn; i++) S.chars.push(newChar(`${foe.name} ${i + 1}`, "none", null, {}, foe.side));
   S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0;
-  S.addSide = h.force.side === "Attackers" ? "Defenders" : "Attackers";    // Add now brings in the other side
+  S.addSide = foe ? foe.side : "Attackers";                                // Add brings in the other side
+  if (!foe && h.force.side === "Attackers") S.addSide = "Defenders";
   const campName = h.camp ? WK.camps[h.camp].name.toLowerCase() : "no camp";
   S.pending = [`Set up from the travel map: ${h.force.name} at ${h.place} (${campName}), day ${h.day}, ${h.time}`];
-  const placed = n < men ? n + " of " + men + " men placed" : n + " men placed";
+  const placed = n < men ? n + " of its " + men + " men" : "its " + n + " men";
   const where = h.camp ? campName : "position", cut = L.fits ? "" : " (cut down to fit the map)";
-  S.mapMsg = `${placed} inside the ${where}${cut}. Add the attackers with Add (they join the side "${S.addSide}" and start at the far edge, facing the gate); click a fighter, on the map or with Place on map, then a hex to move him.`;
+  const facing = lay ? "facing the way in" : "facing them";
+  const foeNote = foe ? `Attacking: ${foe.name} (${foe.side}), ${fn} of its ${foe.men} men, ${foe.km} km away on the travel map, at the far edge ${facing}. ` : "";
+  const addNote = `Add brings in more on the side "${S.addSide}".`;
+  S.mapMsg = `Defending: ${h.force.name} (${h.force.side}), ${placed}, inside the ${where}${cut}. ${foeNote}${addNote} Click a fighter, on the map or with Place on map, then a hex to move him.`;
+  if (foe) S.pending.push(`Facing them: ${foe.name}, ${foe.men} men (${foe.side})`);
   try{ localStorage.removeItem("gravewounds-handoff") }catch(e){}
   S.handoff = null;
   renderChars();
