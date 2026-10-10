@@ -21,12 +21,15 @@ When an item is done, delete it here and note it in the pull request that closes
 - **One clock for all forces.** Each force on the travel map keeps its own clock (kept on
   purpose for now). A shared clock would let forces meet on the road.
 - **Cover and elevation on the battle map**, beyond what works give.
-- **Campaign and battle maps for the other campaigns.** Visby (1361), Agincourt (1415) and
-  Towton (1461) have both a campaign map and a battlefield. The other conflicts in the
-  tables (Sidon, the Thirty Years' War, the Peninsula and later) still play on the generic valley and open
+- **Campaign and battle maps for the other campaigns.** Visby (1361), Agincourt (1415),
+  Towton (1461) and Lützen (1632) have both a campaign map and a battlefield. The other
+  conflicts in the tables (Sidon, the Peninsula and later) still play on the generic valley and open
   ground. Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
+- **Guns on the field map.** The unit rules have no artillery, so the Lützen windmill
+  battery (and any later battle's guns) are left to the GM. Field guns would need a missile
+  rate, a reach and a crew, and roundshot's way of killing several men in a file.
 - **Wind direction.** The weather has a wind strength, which costs every side's missiles
   the same. At Towton the snow blew into the Lancastrians' faces: their archers shot short
   and the Yorkists shot further. The rules could give a wind a direction, with a bonus to
