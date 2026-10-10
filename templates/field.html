@@ -185,7 +185,7 @@ function freshState(){
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)) }catch(e){ /* storage off: the battle lasts while the page is open */ } }
 function restore(){
-  try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j?.units && FD.tables[j.table]) S = j }catch(e){ S = null /* a damaged save: start a fresh battle */ }
+  try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j?.units && FD.tables[j.table]) S = j }catch(e){ /* a damaged save: S stays empty and a fresh battle starts */ }
   if (!S) freshState();
 }
 const idx = id => S.units.findIndex(u => u.id === id);

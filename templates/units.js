@@ -166,7 +166,7 @@ function footprint(u){                          // rows of hexes, front row firs
 function menByHex(u){
   const per = form(u).per_hex, out = [];
   let left = u.men;
-  for (const row of footprint(u)) for (const _ of row){ const n = Math.min(per, left); out.push(n); left -= n }
+  for (const row of footprint(u)) row.forEach(() => { const n = Math.min(per, left); out.push(n); left -= n });
   return out;
 }
 function occupancy(units){
