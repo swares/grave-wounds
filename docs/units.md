@@ -259,9 +259,8 @@ lower ground; canister never goes over anyone's head, and a unit on the same hil
   as above. Supports drawn up behind a line suffer, and so can a side's own men beyond the
   enemy. Rough ground, woods, marsh, or any mud or snow on the ground stop the bounce.
 - **Guns knocked out.** Each round-shot ball fired at a battery that strikes it (not one
-  bounding on into it) has a 10% chance of
-  knocking a gun off its carriage, out for the rest of the fight. A battery serves the
-  fewer of its guns left and its crews left (10 men a gun).
+  bounding on into it) has a 10% chance of knocking a gun off its carriage, out for the rest
+  of the fight. A battery serves the fewer of its guns left and its crews left (10 men a gun).
 - **Canister** throws 8 chances a round, each hitting at 50% to 110 yards (100 m), 30% to 220
   yards (200 m) and 15% to 330 yards (300 m).
 - Cover, the weather (fog and rain hide targets; the wind costs as for firearms) and open
