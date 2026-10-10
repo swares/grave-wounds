@@ -73,6 +73,15 @@ def _main(argv=None) -> int:
             r = simulate(d, did, a.n, ctx, seeded_d100(a.seed))
             print(f"  {x['name']:<22} deaths {r['deaths']:5.1f}% (records {x['deaths']}%), "
                   f"sick {r['sick_days']:4.1f} days on average, virulence {x['virulence']}")
+        if "wounds" in d.disease:
+            from .disease import WOUND_EXAMPLES, simulate_wounds
+            print("Wounded carried from the field, resting (deaths / wound fever / days unfit):")
+            for w in WOUND_EXAMPLES:
+                cells = []
+                for care in ("none", "field", "shelter"):
+                    r = simulate_wounds(d, w, a.n // 4, care, seeded_d100(a.seed))
+                    cells.append(f"{care} {r['deaths']:4.1f}% / {r['fever']:4.1f}% / {r['unfit_days']:4.1f}")
+                print(f"  {w[0]:<8} {w[1]:<5} {w[2]:<6}  " + "   ".join(cells))
         return 0
     if a.cmd == "units":
         from .units import examples, pace

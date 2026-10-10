@@ -9,17 +9,19 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **Unit combat, the rest of step 2.** The field map has units, movement, contact, range,
-  flank and rear, morale and the rout. Still to do: set-up from the travel map; heroes
-  fighting individually in a unit's front rank; the wounded carried to camp; works, terrain
-  and weather on the field map. See [units.md](units.md).
+- **Unit combat, the rest of step 2.** Heroes in units (next), then works, terrain and
+  weather on the field map. See [units.md](units.md).
+- **A battle's time on the travel map.** A battle fought on the field map does not move the
+  forces' clocks; the GM advances them by hand.
+- **Several attacking sides.** On the field map every attacker fights on side B, under the
+  first attacker's side name, even if they came from different sides on the travel map.
 - **One clock for all forces.** Each force on the travel map keeps its own clock (kept on
   purpose for now). A shared clock would let forces meet on the road.
 - **Cover and elevation on the battle map**, beyond what works give.
 - **Campaign and battle maps** for each campaign or battle, to replace the generic valley.
-- **Scurvy and wound fever for forces.** Camp disease covers flux, typhus, typhoid, ague
-  and plague. Scurvy needs food tracking (weeks without fresh food), and wound fever needs
-  individual wounds; both are in the design doc's disease table.
+- **Scurvy for forces.** Camp disease covers flux, typhus, typhoid, ague and plague, and
+  wound fever for the wounded from the field map. Scurvy needs food tracking (weeks
+  without fresh food); it is in the design doc's disease table.
 - **Disease for named characters.** The roller's fighters could carry conditions on the
   five-step track, with their own Endurance, and sick men could come to a fight weakened
   instead of staying out of it.
