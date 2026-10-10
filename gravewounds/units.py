@@ -29,9 +29,10 @@ def fighters(d: Data, front: int, reach: int) -> int:
     return front * (2 if reach >= d.units["melee"]["second_rank_reach"] else 1)
 
 
-def field_range(d: Data, wid: str, field_hexes: int) -> dict | None:
-    """A weapon's range band at this many field-map hexes (weapon ranges are battle-map hexes)."""
-    return weapon_reach(d, wid, field_hexes * d.units["range_scale"])
+def field_range(d: Data, wid: str, field_hexes: int, reach: int = 0) -> dict | None:
+    """A weapon's range band at this many field-map hexes (weapon ranges are battle-map hexes);
+    reach: % on the bands from the wind (with it +, into it -)."""
+    return weapon_reach(d, wid, field_hexes * d.units["range_scale"] * 100 / (100 + reach))
 
 
 def _count(n: float, rng: random.Random) -> int:
@@ -106,10 +107,11 @@ def melee(d: Data, att: dict, dfd: dict, men: int, rng: random.Random, situation
 
 
 def volley(d: Data, att: dict, dfd: dict, men: float, field_hexes: int, rng: random.Random,
-           penalty: int = 0, factor: float = 1.0, exposed: tuple = ()) -> dict | None:
+           penalty: int = 0, factor: float = 1.0, exposed: tuple = (), reach: int = 0) -> dict | None:
     """One exchange of `men` shooting at a unit `field_hexes` away. penalty: extra % off
-    (weather, cover); factor: the target formation's missile_factor. None if out of range."""
-    band = field_range(d, att["weapon"], field_hexes)
+    (weather, cover); factor: the target formation's missile_factor; reach: the wind's % on the
+    range bands. None if out of range."""
+    band = field_range(d, att["weapon"], field_hexes, reach)
     if band is None:
         return None
     S = d.units["missile"]
@@ -521,7 +523,7 @@ def battlefield(d: Data, fid: str) -> dict:
                 it.update({"open": False, "inside": C.hkey(a)})
             works["edges"].setdefault(C.edge_key(a, b), []).append(it)
     wx = f.get("weather") or {"cond": "fair", "wind": "calm", "ground": {"mud": 0, "snow": 0}}
-    return {"ground": ground, "works": works, "weather": wx, "size": list(f["size"])}
+    return {"ground": ground, "works": works, "weather": wx, "size": list(f["size"]), "up": f.get("up", "N")}
 
 
 def battlefield_units(d: Data, fid: str) -> list:
@@ -591,24 +593,30 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
         rows, men = footprint(d, u), men_by_hex(d, u)
         per_hex = form(d, u)["abreast"] * min(d.units["shoot_ranks"], form(d, u)["ranks"])
         shooters = sum(min(per_hex, men[k]) for k in range(len(rows[0])))
-        wx = shot_weather(d, field, u["weapon"], best[0])
+        wx = shot_weather(d, field, u["weapon"], best[0], best[2], best[3])
         out.append({"att": i, "dfd": best[1], "men": shooters, "dist": best[0], "cover": cover_at(d, field, best[2], best[3]),
-                    "penalty": wx["penalty"], "misfire": wx["misfire"]})
+                    "penalty": wx["penalty"], "misfire": wx["misfire"], "reach": wx.get("reach", 0), "from": best[2], "to": best[3]})
     return out
 
 
-def shot_weather(d: Data, field: dict | None, weapon: str, dist: int) -> dict:
-    """The weather's effect on a shot `dist` field hexes away: {blocked, penalty, misfire}."""
+def shot_weather(d: Data, field: dict | None, weapon: str, dist: int, h=None, t=None) -> dict:
+    """The weather's effect on a shot `dist` field hexes away, from hex h to hex t (for the
+    wind's direction): {blocked, penalty, misfire, reach}."""
     if is_gun(d, weapon):
-        return gun_weather(d, field, dist)
-    return C.weather_attack(d, (field or {}).get("weather"), weapon, dist * d.units["range_scale"])
+        return gun_weather(d, field, dist, h, t)
+    return C.weather_attack(d, (field or {}).get("weather"), weapon, dist * d.units["range_scale"], h, t, _up(field))
 
 
-def _reaches(d: Data, weapon: str, dist: int) -> bool:
+def _up(field: dict | None) -> str:
+    """The compass point at the top of the field map (north, unless the battlefield says)."""
+    return (field or {}).get("up") or "N"
+
+
+def _reaches(d: Data, weapon: str, dist: int, reach: int = 0) -> bool:
     """Whether a weapon shoots this many field hexes: a gun to the artillery range."""
     if is_gun(d, weapon):
         return dist <= d.units["artillery"]["range"]
-    return field_range(d, weapon, dist) is not None
+    return field_range(d, weapon, dist, reach) is not None
 
 
 def cover_at(d: Data, field: dict | None, h, t) -> int:
@@ -644,8 +652,10 @@ def _nearest_ahead(d: Data, weapon: str, front: list, fv: tuple, hexes: list, fi
             if sum((c[k] - s[k]) * fv[k] for k in range(3)) <= 0:
                 continue
             dist = hdist(h, t)
-            if (best is None or dist < best[0]) and _reaches(d, weapon, dist) \
-                    and not shot_weather(d, field, weapon, dist)["blocked"]:
+            if best is not None and dist >= best[0]:
+                continue
+            wx = shot_weather(d, field, weapon, dist, h, t)
+            if not wx["blocked"] and _reaches(d, weapon, dist, wx.get("reach", 0)):
                 best = (dist, h, t)
     return best
 
@@ -708,15 +718,15 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
     for v in volleys(d, us, field):
         b = us[v["dfd"]]
         opts = {"factor": form(d, b)["missile_factor"] * (100 - v["misfire"]) / 100, "exposed": _exposure(d, b, False, True),
-                "penalty": v["cover"] + v["penalty"]}
+                "penalty": v["cover"] + v["penalty"], "reach": v["reach"]}
         t = _take_hurt(b, volley(d, _side(us[v["att"]], table), _side(b, table), v["men"], v["dist"], rng, **opts))
         _tally(*acc, v, t)
         log += _logged({"kind": "volley", **v}, t)
         for hero in _heroes(us[v["att"]], ("ranged",)):
-            wx = shot_weather(d, field, hero["weapon"], v["dist"])
-            if field_range(d, hero["weapon"], v["dist"]) is None or wx["blocked"]:
+            wx = shot_weather(d, field, hero["weapon"], v["dist"], v["from"], v["to"])
+            if wx["blocked"] or field_range(d, hero["weapon"], v["dist"], wx["reach"]) is None:
                 continue
-            hopts = {**opts, "factor": form(d, b)["missile_factor"] * (100 - wx["misfire"]) / 100, "penalty": v["cover"] + wx["penalty"]}
+            hopts = {**opts, "factor": form(d, b)["missile_factor"] * (100 - wx["misfire"]) / 100, "penalty": v["cover"] + wx["penalty"], "reach": wx["reach"]}
             t = _take_hurt(b, volley(d, _hero_side(us[v["att"]], hero, table), _side(b, table), d.units["heroes"]["tempo"], v["dist"], rng, **hopts))
             _tally(*acc, v, t)
             log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": v["att"], "dfd": v["dfd"], "dist": v["dist"]}, t)
@@ -1087,14 +1097,17 @@ def guns_served(d: Data, u: dict) -> int:
     return min(math.ceil(u.get("start", u["men"]) / crew), math.ceil(max(0, u["men"]) / crew))
 
 
-def gun_weather(d: Data, field: dict | None, dist: int) -> dict:
-    """The weather's effect on guns: no laying them on what cannot be seen; the wind as on firearms."""
-    out = {"blocked": None, "penalty": 0, "misfire": 0}
+def gun_weather(d: Data, field: dict | None, dist: int, h=None, t=None) -> dict:
+    """The weather's effect on guns: no laying them on what cannot be seen (less with rain or
+    snow driven into the gunners' faces); the wind as on firearms; no reach from the wind."""
+    out = {"blocked": None, "penalty": 0, "misfire": 0, "reach": 0}
     weather = (field or {}).get("weather")
     if not weather or not d.weather:
         return out
     cond = d.weather["conditions"][weather["cond"]]
     vis = cond.get("visibility")
+    if vis is not None and cond["precip"] != "none" and C.wind_lie(d, weather, h, t, _up(field)) == "against":
+        vis = vis * d.weather["driven_sight"] // 100
     if vis is not None and dist * d.units["range_scale"] > vis:
         out["blocked"] = f"{cond['name']}: the guns cannot be laid on what cannot be seen."
         return out
@@ -1120,7 +1133,7 @@ def cannonades(d: Data, units: list, field: dict | None = None) -> list:
         best = _target(d, units, i, field)
         if best is None:
             continue
-        wx = gun_weather(d, field, best[0])
+        wx = gun_weather(d, field, best[0], best[2], best[3])
         out.append({"att": i, "dfd": best[1], "guns": guns_served(d, u), "dist": best[0],
                     "shot": "canister" if best[0] <= A["canister_to"] else "round", "cover": cover_at(d, field, best[2], best[3]),
                     "penalty": wx["penalty"]})

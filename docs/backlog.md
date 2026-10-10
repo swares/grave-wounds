@@ -32,10 +32,6 @@ When an item is done, delete it here and note it in the pull request that closes
   their own units' heads; round shot does not bounce on beyond its target or strike a
   second unit behind; there is no ammunition count, shell, or counter-battery fire at the
   crews in particular; and the Thirty Years' War borrows the Peninsula's gun wounds.
-- **Wind direction.** The weather has a wind strength, which costs every side's missiles
-  the same. At Towton the snow blew into the Lancastrians' faces: their archers shot short
-  and the Yorkists shot further. The rules could give a wind a direction, with a bonus to
-  range downwind and a penalty upwind; for now the GM adjusts by hand.
 - **Scurvy for forces.** Camp disease covers flux, typhus, typhoid, ague and plague, and
   wound fever for the wounded from the field map. Scurvy needs food tracking (weeks
   without fresh food); it is in the design doc's disease table.

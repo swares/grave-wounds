@@ -125,15 +125,59 @@ function deepGoing(ground){
   const deep = WXD.ground.deep;
   return (ground.mud || 0) >= deep || (ground.snow || 0) >= deep ? WXD.battle.deep_step : 0;
 }
-function weatherAttack(weather, wid, dist){
-  const out = { blocked: null, penalty: 0, misfire: 0, notes: [] }, w = WD_WEAPONS[wid];
+// The wind's direction (as gravewounds/combat.py wind_lie): how a shot from hex frm to hex to lies
+// to the wind: "with" (the wind behind it, within 45 degrees), "against", "across", or null (calm,
+// no direction, no hexes). up: the compass point at the top of the map.
+const WIND_NAMES = { N: "north", NE: "north-east", E: "east", SE: "south-east", S: "south", SW: "south-west", W: "west", NW: "north-west" };
+function windDirOptions(cur){                     // the options for a "Wind from" select
+  return `<option value="">(no direction)</option>` + (WXD?.wind_points || []).map(p => `<option value="${p}" ${cur === p ? "selected" : ""}>from the ${WIND_NAMES[p]}</option>`).join("");
+}
+function windDirNote(weather){                    // what the wind's direction does, for a weather note
+  const wind = WXD?.winds.find(x => x.id === weather?.wind);
+  if (!weather?.dir || !wind?.reach) return "";
+  const into = wind.into_wind ? ` and −${wind.into_wind}%` : "", cond = WXD.conditions[weather.cond];
+  const driven = cond.precip === "none" ? "" : `; ${cond.precip} driven into the faces of those shooting into it halves their sight`;
+  return `wind from the ${WIND_NAMES[weather.dir]}: bows, crossbows and slings reach ${wind.reach}% further with it, ${wind.reach}% less into it${into}${driven}`;
+}
+const S45 = Math.sqrt(0.5);
+const WIND_VECTORS = [[0, -1], [S45, -S45], [1, 0], [S45, S45], [0, 1], [-S45, S45], [-1, 0], [-S45, -S45]];
+function windLie(weather, frm, to, up = "N"){
+  const pts = WXD?.wind_points || [];
+  if (!weather || !frm || !to || !pts.includes(weather.dir) || weather.wind === "calm") return null;
+  const k = (pts.indexOf(weather.dir) - pts.indexOf(up) + 12) % 8, [wx, wy] = WIND_VECTORS[k];   // where it blows to, on the page
+  const q1 = frm[0] - (frm[1] - (frm[1] & 1)) / 2, q2 = to[0] - (to[1] - (to[1] & 1)) / 2, dr = to[1] - frm[1];
+  const dx = Math.sqrt(3) * ((q2 - q1) + dr / 2), dy = 1.5 * dr, n = Math.hypot(dx, dy);
+  if (n === 0) return null;
+  const dot = dx * wx + dy * wy;
+  if (dot >= S45 * n - 1e-9) return "with";
+  if (dot <= -S45 * n + 1e-9) return "against";
+  return "across";
+}
+function sightFor(cond, lie, out){                // how far a shooter can see to aim: less with rain or snow in his face
+  let vis = cond.visibility;
+  if (vis !== null && vis !== undefined && lie === "against" && cond.precip !== "none"){
+    vis = Math.floor(vis * WXD.driven_sight / 100);
+    out.notes.push(`${cond.precip} in their faces`);
+  }
+  return vis;
+}
+function windReach(w, wind, lie, out){            // with the wind a bow, crossbow or sling reaches further; into it, less and harder
+  if ((lie !== "with" && lie !== "against") || w.ignition || !wind.reach) return;
+  out.reach = lie === "with" ? wind.reach : -wind.reach;
+  const sign = out.reach > 0 ? "+" : "", way = lie === "with" ? "with" : "into";
+  out.notes.push(`${way} the wind, reach ${sign}${out.reach}%`);
+  if (lie === "against" && wind.into_wind){ out.penalty += wind.into_wind; out.notes.push(`into the wind -${wind.into_wind}%`) }
+}
+function weatherAttack(weather, wid, dist, frm = null, to = null, up = "N"){   // -> {blocked, penalty, misfire, reach (% on the range bands), notes}
+  const out = { blocked: null, penalty: 0, misfire: 0, reach: 0, notes: [] }, w = WD_WEAPONS[wid];
   if (!weather || !WXD || !("range" in w)) return out;
-  const cond = WXD.conditions[weather.cond], vis = cond.visibility;
+  const cond = WXD.conditions[weather.cond], lie = windLie(weather, frm, to, up), vis = sightFor(cond, lie, out);
   if (vis !== null && vis !== undefined && dist > vis){
     out.blocked = `${cond.name}: no one can be seen to aim at beyond ${vis} hexes (${fmtM(vis * 2)}).`;
     return out;
   }
   const wind = WXD.winds.find(x => x.id === weather.wind);
+  windReach(w, wind, lie, out);
   if (w.string){
     const p = WXD.battle.string_wet[cond.wet];
     if (p){ out.penalty += p; out.notes.push(`wet string -${p}%`) }

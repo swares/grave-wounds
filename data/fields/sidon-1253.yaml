@@ -18,6 +18,7 @@ table: sidon-1253-all-hits
 # the travel-map sides that stand where each army stands here (Franks first).
 travel: {map: sidon-1253, place: "Sidon", within: 1, sides: ["Franks", "Damascus"]}
 size: [110, 90]
+up: E                       # the compass point at the top of the map
 weather: {cond: fair, wind: calm, ground: {mud: 0, snow: 0}}
 ground: |
   hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh

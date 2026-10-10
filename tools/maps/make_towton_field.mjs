@@ -46,7 +46,7 @@ const units = [
 writeField({
   id: "towton-1461", name: "Towton, 29 March 1461", sides: ["Yorkists", "Lancastrians"], table: "towton-1461-all-hits",
   travel: { map: "towton-1461", place: "Towton", within: 3, sides: ["York", "Lancaster"] },
-  weather: "{cond: snow, wind: strong, ground: {mud: 0, snow: 1}}",
+  weather: "{cond: snow, wind: strong, dir: S, ground: {mud: 0, snow: 1}}",
   grid, units,
   header: [
     `The field of Towton, Palm Sunday, 29 March 1461 (Julian), at 10 m a hex: ${COLS} x ${ROWS} hexes,`,
@@ -63,8 +63,8 @@ writeField({
     "Lancastrians gaining ground, helped by men from Castle Hill Wood on the Yorkist left, until",
     "the Duke of Norfolk's men came up on the Yorkist right. The Lancastrian line gave way, and",
     "many were killed in the rout down to Cock Beck and on towards Tadcaster.",
-    "The wind's direction is not in the rules: the GM can give the Lancastrian archers a further",
-    "penalty, or the Yorkist archers more reach.",
+    "The wind blows from the south (strong, with snow): the Yorkist archers shoot with it,",
+    "reaching further; the Lancastrians shoot into it, falling short and half blinded."
   ],
 });
 console.log(grid.map(r => r.join("")).join("\n"));

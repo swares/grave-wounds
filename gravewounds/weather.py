@@ -94,7 +94,8 @@ def _pick(rows: list, roll: int) -> dict:
 
 def roll_weather(d: Data, m: dict, day: int, prev: dict | None, rolls: list[int]) -> dict:
     """A day's weather from five d100 rolls [wet, intensity or cloud, warmth, fog, wind] and
-    the day before (None on the first day). {cond, wind, high, low, anomaly}."""
+    the day before (None on the first day). {cond, wind, high, low, anomaly}; with two more
+    rolls [keep, pick], the wind's direction too (dir)."""
     WX = d.weather
     cl = WX["climates"][m["climate"]]
     y, mo, _ = map_date(m, day)
@@ -122,7 +123,25 @@ def roll_weather(d: Data, m: dict, day: int, prev: dict | None, rolls: list[int]
     ids = [w["id"] for w in winds]
     if floor_wind and ids.index(wind) < ids.index(floor_wind):
         wind = floor_wind
-    return {"cond": cond, "wind": wind, "high": high, "low": low, "anomaly": anomaly}
+    out = {"cond": cond, "wind": wind, "high": high, "low": low, "anomaly": anomaly}
+    if len(rolls) > 6:                                # two more rolls: the wind's direction
+        out["dir"] = wind_dir(d, cl, prev, rolls[5], rolls[6])
+    return out
+
+
+def wind_dir(d: Data, cl: dict, prev: dict | None, keep_roll: int, pick_roll: int) -> str:
+    """Where the day's wind blows from: the day before's on keep_roll <= wind_keep, else a
+    point picked by pick_roll from the climate's prevailing winds."""
+    WX = d.weather
+    pts = WX["wind_points"]
+    if prev and prev.get("dir") in pts and keep_roll <= WX["wind_keep"]:
+        return prev["dir"]
+    acc = 0
+    for pt, w in zip(pts, cl["wind_from"]):
+        acc += w
+        if pick_roll <= acc:
+            return pt
+    return pts[-1]
 
 
 def next_ground(d: Data, prev: dict | None, w: dict) -> dict:

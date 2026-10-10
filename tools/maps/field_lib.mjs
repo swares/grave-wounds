@@ -41,7 +41,8 @@ const hexList = hs => hs.map(h => `[${h.join(", ")}]`).join(", ");
 
 // Writes the battlefield file. spec: {id, script, header (comment lines), name, sides, table,
 // travel {map, place, within, sides}, weather (YAML flow text), grid, hexWorks {type: [hexes]},
-// edgeWorks {type: [[hex, hex], ...]} (the first hex of each pair the high or inner side), units}.
+// edgeWorks {type: [[hex, hex], ...]} (the first hex of each pair the high or inner side), units,
+// up (the compass point at the top of the map, if not north)}.
 export function writeField(spec){
   const { grid } = spec, works = Object.entries(spec.hexWorks || {});
   const edges = Object.entries(spec.edgeWorks || {});
@@ -50,7 +51,7 @@ export function writeField(spec){
   const hexText = works.length ? "  hexes:\n" + works.map(workLine).join("\n") + "\n" : "";
   const edgeText = edges.length ? "  edges:\n" + edges.map(edgeLine).join("\n") + "\n" : "";
   const worksText = hexText || edgeText ? "works:\n" + hexText + edgeText : "";
-  const t = spec.travel;
+  const t = spec.travel, upLine = spec.up ? "up: " + spec.up + "                       # the compass point at the top of the map\n" : "";
   const out = `${spec.header.map(l => ("# " + l).trimEnd()).join("\n")}
 id: ${spec.id}
 name: ${yq(spec.name)}
@@ -60,7 +61,7 @@ table: ${spec.table}
 # the travel-map sides that stand where each army stands here (${spec.sides[0]} first).
 travel: {map: ${t.map}, place: ${yq(t.place)}, within: ${t.within}, sides: [${t.sides.map(yq).join(", ")}]}
 size: [${grid[0].length}, ${grid.length}]
-weather: ${spec.weather}
+${upLine}weather: ${spec.weather}
 ground: |
 ${grid.map(row => "  " + row.join("")).join("\n")}
 ${worksText}units:

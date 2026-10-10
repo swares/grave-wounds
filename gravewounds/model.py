@@ -460,6 +460,9 @@ def validate(d: Data) -> None:
                 errors.append(f"maps/{mid}: climate_shift must be a number")
 
     # camp disease
+    if d.weather.get("wind_points"):
+        errors += _wind_errors(d)
+
     if d.disease:
         errors += _disease_errors(d, TT)
 
@@ -844,13 +847,23 @@ def _field_shape_errors(d: Data, f: dict, where: str) -> list[str]:
         errors.append(f"{where}: sides needs two names")
     if f.get("table") not in d.tables:
         errors.append(f"{where}: unknown table {f.get('table')}")
-    cond = (f.get("weather") or {}).get("cond")
-    if f.get("weather") and cond not in d.weather.get("conditions", {}):
-        errors.append(f"{where}: unknown weather {cond}")
+    errors += _field_weather_errors(d, f, where)
     errors += _field_travel_errors(d, f, where)
     works = f.get("works") or {}
     for kind, label, known in (("hexes", "hex", d.works.get("hex_works", {})), ("edges", "edge", d.works.get("edge_works", {}))):
         errors += [f"{where}: unknown {label} work {w.get('type')}" for w in works.get(kind, []) if w.get("type") not in known]
+    return errors
+
+
+def _field_weather_errors(d: Data, f: dict, where: str) -> list[str]:
+    """A battlefield's weather: a known condition, and its wind direction and the compass point
+    at the top of its map among the wind points."""
+    errors, wx = [], f.get("weather") or {}
+    if wx and wx.get("cond") not in d.weather.get("conditions", {}):
+        errors.append(f"{where}: unknown weather {wx.get('cond')}")
+    pts = d.weather.get("wind_points", [])
+    if pts and (wx.get("dir", pts[0]) not in pts or f.get("up", "N") not in pts):
+        errors.append(f"{where}: weather.dir and up must be compass points {pts}")
     return errors
 
 
@@ -888,4 +901,19 @@ def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_un
     for i, u in enumerate(units):
         if not fits(d, units, i, u, tuple(f["size"]), field):
             errors.append(f"{where}: unit {u['name']} does not fit where it stands")
+    return errors
+
+
+def _wind_errors(d: Data) -> list[str]:
+    """weather.yaml: eight wind points, each climate's prevailing winds summing to 100, and
+    whole-number reach and into_wind for each wind."""
+    WX, errors = d.weather, []
+    if len(WX["wind_points"]) != 8:
+        errors.append("weather.yaml: wind_points needs eight compass points, N first, clockwise")
+    for cid, cl in WX.get("climates", {}).items():
+        if len(cl.get("wind_from", [])) != 8 or sum(cl.get("wind_from", [])) != 100:
+            errors.append(f"weather.yaml: climate {cid} wind_from needs eight % summing to 100")
+    for w in WX.get("winds", []):
+        if not all(isinstance(w.get(k), int) and w[k] >= 0 for k in ("reach", "into_wind")):
+            errors.append(f"weather.yaml: wind {w.get('id')} needs whole-number reach and into_wind")
     return errors

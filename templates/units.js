@@ -60,7 +60,7 @@ function weaponReach(wid, dist){                   // as gravewounds.combat.weap
   for (let i = 0; i < w.range.length; i++) if (dist <= w.range[i]) return { band: FD.combat.range[i].band, penalty: FD.combat.range[i].penalty };
   return null;
 }
-const fieldRange = (wid, hexes) => weaponReach(wid, hexes * UD.range_scale);
+const fieldRange = (wid, hexes, reach = 0) => weaponReach(wid, hexes * UD.range_scale * 100 / (100 + reach));   // reach: the wind's % on the range bands
 function countBlows(n, rng){ const whole = Math.floor(n); return whole + (rng.random() < n - whole ? 1 : 0) }
 const newTally = () => ({ blows: 0, missed: 0, parried: 0, stopped: 0, hits: 0, light: 0, serious: 0, critical: 0, down: 0, dead: 0, hurt: {} });
 function noteHurt(t, sev, h, down){             // a wounded man: severity, death clock, infection risk, down or not
@@ -107,9 +107,9 @@ function melee(att, dfd, men, rng, opts = {}){
   const shift = dfn > 0 ? dfn - base : -1000;      // a hero's defence moves with his unit's; none if it has none
   return blows(att, dfd, countBlows(men * tempo, rng), atk, dfn, rng, { exposed: opts.exposed || [], shift });
 }
-function volley(att, dfd, men, hexes, rng, opts = {}){   // opts: {penalty, factor, exposed}
+function volley(att, dfd, men, hexes, rng, opts = {}){   // opts: {penalty, factor, exposed, reach (the wind's % on the range bands)}
   const penalty = opts.penalty || 0, factor = opts.factor ?? 1;
-  const band = fieldRange(att.weapon, hexes);
+  const band = fieldRange(att.weapon, hexes, opts.reach || 0);
   if (!band) return null;
   const S = UD.missile, shots = men * (S.rate[att.weapon] ?? S.default_rate) * S.tempo * factor;
   const atk = attackOf(att) - band.penalty - penalty;
@@ -291,7 +291,9 @@ function nearestAhead(weapon, front, fv, hexes, field){  // [distance, front hex
       const s = cube(h);
       if ((c[0] - s[0]) * fv[0] + (c[1] - s[1]) * fv[1] + (c[2] - s[2]) * fv[2] <= 0) continue;
       const dist = hdist(h, t);
-      if ((best === null || dist < best[0]) && reaches(weapon, dist) && !shotWeather(field, weapon, dist).blocked) best = [dist, h, t];
+      if (best !== null && dist >= best[0]) continue;
+      const wx = shotWeather(field, weapon, dist, h, t);
+      if (!wx.blocked && reaches(weapon, dist, wx.reach || 0)) best = [dist, h, t];
     }
   }
   return best;
@@ -305,8 +307,8 @@ function volleys(units, field = null){            // [{att, dfd, men, dist, cove
     const rows = footprint(u), men = menByHex(u), per = form(u).abreast * Math.min(UD.shoot_ranks, form(u).ranks);
     let shooters = 0;
     for (let k = 0; k < rows[0].length; k++) shooters += Math.min(per, men[k]);
-    const wx = shotWeather(field, u.weapon, best[0]);
-    out.push({ att: i, dfd: best[1], men: shooters, dist: best[0], cover: coverAt(field, best[2], best[3]), penalty: wx.penalty, misfire: wx.misfire });
+    const wx = shotWeather(field, u.weapon, best[0], best[2], best[3]);
+    out.push({ att: i, dfd: best[1], men: shooters, dist: best[0], cover: coverAt(field, best[2], best[3]), penalty: wx.penalty, misfire: wx.misfire, reach: wx.reach || 0, from: best[2], to: best[3] });
   });
   return out;
 }
@@ -323,8 +325,9 @@ function across(field, u, h, x, reach){           // [blocked: only reach 2 over
   const it = hexItem(field.works, x), stk = !!(u.mounted && it && specOf("hex", it).no_horse);
   return [m.blocked, pen, stk];
 }
-const shotWeather = (field, weapon, dist) => (isGun(weapon) ? gunWeather(field, dist) : weatherAttack(field?.weather || null, weapon, dist * UD.range_scale));
-const reaches = (weapon, dist) => (isGun(weapon) ? dist <= UD.artillery.range : !!fieldRange(weapon, dist));   // a gun shoots to the artillery range
+const upOf = field => field?.up || "N";          // the compass point at the top of the field map
+const shotWeather = (field, weapon, dist, h = null, t = null) => (isGun(weapon) ? gunWeather(field, dist, h, t) : weatherAttack(field?.weather || null, weapon, dist * UD.range_scale, h, t, upOf(field)));
+const reaches = (weapon, dist, reach = 0) => (isGun(weapon) ? dist <= UD.artillery.range : !!fieldRange(weapon, dist, reach));   // a gun shoots to the artillery range
 function coverAt(field, h, t){                    // % off shots from h at t: the best of the works' and the ground's
   if (!field) return 0;
   const [cols, rows] = fieldSize(field);
@@ -364,13 +367,13 @@ function strikeAll(us, table, rng, acc, log, field){
 function shootAll(us, table, rng, acc, log, field){
   for (const v of volleys(us, field)){
     const b = us[v.dfd], exposed = exposure(b, false, true), mf = form(b).missile_factor;
-    let t = takeHurt(b, volley(sideOfUnit(us[v.att], table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100, exposed, penalty: v.cover + v.penalty }));
+    let t = takeHurt(b, volley(sideOfUnit(us[v.att], table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100, exposed, penalty: v.cover + v.penalty, reach: v.reach }));
     tallyLoss(acc, v, t);
     log.push(...logged({ kind: "volley", ...v }, t));
     for (const hero of heroesOf(us[v.att], ["ranged"])){
-      const wx = shotWeather(field, hero.weapon, v.dist);
-      if (!fieldRange(hero.weapon, v.dist) || wx.blocked) continue;
-      const hopts = { factor: mf * (100 - wx.misfire) / 100, exposed, penalty: v.cover + wx.penalty };
+      const wx = shotWeather(field, hero.weapon, v.dist, v.from, v.to);
+      if (wx.blocked || !fieldRange(hero.weapon, v.dist, wx.reach)) continue;
+      const hopts = { factor: mf * (100 - wx.misfire) / 100, exposed, penalty: v.cover + wx.penalty, reach: wx.reach };
       t = takeHurt(b, volley(heroSide(us[v.att], hero, table), sideOfUnit(b, table), UD.heroes.tempo, v.dist, rng, hopts));
       tallyLoss(acc, v, t);
       log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: v.att, dfd: v.dfd, dist: v.dist }, t));
@@ -584,10 +587,12 @@ const isGun = w => (UD.artillery?.guns || []).includes(w);
 const isBattery = u => isGun(u.weapon);
 const meleeWeapon = u => (isBattery(u) ? UD.artillery.crew_weapon : u.weapon);
 const gunsServed = u => Math.min(Math.ceil((u.start ?? u.men) / UD.artillery.crew), Math.ceil(Math.max(0, u.men) / UD.artillery.crew));
-function gunWeather(field, dist){                 // no laying guns on what cannot be seen; the wind as on firearms
-  const out = { blocked: null, penalty: 0, misfire: 0 }, w = field?.weather;
+function gunWeather(field, dist, h = null, t = null){   // no laying guns on what cannot be seen (less with rain or snow in the gunners' faces); the wind as on firearms
+  const out = { blocked: null, penalty: 0, misfire: 0, reach: 0 }, w = field?.weather;
   if (!w) return out;
-  const cond = WXD.conditions[w.cond], vis = cond.visibility;
+  const cond = WXD.conditions[w.cond];
+  let vis = cond.visibility;
+  if (vis !== null && vis !== undefined && cond.precip !== "none" && windLie(w, h, t, upOf(field)) === "against") vis = Math.floor(vis * WXD.driven_sight / 100);
   if (vis !== null && vis !== undefined && dist * UD.range_scale > vis){ out.blocked = `${cond.name}: the guns cannot be laid on what cannot be seen.`; return out }
   out.penalty = WXD.winds.find(x => x.id === w.wind).firearm;
   return out;
@@ -599,7 +604,7 @@ function cannonades(units, field = null){         // [{att, dfd, guns, dist, sho
     if (!A || !isBattery(u) || out_(u) || u.limbered || u.limbering || u.abandoned || inContact(units, occ, i)) return;
     const best = target(units, i, field);
     if (!best) return;
-    const wx = gunWeather(field, best[0]);
+    const wx = gunWeather(field, best[0], best[2], best[3]);
     out.push({ att: i, dfd: best[1], guns: gunsServed(u), dist: best[0], shot: best[0] <= A.canister_to ? "canister" : "round", cover: coverAt(field, best[2], best[3]), penalty: wx.penalty });
   });
   return out;

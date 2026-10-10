@@ -597,20 +597,71 @@ def deep_going(d: Data, ground: dict | None) -> int:
     return d.weather["battle"]["deep_step"] if ground.get("mud", 0) >= deep or ground.get("snow", 0) >= deep else 0
 
 
-def weather_attack(d: Data, weather: dict | None, wid: str, dist: int) -> dict:
-    """What the weather does to a missile attack at `dist` hexes: {blocked (a reason, or
-    None), penalty (% off), misfire (% chance), notes}. Close combat is not affected."""
-    out = {"blocked": None, "penalty": 0, "misfire": 0, "notes": []}
+WIND_VECTORS = {0: (0.0, -1.0), 1: (math.sqrt(0.5), -math.sqrt(0.5)), 2: (1.0, 0.0), 3: (math.sqrt(0.5), math.sqrt(0.5)),
+                4: (0.0, 1.0), 5: (-math.sqrt(0.5), math.sqrt(0.5)), 6: (-1.0, 0.0), 7: (-math.sqrt(0.5), -math.sqrt(0.5))}
+
+
+def wind_lie(d: Data, weather: dict | None, frm, to, up: str = "N") -> str | None:
+    """How a shot from hex frm to hex to lies to the wind: "with" (the wind behind it, within
+    45 degrees), "against" (into it, within 45 degrees), "across", or None (calm, no direction
+    or no hexes). up: the compass point at the top of the map."""
+    pts = d.weather.get("wind_points", [])
+    if not weather or not frm or not to or weather.get("dir") not in pts or weather.get("wind") == "calm":
+        return None
+    k = (pts.index(weather["dir"]) - pts.index(up) + 4) % 8          # where it blows to, on the page
+    wx, wy = WIND_VECTORS[k]
+    q1, q2 = frm[0] - (frm[1] - (frm[1] & 1)) / 2, to[0] - (to[1] - (to[1] & 1)) / 2
+    dr = to[1] - frm[1]
+    dx, dy = math.sqrt(3) * ((q2 - q1) + dr / 2), 1.5 * dr
+    n = math.hypot(dx, dy)
+    if n == 0:
+        return None
+    dot = dx * wx + dy * wy
+    if dot >= math.sqrt(0.5) * n - 1e-9:
+        return "with"
+    if dot <= -math.sqrt(0.5) * n + 1e-9:
+        return "against"
+    return "across"
+
+
+def _sight(d: Data, cond: dict, lie: str | None, out: dict):
+    """How far a shooter can see to aim (battle hexes, None for clear): less with rain or snow
+    driven into his face."""
+    vis = cond.get("visibility")
+    if vis is not None and lie == "against" and cond["precip"] != "none":
+        vis = vis * d.weather["driven_sight"] // 100
+        out["notes"].append(f"{cond['precip']} in their faces")
+    return vis
+
+
+def _wind_reach(w: dict, wind: dict, lie: str | None, out: dict) -> None:
+    """With the wind a bow, crossbow or sling reaches further; into it, less and harder."""
+    if lie not in ("with", "against") or w.get("ignition") or not wind.get("reach"):
+        return
+    out["reach"] = wind["reach"] if lie == "with" else -wind["reach"]
+    out["notes"].append(f"{'with' if lie == 'with' else 'into'} the wind, reach {out['reach']:+d}%")
+    if lie == "against" and wind.get("into_wind"):
+        out["penalty"] += wind["into_wind"]
+        out["notes"].append(f"into the wind -{wind['into_wind']}%")
+
+
+def weather_attack(d: Data, weather: dict | None, wid: str, dist: int, frm=None, to=None, up: str = "N") -> dict:
+    """What the weather does to a missile attack at `dist` hexes, from hex frm to hex to (for
+    the wind's direction): {blocked (a reason, or None), penalty (% off), misfire (% chance),
+    reach (% on the range bands: with the wind +, into it -), notes}. Close combat is not affected."""
+    out = {"blocked": None, "penalty": 0, "misfire": 0, "reach": 0, "notes": []}
     w = d.weapons[wid]
     if not weather or not d.weather or "range" not in w:
         return out
     WX = d.weather
     cond = WX["conditions"][weather["cond"]]
-    vis = cond.get("visibility")
+    lie = wind_lie(d, weather, frm, to, up)
+    vis = _sight(d, cond, lie, out)
     if vis is not None and dist > vis:
         out["blocked"] = f"{cond['name']}: no one can be seen to aim at beyond {vis} hexes ({vis * 2} m)."
         return out
     wind = next(x for x in WX["winds"] if x["id"] == weather["wind"])
+    _wind_reach(w, wind, lie, out)
     if w.get("string"):
         p = WX["battle"]["string_wet"][cond["wet"]]
         if p:

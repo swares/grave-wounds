@@ -142,6 +142,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
           <button class="small" id="btn-wx-roll" title="Roll this day's weather again">Roll again</button>
           <label class="inline muted">GM: <select id="sel-wxc" aria-label="Weather"></select></label>
           <select id="sel-wxw" aria-label="Wind" style="width:auto"></select>
+          <select id="sel-wxd" aria-label="Wind from" style="width:auto"></select>
           <label class="inline muted">Low <span class="t-unit"></span> <input id="in-wxlo" type="number" step="0.5" aria-label="Low temperature"></label>
           <label class="inline muted">High <span class="t-unit"></span> <input id="in-wxhi" type="number" step="0.5" aria-label="High temperature"></label>
           <button class="small" id="btn-rest" title="End the selected force's day: the night's rest, then the next morning">Rest until next morning</button>
@@ -295,8 +296,18 @@ function rollWeather(m, day, prev, rolls){
   let wind = pickRow(WXD.winds, rolls[4]).id;
   const floorWind = WXD.conditions[cond].min_wind;
   if (floorWind && ids.indexOf(wind) < ids.indexOf(floorWind)) wind = floorWind;
-  return { cond, wind, high, low, anomaly };
+  const out = { cond, wind, high, low, anomaly };
+  if (rolls.length > 6) out.dir = windDir(cl, prev, rolls[5], rolls[6]);   // two more rolls: the wind's direction
+  return out;
 }
+function windDir(cl, prev, keepRoll, pickRoll){   // the day before's on keepRoll <= wind_keep, else picked from the climate's prevailing winds
+  const pts = WXD.wind_points;
+  if (prev && pts.includes(prev.dir) && keepRoll <= WXD.wind_keep) return prev.dir;
+  let acc = 0;
+  for (let i = 0; i < pts.length; i++){ acc += cl.wind_from[i]; if (pickRoll <= acc) return pts[i] }
+  return pts.at(-1);
+}
+const WIND_NAMES = { N: "north", NE: "north-east", E: "east", SE: "south-east", S: "south", SW: "south-west", W: "west", NW: "north-west" };
 function nextGround(prev, w){
   const G = WXD.ground, g = prev ? { ...prev } : { mud: 0, snow: 0, flood: 0 }, cond = w.cond;
   const precip = WXD.conditions[cond].precip;
@@ -710,7 +721,7 @@ function dayWeather(day){                    // rolls, in order, any day not yet
   for (let n = 1; n <= day; n++){
     if (X.days[n]) continue;
     const prev = X.days[n - 1];
-    const w = rollWeather(m, n, prev ? prev.w : null, [roll100(), roll100(), roll100(), roll100(), roll100()]);
+    const w = rollWeather(m, n, prev ? prev.w : null, [roll100(), roll100(), roll100(), roll100(), roll100(), roll100(), roll100()]);
     X.days[n] = { w, ground: nextGround(prev ? prev.ground : null, w) };
   }
   return X.days[day];
@@ -722,7 +733,7 @@ function regroundFrom(day){                  // the ground follows from the weat
 function rerollDay(day){
   const X = wxState(), prev = X.days[day - 1];
   dayWeather(day);
-  X.days[day].w = rollWeather(curMap(), day, prev ? prev.w : null, [roll100(), roll100(), roll100(), roll100(), roll100()]);
+  X.days[day].w = rollWeather(curMap(), day, prev ? prev.w : null, [roll100(), roll100(), roll100(), roll100(), roll100(), roll100(), roll100()]);
   regroundFrom(day);
 }
 function setDay(day, patch){
@@ -754,7 +765,7 @@ function groundText(g){
   if (g.flood) bits.push("fords flooded");
   return bits.join(", ") || "dry going";
 }
-const wxLine = d => { const w = d.w, c = WXD.conditions[w.cond], wn = WXD.winds.find(x => x.id === w.wind); return `${c.name}, ${wn.name.toLowerCase()}, ${tempOut(w.low)}\u2013${tempOut(w.high)} ${tempUnit()}` };
+const wxLine = d => { const w = d.w, c = WXD.conditions[w.cond], wn = WXD.winds.find(x => x.id === w.wind), from = w.dir && w.wind !== "calm" ? ` from the ${WIND_NAMES[w.dir]}` : ""; return `${c.name}, ${wn.name.toLowerCase()}${from}, ${tempOut(w.low)}\u2013${tempOut(w.high)} ${tempUnit()}` };
 // The night: rest by camp and weather, fatigue for the day, and the next morning.
 function endDay(f){
   const today = dayWeather(f.day), camp = campHere(f);
@@ -1192,6 +1203,7 @@ function renderWeather(){
   $("#wx-climate").textContent = cl.name + (m.climate_shift ? ", " + plus + fmtCDelta(m.climate_shift) : "");
   $("#sel-wxc").innerHTML = Object.entries(WXD.conditions).map(([k, c]) => `<option value="${k}" ${d.w.cond === k ? "selected" : ""}>${c.name}</option>`).join("");
   $("#sel-wxw").innerHTML = WXD.winds.map(x => `<option value="${x.id}" ${d.w.wind === x.id ? "selected" : ""}>${x.name}</option>`).join("");
+  $("#sel-wxd").innerHTML = `<option value="">(no direction)</option>` + WXD.wind_points.map(p => `<option value="${p}" ${d.w.dir === p ? "selected" : ""}>from the ${WIND_NAMES[p]}</option>`).join("");
   $("#in-wxhi").value = tempOut(d.w.high); $("#in-wxlo").value = tempOut(d.w.low);
   document.querySelectorAll(".t-unit").forEach(x => { x.textContent = tempUnit() });
   ["#in-wxhi", "#in-wxlo"].forEach(id => { $(id).step = isUS() ? "1" : "0.5" });
@@ -1370,7 +1382,7 @@ function init(){
     const foes = p.attackers.map(byId).map(brief), allies = p.allies.map(byId).map(brief);
     try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", force: { name: dfd.name, side: dfd.side, men: fitOf(dfd).fit, type: dfd.type, fatigue: dfd.fatigue || 0 },
       camp: st.camp ? st.camp.kind : null, campLabour: st.camp ? st.camp.labour || null : null, party: columnOf(dfd).length > 1 ? colType(dfd) : null, done: st.done, built: st.pct, hauled: !nearWoods(m, dfd.pos), foes, allies, place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day),
-      weather: { cond: today.w.cond, wind: today.w.wind, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){}
+      weather: { cond: today.w.cond, wind: today.w.wind, dir: today.w.dir, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){}
     location.href = "roller.html";
   };
   const sendField = (p, battlefield) => {    // the fight on the field map: on open ground the GM splits each force into units; on a battlefield they stand as drawn up
@@ -1381,7 +1393,7 @@ function init(){
     const camp = lay ? { kind: st.camp.kind, frac: st.done === null ? null : st.done / (st.camp.labour || 1), hauled: !nearWoods(m, dfd.pos), party: columnOf(dfd).length > 1 ? colType(dfd) : null } : null;
     try{ localStorage.setItem("gravewounds-field-handoff", JSON.stringify({ from: "travel", battle: `${S.mapId}:${p.day}:${p.used}:${dfd.id}`, mapId: S.mapId, map: m.name || S.mapId,
       place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day), start: { day: p.day, used: p.used }, forces, camp, battlefield,
-      weather: { cond: today.w.cond, wind: today.w.wind, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){ /* storage off: the field map opens without the forces */ }
+      weather: { cond: today.w.cond, wind: today.w.wind, dir: today.w.dir, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){ /* storage off: the field map opens without the forces */ }
     location.href = "field.html";
   };
   $("#btn-fight").onclick = () => sendFight(0);
@@ -1401,6 +1413,7 @@ function init(){
   $("#btn-wx-roll").onclick = () => { rerollDay(dayNow()); S.msg = ""; afterWx() };
   $("#sel-wxc").onchange = e => { setDay(dayNow(), { cond: e.target.value }); S.msg = ""; afterWx() };
   $("#sel-wxw").onchange = e => { setDay(dayNow(), { wind: e.target.value }); afterWx() };
+  $("#sel-wxd").onchange = e => { setDay(dayNow(), { dir: e.target.value || undefined }); afterWx() };
   $("#in-wxhi").onchange = e => setNum("high", e.target);
   $("#in-wxlo").onchange = e => setNum("low", e.target);
   $("#btn-rest").onclick = () => {             // the whole column rests

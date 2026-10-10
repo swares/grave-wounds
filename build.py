@@ -551,7 +551,7 @@ def field_bundle(d) -> dict:
                     for l in d.locations},
         "track": {"steps": d.disease["steps"], "wounds": d.disease["wounds"]},
         "works": d.works,
-        "weather": {k: d.weather[k] for k in ("winds", "conditions", "battle", "ground")},
+        "weather": {k: d.weather[k] for k in ("winds", "conditions", "battle", "ground", "wind_points", "driven_sight")},
         "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
         "fields": {fid: {"name": f["name"], "sides": f["sides"], "table": f["table"], "field": battlefield(d, fid), "units": f.get("units", []),
                          "travel": f.get("travel")}
