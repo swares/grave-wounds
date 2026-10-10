@@ -9,10 +9,10 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **Unit combat, step 2: the field map.** Units as blocks of hexes on a 10 m field map,
-  with movement, facing, contact and range, flank and rear; set-up from the travel map;
-  heroes fighting individually in a unit's front rank; the wounded carried to camp. Step 1
-  (rules and engine) is in [units.md](units.md).
+- **Unit combat, the rest of step 2.** The field map has units, movement, contact, range,
+  flank and rear, morale and the rout. Still to do: set-up from the travel map; heroes
+  fighting individually in a unit's front rank; the wounded carried to camp; works, terrain
+  and weather on the field map. See [units.md](units.md).
 - **One clock for all forces.** Each force on the travel map keeps its own clock (kept on
   purpose for now). A shared clock would let forces meet on the road.
 - **Cover and elevation on the battle map**, beyond what works give.

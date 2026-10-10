@@ -4418,7 +4418,7 @@ Penalties add up; each total is capped at -60%.
 
 ## Unit combat
 
-**Unit combat (the rank and file, on the field map):** one exchange is about a minute. In melee the front rank of each hex touching the enemy strikes (10 men a hex face; reach-2 weapons add the second rank). 9% of them make a telling attempt each exchange; archers loose their rate a minute, 3.3% of the shots aimed at a man. Each attempt is an individual attack against the unit's attack %, parried on its defence % (not from flank or rear, nor against missiles), then location, severity from the margin, and armour, as for one fighter.
+**Unit combat (the rank and file, on the field map):** one exchange is about a minute. In melee the front rank of each hex touching the enemy strikes (10 men a hex face in close order; reach-2 weapons add the second rank). 9% of them make a telling attempt each exchange; archers loose their rate a minute, 3.3% of the shots aimed at a man. Each attempt is an individual attack against the unit's attack %, parried on its defence % (not from flank or rear, nor against missiles), then location, severity from the margin, and armour, as for one fighter.
 
 Light wounds and grazes fight on. Serious and critical wounds call for a stop check against the unit's Nerve; a failure is down. A wound fatal within rounds kills. Flank +20, rear +30, a mounted charge +20 at x2 tempo, shaken -10.
 
