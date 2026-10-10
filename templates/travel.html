@@ -813,7 +813,8 @@ function routeRows(L, m){                     // the summary's route lines for t
   const rest = L.path.slice(L.index), sch = schedule(m, rest, ft, L.day, L.used, { hpdList: hpdList(L.day), ground: g, speed: sp }), end = sch[sch.length - 1];
   let hours = 0;
   for (let i = 0; i + 1 < rest.length; i++) hours += stepHours(m, rest[i], rest[i + 1], ft, g, sp);
-  return `<dt>To</dt><dd>${esc(where(rest[rest.length - 1]))}${L.waypoints.length > 1 ? ` (${L.waypoints.length} waypoints)` : ""}</dd>`
+  const wps = L.waypoints.length > 1 ? " (" + L.waypoints.length + " waypoints)" : "";
+  return `<dt>To</dt><dd>${esc(where(rest[rest.length - 1]))}${wps}</dd>`
     + `<dt>Distance</dt><dd>${+((rest.length - 1) * m.hex_km).toFixed(1)} km</dd>`
     + `<dt>Marching</dt><dd>${fmtH(hours)}</dd>`
     + `<dt>Arrives</dt><dd>${dateText(end.day, true)}, ${clock(end.used, end.day)}${nightsText(end.day - L.day)}</dd>`;
