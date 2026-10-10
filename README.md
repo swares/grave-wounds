@@ -19,7 +19,7 @@ morale. Each fighter has a side, a leader flag and a Nerve rating. A hex battle 
 the fighters' positions, with movement, leaving contact, and weapon reach and range. The
 one-page rules are in [docs/combat.md](docs/combat.md).
 
-**Travel map:** `dist/travel.html` marches forces from camp to the field across 1 km hexes
+**Travel map:** `dist/travel.html` marches forces from camp to the field across 0.6-mile (1 km) hexes
 of terrain, with planned routes, marching days and terrain painting. See
 [docs/travel.md](docs/travel.md).
 
@@ -43,11 +43,16 @@ long they stay. The sick slow the march, leave fewer men to dig and fight, and s
 **Unit combat:** for battles of hundreds, the rank and file fight as units, resolved in
 bulk each minute through the same wound tables. Morale decides most fights, and the rout
 does most of the killing. Named characters still fight one by one. The field map,
-`dist/field.html`, puts units on 10 m hexes: each side moves, then every melee and volley
+`dist/field.html`, puts units on 11-yard (10 m) hexes: each side moves, then every melee and volley
 is resolved together, with flank and rear, morale and the pursuit, on painted ground
 with the battle map's works and weather. A fight on the travel
 map can be fought there, and its wounded go back to camp, where wound fever can take
 them. See [docs/units.md](docs/units.md).
+
+**Units:** every page has a **US | Metric** switch in its header (US by default), shared by
+the roller, the travel map and the field map and remembered in the browser. The rules and
+data stay metric inside; the printed tables and these docs give US units with metric in
+brackets.
 
 **Backlog:** known gaps and deferred work are listed in [docs/backlog.md](docs/backlog.md).
 

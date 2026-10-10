@@ -4272,7 +4272,7 @@ Penalties add up; each total is capped at -60%.
 
 ### Battle map
 
-**Scale:** one hex is 2 m and a round is 6 seconds. The map has pointy-top hexes; the roller's default is 24 x 16.
+**Scale:** one hex is 2.2 yd (2 m) and a round is 6 seconds. The map has pointy-top hexes; the roller's default is 24 x 16.
 
 **A fighter's turn:** stay in place, **advance** up to 4 hexes and still attack, or **run** up to 12 hexes and not attack. He may pass through friends but not stop on them, and cannot enter an enemy's hex.
 
@@ -4290,10 +4290,10 @@ Penalties add up; each total is capped at -60%.
 | Spear / lance | reach 2 |
 | Bill (English bill, hooked polearm) | reach 2 |
 | Poleaxe (axe, hammer and spike) | reach 1 |
-| Bow (war arrows) | 15 / 40 / 90 hexes (30 / 80 / 180 m) |
-| Longbow (English war bow, bodkin and broadhead arrows) | 20 / 60 / 125 hexes (40 / 120 / 250 m) |
-| Crossbow (bolts) | 15 / 50 / 100 hexes (30 / 100 / 200 m) |
-| Sling (stones, lead bullets) | 10 / 30 / 60 hexes (20 / 60 / 120 m) |
+| Bow (war arrows) | 15 / 40 / 90 hexes (33 / 87 / 197 yd; 30 / 80 / 180 m) |
+| Longbow (English war bow, bodkin and broadhead arrows) | 20 / 60 / 125 hexes (44 / 131 / 273 yd; 40 / 120 / 250 m) |
+| Crossbow (bolts) | 15 / 50 / 100 hexes (33 / 109 / 219 yd; 30 / 100 / 200 m) |
+| Sling (stones, lead bullets) | 10 / 30 / 60 hexes (22 / 66 / 131 yd; 20 / 60 / 120 m) |
 | Dagger / knife | reach 1 |
 | Bayonet (musket or rifle) | reach 1 |
 | Sharpened entrenching tool (spade) | reach 1 |
@@ -4303,23 +4303,23 @@ Penalties add up; each total is capped at -60%.
 | Punch | reach 1 |
 | Kick | reach 1 |
 | Elbow or knee | reach 1 |
-| Matchlock musket | 20 / 40 / 75 hexes (40 / 80 / 150 m) |
-| Wheellock pistol or carbine (cavalry) | 3 / 8 / 15 hexes (6 / 16 / 30 m) |
-| Smoothbore musket (Brown Bess, Charleville) | 25 / 50 / 100 hexes (50 / 100 / 200 m) |
-| Flintlock rifle (Pennsylvania, Baker, Jäger) | 50 / 100 / 150 hexes (100 / 200 / 300 m) |
-| Flintlock pistol | 3 / 8 / 15 hexes (6 / 16 / 30 m) |
+| Matchlock musket | 20 / 40 / 75 hexes (44 / 87 / 164 yd; 40 / 80 / 150 m) |
+| Wheellock pistol or carbine (cavalry) | 3 / 8 / 15 hexes (7 / 17 / 33 yd; 6 / 16 / 30 m) |
+| Smoothbore musket (Brown Bess, Charleville) | 25 / 50 / 100 hexes (55 / 109 / 219 yd; 50 / 100 / 200 m) |
+| Flintlock rifle (Pennsylvania, Baker, Jäger) | 50 / 100 / 150 hexes (109 / 219 / 328 yd; 100 / 200 / 300 m) |
+| Flintlock pistol | 3 / 8 / 15 hexes (7 / 17 / 33 yd; 6 / 16 / 30 m) |
 | Smoothbore artillery (round shot, canister, grape, shell) | off-map (GM decides) |
-| Rifle-musket (Minie ball) | 50 / 150 / 250 hexes (100 / 300 / 500 m) |
+| Rifle-musket (Minie ball) | 50 / 150 / 250 hexes (109 / 328 / 547 yd; 100 / 300 / 500 m) |
 | Artillery (canister, shell fragments) | off-map (GM decides) |
-| Revolver | 5 / 12 / 25 hexes (10 / 24 / 50 m) |
-| Service rifle (bolt or semi-auto, 1914-53) | 100 / 200 / 300 hexes (200 / 400 / 600 m) |
-| Assault rifle (M16, AK) | 50 / 150 / 250 hexes (100 / 300 / 500 m) |
-| Rifle, armour-piercing ammunition | 100 / 200 / 300 hexes (200 / 400 / 600 m) |
-| Machine gun | 100 / 300 / 500 hexes (200 / 600 / 1000 m) |
-| Pistol or submachine gun | 25 / 50 / 100 hexes (50 / 100 / 200 m) |
-| Hand grenade | 5 / 10 / 15 hexes (10 / 20 / 30 m) |
+| Revolver | 5 / 12 / 25 hexes (11 / 26 / 55 yd; 10 / 24 / 50 m) |
+| Service rifle (bolt or semi-auto, 1914-53) | 100 / 200 / 300 hexes (219 / 437 / 656 yd; 200 / 400 / 600 m) |
+| Assault rifle (M16, AK) | 50 / 150 / 250 hexes (109 / 328 / 547 yd; 100 / 300 / 500 m) |
+| Rifle, armour-piercing ammunition | 100 / 200 / 300 hexes (219 / 437 / 656 yd; 200 / 400 / 600 m) |
+| Machine gun | 100 / 300 / 500 hexes (219 / 656 / 1094 yd; 200 / 600 / 1000 m) |
+| Pistol or submachine gun | 25 / 50 / 100 hexes (55 / 109 / 219 yd; 50 / 100 / 200 m) |
+| Hand grenade | 5 / 10 / 15 hexes (11 / 22 / 33 yd; 10 / 20 / 30 m) |
 | Mortar, rocket or artillery | off-map (GM decides) |
-| RPG (rocket-propelled grenade) | 50 / 100 / 150 hexes (100 / 200 / 300 m) |
+| RPG (rocket-propelled grenade) | 50 / 100 / 150 hexes (109 / 219 / 328 yd; 100 / 200 / 300 m) |
 | Mine, booby trap or IED | off-map (GM decides) |
 | Punji stake | off-map (GM decides) |
 | Fragments, unspecified (shell, grenade, mine) | off-map (GM decides) |
@@ -4356,23 +4356,23 @@ Penalties add up; each total is capped at -60%.
 
 **Calendar and daylight:** each map has a start date (Julian or Gregorian), a latitude and a climate. The march starts 1 hour after sunrise and stops 1 before sunset, up to 8 hours.
 
-**Weather:** each day is rolled from the climate's monthly normals, wet and dry spells tending to last (40% persistence). Wet days fall as snow when the high is 2 °C or less. The GM can change any day.
+**Weather:** each day is rolled from the climate's monthly normals, wet and dry spells tending to last (40% persistence). Wet days fall as snow when the high is 36 °F (2 °C) or less. The GM can change any day.
 
 **Ground:** rain builds mud and snow lies, wearing off in dry or mild weather; heavy rain floods fords for two days. Mud and snow slow the march (see the table below); deep mud or snow costs +1 movement per hex in battle.
 
 **Rest and fatigue:** the night's rest starts from the camp's and drops a step for each point of hardship (wet, cold) beyond its shelter. Fatigue changes each night: heat or cold on a march of 4 hours or more, 6 hours in deep mud or snow, and the night (bad +1, poor 0, fair -1, good -2).
 
-| Weather | Missile sight (hexes) | Bows, crossbows | Firearms | Night hardship |
+| Weather | Missile sight | Bows, crossbows | Firearms | Night hardship |
 |---|---|---|---|---|
 | Fair | clear | - | - | 0 |
 | Overcast | clear | - | - | 0 |
-| Fog | 25 | - | - | 0 |
-| Rain | 150 | -10% | may misfire | 1 |
-| Heavy rain | 75 | -20% | may misfire | 2 |
-| Storm | 50 | -20% | may misfire | 2 |
-| Snow | 75 | -10% | may misfire | 1 |
-| Heavy snow | 40 | -10% | may misfire | 2 |
-| Blizzard | 15 | -20% | may misfire | 3 |
+| Fog | 25 hexes, 55 yd (50 m) | - | - | 0 |
+| Rain | 150 hexes, 328 yd (300 m) | -10% | may misfire | 1 |
+| Heavy rain | 75 hexes, 164 yd (150 m) | -20% | may misfire | 2 |
+| Storm | 50 hexes, 109 yd (100 m) | -20% | may misfire | 2 |
+| Snow | 75 hexes, 164 yd (150 m) | -10% | may misfire | 1 |
+| Heavy snow | 40 hexes, 87 yd (80 m) | -10% | may misfire | 2 |
+| Blizzard | 15 hexes, 33 yd (30 m) | -20% | may misfire | 3 |
 
 | Ignition | Dry | Wet | Very wet |
 |---|---|---|---|
@@ -4407,13 +4407,17 @@ Penalties add up; each total is capped at -60%.
 
 | Climate |  | J | F | M | A | M | J | J | A | S | O | N | D |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| North-west Europe, maritime | high/low | 6/1 | 7/1 | 9/2 | 12/4 | 15/7 | 18/10 | 20/12 | 20/12 | 17/10 | 13/7 | 9/4 | 7/2 |
+| North-west Europe, maritime | high/low °F | 43/34 | 45/34 | 48/36 | 54/39 | 59/45 | 64/50 | 68/54 | 68/54 | 63/50 | 55/45 | 48/39 | 45/36 |
+|  | (°C) | 6/1 | 7/1 | 9/2 | 12/4 | 15/7 | 18/10 | 20/12 | 20/12 | 17/10 | 13/7 | 9/4 | 7/2 |
 |  | wet days | 13 | 10 | 11 | 10 | 10 | 9 | 10 | 10 | 10 | 12 | 12 | 12 |
-| Central and eastern Europe, continental | high/low | 1/-5 | 3/-4 | 8/-1 | 14/3 | 19/8 | 22/11 | 24/13 | 24/13 | 19/9 | 13/4 | 6/0 | 2/-3 |
+| Central and eastern Europe, continental | high/low °F | 34/23 | 37/25 | 46/30 | 57/37 | 66/46 | 72/52 | 75/55 | 75/55 | 66/48 | 55/39 | 43/32 | 36/27 |
+|  | (°C) | 1/-5 | 3/-4 | 8/-1 | 14/3 | 19/8 | 22/11 | 24/13 | 24/13 | 19/9 | 13/4 | 6/0 | 2/-3 |
 |  | wet days | 9 | 8 | 8 | 8 | 9 | 10 | 10 | 9 | 8 | 7 | 8 | 9 |
-| Mediterranean and Levant coast | high/low | 18/9 | 19/9 | 21/11 | 25/14 | 28/17 | 30/21 | 32/23 | 32/24 | 31/22 | 28/19 | 24/14 | 19/11 |
+| Mediterranean and Levant coast | high/low °F | 64/48 | 66/48 | 70/52 | 77/57 | 82/63 | 86/70 | 90/73 | 90/75 | 88/72 | 82/66 | 75/57 | 66/52 |
+|  | (°C) | 18/9 | 19/9 | 21/11 | 25/14 | 28/17 | 30/21 | 32/23 | 32/24 | 31/22 | 28/19 | 24/14 | 19/11 |
 |  | wet days | 10 | 9 | 6 | 3 | 1 | 0 | 0 | 0 | 1 | 3 | 6 | 9 |
-| Hot desert and steppe | high/low | 16/4 | 19/6 | 24/10 | 30/15 | 37/21 | 42/24 | 44/26 | 44/25 | 41/21 | 34/16 | 24/9 | 18/5 |
+| Hot desert and steppe | high/low °F | 61/39 | 66/43 | 75/50 | 86/59 | 99/70 | 108/75 | 111/79 | 111/77 | 106/70 | 93/61 | 75/48 | 64/41 |
+|  | (°C) | 16/4 | 19/6 | 24/10 | 30/15 | 37/21 | 42/24 | 44/26 | 44/25 | 41/21 | 34/16 | 24/9 | 18/5 |
 |  | wet days | 4 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 0 | 1 | 3 | 4 |
 
 ## Unit combat
@@ -4424,7 +4428,7 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **Unit morale:** after an exchange a unit checks if it lost the exchange, has 25% of its men down, lost 10% in the exchange, or was struck in flank or rear: d100 against Nerve, +20 while steady, +10 with a leader, -20 if he is down, -20 at half strength, -20 if flanked, -5 a man it lost more than it put down (at most -30). Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +20, no parry, x2 tempo.
 
-**Ground and works on the field map:** open ground (move 1); rough ground (move 2); woods (move 2, cover -20%); marsh (move 3, no horses); high ground (move 1, -10% striking up at it). Works are the battle map's, along the 10 m hex sides: only reach-2 weapons strike over a palisade, wall or barred gate, from the front rank; striking up a bank, ditch or wall costs its height; a volley takes the best cover where it lands. A unit ordered to breach puts half its front rank to hacking at the work in front (a 10 m side takes 5 times a 2 m side's breach figure). The battle map's weather applies.
+**Ground and works on the field map:** open ground (move 1); rough ground (move 2); woods (move 2, cover -20%); marsh (move 3, no horses); high ground (move 1, -10% striking up at it). Works are the battle map's, along the 11 yd (10 m) hex sides: only reach-2 weapons strike over a palisade, wall or barred gate, from the front rank; striking up a bank, ditch or wall costs its height; a volley takes the best cover where it lands. A unit ordered to breach puts half its front rank to hacking at the work in front (a field-map side takes 5 times a battle-map side's breach figure). The battle map's weather applies.
 
 **Heroes in units:** a named fighter in the front rank makes 3 times a ranker's telling attempts with his own attack, and blows on the front fall on him 2 times as often as on a ranker there; a shooting hero looses 3 times a ranker's aimed shots. His wounds use the full rules and his own stop check (a failure: down for the battle). A leader adds his unit's leader modifier while he is up.
 
@@ -4467,7 +4471,7 @@ Men at serious or worse do not dig or fight. Grave and deadly cases go on litter
 
 ## Travel
 
-**Travel map:** hexes are usually 1 km. A force marches 8 hours a day from 08:00 at its type's road speed. Crossing from one hex to the next takes the average of the two terrains' time multipliers; rivers and lakes are crossed only at a ford or bridge.
+**Travel map:** hexes are usually 0.6 mi (1 km). A force marches 8 hours a day from 08:00 at its type's road speed. Crossing from one hex to the next takes the average of the two terrains' time multipliers; rivers and lakes are crossed only at a ford or bridge.
 
 A force stops for the night rather than start a hex it cannot finish that day. Wagons cannot enter forest, marsh, mountains or heath.
 
@@ -4475,22 +4479,22 @@ Speeds are for a small, fit band. A large army's column made less ground a day; 
 
 **Marching together:** forces on one side within a hex can march as a column behind a leader. The column keeps out of ground any of them cannot enter, moves at its slowest and most tired force's pace, keeps one clock, and makes one camp sized for all its men, with every man digging.
 
-| Terrain | Time | On foot km/day | Mounted km/day | Baggage wagons km/day |
+| Terrain | Time | On foot mi (km) a day | Mounted mi (km) a day | Baggage wagons mi (km) a day |
 |---|---|---|---|---|
-| Road | x1 | 32 | 48 | 24 |
-| Open ground | x1.5 | 21 | 32 | 16 |
-| Farmland | x1.5 | 21 | 32 | 16 |
-| Heath | x1.75 | 18 | 27 | - |
-| Forest | x2.5 | 13 | 19 | - |
-| Hills | x2 | 16 | 24 | 12 |
-| Mountains | x4 | 8 | 12 | - |
-| Marsh | x3 | 11 | 16 | - |
+| Road | x1 | 20 (32) | 30 (48) | 15 (24) |
+| Open ground | x1.5 | 13 (21) | 20 (32) | 10 (16) |
+| Farmland | x1.5 | 13 (21) | 20 (32) | 10 (16) |
+| Heath | x1.75 | 11 (18) | 17 (27) | - |
+| Forest | x2.5 | 8 (13) | 12 (19) | - |
+| Hills | x2 | 10 (16) | 15 (24) | 7 (12) |
+| Mountains | x4 | 5 (8) | 7 (12) | - |
+| Marsh | x3 | 7 (11) | 10 (16) | - |
 | River | impassable | - | - | - |
-| Ford | x2 | 16 | 24 | 12 |
-| Bridge | x1 | 32 | 48 | 24 |
+| Ford | x2 | 10 (16) | 15 (24) | 7 (12) |
+| Bridge | x1 | 20 (32) | 30 (48) | 15 (24) |
 | Lake or sea | impassable | - | - | - |
-| Village | x1 | 32 | 48 | 24 |
-| Town | x1 | 32 | 48 | 24 |
+| Village | x1 | 20 (32) | 30 (48) | 15 (24) |
+| Town | x1 | 20 (32) | 30 (48) | 15 (24) |
 
 ## Armour
 

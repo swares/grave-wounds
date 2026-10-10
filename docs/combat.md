@@ -57,7 +57,7 @@ The battle map is at the top of the roller page. Once an attacker and a defender
 chosen, its bar has **Roll the hit** and, after a hit, **Apply hit**, with the last roll in a
 few words; the Strike panel below keeps the attack and defence figures and the full result.
 
-One hex is 2 m and a round is 6 seconds. On his turn a fighter may:
+One hex is about 2 yards (2 m) and a round is 6 seconds. On his turn a fighter may:
 
 - **Stay** where he is.
 - **Advance** up to 4 hexes and still attack.

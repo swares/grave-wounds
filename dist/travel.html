@@ -106,6 +106,9 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
 .campmk.fortified .ring{stroke-width:2.6}.campmk.staked .ring{stroke-dasharray:2 2}
 .campmk text{font:700 7px var(--mono);fill:var(--ink);text-anchor:middle;paint-order:stroke;stroke:var(--panel);stroke-width:2.5px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.units-toggle{display:inline-flex;gap:0;vertical-align:middle;margin-left:14px}
+.units-toggle button{border-radius:0;margin-left:-1px}.units-toggle button:first-child{border-radius:3px 0 0 3px}.units-toggle button:last-child{border-radius:0 3px 3px 0}
+.units-toggle button[aria-pressed="true"]{background:var(--steel);color:var(--panel);border-color:var(--steel)}
 </style>
 <style id="terrain-css"></style>
 
@@ -113,9 +116,9 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
   <header>
     <div>
       <h1>Grave Wounds Travel Map</h1>
-      <p class="sub">March your forces from camp to the field. Each hex is a kilometre; terrain sets how long it takes. Plan a route with waypoints, then march it an hour or a day at a time.</p>
+      <p class="sub">March your forces from camp to the field. Each hex is <span id="hex-size">a kilometre</span>; terrain sets how long it takes. Plan a route with waypoints, then march it an hour or a day at a time.</p>
     </div>
-    <nav><a href="roller.html">Wound roller</a><a href="field.html">Field map</a><a href="../index.html">Start page</a></nav>
+    <nav><span class="units-toggle" id="units-toggle" title="Units for distances, speeds and temperatures"></span><a href="roller.html">Wound roller</a><a href="field.html">Field map</a><a href="../index.html">Start page</a></nav>
   </header>
 
   <div class="grid">
@@ -139,8 +142,8 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
           <button class="small" id="btn-wx-roll" title="Roll this day's weather again">Roll again</button>
           <label class="inline muted">GM: <select id="sel-wxc" aria-label="Weather"></select></label>
           <select id="sel-wxw" aria-label="Wind" style="width:auto"></select>
-          <label class="inline muted">Low <input id="in-wxlo" type="number" step="0.5" aria-label="Low, degrees C"></label>
-          <label class="inline muted">High <input id="in-wxhi" type="number" step="0.5" aria-label="High, degrees C"></label>
+          <label class="inline muted">Low <span class="t-unit"></span> <input id="in-wxlo" type="number" step="0.5" aria-label="Low temperature"></label>
+          <label class="inline muted">High <span class="t-unit"></span> <input id="in-wxhi" type="number" step="0.5" aria-label="High temperature"></label>
           <button class="small" id="btn-rest" title="End the selected force's day: the night's rest, then the next morning">Rest until next morning</button>
           <label class="inline check muted"><input id="chk-plague" type="checkbox"> Plague in the region</label>
         </div>
@@ -435,6 +438,44 @@ function hexDistance(a, b){
 }
 const hkey = h => h[0] + "," + h[1];
 function edgeKey(a, b){ const [x, y] = [a, b].slice().sort((p, q) => p[1] - q[1] || p[0] - q[0]); return hkey(x) + "|" + hkey(y) }
+/* US or metric units on every page (roller, travel map, field map). The rules and data stay
+   metric; only what is shown and typed changes. One setting for all pages, remembered in
+   the browser, US unless the reader picks metric. build.py puts this file into each page at
+   its MEASURE_JS marker. */
+const UNITS_KEY = "gravewounds-units";
+let unitSystem = "us";
+try{ unitSystem = localStorage.getItem(UNITS_KEY) === "metric" ? "metric" : "us" }catch(e){ unitSystem = "us" /* storage off: US */ }
+const isUS = () => unitSystem === "us";
+const roundTo = (x, places) => { const p = 10 ** places; return Math.round(x * p) / p };
+// A distance in metres: yards in US units.
+function fmtM(m, places = 0){ return isUS() ? `${roundTo(m * 1.0936133, places)} yd` : `${roundTo(m, places)} m` }
+// A distance in kilometres: miles in US units.
+function fmtKm(km, places = 1){ return isUS() ? `${roundTo(km * 0.62137119, places)} mi` : `${roundTo(km, places)} km` }
+// A speed in km/h: mph in US units.
+function fmtKmh(kmh, places = 1){ return isUS() ? `${roundTo(kmh * 0.62137119, places)} mph` : `${roundTo(kmh, places)} km/h` }
+// A temperature in degrees C: degrees F in US units.
+const tempOut = c => (isUS() ? roundTo(c * 9 / 5 + 32, 0) : c);
+const tempIn = v => (isUS() ? roundTo((v - 32) * 5 / 9, 1) : v);
+const tempUnit = () => (isUS() ? "°F" : "°C");
+function fmtC(c){ return `${tempOut(c)} ${tempUnit()}` }
+// A temperature change (a climate shift): no 32 offset.
+function fmtCDelta(c){ return isUS() ? `${roundTo(c * 9 / 5, 1)} °F` : `${c} °C` }
+// The US | Metric switch in a page's header. onChange redraws the page.
+function unitToggle(el, onChange){
+  const draw = () => {
+    el.innerHTML = ["us", "metric"].map(u => `<button type="button" class="small" data-units="${u}" aria-pressed="${unitSystem === u}">${u === "us" ? "US" : "Metric"}</button>`).join("");
+  };
+  el.addEventListener("click", e => {
+    const b = e.target.closest("button[data-units]");
+    if (!b || b.dataset.units === unitSystem) return;
+    unitSystem = b.dataset.units;
+    try{ localStorage.setItem(UNITS_KEY, unitSystem) }catch(err){ /* storage off: the choice lasts while the page is open */ }
+    draw();
+    onChange();
+  });
+  draw();
+}
+
 /* Camp layout and works labour, shared by the roller's battle map and the travel map.
    Same rules as gravewounds/combat.py (party_of, camp_radius, camp_map_size, camp_works, works_labour).
    A force type may be a column's party: [[type, men], ...].
@@ -878,7 +919,7 @@ function groundText(g){
   if (g.flood) bits.push("fords flooded");
   return bits.join(", ") || "dry going";
 }
-const wxLine = d => { const w = d.w, c = WXD.conditions[w.cond], wn = WXD.winds.find(x => x.id === w.wind); return `${c.name}, ${wn.name.toLowerCase()}, ${w.low}\u2013${w.high} \u00b0C` };
+const wxLine = d => { const w = d.w, c = WXD.conditions[w.cond], wn = WXD.winds.find(x => x.id === w.wind); return `${c.name}, ${wn.name.toLowerCase()}, ${tempOut(w.low)}\u2013${tempOut(w.high)} ${tempUnit()}` };
 // The night: rest by camp and weather, fatigue for the day, and the next morning.
 function endDay(f){
   const today = dayWeather(f.day), camp = campHere(f);
@@ -886,7 +927,7 @@ function endDay(f){
   const before = f.fatigue || 0, after = fatigueAfter(before, f.marched || 0, today.w, today.ground, rest), L = WXD.fatigue.levels;
   const change = after === before ? "" : ` \u2014 ${L[before].name.toLowerCase()} \u2192 ${L[after].name.toLowerCase()}`;
   const where_ = camp ? WK.camps[camp.kind].name.toLowerCase() : "no camp";
-  f.log.unshift(`Night of ${dateText(f.day, true)}: ${WXD.rest_levels[rest]} rest (${where_}; ${WXD.conditions[today.w.cond].name.toLowerCase()}, low ${today.w.low} \u00b0C)${change}.`);
+  f.log.unshift(`Night of ${dateText(f.day, true)}: ${WXD.rest_levels[rest]} rest (${where_}; ${WXD.conditions[today.w.cond].name.toLowerCase()}, low ${fmtC(today.w.low)})${change}.`);
   healthNight(f, today, camp);
   f.fatigue = after; f.day += 1; f.used = 0; f.marched = 0;
 }
@@ -1017,8 +1058,7 @@ function march(sel, hours){                    // the whole column marches toget
   const passed = f.legs.filter(i => i > from && i <= f.index).length;
   if (passed){ f.waypoints = f.waypoints.slice(passed); f.legs = f.legs.slice(passed).map(i => i - f.index); f.path = f.path.slice(f.index); f.index = 0 }
   if (arrived){ f.path = null; f.legs = []; f.waypoints = []; f.index = 0 }
-  const km = +(steps * curMap().hex_km).toFixed(1);
-  const what = steps ? `marched ${km} km to ${where(f.pos)}` : "could not finish the next hex in the time; halted";
+  const what = steps ? `marched ${fmtKm(steps * curMap().hex_km)} to ${where(f.pos)}` : "could not finish the next hex in the time; halted";
   const halt = f.used >= hpdOf(f.day) - 1e-9 && !arrived ? " Halts for the night." : "";
   const line = `${dateText(f.day, true)}, ${clock(u0, f.day)}\u2013${clock(f.used, f.day)}: ${what}${arrived ? " \u2014 arrived" : ""}.${halt}`;
   f.log.unshift(line);
@@ -1137,7 +1177,8 @@ function renderMap(){
   const VW = W * (cols + 0.5), VH = 1.5 * R * (rows - 1) + 2 * R;
   $("#map").innerHTML = `<svg viewBox="0 0 ${VW.toFixed(1)} ${VH.toFixed(1)}" style="max-width:${Math.round(VW * 1.5)}px">${hx}${over}</svg>`;
   $("#map").className = `mapbox ${S.mode}`;
-  $("#map-scale").textContent = `${cols} × ${rows} hexes · ${m.hex_km} km a hex`;
+  $("#map-scale").textContent = `${cols} × ${rows} hexes · ${fmtKm(m.hex_km, 2)} a hex`;
+  $("#hex-size").textContent = isUS() ? `about ${fmtKm(m.hex_km, 2)}` : `${fmtKm(m.hex_km)}`;
 }
 function sickText(f){                        // who is sick, of what and how badly
   const by = {};
@@ -1176,13 +1217,13 @@ function forceHead(f){                        // who, where and how fast; a colu
   const today = `today ${fmtH(hpd)} of marching from ${clock(0, f.day)}.`;
   if (col.length < 2){
     const ft = FT[f.type], no = ft.cannot_enter ? ` Cannot enter ${ft.cannot_enter.map(t => TT[t].name.toLowerCase()).join(", ")}.` : "";
-    return `<b>${esc(f.name)}</b> at ${esc(where(f.pos))}. ${esc(ft.name)}: ${ft.kmh} km/h on a road${slow}; ${today}${no}`;
+    return `<b>${esc(f.name)}</b> at ${esc(where(f.pos))}. ${esc(ft.name)}: ${fmtKmh(ft.kmh)} on a road${slow}; ${today}${no}`;
   }
   const kmh = columnKmh(colType(L)), slowest = col.find(o => FT[o.type].kmh === kmh);
   const barred = [...new Set(col.flatMap(o => FT[o.type].cannot_enter || []))].map(t => TT[t].name.toLowerCase());
   const role = L === f ? "leads" : "marches in";
   return `<b>${esc(f.name)}</b> at ${esc(where(f.pos))} ${role} ${esc(colName(L))}: ${esc(namesList(col.map(o => o.name)))}, ${colMen(L)} men. `
-    + `The column moves at ${kmh} km/h on a road (${esc(slowest.name)}'s pace), at its most tired force's speed; ${today}`
+    + `The column moves at ${fmtKmh(kmh)} on a road (${esc(slowest.name)}'s pace), at its most tired force's speed; ${today}`
     + (barred.length ? ` It keeps out of ${namesList(barred)}.` : "");
 }
 function routeRows(L, m){                     // the summary's route lines for the column's leader
@@ -1195,7 +1236,7 @@ function routeRows(L, m){                     // the summary's route lines for t
   const est = end.day > lastKnown ? ` (the ground after ${dateText(lastKnown, true)} is a guess from that day's)` : "";
   const wps = L.waypoints.length > 1 ? " (" + L.waypoints.length + " waypoints)" : "";
   return `<dt>To</dt><dd>${esc(where(rest[rest.length - 1]))}${wps}</dd>`
-    + `<dt>Distance</dt><dd>${+((rest.length - 1) * m.hex_km).toFixed(1)} km</dd>`
+    + `<dt>Distance</dt><dd>${fmtKm((rest.length - 1) * m.hex_km)}</dd>`
     + `<dt>Marching</dt><dd>${fmtH(hours)}</dd>`
     + `<dt>Arrives</dt><dd>${dateText(end.day, true)}, ${clock(end.used, end.day)}${nightsText(end.day - L.day)}${est}</dd>`;
 }
@@ -1256,8 +1297,8 @@ function fightButton(f){                     // a fight needs an enemy marched t
   if (!p.attackers.length){
     b.textContent = "Set up a fight";
     b.disabled = true;
-    const km = TER.fight_within * curMap().hex_km;
-    $("#fight-note").textContent = `No enemy force is within ${km} km of ${f.name}. March one up first: select it, and in Plan route click ${f.name} to send it there.`;
+    const near = fmtKm(TER.fight_within * curMap().hex_km);
+    $("#fight-note").textContent = `No enemy force is within ${near} of ${f.name}. March one up first: select it, and in Plan route click ${f.name} to send it there.`;
     return;
   }
   const st = campStatus(dfd, p), here = st.camp;
@@ -1292,11 +1333,12 @@ function renderWeather(){
   $("#wx-date").textContent = `${dateText(day)} (${m.calendar === "julian" ? "Julian" : "Gregorian"} calendar)`;
   $("#wx-sun").textContent = `Sunrise ${hhmm(wd.sunrise)}, sunset ${hhmm(wd.sunset)} \u00b7 marching ${hhmm(wd.start)}\u2013${hhmm(wd.start + wd.hours)}`;
   $("#wx-today").textContent = `${wxLine(d)}${d.w.gm ? " (set by the GM)" : ""} \u00b7 ${groundText(d.ground)}`;
-  const sign = m.climate_shift > 0 ? "+" : "";
-  $("#wx-climate").textContent = cl.name + (m.climate_shift ? ", " + sign + m.climate_shift + " \u00b0C" : "");
+  $("#wx-climate").textContent = cl.name + (m.climate_shift ? ", " + (m.climate_shift > 0 ? "+" : "") + fmtCDelta(m.climate_shift) : "");
   $("#sel-wxc").innerHTML = Object.entries(WXD.conditions).map(([k, c]) => `<option value="${k}" ${d.w.cond === k ? "selected" : ""}>${c.name}</option>`).join("");
   $("#sel-wxw").innerHTML = WXD.winds.map(x => `<option value="${x.id}" ${d.w.wind === x.id ? "selected" : ""}>${x.name}</option>`).join("");
-  $("#in-wxhi").value = d.w.high; $("#in-wxlo").value = d.w.low;
+  $("#in-wxhi").value = tempOut(d.w.high); $("#in-wxlo").value = tempOut(d.w.low);
+  document.querySelectorAll(".t-unit").forEach(x => { x.textContent = tempUnit() });
+  ["#in-wxhi", "#in-wxlo"].forEach(id => { $(id).step = isUS() ? "1" : "0.5" });
   const X = wxState(), past = Object.keys(X.days).map(Number).filter(n => n < day).sort((a, b) => b - a).slice(0, 6);
   $("#wx-past").innerHTML = past.map(n => `<li>${dateText(n, true)}: ${esc(wxLine(X.days[n]))}</li>`).join("");
 }
@@ -1309,7 +1351,7 @@ function render(){
   save();
 }
 function renderLegend(){
-  const sp = Object.values(FT).map(f => `${f.name.toLowerCase()} ${f.kmh} km/h`).join(", ");
+  const sp = Object.values(FT).map(f => `${f.name.toLowerCase()} ${fmtKmh(f.kmh)}`).join(", ");
   $("#legend").innerHTML = Object.values(TT).map(t => `<span><span class="sw t-${t.id}"></span>${esc(t.name)} <span class="muted">${t.cost === null ? "impassable" : t.cost === 1 ? "road pace" : `×${t.cost}`}</span></span>`).join("")
     + `<span class="muted" style="grid-column:1/-1">Times are against road speed (${sp}). A step costs the average of the two hexes' terrain.</span>`;
 }
@@ -1397,6 +1439,7 @@ function applyFieldResult(){                 // a battle fought on the field map
 function init(){
   restore();
   applyFieldResult();
+  unitToggle($("#units-toggle"), () => render());
   terrainCss(); renderLegend();
   $("#sel-map").innerHTML = Object.values(DATA.maps).map(m => `<option value="${esc(m.id)}">${esc(m.name)}</option>`).join("");
   $("#sel-map").value = S.mapId;
@@ -1495,7 +1538,7 @@ function init(){
   };
   const setNum = (key, el) => {
     const v = +el.value;
-    if (Number.isFinite(v)) setDay(dayNow(), { [key]: v });
+    if (Number.isFinite(v)) setDay(dayNow(), { [key]: tempIn(v) });
     afterWx();
   };
   $("#btn-wx-roll").onclick = () => { rerollDay(dayNow()); S.msg = ""; afterWx() };

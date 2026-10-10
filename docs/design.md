@@ -216,10 +216,10 @@ Later eras add their own diet diseases: beriberi on polished-rice rations, pella
 | Fair | Full pace | Normal fatigue and water | - |
 | Hot | Full pace | Water doubled; marching in armour costs double fatigue; an Endurance check each hot march or a step of fatigue from heat exhaustion, and heatstroke on a bad failure | Flux +10 on the outbreak roll |
 | Rain | Three-quarters pace; unmade roads turn to mud, half pace the next day, back to normal the day after | Without shelter, the cold-and-wet -10 on resist and recovery rolls | Matchlocks and flintlocks misfire on 01-30, bowstrings left strung slacken (-10 and shorter range); sight and hearing shortened |
-| Storm | Half pace; mud as rain | As rain, and no fires | Gunpowder useless in the open; sight a few tens of metres |
+| Storm | Half pace; mud as rain | As rain, and no fires | Gunpowder useless in the open; sight a few tens of yards (metres) |
 | Cold | Full pace, frozen roads firm | Without warm clothing, fatigue one and a half times; a night unsheltered needs an Endurance check or chills, frostbite to hands and feet, and a pneumonia roll | Typhus +10; ague 0 |
 | Snow | Half pace, a quarter in drifts; slow to clear as Aftermath!'s snow days | As cold | As cold; tracks easy to follow |
-| Fog | Three-quarters pace off the road; easy to get lost | Damp: as rain if it lasts all day | Sight about 20 metres; surprise much more likely |
+| Fog | Three-quarters pace off the road; easy to get lost | Damp: as rain if it lasts all day | Sight about 20 yards (20 m); surprise much more likely |
 
 History gives the weather its weight: chroniclers say rain slackened the Genoese crossbow strings at Crécy in 1346, the French advanced through deep mud at Agincourt in 1415, and rain-soaked ground delayed the start of Waterloo in 1815.
 

@@ -104,15 +104,18 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 legend{padding:0}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.units-toggle{display:inline-flex;gap:0;vertical-align:middle;margin-left:14px}
+.units-toggle button{border-radius:0;margin-left:-1px}.units-toggle button:first-child{border-radius:3px 0 0 3px}.units-toggle button:last-child{border-radius:0 3px 3px 0}
+.units-toggle button[aria-pressed="true"]{background:var(--steel);color:var(--panel);border-color:var(--steel)}
 </style>
 
 <div class="wrap">
   <header>
     <div>
       <h1>Grave Wounds Field Map</h1>
-      <p class="sub">Battles of hundreds: the rank and file fight as units, a minute an exchange, each hex 10 m. Set up the units, then each exchange side A moves, side B moves, and every fight and volley is resolved together through the wound tables. Morale decides most fights; the rout does most of the killing.</p>
+      <p class="sub">Battles of hundreds: the rank and file fight as units, a minute an exchange, each hex <span id="hex-size">10 m</span>. Set up the units, then each exchange side A moves, side B moves, and every fight and volley is resolved together through the wound tables. Morale decides most fights; the rout does most of the killing.</p>
     </div>
-    <nav><a href="roller.html">Wound roller</a><a href="travel.html">Travel map</a><a href="../index.html">Start page</a></nav>
+    <nav><span class="units-toggle" id="units-toggle" title="Units for distances and ranges"></span><a href="roller.html">Wound roller</a><a href="travel.html">Travel map</a><a href="../index.html">Start page</a></nav>
   </header>
 
   <div class="grid">
@@ -253,6 +256,7 @@ function hexDistance(a, b){
   const cu = ([c, r]) => { const q = c - (r - (r & 1)) / 2; return [q, r, -q - r] }, x = cu(a), y = cu(b);
   return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2]));
 }
+/*__MEASURE_JS__*/
 /*__WORKS_JS__*/
 /*__CAMP_JS__*/
 /*__UNITS_JS__*/
@@ -376,7 +380,7 @@ function logLines(log, ex){
 }
 function unitLineText(l, nm){                     // a volley, a melee or a rout strike
   const dead = l.dead ? " (" + l.dead + " dead)" : "", fallen = `${l.hits} hit, ${l.down} down${dead}`;
-  if (l.kind === "volley") return `${nm(l.att)} shoot at ${nm(l.dfd)}, ${l.dist * FD.units.hex_m} m${shotNotes(l)}: ${l.blows} aimed shots, ${fallen}.`;
+  if (l.kind === "volley") return `${nm(l.att)} shoot at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${l.blows} aimed shots, ${fallen}.`;
   if (l.kind === "rout") return `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.`;
   const where = l.situation === "front" ? "" : " in the " + l.situation, up = l.penalty ? ", attacking up −" + l.penalty + "%" : "";
   return `${nm(l.att)} strike ${nm(l.dfd)}${where}, ${l.men} men${up}: ${l.blows} telling blows, ${fallen}.`;
@@ -555,7 +559,7 @@ function toggleGate(h, n){
 }
 function weatherNote(){                           // what today's weather and ground do
   const w = S.field.weather, c = WXD.conditions[w.cond], wind = WXD.winds.find(x => x.id === w.wind), out = [];
-  if (c.visibility) out.push(`no aiming beyond ${Math.floor(c.visibility / FD.units.range_scale)} hexes (${c.visibility * FD.battle_hex_m} m)`);
+  if (c.visibility) out.push(`no aiming beyond ${Math.floor(c.visibility / FD.units.range_scale)} hexes (${fmtM(c.visibility * FD.battle_hex_m)})`);
   if (WXD.battle.string_wet[c.wet]) out.push(`bows and crossbows −${WXD.battle.string_wet[c.wet]}% (wet strings)`);
   if (wind.missile) out.push(`missiles −${wind.missile}% (${wind.name.toLowerCase()})`);
   if (c.wet) out.push("firearms may misfire");
@@ -680,7 +684,8 @@ function renderMap(){
   }
   const units = S.units.map(unitSvg).join(""), W = HW * (SIZE[0] + 0.5), H = 1.5 * R * (SIZE[1] - 1) + 2 * R;
   $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}">${hx}${worksSvg()}${units}</svg>`;
-  $("#map-scale").textContent = `${SIZE[0]} × ${SIZE[1]} hexes · ${FD.units.hex_m} m a hex · an exchange is about a minute`;
+  $("#map-scale").textContent = `${SIZE[0]} × ${SIZE[1]} hexes · ${fmtM(FD.units.hex_m)} a hex · an exchange is about a minute`;
+  $("#hex-size").textContent = fmtM(FD.units.hex_m);
 }
 function unitMeta(u){
   if (u.state === "fled") return "fled";
@@ -700,7 +705,7 @@ function renderSel(){
   $("#btn-breach").textContent = u?.breach ? "Stop breaching" : "Breach the works";
   if (!u){ $("#sel-info").innerHTML = ""; return }
   const f = FD.units.formations[u.formation], w = FD.weapons[u.weapon];
-  const reach = "range" in w ? `range ${w.range.map(x => Math.round(x / FD.units.range_scale)).join(" / ")} hexes` : `reach ${w.reach || 1}`;
+  const reach = "range" in w ? `range ${w.range.map(x => Math.round(x / FD.units.range_scale)).join(" / ")} hexes, to ${fmtM(w.range.at(-1) * FD.battle_hex_m)}` : `reach ${w.reach || 1}`;
   const down = u.down ? ", " + u.down + " down (" + u.dead + " dead)" : "";
   $("#sel-info").innerHTML = `<dt>Men</dt><dd>${u.men} of ${u.start}${down}</dd>`
     + `<dt>State</dt><dd>${u.state}</dd>`
@@ -796,6 +801,7 @@ function readHandoff(){                           // a fight sent from the trave
 function init(){
   restore();
   HANDOFF = readHandoff();
+  unitToggle($("#units-toggle"), () => render());
   fillChoices();
   fillTools();
   $("#map").addEventListener("click", e => {

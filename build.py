@@ -202,7 +202,7 @@ def move_rules(d) -> list[str]:
     imp = lambda xs: f"the {lst(xs)} impairment{'s' if len(xs) > 1 else ''}"
     bands = ", ".join(f"{b['band']} {'-%d%%' % b['penalty'] if b['penalty'] else '+0'}" for b in CB["range"])
     return [
-        f"<b>Scale:</b> one hex is {M['hex_m']} m and a round is 6 seconds. The map has pointy-top hexes; the roller's default is {M['map']['cols']} x {M['map']['rows']}.",
+        f"<b>Scale:</b> one hex is {yd(M['hex_m'])} and a round is 6 seconds. The map has pointy-top hexes; the roller's default is {M['map']['cols']} x {M['map']['rows']}.",
         f"<b>A fighter's turn:</b> stay in place, <b>advance</b> up to {M['advance']} hexes and still attack, or <b>run</b> up to {M['run']} hexes and not attack. "
         "He may pass through friends but not stop on them, and cannot enter an enemy's hex.",
         f"<b>Wounds and movement:</b> {imp(M['halved_by'])} halve both distances (round down); {imp(M['crawl_by'])} leave only a crawl of "
@@ -244,10 +244,10 @@ def _ground_rules(d) -> list[str]:
             + (["no horses"] if g.get("no_horse") else [])
         parts.append(f"{g['name'].lower()} ({', '.join(bits)})")
     return [
-        "<b>Ground and works on the field map:</b> " + "; ".join(parts) + ". Works are the battle map's, along the 10 m hex sides: "
+        "<b>Ground and works on the field map:</b> " + "; ".join(parts) + f". Works are the battle map's, along the {yd(d.units['hex_m'])} hex sides: "
         "only reach-2 weapons strike over a palisade, wall or barred gate, from the front rank; striking up a bank, ditch or wall costs its height; "
         "a volley takes the best cover where it lands. A unit ordered to breach puts half its front rank to hacking at the work in front "
-        f"(a 10 m side takes {d.units['hex_m'] / d.wounds['combat']['move']['hex_m']:g} times a 2 m side's breach figure). The battle map's weather applies.",
+        f"(a field-map side takes {d.units['hex_m'] / d.wounds['combat']['move']['hex_m']:g} times a battle-map side's breach figure). The battle map's weather applies.",
     ]
 
 
@@ -335,7 +335,7 @@ def weather_rules(d) -> list[str]:
         f"<b>Calendar and daylight:</b> each map has a start date (Julian or Gregorian), a latitude and a climate. The march starts "
         f"{DL['start_after_sunrise']:g} hour after sunrise and stops {DL['stop_before_sunset']:g} before sunset, up to {d.terrain['hours_per_day']} hours.",
         f"<b>Weather:</b> each day is rolled from the climate's monthly normals, wet and dry spells tending to last ({int(WX['persistence'] * 100)}% persistence). "
-        f"Wet days fall as snow when the high is {WX['snow_at_or_below']} °C or less. The GM can change any day.",
+        f"Wet days fall as snow when the high is {WX['snow_at_or_below'] * 9 / 5 + 32:.0f} °F ({WX['snow_at_or_below']} °C) or less. The GM can change any day.",
         "<b>Ground:</b> rain builds mud and snow lies, wearing off in dry or mild weather; heavy rain floods fords for two days. "
         "Mud and snow slow the march (see the table below); deep mud or snow costs +1 movement per hex in battle.",
         "<b>Rest and fatigue:</b> the night's rest starts from the camp's and drops a step for each point of hardship (wet, cold) beyond its shelter. "
@@ -346,10 +346,11 @@ def weather_rules(d) -> list[str]:
 
 def weather_tables(d) -> dict:
     WX = d.weather
-    conds = [["Weather", "Missile sight (hexes)", "Bows, crossbows", "Firearms", "Night hardship"]]
+    conds = [["Weather", "Missile sight", "Bows, crossbows", "Firearms", "Night hardship"]]
     for c in WX["conditions"].values():
         sw = WX["battle"]["string_wet"][c["wet"]]
-        conds.append([c["name"], "clear" if c.get("visibility") is None else str(c["visibility"]), f"-{sw}%" if sw else "-",
+        sight = "clear" if c.get("visibility") is None else f"{c['visibility']} hexes, {yd(c['visibility'] * d.wounds['combat']['move']['hex_m'])}"
+        conds.append([c["name"], sight, f"-{sw}%" if sw else "-",
                       "may misfire" if c["wet"] else "-", str(c["hardship"])])
     mis = [["Ignition", "Dry", "Wet", "Very wet"]] + [[k.capitalize(), *[f"{x}%" for x in v]] for k, v in WX["battle"]["misfire"].items()]
     fat = [["Fatigue", "Attack and defence", "Marching speed"]] + [[l["name"], f"-{l['penalty']}%" if l["penalty"] else "-",
@@ -357,7 +358,8 @@ def weather_tables(d) -> dict:
     mon = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"]
     clim = [["Climate", ""] + mon]
     for cl in WX["climates"].values():
-        clim.append([cl["name"], "high/low"] + [f"{h}/{l}" for h, l in zip(cl["high"], cl["low"])])
+        clim.append([cl["name"], "high/low °F"] + [f"{h * 9 / 5 + 32:.0f}/{l * 9 / 5 + 32:.0f}" for h, l in zip(cl["high"], cl["low"])])
+        clim.append(["", "(°C)"] + [f"{h}/{l}" for h, l in zip(cl["high"], cl["low"])])
         clim.append(["", "wet days"] + [str(x) for x in cl["rain"]])
     ground = [["Terrain", "Mud", "Snow"]] + [[t["name"], f"x{d.weather['march']['mud'].get(tid, 100) / 100:g}", f"x{d.weather['march']['snow'].get(tid, 100) / 100:g}"]
                                              for tid, t in d.terrain["terrain"].items() if t["cost"] is not None]
@@ -367,7 +369,7 @@ def weather_tables(d) -> dict:
 def travel_rules(d) -> list[str]:
     T = d.terrain
     return [
-        f"<b>Travel map:</b> hexes are usually 1 km. A force marches {T['hours_per_day']} hours a day from {T['day_starts']:02d}:00 at its type's road speed. "
+        f"<b>Travel map:</b> hexes are usually {mi(1)}. A force marches {T['hours_per_day']} hours a day from {T['day_starts']:02d}:00 at its type's road speed. "
         "Crossing from one hex to the next takes the average of the two terrains' time multipliers; rivers and lakes are crossed only at a ford or bridge.",
         "A force stops for the night rather than start a hex it cannot finish that day. Wagons cannot enter "
         + (lambda xs: ", ".join(xs[:-1]) + " or " + xs[-1] if len(xs) > 1 else "".join(xs))([TT_name(d, t) for t in T["forces"].get("wagons", {}).get("cannot_enter", [])]) + ".",
@@ -382,14 +384,15 @@ def TT_name(d, tid: str) -> str:
 
 
 def travel_rows(d) -> list[list[str]]:
-    """[terrain, time multiplier, km a day for each force type] (whole hexes of that terrain)."""
+    """[terrain, time multiplier, miles (km) a day for each force type] (whole hexes of that terrain)."""
     T = d.terrain
     out = []
     for t in T["terrain"].values():
         row = [t["name"], "impassable" if t["cost"] is None else f"x{t['cost']:g}"]
         for fid, f in T["forces"].items():
             ok = t["cost"] is not None and t["id"] not in f.get("cannot_enter", [])
-            row.append(f"{f['kmh'] * T['hours_per_day'] / t['cost']:.0f}" if ok else "-")
+            km = f["kmh"] * T["hours_per_day"] / t["cost"] if ok else 0
+            row.append(f"{km * 0.62137119:.0f} ({km:.0f})" if ok else "-")
         out.append(row)
     return out
 
@@ -459,7 +462,9 @@ def reach_rows(d) -> list[list[str]]:
         elif "reach" in w:
             v = f"reach {w['reach']}"
         else:
-            v = " / ".join(str(x) for x in w["range"]) + " hexes (" + " / ".join(str(x * d.wounds["combat"]["move"]["hex_m"]) for x in w["range"]) + " m)"
+            hm = d.wounds["combat"]["move"]["hex_m"]
+            v = " / ".join(str(x) for x in w["range"]) + " hexes (" + " / ".join(f"{round(x * hm * 1.0936133)}" for x in w["range"]) \
+                + " yd; " + " / ".join(str(x * hm) for x in w["range"]) + " m)"
         out.append([w["name"], v])
     return out
 
@@ -484,7 +489,19 @@ def travel_bundle(d) -> dict:
     }
 
 
+def yd(m: float) -> str:
+    """A distance in metres as US units with metric in brackets: '27 yd (25 m)'."""
+    y = m * 1.0936133
+    return f"{y:.1f} yd ({m:g} m)" if y < 10 else f"{round(y):g} yd ({m:g} m)"
+
+
+def mi(km: float) -> str:
+    """A distance in kilometres as miles with km in brackets: '0.6 mi (1 km)'."""
+    return f"{km * 0.62137119:.1f} mi ({km:g} km)"
+
+
 CAMP_MARK = "/*__CAMP_JS__*/"
+MEASURE_MARK = "/*__MEASURE_JS__*/"
 
 
 def field_bundle(d) -> dict:
@@ -693,7 +710,7 @@ def markdown(d) -> str:
     if d.terrain["terrain"]:
         ft = d.terrain["forces"]
         out += ["## Travel", ""] + [re.sub("</?b>", "**", x) + "\n" for x in travel_rules(d)]
-        out += ["| Terrain | Time | " + " | ".join(f"{f['name']} km/day" for f in ft.values()) + " |",
+        out += ["| Terrain | Time | " + " | ".join(f"{f['name']} mi (km) a day" for f in ft.values()) + " |",
                 "|---|---|" + "---|" * len(ft)] + ["| " + " | ".join(r) + " |" for r in travel_rows(d)] + [""]
 
     out += ["## Armour", ""] + [f"{i}. {re.sub('<[^>]+>', '**', x)}" for i, x in enumerate(ARMOR_STEPS, 1)]
@@ -1056,7 +1073,7 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
             Spacer(1, 6), KeepTogether([Paragraph("Misfires in the wet", H2), grid(hdr(wt["misfire"]), [1.5 * inch] + [1.0 * inch] * 3, font=8)]),
             Spacer(1, 6), KeepTogether([Paragraph("Fatigue", H2), grid(hdr(wt["fatigue"]), [1.5 * inch, 1.6 * inch, 1.6 * inch], font=8)]),
             Spacer(1, 6), KeepTogether([Paragraph("Mud and snow on the march (time x)", H2), grid(hdr(wt["ground"]), [1.6 * inch, 0.9 * inch, 0.9 * inch], font=8)]),
-            Spacer(1, 6), KeepTogether([Paragraph("Climates (modern normals, °C and days with rain or snow)", H2),
+            Spacer(1, 6), KeepTogether([Paragraph("Climates (modern normals, °F with °C below, and days with rain or snow)", H2),
                                         grid(hdr([wt["climates"][0]] + [[Paragraph(r[0], C)] + r[1:] for r in wt["climates"][1:]]),
                                              [1.6 * inch, 0.6 * inch] + [(W - 2.2 * inch) / 12] * 12, font=6.5)])]
     if d.units:
@@ -1072,7 +1089,7 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
             Spacer(1, 6), grid(drow, [1.1 * inch, 1.5 * inch, 0.75 * inch, W - 5.75 * inch, 1.3 * inch, 1.1 * inch], font=7.5)]
     if d.terrain["terrain"]:
         ft = d.terrain["forces"]
-        trow = [[Paragraph(x, CH) for x in ["Terrain", "Time"] + [f"{f['name']}<br/>km a day" for f in ft.values()]]] + travel_rows(d)
+        trow = [[Paragraph(x, CH) for x in ["Terrain", "Time"] + [f"{f['name']}<br/>mi (km) a day" for f in ft.values()]]] + travel_rows(d)
         story += [PageBreak(), Paragraph("Travel", H1)] + [Paragraph(x, B) for x in travel_rules(d)] + [
                   Spacer(1, 6), Paragraph("Terrain", H2),
                   Paragraph("Km a day across whole hexes of each terrain; a road day is the type's speed times its marching hours.", S), Spacer(1, 3),
@@ -1259,16 +1276,17 @@ def main() -> int:
     html = tpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>"))
     camp_js = (ROOT / "templates" / "camp.js").read_text(encoding="utf-8")
     works_js = (ROOT / "templates" / "works.js").read_text(encoding="utf-8")
-    html = html.replace(CAMP_MARK, camp_js).replace("/*__WORKS_JS__*/", works_js)
+    measure_js = (ROOT / "templates" / "measure.js").read_text(encoding="utf-8")
+    html = html.replace(CAMP_MARK, camp_js).replace("/*__WORKS_JS__*/", works_js).replace(MEASURE_MARK, measure_js)
     html = html.replace("/*__GRAVEWOUNDS_DATA__*/null", json.dumps(b, separators=(",", ":")))
     (DIST / "roller.html").write_text(html, encoding="utf-8")
     tb = travel_bundle(d)
     ttpl = (ROOT / "templates" / "travel.html").read_text(encoding="utf-8")
-    thtml = ttpl.replace(CAMP_MARK, camp_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
+    thtml = ttpl.replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
     (DIST / "travel.html").write_text(thtml, encoding="utf-8")
     units_js = (ROOT / "templates" / "units.js").read_text(encoding="utf-8")
     ftpl = (ROOT / "templates" / "field.html").read_text(encoding="utf-8")
-    fhtml = ftpl.replace("/*__WORKS_JS__*/", works_js).replace(CAMP_MARK, camp_js).replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(field_bundle(d), separators=(",", ":")))
+    fhtml = ftpl.replace("/*__WORKS_JS__*/", works_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(field_bundle(d), separators=(",", ":")))
     (DIST / "field.html").write_text(fhtml, encoding="utf-8")
     (ROOT / "index.html").write_text(index_page(d), encoding="utf-8")
     print("Built:", ", ".join(p.name for p in sorted(DIST.iterdir())), "+ index.html")
