@@ -486,6 +486,7 @@ def travel_bundle(d) -> dict:
         "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
         "maps": {mid: {k: m.get(k) for k in ("id", "name", "hex_km", "rows", "places", "forces",
                                                 "start_date", "calendar", "latitude", "climate", "climate_shift")} for mid, m in d.maps.items()},
+        "battlefields": {fid: {"name": f["name"], **f["travel"]} for fid, f in d.fields.items() if f.get("travel")},
     }
 
 
@@ -535,7 +536,8 @@ def field_bundle(d) -> dict:
         "works": d.works,
         "weather": {k: d.weather[k] for k in ("winds", "conditions", "battle", "ground")},
         "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
-        "fields": {fid: {"name": f["name"], "sides": f["sides"], "table": f["table"], "field": battlefield(d, fid), "units": f.get("units", [])}
+        "fields": {fid: {"name": f["name"], "sides": f["sides"], "table": f["table"], "field": battlefield(d, fid), "units": f.get("units", []),
+                         "travel": f.get("travel")}
                    for fid, f in d.fields.items()},
     }
 

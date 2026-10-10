@@ -283,9 +283,30 @@ Besides open ground, the field map can lay out a real battlefield. Pick it under
 ground, its works and its weather. With *with the armies as drawn up* ticked, it also
 brings the sides, the wound tables and each army's units in their starting places. Every
 unit can still be moved, changed or removed before the battle starts. *New battle* goes
-back to the same battlefield. A battle sent from the travel map keeps its own forces and
-that day's weather: the battlefield brings only the ground and works, and units that no
-longer fit are taken off.
+back to the same battlefield.
+
+**From the travel map.** A battlefield can name a place on a travel map and how close
+counts (`travel` in its file). Agincourt names Azincourt, within 1 hex. When the defender
+of a fight stands that close, the travel page offers the battlefield under **Fight it on**
+and picks it by default. On the field page the battlefield is laid out with that day's
+weather (not the battlefield's own), and each force's fit men are put into the armies as
+drawn up:
+- **Which army.** The defender with its allies, and the attackers, each take the army of
+  their side's name in the battlefield's `travel.sides` (Agincourt: England, then France).
+  A side not named there takes the other army. If neither is named, or both name the same
+  army, the defenders take the first army and the attackers the second.
+- **How many.** Each army's units are scaled to the fit men of the forces standing with it,
+  so 6,000 English fill the English line in the same shape as the battlefield's 5,960. Each
+  unit is drawn from the force with the most men left. A mounted unit comes from a mounted
+  force if there is one; from a force on foot it fights on foot.
+- **The baggage.** Wagon forces stay in reserve unless their army has no other force.
+- **Room.** A unit that no longer fits where it stood (a much bigger force runs off the
+  map) stays in reserve.
+
+The GM can still move, change or remove any unit, or pick open ground instead, which lets
+the units that fit stay. A battle sent from the travel map to open ground can be put on a
+battlefield the same way: the ground and works come, the forces and weather stay, and
+units that no longer fit are taken off.
 
 **Agincourt, 25 October 1415** (`data/fields/agincourt-1415.yaml`). The field is 100 × 80
 hexes, about 1,090 by 760 yards (1,000 by 690 m), with north at the top:
@@ -315,7 +336,9 @@ needed: `node make_agincourt_field.mjs`).
 **A battlefield file** has an `id` and `name`, `sides` (two names), `table`, `size`
 ([cols, rows]) and `weather`. Its `ground` is rows of one letter per hex: `.` open, `r`
 rough, `F` woods, `m` marsh, `h` high ground (the `key` of each kind in `data/units.yaml`).
-`works` has `hexes`, a list of `{type, at: [hexes]}`, and `edges`, a list of `{type, at:
+`travel` (optional) is `{map, place, within, sides}`: the travel map and place it belongs
+to, how many hexes from the place count as there, and the travel-map side names that stand
+with each army. `works` has `hexes`, a list of `{type, at: [hexes]}`, and `edges`, a list of `{type, at:
 [[hex, hex], ...]}` with the first hex the high or inner side. `units` lists `{name, side
 (0 or 1), men, quality, weapon, kit, formation, width, pos (the middle of the front row),
 facing, mounted}`. `python3 -m gravewounds check` makes sure every unit fits where it

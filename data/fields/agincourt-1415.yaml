@@ -16,6 +16,9 @@ id: agincourt-1415
 name: "Agincourt, 25 October 1415"
 sides: ["English", "French"]
 table: towton-1461-all-hits
+# On the travel map: a fight within `within` hexes of this place offers this field. `sides` are
+# the travel-map sides that stand where each army stands here (English first).
+travel: {map: agincourt-1415, place: "Azincourt", within: 1, sides: ["England", "France"]}
 size: [100, 80]
 weather: {cond: overcast, wind: calm, ground: {mud: 3, snow: 0}}
 ground: |

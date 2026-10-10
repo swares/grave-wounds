@@ -26,9 +26,6 @@ When an item is done, delete it here and note it in the pull request that closes
   other conflicts in the tables (Towton, Visby, the Peninsula and later) still play on the
   generic valley and open ground. Each needs the same work: places, rivers and roads drawn
   through public-domain facts, and a battlefield with its armies.
-- **A battle sent from the travel map onto a battlefield.** A fight near Azincourt could
-  offer the Agincourt field. For now the GM picks the battlefield by hand, and the
-  travel map's forces bring only their own units.
 - **Scurvy for forces.** Camp disease covers flux, typhus, typhoid, ague and plague, and
   wound fever for the wounded from the field map. Scurvy needs food tracking (weeks
   without fresh food); it is in the design doc's disease table.

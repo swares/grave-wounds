@@ -841,9 +841,28 @@ def _field_shape_errors(d: Data, f: dict, where: str) -> list[str]:
     cond = (f.get("weather") or {}).get("cond")
     if f.get("weather") and cond not in d.weather.get("conditions", {}):
         errors.append(f"{where}: unknown weather {cond}")
+    errors += _field_travel_errors(d, f, where)
     works = f.get("works") or {}
     for kind, label, known in (("hexes", "hex", d.works.get("hex_works", {})), ("edges", "edge", d.works.get("edge_works", {}))):
         errors += [f"{where}: unknown {label} work {w.get('type')}" for w in works.get(kind, []) if w.get("type") not in known]
+    return errors
+
+
+def _field_travel_errors(d: Data, f: dict, where: str) -> list[str]:
+    """The travel-map link: a known map and place, a reach in hexes, and the two sides."""
+    t = f.get("travel")
+    if t is None:
+        return []
+    m = d.maps.get(t.get("map"))
+    if m is None:
+        return [f"{where}: travel.map {t.get('map')} is not a travel map"]
+    errors = []
+    if t.get("place") not in {p["name"] for p in m.get("places", [])}:
+        errors.append(f"{where}: travel.place {t.get('place')} is not a place on {t['map']}")
+    if not (isinstance(t.get("within"), int) and t["within"] >= 0):
+        errors.append(f"{where}: travel.within must be a whole number of hexes, 0 or more")
+    if len(t.get("sides", [])) != 2:
+        errors.append(f"{where}: travel.sides needs two side names")
     return errors
 
 

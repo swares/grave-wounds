@@ -313,7 +313,57 @@ function fromTravel(h){                            // a battle with the travel m
     log: [], seq: 1, forces: h.forces.map(f => ({ ...f })), from: h, after: null, field: newField(), camp: null, tool: "unit",
     msg: `From the travel map: ${h.place}, ${h.day}, ${h.time}. Split each force into units with Add a unit, then place them.` };
   if (h.weather) S.field.weather = { cond: h.weather.cond, wind: h.weather.wind, ground: { mud: h.weather.ground?.mud || 0, snow: h.weather.ground?.snow || 0 } };
-  if (h.camp && WK.camps[h.camp.kind]?.layout) layCamp(h.camp, def);
+  if (h.battlefield && FD.fields[h.battlefield]) deployOnBattlefield(h.battlefield);
+  else if (h.camp && WK.camps[h.camp.kind]?.layout) layCamp(h.camp, def);
+}
+// A travel-map fight on a battlefield: its ground and works (the day's weather stays), and its
+// armies as drawn up, scaled to the forces' fit men. The defenders (with their allies) and the
+// attackers each take the army of their side's name in the battlefield's travel.sides; a side
+// not named there takes the other army, and if neither is named, or both name the same army,
+// the defenders take the first and the attackers the second. Each unit is drawn from the force of its army with
+// the most men left (a mounted unit from a mounted force if there is one; it fights on foot if
+// its force has no horses). Wagon forces (the baggage) stay in reserve unless their army has
+// no other force. A unit that no longer fits where it stood stays in reserve.
+function battleSides(B){                         // force id -> the battlefield army (0 or 1) it stands with
+  const names = B.travel?.sides || [], known = f => names.indexOf(f.side);
+  let dk = known(S.forces.find(f => f.role === "defender"));
+  let ak = S.forces.filter(f => f.role === "attacker").map(known).find(k => k >= 0) ?? -1;
+  if (dk < 0 && ak >= 0) dk = 1 - ak;
+  if (ak < 0 && dk >= 0) ak = 1 - dk;
+  if (dk < 0 || dk === ak){ dk = 0; ak = 1 }
+  return new Map(S.forces.map(f => [f.id, f.role === "attacker" ? ak : dk]));
+}
+function scaledUnits(B, sides){
+  const left = new Map(S.forces.map(f => [f.id, f.men])), out = [];
+  for (const b of [0, 1]){
+    const all = S.forces.filter(f => sides.get(f.id) === b), units = B.units.filter(u => u.side === b);
+    const fighting = all.filter(f => f.type !== "wagons"), forces = fighting.length ? fighting : all;   // the baggage stays back if there is anyone else
+    const total = forces.reduce((t, f) => t + f.men, 0), drawn = units.reduce((t, u) => t + u.men, 0);
+    if (!forces.length || !drawn) continue;
+    for (const u of units){
+      const horsed = forces.filter(f => f.type === "mounted" && left.get(f.id) > 0), pool = u.mounted && horsed.length ? horsed : forces;
+      const f = pool.reduce((a, x) => (left.get(x.id) > left.get(a.id) ? x : a));
+      const men = Math.min(Math.max(1, Math.round(u.men * total / drawn)), left.get(f.id));
+      if (men < 1) continue;
+      left.set(f.id, left.get(f.id) - men);
+      out.push({ u, f, men });
+    }
+  }
+  return out;
+}
+function deployOnBattlefield(fid){
+  const B = FD.fields[fid], sides = battleSides(B);
+  loadBattlefield(fid, false);
+  S.table = B.table;
+  let out = 0;
+  for (const { u, f, men } of scaledUnits(B, sides)){
+    const side = forceSide(f), unit = newUnit({ ...u, men, side, banner: f.side === side ? null : f.side, force: f.id, mounted: u.mounted && f.type === "mounted" });
+    if (fits([...S.units, unit], S.units.length, unit, SIZE, S.field)) S.units.push(unit);
+    else out++;
+  }
+  S.sel = S.units[0]?.id ?? null;
+  const left = out ? ` ${out} unit(s) would not fit where they stood; their men are in reserve.` : "";
+  S.msg = `From the travel map: ${S.from.place}, ${S.from.day}, ${S.from.time}, on the field of ${B.name}. The armies stand as drawn up there, scaled to each force's fit men; move or change them before the battle starts.${left}`;
 }
 function layCamp(c, def){                          // the defender's camp works at the field map's scale, as far as they were built
   const ft = c.party || def.type, full = campWorks(c.kind, def.men, ft, SIZE[0], SIZE[1], null, !!c.hauled);
@@ -820,10 +870,15 @@ function startSpots(k){
   return [...inside, ...edge];
 }
 function newBattle(){                            // back to set-up: the travel map's forces again, or the starting units; the same battlefield
-  const fid = S.fieldId;
-  if (S.from) fromTravel(S.from);
-  else freshState();
-  if (fid) loadBattlefield(fid, true);
+  const fid = S.fieldId || null;
+  if (S.from){
+    fromTravel(S.from);                             // lays out the battlefield it was sent to, if any
+    if (fid !== (S.from.battlefield || null)) loadBattlefield(fid || "", false);
+  }
+  else {
+    freshState();
+    if (fid) loadBattlefield(fid, true);
+  }
   fillChoices();
   render();
 }
