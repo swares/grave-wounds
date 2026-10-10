@@ -11,9 +11,6 @@ When an item is done, delete it here and note it in the pull request that closes
 
 - **One clock for all forces.** Each force on the travel map keeps its own clock (kept on
   purpose for now). A shared clock would let forces meet on the road.
-- **Planned arrivals use today's ground.** The arrival estimate assumes today's mud or snow
-  for later days too (see [weather.md](weather.md)). It could use the weather already
-  rolled for those days, or show a range.
 - **Cover and elevation on the battle map**, beyond what works give.
 - **Campaign and battle maps** for each campaign or battle, to replace the generic valley.
 - **Scurvy and wound fever for forces.** Camp disease covers flux, typhus, typhoid, ague

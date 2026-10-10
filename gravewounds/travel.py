@@ -121,19 +121,29 @@ def _hpd(d: Data, hpd_list, i: int) -> float:
     return hpd_list[min(i, len(hpd_list) - 1)]
 
 
-def schedule(d: Data, m: dict, path: list, ftype: str, day: int = 1, used: float = 0.0,
-             hpd_list: list | None = None, ground: dict | None = None, speed: int = 100) -> list[dict]:
+def _ground_at(ground, i: int):
+    """The ground on the i-th day of a schedule: one ground for every day, or a list by day
+    (the last repeats)."""
+    if isinstance(ground, list):
+        return ground[min(i, len(ground) - 1)] if ground else None
+    return ground
+
+
+def schedule(d: Data, m: dict, path: list, ftype, day: int = 1, used: float = 0.0,
+             hpd_list: list | None = None, ground=None, speed: int = 100) -> list[dict]:
     """When the force reaches each hex of the path, stopping for the night rather than
     start a hex it cannot finish that day. hpd_list: marching hours of `day`, the day after
-    and so on (the last repeats); ground: as now (an estimate for later days).
+    and so on (the last repeats); ground: the ground for every day, or a list by day from
+    `day` (the last repeats: later days are estimated from it).
     [{hex, day, used}]: `used` is the marching hours spent that day on arrival."""
     first = day
     out = [{"hex": list(path[0]), "day": day, "used": used}] if path else []
     for a, b in zip(path, path[1:]):
-        st = step_hours(d, m, a, b, ftype, ground, speed)
+        st = step_hours(d, m, a, b, ftype, _ground_at(ground, day - first), speed)
         if used > 0 and used + st > _hpd(d, hpd_list, day - first) + 1e-9:
             day += 1
             used = 0.0
+            st = step_hours(d, m, a, b, ftype, _ground_at(ground, day - first), speed)
         used += st
         out.append({"hex": list(b), "day": day, "used": used})
     return out
