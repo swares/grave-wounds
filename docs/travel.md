@@ -196,7 +196,9 @@ The test map, `data/maps/generic-valley.yaml`, is a made-up river valley about 2
 from Harfleur to Calais on 3.1-mile (5 km) hexes: 49 × 46 hexes, about 150 by 125 miles
 (245 by 200 km), from the Seine to the Channel coast past Calais. It starts on 8 October 1415
 (Julian), the day the army left Harfleur, with four forces: Henry V's army and its baggage at
-Harfleur, a French vanguard at Abbeville and the French royal army at Rouen. The Somme can be
+Harfleur, a French vanguard at Abbeville and the French main army at Rouen. (In 1415 the main
+army marched to join the vanguard around Péronne, and the two fought together at Agincourt;
+the King and the Dauphin stayed at Rouen.) The Somme can be
 crossed only at its towns, the bridges at Pont-Remy, Picquigny and Bray, and the fords at
 Blanchetaque, Béthencourt and Voyennes, so the GM can play out the hunt for a crossing.
 The Seine, the Bresle, the Béthune, the Authie, the Canche and the Ternoise have bridges

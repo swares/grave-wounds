@@ -168,7 +168,7 @@ function kindOf(k){
 }
 const notes = { harfleur: "The English landed nearby in mid-August and took the town on 22 September, after a five-week siege", calais: "English since 1347: the army's goal",
   blanchetaque: "Edward III's crossing in 1346; held against the English on 13 October 1415", azincourt: "The battle, 25 October",
-  bethencourt: "Crossed on 19 October", voyennes: "Crossed on 19 October", rouen: "Where the French royal army gathered",
+  bethencourt: "Crossed on 19 October", voyennes: "Crossed on 19 October", rouen: "Where the French main army mustered; the King and the Dauphin stayed here",
   kent: "Across the Channel: off the march, shown for the coast" };
 const yq = s => JSON.stringify(s);
 const noteOf = k => (notes[k] ? ", note: " + yq(notes[k]) : "");
@@ -183,11 +183,13 @@ const out = `# The Agincourt campaign of 1415, from Harfleur to Calais, at ${HEX
 # Seine mouth in mid-August and took Harfleur on 22 September, after a siege in which dysentery
 # killed or sent home thousands. He left on 8 October to march to Calais, on the coast road by
 # Fécamp, Arques and Eu. On 13 October he found the Blanchetaque ford held, and turned up the
-# Somme looking for a crossing while a French army shadowed him on the far bank: by Pont-Remy,
+# Somme looking for a crossing while the French vanguard shadowed him on the far bank: by Pont-Remy,
 # Hangest and Boves, past Amiens, until he crossed at Béthencourt and Voyennes on 19 October.
-# He marched north by Athies, Albert and Forceville, crossed the Ternoise at Blangy on 24
-# October, and met the French army across his road at Azincourt on the 25th. Numbers on both
-# sides are disputed; those below are round figures for play.
+# Meanwhile the French main army, mustered at Rouen, marched north-east and joined the
+# vanguard around Péronne; the King and the Dauphin stayed behind at Rouen. Henry marched
+# north by Athies, Albert and Forceville, crossed the Ternoise at Blangy on 24 October, and
+# found the combined French army across his road at Azincourt, where they fought on the
+# 25th. Numbers on both sides are disputed; those below are round figures for play.
 id: agincourt-1415
 name: "Agincourt campaign, 1415 (Harfleur to Calais)"
 hex_km: ${HEX_KM}
@@ -204,7 +206,7 @@ forces:
   - {name: "Henry V's army", type: mounted, side: "England", men: 8500, tools: true, hex: [${hx("harfleur").join(", ")}]}
   - {name: "English baggage", type: wagons, side: "England", men: 300, tools: true, hex: [${hx("montivilliers").join(", ")}]}
   - {name: "French vanguard (Boucicaut, d'Albret)", type: mounted, side: "France", men: 6000, tools: false, hex: [${hx("abbeville").join(", ")}]}
-  - {name: "French royal army", type: foot, side: "France", men: 15000, tools: true, hex: [${hx("rouen").join(", ")}]}
+  - {name: "French main army (from Rouen)", type: foot, side: "France", men: 15000, tools: true, hex: [${hx("rouen").join(", ")}]}
 `;
 fs.writeFileSync(path.join(root, "data/maps/agincourt-1415.yaml"), out);
 console.log(`${COLS} x ${ROWS} hexes`);
