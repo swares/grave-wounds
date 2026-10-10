@@ -437,17 +437,18 @@ def edge_metres(d: Data) -> float:
     return d.wounds["combat"]["move"]["hex_m"] / 3 ** 0.5
 
 
+def _edge_labour(s: dict, hauled: bool, em: float) -> float:
+    if "each" in s:
+        return s["each"]
+    return (s.get("per_metre", 0) + (s.get("haul", 0) if hauled else 0)) * em
+
+
 def works_labour(d: Data, works, hauled: bool = False) -> float:
     """Man-hours to build these works: per_metre along each hex side, `each` for gates and
     for each hex of stakes or abatis, plus `haul` when the timber is hauled from afar."""
     W, em, t = d.works, edge_metres(d), 0.0
     for items in (works or {}).get("edges", {}).values():
-        for it in items:
-            s = W["edge_works"][it["type"]]
-            if "each" in s:
-                t += s["each"]
-            else:
-                t += (s.get("per_metre", 0) + (s.get("haul", 0) if hauled else 0)) * em
+        t += sum(_edge_labour(W["edge_works"][it["type"]], hauled, em) for it in items)
     for it in (works or {}).get("hexes", {}).values():
         s = W["hex_works"][it["type"]]
         t += s.get("each", 0) + (s.get("haul", 0) if hauled else 0)
