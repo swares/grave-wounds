@@ -316,7 +316,7 @@ def disease_rows(d) -> list[list[str]]:
     """[disease, caught from, shows after, outbreak chance and modifiers, peak, deaths]."""
     D, out = d.disease, []
     for x in D["diseases"].values():
-        mods = ", ".join(f"{k.replace('_', ' ')} {v:+d}" for k, v in x["mods"].items())
+        mods = ", ".join(f"{k.replace('_', ' ')} {v:+g}" for k, v in x["mods"].items())
         needs = " (only with " + " and ".join(x["needs"]) + ")" if x.get("needs") else ""
         lo = 1
         peak = []

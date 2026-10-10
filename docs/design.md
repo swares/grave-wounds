@@ -173,13 +173,15 @@ A fresh wound enters by severity (critical at Grave or Deadly, serious at Seriou
 
 | Disease | Outbreak chance per week | Peak (target odds) | Notes |
 | --- | --- | --- | --- |
-| Bloody flux | 10 | Deadly 01-03, Grave 04-15, else Serious | Turns chronic (stays at Serious) on a failed recovery check by 30 or more |
-| Camp fever (typhus) | 2 | Deadly 01-30, Grave 31-70, else Serious | Mostly a cold-weather and siege disease |
-| Typhoid | 2 | Deadly 01-30, Grave 31-60, else Serious | Long: recovery checks start only after two weeks |
+| Bloody flux | 3 (was 10; see below) | Deadly 01-03, Grave 04-15, else Serious | Turns chronic (stays at Serious) on a failed recovery check by 30 or more |
+| Camp fever (typhus) | 0, or 14 more in a filthy camp held a month or more (was 2) | Deadly 01-30, Grave 31-70, else Serious | Mostly a cold-weather and siege disease |
+| Typhoid | 0.3 (was 2) | Deadly 01-30, Grave 31-60, else Serious | Long: recovery checks start only after two weeks |
 | Ague (malaria) | 0, or 15 in warm marsh | Deadly 01-02, Grave 03-30, else Serious | A healed case relapses to Serious on a weekly 01-05 while in marsh country |
 | Plague | 0, or 5 where an outbreak is about | Deadly 01-50, Grave 51-80, else Serious | The GM decides when plague is in the region |
 | Scurvy | Not rolled: after 6 weeks without fresh food, each week resist or catch it | Starts at Mending, climbs a step each week without fresh food | Fresh food heals a step a week |
 | Wound fever | Per wound, from HitLoc's infection risk | Deadly chance by location, from the amputation figures | Worse when treatment is delayed |
+
+**Calibrated for long camps.** The first-draft outbreak chances killed about 30-45% of a force held a year in a fair camp, nearly all of it typhus and typhoid. They were lowered so a fair camp held a year costs about a tenth (between the Union army's 5% a year and medieval armies on campaign), while six weeks in a poor bivouac still costs about a tenth and six weeks of a hot, filthy siege about a fifth (Harfleur, 1415). Typhus now needs crowding: it spreads in camps that are both filthy and long held. The numbers are in `data/disease.yaml`; `python3 -m gravewounds disease` shows the marks.
 
 As a check on the numbers: a fair camp gives a man about a 1 in 20 chance a week of catching the flux, more than double the Union army's average (about one bout per man per year, or 1 in 50 a week), which suits a team on campaign rather than in garrison. A poor camp in summer gives about 1 in 5, near the 14% sick seen at Corunna. The playtest should test both.
 

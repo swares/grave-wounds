@@ -532,16 +532,21 @@ const campCare = campKind => DZ.camp_care[campKind || "none"];
 function weekFactors(o){                       // o: {hygiene, camped_days, terrain, highs, wet, plague}
   const f = [];
   if (o.hygiene === "poor" || o.hygiene === "good") f.push(o.hygiene);
-  if (o.camped_days >= DZ.staying_days) f.push("staying");
-  for (const [k, ts] of Object.entries(DZ.terrain_factors)) if (ts.includes(o.terrain)) f.push(k);
-  const highs = o.highs;
-  if (highs.length){
-    const mean = highs.reduce((t, x) => t + x, 0) / highs.length;
-    if (mean >= DZ.warm_at) f.push("warm");
-    if (Math.max(...highs) >= DZ.hot_at) f.push("hot");
-    if (o.wet.filter(Boolean).length >= DZ.cold_wet_days && mean <= DZ.cold_wet_at) f.push("cold_wet");
+  if (o.camped_days >= DZ.staying_days){
+    f.push("staying");
+    if (o.hygiene === "poor") f.push("crowded");
   }
+  for (const [k, ts] of Object.entries(DZ.terrain_factors)) if (ts.includes(o.terrain)) f.push(k);
+  f.push(...weatherFactors(o.highs, o.wet));
   if (o.plague) f.push("plague");
+  return f;
+}
+function weatherFactors(highs, wet){            // the past week's warmth, heat, and cold wet
+  if (!highs.length) return [];
+  const f = [], mean = highs.reduce((t, x) => t + x, 0) / highs.length;
+  if (mean >= DZ.warm_at) f.push("warm");
+  if (Math.max(...highs) >= DZ.hot_at) f.push("hot");
+  if (wet.filter(Boolean).length >= DZ.cold_wet_days && mean <= DZ.cold_wet_at) f.push("cold_wet");
   return f;
 }
 function outbreakChance(did, factors){

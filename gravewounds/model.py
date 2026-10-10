@@ -699,7 +699,7 @@ def validate(d: Data) -> None:
         raise DataError("\n".join(errors))
 
 
-DISEASE_FACTORS = {"poor", "good", "staying", "marsh", "town", "upland", "warm", "hot", "cold_wet", "plague"}
+DISEASE_FACTORS = {"poor", "good", "staying", "crowded", "marsh", "town", "upland", "warm", "hot", "cold_wet", "plague"}
 
 
 def _disease_errors(d: Data, terrain: dict) -> list[str]:
@@ -762,8 +762,8 @@ def _one_disease_errors(did: str, x: dict, steps: list) -> list[str]:
     bad = [k for k in [*x.get("mods", {}), *x.get("needs", [])] if k not in DISEASE_FACTORS]
     if bad:
         errors.append(f"disease.yaml: {did} uses unknown factors {bad}")
-    if not isinstance(x.get("virulence"), int) or not isinstance(x.get("base"), int):
-        errors.append(f"disease.yaml: {did} base and virulence must be whole numbers")
+    if not isinstance(x.get("virulence"), int) or not isinstance(x.get("base"), (int, float)):
+        errors.append(f"disease.yaml: {did} needs a whole-number virulence and a number for base")
     return errors
 
 

@@ -139,9 +139,17 @@ No camp roughly doubles the deaths; quarters in houses roughly halve them. Desig
 estimates; the records are in the design doc's disease table (Union pyaemia was 97% fatal;
 Richard I died of an infected crossbow wound eleven days after he was hit).
 
-As a guide, six weeks in a poor bivouac costs a company of 200 about a tenth of its men
-dead, with a third unable to march or fight. A siege camp in a hot summer (poor hygiene, staying put) costs about
-a fifth dead. That is near the losses recorded at Harfleur in 1415.
+As a guide (`python3 -m gravewounds disease`):
+
+| A force in camp, dry weather | Dead of disease |
+|---|---|
+| A fair camp held a year | about 9% |
+| Six weeks in a poor bivouac | about 10% |
+| Six weeks of a hot, filthy siege camp | about 23% (near Harfleur, 1415) |
+| Good quarters for a year | under 1% |
+
+Typhus needs crowding: it breaks out in a camp that is both filthy (poor hygiene) and held
+four weeks or more.
 
 ## Calendar and weather
 
