@@ -16,7 +16,8 @@ map: {cols: 60, rows: 40}  # the field map's default size (600 x 400 m)
 # missile_factor: shots at a unit in this order count this much (open order is harder to hit).
 formations:
   close: {name: "Close order", abreast: 10, ranks: 4, per_hex: 40, move: 6, missile_factor: 1.0}
-  open:  {name: "Open order", key: ".",  abreast: 10, ranks: 2, per_hex: 20, move: 8, missile_factor: 0.8}
+  open:  {name: "Open order", abreast: 10, ranks: 2, per_hex: 20, move: 8, missile_factor: 0.8}
+  battery: {name: "Battery", abreast: 4, ranks: 5, per_hex: 20, move: 6, missile_factor: 0.8}   # two guns and their crews a hex (see artillery)
 mounted_move: 15           # hexes an exchange for mounted units, in either order
 charge_move: 2             # a unit that ends its move in contact may move this many times its allowance (a charge)
 turn_per: 2                # turning the facing one step (60 degrees) costs 1 hex for every this many hexes of front (at least 1)
@@ -39,6 +40,40 @@ ground:
 # hacking at the work in front of it, every round of the exchange. A work's breach figure
 # (man-rounds, works.yaml) is for a 2 m hex side; a 10 m side takes five times as long.
 breach_share: 0.5
+
+# ---------- guns ----------
+# A battery is a unit whose weapon is a gun (listed in `guns`), in the battery formation. Its
+# men are the crews, `crew` to a gun: 120 men serve 12 guns, and as crews fall fewer guns are
+# served. Each served gun fires `rounds` rounds an exchange at the nearest enemy unit in front
+# of it within `range` field hexes and in sight: canister at `canister_to` hexes or less, round
+# shot beyond. All numbers are design estimates, tuned by python3 -m gravewounds units.
+# - Round shot: each round strikes the target unit with the chance for its range (less its
+#   cover and the weather, times its formation's missile_factor), then goes through its ranks:
+#   each man in the ball's path (the formation's ranks times the unit's rows, at most
+#   `path_max`) is hit at `file` %. Deep columns suffer most.
+# - Canister: each round throws `balls` chances to hit, each at the chance for its range (with
+#   the same cover, weather and formation), on the front of the target.
+# Every man hit takes a wound roll at `attack` (no parry) with the gun's wound data.
+# A battery is limbered (moves as its formation; cannot fire) or unlimbered (fires; can only be
+# manhandled `pushed` hexes an exchange). Limbering or unlimbering takes an exchange, in which
+# it neither moves nor fires. Hand to hand, the crews fight with `crew_weapon`. A battery that
+# breaks abandons its guns: it never fires again, even if it rallies.
+artillery:
+  guns: [artillery_smoothbore]
+  crew: 10
+  rounds: 1
+  range: 100                 # field hexes: 1,000 m
+  canister_to: 30            # field hexes: 300 m
+  round_shot:
+    strike: [[50, 60], [75, 40], [100, 25]]    # [up to this many hexes, % a round strikes the unit]
+    file: 40
+    path_max: 12
+  canister:
+    balls: 8
+    strike: [[10, 50], [20, 30], [30, 15]]
+  attack: 80
+  crew_weapon: sword
+  pushed: 2                  # hexes an unlimbered battery can be manhandled (or turned) in an exchange
 
 # ---------- quality ----------
 # The unit's fighting quality: attack and defence (parry or dodge) % for its men, and the

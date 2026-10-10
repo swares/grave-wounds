@@ -12,8 +12,8 @@
 # riding to help his foot, was killed in the fog. Pappenheim's horse came up on the Imperial
 # left at midday and checked the Swedish right; Pappenheim was mortally wounded. Late in the
 # day Bernhard of Saxe-Weimar's men stormed the windmill hill and its battery, and in the
-# night Wallenstein withdrew. The Imperial guns are not in the unit rules: the GM can treat
-# the windmill hill as a strongpoint, or play the guns out with the roller.
+# night Wallenstein withdrew. The guns: 7 on the windmill hill and 14 in the Imperial centre,
+# 20 heavy Swedish guns in front of their foot (round figures; the regimental guns are left out).
 id: lutzen-1632
 name: "Lützen, 16 November 1632"
 sides: ["Swedes", "Imperialists"]
@@ -158,6 +158,9 @@ units:
   - {name: "Imperial musketeers, centre", side: 1, men: 4000, quality: regular, weapon: matchlock_musket, kit: none, formation: open, width: 70, pos: [110, 69], facing: 4}
   - {name: "Imperial pike, centre", side: 1, men: 4000, quality: regular, weapon: spear, kit: pikeman_1630, formation: close, width: 50, pos: [110, 64], facing: 4}
   - {name: "Musketeers at the windmill battery", side: 1, men: 800, quality: regular, weapon: matchlock_musket, kit: none, formation: open, width: 20, pos: [40, 70], facing: 4}
+  - {name: "Windmill battery", side: 1, men: 70, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 4, pos: [40, 67], facing: 4}
+  - {name: "Imperial centre battery", side: 1, men: 140, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 7, pos: [108, 72], facing: 4}
+  - {name: "Swedish heavy guns", side: 0, men: 200, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 10, pos: [109, 97], facing: 1}
   - {name: "Imperial horse, right", side: 1, men: 1500, quality: veteran, weapon: sword, kit: harquebusier_1630, formation: close, width: 20, pos: [40, 58], facing: 4, mounted: true}
   - {name: "Imperial cuirassiers, left", side: 1, men: 2000, quality: veteran, weapon: sword, kit: cuirassier_1630, formation: close, width: 25, pos: [167, 68], facing: 4, mounted: true}
   - {name: "Pappenheim's horse (coming up)", side: 1, men: 2500, quality: veteran, weapon: sword, kit: cuirassier_1630, formation: close, width: 30, pos: [200, 10], facing: 4, mounted: true}

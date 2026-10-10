@@ -13,7 +13,8 @@
 # hailstorm and nearly destroyed. Hoghton's and Abercrombie's brigades took the Spaniards'
 # place and stood exchanging volleys at short range until most of their men were down; Cole's
 # division, coming up on the right, drove the French off the heights. The hailstorm is not
-# set: the GM can bring it in (storm) for the lancers' charge. Guns are not in the unit rules.
+# set: the GM can bring it in (storm) for the lancers' charge. The guns: 20 French with the
+# columns and 12 allied on the heights (round figures).
 id: albuera-1811
 name: "Albuera, 16 May 1811"
 sides: ["Allies", "French"]
@@ -267,4 +268,6 @@ units:
   - {name: "Werlé's brigade (reserve)", side: 1, men: 3500, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 30, pos: [84, 205], facing: 1}
   - {name: "Polish lancers and hussars", side: 1, men: 1500, quality: veteran, weapon: lance, kit: dragoon_helmet, formation: close, width: 25, pos: [22, 172], facing: 1, mounted: true}
   - {name: "Latour-Maubourg's dragoons", side: 1, men: 2000, quality: regular, weapon: saber, kit: dragoon_helmet, formation: close, width: 30, pos: [54, 222], facing: 1, mounted: true}
+  - {name: "French guns with the columns", side: 1, men: 200, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 10, pos: [54, 192], facing: 1}
+  - {name: "Allied guns on the heights", side: 0, men: 120, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 6, pos: [43, 136], facing: 4}
   - {name: "Godinot's brigade (feint at the village)", side: 1, men: 3500, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 25, pos: [128, 40], facing: 3}

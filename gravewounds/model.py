@@ -182,8 +182,9 @@ def load(root: str | Path = "data") -> Data:
 # Weapon availability and location multipliers
 # --------------------------------------------------------------------------
 def available_weapons(d: Data, tid: str) -> list[str]:
-    """The table's own weapons, then the close-combat weapons offered everywhere."""
-    own = list(d.tables[tid]["weapons"])
+    """The table's own weapons, those it borrows from another table (`borrowed`), then the
+    close-combat weapons offered everywhere."""
+    own = list(d.tables[tid]["weapons"]) + [w for w in d.tables[tid].get("borrowed") or {} if w not in d.tables[tid]["weapons"]]
     return own + [w for w in d.melee_everywhere if w not in own]
 
 
@@ -191,6 +192,8 @@ def resolve_table(d: Data, tid: str, wid: str) -> str:
     """Table whose location data a weapon uses: a close-combat weapon on a table of another
     kind of fighting rolls on the era's melee table (melee_fallback)."""
     w, t = d.weapons[wid], d.tables[tid]
+    if wid not in t["weapons"] and wid in (t.get("borrowed") or {}):
+        return t["borrowed"][wid]                     # e.g. guns at Lützen roll on the Peninsular table
     kind = w.get("melee")
     if not kind:
         return tid
@@ -524,6 +527,9 @@ def validate(d: Data) -> None:
         for wid in t.get("weapons", []):
             if wid not in d.weapons:
                 errors.append(f"tables/{tid}: unknown weapon {wid}")
+        for wid, src in (t.get("borrowed") or {}).items():
+            if wid not in d.weapons or src not in d.tables or wid not in d.tables[src]["weapons"]:
+                errors.append(f"tables/{tid}: borrowed {wid} needs a weapon that table {src} lists as its own")
 
     # modifiers
     sides = {"L", "R", "C"}

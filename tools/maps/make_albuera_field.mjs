@@ -8,8 +8,7 @@
 // village, the stream, the woods and the heights are drawn by hand to that shape, not traced
 // from any map, and are approximate. The field runs from the village south over the heights:
 // the allied line north of the village is off the map. The deployment is the moment Soult's
-// flank attack came on, in our own words; numbers are round figures for play. Guns are not in
-// the unit rules.
+// flank attack came on, in our own words; numbers are round figures for play, the guns among them.
 import { N, S, wobble, groundGrid, unit, writeField } from "./field_lib.mjs";
 
 const COLS = 150, ROWS = 230;                 // 1500 m east to west, about 2000 m north to south
@@ -29,6 +28,7 @@ const grid = groundGrid(COLS, ROWS, kind);
 const ALLY = { side: 0, facing: S }, FR = { side: 1, facing: N };
 const LINE = { quality: "regular", weapon: "musket_smoothbore", kit: "none", formation: "close", mounted: false };
 const HORSE = { quality: "regular", weapon: "saber", kit: "dragoon_helmet", formation: "close", mounted: true };
+const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
 const units = [
   unit("Zayas's Spanish", ALLY, 4000, LINE, [70, 45, 140]),
   unit("Colborne's brigade", ALLY, 1600, { ...LINE, quality: "veteran" }, [40, 5, 142]),
@@ -42,6 +42,8 @@ const units = [
   unit("Werlé's brigade (reserve)", FR, 3500, LINE, [30, 70, 205]),
   unit("Polish lancers and hussars", FR, 1500, { ...HORSE, quality: "veteran", weapon: "lance" }, [25, 10, 172]),
   unit("Latour-Maubourg's dragoons", FR, 2000, HORSE, [30, 40, 222]),
+  unit("French guns with the columns", FR, 200, GUNS, [10, 50, 192]),
+  unit("Allied guns on the heights", ALLY, 120, GUNS, [6, 40, 136]),
   // Godinot's feint at the village comes from the east across the stream: facing 3 (west, a
   // little south), so its front runs north-west to south-east; pos is the middle of the front.
   { name: "Godinot's brigade (feint at the village)", side: 1, facing: 3, men: 3500, ...LINE, width: 25, pos: [128, 40] },
@@ -68,7 +70,8 @@ writeField({
     "hailstorm and nearly destroyed. Hoghton's and Abercrombie's brigades took the Spaniards'",
     "place and stood exchanging volleys at short range until most of their men were down; Cole's",
     "division, coming up on the right, drove the French off the heights. The hailstorm is not",
-    "set: the GM can bring it in (storm) for the lancers' charge. Guns are not in the unit rules.",
+    "set: the GM can bring it in (storm) for the lancers' charge. The guns: 20 French with the",
+    "columns and 12 allied on the heights (round figures).",
   ],
 });
 console.log(grid.map(r => r.join("")).join("\n").slice(0, 200));

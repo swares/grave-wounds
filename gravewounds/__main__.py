@@ -103,6 +103,10 @@ def _main(argv=None) -> int:
         for r in hero_examples(d, a.table, a.runs * 5, a.seed):
             print(f"  {r['label']:<22} wounded {r['wounded']:4.1f}%, down {r['down']:4.1f}%, killed {r['dead']:4.1f}%; "
                   f"men he put down {r['felled']:.2f} on average")
+        from .units import gun_examples
+        print(f"A battery of 6 guns firing for a minute at 1,600 men in close order ({a.runs * 5} runs each):")
+        for r in gun_examples(d, a.runs * 5, a.seed):
+            print(f"  {r['label']:<32} {r['struck']:5.1f} men struck, {r['down']:4.1f} put down")
         return 0
     if a.cmd == "check":
         for w in d.warnings:

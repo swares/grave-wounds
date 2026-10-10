@@ -474,7 +474,7 @@ def _strike_groups(d: Data, units: list, occ: dict, i: int, groups: dict, field:
     """Add unit i's front hexes' strikes to groups {(i, j, situation, penalty, stakes): men}."""
     u = units[i]
     rows, men = footprint(d, u), men_by_hex(d, u)
-    reach = d.weapons[u["weapon"]].get("reach", 1)
+    reach = d.weapons[melee_weapon(d, u)].get("reach", 1)
     abreast = form(d, u)["abreast"]
     per = abreast * (2 if reach >= d.units["melee"]["second_rank_reach"] else 1)
     for k, h in enumerate(rows[0] if rows else []):
@@ -599,7 +599,16 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
 
 def shot_weather(d: Data, field: dict | None, weapon: str, dist: int) -> dict:
     """The weather's effect on a shot `dist` field hexes away: {blocked, penalty, misfire}."""
+    if is_gun(d, weapon):
+        return gun_weather(d, field, dist)
     return C.weather_attack(d, (field or {}).get("weather"), weapon, dist * d.units["range_scale"])
+
+
+def _reaches(d: Data, weapon: str, dist: int) -> bool:
+    """Whether a weapon shoots this many field hexes: a gun to the artillery range."""
+    if is_gun(d, weapon):
+        return dist <= d.units["artillery"]["range"]
+    return field_range(d, weapon, dist) is not None
 
 
 def cover_at(d: Data, field: dict | None, h, t) -> int:
@@ -635,14 +644,16 @@ def _nearest_ahead(d: Data, weapon: str, front: list, fv: tuple, hexes: list, fi
             if sum((c[k] - s[k]) * fv[k] for k in range(3)) <= 0:
                 continue
             dist = hdist(h, t)
-            if (best is None or dist < best[0]) and field_range(d, weapon, dist) is not None \
+            if (best is None or dist < best[0]) and _reaches(d, weapon, dist) \
                     and not shot_weather(d, field, weapon, dist)["blocked"]:
                 best = (dist, h, t)
     return best
 
 
-def _side(u: dict, table: str) -> dict:
-    return {"table": table, "weapon": u["weapon"], "kit": u.get("kit"), "quality": u["quality"]}
+def _side(u: dict, table: str, d: Data | None = None) -> dict:
+    """A unit as a fighting side: hand to hand, a battery's crews fight with their own weapon."""
+    weapon = melee_weapon(d, u) if d else u["weapon"]
+    return {"table": table, "weapon": weapon, "kit": u.get("kit"), "quality": u["quality"]}
 
 
 def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -> tuple[list, list]:
@@ -665,6 +676,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _morale_all(d, us, occ, before, lost, dealt, flanked, rng, table)
     for u in us:
         u["charged"] = False
+        _battery_after(d, u)
     return us, log
 
 
@@ -675,7 +687,7 @@ def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, f
         a, b = us[s["att"]], us[s["dfd"]]
         opts = {"situation": s["situation"], "charge": bool(a.get("charged")) and bool(a.get("mounted")) and not s.get("stakes"),
                 "shaken": a["state"] == "shaken", "rout": s["rout"], "exposed": _exposure(d, b, s["rout"]), "penalty": s.get("penalty", 0)}
-        t = _take_hurt(b, melee(d, _side(a, table), _side(b, table), s["men"], rng, **opts))
+        t = _take_hurt(b, melee(d, _side(a, table, d), _side(b, table, d), s["men"], rng, **opts))
         _tally(*acc, s, t)
         flanked[s["dfd"]] = flanked[s["dfd"]] or s["situation"] in ("flank", "rear")
         log += _logged({"kind": "rout" if s["rout"] else "melee", **s}, t)
@@ -683,7 +695,7 @@ def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, f
             continue
         struck.add(s["att"])
         for hero in _heroes(a, ("front",)):
-            t = _take_hurt(b, melee(d, _hero_side(a, hero, table), _side(b, table), d.units["heroes"]["tempo"], rng, **opts))
+            t = _take_hurt(b, melee(d, _hero_side(a, hero, table), _side(b, table, d), d.units["heroes"]["tempo"], rng, **opts))
             _tally(*acc, s, t)
             log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": s["att"], "dfd": s["dfd"],
                             "situation": s["situation"]}, t)
@@ -708,6 +720,11 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
             t = _take_hurt(b, volley(d, _hero_side(us[v["att"]], hero, table), _side(b, table), d.units["heroes"]["tempo"], v["dist"], rng, **hopts))
             _tally(*acc, v, t)
             log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": v["att"], "dfd": v["dfd"], "dist": v["dist"]}, t)
+    for c in cannonades(d, us, field):
+        a, b = us[c["att"]], us[c["dfd"]]
+        t = _take_hurt(b, cannonade(d, {**_side(a, table), "weapon": a["weapon"]}, b, c, rng, _exposure(d, b, False, True)))
+        _tally(*acc, c, t)
+        log += _logged({"kind": "cannon", **c}, t)
     return log
 
 
@@ -810,7 +827,7 @@ def _rout_strike(d: Data, us: list, occ: dict, j: int, table: str, rng) -> list:
         a, b = us[i], us[j]
         if a["side"] == b["side"] or a["state"] in ("broken", "fled") or a["men"] <= 0 or b["men"] <= 0:
             continue
-        t = _take_hurt(b, melee(d, _side(a, table), _side(b, table), a["men"], rng, rout=True, exposed=_exposure(d, b, True)))
+        t = _take_hurt(b, melee(d, _side(a, table, d), _side(b, table, d), a["men"], rng, rout=True, exposed=_exposure(d, b, True)))
         cut = min(t["down"], b["men"])
         b.update(men=b["men"] - cut, down=b["down"] + cut, dead=b["dead"] + min(t["dead"], cut))
         log += _logged({"kind": "rout", "att": i, "dfd": j, "men": a["men"], "situation": "rear", "rout": True}, t)
@@ -820,7 +837,13 @@ def _rout_strike(d: Data, us: list, occ: dict, j: int, table: str, rng) -> list:
 # ---------- movement ----------
 
 def allowance(d: Data, u: dict) -> int:
-    """Hexes a unit may move in an exchange (twice this for a charge)."""
+    """Hexes a unit may move in an exchange (twice this for a charge). A battery limbering or
+    unlimbering does not move; unlimbered, it can only be manhandled a hex or so."""
+    if is_battery(d, u) and not u.get("abandoned") and u["state"] != "broken":   # crews running from their guns run on foot
+        if u.get("limbering"):
+            return 0
+        if not u.get("limbered"):
+            return d.units["artillery"]["pushed"]
     return d.units["mounted_move"] if u.get("mounted") else form(d, u)["move"]
 
 
@@ -1038,3 +1061,121 @@ def _dies(am: dict, lethal: str, care: str, d100) -> bool:
     if lethal == "hours":
         return d100() > am["saved"]["hours"][care]
     return False
+
+
+# ---------- guns ----------
+# A battery: a unit whose weapon is a gun (units.yaml artillery), its men the crews. It is
+# limbered (u["limbered"]: moves, cannot fire) or not; u["limbering"]: changing over this
+# exchange (neither moves nor fires); u["abandoned"]: broke and left its guns.
+
+def is_gun(d: Data, weapon: str) -> bool:
+    return weapon in d.units.get("artillery", {}).get("guns", [])
+
+
+def is_battery(d: Data, u: dict) -> bool:
+    return is_gun(d, u["weapon"])
+
+
+def melee_weapon(d: Data, u: dict) -> str:
+    """The weapon a unit fights hand to hand with: a battery's crews have their own."""
+    return d.units["artillery"]["crew_weapon"] if is_battery(d, u) else u["weapon"]
+
+
+def guns_served(d: Data, u: dict) -> int:
+    """Guns the crews still serve: one for every `crew` men left, up to the battery's guns."""
+    crew = d.units["artillery"]["crew"]
+    return min(math.ceil(u.get("start", u["men"]) / crew), math.ceil(max(0, u["men"]) / crew))
+
+
+def gun_weather(d: Data, field: dict | None, dist: int) -> dict:
+    """The weather's effect on guns: no laying them on what cannot be seen; the wind as on firearms."""
+    out = {"blocked": None, "penalty": 0, "misfire": 0}
+    weather = (field or {}).get("weather")
+    if not weather or not d.weather:
+        return out
+    cond = d.weather["conditions"][weather["cond"]]
+    vis = cond.get("visibility")
+    if vis is not None and dist * d.units["range_scale"] > vis:
+        out["blocked"] = f"{cond['name']}: the guns cannot be laid on what cannot be seen."
+        return out
+    out["penalty"] = next(x for x in d.weather["winds"] if x["id"] == weather["wind"])["firearm"]
+    return out
+
+
+def _chance_at(bands: list, dist: int) -> int:
+    """The % for this distance from [[up to hexes, %], ...]; 0 beyond the last."""
+    return next((ch for to, ch in bands if dist <= to), 0)
+
+
+def cannonades(d: Data, units: list, field: dict | None = None) -> list:
+    """Which batteries fire at whom: [{att, dfd, guns, dist, shot (canister or round), cover,
+    penalty}]. A battery fires unlimbered, not changing over, not broken and not in contact,
+    with the guns its crews still serve, at the nearest enemy in range and in sight in front."""
+    occ, out, A = occupancy(d, units), [], d.units.get("artillery")
+    for i, u in enumerate(units):
+        if not A or not is_battery(d, u) or _out(u) or u.get("limbered") or u.get("limbering") or u.get("abandoned"):
+            continue
+        if in_contact(d, units, occ, i):
+            continue
+        best = _target(d, units, i, field)
+        if best is None:
+            continue
+        wx = gun_weather(d, field, best[0])
+        out.append({"att": i, "dfd": best[1], "guns": guns_served(d, u), "dist": best[0],
+                    "shot": "canister" if best[0] <= A["canister_to"] else "round", "cover": cover_at(d, field, best[2], best[3]),
+                    "penalty": wx["penalty"]})
+    return out
+
+
+def cannonade(d: Data, att: dict, target: dict, c: dict, rng, exposed: tuple = ()) -> dict:
+    """One exchange of a battery's fire (att: the battery as a side, with its gun; c, from
+    cannonades) at the target unit: the men struck, then a wound roll for each."""
+    A, struck = d.units["artillery"], 0
+    rounds = c["guns"] * A["rounds"]
+    cut = form(d, target)["missile_factor"] * (100 - c["cover"] - c["penalty"]) / 100
+    if c["shot"] == "canister":
+        p = _chance_at(A["canister"]["strike"], c["dist"]) * cut
+        for _ in range(rounds * A["canister"]["balls"]):
+            struck += rng.randint(1, 100) <= p
+    else:
+        rs = A["round_shot"]
+        p, path = _chance_at(rs["strike"], c["dist"]) * cut, min(rs["path_max"], form(d, target)["ranks"] * len(footprint(d, target)))
+        for _ in range(rounds):
+            if rng.randint(1, 100) <= p:
+                struck += sum(rng.randint(1, 100) <= rs["file"] for _ in range(path))
+    return _blows(d, att, _side(target, att["table"]), struck, A["attack"], 0, rng, exposed, -1000)
+
+
+def _battery_after(d: Data, u: dict) -> None:
+    """At the end of an exchange: a battery that was changing over is now limbered or not; one
+    that has broken has left its guns."""
+    if not is_battery(d, u):
+        return
+    if u.get("limbering"):
+        u["limbered"] = not u.get("limbered")
+        u["limbering"] = False
+    if u["state"] in ("broken", "fled"):
+        u["abandoned"] = True
+
+
+GUN_EXAMPLES = (("canister at 200 m, a line", 20, 40), ("round shot at 400 m, a line", 40, 40), ("round shot at 400 m, a column", 40, 10),
+                ("round shot at 800 m, a column", 80, 10))
+
+
+def gun_examples(d: Data, runs: int, seed: int) -> list[dict]:
+    """A battery of 6 guns (60 regular crews) firing for one minute at 1,600 unarmoured men in
+    close order, as a line (40 hexes wide) or a column (10 wide): men struck and men put down
+    (means), on the Peninsular table."""
+    table, out = "peninsular-1808-14-all-hits", []
+    for label, dist, width in GUN_EXAMPLES:
+        struck = down = 0
+        for k in range(runs):
+            bat = {**_example_unit(0, [30, 100], 1), "men": 60, "start": 60, "weapon": "artillery_smoothbore", "formation": "battery"}
+            tgt = {**_example_unit(1, [30, 100 - dist], 4), "men": 1600, "start": 1600, "width": width, "weapon": "musket_smoothbore", "kit": "none"}
+            _, log = exchange(d, [bat, tgt], table, SeededDice(seed * 7907 + k), {"ground": {}, "works": None, "weather": None, "size": [60, 120]})
+            for line in log:
+                if line["kind"] == "cannon":
+                    struck += line["blows"]
+                    down += line["down"]
+        out.append({"label": label, "struck": struck / runs, "down": down / runs})
+    return out

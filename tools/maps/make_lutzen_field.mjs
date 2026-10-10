@@ -8,8 +8,7 @@
 // and the canal are drawn by hand to that shape, not traced from any map, and are approximate.
 // The deployment is the outline most modern accounts share, in our own words: both armies in
 // lines of foot with horse on the wings, and Pappenheim's horse coming in late on the Imperial
-// left. Numbers are disputed; those here are round figures for play. Guns are not in the unit
-// rules, so the windmill battery is shown by the musketeers guarding it.
+// left. Numbers are disputed; those here are round figures for play, the guns among them.
 import { N, S, wobble, groundGrid, unit, writeField } from "./field_lib.mjs";
 
 const COLS = 220, ROWS = 120;                 // 2200 m east to west, about 1040 m north to south
@@ -37,6 +36,7 @@ const SHOT = { quality: "regular", weapon: "matchlock_musket", kit: "none", form
 const PIKE = { quality: "regular", weapon: "spear", kit: "pikeman_1630", formation: "close", mounted: false };
 const HORSE = { quality: "veteran", weapon: "sword", kit: "harquebusier_1630", formation: "close", mounted: true };
 const CUIRASS = { ...HORSE, kit: "cuirassier_1630" };
+const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
 const units = [
   unit("Swedish musketeers, first line", SWE, 3000, { ...SHOT, quality: "veteran" }, [80, 70, 100]),
   unit("Swedish pike, first line", SWE, 3000, { ...PIKE, quality: "veteran" }, [50, 85, 103]),
@@ -47,6 +47,9 @@ const units = [
   unit("Imperial musketeers, centre", IMP, 4000, SHOT, [70, 75, 69]),
   unit("Imperial pike, centre", IMP, 4000, PIKE, [50, 85, 64]),
   unit("Musketeers at the windmill battery", IMP, 800, SHOT, [20, 30, 70]),
+  unit("Windmill battery", IMP, 70, GUNS, [4, 38, 67]),
+  unit("Imperial centre battery", IMP, 140, GUNS, [7, 105, 72]),
+  unit("Swedish heavy guns", SWE, 200, GUNS, [10, 105, 97]),
   unit("Imperial horse, right", IMP, 1500, HORSE, [20, 30, 58]),
   unit("Imperial cuirassiers, left", IMP, 2000, CUIRASS, [25, 155, 68]),
   unit("Pappenheim's horse (coming up)", IMP, 2500, CUIRASS, [30, 185, 10]),
@@ -72,8 +75,8 @@ writeField({
     "riding to help his foot, was killed in the fog. Pappenheim's horse came up on the Imperial",
     "left at midday and checked the Swedish right; Pappenheim was mortally wounded. Late in the",
     "day Bernhard of Saxe-Weimar's men stormed the windmill hill and its battery, and in the",
-    "night Wallenstein withdrew. The Imperial guns are not in the unit rules: the GM can treat",
-    "the windmill hill as a strongpoint, or play the guns out with the roller.",
+    "night Wallenstein withdrew. The guns: 7 on the windmill hill and 14 in the Imperial centre,",
+    "20 heavy Swedish guns in front of their foot (round figures; the regimental guns are left out).",
   ],
 });
 console.log(grid.map(r => r.join("")).join("\n"));

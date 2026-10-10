@@ -244,7 +244,7 @@ function struckHex(units, occ, u, h){            // [enemy index, direction] acr
   return null;
 }
 function unitGroups(units, occ, i, groups, field){   // unit i's front hexes' strikes: "i|j|situation|penalty|stakes" -> men
-  const u = units[i], rows = footprint(u), men = menByHex(u), reach = FD.weapons[u.weapon].reach || 1, abreast = form(u).abreast;
+  const u = units[i], rows = footprint(u), men = menByHex(u), reach = FD.weapons[meleeWeapon(u)].reach || 1, abreast = form(u).abreast;
   const per = abreast * (reach >= UD.melee.second_rank_reach ? 2 : 1);
   (rows[0] || []).forEach((h, k) => {
     const hit = struckHex(units, occ, u, h);
@@ -291,7 +291,7 @@ function nearestAhead(weapon, front, fv, hexes, field){  // [distance, front hex
       const s = cube(h);
       if ((c[0] - s[0]) * fv[0] + (c[1] - s[1]) * fv[1] + (c[2] - s[2]) * fv[2] <= 0) continue;
       const dist = hdist(h, t);
-      if ((best === null || dist < best[0]) && fieldRange(weapon, dist) && !shotWeather(field, weapon, dist).blocked) best = [dist, h, t];
+      if ((best === null || dist < best[0]) && reaches(weapon, dist) && !shotWeather(field, weapon, dist).blocked) best = [dist, h, t];
     }
   }
   return best;
@@ -323,13 +323,15 @@ function across(field, u, h, x, reach){           // [blocked: only reach 2 over
   const it = hexItem(field.works, x), stk = !!(u.mounted && it && specOf("hex", it).no_horse);
   return [m.blocked, pen, stk];
 }
-const shotWeather = (field, weapon, dist) => weatherAttack(field?.weather || null, weapon, dist * UD.range_scale);
+const shotWeather = (field, weapon, dist) => (isGun(weapon) ? gunWeather(field, dist) : weatherAttack(field?.weather || null, weapon, dist * UD.range_scale));
+const reaches = (weapon, dist) => (isGun(weapon) ? dist <= UD.artillery.range : !!fieldRange(weapon, dist));   // a gun shoots to the artillery range
 function coverAt(field, h, t){                    // % off shots from h at t: the best of the works' and the ground's
   if (!field) return 0;
   const [cols, rows] = fieldSize(field);
   return Math.max(missileCover(field.works, h, t, cols, rows).cover, groundAt(field, t).cover || 0);
 }
 const sideOfUnit = (u, table) => ({ table, weapon: u.weapon, kit: u.kit, quality: u.quality });
+const meleeSide = (u, table) => ({ ...sideOfUnit(u, table), weapon: meleeWeapon(u) });   // hand to hand: a battery's crews fight with their own weapon
 function takeHurt(u, t){                         // the wounded go onto the unit struck; the tally (for the log) keeps the rest
   const { hurt, ...rest } = t;
   for (const [k, n] of Object.entries(hurt)) u.hurt[k] = (u.hurt[k] || 0) + n;
@@ -346,14 +348,14 @@ function strikeAll(us, table, rng, acc, log, field){
   for (const s of strikes(us, field)){
     const a = us[s.att], b = us[s.dfd];
     const opts = { situation: s.situation, charge: !!a.charged && !!a.mounted && !s.stakes, shaken: a.state === "shaken", rout: s.rout, exposed: exposure(b, s.rout), penalty: s.penalty || 0 };
-    let t = takeHurt(b, melee(sideOfUnit(a, table), sideOfUnit(b, table), s.men, rng, opts));
+    let t = takeHurt(b, melee(meleeSide(a, table), meleeSide(b, table), s.men, rng, opts));
     tallyLoss(acc, s, t);
     acc.flanked[s.dfd] = acc.flanked[s.dfd] || s.situation === "flank" || s.situation === "rear";
     log.push(...logged({ kind: s.rout ? "rout" : "melee", ...s }, t));
     if (struck.has(s.att)) continue;
     struck.add(s.att);
     for (const hero of heroesOf(a, ["front"])){
-      t = takeHurt(b, melee(heroSide(a, hero, table), sideOfUnit(b, table), UD.heroes.tempo, rng, opts));
+      t = takeHurt(b, melee(heroSide(a, hero, table), meleeSide(b, table), UD.heroes.tempo, rng, opts));
       tallyLoss(acc, s, t);
       log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: s.att, dfd: s.dfd, situation: s.situation }, t));
     }
@@ -373,6 +375,12 @@ function shootAll(us, table, rng, acc, log, field){
       tallyLoss(acc, v, t);
       log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: v.att, dfd: v.dfd, dist: v.dist }, t));
     }
+  }
+  for (const c of cannonades(us, field)){
+    const a = us[c.att], b = us[c.dfd];
+    const t = takeHurt(b, cannonade(sideOfUnit(a, table), b, c, rng, exposure(b, false, true)));
+    tallyLoss(acc, c, t);
+    log.push(...logged({ kind: "cannon", ...c }, t));
   }
 }
 function breachable(field, u, h){                // [kind, key, item]: the first work h's front rank can hack at
@@ -412,7 +420,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
   });
   log.push(...moraleAll(us, occ, before, acc, rng, table));
-  for (const u of us) u.charged = false;
+  for (const u of us){ u.charged = false; batteryAfter(u) }
   return { units: us, log };
 }
 function moraleAll(us, occ, before, acc, rng, table){
@@ -435,7 +443,7 @@ function routStrike(us, occ, j, table, rng){     // a unit that has just broken 
   for (const i of adjacentUnits(us, occ, j)){
     const a = us[i], b = us[j];
     if (a.side === b.side || out_(a) || b.men <= 0) continue;
-    const t = takeHurt(b, melee(sideOfUnit(a, table), sideOfUnit(b, table), a.men, rng, { rout: true, exposed: exposure(b, true) }));
+    const t = takeHurt(b, melee(meleeSide(a, table), meleeSide(b, table), a.men, rng, { rout: true, exposed: exposure(b, true) }));
     const cut = Math.min(t.down, b.men);
     Object.assign(b, { men: b.men - cut, down: b.down + cut, dead: b.dead + Math.min(t.dead, cut) });
     log.push(...logged({ kind: "rout", att: i, dfd: j, men: a.men, situation: "rear", rout: true }, t));
@@ -444,7 +452,13 @@ function routStrike(us, occ, j, table, rng){     // a unit that has just broken 
 }
 
 // ---------- movement ----------
-const allowance = u => (u.mounted ? UD.mounted_move : form(u).move);
+function allowance(u){                            // hexes a unit may move (twice for a charge); a battery changing over not at all, unlimbered a hex or so
+  if (isBattery(u) && !u.abandoned && u.state !== "broken"){   // crews running from their guns run on foot
+    if (u.limbering) return 0;
+    if (!u.limbered) return UD.artillery.pushed;
+  }
+  return u.mounted ? UD.mounted_move : form(u).move;
+}
 function turnCost(u){ const n = Math.ceil(Math.max(1, u.men) / form(u).per_hex); return Math.max(1, Math.ceil(Math.min(u.width, n) / UD.turn_per)) }
 const onMap = (h, size) => h[0] >= 0 && h[0] < size[0] && h[1] >= 0 && h[1] < size[1];
 function canEnter(field, u, h){                  // no wagons; for horses, no marsh, stakes or felled trees
@@ -561,4 +575,52 @@ function aftermath(units, care, rng){            // per unit {left, died, cases}
     }
     return r;
   });
+}
+
+// ---------- guns (as gravewounds/units.py) ----------
+// A battery: a unit whose weapon is a gun (units.yaml artillery), its men the crews. u.limbered:
+// moves, cannot fire; u.limbering: changing over this exchange; u.abandoned: broke and left its guns.
+const isGun = w => (UD.artillery?.guns || []).includes(w);
+const isBattery = u => isGun(u.weapon);
+const meleeWeapon = u => (isBattery(u) ? UD.artillery.crew_weapon : u.weapon);
+const gunsServed = u => Math.min(Math.ceil((u.start ?? u.men) / UD.artillery.crew), Math.ceil(Math.max(0, u.men) / UD.artillery.crew));
+function gunWeather(field, dist){                 // no laying guns on what cannot be seen; the wind as on firearms
+  const out = { blocked: null, penalty: 0, misfire: 0 }, w = field?.weather;
+  if (!w) return out;
+  const cond = WXD.conditions[w.cond], vis = cond.visibility;
+  if (vis !== null && vis !== undefined && dist * UD.range_scale > vis){ out.blocked = `${cond.name}: the guns cannot be laid on what cannot be seen.`; return out }
+  out.penalty = WXD.winds.find(x => x.id === w.wind).firearm;
+  return out;
+}
+const chanceAt = (bands, dist) => (bands.find(([to]) => dist <= to) || [0, 0])[1];
+function cannonades(units, field = null){         // [{att, dfd, guns, dist, shot, cover, penalty}]
+  const occ = occupancy(units), out = [], A = UD.artillery;
+  units.forEach((u, i) => {
+    if (!A || !isBattery(u) || out_(u) || u.limbered || u.limbering || u.abandoned || inContact(units, occ, i)) return;
+    const best = target(units, i, field);
+    if (!best) return;
+    const wx = gunWeather(field, best[0]);
+    out.push({ att: i, dfd: best[1], guns: gunsServed(u), dist: best[0], shot: best[0] <= A.canister_to ? "canister" : "round", cover: coverAt(field, best[2], best[3]), penalty: wx.penalty });
+  });
+  return out;
+}
+function cannonade(att, target, c, rng, exposed = []){   // a battery's fire at the target unit: the men struck, then a wound roll each
+  const A = UD.artillery, rounds = c.guns * A.rounds, cut = form(target).missile_factor * (100 - c.cover - c.penalty) / 100;
+  let struck = 0;
+  if (c.shot === "canister"){
+    const p = chanceAt(A.canister.strike, c.dist) * cut;
+    for (let k = 0; k < rounds * A.canister.balls; k++) if (rng.randint(1, 100) <= p) struck++;
+  } else {
+    const rs = A.round_shot, p = chanceAt(rs.strike, c.dist) * cut, path = Math.min(rs.path_max, form(target).ranks * footprint(target).length);
+    for (let k = 0; k < rounds; k++){
+      if (rng.randint(1, 100) > p) continue;
+      for (let m = 0; m < path; m++) if (rng.randint(1, 100) <= rs.file) struck++;
+    }
+  }
+  return blows(att, sideOfUnit(target, att.table), struck, A.attack, 0, rng, { exposed, shift: -1000 });
+}
+function batteryAfter(u){                          // end of an exchange: changing over is done; a broken battery has left its guns
+  if (!isBattery(u)) return;
+  if (u.limbering){ u.limbered = !u.limbered; u.limbering = false }
+  if (u.state === "broken" || u.state === "fled") u.abandoned = true;
 }
