@@ -214,6 +214,42 @@ def move_rules(d) -> list[str]:
     ]
 
 
+def weather_rules(d) -> list[str]:
+    WX = d.weather
+    DL, F = WX["daylight"], WX["fatigue"]
+    return [
+        f"<b>Calendar and daylight:</b> each map has a start date (Julian or Gregorian), a latitude and a climate. The march starts "
+        f"{DL['start_after_sunrise']:g} hour after sunrise and stops {DL['stop_before_sunset']:g} before sunset, up to {d.terrain['hours_per_day']} hours.",
+        f"<b>Weather:</b> each day is rolled from the climate's monthly normals, wet and dry spells tending to last ({int(WX['persistence'] * 100)}% persistence). "
+        f"Wet days fall as snow when the high is {WX['snow_at_or_below']} °C or less. The GM can change any day.",
+        "<b>Ground:</b> rain builds mud and snow lies, wearing off in dry or mild weather; heavy rain floods fords for two days. "
+        "Mud and snow slow the march (see the table below); deep mud or snow costs +1 movement per hex in battle.",
+        "<b>Rest and fatigue:</b> the night's rest starts from the camp's and drops a step for each point of hardship (wet, cold) beyond its shelter. "
+        f"Fatigue changes each night: heat or cold on a march of {F['heat_cold_min_hours']} hours or more, {F['heavy_going_hours']} hours in deep mud or snow, "
+        "and the night (bad +1, poor 0, fair -1, good -2).",
+    ]
+
+
+def weather_tables(d) -> dict:
+    WX = d.weather
+    conds = [["Weather", "Missile sight (hexes)", "Bows, crossbows", "Firearms", "Night hardship"]]
+    for c in WX["conditions"].values():
+        sw = WX["battle"]["string_wet"][c["wet"]]
+        conds.append([c["name"], "clear" if c.get("visibility") is None else str(c["visibility"]), f"-{sw}%" if sw else "-",
+                      "may misfire" if c["wet"] else "-", str(c["hardship"])])
+    mis = [["Ignition", "Dry", "Wet", "Very wet"]] + [[k.capitalize(), *[f"{x}%" for x in v]] for k, v in WX["battle"]["misfire"].items()]
+    fat = [["Fatigue", "Attack and defence", "Marching speed"]] + [[l["name"], f"-{l['penalty']}%" if l["penalty"] else "-",
+                                                                   "cannot march" if not l["march"] else f"{l['march']}%"] for l in WX["fatigue"]["levels"]]
+    mon = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"]
+    clim = [["Climate", ""] + mon]
+    for cl in WX["climates"].values():
+        clim.append([cl["name"], "high/low"] + [f"{h}/{l}" for h, l in zip(cl["high"], cl["low"])])
+        clim.append(["", "wet days"] + [str(x) for x in cl["rain"]])
+    ground = [["Terrain", "Mud", "Snow"]] + [[t["name"], f"x{d.weather['march']['mud'].get(tid, 100) / 100:g}", f"x{d.weather['march']['snow'].get(tid, 100) / 100:g}"]
+                                             for tid, t in d.terrain["terrain"].items() if t["cost"] is not None]
+    return {"conds": conds, "misfire": mis, "fatigue": fat, "climates": clim, "ground": ground}
+
+
 def travel_rules(d) -> list[str]:
     T = d.terrain
     return [
@@ -321,7 +357,9 @@ def travel_bundle(d) -> dict:
         "generated": date.today().isoformat(),
         "terrain": d.terrain,
         "works": d.works,
-        "maps": {mid: {k: m.get(k) for k in ("id", "name", "hex_km", "rows", "places", "forces")} for mid, m in d.maps.items()},
+        "weather": d.weather,
+        "maps": {mid: {k: m.get(k) for k in ("id", "name", "hex_km", "rows", "places", "forces",
+                                                "start_date", "calendar", "latitude", "climate", "climate_shift")} for mid, m in d.maps.items()},
     }
 
 
@@ -359,6 +397,7 @@ def bundle(d) -> dict:
         "tracking": d.wounds["tracking"],
         "combat": d.wounds["combat"],
         "works": d.works,
+        "weather": d.weather,
         "wounds": wounds,
         "modifiers": list(d.modifiers.values()),
         "called_shot": d.called_shot,
@@ -475,6 +514,11 @@ def markdown(d) -> str:
         out += ["## Camps and works", ""] + [re.sub("</?b>", "**", x) + "\n" for x in works_rules(d)]
         out += ["| Camp | What it is | Needs | 12 men | 100 men | 1,000 men |", "|---|---|---|---|---|---|"] + ["| " + " | ".join(r) + " |" for r in camp_rows(d)] + [""]
         out += ["| Work | Lies on | Labour | Crossing | Cover | Close combat | Breach |", "|---|---|---|---|---|---|---|"] + ["| " + " | ".join(r) + " |" for r in works_rows(d)] + [""]
+    if d.weather:
+        wt = weather_tables(d)
+        md = lambda rows: ["| " + " | ".join(rows[0]) + " |", "|" + "---|" * len(rows[0])] + ["| " + " | ".join(r) + " |" for r in rows[1:]] + [""]
+        out += ["## Weather", ""] + [re.sub("</?b>", "**", x) + "\n" for x in weather_rules(d)]
+        out += md(wt["conds"]) + md(wt["misfire"]) + md(wt["fatigue"]) + md(wt["ground"]) + md(wt["climates"])
     if d.terrain["terrain"]:
         ft = d.terrain["forces"]
         out += ["## Travel", ""] + [re.sub("</?b>", "**", x) + "\n" for x in travel_rules(d)]
@@ -833,6 +877,17 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
                   grid(crow, [1.1 * inch, W - 4.6 * inch, 0.9 * inch, 0.85 * inch, 0.85 * inch, 0.9 * inch], font=7.5), Spacer(1, 8),
                   Paragraph("Medieval works", H2), Spacer(1, 3),
                   grid(wrow, [0.9 * inch, 0.55 * inch, 1.2 * inch, 0.95 * inch, 1.0 * inch, W - 5.6 * inch, 1.0 * inch], font=7.5)]
+    if d.weather:
+        wt = weather_tables(d)
+        hdr = lambda rows: [[Paragraph(x, CH) for x in rows[0]]] + rows[1:]
+        story += [PageBreak(), Paragraph("Weather", H1)] + [Paragraph(x, B) for x in weather_rules(d)] + [
+            Spacer(1, 6), Paragraph("Conditions", H2), grid(hdr(wt["conds"]), [1.3 * inch, 1.3 * inch, 1.2 * inch, 1.1 * inch, W - 4.9 * inch], font=8),
+            Spacer(1, 6), KeepTogether([Paragraph("Misfires in the wet", H2), grid(hdr(wt["misfire"]), [1.5 * inch] + [1.0 * inch] * 3, font=8)]),
+            Spacer(1, 6), KeepTogether([Paragraph("Fatigue", H2), grid(hdr(wt["fatigue"]), [1.5 * inch, 1.6 * inch, 1.6 * inch], font=8)]),
+            Spacer(1, 6), KeepTogether([Paragraph("Mud and snow on the march (time x)", H2), grid(hdr(wt["ground"]), [1.6 * inch, 0.9 * inch, 0.9 * inch], font=8)]),
+            Spacer(1, 6), KeepTogether([Paragraph("Climates (modern normals, °C and days with rain or snow)", H2),
+                                        grid(hdr([wt["climates"][0]] + [[Paragraph(r[0], C)] + r[1:] for r in wt["climates"][1:]]),
+                                             [1.6 * inch, 0.6 * inch] + [(W - 2.2 * inch) / 12] * 12, font=6.5)])]
     if d.terrain["terrain"]:
         ft = d.terrain["forces"]
         trow = [[Paragraph(x, CH) for x in ["Terrain", "Time"] + [f"{f['name']}<br/>km a day" for f in ft.values()]]] + travel_rows(d)

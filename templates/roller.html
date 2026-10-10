@@ -201,6 +201,10 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
 .wk-prog{font:700 8px var(--mono);fill:var(--crit);text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--panel);stroke-width:2.5px}
 .hexmap.building .hex{cursor:cell}
 .workbar .palette{display:flex;flex-wrap:wrap;gap:4px}
+.wxbar select{width:auto;padding:3px 6px}
+fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wxbar label{display:inline-flex;align-items:center;gap:6px;margin:0}
 .workbar .palette button{display:inline-flex;align-items:center;gap:4px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -314,6 +318,12 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
     <div class="mapkey" id="map-key"></div>
     <div class="mapbar workbar"><div class="palette" id="work-palette" role="group" aria-label="Work to build"></div>
       <button class="small" id="btn-clear-works">Clear works</button><span class="muted" id="work-labour"></span></div>
+    <fieldset class="mapbar wxbar"><legend class="sr">Weather</legend>
+      <label class="muted">Weather <select id="sel-wx"></select></label>
+      <label class="muted">Wind <select id="sel-wind"></select></label>
+      <label class="muted">Ground <select id="sel-ground"></select></label>
+      <span class="muted" id="wx-note"></span>
+    </fieldset>
     <div class="mapbar mapsize">
       <button class="small" id="btn-freeplace" aria-pressed="false" title="Move any fighter to any empty hex, for setting up or putting things right">Free placement</button>
       <button class="small" id="btn-works" aria-pressed="false" title="Lay out ditches, banks, palisades, gates, stakes and wagons">Build works</button>
@@ -347,7 +357,7 @@ const d100 = () => 1 + Math.floor(Math.random() * 100);
 const look = (ranges, n) => ranges.find(r => n >= r.lo && n <= r.hi).id;
 const shortName = w => DATA.weapons[w].short || DATA.weapons[w].name.split(" (")[0];
 
-const S = { table: null, weapon: null, hit: null, chars: [], active: 0, attacker: -1, seq: 1, mods: new Set(), called: "", armor: "none", round: 1, log: [], turn: null, broken: {}, pending: [], works: { edges: {}, hexes: {} } };
+const S = { table: null, weapon: null, hit: null, chars: [], active: 0, attacker: -1, seq: 1, mods: new Set(), called: "", armor: "none", round: 1, log: [], turn: null, broken: {}, pending: [], works: { edges: {}, hexes: {} }, weather: { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } };
 const CMB = DATA.combat;
 const MODS = DATA.modifiers, KITS = Object.fromEntries(DATA.armor.kits.map(k => [k.id, k]));
 const MATS = DATA.armor.materials, LADDER = ["stopped", "light", "serious", "critical"];
@@ -408,6 +418,10 @@ function penalties(c){
     }
   }
   if (flags.has("off_hand") && ["grip|shield_arm", "hand_useless|shield_arm", "arm_useless|shield_arm"].some(k => seen.has(k))) flags.add("cannot_wield");
+  if (c.fatigue && DATA.weather){
+    const lv = DATA.weather.fatigue.levels[c.fatigue];
+    if (lv.penalty){ attack += lv.penalty; defence += lv.penalty; notes.push(`${lv.name.toLowerCase()} -${lv.penalty}%`) }
+  }
   if (c.state){
     const rule = CMB.states[c.state.id];
     flags.add(c.state.id);
@@ -525,21 +539,27 @@ function heapPopW(hp){
   return top;
 }
 const lessW = (a, b) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);
-function reachableWorks(start, steps, cols, rows, enemies, friends, works){
+// Hexes within `steps` movement, paying stepCost() plus `extra` a hex. opts: {cols, rows,
+// enemies, friends, works, extra} (see gravewounds/combat.py reachable_works).
+function reachableWorks(start, steps, opts){
+  const { cols, rows, enemies, friends, works, extra = 0 } = opts;
   const key = h => h[0] + "," + h[1], blocked = new Set(enemies.map(key)), friendly = new Set(friends.map(key));
   const best = new Map([[key(start), 0]]), done = new Set(), hp = [[0, 0, start]];
   let seq = 1;
+  const relax = (h, cost, n) => {
+    const nk = key(n);
+    if (blocked.has(nk)) return;
+    const sc = stepCost(works, h, n);
+    if (sc === null) return;
+    const nc = cost + sc + extra;
+    if (nc > steps || nc >= (best.has(nk) ? best.get(nk) : steps + 1)) return;
+    best.set(nk, nc); heapPushW(hp, [nc, seq++, n]);
+  };
   while (hp.length){
     const [cost, , h] = heapPopW(hp), k = key(h);
     if (done.has(k)) continue;
     done.add(k);
-    for (const n of neighbours(h, cols, rows)){
-      const nk = key(n);
-      if (blocked.has(nk)) continue;
-      const sc = stepCost(works, h, n);
-      if (sc === null || cost + sc > steps) continue;
-      if (cost + sc < (best.has(nk) ? best.get(nk) : steps + 1)){ best.set(nk, cost + sc); heapPushW(hp, [cost + sc, seq++, n]) }
-    }
+    for (const n of neighbours(h, cols, rows)) relax(h, cost, n);
   }
   for (const [k, c] of [...best]) if (friendly.has(k) && c) best.delete(k);
   return best;
@@ -611,6 +631,31 @@ function campWorks(kind, men, ftype, cols, rows){
     }
   }
   return { centre, radius: r, fits, works };
+}
+// Weather in battle
+const WXD = DATA.weather;
+function deepGoing(ground){
+  if (!ground || !WXD) return 0;
+  const deep = WXD.ground.deep;
+  return (ground.mud || 0) >= deep || (ground.snow || 0) >= deep ? WXD.battle.deep_step : 0;
+}
+function weatherAttack(weather, wid, dist){
+  const out = { blocked: null, penalty: 0, misfire: 0, notes: [] }, w = DATA.weapons[wid];
+  if (!weather || !WXD || !("range" in w)) return out;
+  const cond = WXD.conditions[weather.cond], vis = cond.visibility;
+  if (vis !== null && vis !== undefined && dist > vis){
+    out.blocked = `${cond.name}: no one can be seen to aim at beyond ${vis} hexes (${vis * 2} m).`;
+    return out;
+  }
+  const wind = WXD.winds.find(x => x.id === weather.wind);
+  if (w.string){
+    const p = WXD.battle.string_wet[cond.wet];
+    if (p){ out.penalty += p; out.notes.push(`wet string -${p}%`) }
+  }
+  const firearm = !!w.ignition, wp = firearm ? wind.firearm : wind.missile;
+  if (wp){ out.penalty += wp; out.notes.push(`${wind.name.toLowerCase()} -${wp}%`) }
+  if (firearm) out.misfire = WXD.battle.misfire[w.ignition][cond.wet];
+  return out;
 }
 /* ---------- end of rules shared with gravewounds/combat.py ---------- */
 const attackerChar = () => (S.chars && S.attacker >= 0) ? S.chars[S.attacker] : null;
@@ -695,7 +740,7 @@ function sevTiers(mech, zone, wid){
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,addSide:S.addSide})) }catch(e){} }
+function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,addSide:S.addSide,weather:S.weather})) }catch(e){} }
 function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); return true } }catch(e){} return false }
 
 /* ---------- body figure ---------- */
@@ -769,6 +814,14 @@ function rollHit(){
     if (A && A.flags.includes("incapacitated")) return done({ blocked: `${attackerChar().name} is incapacitated and cannot attack.` });
     if (cannotAttack(A)) return done({ blocked: `${attackerChar().name} cannot attack: ${CMB.states[attackerChar().state.id].name.toLowerCase()}.` });
     if (A && A.flags.includes("cannot_wield") && w.melee !== "unarmed") return done({ blocked: `${attackerChar().name} cannot hold a weapon in either hand.` });
+    const mf = rc.range ? rc.range.misfire : 0;
+    if (mf){
+      const mr = d100();
+      if (mr <= mf){
+        if (freeHit) freeDone("misfire");
+        return done({ blocked: `Misfire: d100 ${d2(mr)} against ${mf}% \u2014 the wet weather spoiled the priming. The shot is lost.` });
+      }
+    }
     const ar = attackRoll(atkPct, readDie("#in-atk-roll") ?? d100(), (A ? A.attack : 0) + (rc.range ? rc.range.penalty : 0));
     combat = { atk: ar, def: null, range: rc.range };
     if (!ar.hit){ if (freeHit) freeDone("miss"); return done({ miss: true, combat }) }
@@ -832,7 +885,7 @@ function combatLines(c){
   const rangeP = R0.rangePen ?? (R0.cover || R0.height ? 0 : rp);
   const wkName = t => (WK.edge_works[t] || WK.hex_works[t] || { name: t }).name.toLowerCase();
   const parts = [wp ? ` − ${wp} wounds` : "", rangeP ? ` − ${rangeP} ${R0.band} range` : "",
-    R0.cover ? ` − ${R0.cover} cover (${wkName(R0.coverWork)})` : "", R0.height ? ` − ${R0.height} fighting up (${wkName(R0.heightWork)})` : ""].join("");
+    R0.cover ? ` − ${R0.cover} cover (${wkName(R0.coverWork)})` : "", R0.height ? ` − ${R0.height} fighting up (${wkName(R0.heightWork)})` : "", R0.weatherPen ? ` − ${R0.weatherPen} weather (${R0.weatherNotes.map(n => n.replace(/ -\d+%$/, "")).join(", ")})` : ""].join("");
   const apen = parts ? ` (${a.base}${parts})` : "";
   let out = `<div class="sitline">Attack d100 ${d2(a.roll)} vs ${a.effective}%${apen}: ${a.hit ? `hit, margin ${a.margin}${a.critical ? " · <b>critical</b>, cannot be defended" : ""}` : "miss"}</div>`;
   if (c.def) out += `<div class="sitline">Defence d100 ${d2(c.def.roll)} vs ${c.def.effective}%${pen(c.def)}: ${c.def.defended ? "parried or dodged" : "failed"}</div>`;
@@ -1221,8 +1274,9 @@ function turnInfo(){                         // the acting fighter's movement th
   if (!S.tm || S.tm.id !== c.id) S.tm = { id: c.id, steps: 0, ran: false, moved: false };
   const { cols, rows } = mapSize(), allow = moveAllowance(c.wounds, c.state ? c.state.id : null);
   const others = S.chars.filter(o => o !== c && o.pos);
-  const reach = S.tm.moved ? new Map() : reachableWorks(c.pos, Math.max(allow.advance, allow.run), cols, rows,
-    others.filter(o => sideOf(o) !== sideOf(c)).map(o => o.pos), others.filter(o => sideOf(o) === sideOf(c)).map(o => o.pos), S.works);
+  const reach = S.tm.moved ? new Map() : reachableWorks(c.pos, Math.max(allow.advance, allow.run), { cols, rows,
+    enemies: others.filter(o => sideOf(o) !== sideOf(c)).map(o => o.pos), friends: others.filter(o => sideOf(o) === sideOf(c)).map(o => o.pos),
+    works: S.works, extra: deepGoing(S.weather && S.weather.ground) });
   return { c, allow, reach };
 }
 // Range and reach for the hit about to be rolled: {blocked} or {range} (null when there is no map check).
@@ -1243,7 +1297,10 @@ function rangeCheck(){
   if (!r) return { blocked: `${dd.name} is ${hexes(dist)} away, out of reach of the ${shortName(S.weapon).toLowerCase()} (${reachText(S.weapon)}).` };
   const wk = worksOnAttack(a, dd);
   if (wk.blocked) return { blocked: wk.blocked };
-  return { range: { dist, ...r, rangePen: r.penalty, ...wk, penalty: r.penalty + (wk.cover || 0) + (wk.height || 0) } };
+  const wx = weatherAttack(S.weather, S.weather ? S.weapon : null, dist);
+  if (wx.blocked) return { blocked: wx.blocked };
+  const extra = { weatherPen: wx.penalty, weatherNotes: wx.notes, misfire: wx.misfire };
+  return { range: { dist, ...r, rangePen: r.penalty, ...wk, ...extra, penalty: r.penalty + (wk.cover || 0) + (wk.height || 0) + wx.penalty } };
 }
 // What the works do to an attack by a on dd: cover against missiles, or a palisade or a bank in a close fight.
 function worksOnAttack(a, dd){
@@ -1259,7 +1316,8 @@ function worksOnAttack(a, dd){
 }
 function canTarget(a, o){                    // ringed on the map: an enemy the acting fighter can strike now
   if (!a.pos || !o.pos || sideOf(o) === sideOf(a)) return false;
-  return !!weaponReach(S.weapon, hexDistance(a.pos, o.pos)) && !worksOnAttack(a, o).blocked;
+  const dist = hexDistance(a.pos, o.pos);
+  return !!weaponReach(S.weapon, dist) && !worksOnAttack(a, o).blocked && !weatherAttack(S.weather, S.weapon, dist).blocked;
 }
 function restoreActing(){                    // after free attacks: the acting fighter attacks again
   const c = actingChar(); if (!c) return;
@@ -1431,15 +1489,16 @@ function setupHandoff(){                     // a camp or position sent from the
   for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) if (hexDistance(L.centre, [x, y]) <= Math.max(1, L.radius - 1)) spots.push([x, y]);
   spots.sort((p, q) => hexDistance(L.centre, p) - hexDistance(L.centre, q) || p[1] - q[1] || p[0] - q[0]);
   const n = Math.min(men, 8);
-  S.chars = Array.from({ length: n }, (_, i) => { const c = newChar(`${h.force.name} ${i + 1}`, "none", null, {}, h.force.side); c.pos = spots[i]; return c });
+  S.chars = Array.from({ length: n }, (_, i) => { const c = newChar(`${h.force.name} ${i + 1}`, "none", null, {}, h.force.side); c.pos = spots[i]; c.fatigue = h.force.fatigue || 0; return c });
+  if (h.weather) S.weather = h.weather;
   // The nearest enemy force on the travel map comes too, waiting at the far edge (side 2's edge).
   const foe = (h.foes || [])[0], fn = foe ? Math.min(foe.men, 8) : 0;
-  for (let i = 0; i < fn; i++) S.chars.push(newChar(`${foe.name} ${i + 1}`, "none", null, {}, foe.side));
+  for (let i = 0; i < fn; i++){ const c = newChar(`${foe.name} ${i + 1}`, "none", null, {}, foe.side); c.fatigue = foe.fatigue || 0; S.chars.push(c) }
   S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0;
   S.addSide = foe ? foe.side : "Attackers";                                // Add brings in the other side
   if (!foe && h.force.side === "Attackers") S.addSide = "Defenders";
   const campName = h.camp ? WK.camps[h.camp].name.toLowerCase() : "no camp";
-  S.pending = [`Set up from the travel map: ${h.force.name} at ${h.place} (${campName}), day ${h.day}, ${h.time}`];
+  S.pending = [`Set up from the travel map: ${h.force.name} at ${h.place} (${campName}), ${h.day}, ${h.time}${h.weather ? " \u00b7 " + WXD.conditions[h.weather.cond].name.toLowerCase() : ""}`];
   const placed = n < men ? n + " of its " + men + " men" : "its " + n + " men";
   const where = h.camp ? campName : "position", cut = L.fits ? "" : " (cut down to fit the map)";
   const facing = lay ? "facing the way in" : "facing them";
@@ -1451,8 +1510,38 @@ function setupHandoff(){                     // a camp or position sent from the
   S.handoff = null;
   renderChars();
 }
+// ----- weather -----
+const GROUNDS = [["dry", { mud: 0, snow: 0 }, "Dry"], ["mud", { mud: 1, snow: 0 }, "Muddy"], ["deepmud", { mud: 2, snow: 0 }, "Deep mud"],
+  ["snow", { mud: 0, snow: 1 }, "Snow lying"], ["deepsnow", { mud: 0, snow: 2 }, "Deep snow"]];
+function groundKey(g){
+  const deep = WXD ? WXD.ground.deep : 2, mud = (g && g.mud) || 0, snow = (g && g.snow) || 0;
+  if (snow >= deep) return "deepsnow";
+  if (snow) return "snow";
+  if (mud >= deep) return "deepmud";
+  return mud ? "mud" : "dry";
+}
+function fatigueSelect(c){
+  if (!WXD) return "";
+  const opts = WXD.fatigue.levels.map((lv, i) => `<option value="${i}" ${(c.fatigue || 0) === i ? "selected" : ""}>${lv.name}</option>`).join("");
+  return `<label class="order" title="Fatigue: % off attack and defence">Fatigue <select data-act="fatigue" aria-label="Fatigue for ${attr(c.name)}">${opts}</select></label>`;
+}
+function renderWeather(){
+  if (!WXD) return;
+  const W = S.weather || (S.weather = { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } });
+  $("#sel-wx").innerHTML = Object.entries(WXD.conditions).map(([k, c]) => `<option value="${k}" ${W.cond === k ? "selected" : ""}>${c.name}</option>`).join("");
+  $("#sel-wind").innerHTML = WXD.winds.map(x => `<option value="${x.id}" ${W.wind === x.id ? "selected" : ""}>${x.name}</option>`).join("");
+  const gk = groundKey(W.ground);
+  $("#sel-ground").innerHTML = GROUNDS.map(([k, , n]) => `<option value="${k}" ${gk === k ? "selected" : ""}>${n}</option>`).join("");
+  const c = WXD.conditions[W.cond], wind = WXD.winds.find(x => x.id === W.wind), bits = [];
+  if (c.visibility) bits.push(`sight for missiles ${c.visibility} hexes`);
+  if (c.wet) bits.push(`bows and crossbows \u2212${WXD.battle.string_wet[c.wet]}%, firearms may misfire`);
+  if (wind.missile) bits.push(`missiles \u2212${wind.missile}%`);
+  if (deepGoing(W.ground)) bits.push(`every hex +${deepGoing(W.ground)} movement`);
+  const temp = W.high !== undefined ? `${W.low}\u2013${W.high} \u00b0C. ` : "";
+  $("#wx-note").textContent = temp + (bits.length ? bits.join("; ") + "." : "No effect on the fight.");
+}
 function renderMap(){
-  const { cols, rows } = mapSize(); placeUnplaced();
+  const { cols, rows } = mapSize(); placeUnplaced(); renderWeather();
   const t = turnInfo(), acting = t && t.c, sides = sidesInOrder(), placing = !S.turn || S.freePlace;
   const canAtk = acting && !cannotAttack(penalties(acting)) && !(S.tm && S.tm.ran) && attackerChar() === acting && !(S.free || []).length;
   let hx = "";
@@ -1479,7 +1568,8 @@ function renderMap(){
   const bits = [];
   if (S.handoff){
     const h = S.handoff;
-    bits.push(`<span class="free"><b>From the travel map:</b> ${attr(h.force.name)} (${h.force.men} men) at ${attr(h.place)}${h.camp ? `, ${attr(WK.camps[h.camp].name.toLowerCase())}` : ""}, day ${h.day} ${h.time}. Set up the fight here? This replaces the fighters and works on this page.</span><button class="small" data-map="handoff">Set up the fight</button><button class="small" data-map="nohandoff">Not now</button>`);
+    const campBit = h.camp ? ", " + attr(WK.camps[h.camp].name.toLowerCase()) : "";
+    bits.push(`<span class="free"><b>From the travel map:</b> ${attr(h.force.name)} (${h.force.men} men) at ${attr(h.place)}${campBit}, ${h.day}, ${h.time}. Set up the fight here? This replaces the fighters and works on this page.</span><button class="small" data-map="handoff">Set up the fight</button><button class="small" data-map="nohandoff">Not now</button>`);
   }
   const f = (S.free || [])[0];
   if (f){
@@ -1573,7 +1663,8 @@ function renderChars(){
         <button class="small" data-act="leader" aria-pressed="${!!c.leader}" title="This side's leader: +${CMB.morale.leader_present} to morale while he is up, \u2212${CMB.morale.leader_down} if he falls">${c.leader ? "Leader" : "Make leader"}</button>
         <label class="order" title="Nerve: stop checks and morale roll d100 against this">Nerve
           <select data-act="rating" aria-label="Experience for ${attr(c.name)}">${Object.keys(RATINGS).map(r => `<option value="${r}" ${c.rating === r ? "selected" : ""}>${r}</option>`).join("")}<option value="custom" ${c.rating === "custom" ? "selected" : ""}>custom</option></select>
-          <input type="number" data-act="nerve" value="${nerveOf(c)}" aria-label="Nerve for ${attr(c.name)}"></label></div>
+          <input type="number" data-act="nerve" value="${nerveOf(c)}" aria-label="Nerve for ${attr(c.name)}"></label>
+        ${fatigueSelect(c)}</div>
       ${c.state ? `<div class="state ${c.state.id === "out" ? "out" : ""}"><span><b>${CMB.states[c.state.id].name}</b>${c.state.rounds != null ? ` \u00b7 ${c.state.rounds} round${c.state.rounds === 1 ? "" : "s"} left` : " \u00b7 until helped or the fight ends"}</span><button class="small" data-act="clearstate">Clear</button></div>` : ""}
       <div class="charhead"><strong>${c.name}</strong>
         <button class="small" data-act="attacker" aria-pressed="${isAtt}" ${incap ? 'disabled title="This fighter cannot attack now"' : ""}>${isAtt ? "Attacking" : "Attacker"}</button>
@@ -1623,10 +1714,11 @@ $("#chars").addEventListener("click", e => {
   else { const j = +b.closest("li").dataset.j; treat(c, c.wounds[j], act) }
 });
 $("#chars").addEventListener("change", e => {
-  const el = e.target.closest('[data-act="side"],[data-act="rating"],[data-act="nerve"]');
+  const el = e.target.closest('[data-act="side"],[data-act="rating"],[data-act="nerve"],[data-act="fatigue"]');
   if (el){
     const c = S.chars[+el.closest(".char").dataset.i], act = el.dataset.act;
     if (act === "side") c.side = el.value.trim() || "Side A";
+    if (act === "fatigue") c.fatigue = +el.value;
     if (act === "rating" && el.value !== "custom"){ c.rating = el.value; c.nerve = RATINGS[el.value] }
     if (act === "nerve"){ c.nerve = el.value === "" ? RATINGS[DEFAULT_RATING] : +el.value; c.rating = Object.keys(RATINGS).find(r => RATINGS[r] === c.nerve) || "custom" }
     renderChars(); return;
@@ -1750,6 +1842,14 @@ function init(){
   $("#map-actions").addEventListener("click", e => { const b = e.target.closest("button[data-work]"); if (b) doWork(b.dataset.work, b.dataset.k, +b.dataset.j) });
   $("#btn-works").onclick = () => { S.workMode = !S.workMode; S.workType = S.workType || "palisade"; S.placing = null; S.mapMsg = ""; renderChars() };
   $("#work-palette").addEventListener("click", e => { const b = e.target.closest("button[data-wtype]"); if (b){ S.workType = b.dataset.wtype; S.workMode = true; renderChars() } });
+  $("#sel-wx").onchange = e => {
+    S.weather.cond = e.target.value;
+    const mw = WXD.conditions[e.target.value].min_wind, ids = WXD.winds.map(x => x.id);
+    if (mw && ids.indexOf(S.weather.wind) < ids.indexOf(mw)) S.weather.wind = mw;
+    renderChars();
+  };
+  $("#sel-wind").onchange = e => { S.weather.wind = e.target.value; renderChars() };
+  $("#sel-ground").onchange = e => { const g = GROUNDS.find(x => x[0] === e.target.value)[1]; S.weather.ground = { ...S.weather.ground, ...g }; renderChars() };
   $("#btn-clear-works").onclick = () => { S.works = { edges: {}, hexes: {} }; S.mapMsg = "Works cleared."; renderChars() };
   $("#btn-freeplace").onclick = () => { S.freePlace = !S.freePlace; S.placing = null; S.mapMsg = ""; renderChars() };
   const resize = () => {
