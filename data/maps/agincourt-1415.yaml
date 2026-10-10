@@ -7,11 +7,13 @@
 # Seine mouth in mid-August and took Harfleur on 22 September, after a siege in which dysentery
 # killed or sent home thousands. He left on 8 October to march to Calais, on the coast road by
 # Fécamp, Arques and Eu. On 13 October he found the Blanchetaque ford held, and turned up the
-# Somme looking for a crossing while a French army shadowed him on the far bank: by Pont-Remy,
+# Somme looking for a crossing while the French vanguard shadowed him on the far bank: by Pont-Remy,
 # Hangest and Boves, past Amiens, until he crossed at Béthencourt and Voyennes on 19 October.
-# He marched north by Athies, Albert and Forceville, crossed the Ternoise at Blangy on 24
-# October, and met the French army across his road at Azincourt on the 25th. Numbers on both
-# sides are disputed; those below are round figures for play.
+# Meanwhile the French main army, mustered at Rouen, marched north-east and joined the
+# vanguard around Péronne; the King and the Dauphin stayed behind at Rouen. Henry marched
+# north by Athies, Albert and Forceville, crossed the Ternoise at Blangy on 24 October, and
+# found the combined French army across his road at Azincourt, where they fought on the
+# 25th. Numbers on both sides are disputed; those below are round figures for play.
 id: agincourt-1415
 name: "Agincourt campaign, 1415 (Harfleur to Calais)"
 hex_km: 5
@@ -108,7 +110,7 @@ places:
   - {name: "Calais", kind: objective, hex: [27, 4], note: "English since 1347: the army's goal"}
   - {name: "Ardres", kind: village, hex: [29, 6]}
   - {name: "Fruges", kind: village, hex: [31, 15]}
-  - {name: "Rouen", kind: town, hex: [16, 43], note: "Where the French royal army gathered"}
+  - {name: "Rouen", kind: town, hex: [16, 43], note: "Where the French main army mustered; the King and the Dauphin stayed here"}
   - {name: "Caudebec", kind: village, hex: [11, 40]}
   - {name: "Tancarville", kind: village, hex: [7, 42]}
   - {name: "Aumale", kind: village, hex: [26, 34]}
@@ -123,4 +125,4 @@ forces:
   - {name: "Henry V's army", type: mounted, side: "England", men: 8500, tools: true, hex: [3, 41]}
   - {name: "English baggage", type: wagons, side: "England", men: 300, tools: true, hex: [3, 40]}
   - {name: "French vanguard (Boucicaut, d'Albret)", type: mounted, side: "France", men: 6000, tools: false, hex: [27, 26]}
-  - {name: "French royal army", type: foot, side: "France", men: 15000, tools: true, hex: [16, 43]}
+  - {name: "French main army (from Rouen)", type: foot, side: "France", men: 15000, tools: true, hex: [16, 43]}
