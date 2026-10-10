@@ -1545,7 +1545,7 @@ function unitLineText(l, nm){                     // a volley, a melee or a rout
 function cannonText(l, nm, fallen){               // a battery's fire: its target, rounds, men struck, guns knocked out
   const shot = l.shot === "canister" ? "canister" : "round shot", aim = l.named ? " (as ordered)" : "";
   const guns = l.rounds < l.guns * FD.units.artillery.rounds ? `${l.guns} guns, ${l.rounds} rounds left to fire` : `${l.guns} guns`;
-  const lost = l.dismounted ? `; ${l.dismounted} gun${l.dismounted > 1 ? "s" : ""} knocked out` : "";
+  const lost = l.dismounted ? `; ${l.dismounted === 1 ? "1 gun" : l.dismounted + " guns"} knocked out` : "";
   return `${nm(l.att)} fire ${shot} at ${nm(l.dfd)}${aim}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${guns}, ${l.blows} men in the way, ${fallen}${lost}.`;
 }
 function shotNotes(l){                            // " (cover -20%, weather -10%)"

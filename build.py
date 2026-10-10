@@ -267,7 +267,7 @@ def _gun_rules(d) -> list[str]:
         "friend or enemy, except round shot from high ground over a unit on lower ground. "
         f"<b>Ricochet:</b> on firm ground round shot bounds on, striking the first other unit within {yd(rc['beyond'] * m)} past the target ({bands(rc['strike'])} past it) "
         "and going through its ranks; rough ground, woods, marsh, mud or snow stop it. "
-        f"A round-shot strike on a battery knocks out a gun at {A['dismount']}%. <b>Ammunition:</b> {A['ammo']} rounds a gun; resupplying takes an exchange out of contact, without moving or firing.",
+        f"A round-shot strike on the battery it is fired at knocks out a gun at {A['dismount']}%. <b>Ammunition:</b> {A['ammo']} rounds a gun; resupplying takes an exchange out of contact, without moving or firing.",
         f"<b>Limbering:</b> a limbered battery moves but cannot fire; unlimbered it fires but can only be manhandled {A['pushed']} hexes. Changing over takes an exchange, "
         f"without moving or firing. Hand to hand the crews fight with {d.weapons[A['crew_weapon']]['name'].lower()}. A battery that breaks loses its guns.",
     ]

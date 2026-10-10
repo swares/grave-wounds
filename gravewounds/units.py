@@ -802,13 +802,15 @@ def _fire_battery(d: Data, us: list, table: str, rng, acc: tuple, c: dict) -> li
     a["spent"] = a.get("spent", 0) + c["rounds"]
     if t.get("dismounted"):
         b["guns_lost"] = b.get("guns_lost", 0) + t["dismounted"]
-    _tally(*acc, c, t)
+    lost, dead, dealt = acc
+    _tally(lost, dead, dealt, c, t)
     log = _logged({"kind": "cannon", **c}, t)
-    if c["behind"] is not None:
-        r = {**c, "dfd": c["behind"]}
-        t = _take_hurt(us[r["dfd"]], ricochet(d, gun, us[r["dfd"]], c, rng, _exposure(d, us[r["dfd"]], False, True)))
-        _tally(*acc, r, t)
-        log += _logged({"kind": "ricochet", **r}, t)
+    k = c["behind"]
+    if k is not None:
+        bh = us[k]
+        t = _take_hurt(bh, ricochet(d, gun, bh, c, rng, _exposure(d, bh, False, True)))
+        _tally(lost, dead, dealt, {"att": c["att"], "dfd": k}, t)
+        log += _logged({"kind": "ricochet", **c, "dfd": k}, t)
     return log
 
 

@@ -87,7 +87,7 @@ artillery:
   crew_weapon: sword
   pushed: 2                  # hexes an unlimbered battery can be manhandled (or turned) in an exchange
   ammo: 50                   # rounds a gun carries into action
-  dismount: 10               # % a round-shot strike on a battery knocks out one of its guns
+  dismount: 10               # % a round-shot strike on the battery fired at knocks out one of its guns
   ricochet:
     beyond: 30               # field hexes past the target a bounding ball can still strike a unit
     strike: [[10, 30], [20, 20], [30, 10]]     # [up to this many hexes past the target, % a round strikes]
