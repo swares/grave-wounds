@@ -123,6 +123,7 @@ docs/screenshots/      images used in this README and the start page
 requirements.txt       Python packages (PyYAML; reportlab for the PDF; Playwright, optional,
                        to draw the combatant figures into the PDF)
 templates/figure.js    combatant figures (SVG) from kit, weapon and look
+templates/camp.js      camp layout and works labour, put into both the roller and the travel map
 ```
 
 ## Combatant figures

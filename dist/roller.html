@@ -723,7 +723,7 @@ function moraleCheck(fighters, roll){
   return { target, roll, down, of: n, broken: roll > target };
 }
 // Battle map. Hexes are [col, row], pointy-top, odd rows shifted right.
-const MOVE = CMB.move;
+const MOVE = CMB.move, CAMP_HEX_M = MOVE.hex_m;
 function cubeOf([c, r]){ const q = c - (r - (r & 1)) / 2; return [q, r, -q - r] }
 function hexDistance(a, b){ const x = cubeOf(a), y = cubeOf(b); return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2])) }
 const NEIGHBOURS = [[[1, 0], [0, -1], [-1, -1], [-1, 0], [-1, 1], [0, 1]], [[1, 0], [1, -1], [0, -1], [-1, 0], [0, 1], [1, 1]]];
@@ -861,6 +861,11 @@ function meleeAcross(works, attacker, target, reach, cols, rows){
   }
   return { blocked, penalty, work: what };
 }
+/* Camp layout and works labour, shared by the roller's battle map and the travel map.
+   Same rules as gravewounds/combat.py (camp_radius, camp_map_size, camp_works, works_labour).
+   build.py puts this file into both pages at their CAMP_JS marker. Each page provides
+   WK (works.yaml), CAMP_HEX_M (the battle map's hex, metres), neighbours, hexDistance,
+   hkey and edgeKey. */
 function campRadius(men, ftype){
   const area = Math.max(WK.camp_area_min, men * WK.camp_area[ftype]), n = area / (Math.sqrt(3) / 2 * 4);
   let r = 0; while (3 * r * (r + 1) + 1 < n) r++;
@@ -905,24 +910,30 @@ function layStakes(works, centre, r, cols, rows){
   }
 }
 function layFortified(works, centre, r, cols, rows){
+  layWall(works, centre, r, cols, rows);
+  layDitch(works, centre, r, cols, rows);
+}
+function layWall(works, centre, r, cols, rows){   // bank and palisade round the ring, with the gate
   const gateIn = [centre[0] + r, centre[1]], gateOut = [centre[0] + r + 1, centre[1]];
   for (const h of hexesAt(centre, r, cols, rows)){
-    for (const n of neighbours(h, cols, rows)){
-      if (hexDistance(centre, n) !== r + 1) continue;
+    for (const n of neighbours(h, cols, rows).filter(x => hexDistance(centre, x) === r + 1)){
       const gate = sameH(h, gateIn) && sameH(n, gateOut);
       works.edges[edgeKey(h, n)] = gate ? [{ type: "gate", progress: 0, open: false, inside: hkey(h) }]
         : [{ type: "bank", progress: 0, high: hkey(h) }, { type: "palisade", progress: 0 }];
     }
   }
+}
+function layDitch(works, centre, r, cols, rows){  // the ditch one ring out, leaving the way to the gate
+  const gateOut = [centre[0] + r + 1, centre[1]];
   for (const h of hexesAt(centre, r + 1, cols, rows)){
     if (sameH(h, gateOut)) continue;
-    for (const n of neighbours(h, cols, rows)){
-      if (hexDistance(centre, n) === r + 2) works.edges[edgeKey(h, n)] = [{ type: "ditch", progress: 0, high: hkey(h) }];
+    for (const n of neighbours(h, cols, rows).filter(x => hexDistance(centre, x) === r + 2)){
+      works.edges[edgeKey(h, n)] = [{ type: "ditch", progress: 0, high: hkey(h) }];
     }
   }
 }
 const campMapSize = (kind, men, ftype) => 2 * (campRadius(men, ftype) + (WK.camps[kind].layout === "fortified" ? 2 : 1)) + 3;
-const edgeMetres = () => MOVE.hex_m / Math.sqrt(3);
+const edgeMetres = () => CAMP_HEX_M / Math.sqrt(3);
 function edgeLabour(sp, hauled, em){        // one hex side of a work, or one gate
   if ("each" in sp) return sp.each;
   const haul = hauled ? sp.haul || 0 : 0;
@@ -940,6 +951,7 @@ function worksLabour(works, hauled = false){  // man-hours to build these works
   }
   return t;
 }
+
 // Weather in battle
 const WXD = DATA.weather;
 function deepGoing(ground){

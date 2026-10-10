@@ -1077,11 +1077,14 @@ def main() -> int:
         print("templates/figure.js lacks drawings named in gravewounds/model.py FIG_NAMES: " + ", ".join(missing), file=sys.stderr)
         return 1
     html = tpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>"))
+    camp_js = (ROOT / "templates" / "camp.js").read_text(encoding="utf-8")
+    html = html.replace("/*__CAMP_JS__*/", camp_js)
     html = html.replace("/*__GRAVEWOUNDS_DATA__*/null", json.dumps(b, separators=(",", ":")))
     (DIST / "roller.html").write_text(html, encoding="utf-8")
     tb = travel_bundle(d)
     ttpl = (ROOT / "templates" / "travel.html").read_text(encoding="utf-8")
-    (DIST / "travel.html").write_text(ttpl.replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":"))), encoding="utf-8")
+    thtml = ttpl.replace("/*__CAMP_JS__*/", camp_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
+    (DIST / "travel.html").write_text(thtml, encoding="utf-8")
     (ROOT / "index.html").write_text(index_page(d), encoding="utf-8")
     print("Built:", ", ".join(p.name for p in sorted(DIST.iterdir())), "+ index.html")
     return 0
