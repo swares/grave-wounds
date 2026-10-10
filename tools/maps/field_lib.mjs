@@ -43,7 +43,8 @@ const hexList = hs => hs.map(h => `[${h.join(", ")}]`).join(", ");
 // travel {map, place, within, sides}, weather (YAML flow text), grid, hexWorks {type: [hexes]}, units}.
 export function writeField(spec){
   const { grid } = spec, works = Object.entries(spec.hexWorks || {});
-  const worksText = works.length ? `works:\n  hexes:\n${works.map(([type, hs]) => `    - {type: ${type}, at: [${hexList(hs)}]}`).join("\n")}\n` : "";
+  const workLine = ([type, hs]) => `    - {type: ${type}, at: [${hexList(hs)}]}`;
+  const worksText = works.length ? "works:\n  hexes:\n" + works.map(workLine).join("\n") + "\n" : "";
   const t = spec.travel;
   const out = `${spec.header.map(l => ("# " + l).trimEnd()).join("\n")}
 id: ${spec.id}
