@@ -88,7 +88,7 @@ chance depends on how the weapon is fired:
 | Percussion cap | 5% | 10% |
 | Cartridge | – | – |
 
-**Set up a fight here** carries the day's weather and ground to the battle map. The
+**Set up the fight** carries the day's weather and ground to the battle map. The
 roller's weather bar can change them.
 
 ## Rest

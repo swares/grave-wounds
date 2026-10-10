@@ -218,6 +218,30 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
     <span class="hdr-right"><a class="navlink" href="travel.html">Travel map</a><span class="badge" id="conf">fitted weights</span></span>
   </header>
 
+  <section class="panel" aria-labelledby="h-map" id="map-panel">
+    <div class="toolbar" style="justify-content:space-between">
+      <h2 id="h-map">Battle map</h2>
+      <span class="muted" id="map-scale"></span>
+    </div>
+    <div class="mapbar" id="map-actions" aria-live="polite"></div>
+    <div class="hexmap" id="map" role="group" aria-label="Battle map: hex grid with the fighters"></div>
+    <div class="mapkey" id="map-key"></div>
+    <div class="mapbar workbar"><div class="palette" id="work-palette" role="group" aria-label="Work to build"></div>
+      <button class="small" id="btn-clear-works">Clear works</button><label class="muted"><input type="checkbox" id="chk-haul"> Timber hauled from afar</label><span class="muted" id="work-labour"></span></div>
+    <fieldset class="mapbar wxbar"><legend class="sr">Weather</legend>
+      <label class="muted">Weather <select id="sel-wx"></select></label>
+      <label class="muted">Wind <select id="sel-wind"></select></label>
+      <label class="muted">Ground <select id="sel-ground"></select></label>
+      <span class="muted" id="wx-note"></span>
+    </fieldset>
+    <div class="mapbar mapsize">
+      <button class="small" id="btn-freeplace" aria-pressed="false" title="Move any fighter to any empty hex, for setting up or putting things right">Free placement</button>
+      <button class="small" id="btn-works" aria-pressed="false" title="Lay out ditches, banks, palisades, gates, stakes and wagons">Build works</button>
+      <label class="muted">Columns <input id="in-cols" type="number" min="8" max="80"></label>
+      <label class="muted">Rows <input id="in-rows" type="number" min="6" max="60"></label>
+    </div>
+  </section>
+
   <div class="grid">
     <!-- Controls and result -->
     <section class="panel" aria-labelledby="h-roll">
@@ -308,29 +332,6 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
     </section>
   </div>
 
-  <section class="panel" aria-labelledby="h-map" id="map-panel">
-    <div class="toolbar" style="justify-content:space-between">
-      <h2 id="h-map">Battle map</h2>
-      <span class="muted" id="map-scale"></span>
-    </div>
-    <div class="mapbar" id="map-actions" aria-live="polite"></div>
-    <div class="hexmap" id="map" role="group" aria-label="Battle map: hex grid with the fighters"></div>
-    <div class="mapkey" id="map-key"></div>
-    <div class="mapbar workbar"><div class="palette" id="work-palette" role="group" aria-label="Work to build"></div>
-      <button class="small" id="btn-clear-works">Clear works</button><span class="muted" id="work-labour"></span></div>
-    <fieldset class="mapbar wxbar"><legend class="sr">Weather</legend>
-      <label class="muted">Weather <select id="sel-wx"></select></label>
-      <label class="muted">Wind <select id="sel-wind"></select></label>
-      <label class="muted">Ground <select id="sel-ground"></select></label>
-      <span class="muted" id="wx-note"></span>
-    </fieldset>
-    <div class="mapbar mapsize">
-      <button class="small" id="btn-freeplace" aria-pressed="false" title="Move any fighter to any empty hex, for setting up or putting things right">Free placement</button>
-      <button class="small" id="btn-works" aria-pressed="false" title="Lay out ditches, banks, palisades, gates, stakes and wagons">Build works</button>
-      <label class="muted">Columns <input id="in-cols" type="number" min="8" max="80"></label>
-      <label class="muted">Rows <input id="in-rows" type="number" min="6" max="60"></label>
-    </div>
-  </section>
 
   <section class="panel" aria-labelledby="h-hist" id="hist"></section>
 
@@ -632,6 +633,21 @@ function campWorks(kind, men, ftype, cols, rows){
   }
   return { centre, radius: r, fits, works };
 }
+const campMapSize = (kind, men, ftype) => 2 * (campRadius(men, ftype) + (WK.camps[kind].layout === "fortified" ? 2 : 1)) + 3;
+const edgeMetres = () => MOVE.hex_m / Math.sqrt(3);
+function worksLabour(works, hauled = false){  // man-hours to build these works
+  const em = edgeMetres();
+  let t = 0;
+  for (const items of Object.values((works && works.edges) || {})) for (const it of items){
+    const sp = WK.edge_works[it.type];
+    t += "each" in sp ? sp.each : ((sp.per_metre || 0) + (hauled ? sp.haul || 0 : 0)) * em;
+  }
+  for (const it of Object.values((works && works.hexes) || {})){
+    const sp = WK.hex_works[it.type];
+    t += (sp.each || 0) + (hauled ? sp.haul || 0 : 0);
+  }
+  return t;
+}
 // Weather in battle
 const WXD = DATA.weather;
 function deepGoing(ground){
@@ -740,7 +756,7 @@ function sevTiers(mech, zone, wid){
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,addSide:S.addSide,weather:S.weather})) }catch(e){} }
+function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,hauled:S.hauled,addSide:S.addSide,weather:S.weather})) }catch(e){} }
 function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); return true } }catch(e){} return false }
 
 /* ---------- body figure ---------- */
@@ -864,6 +880,7 @@ function rollHit(){
             weapon:S.weapon, table:S.table, ltable:rtid(), mods:orderedMods().map(m => m.short || m.name), called:S.called };
   ["#in-loc","#in-loc2","#in-mech","#in-sev","#in-atk-roll","#in-def-roll"].forEach(id => $(id).value = "");
   renderResult(); shadeFigure(); renderTable();
+  if (S.chars.length) renderMap();             // the map's bar shows the last roll
 }
 const FLAG_LABEL = { shock: "stop check" };   // the data's shock flag is the Grave Wounds stop check
 const pips = n => "●".repeat(n) + "○".repeat(3 - n);
@@ -1403,13 +1420,6 @@ function worksSvg(){
   }
   return out;
 }
-function worksLabour(){                      // man-hours to build what is on the map (timber to hand)
-  const W = S.works || {}, edgeM = 2 / Math.sqrt(3);
-  let t = 0;
-  for (const items of Object.values(W.edges || {})) for (const it of items){ const sp = WK.edge_works[it.type]; t += "each" in sp ? sp.each : (sp.per_metre || 0) * edgeM }
-  for (const it of Object.values(W.hexes || {})) t += WK.hex_works[it.type].each || 0;
-  return t;
-}
 function svgPoint(e){
   const svg = $("#map svg"); if (!svg || !e) return null;
   const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
@@ -1476,6 +1486,27 @@ function doWork(act, k, j){
   }
   renderChars();
 }
+function hitLine(h){                        // a roll in a few words, for the map's bar
+  if (h.blocked) return "no attack";
+  if (h.miss) return "miss";
+  if (h.defended) return "parried or dodged";
+  return `${LOC[h.loc].name.toLowerCase()}, ${sevLabel(h.sev).toLowerCase()}${h.fx ? "" : " (armour held)"}`;
+}
+function mapStrikeBits(){                    // roll and apply from the map; the Strike panel has the details
+  const a = attackerChar(), dd = defenderChar();
+  if (!a || !dd || a === dd) return [];
+  const out = [`<button class="small primary" data-map="roll">Roll the hit: ${attr(a.name)} on ${attr(dd.name)}</button>`];
+  const h = S.hit;
+  if (!h) return out;
+  out.push(`<span>Last roll: <b>${attr(hitLine(h))}</b> <span class="muted">(details under Strike)</span></span>`);
+  if (h.fx && !h.applied) out.push(`<button class="small" data-map="apply">Apply hit to ${attr(dd.name)}</button>`);
+  return out;
+}
+function applyFromMap(){                    // the Strike panel's Apply, with its message on the map's bar
+  $("#btn-apply").click();
+  S.mapMsg = $("#apply-msg").innerText.replace(/\n/g, " ");
+  renderChars();
+}
 function setupHandoff(){                     // a camp or position sent from the travel map
   const h = S.handoff; if (!h) return;
   const ft = h.force.type, men = h.force.men, r = campRadius(men, ft);
@@ -1491,10 +1522,17 @@ function setupHandoff(){                     // a camp or position sent from the
   const n = Math.min(men, 8);
   S.chars = Array.from({ length: n }, (_, i) => { const c = newChar(`${h.force.name} ${i + 1}`, "none", null, {}, h.force.side); c.pos = spots[i]; c.fatigue = h.force.fatigue || 0; return c });
   if (h.weather) S.weather = h.weather;
-  // The nearest enemy force on the travel map comes too, waiting at the far edge (side 2's edge).
-  const foe = (h.foes || [])[0], fn = foe ? Math.min(foe.men, 8) : 0;
-  for (let i = 0; i < fn; i++){ const c = newChar(`${foe.name} ${i + 1}`, "none", null, {}, foe.side); c.fatigue = foe.fatigue || 0; S.chars.push(c) }
-  S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0;
+  S.hauled = !!h.hauled;
+  // The enemy forces that marched up on the travel map come too, waiting at the far edge (side 2's edge).
+  const foes = h.foes || [], foe = foes[0], fns = foes.map(o => Math.min(o.men, 8));
+  foes.forEach((o, k) => {
+    for (let i = 0; i < fns[k]; i++){
+      const c = newChar(`${o.name} ${i + 1}`, "none", null, {}, o.side);
+      c.fatigue = o.fatigue || 0;
+      S.chars.push(c);
+    }
+  });
+  S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0; S.hit = null;
   S.addSide = foe ? foe.side : "Attackers";                                // Add brings in the other side
   if (!foe && h.force.side === "Attackers") S.addSide = "Defenders";
   const campName = h.camp ? WK.camps[h.camp].name.toLowerCase() : "no camp";
@@ -1502,12 +1540,14 @@ function setupHandoff(){                     // a camp or position sent from the
   const placed = n < men ? n + " of its " + men + " men" : "its " + n + " men";
   const where = h.camp ? campName : "position", cut = L.fits ? "" : " (cut down to fit the map)";
   const facing = lay ? "facing the way in" : "facing them";
-  const foeNote = foe ? `Attacking: ${foe.name} (${foe.side}), ${fn} of its ${foe.men} men, ${foe.km} km away on the travel map, at the far edge ${facing}. ` : "";
+  const foeBits = foes.map((o, k) => `${o.name} (${o.side}), ${fns[k] < o.men ? fns[k] + " of its " + o.men : "its " + o.men} men`);
+  const foeNote = foe ? `Attacking: ${foeBits.join("; ")}, at the far edge ${facing}. ` : "";
   const addNote = `Add brings in more on the side "${S.addSide}".`;
   S.mapMsg = `Defending: ${h.force.name} (${h.force.side}), ${placed}, inside the ${where}${cut}. ${foeNote}${addNote} Click a fighter, on the map or with Place on map, then a hex to move him.`;
-  if (foe) S.pending.push(`Facing them: ${foe.name}, ${foe.men} men (${foe.side})`);
+  for (const o of foes) S.pending.push(`Facing them: ${o.name}, ${o.men} men (${o.side})`);
   try{ localStorage.removeItem("gravewounds-handoff") }catch(e){}
   S.handoff = null;
+  renderResult();
   renderChars();
 }
 // ----- weather -----
@@ -1568,8 +1608,9 @@ function renderMap(){
   const bits = [];
   if (S.handoff){
     const h = S.handoff;
+    const foesBit = (h.foes || []).length ? ", against " + h.foes.map(o => `${attr(o.name)} (${o.men} men)`).join(", ") : "";
     const campBit = h.camp ? ", " + attr(WK.camps[h.camp].name.toLowerCase()) : "";
-    bits.push(`<span class="free"><b>From the travel map:</b> ${attr(h.force.name)} (${h.force.men} men) at ${attr(h.place)}${campBit}, ${h.day}, ${h.time}. Set up the fight here? This replaces the fighters and works on this page.</span><button class="small" data-map="handoff">Set up the fight</button><button class="small" data-map="nohandoff">Not now</button>`);
+    bits.push(`<span class="free"><b>From the travel map:</b> ${attr(h.force.name)} (${h.force.men} men) at ${attr(h.place)}${campBit}, ${h.day}, ${h.time}${foesBit}. Set up the fight here? This replaces the fighters and works on this page.</span><button class="small" data-map="handoff">Set up the fight</button><button class="small" data-map="nohandoff">Not now</button>`);
   }
   const f = (S.free || [])[0];
   if (f){
@@ -1591,6 +1632,7 @@ function renderMap(){
   } else {
     bits.push(`<span class="muted">Setting up: click a fighter, then an empty hex, to place him. <b>Next fighter</b> starts the turns; from then on movement, reach and range are enforced.</span>`);
   }
+  bits.push(...mapStrikeBits());
   if (S.workMode) bits.push(`<span class="muted">Building works: ${WK.edge_works[S.workType] ? "click near the edge of a hex, on the side that should be high (or inside, for a gate)" : "click a hex"} to put or take away a ${attr((WK.edge_works[S.workType] || WK.hex_works[S.workType]).name.toLowerCase())}.</span>`);
   if (S.freePlace && S.turn) bits.push(`<span class="muted">Free placement is on: click a fighter, then an empty hex.</span>`);
   if (S.mapMsg) bits.push(`<span class="muted">${S.mapMsg}</span>`);
@@ -1600,8 +1642,9 @@ function renderMap(){
     + `<span>dashed ring: in reach · solid ring: defender</span>`;
   const types = [...Object.keys(WK.edge_works), ...Object.keys(WK.hex_works)];
   $("#work-palette").innerHTML = types.map(t => `<button type="button" class="small" data-wtype="${t}" aria-pressed="${!!S.workMode && S.workType === t}" title="${attr((WK.edge_works[t] || WK.hex_works[t]).note || (WK.edge_works[t] ? "Along a hex edge" : "Fills a hex"))}"><svg viewBox="-12 -8 24 16" width="22" height="14" aria-hidden="true">${WK.edge_works[t] ? `<line class="wk wk-${t}" x1="-10" y1="0" x2="10" y2="0"/>` : `<g class="wkh wkh-${t}" transform="scale(.7)">${HEX_GLYPH[t] || ""}</g>`}</svg>${attr((WK.edge_works[t] || WK.hex_works[t]).name)}</button>`).join("");
-  const lab = worksLabour();
-  $("#work-labour").textContent = lab ? `Works on this map: about ${Math.round(lab)} man-hours to build (timber to hand).` : "No works on this map.";
+  const lab = worksLabour(S.works, !!S.hauled);
+  $("#work-labour").textContent = lab ? `Works on this map: about ${Math.round(lab)} man-hours to build.` : "No works on this map.";
+  $("#chk-haul").checked = !!S.hauled;
   $("#map-scale").textContent = `1 hex = ${MOVE.hex_m} m · a round is 6 seconds · ${cols} × ${rows} hexes`;
   $("#in-cols").value = cols; $("#in-rows").value = rows;
   $("#btn-freeplace").setAttribute("aria-pressed", !!S.freePlace);
@@ -1809,6 +1852,7 @@ function init(){
     let msg, line = "";
     if (h.miss || h.defended || h.blocked) msg = `No hit landed: nothing to add to ${c.name}.`;
     else if (applyHit(c, h)){
+      h.applied = true;
       msg = `Added ${h.graze ? "grazing " : ""}${LOC[h.loc].name.toLowerCase()} wound to ${c.name}.`;
       line = applyStopCheck(c, c.wounds[c.wounds.length - 1]);
       (S.pending = S.pending || []).push(`${c.name}: ${h.graze ? "grazed" : h.sev} ${LOC[h.loc].name.toLowerCase()}`, ...(line ? [line] : []));
@@ -1837,6 +1881,8 @@ function init(){
     else if (act === "next") nextFighter();
     else if (act === "skipfree"){ freeDone("skipped"); renderChars() }
     else if (act === "handoff") setupHandoff();
+    else if (act === "roll") rollHit();
+    else if (act === "apply") applyFromMap();
     else if (act === "nohandoff"){ S.handoff = null; try{ localStorage.removeItem("gravewounds-handoff") }catch(e){} renderChars() }
   });
   $("#map-actions").addEventListener("click", e => { const b = e.target.closest("button[data-work]"); if (b) doWork(b.dataset.work, b.dataset.k, +b.dataset.j) });
@@ -1850,6 +1896,10 @@ function init(){
   };
   $("#sel-wind").onchange = e => { S.weather.wind = e.target.value; renderChars() };
   $("#sel-ground").onchange = e => { const g = GROUNDS.find(x => x[0] === e.target.value)[1]; S.weather.ground = { ...S.weather.ground, ...g }; renderChars() };
+  $("#chk-haul").onchange = e => {
+    S.hauled = e.target.checked;
+    renderChars();
+  };
   $("#btn-clear-works").onclick = () => { S.works = { edges: {}, hexes: {} }; S.mapMsg = "Works cleared."; renderChars() };
   $("#btn-freeplace").onclick = () => { S.freePlace = !S.freePlace; S.placing = null; S.mapMsg = ""; renderChars() };
   const resize = () => {

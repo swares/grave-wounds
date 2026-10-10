@@ -432,6 +432,34 @@ def camp_radius(d: Data, men: int, ftype: str) -> int:
     return max(r, 1)
 
 
+def edge_metres(d: Data) -> float:
+    """Length of one side of a battle-map hex, in metres (hex_m across the flats)."""
+    return d.wounds["combat"]["move"]["hex_m"] / 3 ** 0.5
+
+
+def works_labour(d: Data, works, hauled: bool = False) -> float:
+    """Man-hours to build these works: per_metre along each hex side, `each` for gates and
+    for each hex of stakes or abatis, plus `haul` when the timber is hauled from afar."""
+    W, em, t = d.works, edge_metres(d), 0.0
+    for items in (works or {}).get("edges", {}).values():
+        for it in items:
+            s = W["edge_works"][it["type"]]
+            if "each" in s:
+                t += s["each"]
+            else:
+                t += (s.get("per_metre", 0) + (s.get("haul", 0) if hauled else 0)) * em
+    for it in (works or {}).get("hexes", {}).values():
+        s = W["hex_works"][it["type"]]
+        t += s.get("each", 0) + (s.get("haul", 0) if hauled else 0)
+    return t
+
+
+def camp_map_size(d: Data, kind: str, men: int, ftype: str) -> int:
+    """Columns (and rows) of a battle map just big enough for this camp and its works."""
+    extra = 2 if d.works["camps"][kind].get("layout") == "fortified" else 1
+    return 2 * (camp_radius(d, men, ftype) + extra) + 3
+
+
 def camp_works(d: Data, kind: str, men: int, ftype: str, cols: int, rows: int) -> dict:
     """Battle-map layout for a camp in the middle of the map: {centre, radius, fits, works}.
     The camp is cut down to fit the map if it must (fits false)."""

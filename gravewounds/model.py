@@ -116,7 +116,7 @@ def load(root: str | Path = "data") -> Data:
     mods = _read(root / "modifiers.yaml") if (root / "modifiers.yaml").exists() else {"modifiers": []}
     armor = _read(root / "armor.yaml") if (root / "armor.yaml").exists() else {"materials": {}, "slots": {}, "kits": []}
     conflicts = (_read(root / "conflicts.yaml") or {}).get("conflicts", {}) if (root / "conflicts.yaml").exists() else {}
-    terrain = _read(root / "terrain.yaml") if (root / "terrain.yaml").exists() else {"hours_per_day": 8, "forces": {}, "terrain": [], "place_kinds": {}}
+    terrain = _read(root / "terrain.yaml") if (root / "terrain.yaml").exists() else {"hours_per_day": 8, "fight_within": 1, "forces": {}, "terrain": [], "place_kinds": {}}
     terrain = {**terrain, "terrain": {t["id"]: t for t in terrain["terrain"]}}
     works = _read(root / "works.yaml") if (root / "works.yaml").exists() else {"camps": {}, "edge_works": {}, "hex_works": {}}
     weather = _read(root / "weather.yaml") if (root / "weather.yaml").exists() else {}
@@ -363,6 +363,9 @@ def validate(d: Data) -> None:
             errors.append(f"terrain.yaml: {tid} cost must be positive with at most two decimals, or null for impassable")
         if not (isinstance(t.get("colour"), list) and len(t["colour"]) == 2):
             errors.append(f"terrain.yaml: {tid} colour must be [light, dark]")
+    fw = d.terrain.get("fight_within", 1)
+    if not isinstance(fw, int) or isinstance(fw, bool) or fw < 0:
+        errors.append("terrain.yaml: fight_within must be a whole number of hexes, 0 or more")
     for fid, f in d.terrain["forces"].items():
         if not (isinstance(f.get("kmh"), (int, float)) and f["kmh"] > 0):
             errors.append(f"terrain.yaml: force type {fid} needs a positive kmh")
@@ -450,6 +453,9 @@ def validate(d: Data) -> None:
                 errors.append(f"works.yaml: camp {cid} names unknown terrain {t}")
         if c.get("layout") not in (None, "stakes", "fortified"):
             errors.append(f"works.yaml: camp {cid} layout must be stakes or fortified")
+        laid = {None: set(), "stakes": {"stakes"}, "fortified": {"ditch", "bank", "palisade", "gate"}}.get(c.get("layout"))
+        if laid is not None and set(c.get("works", [])) != laid:
+            errors.append(f"works.yaml: camp {cid} works must be what its layout builds: {sorted(laid) or 'none'}")
     for wid, w in EW.items():
         if w.get("cover_side", "both") not in ("both", "high"):
             errors.append(f"works.yaml: {wid} cover_side must be both or high")

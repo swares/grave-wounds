@@ -18,10 +18,14 @@ axes) or doesn't. Select a force, pick the kind of camp and press **Make camp**.
 
 **How long it takes.**
 
-1. Work out the perimeter. It is a circle round the ground the camp needs: about 20 m² a
-   man on foot, and 40 m² with horses or wagons.
-2. Multiply the perimeter by each work's labour per metre. Timber for palisades and
-   stakes takes longer to fetch when no woods are within a hex.
+1. Lay the camp out as the battle map would. Its ring of 2 m hexes is big enough for the
+   ground the camp needs: about 20 m² a man on foot, and 40 m² with horses or wagons.
+   A fortified camp puts its bank and palisade on the ring's outer edges, its ditch one
+   ring further out and its gate on the east side; a staked camp fills the next ring out
+   with stakes.
+2. Add up the labour of everything laid out: each work's labour per metre along each hex
+   side, and its labour for each gate or hex of stakes. Timber for palisades and stakes
+   takes longer to fetch when no woods are within a hex.
 3. Divide by the men working. Only three-quarters of them work at once; the rest guard
    and cook.
 
@@ -29,7 +33,7 @@ Camp work can use whatever is left of the day's 8 marching hours and then 4 even
 so a camp made at the end of the march costs no marching time. Work beyond that runs on
 into the next day and uses that day's marching hours first.
 The results are realistic, if harsh: a band of 12 can stake its camp in an afternoon but
-would need days to fortify it, while 1,000 men fortify a camp in about 5 hours. That is in
+would need days to fortify it, while 1,000 men fortify a camp in about 6 hours. That is in
 line with the few hours a Roman legion took for its marching camp.
 
 Each kind of camp also records how hard it is to surprise and how well the men rest. These
@@ -38,12 +42,22 @@ are for later rules on surprise, rest, camp hygiene and disease.
 A force can make each kind of camp once in a place. Changing to another kind there (say, a
 watched camp to a staked camp) costs the new camp's work but not its set-up hour again.
 
-The Camp section names the selected force. **Set up a fight with … at its camp** opens the
-roller's battle map with:
-- the selected force's camp laid out in the middle, sized for its men
-- up to eight of its men inside the camp, as the defenders
-- the nearest force from another side on the travel map, up to eight of its men, at the
-  far edge facing the way in, as the attackers
+Because the travel map costs exactly the works the battle map lays out, the camp's
+man-hours on the travel map and on the battle map agree. (A very large camp that has to be
+cut down to fit the battle map is the one exception; the map says so.)
+
+**A fight needs the enemy there.** An enemy force must first march to within 1 km of the
+camp (the same or the next hex): select it, and in **Plan route** click the camp's force
+to send it there. Until then the fight button is off and says why.
+
+**Set up the fight** then opens the roller's battle map with:
+- the defending force's camp laid out in the middle, sized for its men. If the selected
+  force has no camp but an enemy within reach has, that enemy defends its camp.
+- up to eight of the defenders inside the camp
+- every force from another side within reach, up to eight men each, at the far edge facing
+  the way in, as the attackers
+- the fight's date and time: the later of the forces' clocks, when the last of them is there
+- that day's weather and ground, each side's fatigue, and whether the timber was hauled
 
 **Add** brings in more fighters on the attackers' side.
 
@@ -79,7 +93,8 @@ Linear works lie along the edges between hexes. The others fill a hex.
 - For a ditch, bank or wall, click just inside the edge, on the side that should be high.
   For a gate, click on the inside.
 - Click the same place again to take the work away.
-- The page shows roughly how many man-hours the works on the map would take to build.
+- The page shows how many man-hours the works on the map would take to build. Tick
+  **Timber hauled from afar** when no woods are near; a camp from the travel map sets it.
 
 ## Where the ideas come from
 

@@ -319,10 +319,11 @@ def works_rows(d) -> list[list[str]]:
 def works_rules(d) -> list[str]:
     W = d.works
     return [
-        f"<b>Making camp:</b> a camp's works are built all round a perimeter big enough for the force (about {W['camp_area']['foot']} m2 a man on foot, "
-        f"{W['camp_area']['mounted']} with horses). {int(W['work_share'] * 100)}% of the men work at once; the rest guard and cook. Work uses what is left of "
+        f"<b>Making camp:</b> a camp's works are those the battle map lays out for it: a ring of hexes big enough for the force (about {W['camp_area']['foot']} m2 a man on foot, "
+        f"{W['camp_area']['mounted']} with horses), with the bank and palisade on its edge and the ditch one ring out. {int(W['work_share'] * 100)}% of the men work at once; the rest guard and cook. Work uses what is left of "
         f"the day's marching hours and then {W['evening_hours']} evening hours, so a camp made after the march costs no marching time; beyond that it runs on "
-        "into the next day. Timber for palisades and stakes takes longer to fetch when no woods are within a hex.",
+        "into the next day. Timber for palisades and stakes takes longer to fetch when no woods are within a hex. "
+        f"A fight can be set up only once an enemy force has marched to within {d.terrain['fight_within']} hex of the camp.",
         "<b>Works on the battle map:</b> ditches, banks, palisades, gates and walls lie along hex edges; stakes, abatis, pavises and wagons fill a hex. "
         "Crossing costs extra movement; a palisade, a barred gate or a wall stops movement until breached. Missile attacks on a man right behind a work lose its cover. "
         "In close combat only reach-2 weapons (spears, bills) strike over a palisade, gate or wall, and a man attacking up at a defender on the high side of a bank, ditch or wall takes its height penalty.",
@@ -358,6 +359,7 @@ def travel_bundle(d) -> dict:
         "terrain": d.terrain,
         "works": d.works,
         "weather": d.weather,
+        "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
         "maps": {mid: {k: m.get(k) for k in ("id", "name", "hex_km", "rows", "places", "forces",
                                                 "start_date", "calendar", "latitude", "climate", "climate_shift")} for mid, m in d.maps.items()},
     }

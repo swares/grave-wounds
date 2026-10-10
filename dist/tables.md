@@ -4326,7 +4326,7 @@ Penalties add up; each total is capped at -60%.
 
 ## Camps and works
 
-**Making camp:** a camp's works are built all round a perimeter big enough for the force (about 20 m2 a man on foot, 40 with horses). 75% of the men work at once; the rest guard and cook. Work uses what is left of the day's marching hours and then 4 evening hours, so a camp made after the march costs no marching time; beyond that it runs on into the next day. Timber for palisades and stakes takes longer to fetch when no woods are within a hex.
+**Making camp:** a camp's works are those the battle map lays out for it: a ring of hexes big enough for the force (about 20 m2 a man on foot, 40 with horses), with the bank and palisade on its edge and the ditch one ring out. 75% of the men work at once; the rest guard and cook. Work uses what is left of the day's marching hours and then 4 evening hours, so a camp made after the march costs no marching time; beyond that it runs on into the next day. Timber for palisades and stakes takes longer to fetch when no woods are within a hex. A fight can be set up only once an enemy force has marched to within 1 hex of the camp.
 
 **Works on the battle map:** ditches, banks, palisades, gates and walls lie along hex edges; stakes, abatis, pavises and wagons fill a hex. Crossing costs extra movement; a palisade, a barred gate or a wall stops movement until breached. Missile attacks on a man right behind a work lose its cover. In close combat only reach-2 weapons (spears, bills) strike over a palisade, gate or wall, and a man attacking up at a defender on the high side of a bank, ditch or wall takes its height penalty.
 
@@ -4336,8 +4336,8 @@ Penalties add up; each total is capped at -60%.
 |---|---|---|---|---|---|
 | Bivouac | Sleep where you stop. Nothing built and no proper watch. | - | none | none | none |
 | Watched camp | A cleared site with fires, the baggage drawn up and a sentry roster. | - | 1.0 h | 1.0 h | 1.0 h |
-| Staked camp | A watched camp ringed with sharpened stakes, like archers' stakes set against horse. | tools | 5.6 h | 2.6 h | 1.5 h |
-| Fortified camp | Ditch, bank and palisade all round, with a gate. | tools | 38.3 h | 13.8 h | 5.0 h |
+| Staked camp | A watched camp ringed with sharpened stakes, like archers' stakes set against horse. | tools | 6.8 h | 2.8 h | 1.5 h |
+| Fortified camp | Ditch, bank and palisade all round, with a gate. | tools | 54.9 h | 17.4 h | 6.0 h |
 | Quartered | Billeted in the houses of a village or town. | a village or town | 0.5 h | 0.5 h | 0.5 h |
 
 | Work | Lies on | Labour | Crossing | Cover | Close combat | Breach |
