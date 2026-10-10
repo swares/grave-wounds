@@ -334,6 +334,13 @@ function heapPop(hp){
   return top;
 }
 const less = (a, b) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);
+function tracePath(prev, start, goal){        // walk back from the goal along prev
+  const key = h => h[0] + "," + h[1], path = [];
+  let h = goal;
+  while (key(h) !== key(start)){ path.push(h.slice()); h = prev.get(key(h)) }
+  path.push(start.slice());
+  return path.reverse();
+}
 function route(m, start, goal, ftype, ground = null){
   const key = h => h[0] + "," + h[1];
   if (start[0] === goal[0] && start[1] === goal[1]) return [start.slice()];
@@ -341,22 +348,20 @@ function route(m, start, goal, ftype, ground = null){
   const cols = m.rows[0].length, rows = m.rows.length;
   const best = new Map([[key(start), 0]]), prev = new Map(), done = new Set(), hp = [[0, 0, start]];
   let seq = 1;
+  const relax = (h, dist, n) => {
+    if (!passable(m, n, ftype, ground)) return;
+    const nd = dist + stepWeight(m, h, n, ground), nk = key(n);
+    if (nd >= (best.has(nk) ? best.get(nk) : Infinity)) return;
+    best.set(nk, nd); prev.set(nk, h); heapPush(hp, [nd, seq++, n]);
+  };
   while (hp.length){
     const [dist, , h] = heapPop(hp), k = key(h);
     if (done.has(k)) continue;
     done.add(k);
     if (h[0] === goal[0] && h[1] === goal[1]) break;
-    for (const n of neighbours(h, cols, rows)){
-      if (!passable(m, n, ftype, ground)) continue;
-      const nd = dist + stepWeight(m, h, n, ground), nk = key(n);
-      if (nd < (best.has(nk) ? best.get(nk) : Infinity)){ best.set(nk, nd); prev.set(nk, h); heapPush(hp, [nd, seq++, n]) }
-    }
+    for (const n of neighbours(h, cols, rows)) relax(h, dist, n);
   }
-  if (!prev.has(key(goal))) return null;
-  const path = []; let h = goal;
-  while (key(h) !== key(start)){ path.push(h.slice()); h = prev.get(key(h)) }
-  path.push(start.slice());
-  return path.reverse();
+  return prev.has(key(goal)) ? tracePath(prev, start, goal) : null;
 }
 function plan(m, start, waypoints, ftype, ground = null){
   let path = [start.slice()], at = start.slice();
@@ -368,7 +373,9 @@ function plan(m, start, waypoints, ftype, ground = null){
   return path;
 }
 const hpdAt = (list, i) => (list && list.length ? list[Math.min(i, list.length - 1)] : TER.hours_per_day);
-function schedule(m, path, ftype, day = 1, used = 0, hpdList = null, ground = null, speed = 100){
+// opts: {hpdList, ground, speed} (see gravewounds/travel.py schedule)
+function schedule(m, path, ftype, day = 1, used = 0, opts = {}){
+  const { hpdList = null, ground = null, speed = 100 } = opts;
   const first = day, out = path.length ? [{ hex: path[0].slice(), day, used }] : [];
   for (let i = 0; i + 1 < path.length; i++){
     const st = stepHours(m, path[i], path[i + 1], ftype, ground, speed);
@@ -378,7 +385,9 @@ function schedule(m, path, ftype, day = 1, used = 0, hpdList = null, ground = nu
   }
   return out;
 }
-function advance(m, path, index, used, hours, hpd, ftype, ground = null, speed = 100){
+// opts: {hpd, ftype, ground, speed} (see gravewounds/travel.py advance)
+function advance(m, path, index, used, hours, opts){
+  const { hpd, ftype, ground = null, speed = 100 } = opts;
   const target = Math.min(used + hours, hpd);
   while (index + 1 < path.length){
     const st = stepHours(m, path[index], path[index + 1], ftype, ground, speed);
@@ -439,11 +448,11 @@ const sameHex = (a, b) => !!(a && b) && a[0] === b[0] && a[1] === b[1];
 function forcesHere(){
   if (!S.forces[S.mapId]) S.forces[S.mapId] = (baseMap().forces || []).map(f => newForce(f.name, f.type, f.side, f.hex, f.men, f.tools));
   for (const f of S.forces[S.mapId]){
-    if (!(f.men >= 1)) f.men = 10;
+    if (!Number.isFinite(f.men) || f.men < 1) f.men = 10;
     if (typeof f.tools !== "boolean") f.tools = true;
     if (!("camp" in f)) f.camp = null;
-    if (!(f.fatigue >= 0)) f.fatigue = 0;
-    if (!(f.marched >= 0)) f.marched = 0;
+    if (!Number.isFinite(f.fatigue) || f.fatigue < 0) f.fatigue = 0;
+    if (!Number.isFinite(f.marched) || f.marched < 0) f.marched = 0;
   }
   return S.forces[S.mapId];
 }
@@ -468,7 +477,7 @@ function dateText(day, short = false){
   return short ? `${d} ${MONTHS[mo - 1].slice(0, 3)}` : `${wd} ${d} ${MONTHS[mo - 1]} ${y}`;
 }
 const wxState = () => S.wx[S.mapId] || (S.wx[S.mapId] = { days: {} });
-const roll100 = () => 1 + Math.floor(Math.random() * 100);
+const roll100 = () => 1 + (crypto.getRandomValues(new Uint32Array(1))[0] % 100);   // a d100 for the weather
 function dayWeather(day){                    // rolls, in order, any day not yet rolled
   const X = wxState(), m = curMap();
   for (let n = 1; n <= day; n++){
@@ -561,7 +570,7 @@ function march(f, hours){
     return;
   }
   const from = f.index, u0 = f.used;
-  const r = advance(m, f.path, f.index, f.used, hours, hpdOf(f.day), f.type, g, speed);
+  const r = advance(m, f.path, f.index, f.used, hours, { hpd: hpdOf(f.day), ftype: f.type, ground: g, speed });
   const steps = r.index - from;
   if (steps && f.camp){ f.log.unshift(`${dateText(f.day, true)}: breaks camp (${WK.camps[f.camp.kind].name.toLowerCase()}).`); f.camp = null }
   f.marched = (f.marched || 0) + (r.used - u0);
@@ -649,7 +658,7 @@ function renderMap(){
   let over = "";
   for (const o of forcesHere()) if (o !== f && o.path) over += `<polyline class="route other" points="${polyline(o.path.slice(o.index))}"/>`;
   if (f && f.path){
-    const sch = schedule(m, f.path.slice(f.index), f.type, f.day, f.used, hpdList(f.day), groundOf(f.day), speedOf(f) || 100);
+    const sch = schedule(m, f.path.slice(f.index), f.type, f.day, f.used, { hpdList: hpdList(f.day), ground: groundOf(f.day), speed: speedOf(f) || 100 });
     over += `<polyline class="route" points="${polyline(f.path.slice(f.index))}"/>`;
     sch.forEach((s, i) => {                  // night stops: the last hex reached before the day turns
       if (i + 1 < sch.length && sch[i + 1].day > s.day){ const [x, y] = xy(s.hex); over += `<g class="night"><rect x="${(x - 9).toFixed(1)}" y="${(y - 15).toFixed(1)}" width="18" height="10" rx="2"/><text x="${x.toFixed(1)}" y="${(y - 7.5).toFixed(1)}">N${s.day}</text></g>` }
@@ -691,17 +700,17 @@ function renderSide(){
   $("#btn-undo-wp").disabled = !f.waypoints.length; $("#btn-clear").disabled = !f.waypoints.length;
   $("#btn-hour").disabled = $("#btn-day").disabled = !(f.path && f.index < f.path.length - 1);
   let rows = `<dt>Now</dt><dd>${dateText(f.day)}, ${clock(f.used, f.day)}${f.used >= hpd - 1e-9 ? " (marching done for the day)" : ""}</dd>`
-    + `<dt>Fatigue</dt><dd>${lv.name}${lv.penalty ? ` (\u2212${lv.penalty}% in a fight)` : ""}</dd>`
+    + "<dt>Fatigue</dt><dd>" + lv.name + (lv.penalty ? " (\u2212" + lv.penalty + "% in a fight)" : "") + "</dd>"
     + (f.camp ? `<dt>Camp</dt><dd>${esc(WK.camps[f.camp.kind].name)}</dd>` : "");
   if (f.path && f.index < f.path.length - 1){
     const g = groundOf(f.day), sp = speedOf(f) || 100;
-    const rest = f.path.slice(f.index), sch = schedule(m, rest, f.type, f.day, f.used, hpdList(f.day), g, sp), end = sch[sch.length - 1];
+    const rest = f.path.slice(f.index), sch = schedule(m, rest, f.type, f.day, f.used, { hpdList: hpdList(f.day), ground: g, speed: sp }), end = sch[sch.length - 1];
     let hours = 0; for (let i = 0; i + 1 < rest.length; i++) hours += stepHours(m, rest[i], rest[i + 1], f.type, g, sp);
     const nights = end.day - f.day;
     rows += `<dt>To</dt><dd>${esc(where(rest[rest.length - 1]))}${f.waypoints.length > 1 ? ` (${f.waypoints.length} waypoints)` : ""}</dd>`
       + `<dt>Distance</dt><dd>${+((rest.length - 1) * m.hex_km).toFixed(1)} km</dd>`
       + `<dt>Marching</dt><dd>${fmtH(hours)}</dd>`
-      + `<dt>Arrives</dt><dd>${dateText(end.day, true)}, ${clock(end.used, end.day)}${nights ? ` \u00b7 ${nights} night${nights > 1 ? "s" : ""} on the road` : ""}</dd>`;
+      + `<dt>Arrives</dt><dd>${dateText(end.day, true)}, ${clock(end.used, end.day)}${nightsText(nights)}</dd>`;
   } else rows += `<dt>Route</dt><dd>${S.mode === "plan" ? "Click the map, or an enemy force, to add a waypoint" : "None"}</dd>`;
   $("#summary").innerHTML = rows;
   $("#in-men").value = f.men; $("#in-tools").checked = !!f.tools;
@@ -714,13 +723,19 @@ function renderSide(){
   $("#btn-fight").textContent = `Set up a fight with ${f.name} ${at}`;
   $("#log").innerHTML = f.log.map(l => `<li>${esc(l)}</li>`).join("");
 }
+function nightsText(n){
+  if (!n) return "";
+  const s = n > 1 ? "s" : "";
+  return " \u00b7 " + n + " night" + s + " on the road";
+}
 function renderWeather(){
   const f = selForce(), day = f ? f.day : 1, d = dayWeather(day), wd = win(day), m = curMap();
   const cl = WXD.climates[m.climate];
   $("#wx-date").textContent = `${dateText(day)} (${m.calendar === "julian" ? "Julian" : "Gregorian"} calendar)`;
   $("#wx-sun").textContent = `Sunrise ${hhmm(wd.sunrise)}, sunset ${hhmm(wd.sunset)} \u00b7 marching ${hhmm(wd.start)}\u2013${hhmm(wd.start + wd.hours)}`;
   $("#wx-today").textContent = `${wxLine(d)}${d.w.gm ? " (set by the GM)" : ""} \u00b7 ${groundText(d.ground)}`;
-  $("#wx-climate").textContent = `${cl.name}${m.climate_shift ? `, ${m.climate_shift > 0 ? "+" : ""}${m.climate_shift} \u00b0C` : ""}`;
+  const sign = m.climate_shift > 0 ? "+" : "";
+  $("#wx-climate").textContent = cl.name + (m.climate_shift ? ", " + sign + m.climate_shift + " \u00b0C" : "");
   $("#sel-wxc").innerHTML = Object.entries(WXD.conditions).map(([k, c]) => `<option value="${k}" ${d.w.cond === k ? "selected" : ""}>${c.name}</option>`).join("");
   $("#sel-wxw").innerHTML = WXD.winds.map(x => `<option value="${x.id}" ${d.w.wind === x.id ? "selected" : ""}>${x.name}</option>`).join("");
   $("#in-wxhi").value = d.w.high; $("#in-wxlo").value = d.w.low;
@@ -848,13 +863,30 @@ function init(){
     location.href = "roller.html";
   };
   const dayNow = () => { const f = selForce(); return f ? f.day : 1 };
-  const afterWx = () => { for (const f of forcesHere()) if (f.waypoints.length && !replan(f)) S.msg = `${f.name}'s route is cut today (${groundText(groundOf(f.day))}).`; render() };
+  const afterWx = () => {                    // routes may be cut by today's ground
+    for (const f of forcesHere()){
+      if (f.waypoints.length && !replan(f)) S.msg = `${f.name}'s route is cut today (${groundText(groundOf(f.day))}).`;
+    }
+    render();
+  };
+  const setNum = (key, el) => {
+    const v = +el.value;
+    if (Number.isFinite(v)) setDay(dayNow(), { [key]: v });
+    afterWx();
+  };
   $("#btn-wx-roll").onclick = () => { rerollDay(dayNow()); S.msg = ""; afterWx() };
   $("#sel-wxc").onchange = e => { setDay(dayNow(), { cond: e.target.value }); S.msg = ""; afterWx() };
   $("#sel-wxw").onchange = e => { setDay(dayNow(), { wind: e.target.value }); afterWx() };
-  $("#in-wxhi").onchange = e => { const v = +e.target.value; if (Number.isFinite(v)) setDay(dayNow(), { high: v }); afterWx() };
-  $("#in-wxlo").onchange = e => { const v = +e.target.value; if (Number.isFinite(v)) setDay(dayNow(), { low: v }); afterWx() };
-  $("#btn-rest").onclick = () => { const f = selForce(); if (f){ endDay(f); if (f.waypoints.length) replan(f); S.msg = ""; render() } };
+  $("#in-wxhi").onchange = e => setNum("high", e.target);
+  $("#in-wxlo").onchange = e => setNum("low", e.target);
+  $("#btn-rest").onclick = () => {
+    const f = selForce();
+    if (!f) return;
+    endDay(f);
+    if (f.waypoints.length) replan(f);
+    S.msg = "";
+    render();
+  };
   $("#btn-export").onclick = () => { const t = $("#export"); t.hidden = !t.hidden; t.value = mapYaml() };
   $("#btn-download").onclick = () => {
     const a = document.createElement("a");

@@ -202,6 +202,8 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
 .hexmap.building .hex{cursor:cell}
 .workbar .palette{display:flex;flex-wrap:wrap;gap:4px}
 .wxbar select{width:auto;padding:3px 6px}
+fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .wxbar label{display:inline-flex;align-items:center;gap:6px;margin:0}
 .workbar .palette button{display:inline-flex;align-items:center;gap:4px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -316,12 +318,12 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
     <div class="mapkey" id="map-key"></div>
     <div class="mapbar workbar"><div class="palette" id="work-palette" role="group" aria-label="Work to build"></div>
       <button class="small" id="btn-clear-works">Clear works</button><span class="muted" id="work-labour"></span></div>
-    <div class="mapbar wxbar" role="group" aria-label="Weather">
+    <fieldset class="mapbar wxbar"><legend class="sr">Weather</legend>
       <label class="muted">Weather <select id="sel-wx"></select></label>
       <label class="muted">Wind <select id="sel-wind"></select></label>
       <label class="muted">Ground <select id="sel-ground"></select></label>
       <span class="muted" id="wx-note"></span>
-    </div>
+    </fieldset>
     <div class="mapbar mapsize">
       <button class="small" id="btn-freeplace" aria-pressed="false" title="Move any fighter to any empty hex, for setting up or putting things right">Free placement</button>
       <button class="small" id="btn-works" aria-pressed="false" title="Lay out ditches, banks, palisades, gates, stakes and wagons">Build works</button>
@@ -537,22 +539,27 @@ function heapPopW(hp){
   return top;
 }
 const lessW = (a, b) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);
-function reachableWorks(start, steps, cols, rows, enemies, friends, works, extra = 0){
+// Hexes within `steps` movement, paying stepCost() plus `extra` a hex. opts: {cols, rows,
+// enemies, friends, works, extra} (see gravewounds/combat.py reachable_works).
+function reachableWorks(start, steps, opts){
+  const { cols, rows, enemies, friends, works, extra = 0 } = opts;
   const key = h => h[0] + "," + h[1], blocked = new Set(enemies.map(key)), friendly = new Set(friends.map(key));
   const best = new Map([[key(start), 0]]), done = new Set(), hp = [[0, 0, start]];
   let seq = 1;
+  const relax = (h, cost, n) => {
+    const nk = key(n);
+    if (blocked.has(nk)) return;
+    const sc = stepCost(works, h, n);
+    if (sc === null) return;
+    const nc = cost + sc + extra;
+    if (nc > steps || nc >= (best.has(nk) ? best.get(nk) : steps + 1)) return;
+    best.set(nk, nc); heapPushW(hp, [nc, seq++, n]);
+  };
   while (hp.length){
     const [cost, , h] = heapPopW(hp), k = key(h);
     if (done.has(k)) continue;
     done.add(k);
-    for (const n of neighbours(h, cols, rows)){
-      const nk = key(n);
-      if (blocked.has(nk)) continue;
-      let sc = stepCost(works, h, n);
-      if (sc !== null) sc += extra;
-      if (sc === null || cost + sc > steps) continue;
-      if (cost + sc < (best.has(nk) ? best.get(nk) : steps + 1)){ best.set(nk, cost + sc); heapPushW(hp, [cost + sc, seq++, n]) }
-    }
+    for (const n of neighbours(h, cols, rows)) relax(h, cost, n);
   }
   for (const [k, c] of [...best]) if (friendly.has(k) && c) best.delete(k);
   return best;
@@ -1267,8 +1274,9 @@ function turnInfo(){                         // the acting fighter's movement th
   if (!S.tm || S.tm.id !== c.id) S.tm = { id: c.id, steps: 0, ran: false, moved: false };
   const { cols, rows } = mapSize(), allow = moveAllowance(c.wounds, c.state ? c.state.id : null);
   const others = S.chars.filter(o => o !== c && o.pos);
-  const reach = S.tm.moved ? new Map() : reachableWorks(c.pos, Math.max(allow.advance, allow.run), cols, rows,
-    others.filter(o => sideOf(o) !== sideOf(c)).map(o => o.pos), others.filter(o => sideOf(o) === sideOf(c)).map(o => o.pos), S.works, deepGoing(S.weather && S.weather.ground));
+  const reach = S.tm.moved ? new Map() : reachableWorks(c.pos, Math.max(allow.advance, allow.run), { cols, rows,
+    enemies: others.filter(o => sideOf(o) !== sideOf(c)).map(o => o.pos), friends: others.filter(o => sideOf(o) === sideOf(c)).map(o => o.pos),
+    works: S.works, extra: deepGoing(S.weather && S.weather.ground) });
   return { c, allow, reach };
 }
 // Range and reach for the hit about to be rolled: {blocked} or {range} (null when there is no map check).
@@ -1560,7 +1568,8 @@ function renderMap(){
   const bits = [];
   if (S.handoff){
     const h = S.handoff;
-    bits.push(`<span class="free"><b>From the travel map:</b> ${attr(h.force.name)} (${h.force.men} men) at ${attr(h.place)}${h.camp ? `, ${attr(WK.camps[h.camp].name.toLowerCase())}` : ""}, ${h.day}, ${h.time}. Set up the fight here? This replaces the fighters and works on this page.</span><button class="small" data-map="handoff">Set up the fight</button><button class="small" data-map="nohandoff">Not now</button>`);
+    const campBit = h.camp ? ", " + attr(WK.camps[h.camp].name.toLowerCase()) : "";
+    bits.push(`<span class="free"><b>From the travel map:</b> ${attr(h.force.name)} (${h.force.men} men) at ${attr(h.place)}${campBit}, ${h.day}, ${h.time}. Set up the fight here? This replaces the fighters and works on this page.</span><button class="small" data-map="handoff">Set up the fight</button><button class="small" data-map="nohandoff">Not now</button>`);
   }
   const f = (S.free || [])[0];
   if (f){
@@ -1833,7 +1842,12 @@ function init(){
   $("#map-actions").addEventListener("click", e => { const b = e.target.closest("button[data-work]"); if (b) doWork(b.dataset.work, b.dataset.k, +b.dataset.j) });
   $("#btn-works").onclick = () => { S.workMode = !S.workMode; S.workType = S.workType || "palisade"; S.placing = null; S.mapMsg = ""; renderChars() };
   $("#work-palette").addEventListener("click", e => { const b = e.target.closest("button[data-wtype]"); if (b){ S.workType = b.dataset.wtype; S.workMode = true; renderChars() } });
-  $("#sel-wx").onchange = e => { S.weather.cond = e.target.value; const mw = WXD.conditions[e.target.value].min_wind; const ids = WXD.winds.map(x => x.id); if (mw && ids.indexOf(S.weather.wind) < ids.indexOf(mw)) S.weather.wind = mw; renderChars() };
+  $("#sel-wx").onchange = e => {
+    S.weather.cond = e.target.value;
+    const mw = WXD.conditions[e.target.value].min_wind, ids = WXD.winds.map(x => x.id);
+    if (mw && ids.indexOf(S.weather.wind) < ids.indexOf(mw)) S.weather.wind = mw;
+    renderChars();
+  };
   $("#sel-wind").onchange = e => { S.weather.wind = e.target.value; renderChars() };
   $("#sel-ground").onchange = e => { const g = GROUNDS.find(x => x[0] === e.target.value)[1]; S.weather.ground = { ...S.weather.ground, ...g }; renderChars() };
   $("#btn-clear-works").onclick = () => { S.works = { edges: {}, hexes: {} }; S.mapMsg = "Works cleared."; renderChars() };

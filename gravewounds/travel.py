@@ -44,6 +44,15 @@ def step_hours(d: Data, m: dict, a, b, ftype: str, ground: dict | None = None, s
     return step_weight(d, m, a, b, ground) / 200 * m["hex_km"] / (d.terrain["forces"][ftype]["kmh"] * speed / 100)
 
 
+def _trace(prev: dict, start, goal) -> list:
+    path, h = [], tuple(goal)
+    while h != tuple(start):
+        path.append(list(h))
+        h = prev[h]
+    path.append(list(start))
+    return path[::-1]
+
+
 def route(d: Data, m: dict, start, goal, ftype: str, ground: dict | None = None) -> list | None:
     """Quickest path from start to goal for this kind of force on this ground: a list of
     hexes, start and goal included. None if the goal cannot be reached."""
@@ -56,7 +65,20 @@ def route(d: Data, m: dict, start, goal, ftype: str, ground: dict | None = None)
     best = {tuple(start): 0}
     prev = {}
     heap = [(0, 0, tuple(start))]
-    seq, done = 1, set()
+    seq, done = [1], set()
+
+    def relax(h, dist, n):
+        if not passable(d, m, n, ftype, ground):
+            return
+        nd = dist + step_weight(d, m, list(h), n, ground)
+        t = tuple(n)
+        if nd >= best.get(t, float("inf")):
+            return
+        best[t] = nd
+        prev[t] = h
+        heapq.heappush(heap, (nd, seq[0], t))
+        seq[0] += 1
+
     while heap:
         dist, _, h = heapq.heappop(heap)
         if h in done:
@@ -65,23 +87,8 @@ def route(d: Data, m: dict, start, goal, ftype: str, ground: dict | None = None)
         if list(h) == goal:
             break
         for n in neighbours(list(h), cols, rows):
-            if not passable(d, m, n, ftype, ground):
-                continue
-            nd = dist + step_weight(d, m, list(h), n, ground)
-            t = tuple(n)
-            if nd < best.get(t, float("inf")):
-                best[t] = nd
-                prev[t] = h
-                heapq.heappush(heap, (nd, seq, t))
-                seq += 1
-    if tuple(goal) not in prev:
-        return None
-    path, h = [], tuple(goal)
-    while h != tuple(start):
-        path.append(list(h))
-        h = prev[h]
-    path.append(list(start))
-    return path[::-1]
+            relax(h, dist, n)
+    return _trace(prev, start, goal) if tuple(goal) in prev else None
 
 
 def plan(d: Data, m: dict, start, waypoints: list, ftype: str, ground: dict | None = None) -> list | None:

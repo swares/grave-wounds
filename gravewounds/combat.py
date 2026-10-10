@@ -348,25 +348,29 @@ def reachable_works(d: Data, start, steps: int, cols: int, rows: int, enemies, f
     friendly = {tuple(f) for f in friends}
     best = {tuple(start): 0}
     heap = [(0, 0, tuple(start))]
-    seq, done = 1, set()
+    seq, done = [1], set()
+
+    def relax(h, cost, n):
+        t = tuple(n)
+        if t in blocked:
+            return
+        sc = step_cost(d, works, list(h), n)
+        if sc is None:
+            return
+        nc = cost + sc + extra
+        if nc > steps or nc >= best.get(t, steps + 1):
+            return
+        best[t] = nc
+        heapq.heappush(heap, (nc, seq[0], t))
+        seq[0] += 1
+
     while heap:
         cost, _, h = heapq.heappop(heap)
         if h in done:
             continue
         done.add(h)
         for n in neighbours(list(h), cols, rows):
-            t = tuple(n)
-            if t in blocked:
-                continue
-            sc = step_cost(d, works, list(h), n)
-            if sc is not None:
-                sc += extra
-            if sc is None or cost + sc > steps:
-                continue
-            if cost + sc < best.get(t, steps + 1):
-                best[t] = cost + sc
-                heapq.heappush(heap, (cost + sc, seq, t))
-                seq += 1
+            relax(h, cost, n)
     return {h: c for h, c in best.items() if h not in friendly or c == 0}
 
 
