@@ -57,6 +57,7 @@ button:disabled{opacity:.45;cursor:default}
 .hx{stroke:rgba(0,0,0,.12);stroke-width:.6}
 .mapbox.plan .hx,.mapbox.place .hx{cursor:pointer}
 .mapbox.paint .hx{cursor:crosshair}
+.mapbox.paint .force{pointer-events:none}
 .hx:hover{stroke:var(--ink);stroke-width:1.4}
 .route{fill:none;stroke:var(--blood);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:.9;pointer-events:none}
 .route.other{stroke:var(--muted);stroke-width:2;stroke-dasharray:4 4;opacity:.7}
@@ -464,7 +465,7 @@ function renderSide(){
       + `<dt>Distance</dt><dd>${+((rest.length - 1) * m.hex_km).toFixed(1)} km</dd>`
       + `<dt>Marching</dt><dd>${fmtH(hours)}</dd>`
       + `<dt>Arrives</dt><dd>Day ${end.day}, ${clock(end.used)}${nights ? ` · ${nights} night${nights > 1 ? "s" : ""} on the road` : ""}</dd>`;
-  } else rows += `<dt>Route</dt><dd>${S.mode === "plan" ? "Click the map to add a waypoint" : "None"}</dd>`;
+  } else rows += `<dt>Route</dt><dd>${S.mode === "plan" ? "Click the map, or an enemy force, to add a waypoint" : "None"}</dd>`;
   $("#summary").innerHTML = rows;
   $("#in-men").value = f.men; $("#in-tools").checked = !!f.tools;
   const kinds = Object.keys(WK.camps), cur = S.campKind && kinds.includes(S.campKind) ? S.campKind : "watched";
@@ -521,6 +522,17 @@ function clickHex(h){
   }
   render();
 }
+// Clicking a force on the map: in Plan route, an enemy force is a target (a waypoint at its
+// hex) for the selected force; otherwise the click selects the force.
+function clickForce(id){
+  const o = forcesHere().find(x => x.id === id), f = selForce();
+  if (S.mode === "plan" && f && o && o !== f && o.side !== f.side){
+    addWaypoint(f, o.pos.slice());
+    if (!S.msg) S.msg = `${f.name} will march on ${o.name}. To select ${o.name} instead, use the Forces list.`;
+    return render();
+  }
+  S.sel[S.mapId] = id; S.msg = ""; render();
+}
 let painting = false;
 function init(){
   restore();
@@ -533,13 +545,13 @@ function init(){
   const mapEl = $("#map");
   mapEl.addEventListener("click", e => {
     const fo = e.target.closest(".force");
-    if (fo && S.mode !== "paint"){ S.sel[S.mapId] = +fo.dataset.id; S.msg = ""; return render() }
+    if (fo && S.mode !== "paint") return clickForce(+fo.dataset.id);
     if (S.mode === "paint") return;
     const h = hexFrom(e); if (h) clickHex(h);
   });
   mapEl.addEventListener("keydown", e => {
     if (e.key !== "Enter" && e.key !== " ") return;
-    const fo = e.target.closest(".force"); if (fo){ e.preventDefault(); S.sel[S.mapId] = +fo.dataset.id; render() }
+    const fo = e.target.closest(".force"); if (fo){ e.preventDefault(); clickForce(+fo.dataset.id) }
   });
   mapEl.addEventListener("pointerdown", e => { if (S.mode !== "paint") return; const h = hexFrom(e); if (!h) return; painting = true; e.preventDefault(); if (paintHex(h)) renderMap() });
   mapEl.addEventListener("pointermove", e => {

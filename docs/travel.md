@@ -62,7 +62,9 @@ out. See [works.md](works.md).
 
 - **Forces.** Click a force in the list or on the map to select it. **Add a force** puts a
   new one at the camp.
-- **Plan route.** Click hexes to add waypoints for the selected force. The page fills in
+- **Plan route.** Click hexes to add waypoints for the selected force. Clicking an enemy
+  force sets its hex as the next waypoint (select a force with the Forces list or by
+  clicking a force on its own side). The page fills in
   the quickest route between them, using roads where they help. It shows:
   - the distance
   - the marching time
