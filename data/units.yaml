@@ -31,6 +31,7 @@ quality:
 # of those are put out of the fight, the rest fight on wounded. Armour cuts it further.
 melee:
   tempo: 0.09
+  second_rank_reach: 2                    # weapons of this reach or more strike from the second rank too
   flank: {attack: 20, defence: -100}      # % to the attacker's chance, and to the defender's (-100: no defence)
   rear: {attack: 30, defence: -100}
   charge: {attack: 20, tempo: 2.0}        # the first exchange of a charge by mounted men: +attack, x tempo

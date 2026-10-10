@@ -23,7 +23,7 @@ def quality(d: Data, q: str) -> dict:
 def fighters(d: Data, front: int, reach: int) -> int:
     """Men striking in melee: the `front` men in the front rank touching the enemy, and the
     second rank too with reach-2 weapons."""
-    return front * (2 if reach >= 2 else 1)
+    return front * (2 if reach >= d.units["melee"]["second_rank_reach"] else 1)
 
 
 def field_range(d: Data, wid: str, field_hexes: int) -> dict | None:
@@ -137,13 +137,13 @@ def morale(d: Data, unit: dict, roll: int) -> dict:
     return {"check": True, "target": target, "state": _failed(M, unit, roll - target)}
 
 
-def _failed(M: dict, unit: dict, by: int) -> str:
+def _failed(mo: dict, unit: dict, by: int) -> str:
     """A failed check: a steady unit is shaken, unless it fails badly while flanked or with
     half its men down; a shaken unit breaks."""
     if unit["state"] == "shaken":
         return "broken"
     hard = unit.get("flanked") or unit["down"] >= unit["start"] / 2
-    return "broken" if hard and by > M["shaken_by"] else "shaken"
+    return "broken" if hard and by > mo["shaken_by"] else "shaken"
 
 
 def _morale_mods(mods: dict, unit: dict) -> int:
