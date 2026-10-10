@@ -8,9 +8,12 @@ const specOf = (kind, item) => (kind === "edge" ? WK.edge_works : WK.hex_works)[
 function intact(kind, item){ const b = specOf(kind, item).breach; return !(b && (item.progress || 0) >= b) }
 function edgeItems(works, a, b){
   if (!works) return [];
-  return ((works.edges || {})[edgeKey(a, b)] || []).filter(it => intact("edge", it) && !(specOf("edge", it).gate && it.open));
+  return (works.edges?.[edgeKey(a, b)] || []).filter(it => intact("edge", it) && !(specOf("edge", it).gate && it.open));
 }
-function hexItem(works, h){ const it = ((works || {}).hexes || {})[hkey(h)]; return it && intact("hex", it) ? it : null }
+function hexItem(works, h){
+  const it = works?.hexes?.[hkey(h)];
+  return it && intact("hex", it) ? it : null;
+}
 function stepCost(works, a, b){
   let cost = 1;
   for (const it of edgeItems(works, a, b)){
@@ -19,14 +22,34 @@ function stepCost(works, a, b){
     cost += c;
   }
   const it = hexItem(works, b);
-  if (it){ const e = specOf("hex", it).enter; if (e === null || e === undefined) return null; cost += e }
-  return cost;
+  if (!it) return cost;
+  const e = specOf("hex", it).enter;
+  return e === null || e === undefined ? null : cost + e;
 }
-function heapPushW(hp, x){ hp.push(x); let i = hp.length - 1; while (i > 0){ const p = (i - 1) >> 1; if (lessW(hp[p], hp[i])) break; [hp[p], hp[i]] = [hp[i], hp[p]]; i = p } }
+function heapPushW(hp, x){
+  hp.push(x);
+  let i = hp.length - 1;
+  while (i > 0){
+    const p = (i - 1) >> 1;
+    if (lessW(hp[p], hp[i])) break;
+    [hp[p], hp[i]] = [hp[i], hp[p]];
+    i = p;
+  }
+}
 function heapPopW(hp){
   const top = hp[0], last = hp.pop();
-  if (hp.length){ hp[0] = last; let i = 0; for (;;){ const l = 2 * i + 1, r = l + 1; let m = i;
-    if (l < hp.length && lessW(hp[l], hp[m])) m = l; if (r < hp.length && lessW(hp[r], hp[m])) m = r; if (m === i) break; [hp[m], hp[i]] = [hp[i], hp[m]]; i = m } }
+  if (!hp.length) return top;
+  hp[0] = last;
+  let i = 0;
+  for (;;){
+    const l = 2 * i + 1, r = l + 1;
+    let m = i;
+    if (l < hp.length && lessW(hp[l], hp[m])) m = l;
+    if (r < hp.length && lessW(hp[r], hp[m])) m = r;
+    if (m === i) break;
+    [hp[m], hp[i]] = [hp[i], hp[m]];
+    i = m;
+  }
   return top;
 }
 const lessW = (a, b) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);
@@ -52,7 +75,7 @@ function reachableWorks(start, steps, opts){
     done.add(k);
     for (const n of neighbours(h, cols, rows)) relax(h, cost, n);
   }
-  for (const [k, c] of [...best]) if (friendly.has(k) && c) best.delete(k);
+  for (const k of friendly) if (best.get(k)) best.delete(k);
   return best;
 }
 function facing(target, attacker, cols, rows){
@@ -61,20 +84,24 @@ function facing(target, attacker, cols, rows){
   const best = Math.min(...ns.map(n => hexDistance(n, attacker)));
   return ns.filter(n => hexDistance(n, attacker) === best);
 }
+function edgeCover(works, target, n){              // [cover, type]: the best cover the works on this side give the target
+  let best = 0, what = null;
+  for (const e of edgeItems(works, target, n)){
+    const s = specOf("edge", e);
+    if ((s.cover_side || "both") === "high" && e.high !== hkey(target)) continue;
+    if ((s.cover || 0) > best){ best = s.cover; what = e.type }
+  }
+  return [best, what];
+}
 function missileCover(works, attacker, target, cols, rows){
   let best = 0, what = null;
+  const take = (c, t) => { if (c > best){ best = c; what = t } };
   const it = hexItem(works, target);
-  if (it && (specOf("hex", it).cover_here || 0) > best){ best = specOf("hex", it).cover_here; what = it.type }
+  if (it) take(specOf("hex", it).cover_here || 0, it.type);
   for (const n of facing(target, attacker, cols, rows)){
-    for (const e of edgeItems(works, target, n)){
-      const s = specOf("edge", e);
-      if ((s.cover_side || "both") === "high" && e.high !== hkey(target)) continue;
-      if ((s.cover || 0) > best){ best = s.cover; what = e.type }
-    }
-    if (!(n[0] === attacker[0] && n[1] === attacker[1])){
-      const h = hexItem(works, n);
-      if (h && (specOf("hex", h).cover_behind || 0) > best){ best = specOf("hex", h).cover_behind; what = h.type }
-    }
+    take(...edgeCover(works, target, n));
+    const h = n[0] === attacker[0] && n[1] === attacker[1] ? null : hexItem(works, n);
+    if (h) take(specOf("hex", h).cover_behind || 0, h.type);
   }
   return { cover: best, work: what };
 }

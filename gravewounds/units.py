@@ -484,7 +484,9 @@ def _strike_groups(d: Data, units: list, occ: dict, i: int, groups: dict, field:
         j, dirn = hit
         x = step(h, dirn)
         blocked, pen, stk = _across(d, field, u, h, x, reach)
-        n = min(abreast if reach >= 2 else 0, men[k]) if blocked else min(per, men[k])
+        n = min(per, men[k])
+        if blocked:
+            n = min(abreast, men[k]) if reach >= 2 else 0
         if n > 0:
             key = (i, j, arc(units[j]["facing"], dirn + 3), pen, stk)
             groups[key] = groups.get(key, 0) + n
@@ -689,17 +691,21 @@ def _breach_all(d: Data, us: list, field: dict | None) -> list:
     log, scale = [], d.units["hex_m"] / d.wounds["combat"]["move"]["hex_m"]
     per = d.units["exchange_rounds"] * d.units["breach_share"] / scale
     for i, u in enumerate(us):
-        if not u.get("breach") or _out(u):
+        if u.get("breach") and not _out(u):
+            log += _unit_breach(d, field, i, u, per)
+    return log
+
+
+def _unit_breach(d: Data, field: dict, i: int, u: dict, per: float) -> list:
+    log, rows, men = [], footprint(d, u), men_by_hex(d, u)
+    for k, h in enumerate(rows[0] if rows else []):
+        hit = _breachable(d, field, u, h)
+        if hit is None:
             continue
-        rows, men = footprint(d, u), men_by_hex(d, u)
-        for k, h in enumerate(rows[0] if rows else []):
-            hit = _breachable(d, field, u, h)
-            if hit is None:
-                continue
-            kind, where, it = hit
-            it["progress"] = it.get("progress", 0) + min(form(d, u)["abreast"], men[k]) * per
-            if not C.intact(d, kind, it):
-                log.append({"kind": "breach", "unit": i, "work": it["type"], "at": where})
+        kind, where, it = hit
+        it["progress"] = it.get("progress", 0) + min(form(d, u)["abreast"], men[k]) * per
+        if not C.intact(d, kind, it):
+            log.append({"kind": "breach", "unit": i, "work": it["type"], "at": where})
     return log
 
 
@@ -862,16 +868,24 @@ def _path_len(d: Data, units: list, i: int, goal, size: tuple, limit: int, field
         if list(h) == list(goal):
             return cost
         done.add(h)
-        for dirn in range(6):
-            x = tuple(step(list(h), dirn))
-            if not (0 <= x[0] < size[0] and 0 <= x[1] < size[1]) or f"{x[0]},{x[1]}" in occ:
-                continue
-            sc = step_cost(d, field, u, list(h), list(x))
-            if sc is None or cost + sc > limit or cost + sc >= best.get(x, limit + 1):
-                continue
-            best[x] = cost + sc
-            heapq.heappush(heap, (cost + sc, x))
+        for x, c in _steps_from(d, field, u, h, occ, size):
+            if cost + c <= limit and cost + c < best.get(x, limit + 1):
+                best[x] = cost + c
+                heapq.heappush(heap, (cost + c, x))
     return None
+
+
+def _steps_from(d: Data, field: dict | None, u: dict, h: tuple, occ: dict, size: tuple) -> list:
+    """(hex, cost) for each step the unit's middle hex can take from h."""
+    out = []
+    for dirn in range(6):
+        x = tuple(step(list(h), dirn))
+        if not (0 <= x[0] < size[0] and 0 <= x[1] < size[1]) or f"{x[0]},{x[1]}" in occ:
+            continue
+        sc = step_cost(d, field, u, list(h), list(x))
+        if sc is not None:
+            out.append((x, sc))
+    return out
 
 
 def move(d: Data, units: list, i: int, pos, facing: int, size: tuple, field: dict | None = None) -> dict:

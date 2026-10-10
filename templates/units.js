@@ -250,7 +250,8 @@ function unitGroups(units, occ, i, groups, field){   // unit i's front hexes' st
     const hit = struckHex(units, occ, u, h);
     if (!hit) return;
     const [j, dn] = hit, [blocked, pen, stk] = across(field, u, h, step(h, dn), reach);
-    const n = blocked ? Math.min(reach >= 2 ? abreast : 0, men[k]) : Math.min(per, men[k]);
+    let n = Math.min(per, men[k]);
+    if (blocked) n = reach >= 2 ? Math.min(abreast, men[k]) : 0;
     if (n <= 0) return;
     const key = [i, j, arc(units[j].facing, dn + 3), pen, stk ? 1 : 0].join("|");
     groups.set(key, (groups.get(key) || 0) + n);
@@ -471,8 +472,7 @@ function unitStepCost(field, u, a, b){            // movement for the middle hex
 }
 function pathLen(units, i, goal, size, limit, field = null){   // least movement for the middle hex to goal; null if more than limit
   const occ = occupancy(units.filter((_, k) => k !== i)), u = units[i];
-  const best = new Map([[hk(u.pos), 0]]), done = new Set();
-  let open = [[0, u.pos]];
+  const best = new Map([[hk(u.pos), 0]]), done = new Set(), open = [[0, u.pos]];
   while (open.length){
     let m = 0;
     for (let q = 1; q < open.length; q++) if (open[q][0] < open[m][0]) m = q;
@@ -481,16 +481,23 @@ function pathLen(units, i, goal, size, limit, field = null){   // least movement
     if (done.has(hk(h))) continue;
     if (h[0] === goal[0] && h[1] === goal[1]) return cost;
     done.add(hk(h));
-    for (let dn = 0; dn < 6; dn++){
-      const x = step(h, dn);
-      if (!onMap(x, size) || occ[hk(x)] !== undefined) continue;
-      const sc = unitStepCost(field, u, h, x);
-      if (sc === null || cost + sc > limit || cost + sc >= (best.get(hk(x)) ?? limit + 1)) continue;
-      best.set(hk(x), cost + sc);
-      open.push([cost + sc, x]);
+    for (const [x, c] of stepsFrom(field, u, h, occ, size)){
+      if (cost + c > limit || cost + c >= (best.get(hk(x)) ?? limit + 1)) continue;
+      best.set(hk(x), cost + c);
+      open.push([cost + c, x]);
     }
   }
   return null;
+}
+function stepsFrom(field, u, h, occ, size){       // [hex, cost] for each step the middle hex can take from h
+  const out = [];
+  for (let dn = 0; dn < 6; dn++){
+    const x = step(h, dn);
+    if (!onMap(x, size) || occ[hk(x)] !== undefined) continue;
+    const sc = unitStepCost(field, u, h, x);
+    if (sc !== null) out.push([x, sc]);
+  }
+  return out;
 }
 function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, charge, why}
   const u = units[i];

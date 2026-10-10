@@ -263,9 +263,12 @@ const specOf = (kind, item) => (kind === "edge" ? WK.edge_works : WK.hex_works)[
 function intact(kind, item){ const b = specOf(kind, item).breach; return !(b && (item.progress || 0) >= b) }
 function edgeItems(works, a, b){
   if (!works) return [];
-  return ((works.edges || {})[edgeKey(a, b)] || []).filter(it => intact("edge", it) && !(specOf("edge", it).gate && it.open));
+  return (works.edges?.[edgeKey(a, b)] || []).filter(it => intact("edge", it) && !(specOf("edge", it).gate && it.open));
 }
-function hexItem(works, h){ const it = ((works || {}).hexes || {})[hkey(h)]; return it && intact("hex", it) ? it : null }
+function hexItem(works, h){
+  const it = works?.hexes?.[hkey(h)];
+  return it && intact("hex", it) ? it : null;
+}
 function stepCost(works, a, b){
   let cost = 1;
   for (const it of edgeItems(works, a, b)){
@@ -274,14 +277,34 @@ function stepCost(works, a, b){
     cost += c;
   }
   const it = hexItem(works, b);
-  if (it){ const e = specOf("hex", it).enter; if (e === null || e === undefined) return null; cost += e }
-  return cost;
+  if (!it) return cost;
+  const e = specOf("hex", it).enter;
+  return e === null || e === undefined ? null : cost + e;
 }
-function heapPushW(hp, x){ hp.push(x); let i = hp.length - 1; while (i > 0){ const p = (i - 1) >> 1; if (lessW(hp[p], hp[i])) break; [hp[p], hp[i]] = [hp[i], hp[p]]; i = p } }
+function heapPushW(hp, x){
+  hp.push(x);
+  let i = hp.length - 1;
+  while (i > 0){
+    const p = (i - 1) >> 1;
+    if (lessW(hp[p], hp[i])) break;
+    [hp[p], hp[i]] = [hp[i], hp[p]];
+    i = p;
+  }
+}
 function heapPopW(hp){
   const top = hp[0], last = hp.pop();
-  if (hp.length){ hp[0] = last; let i = 0; for (;;){ const l = 2 * i + 1, r = l + 1; let m = i;
-    if (l < hp.length && lessW(hp[l], hp[m])) m = l; if (r < hp.length && lessW(hp[r], hp[m])) m = r; if (m === i) break; [hp[m], hp[i]] = [hp[i], hp[m]]; i = m } }
+  if (!hp.length) return top;
+  hp[0] = last;
+  let i = 0;
+  for (;;){
+    const l = 2 * i + 1, r = l + 1;
+    let m = i;
+    if (l < hp.length && lessW(hp[l], hp[m])) m = l;
+    if (r < hp.length && lessW(hp[r], hp[m])) m = r;
+    if (m === i) break;
+    [hp[m], hp[i]] = [hp[i], hp[m]];
+    i = m;
+  }
   return top;
 }
 const lessW = (a, b) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);
@@ -307,7 +330,7 @@ function reachableWorks(start, steps, opts){
     done.add(k);
     for (const n of neighbours(h, cols, rows)) relax(h, cost, n);
   }
-  for (const [k, c] of [...best]) if (friendly.has(k) && c) best.delete(k);
+  for (const k of friendly) if (best.get(k)) best.delete(k);
   return best;
 }
 function facing(target, attacker, cols, rows){
@@ -316,20 +339,24 @@ function facing(target, attacker, cols, rows){
   const best = Math.min(...ns.map(n => hexDistance(n, attacker)));
   return ns.filter(n => hexDistance(n, attacker) === best);
 }
+function edgeCover(works, target, n){              // [cover, type]: the best cover the works on this side give the target
+  let best = 0, what = null;
+  for (const e of edgeItems(works, target, n)){
+    const s = specOf("edge", e);
+    if ((s.cover_side || "both") === "high" && e.high !== hkey(target)) continue;
+    if ((s.cover || 0) > best){ best = s.cover; what = e.type }
+  }
+  return [best, what];
+}
 function missileCover(works, attacker, target, cols, rows){
   let best = 0, what = null;
+  const take = (c, t) => { if (c > best){ best = c; what = t } };
   const it = hexItem(works, target);
-  if (it && (specOf("hex", it).cover_here || 0) > best){ best = specOf("hex", it).cover_here; what = it.type }
+  if (it) take(specOf("hex", it).cover_here || 0, it.type);
   for (const n of facing(target, attacker, cols, rows)){
-    for (const e of edgeItems(works, target, n)){
-      const s = specOf("edge", e);
-      if ((s.cover_side || "both") === "high" && e.high !== hkey(target)) continue;
-      if ((s.cover || 0) > best){ best = s.cover; what = e.type }
-    }
-    if (!(n[0] === attacker[0] && n[1] === attacker[1])){
-      const h = hexItem(works, n);
-      if (h && (specOf("hex", h).cover_behind || 0) > best){ best = specOf("hex", h).cover_behind; what = h.type }
-    }
+    take(...edgeCover(works, target, n));
+    const h = n[0] === attacker[0] && n[1] === attacker[1] ? null : hexItem(works, n);
+    if (h) take(specOf("hex", h).cover_behind || 0, h.type);
   }
   return { cover: best, work: what };
 }
@@ -753,7 +780,8 @@ function unitGroups(units, occ, i, groups, field){   // unit i's front hexes' st
     const hit = struckHex(units, occ, u, h);
     if (!hit) return;
     const [j, dn] = hit, [blocked, pen, stk] = across(field, u, h, step(h, dn), reach);
-    const n = blocked ? Math.min(reach >= 2 ? abreast : 0, men[k]) : Math.min(per, men[k]);
+    let n = Math.min(per, men[k]);
+    if (blocked) n = reach >= 2 ? Math.min(abreast, men[k]) : 0;
     if (n <= 0) return;
     const key = [i, j, arc(units[j].facing, dn + 3), pen, stk ? 1 : 0].join("|");
     groups.set(key, (groups.get(key) || 0) + n);
@@ -974,8 +1002,7 @@ function unitStepCost(field, u, a, b){            // movement for the middle hex
 }
 function pathLen(units, i, goal, size, limit, field = null){   // least movement for the middle hex to goal; null if more than limit
   const occ = occupancy(units.filter((_, k) => k !== i)), u = units[i];
-  const best = new Map([[hk(u.pos), 0]]), done = new Set();
-  let open = [[0, u.pos]];
+  const best = new Map([[hk(u.pos), 0]]), done = new Set(), open = [[0, u.pos]];
   while (open.length){
     let m = 0;
     for (let q = 1; q < open.length; q++) if (open[q][0] < open[m][0]) m = q;
@@ -984,16 +1011,23 @@ function pathLen(units, i, goal, size, limit, field = null){   // least movement
     if (done.has(hk(h))) continue;
     if (h[0] === goal[0] && h[1] === goal[1]) return cost;
     done.add(hk(h));
-    for (let dn = 0; dn < 6; dn++){
-      const x = step(h, dn);
-      if (!onMap(x, size) || occ[hk(x)] !== undefined) continue;
-      const sc = unitStepCost(field, u, h, x);
-      if (sc === null || cost + sc > limit || cost + sc >= (best.get(hk(x)) ?? limit + 1)) continue;
-      best.set(hk(x), cost + sc);
-      open.push([cost + sc, x]);
+    for (const [x, c] of stepsFrom(field, u, h, occ, size)){
+      if (cost + c > limit || cost + c >= (best.get(hk(x)) ?? limit + 1)) continue;
+      best.set(hk(x), cost + c);
+      open.push([cost + c, x]);
     }
   }
   return null;
+}
+function stepsFrom(field, u, h, occ, size){       // [hex, cost] for each step the middle hex can take from h
+  const out = [];
+  for (let dn = 0; dn < 6; dn++){
+    const x = step(h, dn);
+    if (!onMap(x, size) || occ[hk(x)] !== undefined) continue;
+    const sc = unitStepCost(field, u, h, x);
+    if (sc !== null) out.push([x, sc]);
+  }
+  return out;
 }
 function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, charge, why}
   const u = units[i];
@@ -1168,12 +1202,16 @@ function logLines(log, ex){
       if (line) out.push(line);
       continue;
     }
-    const dead = l.dead ? " (" + l.dead + " dead)" : "", fallen = `${l.hits} hit, ${l.down} down${dead}`;
-    if (l.kind === "volley") out.push({ cls: "", text: `${nm(l.att)} shoot at ${nm(l.dfd)}, ${l.dist * FD.units.hex_m} m${shotNotes(l)}: ${l.blows} aimed shots, ${fallen}.` });
-    else if (l.kind === "rout") out.push({ cls: "", text: `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.` });
-    else out.push({ cls: "", text: `${nm(l.att)} strike ${nm(l.dfd)}${l.situation === "front" ? "" : " in the " + l.situation}, ${l.men} men${l.penalty ? ", attacking up −" + l.penalty + "%" : ""}: ${l.blows} telling blows, ${fallen}.` });
+    out.push({ cls: "", text: unitLineText(l, nm) });
   }
   return out;
+}
+function unitLineText(l, nm){                     // a volley, a melee or a rout strike
+  const dead = l.dead ? " (" + l.dead + " dead)" : "", fallen = `${l.hits} hit, ${l.down} down${dead}`;
+  if (l.kind === "volley") return `${nm(l.att)} shoot at ${nm(l.dfd)}, ${l.dist * FD.units.hex_m} m${shotNotes(l)}: ${l.blows} aimed shots, ${fallen}.`;
+  if (l.kind === "rout") return `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.`;
+  const where = l.situation === "front" ? "" : " in the " + l.situation, up = l.penalty ? ", attacking up −" + l.penalty + "%" : "";
+  return `${nm(l.att)} strike ${nm(l.dfd)}${where}, ${l.men} men${up}: ${l.blows} telling blows, ${fallen}.`;
 }
 function shotNotes(l){                            // " (cover -20%, weather -10%)"
   const bits = [];

@@ -484,6 +484,9 @@ def travel_bundle(d) -> dict:
     }
 
 
+CAMP_MARK = "/*__CAMP_JS__*/"
+
+
 def field_bundle(d) -> dict:
     """What the field map needs: the unit rules, and for every table and weapon the d100 ranges
     the wound roll looks up (precomputed here so the page rolls exactly as roll_hit does)."""
@@ -1256,16 +1259,16 @@ def main() -> int:
     html = tpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>"))
     camp_js = (ROOT / "templates" / "camp.js").read_text(encoding="utf-8")
     works_js = (ROOT / "templates" / "works.js").read_text(encoding="utf-8")
-    html = html.replace("/*__CAMP_JS__*/", camp_js).replace("/*__WORKS_JS__*/", works_js)
+    html = html.replace(CAMP_MARK, camp_js).replace("/*__WORKS_JS__*/", works_js)
     html = html.replace("/*__GRAVEWOUNDS_DATA__*/null", json.dumps(b, separators=(",", ":")))
     (DIST / "roller.html").write_text(html, encoding="utf-8")
     tb = travel_bundle(d)
     ttpl = (ROOT / "templates" / "travel.html").read_text(encoding="utf-8")
-    thtml = ttpl.replace("/*__CAMP_JS__*/", camp_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
+    thtml = ttpl.replace(CAMP_MARK, camp_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
     (DIST / "travel.html").write_text(thtml, encoding="utf-8")
     units_js = (ROOT / "templates" / "units.js").read_text(encoding="utf-8")
     ftpl = (ROOT / "templates" / "field.html").read_text(encoding="utf-8")
-    fhtml = ftpl.replace("/*__WORKS_JS__*/", works_js).replace("/*__CAMP_JS__*/", camp_js).replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(field_bundle(d), separators=(",", ":")))
+    fhtml = ftpl.replace("/*__WORKS_JS__*/", works_js).replace(CAMP_MARK, camp_js).replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(field_bundle(d), separators=(",", ":")))
     (DIST / "field.html").write_text(fhtml, encoding="utf-8")
     (ROOT / "index.html").write_text(index_page(d), encoding="utf-8")
     print("Built:", ", ".join(p.name for p in sorted(DIST.iterdir())), "+ index.html")

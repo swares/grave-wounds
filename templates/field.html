@@ -367,12 +367,16 @@ function logLines(log, ex){
       if (line) out.push(line);
       continue;
     }
-    const dead = l.dead ? " (" + l.dead + " dead)" : "", fallen = `${l.hits} hit, ${l.down} down${dead}`;
-    if (l.kind === "volley") out.push({ cls: "", text: `${nm(l.att)} shoot at ${nm(l.dfd)}, ${l.dist * FD.units.hex_m} m${shotNotes(l)}: ${l.blows} aimed shots, ${fallen}.` });
-    else if (l.kind === "rout") out.push({ cls: "", text: `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.` });
-    else out.push({ cls: "", text: `${nm(l.att)} strike ${nm(l.dfd)}${l.situation === "front" ? "" : " in the " + l.situation}, ${l.men} men${l.penalty ? ", attacking up −" + l.penalty + "%" : ""}: ${l.blows} telling blows, ${fallen}.` });
+    out.push({ cls: "", text: unitLineText(l, nm) });
   }
   return out;
+}
+function unitLineText(l, nm){                     // a volley, a melee or a rout strike
+  const dead = l.dead ? " (" + l.dead + " dead)" : "", fallen = `${l.hits} hit, ${l.down} down${dead}`;
+  if (l.kind === "volley") return `${nm(l.att)} shoot at ${nm(l.dfd)}, ${l.dist * FD.units.hex_m} m${shotNotes(l)}: ${l.blows} aimed shots, ${fallen}.`;
+  if (l.kind === "rout") return `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.`;
+  const where = l.situation === "front" ? "" : " in the " + l.situation, up = l.penalty ? ", attacking up −" + l.penalty + "%" : "";
+  return `${nm(l.att)} strike ${nm(l.dfd)}${where}, ${l.men} men${up}: ${l.blows} telling blows, ${fallen}.`;
 }
 function shotNotes(l){                            // " (cover -20%, weather -10%)"
   const bits = [];
