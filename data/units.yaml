@@ -16,7 +16,7 @@ map: {cols: 60, rows: 40}  # the field map's default size (600 x 400 m)
 # missile_factor: shots at a unit in this order count this much (open order is harder to hit).
 formations:
   close: {name: "Close order", abreast: 10, ranks: 4, per_hex: 40, move: 6, missile_factor: 1.0}
-  open:  {name: "Open order",  abreast: 10, ranks: 2, per_hex: 20, move: 8, missile_factor: 0.8}
+  open:  {name: "Open order", key: ".",  abreast: 10, ranks: 2, per_hex: 20, move: 8, missile_factor: 0.8}
 mounted_move: 15           # hexes an exchange for mounted units, in either order
 charge_move: 2             # a unit that ends its move in contact may move this many times its allowance (a charge)
 turn_per: 2                # turning the facing one step (60 degrees) costs 1 hex for every this many hexes of front (at least 1)
@@ -28,12 +28,13 @@ exchange_rounds: 10        # individual 6-second rounds in one exchange (for fat
 # ground (as a bank's). no_horse: horses cannot go into it. Works (ditches, banks,
 # palisades, gates, walls, stakes, felled trees, wagons, pavises) are those of the battle
 # map (works.yaml), with the same crossing costs, cover and height, along the 10 m hexes.
+# key: the letter for the ground in a battlefield file's rows (data/fields).
 ground:
-  open:  {name: "Open ground",  move: 1}
-  rough: {name: "Rough ground", move: 2}
-  woods: {name: "Woods",        move: 2, cover: 20}
-  marsh: {name: "Marsh",        move: 3, no_horse: true}
-  high:  {name: "High ground",  move: 1, height: 10}
+  open:  {name: "Open ground",  key: ".", move: 1}
+  rough: {name: "Rough ground", key: "r", move: 2}
+  woods: {name: "Woods",        key: "F", move: 2, cover: 20}
+  marsh: {name: "Marsh",        key: "m", move: 3, no_horse: true}
+  high:  {name: "High ground",  key: "h", move: 1, height: 10}
 # Breaching: a unit ordered to breach puts this share of each front hex's front rank to
 # hacking at the work in front of it, every round of the exchange. A work's breach figure
 # (man-rounds, works.yaml) is for a 2 m hex side; a 10 m side takes five times as long.

@@ -20,7 +20,8 @@ the fighters' positions, with movement, leaving contact, and weapon reach and ra
 one-page rules are in [docs/combat.md](docs/combat.md).
 
 **Travel map:** `dist/travel.html` marches forces from camp to the field across 0.6-mile (1 km) hexes
-of terrain, with planned routes, marching days and terrain painting. See
+of terrain, with planned routes, marching days and terrain painting. It comes with a test
+valley and the Agincourt campaign of 1415, from Harfleur to Calais on 3-mile (5 km) hexes. See
 [docs/travel.md](docs/travel.md).
 
 **Camps and works:** forces make camp on the travel map, from a bivouac to a fortified
@@ -45,7 +46,8 @@ bulk each minute through the same wound tables. Morale decides most fights, and 
 does most of the killing. Named characters still fight one by one. The field map,
 `dist/field.html`, puts units on 11-yard (10 m) hexes: each side moves, then every melee and volley
 is resolved together, with flank and rear, morale and the pursuit, on painted ground
-with the battle map's works and weather. A fight on the travel
+with the battle map's works and weather, or on a real battlefield (Agincourt, with both
+armies drawn up). A fight on the travel
 map can be fought there, and its wounded go back to camp, where wound fever can take
 them. See [docs/units.md](docs/units.md).
 
@@ -99,8 +101,8 @@ written in):
 
 1. Playtest the stop check, graze, morale and battle map in the roller and tune their
    numbers. Cover and elevation come next on the map.
-2. Playtest the travel map, then add maps for each campaign and battle. Weather, forage and
-   camp disease will use the terrain's cover, forage and wet notes.
+2. Playtest the travel map and the Agincourt maps, then add maps for the other campaigns
+   and battles.
 3. Draft the medieval character generation tables and make a team in 20 minutes.
 4. Playtest one fight with two teams, then a few weeks of camp, march and weather.
 
@@ -112,4 +114,6 @@ games work in our own words; none of their rules text, tables or art is reproduc
 Those names are trademarks of their owners, and Grave Wounds is not affiliated with or
 endorsed by any of them. The wound data comes from published studies, cited in `data/`;
 period pictures are linked from Wikimedia Commons, not copied; maps are drawn from
-Natural Earth (public domain).
+Natural Earth (public domain). The Agincourt campaign and battle maps are drawn by us from
+public-domain coastline and plain facts (where places are, what the accounts say), not
+traced from any published map.

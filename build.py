@@ -508,6 +508,7 @@ def field_bundle(d) -> dict:
     """What the field map needs: the unit rules, and for every table and weapon the d100 ranges
     the wound roll looks up (precomputed here so the page rolls exactly as roll_hit does)."""
     from gravewounds.engine import armor_at
+    from gravewounds.units import battlefield
     rng3 = lambda rs: [[r["id"], r["lo"], r["hi"]] for r in rs]
     tables = {}
     for tid, t in d.tables.items():
@@ -534,6 +535,8 @@ def field_bundle(d) -> dict:
         "works": d.works,
         "weather": {k: d.weather[k] for k in ("winds", "conditions", "battle", "ground")},
         "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
+        "fields": {fid: {"name": f["name"], "sides": f["sides"], "table": f["table"], "field": battlefield(d, fid), "units": f.get("units", [])}
+                   for fid, f in d.fields.items()},
     }
 
 
