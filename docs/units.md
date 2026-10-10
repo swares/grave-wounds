@@ -398,6 +398,25 @@ about 2,410 by 1,140 yards (2,200 by 1,040 m), with north at the top:
 
 It is drawn by `tools/maps/make_lutzen_field.mjs`.
 
+**Sidon, 1253** (`data/fields/sidon-1253.yaml`). This field is drawn with **east at the
+top**, as medieval maps were: the town and the sea are at the bottom (west) and north is on
+the left, so the attack comes down the page. It is 110 × 90 hexes, about 1,200 yards (1,100 m)
+north to south and 850 yards (780 m) east to west:
+- The town's landward wall runs across the page with a ditch in front of it. One stretch is
+  not yet built, only its footing (a low bank behind the ditch); the gate is barred.
+- The town is rough ground behind the wall, with the mound where the land castle stands;
+  orchards and gardens outside, and the first foothills at the top.
+- Fair weather.
+- The Franks, inside the wall: 300 crossbowmen and 500 sergeants of the garrison in mail, 100
+  knights, and 600 builders and townsmen with axes and no armour (green).
+- The army of Damascus, about 340 yards (310 m) up the page: 1,500 horse archers, 800 heavy
+  horse and 1,500 foot.
+- The wound tables are Sidon's own (the gameplay version). The written record of the raid is
+  thin: the numbers and the deployment are our guesses for play.
+
+It is drawn by `tools/maps/make_sidon_field.mjs`, after the excavators' description of the
+ditch, the gateway and the castle mound, not traced from any map.
+
 **A battlefield file** has an `id` and `name`, `sides` (two names), `table`, `size`
 ([cols, rows]) and `weather`. Its `ground` is rows of one letter per hex: `.` open, `r`
 rough, `F` woods, `m` marsh, `h` high ground (the `key` of each kind in `data/units.yaml`).
