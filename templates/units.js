@@ -604,19 +604,24 @@ function cannonades(units, field = null){         // [{att, dfd, guns, dist, sho
   });
   return out;
 }
+function canisterStruck(A, c, cut, rounds, rng){   // men hit by canister: each ball a chance
+  const p = chanceAt(A.canister.strike, c.dist) * cut;
+  let struck = 0;
+  for (let k = 0; k < rounds * A.canister.balls; k++) if (rng.randint(1, 100) <= p) struck++;
+  return struck;
+}
+function roundShotStruck(A, c, cut, rounds, target, rng){   // men hit by round shot: each ball that strikes goes through the ranks
+  const rs = A.round_shot, p = chanceAt(rs.strike, c.dist) * cut, path = Math.min(rs.path_max, form(target).ranks * footprint(target).length);
+  let struck = 0;
+  for (let k = 0; k < rounds; k++){
+    if (rng.randint(1, 100) > p) continue;
+    for (let m = 0; m < path; m++) if (rng.randint(1, 100) <= rs.file) struck++;
+  }
+  return struck;
+}
 function cannonade(att, target, c, rng, exposed = []){   // a battery's fire at the target unit: the men struck, then a wound roll each
   const A = UD.artillery, rounds = c.guns * A.rounds, cut = form(target).missile_factor * (100 - c.cover - c.penalty) / 100;
-  let struck = 0;
-  if (c.shot === "canister"){
-    const p = chanceAt(A.canister.strike, c.dist) * cut;
-    for (let k = 0; k < rounds * A.canister.balls; k++) if (rng.randint(1, 100) <= p) struck++;
-  } else {
-    const rs = A.round_shot, p = chanceAt(rs.strike, c.dist) * cut, path = Math.min(rs.path_max, form(target).ranks * footprint(target).length);
-    for (let k = 0; k < rounds; k++){
-      if (rng.randint(1, 100) > p) continue;
-      for (let m = 0; m < path; m++) if (rng.randint(1, 100) <= rs.file) struck++;
-    }
-  }
+  const struck = c.shot === "canister" ? canisterStruck(A, c, cut, rounds, rng) : roundShotStruck(A, c, cut, rounds, target, rng);
   return blows(att, sideOfUnit(target, att.table), struck, A.attack, 0, rng, { exposed, shift: -1000 });
 }
 function batteryAfter(u){                          // end of an exchange: changing over is done; a broken battery has left its guns

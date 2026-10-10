@@ -823,7 +823,8 @@ function toggleLimber(){                          // set-up: at once; in play: o
   const was = S.start?.[idx(u.id)];
   if (!u.limbering && was && (was.pos[0] !== u.pos[0] || was.pos[1] !== u.pos[1] || was.facing !== u.facing)){ S.msg = `${u.name} has moved this phase: undo the move first.`; return render() }
   u.limbering = !u.limbering;
-  S.msg = u.limbering ? `${u.name} will ${u.limbered ? "unlimber" : "limber up"} this exchange: it neither moves nor fires until it is done.` : "";
+  const verb = u.limbered ? "unlimber" : "limber up";
+  S.msg = u.limbering ? `${u.name} will ${verb} this exchange: it neither moves nor fires until it is done.` : "";
   render();
 }
 function renderPhase(){

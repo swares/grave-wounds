@@ -1127,22 +1127,33 @@ def cannonades(d: Data, units: list, field: dict | None = None) -> list:
     return out
 
 
+def _canister_struck(A: dict, c: dict, cut: float, rounds: int, rng) -> int:
+    """Men hit by canister: each ball a chance."""
+    p = _chance_at(A["canister"]["strike"], c["dist"]) * cut
+    return sum(rng.randint(1, 100) <= p for _ in range(rounds * A["canister"]["balls"]))
+
+
+def _round_shot_struck(d: Data, A: dict, c: dict, cut: float, rounds: int, target: dict, rng) -> int:
+    """Men hit by round shot: each ball that strikes the unit goes through its ranks."""
+    rs = A["round_shot"]
+    p, path = _chance_at(rs["strike"], c["dist"]) * cut, min(rs["path_max"], form(d, target)["ranks"] * len(footprint(d, target)))
+    struck = 0
+    for _ in range(rounds):
+        if rng.randint(1, 100) <= p:
+            struck += sum(rng.randint(1, 100) <= rs["file"] for _ in range(path))
+    return struck
+
+
 def cannonade(d: Data, att: dict, target: dict, c: dict, rng, exposed: tuple = ()) -> dict:
     """One exchange of a battery's fire (att: the battery as a side, with its gun; c, from
     cannonades) at the target unit: the men struck, then a wound roll for each."""
-    A, struck = d.units["artillery"], 0
+    A = d.units["artillery"]
     rounds = c["guns"] * A["rounds"]
     cut = form(d, target)["missile_factor"] * (100 - c["cover"] - c["penalty"]) / 100
     if c["shot"] == "canister":
-        p = _chance_at(A["canister"]["strike"], c["dist"]) * cut
-        for _ in range(rounds * A["canister"]["balls"]):
-            struck += rng.randint(1, 100) <= p
+        struck = _canister_struck(A, c, cut, rounds, rng)
     else:
-        rs = A["round_shot"]
-        p, path = _chance_at(rs["strike"], c["dist"]) * cut, min(rs["path_max"], form(d, target)["ranks"] * len(footprint(d, target)))
-        for _ in range(rounds):
-            if rng.randint(1, 100) <= p:
-                struck += sum(rng.randint(1, 100) <= rs["file"] for _ in range(path))
+        struck = _round_shot_struck(d, A, c, cut, rounds, target, rng)
     return _blows(d, att, _side(target, att["table"]), struck, A["attack"], 0, rng, exposed, -1000)
 
 
