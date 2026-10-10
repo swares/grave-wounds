@@ -613,7 +613,7 @@ def wind_lie(d: Data, weather: dict | None, frm, to, up: str = "N") -> str | Non
     q1, q2 = frm[0] - (frm[1] - (frm[1] & 1)) / 2, to[0] - (to[1] - (to[1] & 1)) / 2
     dr = to[1] - frm[1]
     dx, dy = math.sqrt(3) * ((q2 - q1) + dr / 2), 1.5 * dr
-    n = math.sqrt(dx * dx + dy * dy)
+    n = math.hypot(dx, dy)
     if n == 0:
         return None
     dot = dx * wx + dy * wy
@@ -622,6 +622,27 @@ def wind_lie(d: Data, weather: dict | None, frm, to, up: str = "N") -> str | Non
     if dot <= -math.sqrt(0.5) * n + 1e-9:
         return "against"
     return "across"
+
+
+def _sight(d: Data, cond: dict, lie: str | None, out: dict):
+    """How far a shooter can see to aim (battle hexes, None for clear): less with rain or snow
+    driven into his face."""
+    vis = cond.get("visibility")
+    if vis is not None and lie == "against" and cond["precip"] != "none":
+        vis = vis * d.weather["driven_sight"] // 100
+        out["notes"].append(f"{cond['precip']} in their faces")
+    return vis
+
+
+def _wind_reach(w: dict, wind: dict, lie: str | None, out: dict) -> None:
+    """With the wind a bow, crossbow or sling reaches further; into it, less and harder."""
+    if lie not in ("with", "against") or w.get("ignition") or not wind.get("reach"):
+        return
+    out["reach"] = wind["reach"] if lie == "with" else -wind["reach"]
+    out["notes"].append(f"{'with' if lie == 'with' else 'into'} the wind, reach {out['reach']:+d}%")
+    if lie == "against" and wind.get("into_wind"):
+        out["penalty"] += wind["into_wind"]
+        out["notes"].append(f"into the wind -{wind['into_wind']}%")
 
 
 def weather_attack(d: Data, weather: dict | None, wid: str, dist: int, frm=None, to=None, up: str = "N") -> dict:
@@ -635,20 +656,12 @@ def weather_attack(d: Data, weather: dict | None, wid: str, dist: int, frm=None,
     WX = d.weather
     cond = WX["conditions"][weather["cond"]]
     lie = wind_lie(d, weather, frm, to, up)
-    vis = cond.get("visibility")
-    if vis is not None and lie == "against" and cond["precip"] != "none":
-        vis = vis * WX["driven_sight"] // 100
-        out["notes"].append(f"{cond['precip']} in their faces")
+    vis = _sight(d, cond, lie, out)
     if vis is not None and dist > vis:
         out["blocked"] = f"{cond['name']}: no one can be seen to aim at beyond {vis} hexes ({vis * 2} m)."
         return out
     wind = next(x for x in WX["winds"] if x["id"] == weather["wind"])
-    if lie in ("with", "against") and not w.get("ignition") and wind.get("reach"):
-        out["reach"] = wind["reach"] if lie == "with" else -wind["reach"]
-        out["notes"].append(f"{'with' if lie == 'with' else 'into'} the wind, reach {out['reach']:+d}%")
-        if lie == "against" and wind.get("into_wind"):
-            out["penalty"] += wind["into_wind"]
-            out["notes"].append(f"into the wind -{wind['into_wind']}%")
+    _wind_reach(w, wind, lie, out)
     if w.get("string"):
         p = WX["battle"]["string_wet"][cond["wet"]]
         if p:

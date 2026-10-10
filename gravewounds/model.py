@@ -847,16 +847,23 @@ def _field_shape_errors(d: Data, f: dict, where: str) -> list[str]:
         errors.append(f"{where}: sides needs two names")
     if f.get("table") not in d.tables:
         errors.append(f"{where}: unknown table {f.get('table')}")
-    cond = (f.get("weather") or {}).get("cond")
-    if f.get("weather") and cond not in d.weather.get("conditions", {}):
-        errors.append(f"{where}: unknown weather {cond}")
-    pts = d.weather.get("wind_points", [])
-    if (f.get("weather") or {}).get("dir", pts[0] if pts else None) not in pts or f.get("up", "N") not in pts:
-        errors.append(f"{where}: weather.dir and up must be compass points {pts}")
+    errors += _field_weather_errors(d, f, where)
     errors += _field_travel_errors(d, f, where)
     works = f.get("works") or {}
     for kind, label, known in (("hexes", "hex", d.works.get("hex_works", {})), ("edges", "edge", d.works.get("edge_works", {}))):
         errors += [f"{where}: unknown {label} work {w.get('type')}" for w in works.get(kind, []) if w.get("type") not in known]
+    return errors
+
+
+def _field_weather_errors(d: Data, f: dict, where: str) -> list[str]:
+    """A battlefield's weather: a known condition, and its wind direction and the compass point
+    at the top of its map among the wind points."""
+    errors, wx = [], f.get("weather") or {}
+    if wx and wx.get("cond") not in d.weather.get("conditions", {}):
+        errors.append(f"{where}: unknown weather {wx.get('cond')}")
+    pts = d.weather.get("wind_points", [])
+    if pts and (wx.get("dir", pts[0]) not in pts or f.get("up", "N") not in pts):
+        errors.append(f"{where}: weather.dir and up must be compass points {pts}")
     return errors
 
 
