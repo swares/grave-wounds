@@ -503,6 +503,36 @@ def _size(d: Data, field: dict | None) -> tuple:
     return d.units["map"]["cols"], d.units["map"]["rows"]
 
 
+def battlefield(d: Data, fid: str) -> dict:
+    """A battlefield from data/fields as a field: the ground from its rows of letters (units.yaml
+    ground keys), its works laid on the hexes and hex sides, its weather and size."""
+    f, keys = d.fields[fid], {g["key"]: k for k, g in d.units["ground"].items()}
+    ground = {f"{c},{r}": keys[ch] for r, row in enumerate(f["rows"]) for c, ch in enumerate(row.strip()) if keys[ch] != "open"}
+    works = {"edges": {}, "hexes": {}}
+    for w in (f.get("works") or {}).get("hexes", []):
+        for h in w["at"]:
+            works["hexes"][C.hkey(h)] = {"type": w["type"], "progress": 0}
+    for w in (f.get("works") or {}).get("edges", []):
+        for a, b in w["at"]:
+            it = {"type": w["type"], "progress": 0}
+            if d.works["edge_works"][w["type"]].get("height"):
+                it["high"] = C.hkey(a)
+            if w["type"] == "gate":
+                it.update({"open": False, "inside": C.hkey(a)})
+            works["edges"].setdefault(C.edge_key(a, b), []).append(it)
+    wx = f.get("weather") or {"cond": "fair", "wind": "calm", "ground": {"mud": 0, "snow": 0}}
+    return {"ground": ground, "works": works, "weather": wx, "size": list(f["size"])}
+
+
+def battlefield_units(d: Data, fid: str) -> list:
+    """The armies as drawn up on a battlefield, as units ready to fight."""
+    out = []
+    for u in d.fields[fid].get("units", []):
+        out.append({**u, "start": u["men"], "down": 0, "dead": 0, "hurt": {}, "heroes": [], "state": "steady",
+                    "mounted": bool(u.get("mounted")), "charged": False, "leader": None})
+    return out
+
+
 def ground_at(d: Data, field: dict | None, h) -> dict:
     kind = ((field or {}).get("ground") or {}).get(f"{h[0]},{h[1]}", "open")
     return d.units["ground"][kind]

@@ -56,7 +56,7 @@ button:disabled{opacity:.45;cursor:default}
 .msg:empty{display:none}
 .phase{font:700 1rem var(--display);letter-spacing:.03em}
 .mapbox{overflow:auto;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
-.mapbox svg{display:block;width:100%;height:auto;min-width:960px;touch-action:manipulation;user-select:none}
+.mapbox svg{display:block;width:100%;height:auto;touch-action:manipulation;user-select:none}
 .hx{fill:var(--ground);stroke:rgba(0,0,0,.10);stroke-width:.5;cursor:pointer}
 .hx:hover{stroke:var(--ink);stroke-width:1.2}
 .hx.g-rough{fill:var(--g-rough)}.hx.g-woods{fill:var(--g-woods)}.hx.g-marsh{fill:var(--g-marsh)}.hx.g-high{fill:var(--g-high)}
@@ -126,6 +126,9 @@ legend{padding:0}
       </div>
       <div class="row">
         <div style="flex:2 1 220px"><label for="sel-tool">Clicking the map</label><select id="sel-tool"></select></div>
+        <div style="flex:2 1 220px"><label for="sel-field">Battlefield</label><select id="sel-field"></select></div>
+        <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-armies" checked> with the armies as drawn up</label></div>
+        <div style="flex:0 0 auto;align-self:end"><button class="small" id="btn-field" title="Lay out this ground, its works and weather (set-up only)">Lay it out</button></div>
       </div>
       <output class="msg" id="msg"></output>
       <div class="mapbox" id="map" title="Click a hex to place or move the selected unit"></div>
@@ -263,7 +266,8 @@ function hexDistance(a, b){
 
 /* ---------- the page ---------- */
 const $ = s => document.querySelector(s);
-const KEY = "gravewounds-field", SIZE = [FD.units.map.cols, FD.units.map.rows];
+const KEY = "gravewounds-field", DEFAULT_SIZE = [FD.units.map.cols, FD.units.map.rows];
+let SIZE = DEFAULT_SIZE.slice();                   // this battle's field, cols x rows: the default, or a battlefield's
 const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
 const dice = {                                     // real dice for play
   randint(a, b){ return a + crypto.getRandomValues(new Uint32Array(1))[0] % (b - a + 1) },
@@ -275,7 +279,33 @@ function newUnit(o){
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, width: o.width || Math.ceil(o.men / FD.units.formations[o.formation].per_hex),
     pos: o.pos, facing: o.facing, state: "steady", charged: false };
 }
-const newField = () => ({ ground: {}, works: { edges: {}, hexes: {} }, weather: { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0 } }, size: SIZE.slice() });
+function newField(){                              // open ground of the default size (and the page goes back to that size)
+  SIZE = DEFAULT_SIZE.slice();
+  return { ground: {}, works: { edges: {}, hexes: {} }, weather: { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0 } }, size: SIZE.slice() };
+}
+function loadBattlefield(fid, armies){            // a battlefield from data/fields: its ground, works, weather and size; its armies if asked
+  if (S.phase !== "setup"){ S.msg = "The battlefield is chosen before the battle starts."; return }
+  const B = FD.fields[fid], travelWx = S.from ? S.field.weather : null;   // a battle from the travel map keeps that day's weather
+  S.field = B ? structuredClone(B.field) : newField();
+  if (travelWx) S.field.weather = travelWx;
+  SIZE = S.field.size.slice();
+  S.fieldId = B ? fid : null;
+  S.camp = null;
+  if (B && armies && !S.forces){
+    S.sides = B.sides.slice();
+    S.table = B.table;
+    S.seq = 1;
+    S.units = B.units.map(u => newUnit({ ...u, side: B.sides[u.side] }));
+    S.sel = S.units[0]?.id ?? null;
+    S.msg = `${B.name}: the armies as drawn up. Move, change or remove any unit before the battle starts.`;
+    return;
+  }
+  const keep = S.units.filter((u, i) => fits(S.units, i, u, SIZE, S.field)), gone = S.units.length - keep.length;
+  S.units = keep;
+  S.sel = keep.some(u => u.id === S.sel) ? S.sel : keep[0]?.id ?? null;
+  const what = travelWx ? "the ground and works (the weather stays the travel map's)" : "the ground, works and weather";
+  S.msg = (B ? `${B.name}: ${what}.` : "Open ground.") + (gone ? ` ${gone} unit(s) no longer fit and were taken off.` : "");
+}
 function fromTravel(h){                            // a battle with the travel map's forces and no units yet: the GM splits them
   const def = h.forces.find(f => f.role === "defender");
   const attSides = [...new Set(h.forces.filter(f => f.role === "attacker").map(f => f.side))];   // attacking together, whatever their sides
@@ -315,6 +345,7 @@ function restore(){
   try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j?.units && FD.tables[j.table]) S = j }catch(e){ /* a damaged save: S stays empty and a fresh battle starts */ }
   if (!S) freshState();
   S.field ??= newField();
+  SIZE = (S.field.size || DEFAULT_SIZE).slice();
   S.tool ??= "unit";
 }
 const idx = id => S.units.findIndex(u => u.id === id);
@@ -683,7 +714,7 @@ function renderMap(){
     hx += `<polygon class="hx${cls}" data-h="${c},${r}" points="${pts(xy([c, r]))}"/>`;
   }
   const units = S.units.map(unitSvg).join(""), W = HW * (SIZE[0] + 0.5), H = 1.5 * R * (SIZE[1] - 1) + 2 * R;
-  $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}">${hx}${worksSvg()}${units}</svg>`;
+  $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" style="min-width:${SIZE[0] * 13}px">${hx}${worksSvg()}${units}</svg>`;
   $("#map-scale").textContent = `${SIZE[0]} × ${SIZE[1]} hexes · ${fmtM(FD.units.hex_m)} a hex · an exchange is about a minute`;
   $("#hex-size").textContent = fmtM(FD.units.hex_m);
 }
@@ -728,6 +759,8 @@ function renderPhase(){
   $("#btn-next").textContent = label;
   $("#add-box").disabled = S.phase !== "setup";
   $("#sel-table").disabled = S.phase !== "setup";
+  ["#sel-field", "#chk-armies", "#btn-field"].forEach(b => $(b).disabled = S.phase !== "setup");
+  $("#chk-armies").disabled ||= !!S.forces;
   ["#in-side0", "#in-side1"].forEach(b => $(b).disabled = S.phase !== "setup" || !!S.forces);
 }
 function render(){
@@ -748,6 +781,9 @@ function fillChoices(){
   $("#sel-kit").innerHTML = Object.entries(FD.kits).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-quality").innerHTML = Object.keys(FD.units.quality).map(q => `<option ${q === "regular" ? "selected" : ""}>${q}</option>`).join("");
   $("#sel-form").innerHTML = Object.entries(FD.units.formations).map(([k, f]) => `<option value="${k}">${f.name}</option>`).join("");
+  $("#sel-field").innerHTML = `<option value="">Open ground (${DEFAULT_SIZE.join(" × ")})</option>`
+    + Object.entries(FD.fields).map(([k, f]) => `<option value="${k}">${esc(f.name)} (${f.field.size.join(" × ")})</option>`).join("");
+  $("#sel-field").value = S.fieldId || "";
 }
 function reshape(dw){                            // set-up: a wider or narrower front, if it fits
   const u = selUnit(); if (!u) return;
@@ -783,9 +819,11 @@ function startSpots(k){
   for (let r = 0; r <= S.camp.radius; r++) inside.push(...ringWalk(S.camp.centre, r));
   return [...inside, ...edge];
 }
-function newBattle(){                            // back to set-up: the travel map's forces again, or the starting units
+function newBattle(){                            // back to set-up: the travel map's forces again, or the starting units; the same battlefield
+  const fid = S.fieldId;
   if (S.from) fromTravel(S.from);
   else freshState();
+  if (fid) loadBattlefield(fid, true);
   fillChoices();
   render();
 }
@@ -841,6 +879,7 @@ function init(){
   $("#btn-undo").onclick = () => { const u = selUnit(); if (u && S.start){ const i = idx(u.id); S.units[i] = { ...S.start[i] }; S.msg = ""; render() } };
   $("#btn-remove").onclick = () => { const u = selUnit(); if (u){ S.units = S.units.filter(x => x.id !== u.id); S.sel = S.units[0] ? S.units[0].id : null; render() } };
   $("#btn-add").onclick = addUnit;
+  $("#btn-field").onclick = () => { loadBattlefield($("#sel-field").value, $("#chk-armies").checked); fillChoices(); render() };
   $("#btn-add-hero").onclick = addHero;
   $("#sel-hero").onchange = heroDefaults;
   $("#sel-hero-unit").onchange = heroDefaults;

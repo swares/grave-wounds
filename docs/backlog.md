@@ -21,7 +21,14 @@ When an item is done, delete it here and note it in the pull request that closes
 - **One clock for all forces.** Each force on the travel map keeps its own clock (kept on
   purpose for now). A shared clock would let forces meet on the road.
 - **Cover and elevation on the battle map**, beyond what works give.
-- **Campaign and battle maps** for each campaign or battle, to replace the generic valley.
+- **Campaign and battle maps for the other campaigns.** Agincourt (1415) has both: the
+  march from Harfleur to Calais on the travel map, and the field on the field map. The
+  other conflicts in the tables (Towton, Visby, the Peninsula and later) still play on the
+  generic valley and open ground. Each needs the same work: places, rivers and roads drawn
+  through public-domain facts, and a battlefield with its armies.
+- **A battle sent from the travel map onto a battlefield.** A fight near Azincourt could
+  offer the Agincourt field. For now the GM picks the battlefield by hand, and the
+  travel map's forces bring only their own units.
 - **Scurvy for forces.** Camp disease covers flux, typhus, typhoid, ague and plague, and
   wound fever for the wounded from the field map. Scurvy needs food tracking (weeks
   without fresh food); it is in the design doc's disease table.

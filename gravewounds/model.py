@@ -99,6 +99,7 @@ class Data:
     weather: dict = field(default_factory=dict)     # weather.yaml: daylight, conditions, ground, rest, fatigue, climates
     disease: dict = field(default_factory=dict)     # disease.yaml: camp disease for travel-map forces
     units: dict = field(default_factory=dict)       # units.yaml: unit combat on the field map
+    fields: dict = field(default_factory=dict)      # battlefield id -> battlefield (data/fields), `rows` = ground rows
     warnings: list = field(default_factory=list)
 
 
@@ -134,6 +135,11 @@ def load(root: str | Path = "data") -> Data:
         m = _read(p)
         m["rows"] = [r for r in str(m.get("terrain", "")).split("\n") if r.strip()]
         maps[m["id"]] = m
+    fields = {}
+    for p in sorted((root / "fields").glob("*.yaml")) if (root / "fields").exists() else []:
+        f = _read(p)
+        f["rows"] = [r for r in str(f.get("ground", "")).split("\n") if r.strip()]
+        fields[f["id"]] = f
 
     data = Data(
         root=root,
@@ -155,6 +161,7 @@ def load(root: str | Path = "data") -> Data:
         weather=weather,
         disease=disease,
         units=units,
+        fields=fields,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -453,6 +460,7 @@ def validate(d: Data) -> None:
     # unit combat
     if d.units:
         errors += _units_errors(d)
+        errors += _fields_errors(d)
 
     # camps and works
     WK = d.works
@@ -797,4 +805,58 @@ def _units_extra_errors(d: Data) -> list[str]:
     saved = U.get("aftermath", {}).get("saved", {})
     if saved and set(saved.get("hours", {})) != set(d.disease.get("recovery", {}).get("care", {})):
         errors.append("units.yaml: aftermath.saved.hours needs every care level")
+    return errors
+
+
+def _fields_errors(d: Data) -> list[str]:
+    """data/fields: battlefields for the field map, each with its ground, works, weather and
+    (optionally) the armies as drawn up."""
+    from .units import battlefield, battlefield_units, _fits   # here: units imports this module
+    errors, keys = [], {g.get("key"): k for k, g in d.units.get("ground", {}).items()}
+    for fid, f in d.fields.items():
+        where = f"fields/{fid}"
+        size = f.get("size")
+        if not (isinstance(size, list) and len(size) == 2 and all(isinstance(x, int) and x > 0 for x in size)):
+            errors.append(f"{where}: size must be [cols, rows], whole numbers")
+            continue
+        if len(f["rows"]) != size[1] or any(len(r.strip()) != size[0] for r in f["rows"]):
+            errors.append(f"{where}: ground needs {size[1]} rows of {size[0]} letters")
+        bad = sorted({ch for r in f["rows"] for ch in r.strip()} - set(keys))
+        if bad:
+            errors.append(f"{where}: unknown ground letters {bad}")
+        if len(f.get("sides", [])) != 2:
+            errors.append(f"{where}: sides needs two names")
+        if f.get("table") not in d.tables:
+            errors.append(f"{where}: unknown table {f.get('table')}")
+        wx = f.get("weather") or {}
+        if wx and wx.get("cond") not in d.weather.get("conditions", {}):
+            errors.append(f"{where}: unknown weather {wx.get('cond')}")
+        for w in (f.get("works") or {}).get("hexes", []):
+            if w.get("type") not in d.works.get("hex_works", {}):
+                errors.append(f"{where}: unknown hex work {w.get('type')}")
+        for w in (f.get("works") or {}).get("edges", []):
+            if w.get("type") not in d.works.get("edge_works", {}):
+                errors.append(f"{where}: unknown edge work {w.get('type')}")
+        if errors:
+            continue
+        errors += _field_unit_errors(d, f, where, battlefield, battlefield_units, _fits)
+    return errors
+
+
+def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_units, fits) -> list[str]:
+    """The armies as drawn up: known arms, armour and formations, each unit standing where it can."""
+    errors, U = [], d.units
+    for u in f.get("units", []):
+        if u.get("side") not in (0, 1) or not isinstance(u.get("men"), int) or u["men"] < 1:
+            errors.append(f"{where}: unit {u.get('name')} needs side 0 or 1 and men")
+        if u.get("weapon") not in d.tables[f["table"]]["weapons"] or u.get("kit") not in d.armor["kits"]:
+            errors.append(f"{where}: unit {u.get('name')} has a weapon not on {f['table']} or an unknown kit")
+        if u.get("quality") not in U["quality"] or u.get("formation") not in U["formations"]:
+            errors.append(f"{where}: unit {u.get('name')} has an unknown quality or formation")
+    if errors:
+        return errors
+    field, units = battlefield(d, f["id"]), battlefield_units(d, f["id"])
+    for i, u in enumerate(units):
+        if not fits(d, units, i, u, tuple(f["size"]), field):
+            errors.append(f"{where}: unit {u['name']} does not fit where it stands")
     return errors
