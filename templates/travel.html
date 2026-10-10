@@ -765,7 +765,8 @@ function fightButton(f){                     // a fight needs an enemy marched t
   const withAllies = p.allies.length ? ` (with ${names(p.allies)})` : "";
   b.textContent = `Set up the fight: ${names(p.attackers)} against ${dfd.name}${withAllies} ${at}`;
   b.disabled = false;
-  const late = p.late.length ? ` ${names(p.late)} ${p.late.length > 1 ? "are" : "is"} not there yet and will miss it.` : "";
+  const be = p.late.length > 1 ? "are" : "is";
+  const late = p.late.length ? ` ${names(p.late)} ${be} not there yet and will miss it.` : "";
   let why = "when the last of the attackers is there";
   if (dfd.day === p.day && dfd.used === p.used) why = here ? `when ${dfd.name} has finished its camp` : `when ${dfd.name} is ready`;
   $("#fight-note").textContent = `The fight starts ${dateText(p.day, true)}, ${clock(p.used, p.day)}, ${why}.${late}`;

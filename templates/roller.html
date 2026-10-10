@@ -1509,8 +1509,9 @@ function setupHandoff(){                     // a camp or position sent from the
   const where = h.camp ? campName : "position", cut = L.fits ? "" : " (cut down to fit the map)";
   const facing = lay ? "facing the way in" : "facing them";
   const unplaced = overflow ? " Those who did not fit inside wait at their side's edge." : "";
-  const defNote = defenders.map(o => `${o.name} (${o.side}), ${menOf(o)}`).join("; ");
-  const foeNote = foe ? `Attacking: ${foes.map(o => `${o.name} (${o.side}), ${menOf(o)}`).join("; ")}, at the far edge ${facing}. ` : "";
+  const forceLine = o => o.name + " (" + o.side + "), " + menOf(o);
+  const defNote = defenders.map(forceLine).join("; ");
+  const foeNote = foe ? `Attacking: ${foes.map(forceLine).join("; ")}, at the far edge ${facing}. ` : "";
   const addNote = `Add brings in more on the side "${S.addSide}".`;
   S.mapMsg = `Defending: ${defNote}, inside the ${where}${cut}.${unplaced} ${foeNote}${addNote} Click a fighter, on the map or with Place on map, then a hex to move him.`;
   for (const o of h.allies || []) S.pending.push(`With them: ${o.name}, ${o.men} men (${o.side})`);
