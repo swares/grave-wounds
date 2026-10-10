@@ -21,7 +21,8 @@ fight starts.
 to march hard, and the rules currently take that away.
 
 **A way to fix it.**
-- Record when each camp's work started as well as when it will finish.
+- Each camp already records when its work started (`from`, added for allies joining a
+  fight), as well as when it will finish.
 - If the attackers arrive first, start the fight at their arrival. Lay the camp out
   partly built, in proportion to the labour done by then. For example, finish the ditch
   first, then the bank, then the palisade, with the gate last. Or build the ring
@@ -29,23 +30,6 @@ to march hard, and the rules currently take that away.
 - Ask the GM which: fight now against the unfinished works, or wait and watch.
 - The labour figures are already shared (`works_labour` in `gravewounds/combat.py` and
   `templates/camp.js`), so a partial layout can be checked against them.
-
-### 2. Friendly forces nearby do not join the defence
-
-**Now.** One force defends. Another force on the defender's side within reach, such as
-the baggage train camped beside Our band, is left out. You can bring its men in by hand:
-**Add** puts new fighters on the attackers' side, so change each one's Side field on its
-card.
-
-**Why it matters.** Baggage trains, allied companies and garrisons camp together, and a
-raid on one is a raid on all.
-
-**A way to fix it.**
-- Extend `fight_plan` (Python and the travel page) to return all defending forces within
-  reach of the defender, as it already does for attackers.
-- In the roller's `setupHandoff`, put the first force inside the camp and the others in the
-  remaining hexes inside, or just behind the gate if the camp is full.
-- Keep the 8-men-per-force cap, or make the cap a setting.
 
 ### 3. A very large camp does not match the travel map's labour
 
@@ -85,7 +69,8 @@ food and tools, open to raids, and it reaches camp after the fighting men.
   of them cannot enter, and the column moves at the slowest one's speed, after fatigue.
 - They camp together. A camp sized for all their men can use the men of both forces for
   the work, and the train's tools count for everyone.
-- In a fight, they defend together (see item 2).
+- In a fight, they already defend together if both are within reach of the camp
+  (done in the allies change); marching together keeps them within reach.
 - Leaving the column is one click, and each force keeps its own clock from there.
 
 ## Deferred earlier
