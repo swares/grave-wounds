@@ -59,7 +59,9 @@ Mud and lying snow build up and wear off day by day:
 On the **travel map**, mud and snow slow the going. Mud is worst on unpaved roads and
 ploughed fields, at one and a half times the usual time. Snow is one and a half times
 everywhere, and double in the mountains. A flooded ford can't be crossed, and routes go
-round it. The planned arrival time uses today's ground as an estimate for later days.
+round it. The planned arrival time uses each day's ground where that day's weather is already known
+(another force's clock may be ahead). Beyond the last known day it repeats that day's ground,
+and the summary says from which date the ground is a guess.
 
 On the **battle map**, deep mud or deep snow (level 2 or more) costs +1 movement for every
 hex.
