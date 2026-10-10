@@ -2,6 +2,7 @@
 
     python build.py            -> dist/tables.pdf, dist/tables.md,
                                   dist/gravewounds-data.json, dist/roller.html, dist/travel.html,
+                                  dist/field.html,
                                   index.html (start page for GitHub Pages)
 """
 from __future__ import annotations
@@ -221,7 +222,7 @@ def unit_rules(d) -> list[str]:
     M, S, R, mo = U["melee"], U["missile"], U["rout"], U["morale"]
     return [
         f"<b>Unit combat (the rank and file, on the field map):</b> one exchange is about a minute. In melee the front rank of each hex touching "
-        f"the enemy strikes ({U['abreast']} men a hex face; reach-2 weapons add the second rank). {M['tempo'] * 100:g}% of them make a telling attempt each exchange; "
+        f"the enemy strikes ({U['formations']['close']['abreast']} men a hex face in close order; reach-2 weapons add the second rank). {M['tempo'] * 100:g}% of them make a telling attempt each exchange; "
         f"archers loose their rate a minute, {S['tempo'] * 100:g}% of the shots aimed at a man. Each attempt is an individual attack against the unit's attack %, "
         "parried on its defence % (not from flank or rear, nor against missiles), then location, severity from the margin, and armour, as for one fighter.",
         f"Light wounds and grazes fight on. Serious and critical wounds call for a stop check against the unit's Nerve; a failure is down. A wound fatal within rounds kills. "
@@ -426,6 +427,35 @@ def travel_bundle(d) -> dict:
         "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
         "maps": {mid: {k: m.get(k) for k in ("id", "name", "hex_km", "rows", "places", "forces",
                                                 "start_date", "calendar", "latitude", "climate", "climate_shift")} for mid, m in d.maps.items()},
+    }
+
+
+def field_bundle(d) -> dict:
+    """What the field map needs: the unit rules, and for every table and weapon the d100 ranges
+    the wound roll looks up (precomputed here so the page rolls exactly as roll_hit does)."""
+    from gravewounds.engine import armor_at
+    rng3 = lambda rs: [[r["id"], r["lo"], r["hi"]] for r in rs]
+    tables = {}
+    for tid, t in d.tables.items():
+        ws = available_weapons(d, tid)
+        tables[tid] = {"name": t["name"], "label": t.get("label", t["name"]), "battle": t.get("battle", "Other"),
+                       "weapons": ws, "ranges": {w: rng3(table_ranges(d, tid, w)) for w in ws}}
+    used = sorted({w for t in tables.values() for w in t["weapons"]})
+    keep = ("name", "short", "reach", "range", "threat", "armor_defeat", "off_map")
+    mechs = sorted({m[0] for w in used for m in rng3(mechanism_ranges(d, w))})
+    return {
+        "generated": date.today().isoformat(),
+        "units": d.units,
+        "combat": {k: d.wounds["combat"][k] for k in ("critical_fraction", "graze_margin", "margin_bands", "range")},
+        "tables": tables,
+        "weapons": {w: {k: d.weapons[w][k] for k in keep if k in d.weapons[w]} for w in used},
+        "mechanisms": {w: rng3(mechanism_ranges(d, w)) for w in used},
+        "locations": {l["id"]: {"zone": l["zone"], "name": l["name"]} for l in d.locations},
+        "kits": {k: {"name": v["name"], "layers": {l["id"]: [list(x) for x in armor_at(d, k, l["id"])] for l in d.locations}}
+                 for k, v in d.armor["kits"].items()},
+        "materials": {m: {k: v[k] for k in ("cut", "pierce", "crush", "ballistic", "threats") if k in v} for m, v in d.armor["materials"].items()},
+        "lethal": {l["id"]: {m: {s: compose_wound(d, l["id"], m, s)["lethal"] for s in ("light", "serious", "critical")} for m in mechs}
+                   for l in d.locations},
     }
 
 
@@ -1169,6 +1199,10 @@ def main() -> int:
     ttpl = (ROOT / "templates" / "travel.html").read_text(encoding="utf-8")
     thtml = ttpl.replace("/*__CAMP_JS__*/", camp_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
     (DIST / "travel.html").write_text(thtml, encoding="utf-8")
+    units_js = (ROOT / "templates" / "units.js").read_text(encoding="utf-8")
+    ftpl = (ROOT / "templates" / "field.html").read_text(encoding="utf-8")
+    fhtml = ftpl.replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(field_bundle(d), separators=(",", ":")))
+    (DIST / "field.html").write_text(fhtml, encoding="utf-8")
     (ROOT / "index.html").write_text(index_page(d), encoding="utf-8")
     print("Built:", ", ".join(p.name for p in sorted(DIST.iterdir())), "+ index.html")
     return 0

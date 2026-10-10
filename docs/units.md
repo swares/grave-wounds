@@ -8,8 +8,8 @@ a unit.
 All the numbers are in `data/units.yaml`. They are design estimates, tuned by simulation:
 `python3 -m gravewounds units` prints the pace and the example fights below.
 
-This is step 1, the rules and the engine (`gravewounds/units.py`). Step 2 puts units on
-the field map (see *Still to come*).
+The rules and engine are in `gravewounds/units.py`; the field map page, `dist/field.html`,
+runs the same rules in the browser (`templates/units.js`, checked against the Python).
 
 ## The choices behind it
 
@@ -109,11 +109,64 @@ losing most of its men in the rout: that is the shape the records show.
 Missiles: 100 longbowmen at medium range hit about 8 unarmoured men a minute, and about
 7 men in mail. At long range it is about a third of that.
 
-## Still to come (step 2)
+## The field map
 
-- **The field map page:** units as blocks of hexes with a front and a facing; moving,
-  wheeling and charging; contact and range worked out from the map; flank and rear; works
-  and weather from the battle map's rules.
+`dist/field.html` fights a battle on a field of 10 m hexes (60 × 40 by default, 600 × 400
+m). Pick the wound tables, name the two sides, and add units: men, quality, close or open
+order, weapon, armour, and whether they are mounted.
+
+**A unit on the map.** A unit is a block of hexes. Its front row runs along its line, and
+it faces the corner between two hexsides (the arrow). Close order holds 40 men a hex, 10
+abreast and 4 deep; open order holds 20, 10 abreast and 2 deep. A unit's width is how many
+hexes its front row has; the rest of its men stand in rows behind. As men go down, the
+block shrinks from the back.
+
+**Arcs.** The two hexsides either side of the facing corner are the front; the next one on
+each side is the flank; the two behind are the rear.
+
+**Turn order.** Each exchange (about a minute):
+1. Every broken unit runs straight back, as far as it can move; a unit that runs off the
+   map has fled the field.
+2. Side A moves its units, then side B moves its units.
+3. Every melee and volley is resolved at once from where the units now stand, then losses,
+   then morale. A unit that breaks is struck at once by every man of each enemy unit
+   touching it.
+
+**Movement**, in hexes an exchange:
+
+| | Hexes |
+|---|---|
+| Close order on foot | 6 |
+| Open order on foot | 8 |
+| Mounted | 15 |
+
+- Turning the facing one step (60°) costs 1 hex for every 2 hexes of front (at least 1).
+- A unit cannot pass through other units' hexes.
+- A unit in contact with an enemy cannot move.
+- **A charge:** a steady unit whose move ends in contact may move up to twice its
+  allowance. Mounted men who charge get the charge bonus (+20, twice the tempo) in that
+  exchange's fight.
+- **Pursuit:** contact with a broken unit is a charge like any other, and every man of the
+  pursuing unit strikes the fleeing.
+
+**Who fights.** A front hex fights the enemy hex across its front hexsides; whether that
+is the enemy's front, flank or rear depends on the side it is struck from. Each front hex
+puts its front rank in (10 men), or its first two ranks with reach-2 weapons.
+
+**Who shoots.** A unit with missile weapons that is not in contact shoots at the nearest
+enemy in range ahead of it (in the half of the field its front faces). The front two ranks
+of each front hex shoot. Shots at a unit in open order count 0.8.
+
+**Range** is the weapon's battle-map range in 2 m hexes, divided by 5 for field hexes:
+a longbow's long range of about 250 m is 25 field hexes.
+
+The page keeps the battle in the browser, so it can be closed and reopened. *New battle*
+starts again from the starting units.
+
+## Still to come
+
+- **Works and weather on the field map:** ditches, banks, stakes and palisades, and rain
+  and wind on the archery, from the battle map's rules.
 - **From the travel map:** a fight set up from the travel map can open on the field map,
   with each force as one or more units (fit men only).
 - **Heroes in units:** a named character in a unit's front rank fights with the full

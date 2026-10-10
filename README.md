@@ -42,8 +42,10 @@ long they stay. The sick slow the march, leave fewer men to dig and fight, and s
 
 **Unit combat:** for battles of hundreds, the rank and file fight as units, resolved in
 bulk each minute through the same wound tables. Morale decides most fights, and the rout
-does most of the killing. Named characters still fight one by one. Rules and engine are
-in place; the field map is next. See [docs/units.md](docs/units.md).
+does most of the killing. Named characters still fight one by one. The field map,
+`dist/field.html`, puts units on 10 m hexes: each side moves, then every melee and volley
+is resolved together, with flank and rear, morale and the pursuit. See
+[docs/units.md](docs/units.md).
 
 **Backlog:** known gaps and deferred work are listed in [docs/backlog.md](docs/backlog.md).
 
@@ -78,7 +80,7 @@ python -m gravewounds roll --table towton-1461-all-hits --weapon bill -n 3
 
 `build.py` writes:
 
-- `dist/roller.html` and `dist/travel.html`
+- `dist/roller.html`, `dist/travel.html` and `dist/field.html`
 - `dist/tables.pdf` and `dist/tables.md`
 - `dist/gravewounds-data.json`
 - the start page `index.html`

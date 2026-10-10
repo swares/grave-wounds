@@ -9,9 +9,18 @@
 
 # ---------- the field map ----------
 hex_m: 10                  # a field-map hex, metres across
-abreast: 10                # men in a hex's front rank, close order (1 m a man)
-ranks: 4                   # ranks to a hex: so a hex holds abreast x ranks = 40 men
 range_scale: 5             # weapon ranges are in 2 m battle-map hexes: divide by this for field hexes
+map: {cols: 60, rows: 40}  # the field map's default size (600 x 400 m)
+
+# Formations. per_hex = abreast x ranks men to a hex. move: hexes an exchange on foot.
+# missile_factor: shots at a unit in this order count this much (open order is harder to hit).
+formations:
+  close: {name: "Close order", abreast: 10, ranks: 4, per_hex: 40, move: 6, missile_factor: 1.0}
+  open:  {name: "Open order",  abreast: 10, ranks: 2, per_hex: 20, move: 8, missile_factor: 0.8}
+mounted_move: 15           # hexes an exchange for mounted units, in either order
+charge_move: 2             # a unit that ends its move in contact may move this many times its allowance (a charge)
+turn_per: 2                # turning the facing one step (60 degrees) costs 1 hex for every this many hexes of front (at least 1)
+shoot_ranks: 2             # ranks of each front hex that can shoot
 exchange_rounds: 10        # individual 6-second rounds in one exchange (for fatigue, bleeding, states)
 
 # ---------- quality ----------
@@ -23,7 +32,7 @@ quality:
   veteran: {attack: 60, defence: 45, nerve: 65}
 
 # ---------- melee ----------
-# Fighting men: the front rank of each hex touching the enemy (`abreast` men a hex face),
+# Fighting men: the front rank of each hex touching the enemy (the formation's `abreast` men),
 # twice that with reach-2 weapons (spears, bills: the second rank strikes over the first).
 # Each exchange, `tempo` of the fighting men land a telling blow's attempt; the rest of the
 # minute is pressing, shoving and watching. Tuned so that two equal regular units with no
