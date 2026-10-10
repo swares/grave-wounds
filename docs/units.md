@@ -417,6 +417,28 @@ north to south and 850 yards (780 m) east to west:
 It is drawn by `tools/maps/make_sidon_field.mjs`, after the excavators' description of the
 ditch, the gateway and the castle mound, not traced from any map.
 
+**Albuera, 16 May 1811** (`data/fields/albuera-1811.yaml`). The field is 150 × 230 hexes, about
+1,640 yards (1,500 m) east to west and 2,190 yards (2,000 m) north to south, with north at the
+top. It runs from La Albuera village south over the heights where the battle was decided; the
+allied line north of the village is off the map.
+- The Albuera stream (wet ground) runs down the east side, turning south-east as the Nogales
+  brook, with olive woods beyond it that hid the French flank march. The allied ridge and the
+  heights to the south are high ground; the village is rough ground by the stream.
+- Overcast with a breeze. The hailstorm that broke during the lancers' charge is not set:
+  the GM can bring it in (storm) when the moment comes.
+- The moment of Soult's flank attack. The allies, wheeled to face south: Zayas's 4,000
+  Spaniards on the heights, Colborne's 1,600 coming up on their right, Hoghton's and
+  Abercrombie's 3,500 behind them, Lumley's 2,000 cavalry, Cole's 5,000 coming up from the
+  north-west, Hamilton's 5,000 Portuguese in reserve and Alten's 1,000 Germans in the village.
+- The French, coming up from the south: Girard's 4,500 and Gazan's 4,000 in deep columns
+  (narrow fronts, many ranks), Werlé's 3,500 in reserve, 1,500 Polish lancers and hussars
+  out on the west flank, Latour-Maubourg's 2,000 dragoons, and Godinot's 3,500 making their
+  show against the village from the east (facing west, so its front runs on the diagonal).
+- The wound tables are the Peninsular War's (the gameplay blend). Guns are not in the unit
+  rules.
+
+It is drawn by `tools/maps/make_albuera_field.mjs`.
+
 **A battlefield file** has an `id` and `name`, `sides` (two names), `table`, `size`
 ([cols, rows]) and `weather`. Its `ground` is rows of one letter per hex: `.` open, `r`
 rough, `F` woods, `m` marsh, `h` high ground (the `key` of each kind in `data/units.yaml`).
