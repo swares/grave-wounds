@@ -103,6 +103,9 @@ class Data:
     warnings: list = field(default_factory=list)
 
 
+YAML_FILES = "*.yaml"
+
+
 def _read(path: Path):
     with open(path, encoding="utf-8") as fh:
         return yaml.safe_load(fh)
@@ -119,7 +122,7 @@ def load(root: str | Path = "data") -> Data:
     wfile = _read(root / "weapons.yaml")
     weapons = wfile["weapons"]
     wounds = _read(root / "wounds.yaml")
-    tables = [_read(p) for p in sorted((root / "tables").glob("*.yaml"))]
+    tables = [_read(p) for p in sorted((root / "tables").glob(YAML_FILES))]
     tables.sort(key=lambda t: t.get("order", 999))   # stable: file name breaks ties
     mods = _read(root / "modifiers.yaml") if (root / "modifiers.yaml").exists() else {"modifiers": []}
     armor = _read(root / "armor.yaml") if (root / "armor.yaml").exists() else {"materials": {}, "slots": {}, "kits": []}
@@ -131,12 +134,12 @@ def load(root: str | Path = "data") -> Data:
     disease = _optional(root / "disease.yaml", {})
     units = _optional(root / "units.yaml", {})
     maps = {}
-    for p in sorted((root / "maps").glob("*.yaml")) if (root / "maps").exists() else []:
+    for p in sorted((root / "maps").glob(YAML_FILES)) if (root / "maps").exists() else []:
         m = _read(p)
         m["rows"] = [r for r in str(m.get("terrain", "")).split("\n") if r.strip()]
         maps[m["id"]] = m
     fields = {}
-    for p in sorted((root / "fields").glob("*.yaml")) if (root / "fields").exists() else []:
+    for p in sorted((root / "fields").glob(YAML_FILES)) if (root / "fields").exists() else []:
         f = _read(p)
         f["rows"] = [r for r in str(f.get("ground", "")).split("\n") if r.strip()]
         fields[f["id"]] = f
@@ -812,34 +815,35 @@ def _fields_errors(d: Data) -> list[str]:
     """data/fields: battlefields for the field map, each with its ground, works, weather and
     (optionally) the armies as drawn up."""
     from .units import battlefield, battlefield_units, _fits   # here: units imports this module
-    errors, keys = [], {g.get("key"): k for k, g in d.units.get("ground", {}).items()}
+    errors = []
     for fid, f in d.fields.items():
         where = f"fields/{fid}"
-        size = f.get("size")
-        if not (isinstance(size, list) and len(size) == 2 and all(isinstance(x, int) and x > 0 for x in size)):
-            errors.append(f"{where}: size must be [cols, rows], whole numbers")
-            continue
-        if len(f["rows"]) != size[1] or any(len(r.strip()) != size[0] for r in f["rows"]):
-            errors.append(f"{where}: ground needs {size[1]} rows of {size[0]} letters")
-        bad = sorted({ch for r in f["rows"] for ch in r.strip()} - set(keys))
-        if bad:
-            errors.append(f"{where}: unknown ground letters {bad}")
-        if len(f.get("sides", [])) != 2:
-            errors.append(f"{where}: sides needs two names")
-        if f.get("table") not in d.tables:
-            errors.append(f"{where}: unknown table {f.get('table')}")
-        wx = f.get("weather") or {}
-        if wx and wx.get("cond") not in d.weather.get("conditions", {}):
-            errors.append(f"{where}: unknown weather {wx.get('cond')}")
-        for w in (f.get("works") or {}).get("hexes", []):
-            if w.get("type") not in d.works.get("hex_works", {}):
-                errors.append(f"{where}: unknown hex work {w.get('type')}")
-        for w in (f.get("works") or {}).get("edges", []):
-            if w.get("type") not in d.works.get("edge_works", {}):
-                errors.append(f"{where}: unknown edge work {w.get('type')}")
-        if errors:
-            continue
-        errors += _field_unit_errors(d, f, where, battlefield, battlefield_units, _fits)
+        bad = _field_shape_errors(d, f, where)
+        errors += bad or _field_unit_errors(d, f, where, battlefield, battlefield_units, _fits)
+    return errors
+
+
+def _field_shape_errors(d: Data, f: dict, where: str) -> list[str]:
+    """A battlefield's size, ground letters, sides, table, weather and works."""
+    size = f.get("size")
+    if not (isinstance(size, list) and len(size) == 2 and all(isinstance(x, int) and x > 0 for x in size)):
+        return [f"{where}: size must be [cols, rows], whole numbers"]
+    errors, keys = [], {g.get("key") for g in d.units.get("ground", {}).values()}
+    if len(f["rows"]) != size[1] or any(len(r.strip()) != size[0] for r in f["rows"]):
+        errors.append(f"{where}: ground needs {size[1]} rows of {size[0]} letters")
+    bad = sorted({ch for r in f["rows"] for ch in r.strip()} - keys)
+    if bad:
+        errors.append(f"{where}: unknown ground letters {bad}")
+    if len(f.get("sides", [])) != 2:
+        errors.append(f"{where}: sides needs two names")
+    if f.get("table") not in d.tables:
+        errors.append(f"{where}: unknown table {f.get('table')}")
+    cond = (f.get("weather") or {}).get("cond")
+    if f.get("weather") and cond not in d.weather.get("conditions", {}):
+        errors.append(f"{where}: unknown weather {cond}")
+    works = f.get("works") or {}
+    for kind, label, known in (("hexes", "hex", d.works.get("hex_works", {})), ("edges", "edge", d.works.get("edge_works", {}))):
+        errors += [f"{where}: unknown {label} work {w.get('type')}" for w in works.get(kind, []) if w.get("type") not in known]
     return errors
 
 

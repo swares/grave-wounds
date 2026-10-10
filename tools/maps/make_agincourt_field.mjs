@@ -32,22 +32,36 @@ paint(96, 99, 34, 42, "r");        // a clearing by Tramecourt, to the east behi
 
 // ---------- the armies (facing 1 is north, 4 is south; pos is the middle of the front row) ----------
 const EN = 0, FR = 1, N = 1, S = 4;
-const unit = (name, side, men, quality, weapon, kit, formation, width, col0, row, facing, mounted = false) =>
-  ({ name, side, men, quality, weapon, kit, formation, width, pos: [col0 + Math.floor((width - 1) / 2) + (facing === S ? width % 2 === 0 ? 1 : 0 : 0), row], facing, mounted });
+// The middle of a front row that starts at col0: facing north the row runs east from its
+// middle's west side, facing south the other way, so an even width puts the middle one further east.
+function middle(col0, width, facing){
+  const half = Math.floor((width - 1) / 2);
+  return facing === S && width % 2 === 0 ? col0 + half + 1 : col0 + half;
+}
+const BASE = { EN: { side: EN, facing: N }, FR: { side: FR, facing: S } };
+function unit(name, side, men, kind, at){
+  const [width, col0, row] = at;
+  return { name, ...BASE[side], men, ...kind, width, pos: [middle(col0, width, BASE[side].facing), row] };
+}
+const ARCHERS = { quality: "veteran", weapon: "longbow", kit: "gambeson", formation: "open", mounted: false };
+const MEN_AT_ARMS = { quality: "veteran", weapon: "poleaxe", kit: "full_plate", formation: "close", mounted: false };
+const KNIGHTS = { ...MEN_AT_ARMS, quality: "regular" };
+const MOUNTED = { quality: "veteran", weapon: "spear", kit: "full_plate", formation: "close", mounted: true };
+const MOUNTED_REAR = { ...MOUNTED, quality: "regular" };
 const FRONT_EN = 66, FRONT_FR = 42;
 const units = [
-  unit("Archers, left wing", EN, 1600, "veteran", "longbow", "gambeson", "open", 16, 12, FRONT_EN, N),
-  unit("Rearward (Camoys)", EN, 320, "veteran", "poleaxe", "full_plate", "close", 8, 28, FRONT_EN, N),
-  unit("Archers, left wedge", EN, 900, "veteran", "longbow", "gambeson", "open", 9, 36, FRONT_EN, N),
-  unit("Main battle (the King)", EN, 320, "veteran", "poleaxe", "full_plate", "close", 8, 45, FRONT_EN, N),
-  unit("Archers, right wedge", EN, 900, "veteran", "longbow", "gambeson", "open", 9, 53, FRONT_EN, N),
-  unit("Vaward (York)", EN, 320, "veteran", "poleaxe", "full_plate", "close", 8, 62, FRONT_EN, N),
-  unit("Archers, right wing", EN, 1600, "veteran", "longbow", "gambeson", "open", 16, 70, FRONT_EN, N),
-  unit("Mounted wing, west", FR, 800, "veteran", "spear", "full_plate", "close", 10, 9, FRONT_FR, S, true),
-  unit("Vanguard", FR, 4800, "veteran", "poleaxe", "full_plate", "close", 60, 20, FRONT_FR, S),
-  unit("Mounted wing, east", FR, 800, "veteran", "spear", "full_plate", "close", 10, 81, FRONT_FR, S, true),
-  unit("Main battle", FR, 4800, "regular", "poleaxe", "full_plate", "close", 60, 20, 30, S),
-  unit("Rearguard (mounted)", FR, 3000, "regular", "spear", "full_plate", "close", 75, 12, 16, S, true),
+  unit("Archers, left wing", "EN", 1600, ARCHERS, [16, 12, FRONT_EN]),
+  unit("Rearward (Camoys)", "EN", 320, MEN_AT_ARMS, [8, 28, FRONT_EN]),
+  unit("Archers, left wedge", "EN", 900, ARCHERS, [9, 36, FRONT_EN]),
+  unit("Main battle (the King)", "EN", 320, MEN_AT_ARMS, [8, 45, FRONT_EN]),
+  unit("Archers, right wedge", "EN", 900, ARCHERS, [9, 53, FRONT_EN]),
+  unit("Vaward (York)", "EN", 320, MEN_AT_ARMS, [8, 62, FRONT_EN]),
+  unit("Archers, right wing", "EN", 1600, ARCHERS, [16, 70, FRONT_EN]),
+  unit("Mounted wing, west", "FR", 800, MOUNTED, [10, 9, FRONT_FR]),
+  unit("Vanguard", "FR", 4800, MEN_AT_ARMS, [60, 20, FRONT_FR]),
+  unit("Mounted wing, east", "FR", 800, MOUNTED, [10, 81, FRONT_FR]),
+  unit("Main battle", "FR", 4800, KNIGHTS, [60, 20, 30]),
+  unit("Rearguard (mounted)", "FR", 3000, MOUNTED_REAR, [75, 12, 16]),
 ];
 // Stakes: a row in front of each body of archers, one hex ahead of their front.
 const stakes = [];
