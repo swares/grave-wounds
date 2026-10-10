@@ -439,14 +439,14 @@ function edgeKey(a, b){ const [x, y] = [a, b].slice().sort((p, q) => p[1] - q[1]
    Same rules as gravewounds/combat.py (party_of, camp_radius, camp_map_size, camp_works, works_labour).
    A force type may be a column's party: [[type, men], ...].
    build.py puts this file into both pages at their CAMP_JS marker. Each page provides
-   WK (works.yaml), CAMP_HEX_M (the battle map's hex, metres), NEIGHBOURS, hexDistance,
+   WK (works.yaml), CAMP_HEX_M (the map's hex, metres: 2 on the battle map, 10 on the field map), NEIGHBOURS, hexDistance,
    hkey and edgeKey. */
 function partyOf(men, ftype){                 // a force type as a party [[type, men]]; a column's party is given as one
   return typeof ftype === "string" ? [[ftype, men]] : ftype.map(p => p.slice());
 }
 function campRadius(men, ftype){
   const need = partyOf(men, ftype).reduce((t, [ft, n]) => t + n * WK.camp_area[ft], 0);
-  const area = Math.max(WK.camp_area_min, need), n = area / (Math.sqrt(3) / 2 * 4);
+  const area = Math.max(WK.camp_area_min, need), n = area / (Math.sqrt(3) / 2 * CAMP_HEX_M ** 2);
   let r = 0; while (3 * r * (r + 1) + 1 < n) r++;
   return Math.max(r, 1);
 }
@@ -1461,8 +1461,10 @@ function init(){
     const dfd = byId(p.defender), m = curMap(), today = dayWeather(p.day);
     const brief = (o, role) => { const c = campHere(o); return { id: o.id, name: o.name, side: o.side, type: o.type, men: fitOf(o).fit, role, care: campCare(c ? c.kind : null), camp: c ? c.kind : null } };
     const forces = [brief(dfd, "defender"), ...p.allies.map(byId).map(o => brief(o, "ally")), ...p.attackers.map(byId).map(o => brief(o, "attacker"))];
+    const st = campStatus(dfd, p), lay = st.camp && WK.camps[st.camp.kind].layout;   // the camp's works, as far as they are built
+    const camp = lay ? { kind: st.camp.kind, frac: st.done === null ? null : st.done / (st.camp.labour || 1), hauled: !nearWoods(m, dfd.pos), party: columnOf(dfd).length > 1 ? colType(dfd) : null } : null;
     try{ localStorage.setItem("gravewounds-field-handoff", JSON.stringify({ from: "travel", battle: `${S.mapId}:${p.day}:${p.used}:${dfd.id}`, mapId: S.mapId, map: m.name || S.mapId,
-      place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day), forces,
+      place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day), forces, camp,
       weather: { cond: today.w.cond, wind: today.w.wind, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){ /* storage off: the field map opens without the forces */ }
     location.href = "field.html";
   };

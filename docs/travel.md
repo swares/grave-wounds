@@ -87,8 +87,10 @@ day costs no marching time. Once an enemy force has marched to within 1 km, **Se
   on its battle map. See [works.md](works.md).
 - **the field map**, in units: the forces arrive with their fit men, and the GM splits each
   into units there (billmen, archers, horse). Men left out of every unit stay in reserve.
-  When the battle ends, **Back to the travel map** brings the result home: the dead come
-  off each force, and its wounded join its sick (below). See [units.md](units.md).
+  The day's weather and ground come too, and the camp's works, as far as they are built,
+  are laid out around the defenders. When the battle ends, **Back to the travel map** brings
+  the result home: the dead come off each force, and its wounded join its sick (below). See
+  [units.md](units.md).
 
 ## Disease and camp hygiene
 

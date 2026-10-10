@@ -44,7 +44,8 @@ long they stay. The sick slow the march, leave fewer men to dig and fight, and s
 bulk each minute through the same wound tables. Morale decides most fights, and the rout
 does most of the killing. Named characters still fight one by one. The field map,
 `dist/field.html`, puts units on 10 m hexes: each side moves, then every melee and volley
-is resolved together, with flank and rear, morale and the pursuit. A fight on the travel
+is resolved together, with flank and rear, morale and the pursuit, on painted ground
+with the battle map's works and weather. A fight on the travel
 map can be fought there, and its wounded go back to camp, where wound fever can take
 them. See [docs/units.md](docs/units.md).
 

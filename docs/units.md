@@ -225,7 +225,50 @@ down. A duel between two heroes facing each other is not fought here: take it to
 A hero matters most through morale and through what happens to him: in a press of hundreds,
 one man fells few. The numbers are in `data/units.yaml` (`heroes`).
 
-## Still to come
+## Ground, works and weather
 
-- **Works and weather on the field map:** ditches, banks, stakes and palisades, and rain
-  and wind on the archery, from the battle map's rules.
+**Clicking the map** picks what a click does: place and move units, open or bar a gate,
+paint the ground, or build works. Ground and works are set before the battle starts; a gate
+can be opened or barred at any time.
+
+**The ground**, painted hex by hex (drag to paint several):
+
+| Ground | Movement to enter | Other |
+|---|---|---|
+| Open | 1 | |
+| Rough | 2 | |
+| Woods | 2 | −20% to shots at men in it |
+| Marsh | 3 | no horses |
+| High ground | 1 | −10% to blows struck up at men on it from lower ground |
+
+**Works** are the battle map's (see [works.md](works.md)), with the same numbers, along
+the sides of the 10 m hexes or in a hex. For a ditch, bank or wall, click just inside the
+side, on the high side; for a gate, on the inside. Click again to take it away.
+- **Crossing:** a unit's move pays each work its middle hex crosses or enters (a ditch +2,
+  a bank +1, stakes +1, felled trees +2). A palisade, wall or barred gate stops it, and a
+  unit cannot stand across one. Wagons fill their hex. Horses cannot go into stakes, felled
+  trees, wagons or marsh.
+- **Close combat:** across a palisade, wall or barred gate, only reach-2 weapons strike, and
+  only the front rank. Striking up a bank, ditch or wall costs its height (−10%, a wall
+  −20%), as does striking up onto high ground. Horses charging into stakes or felled trees
+  get no charge bonus.
+- **Shooting:** the target takes the best cover of the works and ground where the volley
+  lands (the target's hex nearest the shooters): a bank on its side −20%, a palisade or
+  barred gate −40%, a wall −50%, a pavise or felled trees in its hex −20%, wagons in front
+  −40%, woods −20%.
+- **Breaching:** a unit's **Breach the works** order puts half of each front hex's front
+  rank to hacking at the palisade, gate, stakes, felled trees or wagons in front of it, every
+  round of the exchange, until the work is down. The work's breach figure is for a 2 m side;
+  a 10 m side takes five times as much, so ten men open a stretch of palisade in about a
+  minute. A bank or ditch under a breached palisade stays.
+
+**The weather** (set under *Weather*, or brought from the travel map) works as on the
+battle map: no shooting beyond what can be seen (fog 5 hexes, heavy rain 15), wet strings
+−10% or −20% for bows and crossbows, a strong wind −10% (a gale −20%) on missiles, firearms
+misfiring in the wet (a share of the shots lost), and deep mud or snow (level 2 or more)
++1 movement a hex.
+
+**A camp from the travel map.** A fight sent from a force's camp lays the camp's works out
+at the field map's scale (sized for the defender's men on 10 m hexes), as far as they were
+built when the fight starts, with the gate on the east, facing the attackers' edge. The
+defenders' units start inside it, the attackers at the east edge.

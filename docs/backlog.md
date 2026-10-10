@@ -9,7 +9,10 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **Unit combat: works, terrain and weather on the field map.** See [units.md](units.md).
+- **Works and ground on the field map, simplified.** A unit's move pays only for what its
+  middle hex crosses, the cover of a volley is taken at the nearest target hex only, and
+  breaching is by order (it does not stop the unit fighting). High ground gives no edge to
+  shooting. See [units.md](units.md).
 - **Heroes on the field map, simplified.** A hero's earlier wounds do not lower his attack
   and defence there (the GM can lower them by hand), he does not bleed during the battle
   (the roller takes it up afterwards), a failed stop check puts him down for the rest of

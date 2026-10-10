@@ -787,8 +787,11 @@ def _units_errors(d: Data) -> list[str]:
 
 
 def _units_extra_errors(d: Data) -> list[str]:
-    """units.yaml: heroes and the aftermath."""
+    """units.yaml: the ground, heroes and the aftermath."""
     U, errors = d.units, []
+    G = U.get("ground", {})
+    if G and ("open" not in G or not all(isinstance(g.get("move"), int) and g["move"] >= 1 for g in G.values())):
+        errors.append("units.yaml: ground needs open, and a whole-number move of 1 or more for each kind")
     if "heroes" in U and not all(isinstance(U["heroes"].get(k), (int, float)) and U["heroes"][k] > 0 for k in ("tempo", "exposure")):
         errors.append("units.yaml: heroes.tempo and heroes.exposure must be positive")
     saved = U.get("aftermath", {}).get("saved", {})

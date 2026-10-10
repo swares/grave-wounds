@@ -772,6 +772,13 @@ function freeAttackers(start, end, steps, enemies){
 const WK = DATA.works;
 const hkey = h => h[0] + "," + h[1];
 function edgeKey(a, b){ const [x, y] = [a, b].slice().sort((p, q) => p[1] - q[1] || p[0] - q[0]); return hkey(x) + "|" + hkey(y) }
+const WXD = DATA.weather, WD_WEAPONS = DATA.weapons;
+/* Works and weather on a battle map, shared by the wound roller's battle map and the field
+   map. Same rules as gravewounds/combat.py (step_cost, missile_cover, melee_across,
+   deep_going, weather_attack). build.py puts this file into both pages at their WORKS_JS
+   marker. Each page provides WK (works.yaml), WXD (weather.yaml), WD_WEAPONS (weapons),
+   hkey, edgeKey, neighbours(h, cols, rows) and hexDistance.
+   works = {edges: {edgeKey: [item]}, hexes: {hexKey: item}}. */
 const specOf = (kind, item) => (kind === "edge" ? WK.edge_works : WK.hex_works)[item.type];
 function intact(kind, item){ const b = specOf(kind, item).breach; return !(b && (item.progress || 0) >= b) }
 function edgeItems(works, a, b){
@@ -861,18 +868,42 @@ function meleeAcross(works, attacker, target, reach, cols, rows){
   }
   return { blocked, penalty, work: what };
 }
+function deepGoing(ground){
+  if (!ground || !WXD) return 0;
+  const deep = WXD.ground.deep;
+  return (ground.mud || 0) >= deep || (ground.snow || 0) >= deep ? WXD.battle.deep_step : 0;
+}
+function weatherAttack(weather, wid, dist){
+  const out = { blocked: null, penalty: 0, misfire: 0, notes: [] }, w = WD_WEAPONS[wid];
+  if (!weather || !WXD || !("range" in w)) return out;
+  const cond = WXD.conditions[weather.cond], vis = cond.visibility;
+  if (vis !== null && vis !== undefined && dist > vis){
+    out.blocked = `${cond.name}: no one can be seen to aim at beyond ${vis} hexes (${vis * 2} m).`;
+    return out;
+  }
+  const wind = WXD.winds.find(x => x.id === weather.wind);
+  if (w.string){
+    const p = WXD.battle.string_wet[cond.wet];
+    if (p){ out.penalty += p; out.notes.push(`wet string -${p}%`) }
+  }
+  const firearm = !!w.ignition, wp = firearm ? wind.firearm : wind.missile;
+  if (wp){ out.penalty += wp; out.notes.push(`${wind.name.toLowerCase()} -${wp}%`) }
+  if (firearm) out.misfire = WXD.battle.misfire[w.ignition][cond.wet];
+  return out;
+}
+
 /* Camp layout and works labour, shared by the roller's battle map and the travel map.
    Same rules as gravewounds/combat.py (party_of, camp_radius, camp_map_size, camp_works, works_labour).
    A force type may be a column's party: [[type, men], ...].
    build.py puts this file into both pages at their CAMP_JS marker. Each page provides
-   WK (works.yaml), CAMP_HEX_M (the battle map's hex, metres), NEIGHBOURS, hexDistance,
+   WK (works.yaml), CAMP_HEX_M (the map's hex, metres: 2 on the battle map, 10 on the field map), NEIGHBOURS, hexDistance,
    hkey and edgeKey. */
 function partyOf(men, ftype){                 // a force type as a party [[type, men]]; a column's party is given as one
   return typeof ftype === "string" ? [[ftype, men]] : ftype.map(p => p.slice());
 }
 function campRadius(men, ftype){
   const need = partyOf(men, ftype).reduce((t, [ft, n]) => t + n * WK.camp_area[ft], 0);
-  const area = Math.max(WK.camp_area_min, need), n = area / (Math.sqrt(3) / 2 * 4);
+  const area = Math.max(WK.camp_area_min, need), n = area / (Math.sqrt(3) / 2 * CAMP_HEX_M ** 2);
   let r = 0; while (3 * r * (r + 1) + 1 < n) r++;
   return Math.max(r, 1);
 }
@@ -991,30 +1022,6 @@ function worksLabour(works, hauled = false){  // man-hours to build these works
 }
 
 // Weather in battle
-const WXD = DATA.weather;
-function deepGoing(ground){
-  if (!ground || !WXD) return 0;
-  const deep = WXD.ground.deep;
-  return (ground.mud || 0) >= deep || (ground.snow || 0) >= deep ? WXD.battle.deep_step : 0;
-}
-function weatherAttack(weather, wid, dist){
-  const out = { blocked: null, penalty: 0, misfire: 0, notes: [] }, w = DATA.weapons[wid];
-  if (!weather || !WXD || !("range" in w)) return out;
-  const cond = WXD.conditions[weather.cond], vis = cond.visibility;
-  if (vis !== null && vis !== undefined && dist > vis){
-    out.blocked = `${cond.name}: no one can be seen to aim at beyond ${vis} hexes (${vis * 2} m).`;
-    return out;
-  }
-  const wind = WXD.winds.find(x => x.id === weather.wind);
-  if (w.string){
-    const p = WXD.battle.string_wet[cond.wet];
-    if (p){ out.penalty += p; out.notes.push(`wet string -${p}%`) }
-  }
-  const firearm = !!w.ignition, wp = firearm ? wind.firearm : wind.missile;
-  if (wp){ out.penalty += wp; out.notes.push(`${wind.name.toLowerCase()} -${wp}%`) }
-  if (firearm) out.misfire = WXD.battle.misfire[w.ignition][cond.wet];
-  return out;
-}
 /* ---------- end of rules shared with gravewounds/combat.py ---------- */
 const attackerChar = () => (S.chars && S.attacker >= 0) ? S.chars[S.attacker] : null;
 const defenderChar = () => (S.chars && S.chars.length) ? S.chars[S.active] : null;
