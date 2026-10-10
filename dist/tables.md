@@ -4416,6 +4416,22 @@ Penalties add up; each total is capped at -60%.
 | Hot desert and steppe | high/low | 16/4 | 19/6 | 24/10 | 30/15 | 37/21 | 42/24 | 44/26 | 44/25 | 41/21 | 34/16 | 24/9 | 18/5 |
 |  | wet days | 4 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 0 | 1 | 3 | 4 |
 
+## Camp disease
+
+**Camp disease (forces on the travel map):** each force counts its sick, by disease and by step on the track (mending, serious, grave, deadly). Once a week each well man may catch each disease: his chance is the outbreak chance below, with the week's modifiers, times the chance he fails to resist (half, at Endurance 50). A man carries one disease at a time.
+
+A case shows after its incubation at mending, climbs a step a day to the peak rolled below, then makes a recovery check each day: d100 against Endurance, plus care (no camp -20, a camp +0, quarters +10), activity (marched -20, rested +10), a cold wet night beyond the shelter -10, poor hygiene -10, less the disease's virulence. Success by 30 or more: two steps better; success: one; failure: no change; failure by 30 or more: one worse. At deadly, any failure kills. Typhus and plague leave survivors immune; ague relapses in marsh country; flux can turn chronic.
+
+Men at serious or worse do not dig or fight. Grave and deadly cases go on litters: the force marches at 90%, or 50% with fewer than 2 fit men a litter, and cannot march with none. Hygiene comes from the camp (bivouac poor, quarters good, others fair) unless the GM sets it. Plague needs the GM's "plague in the region".
+
+| Disease | Caught from | Shows after | Outbreak chance a week | Peak (d100) | Deaths per case in the records |
+|---|---|---|---|---|---|
+| Bloody flux | Dirty water or food, latrines too near the water | 1-3 days | 10%; poor +20, good -5, staying +10, marsh +5, upland -5, hot +10 | 01-03 deadly, 04-15 grave, 16-00 serious | 2.6% (virulence 5) |
+| Camp fever (typhus) | Lice in crowded, unwashed camps | 7-14 days | 2%; poor +5, good -5, staying +10, cold wet +10 | 01-30 deadly, 31-70 grave, 71-00 serious | 40% (virulence 16) |
+| Typhoid | Dirty water or food, often from a carrier in camp | 7-21 days | 2%; poor +5, good -5, town +5, hot +5 | 01-30 deadly, 31-60 grave, 61-00 serious | 36% (virulence 15) |
+| Ague (malaria) | Mosquitoes in marshes and low wetlands | 7-28 days | 15% (only with marsh and warm) | 01-02 deadly, 03-30 grave, 31-00 serious | 0.8% (virulence -9) |
+| Plague | Flea bites; worst in sieges and towns full of rats | 2-6 days | 5% (only with plague); staying +5, town +5 | 01-50 deadly, 51-80 grave, 81-00 serious | 45% (virulence 15) |
+
 ## Travel
 
 **Travel map:** hexes are usually 1 km. A force marches 8 hours a day from 08:00 at its type's road speed. Crossing from one hex to the next takes the average of the two terrains' time multipliers; rivers and lakes are crossed only at a ford or bridge.

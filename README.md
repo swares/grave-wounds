@@ -35,6 +35,11 @@ it). Mud, snow and floods slow the march; rain, wind and fog affect bows and fir
 battle; and the night's rest and fatigue follow from the camp and the weather. See
 [docs/weather.md](docs/weather.md).
 
+**Camp disease:** forces on the travel map fall sick with bloody flux, camp fever,
+typhoid, ague and plague. The risk depends on camp hygiene, the ground, the weather and how
+long they stay. The sick slow the march, leave fewer men to dig and fight, and some die. See
+[docs/travel.md](docs/travel.md).
+
 **Backlog:** known gaps and deferred work are listed in [docs/backlog.md](docs/backlog.md).
 
 ## Where this started

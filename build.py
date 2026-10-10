@@ -214,6 +214,41 @@ def move_rules(d) -> list[str]:
     ]
 
 
+def disease_rules(d) -> list[str]:
+    D = d.disease
+    L = D["litters"]
+    return [
+        "<b>Camp disease (forces on the travel map):</b> each force counts its sick, by disease and by step on the track "
+        "(mending, serious, grave, deadly). Once a week each well man may catch each disease: his chance is the outbreak chance below, "
+        f"with the week's modifiers, times the chance he fails to resist (half, at Endurance {D['endurance']}). A man carries one disease at a time.",
+        "A case shows after its incubation at mending, climbs a step a day to the peak rolled below, then makes a recovery check each day: "
+        f"d100 against Endurance, plus care (no camp {D['recovery']['care']['none']}, a camp {D['recovery']['care']['field']:+d}, quarters {D['recovery']['care']['shelter']:+d}), "
+        f"activity (marched {D['recovery']['activity']['marched']:+d}, rested {D['recovery']['activity']['rest']:+d}), "
+        f"a cold wet night beyond the shelter {D['recovery']['wet_cold']:+d}, poor hygiene {D['recovery']['filth']:+d}, less the disease's virulence. "
+        f"Success by {D['recovery']['big']} or more: two steps better; success: one; failure: no change; failure by {D['recovery']['big']} or more: one worse. "
+        "At deadly, any failure kills. Typhus and plague leave survivors immune; ague relapses in marsh country; flux can turn chronic.",
+        f"Men at serious or worse do not dig or fight. Grave and deadly cases go on litters: the force marches at {L['march']}%, "
+        f"or {L['short']}% with fewer than {L['bearers']} fit men a litter, and cannot march with none. "
+        "Hygiene comes from the camp (bivouac poor, quarters good, others fair) unless the GM sets it. Plague needs the GM's \"plague in the region\".",
+    ]
+
+
+def disease_rows(d) -> list[list[str]]:
+    """[disease, caught from, shows after, outbreak chance and modifiers, peak, deaths]."""
+    D, out = d.disease, []
+    for x in D["diseases"].values():
+        mods = ", ".join(f"{k.replace('_', ' ')} {v:+d}" for k, v in x["mods"].items())
+        needs = " (only with " + " and ".join(x["needs"]) + ")" if x.get("needs") else ""
+        lo = 1
+        peak = []
+        for r in x["peak"]:
+            peak.append(f"{lo:02d}-{r['upto'] % 100:02d} {r['step']}")
+            lo = r["upto"] + 1
+        out.append([x["name"], x["caught"], f"{x['incubation'][0]}-{x['incubation'][1]} days",
+                    f"{x['base']}%{needs}" + (f"; {mods}" if mods else ""), ", ".join(peak), f"{x['deaths']}% (virulence {x['virulence']})"])
+    return out
+
+
 def weather_rules(d) -> list[str]:
     WX = d.weather
     DL, F = WX["daylight"], WX["fatigue"]
@@ -363,6 +398,7 @@ def travel_bundle(d) -> dict:
         "terrain": d.terrain,
         "works": d.works,
         "weather": d.weather,
+        "disease": d.disease,
         "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
         "maps": {mid: {k: m.get(k) for k in ("id", "name", "hex_km", "rows", "places", "forces",
                                                 "start_date", "calendar", "latitude", "climate", "climate_shift")} for mid, m in d.maps.items()},
@@ -525,6 +561,10 @@ def markdown(d) -> str:
         md = lambda rows: ["| " + " | ".join(rows[0]) + " |", "|" + "---|" * len(rows[0])] + ["| " + " | ".join(r) + " |" for r in rows[1:]] + [""]
         out += ["## Weather", ""] + [re.sub("</?b>", "**", x) + "\n" for x in weather_rules(d)]
         out += md(wt["conds"]) + md(wt["misfire"]) + md(wt["fatigue"]) + md(wt["ground"]) + md(wt["climates"])
+    if d.disease:
+        out += ["## Camp disease", ""] + [re.sub("</?b>", "**", x) + "\n" for x in disease_rules(d)]
+        out += ["| Disease | Caught from | Shows after | Outbreak chance a week | Peak (d100) | Deaths per case in the records |", "|---|---|---|---|---|---|"]
+        out += ["| " + " | ".join(r) + " |" for r in disease_rows(d)] + [""]
     if d.terrain["terrain"]:
         ft = d.terrain["forces"]
         out += ["## Travel", ""] + [re.sub("</?b>", "**", x) + "\n" for x in travel_rules(d)]
@@ -894,6 +934,11 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
             Spacer(1, 6), KeepTogether([Paragraph("Climates (modern normals, °C and days with rain or snow)", H2),
                                         grid(hdr([wt["climates"][0]] + [[Paragraph(r[0], C)] + r[1:] for r in wt["climates"][1:]]),
                                              [1.6 * inch, 0.6 * inch] + [(W - 2.2 * inch) / 12] * 12, font=6.5)])]
+    if d.disease:
+        drow = [[Paragraph(x, CH) for x in ["Disease", "Caught from", "Shows after", "Outbreak chance a week", "Peak (d100)", "Deaths per case"]]]
+        drow += [[Paragraph(c, C) for c in r] for r in disease_rows(d)]
+        story += [PageBreak(), Paragraph("Camp disease", H1)] + [Paragraph(x, B) for x in disease_rules(d)] + [
+            Spacer(1, 6), grid(drow, [1.1 * inch, 1.5 * inch, 0.75 * inch, W - 5.75 * inch, 1.3 * inch, 1.1 * inch], font=7.5)]
     if d.terrain["terrain"]:
         ft = d.terrain["forces"]
         trow = [[Paragraph(x, CH) for x in ["Terrain", "Time"] + [f"{f['name']}<br/>km a day" for f in ft.values()]]] + travel_rows(d)
