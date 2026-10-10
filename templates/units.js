@@ -388,7 +388,7 @@ function aftermath(units, care, rng){            // per unit {left, died, cases}
   return units.map((u, i) => {
     const r = { left: 0, died: 0, cases: [] }, room = { 1: Math.max(0, (u.down || 0) - (u.dead || 0)), 0: Math.max(0, u.men) };
     const abandon = A.left_behind && !up.has(u.side);
-    for (const k of Object.keys(u.hurt || {}).sort()){
+    for (const k of Object.keys(u.hurt || {}).sort((a, b) => (a < b ? -1 : 1))){
       const [sev, lethal, inf, down] = k.split("|"), n = Math.min(u.hurt[k], room[down]);
       room[down] -= n;
       if (down === "1" && abandon){ r.left += n; continue }

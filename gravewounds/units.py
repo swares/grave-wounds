@@ -646,33 +646,34 @@ def aftermath(d: Data, units: list, care: list, rng) -> list:
     lost field, dead), died (of wounds before treatment), cases (survivors on the wound
     track)}. A man wounded twice is counted once: the down are capped at those down and not
     dead, the walking wounded at the men still on their feet."""
-    A, d100 = d.units["aftermath"], (lambda: rng.randint(1, 100))
+    am, d100 = d.units["aftermath"], (lambda: rng.randint(1, 100))
     lost_sides = {u["side"] for u in units} - {u["side"] for u in units if standing(u)}
-    out = []
-    for i, u in enumerate(units):
-        r = {"left": 0, "died": 0, "cases": []}
-        room = {"1": max(0, u.get("down", 0) - u.get("dead", 0)), "0": max(0, u["men"])}
-        abandon = A["left_behind"] and u["side"] in lost_sides
-        for k in sorted(u.get("hurt", {})):
-            sev, lethal, inf, down = k.split("|")
-            n = min(u["hurt"][k], room[down])
-            room[down] -= n
-            if down == "1" and abandon:
-                r["left"] += n
-                continue
-            for _ in range(n):
-                if _dies(A, lethal, care[i], d100):
-                    r["died"] += 1
-                else:
-                    r["cases"].append(wound_case(d, sev, lethal, inf, d100))
-        out.append(r)
-    return out
+    return [_unit_after(d, u, care[i], am["left_behind"] and u["side"] in lost_sides, d100) for i, u in enumerate(units)]
 
 
-def _dies(A: dict, lethal: str, care: str, d100) -> bool:
+def _unit_after(d: Data, u: dict, care: str, abandon: bool, d100) -> dict:
+    """One unit's wounded after the battle: left behind, dead of their wounds, or carried."""
+    r = {"left": 0, "died": 0, "cases": []}
+    room = {"1": max(0, u.get("down", 0) - u.get("dead", 0)), "0": max(0, u["men"])}
+    for k in sorted(u.get("hurt", {})):
+        sev, lethal, inf, down = k.split("|")
+        n = min(u["hurt"][k], room[down])
+        room[down] -= n
+        if down == "1" and abandon:
+            r["left"] += n
+            continue
+        for _ in range(n):
+            if _dies(d.units["aftermath"], lethal, care, d100):
+                r["died"] += 1
+            else:
+                r["cases"].append(wound_case(d, sev, lethal, inf, d100))
+    return r
+
+
+def _dies(am: dict, lethal: str, care: str, d100) -> bool:
     """A wound that kills in minutes or hours: does it, before help comes?"""
     if lethal == "minutes":
-        return d100() > A["saved"]["minutes"]
+        return d100() > am["saved"]["minutes"]
     if lethal == "hours":
-        return d100() > A["saved"]["hours"][care]
+        return d100() > am["saved"]["hours"][care]
     return False

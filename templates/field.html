@@ -467,6 +467,12 @@ function addUnit(){
   S.msg = "No room for it along the edge; make room or narrow it.";
   render();
 }
+function newBattle(){                            // back to set-up: the travel map's forces again, or the starting units
+  if (S.from) fromTravel(S.from);
+  else freshState();
+  fillChoices();
+  render();
+}
 function dropHandoff(){ try{ localStorage.removeItem("gravewounds-field-handoff") }catch(e){ /* storage off: nothing to drop */ } }
 function readHandoff(){                           // a fight sent from the travel map, unless it is the one already on the page
   let h = null;
@@ -484,7 +490,7 @@ function init(){
   $("#units").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; S.msg = ""; render() } });
   $("#units").addEventListener("keydown", e => { if (e.key === "Enter"){ const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; render() } } });
   $("#btn-next").onclick = next;
-  $("#btn-reset").onclick = () => { if (S.from) fromTravel(S.from); else freshState(); fillChoices(); render() };
+  $("#btn-reset").onclick = newBattle;
   $("#btn-end").onclick = endBattle;
   $("#btn-back").onclick = backToTravel;
   $("#btn-handoff").onclick = () => { fromTravel(HANDOFF); HANDOFF = null; dropHandoff(); fillChoices(); render() };

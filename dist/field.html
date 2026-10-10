@@ -568,7 +568,7 @@ function aftermath(units, care, rng){            // per unit {left, died, cases}
   return units.map((u, i) => {
     const r = { left: 0, died: 0, cases: [] }, room = { 1: Math.max(0, (u.down || 0) - (u.dead || 0)), 0: Math.max(0, u.men) };
     const abandon = A.left_behind && !up.has(u.side);
-    for (const k of Object.keys(u.hurt || {}).sort()){
+    for (const k of Object.keys(u.hurt || {}).sort((a, b) => (a < b ? -1 : 1))){
       const [sev, lethal, inf, down] = k.split("|"), n = Math.min(u.hurt[k], room[down]);
       room[down] -= n;
       if (down === "1" && abandon){ r.left += n; continue }
@@ -869,6 +869,12 @@ function addUnit(){
   S.msg = "No room for it along the edge; make room or narrow it.";
   render();
 }
+function newBattle(){                            // back to set-up: the travel map's forces again, or the starting units
+  if (S.from) fromTravel(S.from);
+  else freshState();
+  fillChoices();
+  render();
+}
 function dropHandoff(){ try{ localStorage.removeItem("gravewounds-field-handoff") }catch(e){ /* storage off: nothing to drop */ } }
 function readHandoff(){                           // a fight sent from the travel map, unless it is the one already on the page
   let h = null;
@@ -886,7 +892,7 @@ function init(){
   $("#units").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; S.msg = ""; render() } });
   $("#units").addEventListener("keydown", e => { if (e.key === "Enter"){ const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; render() } } });
   $("#btn-next").onclick = next;
-  $("#btn-reset").onclick = () => { if (S.from) fromTravel(S.from); else freshState(); fillChoices(); render() };
+  $("#btn-reset").onclick = newBattle;
   $("#btn-end").onclick = endBattle;
   $("#btn-back").onclick = backToTravel;
   $("#btn-handoff").onclick = () => { fromTravel(HANDOFF); HANDOFF = null; dropHandoff(); fillChoices(); render() };
