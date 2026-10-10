@@ -92,6 +92,7 @@ button:disabled{opacity:.45;cursor:default}
 .log:empty{display:none}
 .log li{border-left:3px solid var(--line);padding:1px 0 1px 8px}
 .hover{font:500 .8rem var(--mono);color:var(--muted);min-height:1.3em}
+h2 .muted{font:500 .85rem var(--body);letter-spacing:0;color:var(--muted)}
 label.inline{display:inline-flex;align-items:center;gap:6px;margin:0}
 label.check{display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:.88rem;color:var(--ink)}
 label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:4px 6px}
@@ -163,7 +164,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <button class="small" id="btn-clear">Clear route</button>
         <button class="small" id="btn-remove">Remove force</button>
       </div>
-      <h2>Camp</h2>
+      <h2>Camp <span class="muted" id="camp-who"></span></h2>
       <div class="row">
         <div style="flex:2 1 200px"><label for="sel-camp">Kind of camp</label><select id="sel-camp"></select></div>
       </div>
@@ -377,17 +378,46 @@ function march(f, hours){
   S.msg = "";
 }
 
+function hexDist(a, b){                      // hexes apart (as gravewounds.combat.hex_distance)
+  const cube = ([c, r]) => { const q = c - (r - (r & 1)) / 2; return [q, r, -q - r] };
+  const x = cube(a), y = cube(b);
+  return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2]));
+}
+const campHere = f => (f.camp && sameHex(f.camp.hex, f.pos) ? f.camp : null);
+// Time to make this camp now. A force already camped here does not pay the set-up hours
+// again when it changes to another kind (the site, fires and watch are done), and cannot
+// make the same kind twice.
+function campCost(f, kind){
+  const r = campHours(curMap(), f.pos, kind, f.men, f.type, f.tools), old = campHere(f);
+  if (r.error) return r;
+  if (old && old.kind === kind) return { error: "already has one here", same: true };
+  let hours = r.hours;
+  if (old && old.kind !== "bivouac") hours = Math.max(0, hours - WK.camps[kind].hours);
+  return { ...r, hours, change: !!old };
+}
 function makeCamp(f, kind){
-  const r = campHours(curMap(), f.pos, kind, f.men, f.type, f.tools);
+  const r = campCost(f, kind);
   if (r.error){ S.msg = `${f.name} cannot make a ${WK.camps[kind].name.toLowerCase()} here: it ${r.error}.`; return }
   const late = f.used >= TER.hours_per_day + WK.evening_hours - 1e-9, u0 = late ? 0 : f.used, d0 = late ? f.day + 1 : f.day;
   const done = campDone(f.day, f.used, r.hours);
   f.day = done.day; f.used = done.used; f.camp = { kind, hex: f.pos.slice() };
-  f.log.unshift(`Day ${d0}, ${clock(u0)} to day ${f.day}, ${clock(f.used)}: ${kind === "quartered" ? "took quarters" : `made a ${WK.camps[kind].name.toLowerCase()}`} at ${where(f.pos)} (${fmtH(r.hours)}${r.labour ? `, ${Math.round(r.labour)} man-hours` : ""}).`);
+  let what = "made a " + WK.camps[kind].name.toLowerCase();
+  if (kind === "quartered") what = "took quarters";
+  else if (r.change) what = "changed its camp to a " + WK.camps[kind].name.toLowerCase();
+  const lab = r.labour ? ", " + Math.round(r.labour) + " man-hours" : "";
+  f.log.unshift(`Day ${d0}, ${clock(u0)} to day ${f.day}, ${clock(f.used)}: ${what} at ${where(f.pos)} (${fmtH(r.hours)}${lab}).`);
   S.msg = "";
 }
+function campOption(f, k, cur){
+  const r = campCost(f, k);
+  let note = " · " + fmtH(r.hours);
+  if (r.same) note = " (made)";
+  else if (r.error) note = " (not here)";
+  return `<option value="${k}" ${k === cur ? "selected" : ""}>${esc(WK.camps[k].name)}${note}</option>`;
+}
 function campText(f, kind){
-  const c = WK.camps[kind], r = campHours(curMap(), f.pos, kind, f.men, f.type, f.tools);
+  const c = WK.camps[kind], r = campCost(f, kind);
+  if (r.same) return `${f.name} already has a ${c.name.toLowerCase()} here.`;
   if (r.error) return `${c.desc} Not here: it ${r.error}.`;
   const days = Math.floor(r.hours / TER.hours_per_day);
   return `${c.desc} ${f.men} men: ${fmtH(r.hours)}${days ? ` (more than ${days} working day${days > 1 ? "s" : ""})` : ""}`
@@ -469,10 +499,12 @@ function renderSide(){
   $("#summary").innerHTML = rows;
   $("#in-men").value = f.men; $("#in-tools").checked = !!f.tools;
   const kinds = Object.keys(WK.camps), cur = S.campKind && kinds.includes(S.campKind) ? S.campKind : "watched";
-  $("#sel-camp").innerHTML = kinds.map(k => { const r = campHours(m, f.pos, k, f.men, f.type, f.tools);
-    return `<option value="${k}" ${k === cur ? "selected" : ""}>${esc(WK.camps[k].name)}${r.error ? " (not here)" : ` · ${fmtH(r.hours)}`}</option>` }).join("");
+  $("#sel-camp").innerHTML = kinds.map(k => campOption(f, k, cur)).join("");
   $("#camp-est").textContent = campText(f, cur);
-  $("#btn-camp").disabled = !!campHours(m, f.pos, cur, f.men, f.type, f.tools).error;
+  $("#btn-camp").disabled = !!campCost(f, cur).error;
+  $("#camp-who").textContent = "for " + f.name;
+  const here = campHere(f), at = here ? "at its " + WK.camps[here.kind].name.toLowerCase() : "here";
+  $("#btn-fight").textContent = `Set up a fight with ${f.name} ${at}`;
   $("#log").innerHTML = f.log.map(l => `<li>${esc(l)}</li>`).join("");
 }
 function render(){
@@ -585,8 +617,12 @@ function init(){
   $("#btn-camp").onclick = () => { const f = selForce(); if (f){ makeCamp(f, $("#sel-camp").value); render() } };
   $("#btn-fight").onclick = () => {
     const f = selForce(); if (!f) return;
+    const camp = campHere(f);
+    const foes = forcesHere().filter(o => o.side !== f.side)
+      .map(o => ({ name: o.name, side: o.side, men: o.men, type: o.type, km: +(hexDist(o.pos, f.pos) * curMap().hex_km).toFixed(1) }))
+      .sort((a, b) => a.km - b.km);
     try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", force: { name: f.name, side: f.side, men: f.men, type: f.type },
-      camp: f.camp && sameHex(f.camp.hex, f.pos) ? f.camp.kind : null, place: where(f.pos), day: f.day, time: clock(f.used) })) }catch(e){}
+      camp: camp ? camp.kind : null, foes, place: where(f.pos), day: f.day, time: clock(f.used) })) }catch(e){}
     location.href = "roller.html";
   };
   $("#btn-export").onclick = () => { const t = $("#export"); t.hidden = !t.hidden; t.value = mapYaml() };
