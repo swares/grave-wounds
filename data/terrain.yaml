@@ -18,6 +18,9 @@
 
 hours_per_day: 8
 day_starts: 8          # hour of the morning the march starts (for the clock shown)
+# A fight can be set up only between forces that have marched to within this many hexes
+# of each other (1 = the same or the next hex: about a kilometre).
+fight_within: 1
 
 forces:
   foot:    {name: "On foot", kmh: 4}

@@ -11,7 +11,7 @@ from __future__ import annotations
 import heapq
 import math
 
-from .combat import neighbours
+from .combat import camp_map_size, camp_radius, camp_works, edge_metres, hex_distance, neighbours, works_labour
 from .model import Data
 from .weather import flooded, terrain_pct
 
@@ -145,9 +145,6 @@ def advance(d: Data, m: dict, path: list, index: int, used: float, hours: float,
 
 # ---------- making camp ----------
 
-BATTLE_HEX_M = 2      # the battle map's hex (wounds.yaml combat.move.hex_m); camp works are laid out on it
-
-
 def near_woods(d: Data, m: dict, h) -> bool:
     """True if the hex or one next to it is forest (timber to hand)."""
     cols, rows = len(m["rows"][0]), len(m["rows"])
@@ -155,15 +152,15 @@ def near_woods(d: Data, m: dict, h) -> bool:
 
 
 def camp_perimeter(d: Data, men: int, ftype: str) -> float:
-    """Metres round a camp for this many men: a circle of their camp area."""
-    W = d.works
-    area = max(W["camp_area_min"], men * W["camp_area"][ftype])
-    return 2 * (3.141592653589793 * area) ** 0.5
+    """Metres round a camp for this many men: the outer sides of its ring of battle-map hexes."""
+    return (12 * camp_radius(d, men, ftype) + 6) * edge_metres(d)
 
 
 def camp_hours(d: Data, m: dict, h, kind: str, men: int, ftype: str, tools: bool) -> dict:
     """How long this force takes to make this kind of camp here. {hours, labour, perimeter,
-    woods} or {error} if it cannot (no tools, or quartering away from houses)."""
+    woods} or {error} if it cannot (no tools, or quartering away from houses). The labour is
+    that of the works the battle map lays out for this camp (gravewounds.combat.camp_works),
+    with hauled timber unless there is forest at hand."""
     W = d.works
     c = W["camps"][kind]
     t = terrain_at(d, m, h)
@@ -172,20 +169,12 @@ def camp_hours(d: Data, m: dict, h, kind: str, men: int, ftype: str, tools: bool
     if c.get("tools") and not tools:
         return {"error": "needs tools (spades and axes)"}
     woods = near_woods(d, m, h)
-    per = camp_perimeter(d, men, ftype)
     labour = 0.0
-    for w in c.get("works", []):
-        if w in W["edge_works"]:
-            e = W["edge_works"][w]
-            if "each" in e:
-                labour += e["each"]
-            else:
-                labour += (e["per_metre"] + (0 if woods else e.get("haul", 0))) * per
-        else:
-            x = W["hex_works"][w]
-            labour += (x["each"] + (0 if woods else x.get("haul", 0))) * per / BATTLE_HEX_M
+    if c.get("layout"):
+        n = camp_map_size(d, kind, men, ftype)
+        labour = works_labour(d, camp_works(d, kind, men, ftype, n, n)["works"], not woods)
     hours = c["hours"] + labour / (men * W["work_share"])
-    return {"hours": hours, "labour": labour, "perimeter": per, "woods": woods}
+    return {"hours": hours, "labour": labour, "perimeter": camp_perimeter(d, men, ftype), "woods": woods}
 
 
 def camp_done(d: Data, day: int, used: float, hours: float, hpd_list: list | None = None) -> dict:
@@ -204,3 +193,34 @@ def camp_done(d: Data, day: int, used: float, hours: float, hpd_list: list | Non
         used = 0.0
         i += 1
     return {"day": day, "used": used + left}
+
+
+# ---------- who fights ----------
+
+def _camped(o: dict) -> bool:
+    c = o.get("camp")
+    return bool(c) and list(c["hex"]) == list(o["pos"])
+
+
+def fight_plan(d: Data, forces: list, sel) -> dict:
+    """Who fights if force `sel` (an id) sets up a fight. Forces: [{id, side, pos, camp, day,
+    used}]. An enemy force must have marched to within `fight_within` hexes. If `sel` is not
+    camped but such an enemy is, the enemy defends its camp. The defender fights everyone of
+    another side within reach of it. The fight starts at the later of their clocks.
+    {defender, attackers (ids, nearest first), day, used}; attackers is empty if no enemy is near."""
+    reach = d.terrain["fight_within"]
+    f = next(o for o in forces if o["id"] == sel)
+
+    def near_foes(x, camped_only=False):
+        out = [(hex_distance(o["pos"], x["pos"]), i, o) for i, o in enumerate(forces)
+               if o["side"] != x["side"] and hex_distance(o["pos"], x["pos"]) <= reach
+               and (_camped(o) or not camped_only)]
+        return [o for _, _, o in sorted(out, key=lambda t: (t[0], t[1]))]
+    defender = f
+    if not _camped(f):
+        camps = near_foes(f, True)
+        if camps:
+            defender = camps[0]
+    attackers = near_foes(defender)
+    day, used = max((o["day"], o["used"]) for o in [defender] + attackers)
+    return {"defender": defender["id"], "attackers": [o["id"] for o in attackers], "day": day, "used": used}

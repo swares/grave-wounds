@@ -55,8 +55,8 @@ Each force has a number of men and either has tools or doesn't. **Make camp** sp
 time to make a bivouac, a watched camp, a staked camp, a fortified camp, or quarters in a
 village or town. The time depends on the force's size and tools and on whether woods are
 near. Camp work can use 4 evening hours after the march, so a camp made at the end of the
-day costs no marching time. **Set up a fight here** opens the battle map with the camp's works and its men laid
-out. See [works.md](works.md).
+day costs no marching time. Once an enemy force has marched to within 1 km, **Set up the fight** opens the battle map
+with the camp's works, its men and the enemy laid out. See [works.md](works.md).
 
 ## Calendar and weather
 

@@ -53,6 +53,10 @@ the Python engine and the printed tables read them from there, so change them th
 
 ## The battle map
 
+The battle map is at the top of the roller page. Once an attacker and a defender are
+chosen, its bar has **Roll the hit** and, after a hit, **Apply hit**, with the last roll in a
+few words; the Strike panel below keeps the attack and defence figures and the full result.
+
 One hex is 2 m and a round is 6 seconds. On his turn a fighter may:
 
 - **Stay** where he is.

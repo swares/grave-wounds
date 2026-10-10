@@ -189,8 +189,9 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
       <p class="muted" id="camp-est" style="margin:0"></p>
       <div class="toolbar">
         <button id="btn-camp" title="Spend the time to make this camp here">Make camp</button>
-        <button class="small" id="btn-fight" title="Open the wound roller's battle map with this force (and its camp's works) laid out">Set up a fight here</button>
+        <button class="small" id="btn-fight" title="Open the wound roller's battle map with these forces (and the camp's works) laid out">Set up a fight here</button>
       </div>
+      <p class="muted" id="fight-note" style="margin:0"></p>
       <ol class="log" id="log" aria-label="March and camp log"></ol>
 
       <div id="paint-box" hidden>
@@ -397,33 +398,32 @@ function advance(m, path, index, used, hours, opts){
   if (index + 1 < path.length) used = Math.max(used, target);
   return { index, used };
 }
-// Making camp
-const WK = DATA.works, BATTLE_HEX_M = 2;
+// Making camp: the works are those the battle map lays out (as gravewounds.combat)
+const WK = DATA.works, CAMP_HEX_M = DATA.battle_hex_m;
+function hexDistance(a, b){
+  const cube = ([c, r]) => { const q = c - (r - (r & 1)) / 2; return [q, r, -q - r] };
+  const x = cube(a), y = cube(b);
+  return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2]));
+}
+const hkey = h => h[0] + "," + h[1];
+function edgeKey(a, b){ const [x, y] = [a, b].slice().sort((p, q) => p[1] - q[1] || p[0] - q[0]); return hkey(x) + "|" + hkey(y) }
+/*__CAMP_JS__*/
 function nearWoods(m, h){
   const cols = m.rows[0].length, rows = m.rows.length;
   return [h.slice(), ...neighbours(h, cols, rows)].some(x => terrainAt(m, x).id === "forest");
 }
-function campPerimeter(men, ftype){
-  const area = Math.max(WK.camp_area_min, men * WK.camp_area[ftype]);
-  return 2 * Math.sqrt(3.141592653589793 * area);
-}
+const campPerimeter = (men, ftype) => (12 * campRadius(men, ftype) + 6) * edgeMetres();
 function campHours(m, h, kind, men, ftype, tools){
   const c = WK.camps[kind], t = terrainAt(m, h);
   if (c.terrain && !c.terrain.includes(t.id)) return { error: `needs a ${c.terrain.map(x => TT[x].name.toLowerCase()).join(" or ")}` };
   if (c.tools && !tools) return { error: "needs tools (spades and axes)" };
-  const woods = nearWoods(m, h), per = campPerimeter(men, ftype);
+  const woods = nearWoods(m, h);
   let labour = 0;
-  for (const w of c.works || []){
-    if (w in WK.edge_works){
-      const e = WK.edge_works[w];
-      if ("each" in e) labour += e.each;
-      else labour += (e.per_metre + (woods ? 0 : (e.haul || 0))) * per;
-    } else {
-      const x = WK.hex_works[w];
-      labour += (x.each + (woods ? 0 : (x.haul || 0))) * per / BATTLE_HEX_M;
-    }
+  if (c.layout){
+    const n = campMapSize(kind, men, ftype);
+    labour = worksLabour(campWorks(kind, men, ftype, n, n).works, !woods);
   }
-  return { hours: c.hours + labour / (men * WK.work_share), labour, perimeter: per, woods };
+  return { hours: c.hours + labour / (men * WK.work_share), labour, perimeter: campPerimeter(men, ftype), woods };
 }
 function campDone(day, used, hours, hpdList = null){
   const ev = WK.evening_hours;
@@ -431,6 +431,30 @@ function campDone(day, used, hours, hpdList = null){
   if (used >= hpdAt(hpdList, i) + ev - 1e-9){ day += 1; used = 0; i += 1 }
   while (used + left > hpdAt(hpdList, i) + ev + 1e-9){ left -= hpdAt(hpdList, i) + ev - used; day += 1; used = 0; i += 1 }
   return { day, used: used + left };
+}
+// Who fights (as gravewounds.travel.fight_plan)
+const camped = o => !!o.camp && o.camp.hex[0] === o.pos[0] && o.camp.hex[1] === o.pos[1];
+function nearFoes(forces, x, campedOnly = false){
+  const reach = TER.fight_within;
+  return forces.map((o, i) => [hexDistance(o.pos, x.pos), i, o])
+    .filter(([dd, , o]) => o.side !== x.side && dd <= reach && (camped(o) || !campedOnly))
+    .sort((p, q) => p[0] - q[0] || p[1] - q[1]).map(t => t[2]);
+}
+function fightPlan(forces, sel){
+  const f = forces.find(o => o.id === sel);
+  let defender = f;
+  if (!camped(f)){
+    const camps = nearFoes(forces, f, true);
+    if (camps.length) defender = camps[0];
+  }
+  const attackers = nearFoes(forces, defender);
+  let day = defender.day, used = defender.used;
+  for (const o of attackers){
+    if (o.day < day || (o.day === day && o.used <= used)) continue;
+    day = o.day;
+    used = o.used;
+  }
+  return { defender: defender.id, attackers: attackers.map(o => o.id), day, used };
 }
 /* ---------- end of rules shared with gravewounds/travel.py ---------- */
 
@@ -587,11 +611,7 @@ function march(f, hours){
   S.msg = "";
 }
 
-function hexDist(a, b){                      // hexes apart (as gravewounds.combat.hex_distance)
-  const cube = ([c, r]) => { const q = c - (r - (r & 1)) / 2; return [q, r, -q - r] };
-  const x = cube(a), y = cube(b);
-  return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2]));
-}
+const hexDist = hexDistance;
 const campHere = f => (f.camp && sameHex(f.camp.hex, f.pos) ? f.camp : null);
 // Time to make this camp now. A force already camped here does not pay the set-up hours
 // again when it changes to another kind (the site, fires and watch are done), and cannot
@@ -632,8 +652,9 @@ function campText(f, kind){
   const c = WK.camps[kind], r = campCost(f, kind);
   if (r.same) return `${f.name} already has a ${c.name.toLowerCase()} here.`;
   if (r.error) return `${c.desc} Not here: it ${r.error}.`;
-  const days = Math.floor(r.hours / TER.hours_per_day);
-  return `${c.desc} ${f.men} men: ${fmtH(r.hours)}${days ? ` (more than ${days} working day${days > 1 ? "s" : ""})` : ""}`
+  const done = campDone(f.day, f.used, r.hours, hpdList(f.day));
+  const until = done.day === f.day ? "" : ` (done ${dateText(done.day, true)}, ${clock(done.used, done.day)})`;
+  return `${c.desc} ${f.men} men: ${fmtH(r.hours)}${until}`
     + (r.labour ? `, ${Math.round(r.labour)} man-hours for a ${Math.round(r.perimeter)} m perimeter${(c.works || []).some(w => (WK.edge_works[w] || WK.hex_works[w]).haul) ? (r.woods ? ", timber to hand" : ", timber hauled from afar") : ""}` : "") + ".";
 }
 
@@ -692,7 +713,7 @@ function renderSide(){
   const on = !!f;
   ["#btn-hour", "#btn-day", "#btn-undo-wp", "#btn-clear", "#btn-remove"].forEach(id => $(id).disabled = !on);
   ["#btn-camp", "#btn-fight", "#in-men", "#in-tools", "#sel-camp"].forEach(id => $(id).disabled = !on);
-  if (!f){ $("#force-head").textContent = ""; $("#summary").innerHTML = ""; $("#log").innerHTML = ""; $("#camp-est").textContent = ""; return }
+  if (!f){ $("#force-head").textContent = ""; $("#summary").innerHTML = ""; $("#log").innerHTML = ""; $("#camp-est").textContent = ""; $("#fight-note").textContent = ""; return }
   const ft = FT[f.type], hpd = hpdOf(f.day), lv = WXD.fatigue.levels[f.fatigue || 0];
   const slow = lv.march < 100 ? ` (${lv.march}% while ${lv.name.toLowerCase()})` : "";
   $("#force-head").innerHTML = `<b>${esc(f.name)}</b> at ${esc(where(f.pos))}. ${esc(ft.name)}: ${ft.kmh} km/h on a road${slow}; today ${fmtH(hpd)} of marching from ${clock(0, f.day)}.`
@@ -719,9 +740,24 @@ function renderSide(){
   $("#camp-est").textContent = campText(f, cur);
   $("#btn-camp").disabled = !!campCost(f, cur).error;
   $("#camp-who").textContent = "for " + f.name;
-  const here = campHere(f), at = here ? "at its " + WK.camps[here.kind].name.toLowerCase() : "here";
-  $("#btn-fight").textContent = `Set up a fight with ${f.name} ${at}`;
+  fightButton(f);
   $("#log").innerHTML = f.log.map(l => `<li>${esc(l)}</li>`).join("");
+}
+function byId(id){ return forcesHere().find(o => o.id === id) }
+function namesList(xs){ return xs.length < 3 ? xs.join(" and ") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] }
+function fightButton(f){                     // a fight needs an enemy marched to within reach
+  const p = fightPlan(forcesHere(), f.id), dfd = byId(p.defender), b = $("#btn-fight");
+  if (!p.attackers.length){
+    b.textContent = "Set up a fight";
+    b.disabled = true;
+    const km = TER.fight_within * curMap().hex_km;
+    $("#fight-note").textContent = `No enemy force is within ${km} km of ${f.name}. March one up first: select it, and in Plan route click ${f.name} to send it there.`;
+    return;
+  }
+  const here = campHere(dfd), at = here ? "at its " + WK.camps[here.kind].name.toLowerCase() : "where it stands";
+  b.textContent = `Set up the fight: ${namesList(p.attackers.map(id => byId(id).name))} against ${dfd.name} ${at}`;
+  b.disabled = false;
+  $("#fight-note").textContent = `The fight starts ${dateText(p.day, true)}, ${clock(p.used, p.day)}, when the last of them is there.`;
 }
 function nightsText(n){
   if (!n) return "";
@@ -852,13 +888,11 @@ function init(){
   $("#btn-camp").onclick = () => { const f = selForce(); if (f){ makeCamp(f, $("#sel-camp").value); render() } };
   $("#btn-fight").onclick = () => {
     const f = selForce(); if (!f) return;
-    const camp = campHere(f);
-    const foes = forcesHere().filter(o => o.side !== f.side)
-      .map(o => ({ name: o.name, side: o.side, men: o.men, type: o.type, fatigue: o.fatigue || 0, km: +(hexDist(o.pos, f.pos) * curMap().hex_km).toFixed(1) }))
-      .sort((a, b) => a.km - b.km);
-    const today = dayWeather(f.day);
-    try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", force: { name: f.name, side: f.side, men: f.men, type: f.type, fatigue: f.fatigue || 0 },
-      camp: camp ? camp.kind : null, foes, place: where(f.pos), day: dateText(f.day, true), time: clock(f.used, f.day),
+    const p = fightPlan(forcesHere(), f.id); if (!p.attackers.length) return;
+    const dfd = byId(p.defender), camp = campHere(dfd), m = curMap(), today = dayWeather(p.day);
+    const foes = p.attackers.map(byId).map(o => ({ name: o.name, side: o.side, men: o.men, type: o.type, fatigue: o.fatigue || 0, km: +(hexDist(o.pos, dfd.pos) * m.hex_km).toFixed(1) }));
+    try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", force: { name: dfd.name, side: dfd.side, men: dfd.men, type: dfd.type, fatigue: dfd.fatigue || 0 },
+      camp: camp ? camp.kind : null, hauled: !nearWoods(m, dfd.pos), foes, place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day),
       weather: { cond: today.w.cond, wind: today.w.wind, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){}
     location.href = "roller.html";
   };
