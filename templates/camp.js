@@ -2,14 +2,14 @@
    Same rules as gravewounds/combat.py (party_of, camp_radius, camp_map_size, camp_works, works_labour).
    A force type may be a column's party: [[type, men], ...].
    build.py puts this file into both pages at their CAMP_JS marker. Each page provides
-   WK (works.yaml), CAMP_HEX_M (the battle map's hex, metres), NEIGHBOURS, hexDistance,
+   WK (works.yaml), CAMP_HEX_M (the map's hex, metres: 2 on the battle map, 10 on the field map), NEIGHBOURS, hexDistance,
    hkey and edgeKey. */
 function partyOf(men, ftype){                 // a force type as a party [[type, men]]; a column's party is given as one
   return typeof ftype === "string" ? [[ftype, men]] : ftype.map(p => p.slice());
 }
 function campRadius(men, ftype){
   const need = partyOf(men, ftype).reduce((t, [ft, n]) => t + n * WK.camp_area[ft], 0);
-  const area = Math.max(WK.camp_area_min, need), n = area / (Math.sqrt(3) / 2 * 4);
+  const area = Math.max(WK.camp_area_min, need), n = area / (Math.sqrt(3) / 2 * CAMP_HEX_M ** 2);
   let r = 0; while (3 * r * (r + 1) + 1 < n) r++;
   return Math.max(r, 1);
 }

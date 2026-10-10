@@ -8,9 +8,11 @@ A side is {table, weapon, kit, quality, shield (bool or None), attack (extra %),
 (extra %)}. The field map (or the GM) says how many men are striking: see fighters()."""
 from __future__ import annotations
 
+import heapq
 import math
 import random
 
+from . import combat as C
 from .combat import weapon_reach
 from .disease import wound_case
 from .engine import roll_hit
@@ -79,13 +81,13 @@ def _attack(d: Data, side: dict) -> int:
 
 
 def melee(d: Data, att: dict, dfd: dict, men: int, rng: random.Random, situation: str = "front",
-          charge: bool = False, shaken: bool = False, rout: bool = False, exposed: tuple = ()) -> dict:
+          charge: bool = False, shaken: bool = False, rout: bool = False, exposed: tuple = (), penalty: int = 0) -> dict:
     """One exchange of `men` striking at a unit. situation: front, flank or rear. rout: the
     defender is broken and fleeing: then `men` should be all the pursuers, who strike in open
     order. exposed: (hero, chance) for heroes in the struck unit whom a blow may fall on.
     Returns a tally of blows and what they did."""
     M, U = d.units["melee"], d.units
-    tempo, atk = M["tempo"], _attack(d, att)
+    tempo, atk = M["tempo"], _attack(d, att) - penalty
     base = dfn = quality(d, dfd["quality"])["defence"] + dfd.get("defence", 0)
     if situation in ("flank", "rear"):
         atk += M[situation]["attack"]
@@ -441,16 +443,20 @@ def in_contact(d: Data, units: list, occ: dict, i: int) -> bool:
     return any(units[j]["side"] != units[i]["side"] for j in _adjacent_units(d, units, occ, i))
 
 
-def strikes(d: Data, units: list) -> list:
+def strikes(d: Data, units: list, field: dict | None = None) -> list:
     """Who strikes whom this exchange: [{att, dfd, men, situation, rout}], in a fixed order.
     Each front hex of a unit not broken strikes the enemy hex across its front (its first
     front side that has one) with its front rank, two ranks with reach-2 weapons. A broken
-    unit is struck instead by every man of each enemy unit touching it."""
+    unit is struck instead by every man of each enemy unit touching it. On a field with works
+    and ground (see field_ground), a blow across a palisade or wall comes only from reach-2
+    weapons, in the front rank; attacking up a bank, ditch or wall or onto high ground costs
+    `penalty`; and horses get no charge into stakes or felled trees (`stakes`)."""
     occ, groups = occupancy(d, units), {}
     for i, u in enumerate(units):
         if not _out(u):
-            _strike_groups(d, units, occ, i, groups)
-    out = [{"att": i, "dfd": j, "men": n, "situation": sit, "rout": False} for (i, j, sit), n in sorted(groups.items())]
+            _strike_groups(d, units, occ, i, groups, field)
+    out = [{"att": i, "dfd": j, "men": n, "situation": sit, "rout": False, "penalty": pen, "stakes": stk}
+           for (i, j, sit, pen, stk), n in sorted(groups.items())]
     for j, b in enumerate(units):
         if b["state"] == "broken" and b["men"] > 0:
             out += [{"att": i, "dfd": j, "men": units[i]["men"], "situation": "rear", "rout": True}
@@ -464,18 +470,62 @@ def _out(u: dict) -> bool:
     return u["state"] in ("broken", "fled") or u["men"] <= 0
 
 
-def _strike_groups(d: Data, units: list, occ: dict, i: int, groups: dict) -> None:
-    """Add unit i's front hexes' strikes to groups {(i, j, situation): men}."""
+def _strike_groups(d: Data, units: list, occ: dict, i: int, groups: dict, field: dict | None = None) -> None:
+    """Add unit i's front hexes' strikes to groups {(i, j, situation, penalty, stakes): men}."""
     u = units[i]
     rows, men = footprint(d, u), men_by_hex(d, u)
     reach = d.weapons[u["weapon"]].get("reach", 1)
-    per = form(d, u)["abreast"] * (2 if reach >= d.units["melee"]["second_rank_reach"] else 1)
+    abreast = form(d, u)["abreast"]
+    per = abreast * (2 if reach >= d.units["melee"]["second_rank_reach"] else 1)
     for k, h in enumerate(rows[0] if rows else []):
         hit = _struck_hex(units, occ, u, h)
-        if hit is not None:
-            j, dirn = hit
-            key = (i, j, arc(units[j]["facing"], dirn + 3))
-            groups[key] = groups.get(key, 0) + min(per, men[k])
+        if hit is None:
+            continue
+        j, dirn = hit
+        x = step(h, dirn)
+        blocked, pen, stk = _across(d, field, u, h, x, reach)
+        n = min(per, men[k])
+        if blocked:
+            n = min(abreast, men[k]) if reach >= 2 else 0
+        if n > 0:
+            key = (i, j, arc(units[j]["facing"], dirn + 3), pen, stk)
+            groups[key] = groups.get(key, 0) + n
+
+
+# ---------- the field: ground, works and weather ----------
+# field: {ground: {hex key: kind of ground (units.yaml ground; open if not given)}, works:
+# {edges, hexes} as on the battle map (gravewounds/combat.py), weather: {cond, wind, ground:
+# {mud, snow}} or None, size: [cols, rows]}. None: open ground, no works, no weather.
+
+def _size(d: Data, field: dict | None) -> tuple:
+    if field and field.get("size"):
+        return tuple(field["size"])
+    return d.units["map"]["cols"], d.units["map"]["rows"]
+
+
+def ground_at(d: Data, field: dict | None, h) -> dict:
+    kind = ((field or {}).get("ground") or {}).get(f"{h[0]},{h[1]}", "open")
+    return d.units["ground"][kind]
+
+
+def _works(field: dict | None):
+    return (field or {}).get("works")
+
+
+def _across(d: Data, field: dict | None, u: dict, h, x, reach: int) -> tuple:
+    """A blow from hex h at hex x: (blocked: only reach-2 strikes over it, penalty %, stakes:
+    horses get no charge into it)."""
+    if not field:
+        return False, 0, False
+    cols, rows = _size(d, field)
+    m = C.melee_across(d, _works(field), h, x, reach, cols, rows)
+    pen = m["penalty"]
+    gx, gh = ground_at(d, field, x), ground_at(d, field, h)
+    if gx.get("height") and not gh.get("height"):
+        pen += gx["height"]
+    it = C._hex_item(d, _works(field), x)
+    stk = bool(u.get("mounted") and it and C._spec(d, "hex", it).get("no_horse"))
+    return m["blocked"], pen, stk
 
 
 def _struck_hex(units: list, occ: dict, u: dict, h) -> tuple | None:
@@ -493,41 +543,60 @@ def _fvec(facing: int) -> tuple:
     return q, r, -q - r
 
 
-def volleys(d: Data, units: list) -> list:
-    """Who shoots at whom: [{att, dfd, men, dist}]. A unit with a missile weapon, not broken
-    and not in contact, shoots at the nearest enemy unit in range in front of it (ties: the
-    first listed). Its front hexes' first `shoot_ranks` ranks shoot."""
+def volleys(d: Data, units: list, field: dict | None = None) -> list:
+    """Who shoots at whom: [{att, dfd, men, dist, cover, penalty, misfire}]. A unit with a
+    missile weapon, not broken and not in contact, shoots at the nearest enemy unit in range
+    (and in sight, in the weather) in front of it (ties: the first listed). Its front hexes'
+    first `shoot_ranks` ranks shoot. cover: % off from the works and ground at the nearest
+    target hex; penalty and misfire: the weather's (gravewounds.combat.weather_attack)."""
     occ, out = occupancy(d, units), []
     for i, u in enumerate(units):
         if u["state"] in ("broken", "fled") or u["men"] <= 0 or "range" not in d.weapons[u["weapon"]]:
             continue
         if in_contact(d, units, occ, i):
             continue
-        best = _target(d, units, i)
+        best = _target(d, units, i, field)
         if best is None:
             continue
         rows, men = footprint(d, u), men_by_hex(d, u)
         per_hex = form(d, u)["abreast"] * min(d.units["shoot_ranks"], form(d, u)["ranks"])
         shooters = sum(min(per_hex, men[k]) for k in range(len(rows[0])))
-        out.append({"att": i, "dfd": best[1], "men": shooters, "dist": best[0]})
+        wx = shot_weather(d, field, u["weapon"], best[0])
+        out.append({"att": i, "dfd": best[1], "men": shooters, "dist": best[0], "cover": cover_at(d, field, best[2], best[3]),
+                    "penalty": wx["penalty"], "misfire": wx["misfire"]})
     return out
 
 
-def _target(d: Data, units: list, i: int):
-    """(distance, index) of the nearest enemy unit in range and in front of unit i, or None."""
+def shot_weather(d: Data, field: dict | None, weapon: str, dist: int) -> dict:
+    """The weather's effect on a shot `dist` field hexes away: {blocked, penalty, misfire}."""
+    return C.weather_attack(d, (field or {}).get("weather"), weapon, dist * d.units["range_scale"])
+
+
+def cover_at(d: Data, field: dict | None, h, t) -> int:
+    """% off shots from hex h at hex t: the best of the works' cover and the ground's."""
+    if not field:
+        return 0
+    cols, rows = _size(d, field)
+    return max(C.missile_cover(d, _works(field), h, t, cols, rows)["cover"], ground_at(d, field, t).get("cover", 0))
+
+
+def _target(d: Data, units: list, i: int, field: dict | None = None):
+    """(distance, index, shooter hex, target hex) of the nearest enemy unit in range, in
+    sight and in front of unit i, or None."""
     u, fv, best = units[i], _fvec(units[i]["facing"]), None
     front = footprint(d, u)[0]
     for j, e in enumerate(units):
         if e["side"] == u["side"] or e["men"] <= 0 or e["state"] == "fled":
             continue
-        dist = _nearest_ahead(d, u["weapon"], front, fv, [t for row in footprint(d, e) for t in row])
-        if dist is not None and (best is None or dist < best[0]):
-            best = (dist, j)
+        near = _nearest_ahead(d, u["weapon"], front, fv, [t for row in footprint(d, e) for t in row], field)
+        if near is not None and (best is None or near[0] < best[0]):
+            best = (near[0], j, near[1], near[2])
     return best
 
 
-def _nearest_ahead(d: Data, weapon: str, front: list, fv: tuple, hexes: list) -> int | None:
-    """The shortest distance in range from a front hex to one of `hexes` ahead of the line."""
+def _nearest_ahead(d: Data, weapon: str, front: list, fv: tuple, hexes: list, field: dict | None = None):
+    """(distance, front hex, target hex): the shortest distance in range and in sight from a
+    front hex to one of `hexes` ahead of the line, or None."""
     best = None
     for t in hexes:
         c = _cube(t)
@@ -536,8 +605,9 @@ def _nearest_ahead(d: Data, weapon: str, front: list, fv: tuple, hexes: list) ->
             if sum((c[k] - s[k]) * fv[k] for k in range(3)) <= 0:
                 continue
             dist = hdist(h, t)
-            if field_range(d, weapon, dist) is not None and (best is None or dist < best):
-                best = dist
+            if (best is None or dist < best[0]) and field_range(d, weapon, dist) is not None \
+                    and not shot_weather(d, field, weapon, dist)["blocked"]:
+                best = (dist, h, t)
     return best
 
 
@@ -545,15 +615,18 @@ def _side(u: dict, table: str) -> dict:
     return {"table": table, "weapon": u["weapon"], "kit": u.get("kit"), "quality": u["quality"]}
 
 
-def exchange(d: Data, units: list, table: str, rng) -> tuple[list, list]:
+def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -> tuple[list, list]:
     """One exchange on the field map: every melee and volley at once from the present
-    positions, then losses, morale, and a rout strike on any unit that breaks. Returns
-    (units, log): log lines are {kind (melee, volley, rout, morale), ...}."""
+    positions, then breaching, losses, morale, and a rout strike on any unit that breaks.
+    Returns (units, log): log lines are {kind (melee, volley, hero, herohit, breach, rout,
+    morale), ...}. field: the ground, works and weather (see field_ground); works being
+    breached are updated in it, in place."""
     us = [_copy_unit(u) for u in units]
     lost, dead, dealt, flanked, log = [0] * len(us), [0] * len(us), [0] * len(us), [False] * len(us), []
     acc = (lost, dead, dealt)
-    log += _strike_all(d, us, table, rng, acc, flanked)
-    log += _shoot_all(d, us, table, rng, acc)
+    log += _strike_all(d, us, table, rng, acc, flanked, field)
+    log += _shoot_all(d, us, table, rng, acc, field)
+    log += _breach_all(d, us, field)
     occ = occupancy(d, us)
     before = [u["men"] for u in us]
     for i, u in enumerate(us):
@@ -565,13 +638,13 @@ def exchange(d: Data, units: list, table: str, rng) -> tuple[list, list]:
     return us, log
 
 
-def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list) -> list:
+def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, field: dict | None = None) -> list:
     """Every melee, each unit's front heroes striking with its first."""
     log, struck = [], set()
-    for s in strikes(d, us):
+    for s in strikes(d, us, field):
         a, b = us[s["att"]], us[s["dfd"]]
-        opts = {"situation": s["situation"], "charge": bool(a.get("charged")) and bool(a.get("mounted")),
-                "shaken": a["state"] == "shaken", "rout": s["rout"], "exposed": _exposure(d, b, s["rout"])}
+        opts = {"situation": s["situation"], "charge": bool(a.get("charged")) and bool(a.get("mounted")) and not s.get("stakes"),
+                "shaken": a["state"] == "shaken", "rout": s["rout"], "exposed": _exposure(d, b, s["rout"]), "penalty": s.get("penalty", 0)}
         t = _take_hurt(b, melee(d, _side(a, table), _side(b, table), s["men"], rng, **opts))
         _tally(*acc, s, t)
         flanked[s["dfd"]] = flanked[s["dfd"]] or s["situation"] in ("flank", "rear")
@@ -587,22 +660,67 @@ def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list) -
     return log
 
 
-def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple) -> list:
+def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | None = None) -> list:
     """Every volley, each unit's shooting heroes with it."""
     log = []
-    for v in volleys(d, us):
+    for v in volleys(d, us, field):
         b = us[v["dfd"]]
-        opts = {"factor": form(d, b)["missile_factor"], "exposed": _exposure(d, b, False, True)}
+        opts = {"factor": form(d, b)["missile_factor"] * (100 - v["misfire"]) / 100, "exposed": _exposure(d, b, False, True),
+                "penalty": v["cover"] + v["penalty"]}
         t = _take_hurt(b, volley(d, _side(us[v["att"]], table), _side(b, table), v["men"], v["dist"], rng, **opts))
         _tally(*acc, v, t)
         log += _logged({"kind": "volley", **v}, t)
         for hero in _heroes(us[v["att"]], ("ranged",)):
-            if field_range(d, hero["weapon"], v["dist"]) is None:
+            wx = shot_weather(d, field, hero["weapon"], v["dist"])
+            if field_range(d, hero["weapon"], v["dist"]) is None or wx["blocked"]:
                 continue
-            t = _take_hurt(b, volley(d, _hero_side(us[v["att"]], hero, table), _side(b, table), d.units["heroes"]["tempo"], v["dist"], rng, **opts))
+            hopts = {**opts, "factor": form(d, b)["missile_factor"] * (100 - wx["misfire"]) / 100, "penalty": v["cover"] + wx["penalty"]}
+            t = _take_hurt(b, volley(d, _hero_side(us[v["att"]], hero, table), _side(b, table), d.units["heroes"]["tempo"], v["dist"], rng, **hopts))
             _tally(*acc, v, t)
             log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": v["att"], "dfd": v["dfd"], "dist": v["dist"]}, t)
     return log
+
+
+def _breach_all(d: Data, us: list, field: dict | None) -> list:
+    """Units ordered to breach (unit["breach"]) hack at the works on their front: each front
+    hex's front rank works at the first breachable work across its front sides, or in the hex
+    beyond. Progress is in the battle map's man-rounds, so a field hex side, `scale` times as
+    long, takes `scale` times the work."""
+    if not field or not _works(field):
+        return []
+    log, scale = [], d.units["hex_m"] / d.wounds["combat"]["move"]["hex_m"]
+    per = d.units["exchange_rounds"] * d.units["breach_share"] / scale
+    for i, u in enumerate(us):
+        if u.get("breach") and not _out(u):
+            log += _unit_breach(d, field, i, u, per)
+    return log
+
+
+def _unit_breach(d: Data, field: dict, i: int, u: dict, per: float) -> list:
+    log, rows, men = [], footprint(d, u), men_by_hex(d, u)
+    for k, h in enumerate(rows[0] if rows else []):
+        hit = _breachable(d, field, u, h)
+        if hit is None:
+            continue
+        kind, where, it = hit
+        it["progress"] = it.get("progress", 0) + min(form(d, u)["abreast"], men[k]) * per
+        if not C.intact(d, kind, it):
+            log.append({"kind": "breach", "unit": i, "work": it["type"], "at": where})
+    return log
+
+
+def _breachable(d: Data, field: dict, u: dict, h):
+    """(edge or hex, its key, the item): the first work hex h's front rank can hack at."""
+    works = _works(field)
+    for dirn in (u["facing"], u["facing"] + 1):
+        x = step(h, dirn)
+        for it in C._edge_items(d, works, h, x):
+            if C._spec(d, "edge", it).get("breach"):
+                return "edge", C.edge_key(h, x), it
+        it = C._hex_item(d, works, x)
+        if it and C._spec(d, "hex", it).get("breach"):
+            return "hex", C.hkey(x), it
+    return None
 
 
 def _copy_unit(u: dict) -> dict:
@@ -682,34 +800,95 @@ def turn_cost(d: Data, u: dict) -> int:
     return max(1, math.ceil(min(u["width"], n) / d.units["turn_per"]))
 
 
-def _fits(d: Data, units: list, i: int, u: dict, size: tuple) -> bool:
-    """Unit i placed as u: on the map and on no other unit's hexes."""
+def _fits(d: Data, units: list, i: int, u: dict, size: tuple, field: dict | None = None) -> bool:
+    """Unit i placed as u: on the map, on no other unit's hexes, and on ground it can stand on
+    (no wagons; for horses, no marsh, stakes or felled trees), with no palisade or wall
+    running through it."""
     occ = occupancy(d, [x for k, x in enumerate(units) if k != i])
-    return all(0 <= h[0] < size[0] and 0 <= h[1] < size[1] and f"{h[0]},{h[1]}" not in occ
-               for row in footprint(d, u) for h in row)
+    hexes = [h for row in footprint(d, u) for h in row]
+    if not all(0 <= h[0] < size[0] and 0 <= h[1] < size[1] and f"{h[0]},{h[1]}" not in occ for h in hexes):
+        return False
+    return not field or _stands(d, field, u, hexes)
 
 
-def _path_len(d: Data, units: list, i: int, goal, size: tuple, limit: int) -> int | None:
-    """Fewest steps for the unit's middle hex from where it is to goal, not through other
-    units' hexes; None if more than limit."""
+def _stands(d: Data, field: dict, u: dict, hexes: list) -> bool:
+    keys = {f"{h[0]},{h[1]}" for h in hexes}
+    for h in hexes:
+        if not _can_enter(d, field, u, h):
+            return False
+        for dirn in range(6):
+            x = step(h, dirn)
+            if f"{x[0]},{x[1]}" in keys and _wall_between(d, field, h, x):
+                return False
+    return True
+
+
+def _can_enter(d: Data, field: dict, u: dict, h) -> bool:
+    it = C._hex_item(d, _works(field), h)
+    if it and C._spec(d, "hex", it).get("enter") is None:
+        return False
+    if not u.get("mounted"):
+        return True
+    return not ground_at(d, field, h).get("no_horse") and not (it and C._spec(d, "hex", it).get("no_horse"))
+
+
+def _wall_between(d: Data, field: dict, a, b) -> bool:
+    """A palisade, wall or barred gate between hexes a and b (open gates are left out)."""
+    for it in C._edge_items(d, _works(field), a, b):
+        s = C._spec(d, "edge", it)
+        if s.get("cross") is None or s.get("gate"):
+            return True
+    return False
+
+
+def step_cost(d: Data, field: dict | None, u: dict, a, b) -> int | None:
+    """Movement for the unit's middle hex to step from a to b: 1, plus works crossed and
+    entered, plus the ground (rough, woods, marsh), plus deep mud or snow. None if it cannot."""
+    if not field:
+        return 1
+    if not _can_enter(d, field, u, b):
+        return None
+    c = C.step_cost(d, _works(field), a, b)
+    if c is None:
+        return None
+    wx = field.get("weather") or {}
+    return c + ground_at(d, field, b)["move"] - 1 + C.deep_going(d, wx.get("ground"))
+
+
+def _path_len(d: Data, units: list, i: int, goal, size: tuple, limit: int, field: dict | None = None) -> int | None:
+    """Least movement for the unit's middle hex from where it is to goal (step_cost), not
+    through other units' hexes; None if more than limit."""
     occ = occupancy(d, [x for k, x in enumerate(units) if k != i])
-    start, seen, frontier = units[i]["pos"], {tuple(units[i]["pos"])}, [units[i]["pos"]]
-    for n in range(limit + 1):
-        if any(h == list(goal) for h in frontier):
-            return n
-        nxt = []
-        for h in frontier:
-            for dirn in range(6):
-                x = step(h, dirn)
-                if tuple(x) in seen or not (0 <= x[0] < size[0] and 0 <= x[1] < size[1]) or f"{x[0]},{x[1]}" in occ:
-                    continue
-                seen.add(tuple(x))
-                nxt.append(x)
-        frontier = nxt
-    return None if list(goal) != start else 0
+    u, start = units[i], tuple(units[i]["pos"])
+    best, heap, done = {start: 0}, [(0, start)], set()
+    while heap:
+        cost, h = heapq.heappop(heap)
+        if h in done:
+            continue
+        if list(h) == list(goal):
+            return cost
+        done.add(h)
+        for x, c in _steps_from(d, field, u, h, occ, size):
+            if cost + c <= limit and cost + c < best.get(x, limit + 1):
+                best[x] = cost + c
+                heapq.heappush(heap, (cost + c, x))
+    return None
 
 
-def move(d: Data, units: list, i: int, pos, facing: int, size: tuple) -> dict:
+def _steps_from(d: Data, field: dict | None, u: dict, h: tuple, occ: dict, size: tuple) -> list:
+    """(hex, cost) for each step the unit's middle hex can take from h."""
+    out = []
+    for dirn in range(6):
+        x = tuple(step(list(h), dirn))
+        if not (0 <= x[0] < size[0] and 0 <= x[1] < size[1]) or f"{x[0]},{x[1]}" in occ:
+            continue
+        sc = step_cost(d, field, u, list(h), list(x))
+        if sc is not None:
+            out.append((x, sc))
+    return out
+
+
+def move(d: Data, units: list, i: int, pos, facing: int, size: tuple, field: dict | None = None) -> dict:
     """Can unit i end its move with its middle front hex at pos, facing `facing`? {ok, cost,
     charge, why}. Turning costs turn_cost a step. A unit already in contact cannot move. A
     move that ends in contact with an enemy may be up to charge_move times the allowance (a
@@ -721,11 +900,11 @@ def move(d: Data, units: list, i: int, pos, facing: int, size: tuple) -> dict:
         return {"ok": False, "why": "it is in contact"}
     turns = min((facing - u["facing"]) % 6, (u["facing"] - facing) % 6)
     most = allowance(d, u) * d.units["charge_move"]
-    steps = _path_len(d, units, i, pos, size, most)
+    steps = _path_len(d, units, i, pos, size, most, field)
     if steps is None:
         return {"ok": False, "why": "too far, or no way through"}
     moved = {**u, "pos": list(pos), "facing": facing % 6}
-    if not _fits(d, units, i, moved, size):
+    if not _fits(d, units, i, moved, size, field):
         return {"ok": False, "why": "no room there"}
     cost = steps + turns * turn_cost(d, u)
     after = [moved if k == i else x for k, x in enumerate(units)]
@@ -737,7 +916,7 @@ def move(d: Data, units: list, i: int, pos, facing: int, size: tuple) -> dict:
     return {"ok": False, "why": "too far"}
 
 
-def flee(d: Data, units: list, i: int, size: tuple) -> dict:
+def flee(d: Data, units: list, i: int, size: tuple, field: dict | None = None) -> dict:
     """A broken unit runs straight back as far as its allowance takes it; off the map, it has
     fled the field. Returns the unit."""
     u = dict(units[i])
@@ -746,7 +925,7 @@ def flee(d: Data, units: list, i: int, size: tuple) -> dict:
         nxt = {**u, "pos": step(u["pos"], back)}
         if not all(0 <= h[0] < size[0] and 0 <= h[1] < size[1] for row in footprint(d, nxt) for h in row):
             return {**u, "state": "fled"}
-        if not _fits(d, units, i, nxt, size):
+        if step_cost(d, field, u, u["pos"], nxt["pos"]) is None or not _fits(d, units, i, nxt, size, field):
             break
         u = nxt
     return u

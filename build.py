@@ -231,7 +231,24 @@ def unit_rules(d) -> list[str]:
         f"or was struck in flank or rear: d100 against Nerve, +{mo['mods']['in_order']} while steady, +{mo['mods']['leader']} with a leader, {mo['mods']['leader_down']} if he is down, "
         f"{mo['mods']['heavy']} at half strength, {mo['mods']['flank']} if flanked, -{mo['mods']['losing_per_man']} a man it lost more than it put down (at most -{mo['mods']['losing_cap']}). "
         f"Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +{R['attack']}, no parry, x{R['tempo']:g} tempo.",
-    ] + _hero_rules(d) + _aftermath_rules(d)
+    ] + _ground_rules(d) + _hero_rules(d) + _aftermath_rules(d)
+
+
+def _ground_rules(d) -> list[str]:
+    G = d.units.get("ground")
+    if not G:
+        return []
+    parts = []
+    for g in G.values():
+        bits = [f"move {g['move']}"] + ([f"cover -{g['cover']}%"] if g.get("cover") else []) + ([f"-{g['height']}% striking up at it"] if g.get("height") else []) \
+            + (["no horses"] if g.get("no_horse") else [])
+        parts.append(f"{g['name'].lower()} ({', '.join(bits)})")
+    return [
+        "<b>Ground and works on the field map:</b> " + "; ".join(parts) + ". Works are the battle map's, along the 10 m hex sides: "
+        "only reach-2 weapons strike over a palisade, wall or barred gate, from the front rank; striking up a bank, ditch or wall costs its height; "
+        "a volley takes the best cover where it lands. A unit ordered to breach puts half its front rank to hacking at the work in front "
+        f"(a 10 m side takes {d.units['hex_m'] / d.wounds['combat']['move']['hex_m']:g} times a 2 m side's breach figure). The battle map's weather applies.",
+    ]
 
 
 def _hero_rules(d) -> list[str]:
@@ -467,6 +484,9 @@ def travel_bundle(d) -> dict:
     }
 
 
+CAMP_MARK = "/*__CAMP_JS__*/"
+
+
 def field_bundle(d) -> dict:
     """What the field map needs: the unit rules, and for every table and weapon the d100 ranges
     the wound roll looks up (precomputed here so the page rolls exactly as roll_hit does)."""
@@ -478,7 +498,7 @@ def field_bundle(d) -> dict:
         tables[tid] = {"name": t["name"], "label": t.get("label", t["name"]), "battle": t.get("battle", "Other"),
                        "weapons": ws, "ranges": {w: rng3(table_ranges(d, tid, w)) for w in ws}}
     used = sorted({w for t in tables.values() for w in t["weapons"]})
-    keep = ("name", "short", "reach", "range", "threat", "armor_defeat", "off_map")
+    keep = ("name", "short", "reach", "range", "threat", "armor_defeat", "off_map", "string", "ignition")
     mechs = sorted({m[0] for w in used for m in rng3(mechanism_ranges(d, w))})
     return {
         "generated": date.today().isoformat(),
@@ -494,6 +514,9 @@ def field_bundle(d) -> dict:
         "effects": {l["id"]: {m: {s: _lethal_inf(compose_wound(d, l["id"], m, s)) for s in ("light", "serious", "critical")} for m in mechs}
                     for l in d.locations},
         "track": {"steps": d.disease["steps"], "wounds": d.disease["wounds"]},
+        "works": d.works,
+        "weather": {k: d.weather[k] for k in ("winds", "conditions", "battle", "ground")},
+        "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
     }
 
 
@@ -1235,16 +1258,17 @@ def main() -> int:
         return 1
     html = tpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>"))
     camp_js = (ROOT / "templates" / "camp.js").read_text(encoding="utf-8")
-    html = html.replace("/*__CAMP_JS__*/", camp_js)
+    works_js = (ROOT / "templates" / "works.js").read_text(encoding="utf-8")
+    html = html.replace(CAMP_MARK, camp_js).replace("/*__WORKS_JS__*/", works_js)
     html = html.replace("/*__GRAVEWOUNDS_DATA__*/null", json.dumps(b, separators=(",", ":")))
     (DIST / "roller.html").write_text(html, encoding="utf-8")
     tb = travel_bundle(d)
     ttpl = (ROOT / "templates" / "travel.html").read_text(encoding="utf-8")
-    thtml = ttpl.replace("/*__CAMP_JS__*/", camp_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
+    thtml = ttpl.replace(CAMP_MARK, camp_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
     (DIST / "travel.html").write_text(thtml, encoding="utf-8")
     units_js = (ROOT / "templates" / "units.js").read_text(encoding="utf-8")
     ftpl = (ROOT / "templates" / "field.html").read_text(encoding="utf-8")
-    fhtml = ftpl.replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(field_bundle(d), separators=(",", ":")))
+    fhtml = ftpl.replace("/*__WORKS_JS__*/", works_js).replace(CAMP_MARK, camp_js).replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(field_bundle(d), separators=(",", ":")))
     (DIST / "field.html").write_text(fhtml, encoding="utf-8")
     (ROOT / "index.html").write_text(index_page(d), encoding="utf-8")
     print("Built:", ", ".join(p.name for p in sorted(DIST.iterdir())), "+ index.html")

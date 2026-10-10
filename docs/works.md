@@ -116,6 +116,13 @@ Linear works lie along the edges between hexes. The others fill a hex.
 - The page shows how many man-hours the works on the map would take to build. Tick
   **Timber hauled from afar** when no woods are near; a camp from the travel map sets it.
 
+## Works on the field map
+
+The field map (10 m hexes, units of the rank and file) uses the same works with the same
+numbers along its hex sides and in its hexes, and lays out a camp from the travel map at
+its own scale. How they act on units is in [units.md](units.md) (*Ground, works and
+weather*).
+
 ## Where the ideas come from
 
 These are described in our own words.

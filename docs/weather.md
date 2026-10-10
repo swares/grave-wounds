@@ -68,7 +68,9 @@ hex.
 
 ## Weather in battle
 
-These apply to missile attacks once the turns start. Close combat is not affected.
+These apply to missile attacks once the turns start, on the battle map and the field map
+alike (the field map counts its 10 m hexes as five battle-map hexes). Close combat is not
+affected.
 
 | Weather | Effect |
 |---|---|

@@ -23,6 +23,22 @@ turn_per: 2                # turning the facing one step (60 degrees) costs 1 he
 shoot_ranks: 2             # ranks of each front hex that can shoot
 exchange_rounds: 10        # individual 6-second rounds in one exchange (for fatigue, bleeding, states)
 
+# The ground, painted per hex. move: movement to enter a hex of it (open ground 1). cover: %
+# off shots at men standing in it. height: % off a blow struck up at men on it from lower
+# ground (as a bank's). no_horse: horses cannot go into it. Works (ditches, banks,
+# palisades, gates, walls, stakes, felled trees, wagons, pavises) are those of the battle
+# map (works.yaml), with the same crossing costs, cover and height, along the 10 m hexes.
+ground:
+  open:  {name: "Open ground",  move: 1}
+  rough: {name: "Rough ground", move: 2}
+  woods: {name: "Woods",        move: 2, cover: 20}
+  marsh: {name: "Marsh",        move: 3, no_horse: true}
+  high:  {name: "High ground",  move: 1, height: 10}
+# Breaching: a unit ordered to breach puts this share of each front hex's front rank to
+# hacking at the work in front of it, every round of the exchange. A work's breach figure
+# (man-rounds, works.yaml) is for a 2 m hex side; a 10 m side takes five times as long.
+breach_share: 0.5
+
 # ---------- quality ----------
 # The unit's fighting quality: attack and defence (parry or dodge) % for its men, and the
 # Nerve its morale checks use (the same ratings as individual fighters).

@@ -427,21 +427,24 @@ def party_of(men: int, ftype) -> list:
     return [[ftype, men]] if isinstance(ftype, str) else [list(p) for p in ftype]
 
 
-def camp_radius(d: Data, men: int, ftype) -> int:
-    """Hexes from the centre to the edge of a camp for this many men (2 m hexes). ftype: a
-    force type, or a column's party (see party_of)."""
+def camp_radius(d: Data, men: int, ftype, hex_m: float | None = None) -> int:
+    """Hexes from the centre to the edge of a camp for this many men. ftype: a force type, or
+    a column's party (see party_of). hex_m: the map's hex across the flats in metres (the
+    battle map's 2 m unless given; the field map's is 10)."""
     W = d.works
+    hm = hex_m or d.wounds["combat"]["move"]["hex_m"]
     area = max(W["camp_area_min"], sum(n * W["camp_area"][t] for t, n in party_of(men, ftype)))
-    n = area / (3 ** 0.5 / 2 * 4)
+    n = area / (3 ** 0.5 / 2 * hm * hm)
     r = 0
     while 3 * r * (r + 1) + 1 < n:
         r += 1
     return max(r, 1)
 
 
-def edge_metres(d: Data) -> float:
-    """Length of one side of a battle-map hex, in metres (hex_m across the flats)."""
-    return d.wounds["combat"]["move"]["hex_m"] / 3 ** 0.5
+def edge_metres(d: Data, hex_m: float | None = None) -> float:
+    """Length of one side of a hex, in metres: the battle map's (hex_m across the flats)
+    unless another hex size is given."""
+    return (hex_m or d.wounds["combat"]["move"]["hex_m"]) / 3 ** 0.5
 
 
 def _edge_labour(s: dict, hauled: bool, em: float) -> float:
@@ -450,10 +453,10 @@ def _edge_labour(s: dict, hauled: bool, em: float) -> float:
     return (s.get("per_metre", 0) + (s.get("haul", 0) if hauled else 0)) * em
 
 
-def works_labour(d: Data, works, hauled: bool = False) -> float:
+def works_labour(d: Data, works, hauled: bool = False, hex_m: float | None = None) -> float:
     """Man-hours to build these works: per_metre along each hex side, `each` for gates and
     for each hex of stakes or abatis, plus `haul` when the timber is hauled from afar."""
-    W, em, t = d.works, edge_metres(d), 0.0
+    W, em, t = d.works, edge_metres(d, hex_m), 0.0
     for items in (works or {}).get("edges", {}).values():
         t += sum(_edge_labour(W["edge_works"][it["type"]], hauled, em) for it in items)
     for it in (works or {}).get("hexes", {}).values():
@@ -532,9 +535,9 @@ def _camp_pieces(layout: str, centre, r: int) -> dict:
     return out
 
 
-def _piece_labour(d: Data, kind: str, item: dict, hauled: bool) -> float:
+def _piece_labour(d: Data, kind: str, item: dict, hauled: bool, hex_m: float | None = None) -> float:
     if kind == "edge":
-        return _edge_labour(d.works["edge_works"][item["type"]], hauled, edge_metres(d))
+        return _edge_labour(d.works["edge_works"][item["type"]], hauled, edge_metres(d, hex_m))
     s = d.works["hex_works"][item["type"]]
     return s.get("each", 0) + (s.get("haul", 0) if hauled else 0)
 
@@ -543,17 +546,18 @@ CAMP_ROOM = 6     # hexes left between a camp too big for the map and the attack
 
 
 def camp_works(d: Data, kind: str, men: int, ftype, cols: int, rows: int,
-               done: float | None = None, hauled: bool = False) -> dict:
+               done: float | None = None, hauled: bool = False, hex_m: float | None = None) -> dict:
     """Battle-map layout for a camp: {centre, radius, fits, works}. A camp that fits sits in the
     middle of the map. One that does not is laid out at its true size with its centre moved
     west, so the stretch with the gate (on the east) is on the map, CAMP_ROOM hexes from the
     east edge where the attackers wait; the rest runs off the map (fits false). done:
     man-hours of work done so far (None: finished). The works go up in the order the camp lists
     them (works.yaml), each kind all round the ring from the gate before the next starts; a
-    piece appears once its labour (with hauled timber if `hauled`) is done and it is on the map."""
+    piece appears once its labour (with hauled timber if `hauled`) is done and it is on the map.
+    hex_m: the map's hex size (the battle map's unless given; the field map's is 10 m)."""
     c = d.works["camps"][kind]
     layout = c.get("layout")
-    r = camp_radius(d, men, ftype)
+    r = camp_radius(d, men, ftype, hex_m)
     extra = 2 if layout == "fortified" else 1
     centre = [cols // 2, rows // 2]
     fits = _camp_fits(centre, r + extra, cols, rows)
@@ -561,18 +565,18 @@ def camp_works(d: Data, kind: str, men: int, ftype, cols: int, rows: int,
         centre = [cols - 1 - CAMP_ROOM - (r + extra), rows // 2]
     works = {"edges": {}, "hexes": {}}
     if layout:
-        _lay(d, c, _camp_pieces(layout, centre, r), works, done, hauled, (cols, rows))
+        _lay(d, c, _camp_pieces(layout, centre, r), works, done, hauled, (cols, rows), hex_m)
     return {"centre": centre, "radius": r, "fits": fits, "works": works}
 
 
-def _lay(d: Data, c: dict, pieces: dict, works: dict, done: float | None, hauled: bool, size) -> None:
+def _lay(d: Data, c: dict, pieces: dict, works: dict, done: float | None, hauled: bool, size, hex_m=None) -> None:
     """Put the pieces into works in building order, stopping where the labour done runs out.
     Pieces off the map count towards the labour but are not shown."""
     def on(h):
         return 0 <= h[0] < size[0] and 0 <= h[1] < size[1]
     spent = 0.0
     for where, hexes, item in (p for kind in c["works"] for p in pieces[kind]):
-        spent += _piece_labour(d, where, item, hauled)
+        spent += _piece_labour(d, where, item, hauled, hex_m)
         if done is not None and spent > done + 1e-9:
             return
         if not all(on(h) for h in hexes):

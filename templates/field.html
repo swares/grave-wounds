@@ -11,15 +11,21 @@
   --bg:#e9ecee; --panel:#f6f7f8; --ink:#1b2127; --muted:#5b6670; --line:#c5ccd2; --ground:#dfe6d8;
   --steel:#3f4f5d; --blood:#8e1b2c; --blood-soft:#f1d9dc; --warn:#a86512;
   --side0:#2f5d8a; --side1:#8e1b2c;
+  --g-rough:#d3d2b8; --g-woods:#a9c39a; --g-marsh:#b9cfcc; --g-high:#e3d6b6;
+  --w-earth:#7a5a33; --w-timber:#4a3a28; --w-stone:#6d7680;
   --display:"Alegreya SC",Georgia,serif; --body:"Alegreya Sans","Gill Sans","Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942; --ground:#1f2820;
+  --g-rough:#2e2f22; --g-woods:#1b3320; --g-marsh:#1d3133; --g-high:#3a3324;
+  --w-earth:#c9a16e; --w-timber:#d8c3a2; --w-stone:#a9b3bd;
   --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --warn:#e3a14d;
   --side0:#8db8e0; --side1:#e8909c; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942; --ground:#1f2820;
+  --g-rough:#2e2f22; --g-woods:#1b3320; --g-marsh:#1d3133; --g-high:#3a3324;
+  --w-earth:#c9a16e; --w-timber:#d8c3a2; --w-stone:#a9b3bd;
   --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --warn:#e3a14d;
   --side0:#8db8e0; --side1:#e8909c; color-scheme:dark}
 *{box-sizing:border-box}
@@ -53,6 +59,18 @@ button:disabled{opacity:.45;cursor:default}
 .mapbox svg{display:block;width:100%;height:auto;min-width:960px;touch-action:manipulation;user-select:none}
 .hx{fill:var(--ground);stroke:rgba(0,0,0,.10);stroke-width:.5;cursor:pointer}
 .hx:hover{stroke:var(--ink);stroke-width:1.2}
+.hx.g-rough{fill:var(--g-rough)}.hx.g-woods{fill:var(--g-woods)}.hx.g-marsh{fill:var(--g-marsh)}.hx.g-high{fill:var(--g-high)}
+.wk{fill:none;pointer-events:none;stroke-linecap:round}
+.wk.ditch{stroke:var(--w-earth);stroke-width:1.6;stroke-dasharray:2 1.5}
+.wk.bank{stroke:var(--w-earth);stroke-width:2.4}
+.wk.palisade{stroke:var(--w-timber);stroke-width:2.2}
+.wk.wall{stroke:var(--w-stone);stroke-width:3}
+.wk.gate{stroke:var(--warn);stroke-width:2.6}.wk.gate.open{stroke-dasharray:1.5 1.5}
+.wk.breached{opacity:.35;stroke-dasharray:1 2}
+.hw{font:700 6px var(--mono);fill:var(--w-timber);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.hw.breached{opacity:.35}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.78rem;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border:1px solid var(--line);vertical-align:-2px;margin-right:4px}
 .uh{stroke:var(--panel);stroke-width:.7;pointer-events:none}
 .uh.s0{fill:var(--side0)}.uh.s1{fill:var(--side1)}
 .uh.front{stroke:var(--ink);stroke-width:1.1}
@@ -103,8 +121,12 @@ legend{padding:0}
         <h2 id="h-map">The field</h2>
         <span class="muted" id="map-scale"></span>
       </div>
+      <div class="row">
+        <div style="flex:2 1 220px"><label for="sel-tool">Clicking the map</label><select id="sel-tool"></select></div>
+      </div>
       <output class="msg" id="msg"></output>
       <div class="mapbox" id="map" title="Click a hex to place or move the selected unit"></div>
+      <div class="legend" id="legend"></div>
       <p class="muted" style="margin:0">Each unit is a block of hexes along its front (the dark edge), facing the arrow. Close order holds 40 men a hex, open order 20. Units touching across a front fight; archers shoot at the nearest enemy in range in front of them.</p>
     </section>
 
@@ -142,6 +164,20 @@ legend{padding:0}
         <div><label for="in-side1">Side B</label><input type="text" id="in-side1"></div>
       </div>
 
+      <fieldset id="wx-box">
+        <legend class="sr">Weather and ground</legend>
+        <h2>Weather</h2>
+        <div class="row">
+          <div><label for="sel-wx">Weather</label><select id="sel-wx"></select></div>
+          <div><label for="sel-wind">Wind</label><select id="sel-wind"></select></div>
+        </div>
+        <div class="row">
+          <div><label for="in-mud">Mud (0-3)</label><input type="number" id="in-mud" min="0" max="3"></div>
+          <div><label for="in-snow">Snow (0-4)</label><input type="number" id="in-snow" min="0" max="4"></div>
+        </div>
+        <p class="muted" style="margin:0" id="wx-note"></p>
+      </fieldset>
+
       <h2>Units</h2>
       <ul class="units" id="units" aria-label="Units"></ul>
 
@@ -154,6 +190,7 @@ legend{padding:0}
         <button class="small" id="btn-wider">Wider</button>
         <button class="small" id="btn-undo" title="Put it back where it started this phase">Undo move</button>
         <button class="small" id="btn-remove">Remove</button>
+        <button class="small" id="btn-breach" title="Its front rank hacks at the palisade, gate, stakes or wagons in front of it each exchange">Breach the works</button>
       </div>
 
       <h2>Heroes</h2>
@@ -206,6 +243,18 @@ legend{padding:0}
 
 <script>
 const FD = /*__FIELD_DATA__*/null;
+// Hex helpers and data for the shared works and camp code (templates/works.js, camp.js).
+const WK = FD.works, WXD = FD.weather, WD_WEAPONS = FD.weapons, CAMP_HEX_M = FD.units.hex_m;
+const hkey = h => h[0] + "," + h[1];
+function edgeKey(a, b){ const [x, y] = [a, b].slice().sort((p, q) => p[1] - q[1] || p[0] - q[0]); return hkey(x) + "|" + hkey(y) }
+const NEIGHBOURS = [[[1, 0], [0, -1], [-1, -1], [-1, 0], [-1, 1], [0, 1]], [[1, 0], [1, -1], [0, -1], [-1, 0], [0, 1], [1, 1]]];
+function neighbours([c, r], cols, rows){ return NEIGHBOURS[r & 1].map(([dc, dr]) => [c + dc, r + dr]).filter(([x, y]) => x >= 0 && x < cols && y >= 0 && y < rows) }
+function hexDistance(a, b){
+  const cu = ([c, r]) => { const q = c - (r - (r & 1)) / 2; return [q, r, -q - r] }, x = cu(a), y = cu(b);
+  return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2]));
+}
+/*__WORKS_JS__*/
+/*__CAMP_JS__*/
 /*__UNITS_JS__*/
 
 /* ---------- the page ---------- */
@@ -222,17 +271,30 @@ function newUnit(o){
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, width: o.width || Math.ceil(o.men / FD.units.formations[o.formation].per_hex),
     pos: o.pos, facing: o.facing, state: "steady", charged: false };
 }
+const newField = () => ({ ground: {}, works: { edges: {}, hexes: {} }, weather: { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0 } }, size: SIZE.slice() });
 function fromTravel(h){                            // a battle with the travel map's forces and no units yet: the GM splits them
   const att = h.forces.find(f => f.role === "attacker"), def = h.forces.find(f => f.role === "defender");
   S = { table: S?.table || "towton-1461-all-hits", sides: [def.side, att ? att.side : "Attackers"], units: [], exchange: 0, phase: "setup", sel: null, start: null,
-    log: [], seq: 1, forces: h.forces.map(f => ({ ...f })), from: h, after: null,
+    log: [], seq: 1, forces: h.forces.map(f => ({ ...f })), from: h, after: null, field: newField(), camp: null, tool: "unit",
     msg: `From the travel map: ${h.place}, ${h.day}, ${h.time}. Split each force into units with Add a unit, then place them.` };
+  if (h.weather) S.field.weather = { cond: h.weather.cond, wind: h.weather.wind, ground: { mud: h.weather.ground?.mud || 0, snow: h.weather.ground?.snow || 0 } };
+  if (h.camp && WK.camps[h.camp.kind]?.layout) layCamp(h.camp, def);
+}
+function layCamp(c, def){                          // the defender's camp works at the field map's scale, as far as they were built
+  const ft = c.party || def.type, full = campWorks(c.kind, def.men, ft, SIZE[0], SIZE[1], null, !!c.hauled);
+  const done = c.frac === null || c.frac === undefined ? null : worksLabour(full.works, !!c.hauled) * c.frac;
+  const L = campWorks(c.kind, def.men, ft, SIZE[0], SIZE[1], done, !!c.hauled);
+  S.field.works = L.works;
+  S.camp = { centre: L.centre, radius: L.radius, kind: c.kind };
+  const built = done === null ? "" : ` (${Math.round(c.frac * 100)}% built)`;
+  S.msg += ` The ${WK.camps[c.kind].name.toLowerCase()}${built} is laid out with the defenders' units starting inside it.`;
 }
 const reserve = f => f.men - S.units.filter(u => u.force === f.id).reduce((t, u) => t + u.start, 0);
 const forceOf = u => (S.forces || []).find(f => f.id === u.force) || null;
 const forceSide = f => S.sides[f.role === "attacker" ? 1 : 0];
 function freshState(){
-  S = { table: "towton-1461-all-hits", sides: ["Yorkists", "Lancastrians"], units: [], exchange: 0, phase: "setup", sel: null, start: null, log: [], seq: 1, msg: "", forces: null, from: null, after: null };
+  S = { table: "towton-1461-all-hits", sides: ["Yorkists", "Lancastrians"], units: [], exchange: 0, phase: "setup", sel: null, start: null, log: [], seq: 1, msg: "",
+    forces: null, from: null, after: null, field: newField(), camp: null, tool: "unit" };
   const A = S.sides[0], B = S.sides[1];
   S.units = [
     newUnit({ name: "Billmen", side: A, men: 120, quality: "regular", weapon: "bill", kit: "jack_sallet", formation: "close", width: 3, pos: [22, 20], facing: 0 }),
@@ -246,6 +308,8 @@ function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)) }catch(e){ /*
 function restore(){
   try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j?.units && FD.tables[j.table]) S = j }catch(e){ /* a damaged save: S stays empty and a fresh battle starts */ }
   if (!S) freshState();
+  S.field ??= newField();
+  S.tool ??= "unit";
 }
 const idx = id => S.units.findIndex(u => u.id === id);
 const selUnit = () => S.units.find(u => u.id === S.sel) || null;
@@ -258,7 +322,7 @@ function startPhase(k){                           // a side's move; at the start
   S.phase = k;
   S.units.forEach((u, i) => {
     if (k !== 0 || u.state !== "broken") return;
-    const f = flee(S.units, i, SIZE);
+    const f = flee(S.units, i, SIZE, S.field);
     S.units[i] = f;
     S.log.unshift({ cls: "morale", text: f.state === "fled" ? `${unitName(f)} has fled the field.` : `${unitName(f)} runs.` });
   });
@@ -266,13 +330,13 @@ function startPhase(k){                           // a side's move; at the start
 }
 function tryPlace(u, pos, facing){                // set-up: anywhere it fits
   const i = idx(u.id), moved = { ...u, pos, facing: mod6(facing) };
-  if (!fits(S.units, i, moved, SIZE)){ S.msg = `${u.name} does not fit there.`; return }
+  if (!fits(S.units, i, moved, SIZE, S.field)){ S.msg = `${u.name} does not fit there.`; return }
   S.units[i] = moved;
   S.msg = "";
 }
 function tryMove(u, pos, facing){                 // a move from where it began this phase
   const i = idx(u.id), base = S.units.map((x, k) => (k === i ? { ...S.start[i] } : x));
-  const r = moveUnit(base, i, pos, mod6(facing), SIZE);
+  const r = moveUnit(base, i, pos, mod6(facing), SIZE, S.field);
   if (!r.ok){ S.msg = `${u.name} cannot go there: ${r.why}.`; return }
   S.units[i] = { ...S.start[i], pos, facing: mod6(facing), charged: r.charge };
   S.msg = `${u.name}: ${r.cost} of ${allowance(u)} hexes${r.charge ? ", a charge" : ""}.`;
@@ -303,14 +367,26 @@ function logLines(log, ex){
       if (line) out.push(line);
       continue;
     }
-    const dead = l.dead ? " (" + l.dead + " dead)" : "", fallen = `${l.hits} hit, ${l.down} down${dead}`;
-    if (l.kind === "volley") out.push({ cls: "", text: `${nm(l.att)} shoot at ${nm(l.dfd)}, ${l.dist * FD.units.hex_m} m: ${l.blows} aimed shots, ${fallen}.` });
-    else if (l.kind === "rout") out.push({ cls: "", text: `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.` });
-    else out.push({ cls: "", text: `${nm(l.att)} strike ${nm(l.dfd)}${l.situation === "front" ? "" : " in the " + l.situation}, ${l.men} men: ${l.blows} telling blows, ${fallen}.` });
+    out.push({ cls: "", text: unitLineText(l, nm) });
   }
   return out;
 }
-function otherLine(l, nm){                       // morale and hero lines (null: nothing to show); undefined for blows by units
+function unitLineText(l, nm){                     // a volley, a melee or a rout strike
+  const dead = l.dead ? " (" + l.dead + " dead)" : "", fallen = `${l.hits} hit, ${l.down} down${dead}`;
+  if (l.kind === "volley") return `${nm(l.att)} shoot at ${nm(l.dfd)}, ${l.dist * FD.units.hex_m} m${shotNotes(l)}: ${l.blows} aimed shots, ${fallen}.`;
+  if (l.kind === "rout") return `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.`;
+  const where = l.situation === "front" ? "" : " in the " + l.situation, up = l.penalty ? ", attacking up −" + l.penalty + "%" : "";
+  return `${nm(l.att)} strike ${nm(l.dfd)}${where}, ${l.men} men${up}: ${l.blows} telling blows, ${fallen}.`;
+}
+function shotNotes(l){                            // " (cover -20%, weather -10%)"
+  const bits = [];
+  if (l.cover) bits.push(`cover −${l.cover}%`);
+  if (l.penalty) bits.push(`weather −${l.penalty}%`);
+  if (l.misfire) bits.push(`${l.misfire}% misfire`);
+  return bits.length ? ` (${bits.join(", ")})` : "";
+}
+function otherLine(l, nm){                       // morale, breach and hero lines (null: nothing to show); undefined for blows by units
+  if (l.kind === "breach") return { cls: "morale", text: `${nm(l.unit)} break through the ${(WK.edge_works[l.work] || WK.hex_works[l.work]).name.toLowerCase()}.` };
   if (l.kind === "morale") return { cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` };
   if (l.kind === "herohit") return { cls: "hero", text: heroHitText(l) };
   if (l.kind === "hero") return l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null;
@@ -332,7 +408,7 @@ function next(){
   if (S.phase === "over") return;
   if (S.phase === "setup"){ S.exchange = 1; startPhase(0); S.msg = `${S.sides[0]} to move.`; return render() }
   if (S.phase === 0){ startPhase(1); S.msg = `${S.sides[1]} to move.`; return render() }
-  const r = exchange(S.units, S.table, dice);
+  const r = exchange(S.units, S.table, dice, S.field);
   S.units = r.units;
   S.log = [...logLines(r.log, S.exchange), ...S.log].slice(0, 400);
   S.exchange += 1;
@@ -414,6 +490,88 @@ function renderAddSide(){                         // a unit is drawn from a forc
   if ([...el.options].some(o => o.value === was)) el.value = was;
 }
 
+/* ---------- ground, works and weather ---------- */
+const EDGE_TOOLS = ["ditch", "bank", "palisade", "gate", "wall"], HEX_TOOLS = ["stakes", "abatis", "wagon", "pavise"];
+function fillTools(){
+  const g = Object.entries(FD.units.ground).map(([k, v]) => `<option value="g:${k}">${esc(v.name)}</option>`).join("");
+  const e = EDGE_TOOLS.map(k => `<option value="e:${k}">${esc(WK.edge_works[k].name)}</option>`).join("");
+  const h = HEX_TOOLS.map(k => `<option value="h:${k}">${esc(WK.hex_works[k].name)}</option>`).join("");
+  $("#sel-tool").innerHTML = `<option value="unit">Place and move units</option><option value="gate">Open or bar a gate</option>`
+    + `<optgroup label="Paint the ground">${g}</optgroup><optgroup label="Works on a hex side (click just inside it, on the high side)">${e}</optgroup><optgroup label="Works in a hex">${h}</optgroup>`;
+  $("#sel-wx").innerHTML = Object.entries(WXD.conditions).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
+  $("#sel-wind").innerHTML = WXD.winds.map(w => `<option value="${w.id}">${esc(w.name)}</option>`).join("");
+  $("#legend").innerHTML = Object.entries(FD.units.ground).filter(([k]) => k !== "open").map(([k, v]) => `<span><i class="g-${k}" style="background:var(--g-${k})"></i>${esc(v.name)}</span>`).join("")
+    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise</span>`;
+}
+function clickSide(e, h){                         // the neighbour across the hex side nearest the click
+  const svg = $("#map svg"), pt = svg.createSVGPoint();
+  pt.x = e.clientX; pt.y = e.clientY;
+  const p = pt.matrixTransform(svg.getScreenCTM().inverse()), [cx, cy] = xy(h);
+  return step(h, mod6(Math.round(Math.atan2(cy - p.y, p.x - cx) * 180 / Math.PI / 60)));
+}
+function useTool(e, h){                           // paint the ground, or build or take away a work
+  const tool = S.tool, [kind, type] = tool.split(":");
+  if (tool === "gate") return toggleGate(h, clickSide(e, h));
+  if (S.phase !== "setup"){ S.msg = "Ground and works are set before the battle starts; gates can be opened or barred at any time."; return }
+  const before = JSON.stringify(S.field);
+  if (kind === "g") paintGround(h, type);
+  else if (kind === "e") toggleEdge(h, clickSide(e, h), type);
+  else toggleHex(h, type);
+  const blocked = S.units.find((u, i) => !fits(S.units, i, u, SIZE, S.field));
+  if (blocked){ S.field = JSON.parse(before); S.msg = `Not there: ${blocked.name} could not stand on it.`; return }
+  S.msg = "";
+}
+function paintGround(h, kind){
+  if (kind === "open") delete S.field.ground[hkey(h)];
+  else S.field.ground[hkey(h)] = kind;
+}
+function toggleEdge(h, n, type){
+  const k = edgeKey(h, n), items = S.field.works.edges[k] || [], at = items.findIndex(it => it.type === type);
+  if (at >= 0) items.splice(at, 1);
+  else {
+    const it = { type, progress: 0 };
+    if (WK.edge_works[type].height) it.high = hkey(h);
+    if (type === "gate") Object.assign(it, { open: false, inside: hkey(h) });
+    items.push(it);
+  }
+  if (items.length) S.field.works.edges[k] = items;
+  else delete S.field.works.edges[k];
+}
+function toggleHex(h, type){
+  const k = hkey(h), cur = S.field.works.hexes[k];
+  if (cur?.type === type) delete S.field.works.hexes[k];
+  else S.field.works.hexes[k] = { type, progress: 0 };
+}
+function toggleGate(h, n){
+  const g = (S.field.works.edges[edgeKey(h, n)] || []).find(it => it.type === "gate");
+  if (!g){ S.msg = "There is no gate on that side: click just inside the gate."; return }
+  const was = g.open;
+  g.open = !g.open;
+  if (S.units.some((u, i) => !fits(S.units, i, u, SIZE, S.field))){ g.open = was; S.msg = "Not while a unit stands in the gateway."; return }
+  S.msg = g.open ? "The gate is open." : "The gate is barred.";
+}
+function weatherNote(){                           // what today's weather and ground do
+  const w = S.field.weather, c = WXD.conditions[w.cond], wind = WXD.winds.find(x => x.id === w.wind), out = [];
+  if (c.visibility) out.push(`no aiming beyond ${Math.floor(c.visibility / FD.units.range_scale)} hexes (${c.visibility * FD.battle_hex_m} m)`);
+  if (WXD.battle.string_wet[c.wet]) out.push(`bows and crossbows −${WXD.battle.string_wet[c.wet]}% (wet strings)`);
+  if (wind.missile) out.push(`missiles −${wind.missile}% (${wind.name.toLowerCase()})`);
+  if (c.wet) out.push("firearms may misfire");
+  if (deepGoing(w.ground)) out.push(`deep going: +${deepGoing(w.ground)} movement a hex`);
+  return out.length ? out.join("; ") + "." : "No effect on the fighting.";
+}
+function renderWeather(){
+  const w = S.field.weather;
+  $("#sel-wx").value = w.cond; $("#sel-wind").value = w.wind;
+  $("#in-mud").value = w.ground.mud || 0; $("#in-snow").value = w.ground.snow || 0;
+  $("#wx-note").textContent = weatherNote();
+  $("#sel-tool").value = S.tool;
+}
+function setWeather(){
+  const lvl = (id, hi) => Math.max(0, Math.min(hi, Number.parseInt($(id).value, 10) || 0));
+  S.field.weather = { cond: $("#sel-wx").value, wind: $("#sel-wind").value, ground: { mud: lvl("#in-mud", WXD.ground.mud_max), snow: lvl("#in-snow", WXD.ground.snow_max) } };
+  render();
+}
+
 /* ---------- heroes ---------- */
 function rollerFighters(){                        // the wound roller's fighters still able to fight, not yet with a unit here
   let j = null;
@@ -492,17 +650,39 @@ function unitSvg(u){
   g += `<text class="ulabel" x="${x.toFixed(1)}" y="${(y - 8).toFixed(1)}">${esc(u.name)} ${u.men}${star}</text></g>`;
   return g;
 }
+const HEX_GLYPH = { stakes: "\u2715", abatis: "\u2733", wagon: "\u25ad", pavise: "\u25ae" };
+function worksSvg(){                              // edge works along hex sides, hex works as marks in their hexes
+  let g = "";
+  for (const [k, items] of Object.entries(S.field.works.edges || {})){
+    const [a, b] = k.split("|").map(x => x.split(",").map(Number)), A = xy(a), B = xy(b);
+    const mx = (A[0] + B[0]) / 2, my = (A[1] + B[1]) / 2, len = Math.hypot(B[0] - A[0], B[1] - A[1]);
+    const px = -(B[1] - A[1]) / len * R / 2, py = (B[0] - A[0]) / len * R / 2;
+    for (const it of items){
+      const cls = `wk ${it.type}${it.open ? " open" : ""}${intact("edge", it) ? "" : " breached"}`;
+      g += `<line class="${cls}" x1="${(mx + px).toFixed(1)}" y1="${(my + py).toFixed(1)}" x2="${(mx - px).toFixed(1)}" y2="${(my - py).toFixed(1)}"/>`;
+    }
+  }
+  for (const [k, it] of Object.entries(S.field.works.hexes || {})){
+    const [x, y] = xy(k.split(",").map(Number));
+    g += `<text class="hw${intact("hex", it) ? "" : " breached"}" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${HEX_GLYPH[it.type] || "?"}</text>`;
+  }
+  return g;
+}
 function renderMap(){
   let hx = "";
-  for (let r = 0; r < SIZE[1]; r++) for (let c = 0; c < SIZE[0]; c++) hx += `<polygon class="hx" data-h="${c},${r}" points="${pts(xy([c, r]))}"/>`;
+  const G = S.field.ground || {};
+  for (let r = 0; r < SIZE[1]; r++) for (let c = 0; c < SIZE[0]; c++){
+    const kind = G[c + "," + r], cls = kind && kind !== "open" ? " g-" + kind : "";
+    hx += `<polygon class="hx${cls}" data-h="${c},${r}" points="${pts(xy([c, r]))}"/>`;
+  }
   const units = S.units.map(unitSvg).join(""), W = HW * (SIZE[0] + 0.5), H = 1.5 * R * (SIZE[1] - 1) + 2 * R;
-  $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}">${hx}${units}</svg>`;
+  $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}">${hx}${worksSvg()}${units}</svg>`;
   $("#map-scale").textContent = `${SIZE[0]} × ${SIZE[1]} hexes · ${FD.units.hex_m} m a hex · an exchange is about a minute`;
 }
 function unitMeta(u){
   if (u.state === "fled") return "fled";
-  const down = u.down ? " · " + u.down + " down" : "";
-  return `${u.men}/${u.start} · ${u.state}${down}`;
+  const down = u.down ? " · " + u.down + " down" : "", br = u.breach ? " · breaching" : "";
+  return `${u.men}/${u.start} · ${u.state}${down}${br}`;
 }
 function renderUnits(){
   $("#units").innerHTML = S.units.map(u => `<li data-id="${u.id}" aria-current="${u.id === S.sel}" tabindex="0"><span class="dot" style="background:var(--side${sideNo(u)})"></span><span><b>${esc(u.name)}</b> <span class="muted">${esc(u.side)}</span></span><span class="meta">${unitMeta(u)}</span></li>`).join("") || `<li class="muted">No units. Add one below.</li>`;
@@ -513,6 +693,8 @@ function renderSel(){
   ["#btn-left", "#btn-right"].forEach(b => $(b).disabled = !u || (!setup && u.side !== moving()));
   ["#btn-narrow", "#btn-wider", "#btn-remove"].forEach(b => $(b).disabled = !u || !setup);
   $("#btn-undo").disabled = !u || setup || u.side !== moving();
+  $("#btn-breach").disabled = !u || S.phase === "over" || u.state === "broken" || u.state === "fled";
+  $("#btn-breach").textContent = u?.breach ? "Stop breaching" : "Breach the works";
   if (!u){ $("#sel-info").innerHTML = ""; return }
   const f = FD.units.formations[u.formation], w = FD.weapons[u.weapon];
   const reach = "range" in w ? `range ${w.range.map(x => Math.round(x / FD.units.range_scale)).join(" / ")} hexes` : `reach ${w.reach || 1}`;
@@ -541,7 +723,7 @@ function renderPhase(){
   ["#in-side0", "#in-side1"].forEach(b => $(b).disabled = S.phase !== "setup" || !!S.forces);
 }
 function render(){
-  renderMap(); renderUnits(); renderSel(); renderPhase(); renderAfter(); renderForces(); renderHeroes();
+  renderMap(); renderUnits(); renderSel(); renderPhase(); renderAfter(); renderForces(); renderHeroes(); renderWeather();
   $("#msg").textContent = S.msg || "";
   $("#log").innerHTML = S.log.map(l => `<li class="${l.cls}">${esc(l.text)}</li>`).join("");
   $("#in-side0").value = S.sides[0]; $("#in-side1").value = S.sides[1];
@@ -564,7 +746,7 @@ function reshape(dw){                            // set-up: a wider or narrower 
   const hexes = Math.ceil(Math.max(1, u.men) / FD.units.formations[u.formation].per_hex);
   const width = Math.max(1, Math.min(hexes, Math.min(u.width, hexes) + dw)), i = idx(u.id), w = { ...u, width };
   if (width === Math.min(u.width, hexes)) S.msg = dw > 0 ? `${u.name} is already in one rank of hexes.` : `${u.name} is already one hex wide.`;
-  else if (fits(S.units, i, w, SIZE)){ S.units[i] = w; S.msg = "" }
+  else if (fits(S.units, i, w, SIZE, S.field)){ S.units[i] = w; S.msg = "" }
   else S.msg = "No room for that shape there.";
   render();
 }
@@ -578,12 +760,20 @@ function addUnit(){
   }
   const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, force: f ? f.id : null, men, quality: $("#sel-quality").value, weapon: $("#sel-weapon").value,
     kit: $("#sel-kit").value, formation: $("#sel-form").value, mounted: $("#chk-mounted").checked, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
-  for (let r = 2; r < SIZE[1] - 2; r++){                // the first free spot down its side's edge
-    const at = { ...u, pos: [k ? SIZE[0] - 8 : 7, r] };
-    if (fits([...S.units, at], S.units.length, at, SIZE)){ S.units.push(at); S.sel = at.id; S.msg = `${at.name} added; click the map to place it.`; $("#in-name").value = ""; return render() }
+  for (const pos of startSpots(k)){                  // inside the camp for its defenders, else the first free spot down its side's edge
+    const at = { ...u, pos };
+    if (fits([...S.units, at], S.units.length, at, SIZE, S.field)){ S.units.push(at); S.sel = at.id; S.msg = `${at.name} added; click the map to place it.`; $("#in-name").value = ""; return render() }
   }
   S.msg = "No room for it along the edge; make room or narrow it.";
   render();
+}
+function startSpots(k){
+  const edge = [];
+  for (let r = 2; r < SIZE[1] - 2; r++) edge.push([k ? SIZE[0] - 8 : 7, r]);
+  if (k || !S.camp) return edge;
+  const inside = [];
+  for (let r = 0; r <= S.camp.radius; r++) inside.push(...ringWalk(S.camp.centre, r));
+  return [...inside, ...edge];
 }
 function newBattle(){                            // back to set-up: the travel map's forces again, or the starting units
   if (S.from) fromTravel(S.from);
@@ -604,7 +794,28 @@ function init(){
   restore();
   HANDOFF = readHandoff();
   fillChoices();
-  $("#map").addEventListener("click", e => { const p = e.target.closest(".hx"); if (p) clickHex(p.dataset.h.split(",").map(Number)) });
+  fillTools();
+  $("#map").addEventListener("click", e => {
+    const p = e.target.closest(".hx"); if (!p) return;
+    const h = p.dataset.h.split(",").map(Number);
+    if (S.tool === "unit") return clickHex(h);
+    useTool(e, h);
+    render();
+  });
+  let painting = false;
+  $("#map").addEventListener("pointerdown", e => { painting = S.tool.startsWith("g:") && S.phase === "setup" });
+  $("#map").addEventListener("pointerup", () => { painting = false });
+  $("#map").addEventListener("pointermove", e => {
+    const p = painting && e.buttons ? e.target.closest(".hx") : null;
+    if (!p) return;
+    const h = p.dataset.h.split(","), k = h.join(","), kind = S.tool.slice(2);
+    if ((S.field.ground[k] || "open") === kind) return;
+    useTool(e, h.map(Number));
+    renderMap();
+  });
+  $("#sel-tool").onchange = e => { S.tool = e.target.value; S.msg = ""; render() };
+  ["#sel-wx", "#sel-wind", "#in-mud", "#in-snow"].forEach(id => { $(id).onchange = setWeather });
+  $("#btn-breach").onclick = () => { const u = selUnit(); if (u){ u.breach = !u.breach; S.msg = u.breach ? `${u.name} will hack at the works in front of it each exchange.` : `${u.name} stops breaching.`; render() } };
   $("#units").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; S.msg = ""; render() } });
   $("#units").addEventListener("keydown", e => { if (e.key === "Enter"){ const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; render() } } });
   $("#btn-next").onclick = next;
