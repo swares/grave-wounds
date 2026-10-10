@@ -953,7 +953,7 @@ function sevTiers(mech, zone, wid){
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works})) }catch(e){} }
+function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,addSide:S.addSide})) }catch(e){} }
 function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); return true } }catch(e){} return false }
 
 /* ---------- body figure ---------- */
@@ -1254,10 +1254,20 @@ const exLink = e => e.image ? `<a class="exlink" href="${commonsUrl(e.image.file
 const exFigure = (conflict, e, size) => FIG.svg({ kit: KITS[e.kit], weapon: DATA.weapons[e.weapon], look: FIG.lookFor(conflict, e), size, title: e.name });
 const charFigure = (c, size) => FIG.svg({ kit: KITS[c.kit || "none"], weapon: c.weapon ? DATA.weapons[c.weapon] : null, look: c.look || {}, size, title: c.name,
   wounds: c.wounds.filter(w => !w.stopped).map(w => ({ loc: w.loc, sev: w.sev })) });
+function readyToPlace(c){          // while setting up (or Free placement): the next map click puts him there
+  if (!c || (S.turn && !S.freePlace) || S.workMode) return;
+  S.placing = c.id; S.mapMsg = `Placing ${attr(c.name)}: click an empty hex on the battle map.`;
+}
+function placeButton(c){          // the card's Place on map button, while setting up
+  if (S.turn && !S.freePlace) return "";
+  const on = S.placing === c.id, label = on ? "Placing…" : "Place on map";
+  return `<button class="small" data-act="place" aria-pressed="${on}" title="Then click an empty hex on the battle map">${label}</button>`;
+}
 function selectChar(i){            // make this casualty the defender
   S.active = i;
   if (S.attacker === i) S.attacker = -1;
   const c = S.chars[i];
+  readyToPlace(c);
   if (c && c.kit){ S.armor = c.kit; $("#sel-armor").value = c.kit }
   renderChars();
 }
@@ -1681,9 +1691,12 @@ function setupHandoff(){                     // a camp or position sent from the
   const n = Math.min(men, 8);
   S.chars = Array.from({ length: n }, (_, i) => { const c = newChar(`${h.force.name} ${i + 1}`, "none", null, {}, h.force.side); c.pos = spots[i]; return c });
   S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0;
+  S.addSide = h.force.side === "Attackers" ? "Defenders" : "Attackers";    // Add now brings in the other side
   const campName = h.camp ? WK.camps[h.camp].name.toLowerCase() : "no camp";
   S.pending = [`Set up from the travel map: ${h.force.name} at ${h.place} (${campName}), day ${h.day}, ${h.time}`];
-  S.mapMsg = `${n < men ? `${n} of ${men} men placed` : `${n} men placed`} inside the ${h.camp ? campName : "position"}${L.fits ? "" : " (cut down to fit the map)"}. Add the attackers with Add; they start at the far edge, facing the gate.`;
+  const placed = n < men ? n + " of " + men + " men placed" : n + " men placed";
+  const where = h.camp ? campName : "position", cut = L.fits ? "" : " (cut down to fit the map)";
+  S.mapMsg = `${placed} inside the ${where}${cut}. Add the attackers with Add (they join the side "${S.addSide}" and start at the far edge, facing the gate); click a fighter, on the map or with Place on map, then a hex to move him.`;
   try{ localStorage.removeItem("gravewounds-handoff") }catch(e){}
   S.handoff = null;
   renderChars();
@@ -1816,6 +1829,7 @@ function renderChars(){
         <button class="small" data-act="attacker" aria-pressed="${isAtt}" ${incap ? 'disabled title="This fighter cannot attack now"' : ""}>${isAtt ? "Attacking" : "Attacker"}</button>
         <button class="small" data-act="select" aria-pressed="${isDef}">${isDef ? "Defending" : "Defender"}</button>
         <button class="small" data-act="hand" title="Weapon hand">${(c.hand || "R") === "R" ? "Right-handed" : "Left-handed"}</button>
+        ${placeButton(c)}
         <button class="small" data-act="remove">Remove</button></div>
       <div class="charid">${charFigure(c, 104)}<div style="display:flex;flex-direction:column;gap:6px">
         <div class="wears">Wears: ${kitName(c.kit || "none")}${c.weapon ? " · Fights with: " + DATA.weapons[c.weapon].name : ""}</div>
@@ -1838,6 +1852,12 @@ $("#chars").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   const ci = +b.closest(".char").dataset.i, c = S.chars[ci], act = b.dataset.act;
   if (act === "select"){ selectChar(ci) }
+  else if (act === "place"){
+    if (S.placing === c.id){ S.placing = null; S.mapMsg = "" }
+    else readyToPlace(c);
+    renderChars();
+    $("#map-panel").scrollIntoView({ block: "nearest" });
+  }
   else if (act === "attacker"){ setAttacker(ci) }
   else if (act === "hand"){ c.hand = (c.hand || "R") === "R" ? "L" : "R"; renderChars() }
   else if (act === "leader"){                // one leader per side
@@ -1938,7 +1958,7 @@ function init(){
   };
   $("#sel-weapon").onchange = e => { S.weapon = e.target.value; renderMods(); syncArmor(); shadeFigure(); renderTable() };
   $("#btn-roll").onclick = rollHit;
-  $("#btn-add").onclick = () => { const n = $("#in-name").value.trim() || `Combatant ${S.seq}`; S.chars.push(newChar(n, S.armor)); $("#in-name").value = ""; selectChar(S.chars.length - 1) };
+  $("#btn-add").onclick = () => { const n = $("#in-name").value.trim() || `Combatant ${S.seq}`; S.chars.push(newChar(n, S.armor, null, {}, S.addSide || "Side A")); $("#in-name").value = ""; selectChar(S.chars.length - 1) };
   $("#in-name").addEventListener("keydown", e => { if (e.key === "Enter") $("#btn-add").click() });
   $("#btn-apply").onclick = () => {
     if (!S.hit) return;
