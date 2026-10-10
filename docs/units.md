@@ -189,11 +189,43 @@ A man wounded twice is counted once. **Back to the travel map** (for a battle se
 there) takes the dead off each force and adds its wounded to its sick. The numbers are in
 `data/units.yaml` (`aftermath`) and `data/disease.yaml` (`wounds`).
 
+## Heroes
+
+Named fighters from the wound roller can join a unit (**Heroes**, during set-up). Each
+keeps his own attack and defence (from his experience: green 40/25, regular 50/35, veteran
+60/45, and the GM can change them), his Nerve, weapon and armour. He is extra to the
+unit's men. Where he stands decides what he does:
+
+- **Front rank** (a hand weapon): whenever his unit fights hand to hand, he makes his own
+  telling attempts, three times a ranker's (he seeks the fight), with his own attack, and
+  the blows on his unit's front fall on him twice as often as on any man of its front rank.
+- **Shooting** (a missile weapon): whenever his unit shoots, he shoots three times a
+  ranker's aimed shots with his own attack. Missiles at his unit fall on him as on any of
+  its men, and in contact he is in its front rank like a front-rank hero, but does not
+  strike.
+- **Behind** (commanding): only at risk if his unit routs.
+
+His wounds use the full rules: location, mechanism, severity from the margin, his own
+armour, his own parry. A serious or critical wound calls for his stop check against his
+Nerve; a failure puts him down for the rest of the battle. A wound that kills within rounds
+kills him. A **leader** gives his unit +10 morale while he is up, and −20 once he is down.
+A unit with a hero still up shows a star on the map.
+
+After the battle, **Heroes' wounds to the roller** puts each wound on his record in the
+wound roller (with its bleeding, pain and clock), and marks him out of the fight if he went
+down. A duel between two heroes facing each other is not fought here: take it to the roller.
+`python3 -m gravewounds units` shows how heroes fare:
+
+| A hero leading billmen in jacks, until one side breaks | Wounded | Down | Killed | Men he puts down |
+|---|---|---|---|---|
+| Knight in mail | 48% | 14% | 0% | 0.3 |
+| Knight in plate | 22% | 0% | 0% | 0.3 |
+| Champion, no armour | 69% | 28% | 2% | 0.3 |
+
+A hero matters most through morale and through what happens to him: in a press of hundreds,
+one man fells few. The numbers are in `data/units.yaml` (`heroes`).
+
 ## Still to come
 
-- **Heroes in units:** a named fighter from the wound roller in a unit's front rank strikes
-  with his own skill and can be struck like any man there, with his wounds on his record; a
-  duel with an enemy hero opposite goes to the roller. A hero with a missile weapon shoots
-  with his own skill. A leader adds to his unit's morale while he is up.
 - **Works and weather on the field map:** ditches, banks, stakes and palisades, and rain
   and wind on the archery, from the battle map's rules.

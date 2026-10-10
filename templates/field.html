@@ -72,6 +72,7 @@ button:disabled{opacity:.45;cursor:default}
 .log li{border-left:3px solid var(--line);padding:1px 0 1px 8px}
 .log li.head{border-left-color:var(--steel);font-weight:700}
 .log li.morale{border-left-color:var(--warn)}
+.log li.hero{border-left-color:var(--blood)}
 fieldset{border:0;margin:0;padding:0;min-width:0}
 .banner{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:1px solid var(--line);border-left:3px solid var(--steel);border-radius:3px;padding:8px 10px;font-size:.9rem}
 .banner[hidden]{display:none}
@@ -79,6 +80,9 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .forces .meta{float:right;font:500 .75rem var(--mono);color:var(--muted)}
 .after{font-size:.9rem;margin:0;padding-left:1.1rem}
 .after li{margin:2px 0}
+.heroes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.9rem}
+.heroes li{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:3px;padding:5px 8px}
+.heroes .meta{margin-left:auto;font:500 .75rem var(--mono);color:var(--muted);text-align:right}
 legend{padding:0}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -120,7 +124,10 @@ legend{padding:0}
       <div id="after-box" hidden>
         <h2>After the battle</h2>
         <ul class="after" id="after"></ul>
-        <div class="toolbar"><button id="btn-back" hidden title="Take the dead off the forces and the wounded to their camps">Back to the travel map</button></div>
+        <div class="toolbar">
+          <button id="btn-back" hidden title="Take the dead off the forces and the wounded to their camps">Back to the travel map</button>
+          <button id="btn-heroes-back" hidden title="Put the heroes' wounds on their records in the wound roller">Heroes' wounds to the roller</button>
+        </div>
       </div>
       <div id="forces-box" hidden>
         <h2>Forces from the travel map</h2>
@@ -148,6 +155,27 @@ legend{padding:0}
         <button class="small" id="btn-undo" title="Put it back where it started this phase">Undo move</button>
         <button class="small" id="btn-remove">Remove</button>
       </div>
+
+      <h2>Heroes</h2>
+      <p class="muted" style="margin:0" id="heroes-note">Named fighters from the wound roller can join a unit: in its front rank, shooting with it, or behind it. They fight with their own skill, and their wounds go back to the roller.</p>
+      <ul class="heroes" id="heroes"></ul>
+      <fieldset id="hero-box">
+        <legend class="sr">Add a hero</legend>
+        <div class="row">
+          <div><label for="sel-hero">Fighter</label><select id="sel-hero"></select></div>
+          <div><label for="sel-hero-unit">With unit</label><select id="sel-hero-unit"></select></div>
+        </div>
+        <div class="row">
+          <div><label for="sel-hero-role">Place</label><select id="sel-hero-role">
+            <option value="front">Front rank (strikes)</option><option value="ranged">Shooting</option><option value="behind">Behind (commands)</option></select></div>
+          <div><label for="in-hero-atk">Attack %</label><input type="number" id="in-hero-atk" min="0" max="150"></div>
+          <div><label for="in-hero-def">Defence %</label><input type="number" id="in-hero-def" min="0" max="150"></div>
+        </div>
+        <div class="toolbar">
+          <label class="check"><input type="checkbox" id="chk-hero-leader"> Leads the unit</label>
+          <button id="btn-add-hero">Add hero</button>
+        </div>
+      </fieldset>
 
       <fieldset id="add-box">
         <legend><h2>Add a unit</h2></legend>
@@ -190,7 +218,7 @@ const dice = {                                     // real dice for play
 };
 let S = null, HANDOFF = null;                      // HANDOFF: a fight sent from the travel map, waiting for the GM
 function newUnit(o){
-  return { id: S.seq++, name: o.name, side: o.side, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, quality: o.quality, weapon: o.weapon,
+  return { id: S.seq++, name: o.name, side: o.side, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, width: o.width || Math.ceil(o.men / FD.units.formations[o.formation].per_hex),
     pos: o.pos, facing: o.facing, state: "steady", charged: false };
 }
@@ -271,12 +299,24 @@ function logLines(log, ex){
   const out = [{ cls: "head", text: `Exchange ${ex}` }];
   for (const l of log){
     if (l.kind === "morale"){ out.push({ cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` }); continue }
+    if (l.kind === "herohit"){ out.push({ cls: "hero", text: heroHitText(l) }); continue }
+    if (l.kind === "hero"){ if (l.blows) out.push({ cls: "hero", text: heroLineText(l, nm) }); continue }
     const dead = l.dead ? " (" + l.dead + " dead)" : "", fallen = `${l.hits} hit, ${l.down} down${dead}`;
     if (l.kind === "volley") out.push({ cls: "", text: `${nm(l.att)} shoot at ${nm(l.dfd)}, ${l.dist * FD.units.hex_m} m: ${l.blows} aimed shots, ${fallen}.` });
     else if (l.kind === "rout") out.push({ cls: "", text: `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.` });
     else out.push({ cls: "", text: `${nm(l.att)} strike ${nm(l.dfd)}${l.situation === "front" ? "" : " in the " + l.situation}, ${l.men} men: ${l.blows} telling blows, ${fallen}.` });
   }
   return out;
+}
+function heroHitText(l){
+  const where = FD.locations[l.loc].name.toLowerCase(), how = l.graze ? "a graze" : `a ${l.sev} wound`;
+  const fate = { dead: "killed", down: "down, out of the fight", up: "fights on" }[l.state];
+  return `${l.name} takes ${how} (${where}): ${fate}.`;
+}
+function heroLineText(l, nm){
+  const dead = l.dead ? " (" + l.dead + " dead)" : "", s = l.blows > 1 ? "s" : "";
+  const verb = l.dist ? `shoots at ${nm(l.dfd)}` : `strikes ${nm(l.dfd)}`;
+  return `${l.name} ${verb}: ${l.blows} telling ${l.dist ? "shot" : "blow"}${s}, ${l.hits} hit, ${l.down} down${dead}.`;
 }
 function standing(k){ return S.units.some(u => u.side === S.sides[k] && u.men > 0 && (u.state === "steady" || u.state === "shaken")) }
 function next(){
@@ -344,6 +384,9 @@ function renderAfter(){
   if (!over) return;
   $("#after").innerHTML = [0, 1].map(k => `<li>${esc(sideAfter(k))}</li>`).join("");
   $("#btn-back").hidden = !S.from || !!S.from.sent;
+  $("#btn-heroes-back").hidden = !allHeroes().length || !!S.heroesSent;
+  const hs = allHeroes().map(h => `<li>${esc(h.name)}: ${h.state === "up" ? "came through" : h.state}${h.wounds.length ? `, ${h.wounds.length} wound${h.wounds.length > 1 ? "s" : ""}` : ", unhurt"}.</li>`);
+  $("#after").innerHTML += hs.join("");
 }
 function renderForces(){
   $("#forces-box").hidden = !S.forces;
@@ -359,6 +402,67 @@ function renderAddSide(){                         // a unit is drawn from a forc
   if ([...el.options].some(o => o.value === was)) el.value = was;
 }
 
+/* ---------- heroes ---------- */
+function rollerFighters(){                        // the wound roller's fighters still able to fight, not yet with a unit here
+  let j = null;
+  try{ j = JSON.parse(localStorage.getItem("gravewounds-chars") || "null") }catch(e){ j = null /* unreadable: no fighters */ }
+  const taken = new Set(allHeroes().map(h => h.id));
+  return (j?.chars || []).filter(c => !taken.has(c.id) && c.state?.id !== "out");
+}
+const allHeroes = () => S.units.flatMap(u => (u.heroes || []).map(h => ({ ...h, unit: u })));
+const heroQuality = c => FD.units.quality[c.rating] || FD.units.quality.regular;
+function heroWeapon(c, u){                       // his own weapon if this battle's tables have it, else his unit's
+  return c.weapon && FD.tables[S.table].weapons.includes(c.weapon) ? c.weapon : u.weapon;
+}
+function heroDefaults(){                          // fill the form from the chosen fighter
+  const c = rollerFighters().find(x => x.id === +$("#sel-hero").value), u = S.units.find(x => x.id === +$("#sel-hero-unit").value);
+  if (!c) return;
+  const q = heroQuality(c);
+  $("#in-hero-atk").value = q.attack; $("#in-hero-def").value = q.defence;
+  $("#chk-hero-leader").checked = !!c.leader;
+  if (u) $("#sel-hero-role").value = "range" in FD.weapons[heroWeapon(c, u)] ? "ranged" : "front";
+}
+function addHero(){
+  const c = rollerFighters().find(x => x.id === +$("#sel-hero").value), u = S.units.find(x => x.id === +$("#sel-hero-unit").value);
+  if (!c || !u){ S.msg = "Choose a fighter from the roller and a unit."; return render() }
+  const weapon = heroWeapon(c, u), role = $("#sel-hero-role").value;
+  if (role === "ranged" && !("range" in FD.weapons[weapon])){ S.msg = `${c.name} has no missile weapon on these tables: put him in the front rank or behind.`; return render() }
+  const num = (id, d) => { const v = Number.parseInt($(id).value, 10); return Number.isFinite(v) ? v : d };
+  const q = heroQuality(c);
+  (u.heroes ??= []).push({ id: c.id, name: c.name, role, attack: num("#in-hero-atk", q.attack), defence: num("#in-hero-def", q.defence), nerve: Number.isFinite(+c.nerve) ? +c.nerve : q.nerve,
+    weapon, kit: FD.kits[c.kit] ? c.kit : "none", leader: $("#chk-hero-leader").checked, state: "up", wounds: [] });
+  S.msg = `${c.name} joins ${u.name}${weapon === c.weapon ? "" : ", with the unit's weapon (his own is not on these tables)"}.`;
+  render();
+}
+function removeHero(id){
+  for (const u of S.units) u.heroes = (u.heroes || []).filter(h => h.id !== id);
+  render();
+}
+function renderHeroes(){
+  const setup = S.phase === "setup", place = { front: "front rank", ranged: "shooting", behind: "behind" };
+  $("#heroes").innerHTML = allHeroes().map(h => {
+    const wounds = h.wounds.length ? ` · ${h.wounds.length} wound${h.wounds.length > 1 ? "s" : ""}` : "";
+    const rm = setup ? `<button class="small" data-hero="${h.id}" aria-label="Remove ${esc(h.name)}">Remove</button>` : "";
+    return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(h.unit.name)} (${esc(h.unit.side)}) · ${place[h.role]}${h.leader ? " · leader" : ""}</span></span><span class="meta">${h.attack}/${h.defence}% · ${h.state}${wounds}</span>${rm}</li>`;
+  }).join("");
+  const fighters = setup ? rollerFighters() : [];
+  $("#hero-box").hidden = !setup;
+  $("#hero-box").disabled = !fighters.length || !S.units.length;
+  const was = [$("#sel-hero").value, $("#sel-hero-unit").value];
+  $("#sel-hero").innerHTML = fighters.map(c => `<option value="${c.id}">${esc(c.name)} (${esc(c.rating || "regular")})</option>`).join("") || `<option value="">${allHeroes().length ? "Every fighter on the roller is with a unit" : "No fighters on the roller"}</option>`;
+  $("#sel-hero-unit").innerHTML = S.units.map(u => `<option value="${u.id}">${esc(u.name)} (${esc(u.side)})</option>`).join("");
+  if ([...$("#sel-hero").options].some(o => o.value === was[0])) $("#sel-hero").value = was[0];
+  if ([...$("#sel-hero-unit").options].some(o => o.value === was[1])) $("#sel-hero-unit").value = was[1];
+  if (!$("#in-hero-atk").value) heroDefaults();
+}
+function heroesToRoller(){                        // their wounds onto their records in the wound roller
+  const heroes = allHeroes().map(h => ({ id: h.id, name: h.name, state: h.state, wounds: h.wounds }));
+  try{ localStorage.setItem("gravewounds-field-heroes", JSON.stringify({ place: S.from?.place || "", heroes })) }catch(e){ S.msg = "Could not save the heroes for the roller (storage is off)."; return render() }
+  S.heroesSent = true;
+  save();
+  location.href = "roller.html";
+}
+
 /* ---------- drawing ---------- */
 const R = 7, HW = Math.sqrt(3) * R;
 const xy = ([c, r]) => [HW * (c + 0.5 * (r & 1)) + HW / 2, 1.5 * R * r + R];
@@ -371,7 +475,8 @@ function unitSvg(u){
   const [x, y] = xy(u.pos), a = -(60 * u.facing + 30) * Math.PI / 180, tip = [x + 11 * Math.cos(a), y + 11 * Math.sin(a)];
   const l = [x + 5 * Math.cos(a + 1.9), y + 5 * Math.sin(a + 1.9)], r = [x + 5 * Math.cos(a - 1.9), y + 5 * Math.sin(a - 1.9)];
   g += `<polygon class="arrow" points="${[tip, l, r].map(p => p.map(v => v.toFixed(1)).join(",")).join(" ")}"/>`;
-  g += `<text class="ulabel" x="${x.toFixed(1)}" y="${(y - 8).toFixed(1)}">${esc(u.name)} ${u.men}</text></g>`;
+  const star = (u.heroes || []).some(h => h.state === "up") ? " \u2605" : "";
+  g += `<text class="ulabel" x="${x.toFixed(1)}" y="${(y - 8).toFixed(1)}">${esc(u.name)} ${u.men}${star}</text></g>`;
   return g;
 }
 function renderMap(){
@@ -423,7 +528,7 @@ function renderPhase(){
   ["#in-side0", "#in-side1"].forEach(b => $(b).disabled = S.phase !== "setup" || !!S.forces);
 }
 function render(){
-  renderMap(); renderUnits(); renderSel(); renderPhase(); renderAfter(); renderForces();
+  renderMap(); renderUnits(); renderSel(); renderPhase(); renderAfter(); renderForces(); renderHeroes();
   $("#msg").textContent = S.msg || "";
   $("#log").innerHTML = S.log.map(l => `<li class="${l.cls}">${esc(l.text)}</li>`).join("");
   $("#in-side0").value = S.sides[0]; $("#in-side1").value = S.sides[1];
@@ -503,6 +608,11 @@ function init(){
   $("#btn-undo").onclick = () => { const u = selUnit(); if (u && S.start){ const i = idx(u.id); S.units[i] = { ...S.start[i] }; S.msg = ""; render() } };
   $("#btn-remove").onclick = () => { const u = selUnit(); if (u){ S.units = S.units.filter(x => x.id !== u.id); S.sel = S.units[0] ? S.units[0].id : null; render() } };
   $("#btn-add").onclick = addUnit;
+  $("#btn-add-hero").onclick = addHero;
+  $("#sel-hero").onchange = heroDefaults;
+  $("#sel-hero-unit").onchange = heroDefaults;
+  $("#heroes").addEventListener("click", e => { const b = e.target.closest("button[data-hero]"); if (b) removeHero(+b.dataset.hero) });
+  $("#btn-heroes-back").onclick = heroesToRoller;
   $("#sel-table").onchange = e => { S.table = e.target.value; const ok = FD.tables[S.table].weapons; S.units.forEach(u => { if (!ok.includes(u.weapon)) u.weapon = ok[0] }); fillChoices(); render() };
   ["#in-side0", "#in-side1"].forEach((id, k) => { $(id).onchange = e => { const old = S.sides[k], v = e.target.value.trim() || old; S.units.forEach(u => { if (u.side === old) u.side = v }); S.sides[k] = v; render() } });
   render();

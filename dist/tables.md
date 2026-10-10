@@ -4424,6 +4424,8 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **Unit morale:** after an exchange a unit checks if it lost the exchange, has 25% of its men down, lost 10% in the exchange, or was struck in flank or rear: d100 against Nerve, +20 while steady, +10 with a leader, -20 if he is down, -20 at half strength, -20 if flanked, -5 a man it lost more than it put down (at most -30). Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +20, no parry, x2 tempo.
 
+**Heroes in units:** a named fighter in the front rank makes 3 times a ranker's telling attempts with his own attack, and blows on the front fall on him 2 times as often as on a ranker there; a shooting hero looses 3 times a ranker's aimed shots. His wounds use the full rules and his own stop check (a failure: down for the battle). A leader adds his unit's leader modifier while he is up.
+
 **After the battle:** a side with no unit standing has lost the field, and its men down there are left behind, dead. A wound fatal in minutes kills unless he is bound in time (10%); one fatal in hours kills unless his camp treats it (no camp 0%, a camp 40%, quarters 60%). The rest are carried to camp and heal on the wound track (Camp disease).
 
 | Quality | Attack | Defence | Nerve |
