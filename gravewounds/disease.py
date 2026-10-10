@@ -211,6 +211,17 @@ def day(d: Data, health: dict, ctx: dict, rng) -> tuple[dict, dict]:
     return h, ev
 
 
+def seeded_d100(seed: int):
+    """A repeatable d100 for simulations and tests (Park-Miller minimal standard generator),
+    the same in Python and JavaScript; play uses real random dice."""
+    state = [max(1, seed % 2147483647)]
+
+    def roll() -> int:
+        state[0] = state[0] * 16807 % 2147483647
+        return state[0] % 100 + 1
+    return roll
+
+
 def simulate(d: Data, did: str, n: int, ctx: dict, rng, days: int = 300) -> dict:
     """n men who have caught `did`, followed until all are healed or dead (for tuning):
     {deaths (% of cases), sick_days (mean days showing)}."""

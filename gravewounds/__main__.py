@@ -62,12 +62,11 @@ def _main(argv=None) -> int:
         return 1
 
     if a.cmd == "disease":
-        from .disease import simulate
-        rnd = random.Random(a.seed)  # NOSONAR - a seeded, repeatable simulation for tuning, not security
+        from .disease import seeded_d100, simulate
         ctx = {"care": "field", "marched": False, "wet_cold": False, "filth": False}
         print("Resting in an ordinary camp (field care, not marching, dry):")
         for did, x in d.disease["diseases"].items():
-            r = simulate(d, did, a.n, ctx, lambda: rnd.randint(1, 100))
+            r = simulate(d, did, a.n, ctx, seeded_d100(a.seed))
             print(f"  {x['name']:<22} deaths {r['deaths']:5.1f}% (records {x['deaths']}%), "
                   f"sick {r['sick_days']:4.1f} days on average, virulence {x['virulence']}")
         return 0
