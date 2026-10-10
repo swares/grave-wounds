@@ -108,7 +108,7 @@ data/
                        (medieval, Visby, modern) by slot, with layered d100 coverage
 gravewounds/                engine: validation, d100 ranges, wound composition, CLI
 tools/blend_tables.py  writes the musket-era all-hits blends
-tools/maps/            builds data/maps.json (conflict locator maps), and the Agincourt and Towton
+tools/maps/            builds data/maps.json (conflict locator maps), and the Agincourt, Towton and Visby
                        campaign maps (data/maps/) and battlefields (data/fields/) with Node
 templates/roller.html  web roller template (data is injected at build)
 build.py               builds dist/
