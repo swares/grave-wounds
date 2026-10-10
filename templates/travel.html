@@ -385,7 +385,10 @@ function plan(m, start, waypoints, ftype, ground = null){
 }
 const hpdAt = (list, i) => (list && list.length ? list[Math.min(i, list.length - 1)] : TER.hours_per_day);
 // opts: {hpdList, ground, speed} (see gravewounds/travel.py schedule)
-const groundAt = (ground, i) => (Array.isArray(ground) ? (ground.length ? ground[Math.min(i, ground.length - 1)] : null) : ground);
+function groundAt(ground, i){                 // one ground for every day, or a list by day (the last repeats)
+  if (!Array.isArray(ground)) return ground;
+  return ground.length ? ground[Math.min(i, ground.length - 1)] : null;
+}
 // opts: {hpdList, ground (one for every day, or a list by day from `day`; the last repeats), speed}
 function schedule(m, path, ftype, day = 1, used = 0, opts = {}){
   const { hpdList = null, ground = null, speed = 100 } = opts;
