@@ -46,8 +46,9 @@ function rollWound(table, wid, kit, margin, critical, rng){   // {severity, leth
     const hit = whole ? layers[0] : layers.find(l => l[1] <= cov && cov <= l[2]);
     final = reduceSeverity(sev, hit ? armorSteps(hit[0], mech, wid) : 0);
   }
-  if (final === "stopped") return { severity: final, lethal: null, graze: false };
-  return { severity: final, lethal: FD.lethal[loc][mech][final], graze: isGraze(margin, critical) };
+  if (final === "stopped") return { severity: final, lethal: null, infection: null, graze: false };
+  const fx = FD.effects[loc][mech][final];
+  return { severity: final, lethal: fx[0], infection: fx[1], graze: isGraze(margin, critical) };
 }
 
 // ---------- blows ----------
@@ -61,16 +62,22 @@ function weaponReach(wid, dist){                   // as gravewounds.combat.weap
 }
 const fieldRange = (wid, hexes) => weaponReach(wid, hexes * UD.range_scale);
 function countBlows(n, rng){ const whole = Math.floor(n); return whole + (rng.random() < n - whole ? 1 : 0) }
-const newTally = () => ({ blows: 0, missed: 0, parried: 0, stopped: 0, hits: 0, light: 0, serious: 0, critical: 0, down: 0, dead: 0 });
+const newTally = () => ({ blows: 0, missed: 0, parried: 0, stopped: 0, hits: 0, light: 0, serious: 0, critical: 0, down: 0, dead: 0, hurt: {} });
+function noteHurt(t, sev, h, down){             // a wounded man: severity, death clock, infection risk, down or not
+  const k = [sev, h.lethal, h.infection, down ? 1 : 0].join("|");
+  t.hurt[k] = (t.hurt[k] || 0) + 1;
+}
 function landWound(att, dfd, margin, critical, rng, t){
   const h = rollWound(att.table, att.weapon, dfd.kit, margin, critical, rng);
   if (h.severity === "stopped"){ t.stopped++; return }
   t.hits++;
   t[h.severity]++;
   if (UD.dead_if.includes(h.lethal)){ t.dead++; t.down++; return }
-  if (h.severity === "light" || h.graze) return;
+  if (h.severity === "light" || h.graze){ noteHurt(t, h.graze ? "light" : h.severity, h, false); return }
   const nerve = quality(dfd.quality).nerve - (h.severity === "critical" ? 10 : 0);
-  if (rng.randint(1, 100) > nerve) t.down++;
+  const down = rng.randint(1, 100) > nerve;
+  if (down) t.down++;
+  noteHurt(t, h.severity, h, down);
 }
 function blows(att, dfd, n, atk, dfn, rng){
   const t = newTally();
@@ -250,19 +257,24 @@ function volleys(units){                         // [{att, dfd, men, dist}]
   return out;
 }
 const sideOfUnit = (u, table) => ({ table, weapon: u.weapon, kit: u.kit, quality: u.quality });
+function takeHurt(u, t){                         // the wounded go onto the unit struck; the tally (for the log) keeps the rest
+  const { hurt, ...rest } = t;
+  for (const [k, n] of Object.entries(hurt)) u.hurt[k] = (u.hurt[k] || 0) + n;
+  return rest;
+}
 function tallyLoss(acc, s, t){ acc.lost[s.dfd] += t.down; acc.dead[s.dfd] += t.dead; acc.dealt[s.att] += t.down }
 function exchange(units, table, rng){            // -> {units, log}
-  const us = units.map(u => ({ ...u })), n = us.length, log = [];
+  const us = units.map(u => ({ ...u, hurt: { ...u.hurt } })), n = us.length, log = [];
   const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false) };
   for (const s of strikes(us)){
     const a = us[s.att], b = us[s.dfd];
-    const t = melee(sideOfUnit(a, table), sideOfUnit(b, table), s.men, rng, { situation: s.situation, charge: !!a.charged && !!a.mounted, shaken: a.state === "shaken", rout: s.rout });
+    const t = takeHurt(b, melee(sideOfUnit(a, table), sideOfUnit(b, table), s.men, rng, { situation: s.situation, charge: !!a.charged && !!a.mounted, shaken: a.state === "shaken", rout: s.rout }));
     tallyLoss(acc, s, t);
     acc.flanked[s.dfd] = acc.flanked[s.dfd] || s.situation === "flank" || s.situation === "rear";
     log.push({ kind: s.rout ? "rout" : "melee", ...s, ...t });
   }
   for (const v of volleys(us)){
-    const t = volley(sideOfUnit(us[v.att], table), sideOfUnit(us[v.dfd], table), v.men, v.dist, rng, 0, form(us[v.dfd]).missile_factor);
+    const t = takeHurt(us[v.dfd], volley(sideOfUnit(us[v.att], table), sideOfUnit(us[v.dfd], table), v.men, v.dist, rng, 0, form(us[v.dfd]).missile_factor));
     tallyLoss(acc, v, t);
     log.push({ kind: "volley", ...v, ...t });
   }
@@ -295,7 +307,7 @@ function routStrike(us, occ, j, table, rng){     // a unit that has just broken 
   for (const i of adjacentUnits(us, occ, j)){
     const a = us[i], b = us[j];
     if (a.side === b.side || out_(a) || b.men <= 0) continue;
-    const t = melee(sideOfUnit(a, table), sideOfUnit(b, table), a.men, rng, { rout: true });
+    const t = takeHurt(b, melee(sideOfUnit(a, table), sideOfUnit(b, table), a.men, rng, { rout: true }));
     const cut = Math.min(t.down, b.men);
     Object.assign(b, { men: b.men - cut, down: b.down + cut, dead: b.dead + Math.min(t.dead, cut) });
     log.push({ kind: "rout", att: i, dfd: j, men: a.men, situation: "rear", rout: true, ...t });
@@ -353,4 +365,38 @@ function flee(units, i, size){                   // a broken unit runs straight 
     u = nxt;
   }
   return u;
+}
+
+// ---------- after the battle (as units.aftermath and disease.wound_case) ----------
+const TR = FD.track;
+const standingUnit = u => u.men > 0 && (u.state === "steady" || u.state === "shaken");
+const trStep = name => TR.steps.indexOf(name);
+function woundCase(sev, lethal, inf, d100){     // a man carried from the field: his case on the wound track
+  const W = TR.wounds, lo = W.fever_after[0], hi = W.fever_after[1];
+  const step = Math.max(trStep(W.start[sev]), trStep(W.clock_step[lethal] || "healed"));
+  return { d: "wound", inc: 0, step, peak: 0, shown: 0, chronic: false, inf, fever: lo + (d100() - 1) % (hi - lo + 1) };
+}
+function diesOfWound(lethal, care, d100){
+  const A = UD.aftermath;
+  if (lethal === "minutes") return d100() > A.saved.minutes;
+  if (lethal === "hours") return d100() > A.saved.hours[care];
+  return false;
+}
+function aftermath(units, care, rng){            // per unit {left, died, cases}; care: each unit's camp care
+  const A = UD.aftermath, d100 = () => rng.randint(1, 100);
+  const up = new Set(units.filter(standingUnit).map(u => u.side));
+  return units.map((u, i) => {
+    const r = { left: 0, died: 0, cases: [] }, room = { 1: Math.max(0, (u.down || 0) - (u.dead || 0)), 0: Math.max(0, u.men) };
+    const abandon = A.left_behind && !up.has(u.side);
+    for (const k of Object.keys(u.hurt || {}).sort((a, b) => (a < b ? -1 : 1))){
+      const [sev, lethal, inf, down] = k.split("|"), n = Math.min(u.hurt[k], room[down]);
+      room[down] -= n;
+      if (down === "1" && abandon){ r.left += n; continue }
+      for (let m = 0; m < n; m++){
+        if (diesOfWound(lethal, care[i], d100)) r.died++;
+        else r.cases.push(woundCase(sev, lethal, inf, d100));
+      }
+    }
+    return r;
+  });
 }

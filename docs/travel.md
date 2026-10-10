@@ -81,8 +81,14 @@ Each force has a number of men and either has tools or doesn't. **Make camp** sp
 time to make a bivouac, a watched camp, a staked camp, a fortified camp, or quarters in a
 village or town. The time depends on the force's size and tools and on whether woods are
 near. A column makes one camp for all its forces (see *Marching together*). Camp work can use 4 evening hours after the march, so a camp made at the end of the
-day costs no marching time. Once an enemy force has marched to within 1 km, **Set up the fight** opens the battle map
-with the camp's works, its men and the enemy laid out. See [works.md](works.md).
+day costs no marching time. Once an enemy force has marched to within 1 km, **Set up the fight** opens a battle page.
+**Fight it on** picks which:
+- **the wound roller**, man by man (up to 8 men a force), with the camp's works laid out
+  on its battle map. See [works.md](works.md).
+- **the field map**, in units: the forces arrive with their fit men, and the GM splits each
+  into units there (billmen, archers, horse). Men left out of every unit stay in reserve.
+  When the battle ends, **Back to the travel map** brings the result home: the dead come
+  off each force, and its wounded join its sick (below). See [units.md](units.md).
 
 ## Disease and camp hygiene
 
@@ -108,6 +114,26 @@ are in `data/disease.yaml` and the printed tables, and the design behind them is
   only the fit go into a fight. Grave and deadly cases are carried on litters, and the
   force marches at 90%, or 50% if it has fewer than two fit men a litter. A force with no
   fit men cannot march at all. Deaths come off the force's strength.
+
+**The wounded.** Men wounded in a battle on the field map are carried to their force's camp
+and heal on the same track, with the same nightly roll for better or worse, but by the
+week: one check every 7 days. A man starts at mending, serious or grave by his wound, and
+at grave if it would kill in hours untreated. Three to five days after the battle each
+wound turns septic or does not, by the infection risk of the wound (5% low, 15% medium,
+30% high; +5 with no camp, −5 in quarters). A septic wound is **wound fever**: a step
+worse, checked every night, and deadly (about 60% die of it in an ordinary camp). Resting
+in an ordinary camp, `python3 -m gravewounds disease` gives:
+
+| Wound | Die | Wound fever | Days unfit |
+|---|---|---|---|
+| Light, low infection risk | 2% | 5% | 0 |
+| Serious, medium risk | 11% | 17% | 8 |
+| Critical, medium risk | 14% | 16% | 10 |
+| Serious and deadly in hours, high risk | 26% | 30% | 9 |
+
+No camp roughly doubles the deaths; quarters in houses roughly halve them. Design
+estimates; the records are in the design doc's disease table (Union pyaemia was 97% fatal;
+Richard I died of an infected crossbow wound eleven days after he was hit).
 
 As a guide, six weeks in a poor bivouac costs a company of 200 about a tenth of its men
 dead, with a third unable to march or fight. A siege camp in a hot summer (poor hygiene, staying put) costs about

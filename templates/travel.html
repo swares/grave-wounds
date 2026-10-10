@@ -191,7 +191,16 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
       <p class="muted" id="camp-est" style="margin:0"></p>
       <div class="toolbar">
         <button id="btn-camp" title="Spend the time to make this camp here">Make camp</button>
-        <button class="small" id="btn-fight" title="Open the wound roller's battle map with these forces (and the camp's works) laid out">Set up a fight here</button>
+      </div>
+      <div class="row">
+        <div style="flex:2 1 200px"><label for="sel-fightmap">Fight it on</label>
+          <select id="sel-fightmap" title="The wound roller fights man by man (up to 8 a force); the field map fights in units">
+            <option value="roller">The wound roller (man by man)</option>
+            <option value="field">The field map (in units)</option>
+          </select></div>
+      </div>
+      <div class="toolbar">
+        <button class="small" id="btn-fight" title="Open the chosen battle page with these forces laid out">Set up a fight here</button>
         <button class="small" id="btn-fight-wait" hidden title="Fight once the camp is finished">Wait for the camp</button>
       </div>
       <p class="muted" id="fight-note" style="margin:0"></p>
@@ -500,7 +509,9 @@ function fightPlan(forces, sel, wait = true){
 /* ---------- camp disease: same rules as gravewounds/disease.py ---------- */
 // A force's health: {cases, immune, had, dead}; cases are the men sick or incubating, one
 // disease each: {d, inc, step, peak (0 once reached), shown, chronic}. rng() returns d100.
+// Men carried from the field map are cases of "wound" (with inf and fever days) or "fever".
 const DZ = DATA.disease;
+const dzProfile = did => DZ.diseases[did] || DZ.wounds[did];
 const newHealth = () => ({ cases: [], immune: {}, had: {}, dead: 0 });
 const copyHealth = h => ({ cases: h.cases.map(c => ({ ...c })), immune: { ...h.immune }, had: { ...h.had }, dead: h.dead });
 const dzStep = name => DZ.steps.indexOf(name);
@@ -575,9 +586,13 @@ function relapses(h, factors, rng){           // men who have had a relapsing di
   }
   return ev;
 }
-const checksToday = (x, c) => (c.chronic ? c.shown % 7 === 0 : c.shown >= (x.checks_from || 0));
+function checksToday(x, c){
+  if (c.chronic) return c.shown % 7 === 0;
+  if (x.every) return c.shown % x.every === 0;
+  return c.shown >= (x.checks_from || 0);
+}
 function recoverCase(c, target, rng){          // one recovery check: "dead", "healed" or "sick"
-  const x = DZ.diseases[c.d], big = DZ.recovery.big, deadly = DZ.steps.length - 1, m = target - x.virulence - rng();
+  const x = dzProfile(c.d), big = DZ.recovery.big, deadly = DZ.steps.length - 1, m = target - x.virulence - rng();
   if (m >= big) c.step -= 2;
   else if (m >= 0) c.step -= 1;
   else if (c.step === deadly) return "dead";
@@ -589,8 +604,20 @@ function recoverCase(c, target, rng){          // one recovery check: "dead", "h
   }
   return c.step <= 0 ? "healed" : "sick";
 }
-function caseDay(c, target, rng, ev){         // one case's day; false if it ends (healed or dead)
-  const x = DZ.diseases[c.d], tally = k => { ev[k][c.d] = (ev[k][c.d] || 0) + 1 };
+function septic(c, care, rng, ev){            // a wound's fever day: it turns septic (wound fever, a step worse) or not
+  const W = DZ.wounds;
+  c.fever = 0;
+  if (rng() > W.fever_chance[c.inf] + W.fever_care[care]) return;
+  c.d = "fever";
+  c.step = Math.min(DZ.steps.length - 1, c.step + 1);
+  ev.shown.fever = (ev.shown.fever || 0) + 1;
+}
+function caseDay(c, target, rng, ev, care = "field"){   // one case's day: "sick" while it lasts, else "healed" or "dead"
+  if (c.fever){
+    c.fever -= 1;
+    if (c.fever === 0) septic(c, care, rng, ev);
+  }
+  const x = dzProfile(c.d), tally = k => { ev[k][c.d] = (ev[k][c.d] || 0) + 1 };
   if (c.inc > 0){
     c.inc -= 1;
     if (c.inc === 0){
@@ -614,7 +641,7 @@ function healthDay(health, ctx, rng){          // a day passes -> {health, event
   const target = DZ.endurance + R.care[ctx.care] + R.activity[ctx.marched ? "marched" : "rest"] + (ctx.wet_cold ? R.wet_cold : 0) + (ctx.filth ? R.filth : 0);
   const h = copyHealth(health), ev = { shown: {}, healed: {}, dead: {} }, keep = [];
   for (const c of h.cases){
-    const out = caseDay(c, target, rng, ev), x = DZ.diseases[c.d];
+    const out = caseDay(c, target, rng, ev, ctx.care), x = dzProfile(c.d);
     if (out === "sick") keep.push(c);
     else if (out === "dead") h.dead += 1;
     else if (x.immune) h.immune[c.d] = (h.immune[c.d] || 0) + 1;
@@ -627,9 +654,9 @@ function healthDay(health, ctx, rng){          // a day passes -> {health, event
 
 /* ---------- state ---------- */
 const KEY = "gravewounds-travel";
-const S = { mapId: Object.keys(DATA.maps)[0], edits: {}, forces: {}, sel: {}, mode: "plan", paint: "forest", seq: 1, msg: "", wx: {}, plague: {} };
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify({ mapId: S.mapId, edits: S.edits, forces: S.forces, sel: S.sel, seq: S.seq, paint: S.paint, wx: S.wx, plague: S.plague })) }catch(e){} }
-function restore(){ try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.mapId && DATA.maps[j.mapId]) Object.assign(S, j, { plague: j.plague || {} }) }catch(e){ /* nothing saved, or unreadable: start fresh */ } }
+const S = { mapId: Object.keys(DATA.maps)[0], edits: {}, forces: {}, sel: {}, mode: "plan", paint: "forest", seq: 1, msg: "", wx: {}, plague: {}, fought: [] };
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify({ mapId: S.mapId, edits: S.edits, forces: S.forces, sel: S.sel, seq: S.seq, paint: S.paint, wx: S.wx, plague: S.plague, fought: S.fought })) }catch(e){} }
+function restore(){ try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.mapId && DATA.maps[j.mapId]) Object.assign(S, j, { plague: j.plague || {}, fought: j.fought || [] }) }catch(e){ /* nothing saved, or unreadable: start fresh */ } }
 const baseMap = () => DATA.maps[S.mapId];
 function curMap(){                           // the map with any painting applied
   const b = baseMap();
@@ -731,7 +758,7 @@ function endDay(f){
   f.fatigue = after; f.day += 1; f.used = 0; f.marched = 0;
 }
 // ----- camp disease (rules in the shared block) -----
-const dzName = did => DZ.diseases[did].name.toLowerCase();
+const dzName = did => dzProfile(did).name.toLowerCase();
 const dzShort = did => dzName(did).split(" (")[0];    // "camp fever (typhus)" -> "camp fever"
 const tallyText = (o, verb) => Object.entries(o).map(([did, n]) => `${n} ${verb} (${dzShort(did)})`);
 function nightHard(w, kind){                  // the night was harder than the shelter: cold and wet for recovery
@@ -1000,7 +1027,7 @@ function renderHealth(f){
   if (c.sick) parts.push(`Sick: ${sickText(f)}.`);
   if (c.incubating) parts.push(`${c.incubating} caught something and will show it soon.`);
   if (c.carried) parts.push(`${c.carried} on litters: the march goes at ${sickMarchPct(c.fit, c.carried)}%.`);
-  if (h.dead) parts.push(`${h.dead} dead of disease so far.`);
+  if (h.dead) parts.push(`${h.dead} dead of disease and wounds so far.`);
   parts.push(`Weekly check: night of ${dateText(next, true)}. Each well man's chance of catching it this week: ${chances.join(", ") || "none"}.`);
   $("#health-note").textContent = parts.join(" ");
 }
@@ -1203,8 +1230,29 @@ function clickForce(id){
   S.sel[S.mapId] = id; S.msg = ""; render();
 }
 let painting = false;
+function applyFieldResult(){                 // a battle fought on the field map: the dead come off, the wounded join the sick
+  let r = null;
+  try{ r = JSON.parse(localStorage.getItem("gravewounds-field-result") || "null") }catch(e){ r = null /* unreadable: nothing to apply */ }
+  if (!r?.forces || !S.forces[r.mapId] || S.fought.includes(r.battle)) return;
+  const lines = [];
+  for (const [id, x] of Object.entries(r.forces)){
+    const f = S.forces[r.mapId].find(o => o.id === +id); if (!f) continue;
+    f.men = Math.max(0, f.men - x.lost);
+    const h = healthOf(f);
+    h.cases.push(...x.cases);
+    for (const k of Object.keys(h.immune)) h.immune[k] = Math.min(h.immune[k], f.men);
+    const note = `Battle at ${r.place}: ${x.lost} dead (${x.killed} killed, ${x.left} left on the field, ${x.died} died of wounds), ${x.cases.length} wounded carried to camp.`;
+    f.log.unshift(note);
+    lines.push(`${f.name}: ${x.lost} dead, ${x.cases.length} wounded`);
+  }
+  S.fought.push(r.battle);
+  S.mapId = r.mapId;
+  S.msg = `The battle at ${r.place} is over. ${lines.join("; ")}.`;
+  try{ localStorage.removeItem("gravewounds-field-result") }catch(e){ /* storage off: the result stays applied once, by its battle id */ }
+}
 function init(){
   restore();
+  applyFieldResult();
   terrainCss(); renderLegend();
   $("#sel-map").innerHTML = Object.values(DATA.maps).map(m => `<option value="${esc(m.id)}">${esc(m.name)}</option>`).join("");
   $("#sel-map").value = S.mapId;
@@ -1272,6 +1320,7 @@ function init(){
   const sendFight = k => {                   // k: which of the fights on offer (0 attack now / the only one, 1 wait)
     const f = selForce(); if (!f) return;
     const p = fightOptions(f)[k]; if (!p || !p.attackers.length) return;
+    if ($("#sel-fightmap").value === "field") return sendField(p);
     const dfd = byId(p.defender), st = campStatus(dfd, p), m = curMap(), today = dayWeather(p.day);
     const brief = o => ({ name: o.name, side: o.side, men: fitOf(o).fit, type: o.type, fatigue: o.fatigue || 0, km: +(hexDist(o.pos, dfd.pos) * m.hex_km).toFixed(1) });   // the sick stay out of it
     const foes = p.attackers.map(byId).map(brief), allies = p.allies.map(byId).map(brief);
@@ -1279,6 +1328,15 @@ function init(){
       camp: st.camp ? st.camp.kind : null, campLabour: st.camp ? st.camp.labour || null : null, party: columnOf(dfd).length > 1 ? colType(dfd) : null, done: st.done, built: st.pct, hauled: !nearWoods(m, dfd.pos), foes, allies, place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day),
       weather: { cond: today.w.cond, wind: today.w.wind, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){}
     location.href = "roller.html";
+  };
+  const sendField = p => {                   // the fight on the field map: the GM splits each force into units there
+    const dfd = byId(p.defender), m = curMap(), today = dayWeather(p.day);
+    const brief = (o, role) => { const c = campHere(o); return { id: o.id, name: o.name, side: o.side, type: o.type, men: fitOf(o).fit, role, care: campCare(c ? c.kind : null), camp: c ? c.kind : null } };
+    const forces = [brief(dfd, "defender"), ...p.allies.map(byId).map(o => brief(o, "ally")), ...p.attackers.map(byId).map(o => brief(o, "attacker"))];
+    try{ localStorage.setItem("gravewounds-field-handoff", JSON.stringify({ from: "travel", battle: `${S.mapId}:${p.day}:${p.used}:${dfd.id}`, mapId: S.mapId, map: m.name || S.mapId,
+      place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day), forces,
+      weather: { cond: today.w.cond, wind: today.w.wind, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){ /* storage off: the field map opens without the forces */ }
+    location.href = "field.html";
   };
   $("#btn-fight").onclick = () => sendFight(0);
   $("#btn-fight-wait").onclick = () => sendFight(1);

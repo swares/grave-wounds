@@ -12,6 +12,7 @@ import math
 import random
 
 from .combat import weapon_reach
+from .disease import wound_case
 from .engine import roll_hit
 from .model import Data
 
@@ -39,7 +40,13 @@ def _count(n: float, rng: random.Random) -> int:
 
 def _new_tally() -> dict:
     return {"blows": 0, "missed": 0, "parried": 0, "stopped": 0, "hits": 0,
-            "light": 0, "serious": 0, "critical": 0, "down": 0, "dead": 0}
+            "light": 0, "serious": 0, "critical": 0, "down": 0, "dead": 0, "hurt": {}}
+
+
+def _hurt(t: dict, sev: str, fx: dict, down: bool) -> None:
+    """Remember a wounded man by severity, death clock, infection risk and whether he is down."""
+    k = f"{sev}|{fx['lethal']}|{fx['infection']}|{1 if down else 0}"
+    t["hurt"][k] = t["hurt"].get(k, 0) + 1
 
 
 def _wound(d: Data, att: dict, dfd: dict, margin: int, critical: bool, rng: random.Random, t: dict) -> None:
@@ -57,10 +64,13 @@ def _wound(d: Data, att: dict, dfd: dict, margin: int, critical: bool, rng: rand
         t["down"] += 1
         return
     if sev == "light" or h["graze"]:
+        _hurt(t, "light" if h["graze"] else sev, h["effects"], False)
         return
     nerve = quality(d, dfd["quality"])["nerve"] - (10 if sev == "critical" else 0)
-    if rng.randint(1, 100) > nerve:
+    down = rng.randint(1, 100) > nerve
+    if down:
         t["down"] += 1
+    _hurt(t, sev, h["effects"], down)
 
 
 def melee(d: Data, att: dict, dfd: dict, men: int, rng: random.Random, situation: str = "front",
@@ -462,18 +472,20 @@ def exchange(d: Data, units: list, table: str, rng) -> tuple[list, list]:
     """One exchange on the field map: every melee and volley at once from the present
     positions, then losses, morale, and a rout strike on any unit that breaks. Returns
     (units, log): log lines are {kind (melee, volley, rout, morale), ...}."""
-    us = [dict(u) for u in units]
+    us = [dict(u, hurt=dict(u.get("hurt", {}))) for u in units]
     lost, dead, dealt, flanked, log = [0] * len(us), [0] * len(us), [0] * len(us), [False] * len(us), []
     for s in strikes(d, us):
         a, b = us[s["att"]], us[s["dfd"]]
         t = melee(d, _side(a, table), _side(b, table), s["men"], rng, situation=s["situation"],
                   charge=bool(a.get("charged")) and bool(a.get("mounted")), shaken=a["state"] == "shaken", rout=s["rout"])
+        t = _take_hurt(b, t)
         _tally(lost, dead, dealt, s, t)
         flanked[s["dfd"]] = flanked[s["dfd"]] or s["situation"] in ("flank", "rear")
         log.append({"kind": "rout" if s["rout"] else "melee", **s, **t})
     for v in volleys(d, us):
         t = volley(d, _side(us[v["att"]], table), _side(us[v["dfd"]], table), v["men"], v["dist"], rng,
                    factor=form(d, us[v["dfd"]])["missile_factor"])
+        t = _take_hurt(us[v["dfd"]], t)
         _tally(lost, dead, dealt, v, t)
         log.append({"kind": "volley", **v, **t})
     occ = occupancy(d, us)
@@ -485,6 +497,14 @@ def exchange(d: Data, units: list, table: str, rng) -> tuple[list, list]:
     for u in us:
         u["charged"] = False
     return us, log
+
+
+def _take_hurt(u: dict, t: dict) -> dict:
+    """Move a tally's wounded onto the unit struck; the tally (for the log) keeps the rest."""
+    t = dict(t)
+    for k, n in t.pop("hurt", {}).items():
+        u["hurt"][k] = u["hurt"].get(k, 0) + n
+    return t
 
 
 def _tally(lost: list, dead: list, dealt: list, s: dict, t: dict) -> None:
@@ -524,7 +544,7 @@ def _rout_strike(d: Data, us: list, occ: dict, j: int, table: str, rng) -> list:
         a, b = us[i], us[j]
         if a["side"] == b["side"] or a["state"] in ("broken", "fled") or a["men"] <= 0 or b["men"] <= 0:
             continue
-        t = melee(d, _side(a, table), _side(b, table), a["men"], rng, rout=True)
+        t = _take_hurt(b, melee(d, _side(a, table), _side(b, table), a["men"], rng, rout=True))
         cut = min(t["down"], b["men"])
         b.update(men=b["men"] - cut, down=b["down"] + cut, dead=b["dead"] + min(t["dead"], cut))
         log.append({"kind": "rout", "att": i, "dfd": j, "men": a["men"], "situation": "rear", "rout": True, **t})
@@ -612,3 +632,48 @@ def flee(d: Data, units: list, i: int, size: tuple) -> dict:
             break
         u = nxt
     return u
+
+
+# ---------- after the battle ----------
+
+def standing(u: dict) -> bool:
+    return u["men"] > 0 and u["state"] in ("steady", "shaken")
+
+
+def aftermath(d: Data, units: list, care: list, rng) -> list:
+    """What becomes of each unit's wounded when the battle ends (units.yaml aftermath). care:
+    each unit's camp care (none, field, shelter). Returns, per unit, {left (down men left on a
+    lost field, dead), died (of wounds before treatment), cases (survivors on the wound
+    track)}. A man wounded twice is counted once: the down are capped at those down and not
+    dead, the walking wounded at the men still on their feet."""
+    am, d100 = d.units["aftermath"], (lambda: rng.randint(1, 100))
+    lost_sides = {u["side"] for u in units} - {u["side"] for u in units if standing(u)}
+    return [_unit_after(d, u, care[i], am["left_behind"] and u["side"] in lost_sides, d100) for i, u in enumerate(units)]
+
+
+def _unit_after(d: Data, u: dict, care: str, abandon: bool, d100) -> dict:
+    """One unit's wounded after the battle: left behind, dead of their wounds, or carried."""
+    r = {"left": 0, "died": 0, "cases": []}
+    room = {"1": max(0, u.get("down", 0) - u.get("dead", 0)), "0": max(0, u["men"])}
+    for k in sorted(u.get("hurt", {})):
+        sev, lethal, inf, down = k.split("|")
+        n = min(u["hurt"][k], room[down])
+        room[down] -= n
+        if down == "1" and abandon:
+            r["left"] += n
+            continue
+        for _ in range(n):
+            if _dies(d.units["aftermath"], lethal, care, d100):
+                r["died"] += 1
+            else:
+                r["cases"].append(wound_case(d, sev, lethal, inf, d100))
+    return r
+
+
+def _dies(am: dict, lethal: str, care: str, d100) -> bool:
+    """A wound that kills in minutes or hours: does it, before help comes?"""
+    if lethal == "minutes":
+        return d100() > am["saved"]["minutes"]
+    if lethal == "hours":
+        return d100() > am["saved"]["hours"][care]
+    return False

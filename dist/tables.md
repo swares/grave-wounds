@@ -4424,6 +4424,8 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **Unit morale:** after an exchange a unit checks if it lost the exchange, has 25% of its men down, lost 10% in the exchange, or was struck in flank or rear: d100 against Nerve, +20 while steady, +10 with a leader, -20 if he is down, -20 at half strength, -20 if flanked, -5 a man it lost more than it put down (at most -30). Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +20, no parry, x2 tempo.
 
+**After the battle:** a side with no unit standing has lost the field, and its men down there are left behind, dead. A wound fatal in minutes kills unless he is bound in time (10%); one fatal in hours kills unless his camp treats it (no camp 0%, a camp 40%, quarters 60%). The rest are carried to camp and heal on the wound track (Camp disease).
+
 | Quality | Attack | Defence | Nerve |
 |---|---|---|---|
 | Green | 40% | 25% | 35 |
@@ -4448,6 +4450,8 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 A case shows after its incubation at mending, climbs a step a day to the peak rolled below, then makes a recovery check each day: d100 against Endurance, plus care (no camp -20, a camp +0, quarters +10), activity (marched -20, rested +10), a cold wet night beyond the shelter -10, poor hygiene -10, less the disease's virulence. Success by 30 or more: two steps better; success: one; failure: no change; failure by 30 or more: one worse. At deadly, any failure kills. Typhus and plague leave survivors immune; ague relapses in marsh country; flux can turn chronic.
 
 Men at serious or worse do not dig or fight. Grave and deadly cases go on litters: the force marches at 90%, or 50% with fewer than 2 fit men a litter, and cannot march with none. Hygiene comes from the camp (bivouac poor, quarters good, others fair) unless the GM sets it. Plague needs the GM's "plague in the region".
+
+**The wounded (from the field map):** a wounded man starts at mending (light), serious (serious) or grave (critical), and at grave if the wound would kill in hours. He makes the same recovery check, but once every 7 days, at virulence -20. 3-5 days after the battle the wound turns septic on d100: low infection risk 5%, medium 15%, high 30% (no camp +5, quarters -5). Wound fever is one step worse and checks every day at virulence 25.
 
 | Disease | Caught from | Shows after | Outbreak chance a week | Peak (d100) | Deaths per case in the records |
 |---|---|---|---|---|---|

@@ -73,6 +73,12 @@ button:disabled{opacity:.45;cursor:default}
 .log li.head{border-left-color:var(--steel);font-weight:700}
 .log li.morale{border-left-color:var(--warn)}
 fieldset{border:0;margin:0;padding:0;min-width:0}
+.banner{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:1px solid var(--line);border-left:3px solid var(--steel);border-radius:3px;padding:8px 10px;font-size:.9rem}
+.banner[hidden]{display:none}
+.forces{list-style:none;margin:0;padding:0;font-size:.9rem;display:flex;flex-direction:column;gap:4px}
+.forces .meta{float:right;font:500 .75rem var(--mono);color:var(--muted)}
+.after{font-size:.9rem;margin:0;padding-left:1.1rem}
+.after li{margin:2px 0}
 legend{padding:0}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -101,9 +107,25 @@ legend{padding:0}
     <section class="panel" aria-labelledby="h-battle">
       <h2 id="h-battle">Battle</h2>
       <div class="phase" id="phase"></div>
+      <div class="banner" id="handoff" hidden>
+        <span id="handoff-text"></span>
+        <button class="small" id="btn-handoff">Set up the battle</button>
+        <button class="small" id="btn-nohandoff">Not now</button>
+      </div>
       <div class="toolbar">
         <button class="primary" id="btn-next">Start the battle</button>
+        <button class="small" id="btn-end" title="Stop here: count the dead, and carry the wounded to camp">End the battle</button>
         <button class="small" id="btn-reset" title="Back to set-up with the starting units">New battle</button>
+      </div>
+      <div id="after-box" hidden>
+        <h2>After the battle</h2>
+        <ul class="after" id="after"></ul>
+        <div class="toolbar"><button id="btn-back" hidden title="Take the dead off the forces and the wounded to their camps">Back to the travel map</button></div>
+      </div>
+      <div id="forces-box" hidden>
+        <h2>Forces from the travel map</h2>
+        <p class="muted" style="margin:0">Split each force into units with <i>Add a unit</i>. Men left out of every unit stay in reserve, out of the fight.</p>
+        <ul class="forces" id="forces"></ul>
       </div>
       <div class="row">
         <div><label for="sel-table">Wound tables</label><select id="sel-table"></select></div>
@@ -131,7 +153,7 @@ legend{padding:0}
         <legend><h2>Add a unit</h2></legend>
         <div class="row">
           <div><label for="in-name">Name</label><input type="text" id="in-name" placeholder="Billmen"></div>
-          <div><label for="sel-side">Side</label><select id="sel-side"></select></div>
+          <div><label for="sel-side" id="lbl-side">Side</label><select id="sel-side"></select></div>
         </div>
         <div class="row">
           <div><label for="in-men">Men</label><input type="number" id="in-men" min="1" value="120"></div>
@@ -166,14 +188,23 @@ const dice = {                                     // real dice for play
   randint(a, b){ return a + crypto.getRandomValues(new Uint32Array(1))[0] % (b - a + 1) },
   random(){ return crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296 }
 };
-let S = null;
+let S = null, HANDOFF = null;                      // HANDOFF: a fight sent from the travel map, waiting for the GM
 function newUnit(o){
-  return { id: S.seq++, name: o.name, side: o.side, men: o.men, start: o.men, down: 0, dead: 0, quality: o.quality, weapon: o.weapon,
+  return { id: S.seq++, name: o.name, side: o.side, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, quality: o.quality, weapon: o.weapon,
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, width: o.width || Math.ceil(o.men / FD.units.formations[o.formation].per_hex),
     pos: o.pos, facing: o.facing, state: "steady", charged: false };
 }
+function fromTravel(h){                            // a battle with the travel map's forces and no units yet: the GM splits them
+  const att = h.forces.find(f => f.role === "attacker"), def = h.forces.find(f => f.role === "defender");
+  S = { table: S?.table || "towton-1461-all-hits", sides: [def.side, att ? att.side : "Attackers"], units: [], exchange: 0, phase: "setup", sel: null, start: null,
+    log: [], seq: 1, forces: h.forces.map(f => ({ ...f })), from: h, after: null,
+    msg: `From the travel map: ${h.place}, ${h.day}, ${h.time}. Split each force into units with Add a unit, then place them.` };
+}
+const reserve = f => f.men - S.units.filter(u => u.force === f.id).reduce((t, u) => t + u.start, 0);
+const forceOf = u => (S.forces || []).find(f => f.id === u.force) || null;
+const forceSide = f => S.sides[f.role === "attacker" ? 1 : 0];
 function freshState(){
-  S = { table: "towton-1461-all-hits", sides: ["Yorkists", "Lancastrians"], units: [], exchange: 0, phase: "setup", sel: null, start: null, log: [], seq: 1, msg: "" };
+  S = { table: "towton-1461-all-hits", sides: ["Yorkists", "Lancastrians"], units: [], exchange: 0, phase: "setup", sel: null, start: null, log: [], seq: 1, msg: "", forces: null, from: null, after: null };
   const A = S.sides[0], B = S.sides[1];
   S.units = [
     newUnit({ name: "Billmen", side: A, men: 120, quality: "regular", weapon: "bill", kit: "jack_sallet", formation: "close", width: 3, pos: [22, 20], facing: 0 }),
@@ -191,7 +222,7 @@ function restore(){
 const idx = id => S.units.findIndex(u => u.id === id);
 const selUnit = () => S.units.find(u => u.id === S.sel) || null;
 const sideNo = u => (u.side === S.sides[0] ? 0 : 1);
-const moving = () => (S.phase === "setup" ? null : S.sides[S.phase]);
+const moving = () => (S.phase === 0 || S.phase === 1 ? S.sides[S.phase] : null);
 const unitName = u => `${u.name} (${u.side})`;
 
 /* ---------- moving ---------- */
@@ -249,6 +280,7 @@ function logLines(log, ex){
 }
 function standing(k){ return S.units.some(u => u.side === S.sides[k] && u.men > 0 && (u.state === "steady" || u.state === "shaken")) }
 function next(){
+  if (S.phase === "over") return;
   if (S.phase === "setup"){ S.exchange = 1; startPhase(0); S.msg = `${S.sides[0]} to move.`; return render() }
   if (S.phase === 0){ startPhase(1); S.msg = `${S.sides[1]} to move.`; return render() }
   const r = exchange(S.units, S.table, dice);
@@ -260,6 +292,71 @@ function next(){
   S.msg = lost.length ? `${lost.map(k => S.sides[k]).join(" and ")} ${verb} no unit left standing.` : "";
   startPhase(0);
   render();
+}
+
+/* ---------- after the battle ---------- */
+function endBattle(){                             // the dead counted; the wounded die, or are carried to camp
+  if (S.phase !== 0 && S.phase !== 1) return;
+  const am = aftermath(S.units, S.units.map(u => forceOf(u)?.care || "field"), dice);
+  S.after = S.units.map((u, i) => ({ id: u.id, killed: u.dead, ...am[i] }));
+  S.phase = "over";
+  S.msg = "The battle is over.";
+  S.log = [{ cls: "head", text: `The battle ends after ${S.exchange - 1} exchanges.` }, ...S.log];
+  render();
+}
+function byStep(cases){                           // "12 mending, 20 serious, 8 grave"
+  const n = {};
+  for (const c of cases) n[c.step] = (n[c.step] || 0) + 1;
+  return Object.keys(n).sort((a, b) => a - b).map(k => n[k] + " " + FD.track.steps[k]).join(", ");
+}
+function sideAfter(k){
+  const t = { killed: 0, left: 0, died: 0, cases: [] };
+  S.units.forEach((u, i) => {
+    if (sideNo(u) !== k) return;
+    const a = S.after[i];
+    t.killed += a.killed; t.left += a.left; t.died += a.died; t.cases.push(...a.cases);
+  });
+  const left = t.left ? `, ${t.left} left on the field` : "";
+  const carried = t.cases.length ? `${t.cases.length} wounded carried to camp (${byStep(t.cases)})` : "no wounded to carry";
+  return `${S.sides[k]}: ${t.killed} killed${left}, ${t.died} died of their wounds before help came; ${carried}.`;
+}
+function travelResult(){                          // per travel-map force: {killed, left, died, lost, cases}
+  const out = {};
+  S.units.forEach((u, i) => {
+    const f = forceOf(u); if (!f) return;
+    const a = S.after[i];
+    out[f.id] ??= { killed: 0, left: 0, died: 0, lost: 0, cases: [] };
+    const x = out[f.id];
+    x.killed += a.killed; x.left += a.left; x.died += a.died; x.cases.push(...a.cases);
+  });
+  for (const x of Object.values(out)) x.lost = x.killed + x.left + x.died;
+  return { battle: S.from.battle, mapId: S.from.mapId, place: S.from.place, forces: out };
+}
+function backToTravel(){
+  try{ localStorage.setItem("gravewounds-field-result", JSON.stringify(travelResult())) }catch(e){ S.msg = "Could not save the result for the travel map (storage is off)."; return render() }
+  S.from.sent = true;
+  save();
+  location.href = "travel.html";
+}
+function renderAfter(){
+  const over = S.phase === "over" && S.after;
+  $("#after-box").hidden = !over;
+  if (!over) return;
+  $("#after").innerHTML = [0, 1].map(k => `<li>${esc(sideAfter(k))}</li>`).join("");
+  $("#btn-back").hidden = !S.from || !!S.from.sent;
+}
+function renderForces(){
+  $("#forces-box").hidden = !S.forces;
+  if (!S.forces) return;
+  $("#forces").innerHTML = S.forces.map(f => `<li><b>${esc(f.name)}</b> <span class="muted">${esc(forceSide(f))} · ${f.role}</span><span class="meta">${f.men} fit · ${reserve(f)} in reserve</span></li>`).join("");
+}
+function renderAddSide(){                         // a unit is drawn from a force (from the travel map) or set on a side
+  const el = $("#sel-side"), was = el.value;
+  $("#lbl-side").textContent = S.forces ? "From force" : "Side";
+  el.innerHTML = S.forces
+    ? S.forces.map(f => `<option value="f:${f.id}">${esc(f.name)} (${reserve(f)} left)</option>`).join("")
+    : S.sides.map((x, k) => `<option value="s:${k}">${esc(x)}</option>`).join("");
+  if ([...el.options].some(o => o.value === was)) el.value = was;
 }
 
 /* ---------- drawing ---------- */
@@ -310,22 +407,28 @@ function renderSel(){
     + `<dt>Moves</dt><dd>${allowance(u)} hexes; turning costs ${turnCost(u)} a step</dd>`;
 }
 function renderPhase(){
-  const ph = S.phase === "setup" ? "Set-up: place and face the units" : `Exchange ${S.exchange}: ${S.sides[S.phase]} to move`;
+  let ph = `Exchange ${S.exchange}: ${S.sides[S.phase]} to move`;
+  if (S.phase === "setup") ph = "Set-up: place and face the units";
+  else if (S.phase === "over") ph = "The battle is over";
   $("#phase").textContent = ph;
+  $("#btn-next").disabled = S.phase === "over";
+  $("#btn-end").hidden = S.phase !== 0 && S.phase !== 1;
   let label = `${S.sides[1]} done: fight`;
   if (S.phase === "setup") label = "Start the battle";
   else if (S.phase === 0) label = `${S.sides[0]} done`;
+  else if (S.phase === "over") label = "Battle over";
   $("#btn-next").textContent = label;
   $("#add-box").disabled = S.phase !== "setup";
   $("#sel-table").disabled = S.phase !== "setup";
-  ["#in-side0", "#in-side1"].forEach(b => $(b).disabled = S.phase !== "setup");
+  ["#in-side0", "#in-side1"].forEach(b => $(b).disabled = S.phase !== "setup" || !!S.forces);
 }
 function render(){
-  renderMap(); renderUnits(); renderSel(); renderPhase();
+  renderMap(); renderUnits(); renderSel(); renderPhase(); renderAfter(); renderForces();
   $("#msg").textContent = S.msg || "";
   $("#log").innerHTML = S.log.map(l => `<li class="${l.cls}">${esc(l.text)}</li>`).join("");
   $("#in-side0").value = S.sides[0]; $("#in-side1").value = S.sides[1];
-  $("#sel-side").innerHTML = S.sides.map(s => `<option>${esc(s)}</option>`).join("");
+  renderAddSide();
+  $("#handoff").hidden = !HANDOFF;
   save();
 }
 function fillChoices(){
@@ -348,8 +451,14 @@ function reshape(dw){                            // set-up: a wider or narrower 
   render();
 }
 function addUnit(){
-  const side = $("#sel-side").value, k = S.sides.indexOf(side), men = Math.max(1, Number.parseInt($("#in-men").value, 10) || 1);
-  const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, men, quality: $("#sel-quality").value, weapon: $("#sel-weapon").value,
+  const pick = $("#sel-side").value, f = pick.startsWith("f:") ? S.forces.find(x => x.id === +pick.slice(2)) : null;
+  const side = f ? forceSide(f) : S.sides[+pick.slice(2)] || S.sides[0], k = S.sides.indexOf(side);
+  let men = Math.max(1, Number.parseInt($("#in-men").value, 10) || 1);
+  if (f){
+    if (reserve(f) <= 0){ S.msg = `${f.name} has no men left to put in a unit.`; return render() }
+    men = Math.min(men, reserve(f));
+  }
+  const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, force: f ? f.id : null, men, quality: $("#sel-quality").value, weapon: $("#sel-weapon").value,
     kit: $("#sel-kit").value, formation: $("#sel-form").value, mounted: $("#chk-mounted").checked, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
   for (let r = 2; r < SIZE[1] - 2; r++){                // the first free spot down its side's edge
     const at = { ...u, pos: [k ? SIZE[0] - 8 : 7, r] };
@@ -358,14 +467,35 @@ function addUnit(){
   S.msg = "No room for it along the edge; make room or narrow it.";
   render();
 }
+function newBattle(){                            // back to set-up: the travel map's forces again, or the starting units
+  if (S.from) fromTravel(S.from);
+  else freshState();
+  fillChoices();
+  render();
+}
+function dropHandoff(){ try{ localStorage.removeItem("gravewounds-field-handoff") }catch(e){ /* storage off: nothing to drop */ } }
+function readHandoff(){                           // a fight sent from the travel map, unless it is the one already on the page
+  let h = null;
+  try{ h = JSON.parse(localStorage.getItem("gravewounds-field-handoff") || "null") }catch(e){ h = null /* unreadable: ignore it */ }
+  if (!h?.forces?.length || S.from?.battle === h.battle) return null;
+  const names = h.forces.map(f => `${f.name} (${f.men} fit, ${f.role})`).join("; ");
+  $("#handoff-text").textContent = `From the travel map: a battle at ${h.place}, ${h.day}, ${h.time}: ${names}. Set it up here? This replaces the battle on this page.`;
+  return h;
+}
 function init(){
   restore();
+  HANDOFF = readHandoff();
   fillChoices();
   $("#map").addEventListener("click", e => { const p = e.target.closest(".hx"); if (p) clickHex(p.dataset.h.split(",").map(Number)) });
   $("#units").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; S.msg = ""; render() } });
   $("#units").addEventListener("keydown", e => { if (e.key === "Enter"){ const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; render() } } });
   $("#btn-next").onclick = next;
-  $("#btn-reset").onclick = () => { freshState(); fillChoices(); render() };
+  $("#btn-reset").onclick = newBattle;
+  $("#btn-end").onclick = endBattle;
+  $("#btn-back").onclick = backToTravel;
+  $("#btn-handoff").onclick = () => { fromTravel(HANDOFF); HANDOFF = null; dropHandoff(); fillChoices(); render() };
+  $("#btn-nohandoff").onclick = () => { HANDOFF = null; dropHandoff(); render() };
+  $("#sel-side").onchange = e => { const f = e.target.value.startsWith("f:") ? S.forces.find(x => x.id === +e.target.value.slice(2)) : null; if (f){ $("#chk-mounted").checked = f.type === "mounted"; $("#in-men").value = Math.max(1, reserve(f)) } };
   $("#btn-left").onclick = () => turn(1);
   $("#btn-right").onclick = () => turn(-1);
   $("#btn-narrow").onclick = () => reshape(-1);

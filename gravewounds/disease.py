@@ -5,7 +5,11 @@ A force's health is {cases, immune, had, dead}: cases is a list of the men now s
 incubating, one disease each, as {d, inc (days until it shows), step (index into steps),
 peak (0 once reached), shown (days since it showed), chronic}; immune counts survivors of a disease that
 gives immunity; had counts men who have had a disease that relapses; dead is the total.
-Dice come from `rng`, a function returning d100 (1-100), so both languages roll alike."""
+Dice come from `rng`, a function returning d100 (1-100), so both languages roll alike.
+
+Men wounded on the field map join the same list as cases of `wound` (healing, checked by the
+week) carrying `inf` (the wound's infection risk) and `fever` (days until it turns septic or
+not); a septic wound becomes a case of `fever` (wound fever), checked every day."""
 from __future__ import annotations
 
 from .model import Data
@@ -18,6 +22,20 @@ def _copy(health: dict) -> dict:
 
 def new_health() -> dict:
     return {"cases": [], "immune": {}, "had": {}, "dead": 0}
+
+
+def profile(d: Data, did: str) -> dict:
+    """A disease's profile, or the wound track's (wound, fever)."""
+    return d.disease["diseases"].get(did) or d.disease["wounds"][did]
+
+
+def wound_case(d: Data, severity: str, lethal: str, infection: str, rng) -> dict:
+    """A man carried from the field with a wound of this severity, death clock and infection
+    risk: his case on the wound track."""
+    W = d.disease["wounds"]
+    step = max(_step(d, W["start"][severity]), _step(d, W["clock_step"].get(lethal, "healed")))
+    return {"d": "wound", "inc": 0, "step": step, "peak": 0, "shown": 0, "chronic": False,
+            "inf": infection, "fever": _pick(W["fever_after"][0], W["fever_after"][1], rng)}
 
 
 def _step(d: Data, name: str) -> int:
@@ -144,12 +162,14 @@ def _relapses(d: Data, h: dict, factors: list, rng) -> list:
 def _checks_today(x: dict, c: dict) -> bool:
     if c["chronic"]:
         return c["shown"] % 7 == 0
+    if x.get("every"):
+        return c["shown"] % x["every"] == 0
     return c["shown"] >= x.get("checks_from", 0)
 
 
 def _recover(d: Data, c: dict, target: int, rng) -> str:
     """One recovery check on a case at or past its peak: 'dead', 'healed' or 'sick'."""
-    x, big, deadly = d.disease["diseases"][c["d"]], d.disease["recovery"]["big"], len(d.disease["steps"]) - 1
+    x, big, deadly = profile(d, c["d"]), d.disease["recovery"]["big"], len(d.disease["steps"]) - 1
     m = target - x["virulence"] - rng()
     if m >= big:
         c["step"] -= 2
@@ -165,9 +185,22 @@ def _recover(d: Data, c: dict, target: int, rng) -> str:
     return "healed" if c["step"] <= 0 else "sick"
 
 
-def _case_day(d: Data, c: dict, target: int, rng, ev: dict) -> str:
+def _septic(d: Data, c: dict, care: str, rng, ev: dict) -> None:
+    """A wound's fever day: it turns septic (wound fever, one step worse) or it does not."""
+    W = d.disease["wounds"]
+    c["fever"] = 0
+    if rng() <= W["fever_chance"][c["inf"]] + W["fever_care"][care]:
+        c["d"], c["step"] = "fever", min(len(d.disease["steps"]) - 1, c["step"] + 1)
+        ev["shown"]["fever"] = ev["shown"].get("fever", 0) + 1
+
+
+def _case_day(d: Data, c: dict, target: int, rng, ev: dict, care: str = "field") -> str:
     """One case's day: 'sick' while it lasts, else 'healed' or 'dead' (tallied in ev)."""
-    x = d.disease["diseases"][c["d"]]
+    if c.get("fever"):
+        c["fever"] -= 1
+        if c["fever"] == 0:
+            _septic(d, c, care, rng, ev)
+    x = profile(d, c["d"])
     if c["inc"] > 0:
         c["inc"] -= 1
         if c["inc"] == 0:
@@ -197,8 +230,8 @@ def day(d: Data, health: dict, ctx: dict, rng) -> tuple[dict, dict]:
     ev = {"shown": {}, "healed": {}, "dead": {}}
     keep = []
     for c in h["cases"]:
-        x = D["diseases"][c["d"]]
-        out = _case_day(d, c, target, rng, ev)
+        out = _case_day(d, c, target, rng, ev, ctx["care"])
+        x = profile(d, c["d"])
         if out == "sick":
             keep.append(c)
         elif out == "dead":
@@ -234,3 +267,23 @@ def simulate(d: Data, did: str, n: int, ctx: dict, rng, days: int = 300) -> dict
         h, _ = day(d, h, ctx, rng)
         sick_days += sum(1 for c in h["cases"] if c["inc"] == 0)
     return {"deaths": 100 * h["dead"] / n, "sick_days": sick_days / n}
+
+
+WOUND_EXAMPLES = [("light", "none", "low"), ("serious", "none", "medium"), ("critical", "none", "medium"),
+                  ("serious", "hours", "high"), ("critical", "days", "high")]
+
+
+def simulate_wounds(d: Data, wound: tuple, n: int, care: str, rng, days: int = 300) -> dict:
+    """n men carried to camp with this (severity, lethal, infection) wound, resting, followed
+    until healed or dead (for tuning): {deaths, fever (% who got wound fever), unfit_days}."""
+    h = new_health()
+    h["cases"] = [wound_case(d, *wound, rng) for _ in range(n)]
+    fever = unfit = 0
+    ctx = {"care": care, "marched": False, "wet_cold": False, "filth": False}
+    for _ in range(days):
+        if not h["cases"]:
+            break
+        h, ev = day(d, h, ctx, rng)
+        fever += ev["shown"].get("fever", 0)
+        unfit += sum(1 for c in h["cases"] if c["step"] >= _step(d, d.disease["unfit_from"]))
+    return {"deaths": 100 * h["dead"] / n, "fever": 100 * fever / n, "unfit_days": unfit / n}

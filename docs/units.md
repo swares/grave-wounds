@@ -163,15 +163,37 @@ a longbow's long range of about 250 m is 25 field hexes.
 The page keeps the battle in the browser, so it can be closed and reopened. *New battle*
 starts again from the starting units.
 
+## From the travel map
+
+On the travel map, **Set up the fight** with **Fight it on: the field map** opens this page
+with the forces that are there: the defender and any friends beside it on side A, the
+attackers on side B, each with its fit men (the sick stay out). The GM splits each force
+into units with **Add a unit**, choosing the force to draw the men from. A force's men left
+out of every unit stay in reserve and do not fight.
+
+## After the battle
+
+**End the battle** stops the fighting (at any time; usually when one side has no unit left
+standing). Every wounded man was remembered as he was hit: the wound's severity, its
+untreated time to death and its infection risk, and whether he went down. Then:
+
+1. **The field.** A side with no unit still standing has lost the field: the men it had
+   down there are left behind and die. The wounded still on their feet go with their units.
+2. **The death clock.** A wound that kills in minutes kills before help comes, unless he is
+   bound in time (1 in 10). One that kills in hours kills unless his camp can treat it: no
+   chance with no camp, 40% in a camp, 60% in quarters.
+3. **To camp.** The rest are carried to their force's camp and heal on the wound track,
+   where wound fever can still take them (see [travel.md](travel.md), *The wounded*).
+
+A man wounded twice is counted once. **Back to the travel map** (for a battle set up from
+there) takes the dead off each force and adds its wounded to its sick. The numbers are in
+`data/units.yaml` (`aftermath`) and `data/disease.yaml` (`wounds`).
+
 ## Still to come
 
+- **Heroes in units:** a named fighter from the wound roller in a unit's front rank strikes
+  with his own skill and can be struck like any man there, with his wounds on his record; a
+  duel with an enemy hero opposite goes to the roller. A hero with a missile weapon shoots
+  with his own skill. A leader adds to his unit's morale while he is up.
 - **Works and weather on the field map:** ditches, banks, stakes and palisades, and rain
   and wind on the archery, from the battle map's rules.
-- **From the travel map:** a fight set up from the travel map can open on the field map,
-  with each force as one or more units (fit men only).
-- **Heroes in units:** a named character in a unit's front rank fights with the full
-  individual rules, against an enemy hero or into the enemy unit, while his unit fights in
-  bulk around him. His blows count toward the exchange. A leader adds to his unit's morale
-  while he is up.
-- **After the battle:** the wounded who fought on, and those down, carried to camp, where
-  wound fever and disease (camp disease) can take them.

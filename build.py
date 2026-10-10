@@ -231,6 +231,18 @@ def unit_rules(d) -> list[str]:
         f"or was struck in flank or rear: d100 against Nerve, +{mo['mods']['in_order']} while steady, +{mo['mods']['leader']} with a leader, {mo['mods']['leader_down']} if he is down, "
         f"{mo['mods']['heavy']} at half strength, {mo['mods']['flank']} if flanked, -{mo['mods']['losing_per_man']} a man it lost more than it put down (at most -{mo['mods']['losing_cap']}). "
         f"Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +{R['attack']}, no parry, x{R['tempo']:g} tempo.",
+    ] + _aftermath_rules(d)
+
+
+def _aftermath_rules(d) -> list[str]:
+    A = d.units.get("aftermath")
+    if not A:
+        return []
+    h = A["saved"]["hours"]
+    return [
+        "<b>After the battle:</b> a side with no unit standing has lost the field, and its men down there are left behind, dead. "
+        f"A wound fatal in minutes kills unless he is bound in time ({A['saved']['minutes']}%); one fatal in hours kills unless his camp treats it "
+        f"(no camp {h['none']}%, a camp {h['field']}%, quarters {h['shelter']}%). The rest are carried to camp and heal on the wound track (Camp disease).",
     ]
 
 
@@ -255,6 +267,20 @@ def disease_rules(d) -> list[str]:
         f"Men at serious or worse do not dig or fight. Grave and deadly cases go on litters: the force marches at {L['march']}%, "
         f"or {L['short']}% with fewer than {L['bearers']} fit men a litter, and cannot march with none. "
         "Hygiene comes from the camp (bivouac poor, quarters good, others fair) unless the GM sets it. Plague needs the GM's \"plague in the region\".",
+    ] + _wound_track_rules(d)
+
+
+def _wound_track_rules(d) -> list[str]:
+    W = d.disease.get("wounds")
+    if not W:
+        return []
+    st, fc, fcare = W["start"], W["fever_chance"], W["fever_care"]
+    return [
+        f"<b>The wounded (from the field map):</b> a wounded man starts at {st['light']} (light), {st['serious']} (serious) or {st['critical']} (critical), "
+        f"and at {W['clock_step']['hours']} if the wound would kill in hours. He makes the same recovery check, but once every {W['wound']['every']} days, "
+        f"at virulence {W['wound']['virulence']}. {W['fever_after'][0]}-{W['fever_after'][1]} days after the battle the wound turns septic on d100: "
+        f"low infection risk {fc['low']}%, medium {fc['medium']}%, high {fc['high']}% (no camp {fcare['none']:+d}, quarters {fcare['shelter']:+d}). "
+        f"Wound fever is one step worse and checks every day at virulence {W['fever']['virulence']}.",
     ]
 
 
@@ -454,9 +480,15 @@ def field_bundle(d) -> dict:
         "kits": {k: {"name": v["name"], "layers": {l["id"]: [list(x) for x in armor_at(d, k, l["id"])] for l in d.locations}}
                  for k, v in d.armor["kits"].items()},
         "materials": {m: {k: v[k] for k in ("cut", "pierce", "crush", "ballistic", "threats") if k in v} for m, v in d.armor["materials"].items()},
-        "lethal": {l["id"]: {m: {s: compose_wound(d, l["id"], m, s)["lethal"] for s in ("light", "serious", "critical")} for m in mechs}
-                   for l in d.locations},
+        "effects": {l["id"]: {m: {s: _lethal_inf(compose_wound(d, l["id"], m, s)) for s in ("light", "serious", "critical")} for m in mechs}
+                    for l in d.locations},
+        "track": {"steps": d.disease["steps"], "wounds": d.disease["wounds"]},
     }
+
+
+def _lethal_inf(fx: dict) -> list:
+    """[untreated time to death, infection risk] of a composed wound (the field page's two)."""
+    return [fx["lethal"], fx["infection"]]
 
 
 def bundle(d) -> dict:

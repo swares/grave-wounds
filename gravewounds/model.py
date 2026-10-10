@@ -714,6 +714,29 @@ def _disease_errors(d: Data, terrain: dict) -> list[str]:
         errors += [f"disease.yaml: terrain_factors.{k} names unknown terrain {t}" for t in ts if t not in terrain]
     for did, x in D.get("diseases", {}).items():
         errors += _one_disease_errors(did, x, steps)
+    if "wounds" in D:
+        errors += _wound_track_errors(d, steps)
+    return errors
+
+
+def _wound_track_errors(d: Data, steps: list) -> list[str]:
+    """disease.yaml wounds: the two cases, starting steps, fever chances and care."""
+    W, errors = d.disease["wounds"], []
+    V = d.wounds["vocabulary"]
+    for k in ("wound", "fever"):
+        if not isinstance(W.get(k, {}).get("virulence"), int):
+            errors.append(f"disease.yaml: wounds.{k} needs a whole-number virulence")
+    if set(W.get("start", {})) != {"light", "serious", "critical"} or any(v not in steps for v in W["start"].values()):
+        errors.append("disease.yaml: wounds.start must give a step for light, serious and critical")
+    if any(k not in V["lethal"]["order"] or v not in steps for k, v in W.get("clock_step", {}).items()):
+        errors.append("disease.yaml: wounds.clock_step must map lethalities to steps")
+    if set(W.get("fever_chance", {})) != set(V["infection"]["order"]):
+        errors.append("disease.yaml: wounds.fever_chance needs every infection risk")
+    if set(W.get("fever_care", {})) != set(d.disease.get("recovery", {}).get("care", {})):
+        errors.append("disease.yaml: wounds.fever_care needs every care level")
+    lo, hi = (W.get("fever_after") or [0, -1])[:2]
+    if not (isinstance(lo, int) and isinstance(hi, int) and 1 <= lo <= hi):
+        errors.append("disease.yaml: wounds.fever_after must be [low, high] days")
     return errors
 
 
@@ -760,4 +783,7 @@ def _units_errors(d: Data) -> list[str]:
     errors += [f"units.yaml: dead_if names unknown lethality {x}" for x in U.get("dead_if", []) if x not in order]
     if not isinstance(U.get("rout", {}).get("exchanges"), int):
         errors.append("units.yaml: rout.exchanges must be a whole number")
+    saved = U.get("aftermath", {}).get("saved", {})
+    if saved and set(saved.get("hours", {})) != set(d.disease.get("recovery", {}).get("care", {})):
+        errors.append("units.yaml: aftermath.saved.hours needs every care level")
     return errors

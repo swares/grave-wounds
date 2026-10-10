@@ -121,4 +121,28 @@ diseases:
     virulence: 15
     deaths: 45             # untreated bubonic, 30-60%
 
-# Left for later (need food tracking or individual wounds): scurvy and wound fever.
+# ---------- wounds carried from the field ----------
+# Men wounded in a unit battle (the field map) and carried to camp heal on the same five-step
+# track, with the same recovery check, but by the week: one check every `every` days.
+# A wounded man starts at the step for his wound's severity, or worse for a wound that would
+# kill in days or hours untreated. `fever_after` days after the battle (rolled in the range)
+# each wound turns septic or does not: d100 against `fever_chance` for the wound's infection
+# risk, plus `fever_care` for the camp's care. A septic wound becomes wound fever, one step
+# worse, checked every day at its own virulence until it heals or kills.
+# Design estimates; the records: Union pyaemia was 97% fatal, and Richard I died of an
+# infected crossbow wound eleven days after he was hit (1199).
+wounds:
+  wound:
+    name: "Wounds"
+    every: 7
+    virulence: -20
+  fever:
+    name: "Wound fever (sepsis)"
+    virulence: 25
+  start: {light: mending, serious: serious, critical: grave}
+  clock_step: {days: serious, hours: grave, minutes: grave}
+  fever_after: [3, 5]
+  fever_chance: {low: 5, medium: 15, high: 30}
+  fever_care: {none: 5, field: 0, shelter: -5}
+
+# Left for later (needs food tracking): scurvy.

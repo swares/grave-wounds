@@ -107,3 +107,22 @@ rout:
   attack: 20
   tempo: 2.0
   exchanges: 3
+
+# ---------- after the battle ----------
+# Every wounded man is remembered by his wound's severity, its untreated time to death
+# (lethal) and its infection risk. When the battle ends:
+#   - a side with no unit still standing has lost the field: the men it had down there are
+#     left behind and die (`left_behind`); the wounded who were still on their feet go with
+#     their units;
+#   - of the rest, a wound that kills in minutes kills before help comes, unless he is bound
+#     in time (`saved.minutes`, %); one that kills in hours kills unless his camp can treat
+#     it (`saved.hours`, % by the camp's care: no camp, a field camp, quarters);
+#   - the survivors are carried to their force's camp and heal on the wound track (data/
+#     disease.yaml `wounds`), where wound fever can still take them.
+# Design estimates: the beaten side's dead at Towton and Agincourt were mostly men cut down
+# in flight or left on the field.
+aftermath:
+  left_behind: true
+  saved:
+    minutes: 10
+    hours: {none: 0, field: 40, shelter: 60}
