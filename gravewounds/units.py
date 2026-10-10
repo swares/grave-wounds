@@ -292,7 +292,9 @@ def hdist(a, b) -> int:
 def arc(facing: int, dirn: int) -> str:
     """front, flank or rear: where direction dirn falls for a unit with this facing."""
     k = (dirn - facing) % 6
-    return "front" if k in (0, 1) else "flank" if k in (2, 5) else "rear"
+    if k in (0, 1):
+        return "front"
+    return "flank" if k in (2, 5) else "rear"
 
 
 def form(d: Data, u: dict) -> dict:
@@ -359,28 +361,43 @@ def strikes(d: Data, units: list) -> list:
     unit is struck instead by every man of each enemy unit touching it."""
     occ, groups = occupancy(d, units), {}
     for i, u in enumerate(units):
-        if u["state"] in ("broken", "fled") or u["men"] <= 0:
-            continue
-        rows, men = footprint(d, u), men_by_hex(d, u)
-        reach = d.weapons[u["weapon"]].get("reach", 1)
-        ranks = 2 if reach >= d.units["melee"]["second_rank_reach"] else 1
-        for k, h in enumerate(rows[0] if rows else []):
-            for dirn in (u["facing"], u["facing"] + 1):
-                j = occ.get("{0},{1}".format(*step(h, dirn)))
-                if j is None or units[j]["side"] == u["side"] or units[j]["state"] == "broken":
-                    continue
-                sit = arc(units[j]["facing"], dirn + 3)
-                key = (i, j, sit)
-                groups[key] = groups.get(key, 0) + min(form(d, u)["abreast"] * ranks, men[k])
-                break
+        if not _out(u):
+            _strike_groups(d, units, occ, i, groups)
     out = [{"att": i, "dfd": j, "men": n, "situation": sit, "rout": False} for (i, j, sit), n in sorted(groups.items())]
     for j, b in enumerate(units):
-        if b["state"] != "broken" or b["men"] <= 0:
-            continue
-        for i in _adjacent_units(d, units, occ, j):
-            if units[i]["side"] != b["side"] and units[i]["state"] not in ("broken", "fled"):
-                out.append({"att": i, "dfd": j, "men": units[i]["men"], "situation": "rear", "rout": True})
+        if b["state"] == "broken" and b["men"] > 0:
+            out += [{"att": i, "dfd": j, "men": units[i]["men"], "situation": "rear", "rout": True}
+                    for i in _adjacent_units(d, units, occ, j)
+                    if units[i]["side"] != b["side"] and units[i]["state"] not in ("broken", "fled")]
     return out
+
+
+def _out(u: dict) -> bool:
+    """Broken, fled or with no men: out of the fight for striking and shooting."""
+    return u["state"] in ("broken", "fled") or u["men"] <= 0
+
+
+def _strike_groups(d: Data, units: list, occ: dict, i: int, groups: dict) -> None:
+    """Add unit i's front hexes' strikes to groups {(i, j, situation): men}."""
+    u = units[i]
+    rows, men = footprint(d, u), men_by_hex(d, u)
+    reach = d.weapons[u["weapon"]].get("reach", 1)
+    per = form(d, u)["abreast"] * (2 if reach >= d.units["melee"]["second_rank_reach"] else 1)
+    for k, h in enumerate(rows[0] if rows else []):
+        hit = _struck_hex(units, occ, u, h)
+        if hit is not None:
+            j, dirn = hit
+            key = (i, j, arc(units[j]["facing"], dirn + 3))
+            groups[key] = groups.get(key, 0) + min(per, men[k])
+
+
+def _struck_hex(units: list, occ: dict, u: dict, h) -> tuple | None:
+    """(enemy index, direction) across the first of hex h's front sides with a standing enemy."""
+    for dirn in (u["facing"], u["facing"] + 1):
+        j = occ.get("{0},{1}".format(*step(h, dirn)))
+        if j is not None and units[j]["side"] != u["side"] and units[j]["state"] != "broken":
+            return j, dirn
+    return None
 
 
 def _fvec(facing: int) -> tuple:
@@ -416,15 +433,24 @@ def _target(d: Data, units: list, i: int):
     for j, e in enumerate(units):
         if e["side"] == u["side"] or e["men"] <= 0 or e["state"] == "fled":
             continue
-        for row in footprint(d, e):
-            for t in row:
-                for h in front:
-                    c, s = _cube(t), _cube(h)
-                    if sum((c[k] - s[k]) * fv[k] for k in range(3)) <= 0:
-                        continue
-                    dist = hdist(h, t)
-                    if field_range(d, u["weapon"], dist) is not None and (best is None or dist < best[0]):
-                        best = (dist, j)
+        dist = _nearest_ahead(d, u["weapon"], front, fv, [t for row in footprint(d, e) for t in row])
+        if dist is not None and (best is None or dist < best[0]):
+            best = (dist, j)
+    return best
+
+
+def _nearest_ahead(d: Data, weapon: str, front: list, fv: tuple, hexes: list) -> int | None:
+    """The shortest distance in range from a front hex to one of `hexes` ahead of the line."""
+    best = None
+    for t in hexes:
+        c = _cube(t)
+        for h in front:
+            s = _cube(h)
+            if sum((c[k] - s[k]) * fv[k] for k in range(3)) <= 0:
+                continue
+            dist = hdist(h, t)
+            if field_range(d, weapon, dist) is not None and (best is None or dist < best):
+                best = dist
     return best
 
 

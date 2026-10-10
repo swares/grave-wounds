@@ -29,8 +29,8 @@ function marginSeverity(margin, critical, wid, zone){
 }
 function armorSteps(material, mech, wid){
   const mat = FD.materials[material], w = FD.weapons[wid] || {};
-  const steps = mech === "ballistic" && w.threat && (mat.threats || {})[w.threat] !== undefined ? mat.threats[w.threat] : mat[mech];
-  return Math.max(0, steps - ((w.armor_defeat || {})[mech] || 0));
+  const steps = mech === "ballistic" && w.threat && mat.threats?.[w.threat] !== undefined ? mat.threats[w.threat] : mat[mech];
+  return Math.max(0, steps - (w.armor_defeat?.[mech] || 0));
 }
 const reduceSeverity = (sev, steps) => SEV_LADDER[Math.max(0, SEV_LADDER.indexOf(sev) - steps)];
 const isGraze = (margin, critical) => !critical && margin <= FD.combat.graze_margin;
@@ -143,7 +143,11 @@ function step(h, dirn, n = 1){
 }
 function cube(h){ const q = h[0] - (h[1] - (h[1] & 1)) / 2; return [q, h[1], -q - h[1]] }
 function hdist(a, b){ const x = cube(a), y = cube(b); return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2])) }
-function arc(facing, dirn){ const k = mod6(dirn - facing); if (k <= 1) return "front"; return k === 2 || k === 5 ? "flank" : "rear" }
+function arc(facing, dirn){
+  const k = mod6(dirn - facing);
+  if (k <= 1) return "front";
+  return k === 2 || k === 5 ? "flank" : "rear";
+}
 const form = u => UD.formations[u.formation];
 const hk = h => h[0] + "," + h[1];
 function footprint(u){                          // rows of hexes, front row first
@@ -162,7 +166,7 @@ function footprint(u){                          // rows of hexes, front row firs
 function menByHex(u){
   const per = form(u).per_hex, out = [];
   let left = u.men;
-  for (const row of footprint(u)) for (let i = 0; i < row.length; i++){ out.push(Math.min(per, left)); left -= out[out.length - 1] }
+  for (const row of footprint(u)) for (const _ of row){ const n = Math.min(per, left); out.push(n); left -= n }
   return out;
 }
 function occupancy(units){
@@ -198,7 +202,7 @@ function strikeGroups(units, occ){               // melee across the front: {"i|
   });
   return groups;
 }
-const cmpKey = (a, b) => { const x = a.split("|"), y = b.split("|"); return (+x[0] - +y[0]) || (+x[1] - +y[1]) || (x[2] < y[2] ? -1 : x[2] > y[2] ? 1 : 0) };
+const cmpKey = (a, b) => { const x = a.split("|"), y = b.split("|"); return (+x[0] - +y[0]) || (+x[1] - +y[1]) || x[2].localeCompare(y[2]) };
 function strikes(units){                         // [{att, dfd, men, situation, rout}]
   const occ = occupancy(units), groups = strikeGroups(units, occ);
   const out = [...groups.keys()].sort(cmpKey).map(k => { const [i, j, sit] = k.split("|"); return { att: +i, dfd: +j, men: groups.get(k), situation: sit, rout: false } });
@@ -214,13 +218,22 @@ function target(units, i){                       // [distance, index] of the nea
   let best = null;
   units.forEach((e, j) => {
     if (e.side === u.side || e.men <= 0 || e.state === "fled") return;
-    for (const row of footprint(e)) for (const t of row) for (const h of front){
-      const c = cube(t), s = cube(h);
+    const dist = nearestAhead(u.weapon, front, fv, footprint(e).flat());
+    if (dist !== null && (best === null || dist < best[0])) best = [dist, j];
+  });
+  return best;
+}
+function nearestAhead(weapon, front, fv, hexes){  // shortest distance in range from the front to a hex ahead of the line
+  let best = null;
+  for (const t of hexes){
+    const c = cube(t);
+    for (const h of front){
+      const s = cube(h);
       if ((c[0] - s[0]) * fv[0] + (c[1] - s[1]) * fv[1] + (c[2] - s[2]) * fv[2] <= 0) continue;
       const dist = hdist(h, t);
-      if (fieldRange(u.weapon, dist) && (best === null || dist < best[0])) best = [dist, j];
+      if (fieldRange(weapon, dist) && (best === null || dist < best)) best = dist;
     }
-  });
+  }
   return best;
 }
 function volleys(units){                         // [{att, dfd, men, dist}]
@@ -240,7 +253,7 @@ const sideOfUnit = (u, table) => ({ table, weapon: u.weapon, kit: u.kit, quality
 function tallyLoss(acc, s, t){ acc.lost[s.dfd] += t.down; acc.dead[s.dfd] += t.dead; acc.dealt[s.att] += t.down }
 function exchange(units, table, rng){            // -> {units, log}
   const us = units.map(u => ({ ...u })), n = us.length, log = [];
-  const acc = { lost: Array(n).fill(0), dead: Array(n).fill(0), dealt: Array(n).fill(0), flanked: Array(n).fill(false) };
+  const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false) };
   for (const s of strikes(us)){
     const a = us[s.att], b = us[s.dfd];
     const t = melee(sideOfUnit(a, table), sideOfUnit(b, table), s.men, rng, { situation: s.situation, charge: !!a.charged && !!a.mounted, shaken: a.state === "shaken", rout: s.rout });

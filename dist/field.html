@@ -46,7 +46,7 @@ button:disabled{opacity:.45;cursor:default}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 110px;min-width:0}
 .muted{color:var(--muted);font-size:.85rem}
-.msg{font-size:.9rem;border-left:3px solid var(--warn);padding:2px 0 2px 8px}
+.msg{display:block;font-size:.9rem;border-left:3px solid var(--warn);padding:2px 0 2px 8px}
 .msg:empty{display:none}
 .phase{font:700 1rem var(--display);letter-spacing:.03em}
 .mapbox{overflow:auto;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
@@ -93,8 +93,8 @@ legend{padding:0}
         <h2 id="h-map">The field</h2>
         <span class="muted" id="map-scale"></span>
       </div>
-      <p class="msg" id="msg" role="status"></p>
-      <div class="mapbox" id="map" role="group" aria-label="Field map: click a hex to place or move the selected unit"></div>
+      <output class="msg" id="msg"></output>
+      <div class="mapbox" id="map" title="Click a hex to place or move the selected unit"></div>
       <p class="muted" style="margin:0">Each unit is a block of hexes along its front (the dark edge), facing the arrow. Close order holds 40 men a hex, open order 20. Units touching across a front fight; archers shoot at the nearest enemy in range in front of them.</p>
     </section>
 
@@ -187,8 +187,8 @@ function marginSeverity(margin, critical, wid, zone){
 }
 function armorSteps(material, mech, wid){
   const mat = FD.materials[material], w = FD.weapons[wid] || {};
-  const steps = mech === "ballistic" && w.threat && (mat.threats || {})[w.threat] !== undefined ? mat.threats[w.threat] : mat[mech];
-  return Math.max(0, steps - ((w.armor_defeat || {})[mech] || 0));
+  const steps = mech === "ballistic" && w.threat && mat.threats?.[w.threat] !== undefined ? mat.threats[w.threat] : mat[mech];
+  return Math.max(0, steps - (w.armor_defeat?.[mech] || 0));
 }
 const reduceSeverity = (sev, steps) => SEV_LADDER[Math.max(0, SEV_LADDER.indexOf(sev) - steps)];
 const isGraze = (margin, critical) => !critical && margin <= FD.combat.graze_margin;
@@ -301,7 +301,11 @@ function step(h, dirn, n = 1){
 }
 function cube(h){ const q = h[0] - (h[1] - (h[1] & 1)) / 2; return [q, h[1], -q - h[1]] }
 function hdist(a, b){ const x = cube(a), y = cube(b); return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2])) }
-function arc(facing, dirn){ const k = mod6(dirn - facing); if (k <= 1) return "front"; return k === 2 || k === 5 ? "flank" : "rear" }
+function arc(facing, dirn){
+  const k = mod6(dirn - facing);
+  if (k <= 1) return "front";
+  return k === 2 || k === 5 ? "flank" : "rear";
+}
 const form = u => UD.formations[u.formation];
 const hk = h => h[0] + "," + h[1];
 function footprint(u){                          // rows of hexes, front row first
@@ -320,7 +324,7 @@ function footprint(u){                          // rows of hexes, front row firs
 function menByHex(u){
   const per = form(u).per_hex, out = [];
   let left = u.men;
-  for (const row of footprint(u)) for (let i = 0; i < row.length; i++){ out.push(Math.min(per, left)); left -= out[out.length - 1] }
+  for (const row of footprint(u)) for (const _ of row){ const n = Math.min(per, left); out.push(n); left -= n }
   return out;
 }
 function occupancy(units){
@@ -356,7 +360,7 @@ function strikeGroups(units, occ){               // melee across the front: {"i|
   });
   return groups;
 }
-const cmpKey = (a, b) => { const x = a.split("|"), y = b.split("|"); return (+x[0] - +y[0]) || (+x[1] - +y[1]) || (x[2] < y[2] ? -1 : x[2] > y[2] ? 1 : 0) };
+const cmpKey = (a, b) => { const x = a.split("|"), y = b.split("|"); return (+x[0] - +y[0]) || (+x[1] - +y[1]) || x[2].localeCompare(y[2]) };
 function strikes(units){                         // [{att, dfd, men, situation, rout}]
   const occ = occupancy(units), groups = strikeGroups(units, occ);
   const out = [...groups.keys()].sort(cmpKey).map(k => { const [i, j, sit] = k.split("|"); return { att: +i, dfd: +j, men: groups.get(k), situation: sit, rout: false } });
@@ -372,13 +376,22 @@ function target(units, i){                       // [distance, index] of the nea
   let best = null;
   units.forEach((e, j) => {
     if (e.side === u.side || e.men <= 0 || e.state === "fled") return;
-    for (const row of footprint(e)) for (const t of row) for (const h of front){
-      const c = cube(t), s = cube(h);
+    const dist = nearestAhead(u.weapon, front, fv, footprint(e).flat());
+    if (dist !== null && (best === null || dist < best[0])) best = [dist, j];
+  });
+  return best;
+}
+function nearestAhead(weapon, front, fv, hexes){  // shortest distance in range from the front to a hex ahead of the line
+  let best = null;
+  for (const t of hexes){
+    const c = cube(t);
+    for (const h of front){
+      const s = cube(h);
       if ((c[0] - s[0]) * fv[0] + (c[1] - s[1]) * fv[1] + (c[2] - s[2]) * fv[2] <= 0) continue;
       const dist = hdist(h, t);
-      if (fieldRange(u.weapon, dist) && (best === null || dist < best[0])) best = [dist, j];
+      if (fieldRange(weapon, dist) && (best === null || dist < best)) best = dist;
     }
-  });
+  }
   return best;
 }
 function volleys(units){                         // [{att, dfd, men, dist}]
@@ -398,7 +411,7 @@ const sideOfUnit = (u, table) => ({ table, weapon: u.weapon, kit: u.kit, quality
 function tallyLoss(acc, s, t){ acc.lost[s.dfd] += t.down; acc.dead[s.dfd] += t.dead; acc.dealt[s.att] += t.down }
 function exchange(units, table, rng){            // -> {units, log}
   const us = units.map(u => ({ ...u })), n = us.length, log = [];
-  const acc = { lost: Array(n).fill(0), dead: Array(n).fill(0), dealt: Array(n).fill(0), flanked: Array(n).fill(false) };
+  const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false) };
   for (const s of strikes(us)){
     const a = us[s.att], b = us[s.dfd];
     const t = melee(sideOfUnit(a, table), sideOfUnit(b, table), s.men, rng, { situation: s.situation, charge: !!a.charged && !!a.mounted, shaken: a.state === "shaken", rout: s.rout });
@@ -504,7 +517,7 @@ function flee(units, i, size){                   // a broken unit runs straight 
 /* ---------- the page ---------- */
 const $ = s => document.querySelector(s);
 const KEY = "gravewounds-field", SIZE = [FD.units.map.cols, FD.units.map.rows];
-const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
 const dice = {                                     // real dice for play
   randint(a, b){ return a + crypto.getRandomValues(new Uint32Array(1))[0] % (b - a + 1) },
   random(){ return crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296 }
@@ -528,7 +541,7 @@ function freshState(){
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)) }catch(e){ /* storage off: the battle lasts while the page is open */ } }
 function restore(){
-  try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.units && FD.tables[j.table]) S = j }catch(e){ S = null }
+  try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j?.units && FD.tables[j.table]) S = j }catch(e){ S = null /* a damaged save: start a fresh battle */ }
   if (!S) freshState();
 }
 const idx = id => S.units.findIndex(u => u.id === id);
@@ -583,7 +596,7 @@ function logLines(log, ex){
   const out = [{ cls: "head", text: `Exchange ${ex}` }];
   for (const l of log){
     if (l.kind === "morale"){ out.push({ cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` }); continue }
-    const fallen = `${l.hits} hit, ${l.down} down${l.dead ? ` (${l.dead} dead)` : ""}`;
+    const dead = l.dead ? " (" + l.dead + " dead)" : "", fallen = `${l.hits} hit, ${l.down} down${dead}`;
     if (l.kind === "volley") out.push({ cls: "", text: `${nm(l.att)} shoot at ${nm(l.dfd)}, ${l.dist * FD.units.hex_m} m: ${l.blows} aimed shots, ${fallen}.` });
     else if (l.kind === "rout") out.push({ cls: "", text: `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.` });
     else out.push({ cls: "", text: `${nm(l.att)} strike ${nm(l.dfd)}${l.situation === "front" ? "" : " in the " + l.situation}, ${l.men} men: ${l.blows} telling blows, ${fallen}.` });
@@ -599,7 +612,8 @@ function next(){
   S.log = [...logLines(r.log, S.exchange), ...S.log].slice(0, 400);
   S.exchange += 1;
   const lost = [0, 1].filter(k => !standing(k));
-  S.msg = lost.length ? `${lost.map(k => S.sides[k]).join(" and ")} ${lost.length > 1 ? "have" : "has"} no unit left standing.` : "";
+  const verb = lost.length > 1 ? "have" : "has";
+  S.msg = lost.length ? `${lost.map(k => S.sides[k]).join(" and ")} ${verb} no unit left standing.` : "";
   startPhase(0);
   render();
 }
@@ -628,7 +642,8 @@ function renderMap(){
 }
 function unitMeta(u){
   if (u.state === "fled") return "fled";
-  return `${u.men}/${u.start} · ${u.state}${u.down ? ` · ${u.down} down` : ""}`;
+  const down = u.down ? " · " + u.down + " down" : "";
+  return `${u.men}/${u.start} · ${u.state}${down}`;
 }
 function renderUnits(){
   $("#units").innerHTML = S.units.map(u => `<li data-id="${u.id}" aria-current="${u.id === S.sel}" tabindex="0"><span class="dot" style="background:var(--side${sideNo(u)})"></span><span><b>${esc(u.name)}</b> <span class="muted">${esc(u.side)}</span></span><span class="meta">${unitMeta(u)}</span></li>`).join("") || `<li class="muted">No units. Add one below.</li>`;
@@ -642,7 +657,8 @@ function renderSel(){
   if (!u){ $("#sel-info").innerHTML = ""; return }
   const f = FD.units.formations[u.formation], w = FD.weapons[u.weapon];
   const reach = "range" in w ? `range ${w.range.map(x => Math.round(x / FD.units.range_scale)).join(" / ")} hexes` : `reach ${w.reach || 1}`;
-  $("#sel-info").innerHTML = `<dt>Men</dt><dd>${u.men} of ${u.start}${u.down ? `, ${u.down} down (${u.dead} dead)` : ""}</dd>`
+  const down = u.down ? ", " + u.down + " down (" + u.dead + " dead)" : "";
+  $("#sel-info").innerHTML = `<dt>Men</dt><dd>${u.men} of ${u.start}${down}</dd>`
     + `<dt>State</dt><dd>${u.state}</dd>`
     + `<dt>Quality</dt><dd>${u.quality}: attack ${quality(u.quality).attack}%, defence ${quality(u.quality).defence}%, Nerve ${quality(u.quality).nerve}</dd>`
     + `<dt>Arms</dt><dd>${esc(w.name)} (${reach}); ${esc(FD.kits[u.kit].name)}</dd>`
@@ -652,7 +668,10 @@ function renderSel(){
 function renderPhase(){
   const ph = S.phase === "setup" ? "Set-up: place and face the units" : `Exchange ${S.exchange}: ${S.sides[S.phase]} to move`;
   $("#phase").textContent = ph;
-  $("#btn-next").textContent = S.phase === "setup" ? "Start the battle" : S.phase === 0 ? `${S.sides[0]} done` : `${S.sides[1]} done: fight`;
+  let label = `${S.sides[1]} done: fight`;
+  if (S.phase === "setup") label = "Start the battle";
+  else if (S.phase === 0) label = `${S.sides[0]} done`;
+  $("#btn-next").textContent = label;
   $("#add-box").disabled = S.phase !== "setup";
   $("#sel-table").disabled = S.phase !== "setup";
   ["#in-side0", "#in-side1"].forEach(b => $(b).disabled = S.phase !== "setup");
@@ -667,8 +686,9 @@ function render(){
 }
 function fillChoices(){
   const byBattle = {};
-  for (const [tid, t] of Object.entries(FD.tables)) (byBattle[t.battle] = byBattle[t.battle] || []).push([tid, t]);
-  $("#sel-table").innerHTML = Object.entries(byBattle).map(([b, ts]) => `<optgroup label="${esc(b)}">${ts.map(([tid, t]) => `<option value="${tid}" ${tid === S.table ? "selected" : ""}>${esc(t.label)}</option>`).join("")}</optgroup>`).join("");
+  for (const [tid, t] of Object.entries(FD.tables)){ byBattle[t.battle] ??= []; byBattle[t.battle].push([tid, t]) }
+  const opt = ([tid, t]) => `<option value="${tid}"${tid === S.table ? " selected" : ""}>${esc(t.label)}</option>`;
+  $("#sel-table").innerHTML = Object.entries(byBattle).map(([b, ts]) => `<optgroup label="${esc(b)}">` + ts.map(opt).join("") + "</optgroup>").join("");
   $("#sel-weapon").innerHTML = FD.tables[S.table].weapons.map(w => `<option value="${w}">${esc(FD.weapons[w].name)}</option>`).join("");
   $("#sel-kit").innerHTML = Object.entries(FD.kits).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-quality").innerHTML = Object.keys(FD.units.quality).map(q => `<option ${q === "regular" ? "selected" : ""}>${q}</option>`).join("");
@@ -684,7 +704,7 @@ function reshape(dw){                            // set-up: a wider or narrower 
   render();
 }
 function addUnit(){
-  const side = $("#sel-side").value, k = S.sides.indexOf(side), men = Math.max(1, parseInt($("#in-men").value, 10) || 1);
+  const side = $("#sel-side").value, k = S.sides.indexOf(side), men = Math.max(1, Number.parseInt($("#in-men").value, 10) || 1);
   const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, men, quality: $("#sel-quality").value, weapon: $("#sel-weapon").value,
     kit: $("#sel-kit").value, formation: $("#sel-form").value, mounted: $("#chk-mounted").checked, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
   for (let r = 2; r < SIZE[1] - 2; r++){                // the first free spot down its side's edge
