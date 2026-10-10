@@ -216,6 +216,28 @@ def move_rules(d) -> list[str]:
 
 SEP6 = "|---|---|---|---|---|---|"     # a six-column Markdown table rule
 
+def unit_rules(d) -> list[str]:
+    U = d.units
+    M, S, R, mo = U["melee"], U["missile"], U["rout"], U["morale"]
+    return [
+        f"<b>Unit combat (the rank and file, on the field map):</b> one exchange is about a minute. In melee the front rank of each hex touching "
+        f"the enemy strikes ({U['abreast']} men a hex face; reach-2 weapons add the second rank). {M['tempo'] * 100:g}% of them make a telling attempt each exchange; "
+        f"archers loose their rate a minute, {S['tempo'] * 100:g}% of the shots aimed at a man. Each attempt is an individual attack against the unit's attack %, "
+        "parried on its defence % (not from flank or rear, nor against missiles), then location, severity from the margin, and armour, as for one fighter.",
+        f"Light wounds and grazes fight on. Serious and critical wounds call for a stop check against the unit's Nerve; a failure is down. A wound fatal within rounds kills. "
+        f"Flank +{M['flank']['attack']}, rear +{M['rear']['attack']}, a mounted charge +{M['charge']['attack']} at x{M['charge']['tempo']:g} tempo, shaken {M['shaken']['attack']}.",
+        f"<b>Unit morale:</b> after an exchange a unit checks if it lost the exchange, has {int(mo['trigger'] * 100)}% of its men down, lost {int(mo['shock'] * 100)}% in the exchange, "
+        f"or was struck in flank or rear: d100 against Nerve, +{mo['mods']['in_order']} while steady, +{mo['mods']['leader']} with a leader, {mo['mods']['leader_down']} if he is down, "
+        f"{mo['mods']['heavy']} at half strength, {mo['mods']['flank']} if flanked, -{mo['mods']['losing_per_man']} a man it lost more than it put down (at most -{mo['mods']['losing_cap']}). "
+        f"Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +{R['attack']}, no parry, x{R['tempo']:g} tempo.",
+    ]
+
+
+def unit_rows(d) -> list[list[str]]:
+    """[quality, attack, defence, nerve] and missile rates."""
+    return [[q.title(), f"{v['attack']}%", f"{v['defence']}%", str(v["nerve"])] for q, v in d.units["quality"].items()]
+
+
 def disease_rules(d) -> list[str]:
     D = d.disease
     L = D["litters"]
@@ -563,6 +585,11 @@ def markdown(d) -> str:
         md = lambda rows: ["| " + " | ".join(rows[0]) + " |", "|" + "---|" * len(rows[0])] + ["| " + " | ".join(r) + " |" for r in rows[1:]] + [""]
         out += ["## Weather", ""] + [re.sub("</?b>", "**", x) + "\n" for x in weather_rules(d)]
         out += md(wt["conds"]) + md(wt["misfire"]) + md(wt["fatigue"]) + md(wt["ground"]) + md(wt["climates"])
+    if d.units:
+        out += ["## Unit combat", ""] + [re.sub("</?b>", "**", x) + "\n" for x in unit_rules(d)]
+        out += ["| Quality | Attack | Defence | Nerve |", "|---|---|---|---|"] + ["| " + " | ".join(r) + " |" for r in unit_rows(d)] + [""]
+        rates = d.units["missile"]["rate"]
+        out += ["| Missile weapon | Shots a minute |", "|---|---|"] + [f"| {d.weapons[w]['name']} | {n} |" for w, n in rates.items()] + [""]
     if d.disease:
         out += ["## Camp disease", ""] + [re.sub("</?b>", "**", x) + "\n" for x in disease_rules(d)]
         out += ["| Disease | Caught from | Shows after | Outbreak chance a week | Peak (d100) | Deaths per case in the records |", SEP6]
@@ -936,6 +963,12 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
             Spacer(1, 6), KeepTogether([Paragraph("Climates (modern normals, °C and days with rain or snow)", H2),
                                         grid(hdr([wt["climates"][0]] + [[Paragraph(r[0], C)] + r[1:] for r in wt["climates"][1:]]),
                                              [1.6 * inch, 0.6 * inch] + [(W - 2.2 * inch) / 12] * 12, font=6.5)])]
+    if d.units:
+        qrow = [[Paragraph(x, CH) for x in ["Quality", "Attack", "Defence", "Nerve"]]] + unit_rows(d)
+        rrow = [[Paragraph(x, CH) for x in ["Missile weapon", "Shots a minute"]]] + [[d.weapons[w]["name"], str(n)] for w, n in d.units["missile"]["rate"].items()]
+        story += [PageBreak(), Paragraph("Unit combat", H1)] + [Paragraph(x, B) for x in unit_rules(d)] + [
+            Spacer(1, 6), KeepTogether([Paragraph("Unit quality", H2), grid(qrow, [1.4 * inch, 1.0 * inch, 1.0 * inch, 1.0 * inch], font=8)]),
+            Spacer(1, 6), KeepTogether([Paragraph("Missile rates", H2), grid(rrow, [2.4 * inch, 1.2 * inch], font=8)])]
     if d.disease:
         drow = [[Paragraph(x, CH) for x in ["Disease", "Caught from", "Shows after", "Outbreak chance a week", "Peak (d100)", "Deaths per case"]]]
         drow += [[Paragraph(c, C) for c in r] for r in disease_rows(d)]

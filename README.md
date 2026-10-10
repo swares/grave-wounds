@@ -40,6 +40,11 @@ typhoid, ague and plague. The risk depends on camp hygiene, the ground, the weat
 long they stay. The sick slow the march, leave fewer men to dig and fight, and some die. See
 [docs/travel.md](docs/travel.md).
 
+**Unit combat:** for battles of hundreds, the rank and file fight as units, resolved in
+bulk each minute through the same wound tables. Morale decides most fights, and the rout
+does most of the killing. Named characters still fight one by one. Rules and engine are
+in place; the field map is next. See [docs/units.md](docs/units.md).
+
 **Backlog:** known gaps and deferred work are listed in [docs/backlog.md](docs/backlog.md).
 
 ## Where this started

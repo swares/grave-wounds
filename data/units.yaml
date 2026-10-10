@@ -1,0 +1,100 @@
+# Unit combat (Grave Wounds): the rank and file fight as units on the field map.
+#
+# Named characters still fight one by one with the full rules (docs/combat.md). Units are
+# resolved in bulk, once an exchange (about a minute, ten individual rounds): only the men
+# actually striking roll. Each telling blow goes through the same attack, defence,
+# hit-location, severity and armour rules as a single fighter's, so the battle's wound
+# records still decide what kind of hurt a unit takes. All numbers are design estimates;
+# `tempo` is tuned by simulation (python3 -m gravewounds units) to the paces below.
+
+# ---------- the field map ----------
+hex_m: 10                  # a field-map hex, metres across
+abreast: 10                # men in a hex's front rank, close order (1 m a man)
+ranks: 4                   # ranks to a hex: so a hex holds abreast x ranks = 40 men
+range_scale: 5             # weapon ranges are in 2 m battle-map hexes: divide by this for field hexes
+exchange_rounds: 10        # individual 6-second rounds in one exchange (for fatigue, bleeding, states)
+
+# ---------- quality ----------
+# The unit's fighting quality: attack and defence (parry or dodge) % for its men, and the
+# Nerve its morale checks use (the same ratings as individual fighters).
+quality:
+  green:   {attack: 40, defence: 25, nerve: 35}
+  regular: {attack: 50, defence: 35, nerve: 50}
+  veteran: {attack: 60, defence: 45, nerve: 65}
+
+# ---------- melee ----------
+# Fighting men: the front rank of each hex touching the enemy (`abreast` men a hex face),
+# twice that with reach-2 weapons (spears, bills: the second rank strikes over the first).
+# Each exchange, `tempo` of the fighting men land a telling blow's attempt; the rest of the
+# minute is pressing, shoving and watching. Tuned so that two equal regular units with no
+# armour hit about 3% of the men in contact a minute (the chosen pace: 2-4%); about a third
+# of those are put out of the fight, the rest fight on wounded. Armour cuts it further.
+melee:
+  tempo: 0.09
+  second_rank_reach: 2                    # weapons of this reach or more strike from the second rank too
+  flank: {attack: 20, defence: -100}      # % to the attacker's chance, and to the defender's (-100: no defence)
+  rear: {attack: 30, defence: -100}
+  charge: {attack: 20, tempo: 2.0}        # the first exchange of a charge by mounted men: +attack, x tempo
+  shaken: {attack: -10}                   # a shaken unit fights worse
+
+# ---------- missiles ----------
+# Shooting men: those with a missile weapon and the target in range (the field map counts
+# them: the front two ranks of a line). Each fires `rate` shots a minute; `tempo` of those
+# are aimed at a man rather than at the mass, and roll to hit like an individual's shot at
+# that range (combat.range bands; weather and cover as on the battle map). No parry; a
+# shield counts through the hit-location tables. Tuned so 100 archers with longbows at
+# medium range hit about 8 unarmoured men a minute.
+missile:
+  tempo: 0.033
+  rate:                     # shots a minute, by weapon (design estimates)
+    longbow: 8
+    bow: 8
+    crossbow: 2
+    sling: 6
+    matchlock_musket: 1
+    musket_smoothbore: 2
+    rifle_flintlock: 1
+    rifle_musket: 2
+  default_rate: 1
+
+# ---------- wounds ----------
+# Each blow that gets through rolls location, mechanism and severity from the margin, and
+# armour, exactly as a single fighter's. Then:
+#   light: the man fights on, wounded;
+#   serious or critical: a stop check against the unit's Nerve (-10 for critical); a failure
+#     takes him out of the fight (down); a pass leaves him fighting, wounded;
+#   a wound whose untreated time to death is in `dead_if` kills him at once (counted dead,
+#     and down).
+dead_if: [instant, rounds]
+
+# ---------- unit morale ----------
+# After each exchange a unit checks if it lost the exchange in contact (more of its men put
+# down than it put down), or has lost `trigger` of its starting men in all, or `shock` of
+# its present men in this exchange, or was struck in flank or rear: d100 against its Nerve
+# with the modifiers below. A steady unit that fails is shaken (fights worse, cannot
+# charge); one that fails by more than `shaken_by` while flanked or with half its men down
+# breaks at once. A shaken unit that fails breaks. A shaken unit out of contact that passes
+# a check rallies to steady. A broken unit runs.
+morale:
+  trigger: 0.25
+  shock: 0.10
+  shaken_by: 20
+  mods:
+    leader: 10                # a named leader with the unit, up and fighting
+    leader_down: -20
+    heavy: -20                # half or more of its starting men down
+    flank: -20                # struck in flank or rear this exchange
+    veteran_friends: 10       # a steady friendly unit next to it
+    in_order: 20              # still steady: ranks closed, men backing each other
+    losing_per_man: 5         # off for each man more it lost than it put down this exchange
+    losing_cap: 30
+
+# ---------- the rout ----------
+# A broken unit flees. Every enemy man in reach of it strikes, not just the front rank (the
+# ranks have dissolved), with no defence for the fleeing, at +attack and `tempo` times the
+# melee tempo: most of a battle's dead fell in the rout. On the field map the pursuit lasts
+# while pursuers keep contact; the simulation assumes `exchanges` of it.
+rout:
+  attack: 20
+  tempo: 2.0
+  exchanges: 3

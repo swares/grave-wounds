@@ -98,6 +98,7 @@ class Data:
     works: dict = field(default_factory=dict)       # works.yaml: camps, edge_works, hex_works
     weather: dict = field(default_factory=dict)     # weather.yaml: daylight, conditions, ground, rest, fatigue, climates
     disease: dict = field(default_factory=dict)     # disease.yaml: camp disease for travel-map forces
+    units: dict = field(default_factory=dict)       # units.yaml: unit combat on the field map
     warnings: list = field(default_factory=list)
 
 
@@ -127,6 +128,7 @@ def load(root: str | Path = "data") -> Data:
     works = _optional(root / "works.yaml", {"camps": {}, "edge_works": {}, "hex_works": {}})
     weather = _optional(root / "weather.yaml", {})
     disease = _optional(root / "disease.yaml", {})
+    units = _optional(root / "units.yaml", {})
     maps = {}
     for p in sorted((root / "maps").glob("*.yaml")) if (root / "maps").exists() else []:
         m = _read(p)
@@ -152,6 +154,7 @@ def load(root: str | Path = "data") -> Data:
         works=works,
         weather=weather,
         disease=disease,
+        units=units,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -447,6 +450,10 @@ def validate(d: Data) -> None:
     if d.disease:
         errors += _disease_errors(d, TT)
 
+    # unit combat
+    if d.units:
+        errors += _units_errors(d)
+
     # camps and works
     WK = d.works
     EW, HW = WK.get("edge_works", {}), WK.get("hex_works", {})
@@ -734,4 +741,23 @@ def _one_disease_errors(did: str, x: dict, steps: list) -> list[str]:
         errors.append(f"disease.yaml: {did} uses unknown factors {bad}")
     if not isinstance(x.get("virulence"), int) or not isinstance(x.get("base"), int):
         errors.append(f"disease.yaml: {did} base and virulence must be whole numbers")
+    return errors
+
+
+def _units_errors(d: Data) -> list[str]:
+    """units.yaml: qualities, tempos, missile weapons, deaths and morale."""
+    U, errors = d.units, []
+    for q, v in U.get("quality", {}).items():
+        if not all(isinstance(v.get(k), int) for k in ("attack", "defence", "nerve")):
+            errors.append(f"units.yaml: quality {q} needs whole-number attack, defence and nerve")
+    for k in ("melee", "missile", "rout"):
+        if not (isinstance(U.get(k, {}).get("tempo"), (int, float)) and U[k]["tempo"] > 0):
+            errors.append(f"units.yaml: {k}.tempo must be positive")
+    for wid in U.get("missile", {}).get("rate", {}):
+        if wid not in d.weapons or "range" not in d.weapons[wid]:
+            errors.append(f"units.yaml: missile rate for {wid}, which is not a weapon with a range")
+    order = d.wounds["vocabulary"]["lethal"]["order"]
+    errors += [f"units.yaml: dead_if names unknown lethality {x}" for x in U.get("dead_if", []) if x not in order]
+    if not isinstance(U.get("rout", {}).get("exchanges"), int):
+        errors.append("units.yaml: rout.exchanges must be a whole number")
     return errors
