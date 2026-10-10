@@ -199,6 +199,10 @@ legend{padding:0}
         <button class="small" id="btn-remove">Remove</button>
         <button class="small" id="btn-breach" title="Its front rank hacks at the palisade, gate, stakes or wagons in front of it each exchange">Breach the works</button>
         <button class="small" id="btn-limber" hidden title="A battery limbered moves but cannot fire; unlimbered it fires but can only be manhandled. Changing over takes an exchange.">Limber</button>
+        <button class="small" id="btn-resupply" hidden title="The caissons come up: a full load of rounds again. It takes an exchange out of contact, in which the battery neither moves nor fires.">Resupply</button>
+      </div>
+      <div class="row" id="target-box" hidden>
+        <div><label for="sel-target">Battery fires at</label><select id="sel-target"></select></div>
       </div>
 
       <h2>Heroes</h2>
@@ -465,11 +469,18 @@ function logLines(log, ex){
 }
 function unitLineText(l, nm){                     // a volley, a melee or a rout strike
   const dead = l.dead ? " (" + l.dead + " dead)" : "", fallen = `${l.hits} hit, ${l.down} down${dead}`;
-  if (l.kind === "cannon") return `${nm(l.att)} fire ${l.shot === "canister" ? "canister" : "round shot"} at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${l.guns} guns, ${l.blows} men in the way, ${fallen}.`;
+  if (l.kind === "cannon") return cannonText(l, nm, fallen);
+  if (l.kind === "ricochet") return `Round shot from ${nm(l.att)} bounds on ${fmtM(l.beyond * FD.units.hex_m)} into ${nm(l.dfd)}: ${l.blows} men in the way, ${fallen}.`;
   if (l.kind === "volley") return `${nm(l.att)} shoot at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${l.blows} aimed shots, ${fallen}.`;
   if (l.kind === "rout") return `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.`;
   const where = l.situation === "front" ? "" : " in the " + l.situation, up = l.penalty ? ", attacking up −" + l.penalty + "%" : "";
   return `${nm(l.att)} strike ${nm(l.dfd)}${where}, ${l.men} men${up}: ${l.blows} telling blows, ${fallen}.`;
+}
+function cannonText(l, nm, fallen){               // a battery's fire: its target, rounds, men struck, guns knocked out
+  const shot = l.shot === "canister" ? "canister" : "round shot", aim = l.named ? " (as ordered)" : "";
+  const guns = l.rounds < l.guns * FD.units.artillery.rounds ? `${l.guns} guns, ${l.rounds} rounds left to fire` : `${l.guns} guns`;
+  const lost = l.dismounted ? `; ${l.dismounted} gun${l.dismounted > 1 ? "s" : ""} knocked out` : "";
+  return `${nm(l.att)} fire ${shot} at ${nm(l.dfd)}${aim}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${guns}, ${l.blows} men in the way, ${fallen}${lost}.`;
 }
 function shotNotes(l){                            // " (cover -20%, weather -10%)"
   const bits = [];
@@ -781,13 +792,19 @@ function unitMeta(u){
   const down = u.down ? " · " + u.down + " down" : "", br = u.breach ? " · breaching" : "";
   return `${u.men}/${u.start} · ${u.state}${down}${br}${batteryMeta(u)}`;
 }
-function batteryMeta(u){                          // " · 6 guns, limbered"
+function batteryMeta(u){                          // " · 6 guns, limbered, 280 rounds"
   if (!isBattery(u)) return "";
   if (u.abandoned) return " · guns lost";
   let how = "unlimbered";
   if (u.limbering) how = u.limbered ? "unlimbering" : "limbering";
   else if (u.limbered) how = "limbered";
-  return ` · ${gunsServed(u)} guns, ${how}`;
+  if (u.resupplying) how += ", resupplying";
+  const left = ammoLeft(u);
+  return ` · ${gunsServed(u)} guns, ${how}, ${left ? left + " rounds" : "no rounds left"}`;
+}
+function gunsInfo(u){                             // the Guns line of the selected battery
+  const lost = u.guns_lost ? `, ${u.guns_lost} knocked out` : "", left = ammoLeft(u);
+  return `${gunsServed(u)} served of ${gunsOf(u)}${lost}; ${left} of ${gunsOf(u) * FD.units.artillery.ammo} rounds left${u.resupplying ? " (resupplying)" : ""}`;
 }
 function renderUnits(){
   $("#units").innerHTML = S.units.map(u => `<li data-id="${u.id}" aria-current="${u.id === S.sel}" tabindex="0"><span class="dot" style="background:var(--side${sideNo(u)})"></span><span><b>${esc(u.name)}</b> <span class="muted">${esc(banner(u))}</span></span><span class="meta">${unitMeta(u)}</span></li>`).join("") || `<li class="muted">No units. Add one below.</li>`;
@@ -801,6 +818,7 @@ function renderSel(){
   $("#btn-breach").disabled = !u || S.phase === "over" || u.state === "broken" || u.state === "fled";
   $("#btn-breach").textContent = u?.breach ? "Stop breaching" : "Breach the works";
   renderLimber(u, setup);
+  renderGunOrders(u, setup);
   if (!u){ $("#sel-info").innerHTML = ""; return }
   const f = FD.units.formations[u.formation], w = FD.weapons[u.weapon];
   const gun = isGun(u.weapon) ? `range ${FD.units.artillery.range} hexes (${fmtM(FD.units.artillery.range * FD.units.hex_m)}), canister to ${FD.units.artillery.canister_to}; crews fight with ${FD.weapons[meleeWeapon(u)].name.toLowerCase()}` : null;
@@ -811,7 +829,37 @@ function renderSel(){
     + `<dt>Quality</dt><dd>${u.quality}: attack ${quality(u.quality).attack}%, defence ${quality(u.quality).defence}%, Nerve ${quality(u.quality).nerve}</dd>`
     + `<dt>Arms</dt><dd>${esc(w.name)} (${reach}); ${esc(FD.kits[u.kit].name)}</dd>`
     + `<dt>Order</dt><dd>${f.name}, ${Math.min(u.width, Math.ceil(Math.max(1, u.men) / f.per_hex))} hexes of front${u.mounted ? ", mounted" : ""}</dd>`
+    + (isBattery(u) ? `<dt>Guns</dt><dd>${gunsInfo(u)}</dd>` : "")
     + `<dt>Moves</dt><dd>${allowance(u)} hexes; turning costs ${turnCost(u)} a step</dd>`;
+}
+function renderGunOrders(u, setup){               // the Resupply button and the target picker, for batteries only
+  const b = $("#btn-resupply"), box = $("#target-box"), gun = !!u && isBattery(u);
+  b.hidden = box.hidden = !gun;
+  if (!gun) return;
+  const gone = S.phase === "over" || !!u.abandoned || u.state === "broken" || u.state === "fled";
+  b.disabled = gone || (!setup && u.side !== moving()) || (!u.resupplying && !u.spent);
+  b.textContent = u.resupplying ? "Stop resupplying" : "Resupply";
+  const foes = S.units.filter(e => e.side !== u.side && e.state !== "fled" && e.men > 0);
+  if (u.target !== undefined && u.target !== null && !foes.some(e => e.id === u.target)) u.target = null;
+  $("#sel-target").innerHTML = `<option value="">The nearest enemy in front</option>` + foes.map(e => `<option value="${e.id}">${esc(unitName(e))}${isBattery(e) ? " (guns)" : ""}</option>`).join("");
+  $("#sel-target").value = u.target ?? "";
+  $("#sel-target").disabled = gone;
+}
+function setTarget(v){                            // the GM names the battery's target; it falls back to the nearest if it cannot fire on it
+  const u = selUnit(); if (!u || !isBattery(u)) return;
+  u.target = v === "" ? null : +v;
+  S.msg = u.target === null ? `${u.name} will fire at the nearest enemy in front.` : `${u.name} will fire at ${unitName(S.units[idx(u.target)])} when it can (in range, in sight, in front, with a clear line of fire); otherwise at the nearest.`;
+  render();
+}
+function toggleResupply(){                        // set-up: at once; in play: over this exchange, out of contact, instead of moving
+  const u = selUnit(); if (!u || !isBattery(u)) return;
+  if (S.phase === "setup"){ u.spent = 0; S.msg = `${u.name} has a full load of rounds.`; return render() }
+  const i = idx(u.id), was = S.start?.[i];
+  if (!u.resupplying && was && (was.pos[0] !== u.pos[0] || was.pos[1] !== u.pos[1] || was.facing !== u.facing)){ S.msg = `${u.name} has moved this phase: undo the move first.`; return render() }
+  if (!u.resupplying && inContact(S.units, occupancy(S.units), i)){ S.msg = `${u.name} is in contact: the caissons cannot come up.`; return render() }
+  u.resupplying = !u.resupplying;
+  S.msg = u.resupplying ? `${u.name} will resupply this exchange: it neither moves nor fires until it is done.` : "";
+  render();
 }
 function renderLimber(u, setup){                 // the Limber button, for batteries only
   const b = $("#btn-limber");
@@ -971,6 +1019,8 @@ function init(){
   $("#btn-remove").onclick = () => { const u = selUnit(); if (u){ S.units = S.units.filter(x => x.id !== u.id); S.sel = S.units[0] ? S.units[0].id : null; render() } };
   $("#btn-add").onclick = addUnit;
   $("#btn-limber").onclick = toggleLimber;
+  $("#btn-resupply").onclick = toggleResupply;
+  $("#sel-target").onchange = e => setTarget(e.target.value);
   $("#sel-weapon").onchange = e => { if (isGun(e.target.value)) $("#sel-form").value = "battery" };
   $("#btn-field").onclick = () => { loadBattlefield($("#sel-field").value, $("#chk-armies").checked); fillChoices(); render() };
   $("#btn-add-hero").onclick = addHero;

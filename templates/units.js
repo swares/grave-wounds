@@ -188,6 +188,20 @@ function step(h, dirn, n = 1){
 }
 function cube(h){ const q = h[0] - (h[1] - (h[1] & 1)) / 2; return [q, h[1], -q - h[1]] }
 function hdist(a, b){ const x = cube(a), y = cube(b); return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2])) }
+function cubeRound(x, y, z){                    // the offset hex nearest a point in cube coordinates
+  let rx = Math.floor(x + 0.5), ry = Math.floor(y + 0.5);
+  const rz = Math.floor(z + 0.5), dx = Math.abs(rx - x), dy = Math.abs(ry - y), dz = Math.abs(rz - z);
+  if (dx > dy && dx > dz) rx = -ry - rz;
+  else if (dy > dz) ry = -rx - rz;
+  return [rx + (ry - (ry & 1)) / 2, ry];
+}
+function ray(a, b, n){                           // the hexes on the line from a through b, n steps (b is step hdist(a, b))
+  const s = cube(a), c = cube(b), k = hdist(a, b);
+  if (k === 0) return [[...a]];
+  const out = [];
+  for (let i = 0; i <= n; i++) out.push(cubeRound(s[0] + (c[0] - s[0]) * i / k + 1e-6, s[1] + (c[1] - s[1]) * i / k + 2e-6, s[2] + (c[2] - s[2]) * i / k - 3e-6));
+  return out;
+}
 function arc(facing, dirn){
   const k = mod6(dirn - facing);
   if (k <= 1) return "front";
@@ -273,17 +287,37 @@ function strikes(units, field = null){            // [{att, dfd, men, situation,
   return out;
 }
 function fvec(facing){ const a = AX[mod6(facing)], b = AX[mod6(facing + 1)], q = a[0] + b[0], r = a[1] + b[1]; return [q, r, -q - r] }
-function target(units, i, field){                // [distance, index, shooter hex, target hex] of the nearest enemy in range, in sight, in front; or null
+function target(units, i, field, occ = null){    // [distance, index, shooter hex, target hex] of the nearest enemy in range, in sight, in front; or null (a battery: its named target first, a clear line of fire)
   const u = units[i], fv = fvec(u.facing), front = footprint(u)[0];
+  const named = namedTarget(units, i, field, occ);
+  if (named) return named;
   let best = null;
   units.forEach((e, j) => {
     if (e.side === u.side || e.men <= 0 || e.state === "fled") return;
-    const near = nearestAhead(u.weapon, front, fv, footprint(e).flat(), field);
+    const near = nearestAhead(u.weapon, front, fv, footprint(e).flat(), field, clearFn(units, occ, field, i, j));
     if (near && (best === null || near[0] < best[0])) best = [near[0], j, near[1], near[2]];
   });
   return best;
 }
-function nearestAhead(weapon, front, fv, hexes, field){  // [distance, front hex, target hex]: the shortest in range and in sight ahead of the line
+function namedTarget(units, i, field, occ){       // the GM's named target for a battery, if it can be fired on
+  const u = units[i];
+  if (!occ || u.target === undefined || u.target === null) return null;
+  const j = units.findIndex(e => e.id !== undefined && e.id === u.target);
+  if (j < 0 || units[j].side === u.side || out_(units[j])) return null;
+  const near = nearestAhead(u.weapon, footprint(u)[0], fvec(u.facing), footprint(units[j]).flat(), field, clearFn(units, occ, field, i, j));
+  return near ? [near[0], j, near[1], near[2]] : null;
+}
+const clearFn = (units, occ, field, i, j) => (occ && isGun(units[i].weapon) ? (h, t, dist) => lineClear(occ, field, i, j, h, t, dist) : null);
+function lineClear(occ, field, i, j, h, t, dist){  // no other unit between gun and target, but round shot from high ground over lower
+  const over = dist > UD.artillery.canister_to && groundAt(field, h).height;
+  for (const x of ray(h, t, dist).slice(1, -1)){
+    const k = occ[hk(x)];
+    if (k === undefined || k === i || k === j) continue;
+    if (!over || groundAt(field, x).height) return false;
+  }
+  return true;
+}
+function nearestAhead(weapon, front, fv, hexes, field, clear = null){  // [distance, front hex, target hex]: the shortest in range and in sight ahead of the line (a gun: and a clear line)
   let best = null;
   for (const t of hexes){
     const c = cube(t);
@@ -293,7 +327,7 @@ function nearestAhead(weapon, front, fv, hexes, field){  // [distance, front hex
       const dist = hdist(h, t);
       if (best !== null && dist >= best[0]) continue;
       const wx = shotWeather(field, weapon, dist, h, t);
-      if (!wx.blocked && reaches(weapon, dist, wx.reach || 0)) best = [dist, h, t];
+      if (!wx.blocked && reaches(weapon, dist, wx.reach || 0) && (!clear || clear(h, t, dist))) best = [dist, h, t];
     }
   }
   return best;
@@ -379,12 +413,20 @@ function shootAll(us, table, rng, acc, log, field){
       log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: v.att, dfd: v.dfd, dist: v.dist }, t));
     }
   }
-  for (const c of cannonades(us, field)){
-    const a = us[c.att], b = us[c.dfd];
-    const t = takeHurt(b, cannonade(sideOfUnit(a, table), b, c, rng, exposure(b, false, true)));
-    tallyLoss(acc, c, t);
-    log.push(...logged({ kind: "cannon", ...c }, t));
-  }
+  for (const c of cannonades(us, field)) fireBattery(us, table, rng, acc, log, c);
+}
+function fireBattery(us, table, rng, acc, log, c){   // at the target, guns knocked out there, then balls bounding on into the unit behind
+  const a = us[c.att], b = us[c.dfd], gun = sideOfUnit(a, table);
+  let t = takeHurt(b, cannonade(gun, b, c, rng, exposure(b, false, true)));
+  a.spent = (a.spent || 0) + c.rounds;
+  if (t.dismounted) b.guns_lost = (b.guns_lost || 0) + t.dismounted;
+  tallyLoss(acc, c, t);
+  log.push(...logged({ kind: "cannon", ...c }, t));
+  if (c.behind === null) return;
+  const r = { ...c, dfd: c.behind }, bh = us[r.dfd];
+  t = takeHurt(bh, ricochet(gun, bh, c, rng, exposure(bh, false, true)));
+  tallyLoss(acc, r, t);
+  log.push(...logged({ kind: "ricochet", ...r }, t));
 }
 function breachable(field, u, h){                // [kind, key, item]: the first work h's front rank can hack at
   for (const dn of [u.facing, u.facing + 1]){
@@ -455,9 +497,9 @@ function routStrike(us, occ, j, table, rng){     // a unit that has just broken 
 }
 
 // ---------- movement ----------
-function allowance(u){                            // hexes a unit may move (twice for a charge); a battery changing over not at all, unlimbered a hex or so
+function allowance(u){                            // hexes a unit may move (twice for a charge); a battery changing over or resupplying not at all, unlimbered a hex or so
   if (isBattery(u) && !u.abandoned && u.state !== "broken"){   // crews running from their guns run on foot
-    if (u.limbering) return 0;
+    if (u.limbering || u.resupplying) return 0;
     if (!u.limbered) return UD.artillery.pushed;
   }
   return u.mounted ? UD.mounted_move : form(u).move;
@@ -586,7 +628,9 @@ function aftermath(units, care, rng){            // per unit {left, died, cases}
 const isGun = w => (UD.artillery?.guns || []).includes(w);
 const isBattery = u => isGun(u.weapon);
 const meleeWeapon = u => (isBattery(u) ? UD.artillery.crew_weapon : u.weapon);
-const gunsServed = u => Math.min(Math.ceil((u.start ?? u.men) / UD.artillery.crew), Math.ceil(Math.max(0, u.men) / UD.artillery.crew));
+const gunsOf = u => Math.ceil((u.start ?? u.men) / UD.artillery.crew);   // the guns it brought into action
+const gunsServed = u => Math.max(0, Math.min(gunsOf(u) - (u.guns_lost || 0), Math.ceil(Math.max(0, u.men) / UD.artillery.crew)));
+const ammoLeft = u => Math.max(0, gunsOf(u) * UD.artillery.ammo - (u.spent || 0));
 function gunWeather(field, dist, h = null, t = null){   // no laying guns on what cannot be seen (less with rain or snow in the gunners' faces); the wind as on firearms
   const out = { blocked: null, penalty: 0, misfire: 0, reach: 0 }, w = field?.weather;
   if (!w) return out;
@@ -598,16 +642,33 @@ function gunWeather(field, dist, h = null, t = null){   // no laying guns on wha
   return out;
 }
 const chanceAt = (bands, dist) => (bands.find(([to]) => dist <= to) || [0, 0])[1];
-function cannonades(units, field = null){         // [{att, dfd, guns, dist, shot, cover, penalty}]
+const canFire = u => isBattery(u) && !out_(u) && !u.abandoned && !u.limbered && !u.limbering && !u.resupplying && gunsServed(u) > 0 && ammoLeft(u) > 0;
+function cannonades(units, field = null){         // [{att, dfd, guns, rounds, dist, shot, cover, penalty, named, behind, beyond}]
   const occ = occupancy(units), out = [], A = UD.artillery;
   units.forEach((u, i) => {
-    if (!A || !isBattery(u) || out_(u) || u.limbered || u.limbering || u.abandoned || inContact(units, occ, i)) return;
-    const best = target(units, i, field);
+    if (!A || !canFire(u) || inContact(units, occ, i)) return;
+    const best = target(units, i, field, occ);
     if (!best) return;
-    const wx = gunWeather(field, best[0], best[2], best[3]);
-    out.push({ att: i, dfd: best[1], guns: gunsServed(u), dist: best[0], shot: best[0] <= A.canister_to ? "canister" : "round", cover: coverAt(field, best[2], best[3]), penalty: wx.penalty });
+    const wx = gunWeather(field, best[0], best[2], best[3]), shot = best[0] <= A.canister_to ? "canister" : "round";
+    const behind = shot === "round" ? ricochetAt(occ, field, i, best) : null, tid = units[best[1]].id;
+    out.push({ att: i, dfd: best[1], guns: gunsServed(u), rounds: Math.min(gunsServed(u) * A.rounds, ammoLeft(u)), dist: best[0], shot, cover: coverAt(field, best[2], best[3]), penalty: wx.penalty,
+      named: tid !== undefined && tid !== null && tid === u.target, behind: behind ? behind[0] : null, beyond: behind ? behind[1] : 0 });
   });
   return out;
+}
+function softGround(field){                       // mud or snow deep enough to stop a ball bounding
+  const g = field?.weather?.ground || {}, soft = UD.artillery.ricochet.soft;
+  return (g.mud || 0) >= soft || (g.snow || 0) >= soft;
+}
+function ricochetAt(occ, field, i, best){          // [unit index, hexes past the target] a bounding ball can strike, or null
+  if (softGround(field)) return null;
+  const [dist, j, h, t] = best, line = ray(h, t, dist + UD.artillery.ricochet.beyond).slice(dist);
+  for (let k = 0; k < line.length; k++){
+    if (groundAt(field, line[k]).stops_shot) return null;
+    const u = occ[hk(line[k])];
+    if (k > 0 && u !== undefined && u !== i && u !== j) return [u, k];
+  }
+  return null;
 }
 function canisterStruck(A, c, cut, rounds, rng){   // men hit by canister: each ball a chance
   const p = chanceAt(A.canister.strike, c.dist) * cut;
@@ -615,22 +676,37 @@ function canisterStruck(A, c, cut, rounds, rng){   // men hit by canister: each 
   for (let k = 0; k < rounds * A.canister.balls; k++) if (rng.randint(1, 100) <= p) struck++;
   return struck;
 }
-function roundShotStruck(A, c, cut, rounds, target, rng){   // men hit by round shot: each ball that strikes goes through the ranks
-  const rs = A.round_shot, p = chanceAt(rs.strike, c.dist) * cut, path = Math.min(rs.path_max, form(target).ranks * footprint(target).length);
-  let struck = 0;
+function roundShotStruck(A, p, rounds, target, rng){   // [men hit, balls that struck]: each ball that strikes (p %) goes through the ranks
+  const rs = A.round_shot, path = Math.min(rs.path_max, form(target).ranks * footprint(target).length);
+  let struck = 0, hits = 0;
   for (let k = 0; k < rounds; k++){
     if (rng.randint(1, 100) > p) continue;
+    hits++;
     for (let m = 0; m < path; m++) if (rng.randint(1, 100) <= rs.file) struck++;
   }
-  return struck;
+  return [struck, hits];
 }
-function cannonade(att, target, c, rng, exposed = []){   // a battery's fire at the target unit: the men struck, then a wound roll each
-  const A = UD.artillery, rounds = c.guns * A.rounds, cut = form(target).missile_factor * (100 - c.cover - c.penalty) / 100;
-  const struck = c.shot === "canister" ? canisterStruck(A, c, cut, rounds, rng) : roundShotStruck(A, c, cut, rounds, target, rng);
+function cannonade(att, target, c, rng, exposed = []){   // a battery's fire at the target unit: the men struck, then a wound roll each; guns knocked out
+  const A = UD.artillery, rounds = c.rounds, cut = form(target).missile_factor * (100 - c.cover - c.penalty) / 100;
+  let struck, hits = 0;
+  if (c.shot === "canister") struck = canisterStruck(A, c, cut, rounds, rng);
+  else [struck, hits] = roundShotStruck(A, chanceAt(A.round_shot.strike, c.dist) * cut, rounds, target, rng);
+  const t = blows(att, sideOfUnit(target, att.table), struck, A.attack, 0, rng, { exposed, shift: -1000 });
+  if (isBattery(target)){
+    let n = 0;
+    for (let k = 0; k < hits; k++) if (rng.randint(1, 100) <= A.dismount) n++;
+    t.dismounted = Math.min(n, gunsServed(target));
+  }
+  return t;
+}
+function ricochet(att, target, c, rng, exposed = []){   // balls bounding on into the unit behind the target
+  const A = UD.artillery, p = chanceAt(A.ricochet.strike, c.beyond) * form(target).missile_factor;
+  const [struck] = roundShotStruck(A, p, c.rounds, target, rng);
   return blows(att, sideOfUnit(target, att.table), struck, A.attack, 0, rng, { exposed, shift: -1000 });
 }
-function batteryAfter(u){                          // end of an exchange: changing over is done; a broken battery has left its guns
+function batteryAfter(u){                          // end of an exchange: changing over is done, resupply is in; a broken battery has left its guns
   if (!isBattery(u)) return;
+  if (u.resupplying){ u.spent = 0; u.resupplying = false }
   if (u.limbering){ u.limbered = !u.limbered; u.limbering = false }
   if (u.state === "broken" || u.state === "fled") u.abandoned = true;
 }

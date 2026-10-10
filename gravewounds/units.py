@@ -380,6 +380,26 @@ def hdist(a, b) -> int:
     return max(abs(x[0] - y[0]), abs(x[1] - y[1]), abs(x[2] - y[2]))
 
 
+def _cube_round(x: float, y: float, z: float) -> list:
+    """The offset hex nearest a point in cube coordinates."""
+    rx, ry, rz = math.floor(x + 0.5), math.floor(y + 0.5), math.floor(z + 0.5)
+    dx, dy, dz = abs(rx - x), abs(ry - y), abs(rz - z)
+    if dx > dy and dx > dz:
+        rx = -ry - rz
+    elif dy > dz:
+        ry = -rx - rz
+    return [rx + (ry - (ry & 1)) // 2, ry]
+
+
+def ray(a, b, n: int) -> list:
+    """The hexes on the line from hex a through hex b, n steps (b is step hdist(a, b))."""
+    s, c, k = _cube(a), _cube(b), hdist(a, b)
+    if k == 0:
+        return [list(a)]
+    return [_cube_round(s[0] + (c[0] - s[0]) * i / k + 1e-6, s[1] + (c[1] - s[1]) * i / k + 2e-6,
+                        s[2] + (c[2] - s[2]) * i / k - 3e-6) for i in range(n + 1)]
+
+
 def arc(facing: int, dirn: int) -> str:
     """front, flank or rear: where direction dirn falls for a unit with this facing."""
     k = (dirn - facing) % 6
@@ -627,23 +647,61 @@ def cover_at(d: Data, field: dict | None, h, t) -> int:
     return max(C.missile_cover(d, _works(field), h, t, cols, rows)["cover"], ground_at(d, field, t).get("cover", 0))
 
 
-def _target(d: Data, units: list, i: int, field: dict | None = None):
+def _target(d: Data, units: list, i: int, field: dict | None = None, occ: dict | None = None):
     """(distance, index, shooter hex, target hex) of the nearest enemy unit in range, in
-    sight and in front of unit i, or None."""
+    sight and in front of unit i, or None. A battery fires at the unit the GM named
+    (u["target"], its id) if it can, and needs a clear line of fire (occ given)."""
     u, fv, best = units[i], _fvec(units[i]["facing"]), None
     front = footprint(d, u)[0]
+    named = _named_target(d, units, i, field, occ)
+    if named is not None:
+        return named
     for j, e in enumerate(units):
         if e["side"] == u["side"] or e["men"] <= 0 or e["state"] == "fled":
             continue
-        near = _nearest_ahead(d, u["weapon"], front, fv, [t for row in footprint(d, e) for t in row], field)
+        near = _nearest_ahead(d, u["weapon"], front, fv, [t for row in footprint(d, e) for t in row], field, _clear_fn(d, units, occ, field, i, j))
         if near is not None and (best is None or near[0] < best[0]):
             best = (near[0], j, near[1], near[2])
     return best
 
 
-def _nearest_ahead(d: Data, weapon: str, front: list, fv: tuple, hexes: list, field: dict | None = None):
+def _named_target(d: Data, units: list, i: int, field: dict | None, occ: dict | None):
+    """The GM's named target for a battery, as _target gives it, if it can be fired on."""
+    u = units[i]
+    if occ is None or u.get("target") is None:
+        return None
+    j = next((k for k, e in enumerate(units) if e.get("id") == u["target"]), None)
+    if j is None or units[j]["side"] == u["side"] or _out(units[j]):
+        return None
+    hexes = [t for row in footprint(d, units[j]) for t in row]
+    near = _nearest_ahead(d, u["weapon"], footprint(d, u)[0], _fvec(u["facing"]), hexes, field, _clear_fn(d, units, occ, field, i, j))
+    return None if near is None else (near[0], j, near[1], near[2])
+
+
+def _clear_fn(d: Data, units: list, occ: dict | None, field: dict | None, i: int, j: int):
+    """For a gun: a test that its line of fire from h to t is clear; None for anything else."""
+    if occ is None or not is_gun(d, units[i]["weapon"]):
+        return None
+    return lambda h, t, dist: line_clear(d, occ, field, i, j, h, t, dist)
+
+
+def line_clear(d: Data, occ: dict, field: dict | None, i: int, j: int, h, t, dist: int) -> bool:
+    """Whether battery i can fire from hex h at unit j's hex t: no other unit's hex between,
+    except round shot from high ground over a unit on lower ground."""
+    over = dist > d.units["artillery"]["canister_to"] and ground_at(d, field, h).get("height")
+    for x in ray(h, t, dist)[1:-1]:
+        k = occ.get(f"{x[0]},{x[1]}")
+        if k is None or k in (i, j):
+            continue
+        if not over or ground_at(d, field, x).get("height"):
+            return False
+    return True
+
+
+def _nearest_ahead(d: Data, weapon: str, front: list, fv: tuple, hexes: list, field: dict | None = None, clear=None):
     """(distance, front hex, target hex): the shortest distance in range and in sight from a
-    front hex to one of `hexes` ahead of the line, or None."""
+    front hex to one of `hexes` ahead of the line (and, for a gun, with a clear line of fire),
+    or None."""
     best = None
     for t in hexes:
         c = _cube(t)
@@ -655,7 +713,7 @@ def _nearest_ahead(d: Data, weapon: str, front: list, fv: tuple, hexes: list, fi
             if best is not None and dist >= best[0]:
                 continue
             wx = shot_weather(d, field, weapon, dist, h, t)
-            if not wx["blocked"] and _reaches(d, weapon, dist, wx.get("reach", 0)):
+            if not wx["blocked"] and _reaches(d, weapon, dist, wx.get("reach", 0)) and (clear is None or clear(h, t, dist)):
                 best = (dist, h, t)
     return best
 
@@ -731,10 +789,26 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
             _tally(*acc, v, t)
             log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": v["att"], "dfd": v["dfd"], "dist": v["dist"]}, t)
     for c in cannonades(d, us, field):
-        a, b = us[c["att"]], us[c["dfd"]]
-        t = _take_hurt(b, cannonade(d, {**_side(a, table), "weapon": a["weapon"]}, b, c, rng, _exposure(d, b, False, True)))
-        _tally(*acc, c, t)
-        log += _logged({"kind": "cannon", **c}, t)
+        log += _fire_battery(d, us, table, rng, acc, c)
+    return log
+
+
+def _fire_battery(d: Data, us: list, table: str, rng, acc: tuple, c: dict) -> list:
+    """One battery's fire: at its target, any guns it knocks out there, then any balls that
+    bound on into the unit behind."""
+    a, b = us[c["att"]], us[c["dfd"]]
+    gun = {**_side(a, table), "weapon": a["weapon"]}
+    t = _take_hurt(b, cannonade(d, gun, b, c, rng, _exposure(d, b, False, True)))
+    a["spent"] = a.get("spent", 0) + c["rounds"]
+    if t.get("dismounted"):
+        b["guns_lost"] = b.get("guns_lost", 0) + t["dismounted"]
+    _tally(*acc, c, t)
+    log = _logged({"kind": "cannon", **c}, t)
+    if c["behind"] is not None:
+        r = {**c, "dfd": c["behind"]}
+        t = _take_hurt(us[r["dfd"]], ricochet(d, gun, us[r["dfd"]], c, rng, _exposure(d, us[r["dfd"]], False, True)))
+        _tally(*acc, r, t)
+        log += _logged({"kind": "ricochet", **r}, t)
     return log
 
 
@@ -847,10 +921,10 @@ def _rout_strike(d: Data, us: list, occ: dict, j: int, table: str, rng) -> list:
 # ---------- movement ----------
 
 def allowance(d: Data, u: dict) -> int:
-    """Hexes a unit may move in an exchange (twice this for a charge). A battery limbering or
-    unlimbering does not move; unlimbered, it can only be manhandled a hex or so."""
+    """Hexes a unit may move in an exchange (twice this for a charge). A battery limbering,
+    unlimbering or resupplying does not move; unlimbered, it can only be manhandled a hex or so."""
     if is_battery(d, u) and not u.get("abandoned") and u["state"] != "broken":   # crews running from their guns run on foot
-        if u.get("limbering"):
+        if u.get("limbering") or u.get("resupplying"):
             return 0
         if not u.get("limbered"):
             return d.units["artillery"]["pushed"]
@@ -1091,10 +1165,20 @@ def melee_weapon(d: Data, u: dict) -> str:
     return d.units["artillery"]["crew_weapon"] if is_battery(d, u) else u["weapon"]
 
 
+def guns_of(d: Data, u: dict) -> int:
+    """The guns a battery brought into action: one for every `crew` men it started with."""
+    return math.ceil(u.get("start", u["men"]) / d.units["artillery"]["crew"])
+
+
 def guns_served(d: Data, u: dict) -> int:
-    """Guns the crews still serve: one for every `crew` men left, up to the battery's guns."""
+    """Guns the crews still serve: one for every `crew` men left, up to the guns not knocked out."""
     crew = d.units["artillery"]["crew"]
-    return min(math.ceil(u.get("start", u["men"]) / crew), math.ceil(max(0, u["men"]) / crew))
+    return max(0, min(guns_of(d, u) - u.get("guns_lost", 0), math.ceil(max(0, u["men"]) / crew)))
+
+
+def ammo_left(d: Data, u: dict) -> int:
+    """Rounds the battery has left: `ammo` a gun it brought, less those it has fired."""
+    return max(0, guns_of(d, u) * d.units["artillery"]["ammo"] - u.get("spent", 0))
 
 
 def gun_weather(d: Data, field: dict | None, dist: int, h=None, t=None) -> dict:
@@ -1120,24 +1204,57 @@ def _chance_at(bands: list, dist: int) -> int:
     return next((ch for to, ch in bands if dist <= to), 0)
 
 
+def _can_fire(d: Data, u: dict) -> bool:
+    """Unlimbered, not changing over or resupplying, not broken, with guns served and rounds left."""
+    if not is_battery(d, u) or _out(u) or u.get("abandoned"):
+        return False
+    if u.get("limbered") or u.get("limbering") or u.get("resupplying"):
+        return False
+    return guns_served(d, u) > 0 and ammo_left(d, u) > 0
+
+
 def cannonades(d: Data, units: list, field: dict | None = None) -> list:
-    """Which batteries fire at whom: [{att, dfd, guns, dist, shot (canister or round), cover,
-    penalty}]. A battery fires unlimbered, not changing over, not broken and not in contact,
-    with the guns its crews still serve, at the nearest enemy in range and in sight in front."""
+    """Which batteries fire at whom: [{att, dfd, guns, rounds, dist, shot (canister or round),
+    cover, penalty, named, behind, beyond}]. A battery fires unlimbered, not changing over, not
+    broken and not in contact, with the guns its crews still serve and the rounds it has left,
+    at its named target or the nearest enemy in range, in sight and in front, with a clear line
+    of fire. behind: the unit a bounding round-shot ball can strike, beyond: how far past."""
     occ, out, A = occupancy(d, units), [], d.units.get("artillery")
     for i, u in enumerate(units):
-        if not A or not is_battery(d, u) or _out(u) or u.get("limbered") or u.get("limbering") or u.get("abandoned"):
+        if not A or not _can_fire(d, u) or in_contact(d, units, occ, i):
             continue
-        if in_contact(d, units, occ, i):
-            continue
-        best = _target(d, units, i, field)
+        best = _target(d, units, i, field, occ)
         if best is None:
             continue
-        wx = gun_weather(d, field, best[0], best[2], best[3])
-        out.append({"att": i, "dfd": best[1], "guns": guns_served(d, u), "dist": best[0],
-                    "shot": "canister" if best[0] <= A["canister_to"] else "round", "cover": cover_at(d, field, best[2], best[3]),
-                    "penalty": wx["penalty"]})
+        wx, shot = gun_weather(d, field, best[0], best[2], best[3]), "canister" if best[0] <= A["canister_to"] else "round"
+        behind = _ricochet_at(d, occ, field, i, best) if shot == "round" else None
+        out.append({"att": i, "dfd": best[1], "guns": guns_served(d, u), "rounds": min(guns_served(d, u) * A["rounds"], ammo_left(d, u)),
+                    "dist": best[0], "shot": shot, "cover": cover_at(d, field, best[2], best[3]), "penalty": wx["penalty"],
+                    "named": units[best[1]].get("id") is not None and units[best[1]].get("id") == u.get("target"),
+                    "behind": behind[0] if behind else None, "beyond": behind[1] if behind else 0})
     return out
+
+
+def _soft(d: Data, field: dict | None) -> bool:
+    """Mud or snow deep enough to stop a ball bounding."""
+    g, soft = ((field or {}).get("weather") or {}).get("ground") or {}, d.units["artillery"]["ricochet"]["soft"]
+    return g.get("mud", 0) >= soft or g.get("snow", 0) >= soft
+
+
+def _ricochet_at(d: Data, occ: dict, field: dict | None, i: int, best: tuple):
+    """(unit index, hexes past the target) of the first other unit a ball fired from best's
+    shooter hex at its target hex bounds into, or None (soft or broken ground stops it)."""
+    if _soft(d, field):
+        return None
+    dist, j, h, t = best
+    beyond = d.units["artillery"]["ricochet"]["beyond"]
+    for k, x in enumerate(ray(h, t, dist + beyond)[dist:]):
+        if ground_at(d, field, x).get("stops_shot"):
+            return None
+        u = occ.get(f"{x[0]},{x[1]}")
+        if k > 0 and u is not None and u not in (i, j):
+            return u, k
+    return None
 
 
 def _canister_struck(art: dict, c: dict, cut: float, rounds: int, rng) -> int:
@@ -1146,35 +1263,53 @@ def _canister_struck(art: dict, c: dict, cut: float, rounds: int, rng) -> int:
     return sum(rng.randint(1, 100) <= p for _ in range(rounds * art["canister"]["balls"]))
 
 
-def _round_shot_struck(d: Data, art: dict, c: dict, cut: float, rounds: int, target: dict, rng) -> int:
-    """Men hit by round shot: each ball that strikes the unit goes through its ranks."""
+def _round_shot_struck(d: Data, art: dict, p: float, rounds: int, target: dict, rng) -> tuple:
+    """(men hit, balls that struck) by round shot: each ball that strikes the unit (p %) goes
+    through its ranks."""
     rs = art["round_shot"]
-    p, path = _chance_at(rs["strike"], c["dist"]) * cut, min(rs["path_max"], form(d, target)["ranks"] * len(footprint(d, target)))
-    struck = 0
+    path = min(rs["path_max"], form(d, target)["ranks"] * len(footprint(d, target)))
+    struck = hits = 0
     for _ in range(rounds):
         if rng.randint(1, 100) <= p:
+            hits += 1
             struck += sum(rng.randint(1, 100) <= rs["file"] for _ in range(path))
-    return struck
+    return struck, hits
 
 
 def cannonade(d: Data, att: dict, target: dict, c: dict, rng, exposed: tuple = ()) -> dict:
     """One exchange of a battery's fire (att: the battery as a side, with its gun; c, from
     cannonades) at the target unit: the men struck, then a wound roll for each."""
     A = d.units["artillery"]
-    rounds = c["guns"] * A["rounds"]
+    rounds = c["rounds"]
     cut = form(d, target)["missile_factor"] * (100 - c["cover"] - c["penalty"]) / 100
+    hits = 0
     if c["shot"] == "canister":
         struck = _canister_struck(A, c, cut, rounds, rng)
     else:
-        struck = _round_shot_struck(d, A, c, cut, rounds, target, rng)
+        struck, hits = _round_shot_struck(d, A, _chance_at(A["round_shot"]["strike"], c["dist"]) * cut, rounds, target, rng)
+    t = _blows(d, att, _side(target, att["table"]), struck, A["attack"], 0, rng, exposed, -1000)
+    if is_battery(d, target):
+        t["dismounted"] = min(sum(rng.randint(1, 100) <= A["dismount"] for _ in range(hits)), guns_served(d, target))
+    return t
+
+
+def ricochet(d: Data, att: dict, target: dict, c: dict, rng, exposed: tuple = ()) -> dict:
+    """The balls of a battery's round shot that bound on into the unit behind its target
+    (c from cannonades: behind, beyond): the men struck, then a wound roll for each."""
+    A = d.units["artillery"]
+    p = _chance_at(A["ricochet"]["strike"], c["beyond"]) * form(d, target)["missile_factor"]
+    struck, _ = _round_shot_struck(d, A, p, c["rounds"], target, rng)
     return _blows(d, att, _side(target, att["table"]), struck, A["attack"], 0, rng, exposed, -1000)
 
 
 def _battery_after(d: Data, u: dict) -> None:
-    """At the end of an exchange: a battery that was changing over is now limbered or not; one
-    that has broken has left its guns."""
+    """At the end of an exchange: a battery that was changing over is now limbered or not, one
+    that was resupplying has its rounds again, and one that has broken has left its guns."""
     if not is_battery(d, u):
         return
+    if u.get("resupplying"):
+        u["spent"] = 0
+        u["resupplying"] = False
     if u.get("limbering"):
         u["limbered"] = not u.get("limbered")
         u["limbering"] = False

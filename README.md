@@ -50,7 +50,7 @@ bulk each minute through the same wound tables. Morale decides most fights, and 
 does most of the killing. Named characters still fight one by one. The field map,
 `dist/field.html`, puts units on 11-yard (10 m) hexes: each side moves, then every melee and volley
 is resolved together, with flank and rear, morale and the pursuit, batteries of guns firing
-round shot and canister, on painted ground
+round shot and canister (bounding on over firm ground, at named targets, until the rounds run out), on painted ground
 with the battle map's works and weather, or on a real battlefield (Sidon, Visby, Agincourt, Towton, Lützen or Albuera, with both
 armies drawn up). A fight on the travel
 map can be fought there, and its wounded go back to camp, where wound fever can take
