@@ -195,6 +195,28 @@ def camp_done(d: Data, day: int, used: float, hours: float, hpd_list: list | Non
     return {"day": day, "used": used + left}
 
 
+def camp_worked(d: Data, start: dict, day: int, used: float, hpd_list: list | None = None) -> float:
+    """Hours of camp work from start {day, used} until (day, used). Work uses each day's
+    marching hours and then evening_hours, as in camp_done. hpd_list: marching hours of the
+    start day, the day after and so on."""
+    ev, t = d.works["evening_hours"], 0.0
+    for k in range(start["day"], day + 1):
+        cap = _hpd(d, hpd_list, k - start["day"]) + ev
+        begin = start["used"] if k == start["day"] else 0.0
+        end = used if k == day else cap
+        t += max(0.0, min(end, cap) - begin)
+    return t
+
+
+def camp_labour_done(d: Data, camp: dict, day: int, used: float, hpd_list: list | None = None) -> float:
+    """Man-hours of the camp's works done by (day, used). camp: {start, setup (hours before the
+    works begin), rate (man-hours an hour), labour (all of it)}. A camp without a start is done."""
+    if not camp.get("start"):
+        return camp.get("labour", 0)
+    worked = camp_worked(d, camp["start"], day, used, hpd_list)
+    return min(camp["labour"], max(0.0, worked - camp["setup"]) * camp["rate"])
+
+
 # ---------- who fights ----------
 
 def _camped(o: dict) -> bool:
@@ -211,16 +233,18 @@ def _arrived(o: dict) -> tuple:
     return o["day"], o["used"]
 
 
-def fight_plan(d: Data, forces: list, sel) -> dict:
+def fight_plan(d: Data, forces: list, sel, wait: bool = True) -> dict:
     """Who fights if force `sel` (an id) sets up a fight. Forces: [{id, side, pos, camp, day,
     used}], camp {kind, hex, from?}. An enemy force must have marched to within `fight_within` hexes. If `sel` is not
     camped, the fight is at a camp within reach: a friendly force's first (it defends, and
     `sel` with it), else an enemy's (the enemy defends). The defender fights everyone of
-    another side within reach of it. The fight starts when the defender's clock and every
-    attacker's arrival are past. Forces of the defender's side within reach join the
+    another side within reach of it. With `wait`, the fight starts when the defender's clock
+    and every attacker's arrival are past (its camp is finished); without, as soon as the
+    defender and every attacker have arrived. `early`: attacking now is sooner than waiting. Forces of the defender's side within reach join the
     defence if they had arrived by then. A camped force arrived when it began its camp
     (camp["from"]: {day, used}); any other force, at its clock.
-    {defender, allies, attackers (ids, nearest first), late (allies not there yet), day, used};
+    {defender, allies, attackers (ids, nearest first), late (allies not there yet), day, used,
+    early};
     attackers is empty if no enemy is near."""
     reach = d.terrain["fight_within"]
     f = next(o for o in forces if o["id"] == sel)
@@ -236,9 +260,11 @@ def fight_plan(d: Data, forces: list, sel) -> dict:
         if camps:
             defender = camps[0]
     attackers = near(defender, False)
-    day, used = max([(defender["day"], defender["used"])] + [_arrived(o) for o in attackers])
+    now = max([_arrived(defender)] + [_arrived(o) for o in attackers])
+    ready = max((defender["day"], defender["used"]), now)
+    day, used = ready if wait else now
     friends = near(defender, True)
     allies = [o["id"] for o in friends if _arrived(o) <= (day, used)]
     late = [o["id"] for o in friends if _arrived(o) > (day, used)]
     return {"defender": defender["id"], "allies": allies, "attackers": [o["id"] for o in attackers],
-            "late": late, "day": day, "used": used}
+            "late": late, "day": day, "used": used, "early": now < ready}

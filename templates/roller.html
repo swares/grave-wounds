@@ -1490,7 +1490,7 @@ function setupHandoff(){                     // a camp or position sent from the
   const need = 2 * (r + (lay === "fortified" ? 3 : lay ? 2 : 1)) + 6;
   S.map = { cols: Math.min(80, Math.max(24, need)), rows: Math.min(60, Math.max(16, need)) };
   const { cols, rows } = S.map;
-  const L = lay ? campWorks(h.camp, men, ft, cols, rows) : { centre: [cols >> 1, rows >> 1], radius: r, fits: true, works: { edges: {}, hexes: {} } };
+  const L = lay ? campWorks(h.camp, men, ft, cols, rows, h.done ?? null, !!h.hauled) : { centre: [cols >> 1, rows >> 1], radius: r, fits: true, works: { edges: {}, hexes: {} } };
   S.works = L.works;
   // The defender and any friends who were there fill the camp from the middle out; any who
   // do not fit go to their side's edge. The enemy forces wait at the far edge (side 2's edge).
@@ -1504,7 +1504,8 @@ function setupHandoff(){                     // a camp or position sent from the
   S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0; S.hit = null;
   S.addSide = foe ? foe.side : "Attackers";                                // Add brings in the other side
   if (!foe && h.force.side === "Attackers") S.addSide = "Defenders";
-  const campName = h.camp ? WK.camps[h.camp].name.toLowerCase() : "no camp";
+  const unfinished = h.camp && h.done !== null && h.done !== undefined ? `, ${h.built}% built` : "";
+  const campName = h.camp ? WK.camps[h.camp].name.toLowerCase() + unfinished : "no camp";
   S.pending = [`Set up from the travel map: ${h.force.name} at ${h.place} (${campName}), ${h.day}, ${h.time}${h.weather ? " \u00b7 " + WXD.conditions[h.weather.cond].name.toLowerCase() : ""}`];
   const where = h.camp ? campName : "position", cut = L.fits ? "" : " (cut down to fit the map)";
   const facing = lay ? "facing the way in" : "facing them";
@@ -1581,7 +1582,8 @@ function renderMap(){
     const h = S.handoff;
     const foesBit = (h.foes || []).length ? ", against " + h.foes.map(o => `${attr(o.name)} (${o.men} men)`).join(", ") : "";
     const alliesBit = (h.allies || []).length ? ", with " + h.allies.map(o => `${attr(o.name)} (${o.men} men)`).join(", ") : "";
-    const campBit = h.camp ? ", " + attr(WK.camps[h.camp].name.toLowerCase()) : "";
+    const builtBit = h.done !== null && h.done !== undefined ? ` (${h.built}% built)` : "";
+    const campBit = h.camp ? ", " + attr(WK.camps[h.camp].name.toLowerCase()) + builtBit : "";
     bits.push(`<span class="free"><b>From the travel map:</b> ${attr(h.force.name)} (${h.force.men} men)${alliesBit} at ${attr(h.place)}${campBit}, ${h.day}, ${h.time}${foesBit}. Set up the fight here? This replaces the fighters and works on this page.</span><button class="small" data-map="handoff">Set up the fight</button><button class="small" data-map="nohandoff">Not now</button>`);
   }
   const f = (S.free || [])[0];

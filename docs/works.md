@@ -63,6 +63,12 @@ to send it there. Until then the fight button is off and says why.
   the way in, as the attackers
 - the fight's date and time: once the defender is ready (its camp finished) and the last
   attacker has arrived. The page says which.
+- **If the attackers arrive before the camp is finished, the GM chooses.** The page says
+  how far along the camp is when they arrive. **Attack now** fights at that moment, against
+  only the works built so far. **Wait** fights once the camp is finished. Works go up in
+  the order the camp lists them: for a fortified camp the ditch first, then the bank, then
+  the palisade, and the gate last. Each kind goes all the way round, starting from the gate,
+  before the next begins. A stretch shows on the battle map only once its labour is done.
 - that day's weather and ground, each side's fatigue, and whether the timber was hauled
 
 **Add** brings in more fighters on the attackers' side.

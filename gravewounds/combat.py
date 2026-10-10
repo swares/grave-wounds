@@ -461,48 +461,108 @@ def camp_map_size(d: Data, kind: str, men: int, ftype: str) -> int:
     return 2 * (camp_radius(d, men, ftype) + extra) + 3
 
 
-def camp_works(d: Data, kind: str, men: int, ftype: str, cols: int, rows: int) -> dict:
+AXIAL_DIRS = [(1, 0), (1, -1), (0, -1), (-1, 0), (-1, 1), (0, 1)]   # E, NE, NW, W, SW, SE
+
+
+def ring_walk(centre, k: int) -> list:
+    """The hexes k from the centre, in order round the ring from the east (the gate side)."""
+    if k == 0:
+        return [list(centre)]
+    q, r = centre[0] - (centre[1] - (centre[1] & 1)) // 2 + k, centre[1]
+    out = []
+    for i in range(6):
+        dq, dr = AXIAL_DIRS[(i + 2) % 6]
+        for _ in range(k):
+            out.append([q + (r - (r & 1)) // 2, r])
+            q, r = q + dq, r + dr
+    return out
+
+
+def _camp_fits(centre, rr: int, cols: int, rows: int) -> bool:
+    cnt = sum(1 for y in range(rows) for x in range(cols) if hex_distance(centre, [x, y]) <= rr)
+    return cnt == 3 * rr * (rr + 1) + 1
+
+
+def _stake_pieces(centre, r: int, on) -> dict:
+    gate_out = [centre[0] + r + 1, centre[1]]
+    return {"stakes": [("hex", hkey(h), {"type": "stakes", "progress": 0})
+                       for h in ring_walk(centre, r + 1) if on(h) and h != gate_out]}
+
+
+def _wall_pieces(out: dict, centre, r: int, cols: int, rows: int, on) -> None:
+    """Bank and palisade round the ring, and the gate."""
+    gate_in, gate_out = [centre[0] + r, centre[1]], [centre[0] + r + 1, centre[1]]
+    for h in (x for x in ring_walk(centre, r) if on(x)):
+        for n in (x for x in neighbours(h, cols, rows) if hex_distance(centre, x) == r + 1):
+            k = edge_key(h, n)
+            if h == gate_in and n == gate_out:
+                out["gate"].append(("edge", k, {"type": "gate", "progress": 0, "open": False, "inside": hkey(h)}))
+                continue
+            out["bank"].append(("edge", k, {"type": "bank", "progress": 0, "high": hkey(h)}))
+            out["palisade"].append(("edge", k, {"type": "palisade", "progress": 0}))
+
+
+def _ditch_pieces(out: dict, centre, r: int, cols: int, rows: int, on) -> None:
+    """The ditch one ring out, leaving the way to the gate."""
+    gate_out = [centre[0] + r + 1, centre[1]]
+    for h in (x for x in ring_walk(centre, r + 1) if on(x) and x != gate_out):
+        for n in (x for x in neighbours(h, cols, rows) if hex_distance(centre, x) == r + 2):
+            out["ditch"].append(("edge", edge_key(h, n), {"type": "ditch", "progress": 0, "high": hkey(h)}))
+
+
+def _camp_pieces(layout: str, centre, r: int, cols: int, rows: int) -> dict:
+    """Every piece of the camp's works, by type, each in the order it is built round the ring:
+    {type: [(kind, key, item)]}."""
+    def on(h):
+        return 0 <= h[0] < cols and 0 <= h[1] < rows
+    if layout == "stakes":
+        return _stake_pieces(centre, r, on)
+    out = {"ditch": [], "bank": [], "palisade": [], "gate": []}
+    _wall_pieces(out, centre, r, cols, rows, on)
+    _ditch_pieces(out, centre, r, cols, rows, on)
+    return out
+
+
+def _piece_labour(d: Data, kind: str, item: dict, hauled: bool) -> float:
+    if kind == "edge":
+        return _edge_labour(d.works["edge_works"][item["type"]], hauled, edge_metres(d))
+    s = d.works["hex_works"][item["type"]]
+    return s.get("each", 0) + (s.get("haul", 0) if hauled else 0)
+
+
+def camp_works(d: Data, kind: str, men: int, ftype: str, cols: int, rows: int,
+               done: float | None = None, hauled: bool = False) -> dict:
     """Battle-map layout for a camp in the middle of the map: {centre, radius, fits, works}.
-    The camp is cut down to fit the map if it must (fits false)."""
-    layout = d.works["camps"][kind].get("layout")
+    The camp is cut down to fit the map if it must (fits false). done: man-hours of work done
+    so far (None: finished). The works go up in the order the camp lists them (works.yaml),
+    each kind all round the ring from the gate before the next starts; a piece appears only
+    once its labour (with hauled timber if `hauled`) is done."""
+    c = d.works["camps"][kind]
+    layout = c.get("layout")
     centre = [cols // 2, rows // 2]
     r = camp_radius(d, men, ftype)
     extra = 2 if layout == "fortified" else 1
     fits = True
-
-    def inside(rr):
-        cnt = sum(1 for y in range(rows) for x in range(cols) if hex_distance(centre, [x, y]) <= rr)
-        return cnt == 3 * rr * (rr + 1) + 1
-    while r > 1 and not inside(r + extra):
+    while r > 1 and not _camp_fits(centre, r + extra, cols, rows):
         r -= 1
         fits = False
     works = {"edges": {}, "hexes": {}}
-    if not layout:
-        return {"centre": centre, "radius": r, "fits": fits, "works": works}
-    gate_in, gate_out = [centre[0] + r, centre[1]], [centre[0] + r + 1, centre[1]]
-    ring = [[x, y] for y in range(rows) for x in range(cols) if hex_distance(centre, [x, y]) == r]
-    outer = [[x, y] for y in range(rows) for x in range(cols) if hex_distance(centre, [x, y]) == r + 1]
-    if layout == "stakes":
-        for h in outer:
-            if h != gate_out:
-                works["hexes"][hkey(h)] = {"type": "stakes", "progress": 0}
-    elif layout == "fortified":
-        for h in ring:
-            for n in neighbours(h, cols, rows):
-                if hex_distance(centre, n) == r + 1:
-                    k = edge_key(h, n)
-                    if h == gate_in and n == gate_out:
-                        works["edges"][k] = [{"type": "gate", "progress": 0, "open": False, "inside": hkey(h)}]
-                    else:
-                        works["edges"][k] = [{"type": "bank", "progress": 0, "high": hkey(h)},
-                                             {"type": "palisade", "progress": 0}]
-        for h in outer:
-            if h == gate_out:
-                continue
-            for n in neighbours(h, cols, rows):
-                if hex_distance(centre, n) == r + 2:
-                    works["edges"][edge_key(h, n)] = [{"type": "ditch", "progress": 0, "high": hkey(h)}]
+    if layout:
+        _lay(d, c, _camp_pieces(layout, centre, r, cols, rows), works, done, hauled)
     return {"centre": centre, "radius": r, "fits": fits, "works": works}
+
+
+def _lay(d: Data, c: dict, pieces: dict, works: dict, done: float | None, hauled: bool) -> None:
+    """Put the pieces into works in building order, stopping where the labour done runs out."""
+    spent = 0.0
+    for where, key, item in (p for kind in c["works"] for p in pieces[kind]):
+        spent += _piece_labour(d, where, item, hauled)
+        if done is not None and spent > done + 1e-9:
+            return
+        if where == "hex":
+            works["hexes"][key] = item
+        else:
+            works["edges"].setdefault(key, []).append(item)
 
 
 # ---------- weather in battle ----------
