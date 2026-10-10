@@ -234,6 +234,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
     <fieldset class="mapbar wxbar"><legend class="sr">Weather</legend>
       <label class="muted">Weather <select id="sel-wx"></select></label>
       <label class="muted">Wind <select id="sel-wind"></select></label>
+      <label class="muted">Blowing <select id="sel-wdir"></select></label>
       <label class="muted">Ground <select id="sel-ground"></select></label>
       <span class="muted" id="wx-note"></span>
     </fieldset>
@@ -501,6 +502,7 @@ function reachable(start, steps, cols, rows, enemies, friends){
   for (const [k, c] of [...best]) if (friendly.has(k) && c) best.delete(k);
   return best;
 }
+const windDist = (dist, wx) => dist * 100 / (100 + (wx.reach || 0));   // the wind stretches or shortens a missile's range bands
 function weaponReach(wid, dist){
   const w = DATA.weapons[wid];
   if (w.off_map) return { band: "any", penalty: 0 };
@@ -1163,11 +1165,11 @@ function rangeCheck(){
   if (f && f.att === a.id && f.def === dd.id) return { range: { dist: 1, band: "free attack", penalty: 0 } };
   if (S.tm && S.tm.id === a.id && S.tm.ran) return { blocked: `${a.name} ran this turn and cannot attack.` };
   if (S.tm && S.tm.id === a.id && S.tm.worked) return { blocked: `${a.name} spent this turn on the works and cannot attack.` };
-  const dist = hexDistance(a.pos, dd.pos), r = weaponReach(S.weapon, dist);
+  const dist = hexDistance(a.pos, dd.pos), wx = weatherAttack(S.weather, S.weather ? S.weapon : null, dist, a.pos, dd.pos);
+  const r = weaponReach(S.weapon, windDist(dist, wx));
   if (!r) return { blocked: `${dd.name} is ${hexes(dist)} away, out of reach of the ${shortName(S.weapon).toLowerCase()} (${reachText(S.weapon)}).` };
   const wk = worksOnAttack(a, dd);
   if (wk.blocked) return { blocked: wk.blocked };
-  const wx = weatherAttack(S.weather, S.weather ? S.weapon : null, dist);
   if (wx.blocked) return { blocked: wx.blocked };
   const extra = { weatherPen: wx.penalty, weatherNotes: wx.notes, misfire: wx.misfire };
   return { range: { dist, ...r, rangePen: r.penalty, ...wk, ...extra, penalty: r.penalty + (wk.cover || 0) + (wk.height || 0) + wx.penalty } };
@@ -1186,8 +1188,8 @@ function worksOnAttack(a, dd){
 }
 function canTarget(a, o){                    // ringed on the map: an enemy the acting fighter can strike now
   if (!a.pos || !o.pos || sideOf(o) === sideOf(a)) return false;
-  const dist = hexDistance(a.pos, o.pos);
-  return !!weaponReach(S.weapon, dist) && !worksOnAttack(a, o).blocked && !weatherAttack(S.weather, S.weapon, dist).blocked;
+  const dist = hexDistance(a.pos, o.pos), wx = weatherAttack(S.weather, S.weapon, dist, a.pos, o.pos);
+  return !!weaponReach(S.weapon, windDist(dist, wx)) && !worksOnAttack(a, o).blocked && !wx.blocked;
 }
 function restoreActing(){                    // after free attacks: the acting fighter attacks again
   const c = actingChar(); if (!c) return;
@@ -1440,12 +1442,14 @@ function renderWeather(){
   const W = S.weather || (S.weather = { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } });
   $("#sel-wx").innerHTML = Object.entries(WXD.conditions).map(([k, c]) => `<option value="${k}" ${W.cond === k ? "selected" : ""}>${c.name}</option>`).join("");
   $("#sel-wind").innerHTML = WXD.winds.map(x => `<option value="${x.id}" ${W.wind === x.id ? "selected" : ""}>${x.name}</option>`).join("");
+  $("#sel-wdir").innerHTML = windDirOptions(W.dir || "");
   const gk = groundKey(W.ground);
   $("#sel-ground").innerHTML = GROUNDS.map(([k, , n]) => `<option value="${k}" ${gk === k ? "selected" : ""}>${n}</option>`).join("");
   const c = WXD.conditions[W.cond], wind = WXD.winds.find(x => x.id === W.wind), bits = [];
   if (c.visibility) bits.push(`sight for missiles ${c.visibility} hexes`);
   if (c.wet) bits.push(`bows and crossbows \u2212${WXD.battle.string_wet[c.wet]}%, firearms may misfire`);
   if (wind.missile) bits.push(`missiles \u2212${wind.missile}%`);
+  if (windDirNote(W)) bits.push(windDirNote(W) + " (north is at the top of the map)");
   if (deepGoing(W.ground)) bits.push(`every hex +${deepGoing(W.ground)} movement`);
   const temp = W.high !== undefined ? `${tempOut(W.low)}\u2013${tempOut(W.high)} ${tempUnit()}. ` : "";
   $("#wx-note").textContent = temp + (bits.length ? bits.join("; ") + "." : "No effect on the fight.");
@@ -1786,6 +1790,7 @@ function init(){
     renderChars();
   };
   $("#sel-wind").onchange = e => { S.weather.wind = e.target.value; renderChars() };
+  $("#sel-wdir").onchange = e => { S.weather.dir = e.target.value || undefined; renderChars() };
   $("#sel-ground").onchange = e => { const g = GROUNDS.find(x => x[0] === e.target.value)[1]; S.weather.ground = { ...S.weather.ground, ...g }; renderChars() };
   $("#chk-haul").onchange = e => {
     S.hauled = e.target.checked;

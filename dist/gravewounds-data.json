@@ -14918,30 +14918,50 @@
     "upto": 50,
     "name": "Calm or light air",
     "missile": 0,
-    "firearm": 0
+    "firearm": 0,
+    "reach": 0,
+    "into_wind": 0
    },
    {
     "id": "breeze",
     "upto": 85,
     "name": "Breeze",
     "missile": 0,
-    "firearm": 0
+    "firearm": 0,
+    "reach": 10,
+    "into_wind": 0
    },
    {
     "id": "strong",
     "upto": 97,
     "name": "Strong wind",
     "missile": 10,
-    "firearm": 0
+    "firearm": 0,
+    "reach": 20,
+    "into_wind": 10
    },
    {
     "id": "gale",
     "upto": 100,
     "name": "Gale",
     "missile": 20,
-    "firearm": 10
+    "firearm": 10,
+    "reach": 30,
+    "into_wind": 20
    }
   ],
+  "wind_points": [
+   "N",
+   "NE",
+   "E",
+   "SE",
+   "S",
+   "SW",
+   "W",
+   "NW"
+  ],
+  "wind_keep": 50,
+  "driven_sight": 50,
   "conditions": {
    "fair": {
     "name": "Fair",
@@ -15239,6 +15259,16 @@
      5,
      5,
      6
+    ],
+    "wind_from": [
+     8,
+     7,
+     7,
+     8,
+     12,
+     22,
+     22,
+     14
     ]
    },
    "continental": {
@@ -15299,6 +15329,16 @@
      6,
      7,
      7
+    ],
+    "wind_from": [
+     10,
+     9,
+     11,
+     10,
+     12,
+     15,
+     19,
+     14
     ]
    },
    "mediterranean": {
@@ -15359,6 +15399,16 @@
      1,
      1,
      1
+    ],
+    "wind_from": [
+     12,
+     10,
+     8,
+     8,
+     10,
+     14,
+     20,
+     18
     ]
    },
    "arid": {
@@ -15419,6 +15469,16 @@
      0,
      1,
      1
+    ],
+    "wind_from": [
+     22,
+     12,
+     8,
+     8,
+     10,
+     10,
+     14,
+     16
     ]
    }
   }

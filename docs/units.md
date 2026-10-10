@@ -381,18 +381,18 @@ about 1,640 by 1,140 yards (1,500 by 1,040 m), with north at the top:
   north-west and Renshaw Wood towards Saxton.
 - Two ridges (high ground) cross the plateau with a shallow dale between them: the
   Lancastrians on the northern ridge, the Yorkists on the southern.
-- The weather is snow with a strong wind and snow lying (level 1). In the snow no one can
-  aim beyond 15 hexes (about 160 yards, 150 m), so the archers, about 270 yards (250 m)
-  apart at the start, must close before they can shoot.
+- The weather is snow with a strong wind from the south and snow lying (level 1). In the snow
+  no one can aim beyond 15 hexes (about 160 yards, 150 m), so the archers, about 270 yards
+  (250 m) apart at the start, must close before they can shoot.
+- The wind (see [weather.md](weather.md)): the Yorkists shoot with it, their bows reaching
+  20% further. The Lancastrians shoot into it, with the snow in their faces: they can see to
+  aim only about 80 yards (70 m), their bows reach 20% less, and they are a further −10%.
 - The Yorkists: 5,000 archers under Fauconberg in front of Edward's battle (11,000 billmen),
   and the Duke of Norfolk's 5,000 coming up late at the south-east corner, on the Yorkist
   right.
 - The Lancastrians: 6,000 archers in front of Somerset's battle (14,000), a rear battle of
   6,000, and 1,500 men hidden in Castle Hill Wood, on the Yorkist left.
 - Everyone wears jack and sallet; the wound tables are Towton's own.
-- Not in the rules: the snow blew into the Lancastrians' faces, so their archers shot short
-  and the Yorkists' carried further. The weather here has no wind direction, so the GM can
-  give the Lancastrian archers a further penalty, or the Yorkists more reach.
 
 It is drawn the same way, by `tools/maps/make_towton_field.mjs`. The two battlefields share
 their drawing code, `tools/maps/field_lib.mjs`.
@@ -483,7 +483,8 @@ It is drawn by `tools/maps/make_albuera_field.mjs`.
 **A battlefield file** has an `id` and `name`, `sides` (two names), `table`, `size`
 ([cols, rows]) and `weather`. Its `ground` is rows of one letter per hex: `.` open, `r`
 rough, `F` woods, `m` marsh, `h` high ground (the `key` of each kind in `data/units.yaml`).
-`travel` (optional) is `{map, place, within, sides}`: the travel map and place it belongs
+`up` (optional) is the compass point at the top of the map, if not north, and `weather` may
+give the wind's direction as `dir` (where it blows from). `travel` (optional) is `{map, place, within, sides}`: the travel map and place it belongs
 to, how many hexes from the place count as there, and the travel-map side names that stand
 with each army. `works` has `hexes`, a list of `{type, at: [hexes]}`, and `edges`, a list of `{type, at:
 [[hex, hex], ...]}` with the first hex the high or inner side. `units` lists `{name, side

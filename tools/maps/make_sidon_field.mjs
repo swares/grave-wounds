@@ -54,7 +54,7 @@ const units = [
 writeField({
   id: "sidon-1253", name: "Sidon, 1253", sides: ["Franks", "Damascenes"], table: "sidon-1253-all-hits",
   travel: { map: "sidon-1253", place: "Sidon", within: 1, sides: ["Franks", "Damascus"] },
-  weather: "{cond: fair, wind: calm, ground: {mud: 0, snow: 0}}",
+  weather: "{cond: fair, wind: calm, ground: {mud: 0, snow: 0}}", up: "E",
   grid, units, edgeWorks: { ditch, wall, bank, gate },
   header: [
     `The raid on Sidon, 1253, at the town's landward wall, at 10 m a hex: ${COLS} x ${ROWS} hexes, about`,

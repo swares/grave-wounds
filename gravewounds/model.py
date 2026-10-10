@@ -460,6 +460,9 @@ def validate(d: Data) -> None:
                 errors.append(f"maps/{mid}: climate_shift must be a number")
 
     # camp disease
+    if d.weather.get("wind_points"):
+        errors += _wind_errors(d)
+
     if d.disease:
         errors += _disease_errors(d, TT)
 
@@ -847,6 +850,9 @@ def _field_shape_errors(d: Data, f: dict, where: str) -> list[str]:
     cond = (f.get("weather") or {}).get("cond")
     if f.get("weather") and cond not in d.weather.get("conditions", {}):
         errors.append(f"{where}: unknown weather {cond}")
+    pts = d.weather.get("wind_points", [])
+    if (f.get("weather") or {}).get("dir", pts[0] if pts else None) not in pts or f.get("up", "N") not in pts:
+        errors.append(f"{where}: weather.dir and up must be compass points {pts}")
     errors += _field_travel_errors(d, f, where)
     works = f.get("works") or {}
     for kind, label, known in (("hexes", "hex", d.works.get("hex_works", {})), ("edges", "edge", d.works.get("edge_works", {}))):
@@ -888,4 +894,19 @@ def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_un
     for i, u in enumerate(units):
         if not fits(d, units, i, u, tuple(f["size"]), field):
             errors.append(f"{where}: unit {u['name']} does not fit where it stands")
+    return errors
+
+
+def _wind_errors(d: Data) -> list[str]:
+    """weather.yaml: eight wind points, each climate's prevailing winds summing to 100, and
+    whole-number reach and into_wind for each wind."""
+    WX, errors = d.weather, []
+    if len(WX["wind_points"]) != 8:
+        errors.append("weather.yaml: wind_points needs eight compass points, N first, clockwise")
+    for cid, cl in WX.get("climates", {}).items():
+        if len(cl.get("wind_from", [])) != 8 or sum(cl.get("wind_from", [])) != 100:
+            errors.append(f"weather.yaml: climate {cid} wind_from needs eight % summing to 100")
+    for w in WX.get("winds", []):
+        if not all(isinstance(w.get(k), int) and w[k] >= 0 for k in ("reach", "into_wind")):
+            errors.append(f"weather.yaml: wind {w.get('id')} needs whole-number reach and into_wind")
     return errors

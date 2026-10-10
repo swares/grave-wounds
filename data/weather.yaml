@@ -36,10 +36,20 @@ intensity:                    # on a wet day, d100 -> how hard it comes down
 snow_at_or_below: 2           # the day's high, degrees C: wet days fall as snow
 fair_upto: 50                 # on a dry day without fog, d100 at or under this is fair, else overcast
 winds:                        # d100 -> wind; missile and firearm: % off missile attacks
-  - {id: calm,   upto: 50,  name: "Calm or light air", missile: 0,  firearm: 0}
-  - {id: breeze, upto: 85,  name: "Breeze",            missile: 0,  firearm: 0}
-  - {id: strong, upto: 97,  name: "Strong wind",       missile: 10, firearm: 0}
-  - {id: gale,   upto: 100, name: "Gale",              missile: 20, firearm: 10}
+  # reach: % added to a bow's, crossbow's or sling's range bands shooting with the wind (the
+  # wind behind the shot, within 45 degrees), taken off shooting into it; into_wind: further %
+  # off such a shot into the wind. Bullets and round shot are too heavy for either.
+  - {id: calm,   upto: 50,  name: "Calm or light air", missile: 0,  firearm: 0,  reach: 0,  into_wind: 0}
+  - {id: breeze, upto: 85,  name: "Breeze",            missile: 0,  firearm: 0,  reach: 10, into_wind: 0}
+  - {id: strong, upto: 97,  name: "Strong wind",       missile: 10, firearm: 0,  reach: 20, into_wind: 10}
+  - {id: gale,   upto: 100, name: "Gale",              missile: 20, firearm: 10, reach: 30, into_wind: 20}
+# The wind's direction: where it blows FROM, one of eight points, rolled each day from the
+# climate's prevailing winds (wind_from). A day keeps the day before's direction on a d100 of
+# wind_keep or less. Rain or snow blowing into a shooter's face (shooting into the wind, not in
+# a calm) cuts how far he can see to aim to driven_sight % of the condition's visibility.
+wind_points: [N, NE, E, SE, S, SW, W, NW]
+wind_keep: 50
+driven_sight: 50
 
 # Conditions. wet: 0-2, how wet bowstrings and powder get. visibility: hexes of the battle
 # map (2 m) a man can see to aim; null for clear. min_wind: the wind is at least this.
@@ -112,7 +122,7 @@ fatigue:
 
 # ---------- climates ----------
 # Months January to December. high, low: degrees C. rain: days with 1 mm or more of rain
-# or snow. fog: days with fog.
+# or snow. fog: days with fog. wind_from: the prevailing winds (rounded, for play).
 climates:
   maritime:
     name: "North-west Europe, maritime"
@@ -121,6 +131,7 @@ climates:
     low:  [1, 1, 2, 4, 7, 10, 12, 12, 10, 7, 4, 2]
     rain: [13, 10, 11, 10, 10, 9, 10, 10, 10, 12, 12, 12]
     fog:  [5, 4, 3, 2, 2, 1, 1, 2, 3, 5, 5, 6]
+    wind_from: [8, 7, 7, 8, 12, 22, 22, 14]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW
   continental:
     name: "Central and eastern Europe, continental"
     note: "Like Bohemia, Poland, Hungary and the Rhine valley."
@@ -128,6 +139,7 @@ climates:
     low:  [-5, -4, -1, 3, 8, 11, 13, 13, 9, 4, 0, -3]
     rain: [9, 8, 8, 8, 9, 10, 10, 9, 8, 7, 8, 9]
     fog:  [6, 5, 3, 2, 1, 1, 1, 2, 4, 6, 7, 7]
+    wind_from: [10, 9, 11, 10, 12, 15, 19, 14]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW
   mediterranean:
     name: "Mediterranean and Levant coast"
     note: "Like Acre, Sidon, Sicily and southern Spain."
@@ -135,6 +147,7 @@ climates:
     low:  [9, 9, 11, 14, 17, 21, 23, 24, 22, 19, 14, 11]
     rain: [10, 9, 6, 3, 1, 0, 0, 0, 1, 3, 6, 9]
     fog:  [1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1]
+    wind_from: [12, 10, 8, 8, 10, 14, 20, 18]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW
   arid:
     name: "Hot desert and steppe"
     note: "Like Mesopotamia, inland Syria and Egypt."
@@ -142,3 +155,4 @@ climates:
     low:  [4, 6, 10, 15, 21, 24, 26, 25, 21, 16, 9, 5]
     rain: [4, 4, 4, 3, 1, 0, 0, 0, 0, 1, 3, 4]
     fog:  [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
+    wind_from: [22, 12, 8, 8, 10, 10, 14, 16]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW

@@ -32,6 +32,10 @@ Each day's weather is rolled from the climate's figures for that month:
 - On a wet day, rain falls as snow if the day's high is 36 °F (2 °C) or less.
 - On a dry day it may be foggy, fair or overcast.
 - The wind is rolled separately. A storm brings at least a strong wind, and a blizzard a gale.
+- So is the wind's **direction**, where it blows from, one of eight points. Half the time a
+  day keeps the day before's; otherwise it is rolled from the climate's prevailing winds:
+  mostly from the west and south-west in north-west Europe, from the west in central Europe
+  and the Mediterranean, and from the north in the desert.
 
 The **climate shift** cools the modern figures. The Little Ice Age, roughly 1300–1850, ran
 somewhat cooler; the test valley uses −0.9 °F (−0.5 °C).
@@ -45,7 +49,7 @@ somewhat cooler; the test valley uses −0.9 °F (−0.5 °C).
 
 The weather strip on the travel map shows the selected force's day: its date, sunrise and
 sunset, marching hours, weather and ground. The GM can **Roll again**, or set the weather,
-wind, low and high by hand. Earlier days are listed underneath.
+wind, the wind's direction, low and high by hand. Earlier days are listed underneath.
 
 ## The ground
 
@@ -82,6 +86,24 @@ affected.
 | Strong wind | Bows, crossbows, slings and thrown weapons −10% |
 | Gale | Bows, crossbows, slings and thrown weapons −20%; firearms −10% |
 
+**The wind's direction** counts too, when the wind is more than calm. It depends on how the
+shot lies to the wind: **with it** (the wind behind the shot, within 45 degrees either way),
+**into it** (within 45 degrees of straight into it), or across it.
+
+| Wind | With it | Into it |
+|---|---|---|
+| Breeze | Range bands +10% | Range bands −10% |
+| Strong wind | Range bands +20% | Range bands −20%, and −10% |
+| Gale | Range bands +30% | Range bands −30%, and −20% |
+
+- The range effect is on bows, crossbows, slings and thrown weapons. Bullets and round shot
+  are too heavy to carry or drop much.
+- **Driven rain or snow:** a shooter shooting into the wind in rain or snow has it in his
+  face, and can see to aim only half as far.
+- The strength's own penalty (above) still applies, whichever way the shot goes.
+- North is at the top of the battle map and of most battlefields. A battlefield drawn
+  otherwise says so (Sidon's has east at the top), and the page turns the wind to match.
+
 In the wet, a firearm can **misfire**. Rolled before the attack, it loses the shot. The
 chance depends on how the weapon is fired:
 
@@ -92,7 +114,7 @@ chance depends on how the weapon is fired:
 | Percussion cap | 5% | 10% |
 | Cartridge | – | – |
 
-**Set up the fight** carries the day's weather and ground to the battle map. The
+**Set up the fight** carries the day's weather, the wind's direction and the ground to the battle map. The
 roller's weather bar can change them.
 
 ## Rest
