@@ -1127,15 +1127,15 @@ def cannonades(d: Data, units: list, field: dict | None = None) -> list:
     return out
 
 
-def _canister_struck(A: dict, c: dict, cut: float, rounds: int, rng) -> int:
+def _canister_struck(art: dict, c: dict, cut: float, rounds: int, rng) -> int:
     """Men hit by canister: each ball a chance."""
-    p = _chance_at(A["canister"]["strike"], c["dist"]) * cut
-    return sum(rng.randint(1, 100) <= p for _ in range(rounds * A["canister"]["balls"]))
+    p = _chance_at(art["canister"]["strike"], c["dist"]) * cut
+    return sum(rng.randint(1, 100) <= p for _ in range(rounds * art["canister"]["balls"]))
 
 
-def _round_shot_struck(d: Data, A: dict, c: dict, cut: float, rounds: int, target: dict, rng) -> int:
+def _round_shot_struck(d: Data, art: dict, c: dict, cut: float, rounds: int, target: dict, rng) -> int:
     """Men hit by round shot: each ball that strikes the unit goes through its ranks."""
-    rs = A["round_shot"]
+    rs = art["round_shot"]
     p, path = _chance_at(rs["strike"], c["dist"]) * cut, min(rs["path_max"], form(d, target)["ranks"] * len(footprint(d, target)))
     struck = 0
     for _ in range(rounds):
