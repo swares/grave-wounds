@@ -358,9 +358,9 @@ def weather_tables(d) -> dict:
     mon = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"]
     clim = [["Climate", ""] + mon]
     for cl in WX["climates"].values():
-        clim.append([cl["name"], "high/low °F"] + [f"{h * 9 / 5 + 32:.0f}/{l * 9 / 5 + 32:.0f}" for h, l in zip(cl["high"], cl["low"])])
-        clim.append(["", "(°C)"] + [f"{h}/{l}" for h, l in zip(cl["high"], cl["low"])])
-        clim.append(["", "wet days"] + [str(x) for x in cl["rain"]])
+        clim.extend([[cl["name"], "high/low °F"] + [f"{h * 9 / 5 + 32:.0f}/{l * 9 / 5 + 32:.0f}" for h, l in zip(cl["high"], cl["low"])],
+                     ["", "(°C)"] + [f"{h}/{l}" for h, l in zip(cl["high"], cl["low"])],
+                     ["", "wet days"] + [str(x) for x in cl["rain"]]])
     ground = [["Terrain", "Mud", "Snow"]] + [[t["name"], f"x{d.weather['march']['mud'].get(tid, 100) / 100:g}", f"x{d.weather['march']['snow'].get(tid, 100) / 100:g}"]
                                              for tid, t in d.terrain["terrain"].items() if t["cost"] is not None]
     return {"conds": conds, "misfire": mis, "fatigue": fat, "climates": clim, "ground": ground}

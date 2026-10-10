@@ -1168,7 +1168,8 @@ function renderWeather(){
   $("#wx-date").textContent = `${dateText(day)} (${m.calendar === "julian" ? "Julian" : "Gregorian"} calendar)`;
   $("#wx-sun").textContent = `Sunrise ${hhmm(wd.sunrise)}, sunset ${hhmm(wd.sunset)} \u00b7 marching ${hhmm(wd.start)}\u2013${hhmm(wd.start + wd.hours)}`;
   $("#wx-today").textContent = `${wxLine(d)}${d.w.gm ? " (set by the GM)" : ""} \u00b7 ${groundText(d.ground)}`;
-  $("#wx-climate").textContent = cl.name + (m.climate_shift ? ", " + (m.climate_shift > 0 ? "+" : "") + fmtCDelta(m.climate_shift) : "");
+  const plus = m.climate_shift > 0 ? "+" : "";
+  $("#wx-climate").textContent = cl.name + (m.climate_shift ? ", " + plus + fmtCDelta(m.climate_shift) : "");
   $("#sel-wxc").innerHTML = Object.entries(WXD.conditions).map(([k, c]) => `<option value="${k}" ${d.w.cond === k ? "selected" : ""}>${c.name}</option>`).join("");
   $("#sel-wxw").innerHTML = WXD.winds.map(x => `<option value="${x.id}" ${d.w.wind === x.id ? "selected" : ""}>${x.name}</option>`).join("");
   $("#in-wxhi").value = tempOut(d.w.high); $("#in-wxlo").value = tempOut(d.w.low);

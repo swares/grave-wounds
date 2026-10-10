@@ -1118,7 +1118,11 @@ const sameHex = (a, b) => !!(a && b) && a[0] === b[0] && a[1] === b[1];
 const occupant = h => S.chars.find(c => sameHex(c.pos, h));
 const actingChar = () => S.chars.find(c => c.id === S.turn) || null;
 const hexes = n => `${n} hex${n === 1 ? "" : "es"} (${fmtM(n * MOVE.hex_m)})`;
-const reachText = wid => { const w = DATA.weapons[wid]; return w.off_map ? "not limited by the map" : "reach" in w ? `reach ${w.reach}` : `range ${w.range.join(" / ")} hexes, to ${fmtM(w.range.at(-1) * MOVE.hex_m)}` };
+function reachText(wid){
+  const w = DATA.weapons[wid];
+  if (w.off_map) return "not limited by the map";
+  return "reach" in w ? `reach ${w.reach}` : `range ${w.range.join(" / ")} hexes, to ${fmtM(w.range.at(-1) * MOVE.hex_m)}`;
+}
 const initials = n => n.replace(/^Example:\s*/, "").split(/\s+/).filter(Boolean).map(x => x[0]).join("").slice(0, 2).toUpperCase() || "?";
 function placeUnplaced(){                    // new fighters go near their side's edge
   const { cols, rows } = mapSize(), sides = sidesInOrder();
