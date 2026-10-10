@@ -1215,14 +1215,14 @@ function scaledUnits(B, sides){
     const fighting = all.filter(f => f.type !== "wagons"), forces = fighting.length ? fighting : all;   // the baggage stays back if there is anyone else
     const total = forces.reduce((t, f) => t + f.men, 0), drawn = units.reduce((t, u) => t + u.men, 0);
     if (!forces.length || !drawn) continue;
-    const biggestFirst = units.map((u, i) => [u, i]).sort((x, y) => y[0].men - x[0].men || x[1] - y[1]);   // the big units get whole forces
+    const biggestFirst = units.map(u => [u, B.units.indexOf(u)]).sort((x, y) => y[0].men - x[0].men || x[1] - y[1]);   // the big units get whole forces
     for (const [u, i] of biggestFirst){
       const horsed = forces.filter(f => f.type === "mounted" && left.get(f.id) > 0), pool = u.mounted && horsed.length ? horsed : forces;
       const f = pool.reduce((a, x) => (left.get(x.id) > left.get(a.id) ? x : a));
       const men = Math.min(Math.max(1, Math.round(u.men * total / drawn)), left.get(f.id));
       if (men < 1) continue;
       left.set(f.id, left.get(f.id) - men);
-      out.push({ u, f, men, i: B.units.indexOf(u) });
+      out.push({ u, f, men, i });
     }
   }
   return out.sort((x, y) => x.i - y.i);                // back in the battlefield's order
