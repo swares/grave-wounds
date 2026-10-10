@@ -47,14 +47,40 @@ yet. They are there for later rules on ambush, food, and fevers in damp camps.
 A force stops for the night rather than start a hex it cannot finish that day. So the
 last hour of a day can be partly lost when the next hex is slow going. **March 1 hour**
 moves the force one hour along its route. **March to day's end** uses the rest of the
-day's marching hours. The next march starts at 08:00 the following day.
+day's marching hours. The next march starts the following morning, an hour after sunrise
+(see [weather.md](weather.md)).
+
+## Marching together
+
+A force can march with another force on its side, such as a band with its baggage train.
+Pick the other force under **March with**. It must be within 1 km (the same or the next
+hex). The joining force closes up onto the other's hex at no cost in time. If one force's
+clock is later, the column moves off when the last of them is ready.
+
+- **One route.** The first force leads, and the column's route is the leader's. Plan it with
+  either force selected.
+- **One pace.** The column keeps out of ground any of its forces cannot enter. It moves at
+  its slowest force's road speed, and at its most tired force's share of that speed. A
+  band of foot (4 km/h) with its wagons (3 km/h) goes at 3 km/h and stays off forest,
+  marsh, mountains and heath.
+- **One clock.** Every force in the column marches, halts and rests together. Each keeps
+  its own men, tools, fatigue and log.
+- **One camp.** A column makes one camp, sized for all its men. All of them dig, and tools
+  carried by any force serve all. The baggage train's men speed up the work, though its
+  wagons need more room inside the camp.
+- **Leaving.** Choose **on its own** to leave the column where it stands. If the leader is
+  removed, or leaves, the next force leads the rest. Moving a follower with **Move force**
+  takes it out of the column; moving the leader takes the whole column.
+
+Going ahead without the baggage is quicker and keeps to rougher ground, but the train
+then marches on its own and reaches camp later.
 
 ## Making camp
 
 Each force has a number of men and either has tools or doesn't. **Make camp** spends the
 time to make a bivouac, a watched camp, a staked camp, a fortified camp, or quarters in a
 village or town. The time depends on the force's size and tools and on whether woods are
-near. Camp work can use 4 evening hours after the march, so a camp made at the end of the
+near. A column makes one camp for all its forces (see *Marching together*). Camp work can use 4 evening hours after the march, so a camp made at the end of the
 day costs no marching time. Once an enemy force has marched to within 1 km, **Set up the fight** opens the battle map
 with the camp's works, its men and the enemy laid out. See [works.md](works.md).
 

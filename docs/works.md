@@ -42,6 +42,9 @@ are for later rules on surprise, rest, camp hygiene and disease.
 A force can make each kind of camp once in a place. Changing to another kind there (say, a
 watched camp to a staked camp) costs the new camp's work but not its set-up hour again.
 
+A column of forces marching together makes one camp, sized for all its men, and all of them
+dig (see [travel.md](travel.md)). Their camp's men and area count every force in it.
+
 Because the travel map costs exactly the works the battle map lays out, the camp's
 man-hours on the travel map and on the battle map agree. (A very large camp that has to be
 cut down to fit the battle map is the one exception; the map says so.)

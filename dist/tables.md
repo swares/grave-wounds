@@ -4424,6 +4424,8 @@ A force stops for the night rather than start a hex it cannot finish that day. W
 
 Speeds are for a small, fit band. A large army's column made less ground a day; cut its hours or speed to suit.
 
+**Marching together:** forces on one side within a hex can march as a column behind a leader. The column keeps out of ground any of them cannot enter, moves at its slowest and most tired force's pace, keeps one clock, and makes one camp sized for all its men, with every man digging.
+
 | Terrain | Time | On foot km/day | Mounted km/day | Baggage wagons km/day |
 |---|---|---|---|---|
 | Road | x1 | 32 | 48 | 24 |

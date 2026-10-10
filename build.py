@@ -258,6 +258,8 @@ def travel_rules(d) -> list[str]:
         "A force stops for the night rather than start a hex it cannot finish that day. Wagons cannot enter "
         + (lambda xs: ", ".join(xs[:-1]) + " or " + xs[-1] if len(xs) > 1 else "".join(xs))([TT_name(d, t) for t in T["forces"].get("wagons", {}).get("cannot_enter", [])]) + ".",
         "Speeds are for a small, fit band. A large army's column made less ground a day; cut its hours or speed to suit.",
+        "<b>Marching together:</b> forces on one side within a hex can march as a column behind a leader. The column keeps out of ground any of them "
+        "cannot enter, moves at its slowest and most tired force's pace, keeps one clock, and makes one camp sized for all its men, with every man digging.",
     ]
 
 

@@ -11,7 +11,7 @@ from __future__ import annotations
 import heapq
 import math
 
-from .combat import camp_map_size, camp_radius, camp_works, edge_metres, hex_distance, neighbours, works_labour
+from .combat import camp_map_size, camp_radius, camp_works, edge_metres, hex_distance, neighbours, party_of, works_labour
 from .model import Data
 from .weather import flooded, terrain_pct
 
@@ -24,10 +24,21 @@ def terrain_at(d: Data, m: dict, h) -> dict:
     return _terrain_by_key(d)[m["rows"][h[1]][h[0]]]
 
 
-def passable(d: Data, m: dict, h, ftype: str, ground: dict | None = None) -> bool:
+def force_types(ftype) -> list:
+    """The force types in a force (one) or a column (its party's types)."""
+    return [t for t, _ in party_of(0, ftype)]
+
+
+def passable(d: Data, m: dict, h, ftype, ground: dict | None = None) -> bool:
+    """True if this force, or every force in this column, can enter hex h on this ground."""
     t = terrain_at(d, m, h)
-    return (t.get("cost") is not None and t["id"] not in d.terrain["forces"][ftype].get("cannot_enter", [])
-            and not flooded(d, t["id"], ground))
+    barred = {x for ft in force_types(ftype) for x in d.terrain["forces"][ft].get("cannot_enter", [])}
+    return t.get("cost") is not None and t["id"] not in barred and not flooded(d, t["id"], ground)
+
+
+def column_kmh(d: Data, ftype) -> float:
+    """Road speed of a force, or of a column: its slowest force's."""
+    return min(d.terrain["forces"][ft]["kmh"] for ft in force_types(ftype))
 
 
 def hex_weight(d: Data, t: dict, ground: dict | None = None) -> int:
@@ -39,9 +50,10 @@ def step_weight(d: Data, m: dict, a, b, ground: dict | None = None) -> int:
     return hex_weight(d, terrain_at(d, m, a), ground) + hex_weight(d, terrain_at(d, m, b), ground)
 
 
-def step_hours(d: Data, m: dict, a, b, ftype: str, ground: dict | None = None, speed: int = 100) -> float:
-    """Hours to cross from a to b. speed: % of the force's road speed (fatigue)."""
-    return step_weight(d, m, a, b, ground) / 200 * m["hex_km"] / (d.terrain["forces"][ftype]["kmh"] * speed / 100)
+def step_hours(d: Data, m: dict, a, b, ftype, ground: dict | None = None, speed: int = 100) -> float:
+    """Hours to cross from a to b. ftype: a force type or a column's party. speed: % of the
+    road speed (fatigue; for a column, its most tired force's)."""
+    return step_weight(d, m, a, b, ground) / 200 * m["hex_km"] / (column_kmh(d, ftype) * speed / 100)
 
 
 def _trace(prev: dict, start, goal) -> list:
