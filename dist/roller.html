@@ -1258,6 +1258,11 @@ function readyToPlace(c){          // while setting up (or Free placement): the 
   if (!c || (S.turn && !S.freePlace) || S.workMode) return;
   S.placing = c.id; S.mapMsg = `Placing ${attr(c.name)}: click an empty hex on the battle map.`;
 }
+function placeButton(c){          // the card's Place on map button, while setting up
+  if (S.turn && !S.freePlace) return "";
+  const on = S.placing === c.id, label = on ? "Placing…" : "Place on map";
+  return `<button class="small" data-act="place" aria-pressed="${on}" title="Then click an empty hex on the battle map">${label}</button>`;
+}
 function selectChar(i){            // make this casualty the defender
   S.active = i;
   if (S.attacker === i) S.attacker = -1;
@@ -1689,7 +1694,9 @@ function setupHandoff(){                     // a camp or position sent from the
   S.addSide = h.force.side === "Attackers" ? "Defenders" : "Attackers";    // Add now brings in the other side
   const campName = h.camp ? WK.camps[h.camp].name.toLowerCase() : "no camp";
   S.pending = [`Set up from the travel map: ${h.force.name} at ${h.place} (${campName}), day ${h.day}, ${h.time}`];
-  S.mapMsg = `${n < men ? `${n} of ${men} men placed` : `${n} men placed`} inside the ${h.camp ? campName : "position"}${L.fits ? "" : " (cut down to fit the map)"}. Add the attackers with Add (they join the side "${S.addSide}" and start at the far edge, facing the gate); click a fighter, on the map or with Place on map, then a hex to move him.`;
+  const placed = n < men ? n + " of " + men + " men placed" : n + " men placed";
+  const where = h.camp ? campName : "position", cut = L.fits ? "" : " (cut down to fit the map)";
+  S.mapMsg = `${placed} inside the ${where}${cut}. Add the attackers with Add (they join the side "${S.addSide}" and start at the far edge, facing the gate); click a fighter, on the map or with Place on map, then a hex to move him.`;
   try{ localStorage.removeItem("gravewounds-handoff") }catch(e){}
   S.handoff = null;
   renderChars();
@@ -1822,7 +1829,7 @@ function renderChars(){
         <button class="small" data-act="attacker" aria-pressed="${isAtt}" ${incap ? 'disabled title="This fighter cannot attack now"' : ""}>${isAtt ? "Attacking" : "Attacker"}</button>
         <button class="small" data-act="select" aria-pressed="${isDef}">${isDef ? "Defending" : "Defender"}</button>
         <button class="small" data-act="hand" title="Weapon hand">${(c.hand || "R") === "R" ? "Right-handed" : "Left-handed"}</button>
-        ${!S.turn || S.freePlace ? `<button class="small" data-act="place" aria-pressed="${S.placing === c.id}" title="Then click an empty hex on the battle map">${S.placing === c.id ? "Placing…" : "Place on map"}</button>` : ""}
+        ${placeButton(c)}
         <button class="small" data-act="remove">Remove</button></div>
       <div class="charid">${charFigure(c, 104)}<div style="display:flex;flex-direction:column;gap:6px">
         <div class="wears">Wears: ${kitName(c.kit || "none")}${c.weapon ? " · Fights with: " + DATA.weapons[c.weapon].name : ""}</div>
@@ -1845,7 +1852,12 @@ $("#chars").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   const ci = +b.closest(".char").dataset.i, c = S.chars[ci], act = b.dataset.act;
   if (act === "select"){ selectChar(ci) }
-  else if (act === "place"){ if (S.placing === c.id){ S.placing = null; S.mapMsg = "" } else readyToPlace(c); renderChars(); $("#map-panel").scrollIntoView({ block: "nearest" }) }
+  else if (act === "place"){
+    if (S.placing === c.id){ S.placing = null; S.mapMsg = "" }
+    else readyToPlace(c);
+    renderChars();
+    $("#map-panel").scrollIntoView({ block: "nearest" });
+  }
   else if (act === "attacker"){ setAttacker(ci) }
   else if (act === "hand"){ c.hand = (c.hand || "R") === "R" ? "L" : "R"; renderChars() }
   else if (act === "leader"){                // one leader per side
