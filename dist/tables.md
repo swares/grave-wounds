@@ -4352,6 +4352,70 @@ Penalties add up; each total is capped at -60%.
 | Pavise | hex | carried | free | -20% in it | - | - |
 | Wagon | hex | 0.25 man-h | blocks | -40% behind it | no horses | 10 man-rounds |
 
+## Weather
+
+**Calendar and daylight:** each map has a start date (Julian or Gregorian), a latitude and a climate. The march starts 1 hour after sunrise and stops 1 before sunset, up to 8 hours.
+
+**Weather:** each day is rolled from the climate's monthly normals, wet and dry spells tending to last (40% persistence). Wet days fall as snow when the high is 2 °C or less. The GM can change any day.
+
+**Ground:** rain builds mud and snow lies, wearing off in dry or mild weather; heavy rain floods fords for two days. Mud and snow slow the march (see the table below); deep mud or snow costs +1 movement per hex in battle.
+
+**Rest and fatigue:** the night's rest starts from the camp's and drops a step for each point of hardship (wet, cold) beyond its shelter. Fatigue changes each night: heat or cold on a march of 4 hours or more, 6 hours in deep mud or snow, and the night (bad +1, poor 0, fair -1, good -2).
+
+| Weather | Missile sight (hexes) | Bows, crossbows | Firearms | Night hardship |
+|---|---|---|---|---|
+| Fair | clear | - | - | 0 |
+| Overcast | clear | - | - | 0 |
+| Fog | 25 | - | - | 0 |
+| Rain | 150 | -10% | may misfire | 1 |
+| Heavy rain | 75 | -20% | may misfire | 2 |
+| Storm | 50 | -20% | may misfire | 2 |
+| Snow | 75 | -10% | may misfire | 1 |
+| Heavy snow | 40 | -10% | may misfire | 2 |
+| Blizzard | 15 | -20% | may misfire | 3 |
+
+| Ignition | Dry | Wet | Very wet |
+|---|---|---|---|
+| Match | 0% | 30% | 60% |
+| Wheel | 0% | 15% | 30% |
+| Flint | 0% | 15% | 30% |
+| Percussion | 0% | 5% | 10% |
+| Cartridge | 0% | 0% | 0% |
+
+| Fatigue | Attack and defence | Marching speed |
+|---|---|---|
+| Fresh | - | 100% |
+| Tired | -5% | 100% |
+| Weary | -10% | 90% |
+| Exhausted | -20% | 75% |
+| Spent | -30% | cannot march |
+
+| Terrain | Mud | Snow |
+|---|---|---|
+| Road | x1.5 | x1.5 |
+| Open ground | x1.3 | x1.5 |
+| Farmland | x1.5 | x1.5 |
+| Heath | x1.2 | x1.5 |
+| Forest | x1.1 | x1.5 |
+| Hills | x1.2 | x1.75 |
+| Mountains | x1.1 | x2 |
+| Marsh | x1.2 | x1.5 |
+| Ford | x1 | x1.5 |
+| Bridge | x1 | x1.25 |
+| Village | x1.1 | x1.25 |
+| Town | x1 | x1.25 |
+
+| Climate |  | J | F | M | A | M | J | J | A | S | O | N | D |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| North-west Europe, maritime | high/low | 6/1 | 7/1 | 9/2 | 12/4 | 15/7 | 18/10 | 20/12 | 20/12 | 17/10 | 13/7 | 9/4 | 7/2 |
+|  | wet days | 13 | 10 | 11 | 10 | 10 | 9 | 10 | 10 | 10 | 12 | 12 | 12 |
+| Central and eastern Europe, continental | high/low | 1/-5 | 3/-4 | 8/-1 | 14/3 | 19/8 | 22/11 | 24/13 | 24/13 | 19/9 | 13/4 | 6/0 | 2/-3 |
+|  | wet days | 9 | 8 | 8 | 8 | 9 | 10 | 10 | 9 | 8 | 7 | 8 | 9 |
+| Mediterranean and Levant coast | high/low | 18/9 | 19/9 | 21/11 | 25/14 | 28/17 | 30/21 | 32/23 | 32/24 | 31/22 | 28/19 | 24/14 | 19/11 |
+|  | wet days | 10 | 9 | 6 | 3 | 1 | 0 | 0 | 0 | 1 | 3 | 6 | 9 |
+| Hot desert and steppe | high/low | 16/4 | 19/6 | 24/10 | 30/15 | 37/21 | 42/24 | 44/26 | 44/25 | 41/21 | 34/16 | 24/9 | 18/5 |
+|  | wet days | 4 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 0 | 1 | 3 | 4 |
+
 ## Travel
 
 **Travel map:** hexes are usually 1 km. A force marches 8 hours a day from 08:00 at its type's road speed. Crossing from one hex to the next takes the average of the two terrains' time multipliers; rivers and lakes are crossed only at a ford or bridge.

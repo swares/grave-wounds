@@ -10,9 +10,10 @@ from .model import Data
 
 
 def penalties(d: Data, wounds: list[dict], blood_frac: float = 1.0, hand: str = "R",
-              state: str | None = None) -> dict:
+              state: str | None = None, fatigue: int = 0) -> dict:
     """wounds: [{loc, fx}] where fx is a composed wound (pain, impair). hand: 'R' or 'L'.
-    state: a stop-check result in force (defend_only, stunned, out) or None."""
+    state: a stop-check result in force (defend_only, stunned, out) or None.
+    fatigue: the fighter's fatigue level (weather.yaml fatigue.levels)."""
     C = d.wounds["combat"]
     T = d.wounds["tracking"]
     attack = defence = 0
@@ -61,6 +62,12 @@ def penalties(d: Data, wounds: list[dict], blood_frac: float = 1.0, hand: str = 
                 notes.append(f"{imp.replace('_', ' ')}{where}" + (f" atk -{a}%" if a else "") + (f" def -{df}%" if df else ""))
     if "off_hand" in flags and any(k == ("grip", "shield_arm") or k == ("hand_useless", "shield_arm") or k == ("arm_useless", "shield_arm") for k in seen):
         flags.add("cannot_wield")
+    if fatigue and d.weather:
+        lv = d.weather["fatigue"]["levels"][fatigue]
+        if lv["penalty"]:
+            attack += lv["penalty"]
+            defence += lv["penalty"]
+            notes.append(f"{lv['name'].lower()} -{lv['penalty']}%")
     if state:
         rule = C["states"][state]
         flags.add(state)
@@ -334,8 +341,9 @@ def step_cost(d: Data, works, a, b) -> int | None:
     return cost
 
 
-def reachable_works(d: Data, start, steps: int, cols: int, rows: int, enemies, friends, works) -> dict:
-    """Like reachable(), but each step costs step_cost() (works slow or stop him)."""
+def reachable_works(d: Data, start, steps: int, cols: int, rows: int, enemies, friends, works, extra: int = 0) -> dict:
+    """Like reachable(), but each step costs step_cost() (works slow or stop him), plus
+    `extra` for every hex (deep mud or snow)."""
     blocked = {tuple(e) for e in enemies}
     friendly = {tuple(f) for f in friends}
     best = {tuple(start): 0}
@@ -351,6 +359,8 @@ def reachable_works(d: Data, start, steps: int, cols: int, rows: int, enemies, f
             if t in blocked:
                 continue
             sc = step_cost(d, works, list(h), n)
+            if sc is not None:
+                sc += extra
             if sc is None or cost + sc > steps:
                 continue
             if cost + sc < best.get(t, steps + 1):
@@ -460,3 +470,42 @@ def camp_works(d: Data, kind: str, men: int, ftype: str, cols: int, rows: int) -
                 if hex_distance(centre, n) == r + 2:
                     works["edges"][edge_key(h, n)] = [{"type": "ditch", "progress": 0, "high": hkey(h)}]
     return {"centre": centre, "radius": r, "fits": fits, "works": works}
+
+
+# ---------- weather in battle ----------
+
+def deep_going(d: Data, ground: dict | None) -> int:
+    """Extra movement per hex on the battle map for deep mud or snow."""
+    if not ground or not d.weather:
+        return 0
+    deep = d.weather["ground"]["deep"]
+    return d.weather["battle"]["deep_step"] if ground.get("mud", 0) >= deep or ground.get("snow", 0) >= deep else 0
+
+
+def weather_attack(d: Data, weather: dict | None, wid: str, dist: int) -> dict:
+    """What the weather does to a missile attack at `dist` hexes: {blocked (a reason, or
+    None), penalty (% off), misfire (% chance), notes}. Close combat is not affected."""
+    out = {"blocked": None, "penalty": 0, "misfire": 0, "notes": []}
+    w = d.weapons[wid]
+    if not weather or not d.weather or "range" not in w:
+        return out
+    WX = d.weather
+    cond = WX["conditions"][weather["cond"]]
+    vis = cond.get("visibility")
+    if vis is not None and dist > vis:
+        out["blocked"] = f"{cond['name']}: no one can be seen to aim at beyond {vis} hexes ({vis * 2} m)."
+        return out
+    wind = next(x for x in WX["winds"] if x["id"] == weather["wind"])
+    if w.get("string"):
+        p = WX["battle"]["string_wet"][cond["wet"]]
+        if p:
+            out["penalty"] += p
+            out["notes"].append(f"wet string -{p}%")
+    firearm = bool(w.get("ignition"))
+    wp = wind["firearm"] if firearm else wind["missile"]
+    if wp:
+        out["penalty"] += wp
+        out["notes"].append(f"{wind['name'].lower()} -{wp}%")
+    if firearm:
+        out["misfire"] = WX["battle"]["misfire"][w["ignition"]][cond["wet"]]
+    return out

@@ -58,6 +58,11 @@ near. Camp work can use 4 evening hours after the march, so a camp made at the e
 day costs no marching time. **Set up a fight here** opens the battle map with the camp's works and its men laid
 out. See [works.md](works.md).
 
+## Calendar and weather
+
+Days have real dates, and daylight sets each day's marching hours. The weather is rolled
+each day, and mud, snow and flooded fords change the going. See [weather.md](weather.md).
+
 ## In the page
 
 - **Forces.** Click a force in the list or on the map to select it. **Add a force** puts a

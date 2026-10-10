@@ -96,6 +96,7 @@ class Data:
     terrain: dict = field(default_factory=dict)     # terrain.yaml: hours_per_day, forces, terrain (id -> type), place_kinds
     maps: dict = field(default_factory=dict)        # travel map id -> map, `rows` = terrain rows as strings
     works: dict = field(default_factory=dict)       # works.yaml: camps, edge_works, hex_works
+    weather: dict = field(default_factory=dict)     # weather.yaml: daylight, conditions, ground, rest, fatigue, climates
     warnings: list = field(default_factory=list)
 
 
@@ -118,6 +119,7 @@ def load(root: str | Path = "data") -> Data:
     terrain = _read(root / "terrain.yaml") if (root / "terrain.yaml").exists() else {"hours_per_day": 8, "forces": {}, "terrain": [], "place_kinds": {}}
     terrain = {**terrain, "terrain": {t["id"]: t for t in terrain["terrain"]}}
     works = _read(root / "works.yaml") if (root / "works.yaml").exists() else {"camps": {}, "edge_works": {}, "hex_works": {}}
+    weather = _read(root / "weather.yaml") if (root / "weather.yaml").exists() else {}
     maps = {}
     for p in sorted((root / "maps").glob("*.yaml")) if (root / "maps").exists() else []:
         m = _read(p)
@@ -141,6 +143,7 @@ def load(root: str | Path = "data") -> Data:
         terrain=terrain,
         maps=maps,
         works=works,
+        weather=weather,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -394,6 +397,40 @@ def validate(d: Data) -> None:
                 errors.append(f"maps/{mid}: force {fo.get('name')} needs men, a whole number of 1 or more")
             if not isinstance(fo.get("tools"), bool):
                 errors.append(f"maps/{mid}: force {fo.get('name')} needs tools: true or false")
+
+    # calendar and weather
+    WX = d.weather
+    if WX:
+        winds = [w["id"] for w in WX["winds"]]
+        for cid, c in WX["conditions"].items():
+            if c.get("min_wind") and c["min_wind"] not in winds:
+                errors.append(f"weather.yaml: condition {cid} min_wind {c['min_wind']} is not a wind")
+        for row in WX["intensity"]:
+            for k in ("rain", "snow"):
+                if row[k] not in WX["conditions"]:
+                    errors.append(f"weather.yaml: intensity names unknown condition {row[k]}")
+        for kid, cl in WX["climates"].items():
+            for k in ("high", "low", "rain", "fog"):
+                if len(cl.get(k, [])) != 12:
+                    errors.append(f"weather.yaml: climate {kid} {k} needs 12 months")
+        for k in ("mud", "snow"):
+            for t in WX["march"][k]:
+                if t not in TT:
+                    errors.append(f"weather.yaml: march.{k} names unknown terrain {t}")
+        for wid, w in d.weapons.items():
+            if w.get("ignition") and w["ignition"] not in WX["battle"]["misfire"]:
+                errors.append(f"weapons.yaml: {wid} ignition {w['ignition']} is not in weather.yaml battle.misfire")
+        for mid, m in d.maps.items():
+            if not re.fullmatch(r"-?\d{1,4}-\d{2}-\d{2}", str(m.get("start_date", ""))):
+                errors.append(f"maps/{mid}: start_date must be YYYY-MM-DD")
+            if m.get("calendar") not in ("julian", "gregorian"):
+                errors.append(f"maps/{mid}: calendar must be julian or gregorian")
+            if not (isinstance(m.get("latitude"), (int, float)) and -66 <= m["latitude"] <= 66):
+                errors.append(f"maps/{mid}: latitude must be between -66 and 66")
+            if m.get("climate") not in WX["climates"]:
+                errors.append(f"maps/{mid}: climate must be one of {sorted(WX['climates'])}")
+            if not isinstance(m.get("climate_shift", 0), (int, float)):
+                errors.append(f"maps/{mid}: climate_shift must be a number")
 
     # camps and works
     WK = d.works

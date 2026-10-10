@@ -29,6 +29,12 @@ gate or stakes laid out. Works can also be built by hand on the battle map, and 
 change movement, cover and close combat and can be breached. See
 [docs/works.md](docs/works.md).
 
+**Calendar and weather:** each map has a start date, latitude and climate. Days have real
+dates and daylight, and the weather is rolled from climate normals (the GM can change
+it). Mud, snow and floods slow the march; rain, wind and fog affect bows and firearms in
+battle; and the night's rest and fatigue follow from the camp and the weather. See
+[docs/weather.md](docs/weather.md).
+
 ## Where this started
 
 This repository began as a copy of [HitLoc](https://github.com/swares/HitLoc), the

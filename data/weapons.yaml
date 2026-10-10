@@ -17,6 +17,9 @@
 # range        - missile weapons on the battle map: [short, medium, long] in hexes. Each
 #                band has the attack modifier in wounds.yaml combat.range; no shot past long.
 #                Design estimates from the weapon's effective range in its period.
+# ignition     - firearms: match | wheel | flint | percussion | cartridge (weather.yaml:
+#                how often it misfires in the wet)
+# string       - true for bows and crossbows: wet strings lose power (weather.yaml)
 # off_map      - true for weapons no fighter aims on the map (artillery, mines, stakes,
 #                stray fragments): the GM decides who they hit.
 # melee_table  - for a close-combat weapon: the table it rolls on whenever the current table
@@ -135,6 +138,7 @@ weapons:
     short: "Bow"
     icon: bow
     range: [15, 40, 90]
+    string: true
     era: "ancient-1880s"
     mechanisms: {pierce: 95, cut: 5}
     zone_bias: {}
@@ -151,6 +155,7 @@ weapons:
     short: "Longbow"
     icon: bow
     range: [20, 60, 125]
+    string: true
     era: "medieval"
     mechanisms: {pierce: 95, cut: 5}
     zone_bias: {}
@@ -167,6 +172,7 @@ weapons:
     short: "Crossbow"
     icon: crossbow
     range: [15, 50, 100]
+    string: true
     era: "medieval"
     mechanisms: {pierce: 100}
     zone_bias: {}
@@ -319,6 +325,7 @@ weapons:
     short: "Matchlock"
     icon: long_gun
     range: [20, 40, 75]
+    ignition: match
     era: "1500s-1690s"
     threat: rifle
     mechanisms: {ballistic: 100}
@@ -331,6 +338,7 @@ weapons:
     short: "Pistol/carbine"
     icon: pistol
     range: [3, 8, 15]
+    ignition: wheel
     era: "1530s-1690s"
     threat: pistol
     mechanisms: {ballistic: 100}
@@ -344,6 +352,7 @@ weapons:
     short: "Musket"
     icon: long_gun
     range: [25, 50, 100]
+    ignition: flint
     era: "1700s-1850s"
     threat: rifle
     mechanisms: {ballistic: 100}
@@ -356,6 +365,7 @@ weapons:
     short: "Rifle"
     icon: long_gun
     range: [50, 100, 150]
+    ignition: flint
     era: "1700s-1840s"
     threat: rifle
     mechanisms: {ballistic: 100}
@@ -368,6 +378,7 @@ weapons:
     short: "Pistol"
     icon: pistol
     range: [3, 8, 15]
+    ignition: flint
     era: "1700s-1840s"
     threat: pistol
     mechanisms: {ballistic: 100}
@@ -393,6 +404,7 @@ weapons:
     short: "Rifle-musket"
     icon: long_gun
     range: [50, 150, 250]
+    ignition: percussion
     era: "1860s"
     threat: rifle
     mechanisms: {ballistic: 100}
@@ -417,6 +429,7 @@ weapons:
     short: "Revolver"
     icon: pistol
     range: [5, 12, 25]
+    ignition: percussion
     era: "1850s-"
     threat: pistol
     mechanisms: {ballistic: 100}
@@ -430,6 +443,7 @@ weapons:
     short: "Rifle"
     icon: long_gun
     range: [100, 200, 300]
+    ignition: cartridge
     era: "1914-1953"
     threat: rifle
     mechanisms: {ballistic: 100}
@@ -442,6 +456,7 @@ weapons:
     short: "Assault rifle"
     icon: modern_rifle
     range: [50, 150, 250]
+    ignition: cartridge
     era: "1960s-"
     threat: rifle
     mechanisms: {ballistic: 100}
@@ -454,6 +469,7 @@ weapons:
     short: "AP rifle"
     icon: modern_rifle
     range: [100, 200, 300]
+    ignition: cartridge
     era: "1990s-"
     threat: rifle_ap
     mechanisms: {ballistic: 100}
@@ -466,6 +482,7 @@ weapons:
     short: "MG"
     icon: machine_gun
     range: [100, 300, 500]
+    ignition: cartridge
     era: "1914-"
     threat: rifle
     mechanisms: {ballistic: 100}
@@ -478,6 +495,7 @@ weapons:
     short: "Pistol/SMG"
     icon: smg
     range: [25, 50, 100]
+    ignition: cartridge
     era: "1900s-"
     threat: pistol
     mechanisms: {ballistic: 100}

@@ -1,0 +1,144 @@
+# Calendar, weather and their effects (Grave Wounds).
+#
+# Each travel map has a start date, a calendar (julian or gregorian), a latitude and a
+# climate profile. Days on the map run on from the start date. Daylight comes from the
+# latitude and the date; each day's weather is rolled from the climate's figures for the
+# month, weighted towards the day before, and the GM can change it.
+#
+# Climate figures are rounded modern climate normals for a typical place in each region
+# (monthly mean highs and lows, days with 1 mm or more of rain, days with fog). The
+# medieval and early modern climate (the "Little Ice Age", roughly 1300-1850) ran somewhat
+# cooler: a map's `climate_shift` (degrees C, e.g. -0.5) lowers its temperatures.
+
+# ---------- daylight and the marching day ----------
+daylight:
+  start_after_sunrise: 1.0    # hours: breaking camp, eating, forming up
+  stop_before_sunset: 1.0     # hours: halting in time to make camp in daylight
+  min_hours: 2                # even a midwinter day gives this much marching
+# Marching hours = the smaller of terrain.yaml hours_per_day and (sunset - stop) - (sunrise + start),
+# both ends rounded inwards to the quarter hour. Camp work can still use evening_hours (works.yaml).
+
+# ---------- making the day's weather ----------
+persistence: 0.4              # how strongly a wet or dry day tends to follow another
+anomaly_carry: 0.5            # share of yesterday's warmth or chill kept (rounded towards zero)
+anomaly:                      # d100 -> degrees C added to the month's normal high and low
+  - {upto: 5, deg: -4}
+  - {upto: 15, deg: -2}
+  - {upto: 35, deg: -1}
+  - {upto: 65, deg: 0}
+  - {upto: 85, deg: 1}
+  - {upto: 95, deg: 2}
+  - {upto: 100, deg: 4}
+intensity:                    # on a wet day, d100 -> how hard it comes down
+  - {upto: 60, rain: rain, snow: snow}
+  - {upto: 90, rain: heavy_rain, snow: heavy_snow}
+  - {upto: 100, rain: storm, snow: blizzard}
+snow_at_or_below: 2           # the day's high, degrees C: wet days fall as snow
+fair_upto: 50                 # on a dry day without fog, d100 at or under this is fair, else overcast
+winds:                        # d100 -> wind; missile and firearm: % off missile attacks
+  - {id: calm,   upto: 50,  name: "Calm or light air", missile: 0,  firearm: 0}
+  - {id: breeze, upto: 85,  name: "Breeze",            missile: 0,  firearm: 0}
+  - {id: strong, upto: 97,  name: "Strong wind",       missile: 10, firearm: 0}
+  - {id: gale,   upto: 100, name: "Gale",              missile: 20, firearm: 10}
+
+# Conditions. wet: 0-2, how wet bowstrings and powder get. visibility: hexes of the battle
+# map (2 m) a man can see to aim; null for clear. min_wind: the wind is at least this.
+# hardship: how hard a night out in it is (for rest). precip: rain, snow or none.
+conditions:
+  fair:       {name: "Fair",       precip: none, wet: 0, visibility: null, hardship: 0}
+  overcast:   {name: "Overcast",   precip: none, wet: 0, visibility: null, hardship: 0}
+  fog:        {name: "Fog",        precip: none, wet: 0, visibility: 25,   hardship: 0}
+  rain:       {name: "Rain",       precip: rain, wet: 1, visibility: 150,  hardship: 1}
+  heavy_rain: {name: "Heavy rain", precip: rain, wet: 2, visibility: 75,   hardship: 2}
+  storm:      {name: "Storm",      precip: rain, wet: 2, visibility: 50,   hardship: 2, min_wind: strong}
+  snow:       {name: "Snow",       precip: snow, wet: 1, visibility: 75,   hardship: 1}
+  heavy_snow: {name: "Heavy snow", precip: snow, wet: 1, visibility: 40,   hardship: 2}
+  blizzard:   {name: "Blizzard",   precip: snow, wet: 2, visibility: 15,   hardship: 3, min_wind: gale}
+
+# ---------- the ground ----------
+# Mud and lying snow build up and wear off day by day; heavy rain floods fords.
+ground:
+  mud_add: {rain: 1, heavy_rain: 2, storm: 2}
+  mud_max: 3
+  mud_dry: 1                  # mud gone per day without rain
+  mud_dry_warm: 2             # ... if the high is at or over warm_at
+  warm_at: 25
+  snow_add: {snow: 1, heavy_snow: 2, blizzard: 3}
+  snow_max: 4
+  snow_melt: 1                # snow gone per day with the high over snow_at_or_below
+  snow_melt_mild: 2           # ... if the high is at or over mild_at
+  mild_at: 8
+  flood_from: [heavy_rain, storm]
+  flood_days: 2               # fords stay too deep this many days, counting the day itself
+  deep: 2                     # mud or snow at this level or more is deep going on the battle map
+
+# Travel map: % of each terrain's time cost while muddy (mud >= 1) or snowy (snow >= 1);
+# the larger applies. Unpaved roads and ploughed fields suffer most from mud.
+march:
+  mud:  {road: 150, open: 130, farmland: 150, heath: 120, forest: 110, hills: 120, mountains: 110, marsh: 120, ford: 100, bridge: 100, village: 110, town: 100}
+  snow: {road: 150, open: 150, farmland: 150, heath: 150, forest: 150, hills: 175, mountains: 200, marsh: 150, ford: 150, bridge: 125, village: 125, town: 125}
+  flooded: [ford]             # cannot be crossed while flooded
+
+# Battle map: deep mud or snow costs +1 movement for every hex.
+battle:
+  deep_step: 1
+  string_wet: [0, 10, 20]     # % off bows and crossbows by wet level (wet strings)
+  misfire:                    # % chance a firearm fails to fire, by ignition and wet level
+    match:      [0, 30, 60]
+    wheel:      [0, 15, 30]
+    flint:      [0, 15, 30]
+    percussion: [0, 5, 10]
+    cartridge:  [0, 0, 0]
+
+# ---------- rest and fatigue ----------
+# A night's rest starts from the camp's rest (works.yaml; poor without a camp) and drops
+# one step for every point of hardship beyond the camp's shelter. Cold adds hardship.
+rest_levels: [bad, poor, fair, good]
+shelter: {none: 0, bivouac: 0, watched: 1, staked: 1, fortified: 1, quartered: 3}
+cold_hardship: [{low_at_or_below: 0, add: 1}, {low_at_or_below: -10, add: 2}]
+
+fatigue:
+  levels:                     # penalty: % off attack and defence; march: % of marching speed
+    - {name: "Fresh",     penalty: 0,  march: 100}
+    - {name: "Tired",     penalty: 5,  march: 100}
+    - {name: "Weary",     penalty: 10, march: 90}
+    - {name: "Exhausted", penalty: 20, march: 75}
+    - {name: "Spent",     penalty: 30, march: 0}
+  night: {bad: 1, poor: 0, fair: -1, good: -2}
+  heat: [{high_at_or_over: 30, add: 1}, {high_at_or_over: 36, add: 2}]
+  cold: [{high_at_or_below: -5, add: 1}]
+  heat_cold_min_hours: 4      # only a day with this much marching tires men in heat or cold
+  heavy_going_hours: 6        # this much marching in deep mud or snow adds 1
+
+# ---------- climates ----------
+# Months January to December. high, low: degrees C. rain: days with 1 mm or more of rain
+# or snow. fog: days with fog.
+climates:
+  maritime:
+    name: "North-west Europe, maritime"
+    note: "Like England, the Low Countries, the Baltic coast and Gotland."
+    high: [6, 7, 9, 12, 15, 18, 20, 20, 17, 13, 9, 7]
+    low:  [1, 1, 2, 4, 7, 10, 12, 12, 10, 7, 4, 2]
+    rain: [13, 10, 11, 10, 10, 9, 10, 10, 10, 12, 12, 12]
+    fog:  [5, 4, 3, 2, 2, 1, 1, 2, 3, 5, 5, 6]
+  continental:
+    name: "Central and eastern Europe, continental"
+    note: "Like Bohemia, Poland, Hungary and the Rhine valley."
+    high: [1, 3, 8, 14, 19, 22, 24, 24, 19, 13, 6, 2]
+    low:  [-5, -4, -1, 3, 8, 11, 13, 13, 9, 4, 0, -3]
+    rain: [9, 8, 8, 8, 9, 10, 10, 9, 8, 7, 8, 9]
+    fog:  [6, 5, 3, 2, 1, 1, 1, 2, 4, 6, 7, 7]
+  mediterranean:
+    name: "Mediterranean and Levant coast"
+    note: "Like Acre, Sidon, Sicily and southern Spain."
+    high: [18, 19, 21, 25, 28, 30, 32, 32, 31, 28, 24, 19]
+    low:  [9, 9, 11, 14, 17, 21, 23, 24, 22, 19, 14, 11]
+    rain: [10, 9, 6, 3, 1, 0, 0, 0, 1, 3, 6, 9]
+    fog:  [1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1]
+  arid:
+    name: "Hot desert and steppe"
+    note: "Like Mesopotamia, inland Syria and Egypt."
+    high: [16, 19, 24, 30, 37, 42, 44, 44, 41, 34, 24, 18]
+    low:  [4, 6, 10, 15, 21, 24, 26, 25, 21, 16, 9, 5]
+    rain: [4, 4, 4, 3, 1, 0, 0, 0, 0, 1, 3, 4]
+    fog:  [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]

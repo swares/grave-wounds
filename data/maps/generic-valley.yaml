@@ -6,6 +6,14 @@
 id: generic-valley
 name: "Generic river valley (test map)"
 hex_km: 1
+# Calendar and climate: the start date is read in the calendar named (medieval sources use
+# the Julian calendar); latitude sets the daylight; climate_shift cools the climate's
+# modern normals for the Little Ice Age.
+start_date: "1415-10-20"
+calendar: julian
+latitude: 52
+climate: maritime
+climate_shift: -0.5
 terrain: |
     ....FFFFFFFF.FFF.......www......hhMMMMMM
     ..FFFFFFFFFFFFFF......wwww......hhhMMMMM

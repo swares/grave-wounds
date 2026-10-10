@@ -89,6 +89,11 @@ Ditches, banks, palisades, gates, stakes, wagons and other works change movement
 and close combat on the battle map. A fighter can spend his attack breaching one. See
 [works.md](works.md).
 
+## Weather
+
+Rain, wind and fog affect missile attacks, wet weather makes firearms misfire, deep mud
+or snow slows movement, and fatigue costs attack and defence. See [weather.md](weather.md).
+
 ## Nerve
 
 Set by experience: green 35, regular 50, veteran 65, or any number your game prefers.
