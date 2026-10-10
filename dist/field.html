@@ -1104,14 +1104,15 @@ const dice = {                                     // real dice for play
 };
 let S = null, HANDOFF = null;                      // HANDOFF: a fight sent from the travel map, waiting for the GM
 function newUnit(o){
-  return { id: S.seq++, name: o.name, side: o.side, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
+  return { id: S.seq++, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, width: o.width || Math.ceil(o.men / FD.units.formations[o.formation].per_hex),
     pos: o.pos, facing: o.facing, state: "steady", charged: false };
 }
 const newField = () => ({ ground: {}, works: { edges: {}, hexes: {} }, weather: { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0 } }, size: SIZE.slice() });
 function fromTravel(h){                            // a battle with the travel map's forces and no units yet: the GM splits them
-  const att = h.forces.find(f => f.role === "attacker"), def = h.forces.find(f => f.role === "defender");
-  S = { table: S?.table || "towton-1461-all-hits", sides: [def.side, att ? att.side : "Attackers"], units: [], exchange: 0, phase: "setup", sel: null, start: null,
+  const def = h.forces.find(f => f.role === "defender");
+  const attSides = [...new Set(h.forces.filter(f => f.role === "attacker").map(f => f.side))];   // attacking together, whatever their sides
+  S = { table: S?.table || "towton-1461-all-hits", sides: [def.side, attSides.length ? namesAnd(attSides) : "Attackers"], units: [], exchange: 0, phase: "setup", sel: null, start: null,
     log: [], seq: 1, forces: h.forces.map(f => ({ ...f })), from: h, after: null, field: newField(), camp: null, tool: "unit",
     msg: `From the travel map: ${h.place}, ${h.day}, ${h.time}. Split each force into units with Add a unit, then place them.` };
   if (h.weather) S.field.weather = { cond: h.weather.cond, wind: h.weather.wind, ground: { mud: h.weather.ground?.mud || 0, snow: h.weather.ground?.snow || 0 } };
@@ -1126,6 +1127,7 @@ function layCamp(c, def){                          // the defender's camp works 
   const built = done === null ? "" : ` (${Math.round(c.frac * 100)}% built)`;
   S.msg += ` The ${WK.camps[c.kind].name.toLowerCase()}${built} is laid out with the defenders' units starting inside it.`;
 }
+function namesAnd(xs){ return xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " and " + xs.at(-1) }
 const reserve = f => f.men - S.units.filter(u => u.force === f.id).reduce((t, u) => t + u.start, 0);
 const forceOf = u => (S.forces || []).find(f => f.id === u.force) || null;
 const forceSide = f => S.sides[f.role === "attacker" ? 1 : 0];
@@ -1152,7 +1154,8 @@ const idx = id => S.units.findIndex(u => u.id === id);
 const selUnit = () => S.units.find(u => u.id === S.sel) || null;
 const sideNo = u => (u.side === S.sides[0] ? 0 : 1);
 const moving = () => (S.phase === 0 || S.phase === 1 ? S.sides[S.phase] : null);
-const unitName = u => `${u.name} (${u.side})`;
+const banner = u => u.banner || u.side;         // the unit's own side: its force's, if the fighting side joins several
+const unitName = u => `${u.name} (${banner(u)})`;
 
 /* ---------- moving ---------- */
 function startPhase(k){                           // a side's move; at the start of an exchange every broken unit runs first
@@ -1316,7 +1319,7 @@ function renderAfter(){
 function renderForces(){
   $("#forces-box").hidden = !S.forces;
   if (!S.forces) return;
-  $("#forces").innerHTML = S.forces.map(f => `<li><b>${esc(f.name)}</b> <span class="muted">${esc(forceSide(f))} · ${f.role}</span><span class="meta">${f.men} fit · ${reserve(f)} in reserve</span></li>`).join("");
+  $("#forces").innerHTML = S.forces.map(f => `<li><b>${esc(f.name)}</b> <span class="muted">${esc(f.side)} · ${f.role}</span><span class="meta">${f.men} fit · ${reserve(f)} in reserve</span></li>`).join("");
 }
 function renderAddSide(){                         // a unit is drawn from a force (from the travel map) or set on a side
   const el = $("#sel-side"), was = el.value;
@@ -1451,14 +1454,14 @@ function renderHeroes(){
   $("#heroes").innerHTML = allHeroes().map(h => {
     const wounds = h.wounds.length ? " · " + nWounds(h.wounds.length) : "";
     const rm = setup ? `<button class="small" data-hero="${h.id}" aria-label="Remove ${esc(h.name)}">Remove</button>` : "";
-    return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(h.unit.name)} (${esc(h.unit.side)}) · ${place[h.role]}${h.leader ? " · leader" : ""}</span></span><span class="meta">${h.attack}/${h.defence}% · ${h.state}${wounds}</span>${rm}</li>`;
+    return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(unitName(h.unit))} · ${place[h.role]}${h.leader ? " · leader" : ""}</span></span><span class="meta">${h.attack}/${h.defence}% · ${h.state}${wounds}</span>${rm}</li>`;
   }).join("");
   const fighters = setup ? rollerFighters() : [];
   $("#hero-box").hidden = !setup;
   $("#hero-box").disabled = !fighters.length || !S.units.length;
   const was = [$("#sel-hero").value, $("#sel-hero-unit").value];
   $("#sel-hero").innerHTML = fighters.map(c => `<option value="${c.id}">${esc(c.name)} (${esc(c.rating || "regular")})</option>`).join("") || `<option value="">${allHeroes().length ? "Every fighter on the roller is with a unit" : "No fighters on the roller"}</option>`;
-  $("#sel-hero-unit").innerHTML = S.units.map(u => `<option value="${u.id}">${esc(u.name)} (${esc(u.side)})</option>`).join("");
+  $("#sel-hero-unit").innerHTML = S.units.map(u => `<option value="${u.id}">${esc(unitName(u))}</option>`).join("");
   if ([...$("#sel-hero").options].some(o => o.value === was[0])) $("#sel-hero").value = was[0];
   if ([...$("#sel-hero-unit").options].some(o => o.value === was[1])) $("#sel-hero-unit").value = was[1];
   if (!$("#in-hero-atk").value) heroDefaults();
@@ -1522,7 +1525,7 @@ function unitMeta(u){
   return `${u.men}/${u.start} · ${u.state}${down}${br}`;
 }
 function renderUnits(){
-  $("#units").innerHTML = S.units.map(u => `<li data-id="${u.id}" aria-current="${u.id === S.sel}" tabindex="0"><span class="dot" style="background:var(--side${sideNo(u)})"></span><span><b>${esc(u.name)}</b> <span class="muted">${esc(u.side)}</span></span><span class="meta">${unitMeta(u)}</span></li>`).join("") || `<li class="muted">No units. Add one below.</li>`;
+  $("#units").innerHTML = S.units.map(u => `<li data-id="${u.id}" aria-current="${u.id === S.sel}" tabindex="0"><span class="dot" style="background:var(--side${sideNo(u)})"></span><span><b>${esc(u.name)}</b> <span class="muted">${esc(banner(u))}</span></span><span class="meta">${unitMeta(u)}</span></li>`).join("") || `<li class="muted">No units. Add one below.</li>`;
 }
 function renderSel(){
   const u = selUnit(), setup = S.phase === "setup";
@@ -1595,7 +1598,7 @@ function addUnit(){
     if (reserve(f) <= 0){ S.msg = `${f.name} has no men left to put in a unit.`; return render() }
     men = Math.min(men, reserve(f));
   }
-  const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, force: f ? f.id : null, men, quality: $("#sel-quality").value, weapon: $("#sel-weapon").value,
+  const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, banner: f && f.side !== side ? f.side : null, force: f ? f.id : null, men, quality: $("#sel-quality").value, weapon: $("#sel-weapon").value,
     kit: $("#sel-kit").value, formation: $("#sel-form").value, mounted: $("#chk-mounted").checked, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
   for (const pos of startSpots(k)){                  // inside the camp for its defenders, else the first free spot down its side's edge
     const at = { ...u, pos };

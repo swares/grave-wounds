@@ -167,7 +167,9 @@ starts again from the starting units.
 
 On the travel map, **Set up the fight** with **Fight it on: the field map** opens this page
 with the forces that are there: the defender and any friends beside it on side A, the
-attackers on side B, each with its fit men (the sick stay out). The GM splits each force
+attackers on side B, each with its fit men (the sick stay out). Attackers from different
+sides on the travel map fight together on side B, named for all of them ("Lancaster and
+Burgundy"), and each unit keeps its own side's name in the lists and the log. The GM splits each force
 into units with **Add a unit**, choosing the force to draw the men from. A force's men left
 out of every unit stay in reserve and do not fight.
 
