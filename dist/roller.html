@@ -1811,6 +1811,26 @@ function applyFromMap(){                    // the Strike panel's Apply, with it
   S.mapMsg = $("#apply-msg").innerText.replaceAll("\n", " ");
   renderChars();
 }
+function forceChars(o, positions){            // up to 8 of a travel-map force's men, at these hexes if given
+  const out = [];
+  for (let i = 0; i < Math.min(o.men, 8); i++){
+    const c = newChar(`${o.name} ${i + 1}`, "none", null, {}, o.side);
+    c.fatigue = o.fatigue || 0;
+    if (positions && positions[i]) c.pos = positions[i];
+    out.push(c);
+  }
+  return out;
+}
+const menOf = o => { const n = Math.min(o.men, 8); return n < o.men ? `${n} of its ${o.men} men` : `its ${n} men` };
+function campSpots(L, cols, rows){            // hexes inside the camp, nearest the middle first
+  const spots = [];
+  for (let y = 0; y < rows; y++){
+    for (let x = 0; x < cols; x++){
+      if (hexDistance(L.centre, [x, y]) <= Math.max(1, L.radius - 1)) spots.push([x, y]);
+    }
+  }
+  return spots.sort((p, q) => hexDistance(L.centre, p) - hexDistance(L.centre, q) || p[1] - q[1] || p[0] - q[0]);
+}
 function setupHandoff(){                     // a camp or position sent from the travel map
   const h = S.handoff; if (!h) return;
   const ft = h.force.type, men = h.force.men, r = campRadius(men, ft);
@@ -1820,34 +1840,28 @@ function setupHandoff(){                     // a camp or position sent from the
   const { cols, rows } = S.map;
   const L = lay ? campWorks(h.camp, men, ft, cols, rows) : { centre: [cols >> 1, rows >> 1], radius: r, fits: true, works: { edges: {}, hexes: {} } };
   S.works = L.works;
-  const spots = [];
-  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) if (hexDistance(L.centre, [x, y]) <= Math.max(1, L.radius - 1)) spots.push([x, y]);
-  spots.sort((p, q) => hexDistance(L.centre, p) - hexDistance(L.centre, q) || p[1] - q[1] || p[0] - q[0]);
-  const n = Math.min(men, 8);
-  S.chars = Array.from({ length: n }, (_, i) => { const c = newChar(`${h.force.name} ${i + 1}`, "none", null, {}, h.force.side); c.pos = spots[i]; c.fatigue = h.force.fatigue || 0; return c });
+  // The defender and any friends who were there fill the camp from the middle out; any who
+  // do not fit go to their side's edge. The enemy forces wait at the far edge (side 2's edge).
+  const spots = campSpots(L, cols, rows), defenders = [h.force, ...(h.allies || [])], foes = h.foes || [], foe = foes[0];
+  const overflow = defenders.reduce((t, o) => t + Math.min(o.men, 8), 0) > spots.length;
+  S.chars = [];
+  for (const o of defenders) S.chars.push(...forceChars(o, spots.splice(0, Math.min(o.men, 8))));
+  for (const o of foes) S.chars.push(...forceChars(o));
   if (h.weather) S.weather = h.weather;
   S.hauled = !!h.hauled;
-  // The enemy forces that marched up on the travel map come too, waiting at the far edge (side 2's edge).
-  const foes = h.foes || [], foe = foes[0], fns = foes.map(o => Math.min(o.men, 8));
-  foes.forEach((o, k) => {
-    for (let i = 0; i < fns[k]; i++){
-      const c = newChar(`${o.name} ${i + 1}`, "none", null, {}, o.side);
-      c.fatigue = o.fatigue || 0;
-      S.chars.push(c);
-    }
-  });
   S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0; S.hit = null;
   S.addSide = foe ? foe.side : "Attackers";                                // Add brings in the other side
   if (!foe && h.force.side === "Attackers") S.addSide = "Defenders";
   const campName = h.camp ? WK.camps[h.camp].name.toLowerCase() : "no camp";
   S.pending = [`Set up from the travel map: ${h.force.name} at ${h.place} (${campName}), ${h.day}, ${h.time}${h.weather ? " \u00b7 " + WXD.conditions[h.weather.cond].name.toLowerCase() : ""}`];
-  const placed = n < men ? n + " of its " + men + " men" : "its " + n + " men";
   const where = h.camp ? campName : "position", cut = L.fits ? "" : " (cut down to fit the map)";
   const facing = lay ? "facing the way in" : "facing them";
-  const foeBits = foes.map((o, k) => `${o.name} (${o.side}), ${fns[k] < o.men ? fns[k] + " of its " + o.men : "its " + o.men} men`);
-  const foeNote = foe ? `Attacking: ${foeBits.join("; ")}, at the far edge ${facing}. ` : "";
+  const unplaced = overflow ? " Those who did not fit inside wait at their side's edge." : "";
+  const defNote = defenders.map(o => `${o.name} (${o.side}), ${menOf(o)}`).join("; ");
+  const foeNote = foe ? `Attacking: ${foes.map(o => `${o.name} (${o.side}), ${menOf(o)}`).join("; ")}, at the far edge ${facing}. ` : "";
   const addNote = `Add brings in more on the side "${S.addSide}".`;
-  S.mapMsg = `Defending: ${h.force.name} (${h.force.side}), ${placed}, inside the ${where}${cut}. ${foeNote}${addNote} Click a fighter, on the map or with Place on map, then a hex to move him.`;
+  S.mapMsg = `Defending: ${defNote}, inside the ${where}${cut}.${unplaced} ${foeNote}${addNote} Click a fighter, on the map or with Place on map, then a hex to move him.`;
+  for (const o of h.allies || []) S.pending.push(`With them: ${o.name}, ${o.men} men (${o.side})`);
   for (const o of foes) S.pending.push(`Facing them: ${o.name}, ${o.men} men (${o.side})`);
   try{ localStorage.removeItem("gravewounds-handoff") }catch(e){}
   S.handoff = null;
@@ -1913,8 +1927,9 @@ function renderMap(){
   if (S.handoff){
     const h = S.handoff;
     const foesBit = (h.foes || []).length ? ", against " + h.foes.map(o => `${attr(o.name)} (${o.men} men)`).join(", ") : "";
+    const alliesBit = (h.allies || []).length ? ", with " + h.allies.map(o => `${attr(o.name)} (${o.men} men)`).join(", ") : "";
     const campBit = h.camp ? ", " + attr(WK.camps[h.camp].name.toLowerCase()) : "";
-    bits.push(`<span class="free"><b>From the travel map:</b> ${attr(h.force.name)} (${h.force.men} men) at ${attr(h.place)}${campBit}, ${h.day}, ${h.time}${foesBit}. Set up the fight here? This replaces the fighters and works on this page.</span><button class="small" data-map="handoff">Set up the fight</button><button class="small" data-map="nohandoff">Not now</button>`);
+    bits.push(`<span class="free"><b>From the travel map:</b> ${attr(h.force.name)} (${h.force.men} men)${alliesBit} at ${attr(h.place)}${campBit}, ${h.day}, ${h.time}${foesBit}. Set up the fight here? This replaces the fighters and works on this page.</span><button class="small" data-map="handoff">Set up the fight</button><button class="small" data-map="nohandoff">Not now</button>`);
   }
   const f = (S.free || [])[0];
   if (f){

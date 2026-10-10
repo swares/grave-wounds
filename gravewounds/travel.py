@@ -202,25 +202,43 @@ def _camped(o: dict) -> bool:
     return bool(c) and list(c["hex"]) == list(o["pos"])
 
 
+def _arrived(o: dict) -> tuple:
+    """When the force got where it is: when it began its camp there, if it has one (it was
+    there while it dug), else its clock."""
+    c = o.get("camp")
+    if _camped(o) and c.get("from"):
+        return c["from"]["day"], c["from"]["used"]
+    return o["day"], o["used"]
+
+
 def fight_plan(d: Data, forces: list, sel) -> dict:
     """Who fights if force `sel` (an id) sets up a fight. Forces: [{id, side, pos, camp, day,
-    used}]. An enemy force must have marched to within `fight_within` hexes. If `sel` is not
-    camped but such an enemy is, the enemy defends its camp. The defender fights everyone of
-    another side within reach of it. The fight starts at the later of their clocks.
-    {defender, attackers (ids, nearest first), day, used}; attackers is empty if no enemy is near."""
+    used}], camp {kind, hex, from?}. An enemy force must have marched to within `fight_within` hexes. If `sel` is not
+    camped, the fight is at a camp within reach: a friendly force's first (it defends, and
+    `sel` with it), else an enemy's (the enemy defends). The defender fights everyone of
+    another side within reach of it. The fight starts when the defender's clock and every
+    attacker's arrival are past. Forces of the defender's side within reach join the
+    defence if they had arrived by then. A camped force arrived when it began its camp
+    (camp["from"]: {day, used}); any other force, at its clock.
+    {defender, allies, attackers (ids, nearest first), late (allies not there yet), day, used};
+    attackers is empty if no enemy is near."""
     reach = d.terrain["fight_within"]
     f = next(o for o in forces if o["id"] == sel)
 
-    def near_foes(x, camped_only=False):
+    def near(x, same_side, camped_only=False):
         out = [(hex_distance(o["pos"], x["pos"]), i, o) for i, o in enumerate(forces)
-               if o["side"] != x["side"] and hex_distance(o["pos"], x["pos"]) <= reach
-               and (_camped(o) or not camped_only)]
+               if o is not x and (o["side"] == x["side"]) == same_side
+               and hex_distance(o["pos"], x["pos"]) <= reach and (_camped(o) or not camped_only)]
         return [o for _, _, o in sorted(out, key=lambda t: (t[0], t[1]))]
     defender = f
-    if not _camped(f):
-        camps = near_foes(f, True)
+    if not _camped(f):                       # fight from a camp within reach: our own side's first
+        camps = near(f, True, True) or near(f, False, True)
         if camps:
             defender = camps[0]
-    attackers = near_foes(defender)
-    day, used = max((o["day"], o["used"]) for o in [defender] + attackers)
-    return {"defender": defender["id"], "attackers": [o["id"] for o in attackers], "day": day, "used": used}
+    attackers = near(defender, False)
+    day, used = max([(defender["day"], defender["used"])] + [_arrived(o) for o in attackers])
+    friends = near(defender, True)
+    allies = [o["id"] for o in friends if _arrived(o) <= (day, used)]
+    late = [o["id"] for o in friends if _arrived(o) > (day, used)]
+    return {"defender": defender["id"], "allies": allies, "attackers": [o["id"] for o in attackers],
+            "late": late, "day": day, "used": used}

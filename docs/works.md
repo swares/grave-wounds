@@ -52,11 +52,17 @@ to send it there. Until then the fight button is off and says why.
 
 **Set up the fight** then opens the roller's battle map with:
 - the defending force's camp laid out in the middle, sized for its men. If the selected
-  force has no camp but an enemy within reach has, that enemy defends its camp.
-- up to eight of the defenders inside the camp
+  force has no camp, the fight is at a camp within reach: a friendly force's first (that
+  force defends, with the selected one beside it), else an enemy's (the enemy defends).
+- up to eight men from each defending force inside the camp, the camp's own force nearest
+  the middle. Friendly forces within reach of the camp join the defence if they had
+  arrived by the time the fight starts; a force still on the road misses it, and the page
+  says so. A force that made camp counts as there from when it began, since it was there
+  while it dug.
 - every force from another side within reach, up to eight men each, at the far edge facing
   the way in, as the attackers
-- the fight's date and time: the later of the forces' clocks, when the last of them is there
+- the fight's date and time: once the defender is ready (its camp finished) and the last
+  attacker has arrived. The page says which.
 - that day's weather and ground, each side's fatigue, and whether the timber was hauled
 
 **Add** brings in more fighters on the attackers' side.
