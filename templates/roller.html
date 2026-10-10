@@ -1485,7 +1485,7 @@ function campSpots(L, cols, rows){            // hexes inside the camp, nearest 
 }
 function setupHandoff(){                     // a camp or position sent from the travel map
   const h = S.handoff; if (!h) return;
-  const ft = h.force.type, men = h.force.men, r = campRadius(men, ft);
+  const ft = h.party || h.force.type, men = h.force.men, r = campRadius(men, ft);   // a column's camp is sized for all of it
   const lay = h.camp && WK.camps[h.camp] ? WK.camps[h.camp].layout : null;
   const need = 2 * (r + (lay === "fortified" ? 3 : lay ? 2 : 1)) + 6;
   S.map = { cols: Math.min(80, Math.max(24, need)), rows: Math.min(60, Math.max(16, need)) };

@@ -171,6 +171,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
       <div class="toolbar" id="force-kit">
         <label class="inline">Men <input id="in-men" type="number" min="1" style="width:5.5em"></label>
         <label class="inline check"><input id="in-tools" type="checkbox"> Tools (spades, axes)</label>
+        <label class="inline">March with <select id="sel-with"></select></label>
       </div>
       <dl class="summary" id="summary"></dl>
       <div class="toolbar">
@@ -321,13 +322,15 @@ function neighbours([c, r], cols, rows){
   return NEIGHBOURS[r & 1].map(([dc, dr]) => [c + dc, r + dr]).filter(([x, y]) => x >= 0 && x < cols && y >= 0 && y < rows);
 }
 const terrainAt = (m, h) => BYKEY[m.rows[h[1]][h[0]]];
-function passable(m, h, ftype, ground = null){
-  const t = terrainAt(m, h);
-  return t.cost !== null && t.cost !== undefined && !(FT[ftype].cannot_enter || []).includes(t.id) && !flooded(t.id, ground);
+const forceTypes = ftype => partyOf(0, ftype).map(p => p[0]);   // one force's type, or a column's types
+function passable(m, h, ftype, ground = null){  // this force, or every force in this column, can enter h
+  const t = terrainAt(m, h), barred = forceTypes(ftype).flatMap(ft => FT[ft].cannot_enter || []);
+  return t.cost !== null && t.cost !== undefined && !barred.includes(t.id) && !flooded(t.id, ground);
 }
+const columnKmh = ftype => Math.min(...forceTypes(ftype).map(ft => FT[ft].kmh));   // the slowest force's road speed
 const hexWeight = (t, ground) => Math.floor(t.cost * terrainPct(t.id, ground) + 0.5);
 const stepWeight = (m, a, b, ground = null) => hexWeight(terrainAt(m, a), ground) + hexWeight(terrainAt(m, b), ground);
-const stepHours = (m, a, b, ftype, ground = null, speed = 100) => stepWeight(m, a, b, ground) / 200 * m.hex_km / (FT[ftype].kmh * speed / 100);
+const stepHours = (m, a, b, ftype, ground = null, speed = 100) => stepWeight(m, a, b, ground) / 200 * m.hex_km / (columnKmh(ftype) * speed / 100);
 function heapPush(hp, x){ hp.push(x); let i = hp.length - 1; while (i > 0){ const p = (i - 1) >> 1; if (less(hp[p], hp[i])) break; [hp[p], hp[i]] = [hp[i], hp[p]]; i = p } }
 function heapPop(hp){
   const top = hp[0], last = hp.pop();
@@ -409,12 +412,17 @@ function hexDistance(a, b){
 const hkey = h => h[0] + "," + h[1];
 function edgeKey(a, b){ const [x, y] = [a, b].slice().sort((p, q) => p[1] - q[1] || p[0] - q[0]); return hkey(x) + "|" + hkey(y) }
 /* Camp layout and works labour, shared by the roller's battle map and the travel map.
-   Same rules as gravewounds/combat.py (camp_radius, camp_map_size, camp_works, works_labour).
+   Same rules as gravewounds/combat.py (party_of, camp_radius, camp_map_size, camp_works, works_labour).
+   A force type may be a column's party: [[type, men], ...].
    build.py puts this file into both pages at their CAMP_JS marker. Each page provides
    WK (works.yaml), CAMP_HEX_M (the battle map's hex, metres), neighbours, hexDistance,
    hkey and edgeKey. */
+function partyOf(men, ftype){                 // a force type as a party [[type, men]]; a column's party is given as one
+  return typeof ftype === "string" ? [[ftype, men]] : ftype.map(p => p.slice());
+}
 function campRadius(men, ftype){
-  const area = Math.max(WK.camp_area_min, men * WK.camp_area[ftype]), n = area / (Math.sqrt(3) / 2 * 4);
+  const need = partyOf(men, ftype).reduce((t, [ft, n]) => t + n * WK.camp_area[ft], 0);
+  const area = Math.max(WK.camp_area_min, need), n = area / (Math.sqrt(3) / 2 * 4);
   let r = 0; while (3 * r * (r + 1) + 1 < n) r++;
   return Math.max(r, 1);
 }
@@ -705,35 +713,75 @@ function refusal(name, type, h, verb){
   return `${who} cannot ${verb} ${t.name.toLowerCase()}: ${ft.name.toLowerCase()} keep out of ${no.length > 1 ? no.slice(0, -1).join(", ") + " and " + no[no.length - 1] : no[0]}.`;
 }
 // Re-plan a force's route from where it stands now, through its remaining waypoints.
+// ----- columns: forces marching together behind a leader -----
+function leaderOf(f){ const L = f && f.with ? forcesHere().find(o => o.id === f.with) : null; return L || f }
+function columnOf(f){ const L = leaderOf(f); return [L, ...forcesHere().filter(o => o !== L && o.with === L.id)] }
+const colType = L => { const c = columnOf(L); return c.length > 1 ? c.map(o => [o.type, o.men]) : L.type };
+const colSpeed = L => Math.min(...columnOf(L).map(o => speedOf(o)));
+const colMen = L => columnOf(L).reduce((t, o) => t + o.men, 0);
+const colTools = L => columnOf(L).some(o => o.tools);
+const colName = L => (columnOf(L).length > 1 ? `${L.name}'s column` : L.name);
+function colRefusal(L, h, verb){                // which force in the column cannot go there, and why
+  const g = groundOf(L.day), bad = columnOf(L).find(o => !passable(curMap(), h, o.type, g)) || L;
+  const msg = refusal(bad.name, bad.type, h, verb);
+  return columnOf(L).length > 1 ? `${msg} ${L.name}'s column keeps together.` : msg;
+}
+function joinOptions(f){                       // leaders of other columns on its side within reach
+  const mine = columnOf(f);
+  return forcesHere().filter(o => !o.with && !mine.includes(o) && o.side === f.side && hexDistance(o.pos, f.pos) <= TER.fight_within);
+}
+function joinColumn(f, target){                // f and any force marching with it close up on target's column
+  const L = leaderOf(target), joiners = columnOf(f);
+  let at = { day: L.day, used: L.used };
+  for (const o of joiners) at = laterOf({ day: o.day, used: o.used }, at);
+  const camp = campHere(L);
+  for (const o of joiners){
+    Object.assign(o, { with: L.id, pos: L.pos.slice(), waypoints: [], path: null, legs: [], index: 0, camp: camp ? { ...camp } : null });
+    o.log.unshift(`${dateText(at.day, true)}, ${clock(at.used, at.day)}: closes up and marches with ${L.name}.`);
+  }
+  for (const o of columnOf(L)) Object.assign(o, { day: at.day, used: at.used });
+  L.log.unshift(`${dateText(at.day, true)}, ${clock(at.used, at.day)}: ${namesList(joiners.map(o => o.name))} ${joiners.length > 1 ? "join" : "joins"} the column.`);
+  if (!replan(L)){ L.waypoints = []; replan(L); S.msg = `${L.name}'s route was cleared: the column cannot follow it.` }
+}
+function leaveColumn(f){                       // f marches on its own; if it led, the next force leads the rest
+  const rest = columnOf(f).filter(o => o !== f);
+  if (f.with){ f.with = null; f.log.unshift(`${dateText(f.day, true)}, ${clock(f.used, f.day)}: leaves the column.`); return }
+  if (!rest.length) return;
+  const next = rest[0];
+  next.with = null;
+  for (const o of rest.slice(1)) o.with = next.id;
+  f.log.unshift(`${dateText(f.day, true)}, ${clock(f.used, f.day)}: leaves the column; ${next.name} leads the rest.`);
+}
 function replan(f){
   const m = curMap();
   if (!f.waypoints.length){ f.path = null; f.legs = []; f.index = 0; return true }
-  const path = plan(m, f.pos, f.waypoints, f.type, groundOf(f.day));
+  const path = plan(m, f.pos, f.waypoints, colType(f), groundOf(f.day));
   if (!path) return false;
   f.path = path; f.index = 0;
   f.legs = []; let at = 0;                   // where each waypoint falls on the path
   for (const w of f.waypoints){ while (!sameHex(path[at], w)) at++; f.legs.push(at) }
   return true;
 }
-function addWaypoint(f, h){
-  const m = curMap();
-  if (!passable(m, h, f.type, groundOf(f.day))){ S.msg = refusal(f.name, f.type, h, "go into"); return }
+function addWaypoint(sel, h){                  // a column's route is its leader's
+  const m = curMap(), f = leaderOf(sel);
+  if (!passable(m, h, colType(f), groundOf(f.day))){ S.msg = colRefusal(f, h, "go into"); return }
   f.waypoints.push(h);
   if (!replan(f)){ f.waypoints.pop(); replan(f); S.msg = `${f.name} cannot reach ${where(h)} from here.`; return }
   S.msg = "";
 }
-function march(f, hours){
-  if (!f.path || f.index >= f.path.length - 1){ S.msg = `${f.name} has no route to march. Click the map to add a waypoint.`; return }
-  if (f.used >= hpdOf(f.day) - 1e-9) endDay(f);
-  const speed = speedOf(f);
-  if (!speed){ S.msg = `${f.name} is too spent to march. Rest until next morning.`; return }
+function march(sel, hours){                    // the whole column marches together, at its slowest
+  const f = leaderOf(sel), col = columnOf(f);
+  if (!f.path || f.index >= f.path.length - 1){ S.msg = `${colName(f)} has no route to march. Click the map to add a waypoint.`; return }
+  if (f.used >= hpdOf(f.day) - 1e-9) col.forEach(endDay);
+  const speed = colSpeed(f);
+  if (!speed){ S.msg = `${colName(f)} is too spent to march. Rest until next morning.`; return }
   const m = curMap(), g = groundOf(f.day);
-  if (f.path.slice(f.index + 1).some(h => !passable(m, h, f.type, g)) && !replan(f)){
+  if (f.path.slice(f.index + 1).some(h => !passable(m, h, colType(f), g)) && !replan(f)){
     S.msg = `${f.name} cannot get through today (${groundText(g)}). Wait, or add a waypoint to go round.`;
     return;
   }
   const from = f.index, u0 = f.used;
-  const r = advance(m, f.path, f.index, f.used, hours, { hpd: hpdOf(f.day), ftype: f.type, ground: g, speed });
+  const r = advance(m, f.path, f.index, f.used, hours, { hpd: hpdOf(f.day), ftype: colType(f), ground: g, speed });
   const steps = r.index - from;
   if (steps && f.camp){ f.log.unshift(`${dateText(f.day, true)}: breaks camp (${WK.camps[f.camp.kind].name.toLowerCase()}).`); f.camp = null }
   f.marched = (f.marched || 0) + (r.used - u0);
@@ -745,9 +793,17 @@ function march(f, hours){
   const km = +(steps * curMap().hex_km).toFixed(1);
   const what = steps ? `marched ${km} km to ${where(f.pos)}` : "could not finish the next hex in the time; halted";
   const halt = f.used >= hpdOf(f.day) - 1e-9 && !arrived ? " Halts for the night." : "";
-  f.log.unshift(`${dateText(f.day, true)}, ${clock(u0, f.day)}\u2013${clock(f.used, f.day)}: ${what}${arrived ? " \u2014 arrived" : ""}.${halt}`);
+  const line = `${dateText(f.day, true)}, ${clock(u0, f.day)}\u2013${clock(f.used, f.day)}: ${what}${arrived ? " \u2014 arrived" : ""}.${halt}`;
+  f.log.unshift(line);
+  for (const o of col.slice(1)) followLeader(o, f, steps, line);
   f.log = f.log.slice(0, 40);
   S.msg = "";
+}
+function followLeader(o, f, steps, line){      // a force in the column goes where its leader went
+  if (steps && o.camp){ o.log.unshift(`${dateText(f.day, true)}: breaks camp (${WK.camps[o.camp.kind].name.toLowerCase()}).`); o.camp = null }
+  Object.assign(o, { pos: f.pos.slice(), day: f.day, used: f.used, marched: f.marched });
+  o.log.unshift(`With ${f.name}: ${line.replace(/^[^:]*: /, "")}`);
+  o.log = o.log.slice(0, 40);
 }
 
 const hexDist = hexDistance;
@@ -755,24 +811,24 @@ const campHere = f => (f.camp && sameHex(f.camp.hex, f.pos) ? f.camp : null);
 // Time to make this camp now. A force already camped here does not pay the set-up hours
 // again when it changes to another kind (the site, fires and watch are done), and cannot
 // make the same kind twice.
-function campCost(f, kind){
-  const r = campHours(curMap(), f.pos, kind, f.men, f.type, f.tools), old = campHere(f);
+function campCost(sel, kind){                 // a column makes one camp: all its men dig, any tools serve
+  const f = leaderOf(sel), r = campHours(curMap(), f.pos, kind, colMen(f), colType(f), colTools(f)), old = campHere(f);
   if (r.error) return r;
   if (old && old.kind === kind) return { error: "already has one here", same: true };
   let hours = r.hours;
   if (old && old.kind !== "bivouac") hours = Math.max(0, hours - WK.camps[kind].hours);
   return { ...r, hours, change: !!old };
 }
-function makeCamp(f, kind){
-  const r = campCost(f, kind);
-  if (r.error){ S.msg = `${f.name} cannot make a ${WK.camps[kind].name.toLowerCase()} here: it ${r.error}.`; return }
+function makeCamp(sel, kind){
+  const f = leaderOf(sel), col = columnOf(f), r = campCost(f, kind);
+  if (r.error){ S.msg = `${colName(f)} cannot make a ${WK.camps[kind].name.toLowerCase()} here: it ${r.error}.`; return }
   const ev = WK.evening_hours, came = { day: f.day, used: f.used };
-  if (f.used >= hpdOf(f.day) + ev - 1e-9) endDay(f);
+  if (f.used >= hpdOf(f.day) + ev - 1e-9) col.forEach(endDay);
   const d0 = f.day, u0 = f.used;
   let left = r.hours;
-  while (f.used + left > hpdOf(f.day) + ev + 1e-9){ left -= hpdOf(f.day) + ev - f.used; endDay(f) }
+  while (f.used + left > hpdOf(f.day) + ev + 1e-9){ left -= hpdOf(f.day) + ev - f.used; col.forEach(endDay) }
   const from = r.change && campHere(f).from ? campHere(f).from : came;   // when it got here and began camping
-  const rate = f.men * WK.work_share;          // for how far along the works are at any time
+  const rate = colMen(f) * WK.work_share;      // for how far along the works are at any time
   f.used += left; f.camp = { kind, hex: f.pos.slice(), from, start: { day: d0, used: u0 }, labour: r.labour, rate, setup: Math.max(0, r.hours - r.labour / rate) };
   let what = "made a " + WK.camps[kind].name.toLowerCase();
   if (kind === "quartered") what = "took quarters";
@@ -780,6 +836,10 @@ function makeCamp(f, kind){
   const lab = r.labour ? ", " + Math.round(r.labour) + " man-hours" : "";
   const until = f.day === d0 ? clock(f.used, f.day) : `${dateText(f.day, true)}, ${clock(f.used, f.day)}`;
   f.log.unshift(`${dateText(d0, true)}, ${clock(u0, d0)} to ${until}: ${what} at ${where(f.pos)} (${fmtH(r.hours)}${lab}).`);
+  for (const o of col.slice(1)){              // one camp for the column
+    Object.assign(o, { camp: { ...f.camp }, day: f.day, used: f.used });
+    o.log.unshift(`${dateText(d0, true)}, ${clock(u0, d0)} to ${until}: camps with ${f.name} (${WK.camps[kind].name.toLowerCase()}).`);
+  }
   S.msg = "";
 }
 function campOption(f, k, cur){
@@ -789,13 +849,13 @@ function campOption(f, k, cur){
   else if (r.error) note = " (not here)";
   return `<option value="${k}" ${k === cur ? "selected" : ""}>${esc(WK.camps[k].name)}${note}</option>`;
 }
-function campText(f, kind){
-  const c = WK.camps[kind], r = campCost(f, kind);
+function campText(sel, kind){
+  const f = leaderOf(sel), c = WK.camps[kind], r = campCost(f, kind);
   if (r.same) return `${f.name} already has a ${c.name.toLowerCase()} here.`;
   if (r.error) return `${c.desc} Not here: it ${r.error}.`;
   const done = campDone(f.day, f.used, r.hours, hpdList(f.day));
   const until = done.day === f.day ? "" : ` (done ${dateText(done.day, true)}, ${clock(done.used, done.day)})`;
-  return `${c.desc} ${f.men} men: ${fmtH(r.hours)}${until}`
+  return `${c.desc} ${colMen(f)} men: ${fmtH(r.hours)}${until}`
     + (r.labour ? `, ${Math.round(r.labour)} man-hours for a ${Math.round(r.perimeter)} m perimeter${(c.works || []).some(w => (WK.edge_works[w] || WK.hex_works[w]).haul) ? (r.woods ? ", timber to hand" : ", timber hauled from afar") : ""}` : "") + ".";
 }
 
@@ -818,14 +878,15 @@ function renderMap(){
     hx += `<polygon class="hx t-${t.id}" data-h="${c},${r}" points="${pts(xy([c, r]))}"/>`;
   }
   let over = "";
-  for (const o of forcesHere()) if (o !== f && o.path) over += `<polyline class="route other" points="${polyline(o.path.slice(o.index))}"/>`;
-  if (f && f.path){
-    const sch = schedule(m, f.path.slice(f.index), f.type, f.day, f.used, { hpdList: hpdList(f.day), ground: groundOf(f.day), speed: speedOf(f) || 100 });
-    over += `<polyline class="route" points="${polyline(f.path.slice(f.index))}"/>`;
+  const L = f ? leaderOf(f) : null;
+  for (const o of forcesHere()) if (o !== L && o.path) over += `<polyline class="route other" points="${polyline(o.path.slice(o.index))}"/>`;
+  if (L && L.path){
+    const sch = schedule(m, L.path.slice(L.index), colType(L), L.day, L.used, { hpdList: hpdList(L.day), ground: groundOf(L.day), speed: colSpeed(L) || 100 });
+    over += `<polyline class="route" points="${polyline(L.path.slice(L.index))}"/>`;
     sch.forEach((s, i) => {                  // night stops: the last hex reached before the day turns
       if (i + 1 < sch.length && sch[i + 1].day > s.day){ const [x, y] = xy(s.hex); over += `<g class="night"><rect x="${(x - 9).toFixed(1)}" y="${(y - 15).toFixed(1)}" width="18" height="10" rx="2"/><text x="${x.toFixed(1)}" y="${(y - 7.5).toFixed(1)}">N${s.day}</text></g>` }
     });
-    f.waypoints.forEach((w, i) => { const [x, y] = xy(w); over += `<g class="wp"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5.5"/><text x="${x.toFixed(1)}" y="${(y + 2.8).toFixed(1)}">${i + 1}</text></g>` });
+    L.waypoints.forEach((w, i) => { const [x, y] = xy(w); over += `<g class="wp"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5.5"/><text x="${x.toFixed(1)}" y="${(y + 2.8).toFixed(1)}">${i + 1}</text></g>` });
   }
   for (const p of baseMap().places || []){
     const [x, y] = xy(p.hex);
@@ -839,8 +900,10 @@ function renderMap(){
     const [x, y] = xy(o.camp.hex), letter = { bivouac: "B", watched: "W", staked: "S", fortified: "F", quartered: "Q" }[o.camp.kind] || "C";
     over += `<g class="campmk ${o.camp.kind}"><circle class="ring" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="12.5"/><text x="${(x + 9).toFixed(1)}" y="${(y + 13).toFixed(1)}">${letter}</text></g>`;
   }
+  const stack = {};
   for (const o of forcesHere()){
-    const [x, y] = xy(o.pos), k = sd.indexOf(o.side) % 4;
+    const n = stack[o.pos.join()] = (stack[o.pos.join()] || 0) + 1;   // forces sharing a hex fan out a little
+    const [x0, y0] = xy(o.pos), x = x0 + (n - 1) * 7, y = y0 + (n - 1) * 5, k = sd.indexOf(o.side) % 4;
     over += `<g class="force s${k} ${o === f ? "sel" : ""}" data-id="${o.id}" tabindex="0" role="button" aria-label="${esc(o.name)}, ${esc(FT[o.type].name)}, at ${esc(where(o.pos))}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><title>${esc(o.name)} · ${esc(FT[o.type].name)}</title><circle class="ring" r="10"/><circle class="body" r="7.5"/><text dy="0.35em">${esc(initials(o.name))}</text></g>`;
   }
   const VW = W * (cols + 0.5), VH = 1.5 * R * (rows - 1) + 2 * R;
@@ -848,39 +911,66 @@ function renderMap(){
   $("#map").className = `mapbox ${S.mode}`;
   $("#map-scale").textContent = `${cols} × ${rows} hexes · ${m.hex_km} km a hex`;
 }
+function forceMeta(o){                       // the forces list's right-hand note
+  const tired = o.fatigue ? " \u00b7 " + WXD.fatigue.levels[o.fatigue].name.toLowerCase() : "";
+  const withL = o.with && leaderOf(o) !== o ? " \u00b7 with " + esc(leaderOf(o).name) : "";
+  return `${dateText(o.day, true)} ${clock(o.used, o.day)}${tired}${withL}`;
+}
+function forceHead(f){                        // who, where and how fast; a column moves at its slowest
+  const L = leaderOf(f), col = columnOf(f), hpd = hpdOf(f.day), lv = WXD.fatigue.levels[f.fatigue || 0];
+  const slow = lv.march < 100 ? ` (${lv.march}% while ${lv.name.toLowerCase()})` : "";
+  const today = `today ${fmtH(hpd)} of marching from ${clock(0, f.day)}.`;
+  if (col.length < 2){
+    const ft = FT[f.type], no = ft.cannot_enter ? ` Cannot enter ${ft.cannot_enter.map(t => TT[t].name.toLowerCase()).join(", ")}.` : "";
+    return `<b>${esc(f.name)}</b> at ${esc(where(f.pos))}. ${esc(ft.name)}: ${ft.kmh} km/h on a road${slow}; ${today}${no}`;
+  }
+  const kmh = columnKmh(colType(L)), slowest = col.find(o => FT[o.type].kmh === kmh);
+  const barred = [...new Set(col.flatMap(o => FT[o.type].cannot_enter || []))].map(t => TT[t].name.toLowerCase());
+  const role = L === f ? "leads" : "marches in";
+  return `<b>${esc(f.name)}</b> at ${esc(where(f.pos))} ${role} ${esc(colName(L))}: ${esc(namesList(col.map(o => o.name)))}, ${colMen(L)} men. `
+    + `The column moves at ${kmh} km/h on a road (${esc(slowest.name)}'s pace), at its most tired force's speed; ${today}`
+    + (barred.length ? ` It keeps out of ${namesList(barred)}.` : "");
+}
+function routeRows(L, m){                     // the summary's route lines for the column's leader
+  if (!(L.path && L.index < L.path.length - 1)) return `<dt>Route</dt><dd>${S.mode === "plan" ? "Click the map, or an enemy force, to add a waypoint" : "None"}</dd>`;
+  const g = groundOf(L.day), sp = colSpeed(L) || 100, ft = colType(L);
+  const rest = L.path.slice(L.index), sch = schedule(m, rest, ft, L.day, L.used, { hpdList: hpdList(L.day), ground: g, speed: sp }), end = sch[sch.length - 1];
+  let hours = 0;
+  for (let i = 0; i + 1 < rest.length; i++) hours += stepHours(m, rest[i], rest[i + 1], ft, g, sp);
+  const wps = L.waypoints.length > 1 ? " (" + L.waypoints.length + " waypoints)" : "";
+  return `<dt>To</dt><dd>${esc(where(rest[rest.length - 1]))}${wps}</dd>`
+    + `<dt>Distance</dt><dd>${+((rest.length - 1) * m.hex_km).toFixed(1)} km</dd>`
+    + `<dt>Marching</dt><dd>${fmtH(hours)}</dd>`
+    + `<dt>Arrives</dt><dd>${dateText(end.day, true)}, ${clock(end.used, end.day)}${nightsText(end.day - L.day)}</dd>`;
+}
+function withOptions(f){                      // March with: on its own, or a column within reach on its side
+  const cur = f.with && leaderOf(f) !== f ? leaderOf(f).id : 0;
+  const opts = [[0, columnOf(f).length > 1 && !cur ? "\u2014 leads its column \u2014" : "\u2014 on its own \u2014"]];
+  if (cur) opts.push([cur, leaderOf(f).name]);
+  for (const o of joinOptions(f)) opts.push([o.id, columnOf(o).length > 1 ? colName(o) : o.name]);
+  return opts.map(([id, name]) => `<option value="${id}" ${id === cur ? "selected" : ""}>${esc(name)}</option>`).join("");
+}
 function renderSide(){
   const fs = forcesHere(), f = selForce(), sd = sides(), m = curMap();
-  $("#forces").innerHTML = fs.map(o => `<li data-id="${o.id}" aria-current="${o === f}" tabindex="0"><span class="dot" style="background:var(--side${sd.indexOf(o.side) % 4})"></span><span><b>${esc(o.name)}</b> <span class="muted">${esc(FT[o.type].name)} · ${esc(o.side)}</span></span><span class="meta">${dateText(o.day, true)} ${clock(o.used, o.day)}${o.fatigue ? " \u00b7 " + WXD.fatigue.levels[o.fatigue].name.toLowerCase() : ""}</span></li>`).join("") || `<li class="muted">No forces. Add one below.</li>`;
+  $("#forces").innerHTML = fs.map(o => `<li data-id="${o.id}" aria-current="${o === f}" tabindex="0"><span class="dot" style="background:var(--side${sd.indexOf(o.side) % 4})"></span><span><b>${esc(o.name)}</b> <span class="muted">${esc(FT[o.type].name)} · ${esc(o.side)}</span></span><span class="meta">${forceMeta(o)}</span></li>`).join("") || `<li class="muted">No forces. Add one below.</li>`;
   const on = !!f;
   ["#btn-hour", "#btn-day", "#btn-undo-wp", "#btn-clear", "#btn-remove"].forEach(id => $(id).disabled = !on);
-  ["#btn-camp", "#btn-fight", "#in-men", "#in-tools", "#sel-camp"].forEach(id => $(id).disabled = !on);
+  ["#btn-camp", "#btn-fight", "#in-men", "#in-tools", "#sel-camp", "#sel-with"].forEach(id => $(id).disabled = !on);
   if (!f){ $("#force-head").textContent = ""; $("#summary").innerHTML = ""; $("#log").innerHTML = ""; $("#camp-est").textContent = ""; $("#fight-note").textContent = ""; $("#btn-fight-wait").hidden = true; return }
-  const ft = FT[f.type], hpd = hpdOf(f.day), lv = WXD.fatigue.levels[f.fatigue || 0];
-  const slow = lv.march < 100 ? ` (${lv.march}% while ${lv.name.toLowerCase()})` : "";
-  $("#force-head").innerHTML = `<b>${esc(f.name)}</b> at ${esc(where(f.pos))}. ${esc(ft.name)}: ${ft.kmh} km/h on a road${slow}; today ${fmtH(hpd)} of marching from ${clock(0, f.day)}.`
-    + (ft.cannot_enter ? ` Cannot enter ${ft.cannot_enter.map(t => TT[t].name.toLowerCase()).join(", ")}.` : "");
-  $("#btn-undo-wp").disabled = !f.waypoints.length; $("#btn-clear").disabled = !f.waypoints.length;
-  $("#btn-hour").disabled = $("#btn-day").disabled = !(f.path && f.index < f.path.length - 1);
-  let rows = `<dt>Now</dt><dd>${dateText(f.day)}, ${clock(f.used, f.day)}${f.used >= hpd - 1e-9 ? " (marching done for the day)" : ""}</dd>`
+  const L = leaderOf(f), hpd = hpdOf(f.day), lv = WXD.fatigue.levels[f.fatigue || 0];
+  $("#force-head").innerHTML = forceHead(f);
+  $("#btn-undo-wp").disabled = !L.waypoints.length; $("#btn-clear").disabled = !L.waypoints.length;
+  $("#btn-hour").disabled = $("#btn-day").disabled = !(L.path && L.index < L.path.length - 1);
+  $("#summary").innerHTML = `<dt>Now</dt><dd>${dateText(f.day)}, ${clock(f.used, f.day)}${f.used >= hpd - 1e-9 ? " (marching done for the day)" : ""}</dd>`
     + "<dt>Fatigue</dt><dd>" + lv.name + (lv.penalty ? " (\u2212" + lv.penalty + "% in a fight)" : "") + "</dd>"
-    + (f.camp ? `<dt>Camp</dt><dd>${esc(WK.camps[f.camp.kind].name)}</dd>` : "");
-  if (f.path && f.index < f.path.length - 1){
-    const g = groundOf(f.day), sp = speedOf(f) || 100;
-    const rest = f.path.slice(f.index), sch = schedule(m, rest, f.type, f.day, f.used, { hpdList: hpdList(f.day), ground: g, speed: sp }), end = sch[sch.length - 1];
-    let hours = 0; for (let i = 0; i + 1 < rest.length; i++) hours += stepHours(m, rest[i], rest[i + 1], f.type, g, sp);
-    const nights = end.day - f.day;
-    rows += `<dt>To</dt><dd>${esc(where(rest[rest.length - 1]))}${f.waypoints.length > 1 ? ` (${f.waypoints.length} waypoints)` : ""}</dd>`
-      + `<dt>Distance</dt><dd>${+((rest.length - 1) * m.hex_km).toFixed(1)} km</dd>`
-      + `<dt>Marching</dt><dd>${fmtH(hours)}</dd>`
-      + `<dt>Arrives</dt><dd>${dateText(end.day, true)}, ${clock(end.used, end.day)}${nightsText(nights)}</dd>`;
-  } else rows += `<dt>Route</dt><dd>${S.mode === "plan" ? "Click the map, or an enemy force, to add a waypoint" : "None"}</dd>`;
-  $("#summary").innerHTML = rows;
+    + (f.camp ? `<dt>Camp</dt><dd>${esc(WK.camps[f.camp.kind].name)}</dd>` : "") + routeRows(L, m);
   $("#in-men").value = f.men; $("#in-tools").checked = !!f.tools;
+  $("#sel-with").innerHTML = withOptions(f);
   const kinds = Object.keys(WK.camps), cur = S.campKind && kinds.includes(S.campKind) ? S.campKind : "watched";
   $("#sel-camp").innerHTML = kinds.map(k => campOption(f, k, cur)).join("");
   $("#camp-est").textContent = campText(f, cur);
   $("#btn-camp").disabled = !!campCost(f, cur).error;
-  $("#camp-who").textContent = "for " + f.name;
+  $("#camp-who").textContent = "for " + colName(L);
   fightButton(f);
   $("#log").innerHTML = f.log.map(l => `<li>${esc(l)}</li>`).join("");
 }
@@ -893,10 +983,14 @@ function campStatus(dfd, p){                 // the defender's camp at the fight
   if (done >= camp.labour - 1e-6) return { camp, done: null, pct: 100 };
   return { camp, done, pct: Math.floor(100 * done / camp.labour) };
 }
+function planFor(f, wait){                   // a column defends behind its leader, the rest of it beside him
+  const p = fightPlan(forcesHere(), leaderOf(f).id, wait), dfd = byId(p.defender);
+  return leaderOf(dfd) === dfd ? p : fightPlan(forcesHere(), leaderOf(dfd).id, wait);
+}
 function fightOptions(f){                    // the fights on offer: attack now, and wait for the camp if it is unfinished
-  const wait = fightPlan(forcesHere(), f.id, true);
+  const wait = planFor(f, true);
   if (!wait.early) return [wait];
-  const now = fightPlan(forcesHere(), f.id, false);
+  const now = planFor(f, false);
   return campStatus(byId(now.defender), now).done === null ? [now] : [now, wait];
 }
 function fightButton(f){                     // a fight needs an enemy marched to within reach
@@ -989,11 +1083,15 @@ function afterPaint(){                        // routes may no longer work on th
 function clickHex(h){
   const f = selForce(); if (!f) return;
   if (S.mode === "plan") addWaypoint(f, h);
-  else if (S.mode === "place"){
-    if (!passable(curMap(), h, f.type)){ S.msg = refusal(f.name, f.type, h, "stand on"); return render() }
-    f.pos = h; f.waypoints = []; f.path = null; f.legs = []; f.index = 0; S.msg = `${f.name} moved to ${where(h)}.`;
-  }
+  else if (S.mode === "place") placeForce(f, h);
   render();
+}
+function placeForce(f, h){                   // Move force: a leader takes its column along; a follower leaves it
+  if (f.with) leaveColumn(f);
+  const col = columnOf(f);
+  if (!passable(curMap(), h, colType(f))){ S.msg = colRefusal(f, h, "stand on"); return }
+  for (const o of col) Object.assign(o, { pos: h.slice(), waypoints: [], path: null, legs: [], index: 0 });
+  S.msg = `${colName(f)} moved to ${where(h)}.`;
 }
 // Clicking a force on the map: in Plan route, an enemy force is a target (a waypoint at its
 // hex) for the selected force; otherwise the click selects the force.
@@ -1040,9 +1138,24 @@ function init(){
   $("#palette").addEventListener("click", e => { const b = e.target.closest("button[data-key]"); if (b){ S.paint = BYKEY[b.dataset.key].id; render() } });
   $("#btn-hour").onclick = () => { const f = selForce(); if (f){ march(f, 1); render() } };
   $("#btn-day").onclick = () => { const f = selForce(); if (f){ march(f, TER.hours_per_day); render() } };
-  $("#btn-undo-wp").onclick = () => { const f = selForce(); if (f && f.waypoints.length){ f.waypoints.pop(); replan(f); render() } };
-  $("#btn-clear").onclick = () => { const f = selForce(); if (f){ f.waypoints = []; replan(f); render() } };
-  $("#btn-remove").onclick = () => { const f = selForce(); if (f){ S.forces[S.mapId] = forcesHere().filter(o => o !== f); S.sel[S.mapId] = null; render() } };
+  $("#btn-undo-wp").onclick = () => { const f = leaderOf(selForce()); if (f && f.waypoints.length){ f.waypoints.pop(); replan(f); render() } };
+  $("#btn-clear").onclick = () => { const f = leaderOf(selForce()); if (f){ f.waypoints = []; replan(f); render() } };
+  $("#btn-remove").onclick = () => {
+    const f = selForce(); if (!f) return;
+    leaveColumn(f);
+    S.forces[S.mapId] = forcesHere().filter(o => o !== f);
+    S.sel[S.mapId] = null;
+    render();
+  };
+  $("#sel-with").onchange = e => {
+    const f = selForce(), id = +e.target.value; if (!f) return;
+    if (!id) leaveColumn(f);
+    else if (id !== leaderOf(f).id){
+      if (f.with) leaveColumn(f);
+      joinColumn(f, byId(id));
+    }
+    render();
+  };
   $("#btn-add").onclick = () => {
     const camp = (baseMap().places || []).find(p => p.kind === "camp"), m = curMap();
     let at = camp ? camp.hex : [m.rows[0].length >> 1, m.rows.length >> 1];
@@ -1063,7 +1176,7 @@ function init(){
     const brief = o => ({ name: o.name, side: o.side, men: o.men, type: o.type, fatigue: o.fatigue || 0, km: +(hexDist(o.pos, dfd.pos) * m.hex_km).toFixed(1) });
     const foes = p.attackers.map(byId).map(brief), allies = p.allies.map(byId).map(brief);
     try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", force: { name: dfd.name, side: dfd.side, men: dfd.men, type: dfd.type, fatigue: dfd.fatigue || 0 },
-      camp: st.camp ? st.camp.kind : null, done: st.done, built: st.pct, hauled: !nearWoods(m, dfd.pos), foes, allies, place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day),
+      camp: st.camp ? st.camp.kind : null, party: columnOf(dfd).length > 1 ? colType(dfd) : null, done: st.done, built: st.pct, hauled: !nearWoods(m, dfd.pos), foes, allies, place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day),
       weather: { cond: today.w.cond, wind: today.w.wind, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){}
     location.href = "roller.html";
   };
@@ -1086,10 +1199,10 @@ function init(){
   $("#sel-wxw").onchange = e => { setDay(dayNow(), { wind: e.target.value }); afterWx() };
   $("#in-wxhi").onchange = e => setNum("high", e.target);
   $("#in-wxlo").onchange = e => setNum("low", e.target);
-  $("#btn-rest").onclick = () => {
-    const f = selForce();
+  $("#btn-rest").onclick = () => {             // the whole column rests
+    const f = leaderOf(selForce());
     if (!f) return;
-    endDay(f);
+    columnOf(f).forEach(endDay);
     if (f.waypoints.length) replan(f);
     S.msg = "";
     render();

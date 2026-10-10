@@ -421,10 +421,17 @@ def melee_across(d: Data, works, attacker, target, reach: int, cols: int, rows: 
     return {"blocked": blocked, "penalty": penalty, "work": what}
 
 
-def camp_radius(d: Data, men: int, ftype: str) -> int:
-    """Hexes from the centre to the edge of a camp for this many men (2 m hexes)."""
+def party_of(men: int, ftype) -> list:
+    """A force type as a party, [[type, men]]. A column of several forces is given as its
+    party already: [[type, men], ...] (ftype a list), and `men` is then its total."""
+    return [[ftype, men]] if isinstance(ftype, str) else [list(p) for p in ftype]
+
+
+def camp_radius(d: Data, men: int, ftype) -> int:
+    """Hexes from the centre to the edge of a camp for this many men (2 m hexes). ftype: a
+    force type, or a column's party (see party_of)."""
     W = d.works
-    area = max(W["camp_area_min"], men * W["camp_area"][ftype])
+    area = max(W["camp_area_min"], sum(n * W["camp_area"][t] for t, n in party_of(men, ftype)))
     n = area / (3 ** 0.5 / 2 * 4)
     r = 0
     while 3 * r * (r + 1) + 1 < n:
