@@ -186,7 +186,8 @@ untreated time to death and its infection risk, and whether he went down. Then:
    where wound fever can still take them (see [travel.md](travel.md), *The wounded*).
 
 A man wounded twice is counted once. **Back to the travel map** (for a battle set up from
-there) takes the dead off each force and adds its wounded to its sick. The numbers are in
+there) takes the dead off each force, adds its wounded to its sick, and moves each force's
+clock on by the battle's length (a minute an exchange). The numbers are in
 `data/units.yaml` (`aftermath`) and `data/disease.yaml` (`wounds`).
 
 ## Heroes
