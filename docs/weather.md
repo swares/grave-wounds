@@ -29,12 +29,12 @@ Each day's weather is rolled from the climate's figures for that month:
 - **Wet and dry spells last.** A wet day makes the next one more likely to be wet, and a
   dry day the next dry.
 - **Warmth and chill carry over.** Half of a day's warm or cold spell carries into the next.
-- On a wet day, rain falls as snow if the day's high is 2 °C or less.
+- On a wet day, rain falls as snow if the day's high is 36 °F (2 °C) or less.
 - On a dry day it may be foggy, fair or overcast.
 - The wind is rolled separately. A storm brings at least a strong wind, and a blizzard a gale.
 
 The **climate shift** cools the modern figures. The Little Ice Age, roughly 1300–1850, ran
-somewhat cooler; the test valley uses −0.5 °C.
+somewhat cooler; the test valley uses −0.9 °F (−0.5 °C).
 
 | Climate | Like |
 |---|---|
@@ -69,12 +69,12 @@ hex.
 ## Weather in battle
 
 These apply to missile attacks once the turns start, on the battle map and the field map
-alike (the field map counts its 10 m hexes as five battle-map hexes). Close combat is not
+alike (the field map counts its 11-yard, 10 m hexes as five battle-map hexes). Close combat is not
 affected.
 
 | Weather | Effect |
 |---|---|
-| Fog | Can't aim beyond 25 hexes (50 m) |
+| Fog | Can't aim beyond 25 hexes (55 yards, 50 m) |
 | Rain | Can't aim beyond 150 hexes; bows and crossbows −10% (wet strings) |
 | Snow, heavy snow | Can't aim beyond 75 or 40 hexes; bows and crossbows −10% |
 | Heavy rain, storm | Can't aim beyond 75 or 50 hexes; bows and crossbows −20% |
@@ -102,7 +102,7 @@ staked camp, good when fortified or quartered.
 - It drops one step for every point by which the night's hardship is more than the camp's
   shelter.
 - Hardship: rain or snow 1; heavy rain, a storm or heavy snow 2; a blizzard 3. A frosty
-  night adds 1, and a hard frost (−10 °C) adds 2.
+  night adds 1, and a hard frost (14 °F, −10 °C) adds 2.
 - Shelter: none for a bivouac; 1 for a watched, staked or fortified camp (fires and the
   wagons drawn up); 3 for quarters under a roof.
 
@@ -122,9 +122,9 @@ Each force carries a fatigue level from one day to the next.
 
 Fatigue changes each night, when the force's day ends: after **March to day's end**, when
 camp work runs past the evening, or with **Rest until next morning**.
-- **Heat:** +1 if the force marched 4 hours or more with the high at 30 °C or over; +2 at
-  36 °C.
-- **Cold:** +1 if it marched 4 hours or more with the high at −5 °C or under.
+- **Heat:** +1 if the force marched 4 hours or more with the high at 86 °F (30 °C) or over; +2 at
+  97 °F (36 °C).
+- **Cold:** +1 if it marched 4 hours or more with the high at 23 °F (−5 °C) or under.
 - **Heavy going:** +1 for 6 hours or more of marching in deep mud or snow.
 - **The night:** a bad night +1; poor 0; fair −1; good −2.
 

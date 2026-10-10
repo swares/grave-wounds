@@ -160,6 +160,9 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
 .roundlog .ev-bad{color:var(--crit);font-weight:700}
 .roundlog .ev-warn{color:var(--warn)}
 .muted{color:var(--muted);font-size:.85rem}
+.units-toggle{display:inline-flex;gap:0;vertical-align:middle}
+.units-toggle button{border-radius:0;margin-left:-1px}.units-toggle button:first-child{border-radius:3px 0 0 3px}.units-toggle button:last-child{border-radius:0 3px 3px 0}
+.units-toggle button[aria-pressed="true"]{background:var(--steel);color:var(--panel);border-color:var(--steel)}
 .hdr-right{display:flex;align-items:baseline;gap:14px}.navlink{color:var(--blood);font-size:.9rem}
 .hexmap{overflow:auto;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
 .hexmap svg{display:block;width:100%;height:auto;min-width:520px;margin:0 auto}
@@ -215,7 +218,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
       <h1>Grave Wounds Roller</h1>
       <p class="sub">d100 hit locations weighted by real wound records, from the Crusades to Iraq and Afghanistan, plus knife and unarmed fighting. System-agnostic wounds, armour and wounded fighters.</p>
     </div>
-    <span class="hdr-right"><a class="navlink" href="travel.html">Travel map</a><a class="navlink" href="field.html">Field map</a><span class="badge" id="conf">fitted weights</span></span>
+    <span class="hdr-right"><span class="units-toggle" id="units-toggle" title="Units for distances and temperatures"></span><a class="navlink" href="travel.html">Travel map</a><a class="navlink" href="field.html">Field map</a><span class="badge" id="conf">fitted weights</span></span>
   </header>
 
   <section class="panel" aria-labelledby="h-map" id="map-panel">
@@ -515,6 +518,7 @@ const WK = DATA.works;
 const hkey = h => h[0] + "," + h[1];
 function edgeKey(a, b){ const [x, y] = [a, b].slice().sort((p, q) => p[1] - q[1] || p[0] - q[0]); return hkey(x) + "|" + hkey(y) }
 const WXD = DATA.weather, WD_WEAPONS = DATA.weapons;
+/*__MEASURE_JS__*/
 /*__WORKS_JS__*/
 /*__CAMP_JS__*/
 // Weather in battle
@@ -1113,8 +1117,12 @@ const sidesInOrder = () => [...new Set(S.chars.map(sideOf))];
 const sameHex = (a, b) => !!(a && b) && a[0] === b[0] && a[1] === b[1];
 const occupant = h => S.chars.find(c => sameHex(c.pos, h));
 const actingChar = () => S.chars.find(c => c.id === S.turn) || null;
-const hexes = n => `${n} hex${n === 1 ? "" : "es"} (${n * MOVE.hex_m} m)`;
-const reachText = wid => { const w = DATA.weapons[wid]; return w.off_map ? "not limited by the map" : "reach" in w ? `reach ${w.reach}` : `range ${w.range.join(" / ")} hexes` };
+const hexes = n => `${n} hex${n === 1 ? "" : "es"} (${fmtM(n * MOVE.hex_m)})`;
+function reachText(wid){
+  const w = DATA.weapons[wid];
+  if (w.off_map) return "not limited by the map";
+  return "reach" in w ? `reach ${w.reach}` : `range ${w.range.join(" / ")} hexes, to ${fmtM(w.range.at(-1) * MOVE.hex_m)}`;
+}
 const initials = n => n.replace(/^Example:\s*/, "").split(/\s+/).filter(Boolean).map(x => x[0]).join("").slice(0, 2).toUpperCase() || "?";
 function placeUnplaced(){                    // new fighters go near their side's edge
   const { cols, rows } = mapSize(), sides = sidesInOrder();
@@ -1439,7 +1447,7 @@ function renderWeather(){
   if (c.wet) bits.push(`bows and crossbows \u2212${WXD.battle.string_wet[c.wet]}%, firearms may misfire`);
   if (wind.missile) bits.push(`missiles \u2212${wind.missile}%`);
   if (deepGoing(W.ground)) bits.push(`every hex +${deepGoing(W.ground)} movement`);
-  const temp = W.high !== undefined ? `${W.low}\u2013${W.high} \u00b0C. ` : "";
+  const temp = W.high !== undefined ? `${tempOut(W.low)}\u2013${tempOut(W.high)} ${tempUnit()}. ` : "";
   $("#wx-note").textContent = temp + (bits.length ? bits.join("; ") + "." : "No effect on the fight.");
 }
 function renderMap(){
@@ -1509,7 +1517,7 @@ function renderMap(){
   const lab = worksLabour(S.works, !!S.hauled), whole = S.wholeLabour ? ` The whole camp, most of it off the map: about ${Math.round(S.wholeLabour)}.` : "";
   $("#work-labour").textContent = (lab ? `Works on this map: about ${Math.round(lab)} man-hours to build.` : "No works on this map.") + whole;
   $("#chk-haul").checked = !!S.hauled;
-  $("#map-scale").textContent = `1 hex = ${MOVE.hex_m} m · a round is 6 seconds · ${cols} × ${rows} hexes`;
+  $("#map-scale").textContent = `1 hex = ${fmtM(MOVE.hex_m, 1)} · a round is 6 seconds · ${cols} × ${rows} hexes`;
   $("#in-cols").value = cols; $("#in-rows").value = rows;
   $("#btn-freeplace").setAttribute("aria-pressed", !!S.freePlace);
   $("#btn-works").setAttribute("aria-pressed", !!S.workMode);
@@ -1806,6 +1814,7 @@ function init(){
     }
   }
   applyFieldHeroes();
+  unitToggle($("#units-toggle"), () => { renderResult(); renderChars() });
   const att = attackerChar();
   S.weapon = att && att.weapon && DATA.tables[S.table].weapons.includes(att.weapon) ? att.weapon : "sword"; fillWeapons();
   renderMods(); syncArmor(); rollHit(); renderChars(); shadeFigure(); renderTable(); renderHistory();

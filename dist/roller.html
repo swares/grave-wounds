@@ -160,6 +160,9 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
 .roundlog .ev-bad{color:var(--crit);font-weight:700}
 .roundlog .ev-warn{color:var(--warn)}
 .muted{color:var(--muted);font-size:.85rem}
+.units-toggle{display:inline-flex;gap:0;vertical-align:middle}
+.units-toggle button{border-radius:0;margin-left:-1px}.units-toggle button:first-child{border-radius:3px 0 0 3px}.units-toggle button:last-child{border-radius:0 3px 3px 0}
+.units-toggle button[aria-pressed="true"]{background:var(--steel);color:var(--panel);border-color:var(--steel)}
 .hdr-right{display:flex;align-items:baseline;gap:14px}.navlink{color:var(--blood);font-size:.9rem}
 .hexmap{overflow:auto;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
 .hexmap svg{display:block;width:100%;height:auto;min-width:520px;margin:0 auto}
@@ -215,7 +218,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
       <h1>Grave Wounds Roller</h1>
       <p class="sub">d100 hit locations weighted by real wound records, from the Crusades to Iraq and Afghanistan, plus knife and unarmed fighting. System-agnostic wounds, armour and wounded fighters.</p>
     </div>
-    <span class="hdr-right"><a class="navlink" href="travel.html">Travel map</a><a class="navlink" href="field.html">Field map</a><span class="badge" id="conf">fitted weights</span></span>
+    <span class="hdr-right"><span class="units-toggle" id="units-toggle" title="Units for distances and temperatures"></span><a class="navlink" href="travel.html">Travel map</a><a class="navlink" href="field.html">Field map</a><span class="badge" id="conf">fitted weights</span></span>
   </header>
 
   <section class="panel" aria-labelledby="h-map" id="map-panel">
@@ -773,6 +776,44 @@ const WK = DATA.works;
 const hkey = h => h[0] + "," + h[1];
 function edgeKey(a, b){ const [x, y] = [a, b].slice().sort((p, q) => p[1] - q[1] || p[0] - q[0]); return hkey(x) + "|" + hkey(y) }
 const WXD = DATA.weather, WD_WEAPONS = DATA.weapons;
+/* US or metric units on every page (roller, travel map, field map). The rules and data stay
+   metric; only what is shown and typed changes. One setting for all pages, remembered in
+   the browser, US unless the reader picks metric. build.py puts this file into each page at
+   its MEASURE_JS marker. */
+const UNITS_KEY = "gravewounds-units";
+let unitSystem = "us";
+try{ unitSystem = localStorage.getItem(UNITS_KEY) === "metric" ? "metric" : "us" }catch(e){ unitSystem = "us" /* storage off: US */ }
+const isUS = () => unitSystem === "us";
+const roundTo = (x, places) => { const p = 10 ** places; return Math.round(x * p) / p };
+// A distance in metres: yards in US units.
+function fmtM(m, places = 0){ return isUS() ? `${roundTo(m * 1.0936133, places)} yd` : `${roundTo(m, places)} m` }
+// A distance in kilometres: miles in US units.
+function fmtKm(km, places = 1){ return isUS() ? `${roundTo(km * 0.62137119, places)} mi` : `${roundTo(km, places)} km` }
+// A speed in km/h: mph in US units.
+function fmtKmh(kmh, places = 1){ return isUS() ? `${roundTo(kmh * 0.62137119, places)} mph` : `${roundTo(kmh, places)} km/h` }
+// A temperature in degrees C: degrees F in US units.
+const tempOut = c => (isUS() ? roundTo(c * 9 / 5 + 32, 0) : c);
+const tempIn = v => (isUS() ? roundTo((v - 32) * 5 / 9, 1) : v);
+const tempUnit = () => (isUS() ? "°F" : "°C");
+function fmtC(c){ return `${tempOut(c)} ${tempUnit()}` }
+// A temperature change (a climate shift): no 32 offset.
+function fmtCDelta(c){ return isUS() ? `${roundTo(c * 9 / 5, 1)} °F` : `${c} °C` }
+// The US | Metric switch in a page's header. onChange redraws the page.
+function unitToggle(el, onChange){
+  const draw = () => {
+    el.innerHTML = ["us", "metric"].map(u => `<button type="button" class="small" data-units="${u}" aria-pressed="${unitSystem === u}">${u === "us" ? "US" : "Metric"}</button>`).join("");
+  };
+  el.addEventListener("click", e => {
+    const b = e.target.closest("button[data-units]");
+    if (!b || b.dataset.units === unitSystem) return;
+    unitSystem = b.dataset.units;
+    try{ localStorage.setItem(UNITS_KEY, unitSystem) }catch(err){ /* storage off: the choice lasts while the page is open */ }
+    draw();
+    onChange();
+  });
+  draw();
+}
+
 /* Works and weather on a battle map, shared by the wound roller's battle map and the field
    map. Same rules as gravewounds/combat.py (step_cost, missile_cover, melee_across,
    deep_going, weather_attack). build.py puts this file into both pages at their WORKS_JS
@@ -905,7 +946,7 @@ function weatherAttack(weather, wid, dist){
   if (!weather || !WXD || !("range" in w)) return out;
   const cond = WXD.conditions[weather.cond], vis = cond.visibility;
   if (vis !== null && vis !== undefined && dist > vis){
-    out.blocked = `${cond.name}: no one can be seen to aim at beyond ${vis} hexes (${vis * 2} m).`;
+    out.blocked = `${cond.name}: no one can be seen to aim at beyond ${vis} hexes (${fmtM(vis * 2)}).`;
     return out;
   }
   const wind = WXD.winds.find(x => x.id === weather.wind);
@@ -1644,8 +1685,12 @@ const sidesInOrder = () => [...new Set(S.chars.map(sideOf))];
 const sameHex = (a, b) => !!(a && b) && a[0] === b[0] && a[1] === b[1];
 const occupant = h => S.chars.find(c => sameHex(c.pos, h));
 const actingChar = () => S.chars.find(c => c.id === S.turn) || null;
-const hexes = n => `${n} hex${n === 1 ? "" : "es"} (${n * MOVE.hex_m} m)`;
-const reachText = wid => { const w = DATA.weapons[wid]; return w.off_map ? "not limited by the map" : "reach" in w ? `reach ${w.reach}` : `range ${w.range.join(" / ")} hexes` };
+const hexes = n => `${n} hex${n === 1 ? "" : "es"} (${fmtM(n * MOVE.hex_m)})`;
+function reachText(wid){
+  const w = DATA.weapons[wid];
+  if (w.off_map) return "not limited by the map";
+  return "reach" in w ? `reach ${w.reach}` : `range ${w.range.join(" / ")} hexes, to ${fmtM(w.range.at(-1) * MOVE.hex_m)}`;
+}
 const initials = n => n.replace(/^Example:\s*/, "").split(/\s+/).filter(Boolean).map(x => x[0]).join("").slice(0, 2).toUpperCase() || "?";
 function placeUnplaced(){                    // new fighters go near their side's edge
   const { cols, rows } = mapSize(), sides = sidesInOrder();
@@ -1970,7 +2015,7 @@ function renderWeather(){
   if (c.wet) bits.push(`bows and crossbows \u2212${WXD.battle.string_wet[c.wet]}%, firearms may misfire`);
   if (wind.missile) bits.push(`missiles \u2212${wind.missile}%`);
   if (deepGoing(W.ground)) bits.push(`every hex +${deepGoing(W.ground)} movement`);
-  const temp = W.high !== undefined ? `${W.low}\u2013${W.high} \u00b0C. ` : "";
+  const temp = W.high !== undefined ? `${tempOut(W.low)}\u2013${tempOut(W.high)} ${tempUnit()}. ` : "";
   $("#wx-note").textContent = temp + (bits.length ? bits.join("; ") + "." : "No effect on the fight.");
 }
 function renderMap(){
@@ -2040,7 +2085,7 @@ function renderMap(){
   const lab = worksLabour(S.works, !!S.hauled), whole = S.wholeLabour ? ` The whole camp, most of it off the map: about ${Math.round(S.wholeLabour)}.` : "";
   $("#work-labour").textContent = (lab ? `Works on this map: about ${Math.round(lab)} man-hours to build.` : "No works on this map.") + whole;
   $("#chk-haul").checked = !!S.hauled;
-  $("#map-scale").textContent = `1 hex = ${MOVE.hex_m} m · a round is 6 seconds · ${cols} × ${rows} hexes`;
+  $("#map-scale").textContent = `1 hex = ${fmtM(MOVE.hex_m, 1)} · a round is 6 seconds · ${cols} × ${rows} hexes`;
   $("#in-cols").value = cols; $("#in-rows").value = rows;
   $("#btn-freeplace").setAttribute("aria-pressed", !!S.freePlace);
   $("#btn-works").setAttribute("aria-pressed", !!S.workMode);
@@ -2337,6 +2382,7 @@ function init(){
     }
   }
   applyFieldHeroes();
+  unitToggle($("#units-toggle"), () => { renderResult(); renderChars() });
   const att = attackerChar();
   S.weapon = att && att.weapon && DATA.tables[S.table].weapons.includes(att.weapon) ? att.weapon : "sword"; fillWeapons();
   renderMods(); syncArmor(); rollHit(); renderChars(); shadeFigure(); renderTable(); renderHistory();

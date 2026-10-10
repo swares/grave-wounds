@@ -130,7 +130,7 @@ function weatherAttack(weather, wid, dist){
   if (!weather || !WXD || !("range" in w)) return out;
   const cond = WXD.conditions[weather.cond], vis = cond.visibility;
   if (vis !== null && vis !== undefined && dist > vis){
-    out.blocked = `${cond.name}: no one can be seen to aim at beyond ${vis} hexes (${vis * 2} m).`;
+    out.blocked = `${cond.name}: no one can be seen to aim at beyond ${vis} hexes (${fmtM(vis * 2)}).`;
     return out;
   }
   const wind = WXD.winds.find(x => x.id === weather.wind);

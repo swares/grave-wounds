@@ -14,7 +14,7 @@ runs the same rules in the browser (`templates/units.js`, checked against the Py
 ## The choices behind it
 
 - **Heroes and units.** The rank and file are units; named characters fight individually.
-- **A field map.** Hexes of about 10 m. A unit is a block of hexes along its front, one
+- **A field map.** Hexes of about 11 yards (10 m). A unit is a block of hexes along its front, one
   or more deep. A hex holds about 40 men in close order: 10 abreast, 4 deep.
 - **An exchange is about a minute**, roughly ten individual rounds.
 - **Casualties come from the wound tables in bulk.** Each blow that gets through is rolled
@@ -111,8 +111,8 @@ Missiles: 100 longbowmen at medium range hit about 8 unarmoured men a minute, an
 
 ## The field map
 
-`dist/field.html` fights a battle on a field of 10 m hexes (60 × 40 by default, 600 × 400
-m). Pick the wound tables, name the two sides, and add units: men, quality, close or open
+`dist/field.html` fights a battle on a field of 11-yard (10 m) hexes (60 × 40 by default, about
+660 × 440 yards, 600 × 400 m). Pick the wound tables, name the two sides, and add units: men, quality, close or open
 order, weapon, armour, and whether they are mounted.
 
 **A unit on the map.** A unit is a block of hexes. Its front row runs along its line, and
@@ -157,8 +157,8 @@ puts its front rank in (10 men), or its first two ranks with reach-2 weapons.
 enemy in range ahead of it (in the half of the field its front faces). The front two ranks
 of each front hex shoot. Shots at a unit in open order count 0.8.
 
-**Range** is the weapon's battle-map range in 2 m hexes, divided by 5 for field hexes:
-a longbow's long range of about 250 m is 25 field hexes.
+**Range** is the weapon's battle-map range in 2-yard (2 m) hexes, divided by 5 for field hexes:
+a longbow's long range of about 270 yards (250 m) is 25 field hexes.
 
 The page keeps the battle in the browser, so it can be closed and reopened. *New battle*
 starts again from the starting units.
@@ -245,7 +245,7 @@ can be opened or barred at any time.
 | High ground | 1 | −10% to blows struck up at men on it from lower ground |
 
 **Works** are the battle map's (see [works.md](works.md)), with the same numbers, along
-the sides of the 10 m hexes or in a hex. For a ditch, bank or wall, click just inside the
+the sides of the 11-yard (10 m) hexes or in a hex. For a ditch, bank or wall, click just inside the
 side, on the high side; for a gate, on the inside. Click again to take it away.
 - **Crossing:** a unit's move pays each work its middle hex crosses or enters (a ditch +2,
   a bank +1, stakes +1, felled trees +2). A palisade, wall or barred gate stops it, and a
@@ -261,8 +261,8 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   −40%, woods −20%.
 - **Breaching:** a unit's **Breach the works** order puts half of each front hex's front
   rank to hacking at the palisade, gate, stakes, felled trees or wagons in front of it, every
-  round of the exchange, until the work is down. The work's breach figure is for a 2 m side;
-  a 10 m side takes five times as much, so ten men open a stretch of palisade in about a
+  round of the exchange, until the work is down. The work's breach figure is for a battle-map side
+  (about 1.2 yards, 1.15 m); a field-map side takes five times as much, so ten men open a stretch of palisade in about a
   minute. A bank or ditch under a breached palisade stays.
 
 **The weather** (set under *Weather*, or brought from the travel map) works as on the
@@ -272,6 +272,6 @@ misfiring in the wet (a share of the shots lost), and deep mud or snow (level 2 
 +1 movement a hex.
 
 **A camp from the travel map.** A fight sent from a force's camp lays the camp's works out
-at the field map's scale (sized for the defender's men on 10 m hexes), as far as they were
+at the field map's scale (sized for the defender's men on 11-yard, 10 m hexes), as far as they were
 built when the fight starts, with the gate on the east, facing the attackers' edge. The
 defenders' units start inside it, the attackers at the east edge.

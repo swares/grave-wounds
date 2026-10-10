@@ -18,8 +18,8 @@ axes) or doesn't. Select a force, pick the kind of camp and press **Make camp**.
 
 **How long it takes.**
 
-1. Lay the camp out as the battle map would. Its ring of 2 m hexes is big enough for the
-   ground the camp needs: about 20 m² a man on foot, and 40 m² with horses or wagons.
+1. Lay the camp out as the battle map would. Its ring of 2-yard (2 m) hexes is big enough for the
+   ground the camp needs: about 24 square yards (20 m²) a man on foot, and 48 (40 m²) with horses or wagons.
    A fortified camp puts its bank and palisade on the ring's outer edges, its ditch one
    ring further out and its gate on the east side; a staked camp fills the next ring out
    with stakes.
@@ -54,7 +54,7 @@ with the gate is on the map, facing the attackers at the east edge, and the rest
 it. The defenders start inside, near the gate. The labour line gives the works on the map
 and the whole camp's figure, which matches the travel map.
 
-**A fight needs the enemy there.** An enemy force must first march to within 1 km of the
+**A fight needs the enemy there.** An enemy force must first march to within 0.6 mile (1 km) of the
 camp (the same or the next hex): select it, and in **Plan route** click the camp's force
 to send it there. Until then the fight button is off and says why.
 
@@ -118,7 +118,7 @@ Linear works lie along the edges between hexes. The others fill a hex.
 
 ## Works on the field map
 
-The field map (10 m hexes, units of the rank and file) uses the same works with the same
+The field map (11-yard, 10 m hexes, units of the rank and file) uses the same works with the same
 numbers along its hex sides and in its hexes, and lays out a camp from the travel map at
 its own scale. How they act on units is in [units.md](units.md) (*Ground, works and
 weather*).

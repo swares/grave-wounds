@@ -7,14 +7,14 @@ there.
 
 ## Scale and time
 
-- Each hex is usually 1 km. A map can set its own size with `hex_km`.
+- Each hex is usually 0.6 mile (1 km). A map can set its own size with `hex_km`.
 - A force marches 8 hours a day, starting at 08:00, at its type's speed on a road:
 
   | Force type | Road speed | A day on the road |
   |---|---|---|
-  | On foot | 4 km/h | 32 km |
-  | Mounted | 6 km/h | 48 km |
-  | Baggage wagons | 3 km/h | 24 km |
+  | On foot | 2.5 mph (4 km/h) | 20 miles (32 km) |
+  | Mounted | 3.7 mph (6 km/h) | 30 miles (48 km) |
+  | Baggage wagons | 1.9 mph (3 km/h) | 15 miles (24 km) |
 
 - Wagons cannot enter forest, marsh, mountains or heath.
 - These speeds are for a small, fit band. A large army's column, with its halts and its
@@ -53,7 +53,7 @@ day's marching hours. The next march starts the following morning, an hour after
 ## Marching together
 
 A force can march with another force on its side, such as a band with its baggage train.
-Pick the other force under **March with**. It must be within 1 km (the same or the next
+Pick the other force under **March with**. It must be within 0.6 mile (1 km; the same or the next
 hex). The joining force closes up onto the other's hex at no cost in time. If one force's
 clock is later, the column moves off when the last of them is ready.
 
@@ -61,7 +61,7 @@ clock is later, the column moves off when the last of them is ready.
   either force selected.
 - **One pace.** The column keeps out of ground any of its forces cannot enter. It moves at
   its slowest force's road speed, and at its most tired force's share of that speed. A
-  band of foot (4 km/h) with its wagons (3 km/h) goes at 3 km/h and stays off forest,
+  band of foot (2.5 mph, 4 km/h) with its wagons (1.9 mph, 3 km/h) goes at 1.9 mph and stays off forest,
   marsh, mountains and heath.
 - **One clock.** Every force in the column marches, halts and rests together. Each keeps
   its own men, tools, fatigue and log.
@@ -81,7 +81,7 @@ Each force has a number of men and either has tools or doesn't. **Make camp** sp
 time to make a bivouac, a watched camp, a staked camp, a fortified camp, or quarters in a
 village or town. The time depends on the force's size and tools and on whether woods are
 near. A column makes one camp for all its forces (see *Marching together*). Camp work can use 4 evening hours after the march, so a camp made at the end of the
-day costs no marching time. Once an enemy force has marched to within 1 km, **Set up the fight** opens a battle page.
+day costs no marching time. Once an enemy force has marched to within 0.6 mile (1 km), **Set up the fight** opens a battle page.
 **Fight it on** picks which:
 - **the wound roller**, man by man (up to 8 men a force), with the camp's works laid out
   on its battle map. See [works.md](works.md).
@@ -180,8 +180,8 @@ each day, and mud, snow and flooded fords change the going. See [weather.md](wea
 
 ## Maps
 
-The test map, `data/maps/generic-valley.yaml`, is a made-up river valley about 40 km by
-26 km:
+The test map, `data/maps/generic-valley.yaml`, is a made-up river valley about 25 by 16 miles
+(40 by 26 km):
 
 - The camp is in the west.
 - The objective, Gallows Ridge, is in the east beyond the river.
