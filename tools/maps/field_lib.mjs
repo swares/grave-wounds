@@ -40,11 +40,16 @@ const unitLine = u => `  - {name: ${yq(u.name)}, side: ${u.side}, men: ${u.men},
 const hexList = hs => hs.map(h => `[${h.join(", ")}]`).join(", ");
 
 // Writes the battlefield file. spec: {id, script, header (comment lines), name, sides, table,
-// travel {map, place, within, sides}, weather (YAML flow text), grid, hexWorks {type: [hexes]}, units}.
+// travel {map, place, within, sides}, weather (YAML flow text), grid, hexWorks {type: [hexes]},
+// edgeWorks {type: [[hex, hex], ...]} (the first hex of each pair the high or inner side), units}.
 export function writeField(spec){
   const { grid } = spec, works = Object.entries(spec.hexWorks || {});
+  const edges = Object.entries(spec.edgeWorks || {});
   const workLine = ([type, hs]) => `    - {type: ${type}, at: [${hexList(hs)}]}`;
-  const worksText = works.length ? "works:\n  hexes:\n" + works.map(workLine).join("\n") + "\n" : "";
+  const edgeLine = ([type, pairs]) => `    - {type: ${type}, at: [${pairs.map(pr => "[" + hexList(pr) + "]").join(", ")}]}`;
+  const hexText = works.length ? "  hexes:\n" + works.map(workLine).join("\n") + "\n" : "";
+  const edgeText = edges.length ? "  edges:\n" + edges.map(edgeLine).join("\n") + "\n" : "";
+  const worksText = hexText || edgeText ? "works:\n" + hexText + edgeText : "";
   const t = spec.travel;
   const out = `${spec.header.map(l => ("# " + l).trimEnd()).join("\n")}
 id: ${spec.id}

@@ -1,7 +1,7 @@
 {
   "name": "gravewounds-maps",
   "private": true,
-  "description": "Builds data/maps.json (conflict locator maps) from Natural Earth coastlines, borders and lakes (npm ci && node make_maps.mjs), and the campaign maps and battlefields (node make_agincourt.mjs, make_agincourt_field.mjs, make_towton.mjs, make_towton_field.mjs).",
+  "description": "Builds data/maps.json (conflict locator maps) from Natural Earth coastlines, borders and lakes (npm ci && node make_maps.mjs), and the campaign maps and battlefields (node make_agincourt.mjs, make_agincourt_field.mjs, make_towton.mjs, make_towton_field.mjs, make_visby.mjs, make_visby_field.mjs).",
   "type": "module",
   "dependencies": {
     "d3-geo": "^3.1.1",

@@ -297,8 +297,9 @@ drawn up:
   army, the defenders take the first army and the attackers the second.
 - **How many.** Each army's units are scaled to the fit men of the forces standing with it,
   so 6,000 English fill the English line in the same shape as the battlefield's 5,960. Each
-  unit is drawn from the force with the most men left. A mounted unit comes from a mounted
-  force if there is one; from a force on foot it fights on foot.
+  unit is drawn from the force with the most men left, the biggest units first, so they are
+  the least likely to be cut short. A mounted unit comes from a mounted force if there is
+  one; from a force on foot it fights on foot.
 - **The baggage.** Wagon forces stay in reserve unless their army has no other force.
 - **Room.** A unit that no longer fits where it stood (a much bigger force runs off the
   map) stays in reserve.
@@ -355,6 +356,23 @@ about 1,640 by 1,140 yards (1,500 by 1,040 m), with north at the top:
 
 It is drawn the same way, by `tools/maps/make_towton_field.mjs`. The two battlefields share
 their drawing code, `tools/maps/field_lib.mjs`.
+
+**Visby, 27 July 1361** (`data/fields/visby-1361.yaml`). The field is 80 × 70 hexes, about
+870 by 650 yards (800 by 600 m), with north at the top:
+- The town's ring wall runs along the north edge (a stone wall on the hex sides, the town
+  behind it as rough ground), with the south gate barred: the townsmen kept it shut.
+- Solberga nunnery's buildings and closes are rough ground to the north-east, with stony
+  ground to the west and woods to the south-east; the rest is open pasture.
+- Fair summer weather.
+- The Gotlanders, with their backs to the wall: 400 bowmen in front, 1,600 levy with spears
+  in padded coats and mail hoods (green), and 500 better-armed freeholders with axes in
+  coats of plates.
+- The Danes, about 240 yards (220 m) to the south: 500 crossbowmen, 1,000 veteran sergeants
+  with spiked clubs, and 500 men-at-arms in full harness.
+- The wound tables are Visby's own (the gameplay version).
+
+It is drawn by `tools/maps/make_visby_field.mjs`. The wall, the gate and the nunnery are
+drawn by hand to the accounts' description, not traced from any map.
 
 **A battlefield file** has an `id` and `name`, `sides` (two names), `table`, `size`
 ([cols, rows]) and `weather`. Its `ground` is rows of one letter per hex: `.` open, `r`
