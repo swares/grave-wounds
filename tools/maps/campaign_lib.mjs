@@ -47,7 +47,7 @@ function landShape(){
   return feature(t, t.objects.land);
 }
 
-// Paints the terrain: land or sea, then woods, marsh, hills, brooks (as marsh), roads, rivers (with a bridge where
+// Paints the terrain: land or sea, then woods, marsh, hills, mountains, brooks (as marsh), roads, rivers (with a bridge where
 // a road crosses a lesser river), the named bridges and fords, villages and towns.
 function paint(spec, g){
   const land = landShape(), P = spec.places;
@@ -77,6 +77,7 @@ function paint(spec, g){
   (spec.woods || []).forEach(w => blob(w, "F"));
   (spec.marsh || []).forEach(w => blob(w, "m"));
   (spec.hills || []).forEach(w => blob(w, "h"));
+  (spec.mountains || []).forEach(w => blob(w, "M"));
   (spec.streams || []).forEach(st => line(st, "m"));        // a brook: wet, slow ground, not a river
   const roadHexes = (spec.roads || []).flatMap(rd => line(rd, "="));
   // A major river is crossed only where the spec says; where a road crosses a lesser one, a
