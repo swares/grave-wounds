@@ -10,35 +10,7 @@
 //   approximate: a 5 km hex shows a river or a wood, not its banks.
 // The coast and the Somme estuary have moved since 1415 (the bay has silted, Harfleur's
 // harbour has gone); at this scale that changes little.
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { feature } from "topojson-client";
-import { geoContains } from "d3-geo";
-
-const here = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(here, "../..");
-const HEX_KM = 5, ROW_KM = HEX_KM * Math.sqrt(3) / 2;
-const LON0 = -0.05, LAT0 = 51.1, LON1 = 3.3, LAT1 = 49.35;     // west, north, east, south
-const KX = 111.32 * Math.cos(50.2 * Math.PI / 180), KY = 111.2;  // km a degree at the map's middle
-const COLS = Math.ceil((LON1 - LON0) * KX / HEX_KM) + 1, ROWS = Math.ceil((LAT0 - LAT1) * KY / ROW_KM) + 1;
-
-const xy = ([lat, lon]) => [(lon - LON0) * KX, (LAT0 - lat) * KY];
-const centre = (c, r) => [c * HEX_KM + (r & 1) * HEX_KM / 2, r * ROW_KM];
-const toLatLon = ([x, y]) => [LAT0 - y / KY, LON0 + x / KX];
-function hexAt(p){                                // the hex whose centre is nearest a point (km)
-  const [x, y] = p, r0 = Math.round(y / ROW_KM);
-  let best = null, bd = Infinity;
-  for (let r = r0 - 1; r <= r0 + 1; r++){
-    const c0 = Math.round((x - (r & 1) * HEX_KM / 2) / HEX_KM);
-    for (let c = c0 - 1; c <= c0 + 1; c++){
-      const [cx, cy] = centre(c, r), dd = (cx - x) ** 2 + (cy - y) ** 2;
-      if (dd < bd){ bd = dd; best = [c, r] }
-    }
-  }
-  return best;
-}
-const on = ([c, r]) => c >= 0 && c < COLS && r >= 0 && r < ROWS;
+import { buildCampaign } from "./campaign_lib.mjs";
 
 // ---------- places (lat, lon) ----------
 const P = {
@@ -89,68 +61,11 @@ const ROADS = [
   ["calais", "gravelines"],
 ];
 
-const TOWNS = new Set(["harfleur", "fecamp", "dieppe", "eu", "stvalery", "abbeville", "amiens", "corbie", "peronne", "nesle", "ham",
-  "doullens", "stpol", "hesdin", "montreuil", "boulogne", "calais", "rouen", "arras", "stomer", "albert", "gravelines"]);
-const VILLAGES = new Set(["montivilliers", "stvaleryc", "arques", "treport", "crotoy", "hangest", "boves", "athies", "forceville", "frevent",
-  "blangy", "azincourt", "etaples", "guines", "ardres", "fruges", "caudebec", "neufchatel", "aumale", "bapaume", "lucheux", "tancarville"]);
+const TOWNS = ["harfleur", "fecamp", "dieppe", "eu", "stvalery", "abbeville", "amiens", "corbie", "peronne", "nesle", "ham",
+  "doullens", "stpol", "hesdin", "montreuil", "boulogne", "calais", "rouen", "arras", "stomer", "albert", "gravelines"];
+const VILLAGES = ["montivilliers", "stvaleryc", "arques", "treport", "crotoy", "hangest", "boves", "athies", "forceville", "frevent",
+  "blangy", "azincourt", "etaples", "guines", "ardres", "fruges", "caudebec", "neufchatel", "aumale", "bapaume", "lucheux", "tancarville"];
 
-// ---------- painting ----------
-const land = (() => { const t = JSON.parse(fs.readFileSync(path.join(here, "node_modules/world-atlas/land-50m.json"), "utf8")); return feature(t, t.objects.land) })();
-const grid = Array.from({ length: ROWS }, (_, r) => Array.from({ length: COLS }, (_, c) => {
-  const [lat, lon] = toLatLon(centre(c, r));
-  return geoContains(land, [lon, lat]) ? "f" : "w";
-}));
-const pt = p => (typeof p === "string" ? P[p] : p);
-const set = (h, k, onLandOnly = true) => { if (on(h) && (!onLandOnly || grid[h[1]][h[0]] !== "w")) grid[h[1]][h[0]] = k };
-function line(points, k, step = 0.4){             // every hex a polyline runs through
-  const out = [];
-  for (let i = 0; i + 1 < points.length; i++){
-    const a = xy(pt(points[i])), b = xy(pt(points[i + 1])), n = Math.max(1, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / step));
-    for (let j = 0; j <= n; j++) out.push(hexAt([a[0] + (b[0] - a[0]) * j / n, a[1] + (b[1] - a[1]) * j / n]));
-  }
-  for (const h of out) set(h, k);
-  return out;
-}
-function blob([c, rad], k){                       // every land hex within rad km of a point (and the one at it)
-  const p = xy(c);
-  for (let r = 0; r < ROWS; r++) for (let q = 0; q < COLS; q++){
-    const [x, y] = centre(q, r);
-    if (Math.hypot(x - p[0], y - p[1]) <= rad && grid[r][q] !== "w") grid[r][q] = k;
-  }
-  set(hexAt(p), k);
-}
-WOODS.forEach(w => blob(w, "F"));
-MARSH.forEach(w => blob(w, "m"));
-HILLS.forEach(w => blob(w, "h"));
-const roadHexes = ROADS.flatMap(rd => line(rd, "="));
-for (const [name, rv] of Object.entries(RIVERS)){
-  const hexes = line(rv, "~");
-  // Where a road crosses a lesser river, a bridge; the Somme and the Seine only at the crossings named
-  if (name === "somme" || name === "seine") continue;
-  const onRiver = new Set(hexes.map(h => h.join(",")));
-  for (const h of roadHexes) if (onRiver.has(h.join(","))) set(h, "b");
-}
-for (const b of BRIDGES) set(hexAt(xy(P[b])), "b");
-for (const f of FORDS) set(hexAt(xy(P[f])), "d");
-// A place whose hex came out as sea (the coast is coarse at this scale) moves to the nearest land hex.
-function placeHex(k){
-  const h = hexAt(xy(P[k]));
-  if (!on(h) || grid[h[1]][h[0]] !== "w") return h;
-  const p = xy(P[k]);
-  let best = h, bd = Infinity;
-  for (let r = h[1] - 2; r <= h[1] + 2; r++) for (let c = h[0] - 2; c <= h[0] + 2; c++){
-    if (!on([c, r]) || grid[r][c] === "w") continue;
-    const [x, y] = centre(c, r), dd = (x - p[0]) ** 2 + (y - p[1]) ** 2;
-    if (dd < bd){ bd = dd; best = [c, r] }
-  }
-  return best;
-}
-const rivered = h => on(h) && grid[h[1]][h[0]] === "~";
-for (const v of VILLAGES) if (!rivered(placeHex(v))) set(placeHex(v), "v");   // a village on a river is not a crossing
-for (const t of TOWNS) set(placeHex(t), "T");
-
-// ---------- the file ----------
-const hx = placeHex;
 const NAMES = { harfleur: "Harfleur", montivilliers: "Montivilliers", fecamp: "Fécamp", stvaleryc: "Saint-Valery-en-Caux",
   dieppe: "Dieppe", arques: "Arques", eu: "Eu", treport: "Le Tréport", stvalery: "Saint-Valery-sur-Somme", crotoy: "Le Crotoy",
   blanchetaque: "Blanchetaque ford", abbeville: "Abbeville", pontremy: "Pont-Remy bridge", hangest: "Hangest", picquigny: "Picquigny bridge",
@@ -160,54 +75,40 @@ const NAMES = { harfleur: "Harfleur", montivilliers: "Montivilliers", fecamp: "F
   boulogne: "Boulogne", guines: "Guînes", calais: "Calais", ardres: "Ardres", fruges: "Fruges", rouen: "Rouen", caudebec: "Caudebec",
   tancarville: "Tancarville", aumale: "Aumale", neufchatel: "Neufchâtel", gravelines: "Gravelines", stomer: "Saint-Omer", arras: "Arras",
   bapaume: "Bapaume", lucheux: "Lucheux", kent: "England (Kent)" };
-const SPECIAL = { harfleur: "camp", calais: "objective" };
-function kindOf(k){
-  if (SPECIAL[k]) return SPECIAL[k];
-  if (TOWNS.has(k)) return "town";
-  return VILLAGES.has(k) ? "village" : "landmark";
-}
 const notes = { harfleur: "The English landed nearby in mid-August and took the town on 22 September, after a five-week siege", calais: "English since 1347: the army's goal",
   blanchetaque: "Edward III's crossing in 1346; held against the English on 13 October 1415", azincourt: "The battle, 25 October",
   bethencourt: "Crossed on 19 October", voyennes: "Crossed on 19 October", rouen: "Where the French main army mustered; the King and the Dauphin stayed here",
   kent: "Across the Channel: off the march, shown for the coast" };
-const yq = s => JSON.stringify(s);
-const noteOf = k => (notes[k] ? ", note: " + yq(notes[k]) : "");
-const places = Object.keys(NAMES).filter(k => on(hx(k))).map(k =>
-  `  - {name: ${yq(NAMES[k])}, kind: ${kindOf(k)}, hex: [${hx(k).join(", ")}]${noteOf(k)}}`);
-const out = `# The Agincourt campaign of 1415, from Harfleur to Calais, at ${HEX_KM} km a hex (about ${Math.round(COLS * HEX_KM)} by ${Math.round(ROWS * ROW_KM)} km).
-# Generated by tools/maps/make_agincourt.mjs: edit that file and re-run it rather than this one.
-# The coastline is Natural Earth's (public domain); towns, fords and bridges are at their modern
-# places; rivers, woods and roads are drawn by hand through them and are approximate.
-#
-# What happened, briefly (dates Julian, as the chroniclers kept them): Henry V landed by the
-# Seine mouth in mid-August and took Harfleur on 22 September, after a siege in which dysentery
-# killed or sent home thousands. He left on 8 October to march to Calais, on the coast road by
-# Fécamp, Arques and Eu. On 13 October he found the Blanchetaque ford held, and turned up the
-# Somme looking for a crossing while the French vanguard shadowed him on the far bank: by Pont-Remy,
-# Hangest and Boves, past Amiens, until he crossed at Béthencourt and Voyennes on 19 October.
-# Meanwhile the French main army, mustered at Rouen, marched north-east and joined the
-# vanguard around Péronne; the King and the Dauphin stayed behind at Rouen. Henry marched
-# north by Athies, Albert and Forceville, crossed the Ternoise at Blangy on 24 October, and
-# found the combined French army across his road at Azincourt, where they fought on the
-# 25th. Numbers on both sides are disputed; those below are round figures for play.
-id: agincourt-1415
-name: "Agincourt campaign, 1415 (Harfleur to Calais)"
-hex_km: ${HEX_KM}
-start_date: "1415-10-08"
-calendar: julian
-latitude: 50
-climate: maritime
-climate_shift: -0.5
-terrain: |
-${grid.map(row => "    " + row.join("")).join("\n")}
-places:
-${places.join("\n")}
-forces:
-  - {name: "Henry V's army", type: mounted, side: "England", men: 8500, tools: true, hex: [${hx("harfleur").join(", ")}]}
-  - {name: "English baggage", type: wagons, side: "England", men: 300, tools: true, hex: [${hx("montivilliers").join(", ")}]}
-  - {name: "French vanguard (Boucicaut, d'Albret)", type: mounted, side: "France", men: 6000, tools: false, hex: [${hx("abbeville").join(", ")}]}
-  - {name: "French main army (from Rouen)", type: foot, side: "France", men: 15000, tools: true, hex: [${hx("rouen").join(", ")}]}
-`;
-fs.writeFileSync(path.join(root, "data/maps/agincourt-1415.yaml"), out);
-console.log(`${COLS} x ${ROWS} hexes`);
-console.log(grid.map(r => r.join("")).join("\n"));
+
+const map = buildCampaign({
+  id: "agincourt-1415", script: "make_agincourt.mjs", title: "The Agincourt campaign of 1415, from Harfleur to Calais",
+  name: "Agincourt campaign, 1415 (Harfleur to Calais)",
+  start_date: "1415-10-08", calendar: "julian", latitude: 50, climate: "maritime", climate_shift: -0.5,
+  bounds: [-0.05, 51.1, 3.3, 49.35], midLat: 50.2, hexKm: 5,
+  header: [
+    "The coastline is Natural Earth's (public domain); towns, fords and bridges are at their modern",
+    "places; rivers, woods and roads are drawn by hand through them and are approximate.",
+    "",
+    "What happened, briefly (dates Julian, as the chroniclers kept them): Henry V landed by the",
+    "Seine mouth in mid-August and took Harfleur on 22 September, after a siege in which dysentery",
+    "killed or sent home thousands. He left on 8 October to march to Calais, on the coast road by",
+    "Fécamp, Arques and Eu. On 13 October he found the Blanchetaque ford held, and turned up the",
+    "Somme looking for a crossing while the French vanguard shadowed him on the far bank: by Pont-Remy,",
+    "Hangest and Boves, past Amiens, until he crossed at Béthencourt and Voyennes on 19 October.",
+    "Meanwhile the French main army, mustered at Rouen, marched north-east and joined the",
+    "vanguard around Péronne; the King and the Dauphin stayed behind at Rouen. Henry marched",
+    "north by Athies, Albert and Forceville, crossed the Ternoise at Blangy on 24 October, and",
+    "found the combined French army across his road at Azincourt, where they fought on the",
+    "25th. Numbers on both sides are disputed; those below are round figures for play.",
+  ],
+  places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["somme", "seine"], bridges: BRIDGES, fords: FORDS,
+  woods: WOODS, marsh: MARSH, hills: HILLS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
+  kinds: { harfleur: "camp", calais: "objective" },
+  forces: [
+    { name: "Henry V's army", type: "mounted", side: "England", men: 8500, tools: true, at: "harfleur" },
+    { name: "English baggage", type: "wagons", side: "England", men: 300, tools: true, at: "montivilliers" },
+    { name: "French vanguard (Boucicaut, d'Albret)", type: "mounted", side: "France", men: 6000, tools: false, at: "abbeville" },
+    { name: "French main army (from Rouen)", type: "foot", side: "France", men: 15000, tools: true, at: "rouen" },
+  ],
+});
+console.log(`${map.cols} x ${map.rows} hexes`);

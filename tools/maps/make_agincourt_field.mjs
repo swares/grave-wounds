@@ -11,38 +11,17 @@
 // on the wings, stakes in front of the archers; the French in three lines, the first two of
 // dismounted men-at-arms, with mounted wings to ride down the archers and a mounted rear.
 // Numbers are disputed; those here are round figures for play.
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { N, S, wobble, lerp, groundGrid, unit, firstCol, writeField } from "./field_lib.mjs";
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(here, "../..");
 const COLS = 100, ROWS = 80;                  // 1000 m east to west, about 690 m north to south
-
-// A smooth wobble for the wood edges: a sum of sines, fixed so the file is the same each run.
-const wobble = (r, a, b) => 1.4 * Math.sin(r / 5.3 + a) + 0.8 * Math.sin(r / 2.1 + b);
-const lerp = (a, b, t) => a + (b - a) * t;
 const westEdge = r => Math.round(lerp(4, 12, r / (ROWS - 1)) + wobble(r, 0.7, 2.1));    // Azincourt wood: cols below this
 const eastEdge = r => Math.round(lerp(94, 87, r / (ROWS - 1)) + wobble(r, 3.9, 1.3));   // Tramecourt wood: cols above this
+const grid = groundGrid(COLS, ROWS, (c, r) => (c < westEdge(r) || c > eastEdge(r) ? "F" : "."));
+grid.paint(0, 9, 0, 5, "r");       // the edge of Azincourt village, its closes and orchards, to the north-west
+grid.paint(96, 99, 34, 42, "r");   // a clearing by Tramecourt, to the east behind the wood
 
-const grid = Array.from({ length: ROWS }, (_, r) => Array.from({ length: COLS }, (_, c) => (c < westEdge(r) || c > eastEdge(r) ? "F" : ".")));
-const paint = (c0, c1, r0, r1, k) => { for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) grid[r][c] = k };
-paint(0, 9, 0, 5, "r");            // the edge of Azincourt village, its closes and orchards, to the north-west
-paint(96, 99, 34, 42, "r");        // a clearing by Tramecourt, to the east behind the wood
-
-// ---------- the armies (facing 1 is north, 4 is south; pos is the middle of the front row) ----------
-const EN = 0, FR = 1, N = 1, S = 4;
-// The middle of a front row that starts at col0: facing north the row runs east from its
-// middle's west side, facing south the other way, so an even width puts the middle one further east.
-function middle(col0, width, facing){
-  const half = Math.floor((width - 1) / 2);
-  return facing === S && width % 2 === 0 ? col0 + half + 1 : col0 + half;
-}
-const BASE = { EN: { side: EN, facing: N }, FR: { side: FR, facing: S } };
-function unit(name, side, men, kind, at){
-  const [width, col0, row] = at;
-  return { name, ...BASE[side], men, ...kind, width, pos: [middle(col0, width, BASE[side].facing), row] };
-}
+// ---------- the armies (pos is the middle of the front row) ----------
+const EN = { side: 0, facing: N }, FR = { side: 1, facing: S };
 const ARCHERS = { quality: "veteran", weapon: "longbow", kit: "gambeson", formation: "open", mounted: false };
 const MEN_AT_ARMS = { quality: "veteran", weapon: "poleaxe", kit: "full_plate", formation: "close", mounted: false };
 const KNIGHTS = { ...MEN_AT_ARMS, quality: "regular" };
@@ -50,60 +29,42 @@ const MOUNTED = { quality: "veteran", weapon: "spear", kit: "full_plate", format
 const MOUNTED_REAR = { ...MOUNTED, quality: "regular" };
 const FRONT_EN = 66, FRONT_FR = 42;
 const units = [
-  unit("Archers, left wing", "EN", 1600, ARCHERS, [16, 12, FRONT_EN]),
-  unit("Rearward (Camoys)", "EN", 320, MEN_AT_ARMS, [8, 28, FRONT_EN]),
-  unit("Archers, left wedge", "EN", 900, ARCHERS, [9, 36, FRONT_EN]),
-  unit("Main battle (the King)", "EN", 320, MEN_AT_ARMS, [8, 45, FRONT_EN]),
-  unit("Archers, right wedge", "EN", 900, ARCHERS, [9, 53, FRONT_EN]),
-  unit("Vaward (York)", "EN", 320, MEN_AT_ARMS, [8, 62, FRONT_EN]),
-  unit("Archers, right wing", "EN", 1600, ARCHERS, [16, 70, FRONT_EN]),
-  unit("Mounted wing, west", "FR", 800, MOUNTED, [10, 9, FRONT_FR]),
-  unit("Vanguard", "FR", 4800, MEN_AT_ARMS, [60, 20, FRONT_FR]),
-  unit("Mounted wing, east", "FR", 800, MOUNTED, [10, 81, FRONT_FR]),
-  unit("Main battle", "FR", 4800, KNIGHTS, [60, 20, 30]),
-  unit("Rearguard (mounted)", "FR", 3000, MOUNTED_REAR, [75, 12, 16]),
+  unit("Archers, left wing", EN, 1600, ARCHERS, [16, 12, FRONT_EN]),
+  unit("Rearward (Camoys)", EN, 320, MEN_AT_ARMS, [8, 28, FRONT_EN]),
+  unit("Archers, left wedge", EN, 900, ARCHERS, [9, 36, FRONT_EN]),
+  unit("Main battle (the King)", EN, 320, MEN_AT_ARMS, [8, 45, FRONT_EN]),
+  unit("Archers, right wedge", EN, 900, ARCHERS, [9, 53, FRONT_EN]),
+  unit("Vaward (York)", EN, 320, MEN_AT_ARMS, [8, 62, FRONT_EN]),
+  unit("Archers, right wing", EN, 1600, ARCHERS, [16, 70, FRONT_EN]),
+  unit("Mounted wing, west", FR, 800, MOUNTED, [10, 9, FRONT_FR]),
+  unit("Vanguard", FR, 4800, MEN_AT_ARMS, [60, 20, FRONT_FR]),
+  unit("Mounted wing, east", FR, 800, MOUNTED, [10, 81, FRONT_FR]),
+  unit("Main battle", FR, 4800, KNIGHTS, [60, 20, 30]),
+  unit("Rearguard (mounted)", FR, 3000, MOUNTED_REAR, [75, 12, 16]),
 ];
 // Stakes: a row in front of each body of archers, one hex ahead of their front.
-const stakes = [];
-for (const u of units.filter(x => x.weapon === "longbow")){
-  const c0 = u.pos[0] - Math.floor((u.width - 1) / 2);
-  for (let c = c0; c < c0 + u.width; c++) stakes.push([c, FRONT_EN - 1]);
-}
+const stakes = units.filter(u => u.weapon === "longbow").flatMap(u => Array.from({ length: u.width }, (_, i) => [firstCol(u) + i, FRONT_EN - 1]));
 
-// ---------- the file ----------
-const yq = s => JSON.stringify(s);
-const unitLine = u => `  - {name: ${yq(u.name)}, side: ${u.side}, men: ${u.men}, quality: ${u.quality}, weapon: ${u.weapon}, kit: ${u.kit}, formation: ${u.formation}, width: ${u.width}, pos: [${u.pos.join(", ")}], facing: ${u.facing}${u.mounted ? ", mounted: true" : ""}}`;
-const out = `# The field of Agincourt, 25 October 1415 (Julian), at 10 m a hex: ${COLS} x ${ROWS} hexes, about 1000 m
-# east to west and 690 m north to south, north at the top.
-# Generated by tools/maps/make_agincourt_field.mjs: edit that file and re-run it rather than this one.
-# The woods' edges are drawn by hand to the shape the accounts give (a gap narrowing towards
-# the English), not traced from any map; the deployment is the outline most modern accounts
-# share, in our own words, with round numbers for play.
-#
-# What happened, briefly: after a night of heavy rain the two armies stood a long way apart on
-# freshly ploughed, sodden ground. The English moved forward to within long bowshot, planted
-# their stakes again and shot, provoking the French. The mounted wings charged first, were
-# stopped by the stakes and arrows, and rode back through their own vanguard; the vanguard
-# struggled forward through the mud, crowding in towards the English men-at-arms, and was
-# fought to a standstill and cut down, the archers joining in from the flanks. The main battle
-# fared little better; most of the rearguard never came on.
-id: agincourt-1415
-name: "Agincourt, 25 October 1415"
-sides: ["English", "French"]
-table: towton-1461-all-hits
-# On the travel map: a fight within \`within\` hexes of this place offers this field. \`sides\` are
-# the travel-map sides that stand where each army stands here (English first).
-travel: {map: agincourt-1415, place: "Azincourt", within: 1, sides: ["England", "France"]}
-size: [${COLS}, ${ROWS}]
-weather: {cond: overcast, wind: calm, ground: {mud: 3, snow: 0}}
-ground: |
-${grid.map(row => "  " + row.join("")).join("\n")}
-works:
-  hexes:
-    - {type: stakes, at: [${stakes.map(h => `[${h.join(", ")}]`).join(", ")}]}
-units:
-${units.map(unitLine).join("\n")}
-`;
-fs.mkdirSync(path.join(root, "data/fields"), { recursive: true });
-fs.writeFileSync(path.join(root, "data/fields/agincourt-1415.yaml"), out);
+writeField({
+  id: "agincourt-1415", name: "Agincourt, 25 October 1415", sides: ["English", "French"], table: "towton-1461-all-hits",
+  travel: { map: "agincourt-1415", place: "Azincourt", within: 1, sides: ["England", "France"] },
+  weather: "{cond: overcast, wind: calm, ground: {mud: 3, snow: 0}}",
+  grid, hexWorks: { stakes }, units,
+  header: [
+    `The field of Agincourt, 25 October 1415 (Julian), at 10 m a hex: ${COLS} x ${ROWS} hexes, about 1000 m`,
+    "east to west and 690 m north to south, north at the top.",
+    "Generated by tools/maps/make_agincourt_field.mjs: edit that file and re-run it rather than this one.",
+    "The woods' edges are drawn by hand to the shape the accounts give (a gap narrowing towards",
+    "the English), not traced from any map; the deployment is the outline most modern accounts",
+    "share, in our own words, with round numbers for play.",
+    "",
+    "What happened, briefly: after a night of heavy rain the two armies stood a long way apart on",
+    "freshly ploughed, sodden ground. The English moved forward to within long bowshot, planted",
+    "their stakes again and shot, provoking the French. The mounted wings charged first, were",
+    "stopped by the stakes and arrows, and rode back through their own vanguard; the vanguard",
+    "struggled forward through the mud, crowding in towards the English men-at-arms, and was",
+    "fought to a standstill and cut down, the archers joining in from the flanks. The main battle",
+    "fared little better; most of the rearguard never came on.",
+  ],
+});
 console.log(grid.map(r => r.join("")).join("\n"));
