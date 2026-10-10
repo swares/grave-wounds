@@ -18,8 +18,6 @@ When an item is done, delete it here and note it in the pull request that closes
   (the roller takes it up afterwards), a failed stop check puts him down for the rest of
   the battle (no stunned or defend-only), and a duel between two heroes is left to the
   roller.
-- **Several attacking sides.** On the field map every attacker fights on side B, under the
-  first attacker's side name, even if they came from different sides on the travel map.
 - **One clock for all forces.** Each force on the travel map keeps its own clock (kept on
   purpose for now). A shared clock would let forces meet on the road.
 - **Cover and elevation on the battle map**, beyond what works give.
