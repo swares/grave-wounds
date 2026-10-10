@@ -199,7 +199,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <div style="flex:2 1 200px"><label for="sel-fightmap">Fight it on</label>
           <select id="sel-fightmap" title="The wound roller fights man by man (up to 8 a force); the field map fights in units">
             <option value="roller">The wound roller (man by man)</option>
-            <option value="field">The field map (in units)</option>
+            <option value="field">The field map (in units, open ground)</option>
           </select></div>
       </div>
       <div class="toolbar">
@@ -1126,8 +1126,28 @@ function fightOptions(f){                    // the fights on offer: attack now,
   const now = planFor(f, false);
   return campStatus(byId(now.defender), now).done === null ? [now] : [now, wait];
 }
+// Battlefields (data/fields) near where the defender stands: each names a place on a map and how
+// many hexes from it still count. A battlefield newly in reach is picked by default.
+let NEAR_SHOWN = "";
+function nearFields(dfd){
+  const places = baseMap().places || [];
+  return Object.entries(DATA.battlefields || {}).filter(([, b]) => {
+    const pl = b.map === S.mapId && places.find(x => x.name === b.place);
+    return pl && hexDistance(pl.hex, dfd.pos) <= b.within;
+  });
+}
+function fillFightMaps(dfd){
+  const sel = $("#sel-fightmap"), was = sel.value, near = nearFields(dfd), key = near.map(([id]) => id).join();
+  const extra = near.map(([id, b]) => `<option value="field:${id}">${esc(b.name)} (the field map, as drawn up)</option>`).join("");
+  sel.innerHTML = `<option value="roller">The wound roller (man by man)</option><option value="field">The field map (in units, open ground)</option>${extra}`;
+  if (near.length && key !== NEAR_SHOWN) sel.value = "field:" + near[0][0];
+  else if ([...sel.options].some(o => o.value === was)) sel.value = was;
+  else sel.value = was.startsWith("field") ? "field" : "roller";
+  NEAR_SHOWN = key;
+}
 function fightButton(f){                     // a fight needs an enemy marched to within reach
   const opts = fightOptions(f), p = opts[0], dfd = byId(p.defender), b = $("#btn-fight"), bw = $("#btn-fight-wait");
+  fillFightMaps(dfd);
   bw.hidden = opts.length < 2;
   if (!p.attackers.length){
     b.textContent = "Set up a fight";
@@ -1343,7 +1363,8 @@ function init(){
   const sendFight = k => {                   // k: which of the fights on offer (0 attack now / the only one, 1 wait)
     const f = selForce(); if (!f) return;
     const p = fightOptions(f)[k]; if (!p || !p.attackers.length) return;
-    if ($("#sel-fightmap").value === "field") return sendField(p);
+    const on = $("#sel-fightmap").value;
+    if (on.startsWith("field")) return sendField(p, on.slice(6) || null);
     const dfd = byId(p.defender), st = campStatus(dfd, p), m = curMap(), today = dayWeather(p.day);
     const brief = o => ({ name: o.name, side: o.side, men: fitOf(o).fit, type: o.type, fatigue: o.fatigue || 0, km: +(hexDist(o.pos, dfd.pos) * m.hex_km).toFixed(1) });   // the sick stay out of it
     const foes = p.attackers.map(byId).map(brief), allies = p.allies.map(byId).map(brief);
@@ -1352,14 +1373,14 @@ function init(){
       weather: { cond: today.w.cond, wind: today.w.wind, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){}
     location.href = "roller.html";
   };
-  const sendField = p => {                   // the fight on the field map: the GM splits each force into units there
+  const sendField = (p, battlefield) => {    // the fight on the field map: on open ground the GM splits each force into units; on a battlefield they stand as drawn up
     const dfd = byId(p.defender), m = curMap(), today = dayWeather(p.day);
     const brief = (o, role) => { const c = campHere(o); return { id: o.id, name: o.name, side: o.side, type: o.type, men: fitOf(o).fit, role, care: campCare(c ? c.kind : null), camp: c ? c.kind : null } };
     const forces = [brief(dfd, "defender"), ...p.allies.map(byId).map(o => brief(o, "ally")), ...p.attackers.map(byId).map(o => brief(o, "attacker"))];
     const st = campStatus(dfd, p), lay = st.camp && WK.camps[st.camp.kind].layout;   // the camp's works, as far as they are built
     const camp = lay ? { kind: st.camp.kind, frac: st.done === null ? null : st.done / (st.camp.labour || 1), hauled: !nearWoods(m, dfd.pos), party: columnOf(dfd).length > 1 ? colType(dfd) : null } : null;
     try{ localStorage.setItem("gravewounds-field-handoff", JSON.stringify({ from: "travel", battle: `${S.mapId}:${p.day}:${p.used}:${dfd.id}`, mapId: S.mapId, map: m.name || S.mapId,
-      place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day), start: { day: p.day, used: p.used }, forces, camp,
+      place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day), start: { day: p.day, used: p.used }, forces, camp, battlefield,
       weather: { cond: today.w.cond, wind: today.w.wind, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){ /* storage off: the field map opens without the forces */ }
     location.href = "field.html";
   };
