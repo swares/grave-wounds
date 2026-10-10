@@ -79,7 +79,7 @@ function landWound(att, dfd, margin, critical, rng, t){
   if (down) t.down++;
   noteHurt(t, h.severity, h, down);
 }
-function blows(att, dfd, n, atk, dfn, rng, aim = { exposed: [], shift: 0 }){   // aim: the heroes a blow may fall on, and how their defence shifts
+function blows(att, dfd, n, atk, dfn, rng, aim){   // aim: the heroes a blow may fall on, and how their defence shifts
   const t = newTally();
   t.blows = n;
   atk = Math.max(0, atk);
