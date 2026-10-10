@@ -449,7 +449,7 @@ function stakePieces(centre, r, on){
 }
 function wallPieces(out, centre, r, cols, rows, on){   // bank and palisade round the ring, and the gate
   const gateIn = [centre[0] + r, centre[1]], gateOut = [centre[0] + r + 1, centre[1]];
-  for (const h of ringWalk(centre, r).filter(on)){
+  for (const h of ringWalk(centre, r).filter(x => on(x))){
     for (const n of neighbours(h, cols, rows).filter(x => hexDistance(centre, x) === r + 1)){
       const k = edgeKey(h, n);
       if (sameH(h, gateIn) && sameH(n, gateOut)){
@@ -501,7 +501,10 @@ function campWorks(kind, men, ftype, cols, rows, done = null, hauled = false){
     spent += pieceLabour(where, item, hauled);
     if (done !== null && spent > done + 1e-9) return result;
     if (where === "hex") works.hexes[key] = item;
-    else (works.edges[key] = works.edges[key] || []).push(item);
+    else {
+      if (!works.edges[key]) works.edges[key] = [];
+      works.edges[key].push(item);
+    }
   }
   return result;
 }
@@ -908,7 +911,8 @@ function fightButton(f){                     // a fight needs an enemy marched t
   }
   const st = campStatus(dfd, p), here = st.camp;
   const campName = here ? WK.camps[here.kind].name.toLowerCase() : "";
-  const at = here ? `at its ${campName}${st.done === null ? "" : " (" + st.pct + "% built)"}` : "where it stands";
+  const built = st.done === null ? "" : " (" + st.pct + "% built)";
+  const at = here ? `at its ${campName}${built}` : "where it stands";
   const names = ids => namesList(ids.map(id => byId(id).name));
   const withAllies = p.allies.length ? ` (with ${names(p.allies)})` : "";
   b.textContent = `${opts.length > 1 ? "Attack now" : "Set up the fight"}: ${names(p.attackers)} against ${dfd.name}${withAllies} ${at}`;

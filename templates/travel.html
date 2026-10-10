@@ -792,7 +792,8 @@ function fightButton(f){                     // a fight needs an enemy marched t
   }
   const st = campStatus(dfd, p), here = st.camp;
   const campName = here ? WK.camps[here.kind].name.toLowerCase() : "";
-  const at = here ? `at its ${campName}${st.done === null ? "" : " (" + st.pct + "% built)"}` : "where it stands";
+  const built = st.done === null ? "" : " (" + st.pct + "% built)";
+  const at = here ? `at its ${campName}${built}` : "where it stands";
   const names = ids => namesList(ids.map(id => byId(id).name));
   const withAllies = p.allies.length ? ` (with ${names(p.allies)})` : "";
   b.textContent = `${opts.length > 1 ? "Attack now" : "Set up the fight"}: ${names(p.attackers)} against ${dfd.name}${withAllies} ${at}`;
