@@ -73,6 +73,11 @@ def _main(argv=None) -> int:
             r = simulate(d, did, a.n, ctx, seeded_d100(a.seed))
             print(f"  {x['name']:<22} deaths {r['deaths']:5.1f}% (records {x['deaths']}%), "
                   f"sick {r['sick_days']:4.1f} days on average, virulence {x['virulence']}")
+        from .disease import CAMP_EXAMPLES, camp_example
+        print("A force of 1,000 in camp, dry weather (% dead of disease, median of 5 runs):")
+        for label, weeks, hyg, hot, stay in CAMP_EXAMPLES:
+            runs = sorted(camp_example(d, weeks, hyg, hot, stay, 1000, a.seed * 7 + k) for k in range(5))
+            print(f"  {label:<38} {runs[2]:5.1f}%  (runs {runs[0]:.1f}-{runs[-1]:.1f})")
         if "wounds" in d.disease:
             from .disease import WOUND_EXAMPLES, simulate_wounds
             print("Wounded carried from the field, resting (deaths / wound fever / days unfit):")

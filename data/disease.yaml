@@ -27,12 +27,19 @@ litters:
 # resists with Endurance. A force is many men, and one roll for all of them makes the toll a
 # lottery (0-50% dead in six weeks of siege), so here each well man rolls on his own each
 # week, at the same odds: outbreak chance x the chance he fails to resist (half, at Endurance
-# 50). A fair camp gives a man about 1 in 20 a week for the flux, a poor summer camp about
-# 1 in 5, as the doc intends. A man carries one disease at a time.
+# 50). A man carries one disease at a time. Chances may be fractions of a per cent.
+#
+# Calibrated (python3 -m gravewounds disease) against these marks: a fair camp held a year
+# costs about a tenth of a force dead (between the Union army's 5% a year and medieval
+# armies on campaign); six weeks in a poor bivouac about a tenth; six weeks of a hot, filthy
+# siege camp about a fifth (Harfleur, 1415). A fair camp gives a man about 1 in 70 a week
+# for the flux, a poor summer camp about 1 in 6. Typhus needs crowding: lice spread in
+# camps that are both filthy and long held (`crowded`).
 #
 # Weekly factors, from the force's camp, its hex and the past week's weather:
 #   poor, good   - camp hygiene (fair adds nothing)
 #   staying      - camped in the same place `staying_days` or more
+#   crowded      - poor hygiene and staying together: a long-held, filthy camp
 #   marsh, town, upland - the hex the force is in (terrain lists below)
 #   warm         - the week's mean high at or over `warm_at` (the warm season, for ague)
 #   hot          - the week's highest high at or over `hot_at`
@@ -71,8 +78,8 @@ diseases:
   flux:
     name: "Bloody flux"
     caught: "Dirty water or food, latrines too near the water"
-    base: 10
-    mods: {poor: 20, good: -5, staying: 10, marsh: 5, upland: -5, hot: 10}
+    base: 3
+    mods: {poor: 22, good: -5, staying: 4, marsh: 5, upland: -5, hot: 10}
     incubation: [1, 3]
     peak: [{upto: 3, step: deadly}, {upto: 15, step: grave}, {upto: 100, step: serious}]
     chronic: true          # a failed check by `big` at Serious or better leaves it chronic at Serious
@@ -81,8 +88,8 @@ diseases:
   typhus:
     name: "Camp fever (typhus)"
     caught: "Lice in crowded, unwashed camps"
-    base: 2
-    mods: {poor: 5, good: -5, staying: 10, cold_wet: 10}
+    base: 0
+    mods: {poor: 4, good: -5, staying: 0.3, crowded: 14, cold_wet: 10}
     incubation: [7, 14]
     peak: [{upto: 30, step: deadly}, {upto: 70, step: grave}, {upto: 100, step: serious}]
     immune: true           # survivors cannot catch it again
@@ -91,7 +98,7 @@ diseases:
   typhoid:
     name: "Typhoid"
     caught: "Dirty water or food, often from a carrier in camp"
-    base: 2
+    base: 0.3
     mods: {poor: 5, good: -5, town: 5, hot: 5}
     incubation: [7, 21]
     peak: [{upto: 30, step: deadly}, {upto: 60, step: grave}, {upto: 100, step: serious}]

@@ -4459,9 +4459,9 @@ Men at serious or worse do not dig or fight. Grave and deadly cases go on litter
 
 | Disease | Caught from | Shows after | Outbreak chance a week | Peak (d100) | Deaths per case in the records |
 |---|---|---|---|---|---|
-| Bloody flux | Dirty water or food, latrines too near the water | 1-3 days | 10%; poor +20, good -5, staying +10, marsh +5, upland -5, hot +10 | 01-03 deadly, 04-15 grave, 16-00 serious | 2.6% (virulence 5) |
-| Camp fever (typhus) | Lice in crowded, unwashed camps | 7-14 days | 2%; poor +5, good -5, staying +10, cold wet +10 | 01-30 deadly, 31-70 grave, 71-00 serious | 40% (virulence 16) |
-| Typhoid | Dirty water or food, often from a carrier in camp | 7-21 days | 2%; poor +5, good -5, town +5, hot +5 | 01-30 deadly, 31-60 grave, 61-00 serious | 36% (virulence 15) |
+| Bloody flux | Dirty water or food, latrines too near the water | 1-3 days | 3%; poor +22, good -5, staying +4, marsh +5, upland -5, hot +10 | 01-03 deadly, 04-15 grave, 16-00 serious | 2.6% (virulence 5) |
+| Camp fever (typhus) | Lice in crowded, unwashed camps | 7-14 days | 0%; poor +4, good -5, staying +0.3, crowded +14, cold wet +10 | 01-30 deadly, 31-70 grave, 71-00 serious | 40% (virulence 16) |
+| Typhoid | Dirty water or food, often from a carrier in camp | 7-21 days | 0.3%; poor +5, good -5, town +5, hot +5 | 01-30 deadly, 31-60 grave, 61-00 serious | 36% (virulence 15) |
 | Ague (malaria) | Mosquitoes in marshes and low wetlands | 7-28 days | 15% (only with marsh and warm) | 01-02 deadly, 03-30 grave, 31-00 serious | 0.8% (virulence -9) |
 | Plague | Flea bites; worst in sieges and towns full of rats | 2-6 days | 5% (only with plague); staying +5, town +5 | 01-50 deadly, 51-80 grave, 81-00 serious | 45% (virulence 15) |
 

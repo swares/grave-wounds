@@ -532,7 +532,10 @@ const campCare = campKind => DZ.camp_care[campKind || "none"];
 function weekFactors(o){                       // o: {hygiene, camped_days, terrain, highs, wet, plague}
   const f = [];
   if (o.hygiene === "poor" || o.hygiene === "good") f.push(o.hygiene);
-  if (o.camped_days >= DZ.staying_days) f.push("staying");
+  if (o.camped_days >= DZ.staying_days){
+    f.push("staying");
+    if (o.hygiene === "poor") f.push("crowded");
+  }
   for (const [k, ts] of Object.entries(DZ.terrain_factors)) if (ts.includes(o.terrain)) f.push(k);
   const highs = o.highs;
   if (highs.length){

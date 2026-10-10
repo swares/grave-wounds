@@ -82,6 +82,8 @@ def week_factors(d: Data, o: dict) -> list:
         f.append(o["hygiene"])
     if o["camped_days"] >= D["staying_days"]:
         f.append("staying")
+        if o["hygiene"] == "poor":
+            f.append("crowded")
     f += [k for k, ts in D["terrain_factors"].items() if o["terrain"] in ts]
     highs = o["highs"]
     if highs:
@@ -287,3 +289,29 @@ def simulate_wounds(d: Data, wound: tuple, n: int, care: str, rng, days: int = 3
         fever += ev["shown"].get("fever", 0)
         unfit += sum(1 for c in h["cases"] if c["step"] >= _step(d, d.disease["unfit_from"]))
     return {"deaths": 100 * h["dead"] / n, "fever": 100 * fever / n, "unfit_days": unfit / n}
+
+
+CAMP_EXAMPLES = [   # (label, weeks, hygiene, hot, staying from week)
+    ("A fair camp held a year", 52, "fair", False, 4),
+    ("Six weeks in a poor bivouac", 6, "poor", False, 4),
+    ("A hot, filthy siege camp, six weeks", 6, "poor", True, 0),
+    ("Good quarters for a year", 52, "good", False, 4),
+]
+
+
+def camp_example(d: Data, weeks: int, hygiene: str, hot: bool, stay_from: int, men: int, seed: int) -> float:
+    """% of a force of `men` dead of disease after `weeks` resting in camp (dry weather, no
+    marsh or town): the calibration marks in disease.yaml."""
+    rng, h, start = seeded_d100(seed), new_health(), men
+    ctx = {"care": "shelter" if hygiene == "good" else "field", "marched": False, "wet_cold": False, "filth": hygiene == "poor"}
+    for w in range(weeks):
+        f = [hygiene] if hygiene != "fair" else []
+        if hot:
+            f.append("hot")
+        if w >= stay_from:
+            f += ["staying", "crowded"] if hygiene == "poor" else ["staying"]
+        h, _ = week(d, h, men, f, rng)
+        for _ in range(d.disease["week_days"]):
+            h, ev = day(d, h, ctx, rng)
+            men -= sum(ev["dead"].values())
+    return 100 * (start - men) / start

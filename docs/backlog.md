@@ -28,11 +28,6 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Disease for named characters.** The roller's fighters could carry conditions on the
   five-step track, with their own Endurance, and sick men could come to a fight weakened
   instead of staying out of it.
-- **Calibrate long camps.** A fair camp held for a whole year kills about 30% of a force,
-  nearly all of it from typhus and typhoid at the design doc's 2% weekly outbreak chance.
-  The Union army lost about 5% a year to disease, though medieval armies on campaign did
-  far worse. Lowering typhus and typhoid in a fair camp, or tying them more to crowding
-  and long stays, would bring it down.
 - **Nursing and spread.** The design doc has nurses catching flux, typhus and typhoid from
   the sick. The force-level rules leave that out for now.
 - **Medieval character generation**, then a team playtest.
