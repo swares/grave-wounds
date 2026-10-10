@@ -22,8 +22,9 @@ When an item is done, delete it here and note it in the pull request that closes
   purpose for now). A shared clock would let forces meet on the road.
 - **Cover and elevation on the battle map**, beyond what works give.
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
-  Agincourt (1415), Towton (1461) and Lützen (1632) have both a campaign map and a
-  battlefield. The other conflicts in the tables (the Peninsula and later) still play on the generic valley and open
+  Agincourt (1415), Towton (1461), Lützen (1632) and Albuera (1811) have both a campaign
+  map and a battlefield. The other conflicts in the tables (the American Revolution, 1812,
+  the Civil War and later) still play on the generic valley and open
   ground. Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
