@@ -46,9 +46,9 @@ function rollWound(table, wid, kit, margin, critical, rng){   // {severity, leth
     const hit = whole ? layers[0] : layers.find(l => l[1] <= cov && cov <= l[2]);
     final = reduceSeverity(sev, hit ? armorSteps(hit[0], mech, wid) : 0);
   }
-  if (final === "stopped") return { severity: final, lethal: null, infection: null, graze: false };
+  if (final === "stopped") return { severity: final, lethal: null, infection: null, graze: false, loc, mech };
   const fx = FD.effects[loc][mech][final];
-  return { severity: final, lethal: fx[0], infection: fx[1], graze: isGraze(margin, critical) };
+  return { severity: final, lethal: fx[0], infection: fx[1], graze: isGraze(margin, critical), loc, mech };
 }
 
 // ---------- blows ----------
@@ -79,13 +79,14 @@ function landWound(att, dfd, margin, critical, rng, t){
   if (down) t.down++;
   noteHurt(t, h.severity, h, down);
 }
-function blows(att, dfd, n, atk, dfn, rng){
+function blows(att, dfd, n, atk, dfn, rng, aim){   // aim: the heroes a blow may fall on, and how their defence shifts
   const t = newTally();
   t.blows = n;
   atk = Math.max(0, atk);
   const critAt = Math.floor(atk * FD.combat.critical_fraction);
   for (let i = 0; i < n; i++){
-    const r = rng.randint(1, 100);
+    const hero = aimedAt(aim.exposed, rng), r = rng.randint(1, 100);
+    if (hero){ heroBlow(att, hero, { r, atk, critAt, shift: aim.shift }, rng, t); continue }
     if (r > atk){ t.missed++; continue }
     const critical = r <= critAt;
     if (!critical && dfn > 0 && rng.randint(1, 100) <= dfn){ t.parried++; continue }
@@ -93,22 +94,59 @@ function blows(att, dfd, n, atk, dfn, rng){
   }
   return t;
 }
-// opts: {situation, charge, shaken, rout}
+const attackOf = side => (side.skill ?? quality(side.quality).attack) + (side.attack || 0);   // a hero's own skill, else his unit's
+// opts: {situation, charge, shaken, rout, exposed: [[hero, chance]]}
 function melee(att, dfd, men, rng, opts = {}){
   const M = UD.melee, situation = opts.situation || "front";
-  let tempo = M.tempo, atk = quality(att.quality).attack + (att.attack || 0), dfn = quality(dfd.quality).defence + (dfd.defence || 0);
+  let tempo = M.tempo, atk = attackOf(att), dfn = quality(dfd.quality).defence + (dfd.defence || 0);
+  const base = dfn;
   if (situation === "flank" || situation === "rear"){ atk += M[situation].attack; dfn += M[situation].defence }
   if (opts.charge){ atk += M.charge.attack; tempo *= M.charge.tempo }
   if (opts.shaken) atk += M.shaken.attack;
   if (opts.rout){ atk += UD.rout.attack; tempo *= UD.rout.tempo; dfn = 0 }
-  return blows(att, dfd, countBlows(men * tempo, rng), atk, dfn, rng);
+  const shift = dfn > 0 ? dfn - base : -1000;      // a hero's defence moves with his unit's; none if it has none
+  return blows(att, dfd, countBlows(men * tempo, rng), atk, dfn, rng, { exposed: opts.exposed || [], shift });
 }
-function volley(att, dfd, men, hexes, rng, penalty = 0, factor = 1){
+function volley(att, dfd, men, hexes, rng, opts = {}){   // opts: {penalty, factor, exposed}
+  const penalty = opts.penalty || 0, factor = opts.factor ?? 1;
   const band = fieldRange(att.weapon, hexes);
   if (!band) return null;
   const S = UD.missile, shots = men * (S.rate[att.weapon] ?? S.default_rate) * S.tempo * factor;
-  const atk = quality(att.quality).attack + (att.attack || 0) - band.penalty - penalty;
-  return blows(att, dfd, countBlows(shots, rng), atk, 0, rng);
+  const atk = attackOf(att) - band.penalty - penalty;
+  return blows(att, dfd, countBlows(shots, rng), atk, 0, rng, { exposed: opts.exposed || [], shift: -1000 });
+}
+
+// ---------- heroes (as gravewounds/units.py) ----------
+function aimedAt(exposed, rng){                    // the hero a blow falls on, or null
+  for (const [hero, p] of exposed) if (hero.state === "up" && rng.random() < p) return hero;
+  return null;
+}
+function heroBlow(att, hero, roll, rng, t){   // roll: {r, atk, critAt, shift}; his own parry, then the full wound roll on his kit
+  const { r, atk, critAt, shift } = roll;
+  if (r > atk) return;
+  const critical = r <= critAt, dfn = hero.defence + shift;
+  if (!critical && dfn > 0 && rng.randint(1, 100) <= dfn) return;
+  const h = rollWound(att.table, att.weapon, hero.kit, atk - r, critical, rng);
+  if (h.severity === "stopped") return;
+  hero.wounds.push({ loc: h.loc, mech: h.mech, sev: h.severity, graze: h.graze });
+  if (UD.dead_if.includes(h.lethal)) hero.state = "dead";
+  else if (h.severity !== "light" && !h.graze && rng.randint(1, 100) > hero.nerve - (h.severity === "critical" ? 10 : 0)) hero.state = "down";
+  t.heroes ??= [];
+  t.heroes.push({ hero: hero.id, name: hero.name, sev: h.severity, loc: h.loc, graze: h.graze, state: hero.state });
+}
+const heroesOf = (u, roles) => (u.heroes || []).filter(h => h.state === "up" && roles.includes(h.role));
+function exposure(u, rout, missile = false){        // [[hero, chance]] for the heroes of u a blow on it may fall on
+  if (rout || missile){
+    const roles = rout ? ["front", "ranged", "behind"] : ["front", "ranged"];
+    return heroesOf(u, roles).map(h => [h, 1 / Math.max(1, u.men)]);
+  }
+  return heroesOf(u, ["front", "ranged"]).map(h => [h, Math.min(1, UD.heroes.exposure / Math.max(1, frontMen(u)))]);
+}
+const heroSide = (u, hero, table) => ({ table, weapon: hero.weapon, kit: hero.kit, quality: u.quality, skill: hero.attack });
+function leaderState(u){
+  const ls = (u.heroes || []).filter(h => h.leader);
+  if (!ls.length) return u.leader;
+  return ls.some(h => h.state === "up") ? "up" : "down";
 }
 
 // ---------- morale ----------
@@ -169,6 +207,13 @@ function footprint(u){                          // rows of hexes, front row firs
     rows.push(row);
   }
   return rows;
+}
+function frontMen(u){                             // men in the front rank: the ones a blow on its front falls among
+  const rows = footprint(u), men = menByHex(u);
+  if (!rows.length) return 0;
+  let n = 0;
+  for (let k = 0; k < rows[0].length; k++) n += Math.min(form(u).abreast, men[k]);
+  return n;
 }
 function menByHex(u){
   const per = form(u).per_hex, out = [];
@@ -263,21 +308,48 @@ function takeHurt(u, t){                         // the wounded go onto the unit
   return rest;
 }
 function tallyLoss(acc, s, t){ acc.lost[s.dfd] += t.down; acc.dead[s.dfd] += t.dead; acc.dealt[s.att] += t.down }
-function exchange(units, table, rng){            // -> {units, log}
-  const us = units.map(u => ({ ...u, hurt: { ...u.hurt } })), n = us.length, log = [];
-  const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false) };
+const copyUnit = u => ({ ...u, hurt: { ...u.hurt }, heroes: (u.heroes || []).map(h => ({ ...h, wounds: [...(h.wounds || [])] })) });
+function logged(line, t){                         // a log line for a tally, then one for each blow that fell on a hero
+  const { heroes, ...rest } = t;
+  return [{ ...line, ...rest }, ...(heroes || []).map(h => ({ kind: "herohit", unit: line.dfd, ...h }))];
+}
+function strikeAll(us, table, rng, acc, log){
+  const struck = new Set();
   for (const s of strikes(us)){
     const a = us[s.att], b = us[s.dfd];
-    const t = takeHurt(b, melee(sideOfUnit(a, table), sideOfUnit(b, table), s.men, rng, { situation: s.situation, charge: !!a.charged && !!a.mounted, shaken: a.state === "shaken", rout: s.rout }));
+    const opts = { situation: s.situation, charge: !!a.charged && !!a.mounted, shaken: a.state === "shaken", rout: s.rout, exposed: exposure(b, s.rout) };
+    let t = takeHurt(b, melee(sideOfUnit(a, table), sideOfUnit(b, table), s.men, rng, opts));
     tallyLoss(acc, s, t);
     acc.flanked[s.dfd] = acc.flanked[s.dfd] || s.situation === "flank" || s.situation === "rear";
-    log.push({ kind: s.rout ? "rout" : "melee", ...s, ...t });
+    log.push(...logged({ kind: s.rout ? "rout" : "melee", ...s }, t));
+    if (struck.has(s.att)) continue;
+    struck.add(s.att);
+    for (const hero of heroesOf(a, ["front"])){
+      t = takeHurt(b, melee(heroSide(a, hero, table), sideOfUnit(b, table), UD.heroes.tempo, rng, opts));
+      tallyLoss(acc, s, t);
+      log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: s.att, dfd: s.dfd, situation: s.situation }, t));
+    }
   }
+}
+function shootAll(us, table, rng, acc, log){
   for (const v of volleys(us)){
-    const t = takeHurt(us[v.dfd], volley(sideOfUnit(us[v.att], table), sideOfUnit(us[v.dfd], table), v.men, v.dist, rng, 0, form(us[v.dfd]).missile_factor));
+    const b = us[v.dfd], exposed = exposure(b, false, true), factor = form(b).missile_factor;
+    let t = takeHurt(b, volley(sideOfUnit(us[v.att], table), sideOfUnit(b, table), v.men, v.dist, rng, { factor, exposed }));
     tallyLoss(acc, v, t);
-    log.push({ kind: "volley", ...v, ...t });
+    log.push(...logged({ kind: "volley", ...v }, t));
+    for (const hero of heroesOf(us[v.att], ["ranged"])){
+      if (!fieldRange(hero.weapon, v.dist)) continue;
+      t = takeHurt(b, volley(heroSide(us[v.att], hero, table), sideOfUnit(b, table), UD.heroes.tempo, v.dist, rng, { factor, exposed }));
+      tallyLoss(acc, v, t);
+      log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: v.att, dfd: v.dfd, dist: v.dist }, t));
+    }
   }
+}
+function exchange(units, table, rng){            // -> {units, log}
+  const us = units.map(copyUnit), n = us.length, log = [];
+  const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false) };
+  strikeAll(us, table, rng, acc, log);
+  shootAll(us, table, rng, acc, log);
   const occ = occupancy(us), before = us.map(u => u.men);
   us.forEach((u, i) => {
     const cut = Math.min(acc.lost[i], u.men);
@@ -293,7 +365,7 @@ function moraleAll(us, occ, before, acc, rng, table){
     if (out_(u)) return;
     const near = adjacentUnits(us, occ, i);
     const unit = { quality: u.quality, start: u.start, down: u.down, lost: acc.lost[i], dealt: acc.dealt[i], men: before[i], state: u.state,
-      leader: u.leader, flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady") };
+      leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady") };
     const m = morale(unit, rng.randint(1, 100));
     if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state });
     if (m.state === "broken") broke.push(i);
@@ -307,10 +379,10 @@ function routStrike(us, occ, j, table, rng){     // a unit that has just broken 
   for (const i of adjacentUnits(us, occ, j)){
     const a = us[i], b = us[j];
     if (a.side === b.side || out_(a) || b.men <= 0) continue;
-    const t = takeHurt(b, melee(sideOfUnit(a, table), sideOfUnit(b, table), a.men, rng, { rout: true }));
+    const t = takeHurt(b, melee(sideOfUnit(a, table), sideOfUnit(b, table), a.men, rng, { rout: true, exposed: exposure(b, true) }));
     const cut = Math.min(t.down, b.men);
     Object.assign(b, { men: b.men - cut, down: b.down + cut, dead: b.dead + Math.min(t.dead, cut) });
-    log.push({ kind: "rout", att: i, dfd: j, men: a.men, situation: "rear", rout: true, ...t });
+    log.push(...logged({ kind: "rout", att: i, dfd: j, men: a.men, situation: "rear", rout: true }, t));
   }
   return log;
 }

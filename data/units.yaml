@@ -126,3 +126,19 @@ aftermath:
   saved:
     minutes: 10
     hours: {none: 0, field: 40, shelter: 60}
+
+# ---------- heroes ----------
+# A named fighter from the wound roller can join a unit: in its front rank (a hand weapon),
+# shooting with it (a missile weapon), or behind it (commanding). He is extra to the unit's
+# men and uses his own attack, defence, Nerve, weapon and armour. Each exchange a front hero
+# makes `tempo` times a ranker's telling attempts (he seeks the fight), and a ranged hero
+# shoots `tempo` times a ranker's aimed shots. For the same reason a blow on his unit's
+# front falls on him `exposure` times as often as on a ranker of its front rank; missiles
+# fall on him as on any man of the unit, and in a rout as on any man of it. His wounds
+# use the full rules: a serious or critical wound calls for his stop check (a failure puts
+# him down for the rest of the battle), and a wound fatal within rounds kills him. A leader
+# hero adds his unit's leader modifier to its morale while he is up, and the leader-down
+# modifier once he is down. His wounds go back to the roller after the battle.
+heroes:
+  tempo: 3.0
+  exposure: 2.0

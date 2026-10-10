@@ -231,7 +231,18 @@ def unit_rules(d) -> list[str]:
         f"or was struck in flank or rear: d100 against Nerve, +{mo['mods']['in_order']} while steady, +{mo['mods']['leader']} with a leader, {mo['mods']['leader_down']} if he is down, "
         f"{mo['mods']['heavy']} at half strength, {mo['mods']['flank']} if flanked, -{mo['mods']['losing_per_man']} a man it lost more than it put down (at most -{mo['mods']['losing_cap']}). "
         f"Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +{R['attack']}, no parry, x{R['tempo']:g} tempo.",
-    ] + _aftermath_rules(d)
+    ] + _hero_rules(d) + _aftermath_rules(d)
+
+
+def _hero_rules(d) -> list[str]:
+    H = d.units.get("heroes")
+    if not H:
+        return []
+    return [
+        f"<b>Heroes in units:</b> a named fighter in the front rank makes {H['tempo']:g} times a ranker's telling attempts with his own attack, "
+        f"and blows on the front fall on him {H['exposure']:g} times as often as on a ranker there; a shooting hero looses {H['tempo']:g} times a ranker's aimed shots. "
+        "His wounds use the full rules and his own stop check (a failure: down for the battle). A leader adds his unit's leader modifier while he is up.",
+    ]
 
 
 def _aftermath_rules(d) -> list[str]:

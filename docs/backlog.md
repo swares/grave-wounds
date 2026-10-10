@@ -9,8 +9,12 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **Unit combat, the rest of step 2.** Heroes in units (next), then works, terrain and
-  weather on the field map. See [units.md](units.md).
+- **Unit combat: works, terrain and weather on the field map.** See [units.md](units.md).
+- **Heroes on the field map, simplified.** A hero's earlier wounds do not lower his attack
+  and defence there (the GM can lower them by hand), he does not bleed during the battle
+  (the roller takes it up afterwards), a failed stop check puts him down for the rest of
+  the battle (no stunned or defend-only), and a duel between two heroes is left to the
+  roller.
 - **A battle's time on the travel map.** A battle fought on the field map does not move the
   forces' clocks; the GM advances them by hand.
 - **Several attacking sides.** On the field map every attacker fights on side B, under the

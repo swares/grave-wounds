@@ -1759,6 +1759,25 @@ $("#chars").addEventListener("change", e => {
     const to = +el.dataset.i; const f = from; from = -1; if (moveChar(f, to)) renderChars(); else renderChars() });
   $("#chars").addEventListener("dragend", () => { from = -1; document.querySelectorAll(".char.dragging,.char.drop-ok").forEach(x => x.classList.remove("dragging", "drop-ok")) });
 }
+function fieldHero(h){                         // one hero back from the field map: his wounds on his record; the log line
+  const c = S.chars.find(x => x.id === h.id && x.name === h.name);
+  if (!c) return null;
+  for (const w of h.wounds){
+    const fx0 = DATA.wounds[`${LOC[w.loc].class}|${w.mech}|${w.sev}`];
+    if (fx0) c.wounds.push({ loc: w.loc, mech: w.mech, sev: w.sev, graze: !!w.graze, fx: structuredClone(w.graze ? grazeFx(fx0) : fx0), treated: "" });
+  }
+  if (h.state !== "up") c.state = { id: "out", rounds: null };
+  const what = h.wounds.map(w => `${w.graze ? "graze" : w.sev} (${LOC[w.loc].name.toLowerCase()})`).join(", ") || "unhurt";
+  return `${c.name}: ${what}${{ dead: ", killed", down: ", down" }[h.state] || ""}`;
+}
+function applyFieldHeroes(){                 // heroes back from the field map: their wounds onto their records
+  let r = null;
+  try{ r = JSON.parse(localStorage.getItem("gravewounds-field-heroes") || "null") }catch(e){ r = null /* unreadable: nothing to apply */ }
+  try{ localStorage.removeItem("gravewounds-field-heroes") }catch(e){ /* storage off: nothing was saved either */ }
+  if (!r?.heroes) return;
+  const lines = r.heroes.map(fieldHero).filter(Boolean);
+  if (lines.length) S.log.unshift({ label: r.place ? `From the field map (${r.place})` : "From the field map", lines });
+}
 function applyHit(c, h){ if (!h.fx) return false; c.wounds.push({ loc:h.loc, mech:h.mech, sev:h.sev, graze: !!h.graze, fx: JSON.parse(JSON.stringify(h.fx)), treated:"" }); return true }
 // Stop check for a wound just applied. Returns a line for the log, or "" if none was needed.
 const painOf = c => c.wounds.reduce((a, w) => a + w.fx.pain, 0);
@@ -1897,6 +1916,7 @@ function init(){
       for (let i = 0; i < 12 && !applyHit(S.chars[0], (rollHit(), S.hit)); i++);
     }
   }
+  applyFieldHeroes();
   const att = attackerChar();
   S.weapon = att && att.weapon && DATA.tables[S.table].weapons.includes(att.weapon) ? att.weapon : "sword"; fillWeapons();
   renderMods(); syncArmor(); rollHit(); renderChars(); shadeFigure(); renderTable(); renderHistory();

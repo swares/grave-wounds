@@ -93,6 +93,11 @@ def _main(argv=None) -> int:
         for r in examples(d, a.table, a.runs, a.seed):
             print(f"  {r['label']:<40} breaks after {r['minutes']:>3} min; first side broke {r['a_broke']}, second {r['b_broke']}; "
                   f"winner {r['winner_down']} down, loser {r['loser_down']} down")
+        from .units import hero_examples
+        print(f"A hero leading regular billmen in jacks from the front, until one side breaks ({a.runs * 5} runs each):")
+        for r in hero_examples(d, a.table, a.runs * 5, a.seed):
+            print(f"  {r['label']:<22} wounded {r['wounded']:4.1f}%, down {r['down']:4.1f}%, killed {r['dead']:4.1f}%; "
+                  f"men he put down {r['felled']:.2f} on average")
         return 0
     if a.cmd == "check":
         for w in d.warnings:

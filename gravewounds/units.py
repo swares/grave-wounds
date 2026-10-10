@@ -73,14 +73,20 @@ def _wound(d: Data, att: dict, dfd: dict, margin: int, critical: bool, rng: rand
     _hurt(t, sev, h["effects"], down)
 
 
+def _attack(d: Data, side: dict) -> int:
+    """A side's attack %: a hero's own skill, else his unit's quality; plus any extra."""
+    return side.get("skill", quality(d, side["quality"])["attack"]) + side.get("attack", 0)
+
+
 def melee(d: Data, att: dict, dfd: dict, men: int, rng: random.Random, situation: str = "front",
-          charge: bool = False, shaken: bool = False, rout: bool = False) -> dict:
+          charge: bool = False, shaken: bool = False, rout: bool = False, exposed: tuple = ()) -> dict:
     """One exchange of `men` striking at a unit. situation: front, flank or rear. rout: the
     defender is broken and fleeing: then `men` should be all the pursuers, who strike in open
-    order. Returns a tally of blows and what they did."""
+    order. exposed: (hero, chance) for heroes in the struck unit whom a blow may fall on.
+    Returns a tally of blows and what they did."""
     M, U = d.units["melee"], d.units
-    tempo, atk = M["tempo"], quality(d, att["quality"])["attack"] + att.get("attack", 0)
-    dfn = quality(d, dfd["quality"])["defence"] + dfd.get("defence", 0)
+    tempo, atk = M["tempo"], _attack(d, att)
+    base = dfn = quality(d, dfd["quality"])["defence"] + dfd.get("defence", 0)
     if situation in ("flank", "rear"):
         atk += M[situation]["attack"]
         dfn += M[situation]["defence"]
@@ -93,11 +99,12 @@ def melee(d: Data, att: dict, dfd: dict, men: int, rng: random.Random, situation
         atk += U["rout"]["attack"]
         tempo *= U["rout"]["tempo"]
         dfn = 0
-    return _blows(d, att, dfd, _count(men * tempo, rng), atk, dfn, rng)
+    shift = dfn - base if dfn > 0 else -1000      # a hero's defence moves with his unit's; none if it has none
+    return _blows(d, att, dfd, _count(men * tempo, rng), atk, dfn, rng, exposed, shift)
 
 
-def volley(d: Data, att: dict, dfd: dict, men: int, field_hexes: int, rng: random.Random,
-           penalty: int = 0, factor: float = 1.0) -> dict | None:
+def volley(d: Data, att: dict, dfd: dict, men: float, field_hexes: int, rng: random.Random,
+           penalty: int = 0, factor: float = 1.0, exposed: tuple = ()) -> dict | None:
     """One exchange of `men` shooting at a unit `field_hexes` away. penalty: extra % off
     (weather, cover); factor: the target formation's missile_factor. None if out of range."""
     band = field_range(d, att["weapon"], field_hexes)
@@ -105,17 +112,22 @@ def volley(d: Data, att: dict, dfd: dict, men: int, field_hexes: int, rng: rando
         return None
     S = d.units["missile"]
     shots = men * S["rate"].get(att["weapon"], S["default_rate"]) * S["tempo"] * factor
-    atk = quality(d, att["quality"])["attack"] + att.get("attack", 0) - band["penalty"] - penalty
-    return _blows(d, att, dfd, _count(shots, rng), atk, 0, rng)
+    atk = _attack(d, att) - band["penalty"] - penalty
+    return _blows(d, att, dfd, _count(shots, rng), atk, 0, rng, exposed, -1000)
 
 
-def _blows(d: Data, att: dict, dfd: dict, n: int, atk: int, dfn: int, rng: random.Random) -> dict:
+def _blows(d: Data, att: dict, dfd: dict, n: int, atk: int, dfn: int, rng: random.Random,
+           exposed: tuple = (), shift: int = 0) -> dict:
     t = _new_tally()
     t["blows"] = n
     atk = max(0, atk)
     crit_at = math.floor(atk * d.wounds["combat"]["critical_fraction"])
     for _ in range(n):
+        hero = _aimed_at(exposed, rng)
         r = rng.randint(1, 100)
+        if hero is not None:
+            _hero_blow(d, att, hero, r, atk, crit_at, shift, rng, t)
+            continue
         if r > atk:
             t["missed"] += 1
             continue
@@ -125,6 +137,71 @@ def _blows(d: Data, att: dict, dfd: dict, n: int, atk: int, dfn: int, rng: rando
             continue
         _wound(d, att, dfd, atk - r, critical, rng, t)
     return t
+
+
+# ---------- heroes ----------
+# A named fighter from the wound roller with a unit: {id, name, role (front, ranged or
+# behind), attack, defence, nerve, weapon, kit, leader, state (up, down or dead), wounds}.
+# He is extra to the unit's men. Front: strikes with his own skill each time his unit fights
+# hand to hand, and blows on his unit's front may fall on him. Ranged: shoots with his own
+# skill each time his unit shoots, and is at risk from missiles and in contact. Behind:
+# only in a rout. His wounds use the full rules and go back to the roller.
+
+def _aimed_at(exposed: tuple, rng):
+    """The hero a blow falls on, or None: each hero still up, in turn, by his chance."""
+    for hero, p in exposed:
+        if hero["state"] == "up" and rng.random() < p:
+            return hero
+    return None
+
+
+def _hero_blow(d: Data, att: dict, hero: dict, r: int, atk: int, crit_at: int, shift: int, rng, t: dict) -> None:
+    """A blow aimed at a hero: his own parry, then the full wound roll on his kit."""
+    if r > atk:
+        return
+    critical, dfn = r <= crit_at, hero["defence"] + shift
+    if not critical and dfn > 0 and rng.randint(1, 100) <= dfn:
+        return
+    h = roll_hit(d, att["table"], att["weapon"], rng=rng, kit=hero.get("kit"), margin=atk - r, critical=critical)
+    sev = h["severity"]
+    if sev == "stopped":
+        return
+    hero["wounds"].append({"loc": h["location"], "mech": h["mechanism"], "sev": sev, "graze": h["graze"]})
+    if h["effects"]["lethal"] in d.units["dead_if"]:
+        hero["state"] = "dead"
+    elif sev != "light" and not h["graze"] and rng.randint(1, 100) > hero["nerve"] - (10 if sev == "critical" else 0):
+        hero["state"] = "down"
+    t.setdefault("heroes", []).append({"hero": hero["id"], "name": hero["name"], "sev": sev, "loc": h["location"],
+                                        "graze": h["graze"], "state": hero["state"]})
+
+
+def _heroes(u: dict, roles: tuple) -> list:
+    return [h for h in u.get("heroes", []) if h["state"] == "up" and h["role"] in roles]
+
+
+def front_men(d: Data, u: dict) -> int:
+    """Men in the unit's front rank: the ones a blow on its front falls among."""
+    rows, men = footprint(d, u), men_by_hex(d, u)
+    return sum(min(form(d, u)["abreast"], men[k]) for k in range(len(rows[0]))) if rows else 0
+
+
+def _exposure(d: Data, u: dict, rout: bool, missile: bool = False) -> tuple:
+    """(hero, chance) for each hero of unit u a blow on it may fall on."""
+    if rout or missile:
+        return tuple((h, 1 / max(1, u["men"])) for h in _heroes(u, ("front", "ranged", "behind" if rout else "")))
+    return tuple((h, min(1, d.units["heroes"]["exposure"] / max(1, front_men(d, u)))) for h in _heroes(u, ("front", "ranged")))
+
+
+def _hero_side(u: dict, hero: dict, table: str) -> dict:
+    return {"table": table, "weapon": hero["weapon"], "kit": hero.get("kit"), "quality": u["quality"], "skill": hero["attack"]}
+
+
+def leader_state(u: dict) -> str | None:
+    """up if a leader hero of the unit is up, down if it has leaders and none is, else None."""
+    ls = [h for h in u.get("heroes", []) if h.get("leader")]
+    if not ls:
+        return u.get("leader")
+    return "up" if any(h["state"] == "up" for h in ls) else "down"
 
 
 def morale(d: Data, unit: dict, roll: int) -> dict:
@@ -472,22 +549,11 @@ def exchange(d: Data, units: list, table: str, rng) -> tuple[list, list]:
     """One exchange on the field map: every melee and volley at once from the present
     positions, then losses, morale, and a rout strike on any unit that breaks. Returns
     (units, log): log lines are {kind (melee, volley, rout, morale), ...}."""
-    us = [dict(u, hurt=dict(u.get("hurt", {}))) for u in units]
+    us = [_copy_unit(u) for u in units]
     lost, dead, dealt, flanked, log = [0] * len(us), [0] * len(us), [0] * len(us), [False] * len(us), []
-    for s in strikes(d, us):
-        a, b = us[s["att"]], us[s["dfd"]]
-        t = melee(d, _side(a, table), _side(b, table), s["men"], rng, situation=s["situation"],
-                  charge=bool(a.get("charged")) and bool(a.get("mounted")), shaken=a["state"] == "shaken", rout=s["rout"])
-        t = _take_hurt(b, t)
-        _tally(lost, dead, dealt, s, t)
-        flanked[s["dfd"]] = flanked[s["dfd"]] or s["situation"] in ("flank", "rear")
-        log.append({"kind": "rout" if s["rout"] else "melee", **s, **t})
-    for v in volleys(d, us):
-        t = volley(d, _side(us[v["att"]], table), _side(us[v["dfd"]], table), v["men"], v["dist"], rng,
-                   factor=form(d, us[v["dfd"]])["missile_factor"])
-        t = _take_hurt(us[v["dfd"]], t)
-        _tally(lost, dead, dealt, v, t)
-        log.append({"kind": "volley", **v, **t})
+    acc = (lost, dead, dealt)
+    log += _strike_all(d, us, table, rng, acc, flanked)
+    log += _shoot_all(d, us, table, rng, acc)
     occ = occupancy(d, us)
     before = [u["men"] for u in us]
     for i, u in enumerate(us):
@@ -497,6 +563,58 @@ def exchange(d: Data, units: list, table: str, rng) -> tuple[list, list]:
     for u in us:
         u["charged"] = False
     return us, log
+
+
+def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list) -> list:
+    """Every melee, each unit's front heroes striking with its first."""
+    log, struck = [], set()
+    for s in strikes(d, us):
+        a, b = us[s["att"]], us[s["dfd"]]
+        opts = {"situation": s["situation"], "charge": bool(a.get("charged")) and bool(a.get("mounted")),
+                "shaken": a["state"] == "shaken", "rout": s["rout"], "exposed": _exposure(d, b, s["rout"])}
+        t = _take_hurt(b, melee(d, _side(a, table), _side(b, table), s["men"], rng, **opts))
+        _tally(*acc, s, t)
+        flanked[s["dfd"]] = flanked[s["dfd"]] or s["situation"] in ("flank", "rear")
+        log += _logged({"kind": "rout" if s["rout"] else "melee", **s}, t)
+        if s["att"] in struck:
+            continue
+        struck.add(s["att"])
+        for hero in _heroes(a, ("front",)):
+            t = _take_hurt(b, melee(d, _hero_side(a, hero, table), _side(b, table), d.units["heroes"]["tempo"], rng, **opts))
+            _tally(*acc, s, t)
+            log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": s["att"], "dfd": s["dfd"],
+                            "situation": s["situation"]}, t)
+    return log
+
+
+def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple) -> list:
+    """Every volley, each unit's shooting heroes with it."""
+    log = []
+    for v in volleys(d, us):
+        b = us[v["dfd"]]
+        opts = {"factor": form(d, b)["missile_factor"], "exposed": _exposure(d, b, False, True)}
+        t = _take_hurt(b, volley(d, _side(us[v["att"]], table), _side(b, table), v["men"], v["dist"], rng, **opts))
+        _tally(*acc, v, t)
+        log += _logged({"kind": "volley", **v}, t)
+        for hero in _heroes(us[v["att"]], ("ranged",)):
+            if field_range(d, hero["weapon"], v["dist"]) is None:
+                continue
+            t = _take_hurt(b, volley(d, _hero_side(us[v["att"]], hero, table), _side(b, table), d.units["heroes"]["tempo"], v["dist"], rng, **opts))
+            _tally(*acc, v, t)
+            log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": v["att"], "dfd": v["dfd"], "dist": v["dist"]}, t)
+    return log
+
+
+def _copy_unit(u: dict) -> dict:
+    return dict(u, hurt=dict(u.get("hurt", {})),
+                heroes=[dict(h, wounds=list(h.get("wounds", []))) for h in u.get("heroes", [])])
+
+
+def _logged(line: dict, t: dict) -> list:
+    """A log line for a tally, then one line for each blow that fell on a hero."""
+    t = dict(t)
+    hits = t.pop("heroes", [])
+    return [{**line, **t}] + [{"kind": "herohit", "unit": line["dfd"], **h} for h in hits]
 
 
 def _take_hurt(u: dict, t: dict) -> dict:
@@ -523,7 +641,7 @@ def _morale_all(d: Data, us: list, occ: dict, before: list, lost: list, dealt: l
             continue
         near = _adjacent_units(d, us, occ, i)
         unit = {"quality": u["quality"], "start": u["start"], "down": u["down"], "lost": lost[i], "dealt": dealt[i],
-                "men": before[i], "state": u["state"], "leader": u.get("leader"), "flanked": flanked[i],
+                "men": before[i], "state": u["state"], "leader": leader_state(u), "flanked": flanked[i],
                 "contact": any(us[j]["side"] != u["side"] for j in near),
                 "friends": any(us[j]["side"] == u["side"] and us[j]["state"] == "steady" for j in near)}
         m = morale(d, unit, rng.randint(1, 100))
@@ -544,10 +662,10 @@ def _rout_strike(d: Data, us: list, occ: dict, j: int, table: str, rng) -> list:
         a, b = us[i], us[j]
         if a["side"] == b["side"] or a["state"] in ("broken", "fled") or a["men"] <= 0 or b["men"] <= 0:
             continue
-        t = _take_hurt(b, melee(d, _side(a, table), _side(b, table), a["men"], rng, rout=True))
+        t = _take_hurt(b, melee(d, _side(a, table), _side(b, table), a["men"], rng, rout=True, exposed=_exposure(d, b, True)))
         cut = min(t["down"], b["men"])
         b.update(men=b["men"] - cut, down=b["down"] + cut, dead=b["dead"] + min(t["dead"], cut))
-        log.append({"kind": "rout", "att": i, "dfd": j, "men": a["men"], "situation": "rear", "rout": True, **t})
+        log += _logged({"kind": "rout", "att": i, "dfd": j, "men": a["men"], "situation": "rear", "rout": True}, t)
     return log
 
 
@@ -633,6 +751,40 @@ def flee(d: Data, units: list, i: int, size: tuple) -> dict:
         u = nxt
     return u
 
+
+
+HERO_EXAMPLES = [("Knight in mail", "hauberk"), ("Knight in plate", "full_plate"), ("Champion, no armour", "none")]
+
+
+def hero_examples(d: Data, table: str, runs: int, seed: int) -> list[dict]:
+    """A hero (attack 65, defence 45, Nerve 65, sword) leading 120 regular billmen in jacks
+    from the front against the same, fought until one side breaks: % of runs he was wounded,
+    down and killed, and the men he put down (mean)."""
+    out = []
+    for label, kit in HERO_EXAMPLES:
+        r = {"label": label, "wounded": 0, "down": 0, "dead": 0, "felled": 0}
+        for k in range(runs):
+            rng = SeededDice(seed * 7919 + k)
+            us = [_example_unit(0, [20, 20], 0), _example_unit(1, [21, 20], 3)]
+            us[0]["heroes"] = [{"id": 1, "name": "Hero", "role": "front", "attack": 65, "defence": 45, "nerve": 65,
+                                "weapon": "sword", "kit": kit, "leader": True, "state": "up", "wounds": []}]
+            for _ in range(60):
+                us, log = exchange(d, us, table, rng)
+                r["felled"] += sum(x["down"] for x in log if x["kind"] == "hero")
+                if any(u["state"] == "broken" for u in us):
+                    break
+            h = us[0]["heroes"][0]
+            r["wounded"] += bool(h["wounds"])
+            r["down"] += h["state"] == "down"
+            r["dead"] += h["state"] == "dead"
+        out.append({**r, **{k: 100 * r[k] / runs for k in ("wounded", "down", "dead")}, "felled": r["felled"] / runs})
+    return out
+
+
+def _example_unit(side: int, pos: list, facing: int) -> dict:
+    return {"side": side, "pos": pos, "facing": facing, "men": 120, "start": 120, "down": 0, "dead": 0, "width": 3,
+            "quality": "regular", "weapon": "bill", "kit": "jack_sallet", "formation": "close", "state": "steady",
+            "mounted": False, "charged": False, "leader": None}
 
 # ---------- after the battle ----------
 
