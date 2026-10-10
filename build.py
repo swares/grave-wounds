@@ -231,7 +231,7 @@ def unit_rules(d) -> list[str]:
         f"or was struck in flank or rear: d100 against Nerve, +{mo['mods']['in_order']} while steady, +{mo['mods']['leader']} with a leader, {mo['mods']['leader_down']} if he is down, "
         f"{mo['mods']['heavy']} at half strength, {mo['mods']['flank']} if flanked, -{mo['mods']['losing_per_man']} a man it lost more than it put down (at most -{mo['mods']['losing_cap']}). "
         f"Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +{R['attack']}, no parry, x{R['tempo']:g} tempo.",
-    ] + _ground_rules(d) + _hero_rules(d) + _aftermath_rules(d)
+    ] + _ground_rules(d) + _gun_rules(d) + _hero_rules(d) + _aftermath_rules(d)
 
 
 def _ground_rules(d) -> list[str]:
@@ -248,6 +248,23 @@ def _ground_rules(d) -> list[str]:
         "only reach-2 weapons strike over a palisade, wall or barred gate, from the front rank; striking up a bank, ditch or wall costs its height; "
         "a volley takes the best cover where it lands. A unit ordered to breach puts half its front rank to hacking at the work in front "
         f"(a field-map side takes {d.units['hex_m'] / d.wounds['combat']['move']['hex_m']:g} times a battle-map side's breach figure). The battle map's weather applies.",
+    ]
+
+
+def _gun_rules(d) -> list[str]:
+    A = d.units.get("artillery")
+    if not A:
+        return []
+    m = d.units["hex_m"]
+    rs, cn = A["round_shot"], A["canister"]
+    bands = lambda b: ", ".join(f"{ch}% to {yd(to * m)}" for to, ch in b)
+    return [
+        f"<b>Guns:</b> a battery is a unit armed with guns, in battery order; its men are the crews, {A['crew']} to a gun, and as crews fall fewer guns are served. "
+        f"Each served gun fires {A['rounds']} round an exchange at the nearest enemy in front within {yd(A['range'] * m)}: canister to {yd(A['canister_to'] * m)}, round shot beyond. "
+        f"Round shot strikes the unit ({bands(rs['strike'])}), then each man in its path (the ranks deep, at most {rs['path_max']}) is hit at {rs['file']}%, so columns suffer most. "
+        f"Canister throws {cn['balls']} chances a round ({bands(cn['strike'])}). Cover, the weather and open order cut both. Each man hit takes a wound roll at {A['attack']}% with no parry.",
+        f"<b>Limbering:</b> a limbered battery moves but cannot fire; unlimbered it fires but can only be manhandled {A['pushed']} hexes. Changing over takes an exchange, "
+        f"without moving or firing. Hand to hand the crews fight with {d.weapons[A['crew_weapon']]['name'].lower()}. A battery that breaks loses its guns.",
     ]
 
 

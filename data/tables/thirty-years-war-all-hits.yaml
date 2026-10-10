@@ -8,6 +8,9 @@ variant: adjusted
 armor: allowed
 weapon_bias: pooled
 weapons: [matchlock_musket, wheellock_pistol, saber, musket_butt]
+# No artillery wounds survive from the Thirty Years' War: guns roll on the Peninsular table's
+# ordnance (borrowed, 180 years later; the same kind of smoothbore round shot and case shot).
+borrowed: {artillery_smoothbore: peninsular-1808-14-all-hits}
 modifiers: [attacker_higher, attacker_lower, target_fleeing, flanked, behind_cover]
 confidence: extrapolated
 confidence_note: "Blend of the Lützen dead and a stand-in for the wounded; the mix is from casualty totals of a later war."

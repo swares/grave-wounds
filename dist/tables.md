@@ -441,7 +441,7 @@ Confidence: **Extrapolated - design estimate from analogous evidence** · Armour
 | Foot (left) | 97-98 | 97-98 |
 | Foot (right) | 99-00 | 99-00 |
 
-**Close combat:** Sabre, Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Musket butt, Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted* with Target has no shield applied. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
+**Close combat:** Sabre, Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Musket butt, Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted* with Target has no shield applied. Artillery: roll location on *Napoleonic era - all hits (gameplay)*. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
 
 **Reading it:** Use this table for gunfire in play; armour applies (cuirassier, harquebusier and pikeman kits). Sabres and clubbed muskets roll on their own tables (the Peninsular records and the Visby melee table).
 
@@ -4429,6 +4429,10 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 **Unit morale:** after an exchange a unit checks if it lost the exchange, has 25% of its men down, lost 10% in the exchange, or was struck in flank or rear: d100 against Nerve, +20 while steady, +10 with a leader, -20 if he is down, -20 at half strength, -20 if flanked, -5 a man it lost more than it put down (at most -30). Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +20, no parry, x2 tempo.
 
 **Ground and works on the field map:** open ground (move 1); rough ground (move 2); woods (move 2, cover -20%); marsh (move 3, no horses); high ground (move 1, -10% striking up at it). Works are the battle map's, along the 11 yd (10 m) hex sides: only reach-2 weapons strike over a palisade, wall or barred gate, from the front rank; striking up a bank, ditch or wall costs its height; a volley takes the best cover where it lands. A unit ordered to breach puts half its front rank to hacking at the work in front (a field-map side takes 5 times a battle-map side's breach figure). The battle map's weather applies.
+
+**Guns:** a battery is a unit armed with guns, in battery order; its men are the crews, 10 to a gun, and as crews fall fewer guns are served. Each served gun fires 1 round an exchange at the nearest enemy in front within 1094 yd (1000 m): canister to 328 yd (300 m), round shot beyond. Round shot strikes the unit (60% to 547 yd (500 m), 40% to 820 yd (750 m), 25% to 1094 yd (1000 m)), then each man in its path (the ranks deep, at most 12) is hit at 40%, so columns suffer most. Canister throws 8 chances a round (50% to 109 yd (100 m), 30% to 219 yd (200 m), 15% to 328 yd (300 m)). Cover, the weather and open order cut both. Each man hit takes a wound roll at 80% with no parry.
+
+**Limbering:** a limbered battery moves but cannot fire; unlimbered it fires but can only be manhandled 2 hexes. Changing over takes an exchange, without moving or firing. Hand to hand the crews fight with sword (arming sword). A battery that breaks loses its guns.
 
 **Heroes in units:** a named fighter in the front rank makes 3 times a ranker's telling attempts with his own attack, and blows on the front fall on him 2 times as often as on a ranker there; a shooting hero looses 3 times a ranker's aimed shots. His wounds use the full rules and his own stop check (a failure: down for the battle). A leader adds his unit's leader modifier while he is up.
 

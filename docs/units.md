@@ -228,6 +228,45 @@ down. A duel between two heroes facing each other is not fought here: take it to
 A hero matters most through morale and through what happens to him: in a press of hundreds,
 one man fells few. The numbers are in `data/units.yaml` (`heroes`).
 
+## Guns
+
+A **battery** is a unit armed with guns (the smoothbore artillery of the wound tables), in
+**battery order**: two guns and their crews to a hex, 20 men. Its men are the crews, 10 to a
+gun, so a battery of 120 men is 12 guns, and as crews fall fewer guns are served. Picking a
+gun as the weapon in *Add a unit* sets the battery order.
+
+**Fire.** Each served gun fires one round an exchange at the nearest enemy unit in front of
+it within 1,090 yards (1,000 m, 100 hexes) and in sight. At 330 yards (300 m, 30 hexes) or
+less it fires canister; beyond, round shot.
+- **Round shot** strikes the unit on a roll: 60% to 550 yards (500 m), 40% to 820 yards
+  (750 m), 25% to 1,090 yards. Then it goes through the ranks: each man in its path is hit at
+  40%, and the path is the unit's ranks deep (its formation's ranks times its rows of hexes,
+  at most 12). A line four deep loses a man or two a ball; a deep column loses five.
+- **Canister** throws 8 chances a round, each hitting at 50% to 110 yards (100 m), 30% to 220
+  yards (200 m) and 15% to 330 yards (300 m).
+- Cover, the weather (fog and rain hide targets; the wind costs as for firearms) and open
+  order cut both, as they cut volleys. Every man hit takes a wound roll at 80%, with no parry,
+  on the gun's wound data (lower on the body and deadlier than musketry).
+
+What that gives, from `python3 -m gravewounds units`: 6 guns firing for a minute at 1,600 men
+in close order strike about 14 men with canister at 220 yards (5 put down), 6 with round
+shot at 440 yards against a line (2 down), 17 against a column (6 down), and 7 against a
+column at 870 yards. A battalion of 600 muskets at 110 yards hits about 6.
+
+**Limbering.** A battery is limbered or unlimbered (the *Limber* button). Limbered, it moves
+like its formation (horse artillery, marked mounted, as horse) but cannot fire. Unlimbered,
+it fires, but its crews can only manhandle it 2 hexes, or turn it. Changing over takes the
+whole exchange: order it in its side's move, instead of moving, and it neither moves nor
+fires until the exchange is over. In set-up the button changes it at once.
+
+**Hand to hand** the crews fight with swords. A battery whose crews **break** loses its
+guns: it never fires again, even if it rallies, and its men run on foot.
+
+Guns roll on their tables' own artillery wounds where the tables have them (the Peninsula,
+1812, the Civil War and later). The Thirty Years' War tables borrow the Peninsular ones, the
+nearest in time with the same kind of round shot and case shot. A table can borrow a weapon
+from another with `borrowed` in its file.
+
 ## Ground, works and weather
 
 **Clicking the map** picks what a click does: place and move units, open or bar a gate,
@@ -393,8 +432,10 @@ about 2,410 by 1,140 yards (2,200 by 1,040 m), with north at the top:
   horse on the right and 2,000 cuirassiers on the left, with Pappenheim's 2,500 horse coming
   up at the north-east corner.
 - Pikemen fight with the spear's numbers, the nearest the Thirty Years' War tables offer.
-- Not in the rules: the guns. The windmill battery is shown by the musketeers guarding it; the
-  GM can treat the hill as a strongpoint or play the guns out with the roller.
+- The guns (see *Guns*): the windmill battery of 7 on the hill, 14 in the Imperial centre
+  behind the road, and 20 heavy Swedish guns in front of their foot. The regimental guns are
+  left out. No gun wounds survive from the Thirty Years' War, so they roll on the Peninsular
+  table's (borrowed).
 
 It is drawn by `tools/maps/make_lutzen_field.mjs`.
 
@@ -434,8 +475,8 @@ allied line north of the village is off the map.
   (narrow fronts, many ranks), Werlé's 3,500 in reserve, 1,500 Polish lancers and hussars
   out on the west flank, Latour-Maubourg's 2,000 dragoons, and Godinot's 3,500 making their
   show against the village from the east (facing west, so its front runs on the diagonal).
-- The wound tables are the Peninsular War's (the gameplay blend). Guns are not in the unit
-  rules.
+- The guns (see *Guns*): 20 French with the columns and 12 allied on the heights.
+- The wound tables are the Peninsular War's (the gameplay blend).
 
 It is drawn by `tools/maps/make_albuera_field.mjs`.
 

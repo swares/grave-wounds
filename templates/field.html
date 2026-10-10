@@ -197,6 +197,7 @@ legend{padding:0}
         <button class="small" id="btn-undo" title="Put it back where it started this phase">Undo move</button>
         <button class="small" id="btn-remove">Remove</button>
         <button class="small" id="btn-breach" title="Its front rank hacks at the palisade, gate, stakes or wagons in front of it each exchange">Breach the works</button>
+        <button class="small" id="btn-limber" hidden title="A battery limbered moves but cannot fire; unlimbered it fires but can only be manhandled. Changing over takes an exchange.">Limber</button>
       </div>
 
       <h2>Heroes</h2>
@@ -463,6 +464,7 @@ function logLines(log, ex){
 }
 function unitLineText(l, nm){                     // a volley, a melee or a rout strike
   const dead = l.dead ? " (" + l.dead + " dead)" : "", fallen = `${l.hits} hit, ${l.down} down${dead}`;
+  if (l.kind === "cannon") return `${nm(l.att)} fire ${l.shot === "canister" ? "canister" : "round shot"} at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${l.guns} guns, ${l.blows} men in the way, ${fallen}.`;
   if (l.kind === "volley") return `${nm(l.att)} shoot at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${l.blows} aimed shots, ${fallen}.`;
   if (l.kind === "rout") return `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.`;
   const where = l.situation === "front" ? "" : " in the " + l.situation, up = l.penalty ? ", attacking up −" + l.penalty + "%" : "";
@@ -773,7 +775,15 @@ function renderMap(){
 function unitMeta(u){
   if (u.state === "fled") return "fled";
   const down = u.down ? " · " + u.down + " down" : "", br = u.breach ? " · breaching" : "";
-  return `${u.men}/${u.start} · ${u.state}${down}${br}`;
+  return `${u.men}/${u.start} · ${u.state}${down}${br}${batteryMeta(u)}`;
+}
+function batteryMeta(u){                          // " · 6 guns, limbered"
+  if (!isBattery(u)) return "";
+  if (u.abandoned) return " · guns lost";
+  let how = "unlimbered";
+  if (u.limbering) how = u.limbered ? "unlimbering" : "limbering";
+  else if (u.limbered) how = "limbered";
+  return ` · ${gunsServed(u)} guns, ${how}`;
 }
 function renderUnits(){
   $("#units").innerHTML = S.units.map(u => `<li data-id="${u.id}" aria-current="${u.id === S.sel}" tabindex="0"><span class="dot" style="background:var(--side${sideNo(u)})"></span><span><b>${esc(u.name)}</b> <span class="muted">${esc(banner(u))}</span></span><span class="meta">${unitMeta(u)}</span></li>`).join("") || `<li class="muted">No units. Add one below.</li>`;
@@ -786,9 +796,11 @@ function renderSel(){
   $("#btn-undo").disabled = !u || setup || u.side !== moving();
   $("#btn-breach").disabled = !u || S.phase === "over" || u.state === "broken" || u.state === "fled";
   $("#btn-breach").textContent = u?.breach ? "Stop breaching" : "Breach the works";
+  renderLimber(u, setup);
   if (!u){ $("#sel-info").innerHTML = ""; return }
   const f = FD.units.formations[u.formation], w = FD.weapons[u.weapon];
-  const reach = "range" in w ? `range ${w.range.map(x => Math.round(x / FD.units.range_scale)).join(" / ")} hexes, to ${fmtM(w.range.at(-1) * FD.battle_hex_m)}` : `reach ${w.reach || 1}`;
+  const gun = isGun(u.weapon) ? `range ${FD.units.artillery.range} hexes (${fmtM(FD.units.artillery.range * FD.units.hex_m)}), canister to ${FD.units.artillery.canister_to}; crews fight with ${FD.weapons[meleeWeapon(u)].name.toLowerCase()}` : null;
+  const reach = gun || ("range" in w ? `range ${w.range.map(x => Math.round(x / FD.units.range_scale)).join(" / ")} hexes, to ${fmtM(w.range.at(-1) * FD.battle_hex_m)}` : `reach ${w.reach || 1}`);
   const down = u.down ? ", " + u.down + " down (" + u.dead + " dead)" : "";
   $("#sel-info").innerHTML = `<dt>Men</dt><dd>${u.men} of ${u.start}${down}</dd>`
     + `<dt>State</dt><dd>${u.state}</dd>`
@@ -796,6 +808,24 @@ function renderSel(){
     + `<dt>Arms</dt><dd>${esc(w.name)} (${reach}); ${esc(FD.kits[u.kit].name)}</dd>`
     + `<dt>Order</dt><dd>${f.name}, ${Math.min(u.width, Math.ceil(Math.max(1, u.men) / f.per_hex))} hexes of front${u.mounted ? ", mounted" : ""}</dd>`
     + `<dt>Moves</dt><dd>${allowance(u)} hexes; turning costs ${turnCost(u)} a step</dd>`;
+}
+function renderLimber(u, setup){                 // the Limber button, for batteries only
+  const b = $("#btn-limber");
+  b.hidden = !u || !isBattery(u);
+  if (b.hidden) return;
+  b.disabled = S.phase === "over" || !!u.abandoned || u.state === "broken" || u.state === "fled" || (!setup && u.side !== moving());
+  if (u.limbering) b.textContent = u.limbered ? "Stay limbered" : "Stay unlimbered";
+  else b.textContent = u.limbered ? "Unlimber" : "Limber";
+}
+function toggleLimber(){                          // set-up: at once; in play: over this exchange, instead of moving
+  const u = selUnit(); if (!u || !isBattery(u)) return;
+  if (S.phase === "setup"){ u.limbered = !u.limbered; S.msg = `${u.name} is ${u.limbered ? "limbered" : "unlimbered"}.`; return render() }
+  const was = S.start?.[idx(u.id)];
+  if (!u.limbering && was && (was.pos[0] !== u.pos[0] || was.pos[1] !== u.pos[1] || was.facing !== u.facing)){ S.msg = `${u.name} has moved this phase: undo the move first.`; return render() }
+  u.limbering = !u.limbering;
+  const verb = u.limbered ? "unlimber" : "limber up";
+  S.msg = u.limbering ? `${u.name} will ${verb} this exchange: it neither moves nor fires until it is done.` : "";
+  render();
 }
 function renderPhase(){
   let ph = `Exchange ${S.exchange}: ${S.sides[S.phase]} to move`;
@@ -855,7 +885,7 @@ function addUnit(){
     men = Math.min(men, reserve(f));
   }
   const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, banner: f && f.side !== side ? f.side : null, force: f ? f.id : null, men, quality: $("#sel-quality").value, weapon: $("#sel-weapon").value,
-    kit: $("#sel-kit").value, formation: $("#sel-form").value, mounted: $("#chk-mounted").checked, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
+    kit: $("#sel-kit").value, formation: isGun($("#sel-weapon").value) ? "battery" : $("#sel-form").value, mounted: $("#chk-mounted").checked, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
   for (const pos of startSpots(k)){                  // inside the camp for its defenders, else the first free spot down its side's edge
     const at = { ...u, pos };
     if (fits([...S.units, at], S.units.length, at, SIZE, S.field)){ S.units.push(at); S.sel = at.id; S.msg = `${at.name} added; click the map to place it.`; $("#in-name").value = ""; return render() }
@@ -936,6 +966,8 @@ function init(){
   $("#btn-undo").onclick = () => { const u = selUnit(); if (u && S.start){ const i = idx(u.id); S.units[i] = { ...S.start[i] }; S.msg = ""; render() } };
   $("#btn-remove").onclick = () => { const u = selUnit(); if (u){ S.units = S.units.filter(x => x.id !== u.id); S.sel = S.units[0] ? S.units[0].id : null; render() } };
   $("#btn-add").onclick = addUnit;
+  $("#btn-limber").onclick = toggleLimber;
+  $("#sel-weapon").onchange = e => { if (isGun(e.target.value)) $("#sel-form").value = "battery" };
   $("#btn-field").onclick = () => { loadBattlefield($("#sel-field").value, $("#chk-armies").checked); fillChoices(); render() };
   $("#btn-add-hero").onclick = addHero;
   $("#sel-hero").onchange = heroDefaults;

@@ -28,9 +28,10 @@ When an item is done, delete it here and note it in the pull request that closes
   ground. Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
-- **Guns on the field map.** The unit rules have no artillery, so the Lützen windmill
-  battery (and any later battle's guns) are left to the GM. Field guns would need a missile
-  rate, a reach and a crew, and roundshot's way of killing several men in a file.
+- **Guns, simplified.** Batteries fire only at the nearest enemy in front, never over
+  their own units' heads; round shot does not bounce on beyond its target or strike a
+  second unit behind; there is no ammunition count, shell, or counter-battery fire at the
+  crews in particular; and the Thirty Years' War borrows the Peninsula's gun wounds.
 - **Wind direction.** The weather has a wind strength, which costs every side's missiles
   the same. At Towton the snow blew into the Lancastrians' faces: their archers shot short
   and the Yorkists shot further. The rules could give a wind a direction, with a bonus to
