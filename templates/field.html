@@ -321,8 +321,8 @@ function fromTravel(h){                            // a battle with the travel m
 // attackers each take the army of their side's name in the battlefield's travel.sides; a side
 // not named there takes the other army, and if neither is named, or both name the same army,
 // the defenders take the first and the attackers the second. Each unit is drawn from the force of its army with
-// the most men left (a mounted unit from a mounted force if there is one; it fights on foot if
-// its force has no horses). The biggest units are drawn first, so they are least likely to
+// the most men left, a mounted unit from a mounted force and a unit on foot from a force on foot
+// when there is one (a mounted unit from a force with no horses fights on foot). The biggest units are drawn first, so they are least likely to
 // be cut short. Wagon forces (the baggage) stay in reserve unless their army has
 // no other force. A unit that no longer fits where it stood stays in reserve.
 function battleSides(B){                         // force id -> the battlefield army (0 or 1) it stands with
@@ -343,7 +343,7 @@ function scaledUnits(B, sides){
     if (!forces.length || !drawn) continue;
     const biggestFirst = units.map(u => [u, B.units.indexOf(u)]).sort((x, y) => y[0].men - x[0].men || x[1] - y[1]);   // the big units get whole forces
     for (const [u, i] of biggestFirst){
-      const horsed = forces.filter(f => f.type === "mounted" && left.get(f.id) > 0), pool = u.mounted && horsed.length ? horsed : forces;
+      const like = forces.filter(f => (f.type === "mounted") === !!u.mounted && left.get(f.id) > 0), pool = like.length ? like : forces;   // horse from horse, foot from foot
       const f = pool.reduce((a, x) => (left.get(x.id) > left.get(a.id) ? x : a));
       const men = Math.min(Math.max(1, Math.round(u.men * total / drawn)), left.get(f.id));
       if (men < 1) continue;

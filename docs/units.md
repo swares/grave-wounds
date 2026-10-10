@@ -298,8 +298,9 @@ drawn up:
 - **How many.** Each army's units are scaled to the fit men of the forces standing with it,
   so 6,000 English fill the English line in the same shape as the battlefield's 5,960. Each
   unit is drawn from the force with the most men left, the biggest units first, so they are
-  the least likely to be cut short. A mounted unit comes from a mounted force if there is
-  one; from a force on foot it fights on foot.
+  the least likely to be cut short. A mounted unit comes from a mounted force and a unit on
+  foot from a force on foot, when there is one with men left; a mounted unit drawn from a
+  force on foot fights on foot.
 - **The baggage.** Wagon forces stay in reserve unless their army has no other force.
 - **Room.** A unit that no longer fits where it stood (a much bigger force runs off the
   map) stays in reserve.
@@ -373,6 +374,29 @@ their drawing code, `tools/maps/field_lib.mjs`.
 
 It is drawn by `tools/maps/make_visby_field.mjs`. The wall, the gate and the nunnery are
 drawn by hand to the accounts' description, not traced from any map.
+
+**Lützen, 16 November 1632** (`data/fields/lutzen-1632.yaml`). The field is 220 × 120 hexes,
+about 2,410 by 1,140 yards (2,200 by 1,040 m), with north at the top:
+- The high road from Lützen to Leipzig runs east and west across the field. Its ditches were
+  dug out and lined with musketeers: a bank on its north side and a ditch on its south side,
+  as hex-side works.
+- Lützen, burning, is rough ground at the west end, north of the road, with the windmill hill
+  (high ground) beside it. The Floßgraben, a timber canal the Swedes crossed at dawn, runs
+  behind them as wet ground.
+- The weather is fog (no aiming beyond 5 hexes, about 55 yards, 50 m). It came and went all
+  day: the GM can lift it.
+- The Swedes, south of the road: 3,000 veteran musketeers and 3,000 pike in the first line,
+  4,000 in the second, and horse on both wings (3,000 under the King on the right, 2,500 under
+  Bernhard on the left).
+- The Imperialists, north of the road: 1,600 musketeers in the road ditch, 4,000 musketeers and
+  4,000 pike in the centre, 800 musketeers guarding the battery on the windmill hill, 1,500
+  horse on the right and 2,000 cuirassiers on the left, with Pappenheim's 2,500 horse coming
+  up at the north-east corner.
+- Pikemen fight with the spear's numbers, the nearest the Thirty Years' War tables offer.
+- Not in the rules: the guns. The windmill battery is shown by the musketeers guarding it; the
+  GM can treat the hill as a strongpoint or play the guns out with the roller.
+
+It is drawn by `tools/maps/make_lutzen_field.mjs`.
 
 **A battlefield file** has an `id` and `name`, `sides` (two names), `table`, `size`
 ([cols, rows]) and `weather`. Its `ground` is rows of one letter per hex: `.` open, `r`
