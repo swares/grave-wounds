@@ -678,6 +678,11 @@ function healthWeek(health, men, factors, rng){   // the weekly roll: each well 
     }
     if (caught) ev.push({ kind: "caught", d: did, n: caught });
   }
+  ev.push(...relapses(h, factors, rng));
+  return { health: h, events: ev };
+}
+function relapses(h, factors, rng){           // men who have had a relapsing disease fall ill again, in marsh country
+  const ev = [];
   for (const [did, x] of Object.entries(DZ.diseases)){
     if (!x.relapse || !factors.includes("marsh")) continue;
     let back = 0;
@@ -687,7 +692,7 @@ function healthWeek(health, men, factors, rng){   // the weekly roll: each well 
     for (let i = 0; i < back; i++) h.cases.push({ d: did, inc: 0, step: dzStep("serious"), peak: 0, shown: 0, chronic: false });
     ev.push({ kind: "relapse", d: did, n: back });
   }
-  return { health: h, events: ev };
+  return ev;
 }
 const checksToday = (x, c) => (c.chronic ? c.shown % 7 === 0 : c.shown >= (x.checks_from || 0));
 function recoverCase(c, target, rng){          // one recovery check: "dead", "healed" or "sick"
@@ -743,7 +748,7 @@ function healthDay(health, ctx, rng){          // a day passes -> {health, event
 const KEY = "gravewounds-travel";
 const S = { mapId: Object.keys(DATA.maps)[0], edits: {}, forces: {}, sel: {}, mode: "plan", paint: "forest", seq: 1, msg: "", wx: {}, plague: {} };
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify({ mapId: S.mapId, edits: S.edits, forces: S.forces, sel: S.sel, seq: S.seq, paint: S.paint, wx: S.wx, plague: S.plague })) }catch(e){} }
-function restore(){ try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.mapId && DATA.maps[j.mapId]) Object.assign(S, j, { plague: j.plague || {} }) }catch(e){} }
+function restore(){ try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.mapId && DATA.maps[j.mapId]) Object.assign(S, j, { plague: j.plague || {} }) }catch(e){ /* nothing saved, or unreadable: start fresh */ } }
 const baseMap = () => DATA.maps[S.mapId];
 function curMap(){                           // the map with any painting applied
   const b = baseMap();
@@ -841,7 +846,7 @@ function endDay(f){
 }
 // ----- camp disease (rules in the shared block) -----
 const dzName = did => DZ.diseases[did].name.toLowerCase();
-const dzShort = did => dzName(did).replace(/\s*\(.*\)/, "");    // "camp fever (typhus)" -> "camp fever"
+const dzShort = did => dzName(did).split(" (")[0];    // "camp fever (typhus)" -> "camp fever"
 const tallyText = (o, verb) => Object.entries(o).map(([did, n]) => `${n} ${verb} (${dzShort(did)})`);
 function nightHard(w, kind){                  // the night was harder than the shelter: cold and wet for recovery
   const cold = Math.max(0, ...WXD.cold_hardship.filter(c => w.low <= c.low_at_or_below).map(c => c.add));
@@ -941,16 +946,16 @@ function addWaypoint(sel, h){                  // a column's route is its leader
   if (!replan(f)){ f.waypoints.pop(); replan(f); S.msg = `${f.name} cannot reach ${where(h)} from here.`; return }
   S.msg = "";
 }
+function noMarchText(f, col){                 // why a column cannot march at all
+  const carry = col.some(o => sickMarchPct(fitOf(o).fit, fitOf(o).carried) === 0);
+  return carry ? `${colName(f)} has no fit men to carry its sick. Rest until some recover.` : `${colName(f)} is too spent to march. Rest until next morning.`;
+}
 function march(sel, hours){                    // the whole column marches together, at its slowest
   const f = leaderOf(sel), col = columnOf(f);
   if (!f.path || f.index >= f.path.length - 1){ S.msg = `${colName(f)} has no route to march. Click the map to add a waypoint.`; return }
   if (f.used >= hpdOf(f.day) - 1e-9) col.forEach(endDay);
   const speed = colSpeed(f);
-  if (!speed){
-    const carry = col.some(o => sickMarchPct(fitOf(o).fit, fitOf(o).carried) === 0);
-    S.msg = carry ? `${colName(f)} has no fit men to carry its sick. Rest until some recover.` : `${colName(f)} is too spent to march. Rest until next morning.`;
-    return;
-  }
+  if (!speed){ S.msg = noMarchText(f, col); return }
   const m = curMap(), g = groundOf(f.day);
   if (f.path.slice(f.index + 1).some(h => !passable(m, h, colType(f), g)) && !replan(f)){
     S.msg = `${f.name} cannot get through today (${groundText(g)}). Wait, or add a waypoint to go round.`;
@@ -1090,7 +1095,11 @@ function renderMap(){
 }
 function sickText(f){                        // who is sick, of what and how badly
   const by = {};
-  for (const c of healthOf(f).cases.filter(x => x.inc === 0)) (by[c.d] = by[c.d] || {})[DZ.steps[c.step]] = (by[c.d][DZ.steps[c.step]] || 0) + 1;
+  for (const c of healthOf(f).cases.filter(x => x.inc === 0)){
+    const k = DZ.steps[c.step];
+    if (!by[c.d]) by[c.d] = {};
+    by[c.d][k] = (by[c.d][k] || 0) + 1;
+  }
   const steps = st => DZ.steps.filter(k => st[k]).map(k => st[k] + " " + k).join(", ");    // in track order
   return Object.entries(by).map(([did, st]) => `${dzName(did)} ${Object.values(st).reduce((t, n) => t + n, 0)} (${steps(st)})`).join("; ");
 }

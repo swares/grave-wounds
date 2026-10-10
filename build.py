@@ -214,6 +214,8 @@ def move_rules(d) -> list[str]:
     ]
 
 
+SEP6 = "|---|---|---|---|---|---|"     # a six-column Markdown table rule
+
 def disease_rules(d) -> list[str]:
     D = d.disease
     L = D["litters"]
@@ -474,7 +476,7 @@ def markdown(d) -> str:
                     out += ["| Side | Who | Armour |", "|---|---|---|"]
                     out += [f"| {x['name']} | {x['who']} | {x['armour']} |" for x in c["sides"]] + [""]
                 if c.get("examples"):
-                    out += ["**Example combatants**", "", "| Name | Side | Wears | Fights with | Notes | Picture |", "|---|---|---|---|---|---|"]
+                    out += ["**Example combatants**", "", "| Name | Side | Wears | Fights with | Notes | Picture |", SEP6]
                     out += [f"| {e['name']} | {e['side']} | {d.armor['kits'][e['kit']]['name']} | {d.weapons[e['weapon']]['name']} | {e.get('notes', '')} | "
                             + (f"[{e['image']['caption']}]({commons_url(e['image']['file'])})" if e.get("image") else "") + " |"
                             for e in c["examples"]] + [""]
@@ -554,7 +556,7 @@ def markdown(d) -> str:
     out += ["| Weapon | Reach or range (short / medium / long) |", "|---|---|"] + [f"| {a} | {b} |" for a, b in reach_rows(d)] + [""]
     if d.works.get("camps"):
         out += ["## Camps and works", ""] + [re.sub("</?b>", "**", x) + "\n" for x in works_rules(d)]
-        out += ["| Camp | What it is | Needs | 12 men | 100 men | 1,000 men |", "|---|---|---|---|---|---|"] + ["| " + " | ".join(r) + " |" for r in camp_rows(d)] + [""]
+        out += ["| Camp | What it is | Needs | 12 men | 100 men | 1,000 men |", SEP6] + ["| " + " | ".join(r) + " |" for r in camp_rows(d)] + [""]
         out += ["| Work | Lies on | Labour | Crossing | Cover | Close combat | Breach |", "|---|---|---|---|---|---|---|"] + ["| " + " | ".join(r) + " |" for r in works_rows(d)] + [""]
     if d.weather:
         wt = weather_tables(d)
@@ -563,7 +565,7 @@ def markdown(d) -> str:
         out += md(wt["conds"]) + md(wt["misfire"]) + md(wt["fatigue"]) + md(wt["ground"]) + md(wt["climates"])
     if d.disease:
         out += ["## Camp disease", ""] + [re.sub("</?b>", "**", x) + "\n" for x in disease_rules(d)]
-        out += ["| Disease | Caught from | Shows after | Outbreak chance a week | Peak (d100) | Deaths per case in the records |", "|---|---|---|---|---|---|"]
+        out += ["| Disease | Caught from | Shows after | Outbreak chance a week | Peak (d100) | Deaths per case in the records |", SEP6]
         out += ["| " + " | ".join(r) + " |" for r in disease_rows(d)] + [""]
     if d.terrain["terrain"]:
         ft = d.terrain["forces"]

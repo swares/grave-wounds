@@ -63,7 +63,7 @@ def _main(argv=None) -> int:
 
     if a.cmd == "disease":
         from .disease import simulate
-        rnd = random.Random(a.seed)
+        rnd = random.Random(a.seed)  # NOSONAR - a seeded, repeatable simulation for tuning, not security
         ctx = {"care": "field", "marched": False, "wet_cold": False, "filth": False}
         print("Resting in an ordinary camp (field care, not marching, dry):")
         for did, x in d.disease["diseases"].items():

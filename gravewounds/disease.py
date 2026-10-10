@@ -122,7 +122,14 @@ def week(d: Data, health: dict, men: int, factors: list, rng) -> tuple[dict, lis
                 caught += 1
         if caught:
             ev.append({"kind": "caught", "d": did, "n": caught})
-    for did, x in D["diseases"].items():
+    ev += _relapses(d, h, factors, rng)
+    return h, ev
+
+
+def _relapses(d: Data, h: dict, factors: list, rng) -> list:
+    """Men who have had a relapsing disease fall ill with it again (at Serious) in marsh country."""
+    ev = []
+    for did, x in d.disease["diseases"].items():
         if not x.get("relapse") or "marsh" not in factors:
             continue
         back = sum(1 for _ in range(h["had"].get(did, 0)) if rng() <= x["relapse"])
@@ -131,7 +138,7 @@ def week(d: Data, health: dict, men: int, factors: list, rng) -> tuple[dict, lis
             s = _step(d, "serious")
             h["cases"] += [{"d": did, "inc": 0, "step": s, "peak": 0, "shown": 0, "chronic": False} for _ in range(back)]
             ev.append({"kind": "relapse", "d": did, "n": back})
-    return h, ev
+    return ev
 
 
 def _checks_today(x: dict, c: dict) -> bool:
@@ -158,6 +165,27 @@ def _recover(d: Data, c: dict, target: int, rng) -> str:
     return "healed" if c["step"] <= 0 else "sick"
 
 
+def _case_day(d: Data, c: dict, target: int, rng, ev: dict) -> str:
+    """One case's day: 'sick' while it lasts, else 'healed' or 'dead' (tallied in ev)."""
+    x = d.disease["diseases"][c["d"]]
+    if c["inc"] > 0:
+        c["inc"] -= 1
+        if c["inc"] == 0:
+            c["step"] = _step(d, "mending")
+            ev["shown"][c["d"]] = ev["shown"].get(c["d"], 0) + 1
+        return "sick"
+    c["shown"] += 1
+    if c["step"] < c["peak"]:                 # climbing to its peak, once
+        c["step"] += 1
+        if c["step"] >= c["peak"]:
+            c["peak"] = 0
+        return "sick"
+    out = _recover(d, c, target, rng) if _checks_today(x, c) else "sick"
+    if out != "sick":
+        ev[out][c["d"]] = ev[out].get(c["d"], 0) + 1
+    return out
+
+
 def day(d: Data, health: dict, ctx: dict, rng) -> tuple[dict, dict]:
     """A day passes: incubations run down, cases climb to their peak, then recover or worsen.
     ctx: {care (none, field or shelter), marched (bool), wet_cold (bool), filth (bool)}.
@@ -170,26 +198,10 @@ def day(d: Data, health: dict, ctx: dict, rng) -> tuple[dict, dict]:
     keep = []
     for c in h["cases"]:
         x = D["diseases"][c["d"]]
-        if c["inc"] > 0:
-            c["inc"] -= 1
-            if c["inc"] == 0:
-                c["step"] = _step(d, "mending")
-                ev["shown"][c["d"]] = ev["shown"].get(c["d"], 0) + 1
-            keep.append(c)
-            continue
-        c["shown"] += 1
-        if c["step"] < c["peak"]:                 # climbing to its peak, once
-            c["step"] += 1
-            if c["step"] >= c["peak"]:
-                c["peak"] = 0
-            keep.append(c)
-            continue
-        out = _recover(d, c, target, rng) if _checks_today(x, c) else "sick"
+        out = _case_day(d, c, target, rng, ev)
         if out == "sick":
             keep.append(c)
-            continue
-        ev[out][c["d"]] = ev[out].get(c["d"], 0) + 1
-        if out == "dead":
+        elif out == "dead":
             h["dead"] += 1
         elif x.get("immune"):
             h["immune"][c["d"]] = h["immune"].get(c["d"], 0) + 1
