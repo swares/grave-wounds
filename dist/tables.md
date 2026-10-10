@@ -4416,6 +4416,31 @@ Penalties add up; each total is capped at -60%.
 | Hot desert and steppe | high/low | 16/4 | 19/6 | 24/10 | 30/15 | 37/21 | 42/24 | 44/26 | 44/25 | 41/21 | 34/16 | 24/9 | 18/5 |
 |  | wet days | 4 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 0 | 1 | 3 | 4 |
 
+## Unit combat
+
+**Unit combat (the rank and file, on the field map):** one exchange is about a minute. In melee the front rank of each hex touching the enemy strikes (10 men a hex face; reach-2 weapons add the second rank). 9% of them make a telling attempt each exchange; archers loose their rate a minute, 3.3% of the shots aimed at a man. Each attempt is an individual attack against the unit's attack %, parried on its defence % (not from flank or rear, nor against missiles), then location, severity from the margin, and armour, as for one fighter.
+
+Light wounds and grazes fight on. Serious and critical wounds call for a stop check against the unit's Nerve; a failure is down. A wound fatal within rounds kills. Flank +20, rear +30, a mounted charge +20 at x2 tempo, shaken -10.
+
+**Unit morale:** after an exchange a unit checks if it lost the exchange, has 25% of its men down, lost 10% in the exchange, or was struck in flank or rear: d100 against Nerve, +20 while steady, +10 with a leader, -20 if he is down, -20 at half strength, -20 if flanked, -5 a man it lost more than it put down (at most -30). Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +20, no parry, x2 tempo.
+
+| Quality | Attack | Defence | Nerve |
+|---|---|---|---|
+| Green | 40% | 25% | 35 |
+| Regular | 50% | 35% | 50 |
+| Veteran | 60% | 45% | 65 |
+
+| Missile weapon | Shots a minute |
+|---|---|
+| Longbow (English war bow, bodkin and broadhead arrows) | 8 |
+| Bow (war arrows) | 8 |
+| Crossbow (bolts) | 2 |
+| Sling (stones, lead bullets) | 6 |
+| Matchlock musket | 1 |
+| Smoothbore musket (Brown Bess, Charleville) | 2 |
+| Flintlock rifle (Pennsylvania, Baker, Jäger) | 1 |
+| Rifle-musket (Minie ball) | 2 |
+
 ## Camp disease
 
 **Camp disease (forces on the travel map):** each force counts its sick, by disease and by step on the track (mending, serious, grave, deadly). Once a week each well man may catch each disease: his chance is the outbreak chance below, with the week's modifiers, times the chance he fails to resist (half, at Endurance 50). A man carries one disease at a time.

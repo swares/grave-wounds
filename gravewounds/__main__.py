@@ -1,4 +1,4 @@
-"""Command line: python -m gravewounds roll|list|check|disease"""
+"""Command line: python -m gravewounds roll|list|check|disease|units"""
 from __future__ import annotations
 
 import argparse
@@ -53,6 +53,10 @@ def _main(argv=None) -> int:
     ds = sub.add_parser("disease", help="simulate camp disease cases against the records (deaths per case)")
     ds.add_argument("-n", type=int, default=8000, help="cases per disease")
     ds.add_argument("--seed", type=int, default=3)
+    us = sub.add_parser("units", help="unit combat: melee pace by armour and example fights")
+    us.add_argument("--table", default="towton-1461-all-hits")
+    us.add_argument("--runs", type=int, default=40)
+    us.add_argument("--seed", type=int, default=1)
 
     a = p.parse_args(argv)
     try:
@@ -69,6 +73,17 @@ def _main(argv=None) -> int:
             r = simulate(d, did, a.n, ctx, seeded_d100(a.seed))
             print(f"  {x['name']:<22} deaths {r['deaths']:5.1f}% (records {x['deaths']}%), "
                   f"sick {r['sick_days']:4.1f} days on average, virulence {x['virulence']}")
+        return 0
+    if a.cmd == "units":
+        from .units import examples, pace
+        print(f"Melee pace, regular swordsmen front to front ({a.table}), per minute:")
+        for kit in ("none", "gambeson", "jack_sallet", "hauberk", "full_plate"):
+            p = pace(d, a.table, kit, 2000, a.seed)
+            print(f"  against {d.armor['kits'][kit]['name']:<52} {p['hit']:4.1f}% hit, {p['down']:4.1f}% put out of the fight")
+        print(f"Example fights, 120 men a side, 30 abreast, {a.runs} runs each (medians):")
+        for r in examples(d, a.table, a.runs, a.seed):
+            print(f"  {r['label']:<40} breaks after {r['minutes']:>3} min; first side broke {r['a_broke']}, second {r['b_broke']}; "
+                  f"winner {r['winner_down']} down, loser {r['loser_down']} down")
         return 0
     if a.cmd == "check":
         for w in d.warnings:
