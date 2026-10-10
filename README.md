@@ -35,6 +35,8 @@ it). Mud, snow and floods slow the march; rain, wind and fog affect bows and fir
 battle; and the night's rest and fatigue follow from the camp and the weather. See
 [docs/weather.md](docs/weather.md).
 
+**Backlog:** known gaps and deferred work are listed in [docs/backlog.md](docs/backlog.md).
+
 ## Where this started
 
 This repository began as a copy of [HitLoc](https://github.com/swares/HitLoc), the
