@@ -712,7 +712,7 @@ function sevTiers(mech, zone, wid){
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,hauled:S.hauled,addSide:S.addSide,weather:S.weather})) }catch(e){} }
+function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather})) }catch(e){} }
 function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); return true } }catch(e){} return false }
 
 /* ---------- body figure ---------- */
@@ -1474,14 +1474,14 @@ function forceChars(o, positions){            // up to 8 of a travel-map force's
   return out;
 }
 const menOf = o => { const n = Math.min(o.men, 8); return n < o.men ? `${n} of its ${o.men} men` : `its ${n} men` };
-function campSpots(L, cols, rows){            // hexes inside the camp, nearest the middle first
-  const spots = [];
+function campSpots(L, cols, rows){            // hexes inside the camp: nearest the middle, or the gate if the camp runs off the map
+  const spots = [], from = L.fits ? L.centre : [L.centre[0] + L.radius - 1, L.centre[1]];
   for (let y = 0; y < rows; y++){
     for (let x = 0; x < cols; x++){
       if (hexDistance(L.centre, [x, y]) <= Math.max(1, L.radius - 1)) spots.push([x, y]);
     }
   }
-  return spots.sort((p, q) => hexDistance(L.centre, p) - hexDistance(L.centre, q) || p[1] - q[1] || p[0] - q[0]);
+  return spots.sort((p, q) => hexDistance(from, p) - hexDistance(from, q) || p[1] - q[1] || p[0] - q[0]);
 }
 function setupHandoff(){                     // a camp or position sent from the travel map
   const h = S.handoff; if (!h) return;
@@ -1492,6 +1492,7 @@ function setupHandoff(){                     // a camp or position sent from the
   const { cols, rows } = S.map;
   const L = lay ? campWorks(h.camp, men, ft, cols, rows, h.done ?? null, !!h.hauled) : { centre: [cols >> 1, rows >> 1], radius: r, fits: true, works: { edges: {}, hexes: {} } };
   S.works = L.works;
+  S.wholeLabour = L.fits ? null : h.campLabour;                             // the whole camp's, when only part is on the map
   // The defender and any friends who were there fill the camp from the middle out; any who
   // do not fit go to their side's edge. The enemy forces wait at the far edge (side 2's edge).
   const spots = campSpots(L, cols, rows), defenders = [h.force, ...(h.allies || [])], foes = h.foes || [], foe = foes[0];
@@ -1507,7 +1508,7 @@ function setupHandoff(){                     // a camp or position sent from the
   const unfinished = h.camp && h.done !== null && h.done !== undefined ? `, ${h.built}% built` : "";
   const campName = h.camp ? WK.camps[h.camp].name.toLowerCase() + unfinished : "no camp";
   S.pending = [`Set up from the travel map: ${h.force.name} at ${h.place} (${campName}), ${h.day}, ${h.time}${h.weather ? " \u00b7 " + WXD.conditions[h.weather.cond].name.toLowerCase() : ""}`];
-  const where = h.camp ? campName : "position", cut = L.fits ? "" : " (cut down to fit the map)";
+  const where = h.camp ? campName : "position", cut = L.fits ? "" : " (too big for the map: only the stretch with the gate, facing the attackers, is shown, at full size)";
   const facing = lay ? "facing the way in" : "facing them";
   const unplaced = overflow ? " Those who did not fit inside wait at their side's edge." : "";
   const forceLine = o => o.name + " (" + o.side + "), " + menOf(o);
@@ -1616,8 +1617,8 @@ function renderMap(){
     + `<span>dashed ring: in reach · solid ring: defender</span>`;
   const types = [...Object.keys(WK.edge_works), ...Object.keys(WK.hex_works)];
   $("#work-palette").innerHTML = types.map(t => `<button type="button" class="small" data-wtype="${t}" aria-pressed="${!!S.workMode && S.workType === t}" title="${attr((WK.edge_works[t] || WK.hex_works[t]).note || (WK.edge_works[t] ? "Along a hex edge" : "Fills a hex"))}"><svg viewBox="-12 -8 24 16" width="22" height="14" aria-hidden="true">${WK.edge_works[t] ? `<line class="wk wk-${t}" x1="-10" y1="0" x2="10" y2="0"/>` : `<g class="wkh wkh-${t}" transform="scale(.7)">${HEX_GLYPH[t] || ""}</g>`}</svg>${attr((WK.edge_works[t] || WK.hex_works[t]).name)}</button>`).join("");
-  const lab = worksLabour(S.works, !!S.hauled);
-  $("#work-labour").textContent = lab ? `Works on this map: about ${Math.round(lab)} man-hours to build.` : "No works on this map.";
+  const lab = worksLabour(S.works, !!S.hauled), whole = S.wholeLabour ? ` The whole camp, most of it off the map: about ${Math.round(S.wholeLabour)}.` : "";
+  $("#work-labour").textContent = (lab ? `Works on this map: about ${Math.round(lab)} man-hours to build.` : "No works on this map.") + whole;
   $("#chk-haul").checked = !!S.hauled;
   $("#map-scale").textContent = `1 hex = ${MOVE.hex_m} m · a round is 6 seconds · ${cols} × ${rows} hexes`;
   $("#in-cols").value = cols; $("#in-rows").value = rows;
@@ -1874,7 +1875,7 @@ function init(){
     S.hauled = e.target.checked;
     renderChars();
   };
-  $("#btn-clear-works").onclick = () => { S.works = { edges: {}, hexes: {} }; S.mapMsg = "Works cleared."; renderChars() };
+  $("#btn-clear-works").onclick = () => { S.works = { edges: {}, hexes: {} }; S.wholeLabour = null; S.mapMsg = "Works cleared."; renderChars() };
   $("#btn-freeplace").onclick = () => { S.freePlace = !S.freePlace; S.placing = null; S.mapMsg = ""; renderChars() };
   const resize = () => {
     const m = mapSize(), cl = (v, lo, hi, d) => Math.min(hi, Math.max(lo, parseInt(v, 10) || d));
