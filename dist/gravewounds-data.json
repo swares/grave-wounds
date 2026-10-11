@@ -14729,6 +14729,14 @@
      "name": "Deep water",
      "move": 99,
      "deep": true
+    },
+    "road": {
+     "name": "Road",
+     "move": 0
+    },
+    "bridge": {
+     "name": "Bridge",
+     "move": 0
     }
    },
    "max_level": 3,
@@ -14810,6 +14818,40 @@
      6
     ],
     "ford_shift": 10
+   },
+   "through": {
+    "road": {
+     "hexes": [
+      "road",
+      "bridge",
+      "ford",
+      "village",
+      "town"
+     ],
+     "links": [
+      "road",
+      "bridge",
+      "ford",
+      "village",
+      "town"
+     ],
+     "width": [
+      2,
+      3
+     ]
+    },
+    "river": {
+     "hexes": [
+      "ford",
+      "bridge"
+     ],
+     "links": [
+      "river",
+      "ford",
+      "bridge",
+      "lake"
+     ]
+    }
    },
    "terrain_names": {
     "road": "Road",

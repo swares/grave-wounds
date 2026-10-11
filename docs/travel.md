@@ -87,7 +87,8 @@ day costs no marching time. Once an enemy force has marched to within 0.6 mile (
   on its battle map and the ground laid out to match the defenders' hex: woods in forest,
   rises and rocks in hills, marsh in marsh, rubble in a village or town. Where the map
   reaches past a side of that hex, the neighbouring hex's ground (or a lake or river) shows
-  along that edge. See
+  along that edge. A fight on a road, ford or bridge has the road and river through the
+  middle, and the attackers come in from the way they marched. See
   [works.md](works.md) and [combat.md](combat.md).
 - **the field map**, in units: the forces arrive with their fit men, and the GM splits each
   into units there (billmen, archers, horse). Men left out of every unit stay in reserve.

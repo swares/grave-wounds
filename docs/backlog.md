@@ -9,12 +9,12 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **A river or road through the defenders' own travel hex is not drawn.** The battle map
-  lays out the country beyond a side of the hex when it reaches that far, but a fight in a
-  river, ford or bridge hex gets no river across the map, and roads are never drawn. One
-  way: run a river (with its ford or bridge) or a road across the map through the spot.
-- **Enemies arrive on their side's edge even when it is water.** Placed by the map's edge,
-  they crowd onto a ford or the nearest dry hexes. The GM moves them.
+- **A camp at a crossing sits astride the river.** At a ford or bridge hex the river runs
+  through the battle map's middle, and a camp there is cleared inside its works, so the river
+  stops at the camp and its stakes or banks may stand in the water. One way: set the camp
+  beside the crossing, on one bank.
+- **Attackers in the defenders' own travel hex come in at their side's far edge**, not from
+  the way they marched. One way: send the hex they marched in from.
 - **Taking cover lasts until the man moves or strikes in close combat.** He can keep shooting
   from it on later turns, as a man firing prone would; there is no rule yet for the time it
   takes to get up.

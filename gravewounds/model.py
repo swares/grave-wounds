@@ -849,6 +849,9 @@ def _ground_seed_errors(d: Data, terrain: dict) -> list[str]:
             errors.append(f"{where}: shares must be 0 or more and add up to 0.8 at most")
         if x.get("rises", 0) and not 1 <= x.get("top", 0) <= G["max_level"]:
             errors.append(f"{where}: top must be 1 to {G['max_level']}")
+    for what, T in G.get("through", {}).items():
+        errors += [f"wounds.yaml: combat.ground.through.{what} names unknown terrain {t}"
+                   for t in T.get("hexes", []) + T.get("links", []) if t not in terrain]
     return errors
 
 
