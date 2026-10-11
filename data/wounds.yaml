@@ -398,6 +398,12 @@ combat:
     through:
       road:  {hexes: [road, bridge, ford, village, town], links: [road, bridge, ford, village, town], width: [2, 3]}
       river: {hexes: [ford, bridge], links: [river, ford, bridge, lake]}
+    # A camp with works at a ford or bridge stands on one bank, gap hexes back from the river,
+    # on the bank away from the way the attackers came (either bank, fixed for the fight, when
+    # they came along the river or from the same hex). The battle map grows to make room, up to
+    # its cap; if the river still does not fit with far hexes of its far bank showing, it is
+    # narrowed, to the least river width at most, and the rest runs off the map.
+    camp_bank: {gap: 3, far: 2}
   range:
     - {band: short, penalty: 0}
     - {band: medium, penalty: 20}

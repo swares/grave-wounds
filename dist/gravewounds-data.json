@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-10",
+ "generated": "2026-10-11",
  "locations": [
   {
    "id": "skull_l",
@@ -14852,6 +14852,10 @@
       "lake"
      ]
     }
+   },
+   "camp_bank": {
+    "gap": 3,
+    "far": 2
    },
    "terrain_names": {
     "road": "Road",

@@ -115,8 +115,15 @@ wide; there is a junction where more than two meet. At a ford or bridge hex the 
 through the middle too, 8 to 25 hexes wide, toward the neighbouring river, ford, bridge or
 lake hexes. At a ford the road crosses by a ford 3 to 6 hexes wide (marsh to wade), or straight
 across the middle when no road comes; at a bridge it crosses by a bridge as wide as the road.
-A road is clear, open going, no faster than open ground at 2 yards a hex. A camp at a crossing
-is cleared inside its works, so the river shows only outside them.
+A road is clear, open going, no faster than open ground at 2 yards a hex.
+
+**A camp at a crossing.** A camp with works at a ford or bridge stands on one bank, not
+astride the river: the river passes it at least 3 hexes beyond its outer works, on the side
+toward the way the attackers came, so they must cross by the ford or bridge. When they came
+along the river, or are in the same travel hex, the bank is fixed for the fight. The road
+still runs out of the camp to the crossing. The battle map grows to make room, up to 80 by
+60 hexes; if the river still does not fit with 2 hexes of its far bank showing, it is
+narrowed, to no less than 8 hexes, and the rest runs off the map.
 
 **The hexes around.** A travel hex is 0.6 to 3 miles (1 to 5 km) across and the battle map at
 most about 175 by 115 yards (160 by 105 m), so the fight stands at a fixed spot inside its

@@ -9,10 +9,10 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **A camp at a crossing sits astride the river.** At a ford or bridge hex the river runs
-  through the battle map's middle, and a camp there is cleared inside its works, so the river
-  stops at the camp and its stakes or banks may stand in the water. One way: set the camp
-  beside the crossing, on one bank.
+- **A big camp at a crossing can push the river to the map's edge.** The camp stays in the
+  map's middle and the map stops at 80 by 60 hexes, so beside a large camp the river is
+  narrowed and may run partly off the map, and the attackers' far bank barely shows. One way:
+  move the camp off the middle, away from the river.
 - **Attackers in the defenders' own travel hex come in at their side's far edge**, not from
   the way they marched. One way: send the hex they marched in from.
 - **Taking cover lasts until the man moves or strikes in close combat.** He can keep shooting
