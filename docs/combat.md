@@ -98,6 +98,16 @@ The GM can paint the battle map with **Paint ground**: rocks and rubble, woods a
 marsh, and hexes raised a level at a time (0 to 3). Painted hexes show a small mark; raised
 hexes are shaded, darker the higher they are.
 
+**Laying out ground.** A fight sent from the travel map lays out its ground to match the
+defenders' travel hex: irregular clumps of woods, rocks and marsh, and a rise or two, in the
+shares the terrain gives (for example, about half the hexes wooded in forest, a tenth rocky
+and up to three levels high in hills, a third marsh in marsh, a fifth rubble in a town).
+Inside a camp's works the ground is cleared and levelled to the camp's middle. The same
+fight always lays out the same ground. In the Paint ground bar, **Ground like** and **Lay
+out ground** do the same for any fight; pressing it again for the same country gives another
+layout. Paint any hex to change it. The shares are design estimates, in
+`data/wounds.yaml` under `combat.ground.seed`.
+
 - **Movement.** Entering rocks or woods costs 1 extra hex of movement, marsh 2; each level
   climbed costs 1 more.
 - **Cover.** A shot at a man in rocks is −10% and the rocks hide his legs, so the table's

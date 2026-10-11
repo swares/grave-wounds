@@ -559,6 +559,10 @@ def ground_rules(d) -> list[str]:
         "A blow or shot from higher ground takes the attacker-higher situation (head and shoulders), and from lower ground attacker-lower. "
         f"A man striking uphill in close combat loses {G['uphill']}% a level (two levels at most). A shot downhill reaches {G['downhill_reach']}% further a level. "
         "Higher ground rising above the straight line between shooter and target blocks the shot; men in the way below that line are shot over.",
+        "<b>Laying out ground:</b> a fight sent from the travel map lays its ground out like the defenders' travel hex: clumps of woods, rocks and marsh "
+        "and a rise or two, in the shares below; inside a camp's works the ground is cleared and level. "
+        + "; ".join(f"{d.terrain['terrain'][t]['name']}: " + ", ".join([f"{G['kinds'][k]['name'].lower()} {round(v * 100)}%" for k, v in x.items() if k in G['kinds']]
+                    + ([f"{x['rises']} rise{'s' if x['rises'] > 1 else ''} to level {x['top']}"] if x.get('rises') else [])) for t, x in G["seed"].items()) + ".",
         f"<b>Taking cover:</b> on his turn a fighter may go to ground instead of moving or attacking. Until he moves or strikes in close combat, "
         f"shots at him lose {G['take_cover']}% (or the ground's cover if better) and hit as behind cover, and blows at him hit as at a man down.",
     ]
@@ -690,7 +694,8 @@ def bundle(d) -> dict:
         "mechanisms": {m: {"name": v["name"], "desc": v["desc"]} for m, v in d.wounds["mechanisms"].items()},
         "vocabulary": d.wounds["vocabulary"],
         "tracking": d.wounds["tracking"],
-        "combat": d.wounds["combat"],
+        "combat": {**d.wounds["combat"], "ground": {**d.wounds["combat"]["ground"],
+                   "seed_names": {t: d.terrain["terrain"][t]["name"] for t in d.wounds["combat"]["ground"]["seed"]}}},
         "works": d.works,
         "weather": d.weather,
         "wounds": wounds,

@@ -217,7 +217,6 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
 #ground-bar[hidden]{display:none}
 .workbar .palette{display:flex;flex-wrap:wrap;gap:4px}
 .palette-set{border:0;margin:0;padding:0;min-width:0}
-.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .wxbar select{width:auto;padding:3px 6px}
 fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -245,8 +244,11 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
     <div class="mapkey" id="map-key"></div>
     <div class="mapbar workbar"><div class="palette" id="work-palette" role="group" aria-label="Work to build"></div>
       <button class="small" id="btn-clear-works">Clear works</button><label class="muted"><input type="checkbox" id="chk-haul"> Timber hauled from afar</label><span class="muted" id="work-labour"></span></div>
-    <div class="mapbar workbar" id="ground-bar"><fieldset class="palette-set"><legend class="vh">Ground to paint</legend><div class="palette" id="ground-palette"></div></fieldset>
-      <button class="small" id="btn-clear-ground">Clear ground</button><span class="muted" id="ground-note"></span></div>
+    <div class="mapbar workbar" id="ground-bar"><fieldset class="palette-set"><legend class="sr">Ground to paint</legend><div class="palette" id="ground-palette"></div></fieldset>
+      <button class="small" id="btn-clear-ground">Clear ground</button>
+      <label class="muted">Ground like <select id="sel-ground-like"></select></label>
+      <button class="small" id="btn-lay-ground" title="Lay out rocks, woods, marsh and rises like this country; again for another layout">Lay out ground</button>
+      <span class="muted" id="ground-note"></span></div>
     <fieldset class="mapbar wxbar"><legend class="sr">Weather</legend>
       <label class="muted">Weather <select id="sel-wx"></select></label>
       <label class="muted">Wind <select id="sel-wind"></select></label>
@@ -625,7 +627,7 @@ function sevTiers(mech, zone, wid){
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather})) }catch(e){} }
+function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather})) }catch(e){} }
 function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); return true } }catch(e){} return false }
 
 /* ---------- body figure ---------- */
@@ -1344,6 +1346,63 @@ function groundCover(ground, h, taking = false){   // {cover %, low (hides the l
   const g = groundSpec(ground, h);
   return { cover: Math.max(g.cover || 0, taking ? GRD.take_cover : 0), low: !!g.low || taking, kind: ground?.kinds?.[hkey(h)] || "open" };
 }
+// Laying out ground like a travel terrain (as gravewounds.combat.seed_ground): repeatable from a seed.
+function seedNumber(text){                       // FNV-1a, 32 bits, over the text's UTF-8 bytes
+  let h = 2166136261;
+  for (const b of new TextEncoder().encode(text)) h = Math.imul(h ^ b, 16777619) >>> 0;
+  return h;
+}
+function parkMiller(seed){                       // as units.SeededDice: randint(a, b)
+  let st = Math.max(1, seed % 2147483647);
+  return { randint: (a, b) => { st = st * 16807 % 2147483647; return a + st % (b - a + 1) } };
+}
+const GROUND_ORDER = ["marsh", "brush", "rough"];  // laid in this order; a hex keeps the first
+function layRises(ground, spec, cols, rows, rng){
+  for (let n = 0; n < (spec.rises || 0); n++){
+    const top = [rng.randint(0, cols - 1), rng.randint(0, rows - 1)], high = rng.randint(1, spec.top), spread = rng.randint(3, 6);
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){
+      const lv = high - Math.floor(hexDistance([c, r], top) / spread), k = c + "," + r;
+      if (lv > (ground.levels[k] || 0)) ground.levels[k] = lv;
+    }
+  }
+}
+function layClumps(ground, kind, target, cols, rows, rng){
+  let painted = 0, tries = 0;
+  while (painted < target && tries < 4 * cols * rows){
+    let h = [rng.randint(0, cols - 1), rng.randint(0, rows - 1)];
+    const size = rng.randint(3, 12);
+    for (let i = 0; i < size; i++){
+      tries++;
+      const k = hkey(h);
+      if (!(k in ground.kinds)){
+        ground.kinds[k] = kind;
+        if (++painted >= target) return;
+      }
+      const nb = neighbours(h, cols, rows);
+      h = nb[rng.randint(0, nb.length - 1)];
+    }
+  }
+}
+function seedGround(terrain, cols, rows, seed, clear = null){   // clear: [centre, radius] of a camp
+  const spec = GRD.seed[terrain] || GRD.seed.open, rng = parkMiller(seed), ground = { kinds: {}, levels: {} };
+  layRises(ground, spec, cols, rows, rng);
+  for (const kind of GROUND_ORDER) layClumps(ground, kind, Math.round((spec[kind] || 0) * cols * rows), cols, rows, rng);
+  if (clear) clearGround(ground, clear[0], clear[1], cols, rows);
+  return ground;
+}
+function layGroundLike(){                        // the ground S.groundLike asks for, on the map as it is now
+  const g = S.groundLike, { cols, rows } = mapSize();
+  return seedGround(g.terrain, cols, rows, seedNumber(`${g.seed}:${g.n}`), g.clear);
+}
+function clearGround(ground, centre, radius, cols, rows){   // inside a camp: open ground, level with its middle
+  const mid = levelAt(ground, centre);
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){
+    if (hexDistance([c, r], centre) > radius) continue;
+    const k = c + "," + r;
+    delete ground.kinds[k];
+    if (mid) ground.levels[k] = mid; else delete ground.levels[k];
+  }
+}
 // Fighters standing between a shooter at frm and his target at to (others: [[id, hex]]; men on
 // ground below the line of sight are shot over), as gravewounds.combat.in_the_way:
 // {men (nearest the shooter first), penalty %, stray %}.
@@ -1523,6 +1582,8 @@ function levelsSvg(){                            // shading for raised ground, a
 }
 function renderGroundBar(){
   $("#ground-bar").hidden = !S.groundMode;
+  const like = (S.groundLike || {}).terrain || "open";
+  $("#sel-ground-like").innerHTML = Object.keys(GRD.seed).map(t => `<option value="${t}"${t === like ? " selected" : ""}>${attr(GRD.seed_names[t])}</option>`).join("");
   $("#ground-palette").innerHTML = Object.entries(GROUND_TOOLS).map(([k, t]) => `<button type="button" class="small" data-gtool="${k}" aria-pressed="${(S.groundTool || "rough") === k}">${groundIcon(k)}${t.label}</button>`).join("");
   const G = GRD.kinds;
   $("#ground-note").textContent = `Rocks ${G.rough.cover}% cover and low (hides the legs); woods ${G.brush.cover}%; each costs +${G.rough.move} to enter, marsh +${G.marsh.move}, a climb +${GRD.climb} a level (0 to ${GRD.max_level}).`;
@@ -1648,7 +1709,9 @@ function setupHandoff(){                     // a camp or position sent from the
   S.map = { cols: Math.min(80, Math.max(24, need)), rows: Math.min(60, Math.max(16, need)) };
   const { cols, rows } = S.map;
   const L = lay ? campWorks(h.camp, men, ft, cols, rows, h.done ?? null, !!h.hauled) : { centre: [cols >> 1, rows >> 1], radius: r, fits: true, works: { edges: {}, hexes: {} } };
-  S.works = L.works; S.ground = { kinds: {}, levels: {} };
+  S.works = L.works;
+  S.groundLike = { terrain: GRD.seed[h.ground] ? h.ground : "open", seed: h.groundSeed || h.place || "fight", n: 0, clear: lay ? [L.centre, L.radius] : null };
+  S.ground = layGroundLike();
   S.wholeLabour = L.fits ? null : h.campLabour;                             // the whole camp's, when only part is on the map
   // The defender and any friends who were there fill the camp from the middle out; any who
   // do not fit go to their side's edge. The enemy forces wait at the far edge (side 2's edge).
@@ -1672,7 +1735,8 @@ function setupHandoff(){                     // a camp or position sent from the
   const defNote = defenders.map(forceLine).join("; ");
   const foeNote = foe ? `Attacking: ${foes.map(forceLine).join("; ")}, at the far edge ${facing}. ` : "";
   const addNote = `Add brings in more on the side "${S.addSide}".`;
-  S.mapMsg = `Defending: ${defNote}, inside the ${where}${cut}.${unplaced} ${foeNote}${addNote} Click a fighter, on the map or with Place on map, then a hex to move him.`;
+  const like = `The ground is laid out to match the travel map's ${GRD.seed_names[S.groundLike.terrain].toLowerCase()}${lay ? ", cleared inside the camp" : ""}: Paint ground to change it.`;
+  S.mapMsg = `Defending: ${defNote}, inside the ${where}${cut}.${unplaced} ${foeNote}${addNote} ${like} Click a fighter, on the map or with Place on map, then a hex to move him.`;
   for (const o of h.allies || []) S.pending.push(`With them: ${o.name}, ${o.men} men (${o.side})`);
   for (const o of foes) S.pending.push(`Facing them: ${o.name}, ${o.men} men (${o.side})`);
   try{ localStorage.removeItem("gravewounds-handoff") }catch(e){}
@@ -2058,6 +2122,13 @@ function init(){
   $("#btn-ground").onclick = () => { S.groundMode = !S.groundMode; S.workMode = false; S.groundTool = S.groundTool || "rough"; S.placing = null; S.mapMsg = ""; renderChars() };
   $("#ground-palette").addEventListener("click", e => { const b = e.target.closest("button[data-gtool]"); if (b){ S.groundTool = b.dataset.gtool; S.groundMode = true; S.workMode = false; renderChars() } });
   $("#btn-clear-ground").onclick = () => { S.ground = { kinds: {}, levels: {} }; S.mapMsg = "Ground cleared."; renderChars() };
+  $("#btn-lay-ground").onclick = () => {
+    const t = $("#sel-ground-like").value, g = S.groundLike || { seed: "roller", n: 0, clear: null };
+    S.groundLike = { ...g, terrain: t, n: g.terrain === t ? g.n + 1 : g.n };
+    S.ground = layGroundLike();
+    S.mapMsg = `Ground laid out like ${GRD.seed_names[t].toLowerCase()}${g.clear ? ", the camp cleared" : ""}: paint any hex to change it.`;
+    renderChars();
+  };
   $("#work-palette").addEventListener("click", e => { const b = e.target.closest("button[data-wtype]"); if (b){ S.workType = b.dataset.wtype; S.workMode = true; S.groundMode = false; renderChars() } });
   $("#sel-wx").onchange = e => {
     S.weather.cond = e.target.value;

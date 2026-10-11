@@ -9,11 +9,10 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **Ground on the roller's battle map is painted by hand.** A fight sent from the travel
-  map brings its camp's works but not the ground around it, so the GM paints rocks, woods,
-  marsh and hills himself. The map's hex is 2 yards (2 m), far finer than the travel map's
-  terrain. One way: seed the battle map from the travel hex's terrain (woods, hills) with a
-  few random patches the GM can repaint.
+- **The roller's laid-out ground ignores the hexes around the fight.** It follows the
+  defenders' travel hex only, so a camp at a wood's edge gets no wood unless its own hex is
+  forest, and a river beside it does not appear. One way: lay the map's edges from the
+  neighbouring travel hexes.
 - **Taking cover lasts until the man moves or strikes in close combat.** He can keep shooting
   from it on later turns, as a man firing prone would; there is no rule yet for the time it
   takes to get up.
