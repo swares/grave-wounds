@@ -119,7 +119,7 @@ def _main(argv=None) -> int:
             print(f"  {r['label']:<22} wounded {r['wounded']:4.1f}%, down {r['down']:4.1f}%, killed {r['dead']:4.1f}%; "
                   f"men he put down {r['felled']:.2f} on average")
         from .units import gun_examples
-        print(f"A battery of 6 guns (or howitzers) firing for a minute at 1,600 men in close order ({a.runs * 5} runs each):")
+        print(f"A battery of 6 guns (smoothbore, howitzers or rifled) firing for a minute at 1,600 men in close order ({a.runs * 5} runs each):")
         for r in gun_examples(d, a.runs * 5, a.seed):
             print(f"  {r['label']:<36} {r['struck']:5.1f} men struck, {r['down']:4.1f} put down")
         return 0

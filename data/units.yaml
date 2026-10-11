@@ -71,7 +71,8 @@ breach_share: 0.5
 #   the same cover, weather and formation), on the front of the target.
 #   On firm ground (as for ricochet) balls skip on into the target: `graze` % is added to the
 #   chance beyond the first band.
-# - Shell: a battery marked `howitzer: true` fires shell beyond canister range, in a high arc
+# A battery's `guns` are smoothbore (the default), rifled or howitzer.
+# - Shell: howitzers fire shell beyond canister range, in a high arc
 #   over anything between. Each shell falls on the target unit with the chance for its range
 #   (`howitzer.strike`, times its formation's missile_factor, less the weather), then its fuse is
 #   rolled (`fuse`: d100 up to each figure): early (it bursts short, harmlessly), air (it bursts
@@ -79,6 +80,11 @@ breach_share: 0.5
 #   (it bursts as it lands: `fragment_hit` %, less the full cover), or blind (it never bursts).
 #   A burst on a battery may knock out a gun as a round-shot strike does. Within canister range
 #   howitzers fire canister.
+# - Rifled guns (the Civil War's Parrotts and ordnance rifles) reach `rifled.range` and fire
+#   percussion shell beyond canister range on a flat path (a clear line of fire, as round shot):
+#   it falls on the target with the chance for its range (`rifled.strike`), its fuse rolled on
+#   `rifled.fuse`, bursting as shell does; it does not bound on. Their canister throws only
+#   `rifled.canister_balls` balls a round.
 # Every man hit takes a wound roll at `attack` (no parry) with the gun's wound data.
 # A battery is limbered (moves as its formation; cannot fire) or unlimbered (fires; can only be
 # manhandled `pushed` hexes an exchange). Limbering or unlimbering takes an exchange, in which
@@ -88,7 +94,7 @@ breach_share: 0.5
 # caissons; a play figure), spent as it fires; a battery that is out falls silent. Resupplying
 # (the caissons coming up) takes an exchange out of contact, in which it neither moves nor fires.
 artillery:
-  guns: [artillery_smoothbore, artillery_acw]   # smoothbores, and the Civil War's guns (rifled and smoothbore, one set of figures here)
+  guns: [artillery_smoothbore, artillery_acw]   # the weapons a battery fires (its wound data); its `guns` setting picks smoothbore, rifled or howitzer
   crew: 10
   rounds: 1
   range: 100                 # field hexes: 1,000 m
@@ -107,6 +113,11 @@ artillery:
     fragments: 12            # chances to hit for each burst
     fragment_hit: 25         # each, for a burst on the ground
     air_hit: 35              # each, for a burst over the men
+  rifled:
+    range: 160               # field hexes: 1,600 m
+    strike: [[50, 60], [100, 45], [160, 30]]    # [up to this many hexes, % a shell falls on the unit]
+    fuse: [[5, early], [10, air], [85, ground], [100, blind]]   # percussion: most burst as they strike
+    canister_balls: 5        # a rifle's canister: fewer, smaller balls than a smoothbore's
   attack: 80
   crew_weapon: sword
   pushed: 2                  # hexes an unlimbered battery can be manhandled (or turned) in an exchange

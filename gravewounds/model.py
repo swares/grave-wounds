@@ -956,6 +956,8 @@ def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_un
             errors.append(f"{where}: unit {u.get('name')} has a weapon the {f['table']} tables do not offer, or an unknown kit")
         if u.get("quality") not in U["quality"] or u.get("formation") not in U["formations"]:
             errors.append(f"{where}: unit {u.get('name')} has an unknown quality or formation")
+        if u.get("guns", "smoothbore") not in ("smoothbore", "rifled", "howitzer"):
+            errors.append(f"{where}: unit {u.get('name')} has guns other than smoothbore, rifled or howitzer")
     if errors:
         return errors
     field, units = battlefield(d, f["id"]), battlefield_units(d, f["id"])

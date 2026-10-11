@@ -29,8 +29,6 @@ When an item is done, delete it here and note it in the pull request that closes
   modern artillery). Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
-- **Rifled guns.** The Civil War's guns use the smoothbores' figures on the field map; rifled
-  guns reached further and struck harder at long range.
 - **Guns, simplified.** A battery fires one kind of shot at one unit an exchange, and the
   fuse is rolled rather than set by the gunners. The Thirty Years' War still borrows the
   Peninsula's gun wounds: no 1618-48 artillery wound counts were found.

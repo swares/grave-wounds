@@ -281,7 +281,7 @@ function target(units, i, field, occ = null){    // [distance, index, shooter he
   let best = null;
   units.forEach((e, j) => {
     if (e.side === u.side || e.men <= 0 || e.state === "fled") return;
-    const near = nearestAhead(u.weapon, front, fv, footprint(e).flat(), field, clearFn(units, occ, field, i, j));
+    const near = nearestAhead(u, front, fv, footprint(e).flat(), field, clearFn(units, occ, field, i, j));
     if (near && (best === null || near[0] < best[0])) best = [near[0], j, near[1], near[2]];
   });
   return best;
@@ -291,7 +291,7 @@ function namedTarget(units, i, field, occ){       // the GM's named target for a
   if (!occ || u.target === undefined || u.target === null) return null;
   const j = units.findIndex(e => e.id !== undefined && e.id === u.target);
   if (j < 0 || units[j].side === u.side || out_(units[j])) return null;
-  const near = nearestAhead(u.weapon, footprint(u)[0], fvec(u.facing), footprint(units[j]).flat(), field, clearFn(units, occ, field, i, j));
+  const near = nearestAhead(u, footprint(u)[0], fvec(u.facing), footprint(units[j]).flat(), field, clearFn(units, occ, field, i, j));
   return near ? [near[0], j, near[1], near[2]] : null;
 }
 const clearFn = (units, occ, field, i, j) => (occ ? (h, t, dist) => lineFire(units, occ, field, i, j, [h, t, dist]) !== null : null);
@@ -300,7 +300,7 @@ function lineFire(units, occ, field, i, j, path){   // path [from hex, to hex, d
   let over = true, pen = 0;
   if (isGun(u.weapon)){
     over = dist > UD.artillery.canister_to;
-    if (over && u.howitzer) return 0;
+    if (over && gunKind(u) === "howitzer") return 0;
   }
   for (const x of ray(h, t, dist).slice(1, -1)){
     const k = occ[hk(x)];
@@ -310,7 +310,8 @@ function lineFire(units, occ, field, i, j, path){   // path [from hex, to hex, d
   }
   return pen;
 }
-function nearestAhead(weapon, front, fv, hexes, field, clear = null){  // [distance, front hex, target hex]: the shortest in range and in sight ahead of the line (a gun: and a clear line)
+function nearestAhead(u, front, fv, hexes, field, clear = null){  // [distance, front hex, target hex]: the shortest in range of u's weapon and in sight ahead of the line, with a line of fire
+  const weapon = u.weapon;
   let best = null;
   for (const t of hexes){
     const c = cube(t);
@@ -320,7 +321,7 @@ function nearestAhead(weapon, front, fv, hexes, field, clear = null){  // [dista
       const dist = hdist(h, t);
       if (best !== null && dist >= best[0]) continue;
       const wx = shotWeather(field, weapon, dist, h, t);
-      if (!wx.blocked && reaches(weapon, dist, wx.reach || 0) && (!clear || clear(h, t, dist))) best = [dist, h, t];
+      if (!wx.blocked && reaches(u, dist, wx.reach || 0) && (!clear || clear(h, t, dist))) best = [dist, h, t];
     }
   }
   return best;
@@ -355,7 +356,7 @@ function across(field, u, h, x, reach){           // [blocked: only reach 2 over
 }
 const upOf = field => field?.up || "N";          // the compass point at the top of the field map
 const shotWeather = (field, weapon, dist, h = null, t = null) => (isGun(weapon) ? gunWeather(field, dist, h, t) : weatherAttack(field?.weather || null, weapon, dist * UD.range_scale, h, t, upOf(field)));
-const reaches = (weapon, dist, reach = 0) => (isGun(weapon) ? dist <= UD.artillery.range : !!fieldRange(weapon, dist, reach));   // a gun shoots to the artillery range
+const reaches = (u, dist, reach = 0) => (isGun(u.weapon) ? dist <= gunRange(u) : !!fieldRange(u.weapon, dist, reach));   // a battery's guns to their range
 function coverAt(field, h, t){                    // % off shots from h at t: the best of the works' and the ground's
   if (!field) return 0;
   const [cols, rows] = fieldSize(field);
@@ -647,13 +648,15 @@ function cannonades(units, field = null){         // [{att, dfd, guns, rounds, d
     const behind = shot === "round" ? ricochetAt(occ, field, i, best) : null, tid = units[best[1]].id;
     const graze = shot === "canister" && best[0] > A.canister.strike[0][0] && firmLine(field, best) ? A.canister.graze : 0;
     out.push({ att: i, dfd: best[1], guns: gunsServed(u), rounds: Math.min(gunsServed(u) * A.rounds, ammoLeft(u)), dist: best[0], shot, cover: coverAt(field, best[2], best[3]), penalty: wx.penalty,
-      named: tid !== undefined && tid !== null && tid === u.target, graze, behind: behind ? behind[0] : null, beyond: behind ? behind[1] : 0 });
+      named: tid !== undefined && tid !== null && tid === u.target, graze, bore: gunKind(u), behind: behind ? behind[0] : null, beyond: behind ? behind[1] : 0 });
   });
   return out;
 }
-function shotKind(u, dist){                       // canister within canister range; beyond, shell from howitzers, round shot from guns
+const gunKind = u => u.guns || (u.howitzer ? "howitzer" : "smoothbore");   // smoothbore, rifled or howitzer (howitzer: true, saved before)
+const gunRange = u => (gunKind(u) === "rifled" ? UD.artillery.rifled.range : UD.artillery.range);
+function shotKind(u, dist){                       // canister within canister range; beyond, shell from howitzers and rifles, round shot from smoothbores
   if (dist <= UD.artillery.canister_to) return "canister";
-  return u.howitzer ? "shell" : "round";
+  return gunKind(u) === "smoothbore" ? "round" : "shell";
 }
 function firmLine(field, best){                   // firm ground from the gun to the target hex
   const [dist, , h, t] = best;
@@ -674,18 +677,18 @@ function ricochetAt(occ, field, i, best){          // [unit index, hexes past th
   return null;
 }
 function canisterStruck(A, c, cut, rounds, rng){   // men hit by canister: each ball a chance (more on firm ground)
-  const p = (chanceAt(A.canister.strike, c.dist) + (c.graze || 0)) * cut;
+  const p = (chanceAt(A.canister.strike, c.dist) + (c.graze || 0)) * cut, balls = c.bore === "rifled" ? A.rifled.canister_balls : A.canister.balls;
   let struck = 0;
-  for (let k = 0; k < rounds * A.canister.balls; k++) if (rng.randint(1, 100) <= p) struck++;
+  for (let k = 0; k < rounds * balls; k++) if (rng.randint(1, 100) <= p) struck++;
   return struck;
 }
 function shellStruck(A, c, factor, rounds, rng){  // [men hit, shells that burst on the unit, of them in the air]: the fuse decides early, air, ground or blind
-  const H = A.howitzer, p = chanceAt(H.strike, c.dist) * factor;
+  const H = A.howitzer, R = c.bore === "rifled" ? A.rifled : H, p = chanceAt(R.strike, c.dist) * factor;   // rifled shell: its own strike and percussion fuse
   const hitAt = { air: H.air_hit * (100 - c.cover / 2) / 100, ground: H.fragment_hit * (100 - c.cover) / 100 };
   let struck = 0, bursts = 0, air = 0;
   for (let k = 0; k < rounds; k++){
     if (rng.randint(1, 100) > p) continue;
-    const fuse = chanceAt(H.fuse, rng.randint(1, 100));
+    const fuse = chanceAt(R.fuse, rng.randint(1, 100));
     if (!(fuse in hitAt)) continue;
     bursts++;
     if (fuse === "air") air++;

@@ -236,7 +236,7 @@ one man fells few. The numbers are in `data/units.yaml` (`heroes`).
 ## Guns
 
 A **battery** is a unit armed with guns (the smoothbore artillery of the wound tables, or the
-Civil War's artillery, which uses the same figures here), in
+Civil War's artillery), its guns smoothbore, rifled or howitzers, in
 **battery order**: two guns and their crews to a hex, 20 men. Its men are the crews, 10 to a
 gun, so a battery of 120 men is 12 guns, and as crews fall fewer guns are served. Picking a
 gun as the weapon in *Add a unit* sets the battery order.
@@ -254,7 +254,8 @@ ordered".
 **Line of fire.** A gun cannot fire through another unit, friend or enemy, standing between
 it and its target. The one exception is round shot fired from high ground over a unit on
 lower ground; canister never goes over anyone's head, and a unit on the same hill blocks.
-Howitzers fire shell over anything (see *Shell*).
+Howitzers fire shell over anything (see *Shell*); rifled guns' shell needs a clear line, as round
+shot does.
 - **Round shot** strikes the unit on a roll: 60% to 550 yards (500 m), 40% to 820 yards
   (750 m), 25% to 1,090 yards. Then it goes through the ranks: each man in its path is hit at
   40%, and the path is the unit's ranks deep (its formation's ranks times its rows of hexes,
@@ -271,7 +272,7 @@ Howitzers fire shell over anything (see *Shell*).
 - **Canister** throws 8 chances a round, each hitting at 50% to 110 yards (100 m), 30% to 220
   yards (200 m) and 15% to 330 yards (300 m). On firm ground all the way to the target (as for
   ricochet) the balls skip on into it: +5% beyond 110 yards.
-- **Shell.** A battery of **howitzers** (tick *Howitzers* when adding a battery) fires shell
+- **Shell.** A battery of **howitzers** (*Guns: Howitzers* when adding a battery) fires shell
   beyond canister range, in a high arc over anything between. Each shell falls on the target
   at 45% to 550 yards (500 m), 30% to 820 yards (750 m), 20% to 1,090 yards (cut by the
   weather and open order). Then its **fuse** is rolled: 15% early (it bursts short,
@@ -281,6 +282,13 @@ Howitzers fire shell over anything (see *Shell*).
   were in the air. A burst on a battery can knock out a gun, as a round-shot
   strike can. Within canister range howitzers fire canister like guns. Shell rolls on the
   same artillery wound data as the guns: the Peninsular ordnance records include shell.
+- **Rifled guns.** A battery of **rifled guns** (*Guns: Rifled guns*), the Civil War's Parrotts
+  and ordnance rifles, reaches 1,750 yards (1,600 m, 160 hexes), against 1,090 for smoothbores.
+  Beyond canister range it fires percussion shell on a flat path (it needs a clear line of
+  fire, like round shot, and does not bound on): it falls on the target at 60% to 550 yards
+  (500 m), 45% to 1,090 yards (1,000 m) and 30% to 1,750 yards (cut as round shot is), and its
+  fuse is rolled: 5% early, 5% in the air, 75% on the ground as it strikes, 15% blind. It bursts
+  as shell does. Its canister throws 5 balls a round, not 8.
 - Cover, the weather (fog and rain hide targets; the wind costs as for firearms) and open
   order cut both, as they cut volleys. Every man hit takes a wound roll at 80%, with no parry,
   on the gun's wound data (lower on the body and deadlier than musketry).
@@ -289,7 +297,11 @@ What that gives, from `python3 -m gravewounds units`: 6 guns firing for a minute
 in close order on firm ground strike about 17 men with canister at 220 yards (6 put down), 6
 with round shot at 440 yards against a line (2 down), 17 against a column (6 down), and 7
 against a column at 870 yards. Six howitzers strike about 6 with shell at 440 yards, line or
-column alike (2 down), and 3 at 870 yards. A battalion of 600 muskets at 110 yards hits about 6.
+column alike (2 down), and 3 at 870 yards. Six rifled guns strike about 9 men in a column with
+shell at 440 yards (3 down), 7 at 870 yards, and still 5 at 1,530 yards (1,400 m), beyond a
+smoothbore's reach; against a line at 870 yards they do about three times what round shot does,
+but against a deep column about the same, and their canister at 220 yards strikes about 10 to the
+smoothbore's 17. A battalion of 600 muskets at 110 yards hits about 6.
 
 **Ammunition.** Each gun goes into action with 50 rounds (its limber chest and its share
 of the caissons, a figure for play), spent one a gun each exchange it fires. A battery that
@@ -576,8 +588,9 @@ down the west side and Chinn Ridge beyond it.
 - The Confederates: Jackson's brigade and its guns at the edge of the pines, the 33rd Virginia
   in the woods by the Sudley road, Hampton's Legion by the Robinson farm, Bee's and Bartow's
   men rallied behind, and Stuart's horse to the south-west.
-- The wound tables are the Civil War's. Its guns roll on the Civil War artillery wounds,
-  with the same figures as the smoothbores (see *Guns*).
+- The wound tables are the Civil War's, its guns on the Civil War artillery wounds. Ricketts's
+  six 10-pounder Parrotts and Griffin's battery are rifled guns; the Confederate guns, mostly
+  6-pounders and howitzers, are smoothbore (see *Guns*).
 
 It is drawn by `tools/maps/make_bull_run_field.mjs`.
 

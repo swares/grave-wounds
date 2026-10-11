@@ -270,6 +270,8 @@ def _gun_rules(d) -> list[str]:
         f"then its fuse is rolled: {_fuse_text(A['howitzer']['fuse'])}; a burst throws {A['howitzer']['fragments']} chances at {A['howitzer']['air_hit']}% in the air "
         f"(cover counts half) or {A['howitzer']['fragment_hit']}% on the ground. "
         f"Canister gains {cn['graze']}% beyond {yd(cn['strike'][0][0] * m)} on firm ground. "
+        f"<b>Rifled guns</b> reach {yd(A['rifled']['range'] * m)} and fire percussion shell beyond canister range on a flat path (a clear line of fire, no bounding): "
+        f"it falls on the target ({bands(A['rifled']['strike'])}) and its fuse is rolled: {_fuse_text(A['rifled']['fuse'])}; their canister throws {A['rifled']['canister_balls']} balls a round. "
         f"<b>Ricochet:</b> on firm ground round shot bounds on, striking the first other unit within {yd(rc['beyond'] * m)} past the target ({bands(rc['strike'])} past it) "
         "and going through its ranks; rough ground, woods, marsh, mud or snow stop it. "
         f"A round-shot strike on the battery it is fired at knocks out a gun at {A['dismount']}%. <b>Ammunition:</b> {A['ammo']} rounds a gun; resupplying takes an exchange out of contact, without moving or firing.",
