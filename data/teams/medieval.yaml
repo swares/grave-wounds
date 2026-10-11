@@ -1,0 +1,356 @@
+# Character generation for the medieval era (c.1250-1460): the team builder (dist/team.html,
+# python3 -m gravewounds team). A character is made in five steps:
+#   1. Characteristics: six, each 3d6 x 5 (15-90), or the fixed array placed by his first career.
+#   2. Origin: d100 on `origins`: a starting skill, a trait and a matching drawback.
+#   3. Career terms: d100 on the career's `terms` table for each term: the career's main skill
+#      rises (+`first_term` the first term, +`term_main` after), its second skill +`term_second`,
+#      the skill the row names +`gain`, and an event (a row already had moves to the next row
+#      down). Leaders take three terms, others one or two. Nobody dies in generation.
+#   4. Old wounds: a row marked `wound`, or d100 at or under the career's `wound` %, leaves an old
+#      wound: its location rolled on the region's hit-location table for the career's
+#      `wound_weapon`, then d100 on `old_wound`: a healed mark, or a lasting hurt that takes
+#      `lasting` off a characteristic by where it is.
+#   5. Kit: the first career's armour kit and weapon for his region.
+# All of it is written for this game: the tables, events and names are ours (names are common
+# period names, plain fact).
+id: medieval
+name: "Medieval (c.1250-1460)"
+
+characteristics:
+  - {id: str, name: Strength}
+  - {id: agi, name: Agility}
+  - {id: end, name: Endurance}
+  - {id: wits, name: Wits}
+  - {id: nerve, name: Nerve}
+  - {id: pres, name: Presence}
+array: [70, 60, 55, 50, 45, 35]   # the fixed array: the same total as six average rolls
+stat_range: [15, 95]              # characteristics stay within this after traits and old wounds
+age: {start: 16, per_term: 4}     # his age: start, plus each career term
+
+# Skills: base is the characteristic divided by `div` (rounded down); training adds to it.
+# Skills are capped at `skill_max`.
+# One term in a fighting career gives about a green soldier's attack (40%), two a regular's (50%),
+# three a veteran's (60%, units.yaml quality), and defence near theirs (25, 35, 45).
+skill_max: 90
+first_term: 15
+term_main: 10
+term_second: 5
+gain: 15
+skills:
+  - {id: blade, name: Blade, of: agi, div: 2, combat: true}
+  - {id: axe_mace, name: "Axe and mace", of: str, div: 2, combat: true}
+  - {id: polearm, name: Polearm, of: str, div: 2, combat: true}
+  - {id: bow, name: Bow, of: agi, div: 2, combat: true}
+  - {id: crossbow, name: Crossbow, of: agi, div: 2, combat: true}
+  - {id: sling, name: Sling, of: agi, div: 3, combat: true}
+  - {id: brawl, name: Brawl, of: str, div: 2, combat: true}
+  - {id: parry, name: Parry, of: agi, div: 2, combat: true}
+  - {id: dodge, name: Dodge, of: agi, div: 3, combat: true}
+  - {id: ride, name: Ride, of: agi, div: 3}
+  - {id: fieldcraft, name: Fieldcraft, of: wits, div: 3}
+  - {id: watch, name: Watch, of: wits, div: 2}
+  - {id: stealth, name: Stealth, of: agi, div: 3}
+  - {id: leechcraft, name: Leechcraft, of: wits, div: 4}
+  - {id: seamanship, name: Seamanship, of: wits, div: 4}
+  - {id: craft, name: Craft, of: wits, div: 3}
+  - {id: letters, name: Letters, of: wits, div: 5}
+  - {id: persuade, name: Persuade, of: pres, div: 2}
+  - {id: command, name: Command, of: pres, div: 3}
+
+# Which skill a weapon is fought with (attack %); defence is the better of Parry and Dodge.
+weapon_skill:
+  sword: blade
+  dagger: blade
+  axe: axe_mace
+  spiked_club: axe_mace
+  spear: polearm
+  bill: polearm
+  poleaxe: polearm
+  bow: bow
+  longbow: bow
+  crossbow: crossbow
+  sling: sling
+  punch: brawl
+  kick: brawl
+  elbow_knee: brawl
+defence: [parry, dodge]
+
+# Regions: where the team comes from. Each sets the wound table (for old wounds and the roller),
+# the names, and which kits and weapons its careers carry.
+regions:
+  - id: latin_east
+    name: "Latin East (c.1250)"
+    table: sidon-1253-all-hits
+    colours: ["#e6e0d2", "#8a2b2b", "#2f4a6b", "#6b5d45"]
+    names: [Jean, Hugh, Balian, Raymond, Guy, Amalric, Philip, Odo, Anseau, Raoul, Thomas, Nicholas, Renier, Garnier, Arnulf, Walter]
+    bynames: ["of Acre", "of Tyre", "of Sidon", "the Poulain", "of Genoa", "the Pisan", "of Jaffa", "of Beirut", "the Syrian", "of Tripoli"]
+  - id: baltic
+    name: "Gotland and the Baltic (c.1360)"
+    table: visby-1361-adjusted
+    colours: ["#7a6a4f", "#4f5d3a", "#5b6470", "#8c6a3c"]
+    names: [Botvid, Rodvid, Olof, Nils, Lars, Hans, Peder, Jakob, Mikael, Hemming, Gunnar, Ragvald, Sigvid, Torsten, Ketil, Halvard]
+    bynames: [Olofsson, Nilsson, Larsson, Hansson, Pedersson, Jakobsson, Botvidsson, "of Roma", "of Visby", "of Lärbro"]
+  - id: england
+    name: "England (c.1415-1460)"
+    table: towton-1461-all-hits
+    colours: ["#a33a2e", "#2e4f8a", "#e6e0d2", "#5c6b3a"]
+    names: [John, William, Thomas, Richard, Robert, Henry, Walter, Roger, Hugh, Geoffrey, Nicholas, Ralph, Simon, Adam, Edmund, Gilbert]
+    bynames: [Archer, Smith, Fletcher, Carter, Baker, Miller, Webb, Thatcher, Cooper, Hayward, "of York", "of Ely"]
+  - id: france
+    name: "France (c.1415)"
+    table: towton-1461-all-hits
+    colours: ["#2b4a8a", "#e6e0d2", "#8a2b3c", "#4a5a3a"]
+    names: [Jean, Pierre, Guillaume, Jacques, Robert, Colin, Guiot, Perrin, Enguerrand, Hugues, Gautier, Renaud, Bertrand, Huguet, Thibaut, Jehan]
+    bynames: ["le Fèvre", Boucher, "de Picardie", "le Normand", Bourgeois, Charpentier, "le Breton", Marchand, "d'Arras", "de Rouen"]
+
+# Origins: d100, 5 each. gain: a skill (+gain); trait and drawback: a characteristic (+/-10)
+# or a skill (+/-gain).
+origins:
+  - {name: "Ploughman's son", gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Cannot read a word", letters: -15}}
+  - {name: "Shepherd", gain: watch, trait: {text: "Good with a sling", sling: 15}, drawback: {text: "Uneasy in crowds", pres: -10}}
+  - {name: "Fisherman's son", gain: seamanship, trait: {text: "Swims like a seal", end: 10}, drawback: {text: "Smells of the catch", persuade: -15}}
+  - {name: "Smith's apprentice", gain: craft, trait: {text: "Arms like hams", str: 10}, drawback: {text: "Half deaf from the anvil", watch: -15}}
+  - {name: "Carter", gain: ride, trait: {text: "Knows every road", fieldcraft: 15}, drawback: {text: "Bad back", agi: -10}}
+  - {name: "Townsman's apprentice", gain: craft, trait: {text: "Quick tongue", persuade: 15}, drawback: {text: "Never slept under the sky", fieldcraft: -15}}
+  - {name: "Merchant's son", gain: persuade, trait: {text: "Lettered", letters: 15}, drawback: {text: "Soft hands", str: -10}}
+  - {name: "Huntsman's son", gain: bow, trait: {text: "Moves quietly", stealth: 15}, drawback: {text: "Known as a poacher", pres: -10}}
+  - {name: "Miller's son", gain: craft, trait: {text: "Good at sums", wits: 10}, drawback: {text: "Mistrusted, as millers are", persuade: -15}}
+  - {name: "Younger son of a knight", gain: ride, trait: {text: "Raised to arms", blade: 15}, drawback: {text: "Proud and touchy", persuade: -15}}
+  - {name: "A squire's bastard", gain: blade, trait: {text: "Hard to frighten", nerve: 10}, drawback: {text: "No inheritance and no patience", pres: -10}}
+  - {name: "Novice who left the cloister", gain: letters, trait: {text: "Knows his herbs", leechcraft: 15}, drawback: {text: "Faints at the sight of blood", nerve: -10}}
+  - {name: "Barber's boy", gain: leechcraft, trait: {text: "Steady hands", agi: 10}, drawback: {text: "Never stops talking", stealth: -15}}
+  - {name: "Groom in a great stable", gain: ride, trait: {text: "Horse sense", fieldcraft: 15}, drawback: {text: "Kicked by a horse as a boy", end: -10}}
+  - {name: "Sailor's orphan", gain: seamanship, trait: {text: "Climbs anything", agi: 10}, drawback: {text: "Cannot sit a horse", ride: -15}}
+  - {name: "Woodcutter", gain: axe_mace, trait: {text: "Tireless", end: 10}, drawback: {text: "Slow of speech", wits: -10}}
+  - {name: "Raised on the pilgrim roads", gain: fieldcraft, trait: {text: "Speaks three tongues", persuade: 15}, drawback: {text: "Belongs nowhere", pres: -10}}
+  - {name: "Street brawler", gain: brawl, trait: {text: "Takes a punch", end: 10}, drawback: {text: "Known to the watch", persuade: -15}}
+  - {name: "Servant in a great house", gain: watch, trait: {text: "Knows how to please his betters", persuade: 15}, drawback: {text: "Never held a weapon", parry: -15}}
+  - {name: "Herdsman of the border", gain: polearm, trait: {text: "Grew up among raids", nerve: 10}, drawback: {text: "Hot-tempered", wits: -10}}
+
+# Careers. main: the skill each term raises (first_term, then term_main); second: the skill
+# each term raises by term_second. prefers: where the fixed array goes,
+# highest first. wound: % an old wound each term. wound_weapon: what usually hurt men of this
+# trade. kit and weapon: by region (default for any region not listed). terms: d100 up to
+# `to`: the skill it raises and what happened; `wound: true` always leaves an old wound.
+careers:
+  - id: man_at_arms
+    name: "Man-at-arms"
+    main: blade
+    second: parry
+    prefers: [str, agi, nerve, end, pres, wits]
+    wound: 25
+    wound_weapon: sword
+    kit: {default: hauberk, latin_east: hauberk, baltic: danish_maa, england: brigandine_sallet, france: full_plate}
+    weapon: {default: sword}
+    terms:
+      - {to: 20, skill: ride, text: "Rode in a lord's household for a season."}
+      - {to: 40, skill: command, text: "Led a handful of men on a raid."}
+      - {to: 60, skill: polearm, text: "Fought on foot at a barrier."}
+      - {to: 75, skill: parry, text: "Came through a tournament melee."}
+      - {to: 90, skill: watch, text: "Held the gate of a besieged town.", wound: true}
+      - {to: 100, skill: persuade, text: "Took a knight prisoner and haggled his ransom."}
+  - id: archer
+    name: "Archer"
+    main: bow
+    second: dodge
+    prefers: [agi, str, wits, end, nerve, pres]
+    wound: 15
+    wound_weapon: sword
+    kit: {default: gambeson, baltic: gotland_levy, england: jack_sallet, france: jack_sallet}
+    weapon: {default: bow, england: longbow, france: longbow}
+    terms:
+      - {to: 20, skill: watch, text: "Stood sentry on a border tower."}
+      - {to: 40, skill: stealth, text: "Scouted ahead of the army."}
+      - {to: 55, skill: fieldcraft, text: "Foraged through a hungry winter."}
+      - {to: 70, skill: craft, text: "Made arrows by the thousand in a long siege."}
+      - {to: 85, skill: blade, text: "Fought hand to hand when the line broke.", wound: true}
+      - {to: 100, skill: dodge, text: "Ran from a charge of horse and lived.", wound: true}
+  - id: crossbowman
+    name: "Crossbowman"
+    main: crossbow
+    second: dodge
+    prefers: [agi, wits, end, str, nerve, pres]
+    wound: 15
+    wound_weapon: crossbow
+    kit: {default: gambeson, latin_east: leather, baltic: gotland_armoured}
+    weapon: {default: crossbow}
+    terms:
+      - {to: 20, skill: craft, text: "Kept the windlasses and bolts of a garrison."}
+      - {to: 40, skill: watch, text: "Shot from the walls through a siege."}
+      - {to: 55, skill: seamanship, text: "Served aboard a galley."}
+      - {to: 70, skill: persuade, text: "Bargained over pay for a free company."}
+      - {to: 85, skill: parry, text: "Held a pavise in the front of the line.", wound: true}
+      - {to: 100, skill: dodge, text: "Crawled back from a sally that failed.", wound: true}
+  - id: spearman
+    name: "Spearman or billman"
+    main: polearm
+    second: parry
+    prefers: [str, end, nerve, agi, wits, pres]
+    wound: 20
+    wound_weapon: sword
+    kit: {default: gambeson, baltic: gotland_levy, england: jack_sallet, france: jack_sallet}
+    weapon: {default: spear, england: bill}
+    terms:
+      - {to: 20, skill: fieldcraft, text: "Marched through a long campaign."}
+      - {to: 40, skill: parry, text: "Held his place in the line.", wound: true}
+      - {to: 55, skill: craft, text: "Dug ditches and threw up banks for a camp."}
+      - {to: 70, skill: brawl, text: "Won a brawl in camp."}
+      - {to: 85, skill: watch, text: "Guarded the baggage carts."}
+      - {to: 100, skill: dodge, text: "Was caught in a rout and lived.", wound: true}
+  - id: mounted_sergeant
+    name: "Mounted sergeant"
+    main: ride
+    second: parry
+    prefers: [agi, str, nerve, end, wits, pres]
+    wound: 20
+    wound_weapon: sword
+    kit: {default: hauberk, baltic: gotland_armoured, england: brigandine_sallet, france: transitional}
+    weapon: {default: spear}
+    terms:
+      - {to: 20, skill: polearm, text: "Rode in a charge with couched spears."}
+      - {to: 40, skill: fieldcraft, text: "Carried messages across hostile country."}
+      - {to: 55, skill: command, text: "Kept order among the grooms and the baggage."}
+      - {to: 70, skill: watch, text: "Patrolled a frontier road."}
+      - {to: 85, skill: blade, text: "Fought in a skirmish at a ford.", wound: true}
+      - {to: 100, skill: persuade, text: "Bought remounts at a horse fair."}
+  - id: mercenary
+    name: "Mercenary"
+    main: axe_mace
+    second: parry
+    prefers: [str, end, agi, nerve, wits, pres]
+    wound: 25
+    wound_weapon: sword
+    kit: {default: transitional, latin_east: hauberk, england: brigandine_sallet, france: brigandine_sallet}
+    weapon: {default: axe}
+    terms:
+      - {to: 20, skill: persuade, text: "Changed masters for better pay."}
+      - {to: 40, skill: stealth, text: "Looted a town and kept his share hidden."}
+      - {to: 55, skill: blade, text: "Fought a duel over a debt."}
+      - {to: 70, skill: fieldcraft, text: "Lived off the land between contracts."}
+      - {to: 85, skill: parry, text: "Stormed a breach.", wound: true}
+      - {to: 100, skill: command, text: "Was made corporal of a lance."}
+  - id: sailor
+    name: "Sailor"
+    main: seamanship
+    second: dodge
+    prefers: [end, agi, str, wits, nerve, pres]
+    wound: 10
+    wound_weapon: axe
+    kit: {default: none, baltic: leather}
+    weapon: {default: axe, latin_east: dagger}
+    terms:
+      - {to: 20, skill: watch, text: "Kept the night watch on a cog."}
+      - {to: 40, skill: craft, text: "Mended sail and rigging."}
+      - {to: 55, skill: persuade, text: "Traded on his own account in a foreign port."}
+      - {to: 70, skill: brawl, text: "Fought in a dockside tavern."}
+      - {to: 85, skill: axe_mace, text: "Beat off pirates.", wound: true}
+      - {to: 100, skill: fieldcraft, text: "Was wrecked and walked home."}
+  - id: clerk
+    name: "Clerk or priest"
+    main: letters
+    second: persuade
+    prefers: [wits, pres, nerve, end, agi, str]
+    wound: 3
+    wound_weapon: dagger
+    kit: {default: none}
+    weapon: {default: dagger}
+    terms:
+      - {to: 20, skill: persuade, text: "Wrote letters for a lord's steward."}
+      - {to: 40, skill: leechcraft, text: "Kept the infirmary of a religious house."}
+      - {to: 55, skill: command, text: "Kept the accounts of a garrison."}
+      - {to: 70, skill: watch, text: "Took down the testimony of witnesses."}
+      - {to: 85, skill: ride, text: "Travelled as an envoy."}
+      - {to: 100, skill: fieldcraft, text: "Went on pilgrimage on foot.", wound: true}
+  - id: barber_surgeon
+    name: "Barber-surgeon"
+    main: leechcraft
+    second: craft
+    prefers: [wits, agi, nerve, end, pres, str]
+    wound: 5
+    wound_weapon: dagger
+    kit: {default: none, england: jack_sallet}
+    weapon: {default: dagger}
+    terms:
+      - {to: 20, skill: craft, text: "Pulled teeth and let blood in a market town."}
+      - {to: 40, skill: letters, text: "Studied an anatomy with a master."}
+      - {to: 55, skill: watch, text: "Worked through a pestilence."}
+      - {to: 70, skill: persuade, text: "Was paid by a captain to follow the army."}
+      - {to: 85, skill: leechcraft, text: "Cut arrows out of men after a battle."}
+      - {to: 100, skill: dodge, text: "Was caught when the camp was overrun.", wound: true}
+  - id: forester
+    name: "Forester or huntsman"
+    main: fieldcraft
+    second: stealth
+    prefers: [agi, wits, end, str, nerve, pres]
+    wound: 10
+    wound_weapon: bow
+    kit: {default: leather}
+    weapon: {default: bow}
+    terms:
+      - {to: 20, skill: bow, text: "Hunted deer for a lord's table."}
+      - {to: 40, skill: stealth, text: "Hunted poachers in the forest."}
+      - {to: 55, skill: watch, text: "Tracked a band of outlaws."}
+      - {to: 70, skill: ride, text: "Rode with a great hunt."}
+      - {to: 85, skill: polearm, text: "Killed a boar with a spear.", wound: true}
+      - {to: 100, skill: leechcraft, text: "Kept the hounds and doctored them."}
+  - id: servant
+    name: "Servant or groom"
+    main: ride
+    second: watch
+    prefers: [end, agi, wits, str, pres, nerve]
+    wound: 5
+    wound_weapon: dagger
+    kit: {default: none}
+    weapon: {default: dagger}
+    terms:
+      - {to: 20, skill: craft, text: "Kept a lord's harness and arms."}
+      - {to: 40, skill: watch, text: "Waited at table and heard everything."}
+      - {to: 55, skill: fieldcraft, text: "Pitched tents and made camp on campaign."}
+      - {to: 70, skill: persuade, text: "Bought provisions for the household."}
+      - {to: 85, skill: leechcraft, text: "Nursed his master through a fever."}
+      - {to: 100, skill: blade, text: "Fought beside his master when the camp was raided.", wound: true}
+  - id: merchant
+    name: "Merchant"
+    main: persuade
+    second: letters
+    prefers: [pres, wits, nerve, end, agi, str]
+    wound: 5
+    wound_weapon: dagger
+    kit: {default: gambeson}
+    weapon: {default: sword}
+    terms:
+      - {to: 20, skill: letters, text: "Kept the books of a trading house."}
+      - {to: 40, skill: seamanship, text: "Sailed with his goods to a far port."}
+      - {to: 55, skill: ride, text: "Travelled the fairs with a pack train."}
+      - {to: 70, skill: command, text: "Hired and paid guards for a caravan."}
+      - {to: 85, skill: watch, text: "Was cheated once and learned from it."}
+      - {to: 100, skill: blade, text: "Fought off robbers on the road.", wound: true}
+
+# Old wounds: d100 up to `to`: a healed mark, or a lasting hurt (lasting: points off the
+# characteristic its location's zone names).
+old_wound:
+  - {to: 70, kind: mark, text: "a healed scar"}
+  - {to: 100, kind: lasting, text: "a lasting hurt"}
+lasting: 5
+lasting_from: {head: wits, face: pres, arms: str, legs: agi, torso: end}
+
+# Team templates: a team of four to six. Each slot: a career and terms (the first slot leads).
+templates:
+  - id: retinue
+    name: "A lord's retinue"
+    slots: [[man_at_arms, 3], [archer, 2], [archer, 1], [spearman, 1], [barber_surgeon, 1], [servant, 1]]
+  - id: free_company
+    name: "A free company"
+    slots: [[mercenary, 3], [mercenary, 2], [crossbowman, 2], [archer, 1], [spearman, 1]]
+  - id: garrison
+    name: "A garrison patrol"
+    slots: [[mounted_sergeant, 3], [crossbowman, 2], [crossbowman, 1], [spearman, 1], [clerk, 1]]
+  - id: muster
+    name: "A farmers' muster"
+    slots: [[spearman, 3], [spearman, 1], [spearman, 1], [archer, 1], [forester, 1]]
+  - id: escort
+    name: "A pilgrims' escort"
+    slots: [[man_at_arms, 3], [mounted_sergeant, 2], [crossbowman, 1], [clerk, 1], [barber_surgeon, 1]]
+  - id: traders
+    name: "A merchant's company"
+    slots: [[merchant, 3], [sailor, 2], [crossbowman, 1], [servant, 1]]

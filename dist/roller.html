@@ -218,7 +218,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
       <h1>Grave Wounds Roller</h1>
       <p class="sub">d100 hit locations weighted by real wound records, from the Crusades to Iraq and Afghanistan, plus knife and unarmed fighting. System-agnostic wounds, armour and wounded fighters.</p>
     </div>
-    <span class="hdr-right"><span class="units-toggle" id="units-toggle" title="Units for distances and temperatures"></span><a class="navlink" href="travel.html">Travel map</a><a class="navlink" href="field.html">Field map</a><span class="badge" id="conf">fitted weights</span></span>
+    <span class="hdr-right"><span class="units-toggle" id="units-toggle" title="Units for distances and temperatures"></span><a class="navlink" href="team.html">Team builder</a><a class="navlink" href="travel.html">Travel map</a><a class="navlink" href="field.html">Field map</a><span class="badge" id="conf">fitted weights</span></span>
   </header>
 
   <section class="panel" aria-labelledby="h-map" id="map-panel">
@@ -530,8 +530,10 @@ const FIG = (() => {
     lower_leg_l: [69, 196], lower_leg_r: [51, 196], foot_l: [71, 212], foot_r: [49, 212],
   };
   const SEV_R = { light: 3.2, serious: 4.4, critical: 5.8 };
+  const scar = (at, w) => `<path d="M${at[0] - 4} ${at[1] - 2} L${at[0] + 4} ${at[1] + 2} M${at[0] - 2} ${at[1] - 3} L${at[0] - 1} ${at[1] - 1} M${at[0] + 1} ${at[1] + 1} L${at[0] + 2} ${at[1] + 3}" stroke="#7a4b3a" stroke-width="1.6" stroke-linecap="round" fill="none"><title>${w.loc.replace("_", " ")}: old wound</title></path>`;
   const woundMarks = wounds => (wounds || []).map(w => {
     const at = WOUND_AT[w.loc]; if (!at) return "";
+    if (w.old) return scar(at, w);
     const back = w.loc.startsWith("back_"), r = SEV_R[w.sev] || 4;
     return `<circle cx="${at[0]}" cy="${at[1]}" r="${r}" fill="${back ? "none" : "#c4122f"}" stroke="${back ? "#c4122f" : "#fff"}" stroke-width="${back ? 2 : 1}"${back ? ' stroke-dasharray="2 1.5"' : ""}><title>${w.loc.replace("_", " ")}: ${w.sev || ""}</title></circle>`;
   }).join("");
@@ -1590,7 +1592,7 @@ const attr = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").repla
 const exLink = e => e.image ? `<a class="exlink" href="${commonsUrl(e.image.file)}" target="_blank" rel="noopener" title="${attr(e.image.caption)} (Wikimedia Commons)" aria-label="Picture: ${attr(e.image.caption)} (opens Wikimedia Commons)"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="5.5" cy="6.5" r="1.4" fill="currentColor"/><path d="M2.5 12.5l4-4 3 3 2-2 2.5 2.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>picture</a>` : "";
 const exFigure = (conflict, e, size) => FIG.svg({ kit: KITS[e.kit], weapon: DATA.weapons[e.weapon], look: FIG.lookFor(conflict, e), size, title: e.name });
 const charFigure = (c, size) => FIG.svg({ kit: KITS[c.kit || "none"], weapon: c.weapon ? DATA.weapons[c.weapon] : null, look: c.look || {}, size, title: c.name,
-  wounds: c.wounds.filter(w => !w.stopped).map(w => ({ loc: w.loc, sev: w.sev })) });
+  wounds: c.wounds.filter(w => !w.stopped).map(w => ({ loc: w.loc, sev: w.sev })).concat(((c.sheet && c.sheet.old) || []).map(w => ({ loc: w.loc, old: true }))) });
 function readyToPlace(c){          // while setting up (or Free placement): the next map click puts him there
   if (!c || (S.turn && !S.freePlace) || S.workMode) return;
   S.placing = c.id; S.mapMsg = `Placing ${attr(c.name)}: click an empty hex on the battle map.`;
@@ -1606,6 +1608,7 @@ function selectChar(i){            // make this casualty the defender
   const c = S.chars[i];
   readyToPlace(c);
   if (c && c.kit){ S.armor = c.kit; $("#sel-armor").value = c.kit }
+  fillFromSheets();
   renderChars();
 }
 function setAttacker(i){
@@ -1613,6 +1616,7 @@ function setAttacker(i){
   if (S.attacker === S.active && S.chars.length > 1) S.active = S.chars.findIndex((_, j) => j !== i);
   const c = attackerChar();
   if (c && c.weapon && DATA.tables[S.table].weapons.includes(c.weapon)){ S.weapon = c.weapon; fillWeapons(); syncArmor() }
+  fillFromSheets();
   renderChars();
 }
 const FLAG_TEXT = { down: "on the ground", off_hand: "fighting off-hand", no_shield: "no shield", cannot_wield: "cannot wield", incapacitated: "incapacitated",
@@ -1625,6 +1629,37 @@ function penLine(p){
 function applyAttackerWeapon(){
   const c = attackerChar();
   if (c && c.weapon && DATA.tables[S.table].weapons.includes(c.weapon)){ S.weapon = c.weapon; fillWeapons() }
+  fillFromSheets();
+}
+// Characters from the team builder carry a sheet: their attack % with each weapon and their
+// defence fill the Strike panel when they attack or defend (the GM can still change them).
+function fillFromSheets(){
+  const a = attackerChar(), dd = defenderChar();
+  const at = a && a.sheet ? a.sheet.attack_by[S.weapon] : undefined;
+  if (at !== undefined && at !== null) $("#in-atk").value = at;
+  if (dd && dd.sheet) $("#in-def").value = dd.sheet.defence;
+}
+function sheetLine(c){                          // a team builder character's sheet, in a line or two
+  const h = c.sheet; if (!h) return "";
+  const stats = Object.entries(h.stats).map(([k, v]) => `${k === "wits" ? "Wit" : k[0].toUpperCase() + k.slice(1, 3)} ${v}`).join(" ");
+  const skills = h.trained.map(([n, v]) => `${n} ${v}`).join(", ");
+  const old = h.old.length ? ` · old wounds: ${h.old.map(w => LOC[w.loc].name.toLowerCase()).join(", ")}` : "";
+  return `<div class="wears">${attr(h.career)}, ${h.terms} term${h.terms > 1 ? "s" : ""}, age ${h.age}${h.leader ? " · leads" : ""} · ${stats}</div><div class="muted">${attr(skills)} · defence ${h.defence}%${attr(old)}</div>`;
+}
+function addTeam(){                             // the team from the team builder joins the fighters
+  const t = S.teamIn; if (!t) return;
+  if (!S.chars.length && DATA.tables[t.table]) switchTable(t.table);   // a new fight: the team's own wound table
+  for (const m of t.team){
+    const c = newChar(m.name, m.kit, m.weapon, m.look, t.side);
+    c.nerve = m.nerve; c.rating = Object.keys(RATINGS).find(r => RATINGS[r] === m.nerve) || "custom"; c.leader = !!m.leader;
+    c.sheet = m.sheet;
+    S.chars.push(c);
+  }
+  placeUnplaced();
+  S.teamIn = null;
+  try{ localStorage.removeItem("gravewounds-team-handoff") }catch(e){}
+  S.mapMsg = `${t.team.length} fighters from the team builder joined ${t.side}.`;
+  renderChars();
 }
 function switchTable(tid){
   S.table = tid; $("#sel-table").value = tid;
@@ -2189,6 +2224,10 @@ function renderMap(){
     const campBit = h.camp ? ", " + attr(WK.camps[h.camp].name.toLowerCase()) + builtBit : "";
     bits.push(`<span class="free"><b>From the travel map:</b> ${attr(h.force.name)} (${h.force.men} men)${alliesBit} at ${attr(h.place)}${campBit}, ${h.day}, ${h.time}${foesBit}. Set up the fight here? This replaces the fighters and works on this page.</span><button class="small" data-map="handoff">Set up the fight</button><button class="small" data-map="nohandoff">Not now</button>`);
   }
+  if (S.teamIn){
+    const names = S.teamIn.team.map(m => attr(m.name)).join(", ");
+    bits.push(`<span class="free"><b>From the team builder:</b> ${names}, for ${attr(S.teamIn.side)}. Add them to the fighters here?</span><button class="small" data-map="addteam">Add the team</button><button class="small" data-map="noteam">Not now</button>`);
+  }
   const f = (S.free || [])[0];
   if (f){
     const a = S.chars.find(c => c.id === f.att), dd = S.chars.find(c => c.id === f.def);
@@ -2294,6 +2333,7 @@ function renderChars(){
         <button class="small" data-act="remove">Remove</button></div>
       <div class="charid">${charFigure(c, 104)}<div style="display:flex;flex-direction:column;gap:6px">
         <div class="wears">Wears: ${kitName(c.kit || "none")}${c.weapon ? " · Fights with: " + DATA.weapons[c.weapon].name : ""}</div>
+        ${sheetLine(c)}
         ${penLine(cp)}</div></div>
       <div class="bar" title="Blood ${c.blood} of ${TRK.blood_pool}"><i style="width:${Math.max(0, st.frac * 100)}%"></i></div>
       <div class="stat"><span>Blood <b>${c.blood}</b>/${TRK.blood_pool}</span><span>Bleeding ${st.bleed.toFixed(1)}/round</span><span class="${painCls}">Pain −${Math.min(st.pain, TRK.pain_cap) * 10}%${st.pain > TRK.pain_cap ? " · stop check each round" : ""}</span></div>
@@ -2437,7 +2477,7 @@ function init(){
     const c = defenderChar(); if (c) c.kit = S.armor;
     renderChars();
   };
-  $("#sel-weapon").onchange = e => { S.weapon = e.target.value; renderMods(); syncArmor(); shadeFigure(); renderTable() };
+  $("#sel-weapon").onchange = e => { S.weapon = e.target.value; fillFromSheets(); renderMods(); syncArmor(); shadeFigure(); renderTable() };
   $("#btn-roll").onclick = () => rollHit();
   $("#btn-add").onclick = () => { const n = $("#in-name").value.trim() || `Combatant ${S.seq}`; S.chars.push(newChar(n, S.armor, null, {}, S.addSide || "Side A")); $("#in-name").value = ""; selectChar(S.chars.length - 1) };
   $("#in-name").addEventListener("keydown", e => { if (e.key === "Enter") $("#btn-add").click() });
@@ -2480,6 +2520,8 @@ function init(){
     else if (act === "roll") rollHit();
     else if (act === "stray") strayHit();
     else if (act === "apply") applyFromMap();
+    else if (act === "addteam") addTeam();
+    else if (act === "noteam"){ S.teamIn = null; try{ localStorage.removeItem("gravewounds-team-handoff") }catch(e){} renderChars() }
     else if (act === "nohandoff"){ S.handoff = null; try{ localStorage.removeItem("gravewounds-handoff") }catch(e){} renderChars() }
   });
   $("#map-actions").addEventListener("click", e => { const b = e.target.closest("button[data-work]"); if (b) doWork(b.dataset.work, b.dataset.k, +b.dataset.j) });
@@ -2507,6 +2549,7 @@ function init(){
   };
   $("#in-cols").onchange = resize; $("#in-rows").onchange = resize;
   try{ S.handoff = JSON.parse(localStorage.getItem("gravewounds-handoff") || "null") }catch(e){ S.handoff = null }
+  try{ S.teamIn = JSON.parse(localStorage.getItem("gravewounds-team-handoff") || "null") }catch(e){ S.teamIn = null }
 
   if (!restore()){
     // Example combatants from this conflict so the tracker shows what it does; remove them any time.

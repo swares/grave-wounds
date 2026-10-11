@@ -58,6 +58,13 @@ def _main(argv=None) -> int:
     us.add_argument("--runs", type=int, default=40)
     us.add_argument("--seed", type=int, default=1)
 
+    ts = sub.add_parser("team", help="make a team of characters (character generation)")
+    ts.add_argument("--era", default="medieval")
+    ts.add_argument("--region", default="england")
+    ts.add_argument("--template", default="retinue")
+    ts.add_argument("--array", action="store_true", help="the fixed array instead of 3d6 x 5")
+    ts.add_argument("--seed", type=int, default=None, help="repeatable dice")
+
     a = p.parse_args(argv)
     try:
         d = load(a.data)
@@ -65,6 +72,14 @@ def _main(argv=None) -> int:
         print("Data errors:\n" + str(e), file=sys.stderr)
         return 1
 
+    if a.cmd == "team":
+        import random
+        from .team import make_team, sheet
+        from .units import SeededDice
+        rng = SeededDice(a.seed) if a.seed is not None else random.Random()
+        for c in make_team(d, a.era, a.region, a.template, "array" if a.array else "roll", rng):
+            print("\n".join(sheet(d, c)) + "\n")
+        return 0
     if a.cmd == "disease":
         from .disease import seeded_d100, simulate
         ctx = {"care": "field", "marched": False, "wet_cold": False, "filth": False}

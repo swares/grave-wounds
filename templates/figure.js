@@ -179,8 +179,10 @@ const FIG = (() => {
     lower_leg_l: [69, 196], lower_leg_r: [51, 196], foot_l: [71, 212], foot_r: [49, 212],
   };
   const SEV_R = { light: 3.2, serious: 4.4, critical: 5.8 };
+  const scar = (at, w) => `<path d="M${at[0] - 4} ${at[1] - 2} L${at[0] + 4} ${at[1] + 2} M${at[0] - 2} ${at[1] - 3} L${at[0] - 1} ${at[1] - 1} M${at[0] + 1} ${at[1] + 1} L${at[0] + 2} ${at[1] + 3}" stroke="#7a4b3a" stroke-width="1.6" stroke-linecap="round" fill="none"><title>${w.loc.replace("_", " ")}: old wound</title></path>`;
   const woundMarks = wounds => (wounds || []).map(w => {
     const at = WOUND_AT[w.loc]; if (!at) return "";
+    if (w.old) return scar(at, w);
     const back = w.loc.startsWith("back_"), r = SEV_R[w.sev] || 4;
     return `<circle cx="${at[0]}" cy="${at[1]}" r="${r}" fill="${back ? "none" : "#c4122f"}" stroke="${back ? "#c4122f" : "#fff"}" stroke-width="${back ? 2 : 1}"${back ? ' stroke-dasharray="2 1.5"' : ""}><title>${w.loc.replace("_", " ")}: ${w.sev || ""}</title></circle>`;
   }).join("");
