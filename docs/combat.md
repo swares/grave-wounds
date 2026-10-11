@@ -47,6 +47,8 @@ the Python engine and the printed tables read them from there, so change them th
   - +10 if a leader is up
   - −20 if a leader is down
   - −20 once half the side is down
+  - while a leader is up, (Presence − 50) ÷ 5 more, rounded down: +4 at Presence 70, −3
+    at 35 (50 without a team-builder sheet)
 
   Over the target: the side breaks and runs or surrenders. A side keeps checking each round
   while a quarter or more is down.
@@ -191,6 +193,25 @@ or snow slows movement, and fatigue costs attack and defence. See [weather.md](w
 Set by experience: green 35, regular 50, veteran 65, or any number your game prefers.
 Nerve is used for the stop check and for team morale.
 
+## Characteristics in the fight
+
+A fighter from the team builder brings his sheet's characteristics. Anyone else counts as
+50 in each, which changes nothing. All are design estimates, rounded down:
+
+| Characteristic | In the fight |
+| --- | --- |
+| Agility | **Roll initiative** gives d10 + Agility ÷ 10 (the GM can still type any number) |
+| Endurance | Blood pool 20 + (Endurance − 50) ÷ 10: 16 at 15, 24 at 95. The Endurance on his card sets it |
+| Strength | Toil: each hand-to-hand exchange he attacks or defends in counts. After 30 in light kit, 20 in medium or 12 in heavy, times Strength ÷ 50, he is a fatigue step worse, to Exhausted at most. Shooting costs none |
+| Presence | A leader who is up adds (Presence − 50) ÷ 5 to his side's morale |
+
+Heavy kits are full plate and the transitional harness, the Danish man-at-arms, the 1630
+cuirassier, the First World War sentry's armour, the aircrew flak suit and the Interceptor
+vest. Mail, jacks, brigandines, the 1630 harquebusier and pikeman, the Napoleonic
+cuirassier, the Gotland armoured man, the Marines' Vietnam vest, PASGT, the Rangers' 1993
+kit and the plate carrier are medium. The rest are light, unarmoured included. The fatigue select on the card still lets the GM set it by hand, and the toil
+count goes on from there.
+
 ## In the roller
 
 - Each fighter card has **Side**, **Leader** and **Nerve**, and **Endurance** with **With**:
@@ -198,6 +219,7 @@ Nerve is used for the stop check and for team morale.
   him here (see [travel.md](travel.md), Disease).
 - **Apply hit to defender** rolls the stop check. Type your own die in **Stop d100** or
   leave it blank.
+- **Roll initiative** rolls every fighter's initiative and puts them in order.
 - **Next round** and **Next fighter** count results down and roll morale. Type your own
   die in **Morale d100** or leave it blank.
 - **Clear** removes a stop-check result, for example after first aid or a rally.

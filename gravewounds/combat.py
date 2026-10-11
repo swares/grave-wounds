@@ -169,9 +169,43 @@ def pain_check(d: Data, nerve: int, pain_steps: int, roll: int, blood_frac: floa
     return stop_check(d, nerve, d.wounds["combat"]["stop_check"]["pain_round_as"], pain_steps, roll, blood_frac)
 
 
+def initiative(d: Data, agility: int | None, roll: int) -> int:
+    """Rolled initiative: the die (roll, 1..die) + Agility / agi_per (50 without a sheet)."""
+    I = d.wounds["combat"]["characteristics"]["initiative"]
+    return roll + (50 if agility is None else agility) // I["agi_per"]
+
+
+def blood_pool(d: Data, endurance: int | None) -> int:
+    """A fighter's Blood pool: tracking.blood_pool + (Endurance - 50) / per, rounded down."""
+    per = d.wounds["combat"]["characteristics"]["blood"]["per"]
+    return d.wounds["tracking"]["blood_pool"] + ((50 if endurance is None else endurance) - 50) // per
+
+
+def kit_load(d: Data, kit: str | None) -> str:
+    return d.wounds["combat"]["characteristics"]["toil"]["load"].get(kit or "none", "light")
+
+
+def toil_blows(d: Data, kit: str | None, strength: int | None) -> int:
+    """Hand-to-hand exchanges per fatigue step: the kit's load, scaled by Strength / 50 (rounded)."""
+    b = d.wounds["combat"]["characteristics"]["toil"]["blows"][kit_load(d, kit)]
+    return max(1, (b * (50 if strength is None else strength) + 25) // 50)
+
+
+def toil(d: Data, fatigue: int, toil_count: int, kit: str | None, strength: int | None) -> tuple[int, int]:
+    """One more hand-to-hand exchange: (fatigue, toil count) after it."""
+    T, n = d.wounds["combat"]["characteristics"]["toil"], toil_count + 1
+    need = toil_blows(d, kit, strength)
+    if n < need:
+        return fatigue, n
+    if fatigue >= T["worst"]:
+        return fatigue, n - need
+    return fatigue + 1, n - need
+
+
 def morale_check(d: Data, fighters: list[dict], roll: int) -> dict | None:
-    """Team morale at the end of a round. fighters: one side's [{nerve, down, leader}].
-    None if fewer than the trigger share are down (or no one is left up)."""
+    """Team morale at the end of a round. fighters: one side's [{nerve, down, leader, pres}]
+    (pres: Presence, 50 without a sheet). None if fewer than the trigger share are down (or
+    no one is left up)."""
     M = d.wounds["combat"]["morale"]
     n = len(fighters)
     down = sum(1 for f in fighters if f["down"])
@@ -182,7 +216,8 @@ def morale_check(d: Data, fighters: list[dict], roll: int) -> dict | None:
     base = max(f["nerve"] for f in (leaders_up or up))
     target = base
     if leaders_up:
-        target += M["leader_present"]
+        per = d.wounds["combat"]["characteristics"]["presence"]["per"]
+        target += M["leader_present"] + (max(f.get("pres", 50) for f in leaders_up) - 50) // per
     if any(f.get("leader") and f["down"] for f in fighters):
         target -= M["leader_down"]
     if down / n >= M["heavy"]:

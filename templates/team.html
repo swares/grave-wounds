@@ -175,6 +175,13 @@ function renderSlots(){
   $("#btn-add-slot").disabled = S.slots.length >= 6;
 }
 const oldMarks = c => c.old.map(w => ({ loc: w.loc, sev: w.kind === "lasting" ? "serious" : "light", old: true }));
+function fightLine(c){                          // as gravewounds.team.fight_line: Blood, initiative, toil, and as leader, morale
+  const F = TD.fight, C = F.chr, s = c.stats, load = C.toil.load[c.kit] || "light";
+  const bits = [`Blood ${F.blood_pool + Math.floor((s.end - 50) / C.blood.per)}`, `initiative d${C.initiative.die}+${Math.floor(s.agi / C.initiative.agi_per)}`,
+    `tires after ${Math.max(1, Math.floor((C.toil.blows[load] * s.str + 25) / 50))} exchanges hand to hand`];
+  if (c.leader){ const m = Math.floor((s.pres - 50) / C.presence.per); bits.push(`leading, morale ${m >= 0 ? "+" : ""}${m}`) }
+  return bits.join(", ");
+}
 function sheetHtml(c, i){
   const career = careerOf(c), kit = TD.kits[c.kit], w = TD.weapons[c.weapon];
   const fig = FIG.svg({ kit, weapon: w, look: c.look, size: 150, title: c.name, wounds: oldMarks(c) });
@@ -194,6 +201,7 @@ function sheetHtml(c, i){
     <div class="full skills">${trained}</div>
     <div class="full muted">Untrained: ${others || "none"}</div>
     <div class="full arms">${esc(w.name)}: attack <b>${c.attack ?? "—"}%</b> · defence <b>${c.defence}%</b> · Nerve <b>${c.nerve}</b> · ${esc(kit.name)}</div>
+    <div class="full muted" title="What his characteristics do in the wound roller">In a fight: ${esc(fightLine(c))}</div>
     <ol class="full life">${life}</ol>
     <div class="tools"><button class="small" data-reroll="${i}">Reroll him</button></div>
   </article>`;
