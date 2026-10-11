@@ -596,9 +596,10 @@ def _fvec(facing: int) -> tuple:
 
 
 def volleys(d: Data, units: list, field: dict | None = None) -> list:
-    """Who shoots at whom: [{att, dfd, men, dist, cover, penalty, misfire}]. A unit with a
-    missile weapon, not broken and not in contact, shoots at the nearest enemy unit in range
-    (and in sight, in the weather) in front of it (ties: the first listed). Its front hexes'
+    """Who shoots at whom: [{att, dfd, men, dist, cover, penalty, misfire, reach, from, to,
+    over}]. A unit with a missile weapon, not broken and not in contact, shoots at the nearest
+    enemy unit in range (and in sight, in the weather, with a line of fire: see line_fire) in
+    front of it (ties: the first listed); over: % off for loosing high over units between. Its front hexes'
     first `shoot_ranks` ranks shoot. cover: % off from the works and ground at the nearest
     target hex; penalty and misfire: the weather's (gravewounds.combat.weather_attack)."""
     occ, out = occupancy(d, units), []
@@ -607,7 +608,7 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
             continue
         if in_contact(d, units, occ, i):
             continue
-        best = _target(d, units, i, field)
+        best = _target(d, units, i, field, occ)
         if best is None:
             continue
         rows, men = footprint(d, u), men_by_hex(d, u)
@@ -615,7 +616,8 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
         shooters = sum(min(per_hex, men[k]) for k in range(len(rows[0])))
         wx = shot_weather(d, field, u["weapon"], best[0], best[2], best[3])
         out.append({"att": i, "dfd": best[1], "men": shooters, "dist": best[0], "cover": cover_at(d, field, best[2], best[3]),
-                    "penalty": wx["penalty"], "misfire": wx["misfire"], "reach": wx.get("reach", 0), "from": best[2], "to": best[3]})
+                    "penalty": wx["penalty"], "misfire": wx["misfire"], "reach": wx.get("reach", 0), "from": best[2], "to": best[3],
+                    "over": line_fire(d, units, occ, field, i, best[1], best[2], best[3], best[0])})
     return out
 
 
@@ -679,23 +681,30 @@ def _named_target(d: Data, units: list, i: int, field: dict | None, occ: dict | 
 
 
 def _clear_fn(d: Data, units: list, occ: dict | None, field: dict | None, i: int, j: int):
-    """For a gun: a test that its line of fire from h to t is clear; None for anything else."""
-    if occ is None or not is_gun(d, units[i]["weapon"]):
+    """A test that unit i has a line of fire from h to t (see line_fire); None without occ."""
+    if occ is None:
         return None
-    return lambda h, t, dist: line_clear(d, occ, field, i, j, h, t, dist)
+    return lambda h, t, dist: line_fire(d, units, occ, field, i, j, h, t, dist) is not None
 
 
-def line_clear(d: Data, occ: dict, field: dict | None, i: int, j: int, h, t, dist: int) -> bool:
-    """Whether battery i can fire from hex h at unit j's hex t: no other unit's hex between,
-    except round shot from high ground over a unit on lower ground."""
-    over = dist > d.units["artillery"]["canister_to"] and ground_at(d, field, h).get("height")
+def line_fire(d: Data, units: list, occ: dict, field: dict | None, i: int, j: int, h, t, dist: int):
+    """Unit i shooting from hex h at unit j's hex t: None if another unit between blocks it,
+    else the % off (bows loosing high over units). From high ground a unit shoots over units
+    on lower ground; guns only with round shot, never canister; shell goes over anything."""
+    u, high, pen = units[i], ground_at(d, field, h).get("height"), 0
+    over, arc = True, u["weapon"] in d.units["line_of_fire"]["arcing"]
+    if is_gun(d, u["weapon"]):
+        over = dist > d.units["artillery"]["canister_to"]
+        if over and u.get("howitzer"):
+            return 0
     for x in ray(h, t, dist)[1:-1]:
         k = occ.get(f"{x[0]},{x[1]}")
-        if k is None or k in (i, j):
+        if k is None or k in (i, j) or (over and high and not ground_at(d, field, x).get("height")):
             continue
-        if not over or ground_at(d, field, x).get("height"):
-            return False
-    return True
+        if not arc:
+            return None
+        pen = d.units["line_of_fire"]["arc_penalty"]
+    return pen
 
 
 def _nearest_ahead(d: Data, weapon: str, front: list, fv: tuple, hexes: list, field: dict | None = None, clear=None):
@@ -776,7 +785,7 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
     for v in volleys(d, us, field):
         b = us[v["dfd"]]
         opts = {"factor": form(d, b)["missile_factor"] * (100 - v["misfire"]) / 100, "exposed": _exposure(d, b, False, True),
-                "penalty": v["cover"] + v["penalty"], "reach": v["reach"]}
+                "penalty": v["cover"] + v["penalty"] + v["over"], "reach": v["reach"]}
         t = _take_hurt(b, volley(d, _side(us[v["att"]], table), _side(b, table), v["men"], v["dist"], rng, **opts))
         _tally(*acc, v, t)
         log += _logged({"kind": "volley", **v}, t)
@@ -784,7 +793,7 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
             wx = shot_weather(d, field, hero["weapon"], v["dist"], v["from"], v["to"])
             if wx["blocked"] or field_range(d, hero["weapon"], v["dist"], wx["reach"]) is None:
                 continue
-            hopts = {**opts, "factor": form(d, b)["missile_factor"] * (100 - wx["misfire"]) / 100, "penalty": v["cover"] + wx["penalty"], "reach": wx["reach"]}
+            hopts = {**opts, "factor": form(d, b)["missile_factor"] * (100 - wx["misfire"]) / 100, "penalty": v["cover"] + wx["penalty"] + v["over"], "reach": wx["reach"]}
             t = _take_hurt(b, volley(d, _hero_side(us[v["att"]], hero, table), _side(b, table), d.units["heroes"]["tempo"], v["dist"], rng, **hopts))
             _tally(*acc, v, t)
             log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": v["att"], "dfd": v["dfd"], "dist": v["dist"]}, t)
@@ -1216,8 +1225,8 @@ def _can_fire(d: Data, u: dict) -> bool:
 
 
 def cannonades(d: Data, units: list, field: dict | None = None) -> list:
-    """Which batteries fire at whom: [{att, dfd, guns, rounds, dist, shot (canister or round),
-    cover, penalty, named, behind, beyond}]. A battery fires unlimbered, not changing over, not
+    """Which batteries fire at whom: [{att, dfd, guns, rounds, dist, shot (canister, round or
+    shell), cover, penalty, named, graze, behind, beyond}]. A battery fires unlimbered, not changing over, not
     broken and not in contact, with the guns its crews still serve and the rounds it has left,
     at its named target or the nearest enemy in range, in sight and in front, with a clear line
     of fire. behind: the unit a bounding round-shot ball can strike, beyond: how far past."""
@@ -1228,13 +1237,27 @@ def cannonades(d: Data, units: list, field: dict | None = None) -> list:
         best = _target(d, units, i, field, occ)
         if best is None:
             continue
-        wx, shot = gun_weather(d, field, best[0], best[2], best[3]), "canister" if best[0] <= A["canister_to"] else "round"
+        wx, shot = gun_weather(d, field, best[0], best[2], best[3]), _shot(d, u, best[0])
         behind = _ricochet_at(d, occ, field, i, best) if shot == "round" else None
+        graze = A["canister"]["graze"] if shot == "canister" and best[0] > A["canister"]["strike"][0][0] and _firm(d, field, best) else 0
         out.append({"att": i, "dfd": best[1], "guns": guns_served(d, u), "rounds": min(guns_served(d, u) * A["rounds"], ammo_left(d, u)),
                     "dist": best[0], "shot": shot, "cover": cover_at(d, field, best[2], best[3]), "penalty": wx["penalty"],
-                    "named": units[best[1]].get("id") is not None and units[best[1]].get("id") == u.get("target"),
+                    "named": units[best[1]].get("id") is not None and units[best[1]].get("id") == u.get("target"), "graze": graze,
                     "behind": behind[0] if behind else None, "beyond": behind[1] if behind else 0})
     return out
+
+
+def _shot(d: Data, u: dict, dist: int) -> str:
+    """canister within canister range; beyond it shell from howitzers, round shot from guns."""
+    if dist <= d.units["artillery"]["canister_to"]:
+        return "canister"
+    return "shell" if u.get("howitzer") else "round"
+
+
+def _firm(d: Data, field: dict | None, best: tuple) -> bool:
+    """Firm ground all the way from the gun to the target hex: no mud or snow, nothing that stops shot."""
+    dist, _, h, t = best
+    return not _soft(d, field) and not any(ground_at(d, field, x).get("stops_shot") for x in ray(h, t, dist)[1:])
 
 
 def _soft(d: Data, field: dict | None) -> bool:
@@ -1260,9 +1283,23 @@ def _ricochet_at(d: Data, occ: dict, field: dict | None, i: int, best: tuple):
 
 
 def _canister_struck(art: dict, c: dict, cut: float, rounds: int, rng) -> int:
-    """Men hit by canister: each ball a chance."""
-    p = _chance_at(art["canister"]["strike"], c["dist"]) * cut
+    """Men hit by canister: each ball a chance (more on firm ground, the balls skipping on)."""
+    p = (_chance_at(art["canister"]["strike"], c["dist"]) + c.get("graze", 0)) * cut
     return sum(rng.randint(1, 100) <= p for _ in range(rounds * art["canister"]["balls"]))
+
+
+def _shell_struck(art: dict, c: dict, cut: float, rounds: int, rng) -> tuple:
+    """(men hit, shells that burst on the unit): each shell lands with the chance for its range,
+    may fail to burst, and each burst throws its fragments."""
+    H = art["howitzer"]
+    p = _chance_at(H["strike"], c["dist"]) * cut
+    struck = bursts = 0
+    for _ in range(rounds):
+        if rng.randint(1, 100) > p or rng.randint(1, 100) <= H["blind"]:
+            continue
+        bursts += 1
+        struck += sum(rng.randint(1, 100) <= H["fragment_hit"] for _ in range(H["fragments"]))
+    return struck, bursts
 
 
 def _round_shot_struck(d: Data, art: dict, p: float, rounds: int, target: dict, rng) -> tuple:
@@ -1287,9 +1324,13 @@ def cannonade(d: Data, att: dict, target: dict, c: dict, rng, exposed: tuple = (
     hits = 0
     if c["shot"] == "canister":
         struck = _canister_struck(A, c, cut, rounds, rng)
+    elif c["shot"] == "shell":
+        struck, hits = _shell_struck(A, c, cut, rounds, rng)
     else:
         struck, hits = _round_shot_struck(d, A, _chance_at(A["round_shot"]["strike"], c["dist"]) * cut, rounds, target, rng)
     t = _blows(d, att, _side(target, att["table"]), struck, A["attack"], 0, rng, exposed, -1000)
+    if c["shot"] == "shell":
+        t["bursts"] = hits
     if is_battery(d, target):
         t["dismounted"] = min(sum(rng.randint(1, 100) <= A["dismount"] for _ in range(hits)), guns_served(d, target))
     return t
@@ -1319,8 +1360,9 @@ def _battery_after(d: Data, u: dict) -> None:
         u["abandoned"] = True
 
 
-GUN_EXAMPLES = (("canister at 200 m, a line", 20, 40), ("round shot at 400 m, a line", 40, 40), ("round shot at 400 m, a column", 40, 10),
-                ("round shot at 800 m, a column", 80, 10))
+GUN_EXAMPLES = (("canister at 200 m, a line", 20, 40, False), ("round shot at 400 m, a line", 40, 40, False), ("round shot at 400 m, a column", 40, 10, False),
+                ("round shot at 800 m, a column", 80, 10, False), ("howitzers, shell at 400 m, a line", 40, 40, True),
+                ("howitzers, shell at 400 m, a column", 40, 10, True), ("howitzers, shell at 800 m, a column", 80, 10, True))
 
 
 def gun_examples(d: Data, runs: int, seed: int) -> list[dict]:
@@ -1328,10 +1370,10 @@ def gun_examples(d: Data, runs: int, seed: int) -> list[dict]:
     close order, as a line (40 hexes wide) or a column (10 wide): men struck and men put down
     (means), on the Peninsular table."""
     table, out = "peninsular-1808-14-all-hits", []
-    for label, dist, width in GUN_EXAMPLES:
+    for label, dist, width, how in GUN_EXAMPLES:
         struck = down = 0
         for k in range(runs):
-            bat = {**_example_unit(0, [30, 100], 1), "men": 60, "start": 60, "weapon": "artillery_smoothbore", "formation": "battery"}
+            bat = {**_example_unit(0, [30, 100], 1), "men": 60, "start": 60, "weapon": "artillery_smoothbore", "formation": "battery", "howitzer": how}
             tgt = {**_example_unit(1, [30, 100 - dist], 4), "men": 1600, "start": 1600, "width": width, "weapon": "musket_smoothbore", "kit": "none"}
             _, log = exchange(d, [bat, tgt], table, SeededDice(seed * 7907 + k), {"ground": {}, "works": None, "weather": None, "size": [60, 120]})
             for line in log:

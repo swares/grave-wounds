@@ -817,6 +817,9 @@ def _units_extra_errors(d: Data) -> list[str]:
     saved = U.get("aftermath", {}).get("saved", {})
     if saved and set(saved.get("hours", {})) != set(d.disease.get("recovery", {}).get("care", {})):
         errors.append("units.yaml: aftermath.saved.hours needs every care level")
+    for wid in U.get("line_of_fire", {}).get("arcing", []):
+        if wid not in d.weapons or "range" not in d.weapons[wid]:
+            errors.append(f"units.yaml: line_of_fire.arcing names {wid}, which is not a weapon with a range")
     return errors
 
 
