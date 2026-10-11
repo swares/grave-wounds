@@ -4334,6 +4334,12 @@ Penalties add up; each total is capped at -60%.
 
 **In the way:** each fighter standing on the line between a shooter and his target costs the shot 10% (at most 30%). A miss goes into the first man in the way at 50%: roll the hit on him with no attack roll and the severity table. Bows and crossbows loose high over the men in the way: the penalty, but never a stray.
 
+**Ground:** the GM paints hexes as rocks and rubble, woods and brush, or marsh. Entering rocks or woods costs +1 hex of movement, marsh +2. A shot at a man in rocks loses 10% and the rocks hide his legs (the table's behind-cover situation); in woods it loses 20%. Cover from a work counts instead when it is better.
+
+**Height:** hexes stand at level 0 to 3; each level climbed costs +1 hex of movement. A blow or shot from higher ground takes the attacker-higher situation (head and shoulders), and from lower ground attacker-lower. A man striking uphill in close combat loses 10% a level (two levels at most). A shot downhill reaches 10% further a level. Higher ground rising above the straight line between shooter and target blocks the shot; men in the way below that line are shot over.
+
+**Taking cover:** on his turn a fighter may go to ground instead of moving or attacking. Until he moves or strikes in close combat, shots at him lose 20% (or the ground's cover if better) and hit as behind cover, and blows at him hit as at a man down.
+
 | Camp | What it is | Needs | 12 men | 100 men | 1,000 men |
 |---|---|---|---|---|---|
 | Bivouac | Sleep where you stop. Nothing built and no proper watch. | - | none | none | none |

@@ -14585,7 +14585,11 @@
   "auto_situations": {
    "defender_down": "target_down",
    "defender_no_shield": "no_shield",
-   "attacker_down": "attacker_lower"
+   "attacker_down": "attacker_lower",
+   "attacker_higher": "attacker_higher",
+   "defender_higher": "attacker_lower",
+   "behind_cover": "behind_cover",
+   "in_cover": "target_down"
   },
   "margin_bands": {
    "default": {
@@ -14699,6 +14703,34 @@
     "longbow",
     "crossbow"
    ]
+  },
+  "ground": {
+   "kinds": {
+    "open": {
+     "name": "Open ground",
+     "move": 0
+    },
+    "rough": {
+     "name": "Rocks and rubble",
+     "move": 1,
+     "cover": 10,
+     "low": true
+    },
+    "brush": {
+     "name": "Woods and brush",
+     "move": 1,
+     "cover": 20
+    },
+    "marsh": {
+     "name": "Marsh or deep mud",
+     "move": 2
+    }
+   },
+   "max_level": 3,
+   "climb": 1,
+   "uphill": 10,
+   "downhill_reach": 10,
+   "take_cover": 20
   },
   "range": [
    {

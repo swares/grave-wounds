@@ -258,6 +258,10 @@ combat:
     defender_down: target_down      # defender cannot stand
     defender_no_shield: no_shield   # defender's shield arm cannot hold a shield
     attacker_down: attacker_lower   # attacker fights from the ground
+    attacker_higher: attacker_higher  # battle map: attacker a level or more above the defender
+    defender_higher: attacker_lower   # battle map: defender a level or more above the attacker
+    behind_cover: behind_cover        # battle map: target behind works, low cover, or taking cover
+    in_cover: target_down             # battle map: a man taking cover, where the tables have no cover situation, or struck hand to hand
   # Margin of success (effective chance minus the roll) sets severity when the attack is
   # rolled here. A critical is always Critical. Firearm bands match the calibrated
   # (Bougainville) firearm severity table for an attack chance of about 60%; better shots
@@ -329,6 +333,28 @@ combat:
   # instead (`stray` %), rolled on him with no attack roll; bows and crossbows (`arcing`) loose
   # high over the men in the way and never strike them.
   line_of_fire: {per_man: 10, max: 30, stray: 50, arcing: [bow, longbow, crossbow]}
+  # The battle map's ground and height, painted per hex. move: extra movement to enter a hex
+  # of it; cover: % off missiles at a man in it; low: low cover (rocks, rubble) that hides his
+  # lower body, as works do ("Target behind cover"). Each hex has a height level, 0 to
+  # max_level: climbing a level costs `climb` more; a close-combat blow up at a man a level
+  # higher costs `uphill` % a level (at most two levels); a missile shot down from higher
+  # ground reaches `downhill_reach` % further a level; higher ground between shooter and
+  # target blocks the shot, and from higher ground a man shoots over men on lower ground.
+  # Fighting from a level up or down brings in the tables' "Attacker higher" or "Attacker
+  # lower". A man who takes cover (his turn) is `take_cover` % harder to hit with missiles and
+  # shows only head, shoulders and arms ("Target behind cover"; "Target down" where the tables
+  # have no cover situation, and to a blow in close combat) until he moves or strikes.
+  ground:
+    kinds:
+      open:  {name: "Open ground", move: 0}
+      rough: {name: "Rocks and rubble", move: 1, cover: 10, low: true}
+      brush: {name: "Woods and brush", move: 1, cover: 20}
+      marsh: {name: "Marsh or deep mud", move: 2}
+    max_level: 3
+    climb: 1
+    uphill: 10
+    downhill_reach: 10
+    take_cover: 20
   range:
     - {band: short, penalty: 0}
     - {band: medium, penalty: 20}
