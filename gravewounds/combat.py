@@ -587,19 +587,25 @@ def through_lines(d: Data, ground: dict, terrain: str, cols: int, rows: int, see
     ford_w = rng.randint(*E["ford_width"]) if rivers else 0
     road_w = rng.randint(*G["through"]["road"]["width"]) if roads else 0
     cross = roads or ([(-rivers[0][1], rivers[0][0]), (rivers[0][1], -rivers[0][0])] if rivers else [])
+    plan = {"terrain": terrain, "rivers": rivers, "roads": roads, "cross": cross,
+            "river": river_w * hm / 2, "ford": ford_w * hm / 2, "road": road_w * hm / 2}
     for r in range(rows):
         for c in range(cols):
-            q, k = _map_xy(hm, cols, rows, c, r), f"{c},{r}"
-            if rivers and _near_rays(q, rivers, river_w * hm / 2):
-                _set_hex(ground, k, "water", 0)
-            wet = ground["kinds"].get(k) == "water"
-            if wet and terrain == "ford" and _near_rays(q, cross, ford_w * hm / 2):
-                _set_hex(ground, k, "marsh", 0)
-            elif roads and _near_rays(q, roads, road_w * hm / 2):
-                if wet and terrain == "bridge":
-                    _set_hex(ground, k, "bridge", 0)
-                elif not wet:
-                    ground["kinds"][k] = "road"
+            _through_hex(ground, f"{c},{r}", _map_xy(hm, cols, rows, c, r), plan)
+
+
+def _through_hex(ground: dict, k: str, q: list, plan: dict) -> None:
+    """One hex of through_lines: the river, then the road (by a ford or bridge over the river)."""
+    if plan["rivers"] and _near_rays(q, plan["rivers"], plan["river"]):
+        _set_hex(ground, k, "water", 0)
+    wet = ground["kinds"].get(k) == "water"
+    if wet and plan["terrain"] == "ford" and _near_rays(q, plan["cross"], plan["ford"]):
+        _set_hex(ground, k, "marsh", 0)
+    elif plan["roads"] and _near_rays(q, plan["roads"], plan["road"]):
+        if not wet:
+            ground["kinds"][k] = "road"
+        elif plan["terrain"] == "bridge":
+            _set_hex(ground, k, "bridge", 0)
 
 
 def edge_bands(d: Data, ground: dict, terrain: str, cols: int, rows: int, seed: int, edges: dict) -> list:

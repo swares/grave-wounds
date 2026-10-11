@@ -2102,15 +2102,16 @@ function throughLines(ground, terrain, cols, rows, seed, edges){
   const roadW = roads.length ? rng.randint(...GRD.through.road.width) : 0;
   let cross = roads;
   if (!roads.length) cross = rivers.length ? [[-rivers[0][1], rivers[0][0]], [rivers[0][1], -rivers[0][0]]] : [];
-  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){
-    const q = mapXY(hm, cols, rows, c, r), k = c + "," + r;
-    if (rivers.length && nearRays(q, rivers, riverW * hm / 2)) setHex(ground, k, "water", 0);
-    const wet = ground.kinds[k] === "water";
-    if (wet && terrain === "ford" && nearRays(q, cross, fordW * hm / 2)) setHex(ground, k, "marsh", 0);
-    else if (roads.length && nearRays(q, roads, roadW * hm / 2)){
-      if (wet && terrain === "bridge") setHex(ground, k, "bridge", 0);
-      else if (!wet) ground.kinds[k] = "road";
-    }
+  const plan = { terrain, rivers, roads, cross, river: riverW * hm / 2, ford: fordW * hm / 2, road: roadW * hm / 2 };
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) throughHex(ground, c + "," + r, mapXY(hm, cols, rows, c, r), plan);
+}
+function throughHex(ground, k, q, plan){        // one hex: the river, then the road (by a ford or bridge over it)
+  if (plan.rivers.length && nearRays(q, plan.rivers, plan.river)) setHex(ground, k, "water", 0);
+  const wet = ground.kinds[k] === "water";
+  if (wet && plan.terrain === "ford" && nearRays(q, plan.cross, plan.ford)) setHex(ground, k, "marsh", 0);
+  else if (plan.roads.length && nearRays(q, plan.roads, plan.road)){
+    if (!wet) ground.kinds[k] = "road";
+    else if (plan.terrain === "bridge") setHex(ground, k, "bridge", 0);
   }
 }
 // edges: {around: {side: travel terrain}, hex_m (the travel hex across), spot_seed, ford};
