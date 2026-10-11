@@ -383,9 +383,8 @@ def day(d: Data, health: dict, ctx: dict, rng, endurance: int | None = None) -> 
     the untended)}.
     endurance: a named character's own, or the typical man's.
     Returns (health, {shown, healed, dead}: men by disease)."""
-    D, R = d.disease, d.disease["recovery"]
-    target = ((D["endurance"] if endurance is None else endurance) + R["care"][ctx["care"]] + R["activity"]["marched" if ctx["marched"] else "rest"]
-              + (R["wet_cold"] if ctx["wet_cold"] else 0) + (R["filth"] if ctx["filth"] else 0) + ctx.get("leech", 0))
+    R = d.disease["recovery"]
+    target = _day_target(d, ctx, endurance)
     h = _copy(health)
     ev = {"shown": {}, "healed": {}, "dead": {}}
     keep = []
@@ -397,17 +396,30 @@ def day(d: Data, health: dict, ctx: dict, rng, endurance: int | None = None) -> 
     for c in h["cases"]:
         tended = id(c) not in left
         out = _case_day(d, c, target if tended else alone, rng, ev, ctx["care"] if tended else "none", food, lb if tended else 0)
-        x = profile(d, c["d"])
         if out == "sick":
             keep.append(c)
-        elif out == "dead":
-            h["dead"] += 1
-        elif x.get("immune"):
-            h["immune"][c["d"]] = h["immune"].get(c["d"], 0) + 1
-        elif x.get("relapse"):
-            h["had"][c["d"]] = h["had"].get(c["d"], 0) + 1
+        else:
+            _close_case(d, h, c, out)
     h["cases"] = keep
     return h, ev
+
+
+def _day_target(d: Data, ctx: dict, endurance: int | None) -> int:
+    """The day's recovery target before virulence: Endurance, care, activity, conditions, a leech."""
+    D, R = d.disease, d.disease["recovery"]
+    return ((D["endurance"] if endurance is None else endurance) + R["care"][ctx["care"]] + R["activity"]["marched" if ctx["marched"] else "rest"]
+            + (R["wet_cold"] if ctx["wet_cold"] else 0) + (R["filth"] if ctx["filth"] else 0) + ctx.get("leech", 0))
+
+
+def _close_case(d: Data, h: dict, c: dict, out: str) -> None:
+    """A case over: dead, or healed and immune, or healed and liable to relapse."""
+    x = profile(d, c["d"])
+    if out == "dead":
+        h["dead"] += 1
+    elif x.get("immune"):
+        h["immune"][c["d"]] = h["immune"].get(c["d"], 0) + 1
+    elif x.get("relapse"):
+        h["had"][c["d"]] = h["had"].get(c["d"], 0) + 1
 
 
 def worst_step(d: Data, health: dict) -> str | None:

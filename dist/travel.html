@@ -1626,7 +1626,8 @@ function surpriseFor(p){                      // this fight's odds: the camp as 
 }
 function surpriseText(s){
   const name = { base: "base", camp: "camp", dark: "dark", fog: "fog", stealth: `${s.who.stealth}'s Stealth`, watch: `${s.who.watch}'s Watch` };
-  return `Surprise: ${s.chance}% (${s.parts.map(([k, n]) => `${name[k]} ${n > 0 ? "+" : "\u2212"}${Math.abs(n)}`).join(", ")}).`;
+  const part = ([k, n]) => name[k] + " " + (n > 0 ? "+" : "\u2212") + Math.abs(n);
+  return `Surprise: ${s.chance}% (${s.parts.map(part).join(", ")}).`;
 }
 function rollSurprise(p){                     // rolled once, when the fight is sent
   const s = surpriseFor(p), roll = roll100();
