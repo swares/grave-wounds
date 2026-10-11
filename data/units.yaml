@@ -32,7 +32,8 @@ line_of_fire:
   arc_penalty: 20
 exchange_rounds: 10        # individual 6-second rounds in one exchange (for fatigue, bleeding, states)
 
-# The ground, painted per hex. move: movement to enter a hex of it (open ground 1). cover: %
+# The ground, painted per hex. move: movement to enter a hex of it (open ground 1); impassable:
+# no unit can enter or stand in it (cross at a bridge: paint the bridge open ground). cover: %
 # off shots at men standing in it. stops_shot: round shot does not bound on over it. height: % off a blow struck up at men on it from lower
 # ground (as a bank's). no_horse: horses cannot go into it. Works (ditches, banks,
 # palisades, gates, walls, stakes, felled trees, wagons, pavises) are those of the battle
@@ -44,6 +45,8 @@ ground:
   woods: {name: "Woods",        key: "F", move: 2, cover: 20, stops_shot: true}
   marsh: {name: "Marsh",        key: "m", move: 3, no_horse: true, stops_shot: true}
   high:  {name: "High ground",  key: "h", move: 1, height: 10}
+  buildings: {name: "Buildings", key: "T", move: 2, cover: 30, stops_shot: true, no_horse: true}   # houses, walls, yards
+  water: {name: "Water",        key: "w", move: 1, impassable: true}                                # a canal or river: shots cross it, men do not
 # Breaching: a unit ordered to breach puts this share of each front hex's front rank to
 # hacking at the work in front of it, every round of the exchange. A work's breach figure
 # (man-rounds, works.yaml) is for a 2 m hex side; a 10 m side takes five times as long.

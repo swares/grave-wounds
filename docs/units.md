@@ -434,12 +434,14 @@ can be opened or barred at any time.
 | Woods | 2 | −20% to shots at men in it |
 | Marsh | 3 | no horses |
 | High ground | 1 | −10% to blows struck up at men on it from lower ground |
+| Buildings | 2 | −30% to shots at men in it; no horses; stops round shot |
+| Water | can't enter | a canal or river: shots cross it, men cross only at a bridge (paint the bridge open) |
 
 **Works** are the battle map's (see [works.md](works.md)), with the same numbers, along
 the sides of the 11-yard (10 m) hexes or in a hex. For a ditch, bank or wall, click just inside the
 side, on the high side; for a gate, on the inside. Click again to take it away.
 - **Crossing:** a unit's move pays each work its middle hex crosses or enters (a ditch +2,
-  a bank +1, stakes +1, felled trees +2). A palisade, wall or barred gate stops it, and a
+  a bank +1, stakes +1, felled trees +2, barbed wire +3). A palisade, wall or barred gate stops it, and a
   unit cannot stand across one. Wagons fill their hex. Horses cannot go into stakes, felled
   trees, wagons or marsh.
 - **Close combat:** across a palisade, wall or barred gate, only reach-2 weapons strike, and
@@ -685,14 +687,53 @@ down the west side and Chinn Ridge beyond it.
 
 It is drawn by `tools/maps/make_bull_run_field.mjs`.
 
+**Mons, 23 August 1914** (`data/fields/mons-1914.yaml`). The field is 150 × 120 hexes, about
+1,640 yards (1,500 m) east to west and 1,140 yards (1,040 m) north to south, north at the top:
+the canal salient at Nimy.
+- The Mons-Condé canal loops north across the middle (water: crossed only at the road and
+  railway bridges near its tip); Nimy's houses on the south bank (buildings), the edge of Mons
+  to the south-west, a slag heap behind the line, open fields and two woods to the north.
+- Overcast and calm.
+- Mid-morning: the 4th Royal Fusiliers in extended order at both bridges, with their two
+  machine guns at the railway bridge and two companies in Nimy behind; the 4th Middlesex and
+  its machine guns along the canal to the east. All long-service regulars (veteran).
+- The Germans: two battalions of Infantry Regiment 84 in close order in the fields north of
+  the bridges, its machine-gun company with them, its third battalion in extended order
+  behind, and a battalion of Infantry Regiment 86 coming out of the woods to the north-east.
+- Fire support: six British 18-pounders against twelve German 77 mm field guns and six field
+  howitzers.
+- The wound tables are the First World War's.
+
+It is drawn by `tools/maps/make_mons_field.mjs`.
+
+**Hill 700, Bougainville, 8-12 March 1944** (`data/fields/bougainville-1944.yaml`). The field
+is 120 × 100 hexes, about 1,310 yards (1,200 m) east to west and 950 yards (870 m) north to
+south, north at the top: the ridge across the middle.
+- Hill 700's crest (high ground) with a saddle between two knobs; a line of pillboxes
+  (bunkers: −50% to shots at men in them) on the forward crest, a belt of barbed wire below
+  with lanes through it, a cleared belt of stumps and shell holes below that, and jungle
+  (woods) beyond and behind.
+- Rain, the ground muddy.
+- The 145th Infantry's 2nd Battalion on the two knobs in extended order, machine guns covering
+  the saddle, and the 3rd Battalion in reserve in the jungle behind.
+- The Japanese 23rd Infantry's II and III Battalions in the jungle below (veteran, extended
+  order), with their machine-gun company.
+- Fire support: American 105 mm and 155 mm howitzers and 81 mm mortars; Japanese mountain guns
+  and mortars.
+- The wound tables are Bougainville 1944's.
+
+It is drawn by `tools/maps/make_bougainville_field.mjs`. Both are design sketches drawn from
+the accounts' plain facts, not traced from any map.
+
 **A battlefield file** has an `id` and `name`, `sides` (two names), `table`, `size`
 ([cols, rows]) and `weather`. Its `ground` is rows of one letter per hex: `.` open, `r`
-rough, `F` woods, `m` marsh, `h` high ground (the `key` of each kind in `data/units.yaml`).
+rough, `F` woods, `m` marsh, `h` high ground, `T` buildings, `w` water (the `key` of each kind in `data/units.yaml`).
 `up` (optional) is the compass point at the top of the map, if not north, and `weather` may
 give the wind's direction as `dir` (where it blows from). `travel` (optional) is `{map, place, within, sides}`: the travel map and place it belongs
 to, how many hexes from the place count as there, and the travel-map side names that stand
 with each army. `works` has `hexes`, a list of `{type, at: [hexes]}`, and `edges`, a list of `{type, at:
 [[hex, hex], ...]}` with the first hex the high or inner side. `units` lists `{name, side
 (0 or 1), men, quality, weapon, kit, formation, width, pos (the middle of the front row),
-facing, mounted}`. `python3 -m gravewounds check` makes sure every unit fits where it
-stands.
+facing, mounted}`. `support` (optional) lists each side's batteries on call, `{name, side
+(0 or 1), kind (mortar, field or howitzer), tubes}`: loading the field fills the Fire support
+panel. `python3 -m gravewounds check` makes sure every unit fits where it stands.

@@ -1,0 +1,84 @@
+// Builds data/fields/bougainville-1944.yaml: Hill 700 on the Torokina perimeter, Bougainville,
+// 8-12 March 1944, on the field map at 10 m a hex. Run from this folder after editing:
+// node make_bougainville_field.mjs (no packages needed).
+//
+// Sources, all plain fact, and the drawing is ours: Hill 700 is a steep ridge on the north of
+// the perimeter, held by the 145th Infantry (37th Infantry Division) in a line of log-and-earth
+// pillboxes with wire in front and a belt of jungle cleared below it for fields of fire. The
+// Japanese 23rd Infantry Regiment came up its northern slopes through the jungle and broke into
+// the line at a saddle on the night of 8-9 March; the Americans drove them out over the next
+// days, with artillery and mortars firing on call close in front of the line. The ridge, the
+// saddle, the cleared belt and the line are drawn by hand to that shape, not traced from any
+// map, and are approximate. The deployment is the start of the attack, in our own words;
+// numbers are round figures for play.
+import { N, S, wobble, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
+
+const COLS = 120, ROWS = 100;                 // 1200 m east to west, about 870 m north to south
+const crest = c => 48 + wobble(c / 3, 0.7, 2.2) * 0.8;               // the ridge's crest line, west to east
+const saddle = c => c >= 54 && c <= 66;                               // where the line dips between two knobs
+function ridgeTop(c, off){
+  if (!saddle(c)) return "h";
+  return Math.abs(off) <= 2 ? "." : "r";
+}
+function kind(c, r){
+  const k = crest(c);
+  if (Math.abs(r - k) <= 6) return ridgeTop(c, r - k);                       // the ridge top; the saddle lower, its sides broken
+  if (r > k - 18 && r < k - 6) return (c * 7 + r * 3) % 11 === 0 ? "r" : ".";  // the cleared belt: stumps and shell holes
+  if (r >= k - 22 && r <= k - 18) return "r";                                // the jungle's torn edge
+  if (r > k + 6 && r < k + 12 && patch(c, r, { cx: 60, cy: k + 9, rx: 70, ry: 4, a: 0.2, b: 1.1 })) return "r";   // the steep back slope
+  return "F";                                                                // jungle
+}
+const grid = groundGrid(COLS, ROWS, kind);
+
+// ---------- works: the pillbox line on the forward crest, wire below it ----------
+const bunkers = [], wire = [];
+for (let c = 4; c < COLS - 4; c += 7) bunkers.push([c, Math.round(crest(c)) - (saddle(c) ? 1 : 4)]);
+for (let c = 2; c < COLS - 2; c++) if (c % 13 !== 6) wire.push([c, Math.round(crest(c)) - 12]);   // a belt with lanes through it
+
+// ---------- the armies (pos is the middle of the front row) ----------
+const US = { side: 0, facing: N }, JP = { side: 1, facing: S };
+const RIFLES = { quality: "regular", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false };
+const MG = { quality: "regular", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false };
+const JRIFLES = { quality: "veteran", weapon: "rifle_service", kit: "none", formation: "extended", mounted: false };
+const units = [
+  unit("145th Infantry, 2nd Battalion (west knob)", US, 330, RIFLES, [44, 4, Math.round(crest(26)) - 2]),
+  unit("145th Infantry, 2nd Battalion (east knob)", US, 330, RIFLES, [44, 72, Math.round(crest(94)) - 2]),
+  unit("Machine guns covering the saddle (west)", US, 12, MG, [3, 50, Math.round(crest(51)) - 1]),
+  unit("Machine guns covering the saddle (east)", US, 12, MG, [3, 67, Math.round(crest(68)) - 1]),
+  unit("145th Infantry, 3rd Battalion (reserve)", US, 700, RIFLES, [60, 30, 82]),
+  unit("23rd Infantry, II Battalion (on the saddle)", JP, 800, JRIFLES, [36, 30, 20]),
+  unit("23rd Infantry, III Battalion (east slope)", JP, 800, JRIFLES, [36, 76, 14]),
+  unit("23rd Infantry machine-gun company", JP, 30, { ...MG, kit: "none", quality: "veteran" }, [6, 60, 26]),
+];
+
+writeField({
+  id: "bougainville-1944", name: "Hill 700, Bougainville, 8-12 March 1944", sides: ["Americans", "Japanese"], table: "bougainville-1944-all-hits",
+  travel: { map: "bougainville-1944", place: "Hill 700", within: 2, sides: ["Americans", "Japanese"] },
+  weather: "{cond: rain, wind: calm, dir: SE, ground: {mud: 1, snow: 0}}",
+  grid, units, hexWorks: { bunker: bunkers, wire },
+  support: [
+    { name: "105 mm howitzers (field artillery)", side: 0, kind: "field", tubes: 12 },
+    { name: "155 mm howitzers", side: 0, kind: "howitzer", tubes: 12 },
+    { name: "81 mm mortars", side: 0, kind: "mortar", tubes: 6 },
+    { name: "Japanese mountain guns", side: 1, kind: "field", tubes: 8 },
+    { name: "Japanese mortars", side: 1, kind: "mortar", tubes: 6 },
+  ],
+  header: [
+    `Hill 700 on the Torokina perimeter, Bougainville, March 1944, at 10 m a hex: ${COLS} x ${ROWS} hexes, about`,
+    "1200 m east to west and 870 m north to south, north at the top: the ridge across the middle",
+    "with a saddle between two knobs, the American pillbox line on its forward crest, wire and a",
+    "cleared belt below it, and jungle beyond.",
+    "Generated by tools/maps/make_bougainville_field.mjs: edit that file and re-run it rather than this one.",
+    "The ridge, the saddle, the clearing and the line are drawn by hand to the shape the accounts",
+    "give, not traced from any map; the deployment is the start of the attack, in our own words,",
+    "with round numbers for play. Pillboxes are bunkers (cover 50%); the wire is slow to cross.",
+    "",
+    "What happened, briefly: after dark on 8 March the Japanese 23rd Infantry came up through the",
+    "jungle under its own guns and mortars and rushed the line at the saddle, seizing several",
+    "pillboxes. American artillery and mortars fired close in front of the line all night. Over",
+    "the next days the 145th Infantry, with engineers and later tanks and flamethrowers, cleared",
+    "the pillboxes one by one, and by 12 March the line was whole again. The Japanese dead lay",
+    "thick on the slopes. The weather was hot and wet.",
+  ],
+});
+console.log(grid.map(r => r.join("")).join("\n"));

@@ -92,6 +92,10 @@ hex_works:
             note: "A large standing shield carried by crossbowmen; covers the man behind it."}
   wagon:   {name: "Wagon",             each: 0.25, enter: null, cover_behind: 40, no_horse: true, breach: 10,
             note: "Wagons drawn up and chained, as in a wagon laager."}
+  wire:    {name: "Barbed wire",       each: 2,  enter: 3,    no_horse: true, breach: 6,
+            note: "Belts of barbed wire on stakes (from the 1900s): slow to cross, cut by hand."}
+  bunker:  {name: "Bunker",            each: 30, enter: 1,    cover_here: 50, no_horse: true, breach: null,
+            note: "A log-and-earth pillbox or dugout with firing slits (the 20th century)."}
 
 # Where the ideas come from (described in our own words):
 # - Stakes: English archers in the Hundred Years' War planted sharpened stakes in front of

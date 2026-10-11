@@ -50,6 +50,7 @@ somewhat cooler; the test valley uses −0.9 °F (−0.5 °C).
 | Carolina piedmont, humid subtropical | upstate South Carolina (Greenville-Spartanburg) |
 | Virginia piedmont, humid | northern Virginia (Washington Dulles) |
 | Great Lakes, humid continental | the Niagara frontier (Buffalo) |
+| Tropical rainforest, the western Pacific | the Solomon Islands (Bougainville); rounded design estimates |
 
 The three North American climates are rounded approximations of 1991–2020 station normals
 for the places named; only the Greenville-Spartanburg January figures were checked against

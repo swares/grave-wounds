@@ -943,6 +943,9 @@ def _field_shape_errors(d: Data, f: dict, where: str) -> list[str]:
     works = f.get("works") or {}
     for kind, label, known in (("hexes", "hex", d.works.get("hex_works", {})), ("edges", "edge", d.works.get("edge_works", {}))):
         errors += [f"{where}: unknown {label} work {w.get('type')}" for w in works.get(kind, []) if w.get("type") not in known]
+    kinds = (d.units.get("indirect") or {}).get("kinds", {})
+    errors += [f"{where}: support {s.get('name')} needs a side (0 or 1), a known kind and tubes" for s in f.get("support", [])
+               if s.get("side") not in (0, 1) or s.get("kind") not in kinds or not isinstance(s.get("tubes"), int) or s["tubes"] < 1]
     return errors
 
 

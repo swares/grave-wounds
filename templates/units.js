@@ -615,7 +615,8 @@ function allowance(u){                            // hexes a unit may move (twic
 }
 function turnCost(u){ const n = Math.ceil(Math.max(1, u.men) / form(u).per_hex); return Math.max(1, Math.ceil(Math.min(u.width, n) / UD.turn_per)) }
 const onMap = (h, size) => h[0] >= 0 && h[0] < size[0] && h[1] >= 0 && h[1] < size[1];
-function canEnter(field, u, h){                  // no wagons; for horses, no marsh, stakes or felled trees
+function canEnter(field, u, h){                  // no wagons or water; for horses, no marsh, stakes or felled trees
+  if (groundAt(field, h).impassable) return false;
   const it = hexItem(field.works, h);
   if (it && (specOf("hex", it).enter === null || specOf("hex", it).enter === undefined)) return false;
   if (!u.mounted) return true;
