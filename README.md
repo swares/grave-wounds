@@ -114,8 +114,8 @@ python -m gravewounds roll --table towton-1461-all-hits --weapon bill -n 3
 From the design proposal (the rule changes from the rulebook comparison are agreed and
 written in):
 
-1. Playtest the stop check, graze, morale and battle map in the roller and tune their
-   numbers. Cover and elevation come next on the map.
+1. Playtest the stop check, graze, morale and battle map (with its ground, height and
+   cover) in the roller and tune their numbers.
 2. Playtest the travel map and the campaign and battle maps, then add maps for the other
    campaigns and battles.
 3. Playtest the medieval character generation (the team builder) and make a team in 20

@@ -360,10 +360,11 @@ function heapPopW(hp){
   return top;
 }
 const lessW = (a, b) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);
-// Hexes within `steps` movement, paying stepCost() plus `extra` a hex. opts: {cols, rows,
-// enemies, friends, works, extra} (see gravewounds/combat.py reachable_works).
+// Hexes within `steps` movement, paying stepCost() plus `extra` a hex, plus stepExtra(a, b)
+// (the battle map's ground and climbing). opts: {cols, rows, enemies, friends, works, extra,
+// stepExtra} (see gravewounds/combat.py reachable_works).
 function reachableWorks(start, steps, opts){
-  const { cols, rows, enemies, friends, works, extra = 0 } = opts;
+  const { cols, rows, enemies, friends, works, extra = 0, stepExtra = null } = opts;
   const key = h => h[0] + "," + h[1], blocked = new Set(enemies.map(key)), friendly = new Set(friends.map(key));
   const best = new Map([[key(start), 0]]), done = new Set(), hp = [[0, 0, start]];
   let seq = 1;
@@ -372,7 +373,7 @@ function reachableWorks(start, steps, opts){
     if (blocked.has(nk)) return;
     const sc = stepCost(works, h, n);
     if (sc === null) return;
-    const nc = cost + sc + extra;
+    const nc = cost + sc + extra + (stepExtra ? stepExtra(h, n) : 0);
     if (nc > steps || nc >= (best.has(nk) ? best.get(nk) : steps + 1)) return;
     best.set(nk, nc); heapPushW(hp, [nc, seq++, n]);
   };

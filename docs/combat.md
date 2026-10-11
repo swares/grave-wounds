@@ -92,6 +92,33 @@ attack. Stepping back 1 hex is a careful withdrawal and draws no free attack.
 - The printed tables list every weapon. The ranges are design estimates from each
   weapon's effective range in its period.
 
+## Ground and height
+
+The GM can paint the battle map with **Paint ground**: rocks and rubble, woods and brush,
+marsh, and hexes raised a level at a time (0 to 3). Painted hexes show a small mark; raised
+hexes are shaded, darker the higher they are.
+
+- **Movement.** Entering rocks or woods costs 1 extra hex of movement, marsh 2; each level
+  climbed costs 1 more.
+- **Cover.** A shot at a man in rocks is −10% and the rocks hide his legs, so the table's
+  *behind cover* situation applies. In woods the shot is −20%. Where a work also gives cover,
+  the better of the two counts.
+- **Higher and lower.** An attacker above his target gets the *attacker higher* situation
+  (blows and shots come down on the head and shoulders); one below gets *attacker lower*.
+- **Fighting uphill.** A close-combat attack on a man higher up is −10% for each level,
+  at most −20%.
+- **Shooting downhill.** A shot from higher ground reaches 10% further for each level.
+- **Line of sight.** Higher ground rising above the straight line between a shooter and his
+  target blocks the shot. Men in the way who stand below that line are shot over and do not
+  count.
+- **Take cover.** Instead of moving or attacking, the acting fighter can **Take cover**. Until
+  he moves or strikes in close combat, shots at him are −20% (or the ground's cover, if
+  better) and hit as *behind cover*, and blows at him hit as at a man *down*. His token gets a
+  dotted edge. **Undo move** takes it back.
+
+The roller sets these situations and penalties itself once the turns start; they show in
+the Strike panel's line under the result.
+
 ## Works
 
 Ditches, banks, palisades, gates, stakes, wagons and other works change movement, cover
@@ -125,7 +152,8 @@ Nerve is used for the stop check and for team morale.
   - Enemies his weapon can reach are ringed; click one to make him the defender. The roller
     refuses an attack out of reach, or after a run, and takes the range penalty off the
     attack.
-  - **Stay** keeps him in place; **Undo move** takes a move back.
+  - **Stay** keeps him in place; **Take cover** puts him to ground for the turn; **Undo
+    move** takes a move or the cover back.
   - A free attack is set up for you: roll the hit and apply it, or **Skip** it. The token
     has moved already, so if the free attack stops him, use Free placement to put him
     back where he was hit.

@@ -545,6 +545,22 @@ def works_rules(d) -> list[str]:
         f"<b>In the way:</b> each fighter standing on the line between a shooter and his target costs the shot {L['per_man']}% (at most {L['max']}%). "
         f"A miss goes into the first man in the way at {L['stray']}%: roll the hit on him with no attack roll and the severity table. "
         "Bows and crossbows loose high over the men in the way: the penalty, but never a stray.",
+    ] + ground_rules(d)
+
+
+def ground_rules(d) -> list[str]:
+    G = d.wounds["combat"]["ground"]
+    K = G["kinds"]
+    return [
+        f"<b>Ground:</b> the GM paints hexes as rocks and rubble, woods and brush, or marsh. Entering rocks or woods costs +{K['rough']['move']} hex of movement, "
+        f"marsh +{K['marsh']['move']}. A shot at a man in rocks loses {K['rough']['cover']}% and the rocks hide his legs (the table's behind-cover situation); "
+        f"in woods it loses {K['brush']['cover']}%. Cover from a work counts instead when it is better.",
+        f"<b>Height:</b> hexes stand at level 0 to {G['max_level']}; each level climbed costs +{G['climb']} hex of movement. "
+        "A blow or shot from higher ground takes the attacker-higher situation (head and shoulders), and from lower ground attacker-lower. "
+        f"A man striking uphill in close combat loses {G['uphill']}% a level (two levels at most). A shot downhill reaches {G['downhill_reach']}% further a level. "
+        "Higher ground rising above the straight line between shooter and target blocks the shot; men in the way below that line are shot over.",
+        f"<b>Taking cover:</b> on his turn a fighter may go to ground instead of moving or attacking. Until he moves or strikes in close combat, "
+        f"shots at him lose {G['take_cover']}% (or the ground's cover if better) and hit as behind cover, and blows at him hit as at a man down.",
     ]
 
 

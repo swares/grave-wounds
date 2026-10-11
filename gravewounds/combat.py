@@ -290,17 +290,54 @@ def weapon_reach(d: Data, wid: str, dist: int) -> dict | None:
     return None
 
 
-def in_the_way(d: Data, wid: str, frm, to, others) -> dict:
+def _under_sight(ground, frm, to, k: int, i: int, x) -> bool:
+    """Whether hex x, i steps along the k-step line from frm to to, lies below the line of sight
+    between the two (so a man there is shot over)."""
+    return level_at(ground, x) * k < level_at(ground, frm) * (k - i) + level_at(ground, to) * i
+
+
+def sight_clear(ground, frm, to) -> bool:
+    """Whether no higher ground between hexes frm and to rises above the line between them."""
+    k = hex_distance(frm, to)
+    return all(level_at(ground, x) * k <= level_at(ground, frm) * (k - i) + level_at(ground, to) * i
+               for i, x in enumerate(ray(frm, to, k)[1:-1], 1)) if k > 1 else True
+
+
+def in_the_way(d: Data, wid: str, frm, to, others, ground=None) -> dict:
     """Fighters standing between a shooter at hex frm and his target at hex to on the battle map
-    (others: [(id, hex)], not the two of them): {men (ids, nearest the shooter first), penalty
-    (% off the shot), stray (% a miss strikes the first of them instead; none for bows loosing
-    high over them)}."""
+    (others: [(id, hex)], not the two of them; men on ground below the line of sight are shot
+    over): {men (ids, nearest the shooter first), penalty (% off the shot), stray (% a miss
+    strikes the first of them instead; none for bows loosing high over them)}."""
     L, k = d.wounds["combat"]["line_of_fire"], hex_distance(frm, to)
     at = {tuple(h): i for i, h in others}
-    men = [at[tuple(x)] for x in ray(frm, to, k)[1:-1] if tuple(x) in at] if k > 1 else []
+    line = list(enumerate(ray(frm, to, k)[1:-1], 1)) if k > 1 else []
+    men = [at[tuple(x)] for i, x in line if tuple(x) in at and not _under_sight(ground, frm, to, k, i, x)]
     if not men:
         return {"men": [], "penalty": 0, "stray": 0}
     return {"men": men, "penalty": min(L["max"], L["per_man"] * len(men)), "stray": 0 if wid in L["arcing"] else L["stray"]}
+
+
+def height_effects(d: Data, ground, a, b, melee: bool) -> dict:
+    """Fighting from hex a at hex b across height: {situation (the auto situation key, or None),
+    penalty (% off a close-combat blow up at a higher man), reach (% on a missile's range shot
+    down from higher ground)}."""
+    G, diff = d.wounds["combat"]["ground"], level_at(ground, a) - level_at(ground, b)
+    out = {"situation": None, "penalty": 0, "reach": 0}
+    if diff > 0:
+        out["situation"] = "attacker_higher"
+        out["reach"] = 0 if melee else G["downhill_reach"] * diff
+    elif diff < 0:
+        out["situation"] = "defender_higher"
+        out["penalty"] = G["uphill"] * min(2, -diff) if melee else 0
+    return out
+
+
+def ground_cover(d: Data, ground, h, taking_cover: bool = False) -> dict:
+    """What a man at hex h has against missiles from the ground and from taking cover: {cover
+    (%, the better), low (low cover hides his lower body), kind}."""
+    g = ground_spec(d, ground, h)
+    cover = max(g.get("cover", 0), d.wounds["combat"]["ground"]["take_cover"] if taking_cover else 0)
+    return {"cover": cover, "low": bool(g.get("low")) or taking_cover, "kind": ((ground or {}).get("kinds") or {}).get(hkey(h), "open")}
 
 
 def free_attackers(d: Data, start, end, steps: int, enemies: list[dict]) -> list:
@@ -355,10 +392,28 @@ def _hex_item(d: Data, works, h):
     return it if it and intact(d, "hex", it) else None
 
 
-def step_cost(d: Data, works, a, b) -> int | None:
+def ground_spec(d: Data, ground, h) -> dict:
+    """The battle map's ground at hex h (ground: {kinds: {hex key: kind}, levels: {hex key: n}})."""
+    G = d.wounds["combat"]["ground"]["kinds"]
+    return G[((ground or {}).get("kinds") or {}).get(hkey(h), "open")]
+
+
+def level_at(ground, h) -> int:
+    """The battle map's height level at hex h (0 if not set)."""
+    return ((ground or {}).get("levels") or {}).get(hkey(h), 0)
+
+
+def ground_step(d: Data, ground, a, b) -> int:
+    """Extra movement from hex a into hex b for its ground and for climbing."""
+    if not ground:
+        return 0
+    return ground_spec(d, ground, b)["move"] + d.wounds["combat"]["ground"]["climb"] * max(0, level_at(ground, b) - level_at(ground, a))
+
+
+def step_cost(d: Data, works, a, b, ground=None) -> int | None:
     """Movement to step from hex a to the next hex b: 1, plus crossing the works on the
-    edge and entering the works in b. None if a work stops him."""
-    cost = 1
+    edge and entering the works in b, plus its ground and any climb. None if a work stops him."""
+    cost = 1 + ground_step(d, ground, a, b)
     for it in _edge_items(d, works, a, b):
         s = _spec(d, "edge", it)
         c = None if s.get("gate") else s.get("cross")      # open gates are already left out
@@ -374,9 +429,9 @@ def step_cost(d: Data, works, a, b) -> int | None:
     return cost
 
 
-def reachable_works(d: Data, start, steps: int, cols: int, rows: int, enemies, friends, works, extra: int = 0) -> dict:
-    """Like reachable(), but each step costs step_cost() (works slow or stop him), plus
-    `extra` for every hex (deep mud or snow)."""
+def reachable_works(d: Data, start, steps: int, cols: int, rows: int, enemies, friends, works, extra: int = 0, ground=None) -> dict:
+    """Like reachable(), but each step costs step_cost() (works and ground slow or stop him),
+    plus `extra` for every hex (deep mud or snow)."""
     blocked = {tuple(e) for e in enemies}
     friendly = {tuple(f) for f in friends}
     best = {tuple(start): 0}
@@ -387,7 +442,7 @@ def reachable_works(d: Data, start, steps: int, cols: int, rows: int, enemies, f
         t = tuple(n)
         if t in blocked:
             return
-        sc = step_cost(d, works, list(h), n)
+        sc = step_cost(d, works, list(h), n, ground)
         if sc is None:
             return
         nc = cost + sc + extra

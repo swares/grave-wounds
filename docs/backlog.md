@@ -9,6 +9,15 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
+- **Ground on the roller's battle map is painted by hand.** A fight sent from the travel
+  map brings its camp's works but not the ground around it, so the GM paints rocks, woods,
+  marsh and hills himself. The map's hex is 2 yards (2 m), far finer than the travel map's
+  terrain. One way: seed the battle map from the travel hex's terrain (woods, hills) with a
+  few random patches the GM can repaint.
+- **Taking cover lasts until the man moves or strikes in close combat.** He can keep shooting
+  from it on later turns, as a man firing prone would; there is no rule yet for the time it
+  takes to get up.
+
 - **Works and ground on the field map, simplified.** A unit's move pays only for what its
   middle hex crosses, the cover of a volley is taken at the nearest target hex only, and
   breaching is by order (it does not stop the unit fighting). High ground gives no edge to
@@ -20,7 +29,6 @@ When an item is done, delete it here and note it in the pull request that closes
   roller.
 - **One clock for all forces.** Each force on the travel map keeps its own clock (kept on
   purpose for now). A shared clock would let forces meet on the road.
-- **Cover and elevation on the battle map**, beyond what works give.
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
   Agincourt (1415), Towton (1461), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
   Lane (1814) and First Bull Run (1861) have both a campaign map and a battlefield. The
