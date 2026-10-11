@@ -160,6 +160,25 @@ As a guide (`python3 -m gravewounds disease`):
 Typhus needs crowding: it breaks out in a camp that is both filthy (poor hygiene) and held
 four weeks or more.
 
+**Named characters.** In the wound roller, a fighter's card can put him **With** a force on
+the travel map. From then on, each night the travel map runs his own course of disease
+alongside the force's men: the same camp, care, weather and marching, and the same weekly
+outbreak roll, but with his own **Endurance** (from his team-builder sheet, or 50, or as the
+GM sets it on his card). He is not one of the force's men: he is never counted in its sick or
+its dead. The force's health note lists its named men and how they are, and its log says when
+one falls ill, recovers or dies. Back in the roller his card shows his sickness, and it
+weakens him in a fight by the worst step he is at:
+
+| Step | In a fight |
+|---|---|
+| Mending | −10% attack and defence |
+| Serious | −25%, cannot run |
+| Grave | −25%, crawls only, defends only |
+| Deadly | too ill to fight |
+
+A case still incubating does not show or weaken him. A named man who dies of disease is out
+of every fight.
+
 ## Calendar and weather
 
 Days have real dates, and daylight sets each day's marching hours. The weather is rolled

@@ -10,10 +10,11 @@ from .model import Data
 
 
 def penalties(d: Data, wounds: list[dict], blood_frac: float = 1.0, hand: str = "R",
-              state: str | None = None, fatigue: int = 0) -> dict:
+              state: str | None = None, fatigue: int = 0, sick: str | None = None) -> dict:
     """wounds: [{loc, fx}] where fx is a composed wound (pain, impair). hand: 'R' or 'L'.
     state: a stop-check result in force (defend_only, stunned, out) or None.
-    fatigue: the fighter's fatigue level (weather.yaml fatigue.levels)."""
+    fatigue: the fighter's fatigue level (weather.yaml fatigue.levels).
+    sick: a named character's worst step of sickness (disease.yaml in_fight), or None."""
     C = d.wounds["combat"]
     T = d.wounds["tracking"]
     attack = defence = 0
@@ -74,6 +75,7 @@ def penalties(d: Data, wounds: list[dict], blood_frac: float = 1.0, hand: str = 
         if rule.get("defence"):
             defence += rule["defence"]
             notes.append(f"{rule['name'].lower()} def -{rule['defence']}%")
+    attack, defence = _sick_penalties(d, sick, attack, defence, flags, notes)
     return {"attack": min(attack, C["cap"]), "defence": min(defence, C["cap"]),
             "flags": sorted(flags), "notes": notes}
 
@@ -236,19 +238,35 @@ def neighbours(h, cols: int, rows: int) -> list[list[int]]:
     return out
 
 
-def move_allowance(d: Data, wounds: list[dict], state: str | None = None) -> dict:
+def _sick_penalties(d: Data, sick: str | None, attack: int, defence: int, flags: set, notes: list) -> tuple:
+    """Sickness in a fight (disease.yaml in_fight): its penalty, and defend only or out."""
+    rule = (d.disease.get("in_fight") or {}).get(sick or "", {})
+    if rule.get("penalty"):
+        attack += rule["penalty"]
+        defence += rule["penalty"]
+        notes.append(f"sick ({sick}) -{rule['penalty']}%")
+    if rule.get("defend_only"):
+        flags.add("defend_only")
+    if rule.get("out"):
+        flags.add("out")
+    return attack, defence
+
+
+def move_allowance(d: Data, wounds: list[dict], state: str | None = None, sick: str | None = None) -> dict:
     """How far a fighter can go this turn: {advance, run} in hexes (run 0: he cannot run).
-    wounds: [{fx}] as for penalties(). A fighter who is down or incapacitated gets no turn."""
+    wounds: [{fx}] as for penalties(). A fighter who is down or incapacitated gets no turn.
+    sick: a named character's worst step of sickness (disease.yaml in_fight)."""
     M = d.wounds["combat"]["move"]
-    if state in M["no_move_states"]:
+    rule = (d.disease.get("in_fight") or {}).get(sick or "", {})
+    if state in M["no_move_states"] or rule.get("out"):
         return {"advance": 0, "run": 0}
     imp = {i for w in wounds for i in w["fx"].get("impair", [])}
-    if imp & set(M["crawl_by"]):
+    if imp & set(M["crawl_by"]) or rule.get("crawl"):
         return {"advance": M["crawl"], "run": 0}
     adv, run = M["advance"], M["run"]
     if imp & set(M["halved_by"]):
         adv, run = adv // 2, run // 2
-    if imp & set(M["no_run_by"]):
+    if imp & set(M["no_run_by"]) or rule.get("no_run"):
         run = 0
     return {"advance": adv, "run": run}
 

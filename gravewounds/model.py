@@ -742,6 +742,7 @@ def _disease_errors(d: Data, terrain: dict) -> list[str]:
         errors.append("disease.yaml: steps must start with healed")
     errors += [f"disease.yaml: {k} must be one of the steps" for k in ("unfit_from", "carried_from") if D.get(k) not in steps]
     errors += _disease_camp_errors(d)
+    errors += [f"disease.yaml: in_fight.{k} is not a step" for k in D.get("in_fight", {}) if k not in steps]
     for k, ts in D.get("terrain_factors", {}).items():
         errors += [f"disease.yaml: terrain_factors.{k} names unknown terrain {t}" for t in ts if t not in terrain]
     for did, x in D.get("diseases", {}).items():

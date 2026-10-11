@@ -128,6 +128,21 @@ diseases:
     virulence: 15
     deaths: 45             # untreated bubonic, 30-60%
 
+# ---------- named characters ----------
+# A named character (the roller's fighters) can go with a force on the travel map. Each day
+# and week he runs the same course as the force's men, with his own Endurance (his sheet's,
+# or `endurance` above) in place of the typical man's. Sickness then weakens him in a fight,
+# by the worst step he is at (a case still incubating does not show). Design estimates.
+#   penalty  - taken off attack and defence (%)
+#   no_run   - he cannot run
+#   crawl    - he can only crawl, and only defends
+#   out      - too ill to fight at all
+in_fight:
+  mending: {penalty: 10}
+  serious: {penalty: 25, no_run: true}
+  grave:   {penalty: 25, crawl: true, defend_only: true}
+  deadly:  {out: true}
+
 # ---------- wounds carried from the field ----------
 # Men wounded in a unit battle (the field map) and carried to camp heal on the same five-step
 # track, with the same recovery check, but by the week: one check every `every` days.

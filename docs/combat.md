@@ -193,7 +193,9 @@ Nerve is used for the stop check and for team morale.
 
 ## In the roller
 
-- Each fighter card has **Side**, **Leader** and **Nerve**.
+- Each fighter card has **Side**, **Leader** and **Nerve**, and **Endurance** with **With**:
+  put him with a force on the travel map, and its days run his own sickness, which weakens
+  him here (see [travel.md](travel.md), Disease).
 - **Apply hit to defender** rolls the stop check. Type your own die in **Stop d100** or
   leave it blank.
 - **Next round** and **Next fighter** count results down and roll morale. Type your own
