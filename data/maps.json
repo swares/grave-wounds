@@ -189,6 +189,11 @@
      "name": "Eutaw Springs",
      "lat": 33.41,
      "lon": -80.29
+    },
+    {
+     "name": "Cowpens",
+     "lat": 35.14,
+     "lon": -81.82
     }
    ]
   },
@@ -237,6 +242,13 @@
       "y": 96.5,
       "names": [
        "Eutaw Springs"
+      ]
+     },
+     {
+      "x": 45.2,
+      "y": 85.8,
+      "names": [
+       "Cowpens"
       ]
      }
     ]
@@ -437,6 +449,11 @@
    ],
    "sites": [
     {
+     "name": "First Bull Run",
+     "lat": 38.81,
+     "lon": -77.52
+    },
+    {
      "name": "Antietam",
      "lat": 39.47,
      "lon": -77.74
@@ -475,9 +492,10 @@
     "borders": "",
     "dots": [
      {
-      "x": 112.5,
-      "y": 30.3,
+      "x": 112.8,
+      "y": 31.7,
       "names": [
+       "First Bull Run",
        "Antietam",
        "Gettysburg"
       ]

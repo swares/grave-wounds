@@ -47,7 +47,7 @@ function landShape(){
   return feature(t, t.objects.land);
 }
 
-// Paints the terrain: land or sea, then woods, marsh, hills, mountains, brooks (as marsh), roads, rivers (with a bridge where
+// Paints the terrain: land or sea (and any hand-drawn `water`: lakes the land data counts as land), then woods, marsh, hills, mountains, brooks (as marsh), roads, rivers (with a bridge where
 // a road crosses a lesser river), the named bridges and fords, villages and towns.
 function paint(spec, g){
   const land = landShape(), P = spec.places;
@@ -55,6 +55,18 @@ function paint(spec, g){
     const [lat, lon] = g.toLatLon(g.centre(c, r));
     return geoContains(land, [lon, lat]) ? spec.base || "f" : "w";
   }));
+  // Water the land data leaves as land (lakes): hand-drawn shore polygons of [lat, lon] points.
+  const inside = (poly, [lat, lon]) => {
+    let hit = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++){
+      const [ai, oi] = poly[i], [aj, oj] = poly[j];
+      if ((ai > lat) !== (aj > lat) && lon < (oj - oi) * (lat - ai) / (aj - ai) + oi) hit = !hit;
+    }
+    return hit;
+  };
+  for (const poly of spec.water || []){
+    for (let r = 0; r < g.rows; r++) for (let c = 0; c < g.cols; c++) if (inside(poly, g.toLatLon(g.centre(c, r)))) grid[r][c] = "w";
+  }
   const pt = p => (typeof p === "string" ? P[p] : p);
   const set = (h, k) => { if (g.on(h) && grid[h[1]][h[0]] !== "w") grid[h[1]][h[0]] = k };
   const line = (points, k, step = g.hexKm * 0.08) => {          // every hex a polyline runs through
@@ -74,6 +86,8 @@ function paint(spec, g){
     }
     set(g.hexAt(p), k);
   };
+  (spec.farms || []).forEach(w => blob(w, "f"));          // cleared farmland in wooded country (spec.base "F")
+  (spec.clearings || []).forEach(w => blob(w, "."));      // open pasture and old fields
   (spec.woods || []).forEach(w => blob(w, "F"));
   (spec.marsh || []).forEach(w => blob(w, "m"));
   (spec.hills || []).forEach(w => blob(w, "h"));

@@ -147,7 +147,7 @@ conflicts:
 
   "American Revolution":
     period: "1775-1783"
-    map: {bbox: [-84.5, 30.5, -65.5, 46.5], sites: [{name: Bunker Hill, lat: 42.38, lon: -71.06}, {name: Saratoga, lat: 43.00, lon: -73.63}, {name: Monmouth, lat: 40.26, lon: -74.31}, {name: Brandywine, lat: 39.88, lon: -75.58}, {name: Yorktown, lat: 37.24, lon: -76.51}, {name: Eutaw Springs, lat: 33.41, lon: -80.29}]}
+    map: {bbox: [-84.5, 30.5, -65.5, 46.5], sites: [{name: Bunker Hill, lat: 42.38, lon: -71.06}, {name: Saratoga, lat: 43.00, lon: -73.63}, {name: Monmouth, lat: 40.26, lon: -74.31}, {name: Brandywine, lat: 39.88, lon: -75.58}, {name: Yorktown, lat: 37.24, lon: -76.51}, {name: Eutaw Springs, lat: 33.41, lon: -80.29}, {name: Cowpens, lat: 35.14, lon: -81.82}]}
     summary: >
       The thirteen colonies, joined by France from 1778 and later Spain and the Dutch
       Republic, fought Britain for independence. Battles were fought with smoothbore
@@ -265,7 +265,7 @@ conflicts:
 
   "American Civil War":
     period: "1861-1865"
-    map: {bbox: [-93, 29, -72, 42], sites: [{name: Antietam, lat: 39.47, lon: -77.74}, {name: Gettysburg, lat: 39.83, lon: -77.23}, {name: Shiloh, lat: 35.15, lon: -88.32}, {name: Chickamauga, lat: 34.92, lon: -85.26}, {name: Vicksburg, lat: 32.35, lon: -90.88}]}
+    map: {bbox: [-93, 29, -72, 42], sites: [{name: First Bull Run, lat: 38.81, lon: -77.52}, {name: Antietam, lat: 39.47, lon: -77.74}, {name: Gettysburg, lat: 39.83, lon: -77.23}, {name: Shiloh, lat: 35.15, lon: -88.32}, {name: Chickamauga, lat: 34.92, lon: -85.26}, {name: Vicksburg, lat: 32.35, lon: -90.88}]}
     summary: >
       The United States (Union) against the seceded Confederate States. Most wounds came
       from the rifle-musket firing soft lead conoidal balls, which shattered bone and led
