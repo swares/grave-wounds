@@ -353,8 +353,8 @@ def team_rules(d, eid: str = "medieval") -> list[str]:
     ]
 
 
-def _follower_rule(d, T) -> str:
-    Q, U = T["followers"]["quality"], d.units["quality"]
+def _follower_rule(d, tables) -> str:
+    Q, U = tables["followers"]["quality"], d.units["quality"]
     def band(rows):
         lo, out = 1, []
         for r in rows:

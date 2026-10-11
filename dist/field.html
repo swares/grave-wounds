@@ -2168,30 +2168,39 @@ function readTeamIn(){
   return t;
 }
 function dropTeamIn(){ try{ localStorage.removeItem(TEAM_KEY) }catch(e){ /* storage off: nothing to drop */ } }
-function fromTeam(t){
-  if (S.phase !== "setup"){ S.msg = "Followers join before the battle starts: New battle first."; return false }
-  if (!S.units.length && FD.tables[t.table]) S.table = t.table;   // an empty field: the team's own wound table
+function teamSide(t){                             // the side of the team's name, else the first (an empty field takes its name and wound table)
+  if (!S.units.length && FD.tables[t.table]) S.table = t.table;
   if (!S.units.length && !S.sides.includes(t.side)) S.sides[0] = t.side;
-  const side = S.sides.includes(t.side) ? t.side : S.sides[0], k = S.sides.indexOf(side), ok = FD.tables[S.table].weapons;
-  const made = [];
-  for (const o of t.units){
-    const weapon = ok.includes(o.weapon) ? o.weapon : ok[0], shoots = "range" in FD.weapons[weapon] && !isGun(weapon);
-    const u = newUnit({ name: o.name, side, men: o.men, quality: o.quality, weapon, kit: FD.kits[o.kit] ? o.kit : "none",
-      formation: shoots ? "open" : "close", mounted: o.mounted, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
-    const spot = startSpots(k).find(pos => fits([...S.units, { ...u, pos }], S.units.length, { ...u, pos }, SIZE, S.field));
-    if (spot){ u.pos = spot; S.units.push(u) }
-    made.push(spot ? u : null);
-  }
-  let hid = Math.min(0, ...allHeroes().map(h => h.id)) - 1;   // heroes from the team builder: ids below zero (the roller's are above)
-  for (const h of t.heroes){
+  return S.sides.includes(t.side) ? t.side : S.sides[0];
+}
+function followerUnit(o, side, k){                // one career's followers as a unit, placed down its side's edge (null if no room)
+  const ok = FD.tables[S.table].weapons, weapon = ok.includes(o.weapon) ? o.weapon : ok[0], shoots = "range" in FD.weapons[weapon] && !isGun(weapon);
+  const u = newUnit({ name: o.name, side, men: o.men, quality: o.quality, weapon, kit: FD.kits[o.kit] ? o.kit : "none",
+    formation: shoots ? "open" : "close", mounted: o.mounted, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
+  const spot = startSpots(k).find(pos => fits([...S.units, { ...u, pos }], S.units.length, { ...u, pos }, SIZE, S.field));
+  if (!spot) return null;
+  u.pos = spot;
+  S.units.push(u);
+  return u;
+}
+function teamHeroes(heroes, made){                // the team's men as heroes with their units; ids below zero (the roller's are above)
+  const ok = FD.tables[S.table].weapons;
+  let hid = Math.min(0, ...allHeroes().map(h => h.id)) - 1;
+  for (const h of heroes){
     const u = made[h.unit] || made.find(Boolean);
     if (!u) continue;
     const weapon = ok.includes(h.weapon) ? h.weapon : u.weapon;
     u.heroes.push({ id: hid--, name: h.name, role: "range" in FD.weapons[weapon] ? "ranged" : "front", attack: h.attack, defence: h.defence, nerve: h.nerve,
       weapon, kit: FD.kits[h.kit] ? h.kit : "none", leader: !!h.leader, state: "up", wounds: [] });
   }
-  const lost = made.filter(u => !u).length;
-  S.msg = `${made.length - lost} units of followers joined ${side}, the team with them as heroes${lost ? `; ${lost} did not fit along the edge` : ""}. Place them, then start the battle.`;
+}
+function fromTeam(t){
+  if (S.phase !== "setup"){ S.msg = "Followers join before the battle starts: New battle first."; return false }
+  const side = teamSide(t), k = S.sides.indexOf(side);
+  const made = t.units.map(o => followerUnit(o, side, k));
+  teamHeroes(t.heroes, made);
+  const lost = made.filter(u => !u).length, cut = lost ? "; " + lost + " did not fit along the edge" : "";
+  S.msg = `${made.length - lost} units of followers joined ${side}, the team with them as heroes${cut}. Place them, then start the battle.`;
   return true;
 }
 function dropHandoff(){ try{ localStorage.removeItem("gravewounds-field-handoff") }catch(e){ /* storage off: nothing to drop */ } }

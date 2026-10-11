@@ -1262,7 +1262,8 @@ function addTeam(){                             // the team from the team builde
   S.teamIn = null;
   try{ localStorage.removeItem("gravewounds-team-handoff") }catch(e){}
   const nf = (t.followers || []).length;
-  S.mapMsg = `${t.team.length} fighters from the team builder${nf ? ` and ${nf} followers` : ""} joined ${t.side}.`;
+  const plus = nf ? " and " + nf + " followers" : "";
+  S.mapMsg = `${t.team.length} fighters from the team builder${plus} joined ${t.side}.`;
   renderChars();
 }
 function switchTable(tid){

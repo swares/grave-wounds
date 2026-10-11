@@ -545,11 +545,11 @@ function render(){
 function renderFollowers(){                       // the counts to roll, and the rolled followers' lines
   const name = cid => byId(T.careers, cid).name;
   $("#fqual").textContent = `(quality: ${tplQuality(S.template)})`;
-  $("#fcounts").innerHTML = S.fcounts.map(([cid, n], i) => `<li><span>${esc(name(cid))}</span><button class="small" data-fless="${i}" aria-label="One fewer ${esc(name(cid))}">−</button><b>${n}</b><button class="small" data-fmore="${i}" aria-label="One more ${esc(name(cid))}">+</button></li>`).join("")
-    || `<li class="muted">None: add a career below</li>`;
+  const row = ([cid, n], i) => `<li><span>${esc(name(cid))}</span><button class="small" data-fless="${i}" aria-label="One fewer ${esc(name(cid))}">−</button><b>${n}</b><button class="small" data-fmore="${i}" aria-label="One more ${esc(name(cid))}">+</button></li>`;
+  $("#fcounts").innerHTML = S.fcounts.map(row).join("") || `<li class="muted">None: add a career below</li>`;
   $("#sel-fadd").innerHTML = T.careers.filter(c => !S.fcounts.some(([x]) => x === c.id)).map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
-  const n = S.crew.length;
-  $("#crew").innerHTML = n ? `<section class="crew" aria-label="Followers"><h3>Followers (${n})</h3><ol>${S.crew.map(f => `<li class="q-${f.quality}">${esc(followerLine(f))}</li>`).join("")}</ol>
+  const n = S.crew.length, line = f => `<li class="q-${f.quality}">${esc(followerLine(f))}</li>`, lines = S.crew.map(line).join("");
+  $("#crew").innerHTML = n ? `<section class="crew" aria-label="Followers"><h3>Followers (${n})</h3><ol>${lines}</ol>
     <div class="toolbar" style="justify-content:flex-end;margin-top:8px"><button class="small" id="btn-reroll-crew">Reroll the followers</button></div></section>` : "";
 }
 const rollCrew = () => { S.crew = makeFollowers(S.region, S.fcounts.filter(([, n]) => n > 0), tplQuality(S.template), realDice) };
