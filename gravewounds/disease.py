@@ -47,12 +47,13 @@ def _pick(lo: int, hi: int, rng) -> int:
 
 
 def counts(d: Data, health: dict, men: int) -> dict:
-    """{sick (showing), incubating, unfit, carried, fit} for a force of `men`."""
+    """{sick (showing), incubating, unfit, carried, fit, nurses (fit men nursing the unfit)} for a force of `men`."""
     shown = [c for c in health["cases"] if c["inc"] == 0]
     unfit = sum(1 for c in shown if c["step"] >= _step(d, d.disease["unfit_from"]))
     carried = sum(1 for c in shown if c["step"] >= _step(d, d.disease["carried_from"]))
+    fit = max(0, men - unfit)
     return {"sick": len(shown), "incubating": len(health["cases"]) - len(shown),
-            "unfit": unfit, "carried": carried, "fit": max(0, men - unfit)}
+            "unfit": unfit, "carried": carried, "fit": fit, "nurses": min(fit, -(-unfit // d.disease["nursing"]["patients"]))}
 
 
 def march_pct(d: Data, fit: int, carried: int) -> int:
@@ -99,11 +100,54 @@ def week_factors(d: Data, o: dict) -> list:
     return f
 
 
-def outbreak_chance(d: Data, did: str, factors: list) -> int:
+def outbreak_chance(d: Data, did: str, factors: list, extra: dict | None = None) -> int:
+    """The week's outbreak chance: base + the factors' mods + contagion (extra: {did: add})."""
     x = d.disease["diseases"][did]
     if any(n not in factors for n in x.get("needs", [])):
         return 0
-    return max(0, min(100, x["base"] + sum(v for k, v in x["mods"].items() if k in factors)))
+    add = (extra or {}).get(did, 0)
+    return max(0, min(100, x["base"] + sum(v for k, v in x["mods"].items() if k in factors) + add))
+
+
+def _patients(d: Data, health: dict) -> list:
+    """The cases that need nursing: showing, at Serious or worse, in list order."""
+    u = _step(d, d.disease["unfit_from"])
+    return [c for c in health["cases"] if c["inc"] == 0 and c["step"] >= u]
+
+
+def nursing(d: Data, health: dict, men: int, clean: bool = False) -> dict:
+    """The force's nursing this week: {patients: {did: n}, unfit, nurses (fit men tending
+    them, as many as are needed and can be spared), unnursed (sick beyond what they can tend),
+    clean}."""
+    N, pts = d.disease["nursing"], _patients(d, health)
+    by = {}
+    for c in pts:
+        by[c["d"]] = by.get(c["d"], 0) + 1
+    fit = max(0, men - len(pts))
+    need = -(-len(pts) // N["patients"])
+    nurses = min(fit, need)
+    return {"patients": by, "unfit": len(pts), "nurses": nurses,
+            "unnursed": max(0, len(pts) - nurses * N["patients"]), "clean": clean}
+
+
+def contagion(d: Data, health: dict, men: int) -> dict:
+    """{did: add}: the camp's outbreak chances raised by the men already sick (showing)."""
+    C, out = d.disease["nursing"]["contagion"], {}
+    if men <= 0:
+        return out
+    for did, add in C["add"].items():
+        sick = sum(1 for c in health["cases"] if c["d"] == did and c["inc"] == 0)
+        out[did] = (100 * sick) // (men * C["per"]) * add
+    return out
+
+
+def nurse_chance(d: Data, did: str, nurse: dict, endurance: int | None = None) -> float:
+    """% a week that one nurse catches `did` from his patients (resisted with Endurance)."""
+    s = d.disease["nursing"]["spread"].get(did)
+    if not s or not nurse["unfit"] or not nurse["patients"].get(did) or (nurse["clean"] and s.get("clean")):
+        return 0.0
+    e = d.disease["endurance"] if endurance is None else endurance
+    return s["nurse"] * nurse["patients"][did] / nurse["unfit"] * (100 - e) / 100
 
 
 def _new_case(d: Data, did: str, rng) -> dict:
@@ -114,25 +158,28 @@ def _new_case(d: Data, did: str, rng) -> dict:
     return {"d": did, "inc": inc, "step": 0, "peak": peak, "shown": 0, "chronic": False}
 
 
-def catch_chance(d: Data, did: str, factors: list, endurance: int | None = None) -> float:
+def catch_chance(d: Data, did: str, factors: list, endurance: int | None = None, extra: dict | None = None) -> float:
     """% chance a well man catches `did` this week: the outbreak chance times the chance he
     fails to resist (d100 over Endurance: a typical man's, or a named character's own). A
     force is many men, so each rolls on his own rather than the whole force at once."""
     e = d.disease["endurance"] if endurance is None else endurance
-    return outbreak_chance(d, did, factors) * (100 - e) / 100
+    return outbreak_chance(d, did, factors, extra) * (100 - e) / 100
 
 
 def _d10000(rng) -> int:
     return (rng() - 1) * 100 + rng()
 
 
-def week(d: Data, health: dict, men: int, factors: list, rng, endurance: int | None = None) -> tuple[dict, list]:
+def week(d: Data, health: dict, men: int, factors: list, rng, endurance: int | None = None,
+         extra: dict | None = None, nurse: dict | None = None) -> tuple[dict, list]:
     """The weekly roll: each well man who is not immune may catch each disease (d10000 against
-    catch_chance x 100), then relapses. Returns (health, events); events are {kind: caught or
-    relapse, d, n}. endurance: a named character's own (men 1), or the typical man's."""
+    catch_chance x 100, with the camp's contagion `extra`), then the nurses roll for what their
+    patients have (`nurse`: nursing(), its `nurses` the men who roll), then relapses. Returns
+    (health, events); events are {kind: caught, nursed or relapse, d, n}. endurance: a named
+    character's own (men 1), or the typical man's."""
     D, h, ev = d.disease, _copy(health), []
     for did in D["diseases"]:
-        p = catch_chance(d, did, factors, endurance) * 100
+        p = catch_chance(d, did, factors, endurance, extra) * 100
         if p <= 0:
             continue
         exposed = max(0, men - len(h["cases"]) - h["immune"].get(did, 0))
@@ -143,8 +190,28 @@ def week(d: Data, health: dict, men: int, factors: list, rng, endurance: int | N
                 caught += 1
         if caught:
             ev.append({"kind": "caught", "d": did, "n": caught})
+    if nurse:
+        ev += _nurses_catch(d, h, men, nurse, rng, endurance)
     ev += _relapses(d, h, factors, rng)
     return h, ev
+
+
+def _nurses_catch(d: Data, h: dict, men: int, nurse: dict, rng, endurance: int | None) -> list:
+    """Each nurse who is well and not immune may catch each disease his patients have."""
+    ev = []
+    for did in d.disease["nursing"]["spread"]:
+        p = nurse_chance(d, did, nurse, endurance) * 100
+        if p <= 0:
+            continue
+        well = max(0, men - len(h["cases"]) - h["immune"].get(did, 0))
+        caught = 0
+        for _ in range(min(nurse["nurses"], well)):
+            if _d10000(rng) <= p:
+                h["cases"].append(_new_case(d, did, rng))
+                caught += 1
+        if caught:
+            ev.append({"kind": "nursed", "d": did, "n": caught})
+    return ev
 
 
 def _relapses(d: Data, h: dict, factors: list, rng) -> list:
@@ -224,7 +291,8 @@ def _case_day(d: Data, c: dict, target: int, rng, ev: dict, care: str = "field")
 
 def day(d: Data, health: dict, ctx: dict, rng, endurance: int | None = None) -> tuple[dict, dict]:
     """A day passes: incubations run down, cases climb to their peak, then recover or worsen.
-    ctx: {care (none, field or shelter), marched (bool), wet_cold (bool), filth (bool)}.
+    ctx: {care (none, field or shelter), marched (bool), wet_cold (bool), filth (bool), unnursed
+    (the last that many sick needing nursing get none: no care)}.
     endurance: a named character's own, or the typical man's.
     Returns (health, {shown, healed, dead}: men by disease)."""
     D, R = d.disease, d.disease["recovery"]
@@ -233,8 +301,11 @@ def day(d: Data, health: dict, ctx: dict, rng, endurance: int | None = None) -> 
     h = _copy(health)
     ev = {"shown": {}, "healed": {}, "dead": {}}
     keep = []
+    pts = _patients(d, h)
+    left = set(map(id, pts[len(pts) - ctx.get("unnursed", 0):])) if ctx.get("unnursed", 0) else set()
+    alone = target - R["care"][ctx["care"]] + R["care"]["none"]     # no one to tend him
     for c in h["cases"]:
-        out = _case_day(d, c, target, rng, ev, ctx["care"])
+        out = _case_day(d, c, alone if id(c) in left else target, rng, ev, "none" if id(c) in left else ctx["care"])
         x = profile(d, c["d"])
         if out == "sick":
             keep.append(c)
@@ -333,8 +404,8 @@ def camp_example(d: Data, weeks: int, hygiene: str, hot: bool, stay_from: int, m
             f.append("hot")
         if w >= stay_from:
             f += ["staying", "crowded"] if hygiene == "poor" else ["staying"]
-        h, _ = week(d, h, men, f, rng)
+        h, _ = week(d, h, men, f, rng, None, contagion(d, h, men), nursing(d, h, men))
         for _ in range(d.disease["week_days"]):
-            h, ev = day(d, h, ctx, rng)
+            h, ev = day(d, h, {**ctx, "unnursed": nursing(d, h, men)["unnursed"]}, rng)
             men -= sum(ev["dead"].values())
     return 100 * (start - men) / start

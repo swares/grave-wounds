@@ -29,7 +29,7 @@ litters:
 # week, at the same odds: outbreak chance x the chance he fails to resist (half, at Endurance
 # 50). A man carries one disease at a time. Chances may be fractions of a per cent.
 #
-# Calibrated (python3 -m gravewounds disease) against these marks: a fair camp held a year
+# Calibrated (python3 -m gravewounds disease, nursing and contagion included) against these marks: a fair camp held a year
 # costs about a tenth of a force dead (between the Union army's 5% a year and medieval
 # armies on campaign); six weeks in a poor bivouac about a tenth; six weeks of a hot, filthy
 # siege camp about a fifth (Harfleur, 1415). A fair camp gives a man about 1 in 70 a week
@@ -127,6 +127,24 @@ diseases:
     immune: true
     virulence: 15
     deaths: 45             # untreated bubonic, 30-60%
+
+# ---------- nursing and spread ----------
+# The sick at Serious or worse need nursing: one fit man for each `patients` of them. Each
+# week every nurse may catch what his patients have: `nurse` is the % a week for a nurse whose
+# patients all have it (scaled by the share that do), resisted with Endurance as any catch.
+# A force whose nurses keep clean (a switch on the travel map: washing, boiling, the sick kept
+# apart) stops the diseases marked `clean` reaching them, but not typhus (lice) or plague.
+# When there are too few fit men, the sick beyond what they can tend recover with no care.
+# Contagion: the whole camp's weekly outbreak chance rises by `add` for every `per` % of the
+# force sick (showing) with that disease. Nurses are taken off digging. Design estimates.
+nursing:
+  patients: 5
+  spread:
+    flux:    {nurse: 6, clean: true}
+    typhoid: {nurse: 3, clean: true}
+    typhus:  {nurse: 8}
+    plague:  {nurse: 1}
+  contagion: {per: 10, add: {flux: 2, typhoid: 1, typhus: 2}}
 
 # ---------- named characters ----------
 # A named character (the roller's fighters) can go with a force on the travel map. Each day

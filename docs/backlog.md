@@ -34,8 +34,6 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Scurvy for forces.** Camp disease covers flux, typhus, typhoid, ague and plague, and
   wound fever for the wounded from the field map. Scurvy needs food tracking (weeks
   without fresh food); it is in the design doc's disease table.
-- **Nursing and spread.** The design doc has nurses catching flux, typhus and typhoid from
-  the sick. The force-level rules leave that out for now.
 - **Character generation, beyond the first cut.** The medieval tables are a first draft for
   a team playtest. Still to come: tables for the other eras; characteristics feeding more
   rules (Endurance for blood and disease, Agility for initiative); named characters' skills

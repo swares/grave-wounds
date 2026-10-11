@@ -211,6 +211,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
       <h2>Health</h2>
       <div class="row">
         <div style="flex:2 1 200px"><label for="sel-hyg">Camp hygiene</label><select id="sel-hyg"></select></div>
+        <div style="flex:1 1 140px;align-self:end"><label title="Washing, boiling, the sick kept apart: flux and typhoid do not reach the nurses (typhus and plague still can)"><input type="checkbox" id="chk-clean"> Nurses keep clean</label></div>
       </div>
       <p class="muted" id="health-note" style="margin:0"></p>
       <ol class="log" id="log" aria-label="March and camp log"></ol>
@@ -556,7 +557,8 @@ const dzPick = (lo, hi, rng) => lo + (rng() - 1) % (hi - lo + 1);
 function healthCounts(health, men){           // {sick, incubating, unfit, carried, fit}
   const shown = health.cases.filter(c => c.inc === 0);
   const unfit = shown.filter(c => c.step >= dzStep(DZ.unfit_from)).length, carried = shown.filter(c => c.step >= dzStep(DZ.carried_from)).length;
-  return { sick: shown.length, incubating: health.cases.length - shown.length, unfit, carried, fit: Math.max(0, men - unfit) };
+  const fit = Math.max(0, men - unfit), nurses = Math.min(fit, Math.ceil(unfit / DZ.nursing.patients));
+  return { sick: shown.length, incubating: health.cases.length - shown.length, unfit, carried, fit, nurses };
 }
 function sickMarchPct(fit, carried){          // % of its speed a force keeps while carrying litters
   const L = DZ.litters;
@@ -586,23 +588,62 @@ function weatherFactors(highs, wet){            // the past week's warmth, heat,
   if (wet.filter(Boolean).length >= DZ.cold_wet_days && mean <= DZ.cold_wet_at) f.push("cold_wet");
   return f;
 }
-function outbreakChance(did, factors){
+function outbreakChance(did, factors, extra = null){   // base + the factors' mods + contagion (extra: {did: add})
   const x = DZ.diseases[did];
   if ((x.needs || []).some(n => !factors.includes(n))) return 0;
   const add = Object.entries(x.mods).reduce((t, [k, v]) => t + (factors.includes(k) ? v : 0), 0);
-  return Math.max(0, Math.min(100, x.base + add));
+  return Math.max(0, Math.min(100, x.base + add + ((extra || {})[did] || 0)));
+}
+const patientsOf = h => h.cases.filter(c => c.inc === 0 && c.step >= dzStep(DZ.unfit_from));   // the sick who need nursing, in order
+function nursingOf(h, men, clean = false){      // {patients: {did: n}, unfit, nurses, unnursed, clean}
+  const N = DZ.nursing, pts = patientsOf(h), by = {};
+  for (const c of pts) by[c.d] = (by[c.d] || 0) + 1;
+  const fit = Math.max(0, men - pts.length), nurses = Math.min(fit, Math.ceil(pts.length / N.patients));
+  return { patients: by, unfit: pts.length, nurses, unnursed: Math.max(0, pts.length - nurses * N.patients), clean };
+}
+function contagionOf(h, men){                   // {did: add}: outbreak chances raised by the men already sick
+  const C = DZ.nursing.contagion, out = {};
+  if (men <= 0) return out;
+  for (const [did, add] of Object.entries(C.add)){
+    const sick = h.cases.filter(c => c.d === did && c.inc === 0).length;
+    out[did] = Math.floor((100 * sick) / (men * C.per)) * add;
+  }
+  return out;
+}
+function nurseChance(did, nurse, endurance = DZ.endurance){   // % a week one nurse catches it from his patients
+  const s = DZ.nursing.spread[did];
+  if (!s || !nurse.unfit || !nurse.patients[did] || (nurse.clean && s.clean)) return 0;
+  return s.nurse * nurse.patients[did] / nurse.unfit * (100 - endurance) / 100;
+}
+function nursesCatch(h, men, nurse, rng, endurance){
+  const ev = [];
+  for (const did of Object.keys(DZ.nursing.spread)){
+    const p = nurseChance(did, nurse, endurance) * 100;
+    if (p <= 0) continue;
+    const well = Math.max(0, men - h.cases.length - (h.immune[did] || 0));
+    let caught = 0;
+    for (let i = 0; i < Math.min(nurse.nurses, well); i++){
+      if (d10000(rng) > p) continue;
+      h.cases.push(newCase(did, rng));
+      caught++;
+    }
+    if (caught) ev.push({ kind: "nursed", d: did, n: caught });
+  }
+  return ev;
 }
 function newCase(did, rng){
   const x = DZ.diseases[did], inc = dzPick(x.incubation[0], x.incubation[1], rng), roll = rng();
   return { d: did, inc, step: 0, peak: dzStep(x.peak.find(r => roll <= r.upto).step), shown: 0, chronic: false };
 }
 // % a well man catches it this week: a typical man's Endurance, or a named character's own
-const catchChance = (did, factors, endurance = DZ.endurance) => outbreakChance(did, factors) * (100 - endurance) / 100;
+const catchChance = (did, factors, endurance = DZ.endurance, extra = null) => outbreakChance(did, factors, extra) * (100 - endurance) / 100;
 const d10000 = rng => (rng() - 1) * 100 + rng();
-function healthWeek(health, men, factors, rng, endurance = DZ.endurance){   // the weekly roll: each well man may catch each disease, then relapses -> {health, events}
+// The weekly roll: each well man may catch each disease (with the camp's contagion `extra`),
+// then the nurses roll for what their patients have (`nurse`: nursingOf), then relapses -> {health, events}
+function healthWeek(health, men, factors, rng, endurance = DZ.endurance, extra = null, nurse = null){
   const h = copyHealth(health), ev = [];
   for (const did of Object.keys(DZ.diseases)){
-    const p = catchChance(did, factors, endurance) * 100;
+    const p = catchChance(did, factors, endurance, extra) * 100;
     if (p <= 0) continue;
     const exposed = Math.max(0, men - h.cases.length - (h.immune[did] || 0));
     let caught = 0;
@@ -613,6 +654,7 @@ function healthWeek(health, men, factors, rng, endurance = DZ.endurance){   // t
     }
     if (caught) ev.push({ kind: "caught", d: did, n: caught });
   }
+  if (nurse) ev.push(...nursesCatch(h, men, nurse, rng, endurance));
   ev.push(...relapses(h, factors, rng));
   return { health: h, events: ev };
 }
@@ -683,8 +725,10 @@ function healthDay(health, ctx, rng, endurance = DZ.endurance){   // a day passe
   const R = DZ.recovery;
   const target = endurance + R.care[ctx.care] + R.activity[ctx.marched ? "marched" : "rest"] + (ctx.wet_cold ? R.wet_cold : 0) + (ctx.filth ? R.filth : 0);
   const h = copyHealth(health), ev = { shown: {}, healed: {}, dead: {} }, keep = [];
+  const pts = patientsOf(h), k = ctx.unnursed || 0, left = new Set(k ? pts.slice(pts.length - k) : []);   // the last that many get no one to tend them
+  const alone = target - R.care[ctx.care] + R.care.none;
   for (const c of h.cases){
-    const out = caseDay(c, target, rng, ev, ctx.care), x = dzProfile(c.d);
+    const out = caseDay(c, left.has(c) ? alone : target, rng, ev, left.has(c) ? "none" : ctx.care), x = dzProfile(c.d);
     if (out === "sick") keep.push(c);
     else if (out === "dead") h.dead += 1;
     else if (x.immune) h.immune[c.d] = (h.immune[c.d] || 0) + 1;
@@ -812,7 +856,7 @@ function healthNight(f, today, camp){         // the sick get better or worse; o
   const kind = camp ? camp.kind : null, hyg = campHygiene(f.hygiene || null, kind);
   const ctx = { care: campCare(kind), marched: (f.marched || 0) > 0, wet_cold: nightHard(today.w, kind), filth: hyg === "poor" };
   namedNight(f, ctx, f.day % DZ.week_days === 0 ? weekFactorsFor(f, kind, hyg) : null);
-  const r = healthDay(healthOf(f), ctx, roll100);
+  const r = healthDay(healthOf(f), { ...ctx, unnursed: nursingOf(healthOf(f), f.men).unnursed }, roll100);
   f.health = r.health;
   const dead = Object.values(r.events.dead).reduce((t, n) => t + n, 0);
   if (dead) f.men = Math.max(0, f.men - dead);
@@ -829,27 +873,40 @@ const namedWith = (all, f) => Object.entries(all).filter(([, n]) => n.map === S.
 function namedNight(f, ctx, factors){          // the day (and on the week's last day, the outbreak roll) for each named man with the force
   const all = readNamed(), mine = namedWith(all, f);
   if (!mine.length) return;
+  const fh = healthOf(f), force = nursingOf(fh, f.men, !!f.cleanNurses);
   for (const [, n] of mine){
-    const e = Number.isFinite(n.endurance) ? n.endurance : DZ.endurance;
-    const r = healthDay(n.health || newHealth(), ctx, roll100, e);
-    n.health = r.health;
-    n.rest = (n.rest || 0) + 1;                   // a night with the force: the roller gives him back some blood
-    if (r.health.dead) n.died = Object.keys(r.events.dead)[0];
-    const one = (o, verb) => Object.entries(o).map(([did, k]) => `${verb} (${k > 1 ? k + " " : ""}${dzShort(did)})`);   // a man, not a force
-    const bits = [...one(r.events.shown, "fell ill"), ...one(r.events.healed, "recovered")];
-    if (r.health.dead){ n.dead = true; bits.push(`died (${Object.keys(r.events.dead).map(dzShort).join(", ")})`) }
-    if (factors && !n.dead){
-      const w = healthWeek(n.health, 1, factors, roll100, e);
-      n.health = w.health;
-    }
-    if (bits.length){
-      const line = `${dateText(f.day, true)}: ${n.name} ${bits.join("; ")}.`;
-      f.log.unshift(line);
-      n.log = [line, ...(n.log || [])].slice(0, 20);
-    }
+    const tended = force.nurses > 0 || mine.some(([, o]) => o !== n && nursesNow(o));   // nursed first, if anyone can
+    const bits = namedDay(n, ctx, tended ? 0 : 1);
+    if (factors && !n.dead) bits.push(...namedWeek(n, factors, contagionOf(fh, f.men), nursesNow(n) ? { ...force, nurses: 1 } : null));
+    if (!bits.length) continue;
+    const line = `${dateText(f.day, true)}: ${n.name} ${bits.join("; ")}.`;
+    f.log.unshift(line);
+    n.log = [line, ...(n.log || [])].slice(0, 20);
   }
   writeNamed(all);
 }
+const namedEnd = n => (Number.isFinite(n.endurance) ? n.endurance : DZ.endurance);
+function namedDay(n, ctx, unnursed){            // his night: his cases run their course -> what happened, in words
+  const r = healthDay(n.health || newHealth(), { ...ctx, unnursed }, roll100, namedEnd(n));
+  n.health = r.health;
+  n.rest = (n.rest || 0) + 1;                   // a night with the force: the roller gives him back some blood
+  const one = (o, verb) => Object.entries(o).map(([did, k]) => `${verb} (${k > 1 ? k + " " : ""}${dzShort(did)})`);   // a man, not a force
+  const bits = [...one(r.events.shown, "fell ill"), ...one(r.events.healed, "recovered")];
+  if (r.health.dead){
+    n.dead = true;
+    n.died = Object.keys(r.events.dead)[0];
+    bits.push(`died (${Object.keys(r.events.dead).map(dzShort).join(", ")})`);
+  }
+  return bits;
+}
+function namedWeek(n, factors, extra, nurse){   // his outbreak roll: the camp's contagion, and his patients' diseases if he nurses
+  const w = healthWeek(n.health, 1, factors, roll100, namedEnd(n), extra, nurse);
+  n.health = w.health;
+  const said = { caught: x => `caught ${dzShort(x.d)} (not showing yet)`, nursed: x => `caught ${dzShort(x.d)} nursing the sick (not showing yet)`, relapse: x => `fell ill with ${dzShort(x.d)} again` };
+  return w.events.map(x => said[x.kind](x));
+}
+// A named man nurses the force's sick if the GM set him to and he is not too sick himself.
+const nursesNow = n => !!n.nurse && !n.dead && !((n.health || {}).cases || []).some(c => c.inc === 0 && c.step >= dzStep(DZ.unfit_from));
 function namedLine(f){                        // the force's named men and how they are, for its panel
   const mine = Object.values(readNamed()).filter(n => n.map === S.mapId && n.force === f.id);
   if (!mine.length) return "";
@@ -868,9 +925,10 @@ function weekFactorsFor(f, kind, hyg){        // this week's factors for the for
     highs: days.map(x => x.w.high), wet: days.map(x => WXD.conditions[x.w.cond].precip !== "none"), plague: !!S.plague[S.mapId] });
 }
 function healthWeekFor(f, kind, hyg){
-  const r = healthWeek(healthOf(f), f.men, weekFactorsFor(f, kind, hyg), roll100);
+  const h = healthOf(f), r = healthWeek(h, f.men, weekFactorsFor(f, kind, hyg), roll100, DZ.endurance, contagionOf(h, f.men), nursingOf(h, f.men, !!f.cleanNurses));
   f.health = r.health;
-  const bits = r.events.map(e => (e.kind === "caught" ? `${e.n} caught ${dzName(e.d)}` : `${e.n} fell ill with ${dzName(e.d)} again`));
+  const said = { caught: e => `${e.n} caught ${dzName(e.d)}`, nursed: e => `${e.n} nursing the sick caught ${dzName(e.d)}`, relapse: e => `${e.n} fell ill with ${dzName(e.d)} again` };
+  const bits = r.events.map(e => said[e.kind](e));
   f.log.unshift(`Week to ${dateText(f.day, true)}: ${bits.length ? bits.join("; ") + " (not showing yet)" : "no new cases"}.`);
 }
 const fmtH = h => { if (h < 1 / 120) return "no time"; let hh = Math.floor(h + 1e-9), mm = Math.round((h - hh) * 60); if (mm === 60){ hh++; mm = 0 } return hh && mm ? `${hh} h ${mm} min` : hh ? `${hh} h` : `${mm} min` };
@@ -895,6 +953,7 @@ const colSpeed = L => Math.min(...columnOf(L).map(o => speedOf(o)));
 const colMen = L => columnOf(L).reduce((t, o) => t + o.men, 0);
 const colTools = L => columnOf(L).some(o => o.tools);
 const colFit = L => columnOf(L).reduce((t, o) => t + fitOf(o).fit, 0);
+const colDiggers = L => columnOf(L).reduce((t, o) => { const c = fitOf(o); return t + c.fit - c.nurses }, 0);   // fit men not nursing
 const colName = L => (columnOf(L).length > 1 ? `${L.name}'s column` : L.name);
 function colRefusal(L, h, verb){                // which force in the column cannot go there, and why
   const g = groundOf(L.day), bad = columnOf(L).find(o => !passable(curMap(), h, o.type, g)) || L;
@@ -992,7 +1051,7 @@ const campHere = f => (f.camp && sameHex(f.camp.hex, f.pos) ? f.camp : null);
 // again when it changes to another kind (the site, fires and watch are done), and cannot
 // make the same kind twice.
 function campCost(sel, kind){                 // a column makes one camp: all its men dig, any tools serve
-  const f = leaderOf(sel), r = campHours(curMap(), f.pos, kind, colMen(f), colType(f), colTools(f), colFit(f)), old = campHere(f);
+  const f = leaderOf(sel), r = campHours(curMap(), f.pos, kind, colMen(f), colType(f), colTools(f), colDiggers(f)), old = campHere(f);
   if (r.error) return r;
   if (old && old.kind === kind) return { error: "already has one here", same: true };
   let hours = r.hours;
@@ -1008,7 +1067,7 @@ function makeCamp(sel, kind){
   let left = r.hours;
   while (f.used + left > hpdOf(f.day) + ev + 1e-9){ left -= hpdOf(f.day) + ev - f.used; col.forEach(endDay) }
   const from = r.change && campHere(f).from ? campHere(f).from : came;   // when it got here and began camping
-  const rate = Math.max(1, colFit(f)) * WK.work_share;   // the fit men dig: for how far along the works are at any time
+  const rate = Math.max(1, colDiggers(f)) * WK.work_share;   // the fit men dig: for how far along the works are at any time
   f.used += left; f.camp = { kind, hex: f.pos.slice(), from, start: { day: d0, used: u0 }, labour: r.labour, rate, setup: Math.max(0, r.hours - r.labour / rate) };
   let what = "made a " + WK.camps[kind].name.toLowerCase();
   if (kind === "quartered") what = "took quarters";
@@ -1035,7 +1094,7 @@ function campText(sel, kind){
   if (r.error) return `${c.desc} Not here: it ${r.error}.`;
   const done = campDone(f.day, f.used, r.hours, hpdList(f.day));
   const until = done.day === f.day ? "" : ` (done ${dateText(done.day, true)}, ${clock(done.used, done.day)})`;
-  const fit = colFit(f), men = colMen(f) === fit ? `${fit} men` : `${colMen(f)} men (${fit} fit to dig)`;
+  const fit = colDiggers(f), men = colMen(f) === fit ? `${fit} men` : `${colMen(f)} men (${fit} fit to dig)`;
   return `${c.desc} ${men}: ${fmtH(r.hours)}${until}`
     + (r.labour ? `, ${Math.round(r.labour)} man-hours for a ${Math.round(r.perimeter)} m perimeter${(c.works || []).some(w => (WK.edge_works[w] || WK.hex_works[w]).haul) ? (r.woods ? ", timber to hand" : ", timber hauled from afar") : ""}` : "") + ".";
 }
@@ -1106,14 +1165,20 @@ function sickText(f){                        // who is sick, of what and how bad
 function renderHealth(f){
   const camp = campHere(f), kind = camp ? camp.kind : null, c = fitOf(f), h = healthOf(f);
   const opts = [["", `From the camp (${campHygiene(null, kind)})`], ...DZ.hygiene.map(x => [x, x[0].toUpperCase() + x.slice(1)])];
+  $("#chk-clean").checked = !!f.cleanNurses;
   $("#sel-hyg").innerHTML = opts.map(([v, t]) => `<option value="${v}" ${(f.hygiene || "") === v ? "selected" : ""}>${t}</option>`).join("");
   const hyg = campHygiene(f.hygiene || null, kind), factors = weekFactorsFor(f, kind, hyg);
-  const chances = Object.keys(DZ.diseases).map(did => [did, catchChance(did, factors)]).filter(([, n]) => n > 0).map(([did, n]) => `${dzName(did)} ${+n.toFixed(1)}%`);
+  const chances = Object.keys(DZ.diseases).map(did => [did, catchChance(did, factors, DZ.endurance, contagionOf(h, f.men))]).filter(([, n]) => n > 0).map(([did, n]) => `${dzName(did)} ${+n.toFixed(1)}%`);
   const next = f.day + (DZ.week_days - (f.day % DZ.week_days)) % DZ.week_days;
   const parts = [`${f.men} men, ${c.fit} fit.`];
   if (c.sick) parts.push(`Sick: ${sickText(f)}.`);
   if (c.incubating) parts.push(`${c.incubating} caught something and will show it soon.`);
   if (c.carried) parts.push(`${c.carried} on litters: the march goes at ${sickMarchPct(c.fit, c.carried)}%.`);
+  if (c.unfit){
+    const nu = nursingOf(h, f.men, !!f.cleanNurses);
+    const alone = nu.unnursed ? "; " + nu.unnursed + " have no one to tend them" : "", clean = f.cleanNurses ? " (nurses keep clean)" : "";
+    parts.push(`${nu.nurses} nursing the ${c.unfit} too sick to work${alone}${clean}.`);
+  }
   if (h.dead) parts.push(`${h.dead} dead of disease and wounds so far.`);
   const named = namedLine(f);
   if (named) parts.push(`Named with it (from the wound roller): ${named}.`);
@@ -1439,6 +1504,7 @@ function init(){
   $("#in-tools").onchange = e => { const f = selForce(); if (f){ f.tools = e.target.checked; render() } };
   $("#sel-camp").onchange = e => { S.campKind = e.target.value; render() };
   $("#sel-hyg").onchange = e => { const f = selForce(); if (f){ f.hygiene = e.target.value || null; render() } };
+  $("#chk-clean").onchange = e => { const f = selForce(); if (f){ f.cleanNurses = e.target.checked; render() } };
   $("#chk-plague").onchange = e => { S.plague[S.mapId] = e.target.checked; render() };
   $("#btn-camp").onclick = () => { const f = selForce(); if (f){ makeCamp(f, $("#sel-camp").value); render() } };
   const sendFight = k => {                   // k: which of the fights on offer (0 attack now / the only one, 1 wait)

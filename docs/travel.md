@@ -152,13 +152,27 @@ As a guide (`python3 -m gravewounds disease`):
 
 | A force in camp, dry weather | Dead of disease |
 |---|---|
-| A fair camp held a year | about 9% |
+| A fair camp held a year | about 8% |
 | Six weeks in a poor bivouac | about 10% |
-| Six weeks of a hot, filthy siege camp | about 23% (near Harfleur, 1415) |
+| Six weeks of a hot, filthy siege camp | about 22% (near Harfleur, 1415) |
 | Good quarters for a year | under 1% |
+
+These include nursing and contagion (below). In a large force they change the toll by less
+than a run's own spread; they bite in a small force or one where many are already sick.
 
 Typhus needs crowding: it breaks out in a camp that is both filthy (poor hygiene) and held
 four weeks or more.
+
+**Nursing and spread.** The men too sick to work (Serious or worse) need nursing: one fit man
+for every 5 of them, taken off digging. Each week every nurse may catch what his patients
+have, as in the design doc: bloody flux 6%, typhoid 3%, camp fever (typhus) 8% and plague 1% a
+week if all his patients have it, scaled by the share who do, and resisted with Endurance as
+any catch. **Nurses keep clean** (a switch on the force's health panel: washing, boiling, the
+sick kept apart) stops flux and typhoid reaching them, but not typhus (lice) or plague. If
+there are too few fit men, the sick beyond what the nurses can tend recover with no care
+(−20), whatever the camp. Contagion: the whole camp's weekly chance of flux and typhus rises
+by 2, and of typhoid by 1, for every tenth of the force already sick with it. The health note
+says how many are nursing and how many go untended. These numbers are design estimates.
 
 **Named characters.** In the wound roller, a fighter's card can put him **With** a force on
 the travel map. From then on, each night the travel map runs his own course of disease
@@ -175,6 +189,11 @@ weakens him in a fight by the worst step he is at:
 | Serious | −25%, cannot run |
 | Grave | −25%, crawls only, defends only |
 | Deadly | too ill to fight |
+
+A named man catches from the camp's contagion like anyone. With **Nurses the sick** ticked on
+his card he also nurses: each week he rolls as a nurse for what the force's sick have (unless
+he is too sick himself). A sick named man is nursed first, so he gets the camp's care while
+anyone fit can tend him.
 
 A case still incubating does not show or weaken him. A named man who dies of disease is out
 of every fight.
