@@ -880,8 +880,12 @@ function toil(c){                                 // a hand-to-hand exchange tir
   c.fatigue = f;
   c.toil = n;
 }
+function closeIn(){                               // a strike begins: rising from cover, and toil if hand to hand
+  riseToStrike();
+  if (!isShot(S.weapon)) [attackerChar(), defenderChar()].forEach(toil);
+}
 function initiativeAll(){                         // d10 + Agility / 10 for every fighter, then the order
-  for (const c of S.chars) c.init = rollInitiative(statOf(c, "agi"), 1 + Math.floor(Math.random() * CHR.initiative.die));
+  for (const c of S.chars) c.init = rollInitiative(statOf(c, "agi"), 1 + crypto.getRandomValues(new Uint32Array(1))[0] % CHR.initiative.die);
   renderChars();
 }
 function riseToStrike(){                          // a man in cover rises to strike in close combat, which comes off his move
@@ -894,8 +898,7 @@ function attackPhase(atkPct, rc, freeHit){        // the attack and defence roll
   const w = DATA.weapons[S.weapon], A = penalties(attackerChar()), D = penalties(defenderChar()), defPct = readPct("#in-def");
   const blocked = attackBlock(A, w) || misfired(rc, freeHit);
   if (blocked) return { end: { blocked } };
-  riseToStrike();
-  if (!isShot(S.weapon)) [attackerChar(), defenderChar()].forEach(toil);
+  closeIn();
   const ar = attackRoll(atkPct, readDie("#in-atk-roll") ?? d100(), (A ? A.attack : 0) + (rc.range ? rc.range.penalty : 0));
   const combat = { atk: ar, def: null, range: rc.range };
   if (!ar.hit){
