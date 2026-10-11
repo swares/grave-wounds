@@ -3076,6 +3076,16 @@ function fillWeapons(){
   $("#sel-weapon").innerHTML = `<optgroup label="This fight">${own.map(opt).join("")}</optgroup>`
     + (cc.length ? `<optgroup label="Close combat, any era">${cc.map(opt).join("")}</optgroup>` : "");
 }
+function startExamples(){                       // example combatants from this conflict, so the tracker shows what it does
+  const conf = DATA.conflicts[DATA.tables[S.table].battle] || {}, ex = conf.examples || [];
+  const pick = [ex[0], ex[ex.length - 1]].filter(Boolean);
+  S.chars = pick.map(x => newChar("Example: " + x.name, x.kit, x.weapon, FIG.lookFor(conf, x), x.side));
+  if (!S.chars.length) return;
+  selectChar(0);
+  if (S.chars.length > 1) setAttacker(S.chars.length - 1);
+  S.weapon = (pick[1] || pick[0]).weapon; fillWeapons();
+  for (let i = 0; i < 12 && !applyHit(S.chars[0], (rollHit(), S.hit)); i++);
+}
 function init(){
   const ids = Object.keys(DATA.tables);   // already in data order
   S.table = ids.find(i => DATA.tables[i].variant === "adjusted") || ids[0];
@@ -3174,20 +3184,8 @@ function init(){
   try{ S.handoff = JSON.parse(localStorage.getItem("gravewounds-handoff") || "null") }catch(e){ S.handoff = null }
   try{ S.teamIn = JSON.parse(localStorage.getItem("gravewounds-team-handoff") || "null") }catch(e){ S.teamIn = null }
 
-  const restored = restore();
-  if (restored) syncNamed();
-  if (!restored){
-    // Example combatants from this conflict so the tracker shows what it does; remove them any time.
-    const conf = DATA.conflicts[DATA.tables[S.table].battle] || {}, ex = conf.examples || [];
-    const pick = [ex[0], ex[ex.length - 1]].filter(Boolean);
-    S.chars = pick.map(x => newChar("Example: " + x.name, x.kit, x.weapon, FIG.lookFor(conf, x), x.side));
-    if (S.chars.length){
-      selectChar(0);
-      if (S.chars.length > 1) setAttacker(S.chars.length - 1);
-      S.weapon = (pick[1] || pick[0]).weapon; fillWeapons();
-      for (let i = 0; i < 12 && !applyHit(S.chars[0], (rollHit(), S.hit)); i++);
-    }
-  }
+  if (restore()) syncNamed();                // his nights in camp on the travel map
+  else startExamples();
   applyFieldHeroes();
   unitToggle($("#units-toggle"), () => { renderResult(); renderChars() });
   const att = attackerChar();
