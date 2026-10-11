@@ -579,13 +579,13 @@ def _through_rays(d: Data, terrain: str, around: dict, what: str) -> list:
 
 
 def _ray_gap(p: list, origin: list, rays: list) -> float:
-    """The least distance in metres from point p to rays starting at origin."""
+    """The least squared distance (square metres) from point p to rays starting at origin."""
     best = None
     for u in rays:
         q = [p[0] - origin[0], p[1] - origin[1]]
         t = q[0] * u[0] + q[1] * u[1]
         x = q[0] * u[1] - q[1] * u[0]
-        off = math.sqrt(q[0] * q[0] + q[1] * q[1]) if t < 0 else abs(x)
+        off = q[0] * q[0] + q[1] * q[1] if t < 0 else x * x
         best = off if best is None or off < best else best
     return best
 
@@ -599,7 +599,10 @@ def _camp_bank(d: Data, size: tuple, clear, rivers: list, width: int, toward, fl
     (centre, radius), n = clear, (-rivers[0][1], rivers[0][0])
     a = dict(SIDES).get(toward)
     side = n[0] * a[0] + n[1] * a[1] if a else 0
-    sign = (1 if flip else -1) if abs(side) < 0.25 else (1 if side > 0 else -1)
+    if abs(side) < 0.25:                         # along the river, or no direction: the fight decides
+        sign = 1 if flip else -1
+    else:
+        sign = 1 if side > 0 else -1
     n = (sign * n[0], sign * n[1])
     cxy = _map_xy(hm, cols, rows, centre[0], centre[1])
     reach = hm * (cols - 0.5) / 2 * abs(n[0]) + hm * _S3 * (rows - 1) / 2 * abs(n[1]) - (cxy[0] * n[0] + cxy[1] * n[1])
@@ -608,7 +611,7 @@ def _camp_bank(d: Data, size: tuple, clear, rivers: list, width: int, toward, fl
     s, clear_by = near + width * hm / 2, near + width * hm / 2
     for _ in range(400):                         # a bend may swing back toward the camp: move further out
         origin = [cxy[0] + n[0] * s, cxy[1] + n[1] * s]
-        if _ray_gap(cxy, origin, rivers) >= clear_by:
+        if _ray_gap(cxy, origin, rivers) >= clear_by * clear_by:
             break
         s += hm
     return origin, width

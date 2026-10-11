@@ -1465,10 +1465,10 @@ function throughRays(terrain, around, what){     // the directions it runs from 
 }
 // Where the river runs when the defenders camp with works at the crossing: [the point its rays
 // start from, its width in hexes] (as gravewounds.combat._camp_bank).
-function rayGap(p, origin, rays){                // the least distance from p to rays starting at origin
+function rayGap(p, origin, rays){                // the least squared distance from p to rays starting at origin
   return Math.min(...rays.map(u => {
     const q = [p[0] - origin[0], p[1] - origin[1]], t = q[0] * u[0] + q[1] * u[1], x = q[0] * u[1] - q[1] * u[0];
-    return t < 0 ? Math.sqrt(q[0] * q[0] + q[1] * q[1]) : Math.abs(x);
+    return t < 0 ? q[0] * q[0] + q[1] * q[1] : x * x;
   }));
 }
 function campBank(size, clear, rivers, width, toward, flip){
@@ -1487,7 +1487,7 @@ function campBank(size, clear, rivers, width, toward, flip){
   let s = clearBy, origin = null;
   for (let i = 0; i < 400; i++){                  // a bend may swing back toward the camp: move further out
     origin = [cxy[0] + n[0] * s, cxy[1] + n[1] * s];
-    if (rayGap(cxy, origin, rivers) >= clearBy) break;
+    if (rayGap(cxy, origin, rivers) >= clearBy * clearBy) break;
     s += hm;
   }
   return [origin, w];
@@ -1878,7 +1878,10 @@ function setupHandoff(){                     // a camp or position sent from the
   const h = S.handoff; if (!h) return;
   const ft = h.party || h.force.type, men = h.force.men, r = campRadius(men, ft);   // a column's camp is sized for all of it
   const lay = h.camp && WK.camps[h.camp] ? WK.camps[h.camp].layout : null;
-  const need = 2 * (r + (lay === "fortified" ? 3 : lay ? 2 : 1)) + 6 + (lay && atCrossing(h) ? 2 * (GRD.camp_bank.gap + GRD.edges.river_width[1] + GRD.camp_bank.far) : 0);
+  let ring = 1;                                                            // works around the camp
+  if (lay) ring = lay === "fortified" ? 3 : 2;
+  const river = lay && atCrossing(h) ? 2 * (GRD.camp_bank.gap + GRD.edges.river_width[1] + GRD.camp_bank.far) : 0;
+  const need = 2 * (r + ring) + 6 + river;
   S.map = { cols: Math.min(80, Math.max(24, need)), rows: Math.min(60, Math.max(16, need)) };
   const { cols, rows } = S.map;
   const L = lay ? campWorks(h.camp, men, ft, cols, rows, h.done ?? null, !!h.hauled) : { centre: [cols >> 1, rows >> 1], radius: r, fits: true, works: { edges: {}, hexes: {} } };
