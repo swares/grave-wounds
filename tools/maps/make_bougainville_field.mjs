@@ -16,9 +16,13 @@ import { N, S, wobble, patch, groundGrid, unit, writeField } from "./field_lib.m
 const COLS = 120, ROWS = 100;                 // 1200 m east to west, about 870 m north to south
 const crest = c => 48 + wobble(c / 3, 0.7, 2.2) * 0.8;               // the ridge's crest line, west to east
 const saddle = c => c >= 54 && c <= 66;                               // where the line dips between two knobs
+function ridgeTop(c, off){
+  if (!saddle(c)) return "h";
+  return Math.abs(off) <= 2 ? "." : "r";
+}
 function kind(c, r){
   const k = crest(c);
-  if (Math.abs(r - k) <= 6) return saddle(c) ? (Math.abs(r - k) <= 2 ? "." : "r") : "h";   // the ridge top; the saddle lower, its sides broken
+  if (Math.abs(r - k) <= 6) return ridgeTop(c, r - k);                       // the ridge top; the saddle lower, its sides broken
   if (r > k - 18 && r < k - 6) return (c * 7 + r * 3) % 11 === 0 ? "r" : ".";  // the cleared belt: stumps and shell holes
   if (r >= k - 22 && r <= k - 18) return "r";                                // the jungle's torn edge
   if (r > k + 6 && r < k + 12 && patch(c, r, { cx: 60, cy: k + 9, rx: 70, ry: 4, a: 0.2, b: 1.1 })) return "r";   // the steep back slope

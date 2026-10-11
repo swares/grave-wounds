@@ -530,10 +530,15 @@ def battlefield(d: Data, fid: str) -> dict:
     wx = f.get("weather") or {"cond": "fair", "wind": "calm", "ground": {"mud": 0, "snow": 0}}
     out = {"ground": ground, "works": works, "weather": wx, "size": list(f["size"]), "up": f.get("up", "N")}
     if f.get("support"):
-        K = d.units["indirect"]["kinds"]
-        out["support"] = [{"name": s["name"], "army": s["side"], "side": f["sides"][s["side"]], "kind": s["kind"], "tubes": s["tubes"],
-                           "rounds": s["tubes"] * K[s["kind"]]["rounds"], "mission": None} for s in f["support"]]
+        out["support"] = _field_support(d, f)
     return out
+
+
+def _field_support(d: Data, f: dict) -> list:
+    """A battlefield's own fire support, each with its full stock of rounds and no mission yet."""
+    K = d.units["indirect"]["kinds"]
+    return [{"name": s["name"], "army": s["side"], "side": f["sides"][s["side"]], "kind": s["kind"], "tubes": s["tubes"],
+             "rounds": s["tubes"] * K[s["kind"]]["rounds"], "mission": None} for s in f["support"]]
 
 
 def battlefield_units(d: Data, fid: str) -> list:

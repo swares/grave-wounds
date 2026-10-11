@@ -16,9 +16,13 @@ const COLS = 150, ROWS = 120;                 // 1500 m east to west, about 1040
 // The canal: about 20 m wide, its loop's tip at the top of the salient near the middle.
 const canal = c => 34 + ((c - 72) / 46) ** 2 * 26 + wobble(c / 4, 0.4, 1.3) * 0.4;
 const roadBridge = 80, railBridge = 64;       // columns of the two bridges at the tip of the loop
+function inCanal(c, r){                       // about 20 m wide, unbroken
+  const lo = Math.min(canal(c - 0.5), canal(c + 0.5)), hi = Math.max(canal(c - 0.5), canal(c + 0.5));
+  return r >= lo - 0.5 && r <= hi + 1.5;
+}
 function kind(c, r){
-  const k = canal(c), lo = Math.min(canal(c - 0.5), canal(c + 0.5)), hi = Math.max(canal(c - 0.5), canal(c + 0.5));
-  if (r >= lo - 0.5 && r <= hi + 1.5) return c === roadBridge || c === railBridge ? "." : "w";   // about 20 m wide, unbroken
+  const k = canal(c);
+  if (inCanal(c, r)) return c === roadBridge || c === railBridge ? "." : "w";
   if (r > k + 2 && patch(c, r, { cx: 74, cy: 62, rx: 22, ry: 14, a: 0.5, b: 1.7 })) return "T";     // Nimy, on the south bank
   if (r > k + 2 && patch(c, r, { cx: 30, cy: 104, rx: 20, ry: 14, a: 1.1, b: 0.2 })) return "T";    // the edge of Mons
   if (r < k - 6 && patch(c, r, { cx: 128, cy: 14, rx: 26, ry: 16, a: 2.0, b: 0.9 })) return "F";    // woods north-east, towards Obourg
