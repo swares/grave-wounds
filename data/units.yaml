@@ -209,15 +209,33 @@ machine_guns:
 # `prone` for a unit gone to ground and less the hex's ground cover. A struck man rolls a
 # wound as a hit by the table's shell weapon (`weapon`, or `fallback` if the table lacks it)
 # at `attack` %, as a battery's. Design estimates, tuned by python3 -m gravewounds units.
+#
+# tree_burst: a shell bursting in the branches over men in woods (`ground`) showers them from
+#   above: the woods give no cover, the struck % is times `factor`, and going to ground cuts
+#   it only to `prone` (not the usual `prone` above).
+# smoke: a mission may fire smoke instead (the same rounds). Each burst fills its hex and
+#   those within `radius` with smoke that hangs for `lasts` exchanges by the wind, counting
+#   the one it lands in; since the shooting comes before the shells land, it screens the
+#   next lasts - 1 exchanges (calm: 3; a gale blows it away at once). No one sees or shoots
+#   into, out of or through smoke, and fire cannot be called on a hex behind it. It wounds
+#   no one.
+# counter_battery: a battery that has fired is located (flash and sound), and from then on the
+#   other side may call fire on it instead of on a hex, with no one needing to see it. Each
+#   shell knocks out one of its tubes at the kind's `counter` % (mortars cannot reach).
+# creep: a mission that keeps firing may creep, its aim moving that many hexes (1 to `max`)
+#   each exchange after it fires, in the direction chosen, ahead of an advance.
 indirect:
   weapon: mortar_artillery
   fallback: explosive_fragment
   attack: 70
   prone: 0.35
   kinds:
-    mortar:   {name: "Mortars",          rate: 3, rounds: 60, delay: 0, scatter: 2, radius: 2, struck: [15, 5, 1]}
-    field:    {name: "Field guns",       rate: 2, rounds: 80, delay: 1, scatter: 4, radius: 3, struck: [20, 8, 3, 1]}
-    howitzer: {name: "Heavy howitzers",  rate: 1, rounds: 40, delay: 1, scatter: 5, radius: 5, struck: [30, 12, 5, 2, 1, 0.5]}
+    mortar:   {name: "Mortars",          rate: 3, rounds: 60, delay: 0, scatter: 2, radius: 2, struck: [15, 5, 1],                counter: 0}
+    field:    {name: "Field guns",       rate: 2, rounds: 80, delay: 1, scatter: 4, radius: 3, struck: [20, 8, 3, 1],             counter: 2}
+    howitzer: {name: "Heavy howitzers",  rate: 1, rounds: 40, delay: 1, scatter: 5, radius: 5, struck: [30, 12, 5, 2, 1, 0.5], counter: 4}
+  tree_burst: {ground: [woods], factor: 1.5, prone: 0.7}
+  smoke: {radius: 1, lasts: {calm: 4, breeze: 3, strong: 2, gale: 1}}
+  creep: {max: 3}
 
 # ---------- suppression ----------
 # Shellfire and machine-gun fire pin men down. A unit that a shell burst within reach of, or a

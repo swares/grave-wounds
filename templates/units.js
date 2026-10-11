@@ -370,26 +370,71 @@ function sightHexes(field){                       // how far the weather lets a 
   const cond = field?.weather?.cond, vis = cond && FD.weather ? FD.weather.conditions[cond].visibility : null;
   return vis === null || vis === undefined ? null : Math.floor(vis / UD.range_scale);
 }
-function sees(field, u, h, sight){                // any hex of u sees h: within sight, no woods between
-  return footprint(u).flat().some(x => { const dist = hdist(x, h); return (sight === null || dist <= sight) && !ray(x, h, dist).slice(1, -1).some(y => groundAt(field, y).cover) });
+function sees(field, u, h, sight){                // any hex of u sees h: within sight, no woods between, no smoke on the line
+  return footprint(u).flat().some(x => {
+    const dist = hdist(x, h);
+    if (sight !== null && dist > sight) return false;
+    const line = ray(x, h, dist);
+    return !line.slice(1, -1).some(y => groundAt(field, y).cover) && !smoked(field, line);
+  });
+}
+function smoked(field, hexes){                    // smoke over any of these hexes
+  const sm = field?.smoke;
+  return !!sm && hexes.some(h => `${h[0]},${h[1]}` in sm);
+}
+function within(h, radius){                       // hex h and every hex within radius of it
+  const out = [[h[0], h[1]]];
+  for (let n = 1; n <= radius; n++) for (let a = 0; a < 6; a++){ const corner = step(h, a, n); for (let j = 0; j < n; j++) out.push(step(corner, a + 2, j)) }
+  return out;
 }
 function indirectAll(us, table, rng, acc, log, field, under){   // every fire mission due this exchange, in the support list's order
   const weapon = shellWeapon(table);
   if (!field || !weapon) return;
   (field.support || []).forEach((b, k) => {
     const m = b.mission;
-    if (!m || (m.wait || 0) > 0 || (b.rounds || 0) <= 0) return;
+    if (!m || (m.wait || 0) > 0 || (b.rounds || 0) <= 0 || (b.tubes || 0) <= 0) return;
     fireMission({ us, table, weapon, rng, acc, log, field, under }, k, b);
   });
 }
-function fireMission(ctx, k, b){                  // where each shell lands, then the men struck in every unit (ctx: us, table, weapon, rng, acc, log, field, under)
-  const { us, table, weapon, rng, acc, log, field, under } = ctx;
-  const I = UD.indirect, K = I.kinds[b.kind], m = b.mission, shells = Math.min(b.tubes * K.rate, b.rounds), bursts = [];
-  for (let s = 0; s < shells; s++){ const dirn = rng.randint(0, 5), far = rng.randint(0, K.scatter); bursts.push(step(m.hex, dirn, far)) }
+function fireMission(ctx, k, b){                  // on an enemy battery or a hex: smoke laid or men struck; located; a creeping mission moves on (ctx: us, table, weapon, rng, acc, log, field, under)
+  const { rng, log, field } = ctx;
+  const K = UD.indirect.kinds[b.kind], m = b.mission, shells = Math.min(b.tubes * K.rate, b.rounds);
   b.rounds -= shells;
-  if (!m.repeat) b.mission = null;
-  log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells, at: m.hex, bursts });
-  const att = { table, weapon, kit: null, quality: "regular" };
+  b.located = true;
+  if (m.battery !== undefined && m.battery !== null) log.push(...counterFire(field, k, b, shells, K, rng));
+  else {
+    const bursts = [];
+    for (let s = 0; s < shells; s++){ const dirn = rng.randint(0, 5), far = rng.randint(0, K.scatter); bursts.push(step(m.hex, dirn, far)) }
+    log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells, at: m.hex, bursts, smoke: !!m.smoke });
+    if (m.smoke) laySmoke(field, bursts);
+    else shellUnits(ctx, k, b, bursts);
+  }
+  missionOn(b, m, field.size);
+}
+function missionOn(b, m, size){                   // a single mission ends; a creeping one moves its aim on, and ends when it leaves the map
+  if (!m.repeat){ b.mission = null; return }
+  const cr = m.creep;
+  if (!cr) return;
+  for (let s = 0; s < cr.step; s++){ m.hex = step(m.hex, cr.dir + (cr.done || 0) % 2); cr.done = (cr.done || 0) + 1 }
+  if (size && !(m.hex[0] >= 0 && m.hex[0] < size[0] && m.hex[1] >= 0 && m.hex[1] < size[1])) b.mission = null;
+}
+function counterFire(field, k, b, shells, K, rng){   // each shell knocks out one of the target battery's tubes at K's counter %
+  const j = b.mission.battery, sup = field.support, tg = j >= 0 && j < sup.length ? sup[j] : null;
+  if (!tg || tg.side === b.side){ b.mission = null; return [] }
+  let hits = 0;
+  for (let s = 0; s < shells; s++) if (rng.randint(1, 100) <= K.counter) hits++;
+  const knocked = Math.min(tg.tubes, hits);
+  tg.tubes -= knocked;
+  if (tg.tubes <= 0) tg.mission = null;
+  return [{ kind: "counter", sup: k, name: b.name, side: b.side, shells, target: j, tname: tg.name, knocked, left: tg.tubes }];
+}
+function laySmoke(field, bursts){                 // smoke over each burst and the hexes round it, as long as the wind lets it hang
+  const S = UD.indirect.smoke, lasts = S.lasts[field.weather?.wind || "calm"], sm = field.smoke || (field.smoke = {});
+  for (const at of bursts) for (const h of within(at, S.radius)){ const key = `${h[0]},${h[1]}`; sm[key] = Math.max(sm[key] || 0, lasts) }
+}
+function shellUnits(ctx, k, b, bursts){           // the men struck in every unit by a battery's bursts, and their wounds
+  const { us, table, weapon, rng, acc, log, field, under } = ctx;
+  const I = UD.indirect, K = I.kinds[b.kind], att = { table, weapon, kit: null, quality: "regular" };
   us.forEach((u, i) => {
     const struck = shellStruckUnit(field, u, bursts, K, rng);
     if (struck === null) return;
@@ -402,18 +447,23 @@ function fireMission(ctx, k, b){                  // where each shell lands, the
 }
 function shellStruckUnit(field, u, bursts, kind, rng){   // men of u struck by these bursts, or null if none came near
   if (u.men <= 0 || u.state === "fled") return null;
-  const hexes = footprint(u).flat(), men = menByHex(u), cut = u.prone ? UD.indirect.prone : 1;
+  const hexes = footprint(u).flat(), men = menByHex(u), cuts = hexes.map(h => shellCut(field, h, u.prone));
   let near = false, struck = 0;
   for (const at of bursts){
     hexes.forEach((h, j) => {
       const dist = hdist(h, at);
       if (dist > kind.radius) return;
       near = true;
-      const p = kind.struck[dist] * cut * (100 - (groundAt(field, h).cover || 0)) / 100;
+      const p = kind.struck[dist] * cuts[j];
       for (let x = 0; x < men[j]; x++) if (rng.randint(1, 100) <= p) struck++;
     });
   }
   return near ? struck : null;
+}
+function shellCut(field, h, prone){               // shellfire's struck % times this: tree bursts in woods; else going to ground and the ground's cover
+  const I = UD.indirect, TB = I.tree_burst;
+  if (TB.ground.includes(field?.ground?.[`${h[0]},${h[1]}`] || "open")) return TB.factor * (prone ? TB.prone : 1);
+  return (prone ? I.prone : 1) * (100 - (groundAt(field, h).cover || 0)) / 100;
 }
 function suppressAll(us, under, rng){             // under fire: Nerve or pinned for the next exchange
   const S = UD.suppression, log = [];
@@ -456,7 +506,11 @@ function across(field, u, h, x, reach){           // [blocked: only reach 2 over
   return [m.blocked, pen, stk];
 }
 const upOf = field => field?.up || "N";          // the compass point at the top of the field map
-const shotWeather = (field, weapon, dist, h = null, t = null) => (isGun(weapon) ? gunWeather(field, dist, h, t) : weatherAttack(field?.weather || null, weapon, dist * UD.range_scale, h, t, upOf(field)));
+const SMOKED = { blocked: "Smoke: no one can see to shoot through it.", penalty: 0, misfire: 0, reach: 0 };
+function shotWeather(field, weapon, dist, h = null, t = null){   // the weather on a shot from h to t; smoke on the line blocks it
+  if (h && t && smoked(field, ray(h, t, dist))) return { ...SMOKED };
+  return isGun(weapon) ? gunWeather(field, dist, h, t) : weatherAttack(field?.weather || null, weapon, dist * UD.range_scale, h, t, upOf(field));
+}
 const reaches = (u, dist, reach = 0) => (isGun(u.weapon) ? dist <= gunRange(u) : !!fieldRange(u.weapon, dist, reach));   // a battery's guns to their range
 function coverAt(field, h, t){                    // % off shots from h at t: the best of the works' and the ground's
   if (!field) return 0;
@@ -575,6 +629,7 @@ function afterExchange(us, field){                // charges spent, batteries ch
     if (u.pinned) u.pinned -= 1;
   }
   for (const b of field?.support || []) if (b.mission && (b.mission.wait || 0) > 0) b.mission.wait -= 1;
+  if (field?.smoke) field.smoke = Object.fromEntries(Object.entries(field.smoke).filter(([, n]) => n > 1).map(([h, n]) => [h, n - 1]));   // smoke thins
 }
 function moraleAll(us, occ, before, acc, rng, table){
   const log = [], broke = [];
