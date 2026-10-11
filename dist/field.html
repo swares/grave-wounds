@@ -556,14 +556,17 @@ function campFits(centre, rr, cols, rows){    // every hex within rr of the cent
 }
 const sameH = (a, b) => a[0] === b[0] && a[1] === b[1];
 const around = ([c, r]) => NEIGHBOURS[r & 1].map(([dc, dr]) => [c + dc, r + dr]);   // all six, on the map or not
-function stakePieces(centre, r, gate = 0){    // the first hex of the ring is the way out, left open
-  return { stakes: ringWalk(centre, r + 1, gate).slice(1).map(h => ["hex", [h], { type: "stakes", progress: 0 }]) };
+const gateList = gate => (Array.isArray(gate) ? gate : [gate]);   // one side, or a list with the main gate first
+const waysOut = (centre, r, gates) => gates.map(g => ringWalk(centre, r + 1, g)[0]);   // just outside each gate, left open
+function stakePieces(centre, r, gate = 0){
+  const gates = gateList(gate), out = waysOut(centre, r, gates);
+  return { stakes: ringWalk(centre, r + 1, gates[0]).filter(h => !out.some(o => sameH(o, h))).map(h => ["hex", [h], { type: "stakes", progress: 0 }]) };
 }
-function wallPieces(out, centre, r, gate = 0){   // bank and palisade round the ring, and the gate
-  const gateIn = ringWalk(centre, r, gate)[0], gateOut = ringWalk(centre, r + 1, gate)[0];
-  for (const h of ringWalk(centre, r, gate)){
+function wallPieces(out, centre, r, gate = 0){   // bank and palisade round the ring, and the gates
+  const gates = gateList(gate), pairs = gates.map(g => [ringWalk(centre, r, g)[0], ringWalk(centre, r + 1, g)[0]]);
+  for (const h of ringWalk(centre, r, gates[0])){
     for (const n of around(h).filter(x => hexDistance(centre, x) === r + 1)){
-      if (sameH(h, gateIn) && sameH(n, gateOut)){
+      if (pairs.some(([gi, go]) => sameH(h, gi) && sameH(n, go))){
         out.gate.push(["edge", [h, n], { type: "gate", progress: 0, open: false, inside: hkey(h) }]);
         continue;
       }
@@ -572,8 +575,9 @@ function wallPieces(out, centre, r, gate = 0){   // bank and palisade round the 
     }
   }
 }
-function ditchPieces(out, centre, r, gate = 0){   // the ditch one ring out, leaving the way to the gate
-  for (const h of ringWalk(centre, r + 1, gate).slice(1)){
+function ditchPieces(out, centre, r, gate = 0){   // the ditch one ring out, leaving the way to each gate
+  const gates = gateList(gate), ways = waysOut(centre, r, gates);
+  for (const h of ringWalk(centre, r + 1, gates[0]).filter(x => !ways.some(w => sameH(w, x)))){
     for (const n of around(h).filter(x => hexDistance(centre, x) === r + 2)){
       out.ditch.push(["edge", [h, n], { type: "ditch", progress: 0, high: hkey(h) }]);
     }
@@ -598,7 +602,7 @@ const CAMP_ROOM = 6;                          // hexes between a camp too big fo
 // works go up in the order the camp lists them, each kind all round the ring from the gate before
 // the next starts. Pieces off the map count towards the labour but are not shown.
 // opts: {hauled (timber from afar), at (a centre other than the middle, kept even when the camp
-// does not fit), gate (the side its gate is on, 0 east)}
+// does not fit), gate (the side its gate is on, 0 east, or a list of sides, the main gate first)}
 function campWorks(kind, men, ftype, cols, rows, done = null, { hauled = false, at = null, gate = 0 } = {}){
   const c = WK.camps[kind], layout = c.layout, r = campRadius(men, ftype), extra = layout === "fortified" ? 2 : 1;
   let centre = at ? at.slice() : [Math.floor(cols / 2), Math.floor(rows / 2)];
