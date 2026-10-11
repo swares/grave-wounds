@@ -550,10 +550,10 @@ def works_rules(d) -> list[str]:
 
 def ground_rules(d) -> list[str]:
     G = d.wounds["combat"]["ground"]
-    K = G["kinds"]
+    K, E = G["kinds"], G["edges"]
     return [
-        f"<b>Ground:</b> the GM paints hexes as rocks and rubble, woods and brush, or marsh. Entering rocks or woods costs +{K['rough']['move']} hex of movement, "
-        f"marsh +{K['marsh']['move']}. A shot at a man in rocks loses {K['rough']['cover']}% and the rocks hide his legs (the table's behind-cover situation); "
+        f"<b>Ground:</b> the GM paints hexes as rocks and rubble, woods and brush, marsh, or deep water. Entering rocks or woods costs +{K['rough']['move']} hex of movement, "
+        f"marsh +{K['marsh']['move']}; no one enters or stands in deep water, though shots cross it. A shot at a man in rocks loses {K['rough']['cover']}% and the rocks hide his legs (the table's behind-cover situation); "
         f"in woods it loses {K['brush']['cover']}%. Cover from a work counts instead when it is better.",
         f"<b>Height:</b> hexes stand at level 0 to {G['max_level']}; each level climbed costs +{G['climb']} hex of movement. "
         "A blow or shot from higher ground takes the attacker-higher situation (head and shoulders), and from lower ground attacker-lower. "
@@ -561,6 +561,9 @@ def ground_rules(d) -> list[str]:
         "Higher ground rising above the straight line between shooter and target blocks the shot; men in the way below that line are shot over.",
         "<b>Laying out ground:</b> a fight sent from the travel map lays its ground out like the defenders' travel hex: clumps of woods, rocks and marsh "
         "and a rise or two, in the shares below; inside a camp's works the ground is cleared and level. "
+        "The fight stands at a fixed spot in that hex: where the map reaches past a side of the hex, the ground beyond is laid out like the neighbouring hex, "
+        f"a lake as deep water and a river as a band of deep water {E['river_width'][0]} to {E['river_width'][1]} hexes wide, with a ford "
+        f"{E['ford_width'][0]} to {E['ford_width'][1]} hexes wide (marsh to wade) when a ford or bridge is next to the hex. "
         + "; ".join(f"{d.terrain['terrain'][t]['name']}: " + ", ".join([f"{G['kinds'][k]['name'].lower()} {round(v * 100)}%" for k, v in x.items() if k in G['kinds']]
                     + ([f"{x['rises']} rise{'s' if x['rises'] > 1 else ''} to level {x['top']}"] if x.get('rises') else [])) for t, x in G["seed"].items()) + ".",
         f"<b>Taking cover:</b> on his turn a fighter may go to ground instead of moving or attacking. Until he moves or strikes in close combat, "
@@ -695,7 +698,7 @@ def bundle(d) -> dict:
         "vocabulary": d.wounds["vocabulary"],
         "tracking": d.wounds["tracking"],
         "combat": {**d.wounds["combat"], "ground": {**d.wounds["combat"]["ground"],
-                   "seed_names": {t: d.terrain["terrain"][t]["name"] for t in d.wounds["combat"]["ground"]["seed"]}}},
+                   "terrain_names": {t: x["name"] for t, x in d.terrain["terrain"].items()}}},
         "works": d.works,
         "weather": d.weather,
         "wounds": wounds,

@@ -95,7 +95,7 @@ attack. Stepping back 1 hex is a careful withdrawal and draws no free attack.
 ## Ground and height
 
 The GM can paint the battle map with **Paint ground**: rocks and rubble, woods and brush,
-marsh, and hexes raised a level at a time (0 to 3). Painted hexes show a small mark; raised
+marsh, deep water, and hexes raised a level at a time (0 to 3). Painted hexes show a small mark; raised
 hexes are shaded, darker the higher they are.
 
 **Laying out ground.** A fight sent from the travel map lays out its ground to match the
@@ -103,13 +103,22 @@ defenders' travel hex: irregular clumps of woods, rocks and marsh, and a rise or
 shares the terrain gives (for example, about half the hexes wooded in forest, a tenth rocky
 and up to three levels high in hills, a third marsh in marsh, a fifth rubble in a town).
 Inside a camp's works the ground is cleared and levelled to the camp's middle. The same
-fight always lays out the same ground. In the Paint ground bar, **Ground like** and **Lay
+fight always lays out the same ground.
+
+**The hexes around.** A travel hex is 0.6 to 3 miles (1 to 5 km) across and the battle map at
+most about 175 by 115 yards (160 by 105 m), so the fight stands at a fixed spot inside its
+travel hex. Where the map reaches past a side of the hex, the ground beyond that side is laid
+out like the neighbouring hex: woods beyond a forest edge, rises beyond a hill edge. A lake
+beyond is deep water. A river beyond is a band of deep water 8 to 25 hexes wide with open
+ground on the far bank, and when a ford or bridge is next to the hex, a ford 3 to 6 hexes wide
+(marsh to wade) crosses it near the middle of the map's side. The map's message gives how far
+the fight is from each side it reaches. In a large hex this happens seldom, as it should. In the Paint ground bar, **Ground like** and **Lay
 out ground** do the same for any fight; pressing it again for the same country gives another
 layout. Paint any hex to change it. The shares are design estimates, in
 `data/wounds.yaml` under `combat.ground.seed`.
 
 - **Movement.** Entering rocks or woods costs 1 extra hex of movement, marsh 2; each level
-  climbed costs 1 more.
+  climbed costs 1 more. No one enters or stands in deep water, but shots cross it.
 - **Cover.** A shot at a man in rocks is −10% and the rocks hide his legs, so the table's
   *behind cover* situation applies. In woods the shot is −20%. Where a work also gives cover,
   the better of the two counts.

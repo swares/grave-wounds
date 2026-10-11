@@ -350,6 +350,7 @@ combat:
       rough: {name: "Rocks and rubble", move: 1, cover: 10, low: true}
       brush: {name: "Woods and brush", move: 1, cover: 20}
       marsh: {name: "Marsh or deep mud", move: 2}
+      water: {name: "Deep water", move: 99, deep: true}    # no one enters or stands in it; shots pass over
     max_level: 3
     climb: 1
     uphill: 10
@@ -375,6 +376,17 @@ combat:
       bridge:    {brush: 0.03, rough: 0.03}
       village:   {brush: 0.05, rough: 0.10}
       town:      {rough: 0.20}
+    # The neighbouring travel hexes: the fight stands at a repeatable spot in the defenders'
+    # hex (its travel hex is hex_km across, flat side to flat side). Where the battle map
+    # reaches past a side of that hex, the ground beyond the side is laid out like the
+    # neighbour's terrain: a lake is deep water, a river is a band of deep water river_width
+    # hexes wide (open ground on the far bank), with a ford ford_width hexes wide (marsh to
+    # wade) within ford_shift hexes of the middle of the map's side when a ford or bridge is
+    # next to the defenders' hex. Design estimates.
+    edges:
+      river_width: [8, 25]
+      ford_width: [3, 6]
+      ford_shift: 10
   range:
     - {band: short, penalty: 0}
     - {band: medium, penalty: 20}

@@ -11,7 +11,7 @@
   --ok:#2f6b46; --warn:#a86512; --crit:#8e1b2c;
   --side0:#2f5d8a; --side1:#8e1b2c; --side2:#8a5a12; --side3:#2f6b46;
   --wk-ditch:#5f7a88; --wk-bank:#a37a48; --wk-wood:#4a3320; --wk-gate:#c27a22; --wk-stone:#7f7f7f; --wk-green:#476b35;
-  --g-rough:#d3d0bd; --g-brush:#b5cfa6; --g-marsh:#b9cfcc; --hill:#7a5a2e; --gg:#5b5440;
+  --g-rough:#d3d0bd; --g-brush:#b5cfa6; --g-marsh:#b9cfcc; --g-water:#8db7d6; --g-water-line:#2f5f86; --hill:#7a5a2e; --gg:#5b5440;
   --display:"Alegreya SC",Georgia,serif; --body:"Alegreya Sans","Gill Sans","Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
 }
@@ -20,14 +20,14 @@
   --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --heat:228,101,118; --map-sea:#1b2a33; --map-land:#3c4237; --map-coast:#66705e; --map-hl:#57604a; --map-dot:#e46576;
   --side0:#8db8e0; --side1:#e8909c; --side2:#e3b46d; --side3:#86cfa1;
   --wk-ditch:#7fa0b2; --wk-bank:#b48d5a; --wk-wood:#d9b98c; --wk-gate:#f0a54a; --wk-stone:#b5b5b5; --wk-green:#8fbf74;
-  --g-rough:#3a3a30; --g-brush:#24402a; --g-marsh:#1d3133; --hill:#e3c48c; --gg:#b9b39a;
+  --g-rough:#3a3a30; --g-brush:#24402a; --g-marsh:#1d3133; --g-water:#25445c; --g-water-line:#8db7d6; --hill:#e3c48c; --gg:#b9b39a;
   --ok:#6cc08d; --warn:#e3a14d; --crit:#e46576; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
   --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --heat:228,101,118; --map-sea:#1b2a33; --map-land:#3c4237; --map-coast:#66705e; --map-hl:#57604a; --map-dot:#e46576;
   --side0:#8db8e0; --side1:#e8909c; --side2:#e3b46d; --side3:#86cfa1;
   --wk-ditch:#7fa0b2; --wk-bank:#b48d5a; --wk-wood:#d9b98c; --wk-gate:#f0a54a; --wk-stone:#b5b5b5; --wk-green:#8fbf74;
-  --g-rough:#3a3a30; --g-brush:#24402a; --g-marsh:#1d3133; --hill:#e3c48c; --gg:#b9b39a;
+  --g-rough:#3a3a30; --g-brush:#24402a; --g-marsh:#1d3133; --g-water:#25445c; --g-water-line:#8db7d6; --hill:#e3c48c; --gg:#b9b39a;
   --ok:#6cc08d; --warn:#e3a14d; --crit:#e46576; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--body);padding-inline:16px;padding-block:20px 40px}
@@ -207,7 +207,8 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
 .wkh.breached{opacity:.3}
 .wk-prog{font:700 8px var(--mono);fill:var(--crit);text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--panel);stroke-width:2.5px}
 .hexmap.building .hex{cursor:cell}
-.hex.g-rough:not(.h-adv,.h-run){fill:var(--g-rough)} .hex.g-brush:not(.h-adv,.h-run){fill:var(--g-brush)} .hex.g-marsh:not(.h-adv,.h-run){fill:var(--g-marsh)}
+.hex.g-rough:not(.h-adv,.h-run){fill:var(--g-rough)} .hex.g-brush:not(.h-adv,.h-run){fill:var(--g-brush)} .hex.g-marsh:not(.h-adv,.h-run){fill:var(--g-marsh)} .hex.g-water{fill:var(--g-water)}
+.gg-water{stroke:var(--g-water-line);opacity:.9}
 .gg{pointer-events:none;fill:none;stroke:var(--gg);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;opacity:.75}
 .gg-rough{fill:var(--gg)} .gg-brush circle{fill:var(--gg);fill-opacity:.35}
 .lv{fill:var(--hill);pointer-events:none} .lv1{fill-opacity:.14} .lv2{fill-opacity:.28} .lv3{fill-opacity:.42}
@@ -1242,15 +1243,16 @@ function reachText(wid){
   return "reach" in w ? `reach ${w.reach}` : `range ${w.range.join(" / ")} hexes, to ${fmtM(w.range.at(-1) * MOVE.hex_m)}`;
 }
 const initials = n => n.replace(/^Example:\s*/, "").split(/\s+/).filter(Boolean).map(x => x[0]).join("").slice(0, 2).toUpperCase() || "?";
+const deepAt = h => !!groundSpec(S.ground, h).deep;   // deep water: no one enters or stands in it
 function placeUnplaced(){                    // new fighters go near their side's edge
   const { cols, rows } = mapSize(), sides = sidesInOrder();
   for (const c of S.chars){
-    if (c.pos && c.pos[0] < cols && c.pos[1] < rows && S.chars.find(o => sameHex(o.pos, c.pos)) === c) continue;
+    if (c.pos && c.pos[0] < cols && c.pos[1] < rows && !deepAt(c.pos) && S.chars.find(o => sameHex(o.pos, c.pos)) === c) continue;
     c.pos = null;
     const anchor = [[1, rows >> 1], [cols - 2, rows >> 1], [cols >> 1, 1], [cols >> 1, rows - 2]][sides.indexOf(sideOf(c)) % 4];
     let best = null, bd = Infinity;
     for (let r = 0; r < rows; r++) for (let col = 0; col < cols; col++){
-      if (occupant([col, r])) continue;
+      if (occupant([col, r]) || deepAt([col, r])) continue;
       const dd = hexDistance(anchor, [col, r]) * 2 + Math.abs(col - anchor[0]);   // fill along the edge first
       if (dd < bd){ bd = dd; best = [col, r] }
     }
@@ -1383,16 +1385,92 @@ function layClumps(ground, kind, target, cols, rows, rng){
     }
   }
 }
-function seedGround(terrain, cols, rows, seed, clear = null){   // clear: [centre, radius] of a camp
+// clear: [centre, radius] of a camp; edges: the neighbouring travel hexes (see edgeBands)
+function seedGround(terrain, cols, rows, seed, clear = null, edges = null){
   const spec = GRD.seed[terrain] || GRD.seed.open, rng = parkMiller(seed), ground = { kinds: {}, levels: {} };
   layRises(ground, spec, cols, rows, rng);
   for (const kind of GROUND_ORDER) layClumps(ground, kind, Math.round((spec[kind] || 0) * cols * rows), cols, rows, rng);
+  if (edges) ground.sides = edgeBands(ground, terrain, cols, rows, seed, edges);
   if (clear) clearGround(ground, clear[0], clear[1], cols, rows);
   return ground;
 }
+// ----- the country beyond the defenders' travel hex (as gravewounds.combat.edge_bands) -----
+const S3 = Math.sqrt(3) / 2;
+const SIDES = [["east", [1, 0]], ["north-east", [0.5, -S3]], ["north-west", [-0.5, -S3]],
+  ["west", [-1, 0]], ["south-west", [-0.5, S3]], ["south-east", [0.5, S3]]];   // north is up
+function hexSpot(hexM, seed){                    // a repeatable spot in a travel hex hexM across, metres from its middle
+  const rng = parkMiller(seed), a = hexM / 2, c = Math.trunc(a / S3) + 1;
+  for (;;){
+    const p = [rng.randint(-c, c), rng.randint(-c, c)];
+    if (SIDES.every(([, u]) => p[0] * u[0] + p[1] * u[1] <= a)) return p;
+  }
+}
+const mapXY = (hm, cols, rows, c, r) => [hm * (c + 0.5 * (r & 1)) - hm * (cols - 0.5) / 2, hm * S3 * r - hm * S3 * (rows - 1) / 2];
+function sidePlans(terrain, cols, rows, seed, edges){   // each side with other country beyond it
+  const E = GRD.edges, rng = parkMiller(seed + 1), plans = {};
+  SIDES.forEach(([name], i) => {
+    const t = (edges.around || {})[name];
+    if (!t || t === terrain) return;
+    const plan = { terrain: t };
+    if (t === "river"){
+      plan.width = rng.randint(...E.river_width);
+      if (edges.ford) plan.ford = [rng.randint(-E.ford_shift, E.ford_shift), rng.randint(...E.ford_width)];
+    } else if (t !== "lake") plan.layout = seedGround(t, cols, rows, (seed + 7919 * (i + 1)) % 2147483647);
+    plans[name] = plan;
+  });
+  return plans;
+}
+function setHex(ground, k, kind, level){
+  if (kind) ground.kinds[k] = kind; else delete ground.kinds[k];
+  if (level) ground.levels[k] = level; else delete ground.levels[k];
+}
+function beyond(plan, P, u, depth, spot, hm, k){   // [kind, level] depth metres past a side
+  if (plan.terrain === "lake") return ["water", 0];
+  if (plan.terrain === "river"){
+    if (depth > plan.width * hm) return [null, 0];
+    const f = plan.ford;
+    if (f){
+      const v = [-u[1], u[0]];                      // along the side
+      const along = P[0] * v[0] + P[1] * v[1] - (spot[0] * v[0] + spot[1] * v[1]) - f[0] * hm;
+      if (Math.abs(along) <= f[1] * hm / 2) return ["marsh", 0];
+    }
+    return ["water", 0];
+  }
+  return [plan.layout.kinds[k] || null, plan.layout.levels[k] || 0];
+}
+function pastSide(plans, P, a){                 // [side, metres past it, its direction] for the side P lies furthest past
+  let best = null, depth = 0, bu = null;
+  for (const [name, u] of SIDES){
+    if (!plans[name]) continue;
+    const dd = P[0] * u[0] + P[1] * u[1] - a;
+    if (dd > depth){ best = name; depth = dd; bu = u }
+  }
+  return [best, depth, bu];
+}
+// edges: {around: {side: travel terrain}, hex_m (the travel hex across), spot_seed, ford};
+// returns [[side, terrain, metres from the fight's middle to that side]] for the sides reached.
+function edgeBands(ground, terrain, cols, rows, seed, edges){
+  const hm = CMB.move.hex_m, a = edges.hex_m / 2, spot = hexSpot(edges.hex_m, edges.spot_seed);
+  const plans = sidePlans(terrain, cols, rows, seed, edges), reached = new Set();
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){
+    const q = mapXY(hm, cols, rows, c, r), P = [spot[0] + q[0], spot[1] + q[1]];
+    const [best, depth, bu] = pastSide(plans, P, a);
+    if (best){
+      reached.add(best);
+      const k = c + "," + r;
+      setHex(ground, k, ...beyond(plans[best], P, bu, depth, spot, hm, k));
+    }
+  }
+  return SIDES.filter(([name]) => reached.has(name)).map(([name, u]) => [name, plans[name].terrain, Math.floor(a - (spot[0] * u[0] + spot[1] * u[1]) + 0.5)]);
+}
+function sidesText(sides){                       // the sides of the travel hex the battle map reaches past, in words
+  if (!sides || !sides.length) return "";
+  return "; " + sides.map(([side, t, m]) => `${fmtM(m)} from the ${side} edge of the travel hex (${GRD.terrain_names[t].toLowerCase()} beyond)`).join("; ");
+}
 function layGroundLike(){                        // the ground S.groundLike asks for, on the map as it is now
   const g = S.groundLike, { cols, rows } = mapSize();
-  return seedGround(g.terrain, cols, rows, seedNumber(`${g.seed}:${g.n}`), g.clear);
+  const edges = g.edges ? { ...g.edges, spot_seed: seedNumber(`${g.seed}:spot`) } : null;
+  return seedGround(g.terrain, cols, rows, seedNumber(`${g.seed}:${g.n}`), g.clear, edges);
 }
 function clearGround(ground, centre, radius, cols, rows){   // inside a camp: open ground, level with its middle
   const mid = levelAt(ground, centre);
@@ -1540,6 +1618,7 @@ function svgPoint(e){
 const GROUND_TOOLS = {
   open: { label: "Open", verb: "clear its ground" }, rough: { label: "Rocks, rubble", verb: "make it rocks and rubble" },
   brush: { label: "Woods, brush", verb: "make it woods and brush" }, marsh: { label: "Marsh", verb: "make it marsh" },
+  water: { label: "Deep water", verb: "make it deep water" },
   higher: { label: "Higher ▲", verb: "raise it a level" }, lower: { label: "Lower ▼", verb: "lower it a level" },
 };
 function paintGround(h){                         // the chosen tool on hex h
@@ -1548,12 +1627,17 @@ function paintGround(h){                         // the chosen tool on hex h
     const n = Math.max(0, Math.min(GRD.max_level, (G.levels[k] || 0) + (tool === "higher" ? 1 : -1)));
     if (n) G.levels[k] = n; else delete G.levels[k];
   } else if (tool === "open") delete G.kinds[k];
-  else G.kinds[k] = tool;
+  else if (tool === "water" && occupant(h)) S.mapMsg = "Someone stands there: move him before flooding the hex.";
+  else {
+    G.kinds[k] = tool;
+    if (tool === "water") delete G.levels[k];
+  }
 }
 const GROUND_GLYPH = {                           // drawn over the hex, so the ground shows inside a fighter's move
   rough: `<path d="M-7 4l2.5-4 2.5 4zM1 -2l3-4.5 3 4.5zM0 7l2-3 2 3z"/>`,
   brush: `<circle cx="-4" cy="-1" r="3.4"/><circle cx="4.5" cy="2" r="3"/><path d="M-4 2.4v4M4.5 5v3"/>`,
-  marsh: `<path d="M-8 -2q2-2 4 0t4 0t4 0t4 0M-6 4q2-2 4 0t4 0t4 0"/>` };
+  marsh: `<path d="M-8 -2q2-2 4 0t4 0t4 0t4 0M-6 4q2-2 4 0t4 0t4 0"/>`,
+  water: `<path d="M-8 -3q2-2 4 0t4 0t4 0t4 0M-8 3q2-2 4 0t4 0t4 0t4 0"/>` };
 function groundSvg(){                            // a small mark on each hex of rough, brush or marsh
   return Object.entries(S.ground?.kinds || {}).filter(([, g]) => GROUND_GLYPH[g]).map(([k, g]) => {
     const [x, y] = hexXY(k.split(",").map(Number));
@@ -1583,10 +1667,10 @@ function levelsSvg(){                            // shading for raised ground, a
 function renderGroundBar(){
   $("#ground-bar").hidden = !S.groundMode;
   const like = (S.groundLike || {}).terrain || "open";
-  $("#sel-ground-like").innerHTML = Object.keys(GRD.seed).map(t => `<option value="${t}"${t === like ? " selected" : ""}>${attr(GRD.seed_names[t])}</option>`).join("");
+  $("#sel-ground-like").innerHTML = Object.keys(GRD.seed).map(t => `<option value="${t}"${t === like ? " selected" : ""}>${attr(GRD.terrain_names[t])}</option>`).join("");
   $("#ground-palette").innerHTML = Object.entries(GROUND_TOOLS).map(([k, t]) => `<button type="button" class="small" data-gtool="${k}" aria-pressed="${(S.groundTool || "rough") === k}">${groundIcon(k)}${t.label}</button>`).join("");
   const G = GRD.kinds;
-  $("#ground-note").textContent = `Rocks ${G.rough.cover}% cover and low (hides the legs); woods ${G.brush.cover}%; each costs +${G.rough.move} to enter, marsh +${G.marsh.move}, a climb +${GRD.climb} a level (0 to ${GRD.max_level}).`;
+  $("#ground-note").textContent = `Rocks ${G.rough.cover}% cover and low (hides the legs); woods ${G.brush.cover}%; each costs +${G.rough.move} to enter, marsh +${G.marsh.move}, a climb +${GRD.climb} a level (0 to ${GRD.max_level}); no one enters deep water.`;
 }
 function takeCover(){                            // the acting fighter goes to ground for his turn
   const t = turnInfo(); if (!t || S.tm.moved) return;
@@ -1710,7 +1794,7 @@ function setupHandoff(){                     // a camp or position sent from the
   const { cols, rows } = S.map;
   const L = lay ? campWorks(h.camp, men, ft, cols, rows, h.done ?? null, !!h.hauled) : { centre: [cols >> 1, rows >> 1], radius: r, fits: true, works: { edges: {}, hexes: {} } };
   S.works = L.works;
-  S.groundLike = { terrain: GRD.seed[h.ground] ? h.ground : "open", seed: h.groundSeed || h.place || "fight", n: 0, clear: lay ? [L.centre, L.radius] : null };
+  S.groundLike = { terrain: GRD.seed[h.ground] ? h.ground : "open", seed: h.groundSeed || h.place || "fight", n: 0, clear: lay ? [L.centre, L.radius] : null, edges: h.edges || null };
   S.ground = layGroundLike();
   S.wholeLabour = L.fits ? null : h.campLabour;                             // the whole camp's, when only part is on the map
   // The defender and any friends who were there fill the camp from the middle out; any who
@@ -1735,7 +1819,7 @@ function setupHandoff(){                     // a camp or position sent from the
   const defNote = defenders.map(forceLine).join("; ");
   const foeNote = foe ? `Attacking: ${foes.map(forceLine).join("; ")}, at the far edge ${facing}. ` : "";
   const addNote = `Add brings in more on the side "${S.addSide}".`;
-  const like = `The ground is laid out to match the travel map's ${GRD.seed_names[S.groundLike.terrain].toLowerCase()}${lay ? ", cleared inside the camp" : ""}: Paint ground to change it.`;
+  const like = `The ground is laid out to match the travel map's ${GRD.terrain_names[S.groundLike.terrain].toLowerCase()}${lay ? ", cleared inside the camp" : ""}${sidesText(S.ground.sides)}: Paint ground to change it.`;
   S.mapMsg = `Defending: ${defNote}, inside the ${where}${cut}.${unplaced} ${foeNote}${addNote} ${like} Click a fighter, on the map or with Place on map, then a hex to move him.`;
   for (const o of h.allies || []) S.pending.push(`With them: ${o.name}, ${o.men} men (${o.side})`);
   for (const o of foes) S.pending.push(`Facing them: ${o.name}, ${o.men} men (${o.side})`);
@@ -1882,9 +1966,9 @@ function clickToken(id){
 }
 function clickHex(h, e){
   if (S.workMode){ toggleWork(h, e); S.mapMsg = ""; return renderChars() }
-  if (S.groundMode){ paintGround(h); S.mapMsg = ""; return renderChars() }
+  if (S.groundMode){ S.mapMsg = ""; paintGround(h); return renderChars() }
   if ((!S.turn || S.freePlace) && S.placing != null){
-    if (occupant(h)) return;
+    if (occupant(h) || deepAt(h)) return;
     const c = S.chars.find(o => o.id === S.placing);
     if (c) c.pos = h;
     S.placing = null; S.mapMsg = "";
@@ -2126,7 +2210,7 @@ function init(){
     const t = $("#sel-ground-like").value, g = S.groundLike || { seed: "roller", n: 0, clear: null };
     S.groundLike = { ...g, terrain: t, n: g.terrain === t ? g.n + 1 : g.n };
     S.ground = layGroundLike();
-    S.mapMsg = `Ground laid out like ${GRD.seed_names[t].toLowerCase()}${g.clear ? ", the camp cleared" : ""}: paint any hex to change it.`;
+    S.mapMsg = `Ground laid out like ${GRD.terrain_names[t].toLowerCase()}${g.clear ? ", the camp cleared" : ""}${sidesText(S.ground.sides)}: paint any hex to change it.`;
     renderChars();
   };
   $("#work-palette").addEventListener("click", e => { const b = e.target.closest("button[data-wtype]"); if (b){ S.workType = b.dataset.wtype; S.workMode = true; S.groundMode = false; renderChars() } });
