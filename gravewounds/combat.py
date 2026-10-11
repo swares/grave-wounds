@@ -169,6 +169,25 @@ def pain_check(d: Data, nerve: int, pain_steps: int, roll: int, blood_frac: floa
     return stop_check(d, nerve, d.wounds["combat"]["stop_check"]["pain_round_as"], pain_steps, roll, blood_frac)
 
 
+def first_aid(d: Data, how: str, fx: dict, limb: bool, leechcraft: int | None = None, roll: int | None = None) -> dict:
+    """A treatment (bind, tourniquet, cauterise) on a wound's {bleed, pain}: {done, bleed,
+    pain}. leechcraft: the best on his side (None: no sheets there, unrolled, as before);
+    roll: d100 against it. Success binds `bind` steps and cauterises without more pain."""
+    bleed, pain = fx["bleed"], fx["pain"]
+    if how == "tourniquet" and not limb:
+        return {"done": False, "bleed": bleed, "pain": pain}
+    good = leechcraft is not None
+    if good and roll > leechcraft:
+        return {"done": False, "bleed": bleed, "pain": pain}
+    if how == "bind":
+        bleed = max(0, bleed - (d.wounds["combat"]["first_aid"]["bind"] if good else 1))
+    elif how == "tourniquet":
+        bleed = 0
+    elif how == "cauterise":
+        bleed, pain = 0, pain if good else min(3, pain + 1)
+    return {"done": True, "bleed": bleed, "pain": pain}
+
+
 def initiative(d: Data, agility: int | None, roll: int) -> int:
     """Rolled initiative: the die (roll, 1..die) + Agility / agi_per (50 without a sheet)."""
     I = d.wounds["combat"]["characteristics"]["initiative"]

@@ -71,10 +71,11 @@ Quick start:
    Press **Next round** (or **+1 minute** for ten rounds) to move the whole group on: everyone
    bleeds, the round counter goes up, and a short log says who lost how much Blood and who
    passed a threshold (pale and weak, faint, down, unconscious). **Reset count** starts the
-   count again without healing anyone. Bind / Tourniquet / Cauterise treat wounds; wound
-   penalties feed into the attack roll automatically.
+   count again without healing anyone. Bind / Tourniquet / Cauterise treat wounds (on a side
+   with team-builder characters, the best Leechcraft among them rolls each one: see
+   [combat.md](combat.md)); wound penalties feed into the attack roll automatically.
 5. **Turn order** (optional): give each fighter an **Init** number from your game (reaction,
-   speed, an initiative roll). The list sorts highest first; fighters with the same number
+   speed, an initiative roll), or press **Roll initiative** for d10 + Agility ÷ 10. The list sorts highest first; fighters with the same number
    keep the order you set by dragging the ⋮⋮ grip or using ▲ ▼ (a fighter can't be moved
    past a different number; change the number instead). **Next fighter** marks the next
    fighter who is still up as **Acting** and makes them the attacker, skipping anyone down

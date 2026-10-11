@@ -517,9 +517,18 @@ function heroLineText(l, nm){
   return `${l.name} ${verb}: ${l.blows} telling ${l.dist ? "shot" : "blow"}${s}, ${l.hits} hit, ${l.down} down${dead}.`;
 }
 function standing(k){ return S.units.some(u => u.side === S.sides[k] && u.men > 0 && (u.state === "steady" || u.state === "shaken")) }
+function caughtUnawares(){                        // a fight from the travel map that rolled surprise: the defenders' units start shaken
+  const sp = S.from && S.from.surprise;
+  if (!sp) return "";
+  const hit = sp.surprised ? S.units.filter(u => u.side === S.sides[0] && u.state === "steady") : [];
+  hit.forEach(u => { u.state = "shaken" });
+  const said = sp.surprised ? `caught unawares: ${hit.length} of ${S.sides[0]}'s units start shaken` : "not surprised";
+  S.log = [{ cls: "head", text: `${sp.text} Rolled ${sp.roll}: ${said}.` }, ...S.log];
+  return sp.surprised ? ` ${S.sides[0]} were caught unawares: their units start shaken.` : "";
+}
 function next(){
   if (S.phase === "over") return;
-  if (S.phase === "setup"){ S.exchange = 1; startPhase(0); S.msg = `${S.sides[0]} to move.`; return render() }
+  if (S.phase === "setup"){ S.exchange = 1; startPhase(0); S.msg = `${S.sides[0]} to move.${caughtUnawares()}`; return render() }
   if (S.phase === 0){ startPhase(1); S.msg = `${S.sides[1]} to move.`; return render() }
   const r = exchange(S.units, S.table, dice, S.field);
   S.units = r.units;

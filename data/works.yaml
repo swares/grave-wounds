@@ -27,10 +27,24 @@ camp_area_min: 100         # even a handful of men needs a camp this big
 #                (men x work_share) to give hours, then added to `hours`.
 #   tools      - true if it needs spades and axes
 #   terrain    - only on these terrains (quartering needs buildings)
-#   surprise   - shift to the odds of being caught unawares (for later rules; − is better)
+#   surprise   - shift to the odds of being caught unawares (below; − is better)
 #   rest       - poor | fair | good: how well the men sleep (for later rules)
 #   layout     - what the battle map draws for it (a ring of stakes, or ditch, bank, palisade
 #                and gate); none for the others
+# Surprise: when a fight is set up from the travel map, one d100 against `base` + the camp's
+# `surprise` (no camp: `none`) + `dark` if the fight starts between sunset and sunrise + `fog`
+# in fog + the attackers' best Stealth / `per` - the defenders' best Watch / `per` (named
+# characters with the forces; rounded down), within `range`. Surprised: in the wound roller the
+# defenders and their friends cannot act in round 1; on the field map their units start
+# shaken. Design estimates.
+surprise:
+  base: 30
+  none: 10
+  dark: 20
+  fog: 20
+  per: 5
+  range: [5, 95]
+
 camps:
   bivouac:   {name: "Bivouac",        hours: 0,   surprise: 20,  rest: poor,
               desc: "Sleep where you stop. Nothing built and no proper watch."}

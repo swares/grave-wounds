@@ -574,7 +574,8 @@ function clickStat(i, id){                       // fixed array: click two chara
 function rollerSheet(c){                          // what the roller keeps of a sheet: enough to show it and to fill attack and defence
   const attackBy = Object.fromEntries(Object.keys(T.weapon_skill).map(w => [w, attackFor(c, w)]));
   return { career: careerOf(c).name, terms: c.terms, age: c.age, leader: !!c.leader, stats: c.stats, defence: c.defence, attack_by: attackBy,
-    trained: T.skills.filter(s => (c.gains[s.id] || 0) > 0).map(s => [s.name, c.skills[s.id]]), origin: c.origin, old: c.old };
+    trained: T.skills.filter(s => (c.gains[s.id] || 0) > 0).map(s => [s.name, c.skills[s.id]]), origin: c.origin, old: c.old,
+    skills: c.skills };   // every skill, trained or not: the roller and travel map use Leechcraft, Fieldcraft, Watch and Stealth
 }
 function sendToRoller(){                         // the roller picks the team up and offers to add it
   try {

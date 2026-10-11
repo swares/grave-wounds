@@ -639,10 +639,13 @@ function newCase(did, rng){
 // % a well man catches it this week: a typical man's Endurance, or a named character's own
 const catchChance = (did, factors, endurance = DZ.endurance, extra = null) => outbreakChance(did, factors, extra) * (100 - endurance) / 100;
 const d10000 = rng => (rng() - 1) * 100 + rng();
-function freshToday(forage, camped, issued = false){   // fresh food today: good forage, fair when camped all day, or issued
+// fresh food today: good forage, fair when camped all day or found by a named man's Fieldcraft, or issued
+function freshToday(forage, camped, issued = false, found = false){
   const F = DZ.scurvy.fresh;
-  return issued || F.forage.includes(forage) || (camped && F.camped.includes(forage));
+  return issued || F.forage.includes(forage) || (camped && F.camped.includes(forage)) || (found && F.fieldcraft.includes(forage));
 }
+const fieldcraftNeeded = (forage, camped) => !camped && DZ.scurvy.fresh.fieldcraft.includes(forage);   // only then can Fieldcraft find it
+const leechBonus = leechcraft => Math.floor(Math.max(0, leechcraft) / DZ.leech.per);
 function scurvyChance(noFresh, endurance = DZ.endurance){   // % a well man falls ill with scurvy this week
   const S = DZ.scurvy;
   if (noFresh < S.after_days) return 0;
@@ -734,19 +737,19 @@ function scurvyCheck(c, target, rng, fresh){   // weekly: fresh food heals; unfe
   c.step += 1;
   return "sick";
 }
-function septic(c, care, rng, ev){            // a wound's fever day: it turns septic (wound fever, a step worse) or not
+function septic(c, care, rng, ev, leech = 0){   // a wound's fever day: it turns septic (wound fever, a step worse) or not
   const W = DZ.wounds;
   c.fever = 0;
-  if (rng() > W.fever_chance[c.inf] + W.fever_care[care]) return;
+  if (rng() > W.fever_chance[c.inf] + W.fever_care[care] - leech) return;
   c.d = "fever";
   c.step = Math.min(DZ.steps.length - 1, c.step + 1);
   ev.shown.fever = (ev.shown.fever || 0) + 1;
 }
 // one case's day: "sick" while it lasts, else "healed" or "dead". food: [fresh food in the past week, he has scurvy]
-function caseDay(c, target, rng, ev, care = "field", food = [false, false]){
+function caseDay(c, target, rng, ev, care = "field", food = [false, false], leech = 0){
   if (c.fever){
     c.fever -= 1;
-    if (c.fever === 0) septic(c, care, rng, ev);
+    if (c.fever === 0) septic(c, care, rng, ev, leech);
   }
   const x = dzProfile(c.d), tally = k => { ev[k][c.d] = (ev[k][c.d] || 0) + 1 };
   if (c.inc > 0){
@@ -770,12 +773,14 @@ function caseDay(c, target, rng, ev, care = "field", food = [false, false]){
 }
 function healthDay(health, ctx, rng, endurance = DZ.endurance){   // a day passes -> {health, events: {shown, healed, dead}}
   const R = DZ.recovery;
-  const target = endurance + R.care[ctx.care] + R.activity[ctx.marched ? "marched" : "rest"] + (ctx.wet_cold ? R.wet_cold : 0) + (ctx.filth ? R.filth : 0);
+  const lb = ctx.leech || 0;
+  const target = endurance + R.care[ctx.care] + R.activity[ctx.marched ? "marched" : "rest"] + (ctx.wet_cold ? R.wet_cold : 0) + (ctx.filth ? R.filth : 0) + lb;
   const h = copyHealth(health), ev = { shown: {}, healed: {}, dead: {} }, keep = [];
   const pts = patientsOf(h), k = ctx.unnursed || 0, left = new Set(k ? pts.slice(pts.length - k) : []);   // the last that many get no one to tend them
-  const alone = target - R.care[ctx.care] + R.care.none, food = [!!ctx.fresh, h.cases.some(c => c.d === "scurvy")];
+  const alone = target - R.care[ctx.care] + R.care.none - lb, food = [!!ctx.fresh, h.cases.some(c => c.d === "scurvy")];
   for (const c of h.cases){
-    const out = caseDay(c, left.has(c) ? alone : target, rng, ev, left.has(c) ? "none" : ctx.care, food), x = dzProfile(c.d);
+    const tended = !left.has(c), x = dzProfile(c.d);
+    const out = tended ? caseDay(c, target, rng, ev, ctx.care, food, lb) : caseDay(c, alone, rng, ev, "none", food, 0);
     if (out === "sick") keep.push(c);
     else if (out === "dead") h.dead += 1;
     else if (x.immune) h.immune[c.d] = (h.immune[c.d] || 0) + 1;
@@ -881,6 +886,13 @@ function groundText(g){
 }
 const wxLine = d => { const w = d.w, c = WXD.conditions[w.cond], wn = WXD.winds.find(x => x.id === w.wind), from = w.dir && w.wind !== "calm" ? ` from the ${WIND_NAMES[w.dir]}` : ""; return `${c.name}, ${wn.name.toLowerCase()}${from}, ${tempOut(w.low)}\u2013${tempOut(w.high)} ${tempUnit()}` };
 // The night: rest by camp and weather, fatigue for the day, and the next morning.
+function foraged(f){                          // a named man's Fieldcraft roll finds fresh food on the day's march
+  const [skill, who] = bestSkill([f], "fieldcraft");
+  if (!skill) return false;
+  const roll = roll100(), ok = roll <= skill;
+  if (ok) f.log.unshift(`${dateText(f.day, true)}: ${who} foraged fresh food on the march (Fieldcraft ${skill}, rolled ${roll}).`);
+  return ok;
+}
 function endDay(f){
   const today = dayWeather(f.day), camp = campHere(f);
   const rest = nightRest(camp ? camp.kind : null, today.w);
@@ -888,7 +900,9 @@ function endDay(f){
   const change = after === before ? "" : ` \u2014 ${L[before].name.toLowerCase()} \u2192 ${L[after].name.toLowerCase()}`;
   const where_ = camp ? WK.camps[camp.kind].name.toLowerCase() : "no camp";
   f.log.unshift(`Night of ${dateText(f.day, true)}: ${WXD.rest_levels[rest]} rest (${where_}; ${WXD.conditions[today.w.cond].name.toLowerCase()}, low ${fmtC(today.w.low)})${change}.`);
-  const fresh = freshToday(terrainAt(curMap(), f.pos).forage, !!camp && (f.marched || 0) <= 0, !!f.freshIssued);
+  const forage = terrainAt(curMap(), f.pos).forage, campedAll = !!camp && (f.marched || 0) <= 0;
+  const found = !f.freshIssued && fieldcraftNeeded(forage, campedAll) && foraged(f);
+  const fresh = freshToday(forage, campedAll, !!f.freshIssued, found);
   f.noFresh = fresh ? 0 : (f.noFresh || 0) + 1;     // days without fresh food, for scurvy
   healthNight(f, today, camp);
   f.fatigue = after; f.day += 1; f.used = 0; f.marched = 0;
@@ -903,7 +917,8 @@ function nightHard(w, kind){                  // the night was harder than the s
 }
 function healthNight(f, today, camp){         // the sick get better or worse; once a week, the outbreak roll
   const kind = camp ? camp.kind : null, hyg = campHygiene(f.hygiene || null, kind);
-  const ctx = { care: campCare(kind), marched: (f.marched || 0) > 0, wet_cold: nightHard(today.w, kind), filth: hyg === "poor", fresh: (f.noFresh || 0) < DZ.week_days };
+  const ctx = { care: campCare(kind), marched: (f.marched || 0) > 0, wet_cold: nightHard(today.w, kind), filth: hyg === "poor", fresh: (f.noFresh || 0) < DZ.week_days,
+    leech: leechBonus(bestSkill([f], "leechcraft")[0]) };
   namedNight(f, ctx, f.day % DZ.week_days === 0 ? weekFactorsFor(f, kind, hyg) : null);
   const r = healthDay(healthOf(f), { ...ctx, unnursed: nursingOf(healthOf(f), f.men).unnursed }, roll100);
   f.health = r.health;
@@ -960,7 +975,15 @@ function namedWeek(n, factors, extra, nurse, noFresh = 0){
   return w.events.map(x => said[x.kind](x));
 }
 // A named man nurses the force's sick if the GM set him to and he is not too sick himself.
-const nursesNow = n => !!n.nurse && !n.dead && !((n.health || {}).cases || []).some(c => c.inc === 0 && c.step >= dzStep(DZ.unfit_from));
+const ableNow = n => !n.dead && !((n.health || {}).cases || []).some(c => c.inc === 0 && c.step >= dzStep(DZ.unfit_from));
+const nursesNow = n => !!n.nurse && ableNow(n);
+// The best of a skill (from the roller's sheets) among the named men with these forces who are well enough: [value, name]
+function bestSkill(forces, skill, all = readNamed()){
+  let best = [0, null];
+  for (const f of forces)
+    for (const [, n] of namedWith(all, f)) if (ableNow(n) && ((n.skills || {})[skill] || 0) > best[0]) best = [n.skills[skill], n.name];
+  return best;
+}
 function namedLine(f){                        // the force's named men and how they are, for its panel
   const mine = Object.values(readNamed()).filter(n => n.map === S.mapId && n.force === f.id);
   if (!mine.length) return "";
@@ -1223,7 +1246,10 @@ function foodText(f){                          // days without fresh food, and w
   const n = f.noFresh || 0, forage = terrainAt(curMap(), f.pos).forage, F = DZ.scurvy.fresh;
   let here = "no fresh food to be had here";
   if (F.forage.includes(forage)) here = "fresh food to be had here";
-  else if (F.camped.includes(forage)) here = "fresh food here if it spends a whole day camped and foraging";
+  else if (F.camped.includes(forage)){
+    const [fc, who] = bestSkill([f], "fieldcraft");
+    here = "fresh food here if it spends a whole day camped and foraging" + (fc && F.fieldcraft.includes(forage) ? `, or on the march if ${who}'s Fieldcraft (${fc}) finds it` : "");
+  }
   const left = DZ.scurvy.after_days - n, risk = left > 0 ? `scurvy can start in ${left} days` : "scurvy can start now";
   return `${n} day${n === 1 ? "" : "s"} without fresh food (${here}; ${risk}).`;
 }
@@ -1246,6 +1272,8 @@ function renderHealth(f){
     parts.push(`${nu.nurses} nursing the ${c.unfit} too sick to work${alone}${clean}.`);
   }
   if (h.dead) parts.push(`${h.dead} dead of disease and wounds so far.`);
+  const [lc, leech] = bestSkill([f], "leechcraft");
+  if (lc && leechBonus(lc)) parts.push(`${leech} tends the sick and wounded (Leechcraft ${lc}: +${leechBonus(lc)} to recovery, \u2212${leechBonus(lc)} to wound fever).`);
   const named = namedLine(f);
   if (named) parts.push(`Named with it (from the wound roller): ${named}.`);
   const sc = scurvyChance(f.noFresh || 0);
@@ -1358,6 +1386,29 @@ function fillFightMaps(dfd){
   else sel.value = was.startsWith("field") ? "field" : "roller";
   NEAR_SHOWN = key;
 }
+// ----- surprise (as gravewounds.travel.surprise): the defenders caught unawares -----
+function surpriseChance(campKind, dark, fog, stealth = 0, watch = 0){   // {chance, parts: [[why, n]]}
+  const S0 = WK.surprise, camp = campKind ? WK.camps[campKind].surprise : S0.none;
+  const parts = [["base", S0.base], ["camp", camp], ["dark", dark ? S0.dark : 0], ["fog", fog ? S0.fog : 0],
+    ["stealth", Math.floor(Math.max(0, stealth) / S0.per)], ["watch", -Math.floor(Math.max(0, watch) / S0.per)]];
+  const [lo, hi] = S0.range;
+  return { chance: Math.max(lo, Math.min(hi, parts.reduce((t, [, n]) => t + n, 0))), parts: parts.filter(([, n]) => n) };
+}
+function surpriseFor(p){                      // this fight's odds: the camp as built, the hour, fog, and the named men's Stealth and Watch
+  const dfd = byId(p.defender), st = campStatus(dfd, p), w = win(p.day), t = w.start + p.used, today = dayWeather(p.day);
+  const all = readNamed(), [stealth, sneak] = bestSkill(p.attackers.map(byId), "stealth", all), [watch, guard] = bestSkill([dfd, ...p.allies.map(byId)], "watch", all);
+  const s = surpriseChance(st.camp && st.done === null ? st.camp.kind : null, t >= w.sunset || t < w.sunrise, today.w.cond === "fog", stealth, watch);
+  return { ...s, who: { stealth: sneak, watch: guard } };
+}
+function surpriseText(s){
+  const name = { base: "base", camp: "camp", dark: "dark", fog: "fog", stealth: `${s.who.stealth}'s Stealth`, watch: `${s.who.watch}'s Watch` };
+  const part = ([k, n]) => name[k] + " " + (n > 0 ? "+" : "\u2212") + Math.abs(n);
+  return `Surprise: ${s.chance}% (${s.parts.map(part).join(", ")}).`;
+}
+function rollSurprise(p){                     // rolled once, when the fight is sent
+  const s = surpriseFor(p), roll = roll100();
+  return { chance: s.chance, roll, surprised: roll <= s.chance, text: surpriseText(s) };
+}
 function fightButton(f){                     // a fight needs an enemy marched to within reach
   const opts = fightOptions(f), p = opts[0], dfd = byId(p.defender), b = $("#btn-fight"), bw = $("#btn-fight-wait");
   fillFightMaps(dfd);
@@ -1382,12 +1433,12 @@ function fightButton(f){                     // a fight needs an enemy marched t
   const when = q => `${dateText(q.day, true)}, ${clock(q.used, q.day)}`;
   if (opts.length > 1){
     bw.textContent = `Wait: fight at the finished camp, ${when(opts[1])}`;
-    $("#fight-note").textContent = `The attackers are there by ${when(p)}, when ${dfd.name}'s ${campName} is ${st.pct}% built. The GM chooses: attack now, or wait until it is finished.${late}`;
+    $("#fight-note").textContent = `The attackers are there by ${when(p)}, when ${dfd.name}'s ${campName} is ${st.pct}% built. The GM chooses: attack now, or wait until it is finished.${late} ${surpriseText(surpriseFor(p))}`;
     return;
   }
   let why = "when the last of the attackers is there";
   if (dfd.day === p.day && dfd.used === p.used) why = here ? `when ${dfd.name} has finished its camp` : `when ${dfd.name} is ready`;
-  $("#fight-note").textContent = `The fight starts ${when(p)}, ${why}.${late}`;
+  $("#fight-note").textContent = `The fight starts ${when(p)}, ${why}.${late} ${surpriseText(surpriseFor(p))}`;
 }
 function nightsText(n){
   if (!n) return "";
@@ -1589,10 +1640,10 @@ function init(){
     if (on.startsWith("field")) return sendField(p, on.slice(6) || null);
     const dfd = byId(p.defender), st = campStatus(dfd, p), m = curMap(), today = dayWeather(p.day);
     const brief = o => ({ name: o.name, side: o.side, men: fitOf(o).fit, type: o.type, fatigue: o.fatigue || 0, km: +(hexDist(o.pos, dfd.pos) * m.hex_km).toFixed(1), from: cameFrom(dfd, o) });   // the sick stay out of it
-    const foes = p.attackers.map(byId).map(brief), allies = p.allies.map(byId).map(brief);
+    const foes = p.attackers.map(byId).map(brief), allies = p.allies.map(byId).map(brief), surprise = rollSurprise(p);
     try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", force: { name: dfd.name, side: dfd.side, men: fitOf(dfd).fit, type: dfd.type, fatigue: dfd.fatigue || 0 },
       camp: st.camp ? st.camp.kind : null, campLabour: st.camp ? st.camp.labour || null : null, party: columnOf(dfd).length > 1 ? colType(dfd) : null, done: st.done, built: st.pct, hauled: !nearWoods(m, dfd.pos), foes, allies, place: where(dfd.pos), ground: terrainAt(m, dfd.pos).id, groundSeed: `${S.mapId}:${p.day}:${p.used}:${dfd.id}`, edges: sidesAround(m, dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day),
-      weather: { cond: today.w.cond, wind: today.w.wind, dir: today.w.dir, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){}
+      weather: { cond: today.w.cond, wind: today.w.wind, dir: today.w.dir, high: today.w.high, low: today.w.low, ground: today.ground }, surprise })) }catch(e){}
     location.href = "roller.html";
   };
   const sendField = (p, battlefield) => {    // the fight on the field map: on open ground the GM splits each force into units; on a battlefield they stand as drawn up
@@ -1603,7 +1654,7 @@ function init(){
     const camp = lay ? { kind: st.camp.kind, frac: st.done === null ? null : st.done / (st.camp.labour || 1), hauled: !nearWoods(m, dfd.pos), party: columnOf(dfd).length > 1 ? colType(dfd) : null } : null;
     try{ localStorage.setItem("gravewounds-field-handoff", JSON.stringify({ from: "travel", battle: `${S.mapId}:${p.day}:${p.used}:${dfd.id}`, mapId: S.mapId, map: m.name || S.mapId,
       place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day), start: { day: p.day, used: p.used }, forces, camp, battlefield,
-      weather: { cond: today.w.cond, wind: today.w.wind, dir: today.w.dir, high: today.w.high, low: today.w.low, ground: today.ground } })) }catch(e){ /* storage off: the field map opens without the forces */ }
+      weather: { cond: today.w.cond, wind: today.w.wind, dir: today.w.dir, high: today.w.high, low: today.w.low, ground: today.ground }, surprise: rollSurprise(p) })) }catch(e){ /* storage off: the field map opens without the forces */ }
     location.href = "field.html";
   };
   $("#btn-fight").onclick = () => sendFight(0);

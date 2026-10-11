@@ -43,8 +43,22 @@ The results are realistic, if harsh: a band of 12 can stake its camp in an after
 would need days to fortify it, while 1,000 men fortify a camp in about 6 hours. That is in
 line with the few hours a Roman legion took for its marching camp.
 
-Each kind of camp also records how hard it is to surprise and how well the men rest. These
-are for later rules on surprise, rest, camp hygiene and disease.
+Each kind of camp also records how hard it is to surprise and how well the men rest. Rest
+sets the night's fatigue, and hygiene feeds camp disease (see [travel.md](travel.md)).
+
+**Surprise.** When the GM sets up a fight from the travel map, the page rolls once to see
+whether the defenders are caught unawares. The chance is 30%, plus:
+
+| Shift | |
+| --- | --- |
+| The camp | no camp +10, bivouac +20, watched camp and quarters 0, staked camp −10, fortified camp −20 (an unfinished camp counts as none) |
+| Dark | +20 if the fight starts between sunset and sunrise |
+| Fog | +20 |
+| Stealth | + the attackers' best Stealth ÷ 5 (named characters with the attacking forces) |
+| Watch | − the defenders' best Watch ÷ 5 (named characters with the defender and its friends) |
+
+It stays between 5% and 95%, and the travel map's fight note shows it before you send the
+fight. Surprised defenders cannot attack or move in round 1 of the wound roller. On the field map their units start shaken. Design estimates.
 
 A force can make each kind of camp once in a place. Changing to another kind there (say, a
 watched camp to a staked camp) costs the new camp's work but not its set-up hour again.

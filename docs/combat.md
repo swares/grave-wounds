@@ -205,6 +205,16 @@ A fighter from the team builder brings his sheet's characteristics. Anyone else 
 | Strength | Toil: each hand-to-hand exchange he attacks or defends in counts. After 30 in light kit, 20 in medium or 12 in heavy, times Strength ÷ 50, he is a fatigue step worse, to Exhausted at most. Shooting costs none |
 | Presence | A leader who is up adds (Presence − 50) ÷ 5 to his side's morale |
 
+**First aid.** On a side with any team-builder character, the best Leechcraft among them
+still up rolls d100 for each **Bind**, **Tourniquet** or **Cauterise**. Success: a bind stops
+two steps of bleeding instead of one, and cautery adds no pain. Failure: nothing happens;
+try again. A side with no sheets treats as before, unrolled. The note under the strike
+panel says who rolled what.
+
+**Surprised.** A fight set up from the travel map may catch the defenders unawares (see
+[works.md](works.md), *Surprise*). Then the defenders and their friends start **Surprised**:
+they cannot attack or move in round 1.
+
 Heavy kits are full plate and the transitional harness, the Danish man-at-arms, the 1630
 cuirassier, the First World War sentry's armour, the aircrew flak suit and the Interceptor
 vest. Mail, jacks, brigandines, the 1630 harquebusier and pikeman, the Napoleonic

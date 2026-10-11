@@ -208,11 +208,19 @@ in the table above. His card shows each wound's step ("healing: wounds, serious"
 wound leaves his list and stays as a scar on his figure and sheet. If a wound kills him, his
 card says he died of his wounds.
 
+**A leech in camp.** A named man with a force who has **Leechcraft** on his team-builder
+sheet tends its sick and wounded while he is alive and not too sick to work himself. The
+best leech with the force adds Leechcraft ÷ 10 (rounded down) to every recovery check of its
+sick and wounded and of the named men with it, and takes as much off each wound's chance of
+turning septic. The sick beyond what the nurses can tend get none of it. The health note
+names him. A design estimate.
+
 **Scurvy.** Each force counts its days without fresh food (fruit, greens, fresh meat,
 onions). The count goes back to nought on a day that ends in farmland, a village or a town;
 in open ground, forest or hills if the force spent the whole day camped there and foraging
-(it did not march); or every day while **Fresh food issued** is ticked on its health panel.
-Other ground has none. The health note says how many days it has gone without, and whether
+(it did not march), or on a march day there if a named man with the force finds it (his
+**Fieldcraft**, rolled each such day, the best with the force); or every day while **Fresh
+food issued** is ticked on its health panel. Other ground has none. The health note says how many days it has gone without, and whether
 fresh food can be had where it stands.
 
 After 6 weeks without fresh food, each week every well man may fall ill: 10% the first week,

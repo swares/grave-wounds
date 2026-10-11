@@ -200,7 +200,9 @@ def _characteristics_rule(d) -> str:
             f"Initiative: d{C['initiative']['die']} + Agility / {C['initiative']['agi_per']}. Blood: {T['blood_pool']} + (Endurance - 50) / {C['blood']['per']}. "
             f"Toil: each hand-to-hand exchange he attacks or defends in counts, and every {b['light']} (light kit), {b['medium']} (medium) or {b['heavy']} (heavy), "
             f"times Strength / 50, he is a fatigue step worse, to {d.weather['fatigue']['levels'][C['toil']['worst']]['name'].lower()} at most. "
-            f"A leader who is up adds (Presence - 50) / {C['presence']['per']} to his side's morale. Rounded down throughout.")
+            f"A leader who is up adds (Presence - 50) / {C['presence']['per']} to his side's morale. Rounded down throughout. "
+            f"First aid: on a side with any team-builder character, the best Leechcraft among those up rolls each treatment; success binds "
+            f"{d.wounds['combat']['first_aid']['bind']} bleed steps and cauterises without more pain, failure does nothing.")
 
 
 def move_rules(d) -> list[str]:
@@ -398,6 +400,8 @@ def disease_rules(d) -> list[str]:
         f"Men at serious or worse do not dig or fight. Grave and deadly cases go on litters: the force marches at {L['march']}%, "
         f"or {L['short']}% with fewer than {L['bearers']} fit men a litter, and cannot march with none. "
         "Hygiene comes from the camp (bivouac poor, quarters good, others fair) unless the GM sets it. Plague needs the GM's \"plague in the region\".",
+        f"<b>A leech:</b> the best Leechcraft among the named men with a force (alive, not too sick to work) adds Leechcraft / {D['leech']['per']} "
+        "to every recovery check of its sick and wounded, and takes as much off each wound's chance of turning septic.",
     ] + _scurvy_rules(d) + _wound_track_rules(d)
 
 
@@ -407,7 +411,8 @@ def _scurvy_rules(d) -> list[str]:
         return []
     return [
         f"<b>Scurvy:</b> each force counts its days without fresh food. A day ends it in farmland, a village or a town, or in open country, "
-        f"forest or hills if the force camped there all day and foraged, or when the GM issues fresh food. After {S['after_days']} days "
+        f"forest or hills if the force camped there all day and foraged, or on a march day there if a named man's Fieldcraft roll finds it, "
+        f"or when the GM issues fresh food. After {S['after_days']} days "
         f"without it, each week every well man may fall ill: {S['chance']}% the first week, {S['per_week']} more each week after, "
         f"times the chance he fails to resist. It shows at once at mending and is checked once a week: with fresh food in the past "
         f"week, {S['heal']} steps better; without it, the recovery check at virulence {S['virulence']}: success holds, failure is one "
@@ -571,7 +576,17 @@ def works_rules(d) -> list[str]:
         f"<b>In the way:</b> each fighter standing on the line between a shooter and his target costs the shot {L['per_man']}% (at most {L['max']}%). "
         f"A miss goes into the first man in the way at {L['stray']}%: roll the hit on him with no attack roll and the severity table. "
         "Bows and crossbows loose high over the men in the way: the penalty, but never a stray.",
+        _surprise_rule(d),
     ] + ground_rules(d)
+
+
+def _surprise_rule(d) -> str:
+    S, C = d.works["surprise"], d.works["camps"]
+    camps = ", ".join(f"{v['name'].lower()} {v['surprise']:+d}" for v in C.values())
+    return (f"<b>Surprise:</b> when a fight is set up from the travel map, d100 against {S['base']}% + the camp's shift (no camp {S['none']:+d}; {camps}) "
+            f"+ {S['dark']} if it starts between sunset and sunrise + {S['fog']} in fog + the attackers' best Stealth / {S['per']} "
+            f"- the defenders' best Watch / {S['per']} (named characters with the forces), within {S['range'][0]}-{S['range'][1]}%. "
+            "Surprised: in the wound roller the defenders and their friends cannot act in round 1; on the field map their units start shaken.")
 
 
 def ground_rules(d) -> list[str]:

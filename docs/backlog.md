@@ -33,6 +33,6 @@ When an item is done, delete it here and note it in the pull request that closes
   Peninsula's gun wounds: no 1618-48 artillery wound counts were found.
 - **Character generation, beyond the first cut.** The medieval tables are a first draft for
   a team playtest. Its characteristics now count in the roller (Agility, Endurance,
-  Strength, Presence). Still to come: tables for the other eras; named characters' skills
-  outside a fight (Leechcraft for first aid, Fieldcraft and Watch on the travel map); and
-  followers' one-line stat blocks for big teams.
+  Strength, Presence), and Leechcraft, Fieldcraft, Watch and Stealth work outside a fight.
+  Still to come: tables for the other eras, and followers' one-line stat blocks for big
+  teams.

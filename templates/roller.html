@@ -536,6 +536,16 @@ function travelForces(){                          // the forces on the travel ma
     return [];
   }
 }
+// A skill from his team-builder sheet (an older sheet has only the trained ones), or 0 without one
+const SKILL_NAMES = { leechcraft: "Leechcraft", fieldcraft: "Fieldcraft", watch: "Watch", stealth: "Stealth" };
+function skillOf(c, id){
+  const h = c && c.sheet;
+  if (!h) return 0;
+  if (h.skills && Number.isFinite(h.skills[id])) return h.skills[id];
+  const t = (h.trained || []).find(([n]) => n === SKILL_NAMES[id]);
+  return t ? t[1] : 0;
+}
+const namedSkills = c => Object.fromEntries(Object.keys(SKILL_NAMES).map(k => [k, skillOf(c, k)]));   // for the travel map
 // His old wounds from his sheet and his scars, for scurvy to reopen: [{key, loc}] (key "sheet:i" or "scar:i")
 const oldWounds = c => [...((c.sheet && c.sheet.old) || []).map((w, i) => ({ key: "sheet:" + i, loc: w.loc })), ...(c.scars || []).map((w, i) => ({ key: "scar:" + i, loc: w.loc }))];
 // The old wounds scurvy has reopened, as they stand on the wound track: [{loc, step}]
@@ -551,7 +561,7 @@ function attachNamed(c, value){                   // put him with a travel force
   if (!value) delete all[c.uid];
   else {
     const [map, id] = [value.slice(0, value.lastIndexOf(":")), +value.slice(value.lastIndexOf(":") + 1)], was = all[c.uid] || {};
-    all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id, old: oldWounds(c) };
+    all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id, old: oldWounds(c), skills: namedSkills(c) };
   }
   writeNamed(all);
   NAMED = all;
@@ -592,10 +602,11 @@ function syncCamp(c){                             // what his nights in camp did
   c.wounds = c.wounds.filter(w => !healed.includes(w));
   keepOld(c);
 }
-function keepOld(c){                              // the travel map's copy of his old wounds and scars, for scurvy to reopen
-  const all = readNamed(), n = all[c.uid], old = oldWounds(c);
-  if (!n || JSON.stringify(n.old || []) === JSON.stringify(old)) return;
+function keepOld(c){                              // the travel map's copy of his old wounds and scars (for scurvy) and skills
+  const all = readNamed(), n = all[c.uid], old = oldWounds(c), skills = namedSkills(c);
+  if (!n || JSON.stringify([n.old || [], n.skills || {}]) === JSON.stringify([old, skills])) return;
   n.old = old;
+  n.skills = skills;
   writeNamed(all);
   NAMED = all;
 }
@@ -1282,12 +1293,31 @@ function charStats(c){
   const th = [...TRK.thresholds].sort((a,b) => a.at - b.at).find(t => frac <= t.at);
   return { pain, bleed, worst, frac, th };
 }
+// First aid (as gravewounds.combat.first_aid): {done, bleed, pain}. leechcraft null: no sheets on his side, unrolled
+function firstAid(how, fx, limb, leechcraft = null, roll = null){
+  const keep = { done: false, bleed: fx.bleed, pain: fx.pain };
+  if (how === "tourniquet" && !limb) return keep;
+  const good = leechcraft !== null;
+  if (good && roll > leechcraft) return keep;
+  if (how === "bind") return { done: true, bleed: Math.max(0, fx.bleed - (good ? CMB.first_aid.bind : 1)), pain: fx.pain };
+  if (how === "tourniquet") return { done: true, bleed: 0, pain: fx.pain };
+  return { done: true, bleed: 0, pain: good ? fx.pain : Math.min(3, fx.pain + 1) };   // cauterise
+}
+function leechFor(c){                             // the best Leechcraft among his side's team-builder men still up: [skill, name], or null
+  const mine = S.chars.filter(o => sideOf(o) === sideOf(c) && o.sheet);
+  if (!mine.length) return null;
+  const up = mine.filter(o => !isDown(o) && !(o.state && CMB.states[o.state.id].out));
+  return up.reduce((a, o) => (skillOf(o, "leechcraft") > a[0] ? [skillOf(o, "leechcraft"), o.name] : a), [0, up[0] ? up[0].name : "no one"]);
+}
 function treat(c, w, how){
-  const isLimb = ["arms","legs"].includes(LOC[w.loc].zone);
-  if (how === "bind") w.fx.bleed = Math.max(0, w.fx.bleed - 1);
-  if (how === "tourniquet"){ if (!isLimb) return; w.fx.bleed = 0 }
-  if (how === "cauterise"){ w.fx.bleed = 0; w.fx.pain = Math.min(3, w.fx.pain + 1) }
-  w.treated = (w.treated ? w.treated + ", " : "") + how;
+  const isLimb = ["arms","legs"].includes(LOC[w.loc].zone), leech = leechFor(c);
+  const roll = leech ? d100() : null, r = firstAid(how, w.fx, isLimb, leech ? leech[0] : null, roll);
+  const said = leech ? `${leech[1]} (Leechcraft ${leech[0]}) rolled ${roll}` : "";
+  if (leech) $("#apply-msg").textContent = r.done ? `${how[0].toUpperCase() + how.slice(1)} on ${c.name}: ${said}, success.` : `${how[0].toUpperCase() + how.slice(1)} on ${c.name} failed: ${said}. Try again.`;
+  if (!r.done) return renderChars();
+  w.fx.bleed = r.bleed;
+  w.fx.pain = r.pain;
+  w.treated = (w.treated ? w.treated + ", " : "") + how + (leech ? " (skilled)" : "");
   renderChars();
 }
 // Short name for a blood-loss threshold: "down", "unconscious", or the effect's first clause.
@@ -2097,6 +2127,8 @@ function setupHandoff(){                     // a camp or position sent from the
   const overflow = defenders.reduce((t, o) => t + Math.min(o.men, 8), 0) > spots.length;
   S.chars = [];
   for (const o of defenders) S.chars.push(...forceChars(o, spots.splice(0, Math.min(o.men, 8))));
+  const sp = h.surprise;
+  if (sp && sp.surprised) S.chars.forEach(c => { c.state = { id: "surprised", rounds: 1 } });   // the defenders and their friends lose round 1
   for (const o of foes) S.chars.push(...forceChars(o, o.from ? arrivalSpots(o.from, Math.min(o.men, 8)) : null));
   if (h.weather) S.weather = h.weather;
   S.hauled = !!h.hauled;
@@ -2117,6 +2149,7 @@ function setupHandoff(){                     // a camp or position sent from the
   const addNote = `Add brings in more on the side "${S.addSide}".`;
   const like = `The ground is laid out to match the travel map's ${GRD.terrain_names[S.groundLike.terrain].toLowerCase()}${lay ? ", cleared inside the camp" : ""}${sidesText(S.ground.sides)}: Paint ground to change it.`;
   S.mapMsg = `Defending: ${defNote}, inside the ${where}${cut}.${unplaced} ${foeNote}${addNote} ${like} Click a fighter, on the map or with Place on map, then a hex to move him.`;
+  if (sp) S.pending.push(`${sp.text} Rolled ${sp.roll}: ${sp.surprised ? "caught unawares, they cannot act in round 1" : "not surprised"}`);
   for (const o of h.allies || []) S.pending.push(`With them: ${o.name}, ${o.men} men (${o.side})`);
   for (const o of foes) S.pending.push(`Facing them: ${o.name}, ${o.men} men (${o.side})`);
   try{ localStorage.removeItem("gravewounds-handoff") }catch(e){}
