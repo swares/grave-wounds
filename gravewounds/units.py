@@ -815,10 +815,7 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
     fired on (suppression)."""
     log = []
     for v in volleys(d, us, field):
-        if under is not None and is_mg(d, us[v["att"]]["weapon"]):
-            under[v["dfd"]] = True
-            if v.get("behind") is not None:
-                under[v["behind"]] = True
+        _mark_mg(d, us, v, under)
         b = us[v["dfd"]]
         opts = {"factor": form(d, b)["missile_factor"] * (100 - v["misfire"]) / 100, "exposed": _exposure(d, b, False, True),
                 "penalty": v["cover"] + v["penalty"] + v["over"], "reach": v["reach"]}
@@ -838,6 +835,15 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
     for c in cannonades(d, us, field):
         log += _fire_battery(d, us, table, rng, acc, c)
     return log
+
+
+def _mark_mg(d: Data, us: list, v: dict, under: list | None) -> None:
+    """A machine gun's target, and any unit in its beaten zone, check for suppression."""
+    if under is None or not is_mg(d, us[v["att"]]["weapon"]):
+        return
+    under[v["dfd"]] = True
+    if v.get("behind") is not None:
+        under[v["behind"]] = True
 
 
 def _beaten_fire(d: Data, us: list, table: str, rng, acc: tuple, v: dict) -> list:
@@ -867,19 +873,23 @@ def shell_weapon(d: Data, table: str) -> str | None:
 def spotted(d: Data, units: list, field: dict | None, side, h) -> bool:
     """Whether a unit of `side` (not broken or fled) can see hex h to call fire on it: within
     the weather's sight, with no woods between."""
-    cond = (((field or {}).get("weather") or {}).get("cond"))
+    sight = _sight_hexes(d, field)
+    return any(u["side"] == side and u["men"] > 0 and u["state"] not in ("broken", "fled") and _sees(d, field, u, h, sight) for u in units)
+
+
+def _sight_hexes(d: Data, field: dict | None) -> int | None:
+    """How far the weather lets a man see, in field hexes (None: as far as the map)."""
+    cond = ((field or {}).get("weather") or {}).get("cond")
     vis = d.weather["conditions"][cond].get("visibility") if cond and d.weather else None
-    sight = None if vis is None else vis // d.units["range_scale"]
-    for u in units:
-        if u["side"] != side or u["men"] <= 0 or u["state"] in ("broken", "fled"):
-            continue
-        for row in footprint(d, u):
-            for x in row:
-                dist = hdist(x, h)
-                if sight is not None and dist > sight:
-                    continue
-                if not any(ground_at(d, field, y).get("cover") for y in ray(x, h, dist)[1:-1]):
-                    return True
+    return None if vis is None else vis // d.units["range_scale"]
+
+
+def _sees(d: Data, field: dict | None, u: dict, h, sight: int | None) -> bool:
+    """Whether any hex of unit u sees hex h: within sight, with no woods between."""
+    for x in (x for row in footprint(d, u) for x in row):
+        dist = hdist(x, h)
+        if (sight is None or dist <= sight) and not any(ground_at(d, field, y).get("cover") for y in ray(x, h, dist)[1:-1]):
+            return True
     return False
 
 

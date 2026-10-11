@@ -478,7 +478,7 @@ function renderSupport(){
   $("#support").innerHTML = supports().map((b, i) => {
     const can = S.phase === "setup" || b.side === moving(), on = S.calling === i;
     const call = `<button class="small" data-sup-call="${i}" ${can && b.rounds > 0 ? "" : "disabled"} aria-pressed="${on}">${on ? "Click a hex…" : "Call fire"}</button>`;
-    const stop = b.mission ? `<button class="small" data-sup-stop="${i}" ${can ? "" : "disabled"}>Stop</button>` : "";
+    const dis = can ? "" : "disabled", stop = b.mission ? `<button class="small" data-sup-stop="${i}" ${dis}>Stop</button>` : "";
     return `<li aria-current="${on}"><span><b>${esc(b.name)}</b> <span class="muted">${esc(b.side)}</span></span>${call}${stop}<span class="meta">${supportMeta(b)}</span></li>`;
   }).join("") || `<li class="muted">None. Add a battery below.</li>`;
 }

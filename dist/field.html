@@ -1088,18 +1088,19 @@ function shellWeapon(table){                      // the weapon shell fragments 
   const I = UD.indirect, have = FD.tables[table]?.weapons || [];
   return [I.weapon, I.fallback].find(w => have.includes(w)) || null;
 }
-function spotted(units, field, side, h){          // a unit of `side` can see hex h to call fire on it: in sight in the weather, no woods between
+function markMg(us, v, under){                    // a machine gun's target, and any unit in its beaten zone, check for suppression
+  if (!under || !isMg(us[v.att].weapon)) return;
+  under[v.dfd] = true;
+  if (v.behind !== undefined && v.behind !== null) under[v.behind] = true;
+}
+// a unit of `side` can see hex h to call fire on it: in sight in the weather, no woods between
+const spotted = (units, field, side, h) => units.some(u => u.side === side && u.men > 0 && u.state !== "broken" && u.state !== "fled" && sees(field, u, h, sightHexes(field)));
+function sightHexes(field){                       // how far the weather lets a man see, in field hexes (null: as far as the map)
   const cond = field?.weather?.cond, vis = cond && FD.weather ? FD.weather.conditions[cond].visibility : null;
-  const sight = vis === null || vis === undefined ? null : Math.floor(vis / UD.range_scale);
-  for (const u of units){
-    if (u.side !== side || u.men <= 0 || u.state === "broken" || u.state === "fled") continue;
-    for (const row of footprint(u)) for (const x of row){
-      const dist = hdist(x, h);
-      if (sight !== null && dist > sight) continue;
-      if (!ray(x, h, dist).slice(1, -1).some(y => groundAt(field, y).cover)) return true;
-    }
-  }
-  return false;
+  return vis === null || vis === undefined ? null : Math.floor(vis / UD.range_scale);
+}
+function sees(field, u, h, sight){                // any hex of u sees h: within sight, no woods between
+  return footprint(u).flat().some(x => { const dist = hdist(x, h); return (sight === null || dist <= sight) && !ray(x, h, dist).slice(1, -1).some(y => groundAt(field, y).cover) });
 }
 function indirectAll(us, table, rng, acc, log, field, under){   // every fire mission due this exchange, in the support list's order
   const weapon = shellWeapon(table);
@@ -1107,10 +1108,11 @@ function indirectAll(us, table, rng, acc, log, field, under){   // every fire mi
   (field.support || []).forEach((b, k) => {
     const m = b.mission;
     if (!m || (m.wait || 0) > 0 || (b.rounds || 0) <= 0) return;
-    fireMission(us, table, weapon, rng, acc, log, field, under, k, b);
+    fireMission({ us, table, weapon, rng, acc, log, field, under }, k, b);
   });
 }
-function fireMission(us, table, weapon, rng, acc, log, field, under, k, b){   // where each shell lands, then the men struck in every unit
+function fireMission(ctx, k, b){                  // where each shell lands, then the men struck in every unit (ctx: us, table, weapon, rng, acc, log, field, under)
+  const { us, table, weapon, rng, acc, log, field, under } = ctx;
   const I = UD.indirect, K = I.kinds[b.kind], m = b.mission, shells = Math.min(b.tubes * K.rate, b.rounds), bursts = [];
   for (let s = 0; s < shells; s++){ const dirn = rng.randint(0, 5), far = rng.randint(0, K.scatter); bursts.push(step(m.hex, dirn, far)) }
   b.rounds -= shells;
@@ -1223,10 +1225,7 @@ function strikeAll(us, table, rng, acc, log, field){
 }
 function shootAll(us, table, rng, acc, log, field, under = null){
   for (const v of volleys(us, field)){
-    if (under && isMg(us[v.att].weapon)){           // a machine gun's targets check for suppression
-      under[v.dfd] = true;
-      if (v.behind !== undefined && v.behind !== null) under[v.behind] = true;
-    }
+    markMg(us, v, under);
     const b = us[v.dfd], exposed = exposure(b, false, true), mf = form(b).missile_factor;
     let t = takeHurt(b, volley(sideOfUnit(us[v.att], table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
     tallyLoss(acc, v, t);
@@ -1294,11 +1293,17 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     const cut = Math.min(acc.lost[i], u.men);
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
   });
-  log.push(...moraleAll(us, occ, before, acc, rng, table));
-  log.push(...suppressAll(us, under, rng));
-  for (const u of us){ u.charged = false; batteryAfter(u); if (u.pinned) u.pinned -= 1 }
-  for (const b of field?.support || []) if (b.mission && (b.mission.wait || 0) > 0) b.mission.wait -= 1;
+  log.push(...moraleAll(us, occ, before, acc, rng, table), ...suppressAll(us, under, rng));
+  afterExchange(us, field);
   return { units: us, log };
+}
+function afterExchange(us, field){                // charges spent, batteries changed over, pins wear off, missions come due
+  for (const u of us){
+    u.charged = false;
+    batteryAfter(u);
+    if (u.pinned) u.pinned -= 1;
+  }
+  for (const b of field?.support || []) if (b.mission && (b.mission.wait || 0) > 0) b.mission.wait -= 1;
 }
 function moraleAll(us, occ, before, acc, rng, table){
   const log = [], broke = [];
@@ -1751,7 +1756,7 @@ function renderSupport(){
   $("#support").innerHTML = supports().map((b, i) => {
     const can = S.phase === "setup" || b.side === moving(), on = S.calling === i;
     const call = `<button class="small" data-sup-call="${i}" ${can && b.rounds > 0 ? "" : "disabled"} aria-pressed="${on}">${on ? "Click a hex…" : "Call fire"}</button>`;
-    const stop = b.mission ? `<button class="small" data-sup-stop="${i}" ${can ? "" : "disabled"}>Stop</button>` : "";
+    const dis = can ? "" : "disabled", stop = b.mission ? `<button class="small" data-sup-stop="${i}" ${dis}>Stop</button>` : "";
     return `<li aria-current="${on}"><span><b>${esc(b.name)}</b> <span class="muted">${esc(b.side)}</span></span>${call}${stop}<span class="meta">${supportMeta(b)}</span></li>`;
   }).join("") || `<li class="muted">None. Add a battery below.</li>`;
 }
