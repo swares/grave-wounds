@@ -8,15 +8,14 @@
 // road runs up the middle of the field, which is drawn with north at the top and the British
 // coming up from the south. The deployment is Morgan's three lines as most modern accounts give
 // them, in our own words; numbers are round figures for play, the guns among them.
-import { N, S, wobble, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
 
 const COLS = 120, ROWS = 100;                 // 1200 m east to west, about 870 m north to south
-const blob = (c, r, cx, cy, rx, ry, a, b) => ((c - cx) / rx) ** 2 + ((r - cy) / ry) ** 2 <= 1 + 0.12 * wobble(Math.atan2(r - cy, c - cx) * 6, a, b);   // a rounded, uneven patch
 function kind(c, r){
   if (Math.abs(c - (8 + wobble(r / 2, 0.5, 1.4))) <= 2 || Math.abs(c - (112 + wobble(r / 2, 2.2, 0.3))) <= 2) return "m";   // the wet ravines on the flanks
   if (c < 6 || c > 115) return "F";                                     // the woods beyond them
-  if (blob(c, r, 60, 33, 34, 11, 1.1, 0.4)) return "h";      // the low crest the Continentals held
-  if (blob(c, r, 60, 10, 26, 8, 0.2, 2.0)) return "h";       // the rise behind, where the horse waited
+  if (patch(c, r, { cx: 60, cy: 33, rx: 34, ry: 11, a: 1.1, b: 0.4 })) return "h";      // the low crest the Continentals held
+  if (patch(c, r, { cx: 60, cy: 10, rx: 26, ry: 8, a: 0.2, b: 2.0 })) return "h";       // the rise behind, where the horse waited
   return ".";
 }
 const grid = groundGrid(COLS, ROWS, kind);

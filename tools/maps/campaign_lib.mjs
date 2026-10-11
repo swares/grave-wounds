@@ -47,6 +47,22 @@ function landShape(){
   return feature(t, t.objects.land);
 }
 
+// Whether a [lat, lon] point is inside a polygon of [lat, lon] points (even-odd rule).
+function inside(poly, [lat, lon]){
+  let hit = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++){
+    const [ai, oi] = poly[i], [aj, oj] = poly[j];
+    if ((ai > lat) !== (aj > lat) && lon < (oj - oi) * (lat - ai) / (aj - ai) + oi) hit = !hit;
+  }
+  return hit;
+}
+// Water the land data leaves as land (lakes): the spec's hand-drawn shore polygons.
+function paintWater(spec, g, grid){
+  for (const poly of spec.water || []){
+    for (let r = 0; r < g.rows; r++) for (let c = 0; c < g.cols; c++) if (inside(poly, g.toLatLon(g.centre(c, r)))) grid[r][c] = "w";
+  }
+}
+
 // Paints the terrain: land or sea (and any hand-drawn `water`: lakes the land data counts as land), then woods, marsh, hills, mountains, brooks (as marsh), roads, rivers (with a bridge where
 // a road crosses a lesser river), the named bridges and fords, villages and towns.
 function paint(spec, g){
@@ -55,18 +71,7 @@ function paint(spec, g){
     const [lat, lon] = g.toLatLon(g.centre(c, r));
     return geoContains(land, [lon, lat]) ? spec.base || "f" : "w";
   }));
-  // Water the land data leaves as land (lakes): hand-drawn shore polygons of [lat, lon] points.
-  const inside = (poly, [lat, lon]) => {
-    let hit = false;
-    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++){
-      const [ai, oi] = poly[i], [aj, oj] = poly[j];
-      if ((ai > lat) !== (aj > lat) && lon < (oj - oi) * (lat - ai) / (aj - ai) + oi) hit = !hit;
-    }
-    return hit;
-  };
-  for (const poly of spec.water || []){
-    for (let r = 0; r < g.rows; r++) for (let c = 0; c < g.cols; c++) if (inside(poly, g.toLatLon(g.centre(c, r)))) grid[r][c] = "w";
-  }
+  paintWater(spec, g, grid);
   const pt = p => (typeof p === "string" ? P[p] : p);
   const set = (h, k) => { if (g.on(h) && grid[h[1]][h[0]] !== "w") grid[h[1]][h[0]] = k };
   const line = (points, k, step = g.hexKm * 0.08) => {          // every hex a polyline runs through

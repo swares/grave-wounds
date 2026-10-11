@@ -10,18 +10,17 @@
 // are approximate. The deployment is the early afternoon, when the Union batteries had been
 // pushed onto the hill near the Henry house, in our own words; numbers are round figures for
 // play, the guns among them.
-import { N, S, wobble, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
 
 const COLS = 140, ROWS = 130;                 // 1400 m east to west, about 1130 m north to south
 const branch = c => 20 + wobble(c / 3, 1.7, 0.6);                    // Young's Branch, under the turnpike
-const blob = (c, r, cx, cy, rx, ry, a, b) => ((c - cx) / rx) ** 2 + ((r - cy) / ry) ** 2 <= 1 + 0.12 * wobble(Math.atan2(r - cy, c - cx) * 6, a, b);   // a rounded, uneven patch
 function kind(c, r){
   if (Math.abs(r - branch(c)) <= 1.2) return "m";                    // the branch and its wet bottom
-  if (r < branch(c) - 6 && blob(c, r, 75, 0, 38, 12, 1.2, 0.3)) return "h";   // Matthews Hill's southern slope, north of the turnpike
+  if (r < branch(c) - 6 && patch(c, r, { cx: 75, cy: 0, rx: 38, ry: 12, a: 1.2, b: 0.3 })) return "h";   // Matthews Hill's southern slope, north of the turnpike
   if (c < 8 + wobble(r / 3, 0.9, 2.1) && r > 30 && r < 115) return "F";        // woods on Chinn Ridge
-  if (blob(c, r, 10, 72, 9, 40, 2.4, 0.8)) return "h";                         // Chinn Ridge, west of the Sudley road
+  if (patch(c, r, { cx: 10, cy: 72, rx: 9, ry: 40, a: 2.4, b: 0.8 })) return "h";                         // Chinn Ridge, west of the Sudley road
   if (r > 92 + wobble(c / 4, 0.4, 2.2) && c > 42 + wobble(r / 3, 1.0, 0.2)) return "F";   // the pines on the south-east edge of the plateau
-  if (r > branch(c) + 8 && blob(c, r, 78, 60, 52, 32, 0.6, 1.9)) return "h";  // the broad top of Henry Hill
+  if (r > branch(c) + 8 && patch(c, r, { cx: 78, cy: 60, rx: 52, ry: 32, a: 0.6, b: 1.9 })) return "h";  // the broad top of Henry Hill
   return ".";
 }
 const grid = groundGrid(COLS, ROWS, kind);

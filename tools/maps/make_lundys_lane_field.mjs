@@ -9,14 +9,13 @@
 // not traced from any map, and are approximate. The deployment is the evening's opening, when
 // Scott's brigade came up against the hill and Jesup's 25th worked round the British left by
 // the Portage road, in our own words; numbers are round figures for play, the guns among them.
-import { N, S, wobble, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
 
 const COLS = 130, ROWS = 110;                 // 1300 m east to west, about 950 m north to south
 const crest = c => 30 + wobble(c / 3, 0.7, 1.6);                     // Lundy's Lane along the crest
-const blob = (c, r, cx, cy, rx, ry, a, b) => ((c - cx) / rx) ** 2 + ((r - cy) / ry) ** 2 <= 1 + 0.12 * wobble(Math.atan2(r - cy, c - cx) * 6, a, b);   // a rounded, uneven patch
 function kind(c, r){
   const k = crest(c);
-  if (blob(c, r, 62, k, 40, 13, 0.7, 1.6)) return "h";                 // the hill
+  if (patch(c, r, { cx: 62, cy: k, rx: 40, ry: 13, a: 0.7, b: 1.6 })) return "h";                 // the hill
   if (c >= 46 && c <= 52 && r >= k - 4 && r <= k - 1) return "r";   // the churchyard and its wall, behind the guns
   if (r > 60 && c < 45 + wobble(r / 2, 1.3, 0.2)) return "F";        // woods south-west, where Scott's men formed
   if (c > 112 && r > 40) return "F";                                 // woods along the river side
