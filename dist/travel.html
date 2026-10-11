@@ -1099,28 +1099,35 @@ function namedNight(f, ctx, factors){          // the day (and on the week's las
   if (!mine.length) return;
   const fh = healthOf(f), force = nursingOf(fh, f.men, !!f.cleanNurses);
   for (const [, n] of mine){
-    const e = Number.isFinite(n.endurance) ? n.endurance : DZ.endurance;
-    const unnursed = force.nurses + (mine.some(([, o]) => o !== n && nursesNow(o)) ? 1 : 0) > 0 ? 0 : 1;   // nursed first, if anyone can
-    const r = healthDay(n.health || newHealth(), { ...ctx, unnursed }, roll100, e);
-    n.health = r.health;
-    n.rest = (n.rest || 0) + 1;                   // a night with the force: the roller gives him back some blood
-    if (r.health.dead) n.died = Object.keys(r.events.dead)[0];
-    const one = (o, verb) => Object.entries(o).map(([did, k]) => `${verb} (${k > 1 ? k + " " : ""}${dzShort(did)})`);   // a man, not a force
-    const bits = [...one(r.events.shown, "fell ill"), ...one(r.events.healed, "recovered")];
-    if (r.health.dead){ n.dead = true; bits.push(`died (${Object.keys(r.events.dead).map(dzShort).join(", ")})`) }
-    if (factors && !n.dead){                       // the camp's contagion; and his patients' diseases if he nurses
-      const w = healthWeek(n.health, 1, factors, roll100, e, contagionOf(fh, f.men), nursesNow(n) ? { ...force, nurses: 1 } : null);
-      n.health = w.health;
-      const said = { caught: x => `caught ${dzShort(x.d)} (not showing yet)`, nursed: x => `caught ${dzShort(x.d)} nursing the sick (not showing yet)`, relapse: x => `fell ill with ${dzShort(x.d)} again` };
-      for (const x of w.events) bits.push(said[x.kind](x));
-    }
-    if (bits.length){
-      const line = `${dateText(f.day, true)}: ${n.name} ${bits.join("; ")}.`;
-      f.log.unshift(line);
-      n.log = [line, ...(n.log || [])].slice(0, 20);
-    }
+    const tended = force.nurses > 0 || mine.some(([, o]) => o !== n && nursesNow(o));   // nursed first, if anyone can
+    const bits = namedDay(n, ctx, tended ? 0 : 1);
+    if (factors && !n.dead) bits.push(...namedWeek(n, factors, contagionOf(fh, f.men), nursesNow(n) ? { ...force, nurses: 1 } : null));
+    if (!bits.length) continue;
+    const line = `${dateText(f.day, true)}: ${n.name} ${bits.join("; ")}.`;
+    f.log.unshift(line);
+    n.log = [line, ...(n.log || [])].slice(0, 20);
   }
   writeNamed(all);
+}
+const namedEnd = n => (Number.isFinite(n.endurance) ? n.endurance : DZ.endurance);
+function namedDay(n, ctx, unnursed){            // his night: his cases run their course -> what happened, in words
+  const r = healthDay(n.health || newHealth(), { ...ctx, unnursed }, roll100, namedEnd(n));
+  n.health = r.health;
+  n.rest = (n.rest || 0) + 1;                   // a night with the force: the roller gives him back some blood
+  const one = (o, verb) => Object.entries(o).map(([did, k]) => `${verb} (${k > 1 ? k + " " : ""}${dzShort(did)})`);   // a man, not a force
+  const bits = [...one(r.events.shown, "fell ill"), ...one(r.events.healed, "recovered")];
+  if (r.health.dead){
+    n.dead = true;
+    n.died = Object.keys(r.events.dead)[0];
+    bits.push(`died (${Object.keys(r.events.dead).map(dzShort).join(", ")})`);
+  }
+  return bits;
+}
+function namedWeek(n, factors, extra, nurse){   // his outbreak roll: the camp's contagion, and his patients' diseases if he nurses
+  const w = healthWeek(n.health, 1, factors, roll100, namedEnd(n), extra, nurse);
+  n.health = w.health;
+  const said = { caught: x => `caught ${dzShort(x.d)} (not showing yet)`, nursed: x => `caught ${dzShort(x.d)} nursing the sick (not showing yet)`, relapse: x => `fell ill with ${dzShort(x.d)} again` };
+  return w.events.map(x => said[x.kind](x));
 }
 // A named man nurses the force's sick if the GM set him to and he is not too sick himself.
 const nursesNow = n => !!n.nurse && !n.dead && !((n.health || {}).cases || []).some(c => c.inc === 0 && c.step >= dzStep(DZ.unfit_from));
@@ -1393,7 +1400,8 @@ function renderHealth(f){
   if (c.carried) parts.push(`${c.carried} on litters: the march goes at ${sickMarchPct(c.fit, c.carried)}%.`);
   if (c.unfit){
     const nu = nursingOf(h, f.men, !!f.cleanNurses);
-    parts.push(`${nu.nurses} nursing the ${c.unfit} too sick to work${nu.unnursed ? `; ${nu.unnursed} have no one to tend them` : ""}${f.cleanNurses ? " (nurses keep clean)" : ""}.`);
+    const alone = nu.unnursed ? "; " + nu.unnursed + " have no one to tend them" : "", clean = f.cleanNurses ? " (nurses keep clean)" : "";
+    parts.push(`${nu.nurses} nursing the ${c.unfit} too sick to work${alone}${clean}.`);
   }
   if (h.dead) parts.push(`${h.dead} dead of disease and wounds so far.`);
   const named = namedLine(f);
