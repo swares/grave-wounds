@@ -1,0 +1,318 @@
+# Character generation for the horse-and-musket wars (1775-1815): the American Revolution, the
+# Peninsular War and the War of 1812. The team builder (dist/team.html, python3 -m gravewounds
+# team --era horse_musket). Made exactly as the medieval era's (see medieval.yaml for the five
+# steps); only the tables differ. Each region takes its war's wound table.
+# All of it is written for this game: the tables, events and names are ours (names are common
+# period names, plain fact). Gunnery is the artillerymen's skill; lancers' lances are fought
+# with Blade, as cavalry arms.
+id: horse_musket
+name: "Horse and musket (1775-1815)"
+
+characteristics:
+  - {id: str, name: Strength}
+  - {id: agi, name: Agility}
+  - {id: end, name: Endurance}
+  - {id: wits, name: Wits}
+  - {id: nerve, name: Nerve}
+  - {id: pres, name: Presence}
+array: [70, 60, 55, 50, 45, 35]
+stat_range: [15, 95]
+age: {start: 16, per_term: 4}
+
+skill_max: 90
+first_term: 15
+term_main: 10
+term_second: 5
+gain: 15
+skills:
+  - {id: musket, name: Musket, of: agi, div: 2, combat: true}
+  - {id: rifle, name: Rifle, of: wits, div: 2, combat: true}
+  - {id: pistol, name: Pistol, of: agi, div: 2, combat: true}
+  - {id: blade, name: Blade, of: agi, div: 2, combat: true}
+  - {id: bayonet, name: Bayonet, of: str, div: 2, combat: true}
+  - {id: gunnery, name: Gunnery, of: wits, div: 2, combat: true}
+  - {id: brawl, name: Brawl, of: str, div: 2, combat: true}
+  - {id: parry, name: Parry, of: agi, div: 2, combat: true}
+  - {id: dodge, name: Dodge, of: agi, div: 3, combat: true}
+  - {id: ride, name: Ride, of: agi, div: 3}
+  - {id: fieldcraft, name: Fieldcraft, of: wits, div: 3}
+  - {id: watch, name: Watch, of: wits, div: 2}
+  - {id: stealth, name: Stealth, of: agi, div: 3}
+  - {id: leechcraft, name: Leechcraft, of: wits, div: 4}
+  - {id: seamanship, name: Seamanship, of: wits, div: 4}
+  - {id: craft, name: Craft, of: wits, div: 3}
+  - {id: letters, name: Letters, of: wits, div: 5}
+  - {id: persuade, name: Persuade, of: pres, div: 2}
+  - {id: command, name: Command, of: pres, div: 3}
+
+weapon_skill:
+  musket_smoothbore: musket
+  musket_butt: musket
+  rifle_flintlock: rifle
+  pistol_flintlock: pistol
+  saber: blade
+  lance: blade
+  dagger: blade
+  bayonet: bayonet
+  artillery_smoothbore: gunnery
+  punch: brawl
+  kick: brawl
+  elbow_knee: brawl
+defence: [parry, dodge]
+
+regions:
+  - id: continental
+    name: "The Continental Army (1775-1783)"
+    table: revolution-1775-83-all-hits
+    colours: ["#2e4f8a", "#7d5530", "#e6e0d2", "#4f5d3a"]
+    names: [John, William, Samuel, Joseph, Daniel, Benjamin, Thomas, James, Nathan, Elijah, Ebenezer, Jonathan, Abraham, Isaac, Josiah, Peter]
+    bynames: [Allen, Bradford, Clark, Cooper, Hale, Morgan, Porter, Sargent, Wheeler, Van Dyke, Ludwig, McKean]
+  - id: british_rev
+    name: "The British Army in America (1775-1783)"
+    table: revolution-1775-83-all-hits
+    colours: ["#a33a2e", "#e6e0d2", "#2f3f6e", "#5c6b3a"]
+    names: [John, William, Thomas, George, James, Richard, Robert, Henry, Edward, Charles, Patrick, Duncan, Hugh, Samuel, Francis, Joseph]
+    bynames: [Smith, Taylor, Brown, Wright, Walker, Hughes, Murphy, Campbell, Fraser, Kelly, Morris, Lane]
+  - id: british_pen
+    name: "The British in the Peninsula (1808-1814)"
+    table: peninsular-1808-14-all-hits
+    colours: ["#a33a2e", "#2f3f3a", "#e6e0d2", "#2f3f6e"]
+    names: [John, William, Thomas, James, George, Richard, Edward, Patrick, Michael, Daniel, Donald, Robert, Benjamin, Henry, Joseph, Edmund]
+    bynames: [Harris, Costello, Green, Lawrence, Morris, Wheeler, Kincaid, Murray, Ross, Gallagher, Price, Evans]
+  - id: french
+    name: "The French Empire in Spain (1808-1814)"
+    table: peninsular-1808-14-all-hits
+    colours: ["#2b4a8a", "#e6e0d2", "#8a2b3c", "#2f3f6e"]
+    names: [Jean, Pierre, Jacques, François, Louis, Antoine, Joseph, Nicolas, Michel, Étienne, Claude, André, Jan, Józef, Karl, Paul]
+    bynames: [Martin, Bernard, Dubois, Moreau, Laurent, Lefebvre, Roux, Fournier, Girard, Mercier, Nowak, Kowalski]
+  - id: us_1812
+    name: "The United States (1812-1815)"
+    table: war-1812-all-hits
+    colours: ["#2e4f8a", "#7d5530", "#e6e0d2", "#5c6b3a"]
+    names: [John, William, James, Samuel, Thomas, Andrew, David, Jacob, Henry, Robert, Joseph, George, Isaac, Levi, Moses, Zebulon]
+    bynames: [Adams, Baker, Carroll, Davis, Ellis, Foster, Graham, Hall, Johnson, Kerr, Lewis, Shelby]
+
+origins:
+  - {name: "Farmer's son", gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Cannot read a word", letters: -15}}
+  - {name: "Frontier boy", gain: rifle, trait: {text: "Moves quietly in the woods", stealth: 15}, drawback: {text: "Hates drill", pres: -10}}
+  - {name: "Weaver thrown out of work", gain: craft, trait: {text: "Patient", wits: 10}, drawback: {text: "Weak from hunger", end: -10}}
+  - {name: "Townsman's son", gain: persuade, trait: {text: "Quick tongue", persuade: 15}, drawback: {text: "Never slept rough", fieldcraft: -15}}
+  - {name: "Sailor's son", gain: seamanship, trait: {text: "Climbs anything", agi: 10}, drawback: {text: "Cannot sit a horse", ride: -15}}
+  - {name: "Clerk's apprentice", gain: letters, trait: {text: "Good at sums", wits: 10}, drawback: {text: "Soft hands", str: -10}}
+  - {name: "Enlisted for the bounty", gain: brawl, trait: {text: "Hard to frighten", nerve: 10}, drawback: {text: "Drinks his pay", pres: -10}}
+  - {name: "Gamekeeper's son", gain: musket, trait: {text: "A steady aim", musket: 15}, drawback: {text: "Known as a poacher's friend", persuade: -15}}
+  - {name: "Younger son of a gentleman", gain: ride, trait: {text: "Raised to the sword", blade: 15}, drawback: {text: "Proud and touchy", persuade: -15}}
+  - {name: "Apothecary's boy", gain: leechcraft, trait: {text: "Knows his remedies", leechcraft: 15}, drawback: {text: "Faints at the sight of blood", nerve: -10}}
+  - {name: "Blacksmith's apprentice", gain: craft, trait: {text: "Arms like hams", str: 10}, drawback: {text: "Half deaf from the anvil", watch: -15}}
+  - {name: "Drover", gain: ride, trait: {text: "Knows every road", fieldcraft: 15}, drawback: {text: "Bad back", agi: -10}}
+  - {name: "Fisherman's son", gain: seamanship, trait: {text: "Swims like a seal", end: 10}, drawback: {text: "Smells of the catch", persuade: -15}}
+  - {name: "Raised in the barracks", gain: musket, trait: {text: "Knows the drill by heart", nerve: 10}, drawback: {text: "Knows nothing else", fieldcraft: -15}}
+  - {name: "Groom in a great stable", gain: ride, trait: {text: "Horse sense", ride: 15}, drawback: {text: "Kicked by a horse as a boy", end: -10}}
+  - {name: "Woodcutter", gain: craft, trait: {text: "Tireless", end: 10}, drawback: {text: "Slow of speech", wits: -10}}
+  - {name: "Street brawler", gain: brawl, trait: {text: "Takes a punch", end: 10}, drawback: {text: "Known to the watch", persuade: -15}}
+  - {name: "Servant in a great house", gain: watch, trait: {text: "Knows how to please his betters", persuade: 15}, drawback: {text: "Never held a weapon", parry: -15}}
+  - {name: "Shepherd", gain: watch, trait: {text: "Sees far", watch: 15}, drawback: {text: "Uneasy in crowds", pres: -10}}
+  - {name: "Exile from another country", gain: persuade, trait: {text: "Speaks three tongues", persuade: 15}, drawback: {text: "Belongs nowhere", pres: -10}}
+
+careers:
+  - id: line
+    name: "Line infantryman"
+    main: musket
+    second: bayonet
+    prefers: [end, agi, nerve, str, wits, pres]
+    wound: 20
+    wound_weapon: musket_smoothbore
+    kit: {default: none}
+    weapon: {default: musket_smoothbore}
+    terms:
+      - {to: 20, skill: watch, text: "Stood picket on a cold night before a battle."}
+      - {to: 40, skill: fieldcraft, text: "Marched barefoot through a hard winter."}
+      - {to: 55, skill: craft, text: "Dug trenches before a fortress."}
+      - {to: 70, skill: bayonet, text: "Went in with the bayonet at the end of a long fight.", wound: true}
+      - {to: 85, skill: dodge, text: "Stood in line under cannon fire."}
+      - {to: 100, skill: musket, text: "Fired volleys at forty paces until the enemy broke.", wound: true}
+  - id: rifleman
+    name: "Rifleman or light infantryman"
+    main: rifle
+    second: dodge
+    prefers: [wits, agi, end, nerve, str, pres]
+    wound: 15
+    wound_weapon: musket_smoothbore
+    kit: {default: none}
+    weapon: {default: rifle_flintlock}
+    terms:
+      - {to: 20, skill: stealth, text: "Skirmished in front of the army."}
+      - {to: 40, skill: fieldcraft, text: "Lived off the land on outpost duty."}
+      - {to: 55, skill: watch, text: "Picked off officers from a hedge."}
+      - {to: 70, skill: musket, text: "Covered a retreat from rock to rock."}
+      - {to: 85, skill: bayonet, text: "Was caught in the open by cavalry.", wound: true}
+      - {to: 100, skill: rifle, text: "Shot it out with enemy skirmishers in a wood.", wound: true}
+  - id: dragoon
+    name: "Dragoon or hussar"
+    main: blade
+    second: ride
+    prefers: [agi, str, nerve, end, pres, wits]
+    wound: 20
+    wound_weapon: saber
+    kit: {default: dragoon_helmet, french: cuirassier}
+    weapon: {default: saber}
+    mounted: true
+    terms:
+      - {to: 20, skill: fieldcraft, text: "Foraged for horses in a stripped country."}
+      - {to: 40, skill: pistol, text: "Fought dismounted at a ford."}
+      - {to: 55, skill: watch, text: "Patrolled the roads between two armies."}
+      - {to: 70, skill: parry, text: "Fought a running fight with enemy horse.", wound: true}
+      - {to: 85, skill: command, text: "Led a vedette that brought back news of the enemy."}
+      - {to: 100, skill: blade, text: "Rode in a charge that broke a square.", wound: true}
+  - id: gunner
+    name: "Artilleryman"
+    main: gunnery
+    second: craft
+    prefers: [wits, str, end, nerve, agi, pres]
+    wound: 15
+    wound_weapon: artillery_smoothbore
+    kit: {default: none}
+    weapon: {default: artillery_smoothbore}
+    terms:
+      - {to: 20, skill: craft, text: "Made cartridges in a siege train."}
+      - {to: 40, skill: ride, text: "Drove a gun team through the mud."}
+      - {to: 55, skill: letters, text: "Learned the ranges from a printed table."}
+      - {to: 70, skill: watch, text: "Laid a gun on enemy batteries for a day."}
+      - {to: 85, skill: brawl, text: "Defended the guns with a rammer when they were overrun.", wound: true}
+      - {to: 100, skill: gunnery, text: "Fired canister into a column at close range.", wound: true}
+  - id: sergeant
+    name: "Sergeant or corporal"
+    main: command
+    second: musket
+    prefers: [pres, nerve, end, str, agi, wits]
+    wound: 20
+    wound_weapon: musket_smoothbore
+    kit: {default: none}
+    weapon: {default: musket_smoothbore}
+    terms:
+      - {to: 20, skill: letters, text: "Kept the company's books."}
+      - {to: 40, skill: persuade, text: "Recruited at country fairs."}
+      - {to: 55, skill: bayonet, text: "Drilled recruits until they moved as one."}
+      - {to: 70, skill: watch, text: "Set the guard on the line of march."}
+      - {to: 85, skill: parry, text: "Defended the colours when the line wavered.", wound: true}
+      - {to: 100, skill: musket, text: "Closed up the ranks under fire.", wound: true}
+  - id: officer
+    name: "Officer"
+    main: blade
+    second: command
+    prefers: [pres, nerve, agi, wits, end, str]
+    wound: 25
+    wound_weapon: musket_smoothbore
+    kit: {default: none}
+    weapon: {default: saber}
+    terms:
+      - {to: 20, skill: letters, text: "Wrote reports for the colonel."}
+      - {to: 40, skill: ride, text: "Carried orders across a battlefield."}
+      - {to: 55, skill: persuade, text: "Negotiated an exchange of prisoners."}
+      - {to: 70, skill: pistol, text: "Fought a duel over an insult."}
+      - {to: 85, skill: command, text: "Led the company when its captain fell."}
+      - {to: 100, skill: parry, text: "Led a storming party into a breach.", wound: true}
+  - id: surgeon
+    name: "Surgeon's mate"
+    main: leechcraft
+    second: craft
+    prefers: [wits, agi, nerve, end, pres, str]
+    wound: 5
+    wound_weapon: musket_smoothbore
+    kit: {default: none}
+    weapon: {default: pistol_flintlock}
+    terms:
+      - {to: 20, skill: craft, text: "Took off limbs at a field hospital all night."}
+      - {to: 40, skill: letters, text: "Studied anatomy in a hospital in town."}
+      - {to: 55, skill: leechcraft, text: "Nursed a regiment through fever."}
+      - {to: 70, skill: ride, text: "Followed the army with the ambulance wagons."}
+      - {to: 85, skill: persuade, text: "Bargained for quinine and bark."}
+      - {to: 100, skill: watch, text: "Worked under fire at a dressing station.", wound: true}
+  - id: scout
+    name: "Scout or ranger"
+    main: fieldcraft
+    second: rifle
+    prefers: [wits, agi, end, nerve, str, pres]
+    wound: 15
+    wound_weapon: musket_smoothbore
+    kit: {default: none}
+    weapon: {default: rifle_flintlock}
+    terms:
+      - {to: 20, skill: stealth, text: "Watched an enemy camp from a hill for three days."}
+      - {to: 40, skill: persuade, text: "Bought news from the country people."}
+      - {to: 55, skill: ride, text: "Carried a message through enemy country."}
+      - {to: 70, skill: watch, text: "Found the ford the army needed."}
+      - {to: 85, skill: brawl, text: "Was caught by a patrol and fought his way out.", wound: true}
+      - {to: 100, skill: fieldcraft, text: "Guided a column by night."}
+  - id: marine
+    name: "Sailor or marine"
+    main: seamanship
+    second: musket
+    prefers: [agi, str, end, nerve, wits, pres]
+    wound: 15
+    wound_weapon: musket_smoothbore
+    kit: {default: none}
+    weapon: {default: musket_smoothbore}
+    terms:
+      - {to: 20, skill: craft, text: "Rigged and mended sails at sea."}
+      - {to: 40, skill: gunnery, text: "Served a gun in a sea fight."}
+      - {to: 55, skill: brawl, text: "Fought in a tavern brawl in port."}
+      - {to: 70, skill: watch, text: "Kept lookout from the masthead."}
+      - {to: 85, skill: blade, text: "Boarded an enemy ship with a cutlass.", wound: true}
+      - {to: 100, skill: musket, text: "Fired from the tops into the enemy deck.", wound: true}
+  - id: sutler
+    name: "Sutler or camp follower"
+    main: persuade
+    second: watch
+    prefers: [pres, wits, end, agi, nerve, str]
+    wound: 5
+    wound_weapon: musket_smoothbore
+    kit: {default: none}
+    weapon: {default: pistol_flintlock}
+    terms:
+      - {to: 20, skill: craft, text: "Cooked for a regiment."}
+      - {to: 40, skill: ride, text: "Drove a cart in the baggage."}
+      - {to: 55, skill: fieldcraft, text: "Bought food where there was none."}
+      - {to: 70, skill: letters, text: "Kept accounts of what the soldiers owed."}
+      - {to: 85, skill: leechcraft, text: "Nursed the wounded after a battle."}
+      - {to: 100, skill: dodge, text: "Was caught in the baggage when the enemy broke through.", wound: true}
+
+old_wound:
+  - {to: 70, kind: mark, text: "a healed scar"}
+  - {to: 100, kind: lasting, text: "a lasting hurt"}
+lasting: 5
+lasting_from: {head: wits, face: pres, arms: str, legs: agi, torso: end}
+
+followers:
+  quality:
+    default:  [{to: 30, quality: green}, {to: 80, quality: regular}, {to: 100, quality: veteran}]
+    hardened: [{to: 15, quality: green}, {to: 60, quality: regular}, {to: 100, quality: veteran}]
+    raw:      [{to: 55, quality: green}, {to: 90, quality: regular}, {to: 100, quality: veteran}]
+
+templates:
+  - id: company
+    name: "A company of foot"
+    slots: [[officer, 3], [sergeant, 2], [line, 2], [line, 1], [surgeon, 1]]
+    followers: [[line, 16]]
+  - id: riflemen
+    name: "A company of riflemen"
+    slots: [[officer, 3], [rifleman, 2], [rifleman, 2], [scout, 1], [rifleman, 1]]
+    followers: [[rifleman, 10]]
+    follower_quality: hardened
+  - id: troop
+    name: "A troop of horse"
+    slots: [[dragoon, 3], [dragoon, 2], [dragoon, 1], [scout, 1], [sutler, 1]]
+    followers: [[dragoon, 8]]
+  - id: battery
+    name: "A battery's crew"
+    slots: [[gunner, 3], [gunner, 2], [gunner, 1], [line, 1], [sutler, 1]]
+    followers: [[gunner, 8], [line, 4]]
+  - id: militia
+    name: "Militia"
+    slots: [[officer, 2], [line, 1], [line, 1], [rifleman, 1], [scout, 1]]
+    followers: [[line, 12], [rifleman, 4]]
+    follower_quality: raw
+  - id: landing
+    name: "A landing party"
+    slots: [[officer, 3], [marine, 2], [marine, 1], [marine, 1], [surgeon, 1]]
+    followers: [[marine, 10]]

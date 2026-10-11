@@ -2,8 +2,8 @@
 
 Each player runs a team of four to six. The first member leads, and when he falls another
 steps up. A whole team should take about twenty minutes to make at the table, or one click
-on the team builder page, `dist/team.html`. The tables are in `data/teams/medieval.yaml`
-and in the printed tables (*Team generation*). Every table, event and trait is written for
+on the team builder page, `dist/team.html`. The tables are in `data/teams/` (one file an
+era) and in the printed tables (*Team generation*). Every table, event and trait is written for
 this game. The names are common period names.
 
 The first table set covers the medieval era, c.1250-1460, the era of the Sidon, Visby,
@@ -92,6 +92,27 @@ come with his first career and his region.
 
 *Your own team* on the page picks four to six careers and their terms, and no followers
 until you add them.
+
+## The gunpowder eras
+
+Three more eras use the same five steps, with their own skills, origins, careers, events,
+regions, teams and followers (`data/teams/thirty_years.yaml`, `horse_musket.yaml` and
+`civil_war.yaml`). Pick one with **Era** on the page, or `--era` on the command line. Each
+region takes its war's wound table, for old wounds and for the roller.
+
+| Era | Regions (wound table) | Fighting skills | Careers |
+| --- | --- | --- | --- |
+| Thirty Years' War (1618-1648) | the Swedish army; the Imperial army and the Catholic League (Thirty Years' War) | Musket, Pistol, Blade, Pike | musketeer, pikeman, cuirassier, harquebusier, dragoon, sergeant, field surgeon, sutler, chaplain |
+| Horse and musket (1775-1815) | the Continental Army and the British in America (Revolution); the British and the French in the Peninsula (Peninsular War); the United States (1812) | Musket, Rifle, Pistol, Blade, Bayonet, Gunnery | line infantryman, rifleman, dragoon or hussar, artilleryman, sergeant, officer, surgeon's mate, scout, sailor or marine, sutler |
+| Civil War and frontier (1861-1876) | the Union, the Confederacy, the US Army on the frontier (all the Civil War table) | Rifle, Pistol, Blade, Bayonet, Gunnery | infantryman, sharpshooter, cavalry trooper, artilleryman, sergeant, officer, surgeon or hospital steward, scout, teamster |
+
+Brawl, Parry, Dodge and the skills outside a fight (Leechcraft, Fieldcraft, Watch, Stealth
+and the rest) carry over; Bow, Crossbow, Axe and Sling stay medieval. Gunnery is the
+artillerymen's skill. The wound tables have no pike wounds, so a pikeman fights with his sword
+in the roller; his Pike skill stands for the push of pike. On the frontier, gunshots roll on
+the Civil War table, as the arrow-wound records have none. Their kits: cuirassiers,
+harquebusiers and pikemen in the 1630s armours; dragoons with helmets and the French with
+cuirasses; everyone else unarmoured.
 
 ## Followers
 

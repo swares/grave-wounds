@@ -330,9 +330,20 @@ def unit_rows(d) -> list[list[str]]:
     return [[q.title(), f"{v['attack']}%", f"{v['defence']}%", str(v["nerve"])] for q, v in d.units["quality"].items()]
 
 
+def team_eras(d) -> list[str]:
+    """The eras with team tables, medieval first, then in the order of their years."""
+    order = ["medieval", "thirty_years", "horse_musket", "civil_war"]
+    return [e for e in order if e in d.teams] + sorted(e for e in d.teams if e not in order)
+
+
 def team_rules(d, eid: str = "medieval") -> list[str]:
-    """Character generation, as short rules for the PDF and Markdown (data/teams)."""
+    """Character generation, as short rules for the PDF and Markdown (data/teams). The first era
+    gets the whole method; the others only what differs."""
     T = d.teams[eid]
+    if eid != team_eras(d)[0]:
+        skills = ", ".join(s["name"] for s in T["skills"] if s.get("combat"))
+        return [f"<b>{T['name']}:</b> made exactly as the medieval era's, in the same five steps, from the tables below. "
+                f"Fighting skills: {skills}. Each region takes its war's wound table, for old wounds and for the roller.", _follower_rule(d, T)]
     ch = ", ".join(c["name"] for c in T["characteristics"])
     return [
         f"<b>{T['name']}: a team in twenty minutes.</b> A player runs a team of four to six; the first member leads. Each character is made in five steps.",
@@ -892,10 +903,12 @@ def markdown(d) -> str:
         rates = d.units["missile"]["rate"]
         out += ["| Missile weapon | Shots a minute |", "|---|---|"] + [f"| {d.weapons[w]['name']} | {n} |" for w, n in rates.items()] + [""]
     if d.teams:
-        tt = team_tables(d)
         mdt = lambda rows: ["| " + " | ".join(rows[0]) + " |", "|" + "---|" * len(rows[0])] + ["| " + " | ".join(r) + " |" for r in rows[1:]] + [""]
-        out += ["## Team generation", ""] + [re.sub("</?b>", "**", x) + "\n" for x in team_rules(d)]
-        out += mdt(tt["skills"]) + mdt(tt["origins"]) + mdt(tt["careers"]) + mdt(tt["events"]) + mdt(tt["kits"]) + mdt(tt["teams"])
+        out += ["## Team generation", ""]
+        for eid in team_eras(d):
+            tt = team_tables(d, eid)
+            out += [f"### {d.teams[eid]['name']}", ""] + [re.sub("</?b>", "**", x) + "\n" for x in team_rules(d, eid)]
+            out += mdt(tt["skills"]) + mdt(tt["origins"]) + mdt(tt["careers"]) + mdt(tt["events"]) + mdt(tt["kits"]) + mdt(tt["teams"])
     if d.disease:
         out += ["## Camp disease", ""] + [re.sub("</?b>", "**", x) + "\n" for x in disease_rules(d)]
         out += ["| Disease | Caught from | Shows after | Outbreak chance a week | Peak (d100) | Deaths per case in the records |", SEP6]
@@ -1276,15 +1289,17 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
             Spacer(1, 6), KeepTogether([Paragraph("Unit quality", H2), grid(qrow, [1.4 * inch, 1.0 * inch, 1.0 * inch, 1.0 * inch], font=8)]),
             Spacer(1, 6), KeepTogether([Paragraph("Missile rates", H2), grid(rrow, [2.4 * inch, 1.2 * inch], font=8)])]
     if d.teams:
-        tt = team_tables(d)
         cell = lambda rows: [[Paragraph(x, CH) for x in rows[0]]] + [[Paragraph(str(c), C) for c in r] for r in rows[1:]]
-        story += [PageBreak(), Paragraph("Team generation", H1)] + [Paragraph(x, B) for x in team_rules(d)] + [
-            Spacer(1, 6), Paragraph("Skills", H2), grid(cell(tt["skills"]), [1.6 * inch, 1.3 * inch, W - 2.9 * inch], font=7.5),
-            Spacer(1, 6), Paragraph("Origins", H2), grid(cell(tt["origins"]), [0.6 * inch, 1.9 * inch, 1.0 * inch, (W - 3.5 * inch) / 2, (W - 3.5 * inch) / 2], font=7.5),
-            Spacer(1, 6), Paragraph("Careers", H2), grid(cell(tt["careers"]), [1.9 * inch, 1.2 * inch, 1.2 * inch, 0.9 * inch, W - 5.2 * inch], font=7.5),
-            Spacer(1, 6), Paragraph("Career terms (* leaves an old wound)", H2), grid(cell(tt["events"]), [1.7 * inch, 0.6 * inch, 1.1 * inch, W - 3.4 * inch], font=7.5),
-            Spacer(1, 6), Paragraph("Kit and weapon by region", H2), grid(cell(tt["kits"]), [1.5 * inch] + [(W - 1.5 * inch) / 4] * 4, font=7),
-            Spacer(1, 6), Paragraph("Teams", H2), grid(cell(tt["teams"]), [1.8 * inch, W - 1.8 * inch], font=7.5)]
+        for k, eid in enumerate(team_eras(d)):
+            tt, nreg = team_tables(d, eid), len(d.teams[eid]["regions"])
+            head = [PageBreak(), Paragraph("Team generation", H1)] if k == 0 else [PageBreak()]
+            story += head + [Paragraph(d.teams[eid]["name"], H2)] + [Paragraph(x, B) for x in team_rules(d, eid)] + [
+                Spacer(1, 6), Paragraph("Skills", H2), grid(cell(tt["skills"]), [1.6 * inch, 1.3 * inch, W - 2.9 * inch], font=7.5),
+                Spacer(1, 6), Paragraph("Origins", H2), grid(cell(tt["origins"]), [0.6 * inch, 1.9 * inch, 1.0 * inch, (W - 3.5 * inch) / 2, (W - 3.5 * inch) / 2], font=7.5),
+                Spacer(1, 6), Paragraph("Careers", H2), grid(cell(tt["careers"]), [1.9 * inch, 1.2 * inch, 1.2 * inch, 0.9 * inch, W - 5.2 * inch], font=7.5),
+                Spacer(1, 6), Paragraph("Career terms (* leaves an old wound)", H2), grid(cell(tt["events"]), [1.7 * inch, 0.6 * inch, 1.1 * inch, W - 3.4 * inch], font=7.5),
+                Spacer(1, 6), Paragraph("Kit and weapon by region", H2), grid(cell(tt["kits"]), [1.5 * inch] + [(W - 1.5 * inch) / nreg] * nreg, font=7),
+                Spacer(1, 6), Paragraph("Teams", H2), grid(cell(tt["teams"]), [1.6 * inch, (W - 1.6 * inch) / 2, (W - 1.6 * inch) / 2], font=7.5)]
     if d.disease:
         drow = [[Paragraph(x, CH) for x in ["Disease", "Caught from", "Shows after", "Outbreak chance a week", "Peak (d100)", "Deaths per case"]]]
         drow += [[Paragraph(c, C) for c in r] for r in disease_rows(d)]
@@ -1452,15 +1467,19 @@ def index_page(d) -> str:
     return out
 
 
-def team_bundle(d, eid: str = "medieval") -> dict:
-    """What the team builder needs: the era's tables, the old-wound location ranges, and the
-    names, kits and weapons its sheets and figures show."""
+def team_bundle(d) -> dict:
+    """What the team builder needs: every era's tables and old-wound location ranges (TD.eras;
+    the page points TD.era and TD.ranges at the one chosen), and the names, kits and weapons its
+    sheets and figures show."""
     from gravewounds.team import old_wound_ranges
-    T = d.teams[eid]
-    kits = {c["kit"].get(r["id"], c["kit"]["default"]) for c in T["careers"] for r in T["regions"]}
-    weapons = set(T["weapon_skill"]) | {c["wound_weapon"] for c in T["careers"]}
-    weapons |= {c["weapon"].get(r["id"], c["weapon"]["default"]) for c in T["careers"] for r in T["regions"]}
-    return {"era": T, "ranges": old_wound_ranges(d, eid),
+    kits, weapons = set(), set()
+    for T in d.teams.values():
+        kits |= {c["kit"].get(r["id"], c["kit"]["default"]) for c in T["careers"] for r in T["regions"]}
+        weapons |= set(T["weapon_skill"]) | {c["wound_weapon"] for c in T["careers"]}
+        weapons |= {c["weapon"].get(r["id"], c["weapon"]["default"]) for c in T["careers"] for r in T["regions"]}
+    eras = {eid: {"era": d.teams[eid], "ranges": old_wound_ranges(d, eid)} for eid in team_eras(d)}
+    first = team_eras(d)[0]
+    return {"eras": eras, "era": eras[first]["era"], "ranges": eras[first]["ranges"],
             "locs": {l["id"]: {"name": l["name"], "zone": l["zone"], "class": l["class"]} for l in d.locations},
             "kits": {k: d.armor["kits"][k] for k in sorted(kits)},
             "fight": {"blood_pool": d.wounds["tracking"]["blood_pool"], "chr": d.wounds["combat"]["characteristics"]},

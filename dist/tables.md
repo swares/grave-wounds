@@ -4482,6 +4482,8 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 ## Team generation
 
+### Medieval (c.1250-1460)
+
 **Medieval (c.1250-1460): a team in twenty minutes.** A player runs a team of four to six; the first member leads. Each character is made in five steps.
 
 **1. Characteristics:** Strength, Agility, Endurance, Wits, Nerve, Presence: roll 3d6 x 5 for each in order (15-90), or take the array 70, 60, 55, 50, 45, 35 and place it, highest first, in the order his career prefers (the GM may let him swap two).
@@ -4654,6 +4656,431 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 | A farmers' muster | Spearman or billman (3), Spearman or billman (1), Spearman or billman (1), Archer (1), Forester or huntsman (1) | 10 spearman or billman, 4 archer (raw) |
 | A pilgrims' escort | Man-at-arms (3), Mounted sergeant (2), Crossbowman (1), Clerk or priest (1), Barber-surgeon (1) | 3 mounted sergeant, 3 crossbowman, 2 servant or groom (default) |
 | A merchant's company | Merchant (3), Sailor (2), Crossbowman (1), Servant or groom (1) | 4 sailor, 2 crossbowman, 2 servant or groom (default) |
+
+### Thirty Years' War (1618-1648)
+
+**Thirty Years' War (1618-1648):** made exactly as the medieval era's, in the same five steps, from the tables below. Fighting skills: Musket, Pistol, Blade, Pike, Brawl, Parry, Dodge. Each region takes its war's wound table, for old wounds and for the roller.
+
+**Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
+
+| Skill | Starts at | Weapons |
+|---|---|---|
+| Musket | Agility / 2 | matchlock, musket butt |
+| Pistol | Agility / 2 | pistol/carbine |
+| Blade | Agility / 2 | sabre, dagger |
+| Pike | Strength / 2 | spear |
+| Brawl | Strength / 2 | punch, kick, elbow/knee |
+| Parry | Agility / 2 |  |
+| Dodge | Agility / 3 |  |
+| Ride | Agility / 3 |  |
+| Fieldcraft | Wits / 3 |  |
+| Watch | Wits / 2 |  |
+| Stealth | Agility / 3 |  |
+| Leechcraft | Wits / 4 |  |
+| Craft | Wits / 3 |  |
+| Letters | Wits / 5 |  |
+| Persuade | Presence / 2 |  |
+| Command | Presence / 3 |  |
+
+| d100 | Origin | Skill | Trait | Drawback |
+|---|---|---|---|---|
+| 01-05 | Peasant's son from a burned village | Fieldcraft | Hard to starve (Endurance +10) | Cannot read a word (Letters -15) |
+| 06-10 | Weaver's apprentice | Craft | Nimble fingers (Agility +10) | Never slept rough (Fieldcraft -15) |
+| 11-15 | Miner from the hills | Craft | Works by lamplight for hours (Endurance +10) | Coughs in the cold (Stealth -15) |
+| 16-20 | Townsman's son | Persuade | Knows how to bargain (Persuade +15) | Soft hands (Strength -10) |
+| 21-25 | Huntsman's son | Musket | A steady aim (Musket +15) | Known as a poacher (Presence -10) |
+| 26-30 | Carter on the army roads | Ride | Knows every road (Fieldcraft +15) | Bad back (Agility -10) |
+| 31-35 | Student who left the university | Letters | Reads Latin (Letters +15) | Faints at the sight of blood (Nerve -10) |
+| 36-40 | Barber's boy | Leechcraft | Steady hands (Agility +10) | Never stops talking (Stealth -15) |
+| 41-45 | Younger son of a minor noble | Ride | Raised to the sword (Blade +15) | Proud and touchy (Persuade -15) |
+| 46-50 | Born in the baggage train | Fieldcraft | Hard to frighten (Nerve +10) | Belongs nowhere (Presence -10) |
+| 51-55 | Smith's apprentice | Craft | Arms like hams (Strength +10) | Half deaf from the anvil (Watch -15) |
+| 56-60 | Shepherd | Watch | Sees far (Watch +15) | Uneasy in crowds (Presence -10) |
+| 61-65 | Fisherman's son from the coast | Craft | Swims like a seal (Endurance +10) | Cannot sit a horse (Ride -15) |
+| 66-70 | Exile for his faith | Persuade | Stubborn as an oak (Nerve +10) | Trusts no one of the other faith (Persuade -15) |
+| 71-75 | Groom in a great stable | Ride | Horse sense (Ride +15) | Kicked by a horse as a boy (Endurance -10) |
+| 76-80 | Woodcutter | Craft | Tireless (Endurance +10) | Slow of speech (Wits -10) |
+| 81-85 | Street brawler | Brawl | Takes a punch (Endurance +10) | Known to the watch (Persuade -15) |
+| 86-90 | Servant in a great house | Watch | Knows how to please his betters (Persuade +15) | Never held a weapon (Parry -15) |
+| 91-95 | Pressed from a debtors' prison | Brawl | Nothing left to lose (Nerve +10) | Sullen (Presence -10) |
+| 96-00 | Pedlar's son | Persuade | Speaks three tongues (Persuade +15) | Light-fingered (Presence -10) |
+
+| Career | Main skill | Second | Old wound | Hurt by |
+|---|---|---|---|---|
+| Musketeer | Musket | Dodge | 20% | matchlock |
+| Pikeman | Pike | Blade | 20% | matchlock |
+| Cuirassier | Pistol | Ride | 25% | pistol/carbine |
+| Harquebusier or light horseman | Pistol | Ride | 20% | pistol/carbine |
+| Dragoon | Musket | Ride | 20% | sabre |
+| Sergeant or corporal | Command | Blade | 20% | matchlock |
+| Field surgeon (feldscher) | Leechcraft | Craft | 5% | matchlock |
+| Sutler or camp follower | Persuade | Watch | 5% | sabre |
+| Chaplain or clerk | Letters | Persuade | 3% | matchlock |
+
+| Career | d100 | Skill | Event |
+|---|---|---|---|
+| Musketeer | 01-20 | Watch | Stood sentry in the trenches before a besieged town. |
+| Musketeer | 21-40 | Craft | Cast bullets and twisted match through a wet winter. |
+| Musketeer | 41-55 | Fieldcraft | Foraged through a stripped country. |
+| Musketeer | 56-70 | Blade | Held a churchyard wall at close quarters. * |
+| Musketeer | 71-85 | Stealth | Crept forward with a forlorn hope at night. |
+| Musketeer | 86-00 | Dodge | Fired by salvo, rank on rank, in a pitched battle. * |
+| Pikeman | 01-20 | Parry | Drilled the push of pike in a garrison town. |
+| Pikeman | 21-40 | Watch | Guarded the colours on a long march. |
+| Pikeman | 41-55 | Command | Kept a file in order under cannon fire. |
+| Pikeman | 56-70 | Brawl | Brawled with the musketeers over billets. |
+| Pikeman | 71-85 | Blade | Stood in the hedge of pikes against a charge of horse. * |
+| Pikeman | 86-00 | Pike | Came to push of pike when two squares met. * |
+| Cuirassier | 01-20 | Blade | Rode in a charge, sword in hand, after the pistols were empty. * |
+| Cuirassier | 21-40 | Command | Led a troop on a raid for horses. |
+| Cuirassier | 41-55 | Parry | Fought a duel over a woman in winter quarters. |
+| Cuirassier | 56-70 | Persuade | Ransomed a captured officer. |
+| Cuirassier | 71-85 | Ride | Covered a retreat across a river. |
+| Cuirassier | 86-00 | Pistol | Rode up to fire at the enemy's horse, rank by rank. * |
+| Harquebusier or light horseman | 01-20 | Fieldcraft | Scouted ahead of the army for a season. |
+| Harquebusier or light horseman | 21-40 | Stealth | Raided an enemy supply train. |
+| Harquebusier or light horseman | 41-55 | Watch | Patrolled the roads around a camp. |
+| Harquebusier or light horseman | 56-70 | Blade | Fought in a running skirmish. * |
+| Harquebusier or light horseman | 71-85 | Persuade | Levied contributions from a frightened town. |
+| Harquebusier or light horseman | 86-00 | Ride | Outran a pursuit of enemy horse. |
+| Dragoon | 01-20 | Ride | Rode hard to seize a bridge ahead of the army. |
+| Dragoon | 21-40 | Watch | Held an outpost at a crossroads. |
+| Dragoon | 41-55 | Fieldcraft | Foraged far from the camp. |
+| Dragoon | 56-70 | Blade | Was caught mounted and fought with the sword. * |
+| Dragoon | 71-85 | Stealth | Ambushed a convoy in a wood. |
+| Dragoon | 86-00 | Musket | Fought dismounted behind a hedge. |
+| Sergeant or corporal | 01-20 | Letters | Kept the company's muster roll. |
+| Sergeant or corporal | 21-40 | Persuade | Recruited men with drink and drum. |
+| Sergeant or corporal | 41-55 | Musket | Drilled raw musketeers until they fired together. |
+| Sergeant or corporal | 56-70 | Parry | Kept order in a mutiny over pay. |
+| Sergeant or corporal | 71-85 | Watch | Set the night guards in a hostile country. |
+| Sergeant or corporal | 86-00 | Blade | Led a storming party at a breach. * |
+| Field surgeon (feldscher) | 01-20 | Craft | Cut balls out of men after a battle. |
+| Field surgeon (feldscher) | 21-40 | Letters | Studied a printed book of surgery. |
+| Field surgeon (feldscher) | 41-55 | Persuade | Treated an officer and was paid in plunder. |
+| Field surgeon (feldscher) | 56-70 | Leechcraft | Nursed a regiment through camp fever. |
+| Field surgeon (feldscher) | 71-85 | Watch | Worked in a field hospital under fire. * |
+| Field surgeon (feldscher) | 86-00 | Fieldcraft | Gathered herbs on the march. |
+| Sutler or camp follower | 01-20 | Craft | Brewed beer for a regiment. |
+| Sutler or camp follower | 21-40 | Ride | Drove a wagon in the baggage train. |
+| Sutler or camp follower | 41-55 | Fieldcraft | Bought and stole food in a hungry land. |
+| Sutler or camp follower | 56-70 | Letters | Kept accounts of what the soldiers owed. |
+| Sutler or camp follower | 71-85 | Stealth | Hid the wagon from plunderers. |
+| Sutler or camp follower | 86-00 | Blade | Defended the baggage when the enemy horse broke in. * |
+| Chaplain or clerk | 01-20 | Persuade | Preached to a regiment before battle. |
+| Chaplain or clerk | 21-40 | Leechcraft | Sat with the dying in a field hospital. |
+| Chaplain or clerk | 41-55 | Letters | Wrote letters home for the soldiers. |
+| Chaplain or clerk | 56-70 | Watch | Saw a town sacked and could not stop it. |
+| Chaplain or clerk | 71-85 | Command | Kept a rout from turning into a massacre. |
+| Chaplain or clerk | 86-00 | Ride | Carried dispatches between two armies. |
+
+| Career | The Swedish army | The Imperial army and the Catholic League |
+|---|---|---|
+| Musketeer | Unarmoured; matchlock | Unarmoured; matchlock |
+| Pikeman | Pikeman: morion and corslet; sabre | Pikeman: morion and corslet; sabre |
+| Cuirassier | Cuirassier, three-quarter armour; pistol/carbine | Cuirassier, three-quarter armour; pistol/carbine |
+| Harquebusier or light horseman | Harquebusier: buff coat, breastplate, pot helmet; pistol/carbine | Harquebusier: buff coat, breastplate, pot helmet; pistol/carbine |
+| Dragoon | Unarmoured; matchlock | Unarmoured; matchlock |
+| Sergeant or corporal | Unarmoured; sabre | Unarmoured; sabre |
+| Field surgeon (feldscher) | Unarmoured; sabre | Unarmoured; sabre |
+| Sutler or camp follower | Unarmoured; sabre | Unarmoured; sabre |
+| Chaplain or clerk | Unarmoured; sabre | Unarmoured; sabre |
+
+| Team | Members (terms) | Followers (quality table) |
+|---|---|---|
+| A company of foot | Sergeant or corporal (3), Musketeer (2), Pikeman (2), Musketeer (1), Field surgeon (feldscher) (1) | 10 musketeer, 8 pikeman (default) |
+| A troop of horse | Cuirassier (3), Cuirassier (2), Harquebusier or light horseman (2), Harquebusier or light horseman (1), Sutler or camp follower (1) | 4 cuirassier, 8 harquebusier or light horseman (hardened) |
+| A dragoon patrol | Dragoon (3), Dragoon (2), Dragoon (1), Harquebusier or light horseman (1) | 10 dragoon (default) |
+| A foraging party | Sergeant or corporal (2), Musketeer (1), Musketeer (1), Harquebusier or light horseman (1), Sutler or camp follower (1) | 6 musketeer (raw) |
+| The regiment's sick and baggage | Field surgeon (feldscher) (3), Chaplain or clerk (2), Sutler or camp follower (1), Musketeer (1), Pikeman (1) | 4 musketeer, 4 sutler or camp follower (raw) |
+
+### Horse and musket (1775-1815)
+
+**Horse and musket (1775-1815):** made exactly as the medieval era's, in the same five steps, from the tables below. Fighting skills: Musket, Rifle, Pistol, Blade, Bayonet, Gunnery, Brawl, Parry, Dodge. Each region takes its war's wound table, for old wounds and for the roller.
+
+**Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
+
+| Skill | Starts at | Weapons |
+|---|---|---|
+| Musket | Agility / 2 | musket, musket butt |
+| Rifle | Wits / 2 | rifle |
+| Pistol | Agility / 2 | pistol |
+| Blade | Agility / 2 | sabre, lance, dagger |
+| Bayonet | Strength / 2 | bayonet |
+| Gunnery | Wits / 2 | artillery |
+| Brawl | Strength / 2 | punch, kick, elbow/knee |
+| Parry | Agility / 2 |  |
+| Dodge | Agility / 3 |  |
+| Ride | Agility / 3 |  |
+| Fieldcraft | Wits / 3 |  |
+| Watch | Wits / 2 |  |
+| Stealth | Agility / 3 |  |
+| Leechcraft | Wits / 4 |  |
+| Seamanship | Wits / 4 |  |
+| Craft | Wits / 3 |  |
+| Letters | Wits / 5 |  |
+| Persuade | Presence / 2 |  |
+| Command | Presence / 3 |  |
+
+| d100 | Origin | Skill | Trait | Drawback |
+|---|---|---|---|---|
+| 01-05 | Farmer's son | Fieldcraft | Strong back (Strength +10) | Cannot read a word (Letters -15) |
+| 06-10 | Frontier boy | Rifle | Moves quietly in the woods (Stealth +15) | Hates drill (Presence -10) |
+| 11-15 | Weaver thrown out of work | Craft | Patient (Wits +10) | Weak from hunger (Endurance -10) |
+| 16-20 | Townsman's son | Persuade | Quick tongue (Persuade +15) | Never slept rough (Fieldcraft -15) |
+| 21-25 | Sailor's son | Seamanship | Climbs anything (Agility +10) | Cannot sit a horse (Ride -15) |
+| 26-30 | Clerk's apprentice | Letters | Good at sums (Wits +10) | Soft hands (Strength -10) |
+| 31-35 | Enlisted for the bounty | Brawl | Hard to frighten (Nerve +10) | Drinks his pay (Presence -10) |
+| 36-40 | Gamekeeper's son | Musket | A steady aim (Musket +15) | Known as a poacher's friend (Persuade -15) |
+| 41-45 | Younger son of a gentleman | Ride | Raised to the sword (Blade +15) | Proud and touchy (Persuade -15) |
+| 46-50 | Apothecary's boy | Leechcraft | Knows his remedies (Leechcraft +15) | Faints at the sight of blood (Nerve -10) |
+| 51-55 | Blacksmith's apprentice | Craft | Arms like hams (Strength +10) | Half deaf from the anvil (Watch -15) |
+| 56-60 | Drover | Ride | Knows every road (Fieldcraft +15) | Bad back (Agility -10) |
+| 61-65 | Fisherman's son | Seamanship | Swims like a seal (Endurance +10) | Smells of the catch (Persuade -15) |
+| 66-70 | Raised in the barracks | Musket | Knows the drill by heart (Nerve +10) | Knows nothing else (Fieldcraft -15) |
+| 71-75 | Groom in a great stable | Ride | Horse sense (Ride +15) | Kicked by a horse as a boy (Endurance -10) |
+| 76-80 | Woodcutter | Craft | Tireless (Endurance +10) | Slow of speech (Wits -10) |
+| 81-85 | Street brawler | Brawl | Takes a punch (Endurance +10) | Known to the watch (Persuade -15) |
+| 86-90 | Servant in a great house | Watch | Knows how to please his betters (Persuade +15) | Never held a weapon (Parry -15) |
+| 91-95 | Shepherd | Watch | Sees far (Watch +15) | Uneasy in crowds (Presence -10) |
+| 96-00 | Exile from another country | Persuade | Speaks three tongues (Persuade +15) | Belongs nowhere (Presence -10) |
+
+| Career | Main skill | Second | Old wound | Hurt by |
+|---|---|---|---|---|
+| Line infantryman | Musket | Bayonet | 20% | musket |
+| Rifleman or light infantryman | Rifle | Dodge | 15% | musket |
+| Dragoon or hussar | Blade | Ride | 20% | sabre |
+| Artilleryman | Gunnery | Craft | 15% | artillery |
+| Sergeant or corporal | Command | Musket | 20% | musket |
+| Officer | Blade | Command | 25% | musket |
+| Surgeon's mate | Leechcraft | Craft | 5% | musket |
+| Scout or ranger | Fieldcraft | Rifle | 15% | musket |
+| Sailor or marine | Seamanship | Musket | 15% | musket |
+| Sutler or camp follower | Persuade | Watch | 5% | musket |
+
+| Career | d100 | Skill | Event |
+|---|---|---|---|
+| Line infantryman | 01-20 | Watch | Stood picket on a cold night before a battle. |
+| Line infantryman | 21-40 | Fieldcraft | Marched barefoot through a hard winter. |
+| Line infantryman | 41-55 | Craft | Dug trenches before a fortress. |
+| Line infantryman | 56-70 | Bayonet | Went in with the bayonet at the end of a long fight. * |
+| Line infantryman | 71-85 | Dodge | Stood in line under cannon fire. |
+| Line infantryman | 86-00 | Musket | Fired volleys at forty paces until the enemy broke. * |
+| Rifleman or light infantryman | 01-20 | Stealth | Skirmished in front of the army. |
+| Rifleman or light infantryman | 21-40 | Fieldcraft | Lived off the land on outpost duty. |
+| Rifleman or light infantryman | 41-55 | Watch | Picked off officers from a hedge. |
+| Rifleman or light infantryman | 56-70 | Musket | Covered a retreat from rock to rock. |
+| Rifleman or light infantryman | 71-85 | Bayonet | Was caught in the open by cavalry. * |
+| Rifleman or light infantryman | 86-00 | Rifle | Shot it out with enemy skirmishers in a wood. * |
+| Dragoon or hussar | 01-20 | Fieldcraft | Foraged for horses in a stripped country. |
+| Dragoon or hussar | 21-40 | Pistol | Fought dismounted at a ford. |
+| Dragoon or hussar | 41-55 | Watch | Patrolled the roads between two armies. |
+| Dragoon or hussar | 56-70 | Parry | Fought a running fight with enemy horse. * |
+| Dragoon or hussar | 71-85 | Command | Led a vedette that brought back news of the enemy. |
+| Dragoon or hussar | 86-00 | Blade | Rode in a charge that broke a square. * |
+| Artilleryman | 01-20 | Craft | Made cartridges in a siege train. |
+| Artilleryman | 21-40 | Ride | Drove a gun team through the mud. |
+| Artilleryman | 41-55 | Letters | Learned the ranges from a printed table. |
+| Artilleryman | 56-70 | Watch | Laid a gun on enemy batteries for a day. |
+| Artilleryman | 71-85 | Brawl | Defended the guns with a rammer when they were overrun. * |
+| Artilleryman | 86-00 | Gunnery | Fired canister into a column at close range. * |
+| Sergeant or corporal | 01-20 | Letters | Kept the company's books. |
+| Sergeant or corporal | 21-40 | Persuade | Recruited at country fairs. |
+| Sergeant or corporal | 41-55 | Bayonet | Drilled recruits until they moved as one. |
+| Sergeant or corporal | 56-70 | Watch | Set the guard on the line of march. |
+| Sergeant or corporal | 71-85 | Parry | Defended the colours when the line wavered. * |
+| Sergeant or corporal | 86-00 | Musket | Closed up the ranks under fire. * |
+| Officer | 01-20 | Letters | Wrote reports for the colonel. |
+| Officer | 21-40 | Ride | Carried orders across a battlefield. |
+| Officer | 41-55 | Persuade | Negotiated an exchange of prisoners. |
+| Officer | 56-70 | Pistol | Fought a duel over an insult. |
+| Officer | 71-85 | Command | Led the company when its captain fell. |
+| Officer | 86-00 | Parry | Led a storming party into a breach. * |
+| Surgeon's mate | 01-20 | Craft | Took off limbs at a field hospital all night. |
+| Surgeon's mate | 21-40 | Letters | Studied anatomy in a hospital in town. |
+| Surgeon's mate | 41-55 | Leechcraft | Nursed a regiment through fever. |
+| Surgeon's mate | 56-70 | Ride | Followed the army with the ambulance wagons. |
+| Surgeon's mate | 71-85 | Persuade | Bargained for quinine and bark. |
+| Surgeon's mate | 86-00 | Watch | Worked under fire at a dressing station. * |
+| Scout or ranger | 01-20 | Stealth | Watched an enemy camp from a hill for three days. |
+| Scout or ranger | 21-40 | Persuade | Bought news from the country people. |
+| Scout or ranger | 41-55 | Ride | Carried a message through enemy country. |
+| Scout or ranger | 56-70 | Watch | Found the ford the army needed. |
+| Scout or ranger | 71-85 | Brawl | Was caught by a patrol and fought his way out. * |
+| Scout or ranger | 86-00 | Fieldcraft | Guided a column by night. |
+| Sailor or marine | 01-20 | Craft | Rigged and mended sails at sea. |
+| Sailor or marine | 21-40 | Gunnery | Served a gun in a sea fight. |
+| Sailor or marine | 41-55 | Brawl | Fought in a tavern brawl in port. |
+| Sailor or marine | 56-70 | Watch | Kept lookout from the masthead. |
+| Sailor or marine | 71-85 | Blade | Boarded an enemy ship with a cutlass. * |
+| Sailor or marine | 86-00 | Musket | Fired from the tops into the enemy deck. * |
+| Sutler or camp follower | 01-20 | Craft | Cooked for a regiment. |
+| Sutler or camp follower | 21-40 | Ride | Drove a cart in the baggage. |
+| Sutler or camp follower | 41-55 | Fieldcraft | Bought food where there was none. |
+| Sutler or camp follower | 56-70 | Letters | Kept accounts of what the soldiers owed. |
+| Sutler or camp follower | 71-85 | Leechcraft | Nursed the wounded after a battle. |
+| Sutler or camp follower | 86-00 | Dodge | Was caught in the baggage when the enemy broke through. * |
+
+| Career | The Continental Army | The British Army in America | The British in the Peninsula | The French Empire in Spain | The United States |
+|---|---|---|---|---|---|
+| Line infantryman | Unarmoured; musket | Unarmoured; musket | Unarmoured; musket | Unarmoured; musket | Unarmoured; musket |
+| Rifleman or light infantryman | Unarmoured; rifle | Unarmoured; rifle | Unarmoured; rifle | Unarmoured; rifle | Unarmoured; rifle |
+| Dragoon or hussar | Dragoon or light dragoon helmet; sabre | Dragoon or light dragoon helmet; sabre | Dragoon or light dragoon helmet; sabre | Cuirassier: steel cuirass and helmet; sabre | Dragoon or light dragoon helmet; sabre |
+| Artilleryman | Unarmoured; artillery | Unarmoured; artillery | Unarmoured; artillery | Unarmoured; artillery | Unarmoured; artillery |
+| Sergeant or corporal | Unarmoured; musket | Unarmoured; musket | Unarmoured; musket | Unarmoured; musket | Unarmoured; musket |
+| Officer | Unarmoured; sabre | Unarmoured; sabre | Unarmoured; sabre | Unarmoured; sabre | Unarmoured; sabre |
+| Surgeon's mate | Unarmoured; pistol | Unarmoured; pistol | Unarmoured; pistol | Unarmoured; pistol | Unarmoured; pistol |
+| Scout or ranger | Unarmoured; rifle | Unarmoured; rifle | Unarmoured; rifle | Unarmoured; rifle | Unarmoured; rifle |
+| Sailor or marine | Unarmoured; musket | Unarmoured; musket | Unarmoured; musket | Unarmoured; musket | Unarmoured; musket |
+| Sutler or camp follower | Unarmoured; pistol | Unarmoured; pistol | Unarmoured; pistol | Unarmoured; pistol | Unarmoured; pistol |
+
+| Team | Members (terms) | Followers (quality table) |
+|---|---|---|
+| A company of foot | Officer (3), Sergeant or corporal (2), Line infantryman (2), Line infantryman (1), Surgeon's mate (1) | 16 line infantryman (default) |
+| A company of riflemen | Officer (3), Rifleman or light infantryman (2), Rifleman or light infantryman (2), Scout or ranger (1), Rifleman or light infantryman (1) | 10 rifleman or light infantryman (hardened) |
+| A troop of horse | Dragoon or hussar (3), Dragoon or hussar (2), Dragoon or hussar (1), Scout or ranger (1), Sutler or camp follower (1) | 8 dragoon or hussar (default) |
+| A battery's crew | Artilleryman (3), Artilleryman (2), Artilleryman (1), Line infantryman (1), Sutler or camp follower (1) | 8 artilleryman, 4 line infantryman (default) |
+| Militia | Officer (2), Line infantryman (1), Line infantryman (1), Rifleman or light infantryman (1), Scout or ranger (1) | 12 line infantryman, 4 rifleman or light infantryman (raw) |
+| A landing party | Officer (3), Sailor or marine (2), Sailor or marine (1), Sailor or marine (1), Surgeon's mate (1) | 10 sailor or marine (default) |
+
+### Civil War and frontier (1861-1876)
+
+**Civil War and frontier (1861-1876):** made exactly as the medieval era's, in the same five steps, from the tables below. Fighting skills: Rifle, Pistol, Blade, Bayonet, Gunnery, Brawl, Parry, Dodge. Each region takes its war's wound table, for old wounds and for the roller.
+
+**Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
+
+| Skill | Starts at | Weapons |
+|---|---|---|
+| Rifle | Agility / 2 | rifle-musket |
+| Pistol | Agility / 2 | revolver |
+| Blade | Agility / 2 | sabre, dagger |
+| Bayonet | Strength / 2 | bayonet |
+| Gunnery | Wits / 2 | artillery |
+| Brawl | Strength / 2 | punch, kick, elbow/knee |
+| Parry | Agility / 2 |  |
+| Dodge | Agility / 3 |  |
+| Ride | Agility / 3 |  |
+| Fieldcraft | Wits / 3 |  |
+| Watch | Wits / 2 |  |
+| Stealth | Agility / 3 |  |
+| Leechcraft | Wits / 4 |  |
+| Craft | Wits / 3 |  |
+| Letters | Wits / 5 |  |
+| Persuade | Presence / 2 |  |
+| Command | Presence / 3 |  |
+
+| d100 | Origin | Skill | Trait | Drawback |
+|---|---|---|---|---|
+| 01-05 | Farm boy | Fieldcraft | Strong back (Strength +10) | Never been far from home (Persuade -15) |
+| 06-10 | Mill hand | Craft | Used to long hours (Endurance +10) | Never slept rough (Fieldcraft -15) |
+| 11-15 | Clerk in a store | Letters | Good at sums (Wits +10) | Soft hands (Strength -10) |
+| 16-20 | Immigrant fresh off the boat | Craft | Served in an army back home (Rifle +15) | Speaks little English (Persuade -15) |
+| 21-25 | Hunter's son | Rifle | A steady aim (Rifle +15) | Hates drill (Presence -10) |
+| 26-30 | Teamster | Ride | Knows every road (Fieldcraft +15) | Bad back (Agility -10) |
+| 31-35 | Schoolteacher | Letters | Well read (Letters +15) | Faints at the sight of blood (Nerve -10) |
+| 36-40 | Druggist's boy | Leechcraft | Knows his remedies (Leechcraft +15) | Never stops talking (Stealth -15) |
+| 41-45 | Son of a planter or a mill owner | Ride | Raised to command (Command +15) | Proud and touchy (Persuade -15) |
+| 46-50 | Railroad man | Craft | Not afraid of machines (Wits +10) | Half deaf from the engines (Watch -15) |
+| 51-55 | Blacksmith's apprentice | Craft | Arms like hams (Strength +10) | Slow afoot (Agility -10) |
+| 56-60 | Riverboat hand | Brawl | Swims like an otter (Endurance +10) | Gambles away his pay (Presence -10) |
+| 61-65 | Cowhand | Ride | Horse sense (Ride +15) | Kicked by a horse as a boy (Endurance -10) |
+| 66-70 | Woodsman | Fieldcraft | Moves quietly in the woods (Stealth +15) | Uneasy in towns (Presence -10) |
+| 71-75 | Street tough from a big city | Brawl | Takes a punch (Endurance +10) | Known to the police (Persuade -15) |
+| 76-80 | Preacher's son | Persuade | A voice that carries (Presence +10) | Never fired a gun (Rifle -15) |
+| 81-85 | Telegraph operator | Letters | Quick with his hands (Agility +10) | Short-sighted (Watch -15) |
+| 86-90 | Miner from the hills | Craft | Tireless (Endurance +10) | Coughs in the cold (Stealth -15) |
+| 91-95 | Drifter | Watch | Sleeps anywhere (Endurance +10) | Belongs nowhere (Presence -10) |
+| 96-00 | Volunteer for the cause | Persuade | Hard to frighten (Nerve +10) | Never held a weapon (Parry -15) |
+
+| Career | Main skill | Second | Old wound | Hurt by |
+|---|---|---|---|---|
+| Infantryman | Rifle | Bayonet | 20% | rifle-musket |
+| Sharpshooter or skirmisher | Rifle | Stealth | 15% | rifle-musket |
+| Cavalry trooper | Pistol | Ride | 20% | revolver |
+| Artilleryman | Gunnery | Craft | 15% | artillery |
+| Sergeant or corporal | Command | Rifle | 20% | rifle-musket |
+| Officer | Command | Pistol | 25% | rifle-musket |
+| Surgeon or hospital steward | Leechcraft | Craft | 5% | rifle-musket |
+| Scout | Fieldcraft | Rifle | 15% | revolver |
+| Teamster or packer | Ride | Craft | 5% | revolver |
+
+| Career | d100 | Skill | Event |
+|---|---|---|---|
+| Infantryman | 01-20 | Watch | Stood picket across a river from the enemy. |
+| Infantryman | 21-40 | Fieldcraft | Marched thirty miles a day in the summer heat. |
+| Infantryman | 41-55 | Craft | Dug rifle pits and breastworks all night. |
+| Infantryman | 56-70 | Dodge | Lay in the open under artillery fire. |
+| Infantryman | 71-85 | Bayonet | Went over the works in a charge. * |
+| Infantryman | 86-00 | Rifle | Fired from behind a fence until the ammunition ran out. * |
+| Sharpshooter or skirmisher | 01-20 | Watch | Watched an enemy battery from a tree for a day. |
+| Sharpshooter or skirmisher | 21-40 | Fieldcraft | Skirmished ahead of the line through woods. |
+| Sharpshooter or skirmisher | 41-55 | Dodge | Moved from cover to cover under fire. |
+| Sharpshooter or skirmisher | 56-70 | Stealth | Crept up on an enemy picket post. |
+| Sharpshooter or skirmisher | 71-85 | Craft | Kept a target rifle working in the rain. |
+| Sharpshooter or skirmisher | 86-00 | Rifle | Duelled with enemy sharpshooters at long range. * |
+| Cavalry trooper | 01-20 | Fieldcraft | Raided behind the enemy lines for a week. |
+| Cavalry trooper | 21-40 | Watch | Patrolled the roads ahead of the army. |
+| Cavalry trooper | 41-55 | Rifle | Fought dismounted with a carbine. |
+| Cavalry trooper | 56-70 | Blade | Rode in a sabre charge. * |
+| Cavalry trooper | 71-85 | Stealth | Scouted an enemy column at night. |
+| Cavalry trooper | 86-00 | Pistol | Fought a running fight with revolvers. * |
+| Artilleryman | 01-20 | Ride | Drove a gun team through the mud. |
+| Artilleryman | 21-40 | Craft | Cut fuses by lamplight. |
+| Artilleryman | 41-55 | Letters | Learned the ranges from a gunnery manual. |
+| Artilleryman | 56-70 | Watch | Duelled with an enemy battery for an afternoon. |
+| Artilleryman | 71-85 | Brawl | Defended the guns hand to hand. * |
+| Artilleryman | 86-00 | Gunnery | Fired double canister into a charging line. * |
+| Sergeant or corporal | 01-20 | Letters | Kept the company's rolls. |
+| Sergeant or corporal | 21-40 | Persuade | Talked his men out of deserting. |
+| Sergeant or corporal | 41-55 | Bayonet | Drilled recruits through a winter camp. |
+| Sergeant or corporal | 56-70 | Watch | Set the pickets in a hostile country. |
+| Sergeant or corporal | 71-85 | Parry | Carried the colours when the bearer fell. * |
+| Sergeant or corporal | 86-00 | Rifle | Kept the line steady in a firefight. * |
+| Officer | 01-20 | Letters | Wrote orders for the regiment. |
+| Officer | 21-40 | Ride | Carried orders across the field. |
+| Officer | 41-55 | Blade | Led a charge, sword in hand. * |
+| Officer | 56-70 | Persuade | Raised a company from his own county. |
+| Officer | 71-85 | Pistol | Fought at the head of his men in the woods. |
+| Officer | 86-00 | Command | Took command when the colonel fell. * |
+| Surgeon or hospital steward | 01-20 | Craft | Amputated by lamplight in a field hospital. |
+| Surgeon or hospital steward | 21-40 | Letters | Kept the regiment's sick book. |
+| Surgeon or hospital steward | 41-55 | Leechcraft | Nursed a camp through measles and fever. |
+| Surgeon or hospital steward | 56-70 | Ride | Ran the ambulance wagons back from the front. |
+| Surgeon or hospital steward | 71-85 | Persuade | Begged chloroform from another regiment. |
+| Surgeon or hospital steward | 86-00 | Watch | Worked at a dressing station under fire. * |
+| Scout | 01-20 | Stealth | Watched an enemy camp from a ridge for three days. |
+| Scout | 21-40 | Persuade | Bought news from the country people. |
+| Scout | 41-55 | Ride | Carried a dispatch through enemy country. |
+| Scout | 56-70 | Watch | Found water for a column on a dry march. |
+| Scout | 71-85 | Pistol | Was cornered by a patrol and shot his way out. * |
+| Scout | 86-00 | Fieldcraft | Guided a column across country by night. |
+| Teamster or packer | 01-20 | Craft | Mended wagons on the road. |
+| Teamster or packer | 21-40 | Fieldcraft | Found grass for the mules on a long march. |
+| Teamster or packer | 41-55 | Persuade | Bargained for forage at a farm. |
+| Teamster or packer | 56-70 | Watch | Guarded the train at night. |
+| Teamster or packer | 71-85 | Brawl | Fought off raiders at the wagons. * |
+| Teamster or packer | 86-00 | Ride | Brought the train through a flooded ford. |
+
+| Career | The Union | The Confederacy | The US Army on the frontier |
+|---|---|---|---|
+| Infantryman | Unarmoured; rifle-musket | Unarmoured; rifle-musket | Unarmoured; rifle-musket |
+| Sharpshooter or skirmisher | Unarmoured; rifle-musket | Unarmoured; rifle-musket | Unarmoured; rifle-musket |
+| Cavalry trooper | Unarmoured; revolver | Unarmoured; revolver | Unarmoured; revolver |
+| Artilleryman | Unarmoured; artillery | Unarmoured; artillery | Unarmoured; artillery |
+| Sergeant or corporal | Unarmoured; rifle-musket | Unarmoured; rifle-musket | Unarmoured; rifle-musket |
+| Officer | Unarmoured; revolver | Unarmoured; revolver | Unarmoured; revolver |
+| Surgeon or hospital steward | Unarmoured; revolver | Unarmoured; revolver | Unarmoured; revolver |
+| Scout | Unarmoured; rifle-musket | Unarmoured; rifle-musket | Unarmoured; rifle-musket |
+| Teamster or packer | Unarmoured; revolver | Unarmoured; revolver | Unarmoured; revolver |
+
+| Team | Members (terms) | Followers (quality table) |
+|---|---|---|
+| An infantry squad | Sergeant or corporal (3), Infantryman (2), Infantryman (1), Infantryman (1), Surgeon or hospital steward (1) | 12 infantryman (default) |
+| A sharpshooter detachment | Officer (3), Sharpshooter or skirmisher (2), Sharpshooter or skirmisher (2), Scout (1) | 8 sharpshooter or skirmisher (hardened) |
+| A cavalry patrol | Officer (3), Cavalry trooper (2), Cavalry trooper (2), Cavalry trooper (1), Scout (1) | 10 cavalry trooper (default) |
+| A gun section | Artilleryman (3), Artilleryman (2), Artilleryman (1), Teamster or packer (1), Infantryman (1) | 8 artilleryman, 2 teamster or packer (default) |
+| A new company | Officer (2), Sergeant or corporal (1), Infantryman (1), Infantryman (1), Surgeon or hospital steward (1) | 16 infantryman (raw) |
+| A wagon escort on the frontier | Sergeant or corporal (3), Cavalry trooper (2), Scout (2), Teamster or packer (1), Surgeon or hospital steward (1) | 6 cavalry trooper, 4 teamster or packer (default) |
 
 ## Camp disease
 

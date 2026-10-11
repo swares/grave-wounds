@@ -1,0 +1,285 @@
+# Character generation for the Civil War and the frontier (1861-1876): the team builder
+# (dist/team.html, python3 -m gravewounds team --era civil_war). Made exactly as the medieval
+# era's (see medieval.yaml for the five steps); only the tables differ. Every region takes the
+# Civil War table: the frontier army's gunshot wounds roll there too (the arrow-wound records
+# have no gunshots).
+# All of it is written for this game: the tables, events and names are ours (names are common
+# period names, plain fact). Gunnery is the artillerymen's skill.
+id: civil_war
+name: "Civil War and frontier (1861-1876)"
+
+characteristics:
+  - {id: str, name: Strength}
+  - {id: agi, name: Agility}
+  - {id: end, name: Endurance}
+  - {id: wits, name: Wits}
+  - {id: nerve, name: Nerve}
+  - {id: pres, name: Presence}
+array: [70, 60, 55, 50, 45, 35]
+stat_range: [15, 95]
+age: {start: 16, per_term: 4}
+
+skill_max: 90
+first_term: 15
+term_main: 10
+term_second: 5
+gain: 15
+skills:
+  - {id: rifle, name: Rifle, of: agi, div: 2, combat: true}
+  - {id: pistol, name: Pistol, of: agi, div: 2, combat: true}
+  - {id: blade, name: Blade, of: agi, div: 2, combat: true}
+  - {id: bayonet, name: Bayonet, of: str, div: 2, combat: true}
+  - {id: gunnery, name: Gunnery, of: wits, div: 2, combat: true}
+  - {id: brawl, name: Brawl, of: str, div: 2, combat: true}
+  - {id: parry, name: Parry, of: agi, div: 2, combat: true}
+  - {id: dodge, name: Dodge, of: agi, div: 3, combat: true}
+  - {id: ride, name: Ride, of: agi, div: 3}
+  - {id: fieldcraft, name: Fieldcraft, of: wits, div: 3}
+  - {id: watch, name: Watch, of: wits, div: 2}
+  - {id: stealth, name: Stealth, of: agi, div: 3}
+  - {id: leechcraft, name: Leechcraft, of: wits, div: 4}
+  - {id: craft, name: Craft, of: wits, div: 3}
+  - {id: letters, name: Letters, of: wits, div: 5}
+  - {id: persuade, name: Persuade, of: pres, div: 2}
+  - {id: command, name: Command, of: pres, div: 3}
+
+weapon_skill:
+  rifle_musket: rifle
+  revolver: pistol
+  saber: blade
+  dagger: blade
+  bayonet: bayonet
+  artillery_acw: gunnery
+  punch: brawl
+  kick: brawl
+  elbow_knee: brawl
+defence: [parry, dodge]
+
+regions:
+  - id: union
+    name: "The Union (1861-1865)"
+    table: acw-1861-all-hits
+    colours: ["#2e4f8a", "#3a4a6a", "#7d5530", "#e6e0d2"]
+    names: [John, William, James, George, Charles, Henry, Thomas, Patrick, Michael, Frederick, August, Jacob, Samuel, David, Edward, Robert]
+    bynames: [Smith, Miller, Brown, Wilson, Murphy, Schmidt, Becker, Larsen, Taylor, Moore, Kelly, Johnson]
+  - id: confederacy
+    name: "The Confederacy (1861-1865)"
+    table: acw-1861-all-hits
+    colours: ["#8a8a7a", "#7d5530", "#5c6b3a", "#e6e0d2"]
+    names: [John, William, James, Thomas, Robert, Joseph, Benjamin, Jesse, Elijah, Hiram, Nathaniel, Wade, Lewis, Samuel, Henry, George]
+    bynames: [Smith, Jones, Davis, Walker, Harris, Lee, Mitchell, Carter, Turner, Hill, Price, Barrett]
+  - id: frontier
+    name: "The US Army on the frontier (1866-1876)"
+    table: acw-1861-all-hits
+    colours: ["#2e4f8a", "#7d5530", "#9a7347", "#e6e0d2"]
+    names: [John, William, James, Patrick, Michael, Thomas, Charles, George, Henry, Frank, Joseph, Daniel, Peter, Edward, Isaiah, Moses]
+    bynames: [Smith, Murphy, O'Brien, Schultz, Jackson, Williams, Wilson, Clark, Ryan, Walsh, Green, Young]
+
+origins:
+  - {name: "Farm boy", gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Never been far from home", persuade: -15}}
+  - {name: "Mill hand", gain: craft, trait: {text: "Used to long hours", end: 10}, drawback: {text: "Never slept rough", fieldcraft: -15}}
+  - {name: "Clerk in a store", gain: letters, trait: {text: "Good at sums", wits: 10}, drawback: {text: "Soft hands", str: -10}}
+  - {name: "Immigrant fresh off the boat", gain: craft, trait: {text: "Served in an army back home", rifle: 15}, drawback: {text: "Speaks little English", persuade: -15}}
+  - {name: "Hunter's son", gain: rifle, trait: {text: "A steady aim", rifle: 15}, drawback: {text: "Hates drill", pres: -10}}
+  - {name: "Teamster", gain: ride, trait: {text: "Knows every road", fieldcraft: 15}, drawback: {text: "Bad back", agi: -10}}
+  - {name: "Schoolteacher", gain: letters, trait: {text: "Well read", letters: 15}, drawback: {text: "Faints at the sight of blood", nerve: -10}}
+  - {name: "Druggist's boy", gain: leechcraft, trait: {text: "Knows his remedies", leechcraft: 15}, drawback: {text: "Never stops talking", stealth: -15}}
+  - {name: "Son of a planter or a mill owner", gain: ride, trait: {text: "Raised to command", command: 15}, drawback: {text: "Proud and touchy", persuade: -15}}
+  - {name: "Railroad man", gain: craft, trait: {text: "Not afraid of machines", wits: 10}, drawback: {text: "Half deaf from the engines", watch: -15}}
+  - {name: "Blacksmith's apprentice", gain: craft, trait: {text: "Arms like hams", str: 10}, drawback: {text: "Slow afoot", agi: -10}}
+  - {name: "Riverboat hand", gain: brawl, trait: {text: "Swims like an otter", end: 10}, drawback: {text: "Gambles away his pay", pres: -10}}
+  - {name: "Cowhand", gain: ride, trait: {text: "Horse sense", ride: 15}, drawback: {text: "Kicked by a horse as a boy", end: -10}}
+  - {name: "Woodsman", gain: fieldcraft, trait: {text: "Moves quietly in the woods", stealth: 15}, drawback: {text: "Uneasy in towns", pres: -10}}
+  - {name: "Street tough from a big city", gain: brawl, trait: {text: "Takes a punch", end: 10}, drawback: {text: "Known to the police", persuade: -15}}
+  - {name: "Preacher's son", gain: persuade, trait: {text: "A voice that carries", pres: 10}, drawback: {text: "Never fired a gun", rifle: -15}}
+  - {name: "Telegraph operator", gain: letters, trait: {text: "Quick with his hands", agi: 10}, drawback: {text: "Short-sighted", watch: -15}}
+  - {name: "Miner from the hills", gain: craft, trait: {text: "Tireless", end: 10}, drawback: {text: "Coughs in the cold", stealth: -15}}
+  - {name: "Drifter", gain: watch, trait: {text: "Sleeps anywhere", end: 10}, drawback: {text: "Belongs nowhere", pres: -10}}
+  - {name: "Volunteer for the cause", gain: persuade, trait: {text: "Hard to frighten", nerve: 10}, drawback: {text: "Never held a weapon", parry: -15}}
+
+careers:
+  - id: infantry
+    name: "Infantryman"
+    main: rifle
+    second: bayonet
+    prefers: [end, agi, nerve, str, wits, pres]
+    wound: 20
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: rifle_musket}
+    terms:
+      - {to: 20, skill: watch, text: "Stood picket across a river from the enemy."}
+      - {to: 40, skill: fieldcraft, text: "Marched thirty miles a day in the summer heat."}
+      - {to: 55, skill: craft, text: "Dug rifle pits and breastworks all night."}
+      - {to: 70, skill: dodge, text: "Lay in the open under artillery fire."}
+      - {to: 85, skill: bayonet, text: "Went over the works in a charge.", wound: true}
+      - {to: 100, skill: rifle, text: "Fired from behind a fence until the ammunition ran out.", wound: true}
+  - id: sharpshooter
+    name: "Sharpshooter or skirmisher"
+    main: rifle
+    second: stealth
+    prefers: [wits, agi, end, nerve, str, pres]
+    wound: 15
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: rifle_musket}
+    terms:
+      - {to: 20, skill: watch, text: "Watched an enemy battery from a tree for a day."}
+      - {to: 40, skill: fieldcraft, text: "Skirmished ahead of the line through woods."}
+      - {to: 55, skill: dodge, text: "Moved from cover to cover under fire."}
+      - {to: 70, skill: stealth, text: "Crept up on an enemy picket post."}
+      - {to: 85, skill: craft, text: "Kept a target rifle working in the rain."}
+      - {to: 100, skill: rifle, text: "Duelled with enemy sharpshooters at long range.", wound: true}
+  - id: trooper
+    name: "Cavalry trooper"
+    main: pistol
+    second: ride
+    prefers: [agi, end, nerve, str, wits, pres]
+    wound: 20
+    wound_weapon: revolver
+    kit: {default: none}
+    weapon: {default: revolver}
+    mounted: true
+    terms:
+      - {to: 20, skill: fieldcraft, text: "Raided behind the enemy lines for a week."}
+      - {to: 40, skill: watch, text: "Patrolled the roads ahead of the army."}
+      - {to: 55, skill: rifle, text: "Fought dismounted with a carbine."}
+      - {to: 70, skill: blade, text: "Rode in a sabre charge.", wound: true}
+      - {to: 85, skill: stealth, text: "Scouted an enemy column at night."}
+      - {to: 100, skill: pistol, text: "Fought a running fight with revolvers.", wound: true}
+  - id: gunner
+    name: "Artilleryman"
+    main: gunnery
+    second: craft
+    prefers: [wits, str, end, nerve, agi, pres]
+    wound: 15
+    wound_weapon: artillery_acw
+    kit: {default: none}
+    weapon: {default: artillery_acw}
+    terms:
+      - {to: 20, skill: ride, text: "Drove a gun team through the mud."}
+      - {to: 40, skill: craft, text: "Cut fuses by lamplight."}
+      - {to: 55, skill: letters, text: "Learned the ranges from a gunnery manual."}
+      - {to: 70, skill: watch, text: "Duelled with an enemy battery for an afternoon."}
+      - {to: 85, skill: brawl, text: "Defended the guns hand to hand.", wound: true}
+      - {to: 100, skill: gunnery, text: "Fired double canister into a charging line.", wound: true}
+  - id: sergeant
+    name: "Sergeant or corporal"
+    main: command
+    second: rifle
+    prefers: [pres, nerve, end, str, agi, wits]
+    wound: 20
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: rifle_musket}
+    terms:
+      - {to: 20, skill: letters, text: "Kept the company's rolls."}
+      - {to: 40, skill: persuade, text: "Talked his men out of deserting."}
+      - {to: 55, skill: bayonet, text: "Drilled recruits through a winter camp."}
+      - {to: 70, skill: watch, text: "Set the pickets in a hostile country."}
+      - {to: 85, skill: parry, text: "Carried the colours when the bearer fell.", wound: true}
+      - {to: 100, skill: rifle, text: "Kept the line steady in a firefight.", wound: true}
+  - id: officer
+    name: "Officer"
+    main: command
+    second: pistol
+    prefers: [pres, nerve, wits, agi, end, str]
+    wound: 25
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: revolver}
+    terms:
+      - {to: 20, skill: letters, text: "Wrote orders for the regiment."}
+      - {to: 40, skill: ride, text: "Carried orders across the field."}
+      - {to: 55, skill: blade, text: "Led a charge, sword in hand.", wound: true}
+      - {to: 70, skill: persuade, text: "Raised a company from his own county."}
+      - {to: 85, skill: pistol, text: "Fought at the head of his men in the woods."}
+      - {to: 100, skill: command, text: "Took command when the colonel fell.", wound: true}
+  - id: steward
+    name: "Surgeon or hospital steward"
+    main: leechcraft
+    second: craft
+    prefers: [wits, agi, nerve, end, pres, str]
+    wound: 5
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: revolver}
+    terms:
+      - {to: 20, skill: craft, text: "Amputated by lamplight in a field hospital."}
+      - {to: 40, skill: letters, text: "Kept the regiment's sick book."}
+      - {to: 55, skill: leechcraft, text: "Nursed a camp through measles and fever."}
+      - {to: 70, skill: ride, text: "Ran the ambulance wagons back from the front."}
+      - {to: 85, skill: persuade, text: "Begged chloroform from another regiment."}
+      - {to: 100, skill: watch, text: "Worked at a dressing station under fire.", wound: true}
+  - id: scout
+    name: "Scout"
+    main: fieldcraft
+    second: rifle
+    prefers: [wits, agi, end, nerve, str, pres]
+    wound: 15
+    wound_weapon: revolver
+    kit: {default: none}
+    weapon: {default: rifle_musket}
+    terms:
+      - {to: 20, skill: stealth, text: "Watched an enemy camp from a ridge for three days."}
+      - {to: 40, skill: persuade, text: "Bought news from the country people."}
+      - {to: 55, skill: ride, text: "Carried a dispatch through enemy country."}
+      - {to: 70, skill: watch, text: "Found water for a column on a dry march."}
+      - {to: 85, skill: pistol, text: "Was cornered by a patrol and shot his way out.", wound: true}
+      - {to: 100, skill: fieldcraft, text: "Guided a column across country by night."}
+  - id: teamster
+    name: "Teamster or packer"
+    main: ride
+    second: craft
+    prefers: [end, str, wits, agi, nerve, pres]
+    wound: 5
+    wound_weapon: revolver
+    kit: {default: none}
+    weapon: {default: revolver}
+    terms:
+      - {to: 20, skill: craft, text: "Mended wagons on the road."}
+      - {to: 40, skill: fieldcraft, text: "Found grass for the mules on a long march."}
+      - {to: 55, skill: persuade, text: "Bargained for forage at a farm."}
+      - {to: 70, skill: watch, text: "Guarded the train at night."}
+      - {to: 85, skill: brawl, text: "Fought off raiders at the wagons.", wound: true}
+      - {to: 100, skill: ride, text: "Brought the train through a flooded ford."}
+
+old_wound:
+  - {to: 70, kind: mark, text: "a healed scar"}
+  - {to: 100, kind: lasting, text: "a lasting hurt"}
+lasting: 5
+lasting_from: {head: wits, face: pres, arms: str, legs: agi, torso: end}
+
+followers:
+  quality:
+    default:  [{to: 30, quality: green}, {to: 80, quality: regular}, {to: 100, quality: veteran}]
+    hardened: [{to: 15, quality: green}, {to: 60, quality: regular}, {to: 100, quality: veteran}]
+    raw:      [{to: 55, quality: green}, {to: 90, quality: regular}, {to: 100, quality: veteran}]
+
+templates:
+  - id: squad
+    name: "An infantry squad"
+    slots: [[sergeant, 3], [infantry, 2], [infantry, 1], [infantry, 1], [steward, 1]]
+    followers: [[infantry, 12]]
+  - id: sharpshooters
+    name: "A sharpshooter detachment"
+    slots: [[officer, 3], [sharpshooter, 2], [sharpshooter, 2], [scout, 1]]
+    followers: [[sharpshooter, 8]]
+    follower_quality: hardened
+  - id: cavalry
+    name: "A cavalry patrol"
+    slots: [[officer, 3], [trooper, 2], [trooper, 2], [trooper, 1], [scout, 1]]
+    followers: [[trooper, 10]]
+  - id: section
+    name: "A gun section"
+    slots: [[gunner, 3], [gunner, 2], [gunner, 1], [teamster, 1], [infantry, 1]]
+    followers: [[gunner, 8], [teamster, 2]]
+  - id: recruits
+    name: "A new company"
+    slots: [[officer, 2], [sergeant, 1], [infantry, 1], [infantry, 1], [steward, 1]]
+    followers: [[infantry, 16]]
+    follower_quality: raw
+  - id: escort
+    name: "A wagon escort on the frontier"
+    slots: [[sergeant, 3], [trooper, 2], [scout, 2], [teamster, 1], [steward, 1]]
+    followers: [[trooper, 6], [teamster, 4]]
