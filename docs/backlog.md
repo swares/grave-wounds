@@ -9,10 +9,9 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **A big camp's only gate faces the crossing.** A camp at a crossing has its one gate toward
-  the ford or bridge; the road on the far side of the camp runs through its works with no gate,
-  and attackers who come from that side must breach them. One way: a second gate where another
-  road leaves the camp.
+- **The travel map's labour for a camp counts one gate.** On the battle map a camp on a road
+  has a gate where each road leaves; each is built in place of bank and palisade, so the two
+  labour figures differ a little. One way: send the road sides to the travel map's estimate.
 - **Taking cover lasts until the man moves or strikes in close combat.** He can keep shooting
   from it on later turns, as a man firing prone would; there is no rule yet for the time it
   takes to get up.

@@ -1089,14 +1089,17 @@ function campFits(centre, rr, cols, rows){    // every hex within rr of the cent
 }
 const sameH = (a, b) => a[0] === b[0] && a[1] === b[1];
 const around = ([c, r]) => NEIGHBOURS[r & 1].map(([dc, dr]) => [c + dc, r + dr]);   // all six, on the map or not
-function stakePieces(centre, r, gate = 0){    // the first hex of the ring is the way out, left open
-  return { stakes: ringWalk(centre, r + 1, gate).slice(1).map(h => ["hex", [h], { type: "stakes", progress: 0 }]) };
+const gateList = gate => (Array.isArray(gate) ? gate : [gate]);   // one side, or a list with the main gate first
+const waysOut = (centre, r, gates) => gates.map(g => ringWalk(centre, r + 1, g)[0]);   // just outside each gate, left open
+function stakePieces(centre, r, gate = 0){
+  const gates = gateList(gate), out = waysOut(centre, r, gates);
+  return { stakes: ringWalk(centre, r + 1, gates[0]).filter(h => !out.some(o => sameH(o, h))).map(h => ["hex", [h], { type: "stakes", progress: 0 }]) };
 }
-function wallPieces(out, centre, r, gate = 0){   // bank and palisade round the ring, and the gate
-  const gateIn = ringWalk(centre, r, gate)[0], gateOut = ringWalk(centre, r + 1, gate)[0];
-  for (const h of ringWalk(centre, r, gate)){
+function wallPieces(out, centre, r, gate = 0){   // bank and palisade round the ring, and the gates
+  const gates = gateList(gate), pairs = gates.map(g => [ringWalk(centre, r, g)[0], ringWalk(centre, r + 1, g)[0]]);
+  for (const h of ringWalk(centre, r, gates[0])){
     for (const n of around(h).filter(x => hexDistance(centre, x) === r + 1)){
-      if (sameH(h, gateIn) && sameH(n, gateOut)){
+      if (pairs.some(([gi, go]) => sameH(h, gi) && sameH(n, go))){
         out.gate.push(["edge", [h, n], { type: "gate", progress: 0, open: false, inside: hkey(h) }]);
         continue;
       }
@@ -1105,8 +1108,9 @@ function wallPieces(out, centre, r, gate = 0){   // bank and palisade round the 
     }
   }
 }
-function ditchPieces(out, centre, r, gate = 0){   // the ditch one ring out, leaving the way to the gate
-  for (const h of ringWalk(centre, r + 1, gate).slice(1)){
+function ditchPieces(out, centre, r, gate = 0){   // the ditch one ring out, leaving the way to each gate
+  const gates = gateList(gate), ways = waysOut(centre, r, gates);
+  for (const h of ringWalk(centre, r + 1, gates[0]).filter(x => !ways.some(w => sameH(w, x)))){
     for (const n of around(h).filter(x => hexDistance(centre, x) === r + 2)){
       out.ditch.push(["edge", [h, n], { type: "ditch", progress: 0, high: hkey(h) }]);
     }
@@ -1131,7 +1135,7 @@ const CAMP_ROOM = 6;                          // hexes between a camp too big fo
 // works go up in the order the camp lists them, each kind all round the ring from the gate before
 // the next starts. Pieces off the map count towards the labour but are not shown.
 // opts: {hauled (timber from afar), at (a centre other than the middle, kept even when the camp
-// does not fit), gate (the side its gate is on, 0 east)}
+// does not fit), gate (the side its gate is on, 0 east, or a list of sides, the main gate first)}
 function campWorks(kind, men, ftype, cols, rows, done = null, { hauled = false, at = null, gate = 0 } = {}){
   const c = WK.camps[kind], layout = c.layout, r = campRadius(men, ftype), extra = layout === "fortified" ? 2 : 1;
   let centre = at ? at.slice() : [Math.floor(cols / 2), Math.floor(rows / 2)];
@@ -2153,6 +2157,18 @@ function campGate(terrain, edges, cols, rows, centre, radius){
   SIDES.forEach(([, v], i) => { const dd = v[0] * way[0] + v[1] * way[1]; if (bd === null || dd > bd){ best = i; bd = dd } });
   return best;
 }
+// A camp's gate sides, main gate first: the main gate, then one on each side a road leaves by,
+// but not the road to the river at a crossing (as gravewounds.combat.camp_gates).
+function campGates(terrain, edges, cols, rows, centre, radius){
+  const gates = [campGate(terrain, edges, cols, rows, centre, radius)];
+  const roads = edges ? throughRays(terrain, edges.around || {}, "road") : [], n = edges ? bankNormal(terrain, edges) : null;
+  SIDES.forEach(([, u], i) => {
+    if (!roads.includes(u) || gates.includes(i)) return;
+    if (n && u[0] * n[0] + u[1] * n[1] > 0.3) return;
+    gates.push(i);
+  });
+  return gates;
+}
 function campBank(size, clear, rivers, width, n){
   const B = GRD.camp_bank, hm = CMB.move.hex_m, [cols, rows] = size, [centre, radius] = clear;
   const cxy = mapXY(hm, cols, rows, centre[0], centre[1]);
@@ -2177,10 +2193,13 @@ function throughLines(ground, terrain, cols, rows, seed, edges, clear = null){
   let origin = [0, 0];
   if (rivers.length && clear) [origin, riverW] = campBank([cols, rows], clear, rivers, riverW, bankNormal(terrain, edges));
   let roadRays = roads.map(u => [[0, 0], u]);
-  if (rivers.length && clear && clear.length > 2){   // a camp at the crossing: roads leave the camp, the one to the river by its gate
-    const gateXY = mapXY(hm, cols, rows, ...ringWalk(clear[0], clear[1] + 1, clear[2])[0]), n = bankNormal(terrain, edges);
+  if (clear && clear.length > 2){                    // a camp with works: roads leave it from its middle by their gates
     const midXY = mapXY(hm, cols, rows, clear[0][0], clear[0][1]);
-    roadRays = roads.map(u => [u[0] * n[0] + u[1] * n[1] > 0.3 ? gateXY : midXY, u]);
+    roadRays = roads.map(u => [midXY, u]);
+  }
+  if (rivers.length && clear && clear.length > 2){   // at the crossing the road to the river leaves by the main gate
+    const gateXY = mapXY(hm, cols, rows, ...ringWalk(clear[0], clear[1] + 1, gateList(clear[2])[0])[0]), n = bankNormal(terrain, edges);
+    roadRays = roadRays.map(([o, u]) => [u[0] * n[0] + u[1] * n[1] > 0.3 ? gateXY : o, u]);
   }
   let cross = roadRays;
   if (!roads.length) cross = rivers.length ? [[[0, 0], [-rivers[0][1], rivers[0][0]]], [[0, 0], [rivers[0][1], -rivers[0][0]]]] : [];
@@ -2544,7 +2563,7 @@ function arrivalSpots(side, n){
   return free.sort((a, b) => a[0] - b[0]).slice(0, n).map(([, h]) => h);
 }
 function campSpots(L, cols, rows, gate = 0){  // hexes inside the camp: nearest the middle, or the gate if the camp runs off the map
-  const spots = [], from = L.fits ? L.centre : ringWalk(L.centre, Math.max(0, L.radius - 1), gate)[0];
+  const spots = [], from = L.fits ? L.centre : ringWalk(L.centre, Math.max(0, L.radius - 1), gateList(gate)[0])[0];
   for (let y = 0; y < rows; y++){
     for (let x = 0; x < cols; x++){
       if (hexDistance(L.centre, [x, y]) <= Math.max(1, L.radius - 1)) spots.push([x, y]);
@@ -2570,7 +2589,7 @@ function setupHandoff(){                     // a camp or position sent from the
   const seed = h.groundSeed || h.place || "fight", edges = h.edges ? { ...h.edges, toward } : null;
   const spotted = edges ? { ...edges, spot_seed: seedNumber(`${seed}:spot`) } : null;
   const at = lay && spotted && bankNormal(h.ground, spotted) ? campCentre(h.ground, spotted, cols, rows, r, ring) : null;   // only at a crossing
-  const gate = at ? campGate(h.ground, spotted, cols, rows, at, r) : 0;
+  const gate = lay ? campGates(h.ground, spotted, cols, rows, at || [cols >> 1, rows >> 1], r) : [0];   // main gate first
   const L = lay ? campWorks(h.camp, men, ft, cols, rows, h.done ?? null, { hauled: !!h.hauled, at, gate }) : { centre: [cols >> 1, rows >> 1], radius: r, fits: true, works: { edges: {}, hexes: {} } };
   S.works = L.works;
   S.groundLike = { terrain: GRD.seed[h.ground] ? h.ground : "open", seed, n: 0, clear: lay ? [L.centre, L.radius, gate] : null, edges };

@@ -128,8 +128,13 @@ it is narrowed, to no less than 8 hexes, and the rest runs off the map. The camp
 the crossing (toward where the road meets the river, or straight at the river when no road
 goes that way), and the road to the river leaves by it. A camp too big for the whole map moves
 back as far as the river needs, and only the stretch facing the river and the crossing, with
-its gate, is shown. (Camps away from a crossing keep their gate on the east, and a camp too big
-for the map shows the stretch with its gate, facing the attackers.)
+its gate, is shown. (Camps away from a crossing keep their main gate on the east, and a camp too
+big for the map shows the stretch with its gate, facing the attackers.)
+
+**Gates on the roads.** A camp with works on a road (in a road, ford, bridge, village or town
+hex) has a gate, or a gap in its stakes, wherever a road leaves it, besides its main gate; the
+roads run out from the camp's middle through them. At a crossing the road to the river
+leaves by the main gate.
 
 **The hexes around.** A travel hex is 0.6 to 3 miles (1 to 5 km) across and the battle map at
 most about 175 by 115 yards (160 by 105 m), so the fight stands at a fixed spot inside its
