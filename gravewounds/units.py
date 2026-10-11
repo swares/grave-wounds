@@ -1277,6 +1277,11 @@ def _canister_struck(art: dict, c: dict, cut: float, rounds: int, rng) -> int:
     return sum(rng.randint(1, 100) <= p for _ in range(rounds * art["canister"]["balls"]))
 
 
+def _fuse_at(bands: list, roll: int) -> str:
+    """What a shell's fuse does on this d100 roll: [[up to, early|air|ground|blind], ...]."""
+    return next(what for to, what in bands if roll <= to)
+
+
 def _shell_struck(art: dict, c: dict, factor: float, rounds: int, rng) -> tuple:
     """(men hit, shells that burst on the unit, of them in the air): each shell falls on the unit
     with the chance for its range (times factor: formation and weather), then its fuse decides:
@@ -1289,7 +1294,7 @@ def _shell_struck(art: dict, c: dict, factor: float, rounds: int, rng) -> tuple:
     for _ in range(rounds):
         if rng.randint(1, 100) > p:
             continue
-        fuse = _chance_at(H["fuse"], rng.randint(1, 100))
+        fuse = _fuse_at(H["fuse"], rng.randint(1, 100))
         if fuse not in hit_at:
             continue
         bursts += 1
