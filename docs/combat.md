@@ -95,15 +95,28 @@ attack. Stepping back 1 hex is a careful withdrawal and draws no free attack.
 ## Ground and height
 
 The GM can paint the battle map with **Paint ground**: rocks and rubble, woods and brush,
-marsh, deep water, and hexes raised a level at a time (0 to 3). Painted hexes show a small mark; raised
-hexes are shaded, darker the higher they are.
+marsh, deep water, road, bridge, and hexes raised a level at a time (0 to 3). Painted hexes
+show a small mark; raised hexes are shaded, darker the higher they are.
 
 **Laying out ground.** A fight sent from the travel map lays out its ground to match the
 defenders' travel hex: irregular clumps of woods, rocks and marsh, and a rise or two, in the
 shares the terrain gives (for example, about half the hexes wooded in forest, a tenth rocky
 and up to three levels high in hills, a third marsh in marsh, a fifth rubble in a town).
 Inside a camp's works the ground is cleared and levelled to the camp's middle. The same
-fight always lays out the same ground.
+fight always lays out the same ground. In the Paint ground bar, **Ground like** and **Lay out
+ground** do the same for any fight; pressing it again for the same country gives another
+layout. Paint any hex to change it. The shares are design estimates, in `data/wounds.yaml`
+under `combat.ground.seed`.
+
+**Roads and rivers through the hex.** A force in a road, ford or bridge hex (or a village or
+town on a road) is on the road or at the crossing. So the road runs through the middle of
+the battle map toward each neighbouring road, bridge, ford, village or town hex, 2 to 3 hexes
+wide; there is a junction where more than two meet. At a ford or bridge hex the river runs
+through the middle too, 8 to 25 hexes wide, toward the neighbouring river, ford, bridge or
+lake hexes. At a ford the road crosses by a ford 3 to 6 hexes wide (marsh to wade), or straight
+across the middle when no road comes; at a bridge it crosses by a bridge as wide as the road.
+A road is clear, open going, no faster than open ground at 2 yards a hex. A camp at a crossing
+is cleared inside its works, so the river shows only outside them.
 
 **The hexes around.** A travel hex is 0.6 to 3 miles (1 to 5 km) across and the battle map at
 most about 175 by 115 yards (160 by 105 m), so the fight stands at a fixed spot inside its
@@ -112,10 +125,12 @@ out like the neighbouring hex: woods beyond a forest edge, rises beyond a hill e
 beyond is deep water. A river beyond is a band of deep water 8 to 25 hexes wide with open
 ground on the far bank, and when a ford or bridge is next to the hex, a ford 3 to 6 hexes wide
 (marsh to wade) crosses it near the middle of the map's side. The map's message gives how far
-the fight is from each side it reaches. In a large hex this happens seldom, as it should. In the Paint ground bar, **Ground like** and **Lay
-out ground** do the same for any fight; pressing it again for the same country gives another
-layout. Paint any hex to change it. The shares are design estimates, in
-`data/wounds.yaml` under `combat.ground.seed`.
+the fight is from each side it reaches. In a large hex this happens seldom, as it should.
+
+**Where the attackers come in.** Attackers arrive on the map's edge facing the way they came
+on the travel map, on the dry hexes nearest it: across a river they stand on the far bank or
+at the ford. Attackers already in the defenders' own travel hex come in at their side's far
+edge.
 
 - **Movement.** Entering rocks or woods costs 1 extra hex of movement, marsh 2; each level
   climbed costs 1 more. No one enters or stands in deep water, but shots cross it.

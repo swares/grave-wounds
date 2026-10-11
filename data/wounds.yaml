@@ -351,6 +351,8 @@ combat:
       brush: {name: "Woods and brush", move: 1, cover: 20}
       marsh: {name: "Marsh or deep mud", move: 2}
       water: {name: "Deep water", move: 99, deep: true}    # no one enters or stands in it; shots pass over
+      road:  {name: "Road", move: 0}                       # clear going, drawn; no faster than open ground at this scale
+      bridge: {name: "Bridge", move: 0}                    # a road over deep water
     max_level: 3
     climb: 1
     uphill: 10
@@ -387,6 +389,15 @@ combat:
       river_width: [8, 25]
       ford_width: [3, 6]
       ford_shift: 10
+    # A road or river through the defenders' own travel hex: a force on a road, or at a ford or
+    # bridge, is on it, so it runs through the middle of the battle map toward each
+    # neighbouring hex it links to (a junction where there are more than two). A river is
+    # river_width hexes wide (above); at a ford hex the road crosses it by a ford (marsh to wade,
+    # ford_width hexes wide, or across the middle when no road comes), at a bridge hex by a
+    # bridge as wide as the road. Design estimates.
+    through:
+      road:  {hexes: [road, bridge, ford, village, town], links: [road, bridge, ford, village, town], width: [2, 3]}
+      river: {hexes: [ford, bridge], links: [river, ford, bridge, lake]}
   range:
     - {band: short, penalty: 0}
     - {band: medium, penalty: 20}

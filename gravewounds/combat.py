@@ -472,6 +472,7 @@ def seed_ground(d: Data, terrain: str, cols: int, rows: int, seed: int, clear=No
         _lay_clumps(ground, kind, int(spec.get(kind, 0) * cols * rows + 0.5), cols, rows, rng)
     if edges:
         ground["sides"] = edge_bands(d, ground, terrain, cols, rows, seed, edges)
+        through_lines(d, ground, terrain, cols, rows, seed, edges)
     if clear:
         clear_ground(ground, clear[0], clear[1], cols, rows)
     return ground
@@ -555,6 +556,50 @@ def _past_side(plans: dict, pt: list, a: float):
         if dd > depth:
             best, depth, bu = name, dd, u
     return best, depth, bu
+
+
+def _near_rays(q: list, rays: list, half: float) -> bool:
+    """Whether point q (metres from the map's middle) lies within half metres of any ray from the
+    middle in the directions rays."""
+    for u in rays:
+        t = q[0] * u[0] + q[1] * u[1]
+        x = q[0] * u[1] - q[1] * u[0]
+        off = q[0] * q[0] + q[1] * q[1] if t < 0 else x * x
+        if off <= half * half:
+            return True
+    return False
+
+
+def _through_rays(d: Data, terrain: str, around: dict, what: str) -> list:
+    """The directions a road or river runs from the map's middle: toward each linked neighbour."""
+    T = d.wounds["combat"]["ground"]["through"][what]
+    if terrain not in T["hexes"]:
+        return []
+    return [u for name, u in SIDES if around.get(name) in T["links"]]
+
+
+def through_lines(d: Data, ground: dict, terrain: str, cols: int, rows: int, seed: int, edges: dict) -> None:
+    """A river and a road through the defenders' own travel hex, drawn through the map's middle."""
+    G = d.wounds["combat"]["ground"]
+    E, hm, around = G["edges"], d.wounds["combat"]["move"]["hex_m"], edges.get("around") or {}
+    rivers, roads, rng = _through_rays(d, terrain, around, "river"), _through_rays(d, terrain, around, "road"), _Park(seed + 2)
+    river_w = rng.randint(*E["river_width"]) if rivers else 0
+    ford_w = rng.randint(*E["ford_width"]) if rivers else 0
+    road_w = rng.randint(*G["through"]["road"]["width"]) if roads else 0
+    cross = roads or ([(-rivers[0][1], rivers[0][0]), (rivers[0][1], -rivers[0][0])] if rivers else [])
+    for r in range(rows):
+        for c in range(cols):
+            q, k = _map_xy(hm, cols, rows, c, r), f"{c},{r}"
+            if rivers and _near_rays(q, rivers, river_w * hm / 2):
+                _set_hex(ground, k, "water", 0)
+            wet = ground["kinds"].get(k) == "water"
+            if wet and terrain == "ford" and _near_rays(q, cross, ford_w * hm / 2):
+                _set_hex(ground, k, "marsh", 0)
+            elif roads and _near_rays(q, roads, road_w * hm / 2):
+                if wet and terrain == "bridge":
+                    _set_hex(ground, k, "bridge", 0)
+                elif not wet:
+                    ground["kinds"][k] = "road"
 
 
 def edge_bands(d: Data, ground: dict, terrain: str, cols: int, rows: int, seed: int, edges: dict) -> list:

@@ -11,7 +11,7 @@
   --ok:#2f6b46; --warn:#a86512; --crit:#8e1b2c;
   --side0:#2f5d8a; --side1:#8e1b2c; --side2:#8a5a12; --side3:#2f6b46;
   --wk-ditch:#5f7a88; --wk-bank:#a37a48; --wk-wood:#4a3320; --wk-gate:#c27a22; --wk-stone:#7f7f7f; --wk-green:#476b35;
-  --g-rough:#d3d0bd; --g-brush:#b5cfa6; --g-marsh:#b9cfcc; --g-water:#8db7d6; --g-water-line:#2f5f86; --hill:#7a5a2e; --gg:#5b5440;
+  --g-rough:#d3d0bd; --g-brush:#b5cfa6; --g-marsh:#b9cfcc; --g-water:#8db7d6; --g-water-line:#2f5f86; --g-road:#d9c7a3; --hill:#7a5a2e; --gg:#5b5440;
   --display:"Alegreya SC",Georgia,serif; --body:"Alegreya Sans","Gill Sans","Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
 }
@@ -20,14 +20,14 @@
   --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --heat:228,101,118; --map-sea:#1b2a33; --map-land:#3c4237; --map-coast:#66705e; --map-hl:#57604a; --map-dot:#e46576;
   --side0:#8db8e0; --side1:#e8909c; --side2:#e3b46d; --side3:#86cfa1;
   --wk-ditch:#7fa0b2; --wk-bank:#b48d5a; --wk-wood:#d9b98c; --wk-gate:#f0a54a; --wk-stone:#b5b5b5; --wk-green:#8fbf74;
-  --g-rough:#3a3a30; --g-brush:#24402a; --g-marsh:#1d3133; --g-water:#25445c; --g-water-line:#8db7d6; --hill:#e3c48c; --gg:#b9b39a;
+  --g-rough:#3a3a30; --g-brush:#24402a; --g-marsh:#1d3133; --g-water:#25445c; --g-water-line:#8db7d6; --g-road:#5a4b33; --hill:#e3c48c; --gg:#b9b39a;
   --ok:#6cc08d; --warn:#e3a14d; --crit:#e46576; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
   --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --heat:228,101,118; --map-sea:#1b2a33; --map-land:#3c4237; --map-coast:#66705e; --map-hl:#57604a; --map-dot:#e46576;
   --side0:#8db8e0; --side1:#e8909c; --side2:#e3b46d; --side3:#86cfa1;
   --wk-ditch:#7fa0b2; --wk-bank:#b48d5a; --wk-wood:#d9b98c; --wk-gate:#f0a54a; --wk-stone:#b5b5b5; --wk-green:#8fbf74;
-  --g-rough:#3a3a30; --g-brush:#24402a; --g-marsh:#1d3133; --g-water:#25445c; --g-water-line:#8db7d6; --hill:#e3c48c; --gg:#b9b39a;
+  --g-rough:#3a3a30; --g-brush:#24402a; --g-marsh:#1d3133; --g-water:#25445c; --g-water-line:#8db7d6; --g-road:#5a4b33; --hill:#e3c48c; --gg:#b9b39a;
   --ok:#6cc08d; --warn:#e3a14d; --crit:#e46576; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--body);padding-inline:16px;padding-block:20px 40px}
@@ -207,8 +207,8 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
 .wkh.breached{opacity:.3}
 .wk-prog{font:700 8px var(--mono);fill:var(--crit);text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--panel);stroke-width:2.5px}
 .hexmap.building .hex{cursor:cell}
-.hex.g-rough:not(.h-adv,.h-run){fill:var(--g-rough)} .hex.g-brush:not(.h-adv,.h-run){fill:var(--g-brush)} .hex.g-marsh:not(.h-adv,.h-run){fill:var(--g-marsh)} .hex.g-water{fill:var(--g-water)}
-.gg-water{stroke:var(--g-water-line);opacity:.9}
+.hex.g-rough:not(.h-adv,.h-run){fill:var(--g-rough)} .hex.g-brush:not(.h-adv,.h-run){fill:var(--g-brush)} .hex.g-marsh:not(.h-adv,.h-run){fill:var(--g-marsh)} .hex.g-water{fill:var(--g-water)} .hex.g-road:not(.h-adv,.h-run){fill:var(--g-road)} .hex.g-bridge{fill:var(--g-road)}
+.gg-water{stroke:var(--g-water-line);opacity:.9} .gg-bridge{stroke:var(--wk-wood);stroke-width:1.6;opacity:1}
 .gg{pointer-events:none;fill:none;stroke:var(--gg);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;opacity:.75}
 .gg-rough{fill:var(--gg)} .gg-brush circle{fill:var(--gg);fill-opacity:.35}
 .lv{fill:var(--hill);pointer-events:none} .lv1{fill-opacity:.14} .lv2{fill-opacity:.28} .lv3{fill-opacity:.42}
@@ -1390,7 +1390,10 @@ function seedGround(terrain, cols, rows, seed, clear = null, edges = null){
   const spec = GRD.seed[terrain] || GRD.seed.open, rng = parkMiller(seed), ground = { kinds: {}, levels: {} };
   layRises(ground, spec, cols, rows, rng);
   for (const kind of GROUND_ORDER) layClumps(ground, kind, Math.round((spec[kind] || 0) * cols * rows), cols, rows, rng);
-  if (edges) ground.sides = edgeBands(ground, terrain, cols, rows, seed, edges);
+  if (edges){
+    ground.sides = edgeBands(ground, terrain, cols, rows, seed, edges);
+    throughLines(ground, terrain, cols, rows, seed, edges);
+  }
   if (clear) clearGround(ground, clear[0], clear[1], cols, rows);
   return ground;
 }
@@ -1446,6 +1449,38 @@ function pastSide(plans, P, a){                 // [side, metres past it, its di
     if (dd > depth){ best = name; depth = dd; bu = u }
   }
   return [best, depth, bu];
+}
+// ----- a road and a river through the defenders' own travel hex (as gravewounds.combat.through_lines) -----
+function nearRays(q, rays, half){               // q within half metres of a ray from the map's middle
+  return rays.some(u => {
+    const t = q[0] * u[0] + q[1] * u[1];
+    const x = q[0] * u[1] - q[1] * u[0];
+    return (t < 0 ? q[0] * q[0] + q[1] * q[1] : x * x) <= half * half;
+  });
+}
+function throughRays(terrain, around, what){     // the directions it runs from the middle: toward each linked neighbour
+  const T = GRD.through[what];
+  if (!T.hexes.includes(terrain)) return [];
+  return SIDES.filter(([name]) => T.links.includes(around[name])).map(([, u]) => u);
+}
+function throughLines(ground, terrain, cols, rows, seed, edges){
+  const E = GRD.edges, hm = CMB.move.hex_m, around = edges.around || {};
+  const rivers = throughRays(terrain, around, "river"), roads = throughRays(terrain, around, "road"), rng = parkMiller(seed + 2);
+  const riverW = rivers.length ? rng.randint(...E.river_width) : 0;
+  const fordW = rivers.length ? rng.randint(...E.ford_width) : 0;
+  const roadW = roads.length ? rng.randint(...GRD.through.road.width) : 0;
+  let cross = roads;
+  if (!roads.length) cross = rivers.length ? [[-rivers[0][1], rivers[0][0]], [rivers[0][1], -rivers[0][0]]] : [];
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){
+    const q = mapXY(hm, cols, rows, c, r), k = c + "," + r;
+    if (rivers.length && nearRays(q, rivers, riverW * hm / 2)) setHex(ground, k, "water", 0);
+    const wet = ground.kinds[k] === "water";
+    if (wet && terrain === "ford" && nearRays(q, cross, fordW * hm / 2)) setHex(ground, k, "marsh", 0);
+    else if (roads.length && nearRays(q, roads, roadW * hm / 2)){
+      if (wet && terrain === "bridge") setHex(ground, k, "bridge", 0);
+      else if (!wet) ground.kinds[k] = "road";
+    }
+  }
 }
 // edges: {around: {side: travel terrain}, hex_m (the travel hex across), spot_seed, ford};
 // returns [[side, terrain, metres from the fight's middle to that side]] for the sides reached.
@@ -1618,7 +1653,8 @@ function svgPoint(e){
 const GROUND_TOOLS = {
   open: { label: "Open", verb: "clear its ground" }, rough: { label: "Rocks, rubble", verb: "make it rocks and rubble" },
   brush: { label: "Woods, brush", verb: "make it woods and brush" }, marsh: { label: "Marsh", verb: "make it marsh" },
-  water: { label: "Deep water", verb: "make it deep water" },
+  water: { label: "Deep water", verb: "make it deep water" }, road: { label: "Road", verb: "make it road" },
+  bridge: { label: "Bridge", verb: "bridge it" },
   higher: { label: "Higher ▲", verb: "raise it a level" }, lower: { label: "Lower ▼", verb: "lower it a level" },
 };
 function paintGround(h){                         // the chosen tool on hex h
@@ -1637,7 +1673,9 @@ const GROUND_GLYPH = {                           // drawn over the hex, so the g
   rough: `<path d="M-7 4l2.5-4 2.5 4zM1 -2l3-4.5 3 4.5zM0 7l2-3 2 3z"/>`,
   brush: `<circle cx="-4" cy="-1" r="3.4"/><circle cx="4.5" cy="2" r="3"/><path d="M-4 2.4v4M4.5 5v3"/>`,
   marsh: `<path d="M-8 -2q2-2 4 0t4 0t4 0t4 0M-6 4q2-2 4 0t4 0t4 0"/>`,
-  water: `<path d="M-8 -3q2-2 4 0t4 0t4 0t4 0M-8 3q2-2 4 0t4 0t4 0t4 0"/>` };
+  water: `<path d="M-8 -3q2-2 4 0t4 0t4 0t4 0M-8 3q2-2 4 0t4 0t4 0t4 0"/>`,
+  road: `<path d="M-7 0h3M-1.5 0h3M4 0h3"/>`,
+  bridge: `<path d="M-9 -4h18M-9 4h18M-6 -4v8M-2 -4v8M2 -4v8M6 -4v8"/>` };
 function groundSvg(){                            // a small mark on each hex of rough, brush or marsh
   return Object.entries(S.ground?.kinds || {}).filter(([, g]) => GROUND_GLYPH[g]).map(([k, g]) => {
     const [x, y] = hexXY(k.split(",").map(Number));
@@ -1776,6 +1814,20 @@ function forceChars(o, positions){            // up to 8 of a travel-map force's
   return out;
 }
 const menOf = o => { const n = Math.min(o.men, 8); return n < o.men ? `${n} of its ${o.men} men` : `its ${n} men` };
+// Where men coming from one side of the travel hex arrive: the dry, empty hexes nearest the map's
+// edge in that direction (across a river, the far bank or the ford).
+function arrivalSpots(side, n){
+  const { cols, rows } = mapSize(), hm = MOVE.hex_m, u = SIDES.find(([name]) => name === side)[1];
+  const hx = hm * (cols - 0.5) / 2, hy = hm * S3 * (rows - 1) / 2;
+  const t = Math.min(u[0] ? hx / Math.abs(u[0]) : Infinity, u[1] ? hy / Math.abs(u[1]) : Infinity), at = [u[0] * t, u[1] * t];
+  const free = [];
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){
+    if (deepAt([c, r]) || occupant([c, r])) continue;
+    const q = mapXY(hm, cols, rows, c, r);
+    free.push([(q[0] - at[0]) ** 2 + (q[1] - at[1]) ** 2, [c, r]]);
+  }
+  return free.sort((a, b) => a[0] - b[0]).slice(0, n).map(([, h]) => h);
+}
 function campSpots(L, cols, rows){            // hexes inside the camp: nearest the middle, or the gate if the camp runs off the map
   const spots = [], from = L.fits ? L.centre : [L.centre[0] + L.radius - 1, L.centre[1]];
   for (let y = 0; y < rows; y++){
@@ -1803,7 +1855,7 @@ function setupHandoff(){                     // a camp or position sent from the
   const overflow = defenders.reduce((t, o) => t + Math.min(o.men, 8), 0) > spots.length;
   S.chars = [];
   for (const o of defenders) S.chars.push(...forceChars(o, spots.splice(0, Math.min(o.men, 8))));
-  for (const o of foes) S.chars.push(...forceChars(o));
+  for (const o of foes) S.chars.push(...forceChars(o, o.from ? arrivalSpots(o.from, Math.min(o.men, 8)) : null));
   if (h.weather) S.weather = h.weather;
   S.hauled = !!h.hauled;
   S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0; S.hit = null;
@@ -1817,7 +1869,8 @@ function setupHandoff(){                     // a camp or position sent from the
   const unplaced = overflow ? " Those who did not fit inside wait at their side's edge." : "";
   const forceLine = o => o.name + " (" + o.side + "), " + menOf(o);
   const defNote = defenders.map(forceLine).join("; ");
-  const foeNote = foe ? `Attacking: ${foes.map(forceLine).join("; ")}, at the far edge ${facing}. ` : "";
+  const cameFrom = foes.every(o => o.from) ? `coming in from the ${[...new Set(foes.map(o => o.from))].join(" and ")}, as on the travel map` : `at the far edge ${facing}`;
+  const foeNote = foe ? `Attacking: ${foes.map(forceLine).join("; ")}, ${cameFrom}. ` : "";
   const addNote = `Add brings in more on the side "${S.addSide}".`;
   const like = `The ground is laid out to match the travel map's ${GRD.terrain_names[S.groundLike.terrain].toLowerCase()}${lay ? ", cleared inside the camp" : ""}${sidesText(S.ground.sides)}: Paint ground to change it.`;
   S.mapMsg = `Defending: ${defNote}, inside the ${where}${cut}.${unplaced} ${foeNote}${addNote} ${like} Click a fighter, on the map or with Place on map, then a hex to move him.`;
