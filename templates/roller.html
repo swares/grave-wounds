@@ -667,67 +667,99 @@ function shadeFigure(){
 /* ---------- roll ---------- */
 function readDie(id){ const v = parseInt($(id).value, 10); return v >= 1 && v <= 100 ? v : null }
 function readPct(id){ const v = parseInt($(id).value, 10); return v >= 0 && v <= 200 ? v : null }
-function rollHit(){
-  const w = DATA.weapons[S.weapon];
-  const atkPct = readPct("#in-atk"), defPct = readPct("#in-def");
-  let combat = null, margin = null, crit = false;
-  const base = { weapon: S.weapon, table: S.table, ltable: rtid(), mods: orderedMods().map(m => m.short || m.name), called: S.called };
-  const done = extra => { S.hit = { ...base, fx: null, ...extra }; ["#in-atk-roll", "#in-def-roll"].forEach(id => $(id).value = ""); renderResult(); if (S.chars.length) renderChars(); else { shadeFigure(); renderTable() } };
+function rollHit(stray = false){                  // stray: a missed shot gone into a man in the way; no attack roll, severity rolled
+  const atkPct = stray ? null : readPct("#in-atk");
+  const base = { weapon: S.weapon, table: S.table, ltable: rtid(), mods: orderedMods().map(m => m.short || m.name), called: S.called, stray };
   const rc = rangeCheck(), freeHit = isFreePair();
-  if (rc.blocked) return done({ blocked: rc.blocked });
+  if (rc.blocked) return hitDone(base, { blocked: rc.blocked });
   base.range = rc.range;
+  let att = { margin: null, crit: false, combat: null };
   if (atkPct !== null){
-    const A = penalties(attackerChar()), D = penalties(defenderChar());
-    if (A && A.flags.includes("incapacitated")) return done({ blocked: `${attackerChar().name} is incapacitated and cannot attack.` });
-    if (cannotAttack(A)) return done({ blocked: `${attackerChar().name} cannot attack: ${CMB.states[attackerChar().state.id].name.toLowerCase()}.` });
-    if (A && A.flags.includes("cannot_wield") && w.melee !== "unarmed") return done({ blocked: `${attackerChar().name} cannot hold a weapon in either hand.` });
-    const mf = rc.range ? rc.range.misfire : 0;
-    if (mf){
-      const mr = d100();
-      if (mr <= mf){
-        if (freeHit) freeDone("misfire");
-        return done({ blocked: `Misfire: d100 ${d2(mr)} against ${mf}% \u2014 the wet weather spoiled the priming. The shot is lost.` });
-      }
-    }
-    const ar = attackRoll(atkPct, readDie("#in-atk-roll") ?? d100(), (A ? A.attack : 0) + (rc.range ? rc.range.penalty : 0));
-    combat = { atk: ar, def: null, range: rc.range };
-    if (!ar.hit){ if (freeHit) freeDone("miss"); return done({ miss: true, combat }) }
-    if (defPct !== null && !ar.critical){
-      const dr = defenceRoll(defPct, readDie("#in-def-roll") ?? d100(), D ? D.defence : 0);
-      combat.def = dr;
-      if (dr.defended){ if (freeHit) freeDone("parried or dodged"); return done({ defended: true, combat }) }
-    }
-    margin = ar.margin; crit = ar.critical;
+    att = attackPhase(atkPct, rc, freeHit);
+    if (att.end) return hitDone(base, att.end);
   }
-  const ranges = curRanges();
-  const rl = readDie("#in-loc") ?? d100();
+  woundPhase(rc, freeHit, stray, att);
+}
+function hitDone(base, extra){                    // the roll ended before a wound: blocked, missed or parried
+  S.hit = { ...base, fx: null, ...extra };
+  ["#in-atk-roll", "#in-def-roll"].forEach(id => $(id).value = "");
+  renderResult();
+  if (S.chars.length) renderChars();
+  else { shadeFigure(); renderTable() }
+}
+function attackBlock(A, w){                       // why the attacker cannot attack at all, or null
+  const n = () => attackerChar().name;
+  if (A && A.flags.includes("incapacitated")) return `${n()} is incapacitated and cannot attack.`;
+  if (cannotAttack(A)) return `${n()} cannot attack: ${CMB.states[attackerChar().state.id].name.toLowerCase()}.`;
+  if (A && A.flags.includes("cannot_wield") && w.melee !== "unarmed") return `${n()} cannot hold a weapon in either hand.`;
+  return null;
+}
+function misfired(rc, freeHit){                   // wet priming: the shot is lost (text), or null
+  const mf = rc.range ? rc.range.misfire : 0;
+  if (!mf) return null;
+  const mr = d100();
+  if (mr > mf) return null;
+  if (freeHit) freeDone("misfire");
+  return `Misfire: d100 ${d2(mr)} against ${mf}% \u2014 the wet weather spoiled the priming. The shot is lost.`;
+}
+function attackPhase(atkPct, rc, freeHit){        // the attack and defence rolls: {end} if no wound follows, else {margin, crit, combat}
+  const w = DATA.weapons[S.weapon], A = penalties(attackerChar()), D = penalties(defenderChar()), defPct = readPct("#in-def");
+  const blocked = attackBlock(A, w) || misfired(rc, freeHit);
+  if (blocked) return { end: { blocked } };
+  const ar = attackRoll(atkPct, readDie("#in-atk-roll") ?? d100(), (A ? A.attack : 0) + (rc.range ? rc.range.penalty : 0));
+  const combat = { atk: ar, def: null, range: rc.range };
+  if (!ar.hit){
+    if (freeHit) freeDone("miss");
+    return { end: { miss: true, combat, stray: strayRoll(rc.range) } };
+  }
+  if (defPct !== null && !ar.critical){
+    const dr = defenceRoll(defPct, readDie("#in-def-roll") ?? d100(), D ? D.defence : 0);
+    combat.def = dr;
+    if (dr.defended){
+      if (freeHit) freeDone("parried or dodged");
+      return { end: { defended: true, combat } };
+    }
+  }
+  return { margin: ar.margin, crit: ar.critical, combat };
+}
+function rollLocation(){                          // {loc, rl, rl2}: a called shot takes the second roll if only it lands in the zone
+  const ranges = curRanges(), rl = readDie("#in-loc") ?? d100();
   let loc = look(ranges, rl), rl2 = null;
   if (S.called){
     rl2 = readDie("#in-loc2") ?? d100();
     const second = look(ranges, rl2);
     if (LOC[loc].zone !== S.called && LOC[second].zone === S.called) loc = second;
   }
-  const rm = readDie("#in-mech") ?? d100();
-  const mech = look(w.mech_ranges, rm);
-  const sevMode = margin !== null ? "margin" : $("#sel-sev").value;
-  let rs = null, sev = sevMode;
-  if (sevMode === "margin") sev = marginSeverity(margin, crit, S.weapon, LOC[loc].zone);
-  else if (sevMode === "roll"){ rs = readDie("#in-sev") ?? d100(); sev = sevTiers(mech, LOC[loc].zone, S.weapon).find(x => rs >= x.d100[0] && rs <= x.d100[1]).id }
-
-  let armor = null, final = sev;
+  return { loc, rl, rl2 };
+}
+function rollSeverity(mech, loc, att, stray){     // {sev, rs}: from the margin, the severity table, or the GM's pick
+  let sevMode = att.margin !== null ? "margin" : $("#sel-sev").value;
+  if (stray) sevMode = "roll";
+  if (sevMode === "margin") return { sev: marginSeverity(att.margin, att.crit, S.weapon, LOC[loc].zone), rs: null };
+  if (sevMode !== "roll") return { sev: sevMode, rs: null };
+  const rs = readDie("#in-sev") ?? d100();
+  return { sev: sevTiers(mech, LOC[loc].zone, S.weapon).find(x => rs >= x.d100[0] && rs <= x.d100[1]).id, rs };
+}
+function armourOn(loc, mech, sev){                // {armor, final}: the defender's armour on that location lowers the severity
   const layers = isEvidence() ? [] : armorAt(S.armor, loc);
-  if (layers.length){
-    const whole = layers.length === 1 && layers[0][1] === 1 && layers[0][2] === 100;
-    const rc = whole ? null : d100();
-    const hit = whole ? layers[0] : layers.find(([, lo, hi]) => rc >= lo && rc <= hi);
-    const mat = hit ? hit[0] : null, steps = hit ? armorSteps(mat, mech, S.weapon) : 0;
-    final = LADDER[Math.max(0, LADDER.indexOf(sev) - steps)];
-    armor = { mat, layers, rc, covered: !!hit, steps, from: sev, to: final };
-  }
-  const grazed = final !== "stopped" && isGraze(margin, crit);
+  if (!layers.length) return { armor: null, final: sev };
+  const whole = layers.length === 1 && layers[0][1] === 1 && layers[0][2] === 100;
+  const rc = whole ? null : d100();
+  const hit = whole ? layers[0] : layers.find(([, lo, hi]) => rc >= lo && rc <= hi);
+  const mat = hit ? hit[0] : null, steps = hit ? armorSteps(mat, mech, S.weapon) : 0;
+  const final = LADDER[Math.max(0, LADDER.indexOf(sev) - steps)];
+  return { armor: { mat, layers, rc, covered: !!hit, steps, from: sev, to: final }, final };
+}
+function woundPhase(rc, freeHit, stray, att){     // location, mechanism, severity and armour: the wound
+  const w = DATA.weapons[S.weapon];
+  const { loc, rl, rl2 } = rollLocation();
+  const rm = readDie("#in-mech") ?? d100(), mech = look(w.mech_ranges, rm);
+  const { sev, rs } = rollSeverity(mech, loc, att, stray);
+  const { armor, final } = armourOn(loc, mech, sev);
+  const grazed = final !== "stopped" && isGraze(att.margin, att.crit);
   const fx0 = final === "stopped" ? null : DATA.wounds[`${LOC[loc].class}|${mech}|${final}`];
   const fx = fx0 && grazed ? grazeFx(fx0) : fx0;
-  S.hit = { loc, mech, sev: final, rolled: sev, fx, armor, combat, graze: grazed, range: rc.range, free: freeHit, rolls:{loc:rl, loc2:rl2, mech:rm, sev:rs},
+  S.hit = { loc, mech, sev: final, rolled: sev, fx, armor, combat: att.combat, graze: grazed, range: rc.range, free: freeHit, strayHit: stray, rolls:{loc:rl, loc2:rl2, mech:rm, sev:rs},
             weapon:S.weapon, table:S.table, ltable:rtid(), mods:orderedMods().map(m => m.short || m.name), called:S.called };
   ["#in-loc","#in-loc2","#in-mech","#in-sev","#in-atk-roll","#in-def-roll"].forEach(id => $(id).value = "");
   renderResult(); shadeFigure(); renderTable();
@@ -753,17 +785,30 @@ function combatLines(c){
   const rangeP = R0.rangePen ?? (R0.cover || R0.height ? 0 : rp);
   const wkName = t => (WK.edge_works[t] || WK.hex_works[t] || { name: t }).name.toLowerCase();
   const parts = [wp ? ` − ${wp} wounds` : "", rangeP ? ` − ${rangeP} ${R0.band} range` : "",
-    R0.cover ? ` − ${R0.cover} cover (${wkName(R0.coverWork)})` : "", R0.height ? ` − ${R0.height} fighting up (${wkName(R0.heightWork)})` : "", R0.weatherPen ? ` − ${R0.weatherPen} weather (${R0.weatherNotes.map(n => n.replace(/ -\d+%$/, "")).join(", ")})` : ""].join("");
+    R0.cover ? ` − ${R0.cover} cover (${wkName(R0.coverWork)})` : "", R0.height ? ` − ${R0.height} fighting up (${wkName(R0.heightWork)})` : "", R0.weatherPen ? ` − ${R0.weatherPen} weather (${R0.weatherNotes.map(n => n.replace(/ -\d+%$/, "")).join(", ")})` : "",
+    R0.wayPen ? ` − ${R0.wayPen} in the way (${R0.way.map(charName).join(", ")})` : ""].join("");
   const apen = parts ? ` (${a.base}${parts})` : "";
   let out = `<div class="sitline">Attack d100 ${d2(a.roll)} vs ${a.effective}%${apen}: ${a.hit ? `hit, margin ${a.margin}${a.critical ? " · <b>critical</b>, cannot be defended" : ""}` : "miss"}</div>`;
   if (c.def) out += `<div class="sitline">Defence d100 ${d2(c.def.roll)} vs ${c.def.effective}%${pen(c.def)}: ${c.def.defended ? "parried or dodged" : "failed"}</div>`;
   return out;
 }
+const charName = id => (S.chars.find(c => c.id === id) || { name: "someone" }).name;
+function strayLine(st){                         // after a miss with men in the way
+  if (!st) return "";
+  const who = attr(charName(st.id)), roll = `d100 ${d2(st.roll)} vs ${st.chance}%`;
+  if (!st.hit) return `<p class="muted" style="margin:0">It misses ${who}, in the way, too (${roll}).</p>`;
+  return `<p style="margin:.3rem 0">The shot goes into <b>${who}</b>, standing in the way (${roll}).</p><button class="small" id="btn-stray">Roll the hit on ${who}</button>`;
+}
+function outcomeWord(h){                         // a roll that made no wound, in a word or two
+  if (h.blocked) return "No attack";
+  return h.miss ? "Miss" : "Parried or dodged";
+}
 function renderResult(){
   const h = S.hit; if (!h){ $("#result").innerHTML = ""; return }
   if (h.blocked || h.miss || h.defended){
-    $("#result").innerHTML = `${combatLines(h.combat)}<p class="outcome">${h.blocked ? "No attack" : h.miss ? "Miss" : "Parried or dodged"}</p>
-      ${h.blocked ? `<p class="muted" style="margin:0">${h.blocked}</p>` : ""}`;
+    const note = h.blocked ? '<p class="muted" style="margin:0">' + h.blocked + "</p>" : "";
+    $("#result").innerHTML = `${combatLines(h.combat)}<p class="outcome">${outcomeWord(h)}</p>${note}${strayLine(h.stray)}`;
+    $("#btn-stray")?.addEventListener("click", strayHit);
     return;
   }
   const r = h.rolls, ar = h.armor;
@@ -782,6 +827,7 @@ function renderResult(){
     <div class="rolls"><span>loc ${d2(r.loc)}${r.loc2 ? "/" + d2(r.loc2) : ""}</span><span>mech ${d2(r.mech)}</span>${r.sev ? `<span>sev ${d2(r.sev)}</span>` : h.combat ? `<span>sev: margin</span>` : `<span>sev: your system</span>`}</div>
     <p class="hitname">${LOC[h.loc].name}</p>
     ${sit ? `<div class="sitline">${sit}</div>` : ""}
+    ${h.strayHit ? `<div class="sitline">A stray shot: no attack roll, severity rolled</div>` : ""}
     ${h.range ? `<div class="sitline">${h.range.band === "free attack" ? "Free attack as he leaves contact" : `${hexes(h.range.dist)}: ${h.range.band}${h.range.rangePen ? ` range, −${h.range.rangePen}%` : ""}${h.range.cover ? ` · cover behind the ${(WK.edge_works[h.range.coverWork] || WK.hex_works[h.range.coverWork]).name.toLowerCase()}, −${h.range.cover}%` : ""}${h.range.height ? ` · fighting up at the ${WK.edge_works[h.range.heightWork].name.toLowerCase()}, −${h.range.height}%` : ""}${h.range.penalty && !h.combat ? " (not applied: no attack roll)" : ""}`}</div>` : ""}
     ${h.ltable !== h.table ? `<div class="sitline">Close combat: location from ${DATA.tables[h.ltable].label}</div>` : ""}
     <div class="chips"><span class="chip sev-${h.sev === "stopped" ? "light" : h.sev}">${sevLabel(h.sev)}</span>${h.graze ? `<span class="chip graze" title="Hit by the barest margin: bleed and pain one step lower, no stop check">Graze</span>` : ""}<span class="chip">${DATA.mechanisms[h.mech].name}</span><span class="chip">${shortName(h.weapon)}</span></div>
@@ -1172,7 +1218,33 @@ function rangeCheck(){
   if (wk.blocked) return { blocked: wk.blocked };
   if (wx.blocked) return { blocked: wx.blocked };
   const extra = { weatherPen: wx.penalty, weatherNotes: wx.notes, misfire: wx.misfire };
-  return { range: { dist, ...r, rangePen: r.penalty, ...wk, ...extra, penalty: r.penalty + (wk.cover || 0) + (wk.height || 0) + wx.penalty } };
+  const way = shotWay(a, dd);
+  return { range: { dist, ...r, rangePen: r.penalty, ...wk, ...extra, wayPen: way.penalty, way: way.men, stray: way.stray,
+    penalty: r.penalty + (wk.cover || 0) + (wk.height || 0) + wx.penalty + way.penalty } };
+}
+// Fighters standing between a shooter at frm and his target at to (others: [[id, hex]]), as
+// gravewounds.combat.in_the_way: {men (nearest the shooter first), penalty %, stray %}.
+function inTheWay(wid, frm, to, others){
+  const L = CMB.line_of_fire, k = hexDistance(frm, to), at = new Map(others.map(([id, h]) => [h[0] + "," + h[1], id]));
+  const men = k > 1 ? hexRay(frm, to, k).slice(1, -1).map(x => at.get(x[0] + "," + x[1])).filter(id => id !== undefined) : [];
+  if (!men.length) return { men: [], penalty: 0, stray: 0 };
+  return { men, penalty: Math.min(L.max, L.per_man * men.length), stray: L.arcing.includes(wid) ? 0 : L.stray };
+}
+function shotWay(a, dd){                        // who stands in the way of a's shot at dd: shots only
+  const w = DATA.weapons[S.weapon];
+  if (!w.range || w.off_map) return { men: [], penalty: 0, stray: 0 };
+  return inTheWay(S.weapon, a.pos, dd.pos, S.chars.filter(o => o !== a && o !== dd && o.pos && !isOut(o)).map(o => [o.id, o.pos]));
+}
+function strayRoll(range){                      // after a miss: does the shot go into the first man in the way?
+  if (!range || !range.stray || !(range.way || []).length) return null;
+  const roll = d100();
+  return { id: range.way[0], roll, chance: range.stray, hit: roll <= range.stray };
+}
+function strayHit(){                            // roll the stray shot's hit on the man it went into
+  const h = S.hit, i = h && h.stray && h.stray.hit ? S.chars.findIndex(c => c.id === h.stray.id) : -1;
+  if (i < 0) return;
+  selectChar(i);
+  rollHit(true);
 }
 // What the works do to an attack by a on dd: cover against missiles, or a palisade or a bank in a close fight.
 function worksOnAttack(a, dd){
@@ -1343,7 +1415,7 @@ function doWork(act, k, j){
 }
 function hitLine(h){                        // a roll in a few words, for the map's bar
   if (h.blocked) return "no attack";
-  if (h.miss) return "miss";
+  if (h.miss) return h.stray && h.stray.hit ? `miss, into ${charName(h.stray.id)} in the way` : "miss";
   if (h.defended) return "parried or dodged";
   return `${LOC[h.loc].name.toLowerCase()}, ${sevLabel(h.sev).toLowerCase()}${h.fx ? "" : " (armour held)"}`;
 }
@@ -1355,6 +1427,7 @@ function mapStrikeBits(){                    // roll and apply from the map; the
   if (!h) return out;
   out.push(`<span>Last roll: <b>${attr(hitLine(h))}</b> <span class="muted">(details under Strike)</span></span>`);
   if (h.fx && !h.applied) out.push(`<button class="small" data-map="apply">Apply hit to ${attr(dd.name)}</button>`);
+  if (h.stray && h.stray.hit) out.push(`<button class="small" data-map="stray">Roll the hit on ${attr(charName(h.stray.id))}</button>`);
   return out;
 }
 function applyFromMap(){                    // the Strike panel's Apply, with its message on the map's bar
@@ -1737,7 +1810,7 @@ function init(){
     renderChars();
   };
   $("#sel-weapon").onchange = e => { S.weapon = e.target.value; renderMods(); syncArmor(); shadeFigure(); renderTable() };
-  $("#btn-roll").onclick = rollHit;
+  $("#btn-roll").onclick = () => rollHit();
   $("#btn-add").onclick = () => { const n = $("#in-name").value.trim() || `Combatant ${S.seq}`; S.chars.push(newChar(n, S.armor, null, {}, S.addSide || "Side A")); $("#in-name").value = ""; selectChar(S.chars.length - 1) };
   $("#in-name").addEventListener("keydown", e => { if (e.key === "Enter") $("#btn-add").click() });
   $("#btn-apply").onclick = () => {
@@ -1777,6 +1850,7 @@ function init(){
     else if (act === "skipfree"){ freeDone("skipped"); renderChars() }
     else if (act === "handoff") setupHandoff();
     else if (act === "roll") rollHit();
+    else if (act === "stray") strayHit();
     else if (act === "apply") applyFromMap();
     else if (act === "nohandoff"){ S.handoff = null; try{ localStorage.removeItem("gravewounds-handoff") }catch(e){} renderChars() }
   });

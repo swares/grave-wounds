@@ -364,6 +364,9 @@ def validate(d: Data) -> None:
             if not (isinstance(r, list) and len(r) == len(bands) and all(isinstance(x, int) and x >= 1 for x in r)
                     and r == sorted(set(r))):
                 errors.append(f"weapons.yaml: {wid} range must be {len(bands)} increasing hex counts, one per band in wounds.yaml combat.range")
+    for wid in CB.get("line_of_fire", {}).get("arcing", []):
+        if "range" not in d.weapons.get(wid, {}):
+            errors.append(f"wounds.yaml: combat.line_of_fire.arcing names {wid}, which is not a weapon with a range")
     impairs = set(d.wounds["vocabulary"]["impair"])
     mv = CB["move"]
     for k in ("halved_by", "crawl_by", "no_run_by"):

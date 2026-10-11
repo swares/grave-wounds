@@ -155,7 +155,7 @@ ARMOR_STEPS = [
 ]
 COMBAT_STEPS = [
     "Pick the <b>attacker</b> and the <b>defender</b>. Add up each one's wound penalties (table below), capped at the limit shown.",
-    "Attacker rolls d100 against <b>attack % minus penalties</b> (on the battle map, also minus any range penalty). Equal or under hits; the <b>margin</b> is the effective chance minus the roll. "
+    "Attacker rolls d100 against <b>attack % minus penalties</b> (on the battle map, also minus any range penalty and men in the way). Equal or under hits; the <b>margin</b> is the effective chance minus the roll. "
     "A roll at or under a tenth of the effective chance is a <b>critical</b>: it cannot be defended.",
     "If the defender may parry or dodge, they roll d100 against <b>defence % minus penalties</b>; equal or under avoids the blow.",
     "On a hit, roll location and mechanism as usual. <b>Severity comes from the margin</b> (bands below) instead of the severity table.",
@@ -267,7 +267,8 @@ def _gun_rules(d) -> list[str]:
         "friend or enemy, except from high ground over a unit on lower ground (guns: round shot, never canister); "
         f"bows and crossbows may loose high over units at {d.units['line_of_fire']['arc_penalty']}% off. "
         f"<b>Shell:</b> howitzers fire shell beyond canister range over anything between; a shell lands ({bands(A['howitzer']['strike'])}), "
-        f"{A['howitzer']['blind']}% fail to burst, and each burst throws {A['howitzer']['fragments']} chances at {A['howitzer']['fragment_hit']}%. "
+        f"then its fuse is rolled: {_fuse_text(A['howitzer']['fuse'])}; a burst throws {A['howitzer']['fragments']} chances at {A['howitzer']['air_hit']}% in the air "
+        f"(cover counts half) or {A['howitzer']['fragment_hit']}% on the ground. "
         f"Canister gains {cn['graze']}% beyond {yd(cn['strike'][0][0] * m)} on firm ground. "
         f"<b>Ricochet:</b> on firm ground round shot bounds on, striking the first other unit within {yd(rc['beyond'] * m)} past the target ({bands(rc['strike'])} past it) "
         "and going through its ranks; rough ground, woods, marsh, mud or snow stop it. "
@@ -275,6 +276,15 @@ def _gun_rules(d) -> list[str]:
         f"<b>Limbering:</b> a limbered battery moves but cannot fire; unlimbered it fires but can only be manhandled {A['pushed']} hexes. Changing over takes an exchange, "
         f"without moving or firing. Hand to hand the crews fight with {d.weapons[A['crew_weapon']]['name'].lower()}. A battery that breaks loses its guns.",
     ]
+
+
+def _fuse_text(bands) -> str:
+    """'15% early, 25% air, 45% ground, 15% blind' from [[up to, what], ...]."""
+    out, lo = [], 0
+    for to, what in bands:
+        out.append(f"{to - lo}% {what}")
+        lo = to
+    return ", ".join(out)
 
 
 def _hero_rules(d) -> list[str]:
@@ -462,7 +472,7 @@ def works_rows(d) -> list[list[str]]:
 
 
 def works_rules(d) -> list[str]:
-    W = d.works
+    W, L = d.works, d.wounds["combat"]["line_of_fire"]
     return [
         f"<b>Making camp:</b> a camp's works are those the battle map lays out for it: a ring of hexes big enough for the force (about {W['camp_area']['foot']} m2 a man on foot, "
         f"{W['camp_area']['mounted']} with horses), with the bank and palisade on its edge and the ditch one ring out. {int(W['work_share'] * 100)}% of the men work at once; the rest guard and cook. Work uses what is left of "
@@ -476,6 +486,9 @@ def works_rules(d) -> list[str]:
         "In close combat only reach-2 weapons (spears, bills) strike over a palisade, gate or wall, and a man attacking up at a defender on the high side of a bank, ditch or wall takes its height penalty.",
         "<b>Breaching:</b> a fighter next to a work can spend his attack on it: one man-round. When the man-rounds reach the work's breach number it is open. "
         "A gate is opened or barred from inside.",
+        f"<b>In the way:</b> each fighter standing on the line between a shooter and his target costs the shot {L['per_man']}% (at most {L['max']}%). "
+        f"A miss goes into the first man in the way at {L['stray']}%: roll the hit on him with no attack roll and the severity table. "
+        "Bows and crossbows loose high over the men in the way: the penalty, but never a stray.",
     ]
 
 

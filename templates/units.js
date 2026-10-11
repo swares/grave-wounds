@@ -188,20 +188,7 @@ function step(h, dirn, n = 1){
 }
 function cube(h){ const q = h[0] - (h[1] - (h[1] & 1)) / 2; return [q, h[1], -q - h[1]] }
 function hdist(a, b){ const x = cube(a), y = cube(b); return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2])) }
-function cubeRound(x, y, z){                    // the offset hex nearest a point in cube coordinates
-  let rx = Math.floor(x + 0.5), ry = Math.floor(y + 0.5);
-  const rz = Math.floor(z + 0.5), dx = Math.abs(rx - x), dy = Math.abs(ry - y), dz = Math.abs(rz - z);
-  if (dx > dy && dx > dz) rx = -ry - rz;
-  else if (dy > dz) ry = -rx - rz;
-  return [rx + (ry - (ry & 1)) / 2, ry];
-}
-function ray(a, b, n){                           // the hexes on the line from a through b, n steps (b is step hdist(a, b))
-  const s = cube(a), c = cube(b), k = hdist(a, b);
-  if (k === 0) return [[...a]];
-  const out = [];
-  for (let i = 0; i <= n; i++) out.push(cubeRound(s[0] + (c[0] - s[0]) * i / k + 1e-6, s[1] + (c[1] - s[1]) * i / k + 2e-6, s[2] + (c[2] - s[2]) * i / k - 3e-6));
-  return out;
-}
+const ray = hexRay;                              // the hexes on a line (works.js)
 function arc(facing, dirn){
   const k = mod6(dirn - facing);
   if (k <= 1) return "front";
@@ -692,15 +679,19 @@ function canisterStruck(A, c, cut, rounds, rng){   // men hit by canister: each 
   for (let k = 0; k < rounds * A.canister.balls; k++) if (rng.randint(1, 100) <= p) struck++;
   return struck;
 }
-function shellStruck(A, c, cut, rounds, rng){     // [men hit, shells that burst on the unit]
-  const H = A.howitzer, p = chanceAt(H.strike, c.dist) * cut;
-  let struck = 0, bursts = 0;
+function shellStruck(A, c, factor, rounds, rng){  // [men hit, shells that burst on the unit, of them in the air]: the fuse decides early, air, ground or blind
+  const H = A.howitzer, p = chanceAt(H.strike, c.dist) * factor;
+  const hitAt = { air: H.air_hit * (100 - c.cover / 2) / 100, ground: H.fragment_hit * (100 - c.cover) / 100 };
+  let struck = 0, bursts = 0, air = 0;
   for (let k = 0; k < rounds; k++){
-    if (rng.randint(1, 100) > p || rng.randint(1, 100) <= H.blind) continue;
+    if (rng.randint(1, 100) > p) continue;
+    const fuse = chanceAt(H.fuse, rng.randint(1, 100));
+    if (!(fuse in hitAt)) continue;
     bursts++;
-    for (let m = 0; m < H.fragments; m++) if (rng.randint(1, 100) <= H.fragment_hit) struck++;
+    if (fuse === "air") air++;
+    for (let m = 0; m < H.fragments; m++) if (rng.randint(1, 100) <= hitAt[fuse]) struck++;
   }
-  return [struck, bursts];
+  return [struck, bursts, air];
 }
 function roundShotStruck(A, p, rounds, target, rng){   // [men hit, balls that struck]: each ball that strikes (p %) goes through the ranks
   const rs = A.round_shot, path = Math.min(rs.path_max, form(target).ranks * footprint(target).length);
@@ -714,12 +705,12 @@ function roundShotStruck(A, p, rounds, target, rng){   // [men hit, balls that s
 }
 function cannonade(att, target, c, rng, exposed = []){   // a battery's fire at the target unit: the men struck, then a wound roll each; guns knocked out
   const A = UD.artillery, rounds = c.rounds, cut = form(target).missile_factor * (100 - c.cover - c.penalty) / 100;
-  let struck, hits = 0;
+  let struck, hits = 0, air = 0;
   if (c.shot === "canister") struck = canisterStruck(A, c, cut, rounds, rng);
-  else if (c.shot === "shell") [struck, hits] = shellStruck(A, c, cut, rounds, rng);
+  else if (c.shot === "shell") [struck, hits, air] = shellStruck(A, c, form(target).missile_factor * (100 - c.penalty) / 100, rounds, rng);
   else [struck, hits] = roundShotStruck(A, chanceAt(A.round_shot.strike, c.dist) * cut, rounds, target, rng);
   const t = blows(att, sideOfUnit(target, att.table), struck, A.attack, 0, rng, { exposed, shift: -1000 });
-  if (c.shot === "shell") t.bursts = hits;
+  if (c.shot === "shell"){ t.bursts = hits; t.air = air }
   if (isBattery(target)){
     let n = 0;
     for (let k = 0; k < hits; k++) if (rng.randint(1, 100) <= A.dismount) n++;

@@ -271,10 +271,13 @@ Howitzers fire shell over anything (see *Shell*).
   yards (200 m) and 15% to 330 yards (300 m). On firm ground all the way to the target (as for
   ricochet) the balls skip on into it: +5% beyond 110 yards.
 - **Shell.** A battery of **howitzers** (tick *Howitzers* when adding a battery) fires shell
-  beyond canister range, in a high arc over anything between. Each shell lands on the target
-  at 45% to 550 yards (500 m), 30% to 820 yards (750 m), 20% to 1,090 yards (cut by cover,
-  the weather and open order as round shot is); 15% fail to burst; each burst throws 12
-  chances to hit, each at 25%. A burst on a battery can knock out a gun, as a round-shot
+  beyond canister range, in a high arc over anything between. Each shell falls on the target
+  at 45% to 550 yards (500 m), 30% to 820 yards (750 m), 20% to 1,090 yards (cut by the
+  weather and open order). Then its **fuse** is rolled: 15% early (it bursts short,
+  harmlessly), 25% in the air over the men, 45% on the ground as it lands, 15% blind (it never
+  bursts). A burst throws 12 chances to hit: at 35% each in the air, where cover counts only
+  half, and at 25% on the ground, less the full cover. The log counts the bursts and how many
+  were in the air. A burst on a battery can knock out a gun, as a round-shot
   strike can. Within canister range howitzers fire canister like guns. Shell rolls on the
   same artillery wound data as the guns: the Peninsular ordnance records include shell.
 - Cover, the weather (fog and rain hide targets; the wind costs as for firearms) and open
@@ -284,7 +287,7 @@ Howitzers fire shell over anything (see *Shell*).
 What that gives, from `python3 -m gravewounds units`: 6 guns firing for a minute at 1,600 men
 in close order on firm ground strike about 17 men with canister at 220 yards (6 put down), 6
 with round shot at 440 yards against a line (2 down), 17 against a column (6 down), and 7
-against a column at 870 yards. Six howitzers strike about 7 with shell at 440 yards, line or
+against a column at 870 yards. Six howitzers strike about 6 with shell at 440 yards, line or
 column alike (2 down), and 3 at 870 yards. A battalion of 600 muskets at 110 yards hits about 6.
 
 **Ammunition.** Each gun goes into action with 50 rounds (its limber chest and its share

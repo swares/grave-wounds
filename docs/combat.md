@@ -83,6 +83,11 @@ attack. Stepping back 1 hex is a careful withdrawal and draws no free attack.
   spears, bills and lances have reach 2.
 - Missile weapons have short, medium and long range in hexes: +0, −20% and −40% to hit.
   There is no shot past long range.
+- **In the way.** Each fighter standing on the line between a shooter and his target
+  (friend or foe, not down) costs the shot 10%, at most 30%. If the shot misses, it goes into
+  the first man in the way at 50%: the Strike panel and the map's bar offer **Roll the hit on**
+  him, which rolls his hit with no attack roll and the severity table. Bows and crossbows
+  loose high over the men in the way: they take the penalty but never strike them.
 - Artillery, mines and stakes are not aimed on the map; the GM decides whom they hit.
 - The printed tables list every weapon. The ranges are design estimates from each
   weapon's effective range in its period.

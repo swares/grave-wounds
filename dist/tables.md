@@ -4225,7 +4225,7 @@ Modifiers stack in the roller and CLI (one per group). Printed columns below sho
 ## Fighting while wounded
 
 1. Pick the **attacker** and the **defender**. Add up each one's wound penalties (table below), capped at the limit shown.
-2. Attacker rolls d100 against **attack % minus penalties** (on the battle map, also minus any range penalty). Equal or under hits; the **margin** is the effective chance minus the roll. A roll at or under a tenth of the effective chance is a **critical**: it cannot be defended.
+2. Attacker rolls d100 against **attack % minus penalties** (on the battle map, also minus any range penalty and men in the way). Equal or under hits; the **margin** is the effective chance minus the roll. A roll at or under a tenth of the effective chance is a **critical**: it cannot be defended.
 3. If the defender may parry or dodge, they roll d100 against **defence % minus penalties**; equal or under avoids the blow.
 4. On a hit, roll location and mechanism as usual. **Severity comes from the margin** (bands below) instead of the severity table.
 5. Wounds switch situations on by themselves: a defender who cannot stand is **Target down**, a defender whose shield arm is useless has **No shield**, and an attacker on the ground fights as **Attacker lower**.
@@ -4332,6 +4332,8 @@ Penalties add up; each total is capped at -60%.
 
 **Breaching:** a fighter next to a work can spend his attack on it: one man-round. When the man-rounds reach the work's breach number it is open. A gate is opened or barred from inside.
 
+**In the way:** each fighter standing on the line between a shooter and his target costs the shot 10% (at most 30%). A miss goes into the first man in the way at 50%: roll the hit on him with no attack roll and the severity table. Bows and crossbows loose high over the men in the way: the penalty, but never a stray.
+
 | Camp | What it is | Needs | 12 men | 100 men | 1,000 men |
 |---|---|---|---|---|---|
 | Bivouac | Sleep where you stop. Nothing built and no proper watch. | - | none | none | none |
@@ -4432,7 +4434,7 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **Guns:** a battery is a unit armed with guns, in battery order; its men are the crews, 10 to a gun, and as crews fall fewer guns are served. Each served gun fires 1 round an exchange at the nearest enemy in front within 1094 yd (1000 m): canister to 328 yd (300 m), round shot beyond. Round shot strikes the unit (60% to 547 yd (500 m), 40% to 820 yd (750 m), 25% to 1094 yd (1000 m)), then each man in its path (the ranks deep, at most 12) is hit at 40%, so columns suffer most. Canister throws 8 chances a round (50% to 109 yd (100 m), 30% to 219 yd (200 m), 15% to 328 yd (300 m)). Cover, the weather and open order cut both. Each man hit takes a wound roll at 80% with no parry.
 
-**Targets and line of fire:** the GM can name a battery's target; it fires at it when it can, otherwise at the nearest. No unit shoots through another unit, friend or enemy, except from high ground over a unit on lower ground (guns: round shot, never canister); bows and crossbows may loose high over units at 20% off. **Shell:** howitzers fire shell beyond canister range over anything between; a shell lands (45% to 547 yd (500 m), 30% to 820 yd (750 m), 20% to 1094 yd (1000 m)), 15% fail to burst, and each burst throws 12 chances at 25%. Canister gains 5% beyond 109 yd (100 m) on firm ground. **Ricochet:** on firm ground round shot bounds on, striking the first other unit within 328 yd (300 m) past the target (30% to 109 yd (100 m), 20% to 219 yd (200 m), 10% to 328 yd (300 m) past it) and going through its ranks; rough ground, woods, marsh, mud or snow stop it. A round-shot strike on the battery it is fired at knocks out a gun at 10%. **Ammunition:** 50 rounds a gun; resupplying takes an exchange out of contact, without moving or firing.
+**Targets and line of fire:** the GM can name a battery's target; it fires at it when it can, otherwise at the nearest. No unit shoots through another unit, friend or enemy, except from high ground over a unit on lower ground (guns: round shot, never canister); bows and crossbows may loose high over units at 20% off. **Shell:** howitzers fire shell beyond canister range over anything between; a shell lands (45% to 547 yd (500 m), 30% to 820 yd (750 m), 20% to 1094 yd (1000 m)), then its fuse is rolled: 15% early, 25% air, 45% ground, 15% blind; a burst throws 12 chances at 35% in the air (cover counts half) or 25% on the ground. Canister gains 5% beyond 109 yd (100 m) on firm ground. **Ricochet:** on firm ground round shot bounds on, striking the first other unit within 328 yd (300 m) past the target (30% to 109 yd (100 m), 20% to 219 yd (200 m), 10% to 328 yd (300 m) past it) and going through its ranks; rough ground, woods, marsh, mud or snow stop it. A round-shot strike on the battery it is fired at knocks out a gun at 10%. **Ammunition:** 50 rounds a gun; resupplying takes an exchange out of contact, without moving or firing.
 
 **Limbering:** a limbered battery moves but cannot fire; unlimbered it fires but can only be manhandled 2 hexes. Changing over takes an exchange, without moving or firing. Hand to hand the crews fight with sword (arming sword). A battery that breaks loses its guns.
 
