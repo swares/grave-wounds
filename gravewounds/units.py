@@ -662,7 +662,9 @@ def _beaten(d: Data, units: list, occ: dict, field: dict | None, i: int, best: t
 
 def shot_weather(d: Data, field: dict | None, weapon: str, dist: int, h=None, t=None) -> dict:
     """The weather's effect on a shot `dist` field hexes away, from hex h to hex t (for the
-    wind's direction): {blocked, penalty, misfire, reach}."""
+    wind's direction): {blocked, penalty, misfire, reach}. Smoke on the line blocks it."""
+    if h is not None and t is not None and smoked(field, ray(h, t, dist)):
+        return {"blocked": "Smoke: no one can see to shoot through it.", "penalty": 0, "misfire": 0, "reach": 0}
     if is_gun(d, weapon):
         return gun_weather(d, field, dist, h, t)
     return C.weather_attack(d, (field or {}).get("weather"), weapon, dist * d.units["range_scale"], h, t, _up(field))
@@ -800,7 +802,15 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     for b in (field or {}).get("support") or []:
         if b.get("mission") and b["mission"].get("wait", 0) > 0:
             b["mission"]["wait"] -= 1
+    _smoke_thins(field)
     return us, log
+
+
+def _smoke_thins(field: dict | None) -> None:
+    """Smoke hangs one exchange less; gone at none."""
+    sm = (field or {}).get("smoke")
+    if sm:
+        field["smoke"] = {h: n - 1 for h, n in sm.items() if n > 1}
 
 
 def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, field: dict | None = None) -> list:
@@ -900,12 +910,32 @@ def _sight_hexes(d: Data, field: dict | None) -> int | None:
 
 
 def _sees(d: Data, field: dict | None, u: dict, h, sight: int | None) -> bool:
-    """Whether any hex of unit u sees hex h: within sight, with no woods between."""
+    """Whether any hex of unit u sees hex h: within sight, with no woods between and no smoke
+    on the line (the two ends included)."""
     for x in (x for row in footprint(d, u) for x in row):
         dist = hdist(x, h)
-        if (sight is None or dist <= sight) and not any(ground_at(d, field, y).get("cover") for y in ray(x, h, dist)[1:-1]):
+        if sight is not None and dist > sight:
+            continue
+        line = ray(x, h, dist)
+        if not any(ground_at(d, field, y).get("cover") for y in line[1:-1]) and not smoked(field, line):
             return True
     return False
+
+
+def smoked(field: dict | None, hexes) -> bool:
+    """Whether smoke hangs over any of these hexes."""
+    sm = (field or {}).get("smoke") or {}
+    return bool(sm) and any(f"{h[0]},{h[1]}" in sm for h in hexes)
+
+
+def within(h, radius: int) -> list:
+    """Hex h and every hex within `radius` of it."""
+    out = [list(h)]
+    for n in range(1, radius + 1):
+        for a in range(6):
+            corner = step(h, a, n)
+            out += [step(corner, a + 2, j) for j in range(n)]
+    return out
 
 
 def _indirect_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | None, under: list) -> list:
@@ -915,25 +945,83 @@ def _indirect_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | 
         return log
     for k, b in enumerate(field.get("support") or []):
         m = b.get("mission")
-        if not m or m.get("wait", 0) > 0 or b.get("rounds", 0) <= 0:
+        if not m or m.get("wait", 0) > 0 or b.get("rounds", 0) <= 0 or b.get("tubes", 0) <= 0:
             continue
         log += _fire_mission(d, us, table, weapon, rng, acc, field, under, k, b)
     return log
 
 
 def _fire_mission(d: Data, us: list, table: str, weapon: str, rng, acc: tuple, field: dict, under: list, k: int, b: dict) -> list:
-    """One battery's shells this exchange: where each lands, then the men struck in every unit."""
-    I = d.units["indirect"]
-    K, m = I["kinds"][b["kind"]], b["mission"]
+    """One battery's shells this exchange: on an enemy battery (counter-battery), or on a hex:
+    where each lands, then smoke laid or the men struck in every unit. A battery that fires is
+    located; a creeping mission moves on."""
+    K, m = d.units["indirect"]["kinds"][b["kind"]], b["mission"]
     shells = min(b["tubes"] * K["rate"], b["rounds"])
-    bursts = []
-    for _ in range(shells):
-        dirn, far = rng.randint(0, 5), rng.randint(0, K["scatter"])
-        bursts.append(step(m["hex"], dirn, far))
     b["rounds"] -= shells
+    b["located"] = True
+    if m.get("battery") is not None:
+        log = _counter_fire(field, k, b, shells, K, rng)
+    else:
+        bursts = []
+        for _ in range(shells):
+            dirn, far = rng.randint(0, 5), rng.randint(0, K["scatter"])
+            bursts.append(step(m["hex"], dirn, far))
+        log = [{"kind": "barrage", "sup": k, "name": b["name"], "side": b["side"], "shells": shells, "at": m["hex"], "bursts": bursts,
+                "smoke": bool(m.get("smoke"))}]
+        if m.get("smoke"):
+            _lay_smoke(d, field, bursts)
+        else:
+            log += _shell_units(d, us, (table, weapon), rng, acc, field, under, k, b, bursts)
+    _mission_on(b, m, field.get("size"))
+    return log
+
+
+def _mission_on(b: dict, m: dict, size) -> None:
+    """After a battery fires: a single mission ends; a creeping one moves its aim on, and ends
+    when its aim leaves the map."""
     if not m.get("repeat"):
         b["mission"] = None
-    log = [{"kind": "barrage", "sup": k, "name": b["name"], "side": b["side"], "shells": shells, "at": m["hex"], "bursts": bursts}]
+        return
+    cr = m.get("creep")
+    if not cr:
+        return
+    for _ in range(cr["step"]):
+        m["hex"] = step(m["hex"], cr["dir"] + cr.get("done", 0) % 2)
+        cr["done"] = cr.get("done", 0) + 1
+    if size and not (0 <= m["hex"][0] < size[0] and 0 <= m["hex"][1] < size[1]):
+        b["mission"] = None
+
+
+def _counter_fire(field: dict, k: int, b: dict, shells: int, kind: dict, rng) -> list:
+    """Counter-battery: each shell knocks out one of the target battery's tubes at the kind's counter %."""
+    j, sup = b["mission"]["battery"], field["support"]
+    tg = sup[j] if 0 <= j < len(sup) else None
+    if tg is None or tg["side"] == b["side"]:
+        b["mission"] = None
+        return []
+    knocked = min(tg["tubes"], sum(1 for _ in range(shells) if rng.randint(1, 100) <= kind["counter"]))
+    tg["tubes"] -= knocked
+    if tg["tubes"] <= 0:
+        tg["mission"] = None
+    return [{"kind": "counter", "sup": k, "name": b["name"], "side": b["side"], "shells": shells, "target": j, "tname": tg["name"],
+             "knocked": knocked, "left": tg["tubes"]}]
+
+
+def _lay_smoke(d: Data, field: dict, bursts: list) -> None:
+    """Smoke over each burst's hex and those within the radius, for as long as the wind lets it hang."""
+    S = d.units["indirect"]["smoke"]
+    lasts = S["lasts"][((field.get("weather") or {}).get("wind")) or "calm"]
+    sm = field.setdefault("smoke", {})
+    for at in bursts:
+        for h in within(at, S["radius"]):
+            key = f"{h[0]},{h[1]}"
+            sm[key] = max(sm.get(key, 0), lasts)
+
+
+def _shell_units(d: Data, us: list, tw: tuple, rng, acc: tuple, field: dict, under: list, k: int, b: dict, bursts: list) -> list:
+    """The men struck in every unit by a battery's bursts, and their wounds."""
+    I, (table, weapon) = d.units["indirect"], tw
+    K, log = I["kinds"][b["kind"]], []
     att = {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}
     lost, dead, _ = acc
     for i, u in enumerate(us):
@@ -957,16 +1045,26 @@ def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, 
         return None
     hexes = [h for row in footprint(d, u) for h in row]
     men, near, struck = men_by_hex(d, u), False, 0
-    cut = d.units["indirect"]["prone"] if u.get("prone") else 1
+    cuts = [_shell_cut(d, field, h, u.get("prone")) for h in hexes]
     for at in bursts:
-        for h, n in zip(hexes, men):
+        for h, n, cut in zip(hexes, men, cuts):
             dist = hdist(h, at)
             if dist > kind["radius"]:
                 continue
             near = True
-            p = kind["struck"][dist] * cut * (100 - ground_at(d, field, h).get("cover", 0)) / 100
+            p = kind["struck"][dist] * cut
             struck += sum(1 for _ in range(n) if rng.randint(1, 100) <= p)
     return struck if near else None
+
+
+def _shell_cut(d: Data, field: dict | None, h, prone) -> float:
+    """What shellfire's struck % is multiplied by for men in hex h: in woods, tree bursts (no
+    cover, more struck, going to ground helps less); elsewhere going to ground and the ground's cover."""
+    I = d.units["indirect"]
+    TB = I["tree_burst"]
+    if ((field or {}).get("ground") or {}).get(f"{h[0]},{h[1]}", "open") in TB["ground"]:
+        return TB["factor"] * (TB["prone"] if prone else 1)
+    return (I["prone"] if prone else 1) * (100 - ground_at(d, field, h).get("cover", 0)) / 100
 
 
 def _suppress_all(d: Data, us: list, under: list, rng) -> list:
@@ -1638,13 +1736,15 @@ def mg_examples(d: Data, runs: int, seed: int) -> list[dict]:
     return out
 
 
-SHELL_EXAMPLES = (   # (label, kind, tubes, target formation, width, prone)
-    ("2 mortars, close order", "mortar", 2, "close", 3, False),
-    ("2 mortars, extended order", "mortar", 2, "extended", 34, False),
-    ("4 field guns, close order", "field", 4, "close", 3, False),
-    ("4 field guns, extended order", "field", 4, "extended", 34, False),
-    ("4 field guns, extended, to ground", "field", 4, "extended", 34, True),
-    ("4 heavy howitzers, extended order", "howitzer", 4, "extended", 34, False),
+SHELL_EXAMPLES = (   # (label, kind, tubes, target formation, width, prone, ground under the target)
+    ("2 mortars, close order", "mortar", 2, "close", 3, False, "open"),
+    ("2 mortars, extended order", "mortar", 2, "extended", 34, False, "open"),
+    ("4 field guns, close order", "field", 4, "close", 3, False, "open"),
+    ("4 field guns, extended order", "field", 4, "extended", 34, False, "open"),
+    ("4 field guns, extended, to ground", "field", 4, "extended", 34, True, "open"),
+    ("4 field guns, extended, in woods", "field", 4, "extended", 34, False, "woods"),
+    ("4 field guns, extended, to ground in woods", "field", 4, "extended", 34, True, "woods"),
+    ("4 heavy howitzers, extended order", "howitzer", 4, "extended", 34, False, "open"),
 )
 
 
@@ -1652,12 +1752,13 @@ def shell_examples(d: Data, runs: int, seed: int) -> list[dict]:
     """A battery's fire for one minute on the middle of 100 regular unarmoured riflemen (First
     World War table): men struck and put down, and how often the unit is pinned (means)."""
     table, out = "wwi-1914-18-wounds", []
-    for label, kind, tubes, tfm, width, prone in SHELL_EXAMPLES:
+    for label, kind, tubes, tfm, width, prone, ground in SHELL_EXAMPLES:
         struck = down = pinned = 0
+        under = {} if ground == "open" else {f"{c},{r}": ground for c in range(20, 100) for r in range(90, 110)}
         for k in range(runs):
             tg = {**_example_unit(1, [60, 100], 4), "men": 100, "start": 100, "width": width, "weapon": "rifle_service", "formation": tfm,
                   "kit": "none", "prone": prone}
-            field = {"ground": {}, "works": None, "weather": None, "size": [120, 200],
+            field = {"ground": under, "works": None, "weather": None, "size": [120, 200],
                      "support": [{"name": "Battery", "side": 0, "kind": kind, "tubes": tubes, "rounds": 999, "mission": {"hex": [60, 100], "wait": 0}}]}
             us, log = exchange(d, [tg], table, SeededDice(seed * 7927 + k), field)
             for line in log:

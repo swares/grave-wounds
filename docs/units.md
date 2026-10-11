@@ -293,8 +293,10 @@ with shell wounds (the First World War and later):
   its kind's rounds.
 - **Call fire**: on the battery's side's move (or in set-up), press **Call fire**, then click
   the hex to fire on. One of the side's units must see it: within the weather's sight, with
-  no woods between. Tick **Keep firing each exchange** before calling to repeat the mission
-  until **Stop** or the rounds run out. The map marks the hex ⌖ and the last exchange's bursts ✷.
+  no woods or smoke between. Tick **Keep firing each exchange** before calling to repeat the
+  mission until **Stop** or the rounds run out. The map marks the hex ⌖ and the last
+  exchange's bursts ✷. Before calling, **Fire** picks high explosive or smoke, and **Creep**
+  makes a creeping barrage (below).
 - **When it lands**: mortars in this exchange, field guns and heavy howitzers in the next.
 - **Where it lands**: each shell scatters, d6 for the direction and 0 to the kind's scatter in
   hexes.
@@ -302,6 +304,25 @@ with shell wounds (the First World War and later):
   the % for his distance from it, less for men gone to ground (×0.35) and less the ground's
   cover. A struck man rolls a wound as a hit by the table's shell weapon (mortar and
   artillery fragments) at 70%.
+- **Tree bursts**: over men in woods, shells burst in the branches and shower them from
+  above. The woods give no cover, the struck % is ×1.5, and going to ground cuts it only to
+  ×0.7. The jungle at Bougainville is woods.
+- **Smoke**: a smoke mission spends the same rounds and wounds no one. Each burst fills its
+  hex and the hexes round it with smoke (grey on the map). No one sees or shoots into, out
+  of or through smoke, and fire cannot be called on a hex behind it. The shooting in an
+  exchange comes before the shells land, so smoke screens the exchanges after: 3 in calm
+  air, 2 in a breeze, 1 in a strong wind; a gale blows it away at once.
+- **Creeping barrage**: pick **Creep** (1 to 3 hexes an exchange) and **Towards** (the way
+  most of the side's units face, or a direction on the map) before calling. The mission
+  keeps firing, and after each exchange's shells its aim moves on, ahead of an advance. It
+  ends when it leaves the map, or on **Stop**.
+- **Counter-battery**: a battery that has fired is located (◉ in the list), by its flashes
+  and sound. On its own side's move a field gun or howitzer battery can then fire on it
+  instead of on a hex (**Counter-battery…**), with no one needing to see it. Each shell
+  knocks out one of its tubes at 2% (field guns) or 4% (heavy howitzers); mortars cannot
+  reach. A battery with no tubes left is silenced. Six heavy howitzers firing on a located
+  battery knock out about one tube every four minutes: counter-battery wears guns down
+  over a battle, it does not end them in an exchange.
 
 | Kind | Shells a minute a tube | Rounds a tube | Lands | Scatter | Struck % at 0, 1, 2 … hexes |
 | --- | --- | --- | --- | --- | --- |
@@ -324,12 +345,15 @@ runs, the First World War table):
 | 4 field guns | close order | 39.0 | 21.9 | 48% |
 | 4 field guns | extended order | 6.1 | 3.4 | 47% |
 | 4 field guns | extended, to ground | 1.8 | 1.0 | 39% |
+| 4 field guns | extended, in woods | 8.7 | 4.9 | 48% |
+| 4 field guns | extended, to ground in woods | 6.1 | 3.4 | 37% |
 | 4 heavy howitzers | extended order | 4.7 | 2.6 | 50% |
 
 Dense formations under shellfire are slaughtered; spread out and gone to ground, men are hit
-far less but are still pinned about half the time. All design estimates. The batteries are
-off the map: they cannot be counter-battered here. The support list belongs to the battle
-(New battle or a new battlefield clears it).
+far less but are still pinned about half the time. In woods, going to ground does much less
+good. All design estimates. The batteries are off the map: counter-battery fire is the only
+way to reach them. The support list, the smoke and which batteries are located belong to the
+battle (New battle or a new battlefield clears them).
 
 ## Guns
 

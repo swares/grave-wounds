@@ -839,6 +839,20 @@ def _units_extra_errors(d: Data) -> list[str]:
     for wid in U.get("line_of_fire", {}).get("arcing", []):
         if wid not in d.weapons or "range" not in d.weapons[wid]:
             errors.append(f"units.yaml: line_of_fire.arcing names {wid}, which is not a weapon with a range")
+    return errors + _indirect_errors(d)
+
+
+def _indirect_errors(d: Data) -> list[str]:
+    """units.yaml indirect: tree bursts on known ground, smoke for every wind, a counter % per kind."""
+    I, errors = d.units.get("indirect") or {}, []
+    if not I:
+        return errors
+    errors += [f"units.yaml: indirect.tree_burst names unknown ground {g}" for g in I.get("tree_burst", {}).get("ground", []) if g not in d.units.get("ground", {})]
+    winds = {w["id"] for w in d.weather.get("winds", [])}
+    if winds and set(I.get("smoke", {}).get("lasts", {})) != winds:
+        errors.append("units.yaml: indirect.smoke.lasts needs every wind")
+    errors += [f"units.yaml: indirect kind {k} needs a counter % (0 to 100)" for k, v in I.get("kinds", {}).items()
+               if not isinstance(v.get("counter"), (int, float)) or not 0 <= v["counter"] <= 100]
     return errors
 
 
