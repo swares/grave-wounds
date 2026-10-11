@@ -1,6 +1,6 @@
 /* Works and weather on a battle map, shared by the wound roller's battle map and the field
    map. Same rules as gravewounds/combat.py (step_cost, missile_cover, melee_across,
-   deep_going, weather_attack). build.py puts this file into both pages at their WORKS_JS
+   deep_going, weather_attack, ray). build.py puts this file into both pages at their WORKS_JS
    marker. Each page provides WK (works.yaml), WXD (weather.yaml), WD_WEAPONS (weapons),
    hkey, edgeKey, neighbours(h, cols, rows) and hexDistance.
    works = {edges: {edgeKey: [item]}, hexes: {hexKey: item}}. */
@@ -77,6 +77,22 @@ function reachableWorks(start, steps, opts){
   }
   for (const k of friendly) if (best.get(k)) best.delete(k);
   return best;
+}
+// ---------- lines of fire (as gravewounds.combat) ----------
+function cubeRound(x, y, z){                    // the offset hex nearest a point in cube coordinates
+  let rx = Math.floor(x + 0.5), ry = Math.floor(y + 0.5);
+  const rz = Math.floor(z + 0.5), dx = Math.abs(rx - x), dy = Math.abs(ry - y), dz = Math.abs(rz - z);
+  if (dx > dy && dx > dz) rx = -ry - rz;
+  else if (dy > dz) ry = -rx - rz;
+  return [rx + (ry - (ry & 1)) / 2, ry];
+}
+function hexRay(a, b, n){                        // the hexes on the line from a through b, n steps (b is step distance(a, b))
+  const cu = h => { const q = h[0] - (h[1] - (h[1] & 1)) / 2; return [q, h[1], -q - h[1]] };
+  const s = cu(a), c = cu(b), k = Math.max(Math.abs(s[0] - c[0]), Math.abs(s[1] - c[1]), Math.abs(s[2] - c[2]));
+  if (k === 0) return [[...a]];
+  const out = [];
+  for (let i = 0; i <= n; i++) out.push(cubeRound(s[0] + (c[0] - s[0]) * i / k + 1e-6, s[1] + (c[1] - s[1]) * i / k + 2e-6, s[2] + (c[2] - s[2]) * i / k - 3e-6));
+  return out;
 }
 function facing(target, attacker, cols, rows){
   const ns = neighbours(target, cols, rows);

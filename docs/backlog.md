@@ -28,10 +28,9 @@ When an item is done, delete it here and note it in the pull request that closes
   ground. Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
-- **Guns, simplified.** A battery fires one kind of shot at one unit an exchange; shell
-  has no fuse length or air bursts, and the Thirty Years' War still borrows the Peninsula's
-  gun wounds (no 1618-48 artillery wound counts found). The line of fire is checked on the
-  field map only; the roller's battle map leaves it to the GM.
+- **Guns, simplified.** A battery fires one kind of shot at one unit an exchange, and the
+  fuse is rolled rather than set by the gunners. The Thirty Years' War still borrows the
+  Peninsula's gun wounds: no 1618-48 artillery wound counts were found.
 - **Scurvy for forces.** Camp disease covers flux, typhus, typhoid, ague and plague, and
   wound fever for the wounded from the field map. Scurvy needs food tracking (weeks
   without fresh food); it is in the design doc's disease table.

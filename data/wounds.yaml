@@ -324,6 +324,11 @@ combat:
     careful_step: 1
     map: {cols: 24, rows: 16}
   # Missile range bands: weapons.yaml `range` gives each band's outer edge in hexes.
+  # Line of fire on the battle map: each fighter standing on the line between a shooter and his
+  # target costs the shot `per_man` % (at most `max`). A miss may strike the first man in the way
+  # instead (`stray` %), rolled on him with no attack roll; bows and crossbows (`arcing`) loose
+  # high over the men in the way and never strike them.
+  line_of_fire: {per_man: 10, max: 30, stray: 50, arcing: [bow, longbow, crossbow]}
   range:
     - {band: short, penalty: 0}
     - {band: medium, penalty: 20}

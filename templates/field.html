@@ -480,7 +480,7 @@ function unitLineText(l, nm){                     // a volley, a melee or a rout
 const SHOT_NAMES = { canister: "canister", round: "round shot", shell: "shell" };
 function cannonText(l, nm, fallen){               // a battery's fire: its target, rounds, men struck, guns knocked out
   const shot = SHOT_NAMES[l.shot], aim = l.named ? " (as ordered)" : "";
-  if (l.shot === "shell") return `${nm(l.att)} fire shell at ${nm(l.dfd)}${aim}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${l.rounds} shells, ${l.bursts} burst among them, ${l.blows} men struck, ${fallen}${lostGuns(l)}.`;
+  if (l.shot === "shell") return `${nm(l.att)} fire shell at ${nm(l.dfd)}${aim}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${l.rounds} shells, ${l.bursts} burst among them (${l.air} in the air), ${l.blows} men struck, ${fallen}${lostGuns(l)}.`;
   const guns = l.rounds < l.guns * FD.units.artillery.rounds ? `${l.guns} guns, ${l.rounds} rounds left to fire` : `${l.guns} guns`;
   return `${nm(l.att)} fire ${shot} at ${nm(l.dfd)}${aim}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${guns}, ${l.blows} men in the way, ${fallen}${lostGuns(l)}.`;
 }

@@ -14690,6 +14690,16 @@
     "rows": 16
    }
   },
+  "line_of_fire": {
+   "per_man": 10,
+   "max": 30,
+   "stray": 50,
+   "arcing": [
+    "bow",
+    "longbow",
+    "crossbow"
+   ]
+  },
   "range": [
    {
     "band": "short",

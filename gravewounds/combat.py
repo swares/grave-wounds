@@ -206,6 +206,26 @@ _NEIGHBOURS = (((1, 0), (0, -1), (-1, -1), (-1, 0), (-1, 1), (0, 1)),   # even r
                ((1, 0), (1, -1), (0, -1), (-1, 0), (0, 1), (1, 1)))     # odd rows
 
 
+def _cube_round(x: float, y: float, z: float) -> list:
+    """The offset hex nearest a point in cube coordinates."""
+    rx, ry, rz = math.floor(x + 0.5), math.floor(y + 0.5), math.floor(z + 0.5)
+    dx, dy, dz = abs(rx - x), abs(ry - y), abs(rz - z)
+    if dx > dy and dx > dz:
+        rx = -ry - rz
+    elif dy > dz:
+        ry = -rx - rz
+    return [rx + (ry - (ry & 1)) // 2, ry]
+
+
+def ray(a, b, n: int) -> list:
+    """The hexes on the line from hex a through hex b, n steps (b is step hdist(a, b))."""
+    s, c, k = _cube(a), _cube(b), hex_distance(a, b)
+    if k == 0:
+        return [list(a)]
+    return [_cube_round(s[0] + (c[0] - s[0]) * i / k + 1e-6, s[1] + (c[1] - s[1]) * i / k + 2e-6,
+                        s[2] + (c[2] - s[2]) * i / k - 3e-6) for i in range(n + 1)]
+
+
 def neighbours(h, cols: int, rows: int) -> list[list[int]]:
     c, r = h
     out = []
@@ -268,6 +288,19 @@ def weapon_reach(d: Data, wid: str, dist: int) -> dict | None:
         if dist <= edge:
             return {"band": b["band"], "penalty": b["penalty"]}
     return None
+
+
+def in_the_way(d: Data, wid: str, frm, to, others) -> dict:
+    """Fighters standing between a shooter at hex frm and his target at hex to on the battle map
+    (others: [(id, hex)], not the two of them): {men (ids, nearest the shooter first), penalty
+    (% off the shot), stray (% a miss strikes the first of them instead; none for bows loosing
+    high over them)}."""
+    L, k = d.wounds["combat"]["line_of_fire"], hex_distance(frm, to)
+    at = {tuple(h): i for i, h in others}
+    men = [at[tuple(x)] for x in ray(frm, to, k)[1:-1] if tuple(x) in at] if k > 1 else []
+    if not men:
+        return {"men": [], "penalty": 0, "stray": 0}
+    return {"men": men, "penalty": min(L["max"], L["per_man"] * len(men)), "stray": 0 if wid in L["arcing"] else L["stray"]}
 
 
 def free_attackers(d: Data, start, end, steps: int, enemies: list[dict]) -> list:

@@ -72,10 +72,13 @@ breach_share: 0.5
 #   On firm ground (as for ricochet) balls skip on into the target: `graze` % is added to the
 #   chance beyond the first band.
 # - Shell: a battery marked `howitzer: true` fires shell beyond canister range, in a high arc
-#   over anything between. Each shell lands on the target unit with the chance for its range
-#   (`howitzer.strike`, cut as round shot is); `blind` % fail to burst; each burst throws
-#   `fragments` chances to hit, each at `fragment_hit` %. A burst on a battery may knock out a
-#   gun as a round-shot strike does. Within canister range howitzers fire canister.
+#   over anything between. Each shell falls on the target unit with the chance for its range
+#   (`howitzer.strike`, times its formation's missile_factor, less the weather), then its fuse is
+#   rolled (`fuse`: d100 up to each figure): early (it bursts short, harmlessly), air (it bursts
+#   over the men: each of `fragments` chances hits at `air_hit` %, cover counting half), ground
+#   (it bursts as it lands: `fragment_hit` %, less the full cover), or blind (it never bursts).
+#   A burst on a battery may knock out a gun as a round-shot strike does. Within canister range
+#   howitzers fire canister.
 # Every man hit takes a wound roll at `attack` (no parry) with the gun's wound data.
 # A battery is limbered (moves as its formation; cannot fire) or unlimbered (fires; can only be
 # manhandled `pushed` hexes an exchange). Limbering or unlimbering takes an exchange, in which
@@ -99,10 +102,11 @@ artillery:
     strike: [[10, 50], [20, 30], [30, 15]]
     graze: 5                 # % added beyond the first band on firm ground
   howitzer:
-    strike: [[50, 45], [75, 30], [100, 20]]    # [up to this many hexes, % a shell lands on the unit]
-    blind: 15                # % of shells that fail to burst
+    strike: [[50, 45], [75, 30], [100, 20]]    # [up to this many hexes, % a shell falls on the unit]
+    fuse: [[15, early], [40, air], [85, ground], [100, blind]]   # [d100 up to, what the fuse does]
     fragments: 12            # chances to hit for each burst
-    fragment_hit: 25
+    fragment_hit: 25         # each, for a burst on the ground
+    air_hit: 35              # each, for a burst over the men
   attack: 80
   crew_weapon: sword
   pushed: 2                  # hexes an unlimbered battery can be manhandled (or turned) in an exchange

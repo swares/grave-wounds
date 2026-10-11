@@ -380,24 +380,7 @@ def hdist(a, b) -> int:
     return max(abs(x[0] - y[0]), abs(x[1] - y[1]), abs(x[2] - y[2]))
 
 
-def _cube_round(x: float, y: float, z: float) -> list:
-    """The offset hex nearest a point in cube coordinates."""
-    rx, ry, rz = math.floor(x + 0.5), math.floor(y + 0.5), math.floor(z + 0.5)
-    dx, dy, dz = abs(rx - x), abs(ry - y), abs(rz - z)
-    if dx > dy and dx > dz:
-        rx = -ry - rz
-    elif dy > dz:
-        ry = -rx - rz
-    return [rx + (ry - (ry & 1)) // 2, ry]
-
-
-def ray(a, b, n: int) -> list:
-    """The hexes on the line from hex a through hex b, n steps (b is step hdist(a, b))."""
-    s, c, k = _cube(a), _cube(b), hdist(a, b)
-    if k == 0:
-        return [list(a)]
-    return [_cube_round(s[0] + (c[0] - s[0]) * i / k + 1e-6, s[1] + (c[1] - s[1]) * i / k + 2e-6,
-                        s[2] + (c[2] - s[2]) * i / k - 3e-6) for i in range(n + 1)]
+ray = C.ray   # the hexes on a line (gravewounds.combat)
 
 
 def arc(facing: int, dirn: int) -> str:
@@ -1294,18 +1277,25 @@ def _canister_struck(art: dict, c: dict, cut: float, rounds: int, rng) -> int:
     return sum(rng.randint(1, 100) <= p for _ in range(rounds * art["canister"]["balls"]))
 
 
-def _shell_struck(art: dict, c: dict, cut: float, rounds: int, rng) -> tuple:
-    """(men hit, shells that burst on the unit): each shell lands with the chance for its range,
-    may fail to burst, and each burst throws its fragments."""
+def _shell_struck(art: dict, c: dict, factor: float, rounds: int, rng) -> tuple:
+    """(men hit, shells that burst on the unit, of them in the air): each shell falls on the unit
+    with the chance for its range (times factor: formation and weather), then its fuse decides:
+    early (harmless), air (fragments at air_hit %, cover counting half), ground (fragment_hit %,
+    less the cover) or blind."""
     H = art["howitzer"]
-    p = _chance_at(H["strike"], c["dist"]) * cut
-    struck = bursts = 0
+    p = _chance_at(H["strike"], c["dist"]) * factor
+    hit_at = {"air": H["air_hit"] * (100 - c["cover"] / 2) / 100, "ground": H["fragment_hit"] * (100 - c["cover"]) / 100}
+    struck = bursts = air = 0
     for _ in range(rounds):
-        if rng.randint(1, 100) > p or rng.randint(1, 100) <= H["blind"]:
+        if rng.randint(1, 100) > p:
+            continue
+        fuse = _chance_at(H["fuse"], rng.randint(1, 100))
+        if fuse not in hit_at:
             continue
         bursts += 1
-        struck += sum(rng.randint(1, 100) <= H["fragment_hit"] for _ in range(H["fragments"]))
-    return struck, bursts
+        air += fuse == "air"
+        struck += sum(rng.randint(1, 100) <= hit_at[fuse] for _ in range(H["fragments"]))
+    return struck, bursts, air
 
 
 def _round_shot_struck(d: Data, art: dict, p: float, rounds: int, target: dict, rng) -> tuple:
@@ -1327,16 +1317,16 @@ def cannonade(d: Data, att: dict, target: dict, c: dict, rng, exposed: tuple = (
     A = d.units["artillery"]
     rounds = c["rounds"]
     cut = form(d, target)["missile_factor"] * (100 - c["cover"] - c["penalty"]) / 100
-    hits = 0
+    hits = air = 0
     if c["shot"] == "canister":
         struck = _canister_struck(A, c, cut, rounds, rng)
     elif c["shot"] == "shell":
-        struck, hits = _shell_struck(A, c, cut, rounds, rng)
+        struck, hits, air = _shell_struck(A, c, form(d, target)["missile_factor"] * (100 - c["penalty"]) / 100, rounds, rng)
     else:
         struck, hits = _round_shot_struck(d, A, _chance_at(A["round_shot"]["strike"], c["dist"]) * cut, rounds, target, rng)
     t = _blows(d, att, _side(target, att["table"]), struck, A["attack"], 0, rng, exposed, -1000)
     if c["shot"] == "shell":
-        t["bursts"] = hits
+        t["bursts"], t["air"] = hits, air
     if is_battery(d, target):
         t["dismounted"] = min(sum(rng.randint(1, 100) <= A["dismount"] for _ in range(hits)), guns_served(d, target))
     return t
