@@ -81,6 +81,58 @@ function pieceLabour(where, item, hauled){
   const sp = WK.hex_works[item.type];
   return (sp.each || 0) + (hauled ? sp.haul || 0 : 0);
 }
+
+// ----- gates and the river at a crossing (as gravewounds.combat; shared by the roller and the travel map,
+// which give CG, the ground data) -----
+const S3 = Math.sqrt(3) / 2;
+const SIDES = [["east", [1, 0]], ["north-east", [0.5, -S3]], ["north-west", [-0.5, -S3]],
+  ["west", [-1, 0]], ["south-west", [-0.5, S3]], ["south-east", [0.5, S3]]];   // north is up
+const mapXY = (hm, cols, rows, c, r) => [hm * (c + 0.5 * (r & 1)) - hm * (cols - 0.5) / 2, hm * S3 * r - hm * S3 * (rows - 1) / 2];
+function throughRays(terrain, around, what){     // the directions it runs from the middle: toward each linked neighbour
+  const T = CG.through[what];
+  if (!T.hexes.includes(terrain)) return [];
+  return SIDES.filter(([name]) => T.links.includes(around[name])).map(([, u]) => u);
+}
+// At a crossing hex, the way from a camp to the river past it (as gravewounds.combat.bank_normal).
+function bankNormal(terrain, edges){
+  const rivers = throughRays(terrain, edges.around || {}, "river");
+  if (!rivers.length) return null;
+  const n = [-rivers[0][1], rivers[0][0]], a = (SIDES.find(([name]) => name === edges.toward) || [])[1];
+  const side = a ? n[0] * a[0] + n[1] * a[1] : 0;
+  let sign = side > 0 ? 1 : -1;
+  if (Math.abs(side) < 0.25) sign = (edges.spot_seed || 0) & 1 ? 1 : -1;   // along the river, or no direction: the fight decides
+  return [sign * n[0], sign * n[1]];
+}
+// The side a camp at a crossing has its gate on: toward where the road nearest the river's way
+// meets the near bank, or straight at the river (as gravewounds.combat.camp_gate). 0 elsewhere.
+function campGate(terrain, edges, cols, rows, centre, radius){
+  const n = edges ? bankNormal(terrain, edges) : null;
+  if (!n) return 0;
+  const hm = CAMP_HEX_M, cxy = mapXY(hm, cols, rows, centre[0], centre[1]);
+  const roads = throughRays(terrain, edges.around || {}, "road");
+  let u = null;
+  for (const v of roads) if (u === null || v[0] * n[0] + v[1] * n[1] > u[0] * n[0] + u[1] * n[1]) u = v;
+  let way = n.slice();
+  if (u && u[0] * n[0] + u[1] * n[1] > 0.3){
+    const bank = cxy[0] * n[0] + cxy[1] * n[1] + (radius + CG.camp_bank.gap) * hm, t = bank / (u[0] * n[0] + u[1] * n[1]);
+    way = [u[0] * t - cxy[0], u[1] * t - cxy[1]];
+  }
+  let best = 0, bd = null;
+  SIDES.forEach(([, v], i) => { const dd = v[0] * way[0] + v[1] * way[1]; if (bd === null || dd > bd){ best = i; bd = dd } });
+  return best;
+}
+// A camp's gate sides, main gate first: the main gate, then one on each side a road leaves by,
+// but not the road to the river at a crossing (as gravewounds.combat.camp_gates).
+function campGates(terrain, edges, cols, rows, centre, radius){
+  const gates = [campGate(terrain, edges, cols, rows, centre, radius)];
+  const roads = edges ? throughRays(terrain, edges.around || {}, "road") : [], n = edges ? bankNormal(terrain, edges) : null;
+  SIDES.forEach(([, u], i) => {
+    if (!roads.includes(u) || gates.includes(i)) return;
+    if (n && u[0] * n[0] + u[1] * n[1] > 0.3) return;
+    gates.push(i);
+  });
+  return gates;
+}
 const CAMP_ROOM = 6;                          // hexes between a camp too big for the map and the attackers' edge
 // Battle-map layout for a camp. One that fits sits in the middle; one that does not is laid out at
 // its true size with its centre moved west, so the stretch with the gate (east) is on the map and

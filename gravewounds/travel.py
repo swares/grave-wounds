@@ -11,7 +11,8 @@ from __future__ import annotations
 import heapq
 import math
 
-from .combat import camp_map_size, camp_radius, camp_works, edge_metres, hex_distance, neighbours, party_of, works_labour
+from .combat import (_NEIGHBOURS, SIDES, camp_gates, camp_map_size, camp_radius, camp_works, edge_metres, hex_distance,
+                     neighbours, party_of, works_labour)
 from .model import Data
 from .weather import flooded, terrain_pct
 
@@ -173,6 +174,16 @@ def near_woods(d: Data, m: dict, h) -> bool:
     return any(terrain_at(d, m, x)["id"] == "forest" for x in [list(h)] + neighbours(list(h), cols, rows))
 
 
+def sides_around(d: Data, m: dict, h) -> dict:
+    """The terrain beyond each side of hex h (north up), as the travel page's sidesAround."""
+    cols, rows, out = len(m["rows"][0]), len(m["rows"]), {}
+    for (name, _u), (dc, dr) in zip(SIDES, _NEIGHBOURS[h[1] & 1]):
+        n = [h[0] + dc, h[1] + dr]
+        if 0 <= n[0] < cols and 0 <= n[1] < rows:
+            out[name] = terrain_at(d, m, n)["id"]
+    return out
+
+
 def camp_perimeter(d: Data, men: int, ftype: str) -> float:
     """Metres round a camp for this many men: the outer sides of its ring of battle-map hexes."""
     return (12 * camp_radius(d, men, ftype) + 6) * edge_metres(d)
@@ -183,7 +194,9 @@ def camp_hours(d: Data, m: dict, h, kind: str, men: int, ftype, tools: bool, wor
     woods} or {error} if it cannot (no tools, quartering away from houses, or no one fit to dig).
     The camp is sized for all `men`; `workers` (default: all of them) are the fit men who dig. The labour is
     that of the works the battle map lays out for this camp (gravewounds.combat.camp_works),
-    with hauled timber unless there is forest at hand."""
+    with a gate wherever a road leaves it (camp_gates; at a ford or bridge the bank is not known
+    until a fight, so the main gate is taken as if no attackers were known), and with hauled
+    timber unless there is forest at hand."""
     W = d.works
     c = W["camps"][kind]
     t = terrain_at(d, m, h)
@@ -195,7 +208,8 @@ def camp_hours(d: Data, m: dict, h, kind: str, men: int, ftype, tools: bool, wor
     labour = 0.0
     if c.get("layout"):
         n = camp_map_size(d, kind, men, ftype)
-        labour = works_labour(d, camp_works(d, kind, men, ftype, n, n)["works"], not woods)
+        gate = camp_gates(d, t["id"], {"around": sides_around(d, m, h)}, n, n, [n // 2, n // 2], camp_radius(d, men, ftype))
+        labour = works_labour(d, camp_works(d, kind, men, ftype, n, n, None, False, None, None, gate)["works"], not woods)
     workers = men if workers is None else workers
     if labour and not workers:
         return {"error": "has no fit men to dig"}
