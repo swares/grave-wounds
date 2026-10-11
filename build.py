@@ -569,7 +569,8 @@ def ground_rules(d) -> list[str]:
         + "; ".join(f"{d.terrain['terrain'][t]['name']}: " + ", ".join([f"{G['kinds'][k]['name'].lower()} {round(v * 100)}%" for k, v in x.items() if k in G['kinds']]
                     + ([f"{x['rises']} rise{'s' if x['rises'] > 1 else ''} to level {x['top']}"] if x.get('rises') else [])) for t, x in G["seed"].items()) + ".",
         f"<b>Taking cover:</b> on his turn a fighter may go to ground instead of moving or attacking. Until he moves or strikes in close combat, "
-        f"shots at him lose {G['take_cover']}% (or the ground's cover if better) and hit as behind cover, and blows at him hit as at a man down.",
+        f"shots at him lose {G['take_cover']}% (or the ground's cover if better) and hit as behind cover, and blows at him hit as at a man down. "
+        f"Getting up takes {G['rise']} hexes of his move, to move on or to strike in close combat; he may shoot from cover without getting up.",
     ]
 
 

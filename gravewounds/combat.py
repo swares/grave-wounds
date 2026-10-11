@@ -332,6 +332,12 @@ def height_effects(d: Data, ground, a, b, melee: bool) -> dict:
     return out
 
 
+def rising_cost(d: Data, in_cover: bool, risen: int = 0) -> int:
+    """Hexes of his move a fighter spends getting up this turn: combat.ground.rise from cover
+    (to move, or to strike in close combat; shooting needs none), or what he has already spent."""
+    return d.wounds["combat"]["ground"]["rise"] if in_cover else risen
+
+
 def ground_cover(d: Data, ground, h, taking_cover: bool = False) -> dict:
     """What a man at hex h has against missiles from the ground and from taking cover: {cover
     (%, the better), low (low cover hides his lower body), kind}."""

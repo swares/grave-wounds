@@ -358,6 +358,7 @@ combat:
     uphill: 10
     downhill_reach: 10
     take_cover: 20
+    rise: 2        # hexes of his move a man in cover spends getting up, to move or to strike in close combat; shooting does not need it
     # Laying out a battle map's ground from the travel map's terrain (or the roller's "Ground
     # like" picker): for each travel terrain, the share of hexes in rocks, woods and marsh,
     # laid as irregular clumps of 3 to 12 hexes, and how many rises stand on the map and how

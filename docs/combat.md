@@ -167,7 +167,10 @@ force that has not marched) do they come in at their side's far edge.
 - **Take cover.** Instead of moving or attacking, the acting fighter can **Take cover**. Until
   he moves or strikes in close combat, shots at him are −20% (or the ground's cover, if
   better) and hit as *behind cover*, and blows at him hit as at a man *down*. His token gets a
-  dotted edge. **Undo move** takes it back.
+  dotted edge. **Undo move** takes it back. Getting up again takes 2 hexes of his move: moving
+  out of cover, everything costs 2 more, and a blow in close combat from cover spends those 2
+  hexes first (a man who can only crawl cannot get up and strike). He may shoot from cover,
+  kneeling or lying, without getting up, and stays in cover.
 
 The roller sets these situations and penalties itself once the turns start; they show in
 the Strike panel's line under the result.

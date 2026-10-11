@@ -723,9 +723,11 @@ function misfired(rc, freeHit){                   // wet priming: the shot is lo
   if (freeHit) freeDone("misfire");
   return `Misfire: d100 ${d2(mr)} against ${mf}% \u2014 the wet weather spoiled the priming. The shot is lost.`;
 }
-function riseToStrike(){                          // a man in cover rises to strike in close combat
+function riseToStrike(){                          // a man in cover rises to strike in close combat, which comes off his move
   const a = attackerChar();
-  if (a && a.cover && !isShot(S.weapon)) a.cover = false;
+  if (!a || !a.cover || isShot(S.weapon)) return;
+  a.cover = false;
+  if (S.tm && S.tm.id === a.id) S.tm.risen = GRD.rise;
 }
 function attackPhase(atkPct, rc, freeHit){        // the attack and defence rolls: {end} if no wound follows, else {margin, crit, combat}
   const w = DATA.weapons[S.weapon], A = penalties(attackerChar()), D = penalties(defenderChar()), defPct = readPct("#in-def");
@@ -1259,15 +1261,22 @@ function placeUnplaced(){                    // new fighters go near their side'
     c.pos = best;
   }
 }
+// Hexes of the acting fighter's move spent getting up this turn: from cover, or already spent
+// rising to strike.
+function risingCost(c){
+  if (c.cover) return GRD.rise;
+  return S.tm && S.tm.id === c.id ? S.tm.risen || 0 : 0;
+}
 function turnInfo(){                         // the acting fighter's movement this turn
   const c = actingChar(); if (!c || !c.pos) return null;
   if (!S.tm || S.tm.id !== c.id) S.tm = { id: c.id, steps: 0, ran: false, moved: false };
   const { cols, rows } = mapSize(), allow = moveAllowance(c.wounds, c.state ? c.state.id : null);
-  const others = S.chars.filter(o => o !== c && o.pos);
-  const reach = S.tm.moved ? new Map() : reachableWorks(c.pos, Math.max(allow.advance, allow.run), { cols, rows,
+  const others = S.chars.filter(o => o !== c && o.pos), rise = risingCost(c), budget = Math.max(allow.advance, allow.run) - rise;
+  const found = S.tm.moved || budget <= 0 ? new Map() : reachableWorks(c.pos, budget, { cols, rows,
     enemies: others.filter(o => sideOf(o) !== sideOf(c)).map(o => o.pos), friends: others.filter(o => sideOf(o) === sideOf(c)).map(o => o.pos),
     works: S.works, extra: deepGoing(S.weather && S.weather.ground), stepExtra: (a, b) => groundStep(S.ground, a, b) });
-  return { c, allow, reach };
+  const reach = new Map([...found].filter(([k, v]) => v > 0).map(([k, v]) => [k, v + rise]));   // getting up comes off his move
+  return { c, allow, reach, rise };
 }
 // Range and reach for the hit about to be rolled: {blocked} or {range} (null when there is no map check).
 function rangeCheck(){
@@ -1284,6 +1293,8 @@ function rangeCheck(){
   if (S.tm && S.tm.id === a.id && S.tm.ran) return { blocked: `${a.name} ran this turn and cannot attack.` };
   if (S.tm && S.tm.id === a.id && S.tm.worked) return { blocked: `${a.name} spent this turn on the works and cannot attack.` };
   if (S.tm && S.tm.id === a.id && S.tm.covered) return { blocked: `${a.name} took cover this turn and cannot attack.` };
+  if (a.cover && !isShot(S.weapon) && S.turn === a.id && GRD.rise > moveAllowance(a.wounds, a.state ? a.state.id : null).advance)
+    return { blocked: `${a.name} cannot get up from cover and strike this turn (getting up takes ${hexes(GRD.rise)} of his move).` };
   const dist = hexDistance(a.pos, dd.pos), wx = weatherAttack(S.weather, S.weather ? S.weapon : null, dist, a.pos, dd.pos);
   const ranged = isShot(S.weapon), ht = heightEffects(S.ground, a.pos, dd.pos, !ranged);
   const r = weaponReach(S.weapon, windDist(dist, { reach: (wx.reach || 0) + ht.reach }));
@@ -2025,7 +2036,9 @@ function renderMap(){
     const tm = S.tm || {}, al = t.allow;
     const moveTxt = tm.moved ? (tm.steps ? `${tm.ran ? "ran" : "advanced"} ${hexes(tm.steps)}` : "stays in place")
       : al.advance ? `advance up to ${al.advance}${al.run > al.advance ? `, run up to ${al.run}` : ""} hexes` : "cannot move";
-    const coverTxt = acting.cover ? " · in cover" : "";
+    let coverTxt = "";
+    if (acting.cover) coverTxt = ` · in cover (getting up takes ${GRD.rise} of his hexes)`;
+    else if (t.rise) coverTxt = ` · rose from cover (${t.rise} hexes of his move)`;
     const atkTxt = cannotAttack(penalties(acting)) ? `${CMB.states[acting.state.id].name.toLowerCase()}: no attack` : tm.ran ? "no attack after running"
       : attackerChar() === acting ? `${shortName(S.weapon).toLowerCase()} (${reachText(S.weapon)})` : "choose him as attacker to strike";
     bits.push(`<span><b>${attr(acting.name)}</b>${coverTxt}: ${tm.covered ? "takes cover" : moveTxt} · ${tm.covered ? "no attack this turn" : atkTxt}</span>`);
