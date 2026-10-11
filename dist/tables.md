@@ -4657,6 +4657,8 @@ A case shows after its incubation at mending, climbs a step a day to the peak ro
 
 Men at serious or worse do not dig or fight. Grave and deadly cases go on litters: the force marches at 90%, or 50% with fewer than 2 fit men a litter, and cannot march with none. Hygiene comes from the camp (bivouac poor, quarters good, others fair) unless the GM sets it. Plague needs the GM's "plague in the region".
 
+**Scurvy:** each force counts its days without fresh food. A day ends it in farmland, a village or a town, or in open country, forest or hills if the force camped there all day and foraged, or when the GM issues fresh food. After 42 days without it, each week every well man may fall ill: 10% the first week, 10 more each week after, times the chance he fails to resist. It shows at once at mending and is checked once a week: with fresh food in the past week, 2 steps better; without it, the recovery check at virulence -3: success holds, failure is one step worse, and failure at deadly kills. A named character's old wounds and scars reopen at mending and cannot heal until the scurvy has. Records: 1.6% of cases died in the Union army; far more with no fresh food at all.
+
 **The wounded (from the field map):** a wounded man starts at mending (light), serious (serious) or grave (critical), and at grave if the wound would kill in hours. He makes the same recovery check, but once every 7 days, at virulence -20. 3-5 days after the battle the wound turns septic on d100: low infection risk 5%, medium 15%, high 30% (no camp +5, quarters -5). Wound fever is one step worse and checks every day at virulence 25.
 
 | Disease | Caught from | Shows after | Outbreak chance a week | Peak (d100) | Deaths per case in the records |

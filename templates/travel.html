@@ -212,6 +212,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
       <div class="row">
         <div style="flex:2 1 200px"><label for="sel-hyg">Camp hygiene</label><select id="sel-hyg"></select></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Washing, boiling, the sick kept apart: flux and typhoid do not reach the nurses (typhus and plague still can)"><input type="checkbox" id="chk-clean"> Nurses keep clean</label></div>
+        <div style="flex:1 1 140px;align-self:end"><label title="Fruit, greens, fresh meat or onions in the rations each day: no days go without fresh food (scurvy)"><input type="checkbox" id="chk-fresh"> Fresh food issued</label></div>
       </div>
       <p class="muted" id="health-note" style="margin:0"></p>
       <ol class="log" id="log" aria-label="March and camp log"></ol>
@@ -549,7 +550,7 @@ function fightPlan(forces, sel, wait = true){
 // disease each: {d, inc, step, peak (0 once reached), shown, chronic}. rng() returns d100.
 // Men carried from the field map are cases of "wound" (with inf and fever days) or "fever".
 const DZ = DATA.disease;
-const dzProfile = did => DZ.diseases[did] || DZ.wounds[did];
+const dzProfile = did => (did === "scurvy" ? DZ.scurvy : DZ.diseases[did] || DZ.wounds[did]);
 const newHealth = () => ({ cases: [], immune: {}, had: {}, dead: 0 });
 const copyHealth = h => ({ cases: h.cases.map(c => ({ ...c })), immune: { ...h.immune }, had: { ...h.had }, dead: h.dead });
 const dzStep = name => DZ.steps.indexOf(name);
@@ -638,9 +639,40 @@ function newCase(did, rng){
 // % a well man catches it this week: a typical man's Endurance, or a named character's own
 const catchChance = (did, factors, endurance = DZ.endurance, extra = null) => outbreakChance(did, factors, extra) * (100 - endurance) / 100;
 const d10000 = rng => (rng() - 1) * 100 + rng();
-// The weekly roll: each well man may catch each disease (with the camp's contagion `extra`),
-// then the nurses roll for what their patients have (`nurse`: nursingOf), then relapses -> {health, events}
-function healthWeek(health, men, factors, rng, endurance = DZ.endurance, extra = null, nurse = null){
+function freshToday(forage, camped, issued = false){   // fresh food today: good forage, fair when camped all day, or issued
+  const F = DZ.scurvy.fresh;
+  return issued || F.forage.includes(forage) || (camped && F.camped.includes(forage));
+}
+function scurvyChance(noFresh, endurance = DZ.endurance){   // % a well man falls ill with scurvy this week
+  const S = DZ.scurvy;
+  if (noFresh < S.after_days) return 0;
+  const weeks = Math.floor((noFresh - S.after_days) / DZ.week_days);
+  return Math.min(100, S.chance + S.per_week * weeks) * (100 - endurance) / 100;
+}
+const scurvyCase = () => ({ d: "scurvy", inc: 0, step: dzStep("mending"), peak: 0, shown: 0, chronic: false });
+function scurvyWeek(h, men, noFresh, rng, endurance){   // each well man may fall ill (it shows at once)
+  const p = scurvyChance(noFresh, endurance) * 100;
+  if (p <= 0) return [];
+  let ill = 0;
+  for (let i = Math.max(0, men - h.cases.length); i > 0; i--){
+    if (d10000(rng) > p) continue;
+    h.cases.push(scurvyCase());
+    ill++;
+  }
+  return ill ? [{ kind: "scurvy", d: "scurvy", n: ill }] : [];
+}
+function reopenOld(health, olds){              // scurvy reopens a named man's old wounds ({key, loc}) at Mending
+  const h = copyHealth(health), have = new Set(h.cases.map(c => c.wid));
+  for (const o of olds){
+    const wid = "old:" + o.key;
+    if (!have.has(wid)) h.cases.push({ d: "wound", inc: 0, step: dzStep("mending"), peak: 0, shown: 0, chronic: false, wid, old: true });
+  }
+  return h;
+}
+// The weekly roll: each well man may catch each disease (with the camp's contagion `extra`), then scurvy
+// after `noFresh` days without fresh food, then the nurses roll for what their patients have (`nurse`:
+// nursingOf), then relapses -> {health, events}
+function healthWeek(health, men, factors, rng, endurance = DZ.endurance, extra = null, nurse = null, noFresh = 0){
   const h = copyHealth(health), ev = [];
   for (const did of Object.keys(DZ.diseases)){
     const p = catchChance(did, factors, endurance, extra) * 100;
@@ -654,6 +686,7 @@ function healthWeek(health, men, factors, rng, endurance = DZ.endurance, extra =
     }
     if (caught) ev.push({ kind: "caught", d: did, n: caught });
   }
+  ev.push(...scurvyWeek(h, men, noFresh, rng, endurance));
   if (nurse) ev.push(...nursesCatch(h, men, nurse, rng, endurance));
   ev.push(...relapses(h, factors, rng));
   return { health: h, events: ev };
@@ -689,6 +722,17 @@ function recoverCase(c, target, rng){          // one recovery check: "dead", "h
   }
   return c.step <= 0 ? "healed" : "sick";
 }
+function scurvyCheck(c, target, rng, fresh){   // weekly: fresh food heals; unfed, success holds and failure worsens
+  const x = DZ.scurvy;
+  if (fresh){
+    c.step -= x.heal;
+    return c.step <= 0 ? "healed" : "sick";
+  }
+  if (target - x.virulence - rng() >= 0) return "sick";
+  if (c.step === DZ.steps.length - 1) return "dead";
+  c.step += 1;
+  return "sick";
+}
 function septic(c, care, rng, ev){            // a wound's fever day: it turns septic (wound fever, a step worse) or not
   const W = DZ.wounds;
   c.fever = 0;
@@ -697,7 +741,8 @@ function septic(c, care, rng, ev){            // a wound's fever day: it turns s
   c.step = Math.min(DZ.steps.length - 1, c.step + 1);
   ev.shown.fever = (ev.shown.fever || 0) + 1;
 }
-function caseDay(c, target, rng, ev, care = "field"){   // one case's day: "sick" while it lasts, else "healed" or "dead"
+// one case's day: "sick" while it lasts, else "healed" or "dead". food: [fresh food in the past week, he has scurvy]
+function caseDay(c, target, rng, ev, care = "field", food = [false, false]){
   if (c.fever){
     c.fever -= 1;
     if (c.fever === 0) septic(c, care, rng, ev);
@@ -717,7 +762,8 @@ function caseDay(c, target, rng, ev, care = "field"){   // one case's day: "sick
     if (c.step >= c.peak) c.peak = 0;
     return "sick";
   }
-  const out = checksToday(x, c) ? recoverCase(c, target, rng) : "sick";
+  let out = "sick";
+  if (checksToday(x, c) && !(c.old && food[1])) out = c.d === "scurvy" ? scurvyCheck(c, target, rng, food[0]) : recoverCase(c, target, rng);
   if (out !== "sick") tally(out);
   return out;
 }
@@ -726,9 +772,9 @@ function healthDay(health, ctx, rng, endurance = DZ.endurance){   // a day passe
   const target = endurance + R.care[ctx.care] + R.activity[ctx.marched ? "marched" : "rest"] + (ctx.wet_cold ? R.wet_cold : 0) + (ctx.filth ? R.filth : 0);
   const h = copyHealth(health), ev = { shown: {}, healed: {}, dead: {} }, keep = [];
   const pts = patientsOf(h), k = ctx.unnursed || 0, left = new Set(k ? pts.slice(pts.length - k) : []);   // the last that many get no one to tend them
-  const alone = target - R.care[ctx.care] + R.care.none;
+  const alone = target - R.care[ctx.care] + R.care.none, food = [!!ctx.fresh, h.cases.some(c => c.d === "scurvy")];
   for (const c of h.cases){
-    const out = caseDay(c, left.has(c) ? alone : target, rng, ev, left.has(c) ? "none" : ctx.care), x = dzProfile(c.d);
+    const out = caseDay(c, left.has(c) ? alone : target, rng, ev, left.has(c) ? "none" : ctx.care, food), x = dzProfile(c.d);
     if (out === "sick") keep.push(c);
     else if (out === "dead") h.dead += 1;
     else if (x.immune) h.immune[c.d] = (h.immune[c.d] || 0) + 1;
@@ -841,6 +887,8 @@ function endDay(f){
   const change = after === before ? "" : ` \u2014 ${L[before].name.toLowerCase()} \u2192 ${L[after].name.toLowerCase()}`;
   const where_ = camp ? WK.camps[camp.kind].name.toLowerCase() : "no camp";
   f.log.unshift(`Night of ${dateText(f.day, true)}: ${WXD.rest_levels[rest]} rest (${where_}; ${WXD.conditions[today.w.cond].name.toLowerCase()}, low ${fmtC(today.w.low)})${change}.`);
+  const fresh = freshToday(terrainAt(curMap(), f.pos).forage, !!camp && !(f.marched > 0), !!f.freshIssued);
+  f.noFresh = fresh ? 0 : (f.noFresh || 0) + 1;     // days without fresh food, for scurvy
   healthNight(f, today, camp);
   f.fatigue = after; f.day += 1; f.used = 0; f.marched = 0;
 }
@@ -854,7 +902,7 @@ function nightHard(w, kind){                  // the night was harder than the s
 }
 function healthNight(f, today, camp){         // the sick get better or worse; once a week, the outbreak roll
   const kind = camp ? camp.kind : null, hyg = campHygiene(f.hygiene || null, kind);
-  const ctx = { care: campCare(kind), marched: (f.marched || 0) > 0, wet_cold: nightHard(today.w, kind), filth: hyg === "poor" };
+  const ctx = { care: campCare(kind), marched: (f.marched || 0) > 0, wet_cold: nightHard(today.w, kind), filth: hyg === "poor", fresh: (f.noFresh || 0) < DZ.week_days };
   namedNight(f, ctx, f.day % DZ.week_days === 0 ? weekFactorsFor(f, kind, hyg) : null);
   const r = healthDay(healthOf(f), { ...ctx, unnursed: nursingOf(healthOf(f), f.men).unnursed }, roll100);
   f.health = r.health;
@@ -877,7 +925,7 @@ function namedNight(f, ctx, factors){          // the day (and on the week's las
   for (const [, n] of mine){
     const tended = force.nurses > 0 || mine.some(([, o]) => o !== n && nursesNow(o));   // nursed first, if anyone can
     const bits = namedDay(n, ctx, tended ? 0 : 1);
-    if (factors && !n.dead) bits.push(...namedWeek(n, factors, contagionOf(fh, f.men), nursesNow(n) ? { ...force, nurses: 1 } : null));
+    if (factors && !n.dead) bits.push(...namedWeek(n, factors, contagionOf(fh, f.men), nursesNow(n) ? { ...force, nurses: 1 } : null, f.noFresh || 0));
     if (!bits.length) continue;
     const line = `${dateText(f.day, true)}: ${n.name} ${bits.join("; ")}.`;
     f.log.unshift(line);
@@ -899,10 +947,15 @@ function namedDay(n, ctx, unnursed){            // his night: his cases run thei
   }
   return bits;
 }
-function namedWeek(n, factors, extra, nurse){   // his outbreak roll: the camp's contagion, and his patients' diseases if he nurses
-  const w = healthWeek(n.health, 1, factors, roll100, namedEnd(n), extra, nurse);
+// his outbreak roll: the camp's contagion, his patients' diseases if he nurses, and scurvy after noFresh days
+function namedWeek(n, factors, extra, nurse, noFresh = 0){
+  const w = healthWeek(n.health || newHealth(), 1, factors, roll100, namedEnd(n), extra, nurse, noFresh);
   n.health = w.health;
-  const said = { caught: x => `caught ${dzShort(x.d)} (not showing yet)`, nursed: x => `caught ${dzShort(x.d)} nursing the sick (not showing yet)`, relapse: x => `fell ill with ${dzShort(x.d)} again` };
+  const olds = n.old || [];
+  if (w.events.some(x => x.kind === "scurvy")) n.health = reopenOld(n.health, olds);   // his old wounds reopen
+  const reopened = olds.length ? `: ${olds.length} old wound${olds.length > 1 ? "s" : ""} reopened` : "";
+  const said = { caught: x => `caught ${dzShort(x.d)} (not showing yet)`, nursed: x => `caught ${dzShort(x.d)} nursing the sick (not showing yet)`,
+    relapse: x => `fell ill with ${dzShort(x.d)} again`, scurvy: () => `fell ill with scurvy${reopened}` };
   return w.events.map(x => said[x.kind](x));
 }
 // A named man nurses the force's sick if the GM set him to and he is not too sick himself.
@@ -925,11 +978,13 @@ function weekFactorsFor(f, kind, hyg){        // this week's factors for the for
     highs: days.map(x => x.w.high), wet: days.map(x => WXD.conditions[x.w.cond].precip !== "none"), plague: !!S.plague[S.mapId] });
 }
 function healthWeekFor(f, kind, hyg){
-  const h = healthOf(f), r = healthWeek(h, f.men, weekFactorsFor(f, kind, hyg), roll100, DZ.endurance, contagionOf(h, f.men), nursingOf(h, f.men, !!f.cleanNurses));
+  const h = healthOf(f), r = healthWeek(h, f.men, weekFactorsFor(f, kind, hyg), roll100, DZ.endurance, contagionOf(h, f.men), nursingOf(h, f.men, !!f.cleanNurses), f.noFresh || 0);
   f.health = r.health;
-  const said = { caught: e => `${e.n} caught ${dzName(e.d)}`, nursed: e => `${e.n} nursing the sick caught ${dzName(e.d)}`, relapse: e => `${e.n} fell ill with ${dzName(e.d)} again` };
+  const later = " (not showing yet)";
+  const said = { caught: e => `${e.n} caught ${dzName(e.d)}${later}`, nursed: e => `${e.n} nursing the sick caught ${dzName(e.d)}${later}`,
+    relapse: e => `${e.n} fell ill with ${dzName(e.d)} again`, scurvy: e => `${e.n} fell ill with scurvy (${f.noFresh} days without fresh food)` };
   const bits = r.events.map(e => said[e.kind](e));
-  f.log.unshift(`Week to ${dateText(f.day, true)}: ${bits.length ? bits.join("; ") + " (not showing yet)" : "no new cases"}.`);
+  f.log.unshift(`Week to ${dateText(f.day, true)}: ${bits.length ? bits.join("; ") : "no new cases"}.`);
 }
 const fmtH = h => { if (h < 1 / 120) return "no time"; let hh = Math.floor(h + 1e-9), mm = Math.round((h - hh) * 60); if (mm === 60){ hh++; mm = 0 } return hh && mm ? `${hh} h ${mm} min` : hh ? `${hh} h` : `${mm} min` };
 const placeAt = h => (baseMap().places || []).find(p => sameHex(p.hex, h));
@@ -1162,10 +1217,20 @@ function sickText(f){                        // who is sick, of what and how bad
   const steps = st => DZ.steps.filter(k => st[k]).map(k => st[k] + " " + k).join(", ");    // in track order
   return Object.entries(by).map(([did, st]) => `${dzName(did)} ${Object.values(st).reduce((t, n) => t + n, 0)} (${steps(st)})`).join("; ");
 }
+function foodText(f){                          // days without fresh food, and whether this hex gives it
+  if (f.freshIssued) return "Fresh food issued: no scurvy.";
+  const n = f.noFresh || 0, forage = terrainAt(curMap(), f.pos).forage, F = DZ.scurvy.fresh;
+  let here = "no fresh food to be had here";
+  if (F.forage.includes(forage)) here = "fresh food to be had here";
+  else if (F.camped.includes(forage)) here = "fresh food here if it spends a whole day camped and foraging";
+  const left = DZ.scurvy.after_days - n, risk = left > 0 ? `scurvy can start in ${left} days` : "scurvy can start now";
+  return `${n} day${n === 1 ? "" : "s"} without fresh food (${here}; ${risk}).`;
+}
 function renderHealth(f){
   const camp = campHere(f), kind = camp ? camp.kind : null, c = fitOf(f), h = healthOf(f);
   const opts = [["", `From the camp (${campHygiene(null, kind)})`], ...DZ.hygiene.map(x => [x, x[0].toUpperCase() + x.slice(1)])];
   $("#chk-clean").checked = !!f.cleanNurses;
+  $("#chk-fresh").checked = !!f.freshIssued;
   $("#sel-hyg").innerHTML = opts.map(([v, t]) => `<option value="${v}" ${(f.hygiene || "") === v ? "selected" : ""}>${t}</option>`).join("");
   const hyg = campHygiene(f.hygiene || null, kind), factors = weekFactorsFor(f, kind, hyg);
   const chances = Object.keys(DZ.diseases).map(did => [did, catchChance(did, factors, DZ.endurance, contagionOf(h, f.men))]).filter(([, n]) => n > 0).map(([did, n]) => `${dzName(did)} ${+n.toFixed(1)}%`);
@@ -1182,6 +1247,9 @@ function renderHealth(f){
   if (h.dead) parts.push(`${h.dead} dead of disease and wounds so far.`);
   const named = namedLine(f);
   if (named) parts.push(`Named with it (from the wound roller): ${named}.`);
+  const sc = scurvyChance(f.noFresh || 0);
+  if (sc > 0) chances.push(`scurvy ${+sc.toFixed(1)}%`);
+  parts.push(foodText(f));
   parts.push(`Weekly check: night of ${dateText(next, true)}. Each well man's chance of catching it this week: ${chances.join(", ") || "none"}.`);
   $("#health-note").textContent = parts.join(" ");
 }
@@ -1505,6 +1573,7 @@ function init(){
   $("#sel-camp").onchange = e => { S.campKind = e.target.value; render() };
   $("#sel-hyg").onchange = e => { const f = selForce(); if (f){ f.hygiene = e.target.value || null; render() } };
   $("#chk-clean").onchange = e => { const f = selForce(); if (f){ f.cleanNurses = e.target.checked; render() } };
+  $("#chk-fresh").onchange = e => { const f = selForce(); if (f){ f.freshIssued = e.target.checked; if (f.freshIssued) f.noFresh = 0; render() } };
   $("#chk-plague").onchange = e => { S.plague[S.mapId] = e.target.checked; render() };
   $("#btn-camp").onclick = () => { const f = selForce(); if (f){ makeCamp(f, $("#sel-camp").value); render() } };
   const sendFight = k => {                   // k: which of the fights on offer (0 attack now / the only one, 1 wait)

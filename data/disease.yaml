@@ -192,4 +192,30 @@ wounds:
   fever_chance: {low: 5, medium: 15, high: 30}
   fever_care: {none: 5, field: 0, shelter: -5}
 
-# Left for later (needs food tracking): scurvy.
+# ---------- scurvy ----------
+# Not caught from the camp but from what it eats. Each force counts its days without fresh
+# food (fruit, greens, fresh meat, onions). A day resets the count when it ends in a hex whose
+# forage is `fresh.forage` (farmland, a village, a town), or `fresh.camped` when the force spent
+# the whole day camped there and foraging (it did not march), or when the GM issues fresh food.
+# After `after_days` without it, each week every well man may fall ill: the week's chance is
+# `chance` the first week, `per_week` more each week after (up to 100), times the chance he
+# fails to resist with Endurance. It shows at once, at Mending, and is checked once a week:
+#   with fresh food in the past week: `heal` steps better (no roll);
+#   without: the recovery check (Endurance + care + activity + conditions - virulence); success
+#   holds, failure is one step worse, and failure at Deadly kills. It never improves unfed.
+# Old wounds reopen: when a named character falls ill, each old wound from his sheet and each
+# scar comes back on the wound track at Mending, and cannot heal until the scurvy has.
+# `virulence` is tuned (python3 -m gravewounds disease) so that men given fresh food four weeks
+# after it shows die near the Union army's rate (`deaths`), and men never given it die far more
+# often, as at Andersonville (1864). Design estimates.
+scurvy:
+  name: "Scurvy"
+  caught: "Weeks without fresh food: long sieges, winter camps, bare country"
+  after_days: 42
+  chance: 10
+  per_week: 10
+  every: 7
+  heal: 2
+  virulence: -3
+  deaths: 1.6              # % of cases, Union army (771 deaths in about 47,000 cases)
+  fresh: {forage: [good], camped: [fair]}

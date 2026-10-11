@@ -25,7 +25,9 @@ def new_health() -> dict:
 
 
 def profile(d: Data, did: str) -> dict:
-    """A disease's profile, or the wound track's (wound, fever)."""
+    """A disease's profile, the wound track's (wound, fever), or scurvy's."""
+    if did == "scurvy":
+        return d.disease["scurvy"]
     return d.disease["diseases"].get(did) or d.disease["wounds"][did]
 
 
@@ -166,16 +168,65 @@ def catch_chance(d: Data, did: str, factors: list, endurance: int | None = None,
     return outbreak_chance(d, did, factors, extra) * (100 - e) / 100
 
 
+def fresh_today(d: Data, forage: str, camped: bool, issued: bool = False) -> bool:
+    """Did the force get fresh food today? Its hex's forage (good), or fair forage when it
+    spent the whole day camped there (not marching), or the GM issued it."""
+    F = d.disease["scurvy"]["fresh"]
+    return issued or forage in F["forage"] or (camped and forage in F["camped"])
+
+
+def scurvy_chance(d: Data, no_fresh: int, endurance: int | None = None) -> float:
+    """% chance a well man falls ill with scurvy this week, after `no_fresh` days without
+    fresh food: none before `after_days`, then `chance`, `per_week` more each week."""
+    S = d.disease["scurvy"]
+    if no_fresh < S["after_days"]:
+        return 0.0
+    weeks = (no_fresh - S["after_days"]) // d.disease["week_days"]
+    e = d.disease["endurance"] if endurance is None else endurance
+    return min(100, S["chance"] + S["per_week"] * weeks) * (100 - e) / 100
+
+
+def _scurvy_case(d: Data) -> dict:
+    return {"d": "scurvy", "inc": 0, "step": _step(d, "mending"), "peak": 0, "shown": 0, "chronic": False}
+
+
+def _scurvy_week(d: Data, h: dict, men: int, no_fresh: int, rng, endurance: int | None) -> list:
+    """Each well man may fall ill with scurvy (it shows at once, at Mending)."""
+    p = scurvy_chance(d, no_fresh, endurance) * 100
+    if p <= 0:
+        return []
+    ill = 0
+    for _ in range(max(0, men - len(h["cases"]))):
+        if _d10000(rng) <= p:
+            h["cases"].append(_scurvy_case(d))
+            ill += 1
+    return [{"kind": "scurvy", "d": "scurvy", "n": ill}] if ill else []
+
+
+def reopen(d: Data, health: dict, olds: list) -> dict:
+    """Scurvy reopens a named man's old wounds: each ({key, loc}: from his sheet, or a scar)
+    not already open comes back on the wound track at Mending, keyed by wid 'old:<key>'."""
+    h = _copy(health)
+    have = {c.get("wid") for c in h["cases"]}
+    for o in olds:
+        wid = "old:" + str(o["key"])
+        if wid not in have:
+            h["cases"].append({"d": "wound", "inc": 0, "step": _step(d, "mending"), "peak": 0, "shown": 0,
+                               "chronic": False, "wid": wid, "old": True})
+    return h
+
+
 def _d10000(rng) -> int:
     return (rng() - 1) * 100 + rng()
 
 
 def week(d: Data, health: dict, men: int, factors: list, rng, endurance: int | None = None,
-         extra: dict | None = None, nurse: dict | None = None) -> tuple[dict, list]:
+         extra: dict | None = None, nurse: dict | None = None, no_fresh: int = 0) -> tuple[dict, list]:
     """The weekly roll: each well man who is not immune may catch each disease (d10000 against
-    catch_chance x 100, with the camp's contagion `extra`), then the nurses roll for what their
-    patients have (`nurse`: nursing(), its `nurses` the men who roll), then relapses. Returns
-    (health, events); events are {kind: caught, nursed or relapse, d, n}. endurance: a named
+    catch_chance x 100, with the camp's contagion `extra`), then scurvy after `no_fresh` days
+    without fresh food, then the nurses roll for what their patients have (`nurse`: nursing(),
+    its `nurses` the men who roll), then relapses. Returns (health, events); events are
+    {kind: caught, scurvy, nursed or relapse, d, n}. endurance: a named
     character's own (men 1), or the typical man's."""
     D, h, ev = d.disease, _copy(health), []
     for did in D["diseases"]:
@@ -190,6 +241,7 @@ def week(d: Data, health: dict, men: int, factors: list, rng, endurance: int | N
                 caught += 1
         if caught:
             ev.append({"kind": "caught", "d": did, "n": caught})
+    ev += _scurvy_week(d, h, men, no_fresh, rng, endurance)
     if nurse:
         ev += _nurses_catch(d, h, men, nurse, rng, endurance)
     ev += _relapses(d, h, factors, rng)
@@ -255,6 +307,21 @@ def _recover(d: Data, c: dict, target: int, rng) -> str:
     return "healed" if c["step"] <= 0 else "sick"
 
 
+def _scurvy_check(d: Data, c: dict, target: int, rng, fresh: bool) -> str:
+    """Scurvy's weekly check: fresh food heals `heal` steps; without it, success holds and
+    failure is a step worse (at Deadly, dead)."""
+    x = d.disease["scurvy"]
+    if fresh:
+        c["step"] -= x["heal"]
+        return "healed" if c["step"] <= 0 else "sick"
+    if target - x["virulence"] - rng() >= 0:
+        return "sick"
+    if c["step"] == len(d.disease["steps"]) - 1:
+        return "dead"
+    c["step"] += 1
+    return "sick"
+
+
 def _septic(d: Data, c: dict, care: str, rng, ev: dict) -> None:
     """A wound's fever day: it turns septic (wound fever, one step worse) or it does not."""
     W = d.disease["wounds"]
@@ -264,8 +331,10 @@ def _septic(d: Data, c: dict, care: str, rng, ev: dict) -> None:
         ev["shown"]["fever"] = ev["shown"].get("fever", 0) + 1
 
 
-def _case_day(d: Data, c: dict, target: int, rng, ev: dict, care: str = "field") -> str:
-    """One case's day: 'sick' while it lasts, else 'healed' or 'dead' (tallied in ev)."""
+def _case_day(d: Data, c: dict, target: int, rng, ev: dict, care: str = "field", food: tuple = (False, False)) -> str:
+    """One case's day: 'sick' while it lasts, else 'healed' or 'dead' (tallied in ev).
+    food: (fresh food in the past week, he has scurvy): an old wound it reopened cannot heal
+    while it lasts."""
     if c.get("fever"):
         c["fever"] -= 1
         if c["fever"] == 0:
@@ -283,7 +352,12 @@ def _case_day(d: Data, c: dict, target: int, rng, ev: dict, care: str = "field")
         if c["step"] >= c["peak"]:
             c["peak"] = 0
         return "sick"
-    out = _recover(d, c, target, rng) if _checks_today(x, c) else "sick"
+    if not _checks_today(x, c) or (c.get("old") and food[1]):
+        out = "sick"
+    elif c["d"] == "scurvy":
+        out = _scurvy_check(d, c, target, rng, food[0])
+    else:
+        out = _recover(d, c, target, rng)
     if out != "sick":
         ev[out][c["d"]] = ev[out].get(c["d"], 0) + 1
     return out
@@ -292,7 +366,8 @@ def _case_day(d: Data, c: dict, target: int, rng, ev: dict, care: str = "field")
 def day(d: Data, health: dict, ctx: dict, rng, endurance: int | None = None) -> tuple[dict, dict]:
     """A day passes: incubations run down, cases climb to their peak, then recover or worsen.
     ctx: {care (none, field or shelter), marched (bool), wet_cold (bool), filth (bool), unnursed
-    (the last that many sick needing nursing get none: no care)}.
+    (the last that many sick needing nursing get none: no care), fresh (fresh food in the past
+    week, for scurvy)}.
     endurance: a named character's own, or the typical man's.
     Returns (health, {shown, healed, dead}: men by disease)."""
     D, R = d.disease, d.disease["recovery"]
@@ -304,8 +379,9 @@ def day(d: Data, health: dict, ctx: dict, rng, endurance: int | None = None) -> 
     pts = _patients(d, h)
     left = set(map(id, pts[len(pts) - ctx.get("unnursed", 0):])) if ctx.get("unnursed", 0) else set()
     alone = target - R["care"][ctx["care"]] + R["care"]["none"]     # no one to tend him
+    food = (bool(ctx.get("fresh")), any(c["d"] == "scurvy" for c in h["cases"]))
     for c in h["cases"]:
-        out = _case_day(d, c, alone if id(c) in left else target, rng, ev, "none" if id(c) in left else ctx["care"])
+        out = _case_day(d, c, alone if id(c) in left else target, rng, ev, "none" if id(c) in left else ctx["care"], food)
         x = profile(d, c["d"])
         if out == "sick":
             keep.append(c)
@@ -409,3 +485,22 @@ def camp_example(d: Data, weeks: int, hygiene: str, hot: bool, stay_from: int, m
             h, ev = day(d, h, {**ctx, "unnursed": nursing(d, h, men)["unnursed"]}, rng)
             men -= sum(ev["dead"].values())
     return 100 * (start - men) / start
+
+
+SCURVY_EXAMPLES = [4, 8, 12, None]    # weeks after it shows that fresh food comes (None: never)
+
+
+def simulate_scurvy(d: Data, n: int, fresh_after: int | None, rng, weeks: int = 52) -> dict:
+    """n men with scurvy resting in an ordinary camp, fresh food coming `fresh_after` weeks
+    after it shows (None: never), followed until healed or dead or `weeks` pass (for tuning):
+    {deaths (% of cases), sick_weeks (mean weeks showing)}."""
+    h = new_health()
+    h["cases"] = [_scurvy_case(d) for _ in range(n)]
+    sick = 0
+    for day_no in range(1, weeks * d.disease["week_days"] + 1):
+        if not h["cases"]:
+            break
+        fresh = fresh_after is not None and day_no > fresh_after * d.disease["week_days"]
+        h, _ = day(d, h, {"care": "field", "marched": False, "wet_cold": False, "filth": False, "fresh": fresh}, rng)
+        sick += len(h["cases"])
+    return {"deaths": 100 * h["dead"] / n, "sick_weeks": sick / n / d.disease["week_days"]}
