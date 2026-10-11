@@ -355,6 +355,26 @@ combat:
     uphill: 10
     downhill_reach: 10
     take_cover: 20
+    # Laying out a battle map's ground from the travel map's terrain (or the roller's "Ground
+    # like" picker): for each travel terrain, the share of hexes in rocks, woods and marsh,
+    # laid as irregular clumps of 3 to 12 hexes, and how many rises stand on the map and how
+    # high they may go (each a cone, one level lost every 3 to 6 hexes from its top). Design
+    # estimates for a patch of ground about 50 to 160 yd (45 to 150 m) across, not data from
+    # any battlefield. Terrain not listed (river, lake) lays out as open ground. Inside a camp's
+    # works the ground is cleared and levelled to the camp's middle.
+    seed:
+      open:      {brush: 0.03, rough: 0.02, rises: 1, top: 1}
+      road:      {brush: 0.02, rough: 0.01, rises: 1, top: 1}
+      farmland:  {brush: 0.07, rough: 0.01, rises: 1, top: 1}
+      heath:     {brush: 0.10, rough: 0.06, rises: 1, top: 1}
+      forest:    {brush: 0.55, rough: 0.04, marsh: 0.02, rises: 1, top: 1}
+      hills:     {brush: 0.06, rough: 0.10, rises: 2, top: 3}
+      mountains: {brush: 0.04, rough: 0.30, rises: 3, top: 3}
+      marsh:     {brush: 0.10, marsh: 0.35}
+      ford:      {brush: 0.04, marsh: 0.12}
+      bridge:    {brush: 0.03, rough: 0.03}
+      village:   {brush: 0.05, rough: 0.10}
+      town:      {rough: 0.20}
   range:
     - {band: short, penalty: 0}
     - {band: medium, penalty: 20}

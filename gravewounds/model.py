@@ -481,6 +481,7 @@ def validate(d: Data) -> None:
         errors += _fields_errors(d)
     for T in d.teams.values():
         errors += _team_errors(d, T)
+    errors += _ground_seed_errors(d, TT)
 
     # camps and works
     WK = d.works
@@ -831,6 +832,23 @@ def _units_extra_errors(d: Data) -> list[str]:
     for wid in U.get("line_of_fire", {}).get("arcing", []):
         if wid not in d.weapons or "range" not in d.weapons[wid]:
             errors.append(f"units.yaml: line_of_fire.arcing names {wid}, which is not a weapon with a range")
+    return errors
+
+
+def _ground_seed_errors(d: Data, terrain: dict) -> list[str]:
+    """wounds.yaml combat.ground.seed: travel terrain -> shares of each ground kind, rises, top."""
+    G = d.wounds["combat"].get("ground", {})
+    errors = []
+    for tid, x in G.get("seed", {}).items():
+        where = f"wounds.yaml: combat.ground.seed.{tid}"
+        if tid not in terrain:
+            errors.append(f"{where} names unknown terrain")
+        shares = {k: v for k, v in x.items() if k not in ("rises", "top")}
+        errors += [f"{where}: {k} is not a ground kind" for k in shares if k not in G["kinds"] or k == "open"]
+        if any(not isinstance(v, (int, float)) or v < 0 for v in shares.values()) or sum(shares.values()) > 0.8:
+            errors.append(f"{where}: shares must be 0 or more and add up to 0.8 at most")
+        if x.get("rises", 0) and not 1 <= x.get("top", 0) <= G["max_level"]:
+            errors.append(f"{where}: top must be 1 to {G['max_level']}")
     return errors
 
 

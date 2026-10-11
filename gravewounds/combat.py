@@ -410,6 +410,85 @@ def ground_step(d: Data, ground, a, b) -> int:
     return ground_spec(d, ground, b)["move"] + d.wounds["combat"]["ground"]["climb"] * max(0, level_at(ground, b) - level_at(ground, a))
 
 
+def seed_number(text: str) -> int:
+    """A repeatable seed from a string (FNV-1a, 32 bits), as the roller's seedNumber."""
+    h = 2166136261
+    for ch in text.encode("utf-8"):
+        h = ((h ^ ch) * 16777619) & 0xFFFFFFFF
+    return h
+
+
+class _Park:
+    """Park-Miller minimal standard, as units.SeededDice and the roller's parkMiller."""
+
+    def __init__(self, seed: int):
+        self.state = max(1, seed % 2147483647)
+
+    def randint(self, a: int, b: int) -> int:
+        self.state = self.state * 16807 % 2147483647
+        return a + self.state % (b - a + 1)
+
+
+GROUND_ORDER = ("marsh", "brush", "rough")     # laid in this order; a hex keeps the first
+
+
+def _lay_rises(ground: dict, spec: dict, cols: int, rows: int, rng: _Park) -> None:
+    for _ in range(spec.get("rises", 0)):
+        top_hex = [rng.randint(0, cols - 1), rng.randint(0, rows - 1)]
+        top, spread = rng.randint(1, spec["top"]), rng.randint(3, 6)
+        for r in range(rows):
+            for c in range(cols):
+                lv = top - hex_distance([c, r], top_hex) // spread
+                k = f"{c},{r}"
+                if lv > ground["levels"].get(k, 0):
+                    ground["levels"][k] = lv
+
+
+def _lay_clumps(ground: dict, kind: str, target: int, cols: int, rows: int, rng: _Park) -> None:
+    painted, tries = 0, 0
+    while painted < target and tries < 4 * cols * rows:
+        h, size = [rng.randint(0, cols - 1), rng.randint(0, rows - 1)], rng.randint(3, 12)
+        for _ in range(size):
+            tries += 1
+            k = hkey(h)
+            if k not in ground["kinds"]:
+                ground["kinds"][k] = kind
+                painted += 1
+                if painted >= target:
+                    return
+            nb = neighbours(h, cols, rows)
+            h = nb[rng.randint(0, len(nb) - 1)]
+
+
+def seed_ground(d: Data, terrain: str, cols: int, rows: int, seed: int, clear=None) -> dict:
+    """A battle map's ground laid out like a travel terrain: {kinds, levels}. clear: (centre,
+    radius) of a camp, cleared and levelled to its middle."""
+    seeds = d.wounds["combat"]["ground"]["seed"]
+    spec, rng = seeds.get(terrain) or seeds["open"], _Park(seed)
+    ground = {"kinds": {}, "levels": {}}
+    _lay_rises(ground, spec, cols, rows, rng)
+    for kind in GROUND_ORDER:
+        _lay_clumps(ground, kind, int(spec.get(kind, 0) * cols * rows + 0.5), cols, rows, rng)
+    if clear:
+        clear_ground(ground, clear[0], clear[1], cols, rows)
+    return ground
+
+
+def clear_ground(ground: dict, centre, radius: int, cols: int, rows: int) -> None:
+    """Inside a camp: open ground, level with its middle."""
+    mid = level_at(ground, centre)
+    for r in range(rows):
+        for c in range(cols):
+            if hex_distance([c, r], centre) > radius:
+                continue
+            k = f"{c},{r}"
+            ground["kinds"].pop(k, None)
+            if mid:
+                ground["levels"][k] = mid
+            else:
+                ground["levels"].pop(k, None)
+
+
 def step_cost(d: Data, works, a, b, ground=None) -> int | None:
     """Movement to step from hex a to the next hex b: 1, plus crossing the works on the
     edge and entering the works in b, plus its ground and any climb. None if a work stops him."""

@@ -84,7 +84,9 @@ near. A column makes one camp for all its forces (see *Marching together*). Camp
 day costs no marching time. Once an enemy force has marched to within 0.6 mile (1 km), **Set up the fight** opens a battle page.
 **Fight it on** picks which:
 - **the wound roller**, man by man (up to 8 men a force), with the camp's works laid out
-  on its battle map. See [works.md](works.md).
+  on its battle map and the ground laid out to match the defenders' hex: woods in forest,
+  rises and rocks in hills, marsh in marsh, rubble in a village or town. See
+  [works.md](works.md) and [combat.md](combat.md).
 - **the field map**, in units: the forces arrive with their fit men, and the GM splits each
   into units there (billmen, archers, horse). Men left out of every unit stay in reserve.
   The day's weather and ground come too, and the camp's works, as far as they are built,

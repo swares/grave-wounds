@@ -14730,7 +14730,85 @@
    "climb": 1,
    "uphill": 10,
    "downhill_reach": 10,
-   "take_cover": 20
+   "take_cover": 20,
+   "seed": {
+    "open": {
+     "brush": 0.03,
+     "rough": 0.02,
+     "rises": 1,
+     "top": 1
+    },
+    "road": {
+     "brush": 0.02,
+     "rough": 0.01,
+     "rises": 1,
+     "top": 1
+    },
+    "farmland": {
+     "brush": 0.07,
+     "rough": 0.01,
+     "rises": 1,
+     "top": 1
+    },
+    "heath": {
+     "brush": 0.1,
+     "rough": 0.06,
+     "rises": 1,
+     "top": 1
+    },
+    "forest": {
+     "brush": 0.55,
+     "rough": 0.04,
+     "marsh": 0.02,
+     "rises": 1,
+     "top": 1
+    },
+    "hills": {
+     "brush": 0.06,
+     "rough": 0.1,
+     "rises": 2,
+     "top": 3
+    },
+    "mountains": {
+     "brush": 0.04,
+     "rough": 0.3,
+     "rises": 3,
+     "top": 3
+    },
+    "marsh": {
+     "brush": 0.1,
+     "marsh": 0.35
+    },
+    "ford": {
+     "brush": 0.04,
+     "marsh": 0.12
+    },
+    "bridge": {
+     "brush": 0.03,
+     "rough": 0.03
+    },
+    "village": {
+     "brush": 0.05,
+     "rough": 0.1
+    },
+    "town": {
+     "rough": 0.2
+    }
+   },
+   "seed_names": {
+    "open": "Open ground",
+    "road": "Road",
+    "farmland": "Farmland",
+    "heath": "Heath",
+    "forest": "Forest",
+    "hills": "Hills",
+    "mountains": "Mountains",
+    "marsh": "Marsh",
+    "ford": "Ford",
+    "bridge": "Bridge",
+    "village": "Village",
+    "town": "Town"
+   }
   },
   "range": [
    {
