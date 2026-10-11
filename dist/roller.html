@@ -2511,7 +2511,7 @@ function init(){
   $("#map").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); mapKey(e) } });
   const dropKey = k => { try{ localStorage.removeItem(k) }catch(e){ /* storage off: nothing was kept to drop */ } };
   const MAP_ACTS = {                              // the map bar's buttons, by data-map
-    stay: () => { S.tm = { ...(S.tm || {}), moved: true, steps: 0, ran: false, prev: null }; renderChars() },
+    stay: () => { S.tm = { ...S.tm, moved: true, steps: 0, ran: false, prev: null }; renderChars() },
     undo: undoMove, next: nextFighter, handoff: setupHandoff, roll: () => rollHit(), stray: strayHit, apply: applyFromMap, addteam: addTeam,
     skipfree: () => { freeDone("skipped"); renderChars() },
     noteam: () => { S.teamIn = null; dropKey("gravewounds-team-handoff"); renderChars() },
