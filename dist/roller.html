@@ -756,7 +756,7 @@ function moraleCheck(fighters, roll){
 const MOVE = CMB.move, CAMP_HEX_M = MOVE.hex_m;
 // ----- named characters' sickness: a fighter can go with a force on the travel map, which runs his days -----
 const DZR = DATA.disease, NAMED_KEY = "gravewounds-named";   // {uid: {name, endurance, map, force, health, dead, log}}, shared with the travel map
-function readNamed(){ try{ return JSON.parse(localStorage.getItem(NAMED_KEY) || "{}") || {} }catch(e){ return {} } }
+function readNamed(){ try{ return JSON.parse(localStorage.getItem(NAMED_KEY) || "{}") || {} }catch(e){ console.warn("named characters unreadable", e); return {} } }
 function writeNamed(all){ try{ localStorage.setItem(NAMED_KEY, JSON.stringify(all)) }catch(e){ /* storage off: not attached */ } }
 let NAMED = readNamed();
 const sheetEnd = c => (c.sheet && c.sheet.stats && Number.isFinite(c.sheet.stats.end) ? c.sheet.stats.end : DZR.endurance);
@@ -775,7 +775,10 @@ function travelForces(){                          // the forces on the travel ma
     const t = JSON.parse(localStorage.getItem("gravewounds-travel") || "null");
     if (!t || !t.forces || !t.forces[t.mapId]) return [];
     return t.forces[t.mapId].map(f => ({ value: `${t.mapId}:${f.id}`, label: `${f.name} (${f.side})` }));
-  }catch(e){ return [] /* nothing saved on the travel map, or unreadable: no forces to go with */ }
+  }catch(e){
+    console.warn("travel map save unreadable", e);   // nothing to go with
+    return [];
+  }
 }
 function attachNamed(c, value){                   // put him with a travel force (value "map:id"), or take him off ("")
   const all = readNamed();
