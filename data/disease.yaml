@@ -142,6 +142,13 @@ in_fight:
   serious: {penalty: 25, no_run: true}
   grave:   {penalty: 25, crawl: true, defend_only: true}
   deadly:  {out: true}
+# A named man's battle wounds go onto the wound track (below) when the GM sends him to camp
+# with his force: each starts at its severity's step, or worse for a death clock, with its
+# septic roll a few days on, as a force's wounded. The wound's own pain and impairment stay
+# on his card until it heals (they are what the wound does); only wound fever counts as
+# sickness above. In camp the bleeding stops, and he gets back `blood_per_day` of lost blood
+# each night (design estimate: the whole pool of 20 in five days). A healed wound leaves a scar.
+named_blood_per_day: 4
 
 # ---------- wounds carried from the field ----------
 # Men wounded in a unit battle (the field map) and carried to camp heal on the same five-step

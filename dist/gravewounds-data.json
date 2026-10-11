@@ -15066,6 +15066,23 @@
    }
   },
   "endurance": 50,
+  "wounds": {
+   "start": {
+    "light": "mending",
+    "serious": "serious",
+    "critical": "grave"
+   },
+   "clock_step": {
+    "days": "serious",
+    "hours": "grave",
+    "minutes": "grave"
+   },
+   "fever_after": [
+    3,
+    5
+   ]
+  },
+  "blood_per_day": 4,
   "names": {
    "flux": "Bloody flux",
    "typhus": "Camp fever (typhus)",

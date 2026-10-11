@@ -249,9 +249,24 @@ def day(d: Data, health: dict, ctx: dict, rng, endurance: int | None = None) -> 
 
 
 def worst_step(d: Data, health: dict) -> str | None:
-    """A named character's worst step of sickness that shows (not incubating), or None."""
-    shown = [c["step"] for c in health["cases"] if c["inc"] == 0 and c["step"] > 0]
+    """A named character's worst step of sickness that shows (not incubating), or None. His
+    wounds on the wound track do not count (their own pain and impairment stand for them);
+    wound fever does."""
+    shown = [c["step"] for c in health["cases"] if c["inc"] == 0 and c["step"] > 0 and c["d"] != "wound"]
     return d.disease["steps"][max(shown)] if shown else None
+
+
+def to_camp(d: Data, health: dict, wounds: list, rng) -> dict:
+    """A named man sent to camp: each of his battle wounds ({wid, sev, lethal, infection}) not
+    already on the wound track starts there (wound_case), keyed by its wid."""
+    h, have = _copy(health), {c.get("wid") for c in health["cases"]}
+    for w in wounds:
+        if w["wid"] in have or w["sev"] not in d.disease["wounds"]["start"]:
+            continue
+        c = wound_case(d, w["sev"], w["lethal"], w["infection"], rng)
+        c["wid"] = w["wid"]
+        h["cases"].append(c)
+    return h
 
 
 def seeded_d100(seed: int):

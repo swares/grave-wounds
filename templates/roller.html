@@ -504,8 +504,9 @@ const enduranceOf = c => (Number.isFinite(c.endurance) ? c.endurance : sheetEnd(
 function sickOf(c){                               // {step, did} at his worst showing step, {incubating}, {dead}, or null
   const n = c.uid ? NAMED[c.uid] : null;
   if (!n) return null;
-  if (n.dead) return { step: "deadly", dead: true };
-  const cases = (n.health || {}).cases || [], shown = cases.filter(x => x.inc === 0 && x.step > 0);
+  if (n.dead) return { step: "deadly", dead: true, cause: n.died };
+  const cases = ((n.health || {}).cases || []).filter(x => x.d !== "wound");   // his wounds' own effects stand for them; wound fever counts
+  const shown = cases.filter(x => x.inc === 0 && x.step > 0);
   if (!shown.length) return cases.length ? { step: null, incubating: true } : null;
   const w = shown.reduce((a, b) => (b.step > a.step ? b : a));
   return { step: DZR.steps[w.step], did: w.d };
@@ -531,6 +532,42 @@ function attachNamed(c, value){                   // put him with a travel force
   writeNamed(all);
   NAMED = all;
 }
+// ----- his battle wounds in camp: on the travel map's wound track (as gravewounds.disease.to_camp) -----
+const campable = c => c.wounds.filter(w => !w.stopped && !w.camp && DZR.wounds.start[w.sev]);
+function woundCaseFor(w){                         // a wound's case on the track, as disease.wound_case
+  const W = DZR.wounds, st = k => DZR.steps.indexOf(k), [lo, hi] = W.fever_after;
+  const step = Math.max(st(W.start[w.sev]), st(W.clock_step[w.fx.lethal] || "healed"));
+  return { d: "wound", inc: 0, step, peak: 0, shown: 0, chronic: false, inf: w.fx.infection || "low", fever: lo + (d100() - 1) % (hi - lo + 1), wid: w.wid };
+}
+function toCamp(c){                               // the GM sends him to camp with his force: his wounds start on the track
+  const all = readNamed(), n = c.uid ? all[c.uid] : null;
+  if (!n) return;
+  n.health = n.health || { cases: [], immune: {}, had: {}, dead: 0 };
+  for (const w of campable(c)){
+    w.wid = w.wid || Array.from(crypto.getRandomValues(new Uint32Array(2)), x => x.toString(36)).join("");
+    n.health.cases.push(woundCaseFor(w));
+    w.camp = true;
+    w.fx.bleed = 0;                                 // the bleeding stops in camp
+    w.treated = (w.treated ? w.treated + ", " : "") + "in camp";
+  }
+  writeNamed(all);
+  NAMED = all;
+}
+function syncCamp(c){                             // what his nights in camp did: blood back, healed wounds to scars
+  const n = c.uid ? NAMED[c.uid] : null;
+  if (!n) return;
+  const nights = n.rest || 0, seen = c.restSeen || 0;
+  if (nights > seen && !n.dead) c.blood = Math.min(TRK.blood_pool, c.blood + (nights - seen) * DZR.blood_per_day);
+  c.restSeen = Math.max(seen, nights);
+  if (n.dead) return;
+  const open = new Set(((n.health || {}).cases || []).map(x => x.wid).filter(Boolean));
+  const healed = c.wounds.filter(w => w.camp && !open.has(w.wid));
+  if (!healed.length) return;
+  c.scars = [...(c.scars || []), ...healed.map(w => ({ loc: w.loc }))];
+  c.wounds = c.wounds.filter(w => !healed.includes(w));
+}
+const campStep = (c, w) => { const n = c.uid ? NAMED[c.uid] : null, k = n && ((n.health || {}).cases || []).find(x => x.wid === w.wid); return k ? DZR.names[k.d].toLowerCase() + ", " + DZR.steps[k.step] : "" };
+function syncNamed(){ NAMED = readNamed(); S.chars.forEach(syncCamp) }
 function forceSelect(c){                         // the travel-map force he goes with
   const n = c.uid ? NAMED[c.uid] : null, opts = travelForces(), cur = n ? `${n.map}:${n.force}` : "";
   if (n && !opts.some(o => o.value === cur)) opts.unshift({ value: cur, label: `a force on ${n.map}` });
@@ -540,7 +577,7 @@ function forceSelect(c){                         // the travel-map force he goes
 function sickText(c){                             // his sickness on his card, and what it does in a fight
   const s = sickOf(c);
   if (!s) return "";
-  if (s.dead) return `<span class="crit">Died of disease</span>`;
+  if (s.dead) return `<span class="crit">${s.cause === "wound" || s.cause === "fever" ? "Died of his wounds" : "Died of disease"}${s.cause ? " (" + attr((DZR.names[s.cause] || s.cause).toLowerCase()) + ")" : ""}</span>`;
   if (s.incubating) return `<span class="muted">Caught something: not showing yet</span>`;
   const rule = DZR.in_fight[s.step] || {};
   const eff = [rule.penalty ? "−" + rule.penalty + "%" : "", rule.no_run ? "cannot run" : "", rule.crawl ? "crawls, defends only" : "", rule.out ? "too ill to fight" : ""].filter(Boolean).join(", ");
@@ -555,8 +592,8 @@ function namedRow(c){                             // Endurance, the force he goe
     <label class="order" title="Goes with this force on the travel map: its days, camp, weather and marching run his sickness">With ${sel}</label>${sick}</div>`;
 }
 if (typeof window !== "undefined"){                // the travel map may have run his days
-  window.addEventListener("focus", () => { NAMED = readNamed(); renderChars() });
-  window.addEventListener("storage", e => { if (e.key === NAMED_KEY){ NAMED = readNamed(); renderChars() } });
+  window.addEventListener("focus", () => { syncNamed(); renderChars() });
+  window.addEventListener("storage", e => { if (e.key === NAMED_KEY){ syncNamed(); renderChars() } });
 }
 function cubeOf([c, r]){ const q = c - (r - (r & 1)) / 2; return [q, r, -q - r] }
 function hexDistance(a, b){ const x = cubeOf(a), y = cubeOf(b); return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2])) }
@@ -1072,7 +1109,7 @@ const attr = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").repla
 const exLink = e => e.image ? `<a class="exlink" href="${commonsUrl(e.image.file)}" target="_blank" rel="noopener" title="${attr(e.image.caption)} (Wikimedia Commons)" aria-label="Picture: ${attr(e.image.caption)} (opens Wikimedia Commons)"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="5.5" cy="6.5" r="1.4" fill="currentColor"/><path d="M2.5 12.5l4-4 3 3 2-2 2.5 2.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>picture</a>` : "";
 const exFigure = (conflict, e, size) => FIG.svg({ kit: KITS[e.kit], weapon: DATA.weapons[e.weapon], look: FIG.lookFor(conflict, e), size, title: e.name });
 const charFigure = (c, size) => FIG.svg({ kit: KITS[c.kit || "none"], weapon: c.weapon ? DATA.weapons[c.weapon] : null, look: c.look || {}, size, title: c.name,
-  wounds: c.wounds.filter(w => !w.stopped).map(w => ({ loc: w.loc, sev: w.sev })).concat(((c.sheet && c.sheet.old) || []).map(w => ({ loc: w.loc, old: true }))) });
+  wounds: c.wounds.filter(w => !w.stopped).map(w => ({ loc: w.loc, sev: w.sev })).concat([...((c.sheet && c.sheet.old) || []), ...(c.scars || [])].map(w => ({ loc: w.loc, old: true }))) });
 function readyToPlace(c){          // while setting up (or Free placement): the next map click puts him there
   if (!c || (S.turn && !S.freePlace) || S.workMode) return;
   S.placing = c.id; S.mapMsg = `Placing ${attr(c.name)}: click an empty hex on the battle map.`;
@@ -1119,11 +1156,13 @@ function fillFromSheets(){
   if (at !== undefined && at !== null) $("#in-atk").value = at;
   if (dd && dd.sheet) $("#in-def").value = dd.sheet.defence;
 }
-function sheetLine(c){                          // a team builder character's sheet, in a line or two
-  const h = c.sheet; if (!h) return "";
+function sheetLine(c){                          // a team builder character's sheet, in a line or two, and his scars
+  const h = c.sheet, scars = (c.scars || []).map(w => LOC[w.loc].name.toLowerCase());
+  if (!h) return scars.length ? `<div class="muted">Scars: ${attr(scars.join(", "))}</div>` : "";
   const stats = Object.entries(h.stats).map(([k, v]) => `${k === "wits" ? "Wit" : k[0].toUpperCase() + k.slice(1, 3)} ${v}`).join(" ");
   const skills = h.trained.map(([n, v]) => `${n} ${v}`).join(", ");
-  const old = h.old.length ? ` · old wounds: ${h.old.map(w => LOC[w.loc].name.toLowerCase()).join(", ")}` : "";
+  const olds = [...h.old.map(w => LOC[w.loc].name.toLowerCase()), ...scars];
+  const old = olds.length ? ` · old wounds: ${olds.join(", ")}` : "";
   return `<div class="wears">${attr(h.career)}, ${h.terms} term${h.terms > 1 ? "s" : ""}, age ${h.age}${h.leader ? " · leads" : ""} · ${stats}</div><div class="muted">${attr(skills)} · defence ${h.defence}%${attr(old)}</div>`;
 }
 function addTeam(){                             // the team from the team builder joins the fighters
@@ -2207,6 +2246,7 @@ function renderChars(){
         <button class="small" data-act="select" aria-pressed="${isDef}">${isDef ? "Defending" : "Defender"}</button>
         <button class="small" data-act="hand" title="Weapon hand">${(c.hand || "R") === "R" ? "Right-handed" : "Left-handed"}</button>
         ${placeButton(c)}
+        ${c.uid && NAMED[c.uid] && !NAMED[c.uid].dead && campable(c).length ? `<button class="small" data-act="tocamp" title="After the fight: his wounds go onto the travel map's wound track with his force">To camp</button>` : ""}
         <button class="small" data-act="remove">Remove</button></div>
       <div class="charid">${charFigure(c, 104)}<div style="display:flex;flex-direction:column;gap:6px">
         <div class="wears">Wears: ${kitName(c.kit || "none")}${c.weapon ? " · Fights with: " + DATA.weapons[c.weapon].name : ""}</div>
@@ -2218,7 +2258,7 @@ function renderChars(){
       <ul class="wounds">${c.wounds.map((w, j) => `<li data-j="${j}">
         <div class="w1"><span><b>${LOC[w.loc].name}</b> · ${w.sev} ${w.mech}</span><span class="pips" title="bleed">B${w.fx.bleed} P${w.fx.pain}</span></div>
         <div class="muted">${[...w.fx.impair.map(x => x.replace("_"," ")), ...["shock","fracture","severed"].filter(f => w.fx[f]).map(f => FLAG_LABEL[f] || f)].join(", ") || "no impairment"} · lethal: ${w.fx.lethal}</div>
-        <div class="treat"><button class="small" data-act="bind">Bind</button>${["arms","legs"].includes(LOC[w.loc].zone) ? `<button class="small" data-act="tourniquet">Tourniquet</button>` : ""}<button class="small" data-act="cauterise">Cauterise</button>${w.treated ? `<span class="treated">treated: ${w.treated}</span>` : ""}</div>
+        <div class="treat"><button class="small" data-act="bind">Bind</button>${["arms","legs"].includes(LOC[w.loc].zone) ? `<button class="small" data-act="tourniquet">Tourniquet</button>` : ""}<button class="small" data-act="cauterise">Cauterise</button>${w.treated ? `<span class="treated">treated: ${w.treated}</span>` : ""}${w.camp && campStep(c, w) ? `<span class="treated">healing: ${campStep(c, w)}</span>` : ""}</div>
       </li>`).join("") || `<li class="muted">No wounds yet. Roll a hit and apply it.</li>`}</ul>
     </div>`;
   }).join("") || `<p class="muted">Add a combatant to start tracking wounds.</p>`;
@@ -2242,6 +2282,7 @@ $("#chars").addEventListener("click", e => {
     const was = !!c.leader; S.chars.forEach(x => { if (sideOf(x) === sideOf(c)) x.leader = false }); c.leader = !was; renderChars() }
   else if (act === "clearstate"){ c.state = null; renderChars() }
   else if (act === "up" || act === "down"){ if (moveChar(ci, act === "up" ? ci - 1 : ci + 1)) renderChars() }
+  else if (act === "tocamp"){ toCamp(c); renderChars() }
   else if (act === "remove"){
     if (c.uid && NAMED[c.uid]) attachNamed(c, "");   // he leaves his travel-map force too
     S.chars.splice(ci, 1);
@@ -2345,6 +2386,16 @@ function fillWeapons(){
   $("#sel-weapon").innerHTML = `<optgroup label="This fight">${own.map(opt).join("")}</optgroup>`
     + (cc.length ? `<optgroup label="Close combat, any era">${cc.map(opt).join("")}</optgroup>` : "");
 }
+function startExamples(){                       // example combatants from this conflict, so the tracker shows what it does
+  const conf = DATA.conflicts[DATA.tables[S.table].battle] || {}, ex = conf.examples || [];
+  const pick = [ex[0], ex[ex.length - 1]].filter(Boolean);
+  S.chars = pick.map(x => newChar("Example: " + x.name, x.kit, x.weapon, FIG.lookFor(conf, x), x.side));
+  if (!S.chars.length) return;
+  selectChar(0);
+  if (S.chars.length > 1) setAttacker(S.chars.length - 1);
+  S.weapon = (pick[1] || pick[0]).weapon; fillWeapons();
+  for (let i = 0; i < 12 && !applyHit(S.chars[0], (rollHit(), S.hit)); i++);
+}
 function init(){
   const ids = Object.keys(DATA.tables);   // already in data order
   S.table = ids.find(i => DATA.tables[i].variant === "adjusted") || ids[0];
@@ -2443,18 +2494,8 @@ function init(){
   try{ S.handoff = JSON.parse(localStorage.getItem("gravewounds-handoff") || "null") }catch(e){ S.handoff = null }
   try{ S.teamIn = JSON.parse(localStorage.getItem("gravewounds-team-handoff") || "null") }catch(e){ S.teamIn = null }
 
-  if (!restore()){
-    // Example combatants from this conflict so the tracker shows what it does; remove them any time.
-    const conf = DATA.conflicts[DATA.tables[S.table].battle] || {}, ex = conf.examples || [];
-    const pick = [ex[0], ex[ex.length - 1]].filter(Boolean);
-    S.chars = pick.map(x => newChar("Example: " + x.name, x.kit, x.weapon, FIG.lookFor(conf, x), x.side));
-    if (S.chars.length){
-      selectChar(0);
-      if (S.chars.length > 1) setAttacker(S.chars.length - 1);
-      S.weapon = (pick[1] || pick[0]).weapon; fillWeapons();
-      for (let i = 0; i < 12 && !applyHit(S.chars[0], (rollHit(), S.hit)); i++);
-    }
-  }
+  if (restore()) syncNamed();                // his nights in camp on the travel map
+  else startExamples();
   applyFieldHeroes();
   unitToggle($("#units-toggle"), () => { renderResult(); renderChars() });
   const att = attackerChar();

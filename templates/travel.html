@@ -833,7 +833,10 @@ function namedNight(f, ctx, factors){          // the day (and on the week's las
     const e = Number.isFinite(n.endurance) ? n.endurance : DZ.endurance;
     const r = healthDay(n.health || newHealth(), ctx, roll100, e);
     n.health = r.health;
-    const bits = [...tallyText(r.events.shown, "fell ill").map(s => s.replace(/^1 /, "")), ...tallyText(r.events.healed, "recovered").map(s => s.replace(/^1 /, ""))];
+    n.rest = (n.rest || 0) + 1;                   // a night with the force: the roller gives him back some blood
+    if (r.health.dead) n.died = Object.keys(r.events.dead)[0];
+    const one = (o, verb) => Object.entries(o).map(([did, k]) => `${verb} (${k > 1 ? k + " " : ""}${dzShort(did)})`);   // a man, not a force
+    const bits = [...one(r.events.shown, "fell ill"), ...one(r.events.healed, "recovered")];
     if (r.health.dead){ n.dead = true; bits.push(`died (${Object.keys(r.events.dead).map(dzShort).join(", ")})`) }
     if (factors && !n.dead){
       const w = healthWeek(n.health, 1, factors, roll100, e);
