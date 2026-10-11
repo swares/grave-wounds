@@ -82,7 +82,7 @@ attack. Stepping back 1 hex is a careful withdrawal and draws no free attack.
 **Reach and range.**
 
 - Close-combat weapons strike enemies within their reach. Reach 1 is the next hex;
-  spears, bills and lances have reach 2.
+  spears, bills and lances have reach 2, the pike 3.
 - Missile weapons have short, medium and long range in hexes: +0, −20% and −40% to hit.
   There is no shot past long range.
 - **In the way.** Each fighter standing on the line between a shooter and his target

@@ -395,7 +395,7 @@ Confidence: **Historical - taken directly from a source** · Armour: **allowed**
 
 Source: 
 
-**Close combat:** Dagger: roll location on *Knife assault - stab wounds (forensic)*. Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
+**Close combat:** Pike, Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted* with Target has no shield applied. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
 
 **Reading it:** The men wore little or no armour ('insufficient head protection', the authors note), so armour can be applied. This is bone evidence: wounds to soft tissue, above all the belly and chest, left no mark, so the trunk is under-counted. Some blunt facial fractures may come from the burial rather than the battle. For play, use the all-hits table.
 
@@ -441,7 +441,7 @@ Confidence: **Extrapolated - design estimate from analogous evidence** · Armour
 | Foot (left) | 97-98 | 97-98 |
 | Foot (right) | 99-00 | 99-00 |
 
-**Close combat:** Sabre, Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Musket butt, Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted* with Target has no shield applied. Artillery: roll location on *Napoleonic era - all hits (gameplay)*. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
+**Close combat:** Sabre, Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Musket butt, Pike, Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted* with Target has no shield applied. Artillery: roll location on *Napoleonic era - all hits (gameplay)*. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
 
 **Reading it:** Use this table for gunfire in play; armour applies (cuirassier, harquebusier and pikeman kits). Sabres and clubbed muskets roll on their own tables (the Peninsular records and the Visby melee table).
 
@@ -4290,6 +4290,7 @@ Penalties add up; each total is capped at -60%.
 | Axe (hand or long-hafted) | reach 1 |
 | Spiked club / morning star (knout) | reach 1 |
 | Spear / lance | reach 2 |
+| Pike (long infantry pike, 1450s-1700) | reach 3 |
 | Bill (English bill, hooked polearm) | reach 2 |
 | Poleaxe (axe, hammer and spike) | reach 1 |
 | Bow (war arrows) | 15 / 40 / 90 hexes (33 / 87 / 197 yd; 30 / 80 / 180 m) |
@@ -4685,7 +4686,7 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 | Musket | Agility / 2 | matchlock, musket butt |
 | Pistol | Agility / 2 | pistol/carbine |
 | Blade | Agility / 2 | sabre, dagger |
-| Pike | Strength / 2 | spear |
+| Pike | Strength / 2 | spear, pike |
 | Brawl | Strength / 2 | punch, kick, elbow/knee |
 | Parry | Agility / 2 |  |
 | Dodge | Agility / 3 |  |
@@ -4794,7 +4795,7 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 | Career | The Swedish army | The Imperial army and the Catholic League |
 |---|---|---|
 | Musketeer | Unarmoured; matchlock | Unarmoured; matchlock |
-| Pikeman | Pikeman: morion and corslet; sabre | Pikeman: morion and corslet; sabre |
+| Pikeman | Pikeman: morion and corslet; pike | Pikeman: morion and corslet; pike |
 | Cuirassier | Cuirassier, three-quarter armour; pistol/carbine | Cuirassier, three-quarter armour; pistol/carbine |
 | Harquebusier or light horseman | Harquebusier: buff coat, breastplate, pot helmet; pistol/carbine | Harquebusier: buff coat, breastplate, pot helmet; pistol/carbine |
 | Dragoon | Unarmoured; matchlock | Unarmoured; matchlock |
@@ -5282,6 +5283,7 @@ Sources: Visby kit contents follow the finds summarised in Thordeman (1939): mai
 | Axe (hand or long-hafted) | 01-85 | - | 86-00 | - | melee: armed |
 | Spiked club / morning star (knout) | - | 01-45 | 46-00 | - | melee: armed |
 | Spear / lance | 01-10 | 11-00 | - | - | melee: armed |
+| Pike (long infantry pike, 1450s-1700) | - | 01-95 | 96-00 | - | melee: armed |
 | Bill (English bill, hooked polearm) | 01-60 | 61-90 | 91-00 | - | melee: armed |
 | Poleaxe (axe, hammer and spike) | 01-20 | 21-55 | 56-00 | - | melee: armed |
 | Bow (war arrows) | 01-05 | 06-00 | - | - | - |

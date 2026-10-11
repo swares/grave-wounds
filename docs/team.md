@@ -108,8 +108,9 @@ region takes its war's wound table, for old wounds and for the roller.
 
 Brawl, Parry, Dodge and the skills outside a fight (Leechcraft, Fieldcraft, Watch, Stealth
 and the rest) carry over; Bow, Crossbow, Axe and Sling stay medieval. Gunnery is the
-artillerymen's skill. The wound tables have no pike wounds, so a pikeman fights with his sword
-in the roller; his Pike skill stands for the push of pike. On the frontier, gunshots roll on
+artillerymen's skill. The wound tables have no pike wounds, so the pike rolls on the Visby
+melee table as a long spear (reach 3, no shield, more thrusts to the face and chest); a
+pikeman fights with it at his Pike skill, his sabre second. On the frontier, gunshots roll on
 the Civil War table, as the arrow-wound records have none. Their kits: cuirassiers,
 harquebusiers and pikemen in the 1630s armours; dragoons with helmets and the French with
 cuirasses; everyone else unarmoured.

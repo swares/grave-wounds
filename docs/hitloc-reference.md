@@ -276,7 +276,11 @@ knife-assault table, unarmed strikes on the MMA table). A weapon can name its ow
 - the sharpened entrenching tool and the clubbed musket roll on the Visby gameplay-adjusted
   table (chops and blows), with `fallback_mods: [no_shield]` applied automatically because
   their users carry no shield. No wound-location data exists for either;
-- the bill and poleaxe roll on the Towton gameplay-adjusted table.
+- the bill and poleaxe roll on the Towton gameplay-adjusted table;
+- the pike rolls on the Visby gameplay-adjusted table as a long spear, with no shield and
+  more thrusts to the face and chest. No count of pike wounds was found. It is offered only
+  on the tables of its era: a table's `era_melee` lists close-combat weapons it offers beyond
+  those offered everywhere (the Thirty Years' War tables offer the pike).
 
 A table's `native` says what its own data is (armed, unarmed or gunfire; gunfire covers
 any shooting, arrows included); `also_native` adds further kinds, e.g. the Peninsular table

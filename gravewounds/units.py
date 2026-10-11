@@ -56,7 +56,7 @@ def _wound(d: Data, att: dict, dfd: dict, margin: int, critical: bool, rng: rand
     """One blow that got through: roll it, then the stop check and death."""
     h = roll_hit(d, att["table"], att["weapon"], rng=rng, kit=dfd.get("kit"), margin=margin,
                  critical=critical, shield=dfd.get("shield"))
-    sev = h["severity"]
+    sev, modern = h["severity"], att["weapon"] in d.units["modern_fire"]["weapons"]
     if sev == "stopped":
         t["stopped"] += 1
         return
@@ -66,11 +66,10 @@ def _wound(d: Data, att: dict, dfd: dict, margin: int, critical: bool, rng: rand
         t["dead"] += 1
         t["down"] += 1
         return
-    if sev == "light" or h["graze"]:
-        _hurt(t, "light" if h["graze"] else sev, h["effects"], False)
+    if h["graze"] or (sev == "light" and not modern):
+        _hurt(t, "light", h["effects"], False)
         return
-    nerve = quality(d, dfd["quality"])["nerve"] - (10 if sev == "critical" else 0)
-    down = rng.randint(1, 100) > nerve
+    down = (modern and sev != "light") or rng.randint(1, 100) > quality(d, dfd["quality"])["nerve"] - (10 if sev == "critical" else 0)
     if down:
         t["down"] += 1
     _hurt(t, sev, h["effects"], down)

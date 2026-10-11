@@ -188,9 +188,11 @@ def load(root: str | Path = "data") -> Data:
 # Weapon availability and location multipliers
 # --------------------------------------------------------------------------
 def available_weapons(d: Data, tid: str) -> list[str]:
-    """The table's own weapons, those it borrows from another table (`borrowed`), then the
-    close-combat weapons offered everywhere."""
-    own = list(d.tables[tid]["weapons"]) + [w for w in d.tables[tid].get("borrowed") or {} if w not in d.tables[tid]["weapons"]]
+    """The table's own weapons, those it borrows from another table (`borrowed`), the
+    close-combat weapons of its era (`era_melee`), then those offered everywhere."""
+    t = d.tables[tid]
+    own = list(t["weapons"]) + [w for w in t.get("borrowed") or {} if w not in t["weapons"]]
+    own += [w for w in t.get("era_melee") or [] if w not in own]
     return own + [w for w in d.melee_everywhere if w not in own]
 
 
@@ -542,6 +544,9 @@ def validate(d: Data) -> None:
         for wid in t.get("weapons", []):
             if wid not in d.weapons:
                 errors.append(f"tables/{tid}: unknown weapon {wid}")
+        for wid in t.get("era_melee") or []:
+            if wid not in d.weapons or not d.weapons[wid].get("melee_table"):
+                errors.append(f"tables/{tid}: era_melee {wid} needs a close-combat weapon with a melee_table")
         for wid, src in (t.get("borrowed") or {}).items():
             if wid not in d.weapons or src not in d.tables or wid not in d.tables[src]["weapons"]:
                 errors.append(f"tables/{tid}: borrowed {wid} needs a weapon that table {src} lists as its own")
@@ -814,6 +819,7 @@ def _units_errors(d: Data) -> list[str]:
             errors.append(f"units.yaml: missile rate for {wid}, which is not a weapon with a range")
     order = d.wounds["vocabulary"]["lethal"]["order"]
     errors += [f"units.yaml: dead_if names unknown lethality {x}" for x in U.get("dead_if", []) if x not in order]
+    errors += [f"units.yaml: modern_fire names unknown weapon {w}" for w in U.get("modern_fire", {}).get("weapons", []) if w not in d.weapons]
     if not isinstance(U.get("rout", {}).get("exchanges"), int):
         errors.append("units.yaml: rout.exchanges must be a whole number")
     return errors + _units_extra_errors(d)
@@ -906,7 +912,7 @@ def _career_errors(d: Data, era: dict, where: str, c: dict, chars: set, skills: 
         errors.append(f"{where}: career {c['id']} terms must rise to 100 and name known skills")
     for r in T["regions"]:
         kit, wpn = c["kit"].get(r["id"], c["kit"]["default"]), c["weapon"].get(r["id"], c["weapon"]["default"])
-        if kit not in d.armor["kits"] or wpn not in d.tables[r["table"]]["weapons"] or c["wound_weapon"] not in d.tables[r["table"]]["weapons"]:
+        if kit not in d.armor["kits"] or wpn not in available_weapons(d, r["table"]) or c["wound_weapon"] not in d.tables[r["table"]]["weapons"]:
             errors.append(f"{where}: career {c['id']} in {r['id']}: kit {kit}, weapon {wpn} or wound weapon {c['wound_weapon']} not usable there")
     return errors
 

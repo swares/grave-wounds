@@ -498,6 +498,48 @@
     }
    ]
   },
+  "pike": {
+   "id": "pike",
+   "name": "Pike (long infantry pike, 1450s-1700)",
+   "short": "Pike",
+   "icon": "spear",
+   "reach": 3,
+   "era": "1450s-1700",
+   "melee": "armed",
+   "melee_table": "visby-1361-adjusted",
+   "fallback_mods": [
+    "no_shield"
+   ],
+   "mechanisms": {
+    "pierce": 95,
+    "crush": 5
+   },
+   "zone_bias": {
+    "head": 1.1,
+    "torso": 1.5,
+    "arms": 0.8,
+    "legs": 0.6
+   },
+   "loc_bias": {
+    "face": 1.5
+   },
+   "confidence": "extrapolated",
+   "notes": "The pike of the pike-and-shot armies, 15-18 feet (4.5-5.5 m) long, couched or levelled at chest and face height; no count of pike wounds was found, so it rolls on the Visby melee table as a spear, with no shield (pikemen carried none) and more thrusts to the face and chest. Offered on the tables of its era (a table's era_melee).\n",
+   "mech_ranges": [
+    {
+     "id": "pierce",
+     "pct": 95,
+     "lo": 1,
+     "hi": 95
+    },
+    {
+     "id": "crush",
+     "pct": 5,
+     "lo": 96,
+     "hi": 100
+    }
+   ]
+  },
   "bill": {
    "id": "bill",
    "name": "Bill (English bill, hooked polearm)",
@@ -2843,6 +2885,34 @@
      0.6,
      0.6
     ],
+    "pike": [
+     1.1,
+     1.1,
+     1.6500000000000001,
+     1.1,
+     1.5,
+     1.5,
+     1.5,
+     1.5,
+     1.5,
+     1.5,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.6,
+     0.6,
+     0.6,
+     0.6,
+     0.6,
+     0.6,
+     0.6,
+     0.6
+    ],
     "sling": [
      1.5,
      1.5,
@@ -3797,6 +3867,7 @@
     "matchlock_musket",
     "saber",
     "musket_butt",
+    "pike",
     "dagger",
     "bayonet",
     "sword",
@@ -3818,6 +3889,7 @@
     "matchlock_musket": "lutzen-1632-mass-grave",
     "saber": "lutzen-1632-mass-grave",
     "musket_butt": "lutzen-1632-mass-grave",
+    "pike": "visby-1361-adjusted",
     "dagger": "knife-assault",
     "bayonet": "peninsular-1808-14-officers",
     "sword": "visby-1361-adjusted",
@@ -4175,6 +4247,7 @@
     "saber",
     "musket_butt",
     "artillery_smoothbore",
+    "pike",
     "dagger",
     "bayonet",
     "sword",
@@ -4197,6 +4270,7 @@
     "saber": "peninsular-1808-14-officers",
     "musket_butt": "visby-1361-adjusted",
     "artillery_smoothbore": "peninsular-1808-14-all-hits",
+    "pike": "visby-1361-adjusted",
     "dagger": "knife-assault",
     "bayonet": "peninsular-1808-14-officers",
     "sword": "visby-1361-adjusted",
