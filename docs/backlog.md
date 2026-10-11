@@ -9,12 +9,9 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **A big camp at a crossing can push the river to the map's edge.** The camp stays in the
-  map's middle and the map stops at 80 by 60 hexes, so beside a large camp the river is
-  narrowed and may run partly off the map, and the attackers' far bank barely shows. One way:
-  move the camp off the middle, away from the river.
-- **Attackers in the defenders' own travel hex come in at their side's far edge**, not from
-  the way they marched. One way: send the hex they marched in from.
+- **A camp too big for the battle map hides the river at a crossing.** Only the stretch with
+  its gate is shown, laid out as before, so the river beside it falls off the map. One way:
+  show the stretch facing the river and the crossing instead.
 - **Taking cover lasts until the man moves or strikes in close combat.** He can keep shooting
   from it on later turns, as a man firing prone would; there is no rule yet for the time it
   takes to get up.
