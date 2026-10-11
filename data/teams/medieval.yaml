@@ -206,6 +206,7 @@ careers:
     wound_weapon: sword
     kit: {default: hauberk, baltic: gotland_armoured, england: brigandine_sallet, france: transitional}
     weapon: {default: spear}
+    mounted: true            # his followers fight on the field map as a mounted unit
     terms:
       - {to: 20, skill: polearm, text: "Rode in a charge with couched spears."}
       - {to: 40, skill: fieldcraft, text: "Carried messages across hostile country."}
@@ -334,23 +335,42 @@ old_wound:
 lasting: 5
 lasting_from: {head: wits, face: pres, arms: str, legs: agi, torso: end}
 
+# Followers: the men of a big team who fight with it but get no sheet, only a line: a career
+# (for his kit and weapon, by region), a name, and a quality rolled on d100 that gives his
+# attack, defence and Nerve (the field map's unit qualities, units.yaml). A template's
+# `follower_quality` picks the table (default if none). Design estimates.
+followers:
+  quality:
+    default:  [{to: 30, quality: green}, {to: 80, quality: regular}, {to: 100, quality: veteran}]
+    hardened: [{to: 15, quality: green}, {to: 60, quality: regular}, {to: 100, quality: veteran}]
+    raw:      [{to: 55, quality: green}, {to: 90, quality: regular}, {to: 100, quality: veteran}]
+
 # Team templates: a team of four to six. Each slot: a career and terms (the first slot leads).
+# followers: how many of each career come with it (the GM can change them on the page).
 templates:
   - id: retinue
     name: "A lord's retinue"
     slots: [[man_at_arms, 3], [archer, 2], [archer, 1], [spearman, 1], [barber_surgeon, 1], [servant, 1]]
+    followers: [[archer, 8], [spearman, 4], [servant, 2]]
   - id: free_company
     name: "A free company"
     slots: [[mercenary, 3], [mercenary, 2], [crossbowman, 2], [archer, 1], [spearman, 1]]
+    followers: [[mercenary, 6], [crossbowman, 4], [archer, 2]]
+    follower_quality: hardened
   - id: garrison
     name: "A garrison patrol"
     slots: [[mounted_sergeant, 3], [crossbowman, 2], [crossbowman, 1], [spearman, 1], [clerk, 1]]
+    followers: [[crossbowman, 4], [spearman, 4], [mounted_sergeant, 2]]
   - id: muster
     name: "A farmers' muster"
     slots: [[spearman, 3], [spearman, 1], [spearman, 1], [archer, 1], [forester, 1]]
+    followers: [[spearman, 10], [archer, 4]]
+    follower_quality: raw
   - id: escort
     name: "A pilgrims' escort"
     slots: [[man_at_arms, 3], [mounted_sergeant, 2], [crossbowman, 1], [clerk, 1], [barber_surgeon, 1]]
+    followers: [[mounted_sergeant, 3], [crossbowman, 3], [servant, 2]]
   - id: traders
     name: "A merchant's company"
     slots: [[merchant, 3], [sailor, 2], [crossbowman, 1], [servant, 1]]
+    followers: [[sailor, 4], [crossbowman, 2], [servant, 2]]

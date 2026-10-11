@@ -103,6 +103,35 @@ def make_character(d: Data, eid: str, region: str, career_id: str, terms: int, m
     return finish(d, c)
 
 
+def make_follower(d: Data, eid: str, region: str, career_id: str, table: str, rng) -> dict:
+    """One follower: a quality (d100 on the followers' `table`), then a name and a look, in
+    that order (team.js the same). His attack, defence and Nerve are the quality's (units.yaml);
+    his kit and weapon his career's in his region."""
+    T = era(d, eid)
+    career = _by_id(T["careers"], career_id)
+    quality = _pick(T["followers"]["quality"][table], rng.randint(1, 100))["quality"]
+    q = d.units["quality"][quality]
+    reg = _by_id(T["regions"], region)
+    name = f"{reg['names'][rng.randint(1, len(reg['names'])) - 1]} {reg['bynames'][rng.randint(1, len(reg['bynames'])) - 1]}"
+    beards = ["", "moustache", "beard", "stubble"]
+    look = {"colour": reg["colours"][rng.randint(1, len(reg["colours"])) - 1], "beard": beards[rng.randint(1, 4) - 1]}
+    kit, weapon = kit_for(career, region)
+    return {"name": name, "career": career_id, "quality": quality, "attack": q["attack"], "defence": q["defence"],
+            "nerve": q["nerve"], "kit": kit, "weapon": weapon, "look": look, "mounted": bool(career.get("mounted"))}
+
+
+def make_followers(d: Data, eid: str, region: str, counts: list, table: str, rng) -> list[dict]:
+    """The followers: counts [[career, n], ...], in order."""
+    return [make_follower(d, eid, region, cid, table, rng) for cid, n in counts for _ in range(n)]
+
+
+def follower_line(d: Data, f: dict, eid: str = "medieval") -> str:
+    """A follower in one line: "John Archer, archer, regular: bow 50%, defence 35%, Nerve 50; jack and sallet"."""
+    career = _by_id(era(d, eid)["careers"], f["career"])
+    return (f"{f['name']}, {career['name'].lower()}, {f['quality']}: {d.weapons[f['weapon']]['short'].lower()} {f['attack']}%, "
+            f"defence {f['defence']}%, Nerve {f['nerve']}; {d.armor['kits'][f['kit']]['name'].split(' (')[0].lower()}")
+
+
 def _old_wound(d: Data, tables: dict, ranges: list, weapon: str, stat_mods: dict, rng) -> dict:
     """An old wound: where (the region's table), then a healed mark or a lasting hurt."""
     T = tables

@@ -1917,10 +1917,14 @@ function fillFromSheets(){
   const a = attackerChar(), dd = defenderChar();
   const at = a && a.sheet ? a.sheet.attack_by[S.weapon] : undefined;
   if (at !== undefined && at !== null) $("#in-atk").value = at;
+  else if (a && a.follower) $("#in-atk").value = a.follower.attack;   // a follower: his quality's attack, whatever the weapon
   if (dd && dd.sheet) $("#in-def").value = dd.sheet.defence;
+  else if (dd && dd.follower) $("#in-def").value = dd.follower.defence;
 }
 function sheetLine(c){                          // a team builder character's sheet, in a line or two, and his scars
   const h = c.sheet, scars = (c.scars || []).map(w => LOC[w.loc].name.toLowerCase());
+  const fo = c.follower;
+  if (fo) return `<div class="wears">Follower: ${attr(fo.career.toLowerCase())}, ${attr(fo.quality)} · attack ${fo.attack}% · defence ${fo.defence}%</div>`;
   if (!h) return scars.length ? `<div class="muted">Scars: ${attr(scars.join(", "))}</div>` : "";
   const stats = Object.entries(h.stats).map(([k, v]) => `${k === "wits" ? "Wit" : k[0].toUpperCase() + k.slice(1, 3)} ${v}`).join(" ");
   const skills = h.trained.map(([n, v]) => `${n} ${v}`).join(", ");
@@ -1938,10 +1942,18 @@ function addTeam(){                             // the team from the team builde
     c.blood = poolOf(c);                           // his Endurance sets his Blood
     S.chars.push(c);
   }
+  for (const f of t.followers || []){             // followers: a line each, no sheet
+    const c = newChar(f.name, f.kit, f.weapon, f.look, t.side);
+    c.nerve = f.nerve; c.rating = f.quality in RATINGS ? f.quality : "custom";
+    c.follower = { career: f.careerName || f.career, quality: f.quality, attack: f.attack, defence: f.defence };
+    S.chars.push(c);
+  }
   placeUnplaced();
   S.teamIn = null;
   try{ localStorage.removeItem("gravewounds-team-handoff") }catch(e){}
-  S.mapMsg = `${t.team.length} fighters from the team builder joined ${t.side}.`;
+  const nf = (t.followers || []).length;
+  const plus = nf ? " and " + nf + " followers" : "";
+  S.mapMsg = `${t.team.length} fighters from the team builder${plus} joined ${t.side}.`;
   renderChars();
 }
 function switchTable(tid){
@@ -2918,7 +2930,7 @@ function renderMap(){
     bits.push(`<span class="free"><b>From the travel map:</b> ${attr(h.force.name)} (${h.force.men} men)${alliesBit} at ${attr(h.place)}${campBit}, ${h.day}, ${h.time}${foesBit}. Set up the fight here? This replaces the fighters and works on this page.</span><button class="small" data-map="handoff">Set up the fight</button><button class="small" data-map="nohandoff">Not now</button>`);
   }
   if (S.teamIn){
-    const names = S.teamIn.team.map(m => attr(m.name)).join(", ");
+    const nf = (S.teamIn.followers || []).length, names = S.teamIn.team.map(m => attr(m.name)).join(", ") + (nf ? `, and ${nf} followers` : "");
     bits.push(`<span class="free"><b>From the team builder:</b> ${names}, for ${attr(S.teamIn.side)}. Add them to the fighters here?</span><button class="small" data-map="addteam">Add the team</button><button class="small" data-map="noteam">Not now</button>`);
   }
   const f = (S.free || [])[0];

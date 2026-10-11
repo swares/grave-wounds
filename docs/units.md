@@ -199,7 +199,9 @@ clock on by the battle's length (a minute an exchange). The numbers are in
 
 ## Heroes
 
-Named fighters from the wound roller can join a unit (**Heroes**, during set-up). Each
+Named fighters from the wound roller can join a unit (**Heroes**, during set-up). A team
+from the team builder can also come straight here with its followers as units and its men
+as their heroes (see [team.md](team.md), *Followers*). Each
 keeps his own attack and defence (from his experience: green 40/25, regular 50/35, veteran
 60/45, and the GM can change them), his Nerve, weapon and armour. He is extra to the
 unit's men. Where he stands decides what he does:

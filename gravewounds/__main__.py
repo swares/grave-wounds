@@ -74,11 +74,17 @@ def _main(argv=None) -> int:
 
     if a.cmd == "team":
         import random
-        from .team import make_team, sheet
+        from .team import era, follower_line, make_followers, make_team, sheet
         from .units import SeededDice
         rng = SeededDice(a.seed) if a.seed is not None else random.Random()
         for c in make_team(d, a.era, a.region, a.template, "array" if a.array else "roll", rng):
             print("\n".join(sheet(d, c)) + "\n")
+        tpl = next(t for t in era(d, a.era)["templates"] if t["id"] == a.template)
+        crew = make_followers(d, a.era, a.region, tpl.get("followers", []), tpl.get("follower_quality", "default"), rng)
+        if crew:
+            print(f"Followers ({len(crew)}):")
+            for f in crew:
+                print("  " + follower_line(d, f, a.era))
         return 0
     if a.cmd == "disease":
         from .disease import seeded_d100, simulate

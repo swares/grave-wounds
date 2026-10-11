@@ -34,5 +34,4 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Character generation, beyond the first cut.** The medieval tables are a first draft for
   a team playtest. Its characteristics now count in the roller (Agility, Endurance,
   Strength, Presence), and Leechcraft, Fieldcraft, Watch and Stealth work outside a fight.
-  Still to come: tables for the other eras, and followers' one-line stat blocks for big
-  teams.
+  Followers have one-line stat blocks. Still to come: tables for the other eras.
