@@ -9,7 +9,9 @@
 // branch, the woods and the ridge are drawn by hand to that shape, not traced from any map, and
 // are approximate. The deployment is the early afternoon, when the Union batteries had been
 // pushed onto the hill near the Henry house, in our own words; numbers are round figures for
-// play, the guns among them.
+// play, the guns among them. The two Union batteries are rifled (Ricketts's six 10-pounder
+// Parrotts; Griffin's a mix, set rifled here); the Confederate guns, mostly 6-pounders and
+// howitzers, are left smoothbore.
 import { N, S, wobble, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
 
 const COLS = 140, ROWS = 130;                 // 1400 m east to west, about 1130 m north to south
@@ -36,8 +38,8 @@ const units = [
   unit("Hampton's Legion", CSA, 600, RIFLE, [15, 104, 70]),
   unit("Bee's and Bartow's men, rallied", CSA, 1000, RIFLE, [25, 82, 100]),
   unit("Stuart's cavalry", CSA, 300, { ...RIFLE, weapon: "saber", mounted: true, quality: "regular" }, [10, 12, 116]),
-  unit("Ricketts's battery", USA, 70, GUNS, [3, 62, 52]),
-  unit("Griffin's battery", USA, 60, GUNS, [3, 46, 54]),
+  unit("Ricketts's battery (10-pounder Parrotts)", USA, 70, { ...GUNS, guns: "rifled" }, [3, 62, 52]),
+  unit("Griffin's battery (rifles and howitzers)", USA, 60, { ...GUNS, guns: "rifled" }, [3, 46, 54]),
   unit("11th New York (Fire Zouaves)", USA, 900, RIFLE, [22, 30, 48]),
   unit("US Marines", USA, 350, RIFLE, [9, 52, 46]),
   unit("14th Brooklyn", USA, 700, RIFLE, [18, 80, 46]),

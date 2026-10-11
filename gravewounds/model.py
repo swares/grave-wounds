@@ -946,16 +946,23 @@ def _field_travel_errors(d: Data, f: dict, where: str) -> list[str]:
     return errors
 
 
+def _unit_spec_errors(d: Data, f: dict, where: str, u: dict) -> list[str]:
+    """One unit as drawn up: side and men, arms the tables offer, armour, quality, formation, guns."""
+    U, errors = d.units, []
+    if u.get("side") not in (0, 1) or not isinstance(u.get("men"), int) or u["men"] < 1:
+        errors.append(f"{where}: unit {u.get('name')} needs side 0 or 1 and men")
+    if u.get("weapon") not in available_weapons(d, f["table"]) or u.get("kit") not in d.armor["kits"]:
+        errors.append(f"{where}: unit {u.get('name')} has a weapon the {f['table']} tables do not offer, or an unknown kit")
+    if u.get("quality") not in U["quality"] or u.get("formation") not in U["formations"]:
+        errors.append(f"{where}: unit {u.get('name')} has an unknown quality or formation")
+    if u.get("guns", "smoothbore") not in ("smoothbore", "rifled", "howitzer"):
+        errors.append(f"{where}: unit {u.get('name')} has guns other than smoothbore, rifled or howitzer")
+    return errors
+
+
 def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_units, fits) -> list[str]:
     """The armies as drawn up: known arms, armour and formations, each unit standing where it can."""
-    errors, U = [], d.units
-    for u in f.get("units", []):
-        if u.get("side") not in (0, 1) or not isinstance(u.get("men"), int) or u["men"] < 1:
-            errors.append(f"{where}: unit {u.get('name')} needs side 0 or 1 and men")
-        if u.get("weapon") not in available_weapons(d, f["table"]) or u.get("kit") not in d.armor["kits"]:
-            errors.append(f"{where}: unit {u.get('name')} has a weapon the {f['table']} tables do not offer, or an unknown kit")
-        if u.get("quality") not in U["quality"] or u.get("formation") not in U["formations"]:
-            errors.append(f"{where}: unit {u.get('name')} has an unknown quality or formation")
+    errors = [e for u in f.get("units", []) for e in _unit_spec_errors(d, f, where, u)]
     if errors:
         return errors
     field, units = battlefield(d, f["id"]), battlefield_units(d, f["id"])

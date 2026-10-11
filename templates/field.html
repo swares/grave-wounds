@@ -93,7 +93,7 @@ button:disabled{opacity:.45;cursor:default}
 .log li.hero{border-left-color:var(--blood)}
 fieldset{border:0;margin:0;padding:0;min-width:0}
 .banner{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:1px solid var(--line);border-left:3px solid var(--steel);border-radius:3px;padding:8px 10px;font-size:.9rem}
-.banner[hidden],label.check[hidden]{display:none}
+.banner[hidden],label.check[hidden],#guns-box[hidden]{display:none}
 .forces{list-style:none;margin:0;padding:0;font-size:.9rem;display:flex;flex-direction:column;gap:4px}
 .forces .meta{float:right;font:500 .75rem var(--mono);color:var(--muted)}
 .after{font-size:.9rem;margin:0;padding-left:1.1rem}
@@ -243,7 +243,8 @@ legend{padding:0}
         </div>
         <div class="toolbar">
           <label class="check"><input type="checkbox" id="chk-mounted"> Mounted</label>
-          <label class="check" id="howitzer-box" hidden title="Howitzers fire shell in a high arc over anything between, and canister close in"><input type="checkbox" id="chk-howitzer"> Howitzers</label>
+          <span id="guns-box" hidden><label for="sel-guns" class="sr">Guns</label><select id="sel-guns" title="Smoothbores fire round shot; rifled guns reach further with percussion shell; howitzers fire shell over anything between" style="width:auto">
+            <option value="smoothbore">Smoothbore guns</option><option value="rifled">Rifled guns</option><option value="howitzer">Howitzers</option></select></span>
           <button id="btn-add">Add unit</button>
         </div>
       </fieldset>
@@ -283,7 +284,7 @@ const dice = {                                     // real dice for play
 let S = null, HANDOFF = null;                      // HANDOFF: a fight sent from the travel map, waiting for the GM
 function newUnit(o){
   return { id: S.seq++, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
-    kit: o.kit, formation: o.formation, mounted: !!o.mounted, howitzer: !!o.howitzer && isGun(o.weapon), width: o.width || Math.ceil(o.men / FD.units.formations[o.formation].per_hex),
+    kit: o.kit, formation: o.formation, mounted: !!o.mounted, guns: isGun(o.weapon) ? gunKind(o) : undefined, width: o.width || Math.ceil(o.men / FD.units.formations[o.formation].per_hex),
     pos: o.pos, facing: o.facing, state: "steady", charged: false };
 }
 function newField(){                              // open ground of the default size (and the page goes back to that size)
@@ -800,6 +801,7 @@ function unitMeta(u){
   const down = u.down ? " · " + u.down + " down" : "", br = u.breach ? " · breaching" : "";
   return `${u.men}/${u.start} · ${u.state}${down}${br}${batteryMeta(u)}`;
 }
+const GUN_NAMES = { smoothbore: "guns", rifled: "rifled guns", howitzer: "howitzers" };
 function batteryMeta(u){                          // " · 6 guns, limbered, 280 rounds"
   if (!isBattery(u)) return "";
   if (u.abandoned) return " · guns lost";
@@ -808,7 +810,7 @@ function batteryMeta(u){                          // " · 6 guns, limbered, 280 
   else if (u.limbered) how = "limbered";
   if (u.resupplying) how += ", resupplying";
   const left = ammoLeft(u);
-  return ` · ${gunsServed(u)} ${u.howitzer ? "howitzers" : "guns"}, ${how}, ${left ? left + " rounds" : "no rounds left"}`;
+  return ` · ${gunsServed(u)} ${GUN_NAMES[gunKind(u)]}, ${how}, ${left ? left + " rounds" : "no rounds left"}`;
 }
 function gunsInfo(u){                             // the Guns line of the selected battery
   const lost = u.guns_lost ? `, ${u.guns_lost} knocked out` : "", left = ammoLeft(u);
@@ -829,8 +831,8 @@ function renderSel(){
   renderGunOrders(u, setup);
   if (!u){ $("#sel-info").innerHTML = ""; return }
   const f = FD.units.formations[u.formation], w = FD.weapons[u.weapon];
-  const how = u.howitzer ? "howitzers, shell over anything between; " : "";
-  const gun = isGun(u.weapon) ? `${how}range ${FD.units.artillery.range} hexes (${fmtM(FD.units.artillery.range * FD.units.hex_m)}), canister to ${FD.units.artillery.canister_to}; crews fight with ${FD.weapons[meleeWeapon(u)].name.toLowerCase()}` : null;
+  const how = { smoothbore: "smoothbore guns; ", rifled: "rifled guns, percussion shell; ", howitzer: "howitzers, shell over anything between; " }[gunKind(u)];
+  const gun = isGun(u.weapon) ? `${how}range ${gunRange(u)} hexes (${fmtM(gunRange(u) * FD.units.hex_m)}), canister to ${FD.units.artillery.canister_to}; crews fight with ${FD.weapons[meleeWeapon(u)].name.toLowerCase()}` : null;
   const reach = gun || ("range" in w ? `range ${w.range.map(x => Math.round(x / FD.units.range_scale)).join(" / ")} hexes, to ${fmtM(w.range.at(-1) * FD.battle_hex_m)}` : `reach ${w.reach || 1}`);
   const down = u.down ? ", " + u.down + " down (" + u.dead + " dead)" : "";
   $("#sel-info").innerHTML = `<dt>Men</dt><dd>${u.men} of ${u.start}${down}</dd>`
@@ -921,7 +923,7 @@ function fillChoices(){
   const opt = ([tid, t]) => `<option value="${tid}"${tid === S.table ? " selected" : ""}>${esc(t.label)}</option>`;
   $("#sel-table").innerHTML = Object.entries(byBattle).map(([b, ts]) => `<optgroup label="${esc(b)}">` + ts.map(opt).join("") + "</optgroup>").join("");
   $("#sel-weapon").innerHTML = FD.tables[S.table].weapons.map(w => `<option value="${w}">${esc(FD.weapons[w].name)}</option>`).join("");
-  $("#howitzer-box").hidden = !isGun($("#sel-weapon").value);
+  $("#guns-box").hidden = !isGun($("#sel-weapon").value);
   $("#sel-kit").innerHTML = Object.entries(FD.kits).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-quality").innerHTML = Object.keys(FD.units.quality).map(q => `<option ${q === "regular" ? "selected" : ""}>${q}</option>`).join("");
   $("#sel-form").innerHTML = Object.entries(FD.units.formations).map(([k, f]) => `<option value="${k}">${f.name}</option>`).join("");
@@ -947,7 +949,7 @@ function addUnit(){
     men = Math.min(men, reserve(f));
   }
   const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, banner: f && f.side !== side ? f.side : null, force: f ? f.id : null, men, quality: $("#sel-quality").value, weapon: $("#sel-weapon").value,
-    kit: $("#sel-kit").value, formation: isGun($("#sel-weapon").value) ? "battery" : $("#sel-form").value, mounted: $("#chk-mounted").checked, howitzer: $("#chk-howitzer").checked, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
+    kit: $("#sel-kit").value, formation: isGun($("#sel-weapon").value) ? "battery" : $("#sel-form").value, mounted: $("#chk-mounted").checked, guns: $("#sel-guns").value, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
   for (const pos of startSpots(k)){                  // inside the camp for its defenders, else the first free spot down its side's edge
     const at = { ...u, pos };
     if (fits([...S.units, at], S.units.length, at, SIZE, S.field)){ S.units.push(at); S.sel = at.id; S.msg = `${at.name} added; click the map to place it.`; $("#in-name").value = ""; return render() }
@@ -1034,9 +1036,9 @@ function init(){
   $("#sel-weapon").onchange = e => {
     const gun = isGun(e.target.value);
     if (gun) $("#sel-form").value = "battery";
-    $("#howitzer-box").hidden = !gun;
+    $("#guns-box").hidden = !gun;
   };
-  $("#howitzer-box").hidden = !isGun($("#sel-weapon").value);
+  $("#guns-box").hidden = !isGun($("#sel-weapon").value);
   $("#btn-field").onclick = () => { loadBattlefield($("#sel-field").value, $("#chk-armies").checked); fillChoices(); render() };
   $("#btn-add-hero").onclick = addHero;
   $("#sel-hero").onchange = heroDefaults;

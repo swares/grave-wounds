@@ -32,7 +32,8 @@ function middle(col0, width, facing){
   const half = Math.floor((width - 1) / 2);
   return facing === S && width % 2 === 0 ? col0 + half + 1 : col0 + half;
 }
-// A unit: army {side, facing}, kind {quality, weapon, kit, formation, mounted}, at [width, first col, front row].
+// A unit: army {side, facing}, kind {quality, weapon, kit, formation, mounted, guns (a battery's: rifled
+// or howitzer; smoothbore if left out)}, at [width, first col, front row].
 export function unit(name, army, men, kind, at){
   const [width, col0, row] = at;
   return { name, ...army, men, ...kind, width, pos: [middle(col0, width, army.facing), row] };
@@ -41,7 +42,7 @@ export function unit(name, army, men, kind, at){
 export const firstCol = u => u.pos[0] - Math.floor((u.width - 1) / 2);
 
 const yq = s => JSON.stringify(s);
-const unitLine = u => `  - {name: ${yq(u.name)}, side: ${u.side}, men: ${u.men}, quality: ${u.quality}, weapon: ${u.weapon}, kit: ${u.kit}, formation: ${u.formation}, width: ${u.width}, pos: [${u.pos.join(", ")}], facing: ${u.facing}${u.mounted ? ", mounted: true" : ""}}`;
+const unitLine = u => `  - {name: ${yq(u.name)}, side: ${u.side}, men: ${u.men}, quality: ${u.quality}, weapon: ${u.weapon}, kit: ${u.kit}, formation: ${u.formation}, width: ${u.width}, pos: [${u.pos.join(", ")}], facing: ${u.facing}${u.mounted ? ", mounted: true" : ""}${u.guns ? ", guns: " + u.guns : ""}}`;
 const hexList = hs => hs.map(h => `[${h.join(", ")}]`).join(", ");
 
 // Writes the battlefield file. spec: {id, script, header (comment lines), name, sides, table,

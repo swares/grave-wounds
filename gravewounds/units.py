@@ -617,11 +617,11 @@ def _up(field: dict | None) -> str:
     return (field or {}).get("up") or "N"
 
 
-def _reaches(d: Data, weapon: str, dist: int, reach: int = 0) -> bool:
-    """Whether a weapon shoots this many field hexes: a gun to the artillery range."""
-    if is_gun(d, weapon):
-        return dist <= d.units["artillery"]["range"]
-    return field_range(d, weapon, dist, reach) is not None
+def _reaches(d: Data, u: dict, dist: int, reach: int = 0) -> bool:
+    """Whether a unit's weapon shoots this many field hexes: a battery's guns to their range."""
+    if is_gun(d, u["weapon"]):
+        return dist <= gun_range(d, u)
+    return field_range(d, u["weapon"], dist, reach) is not None
 
 
 def cover_at(d: Data, field: dict | None, h, t) -> int:
@@ -644,7 +644,7 @@ def _target(d: Data, units: list, i: int, field: dict | None = None, occ: dict |
     for j, e in enumerate(units):
         if e["side"] == u["side"] or e["men"] <= 0 or e["state"] == "fled":
             continue
-        near = _nearest_ahead(d, u["weapon"], front, fv, [t for row in footprint(d, e) for t in row], field, _clear_fn(d, units, occ, field, i, j))
+        near = _nearest_ahead(d, u, front, fv, [t for row in footprint(d, e) for t in row], field, _clear_fn(d, units, occ, field, i, j))
         if near is not None and (best is None or near[0] < best[0]):
             best = (near[0], j, near[1], near[2])
     return best
@@ -659,7 +659,7 @@ def _named_target(d: Data, units: list, i: int, field: dict | None, occ: dict | 
     if j is None or units[j]["side"] == u["side"] or _out(units[j]):
         return None
     hexes = [t for row in footprint(d, units[j]) for t in row]
-    near = _nearest_ahead(d, u["weapon"], footprint(d, u)[0], _fvec(u["facing"]), hexes, field, _clear_fn(d, units, occ, field, i, j))
+    near = _nearest_ahead(d, u, footprint(d, u)[0], _fvec(u["facing"]), hexes, field, _clear_fn(d, units, occ, field, i, j))
     return None if near is None else (near[0], j, near[1], near[2])
 
 
@@ -678,7 +678,7 @@ def line_fire(d: Data, units: list, occ: dict, field: dict | None, i: int, j: in
     over, arc = True, u["weapon"] in d.units["line_of_fire"]["arcing"]
     if is_gun(d, u["weapon"]):
         over = dist > d.units["artillery"]["canister_to"]
-        if over and u.get("howitzer"):
+        if over and gun_kind(u) == "howitzer":
             return 0
     for x in ray(h, t, dist)[1:-1]:
         k = occ.get(f"{x[0]},{x[1]}")
@@ -690,11 +690,10 @@ def line_fire(d: Data, units: list, occ: dict, field: dict | None, i: int, j: in
     return pen
 
 
-def _nearest_ahead(d: Data, weapon: str, front: list, fv: tuple, hexes: list, field: dict | None = None, clear=None):
-    """(distance, front hex, target hex): the shortest distance in range and in sight from a
-    front hex to one of `hexes` ahead of the line (and, for a gun, with a clear line of fire),
-    or None."""
-    best = None
+def _nearest_ahead(d: Data, u: dict, front: list, fv: tuple, hexes: list, field: dict | None = None, clear=None):
+    """(distance, front hex, target hex): the shortest distance in range of unit u's weapon and
+    in sight from a front hex to one of `hexes` ahead of the line (with a line of fire), or None."""
+    best, weapon = None, u["weapon"]
     for t in hexes:
         c = _cube(t)
         for h in front:
@@ -705,7 +704,7 @@ def _nearest_ahead(d: Data, weapon: str, front: list, fv: tuple, hexes: list, fi
             if best is not None and dist >= best[0]:
                 continue
             wx = shot_weather(d, field, weapon, dist, h, t)
-            if not wx["blocked"] and _reaches(d, weapon, dist, wx.get("reach", 0)) and (clear is None or clear(h, t, dist)):
+            if not wx["blocked"] and _reaches(d, u, dist, wx.get("reach", 0)) and (clear is None or clear(h, t, dist)):
                 best = (dist, h, t)
     return best
 
@@ -1232,15 +1231,27 @@ def _battery_fire(d: Data, units: list, occ: dict, field: dict | None, i: int, b
     tid = units[best[1]].get("id")
     return {"att": i, "dfd": best[1], "guns": guns_served(d, u), "rounds": min(guns_served(d, u) * A["rounds"], ammo_left(d, u)),
             "dist": best[0], "shot": shot, "cover": cover_at(d, field, best[2], best[3]), "penalty": wx["penalty"],
-            "named": tid is not None and tid == u.get("target"), "graze": graze,
+            "named": tid is not None and tid == u.get("target"), "graze": graze, "bore": gun_kind(u),
             "behind": behind[0] if behind else None, "beyond": behind[1] if behind else 0}
 
 
+def gun_kind(u: dict) -> str:
+    """A battery's guns: smoothbore, rifled or howitzer (a battery saved as howitzer: true, howitzer)."""
+    return u.get("guns") or ("howitzer" if u.get("howitzer") else "smoothbore")
+
+
+def gun_range(d: Data, u: dict) -> int:
+    """How far a battery's guns reach, in field hexes: rifled guns further."""
+    A = d.units["artillery"]
+    return A["rifled"]["range"] if gun_kind(u) == "rifled" else A["range"]
+
+
 def _shot(d: Data, u: dict, dist: int) -> str:
-    """canister within canister range; beyond it shell from howitzers, round shot from guns."""
+    """canister within canister range; beyond it shell from howitzers and rifled guns, round
+    shot from smoothbores."""
     if dist <= d.units["artillery"]["canister_to"]:
         return "canister"
-    return "shell" if u.get("howitzer") else "round"
+    return "round" if gun_kind(u) == "smoothbore" else "shell"
 
 
 def _firm(d: Data, field: dict | None, best: tuple) -> bool:
@@ -1272,9 +1283,11 @@ def _ricochet_at(d: Data, occ: dict, field: dict | None, i: int, best: tuple):
 
 
 def _canister_struck(art: dict, c: dict, cut: float, rounds: int, rng) -> int:
-    """Men hit by canister: each ball a chance (more on firm ground, the balls skipping on)."""
+    """Men hit by canister: each ball a chance (more on firm ground, the balls skipping on; a
+    rifle's canister throws fewer balls)."""
     p = (_chance_at(art["canister"]["strike"], c["dist"]) + c.get("graze", 0)) * cut
-    return sum(rng.randint(1, 100) <= p for _ in range(rounds * art["canister"]["balls"]))
+    balls = art["rifled"]["canister_balls"] if c.get("bore") == "rifled" else art["canister"]["balls"]
+    return sum(rng.randint(1, 100) <= p for _ in range(rounds * balls))
 
 
 def _fuse_at(bands: list, roll: int) -> str:
@@ -1284,17 +1297,19 @@ def _fuse_at(bands: list, roll: int) -> str:
 
 def _shell_struck(art: dict, c: dict, factor: float, rounds: int, rng) -> tuple:
     """(men hit, shells that burst on the unit, of them in the air): each shell falls on the unit
-    with the chance for its range (times factor: formation and weather), then its fuse decides:
+    with the chance for its range (times factor: formation and weather; a rifle's own figures
+    and percussion fuse for rifled guns), then its fuse decides:
     early (harmless), air (fragments at air_hit %, cover counting half), ground (fragment_hit %,
     less the cover) or blind."""
     H = art["howitzer"]
-    p = _chance_at(H["strike"], c["dist"]) * factor
+    R = art["rifled"] if c.get("bore") == "rifled" else H          # rifled shell: its own strike and percussion fuse
+    p = _chance_at(R["strike"], c["dist"]) * factor
     hit_at = {"air": H["air_hit"] * (100 - c["cover"] / 2) / 100, "ground": H["fragment_hit"] * (100 - c["cover"]) / 100}
     struck = bursts = air = 0
     for _ in range(rounds):
         if rng.randint(1, 100) > p:
             continue
-        fuse = _fuse_at(H["fuse"], rng.randint(1, 100))
+        fuse = _fuse_at(R["fuse"], rng.randint(1, 100))
         if fuse not in hit_at:
             continue
         bursts += 1
@@ -1361,22 +1376,25 @@ def _battery_after(d: Data, u: dict) -> None:
         u["abandoned"] = True
 
 
-GUN_EXAMPLES = (("canister at 200 m, a line", 20, 40, False), ("round shot at 400 m, a line", 40, 40, False), ("round shot at 400 m, a column", 40, 10, False),
-                ("round shot at 800 m, a column", 80, 10, False), ("howitzers, shell at 400 m, a line", 40, 40, True),
-                ("howitzers, shell at 400 m, a column", 40, 10, True), ("howitzers, shell at 800 m, a column", 80, 10, True))
+GUN_EXAMPLES = (("canister at 200 m, a line", 20, 40, "smoothbore"), ("round shot at 400 m, a line", 40, 40, "smoothbore"),
+                ("round shot at 400 m, a column", 40, 10, "smoothbore"), ("round shot at 800 m, a column", 80, 10, "smoothbore"),
+                ("howitzers, shell at 400 m, a line", 40, 40, "howitzer"), ("howitzers, shell at 400 m, a column", 40, 10, "howitzer"),
+                ("howitzers, shell at 800 m, a column", 80, 10, "howitzer"), ("rifled, canister at 200 m, a line", 20, 40, "rifled"),
+                ("rifled, shell at 400 m, a column", 40, 10, "rifled"), ("rifled, shell at 800 m, a column", 80, 10, "rifled"),
+                ("rifled, shell at 1,400 m, a column", 140, 10, "rifled"))
 
 
 def gun_examples(d: Data, runs: int, seed: int) -> list[dict]:
-    """A battery of 6 guns (60 regular crews) firing for one minute at 1,600 unarmoured men in
-    close order, as a line (40 hexes wide) or a column (10 wide): men struck and men put down
-    (means), on the Peninsular table."""
+    """A battery of 6 guns (60 regular crews; smoothbore, howitzers or rifled) firing for one
+    minute at 1,600 unarmoured men in close order, as a line (40 hexes wide) or a column (10
+    wide): men struck and men put down (means), on the Peninsular table."""
     table, out = "peninsular-1808-14-all-hits", []
     for label, dist, width, how in GUN_EXAMPLES:
         struck = down = 0
         for k in range(runs):
-            bat = {**_example_unit(0, [30, 100], 1), "men": 60, "start": 60, "weapon": "artillery_smoothbore", "formation": "battery", "howitzer": how}
-            tgt = {**_example_unit(1, [30, 100 - dist], 4), "men": 1600, "start": 1600, "width": width, "weapon": "musket_smoothbore", "kit": "none"}
-            _, log = exchange(d, [bat, tgt], table, SeededDice(seed * 7907 + k), {"ground": {}, "works": None, "weather": None, "size": [60, 120]})
+            bat = {**_example_unit(0, [30, 200], 1), "men": 60, "start": 60, "weapon": "artillery_smoothbore", "formation": "battery", "guns": how}
+            tgt = {**_example_unit(1, [30, 200 - dist], 4), "men": 1600, "start": 1600, "width": width, "weapon": "musket_smoothbore", "kit": "none"}
+            _, log = exchange(d, [bat, tgt], table, SeededDice(seed * 7907 + k), {"ground": {}, "works": None, "weather": None, "size": [60, 220]})
             for line in log:
                 if line["kind"] == "cannon":
                     struck += line["blows"]

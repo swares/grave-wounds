@@ -162,8 +162,8 @@ units:
   - {name: "Hampton's Legion", side: 0, men: 600, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 15, pos: [111, 70], facing: 1}
   - {name: "Bee's and Bartow's men, rallied", side: 0, men: 1000, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 25, pos: [94, 100], facing: 1}
   - {name: "Stuart's cavalry", side: 0, men: 300, quality: regular, weapon: saber, kit: none, formation: close, width: 10, pos: [16, 116], facing: 1, mounted: true}
-  - {name: "Ricketts's battery", side: 1, men: 70, quality: regular, weapon: artillery_acw, kit: none, formation: battery, width: 3, pos: [63, 52], facing: 4}
-  - {name: "Griffin's battery", side: 1, men: 60, quality: regular, weapon: artillery_acw, kit: none, formation: battery, width: 3, pos: [47, 54], facing: 4}
+  - {name: "Ricketts's battery (10-pounder Parrotts)", side: 1, men: 70, quality: regular, weapon: artillery_acw, kit: none, formation: battery, width: 3, pos: [63, 52], facing: 4, guns: rifled}
+  - {name: "Griffin's battery (rifles and howitzers)", side: 1, men: 60, quality: regular, weapon: artillery_acw, kit: none, formation: battery, width: 3, pos: [47, 54], facing: 4, guns: rifled}
   - {name: "11th New York (Fire Zouaves)", side: 1, men: 900, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 22, pos: [41, 48], facing: 4}
   - {name: "US Marines", side: 1, men: 350, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 9, pos: [56, 46], facing: 4}
   - {name: "14th Brooklyn", side: 1, men: 700, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 18, pos: [89, 46], facing: 4}
