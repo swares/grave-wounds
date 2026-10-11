@@ -813,10 +813,11 @@ function renderMap(){
   $("#map-scale").textContent = `${SIZE[0]} × ${SIZE[1]} hexes · ${fmtM(FD.units.hex_m)} a hex · an exchange is about a minute`;
   $("#hex-size").textContent = fmtM(FD.units.hex_m);
 }
+const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
 function unitMeta(u){
   if (u.state === "fled") return "fled";
   const down = u.down ? " · " + u.down + " down" : "", br = u.breach ? " · breaching" : "", low = u.prone ? " · to ground" : "";
-  const mg = isMg(u.weapon) ? ` · ${mgGuns(u)} gun${mgGuns(u) === 1 ? "" : "s"}` : "";
+  const mg = isMg(u.weapon) ? " · " + gunsText(mgGuns(u), "gun") : "";
   return `${u.men}/${u.start} · ${u.state}${down}${br}${low}${mg}${batteryMeta(u)}`;
 }
 const GUN_NAMES = { smoothbore: "guns", rifled: "rifled guns", howitzer: "howitzers" };
@@ -860,7 +861,7 @@ function renderSel(){
     + `<dt>Arms</dt><dd>${esc(w.name)} (${reach}); ${esc(FD.kits[u.kit].name)}</dd>`
     + `<dt>Order</dt><dd>${f.name}, ${Math.min(u.width, Math.ceil(Math.max(1, u.men) / f.per_hex))} hexes of front${u.mounted ? ", mounted" : ""}</dd>`
     + (isBattery(u) ? `<dt>Guns</dt><dd>${gunsInfo(u)}</dd>` : "")
-    + (isMg(u.weapon) ? `<dt>Guns</dt><dd>${mgGuns(u)} machine gun${mgGuns(u) === 1 ? "" : "s"} served (${FD.units.machine_guns.crew} men a gun); beaten zone ${fmtM(FD.units.machine_guns.beaten.beyond * FD.units.hex_m)} past the target</dd>` : "")
+    + (isMg(u.weapon) ? `<dt>Guns</dt><dd>${gunsText(mgGuns(u), "machine gun")} served (${FD.units.machine_guns.crew} men a gun); beaten zone ${fmtM(FD.units.machine_guns.beaten.beyond * FD.units.hex_m)} past the target</dd>` : "")
     + (u.prone ? `<dt>Ground</dt><dd>Gone to ground: shots at it −${FD.units.to_ground.cover}%; it cannot move until it gets up</dd>` : "")
     + `<dt>Moves</dt><dd>${allowance(u)} hexes; turning costs ${turnCost(u)} a step</dd>`;
 }

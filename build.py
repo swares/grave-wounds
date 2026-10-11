@@ -252,7 +252,7 @@ def _mg_rules(d) -> list[str]:
     M, F, R = U.get("machine_guns"), U["formations"], U["missile"]["rate"]
     if not M:
         return []
-    ext, mg = F["extended"], F["mg"]
+    ext = F["extended"]
     return [
         f"<b>Modern infantry:</b> extended order is {ext['per_hex']} men a hex (shots at it x{ext['missile_factor']:g}, {ext['move']} hexes a move). "
         f"Magazine rifles fire {R['rifle_service']} rounds a minute, self-loading and assault rifles {R['rifle_assault']}, pistols and submachine guns {R['pistol_smg']}. "

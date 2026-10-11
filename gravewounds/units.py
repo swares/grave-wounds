@@ -835,7 +835,8 @@ def _beaten_fire(d: Data, us: list, table: str, rng, acc: tuple, v: dict) -> lis
     if hits is None:
         return []
     t = _take_hurt(bh, hits)
-    _tally(*acc, r, t)
+    lost, dead, dealt = acc
+    _tally(lost, dead, dealt, r, t)
     return _logged({"kind": "beaten", **r}, t)
 
 
