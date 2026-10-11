@@ -22,6 +22,12 @@ mounted_move: 15           # hexes an exchange for mounted units, in either orde
 charge_move: 2             # a unit that ends its move in contact may move this many times its allowance (a charge)
 turn_per: 2                # turning the facing one step (60 degrees) costs 1 hex for every this many hexes of front (at least 1)
 shoot_ranks: 2             # ranks of each front hex that can shoot
+# Line of fire: a unit cannot shoot through another unit, friend or enemy, standing between it
+# and its target, except from high ground over a unit on lower ground. Bows (`arcing`) can
+# loose high over them instead, at `arc_penalty` % off. Guns: see artillery.
+line_of_fire:
+  arcing: [bow, longbow, crossbow]
+  arc_penalty: 20
 exchange_rounds: 10        # individual 6-second rounds in one exchange (for fatigue, bleeding, states)
 
 # The ground, painted per hex. move: movement to enter a hex of it (open ground 1). cover: %
@@ -50,7 +56,8 @@ breach_share: 0.5
 # fires at it if it is in range, in sight and in front, or at the nearest if not. All numbers
 # are design estimates, tuned by python3 -m gravewounds units.
 # - Line of fire: a gun cannot fire through another unit, friend or enemy, between it and its
-#   target, except round shot from high ground over a unit on lower ground (never canister).
+#   target, except round shot from high ground over a unit on lower ground (never canister),
+#   and shell from howitzers, which goes over anything.
 # - Round shot: each round strikes the target unit with the chance for its range (less its
 #   cover and the weather, times its formation's missile_factor), then goes through its ranks:
 #   each man in the ball's path (the formation's ranks times the unit's rows, at most
@@ -62,6 +69,13 @@ breach_share: 0.5
 #   ranks as above. Ground that `stops_shot`, or mud or snow at `ricochet.soft` or more, stops it.
 # - Canister: each round throws `balls` chances to hit, each at the chance for its range (with
 #   the same cover, weather and formation), on the front of the target.
+#   On firm ground (as for ricochet) balls skip on into the target: `graze` % is added to the
+#   chance beyond the first band.
+# - Shell: a battery marked `howitzer: true` fires shell beyond canister range, in a high arc
+#   over anything between. Each shell lands on the target unit with the chance for its range
+#   (`howitzer.strike`, cut as round shot is); `blind` % fail to burst; each burst throws
+#   `fragments` chances to hit, each at `fragment_hit` %. A burst on a battery may knock out a
+#   gun as a round-shot strike does. Within canister range howitzers fire canister.
 # Every man hit takes a wound roll at `attack` (no parry) with the gun's wound data.
 # A battery is limbered (moves as its formation; cannot fire) or unlimbered (fires; can only be
 # manhandled `pushed` hexes an exchange). Limbering or unlimbering takes an exchange, in which
@@ -83,6 +97,12 @@ artillery:
   canister:
     balls: 8
     strike: [[10, 50], [20, 30], [30, 15]]
+    graze: 5                 # % added beyond the first band on firm ground
+  howitzer:
+    strike: [[50, 45], [75, 30], [100, 20]]    # [up to this many hexes, % a shell lands on the unit]
+    blind: 15                # % of shells that fail to burst
+    fragments: 12            # chances to hit for each burst
+    fragment_hit: 25
   attack: 80
   crew_weapon: sword
   pushed: 2                  # hexes an unlimbered battery can be manhandled (or turned) in an exchange

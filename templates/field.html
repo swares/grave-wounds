@@ -93,7 +93,7 @@ button:disabled{opacity:.45;cursor:default}
 .log li.hero{border-left-color:var(--blood)}
 fieldset{border:0;margin:0;padding:0;min-width:0}
 .banner{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:1px solid var(--line);border-left:3px solid var(--steel);border-radius:3px;padding:8px 10px;font-size:.9rem}
-.banner[hidden]{display:none}
+.banner[hidden],label.check[hidden]{display:none}
 .forces{list-style:none;margin:0;padding:0;font-size:.9rem;display:flex;flex-direction:column;gap:4px}
 .forces .meta{float:right;font:500 .75rem var(--mono);color:var(--muted)}
 .after{font-size:.9rem;margin:0;padding-left:1.1rem}
@@ -243,6 +243,7 @@ legend{padding:0}
         </div>
         <div class="toolbar">
           <label class="check"><input type="checkbox" id="chk-mounted"> Mounted</label>
+          <label class="check" id="howitzer-box" hidden title="Howitzers fire shell in a high arc over anything between, and canister close in"><input type="checkbox" id="chk-howitzer"> Howitzers</label>
           <button id="btn-add">Add unit</button>
         </div>
       </fieldset>
@@ -282,7 +283,7 @@ const dice = {                                     // real dice for play
 let S = null, HANDOFF = null;                      // HANDOFF: a fight sent from the travel map, waiting for the GM
 function newUnit(o){
   return { id: S.seq++, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
-    kit: o.kit, formation: o.formation, mounted: !!o.mounted, width: o.width || Math.ceil(o.men / FD.units.formations[o.formation].per_hex),
+    kit: o.kit, formation: o.formation, mounted: !!o.mounted, howitzer: !!o.howitzer && isGun(o.weapon), width: o.width || Math.ceil(o.men / FD.units.formations[o.formation].per_hex),
     pos: o.pos, facing: o.facing, state: "steady", charged: false };
 }
 function newField(){                              // open ground of the default size (and the page goes back to that size)
@@ -476,16 +477,22 @@ function unitLineText(l, nm){                     // a volley, a melee or a rout
   const where = l.situation === "front" ? "" : " in the " + l.situation, up = l.penalty ? ", attacking up −" + l.penalty + "%" : "";
   return `${nm(l.att)} strike ${nm(l.dfd)}${where}, ${l.men} men${up}: ${l.blows} telling blows, ${fallen}.`;
 }
+const SHOT_NAMES = { canister: "canister", round: "round shot", shell: "shell" };
 function cannonText(l, nm, fallen){               // a battery's fire: its target, rounds, men struck, guns knocked out
-  const shot = l.shot === "canister" ? "canister" : "round shot", aim = l.named ? " (as ordered)" : "";
+  const shot = SHOT_NAMES[l.shot], aim = l.named ? " (as ordered)" : "";
+  if (l.shot === "shell") return `${nm(l.att)} fire shell at ${nm(l.dfd)}${aim}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${l.rounds} shells, ${l.bursts} burst among them, ${l.blows} men struck, ${fallen}${lostGuns(l)}.`;
   const guns = l.rounds < l.guns * FD.units.artillery.rounds ? `${l.guns} guns, ${l.rounds} rounds left to fire` : `${l.guns} guns`;
-  let lost = "";
-  if (l.dismounted) lost = l.dismounted === 1 ? "; 1 gun knocked out" : `; ${l.dismounted} guns knocked out`;
-  return `${nm(l.att)} fire ${shot} at ${nm(l.dfd)}${aim}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${guns}, ${l.blows} men in the way, ${fallen}${lost}.`;
+  return `${nm(l.att)} fire ${shot} at ${nm(l.dfd)}${aim}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${guns}, ${l.blows} men in the way, ${fallen}${lostGuns(l)}.`;
+}
+function lostGuns(l){                             // "; 2 guns knocked out"
+  if (!l.dismounted) return "";
+  return l.dismounted === 1 ? "; 1 gun knocked out" : `; ${l.dismounted} guns knocked out`;
 }
 function shotNotes(l){                            // " (cover -20%, weather -10%)"
   const bits = [];
   if (l.cover) bits.push(`cover −${l.cover}%`);
+  if (l.over) bits.push(`loosing high over the units between −${l.over}%`);
+  if (l.graze) bits.push(`firm ground +${l.graze}%`);
   if (l.penalty) bits.push(`weather −${l.penalty}%`);
   if (l.misfire) bits.push(`${l.misfire}% misfire`);
   return bits.length ? ` (${bits.join(", ")})` : "";
@@ -801,7 +808,7 @@ function batteryMeta(u){                          // " · 6 guns, limbered, 280 
   else if (u.limbered) how = "limbered";
   if (u.resupplying) how += ", resupplying";
   const left = ammoLeft(u);
-  return ` · ${gunsServed(u)} guns, ${how}, ${left ? left + " rounds" : "no rounds left"}`;
+  return ` · ${gunsServed(u)} ${u.howitzer ? "howitzers" : "guns"}, ${how}, ${left ? left + " rounds" : "no rounds left"}`;
 }
 function gunsInfo(u){                             // the Guns line of the selected battery
   const lost = u.guns_lost ? `, ${u.guns_lost} knocked out` : "", left = ammoLeft(u);
@@ -822,7 +829,8 @@ function renderSel(){
   renderGunOrders(u, setup);
   if (!u){ $("#sel-info").innerHTML = ""; return }
   const f = FD.units.formations[u.formation], w = FD.weapons[u.weapon];
-  const gun = isGun(u.weapon) ? `range ${FD.units.artillery.range} hexes (${fmtM(FD.units.artillery.range * FD.units.hex_m)}), canister to ${FD.units.artillery.canister_to}; crews fight with ${FD.weapons[meleeWeapon(u)].name.toLowerCase()}` : null;
+  const how = u.howitzer ? "howitzers, shell over anything between; " : "";
+  const gun = isGun(u.weapon) ? `${how}range ${FD.units.artillery.range} hexes (${fmtM(FD.units.artillery.range * FD.units.hex_m)}), canister to ${FD.units.artillery.canister_to}; crews fight with ${FD.weapons[meleeWeapon(u)].name.toLowerCase()}` : null;
   const reach = gun || ("range" in w ? `range ${w.range.map(x => Math.round(x / FD.units.range_scale)).join(" / ")} hexes, to ${fmtM(w.range.at(-1) * FD.battle_hex_m)}` : `reach ${w.reach || 1}`);
   const down = u.down ? ", " + u.down + " down (" + u.dead + " dead)" : "";
   $("#sel-info").innerHTML = `<dt>Men</dt><dd>${u.men} of ${u.start}${down}</dd>`
@@ -913,6 +921,7 @@ function fillChoices(){
   const opt = ([tid, t]) => `<option value="${tid}"${tid === S.table ? " selected" : ""}>${esc(t.label)}</option>`;
   $("#sel-table").innerHTML = Object.entries(byBattle).map(([b, ts]) => `<optgroup label="${esc(b)}">` + ts.map(opt).join("") + "</optgroup>").join("");
   $("#sel-weapon").innerHTML = FD.tables[S.table].weapons.map(w => `<option value="${w}">${esc(FD.weapons[w].name)}</option>`).join("");
+  $("#howitzer-box").hidden = !isGun($("#sel-weapon").value);
   $("#sel-kit").innerHTML = Object.entries(FD.kits).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-quality").innerHTML = Object.keys(FD.units.quality).map(q => `<option ${q === "regular" ? "selected" : ""}>${q}</option>`).join("");
   $("#sel-form").innerHTML = Object.entries(FD.units.formations).map(([k, f]) => `<option value="${k}">${f.name}</option>`).join("");
@@ -938,7 +947,7 @@ function addUnit(){
     men = Math.min(men, reserve(f));
   }
   const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, banner: f && f.side !== side ? f.side : null, force: f ? f.id : null, men, quality: $("#sel-quality").value, weapon: $("#sel-weapon").value,
-    kit: $("#sel-kit").value, formation: isGun($("#sel-weapon").value) ? "battery" : $("#sel-form").value, mounted: $("#chk-mounted").checked, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
+    kit: $("#sel-kit").value, formation: isGun($("#sel-weapon").value) ? "battery" : $("#sel-form").value, mounted: $("#chk-mounted").checked, howitzer: $("#chk-howitzer").checked, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
   for (const pos of startSpots(k)){                  // inside the camp for its defenders, else the first free spot down its side's edge
     const at = { ...u, pos };
     if (fits([...S.units, at], S.units.length, at, SIZE, S.field)){ S.units.push(at); S.sel = at.id; S.msg = `${at.name} added; click the map to place it.`; $("#in-name").value = ""; return render() }
@@ -1022,7 +1031,12 @@ function init(){
   $("#btn-limber").onclick = toggleLimber;
   $("#btn-resupply").onclick = toggleResupply;
   $("#sel-target").onchange = e => setTarget(e.target.value);
-  $("#sel-weapon").onchange = e => { if (isGun(e.target.value)) $("#sel-form").value = "battery" };
+  $("#sel-weapon").onchange = e => {
+    const gun = isGun(e.target.value);
+    if (gun) $("#sel-form").value = "battery";
+    $("#howitzer-box").hidden = !gun;
+  };
+  $("#howitzer-box").hidden = !isGun($("#sel-weapon").value);
   $("#btn-field").onclick = () => { loadBattlefield($("#sel-field").value, $("#chk-armies").checked); fillChoices(); render() };
   $("#btn-add-hero").onclick = addHero;
   $("#sel-hero").onchange = heroDefaults;

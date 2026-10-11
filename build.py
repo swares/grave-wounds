@@ -263,8 +263,12 @@ def _gun_rules(d) -> list[str]:
         f"Each served gun fires {A['rounds']} round an exchange at the nearest enemy in front within {yd(A['range'] * m)}: canister to {yd(A['canister_to'] * m)}, round shot beyond. "
         f"Round shot strikes the unit ({bands(rs['strike'])}), then each man in its path (the ranks deep, at most {rs['path_max']}) is hit at {rs['file']}%, so columns suffer most. "
         f"Canister throws {cn['balls']} chances a round ({bands(cn['strike'])}). Cover, the weather and open order cut both. Each man hit takes a wound roll at {A['attack']}% with no parry.",
-        f"<b>Targets and line of fire:</b> the GM can name a battery's target; it fires at it when it can, otherwise at the nearest. No gun fires through another unit, "
-        "friend or enemy, except round shot from high ground over a unit on lower ground. "
+        f"<b>Targets and line of fire:</b> the GM can name a battery's target; it fires at it when it can, otherwise at the nearest. No unit shoots through another unit, "
+        "friend or enemy, except from high ground over a unit on lower ground (guns: round shot, never canister); "
+        f"bows and crossbows may loose high over units at {d.units['line_of_fire']['arc_penalty']}% off. "
+        f"<b>Shell:</b> howitzers fire shell beyond canister range over anything between; a shell lands ({bands(A['howitzer']['strike'])}), "
+        f"{A['howitzer']['blind']}% fail to burst, and each burst throws {A['howitzer']['fragments']} chances at {A['howitzer']['fragment_hit']}%. "
+        f"Canister gains {cn['graze']}% beyond {yd(cn['strike'][0][0] * m)} on firm ground. "
         f"<b>Ricochet:</b> on firm ground round shot bounds on, striking the first other unit within {yd(rc['beyond'] * m)} past the target ({bands(rc['strike'])} past it) "
         "and going through its ranks; rough ground, woods, marsh, mud or snow stop it. "
         f"A round-shot strike on the battery it is fired at knocks out a gun at {A['dismount']}%. <b>Ammunition:</b> {A['ammo']} rounds a gun; resupplying takes an exchange out of contact, without moving or firing.",
