@@ -704,6 +704,21 @@ def _camp_bank(d: Data, size: tuple, clear, rivers: list, width: int, n) -> tupl
     return origin, width
 
 
+def _road_starts(d: Data, terrain: str, edges: dict, size: tuple, roads: list, river: bool, clear) -> list:
+    """Each road as (where it starts, its direction): from the map's middle, or with a camp with
+    works, from the camp's middle by its gates, the road to the river at a crossing by the main gate."""
+    if not (clear and len(clear) > 2):
+        return [((0.0, 0.0), u) for u in roads]
+    hm, (cols, rows) = d.wounds["combat"]["move"]["hex_m"], size
+    mid_xy = _map_xy(hm, cols, rows, clear[0][0], clear[0][1])
+    rays = [((mid_xy[0], mid_xy[1]), u) for u in roads]
+    if river:
+        gate_xy = _map_xy(hm, cols, rows, *ring_walk(clear[0], clear[1] + 1, _gate_list(clear[2])[0])[0])
+        n = bank_normal(d, terrain, edges)
+        rays = [((gate_xy[0], gate_xy[1]) if u[0] * n[0] + u[1] * n[1] > 0.3 else o, u) for o, u in rays]
+    return rays
+
+
 def through_lines(d: Data, ground: dict, terrain: str, cols: int, rows: int, seed: int, edges: dict, clear=None) -> None:
     """A river and a road through the defenders' own travel hex, drawn through the map's middle
     (the river past the camp, on one bank, when the defenders camp there with works)."""
@@ -716,14 +731,7 @@ def through_lines(d: Data, ground: dict, terrain: str, cols: int, rows: int, see
     origin = [0.0, 0.0]
     if rivers and clear:
         origin, river_w = _camp_bank(d, (cols, rows), clear, rivers, river_w, bank_normal(d, terrain, edges))
-    road_rays = [((0.0, 0.0), u) for u in roads]
-    if clear and len(clear) > 2:                 # a camp with works: roads leave it from its middle by their gates
-        mid_xy = _map_xy(hm, cols, rows, clear[0][0], clear[0][1])
-        road_rays = [((mid_xy[0], mid_xy[1]), u) for u in roads]
-    if rivers and clear and len(clear) > 2:      # at the crossing the road to the river leaves by the main gate
-        gate_xy = _map_xy(hm, cols, rows, *ring_walk(clear[0], clear[1] + 1, _gate_list(clear[2])[0])[0])
-        n = bank_normal(d, terrain, edges)
-        road_rays = [((gate_xy[0], gate_xy[1]) if u[0] * n[0] + u[1] * n[1] > 0.3 else o, u) for o, u in road_rays]
+    road_rays = _road_starts(d, terrain, edges, (cols, rows), roads, bool(rivers), clear)
     cross = road_rays or ([((0.0, 0.0), (-rivers[0][1], rivers[0][0])), ((0.0, 0.0), (rivers[0][1], -rivers[0][0]))] if rivers else [])
     plan = {"terrain": terrain, "rivers": rivers, "roads": road_rays, "cross": cross, "origin": origin,
             "river": river_w * hm / 2, "ford": ford_w * hm / 2, "road": road_w * hm / 2}
