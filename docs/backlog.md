@@ -34,9 +34,6 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Scurvy for forces.** Camp disease covers flux, typhus, typhoid, ague and plague, and
   wound fever for the wounded from the field map. Scurvy needs food tracking (weeks
   without fresh food); it is in the design doc's disease table.
-- **Named characters' wounds on the travel map.** A named man's battle wounds stay in the
-  roller (bleeding, treatment) and do not turn septic or heal by the week as a force's wounded
-  do. One way: hand his wounds to the wound track when he goes with a force.
 - **Nursing and spread.** The design doc has nurses catching flux, typhus and typhoid from
   the sick. The force-level rules leave that out for now.
 - **Character generation, beyond the first cut.** The medieval tables are a first draft for

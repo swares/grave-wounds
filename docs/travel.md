@@ -179,6 +179,16 @@ weakens him in a fight by the worst step he is at:
 A case still incubating does not show or weaken him. A named man who dies of disease is out
 of every fight.
 
+**A named man's wounds in camp.** After a fight, the GM presses **To camp** on the card of a
+named man who is with a force. Each of his wounds then goes onto the wound track with the
+force's wounded. It starts at the step for its severity, or worse for a death clock, with its
+septic roll a few days on, and heals or kills by the week as theirs do. In camp his bleeding
+stops, and each night with the force gives him back 4 of his 20 points of blood. While a
+wound heals, its own pain and impairment stay on his card. Only wound fever counts as sickness
+in the table above. His card shows each wound's step ("healing: wounds, serious"). A healed
+wound leaves his list and stays as a scar on his figure and sheet. If a wound kills him, his
+card says he died of his wounds.
+
 ## Calendar and weather
 
 Days have real dates, and daylight sets each day's marching hours. The weather is rolled

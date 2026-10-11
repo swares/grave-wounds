@@ -705,6 +705,7 @@ def bundle(d) -> dict:
                    "terrain_names": {t: x["name"] for t, x in d.terrain["terrain"].items()}}},
         "works": d.works,
         "disease": {"steps": d.disease["steps"], "in_fight": d.disease["in_fight"], "endurance": d.disease["endurance"],   # named characters' sickness
+                    "wounds": {k: d.disease["wounds"][k] for k in ("start", "clock_step", "fever_after")}, "blood_per_day": d.disease["named_blood_per_day"],
                     "names": {k: v["name"] for k, v in {**d.disease["diseases"], **{w: d.disease["wounds"][w] for w in ("wound", "fever")}}.items()}},
         "weather": d.weather,
         "wounds": wounds,
