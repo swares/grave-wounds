@@ -4463,6 +4463,10 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **Machine guns:** a team is a gun and 5 crew a hex, the gun served while one of its crew is up. Each gun fires 300 rounds a minute, 10% of them rolled as aimed shots. Its beaten zone: the first other unit, friend or foe, within 20 hexes past the target on the line of fire takes 50% as many shots at that range (ground that stops shot stops it).
 
+**Indirect fire:** off-map batteries on call, on a hex one of the side's units can see (in the weather, no woods between). Each shell scatters (d6 direction, 0 to scatter hexes); every man within the radius is struck at the % for his distance (x0.35 gone to ground, less ground cover) and wounds as a shell fragment at 70%. mortars 3 a minute a tube, lands this exchange, scatter 2, struck % by distance 15/5/1; field guns 2 a minute a tube, lands next exchange, scatter 4, struck % by distance 20/8/3/1; heavy howitzers 1 a minute a tube, lands next exchange, scatter 5, struck % by distance 30/12/5/2/1/0.5.
+
+**Suppression:** a unit shelled or under machine-gun fire checks Nerve at the end of the exchange (+10 gone to ground); a failure pins it for the next exchange: no move, 50% of its fire.
+
 **Heroes in units:** a named fighter in the front rank makes 3 times a ranker's telling attempts with his own attack, and blows on the front fall on him 2 times as often as on a ranker there; a shooting hero looses 3 times a ranker's aimed shots. His wounds use the full rules and his own stop check (a failure: down for the battle). A leader adds his unit's leader modifier while he is up.
 
 **After the battle:** a side with no unit standing has lost the field, and its men down there are left behind, dead. A wound fatal in minutes kills unless he is bound in time (10%); one fatal in hours kills unless his camp treats it (no camp 0%, a camp 40%, quarters 60%). The rest are carried to camp and heal on the wound track (Camp disease).

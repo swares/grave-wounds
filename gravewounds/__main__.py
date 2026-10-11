@@ -143,6 +143,10 @@ def _main(argv=None) -> int:
         print(f"Machine guns and magazine rifles (regular) firing for a minute at 100 riflemen ({a.runs * 5} runs each):")
         for r in mg_examples(d, a.runs * 5, a.seed):
             print(f"  {r['label']:<44} {r['hit']:5.1f} hit, {r['down']:4.1f} put down")
+        from .units import shell_examples
+        print(f"Indirect fire for a minute on the middle of 100 riflemen ({a.runs * 5} runs each):")
+        for r in shell_examples(d, a.runs * 5, a.seed):
+            print(f"  {r['label']:<44} {r['struck']:5.1f} struck, {r['down']:4.1f} put down, pinned {r['pinned']:3.0f}%")
         return 0
     if a.cmd == "check":
         for w in d.warnings:

@@ -345,12 +345,84 @@ function volleys(units, field = null){            // [{att, dfd, men, dist, cove
 const isMg = w => (UD.machine_guns?.weapons || []).includes(w);
 const mgGuns = u => Math.ceil(Math.max(0, u.men) / UD.machine_guns.crew);   // one a crew, while a man of it is up
 const groundCover = u => (u.prone ? UD.to_ground.cover : 0);                 // % off shots at a unit gone to ground
-function shooters(u){                             // a machine-gun team's served guns; any other unit's front hexes' first shoot_ranks ranks
-  if (isMg(u.weapon)) return mgGuns(u);
-  const rows = footprint(u), men = menByHex(u), per = form(u).abreast * Math.min(UD.shoot_ranks, form(u).ranks);
+function shooters(u){                             // a machine-gun team's served guns; any other unit's front hexes' first shoot_ranks ranks; pinned, fewer
   let n = 0;
-  for (let k = 0; k < rows[0].length; k++) n += Math.min(per, men[k]);
-  return n;
+  if (isMg(u.weapon)) n = mgGuns(u);
+  else {
+    const rows = footprint(u), men = menByHex(u), per = form(u).abreast * Math.min(UD.shoot_ranks, form(u).ranks);
+    for (let k = 0; k < rows[0].length; k++) n += Math.min(per, men[k]);
+  }
+  return u.pinned ? n * UD.suppression.fire : n;
+}
+// ----- indirect fire and suppression (as gravewounds/units.py) -----
+function shellWeapon(table){                      // the weapon shell fragments wound as on this table, or null (no indirect fire)
+  const I = UD.indirect, have = FD.tables[table]?.weapons || [];
+  return [I.weapon, I.fallback].find(w => have.includes(w)) || null;
+}
+function markMg(us, v, under){                    // a machine gun's target, and any unit in its beaten zone, check for suppression
+  if (!under || !isMg(us[v.att].weapon)) return;
+  under[v.dfd] = true;
+  if (v.behind !== undefined && v.behind !== null) under[v.behind] = true;
+}
+// a unit of `side` can see hex h to call fire on it: in sight in the weather, no woods between
+const spotted = (units, field, side, h) => units.some(u => u.side === side && u.men > 0 && u.state !== "broken" && u.state !== "fled" && sees(field, u, h, sightHexes(field)));
+function sightHexes(field){                       // how far the weather lets a man see, in field hexes (null: as far as the map)
+  const cond = field?.weather?.cond, vis = cond && FD.weather ? FD.weather.conditions[cond].visibility : null;
+  return vis === null || vis === undefined ? null : Math.floor(vis / UD.range_scale);
+}
+function sees(field, u, h, sight){                // any hex of u sees h: within sight, no woods between
+  return footprint(u).flat().some(x => { const dist = hdist(x, h); return (sight === null || dist <= sight) && !ray(x, h, dist).slice(1, -1).some(y => groundAt(field, y).cover) });
+}
+function indirectAll(us, table, rng, acc, log, field, under){   // every fire mission due this exchange, in the support list's order
+  const weapon = shellWeapon(table);
+  if (!field || !weapon) return;
+  (field.support || []).forEach((b, k) => {
+    const m = b.mission;
+    if (!m || (m.wait || 0) > 0 || (b.rounds || 0) <= 0) return;
+    fireMission({ us, table, weapon, rng, acc, log, field, under }, k, b);
+  });
+}
+function fireMission(ctx, k, b){                  // where each shell lands, then the men struck in every unit (ctx: us, table, weapon, rng, acc, log, field, under)
+  const { us, table, weapon, rng, acc, log, field, under } = ctx;
+  const I = UD.indirect, K = I.kinds[b.kind], m = b.mission, shells = Math.min(b.tubes * K.rate, b.rounds), bursts = [];
+  for (let s = 0; s < shells; s++){ const dirn = rng.randint(0, 5), far = rng.randint(0, K.scatter); bursts.push(step(m.hex, dirn, far)) }
+  b.rounds -= shells;
+  if (!m.repeat) b.mission = null;
+  log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells, at: m.hex, bursts });
+  const att = { table, weapon, kit: null, quality: "regular" };
+  us.forEach((u, i) => {
+    const struck = shellStruckUnit(field, u, bursts, K, rng);
+    if (struck === null) return;
+    under[i] = true;
+    if (!struck) return;
+    const t = takeHurt(u, blows(att, sideOfUnit(u, table), struck, I.attack, 0, rng, { exposed: exposure(u, false, true), shift: -1000 }));
+    acc.lost[i] += t.down; acc.dead[i] += t.dead;
+    log.push(...logged({ kind: "shelled", sup: k, name: b.name, dfd: i, struck }, t));
+  });
+}
+function shellStruckUnit(field, u, bursts, kind, rng){   // men of u struck by these bursts, or null if none came near
+  if (u.men <= 0 || u.state === "fled") return null;
+  const hexes = footprint(u).flat(), men = menByHex(u), cut = u.prone ? UD.indirect.prone : 1;
+  let near = false, struck = 0;
+  for (const at of bursts){
+    hexes.forEach((h, j) => {
+      const dist = hdist(h, at);
+      if (dist > kind.radius) return;
+      near = true;
+      const p = kind.struck[dist] * cut * (100 - (groundAt(field, h).cover || 0)) / 100;
+      for (let x = 0; x < men[j]; x++) if (rng.randint(1, 100) <= p) struck++;
+    });
+  }
+  return near ? struck : null;
+}
+function suppressAll(us, under, rng){             // under fire: Nerve or pinned for the next exchange
+  const S = UD.suppression, log = [];
+  us.forEach((u, i) => {
+    if (!under[i] || u.men <= 0 || u.state === "broken" || u.state === "fled") return;
+    const target = quality(u.quality).nerve + (u.prone ? S.prone : 0), roll = rng.randint(1, 100);
+    if (roll > target){ u.pinned = 2; log.push({ kind: "pinned", unit: i, roll, target }) }
+  });
+  return log;
 }
 function beaten(units, occ, field, i, best){      // {behind, beyond, bcover}: the first other unit in the beaten zone past the target
   const [dist, j, h, t] = best, line = ray(h, t, dist + UD.machine_guns.beaten.beyond).slice(dist);
@@ -422,8 +494,9 @@ function strikeAll(us, table, rng, acc, log, field){
     }
   }
 }
-function shootAll(us, table, rng, acc, log, field){
+function shootAll(us, table, rng, acc, log, field, under = null){
   for (const v of volleys(us, field)){
+    markMg(us, v, under);
     const b = us[v.dfd], exposed = exposure(b, false, true), mf = form(b).missile_factor;
     let t = takeHurt(b, volley(sideOfUnit(us[v.att], table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
     tallyLoss(acc, v, t);
@@ -481,17 +554,27 @@ function breachAll(us, field, log){               // units ordered to breach hac
 function exchange(units, table, rng, field = null){   // -> {units, log}; works being breached are updated in field
   const us = units.map(copyUnit), n = us.length, log = [];
   const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false) };
+  const under = new Array(n).fill(false);          // under shellfire or machine-gun fire this exchange (suppression)
   strikeAll(us, table, rng, acc, log, field);
-  shootAll(us, table, rng, acc, log, field);
+  shootAll(us, table, rng, acc, log, field, under);
+  indirectAll(us, table, rng, acc, log, field, under);
   breachAll(us, field, log);
   const occ = occupancy(us), before = us.map(u => u.men);
   us.forEach((u, i) => {
     const cut = Math.min(acc.lost[i], u.men);
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
   });
-  log.push(...moraleAll(us, occ, before, acc, rng, table));
-  for (const u of us){ u.charged = false; batteryAfter(u) }
+  log.push(...moraleAll(us, occ, before, acc, rng, table), ...suppressAll(us, under, rng));
+  afterExchange(us, field);
   return { units: us, log };
+}
+function afterExchange(us, field){                // charges spent, batteries changed over, pins wear off, missions come due
+  for (const u of us){
+    u.charged = false;
+    batteryAfter(u);
+    if (u.pinned) u.pinned -= 1;
+  }
+  for (const b of field?.support || []) if (b.mission && (b.mission.wait || 0) > 0) b.mission.wait -= 1;
 }
 function moraleAll(us, occ, before, acc, rng, table){
   const log = [], broke = [];
@@ -523,7 +606,7 @@ function routStrike(us, occ, j, table, rng){     // a unit that has just broken 
 
 // ---------- movement ----------
 function allowance(u){                            // hexes a unit may move (twice for a charge); a battery changing over or resupplying not at all, unlimbered a hex or so
-  if (u.prone && u.state !== "broken" && u.state !== "fled") return 0;   // gone to ground: up first
+  if ((u.prone || u.pinned) && u.state !== "broken" && u.state !== "fled") return 0;   // gone to ground or pinned: no move
   if (isBattery(u) && !u.abandoned && u.state !== "broken"){   // crews running from their guns run on foot
     if (u.limbering || u.resupplying) return 0;
     if (!u.limbered) return UD.artillery.pushed;

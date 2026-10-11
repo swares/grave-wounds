@@ -21,8 +21,10 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Modern fire wounds many and stops few.** On the field map a hit puts a man down only
   with a serious or critical wound and a failed stop check, so long-range rifle and
   machine-gun fire leaves most of the men it hits fighting on (units.md, the machine-gun
-  table). Machine guns also do not yet pin or suppress beyond the losses they cause. Playtest
-  first; a fix could be a suppression check under heavy fire.
+  table). Suppression (pinning under shell and machine-gun fire) now carries much of fire's
+  effect; playtest whether the wound rule needs changing too.
+- **Indirect fire, simplified.** Batteries are off the map and cannot be counter-battered;
+  no smoke, no creeping barrage, and woods give cover rather than tree bursts.
 - **One clock for all forces.** Each force on the travel map keeps its own clock (kept on
   purpose for now). A shared clock would let forces meet on the road.
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
@@ -30,8 +32,8 @@ When an item is done, delete it here and note it in the pull request that closes
   Lane (1814) and First Bull Run (1861) have both a campaign map and a battlefield. The
   conflicts after 1865 in the tables (the frontier, the world wars and later) still play on
   the generic valley and open ground. Machine guns, extended order and going to ground are in
-  (units.md); modern artillery and mortars (indirect fire on call) come next, then maps for
-  the First and Second World Wars. Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
+  (units.md), and so are modern artillery and mortars on call with suppression; maps for the
+  First and Second World Wars come next. Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
 - **Guns, simplified.** A battery fires one kind of shot at one unit an exchange, and the

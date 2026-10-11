@@ -98,6 +98,12 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .forces .meta{float:right;font:500 .75rem var(--mono);color:var(--muted)}
 .after{font-size:.9rem;margin:0;padding-left:1.1rem}
 .after li{margin:2px 0}
+.support{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.9rem}
+.support li{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;border:1px solid var(--line);border-radius:3px;padding:5px 8px}
+.support li[aria-current="true"]{border-color:var(--blood)}
+.support .meta{margin-left:auto;font:.78rem var(--mono);color:var(--muted)}
+.aim{font:700 9px var(--mono);fill:var(--blood);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.burst{font:700 7px var(--mono);fill:#c46a1a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .heroes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.9rem}
 .heroes li{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:3px;padding:5px 8px}
 .heroes .meta{margin-left:auto;font:500 .75rem var(--mono);color:var(--muted);text-align:right}
@@ -210,6 +216,21 @@ legend{padding:0}
       <div class="row" id="target-box" hidden>
         <div><label for="sel-target">Battery fires at</label><select id="sel-target"></select></div>
       </div>
+
+      <section id="support-box" aria-labelledby="h-support">
+        <h2 id="h-support">Fire support</h2>
+        <p class="muted" style="margin:0">Off-map artillery and mortars on call. On its side's move, pick a battery, <b>Call fire</b>, then click a hex one of the side's units can see. Field guns and howitzers land the next exchange, mortars this one; each shell scatters.</p>
+        <ul class="support" id="support"></ul>
+        <div class="row">
+          <div><label for="sel-sup-side">Side</label><select id="sel-sup-side"></select></div>
+          <div><label for="sel-sup-kind">Kind</label><select id="sel-sup-kind"></select></div>
+          <div><label for="in-sup-tubes">Tubes</label><input type="number" id="in-sup-tubes" min="1" max="24" value="4"></div>
+        </div>
+        <div class="toolbar">
+          <label class="check"><input type="checkbox" id="chk-sup-repeat"> Keep firing each exchange</label>
+          <button id="btn-add-sup">Add a battery</button>
+        </div>
+      </section>
 
       <h2>Heroes</h2>
       <p class="muted" style="margin:0" id="heroes-note">Named fighters from the wound roller can join a unit: in its front rank, shooting with it, or behind it. They fight with their own skill, and their wounds go back to the roller.</p>
@@ -445,6 +466,52 @@ function tryMove(u, pos, facing){                 // a move from where it began 
   S.units[i] = { ...S.start[i], pos, facing: mod6(facing), charged: r.charge };
   S.msg = `${u.name}: ${r.cost} of ${allowance(u)} hexes${r.charge ? ", a charge" : ""}.`;
 }
+// ----- fire support: off-map batteries on call (rules in units.js: indirectAll) -----
+const supports = () => S.field.support || (S.field.support = []);
+function renderSupport(){
+  const ok = !!shellWeapon(S.table), box = $("#support-box");
+  box.hidden = !ok;
+  if (!ok) return;
+  const K = FD.units.indirect.kinds;
+  $("#sel-sup-side").innerHTML = S.sides.map(s => `<option>${esc(s)}</option>`).join("");
+  if (!$("#sel-sup-kind").options.length) $("#sel-sup-kind").innerHTML = Object.entries(K).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
+  $("#support").innerHTML = supports().map((b, i) => {
+    const can = S.phase === "setup" || b.side === moving(), on = S.calling === i;
+    const call = `<button class="small" data-sup-call="${i}" ${can && b.rounds > 0 ? "" : "disabled"} aria-pressed="${on}">${on ? "Click a hex…" : "Call fire"}</button>`;
+    const dis = can ? "" : "disabled", stop = b.mission ? `<button class="small" data-sup-stop="${i}" ${dis}>Stop</button>` : "";
+    return `<li aria-current="${on}"><span><b>${esc(b.name)}</b> <span class="muted">${esc(b.side)}</span></span>${call}${stop}<span class="meta">${supportMeta(b)}</span></li>`;
+  }).join("") || `<li class="muted">None. Add a battery below.</li>`;
+}
+function supportMeta(b){                          // "4 tubes · 72 rounds · on 30,12 next exchange, each exchange"
+  const K = FD.units.indirect.kinds[b.kind], m = b.mission;
+  let task = "";
+  if (m){
+    const when = m.wait > 0 ? "next exchange" : "this exchange";
+    task = ` · on ${m.hex[0] + 1},${m.hex[1] + 1} ${when}${m.repeat ? ", each exchange" : ""}`;
+  }
+  return `${K.name.toLowerCase()} · ${b.tubes} tubes · ${b.rounds} rounds${task}`;
+}
+function addSupport(){
+  const kind = $("#sel-sup-kind").value, K = FD.units.indirect.kinds[kind], tubes = Math.max(1, Math.min(24, Number.parseInt($("#in-sup-tubes").value, 10) || 1));
+  const side = $("#sel-sup-side").value, n = supports().filter(b => b.side === side).length + 1;
+  supports().push({ name: `${K.name} ${n}`, side, kind, tubes, rounds: tubes * K.rounds, mission: null });
+  S.msg = `${K.name} (${tubes} tubes, ${tubes * K.rounds} rounds) support ${side}.`;
+  render();
+}
+function callFire(i, h){                          // the mission, if a unit of its side can see the hex
+  const b = supports()[i], K = FD.units.indirect.kinds[b.kind];
+  S.calling = null;
+  if (!spotted(S.units, S.field, b.side, h)){ S.msg = `No unit of ${b.side} can see ${h[0] + 1},${h[1] + 1}: fire can only be called where someone sees it fall.`; return render() }
+  b.mission = { hex: h, wait: K.delay, repeat: $("#chk-sup-repeat").checked };
+  S.msg = `${b.name} will fire on ${h[0] + 1},${h[1] + 1} ${K.delay ? "next exchange" : "this exchange"}${b.mission.repeat ? ", and every exchange until stopped" : ""}.`;
+  render();
+}
+function supportSvg(){                            // the hexes fire is called on, and where the last exchange's shells burst
+  let g = "";
+  for (const b of supports()) if (b.mission){ const [x, y] = xy(b.mission.hex); g += `<text class="aim" x="${x.toFixed(1)}" y="${y.toFixed(1)}">\u2316</text>` }
+  for (const h of S.bursts || []){ const [x, y] = xy(h); g += `<text class="burst" x="${x.toFixed(1)}" y="${y.toFixed(1)}">\u2737</text>` }
+  return g;
+}
 function clickHex(h){
   const u = selUnit(); if (!u) return;
   const occ = occupancy(S.units), there = occ[hk(h)];
@@ -479,6 +546,7 @@ function unitLineText(l, nm){                     // a volley, a melee or a rout
   const dead = l.dead ? " (" + l.dead + " dead)" : "", fallen = `${l.hits} hit, ${l.down} down${dead}`;
   if (l.kind === "cannon") return cannonText(l, nm, fallen);
   if (l.kind === "ricochet") return `Round shot from ${nm(l.att)} bounds on ${fmtM(l.beyond * FD.units.hex_m)} into ${nm(l.dfd)}: ${l.blows} men in the way, ${fallen}.`;
+  if (l.kind === "shelled") return `Shells from ${l.name} burst among ${nm(l.dfd)}: ${l.struck} men struck, ${fallen}.`;
   if (l.kind === "beaten") return `The cone of fire from ${nm(l.att)} falls on ${fmtM(l.beyond * FD.units.hex_m)} past its target into ${nm(l.dfd)}: ${l.blows} aimed shots, ${fallen}.`;
   if (l.kind === "volley") return `${nm(l.att)} shoot at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${l.blows} aimed shots, ${fallen}.`;
   if (l.kind === "rout") return `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.`;
@@ -509,6 +577,8 @@ function otherLine(l, nm){                       // morale, breach and hero line
   if (l.kind === "breach") return { cls: "morale", text: `${nm(l.unit)} break through the ${(WK.edge_works[l.work] || WK.hex_works[l.work]).name.toLowerCase()}.` };
   if (l.kind === "morale") return { cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` };
   if (l.kind === "herohit") return { cls: "hero", text: heroHitText(l) };
+  if (l.kind === "pinned") return { cls: "morale", text: `${nm(l.unit)} are pinned down (rolled ${l.roll}, needed ${l.target} or less): no move and half their fire next exchange.` };
+  if (l.kind === "barrage") return { cls: "", text: `${l.name} (${l.side}) fire ${l.shells} shell${l.shells === 1 ? "" : "s"} on ${l.at[0] + 1},${l.at[1] + 1}.` };
   if (l.kind === "hero") return l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null;
   return undefined;
 }
@@ -539,6 +609,7 @@ function next(){
   if (S.phase === 0){ startPhase(1); S.msg = `${S.sides[1]} to move.`; return render() }
   const r = exchange(S.units, S.table, dice, S.field);
   S.units = r.units;
+  S.bursts = r.log.filter(l => l.kind === "barrage").flatMap(l => l.bursts);
   S.log = [...logLines(r.log, S.exchange), ...S.log].slice(0, 400);
   S.exchange += 1;
   const lost = [0, 1].filter(k => !standing(k));
@@ -809,14 +880,14 @@ function renderMap(){
     hx += `<polygon class="hx${cls}" data-h="${c},${r}" points="${pts(xy([c, r]))}"/>`;
   }
   const units = S.units.map(unitSvg).join(""), W = HW * (SIZE[0] + 0.5), H = 1.5 * R * (SIZE[1] - 1) + 2 * R;
-  $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" style="min-width:${SIZE[0] * 13}px">${hx}${worksSvg()}${units}</svg>`;
+  $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" style="min-width:${SIZE[0] * 13}px">${hx}${worksSvg()}${units}${supportSvg()}</svg>`;
   $("#map-scale").textContent = `${SIZE[0]} × ${SIZE[1]} hexes · ${fmtM(FD.units.hex_m)} a hex · an exchange is about a minute`;
   $("#hex-size").textContent = fmtM(FD.units.hex_m);
 }
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
 function unitMeta(u){
   if (u.state === "fled") return "fled";
-  const down = u.down ? " · " + u.down + " down" : "", br = u.breach ? " · breaching" : "", low = u.prone ? " · to ground" : "";
+  const down = u.down ? " · " + u.down + " down" : "", br = u.breach ? " · breaching" : "", low = (u.prone ? " · to ground" : "") + (u.pinned ? " · pinned" : "");
   const mg = isMg(u.weapon) ? " · " + gunsText(mgGuns(u), "gun") : "";
   return `${u.men}/${u.start} · ${u.state}${down}${br}${low}${mg}${batteryMeta(u)}`;
 }
@@ -943,7 +1014,7 @@ function renderPhase(){
   ["#in-side0", "#in-side1"].forEach(b => $(b).disabled = S.phase !== "setup" || !!S.forces);
 }
 function render(){
-  renderMap(); renderUnits(); renderSel(); renderPhase(); renderAfter(); renderForces(); renderHeroes(); renderWeather();
+  renderMap(); renderUnits(); renderSel(); renderPhase(); renderAfter(); renderForces(); renderHeroes(); renderSupport(); renderWeather();
   $("#msg").textContent = S.msg || "";
   $("#log").innerHTML = S.log.map(l => `<li class="${l.cls}">${esc(l.text)}</li>`).join("");
   $("#in-side0").value = S.sides[0]; $("#in-side1").value = S.sides[1];
@@ -1078,6 +1149,7 @@ function readHandoff(){                           // a fight sent from the trave
 }
 function init(){
   restore();
+  S.calling = null;                                  // not mid-call after a reload
   HANDOFF = readHandoff();
   TEAMIN = readTeamIn();
   unitToggle($("#units-toggle"), () => render());
@@ -1086,6 +1158,7 @@ function init(){
   $("#map").addEventListener("click", e => {
     const p = e.target.closest(".hx"); if (!p) return;
     const h = p.dataset.h.split(",").map(Number);
+    if (S.calling !== null && S.calling !== undefined) return callFire(S.calling, h);
     if (S.tool === "unit") return clickHex(h);
     useTool(e, h);
     render();
@@ -1124,6 +1197,12 @@ function init(){
   $("#btn-add").onclick = addUnit;
   $("#btn-limber").onclick = toggleLimber;
   $("#btn-ground").onclick = toggleGround;
+  $("#btn-add-sup").onclick = addSupport;
+  $("#support").addEventListener("click", e => {
+    const c = e.target.closest("button[data-sup-call]"), s = e.target.closest("button[data-sup-stop]");
+    if (c){ const i = +c.dataset.supCall; S.calling = S.calling === i ? null : i; S.msg = S.calling === null ? "" : "Click the hex to fire on."; render() }
+    if (s){ supports()[+s.dataset.supStop].mission = null; S.msg = "Fire stopped."; render() }
+  });
   $("#btn-resupply").onclick = toggleResupply;
   $("#sel-target").onchange = e => setTarget(e.target.value);
   $("#sel-weapon").onchange = e => {

@@ -276,6 +276,54 @@ for every era: a wound puts a man down only if it is serious or critical and he 
 stop check. That makes long-range rifle and machine-gun fire wound many and stop few. It is
 the next thing to test at the table.
 
+## Indirect fire and suppression
+
+Modern artillery and mortars fire from off the map, on call (`indirect` in
+`data/units.yaml`). The **Fire support** panel on the field map appears on any wound table
+with shell wounds (the First World War and later):
+
+- **Add a battery**: a side, a kind and how many tubes (guns or mortars). Each tube carries
+  its kind's rounds.
+- **Call fire**: on the battery's side's move (or in set-up), press **Call fire**, then click
+  the hex to fire on. One of the side's units must see it: within the weather's sight, with
+  no woods between. Tick **Keep firing each exchange** before calling to repeat the mission
+  until **Stop** or the rounds run out. The map marks the hex ⌖ and the last exchange's bursts ✷.
+- **When it lands**: mortars in this exchange, field guns and heavy howitzers in the next.
+- **Where it lands**: each shell scatters, d6 for the direction and 0 to the kind's scatter in
+  hexes.
+- **What it does**: every man (friend or foe) in a hex within the burst's radius is struck at
+  the % for his distance from it, less for men gone to ground (×0.35) and less the ground's
+  cover. A struck man rolls a wound as a hit by the table's shell weapon (mortar and
+  artillery fragments) at 70%.
+
+| Kind | Shells a minute a tube | Rounds a tube | Lands | Scatter | Struck % at 0, 1, 2 … hexes |
+| --- | --- | --- | --- | --- | --- |
+| Mortars | 3 | 60 | this exchange | 2 hexes | 15, 5, 1 |
+| Field guns | 2 | 80 | next exchange | 4 hexes | 20, 8, 3, 1 |
+| Heavy howitzers | 1 | 40 | next exchange | 5 hexes | 30, 12, 5, 2, 1, 0.5 |
+
+**Suppression.** A unit that a shell burst near, or a machine gun fired on (or caught in its
+beaten zone), checks at the end of the exchange: d100 against its Nerve (+10 if gone to
+ground). A failure pins it for the next exchange: it cannot move and shoots at half its rate.
+The list shows "pinned". Broken units do not check.
+
+One minute of fire on the middle of 100 regular riflemen (`python3 -m gravewounds units`, 200
+runs, the First World War table):
+
+| Fire | Target | Struck | Put down | Pinned |
+| --- | --- | --- | --- | --- |
+| 2 mortars | close order | 29.5 | 7.5 | 52% |
+| 2 mortars | extended order | 3.3 | 0.9 | 46% |
+| 4 field guns | close order | 40.2 | 10.2 | 48% |
+| 4 field guns | extended order | 5.9 | 1.6 | 46% |
+| 4 field guns | extended, to ground | 1.7 | 0.5 | 36% |
+| 4 heavy howitzers | extended order | 4.4 | 1.1 | 48% |
+
+Dense formations under shellfire are slaughtered; spread out and gone to ground, men are hit
+far less but are still pinned about half the time. All design estimates. The batteries are
+off the map: they cannot be counter-battered here. The support list belongs to the battle
+(New battle or a new battlefield clears it).
+
 ## Guns
 
 A **battery** is a unit armed with guns (the smoothbore artillery of the wound tables, or the
