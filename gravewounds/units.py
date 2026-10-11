@@ -108,14 +108,16 @@ def melee(d: Data, att: dict, dfd: dict, men: int, rng: random.Random, situation
 
 def volley(d: Data, att: dict, dfd: dict, men: float, field_hexes: int, rng: random.Random,
            penalty: int = 0, factor: float = 1.0, exposed: tuple = (), reach: int = 0) -> dict | None:
-    """One exchange of `men` shooting at a unit `field_hexes` away. penalty: extra % off
-    (weather, cover); factor: the target formation's missile_factor; reach: the wind's % on the
-    range bands. None if out of range."""
+    """One exchange of `men` shooting at a unit `field_hexes` away (a machine-gun team: its
+    served guns, at machine_guns.tempo). penalty: extra % off (weather, cover); factor: the
+    target formation's missile_factor; reach: the wind's % on the range bands. None if out of
+    range."""
     band = field_range(d, att["weapon"], field_hexes, reach)
     if band is None:
         return None
     S = d.units["missile"]
-    shots = men * S["rate"].get(att["weapon"], S["default_rate"]) * S["tempo"] * factor
+    tempo = d.units["machine_guns"]["tempo"] if is_mg(d, att["weapon"]) else S["tempo"]
+    shots = men * S["rate"].get(att["weapon"], S["default_rate"]) * tempo * factor
     atk = _attack(d, att) - band["penalty"] - penalty
     return _blows(d, att, dfd, _count(shots, rng), atk, 0, rng, exposed, -1000)
 
@@ -594,14 +596,51 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
         best = _target(d, units, i, field, occ)
         if best is None:
             continue
-        rows, men = footprint(d, u), men_by_hex(d, u)
-        per_hex = form(d, u)["abreast"] * min(d.units["shoot_ranks"], form(d, u)["ranks"])
-        shooters = sum(min(per_hex, men[k]) for k in range(len(rows[0])))
         wx = shot_weather(d, field, u["weapon"], best[0], best[2], best[3])
-        out.append({"att": i, "dfd": best[1], "men": shooters, "dist": best[0], "cover": cover_at(d, field, best[2], best[3]),
-                    "penalty": wx["penalty"], "misfire": wx["misfire"], "reach": wx.get("reach", 0), "from": best[2], "to": best[3],
-                    "over": line_fire(d, units, occ, field, i, best[1], best[2], best[3], best[0])})
+        v = {"att": i, "dfd": best[1], "men": _shooters(d, u), "dist": best[0], "cover": cover_at(d, field, best[2], best[3]) + ground_cover(d, units[best[1]]),
+             "penalty": wx["penalty"], "misfire": wx["misfire"], "reach": wx.get("reach", 0), "from": best[2], "to": best[3],
+             "over": line_fire(d, units, occ, field, i, best[1], best[2], best[3], best[0])}
+        if is_mg(d, u["weapon"]):
+            v.update(_beaten(d, units, occ, field, i, best))
+        out.append(v)
     return out
+
+
+def _shooters(d: Data, u: dict) -> int:
+    """Who shoots: a machine-gun team's served guns; any other unit's front hexes' first
+    shoot_ranks ranks."""
+    if is_mg(d, u["weapon"]):
+        return mg_guns(d, u)
+    rows, men = footprint(d, u), men_by_hex(d, u)
+    per_hex = form(d, u)["abreast"] * min(d.units["shoot_ranks"], form(d, u)["ranks"])
+    return sum(min(per_hex, men[k]) for k in range(len(rows[0])))
+
+
+def is_mg(d: Data, weapon: str) -> bool:
+    return weapon in (d.units.get("machine_guns") or {}).get("weapons", [])
+
+
+def mg_guns(d: Data, u: dict) -> int:
+    """A machine-gun team's guns still served: one a crew, while a man of the crew is up."""
+    return math.ceil(max(0, u["men"]) / d.units["machine_guns"]["crew"])
+
+
+def ground_cover(d: Data, u: dict) -> int:
+    """% off shots at a unit gone to ground."""
+    return d.units["to_ground"]["cover"] if u.get("prone") else 0
+
+
+def _beaten(d: Data, units: list, occ: dict, field: dict | None, i: int, best: tuple) -> dict:
+    """A machine gun's beaten zone past its target: {behind (unit index or None), beyond (hexes
+    past the target), bcover (% off there: ground and going to ground)}."""
+    dist, j, h, t = best
+    for k, x in enumerate(ray(h, t, dist + d.units["machine_guns"]["beaten"]["beyond"])[dist:]):
+        if ground_at(d, field, x).get("stops_shot"):
+            break
+        b = occ.get(f"{x[0]},{x[1]}")
+        if k > 0 and b is not None and b not in (i, j):
+            return {"behind": b, "beyond": k, "bcover": ground_at(d, field, x).get("cover", 0) + ground_cover(d, units[b])}
+    return {"behind": None, "beyond": 0, "bcover": 0}
 
 
 def shot_weather(d: Data, field: dict | None, weapon: str, dist: int, h=None, t=None) -> dict:
@@ -771,6 +810,8 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
         t = _take_hurt(b, volley(d, _side(us[v["att"]], table), _side(b, table), v["men"], v["dist"], rng, **opts))
         _tally(*acc, v, t)
         log += _logged({"kind": "volley", **v}, t)
+        if v.get("behind") is not None:
+            log += _beaten_fire(d, us, table, rng, acc, v)
         for hero in _heroes(us[v["att"]], ("ranged",)):
             wx = shot_weather(d, field, hero["weapon"], v["dist"], v["from"], v["to"])
             if wx["blocked"] or field_range(d, hero["weapon"], v["dist"], wx["reach"]) is None:
@@ -782,6 +823,21 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
     for c in cannonades(d, us, field):
         log += _fire_battery(d, us, table, rng, acc, c)
     return log
+
+
+def _beaten_fire(d: Data, us: list, table: str, rng, acc: tuple, v: dict) -> list:
+    """A machine gun's cone falling on into the unit behind its target."""
+    k, bh = v["behind"], us[v["behind"]]
+    r = {**v, "dfd": k, "dist": v["dist"] + v["beyond"], "men": v["men"] * d.units["machine_guns"]["beaten"]["share"] / 100}
+    opts = {"factor": form(d, bh)["missile_factor"] * (100 - v["misfire"]) / 100, "exposed": _exposure(d, bh, False, True),
+            "penalty": v["bcover"] + v["penalty"], "reach": v["reach"]}
+    hits = volley(d, _side(us[v["att"]], table), _side(bh, table), r["men"], r["dist"], rng, **opts)
+    if hits is None:
+        return []
+    t = _take_hurt(bh, hits)
+    lost, dead, dealt = acc
+    _tally(lost, dead, dealt, r, t)
+    return _logged({"kind": "beaten", **r}, t)
 
 
 def _fire_battery(d: Data, us: list, table: str, rng, acc: tuple, c: dict) -> list:
@@ -916,6 +972,8 @@ def _rout_strike(d: Data, us: list, occ: dict, j: int, table: str, rng) -> list:
 def allowance(d: Data, u: dict) -> int:
     """Hexes a unit may move in an exchange (twice this for a charge). A battery limbering,
     unlimbering or resupplying does not move; unlimbered, it can only be manhandled a hex or so."""
+    if u.get("prone") and u["state"] not in ("broken", "fled"):   # gone to ground: up first (a broken unit gets up and runs)
+        return 0
     if is_battery(d, u) and not u.get("abandoned") and u["state"] != "broken":   # crews running from their guns run on foot
         if u.get("limbering") or u.get("resupplying"):
             return 0
@@ -1230,7 +1288,7 @@ def _battery_fire(d: Data, units: list, occ: dict, field: dict | None, i: int, b
     graze = A["canister"]["graze"] if shot == "canister" and best[0] > A["canister"]["strike"][0][0] and _firm(d, field, best) else 0
     tid = units[best[1]].get("id")
     return {"att": i, "dfd": best[1], "guns": guns_served(d, u), "rounds": min(guns_served(d, u) * A["rounds"], ammo_left(d, u)),
-            "dist": best[0], "shot": shot, "cover": cover_at(d, field, best[2], best[3]), "penalty": wx["penalty"],
+            "dist": best[0], "shot": shot, "cover": cover_at(d, field, best[2], best[3]) + ground_cover(d, units[best[1]]), "penalty": wx["penalty"],
             "named": tid is not None and tid == u.get("target"), "graze": graze, "bore": gun_kind(u),
             "behind": behind[0] if behind else None, "beyond": behind[1] if behind else 0}
 
@@ -1400,4 +1458,35 @@ def gun_examples(d: Data, runs: int, seed: int) -> list[dict]:
                     struck += line["blows"]
                     down += line["down"]
         out.append({"label": label, "struck": struck / runs, "down": down / runs})
+    return out
+
+
+MG_EXAMPLES = (   # (label, shooter weapon, shooters, shooter formation, distance in hexes, target formation, target width, prone)
+    ("2 machine guns, 400 m, close order", "machine_gun", 10, "mg", 40, "close", 3, False),
+    ("2 machine guns, 400 m, extended order", "machine_gun", 10, "mg", 40, "extended", 34, False),
+    ("2 machine guns, 400 m, extended, to ground", "machine_gun", 10, "mg", 40, "extended", 34, True),
+    ("2 machine guns, 800 m, extended order", "machine_gun", 10, "mg", 80, "extended", 34, False),
+    ("100 riflemen, 400 m, close order", "rifle_service", 100, "extended", 40, "close", 3, False),
+    ("100 riflemen, 400 m, extended order", "rifle_service", 100, "extended", 40, "extended", 34, False),
+    ("100 riflemen, 400 m, extended, to ground", "rifle_service", 100, "extended", 40, "extended", 34, True),
+)
+
+
+def mg_examples(d: Data, runs: int, seed: int) -> list[dict]:
+    """Machine guns and magazine rifles (regular, on the First World War table) firing for one
+    minute at 100 regular unarmoured riflemen: men hit and put down (means)."""
+    table, out = "wwi-1914-18-wounds", []
+    for label, weapon, men, fm, dist, tfm, width, prone in MG_EXAMPLES:
+        hit = down = 0
+        for k in range(runs):
+            sh = {**_example_unit(0, [60, 200], 1), "men": men, "start": men, "weapon": weapon, "formation": fm, "kit": "none",
+                  "width": math.ceil(men / d.units["formations"][fm]["per_hex"])}
+            tg = {**_example_unit(1, [60, 200 - dist], 4), "men": 100, "start": 100, "width": width, "weapon": "rifle_service", "formation": tfm,
+                  "kit": "none", "prone": prone}
+            _, log = exchange(d, [sh, tg], table, SeededDice(seed * 7919 + k), {"ground": {}, "works": None, "weather": None, "size": [120, 220]})
+            for line in log:
+                if line["kind"] == "volley" and line["att"] == 0:
+                    hit += line["hits"]
+                    down += line["down"]
+        out.append({"label": label, "hit": hit / runs, "down": down / runs})
     return out

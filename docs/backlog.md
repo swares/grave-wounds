@@ -18,14 +18,20 @@ When an item is done, delete it here and note it in the pull request that closes
   (the roller takes it up afterwards), a failed stop check puts him down for the rest of
   the battle (no stunned or defend-only), and a duel between two heroes is left to the
   roller.
+- **Modern fire wounds many and stops few.** On the field map a hit puts a man down only
+  with a serious or critical wound and a failed stop check, so long-range rifle and
+  machine-gun fire leaves most of the men it hits fighting on (units.md, the machine-gun
+  table). Machine guns also do not yet pin or suppress beyond the losses they cause. Playtest
+  first; a fix could be a suppression check under heavy fire.
 - **One clock for all forces.** Each force on the travel map keeps its own clock (kept on
   purpose for now). A shared clock would let forces meet on the road.
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
   Agincourt (1415), Towton (1461), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
   Lane (1814) and First Bull Run (1861) have both a campaign map and a battlefield. The
   conflicts after 1865 in the tables (the frontier, the world wars and later) still play on
-  the generic valley and open ground; their weapons need unit rules first (machine guns,
-  modern artillery). Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
+  the generic valley and open ground. Machine guns, extended order and going to ground are in
+  (units.md); modern artillery and mortars (indirect fire on call) come next, then maps for
+  the First and Second World Wars. Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
 - **Guns, simplified.** A battery fires one kind of shot at one unit an exchange, and the

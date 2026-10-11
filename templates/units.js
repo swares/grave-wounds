@@ -111,7 +111,8 @@ function volley(att, dfd, men, hexes, rng, opts = {}){   // opts: {penalty, fact
   const penalty = opts.penalty || 0, factor = opts.factor ?? 1;
   const band = fieldRange(att.weapon, hexes, opts.reach || 0);
   if (!band) return null;
-  const S = UD.missile, shots = men * (S.rate[att.weapon] ?? S.default_rate) * S.tempo * factor;
+  const S = UD.missile, tempo = isMg(att.weapon) ? UD.machine_guns.tempo : S.tempo;   // a machine gun's served guns, at its own tempo
+  const shots = men * (S.rate[att.weapon] ?? S.default_rate) * tempo * factor;
   const atk = attackOf(att) - band.penalty - penalty;
   return blows(att, dfd, countBlows(shots, rng), atk, 0, rng, { exposed: opts.exposed || [], shift: -1000 });
 }
@@ -332,14 +333,42 @@ function volleys(units, field = null){            // [{att, dfd, men, dist, cove
     if (out_(u) || !("range" in FD.weapons[u.weapon]) || inContact(units, occ, i)) return;
     const best = target(units, i, field, occ);
     if (!best) return;
-    const rows = footprint(u), men = menByHex(u), per = form(u).abreast * Math.min(UD.shoot_ranks, form(u).ranks);
-    let shooters = 0;
-    for (let k = 0; k < rows[0].length; k++) shooters += Math.min(per, men[k]);
     const wx = shotWeather(field, u.weapon, best[0], best[2], best[3]);
-    out.push({ att: i, dfd: best[1], men: shooters, dist: best[0], cover: coverAt(field, best[2], best[3]), penalty: wx.penalty, misfire: wx.misfire, reach: wx.reach || 0, from: best[2], to: best[3],
-      over: lineFire(units, occ, field, i, best[1], [best[2], best[3], best[0]]) });
+    const v = { att: i, dfd: best[1], men: shooters(u), dist: best[0], cover: coverAt(field, best[2], best[3]) + groundCover(units[best[1]]), penalty: wx.penalty, misfire: wx.misfire, reach: wx.reach || 0, from: best[2], to: best[3],
+      over: lineFire(units, occ, field, i, best[1], [best[2], best[3], best[0]]) };
+    if (isMg(u.weapon)) Object.assign(v, beaten(units, occ, field, i, best));
+    out.push(v);
   });
   return out;
+}
+// ----- machine guns and going to ground (as gravewounds/units.py) -----
+const isMg = w => (UD.machine_guns?.weapons || []).includes(w);
+const mgGuns = u => Math.ceil(Math.max(0, u.men) / UD.machine_guns.crew);   // one a crew, while a man of it is up
+const groundCover = u => (u.prone ? UD.to_ground.cover : 0);                 // % off shots at a unit gone to ground
+function shooters(u){                             // a machine-gun team's served guns; any other unit's front hexes' first shoot_ranks ranks
+  if (isMg(u.weapon)) return mgGuns(u);
+  const rows = footprint(u), men = menByHex(u), per = form(u).abreast * Math.min(UD.shoot_ranks, form(u).ranks);
+  let n = 0;
+  for (let k = 0; k < rows[0].length; k++) n += Math.min(per, men[k]);
+  return n;
+}
+function beaten(units, occ, field, i, best){      // {behind, beyond, bcover}: the first other unit in the beaten zone past the target
+  const [dist, j, h, t] = best, line = ray(h, t, dist + UD.machine_guns.beaten.beyond).slice(dist);
+  for (let k = 0; k < line.length; k++){
+    if (groundAt(field, line[k]).stops_shot) break;
+    const b = occ[hk(line[k])];
+    if (k > 0 && b !== undefined && b !== i && b !== j) return { behind: b, beyond: k, bcover: (groundAt(field, line[k]).cover || 0) + groundCover(units[b]) };
+  }
+  return { behind: null, beyond: 0, bcover: 0 };
+}
+function beatenFire(us, table, rng, acc, log, v){ // the cone falling on into the unit behind the target
+  const bh = us[v.behind], r = { ...v, dfd: v.behind, dist: v.dist + v.beyond, men: v.men * UD.machine_guns.beaten.share / 100 };
+  const opts = { factor: form(bh).missile_factor * (100 - v.misfire) / 100, exposed: exposure(bh, false, true), penalty: v.bcover + v.penalty, reach: v.reach };
+  const hits = volley(sideOfUnit(us[v.att], table), sideOfUnit(bh, table), r.men, r.dist, rng, opts);
+  if (!hits) return;
+  const t = takeHurt(bh, hits);
+  tallyLoss(acc, r, t);
+  log.push(...logged({ kind: "beaten", ...r }, t));
 }
 
 // ---------- the field: ground, works and weather (as gravewounds/units.py) ----------
@@ -399,6 +428,7 @@ function shootAll(us, table, rng, acc, log, field){
     let t = takeHurt(b, volley(sideOfUnit(us[v.att], table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
     tallyLoss(acc, v, t);
     log.push(...logged({ kind: "volley", ...v }, t));
+    if (v.behind !== undefined && v.behind !== null) beatenFire(us, table, rng, acc, log, v);
     for (const hero of heroesOf(us[v.att], ["ranged"])){
       const wx = shotWeather(field, hero.weapon, v.dist, v.from, v.to);
       if (wx.blocked || !fieldRange(hero.weapon, v.dist, wx.reach)) continue;
@@ -493,6 +523,7 @@ function routStrike(us, occ, j, table, rng){     // a unit that has just broken 
 
 // ---------- movement ----------
 function allowance(u){                            // hexes a unit may move (twice for a charge); a battery changing over or resupplying not at all, unlimbered a hex or so
+  if (u.prone && u.state !== "broken" && u.state !== "fled") return 0;   // gone to ground: up first
   if (isBattery(u) && !u.abandoned && u.state !== "broken"){   // crews running from their guns run on foot
     if (u.limbering || u.resupplying) return 0;
     if (!u.limbered) return UD.artillery.pushed;
@@ -647,7 +678,7 @@ function cannonades(units, field = null){         // [{att, dfd, guns, rounds, d
     const wx = gunWeather(field, best[0], best[2], best[3]), shot = shotKind(u, best[0]);
     const behind = shot === "round" ? ricochetAt(occ, field, i, best) : null, tid = units[best[1]].id;
     const graze = shot === "canister" && best[0] > A.canister.strike[0][0] && firmLine(field, best) ? A.canister.graze : 0;
-    out.push({ att: i, dfd: best[1], guns: gunsServed(u), rounds: Math.min(gunsServed(u) * A.rounds, ammoLeft(u)), dist: best[0], shot, cover: coverAt(field, best[2], best[3]), penalty: wx.penalty,
+    out.push({ att: i, dfd: best[1], guns: gunsServed(u), rounds: Math.min(gunsServed(u) * A.rounds, ammoLeft(u)), dist: best[0], shot, cover: coverAt(field, best[2], best[3]) + groundCover(units[best[1]]), penalty: wx.penalty,
       named: tid !== undefined && tid !== null && tid === u.target, graze, bore: gunKind(u), behind: behind ? behind[0] : null, beyond: behind ? behind[1] : 0 });
   });
   return out;

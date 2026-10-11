@@ -235,6 +235,47 @@ down. A duel between two heroes facing each other is not fought here: take it to
 A hero matters most through morale and through what happens to him: in a press of hundreds,
 one man fells few. The numbers are in `data/units.yaml` (`heroes`).
 
+## Machine guns and modern infantry
+
+The wars after 1865 fight with magazine rifles and machine guns, and their infantry spread
+out. All of this is design estimates (`data/units.yaml`).
+
+- **Extended order**: 3 men a hex, a few yards apart; shots at it count half (×0.5), and it
+  moves 8 hexes. Choose it in *Order* when adding a unit.
+- **Rifles**: bolt-action magazine rifles fire 10 rounds a minute, self-loading and assault
+  rifles 15, pistols and submachine guns 12, rolled as aimed shots at the same rate as a
+  musket's (3.3% of rounds fired).
+- **Going to ground**: on its own side's move (or in set-up), **Go to ground** lays a unit
+  down in the folds of the ground. Shots at it lose 15% on top of the ground's cover, and it
+  cannot move until **Get up**. It still shoots, and fights hand to hand as it stands. The map
+  marks it ↓.
+- **Machine-gun teams**: pick a machine gun as the weapon and the unit becomes a team: a gun
+  and its crew of 5 a hex, so 10 men serve 2 guns. A gun goes on firing while one of its crew
+  is up. Each gun fires 300 rounds a minute, and a tenth of them are rolled as aimed shots
+  (a rifleman's rate is far lower: the gun's cone of fire sweeps the target's depth). It
+  shoots at the nearest enemy in front, in range and in sight, as any unit.
+- **The beaten zone**: the cone falls on past the target. The first other unit, friend or foe,
+  within 20 hexes (220 yards, 200 m) past it on the line of fire takes half as many shots, at
+  the longer range. Woods, rough ground and marsh stop it.
+
+What the numbers give (`python3 -m gravewounds units`, 200 runs, the First World War table),
+fire for one minute at 100 unarmoured regular riflemen:
+
+| Shooting | Target | Hit | Put down |
+|---|---|---|---|
+| 2 machine guns, 440 yd (400 m) | close order | 17.7 | 2.4 |
+| 2 machine guns, 440 yd | extended order | 9.1 | 1.1 |
+| 2 machine guns, 440 yd | extended, to ground | 4.5 | 0.4 |
+| 2 machine guns, 880 yd (800 m) | extended order | 3.2 | 0.2 |
+| 100 riflemen, 440 yd | close order | 9.8 | 1.3 |
+| 100 riflemen, 440 yd | extended order | 5.1 | 0.6 |
+| 100 riflemen, 440 yd | extended, to ground | 2.6 | 0.2 |
+
+Most men hit at these ranges take light wounds and fight on, as the unit wound rules have it
+for every era: a wound puts a man down only if it is serious or critical and he fails the
+stop check. That makes long-range rifle and machine-gun fire wound many and stop few. It is
+the next thing to test at the table.
+
 ## Guns
 
 A **battery** is a unit armed with guns (the smoothbore artillery of the wound tables, or the
