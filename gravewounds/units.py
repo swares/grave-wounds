@@ -606,14 +606,16 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
     return out
 
 
-def _shooters(d: Data, u: dict) -> int:
+def _shooters(d: Data, u: dict) -> float:
     """Who shoots: a machine-gun team's served guns; any other unit's front hexes' first
-    shoot_ranks ranks."""
+    shoot_ranks ranks. A pinned unit, suppression.fire of them."""
     if is_mg(d, u["weapon"]):
-        return mg_guns(d, u)
-    rows, men = footprint(d, u), men_by_hex(d, u)
-    per_hex = form(d, u)["abreast"] * min(d.units["shoot_ranks"], form(d, u)["ranks"])
-    return sum(min(per_hex, men[k]) for k in range(len(rows[0])))
+        n = mg_guns(d, u)
+    else:
+        rows, men = footprint(d, u), men_by_hex(d, u)
+        per_hex = form(d, u)["abreast"] * min(d.units["shoot_ranks"], form(d, u)["ranks"])
+        n = sum(min(per_hex, men[k]) for k in range(len(rows[0])))
+    return n * d.units["suppression"]["fire"] if u.get("pinned") else n
 
 
 def is_mg(d: Data, weapon: str) -> bool:
@@ -763,8 +765,10 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     us = [_copy_unit(u) for u in units]
     lost, dead, dealt, flanked, log = [0] * len(us), [0] * len(us), [0] * len(us), [False] * len(us), []
     acc = (lost, dead, dealt)
+    under = [False] * len(us)                     # under shellfire or machine-gun fire this exchange (suppression)
     log += _strike_all(d, us, table, rng, acc, flanked, field)
-    log += _shoot_all(d, us, table, rng, acc, field)
+    log += _shoot_all(d, us, table, rng, acc, field, under)
+    log += _indirect_all(d, us, table, rng, acc, field, under)
     log += _breach_all(d, us, field)
     occ = occupancy(d, us)
     before = [u["men"] for u in us]
@@ -772,9 +776,15 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
         cut = min(lost[i], u["men"])
         u.update(men=u["men"] - cut, down=u.get("down", 0) + cut, dead=u.get("dead", 0) + min(dead[i], cut))
     log += _morale_all(d, us, occ, before, lost, dealt, flanked, rng, table)
+    log += _suppress_all(d, us, under, rng)
     for u in us:
         u["charged"] = False
         _battery_after(d, u)
+        if u.get("pinned"):
+            u["pinned"] -= 1
+    for b in (field or {}).get("support") or []:
+        if b.get("mission") and b["mission"].get("wait", 0) > 0:
+            b["mission"]["wait"] -= 1
     return us, log
 
 
@@ -800,10 +810,15 @@ def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, f
     return log
 
 
-def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | None = None) -> list:
-    """Every volley, each unit's shooting heroes with it."""
+def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | None = None, under: list | None = None) -> list:
+    """Every volley, each unit's shooting heroes with it. under: marks the units a machine gun
+    fired on (suppression)."""
     log = []
     for v in volleys(d, us, field):
+        if under is not None and is_mg(d, us[v["att"]]["weapon"]):
+            under[v["dfd"]] = True
+            if v.get("behind") is not None:
+                under[v["behind"]] = True
         b = us[v["dfd"]]
         opts = {"factor": form(d, b)["missile_factor"] * (100 - v["misfire"]) / 100, "exposed": _exposure(d, b, False, True),
                 "penalty": v["cover"] + v["penalty"] + v["over"], "reach": v["reach"]}
@@ -838,6 +853,110 @@ def _beaten_fire(d: Data, us: list, table: str, rng, acc: tuple, v: dict) -> lis
     lost, dead, dealt = acc
     _tally(lost, dead, dealt, r, t)
     return _logged({"kind": "beaten", **r}, t)
+
+
+# ---------- indirect fire (data/units.yaml indirect) ----------
+
+def shell_weapon(d: Data, table: str) -> str | None:
+    """The weapon whose wound data shell fragments use on this table, or None (no indirect fire)."""
+    from .model import available_weapons
+    I, have = d.units["indirect"], available_weapons(d, table)
+    return next((w for w in (I["weapon"], I["fallback"]) if w in have), None)
+
+
+def spotted(d: Data, units: list, field: dict | None, side, h) -> bool:
+    """Whether a unit of `side` (not broken or fled) can see hex h to call fire on it: within
+    the weather's sight, with no woods between."""
+    cond = (((field or {}).get("weather") or {}).get("cond"))
+    vis = d.weather["conditions"][cond].get("visibility") if cond and d.weather else None
+    sight = None if vis is None else vis // d.units["range_scale"]
+    for u in units:
+        if u["side"] != side or u["men"] <= 0 or u["state"] in ("broken", "fled"):
+            continue
+        for row in footprint(d, u):
+            for x in row:
+                dist = hdist(x, h)
+                if sight is not None and dist > sight:
+                    continue
+                if not any(ground_at(d, field, y).get("cover") for y in ray(x, h, dist)[1:-1]):
+                    return True
+    return False
+
+
+def _indirect_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | None, under: list) -> list:
+    """Every fire mission due this exchange (in the order of the support list)."""
+    log, weapon = [], shell_weapon(d, table)
+    if not field or weapon is None:
+        return log
+    for k, b in enumerate(field.get("support") or []):
+        m = b.get("mission")
+        if not m or m.get("wait", 0) > 0 or b.get("rounds", 0) <= 0:
+            continue
+        log += _fire_mission(d, us, table, weapon, rng, acc, field, under, k, b)
+    return log
+
+
+def _fire_mission(d: Data, us: list, table: str, weapon: str, rng, acc: tuple, field: dict, under: list, k: int, b: dict) -> list:
+    """One battery's shells this exchange: where each lands, then the men struck in every unit."""
+    I = d.units["indirect"]
+    K, m = I["kinds"][b["kind"]], b["mission"]
+    shells = min(b["tubes"] * K["rate"], b["rounds"])
+    bursts = []
+    for _ in range(shells):
+        dirn, far = rng.randint(0, 5), rng.randint(0, K["scatter"])
+        bursts.append(step(m["hex"], dirn, far))
+    b["rounds"] -= shells
+    if not m.get("repeat"):
+        b["mission"] = None
+    log = [{"kind": "barrage", "sup": k, "name": b["name"], "side": b["side"], "shells": shells, "at": m["hex"], "bursts": bursts}]
+    att = {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}
+    lost, dead, _ = acc
+    for i, u in enumerate(us):
+        struck = _shell_struck_unit(d, field, u, bursts, K, rng)
+        if struck is None:
+            continue
+        under[i] = True
+        if not struck:
+            continue
+        t = _take_hurt(u, _blows(d, att, _side(u, table), struck, I["attack"], 0, rng, _exposure(d, u, False, True), -1000))
+        lost[i] += t["down"]
+        dead[i] += t["dead"]
+        log += _logged({"kind": "shelled", "sup": k, "name": b["name"], "dfd": i, "struck": struck}, t)
+    return log
+
+
+def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, rng) -> int | None:
+    """Men of unit u struck by these bursts: each man in a hex within a burst's radius at the %
+    for his distance (gone to ground, less; ground cover, less). None if no burst came near."""
+    if u["men"] <= 0 or u["state"] == "fled":
+        return None
+    hexes = [h for row in footprint(d, u) for h in row]
+    men, near, struck = men_by_hex(d, u), False, 0
+    cut = d.units["indirect"]["prone"] if u.get("prone") else 1
+    for at in bursts:
+        for h, n in zip(hexes, men):
+            dist = hdist(h, at)
+            if dist > kind["radius"]:
+                continue
+            near = True
+            p = kind["struck"][dist] * cut * (100 - ground_at(d, field, h).get("cover", 0)) / 100
+            struck += sum(1 for _ in range(n) if rng.randint(1, 100) <= p)
+    return struck if near else None
+
+
+def _suppress_all(d: Data, us: list, under: list, rng) -> list:
+    """Units under shellfire or machine-gun fire this exchange check Nerve; a failure pins them
+    for the next exchange."""
+    S, log = d.units["suppression"], []
+    for i, u in enumerate(us):
+        if not under[i] or u["men"] <= 0 or u["state"] in ("broken", "fled"):
+            continue
+        target = quality(d, u["quality"])["nerve"] + (S["prone"] if u.get("prone") else 0)
+        roll = rng.randint(1, 100)
+        if roll > target:
+            u["pinned"] = 2
+            log.append({"kind": "pinned", "unit": i, "roll": roll, "target": target})
+    return log
 
 
 def _fire_battery(d: Data, us: list, table: str, rng, acc: tuple, c: dict) -> list:
@@ -972,7 +1091,7 @@ def _rout_strike(d: Data, us: list, occ: dict, j: int, table: str, rng) -> list:
 def allowance(d: Data, u: dict) -> int:
     """Hexes a unit may move in an exchange (twice this for a charge). A battery limbering,
     unlimbering or resupplying does not move; unlimbered, it can only be manhandled a hex or so."""
-    if u.get("prone") and u["state"] not in ("broken", "fled"):   # gone to ground: up first (a broken unit gets up and runs)
+    if (u.get("prone") or u.get("pinned")) and u["state"] not in ("broken", "fled"):   # gone to ground or pinned (a broken unit gets up and runs)
         return 0
     if is_battery(d, u) and not u.get("abandoned") and u["state"] != "broken":   # crews running from their guns run on foot
         if u.get("limbering") or u.get("resupplying"):
@@ -1489,4 +1608,35 @@ def mg_examples(d: Data, runs: int, seed: int) -> list[dict]:
                     hit += line["hits"]
                     down += line["down"]
         out.append({"label": label, "hit": hit / runs, "down": down / runs})
+    return out
+
+
+SHELL_EXAMPLES = (   # (label, kind, tubes, target formation, width, prone)
+    ("2 mortars, close order", "mortar", 2, "close", 3, False),
+    ("2 mortars, extended order", "mortar", 2, "extended", 34, False),
+    ("4 field guns, close order", "field", 4, "close", 3, False),
+    ("4 field guns, extended order", "field", 4, "extended", 34, False),
+    ("4 field guns, extended, to ground", "field", 4, "extended", 34, True),
+    ("4 heavy howitzers, extended order", "howitzer", 4, "extended", 34, False),
+)
+
+
+def shell_examples(d: Data, runs: int, seed: int) -> list[dict]:
+    """A battery's fire for one minute on the middle of 100 regular unarmoured riflemen (First
+    World War table): men struck and put down, and how often the unit is pinned (means)."""
+    table, out = "wwi-1914-18-wounds", []
+    for label, kind, tubes, tfm, width, prone in SHELL_EXAMPLES:
+        struck = down = pinned = 0
+        for k in range(runs):
+            tg = {**_example_unit(1, [60, 100], 4), "men": 100, "start": 100, "width": width, "weapon": "rifle_service", "formation": tfm,
+                  "kit": "none", "prone": prone}
+            field = {"ground": {}, "works": None, "weather": None, "size": [120, 200],
+                     "support": [{"name": "Battery", "side": 0, "kind": kind, "tubes": tubes, "rounds": 999, "mission": {"hex": [60, 100], "wait": 0}}]}
+            us, log = exchange(d, [tg], table, SeededDice(seed * 7927 + k), field)
+            for line in log:
+                if line["kind"] == "shelled":
+                    struck += line["struck"]
+                    down += line["down"]
+            pinned += 1 if us[0].get("pinned") else 0
+        out.append({"label": label, "struck": struck / runs, "down": down / runs, "pinned": 100 * pinned / runs})
     return out

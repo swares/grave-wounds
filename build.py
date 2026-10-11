@@ -260,6 +260,21 @@ def _mg_rules(d) -> list[str]:
         f"<b>Machine guns:</b> a team is a gun and {M['crew']} crew a hex, the gun served while one of its crew is up. Each gun fires {R['machine_gun']} rounds a minute, "
         f"{M['tempo'] * 100:g}% of them rolled as aimed shots. Its beaten zone: the first other unit, friend or foe, within {M['beaten']['beyond']} hexes past the target on the line "
         f"of fire takes {M['beaten']['share']}% as many shots at that range (ground that stops shot stops it).",
+    ] + _indirect_rules(d)
+
+
+def _indirect_rules(d) -> list[str]:
+    I, S = d.units.get("indirect"), d.units.get("suppression")
+    if not I:
+        return []
+    kinds = "; ".join(f"{k['name'].lower()} {k['rate']} a minute a tube, lands {'this' if not k['delay'] else 'next'} exchange, scatter {k['scatter']}, "
+                      f"struck % by distance {'/'.join(f'{x:g}' for x in k['struck'])}" for k in I["kinds"].values())
+    return [
+        f"<b>Indirect fire:</b> off-map batteries on call, on a hex one of the side's units can see (in the weather, no woods between). Each shell scatters "
+        f"(d6 direction, 0 to scatter hexes); every man within the radius is struck at the % for his distance (x{I['prone']:g} gone to ground, less ground cover) "
+        f"and wounds as a shell fragment at {I['attack']}%. {kinds}.",
+        f"<b>Suppression:</b> a unit shelled or under machine-gun fire checks Nerve at the end of the exchange (+{S['prone']} gone to ground); a failure pins it "
+        f"for the next exchange: no move, {S['fire'] * 100:g}% of its fire.",
     ]
 
 

@@ -194,6 +194,38 @@ machine_guns:
   tempo: 0.1
   beaten: {beyond: 20, share: 50}
 
+# ---------- indirect fire ----------
+# Modern artillery and mortars fire from off the map, on call. Each side lists its supporting
+# batteries (field.support on the field map: a name, a kind below, tubes, rounds). On its own
+# move the GM calls a battery's fire on a hex that one of the side's units can see (in sight
+# in the weather, no woods between: see spotted), once or until stopped. The shells land
+# `delay` exchanges later (mortars at once), each tube `rate` shells an exchange while rounds
+# last. Each shell scatters: d6 for the direction and 0 to `scatter` hexes from the hex
+# called. Where it bursts, every man in a hex within `radius` (of any unit, friend or foe) is
+# struck at the % in `struck` for his distance in hexes (0 = the burst's own hex), times
+# `prone` for a unit gone to ground and less the hex's ground cover. A struck man rolls a
+# wound as a hit by the table's shell weapon (`weapon`, or `fallback` if the table lacks it)
+# at `attack` %, as a battery's. Design estimates, tuned by python3 -m gravewounds units.
+indirect:
+  weapon: mortar_artillery
+  fallback: explosive_fragment
+  attack: 70
+  prone: 0.35
+  kinds:
+    mortar:   {name: "Mortars",          rate: 3, rounds: 60, delay: 0, scatter: 2, radius: 2, struck: [15, 5, 1]}
+    field:    {name: "Field guns",       rate: 2, rounds: 80, delay: 1, scatter: 4, radius: 3, struck: [20, 8, 3, 1]}
+    howitzer: {name: "Heavy howitzers",  rate: 1, rounds: 40, delay: 1, scatter: 5, radius: 5, struck: [30, 12, 5, 2, 1, 0.5]}
+
+# ---------- suppression ----------
+# Shellfire and machine-gun fire pin men down. A unit that a shell burst within reach of, or a
+# machine gun fired on (or caught in its beaten zone), in an exchange checks at the end of it:
+# d100 against its Nerve, + `prone` if gone to ground. A failure pins it for the next
+# exchange: it cannot move, and it shoots at `fire` of its rate. A pinned unit hit again can
+# be pinned again. Broken units do not check. Design estimates.
+suppression:
+  prone: 10
+  fire: 0.5
+
 # ---------- going to ground ----------
 # Modern infantry (and anyone else) can go to ground: the men lie down, in folds of the
 # ground, shell holes and ditches. The GM orders it for a unit on its side's move (Go to
