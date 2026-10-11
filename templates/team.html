@@ -30,7 +30,7 @@ nav a{color:var(--blood);font-size:.9rem;margin-left:14px}
 .grid{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:18px;align-items:start}
 @media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
-label{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:3px}
+label,.lbl{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:3px}
 label.check{display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:.9rem;color:var(--ink);margin:0}
 select,input,button{font:inherit;color:var(--ink)}
 select,input[type=text]{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:7px 8px}
@@ -100,13 +100,13 @@ label.radio input{margin-top:4px}
       <div><label for="sel-template">Team</label><select id="sel-template"></select></div>
       <fieldset id="slots-box" hidden>
         <legend class="sr">Your own team</legend>
-        <label>Careers (the first leads)</label>
+        <span class="lbl" aria-hidden="true">Careers (the first leads)</span>
         <ul class="slots" id="slots"></ul>
         <div class="toolbar"><button class="small" id="btn-add-slot">Add a member</button></div>
       </fieldset>
       <fieldset>
         <legend class="sr">Characteristics</legend>
-        <label>Characteristics</label>
+        <span class="lbl" aria-hidden="true">Characteristics</span>
         <label class="radio"><input type="radio" name="mode" value="roll" checked><span>Roll 3d6 × 5 each</span></label>
         <label class="radio"><input type="radio" name="mode" value="array"><span>The fixed array (<span id="array"></span>), placed by his career; click two to swap them</span></label>
       </fieldset>
@@ -118,7 +118,7 @@ label.radio input{margin-top:4px}
         <button id="btn-send" disabled title="Add the team to the wound roller's fighters">Send to the roller</button>
         <button id="btn-print" disabled>Print the sheets</button>
       </div>
-      <span class="msg" id="msg" role="status"></span>
+      <output class="msg" id="msg"></output>
       <p class="muted" style="margin:0">Leaders serve three terms, the rest one or two. Each term raises his career's skills, adds an event, and may leave an old wound: rolled on the region's wound table, a healed scar or a lasting hurt. See <a href="https://github.com/swares/grave-wounds/blob/main/docs/team.md">the rules</a>.</p>
     </section>
 
@@ -164,10 +164,13 @@ function render(){
   $("#sheets").innerHTML = S.team.length ? S.team.map(sheetHtml).join("") : `<p class="muted">Pick where they come from and a team, then roll.</p>`;
   save();
 }
+function termOpts(n){                             // 1 to 3 terms
+  return [1, 2, 3].map(k => '<option value="' + k + '"' + (k === n ? " selected" : "") + ">" + k + (k > 1 ? " terms" : " term") + "</option>").join("");
+}
 function renderSlots(){
   const opts = sel => T.careers.map(c => `<option value="${c.id}"${c.id === sel ? " selected" : ""}>${esc(c.name)}</option>`).join("");
   $("#slots").innerHTML = S.slots.map(([cid, n], i) => `<li><select data-slot="${i}" data-k="career" aria-label="Career ${i + 1}">${opts(cid)}</select>`
-    + `<select data-slot="${i}" data-k="terms" aria-label="Terms ${i + 1}">${[1, 2, 3].map(k => `<option value="${k}"${k === n ? " selected" : ""}>${k} term${k > 1 ? "s" : ""}</option>`).join("")}</select>`
+    + `<select data-slot="${i}" data-k="terms" aria-label="Terms ${i + 1}">${termOpts(n)}</select>`
     + `<button class="small" data-drop="${i}" title="Remove" aria-label="Remove member ${i + 1}"${S.slots.length <= 1 ? " disabled" : ""}>×</button></li>`).join("");
   $("#btn-add-slot").disabled = S.slots.length >= 6;
 }
@@ -180,7 +183,7 @@ function sheetHtml(c, i){
     return `<button type="button" class="stat${hurt}" data-stat="${x.id}" data-i="${i}" aria-pressed="${!!pressed}"${c.mode === "array" ? "" : " tabindex=\"-1\""} title="${esc(x.name)}"><b>${v}</b><span>${esc(x.name.slice(0, 3))}</span></button>`;
   }).join("");
   const trained = T.skills.filter(s => (c.gains[s.id] || 0) > 0).map(s => `<span>${esc(s.name)} <b>${c.skills[s.id]}</b></span>`).join("");
-  const others = T.skills.filter(s => !((c.gains[s.id] || 0) > 0) && c.skills[s.id] > 0).map(s => `${esc(s.name)} ${c.skills[s.id]}`).join(", ");
+  const others = T.skills.filter(s => (c.gains[s.id] || 0) <= 0 && c.skills[s.id] > 0).map(s => `${esc(s.name)} ${c.skills[s.id]}`).join(", ");
   const life = c.events.map((e, k) => `<li>Term ${k + 1}: ${esc(e)}</li>`).join("") + c.old.map(oldWoundLine).join("");
   return `<article class="sheet" aria-label="${esc(c.name)}">
     <div class="fig">${fig}</div>
@@ -228,7 +231,10 @@ function sendToRoller(){                         // the roller picks the team up
     const team = S.team.map(c => ({ name: c.name, kit: c.kit, weapon: c.weapon, look: c.look, nerve: c.nerve, leader: !!c.leader, sheet: rollerSheet(c) }));
     localStorage.setItem(HANDOFF, JSON.stringify({ side: S.side.trim() || "Side A", era: T.id, table: byId(T.regions, S.region).table, team }));
     location.href = "roller.html";
-  } catch (e) { S.msg = "The browser would not keep the team (storage is off), so it cannot go to the roller."; render() }
+  } catch (e) {                                  // storage is off or full: say so rather than lose the team
+    S.msg = `The browser would not keep the team (${e.name}), so it cannot go to the roller.`;
+    render();
+  }
 }
 function init(){
   fill(); restore();

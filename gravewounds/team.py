@@ -43,18 +43,18 @@ def _at(ranges: list, roll: int) -> str:
     return next(loc for loc, hi in ranges if roll <= hi)
 
 
-def kit_for(T: dict, career: dict, region: str) -> tuple:
+def kit_for(career: dict, region: str) -> tuple:
     """(armour kit, weapon) for a career in a region."""
     k, w = career["kit"], career["weapon"]
     return k.get(region, k["default"]), w.get(region, w["default"])
 
 
-def _stats(T: dict, career: dict, mode: str, rng) -> dict:
+def _stats(tables: dict, career: dict, mode: str, rng) -> dict:
     """Characteristics before any change: 3d6 x 5 each, in order, or the fixed array placed by
     the career's preferences."""
     if mode == "array":
-        return dict(zip(career["prefers"], T["array"]))
-    return {c["id"]: 5 * sum(rng.randint(1, 6) for _ in range(3)) for c in T["characteristics"]}
+        return dict(zip(career["prefers"], tables["array"]))
+    return {c["id"]: 5 * sum(rng.randint(1, 6) for _ in range(3)) for c in tables["characteristics"]}
 
 
 def _apply(mod: dict, stat_mods: dict, gains: dict) -> None:
@@ -95,7 +95,7 @@ def make_character(d: Data, eid: str, region: str, career_id: str, terms: int, m
     name = f"{reg['names'][rng.randint(1, len(reg['names'])) - 1]} {reg['bynames'][rng.randint(1, len(reg['bynames'])) - 1]}"
     beards = ["", "moustache", "beard", "stubble"]
     look = {"colour": reg["colours"][rng.randint(1, len(reg["colours"])) - 1], "beard": beards[rng.randint(1, 4) - 1]}
-    kit, weapon = kit_for(T, career, region)
+    kit, weapon = kit_for(career, region)
     c = {"name": name, "era": eid, "region": region, "career": career_id, "terms": terms, "mode": mode,
          "base": base, "stat_mods": stat_mods, "gains": gains, "origin": origin["name"],
          "trait": origin["trait"]["text"], "drawback": origin["drawback"]["text"], "events": events, "old": old,
@@ -103,8 +103,9 @@ def make_character(d: Data, eid: str, region: str, career_id: str, terms: int, m
     return finish(d, c)
 
 
-def _old_wound(d: Data, T: dict, ranges: list, weapon: str, stat_mods: dict, rng) -> dict:
+def _old_wound(d: Data, tables: dict, ranges: list, weapon: str, stat_mods: dict, rng) -> dict:
     """An old wound: where (the region's table), then a healed mark or a lasting hurt."""
+    T = tables
     loc = _at(ranges, rng.randint(1, 100))
     kind = _pick(T["old_wound"], rng.randint(1, 100))["kind"]
     w = {"loc": loc, "weapon": weapon, "kind": kind}
@@ -129,9 +130,9 @@ def finish(d: Data, c: dict) -> dict:
     return c
 
 
-def attack_for(T: dict, c: dict, weapon: str) -> int | None:
+def attack_for(tables: dict, c: dict, weapon: str) -> int | None:
     """His attack % with a weapon: the skill it is fought with; None for a weapon with no skill."""
-    s = T["weapon_skill"].get(weapon)
+    s = tables["weapon_skill"].get(weapon)
     return c["skills"][s] if s else None
 
 

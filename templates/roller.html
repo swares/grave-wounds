@@ -1879,20 +1879,17 @@ function init(){
   };
   $("#map").addEventListener("click", mapKey);
   $("#map").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); mapKey(e) } });
+  const dropKey = k => { try{ localStorage.removeItem(k) }catch(e){ /* storage off: nothing was kept to drop */ } };
+  const MAP_ACTS = {                              // the map bar's buttons, by data-map
+    stay: () => { S.tm = { ...(S.tm || {}), moved: true, steps: 0, ran: false, prev: null }; renderChars() },
+    undo: undoMove, next: nextFighter, handoff: setupHandoff, roll: () => rollHit(), stray: strayHit, apply: applyFromMap, addteam: addTeam,
+    skipfree: () => { freeDone("skipped"); renderChars() },
+    noteam: () => { S.teamIn = null; dropKey("gravewounds-team-handoff"); renderChars() },
+    nohandoff: () => { S.handoff = null; dropKey("gravewounds-handoff"); renderChars() },
+  };
   $("#map-actions").addEventListener("click", e => {
-    const b = e.target.closest("button[data-map]"); if (!b) return;
-    const act = b.dataset.map;
-    if (act === "stay"){ S.tm = { ...(S.tm || {}), moved: true, steps: 0, ran: false, prev: null }; renderChars() }
-    else if (act === "undo") undoMove();
-    else if (act === "next") nextFighter();
-    else if (act === "skipfree"){ freeDone("skipped"); renderChars() }
-    else if (act === "handoff") setupHandoff();
-    else if (act === "roll") rollHit();
-    else if (act === "stray") strayHit();
-    else if (act === "apply") applyFromMap();
-    else if (act === "addteam") addTeam();
-    else if (act === "noteam"){ S.teamIn = null; try{ localStorage.removeItem("gravewounds-team-handoff") }catch(e){} renderChars() }
-    else if (act === "nohandoff"){ S.handoff = null; try{ localStorage.removeItem("gravewounds-handoff") }catch(e){} renderChars() }
+    const b = e.target.closest("button[data-map]");
+    if (b && MAP_ACTS[b.dataset.map]) MAP_ACTS[b.dataset.map]();
   });
   $("#map-actions").addEventListener("click", e => { const b = e.target.closest("button[data-work]"); if (b) doWork(b.dataset.work, b.dataset.k, +b.dataset.j) });
   $("#btn-works").onclick = () => { S.workMode = !S.workMode; S.workType = S.workType || "palisade"; S.placing = null; S.mapMsg = ""; renderChars() };

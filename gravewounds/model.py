@@ -117,6 +117,17 @@ def _optional(path: Path, default):
     return _read(path) if path.exists() else default
 
 
+def _read_dir(folder: Path, rows_of: str | None = None) -> dict:
+    """Every YAML file in a folder, by id; rows_of: the key whose text is split into `rows`."""
+    out = {}
+    for p in sorted(folder.glob(YAML_FILES)) if folder.exists() else []:
+        x = _read(p)
+        if rows_of:
+            x["rows"] = [r for r in str(x.get(rows_of, "")).split("\n") if r.strip()]
+        out[x["id"]] = x
+    return out
+
+
 def load(root: str | Path = "data") -> Data:
     root = Path(root)
     body = _read(root / "body.yaml")
@@ -134,20 +145,9 @@ def load(root: str | Path = "data") -> Data:
     weather = _optional(root / "weather.yaml", {})
     disease = _optional(root / "disease.yaml", {})
     units = _optional(root / "units.yaml", {})
-    maps = {}
-    for p in sorted((root / "maps").glob(YAML_FILES)) if (root / "maps").exists() else []:
-        m = _read(p)
-        m["rows"] = [r for r in str(m.get("terrain", "")).split("\n") if r.strip()]
-        maps[m["id"]] = m
-    fields = {}
-    for p in sorted((root / "fields").glob(YAML_FILES)) if (root / "fields").exists() else []:
-        f = _read(p)
-        f["rows"] = [r for r in str(f.get("ground", "")).split("\n") if r.strip()]
-        fields[f["id"]] = f
-    teams = {}
-    for p in sorted((root / "teams").glob(YAML_FILES)) if (root / "teams").exists() else []:
-        t = _read(p)
-        teams[t["id"]] = t
+    maps = _read_dir(root / "maps", "terrain")
+    fields = _read_dir(root / "fields", "ground")
+    teams = _read_dir(root / "teams")
 
     data = Data(
         root=root,
@@ -834,8 +834,9 @@ def _units_extra_errors(d: Data) -> list[str]:
     return errors
 
 
-def _team_errors(d: Data, T: dict) -> list[str]:
+def _team_errors(d: Data, era: dict) -> list[str]:
     """data/teams: an era's character generation tables."""
+    T = era
     where, errors = f"teams/{T['id']}", []
     chars, skills = {c["id"] for c in T["characteristics"]}, {s["id"] for s in T["skills"]}
     if len(T["array"]) != len(chars):
@@ -865,9 +866,9 @@ def _team_mod_errors(where: str, name: str, o: dict, chars: set, skills: set) ->
     return [f"{where}: origin {name} names unknown {k}" for k in keys if k not in chars | skills]
 
 
-def _career_errors(d: Data, T: dict, where: str, c: dict, chars: set, skills: set) -> list[str]:
+def _career_errors(d: Data, era: dict, where: str, c: dict, chars: set, skills: set) -> list[str]:
     """A career: its skills, array order, term rows (ending at 100), kits and weapons per region."""
-    errors = []
+    T, errors = era, []
     if c["main"] not in skills or c["second"] not in skills or set(c["prefers"]) != chars:
         errors.append(f"{where}: career {c['id']} needs a known main skill and prefers naming every characteristic once")
     rows = c["terms"]

@@ -8,7 +8,7 @@ class SeededDice {
   randint(a, b){ return a + this.next() % (b - a + 1) }
   random(){ return this.next() / 2147483647 }
 }
-const realDice = { randint: (a, b) => a + Math.floor(Math.random() * (b - a + 1)) };
+const realDice = { randint: (a, b) => a + crypto.getRandomValues(new Uint32Array(1))[0] % (b - a + 1) };   // real dice for play
 const byId = (rows, id) => rows.find(r => r.id === id);
 const pickRow = (rows, roll) => rows.find(r => roll <= r.to);
 const kitFor = (T, career, region) => [career.kit[region] ?? career.kit.default, career.weapon[region] ?? career.weapon.default];
