@@ -527,7 +527,7 @@ def _set_hex(ground: dict, k: str, kind, level) -> None:
         ground["levels"].pop(k, None)
 
 
-def _beyond(plan: dict, P: list, u, depth: float, spot: list, hm: float, k: str):
+def _beyond(plan: dict, pt: list, u, depth: float, spot: list, hm: float, k: str):
     """(kind, level) for a hex depth metres past a side, in the country beyond it."""
     if plan["terrain"] == "lake":
         return "water", 0
@@ -537,12 +537,24 @@ def _beyond(plan: dict, P: list, u, depth: float, spot: list, hm: float, k: str)
         f = plan.get("ford")
         if f:
             v = (-u[1], u[0])                        # along the side
-            along = P[0] * v[0] + P[1] * v[1] - (spot[0] * v[0] + spot[1] * v[1]) - f[0] * hm
+            along = pt[0] * v[0] + pt[1] * v[1] - (spot[0] * v[0] + spot[1] * v[1]) - f[0] * hm
             if abs(along) <= f[1] * hm / 2:
                 return "marsh", 0
         return "water", 0
     L = plan["layout"]
     return L["kinds"].get(k), L["levels"].get(k, 0)
+
+
+def _past_side(plans: dict, pt: list, a: float):
+    """(side, metres past it, its direction) for the planned side pt lies furthest past, or Nones."""
+    best, depth, bu = None, 0.0, None
+    for name, u in SIDES:
+        if name not in plans:
+            continue
+        dd = pt[0] * u[0] + pt[1] * u[1] - a
+        if dd > depth:
+            best, depth, bu = name, dd, u
+    return best, depth, bu
 
 
 def edge_bands(d: Data, ground: dict, terrain: str, cols: int, rows: int, seed: int, edges: dict) -> list:
@@ -557,17 +569,11 @@ def edge_bands(d: Data, ground: dict, terrain: str, cols: int, rows: int, seed: 
     for r in range(rows):
         for c in range(cols):
             q = _map_xy(hm, cols, rows, c, r)
-            P = [spot[0] + q[0], spot[1] + q[1]]
-            best, depth, bu = None, 0.0, None
-            for name, u in SIDES:
-                if name not in plans:
-                    continue
-                dd = P[0] * u[0] + P[1] * u[1] - a
-                if dd > depth:
-                    best, depth, bu = name, dd, u
+            pt = [spot[0] + q[0], spot[1] + q[1]]
+            best, depth, bu = _past_side(plans, pt, a)
             if best:
                 reached.add(best)
-                _set_hex(ground, f"{c},{r}", *_beyond(plans[best], P, bu, depth, spot, hm, f"{c},{r}"))
+                _set_hex(ground, f"{c},{r}", *_beyond(plans[best], pt, bu, depth, spot, hm, f"{c},{r}"))
     return [[name, plans[name]["terrain"], int(a - (spot[0] * u[0] + spot[1] * u[1]) + 0.5)] for name, u in SIDES if name in reached]
 
 

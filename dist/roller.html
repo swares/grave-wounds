@@ -2069,6 +2069,15 @@ function beyond(plan, P, u, depth, spot, hm, k){   // [kind, level] depth metres
   }
   return [plan.layout.kinds[k] || null, plan.layout.levels[k] || 0];
 }
+function pastSide(plans, P, a){                 // [side, metres past it, its direction] for the side P lies furthest past
+  let best = null, depth = 0, bu = null;
+  for (const [name, u] of SIDES){
+    if (!plans[name]) continue;
+    const dd = P[0] * u[0] + P[1] * u[1] - a;
+    if (dd > depth){ best = name; depth = dd; bu = u }
+  }
+  return [best, depth, bu];
+}
 // edges: {around: {side: travel terrain}, hex_m (the travel hex across), spot_seed, ford};
 // returns [[side, terrain, metres from the fight's middle to that side]] for the sides reached.
 function edgeBands(ground, terrain, cols, rows, seed, edges){
@@ -2076,12 +2085,7 @@ function edgeBands(ground, terrain, cols, rows, seed, edges){
   const plans = sidePlans(terrain, cols, rows, seed, edges), reached = new Set();
   for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){
     const q = mapXY(hm, cols, rows, c, r), P = [spot[0] + q[0], spot[1] + q[1]];
-    let best = null, depth = 0, bu = null;
-    for (const [name, u] of SIDES){
-      if (!plans[name]) continue;
-      const dd = P[0] * u[0] + P[1] * u[1] - a;
-      if (dd > depth){ best = name; depth = dd; bu = u }
-    }
+    const [best, depth, bu] = pastSide(plans, P, a);
     if (best){
       reached.add(best);
       const k = c + "," + r;
