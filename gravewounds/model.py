@@ -879,10 +879,10 @@ def _team_errors(d: Data, era: dict) -> list[str]:
     return errors
 
 
-def _template_errors(T: dict, where: str) -> list[str]:
+def _template_errors(tables: dict, where: str) -> list[str]:
     """Team templates: 4 to 6 slots of known careers; followers of known careers and quality table."""
-    careers, quality, errors = {c["id"] for c in T["careers"]}, T.get("followers", {}).get("quality", {}), []
-    for t in T["templates"]:
+    careers, quality, errors = {c["id"] for c in tables["careers"]}, tables.get("followers", {}).get("quality", {}), []
+    for t in tables["templates"]:
         if not 4 <= len(t["slots"]) <= 6 or any(cid not in careers or n < 1 for cid, n in t["slots"]):
             errors.append(f"{where}: template {t['id']} needs 4 to 6 slots of known careers, each with a term or more")
         if any(cid not in careers or n < 0 for cid, n in t.get("followers", [])) or t.get("follower_quality", "default") not in quality:
