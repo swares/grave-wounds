@@ -14744,6 +14744,7 @@
    "uphill": 10,
    "downhill_reach": 10,
    "take_cover": 20,
+   "rise": 2,
    "seed": {
     "open": {
      "brush": 0.03,

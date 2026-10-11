@@ -9,10 +9,6 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **Taking cover lasts until the man moves or strikes in close combat.** He can keep shooting
-  from it on later turns, as a man firing prone would; there is no rule yet for the time it
-  takes to get up.
-
 - **Works and ground on the field map, simplified.** A unit's move pays only for what its
   middle hex crosses, the cover of a volley is taken at the nearest target hex only, and
   breaching is by order (it does not stop the unit fighting). High ground gives no edge to
