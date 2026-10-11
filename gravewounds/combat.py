@@ -590,22 +590,60 @@ def _ray_gap(p: list, origin: list, rays: list) -> float:
     return best
 
 
-def _camp_bank(d: Data, size: tuple, clear, rivers: list, width: int, toward, flip: int) -> tuple:
-    """Where the river runs when the defenders camp with works at the crossing: (the point its
-    rays start from, its width in hexes). It passes the camp on the side toward the attackers,
-    gap hexes clear of the camp's edge; flip picks the bank when that side is unclear."""
-    G, hm = d.wounds["combat"]["ground"], d.wounds["combat"]["move"]["hex_m"]
-    B, cols, rows = G["camp_bank"], size[0], size[1]
-    (centre, radius), n = clear, (-rivers[0][1], rivers[0][0])
-    a = dict(SIDES).get(toward)
+def bank_normal(d: Data, terrain: str, edges: dict):
+    """At a crossing hex, the way from a camp to the river past it (a unit vector, x east and y
+    south): toward the attackers (edges["toward"]), or, when they came along the river or from
+    nowhere known, either way, fixed by the fight's spot seed. None when no river runs through."""
+    rivers = _through_rays(d, terrain, edges.get("around") or {}, "river")
+    if not rivers:
+        return None
+    n, a = (-rivers[0][1], rivers[0][0]), dict(SIDES).get(edges.get("toward"))
     side = n[0] * a[0] + n[1] * a[1] if a else 0
     if abs(side) < 0.25:                         # along the river, or no direction: the fight decides
-        sign = 1 if flip else -1
+        sign = 1 if edges.get("spot_seed", 0) & 1 else -1
     else:
         sign = 1 if side > 0 else -1
-    n = (sign * n[0], sign * n[1])
+    return (sign * n[0], sign * n[1])
+
+
+def _reach(hm: float, cols: int, rows: int, n) -> float:
+    """How far the battle map runs from its middle in direction n, to its furthest corner."""
+    return hm * (cols - 0.5) / 2 * abs(n[0]) + hm * _S3 * (rows - 1) / 2 * abs(n[1])
+
+
+def camp_centre(d: Data, terrain: str, edges: dict, cols: int, rows: int, radius: int, outer: int) -> list:
+    """Where a camp with works stands at a crossing: the map's middle, moved back from the river
+    just enough for the river at its widest and its far bank, keeping 2 hexes of map behind the
+    camp's outer works (radius + outer). Elsewhere, the middle."""
+    mid = [cols // 2, rows // 2]
+    n = bank_normal(d, terrain, edges) if edges else None
+    if not n:
+        return mid
+    G, hm = d.wounds["combat"]["ground"], d.wounds["combat"]["move"]["hex_m"]
+    B, e = G["camp_bank"], _reach(hm, cols, rows, n)
+    need = (radius + B["gap"] + G["edges"]["river_width"][1] + B["far"]) * hm
+    s = max(0.0, min(need - e, e - (radius + outer + 2) * hm))
+    m = _map_xy(hm, cols, rows, mid[0], mid[1])
+    p = [m[0] - n[0] * s, m[1] - n[1] * s]
+    best, bd = mid, None
+    for r in range(rows):
+        for c in range(cols):
+            q = _map_xy(hm, cols, rows, c, r)
+            dd = (q[0] - p[0]) * (q[0] - p[0]) + (q[1] - p[1]) * (q[1] - p[1])
+            if bd is None or dd < bd:
+                best, bd = [c, r], dd
+    return best
+
+
+def _camp_bank(d: Data, size: tuple, clear, rivers: list, width: int, n) -> tuple:
+    """Where the river runs when the defenders camp with works at the crossing: (the point its
+    rays start from, its width in hexes). It passes the camp in direction n (bank_normal), gap
+    hexes clear of the camp's edge."""
+    G, hm = d.wounds["combat"]["ground"], d.wounds["combat"]["move"]["hex_m"]
+    B, cols, rows = G["camp_bank"], size[0], size[1]
+    centre, radius = clear
     cxy = _map_xy(hm, cols, rows, centre[0], centre[1])
-    reach = hm * (cols - 0.5) / 2 * abs(n[0]) + hm * _S3 * (rows - 1) / 2 * abs(n[1]) - (cxy[0] * n[0] + cxy[1] * n[1])
+    reach = _reach(hm, cols, rows, n) - (cxy[0] * n[0] + cxy[1] * n[1])
     near = (radius + B["gap"]) * hm
     width = max(G["edges"]["river_width"][0], min(width, int((reach - near) / hm) - B["far"]))
     s, clear_by = near + width * hm / 2, near + width * hm / 2
@@ -628,7 +666,7 @@ def through_lines(d: Data, ground: dict, terrain: str, cols: int, rows: int, see
     road_w = rng.randint(*G["through"]["road"]["width"]) if roads else 0
     origin = [0.0, 0.0]
     if rivers and clear:
-        origin, river_w = _camp_bank(d, (cols, rows), clear, rivers, river_w, edges.get("toward"), rng.randint(0, 1))
+        origin, river_w = _camp_bank(d, (cols, rows), clear, rivers, river_w, bank_normal(d, terrain, edges))
     cross = roads or ([(-rivers[0][1], rivers[0][0]), (rivers[0][1], -rivers[0][0])] if rivers else [])
     plan = {"terrain": terrain, "rivers": rivers, "roads": roads, "cross": cross, "origin": origin,
             "river": river_w * hm / 2, "ford": ford_w * hm / 2, "road": road_w * hm / 2}
@@ -911,7 +949,7 @@ CAMP_ROOM = 6     # hexes left between a camp too big for the map and the attack
 
 
 def camp_works(d: Data, kind: str, men: int, ftype, cols: int, rows: int,
-               done: float | None = None, hauled: bool = False, hex_m: float | None = None) -> dict:
+               done: float | None = None, hauled: bool = False, hex_m: float | None = None, at=None) -> dict:
     """Battle-map layout for a camp: {centre, radius, fits, works}. A camp that fits sits in the
     middle of the map. One that does not is laid out at its true size with its centre moved
     west, so the stretch with the gate (on the east) is on the map, CAMP_ROOM hexes from the
@@ -919,12 +957,13 @@ def camp_works(d: Data, kind: str, men: int, ftype, cols: int, rows: int,
     man-hours of work done so far (None: finished). The works go up in the order the camp lists
     them (works.yaml), each kind all round the ring from the gate before the next starts; a
     piece appears once its labour (with hauled timber if `hauled`) is done and it is on the map.
-    hex_m: the map's hex size (the battle map's unless given; the field map's is 10 m)."""
+    hex_m: the map's hex size (the battle map's unless given; the field map's is 10 m). at: a
+    centre to use instead of the middle (camp_centre, for a camp at a crossing)."""
     c = d.works["camps"][kind]
     layout = c.get("layout")
     r = camp_radius(d, men, ftype, hex_m)
     extra = 2 if layout == "fortified" else 1
-    centre = [cols // 2, rows // 2]
+    centre = list(at) if at else [cols // 2, rows // 2]
     fits = _camp_fits(centre, r + extra, cols, rows)
     if not fits:
         centre = [cols - 1 - CAMP_ROOM - (r + extra), rows // 2]

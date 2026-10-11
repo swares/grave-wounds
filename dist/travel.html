@@ -571,9 +571,9 @@ const CAMP_ROOM = 6;                          // hexes between a camp too big fo
 // the rest runs off it (fits false). done: man-hours of work done so far (null: finished); the
 // works go up in the order the camp lists them, each kind all round the ring from the gate before
 // the next starts. Pieces off the map count towards the labour but are not shown.
-function campWorks(kind, men, ftype, cols, rows, done = null, hauled = false){
+function campWorks(kind, men, ftype, cols, rows, done = null, hauled = false, at = null){   // at: a centre other than the middle
   const c = WK.camps[kind], layout = c.layout, r = campRadius(men, ftype), extra = layout === "fortified" ? 2 : 1;
-  let centre = [Math.floor(cols / 2), Math.floor(rows / 2)];
+  let centre = at ? at.slice() : [Math.floor(cols / 2), Math.floor(rows / 2)];
   const fits = campFits(centre, r + extra, cols, rows);
   if (!fits) centre = [cols - 1 - CAMP_ROOM - (r + extra), Math.floor(rows / 2)];
   const works = { edges: {}, hexes: {} }, result = { centre, radius: r, fits, works };
@@ -631,6 +631,11 @@ function sideToward(a, b){                      // which side of hex a faces hex
   if (!dx && !dy) return null;
   const turn = Math.round(Math.atan2(-dy, dx) / (Math.PI / 3));
   return SIDE_NAMES[((turn % 6) + 6) % 6];
+}
+function cameFrom(dfd, o){                     // which side of the defenders' hex the attackers come in from
+  const side = sideToward(dfd.pos, o.pos);
+  if (side) return side;
+  return o.cameFrom ? sideToward(dfd.pos, o.cameFrom) : null;   // in the same hex: the way they marched in
 }
 function nearWoods(m, h){
   const cols = m.rows[0].length, rows = m.rows.length;
@@ -1080,6 +1085,7 @@ function march(sel, hours){                    // the whole column marches toget
   const steps = r.index - from;
   if (steps && f.camp){ f.log.unshift(`${dateText(f.day, true)}: breaks camp (${WK.camps[f.camp.kind].name.toLowerCase()}).`); f.camp = null }
   f.marched = (f.marched || 0) + (r.used - u0);
+  if (steps) f.cameFrom = f.path[r.index - 1].slice();     // the hex it last left: the way it came in
   f.index = r.index; f.used = r.used; f.pos = f.path[f.index].slice();
   const arrived = f.index >= f.path.length - 1;
   const passed = f.legs.filter(i => i > from && i <= f.index).length;
@@ -1096,6 +1102,7 @@ function march(sel, hours){                    // the whole column marches toget
 function followLeader(o, f, steps, line){      // a force in the column goes where its leader went
   if (steps && o.camp){ o.log.unshift(`${dateText(f.day, true)}: breaks camp (${WK.camps[o.camp.kind].name.toLowerCase()}).`); o.camp = null }
   Object.assign(o, { pos: f.pos.slice(), day: f.day, used: f.used, marched: f.marched });
+  if (steps && f.cameFrom) o.cameFrom = f.cameFrom.slice();
   o.log.unshift(`With ${f.name}: ${line.replace(/^[^:]*: /, "")}`);
   o.log = o.log.slice(0, 40);
 }
@@ -1559,7 +1566,7 @@ function init(){
     const on = $("#sel-fightmap").value;
     if (on.startsWith("field")) return sendField(p, on.slice(6) || null);
     const dfd = byId(p.defender), st = campStatus(dfd, p), m = curMap(), today = dayWeather(p.day);
-    const brief = o => ({ name: o.name, side: o.side, men: fitOf(o).fit, type: o.type, fatigue: o.fatigue || 0, km: +(hexDist(o.pos, dfd.pos) * m.hex_km).toFixed(1), from: sideToward(dfd.pos, o.pos) });   // the sick stay out of it
+    const brief = o => ({ name: o.name, side: o.side, men: fitOf(o).fit, type: o.type, fatigue: o.fatigue || 0, km: +(hexDist(o.pos, dfd.pos) * m.hex_km).toFixed(1), from: cameFrom(dfd, o) });   // the sick stay out of it
     const foes = p.attackers.map(byId).map(brief), allies = p.allies.map(byId).map(brief);
     try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", force: { name: dfd.name, side: dfd.side, men: fitOf(dfd).fit, type: dfd.type, fatigue: dfd.fatigue || 0 },
       camp: st.camp ? st.camp.kind : null, campLabour: st.camp ? st.camp.labour || null : null, party: columnOf(dfd).length > 1 ? colType(dfd) : null, done: st.done, built: st.pct, hauled: !nearWoods(m, dfd.pos), foes, allies, place: where(dfd.pos), ground: terrainAt(m, dfd.pos).id, groundSeed: `${S.mapId}:${p.day}:${p.used}:${dfd.id}`, edges: sidesAround(m, dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day),

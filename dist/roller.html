@@ -1129,9 +1129,9 @@ const CAMP_ROOM = 6;                          // hexes between a camp too big fo
 // the rest runs off it (fits false). done: man-hours of work done so far (null: finished); the
 // works go up in the order the camp lists them, each kind all round the ring from the gate before
 // the next starts. Pieces off the map count towards the labour but are not shown.
-function campWorks(kind, men, ftype, cols, rows, done = null, hauled = false){
+function campWorks(kind, men, ftype, cols, rows, done = null, hauled = false, at = null){   // at: a centre other than the middle
   const c = WK.camps[kind], layout = c.layout, r = campRadius(men, ftype), extra = layout === "fortified" ? 2 : 1;
-  let centre = [Math.floor(cols / 2), Math.floor(rows / 2)];
+  let centre = at ? at.slice() : [Math.floor(cols / 2), Math.floor(rows / 2)];
   const fits = campFits(centre, r + extra, cols, rows);
   if (!fits) centre = [cols - 1 - CAMP_ROOM - (r + extra), Math.floor(rows / 2)];
   const works = { edges: {}, hexes: {} }, result = { centre, radius: r, fits, works };
@@ -2102,16 +2102,37 @@ function rayGap(p, origin, rays){                // the least squared distance f
     return t < 0 ? q[0] * q[0] + q[1] * q[1] : x * x;
   }));
 }
-function campBank(size, clear, rivers, width, toward, flip){
-  const B = GRD.camp_bank, hm = CMB.move.hex_m, [cols, rows] = size, [centre, radius] = clear;
-  let n = [-rivers[0][1], rivers[0][0]];
-  const a = (SIDES.find(([name]) => name === toward) || [])[1];
+// At a crossing hex, the way from a camp to the river past it (as gravewounds.combat.bank_normal).
+function bankNormal(terrain, edges){
+  const rivers = throughRays(terrain, edges.around || {}, "river");
+  if (!rivers.length) return null;
+  const n = [-rivers[0][1], rivers[0][0]], a = (SIDES.find(([name]) => name === edges.toward) || [])[1];
   const side = a ? n[0] * a[0] + n[1] * a[1] : 0;
   let sign = side > 0 ? 1 : -1;
-  if (Math.abs(side) < 0.25) sign = flip ? 1 : -1;
-  n = [sign * n[0], sign * n[1]];
+  if (Math.abs(side) < 0.25) sign = (edges.spot_seed || 0) & 1 ? 1 : -1;   // along the river, or no direction: the fight decides
+  return [sign * n[0], sign * n[1]];
+}
+const mapReach = (hm, cols, rows, n) => hm * (cols - 0.5) / 2 * Math.abs(n[0]) + hm * S3 * (rows - 1) / 2 * Math.abs(n[1]);
+// Where a camp with works stands at a crossing: the middle, moved back from the river just
+// enough for it at its widest and its far bank (as gravewounds.combat.camp_centre).
+function campCentre(terrain, edges, cols, rows, radius, outer){
+  const mid = [Math.floor(cols / 2), Math.floor(rows / 2)], n = edges ? bankNormal(terrain, edges) : null;
+  if (!n) return mid;
+  const B = GRD.camp_bank, hm = CMB.move.hex_m, e = mapReach(hm, cols, rows, n);
+  const need = (radius + B.gap + GRD.edges.river_width[1] + B.far) * hm;
+  const s = Math.max(0, Math.min(need - e, e - (radius + outer + 2) * hm));
+  const m = mapXY(hm, cols, rows, mid[0], mid[1]), p = [m[0] - n[0] * s, m[1] - n[1] * s];
+  let best = mid, bd = null;
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){
+    const q = mapXY(hm, cols, rows, c, r), dd = (q[0] - p[0]) * (q[0] - p[0]) + (q[1] - p[1]) * (q[1] - p[1]);
+    if (bd === null || dd < bd){ best = [c, r]; bd = dd }
+  }
+  return best;
+}
+function campBank(size, clear, rivers, width, n){
+  const B = GRD.camp_bank, hm = CMB.move.hex_m, [cols, rows] = size, [centre, radius] = clear;
   const cxy = mapXY(hm, cols, rows, centre[0], centre[1]);
-  const reach = hm * (cols - 0.5) / 2 * Math.abs(n[0]) + hm * S3 * (rows - 1) / 2 * Math.abs(n[1]) - (cxy[0] * n[0] + cxy[1] * n[1]);
+  const reach = mapReach(hm, cols, rows, n) - (cxy[0] * n[0] + cxy[1] * n[1]);
   const near = (radius + B.gap) * hm;
   const w = Math.max(GRD.edges.river_width[0], Math.min(width, Math.trunc((reach - near) / hm) - B.far));
   const clearBy = near + w * hm / 2;
@@ -2130,7 +2151,7 @@ function throughLines(ground, terrain, cols, rows, seed, edges, clear = null){
   const fordW = rivers.length ? rng.randint(...E.ford_width) : 0;
   const roadW = roads.length ? rng.randint(...GRD.through.road.width) : 0;
   let origin = [0, 0];
-  if (rivers.length && clear) [origin, riverW] = campBank([cols, rows], clear, rivers, riverW, edges.toward, rng.randint(0, 1));
+  if (rivers.length && clear) [origin, riverW] = campBank([cols, rows], clear, rivers, riverW, bankNormal(terrain, edges));
   let cross = roads;
   if (!roads.length) cross = rivers.length ? [[-rivers[0][1], rivers[0][0]], [rivers[0][1], -rivers[0][0]]] : [];
   const plan = { terrain, rivers, roads, cross, origin, river: riverW * hm / 2, ford: fordW * hm / 2, road: roadW * hm / 2 };
@@ -2515,10 +2536,12 @@ function setupHandoff(){                     // a camp or position sent from the
   const need = 2 * (r + ring) + 6 + river;
   S.map = { cols: Math.min(80, Math.max(24, need)), rows: Math.min(60, Math.max(16, need)) };
   const { cols, rows } = S.map;
-  const L = lay ? campWorks(h.camp, men, ft, cols, rows, h.done ?? null, !!h.hauled) : { centre: [cols >> 1, rows >> 1], radius: r, fits: true, works: { edges: {}, hexes: {} } };
-  S.works = L.works;
   const toward = ((h.foes || []).find(o => o.from) || {}).from || null;      // the river goes between the camp and them
-  S.groundLike = { terrain: GRD.seed[h.ground] ? h.ground : "open", seed: h.groundSeed || h.place || "fight", n: 0, clear: lay ? [L.centre, L.radius] : null, edges: h.edges ? { ...h.edges, toward } : null };
+  const seed = h.groundSeed || h.place || "fight", edges = h.edges ? { ...h.edges, toward } : null;
+  const at = lay && edges ? campCentre(h.ground, { ...edges, spot_seed: seedNumber(`${seed}:spot`) }, cols, rows, r, ring) : null;
+  const L = lay ? campWorks(h.camp, men, ft, cols, rows, h.done ?? null, !!h.hauled, at) : { centre: [cols >> 1, rows >> 1], radius: r, fits: true, works: { edges: {}, hexes: {} } };
+  S.works = L.works;
+  S.groundLike = { terrain: GRD.seed[h.ground] ? h.ground : "open", seed, n: 0, clear: lay ? [L.centre, L.radius] : null, edges };
   S.ground = layGroundLike();
   S.wholeLabour = L.fits ? null : h.campLabour;                             // the whole camp's, when only part is on the map
   // The defender and any friends who were there fill the camp from the middle out; any who

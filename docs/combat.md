@@ -120,10 +120,12 @@ A road is clear, open going, no faster than open ground at 2 yards a hex.
 **A camp at a crossing.** A camp with works at a ford or bridge stands on one bank, not
 astride the river: the river passes it at least 3 hexes beyond its outer works, on the side
 toward the way the attackers came, so they must cross by the ford or bridge. When they came
-along the river, or are in the same travel hex, the bank is fixed for the fight. The road
-still runs out of the camp to the crossing. The battle map grows to make room, up to 80 by
-60 hexes; if the river still does not fit with 2 hexes of its far bank showing, it is
-narrowed, to no less than 8 hexes, and the rest runs off the map.
+along the river, the bank is fixed for the fight. The road still runs out of the camp to the
+crossing. The battle map grows to make room, up to 80 by 60 hexes, and the camp moves back
+from the middle, away from the river, just as far as the river at its widest and 2 hexes of
+its far bank need, keeping 2 hexes of map behind its works. If the river still does not fit,
+it is narrowed, to no less than 8 hexes, and the rest runs off the map. A camp too big for the
+whole map is shown only by the stretch with its gate, and then the river lies off the map.
 
 **The hexes around.** A travel hex is 0.6 to 3 miles (1 to 5 km) across and the battle map at
 most about 175 by 115 yards (160 by 105 m), so the fight stands at a fixed spot inside its
@@ -136,8 +138,9 @@ the fight is from each side it reaches. In a large hex this happens seldom, as i
 
 **Where the attackers come in.** Attackers arrive on the map's edge facing the way they came
 on the travel map, on the dry hexes nearest it: across a river they stand on the far bank or
-at the ford. Attackers already in the defenders' own travel hex come in at their side's far
-edge.
+at the ford. Attackers who have marched into the defenders' own travel hex come in from the
+side of the hex they last left. Only when that is not known (a game saved before this, or a
+force that has not marched) do they come in at their side's far edge.
 
 - **Movement.** Entering rocks or woods costs 1 extra hex of movement, marsh 2; each level
   climbed costs 1 more. No one enters or stands in deep water, but shots cross it.
