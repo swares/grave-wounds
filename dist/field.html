@@ -528,12 +528,15 @@ function campRadius(men, ftype){
   return Math.max(r, 1);
 }
 const AXIAL_DIRS = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];   // E, NE, NW, W, SW, SE
-function ringWalk(centre, k){                 // the hexes k from the centre, round the ring from the east (the gate side)
+// The hexes k from the centre, round the ring from side start (0 east, then anticlockwise as
+// AXIAL_DIRS: the gate side).
+function ringWalk(centre, k, start = 0){
   if (k === 0) return [centre.slice()];
-  let q = centre[0] - (centre[1] - (centre[1] & 1)) / 2 + k, r = centre[1];
+  const [sq, sr] = AXIAL_DIRS[start];
+  let q = centre[0] - (centre[1] - (centre[1] & 1)) / 2 + k * sq, r = centre[1] + k * sr;
   const out = [];
   for (let i = 0; i < 6; i++){
-    const [dq, dr] = AXIAL_DIRS[(i + 2) % 6];
+    const [dq, dr] = AXIAL_DIRS[(i + start + 2) % 6];
     for (let j = 0; j < k; j++){
       out.push([q + (r - (r & 1)) / 2, r]);
       q += dq;
@@ -553,13 +556,12 @@ function campFits(centre, rr, cols, rows){    // every hex within rr of the cent
 }
 const sameH = (a, b) => a[0] === b[0] && a[1] === b[1];
 const around = ([c, r]) => NEIGHBOURS[r & 1].map(([dc, dr]) => [c + dc, r + dr]);   // all six, on the map or not
-function stakePieces(centre, r){
-  const gateOut = [centre[0] + r + 1, centre[1]];
-  return { stakes: ringWalk(centre, r + 1).filter(h => !sameH(h, gateOut)).map(h => ["hex", [h], { type: "stakes", progress: 0 }]) };
+function stakePieces(centre, r, gate = 0){    // the first hex of the ring is the way out, left open
+  return { stakes: ringWalk(centre, r + 1, gate).slice(1).map(h => ["hex", [h], { type: "stakes", progress: 0 }]) };
 }
-function wallPieces(out, centre, r){          // bank and palisade round the ring, and the gate
-  const gateIn = [centre[0] + r, centre[1]], gateOut = [centre[0] + r + 1, centre[1]];
-  for (const h of ringWalk(centre, r)){
+function wallPieces(out, centre, r, gate = 0){   // bank and palisade round the ring, and the gate
+  const gateIn = ringWalk(centre, r, gate)[0], gateOut = ringWalk(centre, r + 1, gate)[0];
+  for (const h of ringWalk(centre, r, gate)){
     for (const n of around(h).filter(x => hexDistance(centre, x) === r + 1)){
       if (sameH(h, gateIn) && sameH(n, gateOut)){
         out.gate.push(["edge", [h, n], { type: "gate", progress: 0, open: false, inside: hkey(h) }]);
@@ -570,19 +572,18 @@ function wallPieces(out, centre, r){          // bank and palisade round the rin
     }
   }
 }
-function ditchPieces(out, centre, r){         // the ditch one ring out, leaving the way to the gate
-  const gateOut = [centre[0] + r + 1, centre[1]];
-  for (const h of ringWalk(centre, r + 1).filter(x => !sameH(x, gateOut))){
+function ditchPieces(out, centre, r, gate = 0){   // the ditch one ring out, leaving the way to the gate
+  for (const h of ringWalk(centre, r + 1, gate).slice(1)){
     for (const n of around(h).filter(x => hexDistance(centre, x) === r + 2)){
       out.ditch.push(["edge", [h, n], { type: "ditch", progress: 0, high: hkey(h) }]);
     }
   }
 }
-function campPieces(layout, centre, r){       // every piece by type, in building order round the ring, on the map or not
-  if (layout === "stakes") return stakePieces(centre, r);
+function campPieces(layout, centre, r, gate = 0){   // every piece by type, in building order round the ring from the gate, on the map or not
+  if (layout === "stakes") return stakePieces(centre, r, gate);
   const out = { ditch: [], bank: [], palisade: [], gate: [] };
-  wallPieces(out, centre, r);
-  ditchPieces(out, centre, r);
+  wallPieces(out, centre, r, gate);
+  ditchPieces(out, centre, r, gate);
   return out;
 }
 function pieceLabour(where, item, hauled){
@@ -596,14 +597,15 @@ const CAMP_ROOM = 6;                          // hexes between a camp too big fo
 // the rest runs off it (fits false). done: man-hours of work done so far (null: finished); the
 // works go up in the order the camp lists them, each kind all round the ring from the gate before
 // the next starts. Pieces off the map count towards the labour but are not shown.
-// opts: {hauled (timber from afar), at (a centre other than the middle)}
-function campWorks(kind, men, ftype, cols, rows, done = null, { hauled = false, at = null } = {}){
+// opts: {hauled (timber from afar), at (a centre other than the middle, kept even when the camp
+// does not fit), gate (the side its gate is on, 0 east)}
+function campWorks(kind, men, ftype, cols, rows, done = null, { hauled = false, at = null, gate = 0 } = {}){
   const c = WK.camps[kind], layout = c.layout, r = campRadius(men, ftype), extra = layout === "fortified" ? 2 : 1;
   let centre = at ? at.slice() : [Math.floor(cols / 2), Math.floor(rows / 2)];
   const fits = campFits(centre, r + extra, cols, rows);
-  if (!fits) centre = [cols - 1 - CAMP_ROOM - (r + extra), Math.floor(rows / 2)];
+  if (!fits && !at) centre = [cols - 1 - CAMP_ROOM - (r + extra), Math.floor(rows / 2)];
   const works = { edges: {}, hexes: {} }, result = { centre, radius: r, fits, works };
-  if (layout) layPieces(c, campPieces(layout, centre, r), works, { done, hauled, cols, rows });
+  if (layout) layPieces(c, campPieces(layout, centre, r, gate), works, { done, hauled, cols, rows });
   return result;
 }
 function layPieces(c, pieces, works, o){

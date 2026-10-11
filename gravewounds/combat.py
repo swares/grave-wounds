@@ -570,6 +570,11 @@ def _near_rays(q: list, rays: list, half: float) -> bool:
     return False
 
 
+def _near_placed(q: list, rays: list, half: float) -> bool:
+    """_near_rays for rays each with its own start: [(origin, direction)]."""
+    return any(_near_rays([q[0] - o[0], q[1] - o[1]], [u], half) for o, u in rays)
+
+
 def _through_rays(d: Data, terrain: str, around: dict, what: str) -> list:
     """The directions a road or river runs from the map's middle: toward each linked neighbour."""
     T = d.wounds["combat"]["ground"]["through"][what]
@@ -611,10 +616,19 @@ def _reach(hm: float, cols: int, rows: int, n) -> float:
     return hm * (cols - 0.5) / 2 * abs(n[0]) + hm * _S3 * (rows - 1) / 2 * abs(n[1])
 
 
+def _hex_at(hm: float, cols: int, rows: int, p: list) -> list:
+    """The battle-map hex (on the map or off it) nearest point p, metres from the map's middle."""
+    rf = (p[1] + hm * _S3 * (rows - 1) / 2) / (hm * _S3)
+    qf = (p[0] + hm * (cols - 0.5) / 2) / hm - rf / 2
+    return _cube_round(qf, rf, -qf - rf)
+
+
 def camp_centre(d: Data, terrain: str, edges: dict, cols: int, rows: int, radius: int, outer: int) -> list:
     """Where a camp with works stands at a crossing: the map's middle, moved back from the river
     just enough for the river at its widest and its far bank, keeping 2 hexes of map behind the
-    camp's outer works (radius + outer). Elsewhere, the middle."""
+    camp's outer works (radius + outer). A camp too big for the map moves back as far as that
+    needs, its centre off the map if need be, so the stretch facing the river is shown.
+    Elsewhere, the middle."""
     mid = [cols // 2, rows // 2]
     n = bank_normal(d, terrain, edges) if edges else None
     if not n:
@@ -622,16 +636,34 @@ def camp_centre(d: Data, terrain: str, edges: dict, cols: int, rows: int, radius
     G, hm = d.wounds["combat"]["ground"], d.wounds["combat"]["move"]["hex_m"]
     B, e = G["camp_bank"], _reach(hm, cols, rows, n)
     need = (radius + B["gap"] + G["edges"]["river_width"][1] + B["far"]) * hm
-    s = max(0.0, min(need - e, e - (radius + outer + 2) * hm))
+    s = max(0.0, need - e)
+    if _camp_fits(mid, radius + outer, cols, rows):
+        s = min(s, max(0.0, e - (radius + outer + 2) * hm))
     m = _map_xy(hm, cols, rows, mid[0], mid[1])
-    p = [m[0] - n[0] * s, m[1] - n[1] * s]
-    best, bd = mid, None
-    for r in range(rows):
-        for c in range(cols):
-            q = _map_xy(hm, cols, rows, c, r)
-            dd = (q[0] - p[0]) * (q[0] - p[0]) + (q[1] - p[1]) * (q[1] - p[1])
-            if bd is None or dd < bd:
-                best, bd = [c, r], dd
+    return _hex_at(hm, cols, rows, [m[0] - n[0] * s, m[1] - n[1] * s])
+
+
+def camp_gate(d: Data, terrain: str, edges: dict, cols: int, rows: int, centre, radius: int) -> int:
+    """The side (0 east, then anticlockwise as SIDES) a camp at a crossing has its gate on: toward
+    where the road nearest the river's way meets the river's near bank, or straight at the river
+    when no road goes that way. 0 (east) elsewhere."""
+    n = bank_normal(d, terrain, edges) if edges else None
+    if not n:
+        return 0
+    G, hm = d.wounds["combat"]["ground"], d.wounds["combat"]["move"]["hex_m"]
+    cxy = _map_xy(hm, cols, rows, centre[0], centre[1])
+    roads = _through_rays(d, terrain, edges.get("around") or {}, "road")
+    u = max(roads, key=lambda v: v[0] * n[0] + v[1] * n[1], default=None)
+    way = list(n)
+    if u and u[0] * n[0] + u[1] * n[1] > 0.3:
+        bank = cxy[0] * n[0] + cxy[1] * n[1] + (radius + G["camp_bank"]["gap"]) * hm   # the near bank, along n
+        t = bank / (u[0] * n[0] + u[1] * n[1])
+        way = [u[0] * t - cxy[0], u[1] * t - cxy[1]]
+    best, bd = 0, None
+    for i, (_name, v) in enumerate(SIDES):
+        dd = v[0] * way[0] + v[1] * way[1]
+        if bd is None or dd > bd:
+            best, bd = i, dd
     return best
 
 
@@ -641,7 +673,7 @@ def _camp_bank(d: Data, size: tuple, clear, rivers: list, width: int, n) -> tupl
     hexes clear of the camp's edge."""
     G, hm = d.wounds["combat"]["ground"], d.wounds["combat"]["move"]["hex_m"]
     B, cols, rows = G["camp_bank"], size[0], size[1]
-    centre, radius = clear
+    centre, radius = clear[0], clear[1]
     cxy = _map_xy(hm, cols, rows, centre[0], centre[1])
     reach = _reach(hm, cols, rows, n) - (cxy[0] * n[0] + cxy[1] * n[1])
     near = (radius + B["gap"]) * hm
@@ -667,8 +699,13 @@ def through_lines(d: Data, ground: dict, terrain: str, cols: int, rows: int, see
     origin = [0.0, 0.0]
     if rivers and clear:
         origin, river_w = _camp_bank(d, (cols, rows), clear, rivers, river_w, bank_normal(d, terrain, edges))
-    cross = roads or ([(-rivers[0][1], rivers[0][0]), (rivers[0][1], -rivers[0][0])] if rivers else [])
-    plan = {"terrain": terrain, "rivers": rivers, "roads": roads, "cross": cross, "origin": origin,
+    road_rays = [((0.0, 0.0), u) for u in roads]
+    if rivers and clear and len(clear) > 2:      # a camp at the crossing: roads leave the camp, the one to the river by its gate
+        gate_xy = _map_xy(hm, cols, rows, *ring_walk(clear[0], clear[1] + 1, clear[2])[0])
+        mid_xy, n = _map_xy(hm, cols, rows, clear[0][0], clear[0][1]), bank_normal(d, terrain, edges)
+        road_rays = [((gate_xy[0], gate_xy[1]) if u[0] * n[0] + u[1] * n[1] > 0.3 else (mid_xy[0], mid_xy[1]), u) for u in roads]
+    cross = road_rays or ([((0.0, 0.0), (-rivers[0][1], rivers[0][0])), ((0.0, 0.0), (rivers[0][1], -rivers[0][0]))] if rivers else [])
+    plan = {"terrain": terrain, "rivers": rivers, "roads": road_rays, "cross": cross, "origin": origin,
             "river": river_w * hm / 2, "ford": ford_w * hm / 2, "road": road_w * hm / 2}
     for r in range(rows):
         for c in range(cols):
@@ -681,9 +718,9 @@ def _through_hex(ground: dict, k: str, q: list, plan: dict) -> None:
     if plan["rivers"] and _near_rays([q[0] - o[0], q[1] - o[1]], plan["rivers"], plan["river"]):
         _set_hex(ground, k, "water", 0)
     wet = ground["kinds"].get(k) == "water"
-    if wet and plan["terrain"] == "ford" and _near_rays(q, plan["cross"], plan["ford"]):
+    if wet and plan["terrain"] == "ford" and _near_placed(q, plan["cross"], plan["ford"]):
         _set_hex(ground, k, "marsh", 0)
-    elif plan["roads"] and _near_rays(q, plan["roads"], plan["road"]):
+    elif plan["roads"] and _near_placed(q, plan["roads"], plan["road"]):
         if not wet:
             ground["kinds"][k] = "road"
         elif plan["terrain"] == "bridge":
@@ -877,14 +914,16 @@ def camp_map_size(d: Data, kind: str, men: int, ftype: str) -> int:
 AXIAL_DIRS = [(1, 0), (1, -1), (0, -1), (-1, 0), (-1, 1), (0, 1)]   # E, NE, NW, W, SW, SE
 
 
-def ring_walk(centre, k: int) -> list:
-    """The hexes k from the centre, in order round the ring from the east (the gate side)."""
+def ring_walk(centre, k: int, start: int = 0) -> list:
+    """The hexes k from the centre, in order round the ring from side start (0 east, then
+    anticlockwise as AXIAL_DIRS: the gate side)."""
     if k == 0:
         return [list(centre)]
-    q, r = centre[0] - (centre[1] - (centre[1] & 1)) // 2 + k, centre[1]
+    sq, sr = AXIAL_DIRS[start]
+    q, r = centre[0] - (centre[1] - (centre[1] & 1)) // 2 + k * sq, centre[1] + k * sr
     out = []
     for i in range(6):
-        dq, dr = AXIAL_DIRS[(i + 2) % 6]
+        dq, dr = AXIAL_DIRS[(i + start + 2) % 6]
         for _ in range(k):
             out.append([q + (r - (r & 1)) // 2, r])
             q, r = q + dq, r + dr
@@ -901,16 +940,15 @@ def _around(h) -> list:
     return [[h[0] + dc, h[1] + dr] for dc, dr in _NEIGHBOURS[h[1] & 1]]
 
 
-def _stake_pieces(centre, r: int) -> dict:
-    gate_out = [centre[0] + r + 1, centre[1]]
-    return {"stakes": [("hex", (h,), {"type": "stakes", "progress": 0})
-                       for h in ring_walk(centre, r + 1) if h != gate_out]}
+def _stake_pieces(centre, r: int, gate: int = 0) -> dict:
+    ring = ring_walk(centre, r + 1, gate)        # the first hex is the way out, left open
+    return {"stakes": [("hex", (h,), {"type": "stakes", "progress": 0}) for h in ring[1:]]}
 
 
-def _wall_pieces(out: dict, centre, r: int) -> None:
+def _wall_pieces(out: dict, centre, r: int, gate: int = 0) -> None:
     """Bank and palisade round the ring, and the gate."""
-    gate_in, gate_out = [centre[0] + r, centre[1]], [centre[0] + r + 1, centre[1]]
-    for h in ring_walk(centre, r):
+    gate_in, gate_out = ring_walk(centre, r, gate)[0], ring_walk(centre, r + 1, gate)[0]
+    for h in ring_walk(centre, r, gate):
         for n in (x for x in _around(h) if hex_distance(centre, x) == r + 1):
             if h == gate_in and n == gate_out:
                 out["gate"].append(("edge", (h, n), {"type": "gate", "progress": 0, "open": False, "inside": hkey(h)}))
@@ -919,22 +957,21 @@ def _wall_pieces(out: dict, centre, r: int) -> None:
             out["palisade"].append(("edge", (h, n), {"type": "palisade", "progress": 0}))
 
 
-def _ditch_pieces(out: dict, centre, r: int) -> None:
+def _ditch_pieces(out: dict, centre, r: int, gate: int = 0) -> None:
     """The ditch one ring out, leaving the way to the gate."""
-    gate_out = [centre[0] + r + 1, centre[1]]
-    for h in (x for x in ring_walk(centre, r + 1) if x != gate_out):
+    for h in ring_walk(centre, r + 1, gate)[1:]:
         for n in (x for x in _around(h) if hex_distance(centre, x) == r + 2):
             out["ditch"].append(("edge", (h, n), {"type": "ditch", "progress": 0, "high": hkey(h)}))
 
 
-def _camp_pieces(layout: str, centre, r: int) -> dict:
-    """Every piece of the camp's works, by type, each in the order it is built round the ring,
-    on the map or not: {type: [(kind, hexes, item)]}."""
+def _camp_pieces(layout: str, centre, r: int, gate: int = 0) -> dict:
+    """Every piece of the camp's works, by type, each in the order it is built round the ring
+    from the gate (on side gate), on the map or not: {type: [(kind, hexes, item)]}."""
     if layout == "stakes":
-        return _stake_pieces(centre, r)
+        return _stake_pieces(centre, r, gate)
     out = {"ditch": [], "bank": [], "palisade": [], "gate": []}
-    _wall_pieces(out, centre, r)
-    _ditch_pieces(out, centre, r)
+    _wall_pieces(out, centre, r, gate)
+    _ditch_pieces(out, centre, r, gate)
     return out
 
 
@@ -949,7 +986,7 @@ CAMP_ROOM = 6     # hexes left between a camp too big for the map and the attack
 
 
 def camp_works(d: Data, kind: str, men: int, ftype, cols: int, rows: int,
-               done: float | None = None, hauled: bool = False, hex_m: float | None = None, at=None) -> dict:
+               done: float | None = None, hauled: bool = False, hex_m: float | None = None, at=None, gate: int = 0) -> dict:
     """Battle-map layout for a camp: {centre, radius, fits, works}. A camp that fits sits in the
     middle of the map. One that does not is laid out at its true size with its centre moved
     west, so the stretch with the gate (on the east) is on the map, CAMP_ROOM hexes from the
@@ -958,18 +995,19 @@ def camp_works(d: Data, kind: str, men: int, ftype, cols: int, rows: int,
     them (works.yaml), each kind all round the ring from the gate before the next starts; a
     piece appears once its labour (with hauled timber if `hauled`) is done and it is on the map.
     hex_m: the map's hex size (the battle map's unless given; the field map's is 10 m). at: a
-    centre to use instead of the middle (camp_centre, for a camp at a crossing)."""
+    centre to use instead of the middle (camp_centre, for a camp at a crossing), kept even when
+    the camp does not fit; gate: the side its gate is on (camp_gate; east unless given)."""
     c = d.works["camps"][kind]
     layout = c.get("layout")
     r = camp_radius(d, men, ftype, hex_m)
     extra = 2 if layout == "fortified" else 1
     centre = list(at) if at else [cols // 2, rows // 2]
     fits = _camp_fits(centre, r + extra, cols, rows)
-    if not fits:
+    if not fits and not at:
         centre = [cols - 1 - CAMP_ROOM - (r + extra), rows // 2]
     works = {"edges": {}, "hexes": {}}
     if layout:
-        _lay(d, c, _camp_pieces(layout, centre, r), works, done, hauled, (cols, rows), hex_m)
+        _lay(d, c, _camp_pieces(layout, centre, r, gate), works, done, hauled, (cols, rows), hex_m)
     return {"centre": centre, "radius": r, "fits": fits, "works": works}
 
 

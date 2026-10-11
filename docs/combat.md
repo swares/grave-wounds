@@ -124,8 +124,12 @@ along the river, the bank is fixed for the fight. The road still runs out of the
 crossing. The battle map grows to make room, up to 80 by 60 hexes, and the camp moves back
 from the middle, away from the river, just as far as the river at its widest and 2 hexes of
 its far bank need, keeping 2 hexes of map behind its works. If the river still does not fit,
-it is narrowed, to no less than 8 hexes, and the rest runs off the map. A camp too big for the
-whole map is shown only by the stretch with its gate, and then the river lies off the map.
+it is narrowed, to no less than 8 hexes, and the rest runs off the map. The camp's gate faces
+the crossing (toward where the road meets the river, or straight at the river when no road
+goes that way), and the road to the river leaves by it. A camp too big for the whole map moves
+back as far as the river needs, and only the stretch facing the river and the crossing, with
+its gate, is shown. (Camps away from a crossing keep their gate on the east, and a camp too big
+for the map shows the stretch with its gate, facing the attackers.)
 
 **The hexes around.** A travel hex is 0.6 to 3 miles (1 to 5 km) across and the battle map at
 most about 175 by 115 yards (160 by 105 m), so the fight stands at a fixed spot inside its
