@@ -80,3 +80,19 @@ function makeTeam(region, slots, mode, rng){      // one character a slot ([care
   if (team.length) team[0].leader = true;
   return team;
 }
+
+/* Followers (as gravewounds/team.py make_follower): a quality on d100, then a name and a look. */
+function makeFollower(region, careerId, table, rng){
+  const T = TD.era, career = byId(T.careers, careerId);
+  const quality = pickRow(T.followers.quality[table], rng.randint(1, 100)).quality, q = TD.quality[quality];
+  const reg = byId(T.regions, region), beards = ["", "moustache", "beard", "stubble"];
+  const name = `${reg.names[rng.randint(1, reg.names.length) - 1]} ${reg.bynames[rng.randint(1, reg.bynames.length) - 1]}`;
+  const look = { colour: reg.colours[rng.randint(1, reg.colours.length) - 1], beard: beards[rng.randint(1, 4) - 1] };
+  const [kit, weapon] = kitFor(T, career, region);
+  return { name, career: careerId, quality, attack: q.attack, defence: q.defence, nerve: q.nerve, kit, weapon, look, mounted: !!career.mounted };
+}
+const makeFollowers = (region, counts, table, rng) => counts.flatMap(([cid, n]) => Array.from({ length: n }, () => makeFollower(region, cid, table, rng)));
+function followerLine(f){                         // as team.py follower_line
+  const career = byId(TD.era.careers, f.career).name.toLowerCase(), kit = TD.kits[f.kit].name.split(" (")[0].toLowerCase();
+  return `${f.name}, ${career}, ${f.quality}: ${TD.weapons[f.weapon].short.toLowerCase()} ${f.attack}%, defence ${f.defence}%, Nerve ${f.nerve}; ${kit}`;
+}

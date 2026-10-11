@@ -4494,6 +4494,8 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **5. Skills and kit:** each skill starts at a characteristic divided as shown (rounded down), plus what he gained, at most 90. His attack is the skill his weapon is fought with; his defence the better of Parry and Dodge; his Nerve the characteristic. Kit and weapon come with his career and region (the table below).
 
+**Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
+
 | Skill | Starts at | Weapons |
 |---|---|---|
 | Blade | Agility / 2 | sword, dagger |
@@ -4644,14 +4646,14 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 | Servant or groom | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
 | Merchant | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword |
 
-| Team | Members (terms) |
-|---|---|
-| A lord's retinue | Man-at-arms (3), Archer (2), Archer (1), Spearman or billman (1), Barber-surgeon (1), Servant or groom (1) |
-| A free company | Mercenary (3), Mercenary (2), Crossbowman (2), Archer (1), Spearman or billman (1) |
-| A garrison patrol | Mounted sergeant (3), Crossbowman (2), Crossbowman (1), Spearman or billman (1), Clerk or priest (1) |
-| A farmers' muster | Spearman or billman (3), Spearman or billman (1), Spearman or billman (1), Archer (1), Forester or huntsman (1) |
-| A pilgrims' escort | Man-at-arms (3), Mounted sergeant (2), Crossbowman (1), Clerk or priest (1), Barber-surgeon (1) |
-| A merchant's company | Merchant (3), Sailor (2), Crossbowman (1), Servant or groom (1) |
+| Team | Members (terms) | Followers (quality table) |
+|---|---|---|
+| A lord's retinue | Man-at-arms (3), Archer (2), Archer (1), Spearman or billman (1), Barber-surgeon (1), Servant or groom (1) | 8 archer, 4 spearman or billman, 2 servant or groom (default) |
+| A free company | Mercenary (3), Mercenary (2), Crossbowman (2), Archer (1), Spearman or billman (1) | 6 mercenary, 4 crossbowman, 2 archer (hardened) |
+| A garrison patrol | Mounted sergeant (3), Crossbowman (2), Crossbowman (1), Spearman or billman (1), Clerk or priest (1) | 4 crossbowman, 4 spearman or billman, 2 mounted sergeant (default) |
+| A farmers' muster | Spearman or billman (3), Spearman or billman (1), Spearman or billman (1), Archer (1), Forester or huntsman (1) | 10 spearman or billman, 4 archer (raw) |
+| A pilgrims' escort | Man-at-arms (3), Mounted sergeant (2), Crossbowman (1), Clerk or priest (1), Barber-surgeon (1) | 3 mounted sergeant, 3 crossbowman, 2 servant or groom (default) |
+| A merchant's company | Merchant (3), Sailor (2), Crossbowman (1), Servant or groom (1) | 4 sailor, 2 crossbowman, 2 servant or groom (default) |
 
 ## Camp disease
 

@@ -144,6 +144,11 @@ legend{padding:0}
         <button class="small" id="btn-handoff">Set up the battle</button>
         <button class="small" id="btn-nohandoff">Not now</button>
       </div>
+      <div class="banner" id="teamin" hidden>
+        <span id="teamin-text"></span>
+        <button class="small" id="btn-teamin">Add them</button>
+        <button class="small" id="btn-noteamin">Not now</button>
+      </div>
       <div class="toolbar">
         <button class="primary" id="btn-next">Start the battle</button>
         <button class="small" id="btn-end" title="Stop here: count the dead, and carry the wounded to camp">End the battle</button>
@@ -1445,7 +1450,7 @@ const dice = {                                     // real dice for play
   randint(a, b){ return a + crypto.getRandomValues(new Uint32Array(1))[0] % (b - a + 1) },
   random(){ return crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296 }
 };
-let S = null, HANDOFF = null;                      // HANDOFF: a fight sent from the travel map, waiting for the GM
+let S = null, HANDOFF = null, TEAMIN = null;       // HANDOFF: a fight sent from the travel map; TEAMIN: a team and its followers from the team builder
 function newUnit(o){
   return { id: S.seq++, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, guns: isGun(o.weapon) ? gunKind(o) : undefined, width: o.width || Math.ceil(o.men / FD.units.formations[o.formation].per_hex),
@@ -2088,6 +2093,7 @@ function render(){
   $("#in-side0").value = S.sides[0]; $("#in-side1").value = S.sides[1];
   renderAddSide();
   $("#handoff").hidden = !HANDOFF;
+  $("#teamin").hidden = !TEAMIN;
   save();
 }
 function fillChoices(){
@@ -2151,6 +2157,43 @@ function newBattle(){                            // back to set-up: the travel m
   fillChoices();
   render();
 }
+// ----- a team and its followers from the team builder: a unit for each career, the team with them as heroes -----
+const TEAM_KEY = "gravewounds-team-field";
+function readTeamIn(){
+  let t = null;
+  try{ t = JSON.parse(localStorage.getItem(TEAM_KEY) || "null") }catch(e){ t = null /* unreadable: ignore it */ }
+  if (!t?.units?.length) return null;
+  const units = t.units.map(u => `${u.name} (${u.men}, ${u.quality})`).join("; ");
+  $("#teamin-text").textContent = `From the team builder: ${units}, with ${t.heroes.map(h => h.name).join(", ")} as heroes, for ${t.side}. Add them here?`;
+  return t;
+}
+function dropTeamIn(){ try{ localStorage.removeItem(TEAM_KEY) }catch(e){ /* storage off: nothing to drop */ } }
+function fromTeam(t){
+  if (S.phase !== "setup"){ S.msg = "Followers join before the battle starts: New battle first."; return false }
+  if (!S.units.length && FD.tables[t.table]) S.table = t.table;   // an empty field: the team's own wound table
+  if (!S.units.length && !S.sides.includes(t.side)) S.sides[0] = t.side;
+  const side = S.sides.includes(t.side) ? t.side : S.sides[0], k = S.sides.indexOf(side), ok = FD.tables[S.table].weapons;
+  const made = [];
+  for (const o of t.units){
+    const weapon = ok.includes(o.weapon) ? o.weapon : ok[0], shoots = "range" in FD.weapons[weapon] && !isGun(weapon);
+    const u = newUnit({ name: o.name, side, men: o.men, quality: o.quality, weapon, kit: FD.kits[o.kit] ? o.kit : "none",
+      formation: shoots ? "open" : "close", mounted: o.mounted, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
+    const spot = startSpots(k).find(pos => fits([...S.units, { ...u, pos }], S.units.length, { ...u, pos }, SIZE, S.field));
+    if (spot){ u.pos = spot; S.units.push(u) }
+    made.push(spot ? u : null);
+  }
+  let hid = Math.min(0, ...allHeroes().map(h => h.id)) - 1;   // heroes from the team builder: ids below zero (the roller's are above)
+  for (const h of t.heroes){
+    const u = made[h.unit] || made.find(Boolean);
+    if (!u) continue;
+    const weapon = ok.includes(h.weapon) ? h.weapon : u.weapon;
+    u.heroes.push({ id: hid--, name: h.name, role: "range" in FD.weapons[weapon] ? "ranged" : "front", attack: h.attack, defence: h.defence, nerve: h.nerve,
+      weapon, kit: FD.kits[h.kit] ? h.kit : "none", leader: !!h.leader, state: "up", wounds: [] });
+  }
+  const lost = made.filter(u => !u).length;
+  S.msg = `${made.length - lost} units of followers joined ${side}, the team with them as heroes${lost ? `; ${lost} did not fit along the edge` : ""}. Place them, then start the battle.`;
+  return true;
+}
 function dropHandoff(){ try{ localStorage.removeItem("gravewounds-field-handoff") }catch(e){ /* storage off: nothing to drop */ } }
 function readHandoff(){                           // a fight sent from the travel map, unless it is the one already on the page
   let h = null;
@@ -2163,6 +2206,7 @@ function readHandoff(){                           // a fight sent from the trave
 function init(){
   restore();
   HANDOFF = readHandoff();
+  TEAMIN = readTeamIn();
   unitToggle($("#units-toggle"), () => render());
   fillChoices();
   fillTools();
@@ -2195,6 +2239,8 @@ function init(){
   $("#btn-back").onclick = backToTravel;
   $("#btn-handoff").onclick = () => { fromTravel(HANDOFF); HANDOFF = null; dropHandoff(); fillChoices(); render() };
   $("#btn-nohandoff").onclick = () => { HANDOFF = null; dropHandoff(); render() };
+  $("#btn-teamin").onclick = () => { if (fromTeam(TEAMIN)){ TEAMIN = null; dropTeamIn() } fillChoices(); render() };
+  $("#btn-noteamin").onclick = () => { TEAMIN = null; dropTeamIn(); render() };
   $("#sel-side").onchange = e => { const f = e.target.value.startsWith("f:") ? S.forces.find(x => x.id === +e.target.value.slice(2)) : null; if (f){ $("#chk-mounted").checked = f.type === "mounted"; $("#in-men").value = Math.max(1, reserve(f)) } };
   $("#btn-left").onclick = () => turn(1);
   $("#btn-right").onclick = () => turn(-1);

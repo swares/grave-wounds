@@ -72,6 +72,14 @@ label.radio input{margin-top:4px}
 .life{margin:0;padding-left:18px;font-size:.88rem}
 .life .wound{color:var(--scar)}
 .sheet .tools{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end}
+.fcounts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.fcounts li{display:grid;grid-template-columns:minmax(0,1fr) 30px 2.5em 30px;gap:6px;align-items:center;font-size:.9rem}
+.fcounts li b{font-family:var(--mono);text-align:center}
+.crew{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:14px;margin-top:14px;break-inside:avoid}
+.crew h3{margin:0 0 6px;font:700 1rem var(--display)}
+.crew ol{margin:0;padding-left:22px;font-size:.88rem;columns:2 320px;column-gap:24px}
+.crew li{break-inside:avoid}
+.q-green{color:var(--muted)}.q-veteran{color:var(--blood);font-weight:600}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 @media print{
   body{background:#fff;color:#000;padding:0}
@@ -105,6 +113,12 @@ label.radio input{margin-top:4px}
         <div class="toolbar"><button class="small" id="btn-add-slot">Add a member</button></div>
       </fieldset>
       <fieldset>
+        <legend class="sr">Followers</legend>
+        <span class="lbl" aria-hidden="true">Followers <span id="fqual"></span></span>
+        <ul class="fcounts" id="fcounts"></ul>
+        <div class="toolbar"><select id="sel-fadd" aria-label="Career to add followers of"></select><button class="small" id="btn-fadd">Add</button></div>
+      </fieldset>
+      <fieldset>
         <legend class="sr">Characteristics</legend>
         <span class="lbl" aria-hidden="true">Characteristics</span>
         <label class="radio"><input type="radio" name="mode" value="roll" checked><span>Roll 3d6 × 5 each</span></label>
@@ -115,7 +129,8 @@ label.radio input{margin-top:4px}
         <button class="primary" id="btn-roll">Roll the team</button>
       </div>
       <div class="toolbar">
-        <button id="btn-send" disabled title="Add the team to the wound roller's fighters">Send to the roller</button>
+        <button id="btn-send" disabled title="Add the team and its followers to the wound roller's fighters">Send to the roller</button>
+        <button id="btn-field" disabled title="The followers as units of the field map, one a career, the team with them as heroes">Send to the field map</button>
         <button id="btn-print" disabled>Print the sheets</button>
       </div>
       <output class="msg" id="msg"></output>
@@ -125,6 +140,7 @@ label.radio input{margin-top:4px}
     <section aria-labelledby="h-team">
       <h2 id="h-team" class="sr">The team</h2>
       <div class="sheets" id="sheets"><p class="muted">Pick where they come from and a team, then roll.</p></div>
+      <div id="crew"></div>
     </section>
   </div>
 </div>
@@ -138,10 +154,13 @@ const $ = s => document.querySelector(s);
 const KEY = "gravewounds-team-builder", HANDOFF = "gravewounds-team-handoff";
 const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
 const T = TD.era;
-let S = { region: T.regions[0].id, template: T.templates[0].id, mode: "roll", side: "Side A", slots: T.templates[0].slots.map(s => [...s]), team: [], swap: null, msg: "" };
+const tplFollowers = id => (id === "own" ? [] : (byId(T.templates, id).followers || []).map(s => [...s]));
+const tplQuality = id => (id === "own" ? "default" : byId(T.templates, id).follower_quality || "default");
+let S = { region: T.regions[0].id, template: T.templates[0].id, mode: "roll", side: "Side A", slots: T.templates[0].slots.map(s => [...s]), team: [], swap: null, msg: "",
+  fcounts: tplFollowers(T.templates[0].id), crew: [] };
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)) } catch (e) { /* storage may be off: the page still works */ } }
 function restore(){
-  try { const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.team) S = { ...S, ...j, swap: null, msg: "" } } catch (e) { /* start fresh */ }
+  try { const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.team) S = { ...S, fcounts: tplFollowers(j.template || S.template), crew: [], ...j, swap: null, msg: "" } } catch (e) { /* start fresh */ }
 }
 const statName = id => byId(T.characteristics, id).name;
 const skillName = id => byId(T.skills, id).name;
@@ -159,11 +178,23 @@ function render(){
   document.querySelectorAll('input[name="mode"]').forEach(r => { r.checked = r.value === S.mode });
   $("#slots-box").hidden = S.template !== "own";
   if (S.template === "own") renderSlots();
-  $("#btn-send").disabled = $("#btn-print").disabled = !S.team.length;
+  $("#btn-send").disabled = $("#btn-print").disabled = $("#btn-field").disabled = !S.team.length;
+  renderFollowers();
   $("#msg").textContent = S.msg;
   $("#sheets").innerHTML = S.team.length ? S.team.map(sheetHtml).join("") : `<p class="muted">Pick where they come from and a team, then roll.</p>`;
   save();
 }
+function renderFollowers(){                       // the counts to roll, and the rolled followers' lines
+  const name = cid => byId(T.careers, cid).name;
+  $("#fqual").textContent = `(quality: ${tplQuality(S.template)})`;
+  $("#fcounts").innerHTML = S.fcounts.map(([cid, n], i) => `<li><span>${esc(name(cid))}</span><button class="small" data-fless="${i}" aria-label="One fewer ${esc(name(cid))}">−</button><b>${n}</b><button class="small" data-fmore="${i}" aria-label="One more ${esc(name(cid))}">+</button></li>`).join("")
+    || `<li class="muted">None: add a career below</li>`;
+  $("#sel-fadd").innerHTML = T.careers.filter(c => !S.fcounts.some(([x]) => x === c.id)).map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
+  const n = S.crew.length;
+  $("#crew").innerHTML = n ? `<section class="crew" aria-label="Followers"><h3>Followers (${n})</h3><ol>${S.crew.map(f => `<li class="q-${f.quality}">${esc(followerLine(f))}</li>`).join("")}</ol>
+    <div class="toolbar" style="justify-content:flex-end;margin-top:8px"><button class="small" id="btn-reroll-crew">Reroll the followers</button></div></section>` : "";
+}
+const rollCrew = () => { S.crew = makeFollowers(S.region, S.fcounts.filter(([, n]) => n > 0), tplQuality(S.template), realDice) };
 function termOpts(n){                             // 1 to 3 terms
   return [1, 2, 3].map(k => '<option value="' + k + '"' + (k === n ? " selected" : "") + ">" + k + (k > 1 ? " terms" : " term") + "</option>").join("");
 }
@@ -213,6 +244,7 @@ function oldWoundLine(w){
 }
 function rollTeam(){
   S.team = makeTeam(S.region, slotsNow(), S.mode, realDice);
+  rollCrew();
   S.swap = null; S.msg = "";
   render();
 }
@@ -238,19 +270,58 @@ function rollerSheet(c){                          // what the roller keeps of a 
 function sendToRoller(){                         // the roller picks the team up and offers to add it
   try {
     const team = S.team.map(c => ({ name: c.name, kit: c.kit, weapon: c.weapon, look: c.look, nerve: c.nerve, leader: !!c.leader, sheet: rollerSheet(c) }));
-    localStorage.setItem(HANDOFF, JSON.stringify({ side: S.side.trim() || "Side A", era: T.id, table: byId(T.regions, S.region).table, team }));
+    const followers = S.crew.map(f => ({ ...f, careerName: byId(T.careers, f.career).name }));
+    localStorage.setItem(HANDOFF, JSON.stringify({ side: S.side.trim() || "Side A", era: T.id, table: byId(T.regions, S.region).table, team, followers }));
     location.href = "roller.html";
   } catch (e) {                                  // storage is off or full: say so rather than lose the team
     S.msg = `The browser would not keep the team (${e.name}), so it cannot go to the roller.`;
     render();
   }
 }
+// The field map: the followers of each career form one unit at the quality most of them have
+// (ties: the better), and the team goes with them as heroes (each with his own career's unit, else the biggest)
+function fieldUnits(){
+  const order = ["green", "regular", "veteran"], units = [];
+  for (const [cid] of S.fcounts){
+    const men = S.crew.filter(f => f.career === cid);
+    if (!men.length) continue;
+    const count = q => men.filter(f => f.quality === q).length;
+    const quality = order.reduce((a, q) => (count(q) >= count(a) ? q : a), "green");
+    units.push({ career: cid, name: `${byId(T.careers, cid).name.split(" or ")[0]} followers`, men: men.length, quality, kit: men[0].kit, weapon: men[0].weapon, mounted: men[0].mounted });
+  }
+  return units;
+}
+function sendToField(){
+  const units = fieldUnits();
+  const biggest = units.reduce((a, u, i) => (u.men > units[a].men ? i : a), 0);
+  const unitOf = c => { const k = units.findIndex(u => u.career === c.career); return k >= 0 ? k : biggest };
+  const heroes = S.team.map(c => ({ name: c.name, attack: c.attack ?? 0, defence: c.defence, nerve: c.nerve, kit: c.kit, weapon: c.weapon, leader: !!c.leader, unit: unitOf(c) }));
+  if (!units.length){ S.msg = "No followers to make units of: add some, roll, then send."; return render() }
+  try {
+    localStorage.setItem("gravewounds-team-field", JSON.stringify({ side: S.side.trim() || "Side A", table: byId(T.regions, S.region).table, units, heroes }));
+    location.href = "field.html";
+  } catch (e) {
+    S.msg = `The browser would not keep the team (${e.name}), so it cannot go to the field map.`;
+    render();
+  }
+}
 function init(){
   fill(); restore();
+  $("#fcounts").addEventListener("click", e => {
+    const b = e.target.closest("button[data-fless],button[data-fmore]"); if (!b) return;
+    const i = +(b.dataset.fless ?? b.dataset.fmore), row = S.fcounts[i];
+    row[1] = Math.max(0, Math.min(60, row[1] + (b.dataset.fmore === undefined ? -1 : 1)));
+    if (!row[1]) S.fcounts.splice(i, 1);
+    render();
+  });
+  $("#btn-fadd").onclick = () => { const v = $("#sel-fadd").value; if (v){ S.fcounts.push([v, 1]); render() } };
+  $("#crew").addEventListener("click", e => { if (e.target.closest("#btn-reroll-crew")){ rollCrew(); render() } });
+  $("#btn-field").onclick = sendToField;
   $("#sel-region").onchange = e => { S.region = e.target.value; render() };
   $("#sel-template").onchange = e => {
     S.template = e.target.value;
     if (S.template !== "own") S.slots = byId(T.templates, S.template).slots.map(s => [...s]);
+    S.fcounts = tplFollowers(S.template);
     render();
   };
   document.querySelectorAll('input[name="mode"]').forEach(r => { r.onchange = e => { S.mode = e.target.value; render() } });

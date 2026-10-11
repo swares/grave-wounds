@@ -349,7 +349,22 @@ def team_rules(d, eid: str = "medieval") -> list[str]:
         f"<b>5. Skills and kit:</b> each skill starts at a characteristic divided as shown (rounded down), plus what he gained, at most {T['skill_max']}. "
         "His attack is the skill his weapon is fought with; his defence the better of Parry and Dodge; his Nerve the characteristic. "
         "Kit and weapon come with his career and region (the table below).",
+        _follower_rule(d, T),
     ]
+
+
+def _follower_rule(d, T) -> str:
+    Q, U = T["followers"]["quality"], d.units["quality"]
+    def band(rows):
+        lo, out = 1, []
+        for r in rows:
+            out.append(f"{lo:02d}-{r['to'] % 100:02d} {r['quality']}")
+            lo = r["to"] + 1
+        return ", ".join(out)
+    tables = "; ".join(f"{k}: {band(v)}" for k, v in Q.items())
+    qs = ", ".join(f"{k} {v['attack']}/{v['defence']}/{v['nerve']}" for k, v in U.items())
+    return (f"<b>Followers:</b> a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 ({tables}), "
+            f"which gives attack/defence/Nerve ({qs}). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.")
 
 
 def team_tables(d, eid: str = "medieval") -> dict:
@@ -380,7 +395,8 @@ def team_tables(d, eid: str = "medieval") -> dict:
         [c["name"]] + [f"{kitname(c['kit'].get(r['id'], c['kit']['default']))}; {d.weapons[c['weapon'].get(r['id'], c['weapon']['default'])]['short'].lower()}" for r in regions]
         for c in T["careers"]]
     names = {c["id"]: c["name"] for c in T["careers"]}
-    teams = [["Team", "Members (terms)"]] + [[t["name"], ", ".join(f"{names[c]} ({n})" for c, n in t["slots"])] for t in T["templates"]]
+    teams = [["Team", "Members (terms)", "Followers (quality table)"]] + [[t["name"], ", ".join(f"{names[c]} ({n})" for c, n in t["slots"]),
+              ", ".join(f"{n} {names[c].lower()}" for c, n in t.get("followers", [])) + f" ({t.get('follower_quality', 'default')})"] for t in T["templates"]]
     return {"skills": skills, "origins": origins, "careers": careers, "events": events, "kits": kits, "teams": teams}
 
 
@@ -1448,6 +1464,7 @@ def team_bundle(d, eid: str = "medieval") -> dict:
             "locs": {l["id"]: {"name": l["name"], "zone": l["zone"], "class": l["class"]} for l in d.locations},
             "kits": {k: d.armor["kits"][k] for k in sorted(kits)},
             "fight": {"blood_pool": d.wounds["tracking"]["blood_pool"], "chr": d.wounds["combat"]["characteristics"]},
+            "quality": d.units["quality"],   # followers' attack, defence and Nerve
             "weapons": {w: d.weapons[w] for w in sorted(weapons) if w in d.weapons}}
 
 

@@ -81,16 +81,54 @@ come with his first career and his region.
 
 ## Teams
 
-| Team | Members (terms) |
-| --- | --- |
-| A lord's retinue | man-at-arms (3), archer (2), archer (1), spearman (1), barber-surgeon (1), servant (1) |
-| A free company | mercenary (3), mercenary (2), crossbowman (2), archer (1), spearman (1) |
-| A garrison patrol | mounted sergeant (3), crossbowman (2), crossbowman (1), spearman (1), clerk (1) |
-| A farmers' muster | spearman (3), spearman (1), spearman (1), archer (1), forester (1) |
-| A pilgrims' escort | man-at-arms (3), mounted sergeant (2), crossbowman (1), clerk (1), barber-surgeon (1) |
-| A merchant's company | merchant (3), sailor (2), crossbowman (1), servant (1) |
+| Team | Members (terms) | Followers (quality) |
+| --- | --- | --- |
+| A lord's retinue | man-at-arms (3), archer (2), archer (1), spearman (1), barber-surgeon (1), servant (1) | 8 archers, 4 spearmen, 2 servants |
+| A free company | mercenary (3), mercenary (2), crossbowman (2), archer (1), spearman (1) | 6 mercenaries, 4 crossbowmen, 2 archers (hardened) |
+| A garrison patrol | mounted sergeant (3), crossbowman (2), crossbowman (1), spearman (1), clerk (1) | 4 crossbowmen, 4 spearmen, 2 mounted sergeants |
+| A farmers' muster | spearman (3), spearman (1), spearman (1), archer (1), forester (1) | 10 spearmen, 4 archers (raw) |
+| A pilgrims' escort | man-at-arms (3), mounted sergeant (2), crossbowman (1), clerk (1), barber-surgeon (1) | 3 mounted sergeants, 3 crossbowmen, 2 servants |
+| A merchant's company | merchant (3), sailor (2), crossbowman (1), servant (1) | 4 sailors, 2 crossbowmen, 2 servants |
 
-*Your own team* on the page picks four to six careers and their terms.
+*Your own team* on the page picks four to six careers and their terms, and no followers
+until you add them.
+
+## Followers
+
+A big team's other men get no sheet, only a line: a career (for his kit and weapon, by
+region), a name, and a quality rolled on d100, which gives his attack, defence and Nerve.
+They are the field map's unit qualities. All are design estimates.
+
+| Quality | Attack | Defence | Nerve |
+| --- | --- | --- | --- |
+| Green | 40% | 25% | 35 |
+| Regular | 50% | 35% | 50 |
+| Veteran | 60% | 45% | 65 |
+
+| Quality table | Green | Regular | Veteran |
+| --- | --- | --- | --- |
+| Default | 01-30 | 31-80 | 81-00 |
+| Hardened (a free company) | 01-15 | 16-60 | 61-00 |
+| Raw (a farmers' muster) | 01-55 | 56-90 | 91-00 |
+
+For example: *John Archer, archer, regular: longbow 50%, defence 35%, Nerve 50; jack and
+sallet.* A follower has no characteristics or skills: in the roller he counts 50 in each.
+
+On the page, **Followers** lists how many of each career come with the team; **−** and
+**+** change them, and **Add** brings in another career. **Roll the team** rolls them with
+the team, and **Reroll the followers** rolls them again. Their lines print below the sheets.
+
+- **Send to the roller** brings the followers too, each as a fighter on the team's side.
+  His card says "Follower" with his career and quality. His quality's attack and defence
+  fill the Strike panel whatever weapon he holds, and his Nerve is the quality's.
+- **Send to the field map** makes one unit of each career's followers, at the quality most
+  of them have (a tie goes to the better), in open order for bows and crossbows and close
+  order for the rest, mounted for mounted sergeants. The team goes with them as heroes, each
+  with his own career's unit, or else the biggest. The field map offers to add them before
+  the battle starts, on the side of that name if it has one, else its first side. Heroes
+  sent this way are not the roller's fighters, so their wounds stay on the field map: to
+  carry wounds back to the roller, send the team to the roller and add its men as heroes
+  from there.
 
 ## On the page and in the roller
 
@@ -105,8 +143,8 @@ attacks, his attack % with the weapon in hand fills the Strike panel; when he de
 defence does. The GM can still change either. His Nerve comes from the sheet. Old wounds do
 not bleed or count as wounds there; their lasting hurts are already in his characteristics.
 
-`python3 -m gravewounds team --region england --template retinue` prints a team on the
-command line. `--array` uses the fixed array and `--seed N` gives repeatable dice. The page
+`python3 -m gravewounds team --region england --template retinue` prints a team and its
+followers on the command line. `--array` uses the fixed array and `--seed N` gives repeatable dice. The page
 and the Python rules make the same team from the same dice.
 
 His characteristics also count in the roller: Agility for initiative, Endurance for his Blood
@@ -120,4 +158,4 @@ forages fresh food on the march; **Watch** makes his force harder to surprise, a
 **Stealth** makes the force he attacks with likelier to surprise its enemy (see
 [combat.md](combat.md), [travel.md](travel.md) and [works.md](works.md), *Surprise*).
 
-Not yet done (see the backlog): tables for the other eras, and followers.
+Not yet done (see the backlog): tables for the other eras.
