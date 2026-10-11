@@ -472,7 +472,7 @@ def seed_ground(d: Data, terrain: str, cols: int, rows: int, seed: int, clear=No
         _lay_clumps(ground, kind, int(spec.get(kind, 0) * cols * rows + 0.5), cols, rows, rng)
     if edges:
         ground["sides"] = edge_bands(d, ground, terrain, cols, rows, seed, edges)
-        through_lines(d, ground, terrain, cols, rows, seed, edges)
+        through_lines(d, ground, terrain, cols, rows, seed, edges, clear)
     if clear:
         clear_ground(ground, clear[0], clear[1], cols, rows)
     return ground
@@ -578,16 +578,59 @@ def _through_rays(d: Data, terrain: str, around: dict, what: str) -> list:
     return [u for name, u in SIDES if around.get(name) in T["links"]]
 
 
-def through_lines(d: Data, ground: dict, terrain: str, cols: int, rows: int, seed: int, edges: dict) -> None:
-    """A river and a road through the defenders' own travel hex, drawn through the map's middle."""
+def _ray_gap(p: list, origin: list, rays: list) -> float:
+    """The least squared distance (square metres) from point p to rays starting at origin."""
+    best = None
+    for u in rays:
+        q = [p[0] - origin[0], p[1] - origin[1]]
+        t = q[0] * u[0] + q[1] * u[1]
+        x = q[0] * u[1] - q[1] * u[0]
+        off = q[0] * q[0] + q[1] * q[1] if t < 0 else x * x
+        best = off if best is None or off < best else best
+    return best
+
+
+def _camp_bank(d: Data, size: tuple, clear, rivers: list, width: int, toward, flip: int) -> tuple:
+    """Where the river runs when the defenders camp with works at the crossing: (the point its
+    rays start from, its width in hexes). It passes the camp on the side toward the attackers,
+    gap hexes clear of the camp's edge; flip picks the bank when that side is unclear."""
+    G, hm = d.wounds["combat"]["ground"], d.wounds["combat"]["move"]["hex_m"]
+    B, cols, rows = G["camp_bank"], size[0], size[1]
+    (centre, radius), n = clear, (-rivers[0][1], rivers[0][0])
+    a = dict(SIDES).get(toward)
+    side = n[0] * a[0] + n[1] * a[1] if a else 0
+    if abs(side) < 0.25:                         # along the river, or no direction: the fight decides
+        sign = 1 if flip else -1
+    else:
+        sign = 1 if side > 0 else -1
+    n = (sign * n[0], sign * n[1])
+    cxy = _map_xy(hm, cols, rows, centre[0], centre[1])
+    reach = hm * (cols - 0.5) / 2 * abs(n[0]) + hm * _S3 * (rows - 1) / 2 * abs(n[1]) - (cxy[0] * n[0] + cxy[1] * n[1])
+    near = (radius + B["gap"]) * hm
+    width = max(G["edges"]["river_width"][0], min(width, int((reach - near) / hm) - B["far"]))
+    s, clear_by = near + width * hm / 2, near + width * hm / 2
+    for _ in range(400):                         # a bend may swing back toward the camp: move further out
+        origin = [cxy[0] + n[0] * s, cxy[1] + n[1] * s]
+        if _ray_gap(cxy, origin, rivers) >= clear_by * clear_by:
+            break
+        s += hm
+    return origin, width
+
+
+def through_lines(d: Data, ground: dict, terrain: str, cols: int, rows: int, seed: int, edges: dict, clear=None) -> None:
+    """A river and a road through the defenders' own travel hex, drawn through the map's middle
+    (the river past the camp, on one bank, when the defenders camp there with works)."""
     G = d.wounds["combat"]["ground"]
     E, hm, around = G["edges"], d.wounds["combat"]["move"]["hex_m"], edges.get("around") or {}
     rivers, roads, rng = _through_rays(d, terrain, around, "river"), _through_rays(d, terrain, around, "road"), _Park(seed + 2)
     river_w = rng.randint(*E["river_width"]) if rivers else 0
     ford_w = rng.randint(*E["ford_width"]) if rivers else 0
     road_w = rng.randint(*G["through"]["road"]["width"]) if roads else 0
+    origin = [0.0, 0.0]
+    if rivers and clear:
+        origin, river_w = _camp_bank(d, (cols, rows), clear, rivers, river_w, edges.get("toward"), rng.randint(0, 1))
     cross = roads or ([(-rivers[0][1], rivers[0][0]), (rivers[0][1], -rivers[0][0])] if rivers else [])
-    plan = {"terrain": terrain, "rivers": rivers, "roads": roads, "cross": cross,
+    plan = {"terrain": terrain, "rivers": rivers, "roads": roads, "cross": cross, "origin": origin,
             "river": river_w * hm / 2, "ford": ford_w * hm / 2, "road": road_w * hm / 2}
     for r in range(rows):
         for c in range(cols):
@@ -596,7 +639,8 @@ def through_lines(d: Data, ground: dict, terrain: str, cols: int, rows: int, see
 
 def _through_hex(ground: dict, k: str, q: list, plan: dict) -> None:
     """One hex of through_lines: the river, then the road (by a ford or bridge over the river)."""
-    if plan["rivers"] and _near_rays(q, plan["rivers"], plan["river"]):
+    o = plan["origin"]
+    if plan["rivers"] and _near_rays([q[0] - o[0], q[1] - o[1]], plan["rivers"], plan["river"]):
         _set_hex(ground, k, "water", 0)
     wet = ground["kinds"].get(k) == "water"
     if wet and plan["terrain"] == "ford" and _near_rays(q, plan["cross"], plan["ford"]):
