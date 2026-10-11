@@ -521,13 +521,22 @@ function travelForces(){                          // the forces on the travel ma
     return [];
   }
 }
+// His old wounds from his sheet and his scars, for scurvy to reopen: [{key, loc}] (key "sheet:i" or "scar:i")
+const oldWounds = c => [...((c.sheet && c.sheet.old) || []).map((w, i) => ({ key: "sheet:" + i, loc: w.loc })), ...(c.scars || []).map((w, i) => ({ key: "scar:" + i, loc: w.loc }))];
+// The old wounds scurvy has reopened, as they stand on the wound track: [{loc, step}]
+function reopenedOf(c){
+  const n = c.uid ? NAMED[c.uid] : null;
+  if (!n || n.dead) return [];
+  const at = Object.fromEntries(oldWounds(c).map(o => ["old:" + o.key, o.loc]));
+  return ((n.health || {}).cases || []).filter(x => x.old && at[x.wid]).map(x => ({ loc: at[x.wid], step: DZR.steps[x.step] }));
+}
 function attachNamed(c, value){                   // put him with a travel force (value "map:id"), or take him off ("")
   const all = readNamed();
   if (!c.uid) c.uid = Array.from(crypto.getRandomValues(new Uint32Array(2)), x => x.toString(36)).join("");
   if (!value) delete all[c.uid];
   else {
     const [map, id] = [value.slice(0, value.lastIndexOf(":")), +value.slice(value.lastIndexOf(":") + 1)], was = all[c.uid] || {};
-    all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id };
+    all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id, old: oldWounds(c) };
   }
   writeNamed(all);
   NAMED = all;
@@ -560,11 +569,20 @@ function syncCamp(c){                             // what his nights in camp did
   if (nights > seen && !n.dead) c.blood = Math.min(TRK.blood_pool, c.blood + (nights - seen) * DZR.blood_per_day);
   c.restSeen = Math.max(seen, nights);
   if (n.dead) return;
+  keepOld(c);
   const open = new Set(((n.health || {}).cases || []).map(x => x.wid).filter(Boolean));
   const healed = c.wounds.filter(w => w.camp && !open.has(w.wid));
   if (!healed.length) return;
   c.scars = [...(c.scars || []), ...healed.map(w => ({ loc: w.loc }))];
   c.wounds = c.wounds.filter(w => !healed.includes(w));
+  keepOld(c);
+}
+function keepOld(c){                              // the travel map's copy of his old wounds and scars, for scurvy to reopen
+  const all = readNamed(), n = all[c.uid], old = oldWounds(c);
+  if (!n || JSON.stringify(n.old || []) === JSON.stringify(old)) return;
+  n.old = old;
+  writeNamed(all);
+  NAMED = all;
 }
 const campStep = (c, w) => { const n = c.uid ? NAMED[c.uid] : null, k = n && ((n.health || {}).cases || []).find(x => x.wid === w.wid); return k ? DZR.names[k.d].toLowerCase() + ", " + DZR.steps[k.step] : "" };
 function syncNamed(){ NAMED = readNamed(); S.chars.forEach(syncCamp) }
@@ -574,15 +592,19 @@ function forceSelect(c){                         // the travel-map force he goes
   const opt = o => `<option value="${attr(o.value)}" ${o.value === cur ? "selected" : ""}>${attr(o.label)}</option>`;
   return `<select data-act="withforce" aria-label="Travel-map force ${attr(c.name)} goes with"><option value="">(no force)</option>${opts.map(opt).join("")}</select>`;
 }
+function reopenedText(c){                         // old wounds scurvy reopened, while they are open
+  const re = reopenedOf(c).map(o => `${LOC[o.loc].name.toLowerCase()} (${o.step})`);
+  return re.length ? `<span class="crit">Old wounds reopened: ${attr(re.join(", "))}</span>` : "";
+}
 function sickText(c){                             // his sickness on his card, and what it does in a fight
   const s = sickOf(c);
-  if (!s) return "";
+  if (!s) return reopenedText(c);
   if (s.dead) return `<span class="crit">${s.cause === "wound" || s.cause === "fever" ? "Died of his wounds" : "Died of disease"}${s.cause ? " (" + attr((DZR.names[s.cause] || s.cause).toLowerCase()) + ")" : ""}</span>`;
   if (s.incubating) return `<span class="muted">Caught something: not showing yet</span>`;
   const rule = DZR.in_fight[s.step] || {};
   const eff = [rule.penalty ? "−" + rule.penalty + "%" : "", rule.no_run ? "cannot run" : "", rule.crawl ? "crawls, defends only" : "", rule.out ? "too ill to fight" : ""].filter(Boolean).join(", ");
   const tail = eff ? " (" + eff + ")" : "";
-  return `<span class="crit">Sick: ${attr(DZR.names[s.did] || s.did)}, ${s.step}${tail}</span>`;
+  return `<span class="crit">Sick: ${attr(DZR.names[s.did] || s.did)}, ${s.step}${tail}</span>${reopenedText(c)}`;
 }
 function nurseTick(n){                           // he nurses the force's sick, if he goes with one
   if (!n) return "";
@@ -1115,7 +1137,11 @@ const attr = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").repla
 const exLink = e => e.image ? `<a class="exlink" href="${commonsUrl(e.image.file)}" target="_blank" rel="noopener" title="${attr(e.image.caption)} (Wikimedia Commons)" aria-label="Picture: ${attr(e.image.caption)} (opens Wikimedia Commons)"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="5.5" cy="6.5" r="1.4" fill="currentColor"/><path d="M2.5 12.5l4-4 3 3 2-2 2.5 2.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>picture</a>` : "";
 const exFigure = (conflict, e, size) => FIG.svg({ kit: KITS[e.kit], weapon: DATA.weapons[e.weapon], look: FIG.lookFor(conflict, e), size, title: e.name });
 const charFigure = (c, size) => FIG.svg({ kit: KITS[c.kit || "none"], weapon: c.weapon ? DATA.weapons[c.weapon] : null, look: c.look || {}, size, title: c.name,
-  wounds: c.wounds.filter(w => !w.stopped).map(w => ({ loc: w.loc, sev: w.sev })).concat([...((c.sheet && c.sheet.old) || []), ...(c.scars || [])].map(w => ({ loc: w.loc, old: true }))) });
+  wounds: c.wounds.filter(w => !w.stopped).map(w => ({ loc: w.loc, sev: w.sev })).concat(oldShown(c)) });
+function oldShown(c){                            // old wounds and scars on his figure: open again while scurvy has reopened them
+  const re = new Set(reopenedOf(c).map(o => o.loc));
+  return [...((c.sheet && c.sheet.old) || []), ...(c.scars || [])].map(w => (re.has(w.loc) ? { loc: w.loc, sev: "light" } : { loc: w.loc, old: true }));
+}
 function readyToPlace(c){          // while setting up (or Free placement): the next map click puts him there
   if (!c || (S.turn && !S.freePlace) || S.workMode) return;
   S.placing = c.id; S.mapMsg = `Placing ${attr(c.name)}: click an empty hex on the battle map.`;

@@ -208,6 +208,36 @@ in the table above. His card shows each wound's step ("healing: wounds, serious"
 wound leaves his list and stays as a scar on his figure and sheet. If a wound kills him, his
 card says he died of his wounds.
 
+**Scurvy.** Each force counts its days without fresh food (fruit, greens, fresh meat,
+onions). The count goes back to nought on a day that ends in farmland, a village or a town;
+in open ground, forest or hills if the force spent the whole day camped there and foraging
+(it did not march); or every day while **Fresh food issued** is ticked on its health panel.
+Other ground has none. The health note says how many days it has gone without, and whether
+fresh food can be had where it stands.
+
+After 6 weeks without fresh food, each week every well man may fall ill: 10% the first week,
+10 more each week after, times the chance he fails to resist (half, for a typical man). It
+shows at once, at Mending, and is checked once a week:
+
+- With fresh food in the past week, it heals two steps.
+- Without it, he makes the recovery check (Endurance, care, rest and conditions, virulence
+  −3). Success holds, failure is a step worse, and failure at Deadly kills. It never
+  improves unfed.
+
+As a guide (`python3 -m gravewounds disease`), for men resting in an ordinary camp:
+
+| Fresh food comes | Dead of scurvy |
+|---|---|
+| 4 weeks after it shows | about 2% (Union army: 1.6%) |
+| 8 weeks after | about a third |
+| 12 weeks after | about 70% |
+| Never | all of them, in about 11 weeks on average |
+
+A named man falls ill the same way. When he does, every old wound from his team-builder sheet
+and every scar comes back on the wound track at Mending, and shows on his card as "Old
+wounds reopened". They cannot heal while he has scurvy; after that they heal by the week as
+any wound. These numbers are design estimates.
+
 ## Calendar and weather
 
 Days have real dates, and daylight sets each day's marching hours. The weather is rolled
@@ -233,6 +263,8 @@ each day, and mud, snow and flooded fords change the going. See [weather.md](wea
   - **Show map file** and **Download map file** give the painted map as YAML. Save it as
     `data/maps/<id>.yaml` and rebuild to keep it.
   - **Undo all painting** goes back to the map as built.
+- **Health.** The selected force's camp hygiene, **Nurses keep clean** and **Fresh food
+  issued**, with a note on its sick, nursing, days without fresh food and the week's chances.
 - Forces, routes, clocks and painting are kept in your browser.
 
 ## Maps

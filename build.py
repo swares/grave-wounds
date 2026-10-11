@@ -387,7 +387,22 @@ def disease_rules(d) -> list[str]:
         f"Men at serious or worse do not dig or fight. Grave and deadly cases go on litters: the force marches at {L['march']}%, "
         f"or {L['short']}% with fewer than {L['bearers']} fit men a litter, and cannot march with none. "
         "Hygiene comes from the camp (bivouac poor, quarters good, others fair) unless the GM sets it. Plague needs the GM's \"plague in the region\".",
-    ] + _wound_track_rules(d)
+    ] + _scurvy_rules(d) + _wound_track_rules(d)
+
+
+def _scurvy_rules(d) -> list[str]:
+    S = d.disease.get("scurvy")
+    if not S:
+        return []
+    return [
+        f"<b>Scurvy:</b> each force counts its days without fresh food. A day ends it in farmland, a village or a town, or in open country, "
+        f"forest or hills if the force camped there all day and foraged, or when the GM issues fresh food. After {S['after_days']} days "
+        f"without it, each week every well man may fall ill: {S['chance']}% the first week, {S['per_week']} more each week after, "
+        f"times the chance he fails to resist. It shows at once at mending and is checked once a week: with fresh food in the past "
+        f"week, {S['heal']} steps better; without it, the recovery check at virulence {S['virulence']}: success holds, failure is one "
+        f"step worse, and failure at deadly kills. A named character's old wounds and scars reopen at mending and cannot heal until "
+        f"the scurvy has. Records: {S['deaths']}% of cases died in the Union army; far more with no fresh food at all.",
+    ]
 
 
 def _wound_track_rules(d) -> list[str]:
@@ -706,7 +721,7 @@ def bundle(d) -> dict:
         "works": d.works,
         "disease": {"steps": d.disease["steps"], "in_fight": d.disease["in_fight"], "endurance": d.disease["endurance"],   # named characters' sickness
                     "wounds": {k: d.disease["wounds"][k] for k in ("start", "clock_step", "fever_after")}, "blood_per_day": d.disease["named_blood_per_day"],
-                    "names": {k: v["name"] for k, v in {**d.disease["diseases"], **{w: d.disease["wounds"][w] for w in ("wound", "fever")}}.items()}},
+                    "names": {k: v["name"] for k, v in {**d.disease["diseases"], "scurvy": d.disease["scurvy"], **{w: d.disease["wounds"][w] for w in ("wound", "fever")}}.items()}},
         "weather": d.weather,
         "wounds": wounds,
         "modifiers": list(d.modifiers.values()),

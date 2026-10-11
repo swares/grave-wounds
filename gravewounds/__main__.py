@@ -93,6 +93,14 @@ def _main(argv=None) -> int:
         for label, weeks, hyg, hot, stay in CAMP_EXAMPLES:
             runs = sorted(camp_example(d, weeks, hyg, hot, stay, 1000, a.seed * 7 + k) for k in range(5))
             print(f"  {label:<38} {runs[2]:5.1f}%  (runs {runs[0]:.1f}-{runs[-1]:.1f})")
+        if "scurvy" in d.disease:
+            from .disease import SCURVY_EXAMPLES, simulate_scurvy
+            S = d.disease["scurvy"]
+            print(f"Scurvy, resting in an ordinary camp (virulence {S['virulence']}; records {S['deaths']}% with fresh food in time):")
+            for fa in SCURVY_EXAMPLES:
+                r = simulate_scurvy(d, a.n, fa, seeded_d100(a.seed))
+                when = f"fresh food after {fa} weeks" if fa else "no fresh food for a year"
+                print(f"  {when:<28} deaths {r['deaths']:5.1f}%, sick {r['sick_weeks']:4.1f} weeks on average")
         if "wounds" in d.disease:
             from .disease import WOUND_EXAMPLES, simulate_wounds
             print("Wounded carried from the field, resting (deaths / wound fever / days unfit):")

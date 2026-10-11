@@ -31,9 +31,6 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Guns, simplified.** A battery fires one kind of shot at one unit an exchange, and the
   fuse is rolled rather than set by the gunners. The Thirty Years' War still borrows the
   Peninsula's gun wounds: no 1618-48 artillery wound counts were found.
-- **Scurvy for forces.** Camp disease covers flux, typhus, typhoid, ague and plague, and
-  wound fever for the wounded from the field map. Scurvy needs food tracking (weeks
-  without fresh food); it is in the design doc's disease table.
 - **Character generation, beyond the first cut.** The medieval tables are a first draft for
   a team playtest. Still to come: tables for the other eras; characteristics feeding more
   rules (Endurance for blood and disease, Agility for initiative); named characters' skills
