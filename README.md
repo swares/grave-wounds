@@ -59,10 +59,12 @@ map can be fought there, and its wounded go back to camp, where wound fever can 
 them. See [docs/units.md](docs/units.md).
 
 **Team builder:** `dist/team.html` makes a team of four to six in a few rolls each, from the
-medieval tables (c.1250-1460): characteristics (3d6 x 5 or a fixed array), an origin with a
+tables of four eras (medieval, the Thirty Years' War, horse and musket, the Civil War and
+frontier): characteristics (3d6 x 5 or a fixed array), an origin with a
 trait and a drawback, one to three career terms with their events, old wounds rolled on the
 region's wound table, and kit. Sent to the roller, each character's skills fill in his attack
-and defence. `python3 -m gravewounds team` makes one on the command line. See
+and defence; a big team's followers get a line each. `python3 -m gravewounds team` makes one
+on the command line. See
 [docs/team.md](docs/team.md).
 
 **Units:** every page has a **US | Metric** switch in its header (US by default), shared by

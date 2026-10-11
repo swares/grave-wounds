@@ -877,6 +877,8 @@ def _team_errors(d: Data, era: dict) -> list[str]:
     for t in T["templates"]:
         if not 4 <= len(t["slots"]) <= 6 or any(cid not in careers or n < 1 for cid, n in t["slots"]):
             errors.append(f"{where}: template {t['id']} needs 4 to 6 slots of known careers, each with a term or more")
+        if any(cid not in careers or n < 0 for cid, n in t.get("followers", [])) or t.get("follower_quality", "default") not in T.get("followers", {}).get("quality", {}):
+            errors.append(f"{where}: template {t['id']} followers need known careers and a known quality table")
     if [r["to"] for r in T["old_wound"]][-1] != 100 or set(T["lasting_from"].values()) - chars:
         errors.append(f"{where}: old_wound must end at 100 and lasting_from name characteristics")
     return errors

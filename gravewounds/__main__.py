@@ -60,8 +60,8 @@ def _main(argv=None) -> int:
 
     ts = sub.add_parser("team", help="make a team of characters (character generation)")
     ts.add_argument("--era", default="medieval")
-    ts.add_argument("--region", default="england")
-    ts.add_argument("--template", default="retinue")
+    ts.add_argument("--region", default=None, help="default: england for medieval, else the era's first region")
+    ts.add_argument("--template", default=None, help="default: the era's first team")
     ts.add_argument("--array", action="store_true", help="the fixed array instead of 3d6 x 5")
     ts.add_argument("--seed", type=int, default=None, help="repeatable dice")
 
@@ -77,6 +77,9 @@ def _main(argv=None) -> int:
         from .team import era, follower_line, make_followers, make_team, sheet
         from .units import SeededDice
         rng = SeededDice(a.seed) if a.seed is not None else random.Random()
+        E = era(d, a.era)
+        a.region = a.region or ("england" if a.era == "medieval" else E["regions"][0]["id"])
+        a.template = a.template or E["templates"][0]["id"]
         for c in make_team(d, a.era, a.region, a.template, "array" if a.array else "roll", rng):
             print("\n".join(sheet(d, c)) + "\n")
         tpl = next(t for t in era(d, a.era)["templates"] if t["id"] == a.template)

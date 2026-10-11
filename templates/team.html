@@ -153,14 +153,18 @@ const TD = /*__TEAM_DATA__*/null;
 const $ = s => document.querySelector(s);
 const KEY = "gravewounds-team-builder", HANDOFF = "gravewounds-team-handoff";
 const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
-const T = TD.era;
+let T = TD.era;                                  // the chosen era's tables (team.js reads TD.era and TD.ranges)
+function setEra(id){
+  const e = TD.eras[id] || Object.values(TD.eras)[0];
+  TD.era = e.era; TD.ranges = e.ranges; T = e.era;
+}
 const tplFollowers = id => (id === "own" ? [] : (byId(T.templates, id).followers || []).map(s => [...s]));
 const tplQuality = id => (id === "own" ? "default" : byId(T.templates, id).follower_quality || "default");
-let S = { region: T.regions[0].id, template: T.templates[0].id, mode: "roll", side: "Side A", slots: T.templates[0].slots.map(s => [...s]), team: [], swap: null, msg: "",
+let S = { era: T.id, region: T.regions[0].id, template: T.templates[0].id, mode: "roll", side: "Side A", slots: T.templates[0].slots.map(s => [...s]), team: [], swap: null, msg: "",
   fcounts: tplFollowers(T.templates[0].id), crew: [] };
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)) } catch (e) { /* storage may be off: the page still works */ } }
 function restore(){
-  try { const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.team) S = { ...S, fcounts: tplFollowers(j.template || S.template), crew: [], ...j, swap: null, msg: "" } } catch (e) { /* start fresh */ }
+  try { const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.team) S = { ...S, fcounts: null, crew: [], ...j, swap: null, msg: "" } }   /* fcounts: filled for its era once that is set */ catch (e) { /* start fresh */ }
 }
 const statName = id => byId(T.characteristics, id).name;
 const skillName = id => byId(T.skills, id).name;
@@ -168,13 +172,13 @@ const careerOf = c => byId(T.careers, c.career);
 const slotsNow = () => (S.template === "own" ? S.slots : byId(T.templates, S.template).slots);
 
 function fill(){
-  $("#sel-era").innerHTML = `<option value="${T.id}">${esc(T.name)}</option>`;
+  $("#sel-era").innerHTML = Object.values(TD.eras).map(e => `<option value="${e.era.id}">${esc(e.era.name)}</option>`).join("");
   $("#sel-region").innerHTML = T.regions.map(r => `<option value="${r.id}">${esc(r.name)}</option>`).join("");
   $("#sel-template").innerHTML = T.templates.map(t => `<option value="${t.id}">${esc(t.name)} (${t.slots.length})</option>`).join("") + `<option value="own">Your own team</option>`;
   $("#array").textContent = T.array.join(", ");
 }
 function render(){
-  $("#sel-region").value = S.region; $("#sel-template").value = S.template; $("#in-side").value = S.side;
+  $("#sel-era").value = T.id; $("#sel-region").value = S.region; $("#sel-template").value = S.template; $("#in-side").value = S.side;
   document.querySelectorAll('input[name="mode"]').forEach(r => { r.checked = r.value === S.mode });
   $("#slots-box").hidden = S.template !== "own";
   if (S.template === "own") renderSlots();
@@ -305,8 +309,19 @@ function sendToField(){
     render();
   }
 }
+function startEra(){                             // a new era (or an old save from another): its first region and team, nothing rolled
+  S.region = T.regions[0].id; S.template = T.templates[0].id;
+  S.slots = T.templates[0].slots.map(s => [...s]); S.fcounts = tplFollowers(S.template);
+  S.team = []; S.crew = []; S.swap = null;
+}
 function init(){
-  fill(); restore();
+  restore();
+  setEra(S.era || "medieval");
+  S.era = T.id;
+  if (!T.regions.some(r => r.id === S.region) || (S.template !== "own" && !T.templates.some(t => t.id === S.template))) startEra();
+  if (!S.fcounts) S.fcounts = tplFollowers(S.template);
+  fill();
+  $("#sel-era").onchange = e => { setEra(e.target.value); S.era = T.id; startEra(); fill(); render() };
   $("#fcounts").addEventListener("click", e => {
     const b = e.target.closest("button[data-fless],button[data-fmore]"); if (!b) return;
     const i = +(b.dataset.fless ?? b.dataset.fmore), row = S.fcounts[i];
