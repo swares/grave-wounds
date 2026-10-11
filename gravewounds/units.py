@@ -515,11 +515,21 @@ def battlefield(d: Data, fid: str) -> dict:
     ground keys), its works laid on the hexes and hex sides, its weather and size."""
     f, keys = d.fields[fid], {g["key"]: k for k, g in d.units["ground"].items()}
     ground = {f"{c},{r}": keys[ch] for r, row in enumerate(f["rows"]) for c, ch in enumerate(row.strip()) if keys[ch] != "open"}
+    works = _field_works(d, f.get("works") or {})
+    wx = f.get("weather") or {"cond": "fair", "wind": "calm", "ground": {"mud": 0, "snow": 0}}
+    out = {"ground": ground, "works": works, "weather": wx, "size": list(f["size"]), "up": f.get("up", "N")}
+    if f.get("support"):
+        out["support"] = _field_support(d, f)
+    return out
+
+
+def _field_works(d: Data, fw: dict) -> dict:
+    """A battlefield's works laid on its hexes and hex sides, none of them begun."""
     works = {"edges": {}, "hexes": {}}
-    for w in (f.get("works") or {}).get("hexes", []):
+    for w in fw.get("hexes", []):
         for h in w["at"]:
             works["hexes"][C.hkey(h)] = {"type": w["type"], "progress": 0}
-    for w in (f.get("works") or {}).get("edges", []):
+    for w in fw.get("edges", []):
         for a, b in w["at"]:
             it = {"type": w["type"], "progress": 0}
             if d.works["edge_works"][w["type"]].get("height"):
@@ -527,11 +537,7 @@ def battlefield(d: Data, fid: str) -> dict:
             if w["type"] == "gate":
                 it.update({"open": False, "inside": C.hkey(a)})
             works["edges"].setdefault(C.edge_key(a, b), []).append(it)
-    wx = f.get("weather") or {"cond": "fair", "wind": "calm", "ground": {"mud": 0, "snow": 0}}
-    out = {"ground": ground, "works": works, "weather": wx, "size": list(f["size"]), "up": f.get("up", "N")}
-    if f.get("support"):
-        out["support"] = _field_support(d, f)
-    return out
+    return works
 
 
 def _field_support(d: Data, f: dict) -> list:
