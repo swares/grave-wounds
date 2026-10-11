@@ -992,14 +992,14 @@ def _mission_on(b: dict, m: dict, size) -> None:
         b["mission"] = None
 
 
-def _counter_fire(field: dict, k: int, b: dict, shells: int, K: dict, rng) -> list:
-    """Counter-battery: each shell knocks out one of the target battery's tubes at K's counter %."""
+def _counter_fire(field: dict, k: int, b: dict, shells: int, kind: dict, rng) -> list:
+    """Counter-battery: each shell knocks out one of the target battery's tubes at the kind's counter %."""
     j, sup = b["mission"]["battery"], field["support"]
     tg = sup[j] if 0 <= j < len(sup) else None
     if tg is None or tg["side"] == b["side"]:
         b["mission"] = None
         return []
-    knocked = min(tg["tubes"], sum(1 for _ in range(shells) if rng.randint(1, 100) <= K["counter"]))
+    knocked = min(tg["tubes"], sum(1 for _ in range(shells) if rng.randint(1, 100) <= kind["counter"]))
     tg["tubes"] -= knocked
     if tg["tubes"] <= 0:
         tg["mission"] = None
