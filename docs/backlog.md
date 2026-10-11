@@ -22,12 +22,15 @@ When an item is done, delete it here and note it in the pull request that closes
   purpose for now). A shared clock would let forces meet on the road.
 - **Cover and elevation on the battle map**, beyond what works give.
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
-  Agincourt (1415), Towton (1461), Lützen (1632) and Albuera (1811) have both a campaign
-  map and a battlefield. The other conflicts in the tables (the American Revolution, 1812,
-  the Civil War and later) still play on the generic valley and open
-  ground. Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
+  Agincourt (1415), Towton (1461), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
+  Lane (1814) and First Bull Run (1861) have both a campaign map and a battlefield. The
+  conflicts after 1865 in the tables (the frontier, the world wars and later) still play on
+  the generic valley and open ground; their weapons need unit rules first (machine guns,
+  modern artillery). Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
+- **Rifled guns.** The Civil War's guns use the smoothbores' figures on the field map; rifled
+  guns reached further and struck harder at long range.
 - **Guns, simplified.** A battery fires one kind of shot at one unit an exchange, and the
   fuse is rolled rather than set by the gunners. The Thirty Years' War still borrows the
   Peninsula's gun wounds: no 1618-48 artillery wound counts were found.

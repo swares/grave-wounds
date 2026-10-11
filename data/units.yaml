@@ -88,7 +88,7 @@ breach_share: 0.5
 # caissons; a play figure), spent as it fires; a battery that is out falls silent. Resupplying
 # (the caissons coming up) takes an exchange out of contact, in which it neither moves nor fires.
 artillery:
-  guns: [artillery_smoothbore]
+  guns: [artillery_smoothbore, artillery_acw]   # smoothbores, and the Civil War's guns (rifled and smoothbore, one set of figures here)
   crew: 10
   rounds: 1
   range: 100                 # field hexes: 1,000 m

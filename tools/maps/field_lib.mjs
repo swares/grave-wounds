@@ -13,6 +13,11 @@ export const N = 1, S = 4;
 // A smooth wobble for drawn edges: a sum of sines, fixed so the file is the same each run.
 export const wobble = (r, a, b) => 1.4 * Math.sin(r / 5.3 + a) + 0.8 * Math.sin(r / 2.1 + b);
 export const lerp = (a, b, t) => a + (b - a) * t;
+// Whether hex (c, r) is inside a rounded, uneven patch: an ellipse {cx, cy, rx, ry} whose edge
+// wobbles by the phases {a, b}.
+export function patch(c, r, { cx, cy, rx, ry, a = 0, b = 0 }){
+  return ((c - cx) / rx) ** 2 + ((r - cy) / ry) ** 2 <= 1 + 0.12 * wobble(Math.atan2(r - cy, c - cx) * 6, a, b);
+}
 
 // A ground grid, each hex's letter from kind(col, row); paint() fills a rectangle.
 export function groundGrid(cols, rows, kind){

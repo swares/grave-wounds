@@ -35,7 +35,8 @@ Each day's weather is rolled from the climate's figures for that month:
 - So is the wind's **direction**, where it blows from, one of eight points. Half the time a
   day keeps the day before's; otherwise it is rolled from the climate's prevailing winds:
   mostly from the west and south-west in north-west Europe, from the west in central Europe
-  and the Mediterranean, and from the north in the desert.
+  and the Mediterranean, from the north in the desert, and from the south-west in eastern
+  North America.
 
 The **climate shift** cools the modern figures. The Little Ice Age, roughly 1300–1850, ran
 somewhat cooler; the test valley uses −0.9 °F (−0.5 °C).
@@ -46,6 +47,14 @@ somewhat cooler; the test valley uses −0.9 °F (−0.5 °C).
 | Central and eastern Europe, continental | Bohemia, Poland, Hungary, the Rhine valley |
 | Mediterranean and Levant coast | Acre, Sidon, Sicily, southern Spain |
 | Hot desert and steppe | Mesopotamia, inland Syria, Egypt |
+| Carolina piedmont, humid subtropical | upstate South Carolina (Greenville-Spartanburg) |
+| Virginia piedmont, humid | northern Virginia (Washington Dulles) |
+| Great Lakes, humid continental | the Niagara frontier (Buffalo) |
+
+The three North American climates are rounded approximations of 1991–2020 station normals
+for the places named; only the Greenville-Spartanburg January figures were checked against
+NOAA's published normals. The campaigns before 1850 there use a shift of −1.8 °F (−1 °C),
+Bull Run −0.9 °F (−0.5 °C).
 
 The weather strip on the travel map shows the selected force's day: its date, sunrise and
 sunset, marching hours, weather and ground. The GM can **Roll again**, or set the weather,

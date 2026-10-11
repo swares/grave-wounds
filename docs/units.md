@@ -235,7 +235,8 @@ one man fells few. The numbers are in `data/units.yaml` (`heroes`).
 
 ## Guns
 
-A **battery** is a unit armed with guns (the smoothbore artillery of the wound tables), in
+A **battery** is a unit armed with guns (the smoothbore artillery of the wound tables, or the
+Civil War's artillery, which uses the same figures here), in
 **battery order**: two guns and their crews to a hex, 20 men. Its men are the crews, 10 to a
 gun, so a battery of 120 men is 12 guns, and as crews fall fewer guns are served. Picking a
 gun as the weapon in *Add a unit* sets the battery order.
@@ -527,6 +528,58 @@ allied line north of the village is off the map.
 - The wound tables are the Peninsular War's (the gameplay blend).
 
 It is drawn by `tools/maps/make_albuera_field.mjs`.
+
+**Cowpens, 17 January 1781** (`data/fields/cowpens-1781.yaml`). The field is 120 × 100 hexes,
+about 1,310 yards (1,200 m) east to west and 950 yards (870 m) north to south, with north at the
+top and the British coming up from the south.
+- An open pasture of scattered trees, with a low crest across the middle where the
+  Continentals stood, a second rise behind it where Washington's horse waited out of sight,
+  wet ravines down both flanks and woods beyond them.
+- Cold and clear.
+- Morgan's three lines: 150 riflemen skirmishing in front, 900 militia (most with rifles) 130
+  yards (120 m) behind them, and 550 Continentals and Virginia men on the crest; 150 of
+  Washington's horse behind the rise.
+- Tarleton's line as it formed after the night march: the Legion infantry, the 7th Fusiliers
+  and the light infantry, two small "grasshopper" guns, dragoons on both flanks, and the 71st
+  Highlanders and most of the Legion horse in reserve.
+- The wound tables are the American Revolution's.
+
+It is drawn by `tools/maps/make_cowpens_field.mjs`.
+
+**Lundy's Lane, 25 July 1814** (`data/fields/lundys-lane-1814.yaml`). The field is 130 × 110
+hexes, about 1,420 yards (1,300 m) east to west and 1,040 yards (950 m) north to south, north at
+the top; the Portage road and the Niagara are off the map to the east.
+- A low hill across the north of the field, the lane along its crest, the churchyard behind the
+  British guns; woods to the south-west, where Scott's men formed, and along the river side.
+- Fair. Most of the fighting was at night, which the field map does not have: the GM may
+  treat it as fog.
+- The evening's opening: Scott's 800 in front of the hill, Jesup's 25th working round the
+  British left, Towson's guns, and Ripley's brigade and Porter's volunteers coming up behind.
+- On the hill: five British guns at the churchyard, the 89th, the 8th and 41st, the
+  Incorporated Militia, the Glengarry Light Infantry on the west, the 19th Light Dragoons, and
+  Drummond's 1,000 coming up behind the crest.
+- The wound tables are the War of 1812's.
+
+It is drawn by `tools/maps/make_lundys_lane_field.mjs`.
+
+**First Bull Run, 21 July 1861** (`data/fields/bull-run-1861.yaml`). The field is 140 × 130
+hexes, about 1,530 yards (1,400 m) east to west and 1,240 yards (1,130 m) north to south, north
+at the top: Henry Hill, with the turnpike and Young's Branch along the north, the Sudley road
+down the west side and Chinn Ridge beyond it.
+- The broad top of Henry Hill (high ground), the pines along its south-east edge where
+  Jackson's brigade formed, Young's Branch (wet ground) below it, and the south slope of
+  Matthews Hill north of the turnpike.
+- Fair and very hot.
+- The early afternoon: Ricketts's and Griffin's batteries pushed onto the hill near the Henry
+  house with the Fire Zouaves, the Marines and the 14th Brooklyn, Willcox's and Franklin's
+  brigades behind them and Sherman's coming over the turnpike.
+- The Confederates: Jackson's brigade and its guns at the edge of the pines, the 33rd Virginia
+  in the woods by the Sudley road, Hampton's Legion by the Robinson farm, Bee's and Bartow's
+  men rallied behind, and Stuart's horse to the south-west.
+- The wound tables are the Civil War's. Its guns roll on the Civil War artillery wounds,
+  with the same figures as the smoothbores (see *Guns*).
+
+It is drawn by `tools/maps/make_bull_run_field.mjs`.
 
 **A battlefield file** has an `id` and `name`, `sides` (two names), `table`, `size`
 ([cols, rows]) and `weather`. Its `ground` is rows of one letter per hex: `.` open, `r`

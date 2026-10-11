@@ -24,8 +24,10 @@ of terrain, with planned routes, marching days and terrain painting. It comes wi
 valley, the Agincourt campaign of 1415 (Harfleur to Calais, on 3-mile, 5 km hexes), the
 Towton campaign of 1461 (Pontefract to York), Valdemar IV's invasion of Gotland in 1361
 (the landing to Visby), the Lützen campaign of 1632 (Naumburg to Leipzig), the raid on
-Sidon in 1253 (Banias to the coast) and the Albuera campaign of 1811 (Badajoz to Santa
-Marta), all on 0.6-mile (1 km) hexes. See
+Sidon in 1253 (Banias to the coast), the Albuera campaign of 1811 (Badajoz to Santa
+Marta), the Cowpens campaign of 1781 (the Pacolet to the Broad), the Niagara campaign of 1814
+(Fort Erie to Fort George) and the First Bull Run campaign of 1861 (Fairfax to Gainesville),
+all on 0.6-mile (1 km) hexes. See
 [docs/travel.md](docs/travel.md).
 
 **Camps and works:** forces make camp on the travel map, from a bivouac to a fortified
@@ -51,8 +53,8 @@ does most of the killing. Named characters still fight one by one. The field map
 `dist/field.html`, puts units on 11-yard (10 m) hexes: each side moves, then every melee and volley
 is resolved together, with flank and rear, morale and the pursuit, batteries of guns firing
 round shot, canister and shell (bounding on over firm ground, at named targets, until the rounds run out), on painted ground
-with the battle map's works and weather, or on a real battlefield (Sidon, Visby, Agincourt, Towton, Lützen or Albuera, with both
-armies drawn up). A fight on the travel
+with the battle map's works and weather, or on a real battlefield (Sidon, Visby, Agincourt, Towton, Lützen, Albuera, Cowpens,
+Lundy's Lane or First Bull Run, with both armies drawn up). A fight on the travel
 map can be fought there, and its wounded go back to camp, where wound fever can take
 them. See [docs/units.md](docs/units.md).
 
