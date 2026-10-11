@@ -589,7 +589,8 @@ function namedRow(c){                             // Endurance, the force he goe
   const last = n && n.log && n.log[0] ? ` title="${attr(n.log[0])}"` : "";
   return `<div class="siderow"${last}><label class="order" title="Endurance: resisting disease and getting over it">Endurance
     <input type="number" data-act="endurance" value="${enduranceOf(c)}" aria-label="Endurance for ${attr(c.name)}"></label>
-    <label class="order" title="Goes with this force on the travel map: its days, camp, weather and marching run his sickness">With ${sel}</label>${sick}</div>`;
+    <label class="order" title="Goes with this force on the travel map: its days, camp, weather and marching run his sickness">With ${sel}</label>
+    ${n ? `<label class="order" title="He nurses the force's sick: he may catch what they have"><input type="checkbox" data-act="nurse" ${n.nurse ? "checked" : ""}> Nurses the sick</label>` : ""}${sick}</div>`;
 }
 if (typeof window !== "undefined"){                // the travel map may have run his days
   window.addEventListener("focus", () => { syncNamed(); renderChars() });
@@ -2298,15 +2299,16 @@ function cardChange(c, act, value){              // a card's side, nerve, fatigu
     if (c.uid && NAMED[c.uid]) attachNamed(c, `${NAMED[c.uid].map}:${NAMED[c.uid].force}`);
   }
   if (act === "withforce") attachNamed(c, value);
+  if (act === "nurse" && c.uid){ const all = readNamed(); if (all[c.uid]){ all[c.uid].nurse = !!value; writeNamed(all); NAMED = all } }
   if (act === "side") c.side = value.trim() || "Side A";
   if (act === "fatigue") c.fatigue = +value;
   if (act === "rating" && value !== "custom"){ c.rating = value; c.nerve = RATINGS[value] }
   if (act === "nerve"){ c.nerve = value === "" ? RATINGS[DEFAULT_RATING] : +value; c.rating = Object.keys(RATINGS).find(r => RATINGS[r] === c.nerve) || "custom" }
 }
 $("#chars").addEventListener("change", e => {
-  const el = e.target.closest('[data-act="side"],[data-act="rating"],[data-act="nerve"],[data-act="fatigue"],[data-act="endurance"],[data-act="withforce"]');
+  const el = e.target.closest('[data-act="side"],[data-act="rating"],[data-act="nerve"],[data-act="fatigue"],[data-act="endurance"],[data-act="withforce"],[data-act="nurse"]');
   if (el){
-    cardChange(S.chars[+el.closest(".char").dataset.i], el.dataset.act, el.value);
+    cardChange(S.chars[+el.closest(".char").dataset.i], el.dataset.act, el.type === "checkbox" ? el.checked : el.value);
     renderChars(); return;
   }
   const inp = e.target.closest('input[data-act="init"]'); if (!inp) return;
