@@ -114,5 +114,10 @@ and for disease, Strength for how soon he tires hand to hand in his kit, and a l
 Presence for his side's morale (see [combat.md](combat.md), *Characteristics in the fight*).
 Each sheet's **In a fight** line gives the numbers.
 
-Not yet done (see the backlog): tables for the other eras, skills outside a fight
-(Leechcraft for first aid, Fieldcraft and Watch on the travel map) and followers.
+Four skills work outside a fight. **Leechcraft** rolls first aid in the roller and, with a
+named man on the travel map, helps his force's sick and wounded recover; **Fieldcraft**
+forages fresh food on the march; **Watch** makes his force harder to surprise, and
+**Stealth** makes the force he attacks with likelier to surprise its enemy (see
+[combat.md](combat.md), [travel.md](travel.md) and [works.md](works.md), *Surprise*).
+
+Not yet done (see the backlog): tables for the other eras, and followers.

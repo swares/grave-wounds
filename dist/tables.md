@@ -4270,7 +4270,7 @@ Penalties add up; each total is capped at -60%.
 
 **Team morale:** at the end of each round, a side with 25% or more of its fighters down rolls d100 against the best Nerve among those still up (its leader's, if he is up), +10 with a leader up, -20 if a leader is down, -20 once 50% are down. Over: the side breaks and runs or surrenders.
 
-**Characteristics:** a team-builder character's sheet counts in the fight (anyone else counts 50 in each). Initiative: d10 + Agility / 10. Blood: 20 + (Endurance - 50) / 10. Toil: each hand-to-hand exchange he attacks or defends in counts, and every 30 (light kit), 20 (medium) or 12 (heavy), times Strength / 50, he is a fatigue step worse, to exhausted at most. A leader who is up adds (Presence - 50) / 5 to his side's morale. Rounded down throughout.
+**Characteristics:** a team-builder character's sheet counts in the fight (anyone else counts 50 in each). Initiative: d10 + Agility / 10. Blood: 20 + (Endurance - 50) / 10. Toil: each hand-to-hand exchange he attacks or defends in counts, and every 30 (light kit), 20 (medium) or 12 (heavy), times Strength / 50, he is a fatigue step worse, to exhausted at most. A leader who is up adds (Presence - 50) / 5 to his side's morale. Rounded down throughout. First aid: on a side with any team-builder character, the best Leechcraft among those up rolls each treatment; success binds 2 bleed steps and cauterises without more pain, failure does nothing.
 
 ### Battle map
 
@@ -4278,7 +4278,7 @@ Penalties add up; each total is capped at -60%.
 
 **A fighter's turn:** stay in place, **advance** up to 4 hexes and still attack, or **run** up to 12 hexes and not attack. He may pass through friends but not stop on them, and cannot enter an enemy's hex.
 
-**Wounds and movement:** the leg and move impairments halve both distances (round down); the collapse and stand impairments leave only a crawl of 1 hex; the breath impairment stops him running. A fighter who is stunned or out of the fight cannot move. Defend only: he may move but not attack.
+**Wounds and movement:** the leg and move impairments halve both distances (round down); the collapse and stand impairments leave only a crawl of 1 hex; the breath impairment stops him running. A fighter who is stunned or out of the fight or surprised cannot move. Defend only: he may move but not attack.
 
 **Leaving contact:** a fighter who moves more than 1 hex and ends no longer next to an enemy he started beside gives that enemy one free attack, if the enemy is up and able to attack. Stepping back 1 hex is a careful withdrawal and draws none.
 
@@ -4335,6 +4335,8 @@ Penalties add up; each total is capped at -60%.
 **Breaching:** a fighter next to a work can spend his attack on it: one man-round. When the man-rounds reach the work's breach number it is open. A gate is opened or barred from inside.
 
 **In the way:** each fighter standing on the line between a shooter and his target costs the shot 10% (at most 30%). A miss goes into the first man in the way at 50%: roll the hit on him with no attack roll and the severity table. Bows and crossbows loose high over the men in the way: the penalty, but never a stray.
+
+**Surprise:** when a fight is set up from the travel map, d100 against 30% + the camp's shift (no camp +10; bivouac +20, watched camp +0, staked camp -10, fortified camp -20, quartered +0) + 20 if it starts between sunset and sunrise + 20 in fog + the attackers' best Stealth / 5 - the defenders' best Watch / 5 (named characters with the forces), within 5-95%. Surprised: in the wound roller the defenders and their friends cannot act in round 1; on the field map their units start shaken.
 
 **Ground:** the GM paints hexes as rocks and rubble, woods and brush, marsh, deep water, road or bridge (roads and bridges are open going). Entering rocks or woods costs +1 hex of movement, marsh +2; no one enters or stands in deep water, though shots cross it. A shot at a man in rocks loses 10% and the rocks hide his legs (the table's behind-cover situation); in woods it loses 20%. Cover from a work counts instead when it is better.
 
@@ -4659,7 +4661,9 @@ A case shows after its incubation at mending, climbs a step a day to the peak ro
 
 Men at serious or worse do not dig or fight. Grave and deadly cases go on litters: the force marches at 90%, or 50% with fewer than 2 fit men a litter, and cannot march with none. Hygiene comes from the camp (bivouac poor, quarters good, others fair) unless the GM sets it. Plague needs the GM's "plague in the region".
 
-**Scurvy:** each force counts its days without fresh food. A day ends it in farmland, a village or a town, or in open country, forest or hills if the force camped there all day and foraged, or when the GM issues fresh food. After 42 days without it, each week every well man may fall ill: 10% the first week, 10 more each week after, times the chance he fails to resist. It shows at once at mending and is checked once a week: with fresh food in the past week, 2 steps better; without it, the recovery check at virulence -3: success holds, failure is one step worse, and failure at deadly kills. A named character's old wounds and scars reopen at mending and cannot heal until the scurvy has. Records: 1.6% of cases died in the Union army; far more with no fresh food at all.
+**A leech:** the best Leechcraft among the named men with a force (alive, not too sick to work) adds Leechcraft / 10 to every recovery check of its sick and wounded, and takes as much off each wound's chance of turning septic.
+
+**Scurvy:** each force counts its days without fresh food. A day ends it in farmland, a village or a town, or in open country, forest or hills if the force camped there all day and foraged, or on a march day there if a named man's Fieldcraft roll finds it, or when the GM issues fresh food. After 42 days without it, each week every well man may fall ill: 10% the first week, 10 more each week after, times the chance he fails to resist. It shows at once at mending and is checked once a week: with fresh food in the past week, 2 steps better; without it, the recovery check at virulence -3: success holds, failure is one step worse, and failure at deadly kills. A named character's old wounds and scars reopen at mending and cannot heal until the scurvy has. Records: 1.6% of cases died in the Union army; far more with no fresh food at all.
 
 **The wounded (from the field map):** a wounded man starts at mending (light), serious (serious) or grave (critical), and at grave if the wound would kill in hours. He makes the same recovery check, but once every 7 days, at virulence -20. 3-5 days after the battle the wound turns septic on d100: low infection risk 5%, medium 15%, high 30% (no camp +5, quarters -5). Wound fever is one step worse and checks every day at virulence 25.
 

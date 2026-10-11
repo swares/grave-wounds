@@ -308,3 +308,15 @@ def fight_plan(d: Data, forces: list, sel, wait: bool = True) -> dict:
     late = [o["id"] for o in friends if _arrived(o) > (day, used)]
     return {"defender": defender["id"], "allies": allies, "attackers": [o["id"] for o in attackers],
             "late": late, "day": day, "used": used, "early": now < ready}
+
+
+def surprise(d: Data, camp_kind: str | None, dark: bool, fog: bool, stealth: int = 0, watch: int = 0) -> dict:
+    """The chance a defender is caught unawares when a fight is set up from the travel map
+    (works.yaml surprise): {chance, parts: [[why, n]]}. stealth / watch: the best Stealth of
+    the attackers' named men and the best Watch of the defenders' (0 if none)."""
+    S = d.works["surprise"]
+    camp = S["none"] if not camp_kind else d.works["camps"][camp_kind]["surprise"]
+    parts = [["base", S["base"]], ["camp", camp], ["dark", S["dark"] if dark else 0], ["fog", S["fog"] if fog else 0],
+             ["stealth", max(0, stealth) // S["per"]], ["watch", -(max(0, watch) // S["per"])]]
+    lo, hi = S["range"]
+    return {"chance": max(lo, min(hi, sum(n for _, n in parts))), "parts": [p for p in parts if p[1]]}

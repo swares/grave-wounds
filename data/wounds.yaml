@@ -294,6 +294,7 @@ combat:
   # out: out of the fight (skipped in the turn order, cannot attack or defend).
   states:
     defend_only: {name: "Defend only", no_attack: true}
+    surprised: {name: "Surprised", no_attack: true}       # caught unawares: round 1 of a fight set up from the travel map (works.yaml surprise)
     stunned: {name: "Stunned", no_attack: true, defence: 50}
     out: {name: "Out of the fight", no_attack: true, out: true}
   # Team morale (Grave Wounds): at the end of each round, a side with at least `trigger`
@@ -310,6 +311,12 @@ combat:
   #                to `worst` at most. Kits not listed in `load` are light. Shooting costs none.
   #   presence   - a leader who is up adds (Presence - 50) / `per` (rounded down) to his side's
   #                morale, on top of leader_present
+  # First aid (the roller's Bind, Tourniquet and Cauterise): on a side with any team-builder
+  # character, the best Leechcraft among those still up rolls d100 for each treatment.
+  # Success: binding stops `bind` steps of bleeding (otherwise 1) and cautery adds no pain.
+  # Failure: nothing happens; it can be tried again. A side with no sheets treats as before,
+  # unrolled. Design estimates.
+  first_aid: {bind: 2}
   characteristics:
     initiative: {die: 10, agi_per: 10}
     blood: {per: 10}
@@ -345,7 +352,7 @@ combat:
     crawl_by: [collapse, stand]
     crawl: 1
     no_run_by: [breath]
-    no_move_states: [stunned, out]
+    no_move_states: [stunned, out, surprised]
     careful_step: 1
     map: {cols: 24, rows: 16}
   # Missile range bands: weapons.yaml `range` gives each band's outer edge in hexes.

@@ -167,6 +167,11 @@ in_fight:
 # sickness above. In camp the bleeding stops, and he gets back `blood_per_day` of lost blood
 # each night (design estimate: the whole pool of 20 in five days). A healed wound leaves a scar.
 named_blood_per_day: 4
+# A named leech (Leechcraft from his sheet) with a force, alive and not too sick to work,
+# adds his Leechcraft / `per` (rounded down) to every recovery check of the force's sick and
+# wounded and of the named men with it, and takes as much off each wound's chance of turning
+# septic. Only the best leech counts. Design estimate.
+leech: {per: 10}
 
 # ---------- wounds carried from the field ----------
 # Men wounded in a unit battle (the field map) and carried to camp heal on the same five-step
@@ -218,4 +223,4 @@ scurvy:
   heal: 2
   virulence: -3
   deaths: 1.6              # % of cases, Union army (771 deaths in about 47,000 cases)
-  fresh: {forage: [good], camped: [fair]}
+  fresh: {forage: [good], camped: [fair], fieldcraft: [fair]}   # fieldcraft: a named man's Fieldcraft roll finds it on a march day

@@ -168,11 +168,23 @@ def catch_chance(d: Data, did: str, factors: list, endurance: int | None = None,
     return outbreak_chance(d, did, factors, extra) * (100 - e) / 100
 
 
-def fresh_today(d: Data, forage: str, camped: bool, issued: bool = False) -> bool:
+def fresh_today(d: Data, forage: str, camped: bool, issued: bool = False, found: bool = False) -> bool:
     """Did the force get fresh food today? Its hex's forage (good), or fair forage when it
-    spent the whole day camped there (not marching), or the GM issued it."""
+    spent the whole day camped there (not marching) or a named man's Fieldcraft found it
+    (found: fieldcraft_finds), or the GM issued it."""
     F = d.disease["scurvy"]["fresh"]
-    return issued or forage in F["forage"] or (camped and forage in F["camped"])
+    return (issued or forage in F["forage"] or (camped and forage in F["camped"])
+            or (found and forage in F["fieldcraft"]))
+
+
+def fieldcraft_needed(d: Data, forage: str, camped: bool) -> bool:
+    """A Fieldcraft roll can find fresh food only on a march day on this kind of forage."""
+    return not camped and forage in d.disease["scurvy"]["fresh"]["fieldcraft"]
+
+
+def leech_bonus(d: Data, leechcraft: int) -> int:
+    """The best named leech with a force: + to recovery checks, - to the septic chance."""
+    return max(0, leechcraft) // d.disease["leech"]["per"]
 
 
 def scurvy_chance(d: Data, no_fresh: int, endurance: int | None = None) -> float:
@@ -322,23 +334,23 @@ def _scurvy_check(d: Data, c: dict, target: int, rng, fresh: bool) -> str:
     return "sick"
 
 
-def _septic(d: Data, c: dict, care: str, rng, ev: dict) -> None:
+def _septic(d: Data, c: dict, care: str, rng, ev: dict, leech: int = 0) -> None:
     """A wound's fever day: it turns septic (wound fever, one step worse) or it does not."""
     W = d.disease["wounds"]
     c["fever"] = 0
-    if rng() <= W["fever_chance"][c["inf"]] + W["fever_care"][care]:
+    if rng() <= W["fever_chance"][c["inf"]] + W["fever_care"][care] - leech:
         c["d"], c["step"] = "fever", min(len(d.disease["steps"]) - 1, c["step"] + 1)
         ev["shown"]["fever"] = ev["shown"].get("fever", 0) + 1
 
 
-def _case_day(d: Data, c: dict, target: int, rng, ev: dict, care: str = "field", food: tuple = (False, False)) -> str:
+def _case_day(d: Data, c: dict, target: int, rng, ev: dict, care: str = "field", food: tuple = (False, False), leech: int = 0) -> str:
     """One case's day: 'sick' while it lasts, else 'healed' or 'dead' (tallied in ev).
     food: (fresh food in the past week, he has scurvy): an old wound it reopened cannot heal
     while it lasts."""
     if c.get("fever"):
         c["fever"] -= 1
         if c["fever"] == 0:
-            _septic(d, c, care, rng, ev)
+            _septic(d, c, care, rng, ev, leech)
     x = profile(d, c["d"])
     if c["inc"] > 0:
         c["inc"] -= 1
@@ -367,21 +379,24 @@ def day(d: Data, health: dict, ctx: dict, rng, endurance: int | None = None) -> 
     """A day passes: incubations run down, cases climb to their peak, then recover or worsen.
     ctx: {care (none, field or shelter), marched (bool), wet_cold (bool), filth (bool), unnursed
     (the last that many sick needing nursing get none: no care), fresh (fresh food in the past
-    week, for scurvy)}.
+    week, for scurvy), leech (leech_bonus of the best named leech with the force; not for
+    the untended)}.
     endurance: a named character's own, or the typical man's.
     Returns (health, {shown, healed, dead}: men by disease)."""
     D, R = d.disease, d.disease["recovery"]
     target = ((D["endurance"] if endurance is None else endurance) + R["care"][ctx["care"]] + R["activity"]["marched" if ctx["marched"] else "rest"]
-              + (R["wet_cold"] if ctx["wet_cold"] else 0) + (R["filth"] if ctx["filth"] else 0))
+              + (R["wet_cold"] if ctx["wet_cold"] else 0) + (R["filth"] if ctx["filth"] else 0) + ctx.get("leech", 0))
     h = _copy(health)
     ev = {"shown": {}, "healed": {}, "dead": {}}
     keep = []
     pts = _patients(d, h)
     left = set(map(id, pts[len(pts) - ctx.get("unnursed", 0):])) if ctx.get("unnursed", 0) else set()
-    alone = target - R["care"][ctx["care"]] + R["care"]["none"]     # no one to tend him
+    lb = ctx.get("leech", 0)
+    alone = target - R["care"][ctx["care"]] + R["care"]["none"] - lb     # no one to tend him
     food = (bool(ctx.get("fresh")), any(c["d"] == "scurvy" for c in h["cases"]))
     for c in h["cases"]:
-        out = _case_day(d, c, alone if id(c) in left else target, rng, ev, "none" if id(c) in left else ctx["care"], food)
+        tended = id(c) not in left
+        out = _case_day(d, c, target if tended else alone, rng, ev, ctx["care"] if tended else "none", food, lb if tended else 0)
         x = profile(d, c["d"])
         if out == "sick":
             keep.append(c)

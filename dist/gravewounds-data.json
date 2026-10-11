@@ -14650,6 +14650,10 @@
     "name": "Defend only",
     "no_attack": true
    },
+   "surprised": {
+    "name": "Surprised",
+    "no_attack": true
+   },
    "stunned": {
     "name": "Stunned",
     "no_attack": true,
@@ -14660,6 +14664,9 @@
     "no_attack": true,
     "out": true
    }
+  },
+  "first_aid": {
+   "bind": 2
   },
   "characteristics": {
    "initiative": {
@@ -14726,7 +14733,8 @@
    ],
    "no_move_states": [
     "stunned",
-    "out"
+    "out",
+    "surprised"
    ],
    "careful_step": 1,
    "map": {
@@ -14939,6 +14947,17 @@
    "wagons": 40
   },
   "camp_area_min": 100,
+  "surprise": {
+   "base": 30,
+   "none": 10,
+   "dark": 20,
+   "fog": 20,
+   "per": 5,
+   "range": [
+    5,
+    95
+   ]
+  },
   "camps": {
    "bivouac": {
     "name": "Bivouac",
