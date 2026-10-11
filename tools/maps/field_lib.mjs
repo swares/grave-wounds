@@ -48,7 +48,8 @@ const hexList = hs => hs.map(h => `[${h.join(", ")}]`).join(", ");
 // Writes the battlefield file. spec: {id, script, header (comment lines), name, sides, table,
 // travel {map, place, within, sides}, weather (YAML flow text), grid, hexWorks {type: [hexes]},
 // edgeWorks {type: [[hex, hex], ...]} (the first hex of each pair the high or inner side), units,
-// up (the compass point at the top of the map, if not north)}.
+// up (the compass point at the top of the map, if not north), support (each side's batteries on
+// call: [{name, side (0 or 1), kind (units.yaml indirect.kinds), tubes}])}.
 export function writeField(spec){
   const { grid } = spec, works = Object.entries(spec.hexWorks || {});
   const edges = Object.entries(spec.edgeWorks || {});
@@ -57,6 +58,8 @@ export function writeField(spec){
   const hexText = works.length ? "  hexes:\n" + works.map(workLine).join("\n") + "\n" : "";
   const edgeText = edges.length ? "  edges:\n" + edges.map(edgeLine).join("\n") + "\n" : "";
   const worksText = hexText || edgeText ? "works:\n" + hexText + edgeText : "";
+  const supText = (spec.support || []).length ? "# Batteries on call (off the map): loading the field fills the Fire support panel.\nsupport:\n"
+    + spec.support.map(s => `  - {name: ${yq(s.name)}, side: ${s.side}, kind: ${s.kind}, tubes: ${s.tubes}}`).join("\n") + "\n" : "";
   const t = spec.travel, upLine = spec.up ? "up: " + spec.up + "                       # the compass point at the top of the map\n" : "";
   const out = `${spec.header.map(l => ("# " + l).trimEnd()).join("\n")}
 id: ${spec.id}
@@ -70,7 +73,7 @@ size: [${grid[0].length}, ${grid.length}]
 ${upLine}weather: ${spec.weather}
 ground: |
 ${grid.map(row => "  " + row.join("")).join("\n")}
-${worksText}units:
+${worksText}${supText}units:
 ${spec.units.map(unitLine).join("\n")}
 `;
   fs.mkdirSync(path.join(ROOT, "data/fields"), { recursive: true });

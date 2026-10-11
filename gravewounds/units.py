@@ -528,7 +528,12 @@ def battlefield(d: Data, fid: str) -> dict:
                 it.update({"open": False, "inside": C.hkey(a)})
             works["edges"].setdefault(C.edge_key(a, b), []).append(it)
     wx = f.get("weather") or {"cond": "fair", "wind": "calm", "ground": {"mud": 0, "snow": 0}}
-    return {"ground": ground, "works": works, "weather": wx, "size": list(f["size"]), "up": f.get("up", "N")}
+    out = {"ground": ground, "works": works, "weather": wx, "size": list(f["size"]), "up": f.get("up", "N")}
+    if f.get("support"):
+        K = d.units["indirect"]["kinds"]
+        out["support"] = [{"name": s["name"], "army": s["side"], "side": f["sides"][s["side"]], "kind": s["kind"], "tubes": s["tubes"],
+                           "rounds": s["tubes"] * K[s["kind"]]["rounds"], "mission": None} for s in f["support"]]
+    return out
 
 
 def battlefield_units(d: Data, fid: str) -> list:
@@ -1141,6 +1146,8 @@ def _stands(d: Data, field: dict, u: dict, hexes: list) -> bool:
 
 
 def _can_enter(d: Data, field: dict, u: dict, h) -> bool:
+    if ground_at(d, field, h).get("impassable"):
+        return False
     it = C._hex_item(d, _works(field), h)
     if it and C._spec(d, "hex", it).get("enter") is None:
         return False

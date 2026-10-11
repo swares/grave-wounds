@@ -4365,6 +4365,8 @@ Penalties add up; each total is capped at -60%.
 | Abatis | hex | 4 man-h (+4 hauled) | +2 | -20% in it | no horses | 8 man-rounds |
 | Pavise | hex | carried | free | -20% in it | - | - |
 | Wagon | hex | 0.25 man-h | blocks | -40% behind it | no horses | 10 man-rounds |
+| Barbed wire | hex | 2 man-h | +3 | - | no horses | 6 man-rounds |
+| Bunker | hex | 30 man-h | +1 | -50% in it | no horses | - |
 
 ## Weather
 
@@ -4439,6 +4441,9 @@ Penalties add up; each total is capped at -60%.
 | Virginia piedmont, humid | high/low °F | 43/25 | 46/27 | 55/32 | 68/41 | 75/52 | 84/61 | 88/64 | 86/63 | 79/55 | 68/45 | 57/34 | 46/28 |
 |  | (°C) | 6/-4 | 8/-3 | 13/0 | 20/5 | 24/11 | 29/16 | 31/18 | 30/17 | 26/13 | 20/7 | 14/1 | 8/-2 |
 |  | wet days | 9 | 8 | 10 | 10 | 11 | 10 | 9 | 8 | 8 | 7 | 8 | 9 |
+| Tropical rainforest, the western Pacific | high/low °F | 88/73 | 88/73 | 88/73 | 88/73 | 88/73 | 86/72 | 86/72 | 86/72 | 88/72 | 88/72 | 88/73 | 88/73 |
+|  | (°C) | 31/23 | 31/23 | 31/23 | 31/23 | 31/23 | 30/22 | 30/22 | 30/22 | 31/22 | 31/22 | 31/23 | 31/23 |
+|  | wet days | 20 | 19 | 21 | 19 | 17 | 15 | 15 | 15 | 15 | 17 | 18 | 20 |
 | Great Lakes, humid continental | high/low °F | 30/18 | 34/19 | 43/27 | 55/36 | 66/46 | 75/57 | 81/63 | 79/61 | 72/54 | 59/43 | 46/34 | 36/25 |
 |  | (°C) | -1/-8 | 1/-7 | 6/-3 | 13/2 | 19/8 | 24/14 | 27/17 | 26/16 | 22/12 | 15/6 | 8/1 | 2/-4 |
 |  | wet days | 15 | 12 | 12 | 12 | 11 | 10 | 9 | 9 | 10 | 11 | 12 | 15 |
@@ -4451,7 +4456,7 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **Unit morale:** after an exchange a unit checks if it lost the exchange, has 25% of its men down, lost 10% in the exchange, or was struck in flank or rear: d100 against Nerve, +20 while steady, +10 with a leader, -20 if he is down, -20 at half strength, -20 if flanked, -5 a man it lost more than it put down (at most -30). Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +20, no parry, x2 tempo.
 
-**Ground and works on the field map:** open ground (move 1); rough ground (move 2); woods (move 2, cover -20%); marsh (move 3, no horses); high ground (move 1, -10% striking up at it). Works are the battle map's, along the 11 yd (10 m) hex sides: only reach-2 weapons strike over a palisade, wall or barred gate, from the front rank; striking up a bank, ditch or wall costs its height; a volley takes the best cover where it lands. A unit ordered to breach puts half its front rank to hacking at the work in front (a field-map side takes 5 times a battle-map side's breach figure). The battle map's weather applies.
+**Ground and works on the field map:** open ground (move 1); rough ground (move 2); woods (move 2, cover -20%); marsh (move 3, no horses); high ground (move 1, -10% striking up at it); buildings (move 2, cover -30%, no horses); water (move 1). Works are the battle map's, along the 11 yd (10 m) hex sides: only reach-2 weapons strike over a palisade, wall or barred gate, from the front rank; striking up a bank, ditch or wall costs its height; a volley takes the best cover where it lands. A unit ordered to breach puts half its front rank to hacking at the work in front (a field-map side takes 5 times a battle-map side's breach figure). The battle map's weather applies.
 
 **Guns:** a battery is a unit armed with guns, in battery order; its men are the crews, 10 to a gun, and as crews fall fewer guns are served. Each served gun fires 1 round an exchange at the nearest enemy in front within 1094 yd (1000 m): canister to 328 yd (300 m), round shot beyond. Round shot strikes the unit (60% to 547 yd (500 m), 40% to 820 yd (750 m), 25% to 1094 yd (1000 m)), then each man in its path (the ranks deep, at most 12) is hit at 40%, so columns suffer most. Canister throws 8 chances a round (50% to 109 yd (100 m), 30% to 219 yd (200 m), 15% to 328 yd (300 m)). Cover, the weather and open order cut both. Each man hit takes a wound roll at 80% with no parry.
 

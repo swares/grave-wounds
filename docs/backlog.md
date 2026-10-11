@@ -29,11 +29,10 @@ When an item is done, delete it here and note it in the pull request that closes
   purpose for now). A shared clock would let forces meet on the road.
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
   Agincourt (1415), Towton (1461), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
-  Lane (1814) and First Bull Run (1861) have both a campaign map and a battlefield. The
-  conflicts after 1865 in the tables (the frontier, the world wars and later) still play on
-  the generic valley and open ground. Machine guns, extended order and going to ground are in
-  (units.md), and so are modern artillery and mortars on call with suppression; maps for the
-  First and Second World Wars come next. Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
+  Lane (1814), First Bull Run (1861), Mons (1914) and Hill 700 on Bougainville (1944) have
+  both a campaign map and a battlefield. The frontier, Italy 1944, Korea, Vietnam and later
+  still play on the generic valley and open ground (the unit rules for them are in: machine
+  guns, extended order, artillery and mortars on call, suppression). Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
 - **Guns, simplified.** A battery fires one kind of shot at one unit an exchange, and the

@@ -15096,6 +15096,23 @@
     "no_horse": true,
     "breach": 10,
     "note": "Wagons drawn up and chained, as in a wagon laager."
+   },
+   "wire": {
+    "name": "Barbed wire",
+    "each": 2,
+    "enter": 3,
+    "no_horse": true,
+    "breach": 6,
+    "note": "Belts of barbed wire on stakes (from the 1900s): slow to cross, cut by hand."
+   },
+   "bunker": {
+    "name": "Bunker",
+    "each": 30,
+    "enter": 1,
+    "cover_here": 50,
+    "no_horse": true,
+    "breach": null,
+    "note": "A log-and-earth pillbox or dugout with firing slits (the 20th century)."
    }
   }
  },
@@ -15917,6 +15934,76 @@
      20,
      17,
      16
+    ]
+   },
+   "tropical": {
+    "name": "Tropical rainforest, the western Pacific",
+    "note": "Like the Solomon Islands (Bougainville): hot and wet all year, rain most days. Rounded design estimates.",
+    "high": [
+     31,
+     31,
+     31,
+     31,
+     31,
+     30,
+     30,
+     30,
+     31,
+     31,
+     31,
+     31
+    ],
+    "low": [
+     23,
+     23,
+     23,
+     23,
+     23,
+     22,
+     22,
+     22,
+     22,
+     22,
+     23,
+     23
+    ],
+    "rain": [
+     20,
+     19,
+     21,
+     19,
+     17,
+     15,
+     15,
+     15,
+     15,
+     17,
+     18,
+     20
+    ],
+    "fog": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    "wind_from": [
+     10,
+     8,
+     10,
+     22,
+     14,
+     10,
+     12,
+     14
     ]
    },
    "great_lakes": {
