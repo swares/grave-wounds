@@ -15040,6 +15040,42 @@
    }
   }
  },
+ "disease": {
+  "steps": [
+   "healed",
+   "mending",
+   "serious",
+   "grave",
+   "deadly"
+  ],
+  "in_fight": {
+   "mending": {
+    "penalty": 10
+   },
+   "serious": {
+    "penalty": 25,
+    "no_run": true
+   },
+   "grave": {
+    "penalty": 25,
+    "crawl": true,
+    "defend_only": true
+   },
+   "deadly": {
+    "out": true
+   }
+  },
+  "endurance": 50,
+  "names": {
+   "flux": "Bloody flux",
+   "typhus": "Camp fever (typhus)",
+   "typhoid": "Typhoid",
+   "ague": "Ague (malaria)",
+   "plague": "Plague",
+   "wound": "Wounds",
+   "fever": "Wound fever (sepsis)"
+  }
+ },
  "weather": {
   "daylight": {
    "start_after_sunrise": 1.0,

@@ -114,24 +114,25 @@ def _new_case(d: Data, did: str, rng) -> dict:
     return {"d": did, "inc": inc, "step": 0, "peak": peak, "shown": 0, "chronic": False}
 
 
-def catch_chance(d: Data, did: str, factors: list) -> float:
+def catch_chance(d: Data, did: str, factors: list, endurance: int | None = None) -> float:
     """% chance a well man catches `did` this week: the outbreak chance times the chance he
-    fails to resist (d100 over Endurance). A force is many men, so each rolls on his own
-    rather than the whole force at once."""
-    return outbreak_chance(d, did, factors) * (100 - d.disease["endurance"]) / 100
+    fails to resist (d100 over Endurance: a typical man's, or a named character's own). A
+    force is many men, so each rolls on his own rather than the whole force at once."""
+    e = d.disease["endurance"] if endurance is None else endurance
+    return outbreak_chance(d, did, factors) * (100 - e) / 100
 
 
 def _d10000(rng) -> int:
     return (rng() - 1) * 100 + rng()
 
 
-def week(d: Data, health: dict, men: int, factors: list, rng) -> tuple[dict, list]:
+def week(d: Data, health: dict, men: int, factors: list, rng, endurance: int | None = None) -> tuple[dict, list]:
     """The weekly roll: each well man who is not immune may catch each disease (d10000 against
     catch_chance x 100), then relapses. Returns (health, events); events are {kind: caught or
-    relapse, d, n}."""
+    relapse, d, n}. endurance: a named character's own (men 1), or the typical man's."""
     D, h, ev = d.disease, _copy(health), []
     for did in D["diseases"]:
-        p = catch_chance(d, did, factors) * 100
+        p = catch_chance(d, did, factors, endurance) * 100
         if p <= 0:
             continue
         exposed = max(0, men - len(h["cases"]) - h["immune"].get(did, 0))
@@ -221,12 +222,13 @@ def _case_day(d: Data, c: dict, target: int, rng, ev: dict, care: str = "field")
     return out
 
 
-def day(d: Data, health: dict, ctx: dict, rng) -> tuple[dict, dict]:
+def day(d: Data, health: dict, ctx: dict, rng, endurance: int | None = None) -> tuple[dict, dict]:
     """A day passes: incubations run down, cases climb to their peak, then recover or worsen.
     ctx: {care (none, field or shelter), marched (bool), wet_cold (bool), filth (bool)}.
+    endurance: a named character's own, or the typical man's.
     Returns (health, {shown, healed, dead}: men by disease)."""
     D, R = d.disease, d.disease["recovery"]
-    target = (D["endurance"] + R["care"][ctx["care"]] + R["activity"]["marched" if ctx["marched"] else "rest"]
+    target = ((D["endurance"] if endurance is None else endurance) + R["care"][ctx["care"]] + R["activity"]["marched" if ctx["marched"] else "rest"]
               + (R["wet_cold"] if ctx["wet_cold"] else 0) + (R["filth"] if ctx["filth"] else 0))
     h = _copy(health)
     ev = {"shown": {}, "healed": {}, "dead": {}}
@@ -244,6 +246,12 @@ def day(d: Data, health: dict, ctx: dict, rng) -> tuple[dict, dict]:
             h["had"][c["d"]] = h["had"].get(c["d"], 0) + 1
     h["cases"] = keep
     return h, ev
+
+
+def worst_step(d: Data, health: dict) -> str | None:
+    """A named character's worst step of sickness that shows (not incubating), or None."""
+    shown = [c["step"] for c in health["cases"] if c["inc"] == 0 and c["step"] > 0]
+    return d.disease["steps"][max(shown)] if shown else None
 
 
 def seeded_d100(seed: int):

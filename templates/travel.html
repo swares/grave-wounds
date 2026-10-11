@@ -596,12 +596,13 @@ function newCase(did, rng){
   const x = DZ.diseases[did], inc = dzPick(x.incubation[0], x.incubation[1], rng), roll = rng();
   return { d: did, inc, step: 0, peak: dzStep(x.peak.find(r => roll <= r.upto).step), shown: 0, chronic: false };
 }
-const catchChance = (did, factors) => outbreakChance(did, factors) * (100 - DZ.endurance) / 100;   // % a well man catches it this week
+// % a well man catches it this week: a typical man's Endurance, or a named character's own
+const catchChance = (did, factors, endurance = DZ.endurance) => outbreakChance(did, factors) * (100 - endurance) / 100;
 const d10000 = rng => (rng() - 1) * 100 + rng();
-function healthWeek(health, men, factors, rng){   // the weekly roll: each well man may catch each disease, then relapses -> {health, events}
+function healthWeek(health, men, factors, rng, endurance = DZ.endurance){   // the weekly roll: each well man may catch each disease, then relapses -> {health, events}
   const h = copyHealth(health), ev = [];
   for (const did of Object.keys(DZ.diseases)){
-    const p = catchChance(did, factors) * 100;
+    const p = catchChance(did, factors, endurance) * 100;
     if (p <= 0) continue;
     const exposed = Math.max(0, men - h.cases.length - (h.immune[did] || 0));
     let caught = 0;
@@ -678,9 +679,9 @@ function caseDay(c, target, rng, ev, care = "field"){   // one case's day: "sick
   if (out !== "sick") tally(out);
   return out;
 }
-function healthDay(health, ctx, rng){          // a day passes -> {health, events: {shown, healed, dead}}
+function healthDay(health, ctx, rng, endurance = DZ.endurance){   // a day passes -> {health, events: {shown, healed, dead}}
   const R = DZ.recovery;
-  const target = DZ.endurance + R.care[ctx.care] + R.activity[ctx.marched ? "marched" : "rest"] + (ctx.wet_cold ? R.wet_cold : 0) + (ctx.filth ? R.filth : 0);
+  const target = endurance + R.care[ctx.care] + R.activity[ctx.marched ? "marched" : "rest"] + (ctx.wet_cold ? R.wet_cold : 0) + (ctx.filth ? R.filth : 0);
   const h = copyHealth(health), ev = { shown: {}, healed: {}, dead: {} }, keep = [];
   for (const c of h.cases){
     const out = caseDay(c, target, rng, ev, ctx.care), x = dzProfile(c.d);
@@ -809,7 +810,9 @@ function nightHard(w, kind){                  // the night was harder than the s
 }
 function healthNight(f, today, camp){         // the sick get better or worse; once a week, the outbreak roll
   const kind = camp ? camp.kind : null, hyg = campHygiene(f.hygiene || null, kind);
-  const r = healthDay(healthOf(f), { care: campCare(kind), marched: (f.marched || 0) > 0, wet_cold: nightHard(today.w, kind), filth: hyg === "poor" }, roll100);
+  const ctx = { care: campCare(kind), marched: (f.marched || 0) > 0, wet_cold: nightHard(today.w, kind), filth: hyg === "poor" };
+  namedNight(f, ctx, f.day % DZ.week_days === 0 ? weekFactorsFor(f, kind, hyg) : null);
+  const r = healthDay(healthOf(f), ctx, roll100);
   f.health = r.health;
   const dead = Object.values(r.events.dead).reduce((t, n) => t + n, 0);
   if (dead) f.men = Math.max(0, f.men - dead);
@@ -817,6 +820,43 @@ function healthNight(f, today, camp){         // the sick get better or worse; o
   const bits = [...tallyText(r.events.shown, "fell ill"), ...tallyText(r.events.dead, "died"), ...tallyText(r.events.healed, "recovered")];
   if (bits.length) f.log.unshift(`Night of ${dateText(f.day, true)}: ${bits.join("; ")}.`);
   if (f.day % DZ.week_days === 0) healthWeekFor(f, kind, hyg);
+}
+// ----- named characters with a force (the roller's fighters): their own course, own Endurance -----
+const NAMED_KEY = "gravewounds-named";        // {uid: {name, endurance, map, force, health, dead, log}}, shared with the roller
+function readNamed(){ try{ return JSON.parse(localStorage.getItem(NAMED_KEY) || "{}") || {} }catch(e){ return {} } }
+function writeNamed(all){ try{ localStorage.setItem(NAMED_KEY, JSON.stringify(all)) }catch(e){ /* storage off: they stay as they were */ } }
+const namedWith = (all, f) => Object.entries(all).filter(([, n]) => n.map === S.mapId && n.force === f.id && !n.dead);
+function namedNight(f, ctx, factors){          // the day (and on the week's last day, the outbreak roll) for each named man with the force
+  const all = readNamed(), mine = namedWith(all, f);
+  if (!mine.length) return;
+  for (const [, n] of mine){
+    const e = Number.isFinite(n.endurance) ? n.endurance : DZ.endurance;
+    const r = healthDay(n.health || newHealth(), ctx, roll100, e);
+    n.health = r.health;
+    const bits = [...tallyText(r.events.shown, "fell ill").map(s => s.replace(/^1 /, "")), ...tallyText(r.events.healed, "recovered").map(s => s.replace(/^1 /, ""))];
+    if (r.health.dead){ n.dead = true; bits.push(`died (${Object.keys(r.events.dead).map(dzShort).join(", ")})`) }
+    if (factors && !n.dead){
+      const w = healthWeek(n.health, 1, factors, roll100, e);
+      n.health = w.health;
+    }
+    if (bits.length){
+      const line = `${dateText(f.day, true)}: ${n.name} ${bits.join("; ")}.`;
+      f.log.unshift(line);
+      n.log = [line, ...(n.log || [])].slice(0, 20);
+    }
+  }
+  writeNamed(all);
+}
+function namedLine(f){                        // the force's named men and how they are, for its panel
+  const mine = Object.values(readNamed()).filter(n => n.map === S.mapId && n.force === f.id);
+  if (!mine.length) return "";
+  return mine.map(n => {
+    if (n.dead) return `${n.name} (dead)`;
+    const shown = (n.health ? n.health.cases : []).filter(c => c.inc === 0 && c.step > 0);
+    if (!shown.length) return `${n.name} (well)`;
+    const c = shown.reduce((a, b) => (b.step > a.step ? b : a));
+    return `${n.name} (${dzShort(c.d)}, ${DZ.steps[c.step]})`;
+  }).join("; ");
 }
 function weekFactorsFor(f, kind, hyg){        // this week's factors for the force where it is
   const days = Array.from({ length: DZ.week_days }, (_, i) => f.day - i).filter(dd => dd >= 1).map(dayWeather);
@@ -1072,6 +1112,8 @@ function renderHealth(f){
   if (c.incubating) parts.push(`${c.incubating} caught something and will show it soon.`);
   if (c.carried) parts.push(`${c.carried} on litters: the march goes at ${sickMarchPct(c.fit, c.carried)}%.`);
   if (h.dead) parts.push(`${h.dead} dead of disease and wounds so far.`);
+  const named = namedLine(f);
+  if (named) parts.push(`Named with it (from the wound roller): ${named}.`);
   parts.push(`Weekly check: night of ${dateText(next, true)}. Each well man's chance of catching it this week: ${chances.join(", ") || "none"}.`);
   $("#health-note").textContent = parts.join(" ");
 }

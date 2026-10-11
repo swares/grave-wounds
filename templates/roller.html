@@ -117,7 +117,7 @@ button.small{font-size:.8rem;padding:3px 8px}
 .bar{height:10px;background:var(--line);border-radius:2px;overflow:hidden}
 .bar>i{display:block;height:100%;background:var(--blood);transition:width .3s}
 .stat{display:flex;justify-content:space-between;gap:10px;font-size:.85rem;flex-wrap:wrap}
-.stat .warn{color:var(--warn);font-weight:700}.stat .crit{color:var(--crit);font-weight:700}
+.stat .warn{color:var(--warn);font-weight:700}.stat .crit,.siderow .crit{color:var(--crit);font-weight:700}
 .wounds{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .wounds li{border-top:1px dashed var(--line);padding-top:6px;font-size:.85rem;display:flex;flex-direction:column;gap:4px}
 .wounds .w1{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
@@ -452,6 +452,10 @@ function penalties(c){
     flags.add(c.state.id);
     if (rule.defence){ defence += rule.defence; notes.push(`${rule.name.toLowerCase()} def -${rule.defence}%`) }
   }
+  const sick = sickOf(c), rule = sick ? DZR.in_fight[sick.step] || {} : {};   // sickness, as gravewounds.combat._sick_penalties
+  if (rule.penalty){ attack += rule.penalty; defence += rule.penalty; notes.push(`sick (${sick.step}) -${rule.penalty}%`) }
+  if (rule.defend_only) flags.add("defend_only");
+  if (rule.out) flags.add("out");
   return { attack: Math.min(attack, CMB.cap), defence: Math.min(defence, CMB.cap), flags: [...flags].sort(), notes };
 }
 const cannotAttack = p => !!p && p.flags.some(f => f === "incapacitated" || (CMB.states[f] || {}).no_attack);
@@ -490,21 +494,78 @@ function moraleCheck(fighters, roll){
 }
 // Battle map. Hexes are [col, row], pointy-top, odd rows shifted right.
 const MOVE = CMB.move, CAMP_HEX_M = MOVE.hex_m;
+// ----- named characters' sickness: a fighter can go with a force on the travel map, which runs his days -----
+const DZR = DATA.disease, NAMED_KEY = "gravewounds-named";   // {uid: {name, endurance, map, force, health, dead, log}}, shared with the travel map
+function readNamed(){ try{ return JSON.parse(localStorage.getItem(NAMED_KEY) || "{}") || {} }catch(e){ return {} } }
+function writeNamed(all){ try{ localStorage.setItem(NAMED_KEY, JSON.stringify(all)) }catch(e){ /* storage off: not attached */ } }
+let NAMED = readNamed();
+const sheetEnd = c => (c.sheet && c.sheet.stats && Number.isFinite(c.sheet.stats.end) ? c.sheet.stats.end : DZR.endurance);
+const enduranceOf = c => (Number.isFinite(c.endurance) ? c.endurance : sheetEnd(c));
+function sickOf(c){                               // {step, did} at his worst showing step, {incubating}, {dead}, or null
+  const n = c.uid ? NAMED[c.uid] : null;
+  if (!n) return null;
+  if (n.dead) return { step: "deadly", dead: true };
+  const cases = (n.health || {}).cases || [], shown = cases.filter(x => x.inc === 0 && x.step > 0);
+  if (!shown.length) return cases.length ? { step: null, incubating: true } : null;
+  const w = shown.reduce((a, b) => (b.step > a.step ? b : a));
+  return { step: DZR.steps[w.step], did: w.d };
+}
+function travelForces(){                          // the forces on the travel map's current map: [{value, label}]
+  try{
+    const t = JSON.parse(localStorage.getItem("gravewounds-travel") || "null");
+    if (!t || !t.forces || !t.forces[t.mapId]) return [];
+    return t.forces[t.mapId].map(f => ({ value: `${t.mapId}:${f.id}`, label: `${f.name} (${f.side})` }));
+  }catch(e){ return [] }
+}
+function attachNamed(c, value){                   // put him with a travel force (value "map:id"), or take him off ("")
+  const all = readNamed();
+  if (!c.uid) c.uid = Array.from(crypto.getRandomValues(new Uint32Array(2)), x => x.toString(36)).join("");
+  if (!value) delete all[c.uid];
+  else {
+    const [map, id] = [value.slice(0, value.lastIndexOf(":")), +value.slice(value.lastIndexOf(":") + 1)], was = all[c.uid] || {};
+    all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id };
+  }
+  writeNamed(all);
+  NAMED = all;
+}
+function namedRow(c){                             // Endurance, the force he goes with, and his sickness
+  const n = c.uid ? NAMED[c.uid] : null, opts = travelForces(), cur = n ? `${n.map}:${n.force}` : "";
+  if (n && !opts.some(o => o.value === cur)) opts.unshift({ value: cur, label: `a force on ${n.map}` });
+  const sel = `<select data-act="withforce" aria-label="Travel-map force ${attr(c.name)} goes with"><option value="">(no force)</option>${opts.map(o => `<option value="${attr(o.value)}" ${o.value === cur ? "selected" : ""}>${attr(o.label)}</option>`).join("")}</select>`;
+  const s = sickOf(c), rule = s && s.step ? DZR.in_fight[s.step] || {} : {};
+  let sick = "";
+  if (s && s.dead) sick = `<span class="crit">Died of disease</span>`;
+  else if (s && s.incubating) sick = `<span class="muted">Caught something: not showing yet</span>`;
+  else if (s){
+    const eff = [rule.penalty ? `−${rule.penalty}%` : "", rule.no_run ? "cannot run" : "", rule.crawl ? "crawls, defends only" : "", rule.out ? "too ill to fight" : ""].filter(Boolean).join(", ");
+    sick = `<span class="crit">Sick: ${attr(DZR.names[s.did] || s.did)}, ${s.step}${eff ? ` (${eff})` : ""}</span>`;
+  }
+  const last = n && n.log && n.log[0] ? ` title="${attr(n.log[0])}"` : "";
+  return `<div class="siderow"${last}><label class="order" title="Endurance: resisting disease and getting over it">Endurance
+    <input type="number" data-act="endurance" value="${enduranceOf(c)}" aria-label="Endurance for ${attr(c.name)}"></label>
+    <label class="order" title="Goes with this force on the travel map: its days, camp, weather and marching run his sickness">With ${sel}</label>${sick}</div>`;
+}
+if (typeof window !== "undefined"){                // the travel map may have run his days
+  window.addEventListener("focus", () => { NAMED = readNamed(); renderChars() });
+  window.addEventListener("storage", e => { if (e.key === NAMED_KEY){ NAMED = readNamed(); renderChars() } });
+}
 function cubeOf([c, r]){ const q = c - (r - (r & 1)) / 2; return [q, r, -q - r] }
 function hexDistance(a, b){ const x = cubeOf(a), y = cubeOf(b); return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2])) }
 const NEIGHBOURS = [[[1, 0], [0, -1], [-1, -1], [-1, 0], [-1, 1], [0, 1]], [[1, 0], [1, -1], [0, -1], [-1, 0], [0, 1], [1, 1]]];
 function neighbours([c, r], cols, rows){
   return NEIGHBOURS[r & 1].map(([dc, dr]) => [c + dc, r + dr]).filter(([x, y]) => x >= 0 && x < cols && y >= 0 && y < rows);
 }
-function moveAllowance(wounds, state = null){
-  if (MOVE.no_move_states.includes(state)) return { advance: 0, run: 0 };
+function moveAllowance(wounds, state = null, sick = null){   // sick: a named character's worst step of sickness
+  const rule = (DZR.in_fight || {})[sick || ""] || {};
+  if (MOVE.no_move_states.includes(state) || rule.out) return { advance: 0, run: 0 };
   const imp = new Set(wounds.flatMap(w => w.fx.impair || []));
-  if (MOVE.crawl_by.some(i => imp.has(i))) return { advance: MOVE.crawl, run: 0 };
+  if (MOVE.crawl_by.some(i => imp.has(i)) || rule.crawl) return { advance: MOVE.crawl, run: 0 };
   let adv = MOVE.advance, run = MOVE.run;
   if (MOVE.halved_by.some(i => imp.has(i))){ adv = Math.floor(adv / 2); run = Math.floor(run / 2) }
-  if (MOVE.no_run_by.some(i => imp.has(i))) run = 0;
+  if (MOVE.no_run_by.some(i => imp.has(i)) || rule.no_run) run = 0;
   return { advance: adv, run };
 }
+const allowanceOf = c => moveAllowance(c.wounds, c.state ? c.state.id : null, (sickOf(c) || {}).step);
 // Hexes he can end on within `steps`: Map "col,row" -> cost. Through friends, not onto them; never into an enemy.
 function reachable(start, steps, cols, rows, enemies, friends){
   const key = h => h[0] + "," + h[1], blocked = new Set(enemies.map(key)), friendly = new Set(friends.map(key));
@@ -1270,7 +1331,7 @@ function risingCost(c){
 function turnInfo(){                         // the acting fighter's movement this turn
   const c = actingChar(); if (!c || !c.pos) return null;
   if (!S.tm || S.tm.id !== c.id) S.tm = { id: c.id, steps: 0, ran: false, moved: false };
-  const { cols, rows } = mapSize(), allow = moveAllowance(c.wounds, c.state ? c.state.id : null);
+  const { cols, rows } = mapSize(), allow = allowanceOf(c);
   const others = S.chars.filter(o => o !== c && o.pos), rise = risingCost(c), budget = Math.max(allow.advance, allow.run) - rise;
   const found = S.tm.moved || budget <= 0 ? new Map() : reachableWorks(c.pos, budget, { cols, rows,
     enemies: others.filter(o => sideOf(o) !== sideOf(c)).map(o => o.pos), friends: others.filter(o => sideOf(o) === sideOf(c)).map(o => o.pos),
@@ -1293,7 +1354,7 @@ function rangeCheck(){
   if (S.tm && S.tm.id === a.id && S.tm.ran) return { blocked: `${a.name} ran this turn and cannot attack.` };
   if (S.tm && S.tm.id === a.id && S.tm.worked) return { blocked: `${a.name} spent this turn on the works and cannot attack.` };
   if (S.tm && S.tm.id === a.id && S.tm.covered) return { blocked: `${a.name} took cover this turn and cannot attack.` };
-  if (a.cover && !isShot(S.weapon) && S.turn === a.id && GRD.rise > moveAllowance(a.wounds, a.state ? a.state.id : null).advance)
+  if (a.cover && !isShot(S.weapon) && S.turn === a.id && GRD.rise > allowanceOf(a).advance)
     return { blocked: `${a.name} cannot get up from cover and strike this turn (getting up takes ${hexes(GRD.rise)} of his move).` };
   const dist = hexDistance(a.pos, dd.pos), wx = weatherAttack(S.weather, S.weather ? S.weapon : null, dist, a.pos, dd.pos);
   const ranged = isShot(S.weapon), ht = heightEffects(S.ground, a.pos, dd.pos, !ranged);
@@ -2130,6 +2191,7 @@ function renderChars(){
           <select data-act="rating" aria-label="Experience for ${attr(c.name)}">${Object.keys(RATINGS).map(r => `<option value="${r}" ${c.rating === r ? "selected" : ""}>${r}</option>`).join("")}<option value="custom" ${c.rating === "custom" ? "selected" : ""}>custom</option></select>
           <input type="number" data-act="nerve" value="${nerveOf(c)}" aria-label="Nerve for ${attr(c.name)}"></label>
         ${fatigueSelect(c)}</div>
+      ${namedRow(c)}
       ${c.state ? `<div class="state ${c.state.id === "out" ? "out" : ""}"><span><b>${CMB.states[c.state.id].name}</b>${c.state.rounds != null ? ` \u00b7 ${c.state.rounds} round${c.state.rounds === 1 ? "" : "s"} left` : " \u00b7 until helped or the fight ends"}</span><button class="small" data-act="clearstate">Clear</button></div>` : ""}
       <div class="charhead"><strong>${c.name}</strong>
         <button class="small" data-act="attacker" aria-pressed="${isAtt}" ${incap ? 'disabled title="This fighter cannot attack now"' : ""}>${isAtt ? "Attacking" : "Attacker"}</button>
@@ -2172,6 +2234,7 @@ $("#chars").addEventListener("click", e => {
   else if (act === "clearstate"){ c.state = null; renderChars() }
   else if (act === "up" || act === "down"){ if (moveChar(ci, act === "up" ? ci - 1 : ci + 1)) renderChars() }
   else if (act === "remove"){
+    if (c.uid && NAMED[c.uid]) attachNamed(c, "");   // he leaves his travel-map force too
     S.chars.splice(ci, 1);
     if (S.attacker === ci) S.attacker = -1; else if (S.attacker > ci) S.attacker--;
     S.active = Math.max(0, Math.min(S.active > ci ? S.active - 1 : S.active, S.chars.length - 1));
@@ -2180,9 +2243,11 @@ $("#chars").addEventListener("click", e => {
   else { const j = +b.closest("li").dataset.j; treat(c, c.wounds[j], act) }
 });
 $("#chars").addEventListener("change", e => {
-  const el = e.target.closest('[data-act="side"],[data-act="rating"],[data-act="nerve"],[data-act="fatigue"]');
+  const el = e.target.closest('[data-act="side"],[data-act="rating"],[data-act="nerve"],[data-act="fatigue"],[data-act="endurance"],[data-act="withforce"]');
   if (el){
     const c = S.chars[+el.closest(".char").dataset.i], act = el.dataset.act;
+    if (act === "endurance"){ c.endurance = el.value === "" ? null : Math.max(1, Math.min(100, +el.value)); if (c.uid && NAMED[c.uid]) attachNamed(c, `${NAMED[c.uid].map}:${NAMED[c.uid].force}`) }
+    if (act === "withforce") attachNamed(c, el.value);
     if (act === "side") c.side = el.value.trim() || "Side A";
     if (act === "fatigue") c.fatigue = +el.value;
     if (act === "rating" && el.value !== "custom"){ c.rating = el.value; c.nerve = RATINGS[el.value] }

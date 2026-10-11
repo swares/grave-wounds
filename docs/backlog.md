@@ -13,8 +13,8 @@ When an item is done, delete it here and note it in the pull request that closes
   middle hex crosses, the cover of a volley is taken at the nearest target hex only, and
   breaching is by order (it does not stop the unit fighting). High ground gives no edge to
   shooting. See [units.md](units.md).
-- **Heroes on the field map, simplified.** A hero's earlier wounds do not lower his attack
-  and defence there (the GM can lower them by hand), he does not bleed during the battle
+- **Heroes on the field map, simplified.** A hero's earlier wounds and his sickness do not
+  lower his attack and defence there (the GM can lower them by hand), he does not bleed during the battle
   (the roller takes it up afterwards), a failed stop check puts him down for the rest of
   the battle (no stunned or defend-only), and a duel between two heroes is left to the
   roller.
@@ -34,9 +34,9 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Scurvy for forces.** Camp disease covers flux, typhus, typhoid, ague and plague, and
   wound fever for the wounded from the field map. Scurvy needs food tracking (weeks
   without fresh food); it is in the design doc's disease table.
-- **Disease for named characters.** The roller's fighters could carry conditions on the
-  five-step track, with their own Endurance, and sick men could come to a fight weakened
-  instead of staying out of it.
+- **Named characters' wounds on the travel map.** A named man's battle wounds stay in the
+  roller (bleeding, treatment) and do not turn septic or heal by the week as a force's wounded
+  do. One way: hand his wounds to the wound track when he goes with a force.
 - **Nursing and spread.** The design doc has nurses catching flux, typhus and typhoid from
   the sick. The force-level rules leave that out for now.
 - **Character generation, beyond the first cut.** The medieval tables are a first draft for
