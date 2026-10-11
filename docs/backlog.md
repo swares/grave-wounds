@@ -9,9 +9,10 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **A camp too big for the battle map hides the river at a crossing.** Only the stretch with
-  its gate is shown, laid out as before, so the river beside it falls off the map. One way:
-  show the stretch facing the river and the crossing instead.
+- **A big camp's only gate faces the crossing.** A camp at a crossing has its one gate toward
+  the ford or bridge; the road on the far side of the camp runs through its works with no gate,
+  and attackers who come from that side must breach them. One way: a second gate where another
+  road leaves the camp.
 - **Taking cover lasts until the man moves or strikes in close combat.** He can keep shooting
   from it on later turns, as a man firing prone would; there is no rule yet for the time it
   takes to get up.
