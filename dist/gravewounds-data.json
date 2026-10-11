@@ -14724,6 +14724,11 @@
     "marsh": {
      "name": "Marsh or deep mud",
      "move": 2
+    },
+    "water": {
+     "name": "Deep water",
+     "move": 99,
+     "deep": true
     }
    },
    "max_level": 3,
@@ -14795,17 +14800,30 @@
      "rough": 0.2
     }
    },
-   "seed_names": {
-    "open": "Open ground",
+   "edges": {
+    "river_width": [
+     8,
+     25
+    ],
+    "ford_width": [
+     3,
+     6
+    ],
+    "ford_shift": 10
+   },
+   "terrain_names": {
     "road": "Road",
+    "open": "Open ground",
     "farmland": "Farmland",
     "heath": "Heath",
     "forest": "Forest",
     "hills": "Hills",
     "mountains": "Mountains",
     "marsh": "Marsh",
+    "river": "River",
     "ford": "Ford",
     "bridge": "Bridge",
+    "lake": "Lake or sea",
     "village": "Village",
     "town": "Town"
    }

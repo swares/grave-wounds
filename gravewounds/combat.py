@@ -460,18 +460,115 @@ def _lay_clumps(ground: dict, kind: str, target: int, cols: int, rows: int, rng:
             h = nb[rng.randint(0, len(nb) - 1)]
 
 
-def seed_ground(d: Data, terrain: str, cols: int, rows: int, seed: int, clear=None) -> dict:
+def seed_ground(d: Data, terrain: str, cols: int, rows: int, seed: int, clear=None, edges=None) -> dict:
     """A battle map's ground laid out like a travel terrain: {kinds, levels}. clear: (centre,
-    radius) of a camp, cleared and levelled to its middle."""
+    radius) of a camp, cleared and levelled to its middle. edges: the neighbouring travel
+    hexes (see edge_bands); the sides the map reaches past go in ground["sides"]."""
     seeds = d.wounds["combat"]["ground"]["seed"]
     spec, rng = seeds.get(terrain) or seeds["open"], _Park(seed)
     ground = {"kinds": {}, "levels": {}}
     _lay_rises(ground, spec, cols, rows, rng)
     for kind in GROUND_ORDER:
         _lay_clumps(ground, kind, int(spec.get(kind, 0) * cols * rows + 0.5), cols, rows, rng)
+    if edges:
+        ground["sides"] = edge_bands(d, ground, terrain, cols, rows, seed, edges)
     if clear:
         clear_ground(ground, clear[0], clear[1], cols, rows)
     return ground
+
+
+_S3 = math.sqrt(3) / 2
+SIDES = (("east", (1.0, 0.0)), ("north-east", (0.5, -_S3)), ("north-west", (-0.5, -_S3)),
+         ("west", (-1.0, 0.0)), ("south-west", (-0.5, _S3)), ("south-east", (0.5, _S3)))   # north is up
+
+
+def hex_spot(hex_m: float, seed: int) -> list:
+    """A repeatable spot inside a travel hex hex_m across (flat to flat), in whole metres from
+    its middle, x east and y south."""
+    rng, a = _Park(seed), hex_m / 2
+    c = int(a / _S3) + 1
+    while True:
+        p = [rng.randint(-c, c), rng.randint(-c, c)]
+        if all(p[0] * u[0] + p[1] * u[1] <= a for _, u in SIDES):
+            return p
+
+
+def _map_xy(hm: float, cols: int, rows: int, c: int, r: int) -> list:
+    """Hex (c, r) of the battle map in metres from the map's middle, x east and y south."""
+    return [hm * (c + 0.5 * (r & 1)) - hm * (cols - 0.5) / 2, hm * _S3 * r - hm * _S3 * (rows - 1) / 2]
+
+
+def _side_plans(d: Data, terrain: str, cols: int, rows: int, seed: int, edges: dict) -> dict:
+    """For each side with other country beyond it: {terrain, river width and ford, or its layout}."""
+    E, rng, plans = d.wounds["combat"]["ground"]["edges"], _Park(seed + 1), {}
+    for i, (name, _u) in enumerate(SIDES):
+        t = (edges.get("around") or {}).get(name)
+        if not t or t == terrain:
+            continue
+        plan = {"terrain": t}
+        if t == "river":
+            plan["width"] = rng.randint(*E["river_width"])
+            if edges.get("ford"):
+                plan["ford"] = [rng.randint(-E["ford_shift"], E["ford_shift"]), rng.randint(*E["ford_width"])]
+        elif t != "lake":
+            plan["layout"] = seed_ground(d, t, cols, rows, (seed + 7919 * (i + 1)) % 2147483647)
+        plans[name] = plan
+    return plans
+
+
+def _set_hex(ground: dict, k: str, kind, level) -> None:
+    if kind:
+        ground["kinds"][k] = kind
+    else:
+        ground["kinds"].pop(k, None)
+    if level:
+        ground["levels"][k] = level
+    else:
+        ground["levels"].pop(k, None)
+
+
+def _beyond(plan: dict, P: list, u, depth: float, spot: list, hm: float, k: str):
+    """(kind, level) for a hex depth metres past a side, in the country beyond it."""
+    if plan["terrain"] == "lake":
+        return "water", 0
+    if plan["terrain"] == "river":
+        if depth > plan["width"] * hm:
+            return None, 0
+        f = plan.get("ford")
+        if f:
+            v = (-u[1], u[0])                        # along the side
+            along = P[0] * v[0] + P[1] * v[1] - (spot[0] * v[0] + spot[1] * v[1]) - f[0] * hm
+            if abs(along) <= f[1] * hm / 2:
+                return "marsh", 0
+        return "water", 0
+    L = plan["layout"]
+    return L["kinds"].get(k), L["levels"].get(k, 0)
+
+
+def edge_bands(d: Data, ground: dict, terrain: str, cols: int, rows: int, seed: int, edges: dict) -> list:
+    """Lay the country beyond the defenders' travel hex where the battle map reaches past its
+    sides. edges: {around: {side: travel terrain}, hex_m: the travel hex across, spot_seed,
+    ford: a ford or bridge next to the hex}. Returns [[side, terrain, metres from the fight's
+    middle to that side]] for the sides reached."""
+    hm, a = d.wounds["combat"]["move"]["hex_m"], edges["hex_m"] / 2
+    spot = hex_spot(edges["hex_m"], edges["spot_seed"])
+    plans = _side_plans(d, terrain, cols, rows, seed, edges)
+    reached = set()
+    for r in range(rows):
+        for c in range(cols):
+            q = _map_xy(hm, cols, rows, c, r)
+            P = [spot[0] + q[0], spot[1] + q[1]]
+            best, depth, bu = None, 0.0, None
+            for name, u in SIDES:
+                if name not in plans:
+                    continue
+                dd = P[0] * u[0] + P[1] * u[1] - a
+                if dd > depth:
+                    best, depth, bu = name, dd, u
+            if best:
+                reached.add(best)
+                _set_hex(ground, f"{c},{r}", *_beyond(plans[best], P, bu, depth, spot, hm, f"{c},{r}"))
+    return [[name, plans[name]["terrain"], int(a - (spot[0] * u[0] + spot[1] * u[1]) + 0.5)] for name, u in SIDES if name in reached]
 
 
 def clear_ground(ground: dict, centre, radius: int, cols: int, rows: int) -> None:

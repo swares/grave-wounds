@@ -85,7 +85,9 @@ day costs no marching time. Once an enemy force has marched to within 0.6 mile (
 **Fight it on** picks which:
 - **the wound roller**, man by man (up to 8 men a force), with the camp's works laid out
   on its battle map and the ground laid out to match the defenders' hex: woods in forest,
-  rises and rocks in hills, marsh in marsh, rubble in a village or town. See
+  rises and rocks in hills, marsh in marsh, rubble in a village or town. Where the map
+  reaches past a side of that hex, the neighbouring hex's ground (or a lake or river) shows
+  along that edge. See
   [works.md](works.md) and [combat.md](combat.md).
 - **the field map**, in units: the forces arrive with their fit men, and the GM splits each
   into units there (billmen, archers, horse). Men left out of every unit stay in reserve.
