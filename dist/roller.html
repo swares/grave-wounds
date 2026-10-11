@@ -775,7 +775,7 @@ function travelForces(){                          // the forces on the travel ma
     const t = JSON.parse(localStorage.getItem("gravewounds-travel") || "null");
     if (!t || !t.forces || !t.forces[t.mapId]) return [];
     return t.forces[t.mapId].map(f => ({ value: `${t.mapId}:${f.id}`, label: `${f.name} (${f.side})` }));
-  }catch(e){ return [] }
+  }catch(e){ return [] /* nothing saved on the travel map, or unreadable: no forces to go with */ }
 }
 function attachNamed(c, value){                   // put him with a travel force (value "map:id"), or take him off ("")
   const all = readNamed();
@@ -788,18 +788,24 @@ function attachNamed(c, value){                   // put him with a travel force
   writeNamed(all);
   NAMED = all;
 }
-function namedRow(c){                             // Endurance, the force he goes with, and his sickness
+function forceSelect(c){                         // the travel-map force he goes with
   const n = c.uid ? NAMED[c.uid] : null, opts = travelForces(), cur = n ? `${n.map}:${n.force}` : "";
   if (n && !opts.some(o => o.value === cur)) opts.unshift({ value: cur, label: `a force on ${n.map}` });
-  const sel = `<select data-act="withforce" aria-label="Travel-map force ${attr(c.name)} goes with"><option value="">(no force)</option>${opts.map(o => `<option value="${attr(o.value)}" ${o.value === cur ? "selected" : ""}>${attr(o.label)}</option>`).join("")}</select>`;
-  const s = sickOf(c), rule = s && s.step ? DZR.in_fight[s.step] || {} : {};
-  let sick = "";
-  if (s && s.dead) sick = `<span class="crit">Died of disease</span>`;
-  else if (s && s.incubating) sick = `<span class="muted">Caught something: not showing yet</span>`;
-  else if (s){
-    const eff = [rule.penalty ? `−${rule.penalty}%` : "", rule.no_run ? "cannot run" : "", rule.crawl ? "crawls, defends only" : "", rule.out ? "too ill to fight" : ""].filter(Boolean).join(", ");
-    sick = `<span class="crit">Sick: ${attr(DZR.names[s.did] || s.did)}, ${s.step}${eff ? ` (${eff})` : ""}</span>`;
-  }
+  const opt = o => `<option value="${attr(o.value)}" ${o.value === cur ? "selected" : ""}>${attr(o.label)}</option>`;
+  return `<select data-act="withforce" aria-label="Travel-map force ${attr(c.name)} goes with"><option value="">(no force)</option>${opts.map(opt).join("")}</select>`;
+}
+function sickText(c){                             // his sickness on his card, and what it does in a fight
+  const s = sickOf(c);
+  if (!s) return "";
+  if (s.dead) return `<span class="crit">Died of disease</span>`;
+  if (s.incubating) return `<span class="muted">Caught something: not showing yet</span>`;
+  const rule = DZR.in_fight[s.step] || {};
+  const eff = [rule.penalty ? "−" + rule.penalty + "%" : "", rule.no_run ? "cannot run" : "", rule.crawl ? "crawls, defends only" : "", rule.out ? "too ill to fight" : ""].filter(Boolean).join(", ");
+  const tail = eff ? " (" + eff + ")" : "";
+  return `<span class="crit">Sick: ${attr(DZR.names[s.did] || s.did)}, ${s.step}${tail}</span>`;
+}
+function namedRow(c){                             // Endurance, the force he goes with, and his sickness
+  const n = c.uid ? NAMED[c.uid] : null, sel = forceSelect(c), sick = sickText(c);
   const last = n && n.log && n.log[0] ? ` title="${attr(n.log[0])}"` : "";
   return `<div class="siderow"${last}><label class="order" title="Endurance: resisting disease and getting over it">Endurance
     <input type="number" data-act="endurance" value="${enduranceOf(c)}" aria-label="Endurance for ${attr(c.name)}"></label>
@@ -2932,16 +2938,21 @@ $("#chars").addEventListener("click", e => {
   }
   else { const j = +b.closest("li").dataset.j; treat(c, c.wounds[j], act) }
 });
+function cardChange(c, act, value){              // a card's side, nerve, fatigue, Endurance or force changed
+  if (act === "endurance"){
+    c.endurance = value === "" ? null : Math.max(1, Math.min(100, +value));
+    if (c.uid && NAMED[c.uid]) attachNamed(c, `${NAMED[c.uid].map}:${NAMED[c.uid].force}`);
+  }
+  if (act === "withforce") attachNamed(c, value);
+  if (act === "side") c.side = value.trim() || "Side A";
+  if (act === "fatigue") c.fatigue = +value;
+  if (act === "rating" && value !== "custom"){ c.rating = value; c.nerve = RATINGS[value] }
+  if (act === "nerve"){ c.nerve = value === "" ? RATINGS[DEFAULT_RATING] : +value; c.rating = Object.keys(RATINGS).find(r => RATINGS[r] === c.nerve) || "custom" }
+}
 $("#chars").addEventListener("change", e => {
   const el = e.target.closest('[data-act="side"],[data-act="rating"],[data-act="nerve"],[data-act="fatigue"],[data-act="endurance"],[data-act="withforce"]');
   if (el){
-    const c = S.chars[+el.closest(".char").dataset.i], act = el.dataset.act;
-    if (act === "endurance"){ c.endurance = el.value === "" ? null : Math.max(1, Math.min(100, +el.value)); if (c.uid && NAMED[c.uid]) attachNamed(c, `${NAMED[c.uid].map}:${NAMED[c.uid].force}`) }
-    if (act === "withforce") attachNamed(c, el.value);
-    if (act === "side") c.side = el.value.trim() || "Side A";
-    if (act === "fatigue") c.fatigue = +el.value;
-    if (act === "rating" && el.value !== "custom"){ c.rating = el.value; c.nerve = RATINGS[el.value] }
-    if (act === "nerve"){ c.nerve = el.value === "" ? RATINGS[DEFAULT_RATING] : +el.value; c.rating = Object.keys(RATINGS).find(r => RATINGS[r] === c.nerve) || "custom" }
+    cardChange(S.chars[+el.closest(".char").dataset.i], el.dataset.act, el.value);
     renderChars(); return;
   }
   const inp = e.target.closest('input[data-act="init"]'); if (!inp) return;
