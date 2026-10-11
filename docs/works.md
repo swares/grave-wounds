@@ -22,12 +22,14 @@ axes) or doesn't. Select a force, pick the kind of camp and press **Make camp**.
    ground the camp needs: about 24 square yards (20 m²) a man on foot, and 48 (40 m²) with horses or wagons.
    A fortified camp puts its bank and palisade on the ring's outer edges, its ditch one
    ring further out and its gate on the east side; a staked camp fills the next ring out
-   with stakes, leaving a way out where the gate would be. This is the travel map's
-   estimate. On the battle map a camp on a road (a road, ford, bridge, village or town
-   hex) also has a gate, or a gap in the stakes, wherever a road leaves it, and a camp at a
-   ford or bridge has its main gate toward the crossing (see [combat.md](combat.md)). A
-   gate is built in place of the bank and palisade on that hex side, so its labour on the
-   battle map differs a little from the estimate.
+   with stakes, leaving a way out where the gate would be. A camp on a road (a road, ford,
+   bridge, village or town hex) also has a gate, or a gap in the stakes, wherever a road
+   leaves it, and a camp at a ford or bridge has its main gate toward the crossing (see
+   [combat.md](combat.md)); each gate is built in place of the bank and palisade on that
+   hex side. The travel map counts the same gates as the battle map, from the camp's hex and
+   its neighbours. At a ford or bridge the bank the camp stands on is not known until a
+   fight, so the estimate there may have one gate more or fewer than the battle map, a
+   difference of a few man-hours.
 2. Add up the labour of everything laid out: each work's labour per metre along each hex
    side, and its labour for each gate or hex of stakes. Timber for palisades and stakes
    takes longer to fetch when no woods are within a hex.

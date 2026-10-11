@@ -441,7 +441,7 @@ function advance(m, path, index, used, hours, opts){
   return { index, used };
 }
 // Making camp: the works are those the battle map lays out (as gravewounds.combat)
-const WK = DATA.works, CAMP_HEX_M = DATA.battle_hex_m;
+const WK = DATA.works, CAMP_HEX_M = DATA.battle_hex_m, CG = DATA.ground;
 function hexDistance(a, b){
   const cube = ([c, r]) => { const q = c - (r - (r & 1)) / 2; return [q, r, -q - r] };
   const x = cube(a), y = cube(b);
@@ -483,9 +483,10 @@ function campHours(m, h, kind, men, ftype, tools, workers = null){   // sized fo
   if (c.tools && !tools) return { error: "needs tools (spades and axes)" };
   const woods = nearWoods(m, h);
   let labour = 0;
-  if (c.layout){
-    const n = campMapSize(kind, men, ftype);
-    labour = worksLabour(campWorks(kind, men, ftype, n, n).works, !woods);
+  if (c.layout){                              // laid out as the battle map would, with a gate wherever a road leaves
+    const n = campMapSize(kind, men, ftype), mid = [Math.floor(n / 2), Math.floor(n / 2)];
+    const gate = campGates(t.id, { around: sidesAround(m, h).around }, n, n, mid, campRadius(men, ftype));
+    labour = worksLabour(campWorks(kind, men, ftype, n, n, null, { gate }).works, !woods);
   }
   const hands = workers === null ? men : workers;
   if (labour && !hands) return { error: "has no fit men to dig" };
