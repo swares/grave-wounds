@@ -18,6 +18,8 @@ formations:
   close: {name: "Close order", abreast: 10, ranks: 4, per_hex: 40, move: 6, missile_factor: 1.0}
   open:  {name: "Open order", abreast: 10, ranks: 2, per_hex: 20, move: 8, missile_factor: 0.8}
   battery: {name: "Battery", abreast: 4, ranks: 5, per_hex: 20, move: 6, missile_factor: 0.8}   # two guns and their crews a hex (see artillery)
+  extended: {name: "Extended order", abreast: 3, ranks: 1, per_hex: 3, move: 8, missile_factor: 0.5}   # modern infantry: a few yards between men
+  mg: {name: "Machine-gun team", abreast: 5, ranks: 1, per_hex: 5, move: 4, missile_factor: 0.5}      # a gun and its crew a hex (see machine_guns)
 mounted_move: 15           # hexes an exchange for mounted units, in either order
 charge_move: 2             # a unit that ends its move in contact may move this many times its allowance (a charge)
 turn_per: 2                # turning the facing one step (60 degrees) costs 1 hex for every this many hexes of front (at least 1)
@@ -169,7 +171,37 @@ missile:
     musket_smoothbore: 2
     rifle_flintlock: 1
     rifle_musket: 2
+    rifle_service: 10         # bolt-action magazine rifles (1914-1953): about ten aimed rounds a minute
+    rifle_assault: 15         # self-loading and assault rifles, aimed fire
+    pistol_smg: 12            # pistols and submachine guns, aimed fire
+    machine_gun: 300          # a gun, not a man: rounds a minute in bursts (see machine_guns)
   default_rate: 1
+
+# ---------- machine guns ----------
+# A machine-gun team is a unit whose weapon is listed in `weapons`, in the mg formation: a
+# gun and its crew to a hex, `crew` men a gun, so 10 men serve 2 guns; as crews fall the guns
+# go on until the last man (a gun is served while a man of its crew is up). Each served gun
+# fires missile.rate rounds a minute at its target, and `tempo` of them are rolled as aimed
+# shots (a rifleman's missile.tempo is far lower: the gun's cone of fire sweeps the target's
+# depth, so many more of its rounds find a man); the formation's missile_factor counts as for
+# any shot. Its beaten zone: the cone of fire falls on along the
+# line of fire for `beaten.beyond` field hexes past the target; the first other unit there,
+# friend or enemy, takes `beaten.share` % as many shots at that range (ground that stops shot
+# stops it). Design estimates, tuned by python3 -m gravewounds units (the machine-gun lines).
+machine_guns:
+  weapons: [machine_gun]
+  crew: 5
+  tempo: 0.1
+  beaten: {beyond: 20, share: 50}
+
+# ---------- going to ground ----------
+# Modern infantry (and anyone else) can go to ground: the men lie down, in folds of the
+# ground, shell holes and ditches. The GM orders it for a unit on its side's move (Go to
+# ground on the field map) and orders it up again the same way. A unit on the ground cannot
+# move; shots at it lose `cover` % (on top of the ground's and the works' cover). It still
+# shoots, and fights hand to hand as it stands. Design estimate.
+to_ground:
+  cover: 15
 
 # ---------- wounds ----------
 # Each blow that gets through rolls location, mechanism and severity from the margin, and

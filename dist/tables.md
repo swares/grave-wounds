@@ -4459,6 +4459,10 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **Limbering:** a limbered battery moves but cannot fire; unlimbered it fires but can only be manhandled 2 hexes. Changing over takes an exchange, without moving or firing. Hand to hand the crews fight with sword (arming sword). A battery that breaks loses its guns.
 
+**Modern infantry:** extended order is 3 men a hex (shots at it x0.5, 8 hexes a move). Magazine rifles fire 10 rounds a minute, self-loading and assault rifles 15, pistols and submachine guns 12. A unit can go to ground on its own move: shots at it -15%, and it cannot move until it gets up.
+
+**Machine guns:** a team is a gun and 5 crew a hex, the gun served while one of its crew is up. Each gun fires 300 rounds a minute, 10% of them rolled as aimed shots. Its beaten zone: the first other unit, friend or foe, within 20 hexes past the target on the line of fire takes 50% as many shots at that range (ground that stops shot stops it).
+
 **Heroes in units:** a named fighter in the front rank makes 3 times a ranker's telling attempts with his own attack, and blows on the front fall on him 2 times as often as on a ranker there; a shooting hero looses 3 times a ranker's aimed shots. His wounds use the full rules and his own stop check (a failure: down for the battle). A leader adds his unit's leader modifier while he is up.
 
 **After the battle:** a side with no unit standing has lost the field, and its men down there are left behind, dead. A wound fatal in minutes kills unless he is bound in time (10%); one fatal in hours kills unless his camp treats it (no camp 0%, a camp 40%, quarters 60%). The rest are carried to camp and heal on the wound track (Camp disease).
@@ -4479,6 +4483,10 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 | Smoothbore musket (Brown Bess, Charleville) | 2 |
 | Flintlock rifle (Pennsylvania, Baker, Jäger) | 1 |
 | Rifle-musket (Minie ball) | 2 |
+| Service rifle (bolt or semi-auto, 1914-53) | 10 |
+| Assault rifle (M16, AK) | 15 |
+| Pistol or submachine gun | 12 |
+| Machine gun | 300 |
 
 ## Team generation
 

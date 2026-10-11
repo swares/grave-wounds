@@ -244,7 +244,23 @@ def unit_rules(d) -> list[str]:
         f"or was struck in flank or rear: d100 against Nerve, +{mo['mods']['in_order']} while steady, +{mo['mods']['leader']} with a leader, {mo['mods']['leader_down']} if he is down, "
         f"{mo['mods']['heavy']} at half strength, {mo['mods']['flank']} if flanked, -{mo['mods']['losing_per_man']} a man it lost more than it put down (at most -{mo['mods']['losing_cap']}). "
         f"Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +{R['attack']}, no parry, x{R['tempo']:g} tempo.",
-    ] + _ground_rules(d) + _gun_rules(d) + _hero_rules(d) + _aftermath_rules(d)
+    ] + _ground_rules(d) + _gun_rules(d) + _mg_rules(d) + _hero_rules(d) + _aftermath_rules(d)
+
+
+def _mg_rules(d) -> list[str]:
+    U = d.units
+    M, F, R = U.get("machine_guns"), U["formations"], U["missile"]["rate"]
+    if not M:
+        return []
+    ext, mg = F["extended"], F["mg"]
+    return [
+        f"<b>Modern infantry:</b> extended order is {ext['per_hex']} men a hex (shots at it x{ext['missile_factor']:g}, {ext['move']} hexes a move). "
+        f"Magazine rifles fire {R['rifle_service']} rounds a minute, self-loading and assault rifles {R['rifle_assault']}, pistols and submachine guns {R['pistol_smg']}. "
+        f"A unit can go to ground on its own move: shots at it -{U['to_ground']['cover']}%, and it cannot move until it gets up.",
+        f"<b>Machine guns:</b> a team is a gun and {M['crew']} crew a hex, the gun served while one of its crew is up. Each gun fires {R['machine_gun']} rounds a minute, "
+        f"{M['tempo'] * 100:g}% of them rolled as aimed shots. Its beaten zone: the first other unit, friend or foe, within {M['beaten']['beyond']} hexes past the target on the line "
+        f"of fire takes {M['beaten']['share']}% as many shots at that range (ground that stops shot stops it).",
+    ]
 
 
 def _ground_rules(d) -> list[str]:

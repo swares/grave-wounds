@@ -203,6 +203,7 @@ legend{padding:0}
         <button class="small" id="btn-undo" title="Put it back where it started this phase">Undo move</button>
         <button class="small" id="btn-remove">Remove</button>
         <button class="small" id="btn-breach" title="Its front rank hacks at the palisade, gate, stakes or wagons in front of it each exchange">Breach the works</button>
+        <button class="small" id="btn-ground" title="The men lie down in the folds of the ground: harder to hit, but the unit cannot move until it gets up">Go to ground</button>
         <button class="small" id="btn-limber" hidden title="A battery limbered moves but cannot fire; unlimbered it fires but can only be manhandled. Changing over takes an exchange.">Limber</button>
         <button class="small" id="btn-resupply" hidden title="The caissons come up: a full load of rounds again. It takes an exchange out of contact, in which the battery neither moves nor fires.">Resupply</button>
       </div>
@@ -478,6 +479,7 @@ function unitLineText(l, nm){                     // a volley, a melee or a rout
   const dead = l.dead ? " (" + l.dead + " dead)" : "", fallen = `${l.hits} hit, ${l.down} down${dead}`;
   if (l.kind === "cannon") return cannonText(l, nm, fallen);
   if (l.kind === "ricochet") return `Round shot from ${nm(l.att)} bounds on ${fmtM(l.beyond * FD.units.hex_m)} into ${nm(l.dfd)}: ${l.blows} men in the way, ${fallen}.`;
+  if (l.kind === "beaten") return `The cone of fire from ${nm(l.att)} falls on ${fmtM(l.beyond * FD.units.hex_m)} past its target into ${nm(l.dfd)}: ${l.blows} aimed shots, ${fallen}.`;
   if (l.kind === "volley") return `${nm(l.att)} shoot at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${l.blows} aimed shots, ${fallen}.`;
   if (l.kind === "rout") return `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.`;
   const where = l.situation === "front" ? "" : " in the " + l.situation, up = l.penalty ? ", attacking up −" + l.penalty + "%" : "";
@@ -777,7 +779,8 @@ function unitSvg(u){
   const l = [x + 5 * Math.cos(a + 1.9), y + 5 * Math.sin(a + 1.9)], r = [x + 5 * Math.cos(a - 1.9), y + 5 * Math.sin(a - 1.9)];
   g += `<polygon class="arrow" points="${[tip, l, r].map(p => p.map(v => v.toFixed(1)).join(",")).join(" ")}"/>`;
   const star = (u.heroes || []).some(h => h.state === "up") ? " \u2605" : "";
-  g += `<text class="ulabel" x="${x.toFixed(1)}" y="${(y - 8).toFixed(1)}">${esc(u.name)} ${u.men}${star}</text></g>`;
+  const low = u.prone ? " \u2193" : "";   // gone to ground
+  g += `<text class="ulabel" x="${x.toFixed(1)}" y="${(y - 8).toFixed(1)}">${esc(u.name)} ${u.men}${star}${low}</text></g>`;
   return g;
 }
 const HEX_GLYPH = { stakes: "\u2715", abatis: "\u2733", wagon: "\u25ad", pavise: "\u25ae" };
@@ -812,8 +815,9 @@ function renderMap(){
 }
 function unitMeta(u){
   if (u.state === "fled") return "fled";
-  const down = u.down ? " · " + u.down + " down" : "", br = u.breach ? " · breaching" : "";
-  return `${u.men}/${u.start} · ${u.state}${down}${br}${batteryMeta(u)}`;
+  const down = u.down ? " · " + u.down + " down" : "", br = u.breach ? " · breaching" : "", low = u.prone ? " · to ground" : "";
+  const mg = isMg(u.weapon) ? ` · ${mgGuns(u)} gun${mgGuns(u) === 1 ? "" : "s"}` : "";
+  return `${u.men}/${u.start} · ${u.state}${down}${br}${low}${mg}${batteryMeta(u)}`;
 }
 const GUN_NAMES = { smoothbore: "guns", rifled: "rifled guns", howitzer: "howitzers" };
 function batteryMeta(u){                          // " · 6 guns, limbered, 280 rounds"
@@ -843,6 +847,7 @@ function renderSel(){
   $("#btn-breach").textContent = u?.breach ? "Stop breaching" : "Breach the works";
   renderLimber(u, setup);
   renderGunOrders(u, setup);
+  renderGround(u, setup);
   if (!u){ $("#sel-info").innerHTML = ""; return }
   const f = FD.units.formations[u.formation], w = FD.weapons[u.weapon];
   const how = { smoothbore: "smoothbore guns; ", rifled: "rifled guns, percussion shell; ", howitzer: "howitzers, shell over anything between; " }[gunKind(u)];
@@ -855,6 +860,8 @@ function renderSel(){
     + `<dt>Arms</dt><dd>${esc(w.name)} (${reach}); ${esc(FD.kits[u.kit].name)}</dd>`
     + `<dt>Order</dt><dd>${f.name}, ${Math.min(u.width, Math.ceil(Math.max(1, u.men) / f.per_hex))} hexes of front${u.mounted ? ", mounted" : ""}</dd>`
     + (isBattery(u) ? `<dt>Guns</dt><dd>${gunsInfo(u)}</dd>` : "")
+    + (isMg(u.weapon) ? `<dt>Guns</dt><dd>${mgGuns(u)} machine gun${mgGuns(u) === 1 ? "" : "s"} served (${FD.units.machine_guns.crew} men a gun); beaten zone ${fmtM(FD.units.machine_guns.beaten.beyond * FD.units.hex_m)} past the target</dd>` : "")
+    + (u.prone ? `<dt>Ground</dt><dd>Gone to ground: shots at it −${FD.units.to_ground.cover}%; it cannot move until it gets up</dd>` : "")
     + `<dt>Moves</dt><dd>${allowance(u)} hexes; turning costs ${turnCost(u)} a step</dd>`;
 }
 function renderGunOrders(u, setup){               // the Resupply button and the target picker, for batteries only
@@ -884,6 +891,18 @@ function toggleResupply(){                        // set-up: at once; in play: o
   if (!u.resupplying && inContact(S.units, occupancy(S.units), i)){ S.msg = `${u.name} is in contact: the caissons cannot come up.`; return render() }
   u.resupplying = !u.resupplying;
   S.msg = u.resupplying ? `${u.name} will resupply this exchange: it neither moves nor fires until it is done.` : "";
+  render();
+}
+function renderGround(u, setup){                 // Go to ground / Get up: on its own side's move, or in set-up
+  const b = $("#btn-ground");
+  b.disabled = !u || S.phase === "over" || u.state === "broken" || u.state === "fled" || (!setup && u.side !== moving());
+  b.textContent = u?.prone ? "Get up" : "Go to ground";
+}
+function toggleGround(){
+  const u = selUnit(); if (!u || u.state === "broken" || u.state === "fled") return;
+  if (S.phase !== "setup" && u.side !== moving()) return;
+  u.prone = !u.prone;
+  S.msg = u.prone ? `${u.name} goes to ground: shots at it lose ${FD.units.to_ground.cover}%, and it cannot move until it gets up.` : `${u.name} gets up and can move.`;
   render();
 }
 function renderLimber(u, setup){                 // the Limber button, for batteries only
@@ -964,13 +983,18 @@ function addUnit(){
     men = Math.min(men, reserve(f));
   }
   const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, banner: f && f.side !== side ? f.side : null, force: f ? f.id : null, men, quality: $("#sel-quality").value, weapon: $("#sel-weapon").value,
-    kit: $("#sel-kit").value, formation: isGun($("#sel-weapon").value) ? "battery" : $("#sel-form").value, mounted: $("#chk-mounted").checked, guns: $("#sel-guns").value, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
+    kit: $("#sel-kit").value, formation: formationFor($("#sel-weapon").value, $("#sel-form").value), mounted: $("#chk-mounted").checked, guns: $("#sel-guns").value, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
   for (const pos of startSpots(k)){                  // inside the camp for its defenders, else the first free spot down its side's edge
     const at = { ...u, pos };
     if (fits([...S.units, at], S.units.length, at, SIZE, S.field)){ S.units.push(at); S.sel = at.id; S.msg = `${at.name} added; click the map to place it.`; $("#in-name").value = ""; return render() }
   }
   S.msg = "No room for it along the edge; make room or narrow it.";
   render();
+}
+function formationFor(weapon, chosen){           // guns in battery order, machine guns as teams; the rest as chosen (not those two)
+  if (isGun(weapon)) return "battery";
+  if (isMg(weapon)) return "mg";
+  return chosen === "battery" || chosen === "mg" ? "close" : chosen;
 }
 function startSpots(k){
   const edge = [];
@@ -1098,11 +1122,13 @@ function init(){
   $("#btn-remove").onclick = () => { const u = selUnit(); if (u){ S.units = S.units.filter(x => x.id !== u.id); S.sel = S.units[0] ? S.units[0].id : null; render() } };
   $("#btn-add").onclick = addUnit;
   $("#btn-limber").onclick = toggleLimber;
+  $("#btn-ground").onclick = toggleGround;
   $("#btn-resupply").onclick = toggleResupply;
   $("#sel-target").onchange = e => setTarget(e.target.value);
   $("#sel-weapon").onchange = e => {
     const gun = isGun(e.target.value);
     if (gun) $("#sel-form").value = "battery";
+    else if (isMg(e.target.value)) $("#sel-form").value = "mg";
     $("#guns-box").hidden = !gun;
   };
   $("#guns-box").hidden = !isGun($("#sel-weapon").value);
