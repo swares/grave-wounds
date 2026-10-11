@@ -236,12 +236,31 @@ gun, so a battery of 120 men is 12 guns, and as crews fall fewer guns are served
 gun as the weapon in *Add a unit* sets the battery order.
 
 **Fire.** Each served gun fires one round an exchange at the nearest enemy unit in front of
-it within 1,090 yards (1,000 m, 100 hexes) and in sight. At 330 yards (300 m, 30 hexes) or
-less it fires canister; beyond, round shot.
+it within 1,090 yards (1,000 m, 100 hexes), in sight and with a clear line of fire. At 330
+yards (300 m, 30 hexes) or less it fires canister; beyond, round shot.
+
+**Targets.** The GM can name a battery's target (*Battery fires at*, under the selected
+unit): an enemy battery for counter-battery fire, say, or the column behind the nearest
+line. The battery fires at it whenever it is in range, in sight, in front and in the line of
+fire, and at the nearest enemy when it is not; the log marks fire at a named target "as
+ordered".
+
+**Line of fire.** A gun cannot fire through another unit, friend or enemy, standing between
+it and its target. The one exception is round shot fired from high ground over a unit on
+lower ground; canister never goes over anyone's head, and a unit on the same hill blocks.
 - **Round shot** strikes the unit on a roll: 60% to 550 yards (500 m), 40% to 820 yards
   (750 m), 25% to 1,090 yards. Then it goes through the ranks: each man in its path is hit at
   40%, and the path is the unit's ranks deep (its formation's ranks times its rows of hexes,
   at most 12). A line four deep loses a man or two a ball; a deep column loses five.
+- **Ricochet.** On firm ground round shot bounds on past its target. The first other unit on
+  the line of fire within 330 yards (300 m, 30 hexes) past the target, friend or enemy, is
+  struck by each round at 30% within 110 yards (100 m) past it, 20% to 220 yards (200 m) and
+  10% to 330 yards (times its order's missile factor), and the ball goes through its ranks
+  as above. Supports drawn up behind a line suffer, and so can a side's own men beyond the
+  enemy. Rough ground, woods, marsh, or any mud or snow on the ground stop the bounce.
+- **Guns knocked out.** Each round-shot ball fired at a battery that strikes it (not one
+  bounding on into it) has a 10% chance of knocking a gun off its carriage, out for the rest
+  of the fight. A battery serves the fewer of its guns left and its crews left (10 men a gun).
 - **Canister** throws 8 chances a round, each hitting at 50% to 110 yards (100 m), 30% to 220
   yards (200 m) and 15% to 330 yards (300 m).
 - Cover, the weather (fog and rain hide targets; the wind costs as for firearms) and open
@@ -252,6 +271,14 @@ What that gives, from `python3 -m gravewounds units`: 6 guns firing for a minute
 in close order strike about 14 men with canister at 220 yards (5 put down), 6 with round
 shot at 440 yards against a line (2 down), 17 against a column (6 down), and 7 against a
 column at 870 yards. A battalion of 600 muskets at 110 yards hits about 6.
+
+**Ammunition.** Each gun goes into action with 50 rounds (its limber chest and its share
+of the caissons, a figure for play), spent one a gun each exchange it fires. A battery that
+has run out falls silent; one nearly out fires the rounds it has. *Resupply* brings the
+caissons up: like limbering it takes the whole exchange, ordered in its side's move instead
+of moving, out of contact with the enemy, and it neither moves nor fires; at the end of the
+exchange it has a full load again. In set-up the button fills it at once. The unit list shows
+the rounds left, and the selected battery its guns served, knocked out and rounds.
 
 **Limbering.** A battery is limbered or unlimbered (the *Limber* button). Limbered, it moves
 like its formation (horse artillery, marked mounted, as horse) but cannot fire. Unlimbered,

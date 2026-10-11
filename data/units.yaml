@@ -25,16 +25,16 @@ shoot_ranks: 2             # ranks of each front hex that can shoot
 exchange_rounds: 10        # individual 6-second rounds in one exchange (for fatigue, bleeding, states)
 
 # The ground, painted per hex. move: movement to enter a hex of it (open ground 1). cover: %
-# off shots at men standing in it. height: % off a blow struck up at men on it from lower
+# off shots at men standing in it. stops_shot: round shot does not bound on over it. height: % off a blow struck up at men on it from lower
 # ground (as a bank's). no_horse: horses cannot go into it. Works (ditches, banks,
 # palisades, gates, walls, stakes, felled trees, wagons, pavises) are those of the battle
 # map (works.yaml), with the same crossing costs, cover and height, along the 10 m hexes.
 # key: the letter for the ground in a battlefield file's rows (data/fields).
 ground:
   open:  {name: "Open ground",  key: ".", move: 1}
-  rough: {name: "Rough ground", key: "r", move: 2}
-  woods: {name: "Woods",        key: "F", move: 2, cover: 20}
-  marsh: {name: "Marsh",        key: "m", move: 3, no_horse: true}
+  rough: {name: "Rough ground", key: "r", move: 2, stops_shot: true}
+  woods: {name: "Woods",        key: "F", move: 2, cover: 20, stops_shot: true}
+  marsh: {name: "Marsh",        key: "m", move: 3, no_horse: true, stops_shot: true}
   high:  {name: "High ground",  key: "h", move: 1, height: 10}
 # Breaching: a unit ordered to breach puts this share of each front hex's front rank to
 # hacking at the work in front of it, every round of the exchange. A work's breach figure
@@ -46,11 +46,20 @@ breach_share: 0.5
 # men are the crews, `crew` to a gun: 120 men serve 12 guns, and as crews fall fewer guns are
 # served. Each served gun fires `rounds` rounds an exchange at the nearest enemy unit in front
 # of it within `range` field hexes and in sight: canister at `canister_to` hexes or less, round
-# shot beyond. All numbers are design estimates, tuned by python3 -m gravewounds units.
+# shot beyond. The GM can name a target instead (u.target, an enemy unit's id): the battery
+# fires at it if it is in range, in sight and in front, or at the nearest if not. All numbers
+# are design estimates, tuned by python3 -m gravewounds units.
+# - Line of fire: a gun cannot fire through another unit, friend or enemy, between it and its
+#   target, except round shot from high ground over a unit on lower ground (never canister).
 # - Round shot: each round strikes the target unit with the chance for its range (less its
 #   cover and the weather, times its formation's missile_factor), then goes through its ranks:
 #   each man in the ball's path (the formation's ranks times the unit's rows, at most
-#   `path_max`) is hit at `file` %. Deep columns suffer most.
+#   `path_max`) is hit at `file` %. Deep columns suffer most. A strike on a battery may also
+#   knock a gun off its carriage (`dismount` %): it is out for the rest of the fight.
+# - Ricochet: on firm ground round shot bounds on past its target. The first other unit, friend
+#   or enemy, on the line within `ricochet.beyond` hexes past it is struck by each round with the
+#   chance for how far past it stands (times its missile_factor) and the ball goes through its
+#   ranks as above. Ground that `stops_shot`, or mud or snow at `ricochet.soft` or more, stops it.
 # - Canister: each round throws `balls` chances to hit, each at the chance for its range (with
 #   the same cover, weather and formation), on the front of the target.
 # Every man hit takes a wound roll at `attack` (no parry) with the gun's wound data.
@@ -58,6 +67,9 @@ breach_share: 0.5
 # manhandled `pushed` hexes an exchange). Limbering or unlimbering takes an exchange, in which
 # it neither moves nor fires. Hand to hand, the crews fight with `crew_weapon`. A battery that
 # breaks abandons its guns: it never fires again, even if it rallies.
+# Ammunition: each gun goes into action with `ammo` rounds (its limber chest and its share of the
+# caissons; a play figure), spent as it fires; a battery that is out falls silent. Resupplying
+# (the caissons coming up) takes an exchange out of contact, in which it neither moves nor fires.
 artillery:
   guns: [artillery_smoothbore]
   crew: 10
@@ -74,6 +86,12 @@ artillery:
   attack: 80
   crew_weapon: sword
   pushed: 2                  # hexes an unlimbered battery can be manhandled (or turned) in an exchange
+  ammo: 50                   # rounds a gun carries into action
+  dismount: 10               # % a round-shot strike on the battery fired at knocks out one of its guns
+  ricochet:
+    beyond: 30               # field hexes past the target a bounding ball can still strike a unit
+    strike: [[10, 30], [20, 20], [30, 10]]     # [up to this many hexes past the target, % a round strikes]
+    soft: 1                  # mud or snow at this level or more stops the bounce
 
 # ---------- quality ----------
 # The unit's fighting quality: attack and defence (parry or dodge) % for its men, and the

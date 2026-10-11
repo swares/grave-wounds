@@ -256,13 +256,18 @@ def _gun_rules(d) -> list[str]:
     if not A:
         return []
     m = d.units["hex_m"]
-    rs, cn = A["round_shot"], A["canister"]
+    rs, cn, rc = A["round_shot"], A["canister"], A["ricochet"]
     bands = lambda b: ", ".join(f"{ch}% to {yd(to * m)}" for to, ch in b)
     return [
         f"<b>Guns:</b> a battery is a unit armed with guns, in battery order; its men are the crews, {A['crew']} to a gun, and as crews fall fewer guns are served. "
         f"Each served gun fires {A['rounds']} round an exchange at the nearest enemy in front within {yd(A['range'] * m)}: canister to {yd(A['canister_to'] * m)}, round shot beyond. "
         f"Round shot strikes the unit ({bands(rs['strike'])}), then each man in its path (the ranks deep, at most {rs['path_max']}) is hit at {rs['file']}%, so columns suffer most. "
         f"Canister throws {cn['balls']} chances a round ({bands(cn['strike'])}). Cover, the weather and open order cut both. Each man hit takes a wound roll at {A['attack']}% with no parry.",
+        f"<b>Targets and line of fire:</b> the GM can name a battery's target; it fires at it when it can, otherwise at the nearest. No gun fires through another unit, "
+        "friend or enemy, except round shot from high ground over a unit on lower ground. "
+        f"<b>Ricochet:</b> on firm ground round shot bounds on, striking the first other unit within {yd(rc['beyond'] * m)} past the target ({bands(rc['strike'])} past it) "
+        "and going through its ranks; rough ground, woods, marsh, mud or snow stop it. "
+        f"A round-shot strike on the battery it is fired at knocks out a gun at {A['dismount']}%. <b>Ammunition:</b> {A['ammo']} rounds a gun; resupplying takes an exchange out of contact, without moving or firing.",
         f"<b>Limbering:</b> a limbered battery moves but cannot fire; unlimbered it fires but can only be manhandled {A['pushed']} hexes. Changing over takes an exchange, "
         f"without moving or firing. Hand to hand the crews fight with {d.weapons[A['crew_weapon']]['name'].lower()}. A battery that breaks loses its guns.",
     ]
