@@ -4270,6 +4270,8 @@ Penalties add up; each total is capped at -60%.
 
 **Team morale:** at the end of each round, a side with 25% or more of its fighters down rolls d100 against the best Nerve among those still up (its leader's, if he is up), +10 with a leader up, -20 if a leader is down, -20 once 50% are down. Over: the side breaks and runs or surrenders.
 
+**Characteristics:** a team-builder character's sheet counts in the fight (anyone else counts 50 in each). Initiative: d10 + Agility / 10. Blood: 20 + (Endurance - 50) / 10. Toil: each hand-to-hand exchange he attacks or defends in counts, and every 30 (light kit), 20 (medium) or 12 (heavy), times Strength / 50, he is a fatigue step worse, to exhausted at most. A leader who is up adds (Presence - 50) / 5 to his side's morale. Rounded down throughout.
+
 ### Battle map
 
 **Scale:** one hex is 2.2 yd (2 m) and a round is 6 seconds. The map has pointy-top hexes; the roller's default is 24 x 16.

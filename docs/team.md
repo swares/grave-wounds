@@ -109,6 +109,10 @@ not bleed or count as wounds there; their lasting hurts are already in his chara
 command line. `--array` uses the fixed array and `--seed N` gives repeatable dice. The page
 and the Python rules make the same team from the same dice.
 
-Not yet done (see the backlog): tables for the other eras, characteristics feeding more rules
-(Endurance for blood and disease, Agility for initiative), and skills outside a fight
-(Leechcraft for first aid, Fieldcraft and Watch on the travel map).
+His characteristics also count in the roller: Agility for initiative, Endurance for his Blood
+and for disease, Strength for how soon he tires hand to hand in his kit, and a leader's
+Presence for his side's morale (see [combat.md](combat.md), *Characteristics in the fight*).
+Each sheet's **In a fight** line gives the numbers.
+
+Not yet done (see the backlog): tables for the other eras, skills outside a fight
+(Leechcraft for first aid, Fieldcraft and Watch on the travel map) and followers.

@@ -189,7 +189,18 @@ def stop_rules(d) -> list[str]:
         f"<b>Team morale:</b> at the end of each round, a side with {int(M['trigger'] * 100)}% or more of its fighters down rolls d100 "
         f"against the best Nerve among those still up (its leader's, if he is up), +{M['leader_present']} with a leader up, "
         f"-{M['leader_down']} if a leader is down, -{M['heavy_losses']} once {int(M['heavy'] * 100)}% are down. Over: the side breaks and runs or surrenders.",
+        _characteristics_rule(d),
     ]
+
+
+def _characteristics_rule(d) -> str:
+    C, T = d.wounds["combat"]["characteristics"], d.wounds["tracking"]
+    b = C["toil"]["blows"]
+    return (f"<b>Characteristics:</b> a team-builder character's sheet counts in the fight (anyone else counts 50 in each). "
+            f"Initiative: d{C['initiative']['die']} + Agility / {C['initiative']['agi_per']}. Blood: {T['blood_pool']} + (Endurance - 50) / {C['blood']['per']}. "
+            f"Toil: each hand-to-hand exchange he attacks or defends in counts, and every {b['light']} (light kit), {b['medium']} (medium) or {b['heavy']} (heavy), "
+            f"times Strength / 50, he is a fatigue step worse, to {d.weather['fatigue']['levels'][C['toil']['worst']]['name'].lower()} at most. "
+            f"A leader who is up adds (Presence - 50) / {C['presence']['per']} to his side's morale. Rounded down throughout.")
 
 
 def move_rules(d) -> list[str]:
@@ -1421,6 +1432,7 @@ def team_bundle(d, eid: str = "medieval") -> dict:
     return {"era": T, "ranges": old_wound_ranges(d, eid),
             "locs": {l["id"]: {"name": l["name"], "zone": l["zone"], "class": l["class"]} for l in d.locations},
             "kits": {k: d.armor["kits"][k] for k in sorted(kits)},
+            "fight": {"blood_pool": d.wounds["tracking"]["blood_pool"], "chr": d.wounds["combat"]["characteristics"]},
             "weapons": {w: d.weapons[w] for w in sorted(weapons) if w in d.weapons}}
 
 

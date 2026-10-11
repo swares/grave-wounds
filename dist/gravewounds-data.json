@@ -14661,6 +14661,46 @@
     "out": true
    }
   },
+  "characteristics": {
+   "initiative": {
+    "die": 10,
+    "agi_per": 10
+   },
+   "blood": {
+    "per": 10
+   },
+   "toil": {
+    "blows": {
+     "light": 30,
+     "medium": 20,
+     "heavy": 12
+    },
+    "worst": 3,
+    "load": {
+     "hauberk": "medium",
+     "transitional": "heavy",
+     "full_plate": "heavy",
+     "gotland_armoured": "medium",
+     "danish_maa": "heavy",
+     "jack_sallet": "medium",
+     "brigandine_sallet": "medium",
+     "cuirassier_1630": "heavy",
+     "harquebusier_1630": "medium",
+     "pikeman_1630": "medium",
+     "cuirassier": "medium",
+     "ww1_sentry": "heavy",
+     "aircrew_flak": "heavy",
+     "vietnam_usmc": "medium",
+     "pasgt": "medium",
+     "ranger_1993": "medium",
+     "interceptor": "heavy",
+     "plate_carrier": "medium"
+    }
+   },
+   "presence": {
+    "per": 5
+   }
+  },
   "morale": {
    "trigger": 0.25,
    "heavy": 0.5,

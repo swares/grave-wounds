@@ -300,6 +300,27 @@ combat:
   # of its fighters down checks d100 against the best Nerve among its fighters still up
   # (its leader's, if he is up). +leader_present if a leader is up; -leader_down if a
   # leader is down; -heavy_losses once `heavy` of the side is down. Over: the side breaks.
+  # Characteristics in the fight (Grave Wounds; design estimates). A fighter from the team
+  # builder uses his sheet's; anyone else counts as 50 in each, which changes nothing.
+  #   initiative - Roll initiative gives d`die` + Agility / `agi_per` (rounded down)
+  #   blood      - his Blood pool is tracking.blood_pool + (Endurance - 50) / `per`, rounded down
+  #                (16 at Endurance 15, 24 at 95), the Endurance on his card
+  #   toil       - every hand-to-hand exchange he attacks or defends in counts; after `blows`
+  #                for his kit's load (x Strength / 50, rounded) he is a fatigue step worse,
+  #                to `worst` at most. Kits not listed in `load` are light. Shooting costs none.
+  #   presence   - a leader who is up adds (Presence - 50) / `per` (rounded down) to his side's
+  #                morale, on top of leader_present
+  characteristics:
+    initiative: {die: 10, agi_per: 10}
+    blood: {per: 10}
+    toil:
+      blows: {light: 30, medium: 20, heavy: 12}
+      worst: 3
+      load: {hauberk: medium, transitional: heavy, full_plate: heavy, gotland_armoured: medium, danish_maa: heavy,
+             jack_sallet: medium, brigandine_sallet: medium, cuirassier_1630: heavy, harquebusier_1630: medium,
+             pikeman_1630: medium, cuirassier: medium, ww1_sentry: heavy, aircrew_flak: heavy, vietnam_usmc: medium,
+             pasgt: medium, ranger_1993: medium, interceptor: heavy, plate_carrier: medium}
+    presence: {per: 5}
   morale:
     trigger: 0.25
     heavy: 0.5

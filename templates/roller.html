@@ -342,6 +342,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
       <p class="muted" id="apply-msg" aria-live="polite" style="margin:0"></p>
       <div class="roundbar" role="group" aria-label="Round tracker">
         <span class="roundno" id="round-no" aria-live="polite">Round 1</span>
+        <button id="btn-init" title="Every fighter rolls initiative: d10 + Agility / 10 (50 without a team-builder sheet)">Roll initiative</button>
         <button id="btn-next" title="Next fighter in initiative order who is still up; after the last one, the round ends">Next fighter</button>
         <span class="turnno" id="turn-no" aria-live="polite"></span>
         <button id="btn-round" title="End this round: every casualty bleeds one round">Next round</button>
@@ -410,7 +411,7 @@ function orderedMods(){
 /* ---------- fighting while wounded: same rules as gravewounds/combat.py ---------- */
 function penalties(c){
   if (!c) return null;
-  const hand = c.hand || "R", frac = c.blood / TRK.blood_pool;
+  const hand = c.hand || "R", frac = c.blood / poolOf(c);
   let attack = 0, defence = 0; const notes = [], flags = new Set();
   const pain = Math.min(c.wounds.reduce((a, w) => a + w.fx.pain, 0), TRK.pain_cap);
   if (pain){ attack += pain * CMB.pain_step; defence += pain * CMB.pain_step; notes.push(`pain -${pain * CMB.pain_step}%`) }
@@ -482,12 +483,25 @@ function painCheck(nerve, painSteps, roll, bloodFrac = 1){
   if (painSteps <= TRK.pain_cap) return null;
   return stopCheck(nerve, CMB.stop_check.pain_round_as, painSteps, roll, bloodFrac);
 }
+// ----- a sheet's characteristics in the fight (as gravewounds/combat.py); 50 without a sheet -----
+const CHR = CMB.characteristics;
+const statOf = (c, k) => (c && c.sheet && c.sheet.stats && Number.isFinite(c.sheet.stats[k]) ? c.sheet.stats[k] : 50);
+const rollInitiative = (agility, roll) => roll + Math.floor(agility / CHR.initiative.agi_per);
+const bloodPool = endurance => TRK.blood_pool + Math.floor((endurance - 50) / CHR.blood.per);
+const kitLoad = kit => CHR.toil.load[kit || "none"] || "light";
+const toilBlows = (kit, strength) => Math.max(1, Math.floor((CHR.toil.blows[kitLoad(kit)] * strength + 25) / 50));
+function toilStep(fatigue, count, kit, strength){   // one more hand-to-hand exchange -> [fatigue, count]
+  const n = count + 1, need = toilBlows(kit, strength);
+  if (n < need) return [fatigue, n];
+  if (fatigue >= CHR.toil.worst) return [fatigue, n - need];   // no worse from toil alone
+  return [fatigue + 1, n - need];
+}
 function moraleCheck(fighters, roll){
   const M = CMB.morale, n = fighters.length, down = fighters.filter(f => f.down).length, up = fighters.filter(f => !f.down);
   if (!n || !up.length || down / n < M.trigger) return null;
   const leadersUp = up.filter(f => f.leader);
   let target = Math.max(...(leadersUp.length ? leadersUp : up).map(f => f.nerve));
-  if (leadersUp.length) target += M.leader_present;
+  if (leadersUp.length) target += M.leader_present + Math.floor((Math.max(...leadersUp.map(f => f.pres ?? 50)) - 50) / CHR.presence.per);
   if (fighters.some(f => f.leader && f.down)) target -= M.leader_down;
   if (down / n >= M.heavy) target -= M.heavy_losses;
   return { target, roll, down, of: n, broken: roll > target };
@@ -501,6 +515,7 @@ function writeNamed(all){ try{ localStorage.setItem(NAMED_KEY, JSON.stringify(al
 let NAMED = readNamed();
 const sheetEnd = c => (c.sheet && c.sheet.stats && Number.isFinite(c.sheet.stats.end) ? c.sheet.stats.end : DZR.endurance);
 const enduranceOf = c => (Number.isFinite(c.endurance) ? c.endurance : sheetEnd(c));
+const poolOf = c => bloodPool(enduranceOf(c));       // his Blood pool, from his Endurance
 function sickOf(c){                               // {step, did} at his worst showing step, {incubating}, {dead}, or null
   const n = c.uid ? NAMED[c.uid] : null;
   if (!n) return null;
@@ -566,7 +581,7 @@ function syncCamp(c){                             // what his nights in camp did
   const n = c.uid ? NAMED[c.uid] : null;
   if (!n) return;
   const nights = n.rest || 0, seen = c.restSeen || 0;
-  if (nights > seen && !n.dead) c.blood = Math.min(TRK.blood_pool, c.blood + (nights - seen) * DZR.blood_per_day);
+  if (nights > seen && !n.dead) c.blood = Math.min(poolOf(c), c.blood + (nights - seen) * DZR.blood_per_day);
   c.restSeen = Math.max(seen, nights);
   if (n.dead) return;
   keepOld(c);
@@ -858,6 +873,17 @@ function misfired(rc, freeHit){                   // wet priming: the shot is lo
   if (freeHit) freeDone("misfire");
   return `Misfire: d100 ${d2(mr)} against ${mf}% \u2014 the wet weather spoiled the priming. The shot is lost.`;
 }
+function toil(c){                                 // a hand-to-hand exchange tires him, by his kit and Strength
+  if (!c) return;
+  const [f, n] = toilStep(c.fatigue || 0, c.toil || 0, c.kit, statOf(c, "str"));
+  if (f > (c.fatigue || 0)) S.pending = [...(S.pending || []), `${c.name} tires: now ${WXD.fatigue.levels[f].name.toLowerCase()}`];
+  c.fatigue = f;
+  c.toil = n;
+}
+function initiativeAll(){                         // d10 + Agility / 10 for every fighter, then the order
+  for (const c of S.chars) c.init = rollInitiative(statOf(c, "agi"), 1 + Math.floor(Math.random() * CHR.initiative.die));
+  renderChars();
+}
 function riseToStrike(){                          // a man in cover rises to strike in close combat, which comes off his move
   const a = attackerChar();
   if (!a || !a.cover || isShot(S.weapon)) return;
@@ -869,6 +895,7 @@ function attackPhase(atkPct, rc, freeHit){        // the attack and defence roll
   const blocked = attackBlock(A, w) || misfired(rc, freeHit);
   if (blocked) return { end: { blocked } };
   riseToStrike();
+  if (!isShot(S.weapon)) [attackerChar(), defenderChar()].forEach(toil);
   const ar = attackRoll(atkPct, readDie("#in-atk-roll") ?? d100(), (A ? A.attack : 0) + (rc.range ? rc.range.penalty : 0));
   const combat = { atk: ar, def: null, range: rc.range };
   if (!ar.hit){
@@ -1204,6 +1231,7 @@ function addTeam(){                             // the team from the team builde
     const c = newChar(m.name, m.kit, m.weapon, m.look, t.side);
     c.nerve = m.nerve; c.rating = Object.keys(RATINGS).find(r => RATINGS[r] === m.nerve) || "custom"; c.leader = !!m.leader;
     c.sheet = m.sheet;
+    c.blood = poolOf(c);                           // his Endurance sets his Blood
     S.chars.push(c);
   }
   placeUnplaced();
@@ -1247,7 +1275,7 @@ function charStats(c){
   const bleed = c.wounds.reduce((a, w) => a + bleedPerRound(w.fx.bleed), 0);
   const open = c.wounds.filter(w => !w.treated);
   const worst = open.reduce((a, w) => LETHAL.indexOf(w.fx.lethal) > LETHAL.indexOf(a) ? w.fx.lethal : a, "none");
-  const frac = c.blood / TRK.blood_pool;
+  const frac = c.blood / poolOf(c);
   const th = [...TRK.thresholds].sort((a,b) => a.at - b.at).find(t => frac <= t.at);
   return { pain, bleed, worst, frac, th };
 }
@@ -1276,7 +1304,7 @@ function advance(rounds){
       extraConds.push(`<span class="ev-bad">incapacitated</span>`);
     if (after.worst !== "none") extraConds.push(`lethal: ${after.worst}`);
     const condStr = extraConds.length ? ` \u00b7 ${extraConds.join(", ")}` : "";
-    lines.push(`${c.name}: \u2212${lost} Blood (${c.blood}/${TRK.blood_pool})` +
+    lines.push(`${c.name}: \u2212${lost} Blood (${c.blood}/${poolOf(c)})` +
       (changed ? `, <span class="${cls}">now ${thLabel(after.th)}</span>` : "") + condStr);
   });
   S.chars.forEach(c => {                     // stop-check results wear off
@@ -1303,7 +1331,7 @@ function moraleChecks(){
     if (S.broken[side]) continue;
     const team = S.chars.filter(c => sideOf(c) === side);
     const roll = own ?? d100();
-    const m = moraleCheck(team.map(c => ({ nerve: nerveOf(c), down: isDown(c), leader: !!c.leader })), roll);
+    const m = moraleCheck(team.map(c => ({ nerve: nerveOf(c), down: isDown(c), leader: !!c.leader, pres: statOf(c, "pres") })), roll);
     if (!m) continue;
     own = null; $("#in-morale").value = "";
     if (m.broken) S.broken[side] = true;
@@ -2284,8 +2312,8 @@ function renderChars(){
         <div class="wears">Wears: ${kitName(c.kit || "none")}${c.weapon ? " · Fights with: " + DATA.weapons[c.weapon].name : ""}</div>
         ${sheetLine(c)}
         ${penLine(cp)}</div></div>
-      <div class="bar" title="Blood ${c.blood} of ${TRK.blood_pool}"><i style="width:${Math.max(0, st.frac * 100)}%"></i></div>
-      <div class="stat"><span>Blood <b>${c.blood}</b>/${TRK.blood_pool}</span><span>Bleeding ${st.bleed.toFixed(1)}/round</span><span class="${painCls}">Pain −${Math.min(st.pain, TRK.pain_cap) * 10}%${st.pain > TRK.pain_cap ? " · stop check each round" : ""}</span></div>
+      <div class="bar" title="Blood ${c.blood} of ${poolOf(c)}"><i style="width:${Math.max(0, st.frac * 100)}%"></i></div>
+      <div class="stat"><span>Blood <b>${c.blood}</b>/${poolOf(c)}</span><span>Bleeding ${st.bleed.toFixed(1)}/round</span><span class="${painCls}">Pain −${Math.min(st.pain, TRK.pain_cap) * 10}%${st.pain > TRK.pain_cap ? " · stop check each round" : ""}</span></div>
       <div class="stat"><span class="${lethCls}">Worst untreated: ${st.worst}</span><span>${st.th ? st.th.effect : "Steady"}</span><span class="muted">${c.rounds} round${c.rounds === 1 ? "" : "s"} elapsed</span></div>
       <ul class="wounds">${c.wounds.map((w, j) => `<li data-j="${j}">
         <div class="w1"><span><b>${LOC[w.loc].name}</b> · ${w.sev} ${w.mech}</span><span class="pips" title="bleed">B${w.fx.bleed} P${w.fx.pain}</span></div>
@@ -2338,7 +2366,9 @@ function namedChange(c, act, value){             // his Endurance, his force, or
   NAMED = all;
 }
 function cardChange(c, act, value){              // a card's side, nerve, fatigue, Endurance or force changed
+  const pool = poolOf(c);
   namedChange(c, act, value);
+  if (act === "endurance") c.blood = c.blood >= pool ? poolOf(c) : Math.min(c.blood, poolOf(c));   // a new pool: full stays full
   if (act === "side") c.side = value.trim() || "Side A";
   if (act === "fatigue") c.fatigue = +value;
   if (act === "rating" && value !== "custom"){ c.rating = value; c.nerve = RATINGS[value] }
@@ -2401,7 +2431,7 @@ function stopResult(c, r, why){
 // Stop check for a wound just applied (if it calls for one).
 function applyStopCheck(c, w){
   if (penalties(c).flags.includes("out")) return "";
-  const r = stopCheck(nerveOf(c), w.sev, painOf(c), readDie("#in-stop") ?? d100(), c.blood / TRK.blood_pool, !!w.fx.shock);
+  const r = stopCheck(nerveOf(c), w.sev, painOf(c), readDie("#in-stop") ?? d100(), c.blood / poolOf(c), !!w.fx.shock);
   $("#in-stop").value = "";
   return r ? stopResult(c, r, "") : "";
 }
@@ -2410,7 +2440,7 @@ function painChecks(){
   const out = [];
   for (const c of S.chars){
     if (penalties(c).flags.includes("out")) continue;
-    const r = painCheck(nerveOf(c), painOf(c), readDie("#in-stop") ?? d100(), c.blood / TRK.blood_pool);
+    const r = painCheck(nerveOf(c), painOf(c), readDie("#in-stop") ?? d100(), c.blood / poolOf(c));
     if (!r) continue;
     $("#in-stop").value = "";
     out.push(stopResult(c, r, " (pain)"));
@@ -2456,6 +2486,7 @@ function init(){
   };
   $("#sel-weapon").onchange = e => { S.weapon = e.target.value; fillFromSheets(); renderMods(); syncArmor(); shadeFigure(); renderTable() };
   $("#btn-roll").onclick = () => rollHit();
+  $("#btn-init").onclick = initiativeAll;
   $("#btn-add").onclick = () => { const n = $("#in-name").value.trim() || `Combatant ${S.seq}`; S.chars.push(newChar(n, S.armor, null, {}, S.addSide || "Side A")); $("#in-name").value = ""; selectChar(S.chars.length - 1) };
   $("#in-name").addEventListener("keydown", e => { if (e.key === "Enter") $("#btn-add").click() });
   $("#btn-apply").onclick = () => {

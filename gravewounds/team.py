@@ -144,6 +144,17 @@ def make_team(d: Data, eid: str, region: str, template: str, mode: str, rng) -> 
     return team
 
 
+def fight_line(d: Data, c: dict) -> str:
+    """What his characteristics do in a fight (combat.py): Blood, initiative, toil, and as leader, morale."""
+    from .combat import blood_pool, toil_blows
+    s, per = c["stats"], d.wounds["combat"]["characteristics"]
+    bits = [f"Blood {blood_pool(d, s['end'])}", f"initiative d{per['initiative']['die']}+{s['agi'] // per['initiative']['agi_per']}",
+            f"tires after {toil_blows(d, c['kit'], s['str'])} exchanges hand to hand"]
+    if c.get("leader"):
+        bits.append(f"leading, morale {(s['pres'] - 50) // per['presence']['per']:+d}")
+    return ", ".join(bits)
+
+
 def sheet(d: Data, c: dict) -> list[str]:
     """A character as lines of text."""
     T = era(d, c["era"])
@@ -156,6 +167,7 @@ def sheet(d: Data, c: dict) -> list[str]:
              f"  Origin: {c['origin'].lower()}. {c['trait']}; {c['drawback'].lower()}.",
              f"  Skills: {trained}",
              f"  Arms: {d.weapons[c['weapon']]['name']} (attack {c['attack']}%), defence {c['defence']}%; {d.armor['kits'][c['kit']]['name']}"]
+    lines.append("  In a fight: " + fight_line(d, c))
     lines += [f"  Term {i + 1}: {e}" for i, e in enumerate(c["events"])]
     for w in c["old"]:
         hurt = f", {T['lasting']} off {_by_id(T['characteristics'], w['stat'])['name']}" if w["kind"] == "lasting" else ""

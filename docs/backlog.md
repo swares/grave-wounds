@@ -32,7 +32,7 @@ When an item is done, delete it here and note it in the pull request that closes
   fuse is rolled rather than set by the gunners. The Thirty Years' War still borrows the
   Peninsula's gun wounds: no 1618-48 artillery wound counts were found.
 - **Character generation, beyond the first cut.** The medieval tables are a first draft for
-  a team playtest. Still to come: tables for the other eras; characteristics feeding more
-  rules (Endurance for blood and disease, Agility for initiative); named characters' skills
+  a team playtest. Its characteristics now count in the roller (Agility, Endurance,
+  Strength, Presence). Still to come: tables for the other eras; named characters' skills
   outside a fight (Leechcraft for first aid, Fieldcraft and Watch on the travel map); and
   followers' one-line stat blocks for big teams.
