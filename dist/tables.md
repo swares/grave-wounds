@@ -4459,6 +4459,179 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 | Flintlock rifle (Pennsylvania, Baker, Jäger) | 1 |
 | Rifle-musket (Minie ball) | 2 |
 
+## Team generation
+
+**Medieval (c.1250-1460): a team in twenty minutes.** A player runs a team of four to six; the first member leads. Each character is made in five steps.
+
+**1. Characteristics:** Strength, Agility, Endurance, Wits, Nerve, Presence: roll 3d6 x 5 for each in order (15-90), or take the array 70, 60, 55, 50, 45, 35 and place it, highest first, in the order his career prefers (the GM may let him swap two).
+
+**2. Origin:** d100 on the origin table: a skill +15, a trait and its drawback (a characteristic +/-10 or a skill +/-15).
+
+**3. Career terms:** leaders serve three terms, the rest one or two. Each term: his career's main skill +15 the first term and +10 after, its second skill +5, and d100 on the career's table: the skill named +15 and the event. An event he has already had moves to the next row down. Nobody dies in generation. He is 16 plus 4 a term.
+
+**4. Old wounds:** a row marked * leaves an old wound, as does d100 at or under the career's old-wound %. Roll its location on the region's wound table for the weapon shown, then d100: 70 or less a healed scar; more, a lasting hurt: -5 to Wits (head), Presence (face), Strength (arms), Agility (legs) or Endurance (body).
+
+**5. Skills and kit:** each skill starts at a characteristic divided as shown (rounded down), plus what he gained, at most 90. His attack is the skill his weapon is fought with; his defence the better of Parry and Dodge; his Nerve the characteristic. Kit and weapon come with his career and region (the table below).
+
+| Skill | Starts at | Weapons |
+|---|---|---|
+| Blade | Agility / 2 | sword, dagger |
+| Axe and mace | Strength / 2 | axe, spiked club |
+| Polearm | Strength / 2 | spear, bill, poleaxe |
+| Bow | Agility / 2 | bow, longbow |
+| Crossbow | Agility / 2 | crossbow |
+| Sling | Agility / 3 | sling |
+| Brawl | Strength / 2 | punch, kick, elbow/knee |
+| Parry | Agility / 2 |  |
+| Dodge | Agility / 3 |  |
+| Ride | Agility / 3 |  |
+| Fieldcraft | Wits / 3 |  |
+| Watch | Wits / 2 |  |
+| Stealth | Agility / 3 |  |
+| Leechcraft | Wits / 4 |  |
+| Seamanship | Wits / 4 |  |
+| Craft | Wits / 3 |  |
+| Letters | Wits / 5 |  |
+| Persuade | Presence / 2 |  |
+| Command | Presence / 3 |  |
+
+| d100 | Origin | Skill | Trait | Drawback |
+|---|---|---|---|---|
+| 01-05 | Ploughman's son | Fieldcraft | Strong back (Strength +10) | Cannot read a word (Letters -15) |
+| 06-10 | Shepherd | Watch | Good with a sling (Sling +15) | Uneasy in crowds (Presence -10) |
+| 11-15 | Fisherman's son | Seamanship | Swims like a seal (Endurance +10) | Smells of the catch (Persuade -15) |
+| 16-20 | Smith's apprentice | Craft | Arms like hams (Strength +10) | Half deaf from the anvil (Watch -15) |
+| 21-25 | Carter | Ride | Knows every road (Fieldcraft +15) | Bad back (Agility -10) |
+| 26-30 | Townsman's apprentice | Craft | Quick tongue (Persuade +15) | Never slept under the sky (Fieldcraft -15) |
+| 31-35 | Merchant's son | Persuade | Lettered (Letters +15) | Soft hands (Strength -10) |
+| 36-40 | Huntsman's son | Bow | Moves quietly (Stealth +15) | Known as a poacher (Presence -10) |
+| 41-45 | Miller's son | Craft | Good at sums (Wits +10) | Mistrusted, as millers are (Persuade -15) |
+| 46-50 | Younger son of a knight | Ride | Raised to arms (Blade +15) | Proud and touchy (Persuade -15) |
+| 51-55 | A squire's bastard | Blade | Hard to frighten (Nerve +10) | No inheritance and no patience (Presence -10) |
+| 56-60 | Novice who left the cloister | Letters | Knows his herbs (Leechcraft +15) | Faints at the sight of blood (Nerve -10) |
+| 61-65 | Barber's boy | Leechcraft | Steady hands (Agility +10) | Never stops talking (Stealth -15) |
+| 66-70 | Groom in a great stable | Ride | Horse sense (Fieldcraft +15) | Kicked by a horse as a boy (Endurance -10) |
+| 71-75 | Sailor's orphan | Seamanship | Climbs anything (Agility +10) | Cannot sit a horse (Ride -15) |
+| 76-80 | Woodcutter | Axe and mace | Tireless (Endurance +10) | Slow of speech (Wits -10) |
+| 81-85 | Raised on the pilgrim roads | Fieldcraft | Speaks three tongues (Persuade +15) | Belongs nowhere (Presence -10) |
+| 86-90 | Street brawler | Brawl | Takes a punch (Endurance +10) | Known to the watch (Persuade -15) |
+| 91-95 | Servant in a great house | Watch | Knows how to please his betters (Persuade +15) | Never held a weapon (Parry -15) |
+| 96-00 | Herdsman of the border | Polearm | Grew up among raids (Nerve +10) | Hot-tempered (Wits -10) |
+
+| Career | Main skill | Second | Old wound | Hurt by |
+|---|---|---|---|---|
+| Man-at-arms | Blade | Parry | 25% | sword |
+| Archer | Bow | Dodge | 15% | sword |
+| Crossbowman | Crossbow | Dodge | 15% | crossbow |
+| Spearman or billman | Polearm | Parry | 20% | sword |
+| Mounted sergeant | Ride | Parry | 20% | sword |
+| Mercenary | Axe and mace | Parry | 25% | sword |
+| Sailor | Seamanship | Dodge | 10% | axe |
+| Clerk or priest | Letters | Persuade | 3% | dagger |
+| Barber-surgeon | Leechcraft | Craft | 5% | dagger |
+| Forester or huntsman | Fieldcraft | Stealth | 10% | bow |
+| Servant or groom | Ride | Watch | 5% | dagger |
+| Merchant | Persuade | Letters | 5% | dagger |
+
+| Career | d100 | Skill | Event |
+|---|---|---|---|
+| Man-at-arms | 01-20 | Ride | Rode in a lord's household for a season. |
+| Man-at-arms | 21-40 | Command | Led a handful of men on a raid. |
+| Man-at-arms | 41-60 | Polearm | Fought on foot at a barrier. |
+| Man-at-arms | 61-75 | Parry | Came through a tournament melee. |
+| Man-at-arms | 76-90 | Watch | Held the gate of a besieged town. * |
+| Man-at-arms | 91-00 | Persuade | Took a knight prisoner and haggled his ransom. |
+| Archer | 01-20 | Watch | Stood sentry on a border tower. |
+| Archer | 21-40 | Stealth | Scouted ahead of the army. |
+| Archer | 41-55 | Fieldcraft | Foraged through a hungry winter. |
+| Archer | 56-70 | Craft | Made arrows by the thousand in a long siege. |
+| Archer | 71-85 | Blade | Fought hand to hand when the line broke. * |
+| Archer | 86-00 | Dodge | Ran from a charge of horse and lived. * |
+| Crossbowman | 01-20 | Craft | Kept the windlasses and bolts of a garrison. |
+| Crossbowman | 21-40 | Watch | Shot from the walls through a siege. |
+| Crossbowman | 41-55 | Seamanship | Served aboard a galley. |
+| Crossbowman | 56-70 | Persuade | Bargained over pay for a free company. |
+| Crossbowman | 71-85 | Parry | Held a pavise in the front of the line. * |
+| Crossbowman | 86-00 | Dodge | Crawled back from a sally that failed. * |
+| Spearman or billman | 01-20 | Fieldcraft | Marched through a long campaign. |
+| Spearman or billman | 21-40 | Parry | Held his place in the line. * |
+| Spearman or billman | 41-55 | Craft | Dug ditches and threw up banks for a camp. |
+| Spearman or billman | 56-70 | Brawl | Won a brawl in camp. |
+| Spearman or billman | 71-85 | Watch | Guarded the baggage carts. |
+| Spearman or billman | 86-00 | Dodge | Was caught in a rout and lived. * |
+| Mounted sergeant | 01-20 | Polearm | Rode in a charge with couched spears. |
+| Mounted sergeant | 21-40 | Fieldcraft | Carried messages across hostile country. |
+| Mounted sergeant | 41-55 | Command | Kept order among the grooms and the baggage. |
+| Mounted sergeant | 56-70 | Watch | Patrolled a frontier road. |
+| Mounted sergeant | 71-85 | Blade | Fought in a skirmish at a ford. * |
+| Mounted sergeant | 86-00 | Persuade | Bought remounts at a horse fair. |
+| Mercenary | 01-20 | Persuade | Changed masters for better pay. |
+| Mercenary | 21-40 | Stealth | Looted a town and kept his share hidden. |
+| Mercenary | 41-55 | Blade | Fought a duel over a debt. |
+| Mercenary | 56-70 | Fieldcraft | Lived off the land between contracts. |
+| Mercenary | 71-85 | Parry | Stormed a breach. * |
+| Mercenary | 86-00 | Command | Was made corporal of a lance. |
+| Sailor | 01-20 | Watch | Kept the night watch on a cog. |
+| Sailor | 21-40 | Craft | Mended sail and rigging. |
+| Sailor | 41-55 | Persuade | Traded on his own account in a foreign port. |
+| Sailor | 56-70 | Brawl | Fought in a dockside tavern. |
+| Sailor | 71-85 | Axe and mace | Beat off pirates. * |
+| Sailor | 86-00 | Fieldcraft | Was wrecked and walked home. |
+| Clerk or priest | 01-20 | Persuade | Wrote letters for a lord's steward. |
+| Clerk or priest | 21-40 | Leechcraft | Kept the infirmary of a religious house. |
+| Clerk or priest | 41-55 | Command | Kept the accounts of a garrison. |
+| Clerk or priest | 56-70 | Watch | Took down the testimony of witnesses. |
+| Clerk or priest | 71-85 | Ride | Travelled as an envoy. |
+| Clerk or priest | 86-00 | Fieldcraft | Went on pilgrimage on foot. * |
+| Barber-surgeon | 01-20 | Craft | Pulled teeth and let blood in a market town. |
+| Barber-surgeon | 21-40 | Letters | Studied an anatomy with a master. |
+| Barber-surgeon | 41-55 | Watch | Worked through a pestilence. |
+| Barber-surgeon | 56-70 | Persuade | Was paid by a captain to follow the army. |
+| Barber-surgeon | 71-85 | Leechcraft | Cut arrows out of men after a battle. |
+| Barber-surgeon | 86-00 | Dodge | Was caught when the camp was overrun. * |
+| Forester or huntsman | 01-20 | Bow | Hunted deer for a lord's table. |
+| Forester or huntsman | 21-40 | Stealth | Hunted poachers in the forest. |
+| Forester or huntsman | 41-55 | Watch | Tracked a band of outlaws. |
+| Forester or huntsman | 56-70 | Ride | Rode with a great hunt. |
+| Forester or huntsman | 71-85 | Polearm | Killed a boar with a spear. * |
+| Forester or huntsman | 86-00 | Leechcraft | Kept the hounds and doctored them. |
+| Servant or groom | 01-20 | Craft | Kept a lord's harness and arms. |
+| Servant or groom | 21-40 | Watch | Waited at table and heard everything. |
+| Servant or groom | 41-55 | Fieldcraft | Pitched tents and made camp on campaign. |
+| Servant or groom | 56-70 | Persuade | Bought provisions for the household. |
+| Servant or groom | 71-85 | Leechcraft | Nursed his master through a fever. |
+| Servant or groom | 86-00 | Blade | Fought beside his master when the camp was raided. * |
+| Merchant | 01-20 | Letters | Kept the books of a trading house. |
+| Merchant | 21-40 | Seamanship | Sailed with his goods to a far port. |
+| Merchant | 41-55 | Ride | Travelled the fairs with a pack train. |
+| Merchant | 56-70 | Command | Hired and paid guards for a caravan. |
+| Merchant | 71-85 | Watch | Was cheated once and learned from it. |
+| Merchant | 86-00 | Blade | Fought off robbers on the road. * |
+
+| Career | Latin East | Gotland and the Baltic | England | France |
+|---|---|---|---|---|
+| Man-at-arms | Mail hauberk and helm; sword | Danish man-at-arms; sword | Brigandine, sallet and arm splints; sword | Full plate harness; sword |
+| Archer | Gambeson and cap; bow | Gotland levy: mail coif, padded coat; bow | Jack and sallet; longbow | Jack and sallet; longbow |
+| Crossbowman | Hardened leather; crossbow | Gotland, better equipped: coif, coat of plates; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow |
+| Spearman or billman | Gambeson and cap; spear | Gotland levy: mail coif, padded coat; spear | Jack and sallet; bill | Jack and sallet; spear |
+| Mounted sergeant | Mail hauberk and helm; spear | Gotland, better equipped: coif, coat of plates; spear | Brigandine, sallet and arm splints; spear | Coat of plates and mail; spear |
+| Mercenary | Mail hauberk and helm; axe | Coat of plates and mail; axe | Brigandine, sallet and arm splints; axe | Brigandine, sallet and arm splints; axe |
+| Sailor | Unarmoured; dagger | Hardened leather; axe | Unarmoured; axe | Unarmoured; axe |
+| Clerk or priest | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
+| Barber-surgeon | Unarmoured; dagger | Unarmoured; dagger | Jack and sallet; dagger | Unarmoured; dagger |
+| Forester or huntsman | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow |
+| Servant or groom | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
+| Merchant | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword |
+
+| Team | Members (terms) |
+|---|---|
+| A lord's retinue | Man-at-arms (3), Archer (2), Archer (1), Spearman or billman (1), Barber-surgeon (1), Servant or groom (1) |
+| A free company | Mercenary (3), Mercenary (2), Crossbowman (2), Archer (1), Spearman or billman (1) |
+| A garrison patrol | Mounted sergeant (3), Crossbowman (2), Crossbowman (1), Spearman or billman (1), Clerk or priest (1) |
+| A farmers' muster | Spearman or billman (3), Spearman or billman (1), Spearman or billman (1), Archer (1), Forester or huntsman (1) |
+| A pilgrims' escort | Man-at-arms (3), Mounted sergeant (2), Crossbowman (1), Clerk or priest (1), Barber-surgeon (1) |
+| A merchant's company | Merchant (3), Sailor (2), Crossbowman (1), Servant or groom (1) |
+
 ## Camp disease
 
 **Camp disease (forces on the travel map):** each force counts its sick, by disease and by step on the track (mending, serious, grave, deadly). Once a week each well man may catch each disease: his chance is the outbreak chance below, with the week's modifiers, times the chance he fails to resist (half, at Endurance 50). A man carries one disease at a time.

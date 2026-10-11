@@ -100,6 +100,7 @@ class Data:
     disease: dict = field(default_factory=dict)     # disease.yaml: camp disease for travel-map forces
     units: dict = field(default_factory=dict)       # units.yaml: unit combat on the field map
     fields: dict = field(default_factory=dict)      # battlefield id -> battlefield (data/fields), `rows` = ground rows
+    teams: dict = field(default_factory=dict)       # era id -> character generation tables (data/teams)
     warnings: list = field(default_factory=list)
 
 
@@ -114,6 +115,17 @@ def _read(path: Path):
 def _optional(path: Path, default):
     """A data file that may be absent (older data sets): its contents, or `default`."""
     return _read(path) if path.exists() else default
+
+
+def _read_dir(folder: Path, rows_of: str | None = None) -> dict:
+    """Every YAML file in a folder, by id; rows_of: the key whose text is split into `rows`."""
+    out = {}
+    for p in sorted(folder.glob(YAML_FILES)) if folder.exists() else []:
+        x = _read(p)
+        if rows_of:
+            x["rows"] = [r for r in str(x.get(rows_of, "")).split("\n") if r.strip()]
+        out[x["id"]] = x
+    return out
 
 
 def load(root: str | Path = "data") -> Data:
@@ -133,16 +145,9 @@ def load(root: str | Path = "data") -> Data:
     weather = _optional(root / "weather.yaml", {})
     disease = _optional(root / "disease.yaml", {})
     units = _optional(root / "units.yaml", {})
-    maps = {}
-    for p in sorted((root / "maps").glob(YAML_FILES)) if (root / "maps").exists() else []:
-        m = _read(p)
-        m["rows"] = [r for r in str(m.get("terrain", "")).split("\n") if r.strip()]
-        maps[m["id"]] = m
-    fields = {}
-    for p in sorted((root / "fields").glob(YAML_FILES)) if (root / "fields").exists() else []:
-        f = _read(p)
-        f["rows"] = [r for r in str(f.get("ground", "")).split("\n") if r.strip()]
-        fields[f["id"]] = f
+    maps = _read_dir(root / "maps", "terrain")
+    fields = _read_dir(root / "fields", "ground")
+    teams = _read_dir(root / "teams")
 
     data = Data(
         root=root,
@@ -165,6 +170,7 @@ def load(root: str | Path = "data") -> Data:
         disease=disease,
         units=units,
         fields=fields,
+        teams=teams,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -473,6 +479,8 @@ def validate(d: Data) -> None:
     if d.units:
         errors += _units_errors(d)
         errors += _fields_errors(d)
+    for T in d.teams.values():
+        errors += _team_errors(d, T)
 
     # camps and works
     WK = d.works
@@ -823,6 +831,53 @@ def _units_extra_errors(d: Data) -> list[str]:
     for wid in U.get("line_of_fire", {}).get("arcing", []):
         if wid not in d.weapons or "range" not in d.weapons[wid]:
             errors.append(f"units.yaml: line_of_fire.arcing names {wid}, which is not a weapon with a range")
+    return errors
+
+
+def _team_errors(d: Data, era: dict) -> list[str]:
+    """data/teams: an era's character generation tables."""
+    T = era
+    where, errors = f"teams/{T['id']}", []
+    chars, skills = {c["id"] for c in T["characteristics"]}, {s["id"] for s in T["skills"]}
+    if len(T["array"]) != len(chars):
+        errors.append(f"{where}: array needs one figure for each characteristic")
+    errors += [f"{where}: skill {s['id']} is based on unknown characteristic {s['of']}" for s in T["skills"] if s["of"] not in chars]
+    errors += [f"{where}: weapon_skill names unknown weapon {w} or skill {s}" for w, s in T["weapon_skill"].items() if w not in d.weapons or s not in skills]
+    errors += [f"{where}: defence names unknown skill {s}" for s in T["defence"] if s not in skills]
+    for o in T["origins"]:
+        errors += _team_mod_errors(where, o["name"], o, chars, skills)
+    for r in T["regions"]:
+        if r["table"] not in d.tables:
+            errors.append(f"{where}: region {r['id']} names unknown table {r['table']}")
+    for c in T["careers"]:
+        errors += _career_errors(d, T, where, c, chars, skills)
+    careers = {c["id"] for c in T["careers"]}
+    for t in T["templates"]:
+        if not 4 <= len(t["slots"]) <= 6 or any(cid not in careers or n < 1 for cid, n in t["slots"]):
+            errors.append(f"{where}: template {t['id']} needs 4 to 6 slots of known careers, each with a term or more")
+    if [r["to"] for r in T["old_wound"]][-1] != 100 or set(T["lasting_from"].values()) - chars:
+        errors.append(f"{where}: old_wound must end at 100 and lasting_from name characteristics")
+    return errors
+
+
+def _team_mod_errors(where: str, name: str, o: dict, chars: set, skills: set) -> list[str]:
+    """An origin: its skill, trait and drawback name known skills and characteristics."""
+    keys = [o["gain"]] + [k for m in (o["trait"], o["drawback"]) for k in m if k != "text"]
+    return [f"{where}: origin {name} names unknown {k}" for k in keys if k not in chars | skills]
+
+
+def _career_errors(d: Data, era: dict, where: str, c: dict, chars: set, skills: set) -> list[str]:
+    """A career: its skills, array order, term rows (ending at 100), kits and weapons per region."""
+    T, errors = era, []
+    if c["main"] not in skills or c["second"] not in skills or set(c["prefers"]) != chars:
+        errors.append(f"{where}: career {c['id']} needs a known main skill and prefers naming every characteristic once")
+    rows = c["terms"]
+    if rows[-1]["to"] != 100 or any(r["skill"] not in skills for r in rows) or [r["to"] for r in rows] != sorted(r["to"] for r in rows):
+        errors.append(f"{where}: career {c['id']} terms must rise to 100 and name known skills")
+    for r in T["regions"]:
+        kit, wpn = c["kit"].get(r["id"], c["kit"]["default"]), c["weapon"].get(r["id"], c["weapon"]["default"])
+        if kit not in d.armor["kits"] or wpn not in d.tables[r["table"]]["weapons"] or c["wound_weapon"] not in d.tables[r["table"]]["weapons"]:
+            errors.append(f"{where}: career {c['id']} in {r['id']}: kit {kit}, weapon {wpn} or wound weapon {c['wound_weapon']} not usable there")
     return errors
 
 

@@ -39,4 +39,8 @@ When an item is done, delete it here and note it in the pull request that closes
   instead of staying out of it.
 - **Nursing and spread.** The design doc has nurses catching flux, typhus and typhoid from
   the sick. The force-level rules leave that out for now.
-- **Medieval character generation**, then a team playtest.
+- **Character generation, beyond the first cut.** The medieval tables are a first draft for
+  a team playtest. Still to come: tables for the other eras; characteristics feeding more
+  rules (Endurance for blood and disease, Agility for initiative); named characters' skills
+  outside a fight (Leechcraft for first aid, Fieldcraft and Watch on the travel map); and
+  followers' one-line stat blocks for big teams.

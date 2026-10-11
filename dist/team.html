@@ -1,0 +1,610 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grave Wounds Team Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Team builder: a team of four to six characters, a few rolls each. Controls | character sheets */
+:root{
+  --bg:#e9ecee; --panel:#f6f7f8; --ink:#1b2127; --muted:#5b6670; --line:#c5ccd2;
+  --steel:#3f4f5d; --blood:#8e1b2c; --blood-soft:#f1d9dc; --warn:#a86512; --scar:#7a4b3a;
+  --display:"Alegreya SC",Georgia,serif; --body:"Alegreya Sans","Gill Sans","Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
+  --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --warn:#e3a14d; --scar:#d39a83; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
+  --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --warn:#e3a14d; --scar:#d39a83; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--body);padding-inline:16px;padding-block:20px 40px;margin:0}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 20px;border-bottom:2px solid var(--ink);padding-bottom:10px}
+h1{font:700 clamp(1.5rem,3.4vw,2.2rem)/1.1 var(--display);margin:0;letter-spacing:.01em}
+h2{font:700 1.05rem/1.2 var(--display);margin:0;letter-spacing:.04em;color:var(--steel)}
+.sub{color:var(--muted);font-size:.92rem;margin:0;max-width:72ch}
+nav a{color:var(--blood);font-size:.9rem;margin-left:14px}
+.grid{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+label,.lbl{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:3px}
+label.check{display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:.9rem;color:var(--ink);margin:0}
+select,input,button{font:inherit;color:var(--ink)}
+select,input[type=text]{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:7px 8px}
+button{cursor:pointer;border:1px solid var(--steel);background:transparent;border-radius:3px;padding:7px 12px}
+button:hover{background:var(--blood-soft)}
+button.primary{background:var(--blood);border-color:var(--blood);color:var(--panel);font-weight:700}
+button.primary:hover{filter:brightness(1.1);background:var(--blood)}
+button.small{font-size:.8rem;padding:3px 8px}
+button:disabled{opacity:.45;cursor:default}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.muted{color:var(--muted);font-size:.85rem}
+.msg{display:block;font-size:.9rem;border-left:3px solid var(--warn);padding:2px 0 2px 8px}
+.msg:empty{display:none}
+fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+fieldset[hidden]{display:none}
+label.radio{display:flex;align-items:flex-start;gap:8px;text-transform:none;letter-spacing:0;font-size:.9rem;color:var(--ink);margin:0}
+label.radio input{margin-top:4px}
+.slots{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.slots li{display:grid;grid-template-columns:minmax(0,1fr) 72px 30px;gap:6px;align-items:center}
+.sheets{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:14px}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:14px;display:grid;grid-template-columns:78px minmax(0,1fr);gap:4px 14px;break-inside:avoid}
+.sheet .fig{grid-row:span 3;line-height:0}
+.sheet .who{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.sheet .who input{font:700 1.08rem var(--display);border:0;border-bottom:1px dashed var(--line);background:transparent;padding:0 2px;width:auto;min-width:0;flex:1 1 140px}
+.tag{font:700 .7rem var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--blood);border:1px solid var(--blood);border-radius:3px;padding:0 5px}
+.what{font-size:.9rem;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin:2px 0}
+.stats button{display:flex;flex-direction:column;align-items:center;padding:3px 0;border-color:var(--line);border-radius:3px;cursor:default;background:var(--bg)}
+.stats.place button{cursor:pointer}
+.stats button[aria-pressed="true"]{border-color:var(--blood);background:var(--blood-soft)}
+.stats b{font:700 1rem var(--mono)}.stats span{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.stats .down b{color:var(--scar)}
+.full{grid-column:1/-1}
+.skills{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:.88rem}
+.skills b{font-family:var(--mono);font-weight:700}
+.skills .base{color:var(--muted)}
+.arms{font-size:.9rem}
+.arms b{font-family:var(--mono)}
+.life{margin:0;padding-left:18px;font-size:.88rem}
+.life .wound{color:var(--scar)}
+.sheet .tools{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media print{
+  body{background:#fff;color:#000;padding:0}
+  header nav,.controls,.sheet .tools{display:none}
+  .grid{grid-template-columns:1fr}
+  .sheets{grid-template-columns:1fr 1fr}
+  .sheet{border-color:#999}
+}
+</style>
+<script>/* Combatant figures: a small flat SVG drawn from an armour kit, a weapon and a "look".
+   Same front view as the hit-location chart (the figure's right is on the viewer's left).
+   Everything comes from the data:
+     armour   - the kit's slots and coverage (armor.yaml); kit.look.helmet names a helmet shape
+     weapon   - the weapon's `icon` (weapons.yaml)
+     look     - side defaults merged with the example's own (conflicts.yaml):
+                colour (coat), trousers, coat: skin (bare chest), hat (when no helmet),
+                helmet (overrides the kit's shape), beard (moustache | beard | stubble)
+   Partial coverage ("greaves on 50%") is drawn as that share of the body part: a visual
+   shorthand for "half the hits there meet armour". */
+const FIG = (() => {
+  const SKIN = "#d9a77c", SKIN_DARK = "#b9855b", INK = "#2a2f35";
+  // --- body geometry (viewBox 0 0 120 230) ------------------------------------------
+  const SLOT_BOX = {               // [x, y, w, h]: the area each slot's coverage is measured over
+    helm: [44, 10, 32, 22], visor: [48, 22, 24, 18], gorget: [52, 40, 16, 12],
+    torso_upper: [38, 50, 44, 42], torso_lower: [40, 92, 40, 26], skirt: [38, 118, 44, 16],
+    pauldron: [26, 48, 68, 18], arm: [20, 62, 80, 62], gauntlet: [18, 124, 84, 14],
+    leg: [42, 134, 36, 48], greave: [42, 182, 36, 26], sabaton: [38, 208, 44, 10],
+  };
+  const PARTS = {
+    torso_upper: ["M38 52 Q60 46 82 52 L80 92 L40 92 Z"],
+    torso_lower: ["M40 92 L80 92 L80 118 L40 118 Z"],
+    skirt: ["M40 118 L80 118 L82 134 L38 134 Z"],
+    gorget: ["M52 40 L68 40 L70 52 L50 52 Z"],
+    pauldron: ["M26 60 Q28 48 40 50 L40 64 Q32 66 26 60 Z", "M94 60 Q92 48 80 50 L80 64 Q88 66 94 60 Z"],
+    arm: ["M26 62 L36 62 L35 94 L25 94 Z", "M84 62 L94 62 L95 94 L85 94 Z",
+          "M25 94 L35 94 L33 124 L23 124 Z", "M85 94 L95 94 L97 124 L87 124 Z"],
+    leg: ["M42 134 L59 134 L58 182 L44 182 Z", "M61 134 L78 134 L76 182 L62 182 Z"],
+    greave: ["M44 182 L58 182 L57 208 L45 208 Z", "M62 182 L76 182 L75 208 L63 208 Z"],
+  };
+  const COAT = "M38 52 Q60 46 82 52 L82 134 L38 134 Z";
+  const HANDS = [[28, 130], [92, 130]];
+  const FEET = ["M42 208 L58 208 L60 216 L38 216 Z", "M62 208 L78 208 L82 216 L60 216 Z"];
+
+  // --- materials ------------------------------------------------------------------------
+  const MAT = {
+    padded: "url(#fg-quilt)", leather: "#7d5530", buff_coat: "#c39a5e",
+    mail: "url(#fg-mail)", mail_padded: "url(#fg-mail)", plates: "url(#fg-plates)",
+    plate: "url(#fg-steel)", cuirass: "url(#fg-steel)", steel_vest: "url(#fg-steel)", sappenpanzer: "url(#fg-steel)",
+    steel_helmet: "#5d6449", cavalry_helmet: "url(#fg-brass)",
+    flak_steel: "url(#fg-flak)", nylon_flak: "url(#fg-flak)", doron: "url(#fg-flak)",
+    kevlar_soft: "#6e6a4c", kevlar_helmet: "#6e6a4c", sapi: "url(#fg-carrier)", esapi: "url(#fg-carrier)",
+  };
+  const DEFS = `<defs>
+    <pattern id="fg-mail" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="#9aa3ad"/><circle cx="2" cy="2" r="1.4" fill="none" stroke="#5c646e" stroke-width=".7"/></pattern>
+    <pattern id="fg-quilt" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#d8c8a2"/><path d="M0 6 L6 0 M0 0 L6 6" stroke="#a8966d" stroke-width=".6"/></pattern>
+    <pattern id="fg-plates" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#6d2c2c"/><circle cx="4" cy="4" r="1" fill="#d5bd70"/></pattern>
+    <pattern id="fg-flak" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#5f6a3c"/><path d="M0 0 V5" stroke="#4b5430" stroke-width=".8"/></pattern>
+    <pattern id="fg-carrier" width="10" height="8" patternUnits="userSpaceOnUse"><rect width="10" height="8" fill="#a68d5d"/><rect x="1" y="1" width="8" height="5" rx="1" fill="#8f784c"/></pattern>
+    <linearGradient id="fg-steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3e8ec"/><stop offset=".55" stop-color="#a9b3bc"/><stop offset="1" stop-color="#7c8792"/></linearGradient>
+    <linearGradient id="fg-brass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0d488"/><stop offset="1" stop-color="#a7822f"/></linearGradient>
+  </defs>`;
+  const st = `stroke="${INK}" stroke-width=".8"`;
+
+  // --- helmets (armour): shape by kit/example look, else by the helm slot's material ----
+  const HELMETS = {
+    kettle: `<path d="M44 26 Q44 8 60 8 Q76 8 76 26 Z" fill="url(#fg-steel)" ${st}/><path d="M36 27 Q60 20 84 27 L84 30 Q60 24 36 30 Z" fill="url(#fg-steel)" ${st}/>`,
+    bascinet: `<path d="M44 30 Q42 4 60 2 Q78 4 76 30 L72 30 Q70 16 60 16 Q50 16 48 30 Z" fill="url(#fg-steel)" ${st}/>`,
+    sallet: `<path d="M40 34 Q42 6 60 4 Q78 6 80 34 L74 31 Q72 18 60 18 Q48 18 46 31 Z" fill="url(#fg-steel)" ${st}/><path d="M47 22 H73" stroke="#3a4148" stroke-width="1.4"/>`,
+    closed: `<path d="M44 40 Q42 6 60 4 Q78 6 76 40 Z" fill="url(#fg-steel)" ${st}/><path d="M50 24 H70 M50 28 H70" stroke="#3a4148" stroke-width="1.6"/>`,
+    pot: `<path d="M45 27 Q45 9 60 9 Q75 9 75 27 Z" fill="url(#fg-steel)" ${st}/><path d="M45 26 L42 38 L48 38 Z M75 26 L78 38 L72 38 Z" fill="url(#fg-steel)" ${st}/><rect x="58" y="24" width="4" height="14" fill="#7c8792"/>`,
+    morion: `<path d="M44 26 Q46 10 60 10 Q74 10 76 26 Z" fill="url(#fg-steel)" ${st}/><path d="M60 3 Q66 8 64 12 L56 12 Q54 8 60 3 Z" fill="url(#fg-steel)" ${st}/><path d="M36 28 Q48 22 60 26 Q72 22 84 28 Q72 25 60 29 Q48 25 36 28 Z" fill="url(#fg-steel)" ${st}/>`,
+    coif: `<path d="M43 30 Q42 8 60 8 Q78 8 77 30 L77 46 Q60 54 43 46 Z" fill="url(#fg-mail)" ${st}/><ellipse cx="60" cy="31" rx="10" ry="12" fill="${SKIN}"/>`,
+    crested: `<path d="M45 27 Q45 9 60 9 Q75 9 75 27 Z" fill="url(#fg-brass)" stroke="#7b5f1e" stroke-width=".8"/><path d="M50 10 Q60 0 74 8 Q66 6 58 12 Z" fill="#2b2b2b"/><path d="M45 26 Q60 22 75 26" fill="none" stroke="#7b5f1e" stroke-width="1.6"/>`,
+    brodie: `<path d="M46 24 Q46 11 60 11 Q74 11 74 24 Z" fill="#5d6449" ${st}/><path d="M37 25 Q60 18 83 25 L81 28 Q60 22 39 28 Z" fill="#5d6449" ${st}/>`,
+    adrian: `<path d="M45 25 Q45 10 60 10 Q75 10 75 25 Z" fill="#6f7560" ${st}/><path d="M58 6 Q60 4 62 6 L62 11 L58 11 Z" fill="#6f7560" ${st}/><path d="M40 26 Q60 20 80 26 L79 28 Q60 23 41 28 Z" fill="#6f7560" ${st}/>`,
+    stahlhelm: `<path d="M44 26 Q43 8 60 8 Q77 8 76 26 L78 34 L72 34 L71 27 Q60 24 49 27 L48 34 L42 34 Z" fill="#5a5f55" ${st}/>`,
+    fj: `<path d="M45 29 Q44 9 60 9 Q76 9 75 29 Q60 26 45 29 Z" fill="#5a5f55" ${st}/>`,
+    m1: `<path d="M44 29 Q43 9 60 9 Q77 9 76 29 Q60 25 44 29 Z" fill="#5d6449" ${st}/>`,
+    japanese: `<path d="M45 27 Q45 9 60 9 Q75 9 75 27 Q60 24 45 27 Z" fill="#6b6a42" ${st}/><path d="M60 13 l1 2 2 .2 -1.6 1.3 .6 2 -2-1.2 -2 1.2 .6-2 -1.6-1.3 2-.2 Z" fill="#d6b44a"/>`,
+    soviet: `<path d="M44 30 Q43 8 60 8 Q77 8 76 30 Q60 26 44 30 Z" fill="#4f5a3a" ${st}/>`,
+    pasgt: `<path d="M43 33 Q42 8 60 8 Q78 8 77 33 L72 33 L72 27 Q60 24 48 27 L48 33 Z" fill="#6e6a4c" ${st}/>`,
+    ach: `<path d="M44 31 Q43 8 60 8 Q77 8 76 31 L72 31 L72 26 Q60 23 48 26 L48 31 Z" fill="#7a7354" ${st}/><rect x="56" y="10" width="8" height="5" rx="1" fill="#3a3a3a"/>`,
+    cap: `<path d="M46 22 Q46 11 60 11 Q74 11 74 22 Z" fill="#d8c8a2" stroke="#a8966d" stroke-width=".8"/>`,
+  };
+  const HELM_BY_MAT = { plate: "kettle", mail: "coif", mail_padded: "coif", padded: "cap", leather: "cap",
+                        steel_helmet: "m1", kevlar_helmet: "pasgt", cavalry_helmet: "crested" };
+
+  // --- hats (cloth headgear, drawn when the kit has no helmet); c = coat colour --------
+  const HATS = {
+    none: c => "",
+    hood: c => `<path d="M42 32 Q40 6 60 6 Q80 6 78 32 L80 50 Q60 56 40 50 Z" fill="${shade(c, -.15)}" ${st}/><ellipse cx="60" cy="30" rx="10.5" ry="12" fill="${SKIN}"/>`,
+    broad_hat: c => `<ellipse cx="60" cy="19" rx="23" ry="4.5" fill="#3a3530" ${st}/><path d="M48 18 Q48 6 60 6 Q72 6 72 18 Z" fill="#3a3530" ${st}/><path d="M70 12 Q84 2 90 12 Q80 8 72 15 Z" fill="#e8e4d8"/>`,
+    tricorne: c => `<path d="M38 20 Q60 8 82 20 L76 23 Q60 15 44 23 Z" fill="#1f1f1f" ${st}/><path d="M47 18 Q49 8 60 8 Q71 8 73 18 Z" fill="#1f1f1f"/><path d="M38 20 Q60 26 82 20" fill="none" stroke="#e8e4d8" stroke-width="1"/>`,
+    bicorne: c => `<path d="M36 20 Q60 2 84 20 Q60 14 36 20 Z" fill="#1f1f1f" ${st}/><circle cx="60" cy="14" r="2.4" fill="#c73a3a"/>`,
+    shako: c => `<path d="M48 18 L50 0 L70 0 L72 18 Z" fill="#1f1f1f" ${st}/><path d="M46 18 Q60 22 74 18 L74 21 Q60 25 46 21 Z" fill="#1f1f1f"/><circle cx="60" cy="9" r="3" fill="#d6b44a"/><path d="M60 0 V-6" stroke="#e8e4d8" stroke-width="3"/>`,
+    bearskin: c => `<path d="M46 20 Q44 -6 60 -8 Q76 -6 74 20 Z" fill="#1c1a18" ${st}/><path d="M50 18 L70 18 L70 13 L50 13 Z" fill="#d6b44a"/>`,
+    mitre: c => `<path d="M47 20 L60 -6 L73 20 Z" fill="url(#fg-brass)" stroke="#7b5f1e" stroke-width=".8"/><path d="M47 20 Q60 23 73 20" fill="none" stroke="${c}" stroke-width="3"/>`,
+    round_hat: c => `<ellipse cx="60" cy="19" rx="18" ry="3.6" fill="#2f2a26" ${st}/><path d="M49 18 Q49 7 60 7 Q71 7 71 18 Z" fill="#2f2a26" ${st}/>`,
+    kepi: c => `<path d="M48 21 L50 7 Q60 4 71 8 L72 21 Z" fill="${c}" ${st}/><path d="M47 20 Q60 23 73 20 L73 22 Q60 25 47 22 Z" fill="#1f1f1f"/><path d="M47 22 Q40 22 44 26 Q52 24 60 23" fill="#1f1f1f"/>`,
+    slouch: c => `<ellipse cx="60" cy="18" rx="22" ry="4.5" fill="${shade(c, -.25)}" ${st}/><path d="M48 18 Q47 6 60 5 Q73 6 72 18 Z" fill="${shade(c, -.25)}" ${st}/><path d="M48 16 Q60 19 72 16" fill="none" stroke="#1f1f1f" stroke-width="1.6"/>`,
+    feather: c => `<path d="M46 20 Q60 16 74 20 L74 23 Q60 19 46 23 Z" fill="#a23b2a"/><path d="M68 18 Q78 0 72 -6 Q70 6 66 18 Z" fill="#f2efe6" ${st}/><path d="M72 -6 L70 2" stroke="#1f1f1f" stroke-width="2"/>`,
+    headband: c => `<path d="M45 20 Q60 15 75 20 L75 24 Q60 19 45 24 Z" fill="#b8402e"/><path d="M46 20 Q47 9 60 9 Q73 9 74 20 Q60 15 46 20 Z" fill="#1f1a17"/>`,
+    czapka: c => `<path d="M48 20 L50 8 L44 2 L76 2 L70 8 L72 20 Z" fill="${shade(c, -.1)}" ${st}/><path d="M47 20 Q60 23 73 20 L73 22 Q60 25 47 22 Z" fill="#1f1f1f"/>`,
+    field_cap: c => `<path d="M47 21 Q47 9 60 9 Q73 9 73 21 Z" fill="${c}" ${st}/><path d="M47 21 Q60 24 73 21 L73 23 Q60 26 47 23 Z" fill="${shade(c, -.3)}"/><path d="M48 23 Q42 25 46 27 Q54 25 60 25" fill="${shade(c, -.4)}"/><circle cx="60" cy="16" r="1.8" fill="#c73a3a"/>`,
+    winter_cap: c => `<path d="M45 26 Q44 8 60 8 Q76 8 75 26 Z" fill="${shade(c, -.1)}" ${st}/><path d="M45 22 L42 36 L49 36 L49 24 Z M75 22 L78 36 L71 36 L71 24 Z" fill="${shade(c, -.1)}" ${st}/><circle cx="60" cy="15" r="1.8" fill="#c73a3a"/>`,
+    pith: c => `<path d="M44 24 Q44 6 60 6 Q76 6 76 24 Z" fill="#5f6b3a" ${st}/><ellipse cx="60" cy="24" rx="19" ry="3.5" fill="#5f6b3a" ${st}/><circle cx="60" cy="15" r="2" fill="#c73a3a"/>`,
+    boonie: c => `<ellipse cx="60" cy="20" rx="19" ry="4" fill="${shade(c, -.1)}" ${st}/><path d="M48 20 Q48 9 60 9 Q72 9 72 20 Z" fill="${shade(c, -.1)}" ${st}/>`,
+    turban: c => `<path d="M44 24 Q42 8 60 7 Q78 8 76 24 Q60 20 44 24 Z" fill="#2b2b2b" ${st}/><path d="M46 14 Q60 10 74 16 M45 19 Q60 14 75 21" fill="none" stroke="#4a4a4a" stroke-width="1.4"/>`,
+    shemagh: c => `<path d="M43 34 Q41 7 60 7 Q79 7 77 34 L80 52 Q60 58 40 52 Z" fill="url(#fg-shemagh)" ${st}/><ellipse cx="60" cy="29" rx="9.5" ry="9" fill="${SKIN}"/>`,
+    balaclava: c => `<path d="M45 30 Q44 13 60 13 Q76 13 75 30 Q76 44 60 45 Q44 44 45 30 Z" fill="#232323"/><rect x="51" y="24" width="18" height="8" rx="3" fill="${SKIN}"/>`,
+    beret: c => `<path d="M45 19 Q44 9 60 9 Q78 9 76 16 Q66 14 60 19 Z" fill="#7b1f2a" ${st}/>`,
+    police_cap: c => `<path d="M44 16 Q60 8 76 16 L73 21 L47 21 Z" fill="#1d2433" ${st}/><path d="M47 21 Q60 24 73 21 L73 23 Q60 26 47 23 Z" fill="#111"/><circle cx="60" cy="17" r="2" fill="#d6b44a"/>`,
+    kabalak: c => `<path d="M45 24 Q44 8 60 8 Q76 8 75 24 Q60 21 45 24 Z" fill="#8a7a52" ${st}/><path d="M46 13 Q60 9 74 14 M45 18 Q60 13 75 19" fill="none" stroke="#6e6140" stroke-width="1.4"/>`,
+  };
+  const BEARDS = {
+    none: "", stubble: `<path d="M50 35 Q60 44 70 35 Q60 41 50 35 Z" fill="#6a5a4a" opacity=".45"/>`,
+    moustache: `<path d="M53 33 Q60 30 67 33 Q60 32 53 33 Z" fill="#4a3b2c" stroke="#4a3b2c" stroke-width="1.2" stroke-linejoin="round"/>`,
+    beard: `<path d="M47 30 Q48 46 60 46 Q72 46 73 30 Q70 38 60 38 Q50 38 47 30 Z" fill="#5a4632"/><path d="M53 33 Q60 31 67 33" fill="none" stroke="#5a4632" stroke-width="1.6"/>`,
+  };
+
+  // --- weapons, by `icon` (held in the weapon hand at 28,130) ------------------------
+  // Shield shapes (look.shield): a heater with painted bands, or a round shield with a boss.
+  const SHIELDS = {
+    heater: c => `<path d="M88 92 L112 92 L112 116 Q112 136 100 144 Q88 136 88 116 Z" fill="${shade(c, 0.15)}" stroke="${INK}" stroke-width="1.2"/><path d="M100 96 V138 M90 110 H110" stroke="${shade(c, 0.55)}" stroke-width="2"/>`,
+    round: c => `<circle cx="100" cy="114" r="15" fill="${shade(c, 0.15)}" stroke="${INK}" stroke-width="1.2"/><circle cx="100" cy="114" r="10" fill="none" stroke="${shade(c, 0.5)}" stroke-width="1.2"/><circle cx="100" cy="114" r="3.2" fill="#9aa3ad" stroke="${INK}" stroke-width=".8"/>`,
+  };
+  const W = {
+    sword: `<path d="M28 132 L18 70" stroke="#c9d1d8" stroke-width="3" stroke-linecap="round"/><path d="M22 128 L34 126" stroke="#6b5530" stroke-width="3"/>`,
+    sabre: `<path d="M28 132 Q12 104 22 70" fill="none" stroke="#c9d1d8" stroke-width="3" stroke-linecap="round"/><path d="M22 128 L34 126" stroke="#a7822f" stroke-width="3"/>`,
+    dagger: `<path d="M28 133 L24 112" stroke="#c9d1d8" stroke-width="3" stroke-linecap="round"/><path d="M24 130 L33 129" stroke="#6b5530" stroke-width="2.5"/>`,
+    axe: `<path d="M28 140 L20 72" stroke="#6b4b28" stroke-width="3"/><path d="M21 80 Q8 76 8 90 Q14 86 22 88 Z" fill="#9aa3ad" stroke="#4a525a" stroke-width=".8"/>`,
+    club: `<path d="M28 140 L20 84" stroke="#6b4b28" stroke-width="3.5"/><circle cx="19" cy="80" r="7" fill="#9aa3ad" stroke="#4a525a"/><path d="M19 70 V73 M10 80 H13 M25 80 H28 M13 74 L15 76 M23 84 L25 86" stroke="#4a525a" stroke-width="1.6"/>`,
+    spear: `<path d="M28 222 L28 8" stroke="#6b4b28" stroke-width="2.6"/><path d="M28 0 L31 12 L28 16 L25 12 Z" fill="#c9d1d8" stroke="#4a525a" stroke-width=".6"/>`,
+    bill: `<path d="M28 222 L28 14" stroke="#6b4b28" stroke-width="2.6"/><path d="M28 0 L31 13 L32 34 Q22 33 23 22 Q27 24 27 16 Z" fill="#c9d1d8" stroke="#4a525a" stroke-width=".7"/><path d="M31 25 L38 21" stroke="#4a525a" stroke-width="1.6" stroke-linecap="round"/>`,
+    poleaxe: `<path d="M28 222 L28 10" stroke="#6b4b28" stroke-width="2.6"/><path d="M28 0 L30.5 12 L25.5 12 Z" fill="#c9d1d8" stroke="#4a525a" stroke-width=".6"/><path d="M29.5 14 Q42 12 43 30 Q36 25 29.5 27 Z" fill="#9aa3ad" stroke="#4a525a" stroke-width=".7"/><rect x="19.5" y="16" width="8" height="7" rx="1" fill="#9aa3ad" stroke="#4a525a" stroke-width=".7"/>`,
+    lance: `<path d="M28 222 L28 4" stroke="#6b4b28" stroke-width="2.6"/><path d="M28 -4 L31 8 L28 12 L25 8 Z" fill="#c9d1d8" stroke="#4a525a" stroke-width=".6"/><path d="M28 14 L42 18 L28 24 Z" fill="#c73a3a"/><path d="M28 18 L42 18 L28 22 Z" fill="#f2efe6"/>`,
+    bow: `<path d="M98 72 Q120 130 98 188" fill="none" stroke="#6b4b28" stroke-width="3"/><path d="M98 72 L98 188" stroke="#ddd" stroke-width=".7"/>`,
+    crossbow: `<path d="M28 134 L58 104" stroke="#6b4b28" stroke-width="4"/><path d="M44 104 Q56 96 64 112" fill="none" stroke="#4a525a" stroke-width="2.4"/>`,
+    sling: `<path d="M28 130 Q14 100 22 76 Q28 72 30 78" fill="none" stroke="#7d5530" stroke-width="1.4"/><circle cx="24" cy="78" r="3" fill="#8b8b8b"/>`,
+    long_gun: `<path d="M24 150 L66 96" stroke="#5a3d22" stroke-width="5" stroke-linecap="round"/><path d="M52 114 L80 78" stroke="#4a4f55" stroke-width="2.6" stroke-linecap="round"/>`,
+    bayonet_gun: `<path d="M24 150 L66 96" stroke="#5a3d22" stroke-width="5" stroke-linecap="round"/><path d="M52 114 L80 78" stroke="#4a4f55" stroke-width="2.6"/><path d="M80 78 L92 62" stroke="#c9d1d8" stroke-width="2" stroke-linecap="round"/>`,
+    musket_butt: `<path d="M28 146 L20 70" stroke="#4a4f55" stroke-width="2.6"/><path d="M28 140 L34 112" stroke="#5a3d22" stroke-width="5" stroke-linecap="round"/>`,
+    modern_rifle: `<path d="M26 140 L72 100" stroke="#2b2e31" stroke-width="5" stroke-linecap="round"/><path d="M40 128 L44 140 M54 116 L58 128" stroke="#2b2e31" stroke-width="3"/><path d="M68 104 L84 90" stroke="#2b2e31" stroke-width="2.2"/>`,
+    machine_gun: `<path d="M26 140 L76 98" stroke="#2b2e31" stroke-width="6" stroke-linecap="round"/><path d="M76 98 L90 86" stroke="#2b2e31" stroke-width="2.6"/><path d="M50 122 Q52 132 46 138" fill="none" stroke="#b08d3c" stroke-width="2"/>`,
+    smg: `<path d="M26 134 L56 110" stroke="#2b2e31" stroke-width="5" stroke-linecap="round"/><path d="M42 122 L40 136" stroke="#2b2e31" stroke-width="3"/><path d="M56 110 L64 104" stroke="#2b2e31" stroke-width="2"/>`,
+    pistol: `<path d="M28 132 L30 118 L44 116 L44 121 L33 122 Z" fill="#2b2e31"/>`,
+    launcher: `<path d="M20 144 L84 92" stroke="#57603a" stroke-width="6" stroke-linecap="round"/><path d="M84 92 L94 82" stroke="#57603a" stroke-width="10" stroke-linecap="round"/>`,
+    grenade: `<ellipse cx="22" cy="122" rx="5" ry="6.5" fill="#55603a" stroke="#2f3420"/><path d="M22 115 V112 H26" stroke="#8b8b8b" stroke-width="1.6" fill="none"/>`,
+    stick_grenade: `<path d="M28 136 L20 110" stroke="#7d5530" stroke-width="3"/><rect x="15" y="100" width="10" height="11" rx="2" fill="#55603a" stroke="#2f3420" transform="rotate(-18 20 105)"/>`,
+    device: `<rect x="18" y="120" width="12" height="16" rx="2" fill="#3a3a3a"/><path d="M24 120 V112" stroke="#3a3a3a" stroke-width="1.4"/><circle cx="24" cy="111" r="1.6" fill="#c73a3a"/>`,
+    rammer: `<path d="M28 222 L28 40" stroke="#6b4b28" stroke-width="2.6"/><rect x="24" y="32" width="8" height="10" rx="2" fill="#2f2a26"/>`,
+    stake: `<path d="M28 140 L24 106" stroke="#a2905c" stroke-width="3"/><path d="M24 106 L23 100" stroke="#a2905c" stroke-width="1.6"/>`,
+    spade: `<path d="M28 140 L20 92" stroke="#6b4b28" stroke-width="3"/><path d="M20 92 L14 74 L22 70 L28 88 Z" fill="#5d6449" stroke="#3d4230" stroke-width=".8"/>`,
+    fist: ``,
+  };
+  const iconOf = w => !w ? "fist" : w.icon || (w.threat ? (w.threat === "pistol" ? "pistol" : "long_gun") : w.melee === "unarmed" ? "fist" : "sword");
+
+  // --- composition ------------------------------------------------------------------------
+  const layersOf = v => {                       // same banding as slot_layers in the engine
+    if (!v) return [];
+    if (typeof v === "string") return [[v, 0, 100]];
+    const items = Array.isArray(v) ? v : [v]; let lo = 0;
+    return items.map(it => { const n = it.cover == null ? 100 - lo : it.cover; const r = [it.material, lo, lo + n]; lo += n; return r });
+  };
+  function slotSvg(slot, val, uid) {
+    const shapes = PARTS[slot]; if (!shapes) return "";
+    const [x, y, w, h] = SLOT_BOX[slot];
+    return layersOf(val).map(([mat, lo, hi], i) => {
+      const fill = MAT[mat]; if (!fill) return "";
+      const id = `${uid}-${slot}-${i}`;
+      return `<clipPath id="${id}"><rect x="${x - 4}" y="${y + h * lo / 100}" width="${w + 8}" height="${h * (hi - lo) / 100}"/></clipPath>` +
+        shapes.map(d => `<path d="${d}" fill="${fill}" stroke="#3a4148" stroke-width=".7" clip-path="url(#${id})"/>`).join("");
+    }).join("");
+  }
+  const face = beard => beard === "mask" ? `<path d="M52 24.5 Q55 23 57.5 24.5 M62.5 24.5 Q65 23 68 24.5" fill="none" stroke="#3b2d22" stroke-width="1.1" stroke-linecap="round"/><ellipse cx="55" cy="27.5" rx="1.3" ry="1.6" fill="#1f1a17"/><ellipse cx="65" cy="27.5" rx="1.3" ry="1.6" fill="#1f1a17"/>` : `<g><path d="M52 24.5 Q55 23 57.5 24.5 M62.5 24.5 Q65 23 68 24.5" fill="none" stroke="#3b2d22" stroke-width="1.1" stroke-linecap="round"/>
+    <ellipse cx="55" cy="27.5" rx="1.3" ry="1.6" fill="#1f1a17"/><ellipse cx="65" cy="27.5" rx="1.3" ry="1.6" fill="#1f1a17"/>
+    <path d="M60 28 L58.6 32.5 L61 32.8" fill="none" stroke="${SKIN_DARK}" stroke-width=".9" stroke-linecap="round"/>
+    <path d="M56 36 Q60 38 64 36" fill="none" stroke="#7a3f33" stroke-width="1.1" stroke-linecap="round"/>${BEARDS[beard] || ""}</g>`;
+  const HAIR = `<path d="M46.5 24 Q46 13 60 13 Q74 13 73.5 24 Q70 17 60 17 Q50 17 46.5 24 Z" fill="#4a3b2c"/>`;
+
+  // Where to mark a wound on the figure (front view; back wounds get a dashed ring).
+  const WOUND_AT = {
+    skull_l: [66, 19], skull_r: [54, 19], face: [60, 31], neck: [60, 46], chest_l: [70, 68], chest_r: [50, 68],
+    abdomen: [60, 104], groin: [60, 126], back_upper: [60, 72], back_lower: [60, 100],
+    shoulder_l: [88, 56], shoulder_r: [32, 56], upper_arm_l: [90, 78], upper_arm_r: [30, 78],
+    forearm_l: [91, 110], forearm_r: [29, 110], hand_l: [92, 130], hand_r: [28, 130],
+    thigh_l: [69, 156], thigh_r: [51, 156], knee_l: [69, 182], knee_r: [51, 182],
+    lower_leg_l: [69, 196], lower_leg_r: [51, 196], foot_l: [71, 212], foot_r: [49, 212],
+  };
+  const SEV_R = { light: 3.2, serious: 4.4, critical: 5.8 };
+  const scar = (at, w) => `<path d="M${at[0] - 4} ${at[1] - 2} L${at[0] + 4} ${at[1] + 2} M${at[0] - 2} ${at[1] - 3} L${at[0] - 1} ${at[1] - 1} M${at[0] + 1} ${at[1] + 1} L${at[0] + 2} ${at[1] + 3}" stroke="#7a4b3a" stroke-width="1.6" stroke-linecap="round" fill="none"><title>${w.loc.replace("_", " ")}: old wound</title></path>`;
+  const woundMarks = wounds => (wounds || []).map(w => {
+    const at = WOUND_AT[w.loc]; if (!at) return "";
+    if (w.old) return scar(at, w);
+    const back = w.loc.startsWith("back_"), r = SEV_R[w.sev] || 4;
+    return `<circle cx="${at[0]}" cy="${at[1]}" r="${r}" fill="${back ? "none" : "#c4122f"}" stroke="${back ? "#c4122f" : "#fff"}" stroke-width="${back ? 2 : 1}"${back ? ' stroke-dasharray="2 1.5"' : ""}><title>${w.loc.replace("_", " ")}: ${w.sev || ""}</title></circle>`;
+  }).join("");
+
+  let seq = 0;
+  function svg({ kit = null, weapon = null, look = {}, size = 96, title = "", wounds = null } = {}) {
+    const uid = "fg" + (seq++).toString(36);
+    const slots = (kit && kit.slots) || {};
+    const colour = look.colour || "#6b7480";
+    const coat = look.coat === "skin" ? SKIN : colour;
+    const trousers = look.trousers || shade(colour, -0.35);
+    const helmMat = slots.helm ? layersOf(slots.helm)[0][0] : null;
+    const visor = slots.visor && layersOf(slots.visor)[0][2] >= 70;
+    const helmShape = helmMat ? (visor ? "closed" : look.helmet || (kit.look && kit.look.helmet) || HELM_BY_MAT[helmMat]) : null;
+    const hat = !helmShape ? (look.hat || "none") : null;
+    const icon = iconOf(weapon);
+    const shield = kit && kit.shield;
+    // Headgear that frames the face (coif, hood, head cloth, balaclava) is drawn under the face.
+    const faceOver = helmShape === "coif" || ["hood", "shemagh", "balaclava"].includes(hat);
+    const pole = icon === "spear" || icon === "lance" || icon === "rammer";
+    const shieldDef = `<pattern id="fg-shemagh" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#ece6d6"/><path d="M0 3 H6 M3 0 V6" stroke="#b5463a" stroke-width=".9"/></pattern>`;
+    return `<svg viewBox="0 -10 120 240" width="${Math.round(size * 120 / 240)}" height="${size}" role="img" aria-label="${title}">${title ? `<title>${title}</title>` : ""}${DEFS.replace("</defs>", shieldDef + "</defs>")}
+      ${pole ? W[icon] : ""}
+      <g stroke="${INK}" stroke-width=".8">
+        ${PARTS.leg.concat(PARTS.greave).map(d => `<path d="${d}" fill="${trousers}"/>`).join("")}
+        ${FEET.map(d => `<path d="${d}" fill="#2f2a26"/>`).join("")}
+        <path d="${COAT}" fill="${coat}"/>
+        ${PARTS.arm.map(d => `<path d="${d}" fill="${coat}"/>`).join("")}
+        <path d="${PARTS.gorget[0]}" fill="${SKIN}"/>
+        <circle cx="60" cy="28" r="14" fill="${SKIN}"/>
+        ${HANDS.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="5.5" fill="${SKIN}"/>`).join("")}
+      </g>
+      ${look.coat === "skin" ? "" : `<path d="M40 118 L80 118" stroke="#2f2a26" stroke-width="3"/>`}
+      ${["leg", "greave", "skirt", "torso_lower", "torso_upper", "arm", "pauldron", "gorget"].map(s => slotSvg(s, slots[s], uid)).join("")}
+      ${slots.gauntlet ? HANDS.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="5.8" fill="${MAT[layersOf(slots.gauntlet)[0][0]] || SKIN}" stroke="#3a4148" stroke-width=".7"/>`).join("") : ""}
+      ${slots.sabaton ? FEET.map(d => `<path d="${d}" fill="${MAT[layersOf(slots.sabaton)[0][0]] || "#2f2a26"}" stroke="#3a4148" stroke-width=".7"/>`).join("") : ""}
+      ${!helmShape && !["hood", "shemagh", "balaclava"].includes(hat) ? HAIR : ""}
+      ${helmShape === "closed" || faceOver ? "" : face(look.beard)}
+      ${helmShape ? HELMETS[helmShape] || "" : (HATS[hat] || HATS.none)(colour)}
+      ${faceOver ? face(hat === "balaclava" ? "mask" : look.beard) : ""}
+      ${shield ? (SHIELDS[look.shield] || SHIELDS.heater)(colour) : ""}
+      ${pole ? "" : W[icon] || ""}
+      ${woundMarks(wounds)}
+    </svg>`;
+  }
+  function shade(hex, amt) {
+    const n = parseInt(hex.slice(1), 16), f = c => Math.max(0, Math.min(255, Math.round(amt < 0 ? c * (1 + amt) : c + (255 - c) * amt)));
+    return "#" + [n >> 16, (n >> 8) & 255, n & 255].map(f).map(c => c.toString(16).padStart(2, "0")).join("");
+  }
+  // The look of an example combatant: its side's look, then the example's own.
+  const lookFor = (conflict, ex) => Object.assign({}, ((conflict.sides || []).find(s => s.name === ex.side) || {}).look || {}, ex.look || {});
+  // Locator map of a conflict (data/maps.json, built by tools/maps/make_maps.mjs). Colours
+  // come from CSS variables --map-sea, --map-land, --map-coast, --map-hl, --map-dot.
+  // A map has one or more panels, drawn side by side. Solid dots: where the records come
+  // from; hollow dots: fought there, but no wound records used.
+  function map(m, height = 48, title = "") {
+    if (!m) return "";
+    const n = m.panels.length, W = n * m.w + (n - 1) * m.gap, width = Math.round(height * W / m.h);
+    const dotName = d => d.names.join(", ") + (d.context ? " (no records used)" : "");
+    const names = m.panels.map(p => (p.label ? p.label + ": " : "") + p.dots.map(dotName).join("; ")).join(" | ");
+    const uid = "mp" + (seq++).toString(36);
+    const panel = (p, i) => `<g transform="translate(${i * (m.w + m.gap)} 0)"><title>${p.label || title}</title>
+      <clipPath id="${uid}-${i}"><rect width="${m.w}" height="${m.h}" rx="7"/></clipPath><g clip-path="url(#${uid}-${i})">
+      <rect width="${m.w}" height="${m.h}" fill="var(--map-sea,#d5e1e6)"/>
+      <path d="${p.land}" fill="var(--map-land,#cfc6ab)" stroke="var(--map-coast,#8c8670)" stroke-width=".5" stroke-linejoin="round"/>
+      ${p.lakes ? `<path d="${p.lakes}" fill="var(--map-sea,#d5e1e6)" stroke="var(--map-coast,#8c8670)" stroke-width=".35"/>` : ""}
+      ${p.highlight ? `<path d="${p.highlight}" fill="var(--map-hl,#b8a77a)" stroke="var(--map-coast,#8c8670)" stroke-width=".5"/>` : ""}
+      ${p.borders ? `<path d="${p.borders}" fill="none" stroke="var(--map-coast,#8c8670)" stroke-width=".45" stroke-dasharray="1.6 1.2" opacity=".8"/>` : ""}</g>
+      ${p.dots.map(d => `<circle cx="${d.x}" cy="${d.y}" r="${d.names.length > 1 ? 4.2 : 3.4}" fill="${d.context ? "var(--map-sea,#d5e1e6)" : "var(--map-dot,#8e1b2c)"}" stroke="${d.context ? "var(--map-dot,#8e1b2c)" : "var(--map-sea,#d5e1e6)"}" stroke-width="${d.context ? 1.6 : 1.2}"><title>${dotName(d)}</title></circle>`).join("")}
+      <rect x=".5" y=".5" width="${m.w - 1}" height="${m.h - 1}" rx="7" fill="none" stroke="var(--map-coast,#8c8670)" stroke-width="1"/></g>`;
+    return `<svg viewBox="0 0 ${W} ${m.h}" width="${width}" height="${height}" role="img" aria-label="${title}: ${names}"><title>${title}: ${names}</title>${m.panels.map(panel).join("")}</svg>`;
+  }
+  return { svg, map, lookFor, iconOf, names: { helmet: Object.keys(HELMETS), hat: Object.keys(HATS), icon: Object.keys(W), beard: Object.keys(BEARDS), shield: Object.keys(SHIELDS) } };
+})();
+if (typeof module !== "undefined") module.exports = FIG;
+</script>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Grave Wounds Team Builder</h1>
+      <p class="sub">A team of four to six, a few rolls each: characteristics, where he comes from, the years he served and what they left on him, and his kit. Send the team to the wound roller to fight: his skills fill in his attack and defence there.</p>
+    </div>
+    <nav><a href="roller.html">Wound roller</a><a href="travel.html">Travel map</a><a href="field.html">Field map</a><a href="../index.html">Start page</a></nav>
+  </header>
+
+  <div class="grid">
+    <section class="panel controls" aria-labelledby="h-make">
+      <h2 id="h-make">Make a team</h2>
+      <div><label for="sel-era">Era</label><select id="sel-era"></select></div>
+      <div><label for="sel-region">Where they come from</label><select id="sel-region"></select></div>
+      <div><label for="sel-template">Team</label><select id="sel-template"></select></div>
+      <fieldset id="slots-box" hidden>
+        <legend class="sr">Your own team</legend>
+        <span class="lbl" aria-hidden="true">Careers (the first leads)</span>
+        <ul class="slots" id="slots"></ul>
+        <div class="toolbar"><button class="small" id="btn-add-slot">Add a member</button></div>
+      </fieldset>
+      <fieldset>
+        <legend class="sr">Characteristics</legend>
+        <span class="lbl" aria-hidden="true">Characteristics</span>
+        <label class="radio"><input type="radio" name="mode" value="roll" checked><span>Roll 3d6 × 5 each</span></label>
+        <label class="radio"><input type="radio" name="mode" value="array"><span>The fixed array (<span id="array"></span>), placed by his career; click two to swap them</span></label>
+      </fieldset>
+      <div><label for="in-side">Side in the roller</label><input type="text" id="in-side" value="Side A"></div>
+      <div class="toolbar">
+        <button class="primary" id="btn-roll">Roll the team</button>
+      </div>
+      <div class="toolbar">
+        <button id="btn-send" disabled title="Add the team to the wound roller's fighters">Send to the roller</button>
+        <button id="btn-print" disabled>Print the sheets</button>
+      </div>
+      <output class="msg" id="msg"></output>
+      <p class="muted" style="margin:0">Leaders serve three terms, the rest one or two. Each term raises his career's skills, adds an event, and may leave an old wound: rolled on the region's wound table, a healed scar or a lasting hurt. See <a href="https://github.com/swares/grave-wounds/blob/main/docs/team.md">the rules</a>.</p>
+    </section>
+
+    <section aria-labelledby="h-team">
+      <h2 id="h-team" class="sr">The team</h2>
+      <div class="sheets" id="sheets"><p class="muted">Pick where they come from and a team, then roll.</p></div>
+    </section>
+  </div>
+</div>
+
+<script>
+const TD = {"era":{"id":"medieval","name":"Medieval (c.1250-1460)","characteristics":[{"id":"str","name":"Strength"},{"id":"agi","name":"Agility"},{"id":"end","name":"Endurance"},{"id":"wits","name":"Wits"},{"id":"nerve","name":"Nerve"},{"id":"pres","name":"Presence"}],"array":[70,60,55,50,45,35],"stat_range":[15,95],"age":{"start":16,"per_term":4},"skill_max":90,"first_term":15,"term_main":10,"term_second":5,"gain":15,"skills":[{"id":"blade","name":"Blade","of":"agi","div":2,"combat":true},{"id":"axe_mace","name":"Axe and mace","of":"str","div":2,"combat":true},{"id":"polearm","name":"Polearm","of":"str","div":2,"combat":true},{"id":"bow","name":"Bow","of":"agi","div":2,"combat":true},{"id":"crossbow","name":"Crossbow","of":"agi","div":2,"combat":true},{"id":"sling","name":"Sling","of":"agi","div":3,"combat":true},{"id":"brawl","name":"Brawl","of":"str","div":2,"combat":true},{"id":"parry","name":"Parry","of":"agi","div":2,"combat":true},{"id":"dodge","name":"Dodge","of":"agi","div":3,"combat":true},{"id":"ride","name":"Ride","of":"agi","div":3},{"id":"fieldcraft","name":"Fieldcraft","of":"wits","div":3},{"id":"watch","name":"Watch","of":"wits","div":2},{"id":"stealth","name":"Stealth","of":"agi","div":3},{"id":"leechcraft","name":"Leechcraft","of":"wits","div":4},{"id":"seamanship","name":"Seamanship","of":"wits","div":4},{"id":"craft","name":"Craft","of":"wits","div":3},{"id":"letters","name":"Letters","of":"wits","div":5},{"id":"persuade","name":"Persuade","of":"pres","div":2},{"id":"command","name":"Command","of":"pres","div":3}],"weapon_skill":{"sword":"blade","dagger":"blade","axe":"axe_mace","spiked_club":"axe_mace","spear":"polearm","bill":"polearm","poleaxe":"polearm","bow":"bow","longbow":"bow","crossbow":"crossbow","sling":"sling","punch":"brawl","kick":"brawl","elbow_knee":"brawl"},"defence":["parry","dodge"],"regions":[{"id":"latin_east","name":"Latin East (c.1250)","table":"sidon-1253-all-hits","colours":["#e6e0d2","#8a2b2b","#2f4a6b","#6b5d45"],"names":["Jean","Hugh","Balian","Raymond","Guy","Amalric","Philip","Odo","Anseau","Raoul","Thomas","Nicholas","Renier","Garnier","Arnulf","Walter"],"bynames":["of Acre","of Tyre","of Sidon","the Poulain","of Genoa","the Pisan","of Jaffa","of Beirut","the Syrian","of Tripoli"]},{"id":"baltic","name":"Gotland and the Baltic (c.1360)","table":"visby-1361-adjusted","colours":["#7a6a4f","#4f5d3a","#5b6470","#8c6a3c"],"names":["Botvid","Rodvid","Olof","Nils","Lars","Hans","Peder","Jakob","Mikael","Hemming","Gunnar","Ragvald","Sigvid","Torsten","Ketil","Halvard"],"bynames":["Olofsson","Nilsson","Larsson","Hansson","Pedersson","Jakobsson","Botvidsson","of Roma","of Visby","of L\u00e4rbro"]},{"id":"england","name":"England (c.1415-1460)","table":"towton-1461-all-hits","colours":["#a33a2e","#2e4f8a","#e6e0d2","#5c6b3a"],"names":["John","William","Thomas","Richard","Robert","Henry","Walter","Roger","Hugh","Geoffrey","Nicholas","Ralph","Simon","Adam","Edmund","Gilbert"],"bynames":["Archer","Smith","Fletcher","Carter","Baker","Miller","Webb","Thatcher","Cooper","Hayward","of York","of Ely"]},{"id":"france","name":"France (c.1415)","table":"towton-1461-all-hits","colours":["#2b4a8a","#e6e0d2","#8a2b3c","#4a5a3a"],"names":["Jean","Pierre","Guillaume","Jacques","Robert","Colin","Guiot","Perrin","Enguerrand","Hugues","Gautier","Renaud","Bertrand","Huguet","Thibaut","Jehan"],"bynames":["le F\u00e8vre","Boucher","de Picardie","le Normand","Bourgeois","Charpentier","le Breton","Marchand","d'Arras","de Rouen"]}],"origins":[{"name":"Ploughman's son","gain":"fieldcraft","trait":{"text":"Strong back","str":10},"drawback":{"text":"Cannot read a word","letters":-15}},{"name":"Shepherd","gain":"watch","trait":{"text":"Good with a sling","sling":15},"drawback":{"text":"Uneasy in crowds","pres":-10}},{"name":"Fisherman's son","gain":"seamanship","trait":{"text":"Swims like a seal","end":10},"drawback":{"text":"Smells of the catch","persuade":-15}},{"name":"Smith's apprentice","gain":"craft","trait":{"text":"Arms like hams","str":10},"drawback":{"text":"Half deaf from the anvil","watch":-15}},{"name":"Carter","gain":"ride","trait":{"text":"Knows every road","fieldcraft":15},"drawback":{"text":"Bad back","agi":-10}},{"name":"Townsman's apprentice","gain":"craft","trait":{"text":"Quick tongue","persuade":15},"drawback":{"text":"Never slept under the sky","fieldcraft":-15}},{"name":"Merchant's son","gain":"persuade","trait":{"text":"Lettered","letters":15},"drawback":{"text":"Soft hands","str":-10}},{"name":"Huntsman's son","gain":"bow","trait":{"text":"Moves quietly","stealth":15},"drawback":{"text":"Known as a poacher","pres":-10}},{"name":"Miller's son","gain":"craft","trait":{"text":"Good at sums","wits":10},"drawback":{"text":"Mistrusted, as millers are","persuade":-15}},{"name":"Younger son of a knight","gain":"ride","trait":{"text":"Raised to arms","blade":15},"drawback":{"text":"Proud and touchy","persuade":-15}},{"name":"A squire's bastard","gain":"blade","trait":{"text":"Hard to frighten","nerve":10},"drawback":{"text":"No inheritance and no patience","pres":-10}},{"name":"Novice who left the cloister","gain":"letters","trait":{"text":"Knows his herbs","leechcraft":15},"drawback":{"text":"Faints at the sight of blood","nerve":-10}},{"name":"Barber's boy","gain":"leechcraft","trait":{"text":"Steady hands","agi":10},"drawback":{"text":"Never stops talking","stealth":-15}},{"name":"Groom in a great stable","gain":"ride","trait":{"text":"Horse sense","fieldcraft":15},"drawback":{"text":"Kicked by a horse as a boy","end":-10}},{"name":"Sailor's orphan","gain":"seamanship","trait":{"text":"Climbs anything","agi":10},"drawback":{"text":"Cannot sit a horse","ride":-15}},{"name":"Woodcutter","gain":"axe_mace","trait":{"text":"Tireless","end":10},"drawback":{"text":"Slow of speech","wits":-10}},{"name":"Raised on the pilgrim roads","gain":"fieldcraft","trait":{"text":"Speaks three tongues","persuade":15},"drawback":{"text":"Belongs nowhere","pres":-10}},{"name":"Street brawler","gain":"brawl","trait":{"text":"Takes a punch","end":10},"drawback":{"text":"Known to the watch","persuade":-15}},{"name":"Servant in a great house","gain":"watch","trait":{"text":"Knows how to please his betters","persuade":15},"drawback":{"text":"Never held a weapon","parry":-15}},{"name":"Herdsman of the border","gain":"polearm","trait":{"text":"Grew up among raids","nerve":10},"drawback":{"text":"Hot-tempered","wits":-10}}],"careers":[{"id":"man_at_arms","name":"Man-at-arms","main":"blade","second":"parry","prefers":["str","agi","nerve","end","pres","wits"],"wound":25,"wound_weapon":"sword","kit":{"default":"hauberk","latin_east":"hauberk","baltic":"danish_maa","england":"brigandine_sallet","france":"full_plate"},"weapon":{"default":"sword"},"terms":[{"to":20,"skill":"ride","text":"Rode in a lord's household for a season."},{"to":40,"skill":"command","text":"Led a handful of men on a raid."},{"to":60,"skill":"polearm","text":"Fought on foot at a barrier."},{"to":75,"skill":"parry","text":"Came through a tournament melee."},{"to":90,"skill":"watch","text":"Held the gate of a besieged town.","wound":true},{"to":100,"skill":"persuade","text":"Took a knight prisoner and haggled his ransom."}]},{"id":"archer","name":"Archer","main":"bow","second":"dodge","prefers":["agi","str","wits","end","nerve","pres"],"wound":15,"wound_weapon":"sword","kit":{"default":"gambeson","baltic":"gotland_levy","england":"jack_sallet","france":"jack_sallet"},"weapon":{"default":"bow","england":"longbow","france":"longbow"},"terms":[{"to":20,"skill":"watch","text":"Stood sentry on a border tower."},{"to":40,"skill":"stealth","text":"Scouted ahead of the army."},{"to":55,"skill":"fieldcraft","text":"Foraged through a hungry winter."},{"to":70,"skill":"craft","text":"Made arrows by the thousand in a long siege."},{"to":85,"skill":"blade","text":"Fought hand to hand when the line broke.","wound":true},{"to":100,"skill":"dodge","text":"Ran from a charge of horse and lived.","wound":true}]},{"id":"crossbowman","name":"Crossbowman","main":"crossbow","second":"dodge","prefers":["agi","wits","end","str","nerve","pres"],"wound":15,"wound_weapon":"crossbow","kit":{"default":"gambeson","latin_east":"leather","baltic":"gotland_armoured"},"weapon":{"default":"crossbow"},"terms":[{"to":20,"skill":"craft","text":"Kept the windlasses and bolts of a garrison."},{"to":40,"skill":"watch","text":"Shot from the walls through a siege."},{"to":55,"skill":"seamanship","text":"Served aboard a galley."},{"to":70,"skill":"persuade","text":"Bargained over pay for a free company."},{"to":85,"skill":"parry","text":"Held a pavise in the front of the line.","wound":true},{"to":100,"skill":"dodge","text":"Crawled back from a sally that failed.","wound":true}]},{"id":"spearman","name":"Spearman or billman","main":"polearm","second":"parry","prefers":["str","end","nerve","agi","wits","pres"],"wound":20,"wound_weapon":"sword","kit":{"default":"gambeson","baltic":"gotland_levy","england":"jack_sallet","france":"jack_sallet"},"weapon":{"default":"spear","england":"bill"},"terms":[{"to":20,"skill":"fieldcraft","text":"Marched through a long campaign."},{"to":40,"skill":"parry","text":"Held his place in the line.","wound":true},{"to":55,"skill":"craft","text":"Dug ditches and threw up banks for a camp."},{"to":70,"skill":"brawl","text":"Won a brawl in camp."},{"to":85,"skill":"watch","text":"Guarded the baggage carts."},{"to":100,"skill":"dodge","text":"Was caught in a rout and lived.","wound":true}]},{"id":"mounted_sergeant","name":"Mounted sergeant","main":"ride","second":"parry","prefers":["agi","str","nerve","end","wits","pres"],"wound":20,"wound_weapon":"sword","kit":{"default":"hauberk","baltic":"gotland_armoured","england":"brigandine_sallet","france":"transitional"},"weapon":{"default":"spear"},"terms":[{"to":20,"skill":"polearm","text":"Rode in a charge with couched spears."},{"to":40,"skill":"fieldcraft","text":"Carried messages across hostile country."},{"to":55,"skill":"command","text":"Kept order among the grooms and the baggage."},{"to":70,"skill":"watch","text":"Patrolled a frontier road."},{"to":85,"skill":"blade","text":"Fought in a skirmish at a ford.","wound":true},{"to":100,"skill":"persuade","text":"Bought remounts at a horse fair."}]},{"id":"mercenary","name":"Mercenary","main":"axe_mace","second":"parry","prefers":["str","end","agi","nerve","wits","pres"],"wound":25,"wound_weapon":"sword","kit":{"default":"transitional","latin_east":"hauberk","england":"brigandine_sallet","france":"brigandine_sallet"},"weapon":{"default":"axe"},"terms":[{"to":20,"skill":"persuade","text":"Changed masters for better pay."},{"to":40,"skill":"stealth","text":"Looted a town and kept his share hidden."},{"to":55,"skill":"blade","text":"Fought a duel over a debt."},{"to":70,"skill":"fieldcraft","text":"Lived off the land between contracts."},{"to":85,"skill":"parry","text":"Stormed a breach.","wound":true},{"to":100,"skill":"command","text":"Was made corporal of a lance."}]},{"id":"sailor","name":"Sailor","main":"seamanship","second":"dodge","prefers":["end","agi","str","wits","nerve","pres"],"wound":10,"wound_weapon":"axe","kit":{"default":"none","baltic":"leather"},"weapon":{"default":"axe","latin_east":"dagger"},"terms":[{"to":20,"skill":"watch","text":"Kept the night watch on a cog."},{"to":40,"skill":"craft","text":"Mended sail and rigging."},{"to":55,"skill":"persuade","text":"Traded on his own account in a foreign port."},{"to":70,"skill":"brawl","text":"Fought in a dockside tavern."},{"to":85,"skill":"axe_mace","text":"Beat off pirates.","wound":true},{"to":100,"skill":"fieldcraft","text":"Was wrecked and walked home."}]},{"id":"clerk","name":"Clerk or priest","main":"letters","second":"persuade","prefers":["wits","pres","nerve","end","agi","str"],"wound":3,"wound_weapon":"dagger","kit":{"default":"none"},"weapon":{"default":"dagger"},"terms":[{"to":20,"skill":"persuade","text":"Wrote letters for a lord's steward."},{"to":40,"skill":"leechcraft","text":"Kept the infirmary of a religious house."},{"to":55,"skill":"command","text":"Kept the accounts of a garrison."},{"to":70,"skill":"watch","text":"Took down the testimony of witnesses."},{"to":85,"skill":"ride","text":"Travelled as an envoy."},{"to":100,"skill":"fieldcraft","text":"Went on pilgrimage on foot.","wound":true}]},{"id":"barber_surgeon","name":"Barber-surgeon","main":"leechcraft","second":"craft","prefers":["wits","agi","nerve","end","pres","str"],"wound":5,"wound_weapon":"dagger","kit":{"default":"none","england":"jack_sallet"},"weapon":{"default":"dagger"},"terms":[{"to":20,"skill":"craft","text":"Pulled teeth and let blood in a market town."},{"to":40,"skill":"letters","text":"Studied an anatomy with a master."},{"to":55,"skill":"watch","text":"Worked through a pestilence."},{"to":70,"skill":"persuade","text":"Was paid by a captain to follow the army."},{"to":85,"skill":"leechcraft","text":"Cut arrows out of men after a battle."},{"to":100,"skill":"dodge","text":"Was caught when the camp was overrun.","wound":true}]},{"id":"forester","name":"Forester or huntsman","main":"fieldcraft","second":"stealth","prefers":["agi","wits","end","str","nerve","pres"],"wound":10,"wound_weapon":"bow","kit":{"default":"leather"},"weapon":{"default":"bow"},"terms":[{"to":20,"skill":"bow","text":"Hunted deer for a lord's table."},{"to":40,"skill":"stealth","text":"Hunted poachers in the forest."},{"to":55,"skill":"watch","text":"Tracked a band of outlaws."},{"to":70,"skill":"ride","text":"Rode with a great hunt."},{"to":85,"skill":"polearm","text":"Killed a boar with a spear.","wound":true},{"to":100,"skill":"leechcraft","text":"Kept the hounds and doctored them."}]},{"id":"servant","name":"Servant or groom","main":"ride","second":"watch","prefers":["end","agi","wits","str","pres","nerve"],"wound":5,"wound_weapon":"dagger","kit":{"default":"none"},"weapon":{"default":"dagger"},"terms":[{"to":20,"skill":"craft","text":"Kept a lord's harness and arms."},{"to":40,"skill":"watch","text":"Waited at table and heard everything."},{"to":55,"skill":"fieldcraft","text":"Pitched tents and made camp on campaign."},{"to":70,"skill":"persuade","text":"Bought provisions for the household."},{"to":85,"skill":"leechcraft","text":"Nursed his master through a fever."},{"to":100,"skill":"blade","text":"Fought beside his master when the camp was raided.","wound":true}]},{"id":"merchant","name":"Merchant","main":"persuade","second":"letters","prefers":["pres","wits","nerve","end","agi","str"],"wound":5,"wound_weapon":"dagger","kit":{"default":"gambeson"},"weapon":{"default":"sword"},"terms":[{"to":20,"skill":"letters","text":"Kept the books of a trading house."},{"to":40,"skill":"seamanship","text":"Sailed with his goods to a far port."},{"to":55,"skill":"ride","text":"Travelled the fairs with a pack train."},{"to":70,"skill":"command","text":"Hired and paid guards for a caravan."},{"to":85,"skill":"watch","text":"Was cheated once and learned from it."},{"to":100,"skill":"blade","text":"Fought off robbers on the road.","wound":true}]}],"old_wound":[{"to":70,"kind":"mark","text":"a healed scar"},{"to":100,"kind":"lasting","text":"a lasting hurt"}],"lasting":5,"lasting_from":{"head":"wits","face":"pres","arms":"str","legs":"agi","torso":"end"},"templates":[{"id":"retinue","name":"A lord's retinue","slots":[["man_at_arms",3],["archer",2],["archer",1],["spearman",1],["barber_surgeon",1],["servant",1]]},{"id":"free_company","name":"A free company","slots":[["mercenary",3],["mercenary",2],["crossbowman",2],["archer",1],["spearman",1]]},{"id":"garrison","name":"A garrison patrol","slots":[["mounted_sergeant",3],["crossbowman",2],["crossbowman",1],["spearman",1],["clerk",1]]},{"id":"muster","name":"A farmers' muster","slots":[["spearman",3],["spearman",1],["spearman",1],["archer",1],["forester",1]]},{"id":"escort","name":"A pilgrims' escort","slots":[["man_at_arms",3],["mounted_sergeant",2],["crossbowman",1],["clerk",1],["barber_surgeon",1]]},{"id":"traders","name":"A merchant's company","slots":[["merchant",3],["sailor",2],["crossbowman",1],["servant",1]]}]},"ranges":{"latin_east":{"axe":[["skull_l",9],["skull_r",18],["face",24],["neck",27],["chest_l",33],["chest_r",39],["abdomen",44],["groin",46],["back_upper",48],["back_lower",50],["shoulder_l",53],["shoulder_r",56],["upper_arm_l",58],["upper_arm_r",60],["forearm_l",63],["forearm_r",66],["hand_l",70],["hand_r",74],["thigh_l",80],["thigh_r",86],["knee_l",87],["knee_r",88],["lower_leg_l",92],["lower_leg_r",96],["foot_l",99],["foot_r",100]],"bow":[["skull_l",8],["skull_r",16],["face",22],["neck",25],["chest_l",32],["chest_r",39],["abdomen",46],["groin",49],["back_upper",52],["back_lower",55],["shoulder_l",58],["shoulder_r",61],["upper_arm_l",63],["upper_arm_r",65],["forearm_l",68],["forearm_r",71],["hand_l",75],["hand_r",79],["thigh_l",84],["thigh_r",89],["knee_l",90],["knee_r",91],["lower_leg_l",94],["lower_leg_r",97],["foot_l",99],["foot_r",100]],"crossbow":[["skull_l",9],["skull_r",18],["face",24],["neck",27],["chest_l",34],["chest_r",40],["abdomen",46],["groin",49],["back_upper",52],["back_lower",55],["shoulder_l",58],["shoulder_r",61],["upper_arm_l",63],["upper_arm_r",65],["forearm_l",68],["forearm_r",71],["hand_l",75],["hand_r",79],["thigh_l",84],["thigh_r",89],["knee_l",90],["knee_r",91],["lower_leg_l",94],["lower_leg_r",97],["foot_l",99],["foot_r",100]],"dagger":[["skull_l",7],["skull_r",14],["face",22],["neck",28],["chest_l",37],["chest_r",46],["abdomen",55],["groin",59],["back_upper",63],["back_lower",67],["shoulder_l",70],["shoulder_r",73],["upper_arm_l",75],["upper_arm_r",77],["forearm_l",80],["forearm_r",83],["hand_l",87],["hand_r",91],["thigh_l",93],["thigh_r",95],["knee_l",96],["knee_r",97],["lower_leg_l",98],["lower_leg_r",99],["foot_l",100]],"sword":[["skull_l",8],["skull_r",16],["face",22],["neck",25],["chest_l",32],["chest_r",39],["abdomen",46],["groin",49],["back_upper",52],["back_lower",55],["shoulder_l",58],["shoulder_r",61],["upper_arm_l",63],["upper_arm_r",65],["forearm_l",68],["forearm_r",71],["hand_l",75],["hand_r",79],["thigh_l",84],["thigh_r",89],["knee_l",90],["knee_r",91],["lower_leg_l",94],["lower_leg_r",97],["foot_l",99],["foot_r",100]]},"baltic":{"axe":[["skull_l",8],["skull_r",15],["face",19],["neck",21],["chest_l",26],["chest_r",30],["abdomen",35],["groin",37],["back_upper",39],["back_lower",41],["shoulder_l",44],["shoulder_r",47],["upper_arm_l",49],["upper_arm_r",51],["forearm_l",54],["forearm_r",57],["hand_l",58],["hand_r",59],["thigh_l",68],["thigh_r",74],["knee_l",78],["knee_r",80],["lower_leg_l",91],["lower_leg_r",97],["foot_l",99],["foot_r",100]],"bow":[["skull_l",8],["skull_r",15],["face",19],["neck",21],["chest_l",28],["chest_r",34],["abdomen",41],["groin",43],["back_upper",46],["back_lower",48],["shoulder_l",51],["shoulder_r",54],["upper_arm_l",56],["upper_arm_r",58],["forearm_l",61],["forearm_r",64],["hand_l",65],["hand_r",66],["thigh_l",73],["thigh_r",78],["knee_l",81],["knee_r",83],["lower_leg_l",92],["lower_leg_r",97],["foot_l",99],["foot_r",100]],"crossbow":[["skull_l",9],["skull_r",17],["face",21],["neck",23],["chest_l",30],["chest_r",36],["abdomen",43],["groin",45],["back_upper",48],["back_lower",50],["shoulder_l",53],["shoulder_r",56],["upper_arm_l",58],["upper_arm_r",60],["forearm_l",63],["forearm_r",66],["hand_l",67],["hand_r",68],["thigh_l",74],["thigh_r",79],["knee_l",82],["knee_r",84],["lower_leg_l",92],["lower_leg_r",97],["foot_l",99],["foot_r",100]],"dagger":[["skull_l",8],["skull_r",15],["face",21],["neck",25],["chest_l",35],["chest_r",43],["abdomen",53],["groin",56],["back_upper",60],["back_lower",63],["shoulder_l",66],["shoulder_r",69],["upper_arm_l",71],["upper_arm_r",73],["forearm_l",76],["forearm_r",79],["hand_l",80],["hand_r",81],["thigh_l",85],["thigh_r",88],["knee_l",90],["knee_r",91],["lower_leg_l",96],["lower_leg_r",99],["foot_l",100]],"sword":[["skull_l",8],["skull_r",15],["face",19],["neck",21],["chest_l",28],["chest_r",34],["abdomen",41],["groin",43],["back_upper",46],["back_lower",48],["shoulder_l",51],["shoulder_r",54],["upper_arm_l",56],["upper_arm_r",58],["forearm_l",61],["forearm_r",64],["hand_l",65],["hand_r",66],["thigh_l",73],["thigh_r",78],["knee_l",81],["knee_r",83],["lower_leg_l",92],["lower_leg_r",97],["foot_l",99],["foot_r",100]]},"england":{"axe":[["skull_l",13],["skull_r",23],["face",29],["neck",33],["chest_l",39],["chest_r",44],["abdomen",49],["groin",51],["back_upper",54],["back_lower",56],["shoulder_l",58],["shoulder_r",59],["upper_arm_l",61],["upper_arm_r",63],["forearm_l",66],["forearm_r",69],["hand_l",73],["hand_r",77],["thigh_l",82],["thigh_r",87],["knee_l",88],["knee_r",89],["lower_leg_l",93],["lower_leg_r",96],["foot_l",99],["foot_r",100]],"bow":[["skull_l",12],["skull_r",21],["face",27],["neck",31],["chest_l",38],["chest_r",44],["abdomen",51],["groin",54],["back_upper",58],["back_lower",61],["shoulder_l",63],["shoulder_r",64],["upper_arm_l",66],["upper_arm_r",68],["forearm_l",71],["forearm_r",74],["hand_l",78],["hand_r",82],["thigh_l",86],["thigh_r",90],["knee_l",91],["knee_r",92],["lower_leg_l",95],["lower_leg_r",97],["foot_l",99],["foot_r",100]],"crossbow":[["skull_l",13],["skull_r",23],["face",29],["neck",33],["chest_l",39],["chest_r",45],["abdomen",51],["groin",54],["back_upper",58],["back_lower",61],["shoulder_l",63],["shoulder_r",64],["upper_arm_l",66],["upper_arm_r",68],["forearm_l",71],["forearm_r",74],["hand_l",78],["hand_r",82],["thigh_l",86],["thigh_r",90],["knee_l",91],["knee_r",92],["lower_leg_l",95],["lower_leg_r",97],["foot_l",99],["foot_r",100]],"dagger":[["skull_l",11],["skull_r",19],["face",27],["neck",34],["chest_l",43],["chest_r",50],["abdomen",59],["groin",63],["back_upper",68],["back_lower",72],["shoulder_l",74],["shoulder_r",75],["upper_arm_l",77],["upper_arm_r",79],["forearm_l",82],["forearm_r",85],["hand_l",89],["hand_r",93],["thigh_l",95],["thigh_r",97],["lower_leg_l",98],["lower_leg_r",99],["foot_l",100]],"sword":[["skull_l",12],["skull_r",21],["face",27],["neck",31],["chest_l",38],["chest_r",44],["abdomen",51],["groin",54],["back_upper",58],["back_lower",61],["shoulder_l",63],["shoulder_r",64],["upper_arm_l",66],["upper_arm_r",68],["forearm_l",71],["forearm_r",74],["hand_l",78],["hand_r",82],["thigh_l",86],["thigh_r",90],["knee_l",91],["knee_r",92],["lower_leg_l",95],["lower_leg_r",97],["foot_l",99],["foot_r",100]]},"france":{"axe":[["skull_l",13],["skull_r",23],["face",29],["neck",33],["chest_l",39],["chest_r",44],["abdomen",49],["groin",51],["back_upper",54],["back_lower",56],["shoulder_l",58],["shoulder_r",59],["upper_arm_l",61],["upper_arm_r",63],["forearm_l",66],["forearm_r",69],["hand_l",73],["hand_r",77],["thigh_l",82],["thigh_r",87],["knee_l",88],["knee_r",89],["lower_leg_l",93],["lower_leg_r",96],["foot_l",99],["foot_r",100]],"bow":[["skull_l",12],["skull_r",21],["face",27],["neck",31],["chest_l",38],["chest_r",44],["abdomen",51],["groin",54],["back_upper",58],["back_lower",61],["shoulder_l",63],["shoulder_r",64],["upper_arm_l",66],["upper_arm_r",68],["forearm_l",71],["forearm_r",74],["hand_l",78],["hand_r",82],["thigh_l",86],["thigh_r",90],["knee_l",91],["knee_r",92],["lower_leg_l",95],["lower_leg_r",97],["foot_l",99],["foot_r",100]],"crossbow":[["skull_l",13],["skull_r",23],["face",29],["neck",33],["chest_l",39],["chest_r",45],["abdomen",51],["groin",54],["back_upper",58],["back_lower",61],["shoulder_l",63],["shoulder_r",64],["upper_arm_l",66],["upper_arm_r",68],["forearm_l",71],["forearm_r",74],["hand_l",78],["hand_r",82],["thigh_l",86],["thigh_r",90],["knee_l",91],["knee_r",92],["lower_leg_l",95],["lower_leg_r",97],["foot_l",99],["foot_r",100]],"dagger":[["skull_l",11],["skull_r",19],["face",27],["neck",34],["chest_l",43],["chest_r",50],["abdomen",59],["groin",63],["back_upper",68],["back_lower",72],["shoulder_l",74],["shoulder_r",75],["upper_arm_l",77],["upper_arm_r",79],["forearm_l",82],["forearm_r",85],["hand_l",89],["hand_r",93],["thigh_l",95],["thigh_r",97],["lower_leg_l",98],["lower_leg_r",99],["foot_l",100]],"sword":[["skull_l",12],["skull_r",21],["face",27],["neck",31],["chest_l",38],["chest_r",44],["abdomen",51],["groin",54],["back_upper",58],["back_lower",61],["shoulder_l",63],["shoulder_r",64],["upper_arm_l",66],["upper_arm_r",68],["forearm_l",71],["forearm_r",74],["hand_l",78],["hand_r",82],["thigh_l",86],["thigh_r",90],["knee_l",91],["knee_r",92],["lower_leg_l",95],["lower_leg_r",97],["foot_l",99],["foot_r",100]]}},"locs":{"skull_l":{"name":"Skull (left)","zone":"head","class":"skull"},"skull_r":{"name":"Skull (right)","zone":"head","class":"skull"},"face":{"name":"Face","zone":"head","class":"face"},"neck":{"name":"Neck","zone":"head","class":"neck"},"chest_l":{"name":"Chest (left)","zone":"torso","class":"chest"},"chest_r":{"name":"Chest (right)","zone":"torso","class":"chest"},"abdomen":{"name":"Abdomen","zone":"torso","class":"abdomen"},"groin":{"name":"Groin / pelvis","zone":"torso","class":"groin"},"back_upper":{"name":"Upper back","zone":"torso","class":"back_upper"},"back_lower":{"name":"Lower back","zone":"torso","class":"back_lower"},"shoulder_l":{"name":"Shoulder (left)","zone":"arms","class":"shoulder"},"shoulder_r":{"name":"Shoulder (right)","zone":"arms","class":"shoulder"},"upper_arm_l":{"name":"Upper arm (left)","zone":"arms","class":"upper_arm"},"upper_arm_r":{"name":"Upper arm (right)","zone":"arms","class":"upper_arm"},"forearm_l":{"name":"Forearm (left)","zone":"arms","class":"forearm"},"forearm_r":{"name":"Forearm (right)","zone":"arms","class":"forearm"},"hand_l":{"name":"Hand (left)","zone":"arms","class":"hand"},"hand_r":{"name":"Hand (right)","zone":"arms","class":"hand"},"thigh_l":{"name":"Thigh (left)","zone":"legs","class":"thigh"},"thigh_r":{"name":"Thigh (right)","zone":"legs","class":"thigh"},"knee_l":{"name":"Knee (left)","zone":"legs","class":"knee"},"knee_r":{"name":"Knee (right)","zone":"legs","class":"knee"},"lower_leg_l":{"name":"Lower leg (left)","zone":"legs","class":"lower_leg"},"lower_leg_r":{"name":"Lower leg (right)","zone":"legs","class":"lower_leg"},"foot_l":{"name":"Foot (left)","zone":"legs","class":"foot"},"foot_r":{"name":"Foot (right)","zone":"legs","class":"foot"}},"kits":{"brigandine_sallet":{"id":"brigandine_sallet","name":"Brigandine, sallet and arm splints (c.1460)","group":"roses","look":{"helmet":"sallet"},"shield":false,"slots":{"helm":"plate","gorget":"mail","torso_upper":"plates","torso_lower":"plates","skirt":"mail","pauldron":{"material":"plate","cover":60},"arm":{"material":"plate","cover":50},"gauntlet":{"material":"plate","cover":50},"leg":{"material":"mail_padded","cover":40}},"notes":"Better-equipped retainer: brigandine (plates riveted inside cloth), sallet, splints on the arms, some plate on the hands."},"danish_maa":{"id":"danish_maa","name":"Danish man-at-arms (1361)","group":"visby","look":{"helmet":"bascinet"},"shield":true,"slots":{"helm":"plate","gorget":"mail","torso_upper":"plates","torso_lower":"plates","skirt":"mail","pauldron":"mail_padded","arm":"mail_padded","gauntlet":"plates","leg":"mail_padded","greave":{"material":"plate","cover":50},"sabaton":"mail"},"notes":"Professional kit of the period; face left open (visors uncertain for 1361)."},"full_plate":{"id":"full_plate","name":"Full plate harness (c.1450)","group":"generic","shield":false,"slots":{"helm":"plate","visor":"plate","gorget":"plate","torso_upper":"plate","torso_lower":"plate","skirt":"mail_padded","pauldron":"plate","arm":"plate","gauntlet":"plate","leg":"plate","greave":"plate","sabaton":"plate"}},"gambeson":{"id":"gambeson","name":"Gambeson and cap","group":"generic","shield":true,"slots":{"helm":"padded","torso_upper":"padded","torso_lower":"padded","skirt":"padded","pauldron":"padded","arm":{"material":"padded","cover":70},"leg":{"material":"padded","cover":40}}},"gotland_armoured":{"id":"gotland_armoured","name":"Gotland, better equipped: coif, coat of plates","group":"visby","shield":true,"slots":{"helm":"mail_padded","gorget":"mail","torso_upper":"plates","torso_lower":"plates","skirt":"mail","pauldron":"mail","arm":{"material":"mail","cover":70},"gauntlet":{"material":"plates","cover":50}},"notes":"Coats of plates and plate gauntlets were recovered from the Visby graves."},"gotland_levy":{"id":"gotland_levy","name":"Gotland levy: mail coif, padded coat","group":"visby","shield":true,"slots":{"helm":"mail","gorget":"mail","torso_upper":"padded","torso_lower":"padded","skirt":"padded","pauldron":"padded","arm":{"material":"padded","cover":60}},"notes":"Many Visby dead were buried wearing mail coifs."},"hauberk":{"id":"hauberk","name":"Mail hauberk and helm (c.1100-1300)","group":"generic","shield":true,"slots":{"helm":"plate","gorget":"mail","torso_upper":"mail_padded","torso_lower":"mail_padded","skirt":"mail","pauldron":"mail_padded","arm":"mail_padded","gauntlet":{"material":"mail","cover":70},"leg":{"material":"mail","cover":50}}},"jack_sallet":{"id":"jack_sallet","name":"Jack and sallet (archer or billman, c.1460)","group":"roses","look":{"helmet":"sallet"},"shield":false,"slots":{"helm":"plate","gorget":{"material":"mail","cover":50},"torso_upper":"jack","torso_lower":"jack","skirt":"jack","pauldron":"jack","arm":{"material":"jack","cover":70}},"notes":"Padded jack of many linen layers and an open sallet; legs and hands mostly bare. Jack protection is a design estimate."},"leather":{"id":"leather","name":"Hardened leather","group":"generic","shield":true,"slots":{"helm":"leather","torso_upper":"leather","torso_lower":"leather","pauldron":"leather","arm":"leather","greave":"leather"}},"none":{"id":"none","name":"Unarmoured","group":"generic","slots":{}},"transitional":{"id":"transitional","name":"Coat of plates and mail (c.1350)","group":"generic","shield":true,"slots":{"helm":"plate","gorget":"mail","torso_upper":"plates","torso_lower":"plates","skirt":"mail","pauldron":"mail_padded","arm":"mail_padded","gauntlet":"plates","leg":"mail_padded","greave":{"material":"plate","cover":50},"sabaton":"mail"}}},"weapons":{"axe":{"id":"axe","name":"Axe (hand or long-hafted)","short":"Axe","icon":"axe","reach":1,"era":"medieval","melee":"armed","melee_table":"visby-1361-adjusted","mechanisms":{"cut":85,"crush":15},"zone_bias":{"head":1.1,"torso":0.8,"legs":1.3},"armor_defeat":{"cut":1},"confidence":"extrapolated","notes":"Visby work describes axes taking the legs out; leg bias reflects that. Heavy cuts bite through mail (ignores 1 step vs cut)."},"bill":{"id":"bill","name":"Bill (English bill, hooked polearm)","short":"Bill","icon":"bill","reach":2,"era":"medieval","melee":"armed","melee_table":"towton-1461-all-hits","mechanisms":{"cut":60,"pierce":30,"crush":10},"zone_bias":{"head":1.2,"legs":1.1},"confidence":"extrapolated","notes":"The common infantry polearm of the Wars of the Roses: a cleaving blade with a hook and spike on a long haft. On the Towton evidence table it rolls on the blade wounds.\n"},"bow":{"id":"bow","name":"Bow (war arrows)","short":"Bow","icon":"bow","range":[15,40,90],"string":true,"era":"ancient-1880s","mechanisms":{"pierce":95,"cut":5},"zone_bias":{},"confidence":"historical","notes":"Its own table is the US Army's 1865-71 arrow-wound reports (Plains and Apache bows, iron and flint heads). At Visby, 126 arrow and crossbow-bolt wounds fell much like the blade wounds, mostly on the lower body, so on the Visby tables it uses their weights unchanged. Arrows are pierce wounds, not gunfire: bleeding, deep tracks and infection; a barbed head left inside causes trouble for months.\n"},"crossbow":{"id":"crossbow","name":"Crossbow (bolts)","short":"Crossbow","icon":"crossbow","range":[15,50,100],"string":true,"era":"medieval","mechanisms":{"pierce":100},"zone_bias":{},"loc_bias":{"skull_l":1.15,"skull_r":1.15,"face":1.15},"armor_defeat":{"pierce":1},"confidence":"extrapolated","notes":"Visby's arrow and bolt wounds are counted together (126), mostly on the lower body; the Visby weights are used with a small head bias for aimed shots at the face and helmet. Heavy bolts punch through mail (ignores 1 step vs pierce): design estimate.\n"},"dagger":{"id":"dagger","name":"Dagger / knife","short":"Dagger","icon":"dagger","reach":1,"era":"any","melee":"armed","mechanisms":{"pierce":70,"cut":30},"zone_bias":{"torso":1.4,"arms":1.1,"legs":0.5},"loc_bias":{"neck":2.0,"face":1.5},"confidence":"extrapolated","notes":"Grappling and finishing weapon. On medieval tables it seeks gaps at neck, face and armpit; elsewhere it uses the forensic knife-assault table as recorded."},"elbow_knee":{"id":"elbow_knee","name":"Elbow or knee","short":"Elbow/knee","icon":"fist","reach":1,"era":"any","melee":"unarmed","mechanisms":{"crush":75,"cut":25},"zone_bias":{"head":1.2,"torso":1.3,"legs":0.3},"confidence":"extrapolated","notes":"Clinch strikes; elbows split skin (cut)."},"kick":{"id":"kick","name":"Kick","short":"Kick","icon":"fist","reach":1,"era":"any","melee":"unarmed","mechanisms":{"crush":100},"zone_bias":{"head":0.35,"torso":1.4,"legs":3.0},"confidence":"extrapolated","notes":"Most landed kicks are low kicks and body kicks."},"longbow":{"id":"longbow","name":"Longbow (English war bow, bodkin and broadhead arrows)","short":"Longbow","icon":"bow","range":[20,60,125],"string":true,"era":"medieval","mechanisms":{"pierce":95,"cut":5},"zone_bias":{},"armor_defeat":{"pierce":1},"confidence":"extrapolated","notes":"Heavy war bow of the Hundred Years' War and the Wars of the Roses. Arrows mostly left soft-tissue wounds, so bone evidence under-counts them; at Towton a few head wounds are arrowheads. Heavy arrows punch through mail and jacks (ignores 1 step vs pierce): design estimate; against good plate they mostly glanced.\n"},"poleaxe":{"id":"poleaxe","name":"Poleaxe (axe, hammer and spike)","short":"Poleaxe","icon":"poleaxe","reach":1,"era":"medieval","melee":"armed","melee_table":"towton-1461-all-hits","mechanisms":{"crush":45,"pierce":35,"cut":20},"zone_bias":{"head":1.3},"armor_defeat":{"crush":1,"pierce":1},"confidence":"extrapolated","notes":"The man-at-arms' weapon against plate: hammer and spike to crack or pierce armour (ignores 1 step vs crush and pierce: design estimate). On the Towton evidence table it rolls on the blunt-force wounds, which were mostly to the head and face.\n"},"punch":{"id":"punch","name":"Punch","short":"Punch","icon":"fist","reach":1,"era":"any","melee":"unarmed","mechanisms":{"crush":100},"zone_bias":{"head":1.25,"torso":0.8,"legs":0.0},"confidence":"extrapolated","notes":"Punches land head and body; leg strikes are kicks."},"sling":{"id":"sling","name":"Sling (stones, lead bullets)","short":"Sling","icon":"sling","range":[10,30,60],"era":"ancient-medieval","mechanisms":{"crush":100},"zone_bias":{"head":1.5,"torso":1.0,"arms":0.9,"legs":0.8},"loc_bias":{"face":1.3},"confidence":"extrapolated","notes":"No battlefield tally separates sling wounds. Andean skeletons from the Wari era show cranial trauma in about a quarter to a third of adults, much of it consistent with sling stones, but the cause is not counted apart. Head bias is a design estimate. Blunt: fractures and shock; a helmet takes the edge off (crush steps).\n"},"spear":{"id":"spear","name":"Spear / lance","short":"Spear","icon":"spear","reach":2,"era":"medieval","melee":"armed","melee_table":"visby-1361-adjusted","mechanisms":{"pierce":90,"cut":10},"zone_bias":{"head":0.8,"torso":1.4,"arms":0.9,"legs":0.9},"loc_bias":{"face":1.5},"confidence":"extrapolated","notes":"Thrusting weapon aimed at the centre mass and face over the shield rim."},"spiked_club":{"id":"spiked_club","name":"Spiked club / morning star (knout)","short":"Spiked club","icon":"club","reach":1,"era":"medieval","melee":"armed","melee_table":"visby-1361-adjusted","mechanisms":{"crush":55,"pierce":45},"zone_bias":{"head":1.4,"legs":0.8},"armor_defeat":{"pierce":1},"confidence":"fitted","notes":"Square skull perforations at Visby match a spiked club (Randolph-Quinney et al., 2026); head bias reflects that. Spikes punch through mail (ignores 1 step vs pierce)."},"sword":{"id":"sword","name":"Sword (arming sword)","short":"Sword","icon":"sword","reach":1,"era":"medieval","melee":"armed","melee_table":"visby-1361-adjusted","mechanisms":{"cut":70,"pierce":30},"zone_bias":{},"confidence":"extrapolated","notes":"Baseline weapon; the Visby tables are applied unchanged."}}};
+/* Character generation: same rules as gravewounds/team.py, from the team bundle TD that build.py
+   writes into the team builder page (TD.era: the era's tables; TD.ranges: old-wound location
+   ranges by region and weapon; TD.locs, TD.weapons, TD.kits). The dice are taken in the same
+   order as the Python rules. rng: {randint(a, b)}; SeededDice gives repeatable dice for tests. */
+class SeededDice {
+  constructor(seed){ this.state = Math.max(1, seed % 2147483647) }
+  next(){ this.state = this.state * 16807 % 2147483647; return this.state }
+  randint(a, b){ return a + this.next() % (b - a + 1) }
+  random(){ return this.next() / 2147483647 }
+}
+const realDice = { randint: (a, b) => a + crypto.getRandomValues(new Uint32Array(1))[0] % (b - a + 1) };   // real dice for play
+const byId = (rows, id) => rows.find(r => r.id === id);
+const pickRow = (rows, roll) => rows.find(r => roll <= r.to);
+const kitFor = (T, career, region) => [career.kit[region] ?? career.kit.default, career.weapon[region] ?? career.weapon.default];
+function statsFor(T, career, mode, rng){         // 3d6 x 5 each in order, or the fixed array by the career's preferences
+  const out = {};
+  if (mode === "array"){ career.prefers.forEach((c, i) => { out[c] = T.array[i] }); return out }
+  for (const c of T.characteristics) out[c.id] = 5 * (rng.randint(1, 6) + rng.randint(1, 6) + rng.randint(1, 6));
+  return out;
+}
+function applyMod(mod, statMods, gains){          // a trait or drawback: characteristics or skills
+  for (const [k, v] of Object.entries(mod)){
+    if (k === "text") continue;
+    const target = k in statMods ? statMods : gains;
+    target[k] = (target[k] || 0) + v;
+  }
+}
+function freshRow(rows, roll, had){               // a row whose event he has had moves to the next one down
+  let i = rows.indexOf(pickRow(rows, roll));
+  while (had.includes(rows[i].text)) i = (i + 1) % rows.length;
+  return rows[i];
+}
+const atRange = (ranges, roll) => ranges.find(([, hi]) => roll <= hi)[0];
+function oldWound(T, ranges, weapon, statMods, rng){   // where, then a healed mark or a lasting hurt
+  const loc = atRange(ranges, rng.randint(1, 100)), kind = pickRow(T.old_wound, rng.randint(1, 100)).kind;
+  const w = { loc, weapon, kind };
+  if (kind === "lasting"){
+    const L = TD.locs[loc], stat = T.lasting_from[L.class === "face" ? "face" : L.zone];
+    statMods[stat] -= T.lasting;
+    w.stat = stat;
+  }
+  return w;
+}
+function makeCharacter(region, careerId, terms, mode, rng){
+  const T = TD.era, career = byId(T.careers, careerId), base = statsFor(T, career, mode, rng);
+  const statMods = Object.fromEntries(T.characteristics.map(c => [c.id, 0])), gains = {};
+  const origin = T.origins[Math.floor((rng.randint(1, 100) - 1) * T.origins.length / 100)];
+  gains[origin.gain] = (gains[origin.gain] || 0) + T.gain;
+  applyMod(origin.trait, statMods, gains);
+  applyMod(origin.drawback, statMods, gains);
+  const events = [], old = [];
+  for (let k = 0; k < terms; k++){
+    const row = freshRow(career.terms, rng.randint(1, 100), events);
+    for (const [skill, n] of [[career.main, k === 0 ? T.first_term : T.term_main], [career.second, T.term_second], [row.skill, T.gain]]) gains[skill] = (gains[skill] || 0) + n;
+    events.push(row.text);
+    if (row.wound || rng.randint(1, 100) <= career.wound) old.push(oldWound(T, TD.ranges[region][career.wound_weapon], career.wound_weapon, statMods, rng));
+  }
+  const reg = byId(T.regions, region), beards = ["", "moustache", "beard", "stubble"];
+  const name = `${reg.names[rng.randint(1, reg.names.length) - 1]} ${reg.bynames[rng.randint(1, reg.bynames.length) - 1]}`;
+  const look = { colour: reg.colours[rng.randint(1, reg.colours.length) - 1], beard: beards[rng.randint(1, 4) - 1] };
+  const [kit, weapon] = kitFor(T, career, region);
+  return finishChar({ name, era: T.id, region, career: careerId, terms, mode, base, stat_mods: statMods, gains, origin: origin.name,
+    trait: origin.trait.text, drawback: origin.drawback.text, events, old, age: T.age.start + T.age.per_term * terms, kit, weapon, look });
+}
+function finishChar(c){                           // stats, skills, attack, defence and nerve from the parts
+  const T = TD.era, [lo, hi] = T.stat_range;
+  c.stats = Object.fromEntries(Object.entries(c.base).map(([k, v]) => [k, Math.max(lo, Math.min(hi, v + c.stat_mods[k]))]));
+  c.skills = Object.fromEntries(T.skills.map(s => [s.id, Math.max(0, Math.min(T.skill_max, Math.floor(c.stats[s.of] / s.div) + (c.gains[s.id] || 0)))]));
+  c.attack = attackFor(c, c.weapon);
+  c.defence = Math.max(...T.defence.map(s => c.skills[s]));
+  c.nerve = c.stats.nerve;
+  return c;
+}
+function attackFor(c, weapon){                    // his attack % with a weapon: its skill, or null
+  const s = TD.era.weapon_skill[weapon];
+  return s ? c.skills[s] : null;
+}
+function makeTeam(region, slots, mode, rng){      // one character a slot ([career, terms]); the first leads
+  const team = slots.map(([cid, n]) => makeCharacter(region, cid, n, mode, rng));
+  if (team.length) team[0].leader = true;
+  return team;
+}
+
+
+/* ---------- the page ---------- */
+const $ = s => document.querySelector(s);
+const KEY = "gravewounds-team-builder", HANDOFF = "gravewounds-team-handoff";
+const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
+const T = TD.era;
+let S = { region: T.regions[0].id, template: T.templates[0].id, mode: "roll", side: "Side A", slots: T.templates[0].slots.map(s => [...s]), team: [], swap: null, msg: "" };
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)) } catch (e) { /* storage may be off: the page still works */ } }
+function restore(){
+  try { const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.team) S = { ...S, ...j, swap: null, msg: "" } } catch (e) { /* start fresh */ }
+}
+const statName = id => byId(T.characteristics, id).name;
+const skillName = id => byId(T.skills, id).name;
+const careerOf = c => byId(T.careers, c.career);
+const slotsNow = () => (S.template === "own" ? S.slots : byId(T.templates, S.template).slots);
+
+function fill(){
+  $("#sel-era").innerHTML = `<option value="${T.id}">${esc(T.name)}</option>`;
+  $("#sel-region").innerHTML = T.regions.map(r => `<option value="${r.id}">${esc(r.name)}</option>`).join("");
+  $("#sel-template").innerHTML = T.templates.map(t => `<option value="${t.id}">${esc(t.name)} (${t.slots.length})</option>`).join("") + `<option value="own">Your own team</option>`;
+  $("#array").textContent = T.array.join(", ");
+}
+function render(){
+  $("#sel-region").value = S.region; $("#sel-template").value = S.template; $("#in-side").value = S.side;
+  document.querySelectorAll('input[name="mode"]').forEach(r => { r.checked = r.value === S.mode });
+  $("#slots-box").hidden = S.template !== "own";
+  if (S.template === "own") renderSlots();
+  $("#btn-send").disabled = $("#btn-print").disabled = !S.team.length;
+  $("#msg").textContent = S.msg;
+  $("#sheets").innerHTML = S.team.length ? S.team.map(sheetHtml).join("") : `<p class="muted">Pick where they come from and a team, then roll.</p>`;
+  save();
+}
+function termOpts(n){                             // 1 to 3 terms
+  return [1, 2, 3].map(k => '<option value="' + k + '"' + (k === n ? " selected" : "") + ">" + k + (k > 1 ? " terms" : " term") + "</option>").join("");
+}
+function renderSlots(){
+  const opts = sel => T.careers.map(c => `<option value="${c.id}"${c.id === sel ? " selected" : ""}>${esc(c.name)}</option>`).join("");
+  $("#slots").innerHTML = S.slots.map(([cid, n], i) => `<li><select data-slot="${i}" data-k="career" aria-label="Career ${i + 1}">${opts(cid)}</select>`
+    + `<select data-slot="${i}" data-k="terms" aria-label="Terms ${i + 1}">${termOpts(n)}</select>`
+    + `<button class="small" data-drop="${i}" title="Remove" aria-label="Remove member ${i + 1}"${S.slots.length <= 1 ? " disabled" : ""}>×</button></li>`).join("");
+  $("#btn-add-slot").disabled = S.slots.length >= 6;
+}
+const oldMarks = c => c.old.map(w => ({ loc: w.loc, sev: w.kind === "lasting" ? "serious" : "light", old: true }));
+function sheetHtml(c, i){
+  const career = careerOf(c), kit = TD.kits[c.kit], w = TD.weapons[c.weapon];
+  const fig = FIG.svg({ kit, weapon: w, look: c.look, size: 150, title: c.name, wounds: oldMarks(c) });
+  const stats = T.characteristics.map(x => {
+    const v = c.stats[x.id], hurt = c.stat_mods[x.id] < 0 ? " down" : "", pressed = S.swap && S.swap[0] === i && S.swap[1] === x.id;
+    return `<button type="button" class="stat${hurt}" data-stat="${x.id}" data-i="${i}" aria-pressed="${!!pressed}"${c.mode === "array" ? "" : " tabindex=\"-1\""} title="${esc(x.name)}"><b>${v}</b><span>${esc(x.name.slice(0, 3))}</span></button>`;
+  }).join("");
+  const trained = T.skills.filter(s => (c.gains[s.id] || 0) > 0).map(s => `<span>${esc(s.name)} <b>${c.skills[s.id]}</b></span>`).join("");
+  const others = T.skills.filter(s => (c.gains[s.id] || 0) <= 0 && c.skills[s.id] > 0).map(s => `${esc(s.name)} ${c.skills[s.id]}`).join(", ");
+  const life = c.events.map((e, k) => `<li>Term ${k + 1}: ${esc(e)}</li>`).join("") + c.old.map(oldWoundLine).join("");
+  return `<article class="sheet" aria-label="${esc(c.name)}">
+    <div class="fig">${fig}</div>
+    <div class="who"><input type="text" value="${esc(c.name)}" data-name="${i}" aria-label="Name">${c.leader ? `<span class="tag">Leader</span>` : ""}</div>
+    <div class="what">${esc(career.name)} · ${c.terms} term${c.terms > 1 ? "s" : ""} · age ${c.age} · ${esc(byId(T.regions, c.region).name.replace(/ \(.*/, ""))}</div>
+    <div class="stats${c.mode === "array" ? " place" : ""}">${stats}</div>
+    <div class="full what"><b>${esc(c.origin)}.</b> ${esc(c.trait)}; ${esc(c.drawback.toLowerCase())}.</div>
+    <div class="full skills">${trained}</div>
+    <div class="full muted">Untrained: ${others || "none"}</div>
+    <div class="full arms">${esc(w.name)}: attack <b>${c.attack ?? "—"}%</b> · defence <b>${c.defence}%</b> · Nerve <b>${c.nerve}</b> · ${esc(kit.name)}</div>
+    <ol class="full life">${life}</ol>
+    <div class="tools"><button class="small" data-reroll="${i}">Reroll him</button></div>
+  </article>`;
+}
+function oldWoundLine(w){
+  const where = TD.locs[w.loc].name.toLowerCase(), from = TD.weapons[w.weapon].short.toLowerCase();
+  const what = w.kind === "lasting" ? `a lasting hurt, ${T.lasting} off ${statName(w.stat)}` : "a healed scar";
+  return `<li class="wound">Old wound: ${esc(where)}, from a ${esc(from)}: ${what}</li>`;
+}
+function rollTeam(){
+  S.team = makeTeam(S.region, slotsNow(), S.mode, realDice);
+  S.swap = null; S.msg = "";
+  render();
+}
+function reroll(i){
+  const c = S.team[i], n = makeCharacter(S.region, c.career, c.terms, S.mode, realDice);
+  if (c.leader) n.leader = true;
+  S.team[i] = n; S.swap = null; render();
+}
+function clickStat(i, id){                       // fixed array: click two characteristics to swap them
+  const c = S.team[i];
+  if (c.mode !== "array") return;
+  if (!S.swap || S.swap[0] !== i){ S.swap = [i, id]; return render() }
+  const a = S.swap[1];
+  if (a !== id){ [c.base[a], c.base[id]] = [c.base[id], c.base[a]]; finishChar(c) }
+  S.swap = null; render();
+}
+function rollerSheet(c){                          // what the roller keeps of a sheet: enough to show it and to fill attack and defence
+  const attackBy = Object.fromEntries(Object.keys(T.weapon_skill).map(w => [w, attackFor(c, w)]));
+  return { career: careerOf(c).name, terms: c.terms, age: c.age, leader: !!c.leader, stats: c.stats, defence: c.defence, attack_by: attackBy,
+    trained: T.skills.filter(s => (c.gains[s.id] || 0) > 0).map(s => [s.name, c.skills[s.id]]), origin: c.origin, old: c.old };
+}
+function sendToRoller(){                         // the roller picks the team up and offers to add it
+  try {
+    const team = S.team.map(c => ({ name: c.name, kit: c.kit, weapon: c.weapon, look: c.look, nerve: c.nerve, leader: !!c.leader, sheet: rollerSheet(c) }));
+    localStorage.setItem(HANDOFF, JSON.stringify({ side: S.side.trim() || "Side A", era: T.id, table: byId(T.regions, S.region).table, team }));
+    location.href = "roller.html";
+  } catch (e) {                                  // storage is off or full: say so rather than lose the team
+    S.msg = `The browser would not keep the team (${e.name}), so it cannot go to the roller.`;
+    render();
+  }
+}
+function init(){
+  fill(); restore();
+  $("#sel-region").onchange = e => { S.region = e.target.value; render() };
+  $("#sel-template").onchange = e => {
+    S.template = e.target.value;
+    if (S.template !== "own") S.slots = byId(T.templates, S.template).slots.map(s => [...s]);
+    render();
+  };
+  document.querySelectorAll('input[name="mode"]').forEach(r => { r.onchange = e => { S.mode = e.target.value; render() } });
+  $("#in-side").onchange = e => { S.side = e.target.value; save() };
+  $("#slots").addEventListener("change", e => {
+    const el = e.target.closest("select[data-slot]"); if (!el) return;
+    const s = S.slots[+el.dataset.slot];
+    if (el.dataset.k === "career") s[0] = el.value; else s[1] = +el.value;
+    render();
+  });
+  $("#slots").addEventListener("click", e => { const b = e.target.closest("button[data-drop]"); if (b){ S.slots.splice(+b.dataset.drop, 1); render() } });
+  $("#btn-add-slot").onclick = () => { if (S.slots.length < 6){ S.slots.push([T.careers[0].id, 1]); render() } };
+  $("#btn-roll").onclick = rollTeam;
+  $("#btn-send").onclick = sendToRoller;
+  $("#btn-print").onclick = () => window.print();
+  $("#sheets").addEventListener("click", e => {
+    const r = e.target.closest("button[data-reroll]"); if (r) return reroll(+r.dataset.reroll);
+    const st = e.target.closest("button[data-stat]"); if (st) clickStat(+st.dataset.i, st.dataset.stat);
+  });
+  $("#sheets").addEventListener("change", e => { const n = e.target.closest("input[data-name]"); if (n){ S.team[+n.dataset.name].name = n.value.trim() || S.team[+n.dataset.name].name; save() } });
+  render();
+}
+init();
+</script>

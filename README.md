@@ -56,6 +56,13 @@ armies drawn up). A fight on the travel
 map can be fought there, and its wounded go back to camp, where wound fever can take
 them. See [docs/units.md](docs/units.md).
 
+**Team builder:** `dist/team.html` makes a team of four to six in a few rolls each, from the
+medieval tables (c.1250-1460): characteristics (3d6 x 5 or a fixed array), an origin with a
+trait and a drawback, one to three career terms with their events, old wounds rolled on the
+region's wound table, and kit. Sent to the roller, each character's skills fill in his attack
+and defence. `python3 -m gravewounds team` makes one on the command line. See
+[docs/team.md](docs/team.md).
+
 **Units:** every page has a **US | Metric** switch in its header (US by default), shared by
 the roller, the travel map and the field map and remembered in the browser. The rules and
 data stay metric inside; the printed tables and these docs give US units with metric in
@@ -97,6 +104,7 @@ python -m gravewounds roll --table towton-1461-all-hits --weapon bill -n 3
 - `dist/roller.html`, `dist/travel.html` and `dist/field.html`
 - `dist/tables.pdf` and `dist/tables.md`
 - `dist/gravewounds-data.json`
+- `dist/team.html`, the team builder (character generation)
 - the start page `index.html`
 
 ## Next steps
@@ -108,7 +116,8 @@ written in):
    numbers. Cover and elevation come next on the map.
 2. Playtest the travel map and the campaign and battle maps, then add maps for the other
    campaigns and battles.
-3. Draft the medieval character generation tables and make a team in 20 minutes.
+3. Playtest the medieval character generation (the team builder) and make a team in 20
+   minutes; then tables for the other eras.
 4. Playtest one fight with two teams, then a few weeks of camp, march and weather.
 
 ## Copyright and trademarks
