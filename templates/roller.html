@@ -216,6 +216,8 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
 .hexmap.painting .hex{cursor:cell}
 #ground-bar[hidden]{display:none}
 .workbar .palette{display:flex;flex-wrap:wrap;gap:4px}
+.palette-set{border:0;margin:0;padding:0;min-width:0}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .wxbar select{width:auto;padding:3px 6px}
 fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -243,7 +245,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
     <div class="mapkey" id="map-key"></div>
     <div class="mapbar workbar"><div class="palette" id="work-palette" role="group" aria-label="Work to build"></div>
       <button class="small" id="btn-clear-works">Clear works</button><label class="muted"><input type="checkbox" id="chk-haul"> Timber hauled from afar</label><span class="muted" id="work-labour"></span></div>
-    <div class="mapbar workbar" id="ground-bar"><div class="palette" id="ground-palette" role="group" aria-label="Ground to paint"></div>
+    <div class="mapbar workbar" id="ground-bar"><fieldset class="palette-set"><legend class="vh">Ground to paint</legend><div class="palette" id="ground-palette"></div></fieldset>
       <button class="small" id="btn-clear-ground">Clear ground</button><span class="muted" id="ground-note"></span></div>
     <fieldset class="mapbar wxbar"><legend class="sr">Weather</legend>
       <label class="muted">Weather <select id="sel-wx"></select></label>
@@ -718,11 +720,15 @@ function misfired(rc, freeHit){                   // wet priming: the shot is lo
   if (freeHit) freeDone("misfire");
   return `Misfire: d100 ${d2(mr)} against ${mf}% \u2014 the wet weather spoiled the priming. The shot is lost.`;
 }
+function riseToStrike(){                          // a man in cover rises to strike in close combat
+  const a = attackerChar();
+  if (a && a.cover && !isShot(S.weapon)) a.cover = false;
+}
 function attackPhase(atkPct, rc, freeHit){        // the attack and defence rolls: {end} if no wound follows, else {margin, crit, combat}
   const w = DATA.weapons[S.weapon], A = penalties(attackerChar()), D = penalties(defenderChar()), defPct = readPct("#in-def");
   const blocked = attackBlock(A, w) || misfired(rc, freeHit);
   if (blocked) return { end: { blocked } };
-  if (!isShot(S.weapon) && attackerChar()?.cover) attackerChar().cover = false;   // he rises to strike
+  riseToStrike();
   const ar = attackRoll(atkPct, readDie("#in-atk-roll") ?? d100(), (A ? A.attack : 0) + (rc.range ? rc.range.penalty : 0));
   const combat = { atk: ar, def: null, range: rc.range };
   if (!ar.hit){
@@ -821,6 +827,17 @@ function outcomeWord(h){                         // a roll that made no wound, i
   if (h.blocked) return "No attack";
   return h.miss ? "Miss" : "Parried or dodged";
 }
+function sitLine(h){                             // the range, cover and height behind the attack, in a line
+  const g = h.range;
+  if (g.band === "free attack") return "Free attack as he leaves contact";
+  const bits = [`${hexes(g.dist)}: ${g.band}`];
+  if (g.rangePen) bits[0] += ` range, −${g.rangePen}%`;
+  if (g.cover) bits.push(`cover (${wkLabel(g.coverWork)}), −${g.cover}%`);
+  if (g.height) bits.push(`fighting up (${wkLabel(g.heightWork)}), −${g.height}%`);
+  if (g.heightReach) bits.push(`shooting downhill, +${g.heightReach}% reach`);
+  const line = bits.join(" · ");
+  return g.penalty && !h.combat ? line + " (not applied: no attack roll)" : line;
+}
 function renderResult(){
   const h = S.hit; if (!h){ $("#result").innerHTML = ""; return }
   if (h.blocked || h.miss || h.defended){
@@ -846,7 +863,7 @@ function renderResult(){
     <p class="hitname">${LOC[h.loc].name}</p>
     ${sit ? `<div class="sitline">${sit}</div>` : ""}
     ${h.strayHit ? `<div class="sitline">A stray shot: no attack roll, severity rolled</div>` : ""}
-    ${h.range ? `<div class="sitline">${h.range.band === "free attack" ? "Free attack as he leaves contact" : `${hexes(h.range.dist)}: ${h.range.band}${h.range.rangePen ? ` range, −${h.range.rangePen}%` : ""}${h.range.cover ? ` · cover (${wkLabel(h.range.coverWork)}), −${h.range.cover}%` : ""}${h.range.height ? ` · fighting up (${wkLabel(h.range.heightWork)}), −${h.range.height}%` : ""}${h.range.heightReach ? ` · shooting downhill, +${h.range.heightReach}% reach` : ""}${h.range.penalty && !h.combat ? " (not applied: no attack roll)" : ""}`}</div>` : ""}
+    ${h.range ? `<div class="sitline">${sitLine(h)}</div>` : ""}
     ${h.ltable !== h.table ? `<div class="sitline">Close combat: location from ${DATA.tables[h.ltable].label}</div>` : ""}
     <div class="chips"><span class="chip sev-${h.sev === "stopped" ? "light" : h.sev}">${sevLabel(h.sev)}</span>${h.graze ? `<span class="chip graze" title="Hit by the barest margin: bleed and pain one step lower, no stop check">Graze</span>` : ""}<span class="chip">${DATA.mechanisms[h.mech].name}</span><span class="chip">${shortName(h.weapon)}</span></div>
     ${armorLine}
@@ -1484,9 +1501,13 @@ function groundSvg(){                            // a small mark on each hex of 
     return `<g class="gg gg-${g}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})">${GROUND_GLYPH[g]}</g>`;
   }).join("");
 }
+function groundIcon(g){                          // the ground's mark, small, for the palette and the key
+  if (!GROUND_GLYPH[g]) return "";
+  return `<svg viewBox="-10 -9 20 18" width="16" height="14" aria-hidden="true"><g class="gg gg-${g}">${GROUND_GLYPH[g]}</g></svg>`;
+}
 function groundLegend(){                           // the map key's ground entries, once any is painted
   const G = S.ground || {}, used = new Set(Object.values(G.kinds || {}));
-  const bits = Object.keys(GROUND_GLYPH).filter(g => used.has(g)).map(g => `<span><svg viewBox="-10 -9 20 18" width="16" height="14" aria-hidden="true"><g class="gg gg-${g}">${GROUND_GLYPH[g]}</g></svg>${attr(GRD.kinds[g].name.toLowerCase())}</span>`);
+  const bits = Object.keys(GROUND_GLYPH).filter(g => used.has(g)).map(g => `<span>${groundIcon(g)}${attr(GRD.kinds[g].name.toLowerCase())}</span>`);
   if (Object.keys(G.levels || {}).length) bits.push(`<span><i style="background:var(--hill);opacity:.35"></i>higher ground (darker is higher)</span>`);
   if (S.chars.some(c => c.cover && c.pos)) bits.push(`<span>dotted edge: taking cover</span>`);
   return bits.join("");
@@ -1502,7 +1523,7 @@ function levelsSvg(){                            // shading for raised ground, a
 }
 function renderGroundBar(){
   $("#ground-bar").hidden = !S.groundMode;
-  $("#ground-palette").innerHTML = Object.entries(GROUND_TOOLS).map(([k, t]) => `<button type="button" class="small" data-gtool="${k}" aria-pressed="${(S.groundTool || "rough") === k}">${GROUND_GLYPH[k] ? `<svg viewBox="-10 -9 20 18" width="16" height="14" aria-hidden="true"><g class="gg gg-${k}">${GROUND_GLYPH[k]}</g></svg>` : ""}${t.label}</button>`).join("");
+  $("#ground-palette").innerHTML = Object.entries(GROUND_TOOLS).map(([k, t]) => `<button type="button" class="small" data-gtool="${k}" aria-pressed="${(S.groundTool || "rough") === k}">${groundIcon(k)}${t.label}</button>`).join("");
   const G = GRD.kinds;
   $("#ground-note").textContent = `Rocks ${G.rough.cover}% cover and low (hides the legs); woods ${G.brush.cover}%; each costs +${G.rough.move} to enter, marsh +${G.marsh.move}, a climb +${GRD.climb} a level (0 to ${GRD.max_level}).`;
 }
@@ -1512,7 +1533,8 @@ function takeCover(){                            // the acting fighter goes to g
   S.tm.prev = { pos: c.pos.slice(), pending: (S.pending || []).length, free: (S.free || []).length, attacker: S.attacker, active: S.active, cover: !!c.cover };
   c.cover = true;
   Object.assign(S.tm, { moved: true, steps: 0, ran: false, covered: true, queued: 0 });
-  (S.pending = S.pending || []).push(`${c.name} takes cover: no attack this turn`);
+  S.pending = S.pending || [];
+  S.pending.push(`${c.name} takes cover: no attack this turn`);
   renderChars();
 }
 function toggleWork(h, e){                   // works mode: put or take away the chosen work
@@ -1700,7 +1722,8 @@ function renderMap(){
     const cls = cost ? (cost <= t.allow.advance ? "h-adv" : "h-run") : "";
     const what = cls === "h-adv" ? "advance" : "run";
     const gk = S.ground?.kinds?.[c + "," + r], gcls = gk && gk !== "open" ? " g-" + gk : "";
-    hx += `<polygon class="hex ${cls}${gcls}" data-h="${c},${r}" points="${hexPts(hexXY([c, r]))}"${cls ? ` tabindex="0" role="button" aria-label="${what} ${hexes(cost)} to column ${c + 1}, row ${r + 1}"><title>${what} ${hexes(cost)}</title></polygon>` : "/>"}`;
+    const label = `${what} ${hexes(cost)}`, tail = cls ? ` tabindex="0" role="button" aria-label="${label} to column ${c + 1}, row ${r + 1}"><title>${label}</title></polygon>` : "/>";
+    hx += `<polygon class="hex ${cls}${gcls}" data-h="${c},${r}" points="${hexPts(hexXY([c, r]))}"${tail}`;
   }
   hx += levelsSvg() + groundSvg();
   const toks = S.chars.filter(c => c.pos).map(c => {
