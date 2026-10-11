@@ -10,6 +10,8 @@ native: gunfire
 also_native: [armed]
 weapon_bias: sourced
 weapons: [wheellock_pistol, matchlock_musket, saber, musket_butt]
+# The pike has no wound count of its own; it rolls on the Visby melee table (weapons.yaml).
+era_melee: [pike]
 modifiers: [attacker_higher, attacker_lower, target_down, target_fleeing, flanked, target_warding, behind_cover]
 confidence: historical
 confidence_note: >

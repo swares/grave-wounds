@@ -8,6 +8,8 @@ variant: adjusted
 armor: allowed
 weapon_bias: pooled
 weapons: [matchlock_musket, wheellock_pistol, saber, musket_butt]
+# The pike has no wound count of its own; it rolls on the Visby melee table (weapons.yaml).
+era_melee: [pike]
 # No artillery wounds survive from the Thirty Years' War: guns roll on the Peninsular table's
 # ordnance (borrowed, 180 years later; the same kind of smoothbore round shot and case shot).
 # Searched again in 2026: the Lützen grave study (Nicklisch et al. 2017) counts lead balls,

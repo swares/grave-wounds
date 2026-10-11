@@ -33,7 +33,7 @@ for (let c = 0; c < COLS; c++){
 // ---------- the armies (pos is the middle of the front row) ----------
 const SWE = { side: 0, facing: N }, IMP = { side: 1, facing: S };
 const SHOT = { quality: "regular", weapon: "matchlock_musket", kit: "none", formation: "open", mounted: false };
-const PIKE = { quality: "regular", weapon: "spear", kit: "pikeman_1630", formation: "close", mounted: false };
+const PIKE = { quality: "regular", weapon: "pike", kit: "pikeman_1630", formation: "close", mounted: false };
 const HORSE = { quality: "veteran", weapon: "sword", kit: "harquebusier_1630", formation: "close", mounted: true };
 const CUIRASS = { ...HORSE, kit: "cuirassier_1630" };
 const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun

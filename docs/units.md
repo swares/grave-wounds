@@ -47,6 +47,14 @@ runs the same rules in the browser (`templates/units.js`, checked against the Py
    - Serious or critical: a stop check against the unit's Nerve (−10 for critical).
      Failing takes him out of the fight (*down*).
    - A wound that kills within rounds or outright: dead (and down).
+   - **Modern fire** (`modern_fire` in `data/units.yaml`: breech-loading rifles, machine
+     guns, pistols and submachine guns, grenades, mortars, shell and mines, about 1866 on)
+     stops more men: a serious or critical wound always puts him down, and a light one calls
+     for the stop check; a graze still leaves him fighting. Casualty returns from 1914 on
+     count nearly every man hit as out of the line: he went back to the aid post. With
+     regulars that puts down about two hits in three on the First World War table (one in
+     five under the old rule), 72% on the 1944 table. Muskets, older guns and blades keep
+     the rule above.
 5. **Morale** (below), then the next exchange.
 
 ## Morale
@@ -258,23 +266,22 @@ out. All of this is design estimates (`data/units.yaml`).
   within 20 hexes (220 yards, 200 m) past it on the line of fire takes half as many shots, at
   the longer range. Woods, rough ground and marsh stop it.
 
-What the numbers give (`python3 -m gravewounds units`, 200 runs, the First World War table),
+What the numbers give (`python3 -m gravewounds units`, 1000 runs, the First World War table),
 fire for one minute at 100 unarmoured regular riflemen:
 
 | Shooting | Target | Hit | Put down |
 |---|---|---|---|
-| 2 machine guns, 440 yd (400 m) | close order | 17.7 | 2.4 |
-| 2 machine guns, 440 yd | extended order | 9.1 | 1.1 |
-| 2 machine guns, 440 yd | extended, to ground | 4.5 | 0.4 |
-| 2 machine guns, 880 yd (800 m) | extended order | 3.2 | 0.2 |
-| 100 riflemen, 440 yd | close order | 9.8 | 1.3 |
-| 100 riflemen, 440 yd | extended order | 5.1 | 0.6 |
-| 100 riflemen, 440 yd | extended, to ground | 2.6 | 0.2 |
+| 2 machine guns, 440 yd (400 m) | close order | 18.0 | 10.3 |
+| 2 machine guns, 440 yd | extended order | 9.0 | 5.2 |
+| 2 machine guns, 440 yd | extended, to ground | 4.6 | 2.1 |
+| 2 machine guns, 880 yd (800 m) | extended order | 3.1 | 1.2 |
+| 100 riflemen, 440 yd | close order | 9.9 | 5.7 |
+| 100 riflemen, 440 yd | extended order | 5.2 | 3.0 |
+| 100 riflemen, 440 yd | extended, to ground | 2.6 | 1.2 |
 
-Most men hit at these ranges take light wounds and fight on, as the unit wound rules have it
-for every era: a wound puts a man down only if it is serious or critical and he fails the
-stop check. That makes long-range rifle and machine-gun fire wound many and stop few. It is
-the next thing to test at the table.
+Under the modern-fire rule (see *The wound*, above) most men hit are put down; the rest are
+light wounds whose men passed the stop check. Hit and put down differ also by the men a
+hit kills outright, counted in both.
 
 ## Indirect fire and suppression
 
@@ -307,17 +314,17 @@ beaten zone), checks at the end of the exchange: d100 against its Nerve (+10 if 
 ground). A failure pins it for the next exchange: it cannot move and shoots at half its rate.
 The list shows "pinned". Broken units do not check.
 
-One minute of fire on the middle of 100 regular riflemen (`python3 -m gravewounds units`, 200
+One minute of fire on the middle of 100 regular riflemen (`python3 -m gravewounds units`, 1000
 runs, the First World War table):
 
 | Fire | Target | Struck | Put down | Pinned |
 | --- | --- | --- | --- | --- |
-| 2 mortars | close order | 29.5 | 7.5 | 52% |
-| 2 mortars | extended order | 3.3 | 0.9 | 46% |
-| 4 field guns | close order | 40.2 | 10.2 | 48% |
-| 4 field guns | extended order | 5.9 | 1.6 | 46% |
-| 4 field guns | extended, to ground | 1.7 | 0.5 | 36% |
-| 4 heavy howitzers | extended order | 4.4 | 1.1 | 48% |
+| 2 mortars | close order | 29.9 | 16.7 | 51% |
+| 2 mortars | extended order | 3.3 | 1.9 | 53% |
+| 4 field guns | close order | 39.0 | 21.9 | 48% |
+| 4 field guns | extended order | 6.1 | 3.4 | 47% |
+| 4 field guns | extended, to ground | 1.8 | 1.0 | 39% |
+| 4 heavy howitzers | extended order | 4.7 | 2.6 | 50% |
 
 Dense formations under shellfire are slaughtered; spread out and gone to ground, men are hit
 far less but are still pinned about half the time. All design estimates. The batteries are

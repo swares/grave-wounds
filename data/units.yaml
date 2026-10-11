@@ -246,7 +246,15 @@ to_ground:
 #     takes him out of the fight (down); a pass leaves him fighting, wounded;
 #   a wound whose untreated time to death is in `dead_if` kills him at once (counted dead,
 #     and down).
+# From a weapon in `modern_fire` (breech-loading rifles, machine guns, pistols and shell, from
+# about 1866 on) a hit stops more men: a serious or critical wound always puts him down, and
+# a light one calls for the stop check (a graze still leaves him fighting). Casualty returns
+# from 1914 on count nearly every man hit as out of the line: he went back to the aid post.
+# Named men (heroes) keep the roller's own rule.
 dead_if: [instant, rounds]
+modern_fire:
+  weapons: [rifle_service, rifle_assault, rifle_ap, machine_gun, pistol_smg, hand_grenade, mortar_artillery, rpg, mine_ied,
+            explosive_fragment]
 
 # ---------- unit morale ----------
 # After each exchange a unit checks if it lost the exchange in contact (more of its men put

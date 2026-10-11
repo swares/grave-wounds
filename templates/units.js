@@ -73,9 +73,9 @@ function landWound(att, dfd, margin, critical, rng, t){
   t.hits++;
   t[h.severity]++;
   if (UD.dead_if.includes(h.lethal)){ t.dead++; t.down++; return }
-  if (h.severity === "light" || h.graze){ noteHurt(t, h.graze ? "light" : h.severity, h, false); return }
-  const nerve = quality(dfd.quality).nerve - (h.severity === "critical" ? 10 : 0);
-  const down = rng.randint(1, 100) > nerve;
+  const modern = UD.modern_fire.weapons.includes(att.weapon);     // breech-loaders and shell: more men stopped
+  if (h.graze || (h.severity === "light" && !modern)){ noteHurt(t, "light", h, false); return }
+  const down = (modern && h.severity !== "light") || rng.randint(1, 100) > quality(dfd.quality).nerve - (h.severity === "critical" ? 10 : 0);
   if (down) t.down++;
   noteHurt(t, h.severity, h, down);
 }

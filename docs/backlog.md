@@ -18,11 +18,6 @@ When an item is done, delete it here and note it in the pull request that closes
   (the roller takes it up afterwards), a failed stop check puts him down for the rest of
   the battle (no stunned or defend-only), and a duel between two heroes is left to the
   roller.
-- **Modern fire wounds many and stops few.** On the field map a hit puts a man down only
-  with a serious or critical wound and a failed stop check, so long-range rifle and
-  machine-gun fire leaves most of the men it hits fighting on (units.md, the machine-gun
-  table). Suppression (pinning under shell and machine-gun fire) now carries much of fire's
-  effect; playtest whether the wound rule needs changing too.
 - **Indirect fire, simplified.** Batteries are off the map and cannot be counter-battered;
   no smoke, no creeping barrage, and woods give cover rather than tree bursts.
 - **One clock for all forces.** Each force on the travel map keeps its own clock (kept on

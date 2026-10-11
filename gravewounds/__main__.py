@@ -73,7 +73,6 @@ def _main(argv=None) -> int:
         return 1
 
     if a.cmd == "team":
-        import random
         from .team import era, follower_line, make_followers, make_team, sheet
         from .units import SeededDice
         rng = SeededDice(a.seed) if a.seed is not None else random.Random()
