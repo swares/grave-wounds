@@ -1235,16 +1235,22 @@ def cannonades(d: Data, units: list, field: dict | None = None) -> list:
         if not A or not _can_fire(d, u) or in_contact(d, units, occ, i):
             continue
         best = _target(d, units, i, field, occ)
-        if best is None:
-            continue
-        wx, shot = gun_weather(d, field, best[0], best[2], best[3]), _shot(d, u, best[0])
-        behind = _ricochet_at(d, occ, field, i, best) if shot == "round" else None
-        graze = A["canister"]["graze"] if shot == "canister" and best[0] > A["canister"]["strike"][0][0] and _firm(d, field, best) else 0
-        out.append({"att": i, "dfd": best[1], "guns": guns_served(d, u), "rounds": min(guns_served(d, u) * A["rounds"], ammo_left(d, u)),
-                    "dist": best[0], "shot": shot, "cover": cover_at(d, field, best[2], best[3]), "penalty": wx["penalty"],
-                    "named": units[best[1]].get("id") is not None and units[best[1]].get("id") == u.get("target"), "graze": graze,
-                    "behind": behind[0] if behind else None, "beyond": behind[1] if behind else 0})
+        if best is not None:
+            out.append(_battery_fire(d, units, occ, field, i, best))
     return out
+
+
+def _battery_fire(d: Data, units: list, occ: dict, field: dict | None, i: int, best: tuple) -> dict:
+    """Battery i's fire at best (from _target), as cannonades gives it."""
+    A, u = d.units["artillery"], units[i]
+    wx, shot = gun_weather(d, field, best[0], best[2], best[3]), _shot(d, u, best[0])
+    behind = _ricochet_at(d, occ, field, i, best) if shot == "round" else None
+    graze = A["canister"]["graze"] if shot == "canister" and best[0] > A["canister"]["strike"][0][0] and _firm(d, field, best) else 0
+    tid = units[best[1]].get("id")
+    return {"att": i, "dfd": best[1], "guns": guns_served(d, u), "rounds": min(guns_served(d, u) * A["rounds"], ammo_left(d, u)),
+            "dist": best[0], "shot": shot, "cover": cover_at(d, field, best[2], best[3]), "penalty": wx["penalty"],
+            "named": tid is not None and tid == u.get("target"), "graze": graze,
+            "behind": behind[0] if behind else None, "beyond": behind[1] if behind else 0}
 
 
 def _shot(d: Data, u: dict, dist: int) -> str:

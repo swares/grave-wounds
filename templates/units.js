@@ -307,9 +307,9 @@ function namedTarget(units, i, field, occ){       // the GM's named target for a
   const near = nearestAhead(u.weapon, footprint(u)[0], fvec(u.facing), footprint(units[j]).flat(), field, clearFn(units, occ, field, i, j));
   return near ? [near[0], j, near[1], near[2]] : null;
 }
-const clearFn = (units, occ, field, i, j) => (occ ? (h, t, dist) => lineFire(units, occ, field, i, j, h, t, dist) !== null : null);
-function lineFire(units, occ, field, i, j, h, t, dist){   // null if a unit between blocks the shot, else % off (bows loosing high over them)
-  const u = units[i], high = groundAt(field, h).height, arc = UD.line_of_fire.arcing.includes(u.weapon);
+const clearFn = (units, occ, field, i, j) => (occ ? (h, t, dist) => lineFire(units, occ, field, i, j, [h, t, dist]) !== null : null);
+function lineFire(units, occ, field, i, j, path){   // path [from hex, to hex, distance]: null if a unit between blocks the shot, else % off (bows loosing high over them)
+  const [h, t, dist] = path, u = units[i], high = groundAt(field, h).height, arc = UD.line_of_fire.arcing.includes(u.weapon);
   let over = true, pen = 0;
   if (isGun(u.weapon)){
     over = dist > UD.artillery.canister_to;
@@ -349,7 +349,7 @@ function volleys(units, field = null){            // [{att, dfd, men, dist, cove
     for (let k = 0; k < rows[0].length; k++) shooters += Math.min(per, men[k]);
     const wx = shotWeather(field, u.weapon, best[0], best[2], best[3]);
     out.push({ att: i, dfd: best[1], men: shooters, dist: best[0], cover: coverAt(field, best[2], best[3]), penalty: wx.penalty, misfire: wx.misfire, reach: wx.reach || 0, from: best[2], to: best[3],
-      over: lineFire(units, occ, field, i, best[1], best[2], best[3], best[0]) });
+      over: lineFire(units, occ, field, i, best[1], [best[2], best[3], best[0]]) });
   });
   return out;
 }

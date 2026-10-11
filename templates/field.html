@@ -829,7 +829,8 @@ function renderSel(){
   renderGunOrders(u, setup);
   if (!u){ $("#sel-info").innerHTML = ""; return }
   const f = FD.units.formations[u.formation], w = FD.weapons[u.weapon];
-  const gun = isGun(u.weapon) ? `${u.howitzer ? "howitzers, shell over anything between; " : ""}range ${FD.units.artillery.range} hexes (${fmtM(FD.units.artillery.range * FD.units.hex_m)}), canister to ${FD.units.artillery.canister_to}; crews fight with ${FD.weapons[meleeWeapon(u)].name.toLowerCase()}` : null;
+  const how = u.howitzer ? "howitzers, shell over anything between; " : "";
+  const gun = isGun(u.weapon) ? `${how}range ${FD.units.artillery.range} hexes (${fmtM(FD.units.artillery.range * FD.units.hex_m)}), canister to ${FD.units.artillery.canister_to}; crews fight with ${FD.weapons[meleeWeapon(u)].name.toLowerCase()}` : null;
   const reach = gun || ("range" in w ? `range ${w.range.map(x => Math.round(x / FD.units.range_scale)).join(" / ")} hexes, to ${fmtM(w.range.at(-1) * FD.battle_hex_m)}` : `reach ${w.reach || 1}`);
   const down = u.down ? ", " + u.down + " down (" + u.dead + " dead)" : "";
   $("#sel-info").innerHTML = `<dt>Men</dt><dd>${u.men} of ${u.start}${down}</dd>`
@@ -1030,7 +1031,11 @@ function init(){
   $("#btn-limber").onclick = toggleLimber;
   $("#btn-resupply").onclick = toggleResupply;
   $("#sel-target").onchange = e => setTarget(e.target.value);
-  $("#sel-weapon").onchange = e => { const gun = isGun(e.target.value); if (gun) $("#sel-form").value = "battery"; $("#howitzer-box").hidden = !gun };
+  $("#sel-weapon").onchange = e => {
+    const gun = isGun(e.target.value);
+    if (gun) $("#sel-form").value = "battery";
+    $("#howitzer-box").hidden = !gun;
+  };
   $("#howitzer-box").hidden = !isGun($("#sel-weapon").value);
   $("#btn-field").onclick = () => { loadBattlefield($("#sel-field").value, $("#chk-armies").checked); fillChoices(); render() };
   $("#btn-add-hero").onclick = addHero;
