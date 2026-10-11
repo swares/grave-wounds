@@ -82,7 +82,8 @@ const CAMP_ROOM = 6;                          // hexes between a camp too big fo
 // the rest runs off it (fits false). done: man-hours of work done so far (null: finished); the
 // works go up in the order the camp lists them, each kind all round the ring from the gate before
 // the next starts. Pieces off the map count towards the labour but are not shown.
-function campWorks(kind, men, ftype, cols, rows, done = null, hauled = false, at = null){   // at: a centre other than the middle
+// opts: {hauled (timber from afar), at (a centre other than the middle)}
+function campWorks(kind, men, ftype, cols, rows, done = null, { hauled = false, at = null } = {}){
   const c = WK.camps[kind], layout = c.layout, r = campRadius(men, ftype), extra = layout === "fortified" ? 2 : 1;
   let centre = at ? at.slice() : [Math.floor(cols / 2), Math.floor(rows / 2)];
   const fits = campFits(centre, r + extra, cols, rows);

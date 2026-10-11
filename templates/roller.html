@@ -1908,7 +1908,7 @@ function setupHandoff(){                     // a camp or position sent from the
   const toward = ((h.foes || []).find(o => o.from) || {}).from || null;      // the river goes between the camp and them
   const seed = h.groundSeed || h.place || "fight", edges = h.edges ? { ...h.edges, toward } : null;
   const at = lay && edges ? campCentre(h.ground, { ...edges, spot_seed: seedNumber(`${seed}:spot`) }, cols, rows, r, ring) : null;
-  const L = lay ? campWorks(h.camp, men, ft, cols, rows, h.done ?? null, !!h.hauled, at) : { centre: [cols >> 1, rows >> 1], radius: r, fits: true, works: { edges: {}, hexes: {} } };
+  const L = lay ? campWorks(h.camp, men, ft, cols, rows, h.done ?? null, { hauled: !!h.hauled, at }) : { centre: [cols >> 1, rows >> 1], radius: r, fits: true, works: { edges: {}, hexes: {} } };
   S.works = L.works;
   S.groundLike = { terrain: GRD.seed[h.ground] ? h.ground : "open", seed, n: 0, clear: lay ? [L.centre, L.radius] : null, edges };
   S.ground = layGroundLike();
