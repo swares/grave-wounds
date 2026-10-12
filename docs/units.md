@@ -1219,6 +1219,22 @@ hexes, about 1,750 by 1,240 yards (1,600 by 1,130 m), north at the top.
 - Fire support: the 7th Division's artillery ("flash fire" round the outposts), heavy
   howitzers, 4.2-inch mortars; Chinese mortars and guns.
 
+**Hue: the new city, 4-6 February 1968** (`data/fields/hue-1968.yaml`). The field is 150 × 110
+hexes, about 1,640 by 1,040 yards (1,500 by 950 m), north at the top.
+- The Perfume River runs along the top, with its bridge into the Citadel, and Le Loi street
+  and a park along the bank. Highway 1 comes up from the An Cuu bridge on the Phu Cam canal
+  along the bottom.
+- Between them are blocks of houses (**buildings**, with **rubble** where shells fell) and the
+  stone public buildings (**tall buildings**): the MACV compound, the university, the
+  provincial headquarters, the Treasury, the hospital and the prison.
+- Cold drizzle and low cloud.
+- United States: three companies of the 2nd Battalion, 5th Marines and A Company, 1st
+  Marines, attacking east, with machine guns and four M48 **tanks** on Highway 1.
+- North Vietnamese (veteran, in cover): the provincial headquarters, the Treasury, the
+  hospital and the prison held, with RPG teams that can knock out tanks, and machine guns.
+- Fire support: Marine 81 mm mortars and 105 mm howitzers (held back at first to spare the
+  city); North Vietnamese mortars, rockets and guns.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.

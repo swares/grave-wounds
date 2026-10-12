@@ -55,6 +55,8 @@ somewhat cooler; the test valley uses −0.9 °F (−0.5 °C).
 | Central Korea, monsoon continental | Suwon and Seoul; rounded approximations of the normals |
 | Central Highlands of Vietnam, tropical monsoon | Pleiku: a dry season November to April, monsoon rains May to October; rounded design estimates |
 | Horn of Africa coast, hot and semi-arid | Mogadishu; rounded design estimates |
+| Central coast of Vietnam, tropical monsoon | Hue: rains September to January, the crachin drizzle into March; rounded design estimates |
+| Annamite hills of Vietnam, monsoon and mist | Khe Sanh and the A Shau at about 400-600 m, with long fogs November to March; rounded design estimates |
 | North Korean plateau, bitter winters | the Changjin (Chosin) plateau at about 1,100 m; rounded design estimates |
 | Hindu Kush valleys, hot summers and cold winters | the Kunar and Nuristan valleys at about 1,200 m; rounded design estimates |
 
