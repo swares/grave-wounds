@@ -301,12 +301,12 @@ def _support_rules(ind: dict) -> str:
             + _air_rules(I))
 
 
-def _air_rules(I: dict) -> str:
+def _air_rules(ind: dict) -> str:
     """Aircraft on call, for the book."""
-    planes = [k for k in I["kinds"].values() if k.get("air")]
+    planes = [k for k in ind["kinds"].values() if k.get("air")]
     if not planes:
         return ""
-    A = I.get("air") or {}
+    A = ind.get("air") or {}
 
     def when(k):
         return "at once" if not k["delay"] else f"{k['delay']} exchanges later"

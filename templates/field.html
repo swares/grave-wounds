@@ -549,7 +549,7 @@ function displace(i){                             // the battery moves: silent f
 }
 const airOf = k => !!FD.units.indirect.kinds[supports()[k]?.kind]?.air;   // battery k is aircraft
 function whenText(wait){                         // "this exchange", "next exchange", "in 2 exchanges"
-  if (!(wait > 0)) return "this exchange";
+  if (!wait || wait <= 0) return "this exchange";
   return wait === 1 ? "next exchange" : `in ${wait} exchanges`;
 }
 const groundedName = why => (WXD.conditions[why] || WXD.light?.levels[why] || { name: why }).name.toLowerCase();
