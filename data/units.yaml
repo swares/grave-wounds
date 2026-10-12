@@ -143,18 +143,22 @@ quality:
 
 # ---------- melee ----------
 # Fighting men: the front rank of each hex touching the enemy (the formation's `abreast` men),
-# twice that with reach-2 weapons (spears, bills: the second rank strikes over the first).
+# and one more rank for each hex of the weapon's reach past the first, up to the formation's
+# ranks: spears and bills (reach 2) strike from two ranks, the pike (reach 3) from three.
 # Each exchange, `tempo` of the fighting men land a telling blow's attempt; the rest of the
 # minute is pressing, shoving and watching. Tuned so that two equal regular units with no
 # armour hit about 3% of the men in contact a minute (the chosen pace: 2-4%); about a third
 # of those are put out of the fight, the rest fight on wounded. Armour cuts it further.
 melee:
   tempo: 0.09
-  second_rank_reach: 2                    # weapons of this reach or more strike from the second rank too
   flank: {attack: 20, defence: -100}      # % to the attacker's chance, and to the defender's (-100: no defence)
   rear: {attack: 30, defence: -100}
   charge: {attack: 20, tempo: 2.0}        # the first exchange of a charge by mounted men: +attack, x tempo
   shaken: {attack: -10}                   # a shaken unit fights worse
+  # A front of pikes against horse: a steady unit in one of `formations` armed with one of
+  # `weapons`, struck by mounted men from its front, takes no charge from them (as stakes), and
+  # its men strike mounted men to their front at +`attack` %. Design estimate.
+  pikes: {weapons: [pike], formations: [close], attack: 20}
 
 # ---------- missiles ----------
 # Shooting men: those with a missile weapon and the target in range (the field map counts

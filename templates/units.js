@@ -247,7 +247,7 @@ function struckHex(units, occ, u, h){            // [enemy index, direction] acr
 }
 function unitGroups(units, occ, i, groups, field){   // unit i's front hexes' strikes: "i|j|situation|penalty|stakes" -> men
   const u = units[i], rows = footprint(u), men = menByHex(u), reach = FD.weapons[meleeWeapon(u)].reach || 1, abreast = form(u).abreast;
-  const per = abreast * (reach >= UD.melee.second_rank_reach ? 2 : 1);
+  const per = abreast * Math.min(reach, form(u).ranks);   // a rank for each hex of reach
   (rows[0] || []).forEach((h, k) => {
     const hit = struckHex(units, occ, u, h);
     if (!hit) return;
@@ -530,11 +530,17 @@ function logged(line, t){                         // a log line for a tally, the
   const { heroes, ...rest } = t;
   return [{ ...line, ...rest }, ...(heroes || []).map(h => ({ kind: "herohit", unit: line.dfd, ...h }))];
 }
+function pikeFront(u){                            // steady, in a pike formation, with a pike: a front horse cannot charge home on
+  const P = UD.melee.pikes;
+  return u.state === "steady" && P.formations.includes(u.formation) && P.weapons.includes(meleeWeapon(u)) && !u.mounted;
+}
 function strikeAll(us, table, rng, acc, log, field){
   const struck = new Set();
   for (const s of strikes(us, field)){
     const a = us[s.att], b = us[s.dfd];
-    const opts = { situation: s.situation, charge: !!a.charged && !!a.mounted && !s.stakes, shaken: a.state === "shaken", rout: s.rout, exposed: exposure(b, s.rout), penalty: s.penalty || 0 };
+    const charge = !!a.charged && !!a.mounted && !s.stakes && !(s.situation === "front" && pikeFront(b));   // no charge home onto a front of pikes
+    const vsHorse = b.mounted && pikeFront(a) ? UD.melee.pikes.attack : 0;
+    const opts = { situation: s.situation, charge, shaken: a.state === "shaken", rout: s.rout, exposed: exposure(b, s.rout), penalty: (s.penalty || 0) - vsHorse };
     let t = takeHurt(b, melee(meleeSide(a, table), meleeSide(b, table), s.men, rng, opts));
     tallyLoss(acc, s, t);
     acc.flanked[s.dfd] = acc.flanked[s.dfd] || s.situation === "flank" || s.situation === "rear";

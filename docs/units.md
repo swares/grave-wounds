@@ -24,7 +24,9 @@ runs the same rules in the browser (`templates/units.js`, checked against the Py
 ## One exchange
 
 1. **Who strikes.** In melee, the front rank of each hex touching the enemy: 10 men to a
-   hex face. With spears, bills and other reach-2 weapons the second rank strikes too.
+   hex face, and one more rank for each hex of the weapon's reach past the first, up to the
+   formation's ranks: spears and bills (reach 2) strike from two ranks, the pike (reach 3)
+   from three.
    With missiles, the men who have the target in range; the field map counts them (the
    front two ranks of a line).
 2. **How many blows tell.** Most of a minute in a press is shoving, guarding and watching
@@ -34,7 +36,8 @@ runs the same rules in the browser (`templates/units.js`, checked against the Py
 3. **Each attempt is an individual attack.** d100 against the unit's attack %:
    - green 40%, regular 50%, veteran 60%;
    - plus situation: flank +20, rear +30, a mounted charge +20 (and twice the tempo) in
-     its first exchange, shaken −10;
+     its first exchange, shaken −10; pikemen striking horse to their front +20 (see *A
+     front of pikes*, below);
    - for missiles, minus the range band (medium −20, long −40), weather and cover.
 
    A critical (a tenth of the chance or less) cannot be parried. Otherwise the defender
@@ -154,6 +157,13 @@ each side is the flank; the two behind are the rear.
 - **A charge:** a steady unit whose move ends in contact may move up to twice its
   allowance. Mounted men who charge get the charge bonus (+20, twice the tempo) in that
   exchange's fight.
+- **A front of pikes:** a steady unit in close order armed with pikes, charged by horse from
+  its front, takes no charge from them (as stakes and felled trees give none), and its men
+  strike mounted men to their front at +20 (`melee.pikes`). Shaken, in open order, or
+  struck in the flank or rear, it loses that edge. One minute of 80 regular horse charging
+  the front of 120 regular pikemen (400 runs, the Thirty Years' War table, no armour on
+  either side): the horse hit 0.65 pikemen, against 1.7 if the pikes gave no edge; the
+  pikemen hit 4.1 horse, against 3.1. Spears and bills get no such edge. Design estimates.
 - **Pursuit:** contact with a broken unit is a charge like any other, and every man of the
   pursuing unit strikes the fleeing.
 
