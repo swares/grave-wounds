@@ -442,10 +442,13 @@ function markMg(us, v, under){                    // a machine gun's target, and
   if (v.behind !== undefined && v.behind !== null) under[v.behind] = true;
 }
 // a unit of `side` can see hex h to call fire on it: in sight in the weather, no woods between
-const spotted = (units, field, side, h) => units.some(u => u.side === side && u.men > 0 && u.state !== "broken" && u.state !== "fled" && sees(field, u, h, sightHexes(field)));
-function sightHexes(field){                       // how far the weather lets a man see, in field hexes (null: as far as the map)
-  const cond = field?.weather?.cond, vis = cond && FD.weather ? FD.weather.conditions[cond].visibility : null;
-  return vis === null || vis === undefined ? null : Math.floor(vis / UD.range_scale);
+const spotted = (units, field, side, h) => units.some(u => u.side === side && u.men > 0 && u.state !== "broken" && u.state !== "fled" && sees(field, u, h, sightHexes(field, h)));
+function sightHexes(field, h = null){             // how far the weather and the light let a man see hex h, in field hexes (null: as far as the map); a lit hex as by day
+  const cond = field?.weather?.cond, L = lightOf(field);
+  let vis = cond && FD.weather ? FD.weather.conditions[cond].visibility : null;
+  if (vis === undefined) vis = null;
+  if ((L?.sight ?? null) !== null && !lit(field, h)) vis = vis === null ? L.sight : Math.min(vis, L.sight);
+  return vis === null ? null : Math.floor(vis / UD.range_scale);
 }
 function sees(field, u, h, sight){                // any hex of u sees h: within sight, no woods between, no smoke on the line
   return footprint(u).flat().some(x => {
@@ -480,18 +483,25 @@ function servedTubes(b){                          // tubes it can fire: not knoc
 }
 function fireMission(ctx, k, b){                  // on an enemy battery or a hex: smoke laid or men struck; located; a creeping mission moves on (ctx: us, table, weapon, rng, acc, log, field, under)
   const { rng, log, field } = ctx;
-  const K = UD.indirect.kinds[b.kind], m = b.mission, shells = Math.min(servedTubes(b) * K.rate, b.rounds);
+  const K = UD.indirect.kinds[b.kind], m = b.mission, shells = Math.min(servedTubes(b) * (m.illum ? 1 : K.rate), b.rounds);
   b.rounds -= shells;
   if (!K.direct) b.located = true;                 // tanks close behind the line are never located
-  if (m.battery !== undefined && m.battery !== null) log.push(...counterFire(field, [k, b, shells, K], [ctx.table, ctx.weapon], rng));
-  else {
-    const bursts = [];
-    for (let s = 0; s < shells; s++){ const dirn = rng.randint(0, 5), far = rng.randint(0, K.scatter); bursts.push(step(m.hex, dirn, far)) }
-    log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells, at: m.hex, bursts, smoke: !!m.smoke });
-    if (m.smoke) laySmoke(field, bursts);
-    else { shellUnits(ctx, k, b, bursts); knockBunkers(field, k, b, bursts, rng, log) }
-  }
+  if (m.illum){
+    lightUp(field, m.hex, K.illum || 0, 1);
+    log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells, at: m.hex, bursts: [], smoke: false, illum: true });
+  } else if (m.battery !== undefined && m.battery !== null) log.push(...counterFire(field, [k, b, shells, K], [ctx.table, ctx.weapon], rng));
+  else bombard(ctx, k, b, shells);
   missionOn(b, m, field.size);
+}
+function bombard(ctx, k, b, shells){               // shells on a hex: where each lands, then smoke laid, or men struck and bunkers knocked
+  const { rng, log, field } = ctx, K = UD.indirect.kinds[b.kind], m = b.mission, bursts = [];
+  for (let s = 0; s < shells; s++){ const dirn = rng.randint(0, 5), far = rng.randint(0, K.scatter); bursts.push(step(m.hex, dirn, far)) }
+  log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells, at: m.hex, bursts, smoke: !!m.smoke });
+  if (m.smoke) laySmoke(field, bursts);
+  else { shellUnits(ctx, k, b, bursts); knockBunkers(field, k, b, bursts, rng, log) }
+}
+function lightUp(field, at, radius, late = 0){      // a flare or illumination lights the hexes within radius of at for light.lasts exchanges (+ late: fired after the shooting)
+  if (radius > 0) (field.lit || (field.lit = [])).push({ at: [...at], radius, left: FD.weather.light.lasts + late });
 }
 function missionOn(b, m, size){                   // a single mission ends; a creeping one keeps its fire plan: `every` exchanges a line, `lines` lines, or off the map
   if (!m.repeat){ b.mission = null; return }
@@ -658,7 +668,19 @@ const upOf = field => field?.up || "N";          // the compass point at the top
 const SMOKED = { blocked: "Smoke: no one can see to shoot through it.", penalty: 0, misfire: 0, reach: 0 };
 function shotWeather(field, weapon, dist, h = null, t = null){   // the weather on a shot from h to t; smoke on the line blocks it
   if (h && t && smoked(field, ray(h, t, dist))) return { ...SMOKED };
-  return isGun(weapon) ? gunWeather(field, dist, h, t) : weatherAttack(field?.weather || null, weapon, dist * UD.range_scale, h, t, upOf(field));
+  return isGun(weapon) ? gunWeather(field, dist, h, t) : inTheDark(field, dist, t, weatherAttack(field?.weather || null, weapon, dist * UD.range_scale, h, t, upOf(field)));
+}
+function lightOf(field){                          // the field's light (weather.light), or null by day
+  const L = FD.weather?.light?.levels?.[field?.weather?.light || "day"];
+  return L && ((L.sight !== null && L.sight !== undefined) || L.aim) ? L : null;
+}
+const lit = (field, h) => !!h && (field?.lit || []).some(x => hdist(h, x.at) <= x.radius);   // a flare or illumination lights hex h
+function inTheDark(field, dist, t, out){           // no aiming beyond the light's sight at an unlit hex, and its aim % off
+  const L = lightOf(field);
+  if (out.blocked || !L || lit(field, t)) return out;
+  if (L.sight !== null && L.sight !== undefined && dist * UD.range_scale > L.sight){ out.blocked = `${L.name}: no one can be seen to aim at beyond ${Math.floor(L.sight / UD.range_scale)} hexes.`; return out }
+  out.penalty += L.aim;
+  return out;
 }
 const reaches = (u, dist, reach = 0) => (isGun(u.weapon) ? dist <= gunRange(u) : !!fieldRange(u.weapon, dist, reach));   // a battery's guns to their range
 function shareCover(field, h, target){            // % off a volley from h at a unit: the average cover of its row nearest h, rounded down
@@ -833,6 +855,7 @@ function afterExchange(us, field, log = []){        // charges spent, batteries 
   log.push(...displaceAll(field));
   if (field?.smoke) field.smoke = Object.fromEntries(Object.entries(field.smoke).filter(([, n]) => n > 1).map(([h, n]) => [h, n - 1]));   // smoke thins
   smokeDrifts(field);
+  if (field?.lit?.length) field.lit = field.lit.filter(x => x.left > 1).map(x => ({ ...x, left: x.left - 1 }));   // flares burn down
 }
 function displaceAll(field){                      // displacing batteries count down; one that has moved is no longer located, missions on it end
   const sup = field?.support || [], log = [];
@@ -1053,7 +1076,7 @@ function gunWeather(field, dist, h = null, t = null){   // no laying guns on wha
   if (vis !== null && vis !== undefined && cond.precip !== "none" && windLie(w, h, t, upOf(field)) === "against") vis = Math.floor(vis * WXD.driven_sight / 100);
   if (vis !== null && vis !== undefined && dist * UD.range_scale > vis){ out.blocked = `${cond.name}: the guns cannot be laid on what cannot be seen.`; return out }
   out.penalty = WXD.winds.find(x => x.id === w.wind).firearm;
-  return out;
+  return inTheDark(field, dist, t, out);
 }
 const chanceAt = (bands, dist) => (bands.find(([to]) => dist <= to) || [0, 0])[1];
 const canFire = u => isBattery(u) && !out_(u) && !u.abandoned && !u.limbered && !u.limbering && !u.resupplying && gunsServed(u) > 0 && ammoLeft(u) > 0;

@@ -56,6 +56,7 @@ on only when the GM moves it, and every force moves with it:
   the way (up to two weeks). At nightfall the first button becomes **Through the night**:
   every force has its night (rest, fatigue, the sick) and the clock moves to the next
   morning, an hour after sunrise (see [weather.md](weather.md)).
+  **Now** also shows the light at that hour (daylight, dusk or dawn, a moonlit or a dark night).
 - **Busy forces.** A force making camp, or fighting, is busy until it is done: its own time
   runs ahead of the clock and it does nothing else until the clock catches up. The forces
   list shows each force's own time.
@@ -112,7 +113,8 @@ day costs no marching time. Once an enemy force has marched to within 0.6 mile (
 - **the field map**, in units: the forces arrive with their fit men, and the GM splits each
   into units there (billmen, archers, horse). Men left out of every unit stay in reserve, and their side can bring them on during the
   battle.
-  The day's weather and ground come too, and the camp's works, as far as they are built,
+  The day's weather and ground come too, with the hour's light (daylight, dusk, moonlit or
+  dark: see [weather.md](weather.md#light-the-field-map)), and the camp's works, as far as they are built,
   are laid out around the defenders. When the battle ends, **Back to the travel map** brings
   the result home: the dead come off each force, and its wounded join its sick (below).
   Each force's clock moves on to the battle's end: a minute an exchange from when it

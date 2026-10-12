@@ -65,6 +65,27 @@ conditions:
   heavy_snow: {name: "Heavy snow", precip: snow, wet: 1, visibility: 40,   hardship: 2}
   blizzard:   {name: "Blizzard",   precip: snow, wet: 2, visibility: 15,   hardship: 3, min_wind: gale}
 
+# ---------- light ----------
+# The battle map's light (its weather's `light`; daylight if none). In the dark no one can be
+# seen to aim at, or to call fire on, beyond `sight` battle hexes (2 m; with the weather's own
+# visibility, the shorter counts), and aimed fire is `aim` % off, guns' too. A hex lit by a
+# flare or an illumination round is seen as by day. A battle sent from the travel map takes
+# the hour's light: dusk within `dusk_hours` of sunrise or sunset; at night, moonlit if the
+# moon is up and at least `moon_from` lit (a simple model: it rises about 50 minutes later each
+# day, at sunrise when new and at sunset when full, and is up 12 hours), in weather that
+# shows it (`moon_shows`), else dark.
+light:
+  levels:
+    day:     {name: "Daylight",      sight: null, aim: 0}
+    dusk:    {name: "Dusk or dawn",  sight: 100,  aim: 5}
+    moonlit: {name: "Moonlit night", sight: 50,   aim: 10}
+    night:   {name: "Dark night",    sight: 25,   aim: 20}
+  dusk_hours: 0.5
+  moon_from: 0.5
+  moon_shows: [fair]
+  lasts: 2                  # exchanges a flare or illumination round lights its hexes
+  flare: 10                 # field hexes round a flare the GM fires (hand or rifle flares, about 100 m)
+
 # ---------- the ground ----------
 # Mud and lying snow build up and wear off day by day; heavy rain floods fords.
 ground:

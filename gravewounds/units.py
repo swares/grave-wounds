@@ -808,7 +808,32 @@ def shot_weather(d: Data, field: dict | None, weapon: str, dist: int, h=None, t=
         return {"blocked": "Smoke: no one can see to shoot through it.", "penalty": 0, "misfire": 0, "reach": 0}
     if is_gun(d, weapon):
         return gun_weather(d, field, dist, h, t)
-    return C.weather_attack(d, (field or {}).get("weather"), weapon, dist * d.units["range_scale"], h, t, _up(field))
+    return in_the_dark(d, field, dist, t, C.weather_attack(d, (field or {}).get("weather"), weapon, dist * d.units["range_scale"], h, t, _up(field)))
+
+
+def light_of(d: Data, field: dict | None) -> dict | None:
+    """The field's light (weather.light, from weather.yaml light.levels), or None by day."""
+    levels = ((d.weather or {}).get("light") or {}).get("levels") or {}
+    L = levels.get(((field or {}).get("weather") or {}).get("light") or "day")
+    return L if L and (L.get("sight") is not None or L.get("aim")) else None
+
+
+def lit(field: dict | None, h) -> bool:
+    """Whether a flare or an illumination round lights hex h: field.lit is [{at, radius, left}]."""
+    return h is not None and any(hdist(h, x["at"]) <= x["radius"] for x in (field or {}).get("lit") or [])
+
+
+def in_the_dark(d: Data, field: dict | None, dist: int, t, out: dict) -> dict:
+    """The dark on a shot `dist` field hexes at hex t (none if it is lit): no aiming beyond the
+    light's sight, and its aim % off."""
+    L = light_of(d, field)
+    if out["blocked"] or L is None or lit(field, t):
+        return out
+    if L["sight"] is not None and dist * d.units["range_scale"] > L["sight"]:
+        out["blocked"] = f"{L['name']}: no one can be seen to aim at beyond {L['sight'] // d.units['range_scale']} hexes."
+        return out
+    out["penalty"] += L["aim"]
+    return out
 
 
 def height_edge(d: Data, field: dict | None, weapon: str, h, t) -> tuple:
@@ -974,6 +999,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _displace_all(field)
     _smoke_thins(field)
     _smoke_drifts(d, field)
+    _lit_fades(field)
     return us, log
 
 
@@ -1164,15 +1190,19 @@ def shell_weapon(d: Data, table: str) -> str | None:
 
 def spotted(d: Data, units: list, field: dict | None, side, h) -> bool:
     """Whether a unit of `side` (not broken or fled) can see hex h to call fire on it: within
-    the weather's sight, with no woods between."""
-    sight = _sight_hexes(d, field)
+    the weather's sight and the light's (unless h is lit), with no woods between."""
+    sight = _sight_hexes(d, field, h)
     return any(u["side"] == side and u["men"] > 0 and u["state"] not in ("broken", "fled") and _sees(d, field, u, h, sight) for u in units)
 
 
-def _sight_hexes(d: Data, field: dict | None) -> int | None:
-    """How far the weather lets a man see, in field hexes (None: as far as the map)."""
+def _sight_hexes(d: Data, field: dict | None, h=None) -> int | None:
+    """How far the weather and the light let a man see hex h, in field hexes (None: as far as
+    the map). A lit hex is seen as by day."""
     cond = ((field or {}).get("weather") or {}).get("cond")
     vis = d.weather["conditions"][cond].get("visibility") if cond and d.weather else None
+    L = light_of(d, field)
+    if L and L.get("sight") is not None and not lit(field, h):
+        vis = L["sight"] if vis is None else min(vis, L["sight"])
     return None if vis is None else vis // d.units["range_scale"]
 
 
@@ -1232,29 +1262,40 @@ def served_tubes(d: Data, b: dict) -> int:
 
 
 def _fire_mission(d: Data, us: list, table: str, weapon: str, rng, acc: tuple, field: dict, under: list, k: int, b: dict) -> list:
-    """One battery's shells this exchange: on an enemy battery (counter-battery), or on a hex:
-    where each lands, then smoke laid or the men struck in every unit. A battery that fires is
-    located; a creeping mission moves on."""
+    """One battery's shells this exchange: illumination over a hex (a round a tube), on an enemy
+    battery (counter-battery), or on a hex (_bombard). A battery that fires is located; a
+    creeping mission moves on."""
     K, m = d.units["indirect"]["kinds"][b["kind"]], b["mission"]
-    shells = min(served_tubes(d, b) * K["rate"], b["rounds"])
+    shells = min(served_tubes(d, b) * (1 if m.get("illum") else K["rate"]), b["rounds"])
     b["rounds"] -= shells
     if not K.get("direct"):
         b["located"] = True                       # tanks close behind the line are never located
-    if m.get("battery") is not None:
+    if m.get("illum"):
+        _light_up(d, field, m["hex"], K.get("illum", 0), 1)
+        log = [{"kind": "barrage", "sup": k, "name": b["name"], "side": b["side"], "shells": shells, "at": m["hex"], "bursts": [], "smoke": False, "illum": True}]
+    elif m.get("battery") is not None:
         log = _counter_fire(d, field, (k, b, shells, K), (table, weapon), rng)
     else:
-        bursts = []
-        for _ in range(shells):
-            dirn, far = rng.randint(0, 5), rng.randint(0, K["scatter"])
-            bursts.append(step(m["hex"], dirn, far))
-        log = [{"kind": "barrage", "sup": k, "name": b["name"], "side": b["side"], "shells": shells, "at": m["hex"], "bursts": bursts,
-                "smoke": bool(m.get("smoke"))}]
-        if m.get("smoke"):
-            _lay_smoke(d, field, bursts)
-        else:
-            log += _shell_units(d, us, (table, weapon), rng, acc, field, under, k, b, bursts)
-            log += _knock_bunkers(d, field, k, b, bursts, rng)
+        log = _bombard(d, (us, table, weapon, rng, acc, field, under), k, b, shells)
     _mission_on(b, m, field.get("size"))
+    return log
+
+
+def _bombard(d: Data, ctx: tuple, k: int, b: dict, shells: int) -> list:
+    """A battery's shells on a hex (ctx: units, table, shell weapon, dice, tallies, field, under
+    fire): where each lands, then smoke laid, or the men struck and bunkers knocked."""
+    us, table, weapon, rng, acc, field, under = ctx
+    K, m, bursts = d.units["indirect"]["kinds"][b["kind"]], b["mission"], []
+    for _ in range(shells):
+        dirn, far = rng.randint(0, 5), rng.randint(0, K["scatter"])
+        bursts.append(step(m["hex"], dirn, far))
+    log = [{"kind": "barrage", "sup": k, "name": b["name"], "side": b["side"], "shells": shells, "at": m["hex"], "bursts": bursts,
+            "smoke": bool(m.get("smoke"))}]
+    if m.get("smoke"):
+        _lay_smoke(d, field, bursts)
+    else:
+        log += _shell_units(d, us, (table, weapon), rng, acc, field, under, k, b, bursts)
+        log += _knock_bunkers(d, field, k, b, bursts, rng)
     return log
 
 
@@ -1328,6 +1369,19 @@ def _counter_fire(d: Data, field: dict, fire: tuple, tw: tuple, rng) -> list:
     return [{"kind": "counter", "sup": k, "name": b["name"], "side": b["side"], "shells": shells, "target": j, "tname": tg["name"],
              "knocked": knocked, "left": tg["tubes"], "struck": struck, "down": t["down"], "dead": t["dead"], "crew": tg["crew"],
              "served": served_tubes(d, tg)}]
+
+
+def _light_up(d: Data, field: dict, at, radius: int, late: int = 0) -> None:
+    """A flare or illumination round lights the hexes within `radius` of hex `at` for
+    light.lasts exchanges (+ late: fired after the shooting, it lights none in this one)."""
+    if radius > 0:
+        field.setdefault("lit", []).append({"at": list(at), "radius": radius, "left": d.weather["light"]["lasts"] + late})
+
+
+def _lit_fades(field: dict | None) -> None:
+    """Flares and illumination burn one exchange less; gone at none."""
+    if (field or {}).get("lit"):
+        field["lit"] = [{**x, "left": x["left"] - 1} for x in field["lit"] if x["left"] > 1]
 
 
 def _lay_smoke(d: Data, field: dict, bursts: list) -> None:
@@ -1912,7 +1966,7 @@ def gun_weather(d: Data, field: dict | None, dist: int, h=None, t=None) -> dict:
         out["blocked"] = f"{cond['name']}: the guns cannot be laid on what cannot be seen."
         return out
     out["penalty"] = next(x for x in d.weather["winds"] if x["id"] == weather["wind"])["firearm"]
-    return out
+    return in_the_dark(d, field, dist, t, out)
 
 
 def _chance_at(bands: list, dist: int) -> int:

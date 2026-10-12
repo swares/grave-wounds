@@ -286,6 +286,16 @@ function marchWindow(m, day){
   const hours = Math.max(DL.min_hours, Math.min(TER.hours_per_day, end - start));
   return { start, hours, sunrise, sunset };
 }
+const MOON_DAYS = 29.530588853, NEW_MOON_JDN = 2451550;   // the moon's month; a new moon (6 January 2000)
+const moonAge = n => (((n - NEW_MOON_JDN) % MOON_DAYS) + MOON_DAYS) % MOON_DAYS;
+function lightAt(m, day, hour, cond){            // day, dusk, moonlit or night at this hour (weather.yaml light)
+  const L = WXD.light, w = marchWindow(m, day), t = ((hour % 24) + 24) % 24;
+  if (Math.abs(t - w.sunrise) < L.dusk_hours || Math.abs(t - w.sunset) < L.dusk_hours) return "dusk";
+  if (w.sunrise < t && t < w.sunset) return "day";
+  const age = moonAge(mapJdn(m, day)), shown = (1 - Math.cos(2 * Math.PI * age / MOON_DAYS)) / 2;
+  const up = (((t - (6 + age * 24 / MOON_DAYS)) % 24) + 24) % 24 < 12;
+  return up && shown >= L.moon_from && L.moon_shows.includes(cond) ? "moonlit" : "night";
+}
 const pickRow = (rows, roll) => rows.find(r => roll <= r.upto);
 function rollWeather(m, day, prev, rolls){
   const cl = WXD.climates[m.climate], [y, mo] = mapDate(m, day), dim = daysInMonth(y, mo, m.calendar);
@@ -1443,7 +1453,8 @@ function withOptions(f){                      // March with: on its own, or a co
 function renderClock(){                        // the map's one clock and the buttons that move it
   const c = clockNow(), hpd = hpdOf(c.day), night = c.used >= hpd - 1e-9;
   const tail = night ? " \u2014 the day's marching is done" : " \u00b7 marching until " + clock(hpd, c.day);
-  $("#clock-now").innerHTML = `<b>Now:</b> ${dateText(c.day)}, ${clock(c.used, c.day)}${tail}`;
+  const lt = WXD.light ? WXD.light.levels[lightAt(curMap(), c.day, win(c.day).start + c.used, dayWeather(c.day).w.cond)] : null;
+  $("#clock-now").innerHTML = `<b>Now:</b> ${dateText(c.day)}, ${clock(c.used, c.day)}${lt ? " (" + esc(lt.name.toLowerCase()) + ")" : ""}${tail}`;
   $("#btn-clock-hour").textContent = night ? "Through the night" : "1 hour";
   $("#btn-clock-night").disabled = night;
 }
@@ -1797,7 +1808,7 @@ function init(){
     const camp = lay ? { kind: st.camp.kind, frac: st.done === null ? null : st.done / (st.camp.labour || 1), hauled: !nearWoods(m, dfd.pos), party: columnOf(dfd).length > 1 ? colType(dfd) : null } : null;
     try{ localStorage.setItem("gravewounds-field-handoff", JSON.stringify({ from: "travel", battle: `${S.mapId}:${p.day}:${p.used}:${dfd.id}`, mapId: S.mapId, map: m.name || S.mapId,
       place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day), start: { day: p.day, used: p.used }, forces, camp, battlefield,
-      weather: { cond: today.w.cond, wind: today.w.wind, dir: today.w.dir, high: today.w.high, low: today.w.low, ground: today.ground }, surprise: rollSurprise(p) })) }catch(e){ /* storage off: the field map opens without the forces */ }
+      weather: { cond: today.w.cond, wind: today.w.wind, dir: today.w.dir, high: today.w.high, low: today.w.low, ground: today.ground, light: lightAt(m, p.day, win(p.day).start + p.used, today.w.cond) }, surprise: rollSurprise(p) })) }catch(e){ /* storage off: the field map opens without the forces */ }
     location.href = "field.html";
   };
   $("#btn-fight").onclick = () => sendFight(0);

@@ -105,6 +105,7 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .aim{font:700 9px var(--mono);fill:var(--blood);text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .burst{font:700 7px var(--mono);fill:#c46a1a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .smoke{fill:#9a9a9a;fill-opacity:.55;stroke:none;pointer-events:none}
+.lit{fill:#ffe680;fill-opacity:.22;stroke:#e0b000;stroke-opacity:.6;stroke-width:.8;pointer-events:none}
 .heroes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.9rem}
 .heroes li{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:3px;padding:5px 8px}
 .heroes .meta{margin-left:auto;font:500 .75rem var(--mono);color:var(--muted);text-align:right}
@@ -189,6 +190,7 @@ legend{padding:0}
           <div><label for="sel-wx">Weather</label><select id="sel-wx"></select></div>
           <div><label for="sel-wind">Wind</label><select id="sel-wind"></select></div>
           <div><label for="sel-wdir">Blowing</label><select id="sel-wdir"></select></div>
+          <div><label for="sel-light">Light</label><select id="sel-light"></select></div>
         </div>
         <div class="row">
           <div><label for="in-mud">Mud (0-3)</label><input type="number" id="in-mud" min="0" max="3"></div>
@@ -227,10 +229,10 @@ legend{padding:0}
 
       <section id="support-box" aria-labelledby="h-support">
         <h2 id="h-support">Fire support</h2>
-        <p class="muted" style="margin:0">Off-map artillery and mortars on call. On its side's move, pick a battery, <b>Call fire</b>, then click a hex one of the side's units can see. Field guns and howitzers land the next exchange, mortars this one; each shell scatters. A battery that has fired is located (◉): the other side's guns can fire on it (<b>Counter-battery</b>) with no one needing to see it, knocking out tubes and killing and wounding crews (a tube without enough men falls silent). <b>Displace</b> moves it: silent for an exchange or more, then no longer located. Smoke drifts with the wind.</p>
+        <p class="muted" style="margin:0">Off-map artillery and mortars on call. On its side's move, pick a battery, <b>Call fire</b>, then click a hex one of the side's units can see. Field guns and howitzers land the next exchange, mortars this one; each shell scatters. A battery that has fired is located (◉): the other side's guns can fire on it (<b>Counter-battery</b>) with no one needing to see it, knocking out tubes and killing and wounding crews (a tube without enough men falls silent). <b>Displace</b> moves it: silent for an exchange or more, then no longer located. Smoke drifts with the wind. At night fire can be called only where the light lets someone see it fall; <b>Illumination</b> (mortars and guns) needs no one to see the hex and lights it and the hexes round it for two exchanges, as does a flare (Clicking the map).</p>
         <ul class="support" id="support"></ul>
         <div class="row">
-          <div><label for="sel-sup-fire">Fire</label><select id="sel-sup-fire"><option value="he">High explosive</option><option value="smoke">Smoke</option></select></div>
+          <div><label for="sel-sup-fire">Fire</label><select id="sel-sup-fire"><option value="he">High explosive</option><option value="smoke">Smoke</option><option value="illum">Illumination</option></select></div>
           <div><label for="sel-sup-creep">Creep</label><select id="sel-sup-creep"></select></div>
           <div><label for="sel-sup-every">Each line</label><select id="sel-sup-every" title="A creeping barrage's fire plan: exchanges on each line before it lifts"></select></div>
           <div><label for="sel-sup-lines">Lines</label><select id="sel-sup-lines" title="A creeping barrage's fire plan: how many lines it fires on before it stops"></select></div>
@@ -370,7 +372,8 @@ function fromTravel(h){                            // a battle with the travel m
   S = { table: S?.table || "towton-1461-all-hits", sides: [def.side, attSides.length ? namesAnd(attSides) : "Attackers"], units: [], exchange: 0, phase: "setup", sel: null, start: null,
     log: [], seq: 1, forces: h.forces.map(f => ({ ...f })), from: h, after: null, field: newField(), camp: null, tool: "unit",
     msg: `From the travel map: ${h.place}, ${h.day}, ${h.time}. Split each force into units with Add a unit, then place them.` };
-  if (h.weather) S.field.weather = { cond: h.weather.cond, wind: h.weather.wind, dir: h.weather.dir, ground: { mud: h.weather.ground?.mud || 0, snow: h.weather.ground?.snow || 0 } };
+  if (h.weather) S.field.weather = { cond: h.weather.cond, wind: h.weather.wind, dir: h.weather.dir, ground: { mud: h.weather.ground?.mud || 0, snow: h.weather.ground?.snow || 0 },
+    ...(h.weather.light && h.weather.light !== "day" ? { light: h.weather.light } : {}) };
   if (h.battlefield && FD.fields[h.battlefield]) deployOnBattlefield(h.battlefield);
   else if (h.camp && WK.camps[h.camp.kind]?.layout) layCamp(h.camp, def);
 }
@@ -542,7 +545,7 @@ function displace(i){                             // the battery moves: silent f
 }
 function missionText(m){                          // " · on 30,12 (smoke) next exchange, each exchange, creeping 2 hexes an exchange"
   const when = m.wait > 0 ? "next exchange" : "this exchange", cb = m.battery !== undefined && m.battery !== null;
-  const smoke = m.smoke ? " (smoke)" : "", on = cb ? `${supports()[m.battery].name} (counter-battery)` : `${m.hex[0] + 1},${m.hex[1] + 1}${smoke}`;
+  const smoke = (m.smoke ? " (smoke)" : "") + (m.illum ? " (illumination)" : ""), on = cb ? `${supports()[m.battery].name} (counter-battery)` : `${m.hex[0] + 1},${m.hex[1] + 1}${smoke}`;
   const plan = m.creep && m.creep.lines ? `, line ${m.creep.line || 1} of ${m.creep.lines}` : "";
   const creep = m.creep ? `, creeping ${nOf(m.creep.step, "hex", "hexes")} every ${nOf(m.creep.every || 1, "exchange")}${plan}` : "";
   return ` · on ${on} ${when}${m.repeat ? ", each exchange" : ""}${creep}`;
@@ -555,15 +558,17 @@ function addSupport(){
   render();
 }
 function callFire(i, h){                          // the mission, if a unit of its side can see the hex
-  const b = supports()[i], K = FD.units.indirect.kinds[b.kind];
+  const b = supports()[i], K = FD.units.indirect.kinds[b.kind], illum = $("#sel-sup-fire").value === "illum";
   S.calling = null;
-  if (!spotted(S.units, S.field, b.side, h)){ S.msg = `No unit of ${b.side} can see ${h[0] + 1},${h[1] + 1}: fire can only be called where someone sees it fall (not through woods or smoke).`; return render() }
+  if (illum && !K.illum){ S.msg = `${K.name} have no illumination rounds.`; return render() }
+  if (!illum && !spotted(S.units, S.field, b.side, h)){ S.msg = `No unit of ${b.side} can see ${h[0] + 1},${h[1] + 1}: fire can only be called where someone sees it fall (not through woods or smoke).`; return render() }
   const smoke = $("#sel-sup-fire").value === "smoke", by = Number($("#sel-sup-creep").value), m = { hex: h, wait: K.delay, repeat: by > 0 || $("#chk-sup-repeat").checked };
   if (smoke) m.smoke = true;
+  if (illum) m.illum = true;
   const every = Number($("#sel-sup-every").value) || 1, lines = Number($("#sel-sup-lines").value) || 0;
   if (by) m.creep = { step: by, dir: creepDir(b.side), every, lines };
   b.mission = m;
-  const plan = lines ? `, ${lines} lines` : ", until it leaves the map", what = smoke ? "lay smoke" : "fire";
+  const plan = lines ? `, ${lines} lines` : ", until it leaves the map", what = { he: "fire", smoke: "lay smoke", illum: "fire illumination" }[$("#sel-sup-fire").value] || "fire";
   const creep = by ? `, lifting ${nOf(by, "hex", "hexes")} towards ${$("#sel-sup-dir").selectedOptions[0].text} every ${nOf(every, "exchange")}${plan}` : "";
   S.msg = `${b.name} will ${what} on ${h[0] + 1},${h[1] + 1} ${K.delay ? "next exchange" : "this exchange"}${m.repeat ? ", and every exchange until stopped" : ""}${creep}.`;
   render();
@@ -583,6 +588,7 @@ function callCounter(i, j){                       // counter-battery: fire on a 
 }
 function supportSvg(){                            // smoke, the hexes fire is called on, and where the last exchange's shells burst
   let g = Object.keys(S.field.smoke || {}).map(k => `<polygon class="smoke" points="${pts(xy(k.split(",").map(Number)))}"/>`).join("");
+  for (const x of S.field.lit || []){ const [cx, cy] = xy(x.at); g += `<circle class="lit" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${((x.radius + 0.5) * HW).toFixed(1)}"/>` }
   for (const b of supports()) if (b.mission?.hex){ const [x, y] = xy(b.mission.hex); g += `<text class="aim" x="${x.toFixed(1)}" y="${y.toFixed(1)}">\u2316</text>` }
   for (const h of S.bursts || []){ const [x, y] = xy(h); g += `<text class="burst" x="${x.toFixed(1)}" y="${y.toFixed(1)}">\u2737</text>` }
   return g;
@@ -649,7 +655,7 @@ function shotNotes(l){                            // " (cover -20%, weather -10%
   if (l.seen !== undefined && l.seen < 1) bits.push(`hidden: ${Math.round(l.seen * 100)}% of shots find a man`);
   if (l.graze) bits.push(`firm ground +${l.graze}%`);
   if (l.fuse) bits.push(`fuses cut: air bursts ${l.fuse > 0 ? "+" : "−"}${Math.abs(l.fuse)}%`);
-  if (l.penalty) bits.push(`weather ${l.penalty > 0 ? "−" : "+"}${Math.abs(l.penalty)}%`);
+  if (l.penalty) bits.push(`weather${lightOf(S.field) ? " and light" : ""} ${l.penalty > 0 ? "−" : "+"}${Math.abs(l.penalty)}%`);
   if (l.misfire) bits.push(`${l.misfire}% misfire`);
   return bits.length ? ` (${bits.join(", ")})` : "";
 }
@@ -681,6 +687,7 @@ function fireText(l){                             // a battery's shells: on a he
     const crew = l.struck ? ` ${nOf(l.struck, "crewman", "crewmen")} struck, ${l.down} down${dead};` : "";
     return `${who} fire ${shells} on ${l.tname} (counter-battery): ${nOf(l.knocked, "tube")} knocked out;${crew} ${l.served} of ${l.left} tubes can fire, ${l.crew} crew left.`;
   }
+  if (l.illum) return `${who} fire ${nOf(l.shells, "illumination round")} over ${l.at[0] + 1},${l.at[1] + 1}: lit for ${nOf(FD.weather.light.lasts, "exchange")}.`;
   return `${who} ${l.smoke ? "lay smoke with" : "fire"} ${shells} on ${l.at[0] + 1},${l.at[1] + 1}.`;
 }
 function heroStateText(l){                        // a duel's attempts, or a hero's bleeding past a threshold
@@ -803,11 +810,13 @@ function fillTools(){
   const e = EDGE_TOOLS.map(k => `<option value="e:${k}">${esc(WK.edge_works[k].name)}</option>`).join("");
   const h = HEX_TOOLS.map(k => `<option value="h:${k}">${esc(WK.hex_works[k].name)}</option>`).join("");
   $("#sel-tool").innerHTML = `<option value="unit">Place and move units</option><option value="gate">Open or bar a gate</option>`
+    + (WXD.light ? `<option value="flare">Fire a flare (lights the hexes round it)</option>` : "")
     + `<optgroup label="Paint the ground">${g}</optgroup><optgroup label="Works on a hex side (click just inside it, on the high side)">${e}</optgroup><optgroup label="Works in a hex">${h}</optgroup>`;
   $("#sel-wx").innerHTML = Object.entries(WXD.conditions).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-wind").innerHTML = WXD.winds.map(w => `<option value="${w.id}">${esc(w.name)}</option>`).join("");
+  $("#sel-light").innerHTML = Object.entries(WXD.light?.levels || { day: { name: "Daylight" } }).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#legend").innerHTML = Object.entries(FD.units.ground).filter(([k]) => k !== "open").map(([k, v]) => `<span><i class="g-${k}" style="background:var(--g-${k})"></i>${esc(v.name)}</span>`).join("")
-    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span>`;
+    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
 }
 function clickSide(e, h){                         // the neighbour across the hex side nearest the click
   const svg = $("#map svg"), pt = svg.createSVGPoint();
@@ -818,6 +827,7 @@ function clickSide(e, h){                         // the neighbour across the he
 function useTool(e, h){                           // paint the ground, or build or take away a work
   const tool = S.tool, [kind, type] = tool.split(":");
   if (tool === "gate") return toggleGate(h, clickSide(e, h));
+  if (tool === "flare") return fireFlare(h);
   if (S.phase !== "setup"){ S.msg = "Ground and works are set before the battle starts; gates can be opened or barred at any time."; return }
   const before = JSON.stringify(S.field);
   if (kind === "g") paintGround(h, type);
@@ -826,6 +836,11 @@ function useTool(e, h){                           // paint the ground, or build 
   const blocked = S.units.find((u, i) => !fits(S.units, i, u, SIZE, S.field));
   if (blocked){ S.field = JSON.parse(before); S.msg = `Not there: ${blocked.name} could not stand on it.`; return }
   S.msg = "";
+}
+function fireFlare(h){                           // the GM's flare: lights the hexes round it for light.lasts exchanges
+  const L = WXD.light;
+  lightUp(S.field, h, L.flare);
+  S.msg = `A flare over ${h[0] + 1},${h[1] + 1}: the hexes within ${nOf(L.flare, "hex", "hexes")} (${fmtM(L.flare * FD.units.hex_m)}) are lit for ${nOf(L.lasts, "exchange")}.`;
 }
 function paintGround(h, kind){
   if (kind === "open") delete S.field.ground[hkey(h)];
@@ -865,11 +880,16 @@ function weatherNote(){                           // what today's weather and gr
   const dn = windDirNote(w), up = S.field.up && S.field.up !== "N" ? ` (${WIND_NAMES[S.field.up]} is at the top of this map)` : "";
   if (dn) out.push(dn + up);
   if (deepGoing(w.ground)) out.push(`deep going: +${deepGoing(w.ground)} movement a hex`);
+  const L = lightOf(S.field);
+  if (L){
+    const far = L.sight === null ? "" : "no aiming or calling fire beyond " + Math.floor(L.sight / FD.units.range_scale) + " hexes (" + fmtM(L.sight * FD.battle_hex_m) + ") except at lit hexes, ";
+    out.push(`${L.name.toLowerCase()}: ${far}aimed fire −${L.aim}%`);
+  }
   return out.length ? out.join("; ") + "." : "No effect on the fighting.";
 }
 function renderWeather(){
   const w = S.field.weather;
-  $("#sel-wx").value = w.cond; $("#sel-wind").value = w.wind;
+  $("#sel-wx").value = w.cond; $("#sel-wind").value = w.wind; $("#sel-light").value = w.light || "day";
   $("#sel-wdir").innerHTML = windDirOptions(w.dir || "");
   $("#in-mud").value = w.ground.mud || 0; $("#in-snow").value = w.ground.snow || 0;
   $("#wx-note").textContent = weatherNote();
@@ -877,7 +897,9 @@ function renderWeather(){
 }
 function setWeather(){
   const lvl = (id, hi) => Math.max(0, Math.min(hi, Number.parseInt($(id).value, 10) || 0));
-  S.field.weather = { cond: $("#sel-wx").value, wind: $("#sel-wind").value, dir: $("#sel-wdir").value || undefined, ground: { mud: lvl("#in-mud", WXD.ground.mud_max), snow: lvl("#in-snow", WXD.ground.snow_max) } };
+  const light = $("#sel-light").value;
+  S.field.weather = { cond: $("#sel-wx").value, wind: $("#sel-wind").value, dir: $("#sel-wdir").value || undefined, ground: { mud: lvl("#in-mud", WXD.ground.mud_max), snow: lvl("#in-snow", WXD.ground.snow_max) },
+    ...(light && light !== "day" ? { light } : {}) };
   render();
 }
 
@@ -1376,7 +1398,7 @@ function init(){
     renderMap();
   });
   $("#sel-tool").onchange = e => { S.tool = e.target.value; S.msg = ""; render() };
-  ["#sel-wx", "#sel-wind", "#sel-wdir", "#in-mud", "#in-snow"].forEach(id => { $(id).onchange = setWeather });
+  ["#sel-wx", "#sel-wind", "#sel-wdir", "#sel-light", "#in-mud", "#in-snow"].forEach(id => { $(id).onchange = setWeather });
   $("#sel-assault").onchange = e => { const u = selUnit(); if (u){ u.assault = e.target.value || null; S.msg = u.assault ? `${u.name} will storm any enemy-held bunker across its front each exchange.` : `${u.name} stops storming.`; render() } };
   $("#btn-breach").onclick = () => { const u = selUnit(); if (u){ u.breach = !u.breach; S.msg = u.breach ? `${u.name} will hack at the works in front of it each exchange.` : `${u.name} stops breaching.`; render() } };
   $("#units").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; S.msg = ""; render() } });

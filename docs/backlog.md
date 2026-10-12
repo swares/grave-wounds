@@ -41,6 +41,10 @@ When an item is done, delete it here and note it in the pull request that closes
   guns, extended order, artillery and mortars on call, suppression). Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
+- **Night, first cut.** The dark limits sight and aim, and flares and illumination light an
+  area. It leaves out muzzle flashes (a man firing at night shows where he is), machine guns
+  firing on fixed lines laid in daylight, men losing their way or their direction in the
+  dark, and night movement being slower. The moon is a simple model, good to an hour or so.
 - **Fire at hidden men, first cut.** Men gone to ground, in bunkers or in buildings are now hit
   at 10% of aimed shots (machine guns 5%), and dug-in men hold better. Osan, left alone, lasts
   about an hour where the real fight took two and a half; the rest of that time went in the

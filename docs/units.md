@@ -339,10 +339,10 @@ with shell wounds (the First World War and later):
 - **Add a battery**: a side, a kind and how many tubes (guns or mortars). Each tube carries
   its kind's rounds and has its crew: 4 men a mortar, 6 a field gun, 8 a heavy howitzer.
 - **Call fire**: on the battery's side's move (or in set-up), press **Call fire**, then click
-  the hex to fire on. One of the side's units must see it: within the weather's sight, with
+  the hex to fire on. One of the side's units must see it: within the weather's sight and the light's, with
   no woods or smoke between. Tick **Keep firing each exchange** before calling to repeat the
   mission until **Stop** or the rounds run out. The map marks the hex ⌖ and the last
-  exchange's bursts ✷. Before calling, **Fire** picks high explosive or smoke, and **Creep**
+  exchange's bursts ✷. Before calling, **Fire** picks high explosive, smoke or illumination, and **Creep**
   makes a creeping barrage (below).
 - **When it lands**: mortars in this exchange, field guns and heavy howitzers in the next.
 - **Where it lands**: each shell scatters, d6 for the direction and 0 to the kind's scatter in
@@ -362,6 +362,12 @@ with shell wounds (the First World War and later):
   exchange it drifts downwind (towards the hex side nearest the way the wind blows): a hex
   in a breeze, 2 in a strong wind or a gale; calm air leaves it where it is. Smoke blown off
   the map is gone.
+- **Illumination**: mortars, field guns and heavy howitzers can fire illumination instead
+  (**Fire: Illumination**). It can be called on any hex, with no one needing to see it,
+  spends one round a tube, and wounds no one. It lights the hexes round its aim (out to 15
+  hexes for mortars, 30 for field guns, 40 for heavy howitzers) for the 2 exchanges after
+  the one it is fired in. A lit hex is seen as by day (see
+  [Light](weather.md#light-the-field-map)). Tanks have none.
 - **Creeping barrage**: before calling, pick **Creep** (1 to 3 hexes a lift), **Each line**
   (1 to 4 exchanges on each line before it lifts), **Lines** (how many lines it fires on, or
   until it leaves the map) and **Towards** (the way most of the side's units face, or a

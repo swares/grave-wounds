@@ -447,6 +447,7 @@ def validate(d: Data) -> None:
             for k in ("rain", "snow"):
                 if row[k] not in WX["conditions"]:
                     errors.append(f"weather.yaml: intensity names unknown condition {row[k]}")
+        errors += _light_errors(WX)
         for kid, cl in WX["climates"].items():
             for k in ("high", "low", "rain", "fog"):
                 if len(cl.get(k, [])) != 12:
@@ -898,6 +899,8 @@ def _indirect_errors(d: Data) -> list[str]:
                if not isinstance(v.get("counter"), (int, float)) or not 0 <= v["counter"] <= 100]
     errors += [f"units.yaml: indirect kind {k} needs whole-number crew and displace, and serve from 1 to crew" for k, v in I.get("kinds", {}).items()
                if not (isinstance(v.get("crew"), int) and isinstance(v.get("serve"), int) and isinstance(v.get("displace"), int) and 1 <= v["serve"] <= v["crew"])]
+    errors += [f"units.yaml: indirect kind {k} illum must be a whole number of hexes" for k, v in I.get("kinds", {}).items()
+               if not (isinstance(v.get("illum", 0), int) and v.get("illum", 0) >= 0)]
     if winds and set(I.get("smoke", {}).get("drift", {})) != winds:
         errors.append("units.yaml: indirect.smoke.drift needs every wind")
     if not all(isinstance(I.get("counter_battery", {}).get(k), int) for k in ("among", "near", "near_struck")):
@@ -1043,12 +1046,29 @@ def _field_shape_errors(d: Data, f: dict, where: str) -> list[str]:
     return errors
 
 
+def _light_errors(wx: dict) -> list[str]:
+    """weather.yaml light: levels with a name, a sight in battle hexes (or null) and an aim %;
+    day among them; weather that shows the moon among the conditions."""
+    L = wx.get("light")
+    if not L:
+        return []
+    errors = [f"weather.yaml: light.levels.{k} needs a name, sight (a number or null) and aim (a number)"
+              for k, v in L.get("levels", {}).items()
+              if not (v.get("name") and (v.get("sight") is None or isinstance(v["sight"], int)) and isinstance(v.get("aim"), int))]
+    if "day" not in L.get("levels", {}):
+        errors.append("weather.yaml: light.levels needs day")
+    errors += [f"weather.yaml: light.moon_shows names unknown condition {c}" for c in L.get("moon_shows", []) if c not in wx["conditions"]]
+    return errors + [f"weather.yaml: light.{k} must be a number" for k in ("dusk_hours", "moon_from", "lasts", "flare") if not isinstance(L.get(k), (int, float))]
+
+
 def _field_weather_errors(d: Data, f: dict, where: str) -> list[str]:
     """A battlefield's weather: a known condition, and its wind direction and the compass point
     at the top of its map among the wind points."""
     errors, wx = [], f.get("weather") or {}
     if wx and wx.get("cond") not in d.weather.get("conditions", {}):
         errors.append(f"{where}: unknown weather {wx.get('cond')}")
+    if wx.get("light", "day") not in (d.weather.get("light") or {}).get("levels", {"day": 1}):
+        errors.append(f"{where}: unknown light {wx.get('light')}")
     pts = d.weather.get("wind_points", [])
     if pts and (wx.get("dir", pts[0]) not in pts or f.get("up", "N") not in pts):
         errors.append(f"{where}: weather.dir and up must be compass points {pts}")
