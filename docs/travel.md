@@ -42,20 +42,39 @@ terrain.
 Each terrain also records **cover**, **forage** and whether it is **wet**. Nothing uses them
 yet. They are there for later rules on ambush, food, and fevers in damp camps.
 
-## A day's march
+## One clock
 
-A force stops for the night rather than start a hex it cannot finish that day. So the
-last hour of a day can be partly lost when the next hex is slow going. **March 1 hour**
-moves the force one hour along its route. **March to day's end** uses the rest of the
-day's marching hours. The next march starts the following morning, an hour after sunrise
-(see [weather.md](weather.md)).
+Every force on a map keeps the same time. The map's clock (**Now**, above the forces) moves
+on only when the GM moves it, and every force moves with it:
+
+- **Orders.** A force given a route marches on it (**Orders: March on its route**); clicking
+  the map to add a waypoint gives that order. **Halt where it is** stops it without losing
+  the route, and a force with no route waits. A column's orders are its leader's.
+- **1 hour** moves the clock on an hour; **To nightfall** to the end of the day's marching
+  hours; **Until something happens** on until a force reaches the end of its route, a camp is
+  finished, or forces of different sides come within fighting reach, passing the nights on
+  the way (up to two weeks). At nightfall the first button becomes **Through the night**:
+  every force has its night (rest, fatigue, the sick) and the clock moves to the next
+  morning, an hour after sunrise (see [weather.md](weather.md)).
+- **Busy forces.** A force making camp, or fighting, is busy until it is done: its own time
+  runs ahead of the clock and it does nothing else until the clock catches up. The forces
+  list shows each force's own time.
+- **Meetings.** The clock watches every quarter hour for forces of different sides coming
+  within fighting reach (the same or the next hex). When they do, it stops, both halt, and
+  the fight can be set up as usual, with the usual chance of surprise; or the GM gives them
+  new orders and they march on past each other.
+- **Part of a hex.** A march stopped in the middle of a hex keeps the time already spent on
+  it, so an hour at a time gets as far as a whole day at once. A force still stops for the
+  night rather than finish a hex after its marching hours.
+- **Saved campaigns** from before the clock start it at their latest force's time; the
+  others wait where they are until then, their nights passing in place.
 
 ## Marching together
 
 A force can march with another force on its side, such as a band with its baggage train.
 Pick the other force under **March with**. It must be within 0.6 mile (1 km; the same or the next
 hex). The joining force closes up onto the other's hex at no cost in time. If one force's
-clock is later, the column moves off when the last of them is ready.
+clock is later (one still making camp, say), the column moves off when the last of them is ready.
 
 - **One route.** The first force leads, and the column's route is the leader's. Plan it with
   either force selected.

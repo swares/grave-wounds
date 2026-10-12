@@ -5556,6 +5556,8 @@ A force stops for the night rather than start a hex it cannot finish that day. W
 
 Speeds are for a small, fit band. A large army's column made less ground a day; cut its hours or speed to suit.
 
+**One clock:** every force on a map keeps the same time. Each has orders (march on its route, or halt); the GM moves the clock on an hour, to nightfall, or until something happens (an arrival, a camp finished, or forces of different sides within fighting reach, when both halt). A force making camp or fighting is busy until it is done. A march stopped mid-hex keeps the time spent on it.
+
 **Marching together:** forces on one side within a hex can march as a column behind a leader. The column keeps out of ground any of them cannot enter, moves at its slowest and most tired force's pace, keeps one clock, and makes one camp sized for all its men, with every man digging.
 
 | Terrain | Time | On foot mi (km) a day | Mounted mi (km) a day | Baggage wagons mi (km) a day |

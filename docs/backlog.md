@@ -19,8 +19,9 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Indirect fire, simplified.** Batteries stay off the map: counter-battery fire wears
   their tubes down but never kills their crews, and a battery cannot move to escape it.
   Smoke does not drift with the wind, and a creeping barrage cannot be timed to lift.
-- **One clock for all forces.** Each force on the travel map keeps its own clock (kept on
-  purpose for now). A shared clock would let forces meet on the road.
+- **The travel clock, simplified.** The clock watches for meetings every quarter hour, so
+  two fast forces passing in open country within one quarter hour can miss each other; and
+  meetings are only between the forces' hexes (no scouting reach, no seeing a dust cloud).
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
   Agincourt (1415), Towton (1461), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
   Lane (1814), First Bull Run (1861), Fort Phil Kearny (1866-67, with two battlefields), Mons

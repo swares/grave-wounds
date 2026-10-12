@@ -76,7 +76,7 @@ On the **travel map**, mud and snow slow the going. Mud is worst on unpaved road
 ploughed fields, at one and a half times the usual time. Snow is one and a half times
 everywhere, and double in the mountains. A flooded ford can't be crossed, and routes go
 round it. The planned arrival time uses each day's ground where that day's weather is already known
-(another force's clock may be ahead). Beyond the last known day it repeats that day's ground,
+(a busy force's own time may be ahead of the map's clock). Beyond the last known day it repeats that day's ground,
 and the summary says from which date the ground is a guess.
 
 On the **battle map**, deep mud or deep snow (level 2 or more) costs +1 movement for every
@@ -154,8 +154,10 @@ Each force carries a fatigue level from one day to the next.
 | Exhausted | −20% | 75% |
 | Spent | −30% | cannot march |
 
-Fatigue changes each night, when the force's day ends: after **March to day's end**, when
-camp work runs past the evening, or with **Rest until next morning**.
+Fatigue changes each night, when the force's day ends: when the map's clock passes the
+night (**Through the night**, or **Until something happens**), when camp work runs past
+the evening, or with **Rest until next morning** (the force stops for the day and waits for
+the clock to reach the next morning).
 - **Heat:** +1 if the force marched 4 hours or more with the high at 86 °F (30 °C) or over; +2 at
   97 °F (36 °C).
 - **Cold:** +1 if it marched 4 hours or more with the high at 23 °F (−5 °C) or under.
