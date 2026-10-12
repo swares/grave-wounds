@@ -9,10 +9,10 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **Works and ground on the field map, simplified.** A unit's move pays only for what its
-  middle hex crosses, the cover of a volley is taken at the nearest target hex only, and
-  breaching is by order (it does not stop the unit fighting). High ground gives no edge to
-  shooting. See [units.md](units.md).
+- **Works and ground on the field map.** Turning a unit in place pays nothing for the ground
+  its ends sweep over, a unit's flanks and rear rows pay no ground on the move (only its
+  front row), and high ground's edge in shooting is all or nothing (no slopes). See
+  [units.md](units.md).
 - **Heroes on the field map.** His sickness does not lower his attack and defence there
   (the GM can lower them by hand), his wounds' impairments (a useless arm, dazed) are left
   to the roller, and there is no first aid during the battle: he bleeds until it is over.

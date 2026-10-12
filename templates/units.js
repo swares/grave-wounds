@@ -314,7 +314,7 @@ function bunkerAt(field, h){                      // the intact bunker in hex h,
 const inBunker = (field, u) => !!field && footprint(u).flat().some(h => bunkerAt(field, h));
 function unitGroups(units, occ, i, groups, field){   // unit i's front hexes' strikes: "i|j|situation|penalty|stakes" -> men
   const u = units[i], rows = footprint(u), men = menByHex(u), reach = FD.weapons[meleeWeapon(u)].reach || 1, abreast = form(u).abreast;
-  const per = abreast * Math.min(reach, form(u).ranks);   // a rank for each hex of reach
+  const per = abreast * Math.min(reach, form(u).ranks), busy = breaching(field, u);   // a rank for each hex of reach
   (rows[0] || []).forEach((h, k) => {
     const hit = struckHex(units, occ, u, h);
     if (!hit) return;
@@ -323,6 +323,7 @@ function unitGroups(units, occ, i, groups, field){   // unit i's front hexes' st
     const [blocked, pen, stk] = across(field, u, h, step(h, dn), reach);
     let n = Math.min(per, men[k]);
     if (blocked) n = reach >= 2 ? Math.min(abreast, men[k]) : 0;
+    if (busy.has(k)) n = Math.max(0, n - Math.min(abreast, men[k]));   // the front rank is hacking at the works
     if (n <= 0) return;
     const key = [i, j, arc(units[j].facing, dn + 3), pen, stk ? 1 : 0].join("|");
     groups.set(key, (groups.get(key) || 0) + n);
@@ -390,8 +391,8 @@ function nearestAhead(u, front, fv, hexes, field, clear = null){  // [distance, 
       if ((c[0] - s[0]) * fv[0] + (c[1] - s[1]) * fv[1] + (c[2] - s[2]) * fv[2] <= 0) continue;
       const dist = hdist(h, t);
       if (best !== null && dist >= best[0]) continue;
-      const wx = shotWeather(field, weapon, dist, h, t);
-      if (!wx.blocked && reaches(u, dist, wx.reach || 0) && (!clear || clear(h, t, dist))) best = [dist, h, t];
+      const wx = shotWeather(field, weapon, dist, h, t), reach = (wx.reach || 0) + heightEdge(field, weapon, h, t)[1];
+      if (!wx.blocked && reaches(u, dist, reach) && (!clear || clear(h, t, dist))) best = [dist, h, t];
     }
   }
   return best;
@@ -402,9 +403,9 @@ function volleys(units, field = null){            // [{att, dfd, men, dist, cove
     if (out_(u) || !("range" in FD.weapons[u.weapon]) || (inContact(units, occ, i) && !inBunker(field, u))) return;   // a bunker's men shoot out even in contact
     const best = target(units, i, field, occ);
     if (!best) return;
-    const wx = shotWeather(field, u.weapon, best[0], best[2], best[3]);
-    const v = { att: i, dfd: best[1], men: shooters(u), dist: best[0], cover: coverAt(field, best[2], best[3]) + groundCover(units[best[1]]), penalty: wx.penalty, misfire: wx.misfire, reach: wx.reach || 0, from: best[2], to: best[3],
-      over: lineFire(units, occ, field, i, best[1], [best[2], best[3], best[0]]) };
+    const wx = shotWeather(field, u.weapon, best[0], best[2], best[3]), [up, longer] = heightEdge(field, u.weapon, best[2], best[3]);
+    const v = { att: i, dfd: best[1], men: shooters(u, field), dist: best[0], cover: shareCover(field, best[2], units[best[1]]) + groundCover(units[best[1]]), penalty: wx.penalty - up, misfire: wx.misfire, reach: (wx.reach || 0) + longer, from: best[2], to: best[3],
+      height: up, over: lineFire(units, occ, field, i, best[1], [best[2], best[3], best[0]]) };
     if (isMg(u.weapon)) Object.assign(v, beaten(units, occ, field, i, best));
     out.push(v);
   });
@@ -414,12 +415,12 @@ function volleys(units, field = null){            // [{att, dfd, men, dist, cove
 const isMg = w => (UD.machine_guns?.weapons || []).includes(w);
 const mgGuns = u => Math.ceil(Math.max(0, u.men) / UD.machine_guns.crew);   // one a crew, while a man of it is up
 const groundCover = u => (u.prone ? UD.to_ground.cover : 0);                 // % off shots at a unit gone to ground
-function shooters(u){                             // a machine-gun team's served guns; any other unit's front hexes' first shoot_ranks ranks; pinned, fewer
+function shooters(u, field = null){               // a machine-gun team's served guns; any other unit's front hexes' first shoot_ranks ranks, less breaching front ranks; pinned, fewer
   let n = 0;
   if (isMg(u.weapon)) n = mgGuns(u);
   else {
-    const rows = footprint(u), men = menByHex(u), per = form(u).abreast * Math.min(UD.shoot_ranks, form(u).ranks);
-    for (let k = 0; k < rows[0].length; k++) n += Math.min(per, men[k]);
+    const rows = footprint(u), men = menByHex(u), ab = form(u).abreast, per = ab * Math.min(UD.shoot_ranks, form(u).ranks), busy = breaching(field, u);
+    for (let k = 0; k < rows[0].length; k++) n += Math.max(0, Math.min(per, men[k]) - (busy.has(k) ? Math.min(ab, men[k]) : 0));
   }
   return u.pinned ? n * UD.suppression.fire : n;
 }
@@ -634,6 +635,20 @@ function shotWeather(field, weapon, dist, h = null, t = null){   // the weather 
   return isGun(weapon) ? gunWeather(field, dist, h, t) : weatherAttack(field?.weather || null, weapon, dist * UD.range_scale, h, t, upOf(field));
 }
 const reaches = (u, dist, reach = 0) => (isGun(u.weapon) ? dist <= gunRange(u) : !!fieldRange(u.weapon, dist, reach));   // a battery's guns to their range
+function shareCover(field, h, target){            // % off a volley from h at a unit: the average cover of its row nearest h, rounded down
+  if (!field) return 0;
+  const rows = footprint(target);
+  if (!rows.length) return 0;
+  let row = rows[0], near = Infinity;
+  for (const r of rows){ const m = Math.min(...r.map(t => hdist(h, t))); if (m < near){ near = m; row = r } }
+  return Math.floor(row.reduce((a, t) => a + coverAt(field, h, t), 0) / row.length);
+}
+function heightEdge(field, weapon, h, t){         // [% to hit, % longer range bands]: down from high ground +, up at it -; none for guns
+  if (!field || isGun(weapon)) return [0, 0];
+  const a = !!groundAt(field, h).height, b = !!groundAt(field, t).height, H = UD.high_ground;
+  if (a && !b) return [H.shoot, H.reach];
+  return b && !a ? [-H.shoot, 0] : [0, 0];
+}
 function coverAt(field, h, t){                    // % off shots from h at t: the best of the works' and the ground's
   if (!field) return 0;
   const [cols, rows] = fieldSize(field);
@@ -709,8 +724,10 @@ function shootAll(us, table, rng, acc, log, field, under = null){
     if (v.behind !== undefined && v.behind !== null) beatenFire(us, table, rng, acc, log, v);
     for (const hero of actingOf(us[v.att], ["ranged"])){
       const wx = shotWeather(field, hero.weapon, v.dist, v.from, v.to);
-      if (wx.blocked || !fieldRange(hero.weapon, v.dist, wx.reach)) continue;
-      const hopts = { factor: mf * (100 - wx.misfire) / 100, exposed, penalty: v.cover + wx.penalty + v.over, reach: wx.reach };
+      if (wx.blocked) continue;
+      const [up, longer] = heightEdge(field, hero.weapon, v.from, v.to);
+      if (!fieldRange(hero.weapon, v.dist, wx.reach + longer)) continue;
+      const hopts = { factor: mf * (100 - wx.misfire) / 100, exposed, penalty: v.cover + wx.penalty - up + v.over, reach: wx.reach + longer };
       t = takeHurt(b, volley(heroSide(us[v.att], hero, table), sideOfUnit(b, table), UD.heroes.tempo, v.dist, rng, hopts));
       tallyLoss(acc, v, t);
       log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: v.att, dfd: v.dfd, dist: v.dist }, t));
@@ -730,6 +747,10 @@ function fireBattery(us, table, rng, acc, log, c){   // at the target, guns knoc
   t = takeHurt(bh, ricochet(gun, bh, c, rng, exposure(bh, false, true)));
   tallyLoss(acc, r, t);
   log.push(...logged({ kind: "ricochet", ...r }, t));
+}
+function breaching(field, u){                     // indexes of the front hexes whose front rank is breaching the works
+  if (!field?.works || !u.breach) return new Set();
+  return new Set((footprint(u)[0] || []).map((h, k) => (breachable(field, u, h) ? k : -1)).filter(k => k >= 0));
 }
 function breachable(field, u, h){                // [kind, key, item]: the first work h's front rank can hack at
   for (const dn of [u.facing, u.facing + 1]){
@@ -867,15 +888,26 @@ function popCheapest(open){                      // take the [cost, hex] with th
   for (let q = 1; q < open.length; q++) if (open[q][0] < open[m][0]) m = q;
   return open.splice(m, 1)[0];
 }
-function stepsFrom(field, u, h, occ, size){       // [hex, cost] for each step the middle hex can take from h
-  const out = [];
+function stepsFrom(field, u, h, occ, size){       // [hex, cost] for each step the middle hex can take from h: the worst its front row pays
+  const out = [], front = field ? footprint({ ...u, pos: h })[0] || [] : [h];
   for (let dn = 0; dn < 6; dn++){
     const x = step(h, dn);
     if (!onMap(x, size) || occ[hk(x)] !== undefined) continue;
-    const sc = unitStepCost(field, u, h, x);
+    const sc = frontCost(field, u, front, dn, size);
     if (sc !== null) out.push([x, sc]);
   }
   return out;
+}
+function frontCost(field, u, front, dn, size){    // the worst step cost of a front row's hexes stepping in direction dn (off the map: not counted)
+  let worst = 0;
+  for (const f of front){
+    const y = step(f, dn);
+    if (!onMap(y, size)) continue;
+    const c = unitStepCost(field, u, f, y);
+    if (c === null) return null;
+    worst = Math.max(worst, c);
+  }
+  return worst || 1;
 }
 function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, charge, why}
   const u = units[i];

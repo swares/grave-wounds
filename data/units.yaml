@@ -247,6 +247,12 @@ indirect:
   smoke: {radius: 1, lasts: {calm: 4, breeze: 3, strong: 2, gale: 1}}
   creep: {max: 3}
 
+# ---------- high ground ----------
+# A shooter on high ground (a ground kind with `height`) shooting at men on lower ground gets
+# +`shoot` % and his range bands `reach` % longer; shooting up at men on high ground costs
+# `shoot` %. Guns are left out: they have their own rule for firing over units from high ground.
+high_ground: {shoot: 10, reach: 20}
+
 # ---------- storming bunkers ----------
 # Men in an intact bunker (a hex work in `works`) cannot be struck hand to hand, and do not
 # strike out; they shoot out of it even with enemies next to it. A unit next to one, ordered
