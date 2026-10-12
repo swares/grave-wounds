@@ -732,7 +732,7 @@ def _field_support(d: Data, f: dict) -> list:
     """A battlefield's own fire support, each with its full stock of rounds and no mission yet."""
     K = d.units["indirect"]["kinds"]
     return [{"name": s["name"], "army": s["side"], "side": f["sides"][s["side"]], "kind": s["kind"], "tubes": s["tubes"],
-             "rounds": s["tubes"] * K[s["kind"]]["rounds"], "mission": None} for s in f["support"]]
+             "rounds": s["tubes"] * K[s["kind"]]["rounds"], "mission": None, **({"place": list(s["place"])} if s.get("place") else {})} for s in f["support"]]
 
 
 def battlefield_units(d: Data, fid: str) -> list:
@@ -1162,7 +1162,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     acc = (lost, dead, dealt)
     under = [False] * len(us)                     # under shellfire or machine-gun fire this exchange (suppression)
     log += _closing_all(d, us, table, rng, acc, field)
-    log += _strike_all(d, us, table, rng, acc, flanked, field)
+    log += _strike_all(d, us, table, rng, acc, flanked, field, list(lost))
     log += _shoot_all(d, us, table, rng, acc, field, under)
     log += _indirect_all(d, us, table, rng, acc, field, under)
     log += _assault_all(d, us, table, rng, acc, field)
@@ -1187,6 +1187,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
         if b.get("mission") and b["mission"].get("wait", 0) > 0:
             b["mission"]["wait"] -= 1
     log += _displace_all(field)
+    log += _overrun_all(d, us, field)
     _smoke_thins(field)
     _smoke_drifts(d, field)
     _lit_fades(field)
@@ -1287,14 +1288,21 @@ def _displace_all(field: dict | None) -> list:
         if not b.get("displacing"):
             continue
         b["displacing"] -= 1
-        if b["displacing"]:
-            continue
-        b["located"] = False
-        for x in sup:
-            if x.get("mission") and x["mission"].get("battery") == k:
-                x["mission"] = None
-        log.append({"kind": "displaced", "sup": k, "name": b["name"], "side": b["side"]})
+        if not b["displacing"]:
+            log.append(_displaced(sup, k))
     return log
+
+
+def _displaced(sup: list, k: int) -> dict:
+    """Battery k has moved: no longer located, at its plotted new place, and missions on it end."""
+    b = sup[k]
+    b["located"] = False
+    if b.get("to") is not None:
+        b["place"] = b.pop("to")              # its new position, plotted when it was ordered to move
+    for x in sup:
+        if x.get("mission") and x["mission"].get("battery") == k:
+            x["mission"] = None
+    return {"kind": "displaced", "sup": k, "name": b["name"], "side": b["side"], **({"place": b["place"]} if b.get("place") is not None else {})}
 
 
 def downwind(d: Data, field: dict | None):
@@ -1344,15 +1352,15 @@ def _closing_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | N
     return log
 
 
-def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, field: dict | None = None) -> list:
-    """Every melee, each unit's front heroes striking with its first (or dueling the enemy's)."""
+def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, field: dict | None = None, thinned: list | None = None) -> list:
+    """Every melee, each unit's front heroes striking with its first (or dueling the enemy's).
+    thinned: men each unit lost to canister as it came in (closing fire), its striking men cut
+    in the same share (rounded down)."""
     log, struck, dueled = [], set(), set()
     for s in strikes(d, us, field):
+        s = _thin(s, us, thinned)
         a, b = us[s["att"]], us[s["dfd"]]
-        charge = bool(a.get("charged")) and bool(a.get("mounted")) and not s.get("stakes") and not (s["situation"] == "front" and pike_front(d, b))
-        vs_horse = d.units["melee"]["pikes"]["attack"] if b.get("mounted") and pike_front(d, a) else 0
-        opts = {"situation": s["situation"], "charge": charge, "shaken": a["state"] == "shaken", "rout": s["rout"],
-                "exposed": _exposure(d, b, s["rout"]), "penalty": s.get("penalty", 0) - vs_horse}
+        opts = _melee_opts(d, a, b, s)
         t = _take_hurt(b, melee(d, _side(a, table, d), _side(b, table, d), s["men"], rng, **opts))
         _tally(*acc, s, t)
         flanked[s["dfd"]] = flanked[s["dfd"]] or s["situation"] in ("flank", "rear")
@@ -1362,6 +1370,25 @@ def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, f
         struck.add(s["att"])
         log += _front_heroes(d, (a, b), s, (table, rng, acc), opts, dueled)
     return log
+
+
+def _thin(s: dict, us: list, thinned: list | None) -> dict:
+    """Strike s with its men cut in the share its unit lost to closing canister (not a rout)."""
+    cut = thinned[s["att"]] if thinned else 0
+    if not cut or s["rout"]:
+        return s
+    men = us[s["att"]]["men"]
+    left = s["men"] * max(0, men - cut) // max(1, men)
+    return {**s, "men": left, "thinned": s["men"] - left}
+
+
+def _melee_opts(d: Data, a: dict, b: dict, s: dict) -> dict:
+    """The melee options for strike s by unit a on unit b: situation, a charge by horse (not
+    into stakes or a pike front), shaken, rout, exposure, and pikes against horse."""
+    charge = bool(a.get("charged")) and bool(a.get("mounted")) and not s.get("stakes") and not (s["situation"] == "front" and pike_front(d, b))
+    vs_horse = d.units["melee"]["pikes"]["attack"] if b.get("mounted") and pike_front(d, a) else 0
+    return {"situation": s["situation"], "charge": charge, "shaken": a["state"] == "shaken", "rout": s["rout"],
+            "exposed": _exposure(d, b, s["rout"]), "penalty": s.get("penalty", 0) - vs_horse}
 
 
 def _front_heroes(d: Data, units: tuple, s: dict, ctx: tuple, opts: dict, dueled: set) -> list:
@@ -1681,11 +1708,47 @@ def _indirect_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | 
 
 def _due(d: Data, field: dict, b: dict) -> bool:
     """Whether a battery's mission fires this exchange: called, its wait over, rounds and tubes
-    left, not moving, and (aircraft) able to fly."""
+    left, not moving, (aircraft) able to fly, and its aim within reach of where it stands."""
     m = b.get("mission")
     if not m or m.get("wait", 0) > 0 or b.get("rounds", 0) <= 0 or served_tubes(d, b) <= 0 or b.get("displacing"):
         return False
-    return grounded(d, field, b) is None
+    return grounded(d, field, b) is None and _aim_in_reach(d, field, b)
+
+
+def reach_of(d: Data, b: dict) -> int | None:
+    """How far a battery placed on or behind the map reaches, in field hexes (its kind's `range`),
+    or None: off the map with no place, or a kind without one (tanks, aircraft)."""
+    r = d.units["indirect"]["kinds"][b["kind"]].get("range")
+    return r if r is not None and b.get("place") is not None else None
+
+
+def in_reach(d: Data, b: dict, h) -> bool:
+    """Whether a battery can fire on hex h from where it stands (always, if it has no place)."""
+    r = reach_of(d, b)
+    return r is None or h is None or hdist(b["place"], h) <= r
+
+
+def _aim_in_reach(d: Data, field: dict, b: dict) -> bool:
+    """A mission's aim within the battery's reach: its hex, or the enemy battery's place."""
+    m = b["mission"]
+    if m.get("battery") is not None:
+        sup = field.get("support") or []
+        tg = sup[m["battery"]] if 0 <= m["battery"] < len(sup) else None
+        return tg is None or tg.get("place") is None or in_reach(d, b, tg["place"])
+    return in_reach(d, b, m.get("hex"))
+
+
+def _overrun_all(d: Data, us: list, field: dict | None) -> list:
+    """A battery placed on the map with an enemy unit (on its feet, not running) within a hex of
+    its place is overrun: its tubes are lost and its mission ends."""
+    log = []
+    for k, b in enumerate((field or {}).get("support") or []):
+        if b.get("place") is None or b.get("tubes", 0) <= 0:
+            continue
+        if any(u["side"] != b["side"] and not _out(u) and any(hdist(h, b["place"]) <= 1 for row in footprint(d, u) for h in row) for u in us):
+            b.update(tubes=0, mission=None, overrun=True)
+            log.append({"kind": "overrun", "sup": k, "name": b["name"], "side": b["side"]})
+    return log
 
 
 def grounded(d: Data, field: dict | None, b: dict) -> str | None:
@@ -1782,8 +1845,11 @@ def _mission_on(b: dict, m: dict, size) -> None:
         return
     cr["on"] = 0
     if cr.get("lines") and cr.get("line", 1) >= cr["lines"]:
-        b["mission"] = None
-        return
+        if not cr.get("legs"):
+            b["mission"] = None
+            return
+        nxt, cr["legs"] = cr["legs"][0], cr["legs"][1:]   # the fire plan's next leg: its own lift, direction and lines
+        cr.update(step=nxt["step"], dir=nxt["dir"], lines=nxt.get("lines", 0), line=0, done=0)
     cr["line"] = cr.get("line", 1) + 1
     for _ in range(cr["step"]):
         m["hex"] = step(m["hex"], cr["dir"] + cr.get("done", 0) % 2)
@@ -2594,16 +2660,34 @@ def cannonades(d: Data, units: list, field: dict | None = None) -> list:
     return out
 
 
+def sections(u: dict) -> list:
+    """The sections a battery has split off, in order ({target, guns, shot}): u.sections, or the
+    single u.section of older saves."""
+    return list(u.get("sections") or ([u["section"]] if u.get("section") else []))
+
+
 def _battery_fires(d: Data, units: list, occ: dict, field: dict | None, i: int, best: tuple) -> list:
-    """Battery i's fire at best, and its section's at the section's target if it split one off."""
+    """Battery i's fire at best, and each section's at its own target, in order, if it can fire
+    on it: a section takes its guns from those the battery still has, at least one staying with
+    the battery; one that cannot fire on its target fires with the rest. The rounds go to the
+    battery's guns first, then to the sections in order."""
     u = units[i]
-    guns, ammo, sec = guns_served(d, u), ammo_left(d, u), u.get("section") or {}
-    n = min(sec.get("guns", 0), guns - 1)
-    at = _named_target(d, units, i, field, occ, sec.get("target")) if n > 0 else None
-    main = _battery_fire(d, units, (occ, field), i, best, {"guns": guns - n if at else guns, "ammo": ammo, "shot": u.get("shot")})
-    if at is None or ammo <= main["rounds"]:
-        return [main]
-    return [main, _battery_fire(d, units, (occ, field), i, at, {"guns": n, "ammo": ammo - main["rounds"], "shot": sec.get("shot"), "section": True})]
+    guns, ammo, spare, firing = guns_served(d, u), ammo_left(d, u), guns_served(d, u) - 1, []
+    for sec in sections(u):
+        n = min(sec.get("guns", 0), spare)
+        at = _named_target(d, units, i, field, occ, sec.get("target")) if n > 0 else None
+        if at is not None:
+            firing.append((sec, n, at))
+            spare -= n
+    main = _battery_fire(d, units, (occ, field), i, best, {"guns": guns - sum(n for _, n, _ in firing), "ammo": ammo, "shot": u.get("shot")})
+    out, left = [main], ammo - main["rounds"]
+    for sec, n, at in firing:
+        if left <= 0:
+            break
+        f = _battery_fire(d, units, (occ, field), i, at, {"guns": n, "ammo": left, "shot": sec.get("shot"), "section": True})
+        out.append(f)
+        left -= f["rounds"]
+    return out
 
 
 def _battery_fire(d: Data, units: list, ground: tuple, i: int, best: tuple, order: dict) -> dict:

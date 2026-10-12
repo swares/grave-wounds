@@ -543,10 +543,35 @@ function indirectAll(us, table, rng, acc, log, field, under){   // every fire mi
   if (!field || !weapon) return;
   (field.support || []).forEach((b, k) => { if (due(field, b)) fireMission({ us, table, weapon, rng, acc, log, field, under }, k, b) });
 }
-function due(field, b){                           // called, its wait over, rounds and tubes left, not moving, and (aircraft) able to fly
+function due(field, b){                           // called, its wait over, rounds and tubes left, not moving, (aircraft) able to fly, its aim in reach of its place
   const m = b.mission;
   if (!m || (m.wait || 0) > 0 || (b.rounds || 0) <= 0 || servedTubes(b) <= 0 || b.displacing) return false;
-  return grounded(field, b) === null;
+  return grounded(field, b) === null && aimInReach(field, b);
+}
+function reachOf(b){                              // how far a placed battery reaches (its kind's range, field hexes), or null: no place, or a kind without a range
+  const r = UD.indirect.kinds[b.kind].range;
+  return r !== undefined && r !== null && b.place !== undefined && b.place !== null ? r : null;
+}
+const inReach = (b, h) => { const r = reachOf(b); return r === null || !h || hdist(b.place, h) <= r };   // can fire on hex h from where it stands
+function aimInReach(field, b){                     // a mission's hex, or the enemy battery's place, in reach
+  const m = b.mission;
+  if (m.battery !== undefined && m.battery !== null){
+    const sup = field.support || [], tg = m.battery >= 0 && m.battery < sup.length ? sup[m.battery] : null;
+    const at = tg?.place;
+    return at === undefined || at === null || inReach(b, at);
+  }
+  return inReach(b, m.hex);
+}
+function overrunAll(us, field){                    // a placed battery with an enemy unit within a hex of its place is overrun: tubes lost, mission over
+  const log = [];
+  (field?.support || []).forEach((b, k) => {
+    if (b.place === undefined || b.place === null || (b.tubes || 0) <= 0) return;
+    if (us.some(u => u.side !== b.side && !out_(u) && footprint(u).flat().some(h => hdist(h, b.place) <= 1))){
+      Object.assign(b, { tubes: 0, mission: null, overrun: true });
+      log.push({ kind: "overrun", sup: k, name: b.name, side: b.side });
+    }
+  });
+  return log;
 }
 function grounded(field, b){                      // why aircraft cannot fly (a condition or a light), or null
   const K = UD.indirect.kinds[b.kind], A = UD.indirect.air || {};
@@ -590,8 +615,13 @@ function missionOn(b, m, size){                   // a single mission ends; a cr
   cr.on = (cr.on || 0) + 1;
   if (cr.on < (cr.every || 1)) return;
   cr.on = 0;
-  if (cr.lines && (cr.line || 1) >= cr.lines){ b.mission = null; return }
-  cr.line = (cr.line || 1) + 1;
+  if (cr.lines && (cr.line ?? 1) >= cr.lines){
+    if (!cr.legs?.length){ b.mission = null; return }
+    const [nxt, ...rest] = cr.legs;                // the fire plan's next leg: its own lift, direction and lines
+    cr.legs = rest;
+    Object.assign(cr, { step: nxt.step, dir: nxt.dir, lines: nxt.lines || 0, line: 0, done: 0 });
+  }
+  cr.line = (cr.line ?? 1) + 1;
   for (let s = 0; s < cr.step; s++){ m.hex = step(m.hex, cr.dir + (cr.done || 0) % 2); cr.done = (cr.done || 0) + 1 }
   if (size && !(m.hex[0] >= 0 && m.hex[0] < size[0] && m.hex[1] >= 0 && m.hex[1] < size[1])) b.mission = null;
 }
@@ -857,9 +887,11 @@ function pikeFront(u){                            // steady, in a pike formation
   const P = UD.melee.pikes;
   return u.state === "steady" && P.formations.includes(u.formation) && P.weapons.includes(meleeWeapon(u)) && !u.mounted;
 }
-function strikeAll(us, table, rng, acc, log, field){
+function strikeAll(us, table, rng, acc, log, field, thinned = null){   // thinned: men each unit lost to canister as it came in; its striking men cut in that share
   const struck = new Set(), dueled = new Set();
-  for (const s of strikes(us, field)){
+  for (let s of strikes(us, field)){
+    const cut = (thinned || [])[s.att] || 0;
+    if (cut && !s.rout){ const men = us[s.att].men, kept = Math.floor(s.men * Math.max(0, men - cut) / Math.max(1, men)); s = { ...s, men: kept, thinned: s.men - kept } }
     const a = us[s.att], b = us[s.dfd];
     const charge = !!a.charged && !!a.mounted && !s.stakes && !(s.situation === "front" && pikeFront(b));   // no charge home onto a front of pikes
     const vsHorse = b.mounted && pikeFront(a) ? UD.melee.pikes.attack : 0;
@@ -1055,7 +1087,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false) };
   const under = new Array(n).fill(false);          // under shellfire or machine-gun fire this exchange (suppression)
   for (const c of closingFire(us, field)) fireBattery(us, table, rng, acc, log, c);
-  strikeAll(us, table, rng, acc, log, field);
+  strikeAll(us, table, rng, acc, log, field, [...acc.lost]);
   shootAll(us, table, rng, acc, log, field, under);
   indirectAll(us, table, rng, acc, log, field, under);
   assaultAll(us, table, rng, acc, log, field);
@@ -1135,7 +1167,7 @@ function afterExchange(us, field, log = []){        // charges spent, batteries 
   }
   flashes(us, log, field);
   for (const b of field?.support || []) if (b.mission && (b.mission.wait || 0) > 0) b.mission.wait -= 1;
-  log.push(...displaceAll(field));
+  log.push(...displaceAll(field), ...overrunAll(us, field));
   if (field?.smoke) field.smoke = Object.fromEntries(Object.entries(field.smoke).filter(([, n]) => n > 1).map(([h, n]) => [h, n - 1]));   // smoke thins
   smokeDrifts(field);
   if (field?.lit?.length) field.lit = field.lit.filter(x => x.left > 1).map(x => ({ ...x, left: x.left - 1 }));   // flares burn down
@@ -1147,8 +1179,9 @@ function displaceAll(field){                      // displacing batteries count 
     b.displacing -= 1;
     if (b.displacing) return;
     b.located = false;
+    if (b.to !== undefined && b.to !== null){ b.place = b.to; delete b.to }   // its new position, plotted when it was ordered to move
     for (const x of sup) if (x.mission && x.mission.battery === k) x.mission = null;
-    log.push({ kind: "displaced", sup: k, name: b.name, side: b.side });
+    log.push({ kind: "displaced", sup: k, name: b.name, side: b.side, ...(b.place !== undefined && b.place !== null ? { place: b.place } : {}) });
   });
   return log;
 }
@@ -1430,12 +1463,26 @@ function cannonades(units, field = null){         // [{att, dfd, guns, rounds, d
   });
   return out;
 }
-function batteryFires(units, occ, field, i, best){   // the battery's fire at best, and its section's at the section's target if it split one off
-  const u = units[i], guns = gunsServed(u), ammo = ammoLeft(u), sec = u.section || {};
-  const n = Math.min(sec.guns || 0, guns - 1), at = n > 0 ? namedTarget(units, i, field, occ, sec.target) : null;
-  const main = batteryFire(units, [occ, field], i, best, { guns: at ? guns - n : guns, ammo, shot: u.shot });
-  if (!at || ammo <= main.rounds) return [main];
-  return [main, batteryFire(units, [occ, field], i, at, { guns: n, ammo: ammo - main.rounds, shot: sec.shot, section: true })];
+function sectionsOf(u){                           // the sections a battery has split off, in order
+  if (u.sections?.length) return [...u.sections];
+  return u.section ? [u.section] : [];
+}
+function batteryFires(units, occ, field, i, best){   // the battery's fire at best, then each section's at its own target (guns from those left, one stays; rounds to the battery first)
+  const u = units[i], guns = gunsServed(u), ammo = ammoLeft(u), firing = [];
+  let spare = guns - 1;
+  for (const sec of sectionsOf(u)){
+    const n = Math.min(sec.guns || 0, spare), at = n > 0 ? namedTarget(units, i, field, occ, sec.target) : null;
+    if (at){ firing.push([sec, n, at]); spare -= n }
+  }
+  const main = batteryFire(units, [occ, field], i, best, { guns: guns - firing.reduce((a, f) => a + f[1], 0), ammo, shot: u.shot }), out = [main];
+  let left = ammo - main.rounds;
+  for (const [sec, n, at] of firing){
+    if (left <= 0) break;
+    const f = batteryFire(units, [occ, field], i, at, { guns: n, ammo: left, shot: sec.shot, section: true });
+    out.push(f);
+    left -= f.rounds;
+  }
+  return out;
 }
 function batteryFire(units, ground, i, best, order){   // guns of battery i at best; order {guns, ammo, shot, per, section}
   const [occ, field] = ground, A = UD.artillery, u = units[i];
