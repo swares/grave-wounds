@@ -28,8 +28,8 @@ Sidon in 1253 (Banias to the coast), the Albuera campaign of 1811 (Badajoz to Sa
 Marta), the Cowpens campaign of 1781 (the Pacolet to the Broad), the Niagara campaign of 1814
 (Fort Erie to Fort George), the First Bull Run campaign of 1861 (Fairfax to Gainesville),
 Fort Phil Kearny on the Bozeman Trail in 1866-67, Mons in 1914 (Condé to Binche), the
-Bougainville perimeter in 1944, the Anzio beachhead in 1944 (to Cisterna), Osan in 1950 (Suwon to P'yongt'aek) and Chipyong-ni in 1951 (Yangpyong to Wonju), all on 0.6-mile (1 km) hexes, and the Ia Drang in
-1965 (X-Ray and Albany) on 0.3-mile (0.5 km) hexes. See
+Bougainville perimeter in 1944, the Anzio beachhead in 1944 (to Cisterna), Osan in 1950 (Suwon to P'yongt'aek) and Chipyong-ni in 1951 (Yangpyong to Wonju), all on 0.6-mile (1 km) hexes, the Ia Drang in
+1965 (X-Ray and Albany) on 0.3-mile (0.5 km) hexes, and Mogadishu in 1993 on 270-yard (0.25 km) hexes. See
 [docs/travel.md](docs/travel.md).
 
 **Camps and works:** forces make camp on the travel map, from a bivouac to a fortified
@@ -57,7 +57,7 @@ is resolved together, with flank and rear, morale and the pursuit, batteries of 
 round shot, canister and shell (bounding on over firm ground, at named targets, ordered shot, split sections, cut fuses and canister into a charge, until the rounds run out), machine guns, artillery and mortars on call with suppression, on painted ground
 with the battle map's works and weather, or on a real battlefield (Sidon, Visby, Agincourt, Towton, Lützen, Albuera, Cowpens,
 Lundy's Lane, First Bull Run, the Fetterman Fight, the Wagon Box Fight, Mons 1914, Hill 700 on
-Bougainville, the Rangers at Cisterna, Task Force Smith at Osan the perimeter at Chipyong-ni or landing zone X-Ray, with both armies drawn up). A fight on the travel
+Bougainville, the Rangers at Cisterna, Task Force Smith at Osan the perimeter at Chipyong-ni, landing zone X-Ray or the crash sites in Mogadishu, with both armies drawn up). A fight on the travel
 map can be fought there, and its wounded go back to camp, where wound fever can take
 them. See [docs/units.md](docs/units.md).
 

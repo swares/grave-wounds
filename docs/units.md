@@ -1047,6 +1047,26 @@ hexes, about 1,750 by 1,240 yards (1,600 by 1,130 m), north at the top.
 It is drawn by `tools/maps/make_xray_field.mjs`, from the plain facts of the battle, not traced
 from any map.
 
+**Mogadishu: the crash sites, 3 October 1993** (`data/fields/mogadishu-1993.yaml`). The field
+is 110 × 110 hexes, about 1,200 by 1,040 yards (1,100 by 950 m), north at the top.
+- A grid of narrow sand streets (open ground) between one-storey stone houses behind walls
+  (buildings). The Olympic Hotel (tall buildings) is on Shalalawi Street, with a few other
+  blocks of several storeys. The Bakara Market's stalls and sheds are to the south-west. The
+  first crash site is north-east of the target, the second to the south, each with its downed
+  helicopter.
+- A **dark night**; the Little Birds fly at night.
+- United States (veteran, the 1993 Ranger body armour): Rangers and Delta in the houses round
+  the first crash and their machine guns; at the second, the crew and the two Delta snipers.
+- Somali National Alliance militia (green, extended order): from the market, the north and the
+  east, and the crowd at the second crash site, with RPG teams and machine guns.
+- Fire support: Little Bird gunships.
+- There are no vehicle rules: the relief column can be brought on as infantry with **Add a
+  unit**.
+- The wound tables are Somalia's (penetrating wounds).
+
+It is drawn by `tools/maps/make_mogadishu_field.mjs`, from the plain facts of the US Army's
+account and the published positions, not traced from any map or photograph.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
