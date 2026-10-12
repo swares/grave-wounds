@@ -93,7 +93,7 @@ button:disabled{opacity:.45;cursor:default}
 .log li.hero{border-left-color:var(--blood)}
 fieldset{border:0;margin:0;padding:0;min-width:0}
 .banner{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:1px solid var(--line);border-left:3px solid var(--steel);border-radius:3px;padding:8px 10px;font-size:.9rem}
-.banner[hidden],label.check[hidden],#guns-box[hidden]{display:none}
+.banner[hidden],label.check[hidden],#guns-box[hidden],#vehicle-box[hidden]{display:none}
 .forces{list-style:none;margin:0;padding:0;font-size:.9rem;display:flex;flex-direction:column;gap:4px}
 .forces .meta{float:right;font:500 .75rem var(--mono);color:var(--muted)}
 .after{font-size:.9rem;margin:0;padding-left:1.1rem}
@@ -291,6 +291,7 @@ legend{padding:0}
           <div><label for="sel-kit">Armour</label><select id="sel-kit"></select></div>
         </div>
         <div class="toolbar">
+          <span id="vehicle-box" hidden><label for="sel-vehicle" class="sr">Vehicles</label><select id="sel-vehicle" title="Tanks or armoured carriers: Men is then how many vehicles" style="width:auto"></select></span>
           <label class="check"><input type="checkbox" id="chk-mounted"> Mounted</label>
           <span id="air-box" hidden><label class="check"><input type="checkbox" id="chk-air"> By air at</label> <label for="sel-lz" class="sr">Landing zone</label><select id="sel-lz" style="width:auto"></select></span>
           <span id="guns-box" hidden><label for="sel-guns" class="sr">Guns</label><select id="sel-guns" title="Smoothbores fire round shot; rifled guns reach further with percussion shell; howitzers fire shell over anything between" style="width:auto">
@@ -341,8 +342,8 @@ function fieldOptions(){                        // the battlefields under their 
 }
 function newUnit(o){
   return { id: S.seq++, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
-    kit: o.kit, formation: o.formation, mounted: !!o.mounted, guns: isGun(o.weapon) ? gunKind(o) : undefined, width: o.width || Math.ceil(o.men / FD.units.formations[o.formation].per_hex),
-    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}) };
+    kit: o.kit, formation: o.formation, mounted: !!o.mounted, guns: isGun(o.weapon) ? gunKind(o) : undefined, width: o.width || Math.ceil(o.men / form(o).per_hex),
+    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}) };
 }
 function newField(){                              // open ground of the default size (and the page goes back to that size)
   SIZE = DEFAULT_SIZE.slice();
@@ -687,18 +688,27 @@ function shotNotes(l){                            // " (cover -20%, weather -10%
   if (l.misfire) bits.push(`${l.misfire}% misfire`);
   return bits.length ? ` (${bits.join(", ")})` : "";
 }
+const OTHER_LINES = {                            // kind: (line, nm) => {cls, text} (null: nothing to show)
+  breach: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} break through the ${(WK.edge_works[l.work] || WK.hex_works[l.work]).name.toLowerCase()}.` }),
+  morale: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` }),
+  herohit: l => ({ cls: "hero", text: heroHitText(l) }),
+  pinned: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} are pinned down (rolled ${l.roll}, needed ${l.target} or less): no move and half their fire next exchange.` }),
+  barrage: l => ({ cls: "", text: fireText(l) }),
+  landed: l => ({ cls: l.hot ? "morale" : "", text: landText(l) }),
+  waveoff: l => ({ cls: "morale", text: landText(l) }),
+  displaced: l => ({ cls: "", text: `${l.name} (${l.side}) have displaced: no longer located.` }),
+  assault: (l, nm) => ({ cls: "morale", text: bunkerText(l, nm) }),
+  antiarmour: (l, nm) => ({ cls: l.knocked ? "morale" : "", text: armourText(l, nm) }),
+  hero: (l, nm) => (l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null),
+  duel: l => ({ cls: "hero", text: heroStateText(l) }),
+};
+OTHER_LINES.counter = OTHER_LINES.barrage;
+OTHER_LINES.knocked = OTHER_LINES.assault;
+OTHER_LINES.tankfire = OTHER_LINES.knocked_out = OTHER_LINES.antiarmour;
+OTHER_LINES.herobled = OTHER_LINES.duel;
 function otherLine(l, nm){                       // morale, breach and hero lines (null: nothing to show); undefined for blows by units
-  if (l.kind === "breach") return { cls: "morale", text: `${nm(l.unit)} break through the ${(WK.edge_works[l.work] || WK.hex_works[l.work]).name.toLowerCase()}.` };
-  if (l.kind === "morale") return { cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` };
-  if (l.kind === "herohit") return { cls: "hero", text: heroHitText(l) };
-  if (l.kind === "pinned") return { cls: "morale", text: `${nm(l.unit)} are pinned down (rolled ${l.roll}, needed ${l.target} or less): no move and half their fire next exchange.` };
-  if (l.kind === "barrage" || l.kind === "counter") return { cls: "", text: fireText(l) };
-  if (l.kind === "landed" || l.kind === "waveoff") return { cls: l.hot || l.kind === "waveoff" ? "morale" : "", text: landText(l) };
-  if (l.kind === "displaced") return { cls: "", text: `${l.name} (${l.side}) have displaced: no longer located.` };
-  if (l.kind === "assault" || l.kind === "knocked") return { cls: "morale", text: bunkerText(l, nm) };
-  if (l.kind === "hero") return l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null;
-  if (l.kind === "duel" || l.kind === "herobled") return { cls: "hero", text: heroStateText(l) };
-  return undefined;
+  const f = Object.hasOwn(OTHER_LINES, l.kind) ? OTHER_LINES[l.kind] : null;
+  return f ? f(l, nm) : undefined;
 }
 function landText(l){                            // men landing by air, or waved off
   const at = `${l.lz[0] + 1},${l.lz[1] + 1}`;
@@ -711,6 +721,15 @@ function landText(l){                            // men landing by air, or waved
   return `${l.men} men of ${l.name} (${l.side}) land at ${at}${l.first ? "" : " and join them"}${hot}.`;
 }
 const nWounds = n => (n === 1 ? "1 wound" : n + " wounds");
+function armourText(l, nm){                       // rockets at vehicles, a tank's main gun, a vehicle knocked out by shells or bombs
+  const vk = l.dfd !== undefined && S.units[l.dfd]?.vehicle, what = vk ? FD.units.vehicles.kinds[vk].name.toLowerCase() : "vehicles";
+  let out = "";
+  if (l.knocked) out = ` ${l.knocked} of ${nm(l.dfd)}'s ${what} knocked out; ${l.crew} crew out of the fight, ${l.down || 0} down` + (l.dead ? ` (${l.dead} dead)` : "") + ".";
+  if (l.kind === "knocked_out") return `${l.name || "Shells"} burst on ${nm(l.dfd)}:${out}`;
+  if (l.kind === "antiarmour") return `${nm(l.att)} fire ${nOf(l.shots, "round")} at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}: ${l.hit} hit.${out}`;
+  if (l.at) return `${nm(l.att)} fire ${nOf(l.rounds, "round")} of high explosive at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}.`;
+  return `${nm(l.att)} fire ${nOf(l.rounds, "round")} at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}: ${l.hit} hit.${out}`;
+}
 function bunkerText(l, nm){                       // a bunker stormed (it falls or holds), or knocked out by shellfire
   const at = `${l.at[0] + 1},${l.at[1] + 1}`;
   if (l.kind === "knocked") return `${l.name} (${l.side}) knock out the bunker at ${at}.`;
@@ -1080,7 +1099,8 @@ const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 mac
 function unitMeta(u){
   if (u.state === "fled") return "fled";
   const down = u.down ? " · " + u.down + " down" : "", br = (u.breach ? " · breaching" : "") + (u.assault ? " · storming" : ""), low = (u.prone ? " · to ground" : "") + (u.pinned ? " · pinned" : "");
-  const mg = isMg(u.weapon) ? " · " + gunsText(mgGuns(u), "gun") : "";
+  let mg = isMg(u.weapon) ? " · " + gunsText(mgGuns(u), "gun") : "";
+  if (u.vehicle) mg = ` · ${vehiclesLeft(u)} ${FD.units.vehicles.kinds[u.vehicle].name.toLowerCase()}`;
   return `${u.men}/${u.start} · ${u.state}${down}${br}${low}${mg}${batteryMeta(u)}`;
 }
 const GUN_NAMES = { smoothbore: "guns", rifled: "rifled guns", howitzer: "howitzers" };
@@ -1093,6 +1113,10 @@ function batteryMeta(u){                          // " · 6 guns, limbered, 280 
   if (u.resupplying) how += ", resupplying";
   const left = ammoLeft(u);
   return ` · ${gunsServed(u)} ${GUN_NAMES[gunKind(u)]}, ${how}, ${left ? left + " rounds" : "no rounds left"}`;
+}
+function vehicleInfo(u, K){                       // the selected vehicle unit: how many, crews, main gun, armour
+  const gun = K.gun ? `main gun to ${K.gun.range} hexes (${fmtM(K.gun.range * FD.units.hex_m)}), ${nOf(K.gun.rate, "round")} a vehicle an exchange` : "machine guns only";
+  return `${vehiclesLeft(u)} of ${Math.ceil(u.start / K.crew)} ${K.name.toLowerCase()} (${K.crew} crew each); ${gun}; ${K.armour} armour: small arms cannot hurt them, no one fights them hand to hand`;
 }
 function gunsInfo(u){                             // the Guns line of the selected battery
   const lost = u.guns_lost ? `, ${u.guns_lost} knocked out` : "", left = ammoLeft(u);
@@ -1128,7 +1152,7 @@ function renderSel(){
   renderGunOrders(u, setup);
   renderGround(u, setup);
   if (!u){ $("#sel-info").innerHTML = ""; return }
-  const f = FD.units.formations[u.formation], w = FD.weapons[u.weapon];
+  const f = form(u), w = FD.weapons[u.weapon], VK = vehicleKind(u);
   const how = { smoothbore: "smoothbore guns; ", rifled: "rifled guns, percussion shell; ", howitzer: "howitzers, shell over anything between; " }[gunKind(u)];
   const gun = isGun(u.weapon) ? `${how}range ${gunRange(u)} hexes (${fmtM(gunRange(u) * FD.units.hex_m)}), canister to ${FD.units.artillery.canister_to}; crews fight with ${FD.weapons[meleeWeapon(u)].name.toLowerCase()}` : null;
   const reach = gun || ("range" in w ? `range ${w.range.map(x => Math.round(x / FD.units.range_scale)).join(" / ")} hexes, to ${fmtM(w.range.at(-1) * FD.battle_hex_m)}` : `reach ${w.reach || 1}`);
@@ -1139,6 +1163,7 @@ function renderSel(){
     + `<dt>Arms</dt><dd>${esc(w.name)} (${reach}); ${esc(FD.kits[u.kit].name)}</dd>`
     + `<dt>Order</dt><dd>${f.name}, ${Math.min(u.width, Math.ceil(Math.max(1, u.men) / f.per_hex))} hexes of front${u.mounted ? ", mounted" : ""}</dd>`
     + (isBattery(u) ? `<dt>Guns</dt><dd>${gunsInfo(u)}</dd>` : "")
+    + (VK ? `<dt>Vehicles</dt><dd>${vehicleInfo(u, VK)}</dd>` : "")
     + (isMg(u.weapon) ? `<dt>Guns</dt><dd>${gunsText(mgGuns(u), "machine gun")} served (${FD.units.machine_guns.crew} men a gun); beaten zone ${fmtM(FD.units.machine_guns.beaten.beyond * FD.units.hex_m)} past the target</dd>` : "")
     + (u.prone ? `<dt>Ground</dt><dd>Gone to ground: shots at it −${FD.units.to_ground.cover}%; it cannot move until it gets up</dd>` : "")
     + `<dt>Moves</dt><dd>${allowance(u)} hexes; turning costs ${turnCost(u)} a step</dd>`;
@@ -1273,9 +1298,12 @@ function fillChoices(){
   $("#sel-table").innerHTML = Object.entries(byBattle).map(([b, ts]) => `<optgroup label="${esc(b)}">` + ts.map(opt).join("") + "</optgroup>").join("");
   $("#sel-weapon").innerHTML = FD.tables[S.table].weapons.map(w => `<option value="${w}">${esc(FD.weapons[w].name)}</option>`).join("");
   $("#guns-box").hidden = !isGun($("#sel-weapon").value);
+  $("#vehicle-box").hidden = !vehiclesHere();
+  if ($("#vehicle-box").hidden) $("#sel-vehicle").value = "";
   $("#sel-kit").innerHTML = Object.entries(FD.kits).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-quality").innerHTML = Object.keys(FD.units.quality).map(q => `<option ${q === "regular" ? "selected" : ""}>${q}</option>`).join("");
-  $("#sel-form").innerHTML = Object.entries(FD.units.formations).map(([k, f]) => `<option value="${k}">${f.name}</option>`).join("");
+  $("#sel-vehicle").innerHTML = `<option value="">On foot or horse</option>` + Object.entries(FD.units.vehicles?.kinds || {}).map(([k, v]) => `<option value="${k}">${esc(v.name)} (Men: how many)</option>`).join("");
+  $("#sel-form").innerHTML = Object.entries(FD.units.formations).filter(([k]) => k !== "armour").map(([k, f]) => `<option value="${k}">${f.name}</option>`).join("");
   $("#sel-field").innerHTML = `<option value="">Open ground (${DEFAULT_SIZE.join(" × ")})</option>` + fieldOptions();
   $("#sel-field").value = S.fieldId || "";
 }
@@ -1288,14 +1316,24 @@ function reshape(dw){                            // set-up: a wider or narrower 
   else S.msg = "No room for that shape there.";
   render();
 }
-function addUnit(){
+function pickedSide(){                            // {f: the force picked or null, side, k: the side's index}
   const pick = $("#sel-side").value, f = pick.startsWith("f:") ? S.forces.find(x => x.id === +pick.slice(2)) : null;
-  const side = f ? forceSide(f) : S.sides[+pick.slice(2)] || S.sides[0], k = S.sides.indexOf(side), mid = S.phase !== "setup";
+  const side = f ? forceSide(f) : S.sides[+pick.slice(2)] || S.sides[0];
+  return { f, side, k: S.sides.indexOf(side) };
+}
+function unitKit(vk){                             // weapon, kit, formation and mounted from the form, or a vehicle unit's fixed ones
+  if (vk) return { weapon: "machine_gun", kit: "none", formation: "armour", mounted: false };
+  const weapon = $("#sel-weapon").value;
+  return { weapon, kit: $("#sel-kit").value, formation: formationFor(weapon, $("#sel-form").value), mounted: $("#chk-mounted").checked };
+}
+function addUnit(){
+  const { f, side, k } = pickedSide(), mid = S.phase !== "setup";
   if (mid && side !== moving()){ S.msg = `Only ${moving()} can bring on a unit now: it is their move.`; return render() }
   if (f && reserve(f) <= 0){ S.msg = `${f.name} has no men left to put in a unit.`; return render() }
-  const asked = Math.max(1, Number.parseInt($("#in-men").value, 10) || 1), men = f ? Math.min(asked, reserve(f)) : asked;
-  const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, banner: f && f.side !== side ? f.side : null, force: f ? f.id : null, men, quality: $("#sel-quality").value, weapon: $("#sel-weapon").value,
-    kit: $("#sel-kit").value, formation: formationFor($("#sel-weapon").value, $("#sel-form").value), mounted: $("#chk-mounted").checked, guns: $("#sel-guns").value, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
+  const vk = vehiclesHere() ? $("#sel-vehicle").value : "", crew = vk ? FD.units.vehicles.kinds[vk].crew : 1;
+  const asked = Math.max(1, Number.parseInt($("#in-men").value, 10) || 1) * crew, men = f ? Math.min(asked, reserve(f)) : asked;
+  const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, banner: f && f.side !== side ? f.side : null, force: f ? f.id : null, men, quality: $("#sel-quality").value,
+    ...unitKit(vk), guns: $("#sel-guns").value, vehicle: vk || undefined, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
   if (FD.units.heliborne && $("#chk-air").checked) return byAir(u, f);
   return mid ? bringOn(u, k) : setUp(u, k);
 }
@@ -1359,6 +1397,7 @@ function entrySpots(facing, ranks){               // front hexes for a unit `ran
   }
   return out;
 }
+const vehiclesHere = () => !!FD.units.vehicles && !!S.table && FD.tables[S.table]?.weapons.some(w => hurtsArmour(w) || w === "machine_gun");   // tables of the machine-gun age and later
 function formationFor(weapon, chosen){           // guns in battery order, machine guns as teams; the rest as chosen (not those two)
   if (isGun(weapon)) return "battery";
   if (isMg(weapon)) return "mg";

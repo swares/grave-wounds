@@ -19,6 +19,7 @@ formations:
   open:  {name: "Open order", abreast: 10, ranks: 2, per_hex: 20, move: 8, missile_factor: 0.8}
   battery: {name: "Battery", abreast: 4, ranks: 5, per_hex: 20, move: 6, missile_factor: 0.8}   # two guns and their crews a hex (see artillery)
   extended: {name: "Extended order", abreast: 3, ranks: 1, per_hex: 3, move: 8, missile_factor: 0.5}   # modern infantry: a few yards between men
+  armour: {name: "Armour", abreast: 1, ranks: 1, per_hex: 4, move: 12, missile_factor: 1.0}   # vehicles, one a hex (per_hex and move are the vehicle kind's: see vehicles)
   mg: {name: "Machine-gun team", abreast: 5, ranks: 1, per_hex: 5, move: 4, missile_factor: 0.5}      # a gun and its crew a hex (see machine_guns)
 mounted_move: 15           # hexes an exchange for mounted units, in either order
 charge_move: 2             # a unit that ends its move in contact may move this many times its allowance (a charge)
@@ -288,6 +289,34 @@ indirect:
   smoke: {radius: 1, lasts: {calm: 4, breeze: 3, strong: 2, gale: 1}, drift: {calm: 0, breeze: 1, strong: 2, gale: 2}}
   counter_battery: {among: 2, near: 3, near_struck: 1}
   creep: {max: 3, every_max: 4}
+
+# ---------- vehicles ----------
+# A vehicle unit (`vehicle`: a kind below) is tanks or armoured carriers on the field, one a
+# hex: its men are their crews, `crew` a vehicle, in the armour formation, with the kind's
+# `move`. Its machine guns fire as a machine-gun team's (its weapon is the machine gun). A
+# kind with a `gun` also fires its main gun each exchange, `rate` rounds a vehicle, at the
+# nearest enemy unit in range, in sight (as guns are) and in front of it, enemy vehicles first:
+# at a vehicle each round hits at the `hit` % for its range in field hexes and then knocks it
+# out at its armour's `gun` %; at men it bursts on the nearest of their hexes as the
+# indirect-fire kind `he` does (no scatter).
+# Armour: small arms cannot hurt a vehicle (men with them do not shoot at one), and no one
+# strikes it, or is struck by it, hand to hand. Men with an `anti_armour` weapon fire its
+# rounds a man at a vehicle (every one aimed); each that hits (as at men: range, cover, the
+# weather) knocks a vehicle out at its armour's `rpg` %. A shell or bomb bursting in a vehicle's own hex knocks it out at the firing kind's
+# `knock` % times its armour's `shell`. A knocked-out vehicle's crew are out of the fight:
+# each is struck at `crew_struck` % and rolls a wound as one struck by shellfire.
+# Going: a vehicle crosses the ground at the `ground` cost a hex; ground not listed (marsh,
+# buildings, tall buildings, rubble, water) it cannot enter; works as men do. Design estimates.
+vehicles:
+  kinds:
+    tank: {name: "Tanks", crew: 4, move: 12, armour: heavy, gun: {range: 100, rate: 1, he: tank, hit: [[20, 75], [50, 50], [100, 25]]}}
+    apc:  {name: "Armoured carriers", crew: 3, move: 14, armour: light}
+  armour:
+    heavy: {rpg: 15, gun: 35, shell: 1}
+    light: {rpg: 50, gun: 75, shell: 3}
+  anti_armour: {rpg: 0.25}   # weapon: rounds a man fires at a vehicle an exchange, every one aimed
+  crew_struck: 50
+  ground: {open: 1, rough: 2, woods: 3, high: 1}
 
 # ---------- landing by air ----------
 # A field can mark landing zones (field.lz, hexes). A unit can come on by air at one: it waits

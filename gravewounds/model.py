@@ -900,7 +900,7 @@ def _indirect_errors(d: Data) -> list[str]:
                if not isinstance(v.get("counter"), (int, float)) or not 0 <= v["counter"] <= 100]
     errors += [f"units.yaml: indirect kind {k} needs whole-number crew and displace, and serve from 1 to crew" for k, v in I.get("kinds", {}).items()
                if not v.get("air") and not (isinstance(v.get("crew"), int) and isinstance(v.get("serve"), int) and isinstance(v.get("displace"), int) and 1 <= v["serve"] <= v["crew"])]
-    errors += _air_errors(d, I)
+    errors += _air_errors(d, I) + _vehicle_errors(d)
     errors += [f"units.yaml: indirect kind {k} illum must be a whole number of hexes" for k, v in I.get("kinds", {}).items()
                if not (isinstance(v.get("illum", 0), int) and v.get("illum", 0) >= 0)]
     if winds and set(I.get("smoke", {}).get("drift", {})) != winds:
@@ -908,6 +908,23 @@ def _indirect_errors(d: Data) -> list[str]:
     if not all(isinstance(I.get("counter_battery", {}).get(k), int) for k in ("among", "near", "near_struck")):
         errors.append("units.yaml: indirect.counter_battery needs whole-number among, near and near_struck")
     return errors
+
+
+def _vehicle_errors(d: Data) -> list[str]:
+    """units.yaml vehicles: kinds with a crew, move and known armour (and a gun with a range, rate,
+    an indirect kind for its high explosive and hit bands); armour %s; anti-armour weapons and
+    ground kinds that exist."""
+    V = d.units.get("vehicles")
+    if not V:
+        return []
+    errors = [f"units.yaml: vehicles.kinds.{k} needs whole-number crew and move and a known armour" for k, v in V.get("kinds", {}).items()
+              if not (isinstance(v.get("crew"), int) and v["crew"] > 0 and isinstance(v.get("move"), int) and v.get("armour") in V.get("armour", {}))]
+    errors += [f"units.yaml: vehicles.kinds.{k}.gun needs range, rate, he (an indirect kind) and hit bands" for k, v in V.get("kinds", {}).items()
+               if "gun" in v and not (isinstance(v["gun"].get("range"), int) and isinstance(v["gun"].get("rate"), int)
+                                      and v["gun"].get("he") in d.units["indirect"]["kinds"] and v["gun"].get("hit"))]
+    errors += [f"units.yaml: vehicles.armour.{k} needs rpg, gun and shell" for k, a in V.get("armour", {}).items() if not all(isinstance(a.get(x), (int, float)) for x in ("rpg", "gun", "shell"))]
+    errors += [f"units.yaml: vehicles.anti_armour names unknown weapon {w}" for w in V.get("anti_armour", {}) if w not in d.weapons]
+    return errors + [f"units.yaml: vehicles.ground names unknown ground {g}" for g in V.get("ground", {}) if g not in d.units["ground"]]
 
 
 def _air_errors(d: Data, ind: dict) -> list[str]:
@@ -1134,6 +1151,9 @@ def _unit_spec_errors(d: Data, f: dict, where: str, u: dict) -> list[str]:
         errors.append(f"{where}: unit {u.get('name')} has an unknown quality or formation")
     if u.get("guns", "smoothbore") not in ("smoothbore", "rifled", "howitzer"):
         errors.append(f"{where}: unit {u.get('name')} has guns other than smoothbore, rifled or howitzer")
+    vk = (U.get("vehicles") or {}).get("kinds", {})
+    if ("vehicle" in u) != (u.get("formation") == "armour") or ("vehicle" in u and u["vehicle"] not in vk):
+        errors.append(f"{where}: unit {u.get('name')}: a vehicle unit needs a known vehicle kind and the armour formation, and only it")
     return errors
 
 

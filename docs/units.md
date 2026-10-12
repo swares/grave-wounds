@@ -644,6 +644,37 @@ at the field map's scale (sized for the defender's men on 11-yard, 10 m hexes), 
 built when the fight starts, with the gate on the east, facing the attackers' edge. The
 defenders' units start inside it, the attackers at the east edge.
 
+## Vehicles
+
+Tanks and armoured carriers fight on the field map as units, one vehicle to a hex (first cut;
+the numbers are in `vehicles` in `data/units.yaml`). On a wound table of the machine-gun age or
+later, **Add a unit** offers **Tanks** or **Armoured carriers**, and **Men** is then how many
+vehicles; their men are the crews (4 a tank, 3 a carrier).
+
+- **Moving.** Tanks move 12 hexes and carriers 14. Each hex costs open or high ground 1, rough
+  2 and woods 3. They cannot enter marsh, buildings, tall buildings, rubble or water, so in a
+  town they keep to the streets. Works and deep going cost them what they cost men.
+- **Their machine guns** fire as a machine-gun team's, about a gun a vehicle.
+- **A tank's main gun** fires a round a tank each exchange at the nearest enemy in range
+  (1,090 yards, 1,000 m), in sight (as guns are: the weather and the light) and in front of
+  it, enemy vehicles first, with a clear line of fire.
+  - At a vehicle, each round hits 75% out to 20 hexes, 50% to 50 and 25% to 100. A hit knocks
+    a tank out at 35% and a carrier at 75%.
+  - At men, each round bursts on their nearest hex as a tank's round on call does (25% in the
+    hex, 5% next to it), with no scatter.
+- **Armour.**
+  - Small arms cannot hurt a vehicle, and men armed only with them do not shoot at one.
+  - No one strikes a vehicle hand to hand, or is struck by it.
+  - Men with **RPGs** fire a rocket for every four men each exchange, every one aimed. Each
+    that hits (range, cover and the weather as for shots at men) knocks out a tank at 15% or
+    a carrier at 50%.
+  - A shell or bomb bursting in a vehicle's own hex knocks it out at the firing kind's knock
+    %: a heavy howitzer 2%, fighter-bombers 15%. A carrier is three times as likely to be
+    knocked out.
+- **Knocked out.** A knocked-out vehicle's crew are out of the fight. Each is struck at 50% and
+  rolls a wound as one hit by shellfire; the rest have bailed out. Vehicle units check morale
+  like any other.
+
 ## Landing by air
 
 For helicopter landings (Vietnam and later). The numbers are in `heliborne` in

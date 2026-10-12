@@ -108,13 +108,16 @@ function melee(att, dfd, men, rng, opts = {}){
   return blows(att, dfd, countBlows(men * tempo, rng), atk, dfn, rng, { exposed: opts.exposed || [], shift });
 }
 function volley(att, dfd, men, hexes, rng, opts = {}){   // opts: {penalty, factor, exposed, reach (the wind's % on the range bands)}
+  const shot = volleyShots(att, men, hexes, rng, opts);
+  return shot ? blows(att, dfd, shot[0], shot[1], 0, rng, { exposed: opts.exposed || [], shift: -1000 }) : null;
+}
+function volleyShots(att, men, hexes, rng, opts = {}){   // [aimed shots, attack %] of a volley, or null out of range
   const penalty = opts.penalty || 0, factor = opts.factor ?? 1;
   const band = fieldRange(att.weapon, hexes, opts.reach || 0);
   if (!band) return null;
   const S = UD.missile, tempo = isMg(att.weapon) ? UD.machine_guns.tempo : S.tempo;   // a machine gun's served guns, at its own tempo
   const shots = men * (S.rate[att.weapon] ?? S.default_rate) * tempo * factor;
-  const atk = attackOf(att) - band.penalty - penalty;
-  return blows(att, dfd, countBlows(shots, rng), atk, 0, rng, { exposed: opts.exposed || [], shift: -1000 });
+  return [countBlows(shots, rng), attackOf(att) - band.penalty - penalty];
 }
 
 // ---------- heroes (as gravewounds/units.py) ----------
@@ -258,7 +261,14 @@ function arc(facing, dirn){
   if (k <= 1) return "front";
   return k === 2 || k === 5 ? "flank" : "rear";
 }
-const form = u => UD.formations[u.formation];
+function form(u){                                 // a unit's formation; a vehicle unit's is one vehicle a hex at its kind's move
+  const F = UD.formations[u.formation], K = vehicleKind(u);
+  return K ? { ...F, per_hex: K.crew, move: K.move } : F;
+}
+const vehicleKind = u => (u.vehicle ? UD.vehicles.kinds[u.vehicle] : null);   // a vehicle unit's kind, or null
+const vehiclesLeft = (u, lost = 0) => { const K = vehicleKind(u); return K ? Math.ceil(Math.max(0, u.men - lost) / K.crew) : 0 };
+const armourOf = u => { const K = vehicleKind(u); return K ? UD.vehicles.armour[K.armour] : null };
+const hurtsArmour = weapon => weapon in (UD.vehicles?.anti_armour || {});
 const hk = h => h[0] + "," + h[1];
 function footprint(u){                          // rows of hexes, front row first
   if (u.men <= 0 || u.state === "fled") return [];
@@ -338,10 +348,11 @@ function strikeGroups(units, occ, field){
 const cmpKey = (a, b) => { const x = a.split("|"), y = b.split("|"); return (+x[0] - +y[0]) || (+x[1] - +y[1]) || x[2].localeCompare(y[2]) || (+x[3] - +y[3]) || (+x[4] - +y[4]) };
 function strikes(units, field = null){            // [{att, dfd, men, situation, rout, penalty, stakes}]
   const occ = occupancy(units), groups = strikeGroups(units, occ, field);
-  const out = [...groups.keys()].sort(cmpKey).map(k => { const [i, j, sit, pen, stk] = k.split("|"); return { att: +i, dfd: +j, men: groups.get(k), situation: sit, rout: false, penalty: +pen, stakes: stk === "1" } });
+  const out = [...groups.keys()].sort(cmpKey).map(k => { const [i, j, sit, pen, stk] = k.split("|"); return { att: +i, dfd: +j, men: groups.get(k), situation: sit, rout: false, penalty: +pen, stakes: stk === "1" } })
+    .filter(s => !units[s.att].vehicle && !units[s.dfd].vehicle);   // no one fights a vehicle hand to hand
   units.forEach((b, j) => {
-    if (b.state !== "broken" || b.men <= 0) return;
-    for (const i of adjacentUnits(units, occ, j)) if (units[i].side !== b.side && units[i].state !== "broken" && units[i].state !== "fled") out.push({ att: i, dfd: j, men: units[i].men, situation: "rear", rout: true });
+    if (b.state !== "broken" || b.men <= 0 || b.vehicle) return;
+    for (const i of adjacentUnits(units, occ, j)) if (units[i].side !== b.side && units[i].state !== "broken" && units[i].state !== "fled" && !units[i].vehicle) out.push({ att: i, dfd: j, men: units[i].men, situation: "rear", rout: true });
   });
   return out;
 }
@@ -352,7 +363,7 @@ function target(units, i, field, occ = null){    // [distance, index, shooter he
   if (named) return named;
   let best = null;
   units.forEach((e, j) => {
-    if (e.side === u.side || e.men <= 0 || e.state === "fled") return;
+    if (e.side === u.side || e.men <= 0 || e.state === "fled" || (e.vehicle && !hurtsArmour(u.weapon))) return;   // small arms do not shoot at vehicles
     const near = nearestAhead(u, front, fv, footprint(e).flat(), field, clearFn(units, occ, field, i, j));
     if (near && (best === null || near[0] < best[0])) best = [near[0], j, near[1], near[2]];
   });
@@ -608,6 +619,7 @@ function shellUnits(ctx, k, b, bursts){           // the men struck in every uni
   const { us, table, weapon, rng, acc, log, field, under } = ctx;
   const I = UD.indirect, K = I.kinds[b.kind], att = { table, weapon, kit: null, quality: "regular" };
   us.forEach((u, i) => {
+    if (u.vehicle){ shellVehicle(us, i, bursts, K, { table, rng, acc, log, src: [k, b] }); return }
     const struck = shellStruckUnit(field, u, bursts, K, rng);
     if (struck === null) return;
     under[i] = true;
@@ -616,6 +628,16 @@ function shellUnits(ctx, k, b, bursts){           // the men struck in every uni
     acc.lost[i] += t.down; acc.dead[i] += t.dead;
     log.push(...logged({ kind: "shelled", sup: k, name: b.name, dfd: i, struck }, t));
   });
+}
+function shellVehicle(us, i, bursts, kind, ctx){   // shells or bombs bursting in a vehicle's own hex knock it out at the kind's knock % x its armour's shell (ctx: table, rng, acc, log, src)
+  const u = us[i], { table, rng, acc, log, src } = ctx;
+  if (u.men <= 0 || u.state === "fled") return;
+  const hexes = new Set(footprint(u).flat().map(hk)), direct = bursts.filter(at => hexes.has(hk(at))).length, p = (kind.knock || 0) * armourOf(u).shell;
+  if (!direct || p <= 0) return;
+  let kills = 0;
+  for (let s = 0; s < direct; s++) if (rng.randint(1, 100) <= p) kills++;
+  const k = knockOut(us, i, kills, table, rng, acc);
+  if (k.knocked) log.push(...logged({ kind: "knocked_out", sup: src[0], name: src[1].name, dfd: i, knocked: k.knocked, crew: k.crew, struck: k.struck }, k.tally));
 }
 function shellStruckUnit(field, u, bursts, kind, rng){   // men of u struck by these bursts, or null if none came near
   if (u.men <= 0 || u.state === "fled") return null;
@@ -652,7 +674,7 @@ function beaten(units, occ, field, i, best){      // {behind, beyond, bcover}: t
   for (let k = 0; k < line.length; k++){
     if (groundAt(field, line[k]).stops_shot) break;
     const b = occ[hk(line[k])];
-    if (k > 0 && b !== undefined && b !== i && b !== j) return { behind: b, beyond: k, bcover: (groundAt(field, line[k]).cover || 0) + groundCover(units[b]), bseen: seenShare(field, units[b], line[k], units[i].weapon) };
+    if (k > 0 && b !== undefined && b !== i && b !== j && !units[b].vehicle) return { behind: b, beyond: k, bcover: (groundAt(field, line[k]).cover || 0) + groundCover(units[b]), bseen: seenShare(field, units[b], line[k], units[i].weapon) };
   }
   return { behind: null, beyond: 0, bcover: 0, bseen: 1 };
 }
@@ -670,6 +692,7 @@ function beatenFire(us, table, rng, acc, log, v){ // the cone falling on into th
 // field: {ground: {hex key: kind}, works: {edges, hexes}, weather: {cond, wind, ground} or null, size: [cols, rows]}
 const fieldSize = field => field?.size || [UD.map.cols, UD.map.rows];
 const groundAt = (field, h) => UD.ground[field?.ground?.[hk(h)] || "open"];
+const groundKey = (field, h) => field?.ground?.[hk(h)] || "open";   // the ground kind painted on hex h
 function across(field, u, h, x, reach){           // [blocked: only reach 2 over it, penalty %, stakes: no charge for horses]
   if (!field) return [false, 0, false];
   const [cols, rows] = fieldSize(field), m = meleeAcross(field.works, h, x, reach, cols, rows);
@@ -786,6 +809,7 @@ function shootAll(us, table, rng, acc, log, field, under = null){
   for (const v of volleys(us, field)){
     markMg(us, v, under);
     const b = us[v.dfd], exposed = exposure(b, false, true), mf = form(b).missile_factor;
+    if (b.vehicle){ armourVolley(us, table, rng, acc, log, v, { factor: mf * (100 - v.misfire) / 100 * v.seen, penalty: v.cover + v.penalty + v.over, reach: v.reach }); continue }
     let t = takeHurt(b, volley(sideOfUnit(us[v.att], table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100 * v.seen, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
     tallyLoss(acc, v, t);
     log.push(...logged({ kind: "volley", ...v }, t));
@@ -802,7 +826,76 @@ function shootAll(us, table, rng, acc, log, field, under = null){
     }
   }
   for (const c of cannonades(us, field)) fireBattery(us, table, rng, acc, log, c);
+  vehicleGuns(us, table, rng, acc, log, field, under);
 }
+function armourVolley(us, table, rng, acc, log, v, opts){   // anti-armour shots that hit knock a vehicle out at its armour's rpg %
+  const att = sideOfUnit(us[v.att], table), band = fieldRange(att.weapon, v.dist, opts.reach || 0);
+  if (!band) return;
+  const n = countBlows(v.men * UD.vehicles.anti_armour[att.weapon] * opts.factor, rng), atk = attackOf(att) - band.penalty - opts.penalty;
+  let hits = 0, kills = 0;
+  for (let s = 0; s < n; s++) if (rng.randint(1, 100) <= atk) hits++;
+  const p = armourOf(us[v.dfd]).rpg;
+  for (let s = 0; s < hits; s++) if (rng.randint(1, 100) <= p) kills++;
+  const k = knockOut(us, v.dfd, kills, table, rng, acc);
+  acc.dealt[v.att] += k.crew;
+  log.push(...logged({ kind: "antiarmour", ...v, shots: n, hit: hits, knocked: k.knocked, crew: k.crew, struck: k.struck }, k.tally));
+}
+function knockOut(us, i, n, table, rng, acc){      // up to n vehicles out: their crews out of the fight, each struck at crew_struck % -> {knocked, crew, struck, tally}
+  const u = us[i], K = vehicleKind(u), V = UD.vehicles;
+  n = Math.min(n, vehiclesLeft(u, acc.lost[i]));
+  if (n <= 0) return { knocked: 0, crew: 0, struck: 0, tally: newTally() };
+  const crew = Math.min(n * K.crew, u.men - acc.lost[i]);
+  let struck = 0;
+  for (let s = 0; s < crew; s++) if (rng.randint(1, 100) <= V.crew_struck) struck++;
+  const weapon = shellWeapon(table);
+  let t = struck && weapon ? blows({ table, weapon, kit: null, quality: "regular" }, sideOfUnit(u, table), struck, UD.indirect.attack, 0, rng, { exposed: [], shift: -1000 }) : newTally();
+  t = takeHurt(u, t);
+  acc.lost[i] += crew;
+  acc.dead[i] += Math.min(t.dead, crew);
+  return { knocked: n, crew, struck, tally: t };
+}
+function vehicleGuns(us, table, rng, acc, log, field, under){   // each vehicle unit's main gun: at vehicles, hits by range and knocks by armour; at men, bursts as the indirect kind `he`
+  us.forEach((u, i) => {
+    const K = vehicleKind(u), G = K ? K.gun : null;
+    if (!G || out_(u)) return;
+    const best = gunTarget(us, i, field, G);
+    if (!best) return;
+    const [dist, j, , t] = best, rounds = vehiclesLeft(u) * G.rate;
+    if (us[j].vehicle){ gunAtVehicle(us, [i, j, dist, rounds], G, { table, rng, acc, log }); return }
+    log.push({ kind: "tankfire", att: i, dfd: j, dist, rounds, at: t });
+    const weapon = shellWeapon(table);
+    if (weapon && field) shellUnits({ us, table, weapon, rng, acc, log, field, under: under || us.map(() => false) }, null, { kind: G.he, name: u.name ?? null }, Array.from({ length: rounds }, () => [...t]));
+  });
+}
+function gunAtVehicle(us, shot, G, ctx){          // a main gun's rounds at a vehicle unit: hits by range, knocks by armour (shot: [gun unit, target, dist, rounds])
+  const [i, j, dist, rounds] = shot, { table, rng, acc, log } = ctx;
+  let hits = 0, kills = 0;
+  for (let s = 0; s < rounds; s++) if (rng.randint(1, 100) <= chanceAt(G.hit, dist)) hits++;
+  const p = armourOf(us[j]).gun;
+  for (let s = 0; s < hits; s++) if (rng.randint(1, 100) <= p) kills++;
+  const k = knockOut(us, j, kills, table, rng, acc);
+  acc.dealt[i] += k.crew;
+  log.push(...logged({ kind: "tankfire", att: i, dfd: j, dist, rounds, hit: hits, knocked: k.knocked, crew: k.crew, struck: k.struck }, k.tally));
+}
+const keyBefore = (a, b) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);   // a gun target's [vehicle first, distance] ranks before another's
+function gunTarget(us, i, field, G){              // [dist, index, gun hex, target hex]: the nearest enemy vehicle in range, sight and front with a line of fire, else the nearest such unit
+  const u = us[i], occ = occupancy(us), front = footprint(u)[0], fv = fvec(u.facing);
+  let best = null;
+  us.forEach((e, j) => {
+    if (e.side === u.side || e.men <= 0 || e.state === "fled") return;
+    const clear = clearFn(us, occ, field, i, j);
+    for (const t of footprint(e).flat()) for (const h of front){
+      const dist = hdist(h, t), key = [e.vehicle ? 0 : 1, dist];
+      if (dist <= G.range && (!best || keyBefore(key, best[0])) && canLay(field, clear, fv, [h, t, dist])) best = [key, [dist, j, h, t]];
+    }
+  });
+  return best ? best[1] : null;
+}
+function canLay(field, clear, fv, line){           // a gun at h can be laid on t: ahead, in sight, with a clear line of fire
+  const [h, t, dist] = line;
+  return ahead(fv, h, t) && !gunWeather(field, dist, h, t).blocked && (!clear || clear(h, t, dist));
+}
+function ahead(fv, h, t){ const c = cube(t), s = cube(h); return (c[0] - s[0]) * fv[0] + (c[1] - s[1]) * fv[1] + (c[2] - s[2]) * fv[2] > 0 }
 function fireBattery(us, table, rng, acc, log, c){   // at the target, guns knocked out there, then balls bounding on into the unit behind
   const a = us[c.att], b = us[c.dfd], gun = sideOfUnit(a, table);
   let t = takeHurt(b, cannonade(gun, b, c, rng, exposure(b, false, true)));
@@ -1008,8 +1101,9 @@ function allowance(u){                            // hexes a unit may move (twic
 }
 function turnCost(u){ const n = Math.ceil(Math.max(1, u.men) / form(u).per_hex); return Math.max(1, Math.ceil(Math.min(u.width, n) / UD.turn_per)) }
 const onMap = (h, size) => h[0] >= 0 && h[0] < size[0] && h[1] >= 0 && h[1] < size[1];
-function canEnter(field, u, h){                  // no wagons or water; for horses, no marsh, stakes or felled trees
+function canEnter(field, u, h){                  // no wagons or water; for horses, no marsh, stakes or felled trees; vehicles only on the ground they cross
   if (groundAt(field, h).impassable) return false;
+  if (u.vehicle && !(groundKey(field, h) in UD.vehicles.ground)) return false;
   const it = hexItem(field.works, h);
   if (it && (specOf("hex", it).enter === null || specOf("hex", it).enter === undefined)) return false;
   if (!u.mounted) return true;
@@ -1030,7 +1124,8 @@ function unitStepCost(field, u, a, b){            // movement for the middle hex
   if (!canEnter(field, u, b)) return null;
   const c = stepCost(field.works, a, b);
   if (c === null) return null;
-  return c + groundAt(field, b).move - 1 + deepGoing(field.weather?.ground) + (coldOf(field)?.move || 0);
+  const going = u.vehicle ? UD.vehicles.ground[groundKey(field, b)] : groundAt(field, b).move;
+  return c + going - 1 + deepGoing(field.weather?.ground) + (coldOf(field)?.move || 0);
 }
 function pathLen(units, i, goal, size, limit, field = null){   // least movement for the middle hex to goal; null if more than limit
   const occ = occupancy(units.filter((_, k) => k !== i)), u = units[i];

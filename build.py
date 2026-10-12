@@ -283,7 +283,7 @@ def _indirect_rules(d) -> list[str]:
         f"(d6 direction, 0 to scatter hexes); every man within the radius is struck at the % for his distance (x{I['prone']:g} gone to ground, less ground cover) "
         f"and wounds as a shell fragment at {I['attack']}%. {kinds}.",
         _support_rules(I),
-    ] + _heliborne_rules(d) + [
+    ] + _heliborne_rules(d) + _vehicle_rules(d) + [
         f"<b>Suppression:</b> a unit shelled or under machine-gun fire checks Nerve at the end of the exchange (+{S['prone']} gone to ground); a failure pins it "
         f"for the next exchange: no move, {S['fire'] * 100:g}% of its fire.",
     ]
@@ -304,6 +304,20 @@ def _support_rules(ind: dict) -> str:
             + (" Illumination (one round a tube, called on any hex) lights the hexes round it, out to " + ", ".join(f"{k['illum']} ({k['name'].lower()})" for k in K.values() if k.get("illum"))
                + " hexes, for the light's exchanges after the one it is fired in." if any(k.get("illum") for k in K.values()) else "")
             + _air_rules(I))
+
+
+def _vehicle_rules(d) -> list[str]:
+    V = d.units.get("vehicles")
+    if not V:
+        return []
+    kinds = "; ".join(f"{k['name'].lower()}: {k['crew']} crew, move {k['move']}, {k['armour']} armour" + (f", main gun to {k['gun']['range']} hexes, {k['gun']['rate']} a vehicle an exchange" if k.get("gun") else "")
+                      for k in V["kinds"].values())
+    arm = "; ".join(f"{name}: rocket {a['rpg']}%, gun {a['gun']}%, shell x{a['shell']:g}" for name, a in V["armour"].items())
+    going = ", ".join(f"{d.units['ground'][g]['name'].lower()} {c}" for g, c in V["ground"].items())
+    return [f"<b>Vehicles:</b> one a hex ({kinds}). Small arms cannot hurt them; no one fights them hand to hand. Anti-armour weapons fire "
+            + ", ".join(f"{r:g} a man" for r in V["anti_armour"].values()) + f" an exchange, every round aimed; a hit knocks a vehicle out by its armour ({arm}). "
+            f"A main gun hits a vehicle by range, or bursts on men as a tank's round on call; a shell or bomb in a vehicle's hex knocks it out at the kind's knock % times shell. "
+            f"A knocked-out vehicle's crew are out of the fight, each struck at {V['crew_struck']}%. Going a hex: {going}; nothing else."]
 
 
 def _heliborne_rules(d) -> list[str]:
