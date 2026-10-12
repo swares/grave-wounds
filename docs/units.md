@@ -1317,6 +1317,23 @@ is 140 × 110 hexes, about 1,530 by 1,040 yards (1,400 by 950 m), north at the t
   street and in the park, and machine guns.
 - Fire support: 155 mm howitzers, mortars and close air support; insurgent mortars.
 
+**Combat Outpost Keating, 3 October 2009** (`data/fields/keating-2009.yaml`). The field is
+120 × 110 hexes, about 1,310 by 1,040 yards (1,200 by 950 m), north at the top.
+- The outpost sits on its flat in the middle, its buildings and trucks ringed with barbed
+  wire.
+- The Landay-Sin runs down the left, with the bridge to Urmul (**buildings**) across it. The
+  Kushtoz comes in from the east below the outpost.
+- Steep slopes of rock, scrub and deodar rise on every side.
+- First light (**dawn**).
+- Coalition: B Troop, 3-61 Cavalry (veteran, Interceptor armour) round the barracks and
+  command post, at the guard posts and in the trucks with its machine guns, and Afghan
+  soldiers on the east side.
+- Insurgents (in cover): fighters on the north, east and south slopes and in Urmul, an RPG
+  team, and machine guns.
+- Fire support: the outpost's mortars, Apaches, and jets later in the morning; insurgent
+  mortars and recoilless rifles.
+- Observation Post Fritsche is off this field.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
