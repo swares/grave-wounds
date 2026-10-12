@@ -35,15 +35,16 @@ const US = { side: 0, facing: N }, VN = { side: 1, facing: S };
 const CAV = { quality: "regular", weapon: "rifle_assault", kit: "ww2_rifleman", formation: "extended", mounted: false };
 const MG = { quality: "regular", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false };
 const PAVN = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false };
-const at = (name, army, men, kind, width, pos, facing, extra = {}) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing, ...extra });
+const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
+const flying = u => ({ ...u, lands: 0 });     // comes in by air at the landing zone
 const units = [
   at("B Company, 1st Battalion, 7th Cavalry (across the creek bed)", US, 90, { ...CAV, prone: true }, 20, [creek(50) - 4, 50], 3),
   at("2nd Platoon, B Company (cut off on the knoll)", US, 27, { ...CAV, prone: true }, 5, [KNOLL.cx, KNOLL.cy], 2),
   at("A Company (along the creek bed, B's left)", US, 110, { ...CAV, prone: true }, 22, [creek(80) - 1, 80], 3),
   at("C Company (south of the clearing)", US, 105, CAV, 26, [LZ[0] - 2, 92], S),
   at("Battalion machine guns and mortars (the command post's termite hill)", US, 20, MG, 4, [LZ[0], LZ[1] + 2], 3),
-  at("D Company (landing)", US, 110, CAV, 12, [LZ[0], LZ[1]], 3, { lands: 0 }),
-  at("B Company, 2nd Battalion, 7th Cavalry (flown in at dusk)", US, 120, CAV, 12, [LZ[0], LZ[1]], 3, { lands: 0 }),
+  flying(at("D Company (landing)", US, 110, CAV, 12, [LZ[0], LZ[1]], 3)),
+  flying(at("B Company, 2nd Battalion, 7th Cavalry (flown in at dusk)", US, 120, CAV, 12, [LZ[0], LZ[1]], 3)),
   at("9th Battalion, 66th Regiment (down off the massif)", VN, 450, PAVN, 40, [40, 46], 0),
   at("7th Battalion, 66th Regiment (from the south-west)", VN, 450, PAVN, 40, [64, 108], 5),
   at("North Vietnamese company round the knoll", VN, 120, PAVN, 14, [48, 30], 0),
