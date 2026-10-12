@@ -811,34 +811,34 @@ Sources: Antietam on the Web, 'Saved by his steel vest' (2018): Atwater and G&D 
 
 Confidence: **Historical - taken directly from a source** · Armour: **already reflected (do not apply)**
 
-| Location | Rifle-musket | Artillery | Revolver |
-|---|---|---|---|
-| Skull (left) | 01-03 | 01-03 | 01-03 |
-| Skull (right) | 04-06 | 04-06 | 04-06 |
-| Face | 07-09 | 07-09 | 07-09 |
-| Neck | 10-11 | 10-11 | 10-11 |
-| Chest (left) | 12-15 | 12-15 | 12-15 |
-| Chest (right) | 16-19 | 16-19 | 16-19 |
-| Abdomen | 20-23 | 20-23 | 20-23 |
-| Groin / pelvis | 24-25 | 24-25 | 24-25 |
-| Upper back | 26-28 | 26-28 | 26-28 |
-| Lower back | 29-30 | 29-30 | 29-30 |
-| Shoulder (left) | 31-34 | 31-34 | 31-34 |
-| Shoulder (right) | 35-38 | 35-38 | 35-38 |
-| Upper arm (left) | 39-43 | 39-43 | 39-43 |
-| Upper arm (right) | 44-48 | 44-48 | 44-48 |
-| Forearm (left) | 49-53 | 49-53 | 49-53 |
-| Forearm (right) | 54-58 | 54-58 | 54-58 |
-| Hand (left) | 59-62 | 59-62 | 59-62 |
-| Hand (right) | 63-66 | 63-66 | 63-66 |
-| Thigh (left) | 67-73 | 67-73 | 67-73 |
-| Thigh (right) | 74-80 | 74-80 | 74-80 |
-| Knee (left) | 81-82 | 81-82 | 81-82 |
-| Knee (right) | 83-84 | 83-84 | 83-84 |
-| Lower leg (left) | 85-90 | 85-90 | 85-90 |
-| Lower leg (right) | 91-96 | 91-96 | 91-96 |
-| Foot (left) | 97-98 | 97-98 | 97-98 |
-| Foot (right) | 99-00 | 99-00 | 99-00 |
+| Location | Rifle-musket | Breech-loader | Artillery | Revolver |
+|---|---|---|---|---|
+| Skull (left) | 01-03 | 01-03 | 01-03 | 01-03 |
+| Skull (right) | 04-06 | 04-06 | 04-06 | 04-06 |
+| Face | 07-09 | 07-09 | 07-09 | 07-09 |
+| Neck | 10-11 | 10-11 | 10-11 | 10-11 |
+| Chest (left) | 12-15 | 12-15 | 12-15 | 12-15 |
+| Chest (right) | 16-19 | 16-19 | 16-19 | 16-19 |
+| Abdomen | 20-23 | 20-23 | 20-23 | 20-23 |
+| Groin / pelvis | 24-25 | 24-25 | 24-25 | 24-25 |
+| Upper back | 26-28 | 26-28 | 26-28 | 26-28 |
+| Lower back | 29-30 | 29-30 | 29-30 | 29-30 |
+| Shoulder (left) | 31-34 | 31-34 | 31-34 | 31-34 |
+| Shoulder (right) | 35-38 | 35-38 | 35-38 | 35-38 |
+| Upper arm (left) | 39-43 | 39-43 | 39-43 | 39-43 |
+| Upper arm (right) | 44-48 | 44-48 | 44-48 | 44-48 |
+| Forearm (left) | 49-53 | 49-53 | 49-53 | 49-53 |
+| Forearm (right) | 54-58 | 54-58 | 54-58 | 54-58 |
+| Hand (left) | 59-62 | 59-62 | 59-62 | 59-62 |
+| Hand (right) | 63-66 | 63-66 | 63-66 | 63-66 |
+| Thigh (left) | 67-73 | 67-73 | 67-73 | 67-73 |
+| Thigh (right) | 74-80 | 74-80 | 74-80 | 74-80 |
+| Knee (left) | 81-82 | 81-82 | 81-82 | 81-82 |
+| Knee (right) | 83-84 | 83-84 | 83-84 | 83-84 |
+| Lower leg (left) | 85-90 | 85-90 | 85-90 | 85-90 |
+| Lower leg (right) | 91-96 | 91-96 | 91-96 | 91-96 |
+| Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 |
+| Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 |
 
 **Source totals:** Head, face, neck 11%; Trunk (chest, abdomen, back, pelvis) 18%; Upper extremities 35.6%; Lower extremities 35.2%. Region totals are from the source. The split inside each region uses body exposure (design estimate).
 
@@ -858,26 +858,26 @@ Sources:
 
 Confidence: **Historical - taken directly from a source** · Armour: **already reflected (do not apply)**
 
-| Location | Rifle-musket | Artillery | Revolver |
-|---|---|---|---|
-| Skull (left) | 01-11 | 01-11 | 01-11 |
-| Skull (right) | 12-21 | 12-21 | 12-21 |
-| Face | 22-34 | 22-34 | 22-34 |
-| Neck | 35-42 | 35-42 | 35-42 |
-| Chest (left) | 43-53 | 43-53 | 43-53 |
-| Chest (right) | 54-64 | 54-64 | 54-64 |
-| Abdomen | 65-74 | 65-74 | 65-74 |
-| Groin / pelvis | 75-79 | 75-79 | 75-79 |
-| Upper back | 80-86 | 80-86 | 80-86 |
-| Lower back | 87-92 | 87-92 | 87-92 |
-| Upper arm (left) | 93 | 93 | 93 |
-| Upper arm (right) | 94 | 94 | 94 |
-| Forearm (left) | 95 | 95 | 95 |
-| Forearm (right) | 96 | 96 | 96 |
-| Thigh (left) | 97 | 97 | 97 |
-| Thigh (right) | 98 | 98 | 98 |
-| Lower leg (left) | 99 | 99 | 99 |
-| Lower leg (right) | 00 | 00 | 00 |
+| Location | Rifle-musket | Breech-loader | Artillery | Revolver |
+|---|---|---|---|---|
+| Skull (left) | 01-11 | 01-11 | 01-11 | 01-11 |
+| Skull (right) | 12-21 | 12-21 | 12-21 | 12-21 |
+| Face | 22-34 | 22-34 | 22-34 | 22-34 |
+| Neck | 35-42 | 35-42 | 35-42 | 35-42 |
+| Chest (left) | 43-53 | 43-53 | 43-53 | 43-53 |
+| Chest (right) | 54-64 | 54-64 | 54-64 | 54-64 |
+| Abdomen | 65-74 | 65-74 | 65-74 | 65-74 |
+| Groin / pelvis | 75-79 | 75-79 | 75-79 | 75-79 |
+| Upper back | 80-86 | 80-86 | 80-86 | 80-86 |
+| Lower back | 87-92 | 87-92 | 87-92 | 87-92 |
+| Upper arm (left) | 93 | 93 | 93 | 93 |
+| Upper arm (right) | 94 | 94 | 94 | 94 |
+| Forearm (left) | 95 | 95 | 95 | 95 |
+| Forearm (right) | 96 | 96 | 96 | 96 |
+| Thigh (left) | 97 | 97 | 97 | 97 |
+| Thigh (right) | 98 | 98 | 98 | 98 |
+| Lower leg (left) | 99 | 99 | 99 | 99 |
+| Lower leg (right) | 00 | 00 | 00 | 00 |
 
 **Source totals:** Head and neck 41.6%; Trunk 51.4%; Upper extremities 2.6%; Lower extremities 4.5%. Region totals are from the source. The split inside each region uses body exposure (design estimate).
 
@@ -896,34 +896,34 @@ Sources:
 
 Confidence: **Extrapolated - design estimate from analogous evidence** · Armour: **allowed**
 
-| Location | Rifle-musket | Artillery | Revolver |
-|---|---|---|---|
-| Skull (left) | 01-04 | 01-04 | 01-04 |
-| Skull (right) | 05-08 | 05-08 | 05-08 |
-| Face | 09-13 | 09-13 | 09-13 |
-| Neck | 14-16 | 14-16 | 14-16 |
-| Chest (left) | 17-22 | 17-22 | 17-22 |
-| Chest (right) | 23-27 | 23-27 | 23-27 |
-| Abdomen | 28-32 | 28-32 | 28-32 |
-| Groin / pelvis | 33-35 | 33-35 | 33-35 |
-| Upper back | 36-39 | 36-39 | 36-39 |
-| Lower back | 40-42 | 40-42 | 40-42 |
-| Shoulder (left) | 43-45 | 43-45 | 43-45 |
-| Shoulder (right) | 46-48 | 46-48 | 46-48 |
-| Upper arm (left) | 49-52 | 49-52 | 49-52 |
-| Upper arm (right) | 53-56 | 53-56 | 53-56 |
-| Forearm (left) | 57-60 | 57-60 | 57-60 |
-| Forearm (right) | 61-64 | 61-64 | 61-64 |
-| Hand (left) | 65-67 | 65-67 | 65-67 |
-| Hand (right) | 68-70 | 68-70 | 68-70 |
-| Thigh (left) | 71-76 | 71-76 | 71-76 |
-| Thigh (right) | 77-82 | 77-82 | 77-82 |
-| Knee (left) | 83-84 | 83-84 | 83-84 |
-| Knee (right) | 85-86 | 85-86 | 85-86 |
-| Lower leg (left) | 87-91 | 87-91 | 87-91 |
-| Lower leg (right) | 92-96 | 92-96 | 92-96 |
-| Foot (left) | 97-98 | 97-98 | 97-98 |
-| Foot (right) | 99-00 | 99-00 | 99-00 |
+| Location | Rifle-musket | Breech-loader | Artillery | Revolver |
+|---|---|---|---|---|
+| Skull (left) | 01-04 | 01-04 | 01-04 | 01-04 |
+| Skull (right) | 05-08 | 05-08 | 05-08 | 05-08 |
+| Face | 09-13 | 09-13 | 09-13 | 09-13 |
+| Neck | 14-16 | 14-16 | 14-16 | 14-16 |
+| Chest (left) | 17-22 | 17-22 | 17-22 | 17-22 |
+| Chest (right) | 23-27 | 23-27 | 23-27 | 23-27 |
+| Abdomen | 28-32 | 28-32 | 28-32 | 28-32 |
+| Groin / pelvis | 33-35 | 33-35 | 33-35 | 33-35 |
+| Upper back | 36-39 | 36-39 | 36-39 | 36-39 |
+| Lower back | 40-42 | 40-42 | 40-42 | 40-42 |
+| Shoulder (left) | 43-45 | 43-45 | 43-45 | 43-45 |
+| Shoulder (right) | 46-48 | 46-48 | 46-48 | 46-48 |
+| Upper arm (left) | 49-52 | 49-52 | 49-52 | 49-52 |
+| Upper arm (right) | 53-56 | 53-56 | 53-56 | 53-56 |
+| Forearm (left) | 57-60 | 57-60 | 57-60 | 57-60 |
+| Forearm (right) | 61-64 | 61-64 | 61-64 | 61-64 |
+| Hand (left) | 65-67 | 65-67 | 65-67 | 65-67 |
+| Hand (right) | 68-70 | 68-70 | 68-70 | 68-70 |
+| Thigh (left) | 71-76 | 71-76 | 71-76 | 71-76 |
+| Thigh (right) | 77-82 | 77-82 | 77-82 | 77-82 |
+| Knee (left) | 83-84 | 83-84 | 83-84 | 83-84 |
+| Knee (right) | 85-86 | 85-86 | 85-86 | 85-86 |
+| Lower leg (left) | 87-91 | 87-91 | 87-91 | 87-91 |
+| Lower leg (right) | 92-96 | 92-96 | 92-96 | 92-96 |
+| Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 |
+| Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 |
 
 **Source totals:** Head and neck 17.1%; Trunk 24.7%; Upper extremities 29%; Lower extremities 29.1%. Blend of the two historical tables.
 
@@ -994,7 +994,7 @@ Confidence: **Historical - taken directly from a source** · Armour: **allowed**
 **Source totals:** Skull and scalp (8) = 6.6%; Face (3) = 2.5%; Neck (3) = 2.5%; Chest, front and sides (24) = 19.7%; Upper back (13) = 10.7%; Lower back, lumbar (6) = 4.9%; Back, level not stated (2) = 1.6%; Abdomen (7) = 5.7%; Groin, hip, buttock, pelvis (9) = 7.4%; Shoulders and armpit (7) = 5.7%; Upper arms and elbows (16) = 13.1%; Forearms (8) = 6.6%; Hands (5) = 4.1%; Thighs (6) = 4.9%; Knees (2) = 1.6%; Lower legs and feet (3) = 2.5% (n = 122). Counts are tallied wound by wound from the report's 83 cases (122 arrow wounds whose site is given; 12 more are not located). Left and right are pooled because the sample is small, then split by body exposure (design estimate).
 
 
-**Close combat:** Dagger: roll location on *Knife assault - stab wounds (forensic)*. Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
+**Close combat:** Rifle-musket, Breech-loader, Revolver, Artillery: roll location on *Civil War 1861-65 - all hits (gameplay)*. Sabre, Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
 
 **Reading it:** The men hit wore no armour, so these are hits before armour: armour can be applied. A mounted man's legs are partly covered by the horse, and many of these men were cavalry; that is one reason leg hits are rare here (9%) while Visby's arrow wounds were mostly in the legs.
 
@@ -3441,7 +3441,7 @@ Modifiers stack in the roller and CLI (one per group). Printed columns below sho
 | Foot (left) | 97-98 | 99 | 97-98 | 97-98 | 97-98 | - |
 | Foot (right) | 99-00 | 00 | 99-00 | 99-00 | 99-00 | - |
 
-### Civil War 1861-65 - wounded (surgeon's records) - Rifle-musket / Artillery / Revolver
+### Civil War 1861-65 - wounded (surgeon's records) - Rifle-musket / Breech-loader / Artillery / Revolver
 
 | Location | Normal | Higher | Lower | Fleeing | Cover |
 |---|---|---|---|---|---|
@@ -3472,7 +3472,7 @@ Modifiers stack in the roller and CLI (one per group). Printed columns below sho
 | Foot (left) | 97-98 | 99 | 95-97 | 95-97 | - |
 | Foot (right) | 99-00 | 00 | 98-00 | 98-00 | - |
 
-### Civil War 1861-65 - killed in action - Rifle-musket / Artillery / Revolver
+### Civil War 1861-65 - killed in action - Rifle-musket / Breech-loader / Artillery / Revolver
 
 | Location | Normal | Higher | Lower | Fleeing | Cover |
 |---|---|---|---|---|---|
@@ -3501,7 +3501,7 @@ Modifiers stack in the roller and CLI (one per group). Printed columns below sho
 | Foot (left) | - | - | 99 | 99 | - |
 | Foot (right) | - | - | 00 | 00 | - |
 
-### Civil War 1861-65 - all hits (gameplay) - Rifle-musket / Artillery / Revolver
+### Civil War 1861-65 - all hits (gameplay) - Rifle-musket / Breech-loader / Artillery / Revolver
 
 | Location | Normal | Higher | Lower | Fleeing | Cover |
 |---|---|---|---|---|---|
@@ -4313,6 +4313,7 @@ Penalties add up; each total is capped at -60%.
 | Flintlock pistol | 3 / 8 / 15 hexes (7 / 17 / 33 yd; 6 / 16 / 30 m) |
 | Smoothbore artillery (round shot, canister, grape, shell) | off-map (GM decides) |
 | Rifle-musket (Minie ball) | 50 / 150 / 250 hexes (109 / 328 / 547 yd; 100 / 300 / 500 m) |
+| Breech-loading rifle or carbine (Sharps, Spencer, Springfield 1866) | 50 / 150 / 250 hexes (109 / 328 / 547 yd; 100 / 300 / 500 m) |
 | Artillery (canister, shell fragments) | off-map (GM decides) |
 | Revolver | 5 / 12 / 25 hexes (11 / 26 / 55 yd; 10 / 24 / 50 m) |
 | Service rifle (bolt or semi-auto, 1914-53) | 100 / 200 / 300 hexes (219 / 437 / 656 yd; 200 / 400 / 600 m) |
@@ -4453,7 +4454,7 @@ Penalties add up; each total is capped at -60%.
 
 **Unit combat (the rank and file, on the field map):** one exchange is about a minute. In melee the front rank of each hex touching the enemy strikes (10 men a hex face in close order; a rank more for each hex of reach past the first: two for spears and bills, three for pikes). 9% of them make a telling attempt each exchange; archers loose their rate a minute, 3.3% of the shots aimed at a man. Each attempt is an individual attack against the unit's attack %, parried on its defence % (not from flank or rear, nor against missiles), then location, severity from the margin, and armour, as for one fighter.
 
-Light wounds and grazes fight on. Serious and critical wounds call for a stop check against the unit's Nerve; a failure is down. From breech-loaders and shell (about 1866 on) a serious or critical wound is always down and a light one calls for the stop check. A wound fatal within rounds kills. Flank +20, rear +30, a mounted charge +20 at x2 tempo (none onto a steady front of pikes in close order, whose men strike horse at +20), shaken -10.
+Light wounds and grazes fight on. Serious and critical wounds call for a stop check against the unit's Nerve; a failure is down. From breech-loaders (the 1860s on) and shell a serious or critical wound is always down and a light one calls for the stop check. A wound fatal within rounds kills. Flank +20, rear +30, a mounted charge +20 at x2 tempo (none onto a steady front of pikes in close order, whose men strike horse at +20), shaken -10.
 
 **Unit morale:** after an exchange a unit checks if it lost the exchange, has 25% of its men down, lost 10% in the exchange, or was struck in flank or rear: d100 against Nerve, +20 while steady, +10 with a leader, -20 if he is down, -20 at half strength, -20 if flanked, -5 a man it lost more than it put down (at most -30). Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +20, no parry, x2 tempo.
 
@@ -4493,6 +4494,7 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 | Smoothbore musket (Brown Bess, Charleville) | 2 |
 | Flintlock rifle (Pennsylvania, Baker, Jäger) | 1 |
 | Rifle-musket (Minie ball) | 2 |
+| Breech-loading rifle or carbine (Sharps, Spencer, Springfield 1866) | 8 |
 | Service rifle (bolt or semi-auto, 1914-53) | 10 |
 | Assault rifle (M16, AK) | 15 |
 | Pistol or submachine gun | 12 |
@@ -4969,7 +4971,7 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 | Skill | Starts at | Weapons |
 |---|---|---|
-| Rifle | Agility / 2 | rifle-musket |
+| Rifle | Agility / 2 | rifle-musket, breech-loader |
 | Pistol | Agility / 2 | revolver |
 | Blade | Agility / 2 | sabre, dagger |
 | Bayonet | Strength / 2 | bayonet |
@@ -5081,8 +5083,8 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 | Career | The Union | The Confederacy | The US Army on the frontier |
 |---|---|---|---|
-| Infantryman | Unarmoured; rifle-musket | Unarmoured; rifle-musket | Unarmoured; rifle-musket |
-| Sharpshooter or skirmisher | Unarmoured; rifle-musket | Unarmoured; rifle-musket | Unarmoured; rifle-musket |
+| Infantryman | Unarmoured; rifle-musket | Unarmoured; rifle-musket | Unarmoured; breech-loader |
+| Sharpshooter or skirmisher | Unarmoured; rifle-musket | Unarmoured; rifle-musket | Unarmoured; breech-loader |
 | Cavalry trooper | Unarmoured; revolver | Unarmoured; revolver | Unarmoured; revolver |
 | Artilleryman | Unarmoured; artillery | Unarmoured; artillery | Unarmoured; artillery |
 | Sergeant or corporal | Unarmoured; rifle-musket | Unarmoured; rifle-musket | Unarmoured; rifle-musket |
@@ -5099,6 +5101,119 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 | A gun section | Artilleryman (3), Artilleryman (2), Artilleryman (1), Teamster or packer (1), Infantryman (1) | 8 artilleryman, 2 teamster or packer (default) |
 | A new company | Officer (2), Sergeant or corporal (1), Infantryman (1), Infantryman (1), Surgeon or hospital steward (1) | 16 infantryman (raw) |
 | A wagon escort on the frontier | Sergeant or corporal (3), Cavalry trooper (2), Scout (2), Teamster or packer (1), Surgeon or hospital steward (1) | 6 cavalry trooper, 4 teamster or packer (default) |
+
+### Plains nations (1860-1877)
+
+**Plains nations (1860-1877):** made exactly as the medieval era's, in the same five steps, from the tables below. Fighting skills: Bow, Lance, Club and knife, Gun, Brawl, Parry, Dodge. Each region takes its war's wound table, for old wounds and for the roller.
+
+**Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
+
+| Skill | Starts at | Weapons |
+|---|---|---|
+| Bow | Agility / 2 | bow |
+| Lance | Strength / 2 | spear |
+| Club and knife | Strength / 2 | axe, spiked club, dagger |
+| Gun | Agility / 2 | rifle-musket, breech-loader, revolver |
+| Brawl | Strength / 2 | punch, kick, elbow/knee |
+| Parry | Agility / 2 |  |
+| Dodge | Agility / 3 |  |
+| Ride | Agility / 3 |  |
+| Fieldcraft | Wits / 3 |  |
+| Watch | Wits / 2 |  |
+| Stealth | Agility / 3 |  |
+| Leechcraft | Wits / 4 |  |
+| Craft | Wits / 3 |  |
+| Persuade | Presence / 2 |  |
+| Command | Presence / 3 |  |
+
+| d100 | Origin | Skill | Trait | Drawback |
+|---|---|---|---|---|
+| 01-07 | Raised in a hunting camp | Fieldcraft | Knows the game trails (Fieldcraft +15) | Uneasy near the forts (Persuade -15) |
+| 08-14 | Son of a well-known warrior | Ride | Expected to be brave, and is (Nerve +10) | Proud and quick to take offence (Persuade -15) |
+| 15-21 | Raised by his mother's brother | Craft | Taught to make bows and arrows (Craft +15) | Few horses of his own (Presence -10) |
+| 22-28 | Horse herder from boyhood | Ride | Rides before he walks (Ride +15) | Little patience for council (Command -15) |
+| 29-35 | Grew up near a trading post | Persuade | Speaks some English (Persuade +15) | Distrusted by the older men (Presence -10) |
+| 36-42 | Has relatives in another nation | Persuade | Speaks two tongues, and the sign language (Wits +10) | An outsider in some camps (Command -15) |
+| 43-49 | Helper to an old healer | Leechcraft | Knows the healing plants (Leechcraft +15) | More at home in camp than on the war trail (Nerve -10) |
+| 50-56 | The fastest runner of his age | Stealth | Wins every footrace (Agility +10) | Thin and light (Strength -10) |
+| 57-63 | Sought a vision alone on a hill | Watch | Calm in danger (Nerve +10) | Keeps to himself (Presence -10) |
+| 64-70 | Lived through a winter of hunger | Fieldcraft | Tough (Endurance +10) | Weakened by the sickness that came with it (Strength -10) |
+| 71-77 | Lost relatives in an attack on a camp | Bow | Hard to frighten (Nerve +10) | Reckless against soldiers (Stealth -15) |
+| 78-84 | A good singer and storyteller | Persuade | A voice that carries (Presence +10) | A poor shot (Bow -15) |
+| 85-91 | From a large family | Brawl | Strong (Strength +10) | Slow afoot (Agility -10) |
+| 92-98 | Grandson of a band's headman | Command | Listened to in council (Command +15) | Never had to fend for himself (Fieldcraft -15) |
+
+| Career | Main skill | Second | Old wound | Hurt by |
+|---|---|---|---|---|
+| Warrior with bow and shield | Bow | Ride | 20% | bow |
+| Warrior with lance and shield | Lance | Ride | 20% | bow |
+| Warrior with a gun | Gun | Stealth | 20% | rifle-musket |
+| Scout (a wolf, sent ahead of the camp) | Watch | Stealth | 15% | bow |
+| Leader of war parties | Command | Lance | 20% | bow |
+| Healer, who knows plants and medicines | Leechcraft | Persuade | 5% | bow |
+| Herder of the camp's horses | Ride | Watch | 10% | bow |
+
+| Career | d100 | Skill | Event |
+|---|---|---|---|
+| Warrior with bow and shield | 01-20 | Ride | Rode with the young men to drive a buffalo herd. |
+| Warrior with bow and shield | 21-40 | Stealth | Went on foot with a party to take horses from a Crow camp. |
+| Warrior with bow and shield | 41-55 | Watch | Guarded the horse herd at night. |
+| Warrior with bow and shield | 56-70 | Craft | Made his own arrows and a new bow. |
+| Warrior with bow and shield | 71-85 | Bow | Fought a Shoshone or Crow war party on the open plain. * |
+| Warrior with bow and shield | 86-00 | Dodge | Rode close to soldiers to count coup, and came back. * |
+| Warrior with lance and shield | 01-20 | Ride | Trained a fast horse for war. |
+| Warrior with lance and shield | 21-40 | Lance | Struck an enemy with his lance to count coup. * |
+| Warrior with lance and shield | 41-55 | Watch | Rode guard on the flanks of a moving camp. |
+| Warrior with lance and shield | 56-70 | Parry | Held his shield before the others in a fight. |
+| Warrior with lance and shield | 71-85 | Lance | Charged a party of Crow scouts. * |
+| Warrior with lance and shield | 86-00 | Ride | Covered the retreat of a war party. * |
+| Warrior with a gun | 01-20 | Persuade | Traded robes for a rifle and powder at a trading post. |
+| Warrior with a gun | 21-40 | Gun | Hunted buffalo with a gun as well as the bow. |
+| Warrior with a gun | 41-55 | Watch | Watched the wagon trains on the Bozeman Trail. |
+| Warrior with a gun | 56-70 | Stealth | Crept up on soldiers cutting wood near a fort. |
+| Warrior with a gun | 71-85 | Gun | Fired on a mail escort from a ravine. * |
+| Warrior with a gun | 86-00 | Dodge | Fought soldiers in the open. * |
+| Scout (a wolf, sent ahead of the camp) | 01-20 | Watch | Watched the country from a hilltop all day. |
+| Scout (a wolf, sent ahead of the camp) | 21-40 | Fieldcraft | Found the buffalo for the camp's hunt. |
+| Scout (a wolf, sent ahead of the camp) | 41-55 | Stealth | Crept close to an enemy camp to count its lodges. |
+| Scout (a wolf, sent ahead of the camp) | 56-70 | Ride | Carried word of soldiers back to the camp. |
+| Scout (a wolf, sent ahead of the camp) | 71-85 | Bow | Was surprised by enemy scouts and fought his way clear. * |
+| Scout (a wolf, sent ahead of the camp) | 86-00 | Fieldcraft | Led a war party across country by night. |
+| Leader of war parties | 01-20 | Command | Led a small party to take horses. |
+| Leader of war parties | 21-40 | Persuade | Spoke in council for going to war. |
+| Leader of war parties | 41-55 | Lance | Carried a lance for his warrior society. * |
+| Leader of war parties | 56-70 | Fieldcraft | Chose the ground for an ambush. |
+| Leader of war parties | 71-85 | Command | Led young men against soldiers on the Bozeman Trail. * |
+| Leader of war parties | 86-00 | Dodge | Rode before the enemy's guns to rally his men. * |
+| Healer, who knows plants and medicines | 01-20 | Leechcraft | Gathered roots and herbs with an older healer. |
+| Healer, who knows plants and medicines | 21-40 | Leechcraft | Set the arm of a boy thrown from his horse. |
+| Healer, who knows plants and medicines | 41-55 | Persuade | Was asked to tend a sick family in another camp. |
+| Healer, who knows plants and medicines | 56-70 | Craft | Made splints and bindings for broken limbs. |
+| Healer, who knows plants and medicines | 71-85 | Leechcraft | Cut out an arrowhead from a warrior's shoulder. |
+| Healer, who knows plants and medicines | 86-00 | Bow | Went with a war party to care for the wounded. * |
+| Herder of the camp's horses | 01-20 | Ride | Took the herd out to fresh grass each morning. |
+| Herder of the camp's horses | 21-40 | Watch | Watched for raiders from the bluffs. |
+| Herder of the camp's horses | 41-55 | Fieldcraft | Found shelter for the horses in a hard winter. |
+| Herder of the camp's horses | 56-70 | Stealth | Hid the herd from raiders in a coulee. |
+| Herder of the camp's horses | 71-85 | Bow | Drove off raiders who came for the herd. * |
+| Herder of the camp's horses | 86-00 | Ride | Brought the herd through a blizzard. |
+
+| Career | The Lakota | The Cheyenne and Arapaho |
+|---|---|---|
+| Warrior with bow and shield | Rawhide shield, no armour; bow | Rawhide shield, no armour; bow |
+| Warrior with lance and shield | Rawhide shield, no armour; spear | Rawhide shield, no armour; spear |
+| Warrior with a gun | Unarmoured; rifle-musket | Unarmoured; rifle-musket |
+| Scout (a wolf, sent ahead of the camp) | Unarmoured; bow | Unarmoured; bow |
+| Leader of war parties | Rawhide shield, no armour; spear | Rawhide shield, no armour; spear |
+| Healer, who knows plants and medicines | Unarmoured; bow | Unarmoured; bow |
+| Herder of the camp's horses | Unarmoured; bow | Unarmoured; bow |
+
+| Team | Members (terms) | Followers (quality table) |
+|---|---|---|
+| A war party | Leader of war parties (3), Warrior with bow and shield (2), Warrior with lance and shield (2), Scout (a wolf, sent ahead of the camp) (2), Warrior with bow and shield (1) | 10 warrior with bow and shield, 4 warrior with lance and shield (default) |
+| A decoy party | Leader of war parties (3), Warrior with bow and shield (3), Warrior with lance and shield (2), Scout (a wolf, sent ahead of the camp) (2) | 6 warrior with bow and shield (hardened) |
+| A hunting party | Warrior with bow and shield (2), Scout (a wolf, sent ahead of the camp) (2), Warrior with a gun (1), Herder of the camp's horses (1), Healer, who knows plants and medicines (1) | 6 warrior with bow and shield, 4 herder of the camp's horses (default) |
+| A camp's young men | Leader of war parties (2), Warrior with bow and shield (1), Warrior with lance and shield (1), Warrior with a gun (1), Healer, who knows plants and medicines (2) | 12 warrior with bow and shield, 4 herder of the camp's horses (raw) |
 
 ## Camp disease
 
@@ -5306,6 +5421,7 @@ Sources: Visby kit contents follow the finds summarised in Thordeman (1939): mai
 | Flintlock pistol | - | - | - | 01-00 | pistol |
 | Smoothbore artillery (round shot, canister, grape, shell) | - | - | 01-30 | 31-00 | fragment |
 | Rifle-musket (Minie ball) | - | - | - | 01-00 | rifle |
+| Breech-loading rifle or carbine (Sharps, Spencer, Springfield 1866) | - | - | - | 01-00 | rifle |
 | Artillery (canister, shell fragments) | - | - | 01-20 | 21-00 | fragment |
 | Revolver | - | - | - | 01-00 | pistol |
 | Service rifle (bolt or semi-auto, 1914-53) | - | - | - | 01-00 | rifle |

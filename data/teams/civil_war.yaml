@@ -2,7 +2,7 @@
 # (dist/team.html, python3 -m gravewounds team --era civil_war). Made exactly as the medieval
 # era's (see medieval.yaml for the five steps); only the tables differ. Every region takes the
 # Civil War table: the frontier army's gunshot wounds roll there too (the arrow-wound records
-# have no gunshots).
+# have no gunshots). Frontier infantry carry the Springfield breech-loader of 1866.
 # All of it is written for this game: the tables, events and names are ours (names are common
 # period names, plain fact). Gunnery is the artillerymen's skill.
 id: civil_war
@@ -45,6 +45,7 @@ skills:
 
 weapon_skill:
   rifle_musket: rifle
+  breechloader: rifle
   revolver: pistol
   saber: blade
   dagger: blade
@@ -106,7 +107,7 @@ careers:
     wound: 20
     wound_weapon: rifle_musket
     kit: {default: none}
-    weapon: {default: rifle_musket}
+    weapon: {default: rifle_musket, frontier: breechloader}
     terms:
       - {to: 20, skill: watch, text: "Stood picket across a river from the enemy."}
       - {to: 40, skill: fieldcraft, text: "Marched thirty miles a day in the summer heat."}
@@ -122,7 +123,7 @@ careers:
     wound: 15
     wound_weapon: rifle_musket
     kit: {default: none}
-    weapon: {default: rifle_musket}
+    weapon: {default: rifle_musket, frontier: breechloader}
     terms:
       - {to: 20, skill: watch, text: "Watched an enemy battery from a tree for a day."}
       - {to: 40, skill: fieldcraft, text: "Skirmished ahead of the line through woods."}

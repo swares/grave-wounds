@@ -1,0 +1,239 @@
+# Character generation for the northern Plains nations in the wars of the 1860s and 1870s: the
+# team builder (dist/team.html, python3 -m gravewounds team --era plains_nations). Made exactly
+# as the medieval era's (see medieval.yaml for the five steps); only the tables differ.
+# All of it is written for this game from plain ethnographic and historical fact: the Lakota,
+# Cheyenne and Arapaho lived by the buffalo and the horse, raided enemy nations (the Crow and
+# the Shoshone above all) for horses and honours, counted coup (struck an enemy, honoured above
+# killing him), sent scouts ahead of a camp or a war party, and from 1866 fought the Army along
+# the Bozeman Trail. Names are in English translation, built from common elements of the
+# period's names; they are not meant to name anyone. Wounds roll on the Army surgeons' arrow
+# report, which borrows the Civil War table for gunshots (see that table).
+id: plains_nations
+name: "Plains nations (1860-1877)"
+
+characteristics:
+  - {id: str, name: Strength}
+  - {id: agi, name: Agility}
+  - {id: end, name: Endurance}
+  - {id: wits, name: Wits}
+  - {id: nerve, name: Nerve}
+  - {id: pres, name: Presence}
+array: [70, 60, 55, 50, 45, 35]
+stat_range: [15, 95]
+age: {start: 15, per_term: 4}
+
+skill_max: 90
+first_term: 15
+term_main: 10
+term_second: 5
+gain: 15
+skills:
+  - {id: bow, name: Bow, of: agi, div: 2, combat: true}
+  - {id: lance, name: Lance, of: str, div: 2, combat: true}
+  - {id: club, name: Club and knife, of: str, div: 2, combat: true}
+  - {id: gun, name: Gun, of: agi, div: 2, combat: true}
+  - {id: brawl, name: Brawl, of: str, div: 2, combat: true}
+  - {id: parry, name: Parry, of: agi, div: 2, combat: true}
+  - {id: dodge, name: Dodge, of: agi, div: 3, combat: true}
+  - {id: ride, name: Ride, of: agi, div: 3}
+  - {id: fieldcraft, name: Fieldcraft, of: wits, div: 3}
+  - {id: watch, name: Watch, of: wits, div: 2}
+  - {id: stealth, name: Stealth, of: agi, div: 3}
+  - {id: leechcraft, name: Leechcraft, of: wits, div: 4}
+  - {id: craft, name: Craft, of: wits, div: 3}
+  - {id: persuade, name: Persuade, of: pres, div: 2}
+  - {id: command, name: Command, of: pres, div: 3}
+
+weapon_skill:
+  bow: bow
+  spear: lance
+  axe: club
+  spiked_club: club
+  dagger: club
+  rifle_musket: gun
+  breechloader: gun
+  revolver: gun
+  punch: brawl
+  kick: brawl
+  elbow_knee: brawl
+defence: [parry, dodge]
+
+regions:
+  - id: lakota
+    name: "The Lakota (Oglala, Minneconjou and other bands)"
+    table: indian-wars-1865-71-arrows
+    colours: ["#9a7347", "#7d5530", "#c9a227", "#e6e0d2"]
+    names: [Kills, Stands, Runs, Charging, Swift, Iron, Brave, Good, Plenty, Yellow, Hollow, Comes, High, Long, Thunder, Bold]
+    bynames: [Hawk, Elk, Buffalo, Eagle, Bear, Shield, Hand, Horn, Hail, Lance, Horses, Arrow]
+  - id: cheyenne
+    name: "The Cheyenne and Arapaho"
+    table: indian-wars-1865-71-arrows
+    colours: ["#7d5530", "#8a2b2b", "#c9a227", "#e6e0d2"]
+    names: [Walking, Standing, Running, Young, Big, Brave, Swift, Iron, High, Whistling, Leaning, Bird]
+    bynames: [Coyote, Whirlwind, Magpie, Beaver, Owl, Badger, Otter, Turtle, Hawk, Rock, Hail, Feather]
+
+origins:
+  - {name: "Raised in a hunting camp", gain: fieldcraft, trait: {text: "Knows the game trails", fieldcraft: 15}, drawback: {text: "Uneasy near the forts", persuade: -15}}
+  - {name: "Son of a well-known warrior", gain: ride, trait: {text: "Expected to be brave, and is", nerve: 10}, drawback: {text: "Proud and quick to take offence", persuade: -15}}
+  - {name: "Raised by his mother's brother", gain: craft, trait: {text: "Taught to make bows and arrows", craft: 15}, drawback: {text: "Few horses of his own", pres: -10}}
+  - {name: "Horse herder from boyhood", gain: ride, trait: {text: "Rides before he walks", ride: 15}, drawback: {text: "Little patience for council", command: -15}}
+  - {name: "Grew up near a trading post", gain: persuade, trait: {text: "Speaks some English", persuade: 15}, drawback: {text: "Distrusted by the older men", pres: -10}}
+  - {name: "Has relatives in another nation", gain: persuade, trait: {text: "Speaks two tongues, and the sign language", wits: 10}, drawback: {text: "An outsider in some camps", command: -15}}
+  - {name: "Helper to an old healer", gain: leechcraft, trait: {text: "Knows the healing plants", leechcraft: 15}, drawback: {text: "More at home in camp than on the war trail", nerve: -10}}
+  - {name: "The fastest runner of his age", gain: stealth, trait: {text: "Wins every footrace", agi: 10}, drawback: {text: "Thin and light", str: -10}}
+  - {name: "Sought a vision alone on a hill", gain: watch, trait: {text: "Calm in danger", nerve: 10}, drawback: {text: "Keeps to himself", pres: -10}}
+  - {name: "Lived through a winter of hunger", gain: fieldcraft, trait: {text: "Tough", end: 10}, drawback: {text: "Weakened by the sickness that came with it", str: -10}}
+  - {name: "Lost relatives in an attack on a camp", gain: bow, trait: {text: "Hard to frighten", nerve: 10}, drawback: {text: "Reckless against soldiers", stealth: -15}}
+  - {name: "A good singer and storyteller", gain: persuade, trait: {text: "A voice that carries", pres: 10}, drawback: {text: "A poor shot", bow: -15}}
+  - {name: "From a large family", gain: brawl, trait: {text: "Strong", str: 10}, drawback: {text: "Slow afoot", agi: -10}}
+  - {name: "Grandson of a band's headman", gain: command, trait: {text: "Listened to in council", command: 15}, drawback: {text: "Never had to fend for himself", fieldcraft: -15}}
+
+careers:
+  - id: warrior
+    name: "Warrior with bow and shield"
+    main: bow
+    second: ride
+    prefers: [agi, end, nerve, str, wits, pres]
+    wound: 20
+    wound_weapon: bow
+    mounted: true            # his followers fight on the field map as a mounted unit
+    kit: {default: rawhide_shield}
+    weapon: {default: bow}
+    terms:
+      - {to: 20, skill: ride, text: "Rode with the young men to drive a buffalo herd."}
+      - {to: 40, skill: stealth, text: "Went on foot with a party to take horses from a Crow camp."}
+      - {to: 55, skill: watch, text: "Guarded the horse herd at night."}
+      - {to: 70, skill: craft, text: "Made his own arrows and a new bow."}
+      - {to: 85, skill: bow, text: "Fought a Shoshone or Crow war party on the open plain.", wound: true}
+      - {to: 100, skill: dodge, text: "Rode close to soldiers to count coup, and came back.", wound: true}
+  - id: lancer
+    name: "Warrior with lance and shield"
+    main: lance
+    second: ride
+    prefers: [str, agi, nerve, end, wits, pres]
+    wound: 20
+    wound_weapon: bow
+    mounted: true
+    kit: {default: rawhide_shield}
+    weapon: {default: spear}
+    terms:
+      - {to: 20, skill: ride, text: "Trained a fast horse for war."}
+      - {to: 40, skill: lance, text: "Struck an enemy with his lance to count coup.", wound: true}
+      - {to: 55, skill: watch, text: "Rode guard on the flanks of a moving camp."}
+      - {to: 70, skill: parry, text: "Held his shield before the others in a fight."}
+      - {to: 85, skill: lance, text: "Charged a party of Crow scouts.", wound: true}
+      - {to: 100, skill: ride, text: "Covered the retreat of a war party.", wound: true}
+  - id: gunman
+    name: "Warrior with a gun"
+    main: gun
+    second: stealth
+    prefers: [agi, wits, nerve, end, str, pres]
+    wound: 20
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: rifle_musket}
+    terms:
+      - {to: 20, skill: persuade, text: "Traded robes for a rifle and powder at a trading post."}
+      - {to: 40, skill: gun, text: "Hunted buffalo with a gun as well as the bow."}
+      - {to: 55, skill: watch, text: "Watched the wagon trains on the Bozeman Trail."}
+      - {to: 70, skill: stealth, text: "Crept up on soldiers cutting wood near a fort."}
+      - {to: 85, skill: gun, text: "Fired on a mail escort from a ravine.", wound: true}
+      - {to: 100, skill: dodge, text: "Fought soldiers in the open.", wound: true}
+  - id: scout
+    name: "Scout (a wolf, sent ahead of the camp)"
+    main: watch
+    second: stealth
+    prefers: [wits, agi, end, nerve, str, pres]
+    wound: 15
+    wound_weapon: bow
+    mounted: true
+    kit: {default: none}
+    weapon: {default: bow}
+    terms:
+      - {to: 20, skill: watch, text: "Watched the country from a hilltop all day."}
+      - {to: 40, skill: fieldcraft, text: "Found the buffalo for the camp's hunt."}
+      - {to: 55, skill: stealth, text: "Crept close to an enemy camp to count its lodges."}
+      - {to: 70, skill: ride, text: "Carried word of soldiers back to the camp."}
+      - {to: 85, skill: bow, text: "Was surprised by enemy scouts and fought his way clear.", wound: true}
+      - {to: 100, skill: fieldcraft, text: "Led a war party across country by night."}
+  - id: war_leader
+    name: "Leader of war parties"
+    main: command
+    second: lance
+    prefers: [pres, nerve, wits, agi, str, end]
+    wound: 20
+    wound_weapon: bow
+    mounted: true
+    kit: {default: rawhide_shield}
+    weapon: {default: spear}
+    terms:
+      - {to: 20, skill: command, text: "Led a small party to take horses."}
+      - {to: 40, skill: persuade, text: "Spoke in council for going to war."}
+      - {to: 55, skill: lance, text: "Carried a lance for his warrior society.", wound: true}
+      - {to: 70, skill: fieldcraft, text: "Chose the ground for an ambush."}
+      - {to: 85, skill: command, text: "Led young men against soldiers on the Bozeman Trail.", wound: true}
+      - {to: 100, skill: dodge, text: "Rode before the enemy's guns to rally his men.", wound: true}
+  - id: healer
+    name: "Healer, who knows plants and medicines"
+    main: leechcraft
+    second: persuade
+    prefers: [wits, pres, end, nerve, agi, str]
+    wound: 5
+    wound_weapon: bow
+    kit: {default: none}
+    weapon: {default: bow}
+    terms:
+      - {to: 20, skill: leechcraft, text: "Gathered roots and herbs with an older healer."}
+      - {to: 40, skill: leechcraft, text: "Set the arm of a boy thrown from his horse."}
+      - {to: 55, skill: persuade, text: "Was asked to tend a sick family in another camp."}
+      - {to: 70, skill: craft, text: "Made splints and bindings for broken limbs."}
+      - {to: 85, skill: leechcraft, text: "Cut out an arrowhead from a warrior's shoulder."}
+      - {to: 100, skill: bow, text: "Went with a war party to care for the wounded.", wound: true}
+  - id: herder
+    name: "Herder of the camp's horses"
+    main: ride
+    second: watch
+    prefers: [agi, end, wits, nerve, str, pres]
+    wound: 10
+    wound_weapon: bow
+    kit: {default: none}
+    weapon: {default: bow}
+    terms:
+      - {to: 20, skill: ride, text: "Took the herd out to fresh grass each morning."}
+      - {to: 40, skill: watch, text: "Watched for raiders from the bluffs."}
+      - {to: 55, skill: fieldcraft, text: "Found shelter for the horses in a hard winter."}
+      - {to: 70, skill: stealth, text: "Hid the herd from raiders in a coulee."}
+      - {to: 85, skill: bow, text: "Drove off raiders who came for the herd.", wound: true}
+      - {to: 100, skill: ride, text: "Brought the herd through a blizzard."}
+
+old_wound:
+  - {to: 70, kind: mark, text: "a healed scar"}
+  - {to: 100, kind: lasting, text: "a lasting hurt"}
+lasting: 5
+lasting_from: {head: wits, face: pres, arms: str, legs: agi, torso: end}
+
+followers:
+  quality:
+    default:  [{to: 30, quality: green}, {to: 80, quality: regular}, {to: 100, quality: veteran}]
+    hardened: [{to: 15, quality: green}, {to: 60, quality: regular}, {to: 100, quality: veteran}]
+    raw:      [{to: 55, quality: green}, {to: 90, quality: regular}, {to: 100, quality: veteran}]
+
+templates:
+  - id: war_party
+    name: "A war party"
+    slots: [[war_leader, 3], [warrior, 2], [lancer, 2], [scout, 2], [warrior, 1]]
+    followers: [[warrior, 10], [lancer, 4]]
+  - id: decoys
+    name: "A decoy party"
+    slots: [[war_leader, 3], [warrior, 3], [lancer, 2], [scout, 2]]
+    followers: [[warrior, 6]]
+    follower_quality: hardened
+  - id: hunt
+    name: "A hunting party"
+    slots: [[warrior, 2], [scout, 2], [gunman, 1], [herder, 1], [healer, 1]]
+    followers: [[warrior, 6], [herder, 4]]
+  - id: camp
+    name: "A camp's young men"
+    slots: [[war_leader, 2], [warrior, 1], [lancer, 1], [gunman, 1], [healer, 2]]
+    followers: [[warrior, 12], [herder, 4]]
+    follower_quality: raw

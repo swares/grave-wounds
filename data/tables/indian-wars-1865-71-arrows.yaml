@@ -8,6 +8,11 @@ variant: evidence
 weapon_bias: raw
 armor: allowed
 weapons: [bow]
+# The surgeons' arrow report has no gunshots: the soldiers' guns, and the warriors' when they
+# had them, roll on the Civil War table (the same arms, a few years earlier). The sabre rolls
+# on its own table, as everywhere.
+borrowed: {rifle_musket: acw-1861-all-hits, breechloader: acw-1861-all-hits, revolver: acw-1861-all-hits, artillery_acw: acw-1861-all-hits}
+era_melee: [saber]
 modifiers: [attacker_higher, attacker_lower, target_fleeing, flanked, behind_cover]
 confidence: historical
 confidence_note: >
