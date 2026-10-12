@@ -91,7 +91,8 @@ day costs no marching time. Once an enemy force has marched to within 0.6 mile (
   middle, and the attackers come in from the way they marched. See
   [works.md](works.md) and [combat.md](combat.md).
 - **the field map**, in units: the forces arrive with their fit men, and the GM splits each
-  into units there (billmen, archers, horse). Men left out of every unit stay in reserve.
+  into units there (billmen, archers, horse). Men left out of every unit stay in reserve, and their side can bring them on during the
+  battle.
   The day's weather and ground come too, and the camp's works, as far as they are built,
   are laid out around the defenders. When the battle ends, **Back to the travel map** brings
   the result home: the dead come off each force, and its wounded join its sick (below).
@@ -101,7 +102,8 @@ day costs no marching time. Once an enemy force has marched to within 0.6 mile (
 - **a battlefield**, when the defender stands near one: within a hex (3.1 miles, 5 km) of
   Azincourt on the Agincourt campaign map, the field of Agincourt is offered and picked by
   default (the GM can still choose open ground or the roller). The armies stand there as
-  drawn up, scaled to the forces' fit men. See [units.md](units.md#battlefields).
+  drawn up, at their drawn numbers at most (fewer if a force is smaller); the rest wait in
+  reserve and can be brought on during the battle. See [units.md](units.md#battlefields).
 
 ## Disease and camp hygiene
 

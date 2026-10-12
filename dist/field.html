@@ -261,6 +261,7 @@ legend{padding:0}
 
       <fieldset id="add-box">
         <legend><h2>Add a unit</h2></legend>
+        <p class="muted" style="margin:0" id="add-note" hidden>During the battle the side to move can bring on a unit (from its forces' reserves, when the battle came from the travel map). It comes on at that side's back edge and can move next exchange.</p>
         <div class="row">
           <div><label for="in-name">Name</label><input type="text" id="in-name" placeholder="Billmen"></div>
           <div><label for="sel-side" id="lbl-side">Side</label><select id="sel-side"></select></div>
@@ -1692,7 +1693,9 @@ function fromTravel(h){                            // a battle with the travel m
   else if (h.camp && WK.camps[h.camp.kind]?.layout) layCamp(h.camp, def);
 }
 // A travel-map fight on a battlefield: its ground and works (the day's weather stays), and its
-// armies as drawn up, scaled to the forces' fit men. The defenders (with their allies) and the
+// armies as drawn up, scaled down to the forces' fit men if they are fewer, never up (a bigger
+// force puts the battlefield's numbers in line and keeps the rest in reserve, to bring on during
+// the battle). The defenders (with their allies) and the
 // attackers each take the army of their side's name in the battlefield's travel.sides; a side
 // not named there takes the other army, and if neither is named, or both name the same army,
 // the defenders take the first and the attackers the second. Each unit is drawn from the force of its army with
@@ -1716,11 +1719,12 @@ function scaledUnits(B, sides){
     const fighting = all.filter(f => f.type !== "wagons"), forces = fighting.length ? fighting : all;   // the baggage stays back if there is anyone else
     const total = forces.reduce((t, f) => t + f.men, 0), drawn = units.reduce((t, u) => t + u.men, 0);
     if (!forces.length || !drawn) continue;
+    const scale = Math.min(1, total / drawn);        // the battlefield is a slice of the battle: as drawn at most
     const biggestFirst = units.map(u => [u, B.units.indexOf(u)]).sort((x, y) => y[0].men - x[0].men || x[1] - y[1]);   // the big units get whole forces
     for (const [u, i] of biggestFirst){
       const like = forces.filter(f => (f.type === "mounted") === !!u.mounted && left.get(f.id) > 0), pool = like.length ? like : forces;   // horse from horse, foot from foot
       const f = pool.reduce((a, x) => (left.get(x.id) > left.get(a.id) ? x : a));
-      const men = Math.min(Math.max(1, Math.round(u.men * total / drawn)), left.get(f.id));
+      const men = Math.min(Math.max(1, Math.round(u.men * scale)), left.get(f.id));
       if (men < 1) continue;
       left.set(f.id, left.get(f.id) - men);
       out.push({ u, f, men, i });
@@ -1744,7 +1748,9 @@ function deployOnBattlefield(fid){
     b.side = f ? forceSide(f) : S.sides[b.army] || S.sides[0];
   }
   const left = out ? ` ${out} unit(s) would not fit where they stood; their men are in reserve.` : "";
-  S.msg = `From the travel map: ${S.from.place}, ${S.from.day}, ${S.from.time}, on the field of ${B.name}. The armies stand as drawn up there, scaled to each force's fit men; move or change them before the battle starts.${left}`;
+  const kept = S.forces.reduce((t, f) => t + reserve(f), 0);
+  const res = kept ? ` ${kept.toLocaleString("en-US")} men wait in reserve: on its own move a side can bring them on at its edge with Add a unit.` : "";
+  S.msg = `From the travel map: ${S.from.place}, ${S.from.day}, ${S.from.time}, on the field of ${B.name}. The armies stand as drawn up there (fewer if a force is smaller); move or change them before the battle starts.${left}${res}`;
 }
 function layCamp(c, def){                          // the defender's camp works at the field map's scale, as far as they were built
   const ft = c.party || def.type, full = campWorks(c.kind, def.men, ft, SIZE[0], SIZE[1], null, { hauled: !!c.hauled });
@@ -1804,6 +1810,7 @@ function tryPlace(u, pos, facing){                // set-up: anywhere it fits
   S.msg = "";
 }
 function tryMove(u, pos, facing){                 // a move from where it began this phase
+  if (u.arrived === S.exchange){ S.msg = `${u.name} came on this exchange; it can move next exchange.`; return }
   const i = idx(u.id), base = S.units.map((x, k) => (k === i ? { ...S.start[i] } : x));
   const r = moveUnit(base, i, pos, mod6(facing), SIZE, S.field);
   if (!r.ok){ S.msg = `${u.name} cannot go there: ${r.why}.`; return }
@@ -2060,9 +2067,10 @@ function renderForces(){
 function renderAddSide(){                         // a unit is drawn from a force (from the travel map) or set on a side
   const el = $("#sel-side"), was = el.value;
   $("#lbl-side").textContent = S.forces ? "From force" : "Side";
+  const now = moving(), mine = x => !now || x === now;   // in battle, only the side to move brings units on
   el.innerHTML = S.forces
-    ? S.forces.map(f => `<option value="f:${f.id}">${esc(f.name)} (${reserve(f)} left)</option>`).join("")
-    : S.sides.map((x, k) => `<option value="s:${k}">${esc(x)}</option>`).join("");
+    ? S.forces.filter(f => mine(forceSide(f))).map(f => `<option value="f:${f.id}">${esc(f.name)} (${reserve(f)} left)</option>`).join("")
+    : S.sides.map((x, k) => [x, k]).filter(([x]) => mine(x)).map(([x, k]) => `<option value="s:${k}">${esc(x)}</option>`).join("");
   if ([...el.options].some(o => o.value === was)) el.value = was;
 }
 
@@ -2383,7 +2391,8 @@ function renderPhase(){
   else if (S.phase === 0) label = `${S.sides[0]} done`;
   else if (S.phase === "over") label = "Battle over";
   $("#btn-next").textContent = label;
-  $("#add-box").disabled = S.phase !== "setup";
+  $("#add-box").disabled = S.phase === "over";
+  $("#add-note").hidden = S.phase === "setup" || S.phase === "over";      // in battle: the side to move can bring on units (from its forces' reserves)
   $("#sel-table").disabled = S.phase !== "setup";
   ["#sel-field", "#chk-armies", "#btn-field"].forEach(b => $(b).disabled = S.phase !== "setup");
   $("#chk-armies").disabled ||= !!S.forces;
@@ -2424,7 +2433,8 @@ function reshape(dw){                            // set-up: a wider or narrower 
 }
 function addUnit(){
   const pick = $("#sel-side").value, f = pick.startsWith("f:") ? S.forces.find(x => x.id === +pick.slice(2)) : null;
-  const side = f ? forceSide(f) : S.sides[+pick.slice(2)] || S.sides[0], k = S.sides.indexOf(side);
+  const side = f ? forceSide(f) : S.sides[+pick.slice(2)] || S.sides[0], k = S.sides.indexOf(side), mid = S.phase !== "setup";
+  if (mid && side !== moving()){ S.msg = `Only ${moving()} can bring on a unit now: it is their move.`; return render() }
   let men = Math.max(1, Number.parseInt($("#in-men").value, 10) || 1);
   if (f){
     if (reserve(f) <= 0){ S.msg = `${f.name} has no men left to put in a unit.`; return render() }
@@ -2432,12 +2442,49 @@ function addUnit(){
   }
   const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, banner: f && f.side !== side ? f.side : null, force: f ? f.id : null, men, quality: $("#sel-quality").value, weapon: $("#sel-weapon").value,
     kit: $("#sel-kit").value, formation: formationFor($("#sel-weapon").value, $("#sel-form").value), mounted: $("#chk-mounted").checked, guns: $("#sel-guns").value, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
+  if (mid) return bringOn(u, k);
   for (const pos of startSpots(k)){                  // inside the camp for its defenders, else the first free spot down its side's edge
     const at = { ...u, pos };
     if (fits([...S.units, at], S.units.length, at, SIZE, S.field)){ S.units.push(at); S.sel = at.id; S.msg = `${at.name} added; click the map to place it.`; $("#in-name").value = ""; return render() }
   }
   S.msg = "No room for it along the edge; make room or narrow it.";
   render();
+}
+function bringOn(u, k){                           // a unit joining during the battle: at its side's back edge, facing the way the side faces; it moves next exchange
+  const facing = sideFacing(k);
+  for (const width of entryWidths(u.width)){         // as wide as asked, else narrower and deeper until it fits
+    const spots = entrySpots(facing, footprint({ ...u, width, pos: [0, 0], facing }).length);
+    const pos = spots.find(h => fits([...S.units, { ...u, width, pos: h, facing }], S.units.length, { ...u, width, pos: h, facing }, SIZE, S.field));
+    if (!pos) continue;
+    const at = { ...u, width, pos, facing, arrived: S.exchange };
+    S.units.push(at); S.start.push({ ...at }); S.sel = at.id; $("#in-name").value = "";
+    const narrowed = width < u.width ? ` ${width} hexes wide to fit` : "";
+    S.msg = `${unitName(at)} (${at.men} men) come on at the edge${narrowed}; they can move next exchange.`;
+    return render();
+  }
+  S.msg = "No room for it at its side's edge, even in column: make room, or bring on fewer men.";
+  render();
+}
+function entryWidths(w){                          // the widths to try: as asked (at most the map's width), then a quarter narrower each time, to 1
+  const out = [];
+  for (let x = Math.min(w, SIZE[0] - 4); x >= 1; x = x > 1 ? Math.min(x - 1, Math.floor(x * 0.75)) : 0) out.push(x);
+  return out;
+}
+function sideFacing(k){                           // the way most of a side's men face (its starting edge's way if it has none left)
+  const n = [0, 0, 0, 0, 0, 0];
+  S.units.filter(u => sideNo(u) === k && u.men > 0 && u.state !== "fled").forEach(u => { n[mod6(u.facing)] += u.men });
+  return Math.max(...n) > 0 ? n.indexOf(Math.max(...n)) : (k ? 3 : 0);
+}
+function entrySpots(facing, ranks){               // front hexes for a unit `ranks` deep with its rear at the map edge behind a side facing this way, middle outwards
+  const [W, H] = SIZE, mid = (n, m) => Array.from({ length: n }, (_, i) => Math.floor(m / 2) + (i % 2 ? -1 : 1) * Math.ceil(i / 2)).filter(x => x >= 0 && x < m);
+  const inner = Array.from({ length: 12 }, (_, d) => d + ranks), out = [];
+  for (const d of inner){
+    if (facing === 1) mid(W, W).forEach(c => out.push([c, H - 1 - d]));        // facing the top: come on at the bottom
+    else if (facing === 4) mid(W, W).forEach(c => out.push([c, d]));           // facing the bottom: at the top
+    else if (facing === 0 || facing === 5) mid(H, H).forEach(r => out.push([d, r]));   // facing right: at the left
+    else mid(H, H).forEach(r => out.push([W - 1 - d, r]));                     // facing left: at the right
+  }
+  return out;
 }
 function formationFor(weapon, chosen){           // guns in battery order, machine guns as teams; the rest as chosen (not those two)
   if (isGun(weapon)) return "battery";
