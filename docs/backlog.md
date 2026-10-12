@@ -25,8 +25,9 @@ When an item is done, delete it here and note it in the pull request that closes
   purpose for now). A shared clock would let forces meet on the road.
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
   Agincourt (1415), Towton (1461), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
-  Lane (1814), First Bull Run (1861), Mons (1914) and Hill 700 on Bougainville (1944) have
-  both a campaign map and a battlefield. The frontier, Italy 1944, Korea, Vietnam and later
+  Lane (1814), First Bull Run (1861), Fort Phil Kearny (1866-67, with two battlefields), Mons
+  (1914) and Hill 700 on Bougainville (1944) have both a campaign map and a battlefield. Italy
+  1944, Korea, Vietnam and later
   still play on the generic valley and open ground (the unit rules for them are in: machine
   guns, extended order, artillery and mortars on call, suppression). Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the

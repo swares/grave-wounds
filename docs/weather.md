@@ -51,11 +51,13 @@ somewhat cooler; the test valley uses −0.9 °F (−0.5 °C).
 | Virginia piedmont, humid | northern Virginia (Washington Dulles) |
 | Great Lakes, humid continental | the Niagara frontier (Buffalo) |
 | Tropical rainforest, the western Pacific | the Solomon Islands (Bougainville); rounded design estimates |
+| Northern High Plains, semi-arid | the Big Horn foothills (Sheridan, Wyoming) |
 
-The three North American climates are rounded approximations of 1991–2020 station normals
-for the places named; only the Greenville-Spartanburg January figures were checked against
-NOAA's published normals. The campaigns before 1850 there use a shift of −1.8 °F (−1 °C),
-Bull Run −0.9 °F (−0.5 °C).
+The four North American climates are rounded approximations of 1991–2020 station normals
+for the places named; the Greenville-Spartanburg January figures and Sheridan's temperatures
+and precipitation days were checked against the published normals (Sheridan's days of 1 mm
+or more are scaled down from its days of 0.01 inch). The campaigns before 1850 there use a
+shift of −1.8 °F (−1 °C), Bull Run and Fort Phil Kearny −0.9 °F (−0.5 °C).
 
 The weather strip on the travel map shows the selected force's day: its date, sunrise and
 sunset, marching hours, weather and ground. The GM can **Roll again**, or set the weather,
