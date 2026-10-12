@@ -61,8 +61,8 @@ map can be fought there, and its wounded go back to camp, where wound fever can 
 them. See [docs/units.md](docs/units.md).
 
 **Team builder:** `dist/team.html` makes a team of four to six in a few rolls each, from the
-tables of five eras (medieval, the Thirty Years' War, horse and musket, the Civil War and
-frontier, and the Plains nations of the 1860s and 1870s): characteristics (3d6 x 5 or a fixed array), an origin with a
+tables of seven eras (medieval, the Thirty Years' War, horse and musket, the Civil War and
+frontier, the Plains nations of the 1860s and 1870s, and the First and Second World Wars): characteristics (3d6 x 5 or a fixed array), an origin with a
 trait and a drawback, one to three career terms with their events, old wounds rolled on the
 region's wound table, and kit. Sent to the roller, each character's skills fill in his attack
 and defence; a big team's followers get a line each. `python3 -m gravewounds team` makes one

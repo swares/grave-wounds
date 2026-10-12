@@ -1,0 +1,314 @@
+# Character generation for the First World War (1914-1918): the team builder (dist/team.html,
+# python3 -m gravewounds team --era wwi). Made exactly as the medieval era's (see medieval.yaml
+# for the five steps); only the tables differ. Every region takes the First World War wound
+# table. Steel helmets came into general use in 1915-16, so everyone wears one; a raid's
+# clubs, knives and entrenching tools are fought with Trench weapons, the Mills bomb and the
+# stick grenade with Bombing.
+# All of it is written for this game: the tables, events and names are ours (names are common
+# period names, plain fact).
+id: wwi
+name: "First World War (1914-1918)"
+
+characteristics:
+  - {id: str, name: Strength}
+  - {id: agi, name: Agility}
+  - {id: end, name: Endurance}
+  - {id: wits, name: Wits}
+  - {id: nerve, name: Nerve}
+  - {id: pres, name: Presence}
+array: [70, 60, 55, 50, 45, 35]
+stat_range: [15, 95]
+age: {start: 18, per_term: 1}
+
+skill_max: 90
+first_term: 15
+term_main: 10
+term_second: 5
+gain: 15
+skills:
+  - {id: rifle, name: Rifle, of: agi, div: 2, combat: true}
+  - {id: pistol, name: Pistol, of: agi, div: 2, combat: true}
+  - {id: mg, name: Machine gun, of: wits, div: 2, combat: true}
+  - {id: grenade, name: Bombing, of: str, div: 2, combat: true}
+  - {id: gunnery, name: Gunnery, of: wits, div: 2, combat: true}
+  - {id: bayonet, name: Bayonet, of: str, div: 2, combat: true}
+  - {id: trench, name: Trench weapons, of: str, div: 2, combat: true}
+  - {id: brawl, name: Brawl, of: str, div: 2, combat: true}
+  - {id: parry, name: Parry, of: agi, div: 2, combat: true}
+  - {id: dodge, name: Dodge, of: agi, div: 3, combat: true}
+  - {id: fieldcraft, name: Fieldcraft, of: wits, div: 3}
+  - {id: watch, name: Watch, of: wits, div: 2}
+  - {id: stealth, name: Stealth, of: agi, div: 3}
+  - {id: leechcraft, name: Leechcraft, of: wits, div: 4}
+  - {id: craft, name: Craft, of: wits, div: 3}
+  - {id: signals, name: Signals, of: wits, div: 3}
+  - {id: letters, name: Letters, of: wits, div: 5}
+  - {id: persuade, name: Persuade, of: pres, div: 2}
+  - {id: command, name: Command, of: pres, div: 3}
+
+weapon_skill:
+  rifle_service: rifle
+  pistol_smg: pistol
+  machine_gun: mg
+  hand_grenade: grenade
+  mortar_artillery: gunnery
+  bayonet: bayonet
+  entrenching_tool: trench
+  dagger: trench
+  spiked_club: trench
+  axe: trench
+  punch: brawl
+  kick: brawl
+  elbow_knee: brawl
+defence: [parry, dodge]
+
+regions:
+  - id: british
+    name: "The British Empire"
+    table: wwi-1914-18-wounds
+    colours: ["#7a6a42", "#6b5f3a", "#8a7a52", "#e6e0d2"]
+    names: [Albert, Arthur, Alfred, Frederick, George, Harold, Henry, Herbert, John, Thomas, William, Walter, Ernest, Percy, Sidney, Charles]
+    bynames: [Smith, Jones, Williams, Taylor, Brown, Davies, Evans, Wilson, Thomas, Roberts, Johnson, Wright]
+  - id: france
+    name: "France"
+    table: wwi-1914-18-wounds
+    colours: ["#7d8ea8", "#6f7f99", "#8a7a52", "#e6e0d2"]
+    names: [Jean, Louis, Pierre, Joseph, Marcel, René, André, Henri, Georges, Paul, Lucien, Émile, Auguste, Marius, Eugène, Fernand]
+    bynames: [Martin, Bernard, Dubois, Thomas, Robert, Richard, Petit, Durand, Leroy, Moreau, Simon, Laurent]
+  - id: germany
+    name: "Germany"
+    table: wwi-1914-18-wounds
+    colours: ["#6b6e5a", "#5e6152", "#7d6a4a", "#e6e0d2"]
+    names: [Wilhelm, Karl, Heinrich, Friedrich, Hermann, Otto, Paul, Ernst, Walter, Hans, Fritz, Franz, Josef, Johann, August, Max]
+    bynames: [Müller, Schmidt, Schneider, Fischer, Weber, Meyer, Wagner, Becker, Schulz, Hoffmann, Koch, Richter]
+  - id: us
+    name: "The United States (1917-1918)"
+    table: wwi-1914-18-wounds
+    colours: ["#6b5f3a", "#5b5236", "#7a6a42", "#e6e0d2"]
+    names: [John, William, James, George, Charles, Joseph, Frank, Robert, Edward, Harry, Walter, Henry, Thomas, Paul, Raymond, Arthur]
+    bynames: [Smith, Johnson, Brown, Miller, Davis, Wilson, Anderson, Taylor, Moore, Jackson, Martin, Thompson]
+
+origins:
+  - {name: "Farm hand", gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Never been far from home", persuade: -15}}
+  - {name: "Coal miner", gain: craft, trait: {text: "At home underground", end: 10}, drawback: {text: "Coughs in the cold", stealth: -15}}
+  - {name: "Clerk in an office", gain: letters, trait: {text: "Good at sums", wits: 10}, drawback: {text: "Soft hands", str: -10}}
+  - {name: "Factory hand", gain: craft, trait: {text: "Used to long hours", end: 10}, drawback: {text: "Half deaf from the machines", watch: -15}}
+  - {name: "Gamekeeper's boy", gain: rifle, trait: {text: "A steady aim", rifle: 15}, drawback: {text: "Hates drill", pres: -10}}
+  - {name: "Poacher", gain: stealth, trait: {text: "Moves quietly at night", stealth: 15}, drawback: {text: "Known to the police", persuade: -15}}
+  - {name: "Schoolteacher", gain: letters, trait: {text: "Well read", letters: 15}, drawback: {text: "Faints at the sight of blood", nerve: -10}}
+  - {name: "Chemist's assistant", gain: leechcraft, trait: {text: "Knows his remedies", leechcraft: 15}, drawback: {text: "Never stops talking", stealth: -15}}
+  - {name: "Son of a good family", gain: command, trait: {text: "Raised to command", command: 15}, drawback: {text: "Proud and touchy", persuade: -15}}
+  - {name: "Railwayman", gain: craft, trait: {text: "Not afraid of machines", wits: 10}, drawback: {text: "Short-sighted", watch: -15}}
+  - {name: "Blacksmith's apprentice", gain: craft, trait: {text: "Arms like hams", str: 10}, drawback: {text: "Slow afoot", agi: -10}}
+  - {name: "Docker", gain: brawl, trait: {text: "Takes a punch", end: 10}, drawback: {text: "Drinks his pay", pres: -10}}
+  - {name: "Post office telegraph boy", gain: signals, trait: {text: "Quick with his hands", agi: 10}, drawback: {text: "Small for his age", str: -10}}
+  - {name: "Footballer", gain: dodge, trait: {text: "Fast on his feet", agi: 10}, drawback: {text: "Bad knee", end: -10}}
+  - {name: "Boxer", gain: brawl, trait: {text: "Hard to frighten", nerve: 10}, drawback: {text: "Hot-tempered", persuade: -15}}
+  - {name: "Shop assistant", gain: persuade, trait: {text: "A ready smile", pres: 10}, drawback: {text: "Never slept rough", fieldcraft: -15}}
+  - {name: "Fisherman", gain: craft, trait: {text: "Weathered every storm", end: 10}, drawback: {text: "Never fired a gun", rifle: -15}}
+  - {name: "Student", gain: letters, trait: {text: "Speaks the enemy's language", wits: 10}, drawback: {text: "Never done a day's labour", str: -10}}
+  - {name: "Reservist called back to the colours", gain: rifle, trait: {text: "Knows the drill", rifle: 15}, drawback: {text: "Older than the rest", agi: -10}}
+  - {name: "Volunteer in the first rush", gain: persuade, trait: {text: "Eager", nerve: 10}, drawback: {text: "Never held a weapon", parry: -15}}
+
+careers:
+  - id: rifleman
+    name: "Rifleman"
+    main: rifle
+    second: bayonet
+    prefers: [end, agi, nerve, str, wits, pres]
+    wound: 25
+    wound_weapon: rifle_service
+    kit: {default: ww2_rifleman}
+    weapon: {default: rifle_service}
+    terms:
+      - {to: 20, skill: watch, text: "Stood sentry on the fire step through a winter night."}
+      - {to: 40, skill: craft, text: "Dug and revetted trenches in the rain."}
+      - {to: 55, skill: fieldcraft, text: "Carried rations up the communication trench."}
+      - {to: 70, skill: dodge, text: "Sat out a bombardment in a dugout."}
+      - {to: 85, skill: bayonet, text: "Went over the top in an attack.", wound: true}
+      - {to: 100, skill: rifle, text: "Held a shell hole against a counter-attack.", wound: true}
+  - id: machine_gunner
+    name: "Machine gunner"
+    main: mg
+    second: craft
+    prefers: [wits, end, str, nerve, agi, pres]
+    wound: 20
+    wound_weapon: rifle_service
+    kit: {default: ww2_rifleman}
+    weapon: {default: machine_gun}
+    terms:
+      - {to: 20, skill: craft, text: "Stripped and cleaned the gun in the mud."}
+      - {to: 40, skill: fieldcraft, text: "Carried the gun and its tripod up the line."}
+      - {to: 55, skill: watch, text: "Laid the gun on a fixed line at night."}
+      - {to: 70, skill: letters, text: "Learned indirect fire from a range card."}
+      - {to: 85, skill: dodge, text: "Moved the gun under shellfire.", wound: true}
+      - {to: 100, skill: mg, text: "Broke up an attack across no man's land.", wound: true}
+  - id: bomber
+    name: "Bomber"
+    main: grenade
+    second: trench
+    prefers: [str, agi, nerve, end, wits, pres]
+    wound: 30
+    wound_weapon: hand_grenade
+    kit: {default: ww2_rifleman}
+    weapon: {default: hand_grenade}
+    terms:
+      - {to: 20, skill: craft, text: "Primed bombs in a bombing store."}
+      - {to: 40, skill: stealth, text: "Crawled out to a listening post."}
+      - {to: 55, skill: trench, text: "Cleared a trench bay with club and knife.", wound: true}
+      - {to: 70, skill: dodge, text: "Ducked an enemy bomb in a sap."}
+      - {to: 85, skill: grenade, text: "Bombed up an enemy trench traverse by traverse.", wound: true}
+      - {to: 100, skill: watch, text: "Held a block in a captured trench."}
+  - id: sniper
+    name: "Sniper or observer"
+    main: rifle
+    second: stealth
+    prefers: [wits, agi, nerve, end, str, pres]
+    wound: 15
+    wound_weapon: rifle_service
+    kit: {default: ww2_rifleman}
+    weapon: {default: rifle_service}
+    terms:
+      - {to: 20, skill: watch, text: "Watched the enemy line through a periscope for a week."}
+      - {to: 40, skill: craft, text: "Built a hide in a ruined wall."}
+      - {to: 55, skill: stealth, text: "Lay out in no man's land all day."}
+      - {to: 70, skill: letters, text: "Kept the sniping log and drew the enemy's loopholes."}
+      - {to: 85, skill: fieldcraft, text: "Moved his post before the enemy found it."}
+      - {to: 100, skill: rifle, text: "Duelled with an enemy sniper across the wire.", wound: true}
+  - id: sapper
+    name: "Sapper or tunneller"
+    main: craft
+    second: grenade
+    prefers: [str, end, wits, nerve, agi, pres]
+    wound: 20
+    wound_weapon: mortar_artillery
+    kit: {default: ww2_rifleman}
+    weapon: {default: rifle_service}
+    terms:
+      - {to: 20, skill: craft, text: "Put up wire in front of the line at night."}
+      - {to: 40, skill: watch, text: "Listened for enemy miners underground."}
+      - {to: 55, skill: watch, text: "Dug a gallery under no man's land by candlelight."}
+      - {to: 70, skill: letters, text: "Surveyed a mine and laid its charge."}
+      - {to: 85, skill: trench, text: "Broke into an enemy gallery and fought in the dark.", wound: true}
+      - {to: 100, skill: grenade, text: "Blew gaps in the wire before an attack.", wound: true}
+  - id: stretcher_bearer
+    name: "Stretcher-bearer or orderly"
+    main: leechcraft
+    second: fieldcraft
+    prefers: [end, wits, nerve, str, agi, pres]
+    wound: 15
+    wound_weapon: mortar_artillery
+    kit: {default: ww2_rifleman}
+    weapon: {default: pistol_smg}
+    terms:
+      - {to: 20, skill: craft, text: "Worked in a casualty clearing station."}
+      - {to: 40, skill: leechcraft, text: "Dressed wounds at a regimental aid post."}
+      - {to: 55, skill: fieldcraft, text: "Carried the wounded down a flooded trench."}
+      - {to: 70, skill: persuade, text: "Calmed a gassed man until the ambulance came."}
+      - {to: 85, skill: dodge, text: "Brought a man in from no man's land.", wound: true}
+      - {to: 100, skill: leechcraft, text: "Kept men alive through a night under shellfire.", wound: true}
+  - id: signaller
+    name: "Signaller or runner"
+    main: signals
+    second: fieldcraft
+    prefers: [wits, agi, end, nerve, pres, str]
+    wound: 20
+    wound_weapon: mortar_artillery
+    kit: {default: ww2_rifleman}
+    weapon: {default: rifle_service}
+    terms:
+      - {to: 20, skill: letters, text: "Learned Morse and the lamp."}
+      - {to: 40, skill: craft, text: "Mended a cut telephone line under fire.", wound: true}
+      - {to: 55, skill: fieldcraft, text: "Ran messages back across the open."}
+      - {to: 70, skill: watch, text: "Watched for the enemy's flares and rockets."}
+      - {to: 85, skill: dodge, text: "Carried orders through a barrage.", wound: true}
+      - {to: 100, skill: signals, text: "Kept the battalion in touch with the guns."}
+  - id: nco
+    name: "Corporal or sergeant"
+    main: command
+    second: rifle
+    prefers: [pres, nerve, end, str, agi, wits]
+    wound: 25
+    wound_weapon: rifle_service
+    kit: {default: ww2_rifleman}
+    weapon: {default: rifle_service}
+    terms:
+      - {to: 20, skill: letters, text: "Kept the platoon's roll and its rum ration."}
+      - {to: 40, skill: persuade, text: "Kept a frightened man at his post."}
+      - {to: 55, skill: bayonet, text: "Drilled the new drafts behind the line."}
+      - {to: 70, skill: watch, text: "Took out a wiring party."}
+      - {to: 85, skill: grenade, text: "Led a bombing party into the enemy trench.", wound: true}
+      - {to: 100, skill: command, text: "Took over the platoon when its officer fell.", wound: true}
+  - id: officer
+    name: "Junior officer"
+    main: command
+    second: pistol
+    prefers: [pres, nerve, wits, agi, end, str]
+    wound: 30
+    wound_weapon: rifle_service
+    kit: {default: ww2_rifleman}
+    weapon: {default: pistol_smg}
+    terms:
+      - {to: 20, skill: letters, text: "Censored his men's letters home."}
+      - {to: 40, skill: signals, text: "Called down the guns on an enemy attack."}
+      - {to: 55, skill: stealth, text: "Led a patrol into no man's land.", wound: true}
+      - {to: 70, skill: persuade, text: "Wrote to the families of the dead."}
+      - {to: 85, skill: pistol, text: "Led a trench raid.", wound: true}
+      - {to: 100, skill: command, text: "Led the company over the top.", wound: true}
+  - id: gunner
+    name: "Gunner or trench mortarman"
+    main: gunnery
+    second: craft
+    prefers: [wits, str, end, nerve, agi, pres]
+    wound: 15
+    wound_weapon: mortar_artillery
+    kit: {default: ww2_rifleman}
+    weapon: {default: mortar_artillery}
+    terms:
+      - {to: 20, skill: fieldcraft, text: "Hauled shells up to the gun pits through the mud."}
+      - {to: 40, skill: craft, text: "Set fuses through a long bombardment."}
+      - {to: 55, skill: letters, text: "Worked out the firing data from a map."}
+      - {to: 70, skill: signals, text: "Took fire orders by telephone from the front."}
+      - {to: 85, skill: dodge, text: "Was shelled in return by the enemy's guns.", wound: true}
+      - {to: 100, skill: gunnery, text: "Fired a box barrage round a raid."}
+
+old_wound:
+  - {to: 70, kind: mark, text: "a healed scar"}
+  - {to: 100, kind: lasting, text: "a lasting hurt"}
+lasting: 5
+lasting_from: {head: wits, face: pres, arms: str, legs: agi, torso: end}
+
+followers:
+  quality:
+    default:  [{to: 30, quality: green}, {to: 80, quality: regular}, {to: 100, quality: veteran}]
+    hardened: [{to: 15, quality: green}, {to: 60, quality: regular}, {to: 100, quality: veteran}]
+    raw:      [{to: 55, quality: green}, {to: 90, quality: regular}, {to: 100, quality: veteran}]
+
+templates:
+  - id: section
+    name: "An infantry section"
+    slots: [[nco, 3], [rifleman, 2], [rifleman, 2], [bomber, 1], [stretcher_bearer, 1]]
+    followers: [[rifleman, 6]]
+  - id: raid
+    name: "A trench raiding party"
+    slots: [[officer, 3], [bomber, 2], [bomber, 2], [nco, 2], [sapper, 1]]
+    followers: [[bomber, 6], [rifleman, 6]]
+    follower_quality: hardened
+  - id: machine_guns
+    name: "A machine-gun team"
+    slots: [[nco, 3], [machine_gunner, 2], [machine_gunner, 2], [machine_gunner, 1], [signaller, 1]]
+    followers: [[machine_gunner, 4]]
+  - id: snipers
+    name: "A sniping section"
+    slots: [[officer, 2], [sniper, 3], [sniper, 2], [sniper, 1]]
+    followers: [[sniper, 4]]
+    follower_quality: hardened
+  - id: tunnellers
+    name: "A tunnelling party"
+    slots: [[officer, 3], [sapper, 3], [sapper, 2], [sapper, 1], [stretcher_bearer, 1]]
+    followers: [[sapper, 10]]
+  - id: drafts
+    name: "A new draft to the front"
+    slots: [[officer, 1], [nco, 2], [rifleman, 1], [rifleman, 1], [signaller, 1]]
+    followers: [[rifleman, 20]]
+    follower_quality: raw
