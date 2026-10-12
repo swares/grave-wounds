@@ -151,19 +151,22 @@ def schedule(d: Data, m: dict, path: list, ftype, day: int = 1, used: float = 0.
 
 
 def advance(d: Data, m: dict, path: list, index: int, used: float, hours: float, hpd: float, ftype: str,
-            ground: dict | None = None, speed: int = 100) -> dict:
+            ground: dict | None = None, speed: int = 100, carried: float = 0) -> dict:
     """March along the path for up to `hours`, never past `hpd`, the day's marching hours.
-    Returns {index, used}. A new day is the caller's business."""
-    target = min(used + hours, hpd)
+    Returns {index, used, carried}: carried is the hours already marched into the next hex (the
+    `carried` given counts towards it), so a march in short steps loses no time. A new day is
+    the caller's business."""
+    target, done = min(used + hours, hpd), carried
     while index + 1 < len(path):
-        st = step_hours(d, m, path[index], path[index + 1], ftype, ground, speed)
+        st = max(0, step_hours(d, m, path[index], path[index + 1], ftype, ground, speed) - done)
         if used + st > target + 1e-9:
             break
         used += st
         index += 1
-    if index + 1 < len(path):
-        used = max(used, target)
-    return {"index": index, "used": used}
+        done = 0
+    if index + 1 >= len(path):
+        return {"index": index, "used": used, "carried": 0}
+    return {"index": index, "used": max(used, target), "carried": done + max(0, target - used)}
 
 
 # ---------- making camp ----------
