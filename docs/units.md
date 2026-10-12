@@ -1290,6 +1290,19 @@ is 140 × 140 hexes, about 1,530 by 1,330 yards (1,400 by 1,210 m), north at the
 - Fire support: three 105 mm light guns and 81 mm mortars; Argentine pack howitzers and
   120 mm mortars.
 
+**Grozny: the railway station, 31 December 1994** (`data/fields/grozny-1995.yaml`). The field
+is 140 × 110 hexes, about 1,530 by 1,040 yards (1,400 by 950 m), north at the top.
+- The station building is in the middle, with its square to the north and the platforms,
+  tracks and freight yard to the south.
+- Older houses (**buildings**) stand round the station, with five- and nine-storey apartment
+  blocks (**tall buildings**) beyond and streets with wrecks and **rubble** between.
+- **Dusk** on a winter afternoon.
+- Russians (green): the 131st Brigade's 1st Battalion in the station and the freight yard,
+  with its infantry carriers and **tanks** parked in the square.
+- Chechens (veteran, in cover): **RPG** teams in the buildings on three sides of the square
+  that can knock out the armour, fighters to the north and south, and machine guns.
+- Fire support: Russian artillery and mortars; Chechen mortars.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
