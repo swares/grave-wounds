@@ -1164,6 +1164,21 @@ field is 140 × 120 hexes, about 1,530 by 1,140 yards (1,400 by 1,040 m), north 
   machine guns.
 - Fire support: guns and fighter-bombers; German mortars and guns. Overcast and wet.
 
+**Fox Hill at Toktong Pass, 27-28 November 1950** (`data/fields/foxhill-1950.yaml`). The field
+is 150 × 120 hexes, about 1,640 by 1,140 yards (1,500 by 1,040 m), north at the top.
+- The hill Fox Company held is in the middle (rocks on high ground, slopes of scrub pine and
+  boulders). The road through the pass runs below it to the south. The heights are to the
+  north, and a ridge lies across the road.
+- **Bitter cold** (automatic weapons jam 25% more, +1 movement a hex). Snow lies, the wind
+  is strong from the north-west, and it is a **dark night**.
+- United States (dug in): Fox Company's three platoons round the crest, its heavy machine
+  guns, and the headquarters, mortars and road block.
+- Chinese (veteran): battalions from the heights to the north, from the north-east and across
+  the road, with machine guns.
+- Fire support: 105 mm howitzers at Hagaru-ri, the company's 60 mm mortars, Corsairs (by day
+  only); Chinese mortars.
+- The wound tables are Korea's (hospitalized wounded).
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
