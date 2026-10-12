@@ -221,6 +221,7 @@ function moraleMods(mods, u){
   if (u.flanked) m += mods.flank;
   if (u.friends) m += mods.veteran_friends;
   if (u.state === "steady") m += mods.in_order;
+  if (u.dug) m += mods.dug_in || 0;
   m -= Math.min(mods.losing_cap, mods.losing_per_man * Math.max(0, (u.lost || 0) - (u.dealt || 0)));
   return m;
 }
@@ -405,7 +406,7 @@ function volleys(units, field = null){            // [{att, dfd, men, dist, cove
     if (!best) return;
     const wx = shotWeather(field, u.weapon, best[0], best[2], best[3]), [up, longer] = heightEdge(field, u.weapon, best[2], best[3]);
     const v = { att: i, dfd: best[1], men: shooters(u, field), dist: best[0], cover: shareCover(field, best[2], units[best[1]]) + groundCover(units[best[1]]), penalty: wx.penalty - up, misfire: wx.misfire, reach: (wx.reach || 0) + longer, from: best[2], to: best[3],
-      height: up, over: lineFire(units, occ, field, i, best[1], [best[2], best[3], best[0]]) };
+      height: up, over: lineFire(units, occ, field, i, best[1], [best[2], best[3], best[0]]), seen: seenShare(field, units[best[1]], best[3], u.weapon) };
     if (isMg(u.weapon)) Object.assign(v, beaten(units, occ, field, i, best));
     out.push(v);
   });
@@ -415,6 +416,12 @@ function volleys(units, field = null){            // [{att, dfd, men, dist, cove
 const isMg = w => (UD.machine_guns?.weapons || []).includes(w);
 const mgGuns = u => Math.ceil(Math.max(0, u.men) / UD.machine_guns.crew);   // one a crew, while a man of it is up
 const groundCover = u => (u.prone ? UD.to_ground.cover : 0);                 // % off shots at a unit gone to ground
+function seenShare(field, u, at, weapon = null){  // share of aimed shots at u that find a man: hidden.seen % (mg_seen % for a machine gun) if gone to ground, in a bunker or in hiding ground
+  const H = UD.hidden;
+  if (!H) return 1;
+  if (!(u.prone || inBunker(field, u) || (at && groundAt(field, at).hides))) return 1;
+  return weapon && isMg(weapon) ? (H.mg_seen ?? H.seen) / 100 : H.seen / 100;
+}
 function shooters(u, field = null){               // a machine-gun team's served guns; any other unit's front hexes' first shoot_ranks ranks, less breaching front ranks; pinned, fewer
   let n = 0;
   if (isMg(u.weapon)) n = mgGuns(u);
@@ -621,13 +628,13 @@ function beaten(units, occ, field, i, best){      // {behind, beyond, bcover}: t
   for (let k = 0; k < line.length; k++){
     if (groundAt(field, line[k]).stops_shot) break;
     const b = occ[hk(line[k])];
-    if (k > 0 && b !== undefined && b !== i && b !== j) return { behind: b, beyond: k, bcover: (groundAt(field, line[k]).cover || 0) + groundCover(units[b]) };
+    if (k > 0 && b !== undefined && b !== i && b !== j) return { behind: b, beyond: k, bcover: (groundAt(field, line[k]).cover || 0) + groundCover(units[b]), bseen: seenShare(field, units[b], line[k], units[i].weapon) };
   }
-  return { behind: null, beyond: 0, bcover: 0 };
+  return { behind: null, beyond: 0, bcover: 0, bseen: 1 };
 }
 function beatenFire(us, table, rng, acc, log, v){ // the cone falling on into the unit behind the target
   const bh = us[v.behind], r = { ...v, dfd: v.behind, dist: v.dist + v.beyond, men: v.men * UD.machine_guns.beaten.share / 100 };
-  const opts = { factor: form(bh).missile_factor * (100 - v.misfire) / 100, exposed: exposure(bh, false, true), penalty: v.bcover + v.penalty, reach: v.reach };
+  const opts = { factor: form(bh).missile_factor * (100 - v.misfire) / 100 * (v.bseen ?? 1), exposed: exposure(bh, false, true), penalty: v.bcover + v.penalty, reach: v.reach };
   const hits = volley(sideOfUnit(us[v.att], table), sideOfUnit(bh, table), r.men, r.dist, rng, opts);
   if (!hits) return;
   const t = takeHurt(bh, hits);
@@ -737,7 +744,7 @@ function shootAll(us, table, rng, acc, log, field, under = null){
   for (const v of volleys(us, field)){
     markMg(us, v, under);
     const b = us[v.dfd], exposed = exposure(b, false, true), mf = form(b).missile_factor;
-    let t = takeHurt(b, volley(sideOfUnit(us[v.att], table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
+    let t = takeHurt(b, volley(sideOfUnit(us[v.att], table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100 * v.seen, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
     tallyLoss(acc, v, t);
     log.push(...logged({ kind: "volley", ...v }, t));
     if (v.behind !== undefined && v.behind !== null) beatenFire(us, table, rng, acc, log, v);
@@ -746,7 +753,7 @@ function shootAll(us, table, rng, acc, log, field, under = null){
       if (wx.blocked) continue;
       const [up, longer] = heightEdge(field, hero.weapon, v.from, v.to);
       if (!fieldRange(hero.weapon, v.dist, wx.reach + longer)) continue;
-      const hopts = { factor: mf * (100 - wx.misfire) / 100, exposed, penalty: v.cover + wx.penalty - up + v.over, reach: wx.reach + longer };
+      const hopts = { factor: mf * (100 - wx.misfire) / 100 * v.seen, exposed, penalty: v.cover + wx.penalty - up + v.over, reach: wx.reach + longer };
       t = takeHurt(b, volley(heroSide(us[v.att], hero, table), sideOfUnit(b, table), UD.heroes.tempo, v.dist, rng, hopts));
       tallyLoss(acc, v, t);
       log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: v.att, dfd: v.dfd, dist: v.dist }, t));
@@ -812,7 +819,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     const cut = Math.min(acc.lost[i], u.men);
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
   });
-  log.push(...moraleAll(us, occ, before, acc, rng, table), ...suppressAll(us, under, rng), ...heroesAfter(us, rng));
+  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng));
   afterExchange(us, field, log);
   return { units: us, log };
 }
@@ -862,13 +869,13 @@ function smokeDrifts(field){                      // smoke moves `drift` hexes d
   }
   field.smoke = out;
 }
-function moraleAll(us, occ, before, acc, rng, table){
+function moraleAll(us, occ, before, acc, rng, table, field = null){
   const log = [], broke = [];
   us.forEach((u, i) => {
     if (out_(u)) return;
     const near = adjacentUnits(us, occ, i);
     const unit = { quality: u.quality, start: u.start, down: u.down, lost: acc.lost[i], dealt: acc.dealt[i], men: before[i], state: u.state,
-      leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady") };
+      leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: !!u.prone || inBunker(field, u) };
     const m = morale(unit, rng.randint(1, 100));
     if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state });
     if (m.state === "broken") broke.push(i);

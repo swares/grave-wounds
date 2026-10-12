@@ -1,6 +1,6 @@
 # Hit Location & Wound Tables
 
-Generated 2026-10-11 from the data folder. Roll d100 (00 = 100).
+Generated 2026-10-12 from the data folder. Roll d100 (00 = 100).
 
 **Procedure:** 1) d100 location on the table for the fight and weapon (situation column if one applies; called shots roll twice). 2) d100 mechanism for the weapon. 3) Severity from your system's damage, or d100. 4) Armour (adjusted tables): lower severity by the material's steps. 5) Look up the wound by location class and severity, then apply the mechanism modifiers.
 
@@ -4462,7 +4462,7 @@ Penalties add up; each total is capped at -60%.
 
 Light wounds and grazes fight on. Serious and critical wounds call for a stop check against the unit's Nerve; a failure is down. From breech-loaders (the 1860s on) and shell a serious or critical wound is always down and a light one calls for the stop check. A wound fatal within rounds kills. Flank +20, rear +30, a mounted charge +20 at x2 tempo (none onto a steady front of pikes in close order, whose men strike horse at +20), shaken -10. Men in an intact bunker can't be fought hand to hand; it is stormed with grenades, satchel charges or flamethrowers (10%, 25%, 40% an exchange to knock it out).
 
-**Unit morale:** after an exchange a unit checks if it lost the exchange, has 25% of its men down, lost 10% in the exchange, or was struck in flank or rear: d100 against Nerve, +20 while steady, +10 with a leader, -20 if he is down, -20 at half strength, -20 if flanked, -5 a man it lost more than it put down (at most -30). Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +20, no parry, x2 tempo.
+**Unit morale:** after an exchange a unit checks if it lost the exchange, has 25% of its men down, lost 10% in the exchange, or was struck in flank or rear: d100 against Nerve, +20 while steady, +10 with a leader, -20 if he is down, -20 at half strength, -20 if flanked, +10 dug in, -5 a man it lost more than it put down (at most -30). Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +20, no parry, x2 tempo.
 
 **Ground and works on the field map:** open ground (move 1); rough ground (move 2); woods (move 2, cover -20%); marsh (move 3, no horses); high ground (move 1, -10% striking up at it); buildings (move 2, cover -30%, no horses); water (move 1). Works are the battle map's, along the 11 yd (10 m) hex sides: only reach-2 weapons strike over a palisade, wall or barred gate, from the front rank; striking up a bank, ditch or wall costs its height; a volley takes the best cover where it lands. A unit ordered to breach puts half its front rank to hacking at the work in front (a field-map side takes 5 times a battle-map side's breach figure). The battle map's weather applies.
 
@@ -4472,7 +4472,7 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **Limbering:** a limbered battery moves but cannot fire; unlimbered it fires but can only be manhandled 2 hexes. Changing over takes an exchange, without moving or firing. Hand to hand the crews fight with sword (arming sword). A battery that breaks loses its guns.
 
-**Modern infantry:** extended order is 3 men a hex (shots at it x0.5, 8 hexes a move). Magazine rifles fire 10 rounds a minute, self-loading and assault rifles 15, pistols and submachine guns 12. A unit can go to ground on its own move: shots at it -15%, and it cannot move until it gets up.
+**Modern infantry:** extended order is 3 men a hex (shots at it x0.5, 8 hexes a move). Magazine rifles fire 10 rounds a minute, self-loading and assault rifles 15, pistols and submachine guns 12. A unit can go to ground on its own move: shots at it -15%, and it cannot move until it gets up. Hidden men (gone to ground, in a bunker or in buildings): only 10% of the aimed shots at them find a man (5% of a machine gun's), and dug in they get +10 on morale.
 
 **Machine guns:** a team is a gun and 5 crew a hex, the gun served while one of its crew is up. Each gun fires 300 rounds a minute, 10% of them rolled as aimed shots. Its beaten zone: the first other unit, friend or foe, within 20 hexes past the target on the line of fire takes 50% as many shots at that range (ground that stops shot stops it).
 
