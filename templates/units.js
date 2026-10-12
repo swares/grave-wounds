@@ -739,7 +739,7 @@ function fireBattery(us, table, rng, acc, log, c){   // at the target, guns knoc
   const a = us[c.att], b = us[c.dfd], gun = sideOfUnit(a, table);
   let t = takeHurt(b, cannonade(gun, b, c, rng, exposure(b, false, true)));
   a.spent = (a.spent || 0) + c.rounds;
-  if (b.id !== undefined && b.id !== null) a.fired = { ...(a.fired || {}), [String(b.id)]: c.dist };
+  if (b.id !== undefined && b.id !== null) a.fired = { ...a.fired, [String(b.id)]: c.dist };
   if (t.dismounted) b.guns_lost = (b.guns_lost || 0) + t.dismounted;
   tallyLoss(acc, c, t);
   log.push(...logged({ kind: "cannon", ...c }, t));
@@ -1022,12 +1022,12 @@ function batteryFire(units, ground, i, best, order){   // guns of battery i at b
 function fuseSetting(u, tid, dist){               // how far the gunners' cut fuses widen the air band: crew quality, and more on a target ranged last exchange
   const F = UD.artillery.set_fuse;
   if (!F) return 0;
-  const was = tid === undefined || tid === null ? undefined : (u.laid || {})[String(tid)];
+  const was = tid === undefined || tid === null ? undefined : u.laid?.[String(tid)];
   return (F.quality[u.quality] || 0) + (was !== undefined && Math.abs(was - dist) <= F.within ? F.ranged : 0);
 }
 function closingFire(units, field = null){        // batteries charged in front: canister at the first charger as it comes in (closing: true)
   const A = UD.artillery, out = [];
-  if (!A || A.closing === undefined) return out;
+  if (A?.closing === undefined) return out;
   const occ = occupancy(units);
   units.forEach((u, i) => {
     const best = canFire(u) ? charger(units, occ, field, i) : null;

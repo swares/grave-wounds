@@ -606,7 +606,9 @@ function unitLineText(l, nm){                     // a volley, a melee or a rout
 }
 const SHOT_NAMES = { canister: "canister", round: "round shot", shell: "shell" };
 function cannonText(l, nm, fallen){               // a battery's fire: its target, rounds, men struck, guns knocked out
-  const shot = SHOT_NAMES[l.shot], aim = l.section ? ` (a section of ${gunsText(l.guns, "gun")}, as ordered)` : (l.named ? " (as ordered)" : "");
+  const shot = SHOT_NAMES[l.shot];
+  let aim = l.named ? " (as ordered)" : "";
+  if (l.section) aim = ` (a section of ${gunsText(l.guns, "gun")}, as ordered)`;
   if (l.closing) return `${nm(l.att)} fire canister into ${nm(l.dfd)} as the charge comes in${shotNotes(l)}: ${l.rounds} rounds, ${l.blows} men in the way, ${fallen}.`;
   if (l.shot === "shell") return `${nm(l.att)} fire shell at ${nm(l.dfd)}${aim}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${l.rounds} shells, ${l.bursts} burst among them (${l.air} in the air), ${l.blows} men struck, ${fallen}${lostGuns(l)}.`;
   const guns = l.rounds < l.guns * FD.units.artillery.rounds ? `${l.guns} guns, ${l.rounds} rounds left to fire` : `${l.guns} guns`;
@@ -1061,7 +1063,8 @@ function renderShotOrders(u, foes, gone){         // the Shot picker and the sec
 function setShot(v){                              // the GM orders the battery's shot, or leaves it to the range
   const u = selUnit(); if (!u || !isBattery(u)) return;
   if (v) u.shot = v; else delete u.shot;
-  S.msg = v ? `${u.name} will fire ${SHOT_NAMES[v]}${v === "canister" ? " when the enemy is within " + fmtM(FD.units.artillery.canister_to * FD.units.hex_m) : ""}.` : `${u.name} will fire the shot the range calls for.`;
+  const within = v === "canister" ? " when the enemy is within " + fmtM(FD.units.artillery.canister_to * FD.units.hex_m) : "";
+  S.msg = v ? `${u.name} will fire ${SHOT_NAMES[v]}${within}.` : `${u.name} will fire the shot the range calls for.`;
   render();
 }
 function setSection(){                            // the GM splits off a section: its target, guns and shot
