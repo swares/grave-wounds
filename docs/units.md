@@ -1235,6 +1235,19 @@ hexes, about 1,640 by 1,040 yards (1,500 by 950 m), north at the top.
 - Fire support: Marine 81 mm mortars and 105 mm howitzers (held back at first to spare the
   city); North Vietnamese mortars, rockets and guns.
 
+**Hill 861A, Khe Sanh, 5 February 1968** (`data/fields/khesanh-1968.yaml`). The field is
+140 × 120 hexes, about 1,530 by 1,140 yards (1,400 by 1,040 m), north at the top.
+- The knoll is in the middle, ringed with **trenches**, **bunkers** and barbed wire. The ridge
+  runs down to the south-west towards Hill 861. The slopes are cleared to elephant grass and
+  craters, with jungle beyond.
+- **Fog** on a **dark night**.
+- United States (flak vests, in the trenches): E Company, 2nd Battalion, 26th Marines on the
+  north and flanks, its reserve platoon, and its machine guns.
+- North Vietnamese (veteran): a battalion through the north wire, a company from the
+  north-west, and machine guns.
+- Fire support: the base's howitzers and 4.2-inch mortars and the guns on 881 South; North
+  Vietnamese mortars, rockets and guns.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
