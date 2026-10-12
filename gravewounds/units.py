@@ -799,16 +799,24 @@ def _fixed_target(d: Data, units: list, i: int, field: dict | None, occ: dict):
     n = hdist(h, u["fixed"])
     if n == 0:
         return None
-    line, width, best = ray(h, u["fixed"], n)[1:], d.weather["light"]["fixed_line"]["width"], None
+    aim, best = (h, ray(h, u["fixed"], n)[1:], d.weather["light"]["fixed_line"]["width"]), None
     for j, e in enumerate(units):
-        if e["side"] == u["side"] or _out(e) or e.get("vehicle"):
+        if e["side"] != u["side"] and not _out(e) and not e.get("vehicle"):
+            best = _nearest_on_line(d, units, (occ, field, i, j), aim, best)
+    return best
+
+
+def _nearest_on_line(d: Data, units: list, ctx: tuple, aim: tuple, best):
+    """The nearest hex of unit j on a fixed line (aim: the gun's hex, the line, its width) that
+    gun unit i reaches with a line of fire, if nearer than best; else best."""
+    occ, field, i, j = ctx
+    h, line, width = aim
+    for t in (x for row in footprint(d, units[j]) for x in row):
+        dist = hdist(h, t)
+        if (best is not None and dist >= best[0]) or min(hdist(t, x) for x in line) > width or not _reaches(d, units[i], dist):
             continue
-        for t in (x for row in footprint(d, e) for x in row):
-            dist = hdist(h, t)
-            if (best is not None and dist >= best[0]) or min(hdist(t, x) for x in line) > width or not _reaches(d, u, dist):
-                continue
-            if line_fire(d, units, occ, field, i, j, h, t, dist) is not None:
-                best = (dist, j, h, t)
+        if line_fire(d, units, occ, field, i, j, h, t, dist) is not None:
+            best = (dist, j, h, t)
     return best
 
 
@@ -932,13 +940,13 @@ def in_the_dark(d: Data, field: dict | None, dist: int, t, out: dict, seer: dict
     return out
 
 
-def dark_sight(d: Data, L: dict, kit: str | None) -> tuple:
-    """(sight in battle hexes or None, aim % off) in the light L for a man in this kit: night-vision
-    kits (light.night_vision) see further and aim better."""
-    N = d.weather["light"].get("night_vision") or {}
-    if kit not in (N.get("kits") or []):
-        return L["sight"], L["aim"]
-    return (None if L["sight"] is None else max(L["sight"], N["sight"])), min(L["aim"], N["aim"])
+def dark_sight(d: Data, level: dict, kit: str | None) -> tuple:
+    """(sight in battle hexes or None, aim % off) in the light level for a man in this kit:
+    night-vision kits (light.night_vision) see further and aim better."""
+    nv = d.weather["light"].get("night_vision") or {}
+    if kit not in (nv.get("kits") or []):
+        return level["sight"], level["aim"]
+    return (None if level["sight"] is None else max(level["sight"], nv["sight"])), min(level["aim"], nv["aim"])
 
 
 def flashing(field: dict | None, t) -> bool:

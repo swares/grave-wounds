@@ -727,7 +727,9 @@ const upOf = field => field?.up || "N";          // the compass point at the top
 const SMOKED = { blocked: "Smoke: no one can see to shoot through it.", penalty: 0, misfire: 0, reach: 0 };
 function shotWeather(field, weapon, dist, h = null, t = null, seer = null){   // the weather on a shot from h to t; smoke on the line blocks it; seer: {kit, blind} in the dark
   if (h && t && smoked(field, ray(h, t, dist))) return { ...SMOKED };
-  return isGun(weapon) ? gunWeather(field, dist, h, t) : inTheCold(field, weapon, inTheDark(field, dist, t, weatherAttack(field?.weather || null, weapon, seer?.blind ? 0 : dist * UD.range_scale, h, t, upOf(field)), seer));
+  if (isGun(weapon)) return gunWeather(field, dist, h, t);
+  const seen = seer?.blind ? 0 : dist * UD.range_scale;   // blind down a fixed line: the weather's sight does not count
+  return inTheCold(field, weapon, inTheDark(field, dist, t, weatherAttack(field?.weather || null, weapon, seen, h, t, upOf(field)), seer));
 }
 const coldOf = field => FD.weather?.cold?.levels?.[field?.weather?.cold || ""] || null;   // the field's cold level, or null
 function inTheCold(field, weapon, out){            // automatic weapons jam more in hard cold
@@ -758,12 +760,12 @@ function darkSight(L, kit){                         // [sight in battle hexes or
   return [sight === null ? null : Math.max(sight, N.sight), Math.min(L.aim, N.aim)];
 }
 const flashing = (field, t) => !!t && (field?.flashes || []).some(x => x[0] === t[0] && x[1] === t[1]);   // a hex a unit fired from in the dark last exchange
-const FLASHING = ["volley", "hero", "antiarmour", "tankfire", "cannon"];
+const FLASHING = new Set(["volley", "hero", "antiarmour", "tankfire", "cannon"]);
 function flashes(us, log, field){                  // after the shooting, in poor light: the hexes of every unit that fired, seen by their flashes through the next exchange
   if (!field) return;
-  const L = lightOf(field);
-  if (!L || L.sight === null || L.sight === undefined || L.sight >= FD.weather.light.flash){ delete field.flashes; return }
-  const fired = [...new Set(log.filter(x => FLASHING.includes(x.kind) && x.att !== undefined && x.att !== null).map(x => x.att))];
+  const sight = lightOf(field)?.sight ?? null;
+  if (sight === null || sight >= FD.weather.light.flash){ delete field.flashes; return }
+  const fired = [...new Set(log.filter(x => FLASHING.has(x.kind) && x.att !== undefined && x.att !== null).map(x => x.att))];
   const keys = new Set(), hexes = [];
   for (const i of fired) for (const h of footprint(us[i]).flat()){ const k = hk(h); if (!keys.has(k)){ keys.add(k); hexes.push([h[0], h[1]]) } }
   hexes.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
@@ -771,7 +773,7 @@ function flashes(us, log, field){                  // after the shooting, in poo
 }
 function nightDrift(units, i, size, field, rng){   // a unit that moved in the dark may lose its direction: {lost, unit}
   const u = units[i], L = lightOf(field);
-  if (!L || !L.lost) return { lost: false, unit: u };
+  if (!L?.lost) return { lost: false, unit: u };
   const chance = Math.max(0, Math.min(100, L.lost + Math.floor((60 - quality(u.quality).nerve) / 2)));
   if (rng.randint(1, 100) > chance) return { lost: false, unit: u };
   const turned = { ...u, facing: mod6(u.facing + (rng.randint(1, 100) % 2 ? -1 : 1)), lost: FD.weather.light.lost_for };

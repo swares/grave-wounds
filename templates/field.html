@@ -682,16 +682,15 @@ function lostGuns(l){                             // "; 2 guns knocked out"
   if (!l.dismounted) return "";
   return l.dismounted === 1 ? "; 1 gun knocked out" : `; ${l.dismounted} guns knocked out`;
 }
+const signed = (n, up = "+", down = "−") => `${n > 0 ? up : down}${Math.abs(n)}%`;   // "+10%" or "−5%"
 function shotNotes(l){                            // " (cover -20%, weather -10%)"
-  const bits = [];
-  if (l.blind) bits.push("blind, down its fixed line");
-  if (l.flash) bits.push("seen by its muzzle flashes");
+  const bits = [[l.blind, "blind, down its fixed line"], [l.flash, "seen by its muzzle flashes"]].filter(([on]) => on).map(([, text]) => text);
   if (l.cover) bits.push(`cover −${l.cover}%`);
   if (l.over) bits.push(`loosing high over the units between −${l.over}%`);
   if (l.seen !== undefined && l.seen < 1) bits.push(`hidden: ${Math.round(l.seen * 100)}% of shots find a man`);
   if (l.graze) bits.push(`firm ground +${l.graze}%`);
-  if (l.fuse) bits.push(`fuses cut: air bursts ${l.fuse > 0 ? "+" : "−"}${Math.abs(l.fuse)}%`);
-  if (l.penalty) bits.push(`weather${lightOf(S.field) ? " and light" : ""} ${l.penalty > 0 ? "−" : "+"}${Math.abs(l.penalty)}%`);
+  if (l.fuse) bits.push(`fuses cut: air bursts ${signed(l.fuse)}`);
+  if (l.penalty) bits.push(`weather${lightOf(S.field) ? " and light" : ""} ${signed(l.penalty, "−", "+")}`);
   if (l.misfire) bits.push(`${l.misfire}% misfire`);
   return bits.length ? ` (${bits.join(", ")})` : "";
 }
@@ -1268,7 +1267,9 @@ function renderFixed(u, setup){                  // Lay a fixed line / Clear it:
   b.hidden = !u || !isMg(u.weapon);
   if (b.hidden) return;
   b.disabled = S.phase === "over" || out_(u) || (!setup && u.side !== moving()) || (!u.fixed && !layable());
-  b.textContent = S.laying === u.id ? "Click a hex…" : (u.fixed ? "Clear the fixed line" : "Lay a fixed line");
+  let label = u.fixed ? "Clear the fixed line" : "Lay a fixed line";
+  if (S.laying === u.id) label = "Click a hex…";
+  b.textContent = label;
   b.setAttribute("aria-pressed", String(S.laying === u.id));
 }
 function toggleFixed(){
