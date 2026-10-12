@@ -1046,10 +1046,10 @@ def _field_shape_errors(d: Data, f: dict, where: str) -> list[str]:
     return errors
 
 
-def _light_errors(WX: dict) -> list[str]:
+def _light_errors(wx: dict) -> list[str]:
     """weather.yaml light: levels with a name, a sight in battle hexes (or null) and an aim %;
     day among them; weather that shows the moon among the conditions."""
-    L = WX.get("light")
+    L = wx.get("light")
     if not L:
         return []
     errors = [f"weather.yaml: light.levels.{k} needs a name, sight (a number or null) and aim (a number)"
@@ -1057,7 +1057,7 @@ def _light_errors(WX: dict) -> list[str]:
               if not (v.get("name") and (v.get("sight") is None or isinstance(v["sight"], int)) and isinstance(v.get("aim"), int))]
     if "day" not in L.get("levels", {}):
         errors.append("weather.yaml: light.levels needs day")
-    errors += [f"weather.yaml: light.moon_shows names unknown condition {c}" for c in L.get("moon_shows", []) if c not in WX["conditions"]]
+    errors += [f"weather.yaml: light.moon_shows names unknown condition {c}" for c in L.get("moon_shows", []) if c not in wx["conditions"]]
     return errors + [f"weather.yaml: light.{k} must be a number" for k in ("dusk_hours", "moon_from", "lasts", "flare") if not isinstance(L.get(k), (int, float))]
 
 

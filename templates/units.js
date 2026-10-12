@@ -447,7 +447,7 @@ function sightHexes(field, h = null){             // how far the weather and the
   const cond = field?.weather?.cond, L = lightOf(field);
   let vis = cond && FD.weather ? FD.weather.conditions[cond].visibility : null;
   if (vis === undefined) vis = null;
-  if (L && L.sight !== null && L.sight !== undefined && !lit(field, h)) vis = vis === null ? L.sight : Math.min(vis, L.sight);
+  if ((L?.sight ?? null) !== null && !lit(field, h)) vis = vis === null ? L.sight : Math.min(vis, L.sight);
   return vis === null ? null : Math.floor(vis / UD.range_scale);
 }
 function sees(field, u, h, sight){                // any hex of u sees h: within sight, no woods between, no smoke on the line
