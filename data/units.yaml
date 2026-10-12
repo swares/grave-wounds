@@ -132,6 +132,23 @@ artillery:
     beyond: 30               # field hexes past the target a bounding ball can still strike a unit
     strike: [[10, 30], [20, 20], [30, 10]]     # [up to this many hexes past the target, % a round strikes]
     soft: 1                  # mud or snow at this level or more stops the bounce
+  # Guns in full. The GM may order a battery's shot instead of leaving it to the range (canister
+  # only within canister range); smoothbores fire round shot, shell (spherical case) or canister,
+  # howitzers shell or canister, rifles shell, solid bolts (as round shot) or canister. A battery
+  # can split off a section of its guns at a second target, with its own shot. Gunners cut their
+  # fuses rather than leave them to chance: the air band of the fuse table grows by the crew's
+  # `quality` figure, and by `ranged` when the battery fired at the same target last exchange at
+  # much the same range (within `within` hexes). A battery charged in front fires `closing`
+  # rounds of canister a gun at its first charger as it comes in, before the melee.
+  shots:
+    smoothbore: [round, shell, canister]
+    howitzer: [shell, canister]
+    rifled: [shell, round, canister]
+  set_fuse:
+    ranged: 15
+    within: 2
+    quality: {green: -10, regular: 0, veteran: 10}
+  closing: 1
 
 # ---------- quality ----------
 # The unit's fighting quality: attack and defence (parry or dodge) % for its men, and the

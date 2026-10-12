@@ -310,21 +310,29 @@ def _gun_rules(d) -> list[str]:
         f"Each served gun fires {A['rounds']} round an exchange at the nearest enemy in front within {yd(A['range'] * m)}: canister to {yd(A['canister_to'] * m)}, round shot beyond. "
         f"Round shot strikes the unit ({bands(rs['strike'])}), then each man in its path (the ranks deep, at most {rs['path_max']}) is hit at {rs['file']}%, so columns suffer most. "
         f"Canister throws {cn['balls']} chances a round ({bands(cn['strike'])}). Cover, the weather and open order cut both. Each man hit takes a wound roll at {A['attack']}% with no parry.",
-        f"<b>Targets and line of fire:</b> the GM can name a battery's target; it fires at it when it can, otherwise at the nearest. No unit shoots through another unit, "
+        f"<b>Targets and line of fire:</b> the GM can name a battery's target; it fires at it when it can, otherwise at the nearest. "
+        "The GM can order its shot (canister only within canister range) and split off a section of its guns at a second target, with its own shot. "
+        f"Gunners cut fuses: the air band of the fuse table grows by crew quality {_signed(A['set_fuse']['quality'])}, and {A['set_fuse']['ranged']} more on a target fired at last exchange "
+        f"at much the same range. A battery charged in front fires {A['closing']} round of canister a gun into the charge as it comes in. No unit shoots through another unit, "
         "friend or enemy, except from high ground over a unit on lower ground (guns: round shot, never canister); "
         f"bows and crossbows may loose high over units at {d.units['line_of_fire']['arc_penalty']}% off. "
         f"<b>Shell:</b> howitzers fire shell beyond canister range over anything between; a shell lands ({bands(A['howitzer']['strike'])}), "
-        f"then its fuse is rolled: {_fuse_text(A['howitzer']['fuse'])}; a burst throws {A['howitzer']['fragments']} chances at {A['howitzer']['air_hit']}% in the air "
+        f"then its fuse does, before the gunners' setting: {_fuse_text(A['howitzer']['fuse'])}; a burst throws {A['howitzer']['fragments']} chances at {A['howitzer']['air_hit']}% in the air "
         f"(cover counts half) or {A['howitzer']['fragment_hit']}% on the ground. "
         f"Canister gains {cn['graze']}% beyond {yd(cn['strike'][0][0] * m)} on firm ground. "
         f"<b>Rifled guns</b> reach {yd(A['rifled']['range'] * m)} and fire percussion shell beyond canister range on a flat path (a clear line of fire, no bounding): "
-        f"it falls on the target ({bands(A['rifled']['strike'])}) and its fuse is rolled: {_fuse_text(A['rifled']['fuse'])}; their canister throws {A['rifled']['canister_balls']} balls a round. "
+        f"it falls on the target ({bands(A['rifled']['strike'])}) and its fuse does, before the setting: {_fuse_text(A['rifled']['fuse'])}; their canister throws {A['rifled']['canister_balls']} balls a round. "
         f"<b>Ricochet:</b> on firm ground round shot bounds on, striking the first other unit within {yd(rc['beyond'] * m)} past the target ({bands(rc['strike'])} past it) "
         "and going through its ranks; rough ground, woods, marsh, mud or snow stop it. "
         f"A round-shot strike on the battery it is fired at knocks out a gun at {A['dismount']}%. <b>Ammunition:</b> {A['ammo']} rounds a gun; resupplying takes an exchange out of contact, without moving or firing.",
         f"<b>Limbering:</b> a limbered battery moves but cannot fire; unlimbered it fires but can only be manhandled {A['pushed']} hexes. Changing over takes an exchange, "
         f"without moving or firing. Hand to hand the crews fight with {d.weapons[A['crew_weapon']]['name'].lower()}. A battery that breaks loses its guns.",
     ]
+
+
+def _signed(by_quality: dict) -> str:
+    """'(green −10, regular 0, veteran +10)'."""
+    return "(" + ", ".join(f"{q} {'+' if v > 0 else '−' if v < 0 else ''}{abs(v)}" for q, v in by_quality.items()) + ")"
 
 
 def _fuse_text(bands) -> str:

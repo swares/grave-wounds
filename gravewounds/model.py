@@ -839,7 +839,7 @@ def _units_extra_errors(d: Data) -> list[str]:
     for wid in U.get("line_of_fire", {}).get("arcing", []):
         if wid not in d.weapons or "range" not in d.weapons[wid]:
             errors.append(f"units.yaml: line_of_fire.arcing names {wid}, which is not a weapon with a range")
-    return errors + _pikes_errors(d) + _indirect_errors(d) + _assault_errors(d)
+    return errors + _pikes_errors(d) + _indirect_errors(d) + _assault_errors(d) + _guns_errors(d)
 
 
 def _assault_errors(d: Data) -> list[str]:
@@ -852,6 +852,22 @@ def _assault_errors(d: Data) -> list[str]:
     pct = lambda v: isinstance(v, (int, float)) and 0 <= v <= 100
     errors += [f"units.yaml: assault means {k} needs knock and struck % (0 to 100)" for k, m in A.get("means", {}).items()
                if not (pct(m.get("knock")) and pct(m.get("struck")))]
+    return errors
+
+
+def _guns_errors(d: Data) -> list[str]:
+    """units.yaml artillery: shots for each kind of gun from round, shell and canister; a fuse
+    figure for every quality; whole-number closing rounds."""
+    A = d.units.get("artillery") or {}
+    if "shots" not in A:
+        return []
+    errors = [f"units.yaml: artillery.shots {k} names an unknown shot" for k, v in A["shots"].items()
+              if not v or any(x not in ("round", "shell", "canister") for x in v)]
+    errors += [f"units.yaml: artillery.shots has no {k} guns" for k in ("smoothbore", "howitzer", "rifled") if k not in A["shots"]]
+    F = A.get("set_fuse") or {}
+    errors += [f"units.yaml: artillery.set_fuse.quality has no {q}" for q in d.units.get("quality", {}) if q not in F.get("quality", {})]
+    if not all(isinstance(F.get(k), int) for k in ("ranged", "within")) or not isinstance(A.get("closing"), int):
+        errors.append("units.yaml: artillery needs whole-number set_fuse.ranged, set_fuse.within and closing")
     return errors
 
 
