@@ -15396,6 +15396,7 @@
    "ague": "Ague (malaria)",
    "plague": "Plague",
    "scurvy": "Scurvy",
+   "frostbite": "Frostbite",
    "wound": "Wounds",
    "fever": "Wound fever (sepsis)"
   }
@@ -15698,6 +15699,27 @@
      0
     ]
    }
+  },
+  "cold": {
+   "levels": {
+    "hard": {
+     "name": "Hard frost",
+     "below": -15,
+     "jam": 10,
+     "move": 0
+    },
+    "bitter": {
+     "name": "Bitter cold",
+     "below": -25,
+     "jam": 25,
+     "move": 1
+    }
+   },
+   "jams": [
+    "machine_gun",
+    "pistol_smg",
+    "rifle_assault"
+   ]
   },
   "rest_levels": [
    "bad",

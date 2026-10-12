@@ -448,6 +448,7 @@ def validate(d: Data) -> None:
                 if row[k] not in WX["conditions"]:
                     errors.append(f"weather.yaml: intensity names unknown condition {row[k]}")
         errors += _light_errors(WX)
+        errors += _cold_errors(d)
         for kid, cl in WX["climates"].items():
             for k in ("high", "low", "rain", "fog"):
                 if len(cl.get(k, [])) != 12:
@@ -1061,6 +1062,18 @@ def _field_shape_errors(d: Data, f: dict, where: str) -> list[str]:
     return errors
 
 
+def _cold_errors(d: Data) -> list[str]:
+    """weather.yaml cold (levels with a below, jam and move; jams known weapons) and disease.yaml
+    frostbite (its peak steps on the track)."""
+    C, F, errors = d.weather.get("cold") or {}, (d.disease or {}).get("frostbite"), []
+    errors += [f"weather.yaml: cold.levels.{k} needs a name and numbers below, jam and move" for k, v in C.get("levels", {}).items()
+               if not (v.get("name") and all(isinstance(v.get(x), (int, float)) for x in ("below", "jam", "move")))]
+    errors += [f"weather.yaml: cold.jams names unknown weapon {w}" for w in C.get("jams", []) if w not in d.weapons]
+    if F:
+        errors += [f"disease.yaml: frostbite peak step {x.get('step')} is not on the track" for x in F.get("peak", []) if x.get("step") not in d.disease["steps"]]
+    return errors
+
+
 def _light_errors(wx: dict) -> list[str]:
     """weather.yaml light: levels with a name, a sight in battle hexes (or null) and an aim %;
     day among them; weather that shows the moon among the conditions."""
@@ -1082,6 +1095,8 @@ def _field_weather_errors(d: Data, f: dict, where: str) -> list[str]:
     errors, wx = [], f.get("weather") or {}
     if wx and wx.get("cond") not in d.weather.get("conditions", {}):
         errors.append(f"{where}: unknown weather {wx.get('cond')}")
+    if wx.get("cold") and wx["cold"] not in ((d.weather.get("cold") or {}).get("levels") or {}):
+        errors.append(f"{where}: unknown cold {wx.get('cold')}")
     if wx.get("light", "day") not in (d.weather.get("light") or {}).get("levels", {"day": 1}):
         errors.append(f"{where}: unknown light {wx.get('light')}")
     pts = d.weather.get("wind_points", [])

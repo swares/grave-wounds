@@ -521,7 +521,27 @@ def disease_rules(d) -> list[str]:
         "Hygiene comes from the camp (bivouac poor, quarters good, others fair) unless the GM sets it. Plague needs the GM's \"plague in the region\".",
         f"<b>A leech:</b> the best Leechcraft among the named men with a force (alive, not too sick to work) adds Leechcraft / {D['leech']['per']} "
         "to every recovery check of its sick and wounded, and takes as much off each wound's chance of turning septic.",
-    ] + _scurvy_rules(d) + _wound_track_rules(d)
+    ] + _scurvy_rules(d) + _frostbite_rules(d) + _wound_track_rules(d)
+
+
+def _fc(c: float) -> str:
+    """A temperature, US units first: '5 °F (-15 °C)'."""
+    return f"{c * 9 / 5 + 32:.0f} °F ({c:g} °C)"
+
+
+def _frostbite_rules(d) -> list[str]:
+    F, C = d.disease.get("frostbite"), (d.weather or {}).get("cold")
+    if not F:
+        return []
+
+    def level(v):
+        move = f", +{v['move']} movement a hex" if v.get("move") else ""
+        return f"{v['name'].lower()} (low at or under {_fc(v['below'])}): automatic weapons misfire {v['jam']}% more{move}"
+    levels = "; ".join(level(v) for v in (C or {}).get("levels", {}).values())
+    return [f"<b>Frostbite:</b> on a night whose low is {_fc(F['below'])} or colder, each well man may be frostbitten: {F['base']}% plus {F['per_degree']}% "
+            f"a degree colder, less {F['shelter']}% of that for each point of the camp's shelter, times the chance he fails to resist. It shows at once "
+            f"(d100: mending, serious or grave) and is checked every {F['every']} days at virulence {F['virulence']}."
+            + (f" <b>Cold in battle:</b> {levels}." if levels else "")]
 
 
 def _scurvy_rules(d) -> list[str]:
@@ -835,7 +855,7 @@ def field_bundle(d) -> dict:
                     for l in d.locations},
         "track": {"steps": d.disease["steps"], "wounds": d.disease["wounds"]},
         "works": d.works,
-        "weather": {k: d.weather[k] for k in ("winds", "conditions", "battle", "ground", "wind_points", "driven_sight", "light") if k in d.weather},
+        "weather": {k: d.weather[k] for k in ("winds", "conditions", "battle", "ground", "wind_points", "driven_sight", "light", "cold") if k in d.weather},
         "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
         "fields": {fid: {"name": f["name"], "sides": f["sides"], "table": f["table"], "field": battlefield(d, fid), "units": f.get("units", []),
                          "travel": f.get("travel"), "period": periods(d)["fields"][fid]}
@@ -888,7 +908,7 @@ def bundle(d) -> dict:
         "works": d.works,
         "disease": {"steps": d.disease["steps"], "in_fight": d.disease["in_fight"], "endurance": d.disease["endurance"],   # named characters' sickness
                     "wounds": {k: d.disease["wounds"][k] for k in ("start", "clock_step", "fever_after")}, "blood_per_day": d.disease["named_blood_per_day"],
-                    "names": {k: v["name"] for k, v in {**d.disease["diseases"], "scurvy": d.disease["scurvy"], **{w: d.disease["wounds"][w] for w in ("wound", "fever")}}.items()}},
+                    "names": {k: v["name"] for k, v in {**d.disease["diseases"], "scurvy": d.disease["scurvy"], **({"frostbite": d.disease["frostbite"]} if "frostbite" in d.disease else {}), **{w: d.disease["wounds"][w] for w in ("wound", "fever")}}.items()}},
         "weather": d.weather,
         "wounds": wounds,
         "modifiers": list(d.modifiers.values()),

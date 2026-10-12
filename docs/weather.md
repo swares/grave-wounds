@@ -159,6 +159,20 @@ applies: whichever is shorter counts.
 - What it leaves out: muzzle flashes, machine guns firing on fixed lines laid by day, and
   men losing their way in the dark. The GM can rule on these.
 
+## Cold (the field map)
+
+The field map's weather has a **Cold**: not freezing hard, hard frost or bitter cold. A battle
+sent from the travel map takes it from the day's low: hard frost at 5 °F (−15 °C) or colder,
+bitter cold at −13 °F (−25 °C) or colder.
+
+| Cold | Automatic weapons (machine guns, submachine guns, assault rifles) | Movement |
+|---|---|---|
+| Hard frost | misfire 10% more | – |
+| Bitter cold | misfire 25% more | +1 a hex |
+
+Frostbite itself is taken on the travel map, night by night (see
+[travel.md](travel.md#disease-and-camp-hygiene)).
+
 **Set up the fight** carries the day's weather, the wind's direction and the ground to the battle map. The
 roller's weather bar can change them.
 

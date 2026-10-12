@@ -193,6 +193,7 @@ legend{padding:0}
           <div><label for="sel-wind">Wind</label><select id="sel-wind"></select></div>
           <div><label for="sel-wdir">Blowing</label><select id="sel-wdir"></select></div>
           <div><label for="sel-light">Light</label><select id="sel-light"></select></div>
+          <div><label for="sel-cold">Cold</label><select id="sel-cold"></select></div>
         </div>
         <div class="row">
           <div><label for="in-mud">Mud (0-3)</label><input type="number" id="in-mud" min="0" max="3"></div>
@@ -379,7 +380,7 @@ function fromTravel(h){                            // a battle with the travel m
     log: [], seq: 1, forces: h.forces.map(f => ({ ...f })), from: h, after: null, field: newField(), camp: null, tool: "unit",
     msg: `From the travel map: ${h.place}, ${h.day}, ${h.time}. Split each force into units with Add a unit, then place them.` };
   if (h.weather) S.field.weather = { cond: h.weather.cond, wind: h.weather.wind, dir: h.weather.dir, ground: { mud: h.weather.ground?.mud || 0, snow: h.weather.ground?.snow || 0 },
-    ...(h.weather.light && h.weather.light !== "day" ? { light: h.weather.light } : {}) };
+    ...(h.weather.light && h.weather.light !== "day" ? { light: h.weather.light } : {}), ...(h.weather.cold ? { cold: h.weather.cold } : {}) };
   if (h.battlefield && FD.fields[h.battlefield]) deployOnBattlefield(h.battlefield);
   else if (h.camp && WK.camps[h.camp.kind]?.layout) layCamp(h.camp, def);
 }
@@ -855,6 +856,7 @@ function fillTools(){
     + `<optgroup label="Paint the ground">${g}</optgroup><optgroup label="Works on a hex side (click just inside it, on the high side)">${e}</optgroup><optgroup label="Works in a hex">${h}</optgroup>`;
   $("#sel-wx").innerHTML = Object.entries(WXD.conditions).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-wind").innerHTML = WXD.winds.map(w => `<option value="${w.id}">${esc(w.name)}</option>`).join("");
+  $("#sel-cold").innerHTML = `<option value="">Not freezing hard</option>` + Object.entries(WXD.cold?.levels || {}).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-light").innerHTML = Object.entries(WXD.light?.levels || { day: { name: "Daylight" } }).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#legend").innerHTML = Object.entries(FD.units.ground).filter(([k]) => k !== "open").map(([k, v]) => `<span><i class="g-${k}" style="background:var(--g-${k})"></i>${esc(v.name)}</span>`).join("")
     + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
@@ -933,6 +935,8 @@ function weatherNote(){                           // what today's weather and gr
   const dn = windDirNote(w), up = S.field.up && S.field.up !== "N" ? ` (${WIND_NAMES[S.field.up]} is at the top of this map)` : "";
   if (dn) out.push(dn + up);
   if (deepGoing(w.ground)) out.push(`deep going: +${deepGoing(w.ground)} movement a hex`);
+  const C = coldOf(S.field);
+  if (C) out.push(`${C.name.toLowerCase()}: automatic weapons misfire ${C.jam}% more` + (C.move ? `, +${C.move} movement a hex` : ""));
   const L = lightOf(S.field);
   if (L){
     const far = L.sight === null ? "" : "no aiming or calling fire beyond " + Math.floor(L.sight / FD.units.range_scale) + " hexes (" + fmtM(L.sight * FD.battle_hex_m) + ") except at lit hexes, ";
@@ -942,7 +946,7 @@ function weatherNote(){                           // what today's weather and gr
 }
 function renderWeather(){
   const w = S.field.weather;
-  $("#sel-wx").value = w.cond; $("#sel-wind").value = w.wind; $("#sel-light").value = w.light || "day";
+  $("#sel-wx").value = w.cond; $("#sel-wind").value = w.wind; $("#sel-light").value = w.light || "day"; $("#sel-cold").value = w.cold || "";
   $("#sel-wdir").innerHTML = windDirOptions(w.dir || "");
   $("#in-mud").value = w.ground.mud || 0; $("#in-snow").value = w.ground.snow || 0;
   $("#wx-note").textContent = weatherNote();
@@ -950,9 +954,9 @@ function renderWeather(){
 }
 function setWeather(){
   const lvl = (id, hi) => Math.max(0, Math.min(hi, Number.parseInt($(id).value, 10) || 0));
-  const light = $("#sel-light").value;
+  const light = $("#sel-light").value, cold = $("#sel-cold").value;
   S.field.weather = { cond: $("#sel-wx").value, wind: $("#sel-wind").value, dir: $("#sel-wdir").value || undefined, ground: { mud: lvl("#in-mud", WXD.ground.mud_max), snow: lvl("#in-snow", WXD.ground.snow_max) },
-    ...(light && light !== "day" ? { light } : {}) };
+    ...(light && light !== "day" ? { light } : {}), ...(cold ? { cold } : {}) };
   render();
 }
 
@@ -1468,7 +1472,7 @@ function init(){
     renderMap();
   });
   $("#sel-tool").onchange = e => { S.tool = e.target.value; S.msg = ""; render() };
-  ["#sel-wx", "#sel-wind", "#sel-wdir", "#sel-light", "#in-mud", "#in-snow"].forEach(id => { $(id).onchange = setWeather });
+  ["#sel-wx", "#sel-wind", "#sel-wdir", "#sel-light", "#sel-cold", "#in-mud", "#in-snow"].forEach(id => { $(id).onchange = setWeather });
   $("#sel-assault").onchange = e => { const u = selUnit(); if (u){ u.assault = e.target.value || null; S.msg = u.assault ? `${u.name} will storm any enemy-held bunker across its front each exchange.` : `${u.name} stops storming.`; render() } };
   $("#btn-breach").onclick = () => { const u = selUnit(); if (u){ u.breach = !u.breach; S.msg = u.breach ? `${u.name} will hack at the works in front of it each exchange.` : `${u.name} stops breaching.`; render() } };
   $("#units").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; S.msg = ""; render() } });
