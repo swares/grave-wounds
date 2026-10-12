@@ -1303,6 +1303,20 @@ is 140 × 110 hexes, about 1,530 by 1,040 yards (1,400 by 950 m), north at the t
   that can knock out the armour, fighters to the north and south, and machine guns.
 - Fire support: Russian artillery and mortars; Chechen mortars.
 
+**Fallujah: into the Jolan, 9 November 2004** (`data/fields/fallujah-2004.yaml`). The field is
+140 × 120 hexes, about 1,530 by 1,140 yards (1,400 by 1,040 m), north at the top.
+- Apartment blocks (**tall buildings**) and the railway run across the top, and the
+  Euphrates and its palms down the left. The main street runs south from the railway.
+- Everywhere else are the Jolan's lanes and walled houses (**buildings**, with **rubble**),
+  with the park and four mosques among them.
+- Overcast.
+- Coalition (veteran, Interceptor armour): two Marine companies astride the main street,
+  with machine guns, and 2-7 Cavalry's M1A1 **tanks** and Bradleys (as armoured carriers)
+  leading down it.
+- Insurgents (in cover): fighters in the houses and a mosque, **RPG** teams by the main
+  street and in the park, and machine guns.
+- Fire support: 155 mm howitzers, mortars and close air support; insurgent mortars.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
