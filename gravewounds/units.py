@@ -2286,14 +2286,9 @@ def move(d: Data, units: list, i: int, pos, facing: int, size: tuple, field: dic
     move that ends in contact with an enemy may be up to charge_move times the allowance (a
     charge; not for a shaken unit)."""
     u = units[i]
-    if u["state"] in ("broken", "fled"):
-        return {"ok": False, "why": "it is running"}
-    if in_contact(d, units, occupancy(d, units), i) and (list(pos) != u["pos"] or facing != u["facing"]):
-        return {"ok": False, "why": "it is in contact"}
-    if u.get("lost") and list(pos) != u["pos"]:
-        return {"ok": False, "why": "it has lost its way in the dark (it may turn)"}
-    if u.get("immobile") and list(pos) != u["pos"]:
-        return {"ok": False, "why": f"{u['immobile']} of its vehicles cannot move (abandon them to move on; it may turn)"}
+    why = _held_still(d, units, i, pos, facing)
+    if why:
+        return {"ok": False, "why": why}
     turns = min((facing - u["facing"]) % 6, (u["facing"] - facing) % 6)
     most = allowance(d, u) * d.units["charge_move"]
     steps = _path_len(d, units, i, pos, size, most, field)
@@ -2310,6 +2305,22 @@ def move(d: Data, units: list, i: int, pos, facing: int, size: tuple, field: dic
     if contact and u["state"] == "steady" and cost <= most:
         return {"ok": True, "cost": cost, "charge": True}
     return {"ok": False, "why": "too far"}
+
+
+def _held_still(d: Data, units: list, i: int, pos, facing: int) -> str | None:
+    """Why unit i cannot move to pos (or turn to facing) at all, or None: running, in contact,
+    lost in the dark, or with vehicles that cannot move."""
+    u = units[i]
+    goes = list(pos) != u["pos"]
+    if u["state"] in ("broken", "fled"):
+        return "it is running"
+    if in_contact(d, units, occupancy(d, units), i) and (goes or facing != u["facing"]):
+        return "it is in contact"
+    if u.get("lost") and goes:
+        return "it has lost its way in the dark (it may turn)"
+    if u.get("immobile") and goes:
+        return f"{u['immobile']} of its vehicles cannot move (abandon them to move on; it may turn)"
+    return None
 
 
 def sweep_cost(d: Data, field: dict | None, before: dict, after: dict) -> int:
