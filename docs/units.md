@@ -1023,6 +1023,30 @@ field is 200 × 170 hexes, about 2,190 by 1,610 yards (2,000 by 1,470 m), north 
 It is drawn by `tools/maps/make_chipyong_field.mjs`, from the plain facts of the battle, not
 traced from any map.
 
+**Landing zone X-Ray, 14 November 1965** (`data/fields/xray-1965.yaml`). The field is 160 × 130
+hexes, about 1,750 by 1,240 yards (1,600 by 1,130 m), north at the top.
+- The clearing right of the middle is the landing zone (H): elephant grass and a termite hill
+  or two. The dry creek bed (rough) runs west of it. The lower slopes of the Chu Pong massif
+  (woods on high ground) are on the left, with the knoll where B Company's 2nd Platoon was cut
+  off to the north-west. Scrub trees, tall grass and termite hills are all round.
+- A fair, still afternoon.
+- United States (1st Battalion, 7th Cavalry):
+  - B Company across the creek bed;
+  - its 2nd Platoon on the knoll;
+  - A Company along the creek bed on B's left;
+  - C Company south of the clearing;
+  - the command post's machine guns and mortars.
+- **In the air:** D Company, and B Company of the 2nd Battalion at dusk, coming in at the
+  landing zone (see *Landing by air*).
+- North Vietnamese (veteran): the 9th Battalion of the 66th Regiment down off the massif, the
+  7th from the south-west, a company round the knoll, and machine guns.
+- Fire support: 105 mm howitzers at Falcon, 81 mm mortars, rocket helicopters (gunships) and
+  Skyraiders and jets with bombs and napalm (fighter-bombers); North Vietnamese mortars.
+- The wound tables are Vietnam's (hospitalized wounded).
+
+It is drawn by `tools/maps/make_xray_field.mjs`, from the plain facts of the battle, not traced
+from any map.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
