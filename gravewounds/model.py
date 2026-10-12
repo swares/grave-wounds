@@ -839,7 +839,20 @@ def _units_extra_errors(d: Data) -> list[str]:
     for wid in U.get("line_of_fire", {}).get("arcing", []):
         if wid not in d.weapons or "range" not in d.weapons[wid]:
             errors.append(f"units.yaml: line_of_fire.arcing names {wid}, which is not a weapon with a range")
-    return errors + _pikes_errors(d) + _indirect_errors(d)
+    return errors + _pikes_errors(d) + _indirect_errors(d) + _assault_errors(d)
+
+
+def _assault_errors(d: Data) -> list[str]:
+    """units.yaml assault: known works and weapons, each means a knock and struck % (0 to 100)."""
+    A = d.units.get("assault")
+    if not A:
+        return []
+    errors = [f"units.yaml: assault.works names unknown hex work {w}" for w in A.get("works", []) if w not in d.works.get("hex_works", {})]
+    errors += [f"units.yaml: assault names unknown weapon {w}" for w in (A.get("weapon"), A.get("fallback")) if w not in d.weapons]
+    pct = lambda v: isinstance(v, (int, float)) and 0 <= v <= 100
+    errors += [f"units.yaml: assault means {k} needs knock and struck % (0 to 100)" for k, m in A.get("means", {}).items()
+               if not (pct(m.get("knock")) and pct(m.get("struck")))]
+    return errors
 
 
 def _pikes_errors(d: Data) -> list[str]:

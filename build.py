@@ -240,7 +240,9 @@ def unit_rules(d) -> list[str]:
         "parried on its defence % (not from flank or rear, nor against missiles), then location, severity from the margin, and armour, as for one fighter.",
         f"Light wounds and grazes fight on. Serious and critical wounds call for a stop check against the unit's Nerve; a failure is down. "
         f"From breech-loaders (the 1860s on) and shell a serious or critical wound is always down and a light one calls for the stop check. A wound fatal within rounds kills. "
-        f"Flank +{M['flank']['attack']}, rear +{M['rear']['attack']}, a mounted charge +{M['charge']['attack']} at x{M['charge']['tempo']:g} tempo (none onto a steady front of pikes in close order, whose men strike horse at +{M['pikes']['attack']}), shaken {M['shaken']['attack']}.",
+        f"Flank +{M['flank']['attack']}, rear +{M['rear']['attack']}, a mounted charge +{M['charge']['attack']} at x{M['charge']['tempo']:g} tempo (none onto a steady front of pikes in close order, whose men strike horse at +{M['pikes']['attack']}), shaken {M['shaken']['attack']}. "
+        f"Men in an intact bunker can't be fought hand to hand; it is stormed with grenades, satchel charges or flamethrowers "
+        f"({', '.join(str(m['knock']) + '%' for m in U['assault']['means'].values())} an exchange to knock it out).",
         f"<b>Unit morale:</b> after an exchange a unit checks if it lost the exchange, has {int(mo['trigger'] * 100)}% of its men down, lost {int(mo['shock'] * 100)}% in the exchange, "
         f"or was struck in flank or rear: d100 against Nerve, +{mo['mods']['in_order']} while steady, +{mo['mods']['leader']} with a leader, {mo['mods']['leader_down']} if he is down, "
         f"{mo['mods']['heavy']} at half strength, {mo['mods']['flank']} if flanked, -{mo['mods']['losing_per_man']} a man it lost more than it put down (at most -{mo['mods']['losing_cap']}). "

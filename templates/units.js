@@ -245,13 +245,20 @@ function struckHex(units, occ, u, h){            // [enemy index, direction] acr
   }
   return null;
 }
+function bunkerAt(field, h){                      // the intact bunker in hex h, or null
+  const it = field?.works?.hexes?.[`${h[0]},${h[1]}`];
+  return it && UD.assault.works.includes(it.type) && intact("hex", it) ? it : null;
+}
+const inBunker = (field, u) => !!field && footprint(u).flat().some(h => bunkerAt(field, h));
 function unitGroups(units, occ, i, groups, field){   // unit i's front hexes' strikes: "i|j|situation|penalty|stakes" -> men
   const u = units[i], rows = footprint(u), men = menByHex(u), reach = FD.weapons[meleeWeapon(u)].reach || 1, abreast = form(u).abreast;
   const per = abreast * Math.min(reach, form(u).ranks);   // a rank for each hex of reach
   (rows[0] || []).forEach((h, k) => {
     const hit = struckHex(units, occ, u, h);
     if (!hit) return;
-    const [j, dn] = hit, [blocked, pen, stk] = across(field, u, h, step(h, dn), reach);
+    const [j, dn] = hit;
+    if (bunkerAt(field, h) || bunkerAt(field, step(h, dn))) return;   // no blows into or out of an intact bunker: it must be stormed
+    const [blocked, pen, stk] = across(field, u, h, step(h, dn), reach);
     let n = Math.min(per, men[k]);
     if (blocked) n = reach >= 2 ? Math.min(abreast, men[k]) : 0;
     if (n <= 0) return;
@@ -330,7 +337,7 @@ function nearestAhead(u, front, fv, hexes, field, clear = null){  // [distance, 
 function volleys(units, field = null){            // [{att, dfd, men, dist, cover, penalty, misfire, reach, from, to, over}]
   const occ = occupancy(units), out = [];
   units.forEach((u, i) => {
-    if (out_(u) || !("range" in FD.weapons[u.weapon]) || inContact(units, occ, i)) return;
+    if (out_(u) || !("range" in FD.weapons[u.weapon]) || (inContact(units, occ, i) && !inBunker(field, u))) return;   // a bunker's men shoot out even in contact
     const best = target(units, i, field, occ);
     if (!best) return;
     const wx = shotWeather(field, u.weapon, best[0], best[2], best[3]);
@@ -400,14 +407,14 @@ function fireMission(ctx, k, b){                  // on an enemy battery or a he
   const { rng, log, field } = ctx;
   const K = UD.indirect.kinds[b.kind], m = b.mission, shells = Math.min(b.tubes * K.rate, b.rounds);
   b.rounds -= shells;
-  b.located = true;
+  if (!K.direct) b.located = true;                 // tanks close behind the line are never located
   if (m.battery !== undefined && m.battery !== null) log.push(...counterFire(field, k, b, shells, K, rng));
   else {
     const bursts = [];
     for (let s = 0; s < shells; s++){ const dirn = rng.randint(0, 5), far = rng.randint(0, K.scatter); bursts.push(step(m.hex, dirn, far)) }
     log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells, at: m.hex, bursts, smoke: !!m.smoke });
     if (m.smoke) laySmoke(field, bursts);
-    else shellUnits(ctx, k, b, bursts);
+    else { shellUnits(ctx, k, b, bursts); knockBunkers(field, k, b, bursts, rng, log) }
   }
   missionOn(b, m, field.size);
 }
@@ -431,6 +438,58 @@ function counterFire(field, k, b, shells, K, rng){   // each shell knocks out on
 function laySmoke(field, bursts){                 // smoke over each burst and the hexes round it, as long as the wind lets it hang
   const S = UD.indirect.smoke, lasts = S.lasts[field.weather?.wind || "calm"], sm = field.smoke || (field.smoke = {});
   for (const at of bursts) for (const h of within(at, S.radius)){ const key = `${h[0]},${h[1]}`; sm[key] = Math.max(sm[key] || 0, lasts) }
+}
+function knockBunkers(field, k, b, bursts, rng, log){   // a shell bursting on a bunker's hex knocks it out at the kind's knock %
+  const knock = UD.indirect.kinds[b.kind].knock || 0;
+  if (!knock) return;
+  for (const at of bursts){
+    const it = bunkerAt(field, at);
+    if (it && rng.randint(1, 100) <= knock){ it.out = true; log.push({ kind: "knocked", sup: k, name: b.name, side: b.side, at }) }
+  }
+}
+function blastWeapon(table){                      // the weapon a storming party's grenades and charges wound as, or null
+  const A = UD.assault, have = FD.tables[table]?.weapons || [];
+  return [A.weapon, A.fallback].find(w => have.includes(w)) || null;
+}
+function assaultAll(us, table, rng, acc, log, field){   // every unit ordered to storm the bunkers across its front
+  const weapon = blastWeapon(table);
+  if (!field || !weapon) return;
+  const occ = occupancy(us);
+  us.forEach((u, i) => { if (UD.assault.means[u.assault] && !out_(u)) storm(us, occ, i, { table, weapon, rng, acc, log, field }) });
+}
+function storm(us, occ, i, ctx){                  // unit i storms each intact, held bunker next to its front hexes once
+  const u = us[i], A = UD.assault, M = A.means[u.assault], done = new Set(), { rng, acc, log, field } = ctx;
+  for (const h of footprint(u)[0] || []){
+    const hit = struckHex(us, occ, u, h);
+    if (!hit) continue;
+    const [j, dn] = hit, x = step(h, dn), it = bunkerAt(field, x), key = `${x[0]},${x[1]}`;
+    if (!it || done.has(key)) continue;
+    done.add(key);
+    const need = M.knock + (us[j].pinned ? A.pinned : 0), roll = rng.randint(1, 100);
+    const line = { kind: "assault", unit: i, dfd: j, means: u.assault, at: x, roll, need, out: roll <= need };
+    if (roll > need){ log.push(line); continue }
+    it.out = true;
+    const t = bunkerStruck(us, j, x, M, ctx);
+    acc.dealt[i] += t.down;
+    log.push(...logged(line, t));
+  }
+}
+function bunkerStruck(us, j, x, M, ctx){          // the men in a bunker's hex when it falls: struck by blast or by flame
+  const b = us[j], { table, weapon, rng, acc } = ctx, hexes = footprint(b).flat();
+  const k = hexes.findIndex(h => h[0] === x[0] && h[1] === x[1]), there = k >= 0 ? menByHex(b)[k] : 0;
+  let struck = 0, t;
+  for (let m = 0; m < there; m++) if (rng.randint(1, 100) <= M.struck) struck++;
+  if (M.flame){                                   // burns: out of the fight, no location roll; some killed outright
+    t = newTally();
+    Object.assign(t, { blows: struck, hits: struck, critical: struck, down: struck });
+    for (let m = 0; m < struck; m++){
+      if (rng.randint(1, 100) <= UD.assault.flame_dead) t.dead++;
+      else noteHurt(t, "critical", { lethal: "days", infection: "high" }, true);
+    }
+  } else t = blows({ table, weapon, kit: null, quality: "regular" }, sideOfUnit(b, table), struck, UD.assault.attack, 0, rng, { exposed: exposure(b, false, true), shift: -1000 });
+  t = takeHurt(b, t);
+  acc.lost[j] += t.down; acc.dead[j] += t.dead;
+  return { ...t, struck };
 }
 function shellUnits(ctx, k, b, bursts){           // the men struck in every unit by a battery's bursts, and their wounds
   const { us, table, weapon, rng, acc, log, field, under } = ctx;
@@ -461,9 +520,10 @@ function shellStruckUnit(field, u, bursts, kind, rng){   // men of u struck by t
   return near ? struck : null;
 }
 function shellCut(field, h, prone){               // shellfire's struck % times this: tree bursts in woods; else going to ground and the ground's cover
-  const I = UD.indirect, TB = I.tree_burst;
-  if (TB.ground.includes(field?.ground?.[`${h[0]},${h[1]}`] || "open")) return TB.factor * (prone ? TB.prone : 1);
-  return (prone ? I.prone : 1) * (100 - (groundAt(field, h).cover || 0)) / 100;
+  const I = UD.indirect, TB = I.tree_burst, bk = bunkerAt(field, h);
+  const shelter = bk ? (100 - (WK.hex_works[bk.type].cover_here || 0)) / 100 : 1;   // a bunker's men get its cover against shell too
+  if (TB.ground.includes(field?.ground?.[`${h[0]},${h[1]}`] || "open")) return TB.factor * (prone ? TB.prone : 1) * shelter;
+  return (prone ? I.prone : 1) * (100 - (groundAt(field, h).cover || 0)) / 100 * shelter;
 }
 function suppressAll(us, under, rng){             // under fire: Nerve or pinned for the next exchange
   const S = UD.suppression, log = [];
@@ -618,6 +678,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   strikeAll(us, table, rng, acc, log, field);
   shootAll(us, table, rng, acc, log, field, under);
   indirectAll(us, table, rng, acc, log, field, under);
+  assaultAll(us, table, rng, acc, log, field);
   breachAll(us, field, log);
   const occ = occupancy(us), before = us.map(u => u.men);
   us.forEach((u, i) => {

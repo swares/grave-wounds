@@ -477,6 +477,18 @@ def pike_front(d: Data, u: dict) -> bool:
     return u["state"] == "steady" and u["formation"] in P["formations"] and melee_weapon(d, u) in P["weapons"] and not u.get("mounted")
 
 
+def bunker_at(d: Data, field: dict | None, h) -> dict | None:
+    """The intact bunker (a hex work assault.works names) in hex h, or None."""
+    hexes = ((_works(field) or {}).get("hexes") or {})
+    it = hexes.get(f"{h[0]},{h[1]}") if hexes else None
+    return it if it and it["type"] in d.units["assault"]["works"] and C.intact(d, "hex", it) else None
+
+
+def in_bunker(d: Data, field: dict | None, u: dict) -> bool:
+    """Whether any of a unit's hexes is in an intact bunker."""
+    return bool(field) and any(bunker_at(d, field, h) for row in footprint(d, u) for h in row)
+
+
 def _out(u: dict) -> bool:
     """Broken, fled or with no men: out of the fight for striking and shooting."""
     return u["state"] in ("broken", "fled") or u["men"] <= 0
@@ -495,6 +507,8 @@ def _strike_groups(d: Data, units: list, occ: dict, i: int, groups: dict, field:
             continue
         j, dirn = hit
         x = step(h, dirn)
+        if bunker_at(d, field, h) or bunker_at(d, field, x):
+            continue                                  # no blows into or out of an intact bunker: it must be stormed
         blocked, pen, stk = _across(d, field, u, h, x, reach)
         n = min(per, men[k])
         if blocked:
@@ -612,7 +626,7 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
     for i, u in enumerate(units):
         if u["state"] in ("broken", "fled") or u["men"] <= 0 or "range" not in d.weapons[u["weapon"]]:
             continue
-        if in_contact(d, units, occ, i):
+        if in_contact(d, units, occ, i) and not in_bunker(d, field, u):
             continue
         best = _target(d, units, i, field, occ)
         if best is None:
@@ -792,6 +806,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _strike_all(d, us, table, rng, acc, flanked, field)
     log += _shoot_all(d, us, table, rng, acc, field, under)
     log += _indirect_all(d, us, table, rng, acc, field, under)
+    log += _assault_all(d, us, table, rng, acc, field)
     log += _breach_all(d, us, field)
     occ = occupancy(d, us)
     before = [u["men"] for u in us]
@@ -966,7 +981,8 @@ def _fire_mission(d: Data, us: list, table: str, weapon: str, rng, acc: tuple, f
     K, m = d.units["indirect"]["kinds"][b["kind"]], b["mission"]
     shells = min(b["tubes"] * K["rate"], b["rounds"])
     b["rounds"] -= shells
-    b["located"] = True
+    if not K.get("direct"):
+        b["located"] = True                       # tanks close behind the line are never located
     if m.get("battery") is not None:
         log = _counter_fire(field, k, b, shells, K, rng)
     else:
@@ -980,7 +996,21 @@ def _fire_mission(d: Data, us: list, table: str, weapon: str, rng, acc: tuple, f
             _lay_smoke(d, field, bursts)
         else:
             log += _shell_units(d, us, (table, weapon), rng, acc, field, under, k, b, bursts)
+            log += _knock_bunkers(d, field, k, b, bursts, rng)
     _mission_on(b, m, field.get("size"))
+    return log
+
+
+def _knock_bunkers(d: Data, field: dict, k: int, b: dict, bursts: list, rng) -> list:
+    """Each shell bursting on an intact bunker's hex knocks it out at the kind's `knock` %."""
+    knock, log = d.units["indirect"]["kinds"][b["kind"]].get("knock", 0), []
+    if not knock:
+        return log
+    for at in bursts:
+        it = bunker_at(d, field, at)
+        if it and rng.randint(1, 100) <= knock:
+            it["out"] = True
+            log.append({"kind": "knocked", "sup": k, "name": b["name"], "side": b["side"], "at": at})
     return log
 
 
@@ -1070,9 +1100,82 @@ def _shell_cut(d: Data, field: dict | None, h, prone) -> float:
     cover, more struck, going to ground helps less); elsewhere going to ground and the ground's cover."""
     I = d.units["indirect"]
     TB = I["tree_burst"]
+    bk = bunker_at(d, field, h)
+    shelter = (100 - d.works["hex_works"][bk["type"]].get("cover_here", 0)) / 100 if bk else 1
     if ((field or {}).get("ground") or {}).get(f"{h[0]},{h[1]}", "open") in TB["ground"]:
-        return TB["factor"] * (TB["prone"] if prone else 1)
-    return (I["prone"] if prone else 1) * (100 - ground_at(d, field, h).get("cover", 0)) / 100
+        return TB["factor"] * (TB["prone"] if prone else 1) * shelter
+    return (I["prone"] if prone else 1) * (100 - ground_at(d, field, h).get("cover", 0)) / 100 * shelter
+
+
+def blast_weapon(d: Data, table: str) -> str | None:
+    """The weapon whose wounds a storming party's grenades and charges use on this table, or None
+    (no storming of bunkers)."""
+    from .model import available_weapons
+    A, have = d.units["assault"], available_weapons(d, table)
+    return next((w for w in (A["weapon"], A["fallback"]) if w in have), None)
+
+
+def _assault_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | None) -> list:
+    """Every unit ordered to storm the bunkers across its front: one roll for each bunker."""
+    weapon, log = blast_weapon(d, table), []
+    if not field or weapon is None:
+        return log
+    occ = occupancy(d, us)
+    for i, u in enumerate(us):
+        if u.get("assault") in d.units["assault"]["means"] and not _out(u):
+            log += _storm(d, us, occ, i, (table, weapon), rng, acc, field)
+    return log
+
+
+def _storm(d: Data, us: list, occ: dict, i: int, tw: tuple, rng, acc: tuple, field: dict) -> list:
+    """Unit i storms each intact, held bunker next to its front hexes once."""
+    u, A, log, done = us[i], d.units["assault"], [], set()
+    M = A["means"][u["assault"]]
+    for h in (footprint(d, u) or [[]])[0]:
+        hit = _struck_hex(us, occ, u, h)
+        if hit is None:
+            continue
+        j, dirn = hit
+        x = step(h, dirn)
+        it = bunker_at(d, field, x)
+        if it is None or f"{x[0]},{x[1]}" in done:
+            continue
+        done.add(f"{x[0]},{x[1]}")
+        need, roll = M["knock"] + (A["pinned"] if us[j].get("pinned") else 0), rng.randint(1, 100)
+        line = {"kind": "assault", "unit": i, "dfd": j, "means": u["assault"], "at": x, "roll": roll, "need": need, "out": roll <= need}
+        if roll > need:
+            log.append(line)
+            continue
+        it["out"] = True
+        t = _bunker_struck(d, us, j, x, M, tw, rng, acc)
+        acc[2][i] += t["down"]
+        log += _logged(line, t)
+    return log
+
+
+def _bunker_struck(d: Data, us: list, j: int, x, means: dict, tw: tuple, rng, acc: tuple) -> dict:
+    """The men in a bunker's hex when it falls: `struck` % of them, by blast or by flame."""
+    b, (table, weapon) = us[j], tw
+    hexes = [h for row in footprint(d, b) for h in row]
+    k = next((n for n, h in enumerate(hexes) if h[0] == x[0] and h[1] == x[1]), None)
+    there = men_by_hex(d, b)[k] if k is not None else 0
+    struck = sum(1 for _ in range(there) if rng.randint(1, 100) <= means["struck"])
+    if means.get("flame"):
+        t = _new_tally()
+        t.update(blows=struck, hits=struck, critical=struck, down=struck)
+        for _ in range(struck):
+            if rng.randint(1, 100) <= d.units["assault"]["flame_dead"]:
+                t["dead"] += 1
+            else:
+                _hurt(t, "critical", {"lethal": "days", "infection": "high"}, True)
+    else:
+        att = {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}
+        t = _blows(d, att, _side(b, table), struck, d.units["assault"]["attack"], 0, rng, _exposure(d, b, False, True), -1000)
+    t = _take_hurt(b, t)
+    lost, dead, _ = acc
+    lost[j] += t["down"]
+    dead[j] += t["dead"]
+    return {**t, "struck": struck}
 
 
 def _suppress_all(d: Data, us: list, under: list, rng) -> list:

@@ -341,6 +341,32 @@ with shell wounds (the First World War and later):
 | Mortars | 3 | 60 | this exchange | 2 hexes | 15, 5, 1 |
 | Field guns | 2 | 80 | next exchange | 4 hexes | 20, 8, 3, 1 |
 | Heavy howitzers | 1 | 40 | next exchange | 5 hexes | 30, 12, 5, 2, 1, 0.5 |
+| Tanks (direct fire) | 2 | 60 | this exchange | none | 25, 5 |
+
+**Tanks** are in the list as a kind of battery: tanks close behind the line, firing over open
+sights at a hex the side can see. Their shells land at once and do not scatter; they are never
+located for counter-battery fire, and small arms cannot hurt them. Each tank shell bursting on a
+bunker's hex knocks the bunker out at 8% (a heavy howitzer's shell at 2%), and the bunker's men
+get its cover (−50%) against shellfire while it stands.
+
+**Storming bunkers.** A bunker (a hex work, from the 20th century) shelters the men in it:
+−50% to shots and to shellfire at them, and no one can strike them hand to hand, nor they
+strike out; they shoot out of it even with enemies next to it. To take it, a unit next to
+it is ordered to storm (**Storm a bunker** on the selected unit, on any wound table with
+grenades: the First World War and later), with one of three means. Once an exchange, for
+each enemy-held bunker across its front, it rolls d100:
+
+| Means | Knocks the bunker out on | Men in its hex struck |
+| --- | --- | --- |
+| Grenades | 10 or less | 40%, as grenade wounds |
+| Satchel charges | 25 or less | 60%, as grenade wounds |
+| Flamethrowers | 40 or less | 70%, burned |
+
++20 if the bunker's men are pinned. A man reached by flame is out of the fight with critical
+burns (burns are not on the hit-location tables, so no location is rolled), and 40% of them
+are killed outright. A knocked-out bunker (drawn faded) is a hex like any other: the men in it
+can be fought hand to hand and lose its cover. On a table without grenades a bunker cannot be
+stormed at all. All design estimates (`assault` in `data/units.yaml`).
 
 **Suppression.** A unit that a shell burst near, or a machine gun fired on (or caught in its
 beaten zone), checks at the end of the exchange: d100 against its Nerve (+10 if gone to
