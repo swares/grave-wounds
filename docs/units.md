@@ -524,28 +524,31 @@ can be opened or barred at any time.
 | Rough | 2 | |
 | Woods | 2 | −20% to shots at men in it |
 | Marsh | 3 | no horses |
-| High ground | 1 | −10% to blows struck up at men on it from lower ground |
+| High ground | 1 | −10% to blows struck up at men on it from lower ground; shooting down from it +10% with range bands 20% longer, shooting up at it −10% (not guns) |
 | Buildings | 2 | −30% to shots at men in it; no horses; stops round shot |
 | Water | can't enter | a canal or river: shots cross it, men cross only at a bridge (paint the bridge open) |
 
 **Works** are the battle map's (see [works.md](works.md)), with the same numbers, along
 the sides of the 11-yard (10 m) hexes or in a hex. For a ditch, bank or wall, click just inside the
 side, on the high side; for a gate, on the inside. Click again to take it away.
-- **Crossing:** a unit's move pays each work its middle hex crosses or enters (a ditch +2,
-  a bank +1, stakes +1, felled trees +2, barbed wire +3). A palisade, wall or barred gate stops it, and a
+- **Crossing:** each step of a unit's move costs what the worst hex of its front row pays
+  for the same step: the ground it enters and each work it crosses or enters (a ditch +2, a
+  bank +1, stakes +1, felled trees +2, barbed wire +3). A line half in a wood moves at the
+  wood's pace. A palisade, wall, barred gate or water under any of its front stops it, and a
   unit cannot stand across one. Wagons fill their hex. Horses cannot go into stakes, felled
   trees, wagons or marsh.
 - **Close combat:** across a palisade, wall or barred gate, only reach-2 weapons strike, and
   only the front rank. Striking up a bank, ditch or wall costs its height (−10%, a wall
   −20%), as does striking up onto high ground. Horses charging into stakes or felled trees
   get no charge bonus.
-- **Shooting:** the target takes the best cover of the works and ground where the volley
-  lands (the target's hex nearest the shooters): a bank on its side −20%, a palisade or
-  barred gate −40%, a wall −50%, a pavise or felled trees in its hex −20%, wagons in front
-  −40%, woods −20%.
-- **Breaching:** a unit's **Breach the works** order puts half of each front hex's front
-  rank to hacking at the palisade, gate, stakes, felled trees or wagons in front of it, every
-  round of the exchange, until the work is down. The work's breach figure is for a battle-map side
+- **Shooting:** the target takes the average cover of its row nearest the shooters (rounded
+  down), each hex the best of the works and ground there: a bank on its side −20%, a palisade
+  or barred gate −40%, a wall −50%, a pavise or felled trees in its hex −20%, wagons in front
+  −40%, woods −20%. Half a line behind a wall gets −25%.
+- **Breaching:** a unit's **Breach the works** order puts each front hex's front rank to
+  hacking at the palisade, gate, stakes, felled trees or wagons in front of it (half of them
+  at a time, every round of the exchange) until the work is down. While they work they
+  neither strike nor shoot; the ranks behind fight as usual. The work's breach figure is for a battle-map side
   (about 1.2 yards, 1.15 m); a field-map side takes five times as much, so ten men open a stretch of palisade in about a
   minute. A bank or ditch under a breached palisade stays.
 
