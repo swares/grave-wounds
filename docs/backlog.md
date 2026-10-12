@@ -37,13 +37,14 @@ When an item is done, delete it here and note it in the pull request that closes
   Agincourt (1415), Towton (1461), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
   Lane (1814), First Bull Run (1861), Fort Phil Kearny (1866-67, with two battlefields), Mons
   (1914), Hill 700 on Bougainville (1944), Anzio and Cisterna (1944), Osan (1950), Chipyong-ni
-  (1951) and the Ia Drang (1965) have both a campaign map and a battlefield. The rest of Italy (Cassino), the rest of Korea, the rest of Vietnam and later
+  (1951), the Ia Drang (1965) and Mogadishu (1993) have both a campaign map and a battlefield. The rest of Italy (Cassino), the rest of Korea, the rest of Vietnam and later
   still play on the generic valley and open ground (the unit rules for them are in: machine
   guns, extended order, artillery and mortars on call, suppression). Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
 - **Night, first cut.** The dark limits sight and aim, and flares and illumination light an
-  area. It leaves out muzzle flashes (a man firing at night shows where he is), machine guns
+  area. Both sides are equally blind: night-vision goggles and thermal sights (Mogadishu,
+  Wanat) are not modelled. It leaves out muzzle flashes (a man firing at night shows where he is), machine guns
   firing on fixed lines laid in daylight, men losing their way or their direction in the
   dark, and night movement being slower. The moon is a simple model, good to an hour or so.
 - **Air support, first cut.** Aircraft are called like batteries. There is no fire at them

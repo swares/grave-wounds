@@ -4,7 +4,7 @@
 // through them, bridges and fords, towns and villages, and the forces at the start.
 //
 // The land and sea come from Natural Earth's 1:50m land (public domain, via the world-atlas
-// package); everything else is the spec's, drawn by hand from plain facts.
+// package), or for a map too small for it (spec.coast "drawn") from the spec's own `water`; everything else is the spec's, drawn by hand from plain facts.
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -66,10 +66,10 @@ function paintWater(spec, g, grid){
 // Paints the terrain: land or sea (and any hand-drawn `water`: lakes the land data counts as land), then woods, marsh, hills, mountains, brooks (as marsh), roads, rivers (with a bridge where
 // a road crosses a lesser river), the named bridges and fords, villages and towns.
 function paint(spec, g){
-  const land = landShape(), P = spec.places;
+  const land = spec.coast === "drawn" ? null : landShape(), P = spec.places;   // coast "drawn": too fine for the land data, the sea is all the spec's `water`
   const grid = Array.from({ length: g.rows }, (_, r) => Array.from({ length: g.cols }, (_, c) => {
     const [lat, lon] = g.toLatLon(g.centre(c, r));
-    return geoContains(land, [lon, lat]) ? spec.base || "f" : "w";
+    return !land || geoContains(land, [lon, lat]) ? spec.base || "f" : "w";
   }));
   paintWater(spec, g, grid);
   const pt = p => (typeof p === "string" ? P[p] : p);
