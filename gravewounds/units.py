@@ -261,20 +261,24 @@ def _impairments(d: Data, ws: list, hand: str) -> tuple:
     each counted once (an arm's by which arm it is), as gravewounds.combat.penalties."""
     attack = defence = 0
     seen, flags = set(), set()
-    for w in ws:
-        for imp in w.get("impair") or []:
-            rule = d.wounds["combat"]["impair"].get(imp, {})
-            key, eff = (imp, None), rule
-            if "weapon_arm" in rule or "shield_arm" in rule:
-                loc = d.loc.get(w["loc"]) or {}
-                arm = "shield_arm" if loc.get("zone") == "arms" and loc.get("side") in ("L", "R") and loc["side"] != hand else "weapon_arm"
-                key, eff = (imp, arm), rule.get(arm, {})
-            if key in seen:
-                continue
-            seen.add(key)
-            attack, defence = attack + eff.get("attack", 0), defence + eff.get("defence", 0)
-            flags |= {f for f in IMPAIR_FLAGS if eff.get(f)}
+    for key, eff in (_impair_effect(d, w, imp, hand) for w in ws for imp in w.get("impair") or []):
+        if key in seen:
+            continue
+        seen.add(key)
+        attack, defence = attack + eff.get("attack", 0), defence + eff.get("defence", 0)
+        flags |= {f for f in IMPAIR_FLAGS if eff.get(f)}
     return attack, defence, flags
+
+
+def _impair_effect(d: Data, w: dict, imp: str, hand: str) -> tuple:
+    """(key, effect) of impairment imp on wound w: an arm's impairment by which arm it is
+    (the shield arm if the wound is on the arm that is not his weapon hand)."""
+    rule = d.wounds["combat"]["impair"].get(imp, {})
+    if "weapon_arm" not in rule and "shield_arm" not in rule:
+        return (imp, None), rule
+    loc = d.loc.get(w["loc"]) or {}
+    arm = "shield_arm" if loc.get("zone") == "arms" and loc.get("side") in ("L", "R") and loc["side"] != hand else "weapon_arm"
+    return (imp, arm), rule.get(arm, {})
 
 
 def _heroes_after(d: Data, us: list, rng, quiet: list | None = None) -> list:

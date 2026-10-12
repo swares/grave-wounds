@@ -760,6 +760,13 @@ function shotNotes(l){                            // " (cover -20%, weather -10%
   if (l.misfire) bits.push(`${l.misfire}% misfire`);
   return bits.length ? ` (${bits.join(", ")})` : "";
 }
+function aidText(l, nm){                          // a hero's first aid: "X (unit) is bandaged: his thigh bleeds less."
+  const who = `${l.name} (${nm(l.unit)})`;
+  if (!l.stopped) return who + ": his comrades cannot stop the bleeding yet.";
+  const part = FD.locations[l.loc]?.name.toLowerCase() || "wound";
+  return `${who} is bandaged: his ${part} bleeds ${l.bleed ? "less" : "no more"}.`;
+}
+const sickText = h => (h.sick ? ` · sick (${h.sick})` + (h.defend_only ? ", defends only" : "") : "");   // " · sick (dysentery), defends only"
 const OTHER_LINES = {                            // kind: (line, nm) => {cls, text} (null: nothing to show)
   breach: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} break through the ${(WK.edge_works[l.work] || WK.hex_works[l.work]).name.toLowerCase()}.` }),
   morale: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` }),
@@ -775,7 +782,7 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   hero: (l, nm) => (l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null),
   duel: l => ({ cls: "hero", text: heroStateText(l) }),
   bailout: l => ({ cls: "morale", text: `${S.units[l.riders]?.name || "The riders"} get out of the wrecked carriers: ${l.men} men on their feet.` }),
-  heroaid: (l, nm) => ({ cls: "hero", text: l.stopped ? `${l.name} (${nm(l.unit)}) is bandaged: his ${FD.locations[l.loc]?.name.toLowerCase() || "wound"} bleeds ${l.bleed ? "less" : "no more"}.` : `${l.name} (${nm(l.unit)}): his comrades cannot stop the bleeding yet.` }),
+  heroaid: (l, nm) => ({ cls: "hero", text: aidText(l, nm) }),
 };
 OTHER_LINES.counter = OTHER_LINES.barrage;
 OTHER_LINES.knocked = OTHER_LINES.assault;
@@ -1136,7 +1143,7 @@ function renderHeroes(){
     const wounds = h.wounds.length ? " · " + nWounds(h.wounds.length) : "", [pa, pd] = heroPenalties(h), [blood, pool] = heroBlood(h);
     const hold = held(h) ? ` (${FD.combat.states[held(h)].name.toLowerCase()})` : "", body = ` · Blood ${blood}/${pool}${h.dying ? ", dying" : ""}`;
     const rm = setup ? `<button class="small" data-hero="${h.id}" aria-label="Remove ${esc(h.name)}">Remove</button>` : "";
-    return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(unitName(h.unit))} · ${place[h.role]}${h.leader ? " · leader" : ""}</span></span><span class="meta">${Math.max(0, h.attack - pa)}/${Math.max(0, h.defence - pd)}% · ${h.state}${hold}${h.sick ? ` · sick (${h.sick})${h.defend_only ? ", defends only" : ""}` : ""}${wounds}${body}</span>${rm}</li>`;
+    return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(unitName(h.unit))} · ${place[h.role]}${h.leader ? " · leader" : ""}</span></span><span class="meta">${Math.max(0, h.attack - pa)}/${Math.max(0, h.defence - pd)}% · ${h.state}${hold}${sickText(h)}${wounds}${body}</span>${rm}</li>`;
   }).join("");
   const fighters = setup ? rollerFighters() : [];
   $("#hero-box").hidden = !setup;

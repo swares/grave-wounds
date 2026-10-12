@@ -178,22 +178,16 @@ function heroPenalties(hero){                     // [% off attack, % off defenc
   let attack = pain, defence = pain;
   const flags = new Set(), th = bloodThreshold(blood / pool);
   if (th){ attack += th.penalty || 0; defence += th.penalty || 0; for (const f of ["down", "incapacitated"]) if (th[f]) flags.add(f) }
-  const [a, df, f] = impairments(ws, hero.hand || "R"), rule = (FD.in_fight || {})[hero.sick || ""] || {};
+  const [a, df, f] = impairments(ws, hero.hand || "R"), rule = FD.in_fight?.[hero.sick || ""] || {};
   f.forEach(x => flags.add(x));
   for (const k of ["defend_only", "out"]) if (rule[k]) flags.add(k);
   attack += a + (rule.penalty || 0); defence += df + (rule.penalty || 0);
-  return [Math.min(attack, C.cap), Math.min(defence, C.cap), [...flags].sort()];
+  return [Math.min(attack, C.cap), Math.min(defence, C.cap), [...flags].sort((x, y) => (x < y ? -1 : 1))];
 }
 function impairments(ws, hand){                     // [% off attack, % off defence, flags] from wounds' impairments, each counted once (an arm's by which arm)
   let attack = 0, defence = 0;
   const seen = new Set(), flags = new Set();
-  for (const w of ws) for (const imp of w.impair || []){
-    const rule = FD.combat.impair[imp] || {};
-    let key = imp + "|", eff = rule;
-    if ("weapon_arm" in rule || "shield_arm" in rule){
-      const L = FD.locations[w.loc] || {}, arm = L.zone === "arms" && (L.side === "L" || L.side === "R") && L.side !== hand ? "shield_arm" : "weapon_arm";
-      key = imp + "|" + arm; eff = rule[arm] || {};
-    }
+  for (const [key, eff] of ws.flatMap(w => (w.impair || []).map(imp => impairEffect(w, imp, hand)))){
     if (seen.has(key)) continue;
     seen.add(key);
     attack += eff.attack || 0; defence += eff.defence || 0;
@@ -201,12 +195,19 @@ function impairments(ws, hand){                     // [% off attack, % off defe
   }
   return [attack, defence, flags];
 }
+function impairEffect(w, imp, hand){              // [key, effect] of impairment imp on wound w: an arm's by which arm it is
+  const rule = FD.combat.impair[imp] || {};
+  if (!("weapon_arm" in rule) && !("shield_arm" in rule)) return [imp + "|", rule];
+  const loc = FD.locations[w.loc] || {}, arm = loc.zone === "arms" && (loc.side === "L" || loc.side === "R") && loc.side !== hand ? "shield_arm" : "weapon_arm";
+  return [imp + "|" + arm, rule[arm] || {}];
+}
 function heroesAfter(us, rng, quiet = null){      // end of an exchange: holds wear off, first aid in a quiet exchange, heroes bleed, Blood thresholds, pain checks
   const log = [];
   us.forEach((u, i) => {
     for (const hero of u.heroes || []){
       if (hero.state === "dead") continue;
-      if (quiet && quiet[i]){ const x = firstAid(hero, rng); if (x) log.push({ kind: "heroaid", unit: i, ...x }) }
+      const aid = quiet?.[i] ? firstAid(hero, rng) : null;
+      if (aid) log.push({ kind: "heroaid", unit: i, ...aid });
       const line = heroAfter(hero, rng);
       if (line) log.push({ kind: "herobled", unit: i, ...line });
     }
