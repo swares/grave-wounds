@@ -1275,6 +1275,21 @@ is 140 × 140 hexes, about 1,530 by 1,330 yards (1,400 by 1,210 m), north at the
 - Fire support: howitzers at the fire bases, fighter-bombers and battalion mortars; North
   Vietnamese mortars.
 
+**Darwin Hill, Goose Green, 28 May 1982** (`data/fields/goosegreen-1982.yaml`). The field is
+140 × 110 hexes, about 1,530 by 1,040 yards (1,400 by 950 m), north at the top.
+- Darwin ridge runs across the middle, with the Argentine **trenches** and **bunkers** along
+  its crest. The gorse gully lies below Darwin Hill on the right, and a gorse hedge crosses
+  the open slope.
+- Darwin settlement sits by its inlet of Choiseul Sound in the lower right, with Brenton Loch
+  along the left.
+- **Dawn**, overcast, a cold westerly.
+- British (veteran paratroopers): A Company pinned in the gully, B Company on the open slope,
+  the battalion headquarters, D Company coming up, and machine guns.
+- Argentines (green conscripts, dug in): two groups of platoons in the ridge trenches,
+  machine guns, and a reserve at Darwin.
+- Fire support: three 105 mm light guns and 81 mm mortars; Argentine pack howitzers and
+  120 mm mortars.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
