@@ -568,3 +568,8 @@ Campaign and battle maps can be added in the same format, one file per map:
 - `terrain`: rows of one character per hex. The keys are listed in `data/terrain.yaml`.
 - `places`: the camp, the objective, villages, towns and landmarks.
 - `forces`: the forces at the start, each with a type, a side and a starting hex.
+- `period` (optional): the period the **Map** picker lists it under. Without it, a map takes
+  the period of a battlefield drawn on it (its wound table's conflict, as the roller groups
+  its tables), or "Any period". The picker lists the periods oldest first, and each period's
+  maps by start date; Agincourt says `period: "Hundred Years' War"`, as it borrows the
+  Towton tables.

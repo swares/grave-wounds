@@ -470,6 +470,9 @@ def validate(d: Data) -> None:
             if not isinstance(m.get("climate_shift", 0), (int, float)):
                 errors.append(f"maps/{mid}: climate_shift must be a number")
 
+    errors += [f"{kind}/{k}: period must be a name" for kind, items in (("maps", d.maps), ("fields", d.fields))
+               for k, x in items.items() if "period" in x and not (isinstance(x["period"], str) and x["period"].strip())]
+
     # camp disease
     if d.weather.get("wind_points"):
         errors += _wind_errors(d)
@@ -975,6 +978,31 @@ def _career_errors(d: Data, era: dict, where: str, c: dict, chars: set, skills: 
         if kit not in d.armor["kits"] or wpn not in available_weapons(d, r["table"]) or c["wound_weapon"] not in available_weapons(d, r["table"]):
             errors.append(f"{where}: career {c['id']} in {r['id']}: kit {kit}, weapon {wpn} or wound weapon {c['wound_weapon']} not usable there")
     return errors
+
+
+ANY_PERIOD = "Any period"
+
+
+def periods(d: Data) -> dict:
+    """The period each campaign map and battlefield is listed under in the pickers: {maps: {id:
+    period}, fields: {id: period}, order: [period, ...]}. A file's own `period`, else a
+    battlefield's wound table's conflict (its `battle` group), else for a map the period of a
+    battlefield on it; a map with none is "Any period". The order is by the earliest start date
+    of the maps in each period (a battlefield counts its map's), "Any period" last."""
+    fields = {fid: f.get("period") or d.tables[f["table"]]["battle"] for fid, f in d.fields.items()}
+    maps = {}
+    for mid, m in d.maps.items():
+        on = [fid for fid, f in d.fields.items() if (f.get("travel") or {}).get("map") == mid]
+        maps[mid] = m.get("period") or (fields[on[0]] if on else ANY_PERIOD)
+    year = lambda mid: str(d.maps[mid].get("start_date", "9999"))[:4]
+    first = {}
+    for mid, p in maps.items():
+        first[p] = min(first.get(p, "9999"), year(mid))
+    for fid, p in fields.items():
+        mid = (d.fields[fid].get("travel") or {}).get("map")
+        first[p] = min(first.get(p, "9999"), year(mid) if mid in d.maps else "9999")
+    order = sorted((p for p in first if p != ANY_PERIOD), key=lambda p: (first[p], p)) + ([ANY_PERIOD] if ANY_PERIOD in first else [])
+    return {"maps": maps, "fields": fields, "order": order}
 
 
 def _fields_errors(d: Data) -> list[str]:

@@ -14,6 +14,7 @@
 # fared little better; most of the rearguard never came on.
 id: agincourt-1415
 name: "Agincourt, 25 October 1415"
+period: "Hundred Years' War"                # the period its pickers list it under (else its wound table's conflict)
 sides: ["English", "French"]
 table: towton-1461-all-hits
 # On the travel map: a fight within `within` hexes of this place offers this field. `sides` are

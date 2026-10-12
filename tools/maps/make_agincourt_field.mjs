@@ -46,7 +46,7 @@ const units = [
 const stakes = units.filter(u => u.weapon === "longbow").flatMap(u => Array.from({ length: u.width }, (_, i) => [firstCol(u) + i, FRONT_EN - 1]));
 
 writeField({
-  id: "agincourt-1415", name: "Agincourt, 25 October 1415", sides: ["English", "French"], table: "towton-1461-all-hits",
+  id: "agincourt-1415", period: "Hundred Years' War", name: "Agincourt, 25 October 1415", sides: ["English", "French"], table: "towton-1461-all-hits",
   travel: { map: "agincourt-1415", place: "Azincourt", within: 1, sides: ["England", "France"] },
   weather: "{cond: overcast, wind: calm, ground: {mud: 3, snow: 0}}",
   grid, hexWorks: { stakes }, units,
