@@ -38,7 +38,7 @@ const US = { side: 0, facing: S }, IN = { side: 1, facing: N };
 const MARINE = { quality: "veteran", weapon: "rifle_assault", kit: "interceptor", formation: "extended", mounted: false };
 const SAW = { quality: "veteran", weapon: "machine_gun", kit: "interceptor", formation: "mg", mounted: false };
 const TANK = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" };
-const BRADLEY = { ...TANK, vehicle: "apc" };
+const BRADLEY = { ...TANK, vehicle: "ifv" };
 const FIGHTER = { quality: "regular", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, prone: true };
 const RPG = { ...FIGHTER, weapon: "rpg" };
 const PKM = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "mg", mounted: false, prone: true };

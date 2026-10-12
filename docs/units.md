@@ -653,34 +653,62 @@ defenders' units start inside it, the attackers at the east edge.
 
 ## Vehicles
 
-Tanks and armoured carriers fight on the field map as units, one vehicle to a hex (first cut;
-the numbers are in `vehicles` in `data/units.yaml`). On a wound table of the machine-gun age or
-later, **Add a unit** offers **Tanks** or **Armoured carriers**, and **Men** is then how many
-vehicles; their men are the crews (4 a tank, 3 a carrier).
+Tanks, infantry fighting vehicles and armoured carriers fight on the field map as units, one
+vehicle to a hex (second cut; the numbers are in `vehicles` in `data/units.yaml`). On a wound
+table of the machine-gun age or later, **Add a unit** offers **Tanks**, **Infantry fighting
+vehicles** or **Armoured carriers**, and **Men** is then how many vehicles; their men are the
+crews (4 a tank, 3 an infantry fighting vehicle or carrier).
 
-- **Moving.** Tanks move 12 hexes and carriers 14. Each hex costs open or high ground 1, rough
-  2 and woods 3. They cannot enter marsh, buildings, tall buildings, rubble or water, so in a
-  town they keep to the streets. Works and deep going cost them what they cost men.
+- **Moving.** Tanks move 12 hexes, infantry fighting vehicles and carriers 14. Each hex costs
+  open or high ground 1, rough ground or a slope 2, woods 3. They cannot enter marsh,
+  buildings, tall buildings, rubble or water, so in a town they keep to the streets. Works
+  and deep going cost them what they cost men.
 - **Their machine guns** fire as a machine-gun team's, about a gun a vehicle.
-- **A tank's main gun** fires a round a tank each exchange at the nearest enemy in range
-  (1,090 yards, 1,000 m), in sight (as guns are: the weather and the light) and in front of
-  it, enemy vehicles first, with a clear line of fire.
-  - At a vehicle, each round hits 75% out to 20 hexes, 50% to 50 and 25% to 100. A hit knocks
-    a tank out at 35% and a carrier at 75%.
-  - At men, each round bursts on their nearest hex as a tank's round on call does (25% in the
-    hex, 5% next to it), with no scatter.
-- **Armour.**
-  - Small arms cannot hurt a vehicle, and men armed only with them do not shoot at one.
-  - No one strikes a vehicle hand to hand, or is struck by it.
-  - Men with **RPGs** fire a rocket for every four men each exchange, every one aimed. Each
-    that hits (range, cover and the weather as for shots at men) knocks out a tank at 15% or
-    a carrier at 50%.
-  - A shell or bomb bursting in a vehicle's own hex knocks it out at the firing kind's knock
-    %: a heavy howitzer 2%, fighter-bombers 15%. A carrier is three times as likely to be
-    knocked out.
+- **Main guns** fire each exchange at the nearest enemy in range, in sight (as guns are: the
+  weather and the light) and in front, enemy vehicles first, with a clear line of fire. A
+  vehicle whose gun is out does not fire it.
+
+  | Kind | Range | Rounds a vehicle | Hits a vehicle (to 20 / mid / full range) | At men |
+  |---|---|---|---|---|
+  | Tank | 100 hexes (1,090 yards, 1,000 m) | 1 | 75% / 50% (50 hexes) / 25% | bursts as a tank's round on call (25% in the hex, 5% next to it) |
+  | Infantry fighting vehicle (autocannon) | 80 hexes (875 yards, 800 m) | 2 | 70% / 45% (40 hexes) / 20% | bursts as an autocannon round (20% in the hex) |
+
+- **Armour.** Small arms cannot hurt a vehicle, and men armed only with them do not shoot at
+  one. No one strikes a vehicle hand to hand, or is struck by it.
+
+  | A hit from | Tank (heavy armour) | Infantry fighting vehicle or carrier (light) |
+  |---|---|---|
+  | A rocket (RPG, bazooka, recoilless rifle) | 15% | 50% |
+  | A guided missile | 60% | 90% |
+  | A main gun | 35% | 75% |
+
+  Those are the chances that a hit knocks the vehicle out. A hit into its **flank** counts
+  twice that, and into its **rear** three times, to 100% at most. Which it is depends on
+  where the shooter stands, by the vehicle unit's facing (the front is the two directions
+  either side of its arrow).
+- **Anti-armour weapons:** the **RPG**, the **bazooka** (and Panzerschreck, for the Second
+  World War and Korea), the **recoilless rifle** (Korea and Vietnam) and the **guided
+  missile** (the Falklands, the Gulf, Chechnya, Iraq and Afghanistan). A rocket, bazooka or
+  recoilless team fires a round for every four men each exchange, and a missile team one for
+  every ten. Every round is aimed, and range, cover and the weather count as for shots at men.
+- **Damage.** A hit that does not knock a vehicle out immobilises it at 25%, or at the next
+  15% puts its main gun out of action. A unit with an immobilised vehicle cannot move (it can
+  still turn) until it **abandons** them. Their crews then leave the fight unhurt.
+- **Shells and bombs** bursting in a vehicle's own hex knock it out at the firing kind's knock
+  %: a heavy howitzer 2%, fighter-bombers 15%. Light armour is three times as likely to go.
 - **Knocked out.** A knocked-out vehicle's crew are out of the fight. Each is struck at 50% and
   rolls a wound as one hit by shellfire; the rest have bailed out. Vehicle units check morale
   like any other.
+- **Riders.** Infantry fighting vehicles carry 7 men each and carriers 10. A foot unit of the
+  same side within a hex of them can **Mount on** them (all its men must fit, and neither may
+  be in contact).
+  - The riders move with the vehicles. They do not fight, shoot or check morale, and the map
+    shows them as "+40" after the vehicles' men.
+  - **Dismount the riders** sets them down beside the vehicles (behind if they fit), facing
+    the same way. They can move next exchange.
+  - When a carrier is knocked out, its share of the riders are each struck at 30% and
+    wounded as by shellfire. When the last carrier goes, the riders get out where it stood.
+  - Men still aboard when the battle ends count with their force.
 
 ## Landing by air
 
@@ -1308,7 +1336,7 @@ is 140 × 110 hexes, about 1,530 by 1,040 yards (1,400 by 950 m), north at the t
   blocks (**tall buildings**) beyond and streets with wrecks and **rubble** between.
 - **Dusk** on a winter afternoon.
 - Russians (green): the 131st Brigade's 1st Battalion in the station and the freight yard,
-  with its infantry carriers and **tanks** parked in the square.
+  with its **infantry fighting vehicles** (BMPs) and **tanks** parked in the square.
 - Chechens (veteran, in cover): **RPG** teams in the buildings on three sides of the square
   that can knock out the armour, fighters to the north and south, and machine guns.
 - Fire support: Russian artillery and mortars; Chechen mortars.
@@ -1321,7 +1349,7 @@ is 140 × 110 hexes, about 1,530 by 1,040 yards (1,400 by 950 m), north at the t
   with the park and four mosques among them.
 - Overcast.
 - Coalition (veteran, Interceptor armour): two Marine companies astride the main street,
-  with machine guns, and 2-7 Cavalry's M1A1 **tanks** and Bradleys (as armoured carriers)
+  with machine guns, and 2-7 Cavalry's M1A1 **tanks** and Bradley **infantry fighting vehicles**
   leading down it.
 - Insurgents (in cover): fighters in the houses and a mosque, **RPG** teams by the main
   street and in the park, and machine guns.

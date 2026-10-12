@@ -58,11 +58,12 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Cold, first cut.** Frostbite is a sickness on the force's track (and a named man's), not a
   wound on a body part, and cold-weather clothing, warming tents and fires are only the camp's
   shelter. In battle, only automatic weapons jam; mortars, grenades and vehicles do not freeze.
-- **Vehicles, first cut.** No facing armour (flank and rear shots), no hull or turret hits, no
-  immobilised or damaged vehicles, no infantry riding in carriers or on tanks, no anti-tank guns
-  or bazookas but the RPG (`anti_armour`), no mines, no fuel or ammunition, and the crews who
-  bail out simply leave the fight. Tanks see as well as men do. Infantry fighting vehicles (the
-  BMP at Grozny, the Bradley at Fallujah) play as armoured carriers, without their guns or missiles.
+- **Vehicles, second cut.** Flank and rear shots, immobilised vehicles and guns put out of
+  action, riders and the bazooka, recoilless rifle and guided missile are in. Still left out:
+  hull and turret hits, tank riders ("desant") and riders firing from the vehicle, anti-tank
+  guns as batteries, mines, fuel and ammunition, and vehicles' night sights. Crews who bail
+  out simply leave the fight. A guided missile's long range only helps in clear weather and
+  light, as aimed fire does.
 - **Fire at hidden men, first cut.** Men gone to ground, in bunkers or in buildings are now hit
   at 10% of aimed shots (machine guns 5%), and dug-in men hold better. Osan, left alone, lasts
   about an hour where the real fight took two and a half; the rest of that time went in the

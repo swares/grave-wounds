@@ -33,7 +33,7 @@ const grid = groundGrid(COLS, ROWS, kind);
 
 const RU = { side: 0, facing: N }, CH = { side: 1, facing: S };
 const SOLDIER = { quality: "green", weapon: "rifle_assault", kit: "ww2_rifleman", formation: "extended", mounted: false };
-const BMP = { quality: "green", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "apc" };
+const BMP = { quality: "green", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "ifv" };
 const TANK = { ...BMP, vehicle: "tank" };
 const FIGHTER = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, prone: true };
 const RPG = { ...FIGHTER, weapon: "rpg" };

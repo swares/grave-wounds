@@ -575,6 +575,42 @@ weapons:
     confidence: extrapolated
     notes: "Blast plus fragments; often aimed at vehicles and bunkers."
 
+  - id: bazooka
+    name: "Bazooka or Panzerschreck (rocket launcher)"
+    short: "Bazooka"
+    icon: launcher
+    range: [30, 60, 100]
+    era: "1942-1953"
+    threat: fragment
+    mechanisms: {ballistic: 70, crush: 30}
+    zone_bias: {}
+    confidence: extrapolated
+    notes: "Shoulder-fired anti-tank rocket (the 2.36 and 3.5 inch bazookas, the Panzerschreck and the Panzerfaust); blast and fragments as an RPG's."
+
+  - id: recoilless
+    name: "Recoilless rifle"
+    short: "Recoilless"
+    icon: launcher
+    range: [100, 200, 400]
+    era: "1945-"
+    threat: fragment
+    mechanisms: {ballistic: 75, crush: 25}
+    zone_bias: {}
+    confidence: extrapolated
+    notes: "The 57, 75 and 106 mm recoilless rifles, the 90 mm M67 and the Soviet B-10: high explosive or anti-tank rounds; blast and fragments."
+
+  - id: atgm
+    name: "Anti-tank guided missile"
+    short: "ATGM"
+    icon: launcher
+    range: [250, 750, 1500]
+    era: "1970s-"
+    threat: fragment
+    mechanisms: {ballistic: 70, crush: 30}
+    zone_bias: {}
+    confidence: extrapolated
+    notes: "Wire- or laser-guided missiles (Milan, TOW, Javelin, Konkurs) fired from a tripod, a vehicle or the shoulder; often used on bunkers and buildings as well as armour."
+
   - id: mine_ied
     name: "Mine, booby trap or IED"
     short: "Mine/IED"

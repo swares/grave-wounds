@@ -269,6 +269,39 @@ const vehicleKind = u => (u.vehicle ? UD.vehicles.kinds[u.vehicle] : null);   //
 const vehiclesLeft = (u, lost = 0) => { const K = vehicleKind(u); return K ? Math.ceil(Math.max(0, u.men - lost) / K.crew) : 0 };
 const armourOf = u => { const K = vehicleKind(u); return K ? UD.vehicles.armour[K.armour] : null };
 const hurtsArmour = weapon => weapon in (UD.vehicles?.anti_armour || {});
+function bearing(t, h){                            // the direction (0-5) from hex t that points most nearly at hex h (the first of equals)
+  const a = cube(t), b = cube(h), v = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+  const dots = AX.map(([q, r]) => v[0] * q + v[1] * r + v[2] * (-q - r));
+  return dots.indexOf(Math.max(...dots));
+}
+function killChance(u, row, h, t){                 // % a hit from h on vehicle unit u (at t) knocks one out: its armour's row %, x aspect for a flank or rear shot, to 100
+  const p = armourOf(u)[row], side = h && t && (h[0] !== t[0] || h[1] !== t[1]) ? arc(u.facing, bearing(t, h)) : "front";
+  return Math.min(100, Math.trunc(p * (UD.vehicles.aspect?.[side] ?? 1)));
+}
+function harm(u, n, lost, rng){                    // hits that did not knock a vehicle out: some immobilise one or put its gun out -> {immobilised, gun}
+  const D = UD.vehicles.damage || {}, left = vehiclesLeft(u, lost), out = { immobilised: 0, gun: 0 };
+  for (let s = 0; s < n; s++){
+    const r = rng.randint(1, 100);
+    if (r <= (D.immobilised || 0)) out.immobilised++;
+    else if (r <= (D.immobilised || 0) + (D.gun || 0)) out.gun++;
+  }
+  u.immobile = Math.min(left, (u.immobile || 0) + out.immobilised);
+  u.gunless = Math.min(left, (u.gunless || 0) + out.gun);
+  return out;
+}
+function harmLine(h){
+  const o = {};
+  if (h.immobilised) o.immobilised = h.immobilised;
+  if (h.gun) o.gun_out = h.gun;
+  return o;
+}
+function ridersLine(k){
+  const o = {};
+  if (k.riders_struck) o.rstruck = k.riders_struck;
+  if (k.riders_down) o.rdown = k.riders_down;
+  if (k.riders_dead) o.rdead = k.riders_dead;
+  return o;
+}
 const hk = h => h[0] + "," + h[1];
 function footprint(u){                          // rows of hexes, front row first
   if (u.men <= 0 || u.state === "fled") return [];
@@ -659,7 +692,7 @@ function shellVehicle(us, i, bursts, kind, ctx){   // shells or bombs bursting i
   let kills = 0;
   for (let s = 0; s < direct; s++) if (rng.randint(1, 100) <= p) kills++;
   const k = knockOut(us, i, kills, table, rng, acc);
-  if (k.knocked) log.push(...logged({ kind: "knocked_out", sup: src[0], name: src[1].name, dfd: i, knocked: k.knocked, crew: k.crew, struck: k.struck }, k.tally));
+  if (k.knocked) log.push(...logged({ kind: "knocked_out", sup: src[0], name: src[1].name, dfd: i, knocked: k.knocked, crew: k.crew, struck: k.struck, ...ridersLine(k) }, k.tally));
 }
 function shellStruckUnit(field, u, bursts, kind, rng){   // men of u struck by these bursts, or null if none came near
   if (u.men <= 0 || u.state === "fled") return null;
@@ -893,14 +926,15 @@ function shootAll(us, table, rng, acc, log, field, under = null){
 function armourVolley(us, table, rng, acc, log, v, opts){   // anti-armour shots that hit knock a vehicle out at its armour's rpg %
   const att = sideOfUnit(us[v.att], table), band = fieldRange(att.weapon, v.dist, opts.reach || 0);
   if (!band) return;
-  const n = countBlows(v.men * UD.vehicles.anti_armour[att.weapon] * opts.factor, rng), atk = attackOf(att) - band.penalty - opts.penalty;
+  const A = UD.vehicles.anti_armour[att.weapon];
+  const n = countBlows(v.men * A.rate * opts.factor, rng), atk = attackOf(att) - band.penalty - opts.penalty;
   let hits = 0, kills = 0;
   for (let s = 0; s < n; s++) if (rng.randint(1, 100) <= atk) hits++;
-  const p = armourOf(us[v.dfd]).rpg;
+  const p = killChance(us[v.dfd], A.row, v.from, v.to);
   for (let s = 0; s < hits; s++) if (rng.randint(1, 100) <= p) kills++;
-  const k = knockOut(us, v.dfd, kills, table, rng, acc);
+  const k = knockOut(us, v.dfd, kills, table, rng, acc), hm = harm(us[v.dfd], hits - k.knocked, acc.lost[v.dfd], rng);
   acc.dealt[v.att] += k.crew;
-  log.push(...logged({ kind: "antiarmour", ...v, shots: n, hit: hits, knocked: k.knocked, crew: k.crew, struck: k.struck }, k.tally));
+  log.push(...logged({ kind: "antiarmour", ...v, shots: n, hit: hits, knocked: k.knocked, crew: k.crew, struck: k.struck, kill: p, ...harmLine(hm), ...ridersLine(k) }, k.tally));
 }
 function knockOut(us, i, n, table, rng, acc){      // up to n vehicles out: their crews out of the fight, each struck at crew_struck % -> {knocked, crew, struck, tally}
   const u = us[i], K = vehicleKind(u), V = UD.vehicles;
@@ -912,9 +946,23 @@ function knockOut(us, i, n, table, rng, acc){      // up to n vehicles out: thei
   const weapon = shellWeapon(table);
   let t = struck && weapon ? blows({ table, weapon, kit: null, quality: "regular" }, sideOfUnit(u, table), struck, UD.indirect.attack, 0, rng, { exposed: [], shift: -1000 }) : newTally();
   t = takeHurt(u, t);
+  const left = vehiclesLeft(u, acc.lost[i]);
   acc.lost[i] += crew;
   acc.dead[i] += Math.min(t.dead, crew);
-  return { knocked: n, crew, struck, tally: t };
+  return { knocked: n, crew, struck, tally: t, ...ridersHit(u, n, left, table, rng) };
+}
+function ridersHit(u, n, left, table, rng){        // the riders in n of a carrier unit's `left` vehicles, knocked out: each struck at riders_struck %, wounded as by shellfire
+  const R = u.riders;
+  if (!R || R.men <= 0 || left <= 0) return {};
+  const share = Math.min(R.men, Math.ceil(R.men * n / left));
+  let struck = 0;
+  for (let s = 0; s < share; s++) if (rng.randint(1, 100) <= UD.vehicles.riders_struck) struck++;
+  const weapon = shellWeapon(table);
+  if (!struck || !weapon) return { riders_struck: struck };
+  const t = takeHurt(R, blows({ table, weapon, kit: null, quality: "regular" }, sideOfUnit(R, table), struck, UD.indirect.attack, 0, rng, { exposed: [], shift: -1000 }));
+  const down = Math.min(t.down, R.men);
+  Object.assign(R, { men: R.men - down, down: (R.down || 0) + down, dead: (R.dead || 0) + Math.min(t.dead, down) });
+  return { riders_struck: struck, riders_down: down, riders_dead: Math.min(t.dead, down) };
 }
 function vehicleGuns(us, table, rng, acc, log, field, under){   // each vehicle unit's main gun: at vehicles, hits by range and knocks by armour; at men, bursts as the indirect kind `he`
   us.forEach((u, i) => {
@@ -922,22 +970,23 @@ function vehicleGuns(us, table, rng, acc, log, field, under){   // each vehicle 
     if (!G || out_(u)) return;
     const best = gunTarget(us, i, field, G);
     if (!best) return;
-    const [dist, j, , t] = best, rounds = vehiclesLeft(u) * G.rate;
-    if (us[j].vehicle){ gunAtVehicle(us, [i, j, dist, rounds], G, { table, rng, acc, log }); return }
+    const [dist, j, h, t] = best, rounds = Math.max(0, vehiclesLeft(u) - (u.gunless || 0)) * G.rate;
+    if (rounds <= 0) return;
+    if (us[j].vehicle){ gunAtVehicle(us, [i, j, dist, rounds, h, t], G, { table, rng, acc, log }); return }
     log.push({ kind: "tankfire", att: i, dfd: j, dist, rounds, at: t });
     const weapon = shellWeapon(table);
     if (weapon && field) shellUnits({ us, table, weapon, rng, acc, log, field, under: under || us.map(() => false) }, null, { kind: G.he, name: u.name ?? null }, Array.from({ length: rounds }, () => [...t]));
   });
 }
 function gunAtVehicle(us, shot, G, ctx){          // a main gun's rounds at a vehicle unit: hits by range, knocks by armour (shot: [gun unit, target, dist, rounds])
-  const [i, j, dist, rounds] = shot, { table, rng, acc, log } = ctx;
+  const [i, j, dist, rounds, h, t] = shot, { table, rng, acc, log } = ctx;
   let hits = 0, kills = 0;
   for (let s = 0; s < rounds; s++) if (rng.randint(1, 100) <= chanceAt(G.hit, dist)) hits++;
-  const p = armourOf(us[j]).gun;
+  const p = killChance(us[j], "gun", h, t);
   for (let s = 0; s < hits; s++) if (rng.randint(1, 100) <= p) kills++;
-  const k = knockOut(us, j, kills, table, rng, acc);
+  const k = knockOut(us, j, kills, table, rng, acc), hm = harm(us[j], hits - k.knocked, acc.lost[j], rng);
   acc.dealt[i] += k.crew;
-  log.push(...logged({ kind: "tankfire", att: i, dfd: j, dist, rounds, hit: hits, knocked: k.knocked, crew: k.crew, struck: k.struck }, k.tally));
+  log.push(...logged({ kind: "tankfire", att: i, dfd: j, dist, rounds, hit: hits, knocked: k.knocked, crew: k.crew, struck: k.struck, kill: p, ...harmLine(hm), ...ridersLine(k) }, k.tally));
 }
 const keyBefore = (a, b) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);   // a gun target's [vehicle first, distance] ranks before another's
 function gunTarget(us, i, field, G){              // [dist, index, gun hex, target hex]: the nearest enemy vehicle in range, sight and front with a line of fire, else the nearest such unit
@@ -1018,7 +1067,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   });
   log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng));
   afterExchange(us, field, log);
-  log.push(...landings(us, table, rng, field));
+  log.push(...landings(us, table, rng, field), ...vehiclesAfter(us, field));
   return { units: us, log };
 }
 function lzState(units, field, side, lz){         // blocked (an enemy within heliborne.blocked hexes), hot (an enemy could shoot at it) or cold
@@ -1178,6 +1227,60 @@ function stands(field, u, hexes){                 // ground it can stand on, and
   const keys = new Set(hexes.map(hk));
   return hexes.every(h => canEnter(field, u, h) && [0, 1, 2, 3, 4, 5].every(dn => { const x = step(h, dn); return !keys.has(hk(x)) || !wallBetween(field, h, x) }));
 }
+function abandonImmobile(u){                       // a vehicle unit leaves its immobilised vehicles: their crews leave the fight unhurt (bailed)
+  const K = vehicleKind(u), n = u.immobile || 0;
+  if (!K || n <= 0) return u;
+  const off = Math.min(u.men, n * K.crew), v = { ...u, men: u.men - off, bailed: (u.bailed || 0) + off, immobile: 0 };
+  v.gunless = Math.min(v.gunless || 0, vehiclesLeft(v));
+  return v;
+}
+const carries = u => { const K = vehicleKind(u); return K ? vehiclesLeft(u) * (K.carry || 0) : 0 };   // men a vehicle unit can carry
+function mountUnit(units, i, j){                    // foot unit i gets aboard vehicle unit j -> {ok, why, units}
+  const u = units[i], c = units[j], occ = occupancy(units);
+  let why = null;
+  if (u.vehicle || isGun(u.weapon) || u.mounted) why = "only men on foot can ride";
+  else if (!c.vehicle || c.side !== u.side || carries(c) <= 0) why = "those are not its side's carriers";
+  else if (c.riders) why = "they carry men already";
+  else if (u.men > carries(c)) why = `they have room for ${carries(c)}`;
+  else if (out_(u) || out_(c) || inContact(units, occ, i) || inContact(units, occ, j)) why = "one of them is in contact or broken";
+  else {
+    const cs = footprint(c).flat();
+    if (Math.min(...footprint(u).flat().flatMap(a => cs.map(b => hdist(a, b)))) > 1) why = "they are not beside the carriers";
+  }
+  if (why) return { ok: false, why, units };
+  const { pos, facing, ...rider } = u;
+  return { ok: true, why: null, units: units.filter((_, k) => k !== i).map(x => (x === c ? { ...x, riders: rider } : x)) };
+}
+function dismountUnit(units, j, size, field = null){   // vehicle unit j's riders get down beside it (behind if they fit), added as the last unit -> {ok, why, units}
+  const c = units[j], R = c.riders;
+  if (!R) return { ok: false, why: "no one is aboard", units };
+  const back = mod6(c.facing + 3), f = c.facing;
+  for (const [dn, n] of [[back, 1], [back, 2], [mod6(f + 2), 1], [mod6(f + 5), 1], [mod6(f + 2), 2], [mod6(f + 5), 2], [f, 1], [back, 3], [back, 4]]){
+    const spot = { ...R, pos: step(c.pos, dn, n), facing: f }, trial = [...units, spot];
+    if (fits(trial, units.length, spot, size, field)){
+      const out = units.map((x, k) => {
+        if (k !== j) return x;
+        const { riders, ...rest } = x;
+        return rest;
+      });
+      return { ok: true, why: null, units: [...out, spot] };
+    }
+  }
+  return { ok: false, why: "no room to get down beside them", units };
+}
+function vehiclesAfter(us, field){                  // immobilised and gunless no more than the vehicles left; riders of a unit with none left get down where it stood
+  const log = [];
+  [...us].forEach((u, j) => {
+    if (!u.vehicle) return;
+    const left = vehiclesLeft(u);
+    for (const k of ["immobile", "gunless"]) if (k in u) u[k] = Math.min(u[k], left);
+    if (left === 0 && u.riders && u.riders.men > 0){
+      const r = dismountUnit(us, j, field?.size || [UD.map.cols, UD.map.rows], field);
+      if (r.ok){ us.splice(0, us.length, ...r.units); log.push({ kind: "bailout", unit: j, riders: us.length - 1, men: us[us.length - 1].men }) }
+    }
+  });
+  return log;
+}
 function fits(units, i, u, size, field = null){
   const occ = occupancy(units.filter((_, k) => k !== i)), hexes = footprint(u).flat();
   if (!hexes.every(h => onMap(h, size) && occ[hk(h)] === undefined)) return false;
@@ -1239,6 +1342,7 @@ function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, ch
   const same = pos[0] === u.pos[0] && pos[1] === u.pos[1] && facing === u.facing;
   if (inContact(units, occupancy(units), i) && !same) return { ok: false, why: "it is in contact" };
   if (u.lost && (pos[0] !== u.pos[0] || pos[1] !== u.pos[1])) return { ok: false, why: "it has lost its way in the dark (it may turn)" };
+  if (u.immobile && (pos[0] !== u.pos[0] || pos[1] !== u.pos[1])) return { ok: false, why: `${u.immobile} of its vehicles cannot move (abandon them to move on; it may turn)` };
   const turns = Math.min(mod6(facing - u.facing), mod6(u.facing - facing)), most = allowance(u) * UD.charge_move;
   const steps = pathLen(units, i, pos, size, most, field);
   if (steps === null) return { ok: false, why: "too far, or no way through" };

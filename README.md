@@ -55,7 +55,7 @@ bulk each minute through the same wound tables. Morale decides most fights, and 
 does most of the killing. Named characters still fight one by one. The field map,
 `dist/field.html`, puts units on 11-yard (10 m) hexes: each side moves, then every melee and volley
 is resolved together, with flank and rear, morale and the pursuit, batteries of guns firing
-round shot, canister and shell (bounding on over firm ground, at named targets, ordered shot, split sections, cut fuses and canister into a charge, until the rounds run out), machine guns, artillery and mortars on call with suppression, on painted ground
+round shot, canister and shell (bounding on over firm ground, at named targets, ordered shot, split sections, cut fuses and canister into a charge, until the rounds run out), machine guns, artillery and mortars on call with suppression, tanks, infantry fighting vehicles and carriers (with their riders) against rockets and guided missiles, on painted ground
 with the battle map's works and weather, or on a real battlefield (Sidon, Visby, Agincourt, Towton, Lützen, Albuera, Cowpens,
 Lundy's Lane, First Bull Run, the Fetterman Fight, the Wagon Box Fight, Mons 1914, Hill 700 on
 Bougainville, the Rangers at Cisterna, Task Force Smith at Osan, the perimeter at Chipyong-ni, landing zone X-Ray, the crash sites in Mogadishu, the patrol base at Wanat, Cassino's ridges and ruins, Fox Hill at Toktong Pass, Hill 504 at Kapyong, Hill 931 on Heartbreak Ridge, Pork Chop Hill, the new city at Hue, Hill 861A at Khe Sanh, Hill 875 at Dak To, Hamburger Hill, Darwin Hill at Goose Green, the railway station in Grozny, the Jolan in Fallujah, or Combat Outpost Keating, with both armies drawn up). A fight on the travel

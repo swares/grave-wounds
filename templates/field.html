@@ -223,6 +223,9 @@ legend{padding:0}
         <button class="small" id="btn-fixed" hidden title="Lay the machine guns on a fixed line (by day or at dusk): in the dark they fire blind down it at any enemy on it">Lay a fixed line</button>
         <button class="small" id="btn-limber" hidden title="A battery limbered moves but cannot fire; unlimbered it fires but can only be manhandled. Changing over takes an exchange.">Limber</button>
         <button class="small" id="btn-resupply" hidden title="The caissons come up: a full load of rounds again. It takes an exchange out of contact, in which the battery neither moves nor fires.">Resupply</button>
+        <button class="small" id="btn-abandon" hidden title="Leave the immobilised vehicles: their crews leave the fight unhurt, and the rest can move">Abandon immobilised</button>
+        <button class="small" id="btn-dismount" hidden title="The riders get down beside the carriers, facing their way; they can move next exchange">Dismount the riders</button>
+        <span id="mount-box" hidden><label class="sr" for="sel-carrier">Mount on</label><select class="small" id="sel-carrier" style="width:auto" title="Get aboard carriers of its side within a hex: the riders move with them and do not fight"></select></span>
       </div>
       <div class="row" id="target-box" hidden>
         <div><label for="sel-target">Battery fires at</label><select id="sel-target"></select></div>
@@ -707,6 +710,7 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   antiarmour: (l, nm) => ({ cls: l.knocked ? "morale" : "", text: armourText(l, nm) }),
   hero: (l, nm) => (l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null),
   duel: l => ({ cls: "hero", text: heroStateText(l) }),
+  bailout: l => ({ cls: "morale", text: `${S.units[l.riders]?.name || "The riders"} get out of the wrecked carriers: ${l.men} men on their feet.` }),
 };
 OTHER_LINES.counter = OTHER_LINES.barrage;
 OTHER_LINES.knocked = OTHER_LINES.assault;
@@ -731,6 +735,10 @@ function armourText(l, nm){                       // rockets at vehicles, a tank
   const vk = l.dfd !== undefined && S.units[l.dfd]?.vehicle, what = vk ? FD.units.vehicles.kinds[vk].name.toLowerCase() : "vehicles";
   let out = "";
   if (l.knocked) out = ` ${l.knocked} of ${nm(l.dfd)}'s ${what} knocked out; ${l.crew} crew out of the fight, ${l.down || 0} down` + (l.dead ? ` (${l.dead} dead)` : "") + ".";
+  if (l.immobilised) out += ` ${nOf(l.immobilised, "vehicle")} immobilised.`;
+  if (l.gun_out) out += ` ${nOf(l.gun_out, "main gun")} put out of action.`;
+  if (l.rstruck) out += ` Riders: ${l.rstruck} struck, ${l.rdown || 0} down` + (l.rdead ? ` (${l.rdead} dead)` : "") + ".";
+  if (l.kill !== undefined && l.hit) out = ` (${l.kill}% a hit to knock out)` + out;
   if (l.kind === "knocked_out") return `${l.name || "Shells"} burst on ${nm(l.dfd)}:${out}`;
   if (l.kind === "antiarmour") return `${nm(l.att)} fire ${nOf(l.shots, "round")} at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}: ${l.hit} hit.${out}`;
   if (l.at) return `${nm(l.att)} fire ${nOf(l.rounds, "round")} of high explosive at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}.`;
@@ -815,8 +823,9 @@ function next(){
 /* ---------- after the battle ---------- */
 function endBattle(){                             // the dead counted; the wounded die, or are carried to camp
   if (S.phase !== 0 && S.phase !== 1) return;
-  const am = aftermath(S.units, S.units.map(u => forceOf(u)?.care || "field"), dice);
-  S.after = S.units.map((u, i) => ({ id: u.id, killed: u.dead, ...am[i] }));
+  const all = afterUnits();
+  const am = aftermath(all, all.map(u => forceOf(u)?.care || "field"), dice);
+  S.after = all.map((u, i) => ({ id: u.id, killed: u.dead || 0, ...am[i] }));
   S.phase = "over";
   S.msg = "The battle is over.";
   S.log = [{ cls: "head", text: `The battle ends after ${S.exchange - 1} exchanges.` }, ...S.log];
@@ -827,9 +836,10 @@ function byStep(cases){                           // "12 mending, 20 serious, 8 
   for (const c of cases) n[c.step] = (n[c.step] || 0) + 1;
   return Object.keys(n).sort((a, b) => a - b).map(k => n[k] + " " + FD.track.steps[k]).join(", ");
 }
+const afterUnits = () => [...S.units, ...S.units.filter(u => u.riders).map(u => u.riders)];   // every unit, the men still aboard carriers too
 function sideAfter(k){
   const t = { killed: 0, left: 0, died: 0, cases: [] };
-  S.units.forEach((u, i) => {
+  afterUnits().forEach((u, i) => {
     if (sideNo(u) !== k) return;
     const a = S.after[i];
     t.killed += a.killed; t.left += a.left; t.died += a.died; t.cases.push(...a.cases);
@@ -840,7 +850,7 @@ function sideAfter(k){
 }
 function travelResult(){                          // per travel-map force: {killed, left, died, lost, cases}
   const out = {};
-  S.units.forEach((u, i) => {
+  afterUnits().forEach((u, i) => {
     const f = forceOf(u); if (!f) return;
     const a = S.after[i];
     out[f.id] ??= { killed: 0, left: 0, died: 0, lost: 0, cases: [] };
@@ -1083,7 +1093,8 @@ function unitSvg(u){
   g += `<polygon class="arrow" points="${[tip, l, r].map(p => p.map(v => v.toFixed(1)).join(",")).join(" ")}"/>`;
   const star = (u.heroes || []).some(h => h.state === "up") ? " \u2605" : "";
   const low = u.prone ? " \u2193" : "";   // gone to ground
-  g += `<text class="ulabel" x="${x.toFixed(1)}" y="${(y - 8).toFixed(1)}">${esc(u.name)} ${u.men}${star}${low}</text></g>`;
+  const aboard = u.riders ? ` +${u.riders.men}` : "";   // riders in the carriers
+  g += `<text class="ulabel" x="${x.toFixed(1)}" y="${(y - 8).toFixed(1)}">${esc(u.name)} ${u.men}${aboard}${star}${low}</text></g>`;
   return g;
 }
 const HEX_GLYPH = { stakes: "\u2715", abatis: "\u2733", wagon: "\u25ad", pavise: "\u25ae", wire: "\u2a33", bunker: "\u25a3", trench: "\u2261", wreck: "\u2708" };
@@ -1121,8 +1132,13 @@ function unitMeta(u){
   if (u.state === "fled") return "fled";
   const down = u.down ? " · " + u.down + " down" : "", br = (u.breach ? " · breaching" : "") + (u.assault ? " · storming" : ""), low = (u.prone ? " · to ground" : "") + (u.pinned ? " · pinned" : "") + (u.lost ? " · lost in the dark" : "") + (u.fixed ? " · fixed line" : "");
   let mg = isMg(u.weapon) ? " · " + gunsText(mgGuns(u), "gun") : "";
-  if (u.vehicle) mg = ` · ${vehiclesLeft(u)} ${FD.units.vehicles.kinds[u.vehicle].name.toLowerCase()}`;
+  if (u.vehicle) mg = vehicleMeta(u);
   return `${u.men}/${u.start} · ${u.state}${down}${br}${low}${mg}${batteryMeta(u)}`;
+}
+function vehicleMeta(u){                          // " · 3 tanks, 1 immobilised · carrying 1st Squad (9)"
+  const imm = u.immobile ? `, ${u.immobile} immobilised` : "", out = u.gunless ? `, ${nOf(u.gunless, "gun")} out` : "";
+  const ride = u.riders ? ` · carrying ${u.riders.name} (${u.riders.men})` : "";
+  return ` · ${vehiclesLeft(u)} ${FD.units.vehicles.kinds[u.vehicle].name.toLowerCase()}${imm}${out}${ride}`;
 }
 const GUN_NAMES = { smoothbore: "guns", rifled: "rifled guns", howitzer: "howitzers" };
 function batteryMeta(u){                          // " · 6 guns, limbered, 280 rounds"
@@ -1137,7 +1153,10 @@ function batteryMeta(u){                          // " · 6 guns, limbered, 280 
 }
 function vehicleInfo(u, K){                       // the selected vehicle unit: how many, crews, main gun, armour
   const gun = K.gun ? `main gun to ${K.gun.range} hexes (${fmtM(K.gun.range * FD.units.hex_m)}), ${nOf(K.gun.rate, "round")} a vehicle an exchange` : "machine guns only";
-  return `${vehiclesLeft(u)} of ${Math.ceil(u.start / K.crew)} ${K.name.toLowerCase()} (${K.crew} crew each); ${gun}; ${K.armour} armour: small arms cannot hurt them, no one fights them hand to hand`;
+  const dmg = (u.immobile ? `; ${u.immobile} immobilised (abandon them to move on)` : "") + (u.gunless ? `; ${u.gunless} with the main gun out` : "") + (u.bailed ? `; ${u.bailed} crew have left the abandoned vehicles` : "");
+  const aboard = u.riders ? `, ${u.riders.men} of ${esc(u.riders.name)} aboard` : "";
+  const room = K.carry ? `; carries ${K.carry} men a vehicle (room for ${carries(u)})` + aboard : "";
+  return `${vehiclesLeft(u)} of ${Math.ceil(u.start / K.crew)} ${K.name.toLowerCase()} (${K.crew} crew each); ${gun}; ${K.armour} armour: small arms cannot hurt them, no one fights them hand to hand; a hit in the flank or rear is worse${room}${dmg}`;
 }
 function gunsInfo(u){                             // the Guns line of the selected battery
   const lost = u.guns_lost ? `, ${u.guns_lost} knocked out` : "", left = ammoLeft(u);
@@ -1170,6 +1189,7 @@ function renderSel(){
   $("#btn-breach").textContent = u?.breach ? "Stop breaching" : "Breach the works";
   renderAssault(u);
   renderLimber(u, setup);
+  renderRiders(u, setup);
   renderGunOrders(u, setup);
   renderGround(u, setup);
   renderFixed(u, setup);
@@ -1292,6 +1312,43 @@ function toggleGround(){
   if (S.phase !== "setup" && u.side !== moving()) return;
   u.prone = !u.prone;
   S.msg = u.prone ? `${u.name} goes to ground: shots at it lose ${FD.units.to_ground.cover}%, and it cannot move until it gets up.` : `${u.name} gets up and can move.`;
+  render();
+}
+function renderRiders(u, setup){                 // Abandon immobilised, Dismount, Mount on: for vehicles and the men they carry
+  const mine = u && (setup || u.side === moving()) && S.phase !== "over" && !out_(u);
+  $("#btn-abandon").hidden = !(mine && u.vehicle && u.immobile);
+  $("#btn-dismount").hidden = !(mine && u.riders);
+  const carriers = mine && !u.vehicle ? S.units.filter(c => c.vehicle && c.side === u.side && carries(c) > 0 && !c.riders) : [];
+  $("#mount-box").hidden = !carriers.length;
+  $("#sel-carrier").innerHTML = `<option value="">Mount on\u2026</option>` + carriers.map(c => `<option value="${c.id}">${esc(c.name)} (room for ${carries(c)})</option>`).join("");
+}
+function abandonVehicles(){                       // the immobilised vehicles are left; their crews leave the fight
+  const u = selUnit(); if (!u?.immobile) return;
+  const i = idx(u.id), n = u.immobile;
+  S.units[i] = abandonImmobile(u);
+  if (S.start?.[i]) S.start[i] = abandonImmobile(S.start[i]);
+  S.msg = `${u.name} abandon ${nOf(n, "immobilised vehicle")}: the crews leave the fight.`;
+  render();
+}
+function mountOn(cid){                            // the selected foot unit gets aboard carrier cid
+  const u = selUnit(), c = S.units.find(x => x.id === +cid); if (!u || !c) return;
+  const i = idx(u.id), r = mountUnit(S.units, i, idx(c.id));
+  if (!r.ok){ S.msg = `${u.name} cannot mount: ${r.why}.`; return render() }
+  S.units = r.units;
+  if (S.start){ S.start.splice(i, 1); const j = idx(c.id); if (S.start[j]) S.start[j] = { ...S.start[j], riders: S.units[j].riders } }
+  S.sel = c.id;
+  S.msg = `${u.name} (${u.men} men) get aboard ${c.name}: they move with the carriers and do not fight until they get down.`;
+  render();
+}
+function dismountRiders(){                        // the selected carriers' riders get down beside them
+  const c = selUnit(); if (!c?.riders) return;
+  const j = idx(c.id), r = dismountUnit(S.units, j, SIZE, S.field);
+  if (!r.ok){ S.msg = `${c.riders.name} cannot get down: ${r.why}.`; return render() }
+  const rider = { ...r.units.at(-1), ...(S.phase === "setup" ? {} : { arrived: S.exchange }) };
+  S.units = [...r.units.slice(0, -1), rider];
+  if (S.start){ const { riders, ...rest } = S.start[j] || {}; S.start[j] = rest; S.start.push({ ...rider }) }
+  S.sel = rider.id;
+  S.msg = `${rider.name} get down beside ${c.name}${S.phase === "setup" ? "" : "; they can move next exchange"}.`;
   render();
 }
 function renderLimber(u, setup){                 // the Limber button, for batteries only
@@ -1585,6 +1642,9 @@ function init(){
   $("#btn-remove").onclick = () => { const u = selUnit(); if (u){ S.units = S.units.filter(x => x.id !== u.id); S.sel = S.units[0] ? S.units[0].id : null; render() } };
   $("#btn-add").onclick = addUnit;
   $("#btn-limber").onclick = toggleLimber;
+  $("#btn-abandon").onclick = abandonVehicles;
+  $("#btn-dismount").onclick = dismountRiders;
+  $("#sel-carrier").onchange = e => { if (e.target.value) mountOn(e.target.value) };
   $("#btn-ground").onclick = toggleGround;
   $("#btn-fixed").onclick = toggleFixed;
   $("#btn-add-sup").onclick = addSupport;
