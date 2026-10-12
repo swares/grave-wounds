@@ -20,16 +20,23 @@ const road = r => Math.round(30 + (ROWS - 1 - r) * 0.28 + (r < 12 ? (12 - r) * 0
 const ditch = r => Math.round(140 - (ROWS - 1 - r) * 0.62 + wobble(r / 3, 1.7, 0.4) * 0.6);    // the Pantano ditch, from the bottom right north-west
 const FARMS = [[52, 46], [96, 40], [118, 58], [24, 62], [70, 66], [132, 30]];                  // farmhouses and their yards
 const STACKS = [[40, 74], [84, 54], [108, 78], [16, 84], [60, 30], [140, 70], [76, 88]];         // haystacks
-function kind(c, r){
+function built(c, r){                         // the town and the station, or null
   if (r < townEdge(c) && c > 20 && c < 142) return speckle(c, r, 5) ? "." : "T";            // Cisterna's southern edge
   if (r < 14 && c >= 6 && c <= 20) return speckle(c, r, 3) ? "." : "T";                      // the railroad station and its sheds
+  return null;
+}
+function lines(c, r){                         // the road and the ditches, or null
   if (Math.abs(c - road(r)) <= 1 && r >= 8) return ".";                                      // the road
   if (r >= 30 && Math.abs(c - ditch(r)) <= 1) return "m";                                    // the ditch: wet, steep-sided
   if (r === 20 || r === 21) return c % 37 < 2 ? "." : "m";                                   // a cross ditch below the town, bridged here and there
-  for (const [fc, fr] of FARMS) if (patch(c, r, { cx: fc, cy: fr, rx: 3, ry: 2, a: fc, b: fr })) return "T";
-  for (const [sc, sr] of STACKS) if (Math.abs(c - sc) <= 1 && Math.abs(r - sr) <= 1) return "r";
+  return null;
+}
+function fields(c, r){                        // farmhouses, haystacks and the open fields
+  if (FARMS.some(([fc, fr]) => patch(c, r, { cx: fc, cy: fr, rx: 3, ry: 2, a: fc, b: fr }))) return "T";
+  if (STACKS.some(([sc, sr]) => Math.abs(c - sc) <= 1 && Math.abs(r - sr) <= 1)) return "r";
   return speckle(c, r, 41) ? "r" : ".";                                                      // open, treeless fields
 }
+const kind = (c, r) => built(c, r) ?? lines(c, r) ?? fields(c, r);
 const grid = groundGrid(COLS, ROWS, kind);
 
 // ---------- the armies (pos is the middle of the front row) ----------
