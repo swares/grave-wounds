@@ -2435,11 +2435,8 @@ function addUnit(){
   const pick = $("#sel-side").value, f = pick.startsWith("f:") ? S.forces.find(x => x.id === +pick.slice(2)) : null;
   const side = f ? forceSide(f) : S.sides[+pick.slice(2)] || S.sides[0], k = S.sides.indexOf(side), mid = S.phase !== "setup";
   if (mid && side !== moving()){ S.msg = `Only ${moving()} can bring on a unit now: it is their move.`; return render() }
-  let men = Math.max(1, Number.parseInt($("#in-men").value, 10) || 1);
-  if (f){
-    if (reserve(f) <= 0){ S.msg = `${f.name} has no men left to put in a unit.`; return render() }
-    men = Math.min(men, reserve(f));
-  }
+  if (f && reserve(f) <= 0){ S.msg = `${f.name} has no men left to put in a unit.`; return render() }
+  const asked = Math.max(1, Number.parseInt($("#in-men").value, 10) || 1), men = f ? Math.min(asked, reserve(f)) : asked;
   const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, banner: f && f.side !== side ? f.side : null, force: f ? f.id : null, men, quality: $("#sel-quality").value, weapon: $("#sel-weapon").value,
     kit: $("#sel-kit").value, formation: formationFor($("#sel-weapon").value, $("#sel-form").value), mounted: $("#chk-mounted").checked, guns: $("#sel-guns").value, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
   if (mid) return bringOn(u, k);
@@ -2473,7 +2470,8 @@ function entryWidths(w){                          // the widths to try: as asked
 function sideFacing(k){                           // the way most of a side's men face (its starting edge's way if it has none left)
   const n = [0, 0, 0, 0, 0, 0];
   S.units.filter(u => sideNo(u) === k && u.men > 0 && u.state !== "fled").forEach(u => { n[mod6(u.facing)] += u.men });
-  return Math.max(...n) > 0 ? n.indexOf(Math.max(...n)) : (k ? 3 : 0);
+  if (Math.max(...n) > 0) return n.indexOf(Math.max(...n));
+  return k ? 3 : 0;
 }
 function entrySpots(facing, ranks){               // front hexes for a unit `ranks` deep with its rear at the map edge behind a side facing this way, middle outwards
   const [W, H] = SIZE, mid = (n, m) => Array.from({ length: n }, (_, i) => Math.floor(m / 2) + (i % 2 ? -1 : 1) * Math.ceil(i / 2)).filter(x => x >= 0 && x < m);
