@@ -156,7 +156,9 @@ each side is the flank; the two behind are the rear.
 | Open order on foot | 8 |
 | Mounted | 15 |
 
-- Turning the facing one step (60°) costs 1 hex for every 2 hexes of front (at least 1).
+- Turning the facing one step (60°) costs 1 hex for every 2 hexes of front (at least 1),
+  plus the ground its ends sweep over: the worst extra going of the hexes it comes to stand
+  on (+1 for rough ground or woods, +2 for marsh or rubble).
 - A unit cannot pass through other units' hexes.
 - A unit in contact with an enemy cannot move.
 - **A charge:** a steady unit whose move ends in contact may move up to twice its
@@ -603,25 +605,30 @@ can be opened or barred at any time.
 | Rough | 2 | |
 | Woods | 2 | −20% to shots at men in it |
 | Marsh | 3 | no horses |
-| High ground | 1 | −10% to blows struck up at men on it from lower ground; shooting down from it +10% with range bands 20% longer, shooting up at it −10% (not guns) |
+| Slope | 2 | the side of a hill, half as high as high ground: −5% to blows struck up at men on it from lower ground; shooting down from it +5% with range bands 10% longer, shooting up at it −5% (not guns) |
+| High ground | 1 | −10% to blows struck up at men on it from lower ground; shooting down from it +10% with range bands 20% longer, shooting up at it −10% (not guns). From a slope to high ground counts half |
 | Buildings | 2 | −30% to shots at men in it; men in it are hidden; no horses; stops round shot |
-| Tall buildings | 3 | blocks of several storeys (a modern town): −40% to shots at men in it; men in it are hidden; high ground (as above) for shooting and for blows struck up at them; no horses; stops round shot. The streets between are open ground. There are no separate floors. |
+| Tall buildings | 3 | blocks of several storeys (a modern town): −40% to shots at men in it; men in it are hidden; high ground (as above) for shooting and for blows struck up at them; from the upper floors they see over lower roofs and woods and shoot over units on lower ground; no horses; stops round shot. The streets between are open ground. |
 | Rubble | 3 | a town bombed or shelled to ruins (Cassino): −40% to shots at men in it; men in it are hidden; no horses; stops round shot |
 | Water | can't enter | a canal or river: shots cross it, men cross only at a bridge (paint the bridge open) |
 
 **Works** are the battle map's (see [works.md](works.md)), with the same numbers, along
 the sides of the 11-yard (10 m) hexes or in a hex. For a ditch, bank or wall, click just inside the
 side, on the high side; for a gate, on the inside. Click again to take it away.
-- **Crossing:** each step of a unit's move costs what the worst hex of its front row pays
-  for the same step: the ground it enters and each work it crosses or enters (a ditch +2, a
-  bank +1, stakes +1, felled trees +2, barbed wire +3). A line half in a wood moves at the
-  wood's pace. A palisade, wall, barred gate or water under any of its front stops it, and a
+- **Crossing:** each step of a unit's move costs what the worst of all its hexes pays for
+  the same step (its front, flanks and rear). That is the ground it enters and each work it
+  crosses or enters (a ditch +2, a bank +1, stakes +1, felled trees +2, barbed wire +3). A
+  line half in a wood moves at the wood's pace, and so does a column whose tail is still in
+  it. A palisade, wall, barred gate or water under any of its front stops it, and a
   unit cannot stand across one. Wagons fill their hex. Horses cannot go into stakes, felled
   trees, wagons or marsh.
 - **Close combat:** across a palisade, wall or barred gate, only reach-2 weapons strike, and
   only the front rank. Striking up a bank, ditch or wall costs its height (−10%, a wall
   −20%), as does striking up onto high ground. Horses charging into stakes or felled trees
   get no charge bonus.
+- **Seeing:** woods and buildings block the sight of men calling fire, unless they stand
+  higher than them: from high ground or a tall building a man sees over woods and lower
+  roofs, and from a slope over woods and houses on the flat.
 - **Shooting:** the target takes the average cover of its row nearest the shooters (rounded
   down), each hex the best of the works and ground there: a bank on its side −20%, a palisade
   or barred gate −40%, a wall −50%, a pavise or felled trees in its hex −20%, wagons in front

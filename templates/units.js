@@ -379,7 +379,7 @@ function namedTarget(units, i, field, occ, tid){  // a target the GM named for a
 }
 const clearFn = (units, occ, field, i, j) => (occ ? (h, t, dist) => lineFire(units, occ, field, i, j, [h, t, dist]) !== null : null);
 function lineFire(units, occ, field, i, j, path){   // path [from hex, to hex, distance]: null if a unit between blocks the shot, else % off (bows loosing high over them)
-  const [h, t, dist] = path, u = units[i], high = groundAt(field, h).height, arc = UD.line_of_fire.arcing.includes(u.weapon);
+  const [h, t, dist] = path, u = units[i], high = heightAt(field, h), arc = UD.line_of_fire.arcing.includes(u.weapon);
   let over = true, pen = 0;
   if (isGun(u.weapon)){
     over = dist > UD.artillery.canister_to;
@@ -387,7 +387,7 @@ function lineFire(units, occ, field, i, j, path){   // path [from hex, to hex, d
   }
   for (const x of ray(h, t, dist).slice(1, -1)){
     const k = occ[hk(x)];
-    if (k === undefined || k === i || k === j || (over && high && !groundAt(field, x).height)) continue;
+    if (k === undefined || k === i || k === j || (over && high > heightAt(field, x))) continue;
     if (!arc) return null;
     pen = UD.line_of_fire.arc_penalty;
   }
@@ -488,12 +488,12 @@ function sightHexes(field, h = null, kit = null){  // how far the weather and th
   if (dark !== null) vis = vis === null ? dark : Math.min(vis, dark);
   return vis === null ? null : Math.floor(vis / UD.range_scale);
 }
-function sees(field, u, h, sight){                // any hex of u sees h: within sight, no woods between, no smoke on the line
+function sees(field, u, h, sight){                // any hex of u sees h: within sight, no woods or buildings between as high as where he stands, no smoke on the line
   return footprint(u).flat().some(x => {
     const dist = hdist(x, h);
     if (sight !== null && dist > sight) return false;
-    const line = ray(x, h, dist);
-    return !line.slice(1, -1).some(y => groundAt(field, y).cover) && !smoked(field, line);
+    const line = ray(x, h, dist), up = heightAt(field, x);
+    return !line.slice(1, -1).some(y => groundAt(field, y).cover && heightAt(field, y) >= up) && !smoked(field, line);
   });
 }
 function smoked(field, hexes){                    // smoke over any of these hexes
@@ -719,7 +719,7 @@ function across(field, u, h, x, reach){           // [blocked: only reach 2 over
   if (!field) return [false, 0, false];
   const [cols, rows] = fieldSize(field), m = meleeAcross(field.works, h, x, reach, cols, rows);
   let pen = m.penalty;
-  if (groundAt(field, x).height && !groundAt(field, h).height) pen += groundAt(field, x).height;
+  pen += Math.max(0, heightAt(field, x) - heightAt(field, h));
   const it = hexItem(field.works, x), stk = !!(u.mounted && it && specOf("hex", it).no_horse);
   return [m.blocked, pen, stk];
 }
@@ -789,11 +789,18 @@ function shareCover(field, h, target){            // % off a volley from h at a 
   for (const r of rows){ const m = Math.min(...r.map(t => hdist(h, t))); if (m < near){ near = m; row = r } }
   return Math.floor(row.reduce((a, t) => a + coverAt(field, h, t), 0) / row.length);
 }
-function heightEdge(field, weapon, h, t){         // [% to hit, % longer range bands]: down from high ground +, up at it -; none for guns
+function heightEdge(field, weapon, h, t){         // [% to hit, % longer range bands]: down from higher ground +, up at it -, by each 10 of height between; none for guns
   if (!field || isGun(weapon)) return [0, 0];
-  const a = !!groundAt(field, h).height, b = !!groundAt(field, t).height, H = UD.high_ground;
-  if (a && !b) return [H.shoot, H.reach];
-  return b && !a ? [-H.shoot, 0] : [0, 0];
+  const diff = heightAt(field, h) - heightAt(field, t), H = UD.high_ground;
+  if (diff > 0) return [Math.floor(H.shoot * diff / 10), Math.floor(H.reach * diff / 10)];
+  return diff < 0 ? [-Math.floor(H.shoot * -diff / 10), 0] : [0, 0];
+}
+const heightAt = (field, h) => (field ? groundAt(field, h).height || 0 : 0);   // how high the ground at h stands (a slope 5, high ground or tall buildings 10)
+function sweepCost(field, before, after){          // the ground a turning unit's ends sweep over: the worst extra going of hexes it comes to stand on
+  if (!field) return 0;
+  const old = new Set(footprint(before).flat().map(hk));
+  const going = x => (after.vehicle ? UD.vehicles.ground[groundKey(field, x)] ?? 1 : groundAt(field, x).move);
+  return Math.max(0, ...footprint(after).flat().filter(x => !old.has(hk(x))).map(x => going(x) - 1));
 }
 function coverAt(field, h, t){                    // % off shots from h at t: the best of the works' and the ground's
   if (!field) return 0;
@@ -1205,8 +1212,8 @@ function popCheapest(open){                      // take the [cost, hex] with th
   for (let q = 1; q < open.length; q++) if (open[q][0] < open[m][0]) m = q;
   return open.splice(m, 1)[0];
 }
-function stepsFrom(field, u, h, occ, size){       // [hex, cost] for each step the middle hex can take from h: the worst its front row pays
-  const out = [], front = field ? footprint({ ...u, pos: h })[0] || [] : [h];
+function stepsFrom(field, u, h, occ, size){       // [hex, cost] for each step the middle hex can take from h: the worst any of its hexes pays
+  const out = [], front = field ? footprint({ ...u, pos: h }).flat() : [h];
   for (let dn = 0; dn < 6; dn++){
     const x = step(h, dn);
     if (!onMap(x, size) || occ[hk(x)] !== undefined) continue;
@@ -1237,7 +1244,7 @@ function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, ch
   if (steps === null) return { ok: false, why: "too far, or no way through" };
   const moved = { ...u, pos: pos.slice(), facing: mod6(facing) };
   if (!fits(units, i, moved, size, field)) return { ok: false, why: "no room there" };
-  const cost = steps + turns * turnCost(u), after = units.map((x, k) => (k === i ? moved : x));
+  const cost = steps + turns * turnCost(u) + (turns ? sweepCost(field, { ...u, pos: pos.slice() }, moved) : 0), after = units.map((x, k) => (k === i ? moved : x));
   const contact = inContact(after, occupancy(after), i);
   if (cost <= allowance(u)) return { ok: true, cost, charge: contact && steps > 0 };
   if (contact && u.state === "steady" && cost <= most) return { ok: true, cost, charge: true };

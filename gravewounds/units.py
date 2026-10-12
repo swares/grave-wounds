@@ -731,9 +731,7 @@ def _across(d: Data, field: dict | None, u: dict, h, x, reach: int) -> tuple:
     cols, rows = _size(d, field)
     m = C.melee_across(d, _works(field), h, x, reach, cols, rows)
     pen = m["penalty"]
-    gx, gh = ground_at(d, field, x), ground_at(d, field, h)
-    if gx.get("height") and not gh.get("height"):
-        pen += gx["height"]
+    pen += max(0, height_at(d, field, x) - height_at(d, field, h))
     it = C._hex_item(d, _works(field), x)
     stk = bool(u.get("mounted") and it and C._spec(d, "hex", it).get("no_horse"))
     return m["blocked"], pen, stk
@@ -995,11 +993,15 @@ def height_edge(d: Data, field: dict | None, weapon: str, h, t) -> tuple:
     +, up at it -; none for guns or on level ground."""
     if not field or is_gun(d, weapon):
         return 0, 0
-    a, b = bool(ground_at(d, field, h).get("height")), bool(ground_at(d, field, t).get("height"))
-    H = d.units["high_ground"]
-    if a and not b:
-        return H["shoot"], H["reach"]
-    return (-H["shoot"], 0) if b and not a else (0, 0)
+    diff, H = height_at(d, field, h) - height_at(d, field, t), d.units["high_ground"]
+    if diff > 0:
+        return H["shoot"] * diff // 10, H["reach"] * diff // 10
+    return (-(H["shoot"] * -diff // 10), 0) if diff < 0 else (0, 0)
+
+
+def height_at(d: Data, field: dict | None, h) -> int:
+    """How high the ground at hex h stands (0, a slope 5, high ground or tall buildings 10)."""
+    return ground_at(d, field, h).get("height", 0) if field else 0
 
 
 def _up(field: dict | None) -> str:
@@ -1076,7 +1078,7 @@ def line_fire(d: Data, units: list, occ: dict, field: dict | None, i: int, j: in
     """Unit i shooting from hex h at unit j's hex t: None if another unit between blocks it,
     else the % off (bows loosing high over units). From high ground a unit shoots over units
     on lower ground; guns only with round shot, never canister; shell goes over anything."""
-    u, high, pen = units[i], ground_at(d, field, h).get("height"), 0
+    u, high, pen = units[i], height_at(d, field, h), 0
     over, arc = True, u["weapon"] in d.units["line_of_fire"]["arcing"]
     if is_gun(d, u["weapon"]):
         over = dist > d.units["artillery"]["canister_to"]
@@ -1084,7 +1086,7 @@ def line_fire(d: Data, units: list, occ: dict, field: dict | None, i: int, j: in
             return 0
     for x in ray(h, t, dist)[1:-1]:
         k = occ.get(f"{x[0]},{x[1]}")
-        if k is None or k in (i, j) or (over and high and not ground_at(d, field, x).get("height")):
+        if k is None or k in (i, j) or (over and high > height_at(d, field, x)):
             continue
         if not arc:
             return None
@@ -1561,14 +1563,15 @@ def _sight_hexes(d: Data, field: dict | None, h=None, kit: str | None = None) ->
 
 
 def _sees(d: Data, field: dict | None, u: dict, h, sight: int | None) -> bool:
-    """Whether any hex of unit u sees hex h: within sight, with no woods between and no smoke
-    on the line (the two ends included)."""
+    """Whether any hex of unit u sees hex h: within sight, with no woods or buildings between
+    (none at least as high as where he stands: from higher ground he sees over them) and no
+    smoke on the line (the two ends included)."""
     for x in (x for row in footprint(d, u) for x in row):
         dist = hdist(x, h)
         if sight is not None and dist > sight:
             continue
-        line = ray(x, h, dist)
-        if not any(ground_at(d, field, y).get("cover") for y in line[1:-1]) and not smoked(field, line):
+        line, up = ray(x, h, dist), height_at(d, field, x)
+        if not any(ground_at(d, field, y).get("cover") and height_at(d, field, y) >= up for y in line[1:-1]) and not smoked(field, line):
             return True
     return False
 
@@ -2135,7 +2138,7 @@ def _wall_between(d: Data, field: dict, a, b) -> bool:
 def step_cost(d: Data, field: dict | None, u: dict, a, b) -> int | None:
     """Movement for one hex of a unit to step from a to b: 1, plus works crossed and entered,
     plus the ground (rough, woods, marsh), plus deep mud or snow. None if it cannot. A unit pays
-    the worst of its front row's (_front_cost)."""
+    the worst of all its hexes' (_front_cost)."""
     if not field:
         return 1
     if not _can_enter(d, field, u, b):
@@ -2175,8 +2178,8 @@ def _path_len(d: Data, units: list, i: int, goal, size: tuple, limit: int, field
 
 def _steps_from(d: Data, field: dict | None, u: dict, h: tuple, occ: dict, size: tuple) -> list:
     """(hex, cost) for each step the unit's middle hex can take from h: the worst that any hex
-    of its front row pays for the same step (one that cannot step blocks it)."""
-    out, front = [], (footprint(d, {**u, "pos": list(h)}) or [[]])[0] if field else [list(h)]
+    of the unit, front, flanks and rear, pays for the same step (one that cannot step blocks it)."""
+    out, front = [], [x for row in footprint(d, {**u, "pos": list(h)}) for x in row] if field else [list(h)]
     for dirn in range(6):
         x = tuple(step(list(h), dirn))
         if not (0 <= x[0] < size[0] and 0 <= x[1] < size[1]) or f"{x[0]},{x[1]}" in occ:
@@ -2221,7 +2224,7 @@ def move(d: Data, units: list, i: int, pos, facing: int, size: tuple, field: dic
     moved = {**u, "pos": list(pos), "facing": facing % 6}
     if not _fits(d, units, i, moved, size, field):
         return {"ok": False, "why": "no room there"}
-    cost = steps + turns * turn_cost(d, u)
+    cost = steps + turns * turn_cost(d, u) + (sweep_cost(d, field, {**u, "pos": list(pos)}, moved) if turns else 0)
     after = [moved if k == i else x for k, x in enumerate(units)]
     contact = in_contact(d, after, occupancy(d, after), i)
     if cost <= allowance(d, u):
@@ -2229,6 +2232,17 @@ def move(d: Data, units: list, i: int, pos, facing: int, size: tuple, field: dic
     if contact and u["state"] == "steady" and cost <= most:
         return {"ok": True, "cost": cost, "charge": True}
     return {"ok": False, "why": "too far"}
+
+
+def sweep_cost(d: Data, field: dict | None, before: dict, after: dict) -> int:
+    """What a unit turning from `before` to `after` pays for the ground its ends sweep over: the
+    worst extra going (its move less 1) of the hexes it comes to stand on that it did not before."""
+    if not field:
+        return 0
+    old = {tuple(x) for row in footprint(d, before) for x in row}
+    new = [x for row in footprint(d, after) for x in row if tuple(x) not in old]
+    going = (lambda x: d.units["vehicles"]["ground"].get(_ground_key(field, x), 1)) if after.get("vehicle") else (lambda x: ground_at(d, field, x)["move"])
+    return max([going(x) - 1 for x in new] + [0])
 
 
 def flee(d: Data, units: list, i: int, size: tuple, field: dict | None = None) -> dict:
