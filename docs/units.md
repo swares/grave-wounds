@@ -368,6 +368,18 @@ with shell wounds (the First World War and later):
   hexes for mortars, 30 for field guns, 40 for heavy howitzers) for the 2 exchanges after
   the one it is fired in. A lit hex is seen as by day (see
   [Light](weather.md#light-the-field-map)). Tanks have none.
+- **Aircraft**: **Fighter-bombers (bombs, napalm)** and **Helicopter gunships (rockets,
+  guns)** are added and called like batteries (a "tube" is an aircraft). Fire can be called
+  only where one of the side's units sees it fall, as for guns.
+  - Fighter-bombers come in two exchanges after the call, two bombs an aircraft a pass,
+    scattering up to 3 hexes and striking everyone within 4 (45% in the hex hit, falling to
+    2% at 4 hexes). Each aircraft has two sorties.
+  - Gunships come at once: four rocket and gun passes an aircraft an exchange, scattering
+    up to a hex, striking within 1 (20%, then 6%), 24 passes an aircraft.
+  - Aircraft are never located (no counter-battery fire on them) and lose no crews. They do
+    not fly in fog, storm, heavy snow or a blizzard, and fighter-bombers not on a moonlit or
+    dark night: a mission called then waits, and flies when it clears. The support list shows
+    **grounded** and why. They drop no smoke and carry no illumination.
 - **Creeping barrage**: before calling, pick **Creep** (1 to 3 hexes a lift), **Each line**
   (1 to 4 exchanges on each line before it lifts), **Lines** (how many lines it fires on, or
   until it leaves the map) and **Towards** (the way most of the side's units face, or a

@@ -898,7 +898,12 @@ def _indirect_errors(d: Data) -> list[str]:
     errors += [f"units.yaml: indirect kind {k} needs a counter % (0 to 100)" for k, v in I.get("kinds", {}).items()
                if not isinstance(v.get("counter"), (int, float)) or not 0 <= v["counter"] <= 100]
     errors += [f"units.yaml: indirect kind {k} needs whole-number crew and displace, and serve from 1 to crew" for k, v in I.get("kinds", {}).items()
-               if not (isinstance(v.get("crew"), int) and isinstance(v.get("serve"), int) and isinstance(v.get("displace"), int) and 1 <= v["serve"] <= v["crew"])]
+               if not v.get("air") and not (isinstance(v.get("crew"), int) and isinstance(v.get("serve"), int) and isinstance(v.get("displace"), int) and 1 <= v["serve"] <= v["crew"])]
+    A = I.get("air") or {}
+    errors += [f"units.yaml: indirect kind {k} shot must be [one, many]" for k, v in I.get("kinds", {}).items()
+               if "shot" in v and not (isinstance(v["shot"], list) and len(v["shot"]) == 2 and all(isinstance(x, str) for x in v["shot"]))]
+    errors += [f"units.yaml: indirect.air.grounded names unknown weather {c}" for c in A.get("grounded", []) if c not in d.weather.get("conditions", {})]
+    errors += [f"units.yaml: indirect.air.night names unknown light {x}" for x in A.get("night", []) if x not in (d.weather.get("light") or {}).get("levels", {})]
     errors += [f"units.yaml: indirect kind {k} illum must be a whole number of hexes" for k, v in I.get("kinds", {}).items()
                if not (isinstance(v.get("illum", 0), int) and v.get("illum", 0) >= 0)]
     if winds and set(I.get("smoke", {}).get("drift", {})) != winds:

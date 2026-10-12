@@ -288,7 +288,7 @@ def _support_rules(ind: dict) -> str:
     """Counter-battery, crews, displacing, smoke drift and fire plans, for the book."""
     I = ind
     CB, K = I["counter_battery"], I["kinds"]
-    crews = ", ".join(f"{k['name'].lower()} {k['crew']} (fires with {k['serve']})" for k in K.values() if not k.get("direct"))
+    crews = ", ".join(f"{k['name'].lower()} {k['crew']} (fires with {k['serve']})" for k in K.values() if "crew" in k and not k.get("direct"))
     moves = ", ".join(f"{k['name'].lower()} {k['displace']}" for k in K.values() if k.get("displace"))
     drift = ", ".join(f"{w} {n}" for w, n in I["smoke"]["drift"].items())
     return (f"<b>Counter-battery and fire plans:</b> crews a tube: {crews}. A located battery can be fired on with no one seeing it: each shell lands among "
@@ -297,7 +297,23 @@ def _support_rules(ind: dict) -> str:
             f"for its exchanges ({moves}) and then unlocated. Smoke drifts downwind each exchange, by hexes: {drift}. A creeping barrage keeps a fire plan: "
             f"1 to {I['creep']['max']} hexes a lift, 1 to {I['creep']['every_max']} exchanges on each line, a set number of lines."
             + (" Illumination (one round a tube, called on any hex) lights the hexes round it, out to " + ", ".join(f"{k['illum']} ({k['name'].lower()})" for k in K.values() if k.get("illum"))
-               + " hexes, for the light's exchanges after the one it is fired in." if any(k.get("illum") for k in K.values()) else ""))
+               + " hexes, for the light's exchanges after the one it is fired in." if any(k.get("illum") for k in K.values()) else "")
+            + _air_rules(I))
+
+
+def _air_rules(I: dict) -> str:
+    """Aircraft on call, for the book."""
+    planes = [k for k in I["kinds"].values() if k.get("air")]
+    if not planes:
+        return ""
+    A = I.get("air") or {}
+
+    def when(k):
+        return "at once" if not k["delay"] else f"{k['delay']} exchanges later"
+    kinds = "; ".join(f"{k['name'].lower()}: {k['rounds'] // k['rate']} sorties an aircraft, {when(k)}" + ("" if k.get("by_night") else ", not at night") for k in planes)
+    wx = [c.replace("_", " ") for c in A.get("grounded", [])]
+    return (f" <b>Aircraft</b> are called like batteries ({kinds}). They are never located, have no crews to lose, and do not fly in "
+            + (", ".join(wx[:-1]) + " or " + wx[-1] if len(wx) > 1 else "".join(wx)) + ".")
 
 
 def _ground_rules(d) -> list[str]:

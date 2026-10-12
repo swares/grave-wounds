@@ -470,11 +470,20 @@ function within(h, radius){                       // hex h and every hex within 
 function indirectAll(us, table, rng, acc, log, field, under){   // every fire mission due this exchange, in the support list's order
   const weapon = shellWeapon(table);
   if (!field || !weapon) return;
-  (field.support || []).forEach((b, k) => {
-    const m = b.mission;
-    if (!m || (m.wait || 0) > 0 || (b.rounds || 0) <= 0 || servedTubes(b) <= 0 || b.displacing) return;
-    fireMission({ us, table, weapon, rng, acc, log, field, under }, k, b);
-  });
+  (field.support || []).forEach((b, k) => { if (due(field, b)) fireMission({ us, table, weapon, rng, acc, log, field, under }, k, b) });
+}
+function due(field, b){                           // called, its wait over, rounds and tubes left, not moving, and (aircraft) able to fly
+  const m = b.mission;
+  if (!m || (m.wait || 0) > 0 || (b.rounds || 0) <= 0 || servedTubes(b) <= 0 || b.displacing) return false;
+  return grounded(field, b) === null;
+}
+function grounded(field, b){                      // why aircraft cannot fly (a condition or a light), or null
+  const K = UD.indirect.kinds[b.kind], A = UD.indirect.air || {};
+  if (!K.air) return null;
+  const wx = field?.weather || {};
+  if ((A.grounded || []).includes(wx.cond)) return wx.cond;
+  if (!K.by_night && (A.night || []).includes(wx.light || "day")) return wx.light;
+  return null;
 }
 const crewOf = b => ("crew" in b ? b.crew : (b.tubes || 0) * (UD.indirect.kinds[b.kind].crew || 0));   // crewmen still serving
 function servedTubes(b){                          // tubes it can fire: not knocked out, with `serve` men each
@@ -485,7 +494,7 @@ function fireMission(ctx, k, b){                  // on an enemy battery or a he
   const { rng, log, field } = ctx;
   const K = UD.indirect.kinds[b.kind], m = b.mission, shells = Math.min(servedTubes(b) * (m.illum ? 1 : K.rate), b.rounds);
   b.rounds -= shells;
-  if (!K.direct) b.located = true;                 // tanks close behind the line are never located
+  if (!K.direct && !K.air) b.located = true;       // tanks close behind the line and aircraft are never located
   if (m.illum){
     lightUp(field, m.hex, K.illum || 0, 1);
     log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells, at: m.hex, bursts: [], smoke: false, illum: true });
