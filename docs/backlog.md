@@ -18,11 +18,11 @@ When an item is done, delete it here and note it in the pull request that closes
   it runs (a key the player supplies, or a hosted service), what it may change in the saved
   game, and how the player overrules it.
 
-- **Works and ground on the field map.** Turning a unit in place pays nothing for the ground
-  its ends sweep over, a unit's flanks and rear rows pay no ground on the move (only its
-  front row), and high ground's edge in shooting is all or nothing (no slopes). Tall
-  buildings are one storey high as far as the rules go: no floors, no fighting room to room,
-  no seeing over the rooftops from them. See [units.md](units.md).
+- **Works and ground on the field map.** Height has three steps (flat, slope, high) and no
+  contour lines or dead ground behind a crest. Tall buildings give a view and a height, but
+  not separate floors: there is no fighting room to room or stair by stair, and men upstairs
+  are not safer from shells. Woods and buildings block the sight for calling fire, but not
+  aimed shots between units.
 - **Heroes on the field map.** His sickness does not lower his attack and defence there
   (the GM can lower them by hand), his wounds' impairments (a useless arm, dazed) are left
   to the roller, and there is no first aid during the battle: he bleeds until it is over.

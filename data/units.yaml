@@ -35,8 +35,10 @@ exchange_rounds: 10        # individual 6-second rounds in one exchange (for fat
 
 # The ground, painted per hex. move: movement to enter a hex of it (open ground 1); impassable:
 # no unit can enter or stand in it (cross at a bridge: paint the bridge open ground). cover: %
-# off shots at men standing in it. stops_shot: round shot does not bound on over it. height: % off a blow struck up at men on it from lower
-# ground (as a bank's), and it is high ground for shooting (high_ground). hides: men in it are hard to
+# off shots at men standing in it. stops_shot: round shot does not bound on over it. height: how high it
+# stands (high ground and tall buildings 10, a slope 5): a blow struck up at men on it from lower ground is
+# that much % off less the striker's own height (as a bank's), it is high ground for shooting by the
+# difference (high_ground), and from it a man sees and shoots over lower ground's cover and units. hides: men in it are hard to
 # see (hidden). no_horse: horses cannot go into it. Works (ditches, banks,
 # palisades, gates, walls, stakes, felled trees, wagons, pavises) are those of the battle
 # map (works.yaml), with the same crossing costs, cover and height, along the 10 m hexes.
@@ -46,6 +48,7 @@ ground:
   rough: {name: "Rough ground", key: "r", move: 2, stops_shot: true}
   woods: {name: "Woods",        key: "F", move: 2, cover: 20, stops_shot: true}
   marsh: {name: "Marsh",        key: "m", move: 3, no_horse: true, stops_shot: true}
+  slope: {name: "Slope",        key: "s", move: 2, height: 5}                     # the side of a hill: half its height for shooting and close combat
   high:  {name: "High ground",  key: "h", move: 1, height: 10}
   buildings: {name: "Buildings", key: "T", move: 2, cover: 30, stops_shot: true, no_horse: true, hides: true}   # houses, walls, yards
   tall:  {name: "Tall buildings", key: "B", move: 3, cover: 40, stops_shot: true, no_horse: true, hides: true, height: 10}   # blocks of several storeys: high ground for shooting; the streets between are open ground
@@ -316,7 +319,7 @@ vehicles:
     light: {rpg: 50, gun: 75, shell: 3}
   anti_armour: {rpg: 0.25}   # weapon: rounds a man fires at a vehicle an exchange, every one aimed
   crew_struck: 50
-  ground: {open: 1, rough: 2, woods: 3, high: 1}
+  ground: {open: 1, rough: 2, woods: 3, slope: 2, high: 1}
 
 # ---------- landing by air ----------
 # A field can mark landing zones (field.lz, hexes). A unit can come on by air at one: it waits
@@ -330,9 +333,10 @@ vehicles:
 heliborne: {lift: 80, blocked: 2, hot: 10, zone: 4}
 
 # ---------- high ground ----------
-# A shooter on high ground (a ground kind with `height`) shooting at men on lower ground gets
-# +`shoot` % and his range bands `reach` % longer; shooting up at men on high ground costs
-# `shoot` %. Guns are left out: they have their own rule for firing over units from high ground.
+# A shooter on higher ground (a ground kind's `height`) shooting at men on lower ground gets
+# +`shoot` % and his range bands `reach` % longer for each 10 of height between them (a slope's
+# 5: half, rounded down); shooting up costs `shoot` % for each 10 in the same way. Guns are left
+# out: they have their own rule for firing over units from high ground.
 high_ground: {shoot: 10, reach: 20}
 
 # ---------- storming bunkers ----------
