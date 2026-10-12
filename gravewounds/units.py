@@ -1153,14 +1153,14 @@ def _storm(d: Data, us: list, occ: dict, i: int, tw: tuple, rng, acc: tuple, fie
     return log
 
 
-def _bunker_struck(d: Data, us: list, j: int, x, M: dict, tw: tuple, rng, acc: tuple) -> dict:
+def _bunker_struck(d: Data, us: list, j: int, x, means: dict, tw: tuple, rng, acc: tuple) -> dict:
     """The men in a bunker's hex when it falls: `struck` % of them, by blast or by flame."""
     b, (table, weapon) = us[j], tw
     hexes = [h for row in footprint(d, b) for h in row]
     k = next((n for n, h in enumerate(hexes) if h[0] == x[0] and h[1] == x[1]), None)
     there = men_by_hex(d, b)[k] if k is not None else 0
-    struck = sum(1 for _ in range(there) if rng.randint(1, 100) <= M["struck"])
-    if M.get("flame"):
+    struck = sum(1 for _ in range(there) if rng.randint(1, 100) <= means["struck"])
+    if means.get("flame"):
         t = _new_tally()
         t.update(blows=struck, hits=struck, critical=struck, down=struck)
         for _ in range(struck):
