@@ -263,3 +263,11 @@ climates:
     rain: [6, 7, 9, 8, 4, 2, 4, 4, 2, 1, 2, 3]
     fog:  [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
     wind_from: [20, 10, 5, 5, 20, 15, 10, 15]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW
+  changjin:
+    name: "North Korean plateau, bitter winters"
+    note: "Like the Changjin (Chosin) plateau at about 1,100 m: Siberian winters, with nights of -20 to -30 C by late November, a short cool summer with the monsoon rains. Rounded design estimates."
+    high: [-10, -6, 1, 10, 17, 21, 24, 24, 18, 10, 0, -7]
+    low:  [-26, -23, -13, -3, 4, 10, 15, 15, 8, -1, -12, -21]
+    rain: [3, 3, 4, 6, 8, 10, 15, 14, 8, 5, 5, 4]
+    fog:  [1, 1, 1, 1, 1, 2, 3, 3, 2, 1, 1, 1]
+    wind_from: [25, 10, 5, 5, 10, 10, 10, 25]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW
