@@ -227,11 +227,13 @@ legend{padding:0}
 
       <section id="support-box" aria-labelledby="h-support">
         <h2 id="h-support">Fire support</h2>
-        <p class="muted" style="margin:0">Off-map artillery and mortars on call. On its side's move, pick a battery, <b>Call fire</b>, then click a hex one of the side's units can see. Field guns and howitzers land the next exchange, mortars this one; each shell scatters. A battery that has fired is located (◉): the other side's guns can fire on it (<b>Counter-battery</b>) with no one needing to see it.</p>
+        <p class="muted" style="margin:0">Off-map artillery and mortars on call. On its side's move, pick a battery, <b>Call fire</b>, then click a hex one of the side's units can see. Field guns and howitzers land the next exchange, mortars this one; each shell scatters. A battery that has fired is located (◉): the other side's guns can fire on it (<b>Counter-battery</b>) with no one needing to see it, knocking out tubes and killing and wounding crews (a tube without enough men falls silent). <b>Displace</b> moves it: silent for an exchange or more, then no longer located. Smoke drifts with the wind.</p>
         <ul class="support" id="support"></ul>
         <div class="row">
           <div><label for="sel-sup-fire">Fire</label><select id="sel-sup-fire"><option value="he">High explosive</option><option value="smoke">Smoke</option></select></div>
           <div><label for="sel-sup-creep">Creep</label><select id="sel-sup-creep"></select></div>
+          <div><label for="sel-sup-every">Each line</label><select id="sel-sup-every" title="A creeping barrage's fire plan: exchanges on each line before it lifts"></select></div>
+          <div><label for="sel-sup-lines">Lines</label><select id="sel-sup-lines" title="A creeping barrage's fire plan: how many lines it fires on before it stops"></select></div>
           <div><label for="sel-sup-dir">Towards</label><select id="sel-sup-dir"><option value="auto">the enemy</option><option value="1">the top</option><option value="0">top right</option><option value="5">bottom right</option><option value="4">the bottom</option><option value="3">bottom left</option><option value="2">top left</option></select></div>
         </div>
         <label class="check"><input type="checkbox" id="chk-sup-repeat"> Keep firing each exchange (a creeping barrage always does)</label>
@@ -500,12 +502,15 @@ function renderSupport(){
   $("#sel-sup-side").innerHTML = S.sides.map(s => `<option>${esc(s)}</option>`).join("");
   if (!$("#sel-sup-kind").options.length) $("#sel-sup-kind").innerHTML = Object.entries(K).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   if (!$("#sel-sup-creep").options.length) $("#sel-sup-creep").innerHTML = `<option value="0">No</option>`
-    + Array.from({ length: FD.units.indirect.creep.max }, (_, n) => `<option value="${n + 1}">${n + 1} hex${n ? "es" : ""} an exchange</option>`).join("");
+    + Array.from({ length: FD.units.indirect.creep.max }, (_, n) => `<option value="${n + 1}">${n + 1} hex${n ? "es" : ""} a lift</option>`).join("");
+  if (!$("#sel-sup-every").options.length) $("#sel-sup-every").innerHTML = Array.from({ length: FD.units.indirect.creep.every_max }, (_, n) => `<option value="${n + 1}">${nOf(n + 1, "exchange")}</option>`).join("");
+  if (!$("#sel-sup-lines").options.length) $("#sel-sup-lines").innerHTML = `<option value="0">Until off the map</option>` + [2, 3, 4, 5, 6, 8, 10].map(n => `<option value="${n}">${n} lines</option>`).join("");
   $("#support").innerHTML = supports().map((b, i) => {
-    const can = S.phase === "setup" || b.side === moving(), on = S.calling === i, live = b.rounds > 0 && b.tubes > 0;
+    const can = S.phase === "setup" || b.side === moving(), on = S.calling === i, live = b.rounds > 0 && servedTubes(b) > 0 && !b.displacing;
     const call = `<button class="small" data-sup-call="${i}" ${can && live ? "" : "disabled"} aria-pressed="${on}">${on ? "Click a hex…" : "Call fire"}</button>`;
     const dis = can ? "" : "disabled", stop = b.mission ? `<button class="small" data-sup-stop="${i}" ${dis}>Stop</button>` : "";
-    return `<li aria-current="${on}"><span><b>${esc(b.name)}</b> <span class="muted">${esc(b.side)}</span>${b.located ? ' <span title="located">\u25c9</span>' : ""}</span>${call}${stop}${counterPick(b, i, can && live)}<span class="meta">${supportMeta(b)}</span></li>`;
+    const move = FD.units.indirect.kinds[b.kind].displace && b.tubes > 0 && !b.displacing ? `<button class="small" data-sup-move="${i}" ${dis} title="Move the battery: silent for ${nOf(FD.units.indirect.kinds[b.kind].displace, "exchange")}, then no longer located">Displace</button>` : "";
+    return `<li aria-current="${on}"><span><b>${esc(b.name)}</b> <span class="muted">${esc(b.side)}</span>${b.located ? ' <span title="located">\u25c9</span>' : ""}</span>${call}${stop}${move}${counterPick(b, i, can && live)}<span class="meta">${supportMeta(b)}</span></li>`;
   }).join("") || `<li class="muted">None. Add a battery below.</li>`;
 }
 function counterPick(b, i, can){                  // a choice of located enemy batteries to fire on, for guns that reach them
@@ -515,20 +520,30 @@ function counterPick(b, i, can){                  // a choice of located enemy b
   return `<select class="small" data-sup-cb="${i}" aria-label="Counter-battery for ${esc(b.name)}"><option value="">Counter-battery…</option>${opts}</select>`;
 }
 const nOf = (n, one, many = one + "s") => `${n} ${n === 1 ? one : many}`;   // "1 tube", "4 tubes"
-function supportMeta(b){                          // "4 tubes · 72 rounds · on 30,12 next exchange, each exchange"
-  const K = FD.units.indirect.kinds[b.kind], tubes = b.tubes > 0 ? nOf(b.tubes, "tube") : "silenced";
-  return `${K.name.toLowerCase()} · ${tubes} · ${b.rounds} rounds${b.mission ? missionText(b.mission) : ""}`;
+function supportMeta(b){                          // "4 tubes · 24 crew · 72 rounds · on 30,12 next exchange, each exchange"
+  const K = FD.units.indirect.kinds[b.kind], served = servedTubes(b);
+  let tubes = b.tubes > 0 ? nOf(b.tubes, "tube") : "silenced";
+  if (b.tubes > 0 && served < b.tubes) tubes = served ? `${served} of ${b.tubes} tubes served` : "silenced (too few crew)";
+  const moving_ = b.displacing ? ` · displacing (${nOf(b.displacing, "exchange")} more)` : "";
+  return `${K.name.toLowerCase()} · ${tubes} · ${crewOf(b)} crew · ${b.rounds} rounds${moving_}${b.mission ? missionText(b.mission) : ""}`;
+}
+function displace(i){                             // the battery moves: silent for its kind's exchanges, then no longer located
+  const b = supports()[i], n = FD.units.indirect.kinds[b.kind].displace;
+  b.displacing = n; b.mission = null; S.calling = null;
+  S.msg = `${b.name} displaces: silent for ${nOf(n, "exchange")}, then no longer located${b.located ? "; counter-battery fire can still find it until then" : ""}.`;
+  render();
 }
 function missionText(m){                          // " · on 30,12 (smoke) next exchange, each exchange, creeping 2 hexes an exchange"
   const when = m.wait > 0 ? "next exchange" : "this exchange", cb = m.battery !== undefined && m.battery !== null;
   const smoke = m.smoke ? " (smoke)" : "", on = cb ? `${supports()[m.battery].name} (counter-battery)` : `${m.hex[0] + 1},${m.hex[1] + 1}${smoke}`;
-  const creep = m.creep ? `, creeping ${nOf(m.creep.step, "hex", "hexes")} an exchange` : "";
+  const plan = m.creep && m.creep.lines ? `, line ${m.creep.line || 1} of ${m.creep.lines}` : "";
+  const creep = m.creep ? `, creeping ${nOf(m.creep.step, "hex", "hexes")} every ${nOf(m.creep.every || 1, "exchange")}${plan}` : "";
   return ` · on ${on} ${when}${m.repeat ? ", each exchange" : ""}${creep}`;
 }
 function addSupport(){
   const kind = $("#sel-sup-kind").value, K = FD.units.indirect.kinds[kind], tubes = Math.max(1, Math.min(24, Number.parseInt($("#in-sup-tubes").value, 10) || 1));
   const side = $("#sel-sup-side").value, n = supports().filter(b => b.side === side).length + 1;
-  supports().push({ name: `${K.name} ${n}`, side, kind, tubes, rounds: tubes * K.rounds, mission: null });
+  supports().push({ name: `${K.name} ${n}`, side, kind, tubes, rounds: tubes * K.rounds, crew: tubes * (K.crew || 0), mission: null });
   S.msg = `${K.name} (${tubes} tubes, ${tubes * K.rounds} rounds) support ${side}.`;
   render();
 }
@@ -538,9 +553,11 @@ function callFire(i, h){                          // the mission, if a unit of i
   if (!spotted(S.units, S.field, b.side, h)){ S.msg = `No unit of ${b.side} can see ${h[0] + 1},${h[1] + 1}: fire can only be called where someone sees it fall (not through woods or smoke).`; return render() }
   const smoke = $("#sel-sup-fire").value === "smoke", by = Number($("#sel-sup-creep").value), m = { hex: h, wait: K.delay, repeat: by > 0 || $("#chk-sup-repeat").checked };
   if (smoke) m.smoke = true;
-  if (by) m.creep = { step: by, dir: creepDir(b.side) };
+  const every = Number($("#sel-sup-every").value) || 1, lines = Number($("#sel-sup-lines").value) || 0;
+  if (by) m.creep = { step: by, dir: creepDir(b.side), every, lines };
   b.mission = m;
-  const what = smoke ? "lay smoke" : "fire", creep = by ? `, creeping ${nOf(by, "hex", "hexes")} an exchange towards ${$("#sel-sup-dir").selectedOptions[0].text}` : "";
+  const plan = lines ? `, ${lines} lines` : ", until it leaves the map", what = smoke ? "lay smoke" : "fire";
+  const creep = by ? `, lifting ${nOf(by, "hex", "hexes")} towards ${$("#sel-sup-dir").selectedOptions[0].text} every ${nOf(every, "exchange")}${plan}` : "";
   S.msg = `${b.name} will ${what} on ${h[0] + 1},${h[1] + 1} ${K.delay ? "next exchange" : "this exchange"}${m.repeat ? ", and every exchange until stopped" : ""}${creep}.`;
   render();
 }
@@ -634,6 +651,7 @@ function otherLine(l, nm){                       // morale, breach and hero line
   if (l.kind === "herohit") return { cls: "hero", text: heroHitText(l) };
   if (l.kind === "pinned") return { cls: "morale", text: `${nm(l.unit)} are pinned down (rolled ${l.roll}, needed ${l.target} or less): no move and half their fire next exchange.` };
   if (l.kind === "barrage" || l.kind === "counter") return { cls: "", text: fireText(l) };
+  if (l.kind === "displaced") return { cls: "", text: `${l.name} (${l.side}) have displaced: no longer located.` };
   if (l.kind === "assault" || l.kind === "knocked") return { cls: "morale", text: bunkerText(l, nm) };
   if (l.kind === "hero") return l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null;
   if (l.kind === "duel" || l.kind === "herobled") return { cls: "hero", text: heroStateText(l) };
@@ -650,7 +668,11 @@ function bunkerText(l, nm){                       // a bunker stormed (it falls 
 }
 function fireText(l){                             // a battery's shells: on a hex (shell or smoke), or on an enemy battery
   const who = `${l.name} (${l.side})`, shells = nOf(l.shells, "shell");
-  if (l.kind === "counter") return `${who} fire ${shells} on ${l.tname} (counter-battery): ${nOf(l.knocked, "tube")} knocked out, ${l.left} left.`;
+  if (l.kind === "counter"){
+    const dead = l.dead ? " (" + l.dead + " dead)" : "";
+    const crew = l.struck ? ` ${nOf(l.struck, "crewman", "crewmen")} struck, ${l.down} down${dead};` : "";
+    return `${who} fire ${shells} on ${l.tname} (counter-battery): ${nOf(l.knocked, "tube")} knocked out;${crew} ${l.served} of ${l.left} tubes can fire, ${l.crew} crew left.`;
+  }
   return `${who} ${l.smoke ? "lay smoke with" : "fire"} ${shells} on ${l.at[0] + 1},${l.at[1] + 1}.`;
 }
 function heroStateText(l){                        // a duel's attempts, or a hero's bleeding past a threshold
@@ -1369,6 +1391,8 @@ function init(){
     const c = e.target.closest("button[data-sup-call]"), s = e.target.closest("button[data-sup-stop]");
     if (c){ const i = +c.dataset.supCall; S.calling = S.calling === i ? null : i; S.msg = S.calling === null ? "" : "Click the hex to fire on."; render() }
     if (s){ supports()[+s.dataset.supStop].mission = null; S.msg = "Fire stopped."; render() }
+    const mv = e.target.closest("button[data-sup-move]");
+    if (mv) displace(+mv.dataset.supMove);
   });
   $("#support").addEventListener("change", e => {
     const c = e.target.closest("select[data-sup-cb]");

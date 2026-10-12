@@ -956,8 +956,59 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     for b in (field or {}).get("support") or []:
         if b.get("mission") and b["mission"].get("wait", 0) > 0:
             b["mission"]["wait"] -= 1
+    log += _displace_all(field)
     _smoke_thins(field)
+    _smoke_drifts(d, field)
     return us, log
+
+
+def _displace_all(field: dict | None) -> list:
+    """Batteries displacing count down; one that has moved is no longer located, and missions on it end."""
+    sup, log = (field or {}).get("support") or [], []
+    for k, b in enumerate(sup):
+        if not b.get("displacing"):
+            continue
+        b["displacing"] -= 1
+        if b["displacing"]:
+            continue
+        b["located"] = False
+        for x in sup:
+            if x.get("mission") and x["mission"].get("battery") == k:
+                x["mission"] = None
+        log.append({"kind": "displaced", "sup": k, "name": b["name"], "side": b["side"]})
+    return log
+
+
+def downwind(d: Data, field: dict | None):
+    """The hex side (0-5) the field's wind blows smoke through, or None in calm air or with no direction."""
+    weather, pts = (field or {}).get("weather") or {}, d.weather.get("wind_points", []) if d.weather else []
+    if weather.get("dir") not in pts or weather.get("wind", "calm") == "calm":
+        return None
+    wx, wy = C.WIND_VECTORS[(pts.index(weather["dir"]) - pts.index(_up(field)) + 4) % 8]
+    best, side = None, None
+    for dirn in range(6):
+        dq, dr = AX[dirn]
+        dot = math.sqrt(3) * (dq + dr / 2) * wx + 1.5 * dr * wy
+        if best is None or dot > best + 1e-9:
+            best, side = dot, dirn
+    return side
+
+
+def _smoke_drifts(d: Data, field: dict | None) -> None:
+    """Smoke moves `drift` hexes downwind; what leaves the map is gone."""
+    sm = (field or {}).get("smoke")
+    side = downwind(d, field) if sm else None
+    n = d.units["indirect"]["smoke"].get("drift", {}).get(((field or {}).get("weather") or {}).get("wind") or "calm", 0)
+    if side is None or not n:
+        return
+    size, out = field.get("size"), {}
+    for key, left in sm.items():
+        h = step([int(x) for x in key.split(",")], side, n)
+        if size and not (0 <= h[0] < size[0] and 0 <= h[1] < size[1]):
+            continue
+        k2 = f"{h[0]},{h[1]}"
+        out[k2] = max(out.get(k2, 0), left)
+    field["smoke"] = out
 
 
 def _smoke_thins(field: dict | None) -> None:
@@ -1146,10 +1197,23 @@ def _indirect_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | 
         return log
     for k, b in enumerate(field.get("support") or []):
         m = b.get("mission")
-        if not m or m.get("wait", 0) > 0 or b.get("rounds", 0) <= 0 or b.get("tubes", 0) <= 0:
+        if not m or m.get("wait", 0) > 0 or b.get("rounds", 0) <= 0 or served_tubes(d, b) <= 0 or b.get("displacing"):
             continue
         log += _fire_mission(d, us, table, weapon, rng, acc, field, under, k, b)
     return log
+
+
+def crew_of(d: Data, b: dict) -> int:
+    """An off-map battery's crewmen still serving: `crew` a tube it came with, less those lost."""
+    return b["crew"] if "crew" in b else b.get("tubes", 0) * d.units["indirect"]["kinds"][b["kind"]].get("crew", 0)
+
+
+def served_tubes(d: Data, b: dict) -> int:
+    """The tubes an off-map battery can fire: those not knocked out that it has `serve` men each for."""
+    K = d.units["indirect"]["kinds"][b["kind"]]
+    if "serve" not in K:
+        return b.get("tubes", 0)
+    return min(b.get("tubes", 0), crew_of(d, b) // K["serve"])
 
 
 def _fire_mission(d: Data, us: list, table: str, weapon: str, rng, acc: tuple, field: dict, under: list, k: int, b: dict) -> list:
@@ -1157,12 +1221,12 @@ def _fire_mission(d: Data, us: list, table: str, weapon: str, rng, acc: tuple, f
     where each lands, then smoke laid or the men struck in every unit. A battery that fires is
     located; a creeping mission moves on."""
     K, m = d.units["indirect"]["kinds"][b["kind"]], b["mission"]
-    shells = min(b["tubes"] * K["rate"], b["rounds"])
+    shells = min(served_tubes(d, b) * K["rate"], b["rounds"])
     b["rounds"] -= shells
     if not K.get("direct"):
         b["located"] = True                       # tanks close behind the line are never located
     if m.get("battery") is not None:
-        log = _counter_fire(field, k, b, shells, K, rng)
+        log = _counter_fire(d, field, (k, b, shells, K), (table, weapon), rng)
     else:
         bursts = []
         for _ in range(shells):
@@ -1193,7 +1257,8 @@ def _knock_bunkers(d: Data, field: dict, k: int, b: dict, bursts: list, rng) -> 
 
 
 def _mission_on(b: dict, m: dict, size) -> None:
-    """After a battery fires: a single mission ends; a creeping one moves its aim on, and ends
+    """After a battery fires: a single mission ends; a creeping one keeps to its fire plan,
+    lifting its aim on after `every` exchanges on a line, and ends after its `lines` lines or
     when its aim leaves the map."""
     if not m.get("repeat"):
         b["mission"] = None
@@ -1201,6 +1266,14 @@ def _mission_on(b: dict, m: dict, size) -> None:
     cr = m.get("creep")
     if not cr:
         return
+    cr["on"] = cr.get("on", 0) + 1
+    if cr["on"] < cr.get("every", 1):
+        return
+    cr["on"] = 0
+    if cr.get("lines") and cr.get("line", 1) >= cr["lines"]:
+        b["mission"] = None
+        return
+    cr["line"] = cr.get("line", 1) + 1
     for _ in range(cr["step"]):
         m["hex"] = step(m["hex"], cr["dir"] + cr.get("done", 0) % 2)
         cr["done"] = cr.get("done", 0) + 1
@@ -1208,19 +1281,38 @@ def _mission_on(b: dict, m: dict, size) -> None:
         b["mission"] = None
 
 
-def _counter_fire(field: dict, k: int, b: dict, shells: int, kind: dict, rng) -> list:
-    """Counter-battery: each shell knocks out one of the target battery's tubes at the kind's counter %."""
-    j, sup = b["mission"]["battery"], field["support"]
+def _counter_fire(d: Data, field: dict, fire: tuple, tw: tuple, rng) -> list:
+    """Counter-battery (fire: battery index, battery, shells, its kind; tw: table and shell
+    weapon): each shell lands among the target's guns at the kind's counter %, knocking out a
+    tube and striking `among` crewmen, or at `near` times that % bursts close by, striking
+    `near_struck`. The struck crewmen roll wounds; those put down are lost to the battery."""
+    k, b, shells, kind = fire
+    j, sup, CB = b["mission"]["battery"], field["support"], d.units["indirect"]["counter_battery"]
     tg = sup[j] if 0 <= j < len(sup) else None
     if tg is None or tg["side"] == b["side"]:
         b["mission"] = None
         return []
-    knocked = min(tg["tubes"], sum(1 for _ in range(shells) if rng.randint(1, 100) <= kind["counter"]))
+    hits = struck = 0
+    for _ in range(shells):
+        r = rng.randint(1, 100)
+        if r <= kind["counter"]:
+            hits += 1
+            struck += CB["among"]
+        elif r <= kind["counter"] * CB["near"]:
+            struck += CB["near_struck"]
+    knocked, crew = min(tg["tubes"], hits), crew_of(d, tg)
+    struck = min(struck, crew)
+    table, weapon = tw
+    t = _blows(d, {"table": table, "weapon": weapon, "kit": None, "quality": "regular"},
+               {"table": table, "weapon": weapon, "kit": "none", "quality": "regular"}, struck, d.units["indirect"]["attack"], 0, rng, (), -1000)
     tg["tubes"] -= knocked
-    if tg["tubes"] <= 0:
+    tg["crew"] = crew - t["down"]
+    tg["crew_dead"] = tg.get("crew_dead", 0) + t["dead"]
+    if served_tubes(d, tg) <= 0:
         tg["mission"] = None
     return [{"kind": "counter", "sup": k, "name": b["name"], "side": b["side"], "shells": shells, "target": j, "tname": tg["name"],
-             "knocked": knocked, "left": tg["tubes"]}]
+             "knocked": knocked, "left": tg["tubes"], "struck": struck, "down": t["down"], "dead": t["dead"], "crew": tg["crew"],
+             "served": served_tubes(d, tg)}]
 
 
 def _lay_smoke(d: Data, field: dict, bursts: list) -> None:

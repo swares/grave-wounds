@@ -893,6 +893,12 @@ def _indirect_errors(d: Data) -> list[str]:
         errors.append("units.yaml: indirect.smoke.lasts needs every wind")
     errors += [f"units.yaml: indirect kind {k} needs a counter % (0 to 100)" for k, v in I.get("kinds", {}).items()
                if not isinstance(v.get("counter"), (int, float)) or not 0 <= v["counter"] <= 100]
+    errors += [f"units.yaml: indirect kind {k} needs whole-number crew and displace, and serve from 1 to crew" for k, v in I.get("kinds", {}).items()
+               if not (isinstance(v.get("crew"), int) and isinstance(v.get("serve"), int) and isinstance(v.get("displace"), int) and 1 <= v["serve"] <= v["crew"])]
+    if winds and set(I.get("smoke", {}).get("drift", {})) != winds:
+        errors.append("units.yaml: indirect.smoke.drift needs every wind")
+    if not all(isinstance(I.get("counter_battery", {}).get(k), int) for k in ("among", "near", "near_struck")):
+        errors.append("units.yaml: indirect.counter_battery needs whole-number among, near and near_struck")
     return errors
 
 

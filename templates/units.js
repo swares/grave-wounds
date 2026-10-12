@@ -462,16 +462,21 @@ function indirectAll(us, table, rng, acc, log, field, under){   // every fire mi
   if (!field || !weapon) return;
   (field.support || []).forEach((b, k) => {
     const m = b.mission;
-    if (!m || (m.wait || 0) > 0 || (b.rounds || 0) <= 0 || (b.tubes || 0) <= 0) return;
+    if (!m || (m.wait || 0) > 0 || (b.rounds || 0) <= 0 || servedTubes(b) <= 0 || b.displacing) return;
     fireMission({ us, table, weapon, rng, acc, log, field, under }, k, b);
   });
 }
+const crewOf = b => ("crew" in b ? b.crew : (b.tubes || 0) * (UD.indirect.kinds[b.kind].crew || 0));   // crewmen still serving
+function servedTubes(b){                          // tubes it can fire: not knocked out, with `serve` men each
+  const K = UD.indirect.kinds[b.kind];
+  return K.serve === undefined ? b.tubes || 0 : Math.min(b.tubes || 0, Math.floor(crewOf(b) / K.serve));
+}
 function fireMission(ctx, k, b){                  // on an enemy battery or a hex: smoke laid or men struck; located; a creeping mission moves on (ctx: us, table, weapon, rng, acc, log, field, under)
   const { rng, log, field } = ctx;
-  const K = UD.indirect.kinds[b.kind], m = b.mission, shells = Math.min(b.tubes * K.rate, b.rounds);
+  const K = UD.indirect.kinds[b.kind], m = b.mission, shells = Math.min(servedTubes(b) * K.rate, b.rounds);
   b.rounds -= shells;
   if (!K.direct) b.located = true;                 // tanks close behind the line are never located
-  if (m.battery !== undefined && m.battery !== null) log.push(...counterFire(field, k, b, shells, K, rng));
+  if (m.battery !== undefined && m.battery !== null) log.push(...counterFire(field, [k, b, shells, K], [ctx.table, ctx.weapon], rng));
   else {
     const bursts = [];
     for (let s = 0; s < shells; s++){ const dirn = rng.randint(0, 5), far = rng.randint(0, K.scatter); bursts.push(step(m.hex, dirn, far)) }
@@ -481,22 +486,36 @@ function fireMission(ctx, k, b){                  // on an enemy battery or a he
   }
   missionOn(b, m, field.size);
 }
-function missionOn(b, m, size){                   // a single mission ends; a creeping one moves its aim on, and ends when it leaves the map
+function missionOn(b, m, size){                   // a single mission ends; a creeping one keeps its fire plan: `every` exchanges a line, `lines` lines, or off the map
   if (!m.repeat){ b.mission = null; return }
   const cr = m.creep;
   if (!cr) return;
+  cr.on = (cr.on || 0) + 1;
+  if (cr.on < (cr.every || 1)) return;
+  cr.on = 0;
+  if (cr.lines && (cr.line || 1) >= cr.lines){ b.mission = null; return }
+  cr.line = (cr.line || 1) + 1;
   for (let s = 0; s < cr.step; s++){ m.hex = step(m.hex, cr.dir + (cr.done || 0) % 2); cr.done = (cr.done || 0) + 1 }
   if (size && !(m.hex[0] >= 0 && m.hex[0] < size[0] && m.hex[1] >= 0 && m.hex[1] < size[1])) b.mission = null;
 }
-function counterFire(field, k, b, shells, K, rng){   // each shell knocks out one of the target battery's tubes at K's counter %
+function counterFire(field, fire, tw, rng){        // fire [k, battery, shells, kind]: shells among the guns knock out tubes and strike crewmen; near bursts strike crewmen
+  const [k, b, shells, K] = fire, [table, weapon] = tw, CB = UD.indirect.counter_battery;
   const j = b.mission.battery, sup = field.support, tg = j >= 0 && j < sup.length ? sup[j] : null;
   if (!tg || tg.side === b.side){ b.mission = null; return [] }
-  let hits = 0;
-  for (let s = 0; s < shells; s++) if (rng.randint(1, 100) <= K.counter) hits++;
-  const knocked = Math.min(tg.tubes, hits);
+  let hits = 0, struck = 0;
+  for (let s = 0; s < shells; s++){
+    const r = rng.randint(1, 100);
+    if (r <= K.counter){ hits++; struck += CB.among }
+    else if (r <= K.counter * CB.near) struck += CB.near_struck;
+  }
+  const knocked = Math.min(tg.tubes, hits), crew = crewOf(tg);
+  struck = Math.min(struck, crew);
+  const t = blows({ table, weapon, kit: null, quality: "regular" }, { table, weapon, kit: "none", quality: "regular" }, struck, UD.indirect.attack, 0, rng, { exposed: [], shift: -1000 });
   tg.tubes -= knocked;
-  if (tg.tubes <= 0) tg.mission = null;
-  return [{ kind: "counter", sup: k, name: b.name, side: b.side, shells, target: j, tname: tg.name, knocked, left: tg.tubes }];
+  tg.crew = crew - t.down;
+  tg.crew_dead = (tg.crew_dead || 0) + t.dead;
+  if (servedTubes(tg) <= 0) tg.mission = null;
+  return [{ kind: "counter", sup: k, name: b.name, side: b.side, shells, target: j, tname: tg.name, knocked, left: tg.tubes, struck, down: t.down, dead: t.dead, crew: tg.crew, served: servedTubes(tg) }];
 }
 function laySmoke(field, bursts){                 // smoke over each burst and the hexes round it, as long as the wind lets it hang
   const S = UD.indirect.smoke, lasts = S.lasts[field.weather?.wind || "calm"], sm = field.smoke || (field.smoke = {});
@@ -794,17 +813,54 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
   });
   log.push(...moraleAll(us, occ, before, acc, rng, table), ...suppressAll(us, under, rng), ...heroesAfter(us, rng));
-  afterExchange(us, field);
+  afterExchange(us, field, log);
   return { units: us, log };
 }
-function afterExchange(us, field){                // charges spent, batteries changed over, pins wear off, missions come due
+function afterExchange(us, field, log = []){        // charges spent, batteries changed over, pins wear off, missions come due, batteries displace, smoke thins and drifts
   for (const u of us){
     u.charged = false;
     batteryAfter(u);
     if (u.pinned) u.pinned -= 1;
   }
   for (const b of field?.support || []) if (b.mission && (b.mission.wait || 0) > 0) b.mission.wait -= 1;
+  log.push(...displaceAll(field));
   if (field?.smoke) field.smoke = Object.fromEntries(Object.entries(field.smoke).filter(([, n]) => n > 1).map(([h, n]) => [h, n - 1]));   // smoke thins
+  smokeDrifts(field);
+}
+function displaceAll(field){                      // displacing batteries count down; one that has moved is no longer located, missions on it end
+  const sup = field?.support || [], log = [];
+  sup.forEach((b, k) => {
+    if (!b.displacing) return;
+    b.displacing -= 1;
+    if (b.displacing) return;
+    b.located = false;
+    for (const x of sup) if (x.mission && x.mission.battery === k) x.mission = null;
+    log.push({ kind: "displaced", sup: k, name: b.name, side: b.side });
+  });
+  return log;
+}
+function downwind(field){                         // the hex side (0-5) the wind blows smoke through, or null
+  const w = field?.weather || {}, pts = WXD?.wind_points || [];
+  if (!pts.includes(w.dir) || (w.wind || "calm") === "calm") return null;
+  const [wx, wy] = WIND_VECTORS[(pts.indexOf(w.dir) - pts.indexOf(upOf(field)) + 12) % 8];
+  let best = null, side = null;
+  for (let dn = 0; dn < 6; dn++){
+    const [dq, dr] = AX[dn], dot = Math.sqrt(3) * (dq + dr / 2) * wx + 1.5 * dr * wy;
+    if (best === null || dot > best + 1e-9){ best = dot; side = dn }
+  }
+  return side;
+}
+function smokeDrifts(field){                      // smoke moves `drift` hexes downwind; off the map it is gone
+  const sm = field?.smoke, side = sm ? downwind(field) : null, n = UD.indirect.smoke.drift?.[field?.weather?.wind || "calm"] || 0;
+  if (side === null || !n) return;
+  const size = field.size, out = {};
+  for (const [key, left] of Object.entries(sm)){
+    const h = step(key.split(",").map(Number), side, n);
+    if (size && !(h[0] >= 0 && h[0] < size[0] && h[1] >= 0 && h[1] < size[1])) continue;
+    const k2 = `${h[0]},${h[1]}`;
+    out[k2] = Math.max(out[k2] || 0, left);
+  }
+  field.smoke = out;
 }
 function moraleAll(us, occ, before, acc, rng, table){
   const log = [], broke = [];
