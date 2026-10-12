@@ -245,7 +245,7 @@ def unit_rules(d) -> list[str]:
         f"({', '.join(str(m['knock']) + '%' for m in U['assault']['means'].values())} an exchange to knock it out).",
         f"<b>Unit morale:</b> after an exchange a unit checks if it lost the exchange, has {int(mo['trigger'] * 100)}% of its men down, lost {int(mo['shock'] * 100)}% in the exchange, "
         f"or was struck in flank or rear: d100 against Nerve, +{mo['mods']['in_order']} while steady, +{mo['mods']['leader']} with a leader, {mo['mods']['leader_down']} if he is down, "
-        f"{mo['mods']['heavy']} at half strength, {mo['mods']['flank']} if flanked, -{mo['mods']['losing_per_man']} a man it lost more than it put down (at most -{mo['mods']['losing_cap']}). "
+        f"{mo['mods']['heavy']} at half strength, {mo['mods']['flank']} if flanked, +{mo['mods']['dug_in']} dug in, -{mo['mods']['losing_per_man']} a man it lost more than it put down (at most -{mo['mods']['losing_cap']}). "
         f"Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +{R['attack']}, no parry, x{R['tempo']:g} tempo.",
     ] + _ground_rules(d) + _gun_rules(d) + _mg_rules(d) + _hero_rules(d) + _aftermath_rules(d)
 
@@ -259,7 +259,9 @@ def _mg_rules(d) -> list[str]:
     return [
         f"<b>Modern infantry:</b> extended order is {ext['per_hex']} men a hex (shots at it x{ext['missile_factor']:g}, {ext['move']} hexes a move). "
         f"Magazine rifles fire {R['rifle_service']} rounds a minute, self-loading and assault rifles {R['rifle_assault']}, pistols and submachine guns {R['pistol_smg']}. "
-        f"A unit can go to ground on its own move: shots at it -{U['to_ground']['cover']}%, and it cannot move until it gets up.",
+        f"A unit can go to ground on its own move: shots at it -{U['to_ground']['cover']}%, and it cannot move until it gets up. "
+        f"Hidden men (gone to ground, in a bunker or in buildings): only {U['hidden']['seen']}% of the aimed shots at them find a man ({U['hidden']['mg_seen']}% of a machine gun's), "
+        f"and dug in they get +{U['morale']['mods']['dug_in']} on morale.",
         f"<b>Machine guns:</b> a team is a gun and {M['crew']} crew a hex, the gun served while one of its crew is up. Each gun fires {R['machine_gun']} rounds a minute, "
         f"{M['tempo'] * 100:g}% of them rolled as aimed shots. Its beaten zone: the first other unit, friend or foe, within {M['beaten']['beyond']} hexes past the target on the line "
         f"of fire takes {M['beaten']['share']}% as many shots at that range (ground that stops shot stops it).",

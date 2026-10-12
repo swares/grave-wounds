@@ -347,6 +347,8 @@ def _morale_mods(mods: dict, unit: dict) -> int:
         m += mods["veteran_friends"]
     if unit.get("state") == "steady":
         m += mods["in_order"]
+    if unit.get("dug"):
+        m += mods.get("dug_in", 0)
     m -= min(mods["losing_cap"], mods["losing_per_man"] * max(0, unit.get("lost", 0) - unit.get("dealt", 0)))
     return m
 
@@ -738,7 +740,7 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
         up, longer = height_edge(d, field, u["weapon"], best[2], best[3])
         v = {"att": i, "dfd": best[1], "men": _shooters(d, u, field), "dist": best[0], "cover": share_cover(d, field, best[2], units[best[1]]) + ground_cover(d, units[best[1]]),
              "penalty": wx["penalty"] - up, "misfire": wx["misfire"], "reach": wx.get("reach", 0) + longer, "from": best[2], "to": best[3], "height": up,
-             "over": line_fire(d, units, occ, field, i, best[1], best[2], best[3], best[0])}
+             "over": line_fire(d, units, occ, field, i, best[1], best[2], best[3], best[0]), "seen": seen_share(d, field, units[best[1]], best[3], u["weapon"])}
         if is_mg(d, u["weapon"]):
             v.update(_beaten(d, units, occ, field, i, best))
         out.append(v)
@@ -773,6 +775,18 @@ def ground_cover(d: Data, u: dict) -> int:
     return d.units["to_ground"]["cover"] if u.get("prone") else 0
 
 
+def seen_share(d: Data, field: dict | None, u: dict, at, weapon: str | None = None) -> float:
+    """The share of aimed shots at unit u (its hex `at` aimed at) that find a man: hidden.seen %
+    (hidden.mg_seen % for a machine gun) if it is gone to ground, in a bunker or in ground that
+    hides it, else all of them."""
+    H = d.units.get("hidden")
+    if not H:
+        return 1
+    if u.get("prone") or in_bunker(d, field, u) or (at is not None and ground_at(d, field, at).get("hides")):
+        return H.get("mg_seen", H["seen"]) / 100 if weapon and is_mg(d, weapon) else H["seen"] / 100
+    return 1
+
+
 def _beaten(d: Data, units: list, occ: dict, field: dict | None, i: int, best: tuple) -> dict:
     """A machine gun's beaten zone past its target: {behind (unit index or None), beyond (hexes
     past the target), bcover (% off there: ground and going to ground)}."""
@@ -782,8 +796,9 @@ def _beaten(d: Data, units: list, occ: dict, field: dict | None, i: int, best: t
             break
         b = occ.get(f"{x[0]},{x[1]}")
         if k > 0 and b is not None and b not in (i, j):
-            return {"behind": b, "beyond": k, "bcover": ground_at(d, field, x).get("cover", 0) + ground_cover(d, units[b])}
-    return {"behind": None, "beyond": 0, "bcover": 0}
+            return {"behind": b, "beyond": k, "bcover": ground_at(d, field, x).get("cover", 0) + ground_cover(d, units[b]),
+                    "bseen": seen_share(d, field, units[b], x, units[i]["weapon"])}
+    return {"behind": None, "beyond": 0, "bcover": 0, "bseen": 1}
 
 
 def shot_weather(d: Data, field: dict | None, weapon: str, dist: int, h=None, t=None) -> dict:
@@ -945,7 +960,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     for i, u in enumerate(us):
         cut = min(lost[i], u["men"])
         u.update(men=u["men"] - cut, down=u.get("down", 0) + cut, dead=u.get("dead", 0) + min(dead[i], cut))
-    log += _morale_all(d, us, occ, before, lost, dealt, flanked, rng, table)
+    log += _morale_all(d, us, occ, before, (lost, dealt, flanked), rng, table, field)
     log += _suppress_all(d, us, under, rng)
     log += _heroes_after(d, us, rng)
     for u in us:
@@ -1092,7 +1107,7 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
     for v in volleys(d, us, field):
         _mark_mg(d, us, v, under)
         b = us[v["dfd"]]
-        opts = {"factor": form(d, b)["missile_factor"] * (100 - v["misfire"]) / 100, "exposed": _exposure(d, b, False, True),
+        opts = {"factor": form(d, b)["missile_factor"] * (100 - v["misfire"]) / 100 * v["seen"], "exposed": _exposure(d, b, False, True),
                 "penalty": v["cover"] + v["penalty"] + v["over"], "reach": v["reach"]}
         t = _take_hurt(b, volley(d, _side(us[v["att"]], table), _side(b, table), v["men"], v["dist"], rng, **opts))
         _tally(*acc, v, t)
@@ -1104,7 +1119,7 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
             up, longer = height_edge(d, field, hero["weapon"], v["from"], v["to"])
             if wx["blocked"] or field_range(d, hero["weapon"], v["dist"], wx["reach"] + longer) is None:
                 continue
-            hopts = {**opts, "factor": form(d, b)["missile_factor"] * (100 - wx["misfire"]) / 100, "penalty": v["cover"] + wx["penalty"] - up + v["over"],
+            hopts = {**opts, "factor": form(d, b)["missile_factor"] * (100 - wx["misfire"]) / 100 * v["seen"], "penalty": v["cover"] + wx["penalty"] - up + v["over"],
                      "reach": wx["reach"] + longer}
             t = _take_hurt(b, volley(d, _hero_side(us[v["att"]], hero, table, d), _side(b, table), d.units["heroes"]["tempo"], v["dist"], rng, **hopts))
             _tally(*acc, v, t)
@@ -1127,7 +1142,7 @@ def _beaten_fire(d: Data, us: list, table: str, rng, acc: tuple, v: dict) -> lis
     """A machine gun's cone falling on into the unit behind its target."""
     k, bh = v["behind"], us[v["behind"]]
     r = {**v, "dfd": k, "dist": v["dist"] + v["beyond"], "men": v["men"] * d.units["machine_guns"]["beaten"]["share"] / 100}
-    opts = {"factor": form(d, bh)["missile_factor"] * (100 - v["misfire"]) / 100, "exposed": _exposure(d, bh, False, True),
+    opts = {"factor": form(d, bh)["missile_factor"] * (100 - v["misfire"]) / 100 * v.get("bseen", 1), "exposed": _exposure(d, bh, False, True),
             "penalty": v["bcover"] + v["penalty"], "reach": v["reach"]}
     hits = volley(d, _side(us[v["att"]], table), _side(bh, table), r["men"], r["dist"], rng, **opts)
     if hits is None:
@@ -1561,11 +1576,10 @@ def _tally(lost: list, dead: list, dealt: list, s: dict, t: dict) -> None:
     dealt[s["att"]] += t["down"]
 
 
-def _morale_all(d: Data, us: list, occ: dict, before: list, lost: list, dealt: list, flanked: list, rng,
-                table: str = "") -> list:
+def _morale_all(d: Data, us: list, occ: dict, before: list, acc: tuple, rng, table: str = "", field: dict | None = None) -> list:
     """Every unit still in the fight checks; any that breaks is struck at once by the enemies
     touching it, every man of them."""
-    log, broke = [], []
+    (lost, dealt, flanked), log, broke = acc, [], []
     for i, u in enumerate(us):
         if u["state"] in ("broken", "fled") or u["men"] <= 0:
             continue
@@ -1573,7 +1587,8 @@ def _morale_all(d: Data, us: list, occ: dict, before: list, lost: list, dealt: l
         unit = {"quality": u["quality"], "start": u["start"], "down": u["down"], "lost": lost[i], "dealt": dealt[i],
                 "men": before[i], "state": u["state"], "leader": leader_state(u), "flanked": flanked[i],
                 "contact": any(us[j]["side"] != u["side"] for j in near),
-                "friends": any(us[j]["side"] == u["side"] and us[j]["state"] == "steady" for j in near)}
+                "friends": any(us[j]["side"] == u["side"] and us[j]["state"] == "steady" for j in near),
+                "dug": bool(u.get("prone")) or in_bunker(d, field, u)}
         m = morale(d, unit, rng.randint(1, 100))
         if m["check"]:
             log.append({"kind": "morale", "unit": i, "target": m["target"], "from": u["state"], "state": m["state"]})

@@ -79,6 +79,7 @@ The check is d100 against its Nerve (green 35, regular 50, veteran 65), with mod
 | Half its men down | −20 |
 | Struck in flank or rear | −20 |
 | A steady friendly unit beside it | +10 |
+| Dug in: gone to ground or in a bunker | +10 |
 | Lost the exchange | −5 a man more lost than it put down (at most −30) |
 
 - **Steady, fails:** shaken. A shaken unit fights at −10 and cannot charge. It breaks at
@@ -292,6 +293,16 @@ out. All of this is design estimates (`data/units.yaml`).
   down in the folds of the ground. Shots at it lose 15% on top of the ground's cover, and it
   cannot move until **Get up**. It still shoots, and fights hand to hand as it stands. The map
   marks it ↓.
+- **Hidden men**: men gone to ground, in a bunker, or in buildings show little of themselves.
+  Of the aimed shots fired at them, only 10% find a man to aim at (5% of a machine gun's: it
+  sprays where they are thought to be, and still pins them); the rest go at the smoke and the
+  flashes. Cover and range then cut those as usual. The log says so ("hidden: 10% of shots
+  find a man"). Men standing in the open are as easy to hit as ever, and dug-in men hold
+  better (+10 on morale). Tuned on Osan: left alone, the dug-in line there now lasts about an
+  hour (median of ten runs; 50 minutes to three and a half hours) against five times its
+  numbers, where before it broke in about five minutes. The real fight lasted about two and a
+  half hours, but the North Koreans spent much of it moving round the flanks, which a GM
+  plays out on the map.
 - **Machine-gun teams**: pick a machine gun as the weapon and the unit becomes a team: a gun
   and its crew of 5 a hex, so 10 men serve 2 guns. A gun goes on firing while one of its crew
   is up. Each gun fires 300 rounds a minute, and a tenth of them are rolled as aimed shots
@@ -308,13 +319,14 @@ fire for one minute at 100 unarmoured regular riflemen:
 |---|---|---|---|
 | 2 machine guns, 440 yd (400 m) | close order | 18.0 | 10.3 |
 | 2 machine guns, 440 yd | extended order | 9.0 | 5.2 |
-| 2 machine guns, 440 yd | extended, to ground | 4.6 | 2.1 |
+| 2 machine guns, 440 yd | extended, to ground | 0.3 | 0.1 |
 | 2 machine guns, 880 yd (800 m) | extended order | 3.1 | 1.2 |
 | 100 riflemen, 440 yd | close order | 9.9 | 5.7 |
 | 100 riflemen, 440 yd | extended order | 5.2 | 3.0 |
-| 100 riflemen, 440 yd | extended, to ground | 2.6 | 1.2 |
+| 100 riflemen, 440 yd | extended, to ground | 0.3 | 0.1 |
 
-Under the modern-fire rule (see *The wound*, above) most men hit are put down; the rest are
+Men gone to ground are hidden (above): the machine guns' fire still pins them, but it seldom
+finds a man. Under the modern-fire rule (see *The wound*, above) most men hit are put down; the rest are
 light wounds whose men passed the stop check. Hit and put down differ also by the men a
 hit kills outright, counted in both.
 

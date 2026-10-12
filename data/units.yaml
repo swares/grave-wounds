@@ -45,7 +45,7 @@ ground:
   woods: {name: "Woods",        key: "F", move: 2, cover: 20, stops_shot: true}
   marsh: {name: "Marsh",        key: "m", move: 3, no_horse: true, stops_shot: true}
   high:  {name: "High ground",  key: "h", move: 1, height: 10}
-  buildings: {name: "Buildings", key: "T", move: 2, cover: 30, stops_shot: true, no_horse: true}   # houses, walls, yards
+  buildings: {name: "Buildings", key: "T", move: 2, cover: 30, stops_shot: true, no_horse: true, hides: true}   # houses, walls, yards
   water: {name: "Water",        key: "w", move: 1, impassable: true}                                # a canal or river: shots cross it, men do not
 # Breaching: a unit ordered to breach puts this share of each front hex's front rank to
 # hacking at the work in front of it, every round of the exchange. A work's breach figure
@@ -320,6 +320,19 @@ suppression:
 to_ground:
   cover: 15
 
+# ---------- hidden targets ----------
+# Men gone to ground, in a bunker, or in ground that hides them (`hides`: buildings) show
+# little of themselves: of the aimed shots fired at them, only `seen` % find a man to aim at
+# (the rest go at where the fire came from), before cover and range. For every missile
+# weapon and machine gun; men standing in the open are as easy to hit as ever. With the
+# dug-in men's nerve (morale.mods.dug_in), tuned so a dug-in line, left alone, holds on the order
+# of one and a half to two hours against five times its numbers (Osan, 1950).
+# A machine gun's fire at hidden men finds a man at `mg_seen` % (it sprays where they are
+# thought to be): it still pins them (suppression), but rarely kills them.
+hidden:
+  seen: 10
+  mg_seen: 5
+
 # ---------- wounds ----------
 # Each blow that gets through rolls location, mechanism and severity from the margin, and
 # armour, exactly as a single fighter's. Then:
@@ -359,6 +372,7 @@ morale:
     in_order: 20              # still steady: ranks closed, men backing each other
     losing_per_man: 5         # off for each man more it lost than it put down this exchange
     losing_cap: 30
+    dug_in: 10                # gone to ground or in a bunker: men in holes stay put
 
 # ---------- the rout ----------
 # A broken unit flees. Every enemy man in reach of it strikes, not just the front rank (the

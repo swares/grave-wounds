@@ -9,6 +9,19 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
+- **The roller's battle and campaign picker, by period.** The lists of battles and
+  campaigns to pick from are one long list; group them under their period (medieval, the
+  Thirty Years' War, horse and musket, the Civil War and the frontier, the First World War,
+  the Second World War, Korea) so a WWII battle is found under WWII.
+- **A rule book.** The printed tables carry a summary of each rule, but there is no rule
+  book to read through: how to play, the turn, the roller, the field map, the travel map,
+  camps and disease, the team builder, with examples. With the tables, or as its own book.
+- **An AI game master in the online app (to consider).** An option for an AI to run the
+  other side or the whole table: narrate, set up fights from the travel map, move and order
+  the enemy's units on the field map, roll and explain. Open questions: which model and where
+  it runs (a key the player supplies, or a hosted service), what it may change in the saved
+  game, and how the player overrules it.
+
 - **Works and ground on the field map.** Turning a unit in place pays nothing for the ground
   its ends sweep over, a unit's flanks and rear rows pay no ground on the move (only its
   front row), and high ground's edge in shooting is all or nothing (no slopes). See
@@ -32,11 +45,11 @@ When an item is done, delete it here and note it in the pull request that closes
   guns, extended order, artillery and mortars on call, suppression). Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
-- **Modern rifle fire may be too deadly close in.** Playtesting Osan: left alone, the dug-in
-  American line breaks in about 20 exchanges (minutes) against five times its numbers, where
-  the real fight lasted about two and a half hours before the withdrawal. Veteran riflemen at
-  150 yards hit prone men behind 17% cover with about 65% of their aimed shots. Worth a look at
-  the missile tempo and range bands for service rifles before more modern battlefields.
+- **Fire at hidden men, first cut.** Men gone to ground, in bunkers or in buildings are now hit
+  at 10% of aimed shots (machine guns 5%), and dug-in men hold better. Osan, left alone, lasts
+  about an hour where the real fight took two and a half; the rest of that time went in the
+  North Koreans moving round the flanks, which the static test does not play. Worth a second
+  look once Osan has been played through by hand.
 - **Guns, still simplified.** A battery splits into at most one section, and its canister
   at a charge is counted at the end of the exchange like all fire, so it does not thin the
   blows the charge strikes that minute. The Thirty Years' War still borrows the Peninsula's
