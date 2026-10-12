@@ -604,14 +604,21 @@ def _strike_groups(d: Data, units: list, occ: dict, i: int, groups: dict, field:
         if bunker_at(d, field, h) or bunker_at(d, field, x):
             continue                                  # no blows into or out of an intact bunker: it must be stormed
         blocked, pen, stk = _across(d, field, u, h, x, reach)
-        n = min(per, men[k])
-        if blocked:
-            n = min(abreast, men[k]) if reach >= 2 else 0
-        if k in busy:
-            n = max(0, n - min(abreast, men[k]))          # the front rank is hacking at the works
+        n = _hex_strikers(men[k], per, abreast, reach if blocked else 0, k in busy)
         if n > 0:
             key = (i, j, arc(units[j]["facing"], dirn + 3), pen, stk)
             groups[key] = groups.get(key, 0) + n
+
+
+def _hex_strikers(men: int, per: int, abreast: int, blocked_reach: int, busy: bool) -> int:
+    """Men of one front hex who strike: per; across a wall (blocked_reach: the weapon's reach,
+    else 0) only the front rank of reach-2 weapons; less the front rank if it is breaching."""
+    n = min(per, men)
+    if blocked_reach:
+        n = min(abreast, men) if blocked_reach >= 2 else 0
+    if busy:
+        n = max(0, n - min(abreast, men))          # the front rank is hacking at the works
+    return n
 
 
 # ---------- the field: ground, works and weather ----------
