@@ -1206,12 +1206,17 @@ function addUnit(){
     kit: $("#sel-kit").value, formation: formationFor($("#sel-weapon").value, $("#sel-form").value), mounted: $("#chk-mounted").checked, guns: $("#sel-guns").value, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
   return mid ? bringOn(u, k) : setUp(u, k);
 }
-function setUp(u, k){                             // set-up: inside the camp for its defenders, else the first free spot down its side's edge
-  for (const pos of startSpots(k)){
-    const at = { ...u, pos };
-    if (fits([...S.units, at], S.units.length, at, SIZE, S.field)){ S.units.push(at); S.sel = at.id; S.msg = `${at.name} added; click the map to place it.`; $("#in-name").value = ""; return render() }
+function setUp(u, k){                             // set-up: inside the camp for its defenders, else the first free spot down its side's edge; as wide as asked, else narrower and deeper
+  for (const width of entryWidths(u.width)){
+    const pos = startSpots(k, footprint({ ...u, width, pos: [0, 0] }).length).find(h => fits([...S.units, { ...u, width, pos: h }], S.units.length, { ...u, width, pos: h }, SIZE, S.field));
+    if (!pos) continue;
+    const at = { ...u, width, pos };
+    S.units.push(at); S.sel = at.id; $("#in-name").value = "";
+    const narrowed = width < u.width ? ` ${width} hexes wide and ${footprint(at).length} deep to fit (asked ${u.width} wide)` : "";
+    S.msg = `${at.name} added${narrowed}; click the map to place it.`;
+    return render();
   }
-  S.msg = "No room for it along the edge; make room or narrow it.";
+  S.msg = "No room for it along the edge, even in column: make room, or add fewer men.";
   render();
 }
 function bringOn(u, k){                           // a unit joining during the battle: at its side's back edge, facing the way the side faces; it moves next exchange
@@ -1256,9 +1261,10 @@ function formationFor(weapon, chosen){           // guns in battery order, machi
   if (isMg(weapon)) return "mg";
   return chosen === "battery" || chosen === "mg" ? "close" : chosen;
 }
-function startSpots(k){
-  const edge = [];
-  for (let r = 2; r < SIZE[1] - 2; r++) edge.push([k ? SIZE[0] - 8 : 7, r]);
+function startSpots(k, ranks = 1){                // its front hexes down its side's edge, far enough in for `ranks` rows behind
+  const edge = [], c = k ? SIZE[0] - 8 - (ranks - 1) : 7 + (ranks - 1);
+  if (c < 0 || c >= SIZE[0]) return edge;
+  for (let r = 2; r < SIZE[1] - 2; r++) edge.push([c, r]);
   if (k || !S.camp) return edge;
   const inside = [];
   for (let r = 0; r <= S.camp.radius; r++) inside.push(...ringWalk(S.camp.centre, r));

@@ -131,7 +131,10 @@ order, weapon, armour, and whether they are mounted.
 it faces the corner between two hexsides (the arrow). Close order holds 40 men a hex, 10
 abreast and 4 deep; open order holds 20, 10 abreast and 2 deep. A unit's width is how many
 hexes its front row has; the rest of its men stand in rows behind. As men go down, the
-block shrinks from the back.
+block shrinks from the back. A new unit comes in one row wide, all its men abreast; if
+that does not fit down its side's edge, it is added narrower and deeper (a quarter narrower
+at a time, its rear still on the map) until it fits, and the message says so. **Wider**
+and **Narrower** change it afterwards.
 
 **Arcs.** The two hexsides either side of the facing corner are the front; the next one on
 each side is the flank; the two behind are the rear.
