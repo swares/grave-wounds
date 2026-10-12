@@ -17,16 +17,23 @@ const COLS = 220, ROWS = 160;                 // 2200 m east to west, about 1390
 const RIVER = r => 92 + Math.round(wobble(r / 10, 0.7, 1.9) * 2);        // the Kapyong river, north to south
 const ROAD = r => RIVER(r) - 8 + Math.round(wobble(r / 7, 1.2, 0.4));    // the road up the valley, west of the river
 const SUMMIT = [176, 64], KNOLL = [106, 70], HAMLET = [100, 132], TANKS = [ROAD(56) + 4, 56];
-function kind(c, r){
+function valley(c, r){                            // the river, the road and what stands by it (null: none of these)
   if (Math.abs(c - RIVER(r)) <= 1) return "m";                                                          // the river: shallow, stony, fordable
-  if (Math.abs(c - ROAD(r)) <= 0) return ".";                                                           // the road
+  if (c === ROAD(r)) return ".";                                                                        // the road
   if (patch(c, r, { cx: TANKS[0], cy: TANKS[1], rx: 6, ry: 3 })) return ".";                           // dry ground by the road where the tanks stood
   if (patch(c, r, { cx: HAMLET[0], cy: HAMLET[1], rx: 6, ry: 4 })) return speckle(c, r, 3) ? "." : "T";  // Chuktun-ni
+  return null;
+}
+function hills(c, r){                             // the knoll, Hill 504 and the hills west of the valley (null: the valley floor)
   if (patch(c, r, { cx: KNOLL[0], cy: KNOLL[1], rx: 6, ry: 5, a: 0.3, b: 1.2 })) return "h";            // B Company's knoll by the road
   if (patch(c, r, { cx: SUMMIT[0], cy: SUMMIT[1], rx: 18, ry: 12, a: 1.1, b: 0.5 })) return speckle(c, r, 4) ? "r" : "h";   // Hill 504's summit
-  if (c > 120 + wobble(r / 9, 0.2, 1.4) * 3) return speckle(c, r, 3) ? "F" : "h";                      // Hill 504's slopes and spurs, wooded
-  if (c < 40 + wobble(r / 8, 1.5, 0.6) * 3) return speckle(c, r, 3) ? "F" : "h";                       // the hills west of the valley, towards 677
-  return speckle(c, r, 4) ? "." : "m";                                                                  // paddies in the valley
+  const wooded = c > 120 + wobble(r / 9, 0.2, 1.4) * 3                                                   // Hill 504's slopes and spurs
+    || c < 40 + wobble(r / 8, 1.5, 0.6) * 3;                                                             // the hills west of the valley, towards 677
+  if (wooded) return speckle(c, r, 3) ? "F" : "h";
+  return null;
+}
+function kind(c, r){
+  return valley(c, r) ?? hills(c, r) ?? (speckle(c, r, 4) ? "." : "m");                                 // else paddies in the valley
 }
 const grid = groundGrid(COLS, ROWS, kind);
 
