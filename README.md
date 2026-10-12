@@ -57,7 +57,7 @@ is resolved together, with flank and rear, morale and the pursuit, batteries of 
 round shot, canister and shell (bounding on over firm ground, at named targets, ordered shot, split sections, cut fuses and canister into a charge, until the rounds run out), machine guns, artillery and mortars on call with suppression, on painted ground
 with the battle map's works and weather, or on a real battlefield (Sidon, Visby, Agincourt, Towton, Lützen, Albuera, Cowpens,
 Lundy's Lane, First Bull Run, the Fetterman Fight, the Wagon Box Fight, Mons 1914, Hill 700 on
-Bougainville, the Rangers at Cisterna, Task Force Smith at Osan the perimeter at Chipyong-ni, landing zone X-Ray or the crash sites in Mogadishu, with both armies drawn up). A fight on the travel
+Bougainville, the Rangers at Cisterna, Task Force Smith at Osan, the perimeter at Chipyong-ni, landing zone X-Ray or the crash sites in Mogadishu, with both armies drawn up). A fight on the travel
 map can be fought there, and its wounded go back to camp, where wound fever can take
 them. See [docs/units.md](docs/units.md).
 
