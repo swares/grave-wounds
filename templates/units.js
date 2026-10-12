@@ -557,7 +557,8 @@ function aimInReach(field, b){                     // a mission's hex, or the en
   const m = b.mission;
   if (m.battery !== undefined && m.battery !== null){
     const sup = field.support || [], tg = m.battery >= 0 && m.battery < sup.length ? sup[m.battery] : null;
-    return !tg || tg.place === undefined || tg.place === null || inReach(b, tg.place);
+    const at = tg?.place;
+    return at === undefined || at === null || inReach(b, at);
   }
   return inReach(b, m.hex);
 }
@@ -615,9 +616,9 @@ function missionOn(b, m, size){                   // a single mission ends; a cr
   if (cr.on < (cr.every || 1)) return;
   cr.on = 0;
   if (cr.lines && (cr.line ?? 1) >= cr.lines){
-    if (!cr.then?.length){ b.mission = null; return }
-    const [nxt, ...rest] = cr.then;                // the fire plan's next leg: its own lift, direction and lines
-    cr.then = rest;
+    if (!cr.legs?.length){ b.mission = null; return }
+    const [nxt, ...rest] = cr.legs;                // the fire plan's next leg: its own lift, direction and lines
+    cr.legs = rest;
     Object.assign(cr, { step: nxt.step, dir: nxt.dir, lines: nxt.lines || 0, line: 0, done: 0 });
   }
   cr.line = (cr.line ?? 1) + 1;
@@ -1166,8 +1167,7 @@ function afterExchange(us, field, log = []){        // charges spent, batteries 
   }
   flashes(us, log, field);
   for (const b of field?.support || []) if (b.mission && (b.mission.wait || 0) > 0) b.mission.wait -= 1;
-  log.push(...displaceAll(field));
-  log.push(...overrunAll(us, field));
+  log.push(...displaceAll(field), ...overrunAll(us, field));
   if (field?.smoke) field.smoke = Object.fromEntries(Object.entries(field.smoke).filter(([, n]) => n > 1).map(([h, n]) => [h, n - 1]));   // smoke thins
   smokeDrifts(field);
   if (field?.lit?.length) field.lit = field.lit.filter(x => x.left > 1).map(x => ({ ...x, left: x.left - 1 }));   // flares burn down
@@ -1463,7 +1463,10 @@ function cannonades(units, field = null){         // [{att, dfd, guns, rounds, d
   });
   return out;
 }
-const sectionsOf = u => (u.sections?.length ? [...u.sections] : (u.section ? [u.section] : []));   // the sections a battery has split off, in order
+function sectionsOf(u){                           // the sections a battery has split off, in order
+  if (u.sections?.length) return [...u.sections];
+  return u.section ? [u.section] : [];
+}
 function batteryFires(units, occ, field, i, best){   // the battery's fire at best, then each section's at its own target (guns from those left, one stays; rounds to the battery first)
   const u = units[i], guns = gunsServed(u), ammo = ammoLeft(u), firing = [];
   let spare = guns - 1;

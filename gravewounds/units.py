@@ -1288,16 +1288,21 @@ def _displace_all(field: dict | None) -> list:
         if not b.get("displacing"):
             continue
         b["displacing"] -= 1
-        if b["displacing"]:
-            continue
-        b["located"] = False
-        if b.get("to") is not None:
-            b["place"] = b.pop("to")              # its new position, plotted when it was ordered to move
-        for x in sup:
-            if x.get("mission") and x["mission"].get("battery") == k:
-                x["mission"] = None
-        log.append({"kind": "displaced", "sup": k, "name": b["name"], "side": b["side"], **({"place": b["place"]} if b.get("place") is not None else {})})
+        if not b["displacing"]:
+            log.append(_displaced(sup, k))
     return log
+
+
+def _displaced(sup: list, k: int) -> dict:
+    """Battery k has moved: no longer located, at its plotted new place, and missions on it end."""
+    b = sup[k]
+    b["located"] = False
+    if b.get("to") is not None:
+        b["place"] = b.pop("to")              # its new position, plotted when it was ordered to move
+    for x in sup:
+        if x.get("mission") and x["mission"].get("battery") == k:
+            x["mission"] = None
+    return {"kind": "displaced", "sup": k, "name": b["name"], "side": b["side"], **({"place": b["place"]} if b.get("place") is not None else {})}
 
 
 def downwind(d: Data, field: dict | None):
@@ -1353,15 +1358,9 @@ def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, f
     in the same share (rounded down)."""
     log, struck, dueled = [], set(), set()
     for s in strikes(d, us, field):
-        cut = (thinned or [0] * len(us))[s["att"]]
-        if cut and not s["rout"]:
-            men = us[s["att"]]["men"]
-            s = {**s, "men": s["men"] * max(0, men - cut) // max(1, men), "thinned": s["men"] - s["men"] * max(0, men - cut) // max(1, men)}
+        s = _thin(s, us, thinned)
         a, b = us[s["att"]], us[s["dfd"]]
-        charge = bool(a.get("charged")) and bool(a.get("mounted")) and not s.get("stakes") and not (s["situation"] == "front" and pike_front(d, b))
-        vs_horse = d.units["melee"]["pikes"]["attack"] if b.get("mounted") and pike_front(d, a) else 0
-        opts = {"situation": s["situation"], "charge": charge, "shaken": a["state"] == "shaken", "rout": s["rout"],
-                "exposed": _exposure(d, b, s["rout"]), "penalty": s.get("penalty", 0) - vs_horse}
+        opts = _melee_opts(d, a, b, s)
         t = _take_hurt(b, melee(d, _side(a, table, d), _side(b, table, d), s["men"], rng, **opts))
         _tally(*acc, s, t)
         flanked[s["dfd"]] = flanked[s["dfd"]] or s["situation"] in ("flank", "rear")
@@ -1371,6 +1370,25 @@ def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, f
         struck.add(s["att"])
         log += _front_heroes(d, (a, b), s, (table, rng, acc), opts, dueled)
     return log
+
+
+def _thin(s: dict, us: list, thinned: list | None) -> dict:
+    """Strike s with its men cut in the share its unit lost to closing canister (not a rout)."""
+    cut = thinned[s["att"]] if thinned else 0
+    if not cut or s["rout"]:
+        return s
+    men = us[s["att"]]["men"]
+    left = s["men"] * max(0, men - cut) // max(1, men)
+    return {**s, "men": left, "thinned": s["men"] - left}
+
+
+def _melee_opts(d: Data, a: dict, b: dict, s: dict) -> dict:
+    """The melee options for strike s by unit a on unit b: situation, a charge by horse (not
+    into stakes or a pike front), shaken, rout, exposure, and pikes against horse."""
+    charge = bool(a.get("charged")) and bool(a.get("mounted")) and not s.get("stakes") and not (s["situation"] == "front" and pike_front(d, b))
+    vs_horse = d.units["melee"]["pikes"]["attack"] if b.get("mounted") and pike_front(d, a) else 0
+    return {"situation": s["situation"], "charge": charge, "shaken": a["state"] == "shaken", "rout": s["rout"],
+            "exposed": _exposure(d, b, s["rout"]), "penalty": s.get("penalty", 0) - vs_horse}
 
 
 def _front_heroes(d: Data, units: tuple, s: dict, ctx: tuple, opts: dict, dueled: set) -> list:
@@ -1827,10 +1845,10 @@ def _mission_on(b: dict, m: dict, size) -> None:
         return
     cr["on"] = 0
     if cr.get("lines") and cr.get("line", 1) >= cr["lines"]:
-        if not cr.get("then"):
+        if not cr.get("legs"):
             b["mission"] = None
             return
-        nxt, cr["then"] = cr["then"][0], cr["then"][1:]   # the fire plan's next leg: its own lift, direction and lines
+        nxt, cr["legs"] = cr["legs"][0], cr["legs"][1:]   # the fire plan's next leg: its own lift, direction and lines
         cr.update(step=nxt["step"], dir=nxt["dir"], lines=nxt.get("lines", 0), line=0, done=0)
     cr["line"] = cr.get("line", 1) + 1
     for _ in range(cr["step"]):

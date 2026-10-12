@@ -536,23 +536,37 @@ function renderSupport(){
   const ok = !!shellWeapon(S.table), box = $("#support-box");
   box.hidden = !ok;
   if (!ok) return;
-  const K = FD.units.indirect.kinds;
   $("#sel-sup-side").innerHTML = S.sides.map(s => `<option>${esc(s)}</option>`).join("");
-  if (!$("#sel-sup-kind").options.length) $("#sel-sup-kind").innerHTML = Object.entries(K).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
-  if (!$("#sel-sup-creep").options.length) $("#sel-sup-creep").innerHTML = `<option value="0">No</option>`
-    + Array.from({ length: FD.units.indirect.creep.max }, (_, n) => `<option value="${n + 1}">${n + 1} hex${n ? "es" : ""} a lift</option>`).join("");
-  if (!$("#sel-sup-every").options.length) $("#sel-sup-every").innerHTML = Array.from({ length: FD.units.indirect.creep.every_max }, (_, n) => `<option value="${n + 1}">${nOf(n + 1, "exchange")}</option>`).join("");
-  if (!$("#sel-sup-then-lines").options.length) $("#sel-sup-then-lines").innerHTML = [1, 2, 3, 4, 5, 6, 8, 10].map(n => `<option value="${n}">${n} line${n > 1 ? "s" : ""}</option>`).join("") + `<option value="0">until off the map</option>`;
-  if (!$("#sel-sup-lines").options.length) $("#sel-sup-lines").innerHTML = `<option value="0">Until off the map</option>` + [2, 3, 4, 5, 6, 8, 10].map(n => `<option value="${n}">${n} lines</option>`).join("");
-  $("#support").innerHTML = supports().map((b, i) => {
-    const can = S.phase === "setup" || b.side === moving(), on = S.calling === i, live = b.rounds > 0 && servedTubes(b) > 0 && !b.displacing;
-    const call = `<button class="small" data-sup-call="${i}" ${can && live ? "" : "disabled"} aria-pressed="${on}">${on ? "Click a hex…" : "Call fire"}</button>`;
-    const dis = can ? "" : "disabled", stop = b.mission ? `<button class="small" data-sup-stop="${i}" ${dis}>Stop</button>` : "";
-    const move = FD.units.indirect.kinds[b.kind].displace && b.tubes > 0 && !b.displacing ? `<button class="small" data-sup-move="${i}" ${dis} title="Move the battery: silent for ${nOf(FD.units.indirect.kinds[b.kind].displace, "exchange")}, then no longer located">Displace</button>` : "";
-    const placeable = FD.units.indirect.kinds[b.kind].range && S.phase === "setup", placing = S.placing && S.placing.i === i;
-    const put = placeable ? `<button class="small" data-sup-place="${i}" aria-pressed="${!!placing}" title="Put its guns on the map: they reach ${nOf(FD.units.indirect.kinds[b.kind].range, "hex", "hexes")} from there and can be overrun">${placing ? "Click a hex\u2026" : (b.place ? "Move it" : "Place it")}</button>` : "";
-    return `<li aria-current="${on}"><span><b>${esc(b.name)}</b> <span class="muted">${esc(b.side)}</span>${b.located ? ' <span title="located">\u25c9</span>' : ""}</span>${call}${stop}${move}${put}${counterPick(b, i, can && live)}<span class="meta">${supportMeta(b)}</span></li>`;
-  }).join("") || `<li class="muted">None. Add a battery below.</li>`;
+  supportChoices();
+  $("#support").innerHTML = supports().map(supportItem).join("") || `<li class="muted">None. Add a battery below.</li>`;
+}
+function fillOnce(sel, html){                     // a select's options, the first time only
+  if (!$(sel).options.length) $(sel).innerHTML = html;
+}
+function supportChoices(){                        // the choices for adding a battery and calling fire
+  const I = FD.units.indirect, lineOpts = ns => ns.map(n => `<option value="${n}">${nOf(n, "line")}</option>`).join("");
+  fillOnce("#sel-sup-kind", Object.entries(I.kinds).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join(""));
+  fillOnce("#sel-sup-creep", `<option value="0">No</option>` + Array.from({ length: I.creep.max }, (_, n) => `<option value="${n + 1}">${nOf(n + 1, "hex", "hexes")} a lift</option>`).join(""));
+  fillOnce("#sel-sup-every", Array.from({ length: I.creep.every_max }, (_, n) => `<option value="${n + 1}">${nOf(n + 1, "exchange")}</option>`).join(""));
+  fillOnce("#sel-sup-then-lines", lineOpts([1, 2, 3, 4, 5, 6, 8, 10]) + `<option value="0">until off the map</option>`);
+  fillOnce("#sel-sup-lines", `<option value="0">Until off the map</option>` + lineOpts([2, 3, 4, 5, 6, 8, 10]));
+}
+function supportItem(b, i){                       // one battery's line: its name, buttons and state
+  const can = S.phase === "setup" || b.side === moving(), on = S.calling === i, live = b.rounds > 0 && servedTubes(b) > 0 && !b.displacing;
+  const call = `<button class="small" data-sup-call="${i}" ${can && live ? "" : "disabled"} aria-pressed="${on}">${on ? "Click a hex…" : "Call fire"}</button>`;
+  const dis = can ? "" : "disabled", stop = b.mission ? `<button class="small" data-sup-stop="${i}" ${dis}>Stop</button>` : "";
+  const D = FD.units.indirect.kinds[b.kind].displace;
+  const move = D && b.tubes > 0 && !b.displacing ? `<button class="small" data-sup-move="${i}" ${dis} title="Move the battery: silent for ${nOf(D, "exchange")}, then no longer located">Displace</button>` : "";
+  const located = b.located ? ' <span title="located">\u25c9</span>' : "";
+  return `<li aria-current="${on}"><span><b>${esc(b.name)}</b> <span class="muted">${esc(b.side)}</span>${located}</span>${call}${stop}${move}${placeButton(b, i)}${counterPick(b, i, can && live)}<span class="meta">${supportMeta(b)}</span></li>`;
+}
+function placeButton(b, i){                       // "Place it" / "Move it" for guns with a range, while setting up
+  const range = FD.units.indirect.kinds[b.kind].range;
+  if (!range || S.phase !== "setup") return "";
+  const placing = S.placing?.i === i;
+  let label = b.place ? "Move it" : "Place it";
+  if (placing) label = "Click a hex\u2026";
+  return `<button class="small" data-sup-place="${i}" aria-pressed="${placing}" title="Put its guns on the map: they reach ${nOf(range, "hex", "hexes")} from there and can be overrun">${label}</button>`;
 }
 function counterPick(b, i, can){                  // a choice of located enemy batteries to fire on, for guns that reach them
   const marks = supports().map((x, j) => [x, j]).filter(([x]) => x.side !== b.side && x.located && x.tubes > 0 && (x.place === undefined || x.place === null || inReach(b, x.place)));
@@ -569,9 +583,14 @@ function supportMeta(b){                          // "4 tubes · 24 crew · 72 r
   }
   let tubes = b.tubes > 0 ? nOf(b.tubes, "tube") : "silenced";
   if (b.tubes > 0 && served < b.tubes) tubes = served ? `${served} of ${b.tubes} tubes served` : "silenced (too few crew)";
-  const moving_ = (b.displacing ? ` · displacing (${nOf(b.displacing, "exchange")} more)${b.to ? ` to ${b.to[0] + 1},${b.to[1] + 1}` : ""}` : "")
-    + (b.place ? ` · at ${b.place[0] + 1},${b.place[1] + 1}, reaches ${nOf(reachOf(b), "hex", "hexes")}` : "") + (b.overrun ? " · overrun" : "");
-  return `${K.name.toLowerCase()} · ${tubes} · ${crewOf(b)} crew · ${b.rounds} rounds${moving_}${b.mission ? missionText(b.mission) : ""}`;
+  return `${K.name.toLowerCase()} · ${tubes} · ${crewOf(b)} crew · ${b.rounds} rounds${batteryWhere(b)}${b.mission ? missionText(b.mission) : ""}`;
+}
+const hexName = h => `${h[0] + 1},${h[1] + 1}`;    // "30,12"
+function batteryWhere(b){                         // " · displacing (2 exchanges more) to 4,5 · at 3,3, reaches 1,100 hexes · overrun"
+  const to = b.to ? " to " + hexName(b.to) : "";
+  const moving_ = b.displacing ? ` · displacing (${nOf(b.displacing, "exchange")} more)${to}` : "";
+  const at = b.place ? ` · at ${hexName(b.place)}, reaches ${nOf(reachOf(b), "hex", "hexes")}` : "";
+  return moving_ + at + (b.overrun ? " · overrun" : "");
 }
 function placeBattery(h){                         // the battery being placed (or plotted to move) stands at hex h
   const { i, to } = S.placing, b = supports()[i];
@@ -609,27 +628,37 @@ function addSupport(){
     : `${K.name} (${tubes} tubes, ${tubes * K.rounds} rounds) support ${side}.`;
   render();
 }
+function fireRefused(b, K, h, fire){              // why battery b cannot fire `fire` on hex h, or ""
+  if (fire === "illum" && !K.illum) return `${K.name} have no illumination rounds.`;
+  if (K.air && fire === "smoke") return `${K.name} drop no smoke.`;
+  if (!inReach(b, h)) return `${b.name} cannot reach ${hexName(h)} from where they stand (${nOf(reachOf(b), "hex", "hexes")}).`;
+  if (fire !== "illum" && !spotted(S.units, S.field, b.side, h)) return `No unit of ${b.side} can see ${hexName(h)}: fire can only be called where someone sees it fall (not through woods or smoke).`;
+  return "";
+}
 function callFire(i, h){                          // the mission, if a unit of its side can see the hex
-  const b = supports()[i], K = FD.units.indirect.kinds[b.kind], illum = $("#sel-sup-fire").value === "illum";
+  const b = supports()[i], K = FD.units.indirect.kinds[b.kind], fire = $("#sel-sup-fire").value;
   S.calling = null;
-  if (illum && !K.illum){ S.msg = `${K.name} have no illumination rounds.`; return render() }
-  if (K.air && $("#sel-sup-fire").value === "smoke"){ S.msg = `${K.name} drop no smoke.`; return render() }
-  if (!inReach(b, h)){ S.msg = `${b.name} cannot reach ${h[0] + 1},${h[1] + 1} from where they stand (${nOf(reachOf(b), "hex", "hexes")}).`; return render() }
-  if (!illum && !spotted(S.units, S.field, b.side, h)){ S.msg = `No unit of ${b.side} can see ${h[0] + 1},${h[1] + 1}: fire can only be called where someone sees it fall (not through woods or smoke).`; return render() }
-  const smoke = $("#sel-sup-fire").value === "smoke", by = Number($("#sel-sup-creep").value), m = { hex: h, wait: K.delay, repeat: by > 0 || $("#chk-sup-repeat").checked };
-  if (smoke) m.smoke = true;
-  if (illum) m.illum = true;
+  const no = fireRefused(b, K, h, fire);
+  if (no){ S.msg = no; return render() }
+  const by = Number($("#sel-sup-creep").value), m = { hex: h, wait: K.delay, repeat: by > 0 || $("#chk-sup-repeat").checked };
+  if (fire === "smoke") m.smoke = true;
+  if (fire === "illum") m.illum = true;
   const every = Number($("#sel-sup-every").value) || 1, lines = Number($("#sel-sup-lines").value) || 0;
   if (by) m.creep = { step: by, dir: creepDir(b.side), every, lines };
   const then = $("#sel-sup-then").value, thenLines = Number($("#sel-sup-then-lines").value) || 0;
-  if (by && lines && then !== "") m.creep.then = [{ step: by, dir: mod6(m.creep.dir + Number(then)), lines: thenLines }];
+  if (by && lines && then !== "") m.creep.legs = [{ step: by, dir: mod6(m.creep.dir + Number(then)), lines: thenLines }];
   b.mission = m;
-  const leg = m.creep?.then ? `, then ${$("#sel-sup-then").selectedOptions[0].text}${thenLines ? ` for ${nOf(thenLines, "line")}` : " until it leaves the map"}` : "";
-  const plan = (lines ? `, ${lines} lines` : ", until it leaves the map") + leg, what = { he: "fire", smoke: "lay smoke", illum: "fire illumination" }[$("#sel-sup-fire").value] || "fire";
-  const creep = by ? `, lifting ${nOf(by, "hex", "hexes")} towards ${$("#sel-sup-dir").selectedOptions[0].text} every ${nOf(every, "exchange")}${plan}` : "";
+  const what = { he: "fire", smoke: "lay smoke", illum: "fire illumination" }[fire] || "fire";
   const why = grounded(S.field, b), wait = why ? ` (grounded: ${groundedName(why)}; they fly when it clears)` : "";
-  S.msg = `${b.name} will ${what} on ${h[0] + 1},${h[1] + 1} ${whenText(K.delay)}${wait}${m.repeat ? ", and every exchange until stopped" : ""}${creep}.`;
+  S.msg = `${b.name} will ${what} on ${hexName(h)} ${whenText(K.delay)}${wait}${m.repeat ? ", and every exchange until stopped" : ""}${creepText(m, every, lines, thenLines)}.`;
   render();
+}
+function creepText(m, every, lines, thenLines){   // ", lifting 2 hexes towards the north every exchange, 4 lines, then ..."
+  if (!m.creep) return "";
+  const after = thenLines ? " for " + nOf(thenLines, "line") : " until it leaves the map";
+  const leg = m.creep.legs ? `, then ${$("#sel-sup-then").selectedOptions[0].text}${after}` : "";
+  const plan = (lines ? `, ${lines} lines` : ", until it leaves the map") + leg;
+  return `, lifting ${nOf(m.creep.step, "hex", "hexes")} towards ${$("#sel-sup-dir").selectedOptions[0].text} every ${nOf(every, "exchange")}${plan}`;
 }
 function creepDir(side){                          // the facing a creeping barrage moves along: chosen, or the way most of the side's units face
   const v = $("#sel-sup-dir").value;
@@ -644,16 +673,24 @@ function callCounter(i, j){                       // counter-battery: fire on a 
   S.msg = `${b.name} will fire on ${tg.name} (counter-battery) ${whenText(K.delay)}${b.mission.repeat ? ", and every exchange until stopped" : ""}.`;
   render();
 }
-function supportSvg(){                            // smoke, the hexes fire is called on, and where the last exchange's shells burst
-  let g = Object.keys(S.field.smoke || {}).map(k => `<polygon class="smoke" points="${pts(xy(k.split(",").map(Number)))}"/>`).join("");
-  for (const h of S.field.lz || []){ const [x, y] = xy(h); g += `<circle class="lz" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(HW * 0.9).toFixed(1)}"/><text class="lz-h" x="${x.toFixed(1)}" y="${y.toFixed(1)}">H</text>` }
-  for (const x of S.field.lit || []){ const [cx, cy] = xy(x.at); g += `<circle class="lit" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${((x.radius + 0.5) * HW).toFixed(1)}"/>` }
-  for (const u of S.units) if (u.fixed && !out_(u)){ const f = footprint(u)[0], [x1, y1] = xy(f[Math.floor(f.length / 2)]), [x2, y2] = xy(u.fixed); g += `<line class="fixed" x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>` }
-  for (const h of S.field.flashes || []){ const [x, y] = xy(h); g += `<text class="flash" x="${x.toFixed(1)}" y="${y.toFixed(1)}">✹</text>` }
-  for (const b of supports()) if (b.mission?.hex){ const [x, y] = xy(b.mission.hex); g += `<text class="aim" x="${x.toFixed(1)}" y="${y.toFixed(1)}">\u2316</text>` }
-  for (const b of supports()) if (b.place){ const [x, y] = xy(b.place); g += `<rect class="bat${b.overrun ? " gone" : ""}" x="${(x - 4).toFixed(1)}" y="${(y - 3).toFixed(1)}" width="8" height="6"><title>${esc(b.name)} (${esc(b.side)})</title></rect>` }
-  for (const h of S.bursts || []){ const [x, y] = xy(h); g += `<text class="burst" x="${x.toFixed(1)}" y="${y.toFixed(1)}">\u2737</text>` }
-  return g;
+const f1 = n => n.toFixed(1);
+const glyph = (cls, ch) => h => { const [x, y] = xy(h); return `<text class="${cls}" x="${f1(x)}" y="${f1(y)}">${ch}</text>` };
+function lzSvg(h){ const [x, y] = xy(h); return `<circle class="lz" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.9)}"/><text class="lz-h" x="${f1(x)}" y="${f1(y)}">H</text>` }
+function litSvg(l){ const [cx, cy] = xy(l.at); return `<circle class="lit" cx="${f1(cx)}" cy="${f1(cy)}" r="${f1((l.radius + 0.5) * HW)}"/>` }
+function fixedSvg(u){ const f = footprint(u)[0], [x1, y1] = xy(f[Math.floor(f.length / 2)]), [x2, y2] = xy(u.fixed); return `<line class="fixed" x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2)}" y2="${f1(y2)}"/>` }
+function batterySvg(b){ const [x, y] = xy(b.place), cls = b.overrun ? "bat gone" : "bat"; return `<rect class="${cls}" x="${f1(x - 4)}" y="${f1(y - 3)}" width="8" height="6"><title>${esc(b.name)} (${esc(b.side)})</title></rect>` }
+function supportSvg(){                            // smoke, landing zones, flares, fixed lines, flashes, the hexes fire is called on, batteries, and where the last exchange's shells burst
+  const F = S.field;
+  return [
+    Object.keys(F.smoke || {}).map(k => `<polygon class="smoke" points="${pts(xy(k.split(",").map(Number)))}"/>`),
+    (F.lz || []).map(lzSvg),
+    (F.lit || []).map(litSvg),
+    S.units.filter(u => u.fixed && !out_(u)).map(fixedSvg),
+    (F.flashes || []).map(glyph("flash", "\u2739")),
+    supports().filter(b => b.mission?.hex).map(b => glyph("aim", "\u2316")(b.mission.hex)),
+    supports().filter(b => b.place).map(batterySvg),
+    (S.bursts || []).map(glyph("burst", "\u2737")),
+  ].flat().join("");
 }
 function clickHex(h){
   const u = selUnit(); if (!u) return;
@@ -731,7 +768,7 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   barrage: l => ({ cls: "", text: fireText(l) }),
   landed: l => ({ cls: l.hot ? "morale" : "", text: landText(l) }),
   waveoff: l => ({ cls: "morale", text: landText(l) }),
-  displaced: l => ({ cls: "", text: `${l.name} (${l.side}) have displaced: no longer located${l.place ? `; now at ${l.place[0] + 1},${l.place[1] + 1}` : ""}.` }),
+  displaced: l => ({ cls: "", text: `${l.name} (${l.side}) have displaced: no longer located` + (l.place ? "; now at " + hexName(l.place) : "") + "." }),
   overrun: l => ({ cls: "morale", text: `${l.name} (${l.side}) are overrun: their guns are lost.` }),
   assault: (l, nm) => ({ cls: "morale", text: bunkerText(l, nm) }),
   antiarmour: (l, nm) => ({ cls: l.knocked ? "morale" : "", text: armourText(l, nm) }),
