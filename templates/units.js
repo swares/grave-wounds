@@ -276,7 +276,7 @@ function bearing(t, h){                            // the direction (0-5) from h
 }
 function killChance(u, row, h, t){                 // % a hit from h on vehicle unit u (at t) knocks one out: its armour's row %, x aspect for a flank or rear shot, to 100
   const p = armourOf(u)[row], side = h && t && (h[0] !== t[0] || h[1] !== t[1]) ? arc(u.facing, bearing(t, h)) : "front";
-  return Math.min(100, Math.trunc(p * ((UD.vehicles.aspect || {})[side] ?? 1)));
+  return Math.min(100, Math.trunc(p * (UD.vehicles.aspect?.[side] ?? 1)));
 }
 function harm(u, n, lost, rng){                    // hits that did not knock a vehicle out: some immobilise one or put its gun out -> {immobilised, gun}
   const D = UD.vehicles.damage || {}, left = vehiclesLeft(u, lost), out = { immobilised: 0, gun: 0 };
@@ -289,8 +289,19 @@ function harm(u, n, lost, rng){                    // hits that did not knock a 
   u.gunless = Math.min(left, (u.gunless || 0) + out.gun);
   return out;
 }
-function harmLine(h){ const o = {}; if (h.immobilised) o.immobilised = h.immobilised; if (h.gun) o.gun_out = h.gun; return o }
-function ridersLine(k){ const o = {}; if (k.riders_struck) o.rstruck = k.riders_struck; if (k.riders_down) o.rdown = k.riders_down; if (k.riders_dead) o.rdead = k.riders_dead; return o }
+function harmLine(h){
+  const o = {};
+  if (h.immobilised) o.immobilised = h.immobilised;
+  if (h.gun) o.gun_out = h.gun;
+  return o;
+}
+function ridersLine(k){
+  const o = {};
+  if (k.riders_struck) o.rstruck = k.riders_struck;
+  if (k.riders_down) o.rdown = k.riders_down;
+  if (k.riders_dead) o.rdead = k.riders_dead;
+  return o;
+}
 const hk = h => h[0] + "," + h[1];
 function footprint(u){                          // rows of hexes, front row first
   if (u.men <= 0 || u.state === "fled") return [];
@@ -1056,8 +1067,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   });
   log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng));
   afterExchange(us, field, log);
-  log.push(...landings(us, table, rng, field));
-  log.push(...vehiclesAfter(us, field));
+  log.push(...landings(us, table, rng, field), ...vehiclesAfter(us, field));
   return { units: us, log };
 }
 function lzState(units, field, side, lz){         // blocked (an enemy within heliborne.blocked hexes), hot (an enemy could shoot at it) or cold
@@ -1248,7 +1258,11 @@ function dismountUnit(units, j, size, field = null){   // vehicle unit j's rider
   for (const [dn, n] of [[back, 1], [back, 2], [mod6(f + 2), 1], [mod6(f + 5), 1], [mod6(f + 2), 2], [mod6(f + 5), 2], [f, 1], [back, 3], [back, 4]]){
     const spot = { ...R, pos: step(c.pos, dn, n), facing: f }, trial = [...units, spot];
     if (fits(trial, units.length, spot, size, field)){
-      const out = units.map((x, k) => { if (k !== j) return x; const { riders, ...rest } = x; return rest });
+      const out = units.map((x, k) => {
+        if (k !== j) return x;
+        const { riders, ...rest } = x;
+        return rest;
+      });
       return { ok: true, why: null, units: [...out, spot] };
     }
   }

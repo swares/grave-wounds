@@ -1509,27 +1509,33 @@ def _vehicle_guns(d: Data, us: list, ctx: tuple, field: dict | None, under: list
     """Each vehicle unit with a main gun fires `rate` rounds a vehicle at its gun target: at
     vehicles, hits by range and knocks by armour; at men, bursts on their nearest hex as the
     indirect kind `he` does."""
-    table, rng, acc = ctx
     log = []
     for i, u in enumerate(us):
         kind = vehicle_kind(d, u)
         gun = kind.get("gun") if kind else None
-        if not gun or _out(u):
-            continue
-        best = _gun_target(d, us, i, field, gun)
-        if best is None:
-            continue
-        dist, j, h, t = best
-        rounds = max(0, vehicles_left(d, u) - u.get("gunless", 0)) * gun["rate"]
-        if rounds <= 0:
-            continue
-        if us[j].get("vehicle"):
-            log += _gun_at_vehicle(d, us, (i, j, dist, rounds, h, t), gun, ctx)
-            continue
-        log.append({"kind": "tankfire", "att": i, "dfd": j, "dist": dist, "rounds": rounds, "at": t})
-        weapon = shell_weapon(d, table)
-        if weapon and field:
-            log += _shell_units(d, us, (table, weapon), rng, acc, field, under or [False] * len(us), None, {"kind": gun["he"], "name": u.get("name")}, [list(t)] * rounds)
+        if gun and not _out(u):
+            log += _main_gun(d, us, i, gun, (ctx, field, under))
+    return log
+
+
+def _main_gun(d: Data, us: list, i: int, gun: dict, env: tuple) -> list:
+    """Vehicle unit i's main gun this exchange (env: (table, dice, tallies), field, under fire):
+    at its gun target, if it has one and guns that still work."""
+    ctx, field, under = env
+    table, rng, acc = ctx
+    u, best = us[i], _gun_target(d, us, i, field, gun)
+    if best is None:
+        return []
+    dist, j, h, t = best
+    rounds = max(0, vehicles_left(d, u) - u.get("gunless", 0)) * gun["rate"]
+    if rounds <= 0:
+        return []
+    if us[j].get("vehicle"):
+        return _gun_at_vehicle(d, us, (i, j, dist, rounds, h, t), gun, ctx)
+    log = [{"kind": "tankfire", "att": i, "dfd": j, "dist": dist, "rounds": rounds, "at": t}]
+    weapon = shell_weapon(d, table)
+    if weapon and field:
+        log += _shell_units(d, us, (table, weapon), rng, acc, field, under or [False] * len(us), None, {"kind": gun["he"], "name": u.get("name")}, [list(t)] * rounds)
     return log
 
 
@@ -2335,27 +2341,28 @@ def carries(d: Data, u: dict) -> int:
     return vehicles_left(d, u) * K.get("carry", 0) if K else 0
 
 
+def _cannot_mount(d: Data, units: list, i: int, j: int) -> str | None:
+    """Why foot unit i cannot get aboard vehicle unit j, or None."""
+    u, c, occ = units[i], units[j], occupancy(d, units)
+    checks = [
+        (lambda: u.get("vehicle") or is_gun(d, u["weapon"]) or u.get("mounted"), "only men on foot can ride"),
+        (lambda: not c.get("vehicle") or c["side"] != u["side"] or carries(d, c) <= 0, "those are not its side's carriers"),
+        (lambda: c.get("riders"), "they carry men already"),
+        (lambda: u["men"] > carries(d, c), f"they have room for {carries(d, c)}"),
+        (lambda: _out(u) or _out(c) or in_contact(d, units, occ, i) or in_contact(d, units, occ, j), "one of them is in contact or broken"),
+        (lambda: min(hdist(a, b) for r1 in footprint(d, u) for a in r1 for r2 in footprint(d, c) for b in r2) > 1, "they are not beside the carriers"),
+    ]
+    return next((why for test, why in checks if test()), None)
+
+
 def mount(d: Data, units: list, i: int, j: int) -> dict:
     """Foot unit i gets aboard vehicle unit j (its side's carriers, room for all its men, within a
     hex of them, neither in contact, j carrying no one yet). -> {ok, why, units}: unit i goes
     into j's riders."""
-    u, c, occ = units[i], units[j], occupancy(d, units)
-    why = None
-    if u.get("vehicle") or is_gun(d, u["weapon"]) or u.get("mounted"):
-        why = "only men on foot can ride"
-    elif not c.get("vehicle") or c["side"] != u["side"] or carries(d, c) <= 0:
-        why = "those are not its side's carriers"
-    elif c.get("riders"):
-        why = "they carry men already"
-    elif u["men"] > carries(d, c):
-        why = f"they have room for {carries(d, c)}"
-    elif _out(u) or _out(c) or in_contact(d, units, occ, i) or in_contact(d, units, occ, j):
-        why = "one of them is in contact or broken"
-    elif min(hdist(a, b) for row in footprint(d, u) for a in row for r2 in footprint(d, c) for b in r2) > 1:
-        why = "they are not beside the carriers"
+    why = _cannot_mount(d, units, i, j)
     if why:
         return {"ok": False, "why": why, "units": units}
-    rider = {k: v for k, v in u.items() if k not in ("pos", "facing")}
+    rider = {k: v for k, v in units[i].items() if k not in ("pos", "facing")}
     out = [{**x, "riders": rider} if k == j else x for k, x in enumerate(units) if k != i]
     return {"ok": True, "why": None, "units": out}
 

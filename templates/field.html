@@ -1132,9 +1132,13 @@ function unitMeta(u){
   if (u.state === "fled") return "fled";
   const down = u.down ? " · " + u.down + " down" : "", br = (u.breach ? " · breaching" : "") + (u.assault ? " · storming" : ""), low = (u.prone ? " · to ground" : "") + (u.pinned ? " · pinned" : "") + (u.lost ? " · lost in the dark" : "") + (u.fixed ? " · fixed line" : "");
   let mg = isMg(u.weapon) ? " · " + gunsText(mgGuns(u), "gun") : "";
-  if (u.vehicle) mg = ` · ${vehiclesLeft(u)} ${FD.units.vehicles.kinds[u.vehicle].name.toLowerCase()}` + (u.immobile ? `, ${u.immobile} immobilised` : "") + (u.gunless ? `, ${u.gunless} gun${u.gunless > 1 ? "s" : ""} out` : "")
-    + (u.riders ? ` · carrying ${u.riders.name} (${u.riders.men})` : "");
+  if (u.vehicle) mg = vehicleMeta(u);
   return `${u.men}/${u.start} · ${u.state}${down}${br}${low}${mg}${batteryMeta(u)}`;
+}
+function vehicleMeta(u){                          // " · 3 tanks, 1 immobilised · carrying 1st Squad (9)"
+  const imm = u.immobile ? `, ${u.immobile} immobilised` : "", out = u.gunless ? `, ${nOf(u.gunless, "gun")} out` : "";
+  const ride = u.riders ? ` · carrying ${u.riders.name} (${u.riders.men})` : "";
+  return ` · ${vehiclesLeft(u)} ${FD.units.vehicles.kinds[u.vehicle].name.toLowerCase()}${imm}${out}${ride}`;
 }
 const GUN_NAMES = { smoothbore: "guns", rifled: "rifled guns", howitzer: "howitzers" };
 function batteryMeta(u){                          // " · 6 guns, limbered, 280 rounds"
@@ -1150,7 +1154,8 @@ function batteryMeta(u){                          // " · 6 guns, limbered, 280 
 function vehicleInfo(u, K){                       // the selected vehicle unit: how many, crews, main gun, armour
   const gun = K.gun ? `main gun to ${K.gun.range} hexes (${fmtM(K.gun.range * FD.units.hex_m)}), ${nOf(K.gun.rate, "round")} a vehicle an exchange` : "machine guns only";
   const dmg = (u.immobile ? `; ${u.immobile} immobilised (abandon them to move on)` : "") + (u.gunless ? `; ${u.gunless} with the main gun out` : "") + (u.bailed ? `; ${u.bailed} crew have left the abandoned vehicles` : "");
-  const room = K.carry ? `; carries ${K.carry} men a vehicle (room for ${carries(u)})${u.riders ? `, ${u.riders.men} of ${esc(u.riders.name)} aboard` : ""}` : "";
+  const aboard = u.riders ? `, ${u.riders.men} of ${esc(u.riders.name)} aboard` : "";
+  const room = K.carry ? `; carries ${K.carry} men a vehicle (room for ${carries(u)})` + aboard : "";
   return `${vehiclesLeft(u)} of ${Math.ceil(u.start / K.crew)} ${K.name.toLowerCase()} (${K.crew} crew each); ${gun}; ${K.armour} armour: small arms cannot hurt them, no one fights them hand to hand; a hit in the flank or rear is worse${room}${dmg}`;
 }
 function gunsInfo(u){                             // the Guns line of the selected battery
