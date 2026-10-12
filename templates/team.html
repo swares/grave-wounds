@@ -199,15 +199,24 @@ function renderWomen(){                          // the women choice: offered wh
   $("#sel-women").disabled = !rolls;
   $("#sel-women").options[1].textContent = rolls ? `Roll each at the army's share (${W.share}%)` : "Roll each at the army's share";
   let note = reg.no_women || "";
-  if (W) note = (rolls ? `Women ${W.disguised ? "enlisted disguised as men" : "served"} as ${womenCareers(W)}. ` : `Women served as ${womenCareers(W)}, in numbers no one counted reliably: pick them in Your own team. `) + (W.closed || "");
+  if (W) note = womenNote(W, rolls) + (W.closed || "");
   $("#women-note").textContent = note;
   $("#women-note").title = W?.source || "";
+}
+function womenNote(W, rolls){                     // what women did in this army, before why the rest is closed
+  if (!rolls) return `Women served as ${womenCareers(W)}, in numbers no one counted reliably: pick them in Your own team. `;
+  const how = W.disguised ? "enlisted disguised as men" : "served";
+  return `Women ${how} as ${womenCareers(W)}. `;
 }
 const womenCareers = W => W.careers.map(cid => byId(T.careers, cid).name.toLowerCase()).join(", ");
 function sexOpts(i, cid, sex){                    // man, woman or roll for an own-team slot; closed choices say why
   const [ok, why] = openToWomen(S.region, cid), share = womenOf(S.region)?.share, rolls = ok && share !== null && share !== undefined;
-  const opt = (v, label, on, title) => `<option value="${v}"${v === (sex || "m") ? " selected" : ""}${on ? "" : " disabled"}${title ? ` title="${esc(title)}"` : ""}>${label}</option>`;
-  return `<select data-slot="${i}" data-k="sex" aria-label="Man or woman ${i + 1}">${opt("m", "Man", true)}${opt("f", "Woman", ok, why)}${opt("roll", "Roll", rolls, rolls ? `${share}%` : why || "No share to roll at")}</select>`;
+  const opt = (v, label, on, title) => {
+    const tip = title ? ' title="' + esc(title) + '"' : "";
+    return `<option value="${v}"${v === (sex || "m") ? " selected" : ""}${on ? "" : " disabled"}${tip}>${label}</option>`;
+  };
+  const rollTip = rolls ? share + "%" : why || "No share to roll at";
+  return `<select data-slot="${i}" data-k="sex" aria-label="Man or woman ${i + 1}">${opt("m", "Man", true)}${opt("f", "Woman", ok, why)}${opt("roll", "Roll", rolls, rollTip)}</select>`;
 }
 function renderFollowers(){                       // the counts to roll, and the rolled followers' lines
   const name = cid => byId(T.careers, cid).name;

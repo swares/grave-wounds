@@ -256,6 +256,12 @@ def fight_line(d: Data, c: dict) -> str:
     return ", ".join(bits)
 
 
+def _woman_note(tables: dict, c: dict) -> str:
+    """' (a woman)', or ' (a woman, enlisted as a man)' where women enlisted disguised."""
+    disguised = (_by_id(tables["regions"], c["region"]).get("women") or {}).get("disguised")
+    return " (a woman, enlisted as a man)" if disguised else " (a woman)"
+
+
 def sheet(d: Data, c: dict) -> list[str]:
     """A character as lines of text."""
     T = era(d, c["era"])
@@ -264,7 +270,7 @@ def sheet(d: Data, c: dict) -> list[str]:
     stats = ", ".join(f"{x['name'][:3]} {c['stats'][x['id']]}" for x in T["characteristics"])
     trained = ", ".join(f"{names[k]} {c['skills'][k]}" for k in names if c["gains"].get(k, 0) > 0)
     sx = c.get("sex", "m")
-    woman = " (a woman" + (", enlisted as a man" if (_by_id(T["regions"], c["region"]).get("women") or {}).get("disguised") else "") + ")" if sx == "f" else ""
+    woman = _woman_note(T, c) if sx == "f" else ""
     lines = [f"{c['name']}{' (leader)' if c.get('leader') else ''}{woman}: {career['name'].lower()}, {c['terms']} term{'s' if c['terms'] > 1 else ''}, age {c['age']}",
              f"  {stats}",
              f"  Origin: {c['origin'].lower()}. {pron(c['trait'], sx)}; {pron(c['drawback'], sx).lower()}.",

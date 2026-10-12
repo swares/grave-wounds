@@ -488,10 +488,10 @@ def _women_rule(tables) -> list[str]:
     rows = [(r, r["women"]) for r in tables["regions"] if r.get("women")]
     if not rows:
         return []
-    def one(r, W):
-        share = f"{W['share']:g}%" if W.get("share") is not None else "no reliable share: chosen, never rolled"
-        how = ", enlisted disguised as men" if W.get("disguised") else ""
-        return f"{r['name']} ({share}{how}): {', '.join(names[c] for c in W['careers'])}"
+    def one(r, women):
+        share = f"{women['share']:g}%" if women.get("share") is not None else "no reliable share: chosen, never rolled"
+        how = ", enlisted disguised as men" if women.get("disguised") else ""
+        return f"{r['name']} ({share}{how}): {', '.join(names[c] for c in women['careers'])}"
     return ["<b>Women under arms:</b> a member may be a woman (her own name lists and origins, no beard; the texts say she and her), "
             "chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: "
             + "; ".join(one(r, W) for r, W in rows) + ". Elsewhere these careers were closed to them."]
