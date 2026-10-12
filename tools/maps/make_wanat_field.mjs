@@ -22,19 +22,25 @@ const VPB = { c0: 34, c1: 44, r0: 26, r1: 60 };   // the patrol base: an open fi
 const OP = [52, 30];                          // Observation Post Topside, on the ridge 50-70 m east of the base
 const RIVER = r => 14 + Math.round(wobble(r / 7, 0.8, 1.6) * 0.8);       // the Waygal river, west of the village
 const DRAW = c => 22 - Math.round((c - 46) * 0.45 + wobble(c / 4, 0.2, 1.1) * 0.6);   // the brush-filled draw, down from the north-east past the post's north side
-function kind(c, r){
-  if (Math.abs(c - RIVER(r)) <= 1) return "w";                            // the river: crossed at the bridge
+function works(c, r){                        // the base, the post and the draw, or null
   if (c >= VPB.c0 && c <= VPB.c1 && r >= VPB.r0 && r <= VPB.r1) return speckle(c, r, 9) ? "r" : ".";   // the base: open, with vehicles and HESCO here and there
   if (patch(c, r, { cx: OP[0], cy: OP[1], rx: 4, ry: 3, a: 0.3, b: 1.1 })) return speckle(c, r, 2) ? "r" : "h";   // the post: rocks on the ridge
   if (c >= 44 && c <= 70 && Math.abs(r - DRAW(c)) <= 1) return "F";      // the draw: brush, cover
+  return null;
+}
+function built(c, r){                         // the buildings north of the post, the bazaar and hotel, the mosque and the village, or null
   if (patch(c, r, { cx: 54, cy: 16, rx: 2, ry: 2 })) return "B";         // the two-storey building north of the post
   if (patch(c, r, { cx: 38, cy: 15, rx: 9, ry: 7, a: 1.4, b: 0.5 })) return speckle(c, r, 5) ? "." : "T";   // the bazaar and the hotel
   if (patch(c, r, { cx: 27, cy: 30, rx: 2, ry: 2 })) return "B";         // the mosque, over the base's west side
   if (c > 17 && c < 33 && r < 50) return speckle(c, r, 3) ? "r" : "T";    // the village on its terraces, above the base
+  return null;
+}
+function land(c, r){                          // the high ground on both sides, and the terraced fields
   if (c <= 11) return speckle(c, r, 4) ? "F" : "h";                       // the high ground west of the river
   if (c >= 58) return speckle(c, r, 3) ? "F" : "h";                       // the ridge and slopes east
   return speckle(c, r, 4) ? "." : "r";                                     // terraced fields
 }
+const kind = (c, r) => (Math.abs(c - RIVER(r)) <= 1 ? "w" : null) ?? works(c, r) ?? built(c, r) ?? land(c, r);   // the river: crossed at the bridge
 const grid = groundGrid(COLS, ROWS, kind);
 for (let r = 44; r <= 46; r++) for (let c = 11; c <= 17; c++) grid[r][c] = ".";   // the bridge over the river and the track up to the base
 
