@@ -172,7 +172,7 @@ def _hero_blow(d: Data, att: dict, hero: dict, r: int, atk: int, crit_at: int, s
     if r > atk:
         return
     critical = r <= crit_at
-    dfn = 0 if _held(hero) == "stunned" else hero["defence"] + shift - hero_penalty(d, hero)
+    dfn = 0 if _held(hero) == "stunned" else hero["defence"] + shift - hero_penalties(d, hero)[1]
     if not critical and dfn > 0 and rng.randint(1, 100) <= dfn:
         return
     h = roll_hit(d, att["table"], att["weapon"], rng=rng, kit=hero.get("kit"), margin=atk - r, critical=critical)
@@ -181,9 +181,11 @@ def _hero_blow(d: Data, att: dict, hero: dict, r: int, atk: int, crit_at: int, s
         return
     fx = h["effects"]
     bleed, pain, shock = (max(0, fx["bleed"] - 1), max(0, fx["pain"] - 1), False) if h["graze"] else (fx["bleed"], fx["pain"], bool(fx.get("shock")))
-    hero["wounds"].append({"loc": h["location"], "mech": h["mechanism"], "sev": sev, "graze": h["graze"], "bleed": bleed, "pain": pain})
+    hero["wounds"].append({"loc": h["location"], "mech": h["mechanism"], "sev": sev, "graze": h["graze"], "bleed": bleed, "pain": pain, "impair": list(fx.get("impair") or [])})
     if fx["lethal"] in d.units["dead_if"]:
         hero["state"] = "dead"
+    elif {"down", "incapacitated"} & set(hero_penalties(d, hero)[2]):
+        hero["state"] = "down"                    # a wound that fells him or knocks him out (collapse, cannot stand, unconscious)
     else:
         _hero_check(d, hero, C.stop_check(d, hero["nerve"], sev, hero_pain(hero), rng.randint(1, 100) if _checks(d, sev, shock) else 0,
                                           hero_blood(d, hero)[0] / hero_blood(d, hero)[1], shock))
@@ -230,24 +232,79 @@ def _threshold(d: Data, frac: float) -> dict | None:
     return next((t for t in sorted(d.wounds["tracking"]["thresholds"], key=lambda t: t["at"]) if frac <= t["at"]), None)
 
 
-def hero_penalty(d: Data, hero: dict) -> int:
-    """% off his attack and defence: pain (to the cap) and Blood lost."""
-    T, C_ = d.wounds["tracking"], d.wounds["combat"]
+def hero_penalties(d: Data, hero: dict) -> tuple:
+    """(% off his attack, % off his defence, flags), as the roller's penalties: pain (to the cap)
+    and Blood lost; his wounds' impairments, the ones he came with (old) and those taken here
+    (combat.impair, by his weapon hand); his sickness (sick: disease.yaml in_fight)."""
+    C_, T = d.wounds["combat"], d.wounds["tracking"]
     blood, pool = hero_blood(d, hero)
+    ws = (hero.get("old") or [{"loc": None, "pain": hero.get("old_pain", 0), "impair": []}]) + hero.get("wounds", [])
+    pain = min(sum(w.get("pain", 0) for w in ws), T["pain_cap"]) * C_["pain_step"]
+    attack, defence, flags = pain, pain, set()
     th = _threshold(d, blood / pool)
-    return min(hero_pain(hero), T["pain_cap"]) * C_["pain_step"] + ((th or {}).get("penalty") or 0)
+    if th:
+        attack, defence = attack + th.get("penalty", 0), defence + th.get("penalty", 0)
+        flags |= {f for f in ("down", "incapacitated") if th.get(f)}
+    a, df, f = _impairments(d, ws, hero.get("hand", "R"))
+    rule = (d.disease.get("in_fight") or {}).get(hero.get("sick") or "", {})
+    flags |= f | {k for k in ("defend_only", "out") if rule.get(k)}
+    attack += a + rule.get("penalty", 0)
+    defence += df + rule.get("penalty", 0)
+    return min(attack, C_["cap"]), min(defence, C_["cap"]), sorted(flags)
 
 
-def _heroes_after(d: Data, us: list, rng) -> list:
-    """End of an exchange for every hero not dead: a hold wears off, he bleeds, his Blood's
-    thresholds can put him down, and pain above the cap calls for a stop check."""
+IMPAIR_FLAGS = ("down", "off_hand", "no_shield", "incapacitated")
+
+
+def _impairments(d: Data, ws: list, hand: str) -> tuple:
+    """(% off attack, % off defence, flags) from the impairments of wounds ws ({loc, impair}),
+    each counted once (an arm's by which arm it is), as gravewounds.combat.penalties."""
+    attack = defence = 0
+    seen, flags = set(), set()
+    for w in ws:
+        for imp in w.get("impair") or []:
+            rule = d.wounds["combat"]["impair"].get(imp, {})
+            key, eff = (imp, None), rule
+            if "weapon_arm" in rule or "shield_arm" in rule:
+                loc = d.loc.get(w["loc"]) or {}
+                arm = "shield_arm" if loc.get("zone") == "arms" and loc.get("side") in ("L", "R") and loc["side"] != hand else "weapon_arm"
+                key, eff = (imp, arm), rule.get(arm, {})
+            if key in seen:
+                continue
+            seen.add(key)
+            attack, defence = attack + eff.get("attack", 0), defence + eff.get("defence", 0)
+            flags |= {f for f in IMPAIR_FLAGS if eff.get(f)}
+    return attack, defence, flags
+
+
+def _heroes_after(d: Data, us: list, rng, quiet: list | None = None) -> list:
+    """End of an exchange for every hero not dead: a hold wears off, first aid if his unit had
+    a quiet exchange (quiet[i]), he bleeds, his Blood's thresholds can put him down, and pain
+    above the cap calls for a stop check."""
     log = []
     for i, u in enumerate(us):
         for hero in u.get("heroes", []):
-            line = _hero_after(d, hero, rng) if hero["state"] != "dead" else None
+            if hero["state"] == "dead":
+                continue
+            if quiet and quiet[i]:
+                log += [{"kind": "heroaid", "unit": i, **x} for x in [_first_aid(d, hero, rng)] if x]
+            line = _hero_after(d, hero, rng)
             if line:
                 log.append({"kind": "herobled", "unit": i, **line})
     return log
+
+
+def _first_aid(d: Data, hero: dict, rng) -> dict | None:
+    """First aid in a quiet exchange: his worst-bleeding wound from this battle bleeds a step
+    less at heroes.first_aid %. -> a log line, or None."""
+    ws = [w for w in hero["wounds"] if w.get("bleed", 0) > 0]
+    if not ws:
+        return None
+    w = max(ws, key=lambda x: x["bleed"])
+    if rng.randint(1, 100) > d.units["heroes"]["first_aid"]:
+        return {"hero": hero["id"], "name": hero["name"], "loc": w["loc"], "stopped": False, "bleed": w["bleed"]}
+    w["bleed"] -= 1
+    return {"hero": hero["id"], "name": hero["name"], "loc": w["loc"], "stopped": True, "bleed": w["bleed"]}
 
 
 def _hero_after(d: Data, hero: dict, rng) -> dict | None:
@@ -278,8 +335,9 @@ def _heroes(u: dict, roles: tuple) -> list:
 
 
 def _acting(u: dict, roles: tuple) -> list:
-    """Heroes up and not held by a stop check: the ones who strike or shoot this exchange."""
-    return [h for h in _heroes(u, roles) if not _held(h)]
+    """Heroes up, not held by a stop check and not too sick to do more than defend
+    (defend_only): the ones who strike or shoot this exchange."""
+    return [h for h in _heroes(u, roles) if not _held(h) and not h.get("defend_only")]
 
 
 def front_men(d: Data, u: dict) -> int:
@@ -297,7 +355,7 @@ def _exposure(d: Data, u: dict, rout: bool, missile: bool = False) -> tuple:
 
 def _hero_side(u: dict, hero: dict, table: str, d: Data | None = None) -> dict:
     """A hero as a fighting side: his own skill, less his wounds' penalty (d given)."""
-    pen = hero_penalty(d, hero) if d else 0
+    pen = hero_penalties(d, hero)[0] if d else 0
     return {"table": table, "weapon": hero["weapon"], "kit": hero.get("kit"), "quality": u["quality"], "skill": hero["attack"] - pen}
 
 
@@ -1174,7 +1232,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
         u.update(men=u["men"] - cut, down=u.get("down", 0) + cut, dead=u.get("dead", 0) + min(dead[i], cut))
     log += _morale_all(d, us, occ, before, (lost, dealt, flanked), rng, table, field)
     log += _suppress_all(d, us, under, rng)
-    log += _heroes_after(d, us, rng)
+    log += _heroes_after(d, us, rng, [not lost[i] and not under[i] and not in_contact(d, us, occ, i) for i in range(len(us))])
     for u in us:
         u["charged"] = False
         _battery_after(d, u)

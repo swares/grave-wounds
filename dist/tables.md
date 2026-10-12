@@ -4516,7 +4516,7 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **Suppression:** a unit shelled or under machine-gun fire checks Nerve at the end of the exchange (+10 gone to ground); a failure pins it for the next exchange: no move, 50% of its fire.
 
-**Heroes in units:** a named fighter in the front rank makes 3 times a ranker's telling attempts with his own attack, and blows on the front fall on him 2 times as often as on a ranker there; a shooting hero looses 3 times a ranker's aimed shots. His wounds use the full rules and his own stop check (a failure: down for the battle). A leader adds his unit's leader modifier while he is up.
+**Heroes in units:** a named fighter in the front rank makes 3 times a ranker's telling attempts with his own attack, and blows on the front fall on him 2 times as often as on a ranker there; a shooting hero looses 3 times a ranker's aimed shots. His wounds use the full rules and his own stop check (a failure: down for the battle); their pain, his Blood lost, their impairments (an arm, a leg, dazed), the ones he came with too, and his sickness come off his attack and defence as in the wound roller, and too sick to do more than defend, he only defends. In a quiet exchange (his unit not in contact, not under fire, no losses) his comrades stop his worst wound bleeding a step at 60%. A leader adds his unit's leader modifier while he is up.
 
 **After the battle:** a side with no unit standing has lost the field, and its men down there are left behind, dead. A wound fatal in minutes kills unless he is bound in time (10%); one fatal in hours kills unless his camp treats it (no camp 0%, a camp 40%, quarters 60%). The rest are carried to camp and heal on the wound track (Camp disease).
 

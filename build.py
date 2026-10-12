@@ -424,7 +424,10 @@ def _hero_rules(d) -> list[str]:
     return [
         f"<b>Heroes in units:</b> a named fighter in the front rank makes {H['tempo']:g} times a ranker's telling attempts with his own attack, "
         f"and blows on the front fall on him {H['exposure']:g} times as often as on a ranker there; a shooting hero looses {H['tempo']:g} times a ranker's aimed shots. "
-        "His wounds use the full rules and his own stop check (a failure: down for the battle). A leader adds his unit's leader modifier while he is up.",
+        "His wounds use the full rules and his own stop check (a failure: down for the battle); their pain, his Blood lost, their impairments (an arm, a leg, dazed), "
+        "the ones he came with too, and his sickness come off his attack and defence as in the wound roller, and too sick to do more than defend, he only defends. "
+        f"In a quiet exchange (his unit not in contact, not under fire, no losses) his comrades stop his worst wound bleeding a step at {H['first_aid']}%. "
+        "A leader adds his unit's leader modifier while he is up.",
     ]
 
 
@@ -870,13 +873,14 @@ def field_bundle(d) -> dict:
     return {
         "generated": date.today().isoformat(),
         "units": d.units,
-        "combat": {k: d.wounds["combat"][k] for k in ("critical_fraction", "graze_margin", "margin_bands", "range", "pain_step", "stop_check", "states")},
+        "combat": {k: d.wounds["combat"][k] for k in ("critical_fraction", "graze_margin", "margin_bands", "range", "pain_step", "stop_check", "states", "impair", "cap")},
+        "in_fight": d.disease.get("in_fight") or {},
         "tracking": {k: d.wounds["tracking"][k] for k in ("blood_pool", "thresholds", "pain_cap", "bleed_per_round")},
         "blood_per": d.wounds["combat"]["characteristics"]["blood"]["per"],
         "tables": tables,
         "weapons": {w: {k: d.weapons[w][k] for k in keep if k in d.weapons[w]} for w in used},
         "mechanisms": {w: rng3(mechanism_ranges(d, w)) for w in used},
-        "locations": {l["id"]: {"zone": l["zone"], "name": l["name"]} for l in d.locations},
+        "locations": {l["id"]: {"zone": l["zone"], "name": l["name"], "side": l.get("side")} for l in d.locations},
         "kits": {k: {"name": v["name"], "layers": {l["id"]: [list(x) for x in armor_at(d, k, l["id"])] for l in d.locations}}
                  for k, v in d.armor["kits"].items()},
         "materials": {m: {k: v[k] for k in ("cut", "pierce", "crush", "ballistic", "threats") if k in v} for m, v in d.armor["materials"].items()},
@@ -895,9 +899,9 @@ def field_bundle(d) -> dict:
 
 
 def _lethal_inf(fx: dict) -> list:
-    """[untreated time to death, infection risk, bleed, pain, shock] of a composed wound (the
-    field page's: the last three for heroes)."""
-    return [fx["lethal"], fx["infection"], fx["bleed"], fx["pain"], bool(fx.get("shock"))]
+    """[untreated time to death, infection risk, bleed, pain, shock, impairments] of a composed
+    wound (the field page's: the last four for heroes)."""
+    return [fx["lethal"], fx["infection"], fx["bleed"], fx["pain"], bool(fx.get("shock")), list(fx.get("impair") or [])]
 
 
 def bundle(d) -> dict:
