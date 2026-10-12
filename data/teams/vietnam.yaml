@@ -1,0 +1,382 @@
+# Character generation for the Vietnam War (1965-1973): the team builder (dist/team.html,
+# python3 -m gravewounds team --era vietnam). Made exactly as the medieval era's (see
+# medieval.yaml for the five steps); only the tables differ. Every region takes the Vietnam
+# hospital table. The US Army wears the M1 helmet and nylon flak vest, the Marines the Doron
+# vest, the ARVN a steel helmet; the Australians and New Zealanders, the North Vietnamese and
+# the Viet Cong no armour. RPGs are fought with Grenade, mortars and recoilless rifles with
+# Gunnery. Vietnamese names are written family name first.
+# Women (docs/team.md): the Viet Cong and the North's army had women under arms in numbers no
+# one counted reliably, so a woman is chosen there, never rolled; American, Australian and New
+# Zealand servicewomen in Vietnam were nurses and staff, not in these careers.
+# All of it is written for this game: the tables, events and names are ours (names are common
+# period names, plain fact).
+id: vietnam
+name: "Vietnam War (1965-1973)"
+
+characteristics:
+  - {id: str, name: Strength}
+  - {id: agi, name: Agility}
+  - {id: end, name: Endurance}
+  - {id: wits, name: Wits}
+  - {id: nerve, name: Nerve}
+  - {id: pres, name: Presence}
+array: [70, 60, 55, 50, 45, 35]
+stat_range: [15, 95]
+age: {start: 18, per_term: 1}
+
+skill_max: 90
+first_term: 15
+term_main: 10
+term_second: 5
+gain: 15
+skills:
+  - {id: rifle, name: Rifle, of: agi, div: 2, combat: true}
+  - {id: pistol, name: SMG and pistol, of: agi, div: 2, combat: true}
+  - {id: mg, name: Machine gun, of: wits, div: 2, combat: true}
+  - {id: grenade, name: Grenade and rocket, of: str, div: 2, combat: true}
+  - {id: gunnery, name: Gunnery, of: wits, div: 2, combat: true}
+  - {id: bayonet, name: Bayonet, of: str, div: 2, combat: true}
+  - {id: trench, name: Close combat, of: str, div: 2, combat: true}
+  - {id: brawl, name: Brawl, of: str, div: 2, combat: true}
+  - {id: parry, name: Parry, of: agi, div: 2, combat: true}
+  - {id: dodge, name: Dodge, of: agi, div: 3, combat: true}
+  - {id: fieldcraft, name: Fieldcraft, of: wits, div: 3}
+  - {id: watch, name: Watch, of: wits, div: 2}
+  - {id: stealth, name: Stealth, of: agi, div: 3}
+  - {id: leechcraft, name: Leechcraft, of: wits, div: 4}
+  - {id: craft, name: Craft, of: wits, div: 3}
+  - {id: signals, name: Signals, of: wits, div: 3}
+  - {id: drive, name: Drive, of: agi, div: 3}
+  - {id: letters, name: Letters, of: wits, div: 5}
+  - {id: persuade, name: Persuade, of: pres, div: 2}
+  - {id: command, name: Command, of: pres, div: 3}
+
+weapon_skill:
+  rifle_assault: rifle
+  pistol_smg: pistol
+  machine_gun: mg
+  hand_grenade: grenade
+  rpg: grenade
+  mortar_artillery: gunnery
+  explosive_fragment: gunnery
+  recoilless: gunnery
+  bayonet: bayonet
+  entrenching_tool: trench
+  dagger: trench
+  punch: brawl
+  kick: brawl
+  elbow_knee: brawl
+defence: [parry, dodge]
+
+regions:
+  - id: us_army
+    name: "The US Army"
+    short: "US Army"
+    table: vietnam-1965-70-hospitalized
+    colours: ["#4f5a3a", "#5b5a3a", "#3f4a30", "#e6e0d2"]
+    names: [Michael, David, James, John, Robert, William, Richard, Thomas, Gary, Larry, Dennis, Steven, Ronald, Daniel, Ricky, Jose]
+    bynames: [Smith, Johnson, Williams, Brown, Jones, Miller, Davis, Garcia, Rodriguez, Wilson, Washington, Martinez]
+    no_women: "About 7,500 American servicewomen served in Vietnam, most of them nurses, the rest in staff work: none in these careers."
+  - id: us_marines
+    name: "The US Marines"
+    short: "US Marines"
+    table: vietnam-1965-70-hospitalized
+    colours: ["#4f5a3a", "#3f4a30", "#5b6a4a", "#e6e0d2"]
+    names: [Michael, David, James, John, Robert, William, Richard, Thomas, Gary, Kenneth, Dennis, Roger, Ronald, Daniel, Jimmy, Raul]
+    bynames: [Smith, Johnson, Williams, Brown, Jones, Miller, Davis, Hernandez, Lopez, Wilson, Jackson, Murphy]
+    no_women: "About 7,500 American servicewomen served in Vietnam, most of them nurses, the rest in staff work: none in these careers."
+  - id: anzac
+    name: "Australians and New Zealanders"
+    short: "ANZAC"
+    table: vietnam-1965-70-hospitalized
+    colours: ["#4f5a3a", "#5b6a4a", "#6b6a48", "#e6e0d2"]
+    names: [Peter, John, David, Michael, Robert, Graham, Ian, Barry, Kevin, Brian, Neil, Terry, Wiremu, Allan, Gregory, Ross]
+    bynames: [Smith, Jones, Williams, Brown, Wilson, Taylor, Anderson, Thompson, Walker, Kelly, Ryan, Ngata]
+    no_women: "Australian and New Zealand servicewomen in Vietnam were nurses, not in these careers."
+  - id: arvn
+    name: "Army of the Republic of Vietnam"
+    short: "ARVN"
+    table: vietnam-1965-70-hospitalized
+    colours: ["#4f5a3a", "#5b5a3a", "#6b6a48", "#e6e0d2"]
+    names: [Nguyễn, Trần, Lê, Phạm, Hoàng, Phan, Vũ, Đặng, Bùi, Đỗ, Hồ, Ngô]
+    bynames: [Văn Minh, Văn Hùng, Văn Thành, Văn Hải, Văn Long, Văn Sơn, Văn Tuấn, Văn Đức, Văn Phúc, Văn Tâm, Văn Nam, Văn Quang]
+    women:
+      share: null
+      careers: [medic]
+      bynames: [Thị Lan, Thị Hoa, Thị Mai, Thị Hồng, Thị Thu, Thị Hà, Thị Hương, Thị Nga, Thị Hạnh, Thị Tuyết, Thị Xuân, Thị Kim]
+      closed: "The ARVN's women's corps did office work; a few women served as medics in the field, as the Rangers' Hồ Thị Quế did."
+      source: "Women in the Vietnam War (Wikipedia): the Women's Armed Forces Corps (administration) and women medics with the Rangers; no count of the share."
+  - id: pavn
+    name: "People's Army of Vietnam (North Vietnamese)"
+    short: "North Vietnam"
+    table: vietnam-1965-70-hospitalized
+    colours: ["#5b6a4a", "#4f5a3a", "#6b7a52", "#e6e0d2"]
+    names: [Nguyễn, Trần, Lê, Phạm, Hoàng, Phan, Vũ, Đặng, Bùi, Đỗ, Hồ, Ngô]
+    bynames: [Văn Hòa, Văn Thắng, Văn Lợi, Văn Bình, Văn Dũng, Văn Toàn, Văn Khánh, Văn Thịnh, Văn Lâm, Văn Cường, Văn Hưng, Văn Tiến]
+    women:
+      share: null
+      careers: [rifleman, scout, sapper, medic]
+      bynames: [Thị Lan, Thị Hoa, Thị Mai, Thị Hồng, Thị Thu, Thị Hà, Thị Hương, Thị Nga, Thị Hạnh, Thị Tuyết, Thị Xuân, Thị Kim]
+      closed: "On the Ho Chi Minh Trail women fought, guided, cleared bombs and treated the wounded; these tables have no record of them in the North's other careers."
+      source: "Women in the Vietnam War (Wikipedia): at least 1.5 million women in the North's forces; on the Trail, combat duty, guides, bomb disposal and emergency medicine; no count of their share in fighting units."
+  - id: nlf
+    name: "National Liberation Front (Viet Cong)"
+    short: "Viet Cong"
+    table: vietnam-1965-70-hospitalized
+    colours: ["#2f2f2f", "#3a3a3a", "#4a4a40", "#e6e0d2"]
+    names: [Nguyễn, Trần, Lê, Phạm, Hoàng, Phan, Võ, Đặng, Bùi, Đỗ, Huỳnh, Ngô]
+    bynames: [Văn Ba, Văn Tư, Văn Năm, Văn Sáu, Văn Bảy, Văn Tám, Văn Mười, Văn Út, Văn Lực, Văn Trí, Văn Hiếu, Văn Nghĩa]
+    women:
+      share: null
+      careers: [rifleman, scout, sapper, medic, radioman, nco, officer]
+      bynames: [Thị Ba, Thị Tư, Thị Năm, Thị Sáu, Thị Bảy, Thị Tám, Thị Út, Thị Lan, Thị Hoa, Thị Mai, Thị Hồng, Thị Xuân]
+      closed: "These tables have no record of the Front's women in its heavy-weapon, tunnel or vehicle careers."
+      source: "Women in the Vietnam War (Wikipedia): women laid booby traps, scouted, carried messages and fought in all-female and mixed units; Võ Thị Mô was second in command of a battalion; no reliable count of their share."
+
+origins:
+  - {name: "Draftee from a factory town", gain: craft, trait: {text: "Used to long shifts", end: 10}, drawback: {text: "Half deaf from the machines", watch: -15}}
+  - {name: "College dropout", gain: letters, trait: {text: "Quick to learn", wits: 10}, drawback: {text: "Never done a day's labour", str: -10}}
+  - {name: "Hunter", gain: rifle, trait: {text: "A steady aim", rifle: 15}, drawback: {text: "Hates drill", pres: -10}}
+  - {name: "Mechanic", gain: drive, trait: {text: "Can fix any engine", craft: 15}, drawback: {text: "Never walked far", end: -10}}
+  - {name: "Rice farmer", gain: fieldcraft, trait: {text: "Works all day in the heat", end: 10}, drawback: {text: "Never learned to read", letters: -15}}
+  - {name: "From a fishing village", gain: craft, trait: {text: "Weathered every storm", end: 10}, drawback: {text: "Never fired a gun", rifle: -15}}
+  - {name: "Hospital orderly", gain: leechcraft, trait: {text: "Steady at the sight of blood", leechcraft: 15}, drawback: {text: "Never stops talking", stealth: -15}}
+  - {name: "Athlete", gain: dodge, trait: {text: "Fast on his feet", agi: 10}, drawback: {text: "Bad knee", end: -10}}
+  - {name: "Street kid from a big city", gain: brawl, trait: {text: "Takes a punch", end: 10}, drawback: {text: "Known to the police", persuade: -15}}
+  - {name: "From an army family", gain: command, trait: {text: "Raised to command", command: 15}, drawback: {text: "Proud and touchy", persuade: -15}}
+  - {name: "Grew up in a war", gain: stealth, trait: {text: "Moves at night", stealth: 15}, drawback: {text: "Trusts no one", pres: -10}}
+  - {name: "Volunteer", gain: rifle, trait: {text: "Eager to fight", nerve: 10}, drawback: {text: "Too eager", stealth: -15}}
+  - {name: "Truck driver", gain: drive, trait: {text: "Knows every road", drive: 15}, drawback: {text: "Bad back", agi: -10}}
+  - {name: "Radio buff", gain: signals, trait: {text: "Mends any set", signals: 15}, drawback: {text: "Short-sighted", watch: -15}}
+  - {name: "Schoolteacher", gain: letters, trait: {text: "Well read", letters: 15}, drawback: {text: "Faints at the sight of blood", nerve: -10}}
+  - {name: "Market trader", gain: persuade, trait: {text: "A ready smile", pres: 10}, drawback: {text: "Never slept rough", fieldcraft: -15}}
+  - {name: "Mountain villager", gain: fieldcraft, trait: {text: "Climbs all day", end: 10}, drawback: {text: "Speaks little of the lowland tongue", persuade: -15}}
+  - {name: "Construction worker", gain: craft, trait: {text: "Strong arms", str: 10}, drawback: {text: "Slow afoot", agi: -10}}
+  - {name: "Boxer", who: m, gain: brawl, trait: {text: "Hard to frighten", nerve: 10}, drawback: {text: "Hot-tempered", persuade: -15}}
+  - {name: "Peacetime regular", who: m, gain: rifle, trait: {text: "Knows the drill", rifle: 15}, drawback: {text: "Set in his ways", wits: -10}}
+  - {name: "Youth volunteer on the supply trails", who: f, gain: fieldcraft, trait: {text: "Carried loads through the mountains", end: 10}, drawback: {text: "Shaken by the bombing", nerve: -10}}
+  - {name: "Village militia", who: f, gain: rifle, trait: {text: "Drilled with the village militia", rifle: 15}, drawback: {text: "Never left her province", persuade: -15}}
+
+careers:
+  - id: rifleman
+    name: "Rifleman"
+    main: rifle
+    second: grenade
+    prefers: [end, agi, nerve, str, wits, pres]
+    wound: 25
+    wound_weapon: rifle_assault
+    kit: {default: vietnam_army, us_marines: vietnam_usmc, anzac: none, arvn: ww2_rifleman, pavn: none, nlf: none}
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: watch, text: "Lay in an ambush by a trail through the night."}
+      - {to: 40, skill: fieldcraft, text: "Carried a heavy pack through the jungle for days."}
+      - {to: 55, skill: dodge, text: "Lay flat in a paddy as fire swept the dike."}
+      - {to: 70, skill: stealth, text: "Crossed a river by night."}
+      - {to: 85, skill: grenade, text: "Fought through a bunker line in the jungle.", wound: true}
+      - {to: 100, skill: rifle, text: "Held the perimeter through a night attack.", wound: true}
+  - id: machine_gunner
+    name: "Machine gunner"
+    main: mg
+    second: craft
+    prefers: [wits, end, str, nerve, agi, pres]
+    wound: 25
+    wound_weapon: rifle_assault
+    kit: {default: vietnam_army, us_marines: vietnam_usmc, anzac: none, arvn: ww2_rifleman, pavn: none, nlf: none}
+    weapon: {default: machine_gun}
+    terms:
+      - {to: 20, skill: craft, text: "Kept the gun clean through mud and rain."}
+      - {to: 40, skill: fieldcraft, text: "Carried the gun and its belts through elephant grass."}
+      - {to: 55, skill: watch, text: "Laid the gun on a trail for a night ambush."}
+      - {to: 70, skill: dodge, text: "Moved the gun before the enemy's mortars found it.", wound: true}
+      - {to: 85, skill: stealth, text: "Sited the gun to cover a landing zone."}
+      - {to: 100, skill: mg, text: "Broke up an assault on the perimeter.", wound: true}
+  - id: grenadier
+    name: "Grenadier or RPG gunner"
+    main: grenade
+    second: rifle
+    prefers: [str, agi, nerve, end, wits, pres]
+    wound: 30
+    wound_weapon: explosive_fragment
+    kit: {default: vietnam_army, us_marines: vietnam_usmc, anzac: none, arvn: ww2_rifleman, pavn: none, nlf: none}
+    weapon: {default: rifle_assault, pavn: rpg, nlf: rpg}
+    terms:
+      - {to: 20, skill: craft, text: "Learned the grenade launcher or the rocket launcher."}
+      - {to: 40, skill: stealth, text: "Crept close to a bunker's firing slit."}
+      - {to: 55, skill: fieldcraft, text: "Carried the rounds through the hills."}
+      - {to: 70, skill: dodge, text: "Was caught by a machine gun crossing a clearing.", wound: true}
+      - {to: 85, skill: grenade, text: "Knocked out a bunker or a vehicle.", wound: true}
+      - {to: 100, skill: trench, text: "Fought hand to hand in a trench line."}
+  - id: scout
+    name: "Point man, scout or sniper"
+    main: rifle
+    second: stealth
+    prefers: [wits, agi, nerve, end, str, pres]
+    wound: 20
+    wound_weapon: rifle_assault
+    kit: {default: vietnam_army, us_marines: vietnam_usmc, anzac: none, arvn: ww2_rifleman, pavn: none, nlf: none}
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: watch, text: "Read the signs of an ambush on a trail."}
+      - {to: 40, skill: fieldcraft, text: "Walked point through the jungle."}
+      - {to: 55, skill: stealth, text: "Lay hidden while an enemy column passed."}
+      - {to: 70, skill: letters, text: "Reported the enemy's trails and camps."}
+      - {to: 85, skill: craft, text: "Kept a scoped rifle zeroed in the wet."}
+      - {to: 100, skill: rifle, text: "Duelled with an enemy sniper in the trees.", wound: true}
+  - id: sapper
+    name: "Combat engineer or sapper"
+    main: craft
+    second: grenade
+    prefers: [str, end, wits, nerve, agi, pres]
+    wound: 25
+    wound_weapon: mine_ied
+    kit: {default: vietnam_army, us_marines: vietnam_usmc, anzac: none, arvn: ww2_rifleman, pavn: none, nlf: none}
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: craft, text: "Built a fire base on a hilltop."}
+      - {to: 40, skill: watch, text: "Found a tripwire on a trail.", wound: true}
+      - {to: 55, skill: stealth, text: "Cut a way through the wire at night."}
+      - {to: 70, skill: letters, text: "Laid mines and booby traps to a plan."}
+      - {to: 85, skill: grenade, text: "Blew up a bunker with a satchel charge.", wound: true}
+      - {to: 100, skill: fieldcraft, text: "Cleared booby traps from a village."}
+  - id: tunnel
+    name: "Tunnel rat or tunnel fighter"
+    main: stealth
+    second: pistol
+    prefers: [agi, nerve, wits, end, str, pres]
+    wound: 25
+    wound_weapon: mine_ied
+    kit: {default: none}
+    weapon: {default: pistol_smg}
+    terms:
+      - {to: 20, skill: craft, text: "Dug and shored a tunnel by hand."}
+      - {to: 40, skill: watch, text: "Listened in the dark for a sound ahead."}
+      - {to: 55, skill: fieldcraft, text: "Mapped a tunnel system by touch."}
+      - {to: 70, skill: dodge, text: "Set off a booby trap underground.", wound: true}
+      - {to: 85, skill: pistol, text: "Fought in a tunnel by torchlight.", wound: true}
+      - {to: 100, skill: stealth, text: "Lived for weeks in the tunnels."}
+  - id: mortarman
+    name: "Mortarman"
+    main: gunnery
+    second: fieldcraft
+    prefers: [wits, str, end, nerve, agi, pres]
+    wound: 20
+    wound_weapon: explosive_fragment
+    kit: {default: vietnam_army, us_marines: vietnam_usmc, anzac: none, arvn: ww2_rifleman, pavn: none, nlf: none}
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: letters, text: "Worked out the firing data by hand."}
+      - {to: 40, skill: craft, text: "Dug the mortar pit on a hilltop."}
+      - {to: 55, skill: fieldcraft, text: "Carried the tube and baseplate through the hills."}
+      - {to: 70, skill: signals, text: "Took fire orders over the radio."}
+      - {to: 85, skill: dodge, text: "Was caught by counter-mortar fire.", wound: true}
+      - {to: 100, skill: gunnery, text: "Fired flares and high explosive all night for the perimeter."}
+  - id: medic
+    name: "Medic or corpsman"
+    main: leechcraft
+    second: fieldcraft
+    prefers: [end, wits, nerve, str, agi, pres]
+    wound: 20
+    wound_weapon: explosive_fragment
+    kit: {default: vietnam_army, us_marines: vietnam_usmc, anzac: none, arvn: ww2_rifleman, pavn: none, nlf: none}
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: craft, text: "Worked at an aid station."}
+      - {to: 40, skill: leechcraft, text: "Fought infection in a wound from a punji stake."}
+      - {to: 55, skill: signals, text: "Called in a medical evacuation helicopter under fire."}
+      - {to: 70, skill: persuade, text: "Talked a shocked man back to his senses."}
+      - {to: 85, skill: dodge, text: "Ran out to a wounded man under fire.", wound: true}
+      - {to: 100, skill: leechcraft, text: "Kept men alive through a night attack.", wound: true}
+  - id: radioman
+    name: "Radio operator"
+    main: signals
+    second: fieldcraft
+    prefers: [wits, agi, end, nerve, pres, str]
+    wound: 20
+    wound_weapon: explosive_fragment
+    kit: {default: vietnam_army, us_marines: vietnam_usmc, anzac: none, arvn: ww2_rifleman, pavn: none, nlf: none}
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: letters, text: "Learned the codes and the call signs."}
+      - {to: 40, skill: craft, text: "Kept the radio dry through the monsoon."}
+      - {to: 55, skill: fieldcraft, text: "Carried the radio's weight on a long patrol."}
+      - {to: 70, skill: watch, text: "Listened in on the enemy's radio net."}
+      - {to: 85, skill: dodge, text: "Was singled out by his aerial.", wound: true}
+      - {to: 100, skill: signals, text: "Called in artillery and air strikes in a close fight."}
+  - id: nco
+    name: "Squad leader or sergeant"
+    main: command
+    second: rifle
+    prefers: [pres, nerve, end, str, agi, wits]
+    wound: 25
+    wound_weapon: rifle_assault
+    kit: {default: vietnam_army, us_marines: vietnam_usmc, anzac: none, arvn: ww2_rifleman, pavn: none, nlf: none}
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: letters, text: "Kept the squad's roll and its ammunition count."}
+      - {to: 40, skill: persuade, text: "Kept a frightened man in his hole."}
+      - {to: 55, skill: rifle, text: "Trained new men in the field."}
+      - {to: 70, skill: watch, text: "Set the night's ambush positions."}
+      - {to: 85, skill: grenade, text: "Led the squad into a bunker line.", wound: true}
+      - {to: 100, skill: command, text: "Took over the platoon when its leader fell.", wound: true}
+  - id: officer
+    name: "Platoon leader"
+    main: command
+    second: rifle
+    prefers: [pres, nerve, wits, agi, end, str]
+    wound: 30
+    wound_weapon: rifle_assault
+    kit: {default: vietnam_army, us_marines: vietnam_usmc, anzac: none, arvn: ww2_rifleman, pavn: none, nlf: none}
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: letters, text: "Read the maps and wrote the orders."}
+      - {to: 40, skill: signals, text: "Called down fire on the radio."}
+      - {to: 55, skill: stealth, text: "Led a night ambush.", wound: true}
+      - {to: 70, skill: persuade, text: "Wrote to the families of the dead."}
+      - {to: 85, skill: rifle, text: "Led an assault on a fortified village.", wound: true}
+      - {to: 100, skill: command, text: "Held the company together when it was surrounded.", wound: true}
+
+old_wound:
+  - {to: 70, kind: mark, text: "a healed scar"}
+  - {to: 100, kind: lasting, text: "a lasting hurt"}
+lasting: 5
+lasting_from: {head: wits, face: pres, arms: str, legs: agi, torso: end}
+
+followers:
+  quality:
+    default:  [{to: 30, quality: green}, {to: 80, quality: regular}, {to: 100, quality: veteran}]
+    hardened: [{to: 15, quality: green}, {to: 60, quality: regular}, {to: 100, quality: veteran}]
+    raw:      [{to: 55, quality: green}, {to: 90, quality: regular}, {to: 100, quality: veteran}]
+
+templates:
+  - id: squad
+    name: "A rifle squad"
+    slots: [[nco, 3], [rifleman, 2], [machine_gunner, 2], [grenadier, 1], [medic, 1]]
+    followers: [[rifleman, 5]]
+  - id: ambush
+    name: "A night ambush patrol"
+    slots: [[officer, 3], [nco, 2], [scout, 2], [radioman, 1], [machine_gunner, 1]]
+    followers: [[rifleman, 8]]
+    follower_quality: hardened
+  - id: recon
+    name: "A long-range reconnaissance team"
+    slots: [[nco, 3], [scout, 2], [scout, 2], [radioman, 1], [medic, 1]]
+    followers: []
+    follower_quality: hardened
+  - id: sappers
+    name: "A sapper team"
+    slots: [[nco, 3], [sapper, 2], [sapper, 2], [grenadier, 1]]
+    followers: [[sapper, 6]]
+    follower_quality: hardened
+  - id: tunnels
+    name: "A tunnel team"
+    slots: [[nco, 3], [tunnel, 2], [tunnel, 2], [tunnel, 1]]
+    followers: [[rifleman, 4]]
+  - id: mortars
+    name: "A mortar section"
+    slots: [[nco, 3], [mortarman, 2], [mortarman, 2], [radioman, 1]]
+    followers: [[mortarman, 6]]
+  - id: replacements
+    name: "Replacements fresh from training"
+    slots: [[officer, 1], [nco, 2], [rifleman, 1], [rifleman, 1], [medic, 1]]
+    followers: [[rifleman, 20]]
+    follower_quality: raw

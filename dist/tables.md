@@ -5011,6 +5011,8 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
 
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The Union (1861-1865) (0.02%, enlisted disguised as men): infantryman, sharpshooter or skirmisher, cavalry trooper, artilleryman, scout, teamster or packer; The Confederacy (1861-1865) (0.03%, enlisted disguised as men): infantryman, sharpshooter or skirmisher, cavalry trooper, artilleryman, scout, teamster or packer. Elsewhere these careers were closed to them.
+
 | Skill | Starts at | Weapons |
 |---|---|---|
 | Rifle | Agility / 2 | rifle-musket, breech-loader |
@@ -5033,26 +5035,31 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 | d100 | Origin | Skill | Trait | Drawback |
 |---|---|---|---|---|
-| 01-05 | Farm boy | Fieldcraft | Strong back (Strength +10) | Never been far from home (Persuade -15) |
-| 06-10 | Mill hand | Craft | Used to long hours (Endurance +10) | Never slept rough (Fieldcraft -15) |
-| 11-15 | Clerk in a store | Letters | Good at sums (Wits +10) | Soft hands (Strength -10) |
-| 16-20 | Immigrant fresh off the boat | Craft | Served in an army back home (Rifle +15) | Speaks little English (Persuade -15) |
-| 21-25 | Hunter's son | Rifle | A steady aim (Rifle +15) | Hates drill (Presence -10) |
-| 26-30 | Teamster | Ride | Knows every road (Fieldcraft +15) | Bad back (Agility -10) |
-| 31-35 | Schoolteacher | Letters | Well read (Letters +15) | Faints at the sight of blood (Nerve -10) |
-| 36-40 | Druggist's boy | Leechcraft | Knows his remedies (Leechcraft +15) | Never stops talking (Stealth -15) |
-| 41-45 | Son of a planter or a mill owner | Ride | Raised to command (Command +15) | Proud and touchy (Persuade -15) |
-| 46-50 | Railroad man | Craft | Not afraid of machines (Wits +10) | Half deaf from the engines (Watch -15) |
-| 51-55 | Blacksmith's apprentice | Craft | Arms like hams (Strength +10) | Slow afoot (Agility -10) |
-| 56-60 | Riverboat hand | Brawl | Swims like an otter (Endurance +10) | Gambles away his pay (Presence -10) |
-| 61-65 | Cowhand | Ride | Horse sense (Ride +15) | Kicked by a horse as a boy (Endurance -10) |
-| 66-70 | Woodsman | Fieldcraft | Moves quietly in the woods (Stealth +15) | Uneasy in towns (Presence -10) |
-| 71-75 | Street tough from a big city | Brawl | Takes a punch (Endurance +10) | Known to the police (Persuade -15) |
-| 76-80 | Preacher's son | Persuade | A voice that carries (Presence +10) | Never fired a gun (Rifle -15) |
-| 81-85 | Telegraph operator | Letters | Quick with his hands (Agility +10) | Short-sighted (Watch -15) |
-| 86-90 | Miner from the hills | Craft | Tireless (Endurance +10) | Coughs in the cold (Stealth -15) |
-| 91-95 | Drifter | Watch | Sleeps anywhere (Endurance +10) | Belongs nowhere (Presence -10) |
-| 96-00 | Volunteer for the cause | Persuade | Hard to frighten (Nerve +10) | Never held a weapon (Parry -15) |
+| 01-04 | Farm boy | Fieldcraft | Strong back (Strength +10) | Never been far from home (Persuade -15) |
+| 05-08 | Mill hand | Craft | Used to long hours (Endurance +10) | Never slept rough (Fieldcraft -15) |
+| 09-12 | Clerk in a store | Letters | Good at sums (Wits +10) | Soft hands (Strength -10) |
+| 13-16 | Immigrant fresh off the boat | Craft | Served in an army back home (Rifle +15) | Speaks little English (Persuade -15) |
+| 17-20 | Hunter's son | Rifle | A steady aim (Rifle +15) | Hates drill (Presence -10) |
+| 21-24 | Teamster | Ride | Knows every road (Fieldcraft +15) | Bad back (Agility -10) |
+| 25-28 | Schoolteacher | Letters | Well read (Letters +15) | Faints at the sight of blood (Nerve -10) |
+| 29-32 | Druggist's boy | Leechcraft | Knows his remedies (Leechcraft +15) | Never stops talking (Stealth -15) |
+| 33-36 | Son of a planter or a mill owner | Ride | Raised to command (Command +15) | Proud and touchy (Persuade -15) |
+| 37-40 | Railroad man | Craft | Not afraid of machines (Wits +10) | Half deaf from the engines (Watch -15) |
+| 41-44 | Blacksmith's apprentice | Craft | Arms like hams (Strength +10) | Slow afoot (Agility -10) |
+| 45-48 | Riverboat hand | Brawl | Swims like an otter (Endurance +10) | Gambles away his pay (Presence -10) |
+| 49-52 | Cowhand | Ride | Horse sense (Ride +15) | Kicked by a horse as a boy (Endurance -10) |
+| 53-56 | Woodsman | Fieldcraft | Moves quietly in the woods (Stealth +15) | Uneasy in towns (Presence -10) |
+| 57-60 | Street tough from a big city | Brawl | Takes a punch (Endurance +10) | Known to the police (Persuade -15) |
+| 61-64 | Preacher's son | Persuade | A voice that carries (Presence +10) | Never fired a gun (Rifle -15) |
+| 65-68 | Telegraph operator | Letters | Quick with his hands (Agility +10) | Short-sighted (Watch -15) |
+| 69-72 | Miner from the hills | Craft | Tireless (Endurance +10) | Coughs in the cold (Stealth -15) |
+| 73-76 | Drifter | Watch | Sleeps anywhere (Endurance +10) | Belongs nowhere (Presence -10) |
+| 77-80 | Volunteer for the cause | Persuade | Hard to frighten (Nerve +10) | Never held a weapon (Parry -15) |
+| 81-84 | Farm girl who cut her hair | Fieldcraft | Strong back (Strength +10) | Never been far from home (Persuade -15) |
+| 85-88 | Mill girl | Craft | Used to long hours (Endurance +10) | Never fired a gun (Rifle -15) |
+| 89-92 | Followed her husband into the ranks | Persuade | Stays by her husband (Nerve +10) | Afraid of being found out (Presence -10) |
+| 93-96 | Ran away from home in boy's clothes | Stealth | Passes unnoticed (Stealth +15) | Never slept rough (Fieldcraft -15) |
+| 97-100 | Seamstress | Craft | Nimble fingers (Agility +10) | Soft hands (Strength -10) |
 
 | Career | Main skill | Second | Old wound | Hurt by |
 |---|---|---|---|---|
@@ -5412,6 +5419,8 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
 
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The Soviet Union (3%): rifleman, machine gunner, sniper or scout, medic or stretcher-bearer, radio operator or signaller, corporal or sergeant, junior officer, tank crewman. Elsewhere these careers were closed to them.
+
 | Skill | Starts at | Weapons |
 |---|---|---|
 | Rifle | Agility / 2 | rifle |
@@ -5437,26 +5446,30 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 | d100 | Origin | Skill | Trait | Drawback |
 |---|---|---|---|---|
-| 01-05 | Farm boy | Fieldcraft | Strong back (Strength +10) | Never been far from home (Persuade -15) |
-| 06-10 | Factory worker | Craft | Used to long shifts (Endurance +10) | Half deaf from the presses (Watch -15) |
-| 11-15 | Office clerk | Letters | Good at sums (Wits +10) | Soft hands (Strength -10) |
-| 16-20 | Coal miner | Craft | At home underground (Endurance +10) | Coughs in the cold (Stealth -15) |
-| 21-25 | Hunter | Rifle | A steady aim (Rifle +15) | Hates drill (Presence -10) |
-| 26-30 | Garage mechanic | Drive | Can fix any engine (Craft +15) | Never walked far (Endurance -10) |
-| 31-35 | Truck driver | Drive | Knows every road (Drive +15) | Bad back (Agility -10) |
-| 36-40 | Schoolteacher | Letters | Well read (Letters +15) | Faints at the sight of blood (Nerve -10) |
-| 41-45 | Pharmacist's assistant | Leechcraft | Knows his remedies (Leechcraft +15) | Never stops talking (Stealth -15) |
-| 46-50 | College student | Letters | Speaks the enemy's language (Wits +10) | Never done a day's labour (Strength -10) |
-| 51-55 | Radio ham | Signals | Sends Morse in his sleep (Signals +15) | Short-sighted (Watch -15) |
-| 56-60 | Boxer | Brawl | Hard to frighten (Nerve +10) | Hot-tempered (Persuade -15) |
-| 61-65 | Athlete | Dodge | Fast on his feet (Agility +10) | Bad knee (Endurance -10) |
-| 66-70 | Lumberjack | Craft | Arms like hams (Strength +10) | Slow afoot (Agility -10) |
-| 71-75 | Fisherman | Craft | Weathered every storm (Endurance +10) | Never fired a gun (Rifle -15) |
-| 76-80 | Shop assistant | Persuade | A ready smile (Presence +10) | Never slept rough (Fieldcraft -15) |
-| 81-85 | Street kid from a big city | Brawl | Takes a punch (Endurance +10) | Known to the police (Persuade -15) |
-| 86-90 | Son of a good family | Command | Raised to command (Command +15) | Proud and touchy (Persuade -15) |
-| 91-95 | Scout or youth group leader | Fieldcraft | Reads a map (Fieldcraft +15) | Too eager (Stealth -15) |
-| 96-00 | Peacetime regular | Rifle | Knows the drill (Rifle +15) | Set in his ways (Wits -10) |
+| 01-04 | Farm boy | Fieldcraft | Strong back (Strength +10) | Never been far from home (Persuade -15) |
+| 05-08 | Factory worker | Craft | Used to long shifts (Endurance +10) | Half deaf from the presses (Watch -15) |
+| 09-12 | Office clerk | Letters | Good at sums (Wits +10) | Soft hands (Strength -10) |
+| 13-16 | Coal miner | Craft | At home underground (Endurance +10) | Coughs in the cold (Stealth -15) |
+| 17-20 | Hunter | Rifle | A steady aim (Rifle +15) | Hates drill (Presence -10) |
+| 21-24 | Garage mechanic | Drive | Can fix any engine (Craft +15) | Never walked far (Endurance -10) |
+| 25-28 | Truck driver | Drive | Knows every road (Drive +15) | Bad back (Agility -10) |
+| 29-32 | Schoolteacher | Letters | Well read (Letters +15) | Faints at the sight of blood (Nerve -10) |
+| 33-36 | Pharmacist's assistant | Leechcraft | Knows his remedies (Leechcraft +15) | Never stops talking (Stealth -15) |
+| 37-40 | College student | Letters | Speaks the enemy's language (Wits +10) | Never done a day's labour (Strength -10) |
+| 41-44 | Radio ham | Signals | Sends Morse in his sleep (Signals +15) | Short-sighted (Watch -15) |
+| 45-48 | Boxer | Brawl | Hard to frighten (Nerve +10) | Hot-tempered (Persuade -15) |
+| 49-52 | Athlete | Dodge | Fast on his feet (Agility +10) | Bad knee (Endurance -10) |
+| 53-56 | Lumberjack | Craft | Arms like hams (Strength +10) | Slow afoot (Agility -10) |
+| 57-60 | Fisherman | Craft | Weathered every storm (Endurance +10) | Never fired a gun (Rifle -15) |
+| 61-64 | Shop assistant | Persuade | A ready smile (Presence +10) | Never slept rough (Fieldcraft -15) |
+| 65-68 | Street kid from a big city | Brawl | Takes a punch (Endurance +10) | Known to the police (Persuade -15) |
+| 69-72 | Son of a good family | Command | Raised to command (Command +15) | Proud and touchy (Persuade -15) |
+| 73-76 | Scout or youth group leader | Fieldcraft | Reads a map (Fieldcraft +15) | Too eager (Stealth -15) |
+| 77-80 | Peacetime regular | Rifle | Knows the drill (Rifle +15) | Set in his ways (Wits -10) |
+| 81-84 | Farm girl | Fieldcraft | Strong back (Strength +10) | Never been far from home (Persuade -15) |
+| 85-88 | Daughter of a good family | Command | Raised to command (Command +15) | Proud and touchy (Persuade -15) |
+| 89-92 | Trained at a shooting club | Rifle | A marksman's badge before the war (Rifle +15) | Never slept rough (Fieldcraft -15) |
+| 93-96 | Telephone operator | Signals | Works any switchboard (Signals +15) | Short-sighted (Watch -15) |
 
 | Career | Main skill | Second | Old wound | Hurt by |
 |---|---|---|---|---|
@@ -5564,6 +5577,492 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 | A tank crew | Corporal or sergeant (3), Tank crewman (2), Tank crewman (2), Tank crewman (1), Radio operator or signaller (1) |  (default) |
 | An assault engineer team | Corporal or sergeant (3), Combat engineer or sapper (2), Combat engineer or sapper (2), Grenadier or anti-tank man (1), Rifleman (1) | 6 combat engineer or sapper (default) |
 | Replacements fresh from training | Junior officer (1), Corporal or sergeant (2), Rifleman (1), Rifleman (1), Medic or stretcher-bearer (1) | 20 rifleman (raw) |
+
+### Korean War (1950-1953)
+
+**Korean War (1950-1953):** made exactly as the medieval era's, in the same five steps, from the tables below. Fighting skills: Rifle, SMG and pistol, Machine gun, Grenade, Gunnery, Bayonet, Close combat, Brawl, Parry, Dodge. Each region takes its war's wound table, for old wounds and for the roller.
+
+**Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
+
+| Skill | Starts at | Weapons |
+|---|---|---|
+| Rifle | Agility / 2 | rifle |
+| SMG and pistol | Agility / 2 | pistol/smg |
+| Machine gun | Wits / 2 | mg |
+| Grenade | Strength / 2 | grenade |
+| Gunnery | Wits / 2 | mortar, frags, bazooka, recoilless |
+| Bayonet | Strength / 2 | bayonet |
+| Close combat | Strength / 2 | spade, dagger |
+| Brawl | Strength / 2 | punch, kick, elbow/knee |
+| Parry | Agility / 2 |  |
+| Dodge | Agility / 3 |  |
+| Fieldcraft | Wits / 3 |  |
+| Watch | Wits / 2 |  |
+| Stealth | Agility / 3 |  |
+| Leechcraft | Wits / 4 |  |
+| Craft | Wits / 3 |  |
+| Signals | Wits / 3 |  |
+| Drive | Agility / 3 |  |
+| Letters | Wits / 5 |  |
+| Persuade | Presence / 2 |  |
+| Command | Presence / 3 |  |
+
+| d100 | Origin | Skill | Trait | Drawback |
+|---|---|---|---|---|
+| 01-05 | Farmer's son | Fieldcraft | Strong back (Strength +10) | Never been far from home (Persuade -15) |
+| 06-10 | Factory hand | Craft | Used to long shifts (Endurance +10) | Half deaf from the machines (Watch -15) |
+| 11-15 | Recalled reservist | Rifle | Fought in the last war (Nerve +10) | Bitter at being called back (Presence -10) |
+| 16-20 | Office clerk | Letters | Good with figures (Wits +10) | Soft hands (Strength -10) |
+| 21-25 | Miner | Craft | At home underground (Endurance +10) | Coughs in the cold (Stealth -15) |
+| 26-30 | Hunter | Rifle | A steady aim (Rifle +15) | Hates drill (Presence -10) |
+| 31-35 | Mechanic | Drive | Can fix any engine (Craft +15) | Never walked far (Endurance -10) |
+| 36-40 | Student | Letters | Quick to learn (Wits +10) | Never done a day's labour (Strength -10) |
+| 41-45 | Hospital orderly | Leechcraft | Steady at the sight of blood (Leechcraft +15) | Never stops talking (Stealth -15) |
+| 46-50 | Boxer | Brawl | Hard to frighten (Nerve +10) | Hot-tempered (Persuade -15) |
+| 51-55 | Athlete | Dodge | Fast on his feet (Agility +10) | Bad knee (Endurance -10) |
+| 56-60 | Hill villager | Fieldcraft | Climbs all day (Endurance +10) | Never learned to read (Letters -15) |
+| 61-65 | Fisherman | Craft | Weathered every storm (Endurance +10) | Never fired a gun (Rifle -15) |
+| 66-70 | Market trader | Persuade | A ready smile (Presence +10) | Never slept rough (Fieldcraft -15) |
+| 71-75 | Street kid from a big city | Brawl | Takes a punch (Endurance +10) | Known to the police (Persuade -15) |
+| 76-80 | From an army family | Command | Raised to command (Command +15) | Proud and touchy (Persuade -15) |
+| 81-85 | Fought as a guerrilla | Stealth | Moves at night (Stealth +15) | Distrusts officers (Presence -10) |
+| 86-90 | Peacetime regular | Rifle | Knows the drill (Rifle +15) | Set in his ways (Wits -10) |
+| 91-95 | Truck driver | Drive | Knows every road (Drive +15) | Bad back (Agility -10) |
+| 96-00 | Radio repairman | Signals | Mends any set (Signals +15) | Short-sighted (Watch -15) |
+
+| Career | Main skill | Second | Old wound | Hurt by |
+|---|---|---|---|---|
+| Rifleman | Rifle | Grenade | 25% | rifle |
+| Machine gunner or BAR man | Machine gun | Craft | 25% | rifle |
+| Rocket or recoilless gunner | Gunnery | Grenade | 30% | frags |
+| Mortarman | Gunnery | Fieldcraft | 20% | frags |
+| Sniper or scout | Rifle | Stealth | 15% | rifle |
+| Combat engineer | Craft | Grenade | 25% | mine/ied |
+| Aidman, corpsman or medic | Leechcraft | Fieldcraft | 20% | frags |
+| Radio operator or wireman | Signals | Fieldcraft | 20% | frags |
+| Squad leader or sergeant | Command | Rifle | 25% | rifle |
+| Platoon leader | Command | SMG and pistol | 30% | rifle |
+| Tank crewman | Gunnery | Drive | 20% | frags |
+
+| Career | d100 | Skill | Event |
+|---|---|---|---|
+| Rifleman | 01-20 | Watch | Stood watch in a frozen foxhole through a long night. |
+| Rifleman | 21-40 | Fieldcraft | Climbed ridge after ridge with a full pack. |
+| Rifleman | 41-55 | Dodge | Lay flat while mortar rounds walked across the slope. |
+| Rifleman | 56-70 | Stealth | Went out on a night patrol into the valley. |
+| Rifleman | 71-85 | Grenade | Fought off a night attack with grenades. * |
+| Rifleman | 86-00 | Rifle | Held a hilltop through a night of attacks. * |
+| Machine gunner or BAR man | 01-20 | Craft | Kept the gun firing in the bitter cold. |
+| Machine gunner or BAR man | 21-40 | Fieldcraft | Carried the gun and its ammunition up a steep ridge. |
+| Machine gunner or BAR man | 41-55 | Watch | Laid the gun on a fixed line across a draw at dusk. |
+| Machine gunner or BAR man | 56-70 | Dodge | Moved the gun before the enemy's mortars found it. * |
+| Machine gunner or BAR man | 71-85 | Stealth | Sited the gun to sweep the saddle between two hills. |
+| Machine gunner or BAR man | 86-00 | Machine gun | Fired until the barrel glowed to break up an attack. * |
+| Rocket or recoilless gunner | 01-20 | Craft | Learned to load and aim the rocket launcher. |
+| Rocket or recoilless gunner | 21-40 | Stealth | Stalked a tank along a paddy dike. |
+| Rocket or recoilless gunner | 41-55 | Fieldcraft | Hauled the rounds up to the line on his back. |
+| Rocket or recoilless gunner | 56-70 | Dodge | Was caught in the open by a tank's machine gun. * |
+| Rocket or recoilless gunner | 71-85 | Gunnery | Knocked out a tank or a bunker at close range. * |
+| Rocket or recoilless gunner | 86-00 | Grenade | Held off infantry closing on the team. |
+| Mortarman | 01-20 | Letters | Learned to work out the firing data by hand. |
+| Mortarman | 21-40 | Craft | Dug the mortar pit into frozen ground. |
+| Mortarman | 41-55 | Fieldcraft | Carried the baseplate up a mountain trail. |
+| Mortarman | 56-70 | Signals | Took fire orders over the field telephone. |
+| Mortarman | 71-85 | Dodge | Was caught by counter-battery fire. * |
+| Mortarman | 86-00 | Gunnery | Dropped rounds on an attack forming in a valley. |
+| Sniper or scout | 01-20 | Watch | Watched the enemy's hill through field glasses for a day. |
+| Sniper or scout | 21-40 | Fieldcraft | Scouted a way through the hills for the company. |
+| Sniper or scout | 41-55 | Stealth | Lay in a hide in no man's land until dark. |
+| Sniper or scout | 56-70 | Letters | Sketched the enemy's trenches for the intelligence officer. |
+| Sniper or scout | 71-85 | Craft | Kept a scoped rifle zeroed through a Korean winter. |
+| Sniper or scout | 86-00 | Rifle | Duelled with an enemy sniper across a valley. * |
+| Combat engineer | 01-20 | Craft | Cut a road up a hillside. |
+| Combat engineer | 21-40 | Watch | Swept a track for mines by hand. * |
+| Combat engineer | 41-55 | Drive | Drove a bulldozer under fire. |
+| Combat engineer | 56-70 | Letters | Laid a minefield in front of the outpost line. |
+| Combat engineer | 71-85 | Grenade | Blew a bridge as the enemy came on. * |
+| Combat engineer | 86-00 | Fieldcraft | Strung wire in front of a hill at night. |
+| Aidman, corpsman or medic | 01-20 | Craft | Worked at a battalion aid station. |
+| Aidman, corpsman or medic | 21-40 | Leechcraft | Kept the morphine from freezing inside his clothes. |
+| Aidman, corpsman or medic | 41-55 | Drive | Loaded litters onto an evacuation helicopter. |
+| Aidman, corpsman or medic | 56-70 | Persuade | Talked a shocked man back to his senses. |
+| Aidman, corpsman or medic | 71-85 | Dodge | Ran out to a wounded man under fire. * |
+| Aidman, corpsman or medic | 86-00 | Leechcraft | Kept men alive through a night of shelling. * |
+| Radio operator or wireman | 01-20 | Letters | Learned the codes and the call signs. |
+| Radio operator or wireman | 21-40 | Craft | Kept the radio's batteries warm enough to work. |
+| Radio operator or wireman | 41-55 | Fieldcraft | Laid telephone wire up to an outpost. |
+| Radio operator or wireman | 56-70 | Watch | Spliced a cut line in the dark. |
+| Radio operator or wireman | 71-85 | Dodge | Was spotted by his aerial and shelled. * |
+| Radio operator or wireman | 86-00 | Signals | Called in the artillery as an outpost was overrun. |
+| Squad leader or sergeant | 01-20 | Letters | Kept the squad's roll and its ammunition count. |
+| Squad leader or sergeant | 21-40 | Persuade | Kept a frightened man in his hole. |
+| Squad leader or sergeant | 41-55 | Rifle | Trained replacements behind the line. |
+| Squad leader or sergeant | 56-70 | Watch | Set the night's listening posts. |
+| Squad leader or sergeant | 71-85 | Grenade | Led the squad into an enemy trench. * |
+| Squad leader or sergeant | 86-00 | Command | Took over the platoon when its officer fell. * |
+| Platoon leader | 01-20 | Letters | Read the maps and wrote the orders. |
+| Platoon leader | 21-40 | Signals | Called down fire on the radio. |
+| Platoon leader | 41-55 | Stealth | Led a raid on an enemy outpost. * |
+| Platoon leader | 56-70 | Persuade | Wrote to the families of the dead. |
+| Platoon leader | 71-85 | SMG and pistol | Led a counter-attack up a lost hill. * |
+| Platoon leader | 86-00 | Command | Held the company together in a winter retreat. * |
+| Tank crewman | 01-20 | Craft | Kept the engine running through a Korean winter. |
+| Tank crewman | 21-40 | Drive | Drove along a narrow valley road under fire. |
+| Tank crewman | 41-55 | Signals | Worked the tank's radio with the infantry. |
+| Tank crewman | 56-70 | Watch | Watched for anti-tank teams from the turret. |
+| Tank crewman | 71-85 | Dodge | Bailed out of a burning tank. * |
+| Tank crewman | 86-00 | Gunnery | Fired the main gun for an attack on a hill. |
+
+| Career | US 1950-51 | US 1952-53 | Commonwealth | ROK | Chinese | North Korea |
+|---|---|---|---|---|---|---|
+| Rifleman | Steel helmet only; rifle | M1 helmet, nylon flak vest; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Unarmoured; rifle | Unarmoured; rifle |
+| Machine gunner or BAR man | Steel helmet only; mg | M1 helmet, nylon flak vest; mg | Steel helmet only; mg | Steel helmet only; mg | Unarmoured; mg | Unarmoured; mg |
+| Rocket or recoilless gunner | Steel helmet only; bazooka | M1 helmet, nylon flak vest; bazooka | Steel helmet only; bazooka | Steel helmet only; bazooka | Unarmoured; rifle | Unarmoured; rifle |
+| Mortarman | Steel helmet only; rifle | M1 helmet, nylon flak vest; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Unarmoured; rifle | Unarmoured; rifle |
+| Sniper or scout | Steel helmet only; rifle | M1 helmet, nylon flak vest; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Unarmoured; rifle | Unarmoured; rifle |
+| Combat engineer | Steel helmet only; rifle | M1 helmet, nylon flak vest; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Unarmoured; rifle | Unarmoured; rifle |
+| Aidman, corpsman or medic | Steel helmet only; pistol/smg | M1 helmet, nylon flak vest; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Unarmoured; pistol/smg | Unarmoured; pistol/smg |
+| Radio operator or wireman | Steel helmet only; rifle | M1 helmet, nylon flak vest; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Unarmoured; rifle | Unarmoured; rifle |
+| Squad leader or sergeant | Steel helmet only; rifle | M1 helmet, nylon flak vest; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Unarmoured; pistol/smg | Unarmoured; pistol/smg |
+| Platoon leader | Steel helmet only; pistol/smg | M1 helmet, nylon flak vest; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Unarmoured; pistol/smg | Unarmoured; pistol/smg |
+| Tank crewman | Steel helmet only; pistol/smg | M1 helmet, nylon flak vest; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Unarmoured; pistol/smg | Unarmoured; pistol/smg |
+
+| Team | Members (terms) | Followers (quality table) |
+|---|---|---|
+| A rifle squad | Squad leader or sergeant (3), Rifleman (2), Machine gunner or BAR man (2), Rifleman (1), Aidman, corpsman or medic (1) | 6 rifleman (default) |
+| An outpost on the line | Squad leader or sergeant (3), Machine gunner or BAR man (2), Rifleman (2), Radio operator or wireman (1), Aidman, corpsman or medic (1) | 10 rifleman, 2 machine gunner or bar man (default) |
+| A night patrol | Platoon leader (3), Squad leader or sergeant (2), Sniper or scout (2), Radio operator or wireman (1), Rifleman (1) | 8 rifleman (hardened) |
+| A rocket and recoilless team | Squad leader or sergeant (3), Rocket or recoilless gunner (2), Rocket or recoilless gunner (1), Rifleman (1) | 2 rocket or recoilless gunner, 2 rifleman (default) |
+| A mortar section | Squad leader or sergeant (3), Mortarman (2), Mortarman (2), Radio operator or wireman (1) | 6 mortarman (default) |
+| A tank crew | Squad leader or sergeant (3), Tank crewman (2), Tank crewman (2), Tank crewman (1), Radio operator or wireman (1) |  (default) |
+| An engineer squad | Squad leader or sergeant (3), Combat engineer (2), Combat engineer (2), Rifleman (1) | 6 combat engineer (default) |
+| Replacements fresh from training | Platoon leader (1), Squad leader or sergeant (2), Rifleman (1), Rifleman (1), Aidman, corpsman or medic (1) | 20 rifleman (raw) |
+
+### Vietnam War (1965-1973)
+
+**Vietnam War (1965-1973):** made exactly as the medieval era's, in the same five steps, from the tables below. Fighting skills: Rifle, SMG and pistol, Machine gun, Grenade and rocket, Gunnery, Bayonet, Close combat, Brawl, Parry, Dodge. Each region takes its war's wound table, for old wounds and for the roller.
+
+**Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
+
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: Army of the Republic of Vietnam (no reliable share: chosen, never rolled): medic or corpsman; People's Army of Vietnam (North Vietnamese) (no reliable share: chosen, never rolled): rifleman, point man, scout or sniper, combat engineer or sapper, medic or corpsman; National Liberation Front (Viet Cong) (no reliable share: chosen, never rolled): rifleman, point man, scout or sniper, combat engineer or sapper, medic or corpsman, radio operator, squad leader or sergeant, platoon leader. Elsewhere these careers were closed to them.
+
+| Skill | Starts at | Weapons |
+|---|---|---|
+| Rifle | Agility / 2 | assault rifle |
+| SMG and pistol | Agility / 2 | pistol/smg |
+| Machine gun | Wits / 2 | mg |
+| Grenade and rocket | Strength / 2 | grenade, rpg |
+| Gunnery | Wits / 2 | mortar, frags, recoilless |
+| Bayonet | Strength / 2 | bayonet |
+| Close combat | Strength / 2 | spade, dagger |
+| Brawl | Strength / 2 | punch, kick, elbow/knee |
+| Parry | Agility / 2 |  |
+| Dodge | Agility / 3 |  |
+| Fieldcraft | Wits / 3 |  |
+| Watch | Wits / 2 |  |
+| Stealth | Agility / 3 |  |
+| Leechcraft | Wits / 4 |  |
+| Craft | Wits / 3 |  |
+| Signals | Wits / 3 |  |
+| Drive | Agility / 3 |  |
+| Letters | Wits / 5 |  |
+| Persuade | Presence / 2 |  |
+| Command | Presence / 3 |  |
+
+| d100 | Origin | Skill | Trait | Drawback |
+|---|---|---|---|---|
+| 01-04 | Draftee from a factory town | Craft | Used to long shifts (Endurance +10) | Half deaf from the machines (Watch -15) |
+| 05-08 | College dropout | Letters | Quick to learn (Wits +10) | Never done a day's labour (Strength -10) |
+| 09-12 | Hunter | Rifle | A steady aim (Rifle +15) | Hates drill (Presence -10) |
+| 13-16 | Mechanic | Drive | Can fix any engine (Craft +15) | Never walked far (Endurance -10) |
+| 17-20 | Rice farmer | Fieldcraft | Works all day in the heat (Endurance +10) | Never learned to read (Letters -15) |
+| 21-24 | From a fishing village | Craft | Weathered every storm (Endurance +10) | Never fired a gun (Rifle -15) |
+| 25-28 | Hospital orderly | Leechcraft | Steady at the sight of blood (Leechcraft +15) | Never stops talking (Stealth -15) |
+| 29-32 | Athlete | Dodge | Fast on his feet (Agility +10) | Bad knee (Endurance -10) |
+| 33-36 | Street kid from a big city | Brawl | Takes a punch (Endurance +10) | Known to the police (Persuade -15) |
+| 37-40 | From an army family | Command | Raised to command (Command +15) | Proud and touchy (Persuade -15) |
+| 41-44 | Grew up in a war | Stealth | Moves at night (Stealth +15) | Trusts no one (Presence -10) |
+| 45-48 | Volunteer | Rifle | Eager to fight (Nerve +10) | Too eager (Stealth -15) |
+| 49-52 | Truck driver | Drive | Knows every road (Drive +15) | Bad back (Agility -10) |
+| 53-56 | Radio buff | Signals | Mends any set (Signals +15) | Short-sighted (Watch -15) |
+| 57-60 | Schoolteacher | Letters | Well read (Letters +15) | Faints at the sight of blood (Nerve -10) |
+| 61-64 | Market trader | Persuade | A ready smile (Presence +10) | Never slept rough (Fieldcraft -15) |
+| 65-68 | Mountain villager | Fieldcraft | Climbs all day (Endurance +10) | Speaks little of the lowland tongue (Persuade -15) |
+| 69-72 | Construction worker | Craft | Strong arms (Strength +10) | Slow afoot (Agility -10) |
+| 73-76 | Boxer | Brawl | Hard to frighten (Nerve +10) | Hot-tempered (Persuade -15) |
+| 77-80 | Peacetime regular | Rifle | Knows the drill (Rifle +15) | Set in his ways (Wits -10) |
+| 81-84 | Youth volunteer on the supply trails | Fieldcraft | Carried loads through the mountains (Endurance +10) | Shaken by the bombing (Nerve -10) |
+| 85-88 | Village militia | Rifle | Drilled with the village militia (Rifle +15) | Never left her province (Persuade -15) |
+
+| Career | Main skill | Second | Old wound | Hurt by |
+|---|---|---|---|---|
+| Rifleman | Rifle | Grenade and rocket | 25% | assault rifle |
+| Machine gunner | Machine gun | Craft | 25% | assault rifle |
+| Grenadier or RPG gunner | Grenade and rocket | Rifle | 30% | frags |
+| Point man, scout or sniper | Rifle | Stealth | 20% | assault rifle |
+| Combat engineer or sapper | Craft | Grenade and rocket | 25% | mine/ied |
+| Tunnel rat or tunnel fighter | Stealth | SMG and pistol | 25% | mine/ied |
+| Mortarman | Gunnery | Fieldcraft | 20% | frags |
+| Medic or corpsman | Leechcraft | Fieldcraft | 20% | frags |
+| Radio operator | Signals | Fieldcraft | 20% | frags |
+| Squad leader or sergeant | Command | Rifle | 25% | assault rifle |
+| Platoon leader | Command | Rifle | 30% | assault rifle |
+
+| Career | d100 | Skill | Event |
+|---|---|---|---|
+| Rifleman | 01-20 | Watch | Lay in an ambush by a trail through the night. |
+| Rifleman | 21-40 | Fieldcraft | Carried a heavy pack through the jungle for days. |
+| Rifleman | 41-55 | Dodge | Lay flat in a paddy as fire swept the dike. |
+| Rifleman | 56-70 | Stealth | Crossed a river by night. |
+| Rifleman | 71-85 | Grenade and rocket | Fought through a bunker line in the jungle. * |
+| Rifleman | 86-00 | Rifle | Held the perimeter through a night attack. * |
+| Machine gunner | 01-20 | Craft | Kept the gun clean through mud and rain. |
+| Machine gunner | 21-40 | Fieldcraft | Carried the gun and its belts through elephant grass. |
+| Machine gunner | 41-55 | Watch | Laid the gun on a trail for a night ambush. |
+| Machine gunner | 56-70 | Dodge | Moved the gun before the enemy's mortars found it. * |
+| Machine gunner | 71-85 | Stealth | Sited the gun to cover a landing zone. |
+| Machine gunner | 86-00 | Machine gun | Broke up an assault on the perimeter. * |
+| Grenadier or RPG gunner | 01-20 | Craft | Learned the grenade launcher or the rocket launcher. |
+| Grenadier or RPG gunner | 21-40 | Stealth | Crept close to a bunker's firing slit. |
+| Grenadier or RPG gunner | 41-55 | Fieldcraft | Carried the rounds through the hills. |
+| Grenadier or RPG gunner | 56-70 | Dodge | Was caught by a machine gun crossing a clearing. * |
+| Grenadier or RPG gunner | 71-85 | Grenade and rocket | Knocked out a bunker or a vehicle. * |
+| Grenadier or RPG gunner | 86-00 | Close combat | Fought hand to hand in a trench line. |
+| Point man, scout or sniper | 01-20 | Watch | Read the signs of an ambush on a trail. |
+| Point man, scout or sniper | 21-40 | Fieldcraft | Walked point through the jungle. |
+| Point man, scout or sniper | 41-55 | Stealth | Lay hidden while an enemy column passed. |
+| Point man, scout or sniper | 56-70 | Letters | Reported the enemy's trails and camps. |
+| Point man, scout or sniper | 71-85 | Craft | Kept a scoped rifle zeroed in the wet. |
+| Point man, scout or sniper | 86-00 | Rifle | Duelled with an enemy sniper in the trees. * |
+| Combat engineer or sapper | 01-20 | Craft | Built a fire base on a hilltop. |
+| Combat engineer or sapper | 21-40 | Watch | Found a tripwire on a trail. * |
+| Combat engineer or sapper | 41-55 | Stealth | Cut a way through the wire at night. |
+| Combat engineer or sapper | 56-70 | Letters | Laid mines and booby traps to a plan. |
+| Combat engineer or sapper | 71-85 | Grenade and rocket | Blew up a bunker with a satchel charge. * |
+| Combat engineer or sapper | 86-00 | Fieldcraft | Cleared booby traps from a village. |
+| Tunnel rat or tunnel fighter | 01-20 | Craft | Dug and shored a tunnel by hand. |
+| Tunnel rat or tunnel fighter | 21-40 | Watch | Listened in the dark for a sound ahead. |
+| Tunnel rat or tunnel fighter | 41-55 | Fieldcraft | Mapped a tunnel system by touch. |
+| Tunnel rat or tunnel fighter | 56-70 | Dodge | Set off a booby trap underground. * |
+| Tunnel rat or tunnel fighter | 71-85 | SMG and pistol | Fought in a tunnel by torchlight. * |
+| Tunnel rat or tunnel fighter | 86-00 | Stealth | Lived for weeks in the tunnels. |
+| Mortarman | 01-20 | Letters | Worked out the firing data by hand. |
+| Mortarman | 21-40 | Craft | Dug the mortar pit on a hilltop. |
+| Mortarman | 41-55 | Fieldcraft | Carried the tube and baseplate through the hills. |
+| Mortarman | 56-70 | Signals | Took fire orders over the radio. |
+| Mortarman | 71-85 | Dodge | Was caught by counter-mortar fire. * |
+| Mortarman | 86-00 | Gunnery | Fired flares and high explosive all night for the perimeter. |
+| Medic or corpsman | 01-20 | Craft | Worked at an aid station. |
+| Medic or corpsman | 21-40 | Leechcraft | Fought infection in a wound from a punji stake. |
+| Medic or corpsman | 41-55 | Signals | Called in a medical evacuation helicopter under fire. |
+| Medic or corpsman | 56-70 | Persuade | Talked a shocked man back to his senses. |
+| Medic or corpsman | 71-85 | Dodge | Ran out to a wounded man under fire. * |
+| Medic or corpsman | 86-00 | Leechcraft | Kept men alive through a night attack. * |
+| Radio operator | 01-20 | Letters | Learned the codes and the call signs. |
+| Radio operator | 21-40 | Craft | Kept the radio dry through the monsoon. |
+| Radio operator | 41-55 | Fieldcraft | Carried the radio's weight on a long patrol. |
+| Radio operator | 56-70 | Watch | Listened in on the enemy's radio net. |
+| Radio operator | 71-85 | Dodge | Was singled out by his aerial. * |
+| Radio operator | 86-00 | Signals | Called in artillery and air strikes in a close fight. |
+| Squad leader or sergeant | 01-20 | Letters | Kept the squad's roll and its ammunition count. |
+| Squad leader or sergeant | 21-40 | Persuade | Kept a frightened man in his hole. |
+| Squad leader or sergeant | 41-55 | Rifle | Trained new men in the field. |
+| Squad leader or sergeant | 56-70 | Watch | Set the night's ambush positions. |
+| Squad leader or sergeant | 71-85 | Grenade and rocket | Led the squad into a bunker line. * |
+| Squad leader or sergeant | 86-00 | Command | Took over the platoon when its leader fell. * |
+| Platoon leader | 01-20 | Letters | Read the maps and wrote the orders. |
+| Platoon leader | 21-40 | Signals | Called down fire on the radio. |
+| Platoon leader | 41-55 | Stealth | Led a night ambush. * |
+| Platoon leader | 56-70 | Persuade | Wrote to the families of the dead. |
+| Platoon leader | 71-85 | Rifle | Led an assault on a fortified village. * |
+| Platoon leader | 86-00 | Command | Held the company together when it was surrounded. * |
+
+| Career | US Army | US Marines | ANZAC | ARVN | North Vietnam | Viet Cong |
+|---|---|---|---|---|---|---|
+| Rifleman | M1 helmet, nylon flak vest; assault rifle | M1 helmet, Doron vest; assault rifle | Unarmoured; assault rifle | Steel helmet only; assault rifle | Unarmoured; assault rifle | Unarmoured; assault rifle |
+| Machine gunner | M1 helmet, nylon flak vest; mg | M1 helmet, Doron vest; mg | Unarmoured; mg | Steel helmet only; mg | Unarmoured; mg | Unarmoured; mg |
+| Grenadier or RPG gunner | M1 helmet, nylon flak vest; assault rifle | M1 helmet, Doron vest; assault rifle | Unarmoured; assault rifle | Steel helmet only; assault rifle | Unarmoured; rpg | Unarmoured; rpg |
+| Point man, scout or sniper | M1 helmet, nylon flak vest; assault rifle | M1 helmet, Doron vest; assault rifle | Unarmoured; assault rifle | Steel helmet only; assault rifle | Unarmoured; assault rifle | Unarmoured; assault rifle |
+| Combat engineer or sapper | M1 helmet, nylon flak vest; assault rifle | M1 helmet, Doron vest; assault rifle | Unarmoured; assault rifle | Steel helmet only; assault rifle | Unarmoured; assault rifle | Unarmoured; assault rifle |
+| Tunnel rat or tunnel fighter | Unarmoured; pistol/smg | Unarmoured; pistol/smg | Unarmoured; pistol/smg | Unarmoured; pistol/smg | Unarmoured; pistol/smg | Unarmoured; pistol/smg |
+| Mortarman | M1 helmet, nylon flak vest; assault rifle | M1 helmet, Doron vest; assault rifle | Unarmoured; assault rifle | Steel helmet only; assault rifle | Unarmoured; assault rifle | Unarmoured; assault rifle |
+| Medic or corpsman | M1 helmet, nylon flak vest; assault rifle | M1 helmet, Doron vest; assault rifle | Unarmoured; assault rifle | Steel helmet only; assault rifle | Unarmoured; assault rifle | Unarmoured; assault rifle |
+| Radio operator | M1 helmet, nylon flak vest; assault rifle | M1 helmet, Doron vest; assault rifle | Unarmoured; assault rifle | Steel helmet only; assault rifle | Unarmoured; assault rifle | Unarmoured; assault rifle |
+| Squad leader or sergeant | M1 helmet, nylon flak vest; assault rifle | M1 helmet, Doron vest; assault rifle | Unarmoured; assault rifle | Steel helmet only; assault rifle | Unarmoured; assault rifle | Unarmoured; assault rifle |
+| Platoon leader | M1 helmet, nylon flak vest; assault rifle | M1 helmet, Doron vest; assault rifle | Unarmoured; assault rifle | Steel helmet only; assault rifle | Unarmoured; assault rifle | Unarmoured; assault rifle |
+
+| Team | Members (terms) | Followers (quality table) |
+|---|---|---|
+| A rifle squad | Squad leader or sergeant (3), Rifleman (2), Machine gunner (2), Grenadier or RPG gunner (1), Medic or corpsman (1) | 5 rifleman (default) |
+| A night ambush patrol | Platoon leader (3), Squad leader or sergeant (2), Point man, scout or sniper (2), Radio operator (1), Machine gunner (1) | 8 rifleman (hardened) |
+| A long-range reconnaissance team | Squad leader or sergeant (3), Point man, scout or sniper (2), Point man, scout or sniper (2), Radio operator (1), Medic or corpsman (1) |  (hardened) |
+| A sapper team | Squad leader or sergeant (3), Combat engineer or sapper (2), Combat engineer or sapper (2), Grenadier or RPG gunner (1) | 6 combat engineer or sapper (hardened) |
+| A tunnel team | Squad leader or sergeant (3), Tunnel rat or tunnel fighter (2), Tunnel rat or tunnel fighter (2), Tunnel rat or tunnel fighter (1) | 4 rifleman (default) |
+| A mortar section | Squad leader or sergeant (3), Mortarman (2), Mortarman (2), Radio operator (1) | 6 mortarman (default) |
+| Replacements fresh from training | Platoon leader (1), Squad leader or sergeant (2), Rifleman (1), Rifleman (1), Medic or corpsman (1) | 20 rifleman (raw) |
+
+### The Falklands to Afghanistan (1982-2014)
+
+**The Falklands to Afghanistan (1982-2014):** made exactly as the medieval era's, in the same five steps, from the tables below. Fighting skills: Rifle, Pistol, Machine gun, Grenade and rocket, Gunnery, Bayonet, Close combat, Brawl, Parry, Dodge. Each region takes its war's wound table, for old wounds and for the roller.
+
+**Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
+
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: US forces in the Gulf, 1991 (7%): combat medic or corpsman, signaller or radio operator, military police or convoy gunner; Russian forces in Chechnya, 1994-96 (10%): combat medic or corpsman; US forces in Iraq and Afghanistan, 2003-14 (11.4%): combat medic or corpsman, signaller or radio operator, military police or convoy gunner, team or section leader, platoon leader; British forces in Iraq and Afghanistan, 2003-14 (8.3%): combat medic or corpsman, signaller or radio operator, military police or convoy gunner, team or section leader, platoon leader. Elsewhere these careers were closed to them.
+
+| Skill | Starts at | Weapons |
+|---|---|---|
+| Rifle | Agility / 2 | assault rifle, ap rifle |
+| Pistol | Agility / 2 | pistol/smg |
+| Machine gun | Wits / 2 | mg |
+| Grenade and rocket | Strength / 2 | grenade, rpg |
+| Gunnery | Wits / 2 | atgm, mortar, frags |
+| Bayonet | Strength / 2 | bayonet |
+| Close combat | Strength / 2 | dagger |
+| Brawl | Strength / 2 | punch, kick, elbow/knee |
+| Parry | Agility / 2 |  |
+| Dodge | Agility / 3 |  |
+| Fieldcraft | Wits / 3 |  |
+| Watch | Wits / 2 |  |
+| Stealth | Agility / 3 |  |
+| Leechcraft | Wits / 4 |  |
+| Craft | Wits / 3 |  |
+| Signals | Wits / 3 |  |
+| Drive | Agility / 3 |  |
+| Letters | Wits / 5 |  |
+| Persuade | Presence / 2 |  |
+| Command | Presence / 3 |  |
+
+| d100 | Origin | Skill | Trait | Drawback |
+|---|---|---|---|---|
+| 01-04 | Small-town kid | Fieldcraft | Strong back (Strength +10) | Never been far from home (Persuade -15) |
+| 05-08 | Factory worker | Craft | Used to long shifts (Endurance +10) | Half deaf from the machines (Watch -15) |
+| 09-12 | College student | Letters | Quick to learn (Wits +10) | Never done a day's labour (Strength -10) |
+| 13-16 | Hunter | Rifle | A steady aim (Rifle +15) | Hates drill (Presence -10) |
+| 17-20 | Mechanic | Drive | Can fix any engine (Craft +15) | Never walked far (Endurance -10) |
+| 21-24 | Paramedic or nursing student | Leechcraft | Steady at the sight of blood (Leechcraft +15) | Never stops talking (Stealth -15) |
+| 25-28 | Athlete | Dodge | Fast on his feet (Agility +10) | Bad knee (Endurance -10) |
+| 29-32 | Street kid from a big city | Brawl | Takes a punch (Endurance +10) | Known to the police (Persuade -15) |
+| 33-36 | From a military family | Command | Raised to command (Command +15) | Proud and touchy (Persuade -15) |
+| 37-40 | Grew up in a war | Stealth | Moves at night (Stealth +15) | Trusts no one (Presence -10) |
+| 41-44 | Truck driver | Drive | Knows every road (Drive +15) | Bad back (Agility -10) |
+| 45-48 | Electronics hobbyist | Signals | Fixes any radio (Signals +15) | Short-sighted (Watch -15) |
+| 49-52 | Shepherd from the hills | Fieldcraft | Climbs all day (Endurance +10) | Never learned to read (Letters -15) |
+| 53-56 | Shop worker | Persuade | A ready smile (Presence +10) | Never slept rough (Fieldcraft -15) |
+| 57-60 | Builder | Craft | Strong arms (Strength +10) | Slow afoot (Agility -10) |
+| 61-64 | Reservist | Rifle | Has done it before (Nerve +10) | Worries about home (Wits -10) |
+| 65-68 | Police officer | Watch | Reads a crowd (Watch +15) | Wedded to the rules (Stealth -15) |
+| 69-72 | Gym regular | Brawl | Lifts heavy (Strength +10) | Stiff joints (Agility -10) |
+| 73-76 | Boxer | Brawl | Hard to frighten (Nerve +10) | Hot-tempered (Persuade -15) |
+| 77-80 | Peacetime regular | Rifle | Knows the drill (Rifle +15) | Set in his ways (Wits -10) |
+| 81-84 | Fought for her place | Command | Hard to discourage (Nerve +10) | Tired of proving herself (Presence -10) |
+| 85-88 | Rugby player | Brawl | Takes a hit (Endurance +10) | An old shoulder injury (Strength -10) |
+
+| Career | Main skill | Second | Old wound | Hurt by |
+|---|---|---|---|---|
+| Rifleman | Rifle | Grenade and rocket | 25% | assault rifle |
+| Machine gunner | Machine gun | Craft | 25% | assault rifle |
+| Grenadier or anti-tank gunner | Grenade and rocket | Rifle | 30% | mortar |
+| Marksman or sniper | Rifle | Stealth | 15% | assault rifle |
+| Combat engineer or bomb searcher | Craft | Grenade and rocket | 25% | mine/ied |
+| Combat medic or corpsman | Leechcraft | Fieldcraft | 20% | mortar |
+| Signaller or radio operator | Signals | Fieldcraft | 20% | mortar |
+| Military police or convoy gunner | Machine gun | Drive | 25% | mine/ied |
+| Armoured vehicle crewman | Gunnery | Drive | 20% | rpg |
+| Team or section leader | Command | Rifle | 25% | assault rifle |
+| Platoon leader | Command | Rifle | 30% | assault rifle |
+
+| Career | d100 | Skill | Event |
+|---|---|---|---|
+| Rifleman | 01-20 | Watch | Stood sentry on a wall through a long night. |
+| Rifleman | 21-40 | Fieldcraft | Patrolled on foot through villages and fields. |
+| Rifleman | 41-55 | Dodge | Went to ground as a burst cracked overhead. |
+| Rifleman | 56-70 | Stealth | Moved into an overwatch position before dawn. |
+| Rifleman | 71-85 | Grenade and rocket | Cleared rooms in a street fight. * |
+| Rifleman | 86-00 | Rifle | Held a position through a long firefight. * |
+| Machine gunner | 01-20 | Craft | Kept the gun running in dust or mud. |
+| Machine gunner | 21-40 | Fieldcraft | Carried the gun and its belts on a long march. |
+| Machine gunner | 41-55 | Watch | Covered a road from a rooftop. |
+| Machine gunner | 56-70 | Dodge | Moved the gun as rounds found its position. * |
+| Machine gunner | 71-85 | Stealth | Sited the gun to cover the team's move. |
+| Machine gunner | 86-00 | Machine gun | Kept an enemy position down while the assault went in. * |
+| Grenadier or anti-tank gunner | 01-20 | Craft | Trained on the grenade launcher and the rocket launcher. |
+| Grenadier or anti-tank gunner | 21-40 | Stealth | Crept forward to a firing point. |
+| Grenadier or anti-tank gunner | 41-55 | Fieldcraft | Carried the rockets on a night march. |
+| Grenadier or anti-tank gunner | 56-70 | Dodge | Was caught in the open by return fire. * |
+| Grenadier or anti-tank gunner | 71-85 | Grenade and rocket | Knocked out a bunker or a vehicle. * |
+| Grenadier or anti-tank gunner | 86-00 | Close combat | Fought hand to hand in a trench or a room. |
+| Marksman or sniper | 01-20 | Watch | Watched a crossroads through a scope for a day. |
+| Marksman or sniper | 21-40 | Fieldcraft | Found a hide overlooking the enemy's route. |
+| Marksman or sniper | 41-55 | Stealth | Lay hidden until dark. |
+| Marksman or sniper | 56-70 | Letters | Logged every movement for the intelligence cell. |
+| Marksman or sniper | 71-85 | Craft | Kept the rifle zeroed through heat and cold. |
+| Marksman or sniper | 86-00 | Rifle | Made a long shot that broke up an ambush. * |
+| Combat engineer or bomb searcher | 01-20 | Craft | Built the defences around a patrol base. |
+| Combat engineer or bomb searcher | 21-40 | Watch | Searched a culvert for a hidden bomb. * |
+| Combat engineer or bomb searcher | 41-55 | Drive | Drove a bulldozer to raise a berm. |
+| Combat engineer or bomb searcher | 56-70 | Letters | Laid or mapped a minefield. |
+| Combat engineer or bomb searcher | 71-85 | Grenade and rocket | Breached a wall with an explosive charge. * |
+| Combat engineer or bomb searcher | 86-00 | Fieldcraft | Cleared a compound of booby traps. |
+| Combat medic or corpsman | 01-20 | Craft | Worked at an aid post. |
+| Combat medic or corpsman | 21-40 | Leechcraft | Put a tourniquet on a casualty in the first minutes. |
+| Combat medic or corpsman | 41-55 | Signals | Called in a casualty evacuation by helicopter. |
+| Combat medic or corpsman | 56-70 | Persuade | Talked a shocked soldier through the worst of it. |
+| Combat medic or corpsman | 71-85 | Dodge | Ran out to a casualty under fire. * |
+| Combat medic or corpsman | 86-00 | Leechcraft | Kept a badly wounded soldier alive until the helicopter came. * |
+| Signaller or radio operator | 01-20 | Letters | Learned the codes, frequencies and call signs. |
+| Signaller or radio operator | 21-40 | Craft | Kept the radio and its batteries working in the field. |
+| Signaller or radio operator | 41-55 | Fieldcraft | Carried the radio's weight on a long patrol. |
+| Signaller or radio operator | 56-70 | Watch | Listened to the enemy's chatter on a scanner. |
+| Signaller or radio operator | 71-85 | Dodge | Was singled out by his antenna. * |
+| Signaller or radio operator | 86-00 | Signals | Called in air support in a close fight. |
+| Military police or convoy gunner | 01-20 | Persuade | Ran a checkpoint on a busy road. |
+| Military police or convoy gunner | 21-40 | Drive | Drove in a supply convoy through hostile country. |
+| Military police or convoy gunner | 41-55 | Watch | Watched the roadside for signs of a bomb. |
+| Military police or convoy gunner | 56-70 | Dodge | Was in a vehicle struck by a roadside bomb. * |
+| Military police or convoy gunner | 71-85 | Craft | Kept the turret gun working on the road. |
+| Military police or convoy gunner | 86-00 | Machine gun | Fought off an ambush from a vehicle's turret. * |
+| Armoured vehicle crewman | 01-20 | Craft | Kept the vehicle running in the field. |
+| Armoured vehicle crewman | 21-40 | Drive | Drove through a town at night. |
+| Armoured vehicle crewman | 41-55 | Signals | Worked the vehicle's radio with the infantry. |
+| Armoured vehicle crewman | 56-70 | Watch | Watched for anti-tank teams from the hatch. |
+| Armoured vehicle crewman | 71-85 | Dodge | Bailed out of a burning vehicle. * |
+| Armoured vehicle crewman | 86-00 | Gunnery | Fired the main gun in support of an assault. |
+| Team or section leader | 01-20 | Letters | Kept the section's roll and its ammunition count. |
+| Team or section leader | 21-40 | Persuade | Kept a frightened soldier in cover. |
+| Team or section leader | 41-55 | Rifle | Trained new soldiers before a tour. |
+| Team or section leader | 56-70 | Watch | Set the sentries around a patrol base. |
+| Team or section leader | 71-85 | Grenade and rocket | Led the section into a building. * |
+| Team or section leader | 86-00 | Command | Took command when the platoon leader fell. * |
+| Platoon leader | 01-20 | Letters | Planned the patrol and wrote the orders. |
+| Platoon leader | 21-40 | Signals | Called in fire on the radio. |
+| Platoon leader | 41-55 | Stealth | Led a night raid on a compound. * |
+| Platoon leader | 56-70 | Persuade | Wrote to the families of the dead. |
+| Platoon leader | 71-85 | Rifle | Led an assault on a defended position. * |
+| Platoon leader | 86-00 | Command | Held the platoon together when it was cut off. * |
+
+| Career | UK 1982 | Argentina 1982 | US 1991 | US 1993 | Russia 1995 | Chechens | US 2003-14 | UK 2003-14 | Insurgents |
+|---|---|---|---|---|---|---|---|---|---|
+| Rifleman | Steel helmet only; assault rifle | Steel helmet only; assault rifle | PASGT vest and helmet; assault rifle | Ranger Body Armor; assault rifle | Steel helmet only; assault rifle | No armour; assault rifle | Interceptor vest; assault rifle | Interceptor vest; assault rifle | No armour; assault rifle |
+| Machine gunner | Steel helmet only; mg | Steel helmet only; mg | PASGT vest and helmet; mg | Ranger Body Armor; mg | Steel helmet only; mg | No armour; mg | Interceptor vest; mg | Interceptor vest; mg | No armour; mg |
+| Grenadier or anti-tank gunner | Steel helmet only; assault rifle | Steel helmet only; assault rifle | PASGT vest and helmet; assault rifle | Ranger Body Armor; assault rifle | Steel helmet only; assault rifle | No armour; rpg | Interceptor vest; assault rifle | Interceptor vest; assault rifle | No armour; rpg |
+| Marksman or sniper | Steel helmet only; assault rifle | Steel helmet only; assault rifle | PASGT vest and helmet; assault rifle | Ranger Body Armor; assault rifle | Steel helmet only; assault rifle | No armour; assault rifle | Interceptor vest; assault rifle | Interceptor vest; assault rifle | No armour; assault rifle |
+| Combat engineer or bomb searcher | Steel helmet only; assault rifle | Steel helmet only; assault rifle | PASGT vest and helmet; assault rifle | Ranger Body Armor; assault rifle | Steel helmet only; assault rifle | No armour; assault rifle | Interceptor vest; assault rifle | Interceptor vest; assault rifle | No armour; assault rifle |
+| Combat medic or corpsman | Steel helmet only; assault rifle | Steel helmet only; assault rifle | PASGT vest and helmet; assault rifle | Ranger Body Armor; assault rifle | Steel helmet only; assault rifle | No armour; assault rifle | Interceptor vest; assault rifle | Interceptor vest; assault rifle | No armour; assault rifle |
+| Signaller or radio operator | Steel helmet only; assault rifle | Steel helmet only; assault rifle | PASGT vest and helmet; assault rifle | Ranger Body Armor; assault rifle | Steel helmet only; assault rifle | No armour; assault rifle | Interceptor vest; assault rifle | Interceptor vest; assault rifle | No armour; assault rifle |
+| Military police or convoy gunner | Steel helmet only; mg | Steel helmet only; mg | PASGT vest and helmet; mg | Ranger Body Armor; mg | Steel helmet only; mg | No armour; mg | Interceptor vest; mg | Interceptor vest; mg | No armour; mg |
+| Armoured vehicle crewman | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | PASGT vest and helmet; pistol/smg | Ranger Body Armor; pistol/smg | Steel helmet only; pistol/smg | No armour; pistol/smg | Interceptor vest; pistol/smg | Interceptor vest; pistol/smg | No armour; pistol/smg |
+| Team or section leader | Steel helmet only; assault rifle | Steel helmet only; assault rifle | PASGT vest and helmet; assault rifle | Ranger Body Armor; assault rifle | Steel helmet only; assault rifle | No armour; assault rifle | Interceptor vest; assault rifle | Interceptor vest; assault rifle | No armour; assault rifle |
+| Platoon leader | Steel helmet only; assault rifle | Steel helmet only; assault rifle | PASGT vest and helmet; assault rifle | Ranger Body Armor; assault rifle | Steel helmet only; assault rifle | No armour; assault rifle | Interceptor vest; assault rifle | Interceptor vest; assault rifle | No armour; assault rifle |
+
+| Team | Members (terms) | Followers (quality table) |
+|---|---|---|
+| A rifle section or squad | Team or section leader (3), Rifleman (2), Machine gunner (2), Grenadier or anti-tank gunner (1), Combat medic or corpsman (1) | 4 rifleman (default) |
+| A fighting patrol | Platoon leader (3), Team or section leader (2), Marksman or sniper (2), Signaller or radio operator (1), Rifleman (1) | 8 rifleman (hardened) |
+| A convoy escort | Team or section leader (3), Military police or convoy gunner (2), Military police or convoy gunner (2), Combat medic or corpsman (1), Signaller or radio operator (1) | 6 military police or convoy gunner (default) |
+| An armoured vehicle crew | Team or section leader (3), Armoured vehicle crewman (2), Armoured vehicle crewman (2), Armoured vehicle crewman (1) | 6 rifleman (default) |
+| A search and clearance team | Team or section leader (3), Combat engineer or bomb searcher (2), Combat engineer or bomb searcher (2), Rifleman (1) | 4 combat engineer or bomb searcher (default) |
+| A sniper pair and their cover | Team or section leader (3), Marksman or sniper (2), Marksman or sniper (2), Machine gunner (1) |  (hardened) |
+| Replacements fresh from training | Platoon leader (1), Team or section leader (2), Rifleman (1), Rifleman (1), Combat medic or corpsman (1) | 20 rifleman (raw) |
 
 ## Camp disease
 

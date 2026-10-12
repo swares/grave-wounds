@@ -63,6 +63,7 @@ def _main(argv=None) -> int:
     ts.add_argument("--region", default=None, help="default: england for medieval, else the era's first region")
     ts.add_argument("--template", default=None, help="default: the era's first team")
     ts.add_argument("--array", action="store_true", help="the fixed array instead of 3d6 x 5")
+    ts.add_argument("--women", choices=["none", "roll"], default="none", help="roll each member and follower man or woman at the army's share")
     ts.add_argument("--seed", type=int, default=None, help="repeatable dice")
 
     a = p.parse_args(argv)
@@ -79,10 +80,10 @@ def _main(argv=None) -> int:
         E = era(d, a.era)
         a.region = a.region or ("england" if a.era == "medieval" else E["regions"][0]["id"])
         a.template = a.template or E["templates"][0]["id"]
-        for c in make_team(d, a.era, a.region, a.template, "array" if a.array else "roll", rng):
+        for c in make_team(d, a.era, a.region, a.template, "array" if a.array else "roll", rng, a.women):
             print("\n".join(sheet(d, c)) + "\n")
         tpl = next(t for t in era(d, a.era)["templates"] if t["id"] == a.template)
-        crew = make_followers(d, a.era, a.region, tpl.get("followers", []), tpl.get("follower_quality", "default"), rng)
+        crew = make_followers(d, a.era, a.region, tpl.get("followers", []), tpl.get("follower_quality", "default"), rng, a.women)
         if crew:
             print(f"Followers ({len(crew)}):")
             for f in crew:

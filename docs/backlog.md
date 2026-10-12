@@ -78,18 +78,12 @@ When an item is done, delete it here and note it in the pull request that closes
   a team playtest. Its characteristics now count in the roller (Agility, Endurance,
   Strength, Presence), and Leechcraft, Fieldcraft, Watch and Stealth work outside a fight.
   Followers have one-line stat blocks, and the gunpowder eras (1618-1876) and the world wars
-  (1914-18, 1939-45) have their own tables. Korea and later, and women, are their own
-  entries below.
-- **Team tables for Korea and later.** The team builder has seven eras, ending with the
-  Second World War. The maps now run from Korea to Afghanistan, but a team for them has to be
-  made from the Second World War tables or by hand, with the wrong kit (no flak vest, no M16,
-  no Interceptor), the wrong careers (no draft and twelve-month tour, no Rangers or Paras) and
-  the wrong events. One way to fix it: tables for Korea (1950-53), Vietnam (1965-73) and the
-  later wars (1982-2010s), each with its origins, careers, events and kit drawn from the armour
-  kits the maps already use.
-- **Women under arms.** Every name list is men's and every sheet says "he", though women
-  served under arms in several eras: Soviet snipers, machine gunners and medics in 1941-45,
-  and American and British soldiers and medics in Iraq and Afghanistan, for two. One way to
-  fix it: a women's name list for each era where they served, a choice (or a roll, at the
-  era's real share) of man or woman, pronouns on the sheets, and careers open to them as the
-  records show for that era and army.
+  (1914-18, 1939-45), Korea, Vietnam and the later wars (1982-2014) have their own tables.
+- **Women under arms, first cut.** Women serve in the Civil War (disguised), the Soviet
+  Union of 1941-45, Vietnam (the ARVN, the North and the Viet Cong) and the later wars (the US,
+  Britain and Russia), chosen or rolled at the army's share. Still left out: the earlier eras
+  (women in medieval sieges, the Revolution's and 1812's few, Russia's women's battalions of
+  1917 and Flora Sandes in Serbia), careers outside the fighting units (nurses, auxiliaries,
+  anti-aircraft gunners, pilots, the Female Engagement Teams of Afghanistan), the Plains
+  nations' women who fought, and shares by career rather than by army. The Viet Cong's and the
+  North's women have no reliable share, so they are chosen, never rolled.

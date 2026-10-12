@@ -377,7 +377,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
      weapon   - the weapon's `icon` (weapons.yaml)
      look     - side defaults merged with the example's own (conflicts.yaml):
                 colour (coat), trousers, coat: skin (bare chest), hat (when no helmet),
-                helmet (overrides the kit's shape), beard (moustache | beard | stubble)
+                helmet (overrides the kit's shape), beard (moustache | beard | stubble), hair (long)
    Partial coverage ("greaves on 50%") is drawn as that share of the body part: a visual
    shorthand for "half the hits there meet armour". */
 const FIG = (() => {
@@ -540,6 +540,7 @@ const FIG = (() => {
     <path d="M60 28 L58.6 32.5 L61 32.8" fill="none" stroke="${SKIN_DARK}" stroke-width=".9" stroke-linecap="round"/>
     <path d="M56 36 Q60 38 64 36" fill="none" stroke="#7a3f33" stroke-width="1.1" stroke-linecap="round"/>${BEARDS[beard] || ""}</g>`;
   const HAIR = `<path d="M46.5 24 Q46 13 60 13 Q74 13 73.5 24 Q70 17 60 17 Q50 17 46.5 24 Z" fill="#4a3b2c"/>`;
+  const LONG_HAIR = `<path d="M45 24 Q42 40 47 49 L73 49 Q78 40 75 24 Z" fill="#4a3b2c"/>`;   // look.hair "long": shows below the helmet and behind the neck
 
   // Where to mark a wound on the figure (front view; back wounds get a dashed ring).
   const WOUND_AT = {
@@ -584,6 +585,7 @@ const FIG = (() => {
         <path d="${COAT}" fill="${coat}"/>
         ${PARTS.arm.map(d => `<path d="${d}" fill="${coat}"/>`).join("")}
         <path d="${PARTS.gorget[0]}" fill="${SKIN}"/>
+        ${look.hair === "long" ? LONG_HAIR : ""}
         <circle cx="60" cy="28" r="14" fill="${SKIN}"/>
         ${HANDS.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="5.5" fill="${SKIN}"/>`).join("")}
       </g>

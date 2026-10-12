@@ -1,0 +1,364 @@
+# Character generation for the Korean War (1950-1953): the team builder (dist/team.html,
+# python3 -m gravewounds team --era korea). Made exactly as the medieval era's (see medieval.yaml
+# for the five steps); only the tables differ. Every region takes the Korean War hospital table.
+# The Americans of 1950-51 and the Commonwealth wear a steel helmet only; the Americans on the
+# outpost line of 1952-53 the M1952 flak vest; the Chinese and North Koreans no armour.
+# Rocket launchers and recoilless rifles are fought with Gunnery, like mortars.
+# Chinese and Korean names are written family name first, as they are said.
+# All of it is written for this game: the tables, events and names are ours (names are common
+# period names, plain fact).
+id: korea
+name: "Korean War (1950-1953)"
+
+characteristics:
+  - {id: str, name: Strength}
+  - {id: agi, name: Agility}
+  - {id: end, name: Endurance}
+  - {id: wits, name: Wits}
+  - {id: nerve, name: Nerve}
+  - {id: pres, name: Presence}
+array: [70, 60, 55, 50, 45, 35]
+stat_range: [15, 95]
+age: {start: 18, per_term: 1}
+
+skill_max: 90
+first_term: 15
+term_main: 10
+term_second: 5
+gain: 15
+skills:
+  - {id: rifle, name: Rifle, of: agi, div: 2, combat: true}
+  - {id: pistol, name: SMG and pistol, of: agi, div: 2, combat: true}
+  - {id: mg, name: Machine gun, of: wits, div: 2, combat: true}
+  - {id: grenade, name: Grenade, of: str, div: 2, combat: true}
+  - {id: gunnery, name: Gunnery, of: wits, div: 2, combat: true}
+  - {id: bayonet, name: Bayonet, of: str, div: 2, combat: true}
+  - {id: trench, name: Close combat, of: str, div: 2, combat: true}
+  - {id: brawl, name: Brawl, of: str, div: 2, combat: true}
+  - {id: parry, name: Parry, of: agi, div: 2, combat: true}
+  - {id: dodge, name: Dodge, of: agi, div: 3, combat: true}
+  - {id: fieldcraft, name: Fieldcraft, of: wits, div: 3}
+  - {id: watch, name: Watch, of: wits, div: 2}
+  - {id: stealth, name: Stealth, of: agi, div: 3}
+  - {id: leechcraft, name: Leechcraft, of: wits, div: 4}
+  - {id: craft, name: Craft, of: wits, div: 3}
+  - {id: signals, name: Signals, of: wits, div: 3}
+  - {id: drive, name: Drive, of: agi, div: 3}
+  - {id: letters, name: Letters, of: wits, div: 5}
+  - {id: persuade, name: Persuade, of: pres, div: 2}
+  - {id: command, name: Command, of: pres, div: 3}
+
+weapon_skill:
+  rifle_service: rifle
+  pistol_smg: pistol
+  machine_gun: mg
+  hand_grenade: grenade
+  mortar_artillery: gunnery
+  explosive_fragment: gunnery
+  bazooka: gunnery
+  recoilless: gunnery
+  bayonet: bayonet
+  entrenching_tool: trench
+  dagger: trench
+  punch: brawl
+  kick: brawl
+  elbow_knee: brawl
+defence: [parry, dodge]
+
+regions:
+  - id: us_1950
+    name: "US Army and Marines, 1950-51"
+    short: "US 1950-51"
+    table: korea-1950-53-hospitalized
+    colours: ["#5b5a3a", "#6b5f3a", "#7a6a42", "#e6e0d2"]
+    names: [Robert, James, John, William, Richard, Charles, Donald, George, Joseph, Edward, Thomas, Ronald, Kenneth, Billy, Carl, Jerry]
+    bynames: [Smith, Johnson, Williams, Brown, Jones, Miller, Davis, Garcia, Wilson, Anderson, Washington, Kowalski]
+    no_women: "American servicewomen in Korea were nurses, not in fighting units."
+  - id: us_1952
+    name: "US Army on the outpost line, 1952-53"
+    short: "US 1952-53"
+    table: korea-1950-53-hospitalized
+    colours: ["#5b5a3a", "#4f5a3a", "#6b6a4a", "#e6e0d2"]
+    names: [Robert, James, John, William, Richard, Charles, Donald, Gerald, Joseph, Edward, Thomas, Ronald, Kenneth, Larry, Carl, Jerry]
+    bynames: [Smith, Johnson, Williams, Brown, Jones, Miller, Davis, Hernandez, Wilson, Anderson, Jackson, Sullivan]
+    no_women: "American servicewomen in Korea were nurses, not in fighting units."
+  - id: commonwealth
+    name: "The Commonwealth (Britain, Australia, Canada)"
+    short: "Commonwealth"
+    table: korea-1950-53-hospitalized
+    colours: ["#7a6a42", "#6b5f3a", "#8a7a52", "#e6e0d2"]
+    names: [Kenneth, Ronald, Brian, Peter, John, Derek, Terence, Alan, Gordon, Keith, Donald, Bill, Raymond, Ian, Bruce, Gilles]
+    bynames: [Smith, Jones, Brown, Taylor, Wilson, Campbell, Murray, Thompson, Kelly, MacLeod, Tremblay, O'Neill]
+    no_women: "Commonwealth servicewomen in Korea were nurses, not in fighting units."
+  - id: rok
+    name: "Republic of Korea Army"
+    short: "ROK"
+    table: korea-1950-53-hospitalized
+    colours: ["#5b5a3a", "#6b6a48", "#7a7450", "#e6e0d2"]
+    names: [Kim, Lee, Park, Choi, Jung, Kang, Cho, Yoon, Jang, Lim, Han, Oh]
+    bynames: [Yeong-su, Yeong-ho, Jong-su, Jeong-ho, Gwang-su, Sang-hun, Byeong-cheol, Chang-ho, Dong-su, Seong-gi, Myeong-su, Hak-su]
+    no_women: "These tables have no record of women in this army's fighting careers."
+  - id: chinese
+    name: "Chinese People's Volunteers"
+    short: "Chinese"
+    table: korea-1950-53-hospitalized
+    colours: ["#7a7450", "#8a8058", "#6b6a48", "#e6e0d2"]
+    names: [Wang, Li, Zhang, Liu, Chen, Yang, Zhao, Huang, Zhou, Wu, Xu, Sun]
+    bynames: [Dehua, Yongfu, Shulin, Baoshan, Changsheng, Fuhai, Wenbin, Zhenhai, Shiquan, Guorong, Mingde, Jinshan]
+    no_women: "These tables have no record of women in this army's fighting careers."
+  - id: north_korea
+    name: "Korean People's Army"
+    short: "North Korea"
+    table: korea-1950-53-hospitalized
+    colours: ["#6b6a48", "#7a7450", "#5b5a3a", "#e6e0d2"]
+    names: [Kim, Ri, Pak, Choe, Jong, Kang, Jo, Yun, Jang, Rim, Han, O]
+    bynames: [Chol-su, Yong-il, Myong-chol, Kwang-ho, Song-il, Hak-chol, Chang-sik, Tae-ho, Il-nam, Kyong-su, Man-sik, Chun-gil]
+    no_women: "These tables have no record of women in this army's fighting careers."
+
+origins:
+  - {name: "Farmer's son", gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Never been far from home", persuade: -15}}
+  - {name: "Factory hand", gain: craft, trait: {text: "Used to long shifts", end: 10}, drawback: {text: "Half deaf from the machines", watch: -15}}
+  - {name: "Recalled reservist", gain: rifle, trait: {text: "Fought in the last war", nerve: 10}, drawback: {text: "Bitter at being called back", pres: -10}}
+  - {name: "Office clerk", gain: letters, trait: {text: "Good with figures", wits: 10}, drawback: {text: "Soft hands", str: -10}}
+  - {name: "Miner", gain: craft, trait: {text: "At home underground", end: 10}, drawback: {text: "Coughs in the cold", stealth: -15}}
+  - {name: "Hunter", gain: rifle, trait: {text: "A steady aim", rifle: 15}, drawback: {text: "Hates drill", pres: -10}}
+  - {name: "Mechanic", gain: drive, trait: {text: "Can fix any engine", craft: 15}, drawback: {text: "Never walked far", end: -10}}
+  - {name: "Student", gain: letters, trait: {text: "Quick to learn", wits: 10}, drawback: {text: "Never done a day's labour", str: -10}}
+  - {name: "Hospital orderly", gain: leechcraft, trait: {text: "Steady at the sight of blood", leechcraft: 15}, drawback: {text: "Never stops talking", stealth: -15}}
+  - {name: "Boxer", gain: brawl, trait: {text: "Hard to frighten", nerve: 10}, drawback: {text: "Hot-tempered", persuade: -15}}
+  - {name: "Athlete", gain: dodge, trait: {text: "Fast on his feet", agi: 10}, drawback: {text: "Bad knee", end: -10}}
+  - {name: "Hill villager", gain: fieldcraft, trait: {text: "Climbs all day", end: 10}, drawback: {text: "Never learned to read", letters: -15}}
+  - {name: "Fisherman", gain: craft, trait: {text: "Weathered every storm", end: 10}, drawback: {text: "Never fired a gun", rifle: -15}}
+  - {name: "Market trader", gain: persuade, trait: {text: "A ready smile", pres: 10}, drawback: {text: "Never slept rough", fieldcraft: -15}}
+  - {name: "Street kid from a big city", gain: brawl, trait: {text: "Takes a punch", end: 10}, drawback: {text: "Known to the police", persuade: -15}}
+  - {name: "From an army family", gain: command, trait: {text: "Raised to command", command: 15}, drawback: {text: "Proud and touchy", persuade: -15}}
+  - {name: "Fought as a guerrilla", gain: stealth, trait: {text: "Moves at night", stealth: 15}, drawback: {text: "Distrusts officers", pres: -10}}
+  - {name: "Peacetime regular", gain: rifle, trait: {text: "Knows the drill", rifle: 15}, drawback: {text: "Set in his ways", wits: -10}}
+  - {name: "Truck driver", gain: drive, trait: {text: "Knows every road", drive: 15}, drawback: {text: "Bad back", agi: -10}}
+  - {name: "Radio repairman", gain: signals, trait: {text: "Mends any set", signals: 15}, drawback: {text: "Short-sighted", watch: -15}}
+
+careers:
+  - id: rifleman
+    name: "Rifleman"
+    main: rifle
+    second: grenade
+    prefers: [end, agi, nerve, str, wits, pres]
+    wound: 25
+    wound_weapon: rifle_service
+    kit: {default: ww2_rifleman, us_1952: vietnam_army, chinese: none, north_korea: none}
+    weapon: {default: rifle_service}
+    terms:
+      - {to: 20, skill: watch, text: "Stood watch in a frozen foxhole through a long night."}
+      - {to: 40, skill: fieldcraft, text: "Climbed ridge after ridge with a full pack."}
+      - {to: 55, skill: dodge, text: "Lay flat while mortar rounds walked across the slope."}
+      - {to: 70, skill: stealth, text: "Went out on a night patrol into the valley."}
+      - {to: 85, skill: grenade, text: "Fought off a night attack with grenades.", wound: true}
+      - {to: 100, skill: rifle, text: "Held a hilltop through a night of attacks.", wound: true}
+  - id: machine_gunner
+    name: "Machine gunner or BAR man"
+    main: mg
+    second: craft
+    prefers: [wits, end, str, nerve, agi, pres]
+    wound: 25
+    wound_weapon: rifle_service
+    kit: {default: ww2_rifleman, us_1952: vietnam_army, chinese: none, north_korea: none}
+    weapon: {default: machine_gun}
+    terms:
+      - {to: 20, skill: craft, text: "Kept the gun firing in the bitter cold."}
+      - {to: 40, skill: fieldcraft, text: "Carried the gun and its ammunition up a steep ridge."}
+      - {to: 55, skill: watch, text: "Laid the gun on a fixed line across a draw at dusk."}
+      - {to: 70, skill: dodge, text: "Moved the gun before the enemy's mortars found it.", wound: true}
+      - {to: 85, skill: stealth, text: "Sited the gun to sweep the saddle between two hills."}
+      - {to: 100, skill: mg, text: "Fired until the barrel glowed to break up an attack.", wound: true}
+  - id: rocket
+    name: "Rocket or recoilless gunner"
+    main: gunnery
+    second: grenade
+    prefers: [wits, str, nerve, end, agi, pres]
+    wound: 30
+    wound_weapon: explosive_fragment
+    kit: {default: ww2_rifleman, us_1952: vietnam_army, chinese: none, north_korea: none}
+    weapon: {default: bazooka, chinese: rifle_service, north_korea: rifle_service}
+    terms:
+      - {to: 20, skill: craft, text: "Learned to load and aim the rocket launcher."}
+      - {to: 40, skill: stealth, text: "Stalked a tank along a paddy dike."}
+      - {to: 55, skill: fieldcraft, text: "Hauled the rounds up to the line on his back."}
+      - {to: 70, skill: dodge, text: "Was caught in the open by a tank's machine gun.", wound: true}
+      - {to: 85, skill: gunnery, text: "Knocked out a tank or a bunker at close range.", wound: true}
+      - {to: 100, skill: grenade, text: "Held off infantry closing on the team."}
+  - id: mortarman
+    name: "Mortarman"
+    main: gunnery
+    second: fieldcraft
+    prefers: [wits, str, end, nerve, agi, pres]
+    wound: 20
+    wound_weapon: explosive_fragment
+    kit: {default: ww2_rifleman, us_1952: vietnam_army, chinese: none, north_korea: none}
+    weapon: {default: rifle_service}
+    terms:
+      - {to: 20, skill: letters, text: "Learned to work out the firing data by hand."}
+      - {to: 40, skill: craft, text: "Dug the mortar pit into frozen ground."}
+      - {to: 55, skill: fieldcraft, text: "Carried the baseplate up a mountain trail."}
+      - {to: 70, skill: signals, text: "Took fire orders over the field telephone."}
+      - {to: 85, skill: dodge, text: "Was caught by counter-battery fire.", wound: true}
+      - {to: 100, skill: gunnery, text: "Dropped rounds on an attack forming in a valley."}
+  - id: sniper
+    name: "Sniper or scout"
+    main: rifle
+    second: stealth
+    prefers: [wits, agi, nerve, end, str, pres]
+    wound: 15
+    wound_weapon: rifle_service
+    kit: {default: ww2_rifleman, us_1952: vietnam_army, chinese: none, north_korea: none}
+    weapon: {default: rifle_service}
+    terms:
+      - {to: 20, skill: watch, text: "Watched the enemy's hill through field glasses for a day."}
+      - {to: 40, skill: fieldcraft, text: "Scouted a way through the hills for the company."}
+      - {to: 55, skill: stealth, text: "Lay in a hide in no man's land until dark."}
+      - {to: 70, skill: letters, text: "Sketched the enemy's trenches for the intelligence officer."}
+      - {to: 85, skill: craft, text: "Kept a scoped rifle zeroed through a Korean winter."}
+      - {to: 100, skill: rifle, text: "Duelled with an enemy sniper across a valley.", wound: true}
+  - id: sapper
+    name: "Combat engineer"
+    main: craft
+    second: grenade
+    prefers: [str, end, wits, nerve, agi, pres]
+    wound: 25
+    wound_weapon: mine_ied
+    kit: {default: ww2_rifleman, us_1952: vietnam_army, chinese: none, north_korea: none}
+    weapon: {default: rifle_service}
+    terms:
+      - {to: 20, skill: craft, text: "Cut a road up a hillside."}
+      - {to: 40, skill: watch, text: "Swept a track for mines by hand.", wound: true}
+      - {to: 55, skill: drive, text: "Drove a bulldozer under fire."}
+      - {to: 70, skill: letters, text: "Laid a minefield in front of the outpost line."}
+      - {to: 85, skill: grenade, text: "Blew a bridge as the enemy came on.", wound: true}
+      - {to: 100, skill: fieldcraft, text: "Strung wire in front of a hill at night."}
+  - id: medic
+    name: "Aidman, corpsman or medic"
+    main: leechcraft
+    second: fieldcraft
+    prefers: [end, wits, nerve, str, agi, pres]
+    wound: 20
+    wound_weapon: explosive_fragment
+    kit: {default: ww2_rifleman, us_1952: vietnam_army, chinese: none, north_korea: none}
+    weapon: {default: pistol_smg}
+    terms:
+      - {to: 20, skill: craft, text: "Worked at a battalion aid station."}
+      - {to: 40, skill: leechcraft, text: "Kept the morphine from freezing inside his clothes."}
+      - {to: 55, skill: drive, text: "Loaded litters onto an evacuation helicopter."}
+      - {to: 70, skill: persuade, text: "Talked a shocked man back to his senses."}
+      - {to: 85, skill: dodge, text: "Ran out to a wounded man under fire.", wound: true}
+      - {to: 100, skill: leechcraft, text: "Kept men alive through a night of shelling.", wound: true}
+  - id: radioman
+    name: "Radio operator or wireman"
+    main: signals
+    second: fieldcraft
+    prefers: [wits, agi, end, nerve, pres, str]
+    wound: 20
+    wound_weapon: explosive_fragment
+    kit: {default: ww2_rifleman, us_1952: vietnam_army, chinese: none, north_korea: none}
+    weapon: {default: rifle_service}
+    terms:
+      - {to: 20, skill: letters, text: "Learned the codes and the call signs."}
+      - {to: 40, skill: craft, text: "Kept the radio's batteries warm enough to work."}
+      - {to: 55, skill: fieldcraft, text: "Laid telephone wire up to an outpost."}
+      - {to: 70, skill: watch, text: "Spliced a cut line in the dark."}
+      - {to: 85, skill: dodge, text: "Was spotted by his aerial and shelled.", wound: true}
+      - {to: 100, skill: signals, text: "Called in the artillery as an outpost was overrun."}
+  - id: nco
+    name: "Squad leader or sergeant"
+    main: command
+    second: rifle
+    prefers: [pres, nerve, end, str, agi, wits]
+    wound: 25
+    wound_weapon: rifle_service
+    kit: {default: ww2_rifleman, us_1952: vietnam_army, chinese: none, north_korea: none}
+    weapon: {default: rifle_service, chinese: pistol_smg, north_korea: pistol_smg}
+    terms:
+      - {to: 20, skill: letters, text: "Kept the squad's roll and its ammunition count."}
+      - {to: 40, skill: persuade, text: "Kept a frightened man in his hole."}
+      - {to: 55, skill: rifle, text: "Trained replacements behind the line."}
+      - {to: 70, skill: watch, text: "Set the night's listening posts."}
+      - {to: 85, skill: grenade, text: "Led the squad into an enemy trench.", wound: true}
+      - {to: 100, skill: command, text: "Took over the platoon when its officer fell.", wound: true}
+  - id: officer
+    name: "Platoon leader"
+    main: command
+    second: pistol
+    prefers: [pres, nerve, wits, agi, end, str]
+    wound: 30
+    wound_weapon: rifle_service
+    kit: {default: ww2_rifleman, us_1952: vietnam_army, chinese: none, north_korea: none}
+    weapon: {default: pistol_smg}
+    terms:
+      - {to: 20, skill: letters, text: "Read the maps and wrote the orders."}
+      - {to: 40, skill: signals, text: "Called down fire on the radio."}
+      - {to: 55, skill: stealth, text: "Led a raid on an enemy outpost.", wound: true}
+      - {to: 70, skill: persuade, text: "Wrote to the families of the dead."}
+      - {to: 85, skill: pistol, text: "Led a counter-attack up a lost hill.", wound: true}
+      - {to: 100, skill: command, text: "Held the company together in a winter retreat.", wound: true}
+  - id: tanker
+    name: "Tank crewman"
+    main: gunnery
+    second: drive
+    prefers: [wits, agi, end, nerve, str, pres]
+    wound: 20
+    wound_weapon: explosive_fragment
+    kit: {default: ww2_rifleman, us_1952: vietnam_army, chinese: none, north_korea: none}
+    weapon: {default: pistol_smg}
+    terms:
+      - {to: 20, skill: craft, text: "Kept the engine running through a Korean winter."}
+      - {to: 40, skill: drive, text: "Drove along a narrow valley road under fire."}
+      - {to: 55, skill: signals, text: "Worked the tank's radio with the infantry."}
+      - {to: 70, skill: watch, text: "Watched for anti-tank teams from the turret."}
+      - {to: 85, skill: dodge, text: "Bailed out of a burning tank.", wound: true}
+      - {to: 100, skill: gunnery, text: "Fired the main gun for an attack on a hill."}
+
+old_wound:
+  - {to: 70, kind: mark, text: "a healed scar"}
+  - {to: 100, kind: lasting, text: "a lasting hurt"}
+lasting: 5
+lasting_from: {head: wits, face: pres, arms: str, legs: agi, torso: end}
+
+followers:
+  quality:
+    default:  [{to: 30, quality: green}, {to: 80, quality: regular}, {to: 100, quality: veteran}]
+    hardened: [{to: 15, quality: green}, {to: 60, quality: regular}, {to: 100, quality: veteran}]
+    raw:      [{to: 55, quality: green}, {to: 90, quality: regular}, {to: 100, quality: veteran}]
+
+templates:
+  - id: squad
+    name: "A rifle squad"
+    slots: [[nco, 3], [rifleman, 2], [machine_gunner, 2], [rifleman, 1], [medic, 1]]
+    followers: [[rifleman, 6]]
+  - id: outpost
+    name: "An outpost on the line"
+    slots: [[nco, 3], [machine_gunner, 2], [rifleman, 2], [radioman, 1], [medic, 1]]
+    followers: [[rifleman, 10], [machine_gunner, 2]]
+  - id: patrol
+    name: "A night patrol"
+    slots: [[officer, 3], [nco, 2], [sniper, 2], [radioman, 1], [rifleman, 1]]
+    followers: [[rifleman, 8]]
+    follower_quality: hardened
+  - id: rockets
+    name: "A rocket and recoilless team"
+    slots: [[nco, 3], [rocket, 2], [rocket, 1], [rifleman, 1]]
+    followers: [[rocket, 2], [rifleman, 2]]
+  - id: mortars
+    name: "A mortar section"
+    slots: [[nco, 3], [mortarman, 2], [mortarman, 2], [radioman, 1]]
+    followers: [[mortarman, 6]]
+  - id: tank
+    name: "A tank crew"
+    slots: [[nco, 3], [tanker, 2], [tanker, 2], [tanker, 1], [radioman, 1]]
+    followers: []
+  - id: engineers
+    name: "An engineer squad"
+    slots: [[nco, 3], [sapper, 2], [sapper, 2], [rifleman, 1]]
+    followers: [[sapper, 6]]
+  - id: replacements
+    name: "Replacements fresh from training"
+    slots: [[officer, 1], [nco, 2], [rifleman, 1], [rifleman, 1], [medic, 1]]
+    followers: [[rifleman, 20]]
+    follower_quality: raw

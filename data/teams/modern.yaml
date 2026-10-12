@@ -1,0 +1,412 @@
+# Character generation for the later wars, the Falklands to Afghanistan (1982-2014): the team
+# builder (dist/team.html, python3 -m gravewounds team --era modern). Made exactly as the
+# medieval era's (see medieval.yaml for the five steps); only the tables differ. Each region
+# takes its war's wound table. The Falklands armies and the Russians in Chechnya wear a steel
+# helmet only; the Americans of 1991 the PASGT vest, the Rangers of 1993 the Ranger Body Armor;
+# the Americans and British of 2003-14 plate armour (the British Osprey is drawn as the
+# Interceptor, its American match); the Chechens and the insurgents no armour. RPGs are fought
+# with Grenade, missiles, mortars and vehicle guns with Gunnery.
+# Women (docs/team.md): a share is the women among that army's soldiers in the year the source
+# gives, and is rolled only for the careers open to them then (ground close combat opened to
+# women in the US in 2016 and in Britain in 2016-18, after this era's wars).
+# All of it is written for this game: the tables, events and names are ours (names are common
+# names, plain fact).
+id: modern
+name: "The Falklands to Afghanistan (1982-2014)"
+
+characteristics:
+  - {id: str, name: Strength}
+  - {id: agi, name: Agility}
+  - {id: end, name: Endurance}
+  - {id: wits, name: Wits}
+  - {id: nerve, name: Nerve}
+  - {id: pres, name: Presence}
+array: [70, 60, 55, 50, 45, 35]
+stat_range: [15, 95]
+age: {start: 18, per_term: 1}
+
+skill_max: 90
+first_term: 15
+term_main: 10
+term_second: 5
+gain: 15
+skills:
+  - {id: rifle, name: Rifle, of: agi, div: 2, combat: true}
+  - {id: pistol, name: Pistol, of: agi, div: 2, combat: true}
+  - {id: mg, name: Machine gun, of: wits, div: 2, combat: true}
+  - {id: grenade, name: Grenade and rocket, of: str, div: 2, combat: true}
+  - {id: gunnery, name: Gunnery, of: wits, div: 2, combat: true}
+  - {id: bayonet, name: Bayonet, of: str, div: 2, combat: true}
+  - {id: trench, name: Close combat, of: str, div: 2, combat: true}
+  - {id: brawl, name: Brawl, of: str, div: 2, combat: true}
+  - {id: parry, name: Parry, of: agi, div: 2, combat: true}
+  - {id: dodge, name: Dodge, of: agi, div: 3, combat: true}
+  - {id: fieldcraft, name: Fieldcraft, of: wits, div: 3}
+  - {id: watch, name: Watch, of: wits, div: 2}
+  - {id: stealth, name: Stealth, of: agi, div: 3}
+  - {id: leechcraft, name: Leechcraft, of: wits, div: 4}
+  - {id: craft, name: Craft, of: wits, div: 3}
+  - {id: signals, name: Signals, of: wits, div: 3}
+  - {id: drive, name: Drive, of: agi, div: 3}
+  - {id: letters, name: Letters, of: wits, div: 5}
+  - {id: persuade, name: Persuade, of: pres, div: 2}
+  - {id: command, name: Command, of: pres, div: 3}
+
+weapon_skill:
+  rifle_assault: rifle
+  rifle_ap: rifle
+  pistol_smg: pistol
+  machine_gun: mg
+  hand_grenade: grenade
+  rpg: grenade
+  atgm: gunnery
+  mortar_artillery: gunnery
+  explosive_fragment: gunnery
+  bayonet: bayonet
+  dagger: trench
+  punch: brawl
+  kick: brawl
+  elbow_knee: brawl
+defence: [parry, dodge]
+
+regions:
+  - id: uk_1982
+    name: "British forces in the Falklands, 1982"
+    short: "UK 1982"
+    table: falklands-1982-wounds
+    colours: ["#5b6a4a", "#4f5a3a", "#6b5f3a", "#e6e0d2"]
+    names: [David, Paul, Mark, Ian, Stephen, Andrew, Gary, Kevin, Michael, Robert, Tony, Neil, Gareth, Iain, Colin, Martin]
+    bynames: [Smith, Jones, Williams, Taylor, Brown, Davies, Evans, Wilson, Thomas, Roberts, Campbell, Murray]
+    no_women: "British servicewomen did not go ashore to fight in 1982; nurses served on the hospital ship."
+  - id: argentina_1982
+    name: "Argentine forces in the Falklands, 1982"
+    short: "Argentina 1982"
+    table: falklands-1982-wounds
+    colours: ["#5b6a4a", "#6b6a48", "#4f5a3a", "#e6e0d2"]
+    names: [Juan, Carlos, José, Jorge, Luis, Miguel, Daniel, Roberto, Ricardo, Sergio, Oscar, Héctor, Gustavo, Alejandro, Marcelo, Rubén]
+    bynames: [González, Rodríguez, Fernández, López, Martínez, García, Pérez, Gómez, Sánchez, Romero, Díaz, Álvarez]
+    no_women: "These tables have no record of Argentine women in these careers in 1982."
+  - id: us_1991
+    name: "US forces in the Gulf, 1991"
+    short: "US 1991"
+    table: gulf-1991-us-wounds
+    colours: ["#b8a27a", "#a8926a", "#c8b28a", "#e6e0d2"]
+    names: [Michael, Christopher, James, David, John, Robert, Jason, Brian, William, Kevin, Anthony, Eric, Jose, Darnell, Scott, Matthew]
+    bynames: [Smith, Johnson, Williams, Brown, Jones, Garcia, Miller, Davis, Rodriguez, Martinez, Wilson, Jackson]
+    women:
+      share: 7
+      careers: [medic, radioman, mp]
+      names: [Jennifer, Lisa, Kimberly, Michelle, Amy, Angela, Melissa, Tammy, Christina, Dawn, Tracy, Rhonda]
+      closed: "Policy kept women out of direct ground combat: infantry, armour, combat engineer and sniper careers."
+      source: "GAO, Operation Desert Storm: Women in the Military (NSIAD-93-93, 1993): about 41,000 women, some 7 percent of the US forces deployed."
+  - id: us_1993
+    name: "US Rangers and Delta in Mogadishu, 1993"
+    short: "US 1993"
+    table: somalia-1993-wounds
+    colours: ["#b8a27a", "#5b5a3a", "#c8b28a", "#e6e0d2"]
+    names: [Michael, Christopher, James, David, John, Robert, Jason, Brian, William, Kevin, Shawn, Eric, Dominick, Jamie, Scott, Matthew]
+    bynames: [Smith, Johnson, Williams, Brown, Jones, Garcia, Miller, Davis, Anderson, Martinez, Wilson, Thomas]
+    no_women: "The Ranger and Delta assault force was all men: those units were closed to women."
+  - id: russia_1995
+    name: "Russian forces in Chechnya, 1994-96"
+    short: "Russia 1995"
+    table: chechnya-wounds
+    colours: ["#5b6a4a", "#6b6a48", "#7a7450", "#e6e0d2"]
+    names: [Aleksandr, Sergei, Dmitri, Andrei, Aleksei, Yevgeni, Maksim, Vladimir, Igor, Denis, Roman, Oleg, Pavel, Nikolai, Vitaly, Artyom]
+    bynames: [Ivanov, Smirnov, Kuznetsov, Popov, Vasilyev, Petrov, Sokolov, Mikhailov, Novikov, Fyodorov, Morozov, Volkov]
+    women:
+      share: 10
+      careers: [medic]
+      names: [Yelena, Olga, Tatyana, Natalya, Irina, Svetlana, Marina, Lyudmila, Galina, Anna, Yulia, Oksana]
+      bynames: [Ivanova, Smirnova, Kuznetsova, Popova, Vasilyeva, Petrova, Sokolova, Mikhailova, Novikova, Fyodorova, Morozova, Volkova]
+      closed: "Russian servicewomen of the 1990s served in support and medical posts; these tables have no record of them in Chechnya's other careers."
+      source: "Smirnov (2002), in Women in the Russian and Soviet military (Wikipedia): the share of women in the Russian forces rose from 3.5% in 1990 to almost 10% in 1999."
+  - id: chechen
+    name: "Chechen fighters, 1994-96"
+    short: "Chechens"
+    table: chechnya-wounds
+    colours: ["#4a4a40", "#5b5a3a", "#3a3a3a", "#e6e0d2"]
+    names: [Akhmed, Ruslan, Magomed, Aslan, Shamil, Islam, Ramzan, Khamzat, Adam, Umar, Salman, Ibragim, Movsar, Zelimkhan, Arbi, Turpal]
+    bynames: [Dudayev, Basayev, Gelayev, Umarov, Khasanov, Magomadov, Musayev, Bisultanov, Ismailov, Akhmadov, Saidov, Yusupov]
+    no_women: "These tables have no record of women in these careers."
+  - id: us_2005
+    name: "US forces in Iraq and Afghanistan, 2003-14"
+    short: "US 2003-14"
+    table: oif-oef-2001-wounds
+    colours: ["#a8926a", "#7a7a5a", "#b8a27a", "#e6e0d2"]
+    names: [Michael, Christopher, Joshua, Matthew, Daniel, David, Andrew, James, Justin, Ryan, Brandon, Jose, Tyler, Anthony, Kevin, Marcus]
+    bynames: [Smith, Johnson, Williams, Brown, Jones, Garcia, Miller, Davis, Rodriguez, Martinez, Hernandez, Wilson]
+    women:
+      share: 11.4
+      careers: [medic, radioman, mp, nco, officer]
+      names: [Jessica, Ashley, Jennifer, Amanda, Sarah, Stephanie, Nicole, Melissa, Elizabeth, Heather, Maria, Tiffany]
+      closed: "Infantry, armour, combat engineer and sniper careers were closed to women until 2016; women led and served in military police, medical and signal units."
+      source: "CRS, Women in Combat: Issues for Congress (R42075, 2013): in February 2013 women were 11.4% of the US forces deployed; 299,548 had deployed to Iraq and Afghanistan since 2001."
+  - id: uk_2005
+    name: "British forces in Iraq and Afghanistan, 2003-14"
+    short: "UK 2003-14"
+    table: oif-oef-2001-wounds
+    colours: ["#a8926a", "#8a8a6a", "#b8a27a", "#e6e0d2"]
+    names: [Daniel, James, Thomas, Christopher, Matthew, Ben, Lee, Craig, Ryan, Jamie, Liam, Sean, Aaron, Gareth, Ross, Adam]
+    bynames: [Smith, Jones, Williams, Taylor, Brown, Davies, Evans, Wilson, Thomas, Johnson, Roberts, Walker]
+    women:
+      share: 8.3
+      careers: [medic, radioman, mp, nco, officer]
+      names: [Sarah, Emma, Laura, Rebecca, Claire, Gemma, Kelly, Hannah, Amy, Lisa, Nicola, Rachel]
+      closed: "Ground close combat roles were closed to women until 2016-18; women served at the front as medics, signallers and military police."
+      source: "Ministry of Defence, UK Armed Forces Quarterly Manning Report, 1 October 2012: women were 8.3% of the Army (9.7% of the Regular forces)."
+  - id: insurgent
+    name: "Insurgents in Iraq and Afghanistan"
+    short: "Insurgents"
+    table: oif-oef-2001-wounds
+    colours: ["#6b5f4a", "#7a6a52", "#4a4a40", "#e6e0d2"]
+    names: [Ahmad, Mohammad, Abdul, Ali, Hassan, Omar, Mahmud, Karim, Nasir, Rahim, Zahir, Gul, Yusuf, Khalid, Hamid, Wali]
+    bynames: [Khan, Rahman, Jan, Hussain, Ahmadzai, Noori, Shah, Mohammadi, Hakimi, Saeed, Jabbar, Kareem]
+    no_women: "These tables have no record of women in these careers."
+
+origins:
+  - {name: "Small-town kid", gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Never been far from home", persuade: -15}}
+  - {name: "Factory worker", gain: craft, trait: {text: "Used to long shifts", end: 10}, drawback: {text: "Half deaf from the machines", watch: -15}}
+  - {name: "College student", gain: letters, trait: {text: "Quick to learn", wits: 10}, drawback: {text: "Never done a day's labour", str: -10}}
+  - {name: "Hunter", gain: rifle, trait: {text: "A steady aim", rifle: 15}, drawback: {text: "Hates drill", pres: -10}}
+  - {name: "Mechanic", gain: drive, trait: {text: "Can fix any engine", craft: 15}, drawback: {text: "Never walked far", end: -10}}
+  - {name: "Paramedic or nursing student", gain: leechcraft, trait: {text: "Steady at the sight of blood", leechcraft: 15}, drawback: {text: "Never stops talking", stealth: -15}}
+  - {name: "Athlete", gain: dodge, trait: {text: "Fast on his feet", agi: 10}, drawback: {text: "Bad knee", end: -10}}
+  - {name: "Street kid from a big city", gain: brawl, trait: {text: "Takes a punch", end: 10}, drawback: {text: "Known to the police", persuade: -15}}
+  - {name: "From a military family", gain: command, trait: {text: "Raised to command", command: 15}, drawback: {text: "Proud and touchy", persuade: -15}}
+  - {name: "Grew up in a war", gain: stealth, trait: {text: "Moves at night", stealth: 15}, drawback: {text: "Trusts no one", pres: -10}}
+  - {name: "Truck driver", gain: drive, trait: {text: "Knows every road", drive: 15}, drawback: {text: "Bad back", agi: -10}}
+  - {name: "Electronics hobbyist", gain: signals, trait: {text: "Fixes any radio", signals: 15}, drawback: {text: "Short-sighted", watch: -15}}
+  - {name: "Shepherd from the hills", gain: fieldcraft, trait: {text: "Climbs all day", end: 10}, drawback: {text: "Never learned to read", letters: -15}}
+  - {name: "Shop worker", gain: persuade, trait: {text: "A ready smile", pres: 10}, drawback: {text: "Never slept rough", fieldcraft: -15}}
+  - {name: "Builder", gain: craft, trait: {text: "Strong arms", str: 10}, drawback: {text: "Slow afoot", agi: -10}}
+  - {name: "Reservist", gain: rifle, trait: {text: "Has done it before", nerve: 10}, drawback: {text: "Worries about home", wits: -10}}
+  - {name: "Police officer", gain: watch, trait: {text: "Reads a crowd", watch: 15}, drawback: {text: "Wedded to the rules", stealth: -15}}
+  - {name: "Gym regular", gain: brawl, trait: {text: "Lifts heavy", str: 10}, drawback: {text: "Stiff joints", agi: -10}}
+  - {name: "Boxer", who: m, gain: brawl, trait: {text: "Hard to frighten", nerve: 10}, drawback: {text: "Hot-tempered", persuade: -15}}
+  - {name: "Peacetime regular", who: m, gain: rifle, trait: {text: "Knows the drill", rifle: 15}, drawback: {text: "Set in his ways", wits: -10}}
+  - {name: "Fought for her place", who: f, gain: command, trait: {text: "Hard to discourage", nerve: 10}, drawback: {text: "Tired of proving herself", pres: -10}}
+  - {name: "Rugby player", who: f, gain: brawl, trait: {text: "Takes a hit", end: 10}, drawback: {text: "An old shoulder injury", str: -10}}
+
+careers:
+  - id: rifleman
+    name: "Rifleman"
+    main: rifle
+    second: grenade
+    prefers: [end, agi, nerve, str, wits, pres]
+    wound: 25
+    wound_weapon: rifle_assault
+    kit: &kit {default: ww2_rifleman, us_1991: pasgt, us_1993: ranger_1993, chechen: none, us_2005: interceptor, uk_2005: interceptor, insurgent: none}
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: watch, text: "Stood sentry on a wall through a long night."}
+      - {to: 40, skill: fieldcraft, text: "Patrolled on foot through villages and fields."}
+      - {to: 55, skill: dodge, text: "Went to ground as a burst cracked overhead."}
+      - {to: 70, skill: stealth, text: "Moved into an overwatch position before dawn."}
+      - {to: 85, skill: grenade, text: "Cleared rooms in a street fight.", wound: true}
+      - {to: 100, skill: rifle, text: "Held a position through a long firefight.", wound: true}
+  - id: machine_gunner
+    name: "Machine gunner"
+    main: mg
+    second: craft
+    prefers: [wits, end, str, nerve, agi, pres]
+    wound: 25
+    wound_weapon: rifle_assault
+    kit: *kit
+    weapon: {default: machine_gun}
+    terms:
+      - {to: 20, skill: craft, text: "Kept the gun running in dust or mud."}
+      - {to: 40, skill: fieldcraft, text: "Carried the gun and its belts on a long march."}
+      - {to: 55, skill: watch, text: "Covered a road from a rooftop."}
+      - {to: 70, skill: dodge, text: "Moved the gun as rounds found its position.", wound: true}
+      - {to: 85, skill: stealth, text: "Sited the gun to cover the team's move."}
+      - {to: 100, skill: mg, text: "Kept an enemy position down while the assault went in.", wound: true}
+  - id: grenadier
+    name: "Grenadier or anti-tank gunner"
+    main: grenade
+    second: rifle
+    prefers: [str, agi, nerve, end, wits, pres]
+    wound: 30
+    wound_weapon: mortar_artillery
+    kit: *kit
+    weapon: {default: rifle_assault, chechen: rpg, insurgent: rpg}
+    terms:
+      - {to: 20, skill: craft, text: "Trained on the grenade launcher and the rocket launcher."}
+      - {to: 40, skill: stealth, text: "Crept forward to a firing point."}
+      - {to: 55, skill: fieldcraft, text: "Carried the rockets on a night march."}
+      - {to: 70, skill: dodge, text: "Was caught in the open by return fire.", wound: true}
+      - {to: 85, skill: grenade, text: "Knocked out a bunker or a vehicle.", wound: true}
+      - {to: 100, skill: trench, text: "Fought hand to hand in a trench or a room."}
+  - id: marksman
+    name: "Marksman or sniper"
+    main: rifle
+    second: stealth
+    prefers: [wits, agi, nerve, end, str, pres]
+    wound: 15
+    wound_weapon: rifle_assault
+    kit: *kit
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: watch, text: "Watched a crossroads through a scope for a day."}
+      - {to: 40, skill: fieldcraft, text: "Found a hide overlooking the enemy's route."}
+      - {to: 55, skill: stealth, text: "Lay hidden until dark."}
+      - {to: 70, skill: letters, text: "Logged every movement for the intelligence cell."}
+      - {to: 85, skill: craft, text: "Kept the rifle zeroed through heat and cold."}
+      - {to: 100, skill: rifle, text: "Made a long shot that broke up an ambush.", wound: true}
+  - id: sapper
+    name: "Combat engineer or bomb searcher"
+    main: craft
+    second: grenade
+    prefers: [str, end, wits, nerve, agi, pres]
+    wound: 25
+    wound_weapon: mine_ied
+    kit: *kit
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: craft, text: "Built the defences around a patrol base."}
+      - {to: 40, skill: watch, text: "Searched a culvert for a hidden bomb.", wound: true}
+      - {to: 55, skill: drive, text: "Drove a bulldozer to raise a berm."}
+      - {to: 70, skill: letters, text: "Laid or mapped a minefield."}
+      - {to: 85, skill: grenade, text: "Breached a wall with an explosive charge.", wound: true}
+      - {to: 100, skill: fieldcraft, text: "Cleared a compound of booby traps."}
+  - id: medic
+    name: "Combat medic or corpsman"
+    main: leechcraft
+    second: fieldcraft
+    prefers: [end, wits, nerve, str, agi, pres]
+    wound: 20
+    wound_weapon: mortar_artillery
+    kit: *kit
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: craft, text: "Worked at an aid post."}
+      - {to: 40, skill: leechcraft, text: "Put a tourniquet on a casualty in the first minutes."}
+      - {to: 55, skill: signals, text: "Called in a casualty evacuation by helicopter."}
+      - {to: 70, skill: persuade, text: "Talked a shocked soldier through the worst of it."}
+      - {to: 85, skill: dodge, text: "Ran out to a casualty under fire.", wound: true}
+      - {to: 100, skill: leechcraft, text: "Kept a badly wounded soldier alive until the helicopter came.", wound: true}
+  - id: radioman
+    name: "Signaller or radio operator"
+    main: signals
+    second: fieldcraft
+    prefers: [wits, agi, end, nerve, pres, str]
+    wound: 20
+    wound_weapon: mortar_artillery
+    kit: *kit
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: letters, text: "Learned the codes, frequencies and call signs."}
+      - {to: 40, skill: craft, text: "Kept the radio and its batteries working in the field."}
+      - {to: 55, skill: fieldcraft, text: "Carried the radio's weight on a long patrol."}
+      - {to: 70, skill: watch, text: "Listened to the enemy's chatter on a scanner."}
+      - {to: 85, skill: dodge, text: "Was singled out by his antenna.", wound: true}
+      - {to: 100, skill: signals, text: "Called in air support in a close fight."}
+  - id: mp
+    name: "Military police or convoy gunner"
+    main: mg
+    second: drive
+    prefers: [wits, nerve, end, pres, agi, str]
+    wound: 25
+    wound_weapon: mine_ied
+    kit: *kit
+    weapon: {default: machine_gun}
+    terms:
+      - {to: 20, skill: persuade, text: "Ran a checkpoint on a busy road."}
+      - {to: 40, skill: drive, text: "Drove in a supply convoy through hostile country."}
+      - {to: 55, skill: watch, text: "Watched the roadside for signs of a bomb."}
+      - {to: 70, skill: dodge, text: "Was in a vehicle struck by a roadside bomb.", wound: true}
+      - {to: 85, skill: craft, text: "Kept the turret gun working on the road."}
+      - {to: 100, skill: mg, text: "Fought off an ambush from a vehicle's turret.", wound: true}
+  - id: crewman
+    name: "Armoured vehicle crewman"
+    main: gunnery
+    second: drive
+    prefers: [wits, agi, end, nerve, str, pres]
+    wound: 20
+    wound_weapon: rpg
+    kit: *kit
+    weapon: {default: pistol_smg}
+    terms:
+      - {to: 20, skill: craft, text: "Kept the vehicle running in the field."}
+      - {to: 40, skill: drive, text: "Drove through a town at night."}
+      - {to: 55, skill: signals, text: "Worked the vehicle's radio with the infantry."}
+      - {to: 70, skill: watch, text: "Watched for anti-tank teams from the hatch."}
+      - {to: 85, skill: dodge, text: "Bailed out of a burning vehicle.", wound: true}
+      - {to: 100, skill: gunnery, text: "Fired the main gun in support of an assault."}
+  - id: nco
+    name: "Team or section leader"
+    main: command
+    second: rifle
+    prefers: [pres, nerve, end, str, agi, wits]
+    wound: 25
+    wound_weapon: rifle_assault
+    kit: *kit
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: letters, text: "Kept the section's roll and its ammunition count."}
+      - {to: 40, skill: persuade, text: "Kept a frightened soldier in cover."}
+      - {to: 55, skill: rifle, text: "Trained new soldiers before a tour."}
+      - {to: 70, skill: watch, text: "Set the sentries around a patrol base."}
+      - {to: 85, skill: grenade, text: "Led the section into a building.", wound: true}
+      - {to: 100, skill: command, text: "Took command when the platoon leader fell.", wound: true}
+  - id: officer
+    name: "Platoon leader"
+    main: command
+    second: rifle
+    prefers: [pres, nerve, wits, agi, end, str]
+    wound: 30
+    wound_weapon: rifle_assault
+    kit: *kit
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: letters, text: "Planned the patrol and wrote the orders."}
+      - {to: 40, skill: signals, text: "Called in fire on the radio."}
+      - {to: 55, skill: stealth, text: "Led a night raid on a compound.", wound: true}
+      - {to: 70, skill: persuade, text: "Wrote to the families of the dead."}
+      - {to: 85, skill: rifle, text: "Led an assault on a defended position.", wound: true}
+      - {to: 100, skill: command, text: "Held the platoon together when it was cut off.", wound: true}
+
+old_wound:
+  - {to: 70, kind: mark, text: "a healed scar"}
+  - {to: 100, kind: lasting, text: "a lasting hurt"}
+lasting: 5
+lasting_from: {head: wits, face: pres, arms: str, legs: agi, torso: end}
+
+followers:
+  quality:
+    default:  [{to: 30, quality: green}, {to: 80, quality: regular}, {to: 100, quality: veteran}]
+    hardened: [{to: 15, quality: green}, {to: 60, quality: regular}, {to: 100, quality: veteran}]
+    raw:      [{to: 55, quality: green}, {to: 90, quality: regular}, {to: 100, quality: veteran}]
+
+templates:
+  - id: section
+    name: "A rifle section or squad"
+    slots: [[nco, 3], [rifleman, 2], [machine_gunner, 2], [grenadier, 1], [medic, 1]]
+    followers: [[rifleman, 4]]
+  - id: patrol
+    name: "A fighting patrol"
+    slots: [[officer, 3], [nco, 2], [marksman, 2], [radioman, 1], [rifleman, 1]]
+    followers: [[rifleman, 8]]
+    follower_quality: hardened
+  - id: convoy
+    name: "A convoy escort"
+    slots: [[nco, 3], [mp, 2], [mp, 2], [medic, 1], [radioman, 1]]
+    followers: [[mp, 6]]
+  - id: vehicle
+    name: "An armoured vehicle crew"
+    slots: [[nco, 3], [crewman, 2], [crewman, 2], [crewman, 1]]
+    followers: [[rifleman, 6]]
+  - id: engineers
+    name: "A search and clearance team"
+    slots: [[nco, 3], [sapper, 2], [sapper, 2], [rifleman, 1]]
+    followers: [[sapper, 4]]
+  - id: snipers
+    name: "A sniper pair and their cover"
+    slots: [[nco, 3], [marksman, 2], [marksman, 2], [machine_gunner, 1]]
+    followers: []
+    follower_quality: hardened
+  - id: replacements
+    name: "Replacements fresh from training"
+    slots: [[officer, 1], [nco, 2], [rifleman, 1], [rifleman, 1], [medic, 1]]
+    followers: [[rifleman, 20]]
+    follower_quality: raw

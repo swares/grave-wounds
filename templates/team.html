@@ -49,7 +49,8 @@ fieldset[hidden]{display:none}
 label.radio{display:flex;align-items:flex-start;gap:8px;text-transform:none;letter-spacing:0;font-size:.9rem;color:var(--ink);margin:0}
 label.radio input{margin-top:4px}
 .slots{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-.slots li{display:grid;grid-template-columns:minmax(0,1fr) 72px 30px;gap:6px;align-items:center}
+.slots li{display:grid;grid-template-columns:minmax(0,1fr) 72px 76px 30px;gap:6px;align-items:center}
+.note{margin:4px 0 0;font-size:.85em}
 .sheets{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:14px}
 .sheet{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:14px;display:grid;grid-template-columns:78px minmax(0,1fr);gap:4px 14px;break-inside:avoid}
 .sheet .fig{grid-row:span 3;line-height:0}
@@ -95,7 +96,7 @@ label.radio input{margin-top:4px}
   <header>
     <div>
       <h1>Grave Wounds Team Builder</h1>
-      <p class="sub">A team of four to six, a few rolls each: characteristics, where he comes from, the years he served and what they left on him, and his kit. Send the team to the wound roller to fight: his skills fill in his attack and defence there.</p>
+      <p class="sub">A team of four to six, a few rolls each: characteristics, where each comes from, the years served and what they left behind, and kit. Send the team to the wound roller to fight: their skills fill in attack and defence there.</p>
     </div>
     <nav><a href="roller.html">Wound roller</a><a href="travel.html">Travel map</a><a href="field.html">Field map</a><a href="../index.html">Start page</a></nav>
   </header>
@@ -106,6 +107,8 @@ label.radio input{margin-top:4px}
       <div><label for="sel-era">Era</label><select id="sel-era"></select></div>
       <div><label for="sel-region">Where they come from</label><select id="sel-region"></select></div>
       <div><label for="sel-template">Team</label><select id="sel-template"></select></div>
+      <div id="women-box"><label for="sel-women">Women</label><select id="sel-women"><option value="none">Men only</option><option value="roll">Roll each at the army's share</option></select>
+        <p class="muted note" id="women-note"></p></div>
       <fieldset id="slots-box" hidden>
         <legend class="sr">Your own team</legend>
         <span class="lbl" aria-hidden="true">Careers (the first leads)</span>
@@ -134,7 +137,7 @@ label.radio input{margin-top:4px}
         <button id="btn-print" disabled>Print the sheets</button>
       </div>
       <output class="msg" id="msg"></output>
-      <p class="muted" style="margin:0">Leaders serve three terms, the rest one or two. Each term raises his career's skills, adds an event, and may leave an old wound: rolled on the region's wound table, a healed scar or a lasting hurt. See <a href="https://github.com/swares/grave-wounds/blob/main/docs/team.md">the rules</a>.</p>
+      <p class="muted" style="margin:0">Leaders serve three terms, the rest one or two. Each term raises the career's skills, adds an event, and may leave an old wound: rolled on the region's wound table, a healed scar or a lasting hurt. See <a href="https://github.com/swares/grave-wounds/blob/main/docs/team.md">the rules</a>.</p>
     </section>
 
     <section aria-labelledby="h-team">
@@ -160,7 +163,7 @@ function setEra(id){
 }
 const tplFollowers = id => (id === "own" ? [] : (byId(T.templates, id).followers || []).map(s => [...s]));
 const tplQuality = id => (id === "own" ? "default" : byId(T.templates, id).follower_quality || "default");
-let S = { era: T.id, region: T.regions[0].id, template: T.templates[0].id, mode: "roll", side: "Side A", slots: T.templates[0].slots.map(s => [...s]), team: [], swap: null, msg: "",
+let S = { era: T.id, region: T.regions[0].id, template: T.templates[0].id, mode: "roll", women: "none", side: "Side A", slots: T.templates[0].slots.map(s => [...s]), team: [], swap: null, msg: "",
   fcounts: tplFollowers(T.templates[0].id), crew: [] };
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)) } catch (e) { /* storage may be off: the page still works */ } }
 function restore(){
@@ -169,7 +172,7 @@ function restore(){
 const statName = id => byId(T.characteristics, id).name;
 const skillName = id => byId(T.skills, id).name;
 const careerOf = c => byId(T.careers, c.career);
-const slotsNow = () => (S.template === "own" ? S.slots : byId(T.templates, S.template).slots);
+const slotsNow = () => (S.template === "own" ? S.slots : byId(T.templates, S.template).slots.map(([cid, n]) => [cid, n, S.women]));
 
 function fill(){
   $("#sel-era").innerHTML = Object.values(TD.eras).map(e => `<option value="${e.era.id}">${esc(e.era.name)}</option>`).join("");
@@ -183,10 +186,37 @@ function render(){
   $("#slots-box").hidden = S.template !== "own";
   if (S.template === "own") renderSlots();
   $("#btn-send").disabled = $("#btn-print").disabled = $("#btn-field").disabled = !S.team.length;
+  renderWomen();
   renderFollowers();
   $("#msg").textContent = S.msg;
   $("#sheets").innerHTML = S.team.length ? S.team.map(sheetHtml).join("") : `<p class="muted">Pick where they come from and a team, then roll.</p>`;
   save();
+}
+function renderWomen(){                          // the women choice: offered where the region has a share to roll at; otherwise why not
+  const reg = byId(T.regions, S.region), W = reg.women, rolls = W?.share !== null && W?.share !== undefined;
+  if (!rolls) S.women = "none";
+  $("#sel-women").value = S.women;
+  $("#sel-women").disabled = !rolls;
+  $("#sel-women").options[1].textContent = rolls ? `Roll each at the army's share (${W.share}%)` : "Roll each at the army's share";
+  let note = reg.no_women || "";
+  if (W) note = womenNote(W, rolls) + (W.closed || "");
+  $("#women-note").textContent = note;
+  $("#women-note").title = W?.source || "";
+}
+function womenNote(W, rolls){                     // what women did in this army, before why the rest is closed
+  if (!rolls) return `Women served as ${womenCareers(W)}, in numbers no one counted reliably: pick them in Your own team. `;
+  const how = W.disguised ? "enlisted disguised as men" : "served";
+  return `Women ${how} as ${womenCareers(W)}. `;
+}
+const womenCareers = W => W.careers.map(cid => byId(T.careers, cid).name.toLowerCase()).join(", ");
+function sexOpts(i, cid, sex){                    // man, woman or roll for an own-team slot; closed choices say why
+  const [ok, why] = openToWomen(S.region, cid), share = womenOf(S.region)?.share, rolls = ok && share !== null && share !== undefined;
+  const opt = (v, label, on, title) => {
+    const tip = title ? ' title="' + esc(title) + '"' : "";
+    return `<option value="${v}"${v === (sex || "m") ? " selected" : ""}${on ? "" : " disabled"}${tip}>${label}</option>`;
+  };
+  const rollTip = rolls ? share + "%" : why || "No share to roll at";
+  return `<select data-slot="${i}" data-k="sex" aria-label="Man or woman ${i + 1}">${opt("m", "Man", true)}${opt("f", "Woman", ok, why)}${opt("roll", "Roll", rolls, rollTip)}</select>`;
 }
 function renderFollowers(){                       // the counts to roll, and the rolled followers' lines
   const name = cid => byId(T.careers, cid).name;
@@ -198,14 +228,14 @@ function renderFollowers(){                       // the counts to roll, and the
   $("#crew").innerHTML = n ? `<section class="crew" aria-label="Followers"><h3>Followers (${n})</h3><ol>${lines}</ol>
     <div class="toolbar" style="justify-content:flex-end;margin-top:8px"><button class="small" id="btn-reroll-crew">Reroll the followers</button></div></section>` : "";
 }
-const rollCrew = () => { S.crew = makeFollowers(S.region, S.fcounts.filter(([, n]) => n > 0), tplQuality(S.template), realDice) };
+const rollCrew = () => { S.crew = makeFollowers(S.region, S.fcounts.filter(([, n]) => n > 0), tplQuality(S.template), realDice, S.women) };
 function termOpts(n){                             // 1 to 3 terms
   return [1, 2, 3].map(k => '<option value="' + k + '"' + (k === n ? " selected" : "") + ">" + k + (k > 1 ? " terms" : " term") + "</option>").join("");
 }
 function renderSlots(){
   const opts = sel => T.careers.map(c => `<option value="${c.id}"${c.id === sel ? " selected" : ""}>${esc(c.name)}</option>`).join("");
-  $("#slots").innerHTML = S.slots.map(([cid, n], i) => `<li><select data-slot="${i}" data-k="career" aria-label="Career ${i + 1}">${opts(cid)}</select>`
-    + `<select data-slot="${i}" data-k="terms" aria-label="Terms ${i + 1}">${termOpts(n)}</select>`
+  $("#slots").innerHTML = S.slots.map(([cid, n, sex], i) => `<li><select data-slot="${i}" data-k="career" aria-label="Career ${i + 1}">${opts(cid)}</select>`
+    + `<select data-slot="${i}" data-k="terms" aria-label="Terms ${i + 1}">${termOpts(n)}</select>` + sexOpts(i, cid, sex)
     + `<button class="small" data-drop="${i}" title="Remove" aria-label="Remove member ${i + 1}"${S.slots.length <= 1 ? " disabled" : ""}>×</button></li>`).join("");
   $("#btn-add-slot").disabled = S.slots.length >= 6;
 }
@@ -226,25 +256,29 @@ function sheetHtml(c, i){
   }).join("");
   const trained = T.skills.filter(s => (c.gains[s.id] || 0) > 0).map(s => `<span>${esc(s.name)} <b>${c.skills[s.id]}</b></span>`).join("");
   const others = T.skills.filter(s => (c.gains[s.id] || 0) <= 0 && c.skills[s.id] > 0).map(s => `${esc(s.name)} ${c.skills[s.id]}`).join(", ");
-  const life = c.events.map((e, k) => `<li>Term ${k + 1}: ${esc(e)}</li>`).join("") + c.old.map(oldWoundLine).join("");
+  const sx = c.sex || "m", life = c.events.map((e, k) => `<li>Term ${k + 1}: ${esc(pron(e, sx))}</li>`).join("") + c.old.map(oldWoundLine).join("");
   return `<article class="sheet" aria-label="${esc(c.name)}">
     <div class="fig">${fig}</div>
-    <div class="who"><input type="text" value="${esc(c.name)}" data-name="${i}" aria-label="Name">${c.leader ? `<span class="tag">Leader</span>` : ""}</div>
+    <div class="who"><input type="text" value="${esc(c.name)}" data-name="${i}" aria-label="Name">${c.leader ? `<span class="tag">Leader</span>` : ""}${womanTag(c)}</div>
     <div class="what">${esc(career.name)} · ${c.terms} term${c.terms > 1 ? "s" : ""} · age ${c.age} · ${esc(byId(T.regions, c.region).name.replace(/ \(.*/, ""))}</div>
     <div class="stats${c.mode === "array" ? " place" : ""}">${stats}</div>
-    <div class="full what"><b>${esc(c.origin)}.</b> ${esc(c.trait)}; ${esc(c.drawback.toLowerCase())}.</div>
+    <div class="full what"><b>${esc(c.origin)}.</b> ${esc(pron(c.trait, sx))}; ${esc(pron(c.drawback, sx).toLowerCase())}.</div>
     <div class="full skills">${trained}</div>
     <div class="full muted">Untrained: ${others || "none"}</div>
     <div class="full arms">${esc(w.name)}: attack <b>${c.attack ?? "—"}%</b> · defence <b>${c.defence}%</b> · Nerve <b>${c.nerve}</b> · ${esc(kit.name)}</div>
-    <div class="full muted" title="What his characteristics do in the wound roller">In a fight: ${esc(fightLine(c))}</div>
+    <div class="full muted" title="${pron("What his characteristics do in the wound roller", sx)}">In a fight: ${esc(fightLine(c))}</div>
     <ol class="full life">${life}</ol>
-    <div class="tools"><button class="small" data-reroll="${i}">Reroll him</button></div>
+    <div class="tools"><button class="small" data-reroll="${i}">${pron("Reroll him", sx)}</button></div>
   </article>`;
+}
+function womanTag(c){                            // "Woman", or "Woman, enlisted as a man"
+  if (c.sex !== "f") return "";
+  return `<span class="tag">${byId(T.regions, c.region)?.women?.disguised ? "Woman, enlisted as a man" : "Woman"}</span>`;
 }
 function oldWoundLine(w){
   const where = TD.locs[w.loc].name.toLowerCase(), from = TD.weapons[w.weapon].short.toLowerCase();
   const what = w.kind === "lasting" ? `a lasting hurt, ${T.lasting} off ${statName(w.stat)}` : "a healed scar";
-  return `<li class="wound">Old wound: ${esc(where)}, from a ${esc(from)}: ${what}</li>`;
+  return `<li class="wound">Old wound: ${esc(where)}, from ${/^[aeiou]/.test(from) ? "an" : "a"} ${esc(from)}: ${what}</li>`;
 }
 function rollTeam(){
   S.team = makeTeam(S.region, slotsNow(), S.mode, realDice);
@@ -253,7 +287,7 @@ function rollTeam(){
   render();
 }
 function reroll(i){
-  const c = S.team[i], n = makeCharacter(S.region, c.career, c.terms, S.mode, realDice);
+  const c = S.team[i], n = makeCharacter(S.region, c.career, c.terms, S.mode, realDice, c.sex || "m");
   if (c.leader) n.leader = true;
   S.team[i] = n; S.swap = null; render();
 }
@@ -333,6 +367,7 @@ function init(){
   $("#crew").addEventListener("click", e => { if (e.target.closest("#btn-reroll-crew")){ rollCrew(); render() } });
   $("#btn-field").onclick = sendToField;
   $("#sel-region").onchange = e => { S.region = e.target.value; render() };
+  $("#sel-women").onchange = e => { S.women = e.target.value; render() };
   $("#sel-template").onchange = e => {
     S.template = e.target.value;
     if (S.template !== "own") S.slots = byId(T.templates, S.template).slots.map(s => [...s]);
@@ -344,7 +379,9 @@ function init(){
   $("#slots").addEventListener("change", e => {
     const el = e.target.closest("select[data-slot]"); if (!el) return;
     const s = S.slots[+el.dataset.slot];
-    if (el.dataset.k === "career") s[0] = el.value; else s[1] = +el.value;
+    if (el.dataset.k === "career") s[0] = el.value;
+    else if (el.dataset.k === "sex") s[2] = el.value;
+    else s[1] = +el.value;
     render();
   });
   $("#slots").addEventListener("click", e => { const b = e.target.closest("button[data-drop]"); if (b){ S.slots.splice(+b.dataset.drop, 1); render() } });

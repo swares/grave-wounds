@@ -63,40 +63,58 @@ regions:
     colours: ["#2e4f8a", "#3a4a6a", "#7d5530", "#e6e0d2"]
     names: [John, William, James, George, Charles, Henry, Thomas, Patrick, Michael, Frederick, August, Jacob, Samuel, David, Edward, Robert]
     bynames: [Smith, Miller, Brown, Wilson, Murphy, Schmidt, Becker, Larsen, Taylor, Moore, Kelly, Johnson]
+    women:
+      share: 0.02
+      disguised: true
+      careers: [infantry, sharpshooter, trooper, gunner, scout, teamster]
+      closed: "A woman in the ranks had enlisted disguised as a man, as a private: none is known to have held these careers' ranks openly."
+      source: "DeAnne Blanton, Women Soldiers of the Civil War, Prologue (National Archives, 1993): roughly 750 women enlisted disguised as men, as many as 250 of them Confederates; the share is our arithmetic on armies of some two million and some 900,000."
   - id: confederacy
     name: "The Confederacy (1861-1865)"
     table: acw-1861-all-hits
     colours: ["#8a8a7a", "#7d5530", "#5c6b3a", "#e6e0d2"]
     names: [John, William, James, Thomas, Robert, Joseph, Benjamin, Jesse, Elijah, Hiram, Nathaniel, Wade, Lewis, Samuel, Henry, George]
     bynames: [Smith, Jones, Davis, Walker, Harris, Lee, Mitchell, Carter, Turner, Hill, Price, Barrett]
+    women:
+      share: 0.03
+      disguised: true
+      careers: [infantry, sharpshooter, trooper, gunner, scout, teamster]
+      closed: "A woman in the ranks had enlisted disguised as a man, as a private: none is known to have held these careers' ranks openly."
+      source: "DeAnne Blanton, Women Soldiers of the Civil War, Prologue (National Archives, 1993): roughly 750 women enlisted disguised as men, as many as 250 of them Confederates; the share is our arithmetic on armies of some two million and some 900,000."
   - id: frontier
     name: "The US Army on the frontier (1866-1876)"
     table: acw-1861-all-hits
     colours: ["#2e4f8a", "#7d5530", "#9a7347", "#e6e0d2"]
     names: [John, William, James, Patrick, Michael, Thomas, Charles, George, Henry, Frank, Joseph, Daniel, Peter, Edward, Isaiah, Moses]
     bynames: [Smith, Murphy, O'Brien, Schultz, Jackson, Williams, Wilson, Clark, Ryan, Walsh, Green, Young]
+    no_women: "These tables have no record of women in the frontier army's ranks."
 
 origins:
-  - {name: "Farm boy", gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Never been far from home", persuade: -15}}
+  - {name: "Farm boy", who: m, gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Never been far from home", persuade: -15}}
   - {name: "Mill hand", gain: craft, trait: {text: "Used to long hours", end: 10}, drawback: {text: "Never slept rough", fieldcraft: -15}}
   - {name: "Clerk in a store", gain: letters, trait: {text: "Good at sums", wits: 10}, drawback: {text: "Soft hands", str: -10}}
   - {name: "Immigrant fresh off the boat", gain: craft, trait: {text: "Served in an army back home", rifle: 15}, drawback: {text: "Speaks little English", persuade: -15}}
-  - {name: "Hunter's son", gain: rifle, trait: {text: "A steady aim", rifle: 15}, drawback: {text: "Hates drill", pres: -10}}
+  - {name: "Hunter's son", who: m, gain: rifle, trait: {text: "A steady aim", rifle: 15}, drawback: {text: "Hates drill", pres: -10}}
   - {name: "Teamster", gain: ride, trait: {text: "Knows every road", fieldcraft: 15}, drawback: {text: "Bad back", agi: -10}}
   - {name: "Schoolteacher", gain: letters, trait: {text: "Well read", letters: 15}, drawback: {text: "Faints at the sight of blood", nerve: -10}}
-  - {name: "Druggist's boy", gain: leechcraft, trait: {text: "Knows his remedies", leechcraft: 15}, drawback: {text: "Never stops talking", stealth: -15}}
-  - {name: "Son of a planter or a mill owner", gain: ride, trait: {text: "Raised to command", command: 15}, drawback: {text: "Proud and touchy", persuade: -15}}
+  - {name: "Druggist's boy", who: m, gain: leechcraft, trait: {text: "Knows his remedies", leechcraft: 15}, drawback: {text: "Never stops talking", stealth: -15}}
+  - {name: "Son of a planter or a mill owner", who: m, gain: ride, trait: {text: "Raised to command", command: 15}, drawback: {text: "Proud and touchy", persuade: -15}}
   - {name: "Railroad man", gain: craft, trait: {text: "Not afraid of machines", wits: 10}, drawback: {text: "Half deaf from the engines", watch: -15}}
   - {name: "Blacksmith's apprentice", gain: craft, trait: {text: "Arms like hams", str: 10}, drawback: {text: "Slow afoot", agi: -10}}
   - {name: "Riverboat hand", gain: brawl, trait: {text: "Swims like an otter", end: 10}, drawback: {text: "Gambles away his pay", pres: -10}}
   - {name: "Cowhand", gain: ride, trait: {text: "Horse sense", ride: 15}, drawback: {text: "Kicked by a horse as a boy", end: -10}}
   - {name: "Woodsman", gain: fieldcraft, trait: {text: "Moves quietly in the woods", stealth: 15}, drawback: {text: "Uneasy in towns", pres: -10}}
   - {name: "Street tough from a big city", gain: brawl, trait: {text: "Takes a punch", end: 10}, drawback: {text: "Known to the police", persuade: -15}}
-  - {name: "Preacher's son", gain: persuade, trait: {text: "A voice that carries", pres: 10}, drawback: {text: "Never fired a gun", rifle: -15}}
+  - {name: "Preacher's son", who: m, gain: persuade, trait: {text: "A voice that carries", pres: 10}, drawback: {text: "Never fired a gun", rifle: -15}}
   - {name: "Telegraph operator", gain: letters, trait: {text: "Quick with his hands", agi: 10}, drawback: {text: "Short-sighted", watch: -15}}
   - {name: "Miner from the hills", gain: craft, trait: {text: "Tireless", end: 10}, drawback: {text: "Coughs in the cold", stealth: -15}}
   - {name: "Drifter", gain: watch, trait: {text: "Sleeps anywhere", end: 10}, drawback: {text: "Belongs nowhere", pres: -10}}
   - {name: "Volunteer for the cause", gain: persuade, trait: {text: "Hard to frighten", nerve: 10}, drawback: {text: "Never held a weapon", parry: -15}}
+  - {name: "Farm girl who cut her hair", who: f, gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Never been far from home", persuade: -15}}
+  - {name: "Mill girl", who: f, gain: craft, trait: {text: "Used to long hours", end: 10}, drawback: {text: "Never fired a gun", rifle: -15}}
+  - {name: "Followed her husband into the ranks", who: f, gain: persuade, trait: {text: "Stays by her husband", nerve: 10}, drawback: {text: "Afraid of being found out", pres: -10}}
+  - {name: "Ran away from home in boy's clothes", who: f, gain: stealth, trait: {text: "Passes unnoticed", stealth: 15}, drawback: {text: "Never slept rough", fieldcraft: -15}}
+  - {name: "Seamstress", who: f, gain: craft, trait: {text: "Nimble fingers", agi: 10}, drawback: {text: "Soft hands", str: -10}}
 
 careers:
   - id: infantry

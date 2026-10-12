@@ -69,39 +69,51 @@ regions:
     colours: ["#5b5a3a", "#6b5f3a", "#7a6a42", "#e6e0d2"]
     names: [Robert, James, John, William, Richard, Charles, Donald, George, Joseph, Edward, Thomas, Frank, Harold, Walter, Paul, Raymond]
     bynames: [Smith, Johnson, Williams, Brown, Jones, Miller, Davis, Garcia, Wilson, Anderson, Kowalski, O'Brien]
+    no_women: "American servicewomen served as nurses and in the women's corps, not in fighting units."
   - id: us_pacific
     name: "US Marines and Army in the Pacific"
     table: bougainville-1944-all-hits
     colours: ["#4f5a3a", "#5b5a3a", "#6b6a4a", "#e6e0d2"]
     names: [Robert, James, John, William, Richard, Charles, Donald, George, Joseph, Edward, Thomas, Frank, Harold, Walter, Eugene, Raymond]
     bynames: [Smith, Johnson, Williams, Brown, Jones, Miller, Davis, Martinez, Wilson, Anderson, Nowak, Sullivan]
+    no_women: "American servicewomen served as nurses and in the women's corps, not in fighting units."
   - id: commonwealth
     name: "The British Commonwealth"
     table: owens-wwii
     colours: ["#7a6a42", "#6b5f3a", "#8a7a52", "#e6e0d2"]
     names: [Ronald, Kenneth, Dennis, Leslie, Stanley, Albert, Arthur, Frederick, George, Jack, Harold, Norman, Douglas, Bruce, Ian, Bill]
     bynames: [Smith, Jones, Brown, Taylor, Williams, Wilson, Campbell, Stewart, Murray, Macdonald, Clarke, Walker]
+    no_women: "Commonwealth servicewomen served in the women's services and as nurses, not in these careers."
   - id: germany
     name: "Germany"
     table: owens-wwii
     colours: ["#5e6152", "#6b6e5a", "#7d6a4a", "#e6e0d2"]
     names: [Hans, Karl, Werner, Günter, Heinz, Walter, Kurt, Helmut, Gerhard, Herbert, Wilhelm, Rudolf, Erich, Otto, Friedrich, Horst]
     bynames: [Müller, Schmidt, Schneider, Fischer, Weber, Meyer, Wagner, Becker, Schulz, Hoffmann, Koch, Richter]
+    no_women: "German women served as auxiliaries and nurses, not in these careers."
   - id: soviet
     name: "The Soviet Union"
     table: owens-wwii
     colours: ["#7a7450", "#6b6a48", "#5b5a3a", "#e6e0d2"]
     names: [Ivan, Aleksandr, Nikolai, Vasily, Mikhail, Pyotr, Sergei, Dmitri, Fyodor, Grigory, Pavel, Yakov, Andrei, Viktor, Boris, Stepan]
     bynames: [Ivanov, Smirnov, Kuznetsov, Popov, Sokolov, Lebedev, Kozlov, Novikov, Morozov, Petrov, Volkov, Solovyov]
+    women:
+      share: 3
+      careers: [rifleman, machine_gunner, sniper, medic, radioman, nco, officer, tanker]
+      names: [Lyudmila, Mariya, Nina, Tatyana, Klavdiya, Valentina, Yevgeniya, Olga, Anna, Natalya, Zoya, Galina, Vera, Lidiya, Yekaterina, Aleksandra]
+      bynames: [Ivanova, Smirnova, Kuznetsova, Popova, Sokolova, Lebedeva, Kozlova, Novikova, Morozova, Petrova, Volkova, Solovyova]
+      closed: "The sources used here name Soviet women as riflemen, machine gunners, snipers, medics, signallers, tank crew, sergeants and officers; the other careers stay closed."
+      source: "Women in the Russian and Soviet military (Wikipedia, citing Air University Review, 1982): over 800,000 women, over 3 percent of the Soviet forces. Soviet women in World War II (Wikipedia): 2,484 women snipers; machine gunner Manshuk Mametova, tank drivers Mariya Oktyabrskaya and Aleksandra Samusenko, battalion commander Tatyana Kostyrina."
   - id: japan
     name: "Japan"
     table: bougainville-1944-all-hits
     colours: ["#8a7a4a", "#7a6a42", "#6b5f3a", "#e6e0d2"]
     names: [Hiroshi, Takeshi, Kiyoshi, Isamu, Minoru, Masao, Shigeru, Saburō, Ichirō, Jirō, Tadashi, Yoshio, Haruo, Tsutomu, Kazuo, Akira]
     bynames: [Satō, Suzuki, Takahashi, Tanaka, Watanabe, Itō, Yamamoto, Nakamura, Kobayashi, Katō, Yoshida, Yamada]
+    no_women: "Japanese women served as nurses and in war work, not in these careers."
 
 origins:
-  - {name: "Farm boy", gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Never been far from home", persuade: -15}}
+  - {name: "Farm boy", who: m, gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Never been far from home", persuade: -15}}
   - {name: "Factory worker", gain: craft, trait: {text: "Used to long shifts", end: 10}, drawback: {text: "Half deaf from the presses", watch: -15}}
   - {name: "Office clerk", gain: letters, trait: {text: "Good at sums", wits: 10}, drawback: {text: "Soft hands", str: -10}}
   - {name: "Coal miner", gain: craft, trait: {text: "At home underground", end: 10}, drawback: {text: "Coughs in the cold", stealth: -15}}
@@ -112,15 +124,19 @@ origins:
   - {name: "Pharmacist's assistant", gain: leechcraft, trait: {text: "Knows his remedies", leechcraft: 15}, drawback: {text: "Never stops talking", stealth: -15}}
   - {name: "College student", gain: letters, trait: {text: "Speaks the enemy's language", wits: 10}, drawback: {text: "Never done a day's labour", str: -10}}
   - {name: "Radio ham", gain: signals, trait: {text: "Sends Morse in his sleep", signals: 15}, drawback: {text: "Short-sighted", watch: -15}}
-  - {name: "Boxer", gain: brawl, trait: {text: "Hard to frighten", nerve: 10}, drawback: {text: "Hot-tempered", persuade: -15}}
+  - {name: "Boxer", who: m, gain: brawl, trait: {text: "Hard to frighten", nerve: 10}, drawback: {text: "Hot-tempered", persuade: -15}}
   - {name: "Athlete", gain: dodge, trait: {text: "Fast on his feet", agi: 10}, drawback: {text: "Bad knee", end: -10}}
   - {name: "Lumberjack", gain: craft, trait: {text: "Arms like hams", str: 10}, drawback: {text: "Slow afoot", agi: -10}}
   - {name: "Fisherman", gain: craft, trait: {text: "Weathered every storm", end: 10}, drawback: {text: "Never fired a gun", rifle: -15}}
   - {name: "Shop assistant", gain: persuade, trait: {text: "A ready smile", pres: 10}, drawback: {text: "Never slept rough", fieldcraft: -15}}
   - {name: "Street kid from a big city", gain: brawl, trait: {text: "Takes a punch", end: 10}, drawback: {text: "Known to the police", persuade: -15}}
-  - {name: "Son of a good family", gain: command, trait: {text: "Raised to command", command: 15}, drawback: {text: "Proud and touchy", persuade: -15}}
+  - {name: "Son of a good family", who: m, gain: command, trait: {text: "Raised to command", command: 15}, drawback: {text: "Proud and touchy", persuade: -15}}
   - {name: "Scout or youth group leader", gain: fieldcraft, trait: {text: "Reads a map", fieldcraft: 15}, drawback: {text: "Too eager", stealth: -15}}
-  - {name: "Peacetime regular", gain: rifle, trait: {text: "Knows the drill", rifle: 15}, drawback: {text: "Set in his ways", wits: -10}}
+  - {name: "Peacetime regular", who: m, gain: rifle, trait: {text: "Knows the drill", rifle: 15}, drawback: {text: "Set in his ways", wits: -10}}
+  - {name: "Farm girl", who: f, gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Never been far from home", persuade: -15}}
+  - {name: "Daughter of a good family", who: f, gain: command, trait: {text: "Raised to command", command: 15}, drawback: {text: "Proud and touchy", persuade: -15}}
+  - {name: "Trained at a shooting club", who: f, gain: rifle, trait: {text: "A marksman's badge before the war", rifle: 15}, drawback: {text: "Never slept rough", fieldcraft: -15}}
+  - {name: "Telephone operator", who: f, gain: signals, trait: {text: "Works any switchboard", signals: 15}, drawback: {text: "Short-sighted", watch: -15}}
 
 careers:
   - id: rifleman
