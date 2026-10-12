@@ -903,6 +903,26 @@ south, north at the top: the ridge across the middle.
 It is drawn by `tools/maps/make_bougainville_field.mjs`. Both are design sketches drawn from
 the accounts' plain facts, not traced from any map.
 
+**The Rangers at Cisterna, 30 January 1944** (`data/fields/cisterna-1944.yaml`). The field is
+150 × 120 hexes, about 1,640 yards (1,500 m) east to west and 1,140 yards (1,040 m) north to
+south, north at the top.
+- The southern edge of Cisterna along the top and the railroad station top left (buildings);
+  a cross ditch below the town; the Conca road from the bottom left; the Pantano ditch (marsh)
+  from the bottom right; open, treeless fields with farmhouses (buildings) and haystacks
+  (rough).
+- A cold, still dawn, the reclaimed ground soft.
+- The 1st and 3rd Ranger Battalions (veteran, extended order) in the open fields 800 yards
+  short of the town, with the 3rd Reconnaissance Troop's platoon behind them on the road.
+- The Germans gone to ground in the houses on the town's edge, in farmhouses with machine
+  guns, and in haystacks and dugouts on both flanks; paratroops by the station.
+- Fire support: the 3rd Division's 105 mm howitzers and the Rangers' 4.2-inch mortars; German
+  mortars, three self-propelled guns and, later in the morning, tanks, all firing over open
+  sights.
+- The wound tables are the Owens WWII set (hospitalized wounded).
+
+It is drawn by `tools/maps/make_cisterna_field.mjs`, from the plain facts of the US Army's
+account (*Anzio Beachhead*), not traced from any map.
+
 **Task Force Smith at Osan, 5 July 1950** (`data/fields/osan-1950.yaml`). The field is 220 ×
 110 hexes, about 2,410 yards (2,200 m) east to west and 1,040 yards (950 m) north to south,
 north at the top.
