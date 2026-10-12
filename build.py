@@ -311,13 +311,18 @@ def _vehicle_rules(d) -> list[str]:
     if not V:
         return []
     kinds = "; ".join(f"{k['name'].lower()}: {k['crew']} crew, move {k['move']}, {k['armour']} armour" + (f", main gun to {k['gun']['range']} hexes, {k['gun']['rate']} a vehicle an exchange" if k.get("gun") else "")
-                      for k in V["kinds"].values())
-    arm = "; ".join(f"{name}: rocket {a['rpg']}%, gun {a['gun']}%, shell x{a['shell']:g}" for name, a in V["armour"].items())
+                      + (f", carries {k['carry']} men a vehicle" if k.get("carry") else "") for k in V["kinds"].values())
+    arm = "; ".join(f"{name}: rocket {a['rpg']}%, guided missile {a['atgm']}%, gun {a['gun']}%, shell x{a['shell']:g}" for name, a in V["armour"].items())
     going = ", ".join(f"{d.units['ground'][g]['name'].lower()} {c}" for g, c in V["ground"].items())
+    at = ", ".join(f"{d.weapons[w]['short']} {a['rate']:g} a man" for w, a in V["anti_armour"].items())
+    asp, dm = V.get("aspect") or {}, V.get("damage") or {}
     return [f"<b>Vehicles:</b> one a hex ({kinds}). Small arms cannot hurt them; no one fights them hand to hand. Anti-armour weapons fire "
-            + ", ".join(f"{r:g} a man" for r in V["anti_armour"].values()) + f" an exchange, every round aimed; a hit knocks a vehicle out by its armour ({arm}). "
+            + at + f" an exchange, every round aimed; a hit knocks a vehicle out by its armour ({arm}), x{asp.get('flank', 1):g} into the flank and x{asp.get('rear', 1):g} into the rear. "
+            f"A hit that does not knock it out immobilises it at {dm.get('immobilised', 0)}% or puts its main gun out at {dm.get('gun', 0)}%; a unit cannot move until it abandons "
+            "its immobilised vehicles (their crews leave unhurt). "
             f"A main gun hits a vehicle by range, or bursts on men as a tank's round on call; a shell or bomb in a vehicle's hex knocks it out at the kind's knock % times shell. "
-            f"A knocked-out vehicle's crew are out of the fight, each struck at {V['crew_struck']}%. Going a hex: {going}; nothing else."]
+            f"A knocked-out vehicle's crew are out of the fight, each struck at {V['crew_struck']}%. Carriers take a foot unit aboard from beside them and set it down beside them; "
+            f"riders in a knocked-out carrier are each struck at {V['riders_struck']}%. Going a hex: {going}; nothing else."]
 
 
 def _heliborne_rules(d) -> list[str]:

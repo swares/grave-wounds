@@ -6,7 +6,7 @@ battle: "Vietnam"
 context: "Location of wounds in US Army casualties admitted to hospital in Vietnam (24-month sample)."
 variant: evidence
 weapon_bias: recentred
-weapons: [rifle_assault, machine_gun, pistol_smg, hand_grenade, mortar_artillery, rpg, mine_ied, punji_stake, explosive_fragment, bayonet, entrenching_tool]
+weapons: [rifle_assault, machine_gun, pistol_smg, hand_grenade, mortar_artillery, rpg, recoilless, mine_ied, punji_stake, explosive_fragment, bayonet, entrenching_tool]
 modifiers: [attacker_higher, attacker_lower, target_fleeing, behind_cover]
 confidence: historical
 excluded_pct: 22

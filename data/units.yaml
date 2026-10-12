@@ -285,6 +285,7 @@ indirect:
     field:    {name: "Field guns",       rate: 2, rounds: 80, delay: 1, scatter: 4, radius: 3, struck: [20, 8, 3, 1],             counter: 2, crew: 6, serve: 3, displace: 2, illum: 30}
     howitzer: {name: "Heavy howitzers",  rate: 1, rounds: 40, delay: 1, scatter: 5, radius: 5, struck: [30, 12, 5, 2, 1, 0.5], counter: 4, knock: 2, crew: 8, serve: 4, displace: 3, illum: 40}
     tank:     {name: "Tanks (direct fire)", rate: 2, rounds: 60, delay: 0, scatter: 0, radius: 1, struck: [25, 5],              counter: 0, knock: 8, direct: true, crew: 5, serve: 3, displace: 0}
+    autocannon: {name: "Autocannon (direct fire)", rate: 3, rounds: 300, delay: 0, scatter: 0, radius: 0, struck: [20],              counter: 0, knock: 3, direct: true, crew: 3, serve: 2, displace: 0}
     fighter_bomber: {name: "Fighter-bombers (bombs, napalm)", rate: 2, rounds: 4, delay: 2, scatter: 3, radius: 4, struck: [45, 25, 12, 5, 2], counter: 0, knock: 15, air: true, by_night: false, shot: [bomb, bombs]}
     gunship:  {name: "Helicopter gunships (rockets, guns)", rate: 4, rounds: 24, delay: 0, scatter: 1, radius: 1, struck: [20, 6], counter: 0, knock: 4, air: true, by_night: true, shot: [rocket and gun pass, rocket and gun passes]}
   air: {grounded: [fog, storm, heavy_snow, blizzard], night: [moonlit, night]}
@@ -294,31 +295,47 @@ indirect:
   creep: {max: 3, every_max: 4}
 
 # ---------- vehicles ----------
-# A vehicle unit (`vehicle`: a kind below) is tanks or armoured carriers on the field, one a
-# hex: its men are their crews, `crew` a vehicle, in the armour formation, with the kind's
-# `move`. Its machine guns fire as a machine-gun team's (its weapon is the machine gun). A
-# kind with a `gun` also fires its main gun each exchange, `rate` rounds a vehicle, at the
-# nearest enemy unit in range, in sight (as guns are) and in front of it, enemy vehicles first:
-# at a vehicle each round hits at the `hit` % for its range in field hexes and then knocks it
-# out at its armour's `gun` %; at men it bursts on the nearest of their hexes as the
-# indirect-fire kind `he` does (no scatter).
+# A vehicle unit (`vehicle`: a kind below) is tanks, infantry fighting vehicles or armoured
+# carriers on the field, one a hex: its men are their crews, `crew` a vehicle, in the armour
+# formation, with the kind's `move`. Its machine guns fire as a machine-gun team's (its weapon is
+# the machine gun). A kind with a `gun` also fires its main gun each exchange, `rate` rounds a
+# vehicle whose gun still works, at the nearest enemy unit in range, in sight (as guns are) and
+# in front of it, enemy vehicles first: at a vehicle each round hits at the `hit` % for its range
+# in field hexes and then knocks it out at its armour's `gun` %; at men it bursts on the nearest
+# of their hexes as the indirect-fire kind `he` does (no scatter).
 # Armour: small arms cannot hurt a vehicle (men with them do not shoot at one), and no one
-# strikes it, or is struck by it, hand to hand. Men with an `anti_armour` weapon fire its
+# strikes it, or is struck by it, hand to hand. Men with an `anti_armour` weapon fire its `rate`
 # rounds a man at a vehicle (every one aimed); each that hits (as at men: range, cover, the
-# weather) knocks a vehicle out at its armour's `rpg` %. A shell or bomb bursting in a vehicle's own hex knocks it out at the firing kind's
-# `knock` % times its armour's `shell`. A knocked-out vehicle's crew are out of the fight:
-# each is struck at `crew_struck` % and rolls a wound as one struck by shellfire.
-# Going: a vehicle crosses the ground at the `ground` cost a hex; ground not listed (marsh,
-# buildings, tall buildings, rubble, water) it cannot enter; works as men do. Design estimates.
+# weather) knocks a vehicle out at its armour's `row` % (rpg or atgm). A round into a vehicle's
+# flank or rear (where the shooter stands, by the vehicle unit's facing) knocks it out at that %
+# times `aspect` (to 100 at most). A hit that does not knock it out may still do harm (`damage`):
+# at `immobilised` % it cannot move, at the next `gun` % its main gun is out. A unit with an
+# immobilised vehicle cannot move until it abandons it (its crew leave the fight unhurt). A shell
+# or bomb bursting in a vehicle's own hex knocks it out at the firing kind's `knock` % times its
+# armour's `shell`. A knocked-out vehicle's crew are out of the fight: each is struck at
+# `crew_struck` % and rolls a wound as one struck by shellfire.
+# Riders: a carrier kind (`carry` men a vehicle) takes a foot unit of its side aboard (it
+# mounts from within a hex of the carriers on its own move). Riders do not fight, shoot or check
+# morale; they move with the carriers and get down beside them on the carriers' move (they can
+# move the exchange after). When a carrier is knocked out, its share of the riders are each
+# struck at `riders_struck` %; when the last is, the riders get down where it stood.
 vehicles:
   kinds:
     tank: {name: "Tanks", crew: 4, move: 12, armour: heavy, gun: {range: 100, rate: 1, he: tank, hit: [[20, 75], [50, 50], [100, 25]]}}
-    apc:  {name: "Armoured carriers", crew: 3, move: 14, armour: light}
+    ifv:  {name: "Infantry fighting vehicles", crew: 3, move: 14, armour: light, carry: 7, gun: {range: 80, rate: 2, he: autocannon, hit: [[20, 70], [40, 45], [80, 20]]}}
+    apc:  {name: "Armoured carriers", crew: 3, move: 14, armour: light, carry: 10}
   armour:
-    heavy: {rpg: 15, gun: 35, shell: 1}
-    light: {rpg: 50, gun: 75, shell: 3}
-  anti_armour: {rpg: 0.25}   # weapon: rounds a man fires at a vehicle an exchange, every one aimed
+    heavy: {rpg: 15, atgm: 60, gun: 35, shell: 1}
+    light: {rpg: 50, atgm: 90, gun: 75, shell: 3}
+  aspect: {flank: 2.0, rear: 3.0}
+  anti_armour:               # weapon: rate (rounds a man fires at a vehicle an exchange, every one aimed) and the armour row it hits on
+    rpg:        {rate: 0.25, row: rpg}
+    bazooka:    {rate: 0.25, row: rpg}
+    recoilless: {rate: 0.25, row: rpg}
+    atgm:       {rate: 0.1,  row: atgm}
+  damage: {immobilised: 25, gun: 15}
   crew_struck: 50
+  riders_struck: 30
   ground: {open: 1, rough: 2, woods: 3, slope: 2, high: 1}
 
 # ---------- landing by air ----------

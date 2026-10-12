@@ -523,6 +523,37 @@ def hurts_armour(d: Data, weapon: str) -> bool:
     return weapon in ((d.units.get("vehicles") or {}).get("anti_armour") or {})
 
 
+def bearing(t, h) -> int:
+    """The direction (0-5, as step) from hex t that points most nearly at hex h (the first of equals)."""
+    a, b = _cube(t), _cube(h)
+    v = (b[0] - a[0], b[1] - a[1], b[2] - a[2])
+    dots = [v[0] * q + v[1] * r + v[2] * (-q - r) for q, r in AX]
+    return dots.index(max(dots))
+
+
+def kill_chance(d: Data, u: dict, row: str, h, t) -> int:
+    """% that a hit from hex h on vehicle unit u (at its hex t) knocks a vehicle out: its armour's
+    `row` %, times vehicles.aspect for a flank or rear shot (by u's facing), to 100 at most."""
+    p = armour_of(d, u)[row]
+    side = arc(u["facing"], bearing(t, h)) if h is not None and t is not None and list(h) != list(t) else "front"
+    return min(100, int(p * (d.units["vehicles"].get("aspect") or {}).get(side, 1)))
+
+
+def _harm(d: Data, u: dict, n: int, lost: int, rng) -> dict:
+    """n hits on vehicle unit u that did not knock one out: each may immobilise a vehicle or put
+    its main gun out (vehicles.damage), up to the vehicles it has left. -> {immobilised, gun}."""
+    D, left, out = d.units["vehicles"].get("damage") or {}, vehicles_left(d, u, lost), {"immobilised": 0, "gun": 0}
+    for _ in range(n):
+        r = rng.randint(1, 100)
+        if r <= D.get("immobilised", 0):
+            out["immobilised"] += 1
+        elif r <= D.get("immobilised", 0) + D.get("gun", 0):
+            out["gun"] += 1
+    u["immobile"] = min(left, u.get("immobile", 0) + out["immobilised"])
+    u["gunless"] = min(left, u.get("gunless", 0) + out["gun"])
+    return out
+
+
 def footprint(d: Data, u: dict) -> list:
     """The unit's hexes as rows, front row first; each row runs along the line. Empty if it
     has no men left or has fled."""
@@ -1160,6 +1191,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     _smoke_drifts(d, field)
     _lit_fades(field)
     log += landings(d, us, table, rng, field)
+    log += _vehicles_after(d, us, field)
     return us, log
 
 
@@ -1411,13 +1443,27 @@ def _armour_volley(d: Data, us: list, ctx: tuple, v: dict, opts: dict) -> list:
     band = field_range(d, att["weapon"], v["dist"], opts["reach"])
     if band is None:
         return []
-    n = _count(v["men"] * d.units["vehicles"]["anti_armour"][att["weapon"]] * opts["factor"], rng)
+    A = d.units["vehicles"]["anti_armour"][att["weapon"]]
+    n = _count(v["men"] * A["rate"] * opts["factor"], rng)
     atk = _attack(d, att) - band["penalty"] - opts["penalty"]
     hits = sum(1 for _ in range(n) if rng.randint(1, 100) <= atk)
-    kills = sum(1 for _ in range(hits) if rng.randint(1, 100) <= armour_of(d, us[v["dfd"]])["rpg"])
+    p = kill_chance(d, us[v["dfd"]], A["row"], v["from"], v["to"])
+    kills = sum(1 for _ in range(hits) if rng.randint(1, 100) <= p)
     k = knock_out(d, us, v["dfd"], kills, (table, rng), acc)
+    harm = _harm(d, us[v["dfd"]], hits - k["knocked"], acc[0][v["dfd"]], rng)
     acc[2][v["att"]] += k["crew"]
-    return _logged({"kind": "antiarmour", **v, "shots": n, "hit": hits, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"]}, k["tally"])
+    line = {"kind": "antiarmour", **v, "shots": n, "hit": hits, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"], "kill": p, **_harm_line(harm), **_riders_line(k)}
+    return _logged(line, k["tally"])
+
+
+def _harm_line(harm: dict) -> dict:
+    """The log's immobilised and gun counts, when there are any."""
+    return {k: v for k, v in (("immobilised", harm["immobilised"]), ("gun_out", harm["gun"])) if v}
+
+
+def _riders_line(k: dict) -> dict:
+    """The log's riders struck and down, when any were."""
+    return {k2: k[k1] for k1, k2 in (("riders_struck", "rstruck"), ("riders_down", "rdown"), ("riders_dead", "rdead")) if k.get(k1)}
 
 
 def knock_out(d: Data, us: list, i: int, n: int, tr: tuple, acc: tuple) -> dict:
@@ -1435,9 +1481,28 @@ def knock_out(d: Data, us: list, i: int, n: int, tr: tuple, acc: tuple) -> dict:
     t = _blows(d, {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}, _side(u, table), struck, d.units["indirect"]["attack"], 0, rng, (), -1000) \
         if struck and weapon else _new_tally()
     t = _take_hurt(u, t)
+    left = vehicles_left(d, u, lost[i])
     lost[i] += crew
     dead[i] += min(t["dead"], crew)
-    return {"knocked": n, "crew": crew, "struck": struck, "tally": t}
+    return {"knocked": n, "crew": crew, "struck": struck, "tally": t, **_riders_hit(d, u, n, left, tr)}
+
+
+def _riders_hit(d: Data, u: dict, n: int, left: int, tr: tuple) -> dict:
+    """The riders in n of a carrier unit's `left` vehicles, knocked out: each struck at
+    vehicles.riders_struck % and wounded as by shellfire (taken off the riders at once)."""
+    R = u.get("riders")
+    if not R or R["men"] <= 0 or left <= 0:
+        return {}
+    table, rng = tr
+    share = min(R["men"], math.ceil(R["men"] * n / left))
+    struck = sum(1 for _ in range(share) if rng.randint(1, 100) <= d.units["vehicles"]["riders_struck"])
+    weapon = shell_weapon(d, table)
+    if not struck or not weapon:
+        return {"riders_struck": struck}
+    t = _take_hurt(R, _blows(d, {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}, _side(R, table), struck, d.units["indirect"]["attack"], 0, rng, (), -1000))
+    down = min(t["down"], R["men"])
+    R.update(men=R["men"] - down, down=R.get("down", 0) + down, dead=R.get("dead", 0) + min(t["dead"], down))
+    return {"riders_struck": struck, "riders_down": down, "riders_dead": min(t["dead"], down)}
 
 
 def _vehicle_guns(d: Data, us: list, ctx: tuple, field: dict | None, under: list | None) -> list:
@@ -1454,10 +1519,12 @@ def _vehicle_guns(d: Data, us: list, ctx: tuple, field: dict | None, under: list
         best = _gun_target(d, us, i, field, gun)
         if best is None:
             continue
-        dist, j, _, t = best
-        rounds = vehicles_left(d, u) * gun["rate"]
+        dist, j, h, t = best
+        rounds = max(0, vehicles_left(d, u) - u.get("gunless", 0)) * gun["rate"]
+        if rounds <= 0:
+            continue
         if us[j].get("vehicle"):
-            log += _gun_at_vehicle(d, us, (i, j, dist, rounds), gun, ctx)
+            log += _gun_at_vehicle(d, us, (i, j, dist, rounds, h, t), gun, ctx)
             continue
         log.append({"kind": "tankfire", "att": i, "dfd": j, "dist": dist, "rounds": rounds, "at": t})
         weapon = shell_weapon(d, table)
@@ -1469,13 +1536,16 @@ def _vehicle_guns(d: Data, us: list, ctx: tuple, field: dict | None, under: list
 def _gun_at_vehicle(d: Data, us: list, shot: tuple, gun: dict, ctx: tuple) -> list:
     """A main gun's rounds at a vehicle unit (shot: gun unit, target, distance, rounds): hits by
     range, knocks by the target's armour."""
-    i, j, dist, rounds = shot
+    i, j, dist, rounds, h, t = shot
     table, rng, acc = ctx
     hits = sum(1 for _ in range(rounds) if rng.randint(1, 100) <= _chance_at(gun["hit"], dist))
-    kills = sum(1 for _ in range(hits) if rng.randint(1, 100) <= armour_of(d, us[j])["gun"])
+    p = kill_chance(d, us[j], "gun", h, t)
+    kills = sum(1 for _ in range(hits) if rng.randint(1, 100) <= p)
     k = knock_out(d, us, j, kills, (table, rng), acc)
+    harm = _harm(d, us[j], hits - k["knocked"], acc[0][j], rng)
     acc[2][i] += k["crew"]
-    line = {"kind": "tankfire", "att": i, "dfd": j, "dist": dist, "rounds": rounds, "hit": hits, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"]}
+    line = {"kind": "tankfire", "att": i, "dfd": j, "dist": dist, "rounds": rounds, "hit": hits, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"], "kill": p,
+            **_harm_line(harm), **_riders_line(k)}
     return _logged(line, k["tally"])
 
 
@@ -1813,7 +1883,7 @@ def _shell_vehicle(d: Data, us: list, i: int, bursts: list, kind: dict, tr: tupl
     k = knock_out(d, us, i, kills, tr, acc)
     if not k["knocked"]:
         return []
-    return _logged({"kind": "knocked_out", "sup": src[0], "name": src[1]["name"], "dfd": i, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"]}, k["tally"])
+    return _logged({"kind": "knocked_out", "sup": src[0], "name": src[1]["name"], "dfd": i, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"], **_riders_line(k)}, k["tally"])
 
 
 def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, rng) -> int | None:
@@ -2216,6 +2286,8 @@ def move(d: Data, units: list, i: int, pos, facing: int, size: tuple, field: dic
         return {"ok": False, "why": "it is in contact"}
     if u.get("lost") and list(pos) != u["pos"]:
         return {"ok": False, "why": "it has lost its way in the dark (it may turn)"}
+    if u.get("immobile") and list(pos) != u["pos"]:
+        return {"ok": False, "why": f"{u['immobile']} of its vehicles cannot move (abandon them to move on; it may turn)"}
     turns = min((facing - u["facing"]) % 6, (u["facing"] - facing) % 6)
     most = allowance(d, u) * d.units["charge_move"]
     steps = _path_len(d, units, i, pos, size, most, field)
@@ -2243,6 +2315,86 @@ def sweep_cost(d: Data, field: dict | None, before: dict, after: dict) -> int:
     new = [x for row in footprint(d, after) for x in row if tuple(x) not in old]
     going = (lambda x: d.units["vehicles"]["ground"].get(_ground_key(field, x), 1)) if after.get("vehicle") else (lambda x: ground_at(d, field, x)["move"])
     return max([going(x) - 1 for x in new] + [0])
+
+
+def abandon_immobile(d: Data, u: dict) -> dict:
+    """A vehicle unit leaves its immobilised vehicles: their crews leave the fight unhurt
+    (bailed). Returns the unit."""
+    K, n = vehicle_kind(d, u), u.get("immobile", 0)
+    if not K or n <= 0:
+        return u
+    out = min(u["men"], n * K["crew"])
+    v = {**u, "men": u["men"] - out, "bailed": u.get("bailed", 0) + out, "immobile": 0}
+    v["gunless"] = min(v.get("gunless", 0), vehicles_left(d, v))
+    return v
+
+
+def carries(d: Data, u: dict) -> int:
+    """Men a vehicle unit can carry: its vehicles left times its kind's `carry` (0 if none)."""
+    K = vehicle_kind(d, u)
+    return vehicles_left(d, u) * K.get("carry", 0) if K else 0
+
+
+def mount(d: Data, units: list, i: int, j: int) -> dict:
+    """Foot unit i gets aboard vehicle unit j (its side's carriers, room for all its men, within a
+    hex of them, neither in contact, j carrying no one yet). -> {ok, why, units}: unit i goes
+    into j's riders."""
+    u, c, occ = units[i], units[j], occupancy(d, units)
+    why = None
+    if u.get("vehicle") or is_gun(d, u["weapon"]) or u.get("mounted"):
+        why = "only men on foot can ride"
+    elif not c.get("vehicle") or c["side"] != u["side"] or carries(d, c) <= 0:
+        why = "those are not its side's carriers"
+    elif c.get("riders"):
+        why = "they carry men already"
+    elif u["men"] > carries(d, c):
+        why = f"they have room for {carries(d, c)}"
+    elif _out(u) or _out(c) or in_contact(d, units, occ, i) or in_contact(d, units, occ, j):
+        why = "one of them is in contact or broken"
+    elif min(hdist(a, b) for row in footprint(d, u) for a in row for r2 in footprint(d, c) for b in r2) > 1:
+        why = "they are not beside the carriers"
+    if why:
+        return {"ok": False, "why": why, "units": units}
+    rider = {k: v for k, v in u.items() if k not in ("pos", "facing")}
+    out = [{**x, "riders": rider} if k == j else x for k, x in enumerate(units) if k != i]
+    return {"ok": True, "why": None, "units": out}
+
+
+def dismount(d: Data, units: list, j: int, size: tuple, field: dict | None = None) -> dict:
+    """Vehicle unit j's riders get down beside it: behind it if they fit, else beside it or in
+    front, facing its way (spots tried in a fixed order). -> {ok, why, units}: the riders are
+    added as the last unit."""
+    c = units[j]
+    R = c.get("riders")
+    if not R:
+        return {"ok": False, "why": "no one is aboard", "units": units}
+    back, f = (c["facing"] + 3) % 6, c["facing"]
+    for dirn, n in [(back, 1), (back, 2), ((f + 2) % 6, 1), ((f + 5) % 6, 1), ((f + 2) % 6, 2), ((f + 5) % 6, 2), (f, 1), (back, 3), (back, 4)]:
+        spot = {**R, "pos": step(c["pos"], dirn, n), "facing": f}
+        trial = [*units, spot]
+        if _fits(d, trial, len(units), spot, size, field):
+            out = [{k: v for k, v in x.items() if k != "riders"} if k == j else x for k, x in enumerate(units)]
+            return {"ok": True, "why": None, "units": [*out, spot]}
+    return {"ok": False, "why": "no room to get down beside them", "units": units}
+
+
+def _vehicles_after(d: Data, us: list, field: dict | None) -> list:
+    """After the losses: a vehicle unit's immobilised and gunless vehicles are no more than it has
+    left; the riders of one with none left get down where it stood (log lines)."""
+    log = []
+    for j, u in enumerate(list(us)):
+        if not u.get("vehicle"):
+            continue
+        left = vehicles_left(d, u)
+        for k in ("immobile", "gunless"):
+            if k in u:
+                u[k] = min(u[k], left)
+        if left == 0 and u.get("riders") and u["riders"]["men"] > 0:
+            r = dismount(d, us, j, _size(d, field), field)
+            if r["ok"]:
+                us[:] = r["units"]
+                log.append({"kind": "bailout", "unit": j, "riders": len(us) - 1, "men": us[-1]["men"]})
+    return log
 
 
 def flee(d: Data, units: list, i: int, size: tuple, field: dict | None = None) -> dict:

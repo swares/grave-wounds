@@ -140,7 +140,7 @@ support:
   - {name: "Chechen mortars", side: 1, kind: mortar, tubes: 4}
 units:
   - {name: "1st Battalion, 131st Brigade (in the station)", side: 0, men: 150, quality: green, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 16, pos: [70, 59], facing: 1}
-  - {name: "131st Brigade's infantry carriers (the square)", side: 0, men: 36, quality: green, weapon: machine_gun, kit: none, formation: armour, width: 3, pos: [64, 44], facing: 1, vehicle: apc}
+  - {name: "131st Brigade's infantry carriers (the square)", side: 0, men: 36, quality: green, weapon: machine_gun, kit: none, formation: armour, width: 3, pos: [64, 44], facing: 1, vehicle: ifv}
   - {name: "131st Brigade's tanks (the square)", side: 0, men: 24, quality: green, weapon: machine_gun, kit: none, formation: armour, width: 2, pos: [78, 44], facing: 1, vehicle: tank}
   - {name: "131st Brigade's men in the freight yard", side: 0, men: 80, quality: green, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 12, pos: [100, 80], facing: 1}
   - {name: "Chechen RPG teams (the blocks north of the square)", side: 1, men: 40, quality: veteran, weapon: rpg, kit: none, formation: extended, width: 6, pos: [70, 32], facing: 4, prone: true}
