@@ -1192,6 +1192,20 @@ field is 220 × 160 hexes, about 2,410 by 1,520 yards (2,200 by 1,390 m), north 
   hill, with machine guns.
 - Fire support: the New Zealand 25-pounders and 3 RAR's mortars; Chinese mortars.
 
+**Hill 931 on Heartbreak Ridge, October 1951** (`data/fields/heartbreak-1951.yaml`). The field
+is 170 × 260 hexes, about 1,860 by 2,460 yards (1,700 by 2,250 m), north at the top.
+- The narrow, rocky crest (high ground) runs north and south up the middle, with Hill 931 in
+  the upper part and Hill 894 at the bottom. Spurs run off both sides, the slopes are steep,
+  wooded and shattered, and the Mundung-ni valley (paddies, a stream and a dry track) lies
+  along the west edge.
+- The North Koreans' log-and-earth **bunkers** are dug into the crest. A fair day.
+- United Nations: the 2nd Battalion, 23rd Infantry along the crest from 894, the French
+  Battalion up the east spur, the 1st Battalion, 23rd Infantry up the west spur, and a company of
+  tanks (**vehicles**) in the valley.
+- North Koreans (veteran, dug in): on 931 and the crest either side, with machine guns.
+- Fire support: division and corps artillery, 4.2-inch mortars, fighter-bombers; North Korean
+  mortars and guns.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
