@@ -374,7 +374,7 @@ def unit_rows(d) -> list[list[str]]:
 
 def team_eras(d) -> list[str]:
     """The eras with team tables, medieval first, then in the order of their years."""
-    order = ["medieval", "thirty_years", "horse_musket", "civil_war", "plains_nations"]
+    order = ["medieval", "thirty_years", "horse_musket", "civil_war", "plains_nations", "wwi", "wwii"]
     return [e for e in order if e in d.teams] + sorted(e for e in d.teams if e not in order)
 
 

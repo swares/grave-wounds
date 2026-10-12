@@ -93,11 +93,11 @@ come with his first career and his region.
 *Your own team* on the page picks four to six careers and their terms, and no followers
 until you add them.
 
-## The gunpowder eras
+## The gunpowder eras and the world wars
 
-Four more eras use the same five steps, with their own skills, origins, careers, events,
+Six more eras use the same five steps, with their own skills, origins, careers, events,
 regions, teams and followers (`data/teams/thirty_years.yaml`, `horse_musket.yaml`,
-`civil_war.yaml` and `plains_nations.yaml`). Pick one with **Era** on the page, or `--era` on the command line. Each
+`civil_war.yaml`, `plains_nations.yaml`, `wwi.yaml` and `wwii.yaml`). Pick one with **Era** on the page, or `--era` on the command line. Each
 region takes its war's wound table, for old wounds and for the roller.
 
 | Era | Regions (wound table) | Fighting skills | Careers |
@@ -106,6 +106,8 @@ region takes its war's wound table, for old wounds and for the roller.
 | Horse and musket (1775-1815) | the Continental Army and the British in America (Revolution); the British and the French in the Peninsula (Peninsular War); the United States (1812) | Musket, Rifle, Pistol, Blade, Bayonet, Gunnery | line infantryman, rifleman, dragoon or hussar, artilleryman, sergeant, officer, surgeon's mate, scout, sailor or marine, sutler |
 | Civil War and frontier (1861-1876) | the Union, the Confederacy, the US Army on the frontier (all the Civil War table) | Rifle, Pistol, Blade, Bayonet, Gunnery | infantryman, sharpshooter, cavalry trooper, artilleryman, sergeant, officer, surgeon or hospital steward, scout, teamster |
 | Plains nations (1860-1877) | the Lakota; the Cheyenne and Arapaho (the Army surgeons' arrow report, with Civil War gunshots) | Bow, Lance, Club and knife, Gun | warrior with bow and shield, warrior with lance and shield, warrior with a gun, scout, leader of war parties, healer, herder of the camp's horses |
+| First World War (1914-1918) | the British Empire, France, Germany, the United States (1917-18) (all the First World War table) | Rifle, Pistol, Machine gun, Bombing, Gunnery, Bayonet, Trench weapons | rifleman, machine gunner, bomber, sniper or observer, sapper or tunneller, stretcher-bearer or orderly, signaller or runner, corporal or sergeant, junior officer, gunner or trench mortarman |
+| Second World War (1939-1945) | the United States in Europe, the British Commonwealth, Germany, the Soviet Union (the Owens WWII table); US Marines and Army in the Pacific, Japan (the Bougainville table) | Rifle, SMG and pistol, Machine gun, Grenade, Gunnery, Bayonet, Close combat | rifleman, machine gunner, grenadier or anti-tank man, sniper or scout, combat engineer, medic, radio operator, corporal or sergeant, junior officer, paratrooper or commando, tank crewman |
 
 Brawl, Parry, Dodge and the skills outside a fight (Leechcraft, Fieldcraft, Watch, Stealth
 and the rest) carry over; Bow, Crossbow, Axe and Sling stay medieval. Gunnery is the
@@ -124,6 +126,16 @@ mounted on the field map; their old wounds are arrow wounds, from the wars betwe
 nations. Their kits: cuirassiers,
 harquebusiers and pikemen in the 1630s armours; dragoons with helmets and the French with
 cuirasses; everyone else unarmoured.
+
+The world wars: a term is a year of the war, not four, so a soldier of three terms is about 21.
+Everyone wears the steel helmet (in general use from 1915-16). Signals (telephone, lamp,
+runner and radio) and, in the Second World War, Drive (trucks and tanks) are new skills
+outside a fight; a raid's clubs, knives and entrenching tools are fought with Trench weapons
+(Close combat in 1939-45). The Second World War's regions roll on their theatre's table:
+Europe and Russia on the Owens WWII table, the Pacific on Bougainville. There are no vehicle
+rules yet, so a tank crew fights as men on foot with pistols and submachine guns. The names
+are common period names; the events are ours, written from plain fact about trench and
+field service.
 
 ## Followers
 
