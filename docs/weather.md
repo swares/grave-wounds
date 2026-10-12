@@ -52,6 +52,7 @@ somewhat cooler; the test valley uses −0.9 °F (−0.5 °C).
 | Great Lakes, humid continental | the Niagara frontier (Buffalo) |
 | Tropical rainforest, the western Pacific | the Solomon Islands (Bougainville); rounded design estimates |
 | Northern High Plains, semi-arid | the Big Horn foothills (Sheridan, Wyoming) |
+| Central Korea, monsoon continental | Suwon and Seoul; rounded approximations of the normals |
 
 The four North American climates are rounded approximations of 1991–2020 station normals
 for the places named; the Greenville-Spartanburg January figures and Sheridan's temperatures

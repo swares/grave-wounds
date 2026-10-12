@@ -906,6 +906,27 @@ south, north at the top: the ridge across the middle.
 It is drawn by `tools/maps/make_bougainville_field.mjs`. Both are design sketches drawn from
 the accounts' plain facts, not traced from any map.
 
+**Task Force Smith at Osan, 5 July 1950** (`data/fields/osan-1950.yaml`). The field is 220 ×
+110 hexes, about 2,410 yards (2,200 m) east to west and 1,040 yards (950 m) north to south,
+north at the top.
+- A line of hills across the middle (high ground, scrub pine), steep on the forward side, with
+  the highway over it at a saddle on the left and the railroad on the right; a hillock west of
+  the road and a finger ridge running south beside the railroad. Rice paddies (marsh, their
+  dikes open ground) before and behind.
+- Overcast after rain, the ground muddy.
+- Task Force Smith dug in (gone to ground, green): B Company at the saddle and east of it, a
+  platoon on the hillock, the recoilless rifle and bazooka teams by the road, machine guns, C
+  Company along the ridge east and its right bent back by the railroad.
+- The North Korean 4th Division's infantry (veteran, extended order) across the paddies, working
+  round the west, in column on the highway, and coming down the railroad, with machine guns.
+- Fire support: American 105 mm howitzers, 4.2-inch and 60 mm mortars; North Korean mortars and
+  the T-34s of the 107th Tank Regiment firing over open sights. There are no vehicle rules: the
+  tanks are on call as fire support, and the recoilless rifles and bazookas fight as riflemen.
+- The wound tables are Korea's (hospitalized wounded).
+
+It is drawn by `tools/maps/make_osan_field.mjs`, from the plain facts of the US Army's account,
+not traced from any map. A battlefield's units may start gone to ground (`prone: true`).
+
 **A battlefield file** has an `id` and `name`, `sides` (two names), `table`, `size`
 ([cols, rows]) and `weather`. Its `ground` is rows of one letter per hex: `.` open, `r`
 rough, `F` woods, `m` marsh, `h` high ground, `T` buildings, `w` water (the `key` of each kind in `data/units.yaml`).

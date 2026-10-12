@@ -328,7 +328,7 @@ let S = null, HANDOFF = null, TEAMIN = null;       // HANDOFF: a fight sent from
 function newUnit(o){
   return { id: S.seq++, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, guns: isGun(o.weapon) ? gunKind(o) : undefined, width: o.width || Math.ceil(o.men / FD.units.formations[o.formation].per_hex),
-    pos: o.pos, facing: o.facing, state: "steady", charged: false };
+    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}) };
 }
 function newField(){                              // open ground of the default size (and the page goes back to that size)
   SIZE = DEFAULT_SIZE.slice();
@@ -641,7 +641,7 @@ function shotNotes(l){                            // " (cover -20%, weather -10%
   if (l.over) bits.push(`loosing high over the units between −${l.over}%`);
   if (l.graze) bits.push(`firm ground +${l.graze}%`);
   if (l.fuse) bits.push(`fuses cut: air bursts ${l.fuse > 0 ? "+" : "−"}${Math.abs(l.fuse)}%`);
-  if (l.penalty) bits.push(`weather −${l.penalty}%`);
+  if (l.penalty) bits.push(`weather ${l.penalty > 0 ? "−" : "+"}${Math.abs(l.penalty)}%`);
   if (l.misfire) bits.push(`${l.misfire}% misfire`);
   return bits.length ? ` (${bits.join(", ")})` : "";
 }

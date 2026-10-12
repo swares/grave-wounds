@@ -16287,6 +16287,76 @@
      14
     ]
    },
+   "korea": {
+    "name": "Central Korea, monsoon continental",
+    "note": "Like Suwon and Seoul: cold dry winters with north-west winds off the continent, a short spring, a hot wet summer with the monsoon rains of July and August, a clear autumn.",
+    "high": [
+     2,
+     5,
+     11,
+     18,
+     23,
+     27,
+     29,
+     30,
+     26,
+     20,
+     11,
+     4
+    ],
+    "low": [
+     -7,
+     -5,
+     0,
+     6,
+     12,
+     17,
+     22,
+     22,
+     17,
+     9,
+     2,
+     -4
+    ],
+    "rain": [
+     4,
+     4,
+     6,
+     7,
+     8,
+     9,
+     15,
+     13,
+     8,
+     5,
+     7,
+     5
+    ],
+    "fog": [
+     2,
+     2,
+     2,
+     2,
+     2,
+     3,
+     4,
+     3,
+     3,
+     3,
+     2,
+     2
+    ],
+    "wind_from": [
+     10,
+     8,
+     6,
+     8,
+     14,
+     14,
+     16,
+     24
+    ]
+   },
    "high_plains": {
     "name": "Northern High Plains, semi-arid",
     "note": "Like the Bighorn foothills (Sheridan, Wyoming): cold dry winters with snow and bitter spells, hot dry summers, wind from the north-west.",

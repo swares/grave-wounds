@@ -26,12 +26,17 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
   Agincourt (1415), Towton (1461), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
   Lane (1814), First Bull Run (1861), Fort Phil Kearny (1866-67, with two battlefields), Mons
-  (1914) and Hill 700 on Bougainville (1944) have both a campaign map and a battlefield. Italy
-  1944, Korea, Vietnam and later
+  (1914), Hill 700 on Bougainville (1944) and Osan (1950) have both a campaign map and a
+  battlefield. Italy 1944, the rest of Korea, Vietnam and later
   still play on the generic valley and open ground (the unit rules for them are in: machine
   guns, extended order, artillery and mortars on call, suppression). Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
+- **Modern rifle fire may be too deadly close in.** Playtesting Osan: left alone, the dug-in
+  American line breaks in about 20 exchanges (minutes) against five times its numbers, where
+  the real fight lasted about two and a half hours before the withdrawal. Veteran riflemen at
+  150 yards hit prone men behind 17% cover with about 65% of their aimed shots. Worth a look at
+  the missile tempo and range bands for service rifles before more modern battlefields.
 - **Guns, still simplified.** A battery splits into at most one section, and its canister
   at a charge is counted at the end of the exchange like all fire, so it does not thin the
   blows the charge strikes that minute. The Thirty Years' War still borrows the Peninsula's
