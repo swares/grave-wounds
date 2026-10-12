@@ -45,6 +45,9 @@ When an item is done, delete it here and note it in the pull request that closes
   area. It leaves out muzzle flashes (a man firing at night shows where he is), machine guns
   firing on fixed lines laid in daylight, men losing their way or their direction in the
   dark, and night movement being slower. The moon is a simple model, good to an hour or so.
+- **Air support, first cut.** Aircraft are called like batteries. There is no fire at them
+  (no aircraft lost to ground fire), no forward air controller or marking rounds, and no
+  direction to a strafing run or a napalm strip: every attack is a round burst like a shell.
 - **Fire at hidden men, first cut.** Men gone to ground, in bunkers or in buildings are now hit
   at 10% of aimed shots (machine guns 5%), and dug-in men hold better. Osan, left alone, lasts
   about an hour where the real fight took two and a half; the rest of that time went in the

@@ -1241,11 +1241,33 @@ def _indirect_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | 
     if not field or weapon is None:
         return log
     for k, b in enumerate(field.get("support") or []):
-        m = b.get("mission")
-        if not m or m.get("wait", 0) > 0 or b.get("rounds", 0) <= 0 or served_tubes(d, b) <= 0 or b.get("displacing"):
-            continue
-        log += _fire_mission(d, us, table, weapon, rng, acc, field, under, k, b)
+        if _due(d, field, b):
+            log += _fire_mission(d, us, table, weapon, rng, acc, field, under, k, b)
     return log
+
+
+def _due(d: Data, field: dict, b: dict) -> bool:
+    """Whether a battery's mission fires this exchange: called, its wait over, rounds and tubes
+    left, not moving, and (aircraft) able to fly."""
+    m = b.get("mission")
+    if not m or m.get("wait", 0) > 0 or b.get("rounds", 0) <= 0 or served_tubes(d, b) <= 0 or b.get("displacing"):
+        return False
+    return grounded(d, field, b) is None
+
+
+def grounded(d: Data, field: dict | None, b: dict) -> str | None:
+    """Why aircraft cannot fly (a condition or a light name), or None: in the weather
+    indirect.air.grounded lists, or in the dark without by_night."""
+    I = d.units["indirect"]
+    K, A = I["kinds"][b["kind"]], I.get("air") or {}
+    if not K.get("air"):
+        return None
+    wx = (field or {}).get("weather") or {}
+    if wx.get("cond") in A.get("grounded", []):
+        return wx["cond"]
+    if not K.get("by_night") and (wx.get("light") or "day") in A.get("night", []):
+        return wx["light"]
+    return None
 
 
 def crew_of(d: Data, b: dict) -> int:
@@ -1268,8 +1290,8 @@ def _fire_mission(d: Data, us: list, table: str, weapon: str, rng, acc: tuple, f
     K, m = d.units["indirect"]["kinds"][b["kind"]], b["mission"]
     shells = min(served_tubes(d, b) * (1 if m.get("illum") else K["rate"]), b["rounds"])
     b["rounds"] -= shells
-    if not K.get("direct"):
-        b["located"] = True                       # tanks close behind the line are never located
+    if not K.get("direct") and not K.get("air"):
+        b["located"] = True                       # tanks close behind the line and aircraft are never located
     if m.get("illum"):
         _light_up(d, field, m["hex"], K.get("illum", 0), 1)
         log = [{"kind": "barrage", "sup": k, "name": b["name"], "side": b["side"], "shells": shells, "at": m["hex"], "bursts": [], "smoke": False, "illum": True}]
