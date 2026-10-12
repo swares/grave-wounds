@@ -15555,6 +15555,37 @@
     "min_wind": "gale"
    }
   },
+  "light": {
+   "levels": {
+    "day": {
+     "name": "Daylight",
+     "sight": null,
+     "aim": 0
+    },
+    "dusk": {
+     "name": "Dusk or dawn",
+     "sight": 100,
+     "aim": 5
+    },
+    "moonlit": {
+     "name": "Moonlit night",
+     "sight": 50,
+     "aim": 10
+    },
+    "night": {
+     "name": "Dark night",
+     "sight": 25,
+     "aim": 20
+    }
+   },
+   "dusk_hours": 0.5,
+   "moon_from": 0.5,
+   "moon_shows": [
+    "fair"
+   ],
+   "lasts": 2,
+   "flare": 10
+  },
   "ground": {
    "mud_add": {
     "rain": 1,

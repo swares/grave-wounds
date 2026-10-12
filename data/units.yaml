@@ -242,6 +242,10 @@ machine_guns:
 #   into, out of or through smoke, and fire cannot be called on a hex behind it. It wounds
 #   no one. At the end of each exchange it drifts `drift` hexes downwind (the hex side
 #   nearest the way the wind blows; calm air leaves it where it is), and off the map is gone.
+# illum: a mission may fire illumination instead (a kind with `illum`): one round a tube served
+#   lights every hex within `illum` field hexes of its aim for weather.yaml light.lasts
+#   exchanges after the one it is fired in (the shooting comes first). It needs no one to see
+#   the hex, and wounds no one. A lit hex is seen as by day (weather.yaml light).
 # counter_battery: a battery that has fired is located (flash and sound), and from then on the
 #   other side may call fire on it instead of on a hex, with no one needing to see it. Each
 #   shell lands among its guns at the kind's `counter` % (mortars cannot reach), knocking out
@@ -264,9 +268,9 @@ indirect:
   attack: 70
   prone: 0.35
   kinds:
-    mortar:   {name: "Mortars",          rate: 3, rounds: 60, delay: 0, scatter: 2, radius: 2, struck: [15, 5, 1],                counter: 0, crew: 4, serve: 2, displace: 1}
-    field:    {name: "Field guns",       rate: 2, rounds: 80, delay: 1, scatter: 4, radius: 3, struck: [20, 8, 3, 1],             counter: 2, crew: 6, serve: 3, displace: 2}
-    howitzer: {name: "Heavy howitzers",  rate: 1, rounds: 40, delay: 1, scatter: 5, radius: 5, struck: [30, 12, 5, 2, 1, 0.5], counter: 4, knock: 2, crew: 8, serve: 4, displace: 3}
+    mortar:   {name: "Mortars",          rate: 3, rounds: 60, delay: 0, scatter: 2, radius: 2, struck: [15, 5, 1],                counter: 0, crew: 4, serve: 2, displace: 1, illum: 15}
+    field:    {name: "Field guns",       rate: 2, rounds: 80, delay: 1, scatter: 4, radius: 3, struck: [20, 8, 3, 1],             counter: 2, crew: 6, serve: 3, displace: 2, illum: 30}
+    howitzer: {name: "Heavy howitzers",  rate: 1, rounds: 40, delay: 1, scatter: 5, radius: 5, struck: [30, 12, 5, 2, 1, 0.5], counter: 4, knock: 2, crew: 8, serve: 4, displace: 3, illum: 40}
     tank:     {name: "Tanks (direct fire)", rate: 2, rounds: 60, delay: 0, scatter: 0, radius: 1, struck: [25, 5],              counter: 0, knock: 8, direct: true, crew: 5, serve: 3, displace: 0}
   tree_burst: {ground: [woods], factor: 1.5, prone: 0.7}
   smoke: {radius: 1, lasts: {calm: 4, breeze: 3, strong: 2, gale: 1}, drift: {calm: 0, breeze: 1, strong: 2, gale: 2}}

@@ -127,6 +127,35 @@ chance depends on how the weapon is fired:
 | Percussion cap | 5% | 10% |
 | Cartridge | – | – |
 
+## Light (the field map)
+
+The field map's weather has a **Light**: daylight, dusk or dawn, a moonlit night or a dark
+night. In the dark no one can see to aim at, or to call fire on, anything further than the
+light allows, and aimed fire, the guns' too, is harder. The weather's own limit still
+applies: whichever is shorter counts.
+
+| Light | No aiming or calling fire beyond | Aimed fire |
+|---|---|---|
+| Daylight | (the weather's limit) | – |
+| Dusk or dawn | 20 hexes (219 yards, 200 m) | −5% |
+| Moonlit night | 10 hexes (109 yards, 100 m) | −10% |
+| Dark night | 5 hexes (55 yards, 50 m) | −20% |
+
+- **Flares and illumination.** A hex that is lit is seen as if by day: no limit from the
+  dark, and no penalty, for shots at it or for calling fire on it. The GM fires a flare
+  with **Clicking the map: Fire a flare** (hand or rifle flares): it lights the hexes within
+  10 (about 100 m) for the next 2 exchanges. Mortars and guns can fire **Illumination**
+  (see [Indirect fire](units.md#indirect-fire-and-suppression)). Lit ground shows pale
+  yellow on the map.
+- **From the travel map**, a battle takes the hour's light. Within half an hour of sunrise
+  or sunset it is dusk or dawn. At night it is moonlit if the moon is up, at least half lit,
+  and the sky is clear (fair weather); otherwise it is dark. The moon is a simple model: it
+  rises about 50 minutes later each day, with the sun at new moon and at sunset when full,
+  and is up for 12 hours, so the hour can be off by an hour or so. The travel map's clock
+  shows the light.
+- What it leaves out: muzzle flashes, machine guns firing on fixed lines laid by day, and
+  men losing their way in the dark. The GM can rule on these.
+
 **Set up the fight** carries the day's weather, the wind's direction and the ground to the battle map. The
 roller's weather bar can change them.
 

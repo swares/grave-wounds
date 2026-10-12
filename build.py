@@ -295,7 +295,9 @@ def _support_rules(ind: dict) -> str:
             f"the guns at the kind's counter %, knocking out a tube and striking {CB['among']} crewmen, or at {CB['near']} times that bursts close by, striking "
             f"{CB['near_struck']}; struck crewmen roll wounds and those put down are lost, and a tube without its men is silent. Displacing, a battery is silent "
             f"for its exchanges ({moves}) and then unlocated. Smoke drifts downwind each exchange, by hexes: {drift}. A creeping barrage keeps a fire plan: "
-            f"1 to {I['creep']['max']} hexes a lift, 1 to {I['creep']['every_max']} exchanges on each line, a set number of lines.")
+            f"1 to {I['creep']['max']} hexes a lift, 1 to {I['creep']['every_max']} exchanges on each line, a set number of lines."
+            + (" Illumination (one round a tube, called on any hex) lights the hexes round it, out to " + ", ".join(f"{k['illum']} ({k['name'].lower()})" for k in K.values() if k.get("illum"))
+               + " hexes, for the light's exchanges after the one it is fired in." if any(k.get("illum") for k in K.values()) else ""))
 
 
 def _ground_rules(d) -> list[str]:
@@ -550,7 +552,19 @@ def weather_rules(d) -> list[str]:
         "<b>Rest and fatigue:</b> the night's rest starts from the camp's and drops a step for each point of hardship (wet, cold) beyond its shelter. "
         f"Fatigue changes each night: heat or cold on a march of {F['heat_cold_min_hours']} hours or more, {F['heavy_going_hours']} hours in deep mud or snow, "
         "and the night (bad +1, poor 0, fair -1, good -2).",
-    ]
+    ] + _light_rules(d)
+
+
+def _light_rules(d) -> list[str]:
+    L = d.weather.get("light")
+    if not L:
+        return []
+    rs, hm = d.units["range_scale"], d.units["hex_m"]
+    lv = "; ".join(f"{v['name'].lower()}: " + ("" if v["sight"] is None else f"no aiming or calling fire beyond {v['sight'] // rs} hexes, {yd(v['sight'] // rs * hm)}, ")
+                   + f"aimed fire -{v['aim']}%" for v in L["levels"].values() if v["sight"] is not None or v["aim"])
+    return [f"<b>Light on the field map:</b> {lv}. A hex lit by a flare or illumination is seen as by day for {L['lasts']} exchanges; the GM's flare lights "
+            f"{L['flare']} hexes round it. A battle from the travel map takes the hour's light: dusk within {L['dusk_hours'] * 60:g} minutes of sunrise or sunset; "
+            f"at night moonlit when the moon is up, at least {L['moon_from'] * 100:g}% lit and the sky clear, else dark."]
 
 
 def weather_tables(d) -> dict:
@@ -790,7 +804,7 @@ def field_bundle(d) -> dict:
                     for l in d.locations},
         "track": {"steps": d.disease["steps"], "wounds": d.disease["wounds"]},
         "works": d.works,
-        "weather": {k: d.weather[k] for k in ("winds", "conditions", "battle", "ground", "wind_points", "driven_sight")},
+        "weather": {k: d.weather[k] for k in ("winds", "conditions", "battle", "ground", "wind_points", "driven_sight", "light") if k in d.weather},
         "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
         "fields": {fid: {"name": f["name"], "sides": f["sides"], "table": f["table"], "field": battlefield(d, fid), "units": f.get("units", []),
                          "travel": f.get("travel"), "period": periods(d)["fields"][fid]}

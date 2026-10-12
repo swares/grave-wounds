@@ -86,6 +86,30 @@ def march_window(d: Data, m: dict, day: int) -> dict:
     return {"start": start, "hours": hours, "sunrise": sunrise, "sunset": sunset}
 
 
+MOON_DAYS = 29.530588853          # the moon's month
+NEW_MOON_JDN = 2451550            # a new moon: 6 January 2000 (Gregorian)
+
+
+def moon_age(n: int) -> float:
+    """Days since the last new moon on the day with Julian day number n."""
+    return (n - NEW_MOON_JDN) % MOON_DAYS
+
+
+def light_at(d: Data, m: dict, day: int, hour: float, cond: str) -> str:
+    """The light (weather.yaml light.levels) at `hour` of day `day` on map m, in weather `cond`:
+    day, dusk within dusk_hours of sunrise or sunset, else moonlit or night (see light)."""
+    L, w = d.weather["light"], march_window(d, m, day)
+    t = hour % 24
+    if abs(t - w["sunrise"]) < L["dusk_hours"] or abs(t - w["sunset"]) < L["dusk_hours"]:
+        return "dusk"
+    if w["sunrise"] < t < w["sunset"]:
+        return "day"
+    age = moon_age(jdn(*parse_date(m["start_date"]), m["calendar"]) + day - 1)
+    shown = (1 - math.cos(2 * math.pi * age / MOON_DAYS)) / 2
+    up = (t - (6 + age * 24 / MOON_DAYS)) % 24 < 12
+    return "moonlit" if up and shown >= L["moon_from"] and cond in L["moon_shows"] else "night"
+
+
 # ---------- weather ----------
 
 def _pick(rows: list, roll: int) -> dict:
