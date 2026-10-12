@@ -347,7 +347,7 @@ function strikes(units, field = null){            // [{att, dfd, men, situation,
 function fvec(facing){ const a = AX[mod6(facing)], b = AX[mod6(facing + 1)], q = a[0] + b[0], r = a[1] + b[1]; return [q, r, -q - r] }
 function target(units, i, field, occ = null){    // [distance, index, shooter hex, target hex] of the nearest enemy in range, in sight, in front; or null (a battery: its named target first, a clear line of fire)
   const u = units[i], fv = fvec(u.facing), front = footprint(u)[0];
-  const named = namedTarget(units, i, field, occ);
+  const named = namedTarget(units, i, field, occ, u.target);
   if (named) return named;
   let best = null;
   units.forEach((e, j) => {
@@ -357,10 +357,10 @@ function target(units, i, field, occ = null){    // [distance, index, shooter he
   });
   return best;
 }
-function namedTarget(units, i, field, occ){       // the GM's named target for a battery, if it can be fired on
+function namedTarget(units, i, field, occ, tid){  // a target the GM named for a battery (tid, a unit's id), if it can be fired on
   const u = units[i];
-  if (!occ || u.target === undefined || u.target === null) return null;
-  const j = units.findIndex(e => e.id !== undefined && e.id === u.target);
+  if (!occ || tid === undefined || tid === null) return null;
+  const j = units.findIndex(e => e.id !== undefined && e.id === tid);
   if (j < 0 || units[j].side === u.side || out_(units[j])) return null;
   const near = nearestAhead(u, footprint(u)[0], fvec(u.facing), footprint(units[j]).flat(), field, clearFn(units, occ, field, i, j));
   return near ? [near[0], j, near[1], near[2]] : null;
@@ -739,6 +739,7 @@ function fireBattery(us, table, rng, acc, log, c){   // at the target, guns knoc
   const a = us[c.att], b = us[c.dfd], gun = sideOfUnit(a, table);
   let t = takeHurt(b, cannonade(gun, b, c, rng, exposure(b, false, true)));
   a.spent = (a.spent || 0) + c.rounds;
+  if (b.id !== undefined && b.id !== null) a.fired = { ...(a.fired || {}), [String(b.id)]: c.dist };
   if (t.dismounted) b.guns_lost = (b.guns_lost || 0) + t.dismounted;
   tallyLoss(acc, c, t);
   log.push(...logged({ kind: "cannon", ...c }, t));
@@ -781,6 +782,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   const us = units.map(copyUnit), n = us.length, log = [];
   const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false) };
   const under = new Array(n).fill(false);          // under shellfire or machine-gun fire this exchange (suppression)
+  for (const c of closingFire(us, field)) fireBattery(us, table, rng, acc, log, c);
   strikeAll(us, table, rng, acc, log, field);
   shootAll(us, table, rng, acc, log, field, under);
   indirectAll(us, table, rng, acc, log, field, under);
@@ -992,24 +994,63 @@ function gunWeather(field, dist, h = null, t = null){   // no laying guns on wha
 }
 const chanceAt = (bands, dist) => (bands.find(([to]) => dist <= to) || [0, 0])[1];
 const canFire = u => isBattery(u) && !out_(u) && !u.abandoned && !u.limbered && !u.limbering && !u.resupplying && gunsServed(u) > 0 && ammoLeft(u) > 0;
-function cannonades(units, field = null){         // [{att, dfd, guns, rounds, dist, shot, cover, penalty, named, graze, behind, beyond}]
+function cannonades(units, field = null){         // [{att, dfd, guns, rounds, dist, shot, cover, penalty, named, graze, behind, beyond, fuse, section}]: a battery's fire, and its section's
   const occ = occupancy(units), out = [], A = UD.artillery;
   units.forEach((u, i) => {
     if (!A || !canFire(u) || inContact(units, occ, i)) return;
     const best = target(units, i, field, occ);
-    if (!best) return;
-    const wx = gunWeather(field, best[0], best[2], best[3]), shot = shotKind(u, best[0]);
-    const behind = shot === "round" ? ricochetAt(occ, field, i, best) : null, tid = units[best[1]].id;
-    const graze = shot === "canister" && best[0] > A.canister.strike[0][0] && firmLine(field, best) ? A.canister.graze : 0;
-    out.push({ att: i, dfd: best[1], guns: gunsServed(u), rounds: Math.min(gunsServed(u) * A.rounds, ammoLeft(u)), dist: best[0], shot, cover: coverAt(field, best[2], best[3]) + groundCover(units[best[1]]), penalty: wx.penalty,
-      named: tid !== undefined && tid !== null && tid === u.target, graze, bore: gunKind(u), behind: behind ? behind[0] : null, beyond: behind ? behind[1] : 0 });
+    if (best) out.push(...batteryFires(units, occ, field, i, best));
   });
   return out;
 }
+function batteryFires(units, occ, field, i, best){   // the battery's fire at best, and its section's at the section's target if it split one off
+  const u = units[i], guns = gunsServed(u), ammo = ammoLeft(u), sec = u.section || {};
+  const n = Math.min(sec.guns || 0, guns - 1), at = n > 0 ? namedTarget(units, i, field, occ, sec.target) : null;
+  const main = batteryFire(units, [occ, field], i, best, { guns: at ? guns - n : guns, ammo, shot: u.shot });
+  if (!at || ammo <= main.rounds) return [main];
+  return [main, batteryFire(units, [occ, field], i, at, { guns: n, ammo: ammo - main.rounds, shot: sec.shot, section: true })];
+}
+function batteryFire(units, ground, i, best, order){   // guns of battery i at best; order {guns, ammo, shot, per, section}
+  const [occ, field] = ground, A = UD.artillery, u = units[i];
+  const wx = gunWeather(field, best[0], best[2], best[3]), shot = shotKind(u, best[0], order.shot);
+  const behind = shot === "round" ? ricochetAt(occ, field, i, best) : null, tgt = units[best[1]], tid = tgt.id;
+  const graze = shot === "canister" && best[0] > A.canister.strike[0][0] && firmLine(field, best) ? A.canister.graze : 0;
+  return { att: i, dfd: best[1], guns: order.guns, rounds: Math.min(order.guns * (order.per ?? A.rounds), order.ammo), dist: best[0], shot, cover: coverAt(field, best[2], best[3]) + groundCover(tgt), penalty: wx.penalty,
+    named: !!order.section || (tid !== undefined && tid !== null && tid === u.target), graze, bore: gunKind(u), behind: behind ? behind[0] : null, beyond: behind ? behind[1] : 0,
+    fuse: shot === "shell" ? fuseSetting(u, tid, best[0]) : 0, section: !!order.section };
+}
+function fuseSetting(u, tid, dist){               // how far the gunners' cut fuses widen the air band: crew quality, and more on a target ranged last exchange
+  const F = UD.artillery.set_fuse;
+  if (!F) return 0;
+  const was = tid === undefined || tid === null ? undefined : (u.laid || {})[String(tid)];
+  return (F.quality[u.quality] || 0) + (was !== undefined && Math.abs(was - dist) <= F.within ? F.ranged : 0);
+}
+function closingFire(units, field = null){        // batteries charged in front: canister at the first charger as it comes in (closing: true)
+  const A = UD.artillery, out = [];
+  if (!A || A.closing === undefined) return out;
+  const occ = occupancy(units);
+  units.forEach((u, i) => {
+    const best = canFire(u) ? charger(units, occ, field, i) : null;
+    if (best) out.push({ ...batteryFire(units, [occ, field], i, best, { guns: gunsServed(u), ammo: ammoLeft(u), shot: "canister", per: A.closing }), named: false, closing: true });
+  });
+  return out;
+}
+function charger(units, occ, field, i){           // [distance, index, gun hex, its hex] of the first enemy that charged battery i in front, or null
+  const u = units[i], front = footprint(u)[0], fv = fvec(u.facing);
+  for (const j of adjacentUnits(units, occ, i)){
+    const e = units[j];
+    if (e.side === u.side || !e.charged || out_(e)) continue;
+    const near = nearestAhead(u, front, fv, footprint(e).flat(), field);
+    if (near) return [near[0], j, near[1], near[2]];
+  }
+  return null;
+}
 const gunKind = u => u.guns || (u.howitzer ? "howitzer" : "smoothbore");   // smoothbore, rifled or howitzer (howitzer: true, saved before)
 const gunRange = u => (gunKind(u) === "rifled" ? UD.artillery.rifled.range : UD.artillery.range);
-function shotKind(u, dist){                       // canister within canister range; beyond, shell from howitzers and rifles, round shot from smoothbores
-  if (dist <= UD.artillery.canister_to) return "canister";
+function shotKind(u, dist, want = null){          // the shot ordered if the guns fire it and it reaches; else canister within canister range, beyond it shell from howitzers and rifles, round shot from smoothbores
+  const A = UD.artillery;
+  if ((A.shots?.[gunKind(u)] || []).includes(want) && (want !== "canister" || dist <= A.canister_to)) return want;
+  if (dist <= A.canister_to) return "canister";
   return gunKind(u) === "smoothbore" ? "round" : "shell";
 }
 function firmLine(field, best){                   // firm ground from the gun to the target hex
@@ -1037,18 +1078,25 @@ function canisterStruck(A, c, cut, rounds, rng){   // men hit by canister: each 
   return struck;
 }
 function shellStruck(A, c, factor, rounds, rng){  // [men hit, shells that burst on the unit, of them in the air]: the fuse decides early, air, ground or blind
-  const H = A.howitzer, R = c.bore === "rifled" ? A.rifled : H, p = chanceAt(R.strike, c.dist) * factor;   // rifled shell: its own strike and percussion fuse
+  const H = A.howitzer, R = c.bore === "rifled" ? A.rifled : H, p = chanceAt(R.strike, c.dist) * factor, fuses = setFuse(R.fuse, c.fuse || 0);   // rifled shell: its own strike and percussion fuse
   const hitAt = { air: H.air_hit * (100 - c.cover / 2) / 100, ground: H.fragment_hit * (100 - c.cover) / 100 };
   let struck = 0, bursts = 0, air = 0;
   for (let k = 0; k < rounds; k++){
     if (rng.randint(1, 100) > p) continue;
-    const fuse = chanceAt(R.fuse, rng.randint(1, 100));
+    const fuse = chanceAt(fuses, rng.randint(1, 100));
     if (!(fuse in hitAt)) continue;
     bursts++;
     if (fuse === "air") air++;
     for (let m = 0; m < H.fragments; m++) if (rng.randint(1, 100) <= hitAt[fuse]) struck++;
   }
   return [struck, bursts, air];
+}
+function setFuse(bands, by){                     // the fuse table with its air band widened by `by` (narrowed if negative), never past its neighbours
+  return bands.map(([to, what], k) => {
+    if (what !== "air" || !by) return [to, what];
+    const lo = k ? bands[k - 1][0] : 0, hi = k + 1 < bands.length ? bands[k + 1][0] : 100;
+    return [Math.max(lo, Math.min(hi, to + by)), what];
+  });
 }
 function roundShotStruck(A, p, rounds, target, rng){   // [men hit, balls that struck]: each ball that strikes (p %) goes through the ranks
   const rs = A.round_shot, path = Math.min(rs.path_max, form(target).ranks * footprint(target).length);
@@ -1082,6 +1130,8 @@ function ricochet(att, target, c, rng, exposed = []){   // balls bounding on int
 }
 function batteryAfter(u){                          // end of an exchange: changing over is done, resupply is in; a broken battery has left its guns
   if (!isBattery(u)) return;
+  u.laid = u.fired || {};
+  delete u.fired;
   if (u.resupplying){ u.spent = 0; u.resupplying = false }
   if (u.limbering){ u.limbered = !u.limbered; u.limbering = false }
   if (u.state === "broken" || u.state === "fled") u.abandoned = true;

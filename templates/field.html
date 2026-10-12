@@ -217,6 +217,12 @@ legend{padding:0}
       </div>
       <div class="row" id="target-box" hidden>
         <div><label for="sel-target">Battery fires at</label><select id="sel-target"></select></div>
+        <div><label for="sel-shot">Shot</label><select id="sel-shot" title="Left to the range: canister close in, beyond it round shot from smoothbores, shell from howitzers and rifles. An order the guns cannot carry out (canister out of its range) falls back to the range."></select></div>
+      </div>
+      <div class="row" id="section-box" hidden>
+        <div><label for="sel-sec-target">A section fires at</label><select id="sel-sec-target" title="Split off some of the guns at a second target, with their own shot; if they cannot fire on it, they fire with the rest"></select></div>
+        <div><label for="in-sec-guns">Guns in the section</label><input type="number" id="in-sec-guns" min="1" value="2"></div>
+        <div><label for="sel-sec-shot">Section's shot</label><select id="sel-sec-shot"></select></div>
       </div>
 
       <section id="support-box" aria-labelledby="h-support">
@@ -600,7 +606,8 @@ function unitLineText(l, nm){                     // a volley, a melee or a rout
 }
 const SHOT_NAMES = { canister: "canister", round: "round shot", shell: "shell" };
 function cannonText(l, nm, fallen){               // a battery's fire: its target, rounds, men struck, guns knocked out
-  const shot = SHOT_NAMES[l.shot], aim = l.named ? " (as ordered)" : "";
+  const shot = SHOT_NAMES[l.shot], aim = l.section ? ` (a section of ${gunsText(l.guns, "gun")}, as ordered)` : (l.named ? " (as ordered)" : "");
+  if (l.closing) return `${nm(l.att)} fire canister into ${nm(l.dfd)} as the charge comes in${shotNotes(l)}: ${l.rounds} rounds, ${l.blows} men in the way, ${fallen}.`;
   if (l.shot === "shell") return `${nm(l.att)} fire shell at ${nm(l.dfd)}${aim}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${l.rounds} shells, ${l.bursts} burst among them (${l.air} in the air), ${l.blows} men struck, ${fallen}${lostGuns(l)}.`;
   const guns = l.rounds < l.guns * FD.units.artillery.rounds ? `${l.guns} guns, ${l.rounds} rounds left to fire` : `${l.guns} guns`;
   return `${nm(l.att)} fire ${shot} at ${nm(l.dfd)}${aim}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${guns}, ${l.blows} men in the way, ${fallen}${lostGuns(l)}.`;
@@ -614,6 +621,7 @@ function shotNotes(l){                            // " (cover -20%, weather -10%
   if (l.cover) bits.push(`cover −${l.cover}%`);
   if (l.over) bits.push(`loosing high over the units between −${l.over}%`);
   if (l.graze) bits.push(`firm ground +${l.graze}%`);
+  if (l.fuse) bits.push(`fuses cut: air bursts ${l.fuse > 0 ? "+" : "−"}${Math.abs(l.fuse)}%`);
   if (l.penalty) bits.push(`weather −${l.penalty}%`);
   if (l.misfire) bits.push(`${l.misfire}% misfire`);
   return bits.length ? ` (${bits.join(", ")})` : "";
@@ -1021,7 +1029,7 @@ function renderSel(){
 function renderGunOrders(u, setup){               // the Resupply button and the target picker, for batteries only
   const b = $("#btn-resupply"), box = $("#target-box"), gun = !!u && isBattery(u);
   b.hidden = box.hidden = !gun;
-  if (!gun) return;
+  if (!gun){ $("#section-box").hidden = true; return }
   const gone = S.phase === "over" || !!u.abandoned || u.state === "broken" || u.state === "fled";
   b.disabled = gone || (!setup && u.side !== moving()) || (!u.resupplying && !u.spent);
   b.textContent = u.resupplying ? "Stop resupplying" : "Resupply";
@@ -1030,6 +1038,40 @@ function renderGunOrders(u, setup){               // the Resupply button and the
   $("#sel-target").innerHTML = `<option value="">The nearest enemy in front</option>` + foes.map(e => `<option value="${e.id}">${esc(unitName(e))}${isBattery(e) ? " (guns)" : ""}</option>`).join("");
   $("#sel-target").value = u.target ?? "";
   $("#sel-target").disabled = gone;
+  renderShotOrders(u, foes, gone);
+}
+function shotOptions(u, auto){                    // the shots this battery's guns fire, after "by range"
+  return `<option value="">${auto}</option>` + FD.units.artillery.shots[gunKind(u)].map(k => `<option value="${k}">${SHOT_NAMES[k]}</option>`).join("");
+}
+function renderShotOrders(u, foes, gone){         // the Shot picker and the section's target, guns and shot
+  $("#sel-shot").innerHTML = shotOptions(u, "By range");
+  $("#sel-shot").value = u.shot || "";
+  const sec = u.section || {}, guns = gunsServed(u), box = $("#section-box");
+  box.hidden = guns < 2;
+  if (sec.target !== undefined && sec.target !== null && !foes.some(e => e.id === sec.target)) delete u.section;
+  $("#sel-sec-target").innerHTML = `<option value="">No section: all guns together</option>` + foes.map(e => `<option value="${e.id}">${esc(unitName(e))}${isBattery(e) ? " (guns)" : ""}</option>`).join("");
+  $("#sel-sec-target").value = u.section?.target ?? "";
+  $("#in-sec-guns").max = Math.max(1, guns - 1);
+  $("#in-sec-guns").value = Math.min(u.section?.guns || 2, Math.max(1, guns - 1));
+  $("#sel-sec-shot").innerHTML = shotOptions(u, "By range");
+  $("#sel-sec-shot").value = u.section?.shot || "";
+  for (const id of ["#sel-shot", "#sel-sec-target"]) $(id).disabled = gone;
+  for (const id of ["#in-sec-guns", "#sel-sec-shot"]) $(id).disabled = gone || !u.section;
+}
+function setShot(v){                              // the GM orders the battery's shot, or leaves it to the range
+  const u = selUnit(); if (!u || !isBattery(u)) return;
+  if (v) u.shot = v; else delete u.shot;
+  S.msg = v ? `${u.name} will fire ${SHOT_NAMES[v]}${v === "canister" ? " when the enemy is within " + fmtM(FD.units.artillery.canister_to * FD.units.hex_m) : ""}.` : `${u.name} will fire the shot the range calls for.`;
+  render();
+}
+function setSection(){                            // the GM splits off a section: its target, guns and shot
+  const u = selUnit(); if (!u || !isBattery(u)) return;
+  const t = $("#sel-sec-target").value;
+  if (t === ""){ delete u.section; S.msg = `${u.name} fires all its guns together.`; return render() }
+  const guns = Math.max(1, Math.min(gunsServed(u) - 1, Math.round(+$("#in-sec-guns").value) || 1)), shot = $("#sel-sec-shot").value;
+  u.section = { target: +t, guns, ...(shot ? { shot } : {}) };
+  S.msg = `A section of ${gunsText(guns, "gun")} of ${u.name} will fire at ${unitName(S.units[idx(u.section.target)])} when it can; the rest at the battery's target.`;
+  render();
 }
 function setTarget(v){                            // the GM names the battery's target; it falls back to the nearest if it cannot fire on it
   const u = selUnit(); if (!u || !isBattery(u)) return;
@@ -1331,6 +1373,8 @@ function init(){
   });
   $("#btn-resupply").onclick = toggleResupply;
   $("#sel-target").onchange = e => setTarget(e.target.value);
+  $("#sel-shot").onchange = e => setShot(e.target.value);
+  for (const id of ["#sel-sec-target", "#in-sec-guns", "#sel-sec-shot"]) $(id).onchange = setSection;
   $("#sel-weapon").onchange = e => {
     const gun = isGun(e.target.value);
     if (gun) $("#sel-form").value = "battery";

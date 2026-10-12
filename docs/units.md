@@ -423,13 +423,41 @@ gun as the weapon in *Add a unit* sets the battery order.
 
 **Fire.** Each served gun fires one round an exchange at the nearest enemy unit in front of
 it within 1,090 yards (1,000 m, 100 hexes), in sight and with a clear line of fire. At 330
-yards (300 m, 30 hexes) or less it fires canister; beyond, round shot.
+yards (300 m, 30 hexes) or less it fires canister; beyond, round shot (see *Shot* for
+orders).
 
 **Targets.** The GM can name a battery's target (*Battery fires at*, under the selected
 unit): an enemy battery for counter-battery fire, say, or the column behind the nearest
 line. The battery fires at it whenever it is in range, in sight, in front and in the line of
 fire, and at the nearest enemy when it is not; the log marks fire at a named target "as
 ordered".
+
+**Shot.** Left alone, the range picks the shot (canister close in, round shot from
+smoothbores beyond, shell from howitzers and rifles). The GM can order it instead (*Shot*,
+under the selected battery): smoothbores fire round shot, shell (spherical case) or canister;
+howitzers shell or canister; rifles shell, solid bolts (fired as round shot) or canister.
+Canister is fired only within its 330 yards (300 m); ordered beyond it, or an order the guns
+cannot carry out, the battery fires what the range calls for.
+
+**Sections.** A battery can split off a section at a second target (*A section fires at*,
+*Guns in the section*, *Section's shot*): those guns fire at it, with their own shot, whenever
+they can, and the rest at the battery's target; at least one gun stays with the battery. If
+the section cannot fire on its target (out of range, sight or line), its guns fire with the
+rest. The log gives the section its own line, "a section of 2 guns, as ordered".
+
+**Cut fuses.** Gunners cut their fuses to the range rather than leave them to chance. Every
+shell's fuse table has its air band widened (taken from the ground band after it): +10 for
+veteran crews, none for regulars, −10 for green crews; and +15 more when the battery fired at
+the same target last exchange at much the same range (within 22 yards, 20 m, 2 hexes), its
+range found. A veteran howitzer battery that has found the range gets 50% air bursts, against
+25% for a regular one firing at a new target. The log shows the setting ("fuses cut: air
+bursts +15%").
+
+**Canister at the charge.** A battery that can fire, charged in its front, gives its first
+charger one round of canister a gun, at point-blank range, as the charge comes in, before
+the melee. Like all fire in the exchange, the men it puts down are counted at its end, so it
+thins the charge for the next exchange and weighs on its morale, not on the blows struck in
+this one. A charge into its flank or rear meets no canister.
 
 **Line of fire.** A gun cannot fire through another unit, friend or enemy, standing between
 it and its target. The one exception is round shot fired from high ground over a unit on
@@ -455,7 +483,7 @@ shot does.
 - **Shell.** A battery of **howitzers** (*Guns: Howitzers* when adding a battery) fires shell
   beyond canister range, in a high arc over anything between. Each shell falls on the target
   at 45% to 550 yards (500 m), 30% to 820 yards (750 m), 20% to 1,090 yards (cut by the
-  weather and open order). Then its **fuse** is rolled: 15% early (it bursts short,
+  weather and open order). Then its **fuse** decides (before the gunners' setting; see *Cut fuses*): 15% early (it bursts short,
   harmlessly), 25% in the air over the men, 45% on the ground as it lands, 15% blind (it never
   bursts). A burst throws 12 chances to hit: at 35% each in the air, where cover counts only
   half, and at 25% on the ground, less the full cover. The log counts the bursts and how many
@@ -467,7 +495,7 @@ shot does.
   Beyond canister range it fires percussion shell on a flat path (it needs a clear line of
   fire, like round shot, and does not bound on): it falls on the target at 60% to 550 yards
   (500 m), 45% to 1,090 yards (1,000 m) and 30% to 1,750 yards (cut as round shot is), and its
-  fuse is rolled: 5% early, 5% in the air, 75% on the ground as it strikes, 15% blind. It bursts
+  fuse (before the gunners' setting) does: 5% early, 5% in the air, 75% on the ground as it strikes, 15% blind. It bursts
   as shell does. Its canister throws 5 balls a round, not 8.
 - Cover, the weather (fog and rain hide targets; the wind costs as for firearms) and open
   order cut both, as they cut volleys. Every man hit takes a wound roll at 80%, with no parry,
