@@ -184,7 +184,8 @@ attackers on side B, each with its fit men (the sick stay out). Attackers from d
 sides on the travel map fight together on side B, named for all of them ("Lancaster and
 Burgundy"), and each unit keeps its own side's name in the lists and the log. The GM splits each force
 into units with **Add a unit**, choosing the force to draw the men from. A force's men left
-out of every unit stay in reserve and do not fight.
+out of every unit stay in reserve and do not fight until their side brings them on (see
+*Reserves in the battle* under [Battlefields](#battlefields)).
 
 ## After the battle
 
@@ -519,15 +520,22 @@ drawn up:
   their side's name in the battlefield's `travel.sides` (Agincourt: England, then France).
   A side not named there takes the other army. If neither is named, or both name the same
   army, the defenders take the first army and the attackers the second.
-- **How many.** Each army's units are scaled to the fit men of the forces standing with it,
-  so 6,000 English fill the English line in the same shape as the battlefield's 5,960. Each
-  unit is drawn from the force with the most men left, the biggest units first, so they are
-  the least likely to be cut short. A mounted unit comes from a mounted force and a unit on
+- **How many.** A battlefield is a slice of the battle, so each unit stands at its drawn
+  numbers at most: 6,000 English fill the battlefield's English line of 5,960, and 40 wait in
+  reserve. A smaller force fills it scaled down, in the same shape (3,000 English stand at
+  half strength). Three German corps at Mons put the battlefield's 3,630 Germans in line and
+  keep the rest in reserve. Each unit is drawn from the force with the most men left, the
+  biggest units first, so they are the least likely to be cut short. A mounted unit comes from a mounted force and a unit on
   foot from a force on foot, when there is one with men left; a mounted unit drawn from a
   force on foot fights on foot.
 - **The baggage.** Wagon forces stay in reserve unless their army has no other force.
-- **Room.** A unit that no longer fits where it stood (a much bigger force runs off the
-  map) stays in reserve.
+- **Room.** A unit that no longer fits where it stood stays in reserve.
+- **Reserves in the battle.** On its own move a side can bring on a unit from its forces'
+  reserves with **Add a unit** (any men, order and arms, up to the force's reserve). It comes
+  on at the map edge behind its side (the side the most of its men face away from), as wide
+  as asked if that fits, else narrower and deeper, and it can move from the next exchange.
+  Any battle can bring on units this way; a battle from the travel map draws them from the
+  forces' reserves.
 
 The GM can still move, change or remove any unit, or pick open ground instead, which lets
 the units that fit stay. A battle sent from the travel map to open ground can be put on a
