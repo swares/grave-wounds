@@ -2439,8 +2439,10 @@ function addUnit(){
   const asked = Math.max(1, Number.parseInt($("#in-men").value, 10) || 1), men = f ? Math.min(asked, reserve(f)) : asked;
   const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, banner: f && f.side !== side ? f.side : null, force: f ? f.id : null, men, quality: $("#sel-quality").value, weapon: $("#sel-weapon").value,
     kit: $("#sel-kit").value, formation: formationFor($("#sel-weapon").value, $("#sel-form").value), mounted: $("#chk-mounted").checked, guns: $("#sel-guns").value, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
-  if (mid) return bringOn(u, k);
-  for (const pos of startSpots(k)){                  // inside the camp for its defenders, else the first free spot down its side's edge
+  return mid ? bringOn(u, k) : setUp(u, k);
+}
+function setUp(u, k){                             // set-up: inside the camp for its defenders, else the first free spot down its side's edge
+  for (const pos of startSpots(k)){
     const at = { ...u, pos };
     if (fits([...S.units, at], S.units.length, at, SIZE, S.field)){ S.units.push(at); S.sel = at.id; S.msg = `${at.name} added; click the map to place it.`; $("#in-name").value = ""; return render() }
   }
