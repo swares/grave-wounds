@@ -16,6 +16,7 @@
 # 25th. Numbers on both sides are disputed; those below are round figures for play.
 id: agincourt-1415
 name: "Agincourt campaign, 1415 (Harfleur to Calais)"
+period: "Hundred Years' War"                # the period its pickers list it under (else its wound table's conflict)
 hex_km: 5
 start_date: "1415-10-08"
 calendar: julian

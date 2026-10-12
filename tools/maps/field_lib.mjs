@@ -70,7 +70,7 @@ export function writeField(spec){
   const out = `${spec.header.map(l => ("# " + l).trimEnd()).join("\n")}
 id: ${spec.id}
 name: ${yq(spec.name)}
-sides: [${spec.sides.map(yq).join(", ")}]
+${spec.period ? "period: " + yq(spec.period) + "                # the period its pickers list it under (else its wound table's conflict)\n" : ""}sides: [${spec.sides.map(yq).join(", ")}]
 table: ${spec.table}
 # On the travel map: a fight within \`within\` hexes of this place offers this field. \`sides\` are
 # the travel-map sides that stand where each army stands here (${spec.sides[0]} first).

@@ -959,6 +959,10 @@ north at the top.
 It is drawn by `tools/maps/make_osan_field.mjs`, from the plain facts of the US Army's account,
 not traced from any map. A battlefield's units may start gone to ground (`prone: true`).
 
+The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
+travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
+table's conflict.
+
 **A battlefield file** has an `id` and `name`, `sides` (two names), `table`, `size`
 ([cols, rows]) and `weather`. Its `ground` is rows of one letter per hex: `.` open, `r`
 rough, `F` woods, `m` marsh, `h` high ground, `T` buildings, `w` water (the `key` of each kind in `data/units.yaml`).

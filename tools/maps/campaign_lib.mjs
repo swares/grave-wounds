@@ -150,7 +150,7 @@ export function buildCampaign(spec){
 ${spec.header.map(l => ("# " + l).trimEnd()).join("\n")}
 id: ${spec.id}
 name: ${yq(spec.name)}
-hex_km: ${g.hexKm}
+${spec.period ? "period: " + yq(spec.period) + "                # the period its pickers list it under (else its wound table's conflict)\n" : ""}hex_km: ${g.hexKm}
 start_date: ${yq(spec.start_date)}
 calendar: ${spec.calendar}
 latitude: ${spec.latitude}

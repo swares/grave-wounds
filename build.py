@@ -16,7 +16,7 @@ from pathlib import Path
 
 from gravewounds import load, DataError
 from gravewounds.engine import table_ranges, mechanism_ranges, severity_ranges, compose_wound, weapon_mix_ranges
-from gravewounds.model import MECHANISMS, SEVERITIES, THREATS, available_weapons, commons_url, resolve_table, slot_layers
+from gravewounds.model import MECHANISMS, SEVERITIES, THREATS, available_weapons, commons_url, resolve_table, slot_layers, periods
 
 ROOT = Path(__file__).parent
 DIST = ROOT / "dist"
@@ -736,8 +736,10 @@ def travel_bundle(d) -> dict:
         "disease": d.disease,
         "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
         "ground": {k: d.wounds["combat"]["ground"][k] for k in ("through", "camp_bank")},   # a camp's gates (camp.js)
-        "maps": {mid: {k: m.get(k) for k in ("id", "name", "hex_km", "rows", "places", "forces",
-                                                "start_date", "calendar", "latitude", "climate", "climate_shift")} for mid, m in d.maps.items()},
+        "maps": {mid: {**{k: m.get(k) for k in ("id", "name", "hex_km", "rows", "places", "forces",
+                                                   "start_date", "calendar", "latitude", "climate", "climate_shift")}, "period": periods(d)["maps"][mid]}
+                 for mid, m in d.maps.items()},
+        "period_order": periods(d)["order"],
         "battlefields": {fid: {"name": f["name"], **f["travel"]} for fid, f in d.fields.items() if f.get("travel")},
     }
 
@@ -791,8 +793,10 @@ def field_bundle(d) -> dict:
         "weather": {k: d.weather[k] for k in ("winds", "conditions", "battle", "ground", "wind_points", "driven_sight")},
         "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
         "fields": {fid: {"name": f["name"], "sides": f["sides"], "table": f["table"], "field": battlefield(d, fid), "units": f.get("units", []),
-                         "travel": f.get("travel")}
+                         "travel": f.get("travel"), "period": periods(d)["fields"][fid]}
                    for fid, f in d.fields.items()},
+        "period_order": periods(d)["order"],
+        "mapStarts": {mid: str(m.get("start_date", "")) for mid, m in d.maps.items()},
     }
 
 

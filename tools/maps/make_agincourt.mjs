@@ -82,7 +82,7 @@ const notes = { harfleur: "The English landed nearby in mid-August and took the 
 
 const map = buildCampaign({
   id: "agincourt-1415", script: "make_agincourt.mjs", title: "The Agincourt campaign of 1415, from Harfleur to Calais",
-  name: "Agincourt campaign, 1415 (Harfleur to Calais)",
+  period: "Hundred Years' War", name: "Agincourt campaign, 1415 (Harfleur to Calais)",
   start_date: "1415-10-08", calendar: "julian", latitude: 50, climate: "maritime", climate_shift: -0.5,
   bounds: [-0.05, 51.1, 3.3, 49.35], midLat: 50.2, hexKm: 5,
   header: [

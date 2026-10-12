@@ -1690,12 +1690,18 @@ function applyFieldResult(){                 // a battle fought on the field map
   S.msg = `The battle at ${r.place} is over. ${lines.join("; ")}.`;
   try{ localStorage.removeItem("gravewounds-field-result") }catch(e){ /* storage off: the result stays applied once, by its battle id */ }
 }
+function mapOptions(){                          // the campaign maps under their periods, oldest first; within a period by start date
+  const maps = Object.values(DATA.maps), opt = m => `<option value="${esc(m.id)}">${esc(m.name)}</option>`;
+  return (DATA.period_order || []).map(p => [p, maps.filter(m => m.period === p).sort((a, b) => String(a.start_date).localeCompare(String(b.start_date)))])
+    .filter(([, ms]) => ms.length).map(([p, ms]) => `<optgroup label="${esc(p)}">${ms.map(opt).join("")}</optgroup>`).join("")
+    + maps.filter(m => !(DATA.period_order || []).includes(m.period)).map(opt).join("");
+}
 function init(){
   restore();
   applyFieldResult();
   unitToggle($("#units-toggle"), () => render());
   terrainCss(); renderLegend();
-  $("#sel-map").innerHTML = Object.values(DATA.maps).map(m => `<option value="${esc(m.id)}">${esc(m.name)}</option>`).join("");
+  $("#sel-map").innerHTML = mapOptions();
   $("#sel-map").value = S.mapId;
   $("#sel-map").onchange = e => { S.mapId = e.target.value; S.msg = ""; render() };
   $("#in-ftype").innerHTML = Object.entries(FT).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");

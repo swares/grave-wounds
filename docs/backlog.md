@@ -9,10 +9,6 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **The roller's battle and campaign picker, by period.** The lists of battles and
-  campaigns to pick from are one long list; group them under their period (medieval, the
-  Thirty Years' War, horse and musket, the Civil War and the frontier, the First World War,
-  the Second World War, Korea) so a WWII battle is found under WWII.
 - **A rule book.** The printed tables carry a summary of each rule, but there is no rule
   book to read through: how to play, the turn, the roller, the field map, the travel map,
   camps and disease, the team builder, with examples. With the tables, or as its own book.
