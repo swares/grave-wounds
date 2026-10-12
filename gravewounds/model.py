@@ -982,11 +982,32 @@ def _team_errors(d: Data, era: dict) -> list[str]:
     for r in T["regions"]:
         if r["table"] not in d.tables:
             errors.append(f"{where}: region {r['id']} names unknown table {r['table']}")
+        errors += _women_errors(T, where, r)
+    if any(o.get("who") not in (None, "m", "f") for o in T["origins"]):
+        errors.append(f"{where}: an origin's who must be m or f")
     for c in T["careers"]:
         errors += _career_errors(d, T, where, c, chars, skills)
     errors += _template_errors(T, where)
     if [r["to"] for r in T["old_wound"]][-1] != 100 or set(T["lasting_from"].values()) - chars:
         errors.append(f"{where}: old_wound must end at 100 and lasting_from name characteristics")
+    return errors
+
+
+def _women_errors(tables: dict, where: str, r: dict) -> list[str]:
+    """A region's women block: known careers, a share (%) between 0 and 100 or null, name lists,
+    and enough origins for a woman (shared or her own)."""
+    W, careers = r.get("women"), {c["id"] for c in tables["careers"]}
+    if not W:
+        return []
+    errors = []
+    if not W.get("careers") or set(W["careers"]) - careers:
+        errors.append(f"{where}: region {r['id']} women needs careers, all known")
+    if W.get("share") is not None and not 0 < W["share"] <= 100:
+        errors.append(f"{where}: region {r['id']} women share must be over 0 and at most 100 (or null)")
+    if any(k in W and not W[k] for k in ("names", "bynames")) or not W.get("source"):
+        errors.append(f"{where}: region {r['id']} women name lists must not be empty, and the block needs a source")
+    if not [o for o in tables["origins"] if o.get("who", "f") == "f"]:
+        errors.append(f"{where}: women need origins (shared or who: f)")
     return errors
 
 

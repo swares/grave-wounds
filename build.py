@@ -450,7 +450,7 @@ def unit_rows(d) -> list[list[str]]:
 
 def team_eras(d) -> list[str]:
     """The eras with team tables, medieval first, then in the order of their years."""
-    order = ["medieval", "thirty_years", "horse_musket", "civil_war", "plains_nations", "wwi", "wwii"]
+    order = ["medieval", "thirty_years", "horse_musket", "civil_war", "plains_nations", "wwi", "wwii", "korea", "vietnam", "modern"]
     return [e for e in order if e in d.teams] + sorted(e for e in d.teams if e not in order)
 
 
@@ -461,7 +461,7 @@ def team_rules(d, eid: str = "medieval") -> list[str]:
     if eid != team_eras(d)[0]:
         skills = ", ".join(s["name"] for s in T["skills"] if s.get("combat"))
         return [f"<b>{T['name']}:</b> made exactly as the medieval era's, in the same five steps, from the tables below. "
-                f"Fighting skills: {skills}. Each region takes its war's wound table, for old wounds and for the roller.", _follower_rule(d, T)]
+                f"Fighting skills: {skills}. Each region takes its war's wound table, for old wounds and for the roller.", _follower_rule(d, T)] + _women_rule(T)
     ch = ", ".join(c["name"] for c in T["characteristics"])
     return [
         f"<b>{T['name']}: a team in twenty minutes.</b> A player runs a team of four to six; the first member leads. Each character is made in five steps.",
@@ -480,6 +480,21 @@ def team_rules(d, eid: str = "medieval") -> list[str]:
         "Kit and weapon come with his career and region (the table below).",
         _follower_rule(d, T),
     ]
+
+
+def _women_rule(tables) -> list[str]:
+    """Where women served under arms in this era: each army's share and open careers (data/teams women)."""
+    names = {c["id"]: c["name"].lower() for c in tables["careers"]}
+    rows = [(r, r["women"]) for r in tables["regions"] if r.get("women")]
+    if not rows:
+        return []
+    def one(r, W):
+        share = f"{W['share']:g}%" if W.get("share") is not None else "no reliable share: chosen, never rolled"
+        how = ", enlisted disguised as men" if W.get("disguised") else ""
+        return f"{r['name']} ({share}{how}): {', '.join(names[c] for c in W['careers'])}"
+    return ["<b>Women under arms:</b> a member may be a woman (her own name lists and origins, no beard; the texts say she and her), "
+            "chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: "
+            + "; ".join(one(r, W) for r, W in rows) + ". Elsewhere these careers were closed to them."]
 
 
 def _follower_rule(d, tables) -> str:
@@ -519,8 +534,13 @@ def team_tables(d, eid: str = "medieval") -> dict:
             events.append([c["name"], f"{lo:02d}-{r['to']:02d}".replace("-100", "-00"), sk[r["skill"]], r["text"] + (" *" if r.get("wound") else "")])
             lo = r["to"] + 1
     regions = T["regions"]
-    kitname = lambda k: d.armor["kits"][k]["name"].split(" (")[0]
-    kits = [["Career"] + [r["name"].split(" (")[0] for r in regions]] + [
+    many = len(T["regions"]) > 6                  # a wide table: the kit's first words only ("Interceptor vest")
+    def kitname(k):
+        name = d.armor["kits"][k]["name"].split(" (")[0]
+        if not many:
+            return name
+        return "No armour" if k == "none" else name.split(",")[0]
+    kits = [["Career"] + [r.get("short") or r["name"].split(" (")[0] for r in regions]] + [
         [c["name"]] + [f"{kitname(c['kit'].get(r['id'], c['kit']['default']))}; {d.weapons[c['weapon'].get(r['id'], c['weapon']['default'])]['short'].lower()}" for r in regions]
         for c in T["careers"]]
     names = {c["id"]: c["name"] for c in T["careers"]}
@@ -1465,7 +1485,7 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
                 Spacer(1, 6), Paragraph("Origins", H2), grid(cell(tt["origins"]), [0.6 * inch, 1.9 * inch, 1.0 * inch, (W - 3.5 * inch) / 2, (W - 3.5 * inch) / 2], font=7.5),
                 Spacer(1, 6), Paragraph("Careers", H2), grid(cell(tt["careers"]), [1.9 * inch, 1.2 * inch, 1.2 * inch, 0.9 * inch, W - 5.2 * inch], font=7.5),
                 Spacer(1, 6), Paragraph("Career terms (* leaves an old wound)", H2), grid(cell(tt["events"]), [1.7 * inch, 0.6 * inch, 1.1 * inch, W - 3.4 * inch], font=7.5),
-                Spacer(1, 6), Paragraph("Kit and weapon by region", H2), grid(cell(tt["kits"]), [1.5 * inch] + [(W - 1.5 * inch) / nreg] * nreg, font=7),
+                Spacer(1, 6), Paragraph("Kit and weapon by region", H2), grid(cell(tt["kits"]), [(1.1 if nreg > 6 else 1.5) * inch] + [(W - (1.1 if nreg > 6 else 1.5) * inch) / nreg] * nreg, font=6.5 if nreg > 6 else 7),
                 Spacer(1, 6), Paragraph("Teams", H2), grid(cell(tt["teams"]), [1.6 * inch, (W - 1.6 * inch) / 2, (W - 1.6 * inch) / 2], font=7.5)]
     if d.disease:
         drow = [[Paragraph(x, CH) for x in ["Disease", "Caught from", "Shows after", "Outbreak chance a week", "Peak (d100)", "Deaths per case"]]]

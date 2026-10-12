@@ -63,10 +63,13 @@ map can be fought there, and its wounded go back to camp, where wound fever can 
 them. See [docs/units.md](docs/units.md).
 
 **Team builder:** `dist/team.html` makes a team of four to six in a few rolls each, from the
-tables of seven eras (medieval, the Thirty Years' War, horse and musket, the Civil War and
-frontier, the Plains nations of the 1860s and 1870s, and the First and Second World Wars): characteristics (3d6 x 5 or a fixed array), an origin with a
+tables of ten eras (medieval, the Thirty Years' War, horse and musket, the Civil War and
+frontier, the Plains nations of the 1860s and 1870s, the First and Second World Wars, Korea,
+Vietnam, and the Falklands to Afghanistan): characteristics (3d6 x 5 or a fixed array), an origin with a
 trait and a drawback, one to three career terms with their events, old wounds rolled on the
-region's wound table, and kit. Sent to the roller, each character's skills fill in his attack
+region's wound table, and kit. Women serve where the records show they did (Civil War women
+disguised as men, Soviet women in 1941-45, the Vietnamese, and the Americans, British and
+Russians since 1991), chosen or rolled at the army's share. Sent to the roller, each character's skills fill in his attack
 and defence; a big team's followers get a line each. `python3 -m gravewounds team` makes one
 on the command line. See
 [docs/team.md](docs/team.md).
@@ -125,7 +128,7 @@ written in):
 2. Playtest the travel map and the campaign and battle maps, then add maps for the other
    campaigns and battles.
 3. Playtest the medieval character generation (the team builder) and make a team in 20
-   minutes; then tables for the other eras.
+   minutes.
 4. Playtest one fight with two teams, then a few weeks of camp, march and weather.
 
 ## Copyright and trademarks

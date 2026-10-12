@@ -93,11 +93,12 @@ come with his first career and his region.
 *Your own team* on the page picks four to six careers and their terms, and no followers
 until you add them.
 
-## The gunpowder eras and the world wars
+## The gunpowder eras, the world wars and after
 
-Six more eras use the same five steps, with their own skills, origins, careers, events,
+Nine more eras use the same five steps, with their own skills, origins, careers, events,
 regions, teams and followers (`data/teams/thirty_years.yaml`, `horse_musket.yaml`,
-`civil_war.yaml`, `plains_nations.yaml`, `wwi.yaml` and `wwii.yaml`). Pick one with **Era** on the page, or `--era` on the command line. Each
+`civil_war.yaml`, `plains_nations.yaml`, `wwi.yaml`, `wwii.yaml`, `korea.yaml`, `vietnam.yaml`
+and `modern.yaml`). Pick one with **Era** on the page, or `--era` on the command line. Each
 region takes its war's wound table, for old wounds and for the roller.
 
 | Era | Regions (wound table) | Fighting skills | Careers |
@@ -108,6 +109,9 @@ region takes its war's wound table, for old wounds and for the roller.
 | Plains nations (1860-1877) | the Lakota; the Cheyenne and Arapaho (the Army surgeons' arrow report, with Civil War gunshots) | Bow, Lance, Club and knife, Gun | warrior with bow and shield, warrior with lance and shield, warrior with a gun, scout, leader of war parties, healer, herder of the camp's horses |
 | First World War (1914-1918) | the British Empire, France, Germany, the United States (1917-18) (all the First World War table) | Rifle, Pistol, Machine gun, Bombing, Gunnery, Bayonet, Trench weapons | rifleman, machine gunner, bomber, sniper or observer, sapper or tunneller, stretcher-bearer or orderly, signaller or runner, corporal or sergeant, junior officer, gunner or trench mortarman |
 | Second World War (1939-1945) | the United States in Europe, the British Commonwealth, Germany, the Soviet Union (the Owens WWII table); US Marines and Army in the Pacific, Japan (the Bougainville table) | Rifle, SMG and pistol, Machine gun, Grenade, Gunnery, Bayonet, Close combat | rifleman, machine gunner, grenadier or anti-tank man, sniper or scout, combat engineer, medic, radio operator, corporal or sergeant, junior officer, paratrooper or commando, tank crewman |
+| Korean War (1950-1953) | US Army and Marines 1950-51, the US Army on the outpost line 1952-53, the Commonwealth, the Republic of Korea Army, the Chinese People's Volunteers, the Korean People's Army (all the Korean War hospital table) | Rifle, SMG and pistol, Machine gun, Grenade, Gunnery, Bayonet, Close combat | rifleman, machine gunner or BAR man, rocket or recoilless gunner, mortarman, sniper or scout, combat engineer, aidman or corpsman, radio operator or wireman, squad leader, platoon leader, tank crewman |
+| Vietnam War (1965-1973) | the US Army, the US Marines, Australians and New Zealanders, the ARVN, the North Vietnamese army, the Viet Cong (all the Vietnam hospital table) | Rifle, SMG and pistol, Machine gun, Grenade and rocket, Gunnery, Bayonet, Close combat | rifleman, machine gunner, grenadier or RPG gunner, point man or scout, combat engineer or sapper, tunnel rat or tunnel fighter, mortarman, medic or corpsman, radio operator, squad leader, platoon leader |
+| The Falklands to Afghanistan (1982-2014) | the British and Argentines in the Falklands (Falklands table), US forces in the Gulf 1991 (Gulf War table), the Rangers in Mogadishu 1993 (Somalia table), the Russians and Chechens 1994-96 (Chechnya table), the US, the British and the insurgents in Iraq and Afghanistan (OIF/OEF table) | Rifle, Pistol, Machine gun, Grenade and rocket, Gunnery, Bayonet, Close combat | rifleman, machine gunner, grenadier or anti-tank gunner, marksman or sniper, combat engineer or bomb searcher, combat medic, signaller, military police or convoy gunner, armoured vehicle crewman, section leader, platoon leader |
 
 Brawl, Parry, Dodge and the skills outside a fight (Leechcraft, Fieldcraft, Watch, Stealth
 and the rest) carry over; Bow, Crossbow, Axe and Sling stay medieval. Gunnery is the
@@ -136,6 +140,42 @@ Europe and Russia on the Owens WWII table, the Pacific on Bougainville. There ar
 rules yet, so a tank crew fights as men on foot with pistols and submachine guns. The names
 are common period names; the events are ours, written from plain fact about trench and
 field service.
+
+Korea and after: armour follows the region and the year, as on the battlefields: a steel
+helmet for the Americans of 1950-51, the Commonwealth and the ROK; the M1952 flak vest on the
+outpost line of 1952-53; the nylon and Doron vests in Vietnam (the Army's and the Marines');
+PASGT in 1991, the Ranger Body Armor in Mogadishu, plate armour in Iraq and Afghanistan (the
+British Osprey drawn as the Interceptor); no armour for the Chinese, the North Koreans, the
+Vietnamese communists, the Chechens and the insurgents. Rocket launchers and recoilless rifles
+are fought with Gunnery in Korea; from Vietnam on, the RPG with Grenade and rocket, and an
+RPG gunner of the Viet Cong, the North's army, the Chechens or the insurgents carries one.
+Chinese, Korean and Vietnamese names are written family name first. A term is a year.
+
+## Women under arms
+
+A region's `women` block opens careers to women where the records show they served under
+arms; elsewhere `no_women` says why not (nurses and auxiliaries served, but not in these
+careers). On the page, **Women** rolls each member of a template team (and each follower) at
+the army's share; in **Your own team** each member is a man, a woman or a roll, and a career
+closed to women in that army is greyed out with the reason. A roll is d10000 at or under the
+share x 100 (shares are given to two places), taken before the characteristics, and only for a
+career open to women; a career closed to them, or an army with no reliable share, rolls a man.
+A woman takes the women's name lists, has no beard, rolls on the shared origins and her own
+(`who: f`; `who: m` rows are men's only), and her sheet's events and traits say *she* and *her*.
+
+| Era and army | Share | Careers open | Source |
+| --- | --- | --- | --- |
+| Civil War: the Union, the Confederacy | 0.02%, 0.03% | infantryman, sharpshooter, trooper, artilleryman, scout, teamster: enlisted disguised as men, under men's names | DeAnne Blanton, *Prologue* (National Archives, 1993): roughly 750 women, as many as 250 Confederates; the share is our arithmetic |
+| Second World War: the Soviet Union | 3% | rifleman, machine gunner, sniper, medic, radio operator, sergeant, officer, tank crewman | Over 800,000 women, over 3% of the forces (Air University Review, 1982); 2,484 women snipers |
+| Vietnam: the ARVN, the North's army, the Viet Cong | not known: chosen, never rolled | ARVN medic; the North's rifleman, scout, sapper, medic; the Viet Cong's rifleman, scout, sapper, medic, radio operator, squad leader, platoon leader | Women in the Vietnam War (Wikipedia, with its sources) |
+| US forces in the Gulf, 1991 | 7% | medic, signaller, military police | GAO NSIAD-93-93: about 41,000 women, some 7% of those deployed |
+| Russian forces in Chechnya | 10% | medic | Smirnov (2002): almost 10% of the Russian forces by 1999 |
+| US forces in Iraq and Afghanistan | 11.4% | medic, signaller, military police, section leader, platoon leader | CRS R42075: 11.4% of those deployed in February 2013 |
+| British forces in Iraq and Afghanistan | 8.3% | the same | MoD manning report, 1 October 2012: 8.3% of the Army |
+
+The share is the women among that army's soldiers, not among those in the career, so a roll is
+a rough guide: the GM may prefer to choose. Ground close combat opened to women in the US in
+2016 and in Britain in 2016-18, after these wars.
 
 ## Followers
 
@@ -176,7 +216,7 @@ the team, and **Reroll the followers** rolls them again. Their lines print below
 
 ## On the page and in the roller
 
-**Roll the team** makes the whole team, and each sheet has **Reroll him**. The names can be
+**Roll the team** makes the whole team, and each sheet has **Reroll him** (or **her**). The names can be
 edited. **Print the sheets** prints them, two across. **Send to the roller** hands the team
 to the wound roller, which offers to add them to its fighters on the side named. If the
 roller has no fighters yet, it switches to the region's wound table.
@@ -188,7 +228,7 @@ defence does. The GM can still change either. His Nerve comes from the sheet. Ol
 not bleed or count as wounds there; their lasting hurts are already in his characteristics.
 
 `python3 -m gravewounds team --region england --template retinue` prints a team and its
-followers on the command line. `--array` uses the fixed array and `--seed N` gives repeatable dice. The page
+followers on the command line. `--array` uses the fixed array, `--women roll` rolls each member and follower at the army's share, and `--seed N` gives repeatable dice. The page
 and the Python rules make the same team from the same dice.
 
 His characteristics also count in the roller: Agility for initiative, Endurance for his Blood
@@ -202,4 +242,6 @@ forages fresh food on the march; **Watch** makes his force harder to surprise, a
 **Stealth** makes the force he attacks with likelier to surprise its enemy (see
 [combat.md](combat.md), [travel.md](travel.md) and [works.md](works.md), *Surprise*).
 
-Not yet done (see the backlog): tables for the other eras.
+Not yet done (see the backlog): women in the earlier eras (the medieval, gunpowder and First
+World War tables have no women blocks yet), and careers for women outside the fighting units
+(nurses, auxiliaries, anti-aircraft gunners, pilots).

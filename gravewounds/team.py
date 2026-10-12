@@ -3,6 +3,8 @@ era's tables (data/teams/<era>.yaml). The team builder page (templates/team.js) 
 rules exactly; build.py precomputes the old-wound location ranges both use."""
 from __future__ import annotations
 
+import re
+
 from . import engine as E
 from .model import Data
 
@@ -43,6 +45,69 @@ def _at(ranges: list, roll: int) -> str:
     return next(loc for loc, hi in ranges if roll <= hi)
 
 
+# Women under arms (docs/team.md): a region's `women` block opens careers to women, at a share
+# of the army's soldiers (in %, to two places; rolled on 1-10000); `no_women` says why a region
+# has none. A woman takes the women's names (or the men's, for a woman who enlisted disguised
+# as a man), no beard, and her own origins (`who: f`; `who: m` rows are men's only).
+SHARE_DIE = 10000
+
+
+def women_of(tables: dict, region: str) -> dict | None:
+    """The region's women block, or None."""
+    return _by_id(tables["regions"], region).get("women")
+
+
+def open_to_women(tables: dict, region: str, career_id: str) -> tuple:
+    """(open, why not): whether women can take this career in this region, and if not, why."""
+    W = women_of(tables, region)
+    if not W:
+        return False, _by_id(tables["regions"], region).get("no_women") or "No women served in this army's fighting careers in these tables."
+    if career_id not in W["careers"]:
+        return False, W.get("closed") or "Closed to women in this army."
+    return True, None
+
+
+def _sex(tables: dict, region: str, career_id: str, sex: str, rng) -> str:
+    """m or f: as chosen, or (roll) d10000 at or under the region's share x 100, for a career
+    open to women in a region with a known share (no roll otherwise: a man)."""
+    ok = open_to_women(tables, region, career_id)[0]
+    if sex == "roll":
+        share = (women_of(tables, region) or {}).get("share") if ok else None
+        return "f" if share is not None and rng.randint(1, SHARE_DIE) <= round(share * 100) else "m"
+    return "f" if sex == "f" and ok else "m"
+
+
+def _name(reg: dict, sex: str, rng) -> str:
+    """A name from the region's lists (a woman's from its women's lists, where it has them)."""
+    W = (reg.get("women") or {}) if sex == "f" else {}
+    names, bynames = W.get("names") or reg["names"], W.get("bynames") or reg["bynames"]
+    return f"{names[rng.randint(1, len(names)) - 1]} {bynames[rng.randint(1, len(bynames)) - 1]}"
+
+
+def _look(reg: dict, sex: str, rng) -> dict:
+    """Coat colour and beard (both always rolled); a woman has no beard, and long hair."""
+    beards = ["", "moustache", "beard", "stubble"]
+    look = {"colour": reg["colours"][rng.randint(1, len(reg["colours"])) - 1], "beard": beards[rng.randint(1, 4) - 1]}
+    if sex == "f":
+        look.update(beard="", hair="long")
+    return look
+
+
+def origins_for(tables: dict, sex: str) -> list:
+    """The origins a man or a woman rolls on: the shared rows and his or her own (`who`)."""
+    return [o for o in tables["origins"] if o.get("who", sex) == sex]
+
+
+PRONOUNS = {"he": "she", "He": "She", "his": "her", "His": "Her", "him": "her", "Him": "Her", "himself": "herself", "Himself": "Herself"}
+
+
+def pron(text: str, sex: str = "m") -> str:
+    """A table's text (written of a man) said of a woman: he, his, him and himself become hers."""
+    if sex != "f":
+        return text
+    return re.sub(r"\b(" + "|".join(PRONOUNS) + r")\b", lambda m: PRONOUNS[m.group(1)], text)
+
+
 def kit_for(career: dict, region: str) -> tuple:
     """(armour kit, weapon) for a career in a region."""
     k, w = career["kit"], career["weapon"]
@@ -67,19 +132,21 @@ def _apply(mod: dict, stat_mods: dict, gains: dict) -> None:
 
 
 def make_character(d: Data, eid: str, region: str, career_id: str, terms: int, mode: str, rng,
-                   ranges: dict | None = None) -> dict:
+                   ranges: dict | None = None, sex: str = "m") -> dict:
     """One character: characteristics, origin, career terms with their events and old wounds,
     name, look and kit. mode: roll (3d6 x 5) or array. The dice are taken in a fixed order
-    (team.js takes them the same way): the characteristics, the origin, each term (the row,
-    then the wound chance unless the row always wounds, then the wound's location and kind),
-    the name and the look."""
+    (team.js takes them the same way): man or woman (only for sex "roll", at the region's
+    share), the characteristics, the origin, each term (the row, then the wound chance unless
+    the row always wounds, then the wound's location and kind), the name and the look."""
     T = era(d, eid)
     career = _by_id(T["careers"], career_id)
     ranges = ranges or old_wound_ranges(d, eid)
+    sex = _sex(T, region, career_id, sex, rng)
     base = _stats(T, career, mode, rng)
     stat_mods = {c["id"]: 0 for c in T["characteristics"]}
     gains: dict = {}
-    origin = T["origins"][(rng.randint(1, 100) - 1) * len(T["origins"]) // 100]
+    rows = origins_for(T, sex)
+    origin = rows[(rng.randint(1, 100) - 1) * len(rows) // 100]
     gains[origin["gain"]] = gains.get(origin["gain"], 0) + T["gain"]
     _apply(origin["trait"], stat_mods, gains)
     _apply(origin["drawback"], stat_mods, gains)
@@ -92,43 +159,41 @@ def make_character(d: Data, eid: str, region: str, career_id: str, terms: int, m
         if row.get("wound") or rng.randint(1, 100) <= career["wound"]:
             old.append(_old_wound(d, T, ranges[region][career["wound_weapon"]], career["wound_weapon"], stat_mods, rng))
     reg = _by_id(T["regions"], region)
-    name = f"{reg['names'][rng.randint(1, len(reg['names'])) - 1]} {reg['bynames'][rng.randint(1, len(reg['bynames'])) - 1]}"
-    beards = ["", "moustache", "beard", "stubble"]
-    look = {"colour": reg["colours"][rng.randint(1, len(reg["colours"])) - 1], "beard": beards[rng.randint(1, 4) - 1]}
+    name, look = _name(reg, sex, rng), _look(reg, sex, rng)
     kit, weapon = kit_for(career, region)
-    c = {"name": name, "era": eid, "region": region, "career": career_id, "terms": terms, "mode": mode,
+    c = {"name": name, "sex": sex, "era": eid, "region": region, "career": career_id, "terms": terms, "mode": mode,
          "base": base, "stat_mods": stat_mods, "gains": gains, "origin": origin["name"],
          "trait": origin["trait"]["text"], "drawback": origin["drawback"]["text"], "events": events, "old": old,
          "age": T["age"]["start"] + T["age"]["per_term"] * terms, "kit": kit, "weapon": weapon, "look": look}
     return finish(d, c)
 
 
-def make_follower(d: Data, eid: str, region: str, career_id: str, table: str, rng) -> dict:
-    """One follower: a quality (d100 on the followers' `table`), then a name and a look, in
-    that order (team.js the same). His attack, defence and Nerve are the quality's (units.yaml);
-    his kit and weapon his career's in his region."""
+def make_follower(d: Data, eid: str, region: str, career_id: str, table: str, rng, women: str = "none") -> dict:
+    """One follower: a quality (d100 on the followers' `table`), man or woman (women "roll":
+    at the region's share, for a career open to women), then a name and a look, in that order
+    (team.js the same). Attack, defence and Nerve are the quality's (units.yaml); kit and
+    weapon the career's in the region."""
     T = era(d, eid)
     career = _by_id(T["careers"], career_id)
     quality = _pick(T["followers"]["quality"][table], rng.randint(1, 100))["quality"]
     q = d.units["quality"][quality]
+    sex = _sex(T, region, career_id, "roll", rng) if women == "roll" else "m"
     reg = _by_id(T["regions"], region)
-    name = f"{reg['names'][rng.randint(1, len(reg['names'])) - 1]} {reg['bynames'][rng.randint(1, len(reg['bynames'])) - 1]}"
-    beards = ["", "moustache", "beard", "stubble"]
-    look = {"colour": reg["colours"][rng.randint(1, len(reg["colours"])) - 1], "beard": beards[rng.randint(1, 4) - 1]}
+    name, look = _name(reg, sex, rng), _look(reg, sex, rng)
     kit, weapon = kit_for(career, region)
-    return {"name": name, "career": career_id, "quality": quality, "attack": q["attack"], "defence": q["defence"],
+    return {"name": name, "sex": sex, "career": career_id, "quality": quality, "attack": q["attack"], "defence": q["defence"],
             "nerve": q["nerve"], "kit": kit, "weapon": weapon, "look": look, "mounted": bool(career.get("mounted"))}
 
 
-def make_followers(d: Data, eid: str, region: str, counts: list, table: str, rng) -> list[dict]:
+def make_followers(d: Data, eid: str, region: str, counts: list, table: str, rng, women: str = "none") -> list[dict]:
     """The followers: counts [[career, n], ...], in order."""
-    return [make_follower(d, eid, region, cid, table, rng) for cid, n in counts for _ in range(n)]
+    return [make_follower(d, eid, region, cid, table, rng, women) for cid, n in counts for _ in range(n)]
 
 
 def follower_line(d: Data, f: dict, eid: str = "medieval") -> str:
     """A follower in one line: "John Archer, archer, regular: bow 50%, defence 35%, Nerve 50; jack and sallet"."""
     career = _by_id(era(d, eid)["careers"], f["career"])
-    return (f"{f['name']}, {career['name'].lower()}, {f['quality']}: {d.weapons[f['weapon']]['short'].lower()} {f['attack']}%, "
+    return (f"{f['name']}{' (a woman)' if f.get('sex') == 'f' else ''}, {career['name'].lower()}, {f['quality']}: {d.weapons[f['weapon']]['short'].lower()} {f['attack']}%, "
             f"defence {f['defence']}%, Nerve {f['nerve']}; {d.armor['kits'][f['kit']]['name'].split(' (')[0].lower()}")
 
 
@@ -165,12 +230,19 @@ def attack_for(tables: dict, c: dict, weapon: str) -> int | None:
     return c["skills"][s] if s else None
 
 
-def make_team(d: Data, eid: str, region: str, template: str, mode: str, rng) -> list[dict]:
-    """A team from a template: one character a slot, the first its leader."""
+def make_team(d: Data, eid: str, region: str, template: str, mode: str, rng, women: str = "none") -> list[dict]:
+    """A team from a template: one character a slot, the first its leader. women "roll": each
+    rolled man or woman at the region's share."""
     T, ranges = era(d, eid), old_wound_ranges(d, eid)
-    team = [make_character(d, eid, region, cid, n, mode, rng, ranges) for cid, n in _by_id(T["templates"], template)["slots"]]
+    sex = "roll" if women == "roll" else "m"
+    team = [make_character(d, eid, region, cid, n, mode, rng, ranges, sex) for cid, n in _by_id(T["templates"], template)["slots"]]
     team[0]["leader"] = True
     return team
+
+
+def _a(word: str) -> str:
+    """'a mortar', 'an assault rifle'."""
+    return ("an " if word[:1] in "aeiou" else "a ") + word
 
 
 def fight_line(d: Data, c: dict) -> str:
@@ -191,14 +263,16 @@ def sheet(d: Data, c: dict) -> list[str]:
     names = {s["id"]: s["name"] for s in T["skills"]}
     stats = ", ".join(f"{x['name'][:3]} {c['stats'][x['id']]}" for x in T["characteristics"])
     trained = ", ".join(f"{names[k]} {c['skills'][k]}" for k in names if c["gains"].get(k, 0) > 0)
-    lines = [f"{c['name']}{' (leader)' if c.get('leader') else ''}: {career['name'].lower()}, {c['terms']} term{'s' if c['terms'] > 1 else ''}, age {c['age']}",
+    sx = c.get("sex", "m")
+    woman = " (a woman" + (", enlisted as a man" if (_by_id(T["regions"], c["region"]).get("women") or {}).get("disguised") else "") + ")" if sx == "f" else ""
+    lines = [f"{c['name']}{' (leader)' if c.get('leader') else ''}{woman}: {career['name'].lower()}, {c['terms']} term{'s' if c['terms'] > 1 else ''}, age {c['age']}",
              f"  {stats}",
-             f"  Origin: {c['origin'].lower()}. {c['trait']}; {c['drawback'].lower()}.",
+             f"  Origin: {c['origin'].lower()}. {pron(c['trait'], sx)}; {pron(c['drawback'], sx).lower()}.",
              f"  Skills: {trained}",
              f"  Arms: {d.weapons[c['weapon']]['name']} (attack {c['attack']}%), defence {c['defence']}%; {d.armor['kits'][c['kit']]['name']}"]
     lines.append("  In a fight: " + fight_line(d, c))
-    lines += [f"  Term {i + 1}: {e}" for i, e in enumerate(c["events"])]
+    lines += [f"  Term {i + 1}: {pron(e, sx)}" for i, e in enumerate(c["events"])]
     for w in c["old"]:
         hurt = f", {T['lasting']} off {_by_id(T['characteristics'], w['stat'])['name']}" if w["kind"] == "lasting" else ""
-        lines.append(f"  Old wound: {d.loc[w['loc']]['name'].lower()}, from a {d.weapons[w['weapon']]['short'].lower()}: {'a lasting hurt' if w['kind'] == 'lasting' else 'a healed scar'}{hurt}")
+        lines.append(f"  Old wound: {d.loc[w['loc']]['name'].lower()}, from {_a(d.weapons[w['weapon']]['short'].lower())}: {'a lasting hurt' if w['kind'] == 'lasting' else 'a healed scar'}{hurt}")
     return lines
