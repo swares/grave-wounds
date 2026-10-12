@@ -2424,7 +2424,9 @@ function landText(l){                            // men landing by air, or waved
   const why = l.why === "blocked" ? "the enemy is on the landing zone" : "no room there";
   if (l.kind === "waveoff") return `${l.name} (${l.side}) cannot land at ${at}: ${why}.`;
   let hot = "";
-  if (l.hot) hot = ", under fire: " + l.struck + " struck" + (l.struck ? ", " + l.down + " down" + (l.dead ? " (" + l.dead + " dead)" : "") : "");
+  if (l.hot) hot = ", under fire: " + l.struck + " struck";
+  if (l.hot && l.struck) hot += ", " + l.down + " down";
+  if (l.hot && l.dead) hot += " (" + l.dead + " dead)";
   return `${l.men} men of ${l.name} (${l.side}) land at ${at}${l.first ? "" : " and join them"}${hot}.`;
 }
 const nWounds = n => (n === 1 ? "1 wound" : n + " wounds");
