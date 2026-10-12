@@ -15325,6 +15325,16 @@
     "breach": null,
     "note": "A log-and-earth pillbox or dugout with firing slits (the 20th century)."
    },
+   "trench": {
+    "name": "Trench",
+    "each": 6,
+    "enter": 1,
+    "cover_here": 40,
+    "hides": true,
+    "no_horse": true,
+    "breach": null,
+    "note": "A fire trench or communication trench, dug chest-deep (the 20th century): the men in it are hard to see and harder to hit."
+   },
    "wreck": {
     "name": "Downed helicopter",
     "each": 0,

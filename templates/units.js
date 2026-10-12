@@ -416,10 +416,15 @@ function volleys(units, field = null){            // [{att, dfd, men, dist, cove
 const isMg = w => (UD.machine_guns?.weapons || []).includes(w);
 const mgGuns = u => Math.ceil(Math.max(0, u.men) / UD.machine_guns.crew);   // one a crew, while a man of it is up
 const groundCover = u => (u.prone ? UD.to_ground.cover : 0);                 // % off shots at a unit gone to ground
+function hidesAt(field, h){                       // men in hex h hidden by its ground or a hex work that hides (a trench)
+  if (groundAt(field, h).hides) return true;
+  const it = field?.works?.hexes?.[`${h[0]},${h[1]}`];
+  return !!it && !!FD.works?.hex_works?.[it.type]?.hides;
+}
 function seenShare(field, u, at, weapon = null){  // share of aimed shots at u that find a man: hidden.seen % (mg_seen % for a machine gun) if gone to ground, in a bunker or in hiding ground
   const H = UD.hidden;
   if (!H) return 1;
-  if (!(u.prone || inBunker(field, u) || (at && groundAt(field, at).hides))) return 1;
+  if (!(u.prone || inBunker(field, u) || (at && hidesAt(field, at)))) return 1;
   return weapon && isMg(weapon) ? (H.mg_seen ?? H.seen) / 100 : H.seen / 100;
 }
 function shooters(u, field = null){               // a machine-gun team's served guns; any other unit's front hexes' first shoot_ranks ranks, less breaching front ranks; pinned, fewer

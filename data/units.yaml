@@ -48,6 +48,7 @@ ground:
   high:  {name: "High ground",  key: "h", move: 1, height: 10}
   buildings: {name: "Buildings", key: "T", move: 2, cover: 30, stops_shot: true, no_horse: true, hides: true}   # houses, walls, yards
   tall:  {name: "Tall buildings", key: "B", move: 3, cover: 40, stops_shot: true, no_horse: true, hides: true, height: 10}   # blocks of several storeys: high ground for shooting; the streets between are open ground
+  rubble: {name: "Rubble", key: "x", move: 3, cover: 40, stops_shot: true, no_horse: true, hides: true}   # a town bombed or shelled to ruins: broken walls, craters, heaps of masonry
   water: {name: "Water",        key: "w", move: 1, impassable: true}                                # a canal or river: shots cross it, men do not
 # Breaching: a unit ordered to breach puts this share of each front hex's front rank to
 # hacking at the work in front of it, every round of the exchange. A work's breach figure
