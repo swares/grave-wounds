@@ -337,8 +337,8 @@ def _ground_rules(d) -> list[str]:
         return []
     parts = []
     for g in G.values():
-        bits = [f"move {g['move']}"] + ([f"cover -{g['cover']}%"] if g.get("cover") else []) + ([f"-{g['height']}% striking up at it"] if g.get("height") else []) \
-            + (["no horses"] if g.get("no_horse") else [])
+        bits = [f"move {g['move']}"] + ([f"cover -{g['cover']}%"] if g.get("cover") else []) + ([f"-{g['height']}% striking up at it, high ground for shooting"] if g.get("height") else []) \
+            + (["no horses"] if g.get("no_horse") else []) + (["hides men"] if g.get("hides") else [])
         parts.append(f"{g['name'].lower()} ({', '.join(bits)})")
     return [
         "<b>Ground and works on the field map:</b> " + "; ".join(parts) + f". Works are the battle map's, along the {yd(d.units['hex_m'])} hex sides: "

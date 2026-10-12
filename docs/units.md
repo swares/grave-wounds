@@ -293,7 +293,7 @@ out. All of this is design estimates (`data/units.yaml`).
   down in the folds of the ground. Shots at it lose 15% on top of the ground's cover, and it
   cannot move until **Get up**. It still shoots, and fights hand to hand as it stands. The map
   marks it ↓.
-- **Hidden men**: men gone to ground, in a bunker, or in buildings show little of themselves.
+- **Hidden men**: men gone to ground, in a bunker, or in buildings or tall buildings show little of themselves.
   Of the aimed shots fired at them, only 10% find a man to aim at (5% of a machine gun's: it
   sprays where they are thought to be, and still pins them); the rest go at the smoke and the
   flashes. Cover and range then cut those as usual. The log says so ("hidden: 10% of shots
@@ -599,7 +599,8 @@ can be opened or barred at any time.
 | Woods | 2 | −20% to shots at men in it |
 | Marsh | 3 | no horses |
 | High ground | 1 | −10% to blows struck up at men on it from lower ground; shooting down from it +10% with range bands 20% longer, shooting up at it −10% (not guns) |
-| Buildings | 2 | −30% to shots at men in it; no horses; stops round shot |
+| Buildings | 2 | −30% to shots at men in it; men in it are hidden; no horses; stops round shot |
+| Tall buildings | 3 | blocks of several storeys (a modern town): −40% to shots at men in it; men in it are hidden; high ground (as above) for shooting and for blows struck up at them; no horses; stops round shot. The streets between are open ground. There are no separate floors. |
 | Water | can't enter | a canal or river: shots cross it, men cross only at a bridge (paint the bridge open) |
 
 **Works** are the battle map's (see [works.md](works.md)), with the same numbers, along
@@ -1007,7 +1008,7 @@ table's conflict.
 
 **A battlefield file** has an `id` and `name`, `sides` (two names), `table`, `size`
 ([cols, rows]) and `weather`. Its `ground` is rows of one letter per hex: `.` open, `r`
-rough, `F` woods, `m` marsh, `h` high ground, `T` buildings, `w` water (the `key` of each kind in `data/units.yaml`).
+rough, `F` woods, `m` marsh, `h` high ground, `T` buildings, `B` tall buildings, `w` water (the `key` of each kind in `data/units.yaml`).
 `up` (optional) is the compass point at the top of the map, if not north, and `weather` may
 give the wind's direction as `dir` (where it blows from). `travel` (optional) is `{map, place, within, sides}`: the travel map and place it belongs
 to, how many hexes from the place count as there, and the travel-map side names that stand
