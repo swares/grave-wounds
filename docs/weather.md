@@ -53,6 +53,9 @@ somewhat cooler; the test valley uses −0.9 °F (−0.5 °C).
 | Tropical rainforest, the western Pacific | the Solomon Islands (Bougainville); rounded design estimates |
 | Northern High Plains, semi-arid | the Big Horn foothills (Sheridan, Wyoming) |
 | Central Korea, monsoon continental | Suwon and Seoul; rounded approximations of the normals |
+| Central Highlands of Vietnam, tropical monsoon | Pleiku: a dry season November to April, monsoon rains May to October; rounded design estimates |
+| Horn of Africa coast, hot and semi-arid | Mogadishu; rounded design estimates |
+| Hindu Kush valleys, hot summers and cold winters | the Kunar and Nuristan valleys at about 1,200 m; rounded design estimates |
 
 The four North American climates are rounded approximations of 1991–2020 station normals
 for the places named; the Greenville-Spartanburg January figures and Sheridan's temperatures
