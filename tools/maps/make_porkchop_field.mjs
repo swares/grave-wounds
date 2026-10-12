@@ -21,10 +21,19 @@ function kind(c, r){
   if (patch(c, r, { cx: TOP[0], cy: TOP[1], rx: 22, ry: 16, a: 0.5, b: 1.2 })) return speckle(c, r, 3) ? "r" : "h";   // Pork Chop: bare, cratered
   if (patch(c, r, { cx: H200[0], cy: H200[1], rx: 12, ry: 9, a: 1.3, b: 0.2 })) return speckle(c, r, 3) ? "r" : "h";   // Hill 200
   if (r > 116) return speckle(c, r, 4) ? "r" : "h";                                                                     // the main line's hills
-  return speckle(c, r, 3) ? "r" : (speckle(c, r, 5) ? "m" : ".");                                                      // the valleys: old paddies, craters, wire
+  if (speckle(c, r, 3)) return "r";                                                                                    // the valleys: craters and wire,
+  return speckle(c, r, 5) ? "m" : ".";                                                                                 // and old paddies
 }
 const grid = groundGrid(COLS, ROWS, kind);
-const ring = (h, d) => { const out = []; for (let r = h[1] - d; r <= h[1] + d; r++) for (let c = h[0] - d - 1; c <= h[0] + d + 1; c++) if (hdist([c, r], h) === d) out.push([c, r]); return out };
+function ring(h, d){                              // the hexes exactly d from h
+  const out = [];
+  for (let r = h[1] - d; r <= h[1] + d; r++){
+    for (let c = h[0] - d - 1; c <= h[0] + d + 1; c++){
+      if (hdist([c, r], h) === d) out.push([c, r]);
+    }
+  }
+  return out;
+}
 const TRENCH = [...ring(TOP, 9), ...ring(TOP, 3), ...ring(H200, 5)];
 const BUNKERS = [[TOP[0] - 9, TOP[1]], [TOP[0] + 9, TOP[1]], [TOP[0] - 4, TOP[1] - 8], [TOP[0] + 5, TOP[1] - 8], [TOP[0], TOP[1] + 9], [TOP[0], TOP[1]]];
 const trenchHexes = TRENCH.filter(h => !BUNKERS.some(b => b[0] === h[0] && b[1] === h[1]));
