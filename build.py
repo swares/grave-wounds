@@ -276,9 +276,23 @@ def _indirect_rules(d) -> list[str]:
         f"<b>Indirect fire:</b> off-map batteries on call, on a hex one of the side's units can see (in the weather, no woods between). Each shell scatters "
         f"(d6 direction, 0 to scatter hexes); every man within the radius is struck at the % for his distance (x{I['prone']:g} gone to ground, less ground cover) "
         f"and wounds as a shell fragment at {I['attack']}%. {kinds}.",
+        _support_rules(I),
         f"<b>Suppression:</b> a unit shelled or under machine-gun fire checks Nerve at the end of the exchange (+{S['prone']} gone to ground); a failure pins it "
         f"for the next exchange: no move, {S['fire'] * 100:g}% of its fire.",
     ]
+
+
+def _support_rules(I: dict) -> str:
+    """Counter-battery, crews, displacing, smoke drift and fire plans, for the book."""
+    CB, K = I["counter_battery"], I["kinds"]
+    crews = ", ".join(f"{k['name'].lower()} {k['crew']} (fires with {k['serve']})" for k in K.values() if not k.get("direct"))
+    moves = ", ".join(f"{k['name'].lower()} {k['displace']}" for k in K.values() if k.get("displace"))
+    drift = ", ".join(f"{w} {n}" for w, n in I["smoke"]["drift"].items())
+    return (f"<b>Counter-battery and fire plans:</b> crews a tube: {crews}. A located battery can be fired on with no one seeing it: each shell lands among "
+            f"the guns at the kind's counter %, knocking out a tube and striking {CB['among']} crewmen, or at {CB['near']} times that bursts close by, striking "
+            f"{CB['near_struck']}; struck crewmen roll wounds and those put down are lost, and a tube without its men is silent. Displacing, a battery is silent "
+            f"for its exchanges ({moves}) and then unlocated. Smoke drifts downwind each exchange, by hexes: {drift}. A creeping barrage keeps a fire plan: "
+            f"1 to {I['creep']['max']} hexes a lift, 1 to {I['creep']['every_max']} exchanges on each line, a set number of lines.")
 
 
 def _ground_rules(d) -> list[str]:

@@ -322,7 +322,7 @@ Modern artillery and mortars fire from off the map, on call (`indirect` in
 with shell wounds (the First World War and later):
 
 - **Add a battery**: a side, a kind and how many tubes (guns or mortars). Each tube carries
-  its kind's rounds.
+  its kind's rounds and has its crew: 4 men a mortar, 6 a field gun, 8 a heavy howitzer.
 - **Call fire**: on the battery's side's move (or in set-up), press **Call fire**, then click
   the hex to fire on. One of the side's units must see it: within the weather's sight, with
   no woods or smoke between. Tick **Keep firing each exchange** before calling to repeat the
@@ -343,18 +343,31 @@ with shell wounds (the First World War and later):
   hex and the hexes round it with smoke (grey on the map). No one sees or shoots into, out
   of or through smoke, and fire cannot be called on a hex behind it. The shooting in an
   exchange comes before the shells land, so smoke screens the exchanges after: 3 in calm
-  air, 2 in a breeze, 1 in a strong wind; a gale blows it away at once.
-- **Creeping barrage**: pick **Creep** (1 to 3 hexes an exchange) and **Towards** (the way
-  most of the side's units face, or a direction on the map) before calling. The mission
-  keeps firing, and after each exchange's shells its aim moves on, ahead of an advance. It
-  ends when it leaves the map, or on **Stop**.
+  air, 2 in a breeze, 1 in a strong wind; a gale blows it away at once. At the end of each
+  exchange it drifts downwind (towards the hex side nearest the way the wind blows): a hex
+  in a breeze, 2 in a strong wind or a gale; calm air leaves it where it is. Smoke blown off
+  the map is gone.
+- **Creeping barrage**: before calling, pick **Creep** (1 to 3 hexes a lift), **Each line**
+  (1 to 4 exchanges on each line before it lifts), **Lines** (how many lines it fires on, or
+  until it leaves the map) and **Towards** (the way most of the side's units face, or a
+  direction on the map). That is the fire plan: the mission keeps firing, lifting its aim
+  on by the timetable, ahead of an advance that keeps to the same timetable. It ends after
+  its last line, when it leaves the map, or on **Stop**.
 - **Counter-battery**: a battery that has fired is located (◉ in the list), by its flashes
   and sound. On its own side's move a field gun or howitzer battery can then fire on it
   instead of on a hex (**Counter-battery…**), with no one needing to see it. Each shell
-  knocks out one of its tubes at 2% (field guns) or 4% (heavy howitzers); mortars cannot
-  reach. A battery with no tubes left is silenced. Six heavy howitzers firing on a located
-  battery knock out about one tube every four minutes: counter-battery wears guns down
-  over a battle, it does not end them in an exchange.
+  lands among its guns at 2% (field guns) or 4% (heavy howitzers), knocking out a tube and
+  striking 2 of its crew; at three times that it bursts close by and strikes one. Mortars
+  cannot reach. Struck crewmen roll wounds as men struck by shellfire, and those put down
+  are lost to the battery: it fires only the tubes it has men for (2 a mortar, 3 a field
+  gun, 4 a howitzer), and with none left it is silenced. Six heavy howitzers firing on a
+  located battery knock out about one tube every four minutes and put down a crewman or
+  two: counter-battery wears a battery down over a battle, it does not end it in an
+  exchange. The list shows each battery's tubes served and crew left.
+- **Displace**: on its side's move a battery can move to a new position: silent for an
+  exchange (mortars), 2 (field guns) or 3 (heavy howitzers), still located and open to
+  counter-battery fire while it limbers up and goes, and then no longer located. Missions
+  on it end. Tanks never need to (they are never located).
 
 | Kind | Shells a minute a tube | Rounds a tube | Lands | Scatter | Struck % at 0, 1, 2 … hexes |
 | --- | --- | --- | --- | --- | --- |
@@ -410,7 +423,7 @@ runs, the First World War table):
 Dense formations under shellfire are slaughtered; spread out and gone to ground, men are hit
 far less but are still pinned about half the time. In woods, going to ground does much less
 good. All design estimates. The batteries are off the map: counter-battery fire is the only
-way to reach them. The support list, the smoke and which batteries are located belong to the
+way to reach them, and moving the only way to get away. The support list, the smoke and which batteries are located belong to the
 battle (New battle or a new battlefield clears them).
 
 ## Guns

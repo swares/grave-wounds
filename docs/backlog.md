@@ -16,9 +16,10 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Heroes on the field map.** His sickness does not lower his attack and defence there
   (the GM can lower them by hand), his wounds' impairments (a useless arm, dazed) are left
   to the roller, and there is no first aid during the battle: he bleeds until it is over.
-- **Indirect fire, simplified.** Batteries stay off the map: counter-battery fire wears
-  their tubes down but never kills their crews, and a battery cannot move to escape it.
-  Smoke does not drift with the wind, and a creeping barrage cannot be timed to lift.
+- **Indirect fire, simplified.** Batteries stay off the map, with no ground of their own:
+  counter-battery fire finds a located battery wherever it is, its crews' wounds are counted
+  but not named, and a displaced battery reappears unlocated with no new position to plot.
+  A barrage's fire plan has one direction and one lift for the whole plan.
 - **The travel clock, simplified.** The clock watches for meetings every quarter hour, so
   two fast forces passing in open country within one quarter hour can miss each other; and
   meetings are only between the forces' hexes (no scouting reach, no seeing a dust cloud).
