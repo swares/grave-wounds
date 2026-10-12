@@ -2846,7 +2846,10 @@ function aidText(l, nm){                          // a hero's first aid: "X (uni
   const part = FD.locations[l.loc]?.name.toLowerCase() || "wound";
   return `${who} is bandaged: his ${part} bleeds ${l.bleed ? "less" : "no more"}.`;
 }
-const sickText = h => (h.sick ? ` · sick (${h.sick})` + (h.defend_only ? ", defends only" : "") : "");   // " · sick (dysentery), defends only"
+function sickText(h){                            // " · sick (dysentery), defends only"
+  if (!h.sick) return "";
+  return ` · sick (${h.sick})` + (h.defend_only ? ", defends only" : "");
+}
 const OTHER_LINES = {                            // kind: (line, nm) => {cls, text} (null: nothing to show)
   breach: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} break through the ${(WK.edge_works[l.work] || WK.hex_works[l.work]).name.toLowerCase()}.` }),
   morale: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` }),
