@@ -1067,6 +1067,31 @@ is 110 × 110 hexes, about 1,200 by 1,040 yards (1,100 by 950 m), north at the t
 It is drawn by `tools/maps/make_mogadishu_field.mjs`, from the plain facts of the US Army's
 account and the published positions, not traced from any map or photograph.
 
+**Wanat: the patrol base and the observation post, 13 July 2008** (`data/fields/wanat-2008.yaml`).
+The field is 90 × 70 hexes, about 980 by 660 yards (900 by 600 m), north at the top.
+- The patrol base is an open field about 110 by 330 yards (100 by 300 m), with loose wire at
+  places along its edges. Observation Post Topside sits among rocks on the ridge east of it,
+  with the brush-filled draw (woods) past the post's north side and a two-storey building
+  north of it. The bazaar and hotel are to the north, and the village and its mosque on the
+  terraces to the west. Beyond them are the Waygal river (water, with a crossing by the
+  track) and the high ground on both sides.
+- First light (dusk or dawn), still.
+- United States (veteran, Interceptor vests, dug in):
+  - the post's six paratroopers and its M240;
+  - 2nd Platoon at the base's north end and its east side;
+  - the Humvee guns and the TOW;
+  - the engineers and mortar section;
+  - the Afghan National Army platoon (green) on the west side.
+- Insurgents (in cover): in the bazaar and hotel, the village and mosque, on the high ground
+  west of the river, in the draw, and from the farmland and slopes east, with RPG teams and
+  PKM machine guns.
+- Fire support: the base's own 120 mm mortar, the 155 mm guns at Blessing, Apaches
+  (gunships) and later A-10s, B-1Bs and F-15Es (fighter-bombers).
+- The wound tables are Iraq and Afghanistan's (combat wounds, 2001-05).
+
+It is drawn by `tools/maps/make_wanat_field.mjs`, from the plain facts of the US Army's
+accounts, not traced from any map or photograph.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
