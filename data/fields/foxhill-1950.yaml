@@ -154,7 +154,7 @@ units:
   - {name: "Fox Company, 3rd Platoon (the crest, facing north)", side: 0, men: 60, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 14, pos: [73, 46], facing: 1, prone: true}
   - {name: "Fox Company, 1st Platoon (the east shoulder)", side: 0, men: 55, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [88, 52], facing: 0, prone: true}
   - {name: "Fox Company, 2nd Platoon (the west shoulder)", side: 0, men: 55, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [61, 53], facing: 3, prone: true}
-  - {name: "Heavy machine guns", side: 0, men: 15, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 3, pos: [79, 48], facing: 1, prone: true}
+  - {name: "Heavy machine guns", side: 0, men: 15, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 3, pos: [79, 48], facing: 1, prone: true, fixed: [75, 26]}
   - {name: "Company headquarters, mortars and the road block", side: 0, men: 40, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [75, 68], facing: 4, prone: true}
   - {name: "Chinese battalion from the heights (north)", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 40, pos: [75, 24], facing: 4}
   - {name: "Chinese battalion from the north-east", side: 1, men: 400, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [115, 34], facing: 2}

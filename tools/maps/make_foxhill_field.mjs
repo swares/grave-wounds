@@ -36,7 +36,7 @@ const units = [
   at("Fox Company, 3rd Platoon (the crest, facing north)", US, 60, MARINE, 14, [HILL[0] - 2, HILL[1] - 8], N),
   at("Fox Company, 1st Platoon (the east shoulder)", US, 55, MARINE, 10, [HILL[0] + 13, HILL[1] - 2], 0),
   at("Fox Company, 2nd Platoon (the west shoulder)", US, 55, MARINE, 10, [HILL[0] - 14, HILL[1] - 1], 3),
-  at("Heavy machine guns", US, 15, MG, 3, [HILL[0] + 4, HILL[1] - 6], N),
+  { ...at("Heavy machine guns", US, 15, MG, 3, [HILL[0] + 4, HILL[1] - 6], N), fixed: [HILL[0], 26] },   // laid by day up the slope to the heights
   at("Company headquarters, mortars and the road block", US, 40, MARINE, 10, [HILL[0], HILL[1] + 14], S),
   at("Chinese battalion from the heights (north)", CH, 500, PVA, 40, [HILL[0], 24], S),
   at("Chinese battalion from the north-east", CH, 400, PVA, 30, [HILL[0] + 40, 34], 2),

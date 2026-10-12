@@ -1103,7 +1103,14 @@ def _light_errors(wx: dict) -> list[str]:
     if "day" not in L.get("levels", {}):
         errors.append("weather.yaml: light.levels needs day")
     errors += [f"weather.yaml: light.moon_shows names unknown condition {c}" for c in L.get("moon_shows", []) if c not in wx["conditions"]]
-    return errors + [f"weather.yaml: light.{k} must be a number" for k in ("dusk_hours", "moon_from", "lasts", "flare") if not isinstance(L.get(k), (int, float))]
+    errors += [f"weather.yaml: light.levels.{k} needs move and lost (numbers)" for k, v in L.get("levels", {}).items()
+               if not (isinstance(v.get("move"), int) and isinstance(v.get("lost"), int))]
+    N, F = L.get("night_vision") or {}, L.get("fixed_line") or {}
+    if not (isinstance(N.get("kits"), list) and isinstance(N.get("sight"), int) and isinstance(N.get("aim"), int)):
+        errors.append("weather.yaml: light.night_vision needs kits, sight and aim")
+    if not (isinstance(F.get("width"), int) and isinstance(F.get("aim"), int)):
+        errors.append("weather.yaml: light.fixed_line needs width and aim")
+    return errors + [f"weather.yaml: light.{k} must be a number" for k in ("dusk_hours", "moon_from", "lasts", "flare", "flash", "lost_for") if not isinstance(L.get(k), (int, float))]
 
 
 def _field_weather_errors(d: Data, f: dict, where: str) -> list[str]:
@@ -1165,6 +1172,9 @@ def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_un
                if not (isinstance(h, list) and len(h) == 2 and 0 <= h[0] < f["size"][0] and 0 <= h[1] < f["size"][1])]
     errors += [f"{where}: unit {u.get('name')} lands must be the number of a landing zone (0 to {len(lz) - 1})" for u in f.get("units", [])
                if "lands" in u and not (isinstance(u["lands"], int) and 0 <= u["lands"] < len(lz))]
+    errors += [f"{where}: unit {u.get('name')}: fixed (a machine gun's fixed line) must be a hex on the map, for a machine gun" for u in f.get("units", [])
+               if "fixed" in u and not (isinstance(u["fixed"], list) and len(u["fixed"]) == 2 and 0 <= u["fixed"][0] < f["size"][0]
+                                        and 0 <= u["fixed"][1] < f["size"][1] and u.get("weapon") in (d.units.get("machine_guns") or {}).get("weapons", []))]
     if errors:
         return errors
     field, units = battlefield(d, f["id"]), battlefield_units(d, f["id"])

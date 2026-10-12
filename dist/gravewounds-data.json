@@ -15580,22 +15580,30 @@
     "day": {
      "name": "Daylight",
      "sight": null,
-     "aim": 0
+     "aim": 0,
+     "move": 0,
+     "lost": 0
     },
     "dusk": {
      "name": "Dusk or dawn",
      "sight": 100,
-     "aim": 5
+     "aim": 5,
+     "move": 0,
+     "lost": 0
     },
     "moonlit": {
      "name": "Moonlit night",
      "sight": 50,
-     "aim": 10
+     "aim": 10,
+     "move": 1,
+     "lost": 10
     },
     "night": {
      "name": "Dark night",
      "sight": 25,
-     "aim": 20
+     "aim": 20,
+     "move": 1,
+     "lost": 25
     }
    },
    "dusk_hours": 0.5,
@@ -15604,7 +15612,22 @@
     "fair"
    ],
    "lasts": 2,
-   "flare": 10
+   "flare": 10,
+   "flash": 150,
+   "night_vision": {
+    "kits": [
+     "ranger_1993",
+     "interceptor",
+     "plate_carrier"
+    ],
+    "sight": 150,
+    "aim": 5
+   },
+   "fixed_line": {
+    "width": 1,
+    "aim": 15
+   },
+   "lost_for": 2
   },
   "ground": {
    "mud_add": {

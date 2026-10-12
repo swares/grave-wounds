@@ -47,7 +47,7 @@ const units = [
   at("E Company, 2/26 Marines (the north trenches)", US, 60, MARINE, 10, [TOP[0], TOP[1] - 8], N),
   at("E Company, 2/26 Marines (the west and east trenches)", US, 60, MARINE, 8, [TOP[0] - 8, TOP[1] + 2], 3),
   at("E Company's reserve platoon", US, 50, { ...MARINE, prone: false }, 8, [TOP[0] + 2, TOP[1] + 4], N),
-  at("E Company's machine guns", US, 10, MG, 2, [TOP[0] + 5, TOP[1] - 6], N),
+  { ...at("E Company's machine guns", US, 10, MG, 2, [TOP[0] + 5, TOP[1] - 6], N), fixed: [TOP[0], 16] },   // laid by day through the north wire
   at("North Vietnamese battalion (through the north wire)", NV, 400, PAVN, 30, [TOP[0], 16], S),
   at("North Vietnamese company (from the north-west)", NV, 120, PAVN, 12, [24, 30], 5),
   at("North Vietnamese machine guns", NV, 10, { ...MG, kit: "none", quality: "veteran" }, 2, [TOP[0] + 20, 22], 4),

@@ -403,7 +403,7 @@ function nearestAhead(u, front, fv, hexes, field, clear = null){  // [distance, 
       if ((c[0] - s[0]) * fv[0] + (c[1] - s[1]) * fv[1] + (c[2] - s[2]) * fv[2] <= 0) continue;
       const dist = hdist(h, t);
       if (best !== null && dist >= best[0]) continue;
-      const wx = shotWeather(field, weapon, dist, h, t), reach = (wx.reach || 0) + heightEdge(field, weapon, h, t)[1];
+      const wx = shotWeather(field, weapon, dist, h, t, { kit: u.kit }), reach = (wx.reach || 0) + heightEdge(field, weapon, h, t)[1];
       if (!wx.blocked && reaches(u, dist, reach) && (!clear || clear(h, t, dist))) best = [dist, h, t];
     }
   }
@@ -413,15 +413,35 @@ function volleys(units, field = null){            // [{att, dfd, men, dist, cove
   const occ = occupancy(units), out = [];
   units.forEach((u, i) => {
     if (out_(u) || !("range" in FD.weapons[u.weapon]) || (inContact(units, occ, i) && !inBunker(field, u))) return;   // a bunker's men shoot out even in contact
-    const best = target(units, i, field, occ);
+    let best = target(units, i, field, occ), blind = false;
+    if (!best){ best = fixedTarget(units, i, field, occ); blind = !!best }
     if (!best) return;
-    const wx = shotWeather(field, u.weapon, best[0], best[2], best[3]), [up, longer] = heightEdge(field, u.weapon, best[2], best[3]);
+    const wx = shotWeather(field, u.weapon, best[0], best[2], best[3], { kit: u.kit, blind }), [up, longer] = heightEdge(field, u.weapon, best[2], best[3]);
+    if (wx.blocked) return;
     const v = { att: i, dfd: best[1], men: shooters(u, field), dist: best[0], cover: shareCover(field, best[2], units[best[1]]) + groundCover(units[best[1]]), penalty: wx.penalty - up, misfire: wx.misfire, reach: (wx.reach || 0) + longer, from: best[2], to: best[3],
       height: up, over: lineFire(units, occ, field, i, best[1], [best[2], best[3], best[0]]), seen: seenShare(field, units[best[1]], best[3], u.weapon) };
+    for (const k of ["blind", "flash"]) if (wx[k]) v[k] = true;
     if (isMg(u.weapon)) Object.assign(v, beaten(units, occ, field, i, best));
     out.push(v);
   });
   return out;
+}
+function fixedTarget(units, i, field, occ){         // [distance, index, shooter hex, target hex]: a machine gun on a fixed line firing blind in the dark at the nearest enemy near the line
+  const u = units[i];
+  if (!u.fixed || !isMg(u.weapon) || !lightOf(field)) return null;
+  const front = footprint(u)[0], h = front[Math.floor(front.length / 2)], n = hdist(h, u.fixed);
+  if (n === 0) return null;
+  const line = ray(h, u.fixed, n).slice(1), width = FD.weather.light.fixed_line.width;
+  let best = null;
+  units.forEach((e, j) => {
+    if (e.side === u.side || out_(e) || e.vehicle) return;
+    for (const t of footprint(e).flat()){
+      const dist = hdist(h, t);
+      if ((best !== null && dist >= best[0]) || Math.min(...line.map(x => hdist(t, x))) > width || !reaches(u, dist)) continue;
+      if (lineFire(units, occ, field, i, j, [h, t, dist]) !== null) best = [dist, j, h, t];
+    }
+  });
+  return best;
 }
 // ----- machine guns and going to ground (as gravewounds/units.py) -----
 const isMg = w => (UD.machine_guns?.weapons || []).includes(w);
@@ -458,12 +478,14 @@ function markMg(us, v, under){                    // a machine gun's target, and
   if (v.behind !== undefined && v.behind !== null) under[v.behind] = true;
 }
 // a unit of `side` can see hex h to call fire on it: in sight in the weather, no woods between
-const spotted = (units, field, side, h) => units.some(u => u.side === side && u.men > 0 && u.state !== "broken" && u.state !== "fled" && sees(field, u, h, sightHexes(field, h)));
-function sightHexes(field, h = null){             // how far the weather and the light let a man see hex h, in field hexes (null: as far as the map); a lit hex as by day
+const spotted = (units, field, side, h) => units.some(u => u.side === side && u.men > 0 && u.state !== "broken" && u.state !== "fled" && sees(field, u, h, sightHexes(field, h, u.kit)));
+function sightHexes(field, h = null, kit = null){  // how far the weather and the light let a man (night vision by kit) see hex h, in field hexes (null: as far as the map); a lit hex as by day, one that fired out to light.flash
   const cond = field?.weather?.cond, L = lightOf(field);
   let vis = cond && FD.weather ? FD.weather.conditions[cond].visibility : null;
   if (vis === undefined) vis = null;
-  if ((L?.sight ?? null) !== null && !lit(field, h)) vis = vis === null ? L.sight : Math.min(vis, L.sight);
+  let dark = L && !lit(field, h) ? darkSight(L, kit)[0] : null;
+  if (dark !== null && flashing(field, h)) dark = Math.max(dark, FD.weather.light.flash);
+  if (dark !== null) vis = vis === null ? dark : Math.min(vis, dark);
   return vis === null ? null : Math.floor(vis / UD.range_scale);
 }
 function sees(field, u, h, sight){                // any hex of u sees h: within sight, no woods between, no smoke on the line
@@ -703,9 +725,11 @@ function across(field, u, h, x, reach){           // [blocked: only reach 2 over
 }
 const upOf = field => field?.up || "N";          // the compass point at the top of the field map
 const SMOKED = { blocked: "Smoke: no one can see to shoot through it.", penalty: 0, misfire: 0, reach: 0 };
-function shotWeather(field, weapon, dist, h = null, t = null){   // the weather on a shot from h to t; smoke on the line blocks it
+function shotWeather(field, weapon, dist, h = null, t = null, seer = null){   // the weather on a shot from h to t; smoke on the line blocks it; seer: {kit, blind} in the dark
   if (h && t && smoked(field, ray(h, t, dist))) return { ...SMOKED };
-  return isGun(weapon) ? gunWeather(field, dist, h, t) : inTheCold(field, weapon, inTheDark(field, dist, t, weatherAttack(field?.weather || null, weapon, dist * UD.range_scale, h, t, upOf(field))));
+  if (isGun(weapon)) return gunWeather(field, dist, h, t);
+  const seen = seer?.blind ? 0 : dist * UD.range_scale;   // blind down a fixed line: the weather's sight does not count
+  return inTheCold(field, weapon, inTheDark(field, dist, t, weatherAttack(field?.weather || null, weapon, seen, h, t, upOf(field)), seer));
 }
 const coldOf = field => FD.weather?.cold?.levels?.[field?.weather?.cold || ""] || null;   // the field's cold level, or null
 function inTheCold(field, weapon, out){            // automatic weapons jam more in hard cold
@@ -718,12 +742,43 @@ function lightOf(field){                          // the field's light (weather.
   return L && ((L.sight !== null && L.sight !== undefined) || L.aim) ? L : null;
 }
 const lit = (field, h) => !!h && (field?.lit || []).some(x => hdist(h, x.at) <= x.radius);   // a flare or illumination lights hex h
-function inTheDark(field, dist, t, out){           // no aiming beyond the light's sight at an unlit hex, and its aim % off
+function inTheDark(field, dist, t, out, seer = null){   // no aiming beyond the light's sight at an unlit hex (night vision further, flashes seen further), its aim % off; blind down a fixed line
   const L = lightOf(field);
   if (out.blocked || !L || lit(field, t)) return out;
-  if (L.sight !== null && L.sight !== undefined && dist * UD.range_scale > L.sight){ out.blocked = `${L.name}: no one can be seen to aim at beyond ${Math.floor(L.sight / UD.range_scale)} hexes.`; return out }
-  out.penalty += L.aim;
+  if (seer?.blind){ out.penalty += FD.weather.light.fixed_line.aim; out.blind = true; return out }
+  const [sight, aim] = darkSight(L, seer?.kit);
+  if (sight !== null && dist * UD.range_scale > sight){
+    if (!(flashing(field, t) && dist * UD.range_scale <= FD.weather.light.flash)){ out.blocked = `${L.name}: no one can be seen to aim at beyond ${Math.floor(sight / UD.range_scale)} hexes.`; return out }
+    out.flash = true;
+  }
+  out.penalty += aim;
   return out;
+}
+function darkSight(L, kit){                         // [sight in battle hexes or null, aim % off] in light L for a man in this kit (night vision)
+  const N = FD.weather.light.night_vision || {}, sight = L.sight ?? null;
+  if (!(N.kits || []).includes(kit)) return [sight, L.aim];
+  return [sight === null ? null : Math.max(sight, N.sight), Math.min(L.aim, N.aim)];
+}
+const flashing = (field, t) => !!t && (field?.flashes || []).some(x => x[0] === t[0] && x[1] === t[1]);   // a hex a unit fired from in the dark last exchange
+const FLASHING = new Set(["volley", "hero", "antiarmour", "tankfire", "cannon"]);
+function flashes(us, log, field){                  // after the shooting, in poor light: the hexes of every unit that fired, seen by their flashes through the next exchange
+  if (!field) return;
+  const sight = lightOf(field)?.sight ?? null;
+  if (sight === null || sight >= FD.weather.light.flash){ delete field.flashes; return }
+  const fired = [...new Set(log.filter(x => FLASHING.has(x.kind) && x.att !== undefined && x.att !== null).map(x => x.att))];
+  const keys = new Set(), hexes = [];
+  for (const i of fired) for (const h of footprint(us[i]).flat()){ const k = hk(h); if (!keys.has(k)){ keys.add(k); hexes.push([h[0], h[1]]) } }
+  hexes.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  if (hexes.length) field.flashes = hexes; else delete field.flashes;
+}
+function nightDrift(units, i, size, field, rng){   // a unit that moved in the dark may lose its direction: {lost, unit}
+  const u = units[i], L = lightOf(field);
+  if (!L?.lost) return { lost: false, unit: u };
+  const chance = Math.max(0, Math.min(100, L.lost + Math.floor((60 - quality(u.quality).nerve) / 2)));
+  if (rng.randint(1, 100) > chance) return { lost: false, unit: u };
+  const turned = { ...u, facing: mod6(u.facing + (rng.randint(1, 100) % 2 ? -1 : 1)), lost: FD.weather.light.lost_for };
+  if (!fits(units, i, turned, size, field)) turned.facing = u.facing;
+  return { lost: true, unit: turned };
 }
 const reaches = (u, dist, reach = 0) => (isGun(u.weapon) ? dist <= gunRange(u) : !!fieldRange(u.weapon, dist, reach));   // a battery's guns to their range
 function shareCover(field, h, target){            // % off a volley from h at a unit: the average cover of its row nearest h, rounded down
@@ -815,7 +870,7 @@ function shootAll(us, table, rng, acc, log, field, under = null){
     log.push(...logged({ kind: "volley", ...v }, t));
     if (v.behind !== undefined && v.behind !== null) beatenFire(us, table, rng, acc, log, v);
     for (const hero of actingOf(us[v.att], ["ranged"])){
-      const wx = shotWeather(field, hero.weapon, v.dist, v.from, v.to);
+      const wx = shotWeather(field, hero.weapon, v.dist, v.from, v.to, { kit: hero.kit, blind: !!v.blind });
       if (wx.blocked) continue;
       const [up, longer] = heightEdge(field, hero.weapon, v.from, v.to);
       if (!fieldRange(hero.weapon, v.dist, wx.reach + longer)) continue;
@@ -972,7 +1027,7 @@ function lzState(units, field, side, lz){         // blocked (an enemy within he
 }
 function couldShoot(field, u, hexes, t){          // u has a weapon that reaches hex t and sees it to aim
   if (!("range" in FD.weapons[u.weapon])) return false;
-  return hexes.some(x => { const dist = hdist(x, t), wx = shotWeather(field, u.weapon, dist, x, t); return !wx.blocked && reaches(u, dist, wx.reach || 0) });
+  return hexes.some(x => { const dist = hdist(x, t), wx = shotWeather(field, u.weapon, dist, x, t, { kit: u.kit }); return !wx.blocked && reaches(u, dist, wx.reach || 0) });
 }
 function landings(us, table, rng, field){         // men coming on by air: up to heliborne.lift a landing zone this exchange, lifts in order
   const lifts = field?.lifts || [], log = [];
@@ -1020,7 +1075,9 @@ function afterExchange(us, field, log = []){        // charges spent, batteries 
     u.charged = false;
     batteryAfter(u);
     if (u.pinned) u.pinned -= 1;
+    if (u.lost) u.lost -= 1;
   }
+  flashes(us, log, field);
   for (const b of field?.support || []) if (b.mission && (b.mission.wait || 0) > 0) b.mission.wait -= 1;
   log.push(...displaceAll(field));
   if (field?.smoke) field.smoke = Object.fromEntries(Object.entries(field.smoke).filter(([, n]) => n > 1).map(([h, n]) => [h, n - 1]));   // smoke thins
@@ -1125,7 +1182,7 @@ function unitStepCost(field, u, a, b){            // movement for the middle hex
   const c = stepCost(field.works, a, b);
   if (c === null) return null;
   const going = u.vehicle ? UD.vehicles.ground[groundKey(field, b)] : groundAt(field, b).move;
-  return c + going - 1 + deepGoing(field.weather?.ground) + (coldOf(field)?.move || 0);
+  return c + going - 1 + deepGoing(field.weather?.ground) + (coldOf(field)?.move || 0) + (lightOf(field)?.move || 0);
 }
 function pathLen(units, i, goal, size, limit, field = null){   // least movement for the middle hex to goal; null if more than limit
   const occ = occupancy(units.filter((_, k) => k !== i)), u = units[i];
@@ -1174,6 +1231,7 @@ function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, ch
   if (u.state === "broken" || u.state === "fled") return { ok: false, why: "it is running" };
   const same = pos[0] === u.pos[0] && pos[1] === u.pos[1] && facing === u.facing;
   if (inContact(units, occupancy(units), i) && !same) return { ok: false, why: "it is in contact" };
+  if (u.lost && (pos[0] !== u.pos[0] || pos[1] !== u.pos[1])) return { ok: false, why: "it has lost its way in the dark (it may turn)" };
   const turns = Math.min(mod6(facing - u.facing), mod6(u.facing - facing)), most = allowance(u) * UD.charge_move;
   const steps = pathLen(units, i, pos, size, most, field);
   if (steps === null) return { ok: false, why: "too far, or no way through" };

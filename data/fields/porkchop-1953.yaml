@@ -168,7 +168,7 @@ support:
 units:
   - {name: "E Company, 31st Infantry (the north trenches)", side: 0, men: 50, quality: regular, weapon: rifle_service, kit: vietnam_army, formation: extended, width: 10, pos: [76, 47], facing: 1}
   - {name: "E Company, 31st Infantry (the west trenches)", side: 0, men: 30, quality: regular, weapon: rifle_service, kit: vietnam_army, formation: extended, width: 6, pos: [67, 58], facing: 3}
-  - {name: "E Company's machine guns", side: 0, men: 10, quality: regular, weapon: machine_gun, kit: vietnam_army, formation: mg, width: 2, pos: [82, 49], facing: 1}
+  - {name: "E Company's machine guns", side: 0, men: 10, quality: regular, weapon: machine_gun, kit: vietnam_army, formation: mg, width: 2, pos: [82, 49], facing: 1, fixed: [76, 18]}
   - {name: "L Company, 31st Infantry (Hill 200)", side: 0, men: 120, quality: regular, weapon: rifle_service, kit: vietnam_army, formation: extended, width: 12, pos: [124, 91], facing: 2}
   - {name: "K Company, 31st Infantry (from the main line)", side: 0, men: 135, quality: regular, weapon: rifle_service, kit: vietnam_army, formation: extended, width: 20, pos: [80, 122], facing: 1}
   - {name: "Chinese battalion up the north slope", side: 1, men: 400, quality: veteran, weapon: pistol_smg, kit: none, formation: extended, width: 30, pos: [76, 18], facing: 4}

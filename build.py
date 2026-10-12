@@ -629,7 +629,13 @@ def _light_rules(d) -> list[str]:
                    + f"aimed fire -{v['aim']}%" for v in L["levels"].values() if v["sight"] is not None or v["aim"])
     return [f"<b>Light on the field map:</b> {lv}. A hex lit by a flare or illumination is seen as by day for {L['lasts']} exchanges; the GM's flare lights "
             f"{L['flare']} hexes round it. A battle from the travel map takes the hour's light: dusk within {L['dusk_hours'] * 60:g} minutes of sunrise or sunset; "
-            f"at night moonlit when the moon is up, at least {L['moon_from'] * 100:g}% lit and the sky clear, else dark."]
+            f"at night moonlit when the moon is up, at least {L['moon_from'] * 100:g}% lit and the sky clear, else dark.",
+            f"<b>Fighting in the dark:</b> a unit that fired when sight is under {L['flash'] // rs} hexes is seen by its muzzle flashes out to {L['flash'] // rs} hexes "
+            f"through the next exchange. Night-vision kits see {L['night_vision']['sight'] // rs} hexes and aim -{L['night_vision']['aim']}% at worst. A machine gun laid on "
+            f"a fixed line by day or at dusk fires blind down it in the dark at the nearest enemy within {L['fixed_line']['width']} hex of it, -{L['fixed_line']['aim']}%. "
+            "Moving: " + "; ".join(f"{v['name'].lower()} +{v['move']} a hex" for v in L["levels"].values() if v["move"])
+            + ". A unit that moved may lose its way: " + "; ".join(f"{v['name'].lower()} {v['lost']}%" for v in L["levels"].values() if v["lost"])
+            + f", plus half of (60 - its Nerve); it turns one point off its line and cannot move for {L['lost_for'] - 1} exchange."]
 
 
 def weather_tables(d) -> dict:

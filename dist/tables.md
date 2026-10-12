@@ -4384,6 +4384,8 @@ Penalties add up; each total is capped at -60%.
 
 **Light on the field map:** dusk or dawn: no aiming or calling fire beyond 20 hexes, 219 yd (200 m), aimed fire -5%; moonlit night: no aiming or calling fire beyond 10 hexes, 109 yd (100 m), aimed fire -10%; dark night: no aiming or calling fire beyond 5 hexes, 55 yd (50 m), aimed fire -20%. A hex lit by a flare or illumination is seen as by day for 2 exchanges; the GM's flare lights 10 hexes round it. A battle from the travel map takes the hour's light: dusk within 30 minutes of sunrise or sunset; at night moonlit when the moon is up, at least 50% lit and the sky clear, else dark.
 
+**Fighting in the dark:** a unit that fired when sight is under 30 hexes is seen by its muzzle flashes out to 30 hexes through the next exchange. Night-vision kits see 30 hexes and aim -5% at worst. A machine gun laid on a fixed line by day or at dusk fires blind down it in the dark at the nearest enemy within 1 hex of it, -15%. Moving: moonlit night +1 a hex; dark night +1 a hex. A unit that moved may lose its way: moonlit night 10%; dark night 25%, plus half of (60 - its Nerve); it turns one point off its line and cannot move for 1 exchange.
+
 | Weather | Missile sight | Bows, crossbows | Firearms | Night hardship |
 |---|---|---|---|---|
 | Fair | clear | - | - | 0 |

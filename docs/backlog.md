@@ -42,11 +42,12 @@ When an item is done, delete it here and note it in the pull request that closes
   guns, extended order, artillery and mortars on call, suppression). Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
-- **Night, first cut.** The dark limits sight and aim, and flares and illumination light an
-  area. Both sides are equally blind: night-vision goggles and thermal sights (Mogadishu,
-  Wanat) are not modelled. It leaves out muzzle flashes (a man firing at night shows where he is), machine guns
-  firing on fixed lines laid in daylight, men losing their way or their direction in the
-  dark, and night movement being slower. The moon is a simple model, good to an hour or so.
+- **Night, second cut.** Muzzle flashes, night vision, fixed lines, slower moves and losing
+  direction are in. Night vision is all or nothing by kit: there are no early image
+  intensifiers (Vietnam's Starlight scope), no thermal sights on vehicles, and no
+  goggles for the other side. A fixed line is laid on one hex, with no traverse limits or
+  final protective fire called by flare. A lost unit only turns, and never strays onto
+  another path or into its friends. The moon is a simple model, good to an hour or so.
 - **Air support, first cut.** Aircraft are called like batteries. There is no fire at them
   (no aircraft lost to ground fire), no forward air controller or marking rounds, and no
   direction to a strafing run or a napalm strip: every attack is a round burst like a shell.
