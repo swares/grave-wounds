@@ -785,9 +785,17 @@ def seen_share(d: Data, field: dict | None, u: dict, at, weapon: str | None = No
     H = d.units.get("hidden")
     if not H:
         return 1
-    if u.get("prone") or in_bunker(d, field, u) or (at is not None and ground_at(d, field, at).get("hides")):
+    if u.get("prone") or in_bunker(d, field, u) or (at is not None and hides_at(d, field, at)):
         return H.get("mg_seen", H["seen"]) / 100 if weapon and is_mg(d, weapon) else H["seen"] / 100
     return 1
+
+
+def hides_at(d: Data, field: dict | None, h) -> bool:
+    """Whether men in hex h are hidden by its ground (`hides`) or a hex work (works.yaml `hides`: a trench)."""
+    if ground_at(d, field, h).get("hides"):
+        return True
+    it = ((_works(field) or {}).get("hexes") or {}).get(f"{h[0]},{h[1]}")
+    return bool(it) and bool(d.works.get("hex_works", {}).get(it["type"], {}).get("hides"))
 
 
 def _beaten(d: Data, units: list, occ: dict, field: dict | None, i: int, best: tuple) -> dict:
