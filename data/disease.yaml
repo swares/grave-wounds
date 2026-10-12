@@ -224,3 +224,26 @@ scurvy:
   virulence: -3
   deaths: 1.6              # % of cases, Union army (771 deaths in about 47,000 cases)
   fresh: {forage: [good], camped: [fair], fieldcraft: [fair]}   # fieldcraft: a named man's Fieldcraft roll finds it on a march day
+
+# ---------- frostbite ----------
+# Not caught but taken from the cold. On a night whose low is at or under `below` (degrees C),
+# each well man may be frostbitten: `base` % plus `per_degree` % for each degree colder, less
+# `shelter` % of that for each point of the camp's shelter (weather.yaml shelter: a quartered
+# force is far safer than a bivouac), times the chance he fails to resist with Endurance. It
+# shows at once, at the step `peak` gives (d100), and is checked every `every` days like any
+# sickness (Endurance + care + activity + conditions - `virulence`); a frostbitten man at Grave
+# has gangrene, and can die of it. Calibrated so that a force bivouacked night after night in
+# -30 degree cold, as the Marines were at the Chosin Reservoir (November-December 1950), loses
+# about one man in sixty a night to it. Design estimates.
+frostbite:
+  name: "Frostbite"
+  caught: "Nights of hard frost with too little shelter"
+  below: -15
+  base: 1
+  per_degree: 0.15
+  shelter: 25
+  peak: [{upto: 60, step: mending}, {upto: 90, step: serious}, {upto: 100, step: grave}]
+  every: 3
+  virulence: -5
+  deaths: 1                # % of cases: gangrene, design estimate
+

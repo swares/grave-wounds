@@ -86,6 +86,14 @@ def march_window(d: Data, m: dict, day: int) -> dict:
     return {"start": start, "hours": hours, "sunrise": sunrise, "sunset": sunset}
 
 
+def cold_level(d: Data, low) -> str | None:
+    """The field map's cold for a day with this low (degrees C): the coldest weather.yaml cold
+    level whose `below` it is at or under, or None."""
+    levels = ((d.weather or {}).get("cold") or {}).get("levels", {})
+    hit = [(v["below"], k) for k, v in levels.items() if low is not None and low <= v["below"]]
+    return min(hit)[1] if hit else None
+
+
 MOON_DAYS = 29.530588853          # the moon's month
 NEW_MOON_JDN = 2451550            # a new moon: 6 January 2000 (Gregorian)
 

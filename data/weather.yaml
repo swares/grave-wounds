@@ -121,6 +121,18 @@ battle:
     percussion: [0, 5, 10]
     cartridge:  [0, 0, 0]
 
+# ---------- cold in battle ----------
+# The field map's cold (its weather's `cold`; none if not set). A battle sent from the travel map
+# takes it from the day's low: the coldest level whose `below` (degrees C) the low is at or under.
+# In it, the automatic weapons in `jams` misfire `jam` % more (oil thickens, actions freeze), and
+# every hex costs `move` more to cross (numb hands and feet, men bundled up). Frostbite itself is
+# taken on the travel map (disease.yaml). Design estimates.
+cold:
+  levels:
+    hard:   {name: "Hard frost", below: -15, jam: 10, move: 0}
+    bitter: {name: "Bitter cold", below: -25, jam: 25, move: 1}
+  jams: [machine_gun, pistol_smg, rifle_assault]
+
 # ---------- rest and fatigue ----------
 # A night's rest starts from the camp's rest (works.yaml; poor without a camp) and drops
 # one step for every point of hardship beyond the camp's shelter. Cold adds hardship.

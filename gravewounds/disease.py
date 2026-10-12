@@ -26,8 +26,8 @@ def new_health() -> dict:
 
 def profile(d: Data, did: str) -> dict:
     """A disease's profile, the wound track's (wound, fever), or scurvy's."""
-    if did == "scurvy":
-        return d.disease["scurvy"]
+    if did in ("scurvy", "frostbite"):
+        return d.disease[did]
     return d.disease["diseases"].get(did) or d.disease["wounds"][did]
 
 
@@ -401,7 +401,32 @@ def day(d: Data, health: dict, ctx: dict, rng, endurance: int | None = None) -> 
         else:
             _close_case(d, h, c, out)
     h["cases"] = keep
+    _frostbite_night(d, h, ctx, rng, endurance, ev)
     return h, ev
+
+
+def frostbite_chance(d: Data, low, shelter: int = 0, endurance: int | None = None) -> float:
+    """% chance a well man is frostbitten on a night with this low (degrees C) under this much
+    shelter (weather.yaml shelter); 0 if it is not cold enough."""
+    F = d.disease.get("frostbite")
+    if not F or low is None or low > F["below"]:
+        return 0.0
+    e = d.disease["endurance"] if endurance is None else endurance
+    return min(100, F["base"] + F["per_degree"] * (F["below"] - low)) * max(0, 100 - F["shelter"] * shelter) / 100 * (100 - e) / 100
+
+
+def _frostbite_night(d: Data, h: dict, ctx: dict, rng, endurance: int | None, ev: dict) -> None:
+    """The night's frostbite (ctx: low, shelter, men): each well man may be bitten; it shows at once."""
+    p = frostbite_chance(d, ctx.get("low"), ctx.get("shelter", 0), endurance) * 100
+    if p <= 0:
+        return
+    F = d.disease["frostbite"]
+    for _ in range(max(0, ctx.get("men", 0) - len(h["cases"]))):
+        if _d10000(rng) <= p:
+            r = rng()
+            step = next(x["step"] for x in F["peak"] if r <= x["upto"])
+            h["cases"].append({"d": "frostbite", "inc": 0, "step": _step(d, step), "peak": 0, "shown": 0, "chronic": False})
+            ev["shown"]["frostbite"] = ev["shown"].get("frostbite", 0) + 1
 
 
 def _day_target(d: Data, ctx: dict, endurance: int | None) -> int:

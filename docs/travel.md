@@ -151,6 +151,14 @@ are in `data/disease.yaml` and the printed tables, and the design behind them is
   force marches at 90%, or 50% if it has fewer than two fit men a litter. A force with no
   fit men cannot march at all. Deaths come off the force's strength.
 
+**Frostbite.** On a night whose low is 5 °F (−15 °C) or colder, every well man may be
+frostbitten: 1% plus 0.15% for each degree (C) colder, less a quarter of that for each point of the
+camp's shelter (a bivouac none, a watched, staked or fortified camp 1, quarters 3), times the
+chance he fails to resist with Endurance. It shows at once: mending (60%), serious (30%) or grave
+(10%, gangrene), and is checked every 3 days like a sickness. A force bivouacked in −22 °F (−30 °C)
+loses about one man in sixty a night to it, as the Marines did at the Chosin Reservoir. Named
+characters with the force can be frostbitten too.
+
 **The wounded.** Men wounded in a battle on the field map are carried to their force's camp
 and heal on the same track, with the same nightly roll for better or worse, but by the
 week: one check every 7 days. A man starts at mending, serious or grave by his wound, and

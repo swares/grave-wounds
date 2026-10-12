@@ -819,7 +819,20 @@ def shot_weather(d: Data, field: dict | None, weapon: str, dist: int, h=None, t=
         return {"blocked": "Smoke: no one can see to shoot through it.", "penalty": 0, "misfire": 0, "reach": 0}
     if is_gun(d, weapon):
         return gun_weather(d, field, dist, h, t)
-    return in_the_dark(d, field, dist, t, C.weather_attack(d, (field or {}).get("weather"), weapon, dist * d.units["range_scale"], h, t, _up(field)))
+    return in_the_cold(d, field, weapon, in_the_dark(d, field, dist, t, C.weather_attack(d, (field or {}).get("weather"), weapon, dist * d.units["range_scale"], h, t, _up(field))))
+
+
+def cold_of(d: Data, field: dict | None) -> dict | None:
+    """The field's cold (weather.cold, a weather.yaml cold level), or None."""
+    return ((d.weather or {}).get("cold") or {}).get("levels", {}).get(((field or {}).get("weather") or {}).get("cold") or "")
+
+
+def in_the_cold(d: Data, field: dict | None, weapon: str, out: dict) -> dict:
+    """In hard cold the automatic weapons (weather.yaml cold.jams) misfire the level's `jam` % more."""
+    L = cold_of(d, field)
+    if L and not out["blocked"] and weapon in d.weather["cold"]["jams"]:
+        out["misfire"] = min(100, out["misfire"] + L["jam"])
+    return out
 
 
 def light_of(d: Data, field: dict | None) -> dict | None:
@@ -1863,7 +1876,7 @@ def step_cost(d: Data, field: dict | None, u: dict, a, b) -> int | None:
     if c is None:
         return None
     wx = field.get("weather") or {}
-    return c + ground_at(d, field, b)["move"] - 1 + C.deep_going(d, wx.get("ground"))
+    return c + ground_at(d, field, b)["move"] - 1 + C.deep_going(d, wx.get("ground")) + (cold_of(d, field) or {}).get("move", 0)
 
 
 def _path_len(d: Data, units: list, i: int, goal, size: tuple, limit: int, field: dict | None = None) -> int | None:

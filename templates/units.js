@@ -682,7 +682,13 @@ const upOf = field => field?.up || "N";          // the compass point at the top
 const SMOKED = { blocked: "Smoke: no one can see to shoot through it.", penalty: 0, misfire: 0, reach: 0 };
 function shotWeather(field, weapon, dist, h = null, t = null){   // the weather on a shot from h to t; smoke on the line blocks it
   if (h && t && smoked(field, ray(h, t, dist))) return { ...SMOKED };
-  return isGun(weapon) ? gunWeather(field, dist, h, t) : inTheDark(field, dist, t, weatherAttack(field?.weather || null, weapon, dist * UD.range_scale, h, t, upOf(field)));
+  return isGun(weapon) ? gunWeather(field, dist, h, t) : inTheCold(field, weapon, inTheDark(field, dist, t, weatherAttack(field?.weather || null, weapon, dist * UD.range_scale, h, t, upOf(field))));
+}
+const coldOf = field => FD.weather?.cold?.levels?.[field?.weather?.cold || ""] || null;   // the field's cold level, or null
+function inTheCold(field, weapon, out){            // automatic weapons jam more in hard cold
+  const L = coldOf(field);
+  if (L && !out.blocked && FD.weather.cold.jams.includes(weapon)) out.misfire = Math.min(100, out.misfire + L.jam);
+  return out;
 }
 function lightOf(field){                          // the field's light (weather.light), or null by day
   const L = FD.weather?.light?.levels?.[field?.weather?.light || "day"];
@@ -1024,7 +1030,7 @@ function unitStepCost(field, u, a, b){            // movement for the middle hex
   if (!canEnter(field, u, b)) return null;
   const c = stepCost(field.works, a, b);
   if (c === null) return null;
-  return c + groundAt(field, b).move - 1 + deepGoing(field.weather?.ground);
+  return c + groundAt(field, b).move - 1 + deepGoing(field.weather?.ground) + (coldOf(field)?.move || 0);
 }
 function pathLen(units, i, goal, size, limit, field = null){   // least movement for the middle hex to goal; null if more than limit
   const occ = occupancy(units.filter((_, k) => k !== i)), u = units[i];
