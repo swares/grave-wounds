@@ -1219,6 +1219,121 @@ hexes, about 1,750 by 1,240 yards (1,600 by 1,130 m), north at the top.
 - Fire support: the 7th Division's artillery ("flash fire" round the outposts), heavy
   howitzers, 4.2-inch mortars; Chinese mortars and guns.
 
+**Hue: the new city, 4-6 February 1968** (`data/fields/hue-1968.yaml`). The field is 150 × 110
+hexes, about 1,640 by 1,040 yards (1,500 by 950 m), north at the top.
+- The Perfume River runs along the top, with its bridge into the Citadel, and Le Loi street
+  and a park along the bank. Highway 1 comes up from the An Cuu bridge on the Phu Cam canal
+  along the bottom.
+- Between them are blocks of houses (**buildings**, with **rubble** where shells fell) and the
+  stone public buildings (**tall buildings**): the MACV compound, the university, the
+  provincial headquarters, the Treasury, the hospital and the prison.
+- Cold drizzle and low cloud.
+- United States: three companies of the 2nd Battalion, 5th Marines and A Company, 1st
+  Marines, attacking east, with machine guns and four M48 **tanks** on Highway 1.
+- North Vietnamese (veteran, in cover): the provincial headquarters, the Treasury, the
+  hospital and the prison held, with RPG teams that can knock out tanks, and machine guns.
+- Fire support: Marine 81 mm mortars and 105 mm howitzers (held back at first to spare the
+  city); North Vietnamese mortars, rockets and guns.
+
+**Hill 861A, Khe Sanh, 5 February 1968** (`data/fields/khesanh-1968.yaml`). The field is
+140 × 120 hexes, about 1,530 by 1,140 yards (1,400 by 1,040 m), north at the top.
+- The knoll is in the middle, ringed with **trenches**, **bunkers** and barbed wire. The ridge
+  runs down to the south-west towards Hill 861. The slopes are cleared to elephant grass and
+  craters, with jungle beyond.
+- **Fog** on a **dark night**.
+- United States (flak vests, in the trenches): E Company, 2nd Battalion, 26th Marines on the
+  north and flanks, its reserve platoon, and its machine guns.
+- North Vietnamese (veteran): a battalion through the north wire, a company from the
+  north-west, and machine guns.
+- Fire support: the base's howitzers and 4.2-inch mortars and the guns on 881 South; North
+  Vietnamese mortars, rockets and guns.
+
+**Hill 875, Dak To, 19 November 1967** (`data/fields/dakto-1967.yaml`). The field is 120 × 140
+hexes, about 1,310 by 1,330 yards (1,200 by 1,210 m), north at the top.
+- The crest is below the middle, ringed with **bunkers** and two lines of **trenches**. The
+  north slope above it is shattered bamboo and fallen trees, with jungle all round.
+- Fair and dry.
+- United States (veteran paratroopers, flak vests): two companies of the 2nd Battalion, 503rd
+  Infantry going up the north slope, a third cutting a landing zone behind them, and
+  machine guns.
+- North Vietnamese (veteran, dug in): the 174th Regiment on the crest and in the lower
+  trenches, with machine guns, and a company coming in behind the Americans from the west.
+- Fire support: howitzers at the fire bases, fighter-bombers and the battalion's mortars;
+  North Vietnamese mortars.
+
+**Hamburger Hill (Dong Ap Bia), 20 May 1969** (`data/fields/hamburger-1969.yaml`). The field
+is 140 × 140 hexes, about 1,530 by 1,330 yards (1,400 by 1,210 m), north at the top.
+- The summit is in the middle, stripped to stumps and craters, with three tiers of
+  **bunkers** down its slopes. Spurs run down to the north-west and the south, with blasted
+  jungle and bamboo below.
+- Overcast, the slopes mud after days of rain.
+- United States and ARVN: the 3rd Battalion, 187th Infantry up the north-west spur, the 1st
+  Battalion, 506th Infantry up the south spur, and the ARVN 2nd Battalion, 3rd Regiment from
+  the east.
+- North Vietnamese (veteran, dug in): the 29th Regiment's survivors on the summit and in the
+  bunkers, with machine guns.
+- Fire support: howitzers at the fire bases, fighter-bombers and battalion mortars; North
+  Vietnamese mortars.
+
+**Darwin Hill, Goose Green, 28 May 1982** (`data/fields/goosegreen-1982.yaml`). The field is
+140 × 110 hexes, about 1,530 by 1,040 yards (1,400 by 950 m), north at the top.
+- Darwin ridge runs across the middle, with the Argentine **trenches** and **bunkers** along
+  its crest. The gorse gully lies below Darwin Hill on the right, and a gorse hedge crosses
+  the open slope.
+- Darwin settlement sits by its inlet of Choiseul Sound in the lower right, with Brenton Loch
+  along the left.
+- **Dawn**, overcast, a cold westerly.
+- British (veteran paratroopers): A Company pinned in the gully, B Company on the open slope,
+  the battalion headquarters, D Company coming up, and machine guns.
+- Argentines (green conscripts, dug in): two groups of platoons in the ridge trenches,
+  machine guns, and a reserve at Darwin.
+- Fire support: three 105 mm light guns and 81 mm mortars; Argentine pack howitzers and
+  120 mm mortars.
+
+**Grozny: the railway station, 31 December 1994** (`data/fields/grozny-1995.yaml`). The field
+is 140 × 110 hexes, about 1,530 by 1,040 yards (1,400 by 950 m), north at the top.
+- The station building is in the middle, with its square to the north and the platforms,
+  tracks and freight yard to the south.
+- Older houses (**buildings**) stand round the station, with five- and nine-storey apartment
+  blocks (**tall buildings**) beyond and streets with wrecks and **rubble** between.
+- **Dusk** on a winter afternoon.
+- Russians (green): the 131st Brigade's 1st Battalion in the station and the freight yard,
+  with its infantry carriers and **tanks** parked in the square.
+- Chechens (veteran, in cover): **RPG** teams in the buildings on three sides of the square
+  that can knock out the armour, fighters to the north and south, and machine guns.
+- Fire support: Russian artillery and mortars; Chechen mortars.
+
+**Fallujah: into the Jolan, 9 November 2004** (`data/fields/fallujah-2004.yaml`). The field is
+140 × 120 hexes, about 1,530 by 1,140 yards (1,400 by 1,040 m), north at the top.
+- Apartment blocks (**tall buildings**) and the railway run across the top, and the
+  Euphrates and its palms down the left. The main street runs south from the railway.
+- Everywhere else are the Jolan's lanes and walled houses (**buildings**, with **rubble**),
+  with the park and four mosques among them.
+- Overcast.
+- Coalition (veteran, Interceptor armour): two Marine companies astride the main street,
+  with machine guns, and 2-7 Cavalry's M1A1 **tanks** and Bradleys (as armoured carriers)
+  leading down it.
+- Insurgents (in cover): fighters in the houses and a mosque, **RPG** teams by the main
+  street and in the park, and machine guns.
+- Fire support: 155 mm howitzers, mortars and close air support; insurgent mortars.
+
+**Combat Outpost Keating, 3 October 2009** (`data/fields/keating-2009.yaml`). The field is
+120 × 110 hexes, about 1,310 by 1,040 yards (1,200 by 950 m), north at the top.
+- The outpost sits on its flat in the middle, its buildings and trucks ringed with barbed
+  wire.
+- The Landay-Sin runs down the left, with the bridge to Urmul (**buildings**) across it. The
+  Kushtoz comes in from the east below the outpost.
+- Steep slopes of rock, scrub and deodar rise on every side.
+- First light (**dawn**).
+- Coalition: B Troop, 3-61 Cavalry (veteran, Interceptor armour) round the barracks and
+  command post, at the guard posts and in the trucks with its machine guns, and Afghan
+  soldiers on the east side.
+- Insurgents (in cover): fighters on the north, east and south slopes and in Urmul, an RPG
+  team, and machine guns.
+- Fire support: the outpost's mortars, Apaches, and jets later in the morning; insurgent
+  mortars and recoilless rifles.
+- Observation Post Fritsche is off this field.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
