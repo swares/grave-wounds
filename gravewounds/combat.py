@@ -447,6 +447,8 @@ def _spec(d: Data, kind: str, item: dict) -> dict:
 
 
 def intact(d: Data, kind: str, item: dict) -> bool:
+    if item.get("out"):                               # a bunker knocked out by assault or shellfire
+        return False
     b = _spec(d, kind, item).get("breach")
     return not (b and item.get("progress", 0) >= b)
 

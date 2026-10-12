@@ -210,6 +210,7 @@ legend{padding:0}
         <button class="small" id="btn-undo" title="Put it back where it started this phase">Undo move</button>
         <button class="small" id="btn-remove">Remove</button>
         <button class="small" id="btn-breach" title="Its front rank hacks at the palisade, gate, stakes or wagons in front of it each exchange">Breach the works</button>
+        <label class="sr" for="sel-assault">Storm the bunker</label><select class="small" id="sel-assault" hidden title="Ordered to storm: once an exchange it tries to knock out each enemy-held bunker across its front, with grenades, satchel charges or flamethrowers" style="width:auto"></select>
         <button class="small" id="btn-ground" title="The men lie down in the folds of the ground: harder to hit, but the unit cannot move until it gets up">Go to ground</button>
         <button class="small" id="btn-limber" hidden title="A battery limbered moves but cannot fire; unlimbered it fires but can only be manhandled. Changing over takes an exchange.">Limber</button>
         <button class="small" id="btn-resupply" hidden title="The caissons come up: a full load of rounds again. It takes an exchange out of contact, in which the battery neither moves nor fires.">Resupply</button>
@@ -623,10 +624,19 @@ function otherLine(l, nm){                       // morale, breach and hero line
   if (l.kind === "herohit") return { cls: "hero", text: heroHitText(l) };
   if (l.kind === "pinned") return { cls: "morale", text: `${nm(l.unit)} are pinned down (rolled ${l.roll}, needed ${l.target} or less): no move and half their fire next exchange.` };
   if (l.kind === "barrage" || l.kind === "counter") return { cls: "", text: fireText(l) };
+  if (l.kind === "assault" || l.kind === "knocked") return { cls: "morale", text: bunkerText(l, nm) };
   if (l.kind === "hero") return l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null;
   return undefined;
 }
 const nWounds = n => (n === 1 ? "1 wound" : n + " wounds");
+function bunkerText(l, nm){                       // a bunker stormed (it falls or holds), or knocked out by shellfire
+  const at = `${l.at[0] + 1},${l.at[1] + 1}`;
+  if (l.kind === "knocked") return `${l.name} (${l.side}) knock out the bunker at ${at}.`;
+  const how = `${nm(l.unit)} storm the bunker at ${at} with ${FD.units.assault.means[l.means].name.toLowerCase()} (rolled ${l.roll}, needed ${l.need} or less)`;
+  if (!l.out) return `${how}: it holds.`;
+  const dead = l.dead ? ` (${l.dead} dead)` : "";
+  return `${how}: it falls. ${nOf(l.struck, "man", "men")} of ${nm(l.dfd)} struck, ${l.down} down${dead}.`;
+}
 function fireText(l){                             // a battery's shells: on a hex (shell or smoke), or on an enemy battery
   const who = `${l.name} (${l.side})`, shells = nOf(l.shells, "shell");
   if (l.kind === "counter") return `${who} fire ${shells} on ${l.tname} (counter-battery): ${nOf(l.knocked, "tube")} knocked out, ${l.left} left.`;
@@ -937,7 +947,7 @@ function renderMap(){
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
 function unitMeta(u){
   if (u.state === "fled") return "fled";
-  const down = u.down ? " · " + u.down + " down" : "", br = u.breach ? " · breaching" : "", low = (u.prone ? " · to ground" : "") + (u.pinned ? " · pinned" : "");
+  const down = u.down ? " · " + u.down + " down" : "", br = (u.breach ? " · breaching" : "") + (u.assault ? " · storming" : ""), low = (u.prone ? " · to ground" : "") + (u.pinned ? " · pinned" : "");
   const mg = isMg(u.weapon) ? " · " + gunsText(mgGuns(u), "gun") : "";
   return `${u.men}/${u.start} · ${u.state}${down}${br}${low}${mg}${batteryMeta(u)}`;
 }
@@ -959,6 +969,14 @@ function gunsInfo(u){                             // the Guns line of the select
 function renderUnits(){
   $("#units").innerHTML = S.units.map(u => `<li data-id="${u.id}" aria-current="${u.id === S.sel}" tabindex="0"><span class="dot" style="background:var(--side${sideNo(u)})"></span><span><b>${esc(u.name)}</b> <span class="muted">${esc(banner(u))}</span></span><span class="meta">${unitMeta(u)}</span></li>`).join("") || `<li class="muted">No units. Add one below.</li>`;
 }
+function renderAssault(u){                        // the storming order, on tables with grenades and charges
+  const el = $("#sel-assault"), A = FD.units.assault;
+  el.hidden = !blastWeapon(S.table);
+  if (el.hidden) return;
+  if (!el.options.length) el.innerHTML = `<option value="">Storm a bunker: no</option>` + Object.entries(A.means).map(([k, m]) => `<option value="${k}">Storm with ${esc(m.name.toLowerCase())}</option>`).join("");
+  el.value = u?.assault || "";
+  el.disabled = !u || S.phase === "over" || u.state === "broken" || u.state === "fled";
+}
 function renderSel(){
   const u = selUnit(), setup = S.phase === "setup";
   $("#sel-name").textContent = u ? "· " + u.name : "";
@@ -967,6 +985,7 @@ function renderSel(){
   $("#btn-undo").disabled = !u || setup || u.side !== moving();
   $("#btn-breach").disabled = !u || S.phase === "over" || u.state === "broken" || u.state === "fled";
   $("#btn-breach").textContent = u?.breach ? "Stop breaching" : "Breach the works";
+  renderAssault(u);
   renderLimber(u, setup);
   renderGunOrders(u, setup);
   renderGround(u, setup);
@@ -1265,6 +1284,7 @@ function init(){
   });
   $("#sel-tool").onchange = e => { S.tool = e.target.value; S.msg = ""; render() };
   ["#sel-wx", "#sel-wind", "#sel-wdir", "#in-mud", "#in-snow"].forEach(id => { $(id).onchange = setWeather });
+  $("#sel-assault").onchange = e => { const u = selUnit(); if (u){ u.assault = e.target.value || null; S.msg = u.assault ? `${u.name} will storm any enemy-held bunker across its front each exchange.` : `${u.name} stops storming.`; render() } };
   $("#btn-breach").onclick = () => { const u = selUnit(); if (u){ u.breach = !u.breach; S.msg = u.breach ? `${u.name} will hack at the works in front of it each exchange.` : `${u.name} stops breaching.`; render() } };
   $("#units").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; S.msg = ""; render() } });
   $("#units").addEventListener("keydown", e => { if (e.key === "Enter"){ const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; render() } } });
