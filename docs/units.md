@@ -1179,6 +1179,19 @@ is 150 × 120 hexes, about 1,640 by 1,140 yards (1,500 by 1,040 m), north at the
   only); Chinese mortars.
 - The wound tables are Korea's (hospitalized wounded).
 
+**Hill 504 and the valley at Kapyong, 23-24 April 1951** (`data/fields/kapyong-1951.yaml`). The
+field is 220 × 160 hexes, about 2,410 by 1,520 yards (2,200 by 1,390 m), north at the top.
+- In the middle is the valley: paddies (marsh, with dry patches), the road and the shallow
+  river (marsh), B Company's knoll by the road, and Chuktun-ni at the bottom. Hill 504's summit
+  and wooded spurs are on the right, and the hills towards 677 on the left.
+- A **dark night**.
+- United Nations: 3 RAR's A Company (north spur), D (summit), B (the knoll), C (reserve),
+  machine guns and headquarters; a platoon of Shermans (**vehicles**) on dry ground by the
+  road.
+- Chinese (veteran): battalions down the valley, onto the north spur and round the east of the
+  hill, with machine guns.
+- Fire support: the New Zealand 25-pounders and 3 RAR's mortars; Chinese mortars.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
