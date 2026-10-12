@@ -15,7 +15,7 @@
 import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
 
 const COLS = 140, ROWS = 120;                 // 1400 m east to west, about 1040 m north to south
-const NORTH_ROAD = () => 84;                    // the road from Caira, straight down into the town from the north
+const NORTH_ROAD = 84;                          // the road from Caira, straight down into the town from the north
 const ROUTE6 = 96;                                                       // Route 6, along the south of the town
 const RAPIDO = r => 132 + Math.round(wobble(r / 8, 1.3, 0.4) * 0.7);     // the Rapido along the east
 const CASTLE = [28, 30], HOTEL = [50, 76], STATION = [104, 106];
@@ -28,7 +28,7 @@ function slopes(c, r){                        // Castle Hill and the massif's fo
 function lines(c, r){                         // the roads and the river, or null
   if (Math.abs(c - RAPIDO(r)) <= 1) return r === ROUTE6 || r === ROUTE6 + 1 ? "." : "w";            // the Rapido, bridged on Route 6
   if (r === ROUTE6 || r === ROUTE6 + 1) return ".";                                                  // Route 6
-  if (r < 50 && Math.abs(c - NORTH_ROAD(r)) <= 0) return ".";                                        // the road from the north, still open outside the town
+  if (r < 50 && c === NORTH_ROAD) return ".";                                        // the road from the north, still open outside the town
   return null;
 }
 function town(c, r){                          // the town: rubble and flooded craters; the hotel; the station
