@@ -1372,7 +1372,7 @@ function shellUnits(ctx, k, b, bursts){           // the men struck in every uni
   const { us, table, weapon, rng, acc, log, field, under } = ctx;
   const I = UD.indirect, K = I.kinds[b.kind], att = { table, weapon, kit: null, quality: "regular" };
   us.forEach((u, i) => {
-    if (u.vehicle){ shellVehicle(us, i, bursts, K, table, rng, acc, log, [k, b]); return }
+    if (u.vehicle){ shellVehicle(us, i, bursts, K, { table, rng, acc, log, src: [k, b] }); return }
     const struck = shellStruckUnit(field, u, bursts, K, rng);
     if (struck === null) return;
     under[i] = true;
@@ -1382,8 +1382,8 @@ function shellUnits(ctx, k, b, bursts){           // the men struck in every uni
     log.push(...logged({ kind: "shelled", sup: k, name: b.name, dfd: i, struck }, t));
   });
 }
-function shellVehicle(us, i, bursts, kind, table, rng, acc, log, src){   // shells or bombs bursting in a vehicle's own hex knock it out at the kind's knock % x its armour's shell
-  const u = us[i];
+function shellVehicle(us, i, bursts, kind, ctx){   // shells or bombs bursting in a vehicle's own hex knock it out at the kind's knock % x its armour's shell (ctx: table, rng, acc, log, src)
+  const u = us[i], { table, rng, acc, log, src } = ctx;
   if (u.men <= 0 || u.state === "fled") return;
   const hexes = new Set(footprint(u).flat().map(hk)), direct = bursts.filter(at => hexes.has(hk(at))).length, p = (kind.knock || 0) * armourOf(u).shell;
   if (!direct || p <= 0) return;
@@ -1614,21 +1614,23 @@ function vehicleGuns(us, table, rng, acc, log, field, under){   // each vehicle 
     const best = gunTarget(us, i, field, G);
     if (!best) return;
     const [dist, j, , t] = best, rounds = vehiclesLeft(u) * G.rate;
-    if (us[j].vehicle){
-      let hits = 0, kills = 0;
-      for (let s = 0; s < rounds; s++) if (rng.randint(1, 100) <= chanceAt(G.hit, dist)) hits++;
-      const p = armourOf(us[j]).gun;
-      for (let s = 0; s < hits; s++) if (rng.randint(1, 100) <= p) kills++;
-      const k = knockOut(us, j, kills, table, rng, acc);
-      acc.dealt[i] += k.crew;
-      log.push(...logged({ kind: "tankfire", att: i, dfd: j, dist, rounds, hit: hits, knocked: k.knocked, crew: k.crew, struck: k.struck }, k.tally));
-      return;
-    }
+    if (us[j].vehicle){ gunAtVehicle(us, [i, j, dist, rounds], G, { table, rng, acc, log }); return }
     log.push({ kind: "tankfire", att: i, dfd: j, dist, rounds, at: t });
     const weapon = shellWeapon(table);
     if (weapon && field) shellUnits({ us, table, weapon, rng, acc, log, field, under: under || us.map(() => false) }, null, { kind: G.he, name: u.name ?? null }, Array.from({ length: rounds }, () => [...t]));
   });
 }
+function gunAtVehicle(us, shot, G, ctx){          // a main gun's rounds at a vehicle unit: hits by range, knocks by armour (shot: [gun unit, target, dist, rounds])
+  const [i, j, dist, rounds] = shot, { table, rng, acc, log } = ctx;
+  let hits = 0, kills = 0;
+  for (let s = 0; s < rounds; s++) if (rng.randint(1, 100) <= chanceAt(G.hit, dist)) hits++;
+  const p = armourOf(us[j]).gun;
+  for (let s = 0; s < hits; s++) if (rng.randint(1, 100) <= p) kills++;
+  const k = knockOut(us, j, kills, table, rng, acc);
+  acc.dealt[i] += k.crew;
+  log.push(...logged({ kind: "tankfire", att: i, dfd: j, dist, rounds, hit: hits, knocked: k.knocked, crew: k.crew, struck: k.struck }, k.tally));
+}
+const keyBefore = (a, b) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);   // a gun target's [vehicle first, distance] ranks before another's
 function gunTarget(us, i, field, G){              // [dist, index, gun hex, target hex]: the nearest enemy vehicle in range, sight and front with a line of fire, else the nearest such unit
   const u = us[i], occ = occupancy(us), front = footprint(u)[0], fv = fvec(u.facing);
   let best = null;
@@ -1637,12 +1639,14 @@ function gunTarget(us, i, field, G){              // [dist, index, gun hex, targ
     const clear = clearFn(us, occ, field, i, j);
     for (const t of footprint(e).flat()) for (const h of front){
       const dist = hdist(h, t), key = [e.vehicle ? 0 : 1, dist];
-      if (dist > G.range || (best && (key[0] > best[0][0] || (key[0] === best[0][0] && key[1] >= best[0][1]))) || !ahead(fv, h, t)) continue;
-      if (gunWeather(field, dist, h, t).blocked || (clear && !clear(h, t, dist))) continue;
-      best = [key, [dist, j, h, t]];
+      if (dist <= G.range && (!best || keyBefore(key, best[0])) && canLay(field, clear, fv, [h, t, dist])) best = [key, [dist, j, h, t]];
     }
   });
   return best ? best[1] : null;
+}
+function canLay(field, clear, fv, line){           // a gun at h can be laid on t: ahead, in sight, with a clear line of fire
+  const [h, t, dist] = line;
+  return ahead(fv, h, t) && !gunWeather(field, dist, h, t).blocked && (!clear || clear(h, t, dist));
 }
 function ahead(fv, h, t){ const c = cube(t), s = cube(h); return (c[0] - s[0]) * fv[0] + (c[1] - s[1]) * fv[1] + (c[2] - s[2]) * fv[2] > 0 }
 function fireBattery(us, table, rng, acc, log, c){   // at the target, guns knocked out there, then balls bounding on into the unit behind
@@ -2510,19 +2514,27 @@ function shotNotes(l){                            // " (cover -20%, weather -10%
   if (l.misfire) bits.push(`${l.misfire}% misfire`);
   return bits.length ? ` (${bits.join(", ")})` : "";
 }
+const OTHER_LINES = {                            // kind: (line, nm) => {cls, text} (null: nothing to show)
+  breach: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} break through the ${(WK.edge_works[l.work] || WK.hex_works[l.work]).name.toLowerCase()}.` }),
+  morale: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` }),
+  herohit: l => ({ cls: "hero", text: heroHitText(l) }),
+  pinned: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} are pinned down (rolled ${l.roll}, needed ${l.target} or less): no move and half their fire next exchange.` }),
+  barrage: l => ({ cls: "", text: fireText(l) }),
+  landed: l => ({ cls: l.hot ? "morale" : "", text: landText(l) }),
+  waveoff: l => ({ cls: "morale", text: landText(l) }),
+  displaced: l => ({ cls: "", text: `${l.name} (${l.side}) have displaced: no longer located.` }),
+  assault: (l, nm) => ({ cls: "morale", text: bunkerText(l, nm) }),
+  antiarmour: (l, nm) => ({ cls: l.knocked ? "morale" : "", text: armourText(l, nm) }),
+  hero: (l, nm) => (l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null),
+  duel: l => ({ cls: "hero", text: heroStateText(l) }),
+};
+OTHER_LINES.counter = OTHER_LINES.barrage;
+OTHER_LINES.knocked = OTHER_LINES.assault;
+OTHER_LINES.tankfire = OTHER_LINES.knocked_out = OTHER_LINES.antiarmour;
+OTHER_LINES.herobled = OTHER_LINES.duel;
 function otherLine(l, nm){                       // morale, breach and hero lines (null: nothing to show); undefined for blows by units
-  if (l.kind === "breach") return { cls: "morale", text: `${nm(l.unit)} break through the ${(WK.edge_works[l.work] || WK.hex_works[l.work]).name.toLowerCase()}.` };
-  if (l.kind === "morale") return { cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` };
-  if (l.kind === "herohit") return { cls: "hero", text: heroHitText(l) };
-  if (l.kind === "pinned") return { cls: "morale", text: `${nm(l.unit)} are pinned down (rolled ${l.roll}, needed ${l.target} or less): no move and half their fire next exchange.` };
-  if (l.kind === "barrage" || l.kind === "counter") return { cls: "", text: fireText(l) };
-  if (l.kind === "landed" || l.kind === "waveoff") return { cls: l.hot || l.kind === "waveoff" ? "morale" : "", text: landText(l) };
-  if (l.kind === "displaced") return { cls: "", text: `${l.name} (${l.side}) have displaced: no longer located.` };
-  if (l.kind === "assault" || l.kind === "knocked") return { cls: "morale", text: bunkerText(l, nm) };
-  if (l.kind === "antiarmour" || l.kind === "tankfire" || l.kind === "knocked_out") return { cls: l.knocked ? "morale" : "", text: armourText(l, nm) };
-  if (l.kind === "hero") return l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null;
-  if (l.kind === "duel" || l.kind === "herobled") return { cls: "hero", text: heroStateText(l) };
-  return undefined;
+  const f = Object.hasOwn(OTHER_LINES, l.kind) ? OTHER_LINES[l.kind] : null;
+  return f ? f(l, nm) : undefined;
 }
 function landText(l){                            // men landing by air, or waved off
   const at = `${l.lz[0] + 1},${l.lz[1] + 1}`;
@@ -3130,16 +3142,24 @@ function reshape(dw){                            // set-up: a wider or narrower 
   else S.msg = "No room for that shape there.";
   render();
 }
-function addUnit(){
+function pickedSide(){                            // {f: the force picked or null, side, k: the side's index}
   const pick = $("#sel-side").value, f = pick.startsWith("f:") ? S.forces.find(x => x.id === +pick.slice(2)) : null;
-  const side = f ? forceSide(f) : S.sides[+pick.slice(2)] || S.sides[0], k = S.sides.indexOf(side), mid = S.phase !== "setup";
+  const side = f ? forceSide(f) : S.sides[+pick.slice(2)] || S.sides[0];
+  return { f, side, k: S.sides.indexOf(side) };
+}
+function unitKit(vk){                             // weapon, kit, formation and mounted from the form, or a vehicle unit's fixed ones
+  if (vk) return { weapon: "machine_gun", kit: "none", formation: "armour", mounted: false };
+  const weapon = $("#sel-weapon").value;
+  return { weapon, kit: $("#sel-kit").value, formation: formationFor(weapon, $("#sel-form").value), mounted: $("#chk-mounted").checked };
+}
+function addUnit(){
+  const { f, side, k } = pickedSide(), mid = S.phase !== "setup";
   if (mid && side !== moving()){ S.msg = `Only ${moving()} can bring on a unit now: it is their move.`; return render() }
   if (f && reserve(f) <= 0){ S.msg = `${f.name} has no men left to put in a unit.`; return render() }
-  const vk = vehiclesHere() ? $("#sel-vehicle").value : "", VK = vk ? FD.units.vehicles.kinds[vk] : null;
-  const asked = Math.max(1, Number.parseInt($("#in-men").value, 10) || 1) * (VK ? VK.crew : 1), men = f ? Math.min(asked, reserve(f)) : asked;
+  const vk = vehiclesHere() ? $("#sel-vehicle").value : "", crew = vk ? FD.units.vehicles.kinds[vk].crew : 1;
+  const asked = Math.max(1, Number.parseInt($("#in-men").value, 10) || 1) * crew, men = f ? Math.min(asked, reserve(f)) : asked;
   const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, banner: f && f.side !== side ? f.side : null, force: f ? f.id : null, men, quality: $("#sel-quality").value,
-    weapon: VK ? "machine_gun" : $("#sel-weapon").value, kit: VK ? "none" : $("#sel-kit").value, formation: VK ? "armour" : formationFor($("#sel-weapon").value, $("#sel-form").value),
-    mounted: !VK && $("#chk-mounted").checked, guns: $("#sel-guns").value, vehicle: vk || undefined, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
+    ...unitKit(vk), guns: $("#sel-guns").value, vehicle: vk || undefined, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
   if (FD.units.heliborne && $("#chk-air").checked) return byAir(u, f);
   return mid ? bringOn(u, k) : setUp(u, k);
 }

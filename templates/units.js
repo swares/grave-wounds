@@ -619,7 +619,7 @@ function shellUnits(ctx, k, b, bursts){           // the men struck in every uni
   const { us, table, weapon, rng, acc, log, field, under } = ctx;
   const I = UD.indirect, K = I.kinds[b.kind], att = { table, weapon, kit: null, quality: "regular" };
   us.forEach((u, i) => {
-    if (u.vehicle){ shellVehicle(us, i, bursts, K, table, rng, acc, log, [k, b]); return }
+    if (u.vehicle){ shellVehicle(us, i, bursts, K, { table, rng, acc, log, src: [k, b] }); return }
     const struck = shellStruckUnit(field, u, bursts, K, rng);
     if (struck === null) return;
     under[i] = true;
@@ -629,8 +629,8 @@ function shellUnits(ctx, k, b, bursts){           // the men struck in every uni
     log.push(...logged({ kind: "shelled", sup: k, name: b.name, dfd: i, struck }, t));
   });
 }
-function shellVehicle(us, i, bursts, kind, table, rng, acc, log, src){   // shells or bombs bursting in a vehicle's own hex knock it out at the kind's knock % x its armour's shell
-  const u = us[i];
+function shellVehicle(us, i, bursts, kind, ctx){   // shells or bombs bursting in a vehicle's own hex knock it out at the kind's knock % x its armour's shell (ctx: table, rng, acc, log, src)
+  const u = us[i], { table, rng, acc, log, src } = ctx;
   if (u.men <= 0 || u.state === "fled") return;
   const hexes = new Set(footprint(u).flat().map(hk)), direct = bursts.filter(at => hexes.has(hk(at))).length, p = (kind.knock || 0) * armourOf(u).shell;
   if (!direct || p <= 0) return;
@@ -861,21 +861,23 @@ function vehicleGuns(us, table, rng, acc, log, field, under){   // each vehicle 
     const best = gunTarget(us, i, field, G);
     if (!best) return;
     const [dist, j, , t] = best, rounds = vehiclesLeft(u) * G.rate;
-    if (us[j].vehicle){
-      let hits = 0, kills = 0;
-      for (let s = 0; s < rounds; s++) if (rng.randint(1, 100) <= chanceAt(G.hit, dist)) hits++;
-      const p = armourOf(us[j]).gun;
-      for (let s = 0; s < hits; s++) if (rng.randint(1, 100) <= p) kills++;
-      const k = knockOut(us, j, kills, table, rng, acc);
-      acc.dealt[i] += k.crew;
-      log.push(...logged({ kind: "tankfire", att: i, dfd: j, dist, rounds, hit: hits, knocked: k.knocked, crew: k.crew, struck: k.struck }, k.tally));
-      return;
-    }
+    if (us[j].vehicle){ gunAtVehicle(us, [i, j, dist, rounds], G, { table, rng, acc, log }); return }
     log.push({ kind: "tankfire", att: i, dfd: j, dist, rounds, at: t });
     const weapon = shellWeapon(table);
     if (weapon && field) shellUnits({ us, table, weapon, rng, acc, log, field, under: under || us.map(() => false) }, null, { kind: G.he, name: u.name ?? null }, Array.from({ length: rounds }, () => [...t]));
   });
 }
+function gunAtVehicle(us, shot, G, ctx){          // a main gun's rounds at a vehicle unit: hits by range, knocks by armour (shot: [gun unit, target, dist, rounds])
+  const [i, j, dist, rounds] = shot, { table, rng, acc, log } = ctx;
+  let hits = 0, kills = 0;
+  for (let s = 0; s < rounds; s++) if (rng.randint(1, 100) <= chanceAt(G.hit, dist)) hits++;
+  const p = armourOf(us[j]).gun;
+  for (let s = 0; s < hits; s++) if (rng.randint(1, 100) <= p) kills++;
+  const k = knockOut(us, j, kills, table, rng, acc);
+  acc.dealt[i] += k.crew;
+  log.push(...logged({ kind: "tankfire", att: i, dfd: j, dist, rounds, hit: hits, knocked: k.knocked, crew: k.crew, struck: k.struck }, k.tally));
+}
+const keyBefore = (a, b) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);   // a gun target's [vehicle first, distance] ranks before another's
 function gunTarget(us, i, field, G){              // [dist, index, gun hex, target hex]: the nearest enemy vehicle in range, sight and front with a line of fire, else the nearest such unit
   const u = us[i], occ = occupancy(us), front = footprint(u)[0], fv = fvec(u.facing);
   let best = null;
@@ -884,12 +886,14 @@ function gunTarget(us, i, field, G){              // [dist, index, gun hex, targ
     const clear = clearFn(us, occ, field, i, j);
     for (const t of footprint(e).flat()) for (const h of front){
       const dist = hdist(h, t), key = [e.vehicle ? 0 : 1, dist];
-      if (dist > G.range || (best && (key[0] > best[0][0] || (key[0] === best[0][0] && key[1] >= best[0][1]))) || !ahead(fv, h, t)) continue;
-      if (gunWeather(field, dist, h, t).blocked || (clear && !clear(h, t, dist))) continue;
-      best = [key, [dist, j, h, t]];
+      if (dist <= G.range && (!best || keyBefore(key, best[0])) && canLay(field, clear, fv, [h, t, dist])) best = [key, [dist, j, h, t]];
     }
   });
   return best ? best[1] : null;
+}
+function canLay(field, clear, fv, line){           // a gun at h can be laid on t: ahead, in sight, with a clear line of fire
+  const [h, t, dist] = line;
+  return ahead(fv, h, t) && !gunWeather(field, dist, h, t).blocked && (!clear || clear(h, t, dist));
 }
 function ahead(fv, h, t){ const c = cube(t), s = cube(h); return (c[0] - s[0]) * fv[0] + (c[1] - s[1]) * fv[1] + (c[2] - s[2]) * fv[2] > 0 }
 function fireBattery(us, table, rng, acc, log, c){   // at the target, guns knocked out there, then balls bounding on into the unit behind

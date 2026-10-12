@@ -1343,31 +1343,39 @@ def _vehicle_guns(d: Data, us: list, ctx: tuple, field: dict | None, under: list
     table, rng, acc = ctx
     log = []
     for i, u in enumerate(us):
-        K = vehicle_kind(d, u)
-        G = K.get("gun") if K else None
-        if not G or _out(u):
+        kind = vehicle_kind(d, u)
+        gun = kind.get("gun") if kind else None
+        if not gun or _out(u):
             continue
-        best = _gun_target(d, us, i, field, G)
+        best = _gun_target(d, us, i, field, gun)
         if best is None:
             continue
         dist, j, _, t = best
-        rounds = vehicles_left(d, u) * G["rate"]
+        rounds = vehicles_left(d, u) * gun["rate"]
         if us[j].get("vehicle"):
-            hits = sum(1 for _ in range(rounds) if rng.randint(1, 100) <= _chance_at(G["hit"], dist))
-            kills = sum(1 for _ in range(hits) if rng.randint(1, 100) <= armour_of(d, us[j])["gun"])
-            k = knock_out(d, us, j, kills, (table, rng), acc)
-            acc[2][i] += k["crew"]
-            line = {"kind": "tankfire", "att": i, "dfd": j, "dist": dist, "rounds": rounds, "hit": hits, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"]}
-            log += _logged(line, k["tally"])
+            log += _gun_at_vehicle(d, us, (i, j, dist, rounds), gun, ctx)
             continue
         log.append({"kind": "tankfire", "att": i, "dfd": j, "dist": dist, "rounds": rounds, "at": t})
         weapon = shell_weapon(d, table)
         if weapon and field:
-            log += _shell_units(d, us, (table, weapon), rng, acc, field, under or [False] * len(us), None, {"kind": G["he"], "name": u.get("name")}, [list(t)] * rounds)
+            log += _shell_units(d, us, (table, weapon), rng, acc, field, under or [False] * len(us), None, {"kind": gun["he"], "name": u.get("name")}, [list(t)] * rounds)
     return log
 
 
-def _gun_target(d: Data, us: list, i: int, field: dict | None, G: dict):
+def _gun_at_vehicle(d: Data, us: list, shot: tuple, gun: dict, ctx: tuple) -> list:
+    """A main gun's rounds at a vehicle unit (shot: gun unit, target, distance, rounds): hits by
+    range, knocks by the target's armour."""
+    i, j, dist, rounds = shot
+    table, rng, acc = ctx
+    hits = sum(1 for _ in range(rounds) if rng.randint(1, 100) <= _chance_at(gun["hit"], dist))
+    kills = sum(1 for _ in range(hits) if rng.randint(1, 100) <= armour_of(d, us[j])["gun"])
+    k = knock_out(d, us, j, kills, (table, rng), acc)
+    acc[2][i] += k["crew"]
+    line = {"kind": "tankfire", "att": i, "dfd": j, "dist": dist, "rounds": rounds, "hit": hits, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"]}
+    return _logged(line, k["tally"])
+
+
+def _gun_target(d: Data, us: list, i: int, field: dict | None, gun: dict):
     """(distance, index, gun hex, target hex) for vehicle unit i's main gun: the nearest enemy
     vehicle in range, in sight and in front with a line of fire, else the nearest such unit."""
     u, occ = us[i], occupancy(d, us)
@@ -1376,16 +1384,18 @@ def _gun_target(d: Data, us: list, i: int, field: dict | None, G: dict):
         if e["side"] == u["side"] or e["men"] <= 0 or e["state"] == "fled":
             continue
         clear = _clear_fn(d, us, occ, field, i, j)
-        for t in (x for row in footprint(d, e) for x in row):
-            for h in front:
-                dist = hdist(h, t)
-                key = (0 if e.get("vehicle") else 1, dist)
-                if dist > G["range"] or (best is not None and key >= best[0]) or not _ahead(fv, h, t):
-                    continue
-                if gun_weather(d, field, dist, h, t)["blocked"] or (clear is not None and not clear(h, t, dist)):
-                    continue
+        for t, h in ((x, h) for row in footprint(d, e) for x in row for h in front):
+            dist = hdist(h, t)
+            key = (0 if e.get("vehicle") else 1, dist)
+            if dist <= gun["range"] and (best is None or key < best[0]) and _can_lay(d, field, clear, fv, (h, t, dist)):
                 best = (key, (dist, j, h, t))
     return None if best is None else best[1]
+
+
+def _can_lay(d: Data, field: dict | None, clear, fv: tuple, line: tuple) -> bool:
+    """Whether a gun at h can be laid on t: ahead, in sight, with a clear line of fire."""
+    h, t, dist = line
+    return _ahead(fv, h, t) and not gun_weather(d, field, dist, h, t)["blocked"] and (clear is None or clear(h, t, dist))
 
 
 def _ahead(fv: tuple, h, t) -> bool:
@@ -1656,7 +1666,7 @@ def _lay_smoke(d: Data, field: dict, bursts: list) -> None:
             sm[key] = max(sm.get(key, 0), lasts)
 
 
-def _shell_units(d: Data, us: list, tw: tuple, rng, acc: tuple, field: dict, under: list, k: int, b: dict, bursts: list) -> list:
+def _shell_units(d: Data, us: list, tw: tuple, rng, acc: tuple, field: dict, under: list, k: int | None, b: dict, bursts: list) -> list:
     """The men struck in every unit by a battery's bursts, and their wounds."""
     I, (table, weapon) = d.units["indirect"], tw
     K, log = I["kinds"][b["kind"]], []

@@ -688,19 +688,27 @@ function shotNotes(l){                            // " (cover -20%, weather -10%
   if (l.misfire) bits.push(`${l.misfire}% misfire`);
   return bits.length ? ` (${bits.join(", ")})` : "";
 }
+const OTHER_LINES = {                            // kind: (line, nm) => {cls, text} (null: nothing to show)
+  breach: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} break through the ${(WK.edge_works[l.work] || WK.hex_works[l.work]).name.toLowerCase()}.` }),
+  morale: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` }),
+  herohit: l => ({ cls: "hero", text: heroHitText(l) }),
+  pinned: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} are pinned down (rolled ${l.roll}, needed ${l.target} or less): no move and half their fire next exchange.` }),
+  barrage: l => ({ cls: "", text: fireText(l) }),
+  landed: l => ({ cls: l.hot ? "morale" : "", text: landText(l) }),
+  waveoff: l => ({ cls: "morale", text: landText(l) }),
+  displaced: l => ({ cls: "", text: `${l.name} (${l.side}) have displaced: no longer located.` }),
+  assault: (l, nm) => ({ cls: "morale", text: bunkerText(l, nm) }),
+  antiarmour: (l, nm) => ({ cls: l.knocked ? "morale" : "", text: armourText(l, nm) }),
+  hero: (l, nm) => (l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null),
+  duel: l => ({ cls: "hero", text: heroStateText(l) }),
+};
+OTHER_LINES.counter = OTHER_LINES.barrage;
+OTHER_LINES.knocked = OTHER_LINES.assault;
+OTHER_LINES.tankfire = OTHER_LINES.knocked_out = OTHER_LINES.antiarmour;
+OTHER_LINES.herobled = OTHER_LINES.duel;
 function otherLine(l, nm){                       // morale, breach and hero lines (null: nothing to show); undefined for blows by units
-  if (l.kind === "breach") return { cls: "morale", text: `${nm(l.unit)} break through the ${(WK.edge_works[l.work] || WK.hex_works[l.work]).name.toLowerCase()}.` };
-  if (l.kind === "morale") return { cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` };
-  if (l.kind === "herohit") return { cls: "hero", text: heroHitText(l) };
-  if (l.kind === "pinned") return { cls: "morale", text: `${nm(l.unit)} are pinned down (rolled ${l.roll}, needed ${l.target} or less): no move and half their fire next exchange.` };
-  if (l.kind === "barrage" || l.kind === "counter") return { cls: "", text: fireText(l) };
-  if (l.kind === "landed" || l.kind === "waveoff") return { cls: l.hot || l.kind === "waveoff" ? "morale" : "", text: landText(l) };
-  if (l.kind === "displaced") return { cls: "", text: `${l.name} (${l.side}) have displaced: no longer located.` };
-  if (l.kind === "assault" || l.kind === "knocked") return { cls: "morale", text: bunkerText(l, nm) };
-  if (l.kind === "antiarmour" || l.kind === "tankfire" || l.kind === "knocked_out") return { cls: l.knocked ? "morale" : "", text: armourText(l, nm) };
-  if (l.kind === "hero") return l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null;
-  if (l.kind === "duel" || l.kind === "herobled") return { cls: "hero", text: heroStateText(l) };
-  return undefined;
+  const f = Object.hasOwn(OTHER_LINES, l.kind) ? OTHER_LINES[l.kind] : null;
+  return f ? f(l, nm) : undefined;
 }
 function landText(l){                            // men landing by air, or waved off
   const at = `${l.lz[0] + 1},${l.lz[1] + 1}`;
@@ -1308,16 +1316,24 @@ function reshape(dw){                            // set-up: a wider or narrower 
   else S.msg = "No room for that shape there.";
   render();
 }
-function addUnit(){
+function pickedSide(){                            // {f: the force picked or null, side, k: the side's index}
   const pick = $("#sel-side").value, f = pick.startsWith("f:") ? S.forces.find(x => x.id === +pick.slice(2)) : null;
-  const side = f ? forceSide(f) : S.sides[+pick.slice(2)] || S.sides[0], k = S.sides.indexOf(side), mid = S.phase !== "setup";
+  const side = f ? forceSide(f) : S.sides[+pick.slice(2)] || S.sides[0];
+  return { f, side, k: S.sides.indexOf(side) };
+}
+function unitKit(vk){                             // weapon, kit, formation and mounted from the form, or a vehicle unit's fixed ones
+  if (vk) return { weapon: "machine_gun", kit: "none", formation: "armour", mounted: false };
+  const weapon = $("#sel-weapon").value;
+  return { weapon, kit: $("#sel-kit").value, formation: formationFor(weapon, $("#sel-form").value), mounted: $("#chk-mounted").checked };
+}
+function addUnit(){
+  const { f, side, k } = pickedSide(), mid = S.phase !== "setup";
   if (mid && side !== moving()){ S.msg = `Only ${moving()} can bring on a unit now: it is their move.`; return render() }
   if (f && reserve(f) <= 0){ S.msg = `${f.name} has no men left to put in a unit.`; return render() }
-  const vk = vehiclesHere() ? $("#sel-vehicle").value : "", VK = vk ? FD.units.vehicles.kinds[vk] : null;
-  const asked = Math.max(1, Number.parseInt($("#in-men").value, 10) || 1) * (VK ? VK.crew : 1), men = f ? Math.min(asked, reserve(f)) : asked;
+  const vk = vehiclesHere() ? $("#sel-vehicle").value : "", crew = vk ? FD.units.vehicles.kinds[vk].crew : 1;
+  const asked = Math.max(1, Number.parseInt($("#in-men").value, 10) || 1) * crew, men = f ? Math.min(asked, reserve(f)) : asked;
   const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, banner: f && f.side !== side ? f.side : null, force: f ? f.id : null, men, quality: $("#sel-quality").value,
-    weapon: VK ? "machine_gun" : $("#sel-weapon").value, kit: VK ? "none" : $("#sel-kit").value, formation: VK ? "armour" : formationFor($("#sel-weapon").value, $("#sel-form").value),
-    mounted: !VK && $("#chk-mounted").checked, guns: $("#sel-guns").value, vehicle: vk || undefined, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
+    ...unitKit(vk), guns: $("#sel-guns").value, vehicle: vk || undefined, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
   if (FD.units.heliborne && $("#chk-air").checked) return byAir(u, f);
   return mid ? bringOn(u, k) : setUp(u, k);
 }
