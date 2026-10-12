@@ -75,5 +75,18 @@ When an item is done, delete it here and note it in the pull request that closes
   a team playtest. Its characteristics now count in the roller (Agility, Endurance,
   Strength, Presence), and Leechcraft, Fieldcraft, Watch and Stealth work outside a fight.
   Followers have one-line stat blocks, and the gunpowder eras (1618-1876) and the world wars
-  (1914-18, 1939-45) have their own tables. Still to come: Korea, Vietnam and later, and
-  women's names where they served under arms (Soviet snipers and medics, for one).
+  (1914-18, 1939-45) have their own tables. Korea and later, and women, are their own
+  entries below.
+- **Team tables for Korea and later.** The team builder has seven eras, ending with the
+  Second World War. The maps now run from Korea to Afghanistan, but a team for them has to be
+  made from the Second World War tables or by hand, with the wrong kit (no flak vest, no M16,
+  no Interceptor), the wrong careers (no draft and twelve-month tour, no Rangers or Paras) and
+  the wrong events. One way to fix it: tables for Korea (1950-53), Vietnam (1965-73) and the
+  later wars (1982-2010s), each with its origins, careers, events and kit drawn from the armour
+  kits the maps already use.
+- **Women under arms.** Every name list is men's and every sheet says "he", though women
+  served under arms in several eras: Soviet snipers, machine gunners and medics in 1941-45,
+  and American and British soldiers and medics in Iraq and Afghanistan, for two. One way to
+  fix it: a women's name list for each era where they served, a choice (or a roll, at the
+  era's real share) of man or woman, pronouns on the sheets, and careers open to them as the
+  records show for that era and army.
