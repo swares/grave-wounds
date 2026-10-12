@@ -13,7 +13,7 @@
 // streets and one-storey stone houses behind walls, the hotel and a few blocks of several
 // storeys, the market's crowded stalls. The deployment is nightfall, in our own words, with
 // round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
 
 const COLS = 110, ROWS = 110;                 // 1100 m east to west, about 950 m north to south
 const TARGET = [45, 40], HOTEL = [44, 48], CRASH1 = [63, 21], CRASH2 = [64, 91];
