@@ -637,6 +637,30 @@ at the field map's scale (sized for the defender's men on 11-yard, 10 m hexes), 
 built when the fight starts, with the gate on the east, facing the attackers' edge. The
 defenders' units start inside it, the attackers at the east edge.
 
+## Landing by air
+
+For helicopter landings (Vietnam and later). The numbers are in `heliborne` in
+`data/units.yaml`.
+
+- **Landing zones.** A battlefield can mark landing zones, shown as a dashed ring with an H.
+  Before the battle the GM can mark or clear one with **Clicking the map: Mark or clear a
+  landing zone**.
+- **Coming in by air.** With a landing zone marked, **Add a unit** offers **By air at** and
+  a zone. The unit waits in the air (listed under the units), and at the end of each
+  exchange up to 80 men land at each zone, the lifts in the order they were called. A lift
+  lands two ranks deep. The unit's first men come down on the zone, or the nearest spot
+  within 4 hexes where they fit; later lifts join them, filling the unit out. It can move
+  in the next exchange. A battlefield's units can start in the air too (`lands`).
+- **Blocked.** No one lands while an enemy unit stands within 2 hexes of the zone, or where
+  there is no room: the lift is waved off and tries again next exchange.
+- **A hot landing zone.** If any enemy unit (not broken) could shoot at the zone's hex, with
+  its weapon in range and in sight (in the weather and the light), the zone is hot. Each man
+  landing is struck at 10% and rolls a wound as one struck by shellfire, and those put down
+  are down at once.
+- **Downed helicopter.** The GM can put a downed helicopter (✈) on any hex at any time, with
+  **Clicking the map: Downed helicopter**. Its hull is cover (30%) for the men in that hex,
+  and it is slow ground to cross.
+
 ## Battlefields
 
 Besides open ground, the field map can lay out a real battlefield. Pick it under

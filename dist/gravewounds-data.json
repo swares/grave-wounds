@@ -15324,6 +15324,15 @@
     "no_horse": true,
     "breach": null,
     "note": "A log-and-earth pillbox or dugout with firing slits (the 20th century)."
+   },
+   "wreck": {
+    "name": "Downed helicopter",
+    "each": 0,
+    "enter": 2,
+    "cover_here": 30,
+    "no_horse": true,
+    "breach": null,
+    "note": "A helicopter brought down on the field: its hull is cover for the men in its hex."
    }
   }
  },

@@ -852,7 +852,64 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   });
   log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng));
   afterExchange(us, field, log);
+  log.push(...landings(us, table, rng, field));
   return { units: us, log };
+}
+function lzState(units, field, side, lz){         // blocked (an enemy within heliborne.blocked hexes), hot (an enemy could shoot at it) or cold
+  const H = UD.heliborne;
+  let hot = false;
+  for (const u of units){
+    if (u.side === side || u.men <= 0 || u.state === "fled") continue;
+    const hexes = footprint(u).flat();
+    if (hexes.some(x => hdist(x, lz) <= H.blocked)) return "blocked";
+    hot = hot || (!out_(u) && couldShoot(field, u, hexes, lz));
+  }
+  return hot ? "hot" : "cold";
+}
+function couldShoot(field, u, hexes, t){          // u has a weapon that reaches hex t and sees it to aim
+  if (!("range" in FD.weapons[u.weapon])) return false;
+  return hexes.some(x => { const dist = hdist(x, t), wx = shotWeather(field, u.weapon, dist, x, t); return !wx.blocked && reaches(u, dist, wx.reach || 0) });
+}
+function landings(us, table, rng, field){         // men coming on by air: up to heliborne.lift a landing zone this exchange, lifts in order
+  const lifts = field?.lifts || [], log = [];
+  if (!lifts.length || !UD.heliborne) return log;
+  const room = {};
+  for (const lf of lifts){
+    const key = `${lf.lz[0]},${lf.lz[1]}`;
+    if (!(key in room)) room[key] = UD.heliborne.lift;
+    if (room[key] > 0 && lf.left > 0) log.push(...land(us, table, rng, field, lf, room, key));
+  }
+  field.lifts = lifts.filter(lf => lf.left > 0);
+  return log;
+}
+function land(us, table, rng, field, lf, room, key){   // one lift's men landing, if the zone is not blocked and they fit
+  const side = lf.unit.side, name = lf.unit.name, state = lzState(us, field, side, lf.lz);
+  if (state === "blocked") return [{ kind: "waveoff", name, side, lz: lf.lz, why: "blocked" }];
+  const n = Math.min(room[key], lf.left);
+  let i = us.findIndex(u => u.id !== undefined && u.id !== null && u.id === lf.unit.id);
+  if (i < 0) i = us.length;
+  const u = i < us.length ? { ...us[i] } : { ...lf.unit, pos: [...lf.lz], men: 0, start: 0, down: 0, dead: 0, hurt: {}, heroes: [], state: "steady" };
+  Object.assign(u, { men: u.men + n, start: u.start + n });
+  const spots = i < us.length ? [u.pos] : within(lf.lz, UD.heliborne.zone);
+  u.pos = spots.find(h => fits(us, i, { ...u, pos: [...h] }, fieldSize(field), field)) || null;
+  if (!u.pos) return [{ kind: "waveoff", name, side, lz: lf.lz, why: "room" }];
+  u.pos = [...u.pos];
+  if (i < us.length) Object.assign(us[i], { men: u.men, start: u.start });
+  else us.push(u);
+  room[key] -= n;
+  lf.left -= n;
+  const line = { kind: "landed", unit: i, dfd: i, name, side, lz: lf.lz, men: n, hot: state === "hot", first: u.start === n };
+  return state === "hot" ? hotLanding(us[i], table, rng, n, line) : [line];
+}
+function hotLanding(u, table, rng, n, line){      // each man landing struck at heliborne.hot %, wounds as shellfire
+  const weapon = shellWeapon(table);
+  let struck = 0;
+  for (let k = 0; k < n; k++) if (rng.randint(1, 100) <= UD.heliborne.hot) struck++;
+  if (!weapon || !struck) return [{ ...line, struck }];
+  const t = takeHurt(u, blows({ table, weapon, kit: null, quality: "regular" }, sideOfUnit(u, table), struck, UD.indirect.attack, 0, rng, { exposed: exposure(u, false, true), shift: -1000 }));
+  const cut = Math.min(t.down, u.men);
+  Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(t.dead, cut) });
+  return logged({ ...line, struck }, t);
 }
 function afterExchange(us, field, log = []){        // charges spent, batteries changed over, pins wear off, missions come due, batteries displace, smoke thins and drifts
   for (const u of us){

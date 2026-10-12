@@ -48,6 +48,10 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Air support, first cut.** Aircraft are called like batteries. There is no fire at them
   (no aircraft lost to ground fire), no forward air controller or marking rounds, and no
   direction to a strafing run or a napalm strip: every attack is a round burst like a shell.
+- **Landing by air, first cut.** Helicopters are not on the map: a lift lands or is waved
+  off, and a hot zone costs men, but the helicopters themselves cannot be shot down, the
+  lift has no fixed number of aircraft or turnaround time, and nothing is flown out (the
+  wounded, or a unit lifted away). The GM places a downed helicopter by hand.
 - **Fire at hidden men, first cut.** Men gone to ground, in bunkers or in buildings are now hit
   at 10% of aimed shots (machine guns 5%), and dug-in men hold better. Osan, left alone, lasts
   about an hour where the real fight took two and a half; the rest of that time went in the

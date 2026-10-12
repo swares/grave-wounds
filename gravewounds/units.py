@@ -642,6 +642,8 @@ def battlefield(d: Data, fid: str) -> dict:
     works = _field_works(d, f.get("works") or {})
     wx = f.get("weather") or {"cond": "fair", "wind": "calm", "ground": {"mud": 0, "snow": 0}}
     out = {"ground": ground, "works": works, "weather": wx, "size": list(f["size"]), "up": f.get("up", "N")}
+    if f.get("lz"):
+        out["lz"] = [list(h) for h in f["lz"]]
     if f.get("support"):
         out["support"] = _field_support(d, f)
     return out
@@ -672,9 +674,10 @@ def _field_support(d: Data, f: dict) -> list:
 
 
 def battlefield_units(d: Data, fid: str) -> list:
-    """The armies as drawn up on a battlefield, as units ready to fight."""
+    """The armies as drawn up on a battlefield, as units ready to fight (not those that come
+    in by air: `lands`)."""
     out = []
-    for u in d.fields[fid].get("units", []):
+    for u in (x for x in d.fields[fid].get("units", []) if "lands" not in x):
         out.append({**u, "start": u["men"], "down": 0, "dead": 0, "hurt": {}, "heroes": [], "state": "steady",
                     "mounted": bool(u.get("mounted")), "charged": False, "leader": None})
     return out
@@ -1000,7 +1003,93 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     _smoke_thins(field)
     _smoke_drifts(d, field)
     _lit_fades(field)
+    log += landings(d, us, table, rng, field)
     return us, log
+
+
+def lz_state(d: Data, units: list, field: dict | None, side, lz) -> str:
+    """A landing zone for `side`: blocked (an enemy unit, not fled, within heliborne.blocked
+    hexes), hot (an enemy unit, not broken or fled, could shoot at its hex) or cold."""
+    H, hot = d.units["heliborne"], False
+    for u in units:
+        if u["side"] == side or u["men"] <= 0 or u["state"] == "fled":
+            continue
+        hexes = [x for row in footprint(d, u) for x in row]
+        if any(hdist(x, lz) <= H["blocked"] for x in hexes):
+            return "blocked"
+        hot = hot or (not _out(u) and _could_shoot(d, field, u, hexes, lz))
+    return "hot" if hot else "cold"
+
+
+def _could_shoot(d: Data, field: dict | None, u: dict, hexes: list, t) -> bool:
+    """Whether unit u (on these hexes) has a weapon that reaches hex t and sees it to aim."""
+    if "range" not in d.weapons[u["weapon"]]:
+        return False
+    for x in hexes:
+        dist = hdist(x, t)
+        wx = shot_weather(d, field, u["weapon"], dist, x, t)
+        if not wx["blocked"] and _reaches(d, u, dist, wx.get("reach", 0)):
+            return True
+    return False
+
+
+def landings(d: Data, us: list, table: str, rng, field: dict | None) -> list:
+    """Men coming on by air (field.lifts: [{unit, lz, left}]): up to heliborne.lift a landing
+    zone this exchange, in order; a lift waits while its zone is blocked or there is no room.
+    A unit's first men to land join the battle as a new unit. At a hot zone each man is struck
+    at heliborne.hot % and rolls a wound as one struck by shellfire."""
+    lifts, log = (field or {}).get("lifts") or [], []
+    if not lifts or "heliborne" not in d.units:
+        return log
+    room = {}
+    for lf in lifts:
+        key = f"{lf['lz'][0]},{lf['lz'][1]}"
+        room.setdefault(key, d.units["heliborne"]["lift"])
+        if room[key] > 0 and lf["left"] > 0:
+            log += _land(d, us, table, rng, field, lf, room, key)
+    field["lifts"] = [lf for lf in lifts if lf["left"] > 0]
+    return log
+
+
+def _land(d: Data, us: list, table: str, rng, field: dict, lf: dict, room: dict, key: str) -> list:
+    """One lift's men landing at its zone this exchange, if they can (see landings)."""
+    side, name = lf["unit"]["side"], lf["unit"]["name"]
+    state = lz_state(d, us, field, side, lf["lz"])
+    if state == "blocked":
+        return [{"kind": "waveoff", "name": name, "side": side, "lz": lf["lz"], "why": "blocked"}]
+    n = min(room[key], lf["left"])
+    i = next((k for k, u in enumerate(us) if u.get("id") is not None and u.get("id") == lf["unit"].get("id")), len(us))
+    u = dict(us[i]) if i < len(us) else {**lf["unit"], "pos": list(lf["lz"]), "men": 0, "start": 0, "down": 0, "dead": 0, "hurt": {}, "heroes": [], "state": "steady"}
+    u.update(men=u["men"] + n, start=u["start"] + n)
+    spots = [u["pos"]] if i < len(us) else within(lf["lz"], d.units["heliborne"]["zone"])
+    u["pos"] = next((list(h) for h in spots if _fits(d, us, i, {**u, "pos": list(h)}, _size(d, field), field)), None)
+    if u["pos"] is None:
+        return [{"kind": "waveoff", "name": name, "side": side, "lz": lf["lz"], "why": "room"}]
+    if i < len(us):
+        us[i].update(men=u["men"], start=u["start"])
+    else:
+        us.append(u)
+    room[key] -= n
+    lf["left"] -= n
+    line = {"kind": "landed", "unit": i, "dfd": i, "name": name, "side": side, "lz": lf["lz"], "men": n, "hot": state == "hot", "first": u["start"] == n}
+    if state != "hot":
+        return [line]
+    return _hot_landing(d, us[i], (table, rng), n, line)
+
+
+def _hot_landing(d: Data, u: dict, tr: tuple, n: int, line: dict) -> list:
+    """The men of a lift landing at a hot zone: each struck at heliborne.hot %, wounds rolled
+    as shellfire; those put down are down at once."""
+    table, rng = tr
+    weapon = shell_weapon(d, table)
+    struck = sum(1 for _ in range(n) if rng.randint(1, 100) <= d.units["heliborne"]["hot"])
+    if not weapon or not struck:
+        return [{**line, "struck": struck}]
+    t = _take_hurt(u, _blows(d, {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}, _side(u, table), struck,
+                             d.units["indirect"]["attack"], 0, rng, _exposure(d, u, False, True), -1000))
+    cut = min(t["down"], u["men"])
+    u.update(men=u["men"] - cut, down=u.get("down", 0) + cut, dead=u.get("dead", 0) + min(t["dead"], cut))
+    return _logged({**line, "struck": struck}, t)
 
 
 def _displace_all(field: dict | None) -> list:
