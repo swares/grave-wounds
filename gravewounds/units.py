@@ -111,14 +111,20 @@ def volley(d: Data, att: dict, dfd: dict, men: float, field_hexes: int, rng: ran
     served guns, at machine_guns.tempo). penalty: extra % off (weather, cover); factor: the
     target formation's missile_factor; reach: the wind's % on the range bands. None if out of
     range."""
+    shot = _volley_shots(d, att, men, field_hexes, rng, (penalty, factor, reach))
+    return None if shot is None else _blows(d, att, dfd, shot[0], shot[1], 0, rng, exposed, -1000)
+
+
+def _volley_shots(d: Data, att: dict, men: float, field_hexes: int, rng, mods: tuple = (0, 1.0, 0)):
+    """(aimed shots, attack %) of a volley (mods: penalty, factor, reach as volley's), or None if out of range."""
+    penalty, factor, reach = mods
     band = field_range(d, att["weapon"], field_hexes, reach)
     if band is None:
         return None
     S = d.units["missile"]
     tempo = d.units["machine_guns"]["tempo"] if is_mg(d, att["weapon"]) else S["tempo"]
     shots = men * S["rate"].get(att["weapon"], S["default_rate"]) * tempo * factor
-    atk = _attack(d, att) - band["penalty"] - penalty
-    return _blows(d, att, dfd, _count(shots, rng), atk, 0, rng, exposed, -1000)
+    return _count(shots, rng), _attack(d, att) - band["penalty"] - penalty
 
 
 def _blows(d: Data, att: dict, dfd: dict, n: int, atk: int, dfn: int, rng: random.Random,
@@ -489,7 +495,32 @@ def arc(facing: int, dirn: int) -> str:
 
 
 def form(d: Data, u: dict) -> dict:
-    return d.units["formations"][u["formation"]]
+    """A unit's formation; a vehicle unit's is one vehicle a hex, at its kind's move."""
+    F = d.units["formations"][u["formation"]]
+    K = vehicle_kind(d, u)
+    return {**F, "per_hex": K["crew"], "move": K["move"]} if K else F
+
+
+def vehicle_kind(d: Data, u: dict) -> dict | None:
+    """A vehicle unit's kind (units.yaml vehicles.kinds), or None for men on foot or horse."""
+    return d.units["vehicles"]["kinds"][u["vehicle"]] if u.get("vehicle") else None
+
+
+def vehicles_left(d: Data, u: dict, lost: int = 0) -> int:
+    """How many vehicles a vehicle unit still has, its crews' losses `lost` this exchange taken off."""
+    K = vehicle_kind(d, u)
+    return math.ceil(max(0, u["men"] - lost) / K["crew"]) if K else 0
+
+
+def armour_of(d: Data, u: dict) -> dict | None:
+    """A vehicle unit's armour (units.yaml vehicles.armour), or None."""
+    K = vehicle_kind(d, u)
+    return d.units["vehicles"]["armour"][K["armour"]] if K else None
+
+
+def hurts_armour(d: Data, weapon: str) -> bool:
+    """Whether a man's weapon can knock out a vehicle (vehicles.anti_armour)."""
+    return weapon in ((d.units.get("vehicles") or {}).get("anti_armour") or {})
 
 
 def footprint(d: Data, u: dict) -> list:
@@ -558,12 +589,12 @@ def strikes(d: Data, units: list, field: dict | None = None) -> list:
         if not _out(u):
             _strike_groups(d, units, occ, i, groups, field)
     out = [{"att": i, "dfd": j, "men": n, "situation": sit, "rout": False, "penalty": pen, "stakes": stk}
-           for (i, j, sit, pen, stk), n in sorted(groups.items())]
+           for (i, j, sit, pen, stk), n in sorted(groups.items()) if not units[i].get("vehicle") and not units[j].get("vehicle")]
     for j, b in enumerate(units):
-        if b["state"] == "broken" and b["men"] > 0:
+        if b["state"] == "broken" and b["men"] > 0 and not b.get("vehicle"):
             out += [{"att": i, "dfd": j, "men": units[i]["men"], "situation": "rear", "rout": True}
                     for i in _adjacent_units(d, units, occ, j)
-                    if units[i]["side"] != b["side"] and units[i]["state"] not in ("broken", "fled")]
+                    if units[i]["side"] != b["side"] and units[i]["state"] not in ("broken", "fled") and not units[i].get("vehicle")]
     return out
 
 
@@ -806,7 +837,7 @@ def _beaten(d: Data, units: list, occ: dict, field: dict | None, i: int, best: t
         if ground_at(d, field, x).get("stops_shot"):
             break
         b = occ.get(f"{x[0]},{x[1]}")
-        if k > 0 and b is not None and b not in (i, j):
+        if k > 0 and b is not None and b not in (i, j) and not units[b].get("vehicle"):
             return {"behind": b, "beyond": k, "bcover": ground_at(d, field, x).get("cover", 0) + ground_cover(d, units[b]),
                     "bseen": seen_share(d, field, units[b], x, units[i]["weapon"])}
     return {"behind": None, "beyond": 0, "bcover": 0, "bseen": 1}
@@ -914,7 +945,7 @@ def _target(d: Data, units: list, i: int, field: dict | None = None, occ: dict |
     if named is not None:
         return named
     for j, e in enumerate(units):
-        if e["side"] == u["side"] or e["men"] <= 0 or e["state"] == "fled":
+        if e["side"] == u["side"] or e["men"] <= 0 or e["state"] == "fled" or (e.get("vehicle") and not hurts_armour(d, u["weapon"])):
             continue
         near = _nearest_ahead(d, u, front, fv, [t for row in footprint(d, e) for t in row], field, _clear_fn(d, units, occ, field, i, j))
         if near is not None and (best is None or near[0] < best[0]):
@@ -1245,6 +1276,9 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
         b = us[v["dfd"]]
         opts = {"factor": form(d, b)["missile_factor"] * (100 - v["misfire"]) / 100 * v["seen"], "exposed": _exposure(d, b, False, True),
                 "penalty": v["cover"] + v["penalty"] + v["over"], "reach": v["reach"]}
+        if b.get("vehicle"):
+            log += _armour_volley(d, us, (table, rng, acc), v, opts)
+            continue
         t = _take_hurt(b, volley(d, _side(us[v["att"]], table), _side(b, table), v["men"], v["dist"], rng, **opts))
         _tally(*acc, v, t)
         log += _logged({"kind": "volley", **v}, t)
@@ -1262,7 +1296,102 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
             log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": v["att"], "dfd": v["dfd"], "dist": v["dist"]}, t)
     for c in cannonades(d, us, field):
         log += _fire_battery(d, us, table, rng, acc, c)
+    return log + _vehicle_guns(d, us, (table, rng, acc), field, under)
+
+
+def _armour_volley(d: Data, us: list, ctx: tuple, v: dict, opts: dict) -> list:
+    """Anti-armour weapons at a vehicle unit: each aimed shot that hits (as at men) knocks a
+    vehicle out at its armour's `rpg` %."""
+    table, rng, acc = ctx
+    att = _side(us[v["att"]], table)
+    band = field_range(d, att["weapon"], v["dist"], opts["reach"])
+    if band is None:
+        return []
+    n = _count(v["men"] * d.units["vehicles"]["anti_armour"][att["weapon"]] * opts["factor"], rng)
+    atk = _attack(d, att) - band["penalty"] - opts["penalty"]
+    hits = sum(1 for _ in range(n) if rng.randint(1, 100) <= atk)
+    kills = sum(1 for _ in range(hits) if rng.randint(1, 100) <= armour_of(d, us[v["dfd"]])["rpg"])
+    k = knock_out(d, us, v["dfd"], kills, (table, rng), acc)
+    acc[2][v["att"]] += k["crew"]
+    return _logged({"kind": "antiarmour", **v, "shots": n, "hit": hits, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"]}, k["tally"])
+
+
+def knock_out(d: Data, us: list, i: int, n: int, tr: tuple, acc: tuple) -> dict:
+    """Knock out up to n of vehicle unit i's vehicles: their crews are out of the fight, each
+    struck at vehicles.crew_struck % and wounded as by shellfire. -> {knocked, crew, struck, tally}."""
+    table, rng = tr
+    lost, dead, _ = acc
+    u, K, V = us[i], vehicle_kind(d, us[i]), d.units["vehicles"]
+    n = min(n, vehicles_left(d, u, lost[i]))
+    if n <= 0:
+        return {"knocked": 0, "crew": 0, "struck": 0, "tally": _new_tally()}
+    crew = min(n * K["crew"], u["men"] - lost[i])
+    struck = sum(1 for _ in range(crew) if rng.randint(1, 100) <= V["crew_struck"])
+    weapon = shell_weapon(d, table)
+    t = _blows(d, {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}, _side(u, table), struck, d.units["indirect"]["attack"], 0, rng, (), -1000) \
+        if struck and weapon else _new_tally()
+    t = _take_hurt(u, t)
+    lost[i] += crew
+    dead[i] += min(t["dead"], crew)
+    return {"knocked": n, "crew": crew, "struck": struck, "tally": t}
+
+
+def _vehicle_guns(d: Data, us: list, ctx: tuple, field: dict | None, under: list | None) -> list:
+    """Each vehicle unit with a main gun fires `rate` rounds a vehicle at its gun target: at
+    vehicles, hits by range and knocks by armour; at men, bursts on their nearest hex as the
+    indirect kind `he` does."""
+    table, rng, acc = ctx
+    log = []
+    for i, u in enumerate(us):
+        K = vehicle_kind(d, u)
+        G = K.get("gun") if K else None
+        if not G or _out(u):
+            continue
+        best = _gun_target(d, us, i, field, G)
+        if best is None:
+            continue
+        dist, j, _, t = best
+        rounds = vehicles_left(d, u) * G["rate"]
+        if us[j].get("vehicle"):
+            hits = sum(1 for _ in range(rounds) if rng.randint(1, 100) <= _chance_at(G["hit"], dist))
+            kills = sum(1 for _ in range(hits) if rng.randint(1, 100) <= armour_of(d, us[j])["gun"])
+            k = knock_out(d, us, j, kills, (table, rng), acc)
+            acc[2][i] += k["crew"]
+            line = {"kind": "tankfire", "att": i, "dfd": j, "dist": dist, "rounds": rounds, "hit": hits, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"]}
+            log += _logged(line, k["tally"])
+            continue
+        log.append({"kind": "tankfire", "att": i, "dfd": j, "dist": dist, "rounds": rounds, "at": t})
+        weapon = shell_weapon(d, table)
+        if weapon and field:
+            log += _shell_units(d, us, (table, weapon), rng, acc, field, under or [False] * len(us), None, {"kind": G["he"], "name": u.get("name")}, [list(t)] * rounds)
     return log
+
+
+def _gun_target(d: Data, us: list, i: int, field: dict | None, G: dict):
+    """(distance, index, gun hex, target hex) for vehicle unit i's main gun: the nearest enemy
+    vehicle in range, in sight and in front with a line of fire, else the nearest such unit."""
+    u, occ = us[i], occupancy(d, us)
+    front, fv, best = footprint(d, u)[0], _fvec(u["facing"]), None
+    for j, e in enumerate(us):
+        if e["side"] == u["side"] or e["men"] <= 0 or e["state"] == "fled":
+            continue
+        clear = _clear_fn(d, us, occ, field, i, j)
+        for t in (x for row in footprint(d, e) for x in row):
+            for h in front:
+                dist = hdist(h, t)
+                key = (0 if e.get("vehicle") else 1, dist)
+                if dist > G["range"] or (best is not None and key >= best[0]) or not _ahead(fv, h, t):
+                    continue
+                if gun_weather(d, field, dist, h, t)["blocked"] or (clear is not None and not clear(h, t, dist)):
+                    continue
+                best = (key, (dist, j, h, t))
+    return None if best is None else best[1]
+
+
+def _ahead(fv: tuple, h, t) -> bool:
+    """Whether hex t is in front of hex h for a unit facing fv."""
+    c, s = _cube(t), _cube(h)
+    return sum((c[k] - s[k]) * fv[k] for k in range(3)) > 0
 
 
 def _mark_mg(d: Data, us: list, v: dict, under: list | None) -> None:
@@ -1534,6 +1663,9 @@ def _shell_units(d: Data, us: list, tw: tuple, rng, acc: tuple, field: dict, und
     att = {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}
     lost, dead, _ = acc
     for i, u in enumerate(us):
+        if u.get("vehicle"):
+            log += _shell_vehicle(d, us, i, bursts, K, (table, rng), acc, (k, b))
+            continue
         struck = _shell_struck_unit(d, field, u, bursts, K, rng)
         if struck is None:
             continue
@@ -1545,6 +1677,25 @@ def _shell_units(d: Data, us: list, tw: tuple, rng, acc: tuple, field: dict, und
         dead[i] += t["dead"]
         log += _logged({"kind": "shelled", "sup": k, "name": b["name"], "dfd": i, "struck": struck}, t)
     return log
+
+
+def _shell_vehicle(d: Data, us: list, i: int, bursts: list, kind: dict, tr: tuple, acc: tuple, src: tuple) -> list:
+    """Shells or bombs bursting in a vehicle's own hex: each knocks it out at the kind's `knock`
+    % times the vehicle's armour `shell`."""
+    u = us[i]
+    if u["men"] <= 0 or u["state"] == "fled":
+        return []
+    hexes = {f"{h[0]},{h[1]}" for row in footprint(d, u) for h in row}
+    direct = sum(1 for at in bursts if f"{at[0]},{at[1]}" in hexes)
+    p = kind.get("knock", 0) * armour_of(d, u)["shell"]
+    if not direct or p <= 0:
+        return []
+    rng = tr[1]
+    kills = sum(1 for _ in range(direct) if rng.randint(1, 100) <= p)
+    k = knock_out(d, us, i, kills, tr, acc)
+    if not k["knocked"]:
+        return []
+    return _logged({"kind": "knocked_out", "sup": src[0], "name": src[1]["name"], "dfd": i, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"]}, k["tally"])
 
 
 def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, rng) -> int | None:
@@ -1847,6 +1998,8 @@ def _stands(d: Data, field: dict, u: dict, hexes: list) -> bool:
 def _can_enter(d: Data, field: dict, u: dict, h) -> bool:
     if ground_at(d, field, h).get("impassable"):
         return False
+    if u.get("vehicle") and _ground_key(field, h) not in d.units["vehicles"]["ground"]:
+        return False
     it = C._hex_item(d, _works(field), h)
     if it and C._spec(d, "hex", it).get("enter") is None:
         return False
@@ -1876,7 +2029,13 @@ def step_cost(d: Data, field: dict | None, u: dict, a, b) -> int | None:
     if c is None:
         return None
     wx = field.get("weather") or {}
-    return c + ground_at(d, field, b)["move"] - 1 + C.deep_going(d, wx.get("ground")) + (cold_of(d, field) or {}).get("move", 0)
+    going = d.units["vehicles"]["ground"][_ground_key(field, b)] if u.get("vehicle") else ground_at(d, field, b)["move"]
+    return c + going - 1 + C.deep_going(d, wx.get("ground")) + (cold_of(d, field) or {}).get("move", 0)
+
+
+def _ground_key(field: dict | None, h) -> str:
+    """The ground kind painted on hex h (open if none)."""
+    return ((field or {}).get("ground") or {}).get(f"{h[0]},{h[1]}", "open")
 
 
 def _path_len(d: Data, units: list, i: int, goal, size: tuple, limit: int, field: dict | None = None) -> int | None:
