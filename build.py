@@ -239,7 +239,7 @@ def unit_rules(d) -> list[str]:
         f"archers loose their rate a minute, {S['tempo'] * 100:g}% of the shots aimed at a man. Each attempt is an individual attack against the unit's attack %, "
         "parried on its defence % (not from flank or rear, nor against missiles), then location, severity from the margin, and armour, as for one fighter.",
         f"Light wounds and grazes fight on. Serious and critical wounds call for a stop check against the unit's Nerve; a failure is down. "
-        f"From breech-loaders and shell (about 1866 on) a serious or critical wound is always down and a light one calls for the stop check. A wound fatal within rounds kills. "
+        f"From breech-loaders (the 1860s on) and shell a serious or critical wound is always down and a light one calls for the stop check. A wound fatal within rounds kills. "
         f"Flank +{M['flank']['attack']}, rear +{M['rear']['attack']}, a mounted charge +{M['charge']['attack']} at x{M['charge']['tempo']:g} tempo (none onto a steady front of pikes in close order, whose men strike horse at +{M['pikes']['attack']}), shaken {M['shaken']['attack']}.",
         f"<b>Unit morale:</b> after an exchange a unit checks if it lost the exchange, has {int(mo['trigger'] * 100)}% of its men down, lost {int(mo['shock'] * 100)}% in the exchange, "
         f"or was struck in flank or rear: d100 against Nerve, +{mo['mods']['in_order']} while steady, +{mo['mods']['leader']} with a leader, {mo['mods']['leader_down']} if he is down, "
@@ -364,7 +364,7 @@ def unit_rows(d) -> list[list[str]]:
 
 def team_eras(d) -> list[str]:
     """The eras with team tables, medieval first, then in the order of their years."""
-    order = ["medieval", "thirty_years", "horse_musket", "civil_war"]
+    order = ["medieval", "thirty_years", "horse_musket", "civil_war", "plains_nations"]
     return [e for e in order if e in d.teams] + sorted(e for e in d.teams if e not in order)
 
 

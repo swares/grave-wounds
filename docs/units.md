@@ -50,8 +50,9 @@ runs the same rules in the browser (`templates/units.js`, checked against the Py
    - Serious or critical: a stop check against the unit's Nerve (−10 for critical).
      Failing takes him out of the fight (*down*).
    - A wound that kills within rounds or outright: dead (and down).
-   - **Modern fire** (`modern_fire` in `data/units.yaml`: breech-loading rifles, machine
-     guns, pistols and submachine guns, grenades, mortars, shell and mines, about 1866 on)
+   - **Modern fire** (`modern_fire` in `data/units.yaml`: breech-loading rifles and
+     carbines (from the Sharps, Spencer and Springfield of the 1860s), magazine rifles,
+     machine guns, pistols and submachine guns, grenades, mortars, shell and mines)
      stops more men: a serious or critical wound always puts him down, and a light one calls
      for the stop check; a graze still leaves him fighting. Casualty returns from 1914 on
      count nearly every man hit as out of the line: he went back to the aid post. With
@@ -459,7 +460,9 @@ nearest in time with the same kind of round shot and case shot. We looked for ar
 wounds from 1618-48 to replace them and found none usable: the one battlefield grave with a
 published injury count, Lützen (Nicklisch and others, 2017), records lead balls, blunt and
 sharp injuries, but no gun wounds. A table can borrow a weapon
-from another with `borrowed` in its file.
+from another with `borrowed` in its file: the Indian Wars' arrow report borrows the Civil
+War table's gunshots (rifle-musket, breech-loader, revolver and artillery), as it has none of
+its own, so soldiers and warriors with guns can fight on it.
 
 ## Ground, works and weather
 

@@ -6,7 +6,8 @@ battle: "American Civil War"
 context: "Seat of the fatal wound in Union soldiers killed in action (n = 1,173)."
 variant: evidence
 weapon_bias: pooled
-weapons: [rifle_musket, artillery_acw, revolver, saber, bayonet]
+# Breech-loaders (Sharps and Spencer carbines) share the rifle-musket's pooled odds: no count sets them apart.
+weapons: [rifle_musket, breechloader, artillery_acw, revolver, saber, bayonet]
 modifiers: [attacker_higher, attacker_lower, target_fleeing, behind_cover]
 confidence: historical
 confidence_note: "Region totals are from the source. The split inside each region uses body exposure (design estimate)."

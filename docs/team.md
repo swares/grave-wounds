@@ -95,9 +95,9 @@ until you add them.
 
 ## The gunpowder eras
 
-Three more eras use the same five steps, with their own skills, origins, careers, events,
-regions, teams and followers (`data/teams/thirty_years.yaml`, `horse_musket.yaml` and
-`civil_war.yaml`). Pick one with **Era** on the page, or `--era` on the command line. Each
+Four more eras use the same five steps, with their own skills, origins, careers, events,
+regions, teams and followers (`data/teams/thirty_years.yaml`, `horse_musket.yaml`,
+`civil_war.yaml` and `plains_nations.yaml`). Pick one with **Era** on the page, or `--era` on the command line. Each
 region takes its war's wound table, for old wounds and for the roller.
 
 | Era | Regions (wound table) | Fighting skills | Careers |
@@ -105,13 +105,23 @@ region takes its war's wound table, for old wounds and for the roller.
 | Thirty Years' War (1618-1648) | the Swedish army; the Imperial army and the Catholic League (Thirty Years' War) | Musket, Pistol, Blade, Pike | musketeer, pikeman, cuirassier, harquebusier, dragoon, sergeant, field surgeon, sutler, chaplain |
 | Horse and musket (1775-1815) | the Continental Army and the British in America (Revolution); the British and the French in the Peninsula (Peninsular War); the United States (1812) | Musket, Rifle, Pistol, Blade, Bayonet, Gunnery | line infantryman, rifleman, dragoon or hussar, artilleryman, sergeant, officer, surgeon's mate, scout, sailor or marine, sutler |
 | Civil War and frontier (1861-1876) | the Union, the Confederacy, the US Army on the frontier (all the Civil War table) | Rifle, Pistol, Blade, Bayonet, Gunnery | infantryman, sharpshooter, cavalry trooper, artilleryman, sergeant, officer, surgeon or hospital steward, scout, teamster |
+| Plains nations (1860-1877) | the Lakota; the Cheyenne and Arapaho (the Army surgeons' arrow report, with Civil War gunshots) | Bow, Lance, Club and knife, Gun | warrior with bow and shield, warrior with lance and shield, warrior with a gun, scout, leader of war parties, healer, herder of the camp's horses |
 
 Brawl, Parry, Dodge and the skills outside a fight (Leechcraft, Fieldcraft, Watch, Stealth
 and the rest) carry over; Bow, Crossbow, Axe and Sling stay medieval. Gunnery is the
 artillerymen's skill. The wound tables have no pike wounds, so the pike rolls on the Visby
 melee table as a long spear (reach 3, no shield, more thrusts to the face and chest); a
 pikeman fights with it at his Pike skill, his sabre second. On the frontier, gunshots roll on
-the Civil War table, as the arrow-wound records have none. Their kits: cuirassiers,
+the Civil War table, as the arrow-wound records have none; the frontier infantry carry the
+Springfield breech-loader of 1866 (Rifle), the Civil War's Sharps and Spencer carbines' kin.
+
+The Plains nations' tables are written from plain ethnographic and historical fact: the
+buffalo and the horse, raids on the Crow and the Shoshone for horses and honours, counting
+coup, scouts sent ahead of a camp, and from 1866 the fighting along the Bozeman Trail. Their
+names are in English translation, built from common elements of the period's names, and
+are not meant to name anyone. Warriors with bow or lance carry the rawhide shield and fight
+mounted on the field map; their old wounds are arrow wounds, from the wars between the
+nations. Their kits: cuirassiers,
 harquebusiers and pikemen in the 1630s armours; dragoons with helmets and the French with
 cuirasses; everyone else unarmoured.
 

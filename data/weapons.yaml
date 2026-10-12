@@ -431,6 +431,23 @@ weapons:
     confidence: extrapolated
     notes: "Soft lead .58 ball; shatters rather than drills bone."
 
+  - id: breechloader
+    name: "Breech-loading rifle or carbine (Sharps, Spencer, Springfield 1866)"
+    short: "Breech-loader"
+    icon: long_gun
+    range: [50, 150, 250]
+    ignition: cartridge
+    era: "1860s-1870s"
+    threat: rifle
+    mechanisms: {ballistic: 100}
+    zone_bias: {}
+    confidence: extrapolated
+    notes: >
+      Loaded at the breech with a metal or linen cartridge: the Sharps and Spencer carbines of
+      the Civil War cavalry, and the Springfield of 1866 that the frontier infantry got in
+      1867 (a rifle-musket converted to a breech-loader, .50 calibre). No wound count sets
+      it apart from the rifle-musket's: it rolls on the same tables, and fires faster.
+
   - id: artillery_acw
     name: "Artillery (canister, shell fragments)"
     short: "Artillery"
