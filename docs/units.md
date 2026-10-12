@@ -1206,6 +1206,19 @@ is 170 × 260 hexes, about 1,860 by 2,460 yards (1,700 by 2,250 m), north at the
 - Fire support: division and corps artillery, 4.2-inch mortars, fighter-bombers; North Korean
   mortars and guns.
 
+**Pork Chop Hill, 16-17 April 1953** (`data/fields/porkchop-1953.yaml`). The field is 160 × 130
+hexes, about 1,750 by 1,240 yards (1,600 by 1,130 m), north at the top.
+- Pork Chop is in the middle, ringed with **trenches**, sandbagged **bunkers** and barbed
+  wire. Hill 200, with its trenches, is to the south-east and the main line's hills are along
+  the bottom. The valleys between are old paddies, craters and wire.
+- A **dark night**.
+- United Nations (M1952 flak vests): E Company, 31st Infantry in the north and west trenches
+  with its machine guns, L Company on Hill 200, and K Company coming up from the main line.
+- Chinese (veteran, submachine guns): a battalion up the north slope, a company from Old Baldy
+  in the west, and machine guns.
+- Fire support: the 7th Division's artillery ("flash fire" round the outposts), heavy
+  howitzers, 4.2-inch mortars; Chinese mortars and guns.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
