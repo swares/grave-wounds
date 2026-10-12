@@ -4451,9 +4451,9 @@ Penalties add up; each total is capped at -60%.
 
 ## Unit combat
 
-**Unit combat (the rank and file, on the field map):** one exchange is about a minute. In melee the front rank of each hex touching the enemy strikes (10 men a hex face in close order; reach-2 weapons add the second rank). 9% of them make a telling attempt each exchange; archers loose their rate a minute, 3.3% of the shots aimed at a man. Each attempt is an individual attack against the unit's attack %, parried on its defence % (not from flank or rear, nor against missiles), then location, severity from the margin, and armour, as for one fighter.
+**Unit combat (the rank and file, on the field map):** one exchange is about a minute. In melee the front rank of each hex touching the enemy strikes (10 men a hex face in close order; a rank more for each hex of reach past the first: two for spears and bills, three for pikes). 9% of them make a telling attempt each exchange; archers loose their rate a minute, 3.3% of the shots aimed at a man. Each attempt is an individual attack against the unit's attack %, parried on its defence % (not from flank or rear, nor against missiles), then location, severity from the margin, and armour, as for one fighter.
 
-Light wounds and grazes fight on. Serious and critical wounds call for a stop check against the unit's Nerve; a failure is down. A wound fatal within rounds kills. Flank +20, rear +30, a mounted charge +20 at x2 tempo, shaken -10.
+Light wounds and grazes fight on. Serious and critical wounds call for a stop check against the unit's Nerve; a failure is down. From breech-loaders and shell (about 1866 on) a serious or critical wound is always down and a light one calls for the stop check. A wound fatal within rounds kills. Flank +20, rear +30, a mounted charge +20 at x2 tempo (none onto a steady front of pikes in close order, whose men strike horse at +20), shaken -10.
 
 **Unit morale:** after an exchange a unit checks if it lost the exchange, has 25% of its men down, lost 10% in the exchange, or was struck in flank or rear: d100 against Nerve, +20 while steady, +10 with a leader, -20 if he is down, -20 at half strength, -20 if flanked, -5 a man it lost more than it put down (at most -30). Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +20, no parry, x2 tempo.
 

@@ -235,11 +235,12 @@ def unit_rules(d) -> list[str]:
     M, S, R, mo = U["melee"], U["missile"], U["rout"], U["morale"]
     return [
         f"<b>Unit combat (the rank and file, on the field map):</b> one exchange is about a minute. In melee the front rank of each hex touching "
-        f"the enemy strikes ({U['formations']['close']['abreast']} men a hex face in close order; reach-2 weapons add the second rank). {M['tempo'] * 100:g}% of them make a telling attempt each exchange; "
+        f"the enemy strikes ({U['formations']['close']['abreast']} men a hex face in close order; a rank more for each hex of reach past the first: two for spears and bills, three for pikes). {M['tempo'] * 100:g}% of them make a telling attempt each exchange; "
         f"archers loose their rate a minute, {S['tempo'] * 100:g}% of the shots aimed at a man. Each attempt is an individual attack against the unit's attack %, "
         "parried on its defence % (not from flank or rear, nor against missiles), then location, severity from the margin, and armour, as for one fighter.",
-        f"Light wounds and grazes fight on. Serious and critical wounds call for a stop check against the unit's Nerve; a failure is down. A wound fatal within rounds kills. "
-        f"Flank +{M['flank']['attack']}, rear +{M['rear']['attack']}, a mounted charge +{M['charge']['attack']} at x{M['charge']['tempo']:g} tempo, shaken {M['shaken']['attack']}.",
+        f"Light wounds and grazes fight on. Serious and critical wounds call for a stop check against the unit's Nerve; a failure is down. "
+        f"From breech-loaders and shell (about 1866 on) a serious or critical wound is always down and a light one calls for the stop check. A wound fatal within rounds kills. "
+        f"Flank +{M['flank']['attack']}, rear +{M['rear']['attack']}, a mounted charge +{M['charge']['attack']} at x{M['charge']['tempo']:g} tempo (none onto a steady front of pikes in close order, whose men strike horse at +{M['pikes']['attack']}), shaken {M['shaken']['attack']}.",
         f"<b>Unit morale:</b> after an exchange a unit checks if it lost the exchange, has {int(mo['trigger'] * 100)}% of its men down, lost {int(mo['shock'] * 100)}% in the exchange, "
         f"or was struck in flank or rear: d100 against Nerve, +{mo['mods']['in_order']} while steady, +{mo['mods']['leader']} with a leader, {mo['mods']['leader_down']} if he is down, "
         f"{mo['mods']['heavy']} at half strength, {mo['mods']['flank']} if flanked, -{mo['mods']['losing_per_man']} a man it lost more than it put down (at most -{mo['mods']['losing_cap']}). "

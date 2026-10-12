@@ -24,9 +24,9 @@ def quality(d: Data, q: str) -> dict:
 
 
 def fighters(d: Data, front: int, reach: int) -> int:
-    """Men striking in melee: the `front` men in the front rank touching the enemy, and the
-    second rank too with reach-2 weapons."""
-    return front * (2 if reach >= d.units["melee"]["second_rank_reach"] else 1)
+    """Men striking in melee: the `front` men in the front rank touching the enemy, and one
+    more rank for each hex of reach past the first, up to close order's ranks."""
+    return front * min(reach, d.units["formations"]["close"]["ranks"])
 
 
 def field_range(d: Data, wid: str, field_hexes: int, reach: int = 0) -> dict | None:
@@ -471,6 +471,12 @@ def strikes(d: Data, units: list, field: dict | None = None) -> list:
     return out
 
 
+def pike_front(d: Data, u: dict) -> bool:
+    """Whether a unit presents a front of pikes to horse: steady, in a pike formation, with a pike."""
+    P = d.units["melee"]["pikes"]
+    return u["state"] == "steady" and u["formation"] in P["formations"] and melee_weapon(d, u) in P["weapons"] and not u.get("mounted")
+
+
 def _out(u: dict) -> bool:
     """Broken, fled or with no men: out of the fight for striking and shooting."""
     return u["state"] in ("broken", "fled") or u["men"] <= 0
@@ -482,7 +488,7 @@ def _strike_groups(d: Data, units: list, occ: dict, i: int, groups: dict, field:
     rows, men = footprint(d, u), men_by_hex(d, u)
     reach = d.weapons[melee_weapon(d, u)].get("reach", 1)
     abreast = form(d, u)["abreast"]
-    per = abreast * (2 if reach >= d.units["melee"]["second_rank_reach"] else 1)
+    per = abreast * min(reach, form(d, u)["ranks"])
     for k, h in enumerate(rows[0] if rows else []):
         hit = _struck_hex(units, occ, u, h)
         if hit is None:
@@ -818,8 +824,10 @@ def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, f
     log, struck = [], set()
     for s in strikes(d, us, field):
         a, b = us[s["att"]], us[s["dfd"]]
-        opts = {"situation": s["situation"], "charge": bool(a.get("charged")) and bool(a.get("mounted")) and not s.get("stakes"),
-                "shaken": a["state"] == "shaken", "rout": s["rout"], "exposed": _exposure(d, b, s["rout"]), "penalty": s.get("penalty", 0)}
+        charge = bool(a.get("charged")) and bool(a.get("mounted")) and not s.get("stakes") and not (s["situation"] == "front" and pike_front(d, b))
+        vs_horse = d.units["melee"]["pikes"]["attack"] if b.get("mounted") and pike_front(d, a) else 0
+        opts = {"situation": s["situation"], "charge": charge, "shaken": a["state"] == "shaken", "rout": s["rout"],
+                "exposed": _exposure(d, b, s["rout"]), "penalty": s.get("penalty", 0) - vs_horse}
         t = _take_hurt(b, melee(d, _side(a, table, d), _side(b, table, d), s["men"], rng, **opts))
         _tally(*acc, s, t)
         flanked[s["dfd"]] = flanked[s["dfd"]] or s["situation"] in ("flank", "rear")

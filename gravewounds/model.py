@@ -839,6 +839,10 @@ def _units_extra_errors(d: Data) -> list[str]:
     for wid in U.get("line_of_fire", {}).get("arcing", []):
         if wid not in d.weapons or "range" not in d.weapons[wid]:
             errors.append(f"units.yaml: line_of_fire.arcing names {wid}, which is not a weapon with a range")
+    P = U.get("melee", {}).get("pikes")
+    if P and (any(w not in d.weapons for w in P.get("weapons", [])) or any(f not in U.get("formations", {}) for f in P.get("formations", []))
+              or not isinstance(P.get("attack"), int)):
+        errors.append("units.yaml: melee.pikes needs known weapons and formations and a whole-number attack")
     return errors + _indirect_errors(d)
 
 
