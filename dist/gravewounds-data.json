@@ -14711,7 +14711,13 @@
     "note": "Stops bleeding; pain +1"
    }
   },
-  "pain_cap": 3
+  "pain_cap": 3,
+  "bleed_per_round": {
+   "0": 0,
+   "1": 0.1,
+   "2": 1,
+   "3": 3
+  }
  },
  "combat": {
   "cap": 60,

@@ -626,6 +626,7 @@ function otherLine(l, nm){                       // morale, breach and hero line
   if (l.kind === "barrage" || l.kind === "counter") return { cls: "", text: fireText(l) };
   if (l.kind === "assault" || l.kind === "knocked") return { cls: "morale", text: bunkerText(l, nm) };
   if (l.kind === "hero") return l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null;
+  if (l.kind === "duel" || l.kind === "herobled") return { cls: "hero", text: heroStateText(l) };
   return undefined;
 }
 const nWounds = n => (n === 1 ? "1 wound" : n + " wounds");
@@ -641,6 +642,11 @@ function fireText(l){                             // a battery's shells: on a he
   const who = `${l.name} (${l.side})`, shells = nOf(l.shells, "shell");
   if (l.kind === "counter") return `${who} fire ${shells} on ${l.tname} (counter-battery): ${nOf(l.knocked, "tube")} knocked out, ${l.left} left.`;
   return `${who} ${l.smoke ? "lay smoke with" : "fire"} ${shells} on ${l.at[0] + 1},${l.at[1] + 1}.`;
+}
+function heroStateText(l){                        // a duel's attempts, or a hero's bleeding past a threshold
+  if (l.kind === "duel") return `${l.name} fights ${l.fname} hand to hand: ${l.blows} telling attempt${l.blows === 1 ? "" : "s"}.`;
+  const fate = l.state === "up" ? "fights on" : "is down" + (l.blood <= 0 ? ", unconscious and dying" : "");
+  return `${l.name} bleeds (${l.lost} Blood this exchange, ${l.blood} of ${l.pool} left): ${fate}.`;
 }
 function heroHitText(l){
   const where = FD.locations[l.loc].name.toLowerCase(), how = l.graze ? "a graze" : `a ${l.sev} wound`;
@@ -864,9 +870,15 @@ function addHero(){
   const q = heroQuality(c);
   u.heroes ??= [];
   u.heroes.push({ id: c.id, name: c.name, role, attack: num("#in-hero-atk", q.attack), defence: num("#in-hero-def", q.defence), nerve: Number.isFinite(+c.nerve) ? +c.nerve : q.nerve,
-    weapon, kit: FD.kits[c.kit] ? c.kit : "none", leader: $("#chk-hero-leader").checked, state: "up", wounds: [] });
+    weapon, kit: FD.kits[c.kit] ? c.kit : "none", leader: $("#chk-hero-leader").checked, state: "up", wounds: [], ...heroBody(c) });
   S.msg = `${c.name} joins ${u.name}${weapon === c.weapon ? "" : ", with the unit's weapon (his own is not on these tables)"}.`;
   render();
+}
+function heroBody(c){                             // {pool, blood, old_pain, old_bleed}: his Blood from his Endurance, and the wounds he comes with (the roller's)
+  const end = [c.endurance, c.sheet?.stats?.end].find(Number.isFinite) ?? 50;
+  const pool = FD.tracking.blood_pool + Math.floor((end - 50) / FD.blood_per), ws = (c.wounds || []).filter(w => w.fx);
+  const perEx = b => Math.round((FD.tracking.bleed_per_round[b] || 0) * FD.units.exchange_rounds);
+  return { pool, blood: Number.isFinite(c.blood) ? Math.min(c.blood, pool) : pool, old_pain: ws.reduce((a, w) => a + (w.fx.pain || 0), 0), old_bleed: ws.reduce((a, w) => a + perEx(w.fx.bleed), 0) };
 }
 function removeHero(id){
   for (const u of S.units) u.heroes = (u.heroes || []).filter(h => h.id !== id);
@@ -875,9 +887,10 @@ function removeHero(id){
 function renderHeroes(){
   const setup = S.phase === "setup", place = { front: "front rank", ranged: "shooting", behind: "behind" };
   $("#heroes").innerHTML = allHeroes().map(h => {
-    const wounds = h.wounds.length ? " · " + nWounds(h.wounds.length) : "";
+    const wounds = h.wounds.length ? " · " + nWounds(h.wounds.length) : "", pen = heroPenalty(h), [blood, pool] = heroBlood(h);
+    const hold = held(h) ? ` (${FD.combat.states[held(h)].name.toLowerCase()})` : "", body = ` · Blood ${blood}/${pool}${h.dying ? ", dying" : ""}`;
     const rm = setup ? `<button class="small" data-hero="${h.id}" aria-label="Remove ${esc(h.name)}">Remove</button>` : "";
-    return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(unitName(h.unit))} · ${place[h.role]}${h.leader ? " · leader" : ""}</span></span><span class="meta">${h.attack}/${h.defence}% · ${h.state}${wounds}</span>${rm}</li>`;
+    return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(unitName(h.unit))} · ${place[h.role]}${h.leader ? " · leader" : ""}</span></span><span class="meta">${Math.max(0, h.attack - pen)}/${Math.max(0, h.defence - pen)}% · ${h.state}${hold}${wounds}${body}</span>${rm}</li>`;
   }).join("");
   const fighters = setup ? rollerFighters() : [];
   $("#hero-box").hidden = !setup;
@@ -890,7 +903,7 @@ function renderHeroes(){
   if (!$("#in-hero-atk").value) heroDefaults();
 }
 function heroesToRoller(){                        // their wounds onto their records in the wound roller
-  const heroes = allHeroes().map(h => ({ id: h.id, name: h.name, state: h.state, wounds: h.wounds }));
+  const heroes = allHeroes().map(h => ({ id: h.id, name: h.name, state: h.state, wounds: h.wounds, blood: h.blood }));
   try{ localStorage.setItem("gravewounds-field-heroes", JSON.stringify({ place: S.from?.place || "", heroes })) }catch(e){ S.msg = "Could not save the heroes for the roller (storage is off)."; return render() }
   S.heroesSent = true;
   save();
@@ -1232,7 +1245,7 @@ function teamHeroes(heroes, made){                // the team's men as heroes wi
     if (!u) continue;
     const weapon = ok.includes(h.weapon) ? h.weapon : u.weapon;
     u.heroes.push({ id: hid--, name: h.name, role: "range" in FD.weapons[weapon] ? "ranged" : "front", attack: h.attack, defence: h.defence, nerve: h.nerve,
-      weapon, kit: FD.kits[h.kit] ? h.kit : "none", leader: !!h.leader, state: "up", wounds: [] });
+      weapon, kit: FD.kits[h.kit] ? h.kit : "none", leader: !!h.leader, state: "up", wounds: [], ...heroBody(h) });
   }
 }
 function fromTeam(t){

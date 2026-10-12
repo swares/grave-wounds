@@ -48,7 +48,7 @@ function rollWound(table, wid, kit, margin, critical, rng){   // {severity, leth
   }
   if (final === "stopped") return { severity: final, lethal: null, infection: null, graze: false, loc, mech };
   const fx = FD.effects[loc][mech][final];
-  return { severity: final, lethal: fx[0], infection: fx[1], graze: isGraze(margin, critical), loc, mech };
+  return { severity: final, lethal: fx[0], infection: fx[1], bleed: fx[2], pain: fx[3], shock: fx[4], graze: isGraze(margin, critical), loc, mech };
 }
 
 // ---------- blows ----------
@@ -122,20 +122,77 @@ function aimedAt(exposed, rng){                    // the hero a blow falls on, 
   for (const [hero, p] of exposed) if (hero.state === "up" && rng.random() < p) return hero;
   return null;
 }
-function heroBlow(att, hero, roll, rng, t){   // roll: {r, atk, critAt, shift}; his own parry, then the full wound roll on his kit
+function heroBlow(att, hero, roll, rng, t){   // roll: {r, atk, critAt, shift}; his own parry (none if stunned; less for his wounds), the full wound roll on his kit, the roller's stop check
   const { r, atk, critAt, shift } = roll;
   if (r > atk) return;
-  const critical = r <= critAt, dfn = hero.defence + shift;
+  const critical = r <= critAt, dfn = held(hero) === "stunned" ? 0 : hero.defence + shift - heroPenalty(hero);
   if (!critical && dfn > 0 && rng.randint(1, 100) <= dfn) return;
   const h = rollWound(att.table, att.weapon, hero.kit, atk - r, critical, rng);
   if (h.severity === "stopped") return;
-  hero.wounds.push({ loc: h.loc, mech: h.mech, sev: h.severity, graze: h.graze });
+  const [bleed, pain, shock] = h.graze ? [Math.max(0, h.bleed - 1), Math.max(0, h.pain - 1), false] : [h.bleed, h.pain, !!h.shock];
+  hero.wounds.push({ loc: h.loc, mech: h.mech, sev: h.severity, graze: h.graze, bleed, pain });
   if (UD.dead_if.includes(h.lethal)) hero.state = "dead";
-  else if (h.severity !== "light" && !h.graze && rng.randint(1, 100) > hero.nerve - (h.severity === "critical" ? 10 : 0)) hero.state = "down";
+  else {
+    const [blood, pool] = heroBlood(hero), roll2 = checks(h.severity, shock) ? rng.randint(1, 100) : 0;
+    heroCheck(hero, stopCheck(hero.nerve, h.severity, heroPain(hero), roll2, blood / pool, shock));
+  }
   t.heroes ??= [];
   t.heroes.push({ hero: hero.id, name: hero.name, sev: h.severity, loc: h.loc, graze: h.graze, state: hero.state });
 }
+// ----- a hero's wounds, as the roller (gravewounds/combat.py stop_check, pain_check) -----
+const checks = (sev, shock) => shock && FD.combat.stop_check.severities.includes(sev);
+function stopTarget(nerve, sev, pain, frac){
+  let target = nerve - Math.min(pain, FD.tracking.pain_cap) * FD.combat.pain_step;
+  const th = bloodThreshold(frac);
+  if (th) target -= th.penalty || 0;
+  if (sev === "critical") target -= FD.combat.stop_check.critical_penalty;
+  return target;
+}
+function stopCheck(nerve, sev, pain, roll, frac, shock = true){   // null if the wound calls for none; else {passed, state}
+  const SC = FD.combat.stop_check;
+  if (!SC.severities.includes(sev) || !shock) return null;
+  const target = stopTarget(nerve, sev, pain, frac);
+  if (roll <= target) return { passed: true, state: null };
+  const failBy = roll - target, res = SC.results.find(x => !("upto" in x) || failBy <= x.upto);
+  return { passed: false, state: res.state };
+}
+const painCheck = (nerve, pain, roll, frac) => (pain <= FD.tracking.pain_cap ? null : stopCheck(nerve, FD.combat.stop_check.pain_round_as, pain, roll, frac));
+function heroCheck(hero, res){                    // out: down; defend only or stunned: held for his next exchange (a worse hold replaces a milder)
+  if (!res || res.passed) return;
+  if (res.state === "out"){ hero.state = "down"; return }
+  const order = Object.keys(FD.combat.states);
+  if (!hero.held || order.indexOf(res.state) >= order.indexOf(hero.held.state)) hero.held = { state: res.state, left: 2 };
+}
+const held = hero => (hero.held && hero.held.left > 0 ? hero.held.state : null);
+const heroPain = hero => (hero.old_pain || 0) + (hero.wounds || []).reduce((a, w) => a + (w.pain || 0), 0);
+function heroBlood(hero){ const pool = hero.pool || FD.tracking.blood_pool; return [hero.blood ?? pool, pool] }
+const bloodThreshold = frac => [...FD.tracking.thresholds].sort((a, b) => a.at - b.at).find(x => frac <= x.at) || null;
+function heroPenalty(hero){                       // % off his attack and defence: pain (to the cap) and Blood lost
+  const [blood, pool] = heroBlood(hero), th = bloodThreshold(blood / pool);
+  return Math.min(heroPain(hero), FD.tracking.pain_cap) * FD.combat.pain_step + (th?.penalty || 0);
+}
+function heroesAfter(us, rng){                    // end of an exchange: holds wear off, heroes bleed, Blood thresholds, pain checks
+  const T = FD.tracking, log = [], rounds = UD.exchange_rounds;
+  us.forEach((u, i) => {
+    for (const hero of u.heroes || []){
+      if (hero.state === "dead") continue;
+      if (hero.held) hero.held.left -= 1;
+      const [blood, pool] = heroBlood(hero), wasUp = hero.state === "up";
+      const lost = (hero.old_bleed || 0) + hero.wounds.reduce((a, w) => a + Math.round(T.bleed_per_round[w.bleed || 0] * rounds), 0);
+      if (!lost && !(hero.state === "up" && heroPain(hero) > T.pain_cap)) continue;
+      const before = bloodThreshold(blood / pool);
+      hero.blood = Math.max(0, blood - lost);
+      const after = bloodThreshold(hero.blood / pool);
+      if (hero.state === "up" && after && (after.down || after.incapacitated)) hero.state = "down";
+      if (hero.blood <= 0) hero.dying = true;
+      if (hero.state === "up" && heroPain(hero) > T.pain_cap) heroCheck(hero, painCheck(hero.nerve, heroPain(hero), rng.randint(1, 100), hero.blood / pool));
+      if (after !== before || (wasUp && hero.state !== "up")) log.push({ kind: "herobled", unit: i, hero: hero.id, name: hero.name, lost, blood: hero.blood, pool, state: hero.state });
+    }
+  });
+  return log;
+}
 const heroesOf = (u, roles) => (u.heroes || []).filter(h => h.state === "up" && roles.includes(h.role));
+const actingOf = (u, roles) => heroesOf(u, roles).filter(h => !held(h));   // up and not held by a stop check: they strike or shoot
 function exposure(u, rout, missile = false){        // [[hero, chance]] for the heroes of u a blow on it may fall on
   if (rout || missile){
     const roles = rout ? ["front", "ranged", "behind"] : ["front", "ranged"];
@@ -143,7 +200,7 @@ function exposure(u, rout, missile = false){        // [[hero, chance]] for the 
   }
   return heroesOf(u, ["front", "ranged"]).map(h => [h, Math.min(1, UD.heroes.exposure / Math.max(1, frontMen(u)))]);
 }
-const heroSide = (u, hero, table) => ({ table, weapon: hero.weapon, kit: hero.kit, quality: u.quality, skill: hero.attack });
+const heroSide = (u, hero, table) => ({ table, weapon: hero.weapon, kit: hero.kit, quality: u.quality, skill: hero.attack - heroPenalty(hero) });
 function leaderState(u){
   const ls = (u.heroes || []).filter(h => h.leader);
   if (!ls.length) return u.leader;
@@ -585,7 +642,7 @@ function takeHurt(u, t){                         // the wounded go onto the unit
   return rest;
 }
 function tallyLoss(acc, s, t){ acc.lost[s.dfd] += t.down; acc.dead[s.dfd] += t.dead; acc.dealt[s.att] += t.down }
-const copyUnit = u => ({ ...u, hurt: { ...u.hurt }, heroes: (u.heroes || []).map(h => ({ ...h, wounds: [...(h.wounds || [])] })) });
+const copyUnit = u => ({ ...u, hurt: { ...u.hurt }, heroes: (u.heroes || []).map(h => ({ ...h, wounds: [...(h.wounds || [])], ...(h.held ? { held: { ...h.held } } : {}) })) });
 function logged(line, t){                         // a log line for a tally, then one for each blow that fell on a hero
   const { heroes, ...rest } = t;
   return [{ ...line, ...rest }, ...(heroes || []).map(h => ({ kind: "herohit", unit: line.dfd, ...h }))];
@@ -595,7 +652,7 @@ function pikeFront(u){                            // steady, in a pike formation
   return u.state === "steady" && P.formations.includes(u.formation) && P.weapons.includes(meleeWeapon(u)) && !u.mounted;
 }
 function strikeAll(us, table, rng, acc, log, field){
-  const struck = new Set();
+  const struck = new Set(), dueled = new Set();
   for (const s of strikes(us, field)){
     const a = us[s.att], b = us[s.dfd];
     const charge = !!a.charged && !!a.mounted && !s.stakes && !(s.situation === "front" && pikeFront(b));   // no charge home onto a front of pikes
@@ -607,12 +664,31 @@ function strikeAll(us, table, rng, acc, log, field){
     log.push(...logged({ kind: s.rout ? "rout" : "melee", ...s }, t));
     if (struck.has(s.att)) continue;
     struck.add(s.att);
-    for (const hero of heroesOf(a, ["front"])){
+    for (const hero of actingOf(a, ["front"])){
+      if (dueled.has(hero.id)) continue;
+      const foe = s.rout ? null : heroesOf(b, ["front"]).find(h => !dueled.has(h.id)) || null;
+      if (foe){ log.push(...duel([a, b], [hero, foe], table, rng, s, dueled)); continue }
       t = takeHurt(b, melee(heroSide(a, hero, table), meleeSide(b, table), UD.heroes.tempo, rng, opts));
       tallyLoss(acc, s, t);
       log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: s.att, dfd: s.dfd, situation: s.situation }, t));
     }
   }
+}
+function duel(units, pair, table, rng, s, dueled){   // two front heroes fight each other: heroes.duel attempts each, the first unit's hero first
+  const [a, b] = units, [hero, foe] = pair, log = [];
+  dueled.add(hero.id); dueled.add(foe.id);
+  for (const [x, y, ux, k] of [[hero, foe, a, s.att], [foe, hero, b, s.dfd]]){
+    if (x.state !== "up" || held(x) || y.state !== "up") continue;
+    const side = heroSide(ux, x, table), atk = Math.max(0, side.skill), critAt = Math.floor(atk * FD.combat.critical_fraction), t = newTally();
+    t.blows = countBlows(UD.heroes.duel, rng);
+    for (let n = 0; n < t.blows; n++){
+      if (y.state !== "up") break;
+      heroBlow(side, y, { r: rng.randint(1, 100), atk, critAt, shift: 0 }, rng, t);
+    }
+    log.push({ kind: "duel", unit: k, hero: x.id, name: x.name, foe: y.id, fname: y.name, blows: t.blows });
+    log.push(...(t.heroes || []).map(h => ({ kind: "herohit", unit: k === s.att ? s.dfd : s.att, ...h })));
+  }
+  return log;
 }
 function shootAll(us, table, rng, acc, log, field, under = null){
   for (const v of volleys(us, field)){
@@ -622,7 +698,7 @@ function shootAll(us, table, rng, acc, log, field, under = null){
     tallyLoss(acc, v, t);
     log.push(...logged({ kind: "volley", ...v }, t));
     if (v.behind !== undefined && v.behind !== null) beatenFire(us, table, rng, acc, log, v);
-    for (const hero of heroesOf(us[v.att], ["ranged"])){
+    for (const hero of actingOf(us[v.att], ["ranged"])){
       const wx = shotWeather(field, hero.weapon, v.dist, v.from, v.to);
       if (wx.blocked || !fieldRange(hero.weapon, v.dist, wx.reach)) continue;
       const hopts = { factor: mf * (100 - wx.misfire) / 100, exposed, penalty: v.cover + wx.penalty + v.over, reach: wx.reach };
@@ -685,7 +761,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     const cut = Math.min(acc.lost[i], u.men);
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
   });
-  log.push(...moraleAll(us, occ, before, acc, rng, table), ...suppressAll(us, under, rng));
+  log.push(...moraleAll(us, occ, before, acc, rng, table), ...suppressAll(us, under, rng), ...heroesAfter(us, rng));
   afterExchange(us, field);
   return { units: us, log };
 }

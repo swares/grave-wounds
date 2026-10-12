@@ -13,11 +13,9 @@ When an item is done, delete it here and note it in the pull request that closes
   middle hex crosses, the cover of a volley is taken at the nearest target hex only, and
   breaching is by order (it does not stop the unit fighting). High ground gives no edge to
   shooting. See [units.md](units.md).
-- **Heroes on the field map, simplified.** A hero's earlier wounds and his sickness do not
-  lower his attack and defence there (the GM can lower them by hand), he does not bleed during the battle
-  (the roller takes it up afterwards), a failed stop check puts him down for the rest of
-  the battle (no stunned or defend-only), and a duel between two heroes is left to the
-  roller.
+- **Heroes on the field map.** His sickness does not lower his attack and defence there
+  (the GM can lower them by hand), his wounds' impairments (a useless arm, dazed) are left
+  to the roller, and there is no first aid during the battle: he bleeds until it is over.
 - **Indirect fire, simplified.** Batteries stay off the map: counter-battery fire wears
   their tubes down but never kills their crews, and a battery cannot move to escape it.
   Smoke does not drift with the wind, and a creeping barrage cannot be timed to lift.

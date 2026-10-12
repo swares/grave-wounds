@@ -746,7 +746,9 @@ def field_bundle(d) -> dict:
     return {
         "generated": date.today().isoformat(),
         "units": d.units,
-        "combat": {k: d.wounds["combat"][k] for k in ("critical_fraction", "graze_margin", "margin_bands", "range")},
+        "combat": {k: d.wounds["combat"][k] for k in ("critical_fraction", "graze_margin", "margin_bands", "range", "pain_step", "stop_check", "states")},
+        "tracking": {k: d.wounds["tracking"][k] for k in ("blood_pool", "thresholds", "pain_cap", "bleed_per_round")},
+        "blood_per": d.wounds["combat"]["characteristics"]["blood"]["per"],
         "tables": tables,
         "weapons": {w: {k: d.weapons[w][k] for k in keep if k in d.weapons[w]} for w in used},
         "mechanisms": {w: rng3(mechanism_ranges(d, w)) for w in used},
@@ -767,8 +769,9 @@ def field_bundle(d) -> dict:
 
 
 def _lethal_inf(fx: dict) -> list:
-    """[untreated time to death, infection risk] of a composed wound (the field page's two)."""
-    return [fx["lethal"], fx["infection"]]
+    """[untreated time to death, infection risk, bleed, pain, shock] of a composed wound (the
+    field page's: the last three for heroes)."""
+    return [fx["lethal"], fx["infection"], fx["bleed"], fx["pain"], bool(fx.get("shock"))]
 
 
 def bundle(d) -> dict:
