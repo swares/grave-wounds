@@ -1261,6 +1261,20 @@ hexes, about 1,310 by 1,330 yards (1,200 by 1,210 m), north at the top.
 - Fire support: howitzers at the fire bases, fighter-bombers and the battalion's mortars;
   North Vietnamese mortars.
 
+**Hamburger Hill (Dong Ap Bia), 20 May 1969** (`data/fields/hamburger-1969.yaml`). The field
+is 140 × 140 hexes, about 1,530 by 1,330 yards (1,400 by 1,210 m), north at the top.
+- The summit is in the middle, stripped to stumps and craters, with three tiers of
+  **bunkers** down its slopes. Spurs run down to the north-west and the south, with blasted
+  jungle and bamboo below.
+- Overcast, the slopes mud after days of rain.
+- United States and ARVN: the 3rd Battalion, 187th Infantry up the north-west spur, the 1st
+  Battalion, 506th Infantry up the south spur, and the ARVN 2nd Battalion, 3rd Regiment from
+  the east.
+- North Vietnamese (veteran, dug in): the 29th Regiment's survivors on the summit and in the
+  bunkers, with machine guns.
+- Fire support: howitzers at the fire bases, fighter-bombers and battalion mortars; North
+  Vietnamese mortars.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
