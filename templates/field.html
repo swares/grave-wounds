@@ -645,7 +645,7 @@ function fireText(l){                             // a battery's shells: on a he
 }
 function heroStateText(l){                        // a duel's attempts, or a hero's bleeding past a threshold
   if (l.kind === "duel") return `${l.name} fights ${l.fname} hand to hand: ${l.blows} telling attempt${l.blows === 1 ? "" : "s"}.`;
-  const fate = l.state === "up" ? "fights on" : "is down" + (l.blood <= 0 ? ", unconscious and dying" : "");
+  const dying = l.blood <= 0 ? ", unconscious and dying" : "", fate = l.state === "up" ? "fights on" : "is down" + dying;
   return `${l.name} bleeds (${l.lost} Blood this exchange, ${l.blood} of ${l.pool} left): ${fate}.`;
 }
 function heroHitText(l){

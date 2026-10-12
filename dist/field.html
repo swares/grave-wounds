@@ -909,24 +909,29 @@ function heroPenalty(hero){                       // % off his attack and defenc
   return Math.min(heroPain(hero), FD.tracking.pain_cap) * FD.combat.pain_step + (th?.penalty || 0);
 }
 function heroesAfter(us, rng){                    // end of an exchange: holds wear off, heroes bleed, Blood thresholds, pain checks
-  const T = FD.tracking, log = [], rounds = UD.exchange_rounds;
+  const log = [];
   us.forEach((u, i) => {
     for (const hero of u.heroes || []){
-      if (hero.state === "dead") continue;
-      if (hero.held) hero.held.left -= 1;
-      const [blood, pool] = heroBlood(hero), wasUp = hero.state === "up";
-      const lost = (hero.old_bleed || 0) + hero.wounds.reduce((a, w) => a + Math.round(T.bleed_per_round[w.bleed || 0] * rounds), 0);
-      if (!lost && !(hero.state === "up" && heroPain(hero) > T.pain_cap)) continue;
-      const before = bloodThreshold(blood / pool);
-      hero.blood = Math.max(0, blood - lost);
-      const after = bloodThreshold(hero.blood / pool);
-      if (hero.state === "up" && after && (after.down || after.incapacitated)) hero.state = "down";
-      if (hero.blood <= 0) hero.dying = true;
-      if (hero.state === "up" && heroPain(hero) > T.pain_cap) heroCheck(hero, painCheck(hero.nerve, heroPain(hero), rng.randint(1, 100), hero.blood / pool));
-      if (after !== before || (wasUp && hero.state !== "up")) log.push({ kind: "herobled", unit: i, hero: hero.id, name: hero.name, lost, blood: hero.blood, pool, state: hero.state });
+      const line = hero.state === "dead" ? null : heroAfter(hero, rng);
+      if (line) log.push({ kind: "herobled", unit: i, ...line });
     }
   });
   return log;
+}
+function heroAfter(hero, rng){                    // one hero's end of an exchange; a log line if he crossed a Blood threshold or went down
+  const T = FD.tracking;
+  if (hero.held) hero.held.left -= 1;
+  const [blood, pool] = heroBlood(hero), wasUp = hero.state === "up";
+  const lost = (hero.old_bleed || 0) + hero.wounds.reduce((a, w) => a + Math.round(T.bleed_per_round[w.bleed || 0] * UD.exchange_rounds), 0);
+  if (!lost && !(wasUp && heroPain(hero) > T.pain_cap)) return null;
+  const before = bloodThreshold(blood / pool);
+  hero.blood = Math.max(0, blood - lost);
+  const after = bloodThreshold(hero.blood / pool);
+  if (wasUp && after && (after.down || after.incapacitated)) hero.state = "down";
+  if (hero.blood <= 0) hero.dying = true;
+  if (hero.state === "up" && heroPain(hero) > T.pain_cap) heroCheck(hero, painCheck(hero.nerve, heroPain(hero), rng.randint(1, 100), hero.blood / pool));
+  if (after === before && !(wasUp && hero.state !== "up")) return null;
+  return { hero: hero.id, name: hero.name, lost, blood: hero.blood, pool, state: hero.state };
 }
 const heroesOf = (u, roles) => (u.heroes || []).filter(h => h.state === "up" && roles.includes(h.role));
 const actingOf = (u, roles) => heroesOf(u, roles).filter(h => !held(h));   // up and not held by a stop check: they strike or shoot
@@ -1395,20 +1400,24 @@ function strikeAll(us, table, rng, acc, log, field){
     const charge = !!a.charged && !!a.mounted && !s.stakes && !(s.situation === "front" && pikeFront(b));   // no charge home onto a front of pikes
     const vsHorse = b.mounted && pikeFront(a) ? UD.melee.pikes.attack : 0;
     const opts = { situation: s.situation, charge, shaken: a.state === "shaken", rout: s.rout, exposed: exposure(b, s.rout), penalty: (s.penalty || 0) - vsHorse };
-    let t = takeHurt(b, melee(meleeSide(a, table), meleeSide(b, table), s.men, rng, opts));
+    const t = takeHurt(b, melee(meleeSide(a, table), meleeSide(b, table), s.men, rng, opts));
     tallyLoss(acc, s, t);
     acc.flanked[s.dfd] = acc.flanked[s.dfd] || s.situation === "flank" || s.situation === "rear";
     log.push(...logged({ kind: s.rout ? "rout" : "melee", ...s }, t));
     if (struck.has(s.att)) continue;
     struck.add(s.att);
-    for (const hero of actingOf(a, ["front"])){
-      if (dueled.has(hero.id)) continue;
-      const foe = s.rout ? null : heroesOf(b, ["front"]).find(h => !dueled.has(h.id)) || null;
-      if (foe){ log.push(...duel([a, b], [hero, foe], table, rng, s, dueled)); continue }
-      t = takeHurt(b, melee(heroSide(a, hero, table), meleeSide(b, table), UD.heroes.tempo, rng, opts));
-      tallyLoss(acc, s, t);
-      log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: s.att, dfd: s.dfd, situation: s.situation }, t));
-    }
+    frontHeroes([a, b], s, { table, rng, acc, log }, opts, dueled);
+  }
+}
+function frontHeroes(units, s, ctx, opts, dueled){   // a striking unit's front heroes: each duels the enemy's first free front hero, or strikes its rankers
+  const [a, b] = units, { table, rng, acc, log } = ctx;
+  for (const hero of actingOf(a, ["front"])){
+    if (dueled.has(hero.id)) continue;
+    const foe = s.rout ? null : heroesOf(b, ["front"]).find(h => !dueled.has(h.id)) || null;
+    if (foe){ log.push(...duel([a, b], [hero, foe], table, rng, s, dueled)); continue }
+    const t = takeHurt(b, melee(heroSide(a, hero, table), meleeSide(b, table), UD.heroes.tempo, rng, opts));
+    tallyLoss(acc, s, t);
+    log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: s.att, dfd: s.dfd, situation: s.situation }, t));
   }
 }
 function duel(units, pair, table, rng, s, dueled){   // two front heroes fight each other: heroes.duel attempts each, the first unit's hero first
@@ -1422,8 +1431,8 @@ function duel(units, pair, table, rng, s, dueled){   // two front heroes fight e
       if (y.state !== "up") break;
       heroBlow(side, y, { r: rng.randint(1, 100), atk, critAt, shift: 0 }, rng, t);
     }
-    log.push({ kind: "duel", unit: k, hero: x.id, name: x.name, foe: y.id, fname: y.name, blows: t.blows });
-    log.push(...(t.heroes || []).map(h => ({ kind: "herohit", unit: k === s.att ? s.dfd : s.att, ...h })));
+    log.push({ kind: "duel", unit: k, hero: x.id, name: x.name, foe: y.id, fname: y.name, blows: t.blows },
+      ...(t.heroes || []).map(h => ({ kind: "herohit", unit: k === s.att ? s.dfd : s.att, ...h })));
   }
   return log;
 }
@@ -2122,7 +2131,7 @@ function fireText(l){                             // a battery's shells: on a he
 }
 function heroStateText(l){                        // a duel's attempts, or a hero's bleeding past a threshold
   if (l.kind === "duel") return `${l.name} fights ${l.fname} hand to hand: ${l.blows} telling attempt${l.blows === 1 ? "" : "s"}.`;
-  const fate = l.state === "up" ? "fights on" : "is down" + (l.blood <= 0 ? ", unconscious and dying" : "");
+  const dying = l.blood <= 0 ? ", unconscious and dying" : "", fate = l.state === "up" ? "fights on" : "is down" + dying;
   return `${l.name} bleeds (${l.lost} Blood this exchange, ${l.blood} of ${l.pool} left): ${fate}.`;
 }
 function heroHitText(l){

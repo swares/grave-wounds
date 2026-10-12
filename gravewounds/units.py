@@ -235,30 +235,36 @@ def hero_penalty(d: Data, hero: dict) -> int:
 def _heroes_after(d: Data, us: list, rng) -> list:
     """End of an exchange for every hero not dead: a hold wears off, he bleeds, his Blood's
     thresholds can put him down, and pain above the cap calls for a stop check."""
-    T, log, rounds = d.wounds["tracking"], [], d.units["exchange_rounds"]
+    log = []
     for i, u in enumerate(us):
         for hero in u.get("heroes", []):
-            if hero["state"] == "dead":
-                continue
-            if hero.get("held"):
-                hero["held"]["left"] -= 1
-            blood, pool, was_up = *hero_blood(d, hero), hero["state"] == "up"
-            lost = hero.get("old_bleed", 0) + sum(round(T["bleed_per_round"][w.get("bleed", 0)] * rounds) for w in hero["wounds"])
-            if not lost and not (hero["state"] == "up" and hero_pain(hero) > T["pain_cap"]):
-                continue
-            before = _threshold(d, blood / pool)
-            hero["blood"] = max(0, blood - lost)
-            after = _threshold(d, hero["blood"] / pool)
-            if hero["state"] == "up" and after and (after.get("down") or after.get("incapacitated")):
-                hero["state"] = "down"
-            if hero["blood"] <= 0:
-                hero["dying"] = True
-            if hero["state"] == "up" and hero_pain(hero) > T["pain_cap"]:
-                _hero_check(d, hero, C.pain_check(d, hero["nerve"], hero_pain(hero), rng.randint(1, 100), hero["blood"] / pool))
-            if after is not before or (was_up and hero["state"] != "up"):
-                log.append({"kind": "herobled", "unit": i, "hero": hero["id"], "name": hero["name"], "lost": lost, "blood": hero["blood"],
-                            "pool": pool, "state": hero["state"]})
+            line = _hero_after(d, hero, rng) if hero["state"] != "dead" else None
+            if line:
+                log.append({"kind": "herobled", "unit": i, **line})
     return log
+
+
+def _hero_after(d: Data, hero: dict, rng) -> dict | None:
+    """One hero's end of an exchange; a log line if he crossed a Blood threshold or went down."""
+    T = d.wounds["tracking"]
+    if hero.get("held"):
+        hero["held"]["left"] -= 1
+    blood, pool, was_up = *hero_blood(d, hero), hero["state"] == "up"
+    lost = hero.get("old_bleed", 0) + sum(round(T["bleed_per_round"][w.get("bleed", 0)] * d.units["exchange_rounds"]) for w in hero["wounds"])
+    if not lost and not (was_up and hero_pain(hero) > T["pain_cap"]):
+        return None
+    before = _threshold(d, blood / pool)
+    hero["blood"] = max(0, blood - lost)
+    after = _threshold(d, hero["blood"] / pool)
+    if was_up and after and (after.get("down") or after.get("incapacitated")):
+        hero["state"] = "down"
+    if hero["blood"] <= 0:
+        hero["dying"] = True
+    if hero["state"] == "up" and hero_pain(hero) > T["pain_cap"]:
+        _hero_check(d, hero, C.pain_check(d, hero["nerve"], hero_pain(hero), rng.randint(1, 100), hero["blood"] / pool))
+    if after is before and not (was_up and hero["state"] != "up"):
+        return None
+    return {"hero": hero["id"], "name": hero["name"], "lost": lost, "blood": hero["blood"], "pool": pool, "state": hero["state"]}
 
 
 def _heroes(u: dict, roles: tuple) -> list:
@@ -939,17 +945,24 @@ def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, f
         if s["att"] in struck:
             continue
         struck.add(s["att"])
-        for hero in _acting(a, ("front",)):
-            if hero["id"] in dueled:
-                continue
-            foe = None if s["rout"] else next((h for h in _heroes(b, ("front",)) if h["id"] not in dueled), None)
-            if foe is not None:
-                log += _duel(d, (a, b), (hero, foe), table, rng, s, dueled)
-                continue
-            t = _take_hurt(b, melee(d, _hero_side(a, hero, table, d), _side(b, table, d), d.units["heroes"]["tempo"], rng, **opts))
-            _tally(*acc, s, t)
-            log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": s["att"], "dfd": s["dfd"],
-                            "situation": s["situation"]}, t)
+        log += _front_heroes(d, (a, b), s, (table, rng, acc), opts, dueled)
+    return log
+
+
+def _front_heroes(d: Data, units: tuple, s: dict, ctx: tuple, opts: dict, dueled: set) -> list:
+    """A striking unit's front heroes: each duels the enemy's first free front hero, or strikes its rankers."""
+    (a, b), (table, rng, acc), log = units, ctx, []
+    for hero in _acting(a, ("front",)):
+        if hero["id"] in dueled:
+            continue
+        foe = None if s["rout"] else next((h for h in _heroes(b, ("front",)) if h["id"] not in dueled), None)
+        if foe is not None:
+            log += _duel(d, (a, b), (hero, foe), table, rng, s, dueled)
+            continue
+        t = _take_hurt(b, melee(d, _hero_side(a, hero, table, d), _side(b, table, d), d.units["heroes"]["tempo"], rng, **opts))
+        _tally(*acc, s, t)
+        log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": s["att"], "dfd": s["dfd"],
+                        "situation": s["situation"]}, t)
     return log
 
 
