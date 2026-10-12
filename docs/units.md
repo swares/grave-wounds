@@ -235,22 +235,42 @@ unit's men. Where he stands decides what he does:
   strike.
 - **Behind** (commanding): only at risk if his unit routs.
 
-His wounds use the full rules: location, mechanism, severity from the margin, his own
-armour, his own parry. A serious or critical wound calls for his stop check against his
-Nerve; a failure puts him down for the rest of the battle. A wound that kills within rounds
-kills him. A **leader** gives his unit +10 morale while he is up, and −20 once he is down.
-A unit with a hero still up shows a star on the map.
+His wounds use the full rules, as in the roller:
+- **The blow:** location, mechanism, severity from the margin, his own armour, his own parry.
+- **Pain:** each wound's pain, and the pain of any wounds he came with from the roller, takes
+  10% a step off his attack and defence, to −30% at most.
+- **Bleeding:** he bleeds each exchange (about a minute, 10 rounds): a seeping wound 1 Blood,
+  a heavy one 10, an arterial one 30. His Blood starts from his Endurance (and where the
+  roller left it). At three-quarters he is −10% more, at half −20%, at a quarter he is down,
+  and at none he is down, unconscious and dying.
+- **The stop check:** the roller's own, for a wound with shock (serious or critical). Failed
+  by 20 or less: defend only, by 40 or less: stunned; either way he makes no attempts in his
+  next exchange, and stunned he cannot parry either. Failed by more: down for the rest of the
+  battle. Pain above the cap calls for a check at the end of each exchange.
+- A wound that kills within rounds kills him.
+
+**Duels.** When two units with front-rank heroes fight hand to hand, the heroes fight each
+other instead of the rankers: each makes 3 telling attempts an exchange at the other, the
+hero of the unit that struck first first, with the full rules. The first hero of one side
+meets the first of the other; a hero left over strikes the rankers as usual.
+
+A **leader** gives his unit +10 morale while he is up, and −20 once he is down. A unit with
+a hero still up shows a star on the map. The heroes' list shows each one's attack and defence
+after his wounds, his state and his Blood.
 
 After the battle, **Heroes' wounds to the roller** puts each wound on his record in the
 wound roller (with its bleeding, pain and clock), and marks him out of the fight if he went
-down. A duel between two heroes facing each other is not fought here: take it to the roller.
-`python3 -m gravewounds units` shows how heroes fare:
+down, and his Blood where the field left it. There is no first aid during the battle: a
+hero bleeds until it is over. `python3 -m gravewounds units` shows how heroes fare:
 
 | A hero leading billmen in jacks, until one side breaks | Wounded | Down | Killed | Men he puts down |
 |---|---|---|---|---|
-| Knight in mail | 48% | 14% | 0% | 0.3 |
-| Knight in plate | 22% | 0% | 0% | 0.3 |
-| Champion, no armour | 69% | 28% | 2% | 0.3 |
+| Knight in mail | 50% | 30% | 0% | 0.2 |
+| Knight in plate | 20% | 4% | 0% | 0.3 |
+| Champion, no armour | 74% | 54% | 2% | 0.2 |
+
+A fight of this kind lasts a quarter of an hour or more, long enough for a hero's wounds to bleed him
+down: about one wounded hero in two ends the fight down.
 
 A hero matters most through morale and through what happens to him: in a press of hundreds,
 one man fells few. The numbers are in `data/units.yaml` (`heroes`).

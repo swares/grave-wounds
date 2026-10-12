@@ -1163,7 +1163,7 @@ function syncArmor(){
 }
 
 /* ---------- tracker ---------- */
-const bleedPerRound = b => b === 3 ? 3 : b === 2 ? 1 : b === 1 ? 0.1 : 0;
+const bleedPerRound = b => TRK.bleed_per_round[b] ?? 0;   // Blood a round by bleed level (wounds.yaml tracking)
 const RATINGS = CMB.stop_check.ratings, DEFAULT_RATING = CMB.stop_check.default_rating;
 function newChar(name, kit = "none", weapon = null, look = {}, side = "Side A"){
   return { id: S.seq++, name, kit, weapon, look, init: null, blood: TRK.blood_pool, rounds: 0, wounds: [],
@@ -2453,6 +2453,7 @@ function fieldHero(h){                         // one hero back from the field m
     const fx0 = DATA.wounds[`${LOC[w.loc].class}|${w.mech}|${w.sev}`];
     if (fx0) c.wounds.push({ loc: w.loc, mech: w.mech, sev: w.sev, graze: !!w.graze, fx: structuredClone(w.graze ? grazeFx(fx0) : fx0), treated: "" });
   }
+  if (Number.isFinite(h.blood)) c.blood = Math.min(c.blood ?? h.blood, h.blood);   // what he bled on the field
   if (h.state !== "up") c.state = { id: "out", rounds: null };
   const what = h.wounds.map(w => `${w.graze ? "graze" : w.sev} (${LOC[w.loc].name.toLowerCase()})`).join(", ") || "unhurt";
   return `${c.name}: ${what}${{ dead: ", killed", down: ", down" }[h.state] || ""}`;
