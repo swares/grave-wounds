@@ -227,3 +227,27 @@ climates:
     rain: [5, 6, 7, 8, 9, 7, 5, 4, 5, 6, 5, 5]
     fog:  [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1]
     wind_from: [10, 5, 5, 10, 10, 12, 18, 30]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW
+  central_highlands:
+    name: "Central Highlands of Vietnam, tropical monsoon"
+    note: "Like Pleiku: a dry season from November to April with cool nights and morning mist, the south-west monsoon rains from May to October. Rounded design estimates."
+    high: [26, 28, 30, 30, 29, 27, 26, 25, 26, 26, 26, 25]
+    low:  [15, 16, 18, 20, 21, 21, 20, 20, 20, 19, 18, 16]
+    rain: [1, 1, 3, 8, 18, 22, 25, 26, 23, 15, 7, 2]
+    fog:  [4, 3, 2, 1, 1, 1, 1, 1, 1, 2, 3, 4]
+    wind_from: [10, 30, 15, 5, 5, 20, 10, 5]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW
+  horn_coast:
+    name: "Horn of Africa coast, hot and semi-arid"
+    note: "Like Mogadishu: hot all year, two short rainy seasons (April to June and October to November), steady monsoon winds off the sea. Rounded design estimates."
+    high: [30, 30, 31, 32, 32, 30, 29, 29, 30, 31, 31, 31]
+    low:  [23, 23, 24, 25, 25, 24, 23, 23, 23, 24, 24, 24]
+    rain: [0, 0, 1, 5, 7, 8, 7, 4, 2, 4, 5, 2]
+    fog:  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    wind_from: [5, 30, 15, 5, 10, 25, 5, 5]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW
+  hindu_kush:
+    name: "Hindu Kush valleys, hot summers and cold winters"
+    note: "Like the Kunar and Nuristan valleys at about 1,200 m: hot dry summers with some monsoon thunderstorms, cold wet winters with snow higher up. Rounded design estimates."
+    high: [13, 15, 20, 26, 31, 36, 35, 34, 31, 26, 20, 15]
+    low:  [2, 4, 8, 13, 17, 21, 23, 22, 18, 12, 6, 3]
+    rain: [6, 7, 9, 8, 4, 2, 4, 4, 2, 1, 2, 3]
+    fog:  [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
+    wind_from: [20, 10, 5, 5, 20, 15, 10, 15]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW

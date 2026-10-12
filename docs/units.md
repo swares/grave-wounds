@@ -1002,6 +1002,27 @@ north at the top.
 It is drawn by `tools/maps/make_osan_field.mjs`, from the plain facts of the US Army's account,
 not traced from any map. A battlefield's units may start gone to ground (`prone: true`).
 
+**The perimeter at Chipyong-ni, 14-15 February 1951** (`data/fields/chipyong-1951.yaml`). The
+field is 200 × 170 hexes, about 2,190 by 1,610 yards (2,000 by 1,470 m), north at the top.
+- The village in the middle (buildings), the railroad through its south and the road north
+  and south; the ring of low hills the 23rd Infantry dug in on (high ground, scrub), about a
+  mile across; frozen paddies (open ground) inside and out, wooded hills beyond.
+- A clear, bitter **dark night**, snow on the ground. No one sees beyond 55 yards (50 m)
+  unless the ground is lit: fire illumination or flares.
+- United Nations, dug in round the ring: A and C Companies (1st Battalion) on the north, I, K
+  and L (3rd) on the east, E, G and F (2nd) on the south, G on the southern hill, and the
+  French Battalion's three companies on the west (veteran). The AAA's quad .50s and the
+  battalion machine guns are on the line, and B Company and the 1st Ranger Company are in
+  reserve.
+- Chinese (veteran, extended order): a regiment from Hill 397 against G Company, and
+  battalions against E, C and K Companies and the French, with machine guns.
+- Fire support: 105 mm and 155 mm howitzers, 4.2-inch mortars and the regimental tanks inside
+  the perimeter, and fighter-bombers, which fly only by day; Chinese mortars.
+- The wound tables are Korea's (hospitalized wounded).
+
+It is drawn by `tools/maps/make_chipyong_field.mjs`, from the plain facts of the battle, not
+traced from any map.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
