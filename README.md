@@ -28,7 +28,7 @@ Sidon in 1253 (Banias to the coast), the Albuera campaign of 1811 (Badajoz to Sa
 Marta), the Cowpens campaign of 1781 (the Pacolet to the Broad), the Niagara campaign of 1814
 (Fort Erie to Fort George), the First Bull Run campaign of 1861 (Fairfax to Gainesville),
 Fort Phil Kearny on the Bozeman Trail in 1866-67, Mons in 1914 (Condé to Binche), the
-Bougainville perimeter in 1944, the Anzio beachhead in 1944 (to Cisterna), Osan in 1950 (Suwon to P'yongt'aek) Chipyong-ni in 1951 (Yangpyong to Wonju) and the Chosin Reservoir in 1950 (Yudam-ni to Hungnam), all on 0.6-mile (1 km) hexes; Cassino in 1944,
+Bougainville perimeter in 1944, the Anzio beachhead in 1944 (to Cisterna), Osan in 1950 (Suwon to P'yongt'aek), Chipyong-ni in 1951 (Yangpyong to Wonju) and the Chosin Reservoir in 1950 (Yudam-ni to Hungnam), all on 0.6-mile (1 km) hexes; Cassino in 1944,
 the Ia Drang in 1965 (X-Ray and Albany) and Wanat in 2008 (the Waygal valley) on 0.3-mile
 (0.5 km) hexes; and Mogadishu in 1993 on 270-yard (0.25 km) hexes. See
 [docs/travel.md](docs/travel.md).
