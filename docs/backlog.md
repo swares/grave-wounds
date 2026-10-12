@@ -37,7 +37,7 @@ When an item is done, delete it here and note it in the pull request that closes
   Agincourt (1415), Towton (1461), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
   Lane (1814), First Bull Run (1861), Fort Phil Kearny (1866-67, with two battlefields), Mons
   (1914), Hill 700 on Bougainville (1944), Anzio and Cisterna (1944), Osan (1950), Chipyong-ni
-  (1951), the Ia Drang (1965), Mogadishu (1993), Wanat (2008), Cassino (1944, three battlefields), the Chosin Reservoir (1950), Kapyong (1951), Heartbreak Ridge (1951), Pork Chop Hill (1953), Hue (1968), Khe Sanh (1968), Dak To (1967), Hamburger Hill (1969), Goose Green (1982), Grozny (1995) and Fallujah (2004) have both a campaign map and a battlefield. The rest of Italy and the other later wars
+  (1951), the Ia Drang (1965), Mogadishu (1993), Wanat (2008), Cassino (1944, three battlefields), the Chosin Reservoir (1950), Kapyong (1951), Heartbreak Ridge (1951), Pork Chop Hill (1953), Hue (1968), Khe Sanh (1968), Dak To (1967), Hamburger Hill (1969), Goose Green (1982), Grozny (1995), Fallujah (2004) and COP Keating (2009) have both a campaign map and a battlefield. The rest of Italy, the Gulf War (1991) and Northern Ireland
   still play on the generic valley and open ground (the unit rules for them are in: machine
   guns, extended order, artillery and mortars on call, suppression). Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
@@ -60,7 +60,8 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Vehicles, first cut.** No facing armour (flank and rear shots), no hull or turret hits, no
   immobilised or damaged vehicles, no infantry riding in carriers or on tanks, no anti-tank guns
   or bazookas but the RPG (`anti_armour`), no mines, no fuel or ammunition, and the crews who
-  bail out simply leave the fight. Tanks see as well as men do.
+  bail out simply leave the fight. Tanks see as well as men do. Infantry fighting vehicles (the
+  BMP at Grozny, the Bradley at Fallujah) play as armoured carriers, without their guns or missiles.
 - **Fire at hidden men, first cut.** Men gone to ground, in bunkers or in buildings are now hit
   at 10% of aimed shots (machine guns 5%), and dug-in men hold better. Osan, left alone, lasts
   about an hour where the real fight took two and a half; the rest of that time went in the
