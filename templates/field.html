@@ -701,7 +701,8 @@ function otherLine(l, nm){                       // morale, breach and hero line
 }
 function landText(l){                            // men landing by air, or waved off
   const at = `${l.lz[0] + 1},${l.lz[1] + 1}`;
-  if (l.kind === "waveoff") return `${l.name} (${l.side}) cannot land at ${at}: ${l.why === "blocked" ? "the enemy is on the landing zone" : "no room there"}.`;
+  const why = l.why === "blocked" ? "the enemy is on the landing zone" : "no room there";
+  if (l.kind === "waveoff") return `${l.name} (${l.side}) cannot land at ${at}: ${why}.`;
   let hot = "";
   if (l.hot) hot = ", under fire: " + l.struck + " struck" + (l.struck ? ", " + l.down + " down" + (l.dead ? " (" + l.dead + " dead)" : "") : "");
   return `${l.men} men of ${l.name} (${l.side}) land at ${at}${l.first ? "" : " and join them"}${hot}.`;
