@@ -261,6 +261,12 @@ machine_guns:
 #   down are lost to the battery. A battery has `crew` men a tube and fires only the tubes it
 #   has `serve` men each for. Ordered to displace, a battery is silent for `displace`
 #   exchanges and then is no longer located: missions on it end (tanks never displace).
+# range and place: a battery may be given a `place` (a hex, on the map or off it, where its guns
+#   stand). Then it can fire only on hexes within its kind's `range` (field hexes: mortars 3.6 km,
+#   field guns 11 km, heavy howitzers 14.5 km), and counter-battery fire reaches a placed battery
+#   only from within range. A placed battery with an enemy unit within a hex of its place is
+#   overrun: its tubes are lost. Ordered to displace, it can be given a new place (`to`), where
+#   it stands once it has moved. A battery with no place fires from off the map, as before.
 # knock: % that a shell bursting on a bunker's hex knocks the bunker out (its men lose its
 #   cover, and it can be stormed). A bunker's men get its cover against shellfire too.
 # direct: tanks firing over open sights, close behind the line: they land at once, do not
@@ -281,9 +287,9 @@ indirect:
   attack: 70
   prone: 0.35
   kinds:
-    mortar:   {name: "Mortars",          rate: 3, rounds: 60, delay: 0, scatter: 2, radius: 2, struck: [15, 5, 1],                counter: 0, crew: 4, serve: 2, displace: 1, illum: 15}
-    field:    {name: "Field guns",       rate: 2, rounds: 80, delay: 1, scatter: 4, radius: 3, struck: [20, 8, 3, 1],             counter: 2, crew: 6, serve: 3, displace: 2, illum: 30}
-    howitzer: {name: "Heavy howitzers",  rate: 1, rounds: 40, delay: 1, scatter: 5, radius: 5, struck: [30, 12, 5, 2, 1, 0.5], counter: 4, knock: 2, crew: 8, serve: 4, displace: 3, illum: 40}
+    mortar:   {name: "Mortars",          range: 360,  rate: 3, rounds: 60, delay: 0, scatter: 2, radius: 2, struck: [15, 5, 1],                counter: 0, crew: 4, serve: 2, displace: 1, illum: 15}
+    field:    {name: "Field guns",       range: 1100, rate: 2, rounds: 80, delay: 1, scatter: 4, radius: 3, struck: [20, 8, 3, 1],             counter: 2, crew: 6, serve: 3, displace: 2, illum: 30}
+    howitzer: {name: "Heavy howitzers",  range: 1450, rate: 1, rounds: 40, delay: 1, scatter: 5, radius: 5, struck: [30, 12, 5, 2, 1, 0.5], counter: 4, knock: 2, crew: 8, serve: 4, displace: 3, illum: 40}
     tank:     {name: "Tanks (direct fire)", rate: 2, rounds: 60, delay: 0, scatter: 0, radius: 1, struck: [25, 5],              counter: 0, knock: 8, direct: true, crew: 5, serve: 3, displace: 0}
     autocannon: {name: "Autocannon (direct fire)", rate: 3, rounds: 300, delay: 0, scatter: 0, radius: 0, struck: [20],              counter: 0, knock: 3, direct: true, crew: 3, serve: 2, displace: 0}
     fighter_bomber: {name: "Fighter-bombers (bombs, napalm)", rate: 2, rounds: 4, delay: 2, scatter: 3, radius: 4, struck: [45, 25, 12, 5, 2], counter: 0, knock: 15, air: true, by_night: false, shot: [bomb, bombs]}

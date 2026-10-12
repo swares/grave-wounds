@@ -26,10 +26,11 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Heroes on the field map.** His sickness does not lower his attack and defence there
   (the GM can lower them by hand), his wounds' impairments (a useless arm, dazed) are left
   to the roller, and there is no first aid during the battle: he bleeds until it is over.
-- **Indirect fire, simplified.** Batteries stay off the map, with no ground of their own:
-  counter-battery fire finds a located battery wherever it is, its crews' wounds are counted
-  but not named, and a displaced battery reappears unlocated with no new position to plot.
-  A barrage's fire plan has one direction and one lift for the whole plan.
+- **Indirect fire, simplified.** A battery can be placed on the map, but a placed one off
+  the map's edge cannot be clicked: it stands on a hex of the map or has no place. Its crews'
+  wounds are counted but not named. A fire plan has at most two legs from the page, though
+  the data takes any number. Counter-battery fire does not need to see a placed battery: it
+  finds it by flash and sound once located, wherever it stands within range.
 - **The travel clock, simplified.** The clock watches for meetings every quarter hour, so
   two fast forces passing in open country within one quarter hour can miss each other; and
   meetings are only between the forces' hexes (no scouting reach, no seeing a dust cloud).
@@ -69,10 +70,9 @@ When an item is done, delete it here and note it in the pull request that closes
   about an hour where the real fight took two and a half; the rest of that time went in the
   North Koreans moving round the flanks, which the static test does not play. Worth a second
   look once Osan has been played through by hand.
-- **Guns, still simplified.** A battery splits into at most one section, and its canister
-  at a charge is counted at the end of the exchange like all fire, so it does not thin the
-  blows the charge strikes that minute. The Thirty Years' War still borrows the Peninsula's
-  gun wounds: no 1618-48 artillery wound counts were found.
+- **Guns, still simplified.** The Thirty Years' War still borrows the Peninsula's gun wounds,
+  because no 1618-48 artillery wound counts were found. Sections share the battery's rounds
+  in order rather than each carrying its own.
 - **Character generation, beyond the first cut.** The medieval tables are a first draft for
   a team playtest. Its characteristics now count in the roller (Agility, Endurance,
   Strength, Presence), and Leechcraft, Fieldcraft, Watch and Stealth work outside a fight.

@@ -108,6 +108,7 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .lz{fill:none;stroke:#2b5d8a;stroke-width:1.2;stroke-dasharray:2 1.5;pointer-events:none}
 .lz-h{font:bold 7px system-ui,sans-serif;fill:#2b5d8a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .lit{fill:#ffe680;fill-opacity:.22;stroke:#e0b000;stroke-opacity:.6;stroke-width:.8;pointer-events:none}
+.bat{fill:#5a5a5a;stroke:#fff;stroke-width:.6}.bat.gone{fill:none;stroke:#999;stroke-dasharray:1.5 1}
 .fixed{stroke:#b03030;stroke-width:1.1;stroke-dasharray:3 2;fill:none;pointer-events:none}
 .flash{font:700 6px var(--mono);fill:#e0a000;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .heroes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.9rem}
@@ -231,15 +232,19 @@ legend{padding:0}
         <div><label for="sel-target">Battery fires at</label><select id="sel-target"></select></div>
         <div><label for="sel-shot">Shot</label><select id="sel-shot" title="Left to the range: canister close in, beyond it round shot from smoothbores, shell from howitzers and rifles. An order the guns cannot carry out (canister out of its range) falls back to the range."></select></div>
       </div>
-      <div class="row" id="section-box" hidden>
-        <div><label for="sel-sec-target">A section fires at</label><select id="sel-sec-target" title="Split off some of the guns at a second target, with their own shot; if they cannot fire on it, they fire with the rest"></select></div>
-        <div><label for="in-sec-guns">Guns in the section</label><input type="number" id="in-sec-guns" min="1" value="2"></div>
-        <div><label for="sel-sec-shot">Section's shot</label><select id="sel-sec-shot"></select></div>
+      <div id="section-box" hidden>
+        <ul class="support" id="sections"></ul>
+        <div class="row">
+          <div><label for="sel-sec-target">Split off a section at</label><select id="sel-sec-target" title="Split off some of the guns at another target, with their own shot; if they cannot fire on it, they fire with the rest"></select></div>
+          <div><label for="in-sec-guns">Guns in the section</label><input type="number" id="in-sec-guns" min="1" value="2"></div>
+          <div><label for="sel-sec-shot">Section's shot</label><select id="sel-sec-shot"></select></div>
+          <div><button class="small" id="btn-add-sec">Add the section</button></div>
+        </div>
       </div>
 
       <section id="support-box" aria-labelledby="h-support">
         <h2 id="h-support">Fire support</h2>
-        <p class="muted" style="margin:0">Off-map artillery and mortars on call. On its side's move, pick a battery, <b>Call fire</b>, then click a hex one of the side's units can see. Field guns and howitzers land the next exchange, mortars this one; each shell scatters. A battery that has fired is located (◉): the other side's guns can fire on it (<b>Counter-battery</b>) with no one needing to see it, knocking out tubes and killing and wounding crews (a tube without enough men falls silent). <b>Displace</b> moves it: silent for an exchange or more, then no longer located. Smoke drifts with the wind. <b>Aircraft</b> are called the same way: fighter-bombers come in two exchanges later with bombs and napalm over a wide area, two sorties an aircraft; helicopter gunships at once with rockets and guns. They are never located, do not fly in fog, storms or heavy snow, and fighter-bombers not at night. At night fire can be called only where the light lets someone see it fall; <b>Illumination</b> (mortars and guns) needs no one to see the hex and lights it and the hexes round it for two exchanges, as does a flare (Clicking the map).</p>
+        <p class="muted" style="margin:0">Off-map artillery and mortars on call. On its side's move, pick a battery, <b>Call fire</b>, then click a hex one of the side's units can see. Field guns and howitzers land the next exchange, mortars this one; each shell scatters. A battery that has fired is located (◉): the other side's guns can fire on it (<b>Counter-battery</b>) with no one needing to see it, knocking out tubes and killing and wounding crews (a tube without enough men falls silent). <b>Displace</b> moves it: silent for an exchange or more, then no longer located. <b>Place it</b> (in set-up) puts a battery's guns on the map: it reaches only its range from there, and an enemy within a hex overruns it. A creeping barrage can take a second leg (<b>Then</b>). Smoke drifts with the wind. <b>Aircraft</b> are called the same way: fighter-bombers come in two exchanges later with bombs and napalm over a wide area, two sorties an aircraft; helicopter gunships at once with rockets and guns. They are never located, do not fly in fog, storms or heavy snow, and fighter-bombers not at night. At night fire can be called only where the light lets someone see it fall; <b>Illumination</b> (mortars and guns) needs no one to see the hex and lights it and the hexes round it for two exchanges, as does a flare (Clicking the map).</p>
         <ul class="support" id="support"></ul>
         <div class="row">
           <div><label for="sel-sup-fire">Fire</label><select id="sel-sup-fire"><option value="he">High explosive</option><option value="smoke">Smoke</option><option value="illum">Illumination</option></select></div>
@@ -247,6 +252,8 @@ legend{padding:0}
           <div><label for="sel-sup-every">Each line</label><select id="sel-sup-every" title="A creeping barrage's fire plan: exchanges on each line before it lifts"></select></div>
           <div><label for="sel-sup-lines">Lines</label><select id="sel-sup-lines" title="A creeping barrage's fire plan: how many lines it fires on before it stops"></select></div>
           <div><label for="sel-sup-dir">Towards</label><select id="sel-sup-dir"><option value="auto">the enemy</option><option value="1">the top</option><option value="0">top right</option><option value="5">bottom right</option><option value="4">the bottom</option><option value="3">bottom left</option><option value="2">top left</option></select></div>
+          <div><label for="sel-sup-then">Then</label><select id="sel-sup-then" title="A second leg of the fire plan, after the lines above: the same lift, the same way or turned"><option value="">stop</option><option value="0">lift on the same way</option><option value="1">turn left</option><option value="5">turn right</option></select></div>
+          <div><label for="sel-sup-then-lines">for</label><select id="sel-sup-then-lines"></select></div>
         </div>
         <label class="check"><input type="checkbox" id="chk-sup-repeat"> Keep firing each exchange (a creeping barrage always does)</label>
         <div class="row">
@@ -535,17 +542,20 @@ function renderSupport(){
   if (!$("#sel-sup-creep").options.length) $("#sel-sup-creep").innerHTML = `<option value="0">No</option>`
     + Array.from({ length: FD.units.indirect.creep.max }, (_, n) => `<option value="${n + 1}">${n + 1} hex${n ? "es" : ""} a lift</option>`).join("");
   if (!$("#sel-sup-every").options.length) $("#sel-sup-every").innerHTML = Array.from({ length: FD.units.indirect.creep.every_max }, (_, n) => `<option value="${n + 1}">${nOf(n + 1, "exchange")}</option>`).join("");
+  if (!$("#sel-sup-then-lines").options.length) $("#sel-sup-then-lines").innerHTML = [1, 2, 3, 4, 5, 6, 8, 10].map(n => `<option value="${n}">${n} line${n > 1 ? "s" : ""}</option>`).join("") + `<option value="0">until off the map</option>`;
   if (!$("#sel-sup-lines").options.length) $("#sel-sup-lines").innerHTML = `<option value="0">Until off the map</option>` + [2, 3, 4, 5, 6, 8, 10].map(n => `<option value="${n}">${n} lines</option>`).join("");
   $("#support").innerHTML = supports().map((b, i) => {
     const can = S.phase === "setup" || b.side === moving(), on = S.calling === i, live = b.rounds > 0 && servedTubes(b) > 0 && !b.displacing;
     const call = `<button class="small" data-sup-call="${i}" ${can && live ? "" : "disabled"} aria-pressed="${on}">${on ? "Click a hex…" : "Call fire"}</button>`;
     const dis = can ? "" : "disabled", stop = b.mission ? `<button class="small" data-sup-stop="${i}" ${dis}>Stop</button>` : "";
     const move = FD.units.indirect.kinds[b.kind].displace && b.tubes > 0 && !b.displacing ? `<button class="small" data-sup-move="${i}" ${dis} title="Move the battery: silent for ${nOf(FD.units.indirect.kinds[b.kind].displace, "exchange")}, then no longer located">Displace</button>` : "";
-    return `<li aria-current="${on}"><span><b>${esc(b.name)}</b> <span class="muted">${esc(b.side)}</span>${b.located ? ' <span title="located">\u25c9</span>' : ""}</span>${call}${stop}${move}${counterPick(b, i, can && live)}<span class="meta">${supportMeta(b)}</span></li>`;
+    const placeable = FD.units.indirect.kinds[b.kind].range && S.phase === "setup", placing = S.placing && S.placing.i === i;
+    const put = placeable ? `<button class="small" data-sup-place="${i}" aria-pressed="${!!placing}" title="Put its guns on the map: they reach ${nOf(FD.units.indirect.kinds[b.kind].range, "hex", "hexes")} from there and can be overrun">${placing ? "Click a hex\u2026" : (b.place ? "Move it" : "Place it")}</button>` : "";
+    return `<li aria-current="${on}"><span><b>${esc(b.name)}</b> <span class="muted">${esc(b.side)}</span>${b.located ? ' <span title="located">\u25c9</span>' : ""}</span>${call}${stop}${move}${put}${counterPick(b, i, can && live)}<span class="meta">${supportMeta(b)}</span></li>`;
   }).join("") || `<li class="muted">None. Add a battery below.</li>`;
 }
 function counterPick(b, i, can){                  // a choice of located enemy batteries to fire on, for guns that reach them
-  const marks = supports().map((x, j) => [x, j]).filter(([x]) => x.side !== b.side && x.located && x.tubes > 0);
+  const marks = supports().map((x, j) => [x, j]).filter(([x]) => x.side !== b.side && x.located && x.tubes > 0 && (x.place === undefined || x.place === null || inReach(b, x.place)));
   if (!can || !FD.units.indirect.kinds[b.kind].counter || !marks.length) return "";
   const opts = marks.map(([x, j]) => `<option value="${j}">${esc(x.name)} (${esc(x.side)})</option>`).join("");
   return `<select class="small" data-sup-cb="${i}" aria-label="Counter-battery for ${esc(b.name)}"><option value="">Counter-battery…</option>${opts}</select>`;
@@ -559,13 +569,23 @@ function supportMeta(b){                          // "4 tubes · 24 crew · 72 r
   }
   let tubes = b.tubes > 0 ? nOf(b.tubes, "tube") : "silenced";
   if (b.tubes > 0 && served < b.tubes) tubes = served ? `${served} of ${b.tubes} tubes served` : "silenced (too few crew)";
-  const moving_ = b.displacing ? ` · displacing (${nOf(b.displacing, "exchange")} more)` : "";
+  const moving_ = (b.displacing ? ` · displacing (${nOf(b.displacing, "exchange")} more)${b.to ? ` to ${b.to[0] + 1},${b.to[1] + 1}` : ""}` : "")
+    + (b.place ? ` · at ${b.place[0] + 1},${b.place[1] + 1}, reaches ${nOf(reachOf(b), "hex", "hexes")}` : "") + (b.overrun ? " · overrun" : "");
   return `${K.name.toLowerCase()} · ${tubes} · ${crewOf(b)} crew · ${b.rounds} rounds${moving_}${b.mission ? missionText(b.mission) : ""}`;
+}
+function placeBattery(h){                         // the battery being placed (or plotted to move) stands at hex h
+  const { i, to } = S.placing, b = supports()[i];
+  S.placing = null;
+  if (!b) return render();
+  if (to) b.to = [h[0], h[1]]; else b.place = [h[0], h[1]];
+  S.msg = to ? `${b.name} will be at ${h[0] + 1},${h[1] + 1} once it has moved.` : `${b.name} stand at ${h[0] + 1},${h[1] + 1}: they reach ${nOf(reachOf(b), "hex", "hexes")} and can be overrun by an enemy within a hex.`;
+  render();
 }
 function displace(i){                             // the battery moves: silent for its kind's exchanges, then no longer located
   const b = supports()[i], n = FD.units.indirect.kinds[b.kind].displace;
   b.displacing = n; b.mission = null; S.calling = null;
-  S.msg = `${b.name} displaces: silent for ${nOf(n, "exchange")}, then no longer located${b.located ? "; counter-battery fire can still find it until then" : ""}.`;
+  if (b.place !== undefined && b.place !== null) S.placing = { i, to: true };   // plot where it goes
+  S.msg = `${b.name} displaces: silent for ${nOf(n, "exchange")}, then no longer located${b.located ? "; counter-battery fire can still find it until then" : ""}.${S.placing ? " Click the hex it moves to." : ""}`;
   render();
 }
 const airOf = k => !!FD.units.indirect.kinds[supports()[k]?.kind]?.air;   // battery k is aircraft
@@ -594,14 +614,18 @@ function callFire(i, h){                          // the mission, if a unit of i
   S.calling = null;
   if (illum && !K.illum){ S.msg = `${K.name} have no illumination rounds.`; return render() }
   if (K.air && $("#sel-sup-fire").value === "smoke"){ S.msg = `${K.name} drop no smoke.`; return render() }
+  if (!inReach(b, h)){ S.msg = `${b.name} cannot reach ${h[0] + 1},${h[1] + 1} from where they stand (${nOf(reachOf(b), "hex", "hexes")}).`; return render() }
   if (!illum && !spotted(S.units, S.field, b.side, h)){ S.msg = `No unit of ${b.side} can see ${h[0] + 1},${h[1] + 1}: fire can only be called where someone sees it fall (not through woods or smoke).`; return render() }
   const smoke = $("#sel-sup-fire").value === "smoke", by = Number($("#sel-sup-creep").value), m = { hex: h, wait: K.delay, repeat: by > 0 || $("#chk-sup-repeat").checked };
   if (smoke) m.smoke = true;
   if (illum) m.illum = true;
   const every = Number($("#sel-sup-every").value) || 1, lines = Number($("#sel-sup-lines").value) || 0;
   if (by) m.creep = { step: by, dir: creepDir(b.side), every, lines };
+  const then = $("#sel-sup-then").value, thenLines = Number($("#sel-sup-then-lines").value) || 0;
+  if (by && lines && then !== "") m.creep.then = [{ step: by, dir: mod6(m.creep.dir + Number(then)), lines: thenLines }];
   b.mission = m;
-  const plan = lines ? `, ${lines} lines` : ", until it leaves the map", what = { he: "fire", smoke: "lay smoke", illum: "fire illumination" }[$("#sel-sup-fire").value] || "fire";
+  const leg = m.creep?.then ? `, then ${$("#sel-sup-then").selectedOptions[0].text}${thenLines ? ` for ${nOf(thenLines, "line")}` : " until it leaves the map"}` : "";
+  const plan = (lines ? `, ${lines} lines` : ", until it leaves the map") + leg, what = { he: "fire", smoke: "lay smoke", illum: "fire illumination" }[$("#sel-sup-fire").value] || "fire";
   const creep = by ? `, lifting ${nOf(by, "hex", "hexes")} towards ${$("#sel-sup-dir").selectedOptions[0].text} every ${nOf(every, "exchange")}${plan}` : "";
   const why = grounded(S.field, b), wait = why ? ` (grounded: ${groundedName(why)}; they fly when it clears)` : "";
   S.msg = `${b.name} will ${what} on ${h[0] + 1},${h[1] + 1} ${whenText(K.delay)}${wait}${m.repeat ? ", and every exchange until stopped" : ""}${creep}.`;
@@ -627,6 +651,7 @@ function supportSvg(){                            // smoke, the hexes fire is ca
   for (const u of S.units) if (u.fixed && !out_(u)){ const f = footprint(u)[0], [x1, y1] = xy(f[Math.floor(f.length / 2)]), [x2, y2] = xy(u.fixed); g += `<line class="fixed" x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>` }
   for (const h of S.field.flashes || []){ const [x, y] = xy(h); g += `<text class="flash" x="${x.toFixed(1)}" y="${y.toFixed(1)}">✹</text>` }
   for (const b of supports()) if (b.mission?.hex){ const [x, y] = xy(b.mission.hex); g += `<text class="aim" x="${x.toFixed(1)}" y="${y.toFixed(1)}">\u2316</text>` }
+  for (const b of supports()) if (b.place){ const [x, y] = xy(b.place); g += `<rect class="bat${b.overrun ? " gone" : ""}" x="${(x - 4).toFixed(1)}" y="${(y - 3).toFixed(1)}" width="8" height="6"><title>${esc(b.name)} (${esc(b.side)})</title></rect>` }
   for (const h of S.bursts || []){ const [x, y] = xy(h); g += `<text class="burst" x="${x.toFixed(1)}" y="${y.toFixed(1)}">\u2737</text>` }
   return g;
 }
@@ -669,7 +694,8 @@ function unitLineText(l, nm){                     // a volley, a melee or a rout
   if (l.kind === "volley") return `${nm(l.att)} shoot at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${l.blows} aimed shots, ${fallen}.`;
   if (l.kind === "rout") return `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.`;
   const where = l.situation === "front" ? "" : " in the " + l.situation, up = l.penalty ? ", attacking up −" + l.penalty + "%" : "";
-  return `${nm(l.att)} strike ${nm(l.dfd)}${where}, ${l.men} men${up}: ${l.blows} telling blows, ${fallen}.`;
+  const thin = l.thinned ? ` (${l.thinned} fewer, cut down by canister as they came in)` : "";
+  return `${nm(l.att)} strike ${nm(l.dfd)}${where}, ${l.men} men${thin}${up}: ${l.blows} telling blows, ${fallen}.`;
 }
 const SHOT_NAMES = { canister: "canister", round: "round shot", shell: "shell" };
 function cannonText(l, nm, fallen){               // a battery's fire: its target, rounds, men struck, guns knocked out
@@ -705,7 +731,8 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   barrage: l => ({ cls: "", text: fireText(l) }),
   landed: l => ({ cls: l.hot ? "morale" : "", text: landText(l) }),
   waveoff: l => ({ cls: "morale", text: landText(l) }),
-  displaced: l => ({ cls: "", text: `${l.name} (${l.side}) have displaced: no longer located.` }),
+  displaced: l => ({ cls: "", text: `${l.name} (${l.side}) have displaced: no longer located${l.place ? `; now at ${l.place[0] + 1},${l.place[1] + 1}` : ""}.` }),
+  overrun: l => ({ cls: "morale", text: `${l.name} (${l.side}) are overrun: their guns are lost.` }),
   assault: (l, nm) => ({ cls: "morale", text: bunkerText(l, nm) }),
   antiarmour: (l, nm) => ({ cls: l.knocked ? "morale" : "", text: armourText(l, nm) }),
   hero: (l, nm) => (l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null),
@@ -1229,20 +1256,21 @@ function renderGunOrders(u, setup){               // the Resupply button and the
 function shotOptions(u, auto){                    // the shots this battery's guns fire, after "by range"
   return `<option value="">${auto}</option>` + FD.units.artillery.shots[gunKind(u)].map(k => `<option value="${k}">${SHOT_NAMES[k]}</option>`).join("");
 }
-function renderShotOrders(u, foes, gone){         // the Shot picker and the section's target, guns and shot
+function renderShotOrders(u, foes, gone){         // the Shot picker, the sections split off, and the form for another
   $("#sel-shot").innerHTML = shotOptions(u, "By range");
   $("#sel-shot").value = u.shot || "";
-  const sec = u.section || {}, guns = gunsServed(u), box = $("#section-box");
-  box.hidden = guns < 2;
-  if (sec.target !== undefined && sec.target !== null && !foes.some(e => e.id === sec.target)) delete u.section;
-  $("#sel-sec-target").innerHTML = `<option value="">No section: all guns together</option>` + foes.map(e => `<option value="${e.id}">${esc(unitName(e))}${isBattery(e) ? " (guns)" : ""}</option>`).join("");
-  $("#sel-sec-target").value = u.section?.target ?? "";
-  $("#in-sec-guns").max = Math.max(1, guns - 1);
-  $("#in-sec-guns").value = Math.min(u.section?.guns || 2, Math.max(1, guns - 1));
-  $("#sel-sec-shot").innerHTML = shotOptions(u, "By range");
-  $("#sel-sec-shot").value = u.section?.shot || "";
-  for (const id of ["#sel-shot", "#sel-sec-target"]) $(id).disabled = gone;
-  for (const id of ["#in-sec-guns", "#sel-sec-shot"]) $(id).disabled = gone || !u.section;
+  if (u.section){ u.sections = [...(u.sections || []), u.section]; delete u.section }   // an older save's single section
+  u.sections = (u.sections || []).filter(x => foes.some(e => e.id === x.target));
+  if (!u.sections.length) delete u.sections;
+  const guns = gunsServed(u), spare = guns - 1 - (u.sections || []).reduce((a, x) => a + x.guns, 0);
+  $("#section-box").hidden = guns < 2;
+  $("#sections").innerHTML = (u.sections || []).map((x, k) => `<li><span>Section ${k + 1}: ${gunsText(x.guns, "gun")} at <b>${esc(unitName(S.units[idx(x.target)]))}</b>${x.shot ? ", " + SHOT_NAMES[x.shot] : ""}</span><button class="small" data-sec-rm="${k}" ${gone ? "disabled" : ""}>Remove</button></li>`).join("");
+  $("#sel-sec-target").innerHTML = `<option value="">Choose a target\u2026</option>` + foes.map(e => `<option value="${e.id}">${esc(unitName(e))}${isBattery(e) ? " (guns)" : ""}</option>`).join("");
+  $("#in-sec-guns").max = Math.max(1, spare);
+  $("#in-sec-guns").value = Math.max(1, Math.min(Number($("#in-sec-guns").value) || 2, spare));
+  if (!$("#sel-sec-shot").options.length || $("#sel-sec-shot").dataset.for !== String(u.id)){ $("#sel-sec-shot").innerHTML = shotOptions(u, "By range"); $("#sel-sec-shot").dataset.for = String(u.id) }
+  $("#sel-shot").disabled = gone;
+  for (const id of ["#sel-sec-target", "#in-sec-guns", "#sel-sec-shot", "#btn-add-sec"]) $(id).disabled = gone || spare < 1;
 }
 function setShot(v){                              // the GM orders the battery's shot, or leaves it to the range
   const u = selUnit(); if (!u || !isBattery(u)) return;
@@ -1251,13 +1279,22 @@ function setShot(v){                              // the GM orders the battery's
   S.msg = v ? `${u.name} will fire ${SHOT_NAMES[v]}${within}.` : `${u.name} will fire the shot the range calls for.`;
   render();
 }
-function setSection(){                            // the GM splits off a section: its target, guns and shot
+function addSection(){                            // the GM splits off another section: its target, guns and shot
   const u = selUnit(); if (!u || !isBattery(u)) return;
   const t = $("#sel-sec-target").value;
-  if (t === ""){ delete u.section; S.msg = `${u.name} fires all its guns together.`; return render() }
-  const guns = Math.max(1, Math.min(gunsServed(u) - 1, Math.round(+$("#in-sec-guns").value) || 1)), shot = $("#sel-sec-shot").value;
-  u.section = { target: +t, guns, ...(shot ? { shot } : {}) };
-  S.msg = `A section of ${gunsText(guns, "gun")} of ${u.name} will fire at ${unitName(S.units[idx(u.section.target)])} when it can; the rest at the battery's target.`;
+  if (t === ""){ S.msg = "Choose the section's target first."; return render() }
+  const spare = gunsServed(u) - 1 - (u.sections || []).reduce((a, x) => a + x.guns, 0);
+  if (spare < 1){ S.msg = `${u.name} has no guns to spare: one stays with the battery.`; return render() }
+  const guns = Math.max(1, Math.min(spare, Math.round(+$("#in-sec-guns").value) || 1)), shot = $("#sel-sec-shot").value;
+  u.sections = [...(u.sections || []), { target: +t, guns, ...(shot ? { shot } : {}) }];
+  S.msg = `A section of ${gunsText(guns, "gun")} of ${u.name} will fire at ${unitName(S.units[idx(+t)])} when it can; the rest at the battery's target.`;
+  render();
+}
+function removeSection(k){
+  const u = selUnit(); if (!u?.sections) return;
+  u.sections.splice(k, 1);
+  if (!u.sections.length) delete u.sections;
+  S.msg = `${u.name}: section ${k + 1} rejoins the battery.`;
   render();
 }
 function setTarget(v){                            // the GM names the battery's target; it falls back to the nearest if it cannot fire on it
@@ -1593,6 +1630,7 @@ function readHandoff(){                           // a fight sent from the trave
 function init(){
   restore();
   S.calling = null;                                  // not mid-call after a reload
+  S.placing = null;
   S.laying = null;
   HANDOFF = readHandoff();
   TEAMIN = readTeamIn();
@@ -1604,6 +1642,7 @@ function init(){
     const h = p.dataset.h.split(",").map(Number);
     if (S.calling !== null && S.calling !== undefined) return callFire(S.calling, h);
     if (S.laying !== null && S.laying !== undefined) return layFixed(h);
+    if (S.placing) return placeBattery(h);
     if (S.tool === "unit") return clickHex(h);
     useTool(e, h);
     render();
@@ -1654,6 +1693,8 @@ function init(){
     if (s){ supports()[+s.dataset.supStop].mission = null; S.msg = "Fire stopped."; render() }
     const mv = e.target.closest("button[data-sup-move]");
     if (mv) displace(+mv.dataset.supMove);
+    const pl = e.target.closest("button[data-sup-place]");
+    if (pl){ const i = +pl.dataset.supPlace; S.placing = S.placing?.i === i ? null : { i }; S.msg = S.placing ? "Click the hex where its guns stand." : ""; render() }
   });
   $("#support").addEventListener("change", e => {
     const c = e.target.closest("select[data-sup-cb]");
@@ -1662,7 +1703,8 @@ function init(){
   $("#btn-resupply").onclick = toggleResupply;
   $("#sel-target").onchange = e => setTarget(e.target.value);
   $("#sel-shot").onchange = e => setShot(e.target.value);
-  for (const id of ["#sel-sec-target", "#in-sec-guns", "#sel-sec-shot"]) $(id).onchange = setSection;
+  $("#btn-add-sec").onclick = addSection;
+  $("#sections").addEventListener("click", e => { const b = e.target.closest("button[data-sec-rm]"); if (b) removeSection(+b.dataset.secRm) });
   $("#sel-weapon").onchange = e => {
     const gun = isGun(e.target.value);
     if (gun) $("#sel-form").value = "battery";

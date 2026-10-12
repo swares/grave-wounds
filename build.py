@@ -300,7 +300,10 @@ def _support_rules(ind: dict) -> str:
             f"the guns at the kind's counter %, knocking out a tube and striking {CB['among']} crewmen, or at {CB['near']} times that bursts close by, striking "
             f"{CB['near_struck']}; struck crewmen roll wounds and those put down are lost, and a tube without its men is silent. Displacing, a battery is silent "
             f"for its exchanges ({moves}) and then unlocated. Smoke drifts downwind each exchange, by hexes: {drift}. A creeping barrage keeps a fire plan: "
-            f"1 to {I['creep']['max']} hexes a lift, 1 to {I['creep']['every_max']} exchanges on each line, a set number of lines."
+            f"1 to {I['creep']['max']} hexes a lift, 1 to {I['creep']['every_max']} exchanges on each line, a set number of lines, then a second leg the same way or turned. "
+            "A battery may be placed on the map: it then reaches only its range ("
+            + ", ".join(f"{k['name'].lower()} {k['range']} hexes" for k in K.values() if k.get("range"))
+            + "), counter-battery fire reaches it only from within range, an enemy within a hex of it overruns it, and displacing it moves it to a new place."
             + (" Illumination (one round a tube, called on any hex) lights the hexes round it, out to " + ", ".join(f"{k['illum']} ({k['name'].lower()})" for k in K.values() if k.get("illum"))
                + " hexes, for the light's exchanges after the one it is fired in." if any(k.get("illum") for k in K.values()) else "")
             + _air_rules(I))
@@ -381,9 +384,9 @@ def _gun_rules(d) -> list[str]:
         f"Round shot strikes the unit ({bands(rs['strike'])}), then each man in its path (the ranks deep, at most {rs['path_max']}) is hit at {rs['file']}%, so columns suffer most. "
         f"Canister throws {cn['balls']} chances a round ({bands(cn['strike'])}). Cover, the weather and open order cut both. Each man hit takes a wound roll at {A['attack']}% with no parry.",
         f"<b>Targets and line of fire:</b> the GM can name a battery's target; it fires at it when it can, otherwise at the nearest. "
-        "The GM can order its shot (canister only within canister range) and split off a section of its guns at a second target, with its own shot. "
+        "The GM can order its shot (canister only within canister range) and split off sections of its guns at other targets, each with its own shot (one gun stays with the battery). "
         f"Gunners cut fuses: the air band of the fuse table grows by crew quality {_signed(A['set_fuse']['quality'])}, and {A['set_fuse']['ranged']} more on a target fired at last exchange "
-        f"at much the same range. A battery charged in front fires {A['closing']} round of canister a gun into the charge as it comes in. No unit shoots through another unit, "
+        f"at much the same range. A battery charged in front fires {A['closing']} round of canister a gun into the charge as it comes in, and the men it cuts down do not strike. No unit shoots through another unit, "
         "friend or enemy, except from high ground over a unit on lower ground (guns: round shot, never canister); "
         f"bows and crossbows may loose high over units at {d.units['line_of_fire']['arc_penalty']}% off. "
         f"<b>Shell:</b> howitzers fire shell beyond canister range over anything between; a shell lands ({bands(A['howitzer']['strike'])}), "

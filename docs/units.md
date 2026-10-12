@@ -386,8 +386,10 @@ with shell wounds (the First World War and later):
   (1 to 4 exchanges on each line before it lifts), **Lines** (how many lines it fires on, or
   until it leaves the map) and **Towards** (the way most of the side's units face, or a
   direction on the map). That is the fire plan: the mission keeps firing, lifting its aim
-  on by the timetable, ahead of an advance that keeps to the same timetable. It ends after
-  its last line, when it leaves the map, or on **Stop**.
+  on by the timetable, ahead of an advance that keeps to the same timetable. **Then** gives
+  the plan a second leg after the last line: the same lift, on the same way or turned left
+  or right, for its own number of lines. It ends after its last line, when it leaves the map,
+  or on **Stop**.
 - **Counter-battery**: a battery that has fired is located (◉ in the list), by its flashes
   and sound. On its own side's move a field gun or howitzer battery can then fire on it
   instead of on a hex (**Counter-battery…**), with no one needing to see it. Each shell
@@ -402,7 +404,16 @@ with shell wounds (the First World War and later):
 - **Displace**: on its side's move a battery can move to a new position: silent for an
   exchange (mortars), 2 (field guns) or 3 (heavy howitzers), still located and open to
   counter-battery fire while it limbers up and goes, and then no longer located. Missions
-  on it end. Tanks never need to (they are never located).
+  on it end. Tanks never need to (they are never located). A placed battery is asked where
+  it goes (click the hex), and it stands there once it has moved.
+- **Batteries on the map**: in set-up, **Place it** puts a mortar, field gun or howitzer
+  battery's guns on a hex of the map (a grey square).
+  - From there it reaches only its range: mortars 360 hexes (2.2 miles, 3.6 km), field guns
+    1,100 (6.8 miles, 11 km), heavy howitzers 1,450 (9 miles, 14.5 km). A call out of reach
+    is refused.
+  - Counter-battery fire reaches a placed battery only from within range.
+  - An enemy unit within a hex of a placed battery **overruns** it: its tubes are lost.
+  - Batteries with no place fire from off the map, as before.
 
 | Kind | Shells a minute a tube | Rounds a tube | Lands | Scatter | Struck % at 0, 1, 2 … hexes |
 | --- | --- | --- | --- | --- | --- |
@@ -492,11 +503,16 @@ howitzers shell or canister; rifles shell, solid bolts (fired as round shot) or 
 Canister is fired only within its 330 yards (300 m); ordered beyond it, or an order the guns
 cannot carry out, the battery fires what the range calls for.
 
-**Sections.** A battery can split off a section at a second target (*A section fires at*,
-*Guns in the section*, *Section's shot*): those guns fire at it, with their own shot, whenever
-they can, and the rest at the battery's target; at least one gun stays with the battery. If
-the section cannot fire on its target (out of range, sight or line), its guns fire with the
-rest. The log gives the section its own line, "a section of 2 guns, as ordered".
+**Sections.** A battery can split off sections at other targets (*Split off a section at*,
+*Guns in the section*, *Section's shot*, **Add the section**), as many as it has guns to
+spare: at least one gun stays with the battery.
+- Each section fires at its own target, with its own shot, whenever it can, and the rest
+  fire at the battery's target.
+- A section that cannot fire on its target (out of range, sight or line) fires with the
+  rest.
+- The battery's guns get their rounds first, then each section in order.
+- The list under the battery shows its sections, each with **Remove**. The log gives each
+  section its own line, "a section of 2 guns, as ordered".
 
 **Cut fuses.** Gunners cut their fuses to the range rather than leave them to chance. Every
 shell's fuse table has its air band widened (taken from the ground band after it): +10 for
@@ -508,9 +524,9 @@ bursts +15%").
 
 **Canister at the charge.** A battery that can fire, charged in its front, gives its first
 charger one round of canister a gun, at point-blank range, as the charge comes in, before
-the melee. Like all fire in the exchange, the men it puts down are counted at its end, so it
-thins the charge for the next exchange and weighs on its morale, not on the blows struck in
-this one. A charge into its flank or rear meets no canister.
+the melee. The men it puts down do not strike: the charging unit's blows that exchange are
+cut in the same share as its men (60 men down out of 200 strike with 70% of their blows). The
+log says how many fewer struck. A charge into its flank or rear meets no canister.
 
 **Line of fire.** A gun cannot fire through another unit, friend or enemy, standing between
 it and its target. The one exception is round shot fired from high ground over a unit on
