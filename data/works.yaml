@@ -96,6 +96,8 @@ hex_works:
             note: "Belts of barbed wire on stakes (from the 1900s): slow to cross, cut by hand."}
   bunker:  {name: "Bunker",            each: 30, enter: 1,    cover_here: 50, no_horse: true, breach: null,
             note: "A log-and-earth pillbox or dugout with firing slits (the 20th century)."}
+  wreck:   {name: "Downed helicopter", each: 0, enter: 2, cover_here: 30, no_horse: true, breach: null,
+            note: "A helicopter brought down on the field: its hull is cover for the men in its hex."}
 
 # Where the ideas come from (described in our own words):
 # - Stakes: English archers in the Hundred Years' War planted sharpened stakes in front of

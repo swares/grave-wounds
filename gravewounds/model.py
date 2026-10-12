@@ -899,17 +899,27 @@ def _indirect_errors(d: Data) -> list[str]:
                if not isinstance(v.get("counter"), (int, float)) or not 0 <= v["counter"] <= 100]
     errors += [f"units.yaml: indirect kind {k} needs whole-number crew and displace, and serve from 1 to crew" for k, v in I.get("kinds", {}).items()
                if not v.get("air") and not (isinstance(v.get("crew"), int) and isinstance(v.get("serve"), int) and isinstance(v.get("displace"), int) and 1 <= v["serve"] <= v["crew"])]
-    A = I.get("air") or {}
-    errors += [f"units.yaml: indirect kind {k} shot must be [one, many]" for k, v in I.get("kinds", {}).items()
-               if "shot" in v and not (isinstance(v["shot"], list) and len(v["shot"]) == 2 and all(isinstance(x, str) for x in v["shot"]))]
-    errors += [f"units.yaml: indirect.air.grounded names unknown weather {c}" for c in A.get("grounded", []) if c not in d.weather.get("conditions", {})]
-    errors += [f"units.yaml: indirect.air.night names unknown light {x}" for x in A.get("night", []) if x not in (d.weather.get("light") or {}).get("levels", {})]
+    errors += _air_errors(d, I)
     errors += [f"units.yaml: indirect kind {k} illum must be a whole number of hexes" for k, v in I.get("kinds", {}).items()
                if not (isinstance(v.get("illum", 0), int) and v.get("illum", 0) >= 0)]
     if winds and set(I.get("smoke", {}).get("drift", {})) != winds:
         errors.append("units.yaml: indirect.smoke.drift needs every wind")
     if not all(isinstance(I.get("counter_battery", {}).get(k), int) for k in ("among", "near", "near_struck")):
         errors.append("units.yaml: indirect.counter_battery needs whole-number among, near and near_struck")
+    return errors
+
+
+def _air_errors(d: Data, ind: dict) -> list[str]:
+    """units.yaml: aircraft (indirect.air: weather and light they are grounded in; a kind's log
+    name `shot`) and landing by air (heliborne)."""
+    A = ind.get("air") or {}
+    errors = [f"units.yaml: indirect kind {k} shot must be [one, many]" for k, v in ind.get("kinds", {}).items()
+              if "shot" in v and not (isinstance(v["shot"], list) and len(v["shot"]) == 2 and all(isinstance(x, str) for x in v["shot"]))]
+    errors += [f"units.yaml: indirect.air.grounded names unknown weather {c}" for c in A.get("grounded", []) if c not in d.weather.get("conditions", {})]
+    errors += [f"units.yaml: indirect.air.night names unknown light {x}" for x in A.get("night", []) if x not in (d.weather.get("light") or {}).get("levels", {})]
+    H = d.units.get("heliborne")
+    if H and not all(isinstance(H.get(k), int) and H[k] >= 0 for k in ("lift", "blocked", "hot", "zone")):
+        errors.append("units.yaml: heliborne needs whole-number lift, blocked, hot and zone")
     return errors
 
 
@@ -1115,6 +1125,11 @@ def _unit_spec_errors(d: Data, f: dict, where: str, u: dict) -> list[str]:
 def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_units, fits) -> list[str]:
     """The armies as drawn up: known arms, armour and formations, each unit standing where it can."""
     errors = [e for u in f.get("units", []) for e in _unit_spec_errors(d, f, where, u)]
+    lz = f.get("lz") or []
+    errors += [f"{where}: lz must be hexes on the map" for h in lz
+               if not (isinstance(h, list) and len(h) == 2 and 0 <= h[0] < f["size"][0] and 0 <= h[1] < f["size"][1])]
+    errors += [f"{where}: unit {u.get('name')} lands must be the number of a landing zone (0 to {len(lz) - 1})" for u in f.get("units", [])
+               if "lands" in u and not (isinstance(u["lands"], int) and 0 <= u["lands"] < len(lz))]
     if errors:
         return errors
     field, units = battlefield(d, f["id"]), battlefield_units(d, f["id"])

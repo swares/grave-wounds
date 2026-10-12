@@ -286,6 +286,17 @@ indirect:
   counter_battery: {among: 2, near: 3, near_struck: 1}
   creep: {max: 3, every_max: 4}
 
+# ---------- landing by air ----------
+# A field can mark landing zones (field.lz, hexes). A unit can come on by air at one: it waits
+# in field.lifts, and at the end of each exchange up to `lift` men land at each landing zone
+# (lifts in the order called), filling the unit's front first; it can move the exchange after
+# it first lands. A unit's first men come down on the zone's hex, or the nearest spot within
+# `zone` hexes of it where they fit (another unit may have landed there first). No one lands while an enemy unit (not fled) stands within `blocked` hexes
+# of the zone, or where the men would not fit. An enemy unit (not broken or fled) that could
+# shoot at the zone's hex makes it hot: each man landing is struck at `hot` % and rolls a wound
+# as a man struck by shellfire (indirect.attack). Design estimates.
+heliborne: {lift: 80, blocked: 2, hot: 10, zone: 4}
+
 # ---------- high ground ----------
 # A shooter on high ground (a ground kind with `height`) shooting at men on lower ground gets
 # +`shoot` % and his range bands `reach` % longer; shooting up at men on high ground costs

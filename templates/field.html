@@ -105,6 +105,8 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .aim{font:700 9px var(--mono);fill:var(--blood);text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .burst{font:700 7px var(--mono);fill:#c46a1a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .smoke{fill:#9a9a9a;fill-opacity:.55;stroke:none;pointer-events:none}
+.lz{fill:none;stroke:#2b5d8a;stroke-width:1.2;stroke-dasharray:2 1.5;pointer-events:none}
+.lz-h{font:bold 7px system-ui,sans-serif;fill:#2b5d8a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .lit{fill:#ffe680;fill-opacity:.22;stroke:#e0b000;stroke-opacity:.6;stroke-width:.8;pointer-events:none}
 .heroes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.9rem}
 .heroes li{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:3px;padding:5px 8px}
@@ -201,6 +203,7 @@ legend{padding:0}
 
       <h2>Units</h2>
       <ul class="units" id="units" aria-label="Units"></ul>
+      <p class="muted" id="lifts" hidden></p>
 
       <h2>Selected unit <span class="muted" id="sel-name"></span></h2>
       <dl class="summary" id="sel-info"></dl>
@@ -288,6 +291,7 @@ legend{padding:0}
         </div>
         <div class="toolbar">
           <label class="check"><input type="checkbox" id="chk-mounted"> Mounted</label>
+          <span id="air-box" hidden><label class="check"><input type="checkbox" id="chk-air"> By air at</label> <label for="sel-lz" class="sr">Landing zone</label><select id="sel-lz" style="width:auto"></select></span>
           <span id="guns-box" hidden><label for="sel-guns" class="sr">Guns</label><select id="sel-guns" title="Smoothbores fire round shot; rifled guns reach further with percussion shell; howitzers fire shell over anything between" style="width:auto">
             <option value="smoothbore">Smoothbore guns</option><option value="rifled">Rifled guns</option><option value="howitzer">Howitzers</option></select></span>
           <button id="btn-add">Add unit</button>
@@ -355,7 +359,9 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
     S.sides = B.sides.slice();
     S.table = B.table;
     S.seq = 1;
-    S.units = B.units.map(u => newUnit({ ...u, side: B.sides[u.side] }));
+    S.units = [];
+    S.field.lifts = [];
+    B.units.forEach(u => standOrFly(newUnit({ ...u, side: B.sides[u.side] }), u.lands));
     S.sel = S.units[0]?.id ?? null;
     S.msg = `${B.name}: the armies as drawn up. Move, change or remove any unit before the battle starts.`;
     return;
@@ -417,6 +423,12 @@ function scaledUnits(B, sides){
   }
   return out.sort((x, y) => x.i - y.i);                // back in the battlefield's order
 }
+function standOrFly(unit, lands){                 // a battlefield's unit: on the field, or (lands: a landing zone's index) waiting to come in by air
+  const lz = lands === undefined ? null : (S.field.lz || [])[lands];
+  if (!lz){ S.units.push(unit); return }
+  const { men, start, down, dead, hurt, heroes, state, ...tmpl } = unit;
+  (S.field.lifts || (S.field.lifts = [])).push({ unit: { ...tmpl, pos: [...lz] }, lz: [...lz], left: men });
+}
 function deployOnBattlefield(fid){
   const B = FD.fields[fid], sides = battleSides(B);
   loadBattlefield(fid, false);
@@ -424,7 +436,7 @@ function deployOnBattlefield(fid){
   let out = 0;
   for (const { u, f, men } of scaledUnits(B, sides)){
     const side = forceSide(f), unit = newUnit({ ...u, men, side, banner: f.side === side ? null : f.side, force: f.id, mounted: u.mounted && f.type === "mounted" });
-    if (fits([...S.units, unit], S.units.length, unit, SIZE, S.field)) S.units.push(unit);
+    if (u.lands !== undefined || fits([...S.units, unit], S.units.length, unit, SIZE, S.field)) standOrFly(unit, u.lands);
     else out++;
   }
   S.sel = S.units[0]?.id ?? null;
@@ -447,7 +459,8 @@ function layCamp(c, def){                          // the defender's camp works 
   S.msg += ` The ${WK.camps[c.kind].name.toLowerCase()}${built} is laid out with the defenders' units starting inside it.`;
 }
 function namesAnd(xs){ return xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " and " + xs.at(-1) }
-const reserve = f => f.men - S.units.filter(u => u.force === f.id).reduce((t, u) => t + u.start, 0);
+const reserve = f => f.men - S.units.filter(u => u.force === f.id).reduce((t, u) => t + u.start, 0)
+  - (S.field?.lifts || []).filter(lf => lf.unit.force === f.id).reduce((t, lf) => t + lf.left, 0);
 const forceOf = u => (S.forces || []).find(f => f.id === u.force) || null;
 const forceSide = f => S.sides[f.role === "attacker" ? 1 : 0];
 function freshState(){
@@ -601,6 +614,7 @@ function callCounter(i, j){                       // counter-battery: fire on a 
 }
 function supportSvg(){                            // smoke, the hexes fire is called on, and where the last exchange's shells burst
   let g = Object.keys(S.field.smoke || {}).map(k => `<polygon class="smoke" points="${pts(xy(k.split(",").map(Number)))}"/>`).join("");
+  for (const h of S.field.lz || []){ const [x, y] = xy(h); g += `<circle class="lz" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(HW * 0.9).toFixed(1)}"/><text class="lz-h" x="${x.toFixed(1)}" y="${y.toFixed(1)}">H</text>` }
   for (const x of S.field.lit || []){ const [cx, cy] = xy(x.at); g += `<circle class="lit" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${((x.radius + 0.5) * HW).toFixed(1)}"/>` }
   for (const b of supports()) if (b.mission?.hex){ const [x, y] = xy(b.mission.hex); g += `<text class="aim" x="${x.toFixed(1)}" y="${y.toFixed(1)}">\u2316</text>` }
   for (const h of S.bursts || []){ const [x, y] = xy(h); g += `<text class="burst" x="${x.toFixed(1)}" y="${y.toFixed(1)}">\u2737</text>` }
@@ -678,11 +692,22 @@ function otherLine(l, nm){                       // morale, breach and hero line
   if (l.kind === "herohit") return { cls: "hero", text: heroHitText(l) };
   if (l.kind === "pinned") return { cls: "morale", text: `${nm(l.unit)} are pinned down (rolled ${l.roll}, needed ${l.target} or less): no move and half their fire next exchange.` };
   if (l.kind === "barrage" || l.kind === "counter") return { cls: "", text: fireText(l) };
+  if (l.kind === "landed" || l.kind === "waveoff") return { cls: l.hot || l.kind === "waveoff" ? "morale" : "", text: landText(l) };
   if (l.kind === "displaced") return { cls: "", text: `${l.name} (${l.side}) have displaced: no longer located.` };
   if (l.kind === "assault" || l.kind === "knocked") return { cls: "morale", text: bunkerText(l, nm) };
   if (l.kind === "hero") return l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null;
   if (l.kind === "duel" || l.kind === "herobled") return { cls: "hero", text: heroStateText(l) };
   return undefined;
+}
+function landText(l){                            // men landing by air, or waved off
+  const at = `${l.lz[0] + 1},${l.lz[1] + 1}`;
+  const why = l.why === "blocked" ? "the enemy is on the landing zone" : "no room there";
+  if (l.kind === "waveoff") return `${l.name} (${l.side}) cannot land at ${at}: ${why}.`;
+  let hot = "";
+  if (l.hot) hot = ", under fire: " + l.struck + " struck";
+  if (l.hot && l.struck) hot += ", " + l.down + " down";
+  if (l.hot && l.dead) hot += " (" + l.dead + " dead)";
+  return `${l.men} men of ${l.name} (${l.side}) land at ${at}${l.first ? "" : " and join them"}${hot}.`;
 }
 const nWounds = n => (n === 1 ? "1 wound" : n + " wounds");
 function bunkerText(l, nm){                       // a bunker stormed (it falls or holds), or knocked out by shellfire
@@ -819,19 +844,20 @@ function renderAddSide(){                         // a unit is drawn from a forc
 }
 
 /* ---------- ground, works and weather ---------- */
-const EDGE_TOOLS = ["ditch", "bank", "palisade", "gate", "wall"], HEX_TOOLS = ["stakes", "abatis", "wagon", "pavise", "wire", "bunker"];
+const EDGE_TOOLS = ["ditch", "bank", "palisade", "gate", "wall"], HEX_TOOLS = ["stakes", "abatis", "wagon", "pavise", "wire", "bunker", "wreck"];
 function fillTools(){
   const g = Object.entries(FD.units.ground).map(([k, v]) => `<option value="g:${k}">${esc(v.name)}</option>`).join("");
   const e = EDGE_TOOLS.map(k => `<option value="e:${k}">${esc(WK.edge_works[k].name)}</option>`).join("");
   const h = HEX_TOOLS.map(k => `<option value="h:${k}">${esc(WK.hex_works[k].name)}</option>`).join("");
   $("#sel-tool").innerHTML = `<option value="unit">Place and move units</option><option value="gate">Open or bar a gate</option>`
     + (WXD.light ? `<option value="flare">Fire a flare (lights the hexes round it)</option>` : "")
+    + (FD.units.heliborne ? `<option value="lz">Mark or clear a landing zone</option>` : "")
     + `<optgroup label="Paint the ground">${g}</optgroup><optgroup label="Works on a hex side (click just inside it, on the high side)">${e}</optgroup><optgroup label="Works in a hex">${h}</optgroup>`;
   $("#sel-wx").innerHTML = Object.entries(WXD.conditions).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-wind").innerHTML = WXD.winds.map(w => `<option value="${w.id}">${esc(w.name)}</option>`).join("");
   $("#sel-light").innerHTML = Object.entries(WXD.light?.levels || { day: { name: "Daylight" } }).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#legend").innerHTML = Object.entries(FD.units.ground).filter(([k]) => k !== "open").map(([k, v]) => `<span><i class="g-${k}" style="background:var(--g-${k})"></i>${esc(v.name)}</span>`).join("")
-    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
+    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
 }
 function clickSide(e, h){                         // the neighbour across the hex side nearest the click
   const svg = $("#map svg"), pt = svg.createSVGPoint();
@@ -843,6 +869,8 @@ function useTool(e, h){                           // paint the ground, or build 
   const tool = S.tool, [kind, type] = tool.split(":");
   if (tool === "gate") return toggleGate(h, clickSide(e, h));
   if (tool === "flare") return fireFlare(h);
+  if (tool === "lz") return toggleLz(h);
+  if (tool === "h:wreck") return placeWreck(h);
   if (S.phase !== "setup"){ S.msg = "Ground and works are set before the battle starts; gates can be opened or barred at any time."; return }
   const before = JSON.stringify(S.field);
   if (kind === "g") paintGround(h, type);
@@ -872,6 +900,16 @@ function toggleEdge(h, n, type){
   }
   if (items.length) S.field.works.edges[k] = items;
   else delete S.field.works.edges[k];
+}
+function toggleLz(h){                            // a landing zone, marked or cleared (set-up only)
+  if (S.phase !== "setup"){ S.msg = "Landing zones are marked before the battle starts."; return }
+  const lz = S.field.lz || (S.field.lz = []), i = lz.findIndex(x => x[0] === h[0] && x[1] === h[1]);
+  if (i >= 0) lz.splice(i, 1); else lz.push([...h]);
+  S.msg = i >= 0 ? `Landing zone ${h[0] + 1},${h[1] + 1} cleared.` : `Landing zone marked at ${h[0] + 1},${h[1] + 1}: units can come on by air there (Add a unit, By air at).`;
+}
+function placeWreck(h){                           // a downed helicopter: the GM places or clears one at any time
+  toggleHex(h, "wreck");
+  S.msg = S.field.works.hexes[hkey(h)] ? `A helicopter is down at ${h[0] + 1},${h[1] + 1}: its hull is cover for the men in that hex.` : "Wreck cleared.";
 }
 function toggleHex(h, type){
   const k = hkey(h), cur = S.field.works.hexes[k];
@@ -1004,7 +1042,7 @@ function unitSvg(u){
   g += `<text class="ulabel" x="${x.toFixed(1)}" y="${(y - 8).toFixed(1)}">${esc(u.name)} ${u.men}${star}${low}</text></g>`;
   return g;
 }
-const HEX_GLYPH = { stakes: "\u2715", abatis: "\u2733", wagon: "\u25ad", pavise: "\u25ae", wire: "\u2a33", bunker: "\u25a3" };
+const HEX_GLYPH = { stakes: "\u2715", abatis: "\u2733", wagon: "\u25ad", pavise: "\u25ae", wire: "\u2a33", bunker: "\u25a3", wreck: "\u2708" };
 function worksSvg(){                              // edge works along hex sides, hex works as marks in their hexes
   let g = "";
   for (const [k, items] of Object.entries(S.field.works.edges || {})){
@@ -1057,6 +1095,12 @@ function gunsInfo(u){                             // the Guns line of the select
   return `${gunsServed(u)} served of ${gunsOf(u)}${lost}; ${left} of ${gunsOf(u) * FD.units.artillery.ammo} rounds left${u.resupplying ? " (resupplying)" : ""}`;
 }
 function renderUnits(){
+  const lzs = S.field.lz || [], lifts = S.field.lifts || [], pick = $("#sel-lz").value;
+  $("#air-box").hidden = !FD.units.heliborne || !lzs.length;
+  $("#sel-lz").innerHTML = lzs.map((h, i) => `<option value="${i}">${h[0] + 1},${h[1] + 1}</option>`).join("");
+  if (pick && Number(pick) < lzs.length) $("#sel-lz").value = pick;
+  $("#lifts").hidden = !lifts.length;
+  $("#lifts").textContent = lifts.length ? "In the air: " + lifts.map(lf => `${lf.unit.name} (${lf.unit.side}), ${lf.left} men for ${lf.lz[0] + 1},${lf.lz[1] + 1}`).join("; ") + "." : "";
   $("#units").innerHTML = S.units.map(u => `<li data-id="${u.id}" aria-current="${u.id === S.sel}" tabindex="0"><span class="dot" style="background:var(--side${sideNo(u)})"></span><span><b>${esc(u.name)}</b> <span class="muted">${esc(banner(u))}</span></span><span class="meta">${unitMeta(u)}</span></li>`).join("") || `<li class="muted">No units. Add one below.</li>`;
 }
 function renderAssault(u){                        // the storming order, on tables with grenades and charges
@@ -1248,7 +1292,18 @@ function addUnit(){
   const asked = Math.max(1, Number.parseInt($("#in-men").value, 10) || 1), men = f ? Math.min(asked, reserve(f)) : asked;
   const u = newUnit({ name: $("#in-name").value.trim() || `Unit ${S.seq}`, side, banner: f && f.side !== side ? f.side : null, force: f ? f.id : null, men, quality: $("#sel-quality").value, weapon: $("#sel-weapon").value,
     kit: $("#sel-kit").value, formation: formationFor($("#sel-weapon").value, $("#sel-form").value), mounted: $("#chk-mounted").checked, guns: $("#sel-guns").value, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0 });
+  if (FD.units.heliborne && $("#chk-air").checked) return byAir(u, f);
   return mid ? bringOn(u, k) : setUp(u, k);
+}
+function byAir(u, f){                             // the unit comes on by air at a landing zone, up to heliborne.lift men an exchange
+  const lz = (S.field.lz || [])[Number($("#sel-lz").value)];
+  if (!lz){ S.msg = "Mark a landing zone first (Clicking the map: Mark or clear a landing zone)."; return render() }
+  const facing = S.phase === "setup" ? u.facing : sideFacing(S.sides.indexOf(u.side)), { men, start, down, dead, hurt, heroes, state, ...tmpl } = u;
+  const width = Math.max(1, Math.min(u.width, Math.ceil(FD.units.heliborne.lift / FD.units.formations[u.formation].per_hex / 2)));   // a lift lands two ranks deep
+  (S.field.lifts || (S.field.lifts = [])).push({ unit: { ...tmpl, facing, width, pos: [...lz] }, lz: [...lz], left: men });
+  $("#in-name").value = "";
+  S.msg = `${unitName(u)} (${men} men) will come in by air at ${lz[0] + 1},${lz[1] + 1}: up to ${FD.units.heliborne.lift} men a landing zone at the end of each exchange.`;
+  render();
 }
 function setUp(u, k){                             // set-up: inside the camp for its defenders, else the first free spot down its side's edge; as wide as asked, else narrower and deeper
   for (const width of entryWidths(u.width)){

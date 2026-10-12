@@ -272,13 +272,18 @@ def _indirect_rules(d) -> list[str]:
     I, S = d.units.get("indirect"), d.units.get("suppression")
     if not I:
         return []
-    kinds = "; ".join(f"{k['name'].lower()} {k['rate']} a minute a tube, lands {'this' if not k['delay'] else 'next'} exchange, scatter {k['scatter']}, "
+    def lands(k):
+        if not k["delay"]:
+            return "this exchange"
+        return "next exchange" if k["delay"] == 1 else f"in {k['delay']} exchanges"
+    kinds = "; ".join(f"{k['name'].lower()} {k['rate']} a minute {'an aircraft' if k.get('air') else 'a tube'}, lands {lands(k)}, scatter {k['scatter']}, "
                       f"struck % by distance {'/'.join(f'{x:g}' for x in k['struck'])}" for k in I["kinds"].values())
     return [
         f"<b>Indirect fire:</b> off-map batteries on call, on a hex one of the side's units can see (in the weather, no woods between). Each shell scatters "
         f"(d6 direction, 0 to scatter hexes); every man within the radius is struck at the % for his distance (x{I['prone']:g} gone to ground, less ground cover) "
         f"and wounds as a shell fragment at {I['attack']}%. {kinds}.",
         _support_rules(I),
+    ] + _heliborne_rules(d) + [
         f"<b>Suppression:</b> a unit shelled or under machine-gun fire checks Nerve at the end of the exchange (+{S['prone']} gone to ground); a failure pins it "
         f"for the next exchange: no move, {S['fire'] * 100:g}% of its fire.",
     ]
@@ -299,6 +304,16 @@ def _support_rules(ind: dict) -> str:
             + (" Illumination (one round a tube, called on any hex) lights the hexes round it, out to " + ", ".join(f"{k['illum']} ({k['name'].lower()})" for k in K.values() if k.get("illum"))
                + " hexes, for the light's exchanges after the one it is fired in." if any(k.get("illum") for k in K.values()) else "")
             + _air_rules(I))
+
+
+def _heliborne_rules(d) -> list[str]:
+    H = d.units.get("heliborne")
+    if not H:
+        return []
+    return [f"<b>Landing by air:</b> a field can mark landing zones; a unit can come on by air at one, up to {H['lift']} men a zone at the end of each "
+            f"exchange, its first men on the zone or the nearest spot within {H['zone']} hexes where they fit. None land while an enemy unit stands within "
+            f"{H['blocked']} hexes of the zone. If an enemy unit could shoot at the zone it is hot: each man landing is struck at {H['hot']}% and wounds as by "
+            "shellfire. A downed helicopter (a work the GM places at any time) is cover for the men in its hex."]
 
 
 def _air_rules(ind: dict) -> str:
