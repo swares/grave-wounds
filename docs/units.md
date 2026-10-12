@@ -1129,6 +1129,41 @@ The field is 90 × 70 hexes, about 980 by 660 yards (900 by 600 m), north at the
 It is drawn by `tools/maps/make_wanat_field.mjs`, from the plain facts of the US Army's
 accounts, not traced from any map or photograph.
 
+**Snakeshead Ridge and the abbey, 17-18 February 1944** (`data/fields/cassino-monastery-1944.yaml`)
+and **the Poles at Point 593 and Phantom Ridge, 12 May 1944** (`data/fields/cassino-poles-1944.yaml`)
+share one ground, drawn in `tools/maps/cassino_massif.mjs`: 200 × 150 hexes, about 2,190 by
+1,420 yards (2,000 by 1,300 m), north at the top. Point 593 is at the upper left (high ground
+and rock). Snakeshead Ridge runs from it to the south-east past Point 444 to the abbey's ruins
+(rubble), and Phantom Ridge lies to the west. Steep slopes of scrub and broken rock (woods,
+rough) and gullies lie between.
+- February, a **dark night**:
+  - the 4/6th Rajputana Rifles along the ridge for Point 593, with the Royal Sussex in reserve;
+  - the 1/9th and 1/2nd Gurkhas down the slopes for Point 444 and the abbey's hill;
+  - German paratroops (veteran, dug in) on the tops and in the ruins, with machine guns.
+- May, a **dark night**: the 3rd Carpathian Rifle Division for Point 593 and along Snakeshead,
+  and the 5th Kresowa Division for Phantom Ridge, against the paratroops on all three tops and
+  in the abbey.
+- Fire support on both sides; the wound tables are the Second World War's (Owens).
+
+**Cassino town and Castle Hill, 15 March 1944** (`data/fields/cassino-town-1944.yaml`). The
+field is 140 × 120 hexes, about 1,530 by 1,140 yards (1,400 by 1,040 m), north at the top.
+- The terrain:
+  - the bombed town is **rubble**, with flooded craters (marsh) and the shell of the
+    Continental Hotel (tall buildings);
+  - Castle Hill and its ruined castle are at the upper left, and the massif's foot rises to
+    the abbey along the left edge;
+  - the road from Caira comes in from the north, with Route 6 and the station to the south
+    and the Rapido on the right.
+- The paratroops' cellars are **bunkers**.
+- The New Zealanders:
+  - the 25th Battalion goes into the town from the north and its D Company for Castle Hill,
+    with the 24th following;
+  - the 19th Armoured Regiment's Shermans are on the fields north of the town. Tanks cannot
+    enter the rubble.
+- German paratroops are in the cellars and ruins, at the hotel and by the station, with
+  machine guns.
+- Fire support: guns and fighter-bombers; German mortars and guns. Overcast and wet.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.

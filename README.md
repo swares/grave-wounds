@@ -29,7 +29,7 @@ Marta), the Cowpens campaign of 1781 (the Pacolet to the Broad), the Niagara cam
 (Fort Erie to Fort George), the First Bull Run campaign of 1861 (Fairfax to Gainesville),
 Fort Phil Kearny on the Bozeman Trail in 1866-67, Mons in 1914 (Condé to Binche), the
 Bougainville perimeter in 1944, the Anzio beachhead in 1944 (to Cisterna), Osan in 1950 (Suwon to P'yongt'aek) and Chipyong-ni in 1951 (Yangpyong to Wonju), all on 0.6-mile (1 km) hexes, the Ia Drang in
-1965 (X-Ray and Albany) and Wanat in 2008 (the Waygal valley) on 0.3-mile (0.5 km) hexes, and Mogadishu in 1993
+1965 (X-Ray and Albany) Wanat in 2008 (the Waygal valley) and Cassino in 1944 on 0.3-mile (0.5 km) hexes, and Mogadishu in 1993
 on 270-yard (0.25 km) hexes. See
 [docs/travel.md](docs/travel.md).
 
@@ -58,7 +58,7 @@ is resolved together, with flank and rear, morale and the pursuit, batteries of 
 round shot, canister and shell (bounding on over firm ground, at named targets, ordered shot, split sections, cut fuses and canister into a charge, until the rounds run out), machine guns, artillery and mortars on call with suppression, on painted ground
 with the battle map's works and weather, or on a real battlefield (Sidon, Visby, Agincourt, Towton, Lützen, Albuera, Cowpens,
 Lundy's Lane, First Bull Run, the Fetterman Fight, the Wagon Box Fight, Mons 1914, Hill 700 on
-Bougainville, the Rangers at Cisterna, Task Force Smith at Osan, the perimeter at Chipyong-ni, landing zone X-Ray, the crash sites in Mogadishu or the patrol base at Wanat, with both armies drawn up). A fight on the travel
+Bougainville, the Rangers at Cisterna, Task Force Smith at Osan, the perimeter at Chipyong-ni, landing zone X-Ray, the crash sites in Mogadishu the patrol base at Wanat, or Cassino's ridges and ruins, with both armies drawn up). A fight on the travel
 map can be fought there, and its wounded go back to camp, where wound fever can take
 them. See [docs/units.md](docs/units.md).
 
