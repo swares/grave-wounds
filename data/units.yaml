@@ -509,3 +509,4 @@ heroes:
   tempo: 3.0
   exposure: 2.0
   duel: 3                 # telling attempts each hero makes at the other in a duel, an exchange
+  first_aid: 60           # % a quiet exchange (his unit not in contact, not under fire, no losses) that his comrades stop his worst wound bleeding a step

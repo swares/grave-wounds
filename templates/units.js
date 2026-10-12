@@ -48,7 +48,7 @@ function rollWound(table, wid, kit, margin, critical, rng){   // {severity, leth
   }
   if (final === "stopped") return { severity: final, lethal: null, infection: null, graze: false, loc, mech };
   const fx = FD.effects[loc][mech][final];
-  return { severity: final, lethal: fx[0], infection: fx[1], bleed: fx[2], pain: fx[3], shock: fx[4], graze: isGraze(margin, critical), loc, mech };
+  return { severity: final, lethal: fx[0], infection: fx[1], bleed: fx[2], pain: fx[3], shock: fx[4], impair: fx[5] || [], graze: isGraze(margin, critical), loc, mech };
 }
 
 // ---------- blows ----------
@@ -128,13 +128,14 @@ function aimedAt(exposed, rng){                    // the hero a blow falls on, 
 function heroBlow(att, hero, roll, rng, t){   // roll: {r, atk, critAt, shift}; his own parry (none if stunned; less for his wounds), the full wound roll on his kit, the roller's stop check
   const { r, atk, critAt, shift } = roll;
   if (r > atk) return;
-  const critical = r <= critAt, dfn = held(hero) === "stunned" ? 0 : hero.defence + shift - heroPenalty(hero);
+  const critical = r <= critAt, dfn = held(hero) === "stunned" ? 0 : hero.defence + shift - heroPenalties(hero)[1];
   if (!critical && dfn > 0 && rng.randint(1, 100) <= dfn) return;
   const h = rollWound(att.table, att.weapon, hero.kit, atk - r, critical, rng);
   if (h.severity === "stopped") return;
   const [bleed, pain, shock] = h.graze ? [Math.max(0, h.bleed - 1), Math.max(0, h.pain - 1), false] : [h.bleed, h.pain, !!h.shock];
-  hero.wounds.push({ loc: h.loc, mech: h.mech, sev: h.severity, graze: h.graze, bleed, pain });
+  hero.wounds.push({ loc: h.loc, mech: h.mech, sev: h.severity, graze: h.graze, bleed, pain, impair: (h.impair || []).slice() });
   if (UD.dead_if.includes(h.lethal)) hero.state = "dead";
+  else if (heroPenalties(hero)[2].some(f => f === "down" || f === "incapacitated")) hero.state = "down";   // a wound that fells him or knocks him out
   else {
     const [blood, pool] = heroBlood(hero), roll2 = checks(h.severity, shock) ? rng.randint(1, 100) : 0;
     heroCheck(hero, stopCheck(hero.nerve, h.severity, heroPain(hero), roll2, blood / pool, shock));
@@ -170,19 +171,56 @@ const held = hero => (hero.held && hero.held.left > 0 ? hero.held.state : null);
 const heroPain = hero => (hero.old_pain || 0) + (hero.wounds || []).reduce((a, w) => a + (w.pain || 0), 0);
 function heroBlood(hero){ const pool = hero.pool || FD.tracking.blood_pool; return [hero.blood ?? pool, pool] }
 const bloodThreshold = frac => [...FD.tracking.thresholds].sort((a, b) => a.at - b.at).find(x => frac <= x.at) || null;
-function heroPenalty(hero){                       // % off his attack and defence: pain (to the cap) and Blood lost
-  const [blood, pool] = heroBlood(hero), th = bloodThreshold(blood / pool);
-  return Math.min(heroPain(hero), FD.tracking.pain_cap) * FD.combat.pain_step + (th?.penalty || 0);
+function heroPenalties(hero){                     // [% off attack, % off defence, flags]: pain, Blood lost, impairments (old and new), sickness, as the roller
+  const C = FD.combat, T = FD.tracking, [blood, pool] = heroBlood(hero);
+  const ws = [...(hero.old?.length ? hero.old : [{ loc: null, pain: hero.old_pain || 0, impair: [] }]), ...(hero.wounds || [])];
+  const pain = Math.min(ws.reduce((a, w) => a + (w.pain || 0), 0), T.pain_cap) * C.pain_step;
+  let attack = pain, defence = pain;
+  const flags = new Set(), th = bloodThreshold(blood / pool);
+  if (th){ attack += th.penalty || 0; defence += th.penalty || 0; for (const f of ["down", "incapacitated"]) if (th[f]) flags.add(f) }
+  const [a, df, f] = impairments(ws, hero.hand || "R"), rule = FD.in_fight?.[hero.sick || ""] || {};
+  f.forEach(x => flags.add(x));
+  for (const k of ["defend_only", "out"]) if (rule[k]) flags.add(k);
+  attack += a + (rule.penalty || 0); defence += df + (rule.penalty || 0);
+  return [Math.min(attack, C.cap), Math.min(defence, C.cap), [...flags].sort((x, y) => (x < y ? -1 : 1))];
 }
-function heroesAfter(us, rng){                    // end of an exchange: holds wear off, heroes bleed, Blood thresholds, pain checks
+function impairments(ws, hand){                     // [% off attack, % off defence, flags] from wounds' impairments, each counted once (an arm's by which arm)
+  let attack = 0, defence = 0;
+  const seen = new Set(), flags = new Set();
+  for (const [key, eff] of ws.flatMap(w => (w.impair || []).map(imp => impairEffect(w, imp, hand)))){
+    if (seen.has(key)) continue;
+    seen.add(key);
+    attack += eff.attack || 0; defence += eff.defence || 0;
+    for (const x of ["down", "off_hand", "no_shield", "incapacitated"]) if (eff[x]) flags.add(x);
+  }
+  return [attack, defence, flags];
+}
+function impairEffect(w, imp, hand){              // [key, effect] of impairment imp on wound w: an arm's by which arm it is
+  const rule = FD.combat.impair[imp] || {};
+  if (!("weapon_arm" in rule) && !("shield_arm" in rule)) return [imp + "|", rule];
+  const loc = FD.locations[w.loc] || {}, arm = loc.zone === "arms" && (loc.side === "L" || loc.side === "R") && loc.side !== hand ? "shield_arm" : "weapon_arm";
+  return [imp + "|" + arm, rule[arm] || {}];
+}
+function heroesAfter(us, rng, quiet = null){      // end of an exchange: holds wear off, first aid in a quiet exchange, heroes bleed, Blood thresholds, pain checks
   const log = [];
   us.forEach((u, i) => {
     for (const hero of u.heroes || []){
-      const line = hero.state === "dead" ? null : heroAfter(hero, rng);
+      if (hero.state === "dead") continue;
+      const aid = quiet?.[i] ? firstAid(hero, rng) : null;
+      if (aid) log.push({ kind: "heroaid", unit: i, ...aid });
+      const line = heroAfter(hero, rng);
       if (line) log.push({ kind: "herobled", unit: i, ...line });
     }
   });
   return log;
+}
+function firstAid(hero, rng){                       // his worst-bleeding wound from this battle bleeds a step less, at heroes.first_aid %
+  const ws = hero.wounds.filter(w => (w.bleed || 0) > 0);
+  if (!ws.length) return null;
+  const w = ws.reduce((a, b) => (b.bleed > a.bleed ? b : a));
+  if (rng.randint(1, 100) > UD.heroes.first_aid) return { hero: hero.id, name: hero.name, loc: w.loc, stopped: false, bleed: w.bleed };
+  w.bleed -= 1;
+  return { hero: hero.id, name: hero.name, loc: w.loc, stopped: true, bleed: w.bleed };
 }
 function heroAfter(hero, rng){                    // one hero's end of an exchange; a log line if he crossed a Blood threshold or went down
   const T = FD.tracking;
@@ -200,7 +238,7 @@ function heroAfter(hero, rng){                    // one hero's end of an exchan
   return { hero: hero.id, name: hero.name, lost, blood: hero.blood, pool, state: hero.state };
 }
 const heroesOf = (u, roles) => (u.heroes || []).filter(h => h.state === "up" && roles.includes(h.role));
-const actingOf = (u, roles) => heroesOf(u, roles).filter(h => !held(h));   // up and not held by a stop check: they strike or shoot
+const actingOf = (u, roles) => heroesOf(u, roles).filter(h => !held(h) && !h.defend_only);   // up, not held by a stop check, not too sick to do more than defend: they strike or shoot
 function exposure(u, rout, missile = false){        // [[hero, chance]] for the heroes of u a blow on it may fall on
   if (rout || missile){
     const roles = rout ? ["front", "ranged", "behind"] : ["front", "ranged"];
@@ -208,7 +246,7 @@ function exposure(u, rout, missile = false){        // [[hero, chance]] for the 
   }
   return heroesOf(u, ["front", "ranged"]).map(h => [h, Math.min(1, UD.heroes.exposure / Math.max(1, frontMen(u)))]);
 }
-const heroSide = (u, hero, table) => ({ table, weapon: hero.weapon, kit: hero.kit, quality: u.quality, skill: hero.attack - heroPenalty(hero) });
+const heroSide = (u, hero, table) => ({ table, weapon: hero.weapon, kit: hero.kit, quality: u.quality, skill: hero.attack - heroPenalties(hero)[0] });
 function leaderState(u){
   const ls = (u.heroes || []).filter(h => h.leader);
   if (!ls.length) return u.leader;
@@ -1097,7 +1135,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     const cut = Math.min(acc.lost[i], u.men);
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
   });
-  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng));
+  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i))));
   afterExchange(us, field, log);
   log.push(...landings(us, table, rng, field), ...vehiclesAfter(us, field));
   return { units: us, log };

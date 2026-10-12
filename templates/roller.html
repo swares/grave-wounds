@@ -2451,7 +2451,10 @@ function fieldHero(h){                         // one hero back from the field m
   if (!c) return null;
   for (const w of h.wounds){
     const fx0 = DATA.wounds[`${LOC[w.loc].class}|${w.mech}|${w.sev}`];
-    if (fx0) c.wounds.push({ loc: w.loc, mech: w.mech, sev: w.sev, graze: !!w.graze, fx: structuredClone(w.graze ? grazeFx(fx0) : fx0), treated: "" });
+    if (!fx0) continue;
+    const fx = structuredClone(w.graze ? grazeFx(fx0) : fx0), bound = Number.isFinite(w.bleed) && w.bleed < fx.bleed;   // bandaged on the field: it bleeds as it was left
+    if (bound) fx.bleed = w.bleed;
+    c.wounds.push({ loc: w.loc, mech: w.mech, sev: w.sev, graze: !!w.graze, fx, treated: bound ? "bind (on the field)" : "" });
   }
   if (Number.isFinite(h.blood)) c.blood = Math.min(c.blood ?? h.blood, h.blood);   // what he bled on the field
   if (h.state !== "up") c.state = { id: "out", rounds: null };

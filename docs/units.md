@@ -245,6 +245,14 @@ His wounds use the full rules, as in the roller:
 - **The blow:** location, mechanism, severity from the margin, his own armour, his own parry.
 - **Pain:** each wound's pain, and the pain of any wounds he came with from the roller, takes
   10% a step off his attack and defence, to −30% at most.
+- **Impairments:** each wound's impairment counts as in the roller, both the ones he came with
+  and the ones he takes here. An arm wound counts by which arm it is, so a useless weapon arm
+  is −40% attack and a useless shield arm −10% defence. Dazed is −20%, and a leg −20%
+  defence. A wound that collapses him, leaves him unable to stand or knocks him out puts him
+  down.
+- **Sickness:** a fighter who goes with a force on the travel map brings his sickness, as in
+  the roller. Mending is −10%, serious and grave −25%. At grave he only defends (he makes
+  no attempts and does not shoot). A man at the deadly step cannot join a unit.
 - **Bleeding:** he bleeds each exchange (about a minute, 10 rounds): a seeping wound 1 Blood,
   a heavy one 10, an arterial one 30. His Blood starts from his Endurance (and where the
   roller left it). At three-quarters he is −10% more, at half −20%, at a quarter he is down,
@@ -266,8 +274,13 @@ after his wounds, his state and his Blood.
 
 After the battle, **Heroes' wounds to the roller** puts each wound on his record in the
 wound roller (with its bleeding, pain and clock), and marks him out of the fight if he went
-down, and his Blood where the field left it. There is no first aid during the battle: a
-hero bleeds until it is over. `python3 -m gravewounds units` shows how heroes fare:
+down, and his Blood where the field left it.
+
+**First aid.** In a quiet exchange his comrades bind his worst-bleeding wound from this
+battle: arterial to heavy, heavy to seeping, seeping to none. A quiet exchange is one in
+which his unit is not in contact, not under fire and loses no one. It works 60% of the
+time, and he may be up or down. The log says when a hero is bandaged, and the roller takes
+the wound as it was left (marked "bind (on the field)"). `python3 -m gravewounds units` shows how heroes fare:
 
 | A hero leading billmen in jacks, until one side breaks | Wounded | Down | Killed | Men he puts down |
 |---|---|---|---|---|

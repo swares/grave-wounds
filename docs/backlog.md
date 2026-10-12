@@ -23,9 +23,10 @@ When an item is done, delete it here and note it in the pull request that closes
   not separate floors: there is no fighting room to room or stair by stair, and men upstairs
   are not safer from shells. Woods and buildings block the sight for calling fire, but not
   aimed shots between units.
-- **Heroes on the field map.** His sickness does not lower his attack and defence there
-  (the GM can lower them by hand), his wounds' impairments (a useless arm, dazed) are left
-  to the roller, and there is no first aid during the battle: he bleeds until it is over.
+- **Heroes on the field map.** First aid is his comrades' at a fixed chance: no one's
+  Leechcraft, no tourniquet or cautery, and the wounds he came with keep bleeding as the
+  roller left them. Impairments count against attack and defence only. A useless leg does not
+  slow his unit, and an off-hand fighter is not stopped from wielding a two-handed weapon.
 - **Indirect fire, simplified.** A battery can be placed on the map, but a placed one off
   the map's edge cannot be clicked: it stands on a hex of the map or has no place. Its crews'
   wounds are counted but not named. A fire plan has at most two legs from the page, though

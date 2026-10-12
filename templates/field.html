@@ -760,6 +760,16 @@ function shotNotes(l){                            // " (cover -20%, weather -10%
   if (l.misfire) bits.push(`${l.misfire}% misfire`);
   return bits.length ? ` (${bits.join(", ")})` : "";
 }
+function aidText(l, nm){                          // a hero's first aid: "X (unit) is bandaged: his thigh bleeds less."
+  const who = `${l.name} (${nm(l.unit)})`;
+  if (!l.stopped) return who + ": his comrades cannot stop the bleeding yet.";
+  const part = FD.locations[l.loc]?.name.toLowerCase() || "wound";
+  return `${who} is bandaged: his ${part} bleeds ${l.bleed ? "less" : "no more"}.`;
+}
+function sickText(h){                            // " · sick (dysentery), defends only"
+  if (!h.sick) return "";
+  return ` · sick (${h.sick})` + (h.defend_only ? ", defends only" : "");
+}
 const OTHER_LINES = {                            // kind: (line, nm) => {cls, text} (null: nothing to show)
   breach: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} break through the ${(WK.edge_works[l.work] || WK.hex_works[l.work]).name.toLowerCase()}.` }),
   morale: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` }),
@@ -775,6 +785,7 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   hero: (l, nm) => (l.blows ? { cls: "hero", text: heroLineText(l, nm) } : null),
   duel: l => ({ cls: "hero", text: heroStateText(l) }),
   bailout: l => ({ cls: "morale", text: `${S.units[l.riders]?.name || "The riders"} get out of the wrecked carriers: ${l.men} men on their feet.` }),
+  heroaid: (l, nm) => ({ cls: "hero", text: aidText(l, nm) }),
 };
 OTHER_LINES.counter = OTHER_LINES.barrage;
 OTHER_LINES.knocked = OTHER_LINES.assault;
@@ -1100,10 +1111,12 @@ function addHero(){
   const weapon = heroWeapon(c, u), role = $("#sel-hero-role").value;
   if (role === "ranged" && !("range" in FD.weapons[weapon])){ S.msg = `${c.name} has no missile weapon on these tables: put him in the front rank or behind.`; return render() }
   const num = (id, d) => { const v = Number.parseInt($(id).value, 10); return Number.isFinite(v) ? v : d };
-  const q = heroQuality(c);
+  const q = heroQuality(c), sick = heroSick(c), rule = (FD.in_fight || {})[sick || ""] || {};
+  if (rule.out){ S.msg = `${c.name} is too sick to fight (${sick}).`; return render() }
   u.heroes ??= [];
   u.heroes.push({ id: c.id, name: c.name, role, attack: num("#in-hero-atk", q.attack), defence: num("#in-hero-def", q.defence), nerve: Number.isFinite(+c.nerve) ? +c.nerve : q.nerve,
-    weapon, kit: FD.kits[c.kit] ? c.kit : "none", leader: $("#chk-hero-leader").checked, state: "up", wounds: [], ...heroBody(c) });
+    weapon, kit: FD.kits[c.kit] ? c.kit : "none", leader: $("#chk-hero-leader").checked, state: "up", wounds: [], hand: c.hand || "R",
+    ...(sick ? { sick } : {}), ...(rule.defend_only ? { defend_only: true } : {}), ...heroBody(c) });
   S.msg = `${c.name} joins ${u.name}${weapon === c.weapon ? "" : ", with the unit's weapon (his own is not on these tables)"}.`;
   render();
 }
@@ -1111,7 +1124,17 @@ function heroBody(c){                             // {pool, blood, old_pain, old
   const end = [c.endurance, c.sheet?.stats?.end].find(Number.isFinite) ?? 50;
   const pool = FD.tracking.blood_pool + Math.floor((end - 50) / FD.blood_per), ws = (c.wounds || []).filter(w => w.fx);
   const perEx = b => Math.round((FD.tracking.bleed_per_round[b] || 0) * FD.units.exchange_rounds);
-  return { pool, blood: Number.isFinite(c.blood) ? Math.min(c.blood, pool) : pool, old_pain: ws.reduce((a, w) => a + (w.fx.pain || 0), 0), old_bleed: ws.reduce((a, w) => a + perEx(w.fx.bleed), 0) };
+  return { pool, blood: Number.isFinite(c.blood) ? Math.min(c.blood, pool) : pool, old_pain: ws.reduce((a, w) => a + (w.fx.pain || 0), 0), old_bleed: ws.reduce((a, w) => a + perEx(w.fx.bleed), 0),
+    old: ws.map(w => ({ loc: w.loc, pain: w.fx.pain || 0, impair: (w.fx.impair || []).slice() })) };
+}
+function heroSick(c){                             // a named man's worst showing step of sickness (the travel map runs it), as the roller's sickOf; null if well
+  let all = {};
+  try{ all = JSON.parse(localStorage.getItem("gravewounds-named") || "{}") || {} }catch(e){ all = {} /* unreadable: no sickness */ }
+  const n = c.uid ? all[c.uid] : null;
+  if (!n) return null;
+  if (n.dead) return "deadly";
+  const shown = ((n.health || {}).cases || []).filter(x => x.d !== "wound" && x.inc === 0 && x.step > 0);
+  return shown.length ? FD.track.steps[Math.max(...shown.map(x => x.step))] : null;
 }
 function removeHero(id){
   for (const u of S.units) u.heroes = (u.heroes || []).filter(h => h.id !== id);
@@ -1120,10 +1143,10 @@ function removeHero(id){
 function renderHeroes(){
   const setup = S.phase === "setup", place = { front: "front rank", ranged: "shooting", behind: "behind" };
   $("#heroes").innerHTML = allHeroes().map(h => {
-    const wounds = h.wounds.length ? " · " + nWounds(h.wounds.length) : "", pen = heroPenalty(h), [blood, pool] = heroBlood(h);
+    const wounds = h.wounds.length ? " · " + nWounds(h.wounds.length) : "", [pa, pd] = heroPenalties(h), [blood, pool] = heroBlood(h);
     const hold = held(h) ? ` (${FD.combat.states[held(h)].name.toLowerCase()})` : "", body = ` · Blood ${blood}/${pool}${h.dying ? ", dying" : ""}`;
     const rm = setup ? `<button class="small" data-hero="${h.id}" aria-label="Remove ${esc(h.name)}">Remove</button>` : "";
-    return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(unitName(h.unit))} · ${place[h.role]}${h.leader ? " · leader" : ""}</span></span><span class="meta">${Math.max(0, h.attack - pen)}/${Math.max(0, h.defence - pen)}% · ${h.state}${hold}${wounds}${body}</span>${rm}</li>`;
+    return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(unitName(h.unit))} · ${place[h.role]}${h.leader ? " · leader" : ""}</span></span><span class="meta">${Math.max(0, h.attack - pa)}/${Math.max(0, h.defence - pd)}% · ${h.state}${hold}${sickText(h)}${wounds}${body}</span>${rm}</li>`;
   }).join("");
   const fighters = setup ? rollerFighters() : [];
   $("#hero-box").hidden = !setup;
