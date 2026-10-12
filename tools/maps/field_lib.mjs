@@ -13,6 +13,12 @@ export const N = 1, S = 4;
 // A smooth wobble for drawn edges: a sum of sines, fixed so the file is the same each run.
 export const wobble = (r, a, b) => 1.4 * Math.sin(r / 5.3 + a) + 0.8 * Math.sin(r / 2.1 + b);
 export const lerp = (a, b, t) => a + (b - a) * t;
+// A fixed scatter: true for about one hex in n, with no pattern to the eye (a hash of the hex).
+export function speckle(c, r, n){
+  let h = Math.imul(c, 374761393) + Math.imul(r, 668265263);
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) % n === 0;
+}
 // Whether hex (c, r) is inside a rounded, uneven patch: an ellipse {cx, cy, rx, ry} whose edge
 // wobbles by the phases {a, b}.
 export function patch(c, r, { cx, cy, rx, ry, a = 0, b = 0 }){

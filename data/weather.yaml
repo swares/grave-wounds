@@ -190,3 +190,11 @@ climates:
     rain: [15, 12, 12, 12, 11, 10, 9, 9, 10, 11, 12, 15]
     fog:  [2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2]
     wind_from: [6, 5, 7, 8, 14, 24, 22, 14]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW
+  high_plains:
+    name: "Northern High Plains, semi-arid"
+    note: "Like the Bighorn foothills (Sheridan, Wyoming): cold dry winters with snow and bitter spells, hot dry summers, wind from the north-west."
+    high: [2, 4, 9, 14, 19, 25, 31, 30, 24, 16, 8, 3]
+    low:  [-11, -10, -5, -1, 4, 8, 12, 11, 6, -1, -7, -11]
+    rain: [5, 6, 7, 8, 9, 7, 5, 4, 5, 6, 5, 5]
+    fog:  [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1]
+    wind_from: [10, 5, 5, 10, 10, 12, 18, 30]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW

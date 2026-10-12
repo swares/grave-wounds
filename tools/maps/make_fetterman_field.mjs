@@ -1,0 +1,80 @@
+// Builds data/fields/fetterman-1866.yaml: the Fetterman Fight, north of Fort Phil Kearny, on
+// 21 December 1866, on the field map at 10 m a hex. Run from this folder after editing:
+// node make_fetterman_field.mjs (no packages needed).
+//
+// Sources, all plain fact, and the drawing is ours: decoys drew Captain William Fetterman's
+// command (49 men of the 18th Infantry, 27 of the 2nd Cavalry under Lieutenant Grummond, and two
+// civilians, Wheatley and Fisher, with repeating rifles) over Lodge Trail Ridge and along its
+// narrow crest towards Peno Creek. Warriors of the Lakota (Minneconjou, Oglala and Brulé), the
+// Northern Cheyenne and the Northern Arapaho, about a thousand, rose from the ravines on both
+// sides and from the flats beyond. The infantry fought from rocks near the south end of the
+// fight, where the monument stands; the cavalry, about a mile ahead, fell back to a flat stretch
+// of the ridge some 400 yards north of them; Wheatley and Fisher held rocks between. All 81 were
+// killed. The ridge, the ravines and the creek are drawn by hand to that shape, not traced from
+// any map, and are approximate; the deployment is the moment the decoys turned, in our own
+// words, with round numbers for play.
+import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+
+const COLS = 150, ROWS = 120;                 // 1500 m east to west, about 1040 m north to south
+const crest = r => 75 + wobble(r / 3, 0.5, 1.9) * 1.2 + (r < 40 ? (40 - r) * 0.08 : 0);   // the ridge's crest line, north to south
+const creek = c => 12 + wobble(c / 4, 1.1, 0.3) * 0.9;                                   // Peno Creek across the flats
+function kind(c, r){
+  const k = crest(r), off = Math.abs(c - k);
+  if (r >= creek(c) - 1 && r <= creek(c) + 1) return "m";                                 // the creek bottom, brush and ice
+  if (r < 22) return speckle(c, r, 14) ? "r" : ".";                                        // the flats beyond the ridge: sage and cutbanks
+  if (patch(c, r, { cx: k - 2, cy: 88, rx: 6, ry: 5, a: 0.4, b: 1.2 })) return "r";       // the rocks where the infantry fought
+  if (patch(c, r, { cx: k + 3, cy: 64, rx: 4, ry: 3, a: 1.7, b: 0.2 })) return "r";       // rocks on the crest (Wheatley and Fisher)
+  if (off <= 7) return "h";                                                               // the ridge's narrow crest
+  if (ravine(c, r)) return "r";                                                           // ravines and gullies down the slopes
+  return ".";                                                                             // grass under a little snow
+}
+function ravine(c, r){                         // three gullies on each side, cutting down from the crest
+  for (const [x0, y0, dx] of [[60, 30, -1], [58, 62, -1], [62, 96, -1], [90, 36, 1], [92, 70, 1], [88, 104, 1]]){
+    const t = (c - x0) * dx;
+    if (t >= 0 && t <= 40 && Math.abs(r - (y0 + t * 0.35 + wobble(t / 3, x0, y0) * 0.8)) <= 2) return true;
+  }
+  return false;
+}
+const grid = groundGrid(COLS, ROWS, kind);
+
+// ---------- the armies (pos is the middle of the front row) ----------
+const US = { side: 0, facing: N }, NATIONS = { side: 1, facing: S };
+const INF = { quality: "regular", weapon: "rifle_musket", kit: "none", formation: "open", mounted: false };
+const CAV = { quality: "regular", weapon: "breechloader", kit: "none", formation: "open", mounted: true };
+const BOWS = { quality: "veteran", weapon: "bow", kit: "rawhide_shield", formation: "open", mounted: true };
+const FOOT = { ...BOWS, mounted: false };
+const units = [
+  unit("18th Infantry (Fetterman and Brown)", US, 49, INF, [3, 73, 86]),
+  unit("Wheatley and Fisher (civilians, repeating rifles)", US, 2, { ...CAV, quality: "veteran", mounted: false }, [1, 77, 62]),
+  unit("2nd Cavalry, Company C (Grummond)", US, 27, CAV, [2, 75, 30]),
+  unit("The decoys (Lakota, Cheyenne and Arapaho)", NATIONS, 10, BOWS, [1, 76, 18]),
+  unit("Lakota horsemen on the flats beyond the creek", NATIONS, 300, BOWS, [15, 68, 4]),
+  unit("Lakota on foot in the west ravines", NATIONS, 350, FOOT, [9, 20, 46]),
+  unit("Cheyenne and Arapaho in the east ravines", NATIONS, 350, BOWS, [9, 116, 50]),
+];
+
+writeField({
+  id: "fetterman-1866", name: "The Fetterman Fight, 21 December 1866", sides: ["US Army", "Lakota, Cheyenne and Arapaho"],
+  table: "indian-wars-1865-71-arrows",
+  travel: { map: "phil-kearny-1866", place: "Fetterman battlefield", within: 2, sides: ["US Army", "Lakota, Cheyenne and Arapaho"] },
+  weather: "{cond: fair, wind: calm, dir: NW, ground: {mud: 0, snow: 1}}",
+  grid, units,
+  header: [
+    `The Fetterman Fight, north of Fort Phil Kearny, 21 December 1866, at 10 m a hex: ${COLS} x ${ROWS} hexes, about`,
+    "1500 m east to west and 1040 m north to south, north at the top: the north end of Lodge Trail",
+    "Ridge down the middle, ravines on both sides, Peno Creek and its flats at the top.",
+    "Generated by tools/maps/make_fetterman_field.mjs: edit that file and re-run it rather than this one.",
+    "The ridge, the ravines, the rocks and the creek are drawn by hand to the shape the accounts",
+    "give, not traced from any map; the deployment is the moment the decoys turned, in our own",
+    "words, with round numbers for play. Cold and clear, a little snow on the ground.",
+    "",
+    "What happened, briefly: the wood train was attacked on its way to the pinery, and Fetterman",
+    "led a relief out of the fort. Ten decoys, Lakota, Cheyenne and Arapaho, drew him over Lodge",
+    "Trail Ridge, against orders, and along its crest. At a signal about a thousand warriors came",
+    "up out of the ravines and across the flats. The cavalry, ahead, fell back up the ridge; the",
+    "infantry fought from the rocks; within the hour all 81 soldiers and civilians were dead.",
+    "The warriors' own losses are put by different accounts at about a dozen to many more. It was",
+    "the Army's worst loss on the Plains until the Little Bighorn ten years later.",
+  ],
+});
+console.log(grid.map(r => r.join("")).join("\n"));

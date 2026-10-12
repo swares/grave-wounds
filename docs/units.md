@@ -739,6 +739,42 @@ down the west side and Chinn Ridge beyond it.
 
 It is drawn by `tools/maps/make_bull_run_field.mjs`.
 
+**The Fetterman Fight, 21 December 1866** (`data/fields/fetterman-1866.yaml`). The field is
+150 × 120 hexes, about 1,640 yards (1,500 m) east to west and 1,140 yards (1,040 m) north to
+south, north at the top: the north end of Lodge Trail Ridge.
+- The ridge's narrow crest (high ground) down the middle, with rocks (rough) where the
+  infantry fought near its south end and where Wheatley and Fisher held further north;
+  ravines (rough) cutting down both slopes; Peno Creek (marsh) and its flats at the top.
+- Clear and cold, a little snow on the ground.
+- The moment the decoys turned: the 18th Infantry (49 men, rifle-muskets, open order) on the
+  rocks; Wheatley and Fisher (2 civilians with repeating rifles, as breech-loaders) further
+  up; the 2nd Cavalry's 27 troopers (Spencer carbines, as breech-loaders) a long way ahead.
+- About a thousand warriors: the ten decoys, Lakota horsemen on the flats beyond the creek,
+  Lakota on foot in the west ravines, and Cheyenne and Arapaho in the east ravines, with bows
+  and rawhide shields (veteran).
+- The wound table is the Army surgeons' arrow report, with the Civil War's gunshots borrowed.
+
+It is drawn by `tools/maps/make_fetterman_field.mjs`.
+
+**The Wagon Box Fight, 2 August 1867** (`data/fields/wagon-box-1867.yaml`). The field is
+100 × 80 hexes, about 1,090 yards (1,000 m) east to west and 750 yards (690 m) north to south,
+north at the top: the plateau between the Big Piney (top) and the Little Piney (bottom).
+- Open summer grass; the creek bottoms (marsh) with cottonwoods and pines (woods) along them,
+  pine woods towards the pinery to the west, a ravine (rough) to the east.
+- The corral in the middle: a ring of wagon hexes round two hexes (wagons: −40% to shots at
+  the men behind them, no way through, no horses). The real corral of 14 boxes was about 60-70
+  feet by 25-30 feet: the ring is larger than it was.
+- Captain Powell's 26 soldiers of the 27th Infantry with Springfield breech-loaders, and 6
+  civilians with repeating rifles, in the corral.
+- The first charge: mounted warriors (Lakota and Cheyenne) from the north, warriors on foot
+  from the ravine, and warriors with guns along the plateau's edge to the west. Estimates of
+  the warriors present run from 300 to 1,000; here 650.
+- The relief column with its mountain howitzer, which came in the early afternoon, is not on
+  the map: on its move the Army side can bring it on with **Add a unit**.
+- Fair, a breeze from the west.
+
+It is drawn by `tools/maps/make_wagon_box_field.mjs`.
+
 **Mons, 23 August 1914** (`data/fields/mons-1914.yaml`). The field is 150 × 120 hexes, about
 1,640 yards (1,500 m) east to west and 1,140 yards (1,040 m) north to south, north at the top:
 the canal salient at Nimy.
