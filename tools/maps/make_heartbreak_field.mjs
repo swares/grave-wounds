@@ -15,14 +15,20 @@ const COLS = 170, ROWS = 260;                 // 1700 m east to west, about 2250
 const CREST = r => 96 + Math.round(wobble(r / 12, 0.4, 1.7) * 2);       // the ridge's crest, north to south
 const H931 = [CREST(70), 70], H894 = [CREST(228), 228];
 const VALLEY = 22;                                                      // the Mundung-ni valley along the west edge
-function kind(c, r){
+function valley(c, r){                            // the Mundung-ni valley: its stream, the track and the paddies
   if (Math.abs(c - VALLEY) <= 1) return "m";                                                            // the valley's stream
   if (c > VALLEY + 1 && c <= VALLEY + 9) return ".";                                                    // the track and the dry fields beside it
-  if (Math.abs(c - VALLEY) <= 10) return speckle(c, r, 3) ? "m" : ".";                                  // paddies
+  return speckle(c, r, 3) ? "m" : ".";                                                                  // paddies
+}
+function onRidge(c, r){                           // the crest, the peaks and the spurs running down off the ridge
   const d = Math.abs(c - CREST(r));
-  if (d <= 3) return speckle(c, r, 4) ? "r" : "h";                                                       // the crest: narrow, rocky
-  if (patch(c, r, { cx: H931[0], cy: H931[1], rx: 10, ry: 8 }) || patch(c, r, { cx: H894[0], cy: H894[1], rx: 9, ry: 7 })) return speckle(c, r, 3) ? "r" : "h";
-  if (r % 40 < 4 && d < 50) return speckle(c, r, 3) ? "r" : "h";                                        // the spurs running down off the ridge
+  const peak = patch(c, r, { cx: H931[0], cy: H931[1], rx: 10, ry: 8 }) || patch(c, r, { cx: H894[0], cy: H894[1], rx: 9, ry: 7 });
+  return peak || (r % 40 < 4 && d < 50);
+}
+function kind(c, r){
+  if (Math.abs(c - VALLEY) <= 10) return valley(c, r);
+  if (Math.abs(c - CREST(r)) <= 3) return speckle(c, r, 4) ? "r" : "h";                                 // the crest: narrow, rocky
+  if (onRidge(c, r)) return speckle(c, r, 3) ? "r" : "h";
   return speckle(c, r, 3) ? "F" : "r";                                                                   // steep wooded slopes, shattered by shellfire
 }
 const grid = groundGrid(COLS, ROWS, kind);
