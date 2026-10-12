@@ -156,17 +156,16 @@ def advance(d: Data, m: dict, path: list, index: int, used: float, hours: float,
     Returns {index, used, carried}: carried is the hours already marched into the next hex (the
     `carried` given counts towards it), so a march in short steps loses no time. A new day is
     the caller's business."""
-    target, done = min(used + hours, hpd), carried
+    target, start = min(used + hours, hpd), index
     while index + 1 < len(path):
-        st = max(0, step_hours(d, m, path[index], path[index + 1], ftype, ground, speed) - done)
+        st = max(0, step_hours(d, m, path[index], path[index + 1], ftype, ground, speed) - (carried if index == start else 0))
         if used + st > target + 1e-9:
             break
         used += st
         index += 1
-        done = 0
     if index + 1 >= len(path):
         return {"index": index, "used": used, "carried": 0}
-    return {"index": index, "used": max(used, target), "carried": done + max(0, target - used)}
+    return {"index": index, "used": max(used, target), "carried": (carried if index == start else 0) + max(0, target - used)}
 
 
 # ---------- making camp ----------
