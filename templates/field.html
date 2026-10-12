@@ -669,7 +669,8 @@ function bunkerText(l, nm){                       // a bunker stormed (it falls 
 function fireText(l){                             // a battery's shells: on a hex (shell or smoke), or on an enemy battery
   const who = `${l.name} (${l.side})`, shells = nOf(l.shells, "shell");
   if (l.kind === "counter"){
-    const crew = l.struck ? ` ${nOf(l.struck, "crewman", "crewmen")} struck, ${l.down} down${l.dead ? ` (${l.dead} dead)` : ""};` : "";
+    const dead = l.dead ? " (" + l.dead + " dead)" : "";
+    const crew = l.struck ? ` ${nOf(l.struck, "crewman", "crewmen")} struck, ${l.down} down${dead};` : "";
     return `${who} fire ${shells} on ${l.tname} (counter-battery): ${nOf(l.knocked, "tube")} knocked out;${crew} ${l.served} of ${l.left} tubes can fire, ${l.crew} crew left.`;
   }
   return `${who} ${l.smoke ? "lay smoke with" : "fire"} ${shells} on ${l.at[0] + 1},${l.at[1] + 1}.`;

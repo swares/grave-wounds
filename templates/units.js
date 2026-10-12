@@ -851,7 +851,7 @@ function downwind(field){                         // the hex side (0-5) the wind
   return side;
 }
 function smokeDrifts(field){                      // smoke moves `drift` hexes downwind; off the map it is gone
-  const sm = field?.smoke, side = sm ? downwind(field) : null, n = (UD.indirect.smoke.drift || {})[field?.weather?.wind || "calm"] || 0;
+  const sm = field?.smoke, side = sm ? downwind(field) : null, n = UD.indirect.smoke.drift?.[field?.weather?.wind || "calm"] || 0;
   if (side === null || !n) return;
   const size = field.size, out = {};
   for (const [key, left] of Object.entries(sm)){

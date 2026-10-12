@@ -1596,7 +1596,7 @@ function downwind(field){                         // the hex side (0-5) the wind
   return side;
 }
 function smokeDrifts(field){                      // smoke moves `drift` hexes downwind; off the map it is gone
-  const sm = field?.smoke, side = sm ? downwind(field) : null, n = (UD.indirect.smoke.drift || {})[field?.weather?.wind || "calm"] || 0;
+  const sm = field?.smoke, side = sm ? downwind(field) : null, n = UD.indirect.smoke.drift?.[field?.weather?.wind || "calm"] || 0;
   if (side === null || !n) return;
   const size = field.size, out = {};
   for (const [key, left] of Object.entries(sm)){
@@ -2293,7 +2293,8 @@ function bunkerText(l, nm){                       // a bunker stormed (it falls 
 function fireText(l){                             // a battery's shells: on a hex (shell or smoke), or on an enemy battery
   const who = `${l.name} (${l.side})`, shells = nOf(l.shells, "shell");
   if (l.kind === "counter"){
-    const crew = l.struck ? ` ${nOf(l.struck, "crewman", "crewmen")} struck, ${l.down} down${l.dead ? ` (${l.dead} dead)` : ""};` : "";
+    const dead = l.dead ? " (" + l.dead + " dead)" : "";
+    const crew = l.struck ? ` ${nOf(l.struck, "crewman", "crewmen")} struck, ${l.down} down${dead};` : "";
     return `${who} fire ${shells} on ${l.tname} (counter-battery): ${nOf(l.knocked, "tube")} knocked out;${crew} ${l.served} of ${l.left} tubes can fire, ${l.crew} crew left.`;
   }
   return `${who} ${l.smoke ? "lay smoke with" : "fire"} ${shells} on ${l.at[0] + 1},${l.at[1] + 1}.`;

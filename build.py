@@ -282,8 +282,9 @@ def _indirect_rules(d) -> list[str]:
     ]
 
 
-def _support_rules(I: dict) -> str:
+def _support_rules(ind: dict) -> str:
     """Counter-battery, crews, displacing, smoke drift and fire plans, for the book."""
+    I = ind
     CB, K = I["counter_battery"], I["kinds"]
     crews = ", ".join(f"{k['name'].lower()} {k['crew']} (fires with {k['serve']})" for k in K.values() if not k.get("direct"))
     moves = ", ".join(f"{k['name'].lower()} {k['displace']}" for k in K.values() if k.get("displace"))
