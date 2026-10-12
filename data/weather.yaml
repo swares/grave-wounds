@@ -76,15 +76,30 @@ conditions:
 # shows it (`moon_shows`), else dark.
 light:
   levels:
-    day:     {name: "Daylight",      sight: null, aim: 0}
-    dusk:    {name: "Dusk or dawn",  sight: 100,  aim: 5}
-    moonlit: {name: "Moonlit night", sight: 50,   aim: 10}
-    night:   {name: "Dark night",    sight: 25,   aim: 20}
+    day:     {name: "Daylight",      sight: null, aim: 0,  move: 0, lost: 0}
+    dusk:    {name: "Dusk or dawn",  sight: 100,  aim: 5,  move: 0, lost: 0}
+    moonlit: {name: "Moonlit night", sight: 50,   aim: 10, move: 1, lost: 10}
+    night:   {name: "Dark night",    sight: 25,   aim: 20, move: 1, lost: 25}
   dusk_hours: 0.5
   moon_from: 0.5
   moon_shows: [fair]
   lasts: 2                  # exchanges a flare or illumination round lights its hexes
   flare: 10                 # field hexes round a flare the GM fires (hand or rifle flares, about 100 m)
+  # Muzzle flashes: a unit that fired when the light limits sight to less than `flash` is seen,
+  # where it fired from, out to `flash` battle hexes (2 m) through the next exchange.
+  flash: 150
+  # Night-vision goggles and thermal sights: men in these kits see `sight` battle hexes in the
+  # dark (if the light's own sight is shorter) and aim `aim` % off (if the light's is worse).
+  night_vision: {kits: [ranger_1993, interceptor, plate_carrier], sight: 150, aim: 5}
+  # A machine gun laid on a fixed line (in daylight or at dusk) fires blind down it in the dark,
+  # at any enemy within `width` field hexes of the line from its front to the hex it is laid on:
+  # no sight needed, `aim` % off in place of the light's.
+  fixed_line: {width: 1, aim: 15}
+  # move: added to each hex's movement in the dark. lost: % chance that a unit that moved in the
+  # dark loses its direction (plus half of how far its quality's nerve is below 60, less half of
+  # how far above): it ends turned one point off, and cannot move for `lost_for` exchanges
+  # (it may still turn).
+  lost_for: 2
 
 # ---------- the ground ----------
 # Mud and lying snow build up and wear off day by day; heavy rain floods fords.

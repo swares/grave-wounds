@@ -141,12 +141,12 @@ night. In the dark no one can see to aim at, or to call fire on, anything furthe
 light allows, and aimed fire, the guns' too, is harder. The weather's own limit still
 applies: whichever is shorter counts.
 
-| Light | No aiming or calling fire beyond | Aimed fire |
-|---|---|---|
-| Daylight | (the weather's limit) | – |
-| Dusk or dawn | 20 hexes (219 yards, 200 m) | −5% |
-| Moonlit night | 10 hexes (109 yards, 100 m) | −10% |
-| Dark night | 5 hexes (55 yards, 50 m) | −20% |
+| Light | No aiming or calling fire beyond | Aimed fire | Movement | Losing direction |
+|---|---|---|---|---|
+| Daylight | (the weather's limit) | – | – | – |
+| Dusk or dawn | 20 hexes (219 yards, 200 m) | −5% | – | – |
+| Moonlit night | 10 hexes (109 yards, 100 m) | −10% | +1 a hex | 10% |
+| Dark night | 5 hexes (55 yards, 50 m) | −20% | +1 a hex | 25% |
 
 - **Flares and illumination.** A hex that is lit is seen as if by day: no limit from the
   dark, and no penalty, for shots at it or for calling fire on it. The GM fires a flare
@@ -160,8 +160,25 @@ applies: whichever is shorter counts.
   rises about 50 minutes later each day, with the sun at new moon and at sunset when full,
   and is up for 12 hours, so the hour can be off by an hour or so. The travel map's clock
   shows the light.
-- What it leaves out: muzzle flashes, machine guns firing on fixed lines laid by day, and
-  men losing their way in the dark. The GM can rule on these.
+- **Muzzle flashes.** A unit that fires when the light limits sight to less than 30 hexes
+  (328 yards, 300 m) shows where it is. Through the next exchange the hexes it fired from
+  can be aimed at, and fire called on, from up to 30 hexes away. The light's aim penalty
+  still applies. They show as a small star on the map, and the log says when a shot was
+  aimed at muzzle flashes.
+- **Night vision.** Men with night-vision goggles or thermal sights see and aim further in
+  the dark. These are the Rangers' kit of 1993, Interceptor body armour and the plate
+  carrier. They see 30 hexes (328 yards, 300 m) and aim −5% at worst.
+- **Fixed lines.** A machine-gun unit can be **laid on a fixed line** (**Lay a fixed line**,
+  then click the hex). This is done before the battle, by day or at dusk, and the line
+  shows as a red dashed line. In the dark, when it has no target it can see, the unit
+  fires blind down the line at the nearest enemy within 1 hex of it, in range, at −15%.
+  The fog or the dark does not stop it.
+- **Moving in the dark** costs 1 more a hex on a moonlit or dark night.
+- **Losing direction.** Each unit that moved in the dark may lose its way when its side's
+  move ends. The chance is the light's figure, plus half of how far its quality's Nerve is
+  below 60 (less half of how far above): green +12%, regular +5%, veteran −2%. A unit
+  that loses its way ends turned one point off its line, if it still fits. It cannot move
+  next exchange, though it may turn.
 
 ## Cold (the field map)
 

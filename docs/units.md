@@ -1172,7 +1172,8 @@ is 150 × 120 hexes, about 1,640 by 1,140 yards (1,500 by 1,040 m), north at the
 - **Bitter cold** (automatic weapons jam 25% more, +1 movement a hex). Snow lies, the wind
   is strong from the north-west, and it is a **dark night**.
 - United States (dug in): Fox Company's three platoons round the crest, its heavy machine
-  guns, and the headquarters, mortars and road block.
+  guns (laid on a **fixed line** up the slope to the heights), and the headquarters, mortars
+  and road block.
 - Chinese (veteran): battalions from the heights to the north, from the north-east and across
   the road, with machine guns.
 - Fire support: 105 mm howitzers at Hagaru-ri, the company's 60 mm mortars, Corsairs (by day
@@ -1213,7 +1214,8 @@ hexes, about 1,750 by 1,240 yards (1,600 by 1,130 m), north at the top.
   the bottom. The valleys between are old paddies, craters and wire.
 - A **dark night**.
 - United Nations (M1952 flak vests): E Company, 31st Infantry in the north and west trenches
-  with its machine guns, L Company on Hill 200, and K Company coming up from the main line.
+  with its machine guns (laid on a **fixed line** down the north slope), L Company on Hill
+  200, and K Company coming up from the main line.
 - Chinese (veteran, submachine guns): a battalion up the north slope, a company from Old Baldy
   in the west, and machine guns.
 - Fire support: the 7th Division's artillery ("flash fire" round the outposts), heavy
@@ -1242,7 +1244,8 @@ hexes, about 1,640 by 1,040 yards (1,500 by 950 m), north at the top.
   craters, with jungle beyond.
 - **Fog** on a **dark night**.
 - United States (flak vests, in the trenches): E Company, 2nd Battalion, 26th Marines on the
-  north and flanks, its reserve platoon, and its machine guns.
+  north and flanks, its reserve platoon, and its machine guns (laid on a **fixed line**
+  through the north wire).
 - North Vietnamese (veteran): a battalion through the north wire, a company from the
   north-west, and machine guns.
 - Fire support: the base's howitzers and 4.2-inch mortars and the guns on 881 South; North

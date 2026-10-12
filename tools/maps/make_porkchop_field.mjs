@@ -46,7 +46,7 @@ const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army,
 const units = [
   at("E Company, 31st Infantry (the north trenches)", UN, 50, GI, 10, [TOP[0], TOP[1] - 9], N),
   at("E Company, 31st Infantry (the west trenches)", UN, 30, GI, 6, [TOP[0] - 9, TOP[1] + 2], 3),
-  at("E Company's machine guns", UN, 10, MG, 2, [TOP[0] + 6, TOP[1] - 7], N),
+  { ...at("E Company's machine guns", UN, 10, MG, 2, [TOP[0] + 6, TOP[1] - 7], N), fixed: [TOP[0], 18] },   // laid by day down the north slope
   at("L Company, 31st Infantry (Hill 200)", UN, 120, GI, 12, [H200[0], H200[1] - 5], 2),
   at("K Company, 31st Infantry (from the main line)", UN, 135, GI, 20, [80, 122], N),
   at("Chinese battalion up the north slope", CH, 400, PVA, 30, [TOP[0], 18], S),
