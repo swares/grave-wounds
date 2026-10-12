@@ -1248,6 +1248,19 @@ hexes, about 1,640 by 1,040 yards (1,500 by 950 m), north at the top.
 - Fire support: the base's howitzers and 4.2-inch mortars and the guns on 881 South; North
   Vietnamese mortars, rockets and guns.
 
+**Hill 875, Dak To, 19 November 1967** (`data/fields/dakto-1967.yaml`). The field is 120 × 140
+hexes, about 1,310 by 1,330 yards (1,200 by 1,210 m), north at the top.
+- The crest is below the middle, ringed with **bunkers** and two lines of **trenches**. The
+  north slope above it is shattered bamboo and fallen trees, with jungle all round.
+- Fair and dry.
+- United States (veteran paratroopers, flak vests): two companies of the 2nd Battalion, 503rd
+  Infantry going up the north slope, a third cutting a landing zone behind them, and
+  machine guns.
+- North Vietnamese (veteran, dug in): the 174th Regiment on the crest and in the lower
+  trenches, with machine guns, and a company coming in behind the Americans from the west.
+- Fire support: howitzers at the fire bases, fighter-bombers and the battalion's mortars;
+  North Vietnamese mortars.
+
 The **Battlefield** picker lists the battlefields under their periods, oldest first, as the
 travel map's **Map** picker does: a battlefield's own `period` (optional), else its wound
 table's conflict.
