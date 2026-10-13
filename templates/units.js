@@ -1573,14 +1573,30 @@ function flee(units, i, size, field = null){      // a broken unit runs straight
 
 // ---------- the enemy commander (as gravewounds.commander) ----------
 const ROUTED = new Set(["broken", "fled"]);
-function command(units, side, size, field, rng, exchange = null, stance = "attack"){   // {units, orders}: each unit of side ordered in turn, by its quality (units.yaml commander); stance attack or hold
+function command(units, side, size, field, rng, exchange = null, stance = "attack", memory = null){   // {units, orders}: each unit of side ordered in turn, by its quality (units.yaml commander); stance attack or hold; memory: where it last saw each enemy (updated in place)
   const us = units.map(u => ({ ...u })), orders = [];
+  const known = sightings(us, side, field, exchange, memory ?? {});
   for (let i = 0; i < us.length; i++){
     if (us[i].side !== side || !commandable(us, i, exchange)) continue;
-    const roll = rng.randint(1, 100), o = unitOrder(us, i, [size, field, stance], roll);
+    const roll = rng.randint(1, 100), o = unitOrder(us, i, [size, field, stance, known, exchange], roll);
     if (o){ orders.push({ unit: i, ...o }); applyOrder(us, i, o) }
   }
   return { units: us, orders };
+}
+function sightings(us, side, field, exchange, memory){   // {index: {pos, facing, ex}}: enemies seen now where they stand; others where last seen, for remember exchanges
+  const ex = exchange ?? 0;
+  us.forEach((e, j) => {
+    const k = String(j);
+    if (e.side === side) return;
+    if (ROUTED.has(e.state) || e.men <= 0) delete memory[k];
+    else if (seenBy(us, side, field, e)) memory[k] = { pos: [...e.pos], facing: e.facing, ex };
+    else if (k in memory && ex - memory[k].ex > UD.commander.remember) delete memory[k];
+  });
+  return memory;
+}
+function seenBy(us, side, field, e){              // a unit of side sees enemy e: its middle hex or either end of its front row
+  const rows = footprint(e), marks = [e.pos, ...(rows.length ? [rows[0][0], rows[0].at(-1)] : [])];
+  return marks.some(h => spotted(us, field, side, h));
 }
 function commandable(us, i, exchange){            // standing, not a battery, not in contact, not just come on
   const u = us[i];
@@ -1588,22 +1604,35 @@ function commandable(us, i, exchange){            // standing, not a battery, no
   if (exchange !== null && u.arrived === exchange) return false;
   return !inContact(us, occupancy(us), i);
 }
-function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance]
-  const u = us[i], C = UD.commander, t = aiTarget(us, i);
-  if (t === null) return null;
+function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance, known, exchange]
+  const u = us[i], C = UD.commander, t = aiTarget(us, i, ctx[3]);
   if (u.state !== "steady") return !u.prone && underFire(us, i) ? { act: "ground", target: t } : null;
+  if (t === null) return null;
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
   return bestOrder(us, i, t, ctx);
 }
-function aiTarget(us, i){                          // the nearest enemy unit still standing (the first of equals), or null
+function aiTarget(us, i, known = null){            // the enemy unit it goes for among those its side knows of (null: every one standing), by threatScore (the first of equals), or null
   const u = us[i];
   let best = null;
   us.forEach((e, j) => {
-    if (e.side === u.side || ROUTED.has(e.state) || e.men <= 0) return;
-    const dist = hdist(u.pos, e.pos);
-    if (best === null || dist < best[0]) best = [dist, j];
+    if (e.side === u.side || ROUTED.has(e.state) || e.men <= 0 || (known !== null && !(String(j) in known))) return;
+    const sc = threatScore(u, e, knownAt(us, j, known));
+    if (best === null || sc > best[0]) best = [sc, j];
   });
   return best ? best[1] : null;
+}
+function knownAt(us, j, known){                   // enemy unit j where its side last saw it (as it is if seen now)
+  const m = known?.[String(j)];
+  return m ? { ...us[j], pos: m.pos, facing: m.facing } : us[j];
+}
+function threatScore(u, e, seen){                 // how much u wants enemy e: closing off a hex away; by its quality's sense, % of e down, e shaken, e a danger to it
+  const C = UD.commander, dist = hdist(u.pos, seen.pos), sense = C.sense[u.quality] ?? 0;
+  if (!sense) return -C.closing * dist;
+  const down = Math.floor((e.down || 0) * 100 / Math.max(1, e.start || e.men));
+  const shooter = "range" in FD.weapons[u.weapon], theirs = "range" in FD.weapons[e.weapon];
+  const danger = (!shooter && theirs) || (shooter && !theirs && dist <= allowance(e) * UD.charge_move);
+  const weak = C.hurt * down + (e.state === "shaken" ? C.shaken : 0) + (danger ? C.threat : 0);
+  return sense * weak - C.closing * dist;
 }
 function underFire(us, i){                         // an enemy unit's missile weapon reaches unit i
   const u = us[i];
@@ -1614,18 +1643,19 @@ function mayCharge(u, t, stance = "attack"){       // men without missiles, stea
   const mine = u.men * quality(u.quality).attack, theirs = t.men * quality(t.quality).attack;
   return 100 * mine >= (UD.commander.charge_odds[stance][u.quality] ?? 100) * theirs;
 }
-function bestOrder(us, i, t, [size, field, stance]){   // the best-scoring hex it can legally reach, facing the target; holding, it only charges, else stays
-  const u = us[i], tu = us[t], hold = stance === "hold";
+function bestOrder(us, i, t, [size, field, stance, known, exchange]){   // the best-scoring hex it can legally reach, facing the target (where last seen); holding, it only charges, else stays
+  const u = us[i], tu = knownAt(us, t, known), hold = stance === "hold";
+  const last = known?.[String(t)]?.ex, ago = last !== undefined && last !== (exchange ?? 0) ? { last } : {};
   const free = u.prone ? { ...u, prone: false } : u, base = us.map((x, k) => (k === i ? free : x));
   const shooter = "range" in FD.weapons[u.weapon], charge = mayCharge(u, tu, stance);
   const best = firstMove(base, i, tu, [size, field], [charge, hold, shooter]);
   if (best === null){
-    const f = bearing(u.pos, tu.pos);
-    return hold && moveUnit(base, i, u.pos, f, size, field).ok ? stayOrder(us, i, t, f, shooter) : null;
+    const f = bearing(u.pos, tu.pos), o = hold && moveUnit(base, i, u.pos, f, size, field).ok ? stayOrder(us, i, t, f, shooter) : null;
+    return o && { ...o, ...ago };
   }
   const [h, f, m] = best;
-  if (h[0] === u.pos[0] && h[1] === u.pos[1]) return stayOrder(us, i, t, f, shooter);
-  return { act: m.charge ? "charge" : "move", target: t, pos: h, facing: f, cost: m.cost, ...(u.prone ? { up: true } : {}) };
+  if (h[0] === u.pos[0] && h[1] === u.pos[1]){ const o = stayOrder(us, i, t, f, shooter); return o && { ...o, ...ago } }
+  return { act: m.charge ? "charge" : "move", target: t, pos: h, facing: f, cost: m.cost, ...(u.prone ? { up: true } : {}), ...ago };
 }
 function firstMove(base, i, tu, [size, field], [charge, hold, shooter]){   // [hex, facing, move] for the best-scoring hex it will move to, or null
   const u = base[i];

@@ -217,7 +217,22 @@ changes: you still press the side's *done* button, and you can still adjust its 
 hand before you do. It is a rule of thumb, as a GM would play the other side, not a
 general. All its numbers are in units.yaml `commander`.
 
-- **Its target.** Each unit takes the nearest enemy unit still standing.
+- **What it knows.** It knows of an enemy unit one of its own units can see now, by the
+  same sight as calling fire: the weather's and the light's reach, woods and buildings in
+  the way, smoke. It is enough to see the enemy's middle hex or either end of its front.
+  An enemy it saw before but cannot see now it remembers where it was last seen, for 3
+  exchanges; then it forgets it. It never targets an enemy it does not know of, and a unit
+  with no enemy known holds where it is. On a dark night, then, a side waits until the
+  enemy comes within sight, or shows itself by firing.
+- **Its target.** Each unit picks among the enemies it knows of. Green men take the
+  nearest. Regulars, and veterans twice as much, weigh up as well:
+  - each % of the enemy's men down, a point;
+  - an enemy that is shaken, 20 points;
+  - an enemy that is a danger to it, 20 points: shooters, for men without missiles; men
+    without missiles within a charge of it, for shooters;
+  - against 10 points off for each hex away.
+  A remembered enemy is gone for where it was last seen, and the log says so ("move 4 hexes
+  toward where Archers (Yorkists) were last seen (exchange 2)").
 - **Not steady.** A shaken unit stays where it is. If an enemy's missile weapon reaches it,
   it goes to ground.
 - **Nerves.** A steady unit first rolls d100. At or under its quality's chance it hesitates
@@ -244,7 +259,8 @@ general. All its numbers are in units.yaml `commander`.
   it can reach with the odds, turns to face its target, or goes to ground.
 
 What it does not do yet:
-- It sees the whole field: no fog of war, even at night.
+- It looks once, at the start of its move: a unit that moves into sight of an enemy does
+  not tell the units ordered after it until the next move.
 - It leaves alone batteries and their orders, calls for fire, air controllers, vehicles'
   riders, fixed lines, reserves and works.
 - It plays only on the field map, not the travel map.

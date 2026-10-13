@@ -14,10 +14,12 @@ When an item is done, delete it here and note it in the pull request that closes
   medieval team followed through. Still to write: the other eras' teams and kit, guns and
   modern fire support, vehicles, night and air in play, and a worked example from a later war.
 - **The enemy commander, beyond the first cut.** A scripted commander moves one side on the
-  field map (attacking or holding, by its units' quality; Undo puts its move back). It sees
-  the whole field, even at night. It leaves batteries, fire support, air controllers,
-  vehicles' riders, fixed lines, reserves and works to the GM. It takes the nearest enemy
-  rather than the weakest or most dangerous, and has no plan beyond each unit's next move.
+  field map (attacking or holding, by its units' quality; Undo puts its move back). It knows
+  only what its units see, remembering last sightings for a few exchanges, and looks once
+  at the start of each move. It leaves batteries, fire support, air controllers,
+  vehicles' riders, fixed lines, reserves and works to the GM. Its units pick their targets
+  one by one (nearest, or hurt, shaken and dangerous for better troops), and it has no plan
+  beyond each unit's next move: no scouting, feints or holding a reserve.
   It does not play the travel map. Later, by the choice made: an optional narrator, using
   a model with a key the player supplies, to explain its orders in prose.
 

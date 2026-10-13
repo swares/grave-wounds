@@ -951,7 +951,7 @@ function drifts(k){                              // in the dark, each unit of si
 }
 function next(){
   if (S.phase === "over") return;
-  if (S.phase === "setup"){ S.exchange = 1; startPhase(0); S.msg = `${S.sides[0]} to move.${caughtUnawares()}`; aiMove(); return render() }
+  if (S.phase === "setup"){ S.exchange = 1; S.aiMemory = null; startPhase(0); S.msg = `${S.sides[0]} to move.${caughtUnawares()}`; aiMove(); return render() }
   if (S.phase === 0){ const lost = drifts(0); startPhase(1); S.msg = `${S.sides[1]} to move.${lost}`; aiMove(); return render() }
   const lostB = drifts(1);
   const r = exchange(S.units, S.table, dice, S.field);
@@ -973,14 +973,21 @@ const aiMoving = () => !!S.ai && moving() === S.ai.side;
 const aiThisMove = () => S.aiDone && S.aiDone.exchange === S.exchange && S.aiDone.phase === S.phase;
 function aiMove(){                                // at the start of its side's move, the commander orders that side
   if (!aiMoving() || aiThisMove()) return;
-  const before = S.units.map(copyUnit), r = command(S.units, S.ai.side, SIZE, S.field, dice, S.exchange, S.ai.stance);
+  const M = aiMemory(), mem = JSON.parse(JSON.stringify(M.mem));
+  const before = S.units.map(copyUnit), r = command(S.units, S.ai.side, SIZE, S.field, dice, S.exchange, S.ai.stance, M.mem);
   S.units = r.units;
-  S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before };
+  S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before, mem };
   const lines = r.orders.map(o => ({ cls: o.act === "charge" ? "morale" : "", text: orderText(o) }));
-  S.log = [{ cls: "head", text: `The commander orders ${S.ai.side} (${stanceWord()}): ${r.orders.length ? nOf(r.orders.length, "order") : "every unit stands"}.` }, ...lines, ...S.log].slice(0, 400);
+  S.log = [{ cls: "head", text: `The commander orders ${S.ai.side} (${stanceWord()}): ${r.orders.length ? nOf(r.orders.length, "order") : "every unit stands"}${Object.keys(M.mem).length ? "" : " (it knows of no enemy: none is in its units' sight)"}.` }, ...lines, ...S.log].slice(0, 400);
+}
+function aiMemory(){                              // where the commander last saw each enemy unit (by index): fresh for a new side, battle or set of units
+  const M = S.aiMemory;
+  if (!M || M.side !== S.ai.side || M.n !== S.units.length) S.aiMemory = { side: S.ai.side, n: S.units.length, mem: {} };
+  return S.aiMemory;
 }
 function orderText(o){                            // "Billmen (Yorkists) move 4 hexes toward Archers (Lancastrians)."
-  const u = S.units[o.unit], t = S.units[o.target], who = unitName(u), them = t ? unitName(t) : "the enemy";
+  const u = S.units[o.unit], t = S.units[o.target], who = unitName(u);
+  const them = t ? `${o.last ? "where " : ""}${unitName(t)}${o.last ? ` were last seen (exchange ${o.last})` : ""}` : "the enemy";
   if (o.act === "charge") return `${who} ${o.up ? "get up and " : ""}charge ${them}.`;
   if (o.act === "move") return `${who} ${o.up ? "get up and " : ""}move ${nOf(o.cost, "hex", "hexes")} toward ${them}.`;
   if (o.act === "turn") return `${who} turn to face ${them}.`;
@@ -990,6 +997,7 @@ function orderText(o){                            // "Billmen (Yorkists) move 4 
 function aiUndo(){                                // its units back where they began this move, for the player to move by hand
   if (!aiThisMove() || !S.aiDone.undo) return;
   S.units = S.aiDone.undo;
+  if (S.aiMemory) S.aiMemory.mem = S.aiDone.mem;
   S.aiDone.undo = null;
   S.msg = `The commander's orders are undone: move ${S.ai.side} yourself, or let it order them again.`;
   render();
