@@ -1668,6 +1668,41 @@
     }
    ]
   },
+  "aa_gun": {
+   "id": "aa_gun",
+   "name": "Anti-aircraft gun (20 mm, 40 mm, ZPU, 37 mm, ZSU-23)",
+   "short": "AA gun",
+   "icon": "machine_gun",
+   "range": [
+    150,
+    400,
+    750
+   ],
+   "ignition": "cartridge",
+   "era": "1939-",
+   "threat": "fragment",
+   "mechanisms": {
+    "ballistic": 90,
+    "crush": 10
+   },
+   "zone_bias": {},
+   "confidence": "extrapolated",
+   "notes": "Light anti-aircraft guns and heavy machine-gun mounts, fought on the field map as a team: they shoot at aircraft attacking near them, and at men as a heavy machine gun.",
+   "mech_ranges": [
+    {
+     "id": "crush",
+     "pct": 10,
+     "lo": 1,
+     "hi": 10
+    },
+    {
+     "id": "ballistic",
+     "pct": 90,
+     "lo": 11,
+     "hi": 100
+    }
+   ]
+  },
   "at_gun": {
    "id": "at_gun",
    "name": "Anti-tank gun (towed: 6-pounder, 57 mm, Pak 38 and 40, 45 mm, 47 mm)",
@@ -7374,6 +7409,7 @@
    "weapons": [
     "rifle_service",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -7395,6 +7431,7 @@
    "own_weapons": [
     "rifle_service",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -7408,6 +7445,7 @@
    "resolve": {
     "rifle_service": "wwii-italy-1944-killed",
     "machine_gun": "wwii-italy-1944-killed",
+    "aa_gun": "wwii-italy-1944-killed",
     "pistol_smg": "wwii-italy-1944-killed",
     "hand_grenade": "wwii-italy-1944-killed",
     "mortar_artillery": "wwii-italy-1944-killed",
@@ -7427,6 +7465,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
     "at_gun": [
      1.0,
      1.0,
@@ -7799,6 +7865,7 @@
    "weapons": [
     "rifle_service",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -7820,6 +7887,7 @@
    "own_weapons": [
     "rifle_service",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -7833,6 +7901,7 @@
    "resolve": {
     "rifle_service": "bougainville-1944-wounded",
     "machine_gun": "bougainville-1944-wounded",
+    "aa_gun": "bougainville-1944-wounded",
     "pistol_smg": "bougainville-1944-wounded",
     "hand_grenade": "bougainville-1944-wounded",
     "mortar_artillery": "bougainville-1944-wounded",
@@ -7852,6 +7921,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     0.9941378564859136,
+     0.9941378564859136,
+     0.9941378564859135,
+     0.9941378564859135,
+     1.0495300764460214,
+     1.0495300764460214,
+     1.0495300764460214,
+     1.0438863594335863,
+     1.0495300764460214,
+     1.0495300764460216,
+     0.9997999544858718,
+     0.9997999544858718,
+     0.9997999544858718,
+     0.9997999544858718,
+     0.9997999544858718,
+     0.9997999544858718,
+     0.9997999544858718,
+     0.9997999544858718,
+     0.9843961622127633,
+     0.9843961622127633,
+     0.9843961622127635,
+     0.9843961622127635,
+     0.9843961622127635,
+     0.9843961622127635,
+     0.9483293718954986,
+     0.9483293718954986
+    ],
     "at_gun": [
      0.9941378564859136,
      0.9941378564859136,
@@ -8240,6 +8337,7 @@
    "weapons": [
     "rifle_service",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -8261,6 +8359,7 @@
    "own_weapons": [
     "rifle_service",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -8274,6 +8373,7 @@
    "resolve": {
     "rifle_service": "bougainville-1944-killed",
     "machine_gun": "bougainville-1944-killed",
+    "aa_gun": "bougainville-1944-killed",
     "pistol_smg": "bougainville-1944-killed",
     "hand_grenade": "bougainville-1944-killed",
     "mortar_artillery": "bougainville-1944-killed",
@@ -8293,6 +8393,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     0.9816513633684308,
+     0.9816513633684308,
+     0.9816513633684306,
+     0.9816513633684307,
+     1.02956031350823,
+     1.02956031350823,
+     1.0295603135082303,
+     1.0191963698803816,
+     1.0295603135082303,
+     1.02956031350823,
+     0.9834324395802242,
+     0.9834324395802242,
+     0.9834324395802243,
+     0.9834324395802243,
+     0.9834324395802243,
+     0.9834324395802243,
+     0.9834324395802242,
+     0.9834324395802242,
+     0.9389584106238272,
+     0.9389584106238272,
+     0.9389584106238272,
+     0.9389584106238272,
+     0.9389584106238273,
+     0.9389584106238273,
+     0.8778970352018407,
+     0.8778970352018407
+    ],
     "at_gun": [
      0.9816513633684308,
      0.9816513633684308,
@@ -8681,6 +8809,7 @@
    "weapons": [
     "rifle_service",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -8702,6 +8831,7 @@
    "own_weapons": [
     "rifle_service",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -8715,6 +8845,7 @@
    "resolve": {
     "rifle_service": "bougainville-1944-all-hits",
     "machine_gun": "bougainville-1944-all-hits",
+    "aa_gun": "bougainville-1944-all-hits",
     "pistol_smg": "bougainville-1944-all-hits",
     "hand_grenade": "bougainville-1944-all-hits",
     "mortar_artillery": "bougainville-1944-all-hits",
@@ -8734,6 +8865,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     0.9925234708122783,
+     0.9925234708122783,
+     0.9925234708122785,
+     0.9925234708122785,
+     1.0467107456339289,
+     1.0467107456339289,
+     1.0467107456339286,
+     1.0404835839779687,
+     1.046710745633929,
+     1.0467107456339289,
+     0.9975228131677256,
+     0.9975228131677256,
+     0.9975228131677255,
+     0.9975228131677255,
+     0.9975228131677255,
+     0.9975228131677255,
+     0.9975228131677256,
+     0.9975228131677256,
+     0.978088167357768,
+     0.978088167357768,
+     0.9780881673577682,
+     0.9780881673577682,
+     0.978088167357768,
+     0.978088167357768,
+     0.9387149218708265,
+     0.9387149218708265
+    ],
     "at_gun": [
      0.9925234708122783,
      0.9925234708122783,
@@ -9122,6 +9281,7 @@
    "weapons": [
     "rifle_service",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -9143,6 +9303,7 @@
    "own_weapons": [
     "rifle_service",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -9156,6 +9317,7 @@
    "resolve": {
     "rifle_service": "owens-wwii",
     "machine_gun": "owens-wwii",
+    "aa_gun": "owens-wwii",
     "pistol_smg": "owens-wwii",
     "hand_grenade": "owens-wwii",
     "mortar_artillery": "owens-wwii",
@@ -9175,6 +9337,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     0.9999999999999999,
+     0.9999999999999999,
+     0.9999999999999998,
+     0.9999999999999998,
+     0.9999999999999999,
+     0.9999999999999999,
+     0.9999999999999998,
+     0.9999999999999998,
+     1.0,
+     0.9999999999999999,
+     0.9999999999999997,
+     0.9999999999999997,
+     0.9999999999999998,
+     0.9999999999999998,
+     0.9999999999999998,
+     0.9999999999999998,
+     0.9999999999999997,
+     0.9999999999999997,
+     0.9999999999999998,
+     0.9999999999999998,
+     0.9999999999999998,
+     0.9999999999999998,
+     0.9999999999999998,
+     0.9999999999999998,
+     0.9999999999999999,
+     0.9999999999999999
+    ],
     "at_gun": [
      0.9999999999999999,
      0.9999999999999999,
@@ -9540,6 +9730,7 @@
    "weapons": [
     "rifle_service",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -9562,6 +9753,7 @@
    "own_weapons": [
     "rifle_service",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -9576,6 +9768,7 @@
    "resolve": {
     "rifle_service": "korea-1950-53-hospitalized",
     "machine_gun": "korea-1950-53-hospitalized",
+    "aa_gun": "korea-1950-53-hospitalized",
     "pistol_smg": "korea-1950-53-hospitalized",
     "hand_grenade": "korea-1950-53-hospitalized",
     "mortar_artillery": "korea-1950-53-hospitalized",
@@ -9596,6 +9789,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     1.0301050151599862,
+     1.0301050151599862,
+     1.0301050151599862,
+     1.0301050151599864,
+     1.024641356858404,
+     1.024641356858404,
+     1.024641356858404,
+     1.0138860900242563,
+     1.024641356858404,
+     1.024641356858404,
+     1.0273659219588862,
+     1.0273659219588862,
+     1.0273659219588862,
+     1.0273659219588862,
+     1.0273659219588862,
+     1.0273659219588862,
+     1.0273659219588862,
+     1.0273659219588862,
+     0.9681554864728952,
+     0.9681554864728952,
+     0.9681554864728953,
+     0.9681554864728953,
+     0.9681554864728955,
+     0.9681554864728955,
+     0.9004641708285199,
+     0.9004641708285199
+    ],
     "at_gun": [
      1.0301050151599862,
      1.0301050151599862,
@@ -10004,6 +10225,7 @@
    "weapons": [
     "rifle_service",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -10026,6 +10248,7 @@
    "own_weapons": [
     "rifle_service",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -10040,6 +10263,7 @@
    "resolve": {
     "rifle_service": "owens-korea",
     "machine_gun": "owens-korea",
+    "aa_gun": "owens-korea",
     "pistol_smg": "owens-korea",
     "hand_grenade": "owens-korea",
     "mortar_artillery": "owens-korea",
@@ -10060,6 +10284,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     1.0000000000000002,
+     1.0000000000000002,
+     1.0,
+     1.0000000000000002,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0000000000000002,
+     1.0000000000000002,
+     1.0000000000000002,
+     1.0000000000000002,
+     1.0000000000000002,
+     1.0000000000000002
+    ],
     "at_gun": [
      1.0000000000000002,
      1.0000000000000002,
@@ -10454,6 +10706,7 @@
    "weapons": [
     "rifle_assault",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -10476,6 +10729,7 @@
    "own_weapons": [
     "rifle_assault",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -10490,6 +10744,7 @@
    "resolve": {
     "rifle_assault": "vietnam-1965-70-hospitalized",
     "machine_gun": "vietnam-1965-70-hospitalized",
+    "aa_gun": "vietnam-1965-70-hospitalized",
     "pistol_smg": "vietnam-1965-70-hospitalized",
     "hand_grenade": "vietnam-1965-70-hospitalized",
     "mortar_artillery": "vietnam-1965-70-hospitalized",
@@ -10510,6 +10765,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     1.1605516987310758,
+     1.1605516987310758,
+     1.1605516987310762,
+     1.1605516987310762,
+     1.137421142695399,
+     1.137421142695399,
+     1.1374211426953988,
+     1.0938200419417758,
+     1.1374211426953988,
+     1.137421142695399,
+     1.148870008845161,
+     1.148870008845161,
+     1.1488700088451607,
+     1.1488700088451607,
+     1.1488700088451607,
+     1.1488700088451607,
+     1.148870008845161,
+     1.148870008845161,
+     0.9047583854822545,
+     0.9047583854822545,
+     0.9047583854822548,
+     0.9047583854822548,
+     0.878268696282535,
+     0.878268696282535,
+     0.6969709527324491,
+     0.6969709527324491
+    ],
     "explosive_fragment": [
      1.1605516987310758,
      1.1605516987310758,
@@ -10926,6 +11209,7 @@
    "weapons": [
     "rifle_assault",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -10948,6 +11232,7 @@
    "own_weapons": [
     "rifle_assault",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -10962,6 +11247,7 @@
    "resolve": {
     "rifle_assault": "owens-vietnam",
     "machine_gun": "owens-vietnam",
+    "aa_gun": "owens-vietnam",
     "pistol_smg": "owens-vietnam",
     "hand_grenade": "owens-vietnam",
     "mortar_artillery": "owens-vietnam",
@@ -10982,6 +11268,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
     "explosive_fragment": [
      1.0,
      1.0,
@@ -11709,6 +12023,7 @@
    "weapons": [
     "rifle_assault",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -11728,6 +12043,7 @@
    "own_weapons": [
     "rifle_assault",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -11739,6 +12055,7 @@
    "resolve": {
     "rifle_assault": "falklands-1982-wounds",
     "machine_gun": "falklands-1982-wounds",
+    "aa_gun": "falklands-1982-wounds",
     "pistol_smg": "falklands-1982-wounds",
     "hand_grenade": "falklands-1982-wounds",
     "mortar_artillery": "falklands-1982-wounds",
@@ -11756,6 +12073,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
     "atgm": [
      1.0,
      1.0,
@@ -12075,6 +12420,7 @@
    "weapons": [
     "rifle_assault",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -12094,6 +12440,7 @@
    "own_weapons": [
     "rifle_assault",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -12105,6 +12452,7 @@
    "resolve": {
     "rifle_assault": "gulf-1991-us-wounds",
     "machine_gun": "gulf-1991-us-wounds",
+    "aa_gun": "gulf-1991-us-wounds",
     "pistol_smg": "gulf-1991-us-wounds",
     "hand_grenade": "gulf-1991-us-wounds",
     "mortar_artillery": "gulf-1991-us-wounds",
@@ -12122,6 +12470,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
     "atgm": [
      1.0,
      1.0,
@@ -12441,6 +12817,7 @@
    "weapons": [
     "rifle_assault",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -12460,6 +12837,7 @@
    "own_weapons": [
     "rifle_assault",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -12471,6 +12849,7 @@
    "resolve": {
     "rifle_assault": "gulf-1991-uk-wounds",
     "machine_gun": "gulf-1991-uk-wounds",
+    "aa_gun": "gulf-1991-uk-wounds",
     "pistol_smg": "gulf-1991-uk-wounds",
     "hand_grenade": "gulf-1991-uk-wounds",
     "mortar_artillery": "gulf-1991-uk-wounds",
@@ -12488,6 +12867,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
     "atgm": [
      1.0,
      1.0,
@@ -12807,6 +13214,7 @@
    "weapons": [
     "rifle_assault",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -12825,6 +13233,7 @@
    "own_weapons": [
     "rifle_assault",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -12835,6 +13244,7 @@
    "resolve": {
     "rifle_assault": "somalia-1993-wounds",
     "machine_gun": "somalia-1993-wounds",
+    "aa_gun": "somalia-1993-wounds",
     "pistol_smg": "somalia-1993-wounds",
     "hand_grenade": "somalia-1993-wounds",
     "mortar_artillery": "somalia-1993-wounds",
@@ -12851,6 +13261,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
     "hand_grenade": [
      1.0,
      1.0,
@@ -13142,6 +13580,7 @@
    "weapons": [
     "rifle_assault",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -13162,6 +13601,7 @@
    "own_weapons": [
     "rifle_assault",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -13174,6 +13614,7 @@
    "resolve": {
     "rifle_assault": "chechnya-wounds",
     "machine_gun": "chechnya-wounds",
+    "aa_gun": "chechnya-wounds",
     "pistol_smg": "chechnya-wounds",
     "hand_grenade": "chechnya-wounds",
     "mortar_artillery": "chechnya-wounds",
@@ -13192,6 +13633,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
     "atgm": [
      1.0,
      1.0,
@@ -13513,6 +13982,7 @@
     "rifle_assault",
     "rifle_ap",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -13534,6 +14004,7 @@
     "rifle_assault",
     "rifle_ap",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -13547,6 +14018,7 @@
     "rifle_assault": "oif-oef-2001-wounds",
     "rifle_ap": "oif-oef-2001-wounds",
     "machine_gun": "oif-oef-2001-wounds",
+    "aa_gun": "oif-oef-2001-wounds",
     "pistol_smg": "oif-oef-2001-wounds",
     "hand_grenade": "oif-oef-2001-wounds",
     "mortar_artillery": "oif-oef-2001-wounds",
@@ -13565,6 +14037,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     1.6659737481492398,
+     1.6659737481492398,
+     1.6659737481492396,
+     1.6659737481492396,
+     1.425352778996423,
+     1.425352778996423,
+     1.4253527789964235,
+     1.0983663151626955,
+     1.4253527789964233,
+     1.425352778996423,
+     1.5259891320153025,
+     1.5259891320153025,
+     1.5259891320153025,
+     1.5259891320153025,
+     1.5259891320153025,
+     1.5259891320153025,
+     1.5259891320153025,
+     1.5259891320153025,
+     0.5370666422800078,
+     0.5370666422800078,
+     0.5370666422800079,
+     0.5370666422800079,
+     0.5370666422800079,
+     0.5370666422800079,
+     0.2916783497320551,
+     0.2916783497320551
+    ],
     "atgm": [
      1.6659737481492398,
      1.6659737481492398,
@@ -14006,6 +14506,7 @@
     "rifle_assault",
     "rifle_ap",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -14027,6 +14528,7 @@
     "rifle_assault",
     "rifle_ap",
     "machine_gun",
+    "aa_gun",
     "pistol_smg",
     "hand_grenade",
     "mortar_artillery",
@@ -14040,6 +14542,7 @@
     "rifle_assault": "owens-oif-oef",
     "rifle_ap": "owens-oif-oef",
     "machine_gun": "owens-oif-oef",
+    "aa_gun": "owens-oif-oef",
     "pistol_smg": "owens-oif-oef",
     "hand_grenade": "owens-oif-oef",
     "mortar_artillery": "owens-oif-oef",
@@ -14058,6 +14561,34 @@
     "elbow_knee": "unarmed-mma"
    },
    "wmult": {
+    "aa_gun": [
+     1.0,
+     1.0,
+     0.9999999999999999,
+     0.9999999999999999,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     0.9999999999999999,
+     0.9999999999999999,
+     1.0,
+     1.0
+    ],
     "atgm": [
      1.0,
      1.0,

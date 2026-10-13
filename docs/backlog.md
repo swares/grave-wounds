@@ -64,10 +64,14 @@ When an item is done, delete it here and note it in the pull request that closes
   light. A fixed line is laid on one hex, with no traverse limits or
   final protective fire called by flare. A lost unit only turns, and never strays onto
   another path or into its friends. The moon is a simple model, good to an hour or so.
-- **Air support, second cut.** Ground fire brings aircraft down and forward air controllers
-  talk them on. Still left out: anti-aircraft guns and missiles (only machine guns, rockets
-  and rifles fire at them), marking rounds and smoke, a damaged aircraft that limps home, and
-  direction to a strafing run or a napalm strip: every attack is a round burst like a shell.
+- **Air support, third cut.** Ground fire hits aircraft (bringing some down, sending the
+  rest home damaged), anti-aircraft guns add to it, forward air controllers and smoke on the
+  target cut the scatter, and an attack can be a round burst, a strafing run or a napalm
+  strip along a line. Still left out: surface-to-air missiles; anti-aircraft guns firing at
+  aircraft passing elsewhere (only those near the aim); a run's line passing over the men
+  between its start and the target; napalm burning on, setting woods alight or reaching
+  men in bunkers; heroes struck by napalm (only the rank and file are); and strafing or
+  napalm against parties on their way back. Numbers are design estimates.
 - **Landing by air, first cut.** Helicopters are not on the map: a lift lands or is waved
   off, and a hot zone costs men, but the helicopters themselves cannot be shot down, the
   lift has no fixed number of aircraft or turnaround time, and nothing is flown out (the

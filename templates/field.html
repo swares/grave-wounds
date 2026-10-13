@@ -260,10 +260,10 @@ legend{padding:0}
 
       <section id="support-box" aria-labelledby="h-support">
         <h2 id="h-support">Fire support</h2>
-        <p class="muted" style="margin:0">Off-map artillery and mortars on call. On its side's move, pick a battery, <b>Call fire</b>, then click a hex one of the side's units can see. Field guns and howitzers land the next exchange, mortars this one; each shell scatters. A battery that has fired is located (◉): the other side's guns can fire on it (<b>Counter-battery</b>) with no one needing to see it, knocking out tubes and killing and wounding crews (a tube without enough men falls silent). <b>Displace</b> moves it: silent for an exchange or more, then no longer located. <b>Place it</b> (in set-up) puts a battery's guns on the map: it reaches only its range from there, and an enemy within a hex overruns it. A creeping barrage can take more legs after its first lines (<b>Then</b>; <b>Another leg</b> adds one), each lifting on the same way or turning. Smoke drifts with the wind. <b>Aircraft</b> are called the same way: fighter-bombers come in two exchanges later with bombs and napalm over a wide area, two sorties an aircraft; helicopter gunships at once with rockets and guns. They are never located, do not fly in fog, storms or heavy snow, and fighter-bombers not at night. At night fire can be called only where the light lets someone see it fall; <b>Illumination</b> (mortars and guns) needs no one to see the hex and lights it and the hexes round it for two exchanges, as does a flare (Clicking the map).</p>
+        <p class="muted" style="margin:0">Off-map artillery and mortars on call. On its side's move, pick a battery, <b>Call fire</b>, then click a hex one of the side's units can see. Field guns and howitzers land the next exchange, mortars this one; each shell scatters. A battery that has fired is located (◉): the other side's guns can fire on it (<b>Counter-battery</b>) with no one needing to see it, knocking out tubes and killing and wounding crews (a tube without enough men falls silent). <b>Displace</b> moves it: silent for an exchange or more, then no longer located. <b>Place it</b> (in set-up) puts a battery's guns on the map: it reaches only its range from there, and an enemy within a hex overruns it. A creeping barrage can take more legs after its first lines (<b>Then</b>; <b>Another leg</b> adds one), each lifting on the same way or turning. Smoke drifts with the wind. <b>Aircraft</b> are called the same way: fighter-bombers come in two exchanges later with bombs over a wide area, two sorties an aircraft; helicopter gunships at once with rockets and guns. <b>Fire</b> can instead make it a strafing run or a napalm strip along a line <b>Towards</b> the way chosen; smoke on the target before they come marks it (less scatter). They are never located, do not fly in fog, storms or heavy snow, and fighter-bombers not at night. At night fire can be called only where the light lets someone see it fall; <b>Illumination</b> (mortars and guns) needs no one to see the hex and lights it and the hexes round it for two exchanges, as does a flare (Clicking the map).</p>
         <ul class="support" id="support"></ul>
         <div class="row">
-          <div><label for="sel-sup-fire">Fire</label><select id="sel-sup-fire"><option value="he">High explosive</option><option value="smoke">Smoke</option><option value="illum">Illumination</option></select></div>
+          <div><label for="sel-sup-fire">Fire</label><select id="sel-sup-fire" title="Aircraft: a round attack, or a strafing run or napalm strip along the line chosen under Towards"><option value="he">High explosive (aircraft: bombs, rockets)</option><option value="smoke">Smoke</option><option value="illum">Illumination</option><option value="strafe">Strafing run (aircraft)</option><option value="napalm">Napalm strip (fighter-bombers)</option></select></div>
           <div><label for="sel-sup-creep">Creep</label><select id="sel-sup-creep"></select></div>
           <div><label for="sel-sup-every">Each line</label><select id="sel-sup-every" title="A creeping barrage's fire plan: exchanges on each line before it lifts"></select></div>
           <div><label for="sel-sup-lines">Lines</label><select id="sel-sup-lines" title="A creeping barrage's fire plan: how many lines it fires on before it stops"></select></div>
@@ -656,7 +656,8 @@ function whenText(wait){                         // "this exchange", "next excha
 const groundedName = why => (WXD.conditions[why] || WXD.light?.levels[why] || { name: why }).name.toLowerCase();
 function missionText(m){                          // " · on 30,12 (smoke) next exchange, each exchange, creeping 2 hexes an exchange"
   const when = whenText(m.wait), cb = m.battery !== undefined && m.battery !== null;
-  const smoke = (m.smoke ? " (smoke)" : "") + (m.illum ? " (illumination)" : ""), on = cb ? `${supports()[m.battery].name} (counter-battery)` : `${m.hex[0] + 1},${m.hex[1] + 1}${smoke}`;
+  const run = { strafe: " (strafing)", napalm: " (napalm)" }[m.attack] || "";
+  const smoke = (m.smoke ? " (smoke)" : "") + (m.illum ? " (illumination)" : "") + run, on = cb ? `${supports()[m.battery].name} (counter-battery)` : `${m.hex[0] + 1},${m.hex[1] + 1}${smoke}`;
   const plan = m.creep && m.creep.lines ? `, line ${m.creep.line || 1} of ${m.creep.lines}` : "";
   const creep = m.creep ? `, creeping ${nOf(m.creep.step, "hex", "hexes")} every ${nOf(m.creep.every || 1, "exchange")}${plan}` : "";
   return ` · on ${on} ${when}${m.repeat ? ", each exchange" : ""}${creep}`;
@@ -671,6 +672,9 @@ function addSupport(){
 }
 function fireRefused(b, K, h, fire){              // why battery b cannot fire `fire` on hex h, or ""
   if (fire === "illum" && !K.illum) return `${K.name} have no illumination rounds.`;
+  const run = FD.units.indirect.air.runs?.[fire];
+  if (run && !run.kinds.includes(b.kind)) return `${K.name} do not fly ${fire === "napalm" ? "napalm strips" : "strafing runs"}.`;
+  if (run?.wars && !run.wars.includes(FD.tables[S.table]?.battle)) return "Napalm is for the wars from 1944 on.";
   if (K.air && fire === "smoke") return `${K.name} drop no smoke.`;
   if (!inReach(b, h)) return `${b.name} cannot reach ${hexName(h)} from where they stand (${nOf(reachOf(b), "hex", "hexes")}).`;
   if (fire !== "illum" && !spotted(S.units, S.field, b.side, h)) return `No unit of ${b.side} can see ${hexName(h)}: fire can only be called where someone sees it fall (not through woods or smoke).`;
@@ -684,13 +688,15 @@ function callFire(i, h){                          // the mission, if a unit of i
   const by = Number($("#sel-sup-creep").value), m = { hex: h, wait: K.delay, repeat: by > 0 || $("#chk-sup-repeat").checked };
   if (fire === "smoke") m.smoke = true;
   if (fire === "illum") m.illum = true;
+  if (fire === "strafe" || fire === "napalm") Object.assign(m, { attack: fire, dir: creepDir(b.side) });
   const every = Number($("#sel-sup-every").value) || 1, lines = Number($("#sel-sup-lines").value) || 0;
   if (by) m.creep = { step: by, dir: creepDir(b.side), every, lines };
   if (by && lines){ const legs = planLegs(by, m.creep.dir); if (legs.length) m.creep.legs = legs }
   b.mission = m;
-  const what = { he: "fire", smoke: "lay smoke", illum: "fire illumination" }[fire] || "fire";
+  const what = { he: "fire", smoke: "lay smoke", illum: "fire illumination", strafe: "fly strafing runs", napalm: "lay napalm strips" }[fire] || "fire";
   const why = grounded(S.field, b), wait = why ? ` (grounded: ${groundedName(why)}; they fly when it clears)` : "";
-  S.msg = `${b.name} will ${what} on ${hexName(h)} ${whenText(K.delay)}${wait}${m.repeat ? ", and every exchange until stopped" : ""}${creepText(m, every, lines)}.`;
+  const along = m.attack ? `, along a line towards ${$("#sel-sup-dir").selectedOptions[0].text}` : "";
+  S.msg = `${b.name} will ${what} on ${hexName(h)}${along} ${whenText(K.delay)}${wait}${m.repeat ? ", and every exchange until stopped" : ""}${creepText(m, every, lines)}.`;
   render();
 }
 /* ----- a creeping barrage's fire plan: its first lines, then any number of legs ----- */
@@ -892,7 +898,7 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   waveoff: l => ({ cls: "morale", text: landText(l) }),
   displaced: l => ({ cls: "", text: `${l.name} (${l.side}) have displaced: no longer located` + (l.place ? "; now at " + hexName(l.place) : "") + "." }),
   overrun: l => ({ cls: "morale", text: `${l.name} (${l.side}) are overrun: their guns are lost.` }),
-  airloss: l => ({ cls: "morale", text: `${l.name} (${l.side}): ground fire brings down ${nOf(l.lost, "aircraft", "aircraft")}; ${l.left} left.` }),
+  airloss: l => ({ cls: "morale", text: `${l.name} (${l.side}): ground fire brings down ${nOf(l.lost, "aircraft", "aircraft")}` + (l.damaged ? `, and ${nOf(l.damaged, "aircraft", "aircraft")} damaged turn${l.damaged === 1 ? "s" : ""} for home` : "") + `; ${l.left} left.` }),
   airhold: l => ({ cls: "", text: `${l.name} (${l.side}) hold off ${hexName(l.at)}: their own men are within ${nOf(FD.units.indirect.air.fac.danger, "hex", "hexes")} and no forward air controller can see it.` }),
   assault: (l, nm) => ({ cls: "morale", text: bunkerText(l, nm) }),
   antiarmour: (l, nm) => ({ cls: l.knocked ? "morale" : "", text: armourText(l, nm) }),
@@ -963,7 +969,13 @@ function fireText(l){                             // a battery's shells: on a he
   }
   if (l.illum) return `${who} fire ${nOf(l.shells, "illumination round")} over ${l.at[0] + 1},${l.at[1] + 1}: lit for ${nOf(FD.weather.light.lasts, "exchange")}.`;
   const shot = airOf(l.sup) && FD.units.indirect.kinds[supports()[l.sup].kind].shot;
-  if (shot) return `${who} attack ${l.at[0] + 1},${l.at[1] + 1}: ${nOf(l.shells, shot[0], shot[1])}${l.fac ? ", talked on by a forward air controller" : ""}.`;
+  if (shot){
+    const how = { strafe: ["strafing run", "strafing runs"], napalm: ["napalm strip", "napalm strips"] }[l.run] || shot;
+    let help = "";
+    if (l.fac) help = ", talked on by a forward air controller";
+    else if (l.marked) help = ", the target marked with smoke";
+    return `${who} attack ${l.at[0] + 1},${l.at[1] + 1}: ${nOf(l.shells, how[0], how[1])}${help}.`;
+  }
   return `${who} ${l.smoke ? "lay smoke with" : "fire"} ${shells} on ${l.at[0] + 1},${l.at[1] + 1}.`;
 }
 function heroStateText(l){                        // a duel's attempts, or a hero's bleeding past a threshold

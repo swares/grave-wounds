@@ -1020,9 +1020,16 @@ def _air_errors(d: Data, ind: dict) -> list[str]:
     errors += [f"units.yaml: indirect.air.night names unknown light {x}" for x in A.get("night", []) if x not in (d.weather.get("light") or {}).get("levels", {})]
     G, FAC = A.get("ground_fire") or {}, A.get("fac") or {}
     if any(ind.get("kinds", {}).get(k, {}).get("air") for k in ind.get("kinds", {})) and not (
-            all(isinstance(G.get(k), (int, float)) and G[k] >= 0 for k in ("reach", "mg", "rocket", "rifles", "cap"))
+            all(isinstance(G.get(k), (int, float)) and G[k] >= 0 for k in ("reach", "mg", "rocket", "rifles", "cap", "aa", "aa_reach", "aa_cap", "downed"))
+            and all(w in d.weapons for w in G.get("aa_weapons", []))
             and all(w in d.weapons for w in G.get("rockets", [])) and isinstance(FAC.get("danger"), int) and isinstance(FAC.get("scatter"), int) and FAC["scatter"] >= 1):
-        errors.append("units.yaml: indirect.air needs ground_fire (reach, mg, rocket, rifles, cap, rockets: known weapons) and fac (danger, scatter at least 1)")
+        errors.append("units.yaml: indirect.air needs ground_fire (reach, mg, rocket, rifles, cap, aa, aa_reach, downed; rockets and aa_weapons: known weapons) and fac (danger, scatter at least 1)")
+    wars = {t.get("battle") for t in d.tables.values()}
+    for name, r in (A.get("runs") or {}).items():
+        if not (isinstance(r.get("length"), int) and r["length"] >= 1 and isinstance(r.get("struck"), int) and isinstance(r.get("knock"), int)
+                and all(k in ind.get("kinds", {}) and ind["kinds"][k].get("air") for k in r.get("kinds", []))):
+            errors.append(f"units.yaml: indirect.air.runs.{name} needs length, struck and knock, and kinds that are aircraft")
+        errors += [f"units.yaml: indirect.air.runs.{name}.wars names {w}, the war of no wound table" for w in r.get("wars", []) if w not in wars]
     H = d.units.get("heliborne")
     if H and not all(isinstance(H.get(k), int) and H[k] >= 0 for k in ("lift", "blocked", "hot", "zone")):
         errors.append("units.yaml: heliborne needs whole-number lift, blocked, hot and zone")
