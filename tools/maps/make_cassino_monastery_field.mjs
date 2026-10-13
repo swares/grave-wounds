@@ -32,6 +32,7 @@ const units = [
 ];
 
 writeField({
+  objective: { at: P593, side: 0, name: "Point 593" },
   id: "cassino-monastery-1944", name: "Snakeshead Ridge and the abbey, 17-18 February 1944", sides: ["Allies", "Germans"], table: "owens-wwii",
   travel: { map: "cassino-1944", place: "Point 593 (Monte Calvario)", within: 1, sides: ["Allies", "Germans"] },
   weather: "{cond: fair, wind: breeze, dir: N, light: night, ground: {mud: 1, snow: 0}}",

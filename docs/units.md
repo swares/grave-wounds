@@ -1088,6 +1088,21 @@ brings the sides, the wound tables and each army's units in their starting place
 unit can still be moved, changed or removed before the battle starts. *New battle* goes
 back to the same battlefield.
 
+**Objectives.** Where the accounts name the place a battle was fought for, the battlefield
+marks it as the objective (`objective` in its file: the hex, the army that attacked it and
+its name), and laying out the field marks it on the map (O). The enemy commander then takes
+it or holds it, as under [The enemy commander](#the-enemy-commander); the GM can move or
+clear it with **Clicking the map**. Twenty-seven battlefields have one: Point 593 at
+Cassino, Castle Hill in the town, the crests of Hills 875, 861A, 931 and 937, Pork Chop,
+Fox Hill, Hill 504 at Kapyong, G Company's hill at Chipyong-ni, Darwin Hill, the station
+at Grozny, the provincial headquarters at Hue, the crash site in Mogadishu, Observation
+Post Topside at Wanat, Combat Outpost Keating, X-Ray's landing zone, the saddle at Osan
+and on Bougainville, the railway bridge at Mons, Henry Hill, the British guns at Lundy's
+Lane, the windmill battery at Lützen, the heights at Albuera, the edge of Cisterna and the
+wagon-box corral. The open-field battles (Agincourt, Towton, Visby, Cowpens), the ambush
+on Lodge Trail Ridge, the Jolan at Fallujah and the unfinished wall at Sidon have none:
+they were not fought for one place, or the map does not place it.
+
 **From the travel map.** A battlefield can name a place on a travel map and how close
 counts (`travel` in its file). Agincourt names Azincourt, within 1 hex. When the defender
 of a fight stands that close, the travel page offers the battlefield under **Fight it on**

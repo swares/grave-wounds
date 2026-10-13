@@ -52,6 +52,7 @@ const units = [
 ];
 
 writeField({
+  objective: { at: [60, Math.round(crest(60))], side: 1, name: "the saddle in the line" },
   id: "bougainville-1944", name: "Hill 700, Bougainville, 8-12 March 1944", sides: ["Americans", "Japanese"], table: "bougainville-1944-all-hits",
   travel: { map: "bougainville-1944", place: "Hill 700", within: 2, sides: ["Americans", "Japanese"] },
   weather: "{cond: rain, wind: calm, dir: SE, ground: {mud: 1, snow: 0}}",

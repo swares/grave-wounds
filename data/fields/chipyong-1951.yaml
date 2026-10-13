@@ -25,6 +25,8 @@ table: korea-1950-53-hospitalized
 travel: {map: chipyong-1951, place: "Chipyong-ni", within: 2, sides: ["United Nations", "Chinese"]}
 size: [200, 170]
 weather: {cond: fair, wind: breeze, dir: NW, light: night, ground: {mud: 0, snow: 1}}
+# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
+objective: {at: [94, 142], side: 1, name: "G Company's hill on the southern perimeter"}
 ground: |
   FF.h..hhhFh..F.F..hhh.hh..h.hh..Fh..hFFh.FhF.hh.....Fhh...FhhFF.F...hhF.F.hFF..hh.rFh.F.h..h..h......h...FFF..F...h.hh....hhFhFFhhFhh.hFhh.h.hFh.hhhh..rhrhhhFhFF.F..hF.hhr.....h..hh..F.hFhhF.rF..h.r..
   .F.hh.Fhhhh.h..h.h..hF.rh.h.h....hh..F.hF.h.hh.h.........hFFF.rh.hh.h..Fh...hh.hhh.h.h..F.....h.hh..F....F.F..F..hF.Fh..h.hhh..FF..hFFrrFFhh..h.h......hF.h..F...r...Fh.h..hrhhhFFrhh..hhFh.hhh...hhh..F

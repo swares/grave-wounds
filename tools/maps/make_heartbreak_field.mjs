@@ -53,6 +53,7 @@ const units = [
 ];
 
 writeField({
+  objective: { at: H931, side: 0, name: "Hill 931" },
   id: "heartbreak-1951", name: "Hill 931 on Heartbreak Ridge, October 1951", sides: ["United Nations", "North Koreans"], table: "korea-1950-53-hospitalized",
   travel: { map: "heartbreak-1951", place: "Hill 931", within: 1, sides: ["United Nations", "North Koreans"] },
   weather: "{cond: fair, wind: breeze, dir: NW, ground: {mud: 0, snow: 0}}",

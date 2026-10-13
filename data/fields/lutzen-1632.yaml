@@ -23,6 +23,8 @@ table: thirty-years-war-all-hits
 travel: {map: lutzen-1632, place: "Lützen", within: 2, sides: ["Sweden", "Empire"]}
 size: [220, 120]
 weather: {cond: fog, wind: calm, ground: {mud: 0, snow: 0}}
+# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
+objective: {at: [38, 67], side: 0, name: "the windmill battery"}
 ground: |
   ............................................................................................................................................................................................................................
   ............................................................................................................................................................................................................................

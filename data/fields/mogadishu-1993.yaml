@@ -28,6 +28,8 @@ table: somalia-1993-wounds
 travel: {map: mogadishu-1993, place: "Crash site 1 (Super 61)", within: 2, sides: ["United States", "Somali National Alliance"]}
 size: [110, 110]
 weather: {cond: fair, wind: breeze, dir: SW, light: night, ground: {mud: 0, snow: 0}}
+# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
+objective: {at: [63, 21], side: 1, name: "Super 61's crash site"}
 ground: |
   r.............................rT.TTB...TT.T.T.TT.rTT.T.TTT.TT....TTTTTBTrTT..TTTT.T.TT.TTT.TTTTTTTT.TTTTT....T
   ..TTTT.TT.TTBTTTTT.TT.TTTTT.TTTTTTTT..TT.TTTT.TT..TTTT.TTT...TT.TTTTTTT..TTTTTTTT.TTTTTT.T.TTTTTTTT..TT.T.T..T

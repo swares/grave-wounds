@@ -24,6 +24,8 @@ table: acw-1861-all-hits
 travel: {map: bull-run-1861, place: "Henry Hill", within: 2, sides: ["Confederacy", "Union"]}
 size: [140, 130]
 weather: {cond: fair, wind: calm, dir: SW, ground: {mud: 0, snow: 0}}
+# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
+objective: {at: [78, 60], side: 1, name: "the top of Henry Hill"}
 ground: |
   .........................................hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh.......................
   .........................................hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh.......................

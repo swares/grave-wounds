@@ -56,6 +56,7 @@ const units = [
 ];
 
 writeField({
+  objective: { at: [38, 67], side: 0, name: "the windmill battery" },
   id: "lutzen-1632", name: "Lützen, 16 November 1632", sides: ["Swedes", "Imperialists"], table: "thirty-years-war-all-hits",
   travel: { map: "lutzen-1632", place: "Lützen", within: 2, sides: ["Sweden", "Empire"] },
   weather: "{cond: fog, wind: calm, ground: {mud: 0, snow: 0}}",

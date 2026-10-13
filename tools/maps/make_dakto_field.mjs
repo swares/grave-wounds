@@ -54,6 +54,7 @@ const units = [
 ];
 
 writeField({
+  objective: { at: TOP, side: 0, name: "the crest of Hill 875" },
   id: "dakto-1967", name: "Hill 875, Dak To, 19 November 1967", sides: ["United States and ARVN", "North Vietnamese"], table: "vietnam-1965-70-hospitalized",
   travel: { map: "dakto-1967", place: "Hill 875", within: 1, sides: ["United States and ARVN", "North Vietnamese"] },
   weather: "{cond: fair, wind: calm, ground: {mud: 0, snow: 0}}",

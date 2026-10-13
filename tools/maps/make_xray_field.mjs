@@ -52,6 +52,7 @@ const units = [
 ];
 
 writeField({
+  objective: { at: LZ, side: 1, name: "the landing zone" },
   id: "xray-1965", name: "Landing zone X-Ray, 14 November 1965", sides: ["United States", "North Vietnamese"], table: "vietnam-1965-70-hospitalized",
   travel: { map: "iadrang-1965", place: "Landing zone X-Ray", within: 2, sides: ["United States", "North Vietnamese"] },
   weather: "{cond: fair, wind: calm, ground: {mud: 0, snow: 0}}",

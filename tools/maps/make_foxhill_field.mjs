@@ -45,6 +45,7 @@ const units = [
 ];
 
 writeField({
+  objective: { at: HILL, side: 1, name: "the crest Fox Company held" },
   id: "foxhill-1950", name: "Fox Hill at Toktong Pass, 27-28 November 1950", sides: ["United Nations", "Chinese"], table: "korea-1950-53-hospitalized",
   travel: { map: "chosin-1950", place: "Toktong Pass (Fox Hill)", within: 1, sides: ["United Nations", "Chinese"] },
   weather: "{cond: fair, wind: strong, dir: NW, light: night, cold: bitter, ground: {mud: 0, snow: 2}}",
