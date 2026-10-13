@@ -297,12 +297,18 @@ general. All its numbers are in units.yaml `commander`.
     unit it sees now that scores best as a target. It fires at the first of that unit's
     hexes its side can see and the battery reaches, and never where its own men are within
     the burst and scatter.
+  - **Smoke.** Attacking, before that, one battery lays smoke on the nearest enemy it knows
+    of whose missiles reach one of its units that cannot shoot back at it (men without
+    missiles, or out of their range): at the first of the enemy's hexes it can see and is not
+    already smoked, by the battery that reaches it and lands soonest (mortars before guns).
+    Not in the dark, and not in a gale (the smoke would blow away at once). A holding side
+    never smokes.
   - **Undo its orders** calls that fire off again.
 
 What it does not do yet:
 - It looks once, at the start of its move: a unit that moves into sight of an enemy does
   not tell the units ordered after it until the next move.
-- It leaves alone smoke, illumination, creeping barrages, counter-battery fire, aircraft,
+- It leaves alone illumination, creeping barrages, counter-battery fire, aircraft,
   air controllers, vehicles' riders, fixed lines and works.
 - Its reserve has no orders beyond holding and, once committed, fighting: it does not plug
   a named gap, and reserve units ignore the objective until committed.

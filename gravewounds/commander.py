@@ -31,7 +31,7 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
             orders.append({"unit": i, **o})
             _apply(us, i, o)
     orders += _lay_guns(d, us, side, (size, field, known, exchange))
-    return us, orders + _call_fire(d, us, side, field, known)
+    return us, orders + _call_fire(d, us, side, field, known, stance)
 
 
 def _free(d: Data, us: list, i: int, exchange) -> bool:
@@ -114,21 +114,74 @@ def _lay_guns(d: Data, us: list, side, ctx: tuple) -> list:
     return out
 
 
-def _call_fire(d: Data, us: list, side, field: dict | None, known: dict) -> list:
-    """Each of its off-map batteries (not tanks or aircraft) with no mission, rounds and tubes,
-    not displacing, is called on the enemy unit it sees now that scores best as a target for
-    the side's unit nearest it (threat_score), at the first of its hexes the side can see, in
-    the battery's reach, with none of the side's men within the kind's radius and scatter."""
-    out = []
-    for k, b in enumerate((field or {}).get("support") or []):
+def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, stance: str = "attack") -> list:
+    """Attacking, first one battery lays smoke where its units are under fire (_call_smoke).
+    Then each of its other off-map batteries (not tanks or aircraft) with no mission, rounds
+    and tubes, not displacing, is called on the enemy unit it sees now that scores best as a
+    target for the side's unit nearest it (threat_score), at the first of its hexes the side
+    can see, in the battery's reach, with none of the side's men within the kind's radius and
+    scatter."""
+    free = [k for k, b in enumerate((field or {}).get("support") or []) if _free_battery(d, b, side)]
+    out = _call_smoke(d, us, side, field, known, free) if stance == "attack" else []
+    for k in free:
+        b = field["support"][k]
         K = d.units["indirect"]["kinds"][b["kind"]]
-        if b["side"] != side or b.get("mission") or K.get("direct") or K.get("air") or b.get("displacing") or b.get("rounds", 0) <= 0 or U.served_tubes(d, b) <= 0:
+        if b.get("mission"):
             continue
         aim = _fire_aim(d, us, side, field, known, (b, K))
         if aim:
             b["mission"] = {"hex": aim[1], "wait": K["delay"], "repeat": False}
             out.append({"unit": None, "act": "fire", "battery": k, "target": aim[0], "hex": aim[1]})
     return out
+
+
+def _free_battery(d: Data, b: dict, side) -> bool:
+    """One of its off-map batteries it can call: not tanks or aircraft, no mission, rounds and
+    tubes, not displacing."""
+    K = d.units["indirect"]["kinds"][b["kind"]]
+    return not (b["side"] != side or b.get("mission") or K.get("direct") or K.get("air") or b.get("displacing") or b.get("rounds", 0) <= 0 or U.served_tubes(d, b) <= 0)
+
+
+def _call_smoke(d: Data, us: list, side, field: dict | None, known: dict, free: list) -> list:
+    """Smoke on an enemy shooting at its units: the nearest known enemy (the first of equals)
+    whose missiles reach a unit of the side that cannot shoot back at it, at the first of its
+    hexes the side can see and is not already smoked, by the free battery that reaches it and
+    lands soonest (the first of equals). Not in the dark (sight shorter than light.flash) or
+    when the wind blows smoke away at once (lasts 1). -> [the smoke order], or []."""
+    S, wind = d.units["indirect"]["smoke"], (((field or {}).get("weather") or {}).get("wind") or "calm")
+    L = U.light_of(d, field)
+    if not free or S["lasts"].get(wind, 0) <= 1 or (L is not None and L.get("sight") is not None and L["sight"] < d.weather["light"]["flash"]):
+        return []
+    sm = (field or {}).get("smoke") or {}
+    for _, j in _shooting_at(d, us, side, known):
+        h = next((x for x in _marks(d, _where(us, j, known)) if U.spotted(d, us, field, side, x) and "{0},{1}".format(*x) not in sm), None)
+        if h is None:
+            continue
+        reach = [(d.units["indirect"]["kinds"][field["support"][k]["kind"]]["delay"], k) for k in free if U.in_reach(d, field["support"][k], h)]
+        if reach:
+            k = min(reach)[1]
+            b = field["support"][k]
+            b["mission"] = {"hex": list(h), "wait": d.units["indirect"]["kinds"][b["kind"]]["delay"], "repeat": False, "smoke": True}
+            return [{"unit": None, "act": "smoke", "battery": k, "target": j, "hex": list(h)}]
+    return []
+
+
+def _shooting_at(d: Data, us: list, side, known: dict) -> list:
+    """[(distance, enemy index)], nearest first: known enemies whose missiles reach a standing
+    unit of the side that cannot shoot back at them (no missiles, or out of its range)."""
+    out = set()
+    for u in us:
+        if u["side"] != side or u["state"] in ROUTED or u["men"] <= 0:
+            continue
+        for k, m in known.items():
+            if not k.isdigit():
+                continue
+            e, dist = us[int(k)], U.hdist(m["pos"], u["pos"])
+            hits = "range" in d.weapons[e["weapon"]] and U.field_range(d, e["weapon"], dist) is not None
+            back = "range" in d.weapons[u["weapon"]] and U.field_range(d, u["weapon"], dist) is not None
+            if hits and not back:
+                out.add((dist, int(k)))
+    return sorted(out)
 
 
 def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tuple) -> tuple | None:
