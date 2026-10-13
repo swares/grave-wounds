@@ -541,6 +541,47 @@ heroes:
   # hex), unless he is left behind (out of the battle).
   lamed: [leg, stand, collapse, move]
   carried: 0.5
+  # Carry him back: a lamed or down hero whose unit is standing and moving can be carried to
+  # the rear by `bearers` of its men. He leaves the battle, safe (no blows, no slowing), and
+  # his wounds go back to the roller as they were. The bearers come back after `back_after`
+  # exchanges, unless the unit has broken or been destroyed by then (then they stay at the
+  # rear, alive). Design estimates.
+  bearers: 2
+  back_after: 3
+  # Medics: a unit's medics (followers of a healing career, which the team builder adds to the
+  # team's biggest unit; the GM can give any unit medics) give first aid at `medic` % by their
+  # quality, as a hero's Leechcraft. Design estimates.
+  medic: {green: 30, regular: 45, veteran: 60}
+  # Cautery: where a tourniquet cannot go (head, neck, body), a wound bleeding `from_bleed` or
+  # more is cauterised on a successful first aid in the wars listed (before the world wars):
+  # the bleeding stops, at `pain` more pain unless a healer (Leechcraft or medics) did it.
+  cautery:
+    from_bleed: 2
+    pain: 1
+    battles: [Crusades, "Visby 1361", "Wars of the Roses", "Thirty Years' War", "American Revolution", "Napoleonic Wars", "War of 1812", "American Civil War", "American Indian Wars"]
+  # A hero left on the field when the battle ends (left behind, or down with a unit that broke,
+  # fled or was destroyed): found by his own side if it holds the field (has a unit still
+  # standing); if only the enemy holds it, d100 at or under `quarter` % for the war (by the wound
+  # table's war) and he is taken prisoner, else killed. Design estimates: medieval armies spared
+  # those worth a ransom and few others; the horse-and-musket wars mostly took prisoners; the
+  # wars of the twentieth century and after vary with the enemy.
+  quarter:
+    default: 50
+    Crusades: 30
+    "Visby 1361": 20
+    "Wars of the Roses": 30
+    "Thirty Years' War": 40
+    "American Revolution": 70
+    "Napoleonic Wars": 80
+    "War of 1812": 80
+    "American Civil War": 85
+    "American Indian Wars": 20
+    WWI: 70
+    WWII: 60
+    Korea: 50
+    Vietnam: 50
+    "Late 20th century": 70
+    "Iraq & Afghanistan": 50
 
 # ---------- the enemy commander ----------
 # A scripted commander can play one side on the field map ("Enemy commander"). At the start

@@ -283,38 +283,110 @@ def _impair_effect(d: Data, w: dict, imp: str, hand: str) -> tuple:
     return (imp, arm), rule.get(arm, {})
 
 
-def _heroes_after(d: Data, us: list, rng, quiet: list | None = None) -> list:
-    """End of an exchange for every hero not dead: a hold wears off, first aid if his unit had
-    a quiet exchange (quiet[i]), he bleeds, his Blood's thresholds can put him down, and pain
-    above the cap calls for a stop check."""
+def _heroes_after(d: Data, us: list, rng, quiet: list | None = None, cautery: bool = False) -> list:
+    """End of an exchange for every hero not dead and still on the field: a hold wears off,
+    first aid if his unit had a quiet exchange (quiet[i]; cautery: the battle's era cauterises),
+    he bleeds, his Blood's thresholds can put him down, and pain above the cap calls for a stop
+    check. Then bearers due back rejoin their units."""
     log = []
     for i, u in enumerate(us):
         for hero in u.get("heroes", []):
-            if hero["state"] == "dead" or hero.get("left"):   # left behind: out of the battle
+            if hero["state"] == "dead" or _off_field(hero):   # left behind or carried back: out of the battle
                 continue
             if quiet and quiet[i]:
-                log += [{"kind": "heroaid", "unit": i, **x} for x in [_first_aid(d, hero, rng, _healer(u))] if x]
+                log += [{"kind": "heroaid", "unit": i, **x} for x in [_first_aid(d, hero, rng, _healer(d, u), cautery)] if x]
             line = _hero_after(d, hero, rng)
             if line:
                 log.append({"kind": "herobled", "unit": i, **line})
+    return log + _bearers_back(us)
+
+
+def cauterises(d: Data, table: str) -> bool:
+    """Whether the battle's era cauterises wounds a tourniquet cannot reach (by its wound
+    table's war: heroes.cautery.battles)."""
+    return (d.tables.get(table) or {}).get("battle") in d.units["heroes"]["cautery"]["battles"]
+
+
+def hero_fates(d: Data, units: list, table: str, rng) -> list:
+    """After the battle, each hero still on the field who cannot leave it with his unit: left
+    behind, or down with a unit that broke, fled or was destroyed. His own side holds the field
+    if it has a unit still standing (or neither side has): he is found. Otherwise d100 at or
+    under heroes.quarter % for the war makes him a prisoner, else he is killed. -> [{unit, hero,
+    name, fate (found, prisoner or killed), roll, chance}], unit by unit."""
+    Q, out = d.units["heroes"]["quarter"], []
+    up = {u["side"] for u in units if u["men"] > 0 and u["state"] in ("steady", "shaken")}
+    chance = Q.get((d.tables.get(table) or {}).get("battle"), Q["default"])
+    for i, u in enumerate(units):
+        gone = u["men"] <= 0 or u["state"] not in ("steady", "shaken")
+        for h in u.get("heroes", []):
+            if h["state"] == "dead" or h.get("carried") or not (h.get("left") or (gone and h["state"] == "down")):
+                continue
+            if u["side"] in up or not up:
+                out.append({"unit": i, "hero": h["id"], "name": h["name"], "fate": "found"})
+                continue
+            roll = rng.randint(1, 100)
+            out.append({"unit": i, "hero": h["id"], "name": h["name"], "fate": "prisoner" if roll <= chance else "killed", "roll": roll, "chance": chance})
+    return out
+
+
+def _off_field(hero: dict) -> bool:
+    """Left behind, or carried to the rear: out of the battle."""
+    return bool(hero.get("left") or hero.get("carried"))
+
+
+def _bearers_back(us: list) -> list:
+    """Each party of bearers counts down an exchange; due back, it rejoins its unit if the
+    unit still stands (steady or shaken), else stays at the rear. -> log lines."""
+    log = []
+    for i, u in enumerate(us):
+        if not u.get("away"):
+            continue
+        due = [dict(a, left=a["left"] - 1) for a in u["away"]]
+        back = sum(a["men"] for a in due if a["left"] <= 0) if u["state"] in ("steady", "shaken") and u["men"] > 0 else 0
+        u["away"] = [a for a in due if a["left"] > 0 or not back]
+        if back:
+            u["men"] += back
+            log.append({"kind": "bearers", "unit": i, "men": back})
     return log
 
 
-def _healer(u: dict) -> tuple | None:
-    """(Leechcraft, name) of the best healer among unit u's heroes still up, or None (no one
-    with Leechcraft: his comrades bind as best they can)."""
-    up = [h for h in u.get("heroes", []) if h["state"] == "up" and not h.get("left") and h.get("leech") is not None]
+def carry_back(d: Data, units: list, i: int, hero_id) -> str | None:
+    """Unit i sends `bearers` of its men to carry hero hero_id to the rear: he leaves the
+    battle (safe), and they come back after `back_after` exchanges. -> None, or why not."""
+    H, u = d.units["heroes"], units[i]
+    hero = next((h for h in u.get("heroes", []) if h["id"] == hero_id), None)
+    if hero is None or not lamed(d, hero):
+        return "he can walk, or is not with the unit"
+    if u["state"] not in ("steady", "shaken"):
+        return "the unit is running"
+    if u["men"] <= H["bearers"]:
+        return f"the unit has not {H['bearers']} men to spare"
+    hero["carried"] = True
+    u["men"] -= H["bearers"]
+    u["away"] = [*u.get("away", []), {"men": H["bearers"], "left": H["back_after"]}]
+    return None
+
+
+def _healer(d: Data, u: dict) -> tuple | None:
+    """(Leechcraft, name) of unit u's best healer: its heroes still up with Leechcraft, and its
+    medics (heroes.medic % by their quality) while it has men; or None (his comrades bind as
+    best they can). A hero is preferred to medics as good."""
+    up = [(h["leech"], h["name"]) for h in u.get("heroes", []) if h["state"] == "up" and not _off_field(h) and h.get("leech") is not None]
+    if u.get("medics") and u["men"] > 0:
+        up.append((d.units["heroes"]["medic"][u.get("medic_quality") or u["quality"]], "the medics"))
     if not up:
         return None
-    best = max(up, key=lambda h: h["leech"])
-    return best["leech"], best["name"]
+    return max(up, key=lambda x: x[0])
 
 
-def _first_aid(d: Data, hero: dict, rng, healer: tuple | None = None) -> dict | None:
+def _first_aid(d: Data, hero: dict, rng, healer: tuple | None = None, cautery: bool = False) -> dict | None:
     """First aid in a quiet exchange on his worst-bleeding wound, from this battle or one he
     came with (old, with its bleed): the healer's Leechcraft % (else heroes.first_aid %); a
     success tourniquets an arm or leg bleeding heroes.tourniquet_from or more (it stops), or
-    binds combat.first_aid.bind steps (1 with no healer). -> a log line, or None."""
+    binds combat.first_aid.bind steps (1 with no healer). Where a tourniquet cannot go, a
+    wound bleeding heroes.cautery.from_bleed or more is cauterised in an era that did
+    (cautery): it stops, at heroes.cautery.pain more pain unless a healer did it. -> a log
+    line, or None."""
     ws = [w for w in hero["wounds"] if w.get("bleed", 0) > 0] + [w for w in hero.get("old") or [] if w.get("bleed", 0) > 0]
     if not ws:
         return None
@@ -325,6 +397,11 @@ def _first_aid(d: Data, hero: dict, rng, healer: tuple | None = None) -> dict | 
     limb = (d.loc.get(w["loc"]) or {}).get("zone") in ("arms", "legs")
     if limb and w["bleed"] >= H["tourniquet_from"]:
         w["bleed"], how = 0, "tourniquet"
+    elif cautery and not limb and w["bleed"] >= H["cautery"]["from_bleed"]:
+        w["bleed"], how = 0, "cauterise"
+        if not healer:
+            w["pain"] = min(d.wounds["tracking"]["pain_cap"], w.get("pain", 0) + H["cautery"]["pain"])
+            _sum_old_pain(hero, w)
     else:
         w["bleed"], how = max(0, w["bleed"] - (d.wounds["combat"]["first_aid"]["bind"] if healer else 1)), "bind"
     w["aid"] = how                            # the roller marks it treated (on the field) when he goes back
@@ -332,6 +409,12 @@ def _first_aid(d: Data, hero: dict, rng, healer: tuple | None = None) -> dict | 
         T = d.wounds["tracking"]
         hero["old_bleed"] = sum(round(T["bleed_per_round"][o.get("bleed", 0)] * d.units["exchange_rounds"]) for o in hero["old"])
     return {**line, "stopped": True, "bleed": w["bleed"], "how": how}
+
+
+def _sum_old_pain(hero: dict, w: dict) -> None:
+    """An old wound's pain changed: his old pain is theirs again."""
+    if any(w is o for o in hero.get("old") or []):
+        hero["old_pain"] = sum(o.get("pain", 0) for o in hero["old"])
 
 
 def _hero_after(d: Data, hero: dict, rng) -> dict | None:
@@ -358,7 +441,7 @@ def _hero_after(d: Data, hero: dict, rng) -> dict | None:
 
 
 def _heroes(u: dict, roles: tuple) -> list:
-    return [h for h in u.get("heroes", []) if h["state"] == "up" and not h.get("left") and h["role"] in roles]
+    return [h for h in u.get("heroes", []) if h["state"] == "up" and not _off_field(h) and h["role"] in roles]
 
 
 def _acting(d: Data, u: dict, roles: tuple) -> list:
@@ -377,7 +460,7 @@ def _strikes(d: Data, hero: dict) -> bool:
 def lamed(d: Data, hero: dict) -> bool:
     """A hero who slows his unit: not dead or left behind, and down (carried) or with a
     wound (from this battle or one he came with) that lames him (heroes.lamed)."""
-    if hero["state"] == "dead" or hero.get("left"):
+    if hero["state"] == "dead" or _off_field(hero):
         return False
     lame = d.units["heroes"]["lamed"]
     return hero["state"] == "down" or any(i in lame for w in (hero.get("old") or []) + hero.get("wounds", []) for i in w.get("impair") or [])
@@ -407,7 +490,7 @@ def leader_state(u: dict) -> str | None:
     ls = [h for h in u.get("heroes", []) if h.get("leader")]
     if not ls:
         return u.get("leader")
-    return "up" if any(h["state"] == "up" and not h.get("left") for h in ls) else "down"
+    return "up" if any(h["state"] == "up" and not _off_field(h) for h in ls) else "down"
 
 
 def morale(d: Data, unit: dict, roll: int) -> dict:
@@ -1324,7 +1407,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
         u.update(men=u["men"] - cut, down=u.get("down", 0) + cut, dead=u.get("dead", 0) + min(dead[i], cut))
     log += _morale_all(d, us, occ, before, (lost, dealt, flanked), rng, table, field)
     log += _suppress_all(d, us, under, rng)
-    log += _heroes_after(d, us, rng, [not lost[i] and not under[i] and not in_contact(d, us, occ, i) for i in range(len(us))])
+    log += _heroes_after(d, us, rng, [not lost[i] and not under[i] and not in_contact(d, us, occ, i) for i in range(len(us))], cauterises(d, table))
     for u in us:
         u["charged"] = False
         _battery_after(d, u)

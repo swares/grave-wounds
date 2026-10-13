@@ -28,12 +28,13 @@ When an item is done, delete it here and note it in the pull request that closes
   are not safer from shells. Cover blocks sight all or nothing past the hex next to either end:
   no thinning of fire through light scrub or an orchard, and no seeing through a building's
   open windows.
-- **Heroes on the field map.** First aid uses his unit's best Leechcraft and a tourniquet,
-  but there is no cautery, no stretcher-bearers carrying him out of the fight, and the
-  followers (who have no Leechcraft) never heal a hero. A lamed hero slows his whole unit
-  or is left behind: comrades cannot carry him to the rear, and a hero left behind is not
-  recovered by whoever holds the ground. There is no two-handed great sword among the
-  weapons, so no sword is barred to a one-armed hero.
+- **Heroes on the field map.** First aid comes from the unit's best Leechcraft or its
+  medics, with tourniquets and (before 1914) cautery. A lamed hero slows his unit until he
+  is carried back or left behind, and heroes left on the field are found, taken or killed by
+  who holds it. Still left out: a hero cannot walk back alone or be fetched by another unit;
+  bearers carry him off the map rather than to an aid post on it; prisoners have no exchange,
+  ransom or escape; and there is no two-handed great sword among the weapons, so no sword
+  is barred to a one-armed hero.
 - **Indirect fire, simplified.** A battery can be placed on the map, but a placed one off
   the map's edge cannot be clicked: it stands on a hex of the map or has no place. Its crews'
   wounds are counted but not named. A fire plan has at most two legs from the page, though

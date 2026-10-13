@@ -202,26 +202,65 @@ function impairEffect(w, imp, hand){              // [key, effect] of impairment
   const loc = FD.locations[w.loc] || {}, arm = loc.zone === "arms" && (loc.side === "L" || loc.side === "R") && loc.side !== hand ? "shield_arm" : "weapon_arm";
   return [imp + "|" + arm, rule[arm] || {}];
 }
-function heroesAfter(us, rng, quiet = null){      // end of an exchange: holds wear off, first aid in a quiet exchange, heroes bleed, Blood thresholds, pain checks
+function heroesAfter(us, rng, quiet = null, cautery = false){   // end of an exchange: holds wear off, first aid in a quiet exchange, heroes bleed, Blood thresholds, pain checks; bearers back
   const log = [];
   us.forEach((u, i) => {
     for (const hero of u.heroes || []){
-      if (hero.state === "dead" || hero.left) continue;   // left behind: out of the battle
-      const aid = quiet?.[i] ? firstAid(hero, rng, healerOf(u)) : null;
+      if (hero.state === "dead" || offField(hero)) continue;   // left behind or carried back: out of the battle
+      const aid = quiet?.[i] ? firstAid(hero, rng, healerOf(u), cautery) : null;
       if (aid) log.push({ kind: "heroaid", unit: i, ...aid });
       const line = heroAfter(hero, rng);
       if (line) log.push({ kind: "herobled", unit: i, ...line });
     }
   });
+  return [...log, ...bearersBack(us)];
+}
+const offField = h => !!(h.left || h.carried);    // left behind, or carried to the rear: out of the battle
+const cauterises = table => UD.heroes.cautery.battles.includes(FD.tables[table]?.battle);   // the battle's era cauterises where a tourniquet cannot go
+function bearersBack(us){                         // each party of bearers counts down; due back, it rejoins a unit still standing, else stays at the rear
+  const log = [];
+  us.forEach((u, i) => {
+    if (!u.away?.length) return;
+    const due = u.away.map(a => ({ ...a, left: a.left - 1 }));
+    const stands = (u.state === "steady" || u.state === "shaken") && u.men > 0;
+    const back = stands ? due.filter(a => a.left <= 0).reduce((n, a) => n + a.men, 0) : 0;
+    u.away = due.filter(a => a.left > 0 || !back);
+    if (back){ u.men += back; log.push({ kind: "bearers", unit: i, men: back }) }
+  });
   return log;
 }
-function healerOf(u){                             // [Leechcraft, name] of the best healer among u's heroes still up, or null
-  const up = (u.heroes || []).filter(h => h.state === "up" && !h.left && Number.isFinite(h.leech));
-  if (!up.length) return null;
-  const best = up.reduce((a, b) => (b.leech > a.leech ? b : a), up[0]);
-  return [best.leech, best.name];
+function carryBack(units, i, heroId){             // unit i sends bearers to carry the hero to the rear: null, or why not (as units.carry_back)
+  const H = UD.heroes, u = units[i], hero = (u.heroes || []).find(h => h.id === heroId);
+  if (!hero || !lamed(hero)) return "he can walk, or is not with the unit";
+  if (u.state !== "steady" && u.state !== "shaken") return "the unit is running";
+  if (u.men <= H.bearers) return `the unit has not ${H.bearers} men to spare`;
+  hero.carried = true;
+  u.men -= H.bearers;
+  u.away = [...(u.away || []), { men: H.bearers, left: H.back_after }];
+  return null;
 }
-function firstAid(hero, rng, healer = null){        // his worst-bleeding wound (this battle's or one he came with): Leechcraft % or heroes.first_aid %; tourniquet a limb, or bind
+function heroFates(units, table, rng){            // after the battle: heroes left on the field found, taken prisoner or killed (as units.hero_fates)
+  const Q = UD.heroes.quarter, out = [];
+  const stands = u => u.men > 0 && (u.state === "steady" || u.state === "shaken");
+  const up = new Set(units.filter(stands).map(u => u.side)), chance = Q[FD.tables[table]?.battle] ?? Q.default;
+  units.forEach((u, i) => {
+    const gone = !stands(u);
+    for (const h of u.heroes || []){
+      if (h.state === "dead" || h.carried || !(h.left || (gone && h.state === "down"))) continue;
+      if (up.has(u.side) || !up.size){ out.push({ unit: i, hero: h.id, name: h.name, fate: "found" }); continue }
+      const roll = rng.randint(1, 100);
+      out.push({ unit: i, hero: h.id, name: h.name, fate: roll <= chance ? "prisoner" : "killed", roll, chance });
+    }
+  });
+  return out;
+}
+function healerOf(u){                             // [Leechcraft, name] of u's best healer: heroes up with Leechcraft, and its medics while it has men; or null
+  const up = (u.heroes || []).filter(h => h.state === "up" && !offField(h) && Number.isFinite(h.leech)).map(h => [h.leech, h.name]);
+  if (u.medics && u.men > 0) up.push([UD.heroes.medic[u.medic_quality || u.quality], "the medics"]);
+  if (!up.length) return null;
+  return up.reduce((a, b) => (b[0] > a[0] ? b : a), up[0]);
+}
+function firstAid(hero, rng, healer = null, cautery = false){   // his worst-bleeding wound (this battle's or one he came with): Leechcraft % or heroes.first_aid %; tourniquet a limb, cauterise the body (older eras), or bind
   const ws = [...hero.wounds, ...(hero.old || [])].filter(w => (w.bleed || 0) > 0);
   if (!ws.length) return null;
   const w = ws.reduce((a, b) => (b.bleed > a.bleed ? b : a), ws[0]), H = UD.heroes;
@@ -230,10 +269,17 @@ function firstAid(hero, rng, healer = null){        // his worst-bleeding wound 
   const limb = ["arms", "legs"].includes(FD.locations[w.loc]?.zone);
   let how = "bind";
   if (limb && w.bleed >= H.tourniquet_from){ w.bleed = 0; how = "tourniquet" }
+  else if (cautery && !limb && w.bleed >= H.cautery.from_bleed){
+    w.bleed = 0; how = "cauterise";
+    if (!healer){ w.pain = Math.min(FD.tracking.pain_cap, (w.pain || 0) + H.cautery.pain); sumOldPain(hero, w) }
+  }
   else w.bleed = Math.max(0, w.bleed - (healer ? FD.combat.first_aid.bind : 1));
   w.aid = how;                                      // the roller marks it treated (on the field) when he goes back
   if ((hero.old || []).includes(w)) hero.old_bleed = hero.old.reduce((a, o) => a + Math.round(FD.tracking.bleed_per_round[o.bleed || 0] * UD.exchange_rounds), 0);
   return { ...line, stopped: true, bleed: w.bleed, how };
+}
+function sumOldPain(hero, w){                     // an old wound's pain changed: his old pain is theirs again
+  if ((hero.old || []).includes(w)) hero.old_pain = hero.old.reduce((a, o) => a + (o.pain || 0), 0);
 }
 function heroAfter(hero, rng){                    // one hero's end of an exchange; a log line if he crossed a Blood threshold or went down
   const T = FD.tracking;
@@ -250,14 +296,14 @@ function heroAfter(hero, rng){                    // one hero's end of an exchan
   if (after === before && !(wasUp && hero.state !== "up")) return null;
   return { hero: hero.id, name: hero.name, lost, blood: hero.blood, pool, state: hero.state };
 }
-const heroesOf = (u, roles) => (u.heroes || []).filter(h => h.state === "up" && !h.left && roles.includes(h.role));
+const heroesOf = (u, roles) => (u.heroes || []).filter(h => h.state === "up" && !offField(h) && roles.includes(h.role));
 const actingOf = (u, roles) => heroesOf(u, roles).filter(heroStrikes);   // up, and able to strike or shoot this exchange
 function heroStrikes(hero){                           // not held by a stop check, not too sick to do more than defend, not hurt in an arm (one_arm) with a two-handed weapon
   if (held(hero) || hero.defend_only) return false;
   return !(FD.weapons[hero.weapon]?.two_handed && heroPenalties(hero)[2].includes("one_arm"));
 }
 function lamed(hero){                             // a hero who slows his unit: not dead or left behind, and down (carried) or lamed by a wound (heroes.lamed)
-  if (hero.state === "dead" || hero.left) return false;
+  if (hero.state === "dead" || offField(hero)) return false;
   const lame = UD.heroes.lamed;
   return hero.state === "down" || [...(hero.old || []), ...(hero.wounds || [])].some(w => (w.impair || []).some(i => lame.includes(i)));
 }
@@ -272,7 +318,7 @@ const heroSide = (u, hero, table) => ({ table, weapon: hero.weapon, kit: hero.ki
 function leaderState(u){
   const ls = (u.heroes || []).filter(h => h.leader);
   if (!ls.length) return u.leader;
-  return ls.some(h => h.state === "up" && !h.left) ? "up" : "down";
+  return ls.some(h => h.state === "up" && !offField(h)) ? "up" : "down";
 }
 
 // ---------- morale ----------
@@ -1212,7 +1258,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     const cut = Math.min(acc.lost[i], u.men);
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
   });
-  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i))));
+  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table)));
   afterExchange(us, field, log);
   log.push(...landings(us, table, rng, field), ...vehiclesAfter(us, field));
   return { units: us, log };

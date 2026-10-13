@@ -708,14 +708,19 @@ function sendToRoller(){                         // the roller picks the team up
 }
 // The field map: the followers of each career form one unit at the quality most of them have
 // (ties: the better), and the team goes with them as heroes (each with his own career's unit, else the biggest)
-function fieldUnits(){
-  const order = ["green", "regular", "veteran"], units = [];
+function fieldUnits(){                            // one unit a career; followers of a healing career go with the biggest as its medics
+  const order = ["green", "regular", "veteran"], units = [], medics = [];
   for (const [cid] of S.fcounts){
     const men = S.crew.filter(f => f.career === cid);
     if (!men.length) continue;
+    if (byId(T.careers, cid).main === "leechcraft"){ medics.push(...men); continue }
     const count = q => men.filter(f => f.quality === q).length;
     const quality = order.reduce((a, q) => (count(q) >= count(a) ? q : a), "green");
     units.push({ career: cid, name: `${byId(T.careers, cid).name.split(" or ")[0]} followers`, men: men.length, quality, kit: men[0].kit, weapon: men[0].weapon, mounted: men[0].mounted });
+  }
+  if (medics.length && units.length){
+    const big = units.reduce((a, u) => (u.men > a.men ? u : a), units[0]), count = q => medics.filter(f => f.quality === q).length;
+    Object.assign(big, { medics: medics.length, medic_quality: order.reduce((a, q) => (count(q) >= count(a) ? q : a), "green") });
   }
   return units;
 }

@@ -3159,13 +3159,14 @@ function fieldHero(h){                         // one hero back from the field m
     if (!fx0) continue;
     const fx = structuredClone(w.graze ? grazeFx(fx0) : fx0), bound = Number.isFinite(w.bleed) && w.bleed < fx.bleed;   // bandaged on the field: it bleeds as it was left
     if (bound) fx.bleed = w.bleed;
+    if (Number.isFinite(w.pain) && w.pain > fx.pain) fx.pain = w.pain;   // cauterised on the field, unskilled: more pain
     c.wounds.push({ loc: w.loc, mech: w.mech, sev: w.sev, graze: !!w.graze, fx, treated: bound ? `${w.aid || "bind"} (on the field)` : "" });
   }
   fieldOldWounds(c, h.old);
   if (Number.isFinite(h.blood)) c.blood = Math.min(c.blood ?? h.blood, h.blood);   // what he bled on the field
   if (h.state !== "up") c.state = { id: "out", rounds: null };
   const what = h.wounds.map(w => `${w.graze ? "graze" : w.sev} (${LOC[w.loc].name.toLowerCase()})`).join(", ") || "unhurt";
-  return `${c.name}: ${what}${{ dead: ", killed", down: ", down" }[h.state] || ""}`;
+  return `${c.name}: ${what}${{ dead: ", killed", down: ", down", prisoner: ", taken prisoner" }[h.state] || ""}`;
 }
 function applyFieldHeroes(){                 // heroes back from the field map: their wounds onto their records
   let r = null;
