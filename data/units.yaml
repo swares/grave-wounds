@@ -38,6 +38,12 @@ line_of_fire:
   arcing: [bow, longbow, crossbow]
   arc_penalty: 20
   see_into: 1
+  # Light cover (ground marked `light`: scrub, brush, orchards, hedgerows, tall grass) thins
+  # sight rather than blocking it: each hex of it on the line between a shooter and his target
+  # (not the hexes they stand in), as high as he stands, costs aimed fire `per` %, and more than
+  # `blind_past` such hexes block sight altogether (aimed fire, guns laying, spotting). Design
+  # estimates.
+  thin: {per: 10, blind_past: 3}
 exchange_rounds: 10        # individual 6-second rounds in one exchange (for fatigue, bleeding, states)
 
 # The ground, painted per hex. move: movement to enter a hex of it (open ground 1); impassable:
@@ -46,7 +52,8 @@ exchange_rounds: 10        # individual 6-second rounds in one exchange (for fat
 # stands (high ground and tall buildings 10, a slope 5): a blow struck up at men on it from lower ground is
 # that much % off less the striker's own height (as a bank's), it is high ground for shooting by the
 # difference (high_ground), and from it a man sees and shoots over lower ground's cover and units. hides: men in it are hard to
-# see (hidden). no_horse: horses cannot go into it. Works (ditches, banks,
+# see (hidden). screen: it blocks sight past its edge; light: it thins sight (line_of_fire.thin).
+# no_horse: horses cannot go into it. Works (ditches, banks,
 # palisades, gates, walls, stakes, felled trees, wagons, pavises) are those of the battle
 # map (works.yaml), with the same crossing costs, cover and height, along the 10 m hexes.
 # key: the letter for the ground in a battlefield file's rows (data/fields).
@@ -54,6 +61,7 @@ ground:
   open:  {name: "Open ground",  key: ".", move: 1}
   rough: {name: "Rough ground", key: "r", move: 2, stops_shot: true}
   woods: {name: "Woods",        key: "F", move: 2, cover: 20, stops_shot: true, screen: true}
+  scrub: {name: "Scrub and orchard", key: "o", move: 2, cover: 10, light: true}   # brush, gorse, orchards, hedgerows, tall grass: thins sight (line_of_fire.thin) and slows as woods do
   marsh: {name: "Marsh",        key: "m", move: 3, no_horse: true, stops_shot: true}
   slope: {name: "Slope",        key: "s", move: 2, height: 5}                     # the side of a hill: half its height for shooting and close combat
   high:  {name: "High ground",  key: "h", move: 1, height: 10}

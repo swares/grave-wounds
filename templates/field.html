@@ -11,20 +11,20 @@
   --bg:#e9ecee; --panel:#f6f7f8; --ink:#1b2127; --muted:#5b6670; --line:#c5ccd2; --ground:#dfe6d8;
   --steel:#3f4f5d; --blood:#8e1b2c; --blood-soft:#f1d9dc; --warn:#a86512;
   --side0:#2f5d8a; --side1:#8e1b2c;
-  --g-rough:#d3d2b8; --g-woods:#a9c39a; --g-marsh:#b9cfcc; --g-slope:#ece3c6; --g-high:#e3d6b6; --g-buildings:#c9a99a; --g-tall:#a98577; --g-rubble:#b7aea4; --g-water:#8db7d6;
+  --g-rough:#d3d2b8; --g-woods:#a9c39a; --g-scrub:#cbd8b0; --g-marsh:#b9cfcc; --g-slope:#ece3c6; --g-high:#e3d6b6; --g-buildings:#c9a99a; --g-tall:#a98577; --g-rubble:#b7aea4; --g-water:#8db7d6;
   --w-earth:#7a5a33; --w-timber:#4a3a28; --w-stone:#6d7680;
   --display:"Alegreya SC",Georgia,serif; --body:"Alegreya Sans","Gill Sans","Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942; --ground:#1f2820;
-  --g-rough:#2e2f22; --g-woods:#1b3320; --g-marsh:#1d3133; --g-slope:#33301f; --g-high:#3a3324; --g-buildings:#4a3630; --g-tall:#5e3f36; --g-rubble:#4a4540; --g-water:#25445c;
+  --g-rough:#2e2f22; --g-woods:#1b3320; --g-scrub:#28351f; --g-marsh:#1d3133; --g-slope:#33301f; --g-high:#3a3324; --g-buildings:#4a3630; --g-tall:#5e3f36; --g-rubble:#4a4540; --g-water:#25445c;
   --w-earth:#c9a16e; --w-timber:#d8c3a2; --w-stone:#a9b3bd;
   --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --warn:#e3a14d;
   --side0:#8db8e0; --side1:#e8909c; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942; --ground:#1f2820;
-  --g-rough:#2e2f22; --g-woods:#1b3320; --g-marsh:#1d3133; --g-slope:#33301f; --g-high:#3a3324; --g-buildings:#4a3630; --g-tall:#5e3f36; --g-rubble:#4a4540; --g-water:#25445c;
+  --g-rough:#2e2f22; --g-woods:#1b3320; --g-scrub:#28351f; --g-marsh:#1d3133; --g-slope:#33301f; --g-high:#3a3324; --g-buildings:#4a3630; --g-tall:#5e3f36; --g-rubble:#4a4540; --g-water:#25445c;
   --w-earth:#c9a16e; --w-timber:#d8c3a2; --w-stone:#a9b3bd;
   --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --warn:#e3a14d;
   --side0:#8db8e0; --side1:#e8909c; color-scheme:dark}
@@ -59,7 +59,7 @@ button:disabled{opacity:.45;cursor:default}
 .mapbox svg{display:block;width:100%;height:auto;touch-action:manipulation;user-select:none}
 .hx{fill:var(--ground);stroke:rgba(0,0,0,.10);stroke-width:.5;cursor:pointer}
 .hx:hover{stroke:var(--ink);stroke-width:1.2}
-.hx.g-rough{fill:var(--g-rough)}.hx.g-woods{fill:var(--g-woods)}.hx.g-marsh{fill:var(--g-marsh)}.hx.g-slope{fill:var(--g-slope)}.hx.g-high{fill:var(--g-high)}.hx.g-buildings{fill:var(--g-buildings)}.hx.g-tall{fill:var(--g-tall)}.hx.g-rubble{fill:var(--g-rubble)}.hx.g-water{fill:var(--g-water)}
+.hx.g-rough{fill:var(--g-rough)}.hx.g-woods{fill:var(--g-woods)}.hx.g-scrub{fill:var(--g-scrub)}.hx.g-marsh{fill:var(--g-marsh)}.hx.g-slope{fill:var(--g-slope)}.hx.g-high{fill:var(--g-high)}.hx.g-buildings{fill:var(--g-buildings)}.hx.g-tall{fill:var(--g-tall)}.hx.g-rubble{fill:var(--g-rubble)}.hx.g-water{fill:var(--g-water)}
 .wk{fill:none;pointer-events:none;stroke-linecap:round}
 .wk.ditch{stroke:var(--w-earth);stroke-width:1.6;stroke-dasharray:2 1.5}
 .wk.bank{stroke:var(--w-earth);stroke-width:2.4}

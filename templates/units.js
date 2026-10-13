@@ -934,19 +934,27 @@ function across(field, u, h, x, reach){           // [blocked: only reach 2 over
 }
 const upOf = field => field?.up || "N";          // the compass point at the top of the field map
 const SMOKED = { blocked: "Smoke: no one can see to shoot through it.", penalty: 0, misfire: 0, reach: 0 };
-const SCREENED = { blocked: "Woods or buildings between: no one can see to aim through them.", penalty: 0, misfire: 0, reach: 0 };
-function clearSight(field, h, t, dist, line = null){   // a man at h sees t to aim: nothing that screens (woods, buildings) on the line between as high as he stands, past see_into hexes at either end
+const SCREENED = { blocked: "Woods, buildings or thick scrub between: no one can see to aim through them.", penalty: 0, misfire: 0, reach: 0 };
+function clearSight(field, h, t, dist, line = null){   // a man at h sees t to aim: nothing that screens (woods, buildings) between past see_into hexes at either end, and no more than thin.blind_past hexes of light cover
   if (!field?.ground) return true;
   const k = UD.line_of_fire.see_into ?? 1, up = heightAt(field, h);
   line ||= ray(h, t, dist);
-  return !line.slice(1 + k, line.length - 1 - k).some(y => groundAt(field, y).screen && heightAt(field, y) >= up);
+  if (line.slice(1 + k, line.length - 1 - k).some(y => groundAt(field, y).screen && heightAt(field, y) >= up)) return false;
+  return thinned(field, h, line) <= UD.line_of_fire.thin.blind_past;
+}
+function thinned(field, h, line){                 // hexes of light cover (scrub, orchards) on the line, not the ends, as high as the man at h stands
+  if (!field?.ground) return 0;
+  const up = heightAt(field, h);
+  return line.slice(1, line.length - 1).filter(y => groundAt(field, y).light && heightAt(field, y) >= up).length;
 }
 function shotWeather(field, weapon, dist, h = null, t = null, seer = null){   // the weather on a shot from h to t; smoke on the line blocks it; seer: {kit, blind} in the dark
   if (h && t && smoked(field, ray(h, t, dist)) && !seesSmoke(seer)) return { ...SMOKED };
   if (h && t && !seer?.blind && !clearSight(field, h, t, dist)) return { ...SCREENED };
   if (isGun(weapon)) return gunWeather(field, dist, h, t, seer);
   const seen = seer?.blind ? 0 : dist * UD.range_scale;   // blind down a fixed line: the weather's sight does not count
-  return inTheCold(field, weapon, inTheDark(field, dist, t, weatherAttack(field?.weather || null, weapon, seen, h, t, upOf(field)), seer));
+  const out = inTheCold(field, weapon, inTheDark(field, dist, t, weatherAttack(field?.weather || null, weapon, seen, h, t, upOf(field)), seer));
+  const n = h && t && !out.blocked ? thinned(field, h, ray(h, t, dist)) : 0;   // light cover between: aimed fire thinned
+  return n ? { ...out, penalty: out.penalty + n * UD.line_of_fire.thin.per } : out;
 }
 const coldOf = field => FD.weather?.cold?.levels?.[field?.weather?.cold || ""] || null;   // the field's cold level, or null
 function inTheCold(field, weapon, out){            // automatic weapons jam more in hard cold

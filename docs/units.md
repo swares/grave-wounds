@@ -763,6 +763,7 @@ can be opened or barred at any time.
 | Open | 1 | |
 | Rough | 2 | |
 | Woods | 2 | −20% to shots at men in it |
+| Scrub and orchard | 2 | brush, gorse, orchards, hedgerows, tall grass: −10% to shots at men in it; it **thins** sight rather than blocking it (see *Seeing*) |
 | Marsh | 3 | no horses |
 | Slope | 2 | the side of a hill, half as high as high ground: −5% to blows struck up at men on it from lower ground; shooting down from it +5% with range bands 10% longer, shooting up at it −5% (not guns) |
 | High ground | 1 | −10% to blows struck up at men on it from lower ground; shooting down from it +10% with range bands 20% longer, shooting up at it −10% (not guns). From a slope to high ground counts half |
@@ -788,7 +789,13 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
 - **Seeing:** woods and buildings block the sight of men calling fire and of aimed shots
   (*Sight through cover*), unless they stand higher than them: from high ground or a tall
   building a man sees over woods and lower roofs, and from a slope over woods and houses on
-  the flat. A man sees one hex into cover, and out of it from its edge.
+  the flat. A man sees one hex into cover, and out of it from its edge. **Scrub and
+  orchards** thin sight instead: each hex of them on the line between the shooter and his
+  target (not the hexes they stand in, and not below him) costs aimed fire −10%, and more
+  than 3 block sight as woods do (aimed fire, guns laying, calling fire). The field map's own
+  battlefields have it only where the accounts name it: the gorse at Goose Green, the
+  elephant grass at Khe Sanh and X-Ray, the brush in Wanat's draw, the scrub on Keating's
+  lower slopes and Cassino's. Each field's notes say so.
 - **Shooting:** the target takes the average cover of its row nearest the shooters (rounded
   down), each hex the best of the works and ground there: a bank on its side −20%, a palisade
   or barred gate −40%, a wall −50%, a pavise or felled trees in its hex −20%, wagons in front

@@ -25,9 +25,10 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Works and ground on the field map.** Height has three steps (flat, slope, high) and no
   contour lines or dead ground behind a crest. Tall buildings give a view and a height, but
   not separate floors: there is no fighting room to room or stair by stair, and men upstairs
-  are not safer from shells. Cover blocks sight all or nothing past the hex next to either end:
-  no thinning of fire through light scrub or an orchard, and no seeing through a building's
-  open windows.
+  are not safer from shells. Scrub and orchards thin aimed fire and block sight past 3 hexes,
+  but calling fire has no roll for them to cost (only the block), and the roller's 2-yard
+  battle map does not thin sight at all (its woods and brush only give cover). There is no
+  seeing through a building's open windows.
 - **Heroes on the field map.** First aid comes from the unit's best Leechcraft or its
   medics, with tourniquets and (before 1914) cautery. A lamed hero slows his unit until he
   is carried back or left behind, and heroes left on the field are found, taken or killed by
