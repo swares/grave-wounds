@@ -115,6 +115,8 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .post-t{font:700 4.6px var(--mono);fill:#2f6b3a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .party{font:700 8px var(--mono);fill:#2f6b3a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .lying{font:700 6px var(--mono);fill:var(--blood);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.mine{fill:#7a2a1a;fill-opacity:.18;stroke:#7a2a1a;stroke-width:.6;stroke-dasharray:1.2 1;pointer-events:none}.mine.hid{fill-opacity:.05;stroke-opacity:.45}
+.mine-t{font:700 4px var(--mono);fill:#7a2a1a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .heroes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.9rem}
 .heroes li{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:3px;padding:5px 8px}
 .heroes .meta{margin-left:auto;font:500 .75rem var(--mono);color:var(--muted);text-align:right}
@@ -746,12 +748,20 @@ function litSvg(l){ const [cx, cy] = xy(l.at); return `<circle class="lit" cx="$
 function fixedSvg(u){ const f = footprint(u)[0], [x1, y1] = xy(f[Math.floor(f.length / 2)]), [x2, y2] = xy(u.fixed); return `<line class="fixed" x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2)}" y2="${f1(y2)}"/>` }
 function batterySvg(b){ const [x, y] = xy(b.place), cls = b.overrun ? "bat gone" : "bat"; return `<rect class="${cls}" x="${f1(x - 4)}" y="${f1(y - 3)}" width="8" height="6"><title>${esc(b.name)} (${esc(b.side)})</title></rect>` }
 const poss = n => (n.endsWith("s") ? n + "'" : n + "'s");   // "Yorkists'", "England's"
+const MINE_TAG = { ap: "a.p.", at: "a.t.", mixed: "mix" };
+function minesSvg(){                              // marked minefields, hidden ones once found (and, setting up, faintly for the GM)
+  return Object.entries(S.field.mines || {}).filter(([, m]) => !m.hidden || m.found || S.phase === "setup").map(([k, m]) => {
+    const h = k.split(",").map(Number), [x, y] = xy(h), hid = m.hidden && !m.found ? " hid" : "";
+    return `<polygon class="mine${hid}" points="${pts(xy(h))}"/><text class="mine-t" x="${f1(x)}" y="${f1(y + 3)}">${MINE_TAG[m.kind] || "M"}</text>`;
+  }).join("");
+}
 function postSvg(p){ const [x, y] = xy(p.at); return `<rect class="post${p.overrun ? " gone" : ""}" x="${f1(x - 5)}" y="${f1(y - 3.5)}" width="10" height="7" rx="1.5"><title>${esc(poss(p.side))} aid post${p.overrun ? " (overrun)" : ""}</title></rect><text class="post-t" x="${f1(x)}" y="${f1(y)}">AP</text>` }
 function supportSvg(){                            // smoke, landing zones, aid posts, heroes going back or lying out, flares, fixed lines, flashes, the hexes fire is called on, batteries, and where the last exchange's shells burst
   const F = S.field, heroes = allHeroes();
   return [
     Object.keys(F.smoke || {}).map(k => `<polygon class="smoke" points="${pts(xy(k.split(",").map(Number)))}"/>`),
     (F.lz || []).map(lzSvg),
+    minesSvg(),
     (F.posts || []).map(postSvg),
     heroes.filter(h => h.going).map(h => glyph("party", "\u21a9")(h.going.pos)),
     heroes.filter(h => h.left && h.at && h.state !== "dead" && h.state !== "prisoner").map(h => glyph("lying", "\u25bc")(h.at)),
@@ -843,6 +853,16 @@ function aidText(l, nm){                          // a hero's first aid: "X (uni
   if (l.how === "cauterise") return `${who}: the wound in his ${part} is cauterised${by}: it bleeds no more.`;
   return `${who} is bandaged${by}: his ${part} bleeds ${l.bleed ? "less" : "no more"}.`;
 }
+function mineText(l, nm){                         // a unit sets off mines
+  const where = `${nm(l.unit)} go into ${nOf(l.hexes, "minefield hex", "minefield hexes")}`;
+  if (S.units[l.unit]?.vehicle){
+    const knocked = l.knocked ? ", " + l.knocked + " knocked out (" + l.crew + " crew out of the fight)" : "";
+    const stuck = l.immobilised ? ", " + l.immobilised + " immobilised" : "";
+    return `${where}: ${nOf(l.struck, "vehicle")} set off a mine${knocked}${stuck}.`;
+  }
+  const dead = l.dead ? " (" + l.dead + " dead)" : "";
+  return `${where}: ${l.struck} men struck, ${l.down || 0} down${dead}.`;
+}
 function partyText(l, nm){                        // a party back: arrived, stopped, or its hero left lying
   const who = `${l.name} (${nm(l.unit)})`;
   if (l.what === "post") return `${who} reaches the aid post at ${hexName(l.at)}.`;
@@ -884,6 +904,7 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   partyhit: (l, nm) => ({ cls: "hero", text: partyHitText(l, nm) }),
   fetched: (l, nm) => ({ cls: "hero", text: `${l.name} is picked up by ${nm(l.unit)}: he goes with them now.` }),
   found: (l, nm) => ({ cls: "morale", text: `${l.name} (${nm(l.unit)}) is found by ${l.at_post ? "the enemy overrunning the aid post" : nm(l.by)}: ${l.fate === "prisoner" ? "taken prisoner" : "killed"} (rolled ${l.roll}, quarter ${l.chance}% or less).` }),
+  mines: (l, nm) => ({ cls: "morale", text: mineText(l, nm) }),
   overrun_post: l => ({ cls: "morale", text: `${poss(l.side)} aid post at ${hexName(l.at)} is overrun.` }),
 };
 OTHER_LINES.counter = OTHER_LINES.barrage;
@@ -905,12 +926,18 @@ function landText(l){                            // men landing by air, or waved
   return `${l.men} men of ${l.name} (${l.side}) land at ${at}${l.first ? "" : " and join them"}${hot}.`;
 }
 const nWounds = n => (n === 1 ? "1 wound" : n + " wounds");
+function damageText(l){                           // " 1 vehicle immobilised. 1 main gun put out of action. (2 hits on the turret.)"
+  let out = "";
+  if (l.immobilised) out += ` ${nOf(l.immobilised, "vehicle")} immobilised.`;
+  if (l.gun_out) out += ` ${nOf(l.gun_out, "main gun")} put out of action.`;
+  if (l.turret) out += ` (${nOf(l.turret, "hit")} on the turret.)`;
+  return out;
+}
 function armourText(l, nm){                       // rockets at vehicles, a tank's main gun, a vehicle knocked out by shells or bombs
   const vk = l.dfd !== undefined && S.units[l.dfd]?.vehicle, what = vk ? FD.units.vehicles.kinds[vk].name.toLowerCase() : "vehicles";
   let out = "";
   if (l.knocked) out = ` ${l.knocked} of ${nm(l.dfd)}'s ${what} knocked out; ${l.crew} crew out of the fight, ${l.down || 0} down` + (l.dead ? ` (${l.dead} dead)` : "") + ".";
-  if (l.immobilised) out += ` ${nOf(l.immobilised, "vehicle")} immobilised.`;
-  if (l.gun_out) out += ` ${nOf(l.gun_out, "main gun")} put out of action.`;
+  out += damageText(l);
   if (l.rstruck) out += ` Riders: ${l.rstruck} struck, ${l.rdown || 0} down` + (l.rdead ? ` (${l.rdead} dead)` : "") + ".";
   if (l.kill !== undefined && l.hit) out = ` (${l.kill}% a hit to knock out)` + out;
   if (l.kind === "knocked_out") return `${l.name || "Shells"} burst on ${nm(l.dfd)}:${out}`;
@@ -977,9 +1004,12 @@ function drifts(k){                              // in the dark, each unit of si
   });
   return names.length ? ` ${names.join(", ")} lost their way in the dark.` : "";
 }
+function markStarts(){                            // with minefields down, where each unit's first moves begin (the ground it crosses)
+  if (Object.keys(S.field.mines || {}).length) for (const u of S.units) u.was = [[...u.pos], u.facing];
+}
 function next(){
   if (S.phase === "over") return;
-  if (S.phase === "setup"){ S.exchange = 1; S.aiMemory = null; startPhase(0); S.msg = `${S.sides[0]} to move.${caughtUnawares()}`; aiMove(); return render() }
+  if (S.phase === "setup"){ S.exchange = 1; S.aiMemory = null; markStarts(); startPhase(0); S.msg = `${S.sides[0]} to move.${caughtUnawares()}`; aiMove(); return render() }
   if (S.phase === 0){ const lost = drifts(0); startPhase(1); S.msg = `${S.sides[1]} to move.${lost}`; aiMove(); return render() }
   const lostB = drifts(1);
   const r = exchange(S.units, S.table, dice, S.field);
@@ -1145,6 +1175,10 @@ function renderAddSide(){                         // a unit is drawn from a forc
 
 /* ---------- ground, works and weather ---------- */
 const EDGE_TOOLS = ["ditch", "bank", "palisade", "gate", "wall"], HEX_TOOLS = ["stakes", "abatis", "wagon", "pavise", "wire", "bunker", "trench", "wreck"];
+function mineOptions(){                           // each kind of minefield, marked or hidden
+  return Object.entries(FD.units.mines.kinds).map(([k, v]) => '<option value="mine:' + k + '">' + esc(v.name) + ", marked</option>"
+    + '<option value="mine:' + k + ':hidden">' + esc(v.name) + ", hidden</option>").join("");
+}
 function fillTools(){
   const g = Object.entries(FD.units.ground).map(([k, v]) => `<option value="g:${k}">${esc(v.name)}</option>`).join("");
   const e = EDGE_TOOLS.map(k => `<option value="e:${k}">${esc(WK.edge_works[k].name)}</option>`).join("");
@@ -1153,13 +1187,14 @@ function fillTools(){
     + (WXD.light ? `<option value="flare">Fire a flare (lights the hexes round it)</option>` : "")
     + (FD.units.heliborne ? `<option value="lz">Mark or clear a landing zone</option>` : "")
     + `<optgroup label="Aid posts"><option value="post:0">Aid post: side A</option><option value="post:1">Aid post: side B</option></optgroup>`
+    + `<optgroup label="Minefields (1939 on; click again to clear)">${mineOptions()}</optgroup>`
     + `<optgroup label="Paint the ground">${g}</optgroup><optgroup label="Works on a hex side (click just inside it, on the high side)">${e}</optgroup><optgroup label="Works in a hex">${h}</optgroup>`;
   $("#sel-wx").innerHTML = Object.entries(WXD.conditions).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-wind").innerHTML = WXD.winds.map(w => `<option value="${w.id}">${esc(w.name)}</option>`).join("");
   $("#sel-cold").innerHTML = `<option value="">Not freezing hard</option>` + Object.entries(WXD.cold?.levels || {}).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-light").innerHTML = Object.entries(WXD.light?.levels || { day: { name: "Daylight" } }).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#legend").innerHTML = Object.entries(FD.units.ground).filter(([k]) => k !== "open").map(([k, v]) => `<span><i class="g-${k}" style="background:var(--g-${k})"></i>${esc(v.name)}</span>`).join("")
-    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span>AP: aid post; \u21a9 a hero going back; \u25bc a hero lying out</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
+    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span>AP: aid post; \u21a9 a hero going back; \u25bc a hero lying out</span><span><i class="smoke-key" style="background:#e9d3cc;border:1px dashed #7a2a1a"></i>a.p., a.t., mix: minefield (hidden ones once found)</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
 }
 function clickSide(e, h){                         // the neighbour across the hex side nearest the click
   const svg = $("#map svg"), pt = svg.createSVGPoint();
@@ -1173,6 +1208,7 @@ function useTool(e, h){                           // paint the ground, or build 
   if (tool === "flare") return fireFlare(h);
   if (tool === "lz") return toggleLz(h);
   if (tool.startsWith("post:")) return placePost(h, Number(tool.slice(5)));
+  if (tool.startsWith("mine:")) return placeMine(h, tool.split(":")[1], tool.endsWith(":hidden"));
   if (tool === "h:wreck") return placeWreck(h);
   if (S.phase !== "setup"){ S.msg = "Ground and works are set before the battle starts; gates can be opened or barred at any time."; return }
   const before = JSON.stringify(S.field);
@@ -1218,6 +1254,15 @@ function placePost(h, k){                         // a side's aid post: placed, 
   if (same){ S.msg = `${poss(side)} aid post cleared: bearers carry men off the map.`; return }
   posts.push({ side, at: [...h] });
   S.msg = `${poss(side)} aid post at ${hexName(h)}: bearers carry their wounded heroes there, and walking wounded go back to it.`;
+}
+const minesHere = () => (FD.tables[S.table]?.weapons || []).includes(FD.units.mines.weapon);   // a table with mine wounds: 1939 on
+function placeMine(h, kind, hidden){              // a minefield hex painted, changed or cleared (set-up only)
+  if (S.phase !== "setup"){ S.msg = "Minefields are laid before the battle starts."; return }
+  if (!minesHere()){ S.msg = "These wound tables have no mine wounds: minefields are for 1939 on."; return }
+  const M = S.field.mines || (S.field.mines = {}), k = hkey(h), was = M[k];
+  if (was && was.kind === kind && !!was.hidden === hidden){ delete M[k]; S.msg = `Minefield at ${hexName(h)} cleared.`; return }
+  M[k] = { kind, hidden };
+  S.msg = `${FD.units.mines.kinds[kind].name} at ${hexName(h)}${hidden ? ", hidden: it shows only once something goes into it" : ", marked"}.`;
 }
 function postLabels(){                            // the tool list names the sides' aid posts
   for (const o of $("#sel-tool").options) if (o.value.startsWith("post:")) o.textContent = `Aid post: ${S.sides[Number(o.value.slice(5))]} (place, move or clear)`;
@@ -1466,6 +1511,7 @@ function unitMeta(u){
   if (u.state === "fled") return "fled";
   const down = u.down ? " · " + u.down + " down" : "", br = (u.breach ? " · breaching" : "") + (u.assault ? " · storming" : ""), low = (u.prone ? " · to ground" : "") + (u.pinned ? " · pinned" : "") + (u.lost ? " · lost in the dark" : "") + (u.fixed ? " · fixed line" : "") + (u.fac ? " · air controller" : "");
   let mg = isMg(u.weapon) ? " · " + gunsText(mgGuns(u), "gun") : "";
+  if (isAtGun(u)) mg = " · " + gunsText(atGuns(u), "gun");
   if (u.vehicle) mg = vehicleMeta(u);
   return `${u.men}/${u.start} · ${u.state}${down}${br}${low}${mg}${batteryMeta(u)}`;
 }
@@ -1513,6 +1559,12 @@ function renderAssault(u){                        // the storming order, on tabl
   el.value = u?.assault || "";
   el.disabled = !u || S.phase === "over" || u.state === "broken" || u.state === "fled";
 }
+function teamInfo(u){                             // a machine-gun team's or anti-tank guns' line in the selected unit
+  const A = FD.units.anti_tank_guns, G = FD.units.machine_guns;
+  if (isAtGun(u)) return `<dt>Guns</dt><dd>${gunsText(atGuns(u), "anti-tank gun")} served (${A.crew} men a gun): ${A.gun.rate} round a gun an exchange at the nearest vehicle (else men) in sight and in front, out to ${fmtM(A.gun.range * FD.units.hex_m)}</dd>`;
+  if (isMg(u.weapon)) return `<dt>Guns</dt><dd>${gunsText(mgGuns(u), "machine gun")} served (${G.crew} men a gun); beaten zone ${fmtM(G.beaten.beyond * FD.units.hex_m)} past the target</dd>`;
+  return "";
+}
 function renderSel(){
   const u = selUnit(), setup = S.phase === "setup";
   $("#sel-name").textContent = u ? "· " + u.name : "";
@@ -1543,7 +1595,7 @@ function renderSel(){
     + `<dt>Order</dt><dd>${f.name}, ${Math.min(u.width, Math.ceil(Math.max(1, u.men) / f.per_hex))} hexes of front${u.mounted ? ", mounted" : ""}</dd>`
     + (isBattery(u) ? `<dt>Guns</dt><dd>${gunsInfo(u)}</dd>` : "")
     + (VK ? `<dt>Vehicles</dt><dd>${vehicleInfo(u, VK)}</dd>` : "")
-    + (isMg(u.weapon) ? `<dt>Guns</dt><dd>${gunsText(mgGuns(u), "machine gun")} served (${FD.units.machine_guns.crew} men a gun); beaten zone ${fmtM(FD.units.machine_guns.beaten.beyond * FD.units.hex_m)} past the target</dd>` : "")
+    + teamInfo(u)
     + (u.prone ? `<dt>Ground</dt><dd>Gone to ground: shots at it −${FD.units.to_ground.cover}%; it cannot move until it gets up</dd>` : "")
     + (u.fixed ? `<dt>Fixed line</dt><dd>Laid on ${u.fixed[0] + 1},${u.fixed[1] + 1}: in the dark, with no target it can see, it fires blind at any enemy within ${nOf(FD.weather.light.fixed_line.width, "hex", "hexes")} of the line (−${FD.weather.light.fixed_line.aim}%)</dd>` : "")
     + (u.lost ? `<dt>Lost</dt><dd>It lost its way in the dark: it cannot move next exchange, but may turn</dd>` : "")
@@ -1905,10 +1957,11 @@ function entrySpots(facing, ranks){               // front hexes for a unit `ran
   return out;
 }
 const vehiclesHere = () => !!FD.units.vehicles && !!S.table && FD.tables[S.table]?.weapons.some(w => hurtsArmour(w) || w === "machine_gun");   // tables of the machine-gun age and later
-function formationFor(weapon, chosen){           // guns in battery order, machine guns as teams; the rest as chosen (not those two)
+function formationFor(weapon, chosen){           // guns in battery order, machine guns as teams, anti-tank guns a gun a hex; the rest as chosen (not those)
   if (isGun(weapon)) return "battery";
   if (isMg(weapon)) return "mg";
-  return chosen === "battery" || chosen === "mg" ? "close" : chosen;
+  if (isAtGun({ weapon })) return "at_gun";
+  return ["battery", "mg", "at_gun"].includes(chosen) ? "close" : chosen;
 }
 function startSpots(k, ranks = 1){                // its front hexes down its side's edge, far enough in for `ranks` rows behind
   const edge = [], c = k ? SIZE[0] - 8 - (ranks - 1) : 7 + (ranks - 1);
@@ -2081,6 +2134,7 @@ function init(){
     const gun = isGun(e.target.value);
     if (gun) $("#sel-form").value = "battery";
     else if (isMg(e.target.value)) $("#sel-form").value = "mg";
+    else if (isAtGun({ weapon: e.target.value })) $("#sel-form").value = "at_gun";
     $("#guns-box").hidden = !gun;
   };
   $("#guns-box").hidden = !isGun($("#sel-weapon").value);

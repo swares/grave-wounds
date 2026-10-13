@@ -31,9 +31,9 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
 
 
 def _free(d: Data, us: list, i: int, exchange) -> bool:
-    """A unit it can order: standing, not a battery, not in contact, not just come on."""
+    """A unit it can order: standing, not a battery or anti-tank guns, not in contact, not just come on."""
     u = us[i]
-    if u["state"] in ROUTED or u["men"] <= 0 or U.is_battery(d, u):
+    if u["state"] in ROUTED or u["men"] <= 0 or U.is_battery(d, u) or U.is_at_gun(d, u):
         return False
     if exchange is not None and u.get("arrived") == exchange:
         return False

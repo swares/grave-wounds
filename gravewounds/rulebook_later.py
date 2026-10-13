@@ -92,9 +92,20 @@ def _vehicle_values(d: Data) -> dict:
     V = d.units["vehicles"]
     A = V["anti_armour"]
     return {"v_flank": f"{V['aspect']['flank']:g}", "v_rear": f"{V['aspect']['rear']:g}", "v_rocket_per": round(1 / A["rpg"]["rate"]),
-            "v_atgm_per": round(1 / A["atgm"]["rate"]), "v_immobile": V["damage"]["immobilised"], "v_gun_out": V["damage"]["gun"],
+            "v_atgm_per": round(1 / A["atgm"]["rate"]), "v_turret": V["damage"]["turret"],
+            "v_t_imm": V["damage"]["turret_hit"]["immobilised"], "v_t_gun": V["damage"]["turret_hit"]["gun"],
+            "v_h_imm": V["damage"]["hull_hit"]["immobilised"], "v_h_gun": V["damage"]["hull_hit"]["gun"],
+            **_at_mine_values(d),
             "v_crew_struck": V["crew_struck"], "v_riders_struck": V["riders_struck"], "v_shell_light": f"{V['armour']['light']['shell'] / V['armour']['heavy']['shell']:g}",
             "v_fb_knock": d.units["indirect"]["kinds"]["fighter_bomber"]["knock"]}
+
+
+def _at_mine_values(d: Data) -> dict:
+    """Anti-tank guns and minefields."""
+    A, M, V = d.units["anti_tank_guns"], d.units["mines"], d.units["vehicles"]["armour"]
+    g = A["gun"]
+    return {"at_crew": A["crew"], "at_range": _field(d, g["range"]), "at_rate": g["rate"], "at_hit": "/".join(str(h[1]) for h in g["hit"]),
+            "at_move": d.units["formations"]["at_gun"]["move"], "m_attack": M["attack"], "m_heavy": V["heavy"]["mine"], "m_light": V["light"]["mine"]}
 
 
 def _night_values(d: Data) -> dict:
@@ -122,7 +133,12 @@ def _air_values(d: Data) -> dict:
 def tables(d: Data) -> dict:
     """The tables chapters 9-13 show, as Markdown, by name."""
     return {"eras": _eras(d), "women": _women(d), "indirect": _indirect(d), "smoke": _smoke(d), "assault": _assault(d),
-            "vehicles": _vehicles(d), "armour": _armour(d), "dark": _dark(d), "nvd": _nvd(d), "air": _air(d)}
+            "vehicles": _vehicles(d), "armour": _armour(d), "dark": _dark(d), "nvd": _nvd(d), "air": _air(d), "mines": _mines(d)}
+
+
+def _mines(d: Data) -> str:
+    rows = [[k["name"], f"{k['men']}%" if k["men"] else "—", f"{k['vehicles']}%" if k["vehicles"] else "—"] for k in d.units["mines"]["kinds"].values()]
+    return _md(["Minefield", "Each man going into a hex struck", "Each vehicle going into a hex struck"], rows)
 
 
 def _eras(d: Data) -> str:

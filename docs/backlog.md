@@ -74,12 +74,15 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Cold, first cut.** Frostbite is a sickness on the force's track (and a named man's), not a
   wound on a body part, and cold-weather clothing, warming tents and fires are only the camp's
   shelter. In battle, only automatic weapons jam; mortars, grenades and vehicles do not freeze.
-- **Vehicles, second cut.** Flank and rear shots, immobilised vehicles and guns put out of
-  action, riders and the bazooka, recoilless rifle and guided missile are in. Still left out:
-  hull and turret hits, tank riders ("desant") and riders firing from the vehicle, anti-tank
-  guns as batteries, mines, fuel and ammunition, and vehicles' night sights. Crews who bail
-  out simply leave the fight. A guided missile's long range only helps in clear weather and
-  light, as aimed fire does.
+- **Vehicles, third cut.** Flank and rear shots, turret and hull hits, immobilised vehicles
+  and guns put out of action, riders, rockets and guided missiles, anti-tank guns (1939-53)
+  and minefields (1939 on) are in. Still left out: anti-tank guns' gun shields and dug-in
+  emplacements (their crews are as exposed as any men in the open), their own ammunition and
+  limbering, tank riders ("desant") and riders firing from the vehicle, mines laid or lifted
+  during the battle (no sappers clearing a lane), the enemy commander steering round known
+  minefields, and vehicles' night sights. A minefield is set off along a straight line from
+  where a unit's move began, not along the path it took. No battlefield has minefields yet:
+  to be laid only where the accounts name them. Crews who bail out simply leave the fight.
 - **Fire at hidden men, first cut.** Men gone to ground, in bunkers or in buildings are now hit
   at 10% of aimed shots (machine guns 5%), and dug-in men hold better. Osan, left alone, lasts
   about an hour where the real fight took two and a half; the rest of that time went in the

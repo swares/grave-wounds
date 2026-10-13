@@ -154,6 +154,8 @@ tbody tr:nth-child(even){background:var(--panel)}
 </li>
 <li><a href="#vehicles">Vehicles</a><ul>
 <li><a href="#knocking-out">Knocking them out</a></li>
+<li><a href="#at-guns">Anti-tank guns</a></li>
+<li><a href="#mines">Minefields</a></li>
 <li><a href="#riders">Riders</a></li>
 </ul>
 </li>
@@ -983,6 +985,14 @@ has a number of men, a quality (green, regular or veteran, as in
 <td>5</td>
 <td>1</td>
 <td>4</td>
+<td>×0.5</td>
+</tr>
+<tr>
+<td>Anti-tank guns</td>
+<td>5</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
 <td>×0.5</td>
 </tr>
 </tbody>
@@ -2179,14 +2189,71 @@ as for shots at men. A hit knocks the vehicle out at:</p>
 <ul>
 <li><strong>Where it is hit.</strong> A hit into the flank counts ×2, and into the rear
   ×3, to 100% at most. Which it is depends on where the shooter stands.</li>
-<li><strong>Damage short of that.</strong> A hit that does not knock the vehicle out immobilises it at
-  25%, or else puts its main gun out at 15%. Immobilised vehicles
-  can still turn. Their crews can abandon them and leave the fight unhurt.</li>
-<li><strong>Shells and bombs</strong> bursting in a vehicle's hex knock it out at the kind's own chance: a
+<li><strong>Damage short of that.</strong> A hit that does not knock the vehicle out strikes the turret at
+  35%, else the hull.</li>
+<li>On the turret it puts the main gun out at 40%, and immobilises the vehicle at
+    only 5%.</li>
+<li>On the hull it immobilises the vehicle at 35%, and puts the gun out at
+    5%.</li>
+</ul>
+<p>Immobilised vehicles can still turn. Their crews can abandon them and leave the fight
+  unhurt.
+- <strong>Shells and bombs</strong> bursting in a vehicle's hex knock it out at the kind's own chance: a
   heavy howitzer's 2%, a fighter-bomber's 15%. Light armour is
-  3 times as likely to go.</li>
-<li><strong>Knocked out.</strong> Its crew are out of the fight. Each is struck at 50% and
-  wounded as by shellfire; the rest bail out.</li>
+  3 times as likely to go.
+- <strong>Knocked out.</strong> Its crew are out of the fight. Each is struck at 50% and
+  wounded as by shellfire; the rest bail out.</p>
+<h2 id="at-guns">Anti-tank guns</h2>
+<p>In the Second World War and Korea, a unit can be <strong>anti-tank guns</strong>: towed guns such as
+the British 6-pounder, the American 57 mm, the German Pak 38 and 40, the Soviet and North
+Korean 45 mm and the Japanese 47 mm.</p>
+<ul>
+<li><strong>Crews.</strong> Each gun has 5 men. A gun fires while one of its crew is up, and its
+  crews manhandle it 2 hexes.</li>
+<li><strong>Fire.</strong> Each gun fires 1 round an exchange, as a tank's main gun does. Out to
+  1,094 yards (1,000 m), it hits a vehicle at 70/45/20% (close, mid and full range), and the hit
+  then knocks the vehicle out as a main gun's would. At men, its high explosive bursts as a
+  tank's round does.</li>
+<li><strong>Vulnerable.</strong> Its crews are men in the open: rifles, machine guns and shells strike
+  them, and hand to hand they fight with bayonets.</li>
+<li><strong>The enemy commander</strong> leaves anti-tank guns, like batteries, to the GM.</li>
+</ul>
+<h2 id="mines">Minefields</h2>
+<p>From 1939, the GM can paint minefields before the battle, marked or hidden. A hidden field
+shows on the map only once something has gone into it. A unit that moves into minefield
+hexes sets them off before the exchange's shooting. The ground it crossed is reckoned on a
+straight line from where its move began.</p>
+<table>
+<thead>
+<tr>
+<th>Minefield</th>
+<th>Each man going into a hex struck</th>
+<th>Each vehicle going into a hex struck</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Anti-personnel mines</td>
+<td>10%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Anti-tank mines</td>
+<td>—</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Mixed minefield</td>
+<td>8%</td>
+<td>25%</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Men.</strong> A man struck rolls a wound as one hit by a mine, at 70%. Mine wounds
+  fall mostly on the feet and legs.</li>
+<li><strong>Vehicles.</strong> A vehicle struck is knocked out at 25% (heavy armour) or
+  60% (light). Otherwise a track is blown off and it is immobilised.</li>
 </ul>
 <h2 id="riders">Riders</h2>
 <p>Infantry fighting vehicles and carriers carry men. A foot unit beside them can <strong>mount</strong>
@@ -2196,7 +2263,8 @@ knocked out, each of its riders is struck at 30%, as by shellfire.</p>
 <div class="admonition gm">
 <p class="admonition-title">For the GM</p>
 <p>Armour is a problem the infantry must solve, not a fight it can win with rifles. Give
-the side without tanks rockets, ground the tanks cannot cross, or the dark.</p>
+the side without tanks rockets, anti-tank guns, mines, ground the tanks cannot cross,
+or the dark.</p>
 </div>
 <h1 id="night">Night and the air</h1>
 <h2 id="dark">Fighting in the dark</h2>
