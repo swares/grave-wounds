@@ -995,13 +995,18 @@ def _vehicle_errors(d: Data) -> list[str]:
 
 
 def _at_mine_errors(d: Data) -> list[str]:
-    """units.yaml anti_tank_guns (known weapons, a crew, a gun as a vehicle's) and mines (a known weapon, kinds with men and vehicles %)."""
-    A, M, errors = d.units.get("anti_tank_guns"), d.units.get("mines"), []
+    """units.yaml anti_tank_guns (known weapons, a crew, rounds, a gun as a vehicle's), gun_shields
+    (known weapons, a cover %) and mines (a known weapon, kinds with men and vehicles %)."""
+    A, M, S, errors = d.units.get("anti_tank_guns"), d.units.get("mines"), d.units.get("gun_shields"), []
     if A:
         g = A.get("gun") or {}
         if not (all(w in d.weapons for w in A.get("weapons", [])) and isinstance(A.get("crew"), int) and A["crew"] > 0 and A.get("crew_weapon") in d.weapons
                 and isinstance(g.get("range"), int) and isinstance(g.get("rate"), int) and g.get("he") in d.units["indirect"]["kinds"] and g.get("hit")):
             errors.append("units.yaml: anti_tank_guns needs known weapons, a crew, a known crew_weapon and a gun (range, rate, he, hit)")
+        if not (isinstance(A.get("rounds"), int) and A["rounds"] > 0):
+            errors.append("units.yaml: anti_tank_guns.rounds must be a whole number above 0")
+    if S and not (all(w in d.weapons for w in S.get("weapons", [])) and isinstance(S.get("cover"), int) and 0 <= S["cover"] <= 100):
+        errors.append("units.yaml: gun_shields needs known weapons and a cover % (0-100)")
     if M:
         if M.get("weapon") not in d.weapons or not isinstance(M.get("attack"), int):
             errors.append("units.yaml: mines needs a known weapon and an attack %")

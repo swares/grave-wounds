@@ -1238,7 +1238,8 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
         if wx["blocked"]:
             continue
         up, longer = height_edge(d, field, u["weapon"], best[2], best[3])
-        v = {"att": i, "dfd": best[1], "men": _shooters(d, u, field), "dist": best[0], "cover": share_cover(d, field, best[2], units[best[1]]) + ground_cover(d, units[best[1]]),
+        v = {"att": i, "dfd": best[1], "men": _shooters(d, u, field), "dist": best[0],
+             "cover": share_cover(d, field, best[2], units[best[1]]) + ground_cover(d, units[best[1]]) + shield_cover(d, units[best[1]], best[3], best[2]),
              "penalty": wx["penalty"] - up, "misfire": wx["misfire"], "reach": wx.get("reach", 0) + longer, "from": best[2], "to": best[3], "height": up,
              "over": line_fire(d, units, occ, field, i, best[1], best[2], best[3], best[0]), "seen": seen_share(d, field, units[best[1]], best[3], u["weapon"])}
         v.update({k: True for k in ("blind", "flash") if wx.get(k)})
@@ -1305,8 +1306,22 @@ def mg_guns(d: Data, u: dict) -> int:
 
 
 def ground_cover(d: Data, u: dict) -> int:
-    """% off shots at a unit gone to ground."""
-    return d.units["to_ground"]["cover"] if u.get("prone") else 0
+    """% off shots at a unit gone to ground (or emplaced)."""
+    return d.units["to_ground"]["cover"] if low(u) else 0
+
+
+def low(u: dict) -> bool:
+    """Gone to ground, or emplaced (dug in before the battle) and not running."""
+    return bool(u.get("prone") or (u.get("emplaced") and u["state"] not in ("broken", "fled")))
+
+
+def shield_cover(d: Data, u: dict, t, h) -> int:
+    """% off small-arms fire from hex h at unit u (its hex t): its guns' shields
+    (gun_shields), from its front only."""
+    S = d.units.get("gun_shields") or {}
+    if u["weapon"] not in S.get("weapons", []) or list(h) == list(t):
+        return 0
+    return S["cover"] if arc(u["facing"], bearing(t, h)) == "front" else 0
 
 
 def seen_share(d: Data, field: dict | None, u: dict, at, weapon: str | None = None) -> float:
@@ -1316,7 +1331,7 @@ def seen_share(d: Data, field: dict | None, u: dict, at, weapon: str | None = No
     H = d.units.get("hidden")
     if not H:
         return 1
-    if u.get("prone") or in_bunker(d, field, u) or (at is not None and hides_at(d, field, at)):
+    if low(u) or in_bunker(d, field, u) or (at is not None and hides_at(d, field, at)):
         return H.get("mg_seen", H["seen"]) / 100 if weapon and is_mg(d, weapon) else H["seen"] / 100
     return 1
 
@@ -2129,9 +2144,10 @@ def _vehicle_guns(d: Data, us: list, ctx: tuple, field: dict | None, under: list
 
 
 def _gun_of(d: Data, u: dict) -> dict | None:
-    """A unit's main gun: a vehicle kind's, or an anti-tank gun unit's (anti_tank_guns.gun)."""
+    """A unit's main gun: a vehicle kind's, or an anti-tank gun unit's (anti_tank_guns.gun;
+    none while it resupplies)."""
     if is_at_gun(d, u):
-        return d.units["anti_tank_guns"]["gun"]
+        return None if u.get("resupplying") else d.units["anti_tank_guns"]["gun"]
     kind = vehicle_kind(d, u)
     return kind.get("gun") if kind else None
 
@@ -2139,6 +2155,12 @@ def _gun_of(d: Data, u: dict) -> dict | None:
 def _guns_firing(d: Data, u: dict) -> int:
     """How many main guns a unit fires: its vehicles whose guns work, or its anti-tank guns served."""
     return at_guns(d, u) if is_at_gun(d, u) else max(0, vehicles_left(d, u) - u.get("gunless", 0))
+
+
+def at_rounds(d: Data, u: dict) -> int:
+    """Rounds an anti-tank gun unit has left: anti_tank_guns.rounds a gun it brought, less those fired."""
+    A = d.units["anti_tank_guns"]
+    return max(0, math.ceil(u.get("start", u["men"]) / A["crew"]) * A["rounds"] - u.get("spent", 0))
 
 
 def _main_gun(d: Data, us: list, i: int, gun: dict, env: tuple) -> list:
@@ -2151,6 +2173,9 @@ def _main_gun(d: Data, us: list, i: int, gun: dict, env: tuple) -> list:
         return []
     dist, j, h, t = best
     rounds = _guns_firing(d, u) * gun["rate"]
+    if is_at_gun(d, u):
+        rounds = min(rounds, at_rounds(d, u))
+        u["spent"] = u.get("spent", 0) + rounds
     if rounds <= 0:
         return []
     if us[j].get("vehicle"):
@@ -2532,7 +2557,7 @@ def _run_struck(d: Data, where: tuple, fire: tuple, tw: tuple, ra: tuple) -> lis
         if not times:
             continue
         near = True
-        p = R["struck"] * (_shell_cut(d, field, h, u.get("prone")) if mode == "strafe" else 1)
+        p = R["struck"] * (_shell_cut(d, field, h, low(u)) if mode == "strafe" else 1)
         struck += sum(1 for _ in range(times * n) if rng.randint(1, 100) <= p)
     if not near:
         return []
@@ -2711,7 +2736,7 @@ def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, 
         return None
     hexes = [h for row in footprint(d, u) for h in row]
     men, near, struck = men_by_hex(d, u), False, 0
-    cuts = [_shell_cut(d, field, h, u.get("prone")) for h in hexes]
+    cuts = [_shell_cut(d, field, h, low(u)) for h in hexes]
     for at in bursts:
         for h, n, cut in zip(hexes, men, cuts):
             dist = hdist(h, at)
@@ -2807,7 +2832,7 @@ def _suppress_all(d: Data, us: list, under: list, rng) -> list:
     for i, u in enumerate(us):
         if not under[i] or u["men"] <= 0 or u["state"] in ("broken", "fled"):
             continue
-        target = quality(d, u["quality"])["nerve"] + (S["prone"] if u.get("prone") else 0)
+        target = quality(d, u["quality"])["nerve"] + (S["prone"] if low(u) else 0)
         roll = rng.randint(1, 100)
         if roll > target:
             u["pinned"] = 2
@@ -2926,7 +2951,7 @@ def _morale_all(d: Data, us: list, occ: dict, before: list, acc: tuple, rng, tab
                 "men": before[i], "state": u["state"], "leader": leader_state(u), "flanked": flanked[i],
                 "contact": any(us[j]["side"] != u["side"] for j in near),
                 "friends": any(us[j]["side"] == u["side"] and us[j]["state"] == "steady" for j in near),
-                "dug": bool(u.get("prone")) or in_bunker(d, field, u)}
+                "dug": low(u) or in_bunker(d, field, u)}
         m = morale(d, unit, rng.randint(1, 100))
         if m["check"]:
             log.append({"kind": "morale", "unit": i, "target": m["target"], "from": u["state"], "state": m["state"]})
@@ -2958,6 +2983,8 @@ def allowance(d: Data, u: dict) -> int:
     """Hexes a unit may move in an exchange (twice this for a charge). A battery limbering,
     unlimbering or resupplying does not move; unlimbered, it can only be manhandled a hex or so."""
     if (u.get("prone") or u.get("pinned")) and u["state"] not in ("broken", "fled"):   # gone to ground or pinned (a broken unit gets up and runs)
+        return 0
+    if is_at_gun(d, u) and u.get("resupplying") and u["state"] not in ("broken", "fled"):
         return 0
     if is_battery(d, u) and not u.get("abandoned") and u["state"] != "broken":   # crews running from their guns run on foot
         if u.get("limbering") or u.get("resupplying"):
@@ -3134,6 +3161,8 @@ def _held_still(d: Data, units: list, i: int, pos, facing: int) -> str | None:
         return "it has lost its way in the dark (it may turn)"
     if u.get("immobile") and goes:
         return f"{u['immobile']} of its vehicles cannot move (abandon them to move on; it may turn)"
+    if u.get("emplaced") and goes:
+        return "it is emplaced, dug in for the battle (it may turn)"
     return None
 
 
@@ -3651,6 +3680,8 @@ def ricochet(d: Data, att: dict, target: dict, c: dict, rng, exposed: tuple = ()
 def _battery_after(d: Data, u: dict) -> None:
     """At the end of an exchange: a battery that was changing over is now limbered or not, one
     that was resupplying has its rounds again, and one that has broken has left its guns."""
+    if is_at_gun(d, u) and u.get("resupplying"):
+        u["spent"], u["resupplying"] = 0, False
     if not is_battery(d, u):
         return
     u["laid"] = u.pop("fired", None) or {}

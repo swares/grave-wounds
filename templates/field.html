@@ -233,6 +233,7 @@ legend{padding:0}
         <button class="small" id="btn-breach" title="Its front rank hacks at the palisade, gate, stakes or wagons in front of it each exchange">Breach the works</button>
         <label class="sr" for="sel-assault">Storm the bunker</label><select class="small" id="sel-assault" hidden title="Ordered to storm: once an exchange it tries to knock out each enemy-held bunker across its front, with grenades, satchel charges or flamethrowers" style="width:auto"></select>
         <button class="small" id="btn-ground" title="The men lie down in the folds of the ground: harder to hit, but the unit cannot move until it gets up">Go to ground</button>
+        <button class="small" id="btn-emplace" hidden title="Guns dug in before the battle: shots at them lose as much as men gone to ground, and they cannot move all battle (they may turn)">Emplace</button>
         <button class="small" id="btn-fixed" hidden title="Lay the machine guns on a fixed line (by day or at dusk): in the dark they fire blind down it at any enemy on it">Lay a fixed line</button>
         <button class="small" id="btn-reserve" hidden title="Held in the enemy commander's reserve: it holds until the commander commits it (when a unit breaks or the enemy comes close). Marking any unit takes the choice of reserves from the commander.">Hold in reserve</button>
         <button class="small" id="btn-fac" hidden title="A forward air controller talks aircraft onto a target he can see: they scatter less, and may attack close to their own men">Air controller</button>
@@ -372,7 +373,7 @@ function fieldOptions(){                        // the battlefields under their 
 function newUnit(o){
   return { id: S.seq++, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, guns: isGun(o.weapon) ? gunKind(o) : undefined, width: o.width || Math.ceil(o.men / form(o).per_hex),
-    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.nv ? { nv: o.nv } : {}), ...(o.fac ? { fac: true } : {}), ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
+    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.nv ? { nv: o.nv } : {}), ...(o.fac ? { fac: true } : {}), ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
 }
 function newField(){                              // open ground of the default size (and the page goes back to that size)
   SIZE = DEFAULT_SIZE.slice();
@@ -1531,9 +1532,9 @@ function renderMap(){
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
 function unitMeta(u){
   if (u.state === "fled") return "fled";
-  const down = u.down ? " · " + u.down + " down" : "", br = (u.breach ? " · breaching" : "") + (u.assault ? " · storming" : ""), low = (u.prone ? " · to ground" : "") + (u.pinned ? " · pinned" : "") + (u.lost ? " · lost in the dark" : "") + (u.fixed ? " · fixed line" : "") + (u.fac ? " · air controller" : "") + (u.reserve ? " · reserve" : "");
+  const down = u.down ? " · " + u.down + " down" : "", br = (u.breach ? " · breaching" : "") + (u.assault ? " · storming" : ""), low = (u.prone ? " · to ground" : "") + (u.emplaced ? " · emplaced" : "") + (u.pinned ? " · pinned" : "") + (u.lost ? " · lost in the dark" : "") + (u.fixed ? " · fixed line" : "") + (u.fac ? " · air controller" : "") + (u.reserve ? " · reserve" : "");
   let mg = isMg(u.weapon) ? " · " + gunsText(mgGuns(u), "gun") : "";
-  if (isAtGun(u)) mg = " · " + gunsText(atGuns(u), "gun");
+  if (isAtGun(u)) mg = " · " + gunsText(atGuns(u), "gun") + ", " + (atRounds(u) ? atRounds(u) + " rounds" : "no rounds left") + (u.resupplying ? ", resupplying" : "");
   if (u.vehicle) mg = vehicleMeta(u);
   return `${u.men}/${u.start} · ${u.state}${down}${br}${low}${mg}${batteryMeta(u)}`;
 }
@@ -1581,10 +1582,14 @@ function renderAssault(u){                        // the storming order, on tabl
   el.value = u?.assault || "";
   el.disabled = !u || S.phase === "over" || u.state === "broken" || u.state === "fled";
 }
+function shieldText(u){                          // "; shields: small arms from in front −30%", for guns with shields
+  const S = FD.units.gun_shields;
+  return S && S.weapons.includes(u.weapon) ? `; shields: small arms from in front −${S.cover}%` : "";
+}
 function teamInfo(u){                             // a machine-gun team's or anti-tank guns' line in the selected unit
   const A = FD.units.anti_tank_guns, G = FD.units.machine_guns;
-  if (isAtGun(u)) return `<dt>Guns</dt><dd>${gunsText(atGuns(u), "anti-tank gun")} served (${A.crew} men a gun): ${A.gun.rate} round a gun an exchange at the nearest vehicle (else men) in sight and in front, out to ${fmtM(A.gun.range * FD.units.hex_m)}</dd>`;
-  if (isMg(u.weapon)) return `<dt>Guns</dt><dd>${gunsText(mgGuns(u), "machine gun")} served (${G.crew} men a gun); beaten zone ${fmtM(G.beaten.beyond * FD.units.hex_m)} past the target</dd>`;
+  if (isAtGun(u)) return `<dt>Guns</dt><dd>${gunsText(atGuns(u), "anti-tank gun")} served (${A.crew} men a gun): ${A.gun.rate} round a gun an exchange at the nearest vehicle (else men) in sight and in front, out to ${fmtM(A.gun.range * FD.units.hex_m)}; ${atRounds(u)} of ${Math.ceil(u.start / A.crew) * A.rounds} rounds left${u.resupplying ? " (resupplying)" : ""}${shieldText(u)}</dd>`;
+  if (isMg(u.weapon)) return `<dt>Guns</dt><dd>${gunsText(mgGuns(u), "machine gun")} served (${G.crew} men a gun); beaten zone ${fmtM(G.beaten.beyond * FD.units.hex_m)} past the target${shieldText(u)}</dd>`;
   return "";
 }
 function renderSel(){
@@ -1620,17 +1625,21 @@ function renderSel(){
     + (VK ? `<dt>Vehicles</dt><dd>${vehicleInfo(u, VK)}</dd>` : "")
     + teamInfo(u)
     + (u.prone ? `<dt>Ground</dt><dd>Gone to ground: shots at it −${FD.units.to_ground.cover}%; it cannot move until it gets up</dd>` : "")
+    + (u.emplaced ? `<dt>Ground</dt><dd>Emplaced: dug in before the battle, shots at it −${FD.units.to_ground.cover}% while it stands; it cannot move, but may turn</dd>` : "")
     + (u.fixed ? `<dt>Fixed line</dt><dd>Laid on ${u.fixed[0] + 1},${u.fixed[1] + 1}: in the dark, with no target it can see, it fires blind at any enemy within ${nOf(FD.weather.light.fixed_line.width, "hex", "hexes")} of the line (−${FD.weather.light.fixed_line.aim}%)</dd>` : "")
     + (u.lost ? `<dt>Lost</dt><dd>It lost its way in the dark: it cannot move next exchange, but may turn</dd>` : "")
     + `<dt>Moves</dt><dd>${allowance(u)} hexes${(u.heroes || []).some(lamed) ? " (slowed by a wounded hero)" : ""}; turning costs ${turnCost(u)} a step</dd>`;
 }
-function renderGunOrders(u, setup){               // the Resupply button and the target picker, for batteries only
-  const b = $("#btn-resupply"), box = $("#target-box"), gun = !!u && isBattery(u);
-  b.hidden = box.hidden = !gun;
+function renderGunOrders(u, setup){               // the Resupply button (batteries and anti-tank guns) and the target picker (batteries)
+  const b = $("#btn-resupply"), box = $("#target-box"), gun = !!u && isBattery(u), at = !!u && isAtGun(u);
+  b.hidden = !gun && !at;
+  box.hidden = !gun;
+  const gone = !!u && (S.phase === "over" || !!u.abandoned || u.state === "broken" || u.state === "fled");
+  if (!b.hidden){
+    b.disabled = gone || (!setup && u.side !== moving()) || (!u.resupplying && !u.spent);
+    b.textContent = u.resupplying ? "Stop resupplying" : "Resupply";
+  }
   if (!gun){ $("#section-box").hidden = true; return }
-  const gone = S.phase === "over" || !!u.abandoned || u.state === "broken" || u.state === "fled";
-  b.disabled = gone || (!setup && u.side !== moving()) || (!u.resupplying && !u.spent);
-  b.textContent = u.resupplying ? "Stop resupplying" : "Resupply";
   const foes = S.units.filter(e => e.side !== u.side && e.state !== "fled" && e.men > 0);
   if (u.target !== undefined && u.target !== null && !foes.some(e => e.id === u.target)) u.target = null;
   $("#sel-target").innerHTML = `<option value="">The nearest enemy in front</option>` + foes.map(e => `<option value="${e.id}">${esc(unitName(e))}${isBattery(e) ? " (guns)" : ""}</option>`).join("");
@@ -1689,7 +1698,7 @@ function setTarget(v){                            // the GM names the battery's 
   render();
 }
 function toggleResupply(){                        // set-up: at once; in play: over this exchange, out of contact, instead of moving
-  const u = selUnit(); if (!u || !isBattery(u)) return;
+  const u = selUnit(); if (!u || !(isBattery(u) || isAtGun(u))) return;
   if (S.phase === "setup"){ u.spent = 0; S.msg = `${u.name} has a full load of rounds.`; return render() }
   const i = idx(u.id), was = S.start?.[i];
   if (!u.resupplying && was && (was.pos[0] !== u.pos[0] || was.pos[1] !== u.pos[1] || was.facing !== u.facing)){ S.msg = `${u.name} has moved this phase: undo the move first.`; return render() }
@@ -1715,6 +1724,18 @@ function renderGround(u, setup){                 // Go to ground / Get up: on it
   const b = $("#btn-ground");
   b.disabled = !u || S.phase === "over" || u.state === "broken" || u.state === "fled" || (!setup && u.side !== moving());
   b.textContent = u?.prone ? "Get up" : "Go to ground";
+  if (u?.emplaced) b.disabled = true;               // dug in already
+  const e = $("#btn-emplace");
+  e.hidden = !u || !setup || !(isBattery(u) || isAtGun(u) || isMg(u.weapon)) || !!u.vehicle;
+  e.textContent = u?.emplaced ? "Not emplaced" : "Emplace";
+}
+function toggleEmplace(){                         // set-up only: guns dug in for the battle
+  const u = selUnit(); if (!u || S.phase !== "setup") return;
+  u.emplaced = !u.emplaced;
+  if (u.emplaced){ u.prone = false; u.limbered = false; u.limbering = false }
+  if (!u.emplaced) delete u.emplaced;
+  S.msg = u.emplaced ? `${u.name} is emplaced: shots at it lose ${FD.units.to_ground.cover}% while it stands, and it cannot move all battle (it may turn).` : `${u.name} is no longer emplaced.`;
+  render();
 }
 const layable = () => S.phase === "setup" || !lightOf(S.field) || S.field.weather?.light === "dusk";   // a fixed line is laid by day or at dusk (or before the battle)
 function renderFixed(u, setup){                  // Lay a fixed line / Clear it: machine guns, on their own side's move or in set-up
@@ -1796,7 +1817,7 @@ function layFixed(h){
   render();
 }
 function toggleGround(){
-  const u = selUnit(); if (!u || u.state === "broken" || u.state === "fled") return;
+  const u = selUnit(); if (!u || u.emplaced || u.state === "broken" || u.state === "fled") return;
   if (S.phase !== "setup" && u.side !== moving()) return;
   u.prone = !u.prone;
   S.msg = u.prone ? `${u.name} goes to ground: shots at it lose ${FD.units.to_ground.cover}%, and it cannot move until it gets up.` : `${u.name} gets up and can move.`;
@@ -1843,7 +1864,7 @@ function renderLimber(u, setup){                 // the Limber button, for batte
   const b = $("#btn-limber");
   b.hidden = !u || !isBattery(u);
   if (b.hidden) return;
-  b.disabled = S.phase === "over" || !!u.abandoned || u.state === "broken" || u.state === "fled" || (!setup && u.side !== moving());
+  b.disabled = S.phase === "over" || !!u.abandoned || !!u.emplaced || u.state === "broken" || u.state === "fled" || (!setup && u.side !== moving());
   if (u.limbering) b.textContent = u.limbered ? "Stay limbered" : "Stay unlimbered";
   else b.textContent = u.limbered ? "Unlimber" : "Limber";
 }
@@ -2137,6 +2158,7 @@ function init(){
   $("#btn-dismount").onclick = dismountRiders;
   $("#sel-carrier").onchange = e => { if (e.target.value) mountOn(e.target.value) };
   $("#btn-ground").onclick = toggleGround;
+  $("#btn-emplace").onclick = toggleEmplace;
   $("#btn-reserve").onclick = toggleReserve;
   $("#btn-fixed").onclick = toggleFixed;
   $("#sel-nv").onchange = e => setNv(e.target.value);

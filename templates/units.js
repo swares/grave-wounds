@@ -689,7 +689,7 @@ function volleys(units, field = null){            // [{att, dfd, men, dist, cove
     if (!best) return;
     const wx = shotWeather(field, u.weapon, best[0], best[2], best[3], seerOf(u, { blind })), [up, longer] = heightEdge(field, u.weapon, best[2], best[3]);
     if (wx.blocked) return;
-    const v = { att: i, dfd: best[1], men: shooters(u, field), dist: best[0], cover: shareCover(field, best[2], units[best[1]]) + groundCover(units[best[1]]), penalty: wx.penalty - up, misfire: wx.misfire, reach: (wx.reach || 0) + longer, from: best[2], to: best[3],
+    const v = { att: i, dfd: best[1], men: shooters(u, field), dist: best[0], cover: shareCover(field, best[2], units[best[1]]) + groundCover(units[best[1]]) + shieldCover(units[best[1]], best[3], best[2]), penalty: wx.penalty - up, misfire: wx.misfire, reach: (wx.reach || 0) + longer, from: best[2], to: best[3],
       height: up, over: lineFire(units, occ, field, i, best[1], [best[2], best[3], best[0]]), seen: seenShare(field, units[best[1]], best[3], u.weapon) };
     for (const k of ["blind", "flash"]) if (wx[k]) v[k] = true;
     if (isMg(u.weapon)) Object.assign(v, beaten(units, occ, field, i, best));
@@ -717,7 +717,13 @@ function fixedTarget(units, i, field, occ){         // [distance, index, shooter
 // ----- machine guns and going to ground (as gravewounds/units.py) -----
 const isMg = w => (UD.machine_guns?.weapons || []).includes(w);
 const mgGuns = u => Math.ceil(Math.max(0, u.men) / UD.machine_guns.crew);   // one a crew, while a man of it is up
-const groundCover = u => (u.prone ? UD.to_ground.cover : 0);                 // % off shots at a unit gone to ground
+const low = u => !!(u.prone || (u.emplaced && u.state !== "broken" && u.state !== "fled"));   // gone to ground, or emplaced and not running
+const groundCover = u => (low(u) ? UD.to_ground.cover : 0);                 // % off shots at a unit gone to ground (or emplaced)
+function shieldCover(u, t, h){                    // % off small-arms fire from h at unit u (its hex t): its guns' shields, from its front only
+  const S = UD.gun_shields || {};
+  if (!(S.weapons || []).includes(u.weapon) || (h[0] === t[0] && h[1] === t[1])) return 0;
+  return arc(u.facing, bearing(t, h)) === "front" ? S.cover : 0;
+}
 function hidesAt(field, h){                       // men in hex h hidden by its ground or a hex work that hides (a trench)
   if (groundAt(field, h).hides) return true;
   const it = field?.works?.hexes?.[`${h[0]},${h[1]}`];
@@ -726,7 +732,7 @@ function hidesAt(field, h){                       // men in hex h hidden by its 
 function seenShare(field, u, at, weapon = null){  // share of aimed shots at u that find a man: hidden.seen % (mg_seen % for a machine gun) if gone to ground, in a bunker or in hiding ground
   const H = UD.hidden;
   if (!H) return 1;
-  if (!(u.prone || inBunker(field, u) || (at && hidesAt(field, at)))) return 1;
+  if (!(low(u) || inBunker(field, u) || (at && hidesAt(field, at)))) return 1;
   return weapon && isMg(weapon) ? (H.mg_seen ?? H.seen) / 100 : H.seen / 100;
 }
 function shooters(u, field = null){               // a machine-gun team's served guns; any other unit's front hexes' first shoot_ranks ranks, less breaching front ranks; pinned, fewer
@@ -881,7 +887,7 @@ function runStruck(ctx, i, [k, b, mode, hexes]){  // unit i's men on the run's h
     const times = keys.filter(x => x === hk(h)).length;
     if (!times) return;
     near = true;
-    const p = R.struck * (mode === "strafe" ? shellCut(field, h, u.prone) : 1);
+    const p = R.struck * (mode === "strafe" ? shellCut(field, h, low(u)) : 1);
     for (let s = 0; s < times * men[n]; s++) if (rng.randint(1, 100) <= p) struck++;
   });
   if (!near) return;
@@ -1054,7 +1060,7 @@ function shellVehicle(us, i, bursts, kind, ctx){   // shells or bombs bursting i
 }
 function shellStruckUnit(field, u, bursts, kind, rng){   // men of u struck by these bursts, or null if none came near
   if (u.men <= 0 || u.state === "fled") return null;
-  const hexes = footprint(u).flat(), men = menByHex(u), cuts = hexes.map(h => shellCut(field, h, u.prone));
+  const hexes = footprint(u).flat(), men = menByHex(u), cuts = hexes.map(h => shellCut(field, h, low(u)));
   let near = false, struck = 0;
   for (const at of bursts){
     hexes.forEach((h, j) => {
@@ -1077,7 +1083,7 @@ function suppressAll(us, under, rng){             // under fire: Nerve or pinned
   const S = UD.suppression, log = [];
   us.forEach((u, i) => {
     if (!under[i] || u.men <= 0 || u.state === "broken" || u.state === "fled") return;
-    const target = quality(u.quality).nerve + (u.prone ? S.prone : 0), roll = rng.randint(1, 100);
+    const target = quality(u.quality).nerve + (low(u) ? S.prone : 0), roll = rng.randint(1, 100);
     if (roll > target){ u.pinned = 2; log.push({ kind: "pinned", unit: i, roll, target }) }
   });
   return log;
@@ -1353,7 +1359,9 @@ function vehicleGuns(us, table, rng, acc, log, field, under){   // each vehicle 
     if (!G || out_(u)) return;
     const best = gunTarget(us, i, field, G);
     if (!best) return;
-    const [dist, j, h, t] = best, rounds = gunsFiring(u) * G.rate;
+    const [dist, j, h, t] = best;
+    let rounds = gunsFiring(u) * G.rate;
+    if (isAtGun(u)){ rounds = Math.min(rounds, atRounds(u)); u.spent = (u.spent || 0) + rounds }
     if (rounds <= 0) return;
     if (us[j].vehicle){ gunAtVehicle(us, [i, j, dist, rounds, h, t], G, { table, rng, acc, log }); return }
     log.push({ kind: "tankfire", att: i, dfd: j, dist, rounds, at: t });
@@ -1361,11 +1369,12 @@ function vehicleGuns(us, table, rng, acc, log, field, under){   // each vehicle 
     if (weapon && field) shellUnits({ us, table, weapon, rng, acc, log, field, under: under || us.map(() => false) }, null, { kind: G.he, name: u.name ?? null }, Array.from({ length: rounds }, () => [...t]));
   });
 }
-function gunOf(u){                                // a unit's main gun: a vehicle kind's, or an anti-tank gun unit's
-  if (isAtGun(u)) return UD.anti_tank_guns.gun;
+function gunOf(u){                                // a unit's main gun: a vehicle kind's, or an anti-tank gun unit's (none while it resupplies)
+  if (isAtGun(u)) return u.resupplying ? null : UD.anti_tank_guns.gun;
   const K = vehicleKind(u);
   return K ? K.gun : null;
 }
+const atRounds = u => Math.max(0, Math.ceil((u.start ?? u.men) / UD.anti_tank_guns.crew) * UD.anti_tank_guns.rounds - (u.spent || 0));   // an anti-tank gun unit's rounds left
 const gunsFiring = u => (isAtGun(u) ? atGuns(u) : Math.max(0, vehiclesLeft(u) - (u.gunless || 0)));   // its vehicles whose guns work, or its anti-tank guns served
 function gunAtVehicle(us, shot, G, ctx){          // a main gun's rounds at a vehicle unit: hits by range, knocks by armour (shot: [gun unit, target, dist, rounds])
   const [i, j, dist, rounds, h, t] = shot, { table, rng, acc, log } = ctx;
@@ -1619,7 +1628,7 @@ function moraleAll(us, occ, before, acc, rng, table, field = null){
     if (out_(u)) return;
     const near = adjacentUnits(us, occ, i);
     const unit = { quality: u.quality, start: u.start, down: u.down, lost: acc.lost[i], dealt: acc.dealt[i], men: before[i], state: u.state,
-      leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: !!u.prone || inBunker(field, u) };
+      leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u) };
     const m = morale(unit, rng.randint(1, 100));
     if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state });
     if (m.state === "broken") broke.push(i);
@@ -1644,6 +1653,7 @@ function routStrike(us, occ, j, table, rng){     // a unit that has just broken 
 // ---------- movement ----------
 function allowance(u){                            // hexes a unit may move (twice for a charge); a battery changing over or resupplying not at all, unlimbered a hex or so
   if ((u.prone || u.pinned) && u.state !== "broken" && u.state !== "fled") return 0;   // gone to ground or pinned: no move
+  if (isAtGun(u) && u.resupplying && u.state !== "broken" && u.state !== "fled") return 0;
   if (isBattery(u) && !u.abandoned && u.state !== "broken"){   // crews running from their guns run on foot
     if (u.limbering || u.resupplying) return 0;
     if (!u.limbered) return carrying(u, UD.artillery.pushed);
@@ -1784,6 +1794,7 @@ function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, ch
   if (inContact(units, occupancy(units), i) && !same) return { ok: false, why: "it is in contact" };
   if (u.lost && (pos[0] !== u.pos[0] || pos[1] !== u.pos[1])) return { ok: false, why: "it has lost its way in the dark (it may turn)" };
   if (u.immobile && (pos[0] !== u.pos[0] || pos[1] !== u.pos[1])) return { ok: false, why: `${u.immobile} of its vehicles cannot move (abandon them to move on; it may turn)` };
+  if (u.emplaced && (pos[0] !== u.pos[0] || pos[1] !== u.pos[1])) return { ok: false, why: "it is emplaced, dug in for the battle (it may turn)" };
   const turns = Math.min(mod6(facing - u.facing), mod6(u.facing - facing)), most = allowance(u) * UD.charge_move;
   const steps = pathLen(units, i, pos, size, most, field);
   if (steps === null) return { ok: false, why: "too far, or no way through" };
@@ -1976,7 +1987,7 @@ function bestOrder(us, i, t, [size, field, stance, known]){   // the best-scorin
 function firstMove(base, i, tu, [size, field], [charge, hold, shooter]){   // [hex, facing, move] for the best-scoring hex it will move to, or null
   const u = base[i];
   if (hold && !charge) return null;
-  const allow = allowance(u), occ = occupancy(base), stuck = !!(u.lost || u.immobile);
+  const allow = allowance(u), occ = occupancy(base), stuck = !!(u.lost || u.immobile || u.emplaced);
   let tries = UD.commander.tries;
   const foes = new Set(Object.keys(occ).filter(k => base[occ[k]].side !== u.side));
   const cands = [...reachable(base, i, size, allow * (charge ? UD.charge_move : 1), field).values()].map(([h, c]) => [-aiScore(field, u, tu, h, c, shooter), c, h[1], h[0]]);
@@ -2258,6 +2269,7 @@ function ricochet(att, target, c, rng, exposed = []){   // balls bounding on int
   return blows(att, sideOfUnit(target, att.table), struck, A.attack, 0, rng, { exposed, shift: -1000 });
 }
 function batteryAfter(u){                          // end of an exchange: changing over is done, resupply is in; a broken battery has left its guns
+  if (isAtGun(u) && u.resupplying){ u.spent = 0; u.resupplying = false }
   if (!isBattery(u)) return;
   u.laid = u.fired || {};
   delete u.fired;

@@ -51,8 +51,17 @@ Korean 45 mm and the Japanese 47 mm.
   {{at_range}}, it hits a vehicle at {{at_hit}}% (close, mid and full range), and the hit
   then knocks the vehicle out as a main gun's would. At men, its high explosive bursts as a
   tank's round does.
-- **Vulnerable.** Its crews are men in the open: rifles, machine guns and shells strike
-  them, and hand to hand they fight with bayonets.
+- **Rounds.** Each gun brings {{at_rounds}} rounds. A gun out of them is resupplied as a
+  battery is: an exchange out of contact, neither moving nor firing.
+- **Shields.** Anti-tank and anti-aircraft guns have shields: small arms fired at them from
+  in front lose {{at_shield}}%. Shields do nothing against shells or fire from the flank or
+  rear.
+- **Vulnerable.** Otherwise its crews are men: rifles, machine guns and shells strike them,
+  and hand to hand they fight with bayonets.
+- **Emplaced.** Before the battle the GM can dig in any gun unit (anti-tank guns,
+  anti-aircraft guns, machine guns or a battery). While it stands it counts as gone to
+  ground, −{{at_ground}}% and hidden, but it cannot move all battle, though it can turn. A
+  unit that breaks leaves its pits.
 - **The enemy commander** leaves anti-tank guns, like batteries, to the GM.
 
 ## Minefields {#mines}
