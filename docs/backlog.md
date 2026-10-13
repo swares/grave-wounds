@@ -83,10 +83,11 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Vehicles, third cut.** Flank and rear shots, turret and hull hits, immobilised vehicles
   and guns put out of action, riders, rockets and guided missiles, anti-tank guns (1939-53)
   and minefields (1939 on), gun shields (anti-tank and anti-aircraft guns, small arms from
-  the front), guns emplaced before the battle and anti-tank guns' own rounds are in. Still
-  left out: shields on machine guns and field guns, anti-tank
-  guns' limbering and towing, tank riders ("desant") and riders firing from the vehicle, mines laid or lifted
-  during the battle (no sappers clearing a lane), and vehicles' night sights. A minefield is set off along a straight line from
+  the front), guns emplaced before the battle, anti-tank guns' own rounds and gun tractors
+  towing them are in. Still left out: shields on machine guns and field guns, the commander
+  towing its guns, soft-skinned trucks (tractors count as light armour), tank riders
+  ("desant") and riders firing from the vehicle, mines laid or lifted during the battle (no
+  sappers clearing a lane), and vehicles' night sights. A minefield is set off along a straight line from
   where a unit's move began, not along the path it took. No battlefield has minefields yet:
   to be laid only where the accounts name them. Crews who bail out simply leave the fight.
 - **Fire at hidden men, first cut.** Men gone to ground, in bunkers or in buildings are now hit

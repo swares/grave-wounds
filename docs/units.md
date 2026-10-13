@@ -1050,6 +1050,14 @@ the Japanese 47 mm (`anti_tank_guns` in `data/units.yaml`).
 - **Gun shields.** Anti-tank and anti-aircraft guns have shields: small arms (rifles, machine
   guns, pistols) fired at them from their front lose 30%. Shields do nothing against shells,
   bombs or fire from the flank or rear (`gun_shields` in `data/units.yaml`).
+- **Towing.** A vehicle unit can be **Gun tractors and trucks** (2 crew a vehicle, 12 hexes a
+  move, counted as light armour: there is no soft-skinned class), each towing one gun. With
+  the guns beside their side's tractors, out of contact, **Hook up to** puts them on tow: they
+  move with the tractors as riders do, and neither fire nor fight. **Unhook the guns** sets
+  them down beside the tractors; in the battle they fire from the next exchange. Tractors
+  knocked out spill their guns' crews as carriers spill riders. Emplaced guns cannot hook up,
+  and anti-tank guns ride only behind tractors, not in carriers. The enemy commander leaves
+  tractors and the guns they tow to the GM.
 - **Rounds.** Each gun brings 40 rounds. A gun out of rounds does not fire its main gun.
   **Resupply** brings a full load, as for a battery: at once in set-up, or over an exchange
   out of contact in which the guns neither move nor fire.

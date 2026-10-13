@@ -377,6 +377,7 @@ vehicles:
     tank: {name: "Tanks", crew: 4, move: 12, armour: heavy, gun: {range: 100, rate: 1, he: tank, hit: [[20, 75], [50, 50], [100, 25]]}}
     ifv:  {name: "Infantry fighting vehicles", crew: 3, move: 14, armour: light, carry: 7, gun: {range: 80, rate: 2, he: autocannon, hit: [[20, 70], [40, 45], [80, 20]]}}
     apc:  {name: "Armoured carriers", crew: 3, move: 14, armour: light, carry: 10}
+    tractor: {name: "Gun tractors and trucks", crew: 2, move: 12, armour: light, tows: 1}
   armour:
     heavy: {rpg: 15, atgm: 60, gun: 35, shell: 1, mine: 25}
     light: {rpg: 50, atgm: 90, gun: 75, shell: 3, mine: 60}
@@ -411,6 +412,11 @@ anti_tank_guns:
   crew_weapon: bayonet
   gun: {range: 100, rate: 1, he: tank, hit: [[20, 70], [50, 45], [100, 20]]}
 
+# Towing: anti-tank guns hook up to gun tractors or trucks of their side beside them
+# (vehicles.kinds `tows`: guns a vehicle tows), riding with them as riders do and neither
+# firing nor fighting; unhooked, they get down beside the tractors and fire from the next
+# exchange. Tractors are counted as light armour (there is no soft-skinned class). The enemy
+# commander leaves tractors and the guns they tow to the GM. Design estimates.
 # Each gun goes into action with `rounds` rounds, spent one a round fired; Resupply refills them
 # (an exchange out of contact, neither moving nor firing), as a black-powder battery's caissons.
 

@@ -337,7 +337,7 @@ def _at_mine_rules(d) -> list[str]:
         g = A["gun"]
         out.append(f"<b>Anti-tank guns (1939-53):</b> a unit of towed guns, {A['crew']} men a gun, a gun a hex, manhandled {d.units['formations']['at_gun']['move']} hexes. "
                    f"Each gun served fires {g['rate']} round an exchange to {g['range']} hexes as a tank's main gun, vehicles first (hits {'/'.join(str(h[1]) for h in g['hit'])}% by range, "
-                   f"knocking out by the armour's gun %), high explosive at men, {A['rounds']} rounds a gun (resupply as a battery). Its crews are men: small arms and shells strike them. "
+                   f"knocking out by the armour's gun %), high explosive at men, {A['rounds']} rounds a gun (resupply as a battery). Gun tractors tow one gun each: hooked up the guns move with them and do not fire; unhooked, they fire from the next exchange. Its crews are men: small arms and shells strike them. "
                    "The commander leaves them to the GM.")
     S = d.units.get("gun_shields")
     if S:

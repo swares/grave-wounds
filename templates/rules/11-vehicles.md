@@ -51,6 +51,9 @@ Korean 45 mm and the Japanese 47 mm.
   {{at_range}}, it hits a vehicle at {{at_hit}}% (close, mid and full range), and the hit
   then knocks the vehicle out as a main gun's would. At men, its high explosive bursts as a
   tank's round does.
+- **Towing.** Gun tractors and trucks tow a gun each, the crews riding. Hooked up beside
+  them, the guns move with the tractors and do not fire; unhooked, they fire from the next
+  exchange.
 - **Rounds.** Each gun brings {{at_rounds}} rounds. A gun out of them is resupplied as a
   battery is: an exchange out of contact, neither moving nor firing.
 - **Shields.** Anti-tank and anti-aircraft guns have shields: small arms fired at them from

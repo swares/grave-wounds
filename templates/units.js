@@ -1386,7 +1386,7 @@ function vehicleGuns(us, table, rng, acc, log, field, under){   // each vehicle 
   });
 }
 function gunOf(u){                                // a unit's main gun: a vehicle kind's, or an anti-tank gun unit's (none while it resupplies)
-  if (isAtGun(u)) return u.resupplying ? null : UD.anti_tank_guns.gun;
+  if (isAtGun(u)) return u.resupplying || u.unhooked ? null : UD.anti_tank_guns.gun;
   const K = vehicleKind(u);
   return K ? K.gun : null;
 }
@@ -1494,6 +1494,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   });
   log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table)),
     ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng), ...digAll(us));
+  for (const u of us) delete u.unhooked;             // guns unhooked this move are in action (as units._unhooked_after)
   afterExchange(us, field, log);
   log.push(...landings(us, table, rng, field), ...vehiclesAfter(us, field), ...objectiveHeld(us, field));
   if (field?.mines && Object.keys(field.mines).length) for (const u of us) u.was = [[...u.pos], u.facing];   // where its next moves begin: the ground it crosses
@@ -1714,18 +1715,27 @@ function abandonImmobile(u){                       // a vehicle unit leaves its 
   return v;
 }
 const carries = u => { const K = vehicleKind(u); return K ? vehiclesLeft(u) * (K.carry || 0) : 0 };   // men a vehicle unit can carry
-function mountUnit(units, i, j){                    // foot unit i gets aboard vehicle unit j -> {ok, why, units}
-  const u = units[i], c = units[j], occ = occupancy(units);
-  let why = null;
-  if (u.vehicle || isGun(u.weapon) || u.mounted) why = "only men on foot can ride";
-  else if (!c.vehicle || c.side !== u.side || carries(c) <= 0) why = "those are not its side's carriers";
-  else if (c.riders) why = "they carry men already";
-  else if (u.men > carries(c)) why = `they have room for ${carries(c)}`;
-  else if (out_(u) || out_(c) || inContact(units, occ, i) || inContact(units, occ, j)) why = "one of them is in contact or broken";
-  else {
-    const cs = footprint(c).flat();
-    if (Math.min(...footprint(u).flat().flatMap(a => cs.map(b => hdist(a, b)))) > 1) why = "they are not beside the carriers";
+const tows = u => { const K = vehicleKind(u); return K ? vehiclesLeft(u) * (K.tows || 0) : 0 };   // anti-tank guns a vehicle unit can tow
+function rideWhy(u, c){                             // why u cannot ride with c (anti-tank guns: be towed), before contact and distance; or null (as units._cannot_mount)
+  if (isAtGun(u)){
+    if (u.emplaced) return "the guns are emplaced";
+    if (!c.vehicle || c.side !== u.side || tows(c) <= 0) return "those are not its side's gun tractors";
+    if (c.riders) return "they tow guns already";
+    return atGuns(u) > tows(c) ? `they can tow ${tows(c)}` : null;
   }
+  if (u.vehicle || isGun(u.weapon) || u.mounted) return "only men on foot can ride";
+  if (!c.vehicle || c.side !== u.side || carries(c) <= 0) return "those are not its side's carriers";
+  if (c.riders) return "they carry men already";
+  return u.men > carries(c) ? `they have room for ${carries(c)}` : null;
+}
+function placeWhy(units, occ, i, j){               // in contact, broken, or not beside the carriers; or null
+  if (out_(units[i]) || out_(units[j]) || inContact(units, occ, i) || inContact(units, occ, j)) return "one of them is in contact or broken";
+  const cs = footprint(units[j]).flat();
+  return Math.min(...footprint(units[i]).flat().flatMap(a => cs.map(b => hdist(a, b)))) > 1 ? "they are not beside the carriers" : null;
+}
+function mountUnit(units, i, j){                    // foot unit i gets aboard vehicle unit j (anti-tank guns: hook up to its tractors) -> {ok, why, units}
+  const u = units[i], c = units[j], occ = occupancy(units);
+  const why = rideWhy(u, c) || placeWhy(units, occ, i, j);
   if (why) return { ok: false, why, units };
   const { pos, facing, ...rider } = u;
   return { ok: true, why: null, units: units.filter((_, k) => k !== i).map(x => (x === c ? { ...x, riders: rider } : x)) };
@@ -1880,7 +1890,7 @@ function holdBack(us, side, known){                // at its first move (unless 
   const far = [...mine].sort((a, b) => away(b) - away(a) || a - b);
   for (const i of mine) us[i].reserve = false;
   for (const i of far){
-    if (isBattery(us[i]) || isAtGun(us[i]) || us[i].men > room) continue;
+    if (isBattery(us[i]) || isAtGun(us[i]) || tractor(us[i]) || us[i].men > room) continue;
     us[i].reserve = true;
     room -= us[i].men;
   }
@@ -1987,9 +1997,10 @@ function sightings(us, side, field, exchange, memory){   // {index: {pos, facing
   return memory;
 }
 const seenBy = (us, side, field, e) => marksOf(e).some(h => spotted(us, field, side, h));   // a unit of side sees enemy e: its middle hex or either end of its front row
-function commandable(us, i, exchange){            // standing, not a battery or anti-tank guns, not in contact, not just come on
+const tractor = u => !!vehicleKind(u)?.tows;      // gun tractors: left to the GM, like the guns they tow
+function commandable(us, i, exchange){            // standing, not a battery, anti-tank guns or gun tractors, not in contact, not just come on
   const u = us[i];
-  if (ROUTED.has(u.state) || u.men <= 0 || isBattery(u) || isAtGun(u)) return false;
+  if (ROUTED.has(u.state) || u.men <= 0 || isBattery(u) || isAtGun(u) || tractor(u)) return false;
   if (exchange !== null && u.arrived === exchange) return false;
   return !inContact(us, occupancy(us), i);
 }

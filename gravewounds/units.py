@@ -1737,6 +1737,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _lying_after(d, us, table, rng)
     log += _posts_after(d, us, field, table, rng)
     log += _dig_all(d, us)
+    _unhooked_after(us)
     for u in us:
         u["charged"] = False
         _battery_after(d, u)
@@ -2213,7 +2214,7 @@ def _gun_of(d: Data, u: dict) -> dict | None:
     """A unit's main gun: a vehicle kind's, or an anti-tank gun unit's (anti_tank_guns.gun;
     none while it resupplies)."""
     if is_at_gun(d, u):
-        return None if u.get("resupplying") else d.units["anti_tank_guns"]["gun"]
+        return None if u.get("resupplying") or u.get("unhooked") else d.units["anti_tank_guns"]["gun"]
     kind = vehicle_kind(d, u)
     return kind.get("gun") if kind else None
 
@@ -3261,18 +3262,38 @@ def carries(d: Data, u: dict) -> int:
     return vehicles_left(d, u) * K.get("carry", 0) if K else 0
 
 
+def tows(d: Data, u: dict) -> int:
+    """Anti-tank guns a vehicle unit can tow: its vehicles left times its kind's `tows` (0 if none)."""
+    K = vehicle_kind(d, u)
+    return vehicles_left(d, u) * K.get("tows", 0) if K else 0
+
+
 def _cannot_mount(d: Data, units: list, i: int, j: int) -> str | None:
-    """Why foot unit i cannot get aboard vehicle unit j, or None."""
+    """Why foot unit i cannot get aboard vehicle unit j (anti-tank guns: hook up to its
+    tractors), or None."""
     u, c, occ = units[i], units[j], occupancy(d, units)
-    checks = [
+    checks = _tow_checks(d, u, c) if is_at_gun(d, u) else [
         (lambda: u.get("vehicle") or is_gun(d, u["weapon"]) or u.get("mounted"), "only men on foot can ride"),
         (lambda: not c.get("vehicle") or c["side"] != u["side"] or carries(d, c) <= 0, "those are not its side's carriers"),
         (lambda: c.get("riders"), "they carry men already"),
         (lambda: u["men"] > carries(d, c), f"they have room for {carries(d, c)}"),
+    ]
+    checks += [
         (lambda: _out(u) or _out(c) or in_contact(d, units, occ, i) or in_contact(d, units, occ, j), "one of them is in contact or broken"),
         (lambda: min(hdist(a, b) for r1 in footprint(d, u) for a in r1 for r2 in footprint(d, c) for b in r2) > 1, "they are not beside the carriers"),
     ]
     return next((why for test, why in checks if test()), None)
+
+
+def _tow_checks(d: Data, u: dict, c: dict) -> list:
+    """Anti-tank guns hooking up: to their side's tractors, towing nothing yet, enough of them,
+    not emplaced."""
+    return [
+        (lambda: u.get("emplaced"), "the guns are emplaced"),
+        (lambda: not c.get("vehicle") or c["side"] != u["side"] or tows(d, c) <= 0, "those are not its side's gun tractors"),
+        (lambda: c.get("riders"), "they tow guns already"),
+        (lambda: at_guns(d, u) > tows(d, c), f"they can tow {tows(d, c)}"),
+    ]
 
 
 def mount(d: Data, units: list, i: int, j: int) -> dict:
@@ -3741,6 +3762,12 @@ def ricochet(d: Data, att: dict, target: dict, c: dict, rng, exposed: tuple = ()
     p = _chance_at(A["ricochet"]["strike"], c["beyond"]) * form(d, target)["missile_factor"]
     struck, _ = _round_shot_struck(d, A, p, c["rounds"], target, rng)
     return _blows(d, att, _side(target, att["table"]), struck, A["attack"], 0, rng, exposed, -1000)
+
+
+def _unhooked_after(us: list) -> None:
+    """End of the exchange: anti-tank guns unhooked this move are in action."""
+    for u in us:
+        u.pop("unhooked", None)
 
 
 def _battery_after(d: Data, u: dict) -> None:
