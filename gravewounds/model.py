@@ -941,6 +941,11 @@ def _air_errors(d: Data, ind: dict) -> list[str]:
               if "shot" in v and not (isinstance(v["shot"], list) and len(v["shot"]) == 2 and all(isinstance(x, str) for x in v["shot"]))]
     errors += [f"units.yaml: indirect.air.grounded names unknown weather {c}" for c in A.get("grounded", []) if c not in d.weather.get("conditions", {})]
     errors += [f"units.yaml: indirect.air.night names unknown light {x}" for x in A.get("night", []) if x not in (d.weather.get("light") or {}).get("levels", {})]
+    G, FAC = A.get("ground_fire") or {}, A.get("fac") or {}
+    if any(ind.get("kinds", {}).get(k, {}).get("air") for k in ind.get("kinds", {})) and not (
+            all(isinstance(G.get(k), (int, float)) and G[k] >= 0 for k in ("reach", "mg", "rocket", "rifles", "cap"))
+            and all(w in d.weapons for w in G.get("rockets", [])) and isinstance(FAC.get("danger"), int) and isinstance(FAC.get("scatter"), int) and FAC["scatter"] >= 1):
+        errors.append("units.yaml: indirect.air needs ground_fire (reach, mg, rocket, rifles, cap, rockets: known weapons) and fac (danger, scatter at least 1)")
     H = d.units.get("heliborne")
     if H and not all(isinstance(H.get(k), int) and H[k] >= 0 for k in ("lift", "blocked", "hot", "zone")):
         errors.append("units.yaml: heliborne needs whole-number lift, blocked, hot and zone")
@@ -1210,6 +1215,7 @@ def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_un
     devices = set((d.weather.get("light", {}).get("night_vision") or {}).get("devices") or {}) | {"none"}
     errors += [f"{where}: unit {u.get('name')}: nv (a night-vision device) must be one of {', '.join(sorted(devices))}" for u in f.get("units", [])
                if "nv" in u and u["nv"] not in devices]
+    errors += [f"{where}: unit {u.get('name')}: fac (a forward air controller) must be true or false" for u in f.get("units", []) if "fac" in u and not isinstance(u["fac"], bool)]
     if errors:
         return errors
     field, units = battlefield(d, f["id"]), battlefield_units(d, f["id"])

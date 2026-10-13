@@ -284,6 +284,14 @@ machine_guns:
 #   not fly in the weather `grounded` lists, and those without `by_night` do not fly in the
 #   lights `night` lists (weather.yaml light); a mission waits until they can. `shot`: what the
 #   log calls one (and many). Design estimates.
+#   ground_fire: each attack run, every aircraft attacking is shot down at a chance (%): `mg` a
+#   machine gun served, `rocket` a unit with an RPG or recoilless rifle, and `rifles` every 100
+#   men with other firearms, of each enemy unit (not in vehicles, not broken) within `reach`
+#   field hexes of the aim; times the kind's `exposed` (low, slow helicopters), at most `cap`.
+#   A lost aircraft takes its share of the flight's remaining attacks with it.
+#   fac: a forward air controller (a unit marked fac) of the aircraft's side who sees the aim
+#   talks them on: their scatter is divided by `scatter` (rounded down). Without one, aircraft
+#   hold off a target with friends within `danger` field hexes: the mission waits.
 # creep: a mission that keeps firing may creep, its aim lifting that many hexes (1 to `max`)
 #   in the direction chosen, ahead of an advance: by the fire plan, after `every` exchanges on
 #   each line (1 to `every_max`), and over `lines` lines before it stops (0: until it leaves
@@ -299,9 +307,13 @@ indirect:
     howitzer: {name: "Heavy howitzers",  range: 1450, rate: 1, rounds: 40, delay: 1, scatter: 5, radius: 5, struck: [30, 12, 5, 2, 1, 0.5], counter: 4, knock: 2, crew: 8, serve: 4, displace: 3, illum: 40}
     tank:     {name: "Tanks (direct fire)", rate: 2, rounds: 60, delay: 0, scatter: 0, radius: 1, struck: [25, 5],              counter: 0, knock: 8, direct: true, crew: 5, serve: 3, displace: 0}
     autocannon: {name: "Autocannon (direct fire)", rate: 3, rounds: 300, delay: 0, scatter: 0, radius: 0, struck: [20],              counter: 0, knock: 3, direct: true, crew: 3, serve: 2, displace: 0}
-    fighter_bomber: {name: "Fighter-bombers (bombs, napalm)", rate: 2, rounds: 4, delay: 2, scatter: 3, radius: 4, struck: [45, 25, 12, 5, 2], counter: 0, knock: 15, air: true, by_night: false, shot: [bomb, bombs]}
-    gunship:  {name: "Helicopter gunships (rockets, guns)", rate: 4, rounds: 24, delay: 0, scatter: 1, radius: 1, struck: [20, 6], counter: 0, knock: 4, air: true, by_night: true, shot: [rocket and gun pass, rocket and gun passes]}
-  air: {grounded: [fog, storm, heavy_snow, blizzard], night: [moonlit, night]}
+    fighter_bomber: {name: "Fighter-bombers (bombs, napalm)", rate: 2, rounds: 4, delay: 2, scatter: 3, radius: 4, struck: [45, 25, 12, 5, 2], counter: 0, knock: 15, air: true, by_night: false, exposed: 1, shot: [bomb, bombs]}
+    gunship:  {name: "Helicopter gunships (rockets, guns)", rate: 4, rounds: 24, delay: 0, scatter: 1, radius: 1, struck: [20, 6], counter: 0, knock: 4, air: true, by_night: true, exposed: 2, shot: [rocket and gun pass, rocket and gun passes]}
+  air:
+    grounded: [fog, storm, heavy_snow, blizzard]
+    night: [moonlit, night]
+    ground_fire: {reach: 30, mg: 0.5, rocket: 1, rifles: 0.2, cap: 12, rockets: [rpg, recoilless]}
+    fac: {danger: 10, scatter: 2}
   tree_burst: {ground: [woods], factor: 1.5, prone: 0.7}
   smoke: {radius: 1, lasts: {calm: 4, breeze: 3, strong: 2, gale: 1}, drift: {calm: 0, breeze: 1, strong: 2, gale: 2}}
   counter_battery: {among: 2, near: 3, near_struck: 1}

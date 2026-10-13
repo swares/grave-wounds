@@ -412,6 +412,20 @@ with shell wounds (the First World War and later):
     not fly in fog, storm, heavy snow or a blizzard, and fighter-bombers not on a moonlit or
     dark night: a mission called then waits, and flies when it clears. The support list shows
     **grounded** and why. They drop no smoke and carry no illumination.
+  - **Ground fire**: after each attack run, every aircraft that attacked is brought down at
+    a chance from the enemy within 30 hexes (328 yards, 300 m) of the aim, not in vehicles
+    and not broken: 0.5% for each machine gun served, 1% for each unit with RPGs or
+    recoilless rifles, and 0.2% for every 100 men with other firearms. Gunships, low and
+    slow, count it twice; at most 12%. A lost aircraft takes its share of the flight's
+    attacks with it, and the log says so.
+  - **Forward air controllers**: a unit can be given one before the battle (**Air
+    controller**, shown while aircraft are on call). When a controller of the aircraft's
+    side can see the aim, the attack scatters half as far and the log says it was talked
+    on. Without one, aircraft will not attack a hex within 10 hexes (109 yards, 100 m) of
+    their own men: the mission waits ("hold off") until it can. On the battlefields the
+    Marine companies at Fallujah, B Troop's command post at Keating and the Rangers north of
+    the crash at Mogadishu have controllers; elsewhere the GM may give one. The numbers are
+    design estimates.
 - **Creeping barrage**: before calling, pick **Creep** (1 to 3 hexes a lift), **Each line**
   (1 to 4 exchanges on each line before it lifts), **Lines** (how many lines it fires on, or
   until it leaves the map) and **Towards** (the way most of the side's units face, or a
