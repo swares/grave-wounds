@@ -63,6 +63,10 @@ map can be fought there, and its wounded go back to camp, where wound fever can 
 them. An optional scripted commander can play either side, attacking or holding, with an
 Undo for each of its moves. See [docs/units.md](docs/units.md).
 
+**Rule book:** `dist/rules.html` teaches the core of play (making a team, the fight,
+wounds, first aid and recovery), following one team from the road to Towton into camp, with
+GM notes set apart. It prints cleanly from the browser.
+
 **Team builder:** `dist/team.html` makes a team of four to six in a few rolls each, from the
 tables of ten eras (medieval, the Thirty Years' War, horse and musket, the Civil War and
 frontier, the Plains nations of the 1860s and 1870s, the First and Second World Wars, Korea,
@@ -113,6 +117,8 @@ python -m gravewounds roll --table towton-1461-all-hits --weapon bill -n 3
 
 `build.py` writes:
 
+- `dist/rules.html`, the rule book: chapters in `templates/rules/*.md`, every number filled
+  in from the data (`gravewounds/rulebook.py`)
 - `dist/roller.html`, `dist/travel.html` and `dist/field.html`
 - `dist/tables.pdf` and `dist/tables.md`
 - `dist/gravewounds-data.json`
