@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grave Wounds Rule Book</title>
+<meta name="description" content="The Grave Wounds rule book: how to play, making a team, the fight, wounds and recovery, with one team followed from start to finish.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%238e1b2c'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='15' font-weight='700' fill='white' text-anchor='middle'%3Ed%25%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* The field-ledger palette of the other pages */
+:root{
+  --bg:#e9ecee; --panel:#f6f7f8; --ink:#1b2127; --muted:#5b6670; --line:#c5ccd2;
+  --steel:#3f4f5d; --blood:#8e1b2c; --blood-soft:#f1d9dc; --gm:#e6ebe0; --gm-edge:#5d6e4b;
+  --display:"Alegreya SC",Georgia,serif; --body:"Alegreya Sans","Gill Sans","Segoe UI",sans-serif;
+  --serif:"Alegreya",Georgia,serif; --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
+  --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --gm:#1f2a1c; --gm-edge:#8fa678; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
+  --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --gm:#1f2a1c; --gm-edge:#8fa678; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 var(--serif)}
+a{color:var(--blood)}
+header{border-bottom:2px solid var(--ink);padding:20px 16px 14px;max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:end;justify-content:space-between}
+header h1{font:700 clamp(1.8rem,5vw,2.6rem)/1.05 var(--display);margin:0}
+header .eyebrow{display:block;font:500 .72rem var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+header nav{display:flex;flex-wrap:wrap;gap:4px 16px;font:500 .95rem var(--body)}
+.layout{max-width:1180px;margin:0 auto;padding:24px 16px 64px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:40px}
+@media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr)}}
+.toc{font:400 .92rem/1.4 var(--body)}
+@media (min-width:861px){.toc{position:sticky;top:16px;align-self:start;max-height:calc(100vh - 32px);overflow:auto}}
+.toc .ttl{font:700 .78rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.toc ul{list-style:none;margin:0;padding:0}
+.toc > div > ul > li{margin:0 0 10px}
+.toc > div > ul > li > a{font-weight:700;color:var(--ink)}
+.toc ul ul{padding-left:12px;margin-top:3px;border-left:1px solid var(--line)}
+.toc ul ul a{color:var(--muted);text-decoration:none}
+.toc a:hover{color:var(--blood)}
+main{max-width:72ch;min-width:0}
+main h1{font:700 2rem/1.15 var(--display);margin:48px 0 12px;padding-top:12px;border-top:1px solid var(--line);color:var(--ink)}
+main h1:first-child{margin-top:0;border-top:0;padding-top:0}
+main h2{font:700 1.3rem/1.25 var(--display);margin:30px 0 8px;color:var(--steel)}
+main p,main li{hyphens:auto}
+main strong{font-weight:700}
+main ul,main ol{padding-left:1.3em}
+main li{margin:3px 0}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;font:400 .9rem/1.4 var(--body);min-width:100%}
+th,td{border-bottom:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{font-weight:700;border-bottom:2px solid var(--ink);white-space:nowrap}
+tbody tr:nth-child(even){background:var(--panel)}
+.admonition{margin:18px 0;padding:12px 16px;border-radius:4px;border:1px solid var(--line);background:var(--panel);font:400 .98rem/1.55 var(--body)}
+.admonition p{margin:6px 0}
+.admonition-title{font:700 .78rem var(--mono)!important;letter-spacing:.08em;text-transform:uppercase;margin:0 0 4px!important;color:var(--muted)}
+.admonition.example{border-left:4px solid var(--blood);background:var(--blood-soft)}
+.admonition.example .admonition-title{color:var(--blood)}
+.admonition.gm{border-left:4px solid var(--gm-edge);background:var(--gm)}
+.admonition.gm .admonition-title{color:var(--gm-edge)}
+.note{font:400 .85rem var(--body);color:var(--muted);margin-top:40px;border-top:1px solid var(--line);padding-top:12px}
+@media print{
+  body{background:#fff;color:#000;font-size:11pt}
+  header nav,.toc .noprint{display:none}
+  header{border-color:#000}
+  .layout{display:block;padding:0}
+  .toc{page-break-after:always}
+  main{max-width:none}
+  main h1{page-break-before:always;border:0}
+  main h1:first-child{page-break-before:avoid}
+  main h2,.admonition,table{page-break-inside:avoid}
+  a{color:inherit;text-decoration:none}
+  .admonition{background:none!important}
+}
+</style>
+</head>
+<body>
+<header>
+  <div><span class="eyebrow">Grave Wounds · blood, bivouac and weather · playtest rules</span><h1>Rule Book</h1></div>
+  <nav><a href="roller.html">Wound roller</a><a href="team.html">Team builder</a><a href="travel.html">Travel map</a><a href="field.html">Field map</a><a href="tables.pdf">Printed tables</a><a href="../index.html">Start page</a></nav>
+</header>
+<div class="layout">
+  <aside class="toc" aria-label="Contents"><p class="ttl">Contents</p><div class="toc">
+<ul>
+<li><a href="#playing">How to play</a><ul>
+<li><a href="#need">What you need</a></li>
+<li><a href="#roll">The one roll</a></li>
+<li><a href="#time">Time</a></li>
+<li><a href="#characteristics">Characteristics and skills</a></li>
+</ul>
+</li>
+<li><a href="#team">Making a team</a><ul>
+<li><a href="#five-steps">The five steps</a></li>
+<li><a href="#followers">Followers</a></li>
+</ul>
+</li>
+<li><a href="#fight">The fight</a><ul>
+<li><a href="#turn">A fighter's turn</a></li>
+<li><a href="#round-end">The end of the round</a></li>
+<li><a href="#wounds-moving">Wounds and movement</a></li>
+</ul>
+</li>
+<li><a href="#wounds">Wounds</a><ul>
+<li><a href="#blood">Blood</a></li>
+<li><a href="#penalties">Penalties</a></li>
+<li><a href="#first-aid">First aid</a></li>
+</ul>
+</li>
+<li><a href="#recovery">Recovery</a><ul>
+<li><a href="#camp">Into camp</a></li>
+<li><a href="#check">The recovery check</a></li>
+<li><a href="#fever">Wound fever</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</aside>
+  <main>
+<h1 id="playing">How to play</h1>
+<p>Grave Wounds is a roleplaying game about small bands of fighting men and women in real
+wars, and about what wounds do to them. There are no hit points. A wound is a place on the
+body, the way it was made and how bad it is, and those three things decide whether it
+bleeds, hurts, stops a hand gripping or a leg bearing weight, and how long it would take
+to kill without help. Most wounds do not kill. They stop a fighter, and then the question
+is whether his friends can stop the bleeding, carry him to camp and keep the fever off.</p>
+<h2 id="need">What you need</h2>
+<ul>
+<li><strong>Dice.</strong> Everything is rolled on <strong>d100</strong>: two ten-sided dice, one for tens and one for
+  units, 01 to 00 (00 is 100). A few rolls use a single d10.</li>
+<li><strong>The pages.</strong> The <a href="roller.html">wound roller</a>, the <a href="team.html">team builder</a>, the
+  <a href="travel.html">travel map</a> and the <a href="field.html">field map</a> run on any browser and keep
+  your game in it. They roll the dice, look up the tables and keep the count, so the table
+  can play quickly. Everything they do is written here, and the
+  <a href="tables.pdf">printed tables</a> hold every table, so the game can be played on paper too.</li>
+<li><strong>A GM and players.</strong> One person runs the world and the enemy (the GM). Each player runs
+  a <strong>team</strong> of four to six characters, not a single hero, so losing one is a loss and not
+  the end of the evening.</li>
+</ul>
+<h2 id="roll">The one roll</h2>
+<p>Every test is the same: roll d100, and <strong>equal to or under</strong> the number you are rolling
+against succeeds. That number is a skill or a characteristic, less any penalties. How far
+under you rolled is the <strong>margin</strong>, and in a fight the margin matters: a hit by a wide
+margin is a worse wound.</p>
+<div class="admonition example">
+<p class="admonition-title">The running example</p>
+<p>This book follows one team from start to finish: a lord's retinue on the road to
+Towton in 1461, led by William of Ely. Each chapter picks up the story where the last
+left it: the team is made, Walter Miller the archer shoots and is cut down, his friends
+stop the bleeding, and he is carried to camp to heal or die. The numbers in the example
+are the game's own; where a die is rolled, the book says what came up.</p>
+</div>
+<h2 id="time">Time</h2>
+<p>The game's clock changes with what the team is doing:</p>
+<table>
+<thead>
+<tr>
+<th>Scale</th>
+<th>How long</th>
+<th>For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Round</td>
+<td>6 seconds</td>
+<td>One action in a fight; bleeding; stop checks</td>
+</tr>
+<tr>
+<td>Minute</td>
+<td>10 rounds</td>
+<td>Binding wounds; the end of most fights</td>
+</tr>
+<tr>
+<td>Day</td>
+<td></td>
+<td>Marching, camps, the weather, sickness</td>
+</tr>
+<tr>
+<td>Week</td>
+<td></td>
+<td>Wounds healing in camp; catching disease</td>
+</tr>
+</tbody>
+</table>
+<h2 id="characteristics">Characteristics and skills</h2>
+<p>Every character has six <strong>characteristics</strong>, from 15 to 95:
+<strong>Strength</strong>, <strong>Agility</strong>, <strong>Endurance</strong>, <strong>Wits</strong>, <strong>Nerve</strong> and <strong>Presence</strong>. Fifty is an
+ordinary person. <strong>Skills</strong> (Bow, Blade, Dodge, Leechcraft and the rest) start from a
+characteristic and grow with experience, up to 90. A character's <strong>attack</strong> is
+the skill his weapon is fought with, and his <strong>defence</strong> is the better of Parry and Dodge.</p>
+<p>Anyone without a sheet (a bystander, an enemy the GM has not written up) counts as 50 in
+every characteristic, and fights at his <strong>quality</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Quality</th>
+<th>Attack</th>
+<th>Defence</th>
+<th>Nerve</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Green</td>
+<td>40%</td>
+<td>25%</td>
+<td>35</td>
+</tr>
+<tr>
+<td>Regular</td>
+<td>50%</td>
+<td>35%</td>
+<td>50</td>
+</tr>
+<tr>
+<td>Veteran</td>
+<td>60%</td>
+<td>45%</td>
+<td>65</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition gm">
+<p class="admonition-title">For the GM</p>
+<p>Quality is the quickest way to make an enemy: decide whether he is green, regular or
+veteran, and the table gives his attack, defence and Nerve. The followers of the
+players' teams use the same table, and so do whole units on the field map.</p>
+</div>
+<h1 id="team">Making a team</h1>
+<p>A team is four to six characters with a shared history: a lord's retinue, a free company, a
+patrol. The first character leads it, and when he falls another steps up. The
+<a href="team.html">team builder</a> makes a whole team in one click, or one character at a time, from
+the tables of 10 eras; the <a href="tables.pdf">printed tables</a> hold the same tables for the
+table top. This chapter uses the medieval tables (c.1250–1460). The other eras follow the
+same five steps with their own careers, skills and kit.</p>
+<h2 id="five-steps">The five steps</h2>
+<p><strong>1. Characteristics.</strong> Roll 3d6 × 5 for each characteristic in order (15 to 90), or
+take the fixed array 70, 60, 55, 50, 45, 35 and place it, highest first, where the character's career
+wants it most.</p>
+<p><strong>2. Origin.</strong> Roll d100 on the origin table (20 origins). It says where he comes
+from, gives one skill +15, and a <strong>trait</strong> and a <strong>drawback</strong> that go together: a
+characteristic ±10 or a skill ±15.</p>
+<p><strong>3. Career terms.</strong> The leader serves three terms, the others one or two. In each term:</p>
+<ul>
+<li>his career's main skill rises, +15 in the first term and +10 after;</li>
+<li>its second skill rises +5;</li>
+<li>d100 on the career's table gives an <strong>event</strong>, and the skill it taught rises
+  +15. An event he has had already moves to the next row down.</li>
+</ul>
+<p>He starts at 16 and is 4 years older for each term. Nobody dies while being
+made. The 12 medieval careers:</p>
+<table>
+<thead>
+<tr>
+<th>Career</th>
+<th>Main skill</th>
+<th>Second skill</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Man-at-arms</td>
+<td>Blade</td>
+<td>Parry</td>
+</tr>
+<tr>
+<td>Archer</td>
+<td>Bow</td>
+<td>Dodge</td>
+</tr>
+<tr>
+<td>Crossbowman</td>
+<td>Crossbow</td>
+<td>Dodge</td>
+</tr>
+<tr>
+<td>Spearman or billman</td>
+<td>Polearm</td>
+<td>Parry</td>
+</tr>
+<tr>
+<td>Mounted sergeant</td>
+<td>Ride</td>
+<td>Parry</td>
+</tr>
+<tr>
+<td>Mercenary</td>
+<td>Axe and mace</td>
+<td>Parry</td>
+</tr>
+<tr>
+<td>Sailor</td>
+<td>Seamanship</td>
+<td>Dodge</td>
+</tr>
+<tr>
+<td>Clerk or priest</td>
+<td>Letters</td>
+<td>Persuade</td>
+</tr>
+<tr>
+<td>Barber-surgeon</td>
+<td>Leechcraft</td>
+<td>Craft</td>
+</tr>
+<tr>
+<td>Forester or huntsman</td>
+<td>Fieldcraft</td>
+<td>Stealth</td>
+</tr>
+<tr>
+<td>Servant or groom</td>
+<td>Ride</td>
+<td>Watch</td>
+</tr>
+<tr>
+<td>Merchant</td>
+<td>Persuade</td>
+<td>Letters</td>
+</tr>
+</tbody>
+</table>
+<p><strong>4. Old wounds.</strong> A term marked * on its table (a siege, a broken line, a rout) leaves an
+old wound, and so does a d100 at or under the career's wound chance. Its place is rolled on
+the region's own wound table, the same one the roller uses. Then d100: up to
+70, a healed scar; above, a <strong>lasting hurt</strong>, 5 off the characteristic
+that place governs (Wits for the head, Presence for the face, Strength for the arms,
+Agility for the legs, Endurance for the body).</p>
+<p><strong>5. Skills and kit.</strong> Each skill starts at a characteristic divided by 2, 3, 4 or 5
+(rounded down), plus what he gained, to 90 at most. His kit and weapon come with
+his first career and his region.</p>
+<div class="admonition example">
+<p class="admonition-title">The retinue: Walter Miller</p>
+<p>The team builder rolls a lord's retinue from England: William of Ely, a man-at-arms, leads
+it. Its senior archer is <strong>Walter Miller</strong>, 2 terms, age 24:
+Strength 40, Agility 65, Endurance 35, Wits 60,
+Nerve 50, Presence 50. He was raised on the pilgrim roads (speaks three tongues;
+belongs nowhere), and in his terms he scouted ahead of the army and foraged through a hungry winter. His skills that matter here:
+Bow 57, Dodge 31, Fieldcraft 50, Stealth 36. He fights with the longbow at <strong>57%</strong>, and his defence is
+<strong>32%</strong>.</p>
+<p>His Endurance is low, and it shows in a fight: his <strong>Blood</strong> is 18, not the
+usual 20 (next chapter). With Agility 65 he rolls
+<strong>d10 + 6</strong> for initiative.</p>
+</div>
+<h2 id="followers">Followers</h2>
+<p>A big team's other men get no sheet, only a line: a career, a name and a <strong>quality</strong>,
+rolled on d100. The quality gives their attack, defence and Nerve (the table in
+<a href="#characteristics">How to play</a>). Some teams roll on a better or worse table:</p>
+<table>
+<thead>
+<tr>
+<th>Quality table</th>
+<th>Green</th>
+<th>Regular</th>
+<th>Veteran</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>01–30</td>
+<td>31–80</td>
+<td>81–00</td>
+</tr>
+<tr>
+<td>Hardened</td>
+<td>01–15</td>
+<td>16–60</td>
+<td>61–00</td>
+</tr>
+<tr>
+<td>Raw</td>
+<td>01–55</td>
+<td>56–90</td>
+<td>91–00</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition gm">
+<p class="admonition-title">For the GM</p>
+<p>Followers are what make a team feel like a household or a company, and they are who
+dies first. Name them; the players will remember them. On the <a href="field.html">field map</a>
+they fight as units around the team, who go with them as <strong>heroes</strong>.</p>
+</div>
+<h1 id="fight">The fight</h1>
+<p>A fight runs in <strong>rounds</strong> of 6 seconds. Each round every fighter who can act takes one
+turn, in order of initiative; then the round ends, the wounded bleed and the sides check
+their nerve. Most fights last a minute or two: one side breaks long before it is all down.</p>
+<p>The <a href="roller.html">wound roller</a> runs all of this: pick an attacker and a defender, roll the
+hit, apply it, and press <strong>Next fighter</strong> and <strong>Next round</strong>. Its battle map is a grid of
+hexes about 2 yards (2 m) across.</p>
+<h2 id="turn">A fighter's turn</h2>
+<ol>
+<li><strong>Initiative.</strong> At the start of the fight each fighter rolls d10 + Agility ÷
+   10 (rounded down), and they act from highest to lowest. A fighter who is down,
+   out of the fight, or on a side that has broken does not act.</li>
+<li><strong>Move or stay.</strong> He may stay, <strong>advance</strong> up to 4 hexes and still attack, or
+   <strong>run</strong> up to 12 hexes and not attack. He may pass through friends but not stop on
+   them. Leaving an enemy's side by more than one step gives that enemy a free attack.</li>
+<li><strong>Attack.</strong> Roll d100 against his attack, less his wound penalties and any range
+   penalty. Equal or under hits, and the <strong>margin</strong> is how far under. A roll at or under a
+   tenth of the chance is a <strong>critical</strong>: it cannot be defended.</li>
+<li><strong>Defence.</strong> The defender may roll d100 against his defence (Parry or Dodge), less his
+   own penalties. Equal or under, the blow misses.</li>
+<li><strong>Where it lands.</strong> Roll d100 on the era's hit-location table for the place, and on the
+   weapon's table for how it wounds: a cut, a thrust (pierce), a crushing blow, a bullet.</li>
+<li><strong>How bad.</strong> The margin sets the severity: under 20 <strong>light</strong>, from
+   20 <strong>serious</strong>, from 50 (or on a critical) <strong>critical</strong>.
+   Firearms have their own bands for the body and the limbs. A hit by a margin of
+   2 or less, if it is not a critical, only <strong>grazes</strong>: its bleeding and pain are
+   a step less, and it calls for no stop check.</li>
+<li><strong>Armour.</strong> The armour on that place lowers the severity a step at a time against that
+   kind of blow, if its coverage roll says the blow met it. Some weapons are made to beat
+   armour: a war bow's heavy arrows go through mail and a jack as if they were not there.</li>
+<li><strong>The wound.</strong> Look up the wound for the place, the kind of blow and the severity, and
+   write it down. Its effects are in <a href="#wounds">the next chapter</a>.</li>
+<li><strong>The stop check.</strong> A serious and critical wound that carries <strong>shock</strong> (most do; many limb wounds
+   do not) calls for a d100 against the wounded man's <strong>Nerve</strong>, less his pain and blood-loss
+   penalties, and 10 more for a critical wound:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Result</th>
+<th>He is</th>
+<th>Which means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Equal or under</td>
+<td>Fighting on</td>
+<td>No change</td>
+</tr>
+<tr>
+<td>Failed by 1–20</td>
+<td><strong>Defend only</strong> for 2 rounds</td>
+<td>No attack; he may move and defend</td>
+</tr>
+<tr>
+<td>Failed by 21–40</td>
+<td><strong>Stunned</strong> for 2 rounds</td>
+<td>No attack; −50% to his defence</td>
+</tr>
+<tr>
+<td>Failed by more than 40</td>
+<td><strong>Out of the fight</strong> until helped or the fight ends</td>
+<td>Takes no part: no attack, no defence</td>
+</tr>
+</tbody>
+</table>
+<p>A worse result replaces a milder one, and the round it happens in is the first of its
+rounds. This is what ends real fights: men stop, sit down, crawl away, long before they
+die.</p>
+<div class="admonition example">
+<p class="admonition-title">The retinue: the arrow</p>
+<p>On the road to Towton the retinue meets a band of Lancastrian billmen, regulars. It is
+Walter Miller's turn, and the nearest billman is in short range. He shoots at
+57% and rolls <strong>21</strong>: a hit by a margin of 36,
+<strong>serious</strong>. The billman tries to dodge at 35% and rolls 61:
+no. The arrow strikes his <strong>chest (left)</strong>, a thrust. His jack would take the wound
+down 1 step, but the war bow's arrows ignore it, so it stays
+<strong>serious</strong>: bleeding 2, pain 2, short of breath, and it
+would kill in hours untreated. It carries shock, so he makes a stop check:
+Nerve 50, less 2 steps of pain, gives <strong>30</strong>. He
+rolls 47, failing by 17: he can <strong>defend only</strong> for
+2 rounds.</p>
+</div>
+<div class="admonition example">
+<p class="admonition-title">The retinue: the bill</p>
+<p>The billmen close. One reaches Walter and swings at 50%, rolling
+<strong>22</strong>: a margin of 28, <strong>serious</strong>. Walter dodges
+at 32% and rolls 58. The bill opens his <strong>thigh (right)</strong>, a cut,
+where his jack does not reach. The wound bleeds <strong>3</strong> (arterial), pain
+2, and the leg is hurt. It does not carry shock, so there is no stop
+check, and he fights on. But at 3 Blood a round, his 18 Blood will be
+gone in 6 rounds. The next chapter is about what that means.</p>
+</div>
+<h2 id="round-end">The end of the round</h2>
+<ul>
+<li><strong>Bleeding.</strong> Every wounded fighter loses Blood at his wounds' rate (next chapter).</li>
+<li><strong>Results wear off.</strong> Defend only and stunned count down a round.</li>
+<li><strong>Pain.</strong> A fighter whose pain is above the cap (3 steps, −30%)
+  makes a stop check every round, as for a serious wound.</li>
+<li><strong>Morale.</strong> A side with 25% or more of its fighters down rolls d100 against
+  the best Nerve among those still up (its leader's, if he is up): +10 while a
+  leader is up, and (Presence − 50) ÷ 5 more for him; −20 if a
+  leader is down; −20 once 50% of the side is down. Over the
+  target, the side breaks: it runs or surrenders.</li>
+</ul>
+<div class="admonition gm">
+<p class="admonition-title">For the GM</p>
+<p>The roller asks for the stop check and the morale roll when they are due, and you can
+type your own dice into it. Remember that most enemies want to live too: a side that
+breaks runs, and a man who is down asks for quarter. A fight is usually decided in a
+minute.</p>
+</div>
+<h2 id="wounds-moving">Wounds and movement</h2>
+<p>A leg wound halves a fighter's move (advance 2, run 6). A man who
+has collapsed or cannot stand crawls 1 hex. A winded man cannot run, and a
+stunned or out man cannot move at all. The <a href="tables.pdf">printed tables</a> and the roller's
+battle map have the rest: ground, height, cover, works and weather.</p>
+<h1 id="wounds">Wounds</h1>
+<p>A wound is written down as what it does. Each one has five things, and they add up across
+all of a fighter's wounds:</p>
+<ul>
+<li><strong>Bleeding</strong>, from B0 (none) to B3 (arterial).</li>
+<li><strong>Pain</strong>, from P0 to P3.</li>
+<li><strong>Impairments</strong>: what the wound stops the body doing.</li>
+<li><strong>Shock, fracture or severed</strong>: shock calls for the stop check; a fracture is a bone
+  that needs setting; a severed part is gone.</li>
+<li><strong>The clock</strong>: how long it would take to kill him untreated, from <em>none</em> through days,
+  hours, minutes and rounds to <em>instant</em>.</li>
+</ul>
+<h2 id="blood">Blood</h2>
+<p>Every fighter has a <strong>Blood</strong> pool: 20, plus (Endurance − 50) ÷ 10,
+rounded down (16 at Endurance 15, 24 at 95). Each wound bleeds away
+Blood at its rate:</p>
+<table>
+<thead>
+<tr>
+<th>Bleed</th>
+<th>Blood lost</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B0</td>
+<td>none</td>
+<td>None</td>
+</tr>
+<tr>
+<td>B1</td>
+<td>1 a minute</td>
+<td>Slow: seeping; lose 1 Blood per minute</td>
+</tr>
+<tr>
+<td>B2</td>
+<td>1 a round</td>
+<td>Heavy: lose 1 Blood per round; bind within minutes</td>
+</tr>
+<tr>
+<td>B3</td>
+<td>3 a round</td>
+<td>Arterial: lose 3 Blood per round; tourniquet or pressure now</td>
+</tr>
+</tbody>
+</table>
+<p>As Blood falls, so does the fighter:</p>
+<table>
+<thead>
+<tr>
+<th>Blood left</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>75% or less</td>
+<td>Pale and weak: -10% to all actions</td>
+</tr>
+<tr>
+<td>50% or less</td>
+<td>Faint check each minute; -20% to all actions</td>
+</tr>
+<tr>
+<td>25% or less</td>
+<td>Barely conscious: -40% to all actions, can only crawl</td>
+</tr>
+<tr>
+<td>None</td>
+<td>Unconscious and dying</td>
+</tr>
+</tbody>
+</table>
+<p>Bleeding is what kills quickly. A man with an arterial wound has a few rounds; a man with a
+heavy one has a few minutes; slow bleeding gives his friends time.</p>
+<h2 id="penalties">Penalties</h2>
+<p>A wounded fighter fights worse. Add up:</p>
+<ul>
+<li><strong>Pain</strong>: −10% to attack and defence for each step, counted to 3
+  steps at most (and above that, a stop check every round).</li>
+<li><strong>Blood lost</strong>: the table above.</li>
+<li><strong>Impairments</strong>, each counted once however many wounds cause it. An arm's impairment
+  counts against his <strong>weapon arm</strong> (his weapon hand's side) or his <strong>shield arm</strong> (the
+  other):</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Impairment</th>
+<th>What it does</th>
+<th>Attack</th>
+<th>Defence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dazed</td>
+<td>Stunned: lose next action, then -20% for 1d6 rounds</td>
+<td>−20%</td>
+<td>−20%</td>
+</tr>
+<tr>
+<td>Vision</td>
+<td>Vision impaired: -30% to sight-based actions; blinded if both eyes</td>
+<td>−30%</td>
+<td>−30%</td>
+</tr>
+<tr>
+<td>Breath</td>
+<td>Winded: no sustained exertion; fatigue doubled</td>
+<td>−10%</td>
+<td>−10%</td>
+</tr>
+<tr>
+<td>Collapse</td>
+<td>Collapses; can only crawl or crouch</td>
+<td>−20%</td>
+<td>−30%</td>
+</tr>
+<tr>
+<td>Stand</td>
+<td>Falls and cannot stand unaided</td>
+<td>−20%</td>
+<td>−30%</td>
+</tr>
+<tr>
+<td>Leg</td>
+<td>Movement halved; -20% to footwork and dodging</td>
+<td>—</td>
+<td>−20%</td>
+</tr>
+<tr>
+<td>Move</td>
+<td>Movement halved</td>
+<td>—</td>
+<td>−10%</td>
+</tr>
+<tr>
+<td>Unconscious</td>
+<td>Knocked out (check each minute to wake)</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Speech</td>
+<td>Cannot speak clearly</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Arm (weapon arm)</td>
+<td>That arm -20%; no two-handed use</td>
+<td>−20%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Arm (shield arm)</td>
+<td>That arm -20%; no two-handed use</td>
+<td>—</td>
+<td>−10%</td>
+</tr>
+<tr>
+<td>Grip (weapon arm)</td>
+<td>Drops anything held in that hand; cannot grip with it</td>
+<td>−30%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Grip (shield arm)</td>
+<td>Drops anything held in that hand; cannot grip with it</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Hand useless (weapon arm)</td>
+<td>That hand useless</td>
+<td>−30%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Hand useless (shield arm)</td>
+<td>That hand useless</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Arm useless (weapon arm)</td>
+<td>That arm useless</td>
+<td>−40%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Arm useless (shield arm)</td>
+<td>That arm useless</td>
+<td>—</td>
+<td>−10%</td>
+</tr>
+</tbody>
+</table>
+<p>Attack and defence penalties are each capped at −60%. A fighter with no usable hand
+cannot hold a weapon. A fighter with <strong>either</strong> arm hurt (an arm wound, a lost grip, a
+useless hand or arm) cannot attack with a two-handed weapon (bows, crossbows, long guns,
+bills, pikes and poleaxes): he can only defend until he takes up something he can use in
+one hand.</p>
+<h2 id="first-aid">First aid</h2>
+<p>A wound can be treated three ways (on the roller, the buttons on the casualty's card).
+How long it takes, and whether anyone can reach him under fire, is the GM's call:</p>
+<ul>
+<li><strong>Bind</strong>: pressure and a bandage, one step less bleeding.</li>
+<li><strong>Tourniquet</strong>: an arm or a leg only; the bleeding stops. Left on for hours, the limb is
+  lost.</li>
+<li><strong>Cauterise</strong>: the bleeding stops, at one more step of pain.</li>
+</ul>
+<p>If anyone on his side comes from the team builder, the best <strong>Leechcraft</strong> among them still
+standing rolls d100 for each treatment. Success: a bind stops 2 steps instead
+of one, and cautery adds no pain. Failure: nothing happens, and it can be tried again next
+turn. A side with no sheets binds without rolling.</p>
+<div class="admonition example">
+<p class="admonition-title">The retinue: the tourniquet</p>
+<p>Walter's thigh bleeds 3 Blood a round. The best Leechcraft in the
+retinue is not its barber-surgeon's but Geoffrey Cooper's, the servant or groom: 27.
+He drags Walter back and tries a tourniquet; he rolls 41, over his
+27, and the strap slips. He tries again the next round and rolls 19: it
+holds, and the bleeding stops. Two rounds of bleeding have left Walter <strong>12</strong> of
+18 Blood: pale and weak.</p>
+<p>His wound penalties now: pain 2 and the Blood he lost give
+<strong>−30% to attack</strong>; his hurt leg adds to his defence, <strong>−50%</strong>. He
+moves at half pace. He is out of this fight in all but name, and alive.</p>
+</div>
+<div class="admonition gm">
+<p class="admonition-title">For the GM</p>
+<p>The clock is a guide to the story, not a timer to run down: a wound <em>fatal in hours</em> is
+one that needs a surgeon tonight, not one that kills on the stroke of the hour. Blood is
+what the rules count. A man who reaches no Blood is unconscious and dying; what happens
+next is first aid, luck, and the camp.</p>
+</div>
+<h1 id="recovery">Recovery</h1>
+<p>After the fight come the days that decide who lives. Wounds, sickness and fever all move
+on one <strong>track</strong> of five steps, and each step weakens a man in the next fight:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>In a fight</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Healed</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Mending</td>
+<td>−10% to attack and defence</td>
+</tr>
+<tr>
+<td>Serious</td>
+<td>−25% to attack and defence, cannot run</td>
+</tr>
+<tr>
+<td>Grave</td>
+<td>−25% to attack and defence, crawls only, defends only</td>
+</tr>
+<tr>
+<td>Deadly</td>
+<td>too ill to fight</td>
+</tr>
+</tbody>
+</table>
+<h2 id="camp">Into camp</h2>
+<p>Each wound goes onto the track at the step its severity gives (light <strong>mending</strong>, serious
+<strong>serious</strong>, critical <strong>grave</strong>), or worse if its clock is short: a wound that would kill in
+hours or minutes starts at <strong>grave</strong>. In camp the bleeding stops, and each night he gets
+back 4 Blood.</p>
+<p>On the <a href="roller.html">wound roller</a>, put him <strong>With</strong> his force on the
+<a href="travel.html">travel map</a> and press <strong>To camp</strong>; the travel map's nights then run his
+wounds with the force's own wounded.</p>
+<h2 id="check">The recovery check</h2>
+<p>Once every 7 days, each wound makes a <strong>recovery check</strong>: d100 against his
+<strong>Endurance</strong>, adjusted:</p>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>To the roll</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Care: no camp</td>
+<td>-20</td>
+</tr>
+<tr>
+<td>Care: a camp</td>
+<td>+0</td>
+</tr>
+<tr>
+<td>Care: quarters in houses</td>
+<td>+10</td>
+</tr>
+<tr>
+<td>He marched that day</td>
+<td>-20</td>
+</tr>
+<tr>
+<td>He rested</td>
+<td>+10</td>
+</tr>
+<tr>
+<td>A night harder than the shelter (cold, wet)</td>
+<td>-10</td>
+</tr>
+<tr>
+<td>Poor hygiene</td>
+<td>-10</td>
+</tr>
+<tr>
+<td>A leech with the force</td>
+<td>+ his Leechcraft ÷ 10</td>
+</tr>
+<tr>
+<td>Battle wounds heal easily</td>
+<td>+20</td>
+</tr>
+<tr>
+<td>Wound fever is hard</td>
+<td>−25</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Succeed by 30 or more: <strong>two steps</strong> better.</li>
+<li>Succeed: one step better.</li>
+<li>Fail: it holds; at <strong>deadly</strong>, he dies.</li>
+<li>Fail by 30 or more: one step <strong>worse</strong>.</li>
+</ul>
+<p>A wound that reaches <em>healed</em> leaves a scar on his sheet and figure.</p>
+<h2 id="fever">Wound fever</h2>
+<p>3 to 5 days after the fight, each wound turns septic or it does not:
+5% for a wound with a low risk of infection, 15% medium,
+30% high; +5 with no camp, −5 in quarters, less a
+leech's bonus. A septic wound is <strong>wound fever</strong>: a step worse, checked every night, and the
+check is harder by 25. Before antibiotics, this is what killed the men who
+survived the battle.</p>
+<div class="admonition example">
+<p class="admonition-title">The retinue: the camp</p>
+<p>The retinue carries Walter to its camp. His wound goes onto the track at
+<strong>serious</strong>. A few nights on, its risk of fever is 13% (medium,
+less 2 for Geoffrey Cooper's Leechcraft). The GM rolls 64: it stays
+clean.</p>
+<p>At the end of the week he checks: Endurance 35, a camp (+0), resting
+(+10), a leech (+2) and a battle wound (+20) make
+<strong>67</strong>. He rolls 52, a success by 15: one step better,
+<strong>mending</strong>. A week later he rolls 30, a success by 37: <strong>healed</strong>,
+with a scar on his right thigh. His Blood came back in his first nights in camp, and
+the retinue marches on with its archer.</p>
+</div>
+<div class="admonition gm">
+<p class="admonition-title">For the GM</p>
+<p>The track is where the campaign's hard choices are made. March on, and every check is
+-20; camp in the open, and fever is likelier; stay in a filthy camp, and the
+flux comes. The travel map counts all of it for whole
+forces; the players only have to decide.</p>
+</div>
+<p class="note">Every number in this book is filled in from the game's data when it is built, so it says what the pages do. This first cut covers the core of play; the field map, the travel map, camps and disease have their own notes in the repository's docs for now. Print it from the browser for a paper copy.</p>
+  </main>
+</div>
+<script>
+// tables scroll sideways on a phone rather than widening the page
+for (const t of document.querySelectorAll("main table")){ const w = document.createElement("div"); w.className = "tw"; t.replaceWith(w); w.appendChild(t) }
+</script>
+</body>
+</html>

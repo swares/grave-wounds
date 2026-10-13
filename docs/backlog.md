@@ -9,9 +9,11 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **A rule book.** The printed tables carry a summary of each rule, but there is no rule
-  book to read through: how to play, the turn, the roller, the field map, the travel map,
-  camps and disease, the team builder, with examples. With the tables, or as its own book.
+- **The rule book, second part.** `dist/rules.html` (built from `templates/rules/`, every
+  number filled from the data) covers how to play, making a team, the fight, wounds and
+  recovery, with one team followed through. Still to write, in the same way: the field map
+  (units, morale, the rout, guns and the enemy commander), the travel map, camps and
+  disease, weather and works, and the other eras' teams. Only `docs/` covers them now.
 - **The enemy commander, beyond the first cut.** A scripted commander moves one side on the
   field map (attacking or holding, by its units' quality; Undo puts its move back). It sees
   the whole field, even at night. It leaves batteries, fire support, air controllers,

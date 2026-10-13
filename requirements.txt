@@ -1,4 +1,5 @@
 PyYAML>=6.0
 reportlab>=4.0
+Markdown>=3.4
 # Optional: draws the combatant figures into the PDF (then run: playwright install chromium)
 playwright>=1.40

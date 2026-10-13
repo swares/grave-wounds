@@ -2,7 +2,7 @@
 
     python build.py            -> dist/tables.pdf, dist/tables.md,
                                   dist/gravewounds-data.json, dist/roller.html, dist/travel.html,
-                                  dist/field.html,
+                                  dist/field.html, dist/team.html, dist/rules.html (the rule book),
                                   index.html (start page for GitHub Pages)
 """
 from __future__ import annotations
@@ -1762,6 +1762,8 @@ def main() -> int:
     gtpl = (ROOT / "templates" / "team.html").read_text(encoding="utf-8")
     ghtml = gtpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>")).replace("/*__TEAM_JS__*/", team_js)
     (DIST / "team.html").write_text(ghtml.replace("/*__TEAM_DATA__*/null", json.dumps(team_bundle(d), separators=(",", ":"))), encoding="utf-8")
+    from gravewounds.rulebook import render as rule_book
+    (DIST / "rules.html").write_text(rule_book(d, ROOT), encoding="utf-8")
     (ROOT / "index.html").write_text(index_page(d), encoding="utf-8")
     print("Built:", ", ".join(p.name for p in sorted(DIST.iterdir())), "+ index.html")
     return 0
