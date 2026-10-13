@@ -692,7 +692,8 @@ const TURNS = [["", "stop"], ["0", "lift on the same way"], ["1", "turn left"], 
 function renderLegs(){                            // the leg rows: Then (stop, same way, turn) and for how many lines
   const box = $("#sup-legs"), was = [...box.querySelectorAll("[data-leg]")].map(r => [r.querySelector("select.then").value, r.querySelector("select.lines").value]);
   const lineOpts = [1, 2, 3, 4, 5, 6, 8, 10].map(n => `<option value="${n}">${nOf(n, "line")}</option>`).join("") + `<option value="0">until off the map</option>`;
-  box.innerHTML = Array.from({ length: LEGS }, (_, k) => `<div class="row" data-leg="${k}"><div><label for="sel-sup-then-${k}">${k ? "And then" : "Then"}</label><select class="then" id="sel-sup-then-${k}" title="A leg of the fire plan, after the lines before it: stop, lift on the same way, or turn">${TURNS.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select></div><div><label for="sel-sup-then-lines-${k}">for</label><select class="lines" id="sel-sup-then-lines-${k}">${lineOpts}</select></div></div>`).join("");
+  const turnOpts = TURNS.map(([v, t]) => `<option value="${v}">${t}</option>`).join("");
+  box.innerHTML = Array.from({ length: LEGS }, (_, k) => `<div class="row" data-leg="${k}"><div><label for="sel-sup-then-${k}">${k ? "And then" : "Then"}</label><select class="then" id="sel-sup-then-${k}" title="A leg of the fire plan, after the lines before it: stop, lift on the same way, or turn">${turnOpts}</select></div><div><label for="sel-sup-then-lines-${k}">for</label><select class="lines" id="sel-sup-then-lines-${k}">${lineOpts}</select></div></div>`).join("");
   [...box.querySelectorAll("[data-leg]")].forEach((r, k) => { if (was[k]){ r.querySelector("select.then").value = was[k][0]; r.querySelector("select.lines").value = was[k][1] } });
   $("#btn-sup-unleg").disabled = LEGS <= 1;
 }
