@@ -255,7 +255,7 @@ def _toward(d: Data, us: list, i: int, t: int | None, ctx: tuple, act: str) -> d
     facing the target if any, else the objective. None if it may only turn, or no such hex is
     nearer the objective."""
     (size, field, _, known, _), u = ctx, us[i]
-    if u.get("lost") or u.get("immobile") or u.get("emplaced"):
+    if _stuck(u):
         return None
     obj, tu = objective(field), None if t is None else _where(us, t, known)
     free = {**u, "prone": False} if u.get("prone") else u
@@ -271,9 +271,18 @@ def _toward(d: Data, us: list, i: int, t: int | None, ctx: tuple, act: str) -> d
         tries -= 1
         m = _legal(d, base, i, (h, f, c, False), (size, field))
         if m["ok"]:
-            o = {"act": act, "target": t, "pos": h, "facing": f, "cost": m["cost"]}
-            return {**o, "up": True} if u.get("prone") else o
+            return _rising(u, {"act": act, "target": t, "pos": h, "facing": f, "cost": m["cost"]})
     return None
+
+
+def _stuck(u: dict) -> bool:
+    """It may only turn: lost in the dark, with vehicles that cannot move, or emplaced."""
+    return bool(u.get("lost") or u.get("immobile") or u.get("emplaced"))
+
+
+def _rising(u: dict, o: dict) -> dict:
+    """The order, marked as getting up first if the unit is on the ground."""
+    return {**o, "up": True} if u.get("prone") else o
 
 
 def _turning(d: Data, u: dict, f: int) -> int:
