@@ -976,13 +976,18 @@ function damageText(l){                           // " 1 vehicle immobilised. 1 
   if (l.turret) out += ` (${nOf(l.turret, "hit")} on the turret.)`;
   return out;
 }
+function ridersText(l){                          // the riders struck when carriers were knocked out, and men hit through a lorry's sides
+  let out = "";
+  if (l.rstruck) out += ` Riders: ${l.rstruck} struck, ${l.rdown || 0} down` + (l.rdead ? ` (${l.rdead} dead)` : "") + ".";
+  if (l.rshot) out += ` Through the sides: ${l.rshot} of the men aboard hit, ${l.rshotdown || 0} down` + (l.rshotdead ? ` (${l.rshotdead} dead)` : "") + ".";
+  return out;
+}
 function armourText(l, nm){                       // rockets at vehicles, a tank's main gun, a vehicle knocked out by shells or bombs
   const vk = l.dfd !== undefined && S.units[l.dfd]?.vehicle, what = vk ? FD.units.vehicles.kinds[vk].name.toLowerCase() : "vehicles";
   let out = "";
   if (l.knocked) out = ` ${l.knocked} of ${nm(l.dfd)}'s ${what} knocked out; ${l.crew} crew out of the fight, ${l.down || 0} down` + (l.dead ? ` (${l.dead} dead)` : "") + ".";
   out += damageText(l);
-  if (l.rstruck) out += ` Riders: ${l.rstruck} struck, ${l.rdown || 0} down` + (l.rdead ? ` (${l.rdead} dead)` : "") + ".";
-  if (l.rshot) out += ` Through the sides: ${l.rshot} of the men aboard hit, ${l.rshotdown || 0} down` + (l.rshotdead ? ` (${l.rshotdead} dead)` : "") + ".";
+  out += ridersText(l);
   if (l.kill !== undefined && l.hit) out = ` (${l.kill}% a hit to knock out)` + out;
   if (l.kind === "knocked_out") return `${l.name || "Shells"} burst on ${nm(l.dfd)}:${out}`;
   const shots = hurtsArmour(S.units[l.att]?.weapon) ? nOf(l.shots, "round") : nOf(l.shots, "aimed shot");
