@@ -4518,7 +4518,7 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **Anti-tank guns (1939-53):** a unit of towed guns, 5 men a gun, a gun a hex, manhandled 2 hexes. Each gun served fires 1 round an exchange to 100 hexes as a tank's main gun, vehicles first (hits 70/45/20% by range, knocking out by the armour's gun %), high explosive at men, 40 rounds a gun (resupply as a battery). Its crews are men: small arms and shells strike them. The commander leaves them to the GM.
 
-**Gun shields and emplacements:** shields (anti-tank guns and anti-aircraft guns) take 30% off small arms from the gun's front only. In set-up the GM can emplace a gun unit (anti-tank, anti-aircraft, machine guns, batteries): while it stands it counts as gone to ground (-15%, hidden, steadier) and cannot move, though it may turn; a unit that breaks leaves its pits.
+**Gun shields and emplacements:** shields (anti-tank guns, anti-aircraft guns) take 30% off small arms from the gun's front only. In set-up the GM can emplace a gun unit (anti-tank, anti-aircraft, machine guns, batteries): while it stands it counts as gone to ground (-15%, hidden, steadier) and cannot move, though it may turn; a unit that breaks leaves its pits.
 
 **Minefields (1939 on):** painted before the battle, marked or hidden (shown once set off). A unit that moved into minefield hexes (its footprint on a straight line from where its move began) sets them off before the shooting, a hex's worth of men a hex struck at the kind's % (anti-personnel mines: men 10%, vehicles 0%; anti-tank mines: men 0%, vehicles 30%; mixed minefield: men 8%, vehicles 25%), wounded as by a mine at 70%; a vehicle struck is knocked out at 25% (heavy) or 60% (light), else immobilised.
 

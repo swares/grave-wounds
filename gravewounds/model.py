@@ -997,7 +997,7 @@ def _vehicle_errors(d: Data) -> list[str]:
 def _at_mine_errors(d: Data) -> list[str]:
     """units.yaml anti_tank_guns (known weapons, a crew, rounds, a gun as a vehicle's), gun_shields
     (known weapons, a cover %) and mines (a known weapon, kinds with men and vehicles %)."""
-    A, M, S, errors = d.units.get("anti_tank_guns"), d.units.get("mines"), d.units.get("gun_shields"), []
+    A, M, errors = d.units.get("anti_tank_guns"), d.units.get("mines"), _shield_errors(d)
     if A:
         g = A.get("gun") or {}
         if not (all(w in d.weapons for w in A.get("weapons", [])) and isinstance(A.get("crew"), int) and A["crew"] > 0 and A.get("crew_weapon") in d.weapons
@@ -1005,14 +1005,20 @@ def _at_mine_errors(d: Data) -> list[str]:
             errors.append("units.yaml: anti_tank_guns needs known weapons, a crew, a known crew_weapon and a gun (range, rate, he, hit)")
         if not (isinstance(A.get("rounds"), int) and A["rounds"] > 0):
             errors.append("units.yaml: anti_tank_guns.rounds must be a whole number above 0")
-    if S and not (all(w in d.weapons for w in S.get("weapons", [])) and isinstance(S.get("cover"), int) and 0 <= S["cover"] <= 100):
-        errors.append("units.yaml: gun_shields needs known weapons and a cover % (0-100)")
     if M:
         if M.get("weapon") not in d.weapons or not isinstance(M.get("attack"), int):
             errors.append("units.yaml: mines needs a known weapon and an attack %")
         errors += [f"units.yaml: mines.kinds.{k} needs men and vehicles (% 0-100)" for k, v in (M.get("kinds") or {}).items()
                    if not all(isinstance(v.get(x), int) and 0 <= v[x] <= 100 for x in ("men", "vehicles"))]
     return errors
+
+
+def _shield_errors(d: Data) -> list[str]:
+    """units.yaml gun_shields: known weapons and a cover % (0-100)."""
+    S = d.units.get("gun_shields")
+    if S and not (all(w in d.weapons for w in S.get("weapons", [])) and isinstance(S.get("cover"), int) and 0 <= S["cover"] <= 100):
+        return ["units.yaml: gun_shields needs known weapons and a cover % (0-100)"]
+    return []
 
 
 def _run_errors(d: Data, ind: dict) -> list[str]:

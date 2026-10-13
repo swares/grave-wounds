@@ -340,7 +340,7 @@ def _at_mine_rules(d) -> list[str]:
                    "The commander leaves them to the GM.")
     S = d.units.get("gun_shields")
     if S:
-        names = " and ".join(d.weapons[w]["name"].split(" (")[0].lower() + "s" for w in S["weapons"])
+        names = ", ".join(d.weapons[w]["name"].split(" (")[0].lower() + "s" for w in S["weapons"])
         out.append(f"<b>Gun shields and emplacements:</b> shields ({names}) take {S['cover']}% off small arms from the gun's front only. "
                    f"In set-up the GM can emplace a gun unit (anti-tank, anti-aircraft, machine guns, batteries): while it stands it counts as gone to ground "
                    f"(-{d.units['to_ground']['cover']}%, hidden, steadier) and cannot move, though it may turn; a unit that breaks leaves its pits.")

@@ -1787,14 +1787,18 @@ function frontCost(field, u, front, dn, size){    // the worst step cost of a fr
   }
   return worst || 1;
 }
+function rootedWhy(u){                             // why a unit cannot leave its hex (though it may turn), or ""
+  if (u.lost) return "it has lost its way in the dark (it may turn)";
+  if (u.immobile) return `${u.immobile} of its vehicles cannot move (abandon them to move on; it may turn)`;
+  return u.emplaced ? "it is emplaced, dug in for the battle (it may turn)" : "";
+}
 function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, charge, why}
   const u = units[i];
   if (u.state === "broken" || u.state === "fled") return { ok: false, why: "it is running" };
   const same = pos[0] === u.pos[0] && pos[1] === u.pos[1] && facing === u.facing;
   if (inContact(units, occupancy(units), i) && !same) return { ok: false, why: "it is in contact" };
-  if (u.lost && (pos[0] !== u.pos[0] || pos[1] !== u.pos[1])) return { ok: false, why: "it has lost its way in the dark (it may turn)" };
-  if (u.immobile && (pos[0] !== u.pos[0] || pos[1] !== u.pos[1])) return { ok: false, why: `${u.immobile} of its vehicles cannot move (abandon them to move on; it may turn)` };
-  if (u.emplaced && (pos[0] !== u.pos[0] || pos[1] !== u.pos[1])) return { ok: false, why: "it is emplaced, dug in for the battle (it may turn)" };
+  const rooted = (pos[0] !== u.pos[0] || pos[1] !== u.pos[1]) && rootedWhy(u);
+  if (rooted) return { ok: false, why: rooted };
   const turns = Math.min(mod6(facing - u.facing), mod6(u.facing - facing)), most = allowance(u) * UD.charge_move;
   const steps = pathLen(units, i, pos, size, most, field);
   if (steps === null) return { ok: false, why: "too far, or no way through" };

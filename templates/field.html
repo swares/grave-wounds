@@ -1530,13 +1530,14 @@ function renderMap(){
   $("#hex-size").textContent = fmtM(FD.units.hex_m);
 }
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
+const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"]];
 function unitMeta(u){
   if (u.state === "fled") return "fled";
-  const down = u.down ? " · " + u.down + " down" : "", br = (u.breach ? " · breaching" : "") + (u.assault ? " · storming" : ""), low = (u.prone ? " · to ground" : "") + (u.emplaced ? " · emplaced" : "") + (u.pinned ? " · pinned" : "") + (u.lost ? " · lost in the dark" : "") + (u.fixed ? " · fixed line" : "") + (u.fac ? " · air controller" : "") + (u.reserve ? " · reserve" : "");
+  const down = u.down ? " · " + u.down + " down" : "", flags = META_FLAGS.filter(([k]) => u[k]).map(([, t]) => " · " + t).join("");
   let mg = isMg(u.weapon) ? " · " + gunsText(mgGuns(u), "gun") : "";
   if (isAtGun(u)) mg = " · " + gunsText(atGuns(u), "gun") + ", " + (atRounds(u) ? atRounds(u) + " rounds" : "no rounds left") + (u.resupplying ? ", resupplying" : "");
   if (u.vehicle) mg = vehicleMeta(u);
-  return `${u.men}/${u.start} · ${u.state}${down}${br}${low}${mg}${batteryMeta(u)}`;
+  return `${u.men}/${u.start} · ${u.state}${down}${flags}${mg}${batteryMeta(u)}`;
 }
 function vehicleMeta(u){                          // " · 3 tanks, 1 immobilised · carrying 1st Squad (9)"
   const imm = u.immobile ? `, ${u.immobile} immobilised` : "", out = u.gunless ? `, ${nOf(u.gunless, "gun")} out` : "";
