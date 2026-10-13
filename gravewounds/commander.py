@@ -35,13 +35,18 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
 
 
 def _free(d: Data, us: list, i: int, exchange) -> bool:
-    """A unit it can order: standing, not a battery or anti-tank guns, not in contact, not just come on."""
+    """A unit it can order: standing, not a battery, anti-tank guns or gun tractors, not in contact, not just come on."""
     u = us[i]
-    if u["state"] in ROUTED or u["men"] <= 0 or U.is_battery(d, u) or U.is_at_gun(d, u):
+    if u["state"] in ROUTED or u["men"] <= 0 or U.is_battery(d, u) or U.is_at_gun(d, u) or _tractor(d, u):
         return False
     if exchange is not None and u.get("arrived") == exchange:
         return False
     return not U.in_contact(d, us, U.occupancy(d, us), i)
+
+
+def _tractor(d: Data, u: dict) -> bool:
+    """Gun tractors (a vehicle kind that tows): left to the GM, like the guns they tow."""
+    return bool((U.vehicle_kind(d, u) or {}).get("tows"))
 
 
 def _hold_back(d: Data, us: list, side, known: dict) -> None:
@@ -62,7 +67,7 @@ def _hold_back(d: Data, us: list, side, known: dict) -> None:
     for i in mine:
         us[i]["reserve"] = False
     for i in far:
-        if U.is_battery(d, us[i]) or U.is_at_gun(d, us[i]) or us[i]["men"] > room:
+        if U.is_battery(d, us[i]) or U.is_at_gun(d, us[i]) or _tractor(d, us[i]) or us[i]["men"] > room:
             continue
         us[i]["reserve"] = True
         room -= us[i]["men"]

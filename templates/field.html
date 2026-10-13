@@ -335,7 +335,7 @@ legend{padding:0}
           <div><label for="sel-kit">Armour</label><select id="sel-kit"></select></div>
         </div>
         <div class="toolbar">
-          <span id="vehicle-box" hidden><label for="sel-vehicle" class="sr">Vehicles</label><select id="sel-vehicle" title="Tanks or armoured carriers: Men is then how many vehicles" style="width:auto"></select></span>
+          <span id="vehicle-box" hidden><label for="sel-vehicle" class="sr">Vehicles</label><select id="sel-vehicle" title="Tanks, armoured carriers or gun tractors: Men is then how many vehicles" style="width:auto"></select></span>
           <label class="check"><input type="checkbox" id="chk-mounted"> Mounted</label>
           <span id="air-box" hidden><label class="check"><input type="checkbox" id="chk-air"> By air at</label> <label for="sel-lz" class="sr">Landing zone</label><select id="sel-lz" style="width:auto"></select></span>
           <span id="guns-box" hidden><label for="sel-guns" class="sr">Guns</label><select id="sel-guns" title="Smoothbores fire round shot; rifled guns reach further with percussion shell; howitzers fire shell over anything between" style="width:auto">
@@ -1645,7 +1645,8 @@ function unitMeta(u){
 }
 function vehicleMeta(u){                          // " · 3 tanks, 1 immobilised · carrying 1st Squad (9)"
   const imm = u.immobile ? `, ${u.immobile} immobilised` : "", out = u.gunless ? `, ${nOf(u.gunless, "gun")} out` : "";
-  const ride = u.riders ? ` · carrying ${u.riders.name} (${u.riders.men})` : "";
+  let ride = "";
+  if (u.riders) ride = tows(u) ? ` · towing ${u.riders.name} (${nOf(atGuns(u.riders), "gun")})` : ` · carrying ${u.riders.name} (${u.riders.men})`;
   return ` · ${vehiclesLeft(u)} ${FD.units.vehicles.kinds[u.vehicle].name.toLowerCase()}${imm}${out}${ride}`;
 }
 const GUN_NAMES = { smoothbore: "guns", rifled: "rifled guns", howitzer: "howitzers" };
@@ -1663,7 +1664,8 @@ function vehicleInfo(u, K){                       // the selected vehicle unit: 
   const gun = K.gun ? `main gun to ${K.gun.range} hexes (${fmtM(K.gun.range * FD.units.hex_m)}), ${nOf(K.gun.rate, "round")} a vehicle an exchange` : "machine guns only";
   const dmg = (u.immobile ? `; ${u.immobile} immobilised (abandon them to move on)` : "") + (u.gunless ? `; ${u.gunless} with the main gun out` : "") + (u.bailed ? `; ${u.bailed} crew have left the abandoned vehicles` : "");
   const aboard = u.riders ? `, ${u.riders.men} of ${esc(u.riders.name)} aboard` : "";
-  const room = K.carry ? `; carries ${K.carry} men a vehicle (room for ${carries(u)})` + aboard : "";
+  let room = K.carry ? `; carries ${K.carry} men a vehicle (room for ${carries(u)})` + aboard : "";
+  if (K.tows) room = `; tows ${nOf(K.tows, "anti-tank gun")} a vehicle (${nOf(tows(u), "gun")}), its crew riding` + (u.riders ? `; towing ${esc(u.riders.name)}` : "");
   return `${vehiclesLeft(u)} of ${Math.ceil(u.start / K.crew)} ${K.name.toLowerCase()} (${K.crew} crew each); ${gun}; ${K.armour} armour: small arms cannot hurt them, no one fights them hand to hand; a hit in the flank or rear is worse${room}${dmg}`;
 }
 function gunsInfo(u){                             // the Guns line of the selected battery
@@ -1963,9 +1965,12 @@ function renderRiders(u, setup){                 // Abandon immobilised, Dismoun
   const mine = u && (setup || u.side === moving()) && S.phase !== "over" && !out_(u);
   $("#btn-abandon").hidden = !(mine && u.vehicle && u.immobile);
   $("#btn-dismount").hidden = !(mine && u.riders);
-  const carriers = mine && !u.vehicle ? S.units.filter(c => c.vehicle && c.side === u.side && carries(c) > 0 && !c.riders) : [];
+  $("#btn-dismount").textContent = u?.riders && isAtGun(u.riders) ? "Unhook the guns" : "Dismount the riders";
+  const gun = !!u && isAtGun(u), room = c => (gun ? tows(c) : carries(c));
+  const carriers = mine && !u.vehicle ? S.units.filter(c => c.vehicle && c.side === u.side && room(c) > 0 && !c.riders) : [];
   $("#mount-box").hidden = !carriers.length;
-  $("#sel-carrier").innerHTML = `<option value="">Mount on\u2026</option>` + carriers.map(c => `<option value="${c.id}">${esc(c.name)} (room for ${carries(c)})</option>`).join("");
+  const what = c => (gun ? `tows ${nOf(tows(c), "gun")}` : `room for ${carries(c)}`);
+  $("#sel-carrier").innerHTML = `<option value="">${gun ? "Hook up to" : "Mount on"}\u2026</option>` + carriers.map(c => `<option value="${c.id}">${esc(c.name)} (${what(c)})</option>`).join("");
 }
 function abandonVehicles(){                       // the immobilised vehicles are left; their crews leave the fight
   const u = selUnit(); if (!u?.immobile) return;
@@ -1982,18 +1987,19 @@ function mountOn(cid){                            // the selected foot unit gets
   S.units = r.units;
   if (S.start){ S.start.splice(i, 1); const j = idx(c.id); if (S.start[j]) S.start[j] = { ...S.start[j], riders: S.units[j].riders } }
   S.sel = c.id;
-  S.msg = `${u.name} (${u.men} men) get aboard ${c.name}: they move with the carriers and do not fight until they get down.`;
+  S.msg = isAtGun(u) ? `${u.name} hook up to ${c.name}: the guns are towed, their crews riding, and do not fire until unhooked.` : `${u.name} (${u.men} men) get aboard ${c.name}: they move with the carriers and do not fight until they get down.`;
   render();
 }
 function dismountRiders(){                        // the selected carriers' riders get down beside them
   const c = selUnit(); if (!c?.riders) return;
   const j = idx(c.id), r = dismountUnit(S.units, j, SIZE, S.field);
   if (!r.ok){ S.msg = `${c.riders.name} cannot get down: ${r.why}.`; return render() }
-  const rider = { ...r.units.at(-1), ...(S.phase === "setup" ? {} : { arrived: S.exchange }) };
+  const gun = isAtGun(r.units.at(-1)), play = S.phase !== "setup";
+  const rider = { ...r.units.at(-1), ...(play ? { arrived: S.exchange } : {}), ...(play && gun ? { unhooked: true } : {}) };
   S.units = [...r.units.slice(0, -1), rider];
   if (S.start){ const { riders, ...rest } = S.start[j] || {}; S.start[j] = rest; S.start.push({ ...rider }) }
   S.sel = rider.id;
-  S.msg = `${rider.name} get down beside ${c.name}${S.phase === "setup" ? "" : "; they can move next exchange"}.`;
+  S.msg = gun ? `${rider.name} are unhooked beside ${c.name}${play ? "; the guns fire from the next exchange" : ""}.` : `${rider.name} get down beside ${c.name}${play ? "; they can move next exchange" : ""}.`;
   render();
 }
 function renderLimber(u, setup){                 // the Limber button, for batteries only
