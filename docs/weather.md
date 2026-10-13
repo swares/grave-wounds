@@ -190,7 +190,7 @@ applies: whichever is shorter counts.
 - **Moving in the dark** costs 1 more a hex on a moonlit or dark night.
 - **Losing direction.** Each unit that moved in the dark may lose its way when its side's
   move ends. The chance is the light's figure, plus half of how far its quality's Nerve is
-  below 60 (less half of how far above): green +12%, regular +5%, veteran −2%. A unit
+  below 60 (less half of how far above): green +12%, regular +5%, veteran −3% (rounded down). A unit
   that loses its way ends turned one point off its line, if it still fits. It cannot move
   next exchange, though it may turn.
 
