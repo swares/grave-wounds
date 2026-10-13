@@ -863,6 +863,9 @@ def _commander_errors(d: Data) -> list[str]:
                if not (isinstance(K.get(k), int) and K[k] >= 0)]
     if not (isinstance(K.get("tries"), int) and K["tries"] > 0):
         errors.append("units.yaml: commander.tries must be a positive whole number")
+    O = K.get("objective") or {}
+    errors += [f"units.yaml: commander.objective.{k} must be a whole number of 0 or more" for k in ("radius", "hold", "guard", "bonus")
+               if not (isinstance(O.get(k), int) and O[k] >= 0)]
     return errors + [f"units.yaml: commander.ground_with names unknown weapon {w}" for w in K.get("ground_with", []) if w not in d.weapons]
 
 

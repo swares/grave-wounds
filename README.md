@@ -60,8 +60,8 @@ with the battle map's works and weather, or on a real battlefield (Sidon, Visby,
 Lundy's Lane, First Bull Run, the Fetterman Fight, the Wagon Box Fight, Mons 1914, Hill 700 on
 Bougainville, the Rangers at Cisterna, Task Force Smith at Osan, the perimeter at Chipyong-ni, landing zone X-Ray, the crash sites in Mogadishu, the patrol base at Wanat, Cassino's ridges and ruins, Fox Hill at Toktong Pass, Hill 504 at Kapyong, Hill 931 on Heartbreak Ridge, Pork Chop Hill, the new city at Hue, Hill 861A at Khe Sanh, Hill 875 at Dak To, Hamburger Hill, Darwin Hill at Goose Green, the railway station in Grozny, the Jolan in Fallujah, or Combat Outpost Keating, with both armies drawn up). A fight on the travel
 map can be fought there, and its wounded go back to camp, where wound fever can take
-them. An optional scripted commander can play either side, attacking or holding, with an
-Undo for each of its moves. See [docs/units.md](docs/units.md).
+them. An optional scripted commander can play either side, attacking or holding (an objective
+hex the GM marks if wanted), with an Undo for each of its moves. See [docs/units.md](docs/units.md).
 
 **Rule book:** `dist/rules.html` teaches the game: making a team, the fight, wounds, first
 aid and recovery, battles of hundreds, the march and the camp, and weather and works,

@@ -1715,8 +1715,26 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     _lit_fades(field)
     log += landings(d, us, table, rng, field)
     log += _vehicles_after(d, us, field)
+    log += objective_held(d, us, field)
     _mark_was(us, field)
     return us, log
+
+
+def off_objective(d: Data, u: dict, obj) -> int:
+    """Hexes from unit u's nearest hex to the objective hex (10**6 if it has no hexes)."""
+    return min((hdist(h, obj) for row in footprint(d, u) for h in row), default=10**6)
+
+
+def objective_held(d: Data, us: list, field: dict | None) -> list:
+    """With an objective marked on the field: [{kind objective, hex, sides (those with a standing
+    unit within commander.objective.radius of it, in the units' order), held (the one side
+    there, else None)}], else []."""
+    obj = (field or {}).get("objective")
+    if not obj:
+        return []
+    r = d.units["commander"]["objective"]["radius"]
+    sides = list(dict.fromkeys(u["side"] for u in us if u["state"] not in ("broken", "fled") and u["men"] > 0 and off_objective(d, u, obj) <= r))
+    return [{"kind": "objective", "hex": list(obj), "sides": sides, "held": sides[0] if len(sides) == 1 else None}]
 
 
 def _mark_was(us: list, field: dict | None) -> None:

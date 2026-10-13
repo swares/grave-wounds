@@ -191,16 +191,88 @@ def _seen(d: Data, us: list, side, field: dict | None, e: dict) -> bool:
 def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     """One unit's order, or None (it holds). ctx: (size, field, stance, known, exchange)."""
     u, C = us[i], d.units["commander"]
-    t = target(d, us, i, ctx[3])
+    obj = objective(ctx[1])
+    t = target(d, us, i, ctx[3], obj)
     if u["state"] != "steady":
         return {"act": "ground", "target": t} if not u.get("prone") and under_fire(d, us, i) else None
-    if t is None:
-        return None
     if u.get("reserve"):
-        return _stay(d, us, i, t, u["facing"], "range" in d.weapons[u["weapon"]])
+        return None if t is None else _stay(d, us, i, t, u["facing"], "range" in d.weapons[u["weapon"]])
+    if t is None and obj is None:
+        return None
     if roll <= C["hesitate"].get(u["quality"], 0):
         return {"act": "hesitate", "target": t, "roll": roll}
-    return _last_seen(_best(d, us, i, t, ctx), ctx[3], t, ctx[4])
+    o = _best(d, us, i, t, ctx) if obj is None else _for_objective(d, us, i, t, ctx)
+    return o if t is None else _last_seen(o, ctx[3], t, ctx[4])
+
+
+def objective(field: dict | None) -> list | None:
+    """The hex the GM marked as the commander's objective (field objective), or None."""
+    o = (field or {}).get("objective")
+    return list(o) if o else None
+
+
+def _for_objective(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict | None:
+    """With an objective. Attacking: a unit at it (within commander.objective.radius) holds it
+    (stays, charging only with a holder's odds); one with no enemy to go for, or one that would
+    only stand or turn while its target is not guarding the objective, advances on it.
+    Holding: a unit further than objective.hold from it falls back toward it unless it can
+    charge; one with no enemy to go for and within that stays."""
+    R, attack, obj = d.units["commander"]["objective"], ctx[2] == "attack", objective(ctx[1])
+    off = U.off_objective(d, us[i], obj)
+    if t is None:
+        far = off > (R["radius"] if attack else R["hold"])
+        return _toward(d, us, i, None, ctx, "advance" if attack else "fall_back") if far else None
+    if attack and off <= R["radius"]:
+        return _best(d, us, i, t, (ctx[0], ctx[1], "hold", ctx[3], ctx[4]))
+    o = _best(d, us, i, t, ctx)
+    if attack:
+        idle = o is None or o["act"] == "turn"
+        return (_toward(d, us, i, t, ctx, "advance") or o) if idle and not _guards(d, _where(us, t, ctx[3]), obj) else o
+    if off > R["hold"] and (o is None or o["act"] != "charge"):
+        return _toward(d, us, i, t, ctx, "fall_back") or o
+    return o
+
+
+def _toward(d: Data, us: list, i: int, t: int | None, ctx: tuple, act: str) -> dict | None:
+    """A move (act advance or fall_back) toward the objective, within its allowance (its turn
+    included) and touching no enemy, to the hex the commander likes best (closer to the objective; less movement, fewer
+    known mines; with a target, more cover from it), facing the target if any, else the
+    objective. None if it may only turn, or no such hex is nearer the objective."""
+    (size, field, _, known, _), u, C = ctx, us[i], d.units["commander"]
+    if u.get("lost") or u.get("immobile") or u.get("emplaced"):
+        return None
+    obj, q = objective(field), u["quality"]
+    tu = None if t is None else _where(us, t, known)
+    free = {**u, "prone": False} if u.get("prone") else u
+    base = [free if k == i else x for k, x in enumerate(us)]
+    foes = {k for k, j in U.occupancy(d, base).items() if base[j]["side"] != u["side"]}
+    now, tries = U.hdist(u["pos"], obj), C["tries"]
+    cands = []
+    for h, c in reachable(d, base, i, size, U.allowance(d, free), field).items():
+        if U.hdist(list(h), obj) >= now:
+            continue
+        cover = 0 if tu is None else C["cover"].get(q, 0) * U.cover_at(d, field, tu["pos"], list(h))
+        cands.append((C["closing"] * U.hdist(list(h), obj) + c + C["mines"].get(q, 0) * _mined(field, u["pos"], h) - cover, c, h[1], h[0]))
+    for _, c, row, col in sorted(cands):
+        h = [col, row]
+        f = _facing(h, tu, obj, u["facing"])
+        turns = min((f - u["facing"]) % 6, (u["facing"] - f) % 6)
+        if c + turns * U.turn_cost(d, free) > U.allowance(d, free) or _touches(d, {**u, "pos": h, "facing": f}, foes):
+            continue
+        if tries == 0:
+            return None
+        tries -= 1
+        m = _legal(d, base, i, (h, f, c, False), (size, field))
+        if m["ok"]:
+            return {"act": act, "target": t, "pos": h, "facing": f, "cost": m["cost"], **({"up": True} if u.get("prone") else {})}
+    return None
+
+
+def _facing(h: list, tu: dict | None, obj: list, facing: int) -> int:
+    """Facing from h: toward the target if any, else the objective (as it was, at the objective)."""
+    if tu is not None and list(tu["pos"]) != h:
+        return U.bearing(h, tu["pos"])
+    return facing if h == obj else U.bearing(h, obj)
 
 
 def _last_seen(o: dict | None, known: dict | None, t: int, exchange) -> dict | None:
@@ -209,13 +281,21 @@ def _last_seen(o: dict | None, known: dict | None, t: int, exchange) -> dict | N
     return {**o, "last": last} if o and last is not None and last != (exchange or 0) else o
 
 
-def target(d: Data, us: list, i: int, known: dict | None = None) -> int | None:
+def target(d: Data, us: list, i: int, known: dict | None = None, obj: list | None = None) -> int | None:
     """The enemy unit it goes for among those its side knows of (known: sightings; None: every
-    one standing), or None: the best by threat_score (the first of equals)."""
+    one standing), or None: the best by threat_score (the first of equals), with an objective
+    (obj) commander.objective.bonus more for one within objective.guard of it."""
     u = us[i]
-    foes = [(-threat_score(d, u, us[j], _where(us, j, known)), j) for j, e in enumerate(us)
+    foes = [(-threat_score(d, u, us[j], _where(us, j, known)) - _guards(d, _where(us, j, known), obj), j) for j, e in enumerate(us)
             if e["side"] != u["side"] and e["state"] not in ROUTED and e["men"] > 0 and (known is None or str(j) in known)]
     return min(foes)[1] if foes else None
+
+
+def _guards(d: Data, seen: dict, obj: list | None) -> int:
+    """commander.objective.bonus if the enemy (where it is known to be) is within objective.guard
+    of the objective, else 0."""
+    R = d.units["commander"]["objective"]
+    return R["bonus"] if obj is not None and U.hdist(seen["pos"], obj) <= R["guard"] else 0
 
 
 def _where(us: list, j: int, known: dict | None) -> dict:
@@ -401,5 +481,5 @@ def _apply(us: list, i: int, o: dict) -> None:
         us[i] = {**u, "prone": True}
     elif o["act"] == "turn":
         us[i] = {**u, "facing": o["facing"]}
-    elif o["act"] in ("move", "charge"):
+    elif o["act"] in ("move", "charge", "advance", "fall_back"):
         us[i] = {**u, "pos": o["pos"], "facing": o["facing"], "charged": o["act"] == "charge", **({"prone": False} if o.get("up") else {})}

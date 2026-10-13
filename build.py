@@ -492,6 +492,9 @@ def _commander_rules(d) -> list[str]:
         f"Others charge only if their men × attack % is at least this % of the target's: attacking {by(K['charge_odds']['attack'])}; holding {by(K['charge_odds']['hold'])}. "
         f"Holding, a side leaves its ground only to charge. Reserve: at its first move (unless the GM marks reserves) it holds back its rearmost units up to {by(K['reserve'])}% of its men; "
         f"they hold until it commits one a move, when a unit of its side breaks, an enemy it knows of comes within {K['gap']} hexes of one, or (veterans) an enemy breaks. "
+        f"Objective (a hex the GM marks, optional): attacking, a unit within {K['objective']['radius']} of it holds it (charging only with holding odds); one with no enemy to go for, "
+        f"or that would only stand or turn while its target is more than {K['objective']['guard']} from the objective, advances on it (nearest hex in its allowance). Holding, a unit more than "
+        f"{K['objective']['hold']} from it falls back to it unless it can charge. Enemies within {K['objective']['guard']} of it score {K['objective']['bonus']} more as targets; the log names who holds it each exchange. "
         f"Known minefields on the way cost {by(K['mines'])} points a hex. Its batteries and anti-tank guns on the map turn to face the nearest enemy it knows of; its off-map "
         "batteries with no mission are called on the enemy it sees that scores best as a target, never where its own men are within the burst. It leaves smoke, aircraft and works to the GM.",
     ]

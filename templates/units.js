@@ -1448,6 +1448,14 @@ function breachAll(us, field, log){               // units ordered to breach hac
     });
   });
 }
+const offObjective = (u, obj) => Math.min(1e6, ...footprint(u).flat().map(h => hdist(h, obj)));   // hexes from its nearest hex to the objective (1e6 with no hexes)
+function objectiveHeld(us, field){                 // with an objective marked: [{kind objective, hex, sides there (units' order), held (the one side there, else null)}]
+  const obj = field?.objective;
+  if (!obj) return [];
+  const r = UD.commander.objective.radius;
+  const sides = [...new Set(us.filter(u => !ROUTED.has(u.state) && u.men > 0 && offObjective(u, obj) <= r).map(u => u.side))];
+  return [{ kind: "objective", hex: [...obj], sides, held: sides.length === 1 ? sides[0] : null }];
+}
 function exchange(units, table, rng, field = null){   // -> {units, log}; works being breached are updated in field
   const us = units.map(copyUnit), n = us.length, log = [];
   const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false) };
@@ -1467,7 +1475,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table)),
     ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng));
   afterExchange(us, field, log);
-  log.push(...landings(us, table, rng, field), ...vehiclesAfter(us, field));
+  log.push(...landings(us, table, rng, field), ...vehiclesAfter(us, field), ...objectiveHeld(us, field));
   if (field?.mines && Object.keys(field.mines).length) for (const u of us) u.was = [[...u.pos], u.facing];   // where its next moves begin: the ground it crosses
   return { units: us, log };
 }
@@ -1932,27 +1940,69 @@ function commandable(us, i, exchange){            // standing, not a battery or 
   return !inContact(us, occupancy(us), i);
 }
 function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance, known, exchange]
-  const u = us[i], C = UD.commander, t = aiTarget(us, i, ctx[3]);
+  const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = aiTarget(us, i, ctx[3], obj);
   if (u.state !== "steady") return !u.prone && underFire(us, i) ? { act: "ground", target: t } : null;
-  if (t === null) return null;
-  if (u.reserve) return stayOrder(us, i, t, u.facing, "range" in FD.weapons[u.weapon]);
+  if (u.reserve) return t === null ? null : stayOrder(us, i, t, u.facing, "range" in FD.weapons[u.weapon]);
+  if (t === null && obj === null) return null;
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
-  return lastSeen(bestOrder(us, i, t, ctx), ctx[3], t, ctx[4]);
+  const o = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx);
+  return t === null ? o : lastSeen(o, ctx[3], t, ctx[4]);
+}
+const objectiveOf = field => (field?.objective ? [...field.objective] : null);   // the hex the GM marked as the commander's objective, or null
+function forObjective(us, i, t, ctx){              // attacking: at the objective it holds, with no enemy it advances; holding: too far out it falls back unless it can charge
+  const R = UD.commander.objective, attack = ctx[2] === "attack", off = offObjective(us[i], objectiveOf(ctx[1]));
+  if (t === null) return off > (attack ? R.radius : R.hold) ? toward(us, i, null, ctx, attack ? "advance" : "fall_back") : null;
+  if (attack && off <= R.radius) return bestOrder(us, i, t, [ctx[0], ctx[1], "hold", ctx[3], ctx[4]]);
+  const o = bestOrder(us, i, t, ctx);
+  if (attack){
+    const idle = o === null || o.act === "turn";
+    return idle && !guards(knownAt(us, t, ctx[3]), objectiveOf(ctx[1])) ? toward(us, i, t, ctx, "advance") || o : o;
+  }
+  if (off > R.hold && (o === null || o.act !== "charge")) return toward(us, i, t, ctx, "fall_back") || o;
+  return o;
+}
+function toward(us, i, t, [size, field, , known], act){   // a move toward the objective within its allowance, touching no enemy, to the hex it likes best; or null
+  const u = us[i], C = UD.commander;
+  if (u.lost || u.immobile || u.emplaced) return null;
+  const obj = objectiveOf(field), q = u.quality, tu = t === null ? null : knownAt(us, t, known);
+  const free = u.prone ? { ...u, prone: false } : u, base = us.map((x, k) => (k === i ? free : x));
+  const occ = occupancy(base), foes = new Set(Object.keys(occ).filter(k => base[occ[k]].side !== u.side));
+  const now = hdist(u.pos, obj);
+  let tries = C.tries;
+  const cands = [...reachable(base, i, size, allowance(free), field).values()].filter(([h]) => hdist(h, obj) < now).map(([h, c]) => {
+    const cover = tu === null ? 0 : (C.cover[q] ?? 0) * coverAt(field, tu.pos, h);
+    return [C.closing * hdist(h, obj) + c + (C.mines[q] ?? 0) * mined(field, u.pos, h) - cover, c, h[1], h[0]];
+  });
+  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]);
+  for (const [, c, row, col] of cands){
+    const h = [col, row], f = facingFrom(h, tu, obj, u.facing), turns = Math.min(mod6(f - u.facing), mod6(u.facing - f));
+    if (c + turns * turnCost(free) > allowance(free) || touches({ ...u, pos: h, facing: f }, foes)) continue;
+    if (tries === 0) return null;
+    tries -= 1;
+    const m = legalMove(base, i, [h, f, c, false], [size, field]);
+    if (m.ok) return { act, target: t, pos: h, facing: f, cost: m.cost, ...(u.prone ? { up: true } : {}) };
+  }
+  return null;
+}
+function facingFrom(h, tu, obj, facing){           // toward the target if any, else the objective (as it was, at the objective)
+  if (tu !== null && (tu.pos[0] !== h[0] || tu.pos[1] !== h[1])) return bearing(h, tu.pos);
+  return h[0] === obj[0] && h[1] === obj[1] ? facing : bearing(h, obj);
 }
 function lastSeen(o, known, t, exchange){        // the order, with the exchange its target was last seen in (last) if not this one
   const last = known?.[String(t)]?.ex;
   return o && last !== undefined && last !== (exchange ?? 0) ? { ...o, last } : o;
 }
-function aiTarget(us, i, known = null){            // the enemy unit it goes for among those its side knows of (null: every one standing), by threatScore (the first of equals), or null
+function aiTarget(us, i, known = null, obj = null){   // the enemy unit it goes for among those its side knows of (null: every one standing), by threatScore (the first of equals), or null; with an objective, more for one guarding it
   const u = us[i];
   let best = null;
   us.forEach((e, j) => {
     if (e.side === u.side || ROUTED.has(e.state) || e.men <= 0 || (known !== null && !(String(j) in known))) return;
-    const sc = threatScore(u, e, knownAt(us, j, known));
+    const seen = knownAt(us, j, known), sc = threatScore(u, e, seen) + guards(seen, obj);
     if (best === null || sc > best[0]) best = [sc, j];
   });
   return best ? best[1] : null;
 }
+const guards = (seen, obj) => (obj !== null && hdist(seen.pos, obj) <= UD.commander.objective.guard ? UD.commander.objective.bonus : 0);   // more for an enemy within guard of the objective
 function knownAt(us, j, known){                   // enemy unit j where its side last saw it (as it is if seen now)
   const m = known?.[String(j)];
   return m ? { ...us[j], pos: m.pos, facing: m.facing } : us[j];
@@ -2061,7 +2111,7 @@ function applyOrder(us, i, o){                    // carry out an order (as the 
   const u = us[i];
   if (o.act === "ground") us[i] = { ...u, prone: true };
   else if (o.act === "turn") us[i] = { ...u, facing: o.facing };
-  else if (o.act === "move" || o.act === "charge") us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}) };
+  else if (["move", "charge", "advance", "fall_back"].includes(o.act)) us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}) };
 }
 
 // ---------- after the battle (as units.aftermath and disease.wound_case) ----------
