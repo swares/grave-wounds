@@ -55,8 +55,50 @@ def values(d: Data) -> dict:
         "blood_night": DZ["named_blood_per_day"], "leech_per": 10,
         "stop_sev": " and ".join(SC["severities"]),
     }
+    v.update(_field_values(d), **_travel_values(d))
     v["ex"] = example(d)
     return v
+
+
+def _yd(m: float) -> str:
+    """'11 yards (10 m)' from metres, as the pages say it."""
+    return f"{round(m * 1.0936):,} yards ({m:g} m)"
+
+
+def _field_values(d: Data) -> dict:
+    """The field map's numbers (units.yaml)."""
+    U, M = d.units, d.units["melee"]
+    MO, H = U["morale"], U["heroes"]
+    return {
+        "f_hex": _yd(U["hex_m"]), "f_rounds": U["exchange_rounds"], "f_tempo": round(1 / M["tempo"]),
+        "f_flank": M["flank"]["attack"], "f_rear": M["rear"]["attack"], "f_charge": M["charge"]["attack"], "f_shaken": -M["shaken"]["attack"],
+        "f_pikes": M["pikes"]["attack"], "f_charge_move": U["charge_move"], "f_mounted": U["mounted_move"],
+        "f_trigger": _pct(MO["trigger"]), "f_shock": _pct(MO["shock"]), "f_shaken_by": MO["shaken_by"],
+        "f_rout": U["rout"]["attack"], "f_rout_x": U["rout"]["exchanges"], "f_range_scale": U["range_scale"],
+        "f_ground": U["to_ground"]["cover"], "f_tempo_h": f"{H['tempo']:g}", "f_exposure": f"{H['exposure']:g}", "f_duel": H["duel"],
+        "f_bearers": H["bearers"], "f_back": H["back_after"], "f_first_aid": H["first_aid"],
+        "f_saved_min": U["aftermath"]["saved"]["minutes"], "f_saved_field": U["aftermath"]["saved"]["hours"]["field"],
+        "f_saved_shelter": U["aftermath"]["saved"]["hours"]["shelter"],
+        "f_bow_rate": U["missile"]["rate"]["longbow"], "f_aimed": round(1 / U["missile"]["tempo"]),
+    }
+
+
+def _travel_values(d: Data) -> dict:
+    """The travel map's, camps' and the weather's numbers."""
+    T, DZ, W, WX = d.terrain, d.disease, d.works, d.weather
+    S = W["surprise"]
+    return {
+        "t_hours": T["hours_per_day"], "t_within": T["fight_within"], "t_start": f"{WX['daylight']['start_after_sunrise']:g}",
+        "t_stop": f"{WX['daylight']['stop_before_sunset']:g}", "t_evening": W["evening_hours"], "t_share": _pct(W["work_share"]),
+        "s_base": S["base"], "s_none": S["none"], "s_dark": S["dark"], "s_fog": S["fog"], "s_per": S["per"], "s_lo": S["range"][0], "s_hi": S["range"][1],
+        "d_bearers": DZ["litters"]["bearers"], "d_march": DZ["litters"]["march"], "d_short": DZ["litters"]["short"],
+        "d_unfit": DZ["unfit_from"], "d_carried": DZ["carried_from"], "d_end": DZ["endurance"],
+        "sc_weeks": DZ["scurvy"]["after_days"] // 7, "sc_chance": DZ["scurvy"]["chance"], "sc_per": DZ["scurvy"]["per_week"], "sc_heal": DZ["scurvy"]["heal"],
+        "fb_below_f": round(DZ["frostbite"]["below"] * 9 / 5 + 32), "fb_below": DZ["frostbite"]["below"],
+        "w_deep": WX["ground"]["deep"], "w_flood": WX["ground"]["flood_days"],
+        "t_foot_day": f"{T['forces']['foot']['kmh'] * T['hours_per_day'] / 1.609:.0f} miles ({T['forces']['foot']['kmh'] * T['hours_per_day']:g} km)",
+        "w_snow_f": round(WX["snow_at_or_below"] * 9 / 5 + 32), "w_snow": WX["snow_at_or_below"],
+    }
 
 
 def tables(d: Data) -> dict:
@@ -91,9 +133,80 @@ def tables(d: Data) -> dict:
     E = d.teams["medieval"]
     names = {s["id"]: s["name"] for s in E["skills"]}
     out["careers"] = _md(["Career", "Main skill", "Second skill"], [[c["name"], names[c["main"]], names[c["second"]]] for c in E["careers"]])
+    out.update(_field_tables(d), **_travel_tables(d))
     out["fq"] = _md(["Quality table", *[q.capitalize() for q in U["quality"]]],
                     [[k.capitalize(), *_ranges(rows)] for k, rows in E["followers"]["quality"].items()])
     return out
+
+
+def _field_tables(d: Data) -> dict:
+    U, M = d.units, d.units["morale"]["mods"]
+    forms = [[f["name"], f["per_hex"], f["abreast"], f["ranks"], f["move"], f"×{f['missile_factor']:g}"] for k, f in U["formations"].items() if k not in ("armour",)]
+    mods = [["Still steady, ranks closed", f"+{M['in_order']}"], ["A named leader with it, up", f"+{M['leader']}"], ["Its leader down", _sign(M["leader_down"])],
+            ["Half its men down", _sign(M["heavy"])], ["Struck in flank or rear", _sign(M["flank"])], ["A steady friendly unit beside it", f"+{M['veteran_friends']}"],
+            ["Dug in: gone to ground or in a bunker", f"+{M['dug_in']}"], ["Lost the exchange", f"−{M['losing_per_man']} a man more lost than it put down (at most −{M['losing_cap']})"]]
+    return {"formations": _md(["Formation", "Men a hex", "Abreast", "Ranks", "Move (hexes)", "Shots at it count"], forms),
+            "morale": _md(["Modifier", ""], mods)}
+
+
+def _travel_tables(d: Data) -> dict:
+    T, W, DZ = d.terrain, d.works, d.disease
+    sp = [[f["name"], f"{f['kmh'] / 1.609:.1f} mph ({f['kmh']:g} km/h)", f"{f['kmh'] * T['hours_per_day'] / 1.609:.0f} miles ({f['kmh'] * T['hours_per_day']:g} km)"] for f in T["forces"].values()]
+    ter = [[t["name"], f"×{t['cost']:g}" if t.get("cost") else "cannot enter"] for t in T["terrain"].values()]
+    camps = [[c["name"], c["desc"], _needs(c), _sign(c["surprise"]), c["rest"]] for c in W["camps"].values()]
+    dis = [[x["name"], x["caught"], f"{x['incubation'][0]}–{x['incubation'][1]} days", f"{x['deaths']:g}%"] for x in DZ["diseases"].values()]
+    works = [[w["name"], _off(w.get("cover")), _cross(w.get("cross")), "yes" if w.get("blocks_melee") else "—"] for w in W["edge_works"].values()]
+    works += [[w["name"], _off(w.get("cover_here") or w.get("cover_behind")), _cross(w.get("enter")), "—"] for w in W["hex_works"].values()]
+    return {"speeds": _md(["Force", "Road speed", "A day on the road"], sp), "terrain": _md(["Terrain", "Time against a road"], ter),
+            "camps": _md(["Camp", "What it is", "Needs", "Surprise", "Rest"], camps),
+            "diseases": _md(["Disease", "Caught from", "Shows after", "Deaths per case (records)"], dis),
+            "works": _md(["Work", "Cover", "Crossing", "Blocks close combat"], works), **_weather_tables(d)}
+
+
+def _weather_tables(d: Data) -> dict:
+    WX = d.weather
+    wet = WX["battle"]["string_wet"]
+    conds = [[c["name"], _sight(c.get("visibility")), _off(wet[c["wet"]])] for c in WX["conditions"].values()]
+    winds = [[w["name"], _off(w["missile"]), _off(w["firearm"]), f"±{w['reach']}%" if w["reach"] else "—"] for w in WX["winds"]]
+    mf = WX["battle"]["misfire"]
+    fire = [[k.capitalize(), *[f"{v}%" if v else "—" for v in mf[k][1:]]] for k in mf]
+    fat = [[f["name"], _off(f["penalty"]), f"{f['march']}%"] for f in WX["fatigue"]["levels"]]
+    light = [[x["name"], _sight(x["sight"]), _off(x["aim"])] for x in WX["light"]["levels"].values()]
+    return {"conditions": _md(["Weather", "Can aim to", "Bows and crossbows"], conds),
+            "winds": _md(["Wind", "Bows, slings, thrown", "Firearms", "Range bands with or into it"], winds),
+            "misfire": _md(["Ignition", "Rain or snow", "Heavy rain, storm, blizzard"], fire),
+            "fatigue": _md(["Fatigue", "Attack and defence", "Marching speed"], fat),
+            "light": _md(["Light", "Can see to aim", "Aimed fire"], light)}
+
+
+def _needs(c: dict) -> str:
+    """What a camp needs: tools, a village or town, or nothing."""
+    if c.get("tools"):
+        return "tools"
+    return ", ".join(c["terrain"]) if c.get("terrain") else "—"
+
+
+def _off(x) -> str:
+    """'−20%' for a penalty, '—' for none."""
+    return f"−{x}%" if x else "—"
+
+
+def _sign(x: int) -> str:
+    """+10, −20, 0."""
+    if x > 0:
+        return f"+{x}"
+    return f"−{-x}" if x < 0 else "0"
+
+
+def _sight(hexes) -> str:
+    """Battle-map hexes (2 m) a man can see to aim, in yards and metres; '—' for no limit."""
+    return "no limit" if hexes is None else f"{round(hexes * 2 * 1.0936):,} yards ({hexes * 2:,} m)"
+
+
+def _cross(x) -> str:
+    if x is None:
+        return "cannot be crossed (breach it)"
+    return f"+{x} movement" if x else "free"
 
 
 def _state_text(st: dict) -> str:

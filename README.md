@@ -63,9 +63,10 @@ map can be fought there, and its wounded go back to camp, where wound fever can 
 them. An optional scripted commander can play either side, attacking or holding, with an
 Undo for each of its moves. See [docs/units.md](docs/units.md).
 
-**Rule book:** `dist/rules.html` teaches the core of play (making a team, the fight,
-wounds, first aid and recovery), following one team from the road to Towton into camp, with
-GM notes set apart. It prints cleanly from the browser.
+**Rule book:** `dist/rules.html` teaches the game: making a team, the fight, wounds, first
+aid and recovery, battles of hundreds, the march and the camp, and weather and works,
+following one team from the road to Towton into camp, with GM notes set apart. It prints
+cleanly from the browser.
 
 **Team builder:** `dist/team.html` makes a team of four to six in a few rolls each, from the
 tables of ten eras (medieval, the Thirty Years' War, horse and musket, the Civil War and

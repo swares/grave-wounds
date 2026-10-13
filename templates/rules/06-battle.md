@@ -1,0 +1,111 @@
+# Battles of hundreds {#battle}
+
+When hundreds fight, rolling for every man every round would take all night. On the
+[field map](field.html) the rank and file fight as **units**, resolved a minute at a time
+through the same wound tables, and the team fights among them as **heroes** with the full
+rules of [the fight](#fight).
+
+## The field map {#field-map}
+
+The field map is a grid of hexes {{f_hex}} across. One **exchange** is about a minute, some
+{{f_rounds}} rounds. Each exchange, one side moves, then the other, and then every melee and
+volley is resolved at once.
+
+A **unit** is a block of hexes: its front row along its line, its men in rows behind. It
+has a number of men, a quality (green, regular or veteran, as in
+[How to play](#characteristics)), a weapon, armour and a **formation**:
+
+{{table:formations}}
+
+Mounted units move {{f_mounted}} hexes. A unit that ends its move touching the enemy may have
+come up to {{f_charge_move}} times its move: a **charge**. A unit in contact cannot move.
+
+## An exchange {#exchange}
+
+1. **Who strikes.** In melee, the front rank of each hex touching the enemy, and one more
+   rank for each hex of the weapon's reach past the first (spears and bills strike from two
+   ranks, the pike from three). With missiles, the men who have the target in range.
+2. **How many blows tell.** Most of a minute in a press is shoving and watching for an
+   opening: about one striking man in {{f_tempo}} makes a real attempt each exchange. A
+   longbowman looses {{f_bow_rate}} arrows a minute, and about one shot in {{f_aimed}} is aimed at
+   a man rather than loosed at the mass.
+3. **Each attempt is one attack**, at the unit's quality, exactly as in [the fight](#turn):
+   +{{f_flank}} from the flank, +{{f_rear}} from the rear (and no parry), +{{f_charge}} for a
+   mounted charge in its first exchange, −{{f_shaken}} for a shaken unit, +{{f_pikes}} for
+   pikes in close order against horse to their front; range, weather and cover come off
+   missiles.
+4. **The wound** is rolled as for one man. A light wound or a graze: he fights on. Serious
+   or critical: a stop check, and failing it puts him **down**. A wound that kills within
+   rounds kills. Against **modern fire** (breech-loaders on, machine guns, shell, grenades),
+   every serious or critical wound puts him down and a light one calls for the check: the
+   casualty returns from 1914 on count nearly every man hit as out of the line.
+5. **Morale**, below; then the next exchange.
+
+## Morale and the rout {#morale}
+
+After an exchange a unit checks its morale if it lost the exchange in contact (more of its
+men down than it put down), has {{f_trigger}} of its men down, lost {{f_shock}} of its men in
+this exchange, or was struck in the flank or rear. It rolls d100 against its quality's
+Nerve:
+
+{{table:morale}}
+
+- **Steady, fails:** it is **shaken**: it fights at −{{f_shaken}} and cannot charge. Failing
+  by more than {{f_shaken_by}} while flanked, or with half its men down, it breaks at once.
+- **Shaken, fails:** it **breaks**.
+- **Shaken, passes out of contact:** it rallies to steady.
+
+A broken unit runs. Every enemy man in reach strikes it at +{{f_rout}}, with no parry and
+twice as often, as long as the pursuers keep up. This is where most of a battle's dead
+fell, as at Towton and Agincourt, where the beaten side lost far more men in flight than in
+the press.
+
+!!! gm "For the GM"
+    A melee of ten or twenty minutes, decided by morale more than by wounds, with the beaten
+    side losing most of its men in the rout: that is the shape the records show, and the
+    page is tuned to give it. Let the players' heroes break a line rather than kill it.
+
+## Heroes {#heroes}
+
+A team's characters go with units as **heroes**: in the front rank, shooting with it, or
+behind it. A hero in the front makes {{f_tempo_h}} times a ranker's attempts with his own
+attack, and blows on his unit's front fall on him {{f_exposure}} times as often as on a ranker
+there. His wounds use the full rules, his own Blood and his own stop check. Two front-rank
+heroes in contact fight each other: {{f_duel}} attempts each an exchange, instead of at the
+rankers.
+
+His wounds slow him as in [Wounds](#wounds): an arm hurt stops a two-handed weapon, and a
+lamed hero halves his unit's move. In a quiet exchange his friends give first aid: the best
+Leechcraft in the unit, or its medics, else his comrades at {{f_first_aid}}%. A lamed or down
+hero can be **carried back** by {{f_bearers}} of his unit's men, who return after
+{{f_back}} exchanges, or **left behind**. When the battle ends, a hero still lying out there is
+found if his side holds the field; if not, he is taken prisoner or killed, by the war's
+custom of quarter.
+
+!!! example "The retinue: at Towton"
+    On the field map the retinue's followers fight as units: its archers in open order, its
+    spearmen in close order. {{ex.lead}} goes with the spearmen in the front rank;
+    {{ex.arch}} shoots with the archers, at his own {{ex.a_bow}}% rather than the unit's
+    quality, and makes {{f_tempo_h}} times as many aimed shots as one of them. When the billmen close,
+    blows on the archers' front can find him, and a wound there is his own: rolled in full,
+    bled on his own {{ex.a_blood}} Blood, and carried back to the roller when the battle is over.
+
+## The enemy commander {#commander}
+
+The GM can hand one side to a scripted **enemy commander**, attacking or holding. At the
+start of that side's move it orders each unit: the nearest enemy is its target; it closes,
+takes cover, shoots from range or charges with the odds its quality wants, and green units
+sometimes hesitate. **Undo its orders** puts the move back for the GM to make by hand.
+
+## After the battle {#after}
+
+**End the battle** stops it. Then:
+
+1. **The field.** A side with no unit still standing has lost the field: the men it had down
+   there are left behind.
+2. **The death clock.** A wound that kills in minutes kills before help comes, unless he is
+   bound in time ({{f_saved_min}}%). One that kills in hours kills unless his camp can treat it:
+   {{f_saved_field}}% saved in a camp, {{f_saved_shelter}}% in quarters, none with no camp.
+3. **To camp.** The rest are carried to their force's camp and go onto the track, as in
+   [Recovery](#recovery). A battle set up from the travel map sends its dead and wounded back
+   to the forces there.
