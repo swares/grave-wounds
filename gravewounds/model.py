@@ -972,10 +972,10 @@ def _indirect_errors(d: Data) -> list[str]:
     return errors
 
 
-def _small_arms_errors(V: dict) -> list[str]:
+def _small_arms_errors(veh: dict) -> list[str]:
     """vehicles.small_arms: rate and mg above 0, when an armour has a small %."""
-    S = V.get("small_arms") or {}
-    if not any("small" in a for a in V.get("armour", {}).values()) or all(isinstance(S.get(x), (int, float)) and S[x] > 0 for x in ("rate", "mg")):
+    S = veh.get("small_arms") or {}
+    if not any("small" in a for a in veh.get("armour", {}).values()) or all(isinstance(S.get(x), (int, float)) and S[x] > 0 for x in ("rate", "mg")):
         return []
     return ["units.yaml: vehicles.small_arms needs rate and mg (aimed shots a man, above 0) when an armour has a small %"]
 
