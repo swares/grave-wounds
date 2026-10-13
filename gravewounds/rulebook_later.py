@@ -125,7 +125,9 @@ def _air_values(d: Data) -> dict:
     return {"a_grounded": ", ".join(cond[c]["name"].lower() for c in A["grounded"]), "a_fb_delay": FB["delay"], "a_fb_rate": FB["rate"],
             "a_fb_sorties": FB["rounds"] // FB["rate"], "a_gs_rate": GS["rate"], "a_gs_rounds": GS["rounds"], "a_reach": _field(d, G["reach"]),
             "a_mg": f"{G['mg']:g}", "a_rocket": f"{G['rocket']:g}", "a_rifles": f"{G['rifles']:g}", "a_cap": G["cap"], "a_gs_exposed": GS["exposed"],
-            "a_danger": _field(d, A["fac"]["danger"]), "h_lift": H["lift"], "h_blocked": H["blocked"], "h_hot": H["hot"], "h_zone": H["zone"]}
+            "a_danger": _field(d, A["fac"]["danger"]), "a_aa": f"{G['aa']:g}", "a_aa_reach": _field(d, G["aa_reach"]), "a_aa_cap": G["aa_cap"], "a_downed": G["downed"],
+            "r_s_len": A["runs"]["strafe"]["length"], "r_s_struck": A["runs"]["strafe"]["struck"], "r_n_len": A["runs"]["napalm"]["length"],
+            "r_n_struck": A["runs"]["napalm"]["struck"], "r_n_dead": A["runs"]["napalm"]["dead"], "h_lift": H["lift"], "h_blocked": H["blocked"], "h_hot": H["hot"], "h_zone": H["zone"]}
 
 
 # ---------- tables ----------

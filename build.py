@@ -373,8 +373,21 @@ def _air_rules(ind: dict) -> str:
             + (", ".join(wx[:-1]) + " or " + wx[-1] if len(wx) > 1 else "".join(wx)) + ". "
             + f"<b>Ground fire:</b> each attack run, every aircraft attacking is brought down at {G['mg']:g}% for each enemy machine gun served, {G['rocket']:g}% for each enemy unit with "
             + " or ".join({"rpg": "RPGs", "recoilless": "recoilless rifles"}.get(w, w.replace("_", " ")) for w in G["rockets"]) + f" and {G['rifles']:g}% for every 100 enemy riflemen within {G['reach']} hexes of the aim "
-            + f"({exposed}), at most {G['cap']:g}%; it takes its share of the flight's attacks with it. "
+            + f"({exposed}), at most {G['cap']:g}%; anti-aircraft guns within {G['aa_reach']} hexes add {G['aa']:g}% a gun served (times exposed), the whole at most {G['aa_cap']:g}%. "
+            + f"Of the aircraft hit, {G['downed']}% are brought down and the rest turn for home damaged; either way it takes its share of the flight's attacks with it. "
+            + _run_rules(A)
             + f"<b>Forward air controllers:</b> with a unit marked as one seeing the aim, aircraft scatter 1/{F['scatter']} as far; without, they hold off any target within {F['danger']} hexes of their own men.")
+
+
+def _run_rules(air: dict) -> str:
+    """Strafing runs and napalm strips, and marking the target with smoke."""
+    R = air.get("runs") or {}
+    s, n = R.get("strafe"), R.get("napalm")
+    if not (s and n):
+        return ""
+    return (f"<b>Attack runs:</b> a strafing run strikes every man on a line of {s['length']} hexes at {s['struck']}% (less cover and going to ground), "
+            f"a napalm strip every man on {n['length']} hexes at {n['struck']}% (no cover helps; critical burns, {n['dead']}% killed); vehicles on the line knocked out "
+            f"at {s['knock']}% and {n['knock']}% times their armour's shell. Napalm only from 1944. An aimed hex marked with smoke scatters an air attack half as far. ")
 
 
 def _ground_rules(d) -> list[str]:

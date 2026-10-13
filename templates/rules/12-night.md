@@ -35,11 +35,23 @@ aircraft. Fire can be called only where one of the side's units can see it fall.
 
 - **Weather.** Aircraft do not fly in {{a_grounded}}, and fighter-bombers do not fly at
   night. A mission called then waits until the weather clears.
-- **Ground fire.** After each attack run, every aircraft that attacked can be brought down
-  by the enemy within {{a_reach}} of the aim. Its chance is {{a_mg}}% for each machine gun
-  served there, {{a_rocket}}% for each unit with rockets, and {{a_rifles}}% for every 100
-  men with other firearms. Gunships fly low and slow, so they count it
-  ×{{a_gs_exposed}}. The chance is at most {{a_cap}}%.
+- **Strafing and napalm.** An air attack can be a **strafing run** or (fighter-bombers,
+  from 1944) a **napalm strip**, flown along a line the GM chooses. Each pass covers
+  {{r_s_len}} hexes strafing or {{r_n_len}} with napalm.
+  - Strafing strikes each man there at {{r_s_struck}}%, less cover and for going to ground.
+  - Napalm strikes at {{r_n_struck}}% and nothing protects. It puts a man down with critical
+    burns, and kills {{r_n_dead}}% outright.
+- **Marking the target.** Smoke laid on the aimed hex before the aircraft arrive halves
+  their scatter, as an air controller does.
+- **Ground fire.** After each attack run, every aircraft that attacked can be hit.
+  - **Small arms** within {{a_reach}} of the aim: {{a_mg}}% for each machine gun served
+    there, {{a_rocket}}% for each unit with rockets, and {{a_rifles}}% for every 100 men with
+    other firearms, at most {{a_cap}}% in all.
+  - **Anti-aircraft guns** within {{a_aa_reach}} add {{a_aa}}% for each gun served.
+
+  Gunships fly low and slow, so they count it ×{{a_gs_exposed}}. The whole is at most
+  {{a_aa_cap}}%. Of the aircraft hit, {{a_downed}}% are brought down; the rest are damaged
+  and turn for home.
 - **Air controllers.** A unit can be given a forward air controller. When he can see the
   aim, the attack scatters half as far. Without one, aircraft will not attack within
   {{a_danger}} of their own men; the mission waits until it can.

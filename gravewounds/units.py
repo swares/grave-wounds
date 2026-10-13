@@ -2403,13 +2403,17 @@ def _on_hex(d: Data, ctx: tuple, fire: tuple, flight: tuple) -> list:
     """Shells or an air attack on a hex (fire: support index, battery, shells; flight: whether
     aircraft, and whether a forward air controller talks them on: less scatter), then the
     ground fire at the aircraft."""
-    us, rng = ctx[0], ctx[3]
+    us, rng, field = ctx[0], ctx[3], ctx[5]
     (k, b, shells), (air, fac) = fire, flight
     K = d.units["indirect"]["kinds"][b["kind"]]
-    scatter = K["scatter"] // d.units["indirect"]["air"]["fac"]["scatter"] if fac else K["scatter"]
-    log = _bombard(d, ctx, k, b, shells, scatter)
+    marked = air and not fac and C.hkey(b["mission"]["hex"]) in ((field or {}).get("smoke") or {})
+    scatter = K["scatter"] // d.units["indirect"]["air"]["fac"]["scatter"] if fac or marked else K["scatter"]
+    run = b["mission"].get("attack") if air else None
+    log = _runs(d, ctx, k, b, shells, scatter) if run in (d.units["indirect"]["air"].get("runs") or {}) else _bombard(d, ctx, k, b, shells, scatter)
     if fac:
         log[0]["fac"] = True
+    if marked:
+        log[0]["marked"] = True
     if air:
         log += _ground_fire(d, us, (k, b), -(-shells // K["rate"]), rng)
     return log
@@ -2427,21 +2431,26 @@ def _friends_near(d: Data, us: list, b: dict, h) -> bool:
 
 
 def _flak(d: Data, us: list, b: dict, h) -> float:
-    """% an aircraft attacking hex h is shot down: the enemy's machine guns, rockets and rifles
-    within indirect.air.ground_fire.reach of it, times the kind's exposed, at most cap."""
+    """% an aircraft attacking hex h is hit: the enemy's machine guns, rockets and rifles within
+    indirect.air.ground_fire.reach of it, times the kind's exposed, at most cap; then its
+    anti-aircraft guns within aa_reach, `aa` % a gun served times exposed, the whole at most aa_cap."""
     G, K = d.units["indirect"]["air"]["ground_fire"], d.units["indirect"]["kinds"][b["kind"]]
-    chance = 0.0
+    chance, flak = 0.0, 0.0
     for u in us:
-        if u["side"] == b["side"] or _out(u) or u.get("vehicle") or not any(hdist(x, h) <= G["reach"] for row in footprint(d, u) for x in row):
-            continue
         w = u["weapon"]
-        if is_mg(d, w):
+        aa = w in G.get("aa_weapons", [])
+        reach = G["aa_reach"] if aa else G["reach"]
+        if u["side"] == b["side"] or _out(u) or u.get("vehicle") or not any(hdist(x, h) <= reach for row in footprint(d, u) for x in row):
+            continue
+        if aa:
+            flak += G["aa"] * mg_guns(d, u)
+        elif is_mg(d, w):
             chance += G["mg"] * mg_guns(d, u)
         elif w in G["rockets"]:
             chance += G["rocket"]
         elif "range" in d.weapons[w] and not is_gun(d, w) and w not in d.units["line_of_fire"]["arcing"]:
             chance += G["rifles"] * u["men"] / 100
-    return min(G["cap"], chance * K.get("exposed", 1))
+    return min(G["aa_cap"], min(G["cap"], chance * K.get("exposed", 1)) + flak * K.get("exposed", 1))
 
 
 def _ground_fire(d: Data, us: list, flight: tuple, attacking: int, rng) -> list:
@@ -2451,13 +2460,14 @@ def _ground_fire(d: Data, us: list, flight: tuple, attacking: int, rng) -> list:
     chance = _flak(d, us, b, b["mission"]["hex"])
     if chance <= 0 or b["tubes"] <= 0:
         return []
-    lost = min(b["tubes"], sum(1 for _ in range(attacking) if rng.randint(1, 100) <= chance))
-    if not lost:
+    hit = min(b["tubes"], sum(1 for _ in range(attacking) if rng.randint(1, 100) <= chance))
+    if not hit:
         return []
+    downed = sum(1 for _ in range(hit) if rng.randint(1, 100) <= d.units["indirect"]["air"]["ground_fire"]["downed"])
     share = b["rounds"] // b["tubes"]
-    b["tubes"] -= lost
-    b["rounds"] = max(0, b["rounds"] - share * lost)
-    return [{"kind": "airloss", "sup": k, "name": b["name"], "side": b["side"], "lost": lost, "left": b["tubes"]}]
+    b["tubes"] -= hit
+    b["rounds"] = max(0, b["rounds"] - share * hit)
+    return [{"kind": "airloss", "sup": k, "name": b["name"], "side": b["side"], "lost": downed, "damaged": hit - downed, "left": b["tubes"]}]
 
 
 def _bombard(d: Data, ctx: tuple, k: int, b: dict, shells: int, scatter: int | None = None) -> list:
@@ -2479,6 +2489,78 @@ def _bombard(d: Data, ctx: tuple, k: int, b: dict, shells: int, scatter: int | N
         log += _shell_parties(d, us, field, bursts, K, {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}, rng)
         log += _knock_bunkers(d, field, k, b, bursts, rng)
     return log
+
+
+def run_line(d: Data, at, dirn: int, mode: str) -> list:
+    """The hexes of an attack run (indirect.air.runs[mode]): `length` hexes through at, along dirn."""
+    n = d.units["indirect"]["air"]["runs"][mode]["length"]
+    return [step(at, dirn, o) for o in range(-((n - 1) // 2), n // 2 + 1)]
+
+
+def _runs(d: Data, ctx: tuple, k: int, b: dict, passes: int, scatter: int) -> list:
+    """Aircraft's strafing runs or napalm strips (the mission's `attack`, along its `dir`): each
+    pass's line scatters as a burst does, then the men and vehicles on every line are struck."""
+    us, table, weapon, rng, acc, field, under = ctx
+    m = b["mission"]
+    R, lines = d.units["indirect"]["air"]["runs"][m["attack"]], []
+    for _ in range(passes):
+        dirn, far = rng.randint(0, 5), rng.randint(0, scatter)
+        lines.append(run_line(d, step(m["hex"], dirn, far), m.get("dir", 0), m["attack"]))
+    hexes = [h for line in lines for h in line]
+    log = [{"kind": "barrage", "sup": k, "name": b["name"], "side": b["side"], "shells": passes, "at": m["hex"], "bursts": hexes, "smoke": False, "run": m["attack"]}]
+    K = {**d.units["indirect"]["kinds"][b["kind"]], "knock": R["knock"]}
+    for i, u in enumerate(us):
+        if u.get("vehicle"):
+            log += _shell_vehicle(d, us, i, hexes, K, (table, rng), acc, (k, b))
+            continue
+        log += _run_struck(d, (us, i, field, under), (k, b, m["attack"], hexes), (table, weapon), (rng, acc))
+    return log
+
+
+def _run_struck(d: Data, where: tuple, fire: tuple, tw: tuple, ra: tuple) -> list:
+    """Unit i's men on the run's hexes: each struck at the run's `struck` % (strafing: times the
+    shellfire cut for its hex). Strafing wounds as the table's machine gun, else shell fragments;
+    napalm puts them down with critical burns, `dead` % killed."""
+    (us, i, field, under), (k, b, mode, hexes), (table, weapon), (rng, acc) = where, fire, tw, ra
+    u, R = us[i], d.units["indirect"]["air"]["runs"][mode]
+    if u["men"] <= 0 or u["state"] == "fled":
+        return []
+    keys = [C.hkey(h) for h in hexes]
+    struck, near = 0, False
+    for h, n in zip((h for row in footprint(d, u) for h in row), men_by_hex(d, u)):
+        times = keys.count(C.hkey(h))
+        if not times:
+            continue
+        near = True
+        p = R["struck"] * (_shell_cut(d, field, h, u.get("prone")) if mode == "strafe" else 1)
+        struck += sum(1 for _ in range(times * n) if rng.randint(1, 100) <= p)
+    if not near:
+        return []
+    under[i] = True
+    if not struck:
+        return []
+    if mode == "napalm":
+        t = _burns(struck, R["dead"], rng)
+    else:
+        gun = "machine_gun" if "machine_gun" in (d.tables.get(table) or {}).get("weapons", []) else weapon
+        t = _blows(d, {"table": table, "weapon": gun, "kit": None, "quality": "regular"}, _side(u, table), struck, d.units["indirect"]["attack"], 0, rng,
+                   _exposure(d, u, False, True), -1000)
+    t = _take_hurt(u, t)
+    acc[0][i] += t["down"]
+    acc[1][i] += t["dead"]
+    return _logged({"kind": "shelled", "sup": k, "name": b["name"], "dfd": i, "struck": struck, "run": mode}, t)
+
+
+def _burns(struck: int, dead: int, rng) -> dict:
+    """Men reached by flame: each down with critical burns, `dead` % of them killed outright."""
+    t = _new_tally()
+    t.update(blows=struck, hits=struck, critical=struck, down=struck)
+    for _ in range(struck):
+        if rng.randint(1, 100) <= dead:
+            t["dead"] += 1
+        else:
+            _hurt(t, "critical", {"lethal": "days", "infection": "high"}, True)
+    return t
 
 
 def _knock_bunkers(d: Data, field: dict, k: int, b: dict, bursts: list, rng) -> list:
@@ -2707,13 +2789,7 @@ def _bunker_struck(d: Data, us: list, j: int, x, means: dict, tw: tuple, rng, ac
     there = men_by_hex(d, b)[k] if k is not None else 0
     struck = sum(1 for _ in range(there) if rng.randint(1, 100) <= means["struck"])
     if means.get("flame"):
-        t = _new_tally()
-        t.update(blows=struck, hits=struck, critical=struck, down=struck)
-        for _ in range(struck):
-            if rng.randint(1, 100) <= d.units["assault"]["flame_dead"]:
-                t["dead"] += 1
-            else:
-                _hurt(t, "critical", {"lethal": "days", "infection": "high"}, True)
+        t = _burns(struck, d.units["assault"]["flame_dead"], rng)
     else:
         att = {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}
         t = _blows(d, att, _side(b, table), struck, d.units["assault"]["attack"], 0, rng, _exposure(d, b, False, True), -1000)

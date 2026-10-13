@@ -606,6 +606,19 @@ weapons:
     confidence: extrapolated
     notes: "Shoulder-fired anti-tank rocket (the 2.36 and 3.5 inch bazookas, the Panzerschreck and the Panzerfaust); blast and fragments as an RPG's."
 
+  - id: aa_gun
+    name: "Anti-aircraft gun (20 mm, 40 mm, ZPU, 37 mm, ZSU-23)"
+    short: "AA gun"
+    icon: machine_gun
+    range: [150, 400, 750]
+    ignition: cartridge
+    era: "1939-"
+    threat: fragment
+    mechanisms: {ballistic: 90, crush: 10}
+    zone_bias: {}
+    confidence: extrapolated
+    notes: "Light anti-aircraft guns and heavy machine-gun mounts, fought on the field map as a team: they shoot at aircraft attacking near them, and at men as a heavy machine gun."
+
   - id: at_gun
     name: "Anti-tank gun (towed: 6-pounder, 57 mm, Pak 38 and 40, 45 mm, 47 mm)"
     short: "AT gun"

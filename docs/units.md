@@ -584,12 +584,36 @@ with shell wounds (the First World War and later):
     not fly in fog, storm, heavy snow or a blizzard, and fighter-bombers not on a moonlit or
     dark night: a mission called then waits, and flies when it clears. The support list shows
     **grounded** and why. They drop no smoke and carry no illumination.
-  - **Ground fire**: after each attack run, every aircraft that attacked is brought down at
-    a chance from the enemy within 30 hexes (328 yards, 300 m) of the aim, not in vehicles
-    and not broken: 0.5% for each machine gun served, 1% for each unit with RPGs or
-    recoilless rifles, and 0.2% for every 100 men with other firearms. Gunships, low and
-    slow, count it twice; at most 12%. A lost aircraft takes its share of the flight's
-    attacks with it, and the log says so.
+  - **Strafing runs and napalm strips**: before calling, **Fire** picks *Strafing run* (fighter-bombers
+    and gunships) or *Napalm strip* (fighter-bombers, in the wars from 1944 on), and
+    **Towards** the way the run flies. Each attack is a pass along a line through the aimed
+    hex, after its scatter: 5 hexes for strafing, 3 for a napalm strip. Every man in a hex
+    of the line is struck.
+    - **Strafing** strikes at 12%, less the ground's cover and for going to ground, as
+      shellfire. Its wounds are the table's machine gun's.
+    - **Napalm** strikes at 45%, and neither cover nor going to ground helps. A man struck is
+      down with critical burns, and 35% of them are killed outright.
+    - A vehicle on the line is knocked out at 3% (strafing) or 15% (napalm), times its
+      armour's shell factor.
+  - **Marking the target**: an air attack whose aimed hex is in smoke (a mortar's or gun's
+    smoke round laid on it after the aircraft were called) scatters half as far, as with a
+    forward air controller (not both). The log says the target was marked.
+  - **Ground fire**: after each attack run, each aircraft that attacked is hit at a chance
+    from the enemy (not in vehicles, not broken):
+    - within 30 hexes (328 yards, 300 m) of the aim, 0.5% for each machine gun served, 1% for
+      each unit with RPGs or recoilless rifles, and 0.2% for every 100 men with other
+      firearms, at most 12%;
+    - then, on top, **anti-aircraft guns** within 100 hexes (1,094 yards, 1,000 m), 3% for
+      each gun served.
+
+    Gunships, low and slow, count all of it twice, and the whole is at most 35%. Of the
+    aircraft hit, 40% are brought down and the rest are damaged and turn for home. Either
+    way the aircraft is out of the mission and takes its share of the flight's attacks with
+    it; the log says which.
+  - **Anti-aircraft guns** (the Second World War on: 20 mm and 40 mm guns, the ZPU mounts,
+    37 mm guns, the ZSU-23) are a unit like a machine-gun team (*AA gun* as the weapon, 5
+    men a gun). Besides their ground fire they shoot at men as a heavy machine gun, 150
+    rounds a minute a gun.
   - **Forward air controllers**: a unit can be given one before the battle (**Air
     controller**, shown while aircraft are on call). When a controller of the aircraft's
     side can see the aim, the attack scatters half as far and the log says it was talked

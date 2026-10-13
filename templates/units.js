@@ -840,9 +840,13 @@ function fireMission(ctx, k, b){                  // on an enemy battery or a he
   missionOn(b, m, field.size);
 }
 function onHex(ctx, fire, flight){                 // shells or an air attack on a hex (less scatter with a controller), then ground fire at the aircraft
-  const { us, rng, log } = ctx, [k, b, shells] = fire, [air, fac] = flight, K = UD.indirect.kinds[b.kind], at = log.length;
-  bombard(ctx, k, b, shells, fac ? Math.floor(K.scatter / UD.indirect.air.fac.scatter) : K.scatter);
+  const { us, rng, log, field } = ctx, [k, b, shells] = fire, [air, fac] = flight, K = UD.indirect.kinds[b.kind], at = log.length;
+  const marked = air && !fac && hk(b.mission.hex) in (field?.smoke || {}), scatter = fac || marked ? Math.floor(K.scatter / UD.indirect.air.fac.scatter) : K.scatter;
+  const run = air ? b.mission.attack : null;
+  if (run && run in (UD.indirect.air.runs || {})) runs(ctx, k, b, shells, scatter);
+  else bombard(ctx, k, b, shells, scatter);
   if (fac) log[at].fac = true;
+  if (marked) log[at].marked = true;
   if (air) log.push(...groundFire(us, [k, b], Math.ceil(shells / K.rate), rng));
 }
 function facSees(us, field, b, h){                 // a forward air controller (fac) of the aircraft's side, on its feet, sees hex h
@@ -852,29 +856,72 @@ function friendsNear(us, b, h){                    // a unit of the aircraft's s
   const r = UD.indirect.air.fac.danger;
   return us.some(u => u.side === b.side && u.men > 0 && footprint(u).flat().some(x => hdist(x, h) <= r));
 }
+function runLine(at, dirn, mode){                 // an attack run's hexes: length hexes through at, along dirn
+  const n = UD.indirect.air.runs[mode].length, out = [];
+  for (let o = -Math.floor((n - 1) / 2); o <= Math.floor(n / 2); o++) out.push(step(at, dirn, o));
+  return out;
+}
+function runs(ctx, k, b, passes, scatter){        // strafing runs or napalm strips: each pass's line scatters, then the men and vehicles on every line are struck (as units._runs)
+  const { us, table, rng, acc, log } = ctx, m = b.mission, R = UD.indirect.air.runs[m.attack], lines = [];
+  for (let p = 0; p < passes; p++){ const dirn = rng.randint(0, 5), far = rng.randint(0, scatter); lines.push(runLine(step(m.hex, dirn, far), m.dir ?? 0, m.attack)) }
+  const hexes = lines.flat();
+  log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells: passes, at: m.hex, bursts: hexes, smoke: false, run: m.attack });
+  const K = { ...UD.indirect.kinds[b.kind], knock: R.knock };
+  us.forEach((u, i) => {
+    if (u.vehicle){ shellVehicle(us, i, hexes, K, { table, rng, acc, log, src: [k, b] }); return }
+    runStruck(ctx, i, [k, b, m.attack, hexes]);
+  });
+}
+function runStruck(ctx, i, [k, b, mode, hexes]){  // unit i's men on the run's hexes: struck at the run's %, strafing cut as shellfire; napalm burns
+  const { us, table, weapon, rng, acc, log, field, under } = ctx, u = us[i], R = UD.indirect.air.runs[mode];
+  if (u.men <= 0 || u.state === "fled") return;
+  const keys = hexes.map(hk), men = menByHex(u);
+  let struck = 0, near = false;
+  footprint(u).flat().forEach((h, n) => {
+    const times = keys.filter(x => x === hk(h)).length;
+    if (!times) return;
+    near = true;
+    const p = R.struck * (mode === "strafe" ? shellCut(field, h, u.prone) : 1);
+    for (let s = 0; s < times * men[n]; s++) if (rng.randint(1, 100) <= p) struck++;
+  });
+  if (!near) return;
+  under[i] = true;
+  if (!struck) return;
+  let t;
+  if (mode === "napalm") t = burns(struck, R.dead, rng);
+  else {
+    const gun = (FD.tables[table]?.weapons || []).includes("machine_gun") ? "machine_gun" : weapon;
+    t = blows({ table, weapon: gun, kit: null, quality: "regular" }, sideOfUnit(u, table), struck, UD.indirect.attack, 0, rng, { exposed: exposure(u, false, true), shift: -1000 });
+  }
+  t = takeHurt(u, t);
+  acc.lost[i] += t.down; acc.dead[i] += t.dead;
+  log.push(...logged({ kind: "shelled", sup: k, name: b.name, dfd: i, struck, run: mode }, t));
+}
 function flak(us, b, h){                           // % an aircraft attacking h is shot down: enemy machine guns, rockets and rifles within reach, times exposed, at most cap
   const G = UD.indirect.air.ground_fire, K = UD.indirect.kinds[b.kind];
-  let chance = 0;
+  let chance = 0, aaFire = 0;
   for (const u of us){
-    if (u.side === b.side || out_(u) || u.vehicle || !footprint(u).flat().some(x => hdist(x, h) <= G.reach)) continue;
-    const w = u.weapon;
-    if (isMg(w)) chance += G.mg * mgGuns(u);
+    const w = u.weapon, aa = (G.aa_weapons || []).includes(w), reach = aa ? G.aa_reach : G.reach;
+    if (u.side === b.side || out_(u) || u.vehicle || !footprint(u).flat().some(x => hdist(x, h) <= reach)) continue;
+    if (aa) aaFire += G.aa * mgGuns(u);
+    else if (isMg(w)) chance += G.mg * mgGuns(u);
     else if (G.rockets.includes(w)) chance += G.rocket;
     else if ("range" in FD.weapons[w] && !isGun(w) && !UD.line_of_fire.arcing.includes(w)) chance += G.rifles * u.men / 100;
   }
-  return Math.min(G.cap, chance * (K.exposed ?? 1));
+  return Math.min(G.aa_cap, Math.min(G.cap, chance * (K.exposed ?? 1)) + aaFire * (K.exposed ?? 1));
 }
 function groundFire(us, flight, attacking, rng){   // ground fire at the aircraft that attacked: each lost at flak %, taking its share of the attacks left
   const [k, b] = flight, chance = flak(us, b, b.mission.hex);
   if (chance <= 0 || b.tubes <= 0) return [];
-  let hit = 0;
+  let hit = 0, downed = 0;
   for (let a = 0; a < attacking; a++) if (rng.randint(1, 100) <= chance) hit++;
-  const lost = Math.min(b.tubes, hit);
-  if (!lost) return [];
+  hit = Math.min(b.tubes, hit);
+  if (!hit) return [];
+  for (let a = 0; a < hit; a++) if (rng.randint(1, 100) <= UD.indirect.air.ground_fire.downed) downed++;
   const share = Math.floor(b.rounds / b.tubes);
-  b.tubes -= lost;
-  b.rounds = Math.max(0, b.rounds - share * lost);
-  return [{ kind: "airloss", sup: k, name: b.name, side: b.side, lost, left: b.tubes }];
+  b.tubes -= hit;
+  b.rounds = Math.max(0, b.rounds - share * hit);
+  return [{ kind: "airloss", sup: k, name: b.name, side: b.side, lost: downed, damaged: hit - downed, left: b.tubes }];
 }
 function bombard(ctx, k, b, shells, scatter = null){   // shells on a hex: where each lands (0 to scatter hexes off), then smoke laid, or men struck and bunkers knocked
   const { rng, log, field } = ctx, K = UD.indirect.kinds[b.kind], m = b.mission, bursts = [], sc = scatter ?? K.scatter;
@@ -961,19 +1008,22 @@ function storm(us, occ, i, ctx){                  // unit i storms each intact, 
     log.push(...logged(line, t));
   }
 }
+function burns(struck, dead, rng){                 // men reached by flame: down with critical burns, dead % killed outright
+  const t = newTally();
+  Object.assign(t, { blows: struck, hits: struck, critical: struck, down: struck });
+  for (let m = 0; m < struck; m++){
+    if (rng.randint(1, 100) <= dead) t.dead++;
+    else noteHurt(t, "critical", { lethal: "days", infection: "high" }, true);
+  }
+  return t;
+}
 function bunkerStruck(us, j, x, M, ctx){          // the men in a bunker's hex when it falls: struck by blast or by flame
   const b = us[j], { table, weapon, rng, acc } = ctx, hexes = footprint(b).flat();
   const k = hexes.findIndex(h => h[0] === x[0] && h[1] === x[1]), there = k >= 0 ? menByHex(b)[k] : 0;
   let struck = 0, t;
   for (let m = 0; m < there; m++) if (rng.randint(1, 100) <= M.struck) struck++;
-  if (M.flame){                                   // burns: out of the fight, no location roll; some killed outright
-    t = newTally();
-    Object.assign(t, { blows: struck, hits: struck, critical: struck, down: struck });
-    for (let m = 0; m < struck; m++){
-      if (rng.randint(1, 100) <= UD.assault.flame_dead) t.dead++;
-      else noteHurt(t, "critical", { lethal: "days", infection: "high" }, true);
-    }
-  } else t = blows({ table, weapon, kit: null, quality: "regular" }, sideOfUnit(b, table), struck, UD.assault.attack, 0, rng, { exposed: exposure(b, false, true), shift: -1000 });
+  if (M.flame) t = burns(struck, UD.assault.flame_dead, rng);   // burns: out of the fight, no location roll; some killed outright
+  else t = blows({ table, weapon, kit: null, quality: "regular" }, sideOfUnit(b, table), struck, UD.assault.attack, 0, rng, { exposed: exposure(b, false, true), shift: -1000 });
   t = takeHurt(b, t);
   acc.lost[j] += t.down; acc.dead[j] += t.dead;
   return { ...t, struck };
