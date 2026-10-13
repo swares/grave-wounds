@@ -988,8 +988,8 @@ def _vehicle_errors(d: Data) -> list[str]:
                if not all(isinstance(a.get(x), (int, float)) for x in ("rpg", "atgm", "gun", "shell", "mine"))]
     errors += [f"units.yaml: vehicles.anti_armour.{w} needs a known weapon, a rate and an armour row (rpg or atgm)" for w, a in V.get("anti_armour", {}).items()
                if w not in d.weapons or not isinstance(a, dict) or not isinstance(a.get("rate"), (int, float)) or a.get("row") not in ("rpg", "atgm")]
-    errors += [f"units.yaml: vehicles.kinds.{k}.carry must be a whole number" for k, v in V.get("kinds", {}).items() if "carry" in v and not (isinstance(v["carry"], int) and v["carry"] > 0)]
-    errors += [f"units.yaml: vehicles.kinds.{k}.tows must be a whole number above 0" for k, v in V.get("kinds", {}).items() if "tows" in v and not (isinstance(v["tows"], int) and v["tows"] > 0)]
+    errors += [f"units.yaml: vehicles.kinds.{k}.{x} must be a whole number above 0" for k, v in V.get("kinds", {}).items() for x in ("carry", "tows")
+               if x in v and not (isinstance(v[x], int) and v[x] > 0)]
     if not all(isinstance((V.get("aspect") or {}).get(x), (int, float)) for x in ("flank", "rear")):
         errors.append("units.yaml: vehicles.aspect needs flank and rear")
     D = V.get("damage") or {}

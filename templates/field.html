@@ -1999,7 +1999,9 @@ function dismountRiders(){                        // the selected carriers' ride
   S.units = [...r.units.slice(0, -1), rider];
   if (S.start){ const { riders, ...rest } = S.start[j] || {}; S.start[j] = rest; S.start.push({ ...rider }) }
   S.sel = rider.id;
-  S.msg = gun ? `${rider.name} are unhooked beside ${c.name}${play ? "; the guns fire from the next exchange" : ""}.` : `${rider.name} get down beside ${c.name}${play ? "; they can move next exchange" : ""}.`;
+  let after = "";
+  if (play) after = gun ? "; the guns fire from the next exchange" : "; they can move next exchange";
+  S.msg = `${rider.name} ${gun ? "are unhooked" : "get down"} beside ${c.name}${after}.`;
   render();
 }
 function renderLimber(u, setup){                 // the Limber button, for batteries only
