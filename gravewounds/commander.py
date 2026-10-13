@@ -40,7 +40,7 @@ def _free(d: Data, us: list, i: int, exchange) -> bool:
 def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     """One unit's order, or None (it holds). ctx: (size, field, stance)."""
     u, C = us[i], d.units["commander"]
-    t = target(d, us, i)
+    t = target(us, i)
     if t is None:
         return None
     if u["state"] != "steady":
@@ -50,7 +50,7 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     return _best(d, us, i, t, ctx)
 
 
-def target(d: Data, us: list, i: int) -> int | None:
+def target(us: list, i: int) -> int | None:
     """The nearest enemy unit still standing (the first of equals), or None."""
     u = us[i]
     foes = [(U.hdist(u["pos"], e["pos"]), j) for j, e in enumerate(us)
@@ -108,7 +108,7 @@ def _first_move(d: Data, base: list, i: int, tu: dict, where: tuple, how: tuple)
         h = [col, row]
         f = U.bearing(h, tu["pos"])
         touch = _touches(d, {**u, "pos": h, "facing": f}, foes)
-        if ((not charge) if touch else (hold or c > allow)) or (stuck and h != u["pos"]):
+        if _skips(touch, (charge, hold), c > allow, stuck and h != u["pos"]):
             continue
         if tries == 0:
             return None
@@ -117,6 +117,16 @@ def _first_move(d: Data, base: list, i: int, tu: dict, where: tuple, how: tuple)
         if not _rejects(m, charge, hold):
             return h, f, m
     return None
+
+
+def _skips(touch: bool, how: tuple, far: bool, stuck: bool) -> bool:
+    """A hex it will not try: touching the enemy without the odds to charge; not touching but
+    beyond its allowance (far), or anything but a charge when holding; or a new hex for a unit
+    that may only turn (stuck)."""
+    charge, hold = how
+    if stuck:
+        return True
+    return not charge if touch else hold or far
 
 
 def _legal(d: Data, base: list, i: int, to: tuple, where: tuple) -> dict:

@@ -2292,7 +2292,7 @@ function flee(units, i, size, field = null){      // a broken unit runs straight
 }
 
 // ---------- the enemy commander (as gravewounds.commander) ----------
-const ROUTED = ["broken", "fled"];
+const ROUTED = new Set(["broken", "fled"]);
 function command(units, side, size, field, rng, exchange = null, stance = "attack"){   // {units, orders}: each unit of side ordered in turn, by its quality (units.yaml commander); stance attack or hold
   const us = units.map(u => ({ ...u })), orders = [];
   for (let i = 0; i < us.length; i++){
@@ -2304,7 +2304,7 @@ function command(units, side, size, field, rng, exchange = null, stance = "attac
 }
 function commandable(us, i, exchange){            // standing, not a battery, not in contact, not just come on
   const u = us[i];
-  if (ROUTED.includes(u.state) || u.men <= 0 || isBattery(u)) return false;
+  if (ROUTED.has(u.state) || u.men <= 0 || isBattery(u)) return false;
   if (exchange !== null && u.arrived === exchange) return false;
   return !inContact(us, occupancy(us), i);
 }
@@ -2319,7 +2319,7 @@ function aiTarget(us, i){                          // the nearest enemy unit sti
   const u = us[i];
   let best = null;
   us.forEach((e, j) => {
-    if (e.side === u.side || ROUTED.includes(e.state) || e.men <= 0) return;
+    if (e.side === u.side || ROUTED.has(e.state) || e.men <= 0) return;
     const dist = hdist(u.pos, e.pos);
     if (best === null || dist < best[0]) best = [dist, j];
   });
@@ -2327,7 +2327,7 @@ function aiTarget(us, i){                          // the nearest enemy unit sti
 }
 function underFire(us, i){                         // an enemy unit's missile weapon reaches unit i
   const u = us[i];
-  return us.some(e => e.side !== u.side && !ROUTED.includes(e.state) && e.men > 0 && "range" in FD.weapons[e.weapon] && fieldRange(e.weapon, hdist(e.pos, u.pos)) !== null);
+  return us.some(e => e.side !== u.side && !ROUTED.has(e.state) && e.men > 0 && "range" in FD.weapons[e.weapon] && fieldRange(e.weapon, hdist(e.pos, u.pos)) !== null);
 }
 function mayCharge(u, t, stance = "attack"){       // men without missiles, steady, with the odds its quality wants in its stance
   if ("range" in FD.weapons[u.weapon] || u.state !== "steady") return false;
@@ -3200,6 +3200,7 @@ function next(){
 }
 
 /* ---------- the enemy commander (rules in units.js: command) ---------- */
+const stanceWord = () => (S.ai.stance === "hold" ? "holding" : "attacking");
 const aiMoving = () => !!S.ai && moving() === S.ai.side;
 const aiThisMove = () => S.aiDone && S.aiDone.exchange === S.exchange && S.aiDone.phase === S.phase;
 function aiMove(){                                // at the start of its side's move, the commander orders that side
@@ -3208,7 +3209,7 @@ function aiMove(){                                // at the start of its side's 
   S.units = r.units;
   S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before };
   const lines = r.orders.map(o => ({ cls: o.act === "charge" ? "morale" : "", text: orderText(o) }));
-  S.log = [{ cls: "head", text: `The commander orders ${S.ai.side} (${S.ai.stance === "hold" ? "holding" : "attacking"}): ${r.orders.length ? nOf(r.orders.length, "order") : "every unit stands"}.` }, ...lines, ...S.log].slice(0, 400);
+  S.log = [{ cls: "head", text: `The commander orders ${S.ai.side} (${stanceWord()}): ${r.orders.length ? nOf(r.orders.length, "order") : "every unit stands"}.` }, ...lines, ...S.log].slice(0, 400);
 }
 function orderText(o){                            // "Billmen (Yorkists) move 4 hexes toward Archers (Lancastrians)."
   const u = S.units[o.unit], t = S.units[o.target], who = unitName(u), them = t ? unitName(t) : "the enemy";
@@ -3234,7 +3235,7 @@ function aiAgain(){                               // the commander orders its si
 function setAi(v){                                // "" (none), or "side|attack" / "side|hold"
   const k = v.lastIndexOf("|");
   S.ai = v ? { side: v.slice(0, k), stance: v.slice(k + 1) } : null;
-  S.msg = S.ai ? `The commander takes ${S.ai.side}, ${S.ai.stance === "hold" ? "holding" : "attacking"}: it orders them at the start of each of their moves.` : "No commander: you move both sides.";
+  S.msg = S.ai ? `The commander takes ${S.ai.side}, ${stanceWord()}: it orders them at the start of each of their moves.` : "No commander: you move both sides.";
   render();
 }
 function renderAi(){

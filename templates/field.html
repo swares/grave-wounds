@@ -913,6 +913,7 @@ function next(){
 }
 
 /* ---------- the enemy commander (rules in units.js: command) ---------- */
+const stanceWord = () => (S.ai.stance === "hold" ? "holding" : "attacking");
 const aiMoving = () => !!S.ai && moving() === S.ai.side;
 const aiThisMove = () => S.aiDone && S.aiDone.exchange === S.exchange && S.aiDone.phase === S.phase;
 function aiMove(){                                // at the start of its side's move, the commander orders that side
@@ -921,7 +922,7 @@ function aiMove(){                                // at the start of its side's 
   S.units = r.units;
   S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before };
   const lines = r.orders.map(o => ({ cls: o.act === "charge" ? "morale" : "", text: orderText(o) }));
-  S.log = [{ cls: "head", text: `The commander orders ${S.ai.side} (${S.ai.stance === "hold" ? "holding" : "attacking"}): ${r.orders.length ? nOf(r.orders.length, "order") : "every unit stands"}.` }, ...lines, ...S.log].slice(0, 400);
+  S.log = [{ cls: "head", text: `The commander orders ${S.ai.side} (${stanceWord()}): ${r.orders.length ? nOf(r.orders.length, "order") : "every unit stands"}.` }, ...lines, ...S.log].slice(0, 400);
 }
 function orderText(o){                            // "Billmen (Yorkists) move 4 hexes toward Archers (Lancastrians)."
   const u = S.units[o.unit], t = S.units[o.target], who = unitName(u), them = t ? unitName(t) : "the enemy";
@@ -947,7 +948,7 @@ function aiAgain(){                               // the commander orders its si
 function setAi(v){                                // "" (none), or "side|attack" / "side|hold"
   const k = v.lastIndexOf("|");
   S.ai = v ? { side: v.slice(0, k), stance: v.slice(k + 1) } : null;
-  S.msg = S.ai ? `The commander takes ${S.ai.side}, ${S.ai.stance === "hold" ? "holding" : "attacking"}: it orders them at the start of each of their moves.` : "No commander: you move both sides.";
+  S.msg = S.ai ? `The commander takes ${S.ai.side}, ${stanceWord()}: it orders them at the start of each of their moves.` : "No commander: you move both sides.";
   render();
 }
 function renderAi(){

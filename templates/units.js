@@ -1518,7 +1518,7 @@ function flee(units, i, size, field = null){      // a broken unit runs straight
 }
 
 // ---------- the enemy commander (as gravewounds.commander) ----------
-const ROUTED = ["broken", "fled"];
+const ROUTED = new Set(["broken", "fled"]);
 function command(units, side, size, field, rng, exchange = null, stance = "attack"){   // {units, orders}: each unit of side ordered in turn, by its quality (units.yaml commander); stance attack or hold
   const us = units.map(u => ({ ...u })), orders = [];
   for (let i = 0; i < us.length; i++){
@@ -1530,7 +1530,7 @@ function command(units, side, size, field, rng, exchange = null, stance = "attac
 }
 function commandable(us, i, exchange){            // standing, not a battery, not in contact, not just come on
   const u = us[i];
-  if (ROUTED.includes(u.state) || u.men <= 0 || isBattery(u)) return false;
+  if (ROUTED.has(u.state) || u.men <= 0 || isBattery(u)) return false;
   if (exchange !== null && u.arrived === exchange) return false;
   return !inContact(us, occupancy(us), i);
 }
@@ -1545,7 +1545,7 @@ function aiTarget(us, i){                          // the nearest enemy unit sti
   const u = us[i];
   let best = null;
   us.forEach((e, j) => {
-    if (e.side === u.side || ROUTED.includes(e.state) || e.men <= 0) return;
+    if (e.side === u.side || ROUTED.has(e.state) || e.men <= 0) return;
     const dist = hdist(u.pos, e.pos);
     if (best === null || dist < best[0]) best = [dist, j];
   });
@@ -1553,7 +1553,7 @@ function aiTarget(us, i){                          // the nearest enemy unit sti
 }
 function underFire(us, i){                         // an enemy unit's missile weapon reaches unit i
   const u = us[i];
-  return us.some(e => e.side !== u.side && !ROUTED.includes(e.state) && e.men > 0 && "range" in FD.weapons[e.weapon] && fieldRange(e.weapon, hdist(e.pos, u.pos)) !== null);
+  return us.some(e => e.side !== u.side && !ROUTED.has(e.state) && e.men > 0 && "range" in FD.weapons[e.weapon] && fieldRange(e.weapon, hdist(e.pos, u.pos)) !== null);
 }
 function mayCharge(u, t, stance = "attack"){       // men without missiles, steady, with the odds its quality wants in its stance
   if ("range" in FD.weapons[u.weapon] || u.state !== "steady") return false;
