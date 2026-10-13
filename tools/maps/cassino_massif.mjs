@@ -18,6 +18,6 @@ function kind(c, r){
   if (patch(c, r, { cx: P444[0], cy: P444[1], rx: 6, ry: 5, a: 0.8, b: 2.0 })) return speckle(c, r, 3) ? "r" : "h";    // Point 444
   if (nearRidge(c, r, P593, ABBEY, 4) || nearRidge(c, r, PHANTOM, P593, 3)) return speckle(c, r, 4) ? "r" : "h";       // Snakeshead and Phantom Ridges: narrow and rocky
   if (Math.abs(r - (96 + wobble(c / 7, 0.9, 0.2) * 1.5) + c * 0.15) <= 1 && c < 120) return "r";                       // a gully, boulders
-  return speckle(c, r, 3) ? "F" : "r";                                                                                 // steep slopes: scrub, broken rock
+  return speckle(c, r, 3) ? "o" : "r";                                                                                 // steep slopes: scrub, broken rock
 }
 export const massif = () => groundGrid(COLS, ROWS, kind);

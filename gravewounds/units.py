@@ -1113,26 +1113,40 @@ def _beaten(d: Data, units: list, occ: dict, field: dict | None, i: int, best: t
 _SCREENS = {}   # id(field ground) -> (that ground, its size, the hexes that screen): the rules never repaint a field
 
 
-def _screen_hexes(d: Data, field: dict | None) -> set:
-    """The keys ("q,r") of the field's hexes whose ground screens sight (woods, buildings)."""
+def _screen_hexes(d: Data, field: dict | None, flag: str = "screen") -> set:
+    """The keys ("q,r") of the field's hexes whose ground screens sight (flag screen: woods,
+    buildings) or thins it (flag light: scrub, orchards)."""
     g = (field or {}).get("ground") or {}
-    hit = _SCREENS.get(id(g))
+    hit = _SCREENS.get((id(g), flag))
     if hit is None or hit[0] is not g or hit[1] != len(g):
-        hit = (g, len(g), {k for k, v in g.items() if d.units["ground"].get(v, {}).get("screen")})
-        _SCREENS[id(g)] = hit
+        hit = (g, len(g), {k for k, v in g.items() if d.units["ground"].get(v, {}).get(flag)})
+        _SCREENS[(id(g), flag)] = hit
     return hit[2]
+
+
+def thinned(d: Data, field: dict | None, h, t, dist: int, line: list | None = None) -> int:
+    """How many hexes of light cover (scrub, orchards) lie on the line from h to t, not the
+    ends, as high as where the man at h stands."""
+    thin = _screen_hexes(d, field, "light")
+    if not thin:
+        return 0
+    line, up = line or ray(h, t, dist), height_at(d, field, h)
+    return sum(1 for y in line[1:len(line) - 1] if f"{y[0]},{y[1]}" in thin and height_at(d, field, y) >= up)
 
 
 def clear_sight(d: Data, field: dict | None, h, t, dist: int, line: list | None = None) -> bool:
     """Whether a man at hex h sees hex t to aim at it: no ground that screens (woods, buildings)
     on the line between as high as where he stands, past the first line_of_fire.see_into hexes
-    at either end (he sees out of a screen's edge, and into it). line: ray(h, t, dist), if known."""
-    cover = _screen_hexes(d, field)
-    if not cover:
+    at either end (he sees out of a screen's edge, and into it), and no more than
+    line_of_fire.thin.blind_past hexes of light cover between. line: ray(h, t, dist), if known."""
+    cover, L = _screen_hexes(d, field), d.units["line_of_fire"]
+    if not cover and not _screen_hexes(d, field, "light"):
         return True
-    k = d.units["line_of_fire"].get("see_into", 1)
+    k = L.get("see_into", 1)
     line, up = line or ray(h, t, dist), height_at(d, field, h)
-    return not any(f"{y[0]},{y[1]}" in cover and height_at(d, field, y) >= up for y in line[1 + k:len(line) - 1 - k])
+    if any(f"{y[0]},{y[1]}" in cover and height_at(d, field, y) >= up for y in line[1 + k:len(line) - 1 - k]):
+        return False
+    return thinned(d, field, h, t, dist, line) <= L["thin"]["blind_past"]
 
 
 def shot_weather(d: Data, field: dict | None, weapon: str, dist: int, h=None, t=None, seer: dict | None = None) -> dict:
@@ -1140,14 +1154,22 @@ def shot_weather(d: Data, field: dict | None, weapon: str, dist: int, h=None, t=
     wind's direction): {blocked, penalty, misfire, reach}. Smoke on the line blocks it, and so
     do woods and buildings between (clear_sight), unless it is fired blind. seer:
     the shooter in the dark, {kit, blind} (see in_the_dark)."""
-    line = ray(h, t, dist) if h is not None and t is not None and ((field or {}).get("smoke") or _screen_hexes(d, field)) else None
+    line = ray(h, t, dist) if h is not None and t is not None and ((field or {}).get("smoke") or _screen_hexes(d, field) or _screen_hexes(d, field, "light")) else None
     if line and smoked(field, line) and not sees_smoke(d, seer):
         return {"blocked": "Smoke: no one can see to shoot through it.", "penalty": 0, "misfire": 0, "reach": 0}
     if line and not (seer or {}).get("blind") and not clear_sight(d, field, h, t, dist, line):
-        return {"blocked": "Woods or buildings between: no one can see to aim through them.", "penalty": 0, "misfire": 0, "reach": 0}
+        return {"blocked": "Woods, buildings or thick scrub between: no one can see to aim through them.", "penalty": 0, "misfire": 0, "reach": 0}
     if is_gun(d, weapon):
         return gun_weather(d, field, dist, h, t, seer)
-    return in_the_cold(d, field, weapon, in_the_dark(d, field, dist, t, C.weather_attack(d, (field or {}).get("weather"), weapon, 0 if (seer or {}).get("blind") else dist * d.units["range_scale"], h, t, _up(field)), seer))
+    out = in_the_cold(d, field, weapon, in_the_dark(d, field, dist, t, C.weather_attack(d, (field or {}).get("weather"), weapon, 0 if (seer or {}).get("blind") else dist * d.units["range_scale"], h, t, _up(field)), seer))
+    return _thin_fire(d, field, out, (h, t, dist, line))
+
+
+def _thin_fire(d: Data, field: dict | None, out: dict, shot: tuple) -> dict:
+    """Aimed fire through light cover: line_of_fire.thin.per % off for each hex of it between."""
+    h, t, dist, line = shot
+    n = thinned(d, field, h, t, dist, line) if line and not out["blocked"] else 0
+    return {**out, "penalty": out["penalty"] + n * d.units["line_of_fire"]["thin"]["per"]} if n else out
 
 
 def cold_of(d: Data, field: dict | None) -> dict | None:
