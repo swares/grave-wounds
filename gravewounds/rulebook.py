@@ -80,6 +80,7 @@ def _field_values(d: Data) -> dict:
         "f_saved_min": U["aftermath"]["saved"]["minutes"], "f_saved_field": U["aftermath"]["saved"]["hours"]["field"],
         "f_saved_shelter": U["aftermath"]["saved"]["hours"]["shelter"],
         "f_bow_rate": U["missile"]["rate"]["longbow"], "f_aimed": round(1 / U["missile"]["tempo"]),
+        "c_remember": U["commander"]["remember"],
     }
 
 

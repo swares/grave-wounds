@@ -595,8 +595,17 @@ heroes:
 # A scripted commander can play one side on the field map ("Enemy commander"). At the start
 # of its side's move it orders each of its units in turn, as a GM would by rule of thumb,
 # and the page logs each order; Undo puts the move back for the player to make by hand. It
-# sees the whole field (no fog of war) and leaves batteries, fire support, vehicles' riders
-# and fixed lines alone. Each unit takes the nearest enemy still standing as its target:
+# knows only what its units see and leaves batteries, fire support, vehicles' riders and
+# fixed lines alone. Each unit:
+# - What it knows: an enemy unit one of the side's units can see now (sight, light, woods,
+#   smoke, as calling fire) at its middle hex or either end of its front is known where it
+#   stands; one seen before is remembered where it was last seen for `remember` exchanges,
+#   then forgotten. It never targets an enemy it does not know of; with none, a unit holds.
+# - Its target, among those it knows of: `closing` points off a hex away; and, times its
+#   quality's `sense` (green men take the nearest), `hurt` points per % of the enemy's men
+#   down, `shaken` if the enemy is shaken, and `threat` if the enemy is a danger to it
+#   (shooters, for men without missiles; men without missiles within a charge of it, for
+#   shooters). A remembered enemy is gone for where it was last seen.
 # - A unit not steady holds; shaken and under fire (an enemy's missile weapon reaches it),
 #   it goes to ground.
 # - A steady unit first rolls d100: at or under `hesitate` % (by quality) it does nothing
@@ -625,4 +634,9 @@ commander:
   too_close: 500
   keep_off: 2
   tries: 30
+  remember: 3
+  sense: {green: 0, regular: 1, veteran: 2}
+  hurt: 1
+  shaken: 20
+  threat: 20
   ground_with: [breechloader, rifle_service, rifle_assault, rifle_ap, machine_gun, pistol_smg, rpg, bazooka, recoilless, atgm]

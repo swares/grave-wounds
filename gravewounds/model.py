@@ -855,11 +855,11 @@ def _commander_errors(d: Data) -> list[str]:
     if not K:
         return []
     qs, errors = set(d.units["quality"]), []
-    tables = [(k, K.get(k)) for k in ("hesitate", "cover", "flank")] + [(f"charge_odds.{s}", (K.get("charge_odds") or {}).get(s)) for s in ("attack", "hold")]
+    tables = [(k, K.get(k)) for k in ("hesitate", "cover", "flank", "sense")] + [(f"charge_odds.{s}", (K.get("charge_odds") or {}).get(s)) for s in ("attack", "hold")]
     for name, t in tables:
         if not isinstance(t, dict) or set(t) != qs or not all(isinstance(v, int) and v >= 0 for v in t.values()):
             errors.append(f"units.yaml: commander.{name} needs a whole number of 0 or more for each quality")
-    errors += [f"units.yaml: commander.{k} must be a whole number of 0 or more" for k in ("closing", "in_range", "too_close", "keep_off")
+    errors += [f"units.yaml: commander.{k} must be a whole number of 0 or more" for k in ("closing", "in_range", "too_close", "keep_off", "remember", "hurt", "shaken", "threat")
                if not (isinstance(K.get(k), int) and K[k] >= 0)]
     if not (isinstance(K.get("tries"), int) and K["tries"] > 0):
         errors.append("units.yaml: commander.tries must be a positive whole number")

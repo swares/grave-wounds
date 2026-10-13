@@ -93,9 +93,11 @@ custom of quarter.
 ## The enemy commander {#commander}
 
 The GM can hand one side to a scripted **enemy commander**, attacking or holding. At the
-start of that side's move it orders each unit: the nearest enemy is its target; it closes,
+start of that side's move it orders each unit. It knows only the enemies its units can see
+(or saw in the last {{c_remember}} exchanges, where they were then); green units go for the
+nearest, better ones for an enemy that is hurt, shaken or dangerous to them. It closes,
 takes cover, shoots from range or charges with the odds its quality wants, and green units
-sometimes hesitate. **Undo its orders** puts the move back for the GM to make by hand.
+sometimes hesitate. With no enemy in sight, a unit holds. **Undo its orders** puts the move back for the GM to make by hand.
 
 ## After the battle {#after}
 

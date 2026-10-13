@@ -446,11 +446,13 @@ def _commander_rules(d) -> list[str]:
     by = lambda t: ", ".join(f"{q} {t[q]}" for q in d.units["quality"])
     return [
         "<b>The enemy commander (field map, optional):</b> it orders one side, attacking or holding, at the start of each of its moves; Undo puts the move back. "
-        f"Each unit takes the nearest enemy standing. Shaken, it holds (and goes to ground under missile fire). Steady, it hesitates on d100 at or under {by(K['hesitate'])}%; "
+        f"It knows an enemy only if one of its units sees it (sight, light, woods, smoke, as calling fire), or saw it in the last {K['remember']} exchanges (where it was then); with none known, a unit holds. "
+        f"Each unit's target, among those it knows: {K['closing']} points off a hex away, and times its quality's sense ({by(K['sense'])}): {K['hurt']} a % of the enemy's men down, "
+        f"{K['shaken']} if it is shaken, {K['threat']} if it is a danger to the unit (shooters, for men without missiles; men without missiles within a charge, for shooters). Shaken, it holds (and goes to ground under missile fire). Steady, it hesitates on d100 at or under {by(K['hesitate'])}%; "
         f"otherwise it takes the best hex it can reach facing the target: {K['closing']} points a hex nearer, cover % times {by(K['cover'])}, less a point a hex moved. "
         f"Shooters stop where the target is in range, keep {K['keep_off']} hexes off, and never charge; with a modern weapon they go to ground under fire. "
         f"Others charge only if their men × attack % is at least this % of the target's: attacking {by(K['charge_odds']['attack'])}; holding {by(K['charge_odds']['hold'])}. "
-        "Holding, a side leaves its ground only to charge. It sees the whole field and leaves batteries, fire support and reserves to the GM.",
+        "Holding, a side leaves its ground only to charge. It leaves batteries, fire support and reserves to the GM.",
     ]
 
 

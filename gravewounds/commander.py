@@ -11,16 +11,19 @@ from .model import Data
 ROUTED = ("broken", "fled")
 
 
-def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, exchange=None, stance: str = "attack") -> tuple:
+def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, exchange=None, stance: str = "attack",
+            memory: dict | None = None) -> tuple:
     """Orders for every unit of `side`, in turn (each sees the moves before it). exchange: units
     that came on in it (arrived) wait. stance: attack (close with the enemy) or hold (stand,
-    charging only what it can reach). -> (units after, orders [{unit, act, ...}])."""
+    charging only what it can reach). memory: where it last saw each enemy unit, kept between
+    its moves (updated in place; see sightings). -> (units after, orders [{unit, act, ...}])."""
     us, orders = [dict(u) for u in units], []
+    known = sightings(d, us, side, field, exchange, {} if memory is None else memory)
     for i in range(len(us)):
         if us[i]["side"] != side or not _free(d, us, i, exchange):
             continue
         roll = rng.randint(1, 100)
-        o = _order(d, us, i, (size, field, stance), roll)
+        o = _order(d, us, i, (size, field, stance, known, exchange), roll)
         if o:
             orders.append({"unit": i, **o})
             _apply(us, i, o)
@@ -37,25 +40,81 @@ def _free(d: Data, us: list, i: int, exchange) -> bool:
     return not U.in_contact(d, us, U.occupancy(d, us), i)
 
 
+def sightings(d: Data, us: list, side, field: dict | None, exchange, memory: dict) -> dict:
+    """Where the side knows each enemy unit to be: {index (str): {pos, facing, ex}}. An enemy
+    one of its units can see now (units.spotted: sight, light, woods, smoke) at its middle hex
+    or either end of its front is set where it stands; one not seen for more than `remember`
+    exchanges, or broken, fled or gone, is forgotten. memory is updated in place."""
+    ex = exchange or 0
+    for j, e in enumerate(us):
+        k = str(j)
+        if e["side"] == side:
+            continue
+        if e["state"] in ROUTED or e["men"] <= 0:
+            memory.pop(k, None)
+        elif _seen(d, us, side, field, e):
+            memory[k] = {"pos": list(e["pos"]), "facing": e["facing"], "ex": ex}
+        elif k in memory and ex - memory[k]["ex"] > d.units["commander"]["remember"]:
+            del memory[k]
+    return memory
+
+
+def _seen(d: Data, us: list, side, field: dict | None, e: dict) -> bool:
+    """A unit of side sees enemy e: its middle hex or either end of its front row."""
+    rows = U.footprint(d, e)
+    marks = [e["pos"]] + ([rows[0][0], rows[0][-1]] if rows else [])
+    return any(U.spotted(d, us, field, side, h) for h in marks)
+
+
 def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
-    """One unit's order, or None (it holds). ctx: (size, field, stance)."""
+    """One unit's order, or None (it holds). ctx: (size, field, stance, known, exchange)."""
     u, C = us[i], d.units["commander"]
-    t = target(us, i)
-    if t is None:
-        return None
+    t = target(d, us, i, ctx[3])
     if u["state"] != "steady":
         return {"act": "ground", "target": t} if not u.get("prone") and under_fire(d, us, i) else None
+    if t is None:
+        return None
     if roll <= C["hesitate"].get(u["quality"], 0):
         return {"act": "hesitate", "target": t, "roll": roll}
-    return _best(d, us, i, t, ctx)
+    return _last_seen(_best(d, us, i, t, ctx), ctx[3], t, ctx[4])
 
 
-def target(us: list, i: int) -> int | None:
-    """The nearest enemy unit still standing (the first of equals), or None."""
+def _last_seen(o: dict | None, known: dict | None, t: int, exchange) -> dict | None:
+    """The order, with the exchange its target was last seen in ("last") if not this one."""
+    last = (known or {}).get(str(t), {}).get("ex")
+    return {**o, "last": last} if o and last is not None and last != (exchange or 0) else o
+
+
+def target(d: Data, us: list, i: int, known: dict | None = None) -> int | None:
+    """The enemy unit it goes for among those its side knows of (known: sightings; None: every
+    one standing), or None: the best by threat_score (the first of equals)."""
     u = us[i]
-    foes = [(U.hdist(u["pos"], e["pos"]), j) for j, e in enumerate(us)
-            if e["side"] != u["side"] and e["state"] not in ROUTED and e["men"] > 0]
+    foes = [(-threat_score(d, u, us[j], _where(us, j, known)), j) for j, e in enumerate(us)
+            if e["side"] != u["side"] and e["state"] not in ROUTED and e["men"] > 0 and (known is None or str(j) in known)]
     return min(foes)[1] if foes else None
+
+
+def _where(us: list, j: int, known: dict | None) -> dict:
+    """Enemy unit j as the side knows it: where it was last seen (as it is if seen now)."""
+    m = (known or {}).get(str(j))
+    return us[j] if m is None else {**us[j], "pos": m["pos"], "facing": m["facing"]}
+
+
+def threat_score(d: Data, u: dict, e: dict, seen: dict) -> int:
+    """How much unit u wants enemy e (seen: e where u's side knows it to be): `closing` off a
+    hex away, and by its quality's `sense`, the % of e's men down times `hurt`, `shaken` if e
+    is shaken, and `threat` if e is a danger to u (shooters for men without missiles, men
+    without missiles in a charge's reach for shooters). Green men take the nearest."""
+    C = d.units["commander"]
+    dist = U.hdist(u["pos"], seen["pos"])
+    sense = C["sense"].get(u["quality"], 0)
+    if not sense:
+        return -C["closing"] * dist
+    down = (e.get("down") or 0) * 100 // max(1, e.get("start") or e["men"])
+    shooter, theirs = "range" in d.weapons[u["weapon"]], "range" in d.weapons[e["weapon"]]
+    danger = (not shooter and theirs) or (shooter and not theirs and dist <= U.allowance(d, e) * d.units["charge_move"])
+    weak = C["hurt"] * down + (C["shaken"] if e["state"] == "shaken" else 0) + (C["threat"] if danger else 0)
+    return sense * weak - C["closing"] * dist
 
 
 def under_fire(d: Data, us: list, i: int) -> bool:
@@ -77,8 +136,8 @@ def may_charge(d: Data, u: dict, t: dict, stance: str = "attack") -> bool:
 def _best(d: Data, us: list, i: int, t: int, ctx: tuple) -> dict | None:
     """The best-scoring hex it can legally reach, facing the target: a move, a charge, a turn,
     going to ground where it stands, or None (it holds). Holding, it only charges, else stays."""
-    (size, field, stance), u, tu = ctx, us[i], us[t]
-    hold = stance == "hold"
+    (size, field, stance, known, _), u = ctx, us[i]
+    tu, hold = _where(us, t, known), stance == "hold"
     free = {**u, "prone": False} if u.get("prone") else u
     base = [free if k == i else x for k, x in enumerate(us)]
     shooter, charge = "range" in d.weapons[u["weapon"]], may_charge(d, u, tu, stance)
