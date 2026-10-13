@@ -444,6 +444,7 @@ function penalties(c){
     }
   }
   if (flags.has("off_hand") && ["grip|shield_arm", "hand_useless|shield_arm", "arm_useless|shield_arm"].some(k => seen.has(k))) flags.add("cannot_wield");
+  if ([...seen].some(k => (CMB.one_arm || []).includes(k.split("|")[0]))) flags.add("one_arm");   // an arm hurt: no two-handed weapon
   if (c.fatigue && DATA.weather){
     const lv = DATA.weather.fatigue.levels[c.fatigue];
     if (lv.penalty){ attack += lv.penalty; defence += lv.penalty; notes.push(`${lv.name.toLowerCase()} -${lv.penalty}%`) }
@@ -869,11 +870,13 @@ function hitDone(base, extra){                    // the roll ended before a wou
   if (S.chars.length) renderChars();
   else { shadeFigure(); renderTable() }
 }
+const lowerName = s => (/^[A-Z]{2}/.test(s) ? s : s.toLowerCase());   // "Bill" -> "bill", "MG" stays
 function attackBlock(A, w){                       // why the attacker cannot attack at all, or null
   const n = () => attackerChar().name;
   if (A && A.flags.includes("incapacitated")) return `${n()} is incapacitated and cannot attack.`;
   if (cannotAttack(A)) return `${n()} cannot attack: ${CMB.states[attackerChar().state.id].name.toLowerCase()}.`;
   if (A && A.flags.includes("cannot_wield") && w.melee !== "unarmed") return `${n()} cannot hold a weapon in either hand.`;
+  if (A && A.flags.includes("one_arm") && w.two_handed) return `${n()} cannot use the ${lowerName(w.short || w.name)} with an arm hurt (it takes both hands): defend only.`;
   return null;
 }
 function misfired(rc, freeHit){                   // wet priming: the shot is lost (text), or null
@@ -1209,7 +1212,7 @@ function setAttacker(i){
   fillFromSheets();
   renderChars();
 }
-const FLAG_TEXT = { down: "on the ground", off_hand: "fighting off-hand", no_shield: "no shield", cannot_wield: "cannot wield", incapacitated: "incapacitated",
+const FLAG_TEXT = { down: "on the ground", off_hand: "fighting off-hand", no_shield: "no shield", cannot_wield: "cannot wield", one_arm: "one arm", incapacitated: "incapacitated",
   ...Object.fromEntries(Object.entries(CMB.states).map(([k, v]) => [k, v.name.toLowerCase()])) };
 function penLine(p){
   if (!p) return "";

@@ -103,6 +103,7 @@ weapons:
   - id: pike
     name: "Pike (long infantry pike, 1450s-1700)"
     short: "Pike"
+    two_handed: true
     icon: spear
     reach: 3
     era: 1450s-1700
@@ -122,6 +123,7 @@ weapons:
   - id: bill
     name: "Bill (English bill, hooked polearm)"
     short: "Bill"
+    two_handed: true
     icon: bill
     reach: 2
     era: medieval
@@ -137,6 +139,7 @@ weapons:
   - id: poleaxe
     name: "Poleaxe (axe, hammer and spike)"
     short: "Poleaxe"
+    two_handed: true
     icon: poleaxe
     reach: 1
     era: medieval
@@ -155,6 +158,7 @@ weapons:
   - id: bow
     name: "Bow (war arrows)"
     short: "Bow"
+    two_handed: true
     icon: bow
     range: [15, 40, 90]
     string: true
@@ -172,6 +176,7 @@ weapons:
   - id: longbow
     name: "Longbow (English war bow, bodkin and broadhead arrows)"
     short: "Longbow"
+    two_handed: true
     icon: bow
     range: [20, 60, 125]
     string: true
@@ -189,6 +194,7 @@ weapons:
   - id: crossbow
     name: "Crossbow (bolts)"
     short: "Crossbow"
+    two_handed: true
     icon: crossbow
     range: [15, 50, 100]
     string: true
@@ -236,6 +242,7 @@ weapons:
   - id: bayonet
     name: "Bayonet (musket or rifle)"
     short: "Bayonet"
+    two_handed: true
     icon: bayonet_gun
     reach: 1
     era: "1700s-"
@@ -291,6 +298,7 @@ weapons:
   - id: musket_butt
     name: "Clubbed musket (butt stroke)"
     short: "Musket butt"
+    two_handed: true
     icon: musket_butt
     reach: 1
     era: "1700s-1900s"
@@ -342,6 +350,7 @@ weapons:
   - id: matchlock_musket
     name: "Matchlock musket"
     short: "Matchlock"
+    two_handed: true
     icon: long_gun
     range: [20, 40, 75]
     ignition: match
@@ -369,6 +378,7 @@ weapons:
   - id: musket_smoothbore
     name: "Smoothbore musket (Brown Bess, Charleville)"
     short: "Musket"
+    two_handed: true
     icon: long_gun
     range: [25, 50, 100]
     ignition: flint
@@ -382,6 +392,7 @@ weapons:
   - id: rifle_flintlock
     name: "Flintlock rifle (Pennsylvania, Baker, Jäger)"
     short: "Rifle"
+    two_handed: true
     icon: long_gun
     range: [50, 100, 150]
     ignition: flint
@@ -421,6 +432,7 @@ weapons:
   - id: rifle_musket
     name: "Rifle-musket (Minie ball)"
     short: "Rifle-musket"
+    two_handed: true
     icon: long_gun
     range: [50, 150, 250]
     ignition: percussion
@@ -434,6 +446,7 @@ weapons:
   - id: breechloader
     name: "Breech-loading rifle or carbine (Sharps, Spencer, Springfield 1866)"
     short: "Breech-loader"
+    two_handed: true
     icon: long_gun
     range: [50, 150, 250]
     ignition: cartridge
@@ -477,6 +490,7 @@ weapons:
   - id: rifle_service
     name: "Service rifle (bolt or semi-auto, 1914-53)"
     short: "Rifle"
+    two_handed: true
     icon: long_gun
     range: [100, 200, 300]
     ignition: cartridge
@@ -490,6 +504,7 @@ weapons:
   - id: rifle_assault
     name: "Assault rifle (M16, AK)"
     short: "Assault rifle"
+    two_handed: true
     icon: modern_rifle
     range: [50, 150, 250]
     ignition: cartridge
@@ -503,6 +518,7 @@ weapons:
   - id: rifle_ap
     name: "Rifle, armour-piercing ammunition"
     short: "AP rifle"
+    two_handed: true
     icon: modern_rifle
     range: [100, 200, 300]
     ignition: cartridge
@@ -516,6 +532,7 @@ weapons:
   - id: machine_gun
     name: "Machine gun"
     short: "MG"
+    two_handed: true
     icon: machine_gun
     range: [100, 300, 500]
     ignition: cartridge
@@ -566,6 +583,7 @@ weapons:
   - id: rpg
     name: "RPG (rocket-propelled grenade)"
     short: "RPG"
+    two_handed: true
     icon: launcher
     range: [50, 100, 150]
     era: "1960s-"
@@ -578,6 +596,7 @@ weapons:
   - id: bazooka
     name: "Bazooka or Panzerschreck (rocket launcher)"
     short: "Bazooka"
+    two_handed: true
     icon: launcher
     range: [30, 60, 100]
     era: "1942-1953"
@@ -590,6 +609,7 @@ weapons:
   - id: recoilless
     name: "Recoilless rifle"
     short: "Recoilless"
+    two_handed: true
     icon: launcher
     range: [100, 200, 400]
     era: "1945-"
@@ -602,6 +622,7 @@ weapons:
   - id: atgm
     name: "Anti-tank guided missile"
     short: "ATGM"
+    two_handed: true
     icon: launcher
     range: [250, 750, 1500]
     era: "1970s-"

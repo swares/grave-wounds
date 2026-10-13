@@ -838,6 +838,7 @@ def _units_extra_errors(d: Data) -> list[str]:
         errors.append("units.yaml: ground needs open, and a whole-number move of 1 or more for each kind")
     if "heroes" in U and not all(isinstance(U["heroes"].get(k), (int, float)) and U["heroes"][k] > 0 for k in ("tempo", "exposure")):
         errors.append("units.yaml: heroes.tempo and heroes.exposure must be positive")
+    errors += _limb_errors(d)
     saved = U.get("aftermath", {}).get("saved", {})
     if saved and set(saved.get("hours", {})) != set(d.disease.get("recovery", {}).get("care", {})):
         errors.append("units.yaml: aftermath.saved.hours needs every care level")
@@ -845,6 +846,17 @@ def _units_extra_errors(d: Data) -> list[str]:
         if wid not in d.weapons or "range" not in d.weapons[wid]:
             errors.append(f"units.yaml: line_of_fire.arcing names {wid}, which is not a weapon with a range")
     return errors + _pikes_errors(d) + _indirect_errors(d) + _assault_errors(d) + _guns_errors(d)
+
+
+def _limb_errors(d: Data) -> list[str]:
+    """Heroes lamed (units.yaml heroes.lamed, carried) and one-armed (wounds.yaml
+    combat.one_arm against weapons' two_handed)."""
+    H, imp = d.units.get("heroes", {}), d.wounds["combat"]["impair"]
+    errors = [f"units.yaml: heroes.lamed names unknown impairment {x}" for x in H.get("lamed", []) if x not in imp]
+    if "carried" in H and not (isinstance(H["carried"], (int, float)) and 0 < H["carried"] <= 1):
+        errors.append("units.yaml: heroes.carried must be more than 0 and at most 1")
+    errors += [f"wounds.yaml: combat.one_arm names unknown impairment {x}" for x in d.wounds["combat"].get("one_arm", []) if x not in imp]
+    return errors + [f"weapons.yaml: {w}.two_handed must be true or false" for w, x in d.weapons.items() if not isinstance(x.get("two_handed", False), bool)]
 
 
 def _assault_errors(d: Data) -> list[str]:

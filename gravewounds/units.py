@@ -267,6 +267,8 @@ def _impairments(d: Data, ws: list, hand: str) -> tuple:
         seen.add(key)
         attack, defence = attack + eff.get("attack", 0), defence + eff.get("defence", 0)
         flags |= {f for f in IMPAIR_FLAGS if eff.get(f)}
+    if any(k[0] in d.wounds["combat"].get("one_arm", ()) for k in seen):   # an arm hurt: no two-handed weapon
+        flags.add("one_arm")
     return attack, defence, flags
 
 
@@ -288,7 +290,7 @@ def _heroes_after(d: Data, us: list, rng, quiet: list | None = None) -> list:
     log = []
     for i, u in enumerate(us):
         for hero in u.get("heroes", []):
-            if hero["state"] == "dead":
+            if hero["state"] == "dead" or hero.get("left"):   # left behind: out of the battle
                 continue
             if quiet and quiet[i]:
                 log += [{"kind": "heroaid", "unit": i, **x} for x in [_first_aid(d, hero, rng, _healer(u))] if x]
@@ -301,7 +303,7 @@ def _heroes_after(d: Data, us: list, rng, quiet: list | None = None) -> list:
 def _healer(u: dict) -> tuple | None:
     """(Leechcraft, name) of the best healer among unit u's heroes still up, or None (no one
     with Leechcraft: his comrades bind as best they can)."""
-    up = [h for h in u.get("heroes", []) if h["state"] == "up" and h.get("leech") is not None]
+    up = [h for h in u.get("heroes", []) if h["state"] == "up" and not h.get("left") and h.get("leech") is not None]
     if not up:
         return None
     best = max(up, key=lambda h: h["leech"])
@@ -356,13 +358,29 @@ def _hero_after(d: Data, hero: dict, rng) -> dict | None:
 
 
 def _heroes(u: dict, roles: tuple) -> list:
-    return [h for h in u.get("heroes", []) if h["state"] == "up" and h["role"] in roles]
+    return [h for h in u.get("heroes", []) if h["state"] == "up" and not h.get("left") and h["role"] in roles]
 
 
-def _acting(u: dict, roles: tuple) -> list:
-    """Heroes up, not held by a stop check and not too sick to do more than defend
-    (defend_only): the ones who strike or shoot this exchange."""
-    return [h for h in _heroes(u, roles) if not _held(h) and not h.get("defend_only")]
+def _acting(d: Data, u: dict, roles: tuple) -> list:
+    """Heroes up who strike or shoot this exchange (_strikes)."""
+    return [h for h in _heroes(u, roles) if _strikes(d, h)]
+
+
+def _strikes(d: Data, hero: dict) -> bool:
+    """Not held by a stop check, not too sick to do more than defend (defend_only), and not
+    hurt in either arm (one_arm) with a two-handed weapon: he can strike or shoot."""
+    if _held(hero) or hero.get("defend_only"):
+        return False
+    return not (d.weapons.get(hero["weapon"], {}).get("two_handed") and "one_arm" in hero_penalties(d, hero)[2])
+
+
+def lamed(d: Data, hero: dict) -> bool:
+    """A hero who slows his unit: not dead or left behind, and down (carried) or with a
+    wound (from this battle or one he came with) that lames him (heroes.lamed)."""
+    if hero["state"] == "dead" or hero.get("left"):
+        return False
+    lame = d.units["heroes"]["lamed"]
+    return hero["state"] == "down" or any(i in lame for w in (hero.get("old") or []) + hero.get("wounds", []) for i in w.get("impair") or [])
 
 
 def front_men(d: Data, u: dict) -> int:
@@ -389,7 +407,7 @@ def leader_state(u: dict) -> str | None:
     ls = [h for h in u.get("heroes", []) if h.get("leader")]
     if not ls:
         return u.get("leader")
-    return "up" if any(h["state"] == "up" for h in ls) else "down"
+    return "up" if any(h["state"] == "up" and not h.get("left") for h in ls) else "down"
 
 
 def morale(d: Data, unit: dict, roll: int) -> dict:
@@ -1526,7 +1544,7 @@ def _melee_opts(d: Data, a: dict, b: dict, s: dict) -> dict:
 def _front_heroes(d: Data, units: tuple, s: dict, ctx: tuple, opts: dict, dueled: set) -> list:
     """A striking unit's front heroes: each duels the enemy's first free front hero, or strikes its rankers."""
     (a, b), (table, rng, acc), log = units, ctx, []
-    for hero in _acting(a, ("front",)):
+    for hero in _acting(d, a, ("front",)):
         if hero["id"] in dueled:
             continue
         foe = None if s["rout"] else next((h for h in _heroes(b, ("front",)) if h["id"] not in dueled), None)
@@ -1546,7 +1564,7 @@ def _duel(d: Data, units: tuple, pair: tuple, table: str, rng, s: dict, dueled: 
     (a, b), (hero, foe), log = units, pair, []
     dueled.update((hero["id"], foe["id"]))
     for x, y, ux, k in ((hero, foe, a, s["att"]), (foe, hero, b, s["dfd"])):
-        if x["state"] != "up" or _held(x) or y["state"] != "up":
+        if x["state"] != "up" or not _strikes(d, x) or y["state"] != "up":
             continue
         side = _hero_side(ux, x, table, d)
         atk = max(0, side["skill"])
@@ -1579,7 +1597,7 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
         log += _logged({"kind": "volley", **v}, t)
         if v.get("behind") is not None:
             log += _beaten_fire(d, us, table, rng, acc, v)
-        for hero in _acting(us[v["att"]], ("ranged",)):
+        for hero in _acting(d, us[v["att"]], ("ranged",)):
             wx = shot_weather(d, field, hero["weapon"], v["dist"], v["from"], v["to"], {"kit": hero.get("kit"), "blind": v.get("blind", False)})
             up, longer = height_edge(d, field, hero["weapon"], v["from"], v["to"])
             if wx["blocked"] or field_range(d, hero["weapon"], v["dist"], wx["reach"] + longer) is None:
@@ -2421,8 +2439,15 @@ def allowance(d: Data, u: dict) -> int:
         if u.get("limbering") or u.get("resupplying"):
             return 0
         if not u.get("limbered"):
-            return d.units["artillery"]["pushed"]
-    return d.units["mounted_move"] if u.get("mounted") else form(d, u)["move"]
+            return _carrying(d, u, d.units["artillery"]["pushed"])
+    return _carrying(d, u, d.units["mounted_move"] if u.get("mounted") else form(d, u)["move"])
+
+
+def _carrying(d: Data, u: dict, move: int) -> int:
+    """A unit's move, slowed (heroes.carried, at least 1 hex) if it has a lamed hero with it."""
+    if move and any(lamed(d, h) for h in u.get("heroes", [])):
+        return max(1, math.floor(move * d.units["heroes"]["carried"]))
+    return move
 
 
 def turn_cost(d: Data, u: dict) -> int:

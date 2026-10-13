@@ -425,6 +425,18 @@ def _fuse_text(bands) -> str:
     return ", ".join(out)
 
 
+def _one_arm_text(cb: dict) -> str:
+    """'an arm, grip, hand useless or arm useless' impairment, for the rules."""
+    names = [x.replace("_", " ") for x in cb.get("one_arm", [])]
+    return "an " + (", ".join(names[:-1]) + " or " + names[-1] if len(names) > 1 else "".join(names)) + " impairment"
+
+
+def _two_handed_text(d) -> str:
+    """The two-handed weapons, by short name."""
+    names = [w.get("short", w["name"]) for w in d.weapons.values() if w.get("two_handed")]
+    return ", ".join(dict.fromkeys(n if n[:2].isupper() else n.lower() for n in names))
+
+
 def _hero_rules(d) -> list[str]:
     H = d.units.get("heroes")
     if not H:
@@ -437,6 +449,9 @@ def _hero_rules(d) -> list[str]:
         "In a quiet exchange (his unit not in contact, not under fire, no losses) his worst-bleeding wound, from this battle or one he came with, gets first aid: "
         f"the best Leechcraft among his unit's heroes still up rolls, a success binding {d.wounds['combat']['first_aid']['bind']} steps of bleeding; with no one who has Leechcraft, his comrades bind one step at {H['first_aid']}%. "
         f"On a success an arm or leg bleeding {H['tourniquet_from']} or more is tourniqueted instead: it stops. "
+        "With an arm hurt (an arm wound, a lost grip, a useless hand or arm, either side) he cannot use a two-handed weapon (bows, crossbows, long guns, pole arms): he only defends, "
+        "here and in the roller. Lamed (a leg wound, cannot stand, collapsed, slowed) or down and carried, he halves his unit's move "
+        f"(times {H['carried']:g}, at least 1 hex) until it leaves him behind: then he is out of the battle. "
         "A leader adds his unit's leader modifier while he is up.",
     ]
 
@@ -902,12 +917,12 @@ def field_bundle(d) -> dict:
         tables[tid] = {"name": t["name"], "label": t.get("label", t["name"]), "battle": t.get("battle", "Other"),
                        "weapons": ws, "ranges": {w: rng3(table_ranges(d, tid, w)) for w in ws}}
     used = sorted({w for t in tables.values() for w in t["weapons"]})
-    keep = ("name", "short", "reach", "range", "threat", "armor_defeat", "off_map", "string", "ignition")
+    keep = ("name", "short", "reach", "range", "threat", "armor_defeat", "off_map", "string", "ignition", "two_handed")
     mechs = sorted({m[0] for w in used for m in rng3(mechanism_ranges(d, w))})
     return {
         "generated": date.today().isoformat(),
         "units": d.units,
-        "combat": {k: d.wounds["combat"][k] for k in ("critical_fraction", "graze_margin", "margin_bands", "range", "pain_step", "stop_check", "states", "impair", "cap", "first_aid")},
+        "combat": {k: d.wounds["combat"][k] for k in ("critical_fraction", "graze_margin", "margin_bands", "range", "pain_step", "stop_check", "states", "impair", "cap", "first_aid", "one_arm")},
         "in_fight": d.disease.get("in_fight") or {},
         "tracking": {k: d.wounds["tracking"][k] for k in ("blood_pool", "thresholds", "pain_cap", "bleed_per_round")},
         "blood_per": d.wounds["combat"]["characteristics"]["blood"]["per"],
@@ -1451,7 +1466,8 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
     story += [Spacer(1, 6), Paragraph(f"Wound penalties (add up, each total capped at -{CB['cap']}%)", H2),
               Paragraph("Arm wounds count against the <b>weapon arm</b> (the side of the fighter's weapon hand, usually right) or the "
                         "<b>shield arm</b>. Wounds elsewhere that impair an arm count against the weapon arm. "
-                        "Each impairment counts once however many wounds cause it. A fighter with neither hand usable cannot wield a weapon.", S),
+                        "Each impairment counts once however many wounds cause it. A fighter with neither hand usable cannot wield a weapon. "
+                        f"With {_one_arm_text(CB)} on either arm he cannot attack with a two-handed weapon ({_two_handed_text(d)}): he only defends.", S),
               Spacer(1, 3), grid(prow, [2.3 * inch, 0.8 * inch, 0.8 * inch, W - 3.9 * inch], font=8), Spacer(1, 8),
               Paragraph("Severity from the margin of success", H2), grid(brow, [2.6 * inch] + [(W - 2.6 * inch) / 3] * 3, font=8),
               Spacer(1, 4),

@@ -26,9 +26,10 @@ When an item is done, delete it here and note it in the pull request that closes
   open windows.
 - **Heroes on the field map.** First aid uses his unit's best Leechcraft and a tourniquet,
   but there is no cautery, no stretcher-bearers carrying him out of the fight, and the
-  followers (who have no Leechcraft) never heal a hero. Impairments count against attack and
-  defence only. A useless leg does not
-  slow his unit, and an off-hand fighter is not stopped from wielding a two-handed weapon.
+  followers (who have no Leechcraft) never heal a hero. A lamed hero slows his whole unit
+  or is left behind: comrades cannot carry him to the rear, and a hero left behind is not
+  recovered by whoever holds the ground. There is no two-handed great sword among the
+  weapons, so no sword is barred to a one-armed hero.
 - **Indirect fire, simplified.** A battery can be placed on the map, but a placed one off
   the map's edge cannot be clicked: it stands on a hex of the map or has no place. Its crews'
   wounds are counted but not named. A fire plan has at most two legs from the page, though

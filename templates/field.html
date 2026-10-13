@@ -1150,13 +1150,32 @@ function removeHero(id){
   for (const u of S.units) u.heroes = (u.heroes || []).filter(h => h.id !== id);
   render();
 }
+function leaveHero(id){                           // a lamed or carried hero left behind: out of the battle, and his unit no longer slowed
+  const u = S.units.find(x => (x.heroes || []).some(h => h.id === id)), h = u?.heroes.find(x => x.id === id);
+  if (!h || !lamed(h)) return;
+  h.left = true;
+  S.msg = `${h.name} is left behind by ${unitName(u)}: out of the battle. They move at ${allowance(u)} hexes.`;
+  save();
+  render();
+}
+function heroButton(h, setup){                    // Remove (setting up), or Leave him (his unit moving, he slows it)
+  if (setup) return `<button class="small" data-hero="${h.id}" aria-label="Remove ${esc(h.name)}">Remove</button>`;
+  if (lamed(h) && h.unit.side === moving()) return `<button class="small" data-leave="${h.id}" aria-label="Leave ${esc(h.name)} behind">Leave him</button>`;
+  return "";
+}
+function limbText(h){                             // " · lamed, slows unit" / " · left behind" / " · one arm: defends only"
+  if (h.left) return " \u00b7 left behind";
+  let lame = "";
+  if (lamed(h)) lame = h.state === "down" ? " \u00b7 carried, slows unit" : " \u00b7 lamed, slows unit";
+  const arm = h.state === "up" && FD.weapons[h.weapon]?.two_handed && heroPenalties(h)[2].includes("one_arm") ? " \u00b7 one arm: defends only" : "";
+  return lame + arm;
+}
 function renderHeroes(){
   const setup = S.phase === "setup", place = { front: "front rank", ranged: "shooting", behind: "behind" };
   $("#heroes").innerHTML = allHeroes().map(h => {
     const wounds = h.wounds.length ? " · " + nWounds(h.wounds.length) : "", [pa, pd] = heroPenalties(h), [blood, pool] = heroBlood(h);
     const hold = held(h) ? ` (${FD.combat.states[held(h)].name.toLowerCase()})` : "", body = ` · Blood ${blood}/${pool}${h.dying ? ", dying" : ""}`;
-    const rm = setup ? `<button class="small" data-hero="${h.id}" aria-label="Remove ${esc(h.name)}">Remove</button>` : "";
-    return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(unitName(h.unit))} · ${place[h.role]}${h.leader ? " · leader" : ""}</span></span><span class="meta">${Math.max(0, h.attack - pa)}/${Math.max(0, h.defence - pd)}% · ${h.state}${hold}${sickText(h)}${wounds}${body}</span>${rm}</li>`;
+    return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(unitName(h.unit))} · ${place[h.role]}${h.leader ? " · leader" : ""}</span></span><span class="meta">${Math.max(0, h.attack - pa)}/${Math.max(0, h.defence - pd)}% · ${h.state}${hold}${sickText(h)}${limbText(h)}${wounds}${body}</span>${heroButton(h, setup)}</li>`;
   }).join("");
   const fighters = setup ? rollerFighters() : [];
   $("#hero-box").hidden = !setup;
@@ -1188,7 +1207,7 @@ function unitSvg(u){
   const [x, y] = xy(u.pos), a = -(60 * u.facing + 30) * Math.PI / 180, tip = [x + 11 * Math.cos(a), y + 11 * Math.sin(a)];
   const l = [x + 5 * Math.cos(a + 1.9), y + 5 * Math.sin(a + 1.9)], r = [x + 5 * Math.cos(a - 1.9), y + 5 * Math.sin(a - 1.9)];
   g += `<polygon class="arrow" points="${[tip, l, r].map(p => p.map(v => v.toFixed(1)).join(",")).join(" ")}"/>`;
-  const star = (u.heroes || []).some(h => h.state === "up") ? " \u2605" : "";
+  const star = (u.heroes || []).some(h => h.state === "up" && !h.left) ? " \u2605" : "";
   const low = u.prone ? " \u2193" : "";   // gone to ground
   const aboard = u.riders ? ` +${u.riders.men}` : "";   // riders in the carriers
   g += `<text class="ulabel" x="${x.toFixed(1)}" y="${(y - 8).toFixed(1)}">${esc(u.name)} ${u.men}${aboard}${star}${low}</text></g>`;
@@ -1309,7 +1328,7 @@ function renderSel(){
     + (u.prone ? `<dt>Ground</dt><dd>Gone to ground: shots at it −${FD.units.to_ground.cover}%; it cannot move until it gets up</dd>` : "")
     + (u.fixed ? `<dt>Fixed line</dt><dd>Laid on ${u.fixed[0] + 1},${u.fixed[1] + 1}: in the dark, with no target it can see, it fires blind at any enemy within ${nOf(FD.weather.light.fixed_line.width, "hex", "hexes")} of the line (−${FD.weather.light.fixed_line.aim}%)</dd>` : "")
     + (u.lost ? `<dt>Lost</dt><dd>It lost its way in the dark: it cannot move next exchange, but may turn</dd>` : "")
-    + `<dt>Moves</dt><dd>${allowance(u)} hexes; turning costs ${turnCost(u)} a step</dd>`;
+    + `<dt>Moves</dt><dd>${allowance(u)} hexes${(u.heroes || []).some(lamed) ? " (slowed by a wounded hero)" : ""}; turning costs ${turnCost(u)} a step</dd>`;
 }
 function renderGunOrders(u, setup){               // the Resupply button and the target picker, for batteries only
   const b = $("#btn-resupply"), box = $("#target-box"), gun = !!u && isBattery(u);
@@ -1826,7 +1845,11 @@ function init(){
   $("#btn-add-hero").onclick = addHero;
   $("#sel-hero").onchange = heroDefaults;
   $("#sel-hero-unit").onchange = heroDefaults;
-  $("#heroes").addEventListener("click", e => { const b = e.target.closest("button[data-hero]"); if (b) removeHero(+b.dataset.hero) });
+  $("#heroes").addEventListener("click", e => {
+    const b = e.target.closest("button[data-hero]"), l = e.target.closest("button[data-leave]");
+    if (b) removeHero(+b.dataset.hero);
+    else if (l) leaveHero(+l.dataset.leave);
+  });
   $("#btn-heroes-back").onclick = heroesToRoller;
   $("#sel-table").onchange = e => { S.table = e.target.value; const ok = FD.tables[S.table].weapons; S.units.forEach(u => { if (!ok.includes(u.weapon)) u.weapon = ok[0] }); fillChoices(); render() };
   ["#in-side0", "#in-side1"].forEach((id, k) => { $(id).onchange = e => { const old = S.sides[k], v = e.target.value.trim() || old; S.units.forEach(u => { if (u.side === old) u.side = v }); S.sides[k] = v; render() } });

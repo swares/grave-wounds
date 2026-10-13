@@ -254,6 +254,9 @@ combat:
     grip:        {weapon_arm: {attack: 30, off_hand: true}, shield_arm: {no_shield: true}}
     hand_useless: {weapon_arm: {attack: 30, off_hand: true}, shield_arm: {no_shield: true}}
     arm_useless: {weapon_arm: {attack: 40, off_hand: true}, shield_arm: {defence: 10, no_shield: true}}
+  # Impairments on either arm that stop a fighter using a two-handed weapon (weapons.yaml
+  # two_handed: bows, crossbows, long guns, pole arms): he cannot attack with it (flag one_arm).
+  one_arm: [arm, grip, hand_useless, arm_useless]
   # Situations switched on automatically by wounds (if the table offers them).
   auto_situations:
     defender_down: target_down      # defender cannot stand
