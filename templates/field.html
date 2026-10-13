@@ -106,6 +106,8 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .aim{font:700 9px var(--mono);fill:var(--blood);text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .burst{font:700 7px var(--mono);fill:#c46a1a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .smoke{fill:#9a9a9a;fill-opacity:.55;stroke:none;pointer-events:none}
+.objective{fill:none;stroke:#8a1f1f;stroke-width:1.6;pointer-events:none}
+.objective-t{font:bold 8px system-ui,sans-serif;fill:#8a1f1f;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .lz{fill:none;stroke:#2b5d8a;stroke-width:1.2;stroke-dasharray:2 1.5;pointer-events:none}
 .lz-h{font:bold 7px system-ui,sans-serif;fill:#2b5d8a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .lit{fill:#ffe680;fill-opacity:.22;stroke:#e0b000;stroke-opacity:.6;stroke-width:.8;pointer-events:none}
@@ -764,12 +766,14 @@ function minesSvg(){                              // marked minefields, hidden o
     return `<polygon class="mine${hid}" points="${pts(xy(h))}"/><text class="mine-t" x="${f1(x)}" y="${f1(y + 3)}">${MINE_TAG[m.kind] || "M"}</text>`;
   }).join("");
 }
+function objectiveSvg(h){ const [x, y] = xy(h); return `<circle class="objective" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.95)}"><title>The commander's objective</title></circle><circle class="objective" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.55)}"/><text class="objective-t" x="${f1(x)}" y="${f1(y)}">O</text>` }
 function postSvg(p){ const [x, y] = xy(p.at); return `<rect class="post${p.overrun ? " gone" : ""}" x="${f1(x - 5)}" y="${f1(y - 3.5)}" width="10" height="7" rx="1.5"><title>${esc(poss(p.side))} aid post${p.overrun ? " (overrun)" : ""}</title></rect><text class="post-t" x="${f1(x)}" y="${f1(y)}">AP</text>` }
 function supportSvg(){                            // smoke, landing zones, aid posts, heroes going back or lying out, flares, fixed lines, flashes, the hexes fire is called on, batteries, and where the last exchange's shells burst
   const F = S.field, heroes = allHeroes();
   return [
     Object.keys(F.smoke || {}).map(k => `<polygon class="smoke" points="${pts(xy(k.split(",").map(Number)))}"/>`),
     (F.lz || []).map(lzSvg),
+    F.objective ? objectiveSvg(F.objective) : "",
     minesSvg(),
     (F.posts || []).map(postSvg),
     heroes.filter(h => h.going).map(h => glyph("party", "\u21a9")(h.going.pos)),
@@ -918,6 +922,7 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   fetched: (l, nm) => ({ cls: "hero", text: `${l.name} is picked up by ${nm(l.unit)}: he goes with them now.` }),
   found: (l, nm) => ({ cls: "morale", text: `${l.name} (${nm(l.unit)}) is found by ${l.at_post ? "the enemy overrunning the aid post" : nm(l.by)}: ${l.fate === "prisoner" ? "taken prisoner" : "killed"} (rolled ${l.roll}, quarter ${l.chance}% or less).` }),
   mines: (l, nm) => ({ cls: "morale", text: mineText(l, nm) }),
+  objective: l => ({ cls: "", text: objectiveText(l) }),
   overrun_post: l => ({ cls: "morale", text: `${poss(l.side)} aid post at ${hexName(l.at)} is overrun.` }),
 };
 OTHER_LINES.counter = OTHER_LINES.barrage;
@@ -927,6 +932,11 @@ OTHER_LINES.herobled = OTHER_LINES.duel;
 function otherLine(l, nm){                       // morale, breach and hero lines (null: nothing to show); undefined for blows by units
   const f = Object.hasOwn(OTHER_LINES, l.kind) ? OTHER_LINES[l.kind] : null;
   return f ? f(l, nm) : undefined;
+}
+function objectiveText(l){                      // who holds the objective after the exchange
+  const at = `The objective at ${hexName(l.hex)}`;
+  if (l.held !== null) return `${at} is held by ${l.held}.`;
+  return l.sides.length ? `${at} is contested by ${l.sides.join(" and ")}.` : `${at} is held by no one.`;
 }
 function landText(l){                            // men landing by air, or waved off
   const at = `${l.lz[0] + 1},${l.lz[1] + 1}`;
@@ -1063,18 +1073,24 @@ function aiMemory(){                              // where the commander last sa
   return S.aiMemory;
 }
 const COMMIT_WHY = { broke: "one of its units has broken", gap: "the enemy is close", exploit: "to exploit an enemy unit that broke" };
+const ORDER_TEXT = {                              // (who, them, o, up, facing) -> the order's line
+  commit: (who, them, o) => `${who} are committed from the reserve: ${COMMIT_WHY[o.why] || o.why}.`,
+  charge: (who, them, o, up) => `${who} ${up}charge ${them}.`,
+  move: (who, them, o, up) => `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} toward ${them}.`,
+  advance: (who, them, o, up, facing) => `${who} ${up}advance ${nOf(o.cost, "hex", "hexes")} on the objective${facing}.`,
+  fall_back: (who, them, o, up, facing) => `${who} ${up}fall back ${nOf(o.cost, "hex", "hexes")} toward the objective${facing}.`,
+  turn: (who, them) => `${who} turn to face ${them}.`,
+  ground: who => `${who} go to ground under fire.`,
+};
 function orderText(o){                            // "Billmen (Yorkists) move 4 hexes toward Archers (Lancastrians)."
   const t = S.units[o.target];
   let them = "the enemy";
   if (t) them = o.last ? `where ${unitName(t)} were last seen (exchange ${o.last})` : unitName(t);
   if (o.act === "fire") return `${supports()[o.battery]?.name || "A battery"} are called on ${them} at ${hexName(o.hex)}.`;
-  const who = unitName(S.units[o.unit]);
-  if (o.act === "commit") return `${who} are committed from the reserve: ${COMMIT_WHY[o.why] || o.why}.`;
-  if (o.act === "charge") return `${who} ${o.up ? "get up and " : ""}charge ${them}.`;
-  if (o.act === "move") return `${who} ${o.up ? "get up and " : ""}move ${nOf(o.cost, "hex", "hexes")} toward ${them}.`;
-  if (o.act === "turn") return `${who} turn to face ${them}.`;
-  if (o.act === "ground") return `${who} go to ground under fire.`;
-  return `${who} hesitate (rolled ${o.roll}): they hold where they are.`;
+  const who = unitName(S.units[o.unit]), f = Object.hasOwn(ORDER_TEXT, o.act) ? ORDER_TEXT[o.act] : null;
+  if (!f) return `${who} hesitate (rolled ${o.roll}): they hold where they are.`;
+  const up = o.up ? "get up and " : "", facing = t ? ", facing " + them : "";
+  return f(who, them, o, up, facing);
 }
 function aiUndo(){                                // its units back where they began this move, for the player to move by hand
   if (!aiThisMove() || !S.aiDone.undo) return;
@@ -1210,6 +1226,7 @@ function fillTools(){
   $("#sel-tool").innerHTML = `<option value="unit">Place and move units</option><option value="gate">Open or bar a gate</option>`
     + (WXD.light ? `<option value="flare">Fire a flare (lights the hexes round it)</option>` : "")
     + (FD.units.heliborne ? `<option value="lz">Mark or clear a landing zone</option>` : "")
+    + `<option value="objective">Mark or clear the enemy commander's objective</option>`
     + `<optgroup label="Aid posts"><option value="post:0">Aid post: side A</option><option value="post:1">Aid post: side B</option></optgroup>`
     + `<optgroup label="Minefields (1939 on; click again to clear)">${mineOptions()}</optgroup>`
     + `<optgroup label="Paint the ground">${g}</optgroup><optgroup label="Works on a hex side (click just inside it, on the high side)">${e}</optgroup><optgroup label="Works in a hex">${h}</optgroup>`;
@@ -1218,7 +1235,7 @@ function fillTools(){
   $("#sel-cold").innerHTML = `<option value="">Not freezing hard</option>` + Object.entries(WXD.cold?.levels || {}).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-light").innerHTML = Object.entries(WXD.light?.levels || { day: { name: "Daylight" } }).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#legend").innerHTML = Object.entries(FD.units.ground).filter(([k]) => k !== "open").map(([k, v]) => `<span><i class="g-${k}" style="background:var(--g-${k})"></i>${esc(v.name)}</span>`).join("")
-    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span>\u2193 gone to ground; \u25e0 emplaced (a dashed parapet across its front)</span><span>AP: aid post; \u21a9 a hero going back; \u25bc a hero lying out</span><span><i class="smoke-key" style="background:#e9d3cc;border:1px dashed #7a2a1a"></i>a.p., a.t., mix: minefield (hidden ones once found)</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
+    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span><i class="smoke-key" style="background:none;border:1.5px solid #8a1f1f;border-radius:50%"></i>O: the enemy commander's objective</span><span>\u2193 gone to ground; \u25e0 emplaced (a dashed parapet across its front)</span><span>AP: aid post; \u21a9 a hero going back; \u25bc a hero lying out</span><span><i class="smoke-key" style="background:#e9d3cc;border:1px dashed #7a2a1a"></i>a.p., a.t., mix: minefield (hidden ones once found)</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
 }
 function clickSide(e, h){                         // the neighbour across the hex side nearest the click
   const svg = $("#map svg"), pt = svg.createSVGPoint();
@@ -1231,6 +1248,7 @@ function useTool(e, h){                           // paint the ground, or build 
   if (tool === "gate") return toggleGate(h, clickSide(e, h));
   if (tool === "flare") return fireFlare(h);
   if (tool === "lz") return toggleLz(h);
+  if (tool === "objective") return toggleObjective(h);
   if (tool.startsWith("post:")) return placePost(h, Number(tool.slice(5)));
   if (tool.startsWith("mine:")) return placeMine(h, tool.split(":")[1], tool.endsWith(":hidden"));
   if (tool === "h:wreck") return placeWreck(h);
@@ -1263,6 +1281,13 @@ function toggleEdge(h, n, type){
   }
   if (items.length) S.field.works.edges[k] = items;
   else delete S.field.works.edges[k];
+}
+function toggleObjective(h){                      // the enemy commander's objective: marked, moved or cleared (at any time)
+  const o = S.field.objective, same = !!o && o[0] === h[0] && o[1] === h[1];
+  if (same) delete S.field.objective; else S.field.objective = [...h];
+  const R = FD.units.commander.objective, who = S.ai ? S.ai.side : "the commander's side";
+  if (same){ S.msg = `Objective at ${hexName(h)} cleared: the commander goes for the enemy only.`; return }
+  S.msg = `Objective marked at ${hexName(h)} for ${who}. Attacking, its units take it and hold it (within ${nOf(R.radius, "hex", "hexes")}); holding, they keep within ${nOf(R.hold, "hex", "hexes")} of it.` + (S.ai ? "" : " Choose a side for the enemy commander to use it.");
 }
 function toggleLz(h){                            // a landing zone, marked or cleared (set-up only)
   if (S.phase !== "setup"){ S.msg = "Landing zones are marked before the battle starts."; return }

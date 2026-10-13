@@ -272,6 +272,22 @@ general. All its numbers are in units.yaml `commander`.
   off) on the straight way to a hex costs that hex 5 points for green men, 40 for regulars
   and 80 for veterans. Green men may still blunder in; veterans go round. Hidden fields it
   has not found it cannot see.
+- **An objective.** With **Clicking the map: Mark or clear the enemy commander's objective**
+  the GM marks one hex (O on the map) for the commander's side, at any time; click it again
+  to clear it. Without one, the commander plays as above.
+  - **Attacking**, a unit within 1 hex of the objective holds it: it stays, turning to its
+    target, and charges only with the odds a holding side wants. A unit with no enemy to go
+    for advances on it, and so does one that would only stand or turn where it is (a
+    shooter already in range, say) while its target is not guarding the objective (within
+    4 hexes of it). It advances as far as its allowance lets it, to the hex nearest the
+    objective (cover from its target and known minefields count as above), facing its
+    target, else the objective.
+  - **Holding**, a unit more than 3 hexes from the objective falls back toward it, facing
+    its target, unless it can charge. One with no enemy to go for and within 3 hexes stays.
+  - Its units weigh an enemy within 4 hexes of the objective 30 points more as a target.
+  - After each exchange the log says who holds it: the one side with a standing unit
+    within 1 hex of it, "contested" if both have, or no one (`commander.objective` in
+    `data/units.yaml`).
 - **Its guns.**
   - Its batteries and anti-tank guns on the map turn to face the nearest enemy it knows of.
     It never moves, limbers or displaces them.
@@ -286,8 +302,11 @@ What it does not do yet:
   not tell the units ordered after it until the next move.
 - It leaves alone smoke, illumination, creeping barrages, counter-battery fire, aircraft,
   air controllers, vehicles' riders, fixed lines and works.
-- Its reserve has no orders beyond holding and, once committed, fighting: it does not
-  counter-attack a named place or plug a named gap.
+- Its reserve has no orders beyond holding and, once committed, fighting: it does not plug
+  a named gap, and reserve units ignore the objective until committed.
+- It has one objective, the same for every unit: no phase lines, no second objective once
+  the first is taken, no feints or scouting. Victory is still the GM's call; the objective
+  line in the log only says who stands on it.
 - It plays only on the field map, not the travel map.
 
 ## From the travel map

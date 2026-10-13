@@ -113,6 +113,10 @@ sometimes hesitate. With no enemy in sight, a unit holds.
 - **Reserve.** Regulars and veterans hold back their rearmost units, and commit one when a
   unit of theirs breaks or the enemy comes close; veterans also commit to exploit an enemy
   rout. The GM can mark reserves instead.
+- **Objective.** The GM can mark a hex as its objective. Attacking, its units advance on it
+  when they have nothing better to do and hold it once there (within {{c_obj_radius}}
+  hex); holding, units more than {{c_obj_hold}} hexes from it fall back to it. Enemies near
+  it make better targets. The log says who holds it after each exchange.
 - **Minefields.** It steers round minefields it knows of.
 - **Guns.** It turns its guns to face the enemy and calls its off-map batteries on what it
   sees.

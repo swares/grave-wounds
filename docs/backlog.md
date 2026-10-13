@@ -18,10 +18,11 @@ When an item is done, delete it here and note it in the pull request that closes
   the field map. It attacks or holds by its units' quality, knows only what its units see
   (remembering last sightings for a few exchanges), picks targets by threat and weakness,
   holds back and commits a reserve, steers round minefields it knows of, turns its guns and
-  calls its off-map batteries; Undo puts its move back. It looks once at the start of each
-  move. Still left out: smoke, illumination, creeping barrages, counter-battery fire and
-  aircraft; moving, limbering or displacing guns; air controllers, riders, fixed lines and
-  works; any plan beyond the next move (a place to take or hold, feints, scouting). It does
+  calls its off-map batteries, and takes or holds an objective hex the GM marks; Undo puts
+  its move back. It looks once at the start of each move. Still left out: smoke,
+  illumination, creeping barrages, counter-battery fire and aircraft; moving, limbering or
+  displacing guns; air controllers, riders, fixed lines and works; any plan beyond one
+  objective (phase lines, a second objective, feints, scouting). It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model
   with a key the player supplies, to explain its orders in prose.
 
@@ -85,8 +86,7 @@ When an item is done, delete it here and note it in the pull request that closes
   the front), guns emplaced before the battle and anti-tank guns' own rounds are in. Still
   left out: shields on machine guns and field guns, digging in during the battle, anti-tank
   guns' limbering and towing, tank riders ("desant") and riders firing from the vehicle, mines laid or lifted
-  during the battle (no sappers clearing a lane), the enemy commander steering round known
-  minefields, and vehicles' night sights. A minefield is set off along a straight line from
+  during the battle (no sappers clearing a lane), and vehicles' night sights. A minefield is set off along a straight line from
   where a unit's move began, not along the path it took. No battlefield has minefields yet:
   to be laid only where the accounts name them. Crews who bail out simply leave the fight.
 - **Fire at hidden men, first cut.** Men gone to ground, in bunkers or in buildings are now hit
