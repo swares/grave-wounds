@@ -1930,13 +1930,24 @@ def _fire_mission(d: Data, us: list, table: str, weapon: str, rng, acc: tuple, f
     elif m.get("battery") is not None:
         log = _counter_fire(d, field, (k, b, shells, K), (table, weapon), rng)
     else:
-        scatter = K["scatter"] // d.units["indirect"]["air"]["fac"]["scatter"] if fac else K["scatter"]
-        log = _bombard(d, (us, table, weapon, rng, acc, field, under), k, b, shells, scatter)
-        if fac:
-            log[0]["fac"] = True
-        if air:
-            log += _ground_fire(d, us, (k, b), -(-shells // K["rate"]), rng)
+        log = _on_hex(d, (us, table, weapon, rng, acc, field, under), (k, b, shells), (air, fac))
     _mission_on(b, m, field.get("size"))
+    return log
+
+
+def _on_hex(d: Data, ctx: tuple, fire: tuple, flight: tuple) -> list:
+    """Shells or an air attack on a hex (fire: support index, battery, shells; flight: whether
+    aircraft, and whether a forward air controller talks them on: less scatter), then the
+    ground fire at the aircraft."""
+    us, rng = ctx[0], ctx[3]
+    (k, b, shells), (air, fac) = fire, flight
+    K = d.units["indirect"]["kinds"][b["kind"]]
+    scatter = K["scatter"] // d.units["indirect"]["air"]["fac"]["scatter"] if fac else K["scatter"]
+    log = _bombard(d, ctx, k, b, shells, scatter)
+    if fac:
+        log[0]["fac"] = True
+    if air:
+        log += _ground_fire(d, us, (k, b), -(-shells // K["rate"]), rng)
     return log
 
 

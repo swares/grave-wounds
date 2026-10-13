@@ -648,13 +648,14 @@ function fireMission(ctx, k, b){                  // on an enemy battery or a he
     lightUp(field, m.hex, K.illum || 0, 1);
     log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells, at: m.hex, bursts: [], smoke: false, illum: true });
   } else if (m.battery !== undefined && m.battery !== null) log.push(...counterFire(field, [k, b, shells, K], [ctx.table, ctx.weapon], rng));
-  else {
-    const at = log.length;
-    bombard(ctx, k, b, shells, fac ? Math.floor(K.scatter / UD.indirect.air.fac.scatter) : K.scatter);
-    if (fac) log[at].fac = true;
-    if (air) log.push(...groundFire(us, [k, b], Math.ceil(shells / K.rate), rng));
-  }
+  else onHex(ctx, [k, b, shells], [air, fac]);
   missionOn(b, m, field.size);
+}
+function onHex(ctx, fire, flight){                 // shells or an air attack on a hex (less scatter with a controller), then ground fire at the aircraft
+  const { us, rng, log } = ctx, [k, b, shells] = fire, [air, fac] = flight, K = UD.indirect.kinds[b.kind], at = log.length;
+  bombard(ctx, k, b, shells, fac ? Math.floor(K.scatter / UD.indirect.air.fac.scatter) : K.scatter);
+  if (fac) log[at].fac = true;
+  if (air) log.push(...groundFire(us, [k, b], Math.ceil(shells / K.rate), rng));
 }
 function facSees(us, field, b, h){                 // a forward air controller (fac) of the aircraft's side, on its feet, sees hex h
   return us.some(u => u.fac && u.side === b.side && !out_(u) && sees(field, u, h, sightHexes(field, h, seerOf(u))));
