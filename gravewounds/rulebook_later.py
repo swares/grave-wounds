@@ -140,9 +140,9 @@ def _eras(d: Data) -> str:
 COMMON = ("brawl", "parry", "dodge")
 
 
-def _era_start(E: dict) -> int:
+def _era_start(era: dict) -> int:
     """The first year in an era's name: 'Thirty Years' War (1618-1648)' -> 1618."""
-    digits = E["name"].split("(")[-1][:4]
+    digits = era["name"].split("(")[-1][:4]
     return int(digits) if digits.isdigit() else 0
 
 
@@ -238,7 +238,7 @@ def example(d: Data) -> dict:
           "gren": gren["name"], "gren_first": gren["name"].split()[0], "medic": medic["name"], "medic_first": medic["name"].split()[0],
           "medic_skill": medic["skills"]["leechcraft"], "kit": kit["name"], "squad": next(t["name"] for t in E["templates"] if t["id"] == "squad").lower(),
           "followers": sum(n for _, n in next(t for t in E["templates"] if t["id"] == "squad")["followers"])}
-    ex.update(_ak(d, mg), **_grenade(d, gren, mg["kit"]), **_bind(d, mg, medic))
+    ex.update(_ak(d, mg), **_grenade(d, mg["kit"]), **_bind(d, medic))
     return ex
 
 
@@ -262,7 +262,7 @@ def _band(d: Data, zone: str) -> int:
     return next(b["serious"] for b in d.wounds["combat"]["margin_bands"]["ballistic"] if zone in b["zones"])
 
 
-def _grenade(d: Data, gren: dict, kit_id: str) -> dict:
+def _grenade(d: Data, kit_id: str) -> dict:
     """A grenade's fragment into the grenadier's chest, and the vest that stops it."""
     q, roll = d.units["quality"]["regular"], 25
     hit = C.attack_roll(d, q["attack"], roll)
@@ -276,7 +276,7 @@ def _grenade(d: Data, gren: dict, kit_id: str) -> dict:
             "r_steps": steps, "r_after": reduce_severity(sev, steps), "r_rifle": f"{rifle} steps" if rifle else "nothing", "r_vest": mat[:1].lower() + mat[1:]}
 
 
-def _bind(d: Data, mg: dict, medic: dict) -> dict:
+def _bind(d: Data, medic: dict) -> dict:
     """The medic binds the gunner's arm."""
     fx = compose_wound(d, "upper_arm_r", "ballistic", "serious")
     roll = 12
