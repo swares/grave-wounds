@@ -314,19 +314,25 @@ def hero_fates(d: Data, units: list, table: str, rng) -> list:
     under heroes.quarter % for the war makes him a prisoner, else he is killed. -> [{unit, hero,
     name, fate (found, prisoner or killed), roll, chance}], unit by unit."""
     Q, out = d.units["heroes"]["quarter"], []
-    up = {u["side"] for u in units if u["men"] > 0 and u["state"] in ("steady", "shaken")}
+    up = {u["side"] for u in units if standing(u)}
     chance = Q.get((d.tables.get(table) or {}).get("battle"), Q["default"])
     for i, u in enumerate(units):
-        gone = u["men"] <= 0 or u["state"] not in ("steady", "shaken")
-        for h in u.get("heroes", []):
-            if h["state"] == "dead" or h.get("carried") or not (h.get("left") or (gone and h["state"] == "down")):
-                continue
+        for h in (h for h in u.get("heroes", []) if _lying_out(u, h)):
+            line = {"unit": i, "hero": h["id"], "name": h["name"]}
             if u["side"] in up or not up:
-                out.append({"unit": i, "hero": h["id"], "name": h["name"], "fate": "found"})
+                out.append({**line, "fate": "found"})
                 continue
             roll = rng.randint(1, 100)
-            out.append({"unit": i, "hero": h["id"], "name": h["name"], "fate": "prisoner" if roll <= chance else "killed", "roll": roll, "chance": chance})
+            out.append({**line, "fate": "prisoner" if roll <= chance else "killed", "roll": roll, "chance": chance})
     return out
+
+
+def _lying_out(u: dict, h: dict) -> bool:
+    """A hero still on the field who cannot leave it with his unit: left behind, or down with a
+    unit that is no longer standing (not dead, not carried back)."""
+    if h["state"] == "dead" or h.get("carried"):
+        return False
+    return bool(h.get("left")) or (not standing(u) and h["state"] == "down")
 
 
 def _off_field(hero: dict) -> bool:
@@ -394,21 +400,30 @@ def _first_aid(d: Data, hero: dict, rng, healer: tuple | None = None, cautery: b
     line = {"hero": hero["id"], "name": hero["name"], "loc": w["loc"], **({"by": healer[1]} if healer else {})}
     if rng.randint(1, 100) > (healer[0] if healer else H["first_aid"]):
         return {**line, "stopped": False, "bleed": w["bleed"]}
-    limb = (d.loc.get(w["loc"]) or {}).get("zone") in ("arms", "legs")
-    if limb and w["bleed"] >= H["tourniquet_from"]:
-        w["bleed"], how = 0, "tourniquet"
-    elif cautery and not limb and w["bleed"] >= H["cautery"]["from_bleed"]:
-        w["bleed"], how = 0, "cauterise"
-        if not healer:
-            w["pain"] = min(d.wounds["tracking"]["pain_cap"], w.get("pain", 0) + H["cautery"]["pain"])
-            _sum_old_pain(hero, w)
-    else:
-        w["bleed"], how = max(0, w["bleed"] - (d.wounds["combat"]["first_aid"]["bind"] if healer else 1)), "bind"
+    how = _treat(d, hero, w, healer, cautery)
     w["aid"] = how                            # the roller marks it treated (on the field) when he goes back
     if any(w is o for o in hero.get("old") or []):
         T = d.wounds["tracking"]
         hero["old_bleed"] = sum(round(T["bleed_per_round"][o.get("bleed", 0)] * d.units["exchange_rounds"]) for o in hero["old"])
     return {**line, "stopped": True, "bleed": w["bleed"], "how": how}
+
+
+def _treat(d: Data, hero: dict, w: dict, healer: tuple | None, cautery: bool) -> str:
+    """A successful first aid on wound w: tourniquet a limb, cauterise the body (cautery), or
+    bind. -> how."""
+    H = d.units["heroes"]
+    limb = (d.loc.get(w["loc"]) or {}).get("zone") in ("arms", "legs")
+    if limb and w["bleed"] >= H["tourniquet_from"]:
+        w["bleed"] = 0
+        return "tourniquet"
+    if cautery and not limb and w["bleed"] >= H["cautery"]["from_bleed"]:
+        w["bleed"] = 0
+        if not healer:
+            w["pain"] = min(d.wounds["tracking"]["pain_cap"], w.get("pain", 0) + H["cautery"]["pain"])
+            _sum_old_pain(hero, w)
+        return "cauterise"
+    w["bleed"] = max(0, w["bleed"] - (d.wounds["combat"]["first_aid"]["bind"] if healer else 1))
+    return "bind"
 
 
 def _sum_old_pain(hero: dict, w: dict) -> None:

@@ -1546,8 +1546,9 @@ function renderMedics(u, setup){                  // the unit's medics, chosen b
   el.hidden = !u || isBattery(u) || !!u.vehicle;
   if (el.hidden) return;
   const q = u.medic_quality || u.quality, pct = FD.units.heroes.medic[q];
-  el.innerHTML = [0, 1, 2, 3, 4, 6, 8].map(n => `<option value="${n}">${n ? `${nOf(n, "medic")} (${q}, ${pct}%)` : "No medics"}</option>`).join("");
-  if (u.medics && ![...el.options].some(o => +o.value === u.medics)) el.insertAdjacentHTML("beforeend", `<option value="${u.medics}">${nOf(u.medics, "medic")} (${q}, ${pct}%)</option>`);
+  const label = n => (n ? nOf(n, "medic") + " (" + q + ", " + pct + "%)" : "No medics");
+  el.innerHTML = [0, 1, 2, 3, 4, 6, 8].map(n => `<option value="${n}">${label(n)}</option>`).join("");
+  if (u.medics && ![...el.options].some(o => +o.value === u.medics)) el.insertAdjacentHTML("beforeend", `<option value="${u.medics}">${label(u.medics)}</option>`);
   el.value = String(u.medics || 0);
   el.disabled = !setup;
 }

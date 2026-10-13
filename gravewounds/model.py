@@ -866,15 +866,16 @@ def _commander_errors(d: Data) -> list[str]:
     return errors + [f"units.yaml: commander.ground_with names unknown weapon {w}" for w in K.get("ground_with", []) if w not in d.weapons]
 
 
-def _field_care_errors(d: Data, H: dict) -> list[str]:
+def _field_care_errors(d: Data, heroes: dict) -> list[str]:
     """Heroes carried back, medics, cautery and quarter (units.yaml heroes)."""
     errors = [f"units.yaml: heroes.{k} must be a positive whole number" for k in ("bearers", "back_after")
-              if k in H and not (isinstance(H[k], int) and H[k] > 0)]
-    if "medic" in H and (set(H["medic"]) != set(d.units["quality"]) or not all(isinstance(v, int) and 0 <= v <= 100 for v in H["medic"].values())):
+              if k in heroes and not (isinstance(heroes[k], int) and heroes[k] > 0)]
+    med = heroes.get("medic")
+    if med is not None and (set(med) != set(d.units["quality"]) or not all(isinstance(v, int) and 0 <= v <= 100 for v in med.values())):
         errors.append("units.yaml: heroes.medic needs a % (0-100) for each quality")
     wars = {t.get("battle") for t in d.tables.values()}
-    errors += [f"units.yaml: heroes.cautery.battles names {w}, the war of no wound table" for w in (H.get("cautery") or {}).get("battles", []) if w not in wars]
-    Q = H.get("quarter") or {}
+    errors += [f"units.yaml: heroes.cautery.battles names {w}, the war of no wound table" for w in (heroes.get("cautery") or {}).get("battles", []) if w not in wars]
+    Q = heroes.get("quarter") or {}
     if Q and "default" not in Q:
         errors.append("units.yaml: heroes.quarter needs a default")
     errors += [f"units.yaml: heroes.quarter names {w}, the war of no wound table" for w in Q if w != "default" and w not in wars]
