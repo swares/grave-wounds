@@ -63,6 +63,8 @@ def penalties(d: Data, wounds: list[dict], blood_frac: float = 1.0, hand: str = 
                 notes.append(f"{imp.replace('_', ' ')}{where}" + (f" atk -{a}%" if a else "") + (f" def -{df}%" if df else ""))
     if "off_hand" in flags and any(k == ("grip", "shield_arm") or k == ("hand_useless", "shield_arm") or k == ("arm_useless", "shield_arm") for k in seen):
         flags.add("cannot_wield")
+    if any(k[0] in C.get("one_arm", ()) for k in seen):   # an arm hurt: no two-handed weapon
+        flags.add("one_arm")
     if fatigue and d.weather:
         lv = d.weather["fatigue"]["levels"][fatigue]
         if lv["penalty"]:

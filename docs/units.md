@@ -281,6 +281,18 @@ other instead of the rankers: each makes 3 telling attempts an exchange at the o
 hero of the unit that struck first first, with the full rules. The first hero of one side
 meets the first of the other; a hero left over strikes the rankers as usual.
 
+**Arms and legs.** With an arm hurt (an arm wound, a lost grip, a useless hand or arm,
+on either side) a hero cannot use a two-handed weapon: bows, crossbows, muskets and
+rifles, machine guns and rocket launchers, bills, pikes and poleaxes (`two_handed` in
+weapons.yaml). He only defends: no strikes, no shots, no attempts in a duel, though blows
+still fall on him and he still parries. A one-handed weapon he goes on using, off-hand if
+it is his weapon arm. A hero lamed (a leg wound, cannot stand, collapsed, slowed), from this
+battle or one he came with, or down and carried by his comrades, halves his unit's move (at
+least 1 hex) while he is with it. **Leave him** (on his line in the heroes' list, when his
+unit is moving) leaves him behind: he is out of the battle, takes no more blows and no first
+aid, no longer slows the unit, and a leader left behind counts as a leader down. His wounds
+still go back to the roller.
+
 A **leader** gives his unit +10 morale while he is up, and −20 once he is down. A unit with
 a hero still up shows a star on the map. The heroes' list shows each one's attack and defence
 after his wounds, his state and his Blood.

@@ -536,3 +536,8 @@ heroes:
   # instead on a success: it stops.
   first_aid: 60
   tourniquet_from: 2
+  # A hero lamed (any of these impairments, from this battle or one he came with) or down
+  # (carried by his comrades) slows his unit: its move is multiplied by `carried` (at least 1
+  # hex), unless he is left behind (out of the battle).
+  lamed: [leg, stand, collapse, move]
+  carried: 0.5

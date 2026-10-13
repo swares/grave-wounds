@@ -193,6 +193,7 @@ function impairments(ws, hand){                     // [% off attack, % off defe
     attack += eff.attack || 0; defence += eff.defence || 0;
     for (const x of ["down", "off_hand", "no_shield", "incapacitated"]) if (eff[x]) flags.add(x);
   }
+  if ([...seen].some(k => (FD.combat.one_arm || []).includes(k.split("|")[0]))) flags.add("one_arm");   // an arm hurt: no two-handed weapon
   return [attack, defence, flags];
 }
 function impairEffect(w, imp, hand){              // [key, effect] of impairment imp on wound w: an arm's by which arm it is
@@ -205,7 +206,7 @@ function heroesAfter(us, rng, quiet = null){      // end of an exchange: holds w
   const log = [];
   us.forEach((u, i) => {
     for (const hero of u.heroes || []){
-      if (hero.state === "dead") continue;
+      if (hero.state === "dead" || hero.left) continue;   // left behind: out of the battle
       const aid = quiet?.[i] ? firstAid(hero, rng, healerOf(u)) : null;
       if (aid) log.push({ kind: "heroaid", unit: i, ...aid });
       const line = heroAfter(hero, rng);
@@ -215,7 +216,7 @@ function heroesAfter(us, rng, quiet = null){      // end of an exchange: holds w
   return log;
 }
 function healerOf(u){                             // [Leechcraft, name] of the best healer among u's heroes still up, or null
-  const up = (u.heroes || []).filter(h => h.state === "up" && Number.isFinite(h.leech));
+  const up = (u.heroes || []).filter(h => h.state === "up" && !h.left && Number.isFinite(h.leech));
   if (!up.length) return null;
   const best = up.reduce((a, b) => (b.leech > a.leech ? b : a), up[0]);
   return [best.leech, best.name];
@@ -249,8 +250,17 @@ function heroAfter(hero, rng){                    // one hero's end of an exchan
   if (after === before && !(wasUp && hero.state !== "up")) return null;
   return { hero: hero.id, name: hero.name, lost, blood: hero.blood, pool, state: hero.state };
 }
-const heroesOf = (u, roles) => (u.heroes || []).filter(h => h.state === "up" && roles.includes(h.role));
-const actingOf = (u, roles) => heroesOf(u, roles).filter(h => !held(h) && !h.defend_only);   // up, not held by a stop check, not too sick to do more than defend: they strike or shoot
+const heroesOf = (u, roles) => (u.heroes || []).filter(h => h.state === "up" && !h.left && roles.includes(h.role));
+const actingOf = (u, roles) => heroesOf(u, roles).filter(heroStrikes);   // up, and able to strike or shoot this exchange
+function heroStrikes(hero){                           // not held by a stop check, not too sick to do more than defend, not hurt in an arm (one_arm) with a two-handed weapon
+  if (held(hero) || hero.defend_only) return false;
+  return !(FD.weapons[hero.weapon]?.two_handed && heroPenalties(hero)[2].includes("one_arm"));
+}
+function lamed(hero){                             // a hero who slows his unit: not dead or left behind, and down (carried) or lamed by a wound (heroes.lamed)
+  if (hero.state === "dead" || hero.left) return false;
+  const lame = UD.heroes.lamed;
+  return hero.state === "down" || [...(hero.old || []), ...(hero.wounds || [])].some(w => (w.impair || []).some(i => lame.includes(i)));
+}
 function exposure(u, rout, missile = false){        // [[hero, chance]] for the heroes of u a blow on it may fall on
   if (rout || missile){
     const roles = rout ? ["front", "ranged", "behind"] : ["front", "ranged"];
@@ -262,7 +272,7 @@ const heroSide = (u, hero, table) => ({ table, weapon: hero.weapon, kit: hero.ki
 function leaderState(u){
   const ls = (u.heroes || []).filter(h => h.leader);
   if (!ls.length) return u.leader;
-  return ls.some(h => h.state === "up") ? "up" : "down";
+  return ls.some(h => h.state === "up" && !h.left) ? "up" : "down";
 }
 
 // ---------- morale ----------
@@ -1025,7 +1035,7 @@ function duel(units, pair, table, rng, s, dueled){   // two front heroes fight e
   const [a, b] = units, [hero, foe] = pair, log = [];
   dueled.add(hero.id); dueled.add(foe.id);
   for (const [x, y, ux, k] of [[hero, foe, a, s.att], [foe, hero, b, s.dfd]]){
-    if (x.state !== "up" || held(x) || y.state !== "up") continue;
+    if (x.state !== "up" || !heroStrikes(x) || y.state !== "up") continue;
     const side = heroSide(ux, x, table), atk = Math.max(0, side.skill), critAt = Math.floor(atk * FD.combat.critical_fraction), t = newTally();
     t.blows = countBlows(UD.heroes.duel, rng);
     for (let n = 0; n < t.blows; n++){
@@ -1346,9 +1356,12 @@ function allowance(u){                            // hexes a unit may move (twic
   if ((u.prone || u.pinned) && u.state !== "broken" && u.state !== "fled") return 0;   // gone to ground or pinned: no move
   if (isBattery(u) && !u.abandoned && u.state !== "broken"){   // crews running from their guns run on foot
     if (u.limbering || u.resupplying) return 0;
-    if (!u.limbered) return UD.artillery.pushed;
+    if (!u.limbered) return carrying(u, UD.artillery.pushed);
   }
-  return u.mounted ? UD.mounted_move : form(u).move;
+  return carrying(u, u.mounted ? UD.mounted_move : form(u).move);
+}
+function carrying(u, move){                       // a unit's move, slowed (heroes.carried, at least 1 hex) if a lamed hero is with it
+  return move && (u.heroes || []).some(lamed) ? Math.max(1, Math.floor(move * UD.heroes.carried)) : move;
 }
 function turnCost(u){ const n = Math.ceil(Math.max(1, u.men) / form(u).per_hex); return Math.max(1, Math.ceil(Math.min(u.width, n) / UD.turn_per)) }
 const onMap = (h, size) => h[0] >= 0 && h[0] < size[0] && h[1] >= 0 && h[1] < size[1];

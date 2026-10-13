@@ -7,7 +7,10 @@ the Python engine and the printed tables read them from there, so change them th
 
 1. **Initiative.** Fighters act from highest to lowest. A fighter who is down, out of the
    fight, or on a side that has broken does not act. A fighter who can only defend, or who
-   is stunned, gets his turn but cannot attack.
+   is stunned, gets his turn but cannot attack. Nor can a fighter with an arm hurt (an arm
+   wound, a lost grip, a useless hand or arm, on either side) attack with a two-handed
+   weapon: a bow, crossbow, musket, rifle, machine gun, rocket launcher, bill, pike or
+   poleaxe. He can only defend until he takes up a one-handed weapon.
 2. **Move or stay.** See *The battle map* below. A fighter who runs does not attack.
    **Attack** only an enemy within the weapon's reach or range.
 3. **Attack.** d100 against attack % minus the attacker's wound penalties and any range
