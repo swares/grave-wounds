@@ -12,11 +12,13 @@ When an item is done, delete it here and note it in the pull request that closes
 - **A rule book.** The printed tables carry a summary of each rule, but there is no rule
   book to read through: how to play, the turn, the roller, the field map, the travel map,
   camps and disease, the team builder, with examples. With the tables, or as its own book.
-- **An AI game master in the online app (to consider).** An option for an AI to run the
-  other side or the whole table: narrate, set up fights from the travel map, move and order
-  the enemy's units on the field map, roll and explain. Open questions: which model and where
-  it runs (a key the player supplies, or a hosted service), what it may change in the saved
-  game, and how the player overrules it.
+- **The enemy commander, beyond the first cut.** A scripted commander moves one side on the
+  field map (attacking or holding, by its units' quality; Undo puts its move back). It sees
+  the whole field, even at night. It leaves batteries, fire support, air controllers,
+  vehicles' riders, fixed lines, reserves and works to the GM. It takes the nearest enemy
+  rather than the weakest or most dangerous, and has no plan beyond each unit's next move.
+  It does not play the travel map. Later, by the choice made: an optional narrator, using
+  a model with a key the player supplies, to explain its orders in prose.
 
 - **Works and ground on the field map.** Height has three steps (flat, slope, high) and no
   contour lines or dead ground behind a crest. Tall buildings give a view and a height, but

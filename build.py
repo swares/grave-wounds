@@ -247,7 +247,7 @@ def unit_rules(d) -> list[str]:
         f"or was struck in flank or rear: d100 against Nerve, +{mo['mods']['in_order']} while steady, +{mo['mods']['leader']} with a leader, {mo['mods']['leader_down']} if he is down, "
         f"{mo['mods']['heavy']} at half strength, {mo['mods']['flank']} if flanked, +{mo['mods']['dug_in']} dug in, -{mo['mods']['losing_per_man']} a man it lost more than it put down (at most -{mo['mods']['losing_cap']}). "
         f"Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +{R['attack']}, no parry, x{R['tempo']:g} tempo.",
-    ] + _ground_rules(d) + _gun_rules(d) + _mg_rules(d) + _hero_rules(d) + _aftermath_rules(d)
+    ] + _ground_rules(d) + _gun_rules(d) + _mg_rules(d) + _hero_rules(d) + _commander_rules(d) + _aftermath_rules(d)
 
 
 def _mg_rules(d) -> list[str]:
@@ -435,6 +435,21 @@ def _two_handed_text(d) -> str:
     """The two-handed weapons, by short name."""
     names = [w.get("short", w["name"]) for w in d.weapons.values() if w.get("two_handed")]
     return ", ".join(dict.fromkeys(n if n[:2].isupper() else n.lower() for n in names))
+
+
+def _commander_rules(d) -> list[str]:
+    K = d.units.get("commander")
+    if not K:
+        return []
+    by = lambda t: ", ".join(f"{q} {t[q]}" for q in d.units["quality"])
+    return [
+        "<b>The enemy commander (field map, optional):</b> it orders one side, attacking or holding, at the start of each of its moves; Undo puts the move back. "
+        f"Each unit takes the nearest enemy standing. Shaken, it holds (and goes to ground under missile fire). Steady, it hesitates on d100 at or under {by(K['hesitate'])}%; "
+        f"otherwise it takes the best hex it can reach facing the target: {K['closing']} points a hex nearer, cover % times {by(K['cover'])}, less a point a hex moved. "
+        f"Shooters stop where the target is in range, keep {K['keep_off']} hexes off, and never charge; with a modern weapon they go to ground under fire. "
+        f"Others charge only if their men × attack % is at least this % of the target's: attacking {by(K['charge_odds']['attack'])}; holding {by(K['charge_odds']['hold'])}. "
+        "Holding, a side leaves its ground only to charge. It sees the whole field and leaves batteries, fire support and reserves to the GM.",
+    ]
 
 
 def _hero_rules(d) -> list[str]:

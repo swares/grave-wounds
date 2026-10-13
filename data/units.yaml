@@ -541,3 +541,39 @@ heroes:
   # hex), unless he is left behind (out of the battle).
   lamed: [leg, stand, collapse, move]
   carried: 0.5
+
+# ---------- the enemy commander ----------
+# A scripted commander can play one side on the field map ("Enemy commander"). At the start
+# of its side's move it orders each of its units in turn, as a GM would by rule of thumb,
+# and the page logs each order; Undo puts the move back for the player to make by hand. It
+# sees the whole field (no fog of war) and leaves batteries, fire support, vehicles' riders
+# and fixed lines alone. Each unit takes the nearest enemy still standing as its target:
+# - A unit not steady holds; shaken and under fire (an enemy's missile weapon reaches it),
+#   it goes to ground.
+# - A steady unit first rolls d100: at or under `hesitate` % (by quality) it does nothing
+#   this move (orders misread, nerves).
+# - Otherwise it scores every hex it can reach, facing the target, and takes the best:
+#   `closing` points a hex nearer the target, `cover` per % of cover from the target's
+#   shots there (green men ignore cover), less a point a hex of movement. A shooter scores
+#   `in_range` for a hex the target is in range from (it then stops rather than closing),
+#   and loses `too_close` within `keep_off` hexes of it. A shooter never charges. Men
+#   without missiles charge only if their men times attack % is at least `charge_odds` %
+#   of the target's, by stance and quality (attacking, regulars take on a somewhat stronger
+#   enemy; holding, they come out only with the odds in their favour), and veterans score
+#   `flank` more for a hex off the target's front.
+# - A unit with a modern weapon (`ground_with`: breech-loaders on) staying where it is under
+#   fire goes to ground (veterans and regulars); older armies stand.
+# `tries`: the best-scoring hexes it tries in turn until one is a legal move.
+commander:
+  hesitate: {green: 30, regular: 10, veteran: 0}
+  charge_odds:
+    attack: {green: 100, regular: 80, veteran: 60}
+    hold: {green: 150, regular: 120, veteran: 100}
+  cover: {green: 0, regular: 1, veteran: 2}
+  flank: {green: 0, regular: 0, veteran: 30}
+  closing: 10
+  in_range: 1000
+  too_close: 500
+  keep_off: 2
+  tries: 30
+  ground_with: [breechloader, rifle_service, rifle_assault, rifle_ap, machine_gun, pistol_smg, rpg, bazooka, recoilless, atgm]

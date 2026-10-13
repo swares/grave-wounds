@@ -167,6 +167,12 @@ legend{padding:0}
         <button class="small" id="btn-end" title="Stop here: count the dead, and carry the wounded to camp">End the battle</button>
         <button class="small" id="btn-reset" title="Back to set-up with the starting units">New battle</button>
       </div>
+      <div class="toolbar" id="ai-box">
+        <label for="sel-ai">Enemy commander</label>
+        <select class="small" id="sel-ai" style="width:auto" title="A scripted commander moves one side at the start of its move, by its units' quality: attacking, it closes with the enemy; holding, it stands and only charges what it can reach"></select>
+        <button class="small" id="btn-ai-undo" hidden title="Put its units back where they began this move, to move them yourself">Undo its orders</button>
+        <button class="small" id="btn-ai-go" hidden title="Let the commander order its side for this move">Give its orders</button>
+      </div>
       <div id="after-box" hidden>
         <h2>After the battle</h2>
         <ul class="after" id="after"></ul>
@@ -510,6 +516,7 @@ const unitName = u => `${u.name} (${banner(u)})`;
 /* ---------- moving ---------- */
 function startPhase(k){                           // a side's move; at the start of an exchange every broken unit runs first
   S.phase = k;
+  S.aiDone = null;                                // the commander has not yet ordered this move
   S.units.forEach((u, i) => {
     if (k !== 0 || u.state !== "broken") return;
     const f = flee(S.units, i, SIZE, S.field);
@@ -889,8 +896,8 @@ function drifts(k){                              // in the dark, each unit of si
 }
 function next(){
   if (S.phase === "over") return;
-  if (S.phase === "setup"){ S.exchange = 1; startPhase(0); S.msg = `${S.sides[0]} to move.${caughtUnawares()}`; return render() }
-  if (S.phase === 0){ const lost = drifts(0); startPhase(1); S.msg = `${S.sides[1]} to move.${lost}`; return render() }
+  if (S.phase === "setup"){ S.exchange = 1; startPhase(0); S.msg = `${S.sides[0]} to move.${caughtUnawares()}`; aiMove(); return render() }
+  if (S.phase === 0){ const lost = drifts(0); startPhase(1); S.msg = `${S.sides[1]} to move.${lost}`; aiMove(); return render() }
   const lostB = drifts(1);
   const r = exchange(S.units, S.table, dice, S.field);
   S.units = r.units;
@@ -901,7 +908,58 @@ function next(){
   const verb = lost.length > 1 ? "have" : "has";
   S.msg = (lost.length ? `${lost.map(k => S.sides[k]).join(" and ")} ${verb} no unit left standing.` : "") + lostB;
   startPhase(0);
+  aiMove();
   render();
+}
+
+/* ---------- the enemy commander (rules in units.js: command) ---------- */
+const stanceWord = () => (S.ai.stance === "hold" ? "holding" : "attacking");
+const aiMoving = () => !!S.ai && moving() === S.ai.side;
+const aiThisMove = () => S.aiDone && S.aiDone.exchange === S.exchange && S.aiDone.phase === S.phase;
+function aiMove(){                                // at the start of its side's move, the commander orders that side
+  if (!aiMoving() || aiThisMove()) return;
+  const before = S.units.map(copyUnit), r = command(S.units, S.ai.side, SIZE, S.field, dice, S.exchange, S.ai.stance);
+  S.units = r.units;
+  S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before };
+  const lines = r.orders.map(o => ({ cls: o.act === "charge" ? "morale" : "", text: orderText(o) }));
+  S.log = [{ cls: "head", text: `The commander orders ${S.ai.side} (${stanceWord()}): ${r.orders.length ? nOf(r.orders.length, "order") : "every unit stands"}.` }, ...lines, ...S.log].slice(0, 400);
+}
+function orderText(o){                            // "Billmen (Yorkists) move 4 hexes toward Archers (Lancastrians)."
+  const u = S.units[o.unit], t = S.units[o.target], who = unitName(u), them = t ? unitName(t) : "the enemy";
+  if (o.act === "charge") return `${who} ${o.up ? "get up and " : ""}charge ${them}.`;
+  if (o.act === "move") return `${who} ${o.up ? "get up and " : ""}move ${nOf(o.cost, "hex", "hexes")} toward ${them}.`;
+  if (o.act === "turn") return `${who} turn to face ${them}.`;
+  if (o.act === "ground") return `${who} go to ground under fire.`;
+  return `${who} hesitate (rolled ${o.roll}): they hold where they are.`;
+}
+function aiUndo(){                                // its units back where they began this move, for the player to move by hand
+  if (!aiThisMove() || !S.aiDone.undo) return;
+  S.units = S.aiDone.undo;
+  S.aiDone.undo = null;
+  S.msg = `The commander's orders are undone: move ${S.ai.side} yourself, or let it order them again.`;
+  render();
+}
+function aiAgain(){                               // the commander orders its side again (after an Undo, or once chosen mid-move)
+  if (!aiMoving()) return;
+  S.aiDone = null;
+  aiMove();
+  render();
+}
+function setAi(v){                                // "" (none), or "side|attack" / "side|hold"
+  const k = v.lastIndexOf("|");
+  S.ai = v ? { side: v.slice(0, k), stance: v.slice(k + 1) } : null;
+  S.msg = S.ai ? `The commander takes ${S.ai.side}, ${stanceWord()}: it orders them at the start of each of their moves.` : "No commander: you move both sides.";
+  render();
+}
+function renderAi(){
+  const el = $("#sel-ai"), opts = [["", "None: you move both sides"], ...S.sides.flatMap(sd => [[`${sd}|attack`, `${sd}, attacking`], [`${sd}|hold`, `${sd}, holding`]])];
+  el.innerHTML = opts.map(([v, t]) => `<option value="${esc(v)}">${esc(t)}</option>`).join("");
+  if (S.ai && !S.sides.includes(S.ai.side)) S.ai = null;   // a side renamed or a new battle
+  el.value = S.ai ? `${S.ai.side}|${S.ai.stance}` : "";
+  el.disabled = S.phase === "over";
+  const undo = aiMoving() && aiThisMove() && !!S.aiDone.undo;
+  $("#btn-ai-undo").hidden = !undo;
+  $("#btn-ai-go").hidden = !aiMoving() || undo;
 }
 
 /* ---------- after the battle ---------- */
@@ -1553,7 +1611,7 @@ function renderPhase(){
   ["#in-side0", "#in-side1"].forEach(b => $(b).disabled = S.phase !== "setup" || !!S.forces);
 }
 function render(){
-  renderMap(); renderUnits(); renderSel(); renderPhase(); renderAfter(); renderForces(); renderHeroes(); renderSupport(); renderWeather();
+  renderMap(); renderUnits(); renderSel(); renderPhase(); renderAfter(); renderForces(); renderHeroes(); renderSupport(); renderWeather(); renderAi();
   $("#msg").textContent = S.msg || "";
   $("#log").innerHTML = S.log.map(l => `<li class="${l.cls}">${esc(l.text)}</li>`).join("");
   $("#in-side0").value = S.sides[0]; $("#in-side1").value = S.sides[1];
@@ -1815,6 +1873,9 @@ function init(){
   $("#btn-fixed").onclick = toggleFixed;
   $("#sel-nv").onchange = e => setNv(e.target.value);
   $("#btn-fac").onclick = toggleFac;
+  $("#sel-ai").onchange = e => setAi(e.target.value);
+  $("#btn-ai-undo").onclick = aiUndo;
+  $("#btn-ai-go").onclick = aiAgain;
   $("#btn-add-sup").onclick = addSupport;
   $("#support").addEventListener("click", e => {
     const c = e.target.closest("button[data-sup-call]"), s = e.target.closest("button[data-sup-stop]");
