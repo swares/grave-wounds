@@ -56,7 +56,7 @@ const RPG = { ...FIGHTER, weapon: "rpg" };
 const PKM = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "mg", mounted: false, prone: true };
 const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
-  at("B Troop, 3-61 Cavalry (the barracks and command post)", US, 30, TROOPER, 6, [COP[0] - 3, COP[1] - 4], N),
+  at("B Troop, 3-61 Cavalry (the barracks and command post)", US, 30, { ...TROOPER, fac: true }, 6, [COP[0] - 3, COP[1] - 4], N),
   at("B Troop (the guard posts and trucks)", US, 15, TROOPER, 4, [COP[0] + 7, COP[1] - 2], 0),
   at("B Troop's machine guns (the trucks)", US, 8, GUNS, 2, [COP[0] - 8, COP[1] + 5], 4),
   at("Afghan soldiers (the east side)", US, 20, ANA, 4, [COP[0] + 10, COP[1] + 4], 0),

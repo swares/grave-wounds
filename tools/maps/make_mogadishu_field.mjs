@@ -42,7 +42,7 @@ const SAW = { quality: "veteran", weapon: "machine_gun", kit: "ranger_1993", for
 const MILITIA = { quality: "green", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false };
 const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
-  at("Rangers and Delta in the houses north of the crash", US, 30, RANGER, 6, [CRASH1[0] - 2, CRASH1[1] - 3], N),
+  at("Rangers and Delta in the houses north of the crash", US, 30, { ...RANGER, fac: true }, 6, [CRASH1[0] - 2, CRASH1[1] - 3], N),
   at("Rangers and Delta in the houses south of the crash", US, 30, RANGER, 6, [CRASH1[0] + 1, CRASH1[1] + 4], S),
   at("Rangers and Delta at the corner west of the crash", US, 25, RANGER, 4, [CRASH1[0] - 6, CRASH1[1] + 1], 3),
   at("Machine guns (SAWs and M60s) at the crash", US, 10, SAW, 2, [CRASH1[0] + 4, CRASH1[1] - 1], 0),

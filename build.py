@@ -349,8 +349,14 @@ def _air_rules(ind: dict) -> str:
         return "at once" if not k["delay"] else f"{k['delay']} exchanges later"
     kinds = "; ".join(f"{k['name'].lower()}: {k['rounds'] // k['rate']} sorties an aircraft, {when(k)}" + ("" if k.get("by_night") else ", not at night") for k in planes)
     wx = [c.replace("_", " ") for c in A.get("grounded", [])]
+    G, F = A["ground_fire"], A["fac"]
+    exposed = "; ".join(f"{k['name'].split(' (')[0].lower()} x{k.get('exposed', 1):g}" for k in planes)
     return (f" <b>Aircraft</b> are called like batteries ({kinds}). They are never located, have no crews to lose, and do not fly in "
-            + (", ".join(wx[:-1]) + " or " + wx[-1] if len(wx) > 1 else "".join(wx)) + ".")
+            + (", ".join(wx[:-1]) + " or " + wx[-1] if len(wx) > 1 else "".join(wx)) + ". "
+            + f"<b>Ground fire:</b> each attack run, every aircraft attacking is brought down at {G['mg']:g}% for each enemy machine gun served, {G['rocket']:g}% for each enemy unit with "
+            + " or ".join({"rpg": "RPGs", "recoilless": "recoilless rifles"}.get(w, w.replace("_", " ")) for w in G["rockets"]) + f" and {G['rifles']:g}% for every 100 enemy riflemen within {G['reach']} hexes of the aim "
+            + f"({exposed}), at most {G['cap']:g}%; it takes its share of the flight's attacks with it. "
+            + f"<b>Forward air controllers:</b> with a unit marked as one seeing the aim, aircraft scatter 1/{F['scatter']} as far; without, they hold off any target within {F['danger']} hexes of their own men.")
 
 
 def _ground_rules(d) -> list[str]:

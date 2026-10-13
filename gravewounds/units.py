@@ -1916,6 +1916,10 @@ def _fire_mission(d: Data, us: list, table: str, weapon: str, rng, acc: tuple, f
     battery (counter-battery), or on a hex (_bombard). A battery that fires is located; a
     creeping mission moves on."""
     K, m = d.units["indirect"]["kinds"][b["kind"]], b["mission"]
+    air = bool(K.get("air")) and m.get("hex") is not None and not m.get("illum")
+    fac = air and _fac_sees(d, us, field, b, m["hex"])
+    if air and not fac and _friends_near(d, us, b, m["hex"]):
+        return [{"kind": "airhold", "sup": k, "name": b["name"], "side": b["side"], "at": m["hex"]}]
     shells = min(served_tubes(d, b) * (1 if m.get("illum") else K["rate"]), b["rounds"])
     b["rounds"] -= shells
     if not K.get("direct") and not K.get("air"):
@@ -1926,18 +1930,81 @@ def _fire_mission(d: Data, us: list, table: str, weapon: str, rng, acc: tuple, f
     elif m.get("battery") is not None:
         log = _counter_fire(d, field, (k, b, shells, K), (table, weapon), rng)
     else:
-        log = _bombard(d, (us, table, weapon, rng, acc, field, under), k, b, shells)
+        log = _on_hex(d, (us, table, weapon, rng, acc, field, under), (k, b, shells), (air, fac))
     _mission_on(b, m, field.get("size"))
     return log
 
 
-def _bombard(d: Data, ctx: tuple, k: int, b: dict, shells: int) -> list:
+def _on_hex(d: Data, ctx: tuple, fire: tuple, flight: tuple) -> list:
+    """Shells or an air attack on a hex (fire: support index, battery, shells; flight: whether
+    aircraft, and whether a forward air controller talks them on: less scatter), then the
+    ground fire at the aircraft."""
+    us, rng = ctx[0], ctx[3]
+    (k, b, shells), (air, fac) = fire, flight
+    K = d.units["indirect"]["kinds"][b["kind"]]
+    scatter = K["scatter"] // d.units["indirect"]["air"]["fac"]["scatter"] if fac else K["scatter"]
+    log = _bombard(d, ctx, k, b, shells, scatter)
+    if fac:
+        log[0]["fac"] = True
+    if air:
+        log += _ground_fire(d, us, (k, b), -(-shells // K["rate"]), rng)
+    return log
+
+
+def _fac_sees(d: Data, us: list, field: dict, b: dict, h) -> bool:
+    """Whether a forward air controller (a unit marked fac, of the aircraft's side, on its feet) sees hex h."""
+    return any(u.get("fac") and u["side"] == b["side"] and not _out(u) and _sees(d, field, u, h, _sight_hexes(d, field, h, _seer(u))) for u in us)
+
+
+def _friends_near(d: Data, us: list, b: dict, h) -> bool:
+    """Whether a unit of the aircraft's side has a hex within indirect.air.fac.danger of hex h."""
+    r = d.units["indirect"]["air"]["fac"]["danger"]
+    return any(u["side"] == b["side"] and u["men"] > 0 and any(hdist(x, h) <= r for row in footprint(d, u) for x in row) for u in us)
+
+
+def _flak(d: Data, us: list, b: dict, h) -> float:
+    """% an aircraft attacking hex h is shot down: the enemy's machine guns, rockets and rifles
+    within indirect.air.ground_fire.reach of it, times the kind's exposed, at most cap."""
+    G, K = d.units["indirect"]["air"]["ground_fire"], d.units["indirect"]["kinds"][b["kind"]]
+    chance = 0.0
+    for u in us:
+        if u["side"] == b["side"] or _out(u) or u.get("vehicle") or not any(hdist(x, h) <= G["reach"] for row in footprint(d, u) for x in row):
+            continue
+        w = u["weapon"]
+        if is_mg(d, w):
+            chance += G["mg"] * mg_guns(d, u)
+        elif w in G["rockets"]:
+            chance += G["rocket"]
+        elif "range" in d.weapons[w] and not is_gun(d, w) and w not in d.units["line_of_fire"]["arcing"]:
+            chance += G["rifles"] * u["men"] / 100
+    return min(G["cap"], chance * K.get("exposed", 1))
+
+
+def _ground_fire(d: Data, us: list, flight: tuple, attacking: int, rng) -> list:
+    """Ground fire at the aircraft that attacked (flight: support index, battery): each is lost
+    at _flak %; a lost one takes its share of the remaining attacks. -> a log line, or none."""
+    k, b = flight
+    chance = _flak(d, us, b, b["mission"]["hex"])
+    if chance <= 0 or b["tubes"] <= 0:
+        return []
+    lost = min(b["tubes"], sum(1 for _ in range(attacking) if rng.randint(1, 100) <= chance))
+    if not lost:
+        return []
+    share = b["rounds"] // b["tubes"]
+    b["tubes"] -= lost
+    b["rounds"] = max(0, b["rounds"] - share * lost)
+    return [{"kind": "airloss", "sup": k, "name": b["name"], "side": b["side"], "lost": lost, "left": b["tubes"]}]
+
+
+def _bombard(d: Data, ctx: tuple, k: int, b: dict, shells: int, scatter: int | None = None) -> list:
     """A battery's shells on a hex (ctx: units, table, shell weapon, dice, tallies, field, under
-    fire): where each lands, then smoke laid, or the men struck and bunkers knocked."""
+    fire): where each lands (0 to scatter hexes off; the kind's, unless given), then smoke laid,
+    or the men struck and bunkers knocked."""
     us, table, weapon, rng, acc, field, under = ctx
     K, m, bursts = d.units["indirect"]["kinds"][b["kind"]], b["mission"], []
+    scatter = K["scatter"] if scatter is None else scatter
     for _ in range(shells):
-        dirn, far = rng.randint(0, 5), rng.randint(0, K["scatter"])
+        dirn, far = rng.randint(0, 5), rng.randint(0, scatter)
         bursts.append(step(m["hex"], dirn, far))
     log = [{"kind": "barrage", "sup": k, "name": b["name"], "side": b["side"], "shells": shells, "at": m["hex"], "bursts": bursts,
             "smoke": bool(m.get("smoke"))}]

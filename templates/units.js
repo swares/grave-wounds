@@ -637,20 +637,60 @@ function servedTubes(b){                          // tubes it can fire: not knoc
   return K.serve === undefined ? b.tubes || 0 : Math.min(b.tubes || 0, Math.floor(crewOf(b) / K.serve));
 }
 function fireMission(ctx, k, b){                  // on an enemy battery or a hex: smoke laid or men struck; located; a creeping mission moves on (ctx: us, table, weapon, rng, acc, log, field, under)
-  const { rng, log, field } = ctx;
-  const K = UD.indirect.kinds[b.kind], m = b.mission, shells = Math.min(servedTubes(b) * (m.illum ? 1 : K.rate), b.rounds);
+  const { rng, log, field, us } = ctx;
+  const K = UD.indirect.kinds[b.kind], m = b.mission;
+  const air = !!K.air && m.hex !== undefined && m.hex !== null && !m.illum, fac = air && facSees(us, field, b, m.hex);
+  if (air && !fac && friendsNear(us, b, m.hex)){ log.push({ kind: "airhold", sup: k, name: b.name, side: b.side, at: m.hex }); return }
+  const shells = Math.min(servedTubes(b) * (m.illum ? 1 : K.rate), b.rounds);
   b.rounds -= shells;
   if (!K.direct && !K.air) b.located = true;       // tanks close behind the line and aircraft are never located
   if (m.illum){
     lightUp(field, m.hex, K.illum || 0, 1);
     log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells, at: m.hex, bursts: [], smoke: false, illum: true });
   } else if (m.battery !== undefined && m.battery !== null) log.push(...counterFire(field, [k, b, shells, K], [ctx.table, ctx.weapon], rng));
-  else bombard(ctx, k, b, shells);
+  else onHex(ctx, [k, b, shells], [air, fac]);
   missionOn(b, m, field.size);
 }
-function bombard(ctx, k, b, shells){               // shells on a hex: where each lands, then smoke laid, or men struck and bunkers knocked
-  const { rng, log, field } = ctx, K = UD.indirect.kinds[b.kind], m = b.mission, bursts = [];
-  for (let s = 0; s < shells; s++){ const dirn = rng.randint(0, 5), far = rng.randint(0, K.scatter); bursts.push(step(m.hex, dirn, far)) }
+function onHex(ctx, fire, flight){                 // shells or an air attack on a hex (less scatter with a controller), then ground fire at the aircraft
+  const { us, rng, log } = ctx, [k, b, shells] = fire, [air, fac] = flight, K = UD.indirect.kinds[b.kind], at = log.length;
+  bombard(ctx, k, b, shells, fac ? Math.floor(K.scatter / UD.indirect.air.fac.scatter) : K.scatter);
+  if (fac) log[at].fac = true;
+  if (air) log.push(...groundFire(us, [k, b], Math.ceil(shells / K.rate), rng));
+}
+function facSees(us, field, b, h){                 // a forward air controller (fac) of the aircraft's side, on its feet, sees hex h
+  return us.some(u => u.fac && u.side === b.side && !out_(u) && sees(field, u, h, sightHexes(field, h, seerOf(u))));
+}
+function friendsNear(us, b, h){                    // a unit of the aircraft's side within indirect.air.fac.danger hexes of h
+  const r = UD.indirect.air.fac.danger;
+  return us.some(u => u.side === b.side && u.men > 0 && footprint(u).flat().some(x => hdist(x, h) <= r));
+}
+function flak(us, b, h){                           // % an aircraft attacking h is shot down: enemy machine guns, rockets and rifles within reach, times exposed, at most cap
+  const G = UD.indirect.air.ground_fire, K = UD.indirect.kinds[b.kind];
+  let chance = 0;
+  for (const u of us){
+    if (u.side === b.side || out_(u) || u.vehicle || !footprint(u).flat().some(x => hdist(x, h) <= G.reach)) continue;
+    const w = u.weapon;
+    if (isMg(w)) chance += G.mg * mgGuns(u);
+    else if (G.rockets.includes(w)) chance += G.rocket;
+    else if ("range" in FD.weapons[w] && !isGun(w) && !UD.line_of_fire.arcing.includes(w)) chance += G.rifles * u.men / 100;
+  }
+  return Math.min(G.cap, chance * (K.exposed ?? 1));
+}
+function groundFire(us, flight, attacking, rng){   // ground fire at the aircraft that attacked: each lost at flak %, taking its share of the attacks left
+  const [k, b] = flight, chance = flak(us, b, b.mission.hex);
+  if (chance <= 0 || b.tubes <= 0) return [];
+  let hit = 0;
+  for (let a = 0; a < attacking; a++) if (rng.randint(1, 100) <= chance) hit++;
+  const lost = Math.min(b.tubes, hit);
+  if (!lost) return [];
+  const share = Math.floor(b.rounds / b.tubes);
+  b.tubes -= lost;
+  b.rounds = Math.max(0, b.rounds - share * lost);
+  return [{ kind: "airloss", sup: k, name: b.name, side: b.side, lost, left: b.tubes }];
+}
+function bombard(ctx, k, b, shells, scatter = null){   // shells on a hex: where each lands (0 to scatter hexes off), then smoke laid, or men struck and bunkers knocked
+  const { rng, log, field } = ctx, K = UD.indirect.kinds[b.kind], m = b.mission, bursts = [], sc = scatter ?? K.scatter;
+  for (let s = 0; s < shells; s++){ const dirn = rng.randint(0, 5), far = rng.randint(0, sc); bursts.push(step(m.hex, dirn, far)) }
   log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells, at: m.hex, bursts, smoke: !!m.smoke });
   if (m.smoke) laySmoke(field, bursts);
   else { shellUnits(ctx, k, b, bursts); knockBunkers(field, k, b, bursts, rng, log) }

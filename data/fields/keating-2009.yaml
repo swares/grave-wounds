@@ -143,7 +143,7 @@ support:
   - {name: "A-10s, F-15Es and a B-1B (later in the morning)", side: 0, kind: fighter_bomber, tubes: 3}
   - {name: "Insurgent mortars and recoilless rifles", side: 1, kind: mortar, tubes: 4}
 units:
-  - {name: "B Troop, 3-61 Cavalry (the barracks and command post)", side: 0, men: 30, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 6, pos: [47, 52], facing: 1, prone: true}
+  - {name: "B Troop, 3-61 Cavalry (the barracks and command post)", side: 0, men: 30, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 6, pos: [47, 52], facing: 1, prone: true, fac: true}
   - {name: "B Troop (the guard posts and trucks)", side: 0, men: 15, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 4, pos: [57, 54], facing: 0, prone: true}
   - {name: "B Troop's machine guns (the trucks)", side: 0, men: 8, quality: veteran, weapon: machine_gun, kit: interceptor, formation: mg, width: 2, pos: [42, 61], facing: 4, prone: true}
   - {name: "Afghan soldiers (the east side)", side: 0, men: 20, quality: green, weapon: rifle_assault, kit: pasgt, formation: extended, width: 4, pos: [60, 60], facing: 0, prone: true}
