@@ -284,7 +284,7 @@ def _first_move(d: Data, base: list, i: int, tu: dict, where: tuple, how: tuple)
     (size, field), (charge, hold, shooter), u = where, how, base[i]
     if hold and not charge:
         return None
-    allow, tries, stuck = U.allowance(d, u), d.units["commander"]["tries"], bool(u.get("lost") or u.get("immobile"))
+    allow, tries, stuck = U.allowance(d, u), d.units["commander"]["tries"], bool(u.get("lost") or u.get("immobile") or u.get("emplaced"))
     reach = reachable(d, base, i, size, allow * (d.units["charge_move"] if charge else 1), field)
     foes = {k for k, j in U.occupancy(d, base).items() if base[j]["side"] != u["side"]}
     for _, c, row, col in sorted((-score(d, field, u, tu, h, c, shooter), c, h[1], h[0]) for h, c in reach.items()):

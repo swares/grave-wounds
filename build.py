@@ -336,7 +336,14 @@ def _at_mine_rules(d) -> list[str]:
         g = A["gun"]
         out.append(f"<b>Anti-tank guns (1939-53):</b> a unit of towed guns, {A['crew']} men a gun, a gun a hex, manhandled {d.units['formations']['at_gun']['move']} hexes. "
                    f"Each gun served fires {g['rate']} round an exchange to {g['range']} hexes as a tank's main gun, vehicles first (hits {'/'.join(str(h[1]) for h in g['hit'])}% by range, "
-                   "knocking out by the armour's gun %), high explosive at men. Its crews are men: small arms and shells strike them. The commander leaves them to the GM.")
+                   f"knocking out by the armour's gun %), high explosive at men, {A['rounds']} rounds a gun (resupply as a battery). Its crews are men: small arms and shells strike them. "
+                   "The commander leaves them to the GM.")
+    S = d.units.get("gun_shields")
+    if S:
+        names = ", ".join(d.weapons[w]["name"].split(" (")[0].lower() + "s" for w in S["weapons"])
+        out.append(f"<b>Gun shields and emplacements:</b> shields ({names}) take {S['cover']}% off small arms from the gun's front only. "
+                   f"In set-up the GM can emplace a gun unit (anti-tank, anti-aircraft, machine guns, batteries): while it stands it counts as gone to ground "
+                   f"(-{d.units['to_ground']['cover']}%, hidden, steadier) and cannot move, though it may turn; a unit that breaks leaves its pits.")
     if M:
         kinds = "; ".join(f"{k['name'].lower()}: men {k['men']}%, vehicles {k['vehicles']}%" for k in M["kinds"].values())
         V = d.units["vehicles"]["armour"]

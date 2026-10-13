@@ -105,7 +105,8 @@ def _at_mine_values(d: Data) -> dict:
     A, M, V = d.units["anti_tank_guns"], d.units["mines"], d.units["vehicles"]["armour"]
     g = A["gun"]
     return {"at_crew": A["crew"], "at_range": _field(d, g["range"]), "at_rate": g["rate"], "at_hit": "/".join(str(h[1]) for h in g["hit"]),
-            "at_move": d.units["formations"]["at_gun"]["move"], "m_attack": M["attack"], "m_heavy": V["heavy"]["mine"], "m_light": V["light"]["mine"]}
+            "at_move": d.units["formations"]["at_gun"]["move"], "at_rounds": A["rounds"], "at_shield": d.units["gun_shields"]["cover"], "at_ground": d.units["to_ground"]["cover"],
+            "m_attack": M["attack"], "m_heavy": V["heavy"]["mine"], "m_light": V["light"]["mine"]}
 
 
 def _night_values(d: Data) -> dict:

@@ -497,6 +497,12 @@ out. All of this is design estimates (`data/units.yaml`).
   down in the folds of the ground. Shots at it lose 15% on top of the ground's cover, and it
   cannot move until **Get up**. It still shoots, and fights hand to hand as it stands. The map
   marks it ↓.
+- **Emplaced guns**: in set-up only, **Emplace** digs in a gun unit (anti-tank guns,
+  anti-aircraft guns, machine-gun teams, batteries) for the battle. While it stands, it
+  counts as gone to ground: shots at it lose 15%, it is hidden, shellfire strikes it less
+  and it holds better. It cannot move all battle, though it can turn, and it cannot limber
+  or go to ground. A unit that breaks leaves its pits and is in the open. The map's unit
+  line says "emplaced".
 - **Hidden men**: men gone to ground, in a bunker or a trench, or in buildings, tall buildings or rubble show little of themselves.
   Of the aimed shots fired at them, only 10% find a man to aim at (5% of a machine gun's: it
   sprays where they are thought to be, and still pins them); the rest go at the smoke and the
@@ -996,8 +1002,14 @@ the Japanese 47 mm (`anti_tank_guns` in `data/units.yaml`).
   - At a vehicle it hits at 70%, 45% or 20% by range, and the hit knocks the vehicle out at
     its armour's main-gun %.
   - At men its high explosive bursts as a tank's round does.
-- **Crews.** The crews are men in the open. Rifles, machine guns and shells strike them, and
-  hand to hand they fight with bayonets.
+- **Crews.** The crews are men. Rifles, machine guns and shells strike them, and hand to
+  hand they fight with bayonets.
+- **Gun shields.** Anti-tank and anti-aircraft guns have shields: small arms (rifles, machine
+  guns, pistols) fired at them from their front lose 30%. Shields do nothing against shells,
+  bombs or fire from the flank or rear (`gun_shields` in `data/units.yaml`).
+- **Rounds.** Each gun brings 40 rounds. A gun out of rounds does not fire its main gun.
+  **Resupply** brings a full load, as for a battery: at once in set-up, or over an exchange
+  out of contact in which the guns neither move nor fire.
 - **Not ordered by the commander.** The enemy commander leaves them to the GM, like
   batteries.
 
