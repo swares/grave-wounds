@@ -856,10 +856,12 @@ function aidText(l, nm){                          // a hero's first aid: "X (uni
 function mineText(l, nm){                         // a unit sets off mines
   const where = `${nm(l.unit)} go into ${nOf(l.hexes, "minefield hex", "minefield hexes")}`;
   if (S.units[l.unit]?.vehicle){
-    const knocked = l.knocked ? `, ${l.knocked} knocked out (${l.crew} crew out of the fight)` : "";
-    return `${where}: ${nOf(l.struck, "vehicle")} set off a mine${knocked}${l.immobilised ? `, ${l.immobilised} immobilised` : ""}.`;
+    const knocked = l.knocked ? ", " + l.knocked + " knocked out (" + l.crew + " crew out of the fight)" : "";
+    const stuck = l.immobilised ? ", " + l.immobilised + " immobilised" : "";
+    return `${where}: ${nOf(l.struck, "vehicle")} set off a mine${knocked}${stuck}.`;
   }
-  return `${where}: ${l.struck} men struck, ${l.down || 0} down${l.dead ? ` (${l.dead} dead)` : ""}.`;
+  const dead = l.dead ? " (" + l.dead + " dead)" : "";
+  return `${where}: ${l.struck} men struck, ${l.down || 0} down${dead}.`;
 }
 function partyText(l, nm){                        // a party back: arrived, stopped, or its hero left lying
   const who = `${l.name} (${nm(l.unit)})`;
@@ -924,13 +926,18 @@ function landText(l){                            // men landing by air, or waved
   return `${l.men} men of ${l.name} (${l.side}) land at ${at}${l.first ? "" : " and join them"}${hot}.`;
 }
 const nWounds = n => (n === 1 ? "1 wound" : n + " wounds");
+function damageText(l){                           // " 1 vehicle immobilised. 1 main gun put out of action. (2 hits on the turret.)"
+  let out = "";
+  if (l.immobilised) out += ` ${nOf(l.immobilised, "vehicle")} immobilised.`;
+  if (l.gun_out) out += ` ${nOf(l.gun_out, "main gun")} put out of action.`;
+  if (l.turret) out += ` (${nOf(l.turret, "hit")} on the turret.)`;
+  return out;
+}
 function armourText(l, nm){                       // rockets at vehicles, a tank's main gun, a vehicle knocked out by shells or bombs
   const vk = l.dfd !== undefined && S.units[l.dfd]?.vehicle, what = vk ? FD.units.vehicles.kinds[vk].name.toLowerCase() : "vehicles";
   let out = "";
   if (l.knocked) out = ` ${l.knocked} of ${nm(l.dfd)}'s ${what} knocked out; ${l.crew} crew out of the fight, ${l.down || 0} down` + (l.dead ? ` (${l.dead} dead)` : "") + ".";
-  if (l.immobilised) out += ` ${nOf(l.immobilised, "vehicle")} immobilised.`;
-  if (l.gun_out) out += ` ${nOf(l.gun_out, "main gun")} put out of action.`;
-  if (l.turret) out += ` (${nOf(l.turret, "hit")} on the turret.)`;
+  out += damageText(l);
   if (l.rstruck) out += ` Riders: ${l.rstruck} struck, ${l.rdown || 0} down` + (l.rdead ? ` (${l.rdead} dead)` : "") + ".";
   if (l.kill !== undefined && l.hit) out = ` (${l.kill}% a hit to knock out)` + out;
   if (l.kind === "knocked_out") return `${l.name || "Shells"} burst on ${nm(l.dfd)}:${out}`;
@@ -1168,6 +1175,10 @@ function renderAddSide(){                         // a unit is drawn from a forc
 
 /* ---------- ground, works and weather ---------- */
 const EDGE_TOOLS = ["ditch", "bank", "palisade", "gate", "wall"], HEX_TOOLS = ["stakes", "abatis", "wagon", "pavise", "wire", "bunker", "trench", "wreck"];
+function mineOptions(){                           // each kind of minefield, marked or hidden
+  return Object.entries(FD.units.mines.kinds).map(([k, v]) => '<option value="mine:' + k + '">' + esc(v.name) + ", marked</option>"
+    + '<option value="mine:' + k + ':hidden">' + esc(v.name) + ", hidden</option>").join("");
+}
 function fillTools(){
   const g = Object.entries(FD.units.ground).map(([k, v]) => `<option value="g:${k}">${esc(v.name)}</option>`).join("");
   const e = EDGE_TOOLS.map(k => `<option value="e:${k}">${esc(WK.edge_works[k].name)}</option>`).join("");
@@ -1176,7 +1187,7 @@ function fillTools(){
     + (WXD.light ? `<option value="flare">Fire a flare (lights the hexes round it)</option>` : "")
     + (FD.units.heliborne ? `<option value="lz">Mark or clear a landing zone</option>` : "")
     + `<optgroup label="Aid posts"><option value="post:0">Aid post: side A</option><option value="post:1">Aid post: side B</option></optgroup>`
-    + `<optgroup label="Minefields (1939 on; click again to clear)">${Object.entries(FD.units.mines.kinds).flatMap(([k, v]) => [`<option value="mine:${k}">${esc(v.name)}, marked</option>`, `<option value="mine:${k}:hidden">${esc(v.name)}, hidden</option>`]).join("")}</optgroup>`
+    + `<optgroup label="Minefields (1939 on; click again to clear)">${mineOptions()}</optgroup>`
     + `<optgroup label="Paint the ground">${g}</optgroup><optgroup label="Works on a hex side (click just inside it, on the high side)">${e}</optgroup><optgroup label="Works in a hex">${h}</optgroup>`;
   $("#sel-wx").innerHTML = Object.entries(WXD.conditions).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-wind").innerHTML = WXD.winds.map(w => `<option value="${w.id}">${esc(w.name)}</option>`).join("");
@@ -1548,6 +1559,12 @@ function renderAssault(u){                        // the storming order, on tabl
   el.value = u?.assault || "";
   el.disabled = !u || S.phase === "over" || u.state === "broken" || u.state === "fled";
 }
+function teamInfo(u){                             // a machine-gun team's or anti-tank guns' line in the selected unit
+  const A = FD.units.anti_tank_guns, G = FD.units.machine_guns;
+  if (isAtGun(u)) return `<dt>Guns</dt><dd>${gunsText(atGuns(u), "anti-tank gun")} served (${A.crew} men a gun): ${A.gun.rate} round a gun an exchange at the nearest vehicle (else men) in sight and in front, out to ${fmtM(A.gun.range * FD.units.hex_m)}</dd>`;
+  if (isMg(u.weapon)) return `<dt>Guns</dt><dd>${gunsText(mgGuns(u), "machine gun")} served (${G.crew} men a gun); beaten zone ${fmtM(G.beaten.beyond * FD.units.hex_m)} past the target</dd>`;
+  return "";
+}
 function renderSel(){
   const u = selUnit(), setup = S.phase === "setup";
   $("#sel-name").textContent = u ? "· " + u.name : "";
@@ -1578,8 +1595,7 @@ function renderSel(){
     + `<dt>Order</dt><dd>${f.name}, ${Math.min(u.width, Math.ceil(Math.max(1, u.men) / f.per_hex))} hexes of front${u.mounted ? ", mounted" : ""}</dd>`
     + (isBattery(u) ? `<dt>Guns</dt><dd>${gunsInfo(u)}</dd>` : "")
     + (VK ? `<dt>Vehicles</dt><dd>${vehicleInfo(u, VK)}</dd>` : "")
-    + (isAtGun(u) ? `<dt>Guns</dt><dd>${gunsText(atGuns(u), "anti-tank gun")} served (${FD.units.anti_tank_guns.crew} men a gun): ${FD.units.anti_tank_guns.gun.rate} round a gun an exchange at the nearest vehicle (else men) in sight and in front, out to ${fmtM(FD.units.anti_tank_guns.gun.range * FD.units.hex_m)}</dd>` : "")
-    + (isMg(u.weapon) ? `<dt>Guns</dt><dd>${gunsText(mgGuns(u), "machine gun")} served (${FD.units.machine_guns.crew} men a gun); beaten zone ${fmtM(FD.units.machine_guns.beaten.beyond * FD.units.hex_m)} past the target</dd>` : "")
+    + teamInfo(u)
     + (u.prone ? `<dt>Ground</dt><dd>Gone to ground: shots at it −${FD.units.to_ground.cover}%; it cannot move until it gets up</dd>` : "")
     + (u.fixed ? `<dt>Fixed line</dt><dd>Laid on ${u.fixed[0] + 1},${u.fixed[1] + 1}: in the dark, with no target it can see, it fires blind at any enemy within ${nOf(FD.weather.light.fixed_line.width, "hex", "hexes")} of the line (−${FD.weather.light.fixed_line.aim}%)</dd>` : "")
     + (u.lost ? `<dt>Lost</dt><dd>It lost its way in the dark: it cannot move next exchange, but may turn</dd>` : "")

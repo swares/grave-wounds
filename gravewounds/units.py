@@ -1700,10 +1700,15 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     _lit_fades(field)
     log += landings(d, us, table, rng, field)
     log += _vehicles_after(d, us, field)
+    _mark_was(us, field)
+    return us, log
+
+
+def _mark_was(us: list, field: dict | None) -> None:
+    """With minefields down, where each unit's next moves begin (the ground it crosses)."""
     if (field or {}).get("mines"):
         for u in us:
-            u["was"] = [list(u["pos"]), u["facing"]]   # where its next moves begin: the ground it crosses
-    return us, log
+            u["was"] = [list(u["pos"]), u["facing"]]
 
 
 # ---------- minefields ----------
@@ -1743,19 +1748,27 @@ def _mines_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
     return log
 
 
+def _mines_vehicles(d: Data, us: list, i: int, kinds: list, lc: tuple) -> list:
+    """Vehicle unit i in minefield hexes: a vehicle struck at the kind's `vehicles` % for each,
+    knocked out at its armour's `mine` %, else immobilised. lc: (log line, (table, dice, tallies))."""
+    line, (table, rng, acc) = lc
+    M, u = d.units["mines"], us[i]
+    struck = sum(1 for k in kinds if rng.randint(1, 100) <= M["kinds"][k]["vehicles"])
+    kills = sum(1 for _ in range(struck) if rng.randint(1, 100) <= armour_of(d, u)["mine"])
+    k = knock_out(d, us, i, kills, (table, rng), acc)
+    left = vehicles_left(d, u, acc[0][i])
+    immobile = min(left, struck - k["knocked"])
+    u["immobile"] = min(left, u.get("immobile", 0) + immobile)
+    return _logged({**line, "struck": struck, "knocked": k["knocked"], "crew": k["crew"], "immobilised": immobile, **_riders_line(k)}, k["tally"])
+
+
 def _set_off(d: Data, us: list, i: int, kinds: list, ctx: tuple) -> list:
     """Unit i in minefield hexes of these kinds: its men or vehicles struck (_mines_all)."""
     table, rng, acc = ctx
     M, u = d.units["mines"], us[i]
     line = {"kind": "mines", "unit": i, "hexes": len(kinds)}
     if u.get("vehicle"):
-        struck = sum(1 for k in kinds if rng.randint(1, 100) <= M["kinds"][k]["vehicles"])
-        kills = sum(1 for _ in range(struck) if rng.randint(1, 100) <= armour_of(d, u)["mine"])
-        k = knock_out(d, us, i, kills, (table, rng), acc)
-        left = vehicles_left(d, u, acc[0][i])
-        immobile = min(left, struck - k["knocked"])
-        u["immobile"] = min(left, u.get("immobile", 0) + immobile)
-        return _logged({**line, "struck": struck, "knocked": k["knocked"], "crew": k["crew"], "immobilised": immobile, **_riders_line(k)}, k["tally"])
+        return _mines_vehicles(d, us, i, kinds, (line, ctx))
     per = form(d, u)["per_hex"]
     struck = sum(1 for k in kinds for _ in range(min(per, u["men"])) if rng.randint(1, 100) <= M["kinds"][k]["men"])
     weapon = M["weapon"] if M["weapon"] in (d.tables.get(table) or {}).get("weapons", []) else None

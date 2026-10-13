@@ -1436,16 +1436,18 @@ function minesAll(us, table, rng, acc, log, field){   // units that went into mi
     log.push(...setOff(us, i, hit.map(x => mines[hk(x)].kind), table, rng, acc));
   });
 }
+function minesVehicles(us, i, kinds, line, [table, rng, acc]){   // vehicles struck at the kind's vehicles %, knocked out at their armour's mine %, else immobilised
+  const M = UD.mines, u = us[i];
+  let struck = 0, kills = 0;
+  for (const k of kinds) if (rng.randint(1, 100) <= M.kinds[k].vehicles) struck++;
+  for (let s = 0; s < struck; s++) if (rng.randint(1, 100) <= armourOf(u).mine) kills++;
+  const k = knockOut(us, i, kills, table, rng, acc), left = vehiclesLeft(u, acc.lost[i]), immobile = Math.min(left, struck - k.knocked);
+  u.immobile = Math.min(left, (u.immobile || 0) + immobile);
+  return logged({ ...line, struck, knocked: k.knocked, crew: k.crew, immobilised: immobile, ...ridersLine(k) }, k.tally);
+}
 function setOff(us, i, kinds, table, rng, acc){   // unit i in minefield hexes of these kinds: men struck at men % (a hex's worth a hex), vehicles at vehicles % then knocked at armour mine %, else immobilised
   const M = UD.mines, u = us[i], line = { kind: "mines", unit: i, hexes: kinds.length };
-  if (u.vehicle){
-    let struck = 0, kills = 0;
-    for (const k of kinds) if (rng.randint(1, 100) <= M.kinds[k].vehicles) struck++;
-    for (let s = 0; s < struck; s++) if (rng.randint(1, 100) <= armourOf(u).mine) kills++;
-    const k = knockOut(us, i, kills, table, rng, acc), left = vehiclesLeft(u, acc.lost[i]), immobile = Math.min(left, struck - k.knocked);
-    u.immobile = Math.min(left, (u.immobile || 0) + immobile);
-    return logged({ ...line, struck, knocked: k.knocked, crew: k.crew, immobilised: immobile, ...ridersLine(k) }, k.tally);
-  }
+  if (u.vehicle) return minesVehicles(us, i, kinds, line, [table, rng, acc]);
   const per = form(u).per_hex;
   let struck = 0;
   for (const k of kinds) for (let s = 0; s < Math.min(per, u.men); s++) if (rng.randint(1, 100) <= M.kinds[k].men) struck++;
