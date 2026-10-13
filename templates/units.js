@@ -686,23 +686,44 @@ function nearestAhead(u, front, fv, hexes, field, clear = null){  // [distance, 
   }
   return best;
 }
-function volleys(units, field = null){            // [{att, dfd, men, dist, cover, penalty, misfire, reach, from, to, over}]
+function volleys(units, field = null){            // [{att, dfd, men, dist, cover, penalty, misfire, reach, from, to, over}]; riders shooting from vehicles too (riders: true)
   const occ = occupancy(units), out = [];
   units.forEach((u, i) => {
-    if (out_(u) || !("range" in FD.weapons[u.weapon]) || u.digging || (inContact(units, occ, i) && !inBunker(field, u))) return;   // a bunker's men shoot out even in contact
-    let best = target(units, i, field, occ), blind = false;
-    if (!best){ best = fixedTarget(units, i, field, occ); blind = !!best }
-    if (!best) return;
-    const wx = shotWeather(field, u.weapon, best[0], best[2], best[3], seerOf(u, { blind })), [up, longer] = heightEdge(field, u.weapon, best[2], best[3]);
-    if (wx.blocked) return;
-    const v = { att: i, dfd: best[1], men: shooters(u, field), dist: best[0], cover: shareCover(field, best[2], units[best[1]]) + groundCover(units[best[1]]) + shieldCover(units[best[1]], best[3], best[2]), penalty: wx.penalty - up, misfire: wx.misfire, reach: (wx.reach || 0) + longer, from: best[2], to: best[3],
-      height: up, over: lineFire(units, occ, field, i, best[1], [best[2], best[3], best[0]]), seen: seenShare(field, units[best[1]], best[3], u.weapon) };
-    for (const k of ["blind", "flash"]) if (wx[k]) v[k] = true;
-    if (isMg(u.weapon)) Object.assign(v, beaten(units, occ, field, i, best));
-    out.push(v);
+    if (out_(u) || u.digging || (inContact(units, occ, i) && !inBunker(field, u))) return;   // a bunker's men shoot out even in contact
+    if ("range" in FD.weapons[u.weapon]) out.push(...volleyOf(units, occ, field, i));
+    out.push(...riderVolley(units, occ, field, i));
   });
   return out;
 }
+function volleyOf(units, occ, field, i, men = null){   // unit i's volley at its target ([v] or []); men: the shooters (default its front ranks) (as units._volley_of)
+  const u = units[i];
+  let best = target(units, i, field, occ), blind = false;
+  if (!best && men === null){ best = fixedTarget(units, i, field, occ); blind = !!best }
+  if (!best) return [];
+  const wx = shotWeather(field, u.weapon, best[0], best[2], best[3], seerOf(u, { blind })), [up, longer] = heightEdge(field, u.weapon, best[2], best[3]);
+  if (wx.blocked) return [];
+  const v = { att: i, dfd: best[1], men: men === null ? shooters(u, field) : men, dist: best[0], cover: shareCover(field, best[2], units[best[1]]) + groundCover(units[best[1]]) + shieldCover(units[best[1]], best[3], best[2]), penalty: wx.penalty - up, misfire: wx.misfire, reach: (wx.reach || 0) + longer, from: best[2], to: best[3],
+    height: up, over: lineFire(units, occ, field, i, best[1], [best[2], best[3], best[0]]), seen: seenShare(field, units[best[1]], best[3], u.weapon) };
+  for (const k of ["blind", "flash"]) if (wx[k]) v[k] = true;
+  if (men === null && isMg(u.weapon)) Object.assign(v, beaten(units, occ, field, i, best));
+  return [v];
+}
+function riderShooters(u){                         // riders who can shoot: through an IFV's ports or from a tank's hull, rider_fire share (as units.rider_shooters)
+  const K = vehicleKind(u), R = u.riders;
+  if (!K || !R || R.men <= 0 || ROUTED.has(R.state) || !("range" in FD.weapons[R.weapon])) return 0;
+  const F = UD.vehicles.rider_fire;
+  let share = 0;
+  if (K.ports) share = F.ports;
+  else if (K.rides) share = F.hull;
+  return Math.floor(R.men * share);
+}
+function riderVolley(units, occ, field, i){         // the riders' volley from vehicle unit i, with their own weapon (as units._rider_volley)
+  const n = riderShooters(units[i]);
+  if (n <= 0) return [];
+  const R = units[i].riders, pseudo = units.map((x, k) => (k === i ? { ...x, weapon: R.weapon, kit: R.kit, quality: R.quality, nv: R.nv } : x));
+  return volleyOf(pseudo, occ, field, i, n).map(v => ({ ...v, riders: true }));
+}
+const shooterOf = (us, v) => (v.riders ? us[v.att].riders : us[v.att]);   // the unit a volley is fired by
 function fixedTarget(units, i, field, occ){         // [distance, index, shooter hex, target hex]: a machine gun on a fixed line firing blind in the dark at the nearest enemy near the line
   const u = units[i];
   if (!u.fixed || !isMg(u.weapon) || !lightOf(field)) return null;
@@ -772,7 +793,7 @@ function shellWeapon(table){                      // the weapon shell fragments 
   return [I.weapon, I.fallback].find(w => have.includes(w)) || null;
 }
 function markMg(us, v, under){                    // a machine gun's target, and any unit in its beaten zone, check for suppression
-  if (!under || !isMg(us[v.att].weapon)) return;
+  if (!under || !isMg(shooterOf(us, v).weapon)) return;
   under[v.dfd] = true;
   if (v.behind !== undefined && v.behind !== null) under[v.behind] = true;
 }
@@ -1338,11 +1359,11 @@ function shootAll(us, table, rng, acc, log, field, under = null){
     markMg(us, v, under);
     const b = us[v.dfd], exposed = exposure(b, false, true), mf = form(b).missile_factor;
     if (b.vehicle){ armourVolley(us, table, rng, acc, log, v, { factor: mf * (100 - v.misfire) / 100 * v.seen, penalty: v.cover + v.penalty + v.over, reach: v.reach }); continue }
-    let t = takeHurt(b, volley(sideOfUnit(us[v.att], table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100 * v.seen, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
+    let t = takeHurt(b, volley(sideOfUnit(shooterOf(us, v), table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100 * v.seen, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
     tallyLoss(acc, v, t);
     log.push(...logged({ kind: "volley", ...v }, t));
     if (v.behind !== undefined && v.behind !== null) beatenFire(us, table, rng, acc, log, v);
-    for (const hero of actingOf(us[v.att], ["ranged"])){
+    for (const hero of (v.riders ? [] : actingOf(us[v.att], ["ranged"]))){
       const wx = shotWeather(field, hero.weapon, v.dist, v.from, v.to, { kit: hero.kit, blind: !!v.blind });
       if (wx.blocked) continue;
       const [up, longer] = heightEdge(field, hero.weapon, v.from, v.to);
@@ -1357,7 +1378,7 @@ function shootAll(us, table, rng, acc, log, field, under = null){
   vehicleGuns(us, table, rng, acc, log, field, under);
 }
 function armourVolley(us, table, rng, acc, log, v, opts){   // anti-armour shots that hit knock a vehicle out at its armour's rpg %
-  const att = sideOfUnit(us[v.att], table), band = fieldRange(att.weapon, v.dist, opts.reach || 0);
+  const att = sideOfUnit(shooterOf(us, v), table), band = fieldRange(att.weapon, v.dist, opts.reach || 0);
   if (!band) return;
   const A = shotAtVehicle(att.weapon);
   const n = countBlows(v.men * A.rate * opts.factor, rng), atk = attackOf(att) - band.penalty - opts.penalty;

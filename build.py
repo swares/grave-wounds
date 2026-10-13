@@ -331,7 +331,7 @@ def _vehicle_rules(d) -> list[str]:
             "its immobilised vehicles (their crews leave unhurt). "
             f"A main gun hits a vehicle by range, or bursts on men as a tank's round on call; a shell or bomb in a vehicle's hex knocks it out at the kind's knock % times shell. "
             f"A knocked-out vehicle's crew are out of the fight, each struck at {V['crew_struck']}%. Carriers take a foot unit aboard from beside them and set it down beside them; "
-            f"riders in a knocked-out carrier are each struck at {V['riders_struck']}%; a small-arms hit on a soft-skinned carrier (lorries) that does not knock it out strikes a rider, and small arms shoot at men riding on a tank's hull (rides), each hit striking one; shells near the tanks strike them as men in the open. Going a hex: {going}; nothing else."] + _at_mine_rules(d)
+            f"riders in a knocked-out carrier are each struck at {V['riders_struck']}%; a small-arms hit on a soft-skinned carrier (lorries) that does not knock it out strikes a rider, and small arms shoot at men riding on a tank's hull (rides), each hit striking one; shells near the tanks strike them as men in the open. Riders shoot from IFVs' firing ports ({V['rider_fire']['ports']:.0%} of them) and from tank hulls ({V['rider_fire']['hull']:.0%}); not from carriers or lorries. Going a hex: {going}; nothing else."] + _at_mine_rules(d)
 
 
 def _at_mine_rules(d) -> list[str]:
