@@ -19,8 +19,8 @@ When an item is done, delete it here and note it in the pull request that closes
   (remembering last sightings for a few exchanges), picks targets by threat and weakness,
   holds back and commits a reserve, steers round minefields it knows of, turns its guns and
   calls its off-map batteries, and takes or holds an objective hex the GM marks; Undo puts
-  its move back. It looks once at the start of each move. Still left out: smoke,
-  illumination, creeping barrages, counter-battery fire and aircraft; moving, limbering or
+  its move back. It looks once at the start of each move. Attacking, it smokes enemies
+  shooting at men who cannot reply. Still left out: illumination, creeping barrages, counter-battery fire and aircraft; moving, limbering or
   displacing guns; air controllers, riders, fixed lines and works; any plan beyond one
   objective (phase lines, a second objective, feints, scouting). It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model

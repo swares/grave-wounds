@@ -121,7 +121,8 @@ sometimes hesitate. With no enemy in sight, a unit holds.
   taking in the whole position (a ring of trenches counts as the hill).
 - **Minefields.** It steers round minefields it knows of.
 - **Guns.** It turns its guns to face the enemy and calls its off-map batteries on what it
-  sees.
+  sees. Attacking, it first has one battery smoke an enemy that is shooting at men who
+  cannot reply (not in the dark, or in a gale).
 
 **Undo its orders** puts the move back for the GM to make by hand.
 

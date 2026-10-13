@@ -2650,7 +2650,7 @@ function command(units, side, size, field, rng, exchange = null, { stance = "att
     const roll = rng.randint(1, 100), o = unitOrder(us, i, [size, field, stance, known, exchange], roll);
     if (o){ orders.push({ unit: i, ...o }); applyOrder(us, i, o) }
   }
-  orders.push(...layGuns(us, side, [size, field, known, exchange]), ...callFireAi(us, side, field, known));
+  orders.push(...layGuns(us, side, [size, field, known, exchange]), ...callFireAi(us, side, field, known, stance));
   return { units: us, orders };
 }
 const knownFoes = known => Object.entries(known).filter(([k]) => /^\d+$/.test(k));   // [index, {pos, facing, ex}] of the enemies it knows of
@@ -2702,17 +2702,51 @@ function layGuns(us, side, [size, field, known, exchange]){   // its batteries a
   });
   return out;
 }
-function callFireAi(us, side, field, known){      // its off-map batteries with no mission are called on the enemy it sees now that scores best as a target (as commander._call_fire)
-  const out = [];
-  (field?.support || []).forEach((b, k) => {
-    const K = UD.indirect.kinds[b.kind];
-    if (b.side !== side || b.mission || K.direct || K.air || b.displacing || (b.rounds || 0) <= 0 || servedTubes(b) <= 0) return;
+function callFireAi(us, side, field, known, stance = "attack"){   // attacking, one battery lays smoke where its units are under fire; its other free batteries are called on the enemy it sees that scores best as a target (as commander._call_fire)
+  const free = (field?.support || []).map((b, k) => k).filter(k => freeBattery(field.support[k], side));
+  const out = stance === "attack" ? callSmoke(us, side, field, known, free) : [];
+  free.forEach(k => {
+    const b = field.support[k], K = UD.indirect.kinds[b.kind];
+    if (b.mission) return;
     const aim = fireAim(us, side, field, known, b, K);
     if (!aim) return;
     b.mission = { hex: aim[1], wait: K.delay, repeat: false };
     out.push({ unit: null, act: "fire", battery: k, target: aim[0], hex: aim[1] });
   });
   return out;
+}
+function freeBattery(b, side){                     // one of its off-map batteries it can call: not tanks or aircraft, no mission, rounds and tubes, not displacing
+  const K = UD.indirect.kinds[b.kind];
+  return !(b.side !== side || b.mission || K.direct || K.air || b.displacing || (b.rounds || 0) <= 0 || servedTubes(b) <= 0);
+}
+function callSmoke(us, side, field, known, free){   // smoke on the nearest known enemy shooting at a unit that cannot shoot back, by the free battery that lands soonest (as commander._call_smoke)
+  const S = UD.indirect.smoke, wind = field?.weather?.wind || "calm", sight = lightOf(field)?.sight ?? null;
+  if (!free.length || (S.lasts[wind] ?? 0) <= 1 || (sight !== null && sight < FD.weather.light.flash)) return [];
+  const sm = field?.smoke || {};
+  for (const [, j] of shootingAt(us, side, known)){
+    const h = marksOf(knownAt(us, j, known)).find(x => spotted(us, field, side, x) && !(hk(x) in sm));
+    if (!h) continue;
+    const reach = free.filter(k => inReach(field.support[k], h)).map(k => [UD.indirect.kinds[field.support[k].kind].delay, k]);
+    if (!reach.length) continue;
+    reach.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const k = reach[0][1], b = field.support[k];
+    b.mission = { hex: [...h], wait: UD.indirect.kinds[b.kind].delay, repeat: false, smoke: true };
+    return [{ unit: null, act: "smoke", battery: k, target: j, hex: [...h] }];
+  }
+  return [];
+}
+function shootingAt(us, side, known){              // [[distance, enemy index]], nearest first: known enemies whose missiles reach a standing unit of the side that cannot shoot back
+  const seen = new Map();
+  for (const u of us){
+    if (u.side !== side || ROUTED.has(u.state) || u.men <= 0) continue;
+    for (const [k, m] of knownFoes(known)){
+      const e = us[Number(k)], dist = hdist(m.pos, u.pos);
+      const hits = "range" in FD.weapons[e.weapon] && fieldRange(e.weapon, dist) !== null;
+      const back = "range" in FD.weapons[u.weapon] && fieldRange(u.weapon, dist) !== null;
+      if (hits && !back) seen.set(`${dist},${k}`, [dist, Number(k)]);
+    }
+  }
+  return [...seen.values()].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
 }
 function fireAim(us, side, field, known, b, K){    // [enemy index, hex] to fire on, or null
   const ours = us.filter(u => u.side === side && u.men > 0 && u.state !== "fled");
@@ -3904,6 +3938,7 @@ function orderText(o){                            // "Billmen (Yorkists) move 4 
   let them = "the enemy";
   if (t) them = o.last ? `where ${unitName(t)} were last seen (exchange ${o.last})` : unitName(t);
   if (o.act === "fire") return `${supports()[o.battery]?.name || "A battery"} are called on ${them} at ${hexName(o.hex)}.`;
+  if (o.act === "smoke") return `${supports()[o.battery]?.name || "A battery"} are called to lay smoke on ${them} at ${hexName(o.hex)}: they are shooting at men who cannot reply.`;
   const who = unitName(S.units[o.unit]), f = Object.hasOwn(ORDER_TEXT, o.act) ? ORDER_TEXT[o.act] : null;
   if (!f) return `${who} hesitate (rolled ${o.roll}): they hold where they are.`;
   const up = o.up ? "get up and " : "", facing = t ? ", facing " + them : "";

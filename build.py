@@ -498,7 +498,9 @@ def _commander_rules(d) -> list[str]:
         f"{K['objective']['hold']} from it falls back to it unless it can charge. Enemies within {K['objective']['guard']} of it score {K['objective']['bonus']} more as targets; the log names who holds it each exchange. "
         "A battlefield's objective has its own radius (the position as drawn), and the other distances widen by as much. "
         f"Known minefields on the way cost {by(K['mines'])} points a hex. Its batteries and anti-tank guns on the map turn to face the nearest enemy it knows of; its off-map "
-        "batteries with no mission are called on the enemy it sees that scores best as a target, never where its own men are within the burst. It leaves smoke, aircraft and works to the GM.",
+        "batteries with no mission are called on the enemy it sees that scores best as a target, never where its own men are within the burst. "
+        "Attacking, one battery first lays smoke (the soonest to land) on the nearest enemy shooting at its men who cannot reply, unless it is dark, a gale blows or the hex is smoked. "
+        "It leaves aircraft and works to the GM.",
     ]
 
 
