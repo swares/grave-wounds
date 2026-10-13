@@ -193,7 +193,7 @@ legend{padding:0}
       <div id="after-box" hidden>
         <h2>After the battle</h2>
         <p id="verdict" class="verdict"></p>
-        <div class="result-wrap"><table class="result" id="result" aria-label="The battle's result, side by side"></table></div>
+        <div class="result-wrap"><table class="result" aria-label="The battle's result, side by side"><thead><tr><th scope="col">Side</th><th scope="col" id="result-a"></th><th scope="col" id="result-b"></th></tr></thead><tbody id="result"></tbody></table></div>
         <ul class="after" id="after"></ul>
         <div class="toolbar">
           <button id="btn-back" hidden title="Take the dead off the forces and the wounded to their camps">Back to the travel map</button>
@@ -4074,11 +4074,11 @@ const RESULT_ROWS = [                             // [label, figure, shown only 
   ["Batteries lost", t => t.guns, true],
   ["Vehicles lost", t => t.vehicles, true],
 ];
-function resultTable(){                           // the side-by-side table
+const resultRow = (label, cells) => "<tr><th scope=\"row\">" + label + "</th>" + cells.map(c => "<td>" + c + "</td>").join("") + "</tr>";
+function resultTable(){                           // the side-by-side table's rows
   const T = [sideTally(0), sideTally(1)];
   const rows = RESULT_ROWS.filter(([, f, opt]) => !opt || T.some(t => Number(f(t)) > 0));
-  return `<thead><tr><th scope="col"></th>${S.sides.map(x => `<th scope="col">${esc(x)}</th>`).join("")}</tr></thead><tbody>`
-    + rows.map(([label, f]) => `<tr><th scope="row">${label}</th>${T.map(t => `<td>${f(t)}</td>`).join("")}</tr>`).join("") + "</tbody>";
+  return rows.map(([label, f]) => resultRow(label, T.map(f))).join("");
 }
 function verdictText(){                           // who holds the field and the objective
   const lost = [0, 1].filter(k => !standing(k));
@@ -4097,6 +4097,8 @@ function renderAfter(){
   $("#after-box").hidden = !over;
   if (!over) return;
   $("#verdict").textContent = verdictText();
+  $("#result-a").textContent = S.sides[0];
+  $("#result-b").textContent = S.sides[1];
   $("#result").innerHTML = resultTable();
   $("#after").innerHTML = [0, 1].map(k => `<li>${esc(sideAfter(k))}</li>`).join("");
   $("#btn-back").hidden = !S.from || !!S.from.sent;
