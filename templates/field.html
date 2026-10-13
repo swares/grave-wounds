@@ -98,6 +98,13 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .forces{list-style:none;margin:0;padding:0;font-size:.9rem;display:flex;flex-direction:column;gap:4px}
 .forces .meta{float:right;font:500 .75rem var(--mono);color:var(--muted)}
 .after{font-size:.9rem;margin:0;padding-left:1.1rem}
+.verdict{margin:4px 0 8px;font-weight:600}
+.result-wrap{overflow-x:auto;margin:0 0 8px}
+.result{border-collapse:collapse;font-size:.88rem;min-width:100%}
+.result th,.result td{padding:3px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.result th:first-child,.result td:first-child{text-align:left;white-space:normal;min-width:10em}
+.result thead th{font-weight:600;white-space:normal;vertical-align:bottom}
+.result tbody th{font-weight:400}
 .after li{margin:2px 0}
 .support{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.9rem}
 .support li{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;border:1px solid var(--line);border-radius:3px;padding:5px 8px}
@@ -185,6 +192,8 @@ legend{padding:0}
       </div>
       <div id="after-box" hidden>
         <h2>After the battle</h2>
+        <p id="verdict" class="verdict"></p>
+        <div class="result-wrap"><table class="result" id="result" aria-label="The battle's result, side by side"></table></div>
         <ul class="after" id="after"></ul>
         <div class="toolbar">
           <button id="btn-back" hidden title="Take the dead off the forces and the wounded to their camps">Back to the travel map</button>
@@ -1198,10 +1207,58 @@ function heroFate(h){                             // "came through", "carried to
   if (h.carried) return `carried to the rear${h.state === "up" ? "" : ", " + h.state}`;
   return h.state === "up" ? "came through" : h.state;
 }
+function sideTally(k){                            // one side's figures for the result table
+  const t = { start: 0, standing: 0, down: 0, killed: 0, died: 0, left: 0, carried: 0, units: 0, broke: 0, guns: 0, vehicles: 0 };
+  afterUnits().forEach((u, i) => {
+    if (sideNo(u) !== k) return;
+    const a = S.after[i], K = vehicleKind(u);
+    t.start += u.start || 0;
+    t.standing += out_(u) ? 0 : u.men;
+    t.down += u.down || 0;
+    t.killed += a.killed; t.died += a.died; t.left += a.left; t.carried += a.cases.length;
+    t.units += 1;
+    t.broke += out_(u) ? 1 : 0;
+    t.guns += u.abandoned ? 1 : 0;
+    t.vehicles += K ? Math.ceil((u.start || 0) / K.crew) - vehiclesLeft(u) : 0;
+  });
+  return t;
+}
+const RESULT_ROWS = [                             // [label, figure, shown only when either side has some]
+  ["Men at the start", t => t.start],
+  ["Men still standing", t => t.standing],
+  ["Men down", t => t.down],
+  ["Killed in the fighting", t => t.killed],
+  ["Died of wounds before help came", t => t.died],
+  ["Left on the field", t => t.left, true],
+  ["Wounded to camp (the walking wounded too)", t => t.carried],
+  ["Units broken or fled", (t) => `${t.broke} of ${t.units}`],
+  ["Batteries lost", t => t.guns, true],
+  ["Vehicles lost", t => t.vehicles, true],
+];
+function resultTable(){                           // the side-by-side table
+  const T = [sideTally(0), sideTally(1)];
+  const rows = RESULT_ROWS.filter(([, f, opt]) => !opt || T.some(t => Number(f(t)) > 0));
+  return `<thead><tr><th scope="col"></th>${S.sides.map(x => `<th scope="col">${esc(x)}</th>`).join("")}</tr></thead><tbody>`
+    + rows.map(([label, f]) => `<tr><th scope="row">${label}</th>${T.map(t => `<td>${f(t)}</td>`).join("")}</tr>`).join("") + "</tbody>";
+}
+function verdictText(){                           // who holds the field and the objective
+  const lost = [0, 1].filter(k => !standing(k));
+  let field = "Both sides still have units standing: the field is undecided.";
+  if (lost.length === 2) field = "Neither side has a unit left standing.";
+  else if (lost.length === 1) field = `${S.sides[1 - lost[0]]} hold the field: ${S.sides[lost[0]]} have no unit left standing.`;
+  const o = objectiveHeld(S.units, S.field)[0];
+  if (!o) return field;
+  let held = `the objective at ${hexName(o.hex)} is held by no one`;
+  if (o.held !== null) held = `${o.held} hold the objective at ${hexName(o.hex)}`;
+  else if (o.sides.length) held = `the objective at ${hexName(o.hex)} is contested`;
+  return `${field} At the end, ${held}.`;
+}
 function renderAfter(){
   const over = S.phase === "over" && S.after;
   $("#after-box").hidden = !over;
   if (!over) return;
+  $("#verdict").textContent = verdictText();
+  $("#result").innerHTML = resultTable();
   $("#after").innerHTML = [0, 1].map(k => `<li>${esc(sideAfter(k))}</li>`).join("");
   $("#btn-back").hidden = !S.from || !!S.from.sent;
   $("#btn-heroes-back").hidden = !allHeroes().length || !!S.heroesSent;

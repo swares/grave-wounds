@@ -128,7 +128,8 @@ sometimes hesitate. With no enemy in sight, a unit holds.
 
 ## After the battle {#after}
 
-**End the battle** stops it. Then:
+**End the battle** stops it. The page then sets the two sides' results side by side, and
+says who holds the field and the objective. Then:
 
 1. **The field.** A side with no unit still standing has lost the field: the men it had down
    there are left behind.
