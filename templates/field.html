@@ -1637,6 +1637,12 @@ function teamInfo(u){                             // a machine-gun team's or ant
   if (isMg(u.weapon)) return `<dt>Guns</dt><dd>${gunsText(mgGuns(u), "machine gun")} served (${G.crew} men a gun); beaten zone ${fmtM(G.beaten.beyond * FD.units.hex_m)} past the target${shieldText(u)}</dd>`;
   return "";
 }
+function groundInfo(u){                          // the selected unit's Ground lines: gone to ground, dug in, digging, emplaced
+  return (u.prone ? `<dt>Ground</dt><dd>Gone to ground: shots at it −${FD.units.to_ground.cover}%; it cannot move until it gets up</dd>` : "")
+    + (dugHere(u) ? `<dt>Ground</dt><dd>Dug in: shots at it −${FD.units.to_ground.cover}% while it stands here; it leaves its holes if it moves</dd>` : "")
+    + (u.digging ? `<dt>Ground</dt><dd>Digging in: ${u.digging.n} of ${FD.units.dig_in.exchanges} exchanges; it does not fire, and stops if it moves or comes into contact</dd>` : "")
+    + (u.emplaced ? `<dt>Ground</dt><dd>Emplaced: dug in before the battle, shots at it −${FD.units.to_ground.cover}% while it stands; it cannot move, but may turn</dd>` : "");
+}
 function renderSel(){
   const u = selUnit(), setup = S.phase === "setup";
   $("#sel-name").textContent = u ? "· " + u.name : "";
@@ -1670,10 +1676,7 @@ function renderSel(){
     + (isBattery(u) ? `<dt>Guns</dt><dd>${gunsInfo(u)}</dd>` : "")
     + (VK ? `<dt>Vehicles</dt><dd>${vehicleInfo(u, VK)}</dd>` : "")
     + teamInfo(u)
-    + (u.prone ? `<dt>Ground</dt><dd>Gone to ground: shots at it −${FD.units.to_ground.cover}%; it cannot move until it gets up</dd>` : "")
-    + (dugHere(u) ? `<dt>Ground</dt><dd>Dug in: shots at it −${FD.units.to_ground.cover}% while it stands here; it leaves its holes if it moves</dd>` : "")
-    + (u.digging ? `<dt>Ground</dt><dd>Digging in: ${u.digging.n} of ${FD.units.dig_in.exchanges} exchanges; it does not fire, and stops if it moves or comes into contact</dd>` : "")
-    + (u.emplaced ? `<dt>Ground</dt><dd>Emplaced: dug in before the battle, shots at it −${FD.units.to_ground.cover}% while it stands; it cannot move, but may turn</dd>` : "")
+    + groundInfo(u)
     + (u.fixed ? `<dt>Fixed line</dt><dd>Laid on ${u.fixed[0] + 1},${u.fixed[1] + 1}: in the dark, with no target it can see, it fires blind at any enemy within ${nOf(FD.weather.light.fixed_line.width, "hex", "hexes")} of the line (−${FD.weather.light.fixed_line.aim}%)</dd>` : "")
     + (u.lost ? `<dt>Lost</dt><dd>It lost its way in the dark: it cannot move next exchange, but may turn</dd>` : "")
     + `<dt>Moves</dt><dd>${allowance(u)} hexes${(u.heroes || []).some(lamed) ? " (slowed by a wounded hero)" : ""}; turning costs ${turnCost(u)} a step</dd>`;
