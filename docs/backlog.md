@@ -9,11 +9,10 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **The rule book, second part.** `dist/rules.html` (built from `templates/rules/`, every
-  number filled from the data) covers how to play, making a team, the fight, wounds and
-  recovery, with one team followed through. Still to write, in the same way: the field map
-  (units, morale, the rout, guns and the enemy commander), the travel map, camps and
-  disease, weather and works, and the other eras' teams. Only `docs/` covers them now.
+- **The rule book, third part.** `dist/rules.html` covers how to play, a team, the fight,
+  wounds, recovery, battles of hundreds, the march and camp, and weather and works, with one
+  medieval team followed through. Still to write: the other eras' teams and kit, guns and
+  modern fire support, vehicles, night and air in play, and a worked example from a later war.
 - **The enemy commander, beyond the first cut.** A scripted commander moves one side on the
   field map (attacking or holding, by its units' quality; Undo puts its move back). It sees
   the whole field, even at night. It leaves batteries, fire support, air controllers,

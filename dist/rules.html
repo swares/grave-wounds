@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Grave Wounds Rule Book</title>
-<meta name="description" content="The Grave Wounds rule book: how to play, making a team, the fight, wounds and recovery, with one team followed from start to finish.">
+<meta name="description" content="The Grave Wounds rule book: how to play, making a team, the fight, wounds and recovery, battles of hundreds, the march and the camp, weather and works, with one team followed through.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%238e1b2c'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='15' font-weight='700' fill='white' text-anchor='middle'%3Ed%25%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -114,6 +114,29 @@ tbody tr:nth-child(even){background:var(--panel)}
 <li><a href="#camp">Into camp</a></li>
 <li><a href="#check">The recovery check</a></li>
 <li><a href="#fever">Wound fever</a></li>
+</ul>
+</li>
+<li><a href="#battle">Battles of hundreds</a><ul>
+<li><a href="#field-map">The field map</a></li>
+<li><a href="#exchange">An exchange</a></li>
+<li><a href="#morale">Morale and the rout</a></li>
+<li><a href="#heroes">Heroes</a></li>
+<li><a href="#commander">The enemy commander</a></li>
+<li><a href="#after">After the battle</a></li>
+</ul>
+</li>
+<li><a href="#travel">The march and the camp</a><ul>
+<li><a href="#marching">Marching</a></li>
+<li><a href="#camps">Camps</a></li>
+<li><a href="#sickness">Sickness</a></li>
+</ul>
+</li>
+<li><a href="#weather">Weather, light and works</a><ul>
+<li><a href="#days-weather">The day's weather</a></li>
+<li><a href="#weather-fight">Weather in a fight</a></li>
+<li><a href="#fatigue">Fatigue</a></li>
+<li><a href="#light">Light</a></li>
+<li><a href="#works">Works</a></li>
 </ul>
 </li>
 </ul>
@@ -869,7 +892,761 @@ the retinue marches on with its archer.</p>
 flux comes. The travel map counts all of it for whole
 forces; the players only have to decide.</p>
 </div>
-<p class="note">Every number in this book is filled in from the game's data when it is built, so it says what the pages do. This first cut covers the core of play; the field map, the travel map, camps and disease have their own notes in the repository's docs for now. Print it from the browser for a paper copy.</p>
+<h1 id="battle">Battles of hundreds</h1>
+<p>When hundreds fight, rolling for every man every round would take all night. On the
+<a href="field.html">field map</a> the rank and file fight as <strong>units</strong>, resolved a minute at a time
+through the same wound tables, and the team fights among them as <strong>heroes</strong> with the full
+rules of <a href="#fight">the fight</a>.</p>
+<h2 id="field-map">The field map</h2>
+<p>The field map is a grid of hexes 11 yards (10 m) across. One <strong>exchange</strong> is about a minute, some
+10 rounds. Each exchange, one side moves, then the other, and then every melee and
+volley is resolved at once.</p>
+<p>A <strong>unit</strong> is a block of hexes: its front row along its line, its men in rows behind. It
+has a number of men, a quality (green, regular or veteran, as in
+<a href="#characteristics">How to play</a>), a weapon, armour and a <strong>formation</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Formation</th>
+<th>Men a hex</th>
+<th>Abreast</th>
+<th>Ranks</th>
+<th>Move (hexes)</th>
+<th>Shots at it count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Close order</td>
+<td>40</td>
+<td>10</td>
+<td>4</td>
+<td>6</td>
+<td>×1</td>
+</tr>
+<tr>
+<td>Open order</td>
+<td>20</td>
+<td>10</td>
+<td>2</td>
+<td>8</td>
+<td>×0.8</td>
+</tr>
+<tr>
+<td>Battery</td>
+<td>20</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>×0.8</td>
+</tr>
+<tr>
+<td>Extended order</td>
+<td>3</td>
+<td>3</td>
+<td>1</td>
+<td>8</td>
+<td>×0.5</td>
+</tr>
+<tr>
+<td>Machine-gun team</td>
+<td>5</td>
+<td>5</td>
+<td>1</td>
+<td>4</td>
+<td>×0.5</td>
+</tr>
+</tbody>
+</table>
+<p>Mounted units move 15 hexes. A unit that ends its move touching the enemy may have
+come up to 2 times its move: a <strong>charge</strong>. A unit in contact cannot move.</p>
+<h2 id="exchange">An exchange</h2>
+<ol>
+<li><strong>Who strikes.</strong> In melee, the front rank of each hex touching the enemy, and one more
+   rank for each hex of the weapon's reach past the first (spears and bills strike from two
+   ranks, the pike from three). With missiles, the men who have the target in range.</li>
+<li><strong>How many blows tell.</strong> Most of a minute in a press is shoving and watching for an
+   opening: about one striking man in 11 makes a real attempt each exchange. A
+   longbowman looses 8 arrows a minute, and about one shot in 30 is aimed at
+   a man rather than loosed at the mass.</li>
+<li><strong>Each attempt is one attack</strong>, at the unit's quality, exactly as in <a href="#turn">the fight</a>:
+   +20 from the flank, +30 from the rear (and no parry), +20 for a
+   mounted charge in its first exchange, −10 for a shaken unit, +20 for
+   pikes in close order against horse to their front; range, weather and cover come off
+   missiles.</li>
+<li><strong>The wound</strong> is rolled as for one man. A light wound or a graze: he fights on. Serious
+   or critical: a stop check, and failing it puts him <strong>down</strong>. A wound that kills within
+   rounds kills. Against <strong>modern fire</strong> (breech-loaders on, machine guns, shell, grenades),
+   every serious or critical wound puts him down and a light one calls for the check: the
+   casualty returns from 1914 on count nearly every man hit as out of the line.</li>
+<li><strong>Morale</strong>, below; then the next exchange.</li>
+</ol>
+<h2 id="morale">Morale and the rout</h2>
+<p>After an exchange a unit checks its morale if it lost the exchange in contact (more of its
+men down than it put down), has 25% of its men down, lost 10% of its men in
+this exchange, or was struck in the flank or rear. It rolls d100 against its quality's
+Nerve:</p>
+<table>
+<thead>
+<tr>
+<th>Modifier</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Still steady, ranks closed</td>
+<td>+20</td>
+</tr>
+<tr>
+<td>A named leader with it, up</td>
+<td>+10</td>
+</tr>
+<tr>
+<td>Its leader down</td>
+<td>−20</td>
+</tr>
+<tr>
+<td>Half its men down</td>
+<td>−20</td>
+</tr>
+<tr>
+<td>Struck in flank or rear</td>
+<td>−20</td>
+</tr>
+<tr>
+<td>A steady friendly unit beside it</td>
+<td>+10</td>
+</tr>
+<tr>
+<td>Dug in: gone to ground or in a bunker</td>
+<td>+10</td>
+</tr>
+<tr>
+<td>Lost the exchange</td>
+<td>−5 a man more lost than it put down (at most −30)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Steady, fails:</strong> it is <strong>shaken</strong>: it fights at −10 and cannot charge. Failing
+  by more than 20 while flanked, or with half its men down, it breaks at once.</li>
+<li><strong>Shaken, fails:</strong> it <strong>breaks</strong>.</li>
+<li><strong>Shaken, passes out of contact:</strong> it rallies to steady.</li>
+</ul>
+<p>A broken unit runs. Every enemy man in reach strikes it at +20, with no parry and
+twice as often, as long as the pursuers keep up. This is where most of a battle's dead
+fell, as at Towton and Agincourt, where the beaten side lost far more men in flight than in
+the press.</p>
+<div class="admonition gm">
+<p class="admonition-title">For the GM</p>
+<p>A melee of ten or twenty minutes, decided by morale more than by wounds, with the beaten
+side losing most of its men in the rout: that is the shape the records show, and the
+page is tuned to give it. Let the players' heroes break a line rather than kill it.</p>
+</div>
+<h2 id="heroes">Heroes</h2>
+<p>A team's characters go with units as <strong>heroes</strong>: in the front rank, shooting with it, or
+behind it. A hero in the front makes 3 times a ranker's attempts with his own
+attack, and blows on his unit's front fall on him 2 times as often as on a ranker
+there. His wounds use the full rules, his own Blood and his own stop check. Two front-rank
+heroes in contact fight each other: 3 attempts each an exchange, instead of at the
+rankers.</p>
+<p>His wounds slow him as in <a href="#wounds">Wounds</a>: an arm hurt stops a two-handed weapon, and a
+lamed hero halves his unit's move. In a quiet exchange his friends give first aid: the best
+Leechcraft in the unit, or its medics, else his comrades at 60%. A lamed or down
+hero can be <strong>carried back</strong> by 2 of his unit's men, who return after
+3 exchanges, or <strong>left behind</strong>. When the battle ends, a hero still lying out there is
+found if his side holds the field; if not, he is taken prisoner or killed, by the war's
+custom of quarter.</p>
+<div class="admonition example">
+<p class="admonition-title">The retinue: at Towton</p>
+<p>On the field map the retinue's followers fight as units: its archers in open order, its
+spearmen in close order. William of Ely goes with the spearmen in the front rank;
+Walter Miller shoots with the archers, at his own 57% rather than the unit's
+quality, and makes 3 times as many aimed shots as one of them. When the billmen close,
+blows on the archers' front can find him, and a wound there is his own: rolled in full,
+bled on his own 18 Blood, and carried back to the roller when the battle is over.</p>
+</div>
+<h2 id="commander">The enemy commander</h2>
+<p>The GM can hand one side to a scripted <strong>enemy commander</strong>, attacking or holding. At the
+start of that side's move it orders each unit: the nearest enemy is its target; it closes,
+takes cover, shoots from range or charges with the odds its quality wants, and green units
+sometimes hesitate. <strong>Undo its orders</strong> puts the move back for the GM to make by hand.</p>
+<h2 id="after">After the battle</h2>
+<p><strong>End the battle</strong> stops it. Then:</p>
+<ol>
+<li><strong>The field.</strong> A side with no unit still standing has lost the field: the men it had down
+   there are left behind.</li>
+<li><strong>The death clock.</strong> A wound that kills in minutes kills before help comes, unless he is
+   bound in time (10%). One that kills in hours kills unless his camp can treat it:
+   40% saved in a camp, 60% in quarters, none with no camp.</li>
+<li><strong>To camp.</strong> The rest are carried to their force's camp and go onto the track, as in
+   <a href="#recovery">Recovery</a>. A battle set up from the travel map sends its dead and wounded back
+   to the forces there.</li>
+</ol>
+<h1 id="travel">The march and the camp</h1>
+<p>Between battles the team marches, camps and sickens. The <a href="travel.html">travel map</a> moves
+forces across a map of hexes, usually 0.6 mile (1 km) across, on one clock for everyone.</p>
+<h2 id="marching">Marching</h2>
+<p>A force marches at its kind's road speed:</p>
+<table>
+<thead>
+<tr>
+<th>Force</th>
+<th>Road speed</th>
+<th>A day on the road</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>On foot</td>
+<td>2.5 mph (4 km/h)</td>
+<td>20 miles (32 km)</td>
+</tr>
+<tr>
+<td>Mounted</td>
+<td>3.7 mph (6 km/h)</td>
+<td>30 miles (48 km)</td>
+</tr>
+<tr>
+<td>Baggage wagons</td>
+<td>1.9 mph (3 km/h)</td>
+<td>15 miles (24 km)</td>
+</tr>
+</tbody>
+</table>
+<p>Other ground takes longer; a step from one hex to the next costs the average of the two:</p>
+<table>
+<thead>
+<tr>
+<th>Terrain</th>
+<th>Time against a road</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Road</td>
+<td>×1</td>
+</tr>
+<tr>
+<td>Open ground</td>
+<td>×1.5</td>
+</tr>
+<tr>
+<td>Farmland</td>
+<td>×1.5</td>
+</tr>
+<tr>
+<td>Heath</td>
+<td>×1.75</td>
+</tr>
+<tr>
+<td>Forest</td>
+<td>×2.5</td>
+</tr>
+<tr>
+<td>Hills</td>
+<td>×2</td>
+</tr>
+<tr>
+<td>Mountains</td>
+<td>×4</td>
+</tr>
+<tr>
+<td>Marsh</td>
+<td>×3</td>
+</tr>
+<tr>
+<td>River</td>
+<td>cannot enter</td>
+</tr>
+<tr>
+<td>Ford</td>
+<td>×2</td>
+</tr>
+<tr>
+<td>Bridge</td>
+<td>×1</td>
+</tr>
+<tr>
+<td>Lake or sea</td>
+<td>cannot enter</td>
+</tr>
+<tr>
+<td>Village</td>
+<td>×1</td>
+</tr>
+<tr>
+<td>Town</td>
+<td>×1</td>
+</tr>
+</tbody>
+</table>
+<p>The march starts 1 hour after sunrise and stops 1 hour before sunset, up to
+8 hours a day: a short winter day is a short march. Mud and snow slow it (next
+chapter), and a flooded ford cannot be crossed. These speeds are for a small, fit band; a
+large army's column made less ground a day.</p>
+<p><strong>The clock.</strong> Every force on a map keeps the same time, and it moves on only when the GM
+moves it: an hour, to nightfall, or until something happens. <strong>Orders</strong> say whether a force
+marches on its route or halts. When forces of different sides come within 1 hex of
+each other, the clock stops and both halt: the fight can be set up, on the roller's battle
+map or the field map, or they can be given new orders.</p>
+<h2 id="camps">Camps</h2>
+<p>At the end of the march a force makes camp:</p>
+<table>
+<thead>
+<tr>
+<th>Camp</th>
+<th>What it is</th>
+<th>Needs</th>
+<th>Surprise</th>
+<th>Rest</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bivouac</td>
+<td>Sleep where you stop. Nothing built and no proper watch.</td>
+<td>—</td>
+<td>+20</td>
+<td>poor</td>
+</tr>
+<tr>
+<td>Watched camp</td>
+<td>A cleared site with fires, the baggage drawn up and a sentry roster.</td>
+<td>—</td>
+<td>0</td>
+<td>fair</td>
+</tr>
+<tr>
+<td>Staked camp</td>
+<td>A watched camp ringed with sharpened stakes, like archers' stakes set against horse.</td>
+<td>tools</td>
+<td>−10</td>
+<td>fair</td>
+</tr>
+<tr>
+<td>Fortified camp</td>
+<td>Ditch, bank and palisade all round, with a gate.</td>
+<td>tools</td>
+<td>−20</td>
+<td>good</td>
+</tr>
+<tr>
+<td>Quartered</td>
+<td>Billeted in the houses of a village or town.</td>
+<td>village, town</td>
+<td>0</td>
+<td>good</td>
+</tr>
+</tbody>
+</table>
+<p>Digging takes the work of the camp's ditches, banks, palisades and stakes, laid out as the
+battle map would lay them, divided among the men (75% of them work at once; the rest
+guard and cook). Camp work can use what is left of the marching day and then 4
+evening hours; beyond that it runs on into the next day.</p>
+<p><strong>Surprise.</strong> When a fight is set up from the travel map, the defenders may be caught
+unawares: 30%, plus the camp's figure above (10 more with no camp at all),
++20 in the dark, +20 in fog, plus the attackers' best Stealth ÷ 5, less the
+defenders' best Watch ÷ 5, and never under 5% or over 95%. Surprised men
+cannot attack or move in the first round.</p>
+<h2 id="sickness">Sickness</h2>
+<p>Before antibiotics, disease emptied armies faster than battle. Once a week every well man
+may catch what the camp breeds, at a chance set by its <strong>hygiene</strong> (a bivouac is poor,
+quarters good, other camps fair), by staying four weeks or more in one place, by the
+ground (marsh, a town) and by the week's weather:</p>
+<table>
+<thead>
+<tr>
+<th>Disease</th>
+<th>Caught from</th>
+<th>Shows after</th>
+<th>Deaths per case (records)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bloody flux</td>
+<td>Dirty water or food, latrines too near the water</td>
+<td>1–3 days</td>
+<td>2.6%</td>
+</tr>
+<tr>
+<td>Camp fever (typhus)</td>
+<td>Lice in crowded, unwashed camps</td>
+<td>7–14 days</td>
+<td>40%</td>
+</tr>
+<tr>
+<td>Typhoid</td>
+<td>Dirty water or food, often from a carrier in camp</td>
+<td>7–21 days</td>
+<td>36%</td>
+</tr>
+<tr>
+<td>Ague (malaria)</td>
+<td>Mosquitoes in marshes and low wetlands</td>
+<td>7–28 days</td>
+<td>0.8%</td>
+</tr>
+<tr>
+<td>Plague</td>
+<td>Flea bites; worst in sieges and towns full of rats</td>
+<td>2–6 days</td>
+<td>45%</td>
+</tr>
+</tbody>
+</table>
+<p>A case climbs to its peak after it shows, then gets better or worse each night on the
+track of <a href="#recovery">Recovery</a>, with rest, a camp and shelter helping, and marching, cold
+wet nights and filth hurting. Survivors of typhus and plague cannot catch it again; ague comes
+back in marsh country.</p>
+<ul>
+<li><strong>What it costs.</strong> Men at <strong>serious</strong> or worse cannot dig, fight or march on their own;
+  at <strong>grave</strong> or worse they are carried on litters. A force carrying litters marches at
+  90%, or 50% with fewer than 2 fit men a litter.</li>
+<li><strong>Scurvy.</strong> After 6 weeks without fresh food (fruit, greens, fresh meat, onions),
+  each week every well man may fall ill: 10% the first week, 10 more each week
+  after, against his Endurance. Fresh food heals it 2 steps a week. A scurvied man's
+  old wounds open again.</li>
+<li><strong>Frostbite.</strong> On a night of 5 °F (-15 °C) or colder, men without
+  enough shelter may be frostbitten, a sickness on the same track.</li>
+</ul>
+<div class="admonition example">
+<p class="admonition-title">The retinue: on the road</p>
+<p>The retinue marches north on foot: 20 miles (32 km) a day on the road when the days are long,
+less in March, when Towton was fought, and less again in the snow that fell that day. It
+makes a watched camp each night, with a sentry roster and fires; no tools are needed. In
+a fair camp, moving on every day, the flux is the only real danger; were it to sit
+in a filthy siege camp for a month, typhus would come for it.</p>
+</div>
+<div class="admonition gm">
+<p class="admonition-title">For the GM</p>
+<p>The travel map counts all of this for whole forces, and runs each named character's own
+case with his own Endurance when you put him <strong>With</strong> a force from the roller. Your job
+is the choices: how hard to march, where to camp, whether to wait for the sick.</p>
+</div>
+<h1 id="weather">Weather, light and works</h1>
+<h2 id="days-weather">The day's weather</h2>
+<p>Each day on the travel map rolls its weather from the climate's figures for the month: its
+highs and lows, its days of rain and fog, its winds. Wet and dry spells last, and a warm or
+cold spell carries over. Rain falls as snow when the day's high is 36 °F
+(2 °C) or less. The GM can roll again or set any of it by hand.</p>
+<p><strong>Mud and snow</strong> build up and wear off day by day. On the travel map they slow the going;
+on the battle map, mud or snow at level 2 or more costs one more hex of movement
+every hex. Heavy rain or a storm floods the fords for 2 days, counting that day.</p>
+<h2 id="weather-fight">Weather in a fight</h2>
+<p>Weather affects missiles, never close combat:</p>
+<table>
+<thead>
+<tr>
+<th>Weather</th>
+<th>Can aim to</th>
+<th>Bows and crossbows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fair</td>
+<td>no limit</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Overcast</td>
+<td>no limit</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Fog</td>
+<td>55 yards (50 m)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Rain</td>
+<td>328 yards (300 m)</td>
+<td>−10%</td>
+</tr>
+<tr>
+<td>Heavy rain</td>
+<td>164 yards (150 m)</td>
+<td>−20%</td>
+</tr>
+<tr>
+<td>Storm</td>
+<td>109 yards (100 m)</td>
+<td>−20%</td>
+</tr>
+<tr>
+<td>Snow</td>
+<td>164 yards (150 m)</td>
+<td>−10%</td>
+</tr>
+<tr>
+<td>Heavy snow</td>
+<td>87 yards (80 m)</td>
+<td>−10%</td>
+</tr>
+<tr>
+<td>Blizzard</td>
+<td>33 yards (30 m)</td>
+<td>−20%</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Wind</th>
+<th>Bows, slings, thrown</th>
+<th>Firearms</th>
+<th>Range bands with or into it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Calm or light air</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Breeze</td>
+<td>—</td>
+<td>—</td>
+<td>±10%</td>
+</tr>
+<tr>
+<td>Strong wind</td>
+<td>−10%</td>
+<td>—</td>
+<td>±20%</td>
+</tr>
+<tr>
+<td>Gale</td>
+<td>−20%</td>
+<td>−10%</td>
+<td>±30%</td>
+</tr>
+</tbody>
+</table>
+<p>Shooting <strong>with</strong> the wind lengthens the range bands of bows, crossbows, slings and thrown
+weapons; shooting <strong>into</strong> it shortens them, and rain or snow in a shooter's face halves how
+far he can see to aim. In the wet, a firearm can <strong>misfire</strong>, losing the shot:</p>
+<table>
+<thead>
+<tr>
+<th>Ignition</th>
+<th>Rain or snow</th>
+<th>Heavy rain, storm, blizzard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Match</td>
+<td>30%</td>
+<td>60%</td>
+</tr>
+<tr>
+<td>Wheel</td>
+<td>15%</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Flint</td>
+<td>15%</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Percussion</td>
+<td>5%</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Cartridge</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="fatigue">Fatigue</h2>
+<p>A hard march, heat or cold, deep going, a bad night and hand-to-hand fighting tire a
+character a step at a time; a good night's rest takes it back:</p>
+<table>
+<thead>
+<tr>
+<th>Fatigue</th>
+<th>Attack and defence</th>
+<th>Marching speed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fresh</td>
+<td>—</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>Tired</td>
+<td>−5%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>Weary</td>
+<td>−10%</td>
+<td>90%</td>
+</tr>
+<tr>
+<td>Exhausted</td>
+<td>−20%</td>
+<td>75%</td>
+</tr>
+<tr>
+<td>Spent</td>
+<td>−30%</td>
+<td>0%</td>
+</tr>
+</tbody>
+</table>
+<h2 id="light">Light</h2>
+<p>In the dark no one can see to aim, or to call fire, past the light's reach, and aimed fire
+is harder. A flare or an illumination round lights its hexes as by day for a few exchanges,
+and night-vision devices of the later wars see further:</p>
+<table>
+<thead>
+<tr>
+<th>Light</th>
+<th>Can see to aim</th>
+<th>Aimed fire</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Daylight</td>
+<td>no limit</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Dusk or dawn</td>
+<td>219 yards (200 m)</td>
+<td>−5%</td>
+</tr>
+<tr>
+<td>Moonlit night</td>
+<td>109 yards (100 m)</td>
+<td>−10%</td>
+</tr>
+<tr>
+<td>Dark night</td>
+<td>55 yards (50 m)</td>
+<td>−20%</td>
+</tr>
+</tbody>
+</table>
+<h2 id="works">Works</h2>
+<p>Camps and battlefields have <strong>works</strong>: along a hex's sides (ditches, banks, palisades,
+gates, walls) or in a hex (stakes, felled trees, wagons, trenches, bunkers):</p>
+<table>
+<thead>
+<tr>
+<th>Work</th>
+<th>Cover</th>
+<th>Crossing</th>
+<th>Blocks close combat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ditch</td>
+<td>—</td>
+<td>+2 movement</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Earth bank</td>
+<td>−20%</td>
+<td>+1 movement</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Palisade</td>
+<td>−40%</td>
+<td>cannot be crossed (breach it)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Gate</td>
+<td>−40%</td>
+<td>free</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Stone wall</td>
+<td>−50%</td>
+<td>cannot be crossed (breach it)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Stakes</td>
+<td>—</td>
+<td>+1 movement</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Abatis</td>
+<td>−20%</td>
+<td>+2 movement</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Pavise</td>
+<td>−20%</td>
+<td>free</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Wagon</td>
+<td>−40%</td>
+<td>cannot be crossed (breach it)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Barbed wire</td>
+<td>—</td>
+<td>+3 movement</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Bunker</td>
+<td>−50%</td>
+<td>+1 movement</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Trench</td>
+<td>−40%</td>
+<td>+1 movement</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Downed helicopter</td>
+<td>−30%</td>
+<td>+2 movement</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>A palisade, wall, barred gate or wagon must be <strong>breached</strong> to get through: men hack at it
+instead of fighting, until it is down. Across a palisade, wall or barred gate only reach-2
+weapons strike, from the front rank, and striking up a bank or ditch costs its height.
+Horses cannot charge into stakes or felled trees.</p>
+<div class="admonition gm">
+<p class="admonition-title">For the GM</p>
+<p>Weather is the cheapest way to change a fight. Rain on the morning of a battle takes the
+archers' edge away and spoils matchlocks; fog lets the attackers close unseen; a gale at
+the archers' backs carries their arrows nearly a third further. Roll it, then let the players
+decide whether to fight in it.</p>
+</div>
+<p class="note">Every number in this book is filled in from the game's data when it is built, so it says what the pages do. The repository's docs go into more detail on each part, and the printed tables hold every table. Print this book from the browser for a paper copy.</p>
   </main>
 </div>
 <script>
