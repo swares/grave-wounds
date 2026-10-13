@@ -879,7 +879,17 @@ def _field_care_errors(d: Data, heroes: dict) -> list[str]:
     if Q and "default" not in Q:
         errors.append("units.yaml: heroes.quarter needs a default")
     errors += [f"units.yaml: heroes.quarter names {w}, the war of no wound table" for w in Q if w != "default" and w not in wars]
-    return errors + [f"units.yaml: heroes.quarter.{w} must be a % (0-100)" for w, v in Q.items() if not (isinstance(v, int) and 0 <= v <= 100)]
+    errors += [f"units.yaml: heroes.quarter.{w} must be a % (0-100)" for w, v in Q.items() if not (isinstance(v, int) and 0 <= v <= 100)]
+    return errors + _aid_post_errors(heroes.get("aid_post"))
+
+
+def _aid_post_errors(post: dict | None) -> list[str]:
+    """heroes.aid_post: first_aid a %, pace a positive whole number of hexes, overrun 0 or more."""
+    if post is None:
+        return []
+    ok = isinstance(post.get("first_aid"), int) and 0 <= post["first_aid"] <= 100 and isinstance(post.get("pace"), int) and post["pace"] > 0 \
+        and isinstance(post.get("overrun"), int) and post["overrun"] >= 0
+    return [] if ok else ["units.yaml: heroes.aid_post needs first_aid (a %), pace (hexes, 1 or more) and overrun (hexes, 0 or more)"]
 
 
 def _limb_errors(d: Data) -> list[str]:

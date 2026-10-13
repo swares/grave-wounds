@@ -284,21 +284,34 @@ def _impair_effect(d: Data, w: dict, imp: str, hand: str) -> tuple:
 
 
 def _heroes_after(d: Data, us: list, rng, quiet: list | None = None, cautery: bool = False) -> list:
-    """End of an exchange for every hero not dead and still on the field: a hold wears off,
-    first aid if his unit had a quiet exchange (quiet[i]; cautery: the battle's era cauterises),
-    he bleeds, his Blood's thresholds can put him down, and pain above the cap calls for a stop
-    check. Then bearers due back rejoin their units."""
+    """End of an exchange for every hero not dead, taken or carried off the map: a hold wears
+    off; first aid if his unit had a quiet exchange (quiet[i]; cautery: the battle's era
+    cauterises), or at the aid post every exchange; he bleeds (with his unit, lying out, on
+    his way back or at the post), his Blood's thresholds can put him down, and pain above the
+    cap calls for a stop check. Then bearers due back rejoin their units."""
     log = []
     for i, u in enumerate(us):
         for hero in u.get("heroes", []):
-            if hero["state"] == "dead" or _off_field(hero):   # left behind or carried back: out of the battle
+            if hero["state"] in ("dead", "prisoner") or (hero.get("carried") and not hero.get("post")):   # off the map: out of the battle
                 continue
-            if quiet and quiet[i]:
-                log += [{"kind": "heroaid", "unit": i, **x} for x in [_first_aid(d, hero, rng, _healer(d, u), cautery)] if x]
+            aid = _aid_for(d, u, hero, rng, (quiet and quiet[i], cautery))
+            if aid:
+                log.append({"kind": "heroaid", "unit": i, **aid})
             line = _hero_after(d, hero, rng)
             if line:
                 log.append({"kind": "herobled", "unit": i, **line})
     return log + _bearers_back(us)
+
+
+def _aid_for(d: Data, u: dict, hero: dict, rng, when: tuple) -> dict | None:
+    """First aid this exchange: at the aid post, always, at heroes.aid_post.first_aid; with his
+    unit, in a quiet exchange, by its best healer. when: (quiet, cautery)."""
+    quiet, cautery = when
+    if hero.get("post"):
+        return _first_aid(d, hero, rng, (d.units["heroes"]["aid_post"]["first_aid"], "the aid post"), cautery)
+    if quiet and not _off_field(hero):
+        return _first_aid(d, hero, rng, _healer(d, u), cautery)
+    return None
 
 
 def cauterises(d: Data, table: str) -> bool:
@@ -313,9 +326,8 @@ def hero_fates(d: Data, units: list, table: str, rng) -> list:
     if it has a unit still standing (or neither side has): he is found. Otherwise d100 at or
     under heroes.quarter % for the war makes him a prisoner, else he is killed. -> [{unit, hero,
     name, fate (found, prisoner or killed), roll, chance}], unit by unit."""
-    Q, out = d.units["heroes"]["quarter"], []
+    out, chance = [], quarter(d, table)
     up = {u["side"] for u in units if standing(u)}
-    chance = Q.get((d.tables.get(table) or {}).get("battle"), Q["default"])
     for i, u in enumerate(units):
         for h in (h for h in u.get("heroes", []) if _lying_out(u, h)):
             line = {"unit": i, "hero": h["id"], "name": h["name"]}
@@ -327,17 +339,183 @@ def hero_fates(d: Data, units: list, table: str, rng) -> list:
     return out
 
 
+def quarter(d: Data, table: str) -> int:
+    """% that a man the enemy finds lying out is taken prisoner (heroes.quarter, by the wound
+    table's war), else killed."""
+    Q = d.units["heroes"]["quarter"]
+    return Q.get((d.tables.get(table) or {}).get("battle"), Q["default"])
+
+
 def _lying_out(u: dict, h: dict) -> bool:
-    """A hero still on the field who cannot leave it with his unit: left behind, or down with a
-    unit that is no longer standing (not dead, not carried back)."""
-    if h["state"] == "dead" or h.get("carried"):
+    """A hero still on the field who cannot leave it with his unit: left behind, on his way
+    back, or down with a unit that is no longer standing (not dead, taken or carried back)."""
+    if h["state"] in ("dead", "prisoner") or h.get("carried"):
         return False
-    return bool(h.get("left")) or (not standing(u) and h["state"] == "down")
+    return bool(h.get("left") or h.get("going")) or (not standing(u) and h["state"] == "down")
 
 
 def _off_field(hero: dict) -> bool:
-    """Left behind, or carried to the rear: out of the battle."""
-    return bool(hero.get("left") or hero.get("carried"))
+    """Left behind, on his way back, or carried to the rear or the aid post: out of his
+    unit's fight."""
+    return bool(hero.get("left") or hero.get("carried") or hero.get("going"))
+
+
+def _parties_after(d: Data, us: list, field: dict | None) -> list:
+    """Each party on its way back goes heroes.aid_post.pace hexes on a straight line to its
+    side's aid post (or, with none, to the map edge the way back), and arrives if it is
+    within reach: the hero is carried (safe; at the post, its care), and the bearers set off
+    back to their unit, due after as many exchanges as the carry took. A hero who cannot walk
+    with no bearers left lies where he is; one killed on the way leaves his bearers to go back."""
+    log, pace = [], d.units["heroes"]["aid_post"]["pace"]
+    for i, u in enumerate(us):
+        for hero in u.get("heroes", []):
+            g = hero.get("going")
+            if not g:
+                continue
+            line = _party_stops(d, u, hero) or _party_moves(d, field, u, hero, pace)
+            if line:
+                log.append({"kind": "party", "unit": i, "hero": hero["id"], "name": hero["name"], **line})
+    return log
+
+
+def _party_stops(d: Data, u: dict, hero: dict) -> dict | None:
+    """A party that cannot go on: its hero killed or taken (the bearers go back), or unable to
+    walk with no bearers (he lies where he is). -> a log line, or None."""
+    g = hero["going"]
+    if hero["state"] in ("dead", "prisoner"):
+        del hero["going"]
+        _bearers_off(u, g)
+        return {"what": "stopped", "at": g["pos"]}
+    if g["bearers"] <= 0 and _lame(d, hero):
+        del hero["going"]
+        hero["left"], hero["at"] = True, g["pos"]
+        return {"what": "lies", "at": g["pos"]}
+    return None
+
+
+def _party_moves(d: Data, field: dict | None, u: dict, hero: dict, pace: int) -> dict | None:
+    """The party goes on toward its aim (the post, or the edge); arriving, the hero is carried."""
+    g, post = hero["going"], aid_post(field, u["side"])
+    aim = post["at"] if post else _edge(d, field, g["pos"], g["dir"])
+    g["ex"] += 1
+    dist = hdist(g["pos"], aim)
+    if dist > pace:
+        g["pos"] = ray(g["pos"], aim, pace)[pace]
+        return None
+    del hero["going"]
+    hero["carried"] = True
+    if post:
+        hero["post"] = True
+    _bearers_off(u, g)
+    return {"what": "post" if post else "edge", "at": aim}
+
+
+def _bearers_off(u: dict, g: dict) -> None:
+    """A party's bearers set off back to their unit: due after as many exchanges as it went."""
+    if g["bearers"] > 0:
+        u["away"] = [*u.get("away", []), {"men": g["bearers"], "left": max(1, g["ex"])}]
+
+
+def _edge(d: Data, field: dict | None, h, dirn: int) -> list:
+    """The last hex on the map going from h in direction dirn."""
+    cols, rows = _size(d, field)
+    while True:
+        x = step(h, dirn)
+        if not (0 <= x[0] < cols and 0 <= x[1] < rows):
+            return list(h)
+        h = x
+
+
+def _lying_after(d: Data, us: list, table: str, rng) -> list:
+    """Heroes lying out (left behind, on a hex): a unit of his side standing on his hex picks
+    him up (he goes with it, behind), but not the unit that left him until it has moved off;
+    an enemy unit, not broken, standing there takes him prisoner at the war's quarter %, else
+    kills him."""
+    log, occ = [], occupancy(d, us)
+    for i, u in enumerate(us):
+        for hero in [h for h in u.get("heroes", []) if h.get("left") and h.get("at") and h["state"] not in ("dead", "prisoner")]:
+            line = _lying_one(d, us, (i, occ.get(C.hkey(hero["at"]))), hero, (table, rng))
+            if line:
+                log.append(line)
+    return log
+
+
+def _lying_one(d: Data, us: list, ij: tuple, hero: dict, tr: tuple) -> dict | None:
+    """One hero lying out of unit i, with unit j (or None) on his hex: fetched, found, or left."""
+    (i, j), u = ij, us[ij[0]]
+    if hero.get("left_by") is not None and (j is None or us[j]["id"] != hero["left_by"]):
+        del hero["left_by"]                       # the unit that left him has moved off: it may come back for him
+    if j is None or _out(us[j]) or us[j].get("vehicle") or hero.get("left_by") is not None:
+        return None
+    if us[j]["side"] != u["side"]:
+        return {"kind": "found", "unit": i, "by": j, **_taken(d, hero, *tr)}
+    u["heroes"].remove(hero)
+    hero.pop("left"), hero.pop("at")
+    us[j]["heroes"] = [*us[j].get("heroes", []), {**hero, "role": "behind"}]
+    return {"kind": "fetched", "unit": j, "from": i, "hero": hero["id"], "name": hero["name"]}
+
+
+def _taken(d: Data, hero: dict, table: str, rng) -> dict:
+    """The enemy finds him: d100 at or under the war's quarter % takes him prisoner, else he is killed."""
+    roll, chance = rng.randint(1, 100), quarter(d, table)
+    hero["state"] = "prisoner" if roll <= chance else "dead"
+    hero.pop("post", None)
+    return {"hero": hero["id"], "name": hero["name"], "fate": "prisoner" if roll <= chance else "killed", "roll": roll, "chance": chance}
+
+
+def _posts_after(d: Data, us: list, field: dict | None, table: str, rng) -> list:
+    """An aid post with an enemy unit (not broken or fled, with men) within
+    heroes.aid_post.overrun hexes is overrun: the heroes there are taken or killed (_taken)."""
+    log, reach = [], d.units["heroes"]["aid_post"]["overrun"]
+    for p in (field or {}).get("posts") or []:
+        if p.get("overrun") or not any(u["side"] != p["side"] and not _out(u) and any(hdist(x, p["at"]) <= reach for row in footprint(d, u) for x in row) for u in us):
+            continue
+        p["overrun"] = True
+        log.append({"kind": "overrun_post", "side": p["side"], "at": p["at"]})
+        for i, u in enumerate(us):
+            log += [{"kind": "found", "unit": i, "at_post": True, **_taken(d, h, table, rng)}
+                    for h in u.get("heroes", []) if h.get("post") and u["side"] == p["side"] and h["state"] not in ("dead", "prisoner")]
+    return log
+
+
+def _shell_parties(d: Data, us: list, field: dict, bursts: list, kind: dict, att: dict, rng) -> list:
+    """Shell bursts near parties on their way back: the hero and each bearer struck at the %
+    for his distance (as men in the open, less the ground's cover). Struck bearers roll their
+    wounds as the unit's men (put down: lost to it); the hero, in full."""
+    log = []
+    for i, u in enumerate(us):
+        for hero in u.get("heroes", []):
+            if hero.get("going") and hero["state"] not in ("dead", "prisoner"):
+                line = _shell_party(d, field, u, hero, (bursts, kind, att), rng)
+                if line:
+                    log.append({"kind": "partyhit", "unit": i, **line})
+    return log
+
+
+def _shell_party(d: Data, field: dict, u: dict, hero: dict, fire: tuple, rng) -> dict | None:
+    (bursts, kind, att), g = fire, hero["going"]
+    cut, hits, struck = _shell_cut(d, field, g["pos"], False), 0, 0
+    for at in bursts:
+        dist = hdist(g["pos"], at)
+        if dist > kind["radius"]:
+            continue
+        p = kind["struck"][dist] * cut
+        hits += rng.randint(1, 100) <= p
+        struck += sum(1 for _ in range(g["bearers"]) if rng.randint(1, 100) <= p)
+    if not hits and not struck:
+        return None
+    atk = d.units["indirect"]["attack"]
+    t = _blows(d, att, _side(u, att["table"]), struck, atk, 0, rng)
+    th = _new_tally()
+    crit_at = math.floor(atk * d.wounds["combat"]["critical_fraction"])
+    for _ in range(hits):
+        if hero["state"] != "dead":
+            _hero_blow(d, att, hero, rng.randint(1, 100), atk, crit_at, -1000, rng, th)
+    g["bearers"] -= t["down"]
+    u.update(down=u.get("down", 0) + t["down"], dead=u.get("dead", 0) + t["dead"])
+    _take_hurt(u, t)
+    return {"hero": hero["id"], "name": hero["name"], "at": g["pos"], "struck": struck, "down": t["down"], "dead": t["dead"],
+            "hits": th.get("heroes", []), "state": hero["state"]}
 
 
 def _bearers_back(us: list) -> list:
@@ -356,21 +534,67 @@ def _bearers_back(us: list) -> list:
     return log
 
 
-def carry_back(d: Data, units: list, i: int, hero_id) -> str | None:
-    """Unit i sends `bearers` of its men to carry hero hero_id to the rear: he leaves the
-    battle (safe), and they come back after `back_after` exchanges. -> None, or why not."""
+def carry_back(d: Data, units: list, i: int, hero_id, field: dict | None = None) -> str | None:
+    """Unit i sends `bearers` of its men to carry hero hero_id back. With an aid post for its
+    side (field.posts), they set off for it as a party on the map (_parties_after); with none,
+    he leaves the battle at once (safe) and they come back after `back_after` exchanges.
+    -> None, or why not."""
     H, u = d.units["heroes"], units[i]
-    hero = next((h for h in u.get("heroes", []) if h["id"] == hero_id), None)
+    hero = _hero_of(u, hero_id)
     if hero is None or not lamed(d, hero):
         return "he can walk, or is not with the unit"
     if u["state"] not in ("steady", "shaken"):
         return "the unit is running"
     if u["men"] <= H["bearers"]:
         return f"the unit has not {H['bearers']} men to spare"
-    hero["carried"] = True
     u["men"] -= H["bearers"]
+    if aid_post(field, u["side"]):
+        hero["going"] = _party(u, H["bearers"])
+        return None
+    hero["carried"] = True
     u["away"] = [*u.get("away", []), {"men": H["bearers"], "left": H["back_after"]}]
     return None
+
+
+def walk_back(d: Data, units: list, i: int, hero_id) -> str | None:
+    """Hero hero_id, wounded but able to walk (up, not lamed), leaves unit i and goes back
+    alone: to his side's aid post, or the map edge behind his unit. -> None, or why not."""
+    u = units[i]
+    hero = _hero_of(u, hero_id)
+    if hero is None or hero["state"] != "up" or _off_field(hero):
+        return "he is not up with the unit"
+    if lamed(d, hero):
+        return "he cannot walk: carry him back"
+    if not hero.get("wounds") and not hero.get("old"):
+        return "he is not wounded"
+    hero["going"] = _party(u, 0)
+    return None
+
+
+def leave(d: Data, units: list, i: int, hero_id) -> str | None:
+    """Unit i leaves lamed or down hero hero_id behind: he lies on its hex (left, at), where a
+    unit can fetch him (_lying_after), it too once it has moved off. -> None, or why not."""
+    u = units[i]
+    hero = _hero_of(u, hero_id)
+    if hero is None or not lamed(d, hero):
+        return "he can walk, or is not with the unit"
+    hero.update(left=True, at=list(u["pos"]), left_by=u["id"])
+    return None
+
+
+def _hero_of(u: dict, hero_id) -> dict | None:
+    return next((h for h in u.get("heroes", []) if h["id"] == hero_id), None)
+
+
+def _party(u: dict, bearers: int) -> dict:
+    """A party setting off back from unit u: where it is, its bearers, the way back (away
+    from the unit's front) and the exchanges it has been going."""
+    return {"pos": list(u["pos"]), "bearers": bearers, "dir": (u["facing"] + 3) % 6, "ex": 0}
+
+
+def aid_post(field: dict | None, side) -> dict | None:
+    """Side's aid post on the field (field.posts: [{side, at, overrun}]) if not overrun, or None."""
+    return next((p for p in (field or {}).get("posts") or [] if p["side"] == side and not p.get("overrun")), None)
 
 
 def _healer(d: Data, u: dict) -> tuple | None:
@@ -473,12 +697,17 @@ def _strikes(d: Data, hero: dict) -> bool:
 
 
 def lamed(d: Data, hero: dict) -> bool:
-    """A hero who slows his unit: not dead or left behind, and down (carried) or with a
-    wound (from this battle or one he came with) that lames him (heroes.lamed)."""
+    """A hero who slows his unit: not dead or off the field, and cannot walk (_lame)."""
     if hero["state"] == "dead" or _off_field(hero):
         return False
+    return _lame(d, hero)
+
+
+def _lame(d: Data, hero: dict) -> bool:
+    """Down, or with a wound (from this battle or one he came with) that lames him
+    (heroes.lamed): he cannot walk."""
     lame = d.units["heroes"]["lamed"]
-    return hero["state"] == "down" or any(i in lame for w in (hero.get("old") or []) + hero.get("wounds", []) for i in w.get("impair") or [])
+    return hero["state"] != "up" or any(i in lame for w in (hero.get("old") or []) + hero.get("wounds", []) for i in w.get("impair") or [])
 
 
 def front_men(d: Data, u: dict) -> int:
@@ -1445,6 +1674,9 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _morale_all(d, us, occ, before, (lost, dealt, flanked), rng, table, field)
     log += _suppress_all(d, us, under, rng)
     log += _heroes_after(d, us, rng, [not lost[i] and not under[i] and not in_contact(d, us, occ, i) for i in range(len(us))], cauterises(d, table))
+    log += _parties_after(d, us, field)
+    log += _lying_after(d, us, table, rng)
+    log += _posts_after(d, us, field, table, rng)
     for u in us:
         u["charged"] = False
         _battery_after(d, u)
@@ -2150,6 +2382,7 @@ def _bombard(d: Data, ctx: tuple, k: int, b: dict, shells: int, scatter: int | N
         _lay_smoke(d, field, bursts)
     else:
         log += _shell_units(d, us, (table, weapon), rng, acc, field, under, k, b, bursts)
+        log += _shell_parties(d, us, field, bursts, K, {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}, rng)
         log += _knock_bunkers(d, field, k, b, bursts, rng)
     return log
 
@@ -2486,7 +2719,8 @@ def _breachable(d: Data, field: dict, u: dict, h):
 
 def _copy_unit(u: dict) -> dict:
     return dict(u, hurt=dict(u.get("hurt", {})),
-                heroes=[dict(h, wounds=list(h.get("wounds", [])), **({"held": dict(h["held"])} if h.get("held") else {})) for h in u.get("heroes", [])])
+                heroes=[dict(h, wounds=list(h.get("wounds", [])), **({"held": dict(h["held"])} if h.get("held") else {}),
+                             **({"going": dict(h["going"])} if h.get("going") else {})) for h in u.get("heroes", [])])
 
 
 def _logged(line: dict, t: dict) -> list:

@@ -590,6 +590,22 @@ heroes:
     Vietnam: 50
     "Late 20th century": 70
     "Iraq & Afghanistan": 50
+  # Aid posts: the GM can mark one hex for each side. With one, bearers carry a hero there,
+  # and a wounded hero who can still walk (not lamed or down) can go back to it alone; with
+  # none, bearers carry him off the map as before, and a walking hero makes for the map edge
+  # behind his unit. A party (the hero and his bearers) goes `pace` hexes an exchange on a
+  # straight line (about half a man's move), and shell bursts strike its men as men in the
+  # open. Bearers struck down are lost to their unit; with no bearers left, a hero who cannot
+  # walk lies where he is. At the post he gets first aid every exchange at `first_aid` %
+  # (as a skilled healer), and his wounds go back to the roller treated, off the death clock.
+  # An enemy unit standing within `overrun` hexes of the post overruns it: the men there are
+  # taken or killed by the war's quarter. Bearers come back to their unit after as many
+  # exchanges as the carry took. A hero left behind lies on his unit's hex: a friendly unit
+  # standing on it picks him up, an enemy one takes or kills him by quarter. Design estimates.
+  aid_post:
+    first_aid: 75
+    pace: 3
+    overrun: 1
 
 # ---------- the enemy commander ----------
 # A scripted commander can play one side on the field map ("Enemy commander"). At the start

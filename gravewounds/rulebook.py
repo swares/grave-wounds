@@ -78,6 +78,7 @@ def _field_values(d: Data) -> dict:
         "f_rout": U["rout"]["attack"], "f_rout_x": U["rout"]["exchanges"], "f_range_scale": U["range_scale"],
         "f_ground": U["to_ground"]["cover"], "f_tempo_h": f"{H['tempo']:g}", "f_exposure": f"{H['exposure']:g}", "f_duel": H["duel"],
         "f_bearers": H["bearers"], "f_back": H["back_after"], "f_first_aid": H["first_aid"],
+        "f_post_pace": H["aid_post"]["pace"], "f_post_aid": H["aid_post"]["first_aid"],
         "f_saved_min": U["aftermath"]["saved"]["minutes"], "f_saved_field": U["aftermath"]["saved"]["hours"]["field"],
         "f_saved_shelter": U["aftermath"]["saved"]["hours"]["shelter"],
         "f_bow_rate": U["missile"]["rate"]["longbow"], "f_aimed": round(1 / U["missile"]["tempo"]),

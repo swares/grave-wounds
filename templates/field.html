@@ -111,6 +111,10 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .bat{fill:#5a5a5a;stroke:#fff;stroke-width:.6}.bat.gone{fill:none;stroke:#999;stroke-dasharray:1.5 1}
 .fixed{stroke:#b03030;stroke-width:1.1;stroke-dasharray:3 2;fill:none;pointer-events:none}
 .flash{font:700 6px var(--mono);fill:#e0a000;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.post{fill:var(--panel);stroke:#2f6b3a;stroke-width:1;pointer-events:none}.post.gone{opacity:.4;stroke-dasharray:1.5 1}
+.post-t{font:700 4.6px var(--mono);fill:#2f6b3a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.party{font:700 8px var(--mono);fill:#2f6b3a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.lying{font:700 6px var(--mono);fill:var(--blood);text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .heroes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.9rem}
 .heroes li{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:3px;padding:5px 8px}
 .heroes .meta{margin-left:auto;font:500 .75rem var(--mono);color:var(--muted);text-align:right}
@@ -741,11 +745,16 @@ function lzSvg(h){ const [x, y] = xy(h); return `<circle class="lz" cx="${f1(x)}
 function litSvg(l){ const [cx, cy] = xy(l.at); return `<circle class="lit" cx="${f1(cx)}" cy="${f1(cy)}" r="${f1((l.radius + 0.5) * HW)}"/>` }
 function fixedSvg(u){ const f = footprint(u)[0], [x1, y1] = xy(f[Math.floor(f.length / 2)]), [x2, y2] = xy(u.fixed); return `<line class="fixed" x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2)}" y2="${f1(y2)}"/>` }
 function batterySvg(b){ const [x, y] = xy(b.place), cls = b.overrun ? "bat gone" : "bat"; return `<rect class="${cls}" x="${f1(x - 4)}" y="${f1(y - 3)}" width="8" height="6"><title>${esc(b.name)} (${esc(b.side)})</title></rect>` }
-function supportSvg(){                            // smoke, landing zones, flares, fixed lines, flashes, the hexes fire is called on, batteries, and where the last exchange's shells burst
-  const F = S.field;
+const poss = n => (n.endsWith("s") ? n + "'" : n + "'s");   // "Yorkists'", "England's"
+function postSvg(p){ const [x, y] = xy(p.at); return `<rect class="post${p.overrun ? " gone" : ""}" x="${f1(x - 5)}" y="${f1(y - 3.5)}" width="10" height="7" rx="1.5"><title>${esc(poss(p.side))} aid post${p.overrun ? " (overrun)" : ""}</title></rect><text class="post-t" x="${f1(x)}" y="${f1(y)}">AP</text>` }
+function supportSvg(){                            // smoke, landing zones, aid posts, heroes going back or lying out, flares, fixed lines, flashes, the hexes fire is called on, batteries, and where the last exchange's shells burst
+  const F = S.field, heroes = allHeroes();
   return [
     Object.keys(F.smoke || {}).map(k => `<polygon class="smoke" points="${pts(xy(k.split(",").map(Number)))}"/>`),
     (F.lz || []).map(lzSvg),
+    (F.posts || []).map(postSvg),
+    heroes.filter(h => h.going).map(h => glyph("party", "\u21a9")(h.going.pos)),
+    heroes.filter(h => h.left && h.at && h.state !== "dead" && h.state !== "prisoner").map(h => glyph("lying", "\u25bc")(h.at)),
     (F.lit || []).map(litSvg),
     S.units.filter(u => u.fixed && !out_(u)).map(fixedSvg),
     (F.flashes || []).map(glyph("flash", "\u2739")),
@@ -834,6 +843,20 @@ function aidText(l, nm){                          // a hero's first aid: "X (uni
   if (l.how === "cauterise") return `${who}: the wound in his ${part} is cauterised${by}: it bleeds no more.`;
   return `${who} is bandaged${by}: his ${part} bleeds ${l.bleed ? "less" : "no more"}.`;
 }
+function partyText(l, nm){                        // a party back: arrived, stopped, or its hero left lying
+  const who = `${l.name} (${nm(l.unit)})`;
+  if (l.what === "post") return `${who} reaches the aid post at ${hexName(l.at)}.`;
+  if (l.what === "edge") return `${who} is carried off the map at ${hexName(l.at)}, out of the battle.`;
+  if (l.what === "lies") return `${who} cannot go on with no one to carry him: he lies at ${hexName(l.at)}.`;
+  return `${who} goes no further; his bearers head back to their unit.`;
+}
+const hitName = x => (x.graze ? "a graze" : x.sev) + " (" + (FD.locations[x.loc]?.name.toLowerCase() || x.loc) + ")";   // "serious (thigh (right))"
+function partyHitText(l, nm){                     // shells among a party going back
+  const dead = l.dead ? " (" + l.dead + " dead)" : "";
+  const bearers = l.struck ? ` ${nOf(l.struck, "bearer")} struck, ${l.down} down${dead}.` : "";
+  const him = l.hits.length ? ` ${l.name} is hit: ${l.hits.map(hitName).join(", ")}; he is ${l.state}.` : "";
+  return `Shells burst round ${l.name}'s party (${nm(l.unit)}) at ${hexName(l.at)}:${bearers}${him}`;
+}
 function sickText(h){                            // " · sick (dysentery), defends only"
   if (!h.sick) return "";
   return ` · sick (${h.sick})` + (h.defend_only ? ", defends only" : "");
@@ -857,6 +880,11 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   bailout: l => ({ cls: "morale", text: `${S.units[l.riders]?.name || "The riders"} get out of the wrecked carriers: ${l.men} men on their feet.` }),
   heroaid: (l, nm) => ({ cls: "hero", text: aidText(l, nm) }),
   bearers: (l, nm) => ({ cls: "", text: `${nm(l.unit)}: ${nOf(l.men, "bearer")} come back from the rear.` }),
+  party: (l, nm) => ({ cls: "hero", text: partyText(l, nm) }),
+  partyhit: (l, nm) => ({ cls: "hero", text: partyHitText(l, nm) }),
+  fetched: (l, nm) => ({ cls: "hero", text: `${l.name} is picked up by ${nm(l.unit)}: he goes with them now.` }),
+  found: (l, nm) => ({ cls: "morale", text: `${l.name} (${nm(l.unit)}) is found by ${l.at_post ? "the enemy overrunning the aid post" : nm(l.by)}: ${l.fate === "prisoner" ? "taken prisoner" : "killed"} (rolled ${l.roll}, quarter ${l.chance}% or less).` }),
+  overrun_post: l => ({ cls: "morale", text: `${poss(l.side)} aid post at ${hexName(l.at)} is overrun.` }),
 };
 OTHER_LINES.counter = OTHER_LINES.barrage;
 OTHER_LINES.knocked = OTHER_LINES.assault;
@@ -1124,13 +1152,14 @@ function fillTools(){
   $("#sel-tool").innerHTML = `<option value="unit">Place and move units</option><option value="gate">Open or bar a gate</option>`
     + (WXD.light ? `<option value="flare">Fire a flare (lights the hexes round it)</option>` : "")
     + (FD.units.heliborne ? `<option value="lz">Mark or clear a landing zone</option>` : "")
+    + `<optgroup label="Aid posts"><option value="post:0">Aid post: side A</option><option value="post:1">Aid post: side B</option></optgroup>`
     + `<optgroup label="Paint the ground">${g}</optgroup><optgroup label="Works on a hex side (click just inside it, on the high side)">${e}</optgroup><optgroup label="Works in a hex">${h}</optgroup>`;
   $("#sel-wx").innerHTML = Object.entries(WXD.conditions).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-wind").innerHTML = WXD.winds.map(w => `<option value="${w.id}">${esc(w.name)}</option>`).join("");
   $("#sel-cold").innerHTML = `<option value="">Not freezing hard</option>` + Object.entries(WXD.cold?.levels || {}).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-light").innerHTML = Object.entries(WXD.light?.levels || { day: { name: "Daylight" } }).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#legend").innerHTML = Object.entries(FD.units.ground).filter(([k]) => k !== "open").map(([k, v]) => `<span><i class="g-${k}" style="background:var(--g-${k})"></i>${esc(v.name)}</span>`).join("")
-    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
+    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span>AP: aid post; \u21a9 a hero going back; \u25bc a hero lying out</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
 }
 function clickSide(e, h){                         // the neighbour across the hex side nearest the click
   const svg = $("#map svg"), pt = svg.createSVGPoint();
@@ -1143,6 +1172,7 @@ function useTool(e, h){                           // paint the ground, or build 
   if (tool === "gate") return toggleGate(h, clickSide(e, h));
   if (tool === "flare") return fireFlare(h);
   if (tool === "lz") return toggleLz(h);
+  if (tool.startsWith("post:")) return placePost(h, Number(tool.slice(5)));
   if (tool === "h:wreck") return placeWreck(h);
   if (S.phase !== "setup"){ S.msg = "Ground and works are set before the battle starts; gates can be opened or barred at any time."; return }
   const before = JSON.stringify(S.field);
@@ -1179,6 +1209,18 @@ function toggleLz(h){                            // a landing zone, marked or cl
   const lz = S.field.lz || (S.field.lz = []), i = lz.findIndex(x => x[0] === h[0] && x[1] === h[1]);
   if (i >= 0) lz.splice(i, 1); else lz.push([...h]);
   S.msg = i >= 0 ? `Landing zone ${h[0] + 1},${h[1] + 1} cleared.` : `Landing zone marked at ${h[0] + 1},${h[1] + 1}: units can come on by air there (Add a unit, By air at).`;
+}
+function placePost(h, k){                         // a side's aid post: placed, moved or cleared (set-up only)
+  if (S.phase !== "setup"){ S.msg = "Aid posts are placed before the battle starts."; return }
+  const side = S.sides[k], posts = S.field.posts || (S.field.posts = []), i = posts.findIndex(p => p.side === side);
+  const same = i >= 0 && posts[i].at[0] === h[0] && posts[i].at[1] === h[1];
+  if (i >= 0) posts.splice(i, 1);
+  if (same){ S.msg = `${poss(side)} aid post cleared: bearers carry men off the map.`; return }
+  posts.push({ side, at: [...h] });
+  S.msg = `${poss(side)} aid post at ${hexName(h)}: bearers carry their wounded heroes there, and walking wounded go back to it.`;
+}
+function postLabels(){                            // the tool list names the sides' aid posts
+  for (const o of $("#sel-tool").options) if (o.value.startsWith("post:")) o.textContent = `Aid post: ${S.sides[Number(o.value.slice(5))]} (place, move or clear)`;
 }
 function placeWreck(h){                           // a downed helicopter: the GM places or clears one at any time
   toggleHex(h, "wreck");
@@ -1221,6 +1263,7 @@ function renderWeather(){
   $("#sel-wdir").innerHTML = windDirOptions(w.dir || "");
   $("#in-mud").value = w.ground.mud || 0; $("#in-snow").value = w.ground.snow || 0;
   $("#wx-note").textContent = weatherNote();
+  postLabels();
   $("#sel-tool").value = S.tool;
 }
 function setWeather(){
@@ -1287,34 +1330,58 @@ function removeHero(id){
   for (const u of S.units) u.heroes = (u.heroes || []).filter(h => h.id !== id);
   render();
 }
-function leaveHero(id){                           // a lamed or carried hero left behind: out of the battle, and his unit no longer slowed
-  const u = S.units.find(x => (x.heroes || []).some(h => h.id === id)), h = u?.heroes.find(x => x.id === id);
-  if (!h || !lamed(h)) return;
-  h.left = true;
-  S.msg = `${h.name} is left behind by ${unitName(u)}: out of the battle. They move at ${allowance(u)} hexes.`;
+function heroAt(id){                              // [unit index, hero] for a hero id, or [-1, null]
+  const i = S.units.findIndex(x => (x.heroes || []).some(h => h.id === id));
+  return i < 0 ? [-1, null] : [i, S.units[i].heroes.find(x => x.id === id)];
+}
+function leaveHero(id){                           // a lamed or carried hero left behind on his unit's hex: out of its fight, and it no longer slowed
+  const [i, h] = heroAt(id);
+  if (!h || leaveBehind(S.units, i, id)) return;
+  const u = S.units[i];
+  S.msg = `${h.name} is left behind by ${unitName(u)} at ${hexName(h.at)}: a unit of his side standing there can pick him up; the enemy's will take him. They move at ${allowance(u)} hexes.`;
   save();
   render();
 }
-function heroButton(h, setup){                    // Remove (setting up); Carry him back or Leave him (his unit moving, he slows it)
+function heroButton(h, setup){                    // Remove (setting up); Carry him back or Leave him (he slows his unit), or Go back (walking wounded), on his side's move
   if (setup) return `<button class="small" data-hero="${h.id}" aria-label="Remove ${esc(h.name)}">Remove</button>`;
-  if (!lamed(h) || h.unit.side !== moving()) return "";
+  if (h.unit.side !== moving() || offField(h) || h.state === "dead" || h.state === "prisoner") return "";
+  const post = aidPost(S.field, h.unit.side), where = post ? `the aid post at ${hexName(post.at)}` : "the rear";
+  if (!lamed(h)){
+    if (!h.wounds.length && !h.old?.length) return "";
+    const to = post ? where : "the map edge behind it";
+    return `<button class="small" data-walk="${h.id}" aria-label="${esc(h.name)} goes back" title="He leaves his unit and walks back alone to ${to}, ${nOf(FD.units.heroes.aid_post.pace, "hex", "hexes")} an exchange; shells can catch him on the way">Go back</button>`;
+  }
   const can = (h.unit.state === "steady" || h.unit.state === "shaken") && h.unit.men > FD.units.heroes.bearers;
-  return (can ? `<button class="small" data-carry="${h.id}" aria-label="Carry ${esc(h.name)} to the rear" title="${FD.units.heroes.bearers} of his unit's men carry him to the rear; they come back after ${nOf(FD.units.heroes.back_after, "exchange")}">Carry him back</button>` : "")
+  const how = post ? `carry him to ${where}, ${nOf(FD.units.heroes.aid_post.pace, "hex", "hexes")} an exchange, and come back after as long` : `carry him to the rear; they come back after ${nOf(FD.units.heroes.back_after, "exchange")}`;
+  return (can ? `<button class="small" data-carry="${h.id}" aria-label="Carry ${esc(h.name)} back" title="${FD.units.heroes.bearers} of his unit's men ${how}">Carry him back</button>` : "")
     + `<button class="small" data-leave="${h.id}" aria-label="Leave ${esc(h.name)} behind">Leave him</button>`;
 }
-function carryHero(id){                            // bearers take a lamed or down hero to the rear: he leaves the battle, safe
-  const i = S.units.findIndex(x => (x.heroes || []).some(h => h.id === id));
-  if (i < 0) return;
-  const h = S.units[i].heroes.find(x => x.id === id), why = carryBack(S.units, i, id);
+function carryHero(id){                            // bearers take a lamed or down hero back: to his side's aid post, or off the map at once
+  const [i, h] = heroAt(id);
+  if (!h) return;
+  const why = carryBack(S.units, i, id, S.field);
   if (why){ S.msg = `${h.name} cannot be carried back: ${why}.`; return render() }
-  const u = S.units[i];
+  const u = S.units[i], post = aidPost(S.field, u.side), n = FD.units.heroes.bearers;
   if (S.start?.[i]) S.start[i] = { ...S.start[i], men: u.men, away: u.away };   // his unit's move this phase starts from its new strength
-  S.msg = `${FD.units.heroes.bearers} of ${unitName(u)} carry ${h.name} to the rear: he is out of the battle. They move at ${allowance(u)} hexes, and the bearers come back in ${nOf(FD.units.heroes.back_after, "exchange")}.`;
+  S.msg = post ? `${n} of ${unitName(u)} carry ${h.name} toward the aid post at ${hexName(post.at)}, ${nOf(FD.units.heroes.aid_post.pace, "hex", "hexes")} an exchange. They move at ${allowance(u)} hexes.`
+    : `${n} of ${unitName(u)} carry ${h.name} to the rear: he is out of the battle. They move at ${allowance(u)} hexes, and the bearers come back in ${nOf(FD.units.heroes.back_after, "exchange")}.`;
+  save();
+  render();
+}
+function walkHero(id){                             // a walking wounded hero goes back alone
+  const [i, h] = heroAt(id);
+  if (!h) return;
+  const why = walkBack(S.units, i, id);
+  if (why){ S.msg = `${h.name} cannot go back: ${why}.`; return render() }
+  const post = aidPost(S.field, S.units[i].side);
+  S.msg = `${h.name} leaves ${unitName(S.units[i])} and walks back to ${post ? "the aid post at " + hexName(post.at) : "the map edge behind them"}.`;
   save();
   render();
 }
 function limbText(h){                             // " · lamed, slows unit" / " · left behind" / " · one arm: defends only"
-  if (h.left) return " \u00b7 left behind";
+  if (h.going) return h.going.bearers ? ` \u00b7 carried back by ${nOf(h.going.bearers, "bearer")}, at ${hexName(h.going.pos)}` : ` \u00b7 walking back, at ${hexName(h.going.pos)}`;
+  if (h.post) return " \u00b7 at the aid post";
+  if (h.left) return h.at ? ` \u00b7 lying out at ${hexName(h.at)}` : " \u00b7 left behind";
   if (h.carried) return " \u00b7 carried to the rear";
   let lame = "";
   if (lamed(h)) lame = h.state === "down" ? " \u00b7 carried, slows unit" : " \u00b7 lamed, slows unit";
@@ -1339,7 +1406,7 @@ function renderHeroes(){
   if (!$("#in-hero-atk").value) heroDefaults();
 }
 function heroesToRoller(){                        // their wounds onto their records in the wound roller
-  const heroes = allHeroes().map(h => ({ id: h.id, name: h.name, state: h.state, wounds: h.wounds, blood: h.blood, old: (h.old || []).map(o => ({ bleed: o.bleed, aid: o.aid })) }));
+  const heroes = allHeroes().map(h => ({ id: h.id, name: h.name, state: h.state, wounds: h.wounds, blood: h.blood, old: (h.old || []).map(o => ({ bleed: o.bleed, aid: o.aid })), ...(h.post ? { post: true } : {}) }));
   try{ localStorage.setItem("gravewounds-field-heroes", JSON.stringify({ place: S.from?.place || "", heroes })) }catch(e){ S.msg = "Could not save the heroes for the roller (storage is off)."; return render() }
   S.heroesSent = true;
   save();
@@ -2022,14 +2089,15 @@ function init(){
   $("#sel-hero").onchange = heroDefaults;
   $("#sel-hero-unit").onchange = heroDefaults;
   $("#heroes").addEventListener("click", e => {
-    const b = e.target.closest("button[data-hero]"), l = e.target.closest("button[data-leave]"), c = e.target.closest("button[data-carry]");
+    const b = e.target.closest("button[data-hero]"), l = e.target.closest("button[data-leave]"), c = e.target.closest("button[data-carry]"), w = e.target.closest("button[data-walk]");
     if (b) removeHero(+b.dataset.hero);
     else if (l) leaveHero(+l.dataset.leave);
     else if (c) carryHero(+c.dataset.carry);
+    else if (w) walkHero(+w.dataset.walk);
   });
   $("#btn-heroes-back").onclick = heroesToRoller;
   $("#sel-table").onchange = e => { S.table = e.target.value; const ok = FD.tables[S.table].weapons; S.units.forEach(u => { if (!ok.includes(u.weapon)) u.weapon = ok[0] }); fillChoices(); render() };
-  ["#in-side0", "#in-side1"].forEach((id, k) => { $(id).onchange = e => { const old = S.sides[k], v = e.target.value.trim() || old; S.units.forEach(u => { if (u.side === old) u.side = v }); S.sides[k] = v; render() } });
+  ["#in-side0", "#in-side1"].forEach((id, k) => { $(id).onchange = e => { const old = S.sides[k], v = e.target.value.trim() || old; S.units.forEach(u => { if (u.side === old) u.side = v }); (S.field.posts || []).forEach(p => { if (p.side === old) p.side = v }); S.sides[k] = v; render() } });
   render();
 }
 init();

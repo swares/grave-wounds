@@ -2470,7 +2470,9 @@ function fieldWound(w){                          // a wound from the field map a
 function fieldHero(h){                         // one hero back from the field map: his wounds on his record; the log line
   const c = S.chars.find(x => x.id === h.id && x.name === h.name);
   if (!c) return null;
-  c.wounds.push(...h.wounds.map(fieldWound).filter(Boolean));
+  const ws = h.wounds.map(fieldWound).filter(Boolean);
+  if (h.post) for (const w of ws) w.treated = (w.treated ? w.treated + ", " : "") + "at the aid post";   // off the death clock
+  c.wounds.push(...ws);
   fieldOldWounds(c, h.old);
   if (Number.isFinite(h.blood)) c.blood = Math.min(c.blood ?? h.blood, h.blood);   // what he bled on the field
   if (h.state !== "up") c.state = { id: "out", rounds: null };

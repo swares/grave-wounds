@@ -470,10 +470,14 @@ def _hero_rules(d) -> list[str]:
         f"On a success an arm or leg bleeding {H['tourniquet_from']} or more is tourniqueted instead: it stops. "
         "With an arm hurt (an arm wound, a lost grip, a useless hand or arm, either side) he cannot use a two-handed weapon (bows, crossbows, long guns, pole arms): he only defends, "
         "here and in the roller. Lamed (a leg wound, cannot stand, collapsed, slowed) or down and carried, he halves his unit's move "
-        f"(times {H['carried']:g}, at least 1 hex) until {H['bearers']} of its men carry him to the rear (they return after {H['back_after']} exchanges unless it has broken) "
-        "or it leaves him behind; either way he is out of the battle. A unit's medics give first aid at "
+        f"(times {H['carried']:g}, at least 1 hex) until {H['bearers']} of its men carry him back or it leaves him behind, lying on its hex. "
+        f"With an aid post for his side (placed by the GM) they carry him there, {H['aid_post']['pace']} hexes an exchange, shells striking the party as men in the open, "
+        f"and come back after as long; with none, he leaves the battle at once and they return after {H['back_after']} exchanges unless the unit has broken. "
+        f"A wounded hero who can walk may go back alone the same way (to the post, or the map edge behind his unit). At the post he gets first aid every exchange at {H['aid_post']['first_aid']}%, "
+        f"and his wounds go back to the roller treated; an enemy unit within {H['aid_post']['overrun']} hex of it overruns it, taking or killing the men there by quarter. "
+        "A hero left lying is picked up by a unit of his side standing on his hex, or found by an enemy one (quarter). A unit's medics give first aid at "
         f"{', '.join(f'{q} {v}%' for q, v in H['medic'].items())}. In the wars before 1914 a heavy bleed a tourniquet cannot reach is cauterised "
-        f"(+{H['cautery']['pain']} pain unless a healer does it). A hero left on the field at the end (left behind, or down with a unit that broke) is found if his side "
+        f"(+{H['cautery']['pain']} pain unless a healer does it). A hero left on the field at the end (left behind, on his way back, or down with a unit that broke) is found if his side "
         f"holds the field; else d100 against the war's quarter (default {H['quarter']['default']}%) makes him a prisoner, over it he is killed. "
         "A leader adds his unit's leader modifier while he is up.",
     ]
