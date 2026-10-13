@@ -76,7 +76,13 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return None
     if roll <= C["hesitate"].get(u["quality"], 0):
         return {"act": "hesitate", "target": t, "roll": roll}
-    return _best(d, us, i, t, ctx)
+    return _last_seen(_best(d, us, i, t, ctx), ctx[3], t, ctx[4])
+
+
+def _last_seen(o: dict | None, known: dict | None, t: int, exchange) -> dict | None:
+    """The order, with the exchange its target was last seen in ("last") if not this one."""
+    last = (known or {}).get(str(t), {}).get("ex")
+    return {**o, "last": last} if o and last is not None and last != (exchange or 0) else o
 
 
 def target(d: Data, us: list, i: int, known: dict | None = None) -> int | None:
@@ -130,24 +136,20 @@ def may_charge(d: Data, u: dict, t: dict, stance: str = "attack") -> bool:
 def _best(d: Data, us: list, i: int, t: int, ctx: tuple) -> dict | None:
     """The best-scoring hex it can legally reach, facing the target: a move, a charge, a turn,
     going to ground where it stands, or None (it holds). Holding, it only charges, else stays."""
-    (size, field, stance, known, exchange), u = ctx, us[i]
+    (size, field, stance, known, _), u = ctx, us[i]
     tu, hold = _where(us, t, known), stance == "hold"
-    last = (known or {}).get(str(t), {}).get("ex")
-    ago = {"last": last} if last is not None and last != (exchange or 0) else {}
     free = {**u, "prone": False} if u.get("prone") else u
     base = [free if k == i else x for k, x in enumerate(us)]
     shooter, charge = "range" in d.weapons[u["weapon"]], may_charge(d, u, tu, stance)
     best = _first_move(d, base, i, tu, (size, field), (charge, hold, shooter))
     if best is None:
         f = U.bearing(u["pos"], tu["pos"])
-        o = _stay(d, us, i, t, f, shooter) if hold and U.move(d, base, i, u["pos"], f, size, field)["ok"] else None
-        return {**o, **ago} if o else o
+        return _stay(d, us, i, t, f, shooter) if hold and U.move(d, base, i, u["pos"], f, size, field)["ok"] else None
     h, f, m = best
     if h == list(u["pos"]):
-        o = _stay(d, us, i, t, f, shooter)
-        return {**o, **ago} if o else o
+        return _stay(d, us, i, t, f, shooter)
     return {"act": "charge" if m["charge"] else "move", "target": t, "pos": h, "facing": f, "cost": m["cost"],
-            **({"up": True} if u.get("prone") else {}), **ago}
+            **({"up": True} if u.get("prone") else {})}
 
 
 def _first_move(d: Data, base: list, i: int, tu: dict, where: tuple, how: tuple) -> tuple | None:

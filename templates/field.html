@@ -973,8 +973,8 @@ const aiMoving = () => !!S.ai && moving() === S.ai.side;
 const aiThisMove = () => S.aiDone && S.aiDone.exchange === S.exchange && S.aiDone.phase === S.phase;
 function aiMove(){                                // at the start of its side's move, the commander orders that side
   if (!aiMoving() || aiThisMove()) return;
-  const M = aiMemory(), mem = JSON.parse(JSON.stringify(M.mem));
-  const before = S.units.map(copyUnit), r = command(S.units, S.ai.side, SIZE, S.field, dice, S.exchange, S.ai.stance, M.mem);
+  const M = aiMemory(), mem = structuredClone(M.mem);
+  const before = S.units.map(copyUnit), r = command(S.units, S.ai.side, SIZE, S.field, dice, S.exchange, { stance: S.ai.stance, memory: M.mem });
   S.units = r.units;
   S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before, mem };
   const lines = r.orders.map(o => ({ cls: o.act === "charge" ? "morale" : "", text: orderText(o) }));
@@ -987,7 +987,8 @@ function aiMemory(){                              // where the commander last sa
 }
 function orderText(o){                            // "Billmen (Yorkists) move 4 hexes toward Archers (Lancastrians)."
   const u = S.units[o.unit], t = S.units[o.target], who = unitName(u);
-  const them = t ? `${o.last ? "where " : ""}${unitName(t)}${o.last ? ` were last seen (exchange ${o.last})` : ""}` : "the enemy";
+  let them = "the enemy";
+  if (t) them = o.last ? `where ${unitName(t)} were last seen (exchange ${o.last})` : unitName(t);
   if (o.act === "charge") return `${who} ${o.up ? "get up and " : ""}charge ${them}.`;
   if (o.act === "move") return `${who} ${o.up ? "get up and " : ""}move ${nOf(o.cost, "hex", "hexes")} toward ${them}.`;
   if (o.act === "turn") return `${who} turn to face ${them}.`;
