@@ -32,7 +32,7 @@ const units = [
 ];
 
 writeField({
-  objective: { at: P593, side: 0, name: "Point 593" },
+  objective: { at: P593, side: 0, name: "Point 593", radius: 4 },
   id: "cassino-poles-1944", name: "The Poles at Point 593 and Phantom Ridge, 12 May 1944", sides: ["Allies", "Germans"], table: "owens-wwii",
   travel: { map: "cassino-1944", place: "Phantom Ridge", within: 1, sides: ["Allies", "Germans"] },
   weather: "{cond: fair, wind: calm, light: night, ground: {mud: 0, snow: 0}}",

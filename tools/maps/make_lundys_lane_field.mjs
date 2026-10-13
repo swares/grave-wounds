@@ -45,7 +45,7 @@ const units = [
 ];
 
 writeField({
-  objective: { at: [49, 33], side: 0, name: "the British guns on the crest by the churchyard" },
+  objective: { at: [49, 33], side: 0, name: "the British guns on the crest by the churchyard", radius: 3 },
   id: "lundys-lane-1814", name: "Lundy's Lane, 25 July 1814", sides: ["Americans", "British"], table: "war-1812-all-hits",
   travel: { map: "lundys-lane-1814", place: "Lundy's Lane", within: 2, sides: ["United States", "Britain"] },
   weather: "{cond: fair, wind: calm, dir: SW, ground: {mud: 0, snow: 0}}",

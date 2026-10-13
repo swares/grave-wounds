@@ -192,7 +192,7 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     """One unit's order, or None (it holds). ctx: (size, field, stance, known, exchange)."""
     u, C = us[i], d.units["commander"]
     obj = objective(ctx[1])
-    t = target(d, us, i, ctx[3], obj)
+    t = target(d, us, i, ctx[3], ctx[1])
     if u["state"] != "steady":
         return {"act": "ground", "target": t} if not u.get("prone") and under_fire(d, us, i) else None
     if u.get("reserve"):
@@ -212,19 +212,18 @@ def objective(field: dict | None) -> list | None:
 
 
 def _for_objective(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict | None:
-    """With an objective. Attacking: a unit at it (within commander.objective.radius) holds it
+    """With an objective (its radius, hold and guard: units.objective_radii). Attacking: a unit at it (within its radius) holds it
     (stays, charging only with a holder's odds); one with no enemy to go for, or one that would
     only stand or turn while its target is not guarding the objective, advances on it.
     Holding: a unit further than objective.hold from it falls back toward it unless it can
     charge; one with no enemy to go for and within that stays."""
-    R = d.units["commander"]["objective"]
     off = U.off_objective(d, us[i], objective(ctx[1]))
     if t is None:
         return _no_target(d, us, i, ctx, off)
     if ctx[2] == "attack":
         return _attack_objective(d, us, i, t, ctx, off)
     o = _best(d, us, i, t, ctx)
-    if off > R["hold"] and (o is None or o["act"] != "charge"):
+    if off > U.objective_radii(d, ctx[1])[1] and (o is None or o["act"] != "charge"):
         return _toward(d, us, i, t, ctx, "fall_back") or o
     return o
 
@@ -232,8 +231,8 @@ def _for_objective(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict
 def _no_target(d: Data, us: list, i: int, ctx: tuple, off: int) -> dict | None:
     """With no enemy to go for: attacking, it advances on the objective unless at it; holding,
     it falls back toward it if further than objective.hold."""
-    R, attack = d.units["commander"]["objective"], ctx[2] == "attack"
-    if off <= (R["radius"] if attack else R["hold"]):
+    (radius, hold, _), attack = U.objective_radii(d, ctx[1]), ctx[2] == "attack"
+    if off <= (radius if attack else hold):
         return None
     return _toward(d, us, i, None, ctx, "advance" if attack else "fall_back")
 
@@ -241,10 +240,10 @@ def _no_target(d: Data, us: list, i: int, ctx: tuple, off: int) -> dict | None:
 def _attack_objective(d: Data, us: list, i: int, t: int, ctx: tuple, off: int) -> dict | None:
     """Attacking with a target: at the objective it holds; else its best order, unless that
     is only to stand or turn while the target is not guarding the objective: then it advances."""
-    if off <= d.units["commander"]["objective"]["radius"]:
+    if off <= U.objective_radii(d, ctx[1])[0]:
         return _best(d, us, i, t, (ctx[0], ctx[1], "hold", ctx[3], ctx[4]))
     o = _best(d, us, i, t, ctx)
-    if (o is not None and o["act"] != "turn") or _guards(d, _where(us, t, ctx[3]), objective(ctx[1])):
+    if (o is not None and o["act"] != "turn") or _guards(d, _where(us, t, ctx[3]), ctx[1]):
         return o
     return _toward(d, us, i, t, ctx, "advance") or o
 
@@ -318,21 +317,23 @@ def _last_seen(o: dict | None, known: dict | None, t: int, exchange) -> dict | N
     return {**o, "last": last} if o and last is not None and last != (exchange or 0) else o
 
 
-def target(d: Data, us: list, i: int, known: dict | None = None, obj: list | None = None) -> int | None:
+def target(d: Data, us: list, i: int, known: dict | None = None, field: dict | None = None) -> int | None:
     """The enemy unit it goes for among those its side knows of (known: sightings; None: every
     one standing), or None: the best by threat_score (the first of equals), with an objective
-    (obj) commander.objective.bonus more for one within objective.guard of it."""
+    on the field commander.objective.bonus more for one within its guard of it."""
     u = us[i]
-    foes = [(-threat_score(d, u, us[j], _where(us, j, known)) - _guards(d, _where(us, j, known), obj), j) for j, e in enumerate(us)
+    foes = [(-threat_score(d, u, us[j], _where(us, j, known)) - _guards(d, _where(us, j, known), field), j) for j, e in enumerate(us)
             if e["side"] != u["side"] and e["state"] not in ROUTED and e["men"] > 0 and (known is None or str(j) in known)]
     return min(foes)[1] if foes else None
 
 
-def _guards(d: Data, seen: dict, obj: list | None) -> int:
-    """commander.objective.bonus if the enemy (where it is known to be) is within objective.guard
-    of the objective, else 0."""
-    R = d.units["commander"]["objective"]
-    return R["bonus"] if obj is not None and U.hdist(seen["pos"], obj) <= R["guard"] else 0
+def _guards(d: Data, seen: dict, field: dict | None) -> int:
+    """commander.objective.bonus if the enemy (where it is known to be) is within the
+    objective's guard (units.objective_radii) of it, else 0."""
+    obj = objective(field)
+    if obj is None or U.hdist(seen["pos"], obj) > U.objective_radii(d, field)[2]:
+        return 0
+    return d.units["commander"]["objective"]["bonus"]
 
 
 def _where(us: list, j: int, known: dict | None) -> dict:

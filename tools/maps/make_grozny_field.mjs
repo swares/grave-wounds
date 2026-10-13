@@ -53,7 +53,7 @@ const units = [
 ];
 
 writeField({
-  objective: { at: STATION, side: 0, name: "the railway station" },
+  objective: { at: STATION, side: 0, name: "the railway station", radius: 5 },
   id: "grozny-1995", name: "Grozny: the railway station, 31 December 1994", sides: ["Russians", "Chechens"], table: "chechnya-wounds",
   travel: { map: "grozny-1995", place: "Grozny railway station", within: 1, sides: ["Russians", "Chechens"] },
   weather: "{cond: overcast, wind: calm, light: dusk, ground: {mud: 1, snow: 0}}",

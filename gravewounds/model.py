@@ -1312,9 +1312,10 @@ def _objective_errors(f: dict, where: str) -> list[str]:
         return []
     at = o.get("at")
     on = isinstance(at, list) and len(at) == 2 and 0 <= at[0] < f["size"][0] and 0 <= at[1] < f["size"][1]
-    if on and o.get("side") in (0, 1) and isinstance(o.get("name"), str) and o["name"]:
+    radius = o.get("radius", 1)
+    if on and o.get("side") in (0, 1) and isinstance(o.get("name"), str) and o["name"] and isinstance(radius, int) and radius >= 1:
         return []
-    return [f"{where}: objective needs at (a hex on the map), side (0 or 1: the army that attacked it) and a name"]
+    return [f"{where}: objective needs at (a hex on the map), side (0 or 1: the army that attacked it), a name, and radius a whole number of 1 or more if given"]
 
 
 def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_units, fits) -> list[str]:

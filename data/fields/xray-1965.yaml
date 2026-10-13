@@ -29,8 +29,8 @@ travel: {map: iadrang-1965, place: "Landing zone X-Ray", within: 2, sides: ["Uni
 size: [160, 130]
 weather: {cond: fair, wind: calm, ground: {mud: 0, snow: 0}}
 lz: [[104, 66]]               # landing zones (units with `lands` come in by air at that one)
-# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
-objective: {at: [104, 66], side: 1, name: "the landing zone"}
+# The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
+objective: {at: [104, 66], side: 1, name: "the landing zone", radius: 6}
 ground: |
   hFFFFFhhhhFFFhFFFFhFhFFFFFhFFhFFFFFFhFFFFFFhFhhFFFFFhhFFFFFhFFFoooFFFFoForFooroFFoFoFFrrrrrrFFFrooFForFFFoooFFoFooFFFFoooFFFoFooFFoFFrFoFFoFrFoFFFFFFFFFFFFFFoFo
   FhFhFFhhFhFFFFFFFhFFFFFFhFhFhFFFFhFFFhFFFFFFhhFhFFFFFFFFFFhFhFFFoFFoFFooFoooFFFFFFrFFFrrrrroFoFrFFFoorFoFoorFFoFFFrooFFFFoFFFFFooFoFooFFooFFooFFFroroFFFoFFoooFr

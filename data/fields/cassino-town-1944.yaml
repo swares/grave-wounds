@@ -25,8 +25,8 @@ table: owens-wwii
 travel: {map: cassino-1944, place: "Cassino", within: 1, sides: ["Allies", "Germans"]}
 size: [140, 120]
 weather: {cond: overcast, wind: breeze, dir: S, ground: {mud: 2, snow: 0}}
-# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
-objective: {at: [28, 30], side: 0, name: "Castle Hill"}
+# The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
+objective: {at: [28, 30], side: 0, name: "Castle Hill", radius: 3}
 ground: |
   FhhhhhFFFFhhhFhhhhFhFhhhhhFhhFhhhhhhFhh.............................................................................................www.....
   hFhFhhFFhFhhhhhhhFhhhhhhFhFhFhhhhFhhhFh.............................................................................................www.....

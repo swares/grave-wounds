@@ -22,8 +22,8 @@ table: chechnya-wounds
 travel: {map: grozny-1995, place: "Grozny railway station", within: 1, sides: ["Russians", "Chechens"]}
 size: [140, 110]
 weather: {cond: overcast, wind: calm, light: dusk, ground: {mud: 1, snow: 0}}
-# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
-objective: {at: [70, 58], side: 0, name: "the railway station"}
+# The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
+objective: {at: [70, 58], side: 0, name: "the railway station", radius: 5}
 ground: |
   .BBBBB.....BB.BBBB.B.BBBBB.BB..BBBBB.BBBBBB.B..BBB.B..BBBBB.BBBBBBBBBB.B.BBB.BB..BB..B.B.B..BBBBBBBBB.BBB.BBBB.BBB.B..BBBB.BB.BB.B..BBBB..BB
   B.B.BB..B..BBBBBB.BBBBBB.B.B.B.BB.BBB.BBBBBB..B.BB.BBBBBBB.B.BB.B.BBBB...BBBBBB.BBB.B.BBBB.BBBBBB.BB.BBBBBB.BB.BB..B..BB.BBBBBB.BB.BB.BBBBBB

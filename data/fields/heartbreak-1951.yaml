@@ -22,8 +22,8 @@ table: korea-1950-53-hospitalized
 travel: {map: heartbreak-1951, place: "Hill 931", within: 1, sides: ["United Nations", "North Koreans"]}
 size: [170, 260]
 weather: {cond: fair, wind: breeze, dir: NW, ground: {mud: 0, snow: 0}}
-# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
-objective: {at: [97, 70], side: 0, name: "Hill 931"}
+# The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
+objective: {at: [97, 70], side: 0, name: "Hill 931", radius: 3}
 ground: |
   FFrrFrrrrFrr.mmm.m...mmm........mrrFrFFrrFrFrrrrrFhhrhhhrrrhhrrrrrhhhhrhrhhrrhrhhrhrhhrhhhhhhhhrhhhhhrhhhrrrhhrhrrhhhhrrrhhhrhrrhhrhhhhrhhrhhhrhhhhhhrrrrrrrrFrFFrFrrrFFrr
   FFrrrrFrrrrr.........mmm........mrrFrFFrFrrrrrFrrrhhrhhhhhrrrrhhrhhrhhrrhrrrhhhhhhrhhhhhrrrrhrhrhrhhrhhrhrrrhhrhhhrrrhhhhrhhhhhrrhrhrrhhrrhhrrhhhhrhrrrrFrrFFFrrrFFrrFrFrF

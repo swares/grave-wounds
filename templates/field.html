@@ -107,6 +107,7 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .burst{font:700 7px var(--mono);fill:#c46a1a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .smoke{fill:#9a9a9a;fill-opacity:.55;stroke:none;pointer-events:none}
 .objective{fill:none;stroke:#8a1f1f;stroke-width:1.6;pointer-events:none}
+.objective.wide{stroke-dasharray:4 3;stroke-width:1.2}
 .objective-t{font:bold 8px system-ui,sans-serif;fill:#8a1f1f;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .lz{fill:none;stroke:#2b5d8a;stroke-width:1.2;stroke-dasharray:2 1.5;pointer-events:none}
 .lz-h{font:bold 7px system-ui,sans-serif;fill:#2b5d8a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
@@ -410,7 +411,8 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
 function objectiveNote(B){                         // " Objective: ... (O on the map, 77,57; attackers: Chinese). ..." for a battlefield with one
   const o = B?.objective;
   if (!o) return "";
-  return ` Objective: ${o.name} (O on the map, ${hexName(o.at)}; attackers: ${S.sides[o.side]}). The enemy commander takes it or holds it; Clicking the map can move or clear it.`;
+  const within = o.radius > 1 ? `, and ${nOf(o.radius, "hex", "hexes")} round it` : "";
+  return ` Objective: ${o.name} (O on the map, ${hexName(o.at)}${within}; attackers: ${S.sides[o.side]}). The enemy commander takes it or holds it; Clicking the map can move or clear it.`;
 }
 function fromTravel(h){                            // a battle with the travel map's forces and no units yet: the GM splits them
   const def = h.forces.find(f => f.role === "defender");
@@ -771,14 +773,16 @@ function minesSvg(){                              // marked minefields, hidden o
     return `<polygon class="mine${hid}" points="${pts(xy(h))}"/><text class="mine-t" x="${f1(x)}" y="${f1(y + 3)}">${MINE_TAG[m.kind] || "M"}</text>`;
   }).join("");
 }
-function objectiveSvg(h){ const [x, y] = xy(h); return `<circle class="objective" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.95)}"><title>The commander's objective</title></circle><circle class="objective" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.55)}"/><text class="objective-t" x="${f1(x)}" y="${f1(y)}">O</text>` }
+function objectiveSvg(h, radius){                 // O in two rings; a wide objective also gets a dashed ring at its radius
+  const [x, y] = xy(h), wide = radius > 1 ? `<circle class="objective wide" cx="${f1(x)}" cy="${f1(y)}" r="${f1(radius * HW + HW / 2)}"/>` : "";
+  return wide + `<circle class="objective" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.95)}"><title>The commander's objective</title></circle><circle class="objective" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.55)}"/><text class="objective-t" x="${f1(x)}" y="${f1(y)}">O</text>` }
 function postSvg(p){ const [x, y] = xy(p.at); return `<rect class="post${p.overrun ? " gone" : ""}" x="${f1(x - 5)}" y="${f1(y - 3.5)}" width="10" height="7" rx="1.5"><title>${esc(poss(p.side))} aid post${p.overrun ? " (overrun)" : ""}</title></rect><text class="post-t" x="${f1(x)}" y="${f1(y)}">AP</text>` }
 function supportSvg(){                            // smoke, landing zones, aid posts, heroes going back or lying out, flares, fixed lines, flashes, the hexes fire is called on, batteries, and where the last exchange's shells burst
   const F = S.field, heroes = allHeroes();
   return [
     Object.keys(F.smoke || {}).map(k => `<polygon class="smoke" points="${pts(xy(k.split(",").map(Number)))}"/>`),
     (F.lz || []).map(lzSvg),
-    F.objective ? objectiveSvg(F.objective) : "",
+    F.objective ? objectiveSvg(F.objective, F.objective_radius) : "",
     minesSvg(),
     (F.posts || []).map(postSvg),
     heroes.filter(h => h.going).map(h => glyph("party", "\u21a9")(h.going.pos)),
@@ -1290,6 +1294,7 @@ function toggleEdge(h, n, type){
 function toggleObjective(h){                      // the enemy commander's objective: marked, moved or cleared (at any time)
   const o = S.field.objective, same = !!o && o[0] === h[0] && o[1] === h[1];
   if (same) delete S.field.objective; else S.field.objective = [...h];
+  delete S.field.objective_radius;                // a hex the GM marks counts within the commander's own radius
   const R = FD.units.commander.objective, who = S.ai ? S.ai.side : "the commander's side";
   if (same){ S.msg = `Objective at ${hexName(h)} cleared: the commander goes for the enemy only.`; return }
   S.msg = `Objective marked at ${hexName(h)} for ${who}. Attacking, its units take it and hold it (within ${nOf(R.radius, "hex", "hexes")}); holding, they keep within ${nOf(R.hold, "hex", "hexes")} of it.` + (S.ai ? "" : " Choose a side for the enemy commander to use it.");

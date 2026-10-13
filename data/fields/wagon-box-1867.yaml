@@ -23,8 +23,8 @@ table: indian-wars-1865-71-arrows
 travel: {map: phil-kearny-1866, place: "Wagon Box corral", within: 2, sides: ["US Army", "Lakota, Cheyenne and Arapaho"]}
 size: [100, 80]
 weather: {cond: fair, wind: breeze, dir: W, ground: {mud: 0, snow: 0}}
-# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
-objective: {at: [49, 40], side: 1, name: "the wagon-box corral"}
+# The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
+objective: {at: [49, 40], side: 1, name: "the wagon-box corral", radius: 1}
 ground: |
   FFFFFFFFF............................................................F.F.FF..F.FF.F.FF.FFFFFFFF.....
   FFFFFFFFFF....................................................FF.FF.FF..F...FFFFFF.FFFFF....F.F.FFF.

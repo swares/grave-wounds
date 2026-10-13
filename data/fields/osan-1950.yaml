@@ -27,8 +27,8 @@ table: korea-1950-53-hospitalized
 travel: {map: osan-1950, place: "The saddle north of Osan (Jukmiryeong)", within: 2, sides: ["United Nations", "North Koreans"]}
 size: [220, 110]
 weather: {cond: overcast, wind: calm, dir: S, ground: {mud: 1, snow: 0}}
-# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
-objective: {at: [40, 46], side: 1, name: "the saddle where the road crosses the ridge"}
+# The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
+objective: {at: [40, 46], side: 1, name: "the saddle where the road crosses the ridge", radius: 6}
 ground: |
   .m.mmmmmm.mmmm..mmmmmm..m...mmmmmmmmmmmm...mmmmmm.mmmmmmmmmmm.m.mmmm..mmmm.mmmmm.mmm.mm..mmmm.mmmmmmmmm.mmmmmm.mmmmmmmmm.mmmmm.mm.m.mmmmm.mmmmmm.mmmmmmmmmmmmm.mm.mmm.mmmmmm..mm.mmmmmmmmmmmmm...m.mmmmmmmm.m.mmm.mmm..mmmmm
   ..mmmmm.mmm.mmmmm.mmmmmmmmmmmmm..mm.mmmm...mmmmmmmmm.mmm..m.mmm.mmmmm.mmmmmmm.mmmmmmmmm.mmmm.mmmmmmmm.mmmmmmm.mmmmmmmmmmmm.mmmmmm..mmm.mm.mm.mm..mmm.m..mmmmmmmm.m.mmmmmmmmmmmmmmmmmmm.m.m..mm...mmmmmmm.mmmmmm..mmmmm.mmmmm

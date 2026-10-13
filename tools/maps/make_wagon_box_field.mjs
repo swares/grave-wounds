@@ -50,7 +50,7 @@ const units = [
 ];
 
 writeField({
-  objective: { at: [49, 40], side: 1, name: "the wagon-box corral" },
+  objective: { at: [49, 40], side: 1, name: "the wagon-box corral", radius: 1 },
   id: "wagon-box-1867", name: "The Wagon Box Fight, 2 August 1867", sides: ["US Army", "Lakota, Cheyenne and Arapaho"],
   table: "indian-wars-1865-71-arrows",
   travel: { map: "phil-kearny-1866", place: "Wagon Box corral", within: 2, sides: ["US Army", "Lakota, Cheyenne and Arapaho"] },
