@@ -1649,7 +1649,7 @@ def _target(d: Data, units: list, i: int, field: dict | None = None, occ: dict |
     if named is not None:
         return named
     for j, e in enumerate(units):
-        if e["side"] == u["side"] or e["men"] <= 0 or e["state"] == "fled" or (e.get("vehicle") and not hurts_armour(d, u["weapon"]) and not soft(d, e)):
+        if e["side"] == u["side"] or e["men"] <= 0 or e["state"] == "fled" or (e.get("vehicle") and not hurts_armour(d, u["weapon"]) and not soft(d, e) and not exposed(d, e)):
             continue
         near = _nearest_ahead(d, u, front, fv, [t for row in footprint(d, e) for t in row], field, _clear_fn(d, units, occ, field, i, j))
         if near is not None and (best is None or near[0] < best[0]):
@@ -2156,8 +2156,8 @@ def _armour_volley(d: Data, us: list, ctx: tuple, v: dict, opts: dict) -> list:
     n = _count(v["men"] * A["rate"] * opts["factor"], rng)
     atk = _attack(d, att) - band["penalty"] - opts["penalty"]
     hits = sum(1 for _ in range(n) if rng.randint(1, 100) <= atk)
-    p = kill_chance(d, us[v["dfd"]], A["row"], v["from"], v["to"])
-    kills = sum(1 for _ in range(hits) if rng.randint(1, 100) <= p)
+    p = kill_chance(d, us[v["dfd"]], A["row"], v["from"], v["to"]) if A["row"] in armour_of(d, us[v["dfd"]]) else 0
+    kills = sum(1 for _ in range(hits) if p and rng.randint(1, 100) <= p)
     k = knock_out(d, us, v["dfd"], kills, (table, rng), acc)
     harm = _harm(d, us[v["dfd"]], 0 if A["row"] == "small" else hits - k["knocked"], acc[0][v["dfd"]], rng)
     shot = _riders_shot(d, us[v["dfd"]], hits - k["knocked"], att, (table, rng)) if A["row"] == "small" else {}
@@ -3289,9 +3289,16 @@ def abandon_immobile(d: Data, u: dict) -> dict:
 
 
 def carries(d: Data, u: dict) -> int:
-    """Men a vehicle unit can carry: its vehicles left times its kind's `carry` (0 if none)."""
+    """Men a vehicle unit can carry: its vehicles left times its kind's `carry`, or `rides`
+    (men on the hull), 0 if neither."""
     K = vehicle_kind(d, u)
-    return vehicles_left(d, u) * K.get("carry", 0) if K else 0
+    return vehicles_left(d, u) * (K.get("carry") or K.get("rides", 0)) if K else 0
+
+
+def exposed(d: Data, u: dict) -> bool:
+    """Men riding on the outside of a vehicle unit (its kind `rides`), whom small arms can hit."""
+    K = vehicle_kind(d, u)
+    return bool(K and K.get("rides") and (u.get("riders") or {}).get("men", 0) > 0)
 
 
 def tows(d: Data, u: dict) -> int:

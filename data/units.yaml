@@ -374,7 +374,7 @@ indirect:
 # struck at `riders_struck` %; when the last is, the riders get down where it stood.
 vehicles:
   kinds:
-    tank: {name: "Tanks", crew: 4, move: 12, armour: heavy, gun: {range: 100, rate: 1, he: tank, hit: [[20, 75], [50, 50], [100, 25]]}}
+    tank: {name: "Tanks", crew: 4, move: 12, armour: heavy, rides: 6, gun: {range: 100, rate: 1, he: tank, hit: [[20, 75], [50, 50], [100, 25]]}}
     ifv:  {name: "Infantry fighting vehicles", crew: 3, move: 14, armour: light, carry: 7, gun: {range: 80, rate: 2, he: autocannon, hit: [[20, 70], [40, 45], [80, 20]]}}
     apc:  {name: "Armoured carriers", crew: 3, move: 14, armour: light, carry: 10}
     tractor: {name: "Gun tractors and trucks", crew: 2, move: 12, armour: soft, tows: 1}
@@ -386,7 +386,9 @@ vehicles:
     # hits knocking one out at `small` % (no lesser damage, but a hit that does not knock one
     # out strikes one of the men riding in it, wounded by that weapon); everything else kills them easily.
     soft: {rpg: 80, atgm: 95, gun: 90, shell: 6, mine: 80, small: 5}
-  # Aimed shots a man fires at soft-skinned vehicles an exchange: `rate` for rifles and the like,
+  # rides (a kind): men a vehicle carries on its hull, outside (tank riders, "desant"). Small arms
+  # shoot at a unit with men on its hull; each hit that knocks no vehicle out strikes a rider.
+  # Aimed shots a man fires at soft-skinned vehicles (or at men riding on a hull) an exchange: `rate` for rifles and the like,
   # `mg` for a machine gun's crewmen (design estimates).
   small_arms: {rate: 0.5, mg: 3}
   aspect: {flank: 2.0, rear: 3.0}

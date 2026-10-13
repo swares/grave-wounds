@@ -999,6 +999,12 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
     machine guns shoot at them as at men, half an aimed shot a man an exchange (3 a machine
     gunner), and each hit knocks one out at 5%, with no lesser damage. Shells count 6 times
     (light armour 3, heavy 1). Design estimates (`vehicles.armour.soft`, `vehicles.small_arms`).
+  - **Tank riders.** Up to 6 men can ride on each tank's hull ("desant"), mounting and
+    getting down as riders do. Out in the open there, they draw small arms: rifles and
+    machine guns shoot at a tank unit with men on its hull (as at soft-skinned vehicles),
+    and each hit strikes one of the riders, wounded by that weapon; the tanks themselves
+    are unhurt (the log says "On the hull"). A knocked-out tank throws its riders off as a
+    carrier does.
   - **Lorries** (2 crew, 14 hexes a move) carry 20 men each, as carriers carry riders. A
     small-arms hit on a lorry that does not knock it out goes through the sides: it strikes
     one of the men aboard, wounded by that weapon (the log says "Through the sides").

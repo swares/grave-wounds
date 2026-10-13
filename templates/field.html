@@ -979,7 +979,8 @@ function damageText(l){                           // " 1 vehicle immobilised. 1 
 function ridersText(l){                          // the riders struck when carriers were knocked out, and men hit through a lorry's sides
   let out = "";
   if (l.rstruck) out += ` Riders: ${l.rstruck} struck, ${l.rdown || 0} down` + (l.rdead ? ` (${l.rdead} dead)` : "") + ".";
-  if (l.rshot) out += ` Through the sides: ${l.rshot} of the men aboard hit, ${l.rshotdown || 0} down` + (l.rshotdead ? ` (${l.rshotdead} dead)` : "") + ".";
+  const hull = !!vehicleKind(S.units[l.dfd] || {})?.rides;
+  if (l.rshot) out += ` ${hull ? "On the hull" : "Through the sides"}: ${l.rshot} of the men aboard hit, ${l.rshotdown || 0} down` + (l.rshotdead ? ` (${l.rshotdead} dead)` : "") + ".";
   return out;
 }
 function armourText(l, nm){                       // rockets at vehicles, a tank's main gun, a vehicle knocked out by shells or bombs
@@ -988,7 +989,7 @@ function armourText(l, nm){                       // rockets at vehicles, a tank
   if (l.knocked) out = ` ${l.knocked} of ${nm(l.dfd)}'s ${what} knocked out; ${l.crew} crew out of the fight, ${l.down || 0} down` + (l.dead ? ` (${l.dead} dead)` : "") + ".";
   out += damageText(l);
   out += ridersText(l);
-  if (l.kill !== undefined && l.hit) out = ` (${l.kill}% a hit to knock out)` + out;
+  if (l.kill && l.hit) out = ` (${l.kill}% a hit to knock out)` + out;
   if (l.kind === "knocked_out") return `${l.name || "Shells"} burst on ${nm(l.dfd)}:${out}`;
   const shots = hurtsArmour(S.units[l.att]?.weapon) ? nOf(l.shots, "round") : nOf(l.shots, "aimed shot");
   if (l.kind === "antiarmour") return `${nm(l.att)} fire ${shots} at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}: ${l.hit} hit.${out}`;
@@ -1653,7 +1654,7 @@ function unitMeta(u){
 function vehicleMeta(u){                          // " · 3 tanks, 1 immobilised · carrying 1st Squad (9)"
   const imm = u.immobile ? `, ${u.immobile} immobilised` : "", out = u.gunless ? `, ${nOf(u.gunless, "gun")} out` : "";
   let ride = "";
-  if (u.riders) ride = tows(u) ? ` · towing ${u.riders.name} (${nOf(atGuns(u.riders), "gun")})` : ` · carrying ${u.riders.name} (${u.riders.men})`;
+  if (u.riders) ride = tows(u) ? ` · towing ${u.riders.name} (${nOf(atGuns(u.riders), "gun")})` : ` · ${exposed(u) ? "riders on the hull:" : "carrying"} ${u.riders.name} (${u.riders.men})`;
   return ` · ${vehiclesLeft(u)} ${FD.units.vehicles.kinds[u.vehicle].name.toLowerCase()}${imm}${out}${ride}`;
 }
 const GUN_NAMES = { smoothbore: "guns", rifled: "rifled guns", howitzer: "howitzers" };
@@ -1676,6 +1677,7 @@ function vehicleInfo(u, K){                       // the selected vehicle unit: 
   const dmg = (u.immobile ? `; ${u.immobile} immobilised (abandon them to move on)` : "") + (u.gunless ? `; ${u.gunless} with the main gun out` : "") + (u.bailed ? `; ${u.bailed} crew have left the abandoned vehicles` : "");
   const aboard = u.riders ? `, ${u.riders.men} of ${esc(u.riders.name)} aboard` : "";
   let room = K.carry ? `; carries ${K.carry} men a vehicle (room for ${carries(u)})` + aboard : "";
+  if (K.rides) room = `; ${K.rides} men can ride on each hull, exposed to small arms (room for ${carries(u)})` + aboard;
   if (K.tows) room = `; tows ${nOf(K.tows, "anti-tank gun")} a vehicle (${nOf(tows(u), "gun")}), its crew riding` + (u.riders ? `; towing ${esc(u.riders.name)}` : "");
   return `${vehiclesLeft(u)} of ${Math.ceil(u.start / K.crew)} ${K.name.toLowerCase()} (${K.crew} crew each); ${gun}; ${armourWords(u, K)}; a hit in the flank or rear is worse${room}${dmg}`;
 }

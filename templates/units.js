@@ -640,7 +640,7 @@ function target(units, i, field, occ = null){    // [distance, index, shooter he
   if (named) return named;
   let best = null;
   units.forEach((e, j) => {
-    if (e.side === u.side || e.men <= 0 || e.state === "fled" || (e.vehicle && !hurtsArmour(u.weapon) && !soft(e))) return;   // small arms do not shoot at armoured vehicles
+    if (e.side === u.side || e.men <= 0 || e.state === "fled" || (e.vehicle && !hurtsArmour(u.weapon) && !soft(e) && !exposed(e))) return;   // small arms do not shoot at armoured vehicles
     const near = nearestAhead(u, front, fv, footprint(e).flat(), field, clearFn(units, occ, field, i, j));
     if (near && (best === null || near[0] < best[0])) best = [near[0], j, near[1], near[2]];
   });
@@ -1341,8 +1341,8 @@ function armourVolley(us, table, rng, acc, log, v, opts){   // anti-armour shots
   const n = countBlows(v.men * A.rate * opts.factor, rng), atk = attackOf(att) - band.penalty - opts.penalty;
   let hits = 0, kills = 0;
   for (let s = 0; s < n; s++) if (rng.randint(1, 100) <= atk) hits++;
-  const p = killChance(us[v.dfd], A.row, v.from, v.to);
-  for (let s = 0; s < hits; s++) if (rng.randint(1, 100) <= p) kills++;
+  const p = A.row in UD.vehicles.armour[vehicleKind(us[v.dfd]).armour] ? killChance(us[v.dfd], A.row, v.from, v.to) : 0;
+  for (let s = 0; s < hits; s++) if (p && rng.randint(1, 100) <= p) kills++;
   const k = knockOut(us, v.dfd, kills, table, rng, acc), hm = harm(us[v.dfd], A.row === "small" ? 0 : hits - k.knocked, acc.lost[v.dfd], rng);
   const shot = A.row === "small" ? ridersShot(us[v.dfd], hits - k.knocked, att, table, rng) : {};
   acc.dealt[v.att] += k.crew;
@@ -1730,7 +1730,8 @@ function abandonImmobile(u){                       // a vehicle unit leaves its 
   v.gunless = Math.min(v.gunless || 0, vehiclesLeft(v));
   return v;
 }
-const carries = u => { const K = vehicleKind(u); return K ? vehiclesLeft(u) * (K.carry || 0) : 0 };   // men a vehicle unit can carry
+const carries = u => { const K = vehicleKind(u); return K ? vehiclesLeft(u) * (K.carry || K.rides || 0) : 0 };   // men a vehicle unit can carry (inside, or on the hull)
+const exposed = u => { const K = vehicleKind(u); return !!(K?.rides && (u.riders?.men || 0) > 0) };   // men riding on the outside of a vehicle unit
 const tows = u => { const K = vehicleKind(u); return K ? vehiclesLeft(u) * (K.tows || 0) : 0 };   // anti-tank guns a vehicle unit can tow
 function rideWhy(u, c){                             // why u cannot ride with c (anti-tank guns: be towed), before contact and distance; or null (as units._cannot_mount)
   if (isAtGun(u)){

@@ -315,7 +315,7 @@ def _vehicle_rules(d) -> list[str]:
     if not V:
         return []
     kinds = "; ".join(f"{k['name'].lower()}: {k['crew']} crew, move {k['move']}, {k['armour']} armour" + (f", main gun to {k['gun']['range']} hexes, {k['gun']['rate']} a vehicle an exchange" if k.get("gun") else "")
-                      + (f", carries {k['carry']} men a vehicle" if k.get("carry") else "") + (f", tows {k['tows']} anti-tank gun" if k.get("tows") else "") for k in V["kinds"].values())
+                      + (f", carries {k['carry']} men a vehicle" if k.get("carry") else "") + (f", {k['rides']} men can ride on its hull" if k.get("rides") else "") + (f", tows {k['tows']} anti-tank gun" if k.get("tows") else "") for k in V["kinds"].values())
     arm = "; ".join(f"{name}: rocket {a['rpg']}%, guided missile {a['atgm']}%, gun {a['gun']}%, shell x{a['shell']:g}" for name, a in V["armour"].items())
     going = ", ".join(f"{d.units['ground'][g]['name'].lower()} {c}" for g, c in V["ground"].items())
     at = ", ".join(f"{d.weapons[w]['short']} {a['rate']:g} a man" for w, a in V["anti_armour"].items())
@@ -331,7 +331,7 @@ def _vehicle_rules(d) -> list[str]:
             "its immobilised vehicles (their crews leave unhurt). "
             f"A main gun hits a vehicle by range, or bursts on men as a tank's round on call; a shell or bomb in a vehicle's hex knocks it out at the kind's knock % times shell. "
             f"A knocked-out vehicle's crew are out of the fight, each struck at {V['crew_struck']}%. Carriers take a foot unit aboard from beside them and set it down beside them; "
-            f"riders in a knocked-out carrier are each struck at {V['riders_struck']}%; a small-arms hit on a soft-skinned carrier (lorries) that does not knock it out strikes a rider. Going a hex: {going}; nothing else."] + _at_mine_rules(d)
+            f"riders in a knocked-out carrier are each struck at {V['riders_struck']}%; a small-arms hit on a soft-skinned carrier (lorries) that does not knock it out strikes a rider, and small arms shoot at men riding on a tank's hull (rides), each hit striking one. Going a hex: {going}; nothing else."] + _at_mine_rules(d)
 
 
 def _at_mine_rules(d) -> list[str]:
