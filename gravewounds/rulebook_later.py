@@ -98,6 +98,7 @@ def _vehicle_values(d: Data) -> dict:
             **_at_mine_values(d),
             "v_crew_struck": V["crew_struck"], "v_riders_struck": V["riders_struck"], "v_shell_light": f"{V['armour']['light']['shell'] / V['armour']['heavy']['shell']:g}",
             "v_shell_soft": f"{V['armour']['soft']['shell'] / V['armour']['heavy']['shell']:g}",
+            "v_rides": V["kinds"]["tank"].get("rides", 0),
             "v_fb_knock": d.units["indirect"]["kinds"]["fighter_bomber"]["knock"]}
 
 

@@ -85,11 +85,14 @@ straight line from where its move began.
 
 ## Riders {#riders}
 
-Infantry fighting vehicles, carriers and lorries carry men. A foot unit beside them can **mount**
+Infantry fighting vehicles, carriers and lorries carry men, and tanks carry {{v_rides}} men on
+each hull. A foot unit beside them can **mount**
 if all its men fit and neither unit is in contact. Riders move with the vehicles. They do
 not fight, shoot or check morale until they **dismount** beside them. When a carrier is
 knocked out, each of its riders is struck at {{v_riders_struck}}%, as by shellfire. Lorries
 are soft-skinned: a rifle or machine-gun hit that does not knock one out strikes a man aboard.
+Men riding on a tank's hull are in the open: small arms shoot at the tanks for them, and each
+hit strikes a rider.
 
 !!! gm "For the GM"
     Armour is a problem the infantry must solve, not a fight it can win with rifles. Give
