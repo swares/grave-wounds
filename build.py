@@ -470,7 +470,10 @@ def _commander_rules(d) -> list[str]:
         f"otherwise it takes the best hex it can reach facing the target: {K['closing']} points a hex nearer, cover % times {by(K['cover'])}, less a point a hex moved. "
         f"Shooters stop where the target is in range, keep {K['keep_off']} hexes off, and never charge; with a modern weapon they go to ground under fire. "
         f"Others charge only if their men × attack % is at least this % of the target's: attacking {by(K['charge_odds']['attack'])}; holding {by(K['charge_odds']['hold'])}. "
-        "Holding, a side leaves its ground only to charge. It leaves batteries, fire support and reserves to the GM.",
+        f"Holding, a side leaves its ground only to charge. Reserve: at its first move (unless the GM marks reserves) it holds back its rearmost units up to {by(K['reserve'])}% of its men; "
+        f"they hold until it commits one a move, when a unit of its side breaks, an enemy it knows of comes within {K['gap']} hexes of one, or (veterans) an enemy breaks. "
+        f"Known minefields on the way cost {by(K['mines'])} points a hex. Its batteries and anti-tank guns on the map turn to face the nearest enemy it knows of; its off-map "
+        "batteries with no mission are called on the enemy it sees that scores best as a target, never where its own men are within the burst. It leaves smoke, aircraft and works to the GM.",
     ]
 
 

@@ -108,7 +108,16 @@ start of that side's move it orders each unit. It knows only the enemies its uni
 (or saw in the last {{c_remember}} exchanges, where they were then); green units go for the
 nearest, better ones for an enemy that is hurt, shaken or dangerous to them. It closes,
 takes cover, shoots from range or charges with the odds its quality wants, and green units
-sometimes hesitate. With no enemy in sight, a unit holds. **Undo its orders** puts the move back for the GM to make by hand.
+sometimes hesitate. With no enemy in sight, a unit holds.
+
+- **Reserve.** Regulars and veterans hold back their rearmost units, and commit one when a
+  unit of theirs breaks or the enemy comes close; veterans also commit to exploit an enemy
+  rout. The GM can mark reserves instead.
+- **Minefields.** It steers round minefields it knows of.
+- **Guns.** It turns its guns to face the enemy and calls its off-map batteries on what it
+  sees.
+
+**Undo its orders** puts the move back for the GM to make by hand.
 
 ## After the battle {#after}
 
