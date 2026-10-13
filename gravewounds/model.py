@@ -1010,6 +1010,17 @@ def _at_mine_errors(d: Data) -> list[str]:
     return errors
 
 
+def _run_errors(d: Data, ind: dict) -> list[str]:
+    """indirect.air.runs: each a length, struck and knock %, aircraft kinds, and known wars."""
+    wars, errors = {t.get("battle") for t in d.tables.values()}, []
+    for name, r in ((ind.get("air") or {}).get("runs") or {}).items():
+        if not (isinstance(r.get("length"), int) and r["length"] >= 1 and isinstance(r.get("struck"), int) and isinstance(r.get("knock"), int)
+                and all(ind.get("kinds", {}).get(k, {}).get("air") for k in r.get("kinds", []))):
+            errors.append(f"units.yaml: indirect.air.runs.{name} needs length, struck and knock, and kinds that are aircraft")
+        errors += [f"units.yaml: indirect.air.runs.{name}.wars names {w}, the war of no wound table" for w in r.get("wars", []) if w not in wars]
+    return errors
+
+
 def _air_errors(d: Data, ind: dict) -> list[str]:
     """units.yaml: aircraft (indirect.air: weather and light they are grounded in; a kind's log
     name `shot`) and landing by air (heliborne)."""
@@ -1024,12 +1035,7 @@ def _air_errors(d: Data, ind: dict) -> list[str]:
             and all(w in d.weapons for w in G.get("aa_weapons", []))
             and all(w in d.weapons for w in G.get("rockets", [])) and isinstance(FAC.get("danger"), int) and isinstance(FAC.get("scatter"), int) and FAC["scatter"] >= 1):
         errors.append("units.yaml: indirect.air needs ground_fire (reach, mg, rocket, rifles, cap, aa, aa_reach, downed; rockets and aa_weapons: known weapons) and fac (danger, scatter at least 1)")
-    wars = {t.get("battle") for t in d.tables.values()}
-    for name, r in (A.get("runs") or {}).items():
-        if not (isinstance(r.get("length"), int) and r["length"] >= 1 and isinstance(r.get("struck"), int) and isinstance(r.get("knock"), int)
-                and all(k in ind.get("kinds", {}) and ind["kinds"][k].get("air") for k in r.get("kinds", []))):
-            errors.append(f"units.yaml: indirect.air.runs.{name} needs length, struck and knock, and kinds that are aircraft")
-        errors += [f"units.yaml: indirect.air.runs.{name}.wars names {w}, the war of no wound table" for w in r.get("wars", []) if w not in wars]
+    errors += _run_errors(d, ind)
     H = d.units.get("heliborne")
     if H and not all(isinstance(H.get(k), int) and H[k] >= 0 for k in ("lift", "blocked", "hot", "zone")):
         errors.append("units.yaml: heliborne needs whole-number lift, blocked, hot and zone")

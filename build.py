@@ -379,9 +379,9 @@ def _air_rules(ind: dict) -> str:
             + f"<b>Forward air controllers:</b> with a unit marked as one seeing the aim, aircraft scatter 1/{F['scatter']} as far; without, they hold off any target within {F['danger']} hexes of their own men.")
 
 
-def _run_rules(A: dict) -> str:
+def _run_rules(air: dict) -> str:
     """Strafing runs and napalm strips, and marking the target with smoke."""
-    R = A.get("runs") or {}
+    R = air.get("runs") or {}
     s, n = R.get("strafe"), R.get("napalm")
     if not (s and n):
         return ""

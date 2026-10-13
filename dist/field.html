@@ -3567,6 +3567,10 @@ function mineText(l, nm){                         // a unit sets off mines
   const dead = l.dead ? " (" + l.dead + " dead)" : "";
   return `${where}: ${l.struck} men struck, ${l.down || 0} down${dead}.`;
 }
+function airLossText(l){                          // "Corsairs (Yorkists): ground fire brings down 1 aircraft, and 2 aircraft damaged turn for home; 5 left."
+  const turn = l.damaged === 1 ? "turns" : "turn", damaged = l.damaged ? `, and ${nOf(l.damaged, "aircraft", "aircraft")} damaged ${turn} for home` : "";
+  return `${l.name} (${l.side}): ground fire brings down ${nOf(l.lost, "aircraft", "aircraft")}${damaged}; ${l.left} left.`;
+}
 function partyText(l, nm){                        // a party back: arrived, stopped, or its hero left lying
   const who = `${l.name} (${nm(l.unit)})`;
   if (l.what === "post") return `${who} reaches the aid post at ${hexName(l.at)}.`;
@@ -3595,7 +3599,7 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   waveoff: l => ({ cls: "morale", text: landText(l) }),
   displaced: l => ({ cls: "", text: `${l.name} (${l.side}) have displaced: no longer located` + (l.place ? "; now at " + hexName(l.place) : "") + "." }),
   overrun: l => ({ cls: "morale", text: `${l.name} (${l.side}) are overrun: their guns are lost.` }),
-  airloss: l => ({ cls: "morale", text: `${l.name} (${l.side}): ground fire brings down ${nOf(l.lost, "aircraft", "aircraft")}` + (l.damaged ? `, and ${nOf(l.damaged, "aircraft", "aircraft")} damaged turn${l.damaged === 1 ? "s" : ""} for home` : "") + `; ${l.left} left.` }),
+  airloss: l => ({ cls: "morale", text: airLossText(l) }),
   airhold: l => ({ cls: "", text: `${l.name} (${l.side}) hold off ${hexName(l.at)}: their own men are within ${nOf(FD.units.indirect.air.fac.danger, "hex", "hexes")} and no forward air controller can see it.` }),
   assault: (l, nm) => ({ cls: "morale", text: bunkerText(l, nm) }),
   antiarmour: (l, nm) => ({ cls: l.knocked ? "morale" : "", text: armourText(l, nm) }),
