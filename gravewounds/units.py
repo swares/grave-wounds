@@ -426,7 +426,7 @@ def _edge(d: Data, field: dict | None, h, dirn: int) -> list:
         h = x
 
 
-def _lying_after(d: Data, us: list, field: dict | None, table: str, rng) -> list:
+def _lying_after(d: Data, us: list, table: str, rng) -> list:
     """Heroes lying out (left behind, on a hex): a unit of his side standing on his hex picks
     him up (he goes with it, behind), but not the unit that left him until it has moved off;
     an enemy unit, not broken, standing there takes him prisoner at the war's quarter %, else
@@ -434,19 +434,25 @@ def _lying_after(d: Data, us: list, field: dict | None, table: str, rng) -> list
     log, occ = [], occupancy(d, us)
     for i, u in enumerate(us):
         for hero in [h for h in u.get("heroes", []) if h.get("left") and h.get("at") and h["state"] not in ("dead", "prisoner")]:
-            j = occ.get("{0},{1}".format(*hero["at"]))
-            if hero.get("left_by") is not None and (j is None or us[j]["id"] != hero["left_by"]):
-                del hero["left_by"]                   # the unit that left him has moved off: it may come back for him
-            if j is None or _out(us[j]) or us[j].get("vehicle") or hero.get("left_by") is not None:
-                continue
-            if us[j]["side"] == u["side"]:
-                u["heroes"].remove(hero)
-                hero.pop("left"), hero.pop("at")
-                us[j]["heroes"] = [*us[j].get("heroes", []), {**hero, "role": "behind"}]
-                log.append({"kind": "fetched", "unit": j, "from": i, "hero": hero["id"], "name": hero["name"]})
-            else:
-                log.append({"kind": "found", "unit": i, "by": j, **_taken(d, hero, table, rng)})
+            line = _lying_one(d, us, (i, occ.get(C.hkey(hero["at"]))), hero, (table, rng))
+            if line:
+                log.append(line)
     return log
+
+
+def _lying_one(d: Data, us: list, ij: tuple, hero: dict, tr: tuple) -> dict | None:
+    """One hero lying out of unit i, with unit j (or None) on his hex: fetched, found, or left."""
+    (i, j), u = ij, us[ij[0]]
+    if hero.get("left_by") is not None and (j is None or us[j]["id"] != hero["left_by"]):
+        del hero["left_by"]                       # the unit that left him has moved off: it may come back for him
+    if j is None or _out(us[j]) or us[j].get("vehicle") or hero.get("left_by") is not None:
+        return None
+    if us[j]["side"] != u["side"]:
+        return {"kind": "found", "unit": i, "by": j, **_taken(d, hero, *tr)}
+    u["heroes"].remove(hero)
+    hero.pop("left"), hero.pop("at")
+    us[j]["heroes"] = [*us[j].get("heroes", []), {**hero, "role": "behind"}]
+    return {"kind": "fetched", "unit": j, "from": i, "hero": hero["id"], "name": hero["name"]}
 
 
 def _taken(d: Data, hero: dict, table: str, rng) -> dict:
@@ -1669,7 +1675,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _suppress_all(d, us, under, rng)
     log += _heroes_after(d, us, rng, [not lost[i] and not under[i] and not in_contact(d, us, occ, i) for i in range(len(us))], cauterises(d, table))
     log += _parties_after(d, us, field)
-    log += _lying_after(d, us, field, table, rng)
+    log += _lying_after(d, us, table, rng)
     log += _posts_after(d, us, field, table, rng)
     for u in us:
         u["charged"] = False

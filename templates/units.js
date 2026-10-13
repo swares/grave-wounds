@@ -262,7 +262,7 @@ function mapEdge(field, h, dirn){                  // the last hex on the map go
     h = x;
   }
 }
-function lyingAfter(us, field, table, rng){       // heroes lying out on a hex: picked up by a unit of their side standing there, or taken or killed by an enemy one (as units._lying_after)
+function lyingAfter(us, table, rng){              // heroes lying out on a hex: picked up by a unit of their side standing there, or taken or killed by an enemy one (as units._lying_after)
   const log = [], occ = occupancy(us);
   us.forEach((u, i) => {
     for (const hero of (u.heroes || []).filter(h => h.left && h.at && h.state !== "dead" && h.state !== "prisoner")){
@@ -353,7 +353,7 @@ function carryBack(units, i, heroId, field = null){   // unit i sends bearers to
 }
 function walkBack(units, i, heroId){              // a wounded hero who can walk leaves his unit and goes back alone (as units.walk_back): null, or why not
   const u = units[i], hero = (u.heroes || []).find(h => h.id === heroId);
-  if (!hero || hero.state !== "up" || offField(hero)) return "he is not up with the unit";
+  if (hero?.state !== "up" || offField(hero)) return "he is not up with the unit";
   if (lamed(hero)) return "he cannot walk: carry him back";
   if (!hero.wounds?.length && !hero.old?.length) return "he is not wounded";
   hero.going = party(u, 0);
@@ -1396,7 +1396,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
   });
   log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table)),
-    ...partiesAfter(us, field), ...lyingAfter(us, field, table, rng), ...postsAfter(us, field, table, rng));
+    ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng));
   afterExchange(us, field, log);
   log.push(...landings(us, table, rng, field), ...vehiclesAfter(us, field));
   return { units: us, log };
