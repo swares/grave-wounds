@@ -1074,11 +1074,33 @@ function shellVehicle(us, i, bursts, kind, ctx){   // shells or bombs bursting i
   const u = us[i], { table, rng, acc, log, src } = ctx;
   if (u.men <= 0 || u.state === "fled") return;
   const hexes = new Set(footprint(u).flat().map(hk)), direct = bursts.filter(at => hexes.has(hk(at))).length, p = (kind.knock || 0) * armourOf(u).shell;
-  if (!direct || p <= 0) return;
-  let kills = 0;
-  for (let s = 0; s < direct; s++) if (rng.randint(1, 100) <= p) kills++;
-  const k = knockOut(us, i, kills, table, rng, acc);
-  if (k.knocked) log.push(...logged({ kind: "knocked_out", sup: src[0], name: src[1].name, dfd: i, knocked: k.knocked, crew: k.crew, struck: k.struck, ...ridersLine(k) }, k.tally));
+  if (direct && p > 0){
+    let kills = 0;
+    for (let s = 0; s < direct; s++) if (rng.randint(1, 100) <= p) kills++;
+    const k = knockOut(us, i, kills, table, rng, acc);
+    if (k.knocked) log.push(...logged({ kind: "knocked_out", sup: src[0], name: src[1].name, dfd: i, knocked: k.knocked, crew: k.crew, struck: k.struck, ...ridersLine(k) }, k.tally));
+  }
+  log.push(...hullShelled(us, i, bursts, kind, table, rng, src));
+}
+function hullShelled(us, i, bursts, kind, table, rng, src){   // men riding on the hulls struck by the bursts as men in the open, wounded as by shellfire (as units._hull_shelled)
+  const u = us[i];
+  if (!exposed(u)) return [];
+  const R = u.riders, hexes = footprint(u).flat(), base = Math.floor(R.men / hexes.length), extra = R.men % hexes.length;
+  const men = hexes.map((h, j) => base + (j < extra ? 1 : 0));
+  let struck = 0, near = false;
+  for (const at of bursts) hexes.forEach((h, j) => {
+    const dist = hdist(h, at);
+    if (dist > kind.radius) return;
+    near = true;
+    for (let s = 0; s < men[j]; s++) if (rng.randint(1, 100) <= kind.struck[dist]) struck++;
+  });
+  struck = Math.min(struck, R.men);
+  const weapon = shellWeapon(table);
+  if (!near || !struck || !weapon) return [];
+  const t = takeHurt(R, blows({ table, weapon, kit: null, quality: "regular" }, sideOfUnit(R, table), struck, UD.indirect.attack, 0, rng, { exposed: [], shift: -1000 }));
+  const down = Math.min(t.down, R.men);
+  Object.assign(R, { men: R.men - down, down: (R.down || 0) + down, dead: (R.dead || 0) + Math.min(t.dead, down) });
+  return [{ kind: "hullshelled", sup: src[0], name: src[1].name, dfd: i, struck, down, dead: Math.min(t.dead, down) }];
 }
 function shellStruckUnit(field, u, bursts, kind, rng){   // men of u struck by these bursts, or null if none came near
   if (u.men <= 0 || u.state === "fled") return null;
