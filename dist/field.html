@@ -2561,7 +2561,7 @@ function holdBack(us, side, known){                // at its first move (unless 
   const byQ = {};
   let men = 0;
   for (const i of mine){ men += us[i].men; byQ[us[i].quality] = (byQ[us[i].quality] || 0) + us[i].men }
-  const q = Object.keys(byQ).sort().reduce((a, k) => (byQ[k] > byQ[a] ? k : a));
+  const keys = Object.keys(byQ).sort((a, b) => a.localeCompare(b)), q = keys.reduce((a, k) => (byQ[k] > byQ[a] ? k : a), keys[0]);
   let room = Math.floor(men * (UD.commander.reserve[q] ?? 0) / 100);
   const known0 = !knownFoes(known).length;
   const foes = us.map((e, j) => j).filter(j => us[j].side !== side && us[j].men > 0 && !ROUTED.has(us[j].state) && (known0 || String(j) in known));
@@ -2583,7 +2583,7 @@ function commitReserve(us, side, known, memory){   // one reserve unit committed
   if (!held.length) return [];
   const kf = knownFoes(known), near = {};
   for (const i of held) near[i] = kf.length ? Math.min(...kf.map(([, m]) => hdist(us[i].pos, m.pos))) : 10 ** 6;
-  const nearest = list => list.reduce((a, i) => (near[i] < near[a] ? i : a));
+  const nearest = list => list.reduce((a, i) => (near[i] < near[a] ? i : a), list[0]);
   const gap = held.some(i => near[i] <= UD.commander.gap), vets = held.filter(i => us[i].quality === "veteran");
   let pick, why;
   if (broke || gap){ pick = nearest(held); why = broke ? "broke" : "gap" }
@@ -2597,7 +2597,7 @@ function layGuns(us, side, [size, field, known, exchange]){   // its batteries a
   us.forEach((u, i) => {
     if (u.side !== side || !(isBattery(u) || isAtGun(u)) || u.state !== "steady" || u.men <= 0) return;
     if ((exchange !== null && u.arrived === exchange) || inContact(us, occ, i) || !kf.length) return;
-    const j = kf.map(([k, m]) => [hdist(u.pos, m.pos), Number(k)]).reduce((a, b) => (b[0] < a[0] || (b[0] === a[0] && b[1] < a[1]) ? b : a))[1];
+    const j = kf.map(([k, m]) => [hdist(u.pos, m.pos), Number(k)]).reduce((a, b) => (b[0] < a[0] || (b[0] === a[0] && b[1] < a[1]) ? b : a), [Infinity, Infinity])[1];
     const f = bearing(u.pos, knownAt(us, j, known).pos);
     if (f !== u.facing && moveUnit(us, i, u.pos, f, size, field).ok){ us[i] = { ...u, facing: f }; out.push({ unit: i, act: "turn", target: j, facing: f }) }
   });
@@ -2622,7 +2622,7 @@ function fireAim(us, side, field, known, b, K){    // [enemy index, hex] to fire
     if (e.side === side || !(String(j) in known) || !ours.length) return;
     const h = marksOf(e).find(x => spotted(us, field, side, x));
     if (!h || !inReach(b, h) || tooNear(ours, h, K.radius + K.scatter)) return;
-    const u = ours.reduce((a, o) => (hdist(o.pos, e.pos) < hdist(a.pos, e.pos) ? o : a));
+    const u = ours.reduce((a, o) => (hdist(o.pos, e.pos) < hdist(a.pos, e.pos) ? o : a), ours[0]);
     const sc = threatScore(u, e, e);
     if (!best || sc > best[0]) best = [sc, [j, [...h]]];
   });

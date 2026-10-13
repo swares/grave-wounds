@@ -142,11 +142,15 @@ def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tupl
         h = next((x for x in _marks(d, e) if U.spotted(d, us, field, side, x)), None)
         if h is None or not U.in_reach(d, b, h) or _too_near(d, ours, h, K["radius"] + K["scatter"]):
             continue
-        u = min(ours, key=lambda o: U.hdist(o["pos"], e["pos"]))
-        key = (-threat_score(d, u, e, e), j)
+        key = (-threat_score(d, _nearest(ours, e["pos"]), e, e), j)
         if best is None or key < best[0]:
             best = (key, (j, list(h)))
     return None if best is None else best[1]
+
+
+def _nearest(ours: list, pos) -> dict:
+    """The unit of ours whose middle hex is nearest pos (the first of equals)."""
+    return min(ours, key=lambda o: U.hdist(o["pos"], pos))
 
 
 def _marks(d: Data, e: dict) -> list:
