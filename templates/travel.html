@@ -1153,7 +1153,20 @@ function followLeader(o, f, steps){            // a force in the column goes whe
   if (steps && f.cameFrom) o.cameFrom = f.cameFrom.slice();
 }
 // ----- one clock for every force on the map: orders, then the GM moves the clock on -----
-const CLOCK_STEP = 0.25;                       // hours: how finely the clock watches for forces meeting
+const CLOCK_STEP = 0.25;                       // hours: how finely the clock watches for forces meeting, at most
+const CLOCK_LEAST = 1 / 60;                     // hours: the finest step it takes
+function nextTick(c){                           // the clock's next step: a quarter hour, or less, to the moment the first marching column enters its next hex
+  let dt = CLOCK_STEP;                          // (so a fast column cannot pass through an enemy's reach between two looks)
+  const m = curMap();
+  for (const f of forcesHere()){
+    if (!marching(f) || busy(f, c)) continue;
+    const speed = colSpeed(f);
+    if (!speed) continue;
+    const st = stepHours(m, f.path[f.index], f.path[f.index + 1], colType(f), groundOf(f.day), speed) - (f.carried || 0);
+    if (st > 0) dt = Math.min(dt, st);
+  }
+  return Math.max(CLOCK_LEAST, dt);
+}
 const atOrAfter = (a, b) => !before(a, b);
 const busy = (f, c) => before(c, { day: f.day, used: f.used });   // still making camp or fighting
 function waitUntil(f, t){                      // a force waits where it is until t: its nights pass as nights in place
@@ -1245,7 +1258,7 @@ function runClock(c, kind){                    // quarter hour by quarter hour t
   while (!events.length){
     const stop = kind === "event" ? hpdOf(c.day) : end;
     if (c.used < stop - 1e-9){
-      events = tickClock(c, Math.min(CLOCK_STEP, stop - c.used), seen, moved);
+      events = tickClock(c, Math.min(nextTick(c), stop - c.used), seen, moved);
       if (kind === "event" && !events.length && !anyAtWork(c)) events = ["Every force has halted."];
       continue;
     }
