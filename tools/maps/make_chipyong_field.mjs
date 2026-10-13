@@ -73,7 +73,7 @@ const units = [
 ];
 
 writeField({
-  objective: { at: edge(95), side: 1, name: "G Company's hill on the southern perimeter" },
+  objective: { at: edge(95), side: 1, name: "G Company's hill on the southern perimeter", radius: 3 },
   id: "chipyong-1951", name: "The perimeter at Chipyong-ni, 14-15 February 1951", sides: ["United Nations", "Chinese"], table: "korea-1950-53-hospitalized",
   travel: { map: "chipyong-1951", place: "Chipyong-ni", within: 2, sides: ["United Nations", "Chinese"] },
   weather: "{cond: fair, wind: breeze, dir: NW, light: night, ground: {mud: 0, snow: 1}}",

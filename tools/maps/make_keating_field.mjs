@@ -69,7 +69,7 @@ const units = [
 ];
 
 writeField({
-  objective: { at: COP, side: 1, name: "the outpost" },
+  objective: { at: COP, side: 1, name: "the outpost", radius: 8 },
   id: "keating-2009", name: "Combat Outpost Keating, 3 October 2009", sides: ["Coalition", "Insurgents"], table: "oif-oef-2001-wounds",
   travel: { map: "keating-2009", place: "Combat Outpost Keating", within: 1, sides: ["Coalition", "Insurgents"] },
   weather: "{cond: fair, wind: calm, light: dusk, ground: {mud: 0, snow: 0}}",

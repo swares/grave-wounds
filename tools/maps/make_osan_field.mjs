@@ -63,7 +63,7 @@ const units = [
 ];
 
 writeField({
-  objective: { at: [ROAD, Math.round(crest(ROAD))], side: 1, name: "the saddle where the road crosses the ridge" },
+  objective: { at: [ROAD, Math.round(crest(ROAD))], side: 1, name: "the saddle where the road crosses the ridge", radius: 6 },
   id: "osan-1950", name: "Task Force Smith at Osan, 5 July 1950", sides: ["United Nations", "North Koreans"], table: "korea-1950-53-hospitalized",
   travel: { map: "osan-1950", place: "The saddle north of Osan (Jukmiryeong)", within: 2, sides: ["United Nations", "North Koreans"] },
   weather: "{cond: overcast, wind: calm, dir: S, ground: {mud: 1, snow: 0}}",

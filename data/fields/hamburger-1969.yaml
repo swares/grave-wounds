@@ -20,8 +20,8 @@ table: vietnam-1965-70-hospitalized
 travel: {map: hamburger-1969, place: "Dong Ap Bia (Hill 937)", within: 1, sides: ["United States and ARVN", "North Vietnamese"]}
 size: [140, 140]
 weather: {cond: overcast, wind: calm, ground: {mud: 2, snow: 0}}
-# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
-objective: {at: [70, 66], side: 0, name: "the summit of Hill 937 (Hamburger Hill)"}
+# The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
+objective: {at: [70, 66], side: 0, name: "the summit of Hill 937 (Hamburger Hill)", radius: 4}
 ground: |
   rrFFFFFFFrFFFrFrFFFFFFFFFFFFFFFFrFFFFrrFFrFrFFFFFFFFrFFFFFrFFrrFrFFFFFrFrFFrrFFFFFFrFFrFFFFFFFFFFFFFFFFFFrrrFFrFFFFFFFFFFFFFrFrrFFrFFFFrFFFF
   FrFFFFrFFFFFFFFFFFFFFrFFFFFFFFFFFFFFFrFFrFFFFFFFFFFFFFFFFFrrrFFFFFFFFFFrFFFFFFFFFFFFFFFFrFFFFFFFFFFFrFFrFrFrFFrFFFrFrFFFFFFFFFFrrFFFrrFFrrFF

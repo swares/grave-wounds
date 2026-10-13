@@ -22,8 +22,8 @@ table: falklands-1982-wounds
 travel: {map: goosegreen-1982, place: "Darwin Hill", within: 1, sides: ["British", "Argentines"]}
 size: [140, 110]
 weather: {cond: overcast, wind: breeze, dir: W, light: dusk, ground: {mud: 1, snow: 0}}
-# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
-objective: {at: [84, 57], side: 0, name: "the crest of Darwin Hill"}
+# The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
+objective: {at: [84, 57], side: 0, name: "the crest of Darwin Hill", radius: 7}
 ground: |
   wwww.....m.......mm..m..m...mm.m.......................m.........................m.......m............................m.....m...wwwwwwwwwwww
   wwww..m................m........m.m..m......m...m..m....m......m.............m...............m..m...m.mmm..............m...m....wwwwwwwwwwww

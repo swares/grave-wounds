@@ -117,7 +117,8 @@ sometimes hesitate. With no enemy in sight, a unit holds.
   when they have nothing better to do and hold it once there (within {{c_obj_radius}}
   hex); holding, units more than {{c_obj_hold}} hexes from it fall back to it. Enemies near
   it make better targets. The log says who holds it after each exchange. Most battlefields
-  mark the place their battle was fought for, a hill, a bridge, an outpost, as theirs.
+  mark the place their battle was fought for, a hill, a bridge, an outpost, as theirs,
+  taking in the whole position (a ring of trenches counts as the hill).
 - **Minefields.** It steers round minefields it knows of.
 - **Guns.** It turns its guns to face the enemy and calls its off-map batteries on what it
   sees.

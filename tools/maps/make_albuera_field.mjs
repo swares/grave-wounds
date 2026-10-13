@@ -50,7 +50,7 @@ const units = [
 ];
 
 writeField({
-  objective: { at: [40, 136], side: 1, name: "the heights south of the allied line" },
+  objective: { at: [40, 136], side: 1, name: "the heights south of the allied line", radius: 6 },
   id: "albuera-1811", name: "Albuera, 16 May 1811", sides: ["Allies", "French"], table: "peninsular-1808-14-all-hits",
   travel: { map: "albuera-1811", place: "La Albuera", within: 2, sides: ["Allies", "France"] },
   weather: "{cond: overcast, wind: breeze, ground: {mud: 0, snow: 0}}",

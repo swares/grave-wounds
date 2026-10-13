@@ -22,8 +22,8 @@ table: bougainville-1944-all-hits
 travel: {map: bougainville-1944, place: "Hill 700", within: 2, sides: ["Americans", "Japanese"]}
 size: [120, 100]
 weather: {cond: rain, wind: calm, dir: SE, ground: {mud: 1, snow: 0}}
-# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
-objective: {at: [60, 46], side: 1, name: "the saddle in the line"}
+# The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
+objective: {at: [60, 46], side: 1, name: "the saddle in the line", radius: 7}
 ground: |
   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF

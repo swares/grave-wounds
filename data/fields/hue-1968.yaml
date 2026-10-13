@@ -24,8 +24,8 @@ table: vietnam-1965-70-hospitalized
 travel: {map: hue-1968, place: "Hue, the new city (south bank)", within: 1, sides: ["United States and ARVN", "North Vietnamese"]}
 size: [150, 110]
 weather: {cond: rain, wind: breeze, dir: NE, ground: {mud: 1, snow: 0}}
-# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
-objective: {at: [86, 24], side: 0, name: "the provincial headquarters"}
+# The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
+objective: {at: [86, 24], side: 0, name: "the provincial headquarters", radius: 3}
 ground: |
   wwwwwwwwwwwwwwwwwwwwwwwwwwwww...wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
   wwwwwwwwwwwwwwwwwwwwwwwwwwwww...wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww

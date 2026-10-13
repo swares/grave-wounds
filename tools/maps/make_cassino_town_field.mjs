@@ -59,7 +59,7 @@ const units = [
 ];
 
 writeField({
-  objective: { at: CASTLE, side: 0, name: "Castle Hill" },
+  objective: { at: CASTLE, side: 0, name: "Castle Hill", radius: 3 },
   id: "cassino-town-1944", name: "Cassino town and Castle Hill, 15 March 1944", sides: ["Allies", "Germans"], table: "owens-wwii",
   travel: { map: "cassino-1944", place: "Cassino", within: 1, sides: ["Allies", "Germans"] },
   weather: "{cond: overcast, wind: breeze, dir: S, ground: {mud: 2, snow: 0}}",

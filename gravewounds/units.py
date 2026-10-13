@@ -1141,6 +1141,8 @@ def battlefield(d: Data, fid: str) -> dict:
         out["lz"] = [list(h) for h in f["lz"]]
     if f.get("objective"):
         out["objective"] = list(f["objective"]["at"])
+        if f["objective"].get("radius"):
+            out["objective_radius"] = f["objective"]["radius"]
     if f.get("support"):
         out["support"] = _field_support(d, f)
     return out
@@ -1728,14 +1730,22 @@ def off_objective(d: Data, u: dict, obj) -> int:
     return min((hdist(h, obj) for row in footprint(d, u) for h in row), default=10**6)
 
 
+def objective_radii(d: Data, field: dict | None) -> tuple:
+    """(radius, hold, guard) of the field's objective: commander.objective's, each widened by
+    as much as the field's own objective_radius (a battlefield's place) exceeds its radius."""
+    R = d.units["commander"]["objective"]
+    r = (field or {}).get("objective_radius") or R["radius"]
+    return r, R["hold"] + r - R["radius"], R["guard"] + r - R["radius"]
+
+
 def objective_held(d: Data, us: list, field: dict | None) -> list:
     """With an objective marked on the field: [{kind objective, hex, sides (those with a standing
-    unit within commander.objective.radius of it, in the units' order), held (the one side
+    unit within its radius (objective_radii) of it, in the units' order), held (the one side
     there, else None)}], else []."""
     obj = (field or {}).get("objective")
     if not obj:
         return []
-    r = d.units["commander"]["objective"]["radius"]
+    r = objective_radii(d, field)[0]
     sides = list(dict.fromkeys(u["side"] for u in us if u["state"] not in ("broken", "fled") and u["men"] > 0 and off_objective(d, u, obj) <= r))
     return [{"kind": "objective", "hex": list(obj), "sides": sides, "held": sides[0] if len(sides) == 1 else None}]
 

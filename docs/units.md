@@ -286,8 +286,8 @@ general. All its numbers are in units.yaml `commander`.
     its target, unless it can charge. One with no enemy to go for and within 3 hexes stays.
   - Its units weigh an enemy within 4 hexes of the objective 30 points more as a target.
   - After each exchange the log says who holds it: the one side with a standing unit
-    within 1 hex of it, "contested" if both have, or no one (`commander.objective` in
-    `data/units.yaml`).
+    within 1 hex of it (a battlefield's objective: within its radius), "contested" if
+    both have, or no one (`commander.objective` in `data/units.yaml`).
 - **Its guns.**
   - Its batteries and anti-tank guns on the map turn to face the nearest enemy it knows of.
     It never moves, limbers or displaces them.
@@ -1089,8 +1089,17 @@ unit can still be moved, changed or removed before the battle starts. *New battl
 back to the same battlefield.
 
 **Objectives.** Where the accounts name the place a battle was fought for, the battlefield
-marks it as the objective (`objective` in its file: the hex, the army that attacked it and
-its name), and laying out the field marks it on the map (O). The enemy commander then takes
+marks it as the objective (`objective` in its file: the hex, the army that attacked it, its
+name and its radius), and laying out the field marks it on the map (O, with a dashed ring
+when it is wider than a hex).
+- **Radius.** A hill or a perimeter is more than one hex, so each battlefield gives its
+  objective a radius that takes in the position as the map draws it: 9 hexes round Pork
+  Chop's top (its trench ring), 8 at Khe Sanh, Kapyong and Keating, 7 at Fox Hill, Darwin
+  Hill and on Bougainville, down to 1 for the wagon-box corral. Within the radius counts as
+  on the objective, for holding it and for the log. The commander's other distances widen to
+  match: holding, units fall back if more than 2 hexes outside it; enemies within 3 hexes
+  outside it count as guarding it. An objective the GM marks by hand has the commander's own
+  radius, 1 hex. The enemy commander then takes
 it or holds it, as under [The enemy commander](#the-enemy-commander); the GM can move or
 clear it with **Clicking the map**. Twenty-seven battlefields have one: Point 593 at
 Cassino, Castle Hill in the town, the crests of Hills 875, 861A, 931 and 937, Pork Chop,

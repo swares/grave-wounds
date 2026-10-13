@@ -55,7 +55,7 @@ const units = [
 ];
 
 writeField({
-  objective: { at: [84, RIDGE(84)], side: 0, name: "the crest of Darwin Hill" },
+  objective: { at: [84, RIDGE(84)], side: 0, name: "the crest of Darwin Hill", radius: 7 },
   id: "goosegreen-1982", name: "Darwin Hill, Goose Green, 28 May 1982", sides: ["British", "Argentines"], table: "falklands-1982-wounds",
   travel: { map: "goosegreen-1982", place: "Darwin Hill", within: 1, sides: ["British", "Argentines"] },
   weather: "{cond: overcast, wind: breeze, dir: W, light: dusk, ground: {mud: 1, snow: 0}}",

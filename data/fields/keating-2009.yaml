@@ -23,8 +23,8 @@ table: oif-oef-2001-wounds
 travel: {map: keating-2009, place: "Combat Outpost Keating", within: 1, sides: ["Coalition", "Insurgents"]}
 size: [120, 110]
 weather: {cond: fair, wind: calm, light: dusk, ground: {mud: 0, snow: 0}}
-# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
-objective: {at: [50, 56], side: 1, name: "the outpost"}
+# The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
+objective: {at: [50, 56], side: 1, name: "the outpost", radius: 8}
 ground: |
   hhFFhFFFFhFFFhhhFhFFFFFFwwwwwrrrorroroorrororrrrrorrorrrooorrooooorrrrorhFFhhFhFFhFhFFhFFFFFFFFhhhFFhFFFFhhhFFhFhhFFFFhh
   hhFFFFhFFFFFFFFFFFFFFhFhwwwwwrrrorroroororrrrrorrrrrorrrrroooorrorrorrooFhhhFFFFFFhFFFFFhhhhFhFhFFFhhFFhFhhhFFhFFFhhhFFF

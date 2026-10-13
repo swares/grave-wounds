@@ -58,7 +58,7 @@ const units = [
 ];
 
 writeField({
-  objective: { at: SUMMIT, side: 1, name: "Hill 504's summit" },
+  objective: { at: SUMMIT, side: 1, name: "Hill 504's summit", radius: 8 },
   id: "kapyong-1951", name: "Hill 504 and the valley at Kapyong, 23-24 April 1951", sides: ["United Nations", "Chinese"], table: "korea-1950-53-hospitalized",
   travel: { map: "kapyong-1951", place: "Hill 504", within: 1, sides: ["United Nations", "Chinese"] },
   weather: "{cond: fair, wind: calm, light: night, ground: {mud: 0, snow: 0}}",

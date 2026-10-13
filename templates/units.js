@@ -1449,10 +1449,14 @@ function breachAll(us, field, log){               // units ordered to breach hac
   });
 }
 const offObjective = (u, obj) => Math.min(1e6, ...footprint(u).flat().map(h => hdist(h, obj)));   // hexes from its nearest hex to the objective (1e6 with no hexes)
+function objectiveRadii(field){                    // [radius, hold, guard] of the field's objective: commander.objective's, widened by its own objective_radius (as units.objective_radii)
+  const R = UD.commander.objective, r = field?.objective_radius || R.radius;
+  return [r, R.hold + r - R.radius, R.guard + r - R.radius];
+}
 function objectiveHeld(us, field){                 // with an objective marked: [{kind objective, hex, sides there (units' order), held (the one side there, else null)}]
   const obj = field?.objective;
   if (!obj) return [];
-  const r = UD.commander.objective.radius;
+  const r = objectiveRadii(field)[0];
   const sides = [...new Set(us.filter(u => !ROUTED.has(u.state) && u.men > 0 && offObjective(u, obj) <= r).map(u => u.side))];
   return [{ kind: "objective", hex: [...obj], sides, held: sides.length === 1 ? sides[0] : null }];
 }
@@ -1940,7 +1944,7 @@ function commandable(us, i, exchange){            // standing, not a battery or 
   return !inContact(us, occupancy(us), i);
 }
 function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance, known, exchange]
-  const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = aiTarget(us, i, ctx[3], obj);
+  const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = aiTarget(us, i, ctx[3], ctx[1]);
   if (u.state !== "steady") return !u.prone && underFire(us, i) ? { act: "ground", target: t } : null;
   if (u.reserve) return t === null ? null : stayOrder(us, i, t, u.facing, "range" in FD.weapons[u.weapon]);
   if (t === null && obj === null) return null;
@@ -1954,18 +1958,18 @@ function forObjective(us, i, t, ctx){              // attacking: at the objectiv
   if (t === null) return noTarget(us, i, ctx, off);
   if (ctx[2] === "attack") return attackObjective(us, i, t, ctx, off);
   const o = bestOrder(us, i, t, ctx);
-  if (off > UD.commander.objective.hold && o?.act !== "charge") return toward(us, i, t, ctx, "fall_back") || o;
+  if (off > objectiveRadii(ctx[1])[1] && o?.act !== "charge") return toward(us, i, t, ctx, "fall_back") || o;
   return o;
 }
 function noTarget(us, i, ctx, off){                // no enemy to go for: attacking, it advances unless at the objective; holding, it falls back if too far out
-  const R = UD.commander.objective, attack = ctx[2] === "attack";
-  if (off <= (attack ? R.radius : R.hold)) return null;
+  const [radius, hold] = objectiveRadii(ctx[1]), attack = ctx[2] === "attack";
+  if (off <= (attack ? radius : hold)) return null;
   return toward(us, i, null, ctx, attack ? "advance" : "fall_back");
 }
 function attackObjective(us, i, t, ctx, off){      // attacking with a target: at the objective it holds; else its best order, or an advance when that is only to stand or turn and the target is not guarding the objective
-  if (off <= UD.commander.objective.radius) return bestOrder(us, i, t, [ctx[0], ctx[1], "hold", ctx[3], ctx[4]]);
+  if (off <= objectiveRadii(ctx[1])[0]) return bestOrder(us, i, t, [ctx[0], ctx[1], "hold", ctx[3], ctx[4]]);
   const o = bestOrder(us, i, t, ctx);
-  if ((o !== null && o.act !== "turn") || guards(knownAt(us, t, ctx[3]), objectiveOf(ctx[1]))) return o;
+  if ((o !== null && o.act !== "turn") || guards(knownAt(us, t, ctx[3]), ctx[1])) return o;
   return toward(us, i, t, ctx, "advance") || o;
 }
 function toward(us, i, t, [size, field, , known], act){   // a move toward the objective within its allowance (its turn included), touching no enemy, to the hex it likes best; or null
@@ -2002,17 +2006,21 @@ function lastSeen(o, known, t, exchange){        // the order, with the exchange
   const last = known?.[String(t)]?.ex;
   return o && last !== undefined && last !== (exchange ?? 0) ? { ...o, last } : o;
 }
-function aiTarget(us, i, known = null, obj = null){   // the enemy unit it goes for among those its side knows of (null: every one standing), by threatScore (the first of equals), or null; with an objective, more for one guarding it
+function aiTarget(us, i, known = null, field = null){   // the enemy unit it goes for among those its side knows of (null: every one standing), by threatScore (the first of equals), or null; with an objective, more for one guarding it
   const u = us[i];
   let best = null;
   us.forEach((e, j) => {
     if (e.side === u.side || ROUTED.has(e.state) || e.men <= 0 || (known !== null && !(String(j) in known))) return;
-    const seen = knownAt(us, j, known), sc = threatScore(u, e, seen) + guards(seen, obj);
+    const seen = knownAt(us, j, known), sc = threatScore(u, e, seen) + guards(seen, field);
     if (best === null || sc > best[0]) best = [sc, j];
   });
   return best ? best[1] : null;
 }
-const guards = (seen, obj) => (obj !== null && hdist(seen.pos, obj) <= UD.commander.objective.guard ? UD.commander.objective.bonus : 0);   // more for an enemy within guard of the objective
+function guards(seen, field){                      // commander.objective.bonus for an enemy within the objective's guard of it, else 0
+  const obj = objectiveOf(field);
+  if (obj === null || hdist(seen.pos, obj) > objectiveRadii(field)[2]) return 0;
+  return UD.commander.objective.bonus;
+}
 function knownAt(us, j, known){                   // enemy unit j where its side last saw it (as it is if seen now)
   const m = known?.[String(j)];
   return m ? { ...us[j], pos: m.pos, facing: m.facing } : us[j];

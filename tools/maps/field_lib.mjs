@@ -49,7 +49,7 @@ export const firstCol = u => u.pos[0] - Math.floor((u.width - 1) / 2);
 
 const yq = s => JSON.stringify(s);
 const unitLine = u => `  - {name: ${yq(u.name)}, side: ${u.side}, men: ${u.men}, quality: ${u.quality}, weapon: ${u.weapon}, kit: ${u.kit}, formation: ${u.formation}, width: ${u.width}, pos: [${u.pos.join(", ")}], facing: ${u.facing}${u.mounted ? ", mounted: true" : ""}${u.guns ? ", guns: " + u.guns : ""}${u.prone ? ", prone: true" : ""}${u.lands === undefined ? "" : ", lands: " + u.lands}${u.vehicle ? ", vehicle: " + u.vehicle : ""}${u.fixed ? ", fixed: [" + u.fixed.join(", ") + "]" : ""}${u.nv ? ", nv: " + u.nv : ""}${u.fac ? ", fac: true" : ""}}`;
-const objLine = o => (o ? `\n# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.\nobjective: {at: [${o.at.map(Math.round).join(", ")}], side: ${o.side}, name: ${yq(o.name)}}` : "");
+const objLine = o => (o ? `\n# The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.\nobjective: {at: [${o.at.map(Math.round).join(", ")}], side: ${o.side}, name: ${yq(o.name)}${o.radius ? ", radius: " + o.radius : ""}}` : "");
 const hexList = hs => hs.map(h => `[${h.join(", ")}]`).join(", ");
 
 // Writes the battlefield file. spec: {id, script, header (comment lines), name, sides, table,
@@ -58,7 +58,8 @@ const hexList = hs => hs.map(h => `[${h.join(", ")}]`).join(", ");
 // up (the compass point at the top of the map, if not north), support (each side's batteries on
 // call: [{name, side (0 or 1), kind (units.yaml indirect.kinds), tubes}]), lz (landing zones,
 // hexes; a unit with `lands: k` comes in by air at the k-th), objective (the place the battle
-// was fought for: {at: hex, side: the army that attacked it (0 or 1), name})}.
+// was fought for: {at: hex, side: the army that attacked it (0 or 1), name, radius: hexes round it
+// that count as on it})}.
 export function writeField(spec){
   const { grid } = spec, works = Object.entries(spec.hexWorks || {});
   const edges = Object.entries(spec.edgeWorks || {});

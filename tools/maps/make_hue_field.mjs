@@ -62,7 +62,7 @@ const units = [
 ];
 
 writeField({
-  objective: { at: PROVINCE, side: 0, name: "the provincial headquarters" },
+  objective: { at: PROVINCE, side: 0, name: "the provincial headquarters", radius: 3 },
   id: "hue-1968", name: "Hue: the new city, 4-6 February 1968", sides: ["United States and ARVN", "North Vietnamese"], table: "vietnam-1965-70-hospitalized",
   travel: { map: "hue-1968", place: "Hue, the new city (south bank)", within: 1, sides: ["United States and ARVN", "North Vietnamese"] },
   weather: "{cond: rain, wind: breeze, dir: NE, ground: {mud: 1, snow: 0}}",

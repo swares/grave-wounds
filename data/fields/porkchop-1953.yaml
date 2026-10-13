@@ -22,8 +22,8 @@ table: korea-1950-53-hospitalized
 travel: {map: porkchop-1953, place: "Pork Chop Hill", within: 1, sides: ["United Nations", "Chinese"]}
 size: [160, 130]
 weather: {cond: fair, wind: calm, light: night, ground: {mud: 0, snow: 0}}
-# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
-objective: {at: [76, 56], side: 1, name: "the top of Pork Chop Hill"}
+# The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
+objective: {at: [76, 56], side: 1, name: "the top of Pork Chop Hill", radius: 9}
 ground: |
   rrm.r....r...rrr.r....mm.rmr....r..r.rr..r.r.....r..r...rrr..rrrrr..mmr.r.mrr.r.mr.rm.rmm....m.rrr..r..m.rrr..r.rr....rrr...r.rr.mrm...r.mr...r.m............rmr
   rr....rm...m.....m...r.r.......mr..r.rr.r.....r.....r...mmrrrr.mr..r.mrr.rrr.m....r....mrrrrmr.r...rrm.r.rrr.mr...rrr....rm....rrmr.rrm.rr..rr.mm.r.r.mmr..rrr..
