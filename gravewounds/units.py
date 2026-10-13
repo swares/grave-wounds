@@ -1162,6 +1162,12 @@ def shot_weather(d: Data, field: dict | None, weapon: str, dist: int, h=None, t=
     if is_gun(d, weapon):
         return gun_weather(d, field, dist, h, t, seer)
     out = in_the_cold(d, field, weapon, in_the_dark(d, field, dist, t, C.weather_attack(d, (field or {}).get("weather"), weapon, 0 if (seer or {}).get("blind") else dist * d.units["range_scale"], h, t, _up(field)), seer))
+    return _thin_fire(d, field, out, (h, t, dist, line))
+
+
+def _thin_fire(d: Data, field: dict | None, out: dict, shot: tuple) -> dict:
+    """Aimed fire through light cover: line_of_fire.thin.per % off for each hex of it between."""
+    h, t, dist, line = shot
     n = thinned(d, field, h, t, dist, line) if line and not out["blocked"] else 0
     return {**out, "penalty": out["penalty"] + n * d.units["line_of_fire"]["thin"]["per"]} if n else out
 

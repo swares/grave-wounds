@@ -1720,7 +1720,7 @@ function clearSight(field, h, t, dist, line = null){   // a man at h sees t to a
 function thinned(field, h, line){                 // hexes of light cover (scrub, orchards) on the line, not the ends, as high as the man at h stands
   if (!field?.ground) return 0;
   const up = heightAt(field, h);
-  return line.slice(1, line.length - 1).filter(y => groundAt(field, y).light && heightAt(field, y) >= up).length;
+  return line.slice(1, -1).filter(y => groundAt(field, y).light && heightAt(field, y) >= up).length;
 }
 function shotWeather(field, weapon, dist, h = null, t = null, seer = null){   // the weather on a shot from h to t; smoke on the line blocks it; seer: {kit, blind} in the dark
   if (h && t && smoked(field, ray(h, t, dist)) && !seesSmoke(seer)) return { ...SMOKED };
