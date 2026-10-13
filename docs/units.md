@@ -993,14 +993,19 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
   | Tank | 100 hexes (1,090 yards, 1,000 m) | 1 | 75% / 50% (50 hexes) / 25% | bursts as a tank's round on call (25% in the hex, 5% next to it) |
   | Infantry fighting vehicle (autocannon) | 80 hexes (875 yards, 800 m) | 2 | 70% / 45% (40 hexes) / 20% | bursts as an autocannon round (20% in the hex) |
 
-- **Armour.** Small arms cannot hurt a vehicle, and men armed only with them do not shoot at
-  one. No one strikes a vehicle hand to hand, or is struck by it.
+- **Armour.** Small arms cannot hurt an armoured vehicle, and men armed only with them do
+  not shoot at one. No one strikes a vehicle hand to hand, or is struck by it.
+  - **Soft-skinned vehicles** (gun tractors and trucks) are the exception: rifles and machine
+    guns shoot at them as at men, half an aimed shot a man an exchange (3 a machine gunner),
+    and each hit knocks one out at 5%, with no lesser damage. Shells count 6 times (light
+    armour 3, heavy 1). Design estimates (`vehicles.armour.soft`, `vehicles.small_arms`).
 
-  | A hit from | Tank (heavy armour) | Infantry fighting vehicle or carrier (light) |
-  |---|---|---|
-  | A rocket (RPG, bazooka, recoilless rifle) | 15% | 50% |
-  | A guided missile | 60% | 90% |
-  | A main gun | 35% | 75% |
+  | A hit from | Tank (heavy armour) | Infantry fighting vehicle or carrier (light) | Gun tractor or truck (soft) |
+  |---|---|---|---|
+  | A rocket (RPG, bazooka, recoilless rifle) | 15% | 50% | 80% |
+  | A guided missile | 60% | 90% | 95% |
+  | A main gun | 35% | 75% | 90% |
+  | A rifle or machine-gun bullet | — | — | 5% |
 
   Those are the chances that a hit knocks the vehicle out. A hit into its **flank** counts
   twice that, and into its **rear** three times, to 100% at most. Which it is depends on
@@ -1051,7 +1056,7 @@ the Japanese 47 mm (`anti_tank_guns` in `data/units.yaml`).
   guns, pistols) fired at them from their front lose 30%. Shields do nothing against shells,
   bombs or fire from the flank or rear (`gun_shields` in `data/units.yaml`).
 - **Towing.** A vehicle unit can be **Gun tractors and trucks** (2 crew a vehicle, 12 hexes a
-  move, counted as light armour: there is no soft-skinned class), each towing one gun. With
+  move, soft-skinned: see Armour), each towing one gun. With
   the guns beside their side's tractors, out of contact, **Hook up to** puts them on tow: they
   move with the tractors as riders do, and neither fire nor fight. **Unhook the guns** sets
   them down beside the tractors; in the battle they fire from the next exchange. Tractors

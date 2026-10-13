@@ -11,8 +11,10 @@ armoured carriers fight as units, one vehicle to a hex. The unit's men are its c
 - **Their machine guns** fire as a machine-gun team's, about one gun to a vehicle.
 - **Main guns** fire each exchange at the nearest enemy in range, in sight and in front,
   enemy vehicles first, with a clear line of fire.
-- **Armour.** Small arms cannot hurt a vehicle, and men armed only with them do not shoot
-  at one. No one fights a vehicle hand to hand.
+- **Armour.** Small arms cannot hurt an armoured vehicle, and men armed only with them do
+  not shoot at one. Trucks and gun tractors are **soft-skinned**: rifles and machine guns
+  shoot at them too, every shot aimed, and each hit knocks one out at the chance below. No
+  one fights a vehicle hand to hand.
 
 ## Knocking them out {#knocking-out}
 
@@ -35,7 +37,7 @@ as for shots at men. A hit knocks the vehicle out at:
   unhurt.
 - **Shells and bombs** bursting in a vehicle's hex knock it out at the kind's own chance: a
   heavy howitzer's {{i_how_knock}}%, a fighter-bomber's {{v_fb_knock}}%. Light armour is
-  {{v_shell_light}} times as likely to go.
+  {{v_shell_light}} times as likely to go, soft-skinned vehicles {{v_shell_soft}} times.
 - **Knocked out.** Its crew are out of the fight. Each is struck at {{v_crew_struck}}% and
   wounded as by shellfire; the rest bail out.
 
