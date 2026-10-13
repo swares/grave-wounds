@@ -342,6 +342,14 @@ untreated time to death and its infection risk, and whether he went down. Then:
 3. **To camp.** The rest are carried to their force's camp and heal on the wound track,
    where wound fever can still take them (see [travel.md](travel.md), *The wounded*).
 
+**The result.** *After the battle* opens with a verdict and a table, side by side. The
+verdict says who holds the field (a side with no unit left standing has lost it; while both
+have, the field is undecided) and, with an objective, who holds it at the end, as the
+exchange log counts it. The table gives each side's men at the start and still standing,
+men down, killed in the fighting, died of wounds before help came, left on the field, the
+wounded taken to camp (the walking wounded too), units broken or fled, and batteries and
+vehicles lost (those rows only when there are some). The lines below it are as before.
+
 A man wounded twice is counted once. **Back to the travel map** (for a battle set up from
 there) takes the dead off each force, adds its wounded to its sick, and moves each force's
 clock on by the battle's length (a minute an exchange). The numbers are in
