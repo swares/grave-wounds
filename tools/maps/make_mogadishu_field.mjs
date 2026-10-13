@@ -56,6 +56,7 @@ const units = [
 ];
 
 writeField({
+  objective: { at: CRASH1, side: 1, name: "Super 61's crash site" },
   id: "mogadishu-1993", name: "Mogadishu: the crash sites, 3 October 1993", sides: ["United States", "Somali National Alliance"], table: "somalia-1993-wounds",
   travel: { map: "mogadishu-1993", place: "Crash site 1 (Super 61)", within: 2, sides: ["United States", "Somali National Alliance"] },
   weather: "{cond: fair, wind: breeze, dir: SW, light: night, ground: {mud: 0, snow: 0}}",

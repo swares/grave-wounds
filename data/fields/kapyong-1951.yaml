@@ -22,6 +22,8 @@ table: korea-1950-53-hospitalized
 travel: {map: kapyong-1951, place: "Hill 504", within: 1, sides: ["United Nations", "Chinese"]}
 size: [220, 160]
 weather: {cond: fair, wind: calm, light: night, ground: {mud: 0, snow: 0}}
+# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
+objective: {at: [176, 64], side: 1, name: "Hill 504's summit"}
 ground: |
   FFhhFhhhhFhhhFFFhFhhhhhhhFhFhhhhFhhFhFFhhFhFhh.mmmmm..mmmmm.mmmmmmmmmmmm.mmm.mm..mm..m.m..m.mmmmmmmmm.mmm.mmmmmmmm.m..mmmm.mFhFFhhFhhhhFhhFhhhFhhhhhhhhhhhhhhFhFFhFhhhFFhhhhhhFhhFhhhhFFhhFhhFhhFhhhhhhhhhFFhhhFFhFhhFFhhhhh
   FFhhhhFhhhhhhhhhhhhhhFhFhhhhhhhhFhhFhFFhFhhhhhm.mmmmmmmmmm.m.mm.m.mmmmm..mmmmmm.mmm.m.mmm.mmmmmmm.mm.mmmmmm.mmmmm..m..mm.mmmhhhFFhFhFFhhFFhhFFhhhhFhFhhhFhhFFFhhhFFhhFhFhFhhhhhhFFFhhhFhhFhhhhhhFFhhhhhFhhhhhFhhhFFhhhFhhhhF

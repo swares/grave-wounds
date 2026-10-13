@@ -55,6 +55,7 @@ const units = [
 ];
 
 writeField({
+  objective: { at: [railBridge, rowFor(railBridge, 1)], side: 1, name: "the railway bridge at Nimy" },
   id: "mons-1914", name: "Mons, 23 August 1914 (the Nimy salient)", sides: ["British", "Germans"], table: "wwi-1914-18-wounds",
   travel: { map: "mons-1914", place: "Nimy bridges", within: 2, sides: ["British", "Germans"] },
   weather: "{cond: overcast, wind: calm, dir: SW, ground: {mud: 0, snow: 0}}",

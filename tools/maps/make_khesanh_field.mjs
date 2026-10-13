@@ -55,6 +55,7 @@ const units = [
 ];
 
 writeField({
+  objective: { at: TOP, side: 1, name: "the top of Hill 861A" },
   id: "khesanh-1968", name: "Hill 861A, Khe Sanh, 5 February 1968", sides: ["United States and ARVN", "North Vietnamese"], table: "vietnam-1965-70-hospitalized",
   travel: { map: "khesanh-1968", place: "Hill 861A", within: 1, sides: ["United States and ARVN", "North Vietnamese"] },
   weather: "{cond: fog, wind: calm, light: night, ground: {mud: 0, snow: 0}}",

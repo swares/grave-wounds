@@ -58,6 +58,7 @@ const units = [
 ];
 
 writeField({
+  objective: { at: [80, Math.ceil(townEdge(80)) - 1], side: 0, name: "the edge of Cisterna" },
   id: "cisterna-1944", name: "The Rangers at Cisterna, 30 January 1944", sides: ["Americans", "Germans"], table: "owens-wwii",
   travel: { map: "anzio-1944", place: "Cisterna", within: 2, sides: ["Americans", "Germans"] },
   weather: "{cond: fair, wind: calm, dir: N, ground: {mud: 1, snow: 0}}",

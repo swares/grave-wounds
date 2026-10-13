@@ -398,14 +398,19 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
     S.field.lifts = [];
     B.units.forEach(u => standOrFly(newUnit({ ...u, side: B.sides[u.side] }), u.lands));
     S.sel = S.units[0]?.id ?? null;
-    S.msg = `${B.name}: the armies as drawn up. Move, change or remove any unit before the battle starts.`;
+    S.msg = `${B.name}: the armies as drawn up. Move, change or remove any unit before the battle starts.` + objectiveNote(B);
     return;
   }
   const keep = S.units.filter((u, i) => fits(S.units, i, u, SIZE, S.field)), gone = S.units.length - keep.length;
   S.units = keep;
   S.sel = keep.some(u => u.id === S.sel) ? S.sel : keep[0]?.id ?? null;
   const what = travelWx ? "the ground and works (the weather stays the travel map's)" : "the ground, works and weather";
-  S.msg = (B ? `${B.name}: ${what}.` : "Open ground.") + (gone ? ` ${gone} unit(s) no longer fit and were taken off.` : "");
+  S.msg = (B ? `${B.name}: ${what}.` : "Open ground.") + (gone ? ` ${gone} unit(s) no longer fit and were taken off.` : "") + objectiveNote(B);
+}
+function objectiveNote(B){                         // " Objective: ... (O on the map, 77,57; attackers: Chinese). ..." for a battlefield with one
+  const o = B?.objective;
+  if (!o) return "";
+  return ` Objective: ${o.name} (O on the map, ${hexName(o.at)}; attackers: ${S.sides[o.side]}). The enemy commander takes it or holds it; Clicking the map can move or clear it.`;
 }
 function fromTravel(h){                            // a battle with the travel map's forces and no units yet: the GM splits them
   const def = h.forces.find(f => f.role === "defender");

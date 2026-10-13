@@ -69,6 +69,7 @@ const units = [
 ];
 
 writeField({
+  objective: { at: OP, side: 1, name: "Observation Post Topside" },
   id: "wanat-2008", name: "Wanat: the patrol base and the observation post, 13 July 2008", sides: ["United States", "Insurgents"], table: "oif-oef-2001-wounds",
   travel: { map: "wanat-2008", place: "Wanat (Vehicle Patrol Base Kahler)", within: 1, sides: ["United States", "Insurgents"] },
   weather: "{cond: fair, wind: calm, light: dusk, ground: {mud: 0, snow: 0}}",

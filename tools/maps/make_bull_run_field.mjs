@@ -48,6 +48,7 @@ const units = [
 ];
 
 writeField({
+  objective: { at: [78, 60], side: 1, name: "the top of Henry Hill" },
   id: "bull-run-1861", name: "First Bull Run, 21 July 1861", sides: ["Confederates", "Union"], table: "acw-1861-all-hits",
   travel: { map: "bull-run-1861", place: "Henry Hill", within: 2, sides: ["Confederacy", "Union"] },
   weather: "{cond: fair, wind: calm, dir: SW, ground: {mud: 0, snow: 0}}",

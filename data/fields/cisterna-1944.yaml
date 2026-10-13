@@ -25,6 +25,8 @@ table: owens-wwii
 travel: {map: anzio-1944, place: "Cisterna", within: 2, sides: ["Americans", "Germans"]}
 size: [150, 120]
 weather: {cond: fair, wind: calm, dir: N, ground: {mud: 1, snow: 0}}
+# The place the battle was fought for (side: the army that attacked it): the enemy commander's objective.
+objective: {at: [80, 7], side: 0, name: "the edge of Cisterna"}
 ground: |
   r.....TTT.TTT...T.TTTT..T...TTTTTTTTTTTTTTTTTTTTT.TTTTTTTTTTT.T.TTTT..TTTT.TTTTT.TTT.TT..TTTT.TTTTTTTTT.TTTTTT.TTTTTTTTT.TTTTT.TT.T.TTTTT.TTTT........
   .......TTTTTTTTTTTTTTTTTTTTTTTT..TT.TTTTTTTTTTTTTTTT.TTT..T.TTT.TTTTT.TTTTTTT.TTTTTTTTT.TTTT.TTTTTTTT.TTTTTTT.TTTTTTTTTTTT.TTTTTT..TTT.TT.TT.T........

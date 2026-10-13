@@ -55,6 +55,7 @@ const units = [
 ];
 
 writeField({
+  objective: { at: TOP, side: 1, name: "the top of Pork Chop Hill" },
   id: "porkchop-1953", name: "Pork Chop Hill, 16-17 April 1953", sides: ["United Nations", "Chinese"], table: "korea-1950-53-hospitalized",
   travel: { map: "porkchop-1953", place: "Pork Chop Hill", within: 1, sides: ["United Nations", "Chinese"] },
   weather: "{cond: fair, wind: calm, light: night, ground: {mud: 0, snow: 0}}",

@@ -57,6 +57,7 @@ const units = [
 ];
 
 writeField({
+  objective: { at: TOP, side: 0, name: "the summit of Hill 937 (Hamburger Hill)" },
   id: "hamburger-1969", name: "Hamburger Hill (Dong Ap Bia), 20 May 1969", sides: ["United States and ARVN", "North Vietnamese"], table: "vietnam-1965-70-hospitalized",
   travel: { map: "hamburger-1969", place: "Dong Ap Bia (Hill 937)", within: 1, sides: ["United States and ARVN", "North Vietnamese"] },
   weather: "{cond: overcast, wind: calm, ground: {mud: 2, snow: 0}}",

@@ -1130,7 +1130,8 @@ def _size(d: Data, field: dict | None) -> tuple:
 
 def battlefield(d: Data, fid: str) -> dict:
     """A battlefield from data/fields as a field: the ground from its rows of letters (units.yaml
-    ground keys), its works laid on the hexes and hex sides, its weather and size."""
+    ground keys), its works laid on the hexes and hex sides, its weather and size, its landing
+    zones, fire support and objective (the hex the battle was fought for) if any."""
     f, keys = d.fields[fid], {g["key"]: k for k, g in d.units["ground"].items()}
     ground = {f"{c},{r}": keys[ch] for r, row in enumerate(f["rows"]) for c, ch in enumerate(row.strip()) if keys[ch] != "open"}
     works = _field_works(d, f.get("works") or {})
@@ -1138,6 +1139,8 @@ def battlefield(d: Data, fid: str) -> dict:
     out = {"ground": ground, "works": works, "weather": wx, "size": list(f["size"]), "up": f.get("up", "N")}
     if f.get("lz"):
         out["lz"] = [list(h) for h in f["lz"]]
+    if f.get("objective"):
+        out["objective"] = list(f["objective"]["at"])
     if f.get("support"):
         out["support"] = _field_support(d, f)
     return out

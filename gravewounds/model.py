@@ -1305,10 +1305,23 @@ def _unit_spec_errors(d: Data, f: dict, where: str, u: dict) -> list[str]:
     return errors
 
 
+def _objective_errors(f: dict, where: str) -> list[str]:
+    """A battlefield's objective: a hex on the map, the army that attacked it (0 or 1) and a name."""
+    o = f.get("objective")
+    if o is None:
+        return []
+    at = o.get("at")
+    on = isinstance(at, list) and len(at) == 2 and 0 <= at[0] < f["size"][0] and 0 <= at[1] < f["size"][1]
+    if on and o.get("side") in (0, 1) and isinstance(o.get("name"), str) and o["name"]:
+        return []
+    return [f"{where}: objective needs at (a hex on the map), side (0 or 1: the army that attacked it) and a name"]
+
+
 def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_units, fits) -> list[str]:
     """The armies as drawn up: known arms, armour and formations, each unit standing where it can."""
     errors = [e for u in f.get("units", []) for e in _unit_spec_errors(d, f, where, u)]
     lz = f.get("lz") or []
+    errors += _objective_errors(f, where)
     errors += [f"{where}: lz must be hexes on the map" for h in lz
                if not (isinstance(h, list) and len(h) == 2 and 0 <= h[0] < f["size"][0] and 0 <= h[1] < f["size"][1])]
     errors += [f"{where}: unit {u.get('name')} lands must be the number of a landing zone (0 to {len(lz) - 1})" for u in f.get("units", [])
