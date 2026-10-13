@@ -33,11 +33,14 @@ When an item is done, delete it here and note it in the pull request that closes
   seeing through a building's open windows.
 - **Heroes on the field map.** First aid comes from the unit's best Leechcraft or its
   medics, with tourniquets and (before 1914) cautery. A lamed hero slows his unit until he
-  is carried back or left behind, and heroes left on the field are found, taken or killed by
-  who holds it. Still left out: a hero cannot walk back alone or be fetched by another unit;
-  bearers carry him off the map rather than to an aid post on it; prisoners have no exchange,
-  ransom or escape; and there is no two-handed great sword among the weapons, so no sword
-  is barred to a one-armed hero.
+  is carried back or left behind. Bearers carry him to his side's aid post across the map
+  (or off it, with none), walking wounded go back alone, and a hero left lying is picked up
+  by a friendly unit or found by an enemy one. Still left out: parties go on a straight line
+  over any ground (water and woods included) and only shellfire can catch them, not aimed
+  fire; the rank and file have no aid post (their wounded are reckoned after the battle);
+  an aid post cannot be moved once the battle starts; prisoners have no exchange, ransom or
+  escape; and there is no two-handed great sword among the weapons, so no sword is barred
+  to a one-armed hero.
 - **Indirect fire, simplified.** A battery placed off the map stands straight out from the
   edge nearest where it was placed, not anywhere behind it. Its crews' wounds are counted
   but not named. Counter-battery fire does not need to see a placed battery: it

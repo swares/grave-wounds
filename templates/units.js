@@ -202,12 +202,12 @@ function impairEffect(w, imp, hand){              // [key, effect] of impairment
   const loc = FD.locations[w.loc] || {}, arm = loc.zone === "arms" && (loc.side === "L" || loc.side === "R") && loc.side !== hand ? "shield_arm" : "weapon_arm";
   return [imp + "|" + arm, rule[arm] || {}];
 }
-function heroesAfter(us, rng, quiet = null, cautery = false){   // end of an exchange: holds wear off, first aid in a quiet exchange, heroes bleed, Blood thresholds, pain checks; bearers back
+function heroesAfter(us, rng, quiet = null, cautery = false){   // end of an exchange: holds wear off, first aid (quiet exchange, or at the aid post), heroes bleed (with the unit, lying out, going back or at the post), Blood thresholds, pain checks; bearers back
   const log = [];
   us.forEach((u, i) => {
     for (const hero of u.heroes || []){
-      if (hero.state === "dead" || offField(hero)) continue;   // left behind or carried back: out of the battle
-      const aid = quiet?.[i] ? firstAid(hero, rng, healerOf(u), cautery) : null;
+      if (hero.state === "dead" || hero.state === "prisoner" || (hero.carried && !hero.post)) continue;   // off the map: out of the battle
+      const aid = aidFor(u, hero, rng, !!quiet?.[i], cautery);
       if (aid) log.push({ kind: "heroaid", unit: i, ...aid });
       const line = heroAfter(hero, rng);
       if (line) log.push({ kind: "herobled", unit: i, ...line });
@@ -215,7 +215,118 @@ function heroesAfter(us, rng, quiet = null, cautery = false){   // end of an exc
   });
   return [...log, ...bearersBack(us)];
 }
-const offField = h => !!(h.left || h.carried);    // left behind, or carried to the rear: out of the battle
+function aidFor(u, hero, rng, quiet, cautery){    // first aid this exchange: at the aid post always (heroes.aid_post.first_aid); with his unit in a quiet exchange
+  if (hero.post) return firstAid(hero, rng, [UD.heroes.aid_post.first_aid, "the aid post"], cautery);
+  if (quiet && !offField(hero)) return firstAid(hero, rng, healerOf(u), cautery);
+  return null;
+}
+const offField = h => !!(h.left || h.carried || h.going);   // left behind, on his way back, or carried to the rear or the aid post: out of his unit's fight
+const quarterOf = table => UD.heroes.quarter[FD.tables[table]?.battle] ?? UD.heroes.quarter.default;   // % a man the enemy finds lying out is taken prisoner, else killed
+const aidPost = (field, side) => (field?.posts || []).find(p => p.side === side && !p.overrun) || null;   // side's aid post, if not overrun
+const party = (u, bearers) => ({ pos: [...u.pos], bearers, dir: mod6(u.facing + 3), ex: 0 });   // a party setting off back: where, its bearers, the way back, exchanges going
+function partiesAfter(us, field){                 // each party goes heroes.aid_post.pace hexes toward its post (or the map edge the way back); arriving, he is carried and the bearers head back (as units._parties_after)
+  const log = [], pace = UD.heroes.aid_post.pace;
+  us.forEach((u, i) => {
+    for (const hero of u.heroes || []){
+      if (!hero.going) continue;
+      const line = partyStops(u, hero) || partyMoves(field, u, hero, pace);
+      if (line) log.push({ kind: "party", unit: i, hero: hero.id, name: hero.name, ...line });
+    }
+  });
+  return log;
+}
+function partyStops(u, hero){                      // its hero killed or taken (bearers go back), or unable to walk with no bearers (he lies there)
+  const g = hero.going;
+  if (hero.state === "dead" || hero.state === "prisoner"){ delete hero.going; bearersOff(u, g); return { what: "stopped", at: g.pos } }
+  if (g.bearers <= 0 && lame(hero)){ delete hero.going; hero.left = true; hero.at = g.pos; return { what: "lies", at: g.pos } }
+  return null;
+}
+function partyMoves(field, u, hero, pace){        // on toward the post or the edge; arriving, the hero is carried (at the post, its care)
+  const g = hero.going, post = aidPost(field, u.side), aim = post ? post.at : mapEdge(field, g.pos, g.dir);
+  g.ex += 1;
+  if (hdist(g.pos, aim) > pace){ g.pos = ray(g.pos, aim, pace)[pace]; return null }
+  delete hero.going;
+  hero.carried = true;
+  if (post) hero.post = true;
+  bearersOff(u, g);
+  return { what: post ? "post" : "edge", at: aim };
+}
+function bearersOff(u, g){                         // a party's bearers set off back to their unit, due after as many exchanges as it went
+  if (g.bearers > 0) u.away = [...(u.away || []), { men: g.bearers, left: Math.max(1, g.ex) }];
+}
+function mapEdge(field, h, dirn){                  // the last hex on the map going from h in direction dirn
+  const [cols, rows] = fieldSize(field);
+  for (;;){
+    const x = step(h, dirn);
+    if (x[0] < 0 || x[0] >= cols || x[1] < 0 || x[1] >= rows) return [...h];
+    h = x;
+  }
+}
+function lyingAfter(us, field, table, rng){       // heroes lying out on a hex: picked up by a unit of their side standing there, or taken or killed by an enemy one (as units._lying_after)
+  const log = [], occ = occupancy(us);
+  us.forEach((u, i) => {
+    for (const hero of (u.heroes || []).filter(h => h.left && h.at && h.state !== "dead" && h.state !== "prisoner")){
+      const j = occ[hk(hero.at)];
+      if (hero.left_by !== undefined && (j === undefined || us[j].id !== hero.left_by)) delete hero.left_by;   // the unit that left him has moved off: it may come back for him
+      if (j === undefined || out_(us[j]) || us[j].vehicle || hero.left_by !== undefined) continue;
+      if (us[j].side === u.side){
+        u.heroes.splice(u.heroes.indexOf(hero), 1);
+        delete hero.left; delete hero.at;
+        us[j].heroes = [...(us[j].heroes || []), { ...hero, role: "behind" }];
+        log.push({ kind: "fetched", unit: j, from: i, hero: hero.id, name: hero.name });
+      }
+      else log.push({ kind: "found", unit: i, by: j, ...taken(hero, table, rng) });
+    }
+  });
+  return log;
+}
+function taken(hero, table, rng){                 // found by the enemy: prisoner at the war's quarter %, else killed
+  const roll = rng.randint(1, 100), chance = quarterOf(table), fate = roll <= chance ? "prisoner" : "killed";
+  hero.state = roll <= chance ? "prisoner" : "dead";
+  delete hero.post;
+  return { hero: hero.id, name: hero.name, fate, roll, chance };
+}
+function postsAfter(us, field, table, rng){       // an aid post with an enemy unit (not out) within heroes.aid_post.overrun hexes is overrun: its heroes taken or killed
+  const log = [], reach = UD.heroes.aid_post.overrun;
+  for (const p of field?.posts || []){
+    if (p.overrun || !us.some(u => u.side !== p.side && !out_(u) && footprint(u).flat().some(x => hdist(x, p.at) <= reach))) continue;
+    p.overrun = true;
+    log.push({ kind: "overrun_post", side: p.side, at: p.at });
+    us.forEach((u, i) => {
+      for (const h of u.heroes || []) if (h.post && u.side === p.side && h.state !== "dead" && h.state !== "prisoner") log.push({ kind: "found", unit: i, at_post: true, ...taken(h, table, rng) });
+    });
+  }
+  return log;
+}
+function shellParties(ctx, bursts, kind, att){    // shell bursts near parties going back: the hero and each bearer struck as men in the open (as units._shell_parties)
+  const { us, field, rng, log } = ctx;
+  us.forEach((u, i) => {
+    for (const hero of u.heroes || []){
+      if (!hero.going || hero.state === "dead" || hero.state === "prisoner") continue;
+      const line = shellParty(field, u, hero, [bursts, kind, att], rng);
+      if (line) log.push({ kind: "partyhit", unit: i, ...line });
+    }
+  });
+}
+function shellParty(field, u, hero, [bursts, kind, att], rng){
+  const g = hero.going, cut = shellCut(field, g.pos, false);
+  let hits = 0, struck = 0;
+  for (const at of bursts){
+    const dist = hdist(g.pos, at);
+    if (dist > kind.radius) continue;
+    const p = kind.struck[dist] * cut;
+    if (rng.randint(1, 100) <= p) hits++;
+    for (let b = 0; b < g.bearers; b++) if (rng.randint(1, 100) <= p) struck++;
+  }
+  if (!hits && !struck) return null;
+  const atk = UD.indirect.attack, t = blows(att, sideOfUnit(u, att.table), struck, atk, 0, rng, { exposed: [], shift: -1000 });
+  const th = newTally(), critAt = Math.floor(atk * FD.combat.critical_fraction);
+  for (let k = 0; k < hits; k++) if (hero.state !== "dead") heroBlow(att, hero, { r: rng.randint(1, 100), atk, critAt, shift: -1000 }, rng, th);
+  g.bearers -= t.down;
+  Object.assign(u, { down: (u.down || 0) + t.down, dead: (u.dead || 0) + t.dead });
+  takeHurt(u, t);
+  return { hero: hero.id, name: hero.name, at: g.pos, struck, down: t.down, dead: t.dead, hits: th.heroes || [], state: hero.state };
+}
 const cauterises = table => UD.heroes.cautery.battles.includes(FD.tables[table]?.battle);   // the battle's era cauterises where a tourniquet cannot go
 function bearersBack(us){                         // each party of bearers counts down; due back, it rejoins a unit still standing, else stays at the rear
   const log = [];
@@ -229,24 +340,39 @@ function bearersBack(us){                         // each party of bearers count
   });
   return log;
 }
-function carryBack(units, i, heroId){             // unit i sends bearers to carry the hero to the rear: null, or why not (as units.carry_back)
+function carryBack(units, i, heroId, field = null){   // unit i sends bearers to carry the hero back: to its side's aid post as a party, else off the map at once: null, or why not (as units.carry_back)
   const H = UD.heroes, u = units[i], hero = (u.heroes || []).find(h => h.id === heroId);
   if (!hero || !lamed(hero)) return "he can walk, or is not with the unit";
   if (u.state !== "steady" && u.state !== "shaken") return "the unit is running";
   if (u.men <= H.bearers) return `the unit has not ${H.bearers} men to spare`;
-  hero.carried = true;
   u.men -= H.bearers;
+  if (aidPost(field, u.side)){ hero.going = party(u, H.bearers); return null }
+  hero.carried = true;
   u.away = [...(u.away || []), { men: H.bearers, left: H.back_after }];
   return null;
 }
+function walkBack(units, i, heroId){              // a wounded hero who can walk leaves his unit and goes back alone (as units.walk_back): null, or why not
+  const u = units[i], hero = (u.heroes || []).find(h => h.id === heroId);
+  if (!hero || hero.state !== "up" || offField(hero)) return "he is not up with the unit";
+  if (lamed(hero)) return "he cannot walk: carry him back";
+  if (!hero.wounds?.length && !hero.old?.length) return "he is not wounded";
+  hero.going = party(u, 0);
+  return null;
+}
+function leaveBehind(units, i, heroId){           // a lamed or down hero left on his unit's hex, to be fetched or found (as units.leave): null, or why not
+  const u = units[i], hero = (u.heroes || []).find(h => h.id === heroId);
+  if (!hero || !lamed(hero)) return "he can walk, or is not with the unit";
+  Object.assign(hero, { left: true, at: [...u.pos], left_by: u.id });
+  return null;
+}
 function heroFates(units, table, rng){            // after the battle: heroes left on the field found, taken prisoner or killed (as units.hero_fates)
-  const Q = UD.heroes.quarter, out = [];
+  const out = [];
   const stands = u => u.men > 0 && (u.state === "steady" || u.state === "shaken");
-  const up = new Set(units.filter(stands).map(u => u.side)), chance = Q[FD.tables[table]?.battle] ?? Q.default;
+  const up = new Set(units.filter(stands).map(u => u.side)), chance = quarterOf(table);
   units.forEach((u, i) => {
     const gone = !stands(u);
     for (const h of u.heroes || []){
-      if (h.state === "dead" || h.carried || !(h.left || (gone && h.state === "down"))) continue;
+      if (h.state === "dead" || h.state === "prisoner" || h.carried || !(h.left || h.going || (gone && h.state === "down"))) continue;
       if (up.has(u.side) || !up.size){ out.push({ unit: i, hero: h.id, name: h.name, fate: "found" }); continue }
       const roll = rng.randint(1, 100);
       out.push({ unit: i, hero: h.id, name: h.name, fate: roll <= chance ? "prisoner" : "killed", roll, chance });
@@ -302,10 +428,13 @@ function heroStrikes(hero){                           // not held by a stop chec
   if (held(hero) || hero.defend_only) return false;
   return !(FD.weapons[hero.weapon]?.two_handed && heroPenalties(hero)[2].includes("one_arm"));
 }
-function lamed(hero){                             // a hero who slows his unit: not dead or left behind, and down (carried) or lamed by a wound (heroes.lamed)
+function lamed(hero){                             // a hero who slows his unit: not dead or off the field, and cannot walk (lame)
   if (hero.state === "dead" || offField(hero)) return false;
-  const lame = UD.heroes.lamed;
-  return hero.state === "down" || [...(hero.old || []), ...(hero.wounds || [])].some(w => (w.impair || []).some(i => lame.includes(i)));
+  return lame(hero);
+}
+function lame(hero){                              // down, or lamed by a wound (heroes.lamed): he cannot walk
+  const L = UD.heroes.lamed;
+  return hero.state !== "up" || [...(hero.old || []), ...(hero.wounds || [])].some(w => (w.impair || []).some(i => L.includes(i)));
 }
 function exposure(u, rout, missile = false){        // [[hero, chance]] for the heroes of u a blow on it may fall on
   if (rout || missile){
@@ -749,7 +878,7 @@ function bombard(ctx, k, b, shells, scatter = null){   // shells on a hex: where
   for (let s = 0; s < shells; s++){ const dirn = rng.randint(0, 5), far = rng.randint(0, sc); bursts.push(step(m.hex, dirn, far)) }
   log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells, at: m.hex, bursts, smoke: !!m.smoke });
   if (m.smoke) laySmoke(field, bursts);
-  else { shellUnits(ctx, k, b, bursts); knockBunkers(field, k, b, bursts, rng, log) }
+  else { shellUnits(ctx, k, b, bursts); shellParties(ctx, bursts, K, { table: ctx.table, weapon: ctx.weapon, kit: null, quality: "regular" }); knockBunkers(field, k, b, bursts, rng, log) }
 }
 function lightUp(field, at, radius, late = 0){      // a flare or illumination lights the hexes within radius of at for light.lasts exchanges (+ late: fired after the shooting)
   if (radius > 0) (field.lit || (field.lit = [])).push({ at: [...at], radius, left: FD.weather.light.lasts + late });
@@ -1047,7 +1176,7 @@ function takeHurt(u, t){                         // the wounded go onto the unit
   return rest;
 }
 function tallyLoss(acc, s, t){ acc.lost[s.dfd] += t.down; acc.dead[s.dfd] += t.dead; acc.dealt[s.att] += t.down }
-const copyUnit = u => ({ ...u, hurt: { ...u.hurt }, heroes: (u.heroes || []).map(h => ({ ...h, wounds: [...(h.wounds || [])], ...(h.held ? { held: { ...h.held } } : {}) })) });
+const copyUnit = u => ({ ...u, hurt: { ...u.hurt }, heroes: (u.heroes || []).map(h => ({ ...h, wounds: [...(h.wounds || [])], ...(h.held ? { held: { ...h.held } } : {}), ...(h.going ? { going: { ...h.going } } : {}) })) });
 function logged(line, t){                         // a log line for a tally, then one for each blow that fell on a hero
   const { heroes, ...rest } = t;
   return [{ ...line, ...rest }, ...(heroes || []).map(h => ({ kind: "herohit", unit: line.dfd, ...h }))];
@@ -1266,7 +1395,8 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     const cut = Math.min(acc.lost[i], u.men);
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
   });
-  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table)));
+  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table)),
+    ...partiesAfter(us, field), ...lyingAfter(us, field, table, rng), ...postsAfter(us, field, table, rng));
   afterExchange(us, field, log);
   log.push(...landings(us, table, rng, field), ...vehiclesAfter(us, field));
   return { units: us, log };

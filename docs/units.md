@@ -350,18 +350,50 @@ battle or one he came with, or down and carried by his comrades, halves his unit
 least 1 hex) while he is with it. On his line in the heroes' list, when his unit is moving,
 there are two ways to stop that:
 
-- **Carry him back.** Two of the unit's men carry him to the rear (the unit must be steady or
-  shaken and have men to spare). He is out of the battle and safe: no more blows, no
-  slowing, and his wounds go back to the roller as they were. The bearers come back after 3
-  exchanges. If the unit has broken or been destroyed by then, they stay at the rear, alive
-  and not counted as lost.
-- **Leave him.** He is left behind: out of the battle, no more blows and no first aid, and
-  no longer slowing the unit. What becomes of him is settled when the battle ends.
+- **Carry him back.** Two of the unit's men carry him back (the unit must be steady or
+  shaken and have men to spare).
+  - **With an aid post** for his side, they carry him there across the map, 3 hexes an
+    exchange on a straight line (about half a man's move). The party shows as ↩.
+    - On the way, shell bursts strike its men as men in the open.
+    - A bearer put down is lost to the unit. With no bearers left, a man who cannot walk
+      lies where he is (▼).
+    - At the post the bearers start back, and rejoin their unit after as many exchanges as
+      the carry took.
+  - **With no aid post**, he leaves the battle at once and safe, as before. The bearers
+    come back after 3 exchanges.
 
-Out of the battle either way, a leader counts as a leader down.
+  If the unit has broken or been destroyed by the time the bearers are due, they stay at
+  the rear, alive and not counted as lost.
+- **Leave him.** He is left behind, lying on his unit's hex (▼). He is out of its fight, no
+  longer slows it, and goes on bleeding.
+  - A unit of his side that stands on that hex at the end of an exchange picks him up. He
+    goes with it (behind), and it can carry him back in turn. The unit that left him can
+    only do this once it has moved off and come back.
+  - An enemy unit, not broken, that stands there finds him. d100 against the war's
+    **quarter** (below): at or under, he is taken prisoner; over, he is killed.
 
-**Left on the field.** When the battle ends, a hero still lying out there is either one
-left behind, or one who was down when his unit broke, fled or was destroyed. If his side
+A hero who is wounded but can still walk (up, not lamed) has a third choice:
+
+- **Go back.** He leaves his unit and walks back alone, 3 hexes an exchange. He goes to his
+  side's aid post, or with none to the map edge behind his unit. Shells can catch him on
+  the way as they can a party, and a wound that lames him there leaves him lying.
+
+Out of his unit's fight any of these ways, a leader counts as a leader down.
+
+**Aid posts.** Before the battle the GM can place one aid post (AP) for each side, with
+**Clicking the map: Aid post**. Click the post's hex again to clear it.
+- **First aid.** A man at the post gets first aid every exchange, at 75% (as a skilled
+  healer, binding 2 steps of bleeding). Its tourniquets and cautery work as with his unit.
+- **After the battle.** His wounds go back to the roller treated at the aid post, so they
+  are off the death clock.
+- **Overrun.** An enemy unit, not broken, standing within a hex of the post overruns it.
+  Each man there is found by the enemy and taken or killed by quarter. From then on the
+  side has no aid post.
+
+All of these numbers are in units.yaml `heroes.aid_post` and are design estimates.
+
+**Left on the field.** When the battle ends, a hero still lying out there is one left behind,
+one still on his way back, or one who was down when his unit broke, fled or was destroyed. If his side
 holds the field (it still has a unit standing, or neither side has), it finds him. If only
 the enemy holds it, d100 against the war's **quarter** decides: at or under, he is taken
 prisoner; over, he is killed where he lies.

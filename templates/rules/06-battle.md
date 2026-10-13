@@ -77,10 +77,21 @@ rankers.
 His wounds slow him as in [Wounds](#wounds): an arm hurt stops a two-handed weapon, and a
 lamed hero halves his unit's move. In a quiet exchange his friends give first aid: the best
 Leechcraft in the unit, or its medics, else his comrades at {{f_first_aid}}%. A lamed or down
-hero can be **carried back** by {{f_bearers}} of his unit's men, who return after
-{{f_back}} exchanges, or **left behind**. When the battle ends, a hero still lying out there is
-found if his side holds the field; if not, he is taken prisoner or killed, by the war's
-custom of quarter.
+hero can be **carried back** by {{f_bearers}} of his unit's men, or **left behind**. A wounded
+hero who can still walk can **go back** alone. Where he goes depends on whether his side has
+an aid post:
+
+- **With an aid post** (the GM places one for each side), the party crosses the map
+  {{f_post_pace}} hexes an exchange, and shells can catch it on the way. At the post he gets
+  first aid every exchange at {{f_post_aid}}%, and his wounds come off the death clock. An
+  enemy who reaches the post takes or kills the men there.
+- **With none**, he is carried off the map at once, and the bearers return after
+  {{f_back}} exchanges.
+
+A hero left behind lies on his unit's hex. A unit of his side that stands there picks him
+up; an enemy unit takes him prisoner or kills him, by the war's custom of **quarter**. When
+the battle ends, a hero still lying out there is found if his side holds the field; if not,
+quarter decides.
 
 !!! example "The retinue: at Towton"
     On the field map the retinue's followers fight as units: its archers in open order, its
