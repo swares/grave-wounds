@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import heapq
 
-from . import units as U
+from . import combat as C, units as U
 from .model import Data
 
 ROUTED = ("broken", "fled")
@@ -154,7 +154,7 @@ def _call_smoke(d: Data, us: list, side, field: dict | None, known: dict, free: 
         return []
     sm = (field or {}).get("smoke") or {}
     for _, j in _shooting_at(d, us, side, known):
-        h = next((x for x in _marks(d, _where(us, j, known)) if U.spotted(d, us, field, side, x) and "{0},{1}".format(*x) not in sm), None)
+        h = next((x for x in _marks(d, _where(us, j, known)) if U.spotted(d, us, field, side, x) and C.hkey(x) not in sm), None)
         if h is None:
             continue
         reach = [(d.units["indirect"]["kinds"][field["support"][k]["kind"]]["delay"], k) for k in free if U.in_reach(d, field["support"][k], h)]
@@ -517,7 +517,7 @@ def _legal(d: Data, base: list, i: int, to: tuple, where: tuple) -> dict:
 
 def _touches(d: Data, u: dict, foes: set) -> bool:
     """Unit u, placed so, touches a hex the enemy stands on (as units.in_contact)."""
-    return any("{0},{1}".format(*U.step(h, dirn)) in foes for row in U.footprint(d, u) for h in row for dirn in range(6))
+    return any(C.hkey(U.step(h, dirn)) in foes for row in U.footprint(d, u) for h in row for dirn in range(6))
 
 
 def _rejects(m: dict, charge: bool, hold: bool) -> bool:
@@ -558,7 +558,7 @@ def _mined(field: dict | None, a, h) -> int:
     if not mines or list(a) == list(h):
         return 0
     known = {k for k, m in mines.items() if not m.get("hidden") or m.get("found")}
-    return sum(1 for x in U.ray(list(a), list(h), U.hdist(a, h))[1:] if "{0},{1}".format(*x) in known)
+    return sum(1 for x in U.ray(list(a), list(h), U.hdist(a, h))[1:] if C.hkey(x) in known)
 
 
 def reachable(d: Data, units: list, i: int, size: tuple, limit: int, field: dict | None = None) -> dict:
