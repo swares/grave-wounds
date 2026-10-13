@@ -143,13 +143,13 @@ support:
   - {name: "A-10s, F-15Es and a B-1B (later in the morning)", side: 0, kind: fighter_bomber, tubes: 3}
   - {name: "Insurgent mortars and recoilless rifles", side: 1, kind: mortar, tubes: 4}
 units:
-  - {name: "B Troop, 3-61 Cavalry (the barracks and command post)", side: 0, men: 30, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 6, pos: [46, 56], facing: 1, prone: true}
-  - {name: "B Troop (the guard posts and trucks)", side: 0, men: 15, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 4, pos: [58, 52], facing: 0, prone: true}
-  - {name: "B Troop's machine guns (the trucks)", side: 0, men: 8, quality: veteran, weapon: machine_gun, kit: interceptor, formation: mg, width: 2, pos: [42, 62], facing: 4, prone: true}
+  - {name: "B Troop, 3-61 Cavalry (the barracks and command post)", side: 0, men: 30, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 6, pos: [47, 52], facing: 1, prone: true}
+  - {name: "B Troop (the guard posts and trucks)", side: 0, men: 15, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 4, pos: [57, 54], facing: 0, prone: true}
+  - {name: "B Troop's machine guns (the trucks)", side: 0, men: 8, quality: veteran, weapon: machine_gun, kit: interceptor, formation: mg, width: 2, pos: [42, 61], facing: 4, prone: true}
   - {name: "Afghan soldiers (the east side)", side: 0, men: 20, quality: green, weapon: rifle_assault, kit: pasgt, formation: extended, width: 4, pos: [60, 60], facing: 0, prone: true}
-  - {name: "Insurgents on the north slope", side: 1, men: 100, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 16, pos: [50, 32], facing: 4, prone: true}
+  - {name: "Insurgents on the north slope", side: 1, men: 100, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 16, pos: [50, 37], facing: 4, prone: true}
   - {name: "Insurgents on the east slope", side: 1, men: 80, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 12, pos: [78, 58], facing: 3, prone: true}
-  - {name: "Insurgents in Urmul and across the river", side: 1, men: 50, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 8, pos: [14, 44], facing: 0, prone: true}
+  - {name: "Insurgents in Urmul and across the river", side: 1, men: 50, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 8, pos: [15, 41], facing: 0, prone: true}
   - {name: "Insurgents on the south slope", side: 1, men: 50, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [54, 80], facing: 1, prone: true}
-  - {name: "Insurgent RPG teams (north)", side: 1, men: 20, quality: regular, weapon: rpg, kit: none, formation: extended, width: 3, pos: [38, 37], facing: 4, prone: true}
-  - {name: "Insurgent machine guns (east)", side: 1, men: 10, quality: regular, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [76, 46], facing: 3, prone: true}
+  - {name: "Insurgent RPG teams (north)", side: 1, men: 20, quality: regular, weapon: rpg, kit: none, formation: extended, width: 3, pos: [37, 40], facing: 4, prone: true}
+  - {name: "Insurgent machine guns (east)", side: 1, men: 10, quality: regular, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [73, 52], facing: 3, prone: true}

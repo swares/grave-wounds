@@ -559,12 +559,12 @@ function sightHexes(field, h = null, kit = null){  // how far the weather and th
   if (dark !== null) vis = vis === null ? dark : Math.min(vis, dark);
   return vis === null ? null : Math.floor(vis / UD.range_scale);
 }
-function sees(field, u, h, sight){                // any hex of u sees h: within sight, no woods or buildings between as high as where he stands, no smoke on the line
+function sees(field, u, h, sight){                // any hex of u sees h: within sight, a clear sight past woods and buildings (clearSight), no smoke on the line
   return footprint(u).flat().some(x => {
     const dist = hdist(x, h);
     if (sight !== null && dist > sight) return false;
-    const line = ray(x, h, dist), up = heightAt(field, x);
-    return !line.slice(1, -1).some(y => groundAt(field, y).cover && heightAt(field, y) >= up) && !smoked(field, line);
+    const line = ray(x, h, dist);
+    return clearSight(field, x, h, dist, line) && !smoked(field, line);
   });
 }
 function smoked(field, hexes){                    // smoke over any of these hexes
@@ -826,8 +826,16 @@ function across(field, u, h, x, reach){           // [blocked: only reach 2 over
 }
 const upOf = field => field?.up || "N";          // the compass point at the top of the field map
 const SMOKED = { blocked: "Smoke: no one can see to shoot through it.", penalty: 0, misfire: 0, reach: 0 };
+const SCREENED = { blocked: "Woods or buildings between: no one can see to aim through them.", penalty: 0, misfire: 0, reach: 0 };
+function clearSight(field, h, t, dist, line = null){   // a man at h sees t to aim: nothing that screens (woods, buildings) on the line between as high as he stands, past see_into hexes at either end
+  if (!field?.ground) return true;
+  const k = UD.line_of_fire.see_into ?? 1, up = heightAt(field, h);
+  line ||= ray(h, t, dist);
+  return !line.slice(1 + k, line.length - 1 - k).some(y => groundAt(field, y).screen && heightAt(field, y) >= up);
+}
 function shotWeather(field, weapon, dist, h = null, t = null, seer = null){   // the weather on a shot from h to t; smoke on the line blocks it; seer: {kit, blind} in the dark
   if (h && t && smoked(field, ray(h, t, dist))) return { ...SMOKED };
+  if (h && t && !seer?.blind && !clearSight(field, h, t, dist)) return { ...SCREENED };
   if (isGun(weapon)) return gunWeather(field, dist, h, t);
   const seen = seer?.blind ? 0 : dist * UD.range_scale;   // blind down a fixed line: the weather's sight does not count
   return inTheCold(field, weapon, inTheDark(field, dist, t, weatherAttack(field?.weather || null, weapon, seen, h, t, upOf(field)), seer));
@@ -1074,7 +1082,7 @@ function gunTarget(us, i, field, G){              // [dist, index, gun hex, targ
 }
 function canLay(field, clear, fv, line){           // a gun at h can be laid on t: ahead, in sight, with a clear line of fire
   const [h, t, dist] = line;
-  return ahead(fv, h, t) && !gunWeather(field, dist, h, t).blocked && (!clear || clear(h, t, dist));
+  return ahead(fv, h, t) && clearSight(field, h, t, dist) && !gunWeather(field, dist, h, t).blocked && (!clear || clear(h, t, dist));
 }
 function ahead(fv, h, t){ const c = cube(t), s = cube(h); return (c[0] - s[0]) * fv[0] + (c[1] - s[1]) * fv[1] + (c[2] - s[2]) * fv[2] > 0 }
 function fireBattery(us, table, rng, acc, log, c){   // at the target, guns knocked out there, then balls bounding on into the unit behind

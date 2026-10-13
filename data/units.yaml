@@ -28,9 +28,16 @@ shoot_ranks: 2             # ranks of each front hex that can shoot
 # Line of fire: a unit cannot shoot through another unit, friend or enemy, standing between it
 # and its target, except from high ground over a unit on lower ground. Bows (`arcing`) can
 # loose high over them instead, at `arc_penalty` % off. Guns: see artillery.
+# Ground that screens (`screen`: woods, buildings, tall buildings) between the shooter's hex
+# and the target's blocks aimed fire, direct gun fire and the sight for calling fire, unless it
+# stands lower than the shooter (he sees over it). Rubble gives cover and hides men, but its
+# heaps are low: it does not screen. Men see `see_into` hexes into
+# cover: those next to either end of the line do not block (a shooter at a wood's edge fires
+# out; a target just inside it is seen). Shell fire and a machine gun's fixed line need no sight.
 line_of_fire:
   arcing: [bow, longbow, crossbow]
   arc_penalty: 20
+  see_into: 1
 exchange_rounds: 10        # individual 6-second rounds in one exchange (for fatigue, bleeding, states)
 
 # The ground, painted per hex. move: movement to enter a hex of it (open ground 1); impassable:
@@ -46,12 +53,12 @@ exchange_rounds: 10        # individual 6-second rounds in one exchange (for fat
 ground:
   open:  {name: "Open ground",  key: ".", move: 1}
   rough: {name: "Rough ground", key: "r", move: 2, stops_shot: true}
-  woods: {name: "Woods",        key: "F", move: 2, cover: 20, stops_shot: true}
+  woods: {name: "Woods",        key: "F", move: 2, cover: 20, stops_shot: true, screen: true}
   marsh: {name: "Marsh",        key: "m", move: 3, no_horse: true, stops_shot: true}
   slope: {name: "Slope",        key: "s", move: 2, height: 5}                     # the side of a hill: half its height for shooting and close combat
   high:  {name: "High ground",  key: "h", move: 1, height: 10}
-  buildings: {name: "Buildings", key: "T", move: 2, cover: 30, stops_shot: true, no_horse: true, hides: true}   # houses, walls, yards
-  tall:  {name: "Tall buildings", key: "B", move: 3, cover: 40, stops_shot: true, no_horse: true, hides: true, height: 10}   # blocks of several storeys: high ground for shooting; the streets between are open ground
+  buildings: {name: "Buildings", key: "T", move: 2, cover: 30, stops_shot: true, no_horse: true, hides: true, screen: true}   # houses, walls, yards
+  tall:  {name: "Tall buildings", key: "B", move: 3, cover: 40, stops_shot: true, no_horse: true, hides: true, height: 10, screen: true}   # blocks of several storeys: high ground for shooting; the streets between are open ground
   rubble: {name: "Rubble", key: "x", move: 3, cover: 40, stops_shot: true, no_horse: true, hides: true}   # a town bombed or shelled to ruins: broken walls, craters, heaps of masonry
   water: {name: "Water",        key: "w", move: 1, impassable: true}                                # a canal or river: shots cross it, men do not
 # Breaching: a unit ordered to breach puts this share of each front hex's front rank to
