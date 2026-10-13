@@ -3325,7 +3325,8 @@ function heroButton(h, setup){                    // Remove (setting up), or Lea
 }
 function limbText(h){                             // " · lamed, slows unit" / " · left behind" / " · one arm: defends only"
   if (h.left) return " \u00b7 left behind";
-  const lame = lamed(h) ? (h.state === "down" ? " \u00b7 carried, slows unit" : " \u00b7 lamed, slows unit") : "";
+  let lame = "";
+  if (lamed(h)) lame = h.state === "down" ? " \u00b7 carried, slows unit" : " \u00b7 lamed, slows unit";
   const arm = h.state === "up" && FD.weapons[h.weapon]?.two_handed && heroPenalties(h)[2].includes("one_arm") ? " \u00b7 one arm: defends only" : "";
   return lame + arm;
 }
