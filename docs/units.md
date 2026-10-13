@@ -501,8 +501,8 @@ out. All of this is design estimates (`data/units.yaml`).
   anti-aircraft guns, machine-gun teams, batteries) for the battle. While it stands, it
   counts as gone to ground: shots at it lose 15%, it is hidden, shellfire strikes it less
   and it holds better. It cannot move all battle, though it can turn, and it cannot limber
-  or go to ground. A unit that breaks leaves its pits and is in the open. The map's unit
-  line says "emplaced".
+  or go to ground. A unit that breaks leaves its pits and is in the open. The map marks
+  it ◠ with a dashed parapet across its front, and its unit line says "emplaced".
 - **Hidden men**: men gone to ground, in a bunker or a trench, or in buildings, tall buildings or rubble show little of themselves.
   Of the aimed shots fired at them, only 10% find a man to aim at (5% of a machine gun's: it
   sprays where they are thought to be, and still pins them); the rest go at the smoke and the

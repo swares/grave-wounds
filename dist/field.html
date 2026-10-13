@@ -77,6 +77,7 @@ button:disabled{opacity:.45;cursor:default}
 .unit.shaken .uh{opacity:.6}.unit.broken .uh{opacity:.32}
 .unit.sel .uh{stroke:var(--ink);stroke-width:1.8}
 .arrow{fill:var(--ink);pointer-events:none}
+.pit{fill:none;stroke:var(--ink);stroke-width:2.2px;stroke-dasharray:2.5 1.5;pointer-events:none}
 .ulabel{font:700 8px var(--mono);fill:var(--ink);text-anchor:middle;paint-order:stroke;stroke:var(--panel);stroke-width:2.6px;pointer-events:none}
 .units{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .units li{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:3px;padding:6px 8px;cursor:pointer}
@@ -3930,7 +3931,7 @@ function fillTools(){
   $("#sel-cold").innerHTML = `<option value="">Not freezing hard</option>` + Object.entries(WXD.cold?.levels || {}).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-light").innerHTML = Object.entries(WXD.light?.levels || { day: { name: "Daylight" } }).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#legend").innerHTML = Object.entries(FD.units.ground).filter(([k]) => k !== "open").map(([k, v]) => `<span><i class="g-${k}" style="background:var(--g-${k})"></i>${esc(v.name)}</span>`).join("")
-    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span>AP: aid post; \u21a9 a hero going back; \u25bc a hero lying out</span><span><i class="smoke-key" style="background:#e9d3cc;border:1px dashed #7a2a1a"></i>a.p., a.t., mix: minefield (hidden ones once found)</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
+    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span>\u2193 gone to ground; \u25e0 emplaced (a dashed parapet across its front)</span><span>AP: aid post; \u21a9 a hero going back; \u25bc a hero lying out</span><span><i class="smoke-key" style="background:#e9d3cc;border:1px dashed #7a2a1a"></i>a.p., a.t., mix: minefield (hidden ones once found)</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
 }
 function clickSide(e, h){                         // the neighbour across the hex side nearest the click
   const svg = $("#map svg"), pt = svg.createSVGPoint();
@@ -4207,7 +4208,12 @@ function unitSvg(u){
   const l = [x + 5 * Math.cos(a + 1.9), y + 5 * Math.sin(a + 1.9)], r = [x + 5 * Math.cos(a - 1.9), y + 5 * Math.sin(a - 1.9)];
   g += `<polygon class="arrow" points="${[tip, l, r].map(p => p.map(v => v.toFixed(1)).join(",")).join(" ")}"/>`;
   const star = (u.heroes || []).some(h => h.state === "up" && !h.left) ? " \u2605" : "";
-  const low = u.prone ? " \u2193" : "";   // gone to ground
+  const dug = u.emplaced && u.state !== "broken" && u.state !== "fled";   // emplaced, while it stands: a parapet across its front
+  if (dug){
+    const p0 = [x + 9 * Math.cos(a - 1.05), y + 9 * Math.sin(a - 1.05)], p1 = [x + 9 * Math.cos(a + 1.05), y + 9 * Math.sin(a + 1.05)];
+    g += `<path class="pit" d="M${p0.map(v => v.toFixed(1)).join(",")} A9,9 0 0,1 ${p1.map(v => v.toFixed(1)).join(",")}"/>`;
+  }
+  const low = (u.prone ? " \u2193" : "") + (dug ? " \u25e0" : "");   // gone to ground, emplaced
   const aboard = u.riders ? ` +${u.riders.men}` : "";   // riders in the carriers
   g += `<text class="ulabel" x="${x.toFixed(1)}" y="${(y - 8).toFixed(1)}">${esc(u.name)} ${u.men}${aboard}${star}${low}</text></g>`;
   return g;
