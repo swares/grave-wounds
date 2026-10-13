@@ -1949,40 +1949,50 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   return t === null ? o : lastSeen(o, ctx[3], t, ctx[4]);
 }
 const objectiveOf = field => (field?.objective ? [...field.objective] : null);   // the hex the GM marked as the commander's objective, or null
-function forObjective(us, i, t, ctx){              // attacking: at the objective it holds, with no enemy it advances; holding: too far out it falls back unless it can charge
-  const R = UD.commander.objective, attack = ctx[2] === "attack", off = offObjective(us[i], objectiveOf(ctx[1]));
-  if (t === null) return off > (attack ? R.radius : R.hold) ? toward(us, i, null, ctx, attack ? "advance" : "fall_back") : null;
-  if (attack && off <= R.radius) return bestOrder(us, i, t, [ctx[0], ctx[1], "hold", ctx[3], ctx[4]]);
+function forObjective(us, i, t, ctx){              // attacking: at the objective it holds, with no enemy or nothing better it advances; holding: too far out it falls back unless it can charge
+  const off = offObjective(us[i], objectiveOf(ctx[1]));
+  if (t === null) return noTarget(us, i, ctx, off);
+  if (ctx[2] === "attack") return attackObjective(us, i, t, ctx, off);
   const o = bestOrder(us, i, t, ctx);
-  if (attack){
-    const idle = o === null || o.act === "turn";
-    return idle && !guards(knownAt(us, t, ctx[3]), objectiveOf(ctx[1])) ? toward(us, i, t, ctx, "advance") || o : o;
-  }
-  if (off > R.hold && (o === null || o.act !== "charge")) return toward(us, i, t, ctx, "fall_back") || o;
+  if (off > UD.commander.objective.hold && o?.act !== "charge") return toward(us, i, t, ctx, "fall_back") || o;
   return o;
 }
-function toward(us, i, t, [size, field, , known], act){   // a move toward the objective within its allowance, touching no enemy, to the hex it likes best; or null
-  const u = us[i], C = UD.commander;
+function noTarget(us, i, ctx, off){                // no enemy to go for: attacking, it advances unless at the objective; holding, it falls back if too far out
+  const R = UD.commander.objective, attack = ctx[2] === "attack";
+  if (off <= (attack ? R.radius : R.hold)) return null;
+  return toward(us, i, null, ctx, attack ? "advance" : "fall_back");
+}
+function attackObjective(us, i, t, ctx, off){      // attacking with a target: at the objective it holds; else its best order, or an advance when that is only to stand or turn and the target is not guarding the objective
+  if (off <= UD.commander.objective.radius) return bestOrder(us, i, t, [ctx[0], ctx[1], "hold", ctx[3], ctx[4]]);
+  const o = bestOrder(us, i, t, ctx);
+  if ((o !== null && o.act !== "turn") || guards(knownAt(us, t, ctx[3]), objectiveOf(ctx[1]))) return o;
+  return toward(us, i, t, ctx, "advance") || o;
+}
+function toward(us, i, t, [size, field, , known], act){   // a move toward the objective within its allowance (its turn included), touching no enemy, to the hex it likes best; or null
+  const u = us[i];
   if (u.lost || u.immobile || u.emplaced) return null;
-  const obj = objectiveOf(field), q = u.quality, tu = t === null ? null : knownAt(us, t, known);
+  const obj = objectiveOf(field), tu = t === null ? null : knownAt(us, t, known);
   const free = u.prone ? { ...u, prone: false } : u, base = us.map((x, k) => (k === i ? free : x));
-  const occ = occupancy(base), foes = new Set(Object.keys(occ).filter(k => base[occ[k]].side !== u.side));
-  const now = hdist(u.pos, obj);
-  let tries = C.tries;
-  const cands = [...reachable(base, i, size, allowance(free), field).values()].filter(([h]) => hdist(h, obj) < now).map(([h, c]) => {
-    const cover = tu === null ? 0 : (C.cover[q] ?? 0) * coverAt(field, tu.pos, h);
-    return [C.closing * hdist(h, obj) + c + (C.mines[q] ?? 0) * mined(field, u.pos, h) - cover, c, h[1], h[0]];
-  });
-  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]);
-  for (const [, c, row, col] of cands){
-    const h = [col, row], f = facingFrom(h, tu, obj, u.facing), turns = Math.min(mod6(f - u.facing), mod6(u.facing - f));
-    if (c + turns * turnCost(free) > allowance(free) || touches({ ...u, pos: h, facing: f }, foes)) continue;
+  const occ = occupancy(base), foes = new Set(Object.keys(occ).filter(k => base[occ[k]].side !== u.side)), allow = allowance(free);
+  let tries = UD.commander.tries;
+  for (const [c, h] of towardHexes(base, i, tu, [size, field])){
+    const f = facingFrom(h, tu, obj, u.facing), turns = Math.min(mod6(f - u.facing), mod6(u.facing - f));
+    if (c + turns * turnCost(free) > allow || touches({ ...u, pos: h, facing: f }, foes)) continue;
     if (tries === 0) return null;
     tries -= 1;
     const m = legalMove(base, i, [h, f, c, false], [size, field]);
     if (m.ok) return { act, target: t, pos: h, facing: f, cost: m.cost, ...(u.prone ? { up: true } : {}) };
   }
   return null;
+}
+function towardHexes(base, i, tu, [size, field]){   // [[movement, hex]] it can reach nearer the objective, best first (as commander._toward_hexes)
+  const u = base[i], C = UD.commander, obj = objectiveOf(field), q = u.quality, now = hdist(u.pos, obj);
+  const cands = [...reachable(base, i, size, allowance(u), field).values()].filter(([h]) => hdist(h, obj) < now).map(([h, c]) => {
+    const cover = tu === null ? 0 : (C.cover[q] ?? 0) * coverAt(field, tu.pos, h);
+    return [C.closing * hdist(h, obj) + c + (C.mines[q] ?? 0) * mined(field, u.pos, h) - cover, c, h[1], h[0]];
+  });
+  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]);
+  return cands.map(([, c, row, col]) => [c, [col, row]]);
 }
 function facingFrom(h, tu, obj, facing){           // toward the target if any, else the objective (as it was, at the objective)
   if (tu !== null && (tu.pos[0] !== h[0] || tu.pos[1] !== h[1])) return bearing(h, tu.pos);

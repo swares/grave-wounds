@@ -217,47 +217,55 @@ def _for_objective(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict
     only stand or turn while its target is not guarding the objective, advances on it.
     Holding: a unit further than objective.hold from it falls back toward it unless it can
     charge; one with no enemy to go for and within that stays."""
-    R, attack, obj = d.units["commander"]["objective"], ctx[2] == "attack", objective(ctx[1])
-    off = U.off_objective(d, us[i], obj)
+    R = d.units["commander"]["objective"]
+    off = U.off_objective(d, us[i], objective(ctx[1]))
     if t is None:
-        far = off > (R["radius"] if attack else R["hold"])
-        return _toward(d, us, i, None, ctx, "advance" if attack else "fall_back") if far else None
-    if attack and off <= R["radius"]:
-        return _best(d, us, i, t, (ctx[0], ctx[1], "hold", ctx[3], ctx[4]))
+        return _no_target(d, us, i, ctx, off)
+    if ctx[2] == "attack":
+        return _attack_objective(d, us, i, t, ctx, off)
     o = _best(d, us, i, t, ctx)
-    if attack:
-        idle = o is None or o["act"] == "turn"
-        return (_toward(d, us, i, t, ctx, "advance") or o) if idle and not _guards(d, _where(us, t, ctx[3]), obj) else o
     if off > R["hold"] and (o is None or o["act"] != "charge"):
         return _toward(d, us, i, t, ctx, "fall_back") or o
     return o
 
 
+def _no_target(d: Data, us: list, i: int, ctx: tuple, off: int) -> dict | None:
+    """With no enemy to go for: attacking, it advances on the objective unless at it; holding,
+    it falls back toward it if further than objective.hold."""
+    R, attack = d.units["commander"]["objective"], ctx[2] == "attack"
+    if off <= (R["radius"] if attack else R["hold"]):
+        return None
+    return _toward(d, us, i, None, ctx, "advance" if attack else "fall_back")
+
+
+def _attack_objective(d: Data, us: list, i: int, t: int, ctx: tuple, off: int) -> dict | None:
+    """Attacking with a target: at the objective it holds; else its best order, unless that
+    is only to stand or turn while the target is not guarding the objective: then it advances."""
+    if off <= d.units["commander"]["objective"]["radius"]:
+        return _best(d, us, i, t, (ctx[0], ctx[1], "hold", ctx[3], ctx[4]))
+    o = _best(d, us, i, t, ctx)
+    if (o is not None and o["act"] != "turn") or _guards(d, _where(us, t, ctx[3]), objective(ctx[1])):
+        return o
+    return _toward(d, us, i, t, ctx, "advance") or o
+
+
 def _toward(d: Data, us: list, i: int, t: int | None, ctx: tuple, act: str) -> dict | None:
     """A move (act advance or fall_back) toward the objective, within its allowance (its turn
-    included) and touching no enemy, to the hex the commander likes best (closer to the objective; less movement, fewer
-    known mines; with a target, more cover from it), facing the target if any, else the
-    objective. None if it may only turn, or no such hex is nearer the objective."""
-    (size, field, _, known, _), u, C = ctx, us[i], d.units["commander"]
+    included) and touching no enemy, to the hex the commander likes best (_toward_hexes),
+    facing the target if any, else the objective. None if it may only turn, or no such hex is
+    nearer the objective."""
+    (size, field, _, known, _), u = ctx, us[i]
     if u.get("lost") or u.get("immobile") or u.get("emplaced"):
         return None
-    obj, q = objective(field), u["quality"]
-    tu = None if t is None else _where(us, t, known)
+    obj, tu = objective(field), None if t is None else _where(us, t, known)
     free = {**u, "prone": False} if u.get("prone") else u
     base = [free if k == i else x for k, x in enumerate(us)]
     foes = {k for k, j in U.occupancy(d, base).items() if base[j]["side"] != u["side"]}
-    now, tries = U.hdist(u["pos"], obj), C["tries"]
-    cands = []
-    for h, c in reachable(d, base, i, size, U.allowance(d, free), field).items():
-        if U.hdist(list(h), obj) >= now:
-            continue
-        cover = 0 if tu is None else C["cover"].get(q, 0) * U.cover_at(d, field, tu["pos"], list(h))
-        cands.append((C["closing"] * U.hdist(list(h), obj) + c + C["mines"].get(q, 0) * _mined(field, u["pos"], h) - cover, c, h[1], h[0]))
-    for _, c, row, col in sorted(cands):
-        h = [col, row]
+    tries, allow = d.units["commander"]["tries"], U.allowance(d, free)
+    for c, h in _toward_hexes(d, base, i, tu, (size, field)):
         f = _facing(h, tu, obj, u["facing"])
         turns = min((f - u["facing"]) % 6, (u["facing"] - f) % 6)
-        if c + turns * U.turn_cost(d, free) > U.allowance(d, free) or _touches(d, {**u, "pos": h, "facing": f}, foes):
+        if c + turns * U.turn_cost(d, free) > allow or _touches(d, {**u, "pos": h, "facing": f}, foes):
             continue
         if tries == 0:
             return None
@@ -266,6 +274,21 @@ def _toward(d: Data, us: list, i: int, t: int | None, ctx: tuple, act: str) -> d
         if m["ok"]:
             return {"act": act, "target": t, "pos": h, "facing": f, "cost": m["cost"], **({"up": True} if u.get("prone") else {})}
     return None
+
+
+def _toward_hexes(d: Data, base: list, i: int, tu: dict | None, where: tuple) -> list:
+    """[(movement, hex)] the unit can reach within its allowance nearer the objective, best
+    first: commander.closing a hex from the objective, a point a hex moved, known minefields
+    on the way, less cover from the target (if any) by its quality."""
+    (size, field), u, C = where, base[i], d.units["commander"]
+    obj, q = objective(field), u["quality"]
+    now, out = U.hdist(u["pos"], obj), []
+    for h, c in reachable(d, base, i, size, U.allowance(d, u), field).items():
+        if U.hdist(list(h), obj) >= now:
+            continue
+        cover = 0 if tu is None else C["cover"].get(q, 0) * U.cover_at(d, field, tu["pos"], list(h))
+        out.append((C["closing"] * U.hdist(list(h), obj) + c + C["mines"].get(q, 0) * _mined(field, u["pos"], h) - cover, c, h[1], h[0]))
+    return [(c, [col, row]) for _, c, row, col in sorted(out)]
 
 
 def _facing(h: list, tu: dict | None, obj: list, facing: int) -> int:

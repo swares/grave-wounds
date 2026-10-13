@@ -1073,20 +1073,22 @@ function aiMemory(){                              // where the commander last sa
   return S.aiMemory;
 }
 const COMMIT_WHY = { broke: "one of its units has broken", gap: "the enemy is close", exploit: "to exploit an enemy unit that broke" };
+const ORDER_TEXT = {                              // (who, them, o, up, facing) -> the order's line
+  commit: (who, them, o) => `${who} are committed from the reserve: ${COMMIT_WHY[o.why] || o.why}.`,
+  charge: (who, them, o, up) => `${who} ${up}charge ${them}.`,
+  move: (who, them, o, up) => `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} toward ${them}.`,
+  advance: (who, them, o, up, facing) => `${who} ${up}advance ${nOf(o.cost, "hex", "hexes")} on the objective${facing}.`,
+  fall_back: (who, them, o, up, facing) => `${who} ${up}fall back ${nOf(o.cost, "hex", "hexes")} toward the objective${facing}.`,
+  turn: (who, them) => `${who} turn to face ${them}.`,
+  ground: who => `${who} go to ground under fire.`,
+};
 function orderText(o){                            // "Billmen (Yorkists) move 4 hexes toward Archers (Lancastrians)."
   const t = S.units[o.target];
   let them = "the enemy";
   if (t) them = o.last ? `where ${unitName(t)} were last seen (exchange ${o.last})` : unitName(t);
   if (o.act === "fire") return `${supports()[o.battery]?.name || "A battery"} are called on ${them} at ${hexName(o.hex)}.`;
-  const who = unitName(S.units[o.unit]);
-  if (o.act === "commit") return `${who} are committed from the reserve: ${COMMIT_WHY[o.why] || o.why}.`;
-  if (o.act === "charge") return `${who} ${o.up ? "get up and " : ""}charge ${them}.`;
-  if (o.act === "move") return `${who} ${o.up ? "get up and " : ""}move ${nOf(o.cost, "hex", "hexes")} toward ${them}.`;
-  if (o.act === "advance") return `${who} ${o.up ? "get up and " : ""}advance ${nOf(o.cost, "hex", "hexes")} on the objective${t ? `, facing ${them}` : ""}.`;
-  if (o.act === "fall_back") return `${who} ${o.up ? "get up and " : ""}fall back ${nOf(o.cost, "hex", "hexes")} toward the objective${t ? `, facing ${them}` : ""}.`;
-  if (o.act === "turn") return `${who} turn to face ${them}.`;
-  if (o.act === "ground") return `${who} go to ground under fire.`;
-  return `${who} hesitate (rolled ${o.roll}): they hold where they are.`;
+  const who = unitName(S.units[o.unit]), f = Object.hasOwn(ORDER_TEXT, o.act) ? ORDER_TEXT[o.act] : null;
+  return f ? f(who, them, o, o.up ? "get up and " : "", t ? ", facing " + them : "") : `${who} hesitate (rolled ${o.roll}): they hold where they are.`;
 }
 function aiUndo(){                                // its units back where they began this move, for the player to move by hand
   if (!aiThisMove() || !S.aiDone.undo) return;
