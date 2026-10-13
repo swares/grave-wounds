@@ -331,10 +331,41 @@ weapons.yaml). He only defends: no strikes, no shots, no attempts in a duel, tho
 still fall on him and he still parries. A one-handed weapon he goes on using, off-hand if
 it is his weapon arm. A hero lamed (a leg wound, cannot stand, collapsed, slowed), from this
 battle or one he came with, or down and carried by his comrades, halves his unit's move (at
-least 1 hex) while he is with it. **Leave him** (on his line in the heroes' list, when his
-unit is moving) leaves him behind: he is out of the battle, takes no more blows and no first
-aid, no longer slows the unit, and a leader left behind counts as a leader down. His wounds
-still go back to the roller.
+least 1 hex) while he is with it. On his line in the heroes' list, when his unit is moving,
+there are two ways to stop that:
+
+- **Carry him back.** Two of the unit's men carry him to the rear (the unit must be steady or
+  shaken and have men to spare). He is out of the battle and safe: no more blows, no
+  slowing, and his wounds go back to the roller as they were. The bearers come back after 3
+  exchanges. If the unit has broken or been destroyed by then, they stay at the rear, alive
+  and not counted as lost.
+- **Leave him.** He is left behind: out of the battle, no more blows and no first aid, and
+  no longer slowing the unit. What becomes of him is settled when the battle ends.
+
+Out of the battle either way, a leader counts as a leader down.
+
+**Left on the field.** When the battle ends, a hero still lying out there is either one
+left behind, or one who was down when his unit broke, fled or was destroyed. If his side
+holds the field (it still has a unit standing, or neither side has), it finds him. If only
+the enemy holds it, d100 against the war's **quarter** decides: at or under, he is taken
+prisoner; over, he is killed where he lies.
+
+| War | Quarter |
+|---|---|
+| The Crusades, Wars of the Roses | 30% |
+| Visby 1361, the Indian Wars | 20% |
+| The Thirty Years' War | 40% |
+| The American Revolution | 70% |
+| The Napoleonic Wars, 1812 | 80% |
+| The Civil War | 85% |
+| The First World War, the later 20th century | 70% |
+| The Second World War | 60% |
+| Korea, Vietnam, Iraq and Afghanistan, and any other | 50% |
+
+These are design estimates. Medieval armies spared those worth a ransom and few others,
+the horse-and-musket wars mostly took prisoners, and the wars since vary with the enemy.
+The after-battle list says what became of each hero. A prisoner goes back to the roller out
+of the fight, marked taken prisoner; the GM decides what comes next.
 
 A **leader** gives his unit +10 morale while he is up, and −20 once he is down. A unit with
 a hero still up shows a star on the map. The heroes' list shows each one's attack and defence
@@ -348,11 +379,24 @@ down, and his Blood where the field left it.
 his worst-bleeding wound gets first aid, whether he is up or down: one from this battle or
 one he came with from the roller. The best Leechcraft among his unit's heroes still up (the
 team builder's skill; it may be his own) is the chance on d100, as in the roller, and a
-success binds two steps of bleeding. With no one in the unit who has Leechcraft, his
-comrades bind one step at 60%. On a success an arm or leg bleeding heavily or worse (2+) is
-tourniqueted instead and stops. The log says who did it and how, and the roller takes the
-wounds as they were left, marked "bind (on the field)" or "tourniquet (on the field)",
-the ones he came with too. `python3 -m gravewounds units` shows how heroes fare:
+success binds two steps of bleeding. The unit's **medics** count too, at their quality's
+chance: green 30%, regular 45%, veteran 60% (a hero as good is preferred). With no healer
+in the unit, his comrades bind one step at 60%.
+
+On a success, an arm or leg bleeding heavily or worse (2+) is tourniqueted instead and
+stops. Where a tourniquet cannot go (head, neck or body), a wound bleeding heavily or worse
+is **cauterised** in the wars before 1914 (on the wound tables from the Crusades to the
+Indian Wars): it stops, at a step more pain unless a healer did it.
+
+The log says who did it and how. The roller takes the wounds as they were left, marked
+"bind (on the field)", "tourniquet (on the field)" or "cauterise (on the field)", the ones
+he came with too.
+
+**Medics.** The selected unit's **Medics** choice (before the battle) gives it medics at its
+own quality. The team builder's **Send to the field map** adds the followers of a healing
+career (barber-surgeons, surgeon's mates, stewards, healers, medics, corpsmen and
+stretcher-bearers) to the team's biggest unit as its medics, at their usual quality, instead
+of making them a unit of their own. `python3 -m gravewounds units` shows how heroes fare:
 
 | A hero leading billmen in jacks, until one side breaks | Wounded | Down | Killed | Men he puts down |
 |---|---|---|---|---|

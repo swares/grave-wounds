@@ -866,6 +866,22 @@ def _commander_errors(d: Data) -> list[str]:
     return errors + [f"units.yaml: commander.ground_with names unknown weapon {w}" for w in K.get("ground_with", []) if w not in d.weapons]
 
 
+def _field_care_errors(d: Data, heroes: dict) -> list[str]:
+    """Heroes carried back, medics, cautery and quarter (units.yaml heroes)."""
+    errors = [f"units.yaml: heroes.{k} must be a positive whole number" for k in ("bearers", "back_after")
+              if k in heroes and not (isinstance(heroes[k], int) and heroes[k] > 0)]
+    med = heroes.get("medic")
+    if med is not None and (set(med) != set(d.units["quality"]) or not all(isinstance(v, int) and 0 <= v <= 100 for v in med.values())):
+        errors.append("units.yaml: heroes.medic needs a % (0-100) for each quality")
+    wars = {t.get("battle") for t in d.tables.values()}
+    errors += [f"units.yaml: heroes.cautery.battles names {w}, the war of no wound table" for w in (heroes.get("cautery") or {}).get("battles", []) if w not in wars]
+    Q = heroes.get("quarter") or {}
+    if Q and "default" not in Q:
+        errors.append("units.yaml: heroes.quarter needs a default")
+    errors += [f"units.yaml: heroes.quarter names {w}, the war of no wound table" for w in Q if w != "default" and w not in wars]
+    return errors + [f"units.yaml: heroes.quarter.{w} must be a % (0-100)" for w, v in Q.items() if not (isinstance(v, int) and 0 <= v <= 100)]
+
+
 def _limb_errors(d: Data) -> list[str]:
     """Heroes lamed (units.yaml heroes.lamed, carried) and one-armed (wounds.yaml
     combat.one_arm against weapons' two_handed)."""
@@ -874,6 +890,7 @@ def _limb_errors(d: Data) -> list[str]:
     if "carried" in H and not (isinstance(H["carried"], (int, float)) and 0 < H["carried"] <= 1):
         errors.append("units.yaml: heroes.carried must be more than 0 and at most 1")
     errors += [f"wounds.yaml: combat.one_arm names unknown impairment {x}" for x in d.wounds["combat"].get("one_arm", []) if x not in imp]
+    errors += _field_care_errors(d, H)
     return errors + [f"weapons.yaml: {w}.two_handed must be true or false" for w, x in d.weapons.items() if not isinstance(x.get("two_handed", False), bool)]
 
 

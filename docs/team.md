@@ -207,7 +207,8 @@ the team, and **Reroll the followers** rolls them again. Their lines print below
   fill the Strike panel whatever weapon he holds, and his Nerve is the quality's.
 - **Send to the field map** makes one unit of each career's followers, at the quality most
   of them have (a tie goes to the better), in open order for bows and crossbows and close
-  order for the rest, mounted for mounted sergeants. The team goes with them as heroes, each
+  order for the rest, mounted for mounted sergeants. Followers of a healing career go with
+  the biggest unit as its medics instead (see [units.md](units.md), *Heroes*). The team goes with them as heroes, each
   with his own career's unit, or else the biggest. The field map offers to add them before
   the battle starts, on the side of that name if it has one, else its first side. Heroes
   sent this way are not the roller's fighters, so their wounds stay on the field map: to
