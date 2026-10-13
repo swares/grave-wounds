@@ -983,13 +983,13 @@ function heroesAfter(us, rng, quiet = null){      // end of an exchange: holds w
 function healerOf(u){                             // [Leechcraft, name] of the best healer among u's heroes still up, or null
   const up = (u.heroes || []).filter(h => h.state === "up" && Number.isFinite(h.leech));
   if (!up.length) return null;
-  const best = up.reduce((a, b) => (b.leech > a.leech ? b : a));
+  const best = up.reduce((a, b) => (b.leech > a.leech ? b : a), up[0]);
   return [best.leech, best.name];
 }
 function firstAid(hero, rng, healer = null){        // his worst-bleeding wound (this battle's or one he came with): Leechcraft % or heroes.first_aid %; tourniquet a limb, or bind
   const ws = [...hero.wounds, ...(hero.old || [])].filter(w => (w.bleed || 0) > 0);
   if (!ws.length) return null;
-  const w = ws.reduce((a, b) => (b.bleed > a.bleed ? b : a)), H = UD.heroes;
+  const w = ws.reduce((a, b) => (b.bleed > a.bleed ? b : a), ws[0]), H = UD.heroes;
   const line = { hero: hero.id, name: hero.name, loc: w.loc, ...(healer ? { by: healer[1] } : {}) };
   if (rng.randint(1, 100) > (healer ? healer[0] : H.first_aid)) return { ...line, stopped: false, bleed: w.bleed };
   const limb = ["arms", "legs"].includes(FD.locations[w.loc]?.zone);
@@ -2862,7 +2862,11 @@ function shotNotes(l){                            // " (cover -20%, weather -10%
 }
 function aidText(l, nm){                          // a hero's first aid: "X (unit) is bandaged by Y: his thigh bleeds less."
   const who = `${l.name} (${nm(l.unit)})`, by = l.by && l.by !== l.name ? " by " + l.by : "";
-  if (!l.stopped) return who + (l.by ? `: ${l.by === l.name ? "he" : l.by} cannot stop the bleeding yet.` : ": his comrades cannot stop the bleeding yet.");
+  if (!l.stopped){
+    let helper = "his comrades";
+    if (l.by) helper = l.by === l.name ? "he" : l.by;
+    return `${who}: ${helper} cannot stop the bleeding yet.`;
+  }
   const part = FD.locations[l.loc]?.name.toLowerCase() || "wound";
   if (l.how === "tourniquet") return `${who}: a tourniquet${by} on his ${part}: it bleeds no more.`;
   return `${who} is bandaged${by}: his ${part} bleeds ${l.bleed ? "less" : "no more"}.`;

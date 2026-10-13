@@ -217,13 +217,13 @@ function heroesAfter(us, rng, quiet = null){      // end of an exchange: holds w
 function healerOf(u){                             // [Leechcraft, name] of the best healer among u's heroes still up, or null
   const up = (u.heroes || []).filter(h => h.state === "up" && Number.isFinite(h.leech));
   if (!up.length) return null;
-  const best = up.reduce((a, b) => (b.leech > a.leech ? b : a));
+  const best = up.reduce((a, b) => (b.leech > a.leech ? b : a), up[0]);
   return [best.leech, best.name];
 }
 function firstAid(hero, rng, healer = null){        // his worst-bleeding wound (this battle's or one he came with): Leechcraft % or heroes.first_aid %; tourniquet a limb, or bind
   const ws = [...hero.wounds, ...(hero.old || [])].filter(w => (w.bleed || 0) > 0);
   if (!ws.length) return null;
-  const w = ws.reduce((a, b) => (b.bleed > a.bleed ? b : a)), H = UD.heroes;
+  const w = ws.reduce((a, b) => (b.bleed > a.bleed ? b : a), ws[0]), H = UD.heroes;
   const line = { hero: hero.id, name: hero.name, loc: w.loc, ...(healer ? { by: healer[1] } : {}) };
   if (rng.randint(1, 100) > (healer ? healer[0] : H.first_aid)) return { ...line, stopped: false, bleed: w.bleed };
   const limb = ["arms", "legs"].includes(FD.locations[w.loc]?.zone);

@@ -762,7 +762,11 @@ function shotNotes(l){                            // " (cover -20%, weather -10%
 }
 function aidText(l, nm){                          // a hero's first aid: "X (unit) is bandaged by Y: his thigh bleeds less."
   const who = `${l.name} (${nm(l.unit)})`, by = l.by && l.by !== l.name ? " by " + l.by : "";
-  if (!l.stopped) return who + (l.by ? `: ${l.by === l.name ? "he" : l.by} cannot stop the bleeding yet.` : ": his comrades cannot stop the bleeding yet.");
+  if (!l.stopped){
+    let helper = "his comrades";
+    if (l.by) helper = l.by === l.name ? "he" : l.by;
+    return `${who}: ${helper} cannot stop the bleeding yet.`;
+  }
   const part = FD.locations[l.loc]?.name.toLowerCase() || "wound";
   if (l.how === "tourniquet") return `${who}: a tourniquet${by} on his ${part}: it bleeds no more.`;
   return `${who} is bandaged${by}: his ${part} bleeds ${l.bleed ? "less" : "no more"}.`;
