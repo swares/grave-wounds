@@ -428,7 +428,9 @@ def _hero_rules(d) -> list[str]:
         f"and blows on the front fall on him {H['exposure']:g} times as often as on a ranker there; a shooting hero looses {H['tempo']:g} times a ranker's aimed shots. "
         "His wounds use the full rules and his own stop check (a failure: down for the battle); their pain, his Blood lost, their impairments (an arm, a leg, dazed), "
         "the ones he came with too, and his sickness come off his attack and defence as in the wound roller, and too sick to do more than defend, he only defends. "
-        f"In a quiet exchange (his unit not in contact, not under fire, no losses) his comrades stop his worst wound bleeding a step at {H['first_aid']}%. "
+        "In a quiet exchange (his unit not in contact, not under fire, no losses) his worst-bleeding wound, from this battle or one he came with, gets first aid: "
+        f"the best Leechcraft among his unit's heroes still up rolls, a success binding {d.wounds['combat']['first_aid']['bind']} steps of bleeding; with no one who has Leechcraft, his comrades bind one step at {H['first_aid']}%. "
+        f"On a success an arm or leg bleeding {H['tourniquet_from']} or more is tourniqueted instead: it stops. "
         "A leader adds his unit's leader modifier while he is up.",
     ]
 
@@ -895,7 +897,7 @@ def field_bundle(d) -> dict:
     return {
         "generated": date.today().isoformat(),
         "units": d.units,
-        "combat": {k: d.wounds["combat"][k] for k in ("critical_fraction", "graze_margin", "margin_bands", "range", "pain_step", "stop_check", "states", "impair", "cap")},
+        "combat": {k: d.wounds["combat"][k] for k in ("critical_fraction", "graze_margin", "margin_bands", "range", "pain_step", "stop_check", "states", "impair", "cap", "first_aid")},
         "in_fight": d.disease.get("in_fight") or {},
         "tracking": {k: d.wounds["tracking"][k] for k in ("blood_pool", "thresholds", "pain_cap", "bleed_per_round")},
         "blood_per": d.wounds["combat"]["characteristics"]["blood"]["per"],

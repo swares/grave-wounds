@@ -289,11 +289,15 @@ After the battle, **Heroes' wounds to the roller** puts each wound on his record
 wound roller (with its bleeding, pain and clock), and marks him out of the fight if he went
 down, and his Blood where the field left it.
 
-**First aid.** In a quiet exchange his comrades bind his worst-bleeding wound from this
-battle: arterial to heavy, heavy to seeping, seeping to none. A quiet exchange is one in
-which his unit is not in contact, not under fire and loses no one. It works 60% of the
-time, and he may be up or down. The log says when a hero is bandaged, and the roller takes
-the wound as it was left (marked "bind (on the field)"). `python3 -m gravewounds units` shows how heroes fare:
+**First aid.** In a quiet exchange (his unit not in contact, not under fire, losing no one)
+his worst-bleeding wound gets first aid, whether he is up or down: one from this battle or
+one he came with from the roller. The best Leechcraft among his unit's heroes still up (the
+team builder's skill; it may be his own) is the chance on d100, as in the roller, and a
+success binds two steps of bleeding. With no one in the unit who has Leechcraft, his
+comrades bind one step at 60%. On a success an arm or leg bleeding heavily or worse (2+) is
+tourniqueted instead and stops. The log says who did it and how, and the roller takes the
+wounds as they were left, marked "bind (on the field)" or "tourniquet (on the field)",
+the ones he came with too. `python3 -m gravewounds units` shows how heroes fare:
 
 | A hero leading billmen in jacks, until one side breaks | Wounded | Down | Killed | Men he puts down |
 |---|---|---|---|---|

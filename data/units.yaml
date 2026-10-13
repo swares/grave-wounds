@@ -516,4 +516,11 @@ heroes:
   tempo: 3.0
   exposure: 2.0
   duel: 3                 # telling attempts each hero makes at the other in a duel, an exchange
-  first_aid: 60           # % a quiet exchange (his unit not in contact, not under fire, no losses) that his comrades stop his worst wound bleeding a step
+  # First aid, each quiet exchange (his unit not in contact, not under fire, no losses), on his
+  # worst-bleeding wound (from this battle or one he came with): the best Leechcraft among his
+  # unit's heroes still up rolls d100 (as the roller's first aid), binding wounds.yaml
+  # combat.first_aid.bind steps of bleeding; with no Leechcraft in the unit, his comrades bind
+  # one step at `first_aid` %. An arm or leg bleeding `tourniquet_from` or more is tourniqueted
+  # instead on a success: it stops.
+  first_aid: 60
+  tourniquet_from: 2

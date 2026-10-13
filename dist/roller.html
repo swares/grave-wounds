@@ -3138,6 +3138,16 @@ $("#chars").addEventListener("change", e => {
     const to = +el.dataset.i; const f = from; from = -1; if (moveChar(f, to)) renderChars(); else renderChars() });
   $("#chars").addEventListener("dragend", () => { from = -1; document.querySelectorAll(".char.dragging,.char.drop-ok").forEach(x => x.classList.remove("dragging", "drop-ok")) });
 }
+function fieldOldWounds(c, old){               // the wounds he took to the field (in order), as first aid there left them
+  if (!Array.isArray(old)) return;
+  const ws = c.wounds.filter(w => w.fx);
+  old.forEach((o, k) => {
+    const w = ws[k];
+    if (!w || !o?.aid || !Number.isFinite(o.bleed) || o.bleed >= w.fx.bleed) return;
+    w.fx.bleed = o.bleed;
+    w.treated = (w.treated ? w.treated + ", " : "") + `${o.aid} (on the field)`;
+  });
+}
 function fieldHero(h){                         // one hero back from the field map: his wounds on his record; the log line
   const c = S.chars.find(x => x.id === h.id && x.name === h.name);
   if (!c) return null;
@@ -3146,8 +3156,9 @@ function fieldHero(h){                         // one hero back from the field m
     if (!fx0) continue;
     const fx = structuredClone(w.graze ? grazeFx(fx0) : fx0), bound = Number.isFinite(w.bleed) && w.bleed < fx.bleed;   // bandaged on the field: it bleeds as it was left
     if (bound) fx.bleed = w.bleed;
-    c.wounds.push({ loc: w.loc, mech: w.mech, sev: w.sev, graze: !!w.graze, fx, treated: bound ? "bind (on the field)" : "" });
+    c.wounds.push({ loc: w.loc, mech: w.mech, sev: w.sev, graze: !!w.graze, fx, treated: bound ? `${w.aid || "bind"} (on the field)` : "" });
   }
+  fieldOldWounds(c, h.old);
   if (Number.isFinite(h.blood)) c.blood = Math.min(c.blood ?? h.blood, h.blood);   // what he bled on the field
   if (h.state !== "up") c.state = { id: "out", rounds: null };
   const what = h.wounds.map(w => `${w.graze ? "graze" : w.sev} (${LOC[w.loc].name.toLowerCase()})`).join(", ") || "unhurt";

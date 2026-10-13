@@ -291,24 +291,45 @@ def _heroes_after(d: Data, us: list, rng, quiet: list | None = None) -> list:
             if hero["state"] == "dead":
                 continue
             if quiet and quiet[i]:
-                log += [{"kind": "heroaid", "unit": i, **x} for x in [_first_aid(d, hero, rng)] if x]
+                log += [{"kind": "heroaid", "unit": i, **x} for x in [_first_aid(d, hero, rng, _healer(u))] if x]
             line = _hero_after(d, hero, rng)
             if line:
                 log.append({"kind": "herobled", "unit": i, **line})
     return log
 
 
-def _first_aid(d: Data, hero: dict, rng) -> dict | None:
-    """First aid in a quiet exchange: his worst-bleeding wound from this battle bleeds a step
-    less at heroes.first_aid %. -> a log line, or None."""
-    ws = [w for w in hero["wounds"] if w.get("bleed", 0) > 0]
+def _healer(u: dict) -> tuple | None:
+    """(Leechcraft, name) of the best healer among unit u's heroes still up, or None (no one
+    with Leechcraft: his comrades bind as best they can)."""
+    up = [h for h in u.get("heroes", []) if h["state"] == "up" and h.get("leech") is not None]
+    if not up:
+        return None
+    best = max(up, key=lambda h: h["leech"])
+    return best["leech"], best["name"]
+
+
+def _first_aid(d: Data, hero: dict, rng, healer: tuple | None = None) -> dict | None:
+    """First aid in a quiet exchange on his worst-bleeding wound, from this battle or one he
+    came with (old, with its bleed): the healer's Leechcraft % (else heroes.first_aid %); a
+    success tourniquets an arm or leg bleeding heroes.tourniquet_from or more (it stops), or
+    binds combat.first_aid.bind steps (1 with no healer). -> a log line, or None."""
+    ws = [w for w in hero["wounds"] if w.get("bleed", 0) > 0] + [w for w in hero.get("old") or [] if w.get("bleed", 0) > 0]
     if not ws:
         return None
-    w = max(ws, key=lambda x: x["bleed"])
-    if rng.randint(1, 100) > d.units["heroes"]["first_aid"]:
-        return {"hero": hero["id"], "name": hero["name"], "loc": w["loc"], "stopped": False, "bleed": w["bleed"]}
-    w["bleed"] -= 1
-    return {"hero": hero["id"], "name": hero["name"], "loc": w["loc"], "stopped": True, "bleed": w["bleed"]}
+    w, H = max(ws, key=lambda x: x["bleed"]), d.units["heroes"]
+    line = {"hero": hero["id"], "name": hero["name"], "loc": w["loc"], **({"by": healer[1]} if healer else {})}
+    if rng.randint(1, 100) > (healer[0] if healer else H["first_aid"]):
+        return {**line, "stopped": False, "bleed": w["bleed"]}
+    limb = (d.loc.get(w["loc"]) or {}).get("zone") in ("arms", "legs")
+    if limb and w["bleed"] >= H["tourniquet_from"]:
+        w["bleed"], how = 0, "tourniquet"
+    else:
+        w["bleed"], how = max(0, w["bleed"] - (d.wounds["combat"]["first_aid"]["bind"] if healer else 1)), "bind"
+    w["aid"] = how                            # the roller marks it treated (on the field) when he goes back
+    if any(w is o for o in hero.get("old") or []):
+        T = d.wounds["tracking"]
+        hero["old_bleed"] = sum(round(T["bleed_per_round"][o.get("bleed", 0)] * d.units["exchange_rounds"]) for o in hero["old"])
+    return {**line, "stopped": True, "bleed": w["bleed"], "how": how}
 
 
 def _hero_after(d: Data, hero: dict, rng) -> dict | None:

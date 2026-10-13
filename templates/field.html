@@ -760,11 +760,12 @@ function shotNotes(l){                            // " (cover -20%, weather -10%
   if (l.misfire) bits.push(`${l.misfire}% misfire`);
   return bits.length ? ` (${bits.join(", ")})` : "";
 }
-function aidText(l, nm){                          // a hero's first aid: "X (unit) is bandaged: his thigh bleeds less."
-  const who = `${l.name} (${nm(l.unit)})`;
-  if (!l.stopped) return who + ": his comrades cannot stop the bleeding yet.";
+function aidText(l, nm){                          // a hero's first aid: "X (unit) is bandaged by Y: his thigh bleeds less."
+  const who = `${l.name} (${nm(l.unit)})`, by = l.by && l.by !== l.name ? " by " + l.by : "";
+  if (!l.stopped) return who + (l.by ? `: ${l.by === l.name ? "he" : l.by} cannot stop the bleeding yet.` : ": his comrades cannot stop the bleeding yet.");
   const part = FD.locations[l.loc]?.name.toLowerCase() || "wound";
-  return `${who} is bandaged: his ${part} bleeds ${l.bleed ? "less" : "no more"}.`;
+  if (l.how === "tourniquet") return `${who}: a tourniquet${by} on his ${part}: it bleeds no more.`;
+  return `${who} is bandaged${by}: his ${part} bleeds ${l.bleed ? "less" : "no more"}.`;
 }
 function sickText(h){                            // " · sick (dysentery), defends only"
   if (!h.sick) return "";
@@ -1124,8 +1125,9 @@ function heroBody(c){                             // {pool, blood, old_pain, old
   const end = [c.endurance, c.sheet?.stats?.end].find(Number.isFinite) ?? 50;
   const pool = FD.tracking.blood_pool + Math.floor((end - 50) / FD.blood_per), ws = (c.wounds || []).filter(w => w.fx);
   const perEx = b => Math.round((FD.tracking.bleed_per_round[b] || 0) * FD.units.exchange_rounds);
+  const leech = [c.leechcraft, c.sheet?.skills?.leechcraft].find(Number.isFinite);   // his Leechcraft, from the team builder's sheet: he can give first aid
   return { pool, blood: Number.isFinite(c.blood) ? Math.min(c.blood, pool) : pool, old_pain: ws.reduce((a, w) => a + (w.fx.pain || 0), 0), old_bleed: ws.reduce((a, w) => a + perEx(w.fx.bleed), 0),
-    old: ws.map(w => ({ loc: w.loc, pain: w.fx.pain || 0, impair: (w.fx.impair || []).slice() })) };
+    old: ws.map(w => ({ loc: w.loc, pain: w.fx.pain || 0, impair: (w.fx.impair || []).slice(), bleed: w.fx.bleed || 0 })), ...(leech === undefined ? {} : { leech }) };
 }
 function heroSick(c){                             // a named man's worst showing step of sickness (the travel map runs it), as the roller's sickOf; null if well
   let all = {};
@@ -1159,7 +1161,7 @@ function renderHeroes(){
   if (!$("#in-hero-atk").value) heroDefaults();
 }
 function heroesToRoller(){                        // their wounds onto their records in the wound roller
-  const heroes = allHeroes().map(h => ({ id: h.id, name: h.name, state: h.state, wounds: h.wounds, blood: h.blood }));
+  const heroes = allHeroes().map(h => ({ id: h.id, name: h.name, state: h.state, wounds: h.wounds, blood: h.blood, old: (h.old || []).map(o => ({ bleed: o.bleed, aid: o.aid })) }));
   try{ localStorage.setItem("gravewounds-field-heroes", JSON.stringify({ place: S.from?.place || "", heroes })) }catch(e){ S.msg = "Could not save the heroes for the roller (storage is off)."; return render() }
   S.heroesSent = true;
   save();
