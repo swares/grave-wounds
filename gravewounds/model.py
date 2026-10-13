@@ -972,6 +972,14 @@ def _indirect_errors(d: Data) -> list[str]:
     return errors
 
 
+def _small_arms_errors(V: dict) -> list[str]:
+    """vehicles.small_arms: rate and mg above 0, when an armour has a small %."""
+    S = V.get("small_arms") or {}
+    if not any("small" in a for a in V.get("armour", {}).values()) or all(isinstance(S.get(x), (int, float)) and S[x] > 0 for x in ("rate", "mg")):
+        return []
+    return ["units.yaml: vehicles.small_arms needs rate and mg (aimed shots a man, above 0) when an armour has a small %"]
+
+
 def _vehicle_errors(d: Data) -> list[str]:
     """units.yaml vehicles: kinds with a crew, move and known armour (and a gun with a range, rate,
     an indirect kind for its high explosive and hit bands); armour %s; anti-armour weapons and
@@ -988,9 +996,7 @@ def _vehicle_errors(d: Data) -> list[str]:
                if not all(isinstance(a.get(x), (int, float)) for x in ("rpg", "atgm", "gun", "shell", "mine"))]
     errors += [f"units.yaml: vehicles.anti_armour.{w} needs a known weapon, a rate and an armour row (rpg or atgm)" for w, a in V.get("anti_armour", {}).items()
                if w not in d.weapons or not isinstance(a, dict) or not isinstance(a.get("rate"), (int, float)) or a.get("row") not in ("rpg", "atgm")]
-    S = V.get("small_arms") or {}
-    if any("small" in a for a in V.get("armour", {}).values()) and not all(isinstance(S.get(x), (int, float)) and S[x] > 0 for x in ("rate", "mg")):
-        errors.append("units.yaml: vehicles.small_arms needs rate and mg (aimed shots a man, above 0) when an armour has a small %")
+    errors += _small_arms_errors(V)
     errors += [f"units.yaml: vehicles.kinds.{k}.{x} must be a whole number above 0" for k, v in V.get("kinds", {}).items() for x in ("carry", "tows")
                if x in v and not (isinstance(v[x], int) and v[x] > 0)]
     if not all(isinstance((V.get("aspect") or {}).get(x), (int, float)) for x in ("flank", "rear")):

@@ -207,7 +207,11 @@ def _vehicles(d: Data) -> str:
     for k in d.units["vehicles"]["kinds"].values():
         g = k.get("gun")
         gun = f"{_field(d, g['range'])}, {g['rate']} a vehicle, hits {'/'.join(str(h[1]) for h in g['hit'])}%" if g else "machine guns only"
-        carries = f"{k['carry']} men" if k.get("carry") else (f"tows {k['tows']} gun" if k.get("tows") else "—")
+        carries = "—"
+        if k.get("carry"):
+            carries = f"{k['carry']} men"
+        elif k.get("tows"):
+            carries = f"tows {k['tows']} gun"
         rows.append([k["name"], k["crew"], k["move"], k["armour"], gun, carries])
     return _md(["Vehicle", "Crew", "Move (hexes)", "Armour", "Main gun: reach, rounds, hits (close / mid / full)", "Carries"], rows)
 
