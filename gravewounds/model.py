@@ -988,6 +988,9 @@ def _vehicle_errors(d: Data) -> list[str]:
                if not all(isinstance(a.get(x), (int, float)) for x in ("rpg", "atgm", "gun", "shell", "mine"))]
     errors += [f"units.yaml: vehicles.anti_armour.{w} needs a known weapon, a rate and an armour row (rpg or atgm)" for w, a in V.get("anti_armour", {}).items()
                if w not in d.weapons or not isinstance(a, dict) or not isinstance(a.get("rate"), (int, float)) or a.get("row") not in ("rpg", "atgm")]
+    S = V.get("small_arms") or {}
+    if any("small" in a for a in V.get("armour", {}).values()) and not all(isinstance(S.get(x), (int, float)) and S[x] > 0 for x in ("rate", "mg")):
+        errors.append("units.yaml: vehicles.small_arms needs rate and mg (aimed shots a man, above 0) when an armour has a small %")
     errors += [f"units.yaml: vehicles.kinds.{k}.{x} must be a whole number above 0" for k, v in V.get("kinds", {}).items() for x in ("carry", "tows")
                if x in v and not (isinstance(v[x], int) and v[x] > 0)]
     if not all(isinstance((V.get("aspect") or {}).get(x), (int, float)) for x in ("flank", "rear")):

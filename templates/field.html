@@ -984,7 +984,8 @@ function armourText(l, nm){                       // rockets at vehicles, a tank
   if (l.rstruck) out += ` Riders: ${l.rstruck} struck, ${l.rdown || 0} down` + (l.rdead ? ` (${l.rdead} dead)` : "") + ".";
   if (l.kill !== undefined && l.hit) out = ` (${l.kill}% a hit to knock out)` + out;
   if (l.kind === "knocked_out") return `${l.name || "Shells"} burst on ${nm(l.dfd)}:${out}`;
-  if (l.kind === "antiarmour") return `${nm(l.att)} fire ${nOf(l.shots, "round")} at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}: ${l.hit} hit.${out}`;
+  const shots = hurtsArmour(S.units[l.att]?.weapon) ? nOf(l.shots, "round") : nOf(l.shots, "aimed shot");
+  if (l.kind === "antiarmour") return `${nm(l.att)} fire ${shots} at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}: ${l.hit} hit.${out}`;
   if (l.at) return `${nm(l.att)} fire ${nOf(l.rounds, "round")} of high explosive at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}.`;
   return `${nm(l.att)} fire ${nOf(l.rounds, "round")} at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}: ${l.hit} hit.${out}`;
 }
@@ -1660,13 +1661,17 @@ function batteryMeta(u){                          // " · 6 guns, limbered, 280 
   const left = ammoLeft(u);
   return ` · ${gunsServed(u)} ${GUN_NAMES[gunKind(u)]}, ${how}, ${left ? left + " rounds" : "no rounds left"}`;
 }
+function armourWords(u, K){                       // "light armour: small arms cannot hurt them, ..." or the soft-skinned line
+  if (soft(u)) return `soft-skinned: small arms knock one out at ${FD.units.vehicles.armour[K.armour].small}% a hit, and anything heavier easily; no one fights them hand to hand`;
+  return `${K.armour} armour: small arms cannot hurt them, no one fights them hand to hand`;
+}
 function vehicleInfo(u, K){                       // the selected vehicle unit: how many, crews, main gun, armour
   const gun = K.gun ? `main gun to ${K.gun.range} hexes (${fmtM(K.gun.range * FD.units.hex_m)}), ${nOf(K.gun.rate, "round")} a vehicle an exchange` : "machine guns only";
   const dmg = (u.immobile ? `; ${u.immobile} immobilised (abandon them to move on)` : "") + (u.gunless ? `; ${u.gunless} with the main gun out` : "") + (u.bailed ? `; ${u.bailed} crew have left the abandoned vehicles` : "");
   const aboard = u.riders ? `, ${u.riders.men} of ${esc(u.riders.name)} aboard` : "";
   let room = K.carry ? `; carries ${K.carry} men a vehicle (room for ${carries(u)})` + aboard : "";
   if (K.tows) room = `; tows ${nOf(K.tows, "anti-tank gun")} a vehicle (${nOf(tows(u), "gun")}), its crew riding` + (u.riders ? `; towing ${esc(u.riders.name)}` : "");
-  return `${vehiclesLeft(u)} of ${Math.ceil(u.start / K.crew)} ${K.name.toLowerCase()} (${K.crew} crew each); ${gun}; ${K.armour} armour: small arms cannot hurt them, no one fights them hand to hand; a hit in the flank or rear is worse${room}${dmg}`;
+  return `${vehiclesLeft(u)} of ${Math.ceil(u.start / K.crew)} ${K.name.toLowerCase()} (${K.crew} crew each); ${gun}; ${armourWords(u, K)}; a hit in the flank or rear is worse${room}${dmg}`;
 }
 function gunsInfo(u){                             // the Guns line of the selected battery
   const lost = u.guns_lost ? `, ${u.guns_lost} knocked out` : "", left = ammoLeft(u);

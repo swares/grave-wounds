@@ -951,6 +951,21 @@ def hurts_armour(d: Data, weapon: str) -> bool:
     return weapon in ((d.units.get("vehicles") or {}).get("anti_armour") or {})
 
 
+def soft(d: Data, u: dict) -> bool:
+    """A soft-skinned vehicle unit (its armour has a `small` %): small arms can hurt it."""
+    return "small" in (armour_of(d, u) or {})
+
+
+def _shot_at_vehicle(d: Data, weapon: str) -> dict:
+    """How a man's weapon is fired at a vehicle: its anti_armour line, else small arms
+    (vehicles.small_arms rate, machine guns `mg`) on the armour's `small` row."""
+    V = d.units["vehicles"]
+    if weapon in V.get("anti_armour", {}):
+        return V["anti_armour"][weapon]
+    S = V["small_arms"]
+    return {"rate": S["mg"] if weapon in d.units["machine_guns"]["weapons"] else S["rate"], "row": "small"}
+
+
 def bearing(t, h) -> int:
     """The direction (0-5, as step) from hex t that points most nearly at hex h (the first of equals)."""
     a, b = _cube(t), _cube(h)
@@ -1634,7 +1649,7 @@ def _target(d: Data, units: list, i: int, field: dict | None = None, occ: dict |
     if named is not None:
         return named
     for j, e in enumerate(units):
-        if e["side"] == u["side"] or e["men"] <= 0 or e["state"] == "fled" or (e.get("vehicle") and not hurts_armour(d, u["weapon"])):
+        if e["side"] == u["side"] or e["men"] <= 0 or e["state"] == "fled" or (e.get("vehicle") and not hurts_armour(d, u["weapon"]) and not soft(d, e)):
             continue
         near = _nearest_ahead(d, u, front, fv, [t for row in footprint(d, e) for t in row], field, _clear_fn(d, units, occ, field, i, j))
         if near is not None and (best is None or near[0] < best[0]):
@@ -2129,21 +2144,22 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
 
 
 def _armour_volley(d: Data, us: list, ctx: tuple, v: dict, opts: dict) -> list:
-    """Anti-armour weapons at a vehicle unit: each aimed shot that hits (as at men) knocks a
-    vehicle out at its armour's `rpg` %."""
+    """Anti-armour weapons (and small arms at soft-skinned vehicles) at a vehicle unit: each
+    aimed shot that hits (as at men) knocks a vehicle out at its armour's row % (`rpg`, `atgm`,
+    or `small`); a small-arms hit that does not does no other harm."""
     table, rng, acc = ctx
     att = _side(us[v["att"]], table)
     band = field_range(d, att["weapon"], v["dist"], opts["reach"])
     if band is None:
         return []
-    A = d.units["vehicles"]["anti_armour"][att["weapon"]]
+    A = _shot_at_vehicle(d, att["weapon"])
     n = _count(v["men"] * A["rate"] * opts["factor"], rng)
     atk = _attack(d, att) - band["penalty"] - opts["penalty"]
     hits = sum(1 for _ in range(n) if rng.randint(1, 100) <= atk)
     p = kill_chance(d, us[v["dfd"]], A["row"], v["from"], v["to"])
     kills = sum(1 for _ in range(hits) if rng.randint(1, 100) <= p)
     k = knock_out(d, us, v["dfd"], kills, (table, rng), acc)
-    harm = _harm(d, us[v["dfd"]], hits - k["knocked"], acc[0][v["dfd"]], rng)
+    harm = _harm(d, us[v["dfd"]], 0 if A["row"] == "small" else hits - k["knocked"], acc[0][v["dfd"]], rng)
     acc[2][v["att"]] += k["crew"]
     line = {"kind": "antiarmour", **v, "shots": n, "hit": hits, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"], "kill": p, **_harm_line(harm), **_riders_line(k)}
     return _logged(line, k["tally"])

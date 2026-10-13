@@ -97,6 +97,7 @@ def _vehicle_values(d: Data) -> dict:
             "v_h_imm": V["damage"]["hull_hit"]["immobilised"], "v_h_gun": V["damage"]["hull_hit"]["gun"],
             **_at_mine_values(d),
             "v_crew_struck": V["crew_struck"], "v_riders_struck": V["riders_struck"], "v_shell_light": f"{V['armour']['light']['shell'] / V['armour']['heavy']['shell']:g}",
+            "v_shell_soft": f"{V['armour']['soft']['shell'] / V['armour']['heavy']['shell']:g}",
             "v_fb_knock": d.units["indirect"]["kinds"]["fighter_bomber"]["knock"]}
 
 
@@ -206,14 +207,18 @@ def _vehicles(d: Data) -> str:
     for k in d.units["vehicles"]["kinds"].values():
         g = k.get("gun")
         gun = f"{_field(d, g['range'])}, {g['rate']} a vehicle, hits {'/'.join(str(h[1]) for h in g['hit'])}%" if g else "machine guns only"
-        rows.append([k["name"], k["crew"], k["move"], k["armour"], gun, k.get("carry") or "—"])
+        carries = f"{k['carry']} men" if k.get("carry") else (f"tows {k['tows']} gun" if k.get("tows") else "—")
+        rows.append([k["name"], k["crew"], k["move"], k["armour"], gun, carries])
     return _md(["Vehicle", "Crew", "Move (hexes)", "Armour", "Main gun: reach, rounds, hits (close / mid / full)", "Carries"], rows)
 
 
 def _armour(d: Data) -> str:
     A = d.units["vehicles"]["armour"]
     what = [("rpg", "A rocket (RPG, bazooka, recoilless rifle)"), ("atgm", "A guided missile"), ("gun", "A main gun")]
-    return _md(["A hit from", "Heavy armour (tanks)", "Light armour"], [[t, f"{A['heavy'][k]}%", f"{A['light'][k]}%"] for k, t in what])
+    rows = [[t, f"{A['heavy'][k]}%", f"{A['light'][k]}%"] + ([f"{A['soft'][k]}%"] if "soft" in A else []) for k, t in what]
+    if "soft" in A:
+        rows.append(["A rifle or machine-gun bullet", "—", "—", f"{A['soft']['small']}%"])
+    return _md(["A hit from", "Heavy armour (tanks)", "Light armour"] + (["Soft-skinned (trucks, tractors)"] if "soft" in A else []), rows)
 
 
 def _dark(d: Data) -> str:

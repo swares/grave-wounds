@@ -504,6 +504,12 @@ const vehicleKind = u => (u.vehicle ? UD.vehicles.kinds[u.vehicle] : null);   //
 const vehiclesLeft = (u, lost = 0) => { const K = vehicleKind(u); return K ? Math.ceil(Math.max(0, u.men - lost) / K.crew) : 0 };
 const armourOf = u => { const K = vehicleKind(u); return K ? UD.vehicles.armour[K.armour] : null };
 const hurtsArmour = weapon => weapon in (UD.vehicles?.anti_armour || {});
+const soft = u => { const K = vehicleKind(u); return !!K && "small" in UD.vehicles.armour[K.armour] };   // a soft-skinned vehicle unit: small arms can hurt it
+function shotAtVehicle(weapon){                    // a weapon's line at vehicles: anti_armour, else small arms on the armour's small row (as units._shot_at_vehicle)
+  const V = UD.vehicles;
+  if (weapon in (V.anti_armour || {})) return V.anti_armour[weapon];
+  return { rate: UD.machine_guns.weapons.includes(weapon) ? V.small_arms.mg : V.small_arms.rate, row: "small" };
+}
 function bearing(t, h){                            // the direction (0-5) from hex t that points most nearly at hex h (the first of equals)
   const a = cube(t), b = cube(h), v = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
   const dots = AX.map(([q, r]) => v[0] * q + v[1] * r + v[2] * (-q - r));
@@ -634,7 +640,7 @@ function target(units, i, field, occ = null){    // [distance, index, shooter he
   if (named) return named;
   let best = null;
   units.forEach((e, j) => {
-    if (e.side === u.side || e.men <= 0 || e.state === "fled" || (e.vehicle && !hurtsArmour(u.weapon))) return;   // small arms do not shoot at vehicles
+    if (e.side === u.side || e.men <= 0 || e.state === "fled" || (e.vehicle && !hurtsArmour(u.weapon) && !soft(e))) return;   // small arms do not shoot at armoured vehicles
     const near = nearestAhead(u, front, fv, footprint(e).flat(), field, clearFn(units, occ, field, i, j));
     if (near && (best === null || near[0] < best[0])) best = [near[0], j, near[1], near[2]];
   });
@@ -1331,13 +1337,13 @@ function shootAll(us, table, rng, acc, log, field, under = null){
 function armourVolley(us, table, rng, acc, log, v, opts){   // anti-armour shots that hit knock a vehicle out at its armour's rpg %
   const att = sideOfUnit(us[v.att], table), band = fieldRange(att.weapon, v.dist, opts.reach || 0);
   if (!band) return;
-  const A = UD.vehicles.anti_armour[att.weapon];
+  const A = shotAtVehicle(att.weapon);
   const n = countBlows(v.men * A.rate * opts.factor, rng), atk = attackOf(att) - band.penalty - opts.penalty;
   let hits = 0, kills = 0;
   for (let s = 0; s < n; s++) if (rng.randint(1, 100) <= atk) hits++;
   const p = killChance(us[v.dfd], A.row, v.from, v.to);
   for (let s = 0; s < hits; s++) if (rng.randint(1, 100) <= p) kills++;
-  const k = knockOut(us, v.dfd, kills, table, rng, acc), hm = harm(us[v.dfd], hits - k.knocked, acc.lost[v.dfd], rng);
+  const k = knockOut(us, v.dfd, kills, table, rng, acc), hm = harm(us[v.dfd], A.row === "small" ? 0 : hits - k.knocked, acc.lost[v.dfd], rng);
   acc.dealt[v.att] += k.crew;
   log.push(...logged({ kind: "antiarmour", ...v, shots: n, hit: hits, knocked: k.knocked, crew: k.crew, struck: k.struck, kill: p, ...harmLine(hm), ...ridersLine(k) }, k.tally));
 }

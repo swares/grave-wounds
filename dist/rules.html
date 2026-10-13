@@ -2155,7 +2155,7 @@ armoured carriers fight as units, one vehicle to a hex. The unit's men are its c
 <td>14</td>
 <td>light</td>
 <td>875 yards (800 m), 2 a vehicle, hits 70/45/20%</td>
-<td>7</td>
+<td>7 men</td>
 </tr>
 <tr>
 <td>Armoured carriers</td>
@@ -2163,15 +2163,15 @@ armoured carriers fight as units, one vehicle to a hex. The unit's men are its c
 <td>14</td>
 <td>light</td>
 <td>machine guns only</td>
-<td>10</td>
+<td>10 men</td>
 </tr>
 <tr>
 <td>Gun tractors and trucks</td>
 <td>2</td>
 <td>12</td>
-<td>light</td>
+<td>soft</td>
 <td>machine guns only</td>
-<td>—</td>
+<td>tows 1 gun</td>
 </tr>
 </tbody>
 </table>
@@ -2182,8 +2182,10 @@ armoured carriers fight as units, one vehicle to a hex. The unit's men are its c
 <li><strong>Their machine guns</strong> fire as a machine-gun team's, about one gun to a vehicle.</li>
 <li><strong>Main guns</strong> fire each exchange at the nearest enemy in range, in sight and in front,
   enemy vehicles first, with a clear line of fire.</li>
-<li><strong>Armour.</strong> Small arms cannot hurt a vehicle, and men armed only with them do not shoot
-  at one. No one fights a vehicle hand to hand.</li>
+<li><strong>Armour.</strong> Small arms cannot hurt an armoured vehicle, and men armed only with them do
+  not shoot at one. Trucks and gun tractors are <strong>soft-skinned</strong>: rifles and machine guns
+  shoot at them too, every shot aimed, and each hit knocks one out at the chance below. No
+  one fights a vehicle hand to hand.</li>
 </ul>
 <h2 id="knocking-out">Knocking them out</h2>
 <p>Rocket teams fire a round for every 4 men each exchange, and missile teams
@@ -2195,6 +2197,7 @@ as for shots at men. A hit knocks the vehicle out at:</p>
 <th>A hit from</th>
 <th>Heavy armour (tanks)</th>
 <th>Light armour</th>
+<th>Soft-skinned (trucks, tractors)</th>
 </tr>
 </thead>
 <tbody>
@@ -2202,16 +2205,25 @@ as for shots at men. A hit knocks the vehicle out at:</p>
 <td>A rocket (RPG, bazooka, recoilless rifle)</td>
 <td>15%</td>
 <td>50%</td>
+<td>80%</td>
 </tr>
 <tr>
 <td>A guided missile</td>
 <td>60%</td>
 <td>90%</td>
+<td>95%</td>
 </tr>
 <tr>
 <td>A main gun</td>
 <td>35%</td>
 <td>75%</td>
+<td>90%</td>
+</tr>
+<tr>
+<td>A rifle or machine-gun bullet</td>
+<td>—</td>
+<td>—</td>
+<td>5%</td>
 </tr>
 </tbody>
 </table>
@@ -2229,7 +2241,7 @@ as for shots at men. A hit knocks the vehicle out at:</p>
   unhurt.
 - <strong>Shells and bombs</strong> bursting in a vehicle's hex knock it out at the kind's own chance: a
   heavy howitzer's 2%, a fighter-bomber's 15%. Light armour is
-  3 times as likely to go.
+  3 times as likely to go, soft-skinned vehicles 6 times.
 - <strong>Knocked out.</strong> Its crew are out of the fight. Each is struck at 50% and
   wounded as by shellfire; the rest bail out.</p>
 <h2 id="at-guns">Anti-tank guns</h2>

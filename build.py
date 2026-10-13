@@ -315,12 +315,16 @@ def _vehicle_rules(d) -> list[str]:
     if not V:
         return []
     kinds = "; ".join(f"{k['name'].lower()}: {k['crew']} crew, move {k['move']}, {k['armour']} armour" + (f", main gun to {k['gun']['range']} hexes, {k['gun']['rate']} a vehicle an exchange" if k.get("gun") else "")
-                      + (f", carries {k['carry']} men a vehicle" if k.get("carry") else "") for k in V["kinds"].values())
+                      + (f", carries {k['carry']} men a vehicle" if k.get("carry") else "") + (f", tows {k['tows']} anti-tank gun" if k.get("tows") else "") for k in V["kinds"].values())
     arm = "; ".join(f"{name}: rocket {a['rpg']}%, guided missile {a['atgm']}%, gun {a['gun']}%, shell x{a['shell']:g}" for name, a in V["armour"].items())
     going = ", ".join(f"{d.units['ground'][g]['name'].lower()} {c}" for g, c in V["ground"].items())
     at = ", ".join(f"{d.weapons[w]['short']} {a['rate']:g} a man" for w, a in V["anti_armour"].items())
     asp, dm = V.get("aspect") or {}, V.get("damage") or {}
-    return [f"<b>Vehicles:</b> one a hex ({kinds}). Small arms cannot hurt them; no one fights them hand to hand. Anti-armour weapons fire "
+    S = V.get("small_arms") or {}
+    soft = [n for n, a in V["armour"].items() if "small" in a]
+    softly = (f" Soft-skinned vehicles ({', '.join(soft)}): small arms shoot at them too, {S.get('rate', 0):g} aimed shots a man ({S.get('mg', 0):g} a machine gunner) an exchange, "
+              f"each hit knocking one out at {', '.join(str(V['armour'][n]['small']) for n in soft)}%, no lesser damage.") if soft else ""
+    return [f"<b>Vehicles:</b> one a hex ({kinds}). Small arms cannot hurt armoured vehicles; no one fights them hand to hand.{softly} Anti-armour weapons fire "
             + at + f" an exchange, every round aimed; a hit knocks a vehicle out by its armour ({arm}), x{asp.get('flank', 1):g} into the flank and x{asp.get('rear', 1):g} into the rear. "
             f"A hit that does not knock it out strikes the turret at {dm['turret']}% (gun out {dm['turret_hit']['gun']}%, immobilised {dm['turret_hit']['immobilised']}%), "
             f"else the hull (immobilised {dm['hull_hit']['immobilised']}%, gun out {dm['hull_hit']['gun']}%); a unit cannot move until it abandons "
