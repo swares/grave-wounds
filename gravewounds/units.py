@@ -2818,14 +2818,41 @@ def _shell_vehicle(d: Data, us: list, i: int, bursts: list, kind: dict, tr: tupl
     hexes = {f"{h[0]},{h[1]}" for row in footprint(d, u) for h in row}
     direct = sum(1 for at in bursts if f"{at[0]},{at[1]}" in hexes)
     p = kind.get("knock", 0) * armour_of(d, u)["shell"]
-    if not direct or p <= 0:
+    log = []
+    if direct and p > 0:
+        rng = tr[1]
+        kills = sum(1 for _ in range(direct) if rng.randint(1, 100) <= p)
+        k = knock_out(d, us, i, kills, tr, acc)
+        if k["knocked"]:
+            log = _logged({"kind": "knocked_out", "sup": src[0], "name": src[1]["name"], "dfd": i, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"], **_riders_line(k)}, k["tally"])
+    return log + _hull_shelled(d, us, i, bursts, kind, tr, src)
+
+
+def _hull_shelled(d: Data, us: list, i: int, bursts: list, kind: dict, tr: tuple, src: tuple) -> list:
+    """Men riding on vehicle unit i's hulls (exposed), spread over its hexes (the first hexes one
+    more), struck by the bursts as men in the open (the kind's struck % by distance, no cover),
+    at most all of them, and wounded as by shellfire. -> a `hullshelled` log line, or []."""
+    u = us[i]
+    if not exposed(d, u):
         return []
-    rng = tr[1]
-    kills = sum(1 for _ in range(direct) if rng.randint(1, 100) <= p)
-    k = knock_out(d, us, i, kills, tr, acc)
-    if not k["knocked"]:
+    R, (table, rng) = u["riders"], tr
+    hexes = [h for row in footprint(d, u) for h in row]
+    base, extra = divmod(R["men"], len(hexes))
+    men, struck, near = [base + (1 if j < extra else 0) for j in range(len(hexes))], 0, False
+    for at in bursts:
+        for h, n in zip(hexes, men):
+            dist = hdist(h, at)
+            if dist <= kind["radius"]:
+                near = True
+                struck += sum(1 for _ in range(n) if rng.randint(1, 100) <= kind["struck"][dist])
+    struck = min(struck, R["men"])
+    weapon = shell_weapon(d, table)
+    if not near or not struck or not weapon:
         return []
-    return _logged({"kind": "knocked_out", "sup": src[0], "name": src[1]["name"], "dfd": i, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"], **_riders_line(k)}, k["tally"])
+    t = _take_hurt(R, _blows(d, {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}, _side(R, table), struck, d.units["indirect"]["attack"], 0, rng, (), -1000))
+    down = min(t["down"], R["men"])
+    R.update(men=R["men"] - down, down=R.get("down", 0) + down, dead=R.get("dead", 0) + min(t["dead"], down))
+    return [{"kind": "hullshelled", "sup": src[0], "name": src[1]["name"], "dfd": i, "struck": struck, "down": down, "dead": min(t["dead"], down)}]
 
 
 def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, rng) -> int | None:

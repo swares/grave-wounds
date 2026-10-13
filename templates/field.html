@@ -942,6 +942,7 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   fetched: (l, nm) => ({ cls: "hero", text: `${l.name} is picked up by ${nm(l.unit)}: he goes with them now.` }),
   found: (l, nm) => ({ cls: "morale", text: `${l.name} (${nm(l.unit)}) is found by ${l.at_post ? "the enemy overrunning the aid post" : nm(l.by)}: ${l.fate === "prisoner" ? "taken prisoner" : "killed"} (rolled ${l.roll}, quarter ${l.chance}% or less).` }),
   mines: (l, nm) => ({ cls: "morale", text: mineText(l, nm) }),
+  hullshelled: (l, nm) => ({ cls: "", text: `${l.name || "Shells"} burst among the men riding on ${nm(l.dfd)}: ${l.struck} struck, ${l.down} down` + (l.dead ? ` (${l.dead} dead)` : "") + "." }),
   objective: l => ({ cls: "", text: objectiveText(l) }),
   overrun_post: l => ({ cls: "morale", text: `${poss(l.side)} aid post at ${hexName(l.at)} is overrun.` }),
 };

@@ -92,7 +92,7 @@ not fight, shoot or check morale until they **dismount** beside them. When a car
 knocked out, each of its riders is struck at {{v_riders_struck}}%, as by shellfire. Lorries
 are soft-skinned: a rifle or machine-gun hit that does not knock one out strikes a man aboard.
 Men riding on a tank's hull are in the open: small arms shoot at the tanks for them, and each
-hit strikes a rider.
+hit strikes a rider; shells bursting near the tanks strike them as men in the open.
 
 !!! gm "For the GM"
     Armour is a problem the infantry must solve, not a fight it can win with rifles. Give

@@ -1004,7 +1004,9 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
     machine guns shoot at a tank unit with men on its hull (as at soft-skinned vehicles),
     and each hit strikes one of the riders, wounded by that weapon; the tanks themselves
     are unhurt (the log says "On the hull"). A knocked-out tank throws its riders off as a
-    carrier does.
+    carrier does. Shells and bombs bursting near the tanks strike the men on the hulls as
+    men in the open (the kind's struck % by distance, no cover), spread over the tanks'
+    hexes, whether or not a tank is knocked out ("burst among the men riding on").
   - **Lorries** (2 crew, 14 hexes a move) carry 20 men each, as carriers carry riders. A
     small-arms hit on a lorry that does not knock it out goes through the sides: it strikes
     one of the men aboard, wounded by that weapon (the log says "Through the sides").
