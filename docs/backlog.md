@@ -24,9 +24,10 @@ When an item is done, delete it here and note it in the pull request that closes
   are not safer from shells. Cover blocks sight all or nothing past the hex next to either end:
   no thinning of fire through light scrub or an orchard, and no seeing through a building's
   open windows.
-- **Heroes on the field map.** First aid is his comrades' at a fixed chance: no one's
-  Leechcraft, no tourniquet or cautery, and the wounds he came with keep bleeding as the
-  roller left them. Impairments count against attack and defence only. A useless leg does not
+- **Heroes on the field map.** First aid uses his unit's best Leechcraft and a tourniquet,
+  but there is no cautery, no stretcher-bearers carrying him out of the fight, and the
+  followers (who have no Leechcraft) never heal a hero. Impairments count against attack and
+  defence only. A useless leg does not
   slow his unit, and an off-hand fighter is not stopped from wielding a two-handed weapon.
 - **Indirect fire, simplified.** A battery can be placed on the map, but a placed one off
   the map's edge cannot be clicked: it stands on a hex of the map or has no place. Its crews'

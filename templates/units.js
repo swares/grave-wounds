@@ -206,7 +206,7 @@ function heroesAfter(us, rng, quiet = null){      // end of an exchange: holds w
   us.forEach((u, i) => {
     for (const hero of u.heroes || []){
       if (hero.state === "dead") continue;
-      const aid = quiet?.[i] ? firstAid(hero, rng) : null;
+      const aid = quiet?.[i] ? firstAid(hero, rng, healerOf(u)) : null;
       if (aid) log.push({ kind: "heroaid", unit: i, ...aid });
       const line = heroAfter(hero, rng);
       if (line) log.push({ kind: "herobled", unit: i, ...line });
@@ -214,13 +214,25 @@ function heroesAfter(us, rng, quiet = null){      // end of an exchange: holds w
   });
   return log;
 }
-function firstAid(hero, rng){                       // his worst-bleeding wound from this battle bleeds a step less, at heroes.first_aid %
-  const ws = hero.wounds.filter(w => (w.bleed || 0) > 0);
+function healerOf(u){                             // [Leechcraft, name] of the best healer among u's heroes still up, or null
+  const up = (u.heroes || []).filter(h => h.state === "up" && Number.isFinite(h.leech));
+  if (!up.length) return null;
+  const best = up.reduce((a, b) => (b.leech > a.leech ? b : a), up[0]);
+  return [best.leech, best.name];
+}
+function firstAid(hero, rng, healer = null){        // his worst-bleeding wound (this battle's or one he came with): Leechcraft % or heroes.first_aid %; tourniquet a limb, or bind
+  const ws = [...hero.wounds, ...(hero.old || [])].filter(w => (w.bleed || 0) > 0);
   if (!ws.length) return null;
-  const w = ws.reduce((a, b) => (b.bleed > a.bleed ? b : a));
-  if (rng.randint(1, 100) > UD.heroes.first_aid) return { hero: hero.id, name: hero.name, loc: w.loc, stopped: false, bleed: w.bleed };
-  w.bleed -= 1;
-  return { hero: hero.id, name: hero.name, loc: w.loc, stopped: true, bleed: w.bleed };
+  const w = ws.reduce((a, b) => (b.bleed > a.bleed ? b : a), ws[0]), H = UD.heroes;
+  const line = { hero: hero.id, name: hero.name, loc: w.loc, ...(healer ? { by: healer[1] } : {}) };
+  if (rng.randint(1, 100) > (healer ? healer[0] : H.first_aid)) return { ...line, stopped: false, bleed: w.bleed };
+  const limb = ["arms", "legs"].includes(FD.locations[w.loc]?.zone);
+  let how = "bind";
+  if (limb && w.bleed >= H.tourniquet_from){ w.bleed = 0; how = "tourniquet" }
+  else w.bleed = Math.max(0, w.bleed - (healer ? FD.combat.first_aid.bind : 1));
+  w.aid = how;                                      // the roller marks it treated (on the field) when he goes back
+  if ((hero.old || []).includes(w)) hero.old_bleed = hero.old.reduce((a, o) => a + Math.round(FD.tracking.bleed_per_round[o.bleed || 0] * UD.exchange_rounds), 0);
+  return { ...line, stopped: true, bleed: w.bleed, how };
 }
 function heroAfter(hero, rng){                    // one hero's end of an exchange; a log line if he crossed a Blood threshold or went down
   const T = FD.tracking;

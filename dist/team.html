@@ -723,7 +723,7 @@ function sendToField(){
   const units = fieldUnits();
   const biggest = units.reduce((a, u, i) => (u.men > units[a].men ? i : a), 0);
   const unitOf = c => { const k = units.findIndex(u => u.career === c.career); return k >= 0 ? k : biggest };
-  const heroes = S.team.map(c => ({ name: c.name, attack: c.attack ?? 0, defence: c.defence, nerve: c.nerve, kit: c.kit, weapon: c.weapon, leader: !!c.leader, unit: unitOf(c), endurance: c.stats?.end }));
+  const heroes = S.team.map(c => ({ name: c.name, attack: c.attack ?? 0, defence: c.defence, nerve: c.nerve, kit: c.kit, weapon: c.weapon, leader: !!c.leader, unit: unitOf(c), endurance: c.stats?.end, leechcraft: c.skills?.leechcraft }));
   if (!units.length){ S.msg = "No followers to make units of: add some, roll, then send."; return render() }
   try {
     localStorage.setItem("gravewounds-team-field", JSON.stringify({ side: S.side.trim() || "Side A", table: byId(T.regions, S.region).table, units, heroes }));
