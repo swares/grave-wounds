@@ -1654,7 +1654,8 @@ function unitMeta(u){
 function vehicleMeta(u){                          // " · 3 tanks, 1 immobilised · carrying 1st Squad (9)"
   const imm = u.immobile ? `, ${u.immobile} immobilised` : "", out = u.gunless ? `, ${nOf(u.gunless, "gun")} out` : "";
   let ride = "";
-  if (u.riders) ride = tows(u) ? ` · towing ${u.riders.name} (${nOf(atGuns(u.riders), "gun")})` : ` · ${exposed(u) ? "riders on the hull:" : "carrying"} ${u.riders.name} (${u.riders.men})`;
+  const how = exposed(u) ? "riders on the hull:" : "carrying";
+  if (u.riders) ride = tows(u) ? ` · towing ${u.riders.name} (${nOf(atGuns(u.riders), "gun")})` : ` · ${how} ${u.riders.name} (${u.riders.men})`;
   return ` · ${vehiclesLeft(u)} ${FD.units.vehicles.kinds[u.vehicle].name.toLowerCase()}${imm}${out}${ride}`;
 }
 const GUN_NAMES = { smoothbore: "guns", rifled: "rifled guns", howitzer: "howitzers" };
