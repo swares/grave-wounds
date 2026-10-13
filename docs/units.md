@@ -530,9 +530,11 @@ with shell wounds (the First World War and later):
   until it leaves the map) and **Towards** (the way most of the side's units face, or a
   direction on the map). That is the fire plan: the mission keeps firing, lifting its aim
   on by the timetable, ahead of an advance that keeps to the same timetable. **Then** gives
-  the plan a second leg after the last line: the same lift, on the same way or turned left
-  or right, for its own number of lines. It ends after its last line, when it leaves the map,
-  or on **Stop**.
+  the plan another leg after the last line: the same lift, on the same way or turned left
+  or right (from the leg before), for its own number of lines. **Another leg** adds more legs,
+  up to eight; **Fewer legs** takes the last off. A leg set to stop, or to run until the
+  map's edge, ends the plan there. It ends after its last line, when it leaves the map, or on
+  **Stop**.
 - **Counter-battery**: a battery that has fired is located (◉ in the list), by its flashes
   and sound. On its own side's move a field gun or howitzer battery can then fire on it
   instead of on a hex (**Counter-battery…**), with no one needing to see it. Each shell
@@ -557,6 +559,11 @@ with shell wounds (the First World War and later):
   - Counter-battery fire reaches a placed battery only from within range.
   - An enemy unit within a hex of a placed battery **overruns** it: its tubes are lost.
   - Batteries with no place fire from off the map, as before.
+  - **Off the map**: once placed, a battery's **Off the map** choice stands it 5 to 120 hexes
+    behind the map's edge nearest where it was placed, straight out from there. It reaches its
+    range from there (so a call far across the map may be out of reach), counter-battery fire
+    needs to be within range of it, and no one can overrun it. The list says how far behind
+    the edge it stands.
 
 | Kind | Shells a minute a tube | Rounds a tube | Lands | Scatter | Struck % at 0, 1, 2 … hexes |
 | --- | --- | --- | --- | --- | --- |

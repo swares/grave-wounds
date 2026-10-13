@@ -300,7 +300,7 @@ def _support_rules(ind: dict) -> str:
             f"the guns at the kind's counter %, knocking out a tube and striking {CB['among']} crewmen, or at {CB['near']} times that bursts close by, striking "
             f"{CB['near_struck']}; struck crewmen roll wounds and those put down are lost, and a tube without its men is silent. Displacing, a battery is silent "
             f"for its exchanges ({moves}) and then unlocated. Smoke drifts downwind each exchange, by hexes: {drift}. A creeping barrage keeps a fire plan: "
-            f"1 to {I['creep']['max']} hexes a lift, 1 to {I['creep']['every_max']} exchanges on each line, a set number of lines, then a second leg the same way or turned. "
+            f"1 to {I['creep']['max']} hexes a lift, 1 to {I['creep']['every_max']} exchanges on each line, a set number of lines, then up to eight more legs, each the same way or turned. "
             "A battery may be placed on the map: it then reaches only its range ("
             + ", ".join(f"{k['name'].lower()} {k['range']} hexes" for k in K.values() if k.get("range"))
             + "), counter-battery fire reaches it only from within range, an enemy within a hex of it overruns it, and displacing it moves it to a new place."
