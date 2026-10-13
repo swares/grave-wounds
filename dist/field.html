@@ -253,7 +253,7 @@ legend{padding:0}
 
       <section id="support-box" aria-labelledby="h-support">
         <h2 id="h-support">Fire support</h2>
-        <p class="muted" style="margin:0">Off-map artillery and mortars on call. On its side's move, pick a battery, <b>Call fire</b>, then click a hex one of the side's units can see. Field guns and howitzers land the next exchange, mortars this one; each shell scatters. A battery that has fired is located (◉): the other side's guns can fire on it (<b>Counter-battery</b>) with no one needing to see it, knocking out tubes and killing and wounding crews (a tube without enough men falls silent). <b>Displace</b> moves it: silent for an exchange or more, then no longer located. <b>Place it</b> (in set-up) puts a battery's guns on the map: it reaches only its range from there, and an enemy within a hex overruns it. A creeping barrage can take a second leg (<b>Then</b>). Smoke drifts with the wind. <b>Aircraft</b> are called the same way: fighter-bombers come in two exchanges later with bombs and napalm over a wide area, two sorties an aircraft; helicopter gunships at once with rockets and guns. They are never located, do not fly in fog, storms or heavy snow, and fighter-bombers not at night. At night fire can be called only where the light lets someone see it fall; <b>Illumination</b> (mortars and guns) needs no one to see the hex and lights it and the hexes round it for two exchanges, as does a flare (Clicking the map).</p>
+        <p class="muted" style="margin:0">Off-map artillery and mortars on call. On its side's move, pick a battery, <b>Call fire</b>, then click a hex one of the side's units can see. Field guns and howitzers land the next exchange, mortars this one; each shell scatters. A battery that has fired is located (◉): the other side's guns can fire on it (<b>Counter-battery</b>) with no one needing to see it, knocking out tubes and killing and wounding crews (a tube without enough men falls silent). <b>Displace</b> moves it: silent for an exchange or more, then no longer located. <b>Place it</b> (in set-up) puts a battery's guns on the map: it reaches only its range from there, and an enemy within a hex overruns it. A creeping barrage can take more legs after its first lines (<b>Then</b>; <b>Another leg</b> adds one), each lifting on the same way or turning. Smoke drifts with the wind. <b>Aircraft</b> are called the same way: fighter-bombers come in two exchanges later with bombs and napalm over a wide area, two sorties an aircraft; helicopter gunships at once with rockets and guns. They are never located, do not fly in fog, storms or heavy snow, and fighter-bombers not at night. At night fire can be called only where the light lets someone see it fall; <b>Illumination</b> (mortars and guns) needs no one to see the hex and lights it and the hexes round it for two exchanges, as does a flare (Clicking the map).</p>
         <ul class="support" id="support"></ul>
         <div class="row">
           <div><label for="sel-sup-fire">Fire</label><select id="sel-sup-fire"><option value="he">High explosive</option><option value="smoke">Smoke</option><option value="illum">Illumination</option></select></div>
@@ -261,9 +261,9 @@ legend{padding:0}
           <div><label for="sel-sup-every">Each line</label><select id="sel-sup-every" title="A creeping barrage's fire plan: exchanges on each line before it lifts"></select></div>
           <div><label for="sel-sup-lines">Lines</label><select id="sel-sup-lines" title="A creeping barrage's fire plan: how many lines it fires on before it stops"></select></div>
           <div><label for="sel-sup-dir">Towards</label><select id="sel-sup-dir"><option value="auto">the enemy</option><option value="1">the top</option><option value="0">top right</option><option value="5">bottom right</option><option value="4">the bottom</option><option value="3">bottom left</option><option value="2">top left</option></select></div>
-          <div><label for="sel-sup-then">Then</label><select id="sel-sup-then" title="A second leg of the fire plan, after the lines above: the same lift, the same way or turned"><option value="">stop</option><option value="0">lift on the same way</option><option value="1">turn left</option><option value="5">turn right</option></select></div>
-          <div><label for="sel-sup-then-lines">for</label><select id="sel-sup-then-lines"></select></div>
         </div>
+        <div id="sup-legs"></div>
+        <div class="row"><button class="small" id="btn-sup-leg" title="Add another leg to the fire plan, after the ones above">Another leg</button><button class="small" id="btn-sup-unleg" title="Take the last leg off the fire plan">Fewer legs</button></div>
         <label class="check"><input type="checkbox" id="chk-sup-repeat"> Keep firing each exchange (a creeping barrage always does)</label>
         <div class="row">
           <div><label for="sel-sup-side">Side</label><select id="sel-sup-side"></select></div>
@@ -2899,7 +2899,7 @@ function supportChoices(){                        // the choices for adding a ba
   fillOnce("#sel-sup-kind", Object.entries(I.kinds).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join(""));
   fillOnce("#sel-sup-creep", `<option value="0">No</option>` + Array.from({ length: I.creep.max }, (_, n) => `<option value="${n + 1}">${nOf(n + 1, "hex", "hexes")} a lift</option>`).join(""));
   fillOnce("#sel-sup-every", Array.from({ length: I.creep.every_max }, (_, n) => `<option value="${n + 1}">${nOf(n + 1, "exchange")}</option>`).join(""));
-  fillOnce("#sel-sup-then-lines", lineOpts([1, 2, 3, 4, 5, 6, 8, 10]) + `<option value="0">until off the map</option>`);
+  renderLegs();
   fillOnce("#sel-sup-lines", `<option value="0">Until off the map</option>` + lineOpts([2, 3, 4, 5, 6, 8, 10]));
 }
 function supportItem(b, i){                       // one battery's line: its name, buttons and state
@@ -2909,7 +2909,7 @@ function supportItem(b, i){                       // one battery's line: its nam
   const D = FD.units.indirect.kinds[b.kind].displace;
   const move = D && b.tubes > 0 && !b.displacing ? `<button class="small" data-sup-move="${i}" ${dis} title="Move the battery: silent for ${nOf(D, "exchange")}, then no longer located">Displace</button>` : "";
   const located = b.located ? ' <span title="located">\u25c9</span>' : "";
-  return `<li aria-current="${on}"><span><b>${esc(b.name)}</b> <span class="muted">${esc(b.side)}</span>${located}</span>${call}${stop}${move}${placeButton(b, i)}${counterPick(b, i, can && live)}<span class="meta">${supportMeta(b)}</span></li>`;
+  return `<li aria-current="${on}"><span><b>${esc(b.name)}</b> <span class="muted">${esc(b.side)}</span>${located}</span>${call}${stop}${move}${placeButton(b, i)}${backPick(b, i)}${counterPick(b, i, can && live)}<span class="meta">${supportMeta(b)}</span></li>`;
 }
 function placeButton(b, i){                       // "Place it" / "Move it" for guns with a range, while setting up
   const range = FD.units.indirect.kinds[b.kind].range;
@@ -2940,15 +2940,39 @@ const hexName = h => `${h[0] + 1},${h[1] + 1}`;    // "30,12"
 function batteryWhere(b){                         // " · displacing (2 exchanges more) to 4,5 · at 3,3, reaches 1,100 hexes · overrun"
   const to = b.to ? " to " + hexName(b.to) : "";
   const moving_ = b.displacing ? ` · displacing (${nOf(b.displacing, "exchange")} more)${to}` : "";
-  const at = b.place ? ` · at ${hexName(b.place)}, reaches ${nOf(reachOf(b), "hex", "hexes")}` : "";
+  let at = b.place ? ` · at ${hexName(b.place)}, reaches ${nOf(reachOf(b), "hex", "hexes")}` : "";
+  if (b.place && offMap(b.place)) at = ` · off the map, ${nOf(beyond(b.place), "hex", "hexes")} behind its edge, reaches ${nOf(reachOf(b), "hex", "hexes")}`;
   return moving_ + at + (b.overrun ? " · overrun" : "");
 }
 function placeBattery(h){                         // the battery being placed (or plotted to move) stands at hex h
   const { i, to } = S.placing, b = supports()[i];
   S.placing = null;
   if (!b) return render();
-  if (to) b.to = [h[0], h[1]]; else b.place = [h[0], h[1]];
+  if (to) b.to = [h[0], h[1]]; else { b.place = [h[0], h[1]]; b.anchor = [h[0], h[1]] }
   S.msg = to ? `${b.name} will be at ${h[0] + 1},${h[1] + 1} once it has moved.` : `${b.name} stand at ${h[0] + 1},${h[1] + 1}: they reach ${nOf(reachOf(b), "hex", "hexes")} and can be overrun by an enemy within a hex.`;
+  render();
+}
+const BACKS = [0, 5, 10, 20, 40, 80, 120];        // hexes behind the map's edge a placed battery may stand
+const offMap = h => h[0] < 0 || h[1] < 0 || h[0] >= SIZE[0] || h[1] >= SIZE[1];
+function beyond(h){                               // how many hexes beyond the map's nearest edge h stands (0 on the map)
+  return Math.max(0, -h[0], -h[1], h[0] - (SIZE[0] - 1), h[1] - (SIZE[1] - 1));
+}
+function outward(h, k){                           // k hexes behind the map's edge nearest hex h (west, east, top or bottom), straight out from h
+  const d = [h[0], SIZE[0] - 1 - h[0], h[1], SIZE[1] - 1 - h[1]], e = d.indexOf(Math.min(...d));
+  return [[-k, h[1]], [SIZE[0] - 1 + k, h[1]], [h[0], -k], [h[0], SIZE[1] - 1 + k]][e];
+}
+function backPick(b, i){                          // while setting up, a placed battery can stand off the map, behind the edge nearest where it was placed
+  if (!b.place || S.phase !== "setup" || !FD.units.indirect.kinds[b.kind].range) return "";
+  const k = beyond(b.place);
+  return `<label class="sr" for="sel-back-${i}">Off the map</label><select class="small" id="sel-back-${i}" data-sup-back="${i}" style="width:auto" title="Stand the guns off the map, this many hexes behind the edge nearest where they were placed: they still reach their range from there, and cannot be overrun">`
+    + BACKS.map(n => `<option value="${n}"${n === k ? " selected" : ""}>${n ? nOf(n, "hex", "hexes") + " behind the edge" : "On the map"}</option>`).join("") + "</select>";
+}
+function setBack(i, k){
+  const b = supports()[i];
+  if (!b?.place || S.phase !== "setup") return;
+  const at = b.anchor || b.place;
+  b.place = k ? outward(at, k) : at.slice();
+  S.msg = k ? `${b.name} stand ${nOf(k, "hex", "hexes")} behind the map's edge: they reach ${nOf(reachOf(b), "hex", "hexes")} from there and cannot be overrun.` : `${b.name} stand on the map at ${hexName(at)}.`;
   render();
 }
 function displace(i){                             // the battery moves: silent for its kind's exchanges, then no longer located
@@ -2996,19 +3020,47 @@ function callFire(i, h){                          // the mission, if a unit of i
   if (fire === "illum") m.illum = true;
   const every = Number($("#sel-sup-every").value) || 1, lines = Number($("#sel-sup-lines").value) || 0;
   if (by) m.creep = { step: by, dir: creepDir(b.side), every, lines };
-  const then = $("#sel-sup-then").value, thenLines = Number($("#sel-sup-then-lines").value) || 0;
-  if (by && lines && then !== "") m.creep.legs = [{ step: by, dir: mod6(m.creep.dir + Number(then)), lines: thenLines }];
+  if (by && lines){ const legs = planLegs(by, m.creep.dir); if (legs.length) m.creep.legs = legs }
   b.mission = m;
   const what = { he: "fire", smoke: "lay smoke", illum: "fire illumination" }[fire] || "fire";
   const why = grounded(S.field, b), wait = why ? ` (grounded: ${groundedName(why)}; they fly when it clears)` : "";
-  S.msg = `${b.name} will ${what} on ${hexName(h)} ${whenText(K.delay)}${wait}${m.repeat ? ", and every exchange until stopped" : ""}${creepText(m, every, lines, thenLines)}.`;
+  S.msg = `${b.name} will ${what} on ${hexName(h)} ${whenText(K.delay)}${wait}${m.repeat ? ", and every exchange until stopped" : ""}${creepText(m, every, lines)}.`;
   render();
 }
-function creepText(m, every, lines, thenLines){   // ", lifting 2 hexes towards the north every exchange, 4 lines, then ..."
+/* ----- a creeping barrage's fire plan: its first lines, then any number of legs ----- */
+let LEGS = 1;                                     // leg rows shown under the plan
+const TURNS = [["", "stop"], ["0", "lift on the same way"], ["1", "turn left"], ["5", "turn right"]];
+function renderLegs(){                            // the leg rows: Then (stop, same way, turn) and for how many lines
+  const box = $("#sup-legs"), was = [...box.querySelectorAll("[data-leg]")].map(r => [r.querySelector("select.then").value, r.querySelector("select.lines").value]);
+  const lineOpts = [1, 2, 3, 4, 5, 6, 8, 10].map(n => `<option value="${n}">${nOf(n, "line")}</option>`).join("") + `<option value="0">until off the map</option>`;
+  const turnOpts = TURNS.map(([v, t]) => `<option value="${v}">${t}</option>`).join("");
+  box.innerHTML = Array.from({ length: LEGS }, (_, k) => `<div class="row" data-leg="${k}"><div><label for="sel-sup-then-${k}">${k ? "And then" : "Then"}</label><select class="then" id="sel-sup-then-${k}" title="A leg of the fire plan, after the lines before it: stop, lift on the same way, or turn">${turnOpts}</select></div><div><label for="sel-sup-then-lines-${k}">for</label><select class="lines" id="sel-sup-then-lines-${k}">${lineOpts}</select></div></div>`).join("");
+  [...box.querySelectorAll("[data-leg]")].forEach((r, k) => { if (was[k]){ r.querySelector("select.then").value = was[k][0]; r.querySelector("select.lines").value = was[k][1] } });
+  $("#btn-sup-unleg").disabled = LEGS <= 1;
+}
+function planLegs(step, dir){                     // the legs as chosen: each turns from the one before; a stop or "until off the map" ends the plan
+  const legs = [];
+  for (const r of $("#sup-legs").querySelectorAll("[data-leg]")){
+    const then = r.querySelector("select.then").value, lines = Number(r.querySelector("select.lines").value) || 0;
+    if (then === "") break;
+    dir = mod6(dir + Number(then));
+    legs.push({ step, dir, lines });
+    if (!lines) break;
+  }
+  return legs;
+}
+const DIR_WORDS = ["top right", "the top", "top left", "bottom left", "the bottom", "bottom right"];
+function legsText(m){                             // ", then turn left for 3 lines, then lift on the same way until it leaves the map"
+  let prev = m.creep.dir;
+  return (m.creep.legs || []).map(l => {
+    const turn = { 0: "lift on the same way", 1: "turn left", 5: "turn right" }[mod6(l.dir - prev)] || "lift towards " + DIR_WORDS[l.dir];
+    prev = l.dir;
+    return `, then ${turn}${l.lines ? " for " + nOf(l.lines, "line") : " until it leaves the map"}`;
+  }).join("");
+}
+function creepText(m, every, lines){              // ", lifting 2 hexes towards the north every exchange, 4 lines, then ..."
   if (!m.creep) return "";
-  const after = thenLines ? " for " + nOf(thenLines, "line") : " until it leaves the map";
-  const leg = m.creep.legs ? `, then ${$("#sel-sup-then").selectedOptions[0].text}${after}` : "";
-  const plan = (lines ? `, ${lines} lines` : ", until it leaves the map") + leg;
+  const plan = (lines ? `, ${lines} lines` : ", until it leaves the map") + legsText(m);
   return `, lifting ${nOf(m.creep.step, "hex", "hexes")} towards ${$("#sel-sup-dir").selectedOptions[0].text} every ${nOf(every, "exchange")}${plan}`;
 }
 function creepDir(side){                          // the facing a creeping barrage moves along: chosen, or the way most of the side's units face
@@ -4263,6 +4315,8 @@ function init(){
   $("#btn-ground").onclick = toggleGround;
   $("#btn-fixed").onclick = toggleFixed;
   $("#sel-nv").onchange = e => setNv(e.target.value);
+  $("#btn-sup-leg").onclick = () => { LEGS = Math.min(8, LEGS + 1); renderLegs() };
+  $("#btn-sup-unleg").onclick = () => { LEGS = Math.max(1, LEGS - 1); renderLegs() };
   $("#sel-medics").onchange = e => setMedics(e.target.value);
   $("#btn-fac").onclick = toggleFac;
   $("#sel-ai").onchange = e => setAi(e.target.value);
@@ -4279,8 +4333,9 @@ function init(){
     if (pl){ const i = +pl.dataset.supPlace; S.placing = S.placing?.i === i ? null : { i }; S.msg = S.placing ? "Click the hex where its guns stand." : ""; render() }
   });
   $("#support").addEventListener("change", e => {
-    const c = e.target.closest("select[data-sup-cb]");
+    const c = e.target.closest("select[data-sup-cb]"), bk = e.target.closest("select[data-sup-back]");
     if (c && c.value !== "") callCounter(+c.dataset.supCb, +c.value);
+    if (bk) setBack(+bk.dataset.supBack, +bk.value);
   });
   $("#btn-resupply").onclick = toggleResupply;
   $("#sel-target").onchange = e => setTarget(e.target.value);
