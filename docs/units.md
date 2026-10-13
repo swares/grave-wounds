@@ -206,6 +206,49 @@ a longbow's long range of about 270 yards (250 m) is 25 field hexes.
 The page keeps the battle in the browser, so it can be closed and reopened. *New battle*
 starts again from the starting units.
 
+## The enemy commander
+
+**Enemy commander** (under the battle buttons) hands one side to a scripted commander, either
+**attacking** or **holding**. At the start of each of that side's moves it orders the side's
+units, one after another, and logs each order ("Billmen (Lancastrians) move 6 hexes toward
+Billmen (Yorkists)."). **Undo its orders** puts the units back where they began the move, so
+you can move them yourself or press **Give its orders** for a fresh set. Nothing else
+changes: you still press the side's *done* button, and you can still adjust its units by
+hand before you do. It is a rule of thumb, as a GM would play the other side, not a
+general. All its numbers are in units.yaml `commander`.
+
+- **Its target.** Each unit takes the nearest enemy unit still standing.
+- **Not steady.** A shaken unit stays where it is. If an enemy's missile weapon reaches it,
+  it goes to ground.
+- **Nerves.** A steady unit first rolls d100. At or under its quality's chance it hesitates
+  and does nothing this move: green men 30%, regulars 10%, veterans never.
+- **Where to go.** It scores every hex it could reach, facing the target, and takes the
+  best one it can legally move to:
+  - 10 points for each hex nearer the target.
+  - For cover from the target's shots there (woods 20%, buildings 30%), a point per % for
+    regulars and 2 for veterans. Green men ignore cover.
+  - One point off for each hex of movement.
+- **Shooters.** A unit with missiles stops where the target is in range and shoots rather
+  than closing. It keeps off the enemy (2 hexes or more) if it can, and never charges.
+  With a modern weapon (breech-loaders on), regulars and veterans under fire go to ground
+  where they stand. Older armies stand up.
+- **Men without missiles** charge only with the odds their quality wants: their men times
+  attack % against the target's.
+  - Attacking: green men want even odds, regulars take on an enemy up to a quarter
+    stronger, and veterans one two-thirds stronger.
+  - Holding: green men want half as many again as the enemy, regulars a fifth more, and
+    veterans even odds.
+  - Without the odds they close to just short of contact and wait.
+  - Veterans prefer a hex off the target's front (30 points more).
+- **Holding.** A side that holds does not leave its ground. A unit only charges an enemy
+  it can reach with the odds, turns to face its target, or goes to ground.
+
+What it does not do yet:
+- It sees the whole field: no fog of war, even at night.
+- It leaves alone batteries and their orders, calls for fire, air controllers, vehicles'
+  riders, fixed lines, reserves and works.
+- It plays only on the field map, not the travel map.
+
 ## From the travel map
 
 On the travel map, **Set up the fight** with **Fight it on: the field map** opens this page

@@ -1517,6 +1517,133 @@ function flee(units, i, size, field = null){      // a broken unit runs straight
   return u;
 }
 
+// ---------- the enemy commander (as gravewounds.commander) ----------
+const ROUTED = ["broken", "fled"];
+function command(units, side, size, field, rng, exchange = null, stance = "attack"){   // {units, orders}: each unit of side ordered in turn, by its quality (units.yaml commander); stance attack or hold
+  const us = units.map(u => ({ ...u })), orders = [];
+  for (let i = 0; i < us.length; i++){
+    if (us[i].side !== side || !commandable(us, i, exchange)) continue;
+    const roll = rng.randint(1, 100), o = unitOrder(us, i, [size, field, stance], roll);
+    if (o){ orders.push({ unit: i, ...o }); applyOrder(us, i, o) }
+  }
+  return { units: us, orders };
+}
+function commandable(us, i, exchange){            // standing, not a battery, not in contact, not just come on
+  const u = us[i];
+  if (ROUTED.includes(u.state) || u.men <= 0 || isBattery(u)) return false;
+  if (exchange !== null && u.arrived === exchange) return false;
+  return !inContact(us, occupancy(us), i);
+}
+function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance]
+  const u = us[i], C = UD.commander, t = aiTarget(us, i);
+  if (t === null) return null;
+  if (u.state !== "steady") return !u.prone && underFire(us, i) ? { act: "ground", target: t } : null;
+  if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
+  return bestOrder(us, i, t, ctx);
+}
+function aiTarget(us, i){                          // the nearest enemy unit still standing (the first of equals), or null
+  const u = us[i];
+  let best = null;
+  us.forEach((e, j) => {
+    if (e.side === u.side || ROUTED.includes(e.state) || e.men <= 0) return;
+    const dist = hdist(u.pos, e.pos);
+    if (best === null || dist < best[0]) best = [dist, j];
+  });
+  return best ? best[1] : null;
+}
+function underFire(us, i){                         // an enemy unit's missile weapon reaches unit i
+  const u = us[i];
+  return us.some(e => e.side !== u.side && !ROUTED.includes(e.state) && e.men > 0 && "range" in FD.weapons[e.weapon] && fieldRange(e.weapon, hdist(e.pos, u.pos)) !== null);
+}
+function mayCharge(u, t, stance = "attack"){       // men without missiles, steady, with the odds its quality wants in its stance
+  if ("range" in FD.weapons[u.weapon] || u.state !== "steady") return false;
+  const mine = u.men * quality(u.quality).attack, theirs = t.men * quality(t.quality).attack;
+  return 100 * mine >= (UD.commander.charge_odds[stance][u.quality] ?? 100) * theirs;
+}
+function bestOrder(us, i, t, [size, field, stance]){   // the best-scoring hex it can legally reach, facing the target; holding, it only charges, else stays
+  const u = us[i], tu = us[t], hold = stance === "hold";
+  const free = u.prone ? { ...u, prone: false } : u, base = us.map((x, k) => (k === i ? free : x));
+  const shooter = "range" in FD.weapons[u.weapon], charge = mayCharge(u, tu, stance);
+  const best = firstMove(base, i, tu, [size, field], [charge, hold, shooter]);
+  if (best === null){
+    const f = bearing(u.pos, tu.pos);
+    return hold && moveUnit(base, i, u.pos, f, size, field).ok ? stayOrder(us, i, t, f, shooter) : null;
+  }
+  const [h, f, m] = best;
+  if (h[0] === u.pos[0] && h[1] === u.pos[1]) return stayOrder(us, i, t, f, shooter);
+  return { act: m.charge ? "charge" : "move", target: t, pos: h, facing: f, cost: m.cost, ...(u.prone ? { up: true } : {}) };
+}
+function firstMove(base, i, tu, [size, field], [charge, hold, shooter]){   // [hex, facing, move] for the best-scoring hex it will move to, or null
+  const u = base[i];
+  if (hold && !charge) return null;
+  const allow = allowance(u), occ = occupancy(base), stuck = !!(u.lost || u.immobile);
+  let tries = UD.commander.tries;
+  const foes = new Set(Object.keys(occ).filter(k => base[occ[k]].side !== u.side));
+  const cands = [...reachable(base, i, size, allow * (charge ? UD.charge_move : 1), field).values()].map(([h, c]) => [-aiScore(field, u, tu, h, c, shooter), c, h[1], h[0]]);
+  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]);
+  for (const [, c, row, col] of cands){
+    const h = [col, row], f = bearing(h, tu.pos), touch = touches({ ...u, pos: h, facing: f }, foes);
+    if ((touch ? !charge : hold || c > allow) || (stuck && (h[0] !== u.pos[0] || h[1] !== u.pos[1]))) continue;
+    if (tries === 0) return null;
+    tries -= 1;
+    const m = legalMove(base, i, [h, f, c, touch], [size, field]);
+    if (!rejects(m, charge, hold)) return [h, f, m];
+  }
+  return null;
+}
+function legalMove(base, i, [h, f, c, touch], [size, field]){   // moveUnit for a hex whose least movement and contact are known, without finding the path again
+  const u = base[i], moved = { ...u, pos: h, facing: mod6(f) };
+  if (!fits(base, i, moved, size, field)) return { ok: false };
+  const turns = Math.min(mod6(f - u.facing), mod6(u.facing - f));
+  const cost = c + turns * turnCost(u) + (turns ? sweepCost(field, { ...u, pos: h }, moved) : 0), allow = allowance(u);
+  if (cost <= allow) return { ok: true, cost, charge: touch && c > 0 };
+  if (touch && u.state === "steady" && cost <= allow * UD.charge_move) return { ok: true, cost, charge: true };
+  return { ok: false };
+}
+const touches = (u, foes) => footprint(u).some(row => row.some(h => [0, 1, 2, 3, 4, 5].some(dn => foes.has(hk(step(h, dn))))));   // placed so, it touches a hex the enemy stands on
+function rejects(m, charge, hold){                // a move it will not make: illegal, a charge without the odds, or (holding) anything but a charge
+  if (!m.ok) return true;
+  return m.charge ? !charge : hold;
+}
+function stayOrder(us, i, t, f, shooter){         // on the ground it stays down; else turn to the target, or go to ground under fire with a modern weapon
+  const u = us[i], C = UD.commander;
+  if (u.prone) return null;
+  if (f !== u.facing) return { act: "turn", target: t, facing: f };
+  const dig = shooter && C.ground_with.includes(u.weapon) && (C.cover[u.quality] ?? 0) > 0 && underFire(us, i);
+  return dig ? { act: "ground", target: t } : null;
+}
+function aiScore(field, u, tu, h, cost, shooter){  // how much the commander likes unit u ending at h (higher is better)
+  const C = UD.commander, q = u.quality, dist = hdist(h, tu.pos);
+  const s = (C.cover[q] ?? 0) * coverAt(field, tu.pos, h) - cost;
+  if (shooter){
+    const inr = dist >= 1 && fieldRange(u.weapon, dist) !== null;
+    return s + (inr ? C.in_range : -C.closing * dist) - (dist < C.keep_off ? C.too_close : 0);
+  }
+  const flank = arc(tu.facing, bearing(tu.pos, h)) === "front" ? 0 : (C.flank[q] ?? 0);
+  return s - C.closing * dist + flank;
+}
+function reachable(units, i, size, limit, field = null){   // Map hk -> [hex, least movement] for every hex the middle hex can reach within limit
+  const occ = occupancy(units.filter((_, k) => k !== i)), u = units[i];
+  const best = new Map([[hk(u.pos), 0]]), done = new Map(), open = [[0, u.pos]];
+  while (open.length){
+    const [cost, h] = popCheapest(open);
+    if (done.has(hk(h))) continue;
+    done.set(hk(h), [h, cost]);
+    for (const [x, c] of stepsFrom(field, u, h, occ, size)){
+      if (cost + c > limit || cost + c >= (best.get(hk(x)) ?? limit + 1)) continue;
+      best.set(hk(x), cost + c);
+      open.push([cost + c, x]);
+    }
+  }
+  return done;
+}
+function applyOrder(us, i, o){                    // carry out an order (as the page's own move: charged when it charges)
+  const u = us[i];
+  if (o.act === "ground") us[i] = { ...u, prone: true };
+  else if (o.act === "turn") us[i] = { ...u, facing: o.facing };
+  else if (o.act === "move" || o.act === "charge") us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}) };
+}
+
 // ---------- after the battle (as units.aftermath and disease.wound_case) ----------
 const TR = FD.track;
 const standingUnit = u => u.men > 0 && (u.state === "steady" || u.state === "shaken");
