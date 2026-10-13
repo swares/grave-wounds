@@ -22,7 +22,7 @@ def _pct(x: float) -> str:
 
 def values(d: Data) -> dict:
     """The rule numbers the chapters quote, by name."""
-    W, T, CB, U = d.wounds, d.wounds["tracking"], d.wounds["combat"], d.units
+    T, CB = d.wounds["tracking"], d.wounds["combat"]
     SC, MV, CH, MO = CB["stop_check"], CB["move"], CB["characteristics"], CB["morale"]
     E, DZ, RC = d.teams["medieval"], d.disease, d.disease["recovery"]
     res = SC["results"]
@@ -164,7 +164,7 @@ def example(d: Data) -> dict:
     names = {s["id"]: s["name"] for s in d.teams["medieval"]["skills"]}
     ex = {"lead": lead["name"], "arch": arch["name"], "arch_first": arch["name"].split()[0], "leech": leech["name"],
           "leech_skill": leech["skills"]["leechcraft"], "leech_career": _career(d, leech)}
-    s, base = arch["stats"], arch["base"]
+    s = arch["stats"]
     ex.update({f"a_{k}": v for k, v in s.items()}, a_bow=arch["attack"], a_def=arch["defence"], a_terms=arch["terms"], a_age=arch["age"],
               a_origin=arch["origin"].lower(), a_trait=arch["trait"].lower(), a_drawback=arch["drawback"].lower(),
               a_blood=d.wounds["tracking"]["blood_pool"] + (s["end"] - 50) // d.wounds["combat"]["characteristics"]["blood"]["per"],
