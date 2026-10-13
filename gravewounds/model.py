@@ -1136,8 +1136,10 @@ def _light_errors(wx: dict) -> list[str]:
     errors += [f"weather.yaml: light.levels.{k} needs move and lost (numbers)" for k, v in L.get("levels", {}).items()
                if not (isinstance(v.get("move"), int) and isinstance(v.get("lost"), int))]
     N, F = L.get("night_vision") or {}, L.get("fixed_line") or {}
-    if not (isinstance(N.get("kits"), list) and isinstance(N.get("sight"), int) and isinstance(N.get("aim"), int)):
-        errors.append("weather.yaml: light.night_vision needs kits, sight and aim")
+    devs = N.get("devices") or {}
+    if not (isinstance(N.get("kits"), list) and N.get("kit_device") in devs) or any(
+            not (v.get("name") and isinstance(v.get("sight"), int) and isinstance(v.get("aim"), int)) for v in devs.values()):
+        errors.append("weather.yaml: light.night_vision needs kits, a kit_device among its devices, and devices with a name, sight and aim")
     if not (isinstance(F.get("width"), int) and isinstance(F.get("aim"), int)):
         errors.append("weather.yaml: light.fixed_line needs width and aim")
     return errors + [f"weather.yaml: light.{k} must be a number" for k in ("dusk_hours", "moon_from", "lasts", "flare", "flash", "lost_for") if not isinstance(L.get(k), (int, float))]
@@ -1205,6 +1207,9 @@ def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_un
     errors += [f"{where}: unit {u.get('name')}: fixed (a machine gun's fixed line) must be a hex on the map, for a machine gun" for u in f.get("units", [])
                if "fixed" in u and not (isinstance(u["fixed"], list) and len(u["fixed"]) == 2 and 0 <= u["fixed"][0] < f["size"][0]
                                         and 0 <= u["fixed"][1] < f["size"][1] and u.get("weapon") in (d.units.get("machine_guns") or {}).get("weapons", []))]
+    devices = set((d.weather.get("light", {}).get("night_vision") or {}).get("devices") or {}) | {"none"}
+    errors += [f"{where}: unit {u.get('name')}: nv (a night-vision device) must be one of {', '.join(sorted(devices))}" for u in f.get("units", [])
+               if "nv" in u and u["nv"] not in devices]
     if errors:
         return errors
     field, units = battlefield(d, f["id"]), battlefield_units(d, f["id"])

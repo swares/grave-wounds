@@ -39,9 +39,10 @@ const BUNKERS = [[TOP[0] - 8, TOP[1]], [TOP[0] + 8, TOP[1]], [TOP[0] - 4, TOP[1]
 const trenchHexes = ring(TOP, 8).filter(h => !BUNKERS.some(b => b[0] === h[0] && b[1] === h[1]));
 
 const US = { side: 0, facing: N }, NV = { side: 1, facing: S };
-const MARINE = { quality: "regular", weapon: "rifle_assault", kit: "vietnam_usmc", formation: "extended", mounted: false, prone: true };
-const MG = { quality: "regular", weapon: "machine_gun", kit: "vietnam_usmc", formation: "mg", mounted: false, prone: true };
-const PAVN = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false };
+// The Marines had a few Starlight scopes on the hill (nv: starlight); the North Vietnamese had none.
+const MARINE = { quality: "regular", weapon: "rifle_assault", kit: "vietnam_usmc", formation: "extended", mounted: false, prone: true, nv: "starlight" };
+const MG = { quality: "regular", weapon: "machine_gun", kit: "vietnam_usmc", formation: "mg", mounted: false, prone: true, nv: "starlight" };
+const PAVN = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, nv: "none" };
 const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("E Company, 2/26 Marines (the north trenches)", US, 60, MARINE, 10, [TOP[0], TOP[1] - 8], N),
@@ -50,7 +51,7 @@ const units = [
   { ...at("E Company's machine guns", US, 10, MG, 2, [TOP[0] + 5, TOP[1] - 6], N), fixed: [TOP[0], 16] },   // laid by day through the north wire
   at("North Vietnamese battalion (through the north wire)", NV, 400, PAVN, 30, [TOP[0], 16], S),
   at("North Vietnamese company (from the north-west)", NV, 120, PAVN, 12, [24, 30], 5),
-  at("North Vietnamese machine guns", NV, 10, { ...MG, kit: "none", quality: "veteran" }, 2, [TOP[0] + 20, 22], 4),
+  at("North Vietnamese machine guns", NV, 10, { ...MG, kit: "none", quality: "veteran", nv: "none" }, 2, [TOP[0] + 20, 22], 4),
 ];
 
 writeField({
