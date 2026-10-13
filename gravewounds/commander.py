@@ -264,16 +264,21 @@ def _toward(d: Data, us: list, i: int, t: int | None, ctx: tuple, act: str) -> d
     tries, allow = d.units["commander"]["tries"], U.allowance(d, free)
     for c, h in _toward_hexes(d, base, i, tu, (size, field)):
         f = _facing(h, tu, obj, u["facing"])
-        turns = min((f - u["facing"]) % 6, (u["facing"] - f) % 6)
-        if c + turns * U.turn_cost(d, free) > allow or _touches(d, {**u, "pos": h, "facing": f}, foes):
+        if c + _turning(d, free, f) > allow or _touches(d, {**u, "pos": h, "facing": f}, foes):
             continue
         if tries == 0:
             return None
         tries -= 1
         m = _legal(d, base, i, (h, f, c, False), (size, field))
         if m["ok"]:
-            return {"act": act, "target": t, "pos": h, "facing": f, "cost": m["cost"], **({"up": True} if u.get("prone") else {})}
+            o = {"act": act, "target": t, "pos": h, "facing": f, "cost": m["cost"]}
+            return {**o, "up": True} if u.get("prone") else o
     return None
+
+
+def _turning(d: Data, u: dict, f: int) -> int:
+    """Movement unit u spends turning to facing f (without sweeping)."""
+    return min((f - u["facing"]) % 6, (u["facing"] - f) % 6) * U.turn_cost(d, u)
 
 
 def _toward_hexes(d: Data, base: list, i: int, tu: dict | None, where: tuple) -> list:
