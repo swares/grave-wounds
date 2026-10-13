@@ -1344,8 +1344,9 @@ function armourVolley(us, table, rng, acc, log, v, opts){   // anti-armour shots
   const p = killChance(us[v.dfd], A.row, v.from, v.to);
   for (let s = 0; s < hits; s++) if (rng.randint(1, 100) <= p) kills++;
   const k = knockOut(us, v.dfd, kills, table, rng, acc), hm = harm(us[v.dfd], A.row === "small" ? 0 : hits - k.knocked, acc.lost[v.dfd], rng);
+  const shot = A.row === "small" ? ridersShot(us[v.dfd], hits - k.knocked, att, table, rng) : {};
   acc.dealt[v.att] += k.crew;
-  log.push(...logged({ kind: "antiarmour", ...v, shots: n, hit: hits, knocked: k.knocked, crew: k.crew, struck: k.struck, kill: p, ...harmLine(hm), ...ridersLine(k) }, k.tally));
+  log.push(...logged({ kind: "antiarmour", ...v, shots: n, hit: hits, knocked: k.knocked, crew: k.crew, struck: k.struck, kill: p, ...harmLine(hm), ...ridersLine(k), ...shot }, k.tally));
 }
 function knockOut(us, i, n, table, rng, acc){      // up to n vehicles out: their crews out of the fight, each struck at crew_struck % -> {knocked, crew, struck, tally}
   const u = us[i], K = vehicleKind(u), V = UD.vehicles;
@@ -1361,6 +1362,15 @@ function knockOut(us, i, n, table, rng, acc){      // up to n vehicles out: thei
   acc.lost[i] += crew;
   acc.dead[i] += Math.min(t.dead, crew);
   return { knocked: n, crew, struck, tally: t, ...ridersHit(u, n, left, table, rng) };
+}
+function ridersShot(u, n, att, table, rng){         // small-arms hits on a soft carrier that knocked none out: each strikes a rider, wounded by the shooter's weapon (as units._riders_shot)
+  const R = u.riders;
+  if (!R || R.men <= 0 || n <= 0) return {};
+  const struck = Math.min(n, R.men);
+  const t = takeHurt(R, blows({ table, weapon: att.weapon, kit: null, quality: "regular" }, sideOfUnit(R, table), struck, UD.indirect.attack, 0, rng, { exposed: [], shift: -1000 }));
+  const down = Math.min(t.down, R.men);
+  Object.assign(R, { men: R.men - down, down: (R.down || 0) + down, dead: (R.dead || 0) + Math.min(t.dead, down) });
+  return { rshot: struck, rshotdown: down, rshotdead: Math.min(t.dead, down) };
 }
 function ridersHit(u, n, left, table, rng){        // the riders in n of a carrier unit's `left` vehicles, knocked out: each struck at riders_struck %, wounded as by shellfire
   const R = u.riders;

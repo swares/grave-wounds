@@ -378,11 +378,13 @@ vehicles:
     ifv:  {name: "Infantry fighting vehicles", crew: 3, move: 14, armour: light, carry: 7, gun: {range: 80, rate: 2, he: autocannon, hit: [[20, 70], [40, 45], [80, 20]]}}
     apc:  {name: "Armoured carriers", crew: 3, move: 14, armour: light, carry: 10}
     tractor: {name: "Gun tractors and trucks", crew: 2, move: 12, armour: soft, tows: 1}
+    lorry: {name: "Lorries", crew: 2, move: 14, armour: soft, carry: 20}
   armour:
     heavy: {rpg: 15, atgm: 60, gun: 35, shell: 1, mine: 25}
     light: {rpg: 50, atgm: 90, gun: 75, shell: 3, mine: 60}
-    # Soft-skinned (trucks and gun tractors): small arms shoot at them too, each aimed shot that
-    # hits knocking one out at `small` % (no lesser damage); everything else kills them easily.
+    # Soft-skinned (lorries and gun tractors): small arms shoot at them too, each aimed shot that
+    # hits knocking one out at `small` % (no lesser damage, but a hit that does not knock one
+    # out strikes one of the men riding in it, wounded by that weapon); everything else kills them easily.
     soft: {rpg: 80, atgm: 95, gun: 90, shell: 6, mine: 80, small: 5}
   # Aimed shots a man fires at soft-skinned vehicles an exchange: `rate` for rifles and the like,
   # `mg` for a machine gun's crewmen (design estimates).

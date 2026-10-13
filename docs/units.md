@@ -995,10 +995,13 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
 
 - **Armour.** Small arms cannot hurt an armoured vehicle, and men armed only with them do
   not shoot at one. No one strikes a vehicle hand to hand, or is struck by it.
-  - **Soft-skinned vehicles** (gun tractors and trucks) are the exception: rifles and machine
-    guns shoot at them as at men, half an aimed shot a man an exchange (3 a machine gunner),
-    and each hit knocks one out at 5%, with no lesser damage. Shells count 6 times (light
-    armour 3, heavy 1). Design estimates (`vehicles.armour.soft`, `vehicles.small_arms`).
+  - **Soft-skinned vehicles** (gun tractors and lorries) are the exception: rifles and
+    machine guns shoot at them as at men, half an aimed shot a man an exchange (3 a machine
+    gunner), and each hit knocks one out at 5%, with no lesser damage. Shells count 6 times
+    (light armour 3, heavy 1). Design estimates (`vehicles.armour.soft`, `vehicles.small_arms`).
+  - **Lorries** (2 crew, 14 hexes a move) carry 20 men each, as carriers carry riders. A
+    small-arms hit on a lorry that does not knock it out goes through the sides: it strikes
+    one of the men aboard, wounded by that weapon (the log says "Through the sides").
 
   | A hit from | Tank (heavy armour) | Infantry fighting vehicle or carrier (light) | Gun tractor or truck (soft) |
   |---|---|---|---|

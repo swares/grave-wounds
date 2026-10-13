@@ -2160,8 +2160,9 @@ def _armour_volley(d: Data, us: list, ctx: tuple, v: dict, opts: dict) -> list:
     kills = sum(1 for _ in range(hits) if rng.randint(1, 100) <= p)
     k = knock_out(d, us, v["dfd"], kills, (table, rng), acc)
     harm = _harm(d, us[v["dfd"]], 0 if A["row"] == "small" else hits - k["knocked"], acc[0][v["dfd"]], rng)
+    shot = _riders_shot(d, us[v["dfd"]], hits - k["knocked"], att, (table, rng)) if A["row"] == "small" else {}
     acc[2][v["att"]] += k["crew"]
-    line = {"kind": "antiarmour", **v, "shots": n, "hit": hits, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"], "kill": p, **_harm_line(harm), **_riders_line(k)}
+    line = {"kind": "antiarmour", **v, "shots": n, "hit": hits, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"], "kill": p, **_harm_line(harm), **_riders_line(k), **shot}
     return _logged(line, k["tally"])
 
 
@@ -2194,6 +2195,21 @@ def knock_out(d: Data, us: list, i: int, n: int, tr: tuple, acc: tuple) -> dict:
     lost[i] += crew
     dead[i] += min(t["dead"], crew)
     return {"knocked": n, "crew": crew, "struck": struck, "tally": t, **_riders_hit(d, u, n, left, tr)}
+
+
+def _riders_shot(d: Data, u: dict, n: int, att: dict, tr: tuple) -> dict:
+    """Small-arms hits on a soft-skinned carrier that knocked none out: each strikes one of its
+    riders (up to as many as ride), wounded by the shooter's weapon (taken off the riders at
+    once). -> the log's rshot, rshotdown and rshotdead, or {}."""
+    R = u.get("riders")
+    if not R or R["men"] <= 0 or n <= 0:
+        return {}
+    table, rng = tr
+    struck = min(n, R["men"])
+    t = _take_hurt(R, _blows(d, {"table": table, "weapon": att["weapon"], "kit": None, "quality": "regular"}, _side(R, table), struck, d.units["indirect"]["attack"], 0, rng, (), -1000))
+    down = min(t["down"], R["men"])
+    R.update(men=R["men"] - down, down=R.get("down", 0) + down, dead=R.get("dead", 0) + min(t["dead"], down))
+    return {"rshot": struck, "rshotdown": down, "rshotdead": min(t["dead"], down)}
 
 
 def _riders_hit(d: Data, u: dict, n: int, left: int, tr: tuple) -> dict:
