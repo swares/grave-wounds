@@ -187,6 +187,19 @@ it and its target: it shoots at the nearest enemy it has a clear line to. From h
 can shoot over a unit on lower ground. Bows, longbows and crossbows can loose high over
 units instead, at 20% off; the log notes it. (Guns: see *Guns*.)
 
+**Sight through cover.** Woods, buildings and tall buildings between the shooter's hex and the
+target's block aimed fire, as they block the sight for calling fire, unless they stand lower
+than the shooter (from high ground a man sees over woods and houses on the flat, from a
+slope over woods; tall buildings stand as high as high ground). Men see one hex into cover
+(`line_of_fire.see_into`): the hex next to either end of the line does not block, so a unit
+at a wood's edge fires out of it, and a target just inside it can be seen; deeper in, it
+cannot. The same goes for guns firing directly and for vehicles' guns. Shell fire, bombs and
+a machine gun firing blind down its fixed line need no sight. Rubble gives cover and hides men,
+but its heaps are low: it does not block sight. In a town, then, the fighting is close: across
+a street or along it, not through a block. At Fallujah, Keating and Hue a few units stand a
+hex or a few nearer the edge of their cover than before, so that they fire from where they
+are drawn up.
+
 **Range** is the weapon's battle-map range in 2-yard (2 m) hexes, divided by 5 for field hexes:
 a longbow's long range of about 270 yards (250 m) is 25 field hexes.
 
@@ -655,9 +668,10 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   only the front rank. Striking up a bank, ditch or wall costs its height (−10%, a wall
   −20%), as does striking up onto high ground. Horses charging into stakes or felled trees
   get no charge bonus.
-- **Seeing:** woods and buildings block the sight of men calling fire, unless they stand
-  higher than them: from high ground or a tall building a man sees over woods and lower
-  roofs, and from a slope over woods and houses on the flat.
+- **Seeing:** woods and buildings block the sight of men calling fire and of aimed shots
+  (*Sight through cover*), unless they stand higher than them: from high ground or a tall
+  building a man sees over woods and lower roofs, and from a slope over woods and houses on
+  the flat. A man sees one hex into cover, and out of it from its edge.
 - **Shooting:** the target takes the average cover of its row nearest the shooters (rounded
   down), each hex the best of the works and ground there: a bank on its side −20%, a palisade
   or barred gate −40%, a wall −50%, a pavise or felled trees in its hex −20%, wagons in front

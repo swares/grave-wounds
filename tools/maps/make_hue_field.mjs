@@ -47,17 +47,17 @@ const TANK = { quality: "regular", weapon: "machine_gun", kit: "none", formation
 const PAVN = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, prone: true };
 const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
-  at("F Company, 2/5 Marines (by the university)", US, 140, MARINE, 12, [UNIVERSITY[0] + 8, 24], 0),
+  at("F Company, 2/5 Marines (by the university)", US, 140, MARINE, 12, [UNIVERSITY[0] + 7, 24], 0),
   at("H Company, 2/5 Marines (for the Treasury)", US, 140, MARINE, 12, [74, 36], 0),
   at("G Company, 2/5 Marines (the south blocks)", US, 120, MARINE, 12, [70, 62], 0),
   at("A Company, 1/1 Marines and the MACV compound", US, 160, MARINE, 10, [MACV[0], MACV[1] + 5], 0),
-  at("Marine machine guns", US, 12, MG, 2, [UNIVERSITY[0], UNIVERSITY[1] + 4], 0),
+  at("Marine machine guns", US, 12, MG, 2, [UNIVERSITY[0], UNIVERSITY[1] + 3], 0),
   at("Marine M48 tanks (Highway 1)", US, 16, TANK, 2, [HIGHWAY, 46], N),
   at("North Vietnamese in the provincial headquarters", NV, 120, PAVN, 10, [PROVINCE[0], PROVINCE[1] + 4], 3),
   at("North Vietnamese in the Treasury", NV, 150, PAVN, 10, [TREASURY[0], TREASURY[1] + 4], 3),
   at("North Vietnamese in the hospital", NV, 150, PAVN, 10, [HOSPITAL[0], HOSPITAL[1] + 4], 3),
   at("North Vietnamese in the prison", NV, 120, PAVN, 10, [PRISON[0], PRISON[1] + 4], 3),
-  at("North Vietnamese RPG teams", NV, 30, { ...PAVN, weapon: "rpg" }, 4, [84, 46], 3),
+  at("North Vietnamese RPG teams", NV, 30, { ...PAVN, weapon: "rpg" }, 4, [82, 44], 3),
   at("North Vietnamese machine guns", NV, 10, { ...MG, kit: "none", quality: "veteran", prone: true }, 2, [92, 32], 3),
 ];
 

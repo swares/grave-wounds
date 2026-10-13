@@ -973,12 +973,41 @@ def _beaten(d: Data, units: list, occ: dict, field: dict | None, i: int, best: t
     return {"behind": None, "beyond": 0, "bcover": 0, "bseen": 1}
 
 
+_SCREENS = {}   # id(field ground) -> (that ground, its size, the hexes that screen): the rules never repaint a field
+
+
+def _screen_hexes(d: Data, field: dict | None) -> set:
+    """The keys ("q,r") of the field's hexes whose ground screens sight (woods, buildings)."""
+    g = (field or {}).get("ground") or {}
+    hit = _SCREENS.get(id(g))
+    if hit is None or hit[0] is not g or hit[1] != len(g):
+        hit = (g, len(g), {k for k, v in g.items() if d.units["ground"].get(v, {}).get("screen")})
+        _SCREENS[id(g)] = hit
+    return hit[2]
+
+
+def clear_sight(d: Data, field: dict | None, h, t, dist: int, line: list | None = None) -> bool:
+    """Whether a man at hex h sees hex t to aim at it: no ground that screens (woods, buildings)
+    on the line between as high as where he stands, past the first line_of_fire.see_into hexes
+    at either end (he sees out of a screen's edge, and into it). line: ray(h, t, dist), if known."""
+    cover = _screen_hexes(d, field)
+    if not cover:
+        return True
+    k = d.units["line_of_fire"].get("see_into", 1)
+    line, up = line or ray(h, t, dist), height_at(d, field, h)
+    return not any(f"{y[0]},{y[1]}" in cover and height_at(d, field, y) >= up for y in line[1 + k:len(line) - 1 - k])
+
+
 def shot_weather(d: Data, field: dict | None, weapon: str, dist: int, h=None, t=None, seer: dict | None = None) -> dict:
     """The weather's effect on a shot `dist` field hexes away, from hex h to hex t (for the
-    wind's direction): {blocked, penalty, misfire, reach}. Smoke on the line blocks it. seer:
+    wind's direction): {blocked, penalty, misfire, reach}. Smoke on the line blocks it, and so
+    do woods and buildings between (clear_sight), unless it is fired blind. seer:
     the shooter in the dark, {kit, blind} (see in_the_dark)."""
-    if h is not None and t is not None and smoked(field, ray(h, t, dist)):
+    line = ray(h, t, dist) if h is not None and t is not None and ((field or {}).get("smoke") or _screen_hexes(d, field)) else None
+    if line and smoked(field, line):
         return {"blocked": "Smoke: no one can see to shoot through it.", "penalty": 0, "misfire": 0, "reach": 0}
+    if line and not (seer or {}).get("blind") and not clear_sight(d, field, h, t, dist, line):
+        return {"blocked": "Woods or buildings between: no one can see to aim through them.", "penalty": 0, "misfire": 0, "reach": 0}
     if is_gun(d, weapon):
         return gun_weather(d, field, dist, h, t)
     return in_the_cold(d, field, weapon, in_the_dark(d, field, dist, t, C.weather_attack(d, (field or {}).get("weather"), weapon, 0 if (seer or {}).get("blind") else dist * d.units["range_scale"], h, t, _up(field)), seer))
@@ -1664,7 +1693,7 @@ def _gun_target(d: Data, us: list, i: int, field: dict | None, gun: dict):
 def _can_lay(d: Data, field: dict | None, clear, fv: tuple, line: tuple) -> bool:
     """Whether a gun at h can be laid on t: ahead, in sight, with a clear line of fire."""
     h, t, dist = line
-    return _ahead(fv, h, t) and not gun_weather(d, field, dist, h, t)["blocked"] and (clear is None or clear(h, t, dist))
+    return _ahead(fv, h, t) and clear_sight(d, field, h, t, dist) and not gun_weather(d, field, dist, h, t)["blocked"] and (clear is None or clear(h, t, dist))
 
 
 def _ahead(fv: tuple, h, t) -> bool:
@@ -1728,15 +1757,15 @@ def _sight_hexes(d: Data, field: dict | None, h=None, kit: str | None = None) ->
 
 
 def _sees(d: Data, field: dict | None, u: dict, h, sight: int | None) -> bool:
-    """Whether any hex of unit u sees hex h: within sight, with no woods or buildings between
-    (none at least as high as where he stands: from higher ground he sees over them) and no
-    smoke on the line (the two ends included)."""
+    """Whether any hex of unit u sees hex h: within sight, with a clear sight past woods and
+    buildings (clear_sight: from higher ground he sees over them, and into and out of a cover's
+    edge) and no smoke on the line (the two ends included)."""
     for x in (x for row in footprint(d, u) for x in row):
         dist = hdist(x, h)
         if sight is not None and dist > sight:
             continue
-        line, up = ray(x, h, dist), height_at(d, field, x)
-        if not any(ground_at(d, field, y).get("cover") and height_at(d, field, y) >= up for y in line[1:-1]) and not smoked(field, line):
+        line = ray(x, h, dist)
+        if clear_sight(d, field, x, h, dist, line) and not smoked(field, line):
             return True
     return False
 

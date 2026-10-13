@@ -21,8 +21,9 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Works and ground on the field map.** Height has three steps (flat, slope, high) and no
   contour lines or dead ground behind a crest. Tall buildings give a view and a height, but
   not separate floors: there is no fighting room to room or stair by stair, and men upstairs
-  are not safer from shells. Woods and buildings block the sight for calling fire, but not
-  aimed shots between units.
+  are not safer from shells. Cover blocks sight all or nothing past the hex next to either end:
+  no thinning of fire through light scrub or an orchard, and no seeing through a building's
+  open windows.
 - **Heroes on the field map.** First aid is his comrades' at a fixed chance: no one's
   Leechcraft, no tourniquet or cautery, and the wounds he came with keep bleeding as the
   roller left them. Impairments count against attack and defence only. A useless leg does not

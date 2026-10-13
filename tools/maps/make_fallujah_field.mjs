@@ -51,10 +51,10 @@ const units = [
   at("Marine machine guns", US, 12, SAW, 2, [60, 6], S),
   at("Insurgents in the houses (north-west)", IN, 80, FIGHTER, 10, [40, 32], N),
   at("Insurgents in the houses (north-east)", IN, 80, FIGHTER, 10, [110, 30], N),
-  at("Insurgent RPG teams (by the main street)", IN, 20, RPG, 3, [MAIN - 6, 34], N),
+  at("Insurgent RPG teams (by the main street)", IN, 20, RPG, 3, [MAIN - 2, 34], N),
   at("Insurgent RPG teams (the park)", IN, 20, RPG, 3, [PARK[0] - 10, PARK[1] - 8], N),
   at("Insurgents in the mosque and the houses south", IN, 120, FIGHTER, 12, [58, 72], N),
-  at("Insurgent machine guns", IN, 10, PKM, 2, [86, 46], N),
+  at("Insurgent machine guns", IN, 10, PKM, 2, [99, 46], N),
 ];
 
 writeField({

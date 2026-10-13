@@ -145,15 +145,15 @@ support:
   - {name: "North Vietnamese mortars", side: 1, kind: mortar, tubes: 8}
   - {name: "North Vietnamese rockets and guns", side: 1, kind: field, tubes: 4}
 units:
-  - {name: "F Company, 2/5 Marines (by the university)", side: 0, men: 140, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 12, pos: [70, 24], facing: 0}
+  - {name: "F Company, 2/5 Marines (by the university)", side: 0, men: 140, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 12, pos: [69, 24], facing: 0}
   - {name: "H Company, 2/5 Marines (for the Treasury)", side: 0, men: 140, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 12, pos: [74, 36], facing: 0}
   - {name: "G Company, 2/5 Marines (the south blocks)", side: 0, men: 120, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 12, pos: [70, 62], facing: 0}
   - {name: "A Company, 1/1 Marines and the MACV compound", side: 0, men: 160, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 10, pos: [44, 27], facing: 0}
-  - {name: "Marine machine guns", side: 0, men: 12, quality: regular, weapon: machine_gun, kit: vietnam_usmc, formation: mg, width: 2, pos: [62, 22], facing: 0}
+  - {name: "Marine machine guns", side: 0, men: 12, quality: regular, weapon: machine_gun, kit: vietnam_usmc, formation: mg, width: 2, pos: [62, 21], facing: 0}
   - {name: "Marine M48 tanks (Highway 1)", side: 0, men: 16, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 2, pos: [40, 46], facing: 1, vehicle: tank}
   - {name: "North Vietnamese in the provincial headquarters", side: 1, men: 120, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [86, 28], facing: 3, prone: true}
   - {name: "North Vietnamese in the Treasury", side: 1, men: 150, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [98, 46], facing: 3, prone: true}
   - {name: "North Vietnamese in the hospital", side: 1, men: 150, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [122, 34], facing: 3, prone: true}
   - {name: "North Vietnamese in the prison", side: 1, men: 120, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [102, 78], facing: 3, prone: true}
-  - {name: "North Vietnamese RPG teams", side: 1, men: 30, quality: veteran, weapon: rpg, kit: none, formation: extended, width: 4, pos: [84, 46], facing: 3, prone: true}
+  - {name: "North Vietnamese RPG teams", side: 1, men: 30, quality: veteran, weapon: rpg, kit: none, formation: extended, width: 4, pos: [82, 44], facing: 3, prone: true}
   - {name: "North Vietnamese machine guns", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [92, 32], facing: 3, prone: true}

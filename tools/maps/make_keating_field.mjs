@@ -56,16 +56,16 @@ const RPG = { ...FIGHTER, weapon: "rpg" };
 const PKM = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "mg", mounted: false, prone: true };
 const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
-  at("B Troop, 3-61 Cavalry (the barracks and command post)", US, 30, TROOPER, 6, [COP[0] - 4, COP[1]], N),
-  at("B Troop (the guard posts and trucks)", US, 15, TROOPER, 4, [COP[0] + 8, COP[1] - 4], 0),
-  at("B Troop's machine guns (the trucks)", US, 8, GUNS, 2, [COP[0] - 8, COP[1] + 6], 4),
+  at("B Troop, 3-61 Cavalry (the barracks and command post)", US, 30, TROOPER, 6, [COP[0] - 3, COP[1] - 4], N),
+  at("B Troop (the guard posts and trucks)", US, 15, TROOPER, 4, [COP[0] + 7, COP[1] - 2], 0),
+  at("B Troop's machine guns (the trucks)", US, 8, GUNS, 2, [COP[0] - 8, COP[1] + 5], 4),
   at("Afghan soldiers (the east side)", US, 20, ANA, 4, [COP[0] + 10, COP[1] + 4], 0),
-  at("Insurgents on the north slope", IN, 100, FIGHTER, 16, [COP[0], COP[1] - 24], S),
+  at("Insurgents on the north slope", IN, 100, FIGHTER, 16, [COP[0], COP[1] - 19], S),
   at("Insurgents on the east slope", IN, 80, FIGHTER, 12, [COP[0] + 28, COP[1] + 2], 3),
-  at("Insurgents in Urmul and across the river", IN, 50, FIGHTER, 8, [URMUL[0] + 2, URMUL[1] - 8], 0),
+  at("Insurgents in Urmul and across the river", IN, 50, FIGHTER, 8, [URMUL[0] + 3, URMUL[1] - 11], 0),
   at("Insurgents on the south slope", IN, 50, FIGHTER, 10, [COP[0] + 4, COP[1] + 24], N),
-  at("Insurgent RPG teams (north)", IN, 20, RPG, 3, [COP[0] - 12, COP[1] - 19], S),
-  at("Insurgent machine guns (east)", IN, 10, PKM, 2, [COP[0] + 26, COP[1] - 10], 3),
+  at("Insurgent RPG teams (north)", IN, 20, RPG, 3, [COP[0] - 13, COP[1] - 16], S),
+  at("Insurgent machine guns (east)", IN, 10, PKM, 2, [COP[0] + 23, COP[1] - 4], 3),
 ];
 
 writeField({

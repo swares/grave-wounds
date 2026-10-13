@@ -157,7 +157,7 @@ units:
   - {name: "Marine machine guns", side: 0, men: 12, quality: veteran, weapon: machine_gun, kit: interceptor, formation: mg, width: 2, pos: [60, 6], facing: 4}
   - {name: "Insurgents in the houses (north-west)", side: 1, men: 80, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [40, 32], facing: 1, prone: true}
   - {name: "Insurgents in the houses (north-east)", side: 1, men: 80, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [110, 30], facing: 1, prone: true}
-  - {name: "Insurgent RPG teams (by the main street)", side: 1, men: 20, quality: regular, weapon: rpg, kit: none, formation: extended, width: 3, pos: [66, 34], facing: 1, prone: true}
+  - {name: "Insurgent RPG teams (by the main street)", side: 1, men: 20, quality: regular, weapon: rpg, kit: none, formation: extended, width: 3, pos: [70, 34], facing: 1, prone: true}
   - {name: "Insurgent RPG teams (the park)", side: 1, men: 20, quality: regular, weapon: rpg, kit: none, formation: extended, width: 3, pos: [86, 56], facing: 1, prone: true}
   - {name: "Insurgents in the mosque and the houses south", side: 1, men: 120, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 12, pos: [58, 72], facing: 1, prone: true}
-  - {name: "Insurgent machine guns", side: 1, men: 10, quality: regular, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [86, 46], facing: 1, prone: true}
+  - {name: "Insurgent machine guns", side: 1, men: 10, quality: regular, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [99, 46], facing: 1, prone: true}

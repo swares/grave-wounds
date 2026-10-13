@@ -366,7 +366,9 @@ def _ground_rules(d) -> list[str]:
         "<b>Ground and works on the field map:</b> " + "; ".join(parts) + f". Works are the battle map's, along the {yd(d.units['hex_m'])} hex sides: "
         "only reach-2 weapons strike over a palisade, wall or barred gate, from the front rank; striking up a bank, ditch or wall costs its height; "
         "a volley takes the best cover where it lands. Each step costs the worst of all the unit's hexes, and a turn adds the worst extra going of the ground its ends sweep; "
-        "from higher ground a man sees over lower woods and roofs and shoots over units below. A unit ordered to breach puts half its front rank to hacking at the work in front "
+        f"woods and buildings between block aimed fire, direct gun fire and the sight for calling fire, except the {d.units['line_of_fire'].get('see_into', 1)} hex next to either end "
+        "(a man sees out of a wood's edge and into it); rubble's low heaps give cover but do not block sight; from higher ground a man sees over lower woods and roofs and shoots over units below; "
+        "shell fire and a machine gun's fixed line need no sight. A unit ordered to breach puts half its front rank to hacking at the work in front "
         f"(a field-map side takes {d.units['hex_m'] / d.wounds['combat']['move']['hex_m']:g} times a battle-map side's breach figure). The battle map's weather applies.",
     ]
 
