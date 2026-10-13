@@ -17,6 +17,10 @@ is the weight of fire, and how men live under it.
 - **Going to ground.** On its own move a unit can **go to ground** in the folds of the
   ground. Shots at it lose {{x_ground}}% on top of its cover. It cannot move until it gets
   up, but it still shoots and fights hand to hand.
+- **Digging in.** A unit with a modern weapon, out of contact, can dig shell scrapes and
+  foxholes: {{x_dig}} exchanges without moving or firing, and it is dug in where it stands.
+  Dug in, it counts as gone to ground (and hidden, and steadier) while it stays there, but it
+  can get up and move, leaving its holes. In set-up the GM can start units dug in.
 - **Hidden men.** Men gone to ground, in a trench or a bunker, or in buildings or rubble
   show little of themselves. Only {{x_seen}}% of the aimed shots at them find a man to aim
   at ({{x_mg_seen}}% of a machine gun's); the rest go at the smoke and the flashes.

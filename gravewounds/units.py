@@ -1229,7 +1229,7 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
     target hex; penalty and misfire: the weather's (gravewounds.combat.weather_attack)."""
     occ, out = occupancy(d, units), []
     for i, u in enumerate(units):
-        if u["state"] in ("broken", "fled") or u["men"] <= 0 or "range" not in d.weapons[u["weapon"]]:
+        if u["state"] in ("broken", "fled") or u["men"] <= 0 or "range" not in d.weapons[u["weapon"]] or u.get("digging"):
             continue
         if in_contact(d, units, occ, i) and not in_bunker(d, field, u):
             continue
@@ -1316,8 +1316,42 @@ def ground_cover(d: Data, u: dict) -> int:
 
 
 def low(u: dict) -> bool:
-    """Gone to ground, or emplaced (dug in before the battle) and not running."""
-    return bool(u.get("prone") or (u.get("emplaced") and u["state"] not in ("broken", "fled")))
+    """Gone to ground, or emplaced or dug in where it stands, and not running."""
+    return bool(u.get("prone") or ((u.get("emplaced") or dug_here(u)) and u["state"] not in ("broken", "fled")))
+
+
+def dug_here(u: dict) -> bool:
+    """It stands where it dug in (dug: the hex it dug in at; it leaves its holes when it moves)."""
+    return bool(u.get("dug")) and list(u["dug"]) == list(u["pos"])
+
+
+def can_dig(d: Data, u: dict) -> bool:
+    """A foot unit with a modern weapon (commander.ground_with) can dig in: not a vehicle,
+    mounted men, a battery, anti-tank guns or emplaced."""
+    return (u["weapon"] in d.units["commander"]["ground_with"] and not u.get("vehicle") and not u.get("mounted")
+            and not is_battery(d, u) and not is_at_gun(d, u) and not u.get("emplaced"))
+
+
+def _dig_all(d: Data, us: list) -> list:
+    """End of the exchange: each unit digging (digging: {at, n}) that is still where it began,
+    standing and out of contact digs on; after dig_in.exchanges it is dug in there (dug) and
+    logged. One that moved, broke or came into contact stops."""
+    occ, out = occupancy(d, us), []
+    for i, u in enumerate(us):
+        g = u.get("digging")
+        if not g:
+            continue
+        if list(g["at"]) != list(u["pos"]) or u["state"] in ("broken", "fled") or u["men"] <= 0 or in_contact(d, us, occ, i):
+            del u["digging"]
+            continue
+        n = g["n"] + 1
+        if n < d.units["dig_in"]["exchanges"]:
+            u["digging"] = {"at": list(g["at"]), "n": n}
+            continue
+        del u["digging"]
+        u["dug"] = list(u["pos"])
+        out.append({"kind": "dug", "unit": i})
+    return out
 
 
 def shield_cover(d: Data, u: dict, t, h) -> int:
@@ -1702,6 +1736,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _parties_after(d, us, field)
     log += _lying_after(d, us, table, rng)
     log += _posts_after(d, us, field, table, rng)
+    log += _dig_all(d, us)
     for u in us:
         u["charged"] = False
         _battery_after(d, u)

@@ -285,6 +285,8 @@ general. All its numbers are in units.yaml `commander`.
   - **Holding**, a unit more than 3 hexes from the objective falls back toward it, facing
     its target, unless it can charge. One with no enemy to go for and within 3 hexes stays.
   - Its units weigh an enemy within 4 hexes of the objective 30 points more as a target.
+  - A unit at the objective that can dig in, is not under fire and has no enemy it knows
+    of in range digs in there (and keeps digging until it is done).
   - After each exchange the log says who holds it: the one side with a standing unit
     within 1 hex of it (a battlefield's objective: within its radius), "contested" if
     both have, or no one (`commander.objective` in `data/units.yaml`).
@@ -516,6 +518,14 @@ out. All of this is design estimates (`data/units.yaml`).
   down in the folds of the ground. Shots at it lose 15% on top of the ground's cover, and it
   cannot move until **Get up**. It still shoots, and fights hand to hand as it stands. The map
   marks it ↓.
+- **Digging in**: a foot unit with a modern weapon (the same weapons that go to ground),
+  not mounted and not in a vehicle, can **Dig in** on its own side's move, out of contact and
+  before it moves. For 3 exchanges it neither moves nor fires; if it moves, breaks or comes
+  into contact it stops. Then it is dug in where it stands (logged): it counts as gone to
+  ground (−15%, hidden, less struck by shellfire, steadier) while it stays in that hex, and
+  the map marks it ◠ like an emplaced gun. Unlike guns it can get up and move, leaving its
+  holes (coming back to them, it is dug in again). In set-up **Dig in** starts the unit dug
+  in at once. Design estimates (`dig_in` in `data/units.yaml`).
 - **Emplaced guns**: in set-up only, **Emplace** digs in a gun unit (anti-tank guns,
   anti-aircraft guns, machine-gun teams, batteries) for the battle. While it stands, it
   counts as gone to ground: shots at it lose 15%, it is hidden, shellfire strikes it less

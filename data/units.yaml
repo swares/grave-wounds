@@ -503,6 +503,13 @@ suppression:
 to_ground:
   cover: 15
 
+# Digging in during the battle: a foot unit with a modern weapon (commander.ground_with), out of
+# contact, that neither moves nor fires for `exchanges` exchanges (shell scrapes and foxholes)
+# is dug in where it stands: as emplaced (to_ground cover, hidden, less struck by shellfire,
+# steadier) while it stays there. It can still move, leaving its holes. Design estimate.
+dig_in:
+  exchanges: 3
+
 # ---------- hidden targets ----------
 # Men gone to ground, in a bunker, or in ground that hides them (`hides`: buildings) show
 # little of themselves: of the aimed shots fired at them, only `seen` % find a man to aim at

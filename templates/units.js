@@ -683,7 +683,7 @@ function nearestAhead(u, front, fv, hexes, field, clear = null){  // [distance, 
 function volleys(units, field = null){            // [{att, dfd, men, dist, cover, penalty, misfire, reach, from, to, over}]
   const occ = occupancy(units), out = [];
   units.forEach((u, i) => {
-    if (out_(u) || !("range" in FD.weapons[u.weapon]) || (inContact(units, occ, i) && !inBunker(field, u))) return;   // a bunker's men shoot out even in contact
+    if (out_(u) || !("range" in FD.weapons[u.weapon]) || u.digging || (inContact(units, occ, i) && !inBunker(field, u))) return;   // a bunker's men shoot out even in contact
     let best = target(units, i, field, occ), blind = false;
     if (!best){ best = fixedTarget(units, i, field, occ); blind = !!best }
     if (!best) return;
@@ -717,7 +717,23 @@ function fixedTarget(units, i, field, occ){         // [distance, index, shooter
 // ----- machine guns and going to ground (as gravewounds/units.py) -----
 const isMg = w => (UD.machine_guns?.weapons || []).includes(w);
 const mgGuns = u => Math.ceil(Math.max(0, u.men) / UD.machine_guns.crew);   // one a crew, while a man of it is up
-const low = u => !!(u.prone || (u.emplaced && u.state !== "broken" && u.state !== "fled"));   // gone to ground, or emplaced and not running
+const dugHere = u => !!u.dug && u.dug[0] === u.pos[0] && u.dug[1] === u.pos[1];   // it stands where it dug in (it leaves its holes when it moves)
+const low = u => !!(u.prone || ((u.emplaced || dugHere(u)) && u.state !== "broken" && u.state !== "fled"));   // gone to ground, or emplaced or dug in where it stands, and not running
+const canDig = u => UD.commander.ground_with.includes(u.weapon) && !u.vehicle && !u.mounted && !isBattery(u) && !isAtGun(u) && !u.emplaced;   // a foot unit with a modern weapon (as units.can_dig)
+function digAll(us){                               // end of the exchange: digging units still where they began, standing and out of contact dig on; after dig_in.exchanges they are dug in (as units._dig_all)
+  const occ = occupancy(us), out = [];
+  us.forEach((u, i) => {
+    const g = u.digging;
+    if (!g) return;
+    if (g.at[0] !== u.pos[0] || g.at[1] !== u.pos[1] || ROUTED.has(u.state) || u.men <= 0 || inContact(us, occ, i)){ delete u.digging; return }
+    const n = g.n + 1;
+    if (n < UD.dig_in.exchanges){ u.digging = { at: [...g.at], n }; return }
+    delete u.digging;
+    u.dug = [...u.pos];
+    out.push({ kind: "dug", unit: i });
+  });
+  return out;
+}
 const groundCover = u => (low(u) ? UD.to_ground.cover : 0);                 // % off shots at a unit gone to ground (or emplaced)
 function shieldCover(u, t, h){                    // % off small-arms fire from h at unit u (its hex t): its guns' shields, from its front only
   const S = UD.gun_shields || {};
@@ -1477,7 +1493,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
   });
   log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table)),
-    ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng));
+    ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng), ...digAll(us));
   afterExchange(us, field, log);
   log.push(...landings(us, table, rng, field), ...vehiclesAfter(us, field), ...objectiveHeld(us, field));
   if (field?.mines && Object.keys(field.mines).length) for (const u of us) u.was = [[...u.pos], u.facing];   // where its next moves begin: the ground it crosses
@@ -1947,10 +1963,17 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = aiTarget(us, i, ctx[3], ctx[1]);
   if (u.state !== "steady") return !u.prone && underFire(us, i) ? { act: "ground", target: t } : null;
   if (u.reserve) return t === null ? null : stayOrder(us, i, t, u.facing, "range" in FD.weapons[u.weapon]);
-  if (t === null && obj === null) return null;
+  if (u.digging || (t === null && obj === null)) return null;
+  if (obj !== null && digs(us, i, ctx)) return { act: "dig", target: t };
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
   const o = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx);
   return t === null ? o : lastSeen(o, ctx[3], t, ctx[4]);
+}
+function digs(us, i, [, field, , known]){          // a unit at the objective digs in: it can, is not dug in here, is not under fire, and no known enemy is in its range (as commander._digs)
+  const u = us[i];
+  if (!canDig(u) || dugHere(u) || offObjective(u, objectiveOf(field)) > objectiveRadii(field)[0]) return false;
+  if (underFire(us, i)) return false;
+  return !knownFoes(known || {}).some(([, m]) => fieldRange(u.weapon, hdist(u.pos, m.pos)) !== null);
 }
 const objectiveOf = field => (field?.objective ? [...field.objective] : null);   // the hex the GM marked as the commander's objective, or null
 function forObjective(us, i, t, ctx){              // attacking: at the objective it holds, with no enemy or nothing better it advances; holding: too far out it falls back unless it can charge
@@ -2128,6 +2151,7 @@ function reachable(units, i, size, limit, field = null){   // Map hk -> [hex, le
 function applyOrder(us, i, o){                    // carry out an order (as the page's own move: charged when it charges)
   const u = us[i];
   if (o.act === "ground") us[i] = { ...u, prone: true };
+  else if (o.act === "dig") us[i] = { ...u, digging: { at: [...u.pos], n: 0 } };
   else if (o.act === "turn") us[i] = { ...u, facing: o.facing };
   else if (["move", "charge", "advance", "fall_back"].includes(o.act)) us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}) };
 }
