@@ -10,6 +10,7 @@ import re
 from pathlib import Path
 
 from . import combat as C
+from . import rulebook_later as LATER
 from .engine import armor_at, armor_steps, compose_wound, reduce_severity
 from .model import Data
 
@@ -55,7 +56,7 @@ def values(d: Data) -> dict:
         "blood_night": DZ["named_blood_per_day"], "leech_per": 10,
         "stop_sev": " and ".join(SC["severities"]),
     }
-    v.update(_field_values(d), **_travel_values(d))
+    v.update(_field_values(d), **_travel_values(d), **LATER.values(d))
     v["ex"] = example(d)
     return v
 
@@ -133,7 +134,7 @@ def tables(d: Data) -> dict:
     E = d.teams["medieval"]
     names = {s["id"]: s["name"] for s in E["skills"]}
     out["careers"] = _md(["Career", "Main skill", "Second skill"], [[c["name"], names[c["main"]], names[c["second"]]] for c in E["careers"]])
-    out.update(_field_tables(d), **_travel_tables(d))
+    out.update(_field_tables(d), **_travel_tables(d), **LATER.tables(d))
     out["fq"] = _md(["Quality table", *[q.capitalize() for q in U["quality"]]],
                     [[k.capitalize(), *_ranges(rows)] for k, rows in E["followers"]["quality"].items()])
     return out

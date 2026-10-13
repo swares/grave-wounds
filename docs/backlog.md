@@ -9,10 +9,11 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **The rule book, third part.** `dist/rules.html` covers how to play, a team, the fight,
-  wounds, recovery, battles of hundreds, the march and camp, and weather and works, with one
-  medieval team followed through. Still to write: the other eras' teams and kit, guns and
-  modern fire support, vehicles, night and air in play, and a worked example from a later war.
+- **The rule book, beyond the third part.** `dist/rules.html` covers the whole game in
+  thirteen chapters, with a medieval retinue and a Vietnam rifle squad followed through.
+  It summarises rather than repeats the docs: the black-powder guns' fire (sections, fuses,
+  ricochet), the travel map's battle set-up and the battlefields are covered in the docs and
+  on the pages, not in the book. It has no index or page numbers in print.
 - **The enemy commander, beyond the first cut.** A scripted commander moves one side on the
   field map (attacking or holding, by its units' quality; Undo puts its move back). It sees
   the whole field, even at night. It leaves batteries, fire support, air controllers,
