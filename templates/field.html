@@ -234,6 +234,7 @@ legend{padding:0}
         <label class="sr" for="sel-assault">Storm the bunker</label><select class="small" id="sel-assault" hidden title="Ordered to storm: once an exchange it tries to knock out each enemy-held bunker across its front, with grenades, satchel charges or flamethrowers" style="width:auto"></select>
         <button class="small" id="btn-ground" title="The men lie down in the folds of the ground: harder to hit, but the unit cannot move until it gets up">Go to ground</button>
         <button class="small" id="btn-fixed" hidden title="Lay the machine guns on a fixed line (by day or at dusk): in the dark they fire blind down it at any enemy on it">Lay a fixed line</button>
+        <button class="small" id="btn-reserve" hidden title="Held in the enemy commander's reserve: it holds until the commander commits it (when a unit breaks or the enemy comes close). Marking any unit takes the choice of reserves from the commander.">Hold in reserve</button>
         <button class="small" id="btn-fac" hidden title="A forward air controller talks aircraft onto a target he can see: they scatter less, and may attack close to their own men">Air controller</button>
         <label class="sr" for="sel-medics">Medics</label><select class="small" id="sel-medics" hidden style="width:auto" title="Medics with the unit (followers of a healing career, chosen before the battle): they give its heroes first aid at their quality's chance"></select>
         <label class="sr" for="sel-nv">Night vision</label><select class="small" id="sel-nv" hidden style="width:auto" title="The night-vision device the unit carries (chosen before the battle): by its armour kit, none, or a Starlight scope, goggles or a thermal sight"></select>
@@ -1031,10 +1032,10 @@ const aiMoving = () => !!S.ai && moving() === S.ai.side;
 const aiThisMove = () => S.aiDone && S.aiDone.exchange === S.exchange && S.aiDone.phase === S.phase;
 function aiMove(){                                // at the start of its side's move, the commander orders that side
   if (!aiMoving() || aiThisMove()) return;
-  const M = aiMemory(), mem = structuredClone(M.mem);
+  const M = aiMemory(), mem = structuredClone(M.mem), sup = supports().map(b => (b.mission ? structuredClone(b.mission) : null));
   const before = S.units.map(copyUnit), r = command(S.units, S.ai.side, SIZE, S.field, dice, S.exchange, { stance: S.ai.stance, memory: M.mem });
   S.units = r.units;
-  S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before, mem };
+  S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before, mem, sup };
   const lines = r.orders.map(o => ({ cls: o.act === "charge" ? "morale" : "", text: orderText(o) }));
   S.log = [{ cls: "head", text: `The commander orders ${S.ai.side} (${stanceWord()}): ${r.orders.length ? nOf(r.orders.length, "order") : "every unit stands"}${Object.keys(M.mem).length ? "" : " (it knows of no enemy: none is in its units' sight)"}.` }, ...lines, ...S.log].slice(0, 400);
 }
@@ -1043,10 +1044,14 @@ function aiMemory(){                              // where the commander last sa
   if (!M || M.side !== S.ai.side || M.n !== S.units.length) S.aiMemory = { side: S.ai.side, n: S.units.length, mem: {} };
   return S.aiMemory;
 }
+const COMMIT_WHY = { broke: "one of its units has broken", gap: "the enemy is close", exploit: "to exploit an enemy unit that broke" };
 function orderText(o){                            // "Billmen (Yorkists) move 4 hexes toward Archers (Lancastrians)."
-  const u = S.units[o.unit], t = S.units[o.target], who = unitName(u);
+  const t = S.units[o.target];
   let them = "the enemy";
   if (t) them = o.last ? `where ${unitName(t)} were last seen (exchange ${o.last})` : unitName(t);
+  if (o.act === "fire") return `${supports()[o.battery]?.name || "A battery"} are called on ${them} at ${hexName(o.hex)}.`;
+  const who = unitName(S.units[o.unit]);
+  if (o.act === "commit") return `${who} are committed from the reserve: ${COMMIT_WHY[o.why] || o.why}.`;
   if (o.act === "charge") return `${who} ${o.up ? "get up and " : ""}charge ${them}.`;
   if (o.act === "move") return `${who} ${o.up ? "get up and " : ""}move ${nOf(o.cost, "hex", "hexes")} toward ${them}.`;
   if (o.act === "turn") return `${who} turn to face ${them}.`;
@@ -1057,6 +1062,7 @@ function aiUndo(){                                // its units back where they b
   if (!aiThisMove() || !S.aiDone.undo) return;
   S.units = S.aiDone.undo;
   if (S.aiMemory) S.aiMemory.mem = S.aiDone.mem;
+  supports().forEach((b, k) => { b.mission = S.aiDone.sup?.[k] ?? null });   // the fire it called, called off
   S.aiDone.undo = null;
   S.msg = `The commander's orders are undone: move ${S.ai.side} yourself, or let it order them again.`;
   render();
@@ -1509,7 +1515,7 @@ function renderMap(){
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
 function unitMeta(u){
   if (u.state === "fled") return "fled";
-  const down = u.down ? " · " + u.down + " down" : "", br = (u.breach ? " · breaching" : "") + (u.assault ? " · storming" : ""), low = (u.prone ? " · to ground" : "") + (u.pinned ? " · pinned" : "") + (u.lost ? " · lost in the dark" : "") + (u.fixed ? " · fixed line" : "") + (u.fac ? " · air controller" : "");
+  const down = u.down ? " · " + u.down + " down" : "", br = (u.breach ? " · breaching" : "") + (u.assault ? " · storming" : ""), low = (u.prone ? " · to ground" : "") + (u.pinned ? " · pinned" : "") + (u.lost ? " · lost in the dark" : "") + (u.fixed ? " · fixed line" : "") + (u.fac ? " · air controller" : "") + (u.reserve ? " · reserve" : "");
   let mg = isMg(u.weapon) ? " · " + gunsText(mgGuns(u), "gun") : "";
   if (isAtGun(u)) mg = " · " + gunsText(atGuns(u), "gun");
   if (u.vehicle) mg = vehicleMeta(u);
@@ -1578,6 +1584,7 @@ function renderSel(){
   renderRiders(u, setup);
   renderGunOrders(u, setup);
   renderGround(u, setup);
+  renderReserve(u);
   renderFixed(u, setup);
   renderNv(u, setup);
   renderMedics(u, setup);
@@ -1673,6 +1680,19 @@ function toggleResupply(){                        // set-up: at once; in play: o
   if (!u.resupplying && inContact(S.units, occupancy(S.units), i)){ S.msg = `${u.name} is in contact: the caissons cannot come up.`; return render() }
   u.resupplying = !u.resupplying;
   S.msg = u.resupplying ? `${u.name} will resupply this exchange: it neither moves nor fires until it is done.` : "";
+  render();
+}
+function renderReserve(u){                        // Hold in reserve / Release it: the commander's side's units
+  const b = $("#btn-reserve");
+  b.hidden = !u || !S.ai || u.side !== S.ai.side || S.phase === "over";
+  if (b.hidden) return;
+  b.textContent = u.reserve ? "Release from reserve" : "Hold in reserve";
+}
+function toggleReserve(){                         // the GM marks or releases a reserve unit: the commander then leaves the choice of reserves to the GM
+  const u = selUnit(); if (!u || !S.ai || u.side !== S.ai.side) return;
+  for (const x of S.units) if (x.side === u.side && !("reserve" in x)) x.reserve = false;
+  u.reserve = !u.reserve;
+  S.msg = u.reserve ? `${unitName(u)} are held in reserve: they hold until the commander commits them.` : `${unitName(u)} are released: the commander orders them as any other unit.`;
   render();
 }
 function renderGround(u, setup){                 // Go to ground / Get up: on its own side's move, or in set-up
@@ -2101,6 +2121,7 @@ function init(){
   $("#btn-dismount").onclick = dismountRiders;
   $("#sel-carrier").onchange = e => { if (e.target.value) mountOn(e.target.value) };
   $("#btn-ground").onclick = toggleGround;
+  $("#btn-reserve").onclick = toggleReserve;
   $("#btn-fixed").onclick = toggleFixed;
   $("#sel-nv").onchange = e => setNv(e.target.value);
   $("#btn-sup-leg").onclick = () => { LEGS = Math.min(8, LEGS + 1); renderLegs() };

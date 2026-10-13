@@ -1760,15 +1760,94 @@ function flee(units, i, size, field = null){      // a broken unit runs straight
 // ---------- the enemy commander (as gravewounds.commander) ----------
 const ROUTED = new Set(["broken", "fled"]);
 function command(units, side, size, field, rng, exchange = null, { stance = "attack", memory = null } = {}){   // {units, orders}: each unit of side ordered in turn, by its quality (units.yaml commander); stance attack or hold; memory: where it last saw each enemy (updated in place)
-  const us = units.map(u => ({ ...u })), orders = [];
-  const known = sightings(us, side, field, exchange, memory ?? {});
+  const us = units.map(u => ({ ...u })), orders = [], mem = memory ?? {};
+  const known = sightings(us, side, field, exchange, mem);
+  holdBack(us, side, known);
+  orders.push(...commitReserve(us, side, known, mem));
   for (let i = 0; i < us.length; i++){
     if (us[i].side !== side || !commandable(us, i, exchange)) continue;
     const roll = rng.randint(1, 100), o = unitOrder(us, i, [size, field, stance, known, exchange], roll);
     if (o){ orders.push({ unit: i, ...o }); applyOrder(us, i, o) }
   }
+  orders.push(...layGuns(us, side, [size, field, known, exchange]), ...callFireAi(us, side, field, known));
   return { units: us, orders };
 }
+const knownFoes = known => Object.entries(known).filter(([k]) => /^\d+$/.test(k));   // [index, {pos, facing, ex}] of the enemies it knows of
+function holdBack(us, side, known){                // at its first move (unless the GM marked reserves), its rearmost units up to commander.reserve % of its men are held back (as commander._hold_back)
+  const mine = us.map((u, i) => i).filter(i => us[i].side === side && us[i].men > 0 && !ROUTED.has(us[i].state));
+  if (!mine.length || mine.some(i => "reserve" in us[i])) return;
+  const byQ = {};
+  let men = 0;
+  for (const i of mine){ men += us[i].men; byQ[us[i].quality] = (byQ[us[i].quality] || 0) + us[i].men }
+  const q = Object.keys(byQ).sort().reduce((a, k) => (byQ[k] > byQ[a] ? k : a));
+  let room = Math.floor(men * (UD.commander.reserve[q] ?? 0) / 100);
+  const known0 = !knownFoes(known).length;
+  const foes = us.map((e, j) => j).filter(j => us[j].side !== side && us[j].men > 0 && !ROUTED.has(us[j].state) && (known0 || String(j) in known));
+  const away = i => (foes.length ? Math.min(...foes.map(j => hdist(us[i].pos, knownAt(us, j, known).pos))) : 0);
+  const far = [...mine].sort((a, b) => away(b) - away(a) || a - b);
+  for (const i of mine) us[i].reserve = false;
+  for (const i of far){
+    if (isBattery(us[i]) || isAtGun(us[i]) || us[i].men > room) continue;
+    us[i].reserve = true;
+    room -= us[i].men;
+  }
+}
+function commitReserve(us, side, known, memory){   // one reserve unit committed when one of its units broke, an enemy is within gap of a reserve unit, or (veterans) an enemy broke (as commander._commit)
+  const plan = memory.plan ?? (memory.plan = {});
+  const own = us.filter(u => u.side === side && ROUTED.has(u.state)).length, foe = us.filter(u => u.side !== side && ROUTED.has(u.state)).length;
+  const broke = own > (plan.own ?? own), foeBroke = foe > (plan.foe ?? foe);
+  Object.assign(plan, { own, foe });
+  const held = us.map((u, i) => i).filter(i => us[i].side === side && us[i].reserve && us[i].men > 0 && !ROUTED.has(us[i].state));
+  if (!held.length) return [];
+  const kf = knownFoes(known), near = {};
+  for (const i of held) near[i] = kf.length ? Math.min(...kf.map(([, m]) => hdist(us[i].pos, m.pos))) : 10 ** 6;
+  const nearest = list => list.reduce((a, i) => (near[i] < near[a] ? i : a));
+  const gap = held.some(i => near[i] <= UD.commander.gap), vets = held.filter(i => us[i].quality === "veteran");
+  let pick, why;
+  if (broke || gap){ pick = nearest(held); why = broke ? "broke" : "gap" }
+  else if (foeBroke && vets.length){ pick = nearest(vets); why = "exploit" }
+  else return [];
+  us[pick].reserve = false;
+  return [{ unit: pick, act: "commit", why }];
+}
+function layGuns(us, side, [size, field, known, exchange]){   // its batteries and anti-tank guns on the map turn to face the nearest enemy it knows of (as commander._lay_guns)
+  const out = [], occ = occupancy(us), kf = knownFoes(known);
+  us.forEach((u, i) => {
+    if (u.side !== side || !(isBattery(u) || isAtGun(u)) || u.state !== "steady" || u.men <= 0) return;
+    if ((exchange !== null && u.arrived === exchange) || inContact(us, occ, i) || !kf.length) return;
+    const j = kf.map(([k, m]) => [hdist(u.pos, m.pos), Number(k)]).reduce((a, b) => (b[0] < a[0] || (b[0] === a[0] && b[1] < a[1]) ? b : a))[1];
+    const f = bearing(u.pos, knownAt(us, j, known).pos);
+    if (f !== u.facing && moveUnit(us, i, u.pos, f, size, field).ok){ us[i] = { ...u, facing: f }; out.push({ unit: i, act: "turn", target: j, facing: f }) }
+  });
+  return out;
+}
+function callFireAi(us, side, field, known){      // its off-map batteries with no mission are called on the enemy it sees now that scores best as a target (as commander._call_fire)
+  const out = [];
+  (field?.support || []).forEach((b, k) => {
+    const K = UD.indirect.kinds[b.kind];
+    if (b.side !== side || b.mission || K.direct || K.air || b.displacing || (b.rounds || 0) <= 0 || servedTubes(b) <= 0) return;
+    const aim = fireAim(us, side, field, known, b, K);
+    if (!aim) return;
+    b.mission = { hex: aim[1], wait: K.delay, repeat: false };
+    out.push({ unit: null, act: "fire", battery: k, target: aim[0], hex: aim[1] });
+  });
+  return out;
+}
+function fireAim(us, side, field, known, b, K){    // [enemy index, hex] to fire on, or null
+  const ours = us.filter(u => u.side === side && u.men > 0 && u.state !== "fled");
+  let best = null;
+  us.forEach((e, j) => {
+    if (e.side === side || !(String(j) in known) || !ours.length) return;
+    const h = marksOf(e).find(x => spotted(us, field, side, x));
+    if (!h || !inReach(b, h) || tooNear(ours, h, K.radius + K.scatter)) return;
+    const u = ours.reduce((a, o) => (hdist(o.pos, e.pos) < hdist(a.pos, e.pos) ? o : a));
+    const sc = threatScore(u, e, e);
+    if (!best || sc > best[0]) best = [sc, [j, [...h]]];
+  });
+  return best ? best[1] : null;
+}
+const marksOf = e => { const rows = footprint(e); return [e.pos, ...(rows.length ? [rows[0][0], rows[0].at(-1)] : [])] };   // its middle hex, then either end of its front row
+const tooNear = (ours, h, r) => ours.some(u => footprint(u).flat().some(x => hdist(x, h) <= r));   // any of the side's hexes within r of h
 function sightings(us, side, field, exchange, memory){   // {index: {pos, facing, ex}}: enemies seen now where they stand; others where last seen, for remember exchanges
   const ex = exchange ?? 0;
   us.forEach((e, j) => {
@@ -1780,10 +1859,7 @@ function sightings(us, side, field, exchange, memory){   // {index: {pos, facing
   });
   return memory;
 }
-function seenBy(us, side, field, e){              // a unit of side sees enemy e: its middle hex or either end of its front row
-  const rows = footprint(e), marks = [e.pos, ...(rows.length ? [rows[0][0], rows[0].at(-1)] : [])];
-  return marks.some(h => spotted(us, field, side, h));
-}
+const seenBy = (us, side, field, e) => marksOf(e).some(h => spotted(us, field, side, h));   // a unit of side sees enemy e: its middle hex or either end of its front row
 function commandable(us, i, exchange){            // standing, not a battery or anti-tank guns, not in contact, not just come on
   const u = us[i];
   if (ROUTED.has(u.state) || u.men <= 0 || isBattery(u) || isAtGun(u)) return false;
@@ -1794,6 +1870,7 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   const u = us[i], C = UD.commander, t = aiTarget(us, i, ctx[3]);
   if (u.state !== "steady") return !u.prone && underFire(us, i) ? { act: "ground", target: t } : null;
   if (t === null) return null;
+  if (u.reserve) return stayOrder(us, i, t, u.facing, "range" in FD.weapons[u.weapon]);
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
   return lastSeen(bestOrder(us, i, t, ctx), ctx[3], t, ctx[4]);
 }
@@ -1887,13 +1964,18 @@ function stayOrder(us, i, t, f, shooter){         // on the ground it stays down
 }
 function aiScore(field, u, tu, h, cost, shooter){  // how much the commander likes unit u ending at h (higher is better)
   const C = UD.commander, q = u.quality, dist = hdist(h, tu.pos);
-  const s = (C.cover[q] ?? 0) * coverAt(field, tu.pos, h) - cost;
+  const s = (C.cover[q] ?? 0) * coverAt(field, tu.pos, h) - cost - (C.mines[q] ?? 0) * mined(field, u.pos, h);
   if (shooter){
     const inr = dist >= 1 && fieldRange(u.weapon, dist) !== null;
     return s + (inr ? C.in_range : -C.closing * dist) - (dist < C.keep_off ? C.too_close : 0);
   }
   const flank = arc(tu.facing, bearing(tu.pos, h)) === "front" ? 0 : (C.flank[q] ?? 0);
   return s - C.closing * dist + flank;
+}
+function mined(field, a, h){                      // hexes of minefields it knows of (marked, or found) on the straight way from a to h
+  const mines = field?.mines || {};
+  if (!Object.keys(mines).length || (a[0] === h[0] && a[1] === h[1])) return 0;
+  return ray([...a], [...h], hdist(a, h)).slice(1).filter(x => { const m = mines[hk(x)]; return m && (!m.hidden || m.found) }).length;
 }
 function reachable(units, i, size, limit, field = null){   // Map hk -> [hex, least movement] for every hex the middle hex can reach within limit
   const occ = occupancy(units.filter((_, k) => k !== i)), u = units[i];

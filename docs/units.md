@@ -257,12 +257,37 @@ general. All its numbers are in units.yaml `commander`.
   - Veterans prefer a hex off the target's front (30 points more).
 - **Holding.** A side that holds does not leave its ground. A unit only charges an enemy
   it can reach with the odds, turns to face its target, or goes to ground.
+- **Its reserve.** At its first move it holds back its rearmost units, those furthest from
+  the nearest enemy. It takes them up to a share of the side's men, set by the quality most
+  of its men have: regulars a quarter, veterans a third, green men none. The GM can decide
+  instead: **Hold in reserve** on a unit of the commander's side marks or releases it, and
+  once any is marked the commander leaves the choice to the GM.
+  - A reserve unit holds where it is, going to ground under fire as the rule above.
+  - It commits one reserve unit a move, the one nearest the enemy, when one of its own units
+    has broken or fled since its last move, or when an enemy it knows of comes within 12
+    hexes of a reserve unit.
+  - Veterans also commit to exploit when an enemy unit breaks.
+  - The log says why ("committed from the reserve: one of its units has broken").
+- **Known minefields.** Each hex of a minefield it knows of (marked, or found by setting it
+  off) on the straight way to a hex costs that hex 5 points for green men, 40 for regulars
+  and 80 for veterans. Green men may still blunder in; veterans go round. Hidden fields it
+  has not found it cannot see.
+- **Its guns.**
+  - Its batteries and anti-tank guns on the map turn to face the nearest enemy it knows of.
+    It never moves, limbers or displaces them.
+  - Its off-map batteries (not tanks or aircraft) with no mission are called on the enemy
+    unit it sees now that scores best as a target. It fires at the first of that unit's
+    hexes its side can see and the battery reaches, and never where its own men are within
+    the burst and scatter.
+  - **Undo its orders** calls that fire off again.
 
 What it does not do yet:
 - It looks once, at the start of its move: a unit that moves into sight of an enemy does
   not tell the units ordered after it until the next move.
-- It leaves alone batteries and their orders, calls for fire, air controllers, vehicles'
-  riders, fixed lines, reserves and works.
+- It leaves alone smoke, illumination, creeping barrages, counter-battery fire, aircraft,
+  air controllers, vehicles' riders, fixed lines and works.
+- Its reserve has no orders beyond holding and, once committed, fighting: it does not
+  counter-attack a named place or plug a named gap.
 - It plays only on the field map, not the travel map.
 
 ## From the travel map

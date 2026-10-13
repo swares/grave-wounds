@@ -14,15 +14,16 @@ When an item is done, delete it here and note it in the pull request that closes
   It summarises rather than repeats the docs: the black-powder guns' fire (sections, fuses,
   ricochet), the travel map's battle set-up and the battlefields are covered in the docs and
   on the pages, not in the book. It has no index or page numbers in print.
-- **The enemy commander, beyond the first cut.** A scripted commander moves one side on the
-  field map (attacking or holding, by its units' quality; Undo puts its move back). It knows
-  only what its units see, remembering last sightings for a few exchanges, and looks once
-  at the start of each move. It leaves batteries, fire support, air controllers,
-  vehicles' riders, fixed lines, reserves and works to the GM. Its units pick their targets
-  one by one (nearest, or hurt, shaken and dangerous for better troops), and it has no plan
-  beyond each unit's next move: no scouting, feints or holding a reserve.
-  It does not play the travel map. Later, by the choice made: an optional narrator, using
-  a model with a key the player supplies, to explain its orders in prose.
+- **The enemy commander, beyond the second cut.** A scripted commander moves one side on
+  the field map. It attacks or holds by its units' quality, knows only what its units see
+  (remembering last sightings for a few exchanges), picks targets by threat and weakness,
+  holds back and commits a reserve, steers round minefields it knows of, turns its guns and
+  calls its off-map batteries; Undo puts its move back. It looks once at the start of each
+  move. Still left out: smoke, illumination, creeping barrages, counter-battery fire and
+  aircraft; moving, limbering or displacing guns; air controllers, riders, fixed lines and
+  works; any plan beyond the next move (a place to take or hold, feints, scouting). It does
+  not play the travel map. Later, by the choice made: an optional narrator, using a model
+  with a key the player supplies, to explain its orders in prose.
 
 - **Works and ground on the field map.** Height has three steps (flat, slope, high) and no
   contour lines or dead ground behind a crest. Tall buildings give a view and a height, but

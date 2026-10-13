@@ -18,7 +18,10 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
     charging only what it can reach). memory: where it last saw each enemy unit, kept between
     its moves (updated in place; see sightings). -> (units after, orders [{unit, act, ...}])."""
     us, orders = [dict(u) for u in units], []
-    known = sightings(d, us, side, field, exchange, {} if memory is None else memory)
+    memory = {} if memory is None else memory
+    known = sightings(d, us, side, field, exchange, memory)
+    _hold_back(d, us, side, known)
+    orders += _commit(d, us, side, known, memory)
     for i in range(len(us)):
         if us[i]["side"] != side or not _free(d, us, i, exchange):
             continue
@@ -27,7 +30,8 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
         if o:
             orders.append({"unit": i, **o})
             _apply(us, i, o)
-    return us, orders
+    orders += _lay_guns(d, us, side, (size, field, known, exchange))
+    return us, orders + _call_fire(d, us, side, field, known)
 
 
 def _free(d: Data, us: list, i: int, exchange) -> bool:
@@ -38,6 +42,122 @@ def _free(d: Data, us: list, i: int, exchange) -> bool:
     if exchange is not None and u.get("arrived") == exchange:
         return False
     return not U.in_contact(d, us, U.occupancy(d, us), i)
+
+
+def _hold_back(d: Data, us: list, side, known: dict) -> None:
+    """At its first move, unless the GM has marked reserves for the side (any of its units has
+    `reserve` set), it holds back its rearmost units, furthest from the nearest enemy it knows
+    of (else any), up to commander.reserve % of the side's men by the quality most of them have.
+    Every unit of the side gets `reserve` (True or False), so it is done once."""
+    mine = [i for i, u in enumerate(us) if u["side"] == side and u["men"] > 0 and u["state"] not in ROUTED]
+    if not mine or any("reserve" in us[i] for i in mine):
+        return
+    men, by_q = sum(us[i]["men"] for i in mine), {}
+    for i in mine:
+        by_q[us[i]["quality"]] = by_q.get(us[i]["quality"], 0) + us[i]["men"]
+    q = max(sorted(by_q), key=lambda k: by_q[k])
+    room = men * d.units["commander"]["reserve"].get(q, 0) // 100
+    foes = [j for j, e in enumerate(us) if e["side"] != side and e["men"] > 0 and e["state"] not in ROUTED and (not known or str(j) in known)]
+    far = sorted(mine, key=lambda i: (-min((U.hdist(us[i]["pos"], _where(us, j, known)["pos"]) for j in foes), default=0), i))
+    for i in mine:
+        us[i]["reserve"] = False
+    for i in far:
+        if U.is_battery(d, us[i]) or U.is_at_gun(d, us[i]) or us[i]["men"] > room:
+            continue
+        us[i]["reserve"] = True
+        room -= us[i]["men"]
+
+
+def _commit(d: Data, us: list, side, known: dict, memory: dict) -> list:
+    """Commit one reserve unit this move, the one nearest an enemy it knows of, when a unit of
+    the side has broken or fled since its last move, when a known enemy is within
+    commander.gap hexes of a reserve unit, or (a veteran reserve unit) when an enemy unit has
+    broken. -> [the commit order], or []."""
+    plan = memory.setdefault("plan", {})
+    own = sum(1 for u in us if u["side"] == side and u["state"] in ROUTED)
+    foe = sum(1 for u in us if u["side"] != side and u["state"] in ROUTED)
+    broke, foe_broke = own > plan.get("own", own), foe > plan.get("foe", foe)
+    plan.update(own=own, foe=foe)
+    held = [i for i, u in enumerate(us) if u["side"] == side and u.get("reserve") and u["men"] > 0 and u["state"] not in ROUTED]
+    if not held:
+        return []
+    near = {i: min((U.hdist(us[i]["pos"], m["pos"]) for k, m in known.items() if k.isdigit()), default=10**6) for i in held}
+    gap = [i for i in held if near[i] <= d.units["commander"]["gap"]]
+    if broke or gap:
+        pick, why = min(held, key=lambda i: (near[i], i)), "broke" if broke else "gap"
+    elif foe_broke and any(us[i]["quality"] == "veteran" for i in held):
+        pick, why = min((i for i in held if us[i]["quality"] == "veteran"), key=lambda i: (near[i], i)), "exploit"
+    else:
+        return []
+    us[pick]["reserve"] = False
+    return [{"unit": pick, "act": "commit", "why": why}]
+
+
+def _lay_guns(d: Data, us: list, side, ctx: tuple) -> list:
+    """Its batteries and anti-tank guns on the map, steady and out of contact, turn to face the
+    nearest enemy it knows of (if the turn is legal). It never moves, limbers or displaces them."""
+    size, field, known, exchange = ctx
+    out, occ = [], U.occupancy(d, us)
+    for i, u in enumerate(us):
+        if u["side"] != side or not (U.is_battery(d, u) or U.is_at_gun(d, u)) or u["state"] != "steady" or u["men"] <= 0:
+            continue
+        if (exchange is not None and u.get("arrived") == exchange) or U.in_contact(d, us, occ, i):
+            continue
+        foes = [(U.hdist(u["pos"], m["pos"]), int(k)) for k, m in known.items() if k.isdigit()]
+        if not foes:
+            continue
+        j = min(foes)[1]
+        f = U.bearing(u["pos"], _where(us, j, known)["pos"])
+        if f != u["facing"] and U.move(d, us, i, u["pos"], f, size, field)["ok"]:
+            us[i] = {**u, "facing": f}
+            out.append({"unit": i, "act": "turn", "target": j, "facing": f})
+    return out
+
+
+def _call_fire(d: Data, us: list, side, field: dict | None, known: dict) -> list:
+    """Each of its off-map batteries (not tanks or aircraft) with no mission, rounds and tubes,
+    not displacing, is called on the enemy unit it sees now that scores best as a target for
+    the side's unit nearest it (threat_score), at the first of its hexes the side can see, in
+    the battery's reach, with none of the side's men within the kind's radius and scatter."""
+    out = []
+    for k, b in enumerate((field or {}).get("support") or []):
+        K = d.units["indirect"]["kinds"][b["kind"]]
+        if b["side"] != side or b.get("mission") or K.get("direct") or K.get("air") or b.get("displacing") or b.get("rounds", 0) <= 0 or U.served_tubes(d, b) <= 0:
+            continue
+        aim = _fire_aim(d, us, side, field, known, (b, K))
+        if aim:
+            b["mission"] = {"hex": aim[1], "wait": K["delay"], "repeat": False}
+            out.append({"unit": None, "act": "fire", "battery": k, "target": aim[0], "hex": aim[1]})
+    return out
+
+
+def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tuple) -> tuple | None:
+    """(enemy index, hex) for battery b (kind K) to fire on, or None (_call_fire)."""
+    b, K = bk
+    best = None
+    ours = [u for u in us if u["side"] == side and u["men"] > 0 and u["state"] != "fled"]
+    for j, e in enumerate(us):
+        if e["side"] == side or str(j) not in known or not ours:
+            continue
+        h = next((x for x in _marks(d, e) if U.spotted(d, us, field, side, x)), None)
+        if h is None or not U.in_reach(d, b, h) or _too_near(d, ours, h, K["radius"] + K["scatter"]):
+            continue
+        u = min(ours, key=lambda o: U.hdist(o["pos"], e["pos"]))
+        key = (-threat_score(d, u, e, e), j)
+        if best is None or key < best[0]:
+            best = (key, (j, list(h)))
+    return None if best is None else best[1]
+
+
+def _marks(d: Data, e: dict) -> list:
+    """The hexes the enemy unit is seen by: its middle hex, then either end of its front row."""
+    rows = U.footprint(d, e)
+    return [e["pos"]] + ([rows[0][0], rows[0][-1]] if rows else [])
+
+
+def _too_near(d: Data, ours: list, h, r: int) -> bool:
+    """Whether any of the side's units has a hex within r of hex h."""
+    return any(U.hdist(x, h) <= r for u in ours for row in U.footprint(d, u) for x in row)
 
 
 def sightings(d: Data, us: list, side, field: dict | None, exchange, memory: dict) -> dict:
@@ -61,9 +181,7 @@ def sightings(d: Data, us: list, side, field: dict | None, exchange, memory: dic
 
 def _seen(d: Data, us: list, side, field: dict | None, e: dict) -> bool:
     """A unit of side sees enemy e: its middle hex or either end of its front row."""
-    rows = U.footprint(d, e)
-    marks = [e["pos"]] + ([rows[0][0], rows[0][-1]] if rows else [])
-    return any(U.spotted(d, us, field, side, h) for h in marks)
+    return any(U.spotted(d, us, field, side, h) for h in _marks(d, e))
 
 
 def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
@@ -74,6 +192,8 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return {"act": "ground", "target": t} if not u.get("prone") and under_fire(d, us, i) else None
     if t is None:
         return None
+    if u.get("reserve"):
+        return _stay(d, us, i, t, u["facing"], "range" in d.weapons[u["weapon"]])
     if roll <= C["hesitate"].get(u["quality"], 0):
         return {"act": "hesitate", "target": t, "roll": roll}
     return _last_seen(_best(d, us, i, t, ctx), ctx[3], t, ctx[4])
@@ -235,12 +355,21 @@ def score(d: Data, field: dict | None, u: dict, tu: dict, h: tuple, cost: int, s
     """How much the commander likes unit u ending at h (higher is better)."""
     C, q = d.units["commander"], u["quality"]
     dist = U.hdist(list(h), tu["pos"])
-    s = C["cover"].get(q, 0) * U.cover_at(d, field, tu["pos"], list(h)) - cost
+    s = C["cover"].get(q, 0) * U.cover_at(d, field, tu["pos"], list(h)) - cost - C["mines"].get(q, 0) * _mined(field, u["pos"], h)
     if shooter:
         inr = dist >= 1 and U.field_range(d, u["weapon"], dist) is not None
         return s + (C["in_range"] if inr else -C["closing"] * dist) - (C["too_close"] if dist < C["keep_off"] else 0)
     flank = C["flank"].get(q, 0) if U.arc(tu["facing"], U.bearing(tu["pos"], list(h))) != "front" else 0
     return s - C["closing"] * dist + flank
+
+
+def _mined(field: dict | None, a, h) -> int:
+    """Hexes of minefields it knows of (marked, or found) on the straight way from a to h, h included."""
+    mines = (field or {}).get("mines") or {}
+    if not mines or list(a) == list(h):
+        return 0
+    known = {k for k, m in mines.items() if not m.get("hidden") or m.get("found")}
+    return sum(1 for x in U.ray(list(a), list(h), U.hdist(a, h))[1:] if "{0},{1}".format(*x) in known)
 
 
 def reachable(d: Data, units: list, i: int, size: tuple, limit: int, field: dict | None = None) -> dict:
