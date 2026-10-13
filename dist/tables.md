@@ -4504,7 +4504,7 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **Limbering:** a limbered battery moves but cannot fire; unlimbered it fires but can only be manhandled 2 hexes. Changing over takes an exchange, without moving or firing. Hand to hand the crews fight with sword (arming sword). A battery that breaks loses its guns.
 
-**Modern infantry:** extended order is 3 men a hex (shots at it x0.5, 8 hexes a move). Magazine rifles fire 10 rounds a minute, self-loading and assault rifles 15, pistols and submachine guns 12. A unit can go to ground on its own move: shots at it -15%, and it cannot move until it gets up. Hidden men (gone to ground, in a bunker or in buildings): only 10% of the aimed shots at them find a man (5% of a machine gun's), and dug in they get +10 on morale.
+**Modern infantry:** extended order is 3 men a hex (shots at it x0.5, 8 hexes a move). Magazine rifles fire 10 rounds a minute, self-loading and assault rifles 15, pistols and submachine guns 12. A unit can go to ground on its own move: shots at it -15%, and it cannot move until it gets up. Digging in: out of contact, 3 exchanges neither moving nor firing, and it counts as gone to ground while it stays in its holes (it may move, leaving them). Hidden men (gone to ground, in a bunker or in buildings): only 10% of the aimed shots at them find a man (5% of a machine gun's), and dug in they get +10 on morale.
 
 **Machine guns:** a team is a gun and 5 crew a hex, the gun served while one of its crew is up. Each gun fires 300 rounds a minute, 10% of them rolled as aimed shots. Its beaten zone: the first other unit, friend or foe, within 20 hexes past the target on the line of fire takes 50% as many shots at that range (ground that stops shot stops it).
 

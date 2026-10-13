@@ -65,7 +65,7 @@ def _fire_values(d: Data) -> dict:
     MG, R = U["machine_guns"], U["missile"]["rate"]
     return {"x_bolt": R["rifle_service"], "x_assault": R["rifle_assault"], "x_smg": R["pistol_smg"], "x_mg": R["machine_gun"],
             "x_mg_crew": MG["crew"], "x_mg_aimed": round(1 / MG["tempo"]), "x_beaten": _field(d, MG["beaten"]["beyond"]),
-            "x_beaten_share": MG["beaten"]["share"], "x_ground": U["to_ground"]["cover"], "x_seen": U["hidden"]["seen"],
+            "x_beaten_share": MG["beaten"]["share"], "x_ground": U["to_ground"]["cover"], "x_dig": U["dig_in"]["exchanges"], "x_seen": U["hidden"]["seen"],
             "x_mg_seen": U["hidden"]["mg_seen"], "x_dug_in": U["morale"]["mods"]["dug_in"], "x_sup_prone": U["suppression"]["prone"],
             "x_ext_move": U["formations"]["extended"]["move"], "x_ext_men": U["formations"]["extended"]["per_hex"]}
 

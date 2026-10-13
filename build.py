@@ -260,6 +260,7 @@ def _mg_rules(d) -> list[str]:
         f"<b>Modern infantry:</b> extended order is {ext['per_hex']} men a hex (shots at it x{ext['missile_factor']:g}, {ext['move']} hexes a move). "
         f"Magazine rifles fire {R['rifle_service']} rounds a minute, self-loading and assault rifles {R['rifle_assault']}, pistols and submachine guns {R['pistol_smg']}. "
         f"A unit can go to ground on its own move: shots at it -{U['to_ground']['cover']}%, and it cannot move until it gets up. "
+        f"Digging in: out of contact, {U['dig_in']['exchanges']} exchanges neither moving nor firing, and it counts as gone to ground while it stays in its holes (it may move, leaving them). "
         f"Hidden men (gone to ground, in a bunker or in buildings): only {U['hidden']['seen']}% of the aimed shots at them find a man ({U['hidden']['mg_seen']}% of a machine gun's), "
         f"and dug in they get +{U['morale']['mods']['dug_in']} on morale.",
         f"<b>Machine guns:</b> a team is a gun and {M['crew']} crew a hex, the gun served while one of its crew is up. Each gun fires {R['machine_gun']} rounds a minute, "

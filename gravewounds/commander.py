@@ -197,12 +197,26 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return {"act": "ground", "target": t} if not u.get("prone") and under_fire(d, us, i) else None
     if u.get("reserve"):
         return None if t is None else _stay(d, us, i, t, u["facing"], "range" in d.weapons[u["weapon"]])
-    if t is None and obj is None:
+    if u.get("digging") or (t is None and obj is None):
         return None
+    if obj is not None and _digs(d, us, i, ctx):
+        return {"act": "dig", "target": t}
     if roll <= C["hesitate"].get(u["quality"], 0):
         return {"act": "hesitate", "target": t, "roll": roll}
     o = _best(d, us, i, t, ctx) if obj is None else _for_objective(d, us, i, t, ctx)
     return o if t is None else _last_seen(o, ctx[3], t, ctx[4])
+
+
+def _digs(d: Data, us: list, i: int, ctx: tuple) -> bool:
+    """A unit at the objective (within its radius) digs in: one that can (units.can_dig), not
+    dug in where it stands, not under fire, and with no enemy it knows of in its range."""
+    u, (_, field, _, known, _) = us[i], ctx
+    if not U.can_dig(d, u) or U.dug_here(u) or U.off_objective(d, u, objective(field)) > U.objective_radii(d, field)[0]:
+        return False
+    if under_fire(d, us, i):
+        return False
+    seen = [m["pos"] for k, m in (known or {}).items() if k.isdigit()]
+    return not any(U.field_range(d, u["weapon"], U.hdist(u["pos"], p)) is not None for p in seen)
 
 
 def objective(field: dict | None) -> list | None:
@@ -517,6 +531,8 @@ def _apply(us: list, i: int, o: dict) -> None:
     u = us[i]
     if o["act"] == "ground":
         us[i] = {**u, "prone": True}
+    elif o["act"] == "dig":
+        us[i] = {**u, "digging": {"at": list(u["pos"]), "n": 0}}
     elif o["act"] == "turn":
         us[i] = {**u, "facing": o["facing"]}
     elif o["act"] in ("move", "charge", "advance", "fall_back"):
