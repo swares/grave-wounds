@@ -165,9 +165,23 @@ applies: whichever is shorter counts.
   can be aimed at, and fire called on, from up to 30 hexes away. The light's aim penalty
   still applies. They show as a small star on the map, and the log says when a shot was
   aimed at muzzle flashes.
-- **Night vision.** Men with night-vision goggles or thermal sights see and aim further in
-  the dark. These are the Rangers' kit of 1993, Interceptor body armour and the plate
-  carrier. They see 30 hexes (328 yards, 300 m) and aim −5% at worst.
+- **Night vision.** A unit can carry a night-vision device, chosen before the battle on
+  the unit (**Night vision**), or set on the battlefield (`nv`). Each sees and aims further
+  in the dark, where the light's own sight is shorter or its aim worse:
+
+  | Device | Sees | Aims at worst | Notes |
+  | --- | --- | --- | --- |
+  | Starlight scope (1960s-70s) | 20 hexes (219 yards, 200 m) | −15% | one rifle in a squad, a dim picture |
+  | Night-vision goggles (1990s on) | 30 hexes (328 yards, 300 m) | −5% | every man |
+  | Thermal sight (tanks from the 1980s, teams from the 2000s) | 60 hexes (656 yards, 600 m) | as by day | also sees through smoke, by day or night |
+
+  By default a unit in the Rangers' kit of 1993, Interceptor body armour or the plate
+  carrier carries goggles; **No night vision** (`nv: none`) takes them away, and any unit of
+  any side or era can be given a device. The device counts for aimed fire, a vehicle's
+  guns and a battery's direct fire, and for calling fire. On the battlefields, the Marines
+  on Hill 861A have a few Starlight scopes, the Rangers in Mogadishu left their goggles
+  behind for what was to be a daylight raid, and the tanks and Bradleys at Fallujah have
+  thermal sights. The numbers are design estimates.
 - **Fixed lines.** A machine-gun unit can be **laid on a fixed line** (**Lay a fixed line**,
   then click the hex). This is done before the battle, by day or at dusk, and the line
   shows as a red dashed line. In the dark, when it has no target it can see, the unit

@@ -88,9 +88,21 @@ light:
   # Muzzle flashes: a unit that fired when the light limits sight to less than `flash` is seen,
   # where it fired from, out to `flash` battle hexes (2 m) through the next exchange.
   flash: 150
-  # Night-vision goggles and thermal sights: men in these kits see `sight` battle hexes in the
-  # dark (if the light's own sight is shorter) and aim `aim` % off (if the light's is worse).
-  night_vision: {kits: [ranger_1993, interceptor, plate_carrier], sight: 150, aim: 5}
+  # Night-vision devices: a unit that carries one (its `nv`) sees `sight` battle hexes in the
+  # dark (if the light's own sight is shorter) and aims `aim` % off (if the light's is worse); a
+  # thermal sight (`smoke`) also sees through smoke, by day or night. Men in `kits` carry the
+  # `kit_device` unless the unit says otherwise (nv: none to go without). Design estimates:
+  # the Starlight scope (AN/PVS-2, 1960s-70s) was one rifle in a squad and showed a dim green
+  # picture to a few hundred metres in starlight; goggles of the 1990s on see further and let
+  # every man aim; thermal sights came on tanks in the 1980s and on infantry teams' weapons in
+  # the 2000s.
+  night_vision:
+    kits: [ranger_1993, interceptor, plate_carrier]
+    kit_device: goggles
+    devices:
+      starlight: {name: "Starlight scope (1960s-70s)", sight: 100, aim: 15}
+      goggles:   {name: "Night-vision goggles (1990s on)", sight: 150, aim: 5}
+      thermal:   {name: "Thermal sight (tanks from the 1980s, teams from the 2000s)", sight: 300, aim: 0, smoke: true}
   # A machine gun laid on a fixed line (in daylight or at dusk) fires blind down it in the dark,
   # at any enemy within `width` field hexes of the line from its front to the hex it is laid on:
   # no sight needed, `aim` % off in place of the light's.

@@ -47,9 +47,10 @@ When an item is done, delete it here and note it in the pull request that closes
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
 - **Night, second cut.** Muzzle flashes, night vision, fixed lines, slower moves and losing
-  direction are in. Night vision is all or nothing by kit: there are no early image
-  intensifiers (Vietnam's Starlight scope), no thermal sights on vehicles, and no
-  goggles for the other side. A fixed line is laid on one hex, with no traverse limits or
+  direction are in. Night-vision devices (Starlight scope, goggles, thermal sight) are a
+  unit's whole: a Starlight scope stands for the few rifles that had one, and there are no
+  infra-red searchlights (the 1950s-60s active sights) or devices that wash out in a flare's
+  light. A fixed line is laid on one hex, with no traverse limits or
   final protective fire called by flare. A lost unit only turns, and never strays onto
   another path or into its friends. The moon is a simple model, good to an hour or so.
 - **Air support, first cut.** Aircraft are called like batteries. There is no fire at them

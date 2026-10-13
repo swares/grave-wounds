@@ -885,7 +885,7 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
             blind = best is not None
         if best is None:
             continue
-        wx = shot_weather(d, field, u["weapon"], best[0], best[2], best[3], {"kit": u.get("kit"), "blind": blind})
+        wx = shot_weather(d, field, u["weapon"], best[0], best[2], best[3], _seer(u, blind=blind))
         if wx["blocked"]:
             continue
         up, longer = height_edge(d, field, u["weapon"], best[2], best[3])
@@ -1025,12 +1025,12 @@ def shot_weather(d: Data, field: dict | None, weapon: str, dist: int, h=None, t=
     do woods and buildings between (clear_sight), unless it is fired blind. seer:
     the shooter in the dark, {kit, blind} (see in_the_dark)."""
     line = ray(h, t, dist) if h is not None and t is not None and ((field or {}).get("smoke") or _screen_hexes(d, field)) else None
-    if line and smoked(field, line):
+    if line and smoked(field, line) and not sees_smoke(d, seer):
         return {"blocked": "Smoke: no one can see to shoot through it.", "penalty": 0, "misfire": 0, "reach": 0}
     if line and not (seer or {}).get("blind") and not clear_sight(d, field, h, t, dist, line):
         return {"blocked": "Woods or buildings between: no one can see to aim through them.", "penalty": 0, "misfire": 0, "reach": 0}
     if is_gun(d, weapon):
-        return gun_weather(d, field, dist, h, t)
+        return gun_weather(d, field, dist, h, t, seer)
     return in_the_cold(d, field, weapon, in_the_dark(d, field, dist, t, C.weather_attack(d, (field or {}).get("weather"), weapon, 0 if (seer or {}).get("blind") else dist * d.units["range_scale"], h, t, _up(field)), seer))
 
 
@@ -1071,7 +1071,7 @@ def in_the_dark(d: Data, field: dict | None, dist: int, t, out: dict, seer: dict
         out["penalty"] += d.weather["light"]["fixed_line"]["aim"]
         out["blind"] = True
         return out
-    sight, aim = dark_sight(d, L, (seer or {}).get("kit"))
+    sight, aim = dark_sight(d, L, night_device(d, seer))
     if sight is not None and dist * d.units["range_scale"] > sight:
         if not (flashing(field, t) and dist * d.units["range_scale"] <= d.weather["light"]["flash"]):
             out["blocked"] = f"{L['name']}: no one can be seen to aim at beyond {sight // d.units['range_scale']} hexes."
@@ -1081,13 +1081,33 @@ def in_the_dark(d: Data, field: dict | None, dist: int, t, out: dict, seer: dict
     return out
 
 
-def dark_sight(d: Data, level: dict, kit: str | None) -> tuple:
-    """(sight in battle hexes or None, aim % off) in the light level for a man in this kit:
-    night-vision kits (light.night_vision) see further and aim better."""
-    nv = d.weather["light"].get("night_vision") or {}
-    if kit not in (nv.get("kits") or []):
+def night_device(d: Data, seer: dict | None) -> str | None:
+    """The night-vision device a shooter or watcher ({kit, nv}) carries: the unit's own (nv;
+    "none" for none), else his kit's (light.night_vision.kits carry its kit_device), else None."""
+    s, N = seer or {}, (d.weather or {}).get("light", {}).get("night_vision") or {}
+    if s.get("nv"):
+        return None if s["nv"] == "none" else s["nv"]
+    return N.get("kit_device") if s.get("kit") in (N.get("kits") or []) else None
+
+
+def _seer(u: dict, **k) -> dict:
+    """A unit as a shooter or watcher for the dark: its kit and its night-vision device."""
+    return {"kit": u.get("kit"), "nv": u.get("nv"), **k}
+
+
+def dark_sight(d: Data, level: dict, device: str | None) -> tuple:
+    """(sight in battle hexes or None, aim % off) in the light level for a man with this
+    night-vision device (light.night_vision.devices; None: his eyes only)."""
+    dev = ((d.weather["light"].get("night_vision") or {}).get("devices") or {}).get(device or "")
+    if not dev:
         return level["sight"], level["aim"]
-    return (None if level["sight"] is None else max(level["sight"], nv["sight"])), min(level["aim"], nv["aim"])
+    return (None if level["sight"] is None else max(level["sight"], dev["sight"])), min(level["aim"], dev["aim"])
+
+
+def sees_smoke(d: Data, seer: dict | None) -> bool:
+    """Whether the shooter's or watcher's device (a thermal sight) sees through smoke."""
+    dev = ((d.weather or {}).get("light", {}).get("night_vision") or {}).get("devices", {}).get(night_device(d, seer) or "")
+    return bool(dev and dev.get("smoke"))
 
 
 def flashing(field: dict | None, t) -> bool:
@@ -1250,7 +1270,7 @@ def _nearest_ahead(d: Data, u: dict, front: list, fv: tuple, hexes: list, field:
             dist = hdist(h, t)
             if best is not None and dist >= best[0]:
                 continue
-            wx = shot_weather(d, field, weapon, dist, h, t, {"kit": u.get("kit")})
+            wx = shot_weather(d, field, weapon, dist, h, t, _seer(u))
             reach = wx.get("reach", 0) + height_edge(d, field, weapon, h, t)[1]
             if not wx["blocked"] and _reaches(d, u, dist, reach) and (clear is None or clear(h, t, dist)):
                 best = (dist, h, t)
@@ -1328,7 +1348,7 @@ def _could_shoot(d: Data, field: dict | None, u: dict, hexes: list, t) -> bool:
         return False
     for x in hexes:
         dist = hdist(x, t)
-        wx = shot_weather(d, field, u["weapon"], dist, x, t, {"kit": u.get("kit")})
+        wx = shot_weather(d, field, u["weapon"], dist, x, t, _seer(u))
         if not wx["blocked"] and _reaches(d, u, dist, wx.get("reach", 0)):
             return True
     return False
@@ -1706,15 +1726,15 @@ def _gun_target(d: Data, us: list, i: int, field: dict | None, gun: dict):
         for t, h in ((x, h) for row in footprint(d, e) for x in row for h in front):
             dist = hdist(h, t)
             key = (0 if e.get("vehicle") else 1, dist)
-            if dist <= gun["range"] and (best is None or key < best[0]) and _can_lay(d, field, clear, fv, (h, t, dist)):
+            if dist <= gun["range"] and (best is None or key < best[0]) and _can_lay(d, field, clear, fv, (h, t, dist), _seer(u)):
                 best = (key, (dist, j, h, t))
     return None if best is None else best[1]
 
 
-def _can_lay(d: Data, field: dict | None, clear, fv: tuple, line: tuple) -> bool:
-    """Whether a gun at h can be laid on t: ahead, in sight, with a clear line of fire."""
+def _can_lay(d: Data, field: dict | None, clear, fv: tuple, line: tuple, seer: dict | None = None) -> bool:
+    """Whether a gun at h can be laid on t: ahead, in sight (seer: the crew's night device), with a clear line of fire."""
     h, t, dist = line
-    return _ahead(fv, h, t) and clear_sight(d, field, h, t, dist) and not gun_weather(d, field, dist, h, t)["blocked"] and (clear is None or clear(h, t, dist))
+    return _ahead(fv, h, t) and clear_sight(d, field, h, t, dist) and not gun_weather(d, field, dist, h, t, seer)["blocked"] and (clear is None or clear(h, t, dist))
 
 
 def _ahead(fv: tuple, h, t) -> bool:
@@ -1759,17 +1779,17 @@ def shell_weapon(d: Data, table: str) -> str | None:
 def spotted(d: Data, units: list, field: dict | None, side, h) -> bool:
     """Whether a unit of `side` (not broken or fled) can see hex h to call fire on it: within
     the weather's sight and the light's (unless h is lit), with no woods between."""
-    return any(u["side"] == side and u["men"] > 0 and u["state"] not in ("broken", "fled") and _sees(d, field, u, h, _sight_hexes(d, field, h, u.get("kit"))) for u in units)
+    return any(u["side"] == side and u["men"] > 0 and u["state"] not in ("broken", "fled") and _sees(d, field, u, h, _sight_hexes(d, field, h, _seer(u))) for u in units)
 
 
-def _sight_hexes(d: Data, field: dict | None, h=None, kit: str | None = None) -> int | None:
-    """How far the weather and the light let a man (in this kit: night vision) see hex h, in
+def _sight_hexes(d: Data, field: dict | None, h=None, seer: dict | None = None) -> int | None:
+    """How far the weather and the light let a man (seer: his kit and night device) see hex h, in
     field hexes (None: as far as the map). A lit hex is seen as by day; one that fired in the
     dark last exchange, out to light.flash."""
     cond = ((field or {}).get("weather") or {}).get("cond")
     vis = d.weather["conditions"][cond].get("visibility") if cond and d.weather else None
     L = light_of(d, field)
-    dark = dark_sight(d, L, kit)[0] if L and not lit(field, h) else None
+    dark = dark_sight(d, L, night_device(d, seer))[0] if L and not lit(field, h) else None
     if dark is not None and flashing(field, h):
         dark = max(dark, d.weather["light"]["flash"])
     if dark is not None:
@@ -1786,7 +1806,7 @@ def _sees(d: Data, field: dict | None, u: dict, h, sight: int | None) -> bool:
         if sight is not None and dist > sight:
             continue
         line = ray(x, h, dist)
-        if clear_sight(d, field, x, h, dist, line) and not smoked(field, line):
+        if clear_sight(d, field, x, h, dist, line) and (not smoked(field, line) or sees_smoke(d, _seer(u))):
             return True
     return False
 
@@ -2721,7 +2741,7 @@ def ammo_left(d: Data, u: dict) -> int:
     return max(0, guns_of(d, u) * d.units["artillery"]["ammo"] - u.get("spent", 0))
 
 
-def gun_weather(d: Data, field: dict | None, dist: int, h=None, t=None) -> dict:
+def gun_weather(d: Data, field: dict | None, dist: int, h=None, t=None, seer: dict | None = None) -> dict:
     """The weather's effect on guns: no laying them on what cannot be seen (less with rain or
     snow driven into the gunners' faces); the wind as on firearms; no reach from the wind."""
     out = {"blocked": None, "penalty": 0, "misfire": 0, "reach": 0}
@@ -2736,7 +2756,7 @@ def gun_weather(d: Data, field: dict | None, dist: int, h=None, t=None) -> dict:
         out["blocked"] = f"{cond['name']}: the guns cannot be laid on what cannot be seen."
         return out
     out["penalty"] = next(x for x in d.weather["winds"] if x["id"] == weather["wind"])["firearm"]
-    return in_the_dark(d, field, dist, t, out)
+    return in_the_dark(d, field, dist, t, out, seer)
 
 
 def _chance_at(bands: list, dist: int) -> int:
@@ -2807,7 +2827,7 @@ def _battery_fire(d: Data, units: list, ground: tuple, i: int, best: tuple, orde
     field); order: {guns, ammo (rounds left), shot (ordered, or None), per (rounds a gun),
     section}."""
     (occ, field), A, u = ground, d.units["artillery"], units[i]
-    wx, shot = gun_weather(d, field, best[0], best[2], best[3]), _shot(d, u, best[0], order.get("shot"))
+    wx, shot = gun_weather(d, field, best[0], best[2], best[3], _seer(u)), _shot(d, u, best[0], order.get("shot"))
     behind = _ricochet_at(d, occ, field, i, best) if shot == "round" else None
     graze = A["canister"]["graze"] if shot == "canister" and best[0] > A["canister"]["strike"][0][0] and _firm(d, field, best) else 0
     tgt = units[best[1]]

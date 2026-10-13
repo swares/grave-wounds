@@ -667,7 +667,11 @@ def _light_rules(d) -> list[str]:
             f"{L['flare']} hexes round it. A battle from the travel map takes the hour's light: dusk within {L['dusk_hours'] * 60:g} minutes of sunrise or sunset; "
             f"at night moonlit when the moon is up, at least {L['moon_from'] * 100:g}% lit and the sky clear, else dark.",
             f"<b>Fighting in the dark:</b> a unit that fired when sight is under {L['flash'] // rs} hexes is seen by its muzzle flashes out to {L['flash'] // rs} hexes "
-            f"through the next exchange. Night-vision kits see {L['night_vision']['sight'] // rs} hexes and aim -{L['night_vision']['aim']}% at worst. A machine gun laid on "
+            "through the next exchange. Night-vision devices (a unit's own, or its kit's: "
+            + ", ".join(d.armor["kits"][k]["name"].split(" (")[0].split(",")[0] for k in L["night_vision"]["kits"]) + f" carry {L['night_vision']['devices'][L['night_vision']['kit_device']]['name'].split(' (')[0].lower()}): "
+            + "; ".join(f"{v['name']} sees {v['sight'] // rs} hexes, " + (f"aims -{v['aim']}% at worst" if v["aim"] else "aims as by day")
+                        + (", and through smoke" if v.get("smoke") else "") for v in L["night_vision"]["devices"].values())
+            + ". A machine gun laid on "
             f"a fixed line by day or at dusk fires blind down it in the dark at the nearest enemy within {L['fixed_line']['width']} hex of it, -{L['fixed_line']['aim']}%. "
             "Moving: " + "; ".join(f"{v['name'].lower()} +{v['move']} a hex" for v in L["levels"].values() if v["move"])
             + ". A unit that moved may lose its way: " + "; ".join(f"{v['name'].lower()} {v['lost']}%" for v in L["levels"].values() if v["lost"])

@@ -36,8 +36,9 @@ const grid = groundGrid(COLS, ROWS, kind);
 
 // ---------- the armies (pos is the middle of the front row) ----------
 const US = { side: 0, facing: N }, SNA = { side: 1, facing: S };
-const RANGER = { quality: "veteran", weapon: "rifle_assault", kit: "ranger_1993", formation: "extended", mounted: false };
-const SAW = { quality: "veteran", weapon: "machine_gun", kit: "ranger_1993", formation: "mg", mounted: false };
+// The assault force went in by day and left its night-vision goggles behind: nv none.
+const RANGER = { quality: "veteran", weapon: "rifle_assault", kit: "ranger_1993", formation: "extended", mounted: false, nv: "none" };
+const SAW = { quality: "veteran", weapon: "machine_gun", kit: "ranger_1993", formation: "mg", mounted: false, nv: "none" };
 const MILITIA = { quality: "green", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false };
 const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [

@@ -222,6 +222,7 @@ legend{padding:0}
         <label class="sr" for="sel-assault">Storm the bunker</label><select class="small" id="sel-assault" hidden title="Ordered to storm: once an exchange it tries to knock out each enemy-held bunker across its front, with grenades, satchel charges or flamethrowers" style="width:auto"></select>
         <button class="small" id="btn-ground" title="The men lie down in the folds of the ground: harder to hit, but the unit cannot move until it gets up">Go to ground</button>
         <button class="small" id="btn-fixed" hidden title="Lay the machine guns on a fixed line (by day or at dusk): in the dark they fire blind down it at any enemy on it">Lay a fixed line</button>
+        <label class="sr" for="sel-nv">Night vision</label><select class="small" id="sel-nv" hidden style="width:auto" title="The night-vision device the unit carries (chosen before the battle): by its armour kit, none, or a Starlight scope, goggles or a thermal sight"></select>
         <button class="small" id="btn-limber" hidden title="A battery limbered moves but cannot fire; unlimbered it fires but can only be manhandled. Changing over takes an exchange.">Limber</button>
         <button class="small" id="btn-resupply" hidden title="The caissons come up: a full load of rounds again. It takes an exchange out of contact, in which the battery neither moves nor fires.">Resupply</button>
         <button class="small" id="btn-abandon" hidden title="Leave the immobilised vehicles: their crews leave the fight unhurt, and the rest can move">Abandon immobilised</button>
@@ -356,7 +357,7 @@ function fieldOptions(){                        // the battlefields under their 
 function newUnit(o){
   return { id: S.seq++, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, guns: isGun(o.weapon) ? gunKind(o) : undefined, width: o.width || Math.ceil(o.men / form(o).per_hex),
-    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}) };
+    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.nv ? { nv: o.nv } : {}) };
 }
 function newField(){                              // open ground of the default size (and the page goes back to that size)
   SIZE = DEFAULT_SIZE.slice();
@@ -1286,6 +1287,7 @@ function renderSel(){
   renderGunOrders(u, setup);
   renderGround(u, setup);
   renderFixed(u, setup);
+  renderNv(u, setup);
   if (!u){ $("#sel-info").innerHTML = ""; return }
   const f = form(u), w = FD.weapons[u.weapon], VK = vehicleKind(u);
   const how = { smoothbore: "smoothbore guns; ", rifled: "rifled guns, percussion shell; ", howitzer: "howitzers, shell over anything between; " }[gunKind(u)];
@@ -1295,7 +1297,7 @@ function renderSel(){
   $("#sel-info").innerHTML = `<dt>Men</dt><dd>${u.men} of ${u.start}${down}</dd>`
     + `<dt>State</dt><dd>${u.state}</dd>`
     + `<dt>Quality</dt><dd>${u.quality}: attack ${quality(u.quality).attack}%, defence ${quality(u.quality).defence}%, Nerve ${quality(u.quality).nerve}</dd>`
-    + `<dt>Arms</dt><dd>${esc(w.name)} (${reach}); ${esc(FD.kits[u.kit].name)}</dd>`
+    + `<dt>Arms</dt><dd>${esc(w.name)} (${reach}); ${esc(FD.kits[u.kit].name)}${nvName(u) ? "; " + esc(nvName(u).split(" (")[0].toLowerCase()) : ""}</dd>`
     + `<dt>Order</dt><dd>${f.name}, ${Math.min(u.width, Math.ceil(Math.max(1, u.men) / f.per_hex))} hexes of front${u.mounted ? ", mounted" : ""}</dd>`
     + (isBattery(u) ? `<dt>Guns</dt><dd>${gunsInfo(u)}</dd>` : "")
     + (VK ? `<dt>Vehicles</dt><dd>${vehicleInfo(u, VK)}</dd>` : "")
@@ -1394,6 +1396,27 @@ function renderFixed(u, setup){                  // Lay a fixed line / Clear it:
   if (S.laying === u.id) label = "Click a hex…";
   b.textContent = label;
   b.setAttribute("aria-pressed", String(S.laying === u.id));
+}
+const NVD = () => FD.weather?.light?.night_vision || { devices: {} };
+function nvName(u){                               // "Night-vision goggles (1990s on)", or "" with none
+  const dev = nightDevice(seerOf(u));
+  return dev ? NVD().devices[dev].name : "";
+}
+function renderNv(u, setup){                      // the unit's night-vision device, chosen before the battle
+  const el = $("#sel-nv");
+  el.hidden = !u || !FD.weather?.light;
+  if (el.hidden) return;
+  const byKit = (NVD().kits || []).includes(u.kit) ? NVD().devices[NVD().kit_device].name : "none";
+  el.innerHTML = `<option value="">Night vision: by kit (${esc(byKit.split(" (")[0].toLowerCase())})</option><option value="none">No night vision</option>`
+    + Object.entries(NVD().devices).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
+  el.value = u.nv || "";
+  el.disabled = !setup;
+}
+function setNv(v){
+  const u = selUnit(); if (!u || S.phase !== "setup") return;
+  if (v) u.nv = v; else delete u.nv;
+  S.msg = `${u.name}: ${nvName(u) || "no night vision"}.`;
+  render();
 }
 function toggleFixed(){
   const u = selUnit(); if (!u || !isMg(u.weapon)) return;
@@ -1752,6 +1775,7 @@ function init(){
   $("#sel-carrier").onchange = e => { if (e.target.value) mountOn(e.target.value) };
   $("#btn-ground").onclick = toggleGround;
   $("#btn-fixed").onclick = toggleFixed;
+  $("#sel-nv").onchange = e => setNv(e.target.value);
   $("#btn-add-sup").onclick = addSupport;
   $("#support").addEventListener("click", e => {
     const c = e.target.closest("button[data-sup-call]"), s = e.target.closest("button[data-sup-stop]");
