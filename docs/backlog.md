@@ -41,9 +41,8 @@ When an item is done, delete it here and note it in the pull request that closes
   wounds are counted but not named. A fire plan has at most two legs from the page, though
   the data takes any number. Counter-battery fire does not need to see a placed battery: it
   finds it by flash and sound once located, wherever it stands within range.
-- **The travel clock, simplified.** The clock watches for meetings every quarter hour, so
-  two fast forces passing in open country within one quarter hour can miss each other; and
-  meetings are only between the forces' hexes (no scouting reach, no seeing a dust cloud).
+- **The travel clock, simplified.** Meetings are only between the forces' hexes: no
+  scouting reach, and no seeing a dust cloud or campfires from further off.
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
   Agincourt (1415), Towton (1461), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
   Lane (1814), First Bull Run (1861), Fort Phil Kearny (1866-67, with two battlefields), Mons

@@ -60,8 +60,11 @@ on only when the GM moves it, and every force moves with it:
 - **Busy forces.** A force making camp, or fighting, is busy until it is done: its own time
   runs ahead of the clock and it does nothing else until the clock catches up. The forces
   list shows each force's own time.
-- **Meetings.** The clock watches every quarter hour for forces of different sides coming
-  within fighting reach (the same or the next hex). When they do, it stops, both halt, and
+- **Meetings.** The clock watches for forces of different sides coming within fighting reach
+  (the same or the next hex): every quarter hour, and more often while a column is about to
+  enter its next hex, so it looks each time any column moves a hex. Fast columns on small
+  hexes (mounted men on Mogadishu's 270-yard hexes cross several in a quarter hour) cannot
+  pass through each other between two looks. When they meet, it stops, both halt, and
   the fight can be set up as usual, with the usual chance of surprise; or the GM gives them
   new orders and they march on past each other.
 - **Part of a hex.** A march stopped in the middle of a hex keeps the time already spent on
