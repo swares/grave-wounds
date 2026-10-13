@@ -37,9 +37,9 @@ When an item is done, delete it here and note it in the pull request that closes
   ransom or escape; and there is no two-handed great sword among the weapons, so no sword
   is barred to a one-armed hero.
 - **Indirect fire, simplified.** A battery placed off the map stands straight out from the
-  edge nearest where it was placed, not anywhere behind it. Its crews' wounds are counted but
-  not named. Counter-battery fire does not need to see a placed battery: it finds it by flash
-  and sound once located, wherever it stands within range.
+  edge nearest where it was placed, not anywhere behind it. Its crews' wounds are counted
+  but not named. Counter-battery fire does not need to see a placed battery: it
+  finds it by flash and sound once located, wherever it stands within range.
 - **The travel clock, simplified.** The clock watches for meetings every quarter hour, so
   two fast forces passing in open country within one quarter hour can miss each other; and
   meetings are only between the forces' hexes (no scouting reach, no seeing a dust cloud).
