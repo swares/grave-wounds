@@ -21,6 +21,7 @@ formations:
   extended: {name: "Extended order", abreast: 3, ranks: 1, per_hex: 3, move: 8, missile_factor: 0.5}   # modern infantry: a few yards between men
   armour: {name: "Armour", abreast: 1, ranks: 1, per_hex: 4, move: 12, missile_factor: 1.0}   # vehicles, one a hex (per_hex and move are the vehicle kind's: see vehicles)
   mg: {name: "Machine-gun team", abreast: 5, ranks: 1, per_hex: 5, move: 4, missile_factor: 0.5}      # a gun and its crew a hex (see machine_guns)
+  at_gun: {name: "Anti-tank guns", abreast: 1, ranks: 1, per_hex: 5, move: 2, missile_factor: 0.5}   # a towed gun and its crew a hex, manhandled (see anti_tank_guns)
 mounted_move: 15           # hexes an exchange for mounted units, in either order
 charge_move: 2             # a unit that ends its move in contact may move this many times its allowance (a charge)
 turn_per: 2                # turning the facing one step (60 degrees) costs 1 hex for every this many hexes of front (at least 1)
@@ -342,7 +343,9 @@ indirect:
 # weather) knocks a vehicle out at its armour's `row` % (rpg or atgm). A round into a vehicle's
 # flank or rear (where the shooter stands, by the vehicle unit's facing) knocks it out at that %
 # times `aspect` (to 100 at most). A hit that does not knock it out may still do harm (`damage`):
-# at `immobilised` % it cannot move, at the next `gun` % its main gun is out. A unit with an
+# each such hit is on the turret at `turret` %, else the hull, and does what that part's line
+# says: at `immobilised` % it cannot move, at the next `gun` % its main gun is out (the turret
+# more often puts the gun out, the hull more often stops it). A unit with an
 # immobilised vehicle cannot move until it abandons it (its crew leave the fight unhurt). A shell
 # or bomb bursting in a vehicle's own hex knocks it out at the firing kind's `knock` % times its
 # armour's `shell`. A knocked-out vehicle's crew are out of the fight: each is struck at
@@ -358,18 +361,55 @@ vehicles:
     ifv:  {name: "Infantry fighting vehicles", crew: 3, move: 14, armour: light, carry: 7, gun: {range: 80, rate: 2, he: autocannon, hit: [[20, 70], [40, 45], [80, 20]]}}
     apc:  {name: "Armoured carriers", crew: 3, move: 14, armour: light, carry: 10}
   armour:
-    heavy: {rpg: 15, atgm: 60, gun: 35, shell: 1}
-    light: {rpg: 50, atgm: 90, gun: 75, shell: 3}
+    heavy: {rpg: 15, atgm: 60, gun: 35, shell: 1, mine: 25}
+    light: {rpg: 50, atgm: 90, gun: 75, shell: 3, mine: 60}
   aspect: {flank: 2.0, rear: 3.0}
   anti_armour:               # weapon: rate (rounds a man fires at a vehicle an exchange, every one aimed) and the armour row it hits on
     rpg:        {rate: 0.25, row: rpg}
     bazooka:    {rate: 0.25, row: rpg}
     recoilless: {rate: 0.25, row: rpg}
     atgm:       {rate: 0.1,  row: atgm}
-  damage: {immobilised: 25, gun: 15}
+  damage:
+    turret: 35
+    turret_hit: {immobilised: 5, gun: 40}
+    hull_hit: {immobilised: 35, gun: 5}
   crew_struck: 50
   riders_struck: 30
   ground: {open: 1, rough: 2, woods: 3, slope: 2, high: 1}
+
+# ---------- anti-tank guns ----------
+# A unit armed with an anti-tank gun (`weapons`; on the Second World War's and Korea's tables)
+# is guns and their crews, `crew` men a gun, in the at_gun formation (a gun a hex, manhandled).
+# It fires as a vehicle's main gun (`gun`, as vehicles.kinds): `rate` rounds a gun its crews
+# still serve each exchange, at the nearest enemy in range, in sight and in front, vehicles first;
+# at a vehicle a hit knocks it out at its armour's `gun` %, at men a round bursts as the
+# indirect kind `he`. It does not shoot small arms. Its crews are men: rifles, machine guns and
+# shells strike them; hand to hand they fight with `crew_weapon`. Design estimates, from the
+# towed guns of 1939-53 (the British 6-pounder and the US 57 mm, the German Pak 38 and 40, the
+# Soviet and North Korean 45 mm, the Japanese 47 mm).
+anti_tank_guns:
+  weapons: [at_gun]
+  crew: 5
+  crew_weapon: bayonet
+  gun: {range: 100, rate: 1, he: tank, hit: [[20, 70], [50, 45], [100, 20]]}
+
+# ---------- minefields ----------
+# The GM paints minefields on hexes before the battle (field.mines: {hex: {kind, hidden}}),
+# on a table that has mine wounds (`weapon`, 1939 on). A marked field shows on the map; a
+# hidden one only once something has gone into it. A unit that moves into minefield hexes (its
+# ground crossed: its footprint along a straight line from where it stood when the exchange's
+# moves began, less where it was) sets them off when the exchange is resolved, before the
+# shooting: for each such hex, each man of a hex's worth (its formation's men a hex) is struck at
+# the kind's `men` %, and rolls a wound as one struck by a mine at `attack` %; a vehicle that goes
+# into it is struck at its `vehicles` %, and then knocked out at its armour's `mine` %, else
+# immobilised (a track blown off). Design estimates.
+mines:
+  weapon: mine_ied
+  attack: 70
+  kinds:
+    ap:    {name: "Anti-personnel mines", men: 10, vehicles: 0}
+    at:    {name: "Anti-tank mines", men: 0, vehicles: 30}
+    mixed: {name: "Mixed minefield", men: 8, vehicles: 25}
 
 # ---------- landing by air ----------
 # A field can mark landing zones (field.lz, hexes). A unit can come on by air at one: it waits

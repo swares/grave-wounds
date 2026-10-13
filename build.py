@@ -321,11 +321,29 @@ def _vehicle_rules(d) -> list[str]:
     asp, dm = V.get("aspect") or {}, V.get("damage") or {}
     return [f"<b>Vehicles:</b> one a hex ({kinds}). Small arms cannot hurt them; no one fights them hand to hand. Anti-armour weapons fire "
             + at + f" an exchange, every round aimed; a hit knocks a vehicle out by its armour ({arm}), x{asp.get('flank', 1):g} into the flank and x{asp.get('rear', 1):g} into the rear. "
-            f"A hit that does not knock it out immobilises it at {dm.get('immobilised', 0)}% or puts its main gun out at {dm.get('gun', 0)}%; a unit cannot move until it abandons "
+            f"A hit that does not knock it out strikes the turret at {dm['turret']}% (gun out {dm['turret_hit']['gun']}%, immobilised {dm['turret_hit']['immobilised']}%), "
+            f"else the hull (immobilised {dm['hull_hit']['immobilised']}%, gun out {dm['hull_hit']['gun']}%); a unit cannot move until it abandons "
             "its immobilised vehicles (their crews leave unhurt). "
             f"A main gun hits a vehicle by range, or bursts on men as a tank's round on call; a shell or bomb in a vehicle's hex knocks it out at the kind's knock % times shell. "
             f"A knocked-out vehicle's crew are out of the fight, each struck at {V['crew_struck']}%. Carriers take a foot unit aboard from beside them and set it down beside them; "
-            f"riders in a knocked-out carrier are each struck at {V['riders_struck']}%. Going a hex: {going}; nothing else."]
+            f"riders in a knocked-out carrier are each struck at {V['riders_struck']}%. Going a hex: {going}; nothing else."] + _at_mine_rules(d)
+
+
+def _at_mine_rules(d) -> list[str]:
+    A, M = d.units.get("anti_tank_guns"), d.units.get("mines")
+    out = []
+    if A:
+        g = A["gun"]
+        out.append(f"<b>Anti-tank guns (1939-53):</b> a unit of towed guns, {A['crew']} men a gun, a gun a hex, manhandled {d.units['formations']['at_gun']['move']} hexes. "
+                   f"Each gun served fires {g['rate']} round an exchange to {g['range']} hexes as a tank's main gun, vehicles first (hits {'/'.join(str(h[1]) for h in g['hit'])}% by range, "
+                   "knocking out by the armour's gun %), high explosive at men. Its crews are men: small arms and shells strike them. The commander leaves them to the GM.")
+    if M:
+        kinds = "; ".join(f"{k['name'].lower()}: men {k['men']}%, vehicles {k['vehicles']}%" for k in M["kinds"].values())
+        V = d.units["vehicles"]["armour"]
+        out.append(f"<b>Minefields (1939 on):</b> painted before the battle, marked or hidden (shown once set off). A unit that moved into minefield hexes "
+                   f"(its footprint on a straight line from where its move began) sets them off before the shooting, a hex's worth of men a hex struck at the kind's % ({kinds}), "
+                   f"wounded as by a mine at {M['attack']}%; a vehicle struck is knocked out at {V['heavy']['mine']}% (heavy) or {V['light']['mine']}% (light), else immobilised.")
+    return out
 
 
 def _heliborne_rules(d) -> list[str]:

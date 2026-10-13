@@ -968,14 +968,18 @@ def kill_chance(d: Data, u: dict, row: str, h, t) -> int:
 
 
 def _harm(d: Data, u: dict, n: int, lost: int, rng) -> dict:
-    """n hits on vehicle unit u that did not knock one out: each may immobilise a vehicle or put
-    its main gun out (vehicles.damage), up to the vehicles it has left. -> {immobilised, gun}."""
-    D, left, out = d.units["vehicles"].get("damage") or {}, vehicles_left(d, u, lost), {"immobilised": 0, "gun": 0}
+    """n hits on vehicle unit u that did not knock one out: each is on the turret at
+    vehicles.damage.turret %, else the hull, and may immobilise a vehicle or put its main gun out
+    by that part's line, up to the vehicles it has left. -> {immobilised, gun, turret}."""
+    D, left, out = d.units["vehicles"]["damage"], vehicles_left(d, u, lost), {"immobilised": 0, "gun": 0, "turret": 0}
     for _ in range(n):
+        turret = rng.randint(1, 100) <= D["turret"]
+        P = D["turret_hit" if turret else "hull_hit"]
+        out["turret"] += turret
         r = rng.randint(1, 100)
-        if r <= D.get("immobilised", 0):
+        if r <= P["immobilised"]:
             out["immobilised"] += 1
-        elif r <= D.get("immobilised", 0) + D.get("gun", 0):
+        elif r <= P["immobilised"] + P["gun"]:
             out["gun"] += 1
     u["immobile"] = min(left, u.get("immobile", 0) + out["immobilised"])
     u["gunless"] = min(left, u.get("gunless", 0) + out["gun"])
@@ -1660,6 +1664,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     lost, dead, dealt, flanked, log = [0] * len(us), [0] * len(us), [0] * len(us), [False] * len(us), []
     acc = (lost, dead, dealt)
     under = [False] * len(us)                     # under shellfire or machine-gun fire this exchange (suppression)
+    log += _mines_all(d, us, table, rng, acc, field)
     log += _closing_all(d, us, table, rng, acc, field)
     log += _strike_all(d, us, table, rng, acc, flanked, field, list(lost))
     log += _shoot_all(d, us, table, rng, acc, field, under)
@@ -1695,7 +1700,71 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     _lit_fades(field)
     log += landings(d, us, table, rng, field)
     log += _vehicles_after(d, us, field)
+    if (field or {}).get("mines"):
+        for u in us:
+            u["was"] = [list(u["pos"]), u["facing"]]   # where its next moves begin: the ground it crosses
     return us, log
+
+
+# ---------- minefields ----------
+
+def crossed(d: Data, u: dict) -> list:
+    """The hexes unit u went into since `was` (where it stood when the moves began): its footprint
+    at each step on a straight line from there to here, less the hexes it started on, in order."""
+    was = u.get("was")
+    if not was or (list(was[0]) == list(u["pos"]) and was[1] == u["facing"]):
+        return []
+    old = {C.hkey(x) for row in footprint(d, {**u, "pos": list(was[0]), "facing": was[1]}) for x in row}
+    out, seen = [], set(old)
+    for p in ray(list(was[0]), u["pos"], hdist(was[0], u["pos"]))[1:] or [u["pos"]]:
+        for x in (x for row in footprint(d, {**u, "pos": list(p)}) for x in row):
+            if C.hkey(x) not in seen:
+                seen.add(C.hkey(x))
+                out.append(x)
+    return out
+
+
+def _mines_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | None) -> list:
+    """Units that went into minefield hexes (crossed) set them off, before the shooting: men
+    struck at the kind's `men` % (a hex's worth a hex) and wounded as by a mine; vehicles struck
+    at its `vehicles` %, then knocked out at their armour's `mine` %, else immobilised. Each
+    field set off is found (shown on the map)."""
+    mines, log = (field or {}).get("mines"), []
+    if not mines:
+        return log
+    for i, u in enumerate(us):
+        if u["men"] <= 0 or u["state"] == "fled":
+            continue
+        hit = [x for x in crossed(d, u) if C.hkey(x) in mines]
+        if hit:
+            for x in hit:
+                mines[C.hkey(x)]["found"] = True
+            log += _set_off(d, us, i, [mines[C.hkey(x)]["kind"] for x in hit], (table, rng, acc))
+    return log
+
+
+def _set_off(d: Data, us: list, i: int, kinds: list, ctx: tuple) -> list:
+    """Unit i in minefield hexes of these kinds: its men or vehicles struck (_mines_all)."""
+    table, rng, acc = ctx
+    M, u = d.units["mines"], us[i]
+    line = {"kind": "mines", "unit": i, "hexes": len(kinds)}
+    if u.get("vehicle"):
+        struck = sum(1 for k in kinds if rng.randint(1, 100) <= M["kinds"][k]["vehicles"])
+        kills = sum(1 for _ in range(struck) if rng.randint(1, 100) <= armour_of(d, u)["mine"])
+        k = knock_out(d, us, i, kills, (table, rng), acc)
+        left = vehicles_left(d, u, acc[0][i])
+        immobile = min(left, struck - k["knocked"])
+        u["immobile"] = min(left, u.get("immobile", 0) + immobile)
+        return _logged({**line, "struck": struck, "knocked": k["knocked"], "crew": k["crew"], "immobilised": immobile, **_riders_line(k)}, k["tally"])
+    per = form(d, u)["per_hex"]
+    struck = sum(1 for k in kinds for _ in range(min(per, u["men"])) if rng.randint(1, 100) <= M["kinds"][k]["men"])
+    weapon = M["weapon"] if M["weapon"] in (d.tables.get(table) or {}).get("weapons", []) else None
+    if not struck or weapon is None:
+        return [{**line, "struck": struck, "down": 0, "dead": 0}]
+    t = _take_hurt(u, _blows(d, {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}, _side(u, table), struck, M["attack"], 0, rng, _exposure(d, u, False, True), -1000))
+    acc[0][i] += t["down"]
+    acc[1][i] += t["dead"]
+    return _logged({**line, "struck": struck}, t)
 
 
 def lz_state(d: Data, units: list, field: dict | None, side, lz) -> str:
@@ -1986,8 +2055,8 @@ def _armour_volley(d: Data, us: list, ctx: tuple, v: dict, opts: dict) -> list:
 
 
 def _harm_line(harm: dict) -> dict:
-    """The log's immobilised and gun counts, when there are any."""
-    return {k: v for k, v in (("immobilised", harm["immobilised"]), ("gun_out", harm["gun"])) if v}
+    """The log's immobilised, gun and turret-hit counts, when there are any."""
+    return {k: v for k, v in (("immobilised", harm["immobilised"]), ("gun_out", harm["gun"]), ("turret", harm["turret"])) if v}
 
 
 def _riders_line(k: dict) -> dict:
@@ -2040,11 +2109,23 @@ def _vehicle_guns(d: Data, us: list, ctx: tuple, field: dict | None, under: list
     indirect kind `he` does."""
     log = []
     for i, u in enumerate(us):
-        kind = vehicle_kind(d, u)
-        gun = kind.get("gun") if kind else None
+        gun = _gun_of(d, u)
         if gun and not _out(u):
             log += _main_gun(d, us, i, gun, (ctx, field, under))
     return log
+
+
+def _gun_of(d: Data, u: dict) -> dict | None:
+    """A unit's main gun: a vehicle kind's, or an anti-tank gun unit's (anti_tank_guns.gun)."""
+    if is_at_gun(d, u):
+        return d.units["anti_tank_guns"]["gun"]
+    kind = vehicle_kind(d, u)
+    return kind.get("gun") if kind else None
+
+
+def _guns_firing(d: Data, u: dict) -> int:
+    """How many main guns a unit fires: its vehicles whose guns work, or its anti-tank guns served."""
+    return at_guns(d, u) if is_at_gun(d, u) else max(0, vehicles_left(d, u) - u.get("gunless", 0))
 
 
 def _main_gun(d: Data, us: list, i: int, gun: dict, env: tuple) -> list:
@@ -2056,7 +2137,7 @@ def _main_gun(d: Data, us: list, i: int, gun: dict, env: tuple) -> list:
     if best is None:
         return []
     dist, j, h, t = best
-    rounds = max(0, vehicles_left(d, u) - u.get("gunless", 0)) * gun["rate"]
+    rounds = _guns_firing(d, u) * gun["rate"]
     if rounds <= 0:
         return []
     if us[j].get("vehicle"):
@@ -3166,9 +3247,21 @@ def is_battery(d: Data, u: dict) -> bool:
     return is_gun(d, u["weapon"])
 
 
+def is_at_gun(d: Data, u: dict) -> bool:
+    """An anti-tank gun unit (units.yaml anti_tank_guns)."""
+    return u["weapon"] in (d.units.get("anti_tank_guns") or {}).get("weapons", [])
+
+
+def at_guns(d: Data, u: dict) -> int:
+    """An anti-tank gun unit's guns still served: one a crew, while a man of the crew is up."""
+    return math.ceil(max(0, u["men"]) / d.units["anti_tank_guns"]["crew"])
+
+
 def melee_weapon(d: Data, u: dict) -> str:
-    """The weapon a unit fights hand to hand with: a battery's crews have their own."""
-    return d.units["artillery"]["crew_weapon"] if is_battery(d, u) else u["weapon"]
+    """The weapon a unit fights hand to hand with: a battery's or an anti-tank gun's crews have their own."""
+    if is_battery(d, u):
+        return d.units["artillery"]["crew_weapon"]
+    return d.units["anti_tank_guns"]["crew_weapon"] if is_at_gun(d, u) else u["weapon"]
 
 
 def guns_of(d: Data, u: dict) -> int:

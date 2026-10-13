@@ -979,15 +979,35 @@ def _vehicle_errors(d: Data) -> list[str]:
     errors += [f"units.yaml: vehicles.kinds.{k}.gun needs range, rate, he (an indirect kind) and hit bands" for k, v in V.get("kinds", {}).items()
                if "gun" in v and not (isinstance(v["gun"].get("range"), int) and isinstance(v["gun"].get("rate"), int)
                                       and v["gun"].get("he") in d.units["indirect"]["kinds"] and v["gun"].get("hit"))]
-    errors += [f"units.yaml: vehicles.armour.{k} needs rpg, atgm, gun and shell" for k, a in V.get("armour", {}).items() if not all(isinstance(a.get(x), (int, float)) for x in ("rpg", "atgm", "gun", "shell"))]
+    errors += [f"units.yaml: vehicles.armour.{k} needs rpg, atgm, gun, shell and mine" for k, a in V.get("armour", {}).items()
+               if not all(isinstance(a.get(x), (int, float)) for x in ("rpg", "atgm", "gun", "shell", "mine"))]
     errors += [f"units.yaml: vehicles.anti_armour.{w} needs a known weapon, a rate and an armour row (rpg or atgm)" for w, a in V.get("anti_armour", {}).items()
                if w not in d.weapons or not isinstance(a, dict) or not isinstance(a.get("rate"), (int, float)) or a.get("row") not in ("rpg", "atgm")]
     errors += [f"units.yaml: vehicles.kinds.{k}.carry must be a whole number" for k, v in V.get("kinds", {}).items() if "carry" in v and not (isinstance(v["carry"], int) and v["carry"] > 0)]
     if not all(isinstance((V.get("aspect") or {}).get(x), (int, float)) for x in ("flank", "rear")):
         errors.append("units.yaml: vehicles.aspect needs flank and rear")
-    if not all(isinstance((V.get("damage") or {}).get(x), int) for x in ("immobilised", "gun")) or not isinstance(V.get("riders_struck"), int):
-        errors.append("units.yaml: vehicles.damage needs immobilised and gun, and vehicles.riders_struck a whole number")
-    return errors + [f"units.yaml: vehicles.ground names unknown ground {g}" for g in V.get("ground", {}) if g not in d.units["ground"]]
+    D = V.get("damage") or {}
+    parts = all(isinstance((D.get(p) or {}).get(x), int) for p in ("turret_hit", "hull_hit") for x in ("immobilised", "gun"))
+    if not (isinstance(D.get("turret"), int) and parts) or not isinstance(V.get("riders_struck"), int):
+        errors.append("units.yaml: vehicles.damage needs turret (a %) and turret_hit and hull_hit (immobilised and gun %), and vehicles.riders_struck a whole number")
+    errors += [f"units.yaml: vehicles.ground names unknown ground {g}" for g in V.get("ground", {}) if g not in d.units["ground"]]
+    return errors + _at_mine_errors(d)
+
+
+def _at_mine_errors(d: Data) -> list[str]:
+    """units.yaml anti_tank_guns (known weapons, a crew, a gun as a vehicle's) and mines (a known weapon, kinds with men and vehicles %)."""
+    A, M, errors = d.units.get("anti_tank_guns"), d.units.get("mines"), []
+    if A:
+        g = A.get("gun") or {}
+        if not (all(w in d.weapons for w in A.get("weapons", [])) and isinstance(A.get("crew"), int) and A["crew"] > 0 and A.get("crew_weapon") in d.weapons
+                and isinstance(g.get("range"), int) and isinstance(g.get("rate"), int) and g.get("he") in d.units["indirect"]["kinds"] and g.get("hit")):
+            errors.append("units.yaml: anti_tank_guns needs known weapons, a crew, a known crew_weapon and a gun (range, rate, he, hit)")
+    if M:
+        if M.get("weapon") not in d.weapons or not isinstance(M.get("attack"), int):
+            errors.append("units.yaml: mines needs a known weapon and an attack %")
+        errors += [f"units.yaml: mines.kinds.{k} needs men and vehicles (% 0-100)" for k, v in (M.get("kinds") or {}).items()
+                   if not all(isinstance(v.get(x), int) and 0 <= v[x] <= 100 for x in ("men", "vehicles"))]
+    return errors
 
 
 def _air_errors(d: Data, ind: dict) -> list[str]:

@@ -913,9 +913,13 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
   missile** (the Falklands, the Gulf, Chechnya, Iraq and Afghanistan). A rocket, bazooka or
   recoilless team fires a round for every four men each exchange, and a missile team one for
   every ten. Every round is aimed, and range, cover and the weather count as for shots at men.
-- **Damage.** A hit that does not knock a vehicle out immobilises it at 25%, or at the next
-  15% puts its main gun out of action. A unit with an immobilised vehicle cannot move (it can
-  still turn) until it **abandons** them. Their crews then leave the fight unhurt.
+- **Damage.** A hit that does not knock a vehicle out strikes the turret (35%) or the hull.
+  - On the turret, it puts the main gun out of action at 40% and immobilises the vehicle at 5%.
+  - On the hull, it immobilises it at 35% and puts the gun out at 5%.
+
+  Over all hits that comes to about the old 25% immobilised and 15% gun out. The log counts
+  the turret hits. A unit with an immobilised vehicle cannot move (it can still turn) until
+  it **abandons** them. Their crews then leave the fight unhurt.
 - **Shells and bombs** bursting in a vehicle's own hex knock it out at the firing kind's knock
   %: a heavy howitzer 2%, fighter-bombers 15%. Light armour is three times as likely to go.
 - **Knocked out.** A knocked-out vehicle's crew are out of the fight. Each is struck at 50% and
@@ -931,6 +935,45 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
   - When a carrier is knocked out, its share of the riders are each struck at 30% and
     wounded as by shellfire. When the last carrier goes, the riders get out where it stood.
   - Men still aboard when the battle ends count with their force.
+
+**Anti-tank guns** (the Second World War and Korea). On those wound tables a unit can take
+the **Anti-tank gun** as its weapon, and its order becomes *Anti-tank guns*: a towed gun and
+its crew of 5 to a hex, manhandled 2 hexes an exchange. They stand for the British
+6-pounder, the US 57 mm, the German Pak 38 and 40, the Soviet and North Korean 45 mm and
+the Japanese 47 mm (`anti_tank_guns` in `data/units.yaml`).
+- **Fire.** Each gun its crews still serve fires one round an exchange, as a tank's main
+  gun does, out to 100 hexes (1,094 yards, 1,000 m). It fires at the nearest enemy in sight
+  and in front, vehicles first.
+  - At a vehicle it hits at 70%, 45% or 20% by range, and the hit knocks the vehicle out at
+    its armour's main-gun %.
+  - At men its high explosive bursts as a tank's round does.
+- **Crews.** The crews are men in the open. Rifles, machine guns and shells strike them, and
+  hand to hand they fight with bayonets.
+- **Not ordered by the commander.** The enemy commander leaves them to the GM, like
+  batteries.
+
+**Minefields** (wound tables with mine wounds: 1939 on). In set-up, **Clicking the map:
+Minefields** paints a hex as anti-personnel, anti-tank or mixed, **marked** or **hidden**.
+Click it again with the same choice to clear it.
+- **Showing.** A marked field shows as a hatched hex (a.p., a.t., mix). A hidden one shows
+  faintly while setting up, then not at all until something goes into it.
+- **Setting them off.** A unit that moved into minefield hexes since the last exchange sets
+  them off when the exchange is resolved, before the shooting. The ground it crossed is its
+  footprint along a straight line from where its move began.
+
+| Minefield | Each man going into a hex struck | Each vehicle going into a hex struck |
+|---|---|---|
+| Anti-personnel | 10% | — |
+| Anti-tank | — | 30% |
+| Mixed | 8% | 25% |
+
+- **Men.** For each hex, a hex's worth of the unit's men is at risk. A man struck rolls a
+  wound as one hit by a mine at 70%; mine wounds fall on the feet, legs and groin.
+- **Vehicles.** A vehicle struck is knocked out at 25% (heavy armour) or 60% (light), and
+  otherwise has a track blown off: it is immobilised.
+
+All design estimates (`mines` in `data/units.yaml`). No battlefield has minefields laid yet;
+they are for the GM to place, and for the battlefields only where the accounts name them.
 
 ## Landing by air
 

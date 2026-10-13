@@ -24,14 +24,50 @@ as for shots at men. A hit knocks the vehicle out at:
 
 - **Where it is hit.** A hit into the flank counts ×{{v_flank}}, and into the rear
   ×{{v_rear}}, to 100% at most. Which it is depends on where the shooter stands.
-- **Damage short of that.** A hit that does not knock the vehicle out immobilises it at
-  {{v_immobile}}%, or else puts its main gun out at {{v_gun_out}}%. Immobilised vehicles
-  can still turn. Their crews can abandon them and leave the fight unhurt.
+- **Damage short of that.** A hit that does not knock the vehicle out strikes the turret at
+  {{v_turret}}%, else the hull.
+  - On the turret it puts the main gun out at {{v_t_gun}}%, and immobilises the vehicle at
+    only {{v_t_imm}}%.
+  - On the hull it immobilises the vehicle at {{v_h_imm}}%, and puts the gun out at
+    {{v_h_gun}}%.
+
+  Immobilised vehicles can still turn. Their crews can abandon them and leave the fight
+  unhurt.
 - **Shells and bombs** bursting in a vehicle's hex knock it out at the kind's own chance: a
   heavy howitzer's {{i_how_knock}}%, a fighter-bomber's {{v_fb_knock}}%. Light armour is
   {{v_shell_light}} times as likely to go.
 - **Knocked out.** Its crew are out of the fight. Each is struck at {{v_crew_struck}}% and
   wounded as by shellfire; the rest bail out.
+
+## Anti-tank guns {#at-guns}
+
+In the Second World War and Korea, a unit can be **anti-tank guns**: towed guns such as
+the British 6-pounder, the American 57 mm, the German Pak 38 and 40, the Soviet and North
+Korean 45 mm and the Japanese 47 mm.
+
+- **Crews.** Each gun has {{at_crew}} men. A gun fires while one of its crew is up, and its
+  crews manhandle it {{at_move}} hexes.
+- **Fire.** Each gun fires {{at_rate}} round an exchange, as a tank's main gun does. Out to
+  {{at_range}}, it hits a vehicle at {{at_hit}}% (close, mid and full range), and the hit
+  then knocks the vehicle out as a main gun's would. At men, its high explosive bursts as a
+  tank's round does.
+- **Vulnerable.** Its crews are men in the open: rifles, machine guns and shells strike
+  them, and hand to hand they fight with bayonets.
+- **The enemy commander** leaves anti-tank guns, like batteries, to the GM.
+
+## Minefields {#mines}
+
+From 1939, the GM can paint minefields before the battle, marked or hidden. A hidden field
+shows on the map only once something has gone into it. A unit that moves into minefield
+hexes sets them off before the exchange's shooting. The ground it crossed is reckoned on a
+straight line from where its move began.
+
+{{table:mines}}
+
+- **Men.** A man struck rolls a wound as one hit by a mine, at {{m_attack}}%. Mine wounds
+  fall mostly on the feet and legs.
+- **Vehicles.** A vehicle struck is knocked out at {{m_heavy}}% (heavy armour) or
+  {{m_light}}% (light). Otherwise a track is blown off and it is immobilised.
 
 ## Riders {#riders}
 
@@ -42,4 +78,5 @@ knocked out, each of its riders is struck at {{v_riders_struck}}%, as by shellfi
 
 !!! gm "For the GM"
     Armour is a problem the infantry must solve, not a fight it can win with rifles. Give
-    the side without tanks rockets, ground the tanks cannot cross, or the dark.
+    the side without tanks rockets, anti-tank guns, mines, ground the tanks cannot cross,
+    or the dark.
