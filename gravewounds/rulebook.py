@@ -87,6 +87,7 @@ def _field_values(d: Data) -> dict:
         "c_obj_hold": U["commander"]["objective"]["hold"],
         "c_sap_clear": U["commander"]["sappers"]["clear_of"],
         "c_keep_off": U["commander"]["keep_off"],
+        "c_displace_shift": U["indirect"]["displace_shift"],
     }
 
 

@@ -341,12 +341,20 @@ general. All its numbers are in units.yaml `commander`.
     Moving guns go to the hex in their allowance nearest the enemy that has it in reach but
     is no nearer than 2 hexes (`commander.keep_off`), never touching it; known minefields on
     the way count as for other units.
-  - Holding, its guns unlimber, or are unhooked, where they stand, and never move.
+  - Holding, its guns unlimber, or are unhooked, where they stand, and move only to pull
+    back.
+  - **Pulling back.** Attacking or holding, guns that a known enemy could reach at a charge
+    (in its allowance times `charge_move`, not broken or fled, with men) pull back, unless a
+    steady unit of its side (not guns or a vehicle) stands on the straight line between
+    them. A battery in action limbers first (an exchange changing over); limbered guns, and
+    towed anti-tank guns (which hook up to an empty tractor beside them first), go to the hex
+    in their allowance furthest from that enemy, keeping their facing and never touching
+    it. Guns that can get no further away stay put.
   - Attacking, an empty tractor of its side goes to fetch the nearest anti-tank guns that
     want a tow and that it can tow (one tractor to a gun unit): to the hex in its allowance
     beside them it reaches cheapest, else as near as it can get, facing where the guns will
     go. The guns hook up at the side's next move.
-  - Emplaced guns stay put, and guns never fall back on tow.
+  - Emplaced guns stay put.
   - Its off-map batteries (not tanks) with no mission are called on the enemy unit it sees
     now that scores best as a target. It fires at the first of that unit's hexes its side
     can see and the battery reaches, and never where its own men are within the burst and
@@ -374,7 +382,9 @@ general. All its numbers are in units.yaml `commander`.
   - **Displacing.** First of all, each of its located batteries that an enemy counter-battery
     mission is aimed at displaces (not one already moving, or tanks): its own mission ends,
     it is silent for its kind's exchanges, and then it is no longer located. A placed
-    battery stays at its place (the GM can plot a new one by hand).
+    battery also moves its place 30 hexes (`indirect.displace_shift`) along the nearest map
+    edge, away from the battery firing on it (or, with that one off the line, toward the
+    side with more room), and no further than the corner.
   - **Illumination.** In the dark (any light that limits sight), before anything else, one
     free battery with illumination rounds (mortars, field guns, howitzers) fires
     illumination over the enemy it has lost sight of (remembered, but not seen now) nearest

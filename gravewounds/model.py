@@ -883,6 +883,9 @@ def _commander_errors(d: Data) -> list[str]:
     errors += [f"units.yaml: commander.objective.{k} must be a whole number of 0 or more" for k in ("radius", "hold", "guard", "bonus")
                if not (isinstance(O.get(k), int) and O[k] >= 0)]
     errors += _rout_errors(d)
+    shift = (d.units.get("indirect") or {}).get("displace_shift")
+    if not (isinstance(shift, int) and shift >= 1):
+        errors.append("units.yaml: indirect.displace_shift must be a whole number of hexes, 1 or more")
     errors += [f"units.yaml: commander.storm names {w}, not a weapon that shoots" for w in K.get("storm", []) if "range" not in d.weapons.get(w, {})]
     return errors + [f"units.yaml: commander.ground_with names unknown weapon {w}" for w in K.get("ground_with", []) if w not in d.weapons]
 

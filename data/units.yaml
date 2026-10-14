@@ -291,6 +291,8 @@ machine_guns:
 #   only from within range. A placed battery with an enemy unit within a hex of its place is
 #   overrun: its tubes are lost. Ordered to displace, it can be given a new place (`to`), where
 #   it stands once it has moved. A battery with no place fires from off the map, as before.
+#   The enemy commander moves a placed battery it displaces `displace_shift` hexes along its
+#   map edge, away from the battery firing on it.
 # knock: % that a shell bursting on a bunker's hex knocks the bunker out (its men lose its
 #   cover, and it can be stormed). A bunker's men get its cover against shellfire too.
 # direct: tanks firing over open sights, close behind the line: they land at once, do not
@@ -314,6 +316,7 @@ machine_guns:
 #   each line (1 to `every_max`), and over `lines` lines before it stops (0: until it leaves
 #   the map).
 indirect:
+  displace_shift: 30
   weapon: mortar_artillery
   fallback: explosive_fragment
   attack: 70
