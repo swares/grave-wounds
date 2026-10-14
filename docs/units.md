@@ -1213,7 +1213,13 @@ Click it again with the same choice to clear it.
   faintly while setting up, then not at all until something goes into it.
 - **Setting them off.** A unit that moved into minefield hexes since the last exchange sets
   them off when the exchange is resolved, before the shooting. The ground it crossed is its
-  footprint along a straight line from where its move began.
+  footprint along the way it went from where its move began: the cheapest way over the
+  ground and works, within its move (twice that for a charge), that crosses the fewest
+  minefield hexes its side knows of (marked, found, not its own side's), and of equal ways
+  the one nearest the straight line. So a unit, moved by hand or by the commander, that went
+  round a known minefield does not set it off; hidden ones on its way still catch it. Other
+  units are left out of the way (they have moved since). A unit moved further than its
+  move allows (placed by the GM) is taken on a straight line.
 
 | Minefield | Each man going into a hex struck | Each vehicle going into a hex struck |
 |---|---|---|
