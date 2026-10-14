@@ -2455,7 +2455,7 @@ function minePath(field, u, start){               // within its allowance (times
     const m = levels[c].get(hk(goal));
     if (m !== undefined && (end === null || m < end[0])) end = [m, c];
   }
-  return end ? walkBack(field, u, [goal, end[1], end[0]], [levels, steps, mines, size, start]) : null;
+  return end ? mineWayBack(field, u, [goal, end[1], end[0]], [levels, steps, mines, size, start]) : null;
 }
 function stepsCached(field, u, h, size, steps){   // stepsFrom for hex h, other units left out, worked out once
   const k = hk(h);
@@ -2468,7 +2468,7 @@ function stepInto(field, u, p, h, size, steps){   // what it costs to step from 
   const e = stepsCached(field, u, p, size, steps).find(([x]) => x[0] === h[0] && x[1] === h[1]);
   return e ? e[1] : null;
 }
-function walkBack(field, u, [h0, c0, m0], [levels, steps, mines, size, start]){   // back to the start: at each hex the fitting neighbour nearest the straight line from the start, the first by direction of equals (as units._walk_back)
+function mineWayBack(field, u, [h0, c0, m0], [levels, steps, mines, size, start]){   // back to the start: at each hex the fitting neighbour nearest the straight line from the start, the first by direction of equals (as units._way_back)
   const line = ray([...start], h0, hdist(start, h0)), out = [[...h0]];
   let h = h0, c = c0, m = m0;
   while (c > 0){

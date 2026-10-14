@@ -2040,7 +2040,7 @@ def mine_path(d: Data, field: dict, u: dict, start) -> list | None:
     if not ends:
         return None
     m, c = min(ends)
-    return _walk_back(d, field, u, (goal, c, m), (levels, steps, mines, size, s))
+    return _way_back(d, field, u, (goal, c, m), (levels, steps, mines, size, s))
 
 
 def _steps_cached(d: Data, field: dict, u: dict, h: tuple, size: tuple, steps: dict) -> list:
@@ -2064,7 +2064,7 @@ def _step_into(d: Data, field: dict, u: dict, ph: tuple, ss: tuple) -> int | Non
     return next((k for x, k in _steps_cached(d, field, u, p, size, steps) if x == h), None)
 
 
-def _walk_back(d: Data, field: dict, u: dict, end: tuple, ctx: tuple) -> list:
+def _way_back(d: Data, field: dict, u: dict, end: tuple, ctx: tuple) -> list:
     """From (hex, cost, mines) back to the start: at each hex the neighbour that steps into it at
     a level and mines count that fit, the nearest the straight line from the start (the first by
     direction of equals). -> the hexes after the start."""
