@@ -940,7 +940,7 @@ def _first_move(d: Data, base: list, i: int, tu: dict, where: tuple, how: tuple)
         h, via = [col, row], reach[(col, row)][1]
         f = keep_front(u, U.bearing(h, tu["pos"]))
         touch = _touches(d, {**u, "pos": h, "facing": f}, foes)
-        if _skips(touch, (charge, hold), c > allow, stuck and h != u["pos"]) or (via and not touch):
+        if _skips(touch, (charge, hold, via), c > allow, stuck and h != u["pos"]):
             continue
         if tries == 0:
             return None
@@ -971,10 +971,10 @@ def keep_front(u: dict, b: int) -> int:
 
 def _skips(touch: bool, how: tuple, far: bool, stuck: bool) -> bool:
     """A hex it will not try: touching the enemy without the odds to charge; not touching but
-    beyond its allowance (far), or anything but a charge when holding; or a new hex for a unit
-    that may only turn (stuck)."""
-    charge, hold = how
-    if stuck:
+    beyond its allowance (far), or anything but a charge when holding; reached only through
+    its own men (via) but not a charge; or a new hex for a unit that may only turn (stuck)."""
+    charge, hold, via = how
+    if stuck or (via and not touch):
         return True
     return not charge if touch else hold or far
 

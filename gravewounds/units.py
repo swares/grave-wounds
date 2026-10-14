@@ -3440,9 +3440,7 @@ def move(d: Data, units: list, i: int, pos, facing: int, size: tuple, field: dic
         return {"ok": False, "why": why}
     turns = min((facing - u["facing"]) % 6, (u["facing"] - facing) % 6)
     most = allowance(d, u) * d.units["charge_move"]
-    steps, through = _path_len(d, units, i, pos, size, most, field), False
-    if steps is None and u["state"] == "steady":   # a charge may pass through its own side's men
-        steps, through = _path_len(d, units, i, pos, size, most, field, through=True), True
+    steps, through = _charge_path(d, units, i, pos, (size, most, field))
     if steps is None:
         return {"ok": False, "why": "too far, or no way through"}
     moved = {**u, "pos": list(pos), "facing": facing % 6}
@@ -3459,6 +3457,16 @@ def move(d: Data, units: list, i: int, pos, facing: int, size: tuple, field: dic
     if contact and u["state"] == "steady" and cost <= most:
         return {"ok": True, "cost": cost, "charge": True, **passed}
     return {"ok": False, "why": "too far"}
+
+
+def _charge_path(d: Data, units: list, i: int, pos, how: tuple) -> tuple:
+    """(least movement, passing through friends): round its own side's units, else (a steady
+    unit, for a charge) through them."""
+    size, most, field = how
+    steps = _path_len(d, units, i, pos, size, most, field)
+    if steps is not None or units[i]["state"] != "steady":
+        return steps, False
+    return _path_len(d, units, i, pos, size, most, field, through=True), True
 
 
 def passed_through(d: Data, units: list, i: int, pos) -> list:

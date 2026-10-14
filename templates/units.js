@@ -1963,8 +1963,7 @@ function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, ch
   const rooted = (pos[0] !== u.pos[0] || pos[1] !== u.pos[1]) && rootedWhy(u);
   if (rooted) return { ok: false, why: rooted };
   const turns = Math.min(mod6(facing - u.facing), mod6(u.facing - facing)), most = allowance(u) * UD.charge_move;
-  let steps = pathLen(units, i, pos, size, most, field), through = false;
-  if (steps === null && u.state === "steady"){ steps = pathLen(units, i, pos, size, most, field, true); through = true }   // a charge may pass through its own side's men
+  const [steps, through] = chargePath(units, i, pos, size, most, field);
   if (steps === null) return { ok: false, why: "too far, or no way through" };
   const moved = { ...u, pos: pos.slice(), facing: mod6(facing) };
   if (!fits(units, i, moved, size, field)) return { ok: false, why: "no room there" };
@@ -1975,6 +1974,11 @@ function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, ch
   if (cost <= allowance(u)) return { ok: true, cost, charge: contact && steps > 0, ...passed };
   if (contact && u.state === "steady" && cost <= most) return { ok: true, cost, charge: true, ...passed };
   return { ok: false, why: "too far" };
+}
+function chargePath(units, i, pos, size, most, field){   // [least movement, passing through friends]: round them, else (a steady unit, for a charge) through them (as units._charge_path)
+  const steps = pathLen(units, i, pos, size, most, field);
+  if (steps !== null || units[i].state !== "steady") return [steps, false];
+  return [pathLen(units, i, pos, size, most, field, true), true];
 }
 function flee(units, i, size, field = null){      // a broken unit runs straight back; off the map it has fled; through its own side's units to the first free ground beyond (as units.flee)
   let u = { ...units[i] };
@@ -2540,13 +2544,17 @@ function firstMove(base, i, tu, [size, field], [charge, hold, shooter, storm]){ 
   cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4]);
   for (const [, c, , row, col, via] of cands){
     const h = [col, row], f = keepFront(u, bearing(h, tu.pos)), touch = touches({ ...u, pos: h, facing: f }, foes);
-    if ((touch ? !charge : hold || c > allow) || (stuck && (h[0] !== u.pos[0] || h[1] !== u.pos[1])) || (via && !touch)) continue;
+    if (skipsHex(touch, [charge, hold, via], c > allow, stuck && (h[0] !== u.pos[0] || h[1] !== u.pos[1]))) continue;
     if (tries === 0) return null;
     tries -= 1;
     const m = legalMove(base, i, [h, f, c, touch], [size, field]);
     if (!rejects(m, charge, hold)) return [h, f, via ? { ...m, through: passedThrough(base, i, h) } : m];
   }
   return null;
+}
+function skipsHex(touch, [charge, hold, via], far, stuck){   // a hex it will not try (as commander._skips)
+  if (stuck || (via && !touch)) return true;
+  return touch ? !charge : hold || far;
 }
 function aiReach(base, i, [size, limit, field], through){   // Map hk -> [hex, least movement, through friends]: round its own side's units, and (a steady unit that may charge) only through them (as commander._reach)
   const out = new Map([...reachable(base, i, size, limit, field).entries()].map(([k, [h, c]]) => [k, [h, c, false]]));
