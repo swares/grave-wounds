@@ -243,6 +243,9 @@ general. All its numbers are in units.yaml `commander`.
   - For cover from the target's shots there (woods 20%, buildings 30%), a point per % for
     regulars and 2 for veterans. Green men ignore cover.
   - One point off for each hex of movement.
+  - Of hexes that score the same and cost the same, it takes the one nearest the straight
+    line to the target (or the objective), so a long advance goes straight rather than
+    drifting to one side.
 - **Shooters.** A unit with missiles stops where the target is in range and shoots rather
   than closing. It keeps off the enemy (2 hexes or more) if it can, and never charges.
   With a modern weapon (breech-loaders on), regulars and veterans under fire go to ground
@@ -312,17 +315,29 @@ general. All its numbers are in units.yaml `commander`.
     is no nearer than 2 hexes (`commander.keep_off`), never touching it; known minefields on
     the way count as for other units.
   - Holding, its guns unlimber, or are unhooked, where they stand, and never move.
-  - Emplaced guns stay put, and empty tractors are left to the GM.
-  - Its off-map batteries (not tanks or aircraft) with no mission are called on the enemy
-    unit it sees now that scores best as a target. It fires at the first of that unit's
-    hexes its side can see and the battery reaches, and never where its own men are within
-    the burst and scatter.
+  - Attacking, an empty tractor of its side goes to fetch the nearest anti-tank guns that
+    want a tow and that it can tow (one tractor to a gun unit): to the hex in its allowance
+    beside them it reaches cheapest, else as near as it can get, facing where the guns will
+    go. The guns hook up at the side's next move.
+  - Emplaced guns stay put, and guns never fall back on tow.
+  - Its off-map batteries (not tanks) with no mission are called on the enemy unit it sees
+    now that scores best as a target. It fires at the first of that unit's hexes its side
+    can see and the battery reaches, and never where its own men are within the burst and
+    scatter.
+  - **Aircraft.** Its aircraft on call with attacks left are called the same way, with
+    bombs or rockets (never a strafing run or napalm strip), unless the weather or the dark
+    grounds them. Fighter-bombers come in two exchanges later; a forward air controller of
+    its side who sees the aim cuts their scatter as usual.
   - **Smoke.** Attacking, before that, one battery lays smoke on the nearest enemy it knows
     of whose missiles reach one of its units that cannot shoot back at it (men without
     missiles, or out of their range): at the first of the enemy's hexes it can see and is not
     already smoked, by the battery that reaches it and lands soonest (mortars before guns).
     Not in the dark, and not in a gale (the smoke would blow away at once). A holding side
     never smokes.
+  - **Displacing.** First of all, each of its located batteries that an enemy counter-battery
+    mission is aimed at displaces (not one already moving, or tanks): its own mission ends,
+    it is silent for its kind's exchanges, and then it is no longer located. A placed
+    battery stays at its place (the GM can plot a new one by hand).
   - **Illumination.** In the dark (any light that limits sight), before anything else, one
     free battery with illumination rounds (mortars, field guns, howitzers) fires
     illumination over the enemy it has lost sight of (remembered, but not seen now) nearest

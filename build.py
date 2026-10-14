@@ -494,7 +494,7 @@ def _commander_rules(d) -> list[str]:
         f"It knows an enemy only if one of its units sees it (sight, light, woods, smoke, as calling fire), or saw it in the last {K['remember']} exchanges (where it was then); with none known, a unit holds. "
         f"Each unit's target, among those it knows: {K['closing']} points off a hex away, and times its quality's sense ({by(K['sense'])}): {K['hurt']} a % of the enemy's men down, "
         f"{K['shaken']} if it is shaken, {K['threat']} if it is a danger to the unit (shooters, for men without missiles; men without missiles within a charge, for shooters). Shaken, it holds (and goes to ground under missile fire). Steady, it hesitates on d100 at or under {by(K['hesitate'])}%; "
-        f"otherwise it takes the best hex it can reach facing the target: {K['closing']} points a hex nearer, cover % times {by(K['cover'])}, less a point a hex moved. "
+        f"otherwise it takes the best hex it can reach facing the target: {K['closing']} points a hex nearer, cover % times {by(K['cover'])}, less a point a hex moved; of equals, the hex nearest the straight line to it. "
         f"Shooters stop where the target is in range, keep {K['keep_off']} hexes off, and never charge; with a modern weapon they go to ground under fire. "
         f"Others charge only if their men × attack % is at least this % of the target's: attacking {by(K['charge_odds']['attack'])}; holding {by(K['charge_odds']['hold'])}. "
         f"Holding, a side leaves its ground only to charge. Reserve: at its first move (unless the GM marks reserves) it holds back its rearmost units up to {by(K['reserve'])}% of its men; "
@@ -504,15 +504,17 @@ def _commander_rules(d) -> list[str]:
         f"{K['objective']['hold']} from it falls back to it unless it can charge. Enemies within {K['objective']['guard']} of it score {K['objective']['bonus']} more as targets; the log names who holds it each exchange. "
         "A battlefield's objective has its own radius (the position as drawn), and the other distances widen by as much. "
         f"Known minefields on the way cost {by(K['mines'])} points a hex. Its batteries and anti-tank guns on the map, in action, turn to face the nearest enemy it knows of; its off-map "
-        "batteries with no mission are called on the enemy it sees that scores best as a target, never where its own men are within the burst. "
+        "batteries with no mission, and its aircraft that can fly (bombs or rockets only), are called on the enemy it sees that scores best as a target, never where its own men are within the burst. "
         "Attacking, one battery first lays smoke (the soonest to land) on the nearest enemy shooting at its men who cannot reply, unless it is dark, a gale blows or the hex is smoked. "
-        "In the dark, first one battery with illumination (the soonest to land) lights the enemy it has lost sight of nearest its men, where last seen, unless lit or a round is on its way. "
+        "Its located batteries that an enemy counter-battery mission is aimed at displace first. "
+        "In the dark, one battery with illumination (the soonest to land) lights the enemy it has lost sight of nearest its men, where last seen, unless lit or a round is on its way. "
         "Then one battery, the one with the best counter % that reaches one, fires counter-battery on the located enemy battery with the most tubes served. "
         f"Its sappers, attacking, lift the known enemy mines in the row ahead when the straight way to their target (or the objective) crosses known mines; holding, or at the objective, "
         f"with no enemy it knows of within {K['sappers']['clear_of']} hexes, they lay mines in the row ahead (mixed if the enemy it knows of has vehicles, else anti-personnel). "
         f"Attacking, its guns with no known enemy in reach go forward: a battery limbers, moves and unlimbers once one is in reach; anti-tank guns hook up to an empty tractor beside them and are unhooked in reach "
-        f"(the tractor counting 4 hexes less); moving guns stop in reach, no nearer than {K['keep_off']} hexes. Holding, its guns unlimber or unhook where they stand. "
-        "It leaves aircraft, works and empty tractors to the GM.",
+        f"(the tractor counting 4 hexes less; empty tractors fetch them); moving guns stop in reach, no nearer than {K['keep_off']} hexes. Holding, its guns unlimber or unhook where they stand. "
+        "Attacking, an empty tractor drives beside the nearest guns that want a tow, to hook them up next move. "
+        "It leaves strafing runs, napalm and works to the GM.",
     ]
 
 
