@@ -366,12 +366,19 @@ def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, how: tu
     out += _call_counter(d, field, side, free)
     out += _call_creep(d, us, side, field, (known, orders), free) if stance == "attack" else []
     air = [k for k, b in enumerate((field or {}).get("support") or []) if _free_air(d, field, b, side)]
-    for k in sorted(free + air):
+    return out + _call_plain(d, us, side, field, (known, sorted(free + air), table))
+
+
+def _call_plain(d: Data, us: list, side, field: dict | None, kt: tuple) -> list:
+    """Each of the given batteries and aircraft still without a mission is called on the enemy
+    it sees that scores best as a target (_fire_aim); aircraft fly a run on a wide front
+    (_air_run). -> [fire orders]."""
+    known, ks, table = kt
+    out = []
+    for k in ks:
         b = field["support"][k]
         K = d.units["indirect"]["kinds"][b["kind"]]
-        if b.get("mission"):
-            continue
-        aim = _fire_aim(d, us, side, field, known, (b, K))
+        aim = None if b.get("mission") else _fire_aim(d, us, side, field, known, (b, K))
         if aim:
             run = _air_run(d, us, side, (b, K), aim, table) if K.get("air") else None
             b["mission"] = {"hex": aim[1], "wait": K["delay"], "repeat": False, **(run or {})}

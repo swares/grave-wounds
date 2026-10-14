@@ -2967,7 +2967,7 @@ function callFireAi(us, side, field, known, [stance, exchange, orders, table] = 
     const aim = fireAim(us, side, field, known, b, K);
     if (!aim) return;
     const run = K.air ? airRun(us, side, b, K, aim, table) : null;
-    b.mission = { hex: aim[1], wait: K.delay, repeat: false, ...(run || {}) };
+    b.mission = { hex: aim[1], wait: K.delay, repeat: false, ...run };
     out.push({ unit: null, act: "fire", battery: k, target: aim[0], hex: aim[1], ...(run ? { attack: run.attack } : {}) });
   });
   return out;
@@ -2997,7 +2997,7 @@ function airRun(us, side, b, K, [j, h], table){     // a strafing run or napalm 
   const ours = us.filter(u => u.side === side && u.men > 0 && u.state !== "fled");
   for (const mode of ["napalm", "strafe"]){
     const r = R[mode];
-    if (!r || !r.kinds.includes(b.kind) || front < r.length || (r.wars && !r.wars.includes(war))) continue;
+    if (!r?.kinds.includes(b.kind) || front < r.length || (r.wars && !r.wars.includes(war))) continue;
     if (!runLine(h, dirn, mode).some(x => tooNear(ours, x, K.scatter))) return { attack: mode, dir: dirn };
   }
   return null;
