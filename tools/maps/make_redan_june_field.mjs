@@ -13,17 +13,13 @@
 // either side stopped the columns short of it, and their leaders fell. The work and the ground
 // are drawn by redan_lib.mjs (here with the trench further out, the abatis whole and fewer shell
 // holes); the deployment is our own reading, in our own words, with round numbers for play.
-import { N, S, unit, writeField } from "./field_lib.mjs";
-import { COLS, redan } from "./redan_lib.mjs";
+import { unit, writeField } from "./field_lib.mjs";
+import { COLS, redan, BRITISH, RUSSIANS, RIFLE, MUSKET, GUNS, COMMON } from "./redan_lib.mjs";
 
 const ROWS = 105;                            // about 910 m north to south
 const { grid, hexWorks, edgeWorks } = redan({ rows: ROWS, trenchRow: 92, holes: 25, abatis: "whole" });   // the trench about 400 m from the salient
 
 // ---------- the armies (pos is the middle of the front row) ----------
-const BRITISH = { side: 0, facing: N }, RUSSIANS = { side: 1, facing: S };
-const RIFLE = { quality: "regular", weapon: "rifle_musket", kit: "none", formation: "close", mounted: false };
-const MUSKET = { quality: "regular", weapon: "musket_smoothbore", kit: "none", formation: "close", mounted: false };
-const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };
 // A column: covering riflemen, the ladder and wool-bag party, the storming party and its supports.
 const column = (label, col0) => [
   unit(`${label}: covering riflemen (Rifle Brigade)`, BRITISH, 100, { ...RIFLE, formation: "open" }, [10, col0, 89]),
@@ -47,9 +43,8 @@ const units = [
 ];
 
 writeField({
-  objective: { at: [50, 42], side: 0, name: "the Redan's salient", radius: 3 },
-  id: "redan-1855-june", name: "The Great Redan, 18 June 1855", sides: ["British", "Russians"], table: "crimea-1854-56-all-hits",
-  travel: { map: "sevastopol-1855", place: "The Great Redan", within: 1, sides: ["Allies", "Russia"] },
+  ...COMMON,
+  id: "redan-1855-june", name: "The Great Redan, 18 June 1855",
   weather: "{cond: fair, wind: calm, ground: {mud: 0, snow: 0}}",   // daybreak, but light enough: the columns were under fire as soon as they left the trenches
   grid, units, hexWorks, edgeWorks,
   header: [

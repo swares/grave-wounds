@@ -13,17 +13,13 @@
 // for the field map, whose units stand in straight lines and could not otherwise reach the men
 // in a sharp point. The Russian infantry are on smoothbore muskets (most of them still were), their riflemen on
 // rifles; the British on the rifle-musket. The siege guns on both sides are not on the map.
-import { N, S, unit, writeField } from "./field_lib.mjs";
-import { COLS, redan } from "./redan_lib.mjs";
+import { unit, writeField } from "./field_lib.mjs";
+import { COLS, redan, BRITISH, RUSSIANS, RIFLE, MUSKET, GUNS, COMMON } from "./redan_lib.mjs";
 
 const ROWS = 80;                             // about 690 m north to south
 const { grid, hexWorks, edgeWorks } = redan({ rows: ROWS, trenchRow: 67, holes: 14, abatis: "scatter" });   // the trench about 200 yards from the salient; the abatis mostly smashed
 
 // ---------- the armies (pos is the middle of the front row) ----------
-const BRITISH = { side: 0, facing: N }, RUSSIANS = { side: 1, facing: S };
-const RIFLE = { quality: "regular", weapon: "rifle_musket", kit: "none", formation: "close", mounted: false };
-const MUSKET = { quality: "regular", weapon: "musket_smoothbore", kit: "none", formation: "close", mounted: false };
-const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };
 const units = [
   unit("Covering party (2nd Rifle Brigade and the Buffs)", BRITISH, 200, { ...RIFLE, formation: "open" }, [20, 40, 63]),
   unit("Ladder party (the Buffs and the 97th)", BRITISH, 320, RIFLE, [10, 45, 65]),
@@ -39,9 +35,8 @@ const units = [
 ];
 
 writeField({
-  objective: { at: [50, 42], side: 0, name: "the Redan's salient", radius: 3 },
-  id: "redan-1855", name: "The Great Redan, 8 September 1855", sides: ["British", "Russians"], table: "crimea-1854-56-all-hits",
-  travel: { map: "sevastopol-1855", place: "The Great Redan", within: 1, sides: ["Allies", "Russia"] },
+  ...COMMON,
+  id: "redan-1855", name: "The Great Redan, 8 September 1855",
   weather: "{cond: fair, wind: strong, dir: N, ground: {mud: 0, snow: 0}}",
   grid, units, hexWorks, edgeWorks,
   header: [
