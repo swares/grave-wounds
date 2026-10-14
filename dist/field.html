@@ -2151,25 +2151,29 @@ function duel(units, pair, table, rng, s, dueled){   // two front heroes fight e
   }
   return log;
 }
+function heroShots(us, v, { table, rng, acc, log, field, exposed, mf }){   // the shooting unit's heroes with missile weapons fire with it
+  const b = us[v.dfd];
+  for (const hero of actingOf(us[v.att], ["ranged"])){
+    const wx = shotWeather(field, hero.weapon, v.dist, v.from, v.to, { kit: hero.kit, blind: !!v.blind });
+    if (wx.blocked) continue;
+    const [up, longer] = heightEdge(field, hero.weapon, v.from, v.to);
+    if (!fieldRange(hero.weapon, v.dist, wx.reach + longer)) continue;
+    const hopts = { factor: mf * (100 - wx.misfire) / 100 * v.seen, exposed, penalty: v.cover + wx.penalty - up + v.over, reach: wx.reach + longer };
+    const t = takeHurt(b, volley(heroSide(us[v.att], hero, table), sideOfUnit(b, table), UD.heroes.tempo, v.dist, rng, hopts));
+    tallyLoss(acc, v, t);
+    log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: v.att, dfd: v.dfd, dist: v.dist }, t));
+  }
+}
 function shootAll(us, table, rng, acc, log, field, under = null){
   for (const v of volleys(us, field)){
     markMg(us, v, under);
     const b = us[v.dfd], exposed = exposure(b, false, true), mf = form(b).missile_factor;
     if (b.vehicle){ armourVolley(us, table, rng, acc, log, v, { factor: mf * (100 - v.misfire) / 100 * v.seen, penalty: v.cover + v.penalty + v.over, reach: v.reach }); continue }
-    let t = takeHurt(b, volley(sideOfUnit(shooterOf(us, v), table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100 * v.seen, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
+    const t = takeHurt(b, volley(sideOfUnit(shooterOf(us, v), table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100 * v.seen, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
     tallyLoss(acc, v, t);
     log.push(...logged({ kind: "volley", ...v }, t));
     if (v.behind !== undefined && v.behind !== null) beatenFire(us, table, rng, acc, log, v);
-    for (const hero of (v.riders ? [] : actingOf(us[v.att], ["ranged"]))){
-      const wx = shotWeather(field, hero.weapon, v.dist, v.from, v.to, { kit: hero.kit, blind: !!v.blind });
-      if (wx.blocked) continue;
-      const [up, longer] = heightEdge(field, hero.weapon, v.from, v.to);
-      if (!fieldRange(hero.weapon, v.dist, wx.reach + longer)) continue;
-      const hopts = { factor: mf * (100 - wx.misfire) / 100 * v.seen, exposed, penalty: v.cover + wx.penalty - up + v.over, reach: wx.reach + longer };
-      t = takeHurt(b, volley(heroSide(us[v.att], hero, table), sideOfUnit(b, table), UD.heroes.tempo, v.dist, rng, hopts));
-      tallyLoss(acc, v, t);
-      log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: v.att, dfd: v.dfd, dist: v.dist }, t));
-    }
+    if (!v.riders) heroShots(us, v, { table, rng, acc, log, field, exposed, mf });
   }
   for (const c of cannonades(us, field)) fireBattery(us, table, rng, acc, log, c);
   vehicleGuns(us, table, rng, acc, log, field, under);

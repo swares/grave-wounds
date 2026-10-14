@@ -1284,7 +1284,11 @@ def rider_shooters(d: Data, u: dict) -> int:
     if not K or not R or R["men"] <= 0 or R.get("state") in ("broken", "fled") or "range" not in d.weapons[R["weapon"]]:
         return 0
     F = d.units["vehicles"]["rider_fire"]
-    share = F["ports"] if K.get("ports") else (F["hull"] if K.get("rides") else 0)
+    share = 0
+    if K.get("ports"):
+        share = F["ports"]
+    elif K.get("rides"):
+        share = F["hull"]
     return math.floor(R["men"] * share)
 
 
