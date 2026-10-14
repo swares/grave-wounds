@@ -1968,7 +1968,10 @@ function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, ch
   const moved = { ...u, pos: pos.slice(), facing: mod6(facing) };
   if (!fits(units, i, moved, size, field)) return { ok: false, why: "no room there" };
   const cost = steps + turns * turnCost(u) + (turns ? sweepCost(field, { ...u, pos: pos.slice() }, moved) : 0), after = units.map((x, k) => (k === i ? moved : x));
-  const contact = inContact(after, occupancy(after), i);
+  return moveVerdict(units, i, pos, { cost, steps, most, through, contact: inContact(after, occupancy(after), i) });
+}
+function moveVerdict(units, i, pos, { cost, steps, most, through, contact }){   // {ok, cost, charge, through?, why} for a move whose path, cost and contact are known (as the end of units.move)
+  const u = units[i];
   if (through && !contact) return { ok: false, why: "it can pass through its own men only to charge" };
   const passed = through ? { through: passedThrough(units, i, pos) } : {};
   if (cost <= allowance(u)) return { ok: true, cost, charge: contact && steps > 0, ...passed };
@@ -2548,10 +2551,11 @@ function firstMove(base, i, tu, [size, field], [charge, hold, shooter, storm]){ 
     if (tries === 0) return null;
     tries -= 1;
     const m = legalMove(base, i, [h, f, c, touch], [size, field]);
-    if (!rejects(m, charge, hold)) return [h, f, via ? { ...m, through: passedThrough(base, i, h) } : m];
+    if (!rejects(m, charge, hold)) return [h, f, passing(base, i, h, m, via)];
   }
   return null;
 }
+const passing = (base, i, h, m, via) => (via ? { ...m, through: passedThrough(base, i, h) } : m);   // the legal move, with the friends it passes through if it came through them (as commander._passing)
 function skipsHex(touch, [charge, hold, via], far, stuck){   // a hex it will not try (as commander._skips)
   if (stuck || (via && !touch)) return true;
   return touch ? !charge : hold || far;

@@ -947,8 +947,14 @@ def _first_move(d: Data, base: list, i: int, tu: dict, where: tuple, how: tuple)
         tries -= 1
         m = _legal(d, base, i, (h, f, c, touch), (size, field))
         if not _rejects(m, charge, hold):
-            return h, f, ({**m, "through": U.passed_through(d, base, i, h)} if via else m)
+            return h, f, _passing(d, base, i, (h, m, via))
     return None
+
+
+def _passing(d: Data, base: list, i: int, move: tuple) -> dict:
+    """The legal move m to h, with the friends it passes through if it came through them (via)."""
+    h, m, via = move
+    return {**m, "through": U.passed_through(d, base, i, h)} if via else m
 
 
 def _reach(d: Data, base: list, i: int, how: tuple, through: bool) -> dict:
