@@ -34,7 +34,7 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
             _apply(us, i, o)
     orders += _move_guns(d, us, side, (size, field, stance, known, exchange))
     orders += _lay_guns(d, us, side, (size, field, known, exchange))
-    return us, orders + _call_fire(d, us, side, field, known, stance)
+    return us, orders + _call_fire(d, us, side, field, known, (stance, exchange))
 
 
 def _free(d: Data, us: list, i: int, exchange) -> bool:
@@ -294,15 +294,18 @@ def _gun_apply(d: Data, us: list, i: int, o: dict, where: tuple) -> bool:
     return True
 
 
-def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, stance: str = "attack") -> list:
-    """Attacking, first one battery lays smoke where its units are under fire (_call_smoke).
+def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, how: tuple = ("attack", None)) -> list:
+    """In the dark, first one battery lights an enemy it has lost sight of (_call_illum).
+    Attacking, one battery lays smoke where its units are under fire (_call_smoke).
     Then one battery fires counter-battery on a located enemy battery (_call_counter). Then each of its other off-map batteries (not tanks or aircraft) with no mission, rounds
     and tubes, not displacing, is called on the enemy unit it sees now that scores best as a
     target for the side's unit nearest it (threat_score), at the first of its hexes the side
     can see, in the battery's reach, with none of the side's men within the kind's radius and
     scatter."""
+    stance, exchange = how
     free = [k for k, b in enumerate((field or {}).get("support") or []) if _free_battery(d, b, side)]
-    out = _call_smoke(d, us, side, field, known, free) if stance == "attack" else []
+    out = _call_illum(d, us, side, field, (known, exchange), free)
+    out += _call_smoke(d, us, side, field, known, free) if stance == "attack" else []
     out += _call_counter(d, field, side, free)
     for k in free:
         b = field["support"][k]
@@ -314,6 +317,34 @@ def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, stance:
             b["mission"] = {"hex": aim[1], "wait": K["delay"], "repeat": False}
             out.append({"unit": None, "act": "fire", "battery": k, "target": aim[0], "hex": aim[1]})
     return out
+
+
+def _call_illum(d: Data, us: list, side, field: dict | None, kx: tuple, free: list) -> list:
+    """In the dark (a light with limited sight), illumination over the enemy it has lost sight
+    of (remembered but not seen this exchange) nearest one of its units (the first of equals),
+    at its last-seen middle hex if no flare or round lights it or is on its way there, by the free battery with
+    illumination rounds (a kind with `illum`) that reaches it and lands soonest (the first of
+    equals). -> [the illumination order], or []."""
+    known, exchange = kx
+    L = U.light_of(d, field)
+    ours = [u for u in us if u["side"] == side and u["men"] > 0 and u["state"] != "fled"]
+    if L is None or L.get("sight") is None or not ours:
+        return []
+    lost = sorted((min(U.hdist(o["pos"], m["pos"]) for o in ours), int(k)) for k, m in known.items()
+                  if k.isdigit() and m["ex"] != (exchange or 0) and not U.lit(field, m["pos"]))
+    sup = (field or {}).get("support") or []
+    coming = [(b["mission"]["hex"], d.units["indirect"]["kinds"][b["kind"]].get("illum", 0)) for b in sup
+              if b["side"] == side and (b.get("mission") or {}).get("illum")]
+    lost = [(n, j) for n, j in lost if not any(U.hdist(known[str(j)]["pos"], c) <= r for c, r in coming)]
+    for _, j in lost:
+        h = list(known[str(j)]["pos"])
+        guns = [(d.units["indirect"]["kinds"][sup[k]["kind"]]["delay"], k) for k in free
+                if not sup[k].get("mission") and d.units["indirect"]["kinds"][sup[k]["kind"]].get("illum") and U.in_reach(d, sup[k], h)]
+        if guns:
+            k = min(guns)[1]
+            sup[k]["mission"] = {"hex": h, "wait": d.units["indirect"]["kinds"][sup[k]["kind"]]["delay"], "repeat": False, "illum": True}
+            return [{"unit": None, "act": "illum", "battery": k, "target": j, "hex": h}]
+    return []
 
 
 def _call_counter(d: Data, field: dict | None, side, free: list) -> list:

@@ -323,6 +323,12 @@ general. All its numbers are in units.yaml `commander`.
     already smoked, by the battery that reaches it and lands soonest (mortars before guns).
     Not in the dark, and not in a gale (the smoke would blow away at once). A holding side
     never smokes.
+  - **Illumination.** In the dark (any light that limits sight), before anything else, one
+    free battery with illumination rounds (mortars, field guns, howitzers) fires
+    illumination over the enemy it has lost sight of (remembered, but not seen now) nearest
+    one of its units, at the hex where it was last seen, unless a flare or round already
+    lights it or one is on its way there. The battery that lands soonest fires (the first
+    listed of equals); a placed battery only within its range. One a move.
   - **Counter-battery.** Next, attacking or holding, one of its free batteries fires on a
     located enemy battery (one that has fired: ◉). The shooter is the free battery with the
     highest counter % that can reach one (howitzers, then field guns; mortars cannot; a
