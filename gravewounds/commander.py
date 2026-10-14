@@ -296,13 +296,14 @@ def _gun_apply(d: Data, us: list, i: int, o: dict, where: tuple) -> bool:
 
 def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, stance: str = "attack") -> list:
     """Attacking, first one battery lays smoke where its units are under fire (_call_smoke).
-    Then each of its other off-map batteries (not tanks or aircraft) with no mission, rounds
+    Then one battery fires counter-battery on a located enemy battery (_call_counter). Then each of its other off-map batteries (not tanks or aircraft) with no mission, rounds
     and tubes, not displacing, is called on the enemy unit it sees now that scores best as a
     target for the side's unit nearest it (threat_score), at the first of its hexes the side
     can see, in the battery's reach, with none of the side's men within the kind's radius and
     scatter."""
     free = [k for k, b in enumerate((field or {}).get("support") or []) if _free_battery(d, b, side)]
     out = _call_smoke(d, us, side, field, known, free) if stance == "attack" else []
+    out += _call_counter(d, field, side, free)
     for k in free:
         b = field["support"][k]
         K = d.units["indirect"]["kinds"][b["kind"]]
@@ -313,6 +314,29 @@ def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, stance:
             b["mission"] = {"hex": aim[1], "wait": K["delay"], "repeat": False}
             out.append({"unit": None, "act": "fire", "battery": k, "target": aim[0], "hex": aim[1]})
     return out
+
+
+def _call_counter(d: Data, field: dict | None, side, free: list) -> list:
+    """Counter-battery: of its free batteries with no mission that can reach (counter > 0, and
+    in range of a placed target) a located enemy battery with tubes, the one with the highest
+    counter % (the first of equals) fires on the reachable one with the most tubes served (the
+    first of equals). -> [the counter order], or []."""
+    sup = (field or {}).get("support") or []
+    marks = [j for j, x in enumerate(sup) if x["side"] != side and x.get("located") and x.get("tubes", 0) > 0]
+    best = None
+    for k in free:
+        b = sup[k]
+        K = d.units["indirect"]["kinds"][b["kind"]]
+        if b.get("mission") or not K.get("counter"):
+            continue
+        aims = [j for j in marks if sup[j].get("place") is None or U.in_reach(d, b, sup[j]["place"])]
+        if aims and (best is None or K["counter"] > best[0]):
+            best = (K["counter"], k, max(aims, key=lambda j: (U.served_tubes(d, sup[j]), -j)))
+    if best is None:
+        return []
+    _, k, j = best
+    sup[k]["mission"] = {"battery": j, "wait": d.units["indirect"]["kinds"][sup[k]["kind"]]["delay"], "repeat": False}
+    return [{"unit": None, "act": "counter", "battery": k, "on": j}]
 
 
 def _free_battery(d: Data, b: dict, side) -> bool:

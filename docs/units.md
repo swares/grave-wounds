@@ -323,6 +323,12 @@ general. All its numbers are in units.yaml `commander`.
     already smoked, by the battery that reaches it and lands soonest (mortars before guns).
     Not in the dark, and not in a gale (the smoke would blow away at once). A holding side
     never smokes.
+  - **Counter-battery.** Next, attacking or holding, one of its free batteries fires on a
+    located enemy battery (one that has fired: ◉). The shooter is the free battery with the
+    highest counter % that can reach one (howitzers, then field guns; mortars cannot; a
+    placed battery only within its range of a placed target). It fires on the reachable
+    one with the most tubes served (the first listed of equals). Its other batteries shell
+    units as above.
   - **Undo its orders** calls that fire off again.
 
 What it does not do yet:
