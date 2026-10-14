@@ -1,0 +1,319 @@
+# Character generation for the Crimean War (1854-1856): the team builder (dist/team.html,
+# python3 -m gravewounds team --era crimea). Made exactly as the medieval era's (see
+# medieval.yaml for the five steps); only the tables differ. Every region takes the Crimean
+# all-hits table (the British siege returns, blended).
+# All of it is written for this game: the tables, events and names are ours (names are common
+# period names, plain fact). The infantry's Musket skill covers both the smoothbore musket
+# most Russian infantry still carried and the British and French rifle-musket (the Minié and
+# the Enfield): both were fired by the same drill. Gunnery is the artillerymen's skill (and
+# the sailors', who served guns ashore in the siege). Lancers' lances are fought with Blade.
+id: crimea
+name: "Crimean War (1854-1856)"
+
+characteristics:
+  - {id: str, name: Strength}
+  - {id: agi, name: Agility}
+  - {id: end, name: Endurance}
+  - {id: wits, name: Wits}
+  - {id: nerve, name: Nerve}
+  - {id: pres, name: Presence}
+array: [70, 60, 55, 50, 45, 35]
+stat_range: [15, 95]
+age: {start: 16, per_term: 4}
+
+skill_max: 90
+first_term: 15
+term_main: 10
+term_second: 5
+gain: 15
+skills:
+  - {id: musket, name: Musket, of: agi, div: 2, combat: true}
+  - {id: pistol, name: Pistol, of: agi, div: 2, combat: true}
+  - {id: blade, name: Blade, of: agi, div: 2, combat: true}
+  - {id: bayonet, name: Bayonet, of: str, div: 2, combat: true}
+  - {id: gunnery, name: Gunnery, of: wits, div: 2, combat: true}
+  - {id: brawl, name: Brawl, of: str, div: 2, combat: true}
+  - {id: parry, name: Parry, of: agi, div: 2, combat: true}
+  - {id: dodge, name: Dodge, of: agi, div: 3, combat: true}
+  - {id: ride, name: Ride, of: agi, div: 3}
+  - {id: fieldcraft, name: Fieldcraft, of: wits, div: 3}
+  - {id: watch, name: Watch, of: wits, div: 2}
+  - {id: stealth, name: Stealth, of: agi, div: 3}
+  - {id: leechcraft, name: Leechcraft, of: wits, div: 4}
+  - {id: seamanship, name: Seamanship, of: wits, div: 4}
+  - {id: craft, name: Craft, of: wits, div: 3}
+  - {id: letters, name: Letters, of: wits, div: 5}
+  - {id: persuade, name: Persuade, of: pres, div: 2}
+  - {id: command, name: Command, of: pres, div: 3}
+
+weapon_skill:
+  rifle_musket: musket
+  musket_smoothbore: musket
+  revolver: pistol
+  saber: blade
+  lance: blade
+  dagger: blade
+  bayonet: bayonet
+  artillery_smoothbore: gunnery
+  punch: brawl
+  kick: brawl
+  elbow_knee: brawl
+defence: [parry, dodge]
+
+regions:
+  - id: british
+    name: "The British Army in the Crimea"
+    short: "British"
+    table: crimea-1854-56-all-hits
+    colours: ["#a33a2e", "#2f3f6e", "#e6e0d2", "#3a3a3a"]
+    names: [John, William, Thomas, James, George, Henry, Charles, Patrick, Michael, Edward, Robert, Joseph, Richard, Daniel, Alexander, Samuel]
+    bynames: [Smith, Jones, Williams, Brown, Taylor, Murphy, Kelly, Campbell, MacDonald, Evans, Walker, Wright]
+    no_women: "Women with the British army in the Crimea were soldiers' wives and the nurses at Scutari and Balaklava: none in these careers."
+  - id: french
+    name: "The French Army of the East"
+    short: "French"
+    table: crimea-1854-56-all-hits
+    colours: ["#2b4a8a", "#a33a2e", "#e6e0d2", "#3b4a6a"]
+    names: [Jean, Pierre, Louis, Joseph, François, Jacques, Antoine, Charles, Auguste, Henri, Victor, Jules, Étienne, Nicolas, Ahmed, Mohamed]
+    bynames: [Martin, Bernard, Dubois, Durand, Moreau, Laurent, Simon, Michel, Lefebvre, Leroy, Roux, Girard]
+    women:
+      share: null
+      careers: [cantiniere]
+      names: [Marie, Jeanne, Louise, Marguerite, Catherine, Anne, Joséphine, Françoise, Madeleine, Rose, Victorine, Julie]
+      closed: "French women served with their regiments as cantinières, not in its other careers."
+      source: "Vivandière (Military Wiki): Napoleon III doubled the cantinières' numbers in 1854; attached to regiments, they served with their units in every campaign of the Second Empire, the Crimea included, selling food and drink and tending the wounded. No count of their share."
+  - id: russian
+    name: "The Russian Army at Sevastopol"
+    short: "Russian"
+    table: crimea-1854-56-all-hits
+    colours: ["#3f4a3a", "#7a7468", "#2e3a2e", "#e6e0d2"]
+    names: [Ivan, Pyotr, Nikolai, Fyodor, Vasily, Mikhail, Alexei, Grigory, Semyon, Stepan, Yegor, Andrei, Pavel, Dmitri, Timofei, Kuzma]
+    bynames: [Ivanov, Petrov, Smirnov, Kuznetsov, Popov, Sokolov, Lebedev, Kozlov, Novikov, Morozov, Volkov, Fyodorov]
+    no_women: "The women of Sevastopol nursed the wounded in the siege, outside these careers."
+
+origins:
+  - {name: "Farm labourer", who: m, gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Cannot read a word", letters: -15}}
+  - {name: "Weaver thrown out of work", gain: craft, trait: {text: "Patient", wits: 10}, drawback: {text: "Weak from hunger", end: -10}}
+  - {name: "Townsman's son", who: m, gain: persuade, trait: {text: "Quick tongue", persuade: 15}, drawback: {text: "Never slept rough", fieldcraft: -15}}
+  - {name: "Fisherman's son", who: m, gain: seamanship, trait: {text: "Swims like a seal", end: 10}, drawback: {text: "Cannot sit a horse", ride: -15}}
+  - {name: "Clerk's apprentice", gain: letters, trait: {text: "Good at sums", wits: 10}, drawback: {text: "Soft hands", str: -10}}
+  - {name: "Enlisted for the bounty", who: m, gain: brawl, trait: {text: "Hard to frighten", nerve: 10}, drawback: {text: "Drinks his pay", pres: -10}}
+  - {name: "Serf taken by the levy", who: m, gain: craft, trait: {text: "Endures anything", end: 10}, drawback: {text: "Never left his village", persuade: -15}}
+  - {name: "Gamekeeper's son", who: m, gain: musket, trait: {text: "A steady aim", musket: 15}, drawback: {text: "Known as a poacher's friend", persuade: -15}}
+  - {name: "Younger son of a gentleman", who: m, gain: ride, trait: {text: "Raised to the sword", blade: 15}, drawback: {text: "Proud and touchy", persuade: -15}}
+  - {name: "Apothecary's apprentice", gain: leechcraft, trait: {text: "Knows his remedies", leechcraft: 15}, drawback: {text: "Faints at the sight of blood", nerve: -10}}
+  - {name: "Blacksmith's apprentice", who: m, gain: craft, trait: {text: "Arms like hams", str: 10}, drawback: {text: "Half deaf from the anvil", watch: -15}}
+  - {name: "Railway navvy", who: m, gain: craft, trait: {text: "Digs all day", end: 10}, drawback: {text: "Known to the police", persuade: -15}}
+  - {name: "Raised in the barracks", gain: musket, trait: {text: "Knows the drill by heart", nerve: 10}, drawback: {text: "Knows nothing else", fieldcraft: -15}}
+  - {name: "Groom in a great stable", who: m, gain: ride, trait: {text: "Horse sense", ride: 15}, drawback: {text: "Kicked by a horse as a boy", end: -10}}
+  - {name: "Street brawler", who: m, gain: brawl, trait: {text: "Takes a punch", end: 10}, drawback: {text: "Quick to anger", pres: -10}}
+  - {name: "Servant in a great house", gain: watch, trait: {text: "Knows how to please his betters", persuade: 15}, drawback: {text: "Never held a weapon", parry: -15}}
+  - {name: "Shepherd", who: m, gain: watch, trait: {text: "Sees far", watch: 15}, drawback: {text: "Uneasy in crowds", pres: -10}}
+  - {name: "Veteran of a colonial war", who: m, gain: fieldcraft, trait: {text: "Seasoned to hardship", end: 10}, drawback: {text: "Fever comes back every summer", end: -10}}
+  - {name: "Soldier's daughter born in the regiment", who: f, gain: watch, trait: {text: "Knows every man by name", persuade: 15}, drawback: {text: "Never lived anywhere else", fieldcraft: -15}}
+  - {name: "Married a sergeant of the regiment", who: f, gain: persuade, trait: {text: "Hard to frighten", nerve: 10}, drawback: {text: "Stays by her husband", pres: -10}}
+  - {name: "Innkeeper's daughter", who: f, gain: craft, trait: {text: "Knows how to keep accounts", letters: 15}, drawback: {text: "Never slept rough", fieldcraft: -15}}
+  - {name: "Widow who stayed with the regiment", who: f, gain: leechcraft, trait: {text: "Tireless", end: 10}, drawback: {text: "Grieves still", nerve: -10}}
+
+careers:
+  - id: line
+    name: "Line infantryman"
+    main: musket
+    second: bayonet
+    prefers: [end, agi, nerve, str, wits, pres]
+    wound: 20
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: rifle_musket, russian: musket_smoothbore}
+    terms:
+      - {to: 20, skill: watch, text: "Stood in the trenches through a winter night."}
+      - {to: 40, skill: fieldcraft, text: "Lived through the winter on the heights with no proper shelter."}
+      - {to: 55, skill: craft, text: "Dug and revetted a parallel under fire."}
+      - {to: 70, skill: dodge, text: "Lay in a trench under a bombardment."}
+      - {to: 85, skill: bayonet, text: "Fought hand to hand in fog and brushwood.", wound: true}
+      - {to: 100, skill: musket, text: "Held a line of works against a night attack.", wound: true}
+  - id: rifleman
+    name: "Rifleman, chasseur or Zouave"
+    main: musket
+    second: stealth
+    prefers: [agi, wits, end, nerve, str, pres]
+    wound: 20
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: rifle_musket}
+    terms:
+      - {to: 20, skill: watch, text: "Lay out in a rifle pit, watching the enemy's embrasures."}
+      - {to: 40, skill: fieldcraft, text: "Skirmished ahead of a column across broken ground."}
+      - {to: 55, skill: stealth, text: "Crept out at night to take an enemy rifle pit."}
+      - {to: 70, skill: dodge, text: "Ran from cover to cover across open ground under fire."}
+      - {to: 85, skill: bayonet, text: "Went into an enemy work at the run.", wound: true}
+      - {to: 100, skill: musket, text: "Picked off the gunners at an embrasure all day.", wound: true}
+  - id: trooper
+    name: "Light cavalryman (hussar, lancer, Cossack)"
+    main: blade
+    second: ride
+    prefers: [agi, end, nerve, str, wits, pres]
+    wound: 20
+    wound_weapon: saber
+    kit: {default: none}
+    weapon: {default: saber}
+    mounted: true
+    terms:
+      - {to: 20, skill: fieldcraft, text: "Foraged for the horses through a hard winter."}
+      - {to: 40, skill: watch, text: "Rode outpost duty along a valley."}
+      - {to: 55, skill: ride, text: "Kept his horse alive on half rations."}
+      - {to: 70, skill: parry, text: "Fought a skirmish with enemy horse.", wound: true}
+      - {to: 85, skill: stealth, text: "Scouted an enemy camp at night."}
+      - {to: 100, skill: blade, text: "Rode in a charge against guns and cavalry.", wound: true}
+  - id: gunner
+    name: "Artilleryman"
+    main: gunnery
+    second: craft
+    prefers: [wits, str, end, nerve, agi, pres]
+    wound: 20
+    wound_weapon: artillery_smoothbore
+    kit: {default: none}
+    weapon: {default: artillery_smoothbore}
+    terms:
+      - {to: 20, skill: craft, text: "Rebuilt a battery's parapet by night."}
+      - {to: 40, skill: letters, text: "Kept the battery's range book."}
+      - {to: 55, skill: ride, text: "Drove a gun team through deep mud."}
+      - {to: 70, skill: watch, text: "Spotted the fall of shot from the parapet."}
+      - {to: 85, skill: brawl, text: "Defended the guns hand to hand.", wound: true}
+      - {to: 100, skill: gunnery, text: "Fought his gun through a day-long bombardment.", wound: true}
+  - id: sailor
+    name: "Sailor serving guns ashore"
+    main: gunnery
+    second: seamanship
+    prefers: [agi, str, end, nerve, wits, pres]
+    wound: 20
+    wound_weapon: artillery_smoothbore
+    kit: {default: none}
+    weapon: {default: artillery_smoothbore}
+    terms:
+      - {to: 20, skill: craft, text: "Hauled a ship's gun up to the heights with tackle."}
+      - {to: 40, skill: seamanship, text: "Rode out a storm at anchor."}
+      - {to: 55, skill: watch, text: "Kept lookout from a battery for enemy mortar shells."}
+      - {to: 70, skill: brawl, text: "Fought a sortie off in the dark.", wound: true}
+      - {to: 85, skill: musket, text: "Stood in the works with a borrowed musket."}
+      - {to: 100, skill: gunnery, text: "Served a heavy gun until it burst or was dismounted.", wound: true}
+  - id: sapper
+    name: "Sapper or miner"
+    main: craft
+    second: musket
+    prefers: [end, str, wits, nerve, agi, pres]
+    wound: 20
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: rifle_musket, russian: musket_smoothbore}
+    terms:
+      - {to: 20, skill: letters, text: "Laid out a new parallel by compass and tape at night."}
+      - {to: 40, skill: craft, text: "Made gabions and fascines by the hundred."}
+      - {to: 55, skill: watch, text: "Listened underground for the enemy's miners."}
+      - {to: 70, skill: stealth, text: "Pushed a sap forward under a covering party."}
+      - {to: 85, skill: brawl, text: "Broke into an enemy gallery and fought in the dark.", wound: true}
+      - {to: 100, skill: craft, text: "Laid and fired a mine under an enemy work.", wound: true}
+  - id: sergeant
+    name: "Sergeant or corporal"
+    main: command
+    second: musket
+    prefers: [pres, nerve, end, str, agi, wits]
+    wound: 20
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: rifle_musket, russian: musket_smoothbore}
+    terms:
+      - {to: 20, skill: letters, text: "Kept the company's rolls through a sickly winter."}
+      - {to: 40, skill: persuade, text: "Kept his men at work in the trenches."}
+      - {to: 55, skill: bayonet, text: "Drilled a draft of new recruits."}
+      - {to: 70, skill: watch, text: "Set the sentries in an advanced trench."}
+      - {to: 85, skill: parry, text: "Carried the colours when the bearer fell.", wound: true}
+      - {to: 100, skill: musket, text: "Kept the line steady under a storm of grape.", wound: true}
+  - id: officer
+    name: "Officer"
+    main: command
+    second: pistol
+    prefers: [pres, nerve, wits, agi, end, str]
+    wound: 25
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: revolver}
+    terms:
+      - {to: 20, skill: letters, text: "Wrote the regiment's returns."}
+      - {to: 40, skill: ride, text: "Carried orders along the lines."}
+      - {to: 55, skill: blade, text: "Led a sortie, sword in hand.", wound: true}
+      - {to: 70, skill: persuade, text: "Begged stores for his men from the commissariat."}
+      - {to: 85, skill: pistol, text: "Fought at the head of his men in an enemy work."}
+      - {to: 100, skill: command, text: "Took command of the trenches when his senior fell.", wound: true}
+  - id: surgeon
+    name: "Surgeon or orderly"
+    main: leechcraft
+    second: craft
+    prefers: [wits, agi, nerve, end, pres, str]
+    wound: 5
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: revolver}
+    terms:
+      - {to: 20, skill: craft, text: "Operated by lamplight in a hut hospital."}
+      - {to: 40, skill: letters, text: "Kept the regiment's sick book through the cholera."}
+      - {to: 55, skill: leechcraft, text: "Nursed a camp through fever and scurvy."}
+      - {to: 70, skill: ride, text: "Brought the sick down to the harbour in carts."}
+      - {to: 85, skill: persuade, text: "Begged chloroform from another regiment."}
+      - {to: 100, skill: watch, text: "Dressed wounds in the trenches under fire.", wound: true}
+  - id: cantiniere
+    name: "Cantinière or canteen-keeper"
+    main: persuade
+    second: leechcraft
+    prefers: [pres, end, nerve, wits, agi, str]
+    wound: 10
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: dagger}
+    terms:
+      - {to: 20, skill: craft, text: "Kept the canteen going through a winter in the camps."}
+      - {to: 40, skill: letters, text: "Kept accounts of what the soldiers owed."}
+      - {to: 55, skill: ride, text: "Drove the canteen cart up from the harbour."}
+      - {to: 70, skill: fieldcraft, text: "Found food and drink where there was none."}
+      - {to: 85, skill: leechcraft, text: "Tended the wounded after an assault."}
+      - {to: 100, skill: dodge, text: "Carried drink to the men in the front line under fire.", wound: true}
+
+old_wound:
+  - {to: 70, kind: mark, text: "a healed scar"}
+  - {to: 100, kind: lasting, text: "a lasting hurt"}
+lasting: 5
+lasting_from: {head: wits, face: pres, arms: str, legs: agi, torso: end}
+
+followers:
+  quality:
+    default:  [{to: 30, quality: green}, {to: 80, quality: regular}, {to: 100, quality: veteran}]
+    hardened: [{to: 15, quality: green}, {to: 60, quality: regular}, {to: 100, quality: veteran}]
+    raw:      [{to: 55, quality: green}, {to: 90, quality: regular}, {to: 100, quality: veteran}]
+
+templates:
+  - id: trench
+    name: "A company in the trenches"
+    slots: [[sergeant, 3], [line, 2], [line, 1], [line, 1], [surgeon, 1]]
+    followers: [[line, 12]]
+  - id: riflemen
+    name: "Riflemen in the pits"
+    slots: [[officer, 3], [rifleman, 2], [rifleman, 2], [sapper, 1]]
+    followers: [[rifleman, 8]]
+    follower_quality: hardened
+  - id: cavalry
+    name: "A cavalry patrol"
+    slots: [[officer, 3], [trooper, 2], [trooper, 2], [trooper, 1]]
+    followers: [[trooper, 10]]
+  - id: battery
+    name: "A siege battery"
+    slots: [[gunner, 3], [gunner, 2], [sailor, 2], [sapper, 1]]
+    followers: [[gunner, 6], [sailor, 4]]
+  - id: sap
+    name: "A working party at the sap"
+    slots: [[sapper, 3], [sapper, 2], [line, 1], [line, 1]]
+    followers: [[sapper, 6], [line, 6]]
+  - id: draft
+    name: "A new draft"
+    slots: [[officer, 2], [sergeant, 1], [line, 1], [line, 1], [surgeon, 1]]
+    followers: [[line, 16]]
+    follower_quality: raw
