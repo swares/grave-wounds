@@ -1134,7 +1134,11 @@ sometimes hesitate. With no enemy in sight, a unit holds.</p>
   it make better targets. The log says who holds it after each exchange. Most battlefields
   mark the place their battle was fought for, a hill, a bridge, an outpost, as theirs,
   taking in the whole position (a ring of trenches counts as the hill).</li>
-<li><strong>Minefields.</strong> It steers round minefields it knows of.</li>
+<li><strong>Minefields.</strong> It steers round minefields it knows of. Its sappers, attacking, lift a
+  lane through known enemy mines in the row ahead when those mines lie on the way to their
+  target or the objective. Holding, or at the objective, with no enemy it knows of within
+  8 hexes, they lay mines in the row ahead: mixed if the enemy it knows of has
+  vehicles, otherwise anti-personnel.</li>
 <li><strong>Guns.</strong> It turns its guns to face the enemy and calls its off-map batteries on what it
   sees. Attacking, it first has one battery smoke an enemy that is shooting at men who
   cannot reply (not in the dark, or in a gale).</li>
@@ -2323,6 +2327,7 @@ straight line from where its move began.</p>
     as its front, is a hidden minefield. Hexes where a unit stands are left clear.</li>
 <li>Lifting takes 2 exchanges. Then the minefield hexes in that row that its side
     knows of are lifted: a lane.</li>
+<li>The enemy commander sets its own sappers to work (see <a href="#commander">the enemy commander</a>).</li>
 <li>A side knows the mines its own sappers laid: its commander steers round them, and they do
     not strike its own men.</li>
 </ul>

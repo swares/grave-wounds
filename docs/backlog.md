@@ -18,9 +18,11 @@ When an item is done, delete it here and note it in the pull request that closes
   the field map. It attacks or holds by its units' quality, knows only what its units see
   (remembering last sightings for a few exchanges), picks targets by threat and weakness,
   holds back and commits a reserve, steers round minefields it knows of, turns its guns and
-  calls its off-map batteries, and takes or holds an objective hex the GM marks; Undo puts
+  calls its off-map batteries, sets its sappers to lay or lift mines, and takes or holds an
+  objective hex the GM marks; Undo puts
   its move back. It looks once at the start of each move. Attacking, it smokes enemies
-  shooting at men who cannot reply. Still left out: illumination, creeping barrages, counter-battery fire and aircraft; moving, limbering or
+  shooting at men who cannot reply. Its sappers lay one row and lift only the row ahead of
+  them: no deep belts, and no clearing a whole path ahead of the attack. Still left out: illumination, creeping barrages, counter-battery fire and aircraft; moving, limbering or
   displacing guns; air controllers, riders, fixed lines and works; any plan beyond one
   objective (phase lines, a second objective, feints, scouting). It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model
@@ -85,7 +87,7 @@ When an item is done, delete it here and note it in the pull request that closes
   and minefields (1939 on), gun shields (anti-tank and anti-aircraft guns, small arms from
   the front), guns emplaced before the battle, anti-tank guns' own rounds and gun tractors
   towing them, lorries, tank riders and sappers laying and lifting mines in battle are in. Still left out: shields on machine guns and
-  field guns, the commander towing its guns or setting sappers to work. Sappers lay or lift
+  field guns, the commander towing its guns. Sappers lay or lift
   only the row just ahead of them, and a unit that turns in place onto mines sets them off
   as if it had moved into them (except its own side's). A minefield is set off along a straight line from
   where a unit's move began, not along the path it took. No battlefield has minefields yet:

@@ -84,6 +84,7 @@ def _field_values(d: Data) -> dict:
         "f_bow_rate": U["missile"]["rate"]["longbow"], "f_aimed": round(1 / U["missile"]["tempo"]),
         "c_remember": U["commander"]["remember"], "c_obj_radius": U["commander"]["objective"]["radius"],
         "c_obj_hold": U["commander"]["objective"]["hold"],
+        "c_sap_clear": U["commander"]["sappers"]["clear_of"],
     }
 
 

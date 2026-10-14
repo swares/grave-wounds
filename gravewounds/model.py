@@ -873,6 +873,8 @@ def _commander_errors(d: Data) -> list[str]:
     if not (isinstance((d.units.get("dig_in") or {}).get("exchanges"), int) and d.units["dig_in"]["exchanges"] >= 1):
         errors.append("units.yaml: dig_in.exchanges must be a whole number of 1 or more")
     errors += _sapper_errors(d)
+    if not (isinstance((K.get("sappers") or {}).get("clear_of"), int) and K["sappers"]["clear_of"] >= 0):
+        errors.append("units.yaml: commander.sappers.clear_of must be a whole number of 0 or more")
     O = K.get("objective") or {}
     errors += [f"units.yaml: commander.objective.{k} must be a whole number of 0 or more" for k in ("radius", "hold", "guard", "bonus")
                if not (isinstance(O.get(k), int) and O[k] >= 0)]

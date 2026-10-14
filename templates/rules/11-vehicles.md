@@ -90,6 +90,7 @@ straight line from where its move began.
     as its front, is a hidden minefield. Hexes where a unit stands are left clear.
   - Lifting takes {{m_clear}} exchanges. Then the minefield hexes in that row that its side
     knows of are lifted: a lane.
+  - The enemy commander sets its own sappers to work (see [the enemy commander](#commander)).
   - A side knows the mines its own sappers laid: its commander steers round them, and they do
     not strike its own men.
 

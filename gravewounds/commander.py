@@ -255,7 +255,12 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return {"act": "ground", "target": t} if not u.get("prone") and under_fire(d, us, i) else None
     if u.get("reserve"):
         return None if t is None else _stay(d, us, i, t, u["facing"], "range" in d.weapons[u["weapon"]])
-    if U.busy_digging(u) or (t is None and obj is None):
+    if U.busy_digging(u):
+        return None
+    sap = _sapper_order(d, us, i, t, ctx)
+    if sap is not None:
+        return sap
+    if t is None and obj is None:
         return None
     if obj is not None and _digs(d, us, i, ctx):
         return {"act": "dig", "target": t}
@@ -275,6 +280,48 @@ def _digs(d: Data, us: list, i: int, ctx: tuple) -> bool:
         return False
     seen = [m["pos"] for k, m in (known or {}).items() if k.isdigit()]
     return not any(U.field_range(d, u["weapon"], U.hdist(u["pos"], p)) is not None for p in seen)
+
+
+def _sapper_order(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict | None:
+    """Sappers (units.can_sap) set to work: attacking, they lift the known mines (not their own
+    side's) in the row ahead when the straight way to their target (where last seen) or the objective
+    crosses known mines; holding, or at the objective, they lay mines there (_lays)."""
+    u, field = us[i], ctx[1]
+    if not U.can_sap(d, u):                       # (commanded units are out of contact)
+        return None
+    row = U.ahead_row(d, field, u)
+    mines = (field or {}).get("mines") or {}
+    if ctx[2] == "attack" and any(_foes_mine(mines.get(C.hkey(x)), u["side"]) for x in row):
+        goal = _where(us, t, ctx[3])["pos"] if t is not None else objective(field)
+        if goal is not None and _mined(field, u["pos"], goal, u["side"]):
+            return {"act": "lift", "target": t}
+    if _lays(d, us, i, ctx, row):
+        return {"act": "lay", "target": t, "kind": _mine_kind(us, ctx[3])}
+    return None
+
+
+def _foes_mine(m: dict | None, side) -> bool:
+    """A minefield hex it knows of that its own sappers did not lay (those do not strike it)."""
+    return m is not None and U.known_mine(m) and m.get("side") != side
+
+
+def _lays(d: Data, us: list, i: int, ctx: tuple, row: list) -> bool:
+    """Holding (or at the objective, within its radius), no enemy it knows of
+    within commander.sappers.clear_of hexes, and a hex of the row ahead free to mine."""
+    u, (_, field, stance, known, _) = us[i], ctx
+    obj = objective(field)
+    if stance != "hold" and (obj is None or U.off_objective(d, u, obj) > U.objective_radii(d, field)[0]):
+        return False
+    near = d.units["commander"]["sappers"]["clear_of"]
+    if any(U.hdist(u["pos"], m["pos"]) <= near for k, m in (known or {}).items() if k.isdigit()):
+        return False
+    mines, occ = (field or {}).get("mines") or {}, U.occupancy(d, us)
+    return any(C.hkey(x) not in mines and C.hkey(x) not in occ for x in row)
+
+
+def _mine_kind(us: list, known: dict | None) -> str:
+    """Mixed if an enemy unit it knows of has vehicles, else anti-personnel."""
+    return "mixed" if any(us[int(k)].get("vehicle") for k in (known or {}) if k.isdigit()) else "ap"
 
 
 def objective(field: dict | None) -> list | None:
@@ -592,6 +639,10 @@ def _apply(us: list, i: int, o: dict) -> None:
         us[i] = {**u, "prone": True}
     elif o["act"] == "dig":
         us[i] = {**u, "digging": {"at": list(u["pos"]), "n": 0}}
+    elif o["act"] == "lay":
+        us[i] = {**u, "mining": {"at": list(u["pos"]), "facing": u["facing"], "n": 0, "kind": o["kind"]}}
+    elif o["act"] == "lift":
+        us[i] = {**u, "clearing": {"at": list(u["pos"]), "facing": u["facing"], "n": 0}}
     elif o["act"] == "turn":
         us[i] = {**u, "facing": o["facing"]}
     elif o["act"] in ("move", "charge", "advance", "fall_back"):

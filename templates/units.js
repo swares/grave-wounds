@@ -2108,7 +2108,10 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = aiTarget(us, i, ctx[3], ctx[1]);
   if (u.state !== "steady") return !u.prone && underFire(us, i) ? { act: "ground", target: t } : null;
   if (u.reserve) return t === null ? null : stayOrder(us, i, t, u.facing, "range" in FD.weapons[u.weapon]);
-  if (busyDigging(u) || (t === null && obj === null)) return null;
+  if (busyDigging(u)) return null;
+  const sap = sapperOrder(us, i, t, ctx);
+  if (sap) return sap;
+  if (t === null && obj === null) return null;
   if (obj !== null && digs(us, i, ctx)) return { act: "dig", target: t };
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
   const o = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx);
@@ -2120,6 +2123,26 @@ function digs(us, i, [, field, , known]){          // a unit at the objective di
   if (underFire(us, i)) return false;
   return !knownFoes(known || {}).some(([, m]) => fieldRange(u.weapon, hdist(u.pos, m.pos)) !== null);
 }
+const foesMine = (m, side) => !!m && knownMine(m) && m.side !== side;   // a minefield hex it knows of that its own sappers did not lay (as commander._foes_mine)
+function sapperOrder(us, i, t, ctx){              // sappers set to work: attacking, lift known mines ahead in their way; holding or at the objective, lay (as commander._sapper_order)
+  const u = us[i], field = ctx[1];
+  if (!canSap(u)) return null;
+  const row = aheadRow(field, u), mines = field?.mines || {};
+  if (ctx[2] === "attack" && row.some(x => foesMine(mines[hk(x)], u.side))){
+    const goal = t === null ? objectiveOf(field) : knownAt(us, t, ctx[3]).pos;
+    if (goal !== null && mined(field, u.pos, goal, u.side)) return { act: "lift", target: t };
+  }
+  return lays(us, i, ctx, row) ? { act: "lay", target: t, kind: mineKind(us, ctx[3]) } : null;
+}
+function lays(us, i, [, field, stance, known], row){   // holding (or at the objective), no known enemy within commander.sappers.clear_of, a free hex ahead (as commander._lays)
+  const u = us[i], obj = objectiveOf(field);
+  if (stance !== "hold" && (obj === null || offObjective(u, obj) > objectiveRadii(field)[0])) return false;
+  const near = UD.commander.sappers.clear_of;
+  if (knownFoes(known || {}).some(([, m]) => hdist(u.pos, m.pos) <= near)) return false;
+  const mines = field?.mines || {}, occ = occupancy(us);
+  return row.some(x => !(hk(x) in mines) && !(hk(x) in occ));
+}
+const mineKind = (us, known) => (knownFoes(known || {}).some(([k]) => us[+k].vehicle) ? "mixed" : "ap");   // mixed if an enemy it knows of has vehicles (as commander._mine_kind)
 const objectiveOf = field => (field?.objective ? [...field.objective] : null);   // the hex the GM marked as the commander's objective, or null
 function forObjective(us, i, t, ctx){              // attacking: at the objective it holds, with no enemy or nothing better it advances; holding: too far out it falls back unless it can charge
   const off = offObjective(us[i], objectiveOf(ctx[1]));
@@ -2297,6 +2320,8 @@ function applyOrder(us, i, o){                    // carry out an order (as the 
   const u = us[i];
   if (o.act === "ground") us[i] = { ...u, prone: true };
   else if (o.act === "dig") us[i] = { ...u, digging: { at: [...u.pos], n: 0 } };
+  else if (o.act === "lay") us[i] = { ...u, mining: { at: [...u.pos], facing: u.facing, n: 0, kind: o.kind } };
+  else if (o.act === "lift") us[i] = { ...u, clearing: { at: [...u.pos], facing: u.facing, n: 0 } };
   else if (o.act === "turn") us[i] = { ...u, facing: o.facing };
   else if (["move", "charge", "advance", "fall_back"].includes(o.act)) us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}) };
 }

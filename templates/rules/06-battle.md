@@ -119,7 +119,11 @@ sometimes hesitate. With no enemy in sight, a unit holds.
   it make better targets. The log says who holds it after each exchange. Most battlefields
   mark the place their battle was fought for, a hill, a bridge, an outpost, as theirs,
   taking in the whole position (a ring of trenches counts as the hill).
-- **Minefields.** It steers round minefields it knows of.
+- **Minefields.** It steers round minefields it knows of. Its sappers, attacking, lift a
+  lane through known enemy mines in the row ahead when those mines lie on the way to their
+  target or the objective. Holding, or at the objective, with no enemy it knows of within
+  {{c_sap_clear}} hexes, they lay mines in the row ahead: mixed if the enemy it knows of has
+  vehicles, otherwise anti-personnel.
 - **Guns.** It turns its guns to face the enemy and calls its off-map batteries on what it
   sees. Attacking, it first has one battery smoke an enemy that is shooting at men who
   cannot reply (not in the dark, or in a gale).
