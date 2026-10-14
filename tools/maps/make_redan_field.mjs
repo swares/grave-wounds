@@ -7,72 +7,17 @@
 // along its two faces, joined to the Russian line on either side and open at the back (the
 // gorge), with breastworks and traverses inside. The British advanced trench was about 200
 // yards from the salient; the abatis in front had been mostly smashed by the bombardment. The
-// work, its ditch, the line either side, the trench, the ravines and the shell holes are drawn
-// by hand to that, not traced from any map, and are approximate. The deployment is just after
+// work and the ground are drawn by redan_lib.mjs. The deployment is just after
 // noon, when the stormers went over, in our own words; numbers are round figures for play.
 // The point of the salient is drawn cut off square, a front of 12 hexes (120 m): a simplification
 // for the field map, whose units stand in straight lines and could not otherwise reach the men
 // in a sharp point. The Russian infantry are on smoothbore muskets (most of them still were), their riflemen on
 // rifles; the British on the rifle-musket. The siege guns on both sides are not on the map.
-import { N, S, wobble, speckle, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, unit, writeField } from "./field_lib.mjs";
+import { COLS, redan } from "./redan_lib.mjs";
 
-const COLS = 100, ROWS = 80;                 // 1000 m east to west, about 690 m north to south
-const ROW_M = Math.sqrt(3) / 2;              // a row is this many hexes deep (pointy-top hexes)
-const TIP = [50, 46];                        // the salient (col, row)
-const BLUNT = 5;                             // the salient's point is cut off square, this many hexes either side (on the field map; see below)
-const SPAN = 12;                             // the faces run this many hexes beyond it ...
-const SLOPE = 1.15;                          // ... rising one row-height for every this many hexes across
-const tipX = TIP[0] + (TIP[1] & 1) / 2, tipY = TIP[1] * ROW_M;
-const curtainY = c => tipY - SPAN / SLOPE + 0.25 * wobble(c / 4, 0.7, 1.9);
-// The Russian line's front: the Redan's two faces, and the line either side of it.
-function lineY(x){
-  const dx = Math.abs(x - tipX);
-  if (dx <= BLUNT) return tipY;
-  return dx <= BLUNT + SPAN ? tipY - (dx - BLUNT) / SLOPE : curtainY(x);
-}
-const centre = (c, r) => [c + (r & 1) / 2, r * ROW_M];
-const behind = (c, r) => { const [x, y] = centre(c, r); return y < lineY(x) };   // inside the Russian line
-
-const TRENCH_ROW = 67;                       // the British advanced trench, about 200 yards from the salient
-function kind(c, r){
-  if (r < 15 && patch(c, r, { cx: 50, cy: 2, rx: 46, ry: 14, a: 0.9, b: 2.3 })) return speckle(c, r, 3) ? "T" : "x";   // the Karabelnaya, shelled to ruins
-  if (r > 34 && c < 7 + wobble(r / 3, 1.3, 0.4)) return "r";                // the ravine on the west
-  if (r > 34 && c > 92 + wobble(r / 3, 0.2, 1.6)) return "r";               // the ravine on the east
-  if (!behind(c, r) && r < TRENCH_ROW && speckle(c, r, 14)) return "r";    // shell holes in front of the works
-  return ".";
-}
-const grid = groundGrid(COLS, ROWS, kind);
-
-// Neighbours of a hex (odd rows shifted half a hex east).
-function neighbours(c, r){
-  const o = r & 1;
-  return [[c - 1, r], [c + 1, r], [c - 1 + o, r - 1], [c + o, r - 1], [c - 1 + o, r + 1], [c + o, r + 1]]
-    .filter(([q, s]) => q >= 0 && q < COLS && s >= 0 && s < ROWS);
-}
-
-// The ditch and parapet: every side between a hex behind the line and one in front of it, the
-// inner hex first.
-const ditch = [], bank = [];
-for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++){
-  if (!behind(c, r)) continue;
-  for (const n of neighbours(c, r)) if (!behind(...n)){ ditch.push([[c, r], n]); bank.push([[c, r], n]) }
-}
-// The breastwork across the Redan's back, the Russians behind it (north) on its inner side.
-const BREAST = 24;
-for (let c = 36; c <= 64; c++){
-  for (const n of neighbours(c, BREAST)) if (n[1] === BREAST + 1) bank.push([[c, BREAST], n]);
-}
-// What is left of the abatis: a scatter two or three rows out from the Redan's faces.
-const abatis = [];
-for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++){
-  const [x] = centre(c, r);
-  if (behind(c, r) || Math.abs(x - tipX) > BLUNT + SPAN + 2) continue;
-  if (behind(c, r - 3) && !behind(c, r - 1) && speckle(c, r, 3)) abatis.push([c, r]);
-}
-// The British advanced trench, and the zig-zag back from it.
-const trench = [];
-for (let c = 26; c <= 78; c++) trench.push([c, TRENCH_ROW + Math.round(0.4 * wobble(c / 5, 2.2, 0.5))]);
-for (let r = TRENCH_ROW + 2; r < ROWS; r++){ const k = (r - TRENCH_ROW) % 6; trench.push([52 + (k < 3 ? k : 6 - k), r]) }
+const ROWS = 80;                             // about 690 m north to south
+const { grid, hexWorks, edgeWorks } = redan({ rows: ROWS, trenchRow: 67, holes: 14, abatis: "scatter" });   // the trench about 200 yards from the salient; the abatis mostly smashed
 
 // ---------- the armies (pos is the middle of the front row) ----------
 const BRITISH = { side: 0, facing: N }, RUSSIANS = { side: 1, facing: S };
@@ -98,7 +43,7 @@ writeField({
   id: "redan-1855", name: "The Great Redan, 8 September 1855", sides: ["British", "Russians"], table: "crimea-1854-56-all-hits",
   travel: { map: "sevastopol-1855", place: "The Great Redan", within: 1, sides: ["Allies", "Russia"] },
   weather: "{cond: fair, wind: strong, dir: N, ground: {mud: 0, snow: 0}}",
-  grid, units, hexWorks: { abatis, trench }, edgeWorks: { ditch, bank },
+  grid, units, hexWorks, edgeWorks,
   header: [
     `The British assault on the Great Redan, Sevastopol, 8 September 1855, at 10 m a hex: ${COLS} x ${ROWS}`,
     "hexes, about 1000 m east to west and 690 m north to south, north at the top: the Redan's point",
