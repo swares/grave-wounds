@@ -28,7 +28,6 @@ function lineY(x){
 }
 const centre = (c, r) => [c + (r & 1) / 2, r * ROW_M];
 const behind = (c, r) => { const [x, y] = centre(c, r); return y < lineY(x) };   // inside the Russian line
-const inRedan = (c, r) => behind(c, r) && Math.abs(centre(c, r)[0] - tipX) <= SPAN && r >= TIP[1] - Math.round(SPAN / SLOPE / ROW_M) - 1;
 
 const TRENCH_ROW = 67;                       // the British advanced trench, about 200 yards from the salient
 function kind(c, r){
@@ -118,4 +117,4 @@ writeField({
     "and dust.",
   ],
 });
-console.log(grid.map((row, r) => row.map((k, c) => (trench.some(h => h[0] === c && h[1] === r) ? "t" : abatis.some(h => h[0] === c && h[1] === r) ? "a" : behind(c, r) && k === "." ? (inRedan(c, r) ? ":" : "'") : k)).join("")).join("\n"));
+console.log(grid.map(r => r.join("")).join("\n"));
