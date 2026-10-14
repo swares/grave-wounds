@@ -1370,6 +1370,13 @@ def _objective_errors(f: dict, where: str) -> list[str]:
     return [f"{where}: objective needs at (a hex on the map), side (0 or 1: the army that attacked it), a name, and radius a whole number of 1 or more if given"]
 
 
+def _flag_errors(f: dict, where: str) -> list[str]:
+    """A battlefield's units' true-or-false marks: fac (a forward air controller), ladders."""
+    names = {"fac": "fac (a forward air controller)", "ladders": "ladders"}
+    return [f"{where}: unit {u.get('name')}: {names[k]} must be true or false" for u in f.get("units", []) for k in names
+            if k in u and not isinstance(u[k], bool)]
+
+
 def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_units, fits) -> list[str]:
     """The armies as drawn up: known arms, armour and formations, each unit standing where it can."""
     errors = [e for u in f.get("units", []) for e in _unit_spec_errors(d, f, where, u)]
@@ -1385,8 +1392,7 @@ def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_un
     devices = set((d.weather.get("light", {}).get("night_vision") or {}).get("devices") or {}) | {"none"}
     errors += [f"{where}: unit {u.get('name')}: nv (a night-vision device) must be one of {', '.join(sorted(devices))}" for u in f.get("units", [])
                if "nv" in u and u["nv"] not in devices]
-    errors += [f"{where}: unit {u.get('name')}: fac (a forward air controller) must be true or false" for u in f.get("units", []) if "fac" in u and not isinstance(u["fac"], bool)]
-    errors += [f"{where}: unit {u.get('name')}: ladders must be true or false" for u in f.get("units", []) if "ladders" in u and not isinstance(u["ladders"], bool)]
+    errors += _flag_errors(f, where)
     if errors:
         return errors
     field, units = battlefield(d, f["id"]), battlefield_units(d, f["id"])

@@ -1114,15 +1114,23 @@ def _strike_groups(d: Data, units: list, occ: dict, i: int, groups: dict, field:
         x = step(h, dirn)
         if bunker_at(d, field, h) or bunker_at(d, field, x):
             continue                                  # no blows into or out of an intact bunker: it must be stormed
-        blocked, pen, stk = _across(d, field, u, h, x, reach)
-        climbing = blocked and reach < 2 and has_ladders(u)
-        if climbing:
-            pen += d.units["escalade"]["penalty"]
-        defends = blocked and reach < 2 and not climbing and has_ladders(units[j])   # the defenders on the wall strike at the men on the ladders, a rank of them
-        n = _hex_strikers(men[k], abreast if defends else per, abreast, reach if blocked and not defends else 0, k in busy, d.units["escalade"]["share"] if climbing else 0)
+        pen, stk, n = _hex_blows(d, field, (u, units[j]), (h, x, reach), (men[k], per, abreast, k in busy))
         if n > 0:
             key = (i, j, arc(units[j]["facing"], dirn + 3), pen, stk)
             groups[key] = groups.get(key, 0) + n
+
+
+def _hex_blows(d: Data, field: dict | None, pair: tuple, where: tuple, ranks: tuple) -> tuple:
+    """(penalty %, stakes, strikers) for one front hex of unit u at its enemy across the side
+    from h to x: across a work that blocks hand to hand, men with ladders fight from them (at
+    escalade.penalty), and the defenders' front rank strikes back at the men on the ladders."""
+    (u, e), (h, x, reach), (men, per, abreast, busy) = pair, where, ranks
+    E = d.units["escalade"]
+    blocked, pen, stk = _across(d, field, u, h, x, reach)
+    climbing = blocked and reach < 2 and has_ladders(u)
+    defends = blocked and reach < 2 and not climbing and has_ladders(e)
+    n = _hex_strikers(men, abreast if defends else per, abreast, reach if blocked and not defends else 0, busy, E["share"] if climbing else 0)
+    return pen + (E["penalty"] if climbing else 0), stk, n
 
 
 def _hex_strikers(men: int, per: int, abreast: int, blocked_reach: int, busy: bool, climb: float = 0) -> int:
