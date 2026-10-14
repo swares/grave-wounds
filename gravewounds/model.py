@@ -882,13 +882,19 @@ def _commander_errors(d: Data) -> list[str]:
     O = K.get("objective") or {}
     errors += [f"units.yaml: commander.objective.{k} must be a whole number of 0 or more" for k in ("radius", "hold", "guard", "bonus")
                if not (isinstance(O.get(k), int) and O[k] >= 0)]
-    R = d.units.get("rout") or {}
+    errors += _rout_errors(d)
+    errors += [f"units.yaml: commander.storm names {w}, not a weapon that shoots" for w in K.get("storm", []) if "range" not in d.weapons.get(w, {})]
+    return errors + [f"units.yaml: commander.ground_with names unknown weapon {w}" for w in K.get("ground_with", []) if w not in d.weapons]
+
+
+def _rout_errors(d: Data) -> list[str]:
+    """units.yaml rout: how far a broken unit runs through its friends, and how much it jostles them."""
+    R, errors = d.units.get("rout") or {}, []
     if not (isinstance(R.get("through", 1), int) and R.get("through", 1) >= 1):
         errors.append("units.yaml: rout.through must be a whole number of 1 or more")
     if not (isinstance(R.get("jostle", 0), (int, float)) and 0 <= R.get("jostle", 0) <= 1):
         errors.append("units.yaml: rout.jostle must be a share from 0 to 1")
-    errors += [f"units.yaml: commander.storm names {w}, not a weapon that shoots" for w in K.get("storm", []) if "range" not in d.weapons.get(w, {})]
-    return errors + [f"units.yaml: commander.ground_with names unknown weapon {w}" for w in K.get("ground_with", []) if w not in d.weapons]
+    return errors
 
 
 def _field_care_errors(d: Data, heroes: dict) -> list[str]:

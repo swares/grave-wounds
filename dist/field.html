@@ -2793,7 +2793,10 @@ function ranThrough(units, i, after){             // indices of the friendly uni
 }
 function runAway(units, i, size, field = null){   // units after broken unit i runs, the friends it ran through jostled (as units.run_away)
   const after = flee(units, i, size, field), hit = new Set(ranThrough(units, i, after));
-  return units.map((x, k) => (k === i ? after : hit.has(k) ? { ...x, jostled: true } : x));
+  return units.map((x, k) => {
+    if (k === i) return after;
+    return hit.has(k) ? { ...x, jostled: true } : x;
+  });
 }
 
 // ---------- the enemy commander (as gravewounds.commander) ----------
