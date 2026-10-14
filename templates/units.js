@@ -689,7 +689,7 @@ function nearestAhead(u, front, fv, hexes, field, clear = null){  // [distance, 
 function volleys(units, field = null){            // [{att, dfd, men, dist, cover, penalty, misfire, reach, from, to, over}]; riders shooting from vehicles too (riders: true)
   const occ = occupancy(units), out = [];
   units.forEach((u, i) => {
-    if (out_(u) || u.digging || (inContact(units, occ, i) && !inBunker(field, u))) return;   // a bunker's men shoot out even in contact
+    if (out_(u) || busyDigging(u) || (inContact(units, occ, i) && !inBunker(field, u))) return;   // a bunker's men shoot out even in contact
     if ("range" in FD.weapons[u.weapon]) out.push(...volleyOf(units, occ, field, i));
     out.push(...riderVolley(units, occ, field, i));
   });
@@ -746,6 +746,7 @@ const isMg = w => (UD.machine_guns?.weapons || []).includes(w);
 const mgGuns = u => Math.ceil(Math.max(0, u.men) / UD.machine_guns.crew);   // one a crew, while a man of it is up
 const dugHere = u => !!u.dug && u.dug[0] === u.pos[0] && u.dug[1] === u.pos[1];   // it stands where it dug in (it leaves its holes when it moves)
 const low = u => !!(u.prone || ((u.emplaced || dugHere(u)) && u.state !== "broken" && u.state !== "fled"));   // gone to ground, or emplaced or dug in where it stands, and not running
+const busyDigging = u => !!(u.digging || u.mining || u.clearing);   // digging in, or sappers laying or lifting mines: it does not shoot (as units.busy_digging)
 const canDig = u => UD.commander.ground_with.includes(u.weapon) && !u.vehicle && !u.mounted && !isBattery(u) && !isAtGun(u) && !u.emplaced;   // a foot unit with a modern weapon (as units.can_dig)
 function digAll(us){                               // end of the exchange: digging units still where they began, standing and out of contact dig on; after dig_in.exchanges they are dug in (as units._dig_all)
   const occ = occupancy(us), out = [];
@@ -758,6 +759,40 @@ function digAll(us){                               // end of the exchange: diggi
     delete u.digging;
     u.dug = [...u.pos];
     out.push({ kind: "dug", unit: i });
+  });
+  return out;
+}
+const canSap = u => !!u.sappers && !u.vehicle && !u.mounted && !isBattery(u) && !isAtGun(u);   // sappers can lay or lift mines (as units.can_sap)
+function aheadRow(field, u){                       // the row of hexes just ahead of its front row, on the map (as units.ahead_row)
+  const rows = footprint(u), [cols, nrows] = fieldSize(field);
+  return (rows[0] || []).map(h => step(h, u.facing)).filter(x => x[0] >= 0 && x[0] < cols && x[1] >= 0 && x[1] < nrows);
+}
+const knownMine = (m, side = null) => !m.hidden || !!m.found || (side !== null && m.side === side);   // a minefield hex a side knows of: marked, found, or laid by its sappers (as units.known_mine)
+function sapperDone(field, u, task, w, occ){       // its mining or clearing finished: [log kind, hexes] laid (where no unit stands) or lifted in the row ahead (as units._sapper_done)
+  const M = field.mines || (field.mines = {}), row = aheadRow(field, u);
+  if (task === "mining"){
+    const hexes = row.filter(x => !(hk(x) in M) && !(hk(x) in occ));
+    for (const x of hexes) M[hk(x)] = { kind: w.kind, hidden: true, side: u.side };
+    return ["laid", hexes];
+  }
+  const hexes = row.filter(x => hk(x) in M && knownMine(M[hk(x)], u.side));
+  for (const x of hexes) delete M[hk(x)];
+  return ["lifted", hexes];
+}
+const sapperTask = u => (u.mining && "mining") || (u.clearing && "clearing") || null;
+function sappersAll(us, field){                    // end of the exchange: sappers still where and as they began, standing and out of contact work on (as units._sappers_all)
+  if (!field){ for (const u of us){ delete u.mining; delete u.clearing } return [] }
+  const occ = occupancy(us), out = [], S = UD.mines.sappers;
+  us.forEach((u, i) => {
+    const task = sapperTask(u);
+    if (!task) return;
+    const w = u[task];
+    if (!canSap(u) || w.at[0] !== u.pos[0] || w.at[1] !== u.pos[1] || w.facing !== u.facing || ROUTED.has(u.state) || u.men <= 0 || inContact(us, occ, i)){ delete u[task]; return }
+    const n = w.n + 1;
+    if (n < S[task === "mining" ? "lay" : "clear"]){ u[task] = { ...w, at: [...w.at], n }; return }
+    delete u[task];
+    const [kind, hexes] = sapperDone(field, u, task, w, occ);
+    out.push({ kind, unit: i, hexes: hexes.length, ...(task === "mining" ? { mine: w.kind } : {}) });
   });
   return out;
 }
@@ -1557,7 +1592,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
   });
   log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table)),
-    ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng), ...digAll(us));
+    ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng), ...digAll(us), ...sappersAll(us, field));
   for (const u of us) delete u.unhooked;             // guns unhooked this move are in action (as units._unhooked_after)
   afterExchange(us, field, log);
   log.push(...landings(us, table, rng, field), ...vehiclesAfter(us, field), ...objectiveHeld(us, field));
@@ -1582,7 +1617,7 @@ function minesAll(us, table, rng, acc, log, field){   // units that went into mi
   if (!mines || !Object.keys(mines).length) return;
   us.forEach((u, i) => {
     if (u.men <= 0 || u.state === "fled") return;
-    const hit = crossed(u).filter(x => hk(x) in mines);
+    const hit = crossed(u).filter(x => hk(x) in mines && mines[hk(x)].side !== u.side);   // its own sappers' mines do not strike it
     if (!hit.length) return;
     for (const x of hit) mines[hk(x)].found = true;
     log.push(...setOff(us, i, hit.map(x => mines[hk(x)].kind), table, rng, acc));
@@ -2073,7 +2108,7 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = aiTarget(us, i, ctx[3], ctx[1]);
   if (u.state !== "steady") return !u.prone && underFire(us, i) ? { act: "ground", target: t } : null;
   if (u.reserve) return t === null ? null : stayOrder(us, i, t, u.facing, "range" in FD.weapons[u.weapon]);
-  if (u.digging || (t === null && obj === null)) return null;
+  if (busyDigging(u) || (t === null && obj === null)) return null;
   if (obj !== null && digs(us, i, ctx)) return { act: "dig", target: t };
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
   const o = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx);
@@ -2126,7 +2161,7 @@ function towardHexes(base, i, tu, [size, field]){   // [[movement, hex]] it can 
   const u = base[i], C = UD.commander, obj = objectiveOf(field), q = u.quality, now = hdist(u.pos, obj);
   const cands = [...reachable(base, i, size, allowance(u), field).values()].filter(([h]) => hdist(h, obj) < now).map(([h, c]) => {
     const cover = tu === null ? 0 : (C.cover[q] ?? 0) * coverAt(field, tu.pos, h);
-    return [C.closing * hdist(h, obj) + c + (C.mines[q] ?? 0) * mined(field, u.pos, h) - cover, c, h[1], h[0]];
+    return [C.closing * hdist(h, obj) + c + (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side) - cover, c, h[1], h[0]];
   });
   cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]);
   return cands.map(([, c, row, col]) => [c, [col, row]]);
@@ -2230,7 +2265,7 @@ function stayOrder(us, i, t, f, shooter){         // on the ground it stays down
 }
 function aiScore(field, u, tu, h, cost, shooter){  // how much the commander likes unit u ending at h (higher is better)
   const C = UD.commander, q = u.quality, dist = hdist(h, tu.pos);
-  const s = (C.cover[q] ?? 0) * coverAt(field, tu.pos, h) - cost - (C.mines[q] ?? 0) * mined(field, u.pos, h);
+  const s = (C.cover[q] ?? 0) * coverAt(field, tu.pos, h) - cost - (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side);
   if (shooter){
     const inr = dist >= 1 && fieldRange(u.weapon, dist) !== null;
     return s + (inr ? C.in_range : -C.closing * dist) - (dist < C.keep_off ? C.too_close : 0);
@@ -2238,10 +2273,10 @@ function aiScore(field, u, tu, h, cost, shooter){  // how much the commander lik
   const flank = arc(tu.facing, bearing(tu.pos, h)) === "front" ? 0 : (C.flank[q] ?? 0);
   return s - C.closing * dist + flank;
 }
-function mined(field, a, h){                      // hexes of minefields it knows of (marked, or found) on the straight way from a to h
+function mined(field, a, h, side = null){         // hexes of minefields its side knows of (marked, found, or laid by its sappers) on the straight way from a to h
   const mines = field?.mines || {};
   if (!Object.keys(mines).length || (a[0] === h[0] && a[1] === h[1])) return 0;
-  return ray([...a], [...h], hdist(a, h)).slice(1).filter(x => { const m = mines[hk(x)]; return m && (!m.hidden || m.found) }).length;
+  return ray([...a], [...h], hdist(a, h)).slice(1).filter(x => { const m = mines[hk(x)]; return m && knownMine(m, side) }).length;
 }
 function reachable(units, i, size, limit, field = null){   // Map hk -> [hex, least movement] for every hex the middle hex can reach within limit
   const occ = occupancy(units.filter((_, k) => k !== i)), u = units[i];

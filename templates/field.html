@@ -250,6 +250,8 @@ legend{padding:0}
         <button class="small" id="btn-emplace" hidden title="Guns dug in before the battle: shots at them lose as much as men gone to ground, and they cannot move all battle (they may turn)">Emplace</button>
         <button class="small" id="btn-fixed" hidden title="Lay the machine guns on a fixed line (by day or at dusk): in the dark they fire blind down it at any enemy on it">Lay a fixed line</button>
         <button class="small" id="btn-reserve" hidden title="Held in the enemy commander's reserve: it holds until the commander commits it (when a unit breaks or the enemy comes close). Marking any unit takes the choice of reserves from the commander.">Hold in reserve</button>
+        <button class="small" id="btn-sappers" hidden title="Engineers or pioneers: during the battle they can lay a hidden minefield in the row of hexes ahead of their front, or lift a lane through a known one">Sappers</button>
+        <label class="sr" for="sel-sap">Sapper work</label><select class="small" id="sel-sap" hidden style="width:auto" title="On their own move, before moving and out of contact: lay mines in the row ahead of their front, or lift the known minefield there. They neither move nor fire while they work."></select>
         <button class="small" id="btn-fac" hidden title="A forward air controller talks aircraft onto a target he can see: they scatter less, and may attack close to their own men">Air controller</button>
         <label class="sr" for="sel-medics">Medics</label><select class="small" id="sel-medics" hidden style="width:auto" title="Medics with the unit (followers of a healing career, chosen before the battle): they give its heroes first aid at their quality's chance"></select>
         <label class="sr" for="sel-nv">Night vision</label><select class="small" id="sel-nv" hidden style="width:auto" title="The night-vision device the unit carries (chosen before the battle): by its armour kit, none, or a Starlight scope, goggles or a thermal sight"></select>
@@ -778,8 +780,8 @@ function fixedSvg(u){ const f = footprint(u)[0], [x1, y1] = xy(f[Math.floor(f.le
 function batterySvg(b){ const [x, y] = xy(b.place), cls = b.overrun ? "bat gone" : "bat"; return `<rect class="${cls}" x="${f1(x - 4)}" y="${f1(y - 3)}" width="8" height="6"><title>${esc(b.name)} (${esc(b.side)})</title></rect>` }
 const poss = n => (n.endsWith("s") ? n + "'" : n + "'s");   // "Yorkists'", "England's"
 const MINE_TAG = { ap: "a.p.", at: "a.t.", mixed: "mix" };
-function minesSvg(){                              // marked minefields, hidden ones once found (and, setting up, faintly for the GM)
-  return Object.entries(S.field.mines || {}).filter(([, m]) => !m.hidden || m.found || S.phase === "setup").map(([k, m]) => {
+function minesSvg(){                              // marked minefields, hidden ones once found (and faintly for the GM: setting up, or laid by sappers)
+  return Object.entries(S.field.mines || {}).filter(([, m]) => !m.hidden || m.found || S.phase === "setup" || "side" in m).map(([k, m]) => {
     const h = k.split(",").map(Number), [x, y] = xy(h), hid = m.hidden && !m.found ? " hid" : "";
     return `<polygon class="mine${hid}" points="${pts(xy(h))}"/><text class="mine-t" x="${f1(x)}" y="${f1(y + 3)}">${MINE_TAG[m.kind] || "M"}</text>`;
   }).join("");
@@ -936,6 +938,8 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   duel: l => ({ cls: "hero", text: heroStateText(l) }),
   bailout: l => ({ cls: "morale", text: `${S.units[l.riders]?.name || "The riders"} get out of the wrecked carriers: ${l.men} men on their feet.` }),
   heroaid: (l, nm) => ({ cls: "hero", text: aidText(l, nm) }),
+  laid: (l, nm) => ({ cls: "", text: l.hexes ? `${nm(l.unit)} have laid ${nOf(l.hexes, "hex", "hexes")} of ${FD.units.mines.kinds[l.mine].name.toLowerCase()} ahead of them, hidden.` : `${nm(l.unit)} had nowhere free ahead of them to lay mines.` }),
+  lifted: (l, nm) => ({ cls: "", text: l.hexes ? `${nm(l.unit)} have lifted the mines in ${nOf(l.hexes, "hex", "hexes")} ahead of them: a lane.` : `${nm(l.unit)} found no known minefield ahead of them to lift.` }),
   dug: (l, nm) => ({ cls: "", text: `${nm(l.unit)} have dug in: shots at them lose ${FD.units.to_ground.cover}% while they stay there.` }),
   bearers: (l, nm) => ({ cls: "", text: `${nm(l.unit)}: ${nOf(l.men, "bearer")} come back from the rear.` }),
   party: (l, nm) => ({ cls: "hero", text: partyText(l, nm) }),
@@ -1321,7 +1325,7 @@ function fillTools(){
   $("#sel-cold").innerHTML = `<option value="">Not freezing hard</option>` + Object.entries(WXD.cold?.levels || {}).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-light").innerHTML = Object.entries(WXD.light?.levels || { day: { name: "Daylight" } }).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#legend").innerHTML = Object.entries(FD.units.ground).filter(([k]) => k !== "open").map(([k, v]) => `<span><i class="g-${k}" style="background:var(--g-${k})"></i>${esc(v.name)}</span>`).join("")
-    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span><i class="smoke-key" style="background:none;border:1.5px solid #8a1f1f;border-radius:50%"></i>O: the enemy commander's objective</span><span>\u2193 gone to ground; \u25e0 emplaced or dug in (a dashed parapet across its front)</span><span>AP: aid post; \u21a9 a hero going back; \u25bc a hero lying out</span><span><i class="smoke-key" style="background:#e9d3cc;border:1px dashed #7a2a1a"></i>a.p., a.t., mix: minefield (hidden ones once found)</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
+    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span><i class="smoke-key" style="background:none;border:1.5px solid #8a1f1f;border-radius:50%"></i>O: the enemy commander's objective</span><span>\u2193 gone to ground; \u25e0 emplaced or dug in (a dashed parapet across its front)</span><span>AP: aid post; \u21a9 a hero going back; \u25bc a hero lying out</span><span><i class="smoke-key" style="background:#e9d3cc;border:1px dashed #7a2a1a"></i>a.p., a.t., mix: minefield (hidden ones faint, for the GM)</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
 }
 function clickSide(e, h){                         // the neighbour across the hex side nearest the click
   const svg = $("#map svg"), pt = svg.createSVGPoint();
@@ -1648,7 +1652,7 @@ function renderMap(){
   $("#hex-size").textContent = fmtM(FD.units.hex_m);
 }
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
-const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"]];
+const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"], ["sappers", "sappers"], ["mining", "laying mines"], ["clearing", "lifting mines"]];
 function unitMeta(u){
   if (u.state === "fled") return "fled";
   const down = u.down ? " · " + u.down + " down" : "", flags = META_FLAGS.filter(([k]) => u[k]).map(([, t]) => " · " + t).join("") + (dugHere(u) ? " · dug in" : "");
@@ -1723,6 +1727,7 @@ function groundInfo(u){                          // the selected unit's Ground l
   return (u.prone ? `<dt>Ground</dt><dd>Gone to ground: shots at it −${FD.units.to_ground.cover}%; it cannot move until it gets up</dd>` : "")
     + (dugHere(u) ? `<dt>Ground</dt><dd>Dug in: shots at it −${FD.units.to_ground.cover}% while it stands here; it leaves its holes if it moves</dd>` : "")
     + (u.digging ? `<dt>Ground</dt><dd>Digging in: ${u.digging.n} of ${FD.units.dig_in.exchanges} exchanges; it does not fire, and stops if it moves or comes into contact</dd>` : "")
+    + sapInfo(u)
     + (u.emplaced ? `<dt>Ground</dt><dd>Emplaced: dug in before the battle, shots at it −${FD.units.to_ground.cover}% while it stands; it cannot move, but may turn</dd>` : "");
 }
 function renderSel(){
@@ -1744,6 +1749,7 @@ function renderSel(){
   renderNv(u, setup);
   renderMedics(u, setup);
   renderFac(u, setup);
+  renderSappers(u, setup);
   if (!u){ $("#sel-info").innerHTML = ""; return }
   const f = form(u), w = FD.weapons[u.weapon], VK = vehicleKind(u);
   const how = { smoothbore: "smoothbore guns; ", rifled: "rifled guns, percussion shell; ", howitzer: "howitzers, shell over anything between; " }[gunKind(u)];
@@ -1883,6 +1889,7 @@ function toggleDig(){                             // set-up: dug in at once (or 
   const i = idx(u.id), was = S.start?.[i];
   if (was && (was.pos[0] !== u.pos[0] || was.pos[1] !== u.pos[1])){ S.msg = `${u.name} have moved this phase: undo the move first.`; return render() }
   if (inContact(S.units, occupancy(S.units), i)){ S.msg = `${u.name} are in contact: they cannot dig.`; return render() }
+  delete u.mining; delete u.clearing;
   u.digging = { at: [...u.pos], n: 0 };
   S.msg = `${u.name} dig in: ${nOf(FD.units.dig_in.exchanges, "exchange")} without moving, firing or coming into contact, and they are dug in here.`;
   render();
@@ -1912,6 +1919,59 @@ function nvName(u){                               // "Night-vision goggles (1990
   return dev ? NVD().devices[dev].name : "";
 }
 const hasAir = () => supports().some(b => FD.units.indirect.kinds[b.kind]?.air);
+const SAP_KINDS = ["ap", "at", "mixed"];
+function sapInfo(u){                              // the selected unit's sapper lines: laying or lifting mines
+  const S_ = FD.units.mines.sappers;
+  if (u.mining) return `<dt>Sappers</dt><dd>Laying ${FD.units.mines.kinds[u.mining.kind].name.toLowerCase()}: ${u.mining.n} of ${S_.lay} exchanges; they do not fire, and stop if they move, turn or come into contact</dd>`;
+  if (u.clearing) return `<dt>Sappers</dt><dd>Lifting mines: ${u.clearing.n} of ${S_.clear} exchanges; they do not fire, and stop if they move, turn or come into contact</dd>`;
+  return u.sappers ? `<dt>Sappers</dt><dd>Can lay mines in the row ahead (${nOf(S_.lay, "exchange")}) or lift a known minefield there (${nOf(S_.clear, "exchange")})</dd>` : "";
+}
+const sapperLike = u => !u.vehicle && !u.mounted && !isBattery(u) && !isAtGun(u);
+function renderSappers(u, setup){                 // Sappers toggle (set-up, on a foot unit, on a table with mine wounds), then the work select in play
+  const b = $("#btn-sappers"), sel = $("#sel-sap");
+  b.hidden = !u || !setup || !sapperLike(u) || !minesHere();
+  if (!b.hidden){ b.textContent = u.sappers ? "Not sappers" : "Sappers"; b.setAttribute("aria-pressed", String(!!u.sappers)) }
+  sel.hidden = !u || setup || S.phase === "over" || !canSap(u);
+  if (sel.hidden) return;
+  sel.disabled = out_(u) || u.side !== moving();
+  const S_ = FD.units.mines.sappers, busy = u.mining || u.clearing;
+  const head = busy ? `<option value="">${u.mining ? "Laying mines" : "Lifting mines"} (${busy.n} of ${u.mining ? S_.lay : S_.clear})</option><option value="stop">Stop work</option>`
+    : `<option value="">Sapper work…</option>${SAP_KINDS.map(k => `<option value="lay:${k}">Lay ${FD.units.mines.kinds[k].name.toLowerCase()}</option>`).join("")}<option value="clear">Lift the mines ahead</option>`;
+  sel.innerHTML = head;
+  sel.value = "";
+}
+function sapWhy(u, i, task){                       // why the sappers cannot start this work now, or ""
+  const was = S.start?.[i];
+  if (was && (was.pos[0] !== u.pos[0] || was.pos[1] !== u.pos[1] || was.facing !== u.facing)) return `${u.name} have moved this phase: undo the move first.`;
+  if (inContact(S.units, occupancy(S.units), i)) return `${u.name} are in contact: they cannot work.`;
+  const row = aheadRow(S.field, u), M = S.field.mines || {};
+  if (!row.length) return `${u.name} face the edge of the map.`;
+  if (task === "clearing" && !row.some(x => M[hk(x)] && knownMine(M[hk(x)], u.side))) return `${u.name} know of no minefield in the row ahead of them.`;
+  return "";
+}
+function setSap(v){                               // start or stop laying or lifting mines (in play, on its own move)
+  const u = selUnit(); if (!u || !canSap(u) || out_(u) || S.phase === "setup" || u.side !== moving() || !v) return render();
+  if (v === "stop"){ delete u.mining; delete u.clearing; S.msg = `${u.name} stop work.`; return render() }
+  const task = v === "clear" ? "clearing" : "mining", why = sapWhy(u, idx(u.id), task);
+  if (why){ S.msg = why; return render() }
+  delete u.digging; delete u.mining; delete u.clearing;
+  const S_ = FD.units.mines.sappers;
+  if (task === "mining"){
+    const kind = v.split(":")[1];
+    u.mining = { at: [...u.pos], facing: u.facing, n: 0, kind };
+    S.msg = `${u.name} lay ${FD.units.mines.kinds[kind].name.toLowerCase()}: ${nOf(S_.lay, "exchange")} without moving, turning, firing or coming into contact, and the row ahead of them is mined (hidden).`;
+  } else {
+    u.clearing = { at: [...u.pos], facing: u.facing, n: 0 };
+    S.msg = `${u.name} lift the mines ahead: ${nOf(S_.clear, "exchange")} without moving, turning, firing or coming into contact, and the known minefield in the row ahead is cleared.`;
+  }
+  render();
+}
+function toggleSappers(){                          // set-up only: mark (or unmark) a foot unit as sappers
+  const u = selUnit(); if (!u || S.phase !== "setup" || !sapperLike(u)) return;
+  if (u.sappers) delete u.sappers; else u.sappers = true;
+  S.msg = u.sappers ? `${u.name} are sappers: during the battle they can lay mines ahead of them or lift a lane through a known minefield.` : `${u.name} are no longer sappers.`;
+  render();
+}
 function renderFac(u, setup){                     // forward air controller: on a unit on foot, chosen before the battle, while aircraft are on call
   const b = $("#btn-fac");
   b.hidden = !u || !!u.vehicle || !hasAir();
@@ -2332,6 +2392,8 @@ function init(){
   $("#btn-sup-unleg").onclick = () => { LEGS = Math.max(1, LEGS - 1); renderLegs() };
   $("#sel-medics").onchange = e => setMedics(e.target.value);
   $("#btn-fac").onclick = toggleFac;
+  $("#btn-sappers").onclick = toggleSappers;
+  $("#sel-sap").onchange = e => setSap(e.target.value);
   $("#sel-ai").onchange = e => setAi(e.target.value);
   $("#btn-ai-undo").onclick = aiUndo;
   $("#btn-ai-go").onclick = aiAgain;

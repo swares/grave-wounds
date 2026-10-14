@@ -84,8 +84,10 @@ When an item is done, delete it here and note it in the pull request that closes
   and guns put out of action, riders, rockets and guided missiles, anti-tank guns (1939-53)
   and minefields (1939 on), gun shields (anti-tank and anti-aircraft guns, small arms from
   the front), guns emplaced before the battle, anti-tank guns' own rounds and gun tractors
-  towing them, lorries and tank riders are in. Still left out: shields on machine guns and
-  field guns, the commander towing its guns, mines laid or lifted during the battle (no sappers clearing a lane). A minefield is set off along a straight line from
+  towing them, lorries, tank riders and sappers laying and lifting mines in battle are in. Still left out: shields on machine guns and
+  field guns, the commander towing its guns or setting sappers to work. Sappers lay or lift
+  only the row just ahead of them, and a unit that turns in place onto mines sets them off
+  as if it had moved into them (except its own side's). A minefield is set off along a straight line from
   where a unit's move began, not along the path it took. No battlefield has minefields yet:
   to be laid only where the accounts name them. Crews who bail out simply leave the fight.
 - **Fire at hidden men, first cut.** Men gone to ground, in bunkers or in buildings are now hit

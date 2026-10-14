@@ -255,7 +255,7 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return {"act": "ground", "target": t} if not u.get("prone") and under_fire(d, us, i) else None
     if u.get("reserve"):
         return None if t is None else _stay(d, us, i, t, u["facing"], "range" in d.weapons[u["weapon"]])
-    if u.get("digging") or (t is None and obj is None):
+    if U.busy_digging(u) or (t is None and obj is None):
         return None
     if obj is not None and _digs(d, us, i, ctx):
         return {"act": "dig", "target": t}
@@ -372,7 +372,7 @@ def _toward_hexes(d: Data, base: list, i: int, tu: dict | None, where: tuple) ->
         if U.hdist(list(h), obj) >= now:
             continue
         cover = 0 if tu is None else C["cover"].get(q, 0) * U.cover_at(d, field, tu["pos"], list(h))
-        out.append((C["closing"] * U.hdist(list(h), obj) + c + C["mines"].get(q, 0) * _mined(field, u["pos"], h) - cover, c, h[1], h[0]))
+        out.append((C["closing"] * U.hdist(list(h), obj) + c + C["mines"].get(q, 0) * _mined(field, u["pos"], h, u["side"]) - cover, c, h[1], h[0]))
     return [(c, [col, row]) for _, c, row, col in sorted(out)]
 
 
@@ -549,7 +549,7 @@ def score(d: Data, field: dict | None, u: dict, tu: dict, h: tuple, cost: int, s
     """How much the commander likes unit u ending at h (higher is better)."""
     C, q = d.units["commander"], u["quality"]
     dist = U.hdist(list(h), tu["pos"])
-    s = C["cover"].get(q, 0) * U.cover_at(d, field, tu["pos"], list(h)) - cost - C["mines"].get(q, 0) * _mined(field, u["pos"], h)
+    s = C["cover"].get(q, 0) * U.cover_at(d, field, tu["pos"], list(h)) - cost - C["mines"].get(q, 0) * _mined(field, u["pos"], h, u["side"])
     if shooter:
         inr = dist >= 1 and U.field_range(d, u["weapon"], dist) is not None
         return s + (C["in_range"] if inr else -C["closing"] * dist) - (C["too_close"] if dist < C["keep_off"] else 0)
@@ -557,12 +557,13 @@ def score(d: Data, field: dict | None, u: dict, tu: dict, h: tuple, cost: int, s
     return s - C["closing"] * dist + flank
 
 
-def _mined(field: dict | None, a, h) -> int:
-    """Hexes of minefields it knows of (marked, or found) on the straight way from a to h, h included."""
+def _mined(field: dict | None, a, h, side: int | None = None) -> int:
+    """Hexes of minefields its side knows of (marked, found, or laid by its sappers) on the straight
+    way from a to h, h included."""
     mines = (field or {}).get("mines") or {}
     if not mines or list(a) == list(h):
         return 0
-    known = {k for k, m in mines.items() if not m.get("hidden") or m.get("found")}
+    known = {k for k, m in mines.items() if U.known_mine(m, side)}
     return sum(1 for x in U.ray(list(a), list(h), U.hdist(a, h))[1:] if C.hkey(x) in known)
 
 

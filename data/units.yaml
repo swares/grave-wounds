@@ -463,6 +463,12 @@ mines:
     ap:    {name: "Anti-personnel mines", men: 10, vehicles: 0}
     at:    {name: "Anti-tank mines", men: 0, vehicles: 30}
     mixed: {name: "Mixed minefield", men: 8, vehicles: 25}
+  # Sappers (a foot unit marked sappers) can lay or lift mines during the battle, on their side's
+  # move, standing and out of contact: they neither move nor shoot while they work. After `lay`
+  # exchanges the row of hexes just ahead of their front (as wide as it) is a hidden minefield of
+  # the kind chosen; after `clear` exchanges the known minefield hexes in that row are lifted
+  # (a lane). Moving, turning, breaking or coming into contact stops the work. Design estimates.
+  sappers: {lay: 3, clear: 2}
 
 # ---------- landing by air ----------
 # A field can mark landing zones (field.lz, hexes). A unit can come on by air at one: it waits
