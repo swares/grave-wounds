@@ -243,6 +243,9 @@ general. All its numbers are in units.yaml `commander`.
   - For cover from the target's shots there (woods 20%, buildings 30%), a point per % for
     regulars and 2 for veterans. Green men ignore cover.
   - One point off for each hex of movement.
+  - Of hexes that score the same and cost the same, it takes the one nearest the straight
+    line to the target (or the objective), so a long advance goes straight rather than
+    drifting to one side.
 - **Shooters.** A unit with missiles stops where the target is in range and shoots rather
   than closing. It keeps off the enemy (2 hexes or more) if it can, and never charges.
   With a modern weapon (breech-loaders on), regulars and veterans under fire go to ground

@@ -300,9 +300,9 @@ def _gun_move(d: Data, us: list, i: int, aim: tuple, where: tuple) -> dict | Non
     minefields on the way. -> a move (on a target) or advance (on the objective), or None."""
     (t, goal), (size, field), u = aim, where, us[i]
     foes = {k for k, j in U.occupancy(d, us).items() if us[j]["side"] != u["side"]}
-    cands = [(-_gun_score(d, field, u, (h, c), aim), c, h[1], h[0]) for h, c in reachable(d, us, i, size, U.allowance(d, u), field).items()]
+    cands = [(-_gun_score(d, field, u, (h, c), aim), c, aside(h, goal), h[1], h[0]) for h, c in reachable(d, us, i, size, U.allowance(d, u), field).items()]
     tries = d.units["commander"]["tries"]
-    for _, c, row, col in sorted(cands):
+    for _, c, _, row, col in sorted(cands):
         h = [col, row]
         if h == list(u["pos"]):
             return None
@@ -736,8 +736,8 @@ def _toward_hexes(d: Data, base: list, i: int, tu: dict | None, where: tuple) ->
         if U.hdist(list(h), obj) >= now:
             continue
         cover = 0 if tu is None else C["cover"].get(q, 0) * U.cover_at(d, field, tu["pos"], list(h))
-        out.append((C["closing"] * U.hdist(list(h), obj) + c + C["mines"].get(q, 0) * _mined(field, u["pos"], h, u["side"]) - cover, c, h[1], h[0]))
-    return [(c, [col, row]) for _, c, row, col in sorted(out)]
+        out.append((C["closing"] * U.hdist(list(h), obj) + c + C["mines"].get(q, 0) * _mined(field, u["pos"], h, u["side"]) - cover, c, aside(h, obj), h[1], h[0]))
+    return [(c, [col, row]) for _, c, _, row, col in sorted(out)]
 
 
 def _facing(h: list, tu: dict | None, obj: list, facing: int) -> int:
@@ -841,7 +841,7 @@ def _first_move(d: Data, base: list, i: int, tu: dict, where: tuple, how: tuple)
     allow, tries, stuck = U.allowance(d, u), d.units["commander"]["tries"], bool(u.get("lost") or u.get("immobile") or u.get("emplaced"))
     reach = reachable(d, base, i, size, allow * (d.units["charge_move"] if charge else 1), field)
     foes = {k for k, j in U.occupancy(d, base).items() if base[j]["side"] != u["side"]}
-    for _, c, row, col in sorted((-score(d, field, u, tu, h, c, shooter), c, h[1], h[0]) for h, c in reach.items()):
+    for _, c, _, row, col in sorted((-score(d, field, u, tu, h, c, shooter), c, aside(h, tu["pos"]), h[1], h[0]) for h, c in reach.items()):
         h = [col, row]
         f = U.bearing(h, tu["pos"])
         touch = _touches(d, {**u, "pos": h, "facing": f}, foes)
@@ -907,6 +907,14 @@ def _stay(d: Data, us: list, i: int, t: int, f: int, shooter: bool) -> dict | No
         return {"act": "turn", "target": t, "facing": f}
     dig = shooter and u["weapon"] in C["ground_with"] and C["cover"].get(u["quality"], 0) > 0 and under_fire(d, us, i)
     return {"act": "ground", "target": t} if dig else None
+
+
+def aside(h, to) -> int:
+    """How far hex h lies from hex `to` in a straight line (squared, in units where a hex's
+    width is 2 and its rows 3 apart squared): among moves the commander likes equally, the
+    one that keeps nearer the straight line wins, so a long advance does not drift sideways."""
+    x, tx = 2 * h[0] + (h[1] & 1), 2 * to[0] + (to[1] & 1)
+    return (x - tx) ** 2 + 3 * (h[1] - to[1]) ** 2
 
 
 def score(d: Data, field: dict | None, u: dict, tu: dict, h: tuple, cost: int, shooter: bool) -> int:

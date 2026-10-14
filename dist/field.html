@@ -2929,10 +2929,10 @@ function gunMove(us, i, [t, goal], [size, field]){   // the best hex within its 
     let s = -c - (K.mines[u.quality] ?? 0) * mined(field, u.pos, h, u.side);
     if (t === null) s -= K.closing * dist;
     else s += (dist >= K.keep_off && dist <= reach ? K.in_range : -K.closing * dist) - (dist < K.keep_off ? K.too_close : 0);
-    return [-s, c, h[1], h[0]];
-  }).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]);
+    return [-s, c, aside(h, goal), h[1], h[0]];
+  }).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4]);
   let tries = K.tries;
-  for (const [, c, row, col] of cands){
+  for (const [, c, , row, col] of cands){
     const h = [col, row];
     if (h[0] === u.pos[0] && h[1] === u.pos[1]) return null;
     const f = bearing(h, goal);
@@ -3167,10 +3167,10 @@ function towardHexes(base, i, tu, [size, field]){   // [[movement, hex]] it can 
   const u = base[i], C = UD.commander, obj = objectiveOf(field), q = u.quality, now = hdist(u.pos, obj);
   const cands = [...reachable(base, i, size, allowance(u), field).values()].filter(([h]) => hdist(h, obj) < now).map(([h, c]) => {
     const cover = tu === null ? 0 : (C.cover[q] ?? 0) * coverAt(field, tu.pos, h);
-    return [C.closing * hdist(h, obj) + c + (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side) - cover, c, h[1], h[0]];
+    return [C.closing * hdist(h, obj) + c + (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side) - cover, c, aside(h, obj), h[1], h[0]];
   });
-  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]);
-  return cands.map(([, c, row, col]) => [c, [col, row]]);
+  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4]);
+  return cands.map(([, c, , row, col]) => [c, [col, row]]);
 }
 function facingFrom(h, tu, obj, facing){           // toward the target if any, else the objective (as it was, at the objective)
   if (tu !== null && (tu.pos[0] !== h[0] || tu.pos[1] !== h[1])) return bearing(h, tu.pos);
@@ -3236,9 +3236,9 @@ function firstMove(base, i, tu, [size, field], [charge, hold, shooter]){   // [h
   const allow = allowance(u), occ = occupancy(base), stuck = !!(u.lost || u.immobile || u.emplaced);
   let tries = UD.commander.tries;
   const foes = new Set(Object.keys(occ).filter(k => base[occ[k]].side !== u.side));
-  const cands = [...reachable(base, i, size, allow * (charge ? UD.charge_move : 1), field).values()].map(([h, c]) => [-aiScore(field, u, tu, h, c, shooter), c, h[1], h[0]]);
-  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]);
-  for (const [, c, row, col] of cands){
+  const cands = [...reachable(base, i, size, allow * (charge ? UD.charge_move : 1), field).values()].map(([h, c]) => [-aiScore(field, u, tu, h, c, shooter), c, aside(h, tu.pos), h[1], h[0]]);
+  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4]);
+  for (const [, c, , row, col] of cands){
     const h = [col, row], f = bearing(h, tu.pos), touch = touches({ ...u, pos: h, facing: f }, foes);
     if ((touch ? !charge : hold || c > allow) || (stuck && (h[0] !== u.pos[0] || h[1] !== u.pos[1]))) continue;
     if (tries === 0) return null;
@@ -3269,6 +3269,7 @@ function stayOrder(us, i, t, f, shooter){         // on the ground it stays down
   const dig = shooter && C.ground_with.includes(u.weapon) && (C.cover[u.quality] ?? 0) > 0 && underFire(us, i);
   return dig ? { act: "ground", target: t } : null;
 }
+const aside = (h, to) => { const x = 2 * h[0] + (h[1] & 1), tx = 2 * to[0] + (to[1] & 1); return (x - tx) ** 2 + 3 * (h[1] - to[1]) ** 2 };   // squared straight-line distance: ties go to the move nearer the straight line (as commander.aside)
 function aiScore(field, u, tu, h, cost, shooter){  // how much the commander likes unit u ending at h (higher is better)
   const C = UD.commander, q = u.quality, dist = hdist(h, tu.pos);
   const s = (C.cover[q] ?? 0) * coverAt(field, tu.pos, h) - cost - (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side);
