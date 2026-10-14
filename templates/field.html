@@ -1934,11 +1934,15 @@ function renderSappers(u, setup){                 // Sappers toggle (set-up, on 
   sel.hidden = !u || setup || S.phase === "over" || !canSap(u);
   if (sel.hidden) return;
   sel.disabled = out_(u) || u.side !== moving();
-  const S_ = FD.units.mines.sappers, busy = u.mining || u.clearing;
-  const head = busy ? `<option value="">${u.mining ? "Laying mines" : "Lifting mines"} (${busy.n} of ${u.mining ? S_.lay : S_.clear})</option><option value="stop">Stop work</option>`
-    : `<option value="">Sapper work…</option>${SAP_KINDS.map(k => `<option value="lay:${k}">Lay ${FD.units.mines.kinds[k].name.toLowerCase()}</option>`).join("")}<option value="clear">Lift the mines ahead</option>`;
-  sel.innerHTML = head;
+  sel.innerHTML = sapOptions(u);
   sel.value = "";
+}
+const layOption = k => '<option value="lay:' + k + '">Lay ' + FD.units.mines.kinds[k].name.toLowerCase() + "</option>";
+function sapOptions(u){                           // the Sapper work choices: the work under way and Stop, or what it can start
+  const S_ = FD.units.mines.sappers;
+  if (u.mining) return `<option value="">Laying mines (${u.mining.n} of ${S_.lay})</option><option value="stop">Stop work</option>`;
+  if (u.clearing) return `<option value="">Lifting mines (${u.clearing.n} of ${S_.clear})</option><option value="stop">Stop work</option>`;
+  return '<option value="">Sapper work…</option>' + SAP_KINDS.map(layOption).join("") + '<option value="clear">Lift the mines ahead</option>';
 }
 function sapWhy(u, i, task){                       // why the sappers cannot start this work now, or ""
   const was = S.start?.[i];

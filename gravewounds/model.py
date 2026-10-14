@@ -848,6 +848,13 @@ def _units_extra_errors(d: Data) -> list[str]:
     return errors + _pikes_errors(d) + _indirect_errors(d) + _assault_errors(d) + _guns_errors(d)
 
 
+def _sapper_errors(d: Data) -> list:
+    """mines.sappers: exchanges to lay and to clear, whole numbers of 1 or more."""
+    SP = (d.units.get("mines") or {}).get("sappers") or {}
+    return [f"units.yaml: mines.sappers.{k} must be a whole number of 1 or more" for k in ("lay", "clear")
+            if not (isinstance(SP.get(k), int) and SP[k] >= 1)]
+
+
 def _commander_errors(d: Data) -> list[str]:
     """units.yaml commander: by-quality tables, charge odds by stance, whole-number weights and
     real weapons."""
@@ -865,9 +872,7 @@ def _commander_errors(d: Data) -> list[str]:
         errors.append("units.yaml: commander.tries must be a positive whole number")
     if not (isinstance((d.units.get("dig_in") or {}).get("exchanges"), int) and d.units["dig_in"]["exchanges"] >= 1):
         errors.append("units.yaml: dig_in.exchanges must be a whole number of 1 or more")
-    SP = (d.units.get("mines") or {}).get("sappers") or {}
-    errors += [f"units.yaml: mines.sappers.{k} must be a whole number of 1 or more" for k in ("lay", "clear")
-               if not (isinstance(SP.get(k), int) and SP[k] >= 1)]
+    errors += _sapper_errors(d)
     O = K.get("objective") or {}
     errors += [f"units.yaml: commander.objective.{k} must be a whole number of 0 or more" for k in ("radius", "hold", "guard", "bonus")
                if not (isinstance(O.get(k), int) and O[k] >= 0)]

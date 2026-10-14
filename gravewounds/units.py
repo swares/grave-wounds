@@ -1456,6 +1456,20 @@ def _sapper_done(d: Data, field: dict, u: dict, task: str, w: dict, occ: dict) -
     return "lifted", hexes
 
 
+def _sapper_task(u: dict) -> str | None:
+    """The sappers' work under way: mining, clearing or None."""
+    if u.get("mining"):
+        return "mining"
+    return "clearing" if u.get("clearing") else None
+
+
+def _sapper_stops(d: Data, us: list, occ: dict, i: int, w: dict) -> bool:
+    """Unit i's work w stops: not sappers, moved or turned, running, gone, or in contact."""
+    u = us[i]
+    return (not can_sap(d, u) or list(w["at"]) != list(u["pos"]) or w["facing"] != u["facing"]
+            or u["state"] in ("broken", "fled") or u["men"] <= 0 or in_contact(d, us, occ, i))
+
+
 def _sappers_all(d: Data, us: list, field: dict | None) -> list:
     """End of the exchange: sappers mining ({at, facing, n, kind}) or clearing ({at, facing, n})
     that are still where and as they began, standing and out of contact, work on (sappers only); after
@@ -1468,12 +1482,11 @@ def _sappers_all(d: Data, us: list, field: dict | None) -> list:
         return []
     occ, out, S = occupancy(d, us), [], d.units["mines"]["sappers"]
     for i, u in enumerate(us):
-        task = "mining" if u.get("mining") else "clearing" if u.get("clearing") else None
+        task = _sapper_task(u)
         if not task:
             continue
         w = u[task]
-        if (not can_sap(d, u) or list(w["at"]) != list(u["pos"]) or w["facing"] != u["facing"] or u["state"] in ("broken", "fled")
-                or u["men"] <= 0 or in_contact(d, us, occ, i)):
+        if _sapper_stops(d, us, occ, i, w):
             del u[task]
             continue
         n = w["n"] + 1
