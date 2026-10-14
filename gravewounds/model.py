@@ -1048,9 +1048,9 @@ def _at_mine_errors(d: Data) -> list[str]:
 
 
 def _shield_errors(d: Data) -> list[str]:
-    """units.yaml gun_shields: known weapons and a cover % (0-100)."""
+    """units.yaml gun_shields: known weapons (and optional ones) and a cover % (0-100)."""
     S = d.units.get("gun_shields")
-    if S and not (all(w in d.weapons for w in S.get("weapons", [])) and isinstance(S.get("cover"), int) and 0 <= S["cover"] <= 100):
+    if S and not (all(w in d.weapons for w in S.get("weapons", []) + S.get("optional", [])) and isinstance(S.get("cover"), int) and 0 <= S["cover"] <= 100):
         return ["units.yaml: gun_shields needs known weapons and a cover % (0-100)"]
     return []
 

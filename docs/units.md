@@ -1091,7 +1091,11 @@ the Japanese 47 mm (`anti_tank_guns` in `data/units.yaml`).
   hand they fight with bayonets.
 - **Gun shields.** Anti-tank and anti-aircraft guns have shields: small arms (rifles, machine
   guns, pistols) fired at them from their front lose 30%. Shields do nothing against shells,
-  bombs or fire from the flank or rear (`gun_shields` in `data/units.yaml`).
+  bombs or fire from the flank or rear (`gun_shields` in `data/units.yaml`). Some machine
+  guns had shields (a Maxim on a wheeled mount, say) and most did not: in set-up,
+  **Shielded** marks a machine-gun unit's guns as shielded, with the same cover; the unit
+  shows "shielded" and its Guns line says so. Batteries on the map are smoothbore and Civil
+  War guns, which had no shields.
 - **Towing.** A vehicle unit can be **Gun tractors and trucks** (2 crew a vehicle, 12 hexes a
   move, soft-skinned: see Armour), each towing one gun. With
   the guns beside their side's tractors, out of contact, **Hook up to** puts them on tow: they
