@@ -2123,6 +2123,7 @@ function gunApply(us, i, o, [size, field, exchange]){   // limber or unlimber (c
 function callFireAi(us, side, field, known, stance = "attack"){   // attacking, one battery lays smoke where its units are under fire; its other free batteries are called on the enemy it sees that scores best as a target (as commander._call_fire)
   const free = (field?.support || []).map((b, k) => k).filter(k => freeBattery(field.support[k], side));
   const out = stance === "attack" ? callSmoke(us, side, field, known, free) : [];
+  out.push(...aiCounter(field, side, free));
   free.forEach(k => {
     const b = field.support[k], K = UD.indirect.kinds[b.kind];
     if (b.mission) return;
@@ -2132,6 +2133,22 @@ function callFireAi(us, side, field, known, stance = "attack"){   // attacking, 
     out.push({ unit: null, act: "fire", battery: k, target: aim[0], hex: aim[1] });
   });
   return out;
+}
+function aiCounter(field, side, free){            // one free battery with the best counter % fires on the reachable located enemy battery with most tubes served (as commander._call_counter)
+  const sup = field?.support || [];
+  const marks = sup.map((x, j) => j).filter(j => sup[j].side !== side && sup[j].located && (sup[j].tubes || 0) > 0);
+  let best = null;
+  for (const k of free){
+    const b = sup[k], K = UD.indirect.kinds[b.kind];
+    if (b.mission || !K.counter) continue;
+    const aims = marks.filter(j => sup[j].place === undefined || sup[j].place === null || inReach(b, sup[j].place));
+    if (!aims.length || (best && K.counter <= best[0])) continue;
+    best = [K.counter, k, aims.reduce((a, j) => (servedTubes(sup[j]) > servedTubes(sup[a]) ? j : a), aims[0])];
+  }
+  if (!best) return [];
+  const [, k, j] = best;
+  sup[k].mission = { battery: j, wait: UD.indirect.kinds[sup[k].kind].delay, repeat: false };
+  return [{ unit: null, act: "counter", battery: k, on: j }];
 }
 function freeBattery(b, side){                     // one of its off-map batteries it can call: not tanks or aircraft, no mission, rounds and tubes, not displacing
   const K = UD.indirect.kinds[b.kind];

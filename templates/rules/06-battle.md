@@ -129,7 +129,9 @@ sometimes hesitate. With no enemy in sight, a unit holds.
   unlimbers once an enemy is in reach; anti-tank guns hook up to an empty tractor beside
   them, are towed, and are unhooked in reach. They stop in reach but no nearer than
   {{c_keep_off}} hexes. Holding, its guns unlimber or unhook where they stand. Attacking, it first has one battery smoke an enemy that is shooting at men who
-  cannot reply (not in the dark, or in a gale).
+  cannot reply (not in the dark, or in a gale). Then one battery fires counter-battery on
+  a located enemy battery it can reach: the one with the best counter % on the one with the
+  most guns still served.
 
 **Undo its orders** puts the move back for the GM to make by hand.
 

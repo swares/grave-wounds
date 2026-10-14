@@ -21,8 +21,8 @@ When an item is done, delete it here and note it in the pull request that closes
   calls its off-map batteries, limbers, tows and moves up its guns, sets its sappers to lay or lift mines, and takes or holds an
   objective hex the GM marks; Undo puts
   its move back. It looks once at the start of each move. Attacking, it smokes enemies
-  shooting at men who cannot reply. Its sappers lay one row and lift only the row ahead of
-  them: no deep belts, and no clearing a whole path ahead of the attack. Still left out: illumination, creeping barrages, counter-battery fire and aircraft; displacing off-map
+  shooting at men who cannot reply, and puts one battery on counter-battery fire. Its sappers lay one row and lift only the row ahead of
+  them: no deep belts, and no clearing a whole path ahead of the attack. Still left out: illumination, creeping barrages and aircraft; displacing off-map
   batteries; empty tractors going to fetch guns, and guns moving back; air controllers, riders, fixed lines and works; any plan beyond one
   objective (phase lines, a second objective, feints, scouting). It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model
