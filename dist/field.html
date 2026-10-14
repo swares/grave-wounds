@@ -3249,6 +3249,14 @@ function mayCharge(u, t, stance = "attack"){       // men without missiles, stea
   const mine = u.men * quality(u.quality).attack, theirs = t.men * quality(t.quality).attack;
   return 100 * mine >= (UD.commander.charge_odds[stance][u.quality] ?? 100) * theirs;
 }
+function turnToward(base, i, f, [size, field]){    // the facing nearest f, turning the shorter way, it can reach where it stands this move, or null (as commander._turn_toward)
+  const u = base[i], right = mod6(f - u.facing), sign = right <= 3 ? 1 : -1;
+  for (let n = Math.min(right, 6 - right); n > 0; n--){
+    const g = mod6(u.facing + sign * n);
+    if (moveUnit(base, i, u.pos, g, size, field).ok) return g;
+  }
+  return right === 0 && moveUnit(base, i, u.pos, f, size, field).ok ? f : null;
+}
 function bestOrder(us, i, t, [size, field, stance, known]){   // the best-scoring hex it can legally reach, facing the target (where last seen); holding, it only charges, else stays
   const u = us[i], tu = knownAt(us, t, known), hold = stance === "hold";
   const free = u.prone ? { ...u, prone: false } : u, base = us.map((x, k) => (k === i ? free : x));
@@ -3256,7 +3264,8 @@ function bestOrder(us, i, t, [size, field, stance, known]){   // the best-scorin
   const best = firstMove(base, i, tu, [size, field], [charge, hold, shooter]);
   if (best === null){
     const f = bearing(u.pos, tu.pos);
-    return hold && moveUnit(base, i, u.pos, f, size, field).ok ? stayOrder(us, i, t, f, shooter) : null;
+    const g = turnToward(base, i, f, [size, field]);   // no hex it likes is in reach: it turns where it stands, as far toward the target as it can
+    return g === null ? null : stayOrder(us, i, t, g, shooter);
   }
   const [h, f, m] = best;
   if (h[0] === u.pos[0] && h[1] === u.pos[1]) return stayOrder(us, i, t, f, shooter);
