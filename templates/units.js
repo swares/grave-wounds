@@ -1966,7 +1966,7 @@ function flee(units, i, size, field = null){      // a broken unit runs straight
 
 // ---------- the enemy commander (as gravewounds.commander) ----------
 const ROUTED = new Set(["broken", "fled"]);
-function command(units, side, size, field, rng, exchange = null, { stance = "attack", memory = null } = {}){   // {units, orders}: each unit of side ordered in turn, by its quality (units.yaml commander); stance attack or hold; memory: where it last saw each enemy (updated in place)
+function command(units, side, size, field, rng, exchange = null, { stance = "attack", memory = null, table = null } = {}){   // {units, orders}: each unit of side ordered in turn, by its quality (units.yaml commander); stance attack or hold; memory: where it last saw each enemy (updated in place)
   let us = units.map(u => ({ ...u }));
   const orders = [], mem = memory ?? {};
   const known = sightings(us, side, field, exchange, mem);
@@ -1978,7 +1978,7 @@ function command(units, side, size, field, rng, exchange = null, { stance = "att
     const roll = rng.randint(1, 100), o = unitOrder(us, i, [size, field, stance, known, exchange], roll);
     if (o){ orders.push({ unit: i, ...o }); applyOrder(us, i, o) }
   }
-  orders.push(...moveGuns(us, side, [size, field, stance, known, exchange]), ...layGuns(us, side, [size, field, known, exchange]), ...callFireAi(us, side, field, known, [stance, exchange]));
+  orders.push(...moveGuns(us, side, [size, field, stance, known, exchange]), ...layGuns(us, side, [size, field, known, exchange]), ...callFireAi(us, side, field, known, [stance, exchange, orders, table]));
   return { units: us, orders };
 }
 const knownFoes = known => Object.entries(known).filter(([k]) => /^\d+$/.test(k));   // [index, {pos, facing, ex}] of the enemies it knows of
@@ -2153,22 +2153,54 @@ function gunApply(us, i, o, [size, field, exchange]){   // limber or unlimber (c
   else us[i] = { ...us[i], pos: o.pos, facing: o.facing };
   return true;
 }
-function callFireAi(us, side, field, known, [stance, exchange] = ["attack", null]){   // its batteries under counter-battery fire displace; in the dark, one battery lights an enemy it lost sight of; attacking, one battery lays smoke where its units are under fire; its other free batteries are called on the enemy it sees that scores best as a target (as commander._call_fire)
+function callFireAi(us, side, field, known, [stance, exchange, orders, table] = ["attack", null, [], null]){   // its batteries under counter-battery fire displace; in the dark, one battery lights an enemy it lost sight of; attacking, one battery lays smoke where its units are under fire; its other free batteries are called on the enemy it sees that scores best as a target (as commander._call_fire)
   const out = displaceAi(field, side);
   const free = (field?.support || []).map((b, k) => k).filter(k => freeBattery(field.support[k], side));
   out.push(...callIllum(us, side, field, [known, exchange], free));
   if (stance === "attack") out.push(...callSmoke(us, side, field, known, free));
   out.push(...aiCounter(field, side, free));
+  if (stance === "attack") out.push(...callCreep(us, side, field, [known, orders || []], free));
   const air = (field?.support || []).map((b, k) => k).filter(k => freeAir(field, field.support[k], side));
   [...free, ...air].sort((a, b) => a - b).forEach(k => {
     const b = field.support[k], K = UD.indirect.kinds[b.kind];
     if (b.mission) return;
     const aim = fireAim(us, side, field, known, b, K);
     if (!aim) return;
-    b.mission = { hex: aim[1], wait: K.delay, repeat: false };
-    out.push({ unit: null, act: "fire", battery: k, target: aim[0], hex: aim[1] });
+    const run = K.air ? airRun(us, side, b, K, aim, table) : null;
+    b.mission = { hex: aim[1], wait: K.delay, repeat: false, ...(run || {}) };
+    out.push({ unit: null, act: "fire", battery: k, target: aim[0], hex: aim[1], ...(run ? { attack: run.attack } : {}) });
   });
   return out;
+}
+function callCreep(us, side, field, [known, orders], free){   // attacking: a creeping barrage on the enemy nearest a unit moving or charging on it, lifting along that unit's facing (as commander._call_creep)
+  const sup = field?.support || [], CR = UD.commander.creep;
+  if (sup.some(b => b.side === side && b.mission?.creep)) return [];
+  const ours = us.filter(u => u.side === side && u.men > 0 && u.state !== "fled"), KI = k => UD.indirect.kinds[sup[k].kind];
+  const pairs = orders.filter(o => (o.act === "move" || o.act === "charge") && o.target !== null && o.target !== undefined && String(o.target) in known)
+    .map(o => [hdist(us[o.unit].pos, knownAt(us, o.target, known).pos), o.unit, o.target]).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]);
+  for (const [dist, i, t] of pairs){
+    const h = dist <= CR.near ? marksOf(us[t]).find(x => spotted(us, field, side, x)) : undefined;
+    if (!h) continue;
+    const guns = free.filter(k => !sup[k].mission && inReach(sup[k], h) && !tooNear(ours, h, KI(k).radius + KI(k).scatter))
+      .map(k => [KI(k).delay, k]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    if (guns.length){
+      const k = guns[0][1];
+      sup[k].mission = { hex: [...h], wait: guns[0][0], repeat: true, creep: { step: CR.step, dir: us[i].facing, every: CR.every, lines: CR.lines } };
+      return [{ unit: null, act: "creep", battery: k, target: t, hex: [...h], for: i }];
+    }
+  }
+  return [];
+}
+function airRun(us, side, b, K, [j, h], table){     // a strafing run or napalm strip along a wide enemy front, its line clear of its own men by the scatter; or null (as commander._air_run)
+  const R = UD.indirect.air.runs || {}, rows = footprint(us[j]), front = rows.length ? rows[0].length : 0;
+  const war = table ? FD.tables[table]?.battle ?? null : null, dirn = (us[j].facing + 5) % 6;
+  const ours = us.filter(u => u.side === side && u.men > 0 && u.state !== "fled");
+  for (const mode of ["napalm", "strafe"]){
+    const r = R[mode];
+    if (!r || !r.kinds.includes(b.kind) || front < r.length || (r.wars && !r.wars.includes(war))) continue;
+    if (!runLine(h, dirn, mode).some(x => tooNear(ours, x, K.scatter))) return { attack: mode, dir: dirn };
+  }
+  return null;
 }
 function callIllum(us, side, field, [known, exchange], free){   // in the dark: illumination over the lost enemy nearest its units, by the free battery with illumination that lands soonest (as commander._call_illum)
   const L = lightOf(field), ours = us.filter(u => u.side === side && u.men > 0 && u.state !== "fled");
