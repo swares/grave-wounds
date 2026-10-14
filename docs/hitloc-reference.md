@@ -381,7 +381,14 @@ Firearms and explosives (any weapon with a `threat`) roll severity on the firear
   history, a public-domain report), plus an *all hits* blend. The same report's earlier
   period (the Alma, Balaklava, Inkerman and the first winter) is shown beside it in the
   conflict notes: in the siege, men were hit in the head and face about 1.5 times as often,
-  in the back 1.4 times, and in the limbs less. Leave armour off.
+  in the back 1.4 times, and in the limbs less. Leave armour off. The French surgeon-general
+  Chenu's report on the French army (*Rapport au Conseil de santé des armées … campagne
+  d'Orient*, 1865; public domain, read on Google Books) gives no count of all wounded by
+  region: its tables are monthly hospital returns and losses to enemy fire (its Tableau 42,
+  whose column headings are lost in the text copy, totals 39,868, 8,250, 50,836 and 2,708),
+  and its region-by-region pages are case notes on the men pensioned for their wounds.
+  Counting those would show where wounds fell among disabled survivors only (limbs far
+  ahead, deadly head and trunk wounds missing), so no French table is made from it.
 - **All-hits blends (estimated)** - `tools/blend_tables.py` mixes each wounded table with
   the Civil War killed-in-action table (soft lead balls too) as a stand-in for the dead:
   46.5% killed for the Revolution (Peckham: 7,174 killed, 8,241 wounded), 25.5% for the
