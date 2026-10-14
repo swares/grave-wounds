@@ -2069,15 +2069,48 @@ function hookUp(units, side, [field, known, exchange]){   // attacking: anti-tan
   }
   return { units: us, orders: out };
 }
-function moveGuns(us, side, ctx){                   // its batteries and tractors towing anti-tank guns limber, move, unlimber or unhook (as commander._move_guns)
-  const [size, field, , , exchange] = ctx, out = [], n = us.length;
+function moveGuns(us, side, ctx){                   // its batteries and tractors towing anti-tank guns limber, move, unlimber or unhook; attacking, empty tractors fetch guns (as commander._move_guns)
+  const [size, field, stance, , exchange] = ctx, out = [], n = us.length, claimed = new Set();
   for (let i = 0; i < n; i++){
     const u = us[i];
-    if (!(isBattery(u) || (tractor(u) && gunReach(u))) || !gunReady(us, i, side, exchange)) continue;
-    const o = gunOrder(us, i, ctx);
+    let o;
+    if (stance === "attack" && tractor(u) && !u.riders && gunReady(us, i, side, exchange)) o = fetchGuns(us, i, ctx, claimed);
+    else if (!(isBattery(u) || (tractor(u) && gunReach(u))) || !gunReady(us, i, side, exchange)) continue;
+    else o = gunOrder(us, i, ctx);
     if (o && gunApply(us, i, o, [size, field, exchange])) out.push({ unit: i, ...o });
   }
   return out;
+}
+function wantsTow(us, g, [, field, , known, exchange]){   // anti-tank guns that would hook up: on the map, not emplaced, ready, nothing in reach and somewhere to go (as commander._wants_tow)
+  const e = us[g];
+  if (!isAtGun(e) || e.emplaced || !gunReady(us, g, e.side, exchange)) return false;
+  const [, goal, inr] = gunGoal(us, e, field, known);
+  return goal !== null && !inr;
+}
+function fetchGuns(us, i, ctx, claimed){            // an empty tractor goes beside the nearest guns that want a tow and that it can tow, facing where they will go (as commander._fetch)
+  const [size, field, , known] = ctx, u = us[i];
+  const guns = us.map((e, g) => [e, g]).filter(([e, g]) => e.side === u.side && !claimed.has(g) && wantsTow(us, g, ctx) && rideWhy(e, u) === null)
+    .map(([e, g]) => [hdist(u.pos, e.pos), g]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  if (!guns.length) return null;
+  const g = guns[0][1];
+  claimed.add(g);
+  const goal = gunGoal(us, us[g], field, known)[1], near = footprint(us[g]).flat(), occ = occupancy(us);
+  const foes = new Set(Object.keys(occ).filter(k => us[occ[k]].side !== u.side));
+  const cands = [...reachable(us, i, size, allowance(u), field).values()].map(([h, c]) => {
+    const f = bearing(h, goal), gap = Math.min(...footprint({ ...u, pos: h, facing: f }).flat().flatMap(a => near.map(b => hdist(a, b))));
+    return [gap <= 1 ? 0 : gap, c, h[1], h[0], f];
+  }).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4]);
+  let tries = UD.commander.tries;
+  for (const [, c, row, col, f] of cands){
+    const h = [col, row];
+    if (h[0] === u.pos[0] && h[1] === u.pos[1]) return null;
+    if (touches({ ...u, pos: h, facing: f }, foes)) continue;
+    if (tries === 0) return null;
+    tries -= 1;
+    const m = legalMove(us, i, [h, f, c, false], [size, field]);
+    if (m.ok) return { act: "fetch", target: null, guns: g, pos: h, facing: f, cost: m.cost };
+  }
+  return null;
 }
 function gunOrder(us, i, [size, field, stance, known]){   // holding, or with an enemy in reach, it unlimbers (unhooks); else a battery in action limbers, and one limbered or a tractor moves (as commander._gun_order)
   const u = us[i], battery = isBattery(u), [t, goal, inr] = gunGoal(us, u, field, known);
@@ -2096,10 +2129,10 @@ function gunMove(us, i, [t, goal], [size, field]){   // the best hex within its 
     let s = -c - (K.mines[u.quality] ?? 0) * mined(field, u.pos, h, u.side);
     if (t === null) s -= K.closing * dist;
     else s += (dist >= K.keep_off && dist <= reach ? K.in_range : -K.closing * dist) - (dist < K.keep_off ? K.too_close : 0);
-    return [-s, c, h[1], h[0]];
-  }).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]);
+    return [-s, c, aside(h, goal), h[1], h[0]];
+  }).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4]);
   let tries = K.tries;
-  for (const [, c, row, col] of cands){
+  for (const [, c, , row, col] of cands){
     const h = [col, row];
     if (h[0] === u.pos[0] && h[1] === u.pos[1]) return null;
     const f = bearing(h, goal);
@@ -2120,12 +2153,14 @@ function gunApply(us, i, o, [size, field, exchange]){   // limber or unlimber (c
   else us[i] = { ...us[i], pos: o.pos, facing: o.facing };
   return true;
 }
-function callFireAi(us, side, field, known, [stance, exchange] = ["attack", null]){   // in the dark, one battery lights an enemy it lost sight of; attacking, one battery lays smoke where its units are under fire; its other free batteries are called on the enemy it sees that scores best as a target (as commander._call_fire)
+function callFireAi(us, side, field, known, [stance, exchange] = ["attack", null]){   // its batteries under counter-battery fire displace; in the dark, one battery lights an enemy it lost sight of; attacking, one battery lays smoke where its units are under fire; its other free batteries are called on the enemy it sees that scores best as a target (as commander._call_fire)
+  const out = displaceAi(field, side);
   const free = (field?.support || []).map((b, k) => k).filter(k => freeBattery(field.support[k], side));
-  const out = callIllum(us, side, field, [known, exchange], free);
+  out.push(...callIllum(us, side, field, [known, exchange], free));
   if (stance === "attack") out.push(...callSmoke(us, side, field, known, free));
   out.push(...aiCounter(field, side, free));
-  free.forEach(k => {
+  const air = (field?.support || []).map((b, k) => k).filter(k => freeAir(field, field.support[k], side));
+  [...free, ...air].sort((a, b) => a - b).forEach(k => {
     const b = field.support[k], K = UD.indirect.kinds[b.kind];
     if (b.mission) return;
     const aim = fireAim(us, side, field, known, b, K);
@@ -2171,6 +2206,19 @@ function aiCounter(field, side, free){            // one free battery with the b
   sup[k].mission = { battery: j, wait: UD.indirect.kinds[sup[k].kind].delay, repeat: false };
   return [{ unit: null, act: "counter", battery: k, on: j }];
 }
+function displaceAi(field, side){                  // its located batteries an enemy counter-battery mission is aimed at displace (as commander._displace)
+  const sup = field?.support || [], out = [];
+  sup.forEach((b, k) => {
+    const n = UD.indirect.kinds[b.kind].displace || 0;
+    if (b.side !== side || !b.located || b.displacing || (b.tubes || 0) <= 0 || !n) return;
+    const by = sup.findIndex(x => x.side !== side && x.mission?.battery === k);
+    if (by < 0) return;
+    Object.assign(b, { displacing: n, mission: null });
+    out.push({ unit: null, act: "displace", battery: k, by });
+  });
+  return out;
+}
+const freeAir = (field, b, side) => !!UD.indirect.kinds[b.kind].air && b.side === side && !b.mission && (b.rounds || 0) > 0 && (b.tubes || 0) > 0 && !grounded(field, b);   // its aircraft it can send: not grounded (as commander._free_air)
 function freeBattery(b, side){                     // one of its off-map batteries it can call: not tanks or aircraft, no mission, rounds and tubes, not displacing
   const K = UD.indirect.kinds[b.kind];
   return !(b.side !== side || b.mission || K.direct || K.air || b.displacing || (b.rounds || 0) <= 0 || servedTubes(b) <= 0);
@@ -2319,10 +2367,10 @@ function towardHexes(base, i, tu, [size, field]){   // [[movement, hex]] it can 
   const u = base[i], C = UD.commander, obj = objectiveOf(field), q = u.quality, now = hdist(u.pos, obj);
   const cands = [...reachable(base, i, size, allowance(u), field).values()].filter(([h]) => hdist(h, obj) < now).map(([h, c]) => {
     const cover = tu === null ? 0 : (C.cover[q] ?? 0) * coverAt(field, tu.pos, h);
-    return [C.closing * hdist(h, obj) + c + (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side) - cover, c, h[1], h[0]];
+    return [C.closing * hdist(h, obj) + c + (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side) - cover, c, aside(h, obj), h[1], h[0]];
   });
-  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]);
-  return cands.map(([, c, row, col]) => [c, [col, row]]);
+  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4]);
+  return cands.map(([, c, , row, col]) => [c, [col, row]]);
 }
 function facingFrom(h, tu, obj, facing){           // toward the target if any, else the objective (as it was, at the objective)
   if (tu !== null && (tu.pos[0] !== h[0] || tu.pos[1] !== h[1])) return bearing(h, tu.pos);
@@ -2388,9 +2436,9 @@ function firstMove(base, i, tu, [size, field], [charge, hold, shooter]){   // [h
   const allow = allowance(u), occ = occupancy(base), stuck = !!(u.lost || u.immobile || u.emplaced);
   let tries = UD.commander.tries;
   const foes = new Set(Object.keys(occ).filter(k => base[occ[k]].side !== u.side));
-  const cands = [...reachable(base, i, size, allow * (charge ? UD.charge_move : 1), field).values()].map(([h, c]) => [-aiScore(field, u, tu, h, c, shooter), c, h[1], h[0]]);
-  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]);
-  for (const [, c, row, col] of cands){
+  const cands = [...reachable(base, i, size, allow * (charge ? UD.charge_move : 1), field).values()].map(([h, c]) => [-aiScore(field, u, tu, h, c, shooter), c, aside(h, tu.pos), h[1], h[0]]);
+  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4]);
+  for (const [, c, , row, col] of cands){
     const h = [col, row], f = bearing(h, tu.pos), touch = touches({ ...u, pos: h, facing: f }, foes);
     if ((touch ? !charge : hold || c > allow) || (stuck && (h[0] !== u.pos[0] || h[1] !== u.pos[1]))) continue;
     if (tries === 0) return null;
@@ -2421,6 +2469,7 @@ function stayOrder(us, i, t, f, shooter){         // on the ground it stays down
   const dig = shooter && C.ground_with.includes(u.weapon) && (C.cover[u.quality] ?? 0) > 0 && underFire(us, i);
   return dig ? { act: "ground", target: t } : null;
 }
+const aside = (h, to) => { const x = 2 * h[0] + (h[1] & 1), tx = 2 * to[0] + (to[1] & 1); return (x - tx) ** 2 + 3 * (h[1] - to[1]) ** 2 };   // squared straight-line distance: ties go to the move nearer the straight line (as commander.aside)
 function aiScore(field, u, tu, h, cost, shooter){  // how much the commander likes unit u ending at h (higher is better)
   const C = UD.commander, q = u.quality, dist = hdist(h, tu.pos);
   const s = (C.cover[q] ?? 0) * coverAt(field, tu.pos, h) - cost - (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side);

@@ -211,17 +211,70 @@ def _turns_guns(d: Data, us: list, i: int, side, ctx: tuple) -> bool:
 
 def _move_guns(d: Data, us: list, side, ctx: tuple) -> list:
     """Its batteries and tractors towing anti-tank guns: limber, move, unlimber or unhook
-    (_gun_order). -> [orders]."""
-    size, field, _, _, exchange = ctx
-    out = []
+    (_gun_order); attacking, its empty tractors go to fetch guns (_fetch). -> [orders]."""
+    size, field, stance, _, exchange = ctx
+    out, claimed = [], set()
     for i in range(len(us)):
         u = us[i]
-        if not (U.is_battery(d, u) or (_tractor(d, u) and gun_reach(d, u))) or not _gun_ready(d, us, i, side, exchange):
+        if stance == "attack" and _tractor(d, u) and not u.get("riders") and _gun_ready(d, us, i, side, exchange):
+            o = _fetch(d, us, i, ctx, claimed)
+        elif not (U.is_battery(d, u) or (_tractor(d, u) and gun_reach(d, u))) or not _gun_ready(d, us, i, side, exchange):
             continue
-        o = _gun_order(d, us, i, ctx)
+        else:
+            o = _gun_order(d, us, i, ctx)
         if o and _gun_apply(d, us, i, o, (size, field, exchange)):
             out.append({"unit": i, **o})
     return out
+
+
+def _wants_tow(d: Data, us: list, g: int, ctx: tuple) -> bool:
+    """Anti-tank guns g of the side would hook up (_hook_up): on the map, not emplaced, ready,
+    with no known enemy in reach and somewhere to go."""
+    _, field, _, known, exchange = ctx
+    e = us[g]
+    if not U.is_at_gun(d, e) or e.get("emplaced") or not _gun_ready(d, us, g, e["side"], exchange):
+        return False
+    _, goal, inr = _gun_goal(d, us, e, field, known)
+    return goal is not None and not inr
+
+
+def _fetch(d: Data, us: list, i: int, ctx: tuple, claimed: set) -> dict | None:
+    """An empty tractor goes to fetch the nearest guns of its side that want a tow and that it
+    can tow (no other tractor fetching them this move; the first of equals): to the hex in its
+    allowance beside them it reaches cheapest, else as near them as it can, facing where the
+    guns will go; it does not touch the enemy. They hook up at the side's next move."""
+    size, field, _, known, _ = ctx
+    u = us[i]
+    guns = sorted((U.hdist(u["pos"], e["pos"]), g) for g, e in enumerate(us)
+                  if e["side"] == u["side"] and g not in claimed and _wants_tow(d, us, g, ctx)
+                  and not any(t() for t, _ in U._tow_checks(d, e, u)))
+    if not guns:
+        return None
+    g = guns[0][1]
+    claimed.add(g)
+    goal = _gun_goal(d, us, us[g], field, known)[1]
+    near = [x for r in U.footprint(d, us[g]) for x in r]
+    foes = {k for k, j in U.occupancy(d, us).items() if us[j]["side"] != u["side"]}
+    cands = []
+    for h, c in reachable(d, us, i, size, U.allowance(d, u), field).items():
+        f = U.bearing(list(h), goal)
+        moved = {**u, "pos": list(h), "facing": f}
+        gap = min(U.hdist(a, b) for r in U.footprint(d, moved) for a in r for b in near)
+        cands.append((0 if gap <= 1 else gap, c, h[1], h[0], f))
+    tries = d.units["commander"]["tries"]
+    for _, c, row, col, f in sorted(cands):
+        h = [col, row]
+        if h == list(u["pos"]):
+            return None
+        if _touches(d, {**u, "pos": h, "facing": f}, foes):
+            continue
+        if tries == 0:
+            return None
+        tries -= 1
+        m = _legal(d, us, i, (h, f, c, False), (size, field))
+        if m["ok"]:
+            return {"act": "fetch", "target": None, "guns": g, "pos": h, "facing": f, "cost": m["cost"]}
+    return None
 
 
 def _gun_order(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
@@ -247,9 +300,9 @@ def _gun_move(d: Data, us: list, i: int, aim: tuple, where: tuple) -> dict | Non
     minefields on the way. -> a move (on a target) or advance (on the objective), or None."""
     (t, goal), (size, field), u = aim, where, us[i]
     foes = {k for k, j in U.occupancy(d, us).items() if us[j]["side"] != u["side"]}
-    cands = [(-_gun_score(d, field, u, (h, c), aim), c, h[1], h[0]) for h, c in reachable(d, us, i, size, U.allowance(d, u), field).items()]
+    cands = [(-_gun_score(d, field, u, (h, c), aim), c, aside(h, goal), h[1], h[0]) for h, c in reachable(d, us, i, size, U.allowance(d, u), field).items()]
     tries = d.units["commander"]["tries"]
-    for _, c, row, col in sorted(cands):
+    for _, c, _, row, col in sorted(cands):
         h = [col, row]
         if h == list(u["pos"]):
             return None
@@ -295,19 +348,23 @@ def _gun_apply(d: Data, us: list, i: int, o: dict, where: tuple) -> bool:
 
 
 def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, how: tuple = ("attack", None)) -> list:
-    """In the dark, first one battery lights an enemy it has lost sight of (_call_illum).
+    """First its batteries under counter-battery fire displace (_displace). In the dark, one
+    battery lights an enemy it has lost sight of (_call_illum).
     Attacking, one battery lays smoke where its units are under fire (_call_smoke).
-    Then one battery fires counter-battery on a located enemy battery (_call_counter). Then each of its other off-map batteries (not tanks or aircraft) with no mission, rounds
-    and tubes, not displacing, is called on the enemy unit it sees now that scores best as a
+    Then one battery fires counter-battery on a located enemy battery (_call_counter). Then each
+    of its other off-map batteries (not tanks) with no mission, rounds and tubes, not
+    displacing, and its aircraft that can fly (_free_air), is called on the enemy unit it sees now that scores best as a
     target for the side's unit nearest it (threat_score), at the first of its hexes the side
     can see, in the battery's reach, with none of the side's men within the kind's radius and
     scatter."""
     stance, exchange = how
+    out = _displace(d, field, side)
     free = [k for k, b in enumerate((field or {}).get("support") or []) if _free_battery(d, b, side)]
-    out = _call_illum(d, us, side, field, (known, exchange), free)
+    out += _call_illum(d, us, side, field, (known, exchange), free)
     out += _call_smoke(d, us, side, field, known, free) if stance == "attack" else []
     out += _call_counter(d, field, side, free)
-    for k in free:
+    air = [k for k, b in enumerate((field or {}).get("support") or []) if _free_air(d, field, b, side)]
+    for k in sorted(free + air):
         b = field["support"][k]
         K = d.units["indirect"]["kinds"][b["kind"]]
         if b.get("mission"):
@@ -317,6 +374,31 @@ def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, how: tu
             b["mission"] = {"hex": aim[1], "wait": K["delay"], "repeat": False}
             out.append({"unit": None, "act": "fire", "battery": k, "target": aim[0], "hex": aim[1]})
     return out
+
+
+def _displace(d: Data, field: dict | None, side) -> list:
+    """Each of its located batteries that an enemy counter-battery mission is aimed at, not
+    displacing already, with tubes and a kind that can move (displace > 0), displaces: its
+    mission ends and it is silent for its kind's exchanges, then no longer located (where it
+    stands, if placed). -> [displace orders]."""
+    sup, out = (field or {}).get("support") or [], []
+    for k, b in enumerate(sup):
+        n = d.units["indirect"]["kinds"][b["kind"]].get("displace", 0)
+        if b["side"] != side or not b.get("located") or b.get("displacing") or b.get("tubes", 0) <= 0 or not n:
+            continue
+        by = next((j for j, x in enumerate(sup) if x["side"] != side and (x.get("mission") or {}).get("battery") == k), None)
+        if by is not None:
+            b.update(displacing=n, mission=None)
+            out.append({"unit": None, "act": "displace", "battery": k, "by": by})
+    return out
+
+
+def _free_air(d: Data, field: dict | None, b: dict, side) -> bool:
+    """Its aircraft on call it can send: no mission, attacks and aircraft left, not grounded
+    by the weather or the dark (units.grounded)."""
+    K = d.units["indirect"]["kinds"][b["kind"]]
+    return bool(K.get("air")) and b["side"] == side and not b.get("mission") and b.get("rounds", 0) > 0 \
+        and b.get("tubes", 0) > 0 and U.grounded(d, field, b) is None
 
 
 def _call_illum(d: Data, us: list, side, field: dict | None, kx: tuple, free: list) -> list:
@@ -654,8 +736,8 @@ def _toward_hexes(d: Data, base: list, i: int, tu: dict | None, where: tuple) ->
         if U.hdist(list(h), obj) >= now:
             continue
         cover = 0 if tu is None else C["cover"].get(q, 0) * U.cover_at(d, field, tu["pos"], list(h))
-        out.append((C["closing"] * U.hdist(list(h), obj) + c + C["mines"].get(q, 0) * _mined(field, u["pos"], h, u["side"]) - cover, c, h[1], h[0]))
-    return [(c, [col, row]) for _, c, row, col in sorted(out)]
+        out.append((C["closing"] * U.hdist(list(h), obj) + c + C["mines"].get(q, 0) * _mined(field, u["pos"], h, u["side"]) - cover, c, aside(h, obj), h[1], h[0]))
+    return [(c, [col, row]) for _, c, _, row, col in sorted(out)]
 
 
 def _facing(h: list, tu: dict | None, obj: list, facing: int) -> int:
@@ -759,7 +841,7 @@ def _first_move(d: Data, base: list, i: int, tu: dict, where: tuple, how: tuple)
     allow, tries, stuck = U.allowance(d, u), d.units["commander"]["tries"], bool(u.get("lost") or u.get("immobile") or u.get("emplaced"))
     reach = reachable(d, base, i, size, allow * (d.units["charge_move"] if charge else 1), field)
     foes = {k for k, j in U.occupancy(d, base).items() if base[j]["side"] != u["side"]}
-    for _, c, row, col in sorted((-score(d, field, u, tu, h, c, shooter), c, h[1], h[0]) for h, c in reach.items()):
+    for _, c, _, row, col in sorted((-score(d, field, u, tu, h, c, shooter), c, aside(h, tu["pos"]), h[1], h[0]) for h, c in reach.items()):
         h = [col, row]
         f = U.bearing(h, tu["pos"])
         touch = _touches(d, {**u, "pos": h, "facing": f}, foes)
@@ -825,6 +907,14 @@ def _stay(d: Data, us: list, i: int, t: int, f: int, shooter: bool) -> dict | No
         return {"act": "turn", "target": t, "facing": f}
     dig = shooter and u["weapon"] in C["ground_with"] and C["cover"].get(u["quality"], 0) > 0 and under_fire(d, us, i)
     return {"act": "ground", "target": t} if dig else None
+
+
+def aside(h, to) -> int:
+    """How far hex h lies from hex `to` in a straight line (squared, in units where a hex's
+    width is 2 and its rows 3 apart squared): among moves the commander likes equally, the
+    one that keeps nearer the straight line wins, so a long advance does not drift sideways."""
+    x, tx = 2 * h[0] + (h[1] & 1), 2 * to[0] + (to[1] & 1)
+    return (x - tx) ** 2 + 3 * (h[1] - to[1]) ** 2
 
 
 def score(d: Data, field: dict | None, u: dict, tu: dict, h: tuple, cost: int, shooter: bool) -> int:
