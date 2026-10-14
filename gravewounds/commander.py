@@ -862,9 +862,16 @@ def under_fire(d: Data, us: list, i: int) -> bool:
                and U.field_range(d, e["weapon"], U.hdist(e["pos"], u["pos"])) is not None for e in us)
 
 
-def may_charge(d: Data, u: dict, t: dict, stance: str = "attack") -> bool:
-    """Men without missiles, steady, with the odds its quality wants in its stance (charge_odds)."""
-    if "range" in d.weapons[u["weapon"]] or u["state"] != "steady":
+def storming(d: Data, u: dict, t: dict, field: dict | None, stance: str) -> bool:
+    """Attacking, a unit armed for storming (commander.storm: black powder with the bayonet)
+    whose target holds works (units.holds_works): it closes and charges rather than firing."""
+    return stance == "attack" and u["weapon"] in d.units["commander"]["storm"] and U.holds_works(d, field, u["pos"], t)
+
+
+def may_charge(d: Data, u: dict, t: dict, stance: str = "attack", storm: bool = False) -> bool:
+    """Men without missiles (or storming works), steady, with the odds its quality wants in its
+    stance (charge_odds)."""
+    if ("range" in d.weapons[u["weapon"]] and not storm) or u["state"] != "steady":
         return False
     mine = u["men"] * U.quality(d, u["quality"])["attack"]
     theirs = t["men"] * U.quality(d, t["quality"])["attack"]
@@ -880,10 +887,11 @@ def _best(d: Data, us: list, i: int, t: int, ctx: tuple) -> dict | None:
     tu, hold = _where(us, t, known), stance == "hold"
     free = {**u, "prone": False} if u.get("prone") else u
     base = [free if k == i else x for k, x in enumerate(us)]
-    shooter, charge = "range" in d.weapons[u["weapon"]], may_charge(d, u, tu, stance)
-    best = _first_move(d, base, i, tu, (size, field), (charge, hold, shooter))
+    storm = storming(d, u, tu, field, stance)
+    shooter, charge = "range" in d.weapons[u["weapon"]] and not storm, may_charge(d, u, tu, stance, storm)
+    best = _first_move(d, base, i, tu, (size, field), (charge, hold, shooter, storm))
     if best is None:
-        f = U.bearing(u["pos"], tu["pos"])
+        f = keep_front(u, U.bearing(u["pos"], tu["pos"]))
         f = _turn_toward(d, base, i, f, (size, field))
         return None if f is None else _stay(d, us, i, t, f, shooter)
     h, f, m = best
@@ -912,15 +920,15 @@ def _first_move(d: Data, base: list, i: int, tu: dict, where: tuple, how: tuple)
     the enemy is a charge (only with the odds); any other must be within its allowance (and
     holding, it goes nowhere but a charge). Lost in the dark or with vehicles that cannot
     move, it may only turn. It tries `tries` of them at most."""
-    (size, field), (charge, hold, shooter), u = where, how, base[i]
+    (size, field), (charge, hold, shooter, storm), u = where, how, base[i]
     if hold and not charge:
         return None
     allow, tries, stuck = U.allowance(d, u), d.units["commander"]["tries"], bool(u.get("lost") or u.get("immobile") or u.get("emplaced"))
     reach = reachable(d, base, i, size, allow * (d.units["charge_move"] if charge else 1), field)
     foes = {k for k, j in U.occupancy(d, base).items() if base[j]["side"] != u["side"]}
-    for _, c, _, row, col in sorted((-score(d, field, u, tu, h, c, shooter), c, aside(h, tu["pos"]), h[1], h[0]) for h, c in reach.items()):
+    for _, c, _, row, col in sorted((-score(d, field, u, tu, h, c, shooter, storm), c, aside(h, tu["pos"]), h[1], h[0]) for h, c in reach.items()):
         h = [col, row]
-        f = U.bearing(h, tu["pos"])
+        f = keep_front(u, U.bearing(h, tu["pos"]))
         touch = _touches(d, {**u, "pos": h, "facing": f}, foes)
         if _skips(touch, (charge, hold), c > allow, stuck and h != u["pos"]):
             continue
@@ -931,6 +939,12 @@ def _first_move(d: Data, base: list, i: int, tu: dict, where: tuple, how: tuple)
         if not _rejects(m, charge, hold):
             return h, f, m
     return None
+
+
+def keep_front(u: dict, b: int) -> int:
+    """The facing to take toward direction b: its own if b is already in its front arc (no
+    needless turn), else b."""
+    return u["facing"] if U.arc(u["facing"], b) == "front" else b
 
 
 def _skips(touch: bool, how: tuple, far: bool, stuck: bool) -> bool:
@@ -994,11 +1008,12 @@ def aside(h, to) -> int:
     return (x - tx) ** 2 + 3 * (h[1] - to[1]) ** 2
 
 
-def score(d: Data, field: dict | None, u: dict, tu: dict, h: tuple, cost: int, shooter: bool) -> int:
-    """How much the commander likes unit u ending at h (higher is better)."""
+def score(d: Data, field: dict | None, u: dict, tu: dict, h: tuple, cost: int, shooter: bool, storm: bool = False) -> int:
+    """How much the commander likes unit u ending at h (higher is better). Storming works, it
+    takes no account of cover on the way."""
     C, q = d.units["commander"], u["quality"]
     dist = U.hdist(list(h), tu["pos"])
-    s = C["cover"].get(q, 0) * U.cover_at(d, field, tu["pos"], list(h)) - cost - C["mines"].get(q, 0) * _mined(field, u["pos"], h, u["side"])
+    s = (0 if storm else C["cover"].get(q, 0)) * U.cover_at(d, field, tu["pos"], list(h)) - cost - C["mines"].get(q, 0) * _mined(field, u["pos"], h, u["side"])
     if shooter:
         inr = dist >= 1 and U.field_range(d, u["weapon"], dist) is not None
         return s + (C["in_range"] if inr else -C["closing"] * dist) - (C["too_close"] if dist < C["keep_off"] else 0)

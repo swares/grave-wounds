@@ -1768,6 +1768,19 @@ def share_cover(d: Data, field: dict | None, h, target: dict) -> int:
     return sum(cover_at(d, field, h, t) for t in row) // len(row)
 
 
+def holds_works(d: Data, field: dict | None, h, t: dict) -> bool:
+    """Unit t holds works against an attack from hex h: dug in or emplaced where it stands, or
+    any hex of it with cover from the works toward h, or in ground that hides men (buildings,
+    rubble)."""
+    if dug_here(t) or t.get("emplaced"):
+        return True
+    if not field:
+        return False
+    cols, rows = _size(d, field)
+    return any(ground_at(d, field, x).get("hides") or C.missile_cover(d, _works(field), h, x, cols, rows)["cover"] > 0
+               for row in footprint(d, t) for x in row)
+
+
 def cover_at(d: Data, field: dict | None, h, t) -> int:
     """% off shots from hex h at hex t: the best of the works' cover and the ground's."""
     if not field:
