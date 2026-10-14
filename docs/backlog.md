@@ -24,7 +24,7 @@ When an item is done, delete it here and note it in the pull request that closes
   shooting at men who cannot reply, calls its aircraft, puts one battery on counter-battery fire and displaces batteries under it (moving a placed one along its map edge), and in the dark lights an enemy it has lost sight of. Its sappers lay one row and lift only the row ahead of
   them: no deep belts, and no clearing a whole path ahead of the attack. Its creeping barrages start on the enemy and lift a fixed 3 lines, and it plans none
   for riflemen who stop at range. Still left out: air controllers, riders, fixed lines and works; any plan beyond one
-  objective (phase lines, a second objective, feints, scouting); ladders only where the GM or a battlefield marks them (no battlefield does yet). It does
+  objective (phase lines, a second objective, feints, scouting); ladders only where the GM or a battlefield marks them (the Great Redan's ladder parties are marked, but ladders do nothing on its ditch and bank). It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model
   with a key the player supplies, to explain its orders in prose.
 
@@ -112,7 +112,10 @@ When an item is done, delete it here and note it in the pull request that closes
     (the head factor of 1.5 agrees with the Crimean returns);
   - on the Great Redan battlefields, the siege guns of both sides, the French attack on the
     Malakhov and the flanking fire of the batteries further along the line (only the guns in
-    the work and, on 18 June, a battery either side are on the map).
+    the work and, on 18 June, a battery either side are on the map);
+  - a deep ditch that needs ladders: the Redan's ladder parties are marked, but the ditch
+    (15 to 20 feet deep) and its bank are crossed without them, as no figures were found for
+    how much slower or costlier it was to get in without ladders.
 - **Guns, still simplified.** The Thirty Years' War still borrows the Peninsula's gun wounds,
   because no 1618-48 artillery wound counts were found. Sections share the battery's rounds
   in order rather than each carrying its own.
