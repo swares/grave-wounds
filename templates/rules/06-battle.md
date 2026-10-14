@@ -118,8 +118,8 @@ steady friends touching it, who go in with it), and green units sometimes hesita
   not stop to trade fire with an enemy behind works (a parapet, trench or bank), dug in, or
   in buildings or rubble: they close without seeking cover and charge it with the bayonet,
   with the same odds. Riflemen, archers and modern infantry still fight by fire. A wall or
-  palisade that blocks hand-to-hand fighting stops them at its foot; breaching it is the GM's
-  order.
+  palisade that blocks hand-to-hand fighting stops them at its foot, unless they carry
+  ladders: then they go up it (see [works](#works)). Breaching it is the GM's order.
 
 - **Reserve.** Regulars and veterans hold back their rearmost units, and commit one when a
   unit of theirs breaks or the enemy comes close; veterans also commit to exploit an enemy

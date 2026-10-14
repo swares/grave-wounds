@@ -608,14 +608,19 @@ function unitGroups(units, occ, i, groups, field){   // unit i's front hexes' st
     if (!hit) return;
     const [j, dn] = hit;
     if (bunkerAt(field, h) || bunkerAt(field, step(h, dn))) return;   // no blows into or out of an intact bunker: it must be stormed
-    const [blocked, pen, stk] = across(field, u, h, step(h, dn), reach);
-    let n = Math.min(per, men[k]);
-    if (blocked) n = reach >= 2 ? Math.min(abreast, men[k]) : 0;
+    const [blocked, pen0, stk] = across(field, u, h, step(h, dn), reach);
+    const climbing = blocked && reach < 2 && hasLadders(u), pen = pen0 + (climbing ? UD.escalade.penalty : 0);
+    const defends = blocked && reach < 2 && !climbing && hasLadders(units[j]);   // the defenders on the wall strike at the men on the ladders, a rank of them
+    let n = Math.min(defends ? abreast : per, men[k]);
+    if (blocked && !defends) n = reach >= 2 ? Math.min(abreast, men[k]) : climbers(men[k], abreast, climbing);
     if (busy.has(k)) n = Math.max(0, n - Math.min(abreast, men[k]));   // the front rank is hacking at the works
     if (n <= 0) return;
     const key = [i, j, arc(units[j].facing, dn + 3), pen, stk ? 1 : 0].join("|");
     groups.set(key, (groups.get(key) || 0) + n);
   });
+}
+function climbers(men, abreast, climbing){       // across a wall with ladders: escalade.share of the front rank, at least one (as units._hex_strikers)
+  return climbing && men > 0 ? Math.max(1, Math.floor(Math.min(abreast, men) * UD.escalade.share)) : 0;
 }
 function strikeGroups(units, occ, field){
   const groups = new Map();
@@ -1889,10 +1894,11 @@ function fits(units, i, u, size, field = null){
   if (!hexes.every(h => onMap(h, size) && occ[hk(h)] === undefined)) return false;
   return !field || stands(field, u, hexes);
 }
+const hasLadders = u => !!u.ladders && !u.mounted && !u.vehicle;   // a unit on foot marked with ladders (as units.has_ladders)
 function unitStepCost(field, u, a, b){            // movement for the middle hex from a to b: works, ground, deep going; null if it cannot
   if (!field) return 1;
   if (!canEnter(field, u, b)) return null;
-  const c = stepCost(field.works, a, b);
+  const c = stepCost(field.works, a, b, hasLadders(u) ? UD.escalade.cross : null);
   if (c === null) return null;
   const going = u.vehicle ? UD.vehicles.ground[groundKey(field, b)] : groundAt(field, b).move;
   return c + going - 1 + deepGoing(field.weather?.ground) + (coldOf(field)?.move || 0) + (lightOf(field)?.move || 0);

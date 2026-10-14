@@ -74,6 +74,13 @@ ground:
 # hacking at the work in front of it, every round of the exchange. A work's breach figure
 # (man-rounds, works.yaml) is for a 2 m hex side; a 10 m side takes five times as long.
 breach_share: 0.5
+# Escalade: a foot unit marked with ladders (by the GM, or `ladders: true` in a battlefield file)
+# fights across a work that blocks hand-to-hand fighting (a palisade, a wall, a barred gate) and
+# climbs over it. Across it only `share` of the front rank of each front hex fights (the men on
+# the ladders, at least one a hex), at `penalty` % off their attack besides any climb up at men
+# above; stepping over it costs `cross` hexes of movement (and, as any move, the hexes beyond
+# must be clear of the enemy). Design estimates.
+escalade: {share: 0.25, penalty: 20, cross: 4}
 
 # ---------- guns ----------
 # A battery is a unit whose weapon is a gun (listed in `guns`), in the battery formation. Its

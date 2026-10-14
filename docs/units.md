@@ -275,8 +275,8 @@ general. All its numbers are in units.yaml `commander`.
   scores hexes as men without missiles do, taking no account of cover on the way, and
   charges with the same odds. Holding units, other weapons (flintlock rifles, matchlocks,
   bows, modern rifles) and targets in woods or scrub are not stormed. A wall or palisade
-  blocks hand-to-hand fighting, so stormers stop at its foot; breaching it is still the GM's
-  order.
+  blocks hand-to-hand fighting, so stormers stop at its foot unless they carry ladders (see
+  *Escalade*), when they go up it; breaching it is still the GM's order.
 - **Facing.** A unit whose target is already in its front arc keeps its facing rather than
   turning to face it squarely, so a wide line does not spend its move turning.
   - Veterans prefer a hex off the target's front (30 points more).
@@ -1038,6 +1038,15 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   neither strike nor shoot; the ranks behind fight as usual. The work's breach figure is for a battle-map side
   (about 1.2 yards, 1.15 m); a field-map side takes five times as much, so ten men open a stretch of palisade in about a
   minute. A bank or ditch under a breached palisade stays.
+- **Escalade:** a unit on foot marked **Ladders** (set-up only, on a field with a wall,
+  palisade or gate; or `ladders: true` in a battlefield file) fights across a palisade, wall
+  or barred gate and climbs over it. Across it only a quarter of the front rank of each front
+  hex fights, at least one man (`escalade.share`), at −20% (`escalade.penalty`) besides the
+  climb up a wall's height; the defenders' front rank strikes back at the men on the ladders.
+  Stepping over the work costs 4 hexes of movement (`escalade.cross`), into hexes clear of
+  the enemy. Mounted units and guns cannot use ladders. Without ladders, a unit still stops at
+  the foot, and only reach-2 weapons strike over. No battlefield marks ladders yet: the GM
+  marks the units that carried them.
 
 **The weather** (set under *Weather*, or brought from the travel map) works as on the
 battle map: no shooting beyond what can be seen (fog 5 hexes, heavy rain 15), wet strings

@@ -52,6 +52,11 @@ instead of fighting, until it is down. Across a palisade, wall or barred gate on
 weapons strike, from the front rank, and striking up a bank or ditch costs its height.
 Horses cannot charge into stakes or felled trees.
 
+On the field map, men on foot the GM marks with **ladders** can escalade a palisade, wall or
+barred gate instead: a few men a hex fight from the ladders at {{f_esc_pen}}, the defenders
+strike back at them, and once the far side is clear the unit can climb over at a cost of
+{{f_esc_cross}} hexes of movement.
+
 !!! gm "For the GM"
     Weather is the cheapest way to change a fight. Rain on the morning of a battle takes the
     archers' edge away and spoils matchlocks; fog lets the attackers close unseen; a gale at

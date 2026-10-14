@@ -888,12 +888,17 @@ def _commander_errors(d: Data) -> list[str]:
 
 
 def _rout_errors(d: Data) -> list[str]:
-    """units.yaml rout: how far a broken unit runs through its friends, and how much it jostles them."""
+    """units.yaml rout (how far a broken unit runs through its friends, and how much it jostles
+    them) and escalade (ladders)."""
     R, errors = d.units.get("rout") or {}, []
     if not (isinstance(R.get("through", 1), int) and R.get("through", 1) >= 1):
         errors.append("units.yaml: rout.through must be a whole number of 1 or more")
     if not (isinstance(R.get("jostle", 0), (int, float)) and 0 <= R.get("jostle", 0) <= 1):
         errors.append("units.yaml: rout.jostle must be a share from 0 to 1")
+    E = d.units.get("escalade") or {}
+    if not (isinstance(E.get("share"), (int, float)) and 0 < E["share"] <= 1 and isinstance(E.get("penalty"), int) and E["penalty"] >= 0
+            and isinstance(E.get("cross"), int) and E["cross"] >= 1):
+        errors.append("units.yaml: escalade needs share (over 0, at most 1), penalty (a whole % of 0 or more) and cross (whole hexes, 1 or more)")
     return errors
 
 
@@ -1365,6 +1370,13 @@ def _objective_errors(f: dict, where: str) -> list[str]:
     return [f"{where}: objective needs at (a hex on the map), side (0 or 1: the army that attacked it), a name, and radius a whole number of 1 or more if given"]
 
 
+def _flag_errors(f: dict, where: str) -> list[str]:
+    """A battlefield's units' true-or-false marks: fac (a forward air controller), ladders."""
+    names = {"fac": "fac (a forward air controller)", "ladders": "ladders"}
+    return [f"{where}: unit {u.get('name')}: {names[k]} must be true or false" for u in f.get("units", []) for k in names
+            if k in u and not isinstance(u[k], bool)]
+
+
 def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_units, fits) -> list[str]:
     """The armies as drawn up: known arms, armour and formations, each unit standing where it can."""
     errors = [e for u in f.get("units", []) for e in _unit_spec_errors(d, f, where, u)]
@@ -1380,7 +1392,7 @@ def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_un
     devices = set((d.weather.get("light", {}).get("night_vision") or {}).get("devices") or {}) | {"none"}
     errors += [f"{where}: unit {u.get('name')}: nv (a night-vision device) must be one of {', '.join(sorted(devices))}" for u in f.get("units", [])
                if "nv" in u and u["nv"] not in devices]
-    errors += [f"{where}: unit {u.get('name')}: fac (a forward air controller) must be true or false" for u in f.get("units", []) if "fac" in u and not isinstance(u["fac"], bool)]
+    errors += _flag_errors(f, where)
     if errors:
         return errors
     field, units = battlefield(d, f["id"]), battlefield_units(d, f["id"])

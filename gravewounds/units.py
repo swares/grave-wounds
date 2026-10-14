@@ -1114,19 +1114,35 @@ def _strike_groups(d: Data, units: list, occ: dict, i: int, groups: dict, field:
         x = step(h, dirn)
         if bunker_at(d, field, h) or bunker_at(d, field, x):
             continue                                  # no blows into or out of an intact bunker: it must be stormed
-        blocked, pen, stk = _across(d, field, u, h, x, reach)
-        n = _hex_strikers(men[k], per, abreast, reach if blocked else 0, k in busy)
+        pen, stk, n = _hex_blows(d, field, (u, units[j]), (h, x, reach), (men[k], per, abreast, k in busy))
         if n > 0:
             key = (i, j, arc(units[j]["facing"], dirn + 3), pen, stk)
             groups[key] = groups.get(key, 0) + n
 
 
-def _hex_strikers(men: int, per: int, abreast: int, blocked_reach: int, busy: bool) -> int:
+def _hex_blows(d: Data, field: dict | None, pair: tuple, where: tuple, ranks: tuple) -> tuple:
+    """(penalty %, stakes, strikers) for one front hex of unit u at its enemy across the side
+    from h to x: across a work that blocks hand to hand, men with ladders fight from them (at
+    escalade.penalty), and the defenders' front rank strikes back at the men on the ladders."""
+    (u, e), (h, x, reach), (men, per, abreast, busy) = pair, where, ranks
+    E = d.units["escalade"]
+    blocked, pen, stk = _across(d, field, u, h, x, reach)
+    climbing = blocked and reach < 2 and has_ladders(u)
+    defends = blocked and reach < 2 and not climbing and has_ladders(e)
+    n = _hex_strikers(men, abreast if defends else per, abreast, reach if blocked and not defends else 0, busy, E["share"] if climbing else 0)
+    return pen + (E["penalty"] if climbing else 0), stk, n
+
+
+def _hex_strikers(men: int, per: int, abreast: int, blocked_reach: int, busy: bool, climb: float = 0) -> int:
     """Men of one front hex who strike: per; across a wall (blocked_reach: the weapon's reach,
-    else 0) only the front rank of reach-2 weapons; less the front rank if it is breaching."""
+    else 0) only the front rank of reach-2 weapons, or with ladders (climb: escalade.share) that
+    share of the front rank (at least one); less the front rank if it is breaching."""
     n = min(per, men)
     if blocked_reach:
-        n = min(abreast, men) if blocked_reach >= 2 else 0
+        if blocked_reach >= 2:
+            n = min(abreast, men)
+        else:
+            n = max(1, math.floor(min(abreast, men) * climb)) if climb and men > 0 else 0
     if busy:
         n = max(0, n - min(abreast, men))          # the front rank is hacking at the works
     return n
@@ -3330,6 +3346,11 @@ def _can_enter(d: Data, field: dict, u: dict, h) -> bool:
     return not ground_at(d, field, h).get("no_horse") and not (it and C._spec(d, "hex", it).get("no_horse"))
 
 
+def has_ladders(u: dict) -> bool:
+    """A unit on foot marked with ladders (escalade)."""
+    return bool(u.get("ladders")) and not u.get("mounted") and not u.get("vehicle")
+
+
 def _wall_between(d: Data, field: dict, a, b) -> bool:
     """A palisade, wall or barred gate between hexes a and b (open gates are left out)."""
     for it in C._edge_items(d, _works(field), a, b):
@@ -3347,7 +3368,7 @@ def step_cost(d: Data, field: dict | None, u: dict, a, b) -> int | None:
         return 1
     if not _can_enter(d, field, u, b):
         return None
-    c = C.step_cost(d, _works(field), a, b)
+    c = C.step_cost(d, _works(field), a, b, climb=d.units["escalade"]["cross"] if has_ladders(u) else None)
     if c is None:
         return None
     wx = field.get("weather") or {}
