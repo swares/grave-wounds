@@ -324,10 +324,20 @@ general. All its numbers are in units.yaml `commander`.
     now that scores best as a target. It fires at the first of that unit's hexes its side
     can see and the battery reaches, and never where its own men are within the burst and
     scatter.
-  - **Aircraft.** Its aircraft on call with attacks left are called the same way, with
-    bombs or rockets (never a strafing run or napalm strip), unless the weather or the dark
-    grounds them. Fighter-bombers come in two exchanges later; a forward air controller of
-    its side who sees the aim cuts their scatter as usual.
+  - **Aircraft.** Its aircraft on call with attacks left are called the same way, unless the
+    weather or the dark grounds them. Fighter-bombers come in two exchanges later; a forward
+    air controller of its side who sees the aim cuts their scatter as usual.
+    - On an enemy whose front is as wide as a run, they fly it along that front: a napalm
+      strip (3 hexes; fighter-bombers, in the wars that used napalm), else a strafing run
+      (5 hexes). They do so only when none of its men are within the aircraft's scatter of
+      any hex of the line; otherwise, and on narrower fronts, a plain attack with bombs or
+      rockets.
+  - **Creeping barrage.** Attacking, when one of its units moves or charges on a known enemy
+    it can see within 20 hexes, one free battery (not aircraft) puts a creeping barrage on
+    that enemy: the battery that lands soonest, with none of its men within the burst and
+    scatter of the aim. It lifts a hex each exchange along that unit's facing, for 3 lines.
+    One creeping barrage at a time (`commander.creep` in `data/units.yaml`). Riflemen stop
+    and shoot once in range, so this mostly covers men closing to charge.
   - **Smoke.** Attacking, before that, one battery lays smoke on the nearest enemy it knows
     of whose missiles reach one of its units that cannot shoot back at it (men without
     missiles, or out of their range): at the first of the enemy's hexes it can see and is not

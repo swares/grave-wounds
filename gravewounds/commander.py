@@ -12,7 +12,7 @@ ROUTED = ("broken", "fled")
 
 
 def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, exchange=None, stance: str = "attack",
-            memory: dict | None = None) -> tuple:
+            memory: dict | None = None, table: str | None = None) -> tuple:
     """Orders for every unit of `side`, in turn (each sees the moves before it). exchange: units
     that came on in it (arrived) wait. stance: attack (close with the enemy) or hold (stand,
     charging only what it can reach). memory: where it last saw each enemy unit, kept between
@@ -34,7 +34,7 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
             _apply(us, i, o)
     orders += _move_guns(d, us, side, (size, field, stance, known, exchange))
     orders += _lay_guns(d, us, side, (size, field, known, exchange))
-    return us, orders + _call_fire(d, us, side, field, known, (stance, exchange))
+    return us, orders + _call_fire(d, us, side, field, known, (stance, exchange, orders, table))
 
 
 def _free(d: Data, us: list, i: int, exchange) -> bool:
@@ -347,33 +347,93 @@ def _gun_apply(d: Data, us: list, i: int, o: dict, where: tuple) -> bool:
     return True
 
 
-def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, how: tuple = ("attack", None)) -> list:
+def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, how: tuple = ("attack", None, (), None)) -> list:
     """First its batteries under counter-battery fire displace (_displace). In the dark, one
     battery lights an enemy it has lost sight of (_call_illum).
     Attacking, one battery lays smoke where its units are under fire (_call_smoke).
-    Then one battery fires counter-battery on a located enemy battery (_call_counter). Then each
+    Then one battery fires counter-battery on a located enemy battery (_call_counter), and,
+    attacking, one puts a creeping barrage ahead of a unit closing on the enemy (_call_creep). Then each
     of its other off-map batteries (not tanks) with no mission, rounds and tubes, not
     displacing, and its aircraft that can fly (_free_air), is called on the enemy unit it sees now that scores best as a
     target for the side's unit nearest it (threat_score), at the first of its hexes the side
     can see, in the battery's reach, with none of the side's men within the kind's radius and
-    scatter."""
-    stance, exchange = how
+    scatter; aircraft fly a strafing run or napalm strip on a wide enemy front (_air_run)."""
+    stance, exchange, orders, table = how
     out = _displace(d, field, side)
     free = [k for k, b in enumerate((field or {}).get("support") or []) if _free_battery(d, b, side)]
     out += _call_illum(d, us, side, field, (known, exchange), free)
     out += _call_smoke(d, us, side, field, known, free) if stance == "attack" else []
     out += _call_counter(d, field, side, free)
+    out += _call_creep(d, us, side, field, (known, orders), free) if stance == "attack" else []
     air = [k for k, b in enumerate((field or {}).get("support") or []) if _free_air(d, field, b, side)]
-    for k in sorted(free + air):
+    return out + _call_plain(d, us, side, field, (known, sorted(free + air), table))
+
+
+def _call_plain(d: Data, us: list, side, field: dict | None, kt: tuple) -> list:
+    """Each of the given batteries and aircraft still without a mission is called on the enemy
+    it sees that scores best as a target (_fire_aim); aircraft fly a run on a wide front
+    (_air_run). -> [fire orders]."""
+    known, ks, table = kt
+    out = []
+    for k in ks:
         b = field["support"][k]
         K = d.units["indirect"]["kinds"][b["kind"]]
-        if b.get("mission"):
-            continue
-        aim = _fire_aim(d, us, side, field, known, (b, K))
+        aim = None if b.get("mission") else _fire_aim(d, us, side, field, known, (b, K))
         if aim:
-            b["mission"] = {"hex": aim[1], "wait": K["delay"], "repeat": False}
-            out.append({"unit": None, "act": "fire", "battery": k, "target": aim[0], "hex": aim[1]})
+            run = _air_run(d, us, side, (b, K), aim, table) if K.get("air") else None
+            b["mission"] = {"hex": aim[1], "wait": K["delay"], "repeat": False, **(run or {})}
+            out.append({"unit": None, "act": "fire", "battery": k, "target": aim[0], "hex": aim[1], **({"attack": run["attack"]} if run else {})})
     return out
+
+
+def _call_creep(d: Data, us: list, side, field: dict | None, ko: tuple, free: list) -> list:
+    """Attacking: of its units ordered this move to move or charge on a known enemy it can see
+    within commander.creep.near hexes, the nearest (the first of equals) gets a creeping
+    barrage on that enemy, at the first of its hexes the side can see, from the free battery
+    (not aircraft) that reaches it and lands soonest with none of its men within the burst and
+    scatter; it lifts step hexes every `every` exchanges along the unit's facing for `lines`
+    lines. Not while one of its batteries is already creeping. -> [the order], or []."""
+    known, orders = ko
+    sup, CR = (field or {}).get("support") or [], d.units["commander"]["creep"]
+    if any(b["side"] == side and (b.get("mission") or {}).get("creep") for b in sup):
+        return []
+    ours = [u for u in us if u["side"] == side and u["men"] > 0 and u["state"] != "fled"]
+    pairs = sorted((U.hdist(us[o["unit"]]["pos"], _where(us, o["target"], known)["pos"]), o["unit"], o["target"]) for o in orders
+                   if o.get("act") in ("move", "charge") and o.get("target") is not None and str(o["target"]) in known)
+    for dist, i, t in pairs:
+        h = next((x for x in _marks(d, us[t]) if U.spotted(d, us, field, side, x)), None) if dist <= CR["near"] else None
+        if h is None:
+            continue
+        guns = sorted((d.units["indirect"]["kinds"][sup[k]["kind"]]["delay"], k) for k in free if not sup[k].get("mission")
+                      and U.in_reach(d, sup[k], h)
+                      and not _too_near(d, ours, h, d.units["indirect"]["kinds"][sup[k]["kind"]]["radius"] + d.units["indirect"]["kinds"][sup[k]["kind"]]["scatter"]))
+        if guns:
+            k = guns[0][1]
+            sup[k]["mission"] = {"hex": list(h), "wait": guns[0][0], "repeat": True,
+                                 "creep": {"step": CR["step"], "dir": us[i]["facing"], "every": CR["every"], "lines": CR["lines"]}}
+            return [{"unit": None, "act": "creep", "battery": k, "target": t, "hex": list(h), "for": i}]
+    return []
+
+
+def _air_run(d: Data, us: list, side, bk: tuple, aim: tuple, table: str | None) -> dict | None:
+    """A strafing run or napalm strip for aircraft b (kind K) on enemy aim[0] at aim[1]: napalm
+    if the aircraft carry it and the war allows it (table's battle), else strafing, when the
+    target's front is at least the run's length; along its front; only if none of the side's
+    men are within K's scatter of a hex of the line. -> {attack, dir}, or None (a plain attack)."""
+    (b, K), (j, h) = bk, aim
+    R = d.units["indirect"]["air"].get("runs") or {}
+    rows = U.footprint(d, us[j])
+    front = len(rows[0]) if rows else 0
+    war = (d.tables.get(table) or {}).get("battle") if table else None
+    ours = [u for u in us if u["side"] == side and u["men"] > 0 and u["state"] != "fled"]
+    dirn = (us[j]["facing"] + 5) % 6
+    for mode in ("napalm", "strafe"):
+        r = R.get(mode)
+        if not r or b["kind"] not in r["kinds"] or front < r["length"] or ("wars" in r and war not in r["wars"]):
+            continue
+        if not any(_too_near(d, ours, x, K["scatter"]) for x in U.run_line(d, h, dirn, mode)):
+            return {"attack": mode, "dir": dirn}
+    return None
 
 
 def _displace(d: Data, field: dict | None, side) -> list:

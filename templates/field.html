@@ -1100,7 +1100,7 @@ const aiThisMove = () => S.aiDone && S.aiDone.exchange === S.exchange && S.aiDon
 function aiMove(){                                // at the start of its side's move, the commander orders that side
   if (!aiMoving() || aiThisMove()) return;
   const M = aiMemory(), mem = structuredClone(M.mem), sup = supports().map(b => (b.mission ? structuredClone(b.mission) : null));
-  const before = S.units.map(copyUnit), r = command(S.units, S.ai.side, SIZE, S.field, dice, S.exchange, { stance: S.ai.stance, memory: M.mem });
+  const before = S.units.map(copyUnit), r = command(S.units, S.ai.side, SIZE, S.field, dice, S.exchange, { stance: S.ai.stance, memory: M.mem, table: S.table });
   S.units = r.units;
   S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before, mem, sup, start: S.start };
   if (S.units.length !== before.length) realignStarts();   // guns hooked up or unhooked: each unit's move this phase starts where it stood
@@ -1135,13 +1135,15 @@ const ORDER_TEXT = {                              // (who, them, o, up, facing) 
   unhook: (who, them) => `${who} unhook their guns facing ${them}: they fire from the next exchange.`,
   dig: who => `${who} dig in at the objective (${nOf(FD.units.dig_in.exchanges, "exchange")} without moving or firing).`,
 };
+const airRunText = a => ({ napalm: ", a napalm strip along their front", strafe: ", a strafing run along their front" }[a] || "");   // what an air order flies, if not a plain attack
 function orderText(o){                            // "Billmen (Yorkists) move 4 hexes toward Archers (Lancastrians)."
   const t = S.units[o.target];
   let them = "the enemy";
   if (t) them = o.last ? `where ${unitName(t)} were last seen (exchange ${o.last})` : unitName(t);
-  if (o.act === "fire") return `${supports()[o.battery]?.name || "A battery"} are called on ${them} at ${hexName(o.hex)}.`;
+  if (o.act === "fire") return `${supports()[o.battery]?.name || "A battery"} are called on ${them} at ${hexName(o.hex)}${airRunText(o.attack)}.`;
   if (o.act === "displace") return `${supports()[o.battery]?.name || "A battery"} displace: ${supports()[o.by]?.name || "enemy guns"} have them under counter-battery fire (silent for ${nOf(FD.units.indirect.kinds[supports()[o.battery]?.kind]?.displace || 1, "exchange")}, then no longer located).`;
   if (o.act === "illum") return `${supports()[o.battery]?.name || "A battery"} are called to fire illumination over ${hexName(o.hex)}, where ${them} were last seen.`;
+  if (o.act === "creep") return `${supports()[o.battery]?.name || "A battery"} are called on ${them} at ${hexName(o.hex)} as a creeping barrage ahead of ${unitName(S.units[o.for])}: it lifts ${nOf(FD.units.commander.creep.step, "hex", "hexes")} a time for ${nOf(FD.units.commander.creep.lines, "line")}.`;
   if (o.act === "counter") return `${supports()[o.battery]?.name || "A battery"} are called on ${supports()[o.on]?.name || "an enemy battery"} (counter-battery), located by their flashes and sound.`;
   if (o.act === "smoke") return `${supports()[o.battery]?.name || "A battery"} are called to lay smoke on ${them} at ${hexName(o.hex)}: they are shooting at men who cannot reply.`;
   const who = unitName(S.units[o.unit]), f = Object.hasOwn(ORDER_TEXT, o.act) ? ORDER_TEXT[o.act] : null;
