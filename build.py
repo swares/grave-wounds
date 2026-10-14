@@ -494,7 +494,7 @@ def _commander_rules(d) -> list[str]:
         f"It knows an enemy only if one of its units sees it (sight, light, woods, smoke, as calling fire), or saw it in the last {K['remember']} exchanges (where it was then); with none known, a unit holds. "
         f"Each unit's target, among those it knows: {K['closing']} points off a hex away, and times its quality's sense ({by(K['sense'])}): {K['hurt']} a % of the enemy's men down, "
         f"{K['shaken']} if it is shaken, {K['threat']} if it is a danger to the unit (shooters, for men without missiles; men without missiles within a charge, for shooters). Shaken, it holds (and goes to ground under missile fire). Steady, it hesitates on d100 at or under {by(K['hesitate'])}%; "
-        f"otherwise it takes the best hex it can reach facing the target: {K['closing']} points a hex nearer, cover % times {by(K['cover'])}, less a point a hex moved. "
+        f"otherwise it takes the best hex it can reach facing the target: {K['closing']} points a hex nearer, cover % times {by(K['cover'])}, less a point a hex moved; of equals, the hex nearest the straight line to it. "
         f"Shooters stop where the target is in range, keep {K['keep_off']} hexes off, and never charge; with a modern weapon they go to ground under fire. "
         f"Others charge only if their men × attack % is at least this % of the target's: attacking {by(K['charge_odds']['attack'])}; holding {by(K['charge_odds']['hold'])}. "
         f"Holding, a side leaves its ground only to charge. Reserve: at its first move (unless the GM marks reserves) it holds back its rearmost units up to {by(K['reserve'])}% of its men; "
