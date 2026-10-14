@@ -57,6 +57,7 @@ somewhat cooler; the test valley uses −0.9 °F (−0.5 °C).
 | Horn of Africa coast, hot and semi-arid | Mogadishu; rounded design estimates |
 | Central coast of Vietnam, tropical monsoon | Hue: rains September to January, the crachin drizzle into March; rounded design estimates |
 | Annamite hills of Vietnam, monsoon and mist | Khe Sanh and the A Shau at about 400-600 m, with long fogs November to March; rounded design estimates |
+| Crimean coast, Black Sea | Sevastopol; rounded design estimates |
 | Falkland Islands, cold oceanic | Stanley, with the seasons reversed; rounded design estimates |
 | North Korean plateau, bitter winters | the Changjin (Chosin) plateau at about 1,100 m; rounded design estimates |
 | Hindu Kush valleys, hot summers and cold winters | the Kunar and Nuristan valleys at about 1,200 m; rounded design estimates |
@@ -65,7 +66,7 @@ The four North American climates are rounded approximations of 1991–2020 stati
 for the places named; the Greenville-Spartanburg January figures and Sheridan's temperatures
 and precipitation days were checked against the published normals (Sheridan's days of 1 mm
 or more are scaled down from its days of 0.01 inch). The campaigns before 1850 there use a
-shift of −1.8 °F (−1 °C), Bull Run and Fort Phil Kearny −0.9 °F (−0.5 °C).
+shift of −1.8 °F (−1 °C), Bull Run and Fort Phil Kearny −0.9 °F (−0.5 °C), as does Sevastopol.
 
 The weather strip on the travel map shows the selected force's day: its date, sunrise and
 sunset, marching hours, weather and ground. The GM can **Roll again**, or set the weather,

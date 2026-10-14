@@ -1234,12 +1234,12 @@ when it is wider than a hex).
   outside it count as guarding it. An objective the GM marks by hand has the commander's own
   radius, 1 hex. The enemy commander then takes
 it or holds it, as under [The enemy commander](#the-enemy-commander); the GM can move or
-clear it with **Clicking the map**. Twenty-seven battlefields have one: Point 593 at
+clear it with **Clicking the map**. Twenty-eight battlefields have one: Point 593 at
 Cassino, Castle Hill in the town, the crests of Hills 875, 861A, 931 and 937, Pork Chop,
 Fox Hill, Hill 504 at Kapyong, G Company's hill at Chipyong-ni, Darwin Hill, the station
 at Grozny, the provincial headquarters at Hue, the crash site in Mogadishu, Observation
 Post Topside at Wanat, Combat Outpost Keating, X-Ray's landing zone, the saddle at Osan
-and on Bougainville, the railway bridge at Mons, Henry Hill, the British guns at Lundy's
+and on Bougainville, the railway bridge at Mons, Henry Hill, the Redan's salient, the British guns at Lundy's
 Lane, the windmill battery at Lützen, the heights at Albuera, the edge of Cisterna and the
 wagon-box corral. The open-field battles (Agincourt, Towton, Visby, Cowpens), the ambush
 on Lodge Trail Ridge, the Jolan at Fallujah and the unfinished wall at Sidon have none:
@@ -1440,6 +1440,32 @@ the top; the Portage road and the Niagara are off the map to the east.
 - The wound tables are the War of 1812's.
 
 It is drawn by `tools/maps/make_lundys_lane_field.mjs`.
+
+**The Great Redan, Sevastopol, 8 September 1855** (`data/fields/redan-1855.yaml`). The field
+is 100 × 80 hexes, about 1,090 yards (1,000 m) east to west and 750 yards (690 m) north to
+south, north at the top: the Redan's point toward the British trench at the bottom.
+- The Redan: two faces meeting in a salient, each with a **ditch** and an **earth bank** (the
+  parapet) along it, joined to the Russian line running off either side of the map. The back
+  (the gorge) is open, with a **breastwork** (an earth bank) across it. What is left of the
+  **abatis** lies in scattered hexes in front of the faces.
+- The British advanced **trench** about 200 yards (180 m) from the salient, with a zig-zag
+  back from it; open ground pitted with shell holes (rough ground) between; ravines down both
+  sides; the shelled ruins of the Karabelnaya suburb (rubble and buildings) behind the Redan.
+- Fair and cold, with a strong north wind.
+- Just after noon: the covering party of riflemen and the ladder party out in front, the
+  stormers of the Light and 2nd Divisions in the trench, and green supports behind.
+- The Russians: the Vladimirski Regiment at the salient and behind the breastwork, guns at
+  each shoulder, riflemen on the line to the west, and the Kamchatski and Iakutski regiments
+  in reserve in the suburb. The Russian infantry have smoothbore muskets, their riflemen and
+  the British rifle-muskets; the guns are smoothbore.
+- The wound tables are the Crimean War's. The siege guns on both sides, the French attack on
+  the Malakhov to the east and the flanking fire from the Russian batteries either side are
+  not on the map.
+- Played by the enemy commander, the British stormers stop in the trench and trade fire at
+  range with the men in the work rather than rushing it (see *The enemy commander*); the GM
+  should move them for the assault.
+
+It is drawn by `tools/maps/make_redan_field.mjs`.
 
 **First Bull Run, 21 July 1861** (`data/fields/bull-run-1861.yaml`). The field is 140 × 130
 hexes, about 1,530 yards (1,400 m) east to west and 1,240 yards (1,130 m) north to south, north
