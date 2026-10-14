@@ -107,11 +107,7 @@ def _lay_guns(d: Data, us: list, side, ctx: tuple) -> list:
     size, field, known, exchange = ctx
     out, occ = [], U.occupancy(d, us)
     for i, u in enumerate(us):
-        if u["side"] != side or not (U.is_battery(d, u) or U.is_at_gun(d, u)) or u["state"] != "steady" or u["men"] <= 0:
-            continue
-        if u.get("limbered") or u.get("limbering"):
-            continue
-        if (exchange is not None and u.get("arrived") == exchange) or U.in_contact(d, us, occ, i):
+        if not _turns_guns(d, us, i, side, (occ, exchange)):
             continue
         foes = [(U.hdist(u["pos"], m["pos"]), int(k)) for k, m in known.items() if k.isdigit()]
         if not foes:
@@ -201,10 +197,22 @@ def _drop_index(known: dict, i: int) -> None:
     known.update(moved)
 
 
+def _turns_guns(d: Data, us: list, i: int, side, ctx: tuple) -> bool:
+    """Unit i is a battery or anti-tank guns of the side in action: steady, with men, not
+    limbered or changing over, not just come on, out of contact."""
+    occ, exchange = ctx
+    u = us[i]
+    if u["side"] != side or not (U.is_battery(d, u) or U.is_at_gun(d, u)) or u["state"] != "steady" or u["men"] <= 0:
+        return False
+    if u.get("limbered") or u.get("limbering") or (exchange is not None and u.get("arrived") == exchange):
+        return False
+    return not U.in_contact(d, us, occ, i)
+
+
 def _move_guns(d: Data, us: list, side, ctx: tuple) -> list:
     """Its batteries and tractors towing anti-tank guns: limber, move, unlimber or unhook
     (_gun_order). -> [orders]."""
-    size, field, stance, known, exchange = ctx
+    size, field, _, _, exchange = ctx
     out = []
     for i in range(len(us)):
         u = us[i]
@@ -220,7 +228,7 @@ def _gun_order(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
     """A battery or a tractor towing guns: holding, it unlimbers (or unhooks); attacking, with
     an enemy in reach it unlimbers (unhooks), else a battery in action limbers and one limbered
     (or a tractor) moves toward its goal (_gun_move)."""
-    size, field, stance, known, exchange = ctx
+    size, field, stance, known, _ = ctx
     u = us[i]
     battery = U.is_battery(d, u)
     t, goal, inr = _gun_goal(d, us, u, field, known)
@@ -238,18 +246,9 @@ def _gun_move(d: Data, us: list, i: int, aim: tuple, where: tuple) -> dict | Non
     the enemy and no nearer than keep_off (else nearer is better), less the cost and known
     minefields on the way. -> a move (on a target) or advance (on the objective), or None."""
     (t, goal), (size, field), u = aim, where, us[i]
-    K, reach, allow = d.units["commander"], gun_reach(d, u), U.allowance(d, u)
     foes = {k for k, j in U.occupancy(d, us).items() if us[j]["side"] != u["side"]}
-    cands = []
-    for h, c in reachable(d, us, i, size, allow, field).items():
-        dist = U.hdist(list(h), goal)
-        s = -c - K["mines"].get(u["quality"], 0) * _mined(field, u["pos"], h, u["side"])
-        if t is None:
-            s -= K["closing"] * dist
-        else:
-            s += (K["in_range"] if K["keep_off"] <= dist <= reach else -K["closing"] * dist) - (K["too_close"] if dist < K["keep_off"] else 0)
-        cands.append((-s, c, h[1], h[0]))
-    tries = K["tries"]
+    cands = [(-_gun_score(d, field, u, (h, c), aim), c, h[1], h[0]) for h, c in reachable(d, us, i, size, U.allowance(d, u), field).items()]
+    tries = d.units["commander"]["tries"]
     for _, c, row, col in sorted(cands):
         h = [col, row]
         if h == list(u["pos"]):
@@ -264,6 +263,18 @@ def _gun_move(d: Data, us: list, i: int, aim: tuple, where: tuple) -> dict | Non
         if m["ok"]:
             return {"act": "move" if t is not None else "advance", "target": t, "pos": h, "facing": f, "cost": m["cost"]}
     return None
+
+
+def _gun_score(d: Data, field: dict | None, u: dict, hc: tuple, aim: tuple) -> int:
+    """How much it likes gun unit u ending at h, c hexes of movement away, going for aim
+    (target, goal): in reach of the enemy and no nearer than keep_off (else nearer is better;
+    on the objective, nearer), less the cost and known minefields on the way."""
+    (h, c), (t, goal), K = hc, aim, d.units["commander"]
+    dist = U.hdist(list(h), goal)
+    s = -c - K["mines"].get(u["quality"], 0) * _mined(field, u["pos"], h, u["side"])
+    if t is None:
+        return s - K["closing"] * dist
+    return s + (K["in_range"] if K["keep_off"] <= dist <= gun_reach(d, u) else -K["closing"] * dist) - (K["too_close"] if dist < K["keep_off"] else 0)
 
 
 def _gun_apply(d: Data, us: list, i: int, o: dict, where: tuple) -> bool:
