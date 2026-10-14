@@ -889,8 +889,11 @@ def _commander_errors(d: Data) -> list[str]:
 
 def _rout_errors(d: Data) -> list[str]:
     """units.yaml rout (how far a broken unit runs through its friends, and how much it jostles
-    them) and escalade (ladders)."""
+    them), escalade (ladders) and how far a placed battery displaces."""
     R, errors = d.units.get("rout") or {}, []
+    shift = (d.units.get("indirect") or {}).get("displace_shift")
+    if not (isinstance(shift, int) and shift >= 1):
+        errors.append("units.yaml: indirect.displace_shift must be a whole number of hexes, 1 or more")
     if not (isinstance(R.get("through", 1), int) and R.get("through", 1) >= 1):
         errors.append("units.yaml: rout.through must be a whole number of 1 or more")
     if not (isinstance(R.get("jostle", 0), (int, float)) and 0 <= R.get("jostle", 0) <= 1):
