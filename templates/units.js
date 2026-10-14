@@ -1978,7 +1978,7 @@ function command(units, side, size, field, rng, exchange = null, { stance = "att
     const roll = rng.randint(1, 100), o = unitOrder(us, i, [size, field, stance, known, exchange], roll);
     if (o){ orders.push({ unit: i, ...o }); applyOrder(us, i, o) }
   }
-  orders.push(...moveGuns(us, side, [size, field, stance, known, exchange]), ...layGuns(us, side, [size, field, known, exchange]), ...callFireAi(us, side, field, known, stance));
+  orders.push(...moveGuns(us, side, [size, field, stance, known, exchange]), ...layGuns(us, side, [size, field, known, exchange]), ...callFireAi(us, side, field, known, [stance, exchange]));
   return { units: us, orders };
 }
 const knownFoes = known => Object.entries(known).filter(([k]) => /^\d+$/.test(k));   // [index, {pos, facing, ex}] of the enemies it knows of
@@ -2120,9 +2120,10 @@ function gunApply(us, i, o, [size, field, exchange]){   // limber or unlimber (c
   else us[i] = { ...us[i], pos: o.pos, facing: o.facing };
   return true;
 }
-function callFireAi(us, side, field, known, stance = "attack"){   // attacking, one battery lays smoke where its units are under fire; its other free batteries are called on the enemy it sees that scores best as a target (as commander._call_fire)
+function callFireAi(us, side, field, known, [stance, exchange] = ["attack", null]){   // in the dark, one battery lights an enemy it lost sight of; attacking, one battery lays smoke where its units are under fire; its other free batteries are called on the enemy it sees that scores best as a target (as commander._call_fire)
   const free = (field?.support || []).map((b, k) => k).filter(k => freeBattery(field.support[k], side));
-  const out = stance === "attack" ? callSmoke(us, side, field, known, free) : [];
+  const out = callIllum(us, side, field, [known, exchange], free);
+  if (stance === "attack") out.push(...callSmoke(us, side, field, known, free));
   out.push(...aiCounter(field, side, free));
   free.forEach(k => {
     const b = field.support[k], K = UD.indirect.kinds[b.kind];
@@ -2133,6 +2134,26 @@ function callFireAi(us, side, field, known, stance = "attack"){   // attacking, 
     out.push({ unit: null, act: "fire", battery: k, target: aim[0], hex: aim[1] });
   });
   return out;
+}
+function callIllum(us, side, field, [known, exchange], free){   // in the dark: illumination over the lost enemy nearest its units, by the free battery with illumination that lands soonest (as commander._call_illum)
+  const L = lightOf(field), ours = us.filter(u => u.side === side && u.men > 0 && u.state !== "fled");
+  if (!L || L.sight === null || L.sight === undefined || !ours.length) return [];
+  const lost = knownFoes(known).filter(([, m]) => m.ex !== (exchange ?? 0) && !lit(field, m.pos))
+    .map(([k, m]) => [Math.min(...ours.map(o => hdist(o.pos, m.pos))), Number(k)]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const sup = field?.support || [];
+  const coming = sup.filter(b => b.side === side && b.mission?.illum).map(b => [b.mission.hex, UD.indirect.kinds[b.kind].illum || 0]);
+  for (const [, j] of lost){
+    const h = [...known[String(j)].pos];
+    if (coming.some(([c, r]) => hdist(h, c) <= r)) continue;
+    const guns = free.filter(k => !sup[k].mission && UD.indirect.kinds[sup[k].kind].illum && inReach(sup[k], h))
+      .map(k => [UD.indirect.kinds[sup[k].kind].delay, k]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    if (guns.length){
+      const k = guns[0][1];
+      sup[k].mission = { hex: h, wait: UD.indirect.kinds[sup[k].kind].delay, repeat: false, illum: true };
+      return [{ unit: null, act: "illum", battery: k, target: j, hex: h }];
+    }
+  }
+  return [];
 }
 function aiCounter(field, side, free){            // one free battery with the best counter % fires on the reachable located enemy battery with most tubes served (as commander._call_counter)
   const sup = field?.support || [];

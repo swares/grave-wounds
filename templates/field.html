@@ -1139,6 +1139,7 @@ function orderText(o){                            // "Billmen (Yorkists) move 4 
   let them = "the enemy";
   if (t) them = o.last ? `where ${unitName(t)} were last seen (exchange ${o.last})` : unitName(t);
   if (o.act === "fire") return `${supports()[o.battery]?.name || "A battery"} are called on ${them} at ${hexName(o.hex)}.`;
+  if (o.act === "illum") return `${supports()[o.battery]?.name || "A battery"} are called to fire illumination over ${hexName(o.hex)}, where ${them} were last seen.`;
   if (o.act === "counter") return `${supports()[o.battery]?.name || "A battery"} are called on ${supports()[o.on]?.name || "an enemy battery"} (counter-battery), located by their flashes and sound.`;
   if (o.act === "smoke") return `${supports()[o.battery]?.name || "A battery"} are called to lay smoke on ${them} at ${hexName(o.hex)}: they are shooting at men who cannot reply.`;
   const who = unitName(S.units[o.unit]), f = Object.hasOwn(ORDER_TEXT, o.act) ? ORDER_TEXT[o.act] : null;
