@@ -1187,13 +1187,21 @@ def _field_support(d: Data, f: dict) -> list:
              "rounds": s["tubes"] * K[s["kind"]]["rounds"], "mission": None, **({"place": list(s["place"])} if s.get("place") else {})} for s in f["support"]]
 
 
+def vehicle_device(d: Data, table: str) -> str | None:
+    """The night-vision device a vehicle unit carries by default in the war of this wound table
+    (weather.yaml light.night_vision.vehicles), or None."""
+    war = (d.tables.get(table) or {}).get("battle")
+    return (((d.weather or {}).get("light") or {}).get("night_vision") or {}).get("vehicles", {}).get(war)
+
+
 def battlefield_units(d: Data, fid: str) -> list:
     """The armies as drawn up on a battlefield, as units ready to fight (not those that come
-    in by air: `lands`)."""
-    out = []
+    in by air: `lands`); vehicle units with no night device get their war's (vehicle_device)."""
+    out, dev = [], vehicle_device(d, d.fields[fid]["table"])
     for u in (x for x in d.fields[fid].get("units", []) if "lands" not in x):
         out.append({**u, "start": u["men"], "down": 0, "dead": 0, "hurt": {}, "heroes": [], "state": "steady",
-                    "mounted": bool(u.get("mounted")), "charged": False, "leader": None})
+                    "mounted": bool(u.get("mounted")), "charged": False, "leader": None,
+                    **({"nv": dev} if u.get("vehicle") and not u.get("nv") and dev else {})})
     return out
 
 

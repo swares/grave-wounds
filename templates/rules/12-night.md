@@ -16,7 +16,9 @@ and whichever is shorter counts. The dark also slows a march and turns men round
   be aimed at, and fire called on, from up to {{n_flash}} away.
 - **Flares.** A flare lights the ground within {{n_flare}} for {{n_lasts}} exchanges, and
   illumination rounds from mortars and guns light far more. A lit hex is seen as by day.
-- **Night vision.** From the 1960s, units can carry devices that see further in the dark:
+- **Night vision.** From the 1960s, units can carry devices that see further in the dark.
+  Vehicles carry their war's unless another is chosen: infrared searchlights in Vietnam,
+  thermal sights from the 1980s on.
 
 {{table:nvd}}
 

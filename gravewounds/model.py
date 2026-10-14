@@ -1269,6 +1269,7 @@ def _light_errors(wx: dict) -> list[str]:
     if not (isinstance(N.get("kits"), list) and N.get("kit_device") in devs) or any(
             not (v.get("name") and isinstance(v.get("sight"), int) and isinstance(v.get("aim"), int)) for v in devs.values()):
         errors.append("weather.yaml: light.night_vision needs kits, a kit_device among its devices, and devices with a name, sight and aim")
+    errors += [f"weather.yaml: light.night_vision.vehicles.{w} names unknown device {v}" for w, v in (N.get("vehicles") or {}).items() if v not in devs]
     if not (isinstance(F.get("width"), int) and isinstance(F.get("aim"), int)):
         errors.append("weather.yaml: light.fixed_line needs width and aim")
     return errors + [f"weather.yaml: light.{k} must be a number" for k in ("dusk_hours", "moon_from", "lasts", "flare", "flash", "lost_for") if not isinstance(L.get(k), (int, float))]

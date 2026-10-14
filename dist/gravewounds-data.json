@@ -17071,7 +17071,17 @@
       "sight": 300,
       "aim": 0,
       "smoke": true
+     },
+     "ir_searchlight": {
+      "name": "Infrared searchlight and sights (tanks, 1950s-70s)",
+      "sight": 80,
+      "aim": 20
      }
+    },
+    "vehicles": {
+     "Vietnam": "ir_searchlight",
+     "Late 20th century": "thermal",
+     "Iraq & Afghanistan": "thermal"
     }
    },
    "fixed_line": {

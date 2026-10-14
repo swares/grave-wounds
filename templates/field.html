@@ -384,10 +384,11 @@ function fieldOptions(){                        // the battlefields under their 
     .filter(([, fs]) => fs.length).map(([p, fs]) => `<optgroup label="${esc(p)}">${fs.map(opt).join("")}</optgroup>`).join("")
     + all.filter(([, f]) => !order.includes(f.period)).map(opt).join("");
 }
+const newNv = o => o.nv || (o.vehicle ? vehicleDevice(S.table) : null);   // a unit's night device: as chosen, else a vehicle's war's
 function newUnit(o){
   return { id: S.seq++, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, guns: isGun(o.weapon) ? gunKind(o) : undefined, width: o.width || Math.ceil(o.men / form(o).per_hex),
-    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.nv ? { nv: o.nv } : {}), ...(o.fac ? { fac: true } : {}), ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
+    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(newNv(o) ? { nv: newNv(o) } : {}), ...(o.fac ? { fac: true } : {}), ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
 }
 function newField(){                              // open ground of the default size (and the page goes back to that size)
   SIZE = DEFAULT_SIZE.slice();
@@ -1930,7 +1931,8 @@ function renderNv(u, setup){                      // the unit's night-vision dev
   el.hidden = !u || !FD.weather?.light;
   if (el.hidden) return;
   const byKit = (NVD().kits || []).includes(u.kit) ? NVD().devices[NVD().kit_device].name : "none";
-  el.innerHTML = `<option value="">Night vision: by kit (${esc(byKit.split(" (")[0].toLowerCase())})</option><option value="none">No night vision</option>`
+  const first = u.vehicle ? "" : `<option value="">Night vision: by kit (${esc(byKit.split(" (")[0].toLowerCase())})</option>`;
+  el.innerHTML = first + `<option value="none">No night vision</option>`
     + Object.entries(NVD().devices).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   el.value = u.nv || "";
   el.disabled = !setup;

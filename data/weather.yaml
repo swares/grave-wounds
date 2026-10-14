@@ -103,6 +103,10 @@ light:
       starlight: {name: "Starlight scope (1960s-70s)", sight: 100, aim: 15}
       goggles:   {name: "Night-vision goggles (1990s on)", sight: 150, aim: 5}
       thermal:   {name: "Thermal sight (tanks from the 1980s, teams from the 2000s)", sight: 300, aim: 0, smoke: true}
+      ir_searchlight: {name: "Infrared searchlight and sights (tanks, 1950s-70s)", sight: 80, aim: 20}
+    # Vehicles' sights by war (the wound table's `battle`): a vehicle unit with no device chosen
+    # gets its war's (tanks and IFVs of that era carried them; design estimates).
+    vehicles: {"Vietnam": ir_searchlight, "Late 20th century": thermal, "Iraq & Afghanistan": thermal}
   # A machine gun laid on a fixed line (in daylight or at dusk) fires blind down it in the dark,
   # at any enemy within `width` field hexes of the line from its front to the hex it is laid on:
   # no sight needed, `aim` % off in place of the light's.

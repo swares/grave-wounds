@@ -60,9 +60,9 @@ When an item is done, delete it here and note it in the pull request that closes
   battlefield and its armies).
 - **Night, second cut.** Muzzle flashes, night vision, fixed lines, slower moves and losing
   direction are in. Night-vision devices (Starlight scope, goggles, thermal sight) are a
-  unit's whole: a Starlight scope stands for the few rifles that had one, and there are no
-  infra-red searchlights (the 1950s-60s active sights) or devices that wash out in a flare's
-  light. A fixed line is laid on one hex, with no traverse limits or
+  unit's whole: a Starlight scope stands for the few rifles that had one. Vehicles' infrared
+  searchlights do not show the vehicle to an enemy with infrared, and no device washes out in
+  a flare's light. A fixed line is laid on one hex, with no traverse limits or
   final protective fire called by flare. A lost unit only turns, and never strays onto
   another path or into its friends. The moon is a simple model, good to an hour or so.
 - **Air support, third cut.** Ground fire hits aircraft (bringing some down, sending the
@@ -85,8 +85,7 @@ When an item is done, delete it here and note it in the pull request that closes
   and minefields (1939 on), gun shields (anti-tank and anti-aircraft guns, small arms from
   the front), guns emplaced before the battle, anti-tank guns' own rounds and gun tractors
   towing them, lorries and tank riders are in. Still left out: shields on machine guns and
-  field guns, the commander towing its guns, mines laid or lifted during the battle (no sappers clearing a lane), and
-  vehicles' night sights. A minefield is set off along a straight line from
+  field guns, the commander towing its guns, mines laid or lifted during the battle (no sappers clearing a lane). A minefield is set off along a straight line from
   where a unit's move began, not along the path it took. No battlefield has minefields yet:
   to be laid only where the accounts name them. Crews who bail out simply leave the fight.
 - **Fire at hidden men, first cut.** Men gone to ground, in bunkers or in buildings are now hit
