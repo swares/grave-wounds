@@ -211,17 +211,70 @@ def _turns_guns(d: Data, us: list, i: int, side, ctx: tuple) -> bool:
 
 def _move_guns(d: Data, us: list, side, ctx: tuple) -> list:
     """Its batteries and tractors towing anti-tank guns: limber, move, unlimber or unhook
-    (_gun_order). -> [orders]."""
-    size, field, _, _, exchange = ctx
-    out = []
+    (_gun_order); attacking, its empty tractors go to fetch guns (_fetch). -> [orders]."""
+    size, field, stance, _, exchange = ctx
+    out, claimed = [], set()
     for i in range(len(us)):
         u = us[i]
-        if not (U.is_battery(d, u) or (_tractor(d, u) and gun_reach(d, u))) or not _gun_ready(d, us, i, side, exchange):
+        if stance == "attack" and _tractor(d, u) and not u.get("riders") and _gun_ready(d, us, i, side, exchange):
+            o = _fetch(d, us, i, ctx, claimed)
+        elif not (U.is_battery(d, u) or (_tractor(d, u) and gun_reach(d, u))) or not _gun_ready(d, us, i, side, exchange):
             continue
-        o = _gun_order(d, us, i, ctx)
+        else:
+            o = _gun_order(d, us, i, ctx)
         if o and _gun_apply(d, us, i, o, (size, field, exchange)):
             out.append({"unit": i, **o})
     return out
+
+
+def _wants_tow(d: Data, us: list, g: int, ctx: tuple) -> bool:
+    """Anti-tank guns g of the side would hook up (_hook_up): on the map, not emplaced, ready,
+    with no known enemy in reach and somewhere to go."""
+    _, field, _, known, exchange = ctx
+    e = us[g]
+    if not U.is_at_gun(d, e) or e.get("emplaced") or not _gun_ready(d, us, g, e["side"], exchange):
+        return False
+    _, goal, inr = _gun_goal(d, us, e, field, known)
+    return goal is not None and not inr
+
+
+def _fetch(d: Data, us: list, i: int, ctx: tuple, claimed: set) -> dict | None:
+    """An empty tractor goes to fetch the nearest guns of its side that want a tow and that it
+    can tow (no other tractor fetching them this move; the first of equals): to the hex in its
+    allowance beside them it reaches cheapest, else as near them as it can, facing where the
+    guns will go; it does not touch the enemy. They hook up at the side's next move."""
+    size, field, _, known, _ = ctx
+    u = us[i]
+    guns = sorted((U.hdist(u["pos"], e["pos"]), g) for g, e in enumerate(us)
+                  if e["side"] == u["side"] and g not in claimed and _wants_tow(d, us, g, ctx)
+                  and not any(t() for t, _ in U._tow_checks(d, e, u)))
+    if not guns:
+        return None
+    g = guns[0][1]
+    claimed.add(g)
+    goal = _gun_goal(d, us, us[g], field, known)[1]
+    near = [x for r in U.footprint(d, us[g]) for x in r]
+    foes = {k for k, j in U.occupancy(d, us).items() if us[j]["side"] != u["side"]}
+    cands = []
+    for h, c in reachable(d, us, i, size, U.allowance(d, u), field).items():
+        f = U.bearing(list(h), goal)
+        moved = {**u, "pos": list(h), "facing": f}
+        gap = min(U.hdist(a, b) for r in U.footprint(d, moved) for a in r for b in near)
+        cands.append((0 if gap <= 1 else gap, c, h[1], h[0], f))
+    tries = d.units["commander"]["tries"]
+    for _, c, row, col, f in sorted(cands):
+        h = [col, row]
+        if h == list(u["pos"]):
+            return None
+        if _touches(d, {**u, "pos": h, "facing": f}, foes):
+            continue
+        if tries == 0:
+            return None
+        tries -= 1
+        m = _legal(d, us, i, (h, f, c, False), (size, field))
+        if m["ok"]:
+            return {"act": "fetch", "target": None, "guns": g, "pos": h, "facing": f, "cost": m["cost"]}
+    return None
 
 
 def _gun_order(d: Data, us: list, i: int, ctx: tuple) -> dict | None:

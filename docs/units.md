@@ -312,7 +312,11 @@ general. All its numbers are in units.yaml `commander`.
     is no nearer than 2 hexes (`commander.keep_off`), never touching it; known minefields on
     the way count as for other units.
   - Holding, its guns unlimber, or are unhooked, where they stand, and never move.
-  - Emplaced guns stay put, and empty tractors are left to the GM.
+  - Attacking, an empty tractor of its side goes to fetch the nearest anti-tank guns that
+    want a tow and that it can tow (one tractor to a gun unit): to the hex in its allowance
+    beside them it reaches cheapest, else as near as it can get, facing where the guns will
+    go. The guns hook up at the side's next move.
+  - Emplaced guns stay put, and guns never fall back on tow.
   - Its off-map batteries (not tanks) with no mission are called on the enemy unit it sees
     now that scores best as a target. It fires at the first of that unit's hexes its side
     can see and the battery reaches, and never where its own men are within the burst and

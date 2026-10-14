@@ -23,7 +23,7 @@ When an item is done, delete it here and note it in the pull request that closes
   its move back. It looks once at the start of each move. Attacking, it smokes enemies
   shooting at men who cannot reply, calls its aircraft, puts one battery on counter-battery fire and displaces batteries under it, and in the dark lights an enemy it has lost sight of. Its sappers lay one row and lift only the row ahead of
   them: no deep belts, and no clearing a whole path ahead of the attack. Still left out: creeping barrages, strafing runs and napalm strips; moving a placed
-  battery to a new place when it displaces; empty tractors going to fetch guns, and guns moving back; air controllers, riders, fixed lines and works; any plan beyond one
+  battery to a new place when it displaces; guns falling back on tow; air controllers, riders, fixed lines and works; any plan beyond one
   objective (phase lines, a second objective, feints, scouting). It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model
   with a key the player supplies, to explain its orders in prose.

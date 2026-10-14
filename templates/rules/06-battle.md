@@ -128,7 +128,7 @@ sometimes hesitate. With no enemy in sight, a unit holds.
   aircraft (bombs and rockets, when they can fly) on what it sees. Its batteries under counter-battery fire displace. In the dark it first has one battery fire illumination over the enemy it has lost
   sight of nearest its men, where it was last seen. Attacking, guns with no enemy in reach go forward: a battery limbers, moves and
   unlimbers once an enemy is in reach; anti-tank guns hook up to an empty tractor beside
-  them, are towed, and are unhooked in reach. They stop in reach but no nearer than
+  them (an empty tractor drives over to fetch them), are towed, and are unhooked in reach. They stop in reach but no nearer than
   {{c_keep_off}} hexes. Holding, its guns unlimber or unhook where they stand. Attacking, it first has one battery smoke an enemy that is shooting at men who
   cannot reply (not in the dark, or in a gale). Then one battery fires counter-battery on
   a located enemy battery it can reach: the one with the best counter % on the one with the

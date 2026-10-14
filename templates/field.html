@@ -1128,6 +1128,7 @@ const ORDER_TEXT = {                              // (who, them, o, up, facing) 
   ground: who => `${who} go to ground under fire.`,
   lay: (who, them, o) => `${who} lay ${FD.units.mines.kinds[o.kind].name.toLowerCase()} ahead of them (${nOf(FD.units.mines.sappers.lay, "exchange")} without moving or firing).`,
   lift: who => `${who} lift the known mines ahead of them, a lane (${nOf(FD.units.mines.sappers.clear, "exchange")} without moving or firing).`,
+  fetch: (who, them, o) => `${who} drive ${nOf(o.cost, "hex", "hexes")} to fetch ${S.units[o.guns]?.name || "their guns"}: they hook up next move.`,
   hook: (who, them, o) => `${who} hook up ${o.guns} to tow them forward: they do not fire until unhooked.`,
   limber: who => `${who} limber up to move forward (an exchange changing over).`,
   unlimber: who => `${who} unlimber to fire (an exchange changing over).`,
