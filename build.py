@@ -512,8 +512,9 @@ def _commander_rules(d) -> list[str]:
         f"Its sappers, attacking, lift the known enemy mines in the row ahead when the straight way to their target (or the objective) crosses known mines; holding, or at the objective, "
         f"with no enemy it knows of within {K['sappers']['clear_of']} hexes, they lay mines in the row ahead (mixed if the enemy it knows of has vehicles, else anti-personnel). "
         f"Attacking, its guns with no known enemy in reach go forward: a battery limbers, moves and unlimbers once one is in reach; anti-tank guns hook up to an empty tractor beside them and are unhooked in reach "
-        f"(the tractor counting 4 hexes less); moving guns stop in reach, no nearer than {K['keep_off']} hexes. Holding, its guns unlimber or unhook where they stand. "
-        "It leaves strafing runs, napalm, works and empty tractors to the GM.",
+        f"(the tractor counting 4 hexes less; empty tractors fetch them); moving guns stop in reach, no nearer than {K['keep_off']} hexes. Holding, its guns unlimber or unhook where they stand. "
+        "Attacking, an empty tractor drives beside the nearest guns that want a tow, to hook them up next move. "
+        "It leaves strafing runs, napalm and works to the GM.",
     ]
 
 

@@ -2069,15 +2069,48 @@ function hookUp(units, side, [field, known, exchange]){   // attacking: anti-tan
   }
   return { units: us, orders: out };
 }
-function moveGuns(us, side, ctx){                   // its batteries and tractors towing anti-tank guns limber, move, unlimber or unhook (as commander._move_guns)
-  const [size, field, , , exchange] = ctx, out = [], n = us.length;
+function moveGuns(us, side, ctx){                   // its batteries and tractors towing anti-tank guns limber, move, unlimber or unhook; attacking, empty tractors fetch guns (as commander._move_guns)
+  const [size, field, stance, , exchange] = ctx, out = [], n = us.length, claimed = new Set();
   for (let i = 0; i < n; i++){
     const u = us[i];
-    if (!(isBattery(u) || (tractor(u) && gunReach(u))) || !gunReady(us, i, side, exchange)) continue;
-    const o = gunOrder(us, i, ctx);
+    let o;
+    if (stance === "attack" && tractor(u) && !u.riders && gunReady(us, i, side, exchange)) o = fetchGuns(us, i, ctx, claimed);
+    else if (!(isBattery(u) || (tractor(u) && gunReach(u))) || !gunReady(us, i, side, exchange)) continue;
+    else o = gunOrder(us, i, ctx);
     if (o && gunApply(us, i, o, [size, field, exchange])) out.push({ unit: i, ...o });
   }
   return out;
+}
+function wantsTow(us, g, [, field, , known, exchange]){   // anti-tank guns that would hook up: on the map, not emplaced, ready, nothing in reach and somewhere to go (as commander._wants_tow)
+  const e = us[g];
+  if (!isAtGun(e) || e.emplaced || !gunReady(us, g, e.side, exchange)) return false;
+  const [, goal, inr] = gunGoal(us, e, field, known);
+  return goal !== null && !inr;
+}
+function fetchGuns(us, i, ctx, claimed){            // an empty tractor goes beside the nearest guns that want a tow and that it can tow, facing where they will go (as commander._fetch)
+  const [size, field, , known] = ctx, u = us[i];
+  const guns = us.map((e, g) => [e, g]).filter(([e, g]) => e.side === u.side && !claimed.has(g) && wantsTow(us, g, ctx) && rideWhy(e, u) === null)
+    .map(([e, g]) => [hdist(u.pos, e.pos), g]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  if (!guns.length) return null;
+  const g = guns[0][1];
+  claimed.add(g);
+  const goal = gunGoal(us, us[g], field, known)[1], near = footprint(us[g]).flat(), occ = occupancy(us);
+  const foes = new Set(Object.keys(occ).filter(k => us[occ[k]].side !== u.side));
+  const cands = [...reachable(us, i, size, allowance(u), field).values()].map(([h, c]) => {
+    const f = bearing(h, goal), gap = Math.min(...footprint({ ...u, pos: h, facing: f }).flat().flatMap(a => near.map(b => hdist(a, b))));
+    return [gap <= 1 ? 0 : gap, c, h[1], h[0], f];
+  }).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4]);
+  let tries = UD.commander.tries;
+  for (const [, c, row, col, f] of cands){
+    const h = [col, row];
+    if (h[0] === u.pos[0] && h[1] === u.pos[1]) return null;
+    if (touches({ ...u, pos: h, facing: f }, foes)) continue;
+    if (tries === 0) return null;
+    tries -= 1;
+    const m = legalMove(us, i, [h, f, c, false], [size, field]);
+    if (m.ok) return { act: "fetch", target: null, guns: g, pos: h, facing: f, cost: m.cost };
+  }
+  return null;
 }
 function gunOrder(us, i, [size, field, stance, known]){   // holding, or with an enemy in reach, it unlimbers (unhooks); else a battery in action limbers, and one limbered or a tractor moves (as commander._gun_order)
   const u = us[i], battery = isBattery(u), [t, goal, inr] = gunGoal(us, u, field, known);
