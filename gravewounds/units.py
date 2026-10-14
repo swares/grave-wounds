@@ -3574,10 +3574,12 @@ def _vehicles_after(d: Data, us: list, field: dict | None) -> list:
 
 def flee(d: Data, units: list, i: int, size: tuple, field: dict | None = None) -> dict:
     """A broken unit runs straight back as far as its allowance takes it; off the map, it has
-    fled the field. Running into its own side's units it runs on through them to the first
+    fled the field (as has one with no men left in it). Running into its own side's units it runs on through them to the first
     free ground beyond (rout.through times its allowance at most), else it stops where it last
     stood clear. Returns the unit."""
     u = dict(units[i])
+    if not any(footprint(d, u)):                 # no men left standing in it: it is gone
+        return {**u, "state": "fled"}
     back, allow = (u["facing"] + 3) % 6, allowance(d, u)
     # Its own side's other units do not stop it: it may pass through them, but not end on them.
     others = [x for k, x in enumerate(units) if k == i or x["side"] != u["side"]]

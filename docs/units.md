@@ -146,7 +146,8 @@ each side is the flank; the two behind are the rear.
    the first clear ground beyond (up to three times its move in all, `rout.through`; with
    none in that, it stops where it last stood clear). Each friendly unit it runs through is
    **jostled**: its move that exchange is halved, rounded down (`rout.jostle`). Enemy units,
-   impassable ground and the map edge stop it as before.
+   impassable ground and the map edge stop it as before. A broken unit with no men left has
+   gone from the field.
 2. Side A moves its units, then side B moves its units.
 3. Every melee and volley is resolved at once from where the units now stand, then losses,
    then morale. A unit that breaks is struck at once by every man of each enemy unit
@@ -1252,12 +1253,12 @@ when it is wider than a hex).
   outside it count as guarding it. An objective the GM marks by hand has the commander's own
   radius, 1 hex. The enemy commander then takes
 it or holds it, as under [The enemy commander](#the-enemy-commander); the GM can move or
-clear it with **Clicking the map**. Twenty-eight battlefields have one: Point 593 at
+clear it with **Clicking the map**. Twenty-nine battlefields have one: Point 593 at
 Cassino, Castle Hill in the town, the crests of Hills 875, 861A, 931 and 937, Pork Chop,
 Fox Hill, Hill 504 at Kapyong, G Company's hill at Chipyong-ni, Darwin Hill, the station
 at Grozny, the provincial headquarters at Hue, the crash site in Mogadishu, Observation
 Post Topside at Wanat, Combat Outpost Keating, X-Ray's landing zone, the saddle at Osan
-and on Bougainville, the railway bridge at Mons, Henry Hill, the Redan's salient, the British guns at Lundy's
+and on Bougainville, the railway bridge at Mons, Henry Hill, the Redan's salient (on both of its battlefields), the British guns at Lundy's
 Lane, the windmill battery at Lützen, the heights at Albuera, the edge of Cisterna and the
 wagon-box corral. The open-field battles (Agincourt, Towton, Visby, Cowpens), the ambush
 on Lodge Trail Ridge, the Jolan at Fallujah and the unfinished wall at Sidon have none:
@@ -1489,7 +1490,30 @@ south, north at the top: the Redan's point toward the British trench at the bott
   into the salient after 60 to 80 exchanges with heavy losses on both sides, where the real
   assault was driven out.
 
-It is drawn by `tools/maps/make_redan_field.mjs`.
+It is drawn by `tools/maps/make_redan_field.mjs`, the work and the ground by `tools/maps/redan_lib.mjs`.
+
+**The Great Redan, 18 June 1855** (`data/fields/redan-1855-june.yaml`). The first assault, at
+dawn: the same work, drawn by the same script (`tools/maps/redan_lib.mjs`), on a field of
+100 × 105 hexes (about 1,090 by 1,000 yards, 1,000 by 910 m), with the British trench about
+440 yards (400 m) from the salient, the **abatis** still whole (a belt two rows deep in front
+of the faces) and fewer shell holes.
+- Daybreak, fair and calm, light enough to see across the open ground (the columns were
+  under fire as soon as they left the trenches).
+- Three British columns, each with covering riflemen of the Rifle Brigade, a ladder and
+  wool-bag party of sailors and soldiers, a storming party and green supports: the right
+  column (Yea) facing the Redan's left face, the centre the salient, the left column
+  (Campbell) the right face and the angle beyond it.
+- The Russians, the works fully manned: infantry at the salient and behind the breastwork,
+  guns at each shoulder, a battery and riflemen on the line either side, and a reserve in the
+  suburb.
+- The wound tables are the Crimean War's. The French attack on the Malakhov, the siege guns
+  and the diversions on either flank are not on the map.
+- Played by the enemy commander, the columns cross the open under grape and musketry and
+  storm the salient; in three test runs the British had a fifth to a quarter of their men
+  down, most of the columns broke and ran, and in one run a few men got into the salient. The
+  real attack never reached it.
+
+It is drawn by `tools/maps/make_redan_june_field.mjs`.
 
 **First Bull Run, 21 July 1861** (`data/fields/bull-run-1861.yaml`). The field is 140 × 130
 hexes, about 1,530 yards (1,400 m) east to west and 1,240 yards (1,130 m) north to south, north

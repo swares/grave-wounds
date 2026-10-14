@@ -1964,6 +1964,7 @@ function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, ch
 }
 function flee(units, i, size, field = null){      // a broken unit runs straight back; off the map it has fled; through its own side's units to the first free ground beyond (as units.flee)
   let u = { ...units[i] };
+  if (!footprint(u).some(row => row.length)) return { ...u, state: "fled" };   // no men left standing in it: it is gone
   const back = mod6(u.facing + 3), allow = allowance(u);
   const others = units.filter((x, k) => k === i || x.side !== u.side), j = others.indexOf(units[i]);
   let clear = u;
