@@ -174,6 +174,7 @@ applies: whichever is shorter counts.
   | Starlight scope (1960s-70s) | 20 hexes (219 yards, 200 m) | −15% | one rifle in a squad, a dim picture |
   | Night-vision goggles (1990s on) | 30 hexes (328 yards, 300 m) | −5% | every man |
   | Thermal sight (tanks from the 1980s, teams from the 2000s) | 60 hexes (656 yards, 600 m) | as by day | also sees through smoke, by day or night |
+  | Infrared searchlight and sights (tanks, 1950s-70s) | 16 hexes (175 yards, 160 m) | −20% | a tank's active infrared, a short reach |
 
   By default a unit in the Rangers' kit of 1993, Interceptor body armour or the plate
   carrier carries goggles; **No night vision** (`nv: none`) takes them away, and any unit of
@@ -181,7 +182,10 @@ applies: whichever is shorter counts.
   guns and a battery's direct fire, and for calling fire. On the battlefields, the Marines
   on Hill 861A have a few Starlight scopes, the Rangers in Mogadishu left their goggles
   behind for what was to be a daylight raid, and the tanks and Bradleys at Fallujah have
-  thermal sights. The numbers are design estimates.
+  thermal sights. **Vehicles** (tanks, carriers, lorries, tractors) with no device chosen
+  carry their war's: infrared searchlights in Vietnam, thermal sights in the late 20th
+  century and in Iraq and Afghanistan, none before (`light.night_vision.vehicles`); a vehicle
+  unit's **Night vision** has no "by kit" choice. The numbers are design estimates.
 - **Fixed lines.** A machine-gun unit can be **laid on a fixed line** (**Lay a fixed line**,
   then click the hex). This is done before the battle, by day or at dusk, and the line
   shows as a red dashed line. In the dark, when it has no target it can see, the unit

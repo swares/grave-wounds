@@ -1233,6 +1233,7 @@ function inTheDark(field, dist, t, out, seer = null){   // no aiming beyond the 
   return out;
 }
 const NV = () => FD.weather?.light?.night_vision || {};
+const vehicleDevice = table => NV().vehicles?.[FD.tables[table]?.battle] ?? null;   // the night device a vehicle unit carries by default in this table's war (as units.vehicle_device)
 function nightDevice(seer){                        // the night-vision device a shooter or watcher ({kit, nv}) carries: the unit's own ("none": none), else his kit's, else null
   if (seer?.nv) return seer.nv === "none" ? null : seer.nv;
   return (NV().kits || []).includes(seer?.kit) ? NV().kit_device : null;

@@ -771,6 +771,7 @@ def _light_rules(d) -> list[str]:
             + ", ".join(d.armor["kits"][k]["name"].split(" (")[0].split(",")[0] for k in L["night_vision"]["kits"]) + f" carry {L['night_vision']['devices'][L['night_vision']['kit_device']]['name'].split(' (')[0].lower()}): "
             + "; ".join(f"{v['name']} sees {v['sight'] // rs} hexes, " + (f"aims -{v['aim']}% at worst" if v["aim"] else "aims as by day")
                         + (", and through smoke" if v.get("smoke") else "") for v in L["night_vision"]["devices"].values())
+            + ". Vehicles with none chosen carry their war's: " + ", ".join(f"{w} {L['night_vision']['devices'][v]['name'].split(' (')[0].lower()}" for w, v in (L["night_vision"].get("vehicles") or {}).items())
             + ". A machine gun laid on "
             f"a fixed line by day or at dusk fires blind down it in the dark at the nearest enemy within {L['fixed_line']['width']} hex of it, -{L['fixed_line']['aim']}%. "
             "Moving: " + "; ".join(f"{v['name'].lower()} +{v['move']} a hex" for v in L["levels"].values() if v["move"])
