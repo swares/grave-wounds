@@ -295,7 +295,8 @@ def _gun_apply(d: Data, us: list, i: int, o: dict, where: tuple) -> bool:
 
 
 def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, how: tuple = ("attack", None)) -> list:
-    """In the dark, first one battery lights an enemy it has lost sight of (_call_illum).
+    """First its batteries under counter-battery fire displace (_displace). In the dark, one
+    battery lights an enemy it has lost sight of (_call_illum).
     Attacking, one battery lays smoke where its units are under fire (_call_smoke).
     Then one battery fires counter-battery on a located enemy battery (_call_counter). Then each
     of its other off-map batteries (not tanks) with no mission, rounds and tubes, not
@@ -304,8 +305,9 @@ def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, how: tu
     can see, in the battery's reach, with none of the side's men within the kind's radius and
     scatter."""
     stance, exchange = how
+    out = _displace(d, field, side)
     free = [k for k, b in enumerate((field or {}).get("support") or []) if _free_battery(d, b, side)]
-    out = _call_illum(d, us, side, field, (known, exchange), free)
+    out += _call_illum(d, us, side, field, (known, exchange), free)
     out += _call_smoke(d, us, side, field, known, free) if stance == "attack" else []
     out += _call_counter(d, field, side, free)
     air = [k for k, b in enumerate((field or {}).get("support") or []) if _free_air(d, field, b, side)]
@@ -318,6 +320,23 @@ def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, how: tu
         if aim:
             b["mission"] = {"hex": aim[1], "wait": K["delay"], "repeat": False}
             out.append({"unit": None, "act": "fire", "battery": k, "target": aim[0], "hex": aim[1]})
+    return out
+
+
+def _displace(d: Data, field: dict | None, side) -> list:
+    """Each of its located batteries that an enemy counter-battery mission is aimed at, not
+    displacing already, with tubes and a kind that can move (displace > 0), displaces: its
+    mission ends and it is silent for its kind's exchanges, then no longer located (where it
+    stands, if placed). -> [displace orders]."""
+    sup, out = (field or {}).get("support") or [], []
+    for k, b in enumerate(sup):
+        n = d.units["indirect"]["kinds"][b["kind"]].get("displace", 0)
+        if b["side"] != side or not b.get("located") or b.get("displacing") or b.get("tubes", 0) <= 0 or not n:
+            continue
+        by = next((j for j, x in enumerate(sup) if x["side"] != side and (x.get("mission") or {}).get("battery") == k), None)
+        if by is not None:
+            b.update(displacing=n, mission=None)
+            out.append({"unit": None, "act": "displace", "battery": k, "by": by})
     return out
 
 

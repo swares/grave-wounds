@@ -125,7 +125,7 @@ sometimes hesitate. With no enemy in sight, a unit holds.
   {{c_sap_clear}} hexes, they lay mines in the row ahead: mixed if the enemy it knows of has
   vehicles, otherwise anti-personnel.
 - **Guns.** It turns its guns to face the enemy and calls its off-map batteries and its
-  aircraft (bombs and rockets, when they can fly) on what it sees. In the dark it first has one battery fire illumination over the enemy it has lost
+  aircraft (bombs and rockets, when they can fly) on what it sees. Its batteries under counter-battery fire displace. In the dark it first has one battery fire illumination over the enemy it has lost
   sight of nearest its men, where it was last seen. Attacking, guns with no enemy in reach go forward: a battery limbers, moves and
   unlimbers once an enemy is in reach; anti-tank guns hook up to an empty tractor beside
   them, are towed, and are unhooked in reach. They stop in reach but no nearer than

@@ -327,6 +327,10 @@ general. All its numbers are in units.yaml `commander`.
     already smoked, by the battery that reaches it and lands soonest (mortars before guns).
     Not in the dark, and not in a gale (the smoke would blow away at once). A holding side
     never smokes.
+  - **Displacing.** First of all, each of its located batteries that an enemy counter-battery
+    mission is aimed at displaces (not one already moving, or tanks): its own mission ends,
+    it is silent for its kind's exchanges, and then it is no longer located. A placed
+    battery stays at its place (the GM can plot a new one by hand).
   - **Illumination.** In the dark (any light that limits sight), before anything else, one
     free battery with illumination rounds (mortars, field guns, howitzers) fires
     illumination over the enemy it has lost sight of (remembered, but not seen now) nearest

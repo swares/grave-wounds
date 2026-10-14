@@ -2120,9 +2120,10 @@ function gunApply(us, i, o, [size, field, exchange]){   // limber or unlimber (c
   else us[i] = { ...us[i], pos: o.pos, facing: o.facing };
   return true;
 }
-function callFireAi(us, side, field, known, [stance, exchange] = ["attack", null]){   // in the dark, one battery lights an enemy it lost sight of; attacking, one battery lays smoke where its units are under fire; its other free batteries are called on the enemy it sees that scores best as a target (as commander._call_fire)
+function callFireAi(us, side, field, known, [stance, exchange] = ["attack", null]){   // its batteries under counter-battery fire displace; in the dark, one battery lights an enemy it lost sight of; attacking, one battery lays smoke where its units are under fire; its other free batteries are called on the enemy it sees that scores best as a target (as commander._call_fire)
+  const out = displaceAi(field, side);
   const free = (field?.support || []).map((b, k) => k).filter(k => freeBattery(field.support[k], side));
-  const out = callIllum(us, side, field, [known, exchange], free);
+  out.push(...callIllum(us, side, field, [known, exchange], free));
   if (stance === "attack") out.push(...callSmoke(us, side, field, known, free));
   out.push(...aiCounter(field, side, free));
   const air = (field?.support || []).map((b, k) => k).filter(k => freeAir(field, field.support[k], side));
@@ -2171,6 +2172,18 @@ function aiCounter(field, side, free){            // one free battery with the b
   const [, k, j] = best;
   sup[k].mission = { battery: j, wait: UD.indirect.kinds[sup[k].kind].delay, repeat: false };
   return [{ unit: null, act: "counter", battery: k, on: j }];
+}
+function displaceAi(field, side){                  // its located batteries an enemy counter-battery mission is aimed at displace (as commander._displace)
+  const sup = field?.support || [], out = [];
+  sup.forEach((b, k) => {
+    const n = UD.indirect.kinds[b.kind].displace || 0;
+    if (b.side !== side || !b.located || b.displacing || (b.tubes || 0) <= 0 || !n) return;
+    const by = sup.findIndex(x => x.side !== side && x.mission?.battery === k);
+    if (by < 0) return;
+    Object.assign(b, { displacing: n, mission: null });
+    out.push({ unit: null, act: "displace", battery: k, by });
+  });
+  return out;
 }
 const freeAir = (field, b, side) => !!UD.indirect.kinds[b.kind].air && b.side === side && !b.mission && (b.rounds || 0) > 0 && (b.tubes || 0) > 0 && !grounded(field, b);   // its aircraft it can send: not grounded (as commander._free_air)
 function freeBattery(b, side){                     // one of its off-map batteries it can call: not tanks or aircraft, no mission, rounds and tubes, not displacing
