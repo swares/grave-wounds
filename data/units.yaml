@@ -782,6 +782,12 @@ commander:
   # the aircraft carry it), when none of its men are within the scatter of the run's line.
   # Design estimates.
   creep: {near: 20, step: 1, every: 1, lines: 3}
+  # storm: attacking, a unit armed with one of these (black powder with the bayonet) whose target
+  # holds works (dug in or emplaced where it stands, behind works that give it cover toward the
+  # attacker, or in ground that hides men: buildings, tall buildings, rubble) does not stop to
+  # fire at range: it closes and charges it, with its quality's attack odds (charge_odds), as
+  # men without missiles do. Design choice.
+  storm: [musket_smoothbore, rifle_musket, breechloader]
   hesitate: {green: 30, regular: 10, veteran: 0}
   charge_odds:
     attack: {green: 100, regular: 80, veteran: 60}

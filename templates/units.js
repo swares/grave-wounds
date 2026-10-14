@@ -1327,6 +1327,12 @@ function sweepCost(field, before, after){          // the ground a turning unit'
   const going = x => (after.vehicle ? UD.vehicles.ground[groundKey(field, x)] ?? 1 : groundAt(field, x).move);
   return Math.max(0, ...footprint(after).flat().filter(x => !old.has(hk(x))).map(x => going(x) - 1));
 }
+function holdsWorks(field, h, t){                 // unit t holds works against an attack from h: dug in or emplaced, cover from the works toward h in any of its hexes, or in ground that hides men (as units.holds_works)
+  if (dugHere(t) || t.emplaced) return true;
+  if (!field) return false;
+  const [cols, rows] = fieldSize(field);
+  return footprint(t).some(row => row.some(x => groundAt(field, x).hides || missileCover(field.works, h, x, cols, rows).cover > 0));
+}
 function coverAt(field, h, t){                    // % off shots from h at t: the best of the works' and the ground's
   if (!field) return 0;
   const [cols, rows] = fieldSize(field);
@@ -2444,8 +2450,11 @@ function underFire(us, i){                         // an enemy unit's missile we
   const u = us[i];
   return us.some(e => e.side !== u.side && !ROUTED.has(e.state) && e.men > 0 && "range" in FD.weapons[e.weapon] && fieldRange(e.weapon, hdist(e.pos, u.pos)) !== null);
 }
-function mayCharge(u, t, stance = "attack"){       // men without missiles, steady, with the odds its quality wants in its stance
-  if ("range" in FD.weapons[u.weapon] || u.state !== "steady") return false;
+function storming(u, t, field, stance){           // attacking, armed for storming (black powder with the bayonet), its target holding works: it closes and charges (as commander.storming)
+  return stance === "attack" && UD.commander.storm.includes(u.weapon) && holdsWorks(field, u.pos, t);
+}
+function mayCharge(u, t, stance = "attack", storm = false){   // men without missiles (or storming works), steady, with the odds its quality wants in its stance
+  if (("range" in FD.weapons[u.weapon] && !storm) || u.state !== "steady") return false;
   const mine = u.men * quality(u.quality).attack, theirs = t.men * quality(t.quality).attack;
   return 100 * mine >= (UD.commander.charge_odds[stance][u.quality] ?? 100) * theirs;
 }
@@ -2460,10 +2469,11 @@ function turnToward(base, i, f, [size, field]){    // the facing nearest f, turn
 function bestOrder(us, i, t, [size, field, stance, known]){   // the best-scoring hex it can legally reach, facing the target (where last seen); holding, it only charges, else stays
   const u = us[i], tu = knownAt(us, t, known), hold = stance === "hold";
   const free = u.prone ? { ...u, prone: false } : u, base = us.map((x, k) => (k === i ? free : x));
-  const shooter = "range" in FD.weapons[u.weapon], charge = mayCharge(u, tu, stance);
-  const best = firstMove(base, i, tu, [size, field], [charge, hold, shooter]);
+  const storm = storming(u, tu, field, stance);
+  const shooter = "range" in FD.weapons[u.weapon] && !storm, charge = mayCharge(u, tu, stance, storm);
+  const best = firstMove(base, i, tu, [size, field], [charge, hold, shooter, storm]);
   if (best === null){
-    const f = bearing(u.pos, tu.pos);
+    const f = keepFront(u, bearing(u.pos, tu.pos));
     const g = turnToward(base, i, f, [size, field]);   // no hex it likes is in reach: it turns where it stands, as far toward the target as it can
     return g === null ? null : stayOrder(us, i, t, g, shooter);
   }
@@ -2471,16 +2481,16 @@ function bestOrder(us, i, t, [size, field, stance, known]){   // the best-scorin
   if (h[0] === u.pos[0] && h[1] === u.pos[1]) return stayOrder(us, i, t, f, shooter);
   return { act: m.charge ? "charge" : "move", target: t, pos: h, facing: f, cost: m.cost, ...(u.prone ? { up: true } : {}) };
 }
-function firstMove(base, i, tu, [size, field], [charge, hold, shooter]){   // [hex, facing, move] for the best-scoring hex it will move to, or null
+function firstMove(base, i, tu, [size, field], [charge, hold, shooter, storm]){   // [hex, facing, move] for the best-scoring hex it will move to, or null
   const u = base[i];
   if (hold && !charge) return null;
   const allow = allowance(u), occ = occupancy(base), stuck = !!(u.lost || u.immobile || u.emplaced);
   let tries = UD.commander.tries;
   const foes = new Set(Object.keys(occ).filter(k => base[occ[k]].side !== u.side));
-  const cands = [...reachable(base, i, size, allow * (charge ? UD.charge_move : 1), field).values()].map(([h, c]) => [-aiScore(field, u, tu, h, c, shooter), c, aside(h, tu.pos), h[1], h[0]]);
+  const cands = [...reachable(base, i, size, allow * (charge ? UD.charge_move : 1), field).values()].map(([h, c]) => [-aiScore(field, u, tu, h, c, shooter, storm), c, aside(h, tu.pos), h[1], h[0]]);
   cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4]);
   for (const [, c, , row, col] of cands){
-    const h = [col, row], f = bearing(h, tu.pos), touch = touches({ ...u, pos: h, facing: f }, foes);
+    const h = [col, row], f = keepFront(u, bearing(h, tu.pos)), touch = touches({ ...u, pos: h, facing: f }, foes);
     if ((touch ? !charge : hold || c > allow) || (stuck && (h[0] !== u.pos[0] || h[1] !== u.pos[1]))) continue;
     if (tries === 0) return null;
     tries -= 1;
@@ -2489,6 +2499,7 @@ function firstMove(base, i, tu, [size, field], [charge, hold, shooter]){   // [h
   }
   return null;
 }
+const keepFront = (u, b) => (arc(u.facing, b) === "front" ? u.facing : b);   // the facing to take toward direction b: its own if b is already in its front arc, else b (as commander.keep_front)
 function legalMove(base, i, [h, f, c, touch], [size, field]){   // moveUnit for a hex whose least movement and contact are known, without finding the path again
   const u = base[i], moved = { ...u, pos: h, facing: mod6(f) };
   if (!fits(base, i, moved, size, field)) return { ok: false };
@@ -2511,9 +2522,9 @@ function stayOrder(us, i, t, f, shooter){         // on the ground it stays down
   return dig ? { act: "ground", target: t } : null;
 }
 const aside = (h, to) => { const x = 2 * h[0] + (h[1] & 1), tx = 2 * to[0] + (to[1] & 1); return (x - tx) ** 2 + 3 * (h[1] - to[1]) ** 2 };   // squared straight-line distance: ties go to the move nearer the straight line (as commander.aside)
-function aiScore(field, u, tu, h, cost, shooter){  // how much the commander likes unit u ending at h (higher is better)
+function aiScore(field, u, tu, h, cost, shooter, storm = false){   // how much the commander likes unit u ending at h (higher is better); storming works, it takes no account of cover on the way
   const C = UD.commander, q = u.quality, dist = hdist(h, tu.pos);
-  const s = (C.cover[q] ?? 0) * coverAt(field, tu.pos, h) - cost - (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side);
+  const s = (storm ? 0 : (C.cover[q] ?? 0)) * coverAt(field, tu.pos, h) - cost - (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side);
   if (shooter){
     const inr = dist >= 1 && fieldRange(u.weapon, dist) !== null;
     return s + (inr ? C.in_range : -C.closing * dist) - (dist < C.keep_off ? C.too_close : 0);

@@ -863,7 +863,7 @@ def _sapper_errors(d: Data) -> list:
 
 def _commander_errors(d: Data) -> list[str]:
     """units.yaml commander: by-quality tables, charge odds by stance, whole-number weights and
-    real weapons."""
+    real weapons (storm: weapons that shoot)."""
     K = d.units.get("commander")
     if not K:
         return []
@@ -882,6 +882,7 @@ def _commander_errors(d: Data) -> list[str]:
     O = K.get("objective") or {}
     errors += [f"units.yaml: commander.objective.{k} must be a whole number of 0 or more" for k in ("radius", "hold", "guard", "bonus")
                if not (isinstance(O.get(k), int) and O[k] >= 0)]
+    errors += [f"units.yaml: commander.storm names {w}, not a weapon that shoots" for w in K.get("storm", []) if "range" not in d.weapons.get(w, {})]
     return errors + [f"units.yaml: commander.ground_with names unknown weapon {w}" for w in K.get("ground_with", []) if w not in d.weapons]
 
 

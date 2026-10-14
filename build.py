@@ -496,6 +496,8 @@ def _commander_rules(d) -> list[str]:
         f"{K['shaken']} if it is shaken, {K['threat']} if it is a danger to the unit (shooters, for men without missiles; men without missiles within a charge, for shooters). Shaken, it holds (and goes to ground under missile fire). Steady, it hesitates on d100 at or under {by(K['hesitate'])}%; "
         f"otherwise it takes the best hex it can reach facing the target: {K['closing']} points a hex nearer, cover % times {by(K['cover'])}, less a point a hex moved; of equals, the hex nearest the straight line to it. "
         f"Shooters stop where the target is in range, keep {K['keep_off']} hexes off, and never charge; with a modern weapon they go to ground under fire. "
+        f"Storming works: attacking, {', '.join(d.weapons[w]['name'] for w in K.get('storm', []))} do not stop at range when the target is dug in, behind works giving it cover, or in buildings or rubble; they close (ignoring cover) and charge as men without missiles. "
+        "A unit whose target is already in its front arc keeps its facing. "
         f"Others charge only if their men × attack % is at least this % of the target's: attacking {by(K['charge_odds']['attack'])}; holding {by(K['charge_odds']['hold'])}. "
         f"Holding, a side leaves its ground only to charge. Reserve: at its first move (unless the GM marks reserves) it holds back its rearmost units up to {by(K['reserve'])}% of its men; "
         f"they hold until it commits one a move, when a unit of its side breaks, an enemy it knows of comes within {K['gap']} hexes of one, or (veterans) an enemy breaks. "

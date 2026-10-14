@@ -250,7 +250,8 @@ general. All its numbers are in units.yaml `commander`.
     line to the target (or the objective), so a long advance goes straight rather than
     drifting to one side.
 - **Shooters.** A unit with missiles stops where the target is in range and shoots rather
-  than closing. It keeps off the enemy (2 hexes or more) if it can, and never charges.
+  than closing. It keeps off the enemy (2 hexes or more) if it can, and never charges,
+  except when storming works (below).
   With a modern weapon (breech-loaders on), regulars and veterans under fire go to ground
   where they stand. Older armies stand up.
 - **Men without missiles** charge only with the odds their quality wants: their men times
@@ -260,6 +261,18 @@ general. All its numbers are in units.yaml `commander`.
   - Holding: green men want half as many again as the enemy, regulars a fifth more, and
     veterans even odds.
   - Without the odds they close to just short of contact and wait.
+- **Storming works.** Attacking, a unit armed with a smoothbore musket, a rifle-musket or a
+  breech-loader (`commander.storm`: black powder with the bayonet) whose target holds works
+  does not stop at range. The target holds works if it is dug in or emplaced where it
+  stands, if any of its hexes has cover from works toward the attacker (a bank, trench, wall,
+  palisade or the like), or if it stands in buildings, tall buildings or rubble. The unit
+  scores hexes as men without missiles do, taking no account of cover on the way, and
+  charges with the same odds. Holding units, other weapons (flintlock rifles, matchlocks,
+  bows, modern rifles) and targets in woods or scrub are not stormed. A wall or palisade
+  blocks hand-to-hand fighting, so stormers stop at its foot; breaching it is still the GM's
+  order.
+- **Facing.** A unit whose target is already in its front arc keeps its facing rather than
+  turning to face it squarely, so a wide line does not spend its move turning.
   - Veterans prefer a hex off the target's front (30 points more).
 - **Holding.** A side that holds does not leave its ground. A unit only charges an enemy
   it can reach with the odds, turns to face its target, or goes to ground.
@@ -1461,9 +1474,12 @@ south, north at the top: the Redan's point toward the British trench at the bott
 - The wound tables are the Crimean War's. The siege guns on both sides, the French attack on
   the Malakhov to the east and the flanking fire from the Russian batteries either side are
   not on the map.
-- Played by the enemy commander, the British stormers stop in the trench and trade fire at
-  range with the men in the work rather than rushing it (see *The enemy commander*); the GM
-  should move them for the assault.
+- The point of the salient is drawn cut off square, 120 m across, so that units in line can
+  reach the men in it; the real salient came to a sharper point.
+- Played by the enemy commander, the British storm the salient (see *Storming works*): the
+  covering party and the stormers reach it in four or five exchanges and fight there. The
+  supports crowd up behind them and the fight jams: a broken unit at the front that cannot
+  get away blocks the others.
 
 It is drawn by `tools/maps/make_redan_field.mjs`.
 

@@ -10,21 +10,25 @@
 // work, its ditch, the line either side, the trench, the ravines and the shell holes are drawn
 // by hand to that, not traced from any map, and are approximate. The deployment is just after
 // noon, when the stormers went over, in our own words; numbers are round figures for play.
-// The Russian infantry are on smoothbore muskets (most of them still were), their riflemen on
+// The point of the salient is drawn cut off square, a front of 12 hexes (120 m): a simplification
+// for the field map, whose units stand in straight lines and could not otherwise reach the men
+// in a sharp point. The Russian infantry are on smoothbore muskets (most of them still were), their riflemen on
 // rifles; the British on the rifle-musket. The siege guns on both sides are not on the map.
 import { N, S, wobble, speckle, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
 
 const COLS = 100, ROWS = 80;                 // 1000 m east to west, about 690 m north to south
 const ROW_M = Math.sqrt(3) / 2;              // a row is this many hexes deep (pointy-top hexes)
 const TIP = [50, 46];                        // the salient (col, row)
-const SPAN = 12;                             // the faces run this many hexes either side of the salient ...
+const BLUNT = 5;                             // the salient's point is cut off square, this many hexes either side (on the field map; see below)
+const SPAN = 12;                             // the faces run this many hexes beyond it ...
 const SLOPE = 1.15;                          // ... rising one row-height for every this many hexes across
 const tipX = TIP[0] + (TIP[1] & 1) / 2, tipY = TIP[1] * ROW_M;
 const curtainY = c => tipY - SPAN / SLOPE + 0.25 * wobble(c / 4, 0.7, 1.9);
 // The Russian line's front: the Redan's two faces, and the line either side of it.
 function lineY(x){
   const dx = Math.abs(x - tipX);
-  return dx <= SPAN ? tipY - dx / SLOPE : curtainY(x);
+  if (dx <= BLUNT) return tipY;
+  return dx <= BLUNT + SPAN ? tipY - (dx - BLUNT) / SLOPE : curtainY(x);
 }
 const centre = (c, r) => [c + (r & 1) / 2, r * ROW_M];
 const behind = (c, r) => { const [x, y] = centre(c, r); return y < lineY(x) };   // inside the Russian line
@@ -62,7 +66,7 @@ for (let c = 36; c <= 64; c++){
 const abatis = [];
 for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++){
   const [x] = centre(c, r);
-  if (behind(c, r) || Math.abs(x - tipX) > SPAN + 2) continue;
+  if (behind(c, r) || Math.abs(x - tipX) > BLUNT + SPAN + 2) continue;
   if (behind(c, r - 3) && !behind(c, r - 1) && speckle(c, r, 3)) abatis.push([c, r]);
 }
 // The British advanced trench, and the zig-zag back from it.
@@ -79,18 +83,18 @@ const units = [
   unit("Covering party (2nd Rifle Brigade and the Buffs)", BRITISH, 200, { ...RIFLE, formation: "open" }, [20, 40, 63]),
   unit("Ladder party (the Buffs and the 97th)", BRITISH, 320, RIFLE, [10, 45, 65]),
   unit("Light Division stormers (90th and 97th)", BRITISH, 1000, RIFLE, [20, 28, 68]),
-  unit("2nd Division stormers (the Buffs, 41st and 62nd)", BRITISH, 760, { ...RIFLE, quality: "green" }, [16, 56, 68]),
+  unit("2nd Division stormers (the Buffs, 41st and 62nd)", BRITISH, 760, { ...RIFLE, quality: "green" }, [16, 50, 68]),
   unit("Supports (7th, 23rd, 33rd, 34th and 77th)", BRITISH, 1500, { ...RIFLE, quality: "green" }, [30, 35, 74]),
-  unit("Vladimirski Regiment, at the salient", RUSSIANS, 500, MUSKET, [12, 44, 38]),
-  unit("Guns on the left face", RUSSIANS, 40, GUNS, [3, 40, 33]),
-  unit("Guns on the right face", RUSSIANS, 40, GUNS, [3, 58, 33]),
-  unit("Vladimirski Regiment, behind the breastwork", RUSSIANS, 1300, MUSKET, [26, 37, 23]),
-  unit("Riflemen on the line to the west", RUSSIANS, 300, { ...MUSKET, weapon: "rifle_musket", formation: "open" }, [20, 12, 33]),
+  unit("Vladimirski Regiment, at the salient", RUSSIANS, 400, MUSKET, [12, 44, 45]),
+  unit("Guns on the left face", RUSSIANS, 40, GUNS, [3, 35, 35]),
+  unit("Guns on the right face", RUSSIANS, 40, GUNS, [3, 62, 35]),
+  unit("Vladimirski Regiment, behind the breastwork", RUSSIANS, 1400, MUSKET, [26, 37, 24]),
+  unit("Riflemen on the line to the west", RUSSIANS, 300, { ...MUSKET, weapon: "rifle_musket", formation: "open" }, [20, 12, 34]),
   unit("Kamchatski and Iakutski regiments (reserve)", RUSSIANS, 2000, MUSKET, [40, 30, 12]),
 ];
 
 writeField({
-  objective: { at: [50, 40], side: 0, name: "the Redan's salient", radius: 6 },
+  objective: { at: [50, 42], side: 0, name: "the Redan's salient", radius: 6 },
   id: "redan-1855", name: "The Great Redan, 8 September 1855", sides: ["British", "Russians"], table: "crimea-1854-56-all-hits",
   travel: { map: "sevastopol-1855", place: "The Great Redan", within: 1, sides: ["Allies", "Russia"] },
   weather: "{cond: fair, wind: strong, dir: N, ground: {mud: 0, snow: 0}}",
@@ -101,7 +105,8 @@ writeField({
     "toward the British trench at the bottom, the Karabelnaya suburb behind it at the top.",
     "Generated by tools/maps/make_redan_field.mjs: edit that file and re-run it rather than this one.",
     "The work, its ditch, the line either side, the breastwork, the trench, the ravines and the",
-    "shell holes are drawn by hand to the shape the accounts give, not traced from any map; the",
+    "shell holes are drawn by hand to the shape the accounts give, not traced from any map (the",
+    "point is cut off square, 120 m across, so that units in line can reach it); the",
     "deployment is just after noon, in our own words, with round numbers for play.",
     "",
     "What happened, briefly: after three days' bombardment the French stormed the Malakhov, east",
