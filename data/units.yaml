@@ -598,10 +598,17 @@ morale:
 # ranks have dissolved), with no defence for the fleeing, at +attack and `tempo` times the
 # melee tempo: most of a battle's dead fell in the rout. On the field map the pursuit lasts
 # while pursuers keep contact; the simulation assumes `exchanges` of it.
+# On the field map a broken unit runs straight back as far as its move. Running into its own
+# side's units, it runs on through them to the first free ground beyond (up to `through` times
+# its move in all; if there is none in that, it stops where it last stood clear). Each friendly
+# unit it runs through is jostled: that exchange its move is cut by `jostle` (rounded down).
+# Design estimates.
 rout:
   attack: 20
   tempo: 2.0
   exchanges: 3
+  through: 3
+  jostle: 0.5
 
 # ---------- after the battle ----------
 # Every wounded man is remembered by his wound's severity, its untreated time to death

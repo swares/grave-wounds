@@ -94,7 +94,7 @@ const units = [
 ];
 
 writeField({
-  objective: { at: [50, 42], side: 0, name: "the Redan's salient", radius: 6 },
+  objective: { at: [50, 42], side: 0, name: "the Redan's salient", radius: 3 },
   id: "redan-1855", name: "The Great Redan, 8 September 1855", sides: ["British", "Russians"], table: "crimea-1854-56-all-hits",
   travel: { map: "sevastopol-1855", place: "The Great Redan", within: 1, sides: ["Allies", "Russia"] },
   weather: "{cond: fair, wind: strong, dir: N, ground: {mud: 0, snow: 0}}",

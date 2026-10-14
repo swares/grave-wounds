@@ -550,12 +550,13 @@ const unitName = u => `${u.name} (${banner(u)})`;
 function startPhase(k){                           // a side's move; at the start of an exchange every broken unit runs first
   S.phase = k;
   S.aiDone = null;                                // the commander has not yet ordered this move
-  S.units.forEach((u, i) => {
-    if (k !== 0 || u.state !== "broken") return;
-    const f = flee(S.units, i, SIZE, S.field);
-    S.units[i] = f;
-    S.log.unshift({ cls: "morale", text: f.state === "fled" ? `${unitName(f)} has fled the field.` : `${unitName(f)} runs.` });
-  });
+  for (let i = 0; i < S.units.length; i++){
+    if (k !== 0 || S.units[i].state !== "broken") continue;
+    const through = ranThrough(S.units, i, flee(S.units, i, SIZE, S.field));
+    S.units = runAway(S.units, i, SIZE, S.field);
+    const f = S.units[i], past = through.length ? ` back through ${through.map(j => S.units[j].name).join(", ")}, who are jostled` : "";
+    S.log.unshift({ cls: "morale", text: f.state === "fled" ? `${unitName(f)} has fled the field.` : `${unitName(f)} runs${past}.` });
+  }
   S.start = S.units.map(u => ({ ...u }));
 }
 function tryPlace(u, pos, facing){                // set-up: anywhere it fits
@@ -1672,7 +1673,7 @@ function renderMap(){
   $("#hex-size").textContent = fmtM(FD.units.hex_m);
 }
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
-const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"], ["sappers", "sappers"], ["shielded", "shielded"], ["mining", "laying mines"], ["clearing", "lifting mines"]];
+const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"], ["sappers", "sappers"], ["shielded", "shielded"], ["jostled", "jostled"], ["mining", "laying mines"], ["clearing", "lifting mines"]];
 function unitMeta(u){
   if (u.state === "fled") return "fled";
   const down = u.down ? " · " + u.down + " down" : "", flags = META_FLAGS.filter(([k]) => u[k]).map(([, t]) => " · " + t).join("") + (dugHere(u) ? " · dug in" : "");

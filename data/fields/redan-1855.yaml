@@ -28,7 +28,7 @@ travel: {map: sevastopol-1855, place: "The Great Redan", within: 1, sides: ["All
 size: [100, 80]
 weather: {cond: fair, wind: strong, dir: N, ground: {mud: 0, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
-objective: {at: [50, 42], side: 0, name: "the Redan's salient", radius: 6}
+objective: {at: [50, 42], side: 0, name: "the Redan's salient", radius: 3}
 ground: |
   ........xTxxxTTTxTxxxxxxxTxTxxxxTxxTxTTxxTxTxxxxxTxxTxxxTTTxxTTTTTxxxxTxTxxTTxTxxTxTxxTxxxxxxxxTTTxx
   .......xxxxxxxxxxxxxxTxTxxxxxxxxTxxTxTTxTxxxxxTxxxxxTxxxxxTTTTxxTxxTxxTTxTTTxxxxxxTxxxxxTTTTxTxTxxxT
