@@ -1244,29 +1244,68 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
     target hex; penalty and misfire: the weather's (gravewounds.combat.weather_attack)."""
     occ, out = occupancy(d, units), []
     for i, u in enumerate(units):
-        if u["state"] in ("broken", "fled") or u["men"] <= 0 or "range" not in d.weapons[u["weapon"]] or u.get("digging"):
+        if u["state"] in ("broken", "fled") or u["men"] <= 0 or u.get("digging"):
             continue
         if in_contact(d, units, occ, i) and not in_bunker(d, field, u):
             continue
-        best, blind = _target(d, units, i, field, occ), False
-        if best is None:
-            best = _fixed_target(d, units, i, field, occ)
-            blind = best is not None
-        if best is None:
-            continue
-        wx = shot_weather(d, field, u["weapon"], best[0], best[2], best[3], _seer(u, blind=blind))
-        if wx["blocked"]:
-            continue
-        up, longer = height_edge(d, field, u["weapon"], best[2], best[3])
-        v = {"att": i, "dfd": best[1], "men": _shooters(d, u, field), "dist": best[0],
-             "cover": share_cover(d, field, best[2], units[best[1]]) + ground_cover(d, units[best[1]]) + shield_cover(d, units[best[1]], best[3], best[2]),
-             "penalty": wx["penalty"] - up, "misfire": wx["misfire"], "reach": wx.get("reach", 0) + longer, "from": best[2], "to": best[3], "height": up,
-             "over": line_fire(d, units, occ, field, i, best[1], best[2], best[3], best[0]), "seen": seen_share(d, field, units[best[1]], best[3], u["weapon"])}
-        v.update({k: True for k in ("blind", "flash") if wx.get(k)})
-        if is_mg(d, u["weapon"]):
-            v.update(_beaten(d, units, occ, field, i, best))
-        out.append(v)
+        if "range" in d.weapons[u["weapon"]]:
+            out += _volley_of(d, units, occ, field, i)
+        out += _rider_volley(d, units, occ, field, i)
     return out
+
+
+def _volley_of(d: Data, units: list, occ: dict, field: dict | None, i: int, men: int | None = None) -> list:
+    """Unit i's volley at its target ([v] or []); men: the shooters (default its front ranks)."""
+    u = units[i]
+    best, blind = _target(d, units, i, field, occ), False
+    if best is None and men is None:
+        best = _fixed_target(d, units, i, field, occ)
+        blind = best is not None
+    if best is None:
+        return []
+    wx = shot_weather(d, field, u["weapon"], best[0], best[2], best[3], _seer(u, blind=blind))
+    if wx["blocked"]:
+        return []
+    up, longer = height_edge(d, field, u["weapon"], best[2], best[3])
+    v = {"att": i, "dfd": best[1], "men": _shooters(d, u, field) if men is None else men, "dist": best[0],
+         "cover": share_cover(d, field, best[2], units[best[1]]) + ground_cover(d, units[best[1]]) + shield_cover(d, units[best[1]], best[3], best[2]),
+         "penalty": wx["penalty"] - up, "misfire": wx["misfire"], "reach": wx.get("reach", 0) + longer, "from": best[2], "to": best[3], "height": up,
+         "over": line_fire(d, units, occ, field, i, best[1], best[2], best[3], best[0]), "seen": seen_share(d, field, units[best[1]], best[3], u["weapon"])}
+    v.update({k: True for k in ("blind", "flash") if wx.get(k)})
+    if men is None and is_mg(d, u["weapon"]):
+        v.update(_beaten(d, units, occ, field, i, best))
+    return [v]
+
+
+def rider_shooters(d: Data, u: dict) -> int:
+    """Men of vehicle unit u's riders who can shoot: through an IFV's firing ports (`ports`) or
+    from a tank's hull (`rides`), vehicles.rider_fire share of them (0 if they cannot)."""
+    K, R = vehicle_kind(d, u), u.get("riders")
+    if not K or not R or R["men"] <= 0 or R.get("state") in ("broken", "fled") or "range" not in d.weapons[R["weapon"]]:
+        return 0
+    F = d.units["vehicles"]["rider_fire"]
+    share = 0
+    if K.get("ports"):
+        share = F["ports"]
+    elif K.get("rides"):
+        share = F["hull"]
+    return math.floor(R["men"] * share)
+
+
+def _rider_volley(d: Data, units: list, occ: dict, field: dict | None, i: int) -> list:
+    """Vehicle unit i's riders shooting from it (rider_shooters), at their own weapon's target
+    from its hexes: [v with riders True] or []."""
+    n = rider_shooters(d, units[i])
+    if n <= 0:
+        return []
+    R = units[i]["riders"]
+    pseudo = [*units[:i], {**units[i], "weapon": R["weapon"], "kit": R.get("kit"), "quality": R["quality"], "nv": R.get("nv")}, *units[i + 1:]]
+    return [{**v, "riders": True} for v in _volley_of(d, pseudo, occ, field, i, n)]
+
+
+def _shooter(us: list, v: dict) -> dict:
+    """The unit a volley is fired by: its vehicle's riders for a riders' volley."""
+    return us[v["att"]]["riders"] if v.get("riders") else us[v["att"]]
 
 
 def _fixed_target(d: Data, units: list, i: int, field: dict | None, occ: dict):
@@ -2123,12 +2162,12 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
         if b.get("vehicle"):
             log += _armour_volley(d, us, (table, rng, acc), v, opts)
             continue
-        t = _take_hurt(b, volley(d, _side(us[v["att"]], table), _side(b, table), v["men"], v["dist"], rng, **opts))
+        t = _take_hurt(b, volley(d, _side(_shooter(us, v), table), _side(b, table), v["men"], v["dist"], rng, **opts))
         _tally(*acc, v, t)
         log += _logged({"kind": "volley", **v}, t)
         if v.get("behind") is not None:
             log += _beaten_fire(d, us, table, rng, acc, v)
-        for hero in _acting(d, us[v["att"]], ("ranged",)):
+        for hero in ([] if v.get("riders") else _acting(d, us[v["att"]], ("ranged",))):
             wx = shot_weather(d, field, hero["weapon"], v["dist"], v["from"], v["to"], {"kit": hero.get("kit"), "blind": v.get("blind", False)})
             up, longer = height_edge(d, field, hero["weapon"], v["from"], v["to"])
             if wx["blocked"] or field_range(d, hero["weapon"], v["dist"], wx["reach"] + longer) is None:
@@ -2148,7 +2187,7 @@ def _armour_volley(d: Data, us: list, ctx: tuple, v: dict, opts: dict) -> list:
     aimed shot that hits (as at men) knocks a vehicle out at its armour's row % (`rpg`, `atgm`,
     or `small`); a small-arms hit that does not does no other harm."""
     table, rng, acc = ctx
-    att = _side(us[v["att"]], table)
+    att = _side(_shooter(us, v), table)
     band = field_range(d, att["weapon"], v["dist"], opts["reach"])
     if band is None:
         return []
@@ -2333,7 +2372,7 @@ def _ahead(fv: tuple, h, t) -> bool:
 
 def _mark_mg(d: Data, us: list, v: dict, under: list | None) -> None:
     """A machine gun's target, and any unit in its beaten zone, check for suppression."""
-    if under is None or not is_mg(d, us[v["att"]]["weapon"]):
+    if under is None or not is_mg(d, _shooter(us, v)["weapon"]):
         return
     under[v["dfd"]] = True
     if v.get("behind") is not None:

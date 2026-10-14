@@ -841,7 +841,7 @@ function unitLineText(l, nm){                     // a volley, a melee or a rout
   if (l.kind === "ricochet") return `Round shot from ${nm(l.att)} bounds on ${fmtM(l.beyond * FD.units.hex_m)} into ${nm(l.dfd)}: ${l.blows} men in the way, ${fallen}.`;
   if (l.kind === "shelled") return `${airOf(l.sup) ? "Fire" : "Shells"} from ${l.name} ${airOf(l.sup) ? "falls" : "burst"} among ${nm(l.dfd)}: ${l.struck} men struck, ${fallen}.`;
   if (l.kind === "beaten") return `The cone of fire from ${nm(l.att)} falls on ${fmtM(l.beyond * FD.units.hex_m)} past its target into ${nm(l.dfd)}: ${l.blows} aimed shots, ${fallen}.`;
-  if (l.kind === "volley") return `${nm(l.att)} shoot at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${l.blows} aimed shots, ${fallen}.`;
+  if (l.kind === "volley") return `${riderWho(l, nm)} shoot at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}${shotNotes(l)}: ${l.blows} aimed shots, ${fallen}.`;
   if (l.kind === "rout") return `${nm(l.att)} cut down the fleeing ${nm(l.dfd)}: ${fallen}.`;
   const where = l.situation === "front" ? "" : " in the " + l.situation, up = l.penalty ? ", attacking up −" + l.penalty + "%" : "";
   const thin = l.thinned ? ` (${l.thinned} fewer, cut down by canister as they came in)` : "";
@@ -984,6 +984,10 @@ function ridersText(l){                          // the riders struck when carri
   if (l.rshot) out += ` ${hull ? "On the hull" : "Through the sides"}: ${l.rshot} of the men aboard hit, ${l.rshotdown || 0} down` + (l.rshotdead ? ` (${l.rshotdead} dead)` : "") + ".";
   return out;
 }
+function riderWho(l, nm){                          // who fired a volley: a unit, or the men riding on it ("Desant, riding on T-34s (Lancastrians)")
+  const c = S.units[l.att];
+  return l.riders && c?.riders ? `${c.riders.name}, riding on ${nm(l.att)},` : nm(l.att);
+}
 function armourText(l, nm){                       // rockets at vehicles, a tank's main gun, a vehicle knocked out by shells or bombs
   const vk = l.dfd !== undefined && S.units[l.dfd]?.vehicle, what = vk ? FD.units.vehicles.kinds[vk].name.toLowerCase() : "vehicles";
   let out = "";
@@ -992,8 +996,8 @@ function armourText(l, nm){                       // rockets at vehicles, a tank
   out += ridersText(l);
   if (l.kill && l.hit) out = ` (${l.kill}% a hit to knock out)` + out;
   if (l.kind === "knocked_out") return `${l.name || "Shells"} burst on ${nm(l.dfd)}:${out}`;
-  const shots = hurtsArmour(S.units[l.att]?.weapon) ? nOf(l.shots, "round") : nOf(l.shots, "aimed shot");
-  if (l.kind === "antiarmour") return `${nm(l.att)} fire ${shots} at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}: ${l.hit} hit.${out}`;
+  const firer = l.riders ? S.units[l.att]?.riders : S.units[l.att], shots = hurtsArmour(firer?.weapon) ? nOf(l.shots, "round") : nOf(l.shots, "aimed shot");
+  if (l.kind === "antiarmour") return `${riderWho(l, nm)} fire ${shots} at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}: ${l.hit} hit.${out}`;
   if (l.at) return `${nm(l.att)} fire ${nOf(l.rounds, "round")} of high explosive at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}.`;
   return `${nm(l.att)} fire ${nOf(l.rounds, "round")} at ${nm(l.dfd)}, ${fmtM(l.dist * FD.units.hex_m)}: ${l.hit} hit.${out}`;
 }

@@ -99,6 +99,7 @@ def _vehicle_values(d: Data) -> dict:
             "v_crew_struck": V["crew_struck"], "v_riders_struck": V["riders_struck"], "v_shell_light": f"{V['armour']['light']['shell'] / V['armour']['heavy']['shell']:g}",
             "v_shell_soft": f"{V['armour']['soft']['shell'] / V['armour']['heavy']['shell']:g}",
             "v_rides": V["kinds"]["tank"].get("rides", 0),
+            "v_ports": f"{round(V['rider_fire']['ports'] * 100)}%", "v_hull": f"{round(V['rider_fire']['hull'] * 100)}%",
             "v_fb_knock": d.units["indirect"]["kinds"]["fighter_bomber"]["knock"]}
 
 

@@ -972,6 +972,14 @@ def _indirect_errors(d: Data) -> list[str]:
     return errors
 
 
+def _rider_fire_errors(veh: dict) -> list[str]:
+    """vehicles.rider_fire: ports and hull shares (0-1), when a kind has ports or rides."""
+    F = veh.get("rider_fire") or {}
+    if not any(k.get("ports") or k.get("rides") for k in veh.get("kinds", {}).values()) or all(isinstance(F.get(x), (int, float)) and 0 <= F[x] <= 1 for x in ("ports", "hull")):
+        return []
+    return ["units.yaml: vehicles.rider_fire needs ports and hull (shares 0-1) when a kind has ports or rides"]
+
+
 def _small_arms_errors(veh: dict) -> list[str]:
     """vehicles.small_arms: rate and mg above 0, when an armour has a small %."""
     S = veh.get("small_arms") or {}
@@ -996,7 +1004,7 @@ def _vehicle_errors(d: Data) -> list[str]:
                if not all(isinstance(a.get(x), (int, float)) for x in ("rpg", "atgm", "gun", "shell", "mine"))]
     errors += [f"units.yaml: vehicles.anti_armour.{w} needs a known weapon, a rate and an armour row (rpg or atgm)" for w, a in V.get("anti_armour", {}).items()
                if w not in d.weapons or not isinstance(a, dict) or not isinstance(a.get("rate"), (int, float)) or a.get("row") not in ("rpg", "atgm")]
-    errors += _small_arms_errors(V)
+    errors += _small_arms_errors(V) + _rider_fire_errors(V)
     errors += [f"units.yaml: vehicles.kinds.{k}.{x} must be a whole number above 0" for k, v in V.get("kinds", {}).items() for x in ("carry", "tows")
                if x in v and not (isinstance(v[x], int) and v[x] > 0)]
     if not all(isinstance((V.get("aspect") or {}).get(x), (int, float)) for x in ("flank", "rear")):

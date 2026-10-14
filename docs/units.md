@@ -1007,6 +1007,12 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
     carrier does. Shells and bombs bursting near the tanks strike the men on the hulls as
     men in the open (the kind's struck % by distance, no cover), spread over the tanks'
     hexes, whether or not a tank is knocked out ("burst among the men riding on").
+  - **Riders shooting.** Men riding an infantry fighting vehicle shoot through its firing
+    ports, a quarter of them; men on a tank's hull, half of them. They fire their own weapon
+    (rockets at vehicles too) from the vehicles' hexes at its nearest target in range and in
+    front, as a unit of their own would; the log names them ("Desant, riding on T-34s, shoot
+    at…"). Men inside armoured carriers and lorries do not shoot. Design estimates
+    (`vehicles.rider_fire`).
   - **Lorries** (2 crew, 14 hexes a move) carry 20 men each, as carriers carry riders. A
     small-arms hit on a lorry that does not knock it out goes through the sides: it strikes
     one of the men aboard, wounded by that weapon (the log says "Through the sides").
