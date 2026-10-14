@@ -763,6 +763,12 @@ commander:
   # than `hold` fall back to it. Enemies within `guard` of it score `bonus` more as targets.
   # Who holds it is logged each exchange. Design estimates.
   objective: {radius: 1, hold: 3, guard: 4, bonus: 30}
+  # sappers (units marked sappers: mines.sappers): holding, or at the objective, out of contact
+  # and with no enemy it knows of within `clear_of` hexes, they lay mines in the
+  # row ahead (mixed if the enemy it knows of has vehicles, else anti-personnel), where it is
+  # not mined yet. Attacking, they lift the known mines in the row ahead when the straight way
+  # to their target (or the objective) crosses known mines. Design estimates.
+  sappers: {clear_of: 8}
   hesitate: {green: 30, regular: 10, veteran: 0}
   charge_odds:
     attack: {green: 100, regular: 80, veteran: 60}

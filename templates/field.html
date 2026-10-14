@@ -1119,6 +1119,8 @@ const ORDER_TEXT = {                              // (who, them, o, up, facing) 
   fall_back: (who, them, o, up, facing) => `${who} ${up}fall back ${nOf(o.cost, "hex", "hexes")} toward the objective${facing}.`,
   turn: (who, them) => `${who} turn to face ${them}.`,
   ground: who => `${who} go to ground under fire.`,
+  lay: (who, them, o) => `${who} lay ${FD.units.mines.kinds[o.kind].name.toLowerCase()} ahead of them (${nOf(FD.units.mines.sappers.lay, "exchange")} without moving or firing).`,
+  lift: who => `${who} lift the known mines ahead of them, a lane (${nOf(FD.units.mines.sappers.clear, "exchange")} without moving or firing).`,
   dig: who => `${who} dig in at the objective (${nOf(FD.units.dig_in.exchanges, "exchange")} without moving or firing).`,
 };
 function orderText(o){                            // "Billmen (Yorkists) move 4 hexes toward Archers (Lancastrians)."

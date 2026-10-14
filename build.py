@@ -506,6 +506,8 @@ def _commander_rules(d) -> list[str]:
         f"Known minefields on the way cost {by(K['mines'])} points a hex. Its batteries and anti-tank guns on the map turn to face the nearest enemy it knows of; its off-map "
         "batteries with no mission are called on the enemy it sees that scores best as a target, never where its own men are within the burst. "
         "Attacking, one battery first lays smoke (the soonest to land) on the nearest enemy shooting at its men who cannot reply, unless it is dark, a gale blows or the hex is smoked. "
+        f"Its sappers, attacking, lift the known enemy mines in the row ahead when the straight way to their target (or the objective) crosses known mines; holding, or at the objective, "
+        f"with no enemy it knows of within {K['sappers']['clear_of']} hexes, they lay mines in the row ahead (mixed if the enemy it knows of has vehicles, else anti-personnel). "
         "It leaves aircraft and works to the GM.",
     ]
 

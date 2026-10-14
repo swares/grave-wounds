@@ -287,6 +287,15 @@ general. All its numbers are in units.yaml `commander`.
   - Its units weigh an enemy within 4 hexes of the objective 30 points more as a target.
   - A unit at the objective that can dig in, is not under fire and has no enemy it knows
     of in range digs in there (and keeps digging until it is done).
+- **Its sappers** (units marked sappers; see Minefields).
+  - **Attacking**, they lift the known enemy mines in the row ahead of their front when the
+    straight way to their target (where last seen), or with no target to the objective,
+    crosses known mines. Mines their own side laid are left: they do not strike its men.
+  - **Holding, or at the objective** (within its radius), with no enemy it knows of within
+    8 hexes, they lay mines in the row ahead where it is not mined yet and no unit stands:
+    mixed if an enemy unit it knows of has vehicles, otherwise anti-personnel.
+  - Once at work they hold until the work is done or stopped (`commander.sappers` in
+    `data/units.yaml`).
   - After each exchange the log says who holds it: the one side with a standing unit
     within 1 hex of it (a battlefield's objective: within its radius), "contested" if
     both have, or no one (`commander.objective` in `data/units.yaml`).
@@ -1118,8 +1127,8 @@ Click it again with the same choice to clear it.
   - **Its own mines.** A side knows where its sappers laid mines: its commander steers round
     them as round any known field, and they do not strike its own men. They show faintly on
     the map for the GM; the enemy commander learns of them only once it sets them off.
-  - The log says when a field is laid or a lane lifted. The enemy commander does not set
-    sappers to work; the GM does.
+  - The log says when a field is laid or a lane lifted. The enemy commander sets its own
+    sappers to work (see The enemy commander: Its sappers).
 
 All design estimates (`mines` and `mines.sappers` in `data/units.yaml`). No battlefield has minefields laid yet;
 they are for the GM to place, and for the battlefields only where the accounts name them.
