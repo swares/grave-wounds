@@ -53,14 +53,19 @@ const groundKind = (trenchRow, holes) => (c, r) => {
 function parapet(rows){
   const ditch = [], bank = [];
   for (let r = 0; r < rows; r++) for (let c = 0; c < COLS; c++){
-    if (!behind(c, r)) continue;
-    for (const n of neighbours(c, r, rows)) if (!behind(...n)){ ditch.push([[c, r], n]); bank.push([[c, r], n]) }
+    for (const side of outerSides(c, r, rows)){ ditch.push(side); bank.push(side) }
   }
-  const BREAST = 24;
+  return { ditch, bank: [...bank, ...breastwork(rows)] };
+}
+// The sides between hex (c, r), if it is behind the line, and its neighbours in front of it.
+const outerSides = (c, r, rows) => (behind(c, r) ? neighbours(c, r, rows).filter(n => !behind(...n)).map(n => [[c, r], n]) : []);
+// The breastwork across the Redan's back, row 24 its inner side.
+function breastwork(rows){
+  const BREAST = 24, out = [];
   for (let c = 36; c <= 64; c++){
-    for (const n of neighbours(c, BREAST, rows)) if (n[1] === BREAST + 1) bank.push([[c, BREAST], n]);
+    for (const n of neighbours(c, BREAST, rows)) if (n[1] === BREAST + 1) out.push([[c, BREAST], n]);
   }
-  return { ditch, bank };
+  return out;
 }
 // The abatis in front of the Redan's faces: "scatter" (a hex in three, two or three rows out) or
 // "whole" (a belt two rows deep).
