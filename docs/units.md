@@ -300,8 +300,19 @@ general. All its numbers are in units.yaml `commander`.
     within 1 hex of it (a battlefield's objective: within its radius), "contested" if
     both have, or no one (`commander.objective` in `data/units.yaml`).
 - **Its guns.**
-  - Its batteries and anti-tank guns on the map turn to face the nearest enemy it knows of.
-    It never moves, limbers or displaces them.
+  - Its batteries and anti-tank guns on the map, in action, turn to face the nearest enemy
+    it knows of.
+  - **Moving its guns.** Attacking, a battery or anti-tank guns with no enemy it knows of
+    within their reach (and, with none known, short of the objective) go forward. A
+    battery in action limbers (an exchange changing over), moves, and unlimbers once an
+    enemy it knows of is in reach. Anti-tank guns hook up to an empty tractor of their side
+    beside them, are towed, and are unhooked once an enemy is in reach (counting 4 hexes
+    less from the tractor, so the guns land in reach); they fire from the next exchange.
+    Moving guns go to the hex in their allowance nearest the enemy that has it in reach but
+    is no nearer than 2 hexes (`commander.keep_off`), never touching it; known minefields on
+    the way count as for other units.
+  - Holding, its guns unlimber, or are unhooked, where they stand, and never move.
+  - Emplaced guns stay put, and empty tractors are left to the GM.
   - Its off-map batteries (not tanks or aircraft) with no mission are called on the enemy
     unit it sees now that scores best as a target. It fires at the first of that unit's
     hexes its side can see and the battery reaches, and never where its own men are within
@@ -1087,13 +1098,13 @@ the Japanese 47 mm (`anti_tank_guns` in `data/units.yaml`).
   move with the tractors as riders do, and neither fire nor fight. **Unhook the guns** sets
   them down beside the tractors; in the battle they fire from the next exchange. Tractors
   knocked out spill their guns' crews as carriers spill riders. Emplaced guns cannot hook up,
-  and anti-tank guns ride only behind tractors, not in carriers. The enemy commander leaves
-  tractors and the guns they tow to the GM.
+  and anti-tank guns ride only behind tractors, not in carriers. The enemy commander hooks up,
+  tows and unhooks its own (see The enemy commander: Its guns).
 - **Rounds.** Each gun brings 40 rounds. A gun out of rounds does not fire its main gun.
   **Resupply** brings a full load, as for a battery: at once in set-up, or over an exchange
   out of contact in which the guns neither move nor fire.
-- **Not ordered by the commander.** The enemy commander leaves them to the GM, like
-  batteries.
+- **Ordered by the commander.** The enemy commander moves them forward on tow and unhooks
+  them in reach, as it limbers and moves its batteries (see The enemy commander: Its guns).
 
 **Minefields** (wound tables with mine wounds: 1939 on). In set-up, **Clicking the map:
 Minefields** paints a hex as anti-personnel, anti-tank or mixed, **marked** or **hidden**.

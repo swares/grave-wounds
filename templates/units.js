@@ -1963,8 +1963,10 @@ function flee(units, i, size, field = null){      // a broken unit runs straight
 // ---------- the enemy commander (as gravewounds.commander) ----------
 const ROUTED = new Set(["broken", "fled"]);
 function command(units, side, size, field, rng, exchange = null, { stance = "attack", memory = null } = {}){   // {units, orders}: each unit of side ordered in turn, by its quality (units.yaml commander); stance attack or hold; memory: where it last saw each enemy (updated in place)
-  const us = units.map(u => ({ ...u })), orders = [], mem = memory ?? {};
+  let us = units.map(u => ({ ...u }));
+  const orders = [], mem = memory ?? {};
   const known = sightings(us, side, field, exchange, mem);
+  if (stance === "attack"){ const h = hookUp(us, side, [field, known, exchange]); us = h.units; orders.push(...h.orders) }
   holdBack(us, side, known);
   orders.push(...commitReserve(us, side, known, mem));
   for (let i = 0; i < us.length; i++){
@@ -1972,7 +1974,7 @@ function command(units, side, size, field, rng, exchange = null, { stance = "att
     const roll = rng.randint(1, 100), o = unitOrder(us, i, [size, field, stance, known, exchange], roll);
     if (o){ orders.push({ unit: i, ...o }); applyOrder(us, i, o) }
   }
-  orders.push(...layGuns(us, side, [size, field, known, exchange]), ...callFireAi(us, side, field, known, stance));
+  orders.push(...moveGuns(us, side, [size, field, stance, known, exchange]), ...layGuns(us, side, [size, field, known, exchange]), ...callFireAi(us, side, field, known, stance));
   return { units: us, orders };
 }
 const knownFoes = known => Object.entries(known).filter(([k]) => /^\d+$/.test(k));   // [index, {pos, facing, ex}] of the enemies it knows of
@@ -2016,13 +2018,103 @@ function commitReserve(us, side, known, memory){   // one reserve unit committed
 function layGuns(us, side, [size, field, known, exchange]){   // its batteries and anti-tank guns on the map turn to face the nearest enemy it knows of (as commander._lay_guns)
   const out = [], occ = occupancy(us), kf = knownFoes(known);
   us.forEach((u, i) => {
-    if (u.side !== side || !(isBattery(u) || isAtGun(u)) || u.state !== "steady" || u.men <= 0) return;
+    if (u.side !== side || !(isBattery(u) || isAtGun(u)) || u.state !== "steady" || u.men <= 0 || u.limbered || u.limbering) return;
     if ((exchange !== null && u.arrived === exchange) || inContact(us, occ, i) || !kf.length) return;
     const j = kf.map(([k, m]) => [hdist(u.pos, m.pos), Number(k)]).reduce((a, b) => (b[0] < a[0] || (b[0] === a[0] && b[1] < a[1]) ? b : a), [Infinity, Infinity])[1];
     const f = bearing(u.pos, knownAt(us, j, known).pos);
     if (f !== u.facing && moveUnit(us, i, u.pos, f, size, field).ok){ us[i] = { ...u, facing: f }; out.push({ unit: i, act: "turn", target: j, facing: f }) }
   });
   return out;
+}
+const TOW_SLACK = 4;                               // hexes from its tractor the guns may land when unhooked (dismountUnit: up to 4 behind)
+function gunReach(u){                              // how far a gun unit's guns reach, or null; a tractor towing guns counts TOW_SLACK less, so its guns land in reach (as commander.gun_reach)
+  if (isBattery(u)) return gunRange(u);
+  if (isAtGun(u)) return UD.anti_tank_guns.gun.range;
+  return u.riders && isAtGun(u.riders) ? UD.anti_tank_guns.gun.range - TOW_SLACK : null;
+}
+function gunGoal(us, u, field, known){              // [target or null, hex to go for, in reach]: the nearest enemy it knows of, else the objective while beyond its radius (as commander._gun_goal)
+  const kf = knownFoes(known).map(([k, m]) => [hdist(u.pos, m.pos), Number(k)]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  if (kf.length){ const [dist, j] = kf[0]; return [j, [...knownAt(us, j, known).pos], dist <= gunReach(u)] }
+  const obj = objectiveOf(field);
+  if (obj === null || offObjective(u, obj) <= objectiveRadii(field)[0]) return [null, null, true];
+  return [null, obj, false];
+}
+function gunReady(us, i, side, exchange){           // a gun unit of the side it may order: steady, with men, not just come on, out of contact, not abandoned, changing over or resupplying (as commander._gun_ready)
+  const u = us[i];
+  if (u.side !== side || u.state !== "steady" || u.men <= 0 || u.abandoned) return false;
+  if ((exchange !== null && u.arrived === exchange) || u.limbering || u.resupplying) return false;
+  return !inContact(us, occupancy(us), i);
+}
+function dropIndex(known, i){                       // unit i has left the list: the enemy indices remembered above it move down one (as commander._drop_index)
+  const moved = Object.entries(known).map(([k, v]) => [/^\d+$/.test(k) && +k > i ? String(+k - 1) : k, v]);
+  for (const k of Object.keys(known)) delete known[k];
+  for (const [k, v] of moved) known[k] = v;
+}
+function hookUp(units, side, [field, known, exchange]){   // attacking: anti-tank guns with no known enemy in reach and somewhere to go hook up to an empty tractor beside them (as commander._hook_up)
+  let us = units, out = [], i = 0;
+  while (i < us.length){
+    const u = us[i];
+    if (!isAtGun(u) || u.emplaced || !gunReady(us, i, side, exchange)){ i++; continue }
+    const [, goal, inr] = gunGoal(us, u, field, known);
+    const j = inr || goal === null ? -1 : us.findIndex((c, k) => k !== i && mountUnit(us, i, k).ok);
+    if (j < 0){ i++; continue }
+    us = mountUnit(us, i, j).units;
+    dropIndex(known, i);
+    out = out.map(o => ({ ...o, unit: o.unit - (o.unit > i ? 1 : 0) }));
+    out.push({ unit: j - (j > i ? 1 : 0), act: "hook", guns: u.name });
+  }
+  return { units: us, orders: out };
+}
+function moveGuns(us, side, ctx){                   // its batteries and tractors towing anti-tank guns limber, move, unlimber or unhook (as commander._move_guns)
+  const [size, field, , , exchange] = ctx, out = [], n = us.length;
+  for (let i = 0; i < n; i++){
+    const u = us[i];
+    if (!(isBattery(u) || (tractor(u) && gunReach(u))) || !gunReady(us, i, side, exchange)) continue;
+    const o = gunOrder(us, i, ctx);
+    if (o && gunApply(us, i, o, [size, field, exchange])) out.push({ unit: i, ...o });
+  }
+  return out;
+}
+function gunOrder(us, i, [size, field, stance, known]){   // holding, or with an enemy in reach, it unlimbers (unhooks); else a battery in action limbers, and one limbered or a tractor moves (as commander._gun_order)
+  const u = us[i], battery = isBattery(u), [t, goal, inr] = gunGoal(us, u, field, known);
+  if (stance === "hold" || inr){
+    if (battery) return u.limbered ? { act: "unlimber", target: t } : null;
+    return { act: "unhook", target: t };
+  }
+  if (battery && !u.limbered) return { act: "limber", target: t };
+  return gunMove(us, i, [t, goal], [size, field]);
+}
+function gunMove(us, i, [t, goal], [size, field]){   // the best hex within its allowance, not touching the enemy, facing its goal (as commander._gun_move)
+  const u = us[i], K = UD.commander, reach = gunReach(u), allow = allowance(u), occ = occupancy(us);
+  const foes = new Set(Object.keys(occ).filter(k => us[occ[k]].side !== u.side));
+  const cands = [...reachable(us, i, size, allow, field).values()].map(([h, c]) => {
+    const dist = hdist(h, goal);
+    let s = -c - (K.mines[u.quality] ?? 0) * mined(field, u.pos, h, u.side);
+    if (t === null) s -= K.closing * dist;
+    else s += (dist >= K.keep_off && dist <= reach ? K.in_range : -K.closing * dist) - (dist < K.keep_off ? K.too_close : 0);
+    return [-s, c, h[1], h[0]];
+  }).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]);
+  let tries = K.tries;
+  for (const [, c, row, col] of cands){
+    const h = [col, row];
+    if (h[0] === u.pos[0] && h[1] === u.pos[1]) return null;
+    const f = bearing(h, goal);
+    if (touches({ ...u, pos: h, facing: f }, foes)) continue;
+    if (tries === 0) return null;
+    tries -= 1;
+    const m = legalMove(us, i, [h, f, c, false], [size, field]);
+    if (m.ok) return { act: t === null ? "advance" : "move", target: t, pos: h, facing: f, cost: m.cost };
+  }
+  return null;
+}
+function gunApply(us, i, o, [size, field, exchange]){   // limber or unlimber (changing over), move, or unhook the towed guns beside the tractor; false with no room (as commander._gun_apply)
+  if (o.act === "unhook"){
+    const r = dismountUnit(us, i, size, field);
+    if (!r.ok) return false;
+    us.splice(0, us.length, ...r.units.slice(0, -1), { ...r.units.at(-1), arrived: exchange, unhooked: true });
+  } else if (o.act === "limber" || o.act === "unlimber") us[i] = { ...us[i], limbering: true };
+  else us[i] = { ...us[i], pos: o.pos, facing: o.facing };
+  return true;
 }
 function callFireAi(us, side, field, known, stance = "attack"){   // attacking, one battery lays smoke where its units are under fire; its other free batteries are called on the enemy it sees that scores best as a target (as commander._call_fire)
   const free = (field?.support || []).map((b, k) => k).filter(k => freeBattery(field.support[k], side));
@@ -2097,7 +2189,7 @@ function sightings(us, side, field, exchange, memory){   // {index: {pos, facing
   return memory;
 }
 const seenBy = (us, side, field, e) => marksOf(e).some(h => spotted(us, field, side, h));   // a unit of side sees enemy e: its middle hex or either end of its front row
-const tractor = u => !!vehicleKind(u)?.tows;      // gun tractors: left to the GM, like the guns they tow
+const tractor = u => !!vehicleKind(u)?.tows;      // gun tractors: not ordered as other units (towing: moveGuns)
 function commandable(us, i, exchange){            // standing, not a battery, anti-tank guns or gun tractors, not in contact, not just come on
   const u = us[i];
   if (ROUTED.has(u.state) || u.men <= 0 || isBattery(u) || isAtGun(u) || tractor(u)) return false;

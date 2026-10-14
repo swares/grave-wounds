@@ -20,6 +20,8 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
     us, orders = [dict(u) for u in units], []
     memory = {} if memory is None else memory
     known = sightings(d, us, side, field, exchange, memory)
+    if stance == "attack":
+        us, orders = _hook_up(d, us, side, (field, known, exchange))
     _hold_back(d, us, side, known)
     orders += _commit(d, us, side, known, memory)
     for i in range(len(us)):
@@ -30,6 +32,7 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
         if o:
             orders.append({"unit": i, **o})
             _apply(us, i, o)
+    orders += _move_guns(d, us, side, (size, field, stance, known, exchange))
     orders += _lay_guns(d, us, side, (size, field, known, exchange))
     return us, orders + _call_fire(d, us, side, field, known, stance)
 
@@ -45,7 +48,7 @@ def _free(d: Data, us: list, i: int, exchange) -> bool:
 
 
 def _tractor(d: Data, u: dict) -> bool:
-    """Gun tractors (a vehicle kind that tows): left to the GM, like the guns they tow."""
+    """Gun tractors (a vehicle kind that tows): not ordered as other units (towing, see _move_guns)."""
     return bool((U.vehicle_kind(d, u) or {}).get("tows"))
 
 
@@ -100,13 +103,11 @@ def _commit(d: Data, us: list, side, known: dict, memory: dict) -> list:
 
 def _lay_guns(d: Data, us: list, side, ctx: tuple) -> list:
     """Its batteries and anti-tank guns on the map, steady and out of contact, turn to face the
-    nearest enemy it knows of (if the turn is legal). It never moves, limbers or displaces them."""
+    nearest enemy it knows of (if the turn is legal), unless limbered or changing over."""
     size, field, known, exchange = ctx
     out, occ = [], U.occupancy(d, us)
     for i, u in enumerate(us):
-        if u["side"] != side or not (U.is_battery(d, u) or U.is_at_gun(d, u)) or u["state"] != "steady" or u["men"] <= 0:
-            continue
-        if (exchange is not None and u.get("arrived") == exchange) or U.in_contact(d, us, occ, i):
+        if not _turns_guns(d, us, i, side, (occ, exchange)):
             continue
         foes = [(U.hdist(u["pos"], m["pos"]), int(k)) for k, m in known.items() if k.isdigit()]
         if not foes:
@@ -117,6 +118,180 @@ def _lay_guns(d: Data, us: list, side, ctx: tuple) -> list:
             us[i] = {**u, "facing": f}
             out.append({"unit": i, "act": "turn", "target": j, "facing": f})
     return out
+
+
+# ---------- moving its guns ----------
+# Attacking, its guns with no enemy it knows of in their reach (and, with none known, short of
+# the objective) go forward: a battery limbers, then moves, then unlimbers once an enemy is in
+# reach; anti-tank guns hook up to an empty tractor of their side beside them, are towed, and
+# are unhooked once an enemy is in reach. They stop at the hex nearest their goal that has the
+# enemy in reach but no nearer than commander.keep_off. Holding, its guns unlimber or are
+# unhooked where they are, and never move.
+
+TOW_SLACK = 4   # hexes from its tractor the guns may land when unhooked (units.dismount: up to 4 behind)
+
+
+def gun_reach(d: Data, u: dict) -> int | None:
+    """How far a gun unit's guns reach (a battery, anti-tank guns), or None. A tractor towing
+    guns counts TOW_SLACK less, so the guns it unhooks are in reach wherever they land."""
+    if U.is_battery(d, u):
+        return U.gun_range(d, u)
+    if U.is_at_gun(d, u):
+        return d.units["anti_tank_guns"]["gun"]["range"]
+    R = u.get("riders")
+    return d.units["anti_tank_guns"]["gun"]["range"] - TOW_SLACK if R and U.is_at_gun(d, R) else None
+
+
+def _gun_goal(d: Data, us: list, u: dict, field: dict | None, known: dict) -> tuple:
+    """(target index or None, the hex to go for, in reach) for a gun unit: the nearest enemy it
+    knows of (ties: the lowest index), else the objective while it is beyond its radius."""
+    foes = sorted((U.hdist(u["pos"], m["pos"]), int(k)) for k, m in known.items() if k.isdigit())
+    if foes:
+        dist, j = foes[0]
+        return j, list(_where(us, j, known)["pos"]), dist <= gun_reach(d, u)
+    obj = objective(field)
+    if obj is None or U.off_objective(d, u, obj) <= U.objective_radii(d, field)[0]:
+        return None, None, True
+    return None, obj, False
+
+
+def _gun_ready(d: Data, us: list, i: int, side, exchange) -> bool:
+    """A gun unit of the side it may order: steady, with men, not just come on, out of contact,
+    not abandoned, changing over or resupplying."""
+    u = us[i]
+    if u["side"] != side or u["state"] != "steady" or u["men"] <= 0 or u.get("abandoned"):
+        return False
+    if (exchange is not None and u.get("arrived") == exchange) or u.get("limbering") or u.get("resupplying"):
+        return False
+    return not U.in_contact(d, us, U.occupancy(d, us), i)
+
+
+def _hook_up(d: Data, us: list, side, ctx: tuple) -> tuple:
+    """Attacking, at the start of its move: anti-tank guns on the map (not emplaced) with no
+    known enemy in reach and somewhere to go hook up to the first empty tractor of their side
+    beside them that can tow them (units.mount). The guns leave the list, so the enemy indices
+    it remembers are moved down. -> (units, [hook orders])."""
+    field, known, exchange = ctx
+    out, i = [], 0
+    while i < len(us):
+        u = us[i]
+        if not U.is_at_gun(d, u) or u.get("emplaced") or not _gun_ready(d, us, i, side, exchange):
+            i += 1
+            continue
+        _, goal, inr = _gun_goal(d, us, u, field, known)
+        j = None if inr or goal is None else next((k for k, c in enumerate(us) if k != i and U._cannot_mount(d, us, i, k) is None), None)
+        if j is None:
+            i += 1
+            continue
+        us = U.mount(d, us, i, j)["units"]
+        _drop_index(known, i)
+        out = [{**o, "unit": o["unit"] - (o["unit"] > i)} for o in out]
+        out.append({"unit": j - (j > i), "act": "hook", "guns": u["name"]})
+    return us, out
+
+
+def _drop_index(known: dict, i: int) -> None:
+    """Unit i has left the list: the enemy indices remembered above it move down one."""
+    moved = {(str(int(k) - 1) if k.isdigit() and int(k) > i else k): v for k, v in known.items()}
+    known.clear()
+    known.update(moved)
+
+
+def _turns_guns(d: Data, us: list, i: int, side, ctx: tuple) -> bool:
+    """Unit i is a battery or anti-tank guns of the side in action: steady, with men, not
+    limbered or changing over, not just come on, out of contact."""
+    occ, exchange = ctx
+    u = us[i]
+    if u["side"] != side or not (U.is_battery(d, u) or U.is_at_gun(d, u)) or u["state"] != "steady" or u["men"] <= 0:
+        return False
+    if u.get("limbered") or u.get("limbering") or (exchange is not None and u.get("arrived") == exchange):
+        return False
+    return not U.in_contact(d, us, occ, i)
+
+
+def _move_guns(d: Data, us: list, side, ctx: tuple) -> list:
+    """Its batteries and tractors towing anti-tank guns: limber, move, unlimber or unhook
+    (_gun_order). -> [orders]."""
+    size, field, _, _, exchange = ctx
+    out = []
+    for i in range(len(us)):
+        u = us[i]
+        if not (U.is_battery(d, u) or (_tractor(d, u) and gun_reach(d, u))) or not _gun_ready(d, us, i, side, exchange):
+            continue
+        o = _gun_order(d, us, i, ctx)
+        if o and _gun_apply(d, us, i, o, (size, field, exchange)):
+            out.append({"unit": i, **o})
+    return out
+
+
+def _gun_order(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
+    """A battery or a tractor towing guns: holding, it unlimbers (or unhooks); attacking, with
+    an enemy in reach it unlimbers (unhooks), else a battery in action limbers and one limbered
+    (or a tractor) moves toward its goal (_gun_move)."""
+    size, field, stance, known, _ = ctx
+    u = us[i]
+    battery = U.is_battery(d, u)
+    t, goal, inr = _gun_goal(d, us, u, field, known)
+    if stance == "hold" or inr:
+        if battery:
+            return {"act": "unlimber", "target": t} if u.get("limbered") else None
+        return {"act": "unhook", "target": t}
+    if battery and not u.get("limbered"):
+        return {"act": "limber", "target": t}
+    return _gun_move(d, us, i, (t, goal), (size, field))
+
+
+def _gun_move(d: Data, us: list, i: int, aim: tuple, where: tuple) -> dict | None:
+    """The best hex within its allowance, not touching the enemy, facing its goal: in reach of
+    the enemy and no nearer than keep_off (else nearer is better), less the cost and known
+    minefields on the way. -> a move (on a target) or advance (on the objective), or None."""
+    (t, goal), (size, field), u = aim, where, us[i]
+    foes = {k for k, j in U.occupancy(d, us).items() if us[j]["side"] != u["side"]}
+    cands = [(-_gun_score(d, field, u, (h, c), aim), c, h[1], h[0]) for h, c in reachable(d, us, i, size, U.allowance(d, u), field).items()]
+    tries = d.units["commander"]["tries"]
+    for _, c, row, col in sorted(cands):
+        h = [col, row]
+        if h == list(u["pos"]):
+            return None
+        f = U.bearing(h, goal)
+        if _touches(d, {**u, "pos": h, "facing": f}, foes):
+            continue
+        if tries == 0:
+            return None
+        tries -= 1
+        m = _legal(d, us, i, (h, f, c, False), (size, field))
+        if m["ok"]:
+            return {"act": "move" if t is not None else "advance", "target": t, "pos": h, "facing": f, "cost": m["cost"]}
+    return None
+
+
+def _gun_score(d: Data, field: dict | None, u: dict, hc: tuple, aim: tuple) -> int:
+    """How much it likes gun unit u ending at h, c hexes of movement away, going for aim
+    (target, goal): in reach of the enemy and no nearer than keep_off (else nearer is better;
+    on the objective, nearer), less the cost and known minefields on the way."""
+    (h, c), (t, goal), K = hc, aim, d.units["commander"]
+    dist = U.hdist(list(h), goal)
+    s = -c - K["mines"].get(u["quality"], 0) * _mined(field, u["pos"], h, u["side"])
+    if t is None:
+        return s - K["closing"] * dist
+    return s + (K["in_range"] if K["keep_off"] <= dist <= gun_reach(d, u) else -K["closing"] * dist) - (K["too_close"] if dist < K["keep_off"] else 0)
+
+
+def _gun_apply(d: Data, us: list, i: int, o: dict, where: tuple) -> bool:
+    """Carry out a gun order: limber or unlimber (changing over this exchange), move, or unhook
+    the towed guns beside the tractor (in action from the next exchange; added last). False if
+    the guns have no room to be unhooked."""
+    size, field, exchange = where
+    if o["act"] == "unhook":
+        r = U.dismount(d, us, i, size, field)
+        if not r["ok"]:
+            return False
+        us[:] = r["units"][:-1] + [{**r["units"][-1], "arrived": exchange, "unhooked": True}]
+    elif o["act"] in ("limber", "unlimber"):
+        us[i] = {**us[i], "limbering": True}
+    else:
+        us[i] = {**us[i], "pos": o["pos"], "facing": o["facing"]}
+    return True
 
 
 def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, stance: str = "attack") -> list:

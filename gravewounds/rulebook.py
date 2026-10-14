@@ -85,6 +85,7 @@ def _field_values(d: Data) -> dict:
         "c_remember": U["commander"]["remember"], "c_obj_radius": U["commander"]["objective"]["radius"],
         "c_obj_hold": U["commander"]["objective"]["hold"],
         "c_sap_clear": U["commander"]["sappers"]["clear_of"],
+        "c_keep_off": U["commander"]["keep_off"],
     }
 
 

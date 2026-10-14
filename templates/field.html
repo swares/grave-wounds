@@ -1101,9 +1101,15 @@ function aiMove(){                                // at the start of its side's 
   const M = aiMemory(), mem = structuredClone(M.mem), sup = supports().map(b => (b.mission ? structuredClone(b.mission) : null));
   const before = S.units.map(copyUnit), r = command(S.units, S.ai.side, SIZE, S.field, dice, S.exchange, { stance: S.ai.stance, memory: M.mem });
   S.units = r.units;
-  S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before, mem, sup };
+  S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before, mem, sup, start: S.start };
+  if (S.units.length !== before.length) realignStarts();   // guns hooked up or unhooked: each unit's move this phase starts where it stood
+  M.n = S.units.length;
   const lines = r.orders.map(o => ({ cls: o.act === "charge" ? "morale" : "", text: orderText(o) }));
   S.log = [{ cls: "head", text: `The commander orders ${S.ai.side} (${stanceWord()}): ${r.orders.length ? nOf(r.orders.length, "order") : "every unit stands"}${Object.keys(M.mem).length ? "" : " (it knows of no enemy: none is in its units' sight)"}.` }, ...lines, ...S.log].slice(0, 400);
+}
+function realignStarts(){                         // S.start by unit id, after units joined or left the list (a unit whose riders changed starts as it is)
+  const was = S.start || [];
+  S.start = S.units.map(u => { const s = was.find(x => x.id === u.id); return s && s.riders?.id === u.riders?.id ? s : { ...u } });
 }
 function aiMemory(){                              // where the commander last saw each enemy unit (by index): fresh for a new side, battle or set of units
   const M = S.aiMemory;
@@ -1121,6 +1127,10 @@ const ORDER_TEXT = {                              // (who, them, o, up, facing) 
   ground: who => `${who} go to ground under fire.`,
   lay: (who, them, o) => `${who} lay ${FD.units.mines.kinds[o.kind].name.toLowerCase()} ahead of them (${nOf(FD.units.mines.sappers.lay, "exchange")} without moving or firing).`,
   lift: who => `${who} lift the known mines ahead of them, a lane (${nOf(FD.units.mines.sappers.clear, "exchange")} without moving or firing).`,
+  hook: (who, them, o) => `${who} hook up ${o.guns} to tow them forward: they do not fire until unhooked.`,
+  limber: who => `${who} limber up to move forward (an exchange changing over).`,
+  unlimber: who => `${who} unlimber to fire (an exchange changing over).`,
+  unhook: (who, them) => `${who} unhook their guns facing ${them}: they fire from the next exchange.`,
   dig: who => `${who} dig in at the objective (${nOf(FD.units.dig_in.exchanges, "exchange")} without moving or firing).`,
 };
 function orderText(o){                            // "Billmen (Yorkists) move 4 hexes toward Archers (Lancastrians)."
@@ -1137,7 +1147,8 @@ function orderText(o){                            // "Billmen (Yorkists) move 4 
 function aiUndo(){                                // its units back where they began this move, for the player to move by hand
   if (!aiThisMove() || !S.aiDone.undo) return;
   S.units = S.aiDone.undo;
-  if (S.aiMemory) S.aiMemory.mem = S.aiDone.mem;
+  if (S.aiDone.start) S.start = S.aiDone.start;
+  if (S.aiMemory){ S.aiMemory.mem = S.aiDone.mem; S.aiMemory.n = S.units.length }
   supports().forEach((b, k) => { b.mission = S.aiDone.sup?.[k] ?? null });   // the fire it called, called off
   S.aiDone.undo = null;
   S.msg = `The commander's orders are undone: move ${S.ai.side} yourself, or let it order them again.`;
