@@ -25,7 +25,7 @@ When an item is done, delete it here and note it in the pull request that closes
   them: no deep belts, and no clearing a whole path ahead of the attack. Its creeping barrages start on the enemy and lift a fixed 3 lines, and it plans none
   for riflemen who stop at range. Still left out: moving a placed
   battery to a new place when it displaces; guns falling back on tow; air controllers, riders, fixed lines and works; any plan beyond one
-  objective (phase lines, a second objective, feints, scouting). It does
+  objective (phase lines, a second objective, feints, scouting); storming a work: its riflemen stop at range and trade fire with the men behind it (as at the Redan) rather than rushing it. It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model
   with a key the player supplies, to explain its orders in prose.
 
@@ -54,7 +54,7 @@ When an item is done, delete it here and note it in the pull request that closes
   scouting reach, and no seeing a dust cloud or campfires from further off.
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
   Agincourt (1415), Towton (1461), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
-  Lane (1814), First Bull Run (1861), Fort Phil Kearny (1866-67, with two battlefields), Mons
+  Lane (1814), Sevastopol (1855), First Bull Run (1861), Fort Phil Kearny (1866-67, with two battlefields), Mons
   (1914), Hill 700 on Bougainville (1944), Anzio and Cisterna (1944), Osan (1950), Chipyong-ni
   (1951), the Ia Drang (1965), Mogadishu (1993), Wanat (2008), Cassino (1944, three battlefields), the Chosin Reservoir (1950), Kapyong (1951), Heartbreak Ridge (1951), Pork Chop Hill (1953), Hue (1968), Khe Sanh (1968), Dak To (1967), Hamburger Hill (1969), Goose Green (1982), Grozny (1995), Fallujah (2004) and COP Keating (2009) have both a campaign map and a battlefield. The rest of Italy, the Gulf War (1991) and Northern Ireland
   still play on the generic valley and open ground (the unit rules for them are in: machine
@@ -109,7 +109,10 @@ When an item is done, delete it here and note it in the pull request that closes
   - the French surgeon-general Chenu's larger Crimea report (1865), not yet read;
   - the `behind_cover` modifier's torso and leg factors, which whole-army totals cannot set
     (the head factor of 1.5 agrees with the Crimean returns);
-  - Crimean characters in the team builder, and a Crimean battlefield.
+  - Crimean characters in the team builder;
+  - on the Great Redan battlefield, the siege guns of both sides, the French attack on the
+    Malakhov and the flanking fire of the batteries either side of the Redan (only the guns in
+    the work are on the map), and the 18 June attack as a second battlefield.
 - **Guns, still simplified.** The Thirty Years' War still borrows the Peninsula's gun wounds,
   because no 1618-48 artillery wound counts were found. Sections share the battery's rounds
   in order rather than each carrying its own.
