@@ -20,20 +20,51 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
     us, orders = [dict(u) for u in units], []
     memory = {} if memory is None else memory
     known = sightings(d, us, side, field, exchange, memory)
-    us, orders = _hook_up(d, us, side, (field, known, exchange, stance))
+    aim = aims(d, us, side, field, stance, memory)
+    goal = aim[1]                                # the field with the objective most of its units go for (with a second one marked)
+    us, orders = _hook_up(d, us, side, (goal, known, exchange, stance))
     _hold_back(d, us, side, known)
     orders += _commit(d, us, side, known, memory)
     for i in range(len(us)):
         if us[i]["side"] != side or not _free(d, us, i, exchange):
             continue
         roll = rng.randint(1, 100)
-        o = _order(d, us, i, (size, field, stance, known, exchange), roll)
+        o = _order(d, us, i, (size, _aim(i, aim), stance, known, exchange), roll)
         if o:
             orders.append({"unit": i, **o})
             _apply(us, i, o)
-    orders += _move_guns(d, us, side, (size, field, stance, known, exchange))
-    orders += _lay_guns(d, us, side, (size, field, known, exchange))
-    return us, orders + _call_fire(d, us, side, field, known, (stance, exchange, orders, table))
+    orders += _move_guns(d, us, side, (size, goal, stance, known, exchange))
+    orders += _lay_guns(d, us, side, (size, goal, known, exchange))
+    return us, orders + _call_fire(d, us, side, goal, known, (stance, exchange, orders, table))
+
+
+def aims(d: Data, us: list, side, field: dict | None, stance: str, memory: dict) -> tuple:
+    """(the field as its garrison of the first objective sees it, as the rest see it, the
+    garrison's indices): with a second objective (objective2) marked, attacking, once its side
+    holds the first, the rest go for the second while the units that stood on the first when it
+    moved on (its garrison, kept in memory plan) stay; holding, once the enemy holds the first,
+    all fall back to the second. Else (field, field, []). An attacker that no longer holds the
+    first goes back for it, and picks a new garrison when it moves on again."""
+    if not (field or {}).get("objective") or not field.get("objective2"):
+        return field, field, []
+    held, second, plan = U.objective_held(d, us, field)[0]["held"], U.second_view(field), memory.setdefault("plan", {})
+    if stance != "attack":
+        return (second, second, []) if held is not None and held != side else (field, field, [])
+    if held != side:
+        plan.pop("garrison", None)
+        return field, field, []
+    at, g = [list(field["objective"]), list(field["objective2"])], plan.get("garrison")
+    if not g or g["at"] != at:
+        r = U.objective_radii(d, field)[0]
+        g = plan["garrison"] = {"at": at, "units": [k for k, u in enumerate(us) if u["side"] == side and u["men"] > 0 and u["state"] not in ROUTED
+                                                    and U.off_objective(d, u, field["objective"]) <= r]}
+    return field, second, g["units"]
+
+
+def _aim(i: int, aim: tuple) -> dict | None:
+    """The field (objective) unit i goes for: the first's view if it is in the garrison, else the
+    rest's (see aims)."""
+    return aim[0] if i in aim[2] else aim[1]
 
 
 def _free(d: Data, us: list, i: int, exchange) -> bool:

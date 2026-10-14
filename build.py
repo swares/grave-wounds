@@ -508,6 +508,8 @@ def _commander_rules(d) -> list[str]:
         f"or that would only stand or turn while its target is more than {K['objective']['guard']} from the objective, advances on it (nearest hex in its allowance). Holding, a unit more than "
         f"{K['objective']['hold']} from it falls back to it unless it can charge. Enemies within {K['objective']['guard']} of it score {K['objective']['bonus']} more as targets; the log names who holds it each exchange. "
         "A battlefield's objective has its own radius (the position as drawn), and the other distances widen by as much. "
+        "A second objective (GM-marked): attacking, once its side holds the first, the units on the first stay and the rest go for the second, going back for the first if the enemy retakes it; "
+        "holding, once the enemy holds the first, its units fall back to the second. "
         f"Known minefields on the way cost {by(K['mines'])} points a hex. Its batteries and anti-tank guns on the map, in action, turn to face the nearest enemy it knows of; its off-map "
         "batteries with no mission, and its aircraft that can fly, are called on the enemy it sees that scores best as a target, never where its own men are within the burst; "
         "aircraft fly a napalm strip (where the war used it) or a strafing run along an enemy front as wide as the run, if its own men are clear of the line by the scatter. "

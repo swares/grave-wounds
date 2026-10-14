@@ -795,9 +795,10 @@ function minesSvg(){                              // marked minefields, hidden o
     return `<polygon class="mine${hid}" points="${pts(xy(h))}"/><text class="mine-t" x="${f1(x)}" y="${f1(y + 3)}">${MINE_TAG[m.kind] || "M"}</text>`;
   }).join("");
 }
-function objectiveSvg(h, radius){                 // O in two rings; a wide objective also gets a dashed ring at its radius
+function objectiveSvg(h, radius, second = false){ // O (or 2, the second) in two rings; a wide objective also gets a dashed ring at its radius
   const [x, y] = xy(h), wide = radius > 1 ? `<circle class="objective wide" cx="${f1(x)}" cy="${f1(y)}" r="${f1(radius * HW + HW / 2)}"/>` : "";
-  return wide + `<circle class="objective" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.95)}"><title>The commander's objective</title></circle><circle class="objective" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.55)}"/><text class="objective-t" x="${f1(x)}" y="${f1(y)}">O</text>` }
+  const title = second ? "The commander's second objective" : "The commander's objective";
+  return wide + `<circle class="objective" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.95)}"><title>${title}</title></circle><circle class="objective" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.55)}"/><text class="objective-t" x="${f1(x)}" y="${f1(y)}">${second ? "2" : "O"}</text>` }
 function postSvg(p){ const [x, y] = xy(p.at); return `<rect class="post${p.overrun ? " gone" : ""}" x="${f1(x - 5)}" y="${f1(y - 3.5)}" width="10" height="7" rx="1.5"><title>${esc(poss(p.side))} aid post${p.overrun ? " (overrun)" : ""}</title></rect><text class="post-t" x="${f1(x)}" y="${f1(y)}">AP</text>` }
 function supportSvg(){                            // smoke, landing zones, aid posts, heroes going back or lying out, flares, fixed lines, flashes, the hexes fire is called on, batteries, and where the last exchange's shells burst
   const F = S.field, heroes = allHeroes();
@@ -805,6 +806,7 @@ function supportSvg(){                            // smoke, landing zones, aid p
     Object.keys(F.smoke || {}).map(k => `<polygon class="smoke" points="${pts(xy(k.split(",").map(Number)))}"/>`),
     (F.lz || []).map(lzSvg),
     F.objective ? objectiveSvg(F.objective, F.objective_radius) : "",
+    F.objective2 ? objectiveSvg(F.objective2, FD.units.commander.objective.radius, true) : "",
     minesSvg(),
     (F.posts || []).map(postSvg),
     heroes.filter(h => h.going).map(h => glyph("party", "\u21a9")(h.going.pos)),
@@ -969,7 +971,7 @@ function otherLine(l, nm){                       // morale, breach and hero line
   return f ? f(l, nm) : undefined;
 }
 function objectiveText(l){                      // who holds the objective after the exchange
-  const at = `The objective at ${hexName(l.hex)}`;
+  const at = `The ${l.second ? "second " : ""}objective at ${hexName(l.hex)}`;
   if (l.held !== null) return `${at} is held by ${l.held}.`;
   return l.sides.length ? `${at} is contested by ${l.sides.join(" and ")}.` : `${at} is held by no one.`;
 }
@@ -1108,14 +1110,18 @@ const aiThisMove = () => S.aiDone && S.aiDone.exchange === S.exchange && S.aiDon
 function aiMove(){                                // at the start of its side's move, the commander orders that side
   if (!aiMoving() || aiThisMove()) return;
   const M = aiMemory(), mem = structuredClone(M.mem), sup = supports().map(b => (b.mission ? structuredClone(b.mission) : null));
+  const onward = aims(S.units, S.ai.side, S.field, S.ai.stance, structuredClone(M.mem))[1] !== S.field ? aimText() : "";
   const before = S.units.map(copyUnit), r = command(S.units, S.ai.side, SIZE, S.field, dice, S.exchange, { stance: S.ai.stance, memory: M.mem, table: S.table });
   S.units = r.units;
   S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before, mem, sup, start: S.start };
   if (S.units.length !== before.length) realignStarts();   // guns hooked up or unhooked: each unit's move this phase starts where it stood
   M.n = S.units.length;
   const lines = r.orders.map(o => ({ cls: o.act === "charge" ? "morale" : "", text: orderText(o) }));
-  S.log = [{ cls: "head", text: `The commander orders ${S.ai.side} (${stanceWord()}): ${r.orders.length ? nOf(r.orders.length, "order") : "every unit stands"}${Object.keys(M.mem).length ? "" : " (it knows of no enemy: none is in its units' sight)"}.` }, ...lines, ...S.log].slice(0, 400);
+  S.log = [{ cls: "head", text: `The commander orders ${S.ai.side} (${stanceWord()}): ${r.orders.length ? nOf(r.orders.length, "order") : "every unit stands"}${Object.keys(M.mem).length ? "" : " (it knows of no enemy: none is in its units' sight)"}.${onward}` }, ...lines, ...S.log].slice(0, 400);
 }
+const aimText = () => (S.ai.stance === "attack"   // why its units go for the second objective this move
+  ? ` It holds the first objective: its units on it stay, the rest go on to the second at ${hexName(S.field.objective2)}.`
+  : ` The enemy holds the first objective: its units fall back to the second at ${hexName(S.field.objective2)}.`);
 function realignStarts(){                         // S.start by unit id, after units joined or left the list (a unit whose riders changed starts as it is)
   const was = S.start || [];
   S.start = S.units.map(u => { const s = was.find(x => x.id === u.id); return s && s.riders?.id === u.riders?.id ? s : { ...u } });
@@ -1296,12 +1302,13 @@ function verdictText(){                           // who holds the field and the
   let field = "Both sides still have units standing: the field is undecided.";
   if (lost.length === 2) field = "Neither side has a unit left standing.";
   else if (lost.length === 1) field = `${S.sides[1 - lost[0]]} hold the field: ${S.sides[lost[0]]} have no unit left standing.`;
-  const o = objectiveHeld(S.units, S.field)[0];
-  if (!o) return field;
-  let held = `the objective at ${hexName(o.hex)} is held by no one`;
-  if (o.held !== null) held = `${o.held} hold the objective at ${hexName(o.hex)}`;
-  else if (o.sides.length) held = `the objective at ${hexName(o.hex)} is contested`;
-  return `${field} At the end, ${held}.`;
+  const os = objectiveHeld(S.units, S.field);
+  return os.length ? `${field} At the end, ${os.map(heldText).join("; ")}.` : field;
+}
+function heldText(o){                             // "Chinese hold the objective at 12,30" (or the second objective)
+  const at = `the ${o.second ? "second " : ""}objective at ${hexName(o.hex)}`;
+  if (o.held !== null) return `${o.held} hold ${at}`;
+  return o.sides.length ? `${at} is contested` : `${at} is held by no one`;
 }
 function renderAfter(){
   const over = S.phase === "over" && S.after;
@@ -1348,7 +1355,7 @@ function fillTools(){
   $("#sel-tool").innerHTML = `<option value="unit">Place and move units</option><option value="gate">Open or bar a gate</option>`
     + (WXD.light ? `<option value="flare">Fire a flare (lights the hexes round it)</option>` : "")
     + (FD.units.heliborne ? `<option value="lz">Mark or clear a landing zone</option>` : "")
-    + `<option value="objective">Mark or clear the enemy commander's objective</option>`
+    + `<option value="objective">Mark or clear the enemy commander's objective</option><option value="objective2">Mark or clear its second objective</option>`
     + `<optgroup label="Aid posts"><option value="post:0">Aid post: side A</option><option value="post:1">Aid post: side B</option></optgroup>`
     + `<optgroup label="Minefields (1939 on; click again to clear)">${mineOptions()}</optgroup>`
     + `<optgroup label="Paint the ground">${g}</optgroup><optgroup label="Works on a hex side (click just inside it, on the high side)">${e}</optgroup><optgroup label="Works in a hex">${h}</optgroup>`;
@@ -1357,7 +1364,7 @@ function fillTools(){
   $("#sel-cold").innerHTML = `<option value="">Not freezing hard</option>` + Object.entries(WXD.cold?.levels || {}).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-light").innerHTML = Object.entries(WXD.light?.levels || { day: { name: "Daylight" } }).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#legend").innerHTML = Object.entries(FD.units.ground).filter(([k]) => k !== "open").map(([k, v]) => `<span><i class="g-${k}" style="background:var(--g-${k})"></i>${esc(v.name)}</span>`).join("")
-    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span><i class="smoke-key" style="background:none;border:1.5px solid #8a1f1f;border-radius:50%"></i>O: the enemy commander's objective</span><span>\u2193 gone to ground; \u25e0 emplaced or dug in (a dashed parapet across its front)</span><span>AP: aid post; \u21a9 a hero going back; \u25bc a hero lying out</span><span><i class="smoke-key" style="background:#e9d3cc;border:1px dashed #7a2a1a"></i>a.p., a.t., mix: minefield (hidden ones faint, for the GM)</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
+    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span><i class="smoke-key" style="background:none;border:1.5px solid #8a1f1f;border-radius:50%"></i>O: the enemy commander's objective (2: its second)</span><span>\u2193 gone to ground; \u25e0 emplaced or dug in (a dashed parapet across its front)</span><span>AP: aid post; \u21a9 a hero going back; \u25bc a hero lying out</span><span><i class="smoke-key" style="background:#e9d3cc;border:1px dashed #7a2a1a"></i>a.p., a.t., mix: minefield (hidden ones faint, for the GM)</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
 }
 function clickSide(e, h){                         // the neighbour across the hex side nearest the click
   const svg = $("#map svg"), pt = svg.createSVGPoint();
@@ -1371,6 +1378,7 @@ function useTool(e, h){                           // paint the ground, or build 
   if (tool === "flare") return fireFlare(h);
   if (tool === "lz") return toggleLz(h);
   if (tool === "objective") return toggleObjective(h);
+  if (tool === "objective2") return toggleObjective2(h);
   if (tool.startsWith("post:")) return placePost(h, Number(tool.slice(5)));
   if (tool.startsWith("mine:")) return placeMine(h, tool.split(":")[1], tool.endsWith(":hidden"));
   if (tool === "h:wreck") return placeWreck(h);
@@ -1409,8 +1417,20 @@ function toggleObjective(h){                      // the enemy commander's objec
   if (same) delete S.field.objective; else S.field.objective = [...h];
   delete S.field.objective_radius;                // a hex the GM marks counts within the commander's own radius
   const R = FD.units.commander.objective, who = S.ai ? S.ai.side : "the commander's side";
-  if (same){ S.msg = `Objective at ${hexName(h)} cleared: the commander goes for the enemy only.`; return }
+  if (same){
+    const two = !!S.field.objective2;
+    delete S.field.objective2;
+    S.msg = `Objective at ${hexName(h)} cleared${two ? ", and the second with it" : ""}: the commander goes for the enemy only.`;
+    return;
+  }
   S.msg = `Objective marked at ${hexName(h)} for ${who}. Attacking, its units take it and hold it (within ${nOf(R.radius, "hex", "hexes")}); holding, they keep within ${nOf(R.hold, "hex", "hexes")} of it.` + (S.ai ? "" : " Choose a side for the enemy commander to use it.");
+}
+function toggleObjective2(h){                     // its second objective: marked, moved or cleared (at any time), once there is a first
+  if (!S.field.objective){ S.msg = "Mark the commander's first objective before a second one."; return }
+  const o = S.field.objective2, same = !!o && o[0] === h[0] && o[1] === h[1];
+  if (same){ delete S.field.objective2; S.msg = `Second objective at ${hexName(h)} cleared.`; return }
+  S.field.objective2 = [...h];
+  S.msg = `Second objective marked at ${hexName(h)}. Attacking, once the commander's side holds the first, its units on the first stay and the rest go for the second (and back for the first if the enemy retakes it); holding, once the enemy holds the first, its units fall back to the second.`;
 }
 function toggleLz(h){                            // a landing zone, marked or cleared (set-up only)
   if (S.phase !== "setup"){ S.msg = "Landing zones are marked before the battle starts."; return }

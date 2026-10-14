@@ -1957,16 +1957,30 @@ def objective_radii(d: Data, field: dict | None) -> tuple:
     return r, R["hold"] + r - R["radius"], R["guard"] + r - R["radius"]
 
 
+def second_view(field: dict) -> dict:
+    """The field as the commander sees it for the GM's second objective (objective2): a shallow
+    copy with that hex as its objective, at the commander's own radius. Read only: nothing that
+    orders units sets keys on the field."""
+    return {**field, "objective": list(field["objective2"]), "objective_radius": None}
+
+
 def objective_held(d: Data, us: list, field: dict | None) -> list:
     """With an objective marked on the field: [{kind objective, hex, sides (those with a standing
     unit within its radius (objective_radii) of it, in the units' order), held (the one side
-    there, else None)}], else []."""
-    obj = (field or {}).get("objective")
-    if not obj:
+    there, else None)}], and a second line (second: True) for a second objective, else []."""
+    if not (field or {}).get("objective"):
         return []
-    r = objective_radii(d, field)[0]
+    out = [_held_at(d, us, field)]
+    if field.get("objective2"):
+        out.append({**_held_at(d, us, second_view(field)), "second": True})
+    return out
+
+
+def _held_at(d: Data, us: list, field: dict) -> dict:
+    """{kind objective, hex, sides, held} for the field's objective (see objective_held)."""
+    obj, r = field["objective"], objective_radii(d, field)[0]
     sides = list(dict.fromkeys(u["side"] for u in us if u["state"] not in ("broken", "fled") and u["men"] > 0 and off_objective(d, u, obj) <= r))
-    return [{"kind": "objective", "hex": list(obj), "sides": sides, "held": sides[0] if len(sides) == 1 else None}]
+    return {"kind": "objective", "hex": list(obj), "sides": sides, "held": sides[0] if len(sides) == 1 else None}
 
 
 def _mark_was(us: list, field: dict | None) -> None:

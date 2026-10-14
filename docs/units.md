@@ -329,6 +329,17 @@ general. All its numbers are in units.yaml `commander`.
   - After each exchange the log says who holds it: the one side with a standing unit
     within 1 hex of it (a battlefield's objective: within its radius), "contested" if
     both have, or no one (`commander.objective` in `data/units.yaml`).
+- **A second objective.** With **Mark or clear its second objective** the GM marks a second
+  hex (2 on the map), once there is a first; clearing the first clears it too. It counts
+  within the commander's own radius (1 hex), and the log says who holds it as well.
+  - **Attacking**, once its side holds the first objective (at the start of its move: its
+    men there and no enemy), the units standing on the first then stay there and hold it
+    (digging in where they can), and the rest go for the second, as above. If the enemy
+    takes the first back (or contests it), every unit goes for the first again, and when it
+    holds it again it picks the units on it afresh.
+  - **Holding**, its units hold the first as above until the enemy holds it; then they all
+    fall back to the second and hold that.
+  - The move's first log line says when it goes on to (or falls back to) the second.
 - **Its guns.**
   - Its batteries and anti-tank guns on the map, in action, turn to face the nearest enemy
     it knows of.
@@ -406,8 +417,8 @@ What it does not do yet:
   air controllers, vehicles' riders, fixed lines and works.
 - Its reserve has no orders beyond holding and, once committed, fighting: it does not plug
   a named gap, and reserve units ignore the objective until committed.
-- It has one objective, the same for every unit: no phase lines, no second objective once
-  the first is taken, no feints or scouting. Victory is still the GM's call; the objective
+- It has at most two objectives, taken (or held) in turn: no third or more, no phase lines
+  across the whole front, no feints or scouting. Battlefields mark only one. Victory is still the GM's call; the objective
   line in the log only says who stands on it.
 - It plays only on the field map, not the travel map.
 
@@ -438,7 +449,7 @@ untreated time to death and its infection risk, and whether he went down. Then:
 
 **The result.** *After the battle* opens with a verdict and a table, side by side. The
 verdict says who holds the field (a side with no unit left standing has lost it; while both
-have, the field is undecided) and, with an objective, who holds it at the end, as the
+have, the field is undecided) and, with an objective, who holds it (and the second) at the end, as the
 exchange log counts it. The table gives each side's men at the start and still standing,
 men down, killed in the fighting, died of wounds before help came, left on the field, the
 wounded taken to camp (the walking wounded too), units broken or fled, and batteries and
