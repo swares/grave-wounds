@@ -243,6 +243,9 @@ general. All its numbers are in units.yaml `commander`.
   - For cover from the target's shots there (woods 20%, buildings 30%), a point per % for
     regulars and 2 for veterans. Green men ignore cover.
   - One point off for each hex of movement.
+  - If no hex it would move to is in reach (it faces away from the target, and turning alone
+    takes its whole move), it turns where it stands toward the target, as far as its move
+    allows, and moves on next time. Holding units do the same.
   - Of hexes that score the same and cost the same, it takes the one nearest the straight
     line to the target (or the objective), so a long advance goes straight rather than
     drifting to one side.

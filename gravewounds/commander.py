@@ -873,7 +873,9 @@ def may_charge(d: Data, u: dict, t: dict, stance: str = "attack") -> bool:
 
 def _best(d: Data, us: list, i: int, t: int, ctx: tuple) -> dict | None:
     """The best-scoring hex it can legally reach, facing the target: a move, a charge, a turn,
-    going to ground where it stands, or None (it holds). Holding, it only charges, else stays."""
+    going to ground where it stands, or None (it holds). Holding, it only charges, else stays.
+    If no hex it likes is in reach (facing away, the turn alone eats its move), it turns
+    where it stands toward the target, as far as its move allows (_turn_toward)."""
     (size, field, stance, known, _), u = ctx, us[i]
     tu, hold = _where(us, t, known), stance == "hold"
     free = {**u, "prone": False} if u.get("prone") else u
@@ -882,12 +884,27 @@ def _best(d: Data, us: list, i: int, t: int, ctx: tuple) -> dict | None:
     best = _first_move(d, base, i, tu, (size, field), (charge, hold, shooter))
     if best is None:
         f = U.bearing(u["pos"], tu["pos"])
-        return _stay(d, us, i, t, f, shooter) if hold and U.move(d, base, i, u["pos"], f, size, field)["ok"] else None
+        f = _turn_toward(d, base, i, f, (size, field))
+        return None if f is None else _stay(d, us, i, t, f, shooter)
     h, f, m = best
     if h == list(u["pos"]):
         return _stay(d, us, i, t, f, shooter)
     return {"act": "charge" if m["charge"] else "move", "target": t, "pos": h, "facing": f, "cost": m["cost"],
             **({"up": True} if u.get("prone") else {})}
+
+
+def _turn_toward(d: Data, base: list, i: int, f: int, where: tuple) -> int | None:
+    """The facing nearest f, turning the shorter way from where unit i faces, that it can
+    reach this move where it stands (f itself if it can), or None (not even a step)."""
+    size, field = where
+    u = base[i]
+    right = (f - u["facing"]) % 6
+    sign = 1 if right <= 3 else -1
+    for n in range(min(right, 6 - right), 0, -1):
+        g = (u["facing"] + sign * n) % 6
+        if U.move(d, base, i, u["pos"], g, size, field)["ok"]:
+            return g
+    return f if right == 0 and U.move(d, base, i, u["pos"], f, size, field)["ok"] else None
 
 
 def _first_move(d: Data, base: list, i: int, tu: dict, where: tuple, how: tuple) -> tuple | None:
