@@ -248,6 +248,7 @@ legend{padding:0}
         <button class="small" id="btn-ground" title="The men lie down in the folds of the ground: harder to hit, but the unit cannot move until it gets up">Go to ground</button>
         <button class="small" id="btn-dig" hidden title="Shell scrapes and foxholes: out of contact, neither moving nor firing, it is dug in after a few exchanges (in set-up, at once). Dug in, shots at it lose as much as men gone to ground until it moves.">Dig in</button>
         <button class="small" id="btn-emplace" hidden title="Guns dug in before the battle: shots at them lose as much as men gone to ground, and they cannot move all battle (they may turn)">Emplace</button>
+        <button class="small" id="btn-shield" hidden title="Machine guns on shielded mounts (a wheeled Maxim, say): small arms from in front lose as much as against anti-tank guns' shields. Most machine guns had none.">Shielded</button>
         <button class="small" id="btn-fixed" hidden title="Lay the machine guns on a fixed line (by day or at dusk): in the dark they fire blind down it at any enemy on it">Lay a fixed line</button>
         <button class="small" id="btn-reserve" hidden title="Held in the enemy commander's reserve: it holds until the commander commits it (when a unit breaks or the enemy comes close). Marking any unit takes the choice of reserves from the commander.">Hold in reserve</button>
         <button class="small" id="btn-sappers" hidden title="Engineers or pioneers: during the battle they can lay a hidden minefield in the row of hexes ahead of their front, or lift a lane through a known one">Sappers</button>
@@ -1665,7 +1666,7 @@ function renderMap(){
   $("#hex-size").textContent = fmtM(FD.units.hex_m);
 }
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
-const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"], ["sappers", "sappers"], ["mining", "laying mines"], ["clearing", "lifting mines"]];
+const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"], ["sappers", "sappers"], ["shielded", "shielded"], ["mining", "laying mines"], ["clearing", "lifting mines"]];
 function unitMeta(u){
   if (u.state === "fled") return "fled";
   const down = u.down ? " · " + u.down + " down" : "", flags = META_FLAGS.filter(([k]) => u[k]).map(([, t]) => " · " + t).join("") + (dugHere(u) ? " · dug in" : "");
@@ -1728,7 +1729,7 @@ function renderAssault(u){                        // the storming order, on tabl
 }
 function shieldText(u){                          // "; shields: small arms from in front −30%", for guns with shields
   const S = FD.units.gun_shields;
-  return S && S.weapons.includes(u.weapon) ? `; shields: small arms from in front −${S.cover}%` : "";
+  return S && hasShields(u) ? `; shields: small arms from in front −${S.cover}%` : "";
 }
 function teamInfo(u){                             // a machine-gun team's or anti-tank guns' line in the selected unit
   const A = FD.units.anti_tank_guns, G = FD.units.machine_guns;
@@ -1763,6 +1764,7 @@ function renderSel(){
   renderMedics(u, setup);
   renderFac(u, setup);
   renderSappers(u, setup);
+  renderShield(u, setup);
   if (!u){ $("#sel-info").innerHTML = ""; return }
   const f = form(u), w = FD.weapons[u.weapon], VK = vehicleKind(u);
   const how = { smoothbore: "smoothbore guns; ", rifled: "rifled guns, percussion shell; ", howitzer: "howitzers, shell over anything between; " }[gunKind(u)];
@@ -1905,6 +1907,20 @@ function toggleDig(){                             // set-up: dug in at once (or 
   delete u.mining; delete u.clearing;
   u.digging = { at: [...u.pos], n: 0 };
   S.msg = `${u.name} dig in: ${nOf(FD.units.dig_in.exchanges, "exchange")} without moving, firing or coming into contact, and they are dug in here.`;
+  render();
+}
+const shieldable = u => !u.vehicle && (FD.units.gun_shields?.optional || []).includes(u.weapon);   // a unit whose guns sometimes had shields
+function renderShield(u, setup){                  // Shielded / Not shielded: set-up only, machine-gun units
+  const b = $("#btn-shield");
+  b.hidden = !u || !setup || !shieldable(u);
+  if (b.hidden) return;
+  b.textContent = u.shielded ? "Not shielded" : "Shielded";
+  b.setAttribute("aria-pressed", String(!!u.shielded));
+}
+function toggleShield(){                          // set-up only: the GM marks a machine-gun unit's guns as shielded
+  const u = selUnit(); if (!u || S.phase !== "setup" || !shieldable(u)) return;
+  if (u.shielded) delete u.shielded; else u.shielded = true;
+  S.msg = u.shielded ? `${u.name} have shielded guns: small arms from in front lose ${FD.units.gun_shields.cover}%.` : `${u.name} have no shields on their guns.`;
   render();
 }
 function toggleEmplace(){                         // set-up only: guns dug in for the battle
@@ -2410,6 +2426,7 @@ function init(){
   $("#sel-medics").onchange = e => setMedics(e.target.value);
   $("#btn-fac").onclick = toggleFac;
   $("#btn-sappers").onclick = toggleSappers;
+  $("#btn-shield").onclick = toggleShield;
   $("#sel-sap").onchange = e => setSap(e.target.value);
   $("#sel-ai").onchange = e => setAi(e.target.value);
   $("#btn-ai-undo").onclick = aiUndo;

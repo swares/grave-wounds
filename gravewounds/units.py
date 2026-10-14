@@ -1499,11 +1499,18 @@ def _sappers_all(d: Data, us: list, field: dict | None) -> list:
     return out
 
 
+def has_shields(d: Data, u: dict) -> bool:
+    """Its guns have shields: a weapon that always had them (gun_shields.weapons), or one that
+    sometimes did (optional) on a unit the GM marked shielded."""
+    S = d.units.get("gun_shields") or {}
+    return u["weapon"] in S.get("weapons", []) or (bool(u.get("shielded")) and u["weapon"] in S.get("optional", []))
+
+
 def shield_cover(d: Data, u: dict, t, h) -> int:
     """% off small-arms fire from hex h at unit u (its hex t): its guns' shields
     (gun_shields), from its front only."""
     S = d.units.get("gun_shields") or {}
-    if u["weapon"] not in S.get("weapons", []) or list(h) == list(t):
+    if not has_shields(d, u) or list(h) == list(t):
         return 0
     return S["cover"] if arc(u["facing"], bearing(t, h)) == "front" else 0
 

@@ -437,13 +437,16 @@ anti_tank_guns:
 # ---------- gun shields and emplacements ----------
 # Gun shields: the crews of the guns that carried one (`weapons`) get `cover` % against small
 # arms (rifles, machine guns, pistols, bows: aimed fire) from their front only; none against
-# shell, bombs, canister or fire from the flank or rear.
+# shell, bombs, canister or fire from the flank or rear. Of the weapons in `optional` some had
+# one and most did not (a Maxim on a wheeled Sokolov mount did; most machine guns did not):
+# the GM marks a unit shielded in set-up, and it gets the same cover.
 # Emplaced: before the battle the GM can dig a gun unit in (anti-tank guns, anti-aircraft guns,
 # machine-gun teams, batteries: `units`). Its crews count as gone to ground (to_ground cover,
 # hidden, less struck by shellfire, steadier) while it stands, and it cannot move all battle,
 # though it can turn. A unit that breaks leaves its pits. Design estimates.
 gun_shields:
   weapons: [at_gun, aa_gun]
+  optional: [machine_gun]
   cover: 30
 
 # ---------- minefields ----------

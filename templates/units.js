@@ -797,9 +797,13 @@ function sappersAll(us, field){                    // end of the exchange: sappe
   return out;
 }
 const groundCover = u => (low(u) ? UD.to_ground.cover : 0);                 // % off shots at a unit gone to ground (or emplaced)
+function hasShields(u){                           // its guns have shields: always (gun_shields.weapons), or optional ones the GM marked shielded (as units.has_shields)
+  const S = UD.gun_shields || {};
+  return (S.weapons || []).includes(u.weapon) || (!!u.shielded && (S.optional || []).includes(u.weapon));
+}
 function shieldCover(u, t, h){                    // % off small-arms fire from h at unit u (its hex t): its guns' shields, from its front only
   const S = UD.gun_shields || {};
-  if (!(S.weapons || []).includes(u.weapon) || (h[0] === t[0] && h[1] === t[1])) return 0;
+  if (!hasShields(u) || (h[0] === t[0] && h[1] === t[1])) return 0;
   return arc(u.facing, bearing(t, h)) === "front" ? S.cover : 0;
 }
 function hidesAt(field, h){                       // men in hex h hidden by its ground or a hex work that hides (a trench)

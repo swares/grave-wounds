@@ -60,7 +60,8 @@ Korean 45 mm and the Japanese 47 mm.
   battery is: an exchange out of contact, neither moving nor firing.
 - **Shields.** Anti-tank and anti-aircraft guns have shields: small arms fired at them from
   in front lose {{at_shield}}%. Shields do nothing against shells or fire from the flank or
-  rear.
+  rear. Some machine guns had shields too (a Maxim on a wheeled mount, say), though most did
+  not: in set-up the GM can mark a machine-gun unit **shielded**, and it gets the same cover.
 - **Vulnerable.** Otherwise its crews are men: rifles, machine guns and shells strike them,
   and hand to hand they fight with bayonets.
 - **Emplaced.** Before the battle the GM can dig in any gun unit (anti-tank guns,

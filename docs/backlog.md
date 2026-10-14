@@ -84,10 +84,10 @@ When an item is done, delete it here and note it in the pull request that closes
   shelter. In battle, only automatic weapons jam; mortars, grenades and vehicles do not freeze.
 - **Vehicles, third cut.** Flank and rear shots, turret and hull hits, immobilised vehicles
   and guns put out of action, riders, rockets and guided missiles, anti-tank guns (1939-53)
-  and minefields (1939 on), gun shields (anti-tank and anti-aircraft guns, small arms from
-  the front), guns emplaced before the battle, anti-tank guns' own rounds and gun tractors
-  towing them, lorries, tank riders and sappers laying and lifting mines in battle are in. Still left out: shields on machine guns and
-  field guns. Sappers lay or lift
+  and minefields (1939 on), gun shields (anti-tank and anti-aircraft guns, and machine guns
+  the GM marks shielded; small arms from the front), guns emplaced before the battle, anti-tank guns' own rounds and gun tractors
+  towing them, lorries, tank riders and sappers laying and lifting mines in battle are in. Field guns with shields (about
+  1900 on) only fire from off the map, so no battery on the map has one. Sappers lay or lift
   only the row just ahead of them, and a unit that turns in place onto mines sets them off
   as if it had moved into them (except its own side's). A minefield is set off along a straight line from
   where a unit's move began, not along the path it took. No battlefield has minefields yet:
