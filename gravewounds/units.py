@@ -1906,6 +1906,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     _unhooked_after(us)
     for u in us:
         u["charged"] = False
+        u.pop("jostled", None)
         _battery_after(d, u)
         if u.get("pinned"):
             u["pinned"] -= 1
@@ -3268,8 +3269,16 @@ def allowance(d: Data, u: dict) -> int:
         if u.get("limbering") or u.get("resupplying"):
             return 0
         if not u.get("limbered"):
-            return _carrying(d, u, d.units["artillery"]["pushed"])
-    return _carrying(d, u, d.units["mounted_move"] if u.get("mounted") else form(d, u)["move"])
+            return _jostled(d, u, _carrying(d, u, d.units["artillery"]["pushed"]))
+    return _jostled(d, u, _carrying(d, u, d.units["mounted_move"] if u.get("mounted") else form(d, u)["move"]))
+
+
+def _jostled(d: Data, u: dict, move: int) -> int:
+    """A move cut by rout.jostle (rounded down) for a unit a broken friend ran through this
+    exchange (a broken unit itself runs at full speed)."""
+    if u.get("jostled") and u["state"] not in ("broken", "fled"):
+        return math.floor(move * (1 - d.units["rout"]["jostle"]))
+    return move
 
 
 def _carrying(d: Data, u: dict, move: int) -> int:
@@ -3565,17 +3574,49 @@ def _vehicles_after(d: Data, us: list, field: dict | None) -> list:
 
 def flee(d: Data, units: list, i: int, size: tuple, field: dict | None = None) -> dict:
     """A broken unit runs straight back as far as its allowance takes it; off the map, it has
-    fled the field. Returns the unit."""
+    fled the field. Running into its own side's units it runs on through them to the first
+    free ground beyond (rout.through times its allowance at most), else it stops where it last
+    stood clear. Returns the unit."""
     u = dict(units[i])
-    back = (u["facing"] + 3) % 6
-    for _ in range(allowance(d, u)):
+    back, allow = (u["facing"] + 3) % 6, allowance(d, u)
+    # Its own side's other units do not stop it: it may pass through them, but not end on them.
+    others = [x for k, x in enumerate(units) if k == i or x["side"] != u["side"]]
+    j = next(k for k, x in enumerate(others) if x is units[i])
+    clear = u
+    for n in range(allow * d.units["rout"]["through"]):
         nxt = {**u, "pos": step(u["pos"], back)}
         if not all(0 <= h[0] < size[0] and 0 <= h[1] < size[1] for row in footprint(d, nxt) for h in row):
             return {**u, "state": "fled"}
-        if step_cost(d, field, u, u["pos"], nxt["pos"]) is None or not _fits(d, units, i, nxt, size, field):
+        if step_cost(d, field, u, u["pos"], nxt["pos"]) is None or not _fits(d, others, j, nxt, size, field):
             break
         u = nxt
-    return u
+        if _fits(d, units, i, u, size, field):
+            clear = u
+            if n + 1 >= allow:
+                break
+    return clear
+
+
+def ran_through(d: Data, units: list, i: int, after: dict) -> list:
+    """The friendly units unit i passed through running straight back from where it stands to
+    after (flee): indices, in order."""
+    u, out = dict(units[i]), []
+    back = (u["facing"] + 3) % 6
+    while list(u["pos"]) != list(after["pos"]) and after["state"] != "fled":
+        u = {**u, "pos": step(u["pos"], back)}
+        hexes = {C.hkey(h) for row in footprint(d, u) for h in row}
+        for k, x in enumerate(units):
+            if k != i and k not in out and x["side"] == u["side"] and x["state"] not in ("broken", "fled") and hexes & {C.hkey(h) for row in footprint(d, x) for h in row}:
+                out.append(k)
+    return out
+
+
+def run_away(d: Data, units: list, i: int, size: tuple, field: dict | None = None) -> list:
+    """Units after broken unit i runs (flee), the friends it ran through jostled (rout.jostle:
+    their move cut this exchange)."""
+    after = flee(d, units, i, size, field)
+    hit = set(ran_through(d, units, i, after))
+    return [after if k == i else ({**x, "jostled": True} if k in hit else x) for k, x in enumerate(units)]
 
 
 

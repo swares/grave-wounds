@@ -1713,6 +1713,7 @@ function hotLanding(u, table, rng, n, line){      // each man landing struck at 
 function afterExchange(us, field, log = []){        // charges spent, batteries changed over, pins wear off, missions come due, batteries displace, smoke thins and drifts
   for (const u of us){
     u.charged = false;
+    delete u.jostled;
     batteryAfter(u);
     if (u.pinned) u.pinned -= 1;
     if (u.lost) u.lost -= 1;
@@ -1794,9 +1795,12 @@ function allowance(u){                            // hexes a unit may move (twic
   if (isAtGun(u) && u.resupplying && u.state !== "broken" && u.state !== "fled") return 0;
   if (isBattery(u) && !u.abandoned && u.state !== "broken"){   // crews running from their guns run on foot
     if (u.limbering || u.resupplying) return 0;
-    if (!u.limbered) return carrying(u, UD.artillery.pushed);
+    if (!u.limbered) return jostledMove(u, carrying(u, UD.artillery.pushed));
   }
-  return carrying(u, u.mounted ? UD.mounted_move : form(u).move);
+  return jostledMove(u, carrying(u, u.mounted ? UD.mounted_move : form(u).move));
+}
+function jostledMove(u, move){                    // a move cut by rout.jostle for a unit a broken friend ran through this exchange (as units._jostled)
+  return u.jostled && u.state !== "broken" && u.state !== "fled" ? Math.floor(move * (1 - UD.rout.jostle)) : move;
 }
 function carrying(u, move){                       // a unit's move, slowed (heroes.carried, at least 1 hex) if a lamed hero is with it
   return move && (u.heroes || []).some(lamed) ? Math.max(1, Math.floor(move * UD.heroes.carried)) : move;
@@ -1958,16 +1962,38 @@ function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, ch
   if (contact && u.state === "steady" && cost <= most) return { ok: true, cost, charge: true };
   return { ok: false, why: "too far" };
 }
-function flee(units, i, size, field = null){      // a broken unit runs straight back; off the map it has fled
+function flee(units, i, size, field = null){      // a broken unit runs straight back; off the map it has fled; through its own side's units to the first free ground beyond (as units.flee)
   let u = { ...units[i] };
-  const back = mod6(u.facing + 3);
-  for (let n = 0; n < allowance(u); n++){
+  const back = mod6(u.facing + 3), allow = allowance(u);
+  const others = units.filter((x, k) => k === i || x.side !== u.side), j = others.indexOf(units[i]);
+  let clear = u;
+  for (let n = 0; n < allow * UD.rout.through; n++){
     const nxt = { ...u, pos: step(u.pos, back) };
     if (!footprint(nxt).every(row => row.every(h => onMap(h, size)))) return { ...u, state: "fled" };
-    if (unitStepCost(field, u, u.pos, nxt.pos) === null || !fits(units, i, nxt, size, field)) break;
+    if (unitStepCost(field, u, u.pos, nxt.pos) === null || !fits(others, j, nxt, size, field)) break;
     u = nxt;
+    if (fits(units, i, u, size, field)){
+      clear = u;
+      if (n + 1 >= allow) break;
+    }
   }
-  return u;
+  return clear;
+}
+function ranThrough(units, i, after){             // indices of the friendly units unit i passed through running straight back to after (as units.ran_through)
+  let u = { ...units[i] };
+  const back = mod6(u.facing + 3), out = [];
+  while ((u.pos[0] !== after.pos[0] || u.pos[1] !== after.pos[1]) && after.state !== "fled"){
+    u = { ...u, pos: step(u.pos, back) };
+    const hexes = new Set(footprint(u).flat().map(hk));
+    units.forEach((x, k) => {
+      if (k !== i && !out.includes(k) && x.side === u.side && x.state !== "broken" && x.state !== "fled" && footprint(x).flat().some(h => hexes.has(hk(h)))) out.push(k);
+    });
+  }
+  return out;
+}
+function runAway(units, i, size, field = null){   // units after broken unit i runs, the friends it ran through jostled (as units.run_away)
+  const after = flee(units, i, size, field), hit = new Set(ranThrough(units, i, after));
+  return units.map((x, k) => (k === i ? after : hit.has(k) ? { ...x, jostled: true } : x));
 }
 
 // ---------- the enemy commander (as gravewounds.commander) ----------
@@ -2453,9 +2479,13 @@ function underFire(us, i){                         // an enemy unit's missile we
 function storming(u, t, field, stance){           // attacking, armed for storming (black powder with the bayonet), its target holding works: it closes and charges (as commander.storming)
   return stance === "attack" && UD.commander.storm.includes(u.weapon) && holdsWorks(field, u.pos, t);
 }
-function mayCharge(u, t, stance = "attack", storm = false){   // men without missiles (or storming works), steady, with the odds its quality wants in its stance
+function support(us, i){                          // men times attack % of the steady friendly units (not guns or vehicles) touching unit i: they go in with it (as commander.support)
+  const u = us[i], near = new Set(footprint(u).flat().flatMap(h => [0, 1, 2, 3, 4, 5].map(n => hk(step(h, n)))));
+  return us.reduce((a, x, k) => (k !== i && x.side === u.side && x.state === "steady" && !isBattery(x) && !x.vehicle && footprint(x).flat().some(h => near.has(hk(h))) ? a + x.men * quality(x.quality).attack : a), 0);
+}
+function mayCharge(u, t, stance = "attack", storm = false, backing = 0){   // men without missiles (or storming works), steady, with the odds its quality wants in its stance, counting the friends touching it
   if (("range" in FD.weapons[u.weapon] && !storm) || u.state !== "steady") return false;
-  const mine = u.men * quality(u.quality).attack, theirs = t.men * quality(t.quality).attack;
+  const mine = u.men * quality(u.quality).attack + backing, theirs = t.men * quality(t.quality).attack;
   return 100 * mine >= (UD.commander.charge_odds[stance][u.quality] ?? 100) * theirs;
 }
 function turnToward(base, i, f, [size, field]){    // the facing nearest f, turning the shorter way, it can reach where it stands this move, or null (as commander._turn_toward)
@@ -2470,7 +2500,7 @@ function bestOrder(us, i, t, [size, field, stance, known]){   // the best-scorin
   const u = us[i], tu = knownAt(us, t, known), hold = stance === "hold";
   const free = u.prone ? { ...u, prone: false } : u, base = us.map((x, k) => (k === i ? free : x));
   const storm = storming(u, tu, field, stance);
-  const shooter = "range" in FD.weapons[u.weapon] && !storm, charge = mayCharge(u, tu, stance, storm);
+  const shooter = "range" in FD.weapons[u.weapon] && !storm, charge = mayCharge(u, tu, stance, storm, support(us, i));
   const best = firstMove(base, i, tu, [size, field], [charge, hold, shooter, storm]);
   if (best === null){
     const f = keepFront(u, bearing(u.pos, tu.pos));

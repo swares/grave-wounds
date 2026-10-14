@@ -60,6 +60,10 @@ twice as often, as long as the pursuers keep up. This is where most of a battle'
 fell, as at Towton and Agincourt, where the beaten side lost far more men in flight than in
 the press.
 
+On the field map it runs straight back as far as it can move. Its own side's units do not
+stop it: it runs on through them to the first clear ground beyond, and each unit it runs
+through loses half its move that exchange as the fugitives push through its ranks.
+
 !!! gm "For the GM"
     A melee of ten or twenty minutes, decided by morale more than by wounds, with the beaten
     side losing most of its men in the rout: that is the shape the records show, and the
@@ -107,8 +111,8 @@ The GM can hand one side to a scripted **enemy commander**, attacking or holding
 start of that side's move it orders each unit. It knows only the enemies its units can see
 (or saw in the last {{c_remember}} exchanges, where they were then); green units go for the
 nearest, better ones for an enemy that is hurt, shaken or dangerous to them. It closes,
-takes cover, shoots from range or charges with the odds its quality wants, and green units
-sometimes hesitate. With no enemy in sight, a unit holds.
+takes cover, shoots from range or charges with the odds its quality wants (counting the
+steady friends touching it, who go in with it), and green units sometimes hesitate. With no enemy in sight, a unit holds.
 
 - **Storming works.** Attacking, infantry with muskets, rifle-muskets or breech-loaders do
   not stop to trade fire with an enemy behind works (a parapet, trench or bank), dug in, or

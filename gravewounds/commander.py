@@ -868,12 +868,22 @@ def storming(d: Data, u: dict, t: dict, field: dict | None, stance: str) -> bool
     return stance == "attack" and u["weapon"] in d.units["commander"]["storm"] and U.holds_works(d, field, u["pos"], t)
 
 
-def may_charge(d: Data, u: dict, t: dict, stance: str = "attack", storm: bool = False) -> bool:
+def support(d: Data, us: list, i: int) -> int:
+    """Men times attack % of the steady friendly units (not guns or vehicles) touching unit i:
+    they go in with it, and count toward its charge odds."""
+    u = us[i]
+    near = {C.hkey(U.step(h, n)) for row in U.footprint(d, u) for h in row for n in range(6)}
+    return sum(x["men"] * U.quality(d, x["quality"])["attack"] for k, x in enumerate(us)
+               if k != i and x["side"] == u["side"] and x["state"] == "steady" and not U.is_battery(d, x) and not x.get("vehicle")
+               and any(C.hkey(h) in near for row in U.footprint(d, x) for h in row))
+
+
+def may_charge(d: Data, u: dict, t: dict, stance: str = "attack", storm: bool = False, backing: int = 0) -> bool:
     """Men without missiles (or storming works), steady, with the odds its quality wants in its
-    stance (charge_odds)."""
+    stance (charge_odds), counting the friends touching it (backing: their men times attack %)."""
     if ("range" in d.weapons[u["weapon"]] and not storm) or u["state"] != "steady":
         return False
-    mine = u["men"] * U.quality(d, u["quality"])["attack"]
+    mine = u["men"] * U.quality(d, u["quality"])["attack"] + backing
     theirs = t["men"] * U.quality(d, t["quality"])["attack"]
     return 100 * mine >= d.units["commander"]["charge_odds"][stance].get(u["quality"], 100) * theirs
 
@@ -888,7 +898,7 @@ def _best(d: Data, us: list, i: int, t: int, ctx: tuple) -> dict | None:
     free = {**u, "prone": False} if u.get("prone") else u
     base = [free if k == i else x for k, x in enumerate(us)]
     storm = storming(d, u, tu, field, stance)
-    shooter, charge = "range" in d.weapons[u["weapon"]] and not storm, may_charge(d, u, tu, stance, storm)
+    shooter, charge = "range" in d.weapons[u["weapon"]] and not storm, may_charge(d, u, tu, stance, storm, support(d, us, i))
     best = _first_move(d, base, i, tu, (size, field), (charge, hold, shooter, storm))
     if best is None:
         f = keep_front(u, U.bearing(u["pos"], tu["pos"]))

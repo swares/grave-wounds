@@ -246,7 +246,7 @@ def unit_rules(d) -> list[str]:
         f"<b>Unit morale:</b> after an exchange a unit checks if it lost the exchange, has {int(mo['trigger'] * 100)}% of its men down, lost {int(mo['shock'] * 100)}% in the exchange, "
         f"or was struck in flank or rear: d100 against Nerve, +{mo['mods']['in_order']} while steady, +{mo['mods']['leader']} with a leader, {mo['mods']['leader_down']} if he is down, "
         f"{mo['mods']['heavy']} at half strength, {mo['mods']['flank']} if flanked, +{mo['mods']['dug_in']} dug in, -{mo['mods']['losing_per_man']} a man it lost more than it put down (at most -{mo['mods']['losing_cap']}). "
-        f"Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +{R['attack']}, no parry, x{R['tempo']:g} tempo.",
+        f"Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +{R['attack']}, no parry, x{R['tempo']:g} tempo. On the field map it runs on through its own side's units to clear ground (up to {R['through']} times its move); each it runs through moves {round(100 * (1 - R['jostle']))}% of its move that exchange.",
     ] + _ground_rules(d) + _gun_rules(d) + _mg_rules(d) + _hero_rules(d) + _commander_rules(d) + _aftermath_rules(d)
 
 
@@ -498,7 +498,7 @@ def _commander_rules(d) -> list[str]:
         f"Shooters stop where the target is in range, keep {K['keep_off']} hexes off, and never charge; with a modern weapon they go to ground under fire. "
         f"Storming works: attacking, {', '.join(d.weapons[w]['name'] for w in K.get('storm', []))} do not stop at range when the target is dug in, behind works giving it cover, or in buildings or rubble; they close (ignoring cover) and charge as men without missiles. "
         "A unit whose target is already in its front arc keeps its facing. "
-        f"Others charge only if their men × attack % is at least this % of the target's: attacking {by(K['charge_odds']['attack'])}; holding {by(K['charge_odds']['hold'])}. "
+        f"Others charge only if their men × attack % (with those of steady friends touching them) is at least this % of the target's: attacking {by(K['charge_odds']['attack'])}; holding {by(K['charge_odds']['hold'])}. "
         f"Holding, a side leaves its ground only to charge. Reserve: at its first move (unless the GM marks reserves) it holds back its rearmost units up to {by(K['reserve'])}% of its men; "
         f"they hold until it commits one a move, when a unit of its side breaks, an enemy it knows of comes within {K['gap']} hexes of one, or (veterans) an enemy breaks. "
         f"Objective (a hex the GM marks, optional): attacking, a unit within {K['objective']['radius']} of it holds it (charging only with holding odds); one with no enemy to go for, "

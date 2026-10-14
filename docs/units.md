@@ -142,7 +142,11 @@ each side is the flank; the two behind are the rear.
 
 **Turn order.** Each exchange (about a minute):
 1. Every broken unit runs straight back, as far as it can move; a unit that runs off the
-   map has fled the field.
+   map has fled the field. Its own side's units do not stop it: it runs on through them to
+   the first clear ground beyond (up to three times its move in all, `rout.through`; with
+   none in that, it stops where it last stood clear). Each friendly unit it runs through is
+   **jostled**: its move that exchange is halved, rounded down (`rout.jostle`). Enemy units,
+   impassable ground and the map edge stop it as before.
 2. Side A moves its units, then side B moves its units.
 3. Every melee and volley is resolved at once from where the units now stand, then losses,
    then morale. A unit that breaks is struck at once by every man of each enemy unit
@@ -255,7 +259,8 @@ general. All its numbers are in units.yaml `commander`.
   With a modern weapon (breech-loaders on), regulars and veterans under fire go to ground
   where they stand. Older armies stand up.
 - **Men without missiles** charge only with the odds their quality wants: their men times
-  attack % against the target's.
+  attack % against the target's. The men of steady friendly units touching it (not guns or
+  vehicles) count with its own: a column backed by its supports goes in together.
   - Attacking: green men want even odds, regulars take on an enemy up to a quarter
     stronger, and veterans one two-thirds stronger.
   - Holding: green men want half as many again as the enemy, regulars a fifth more, and
@@ -1476,10 +1481,13 @@ south, north at the top: the Redan's point toward the British trench at the bott
   not on the map.
 - The point of the salient is drawn cut off square, 120 m across, so that units in line can
   reach the men in it; the real salient came to a sharper point.
+- The objective is the salient inside the parapet (3 hexes round its middle), so men in the
+  ditch outside it are still attacking it.
 - Played by the enemy commander, the British storm the salient (see *Storming works*): the
-  covering party and the stormers reach it in four or five exchanges and fight there. The
-  supports crowd up behind them and the fight jams: a broken unit at the front that cannot
-  get away blocks the others.
+  covering party and the stormers reach it in four or five exchanges. Broken units run back
+  through the supports, and the columns behind go in together; in test runs the British got
+  into the salient after 60 to 80 exchanges with heavy losses on both sides, where the real
+  assault was driven out.
 
 It is drawn by `tools/maps/make_redan_field.mjs`.
 
