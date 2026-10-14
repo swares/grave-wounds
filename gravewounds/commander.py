@@ -501,8 +501,8 @@ def _displace(d: Data, field: dict | None, side) -> list:
     battery moves along its map edge (shifted). -> [displace orders]."""
     sup, out = (field or {}).get("support") or [], []
     for k, b in enumerate(sup):
-        n = d.units["indirect"]["kinds"][b["kind"]].get("displace", 0)
-        if b["side"] != side or not b.get("located") or b.get("displacing") or b.get("tubes", 0) <= 0 or not n:
+        n = _displace_for(d, b, side)
+        if not n:
             continue
         by = next((j for j, x in enumerate(sup) if x["side"] != side and (x.get("mission") or {}).get("battery") == k), None)
         if by is not None:
@@ -511,6 +511,14 @@ def _displace(d: Data, field: dict | None, side) -> list:
                 b["to"] = shifted(d, field, b["place"], sup[by].get("place"))
             out.append({"unit": None, "act": "displace", "battery": k, "by": by, **({"to": b["to"]} if b.get("to") else {})})
     return out
+
+
+def _displace_for(d: Data, b: dict, side) -> int:
+    """The exchanges battery b of this side would be silent displacing, or 0 if it does not
+    displace (not located, displacing already, no tubes, or a kind that cannot move)."""
+    if b["side"] != side or not b.get("located") or b.get("displacing") or b.get("tubes", 0) <= 0:
+        return 0
+    return d.units["indirect"]["kinds"][b["kind"]].get("displace", 0)
 
 
 def shifted(d: Data, field: dict, place, away) -> list:
