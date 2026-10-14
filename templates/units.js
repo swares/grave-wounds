@@ -1636,23 +1636,26 @@ function went(field, u, start){                   // the middle hex's way from s
 function minePath(field, u, start){               // within its allowance (times charge_move if it charged), the way crossing the fewest known enemy minefield hexes, then the cheapest; null if none (as units.mine_path)
   const limit = allowance(u) * (u.charged ? UD.charge_move : 1), size = fieldSize(field), goal = u.pos;
   if (limit <= 0 || hdist(start, goal) > limit) return null;
-  const mines = field.mines || {}, steps = new Map(), levels = Array.from({ length: limit + 1 }, () => new Map());
-  levels[0].set(hk(start), 0);
-  for (let c = 0; c <= limit; c++){
-    for (const [k, m0] of levels[c]){
-      for (const [x, sc] of stepsCached(field, u, k.split(",").map(Number), size, steps)){
-        if (c + sc > limit) continue;
-        const m = m0 + knownMinesAt(u, x, mines);
-        if (m < (levels[c + sc].get(hk(x)) ?? 1e9)) levels[c + sc].set(hk(x), m);
-      }
-    }
-  }
+  const mines = field.mines || {}, steps = new Map(), levels = mineLevels(field, u, [start, limit, size], [mines, steps]);
   let end = null;
   for (let c = 0; c <= limit; c++){
     const m = levels[c].get(hk(goal));
     if (m !== undefined && (end === null || m < end[0])) end = [m, c];
   }
   return end ? mineWayBack(field, u, [goal, end[1], end[0]], [levels, steps, mines, size, start]) : null;
+}
+function mineLevels(field, u, [start, limit, size], [mines, steps]){   // for each movement spent, Map hex -> the fewest known enemy minefield hexes crossed to reach it for exactly that (as units._mine_levels)
+  const levels = Array.from({ length: limit + 1 }, () => new Map());
+  levels[0].set(hk(start), 0);
+  for (let c = 0; c <= limit; c++){
+    for (const [k, m0] of levels[c]){
+      for (const [x, sc] of stepsCached(field, u, k.split(",").map(Number), size, steps)){
+        const m = c + sc <= limit ? m0 + knownMinesAt(u, x, mines) : null;
+        if (m !== null && m < (levels[c + sc].get(hk(x)) ?? 1e9)) levels[c + sc].set(hk(x), m);
+      }
+    }
+  }
+  return levels;
 }
 function stepsCached(field, u, h, size, steps){   // stepsFrom for hex h, other units left out, worked out once
   const k = hk(h);
@@ -1669,19 +1672,22 @@ function mineWayBack(field, u, [h0, c0, m0], [levels, steps, mines, size, start]
   const line = ray([...start], h0, hdist(start, h0)), out = [[...h0]];
   let h = h0, c = c0, m = m0;
   while (c > 0){
-    const here = knownMinesAt(u, h, mines);
-    let best = null;
-    for (let dn = 0; dn < 6; dn++){
-      const p = step(h, dn), sc = stepInto(field, u, p, h, size, steps);
-      if (sc === null || sc > c || levels[c - sc].get(hk(p)) !== m - here) continue;
-      const off = Math.min(...line.map(x => hdist(p, x)));
-      if (best === null || off < best[0]) best = [off, p, sc];
-    }
+    const here = knownMinesAt(u, h, mines), best = stepBack(field, u, [h, c, m - here], [levels, steps, size, line]);
     if (best === null) return null;
     [h, c, m] = [best[1], c - best[2], m - here];
     if (c > 0) out.push([...h]);
   }
   return out.reverse();
+}
+function stepBack(field, u, [h, c, want], [levels, steps, size, line]){   // [off the line, hex, cost] of the neighbour stepping into h from the level below with want mines (as units._step_back)
+  let best = null;
+  for (let dn = 0; dn < 6; dn++){
+    const p = step(h, dn), sc = stepInto(field, u, p, h, size, steps);
+    if (sc === null || sc > c || levels[c - sc].get(hk(p)) !== want) continue;
+    const off = Math.min(...line.map(x => hdist(p, x)));
+    if (best === null || off < best[0]) best = [off, p, sc];
+  }
+  return best;
 }
 function minesAll(us, table, rng, acc, log, field){   // units that went into minefield hexes set them off, before the shooting; each field set off is found
   const mines = field?.mines;

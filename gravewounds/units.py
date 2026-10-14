@@ -2021,26 +2021,33 @@ def mine_path(d: Data, field: dict, u: dict, start) -> list | None:
     """The way (hexes after start) to u's position, within its allowance (times charge_move if
     it charged), crossing the fewest hexes of known enemy minefields (known_mine) in its
     footprint, then costing the least; None if there is none. Other units are left out (they
-    have moved since). Of equal ways, the one whose last steps come from the lowest directions."""
+    have moved since). Of equal ways, the one nearest the straight line (_way_back)."""
     limit = allowance(d, u) * (d.units["charge_move"] if u.get("charged") else 1)
     size, goal, s = _size(d, field), tuple(u["pos"]), tuple(start)
     if limit <= 0 or hdist(s, goal) > limit:
         return None
-    mines = field.get("mines") or {}
-    levels, steps = [{} for _ in range(limit + 1)], {}
-    levels[0][s] = 0
-    for c in range(limit + 1):
-        for h in sorted(levels[c]):
-            for x, sc in _steps_cached(d, field, u, h, size, steps):
-                if c + sc <= limit:
-                    m = levels[c][h] + _known_mines_at(d, u, x, mines)
-                    if m < levels[c + sc].get(x, 10**9):
-                        levels[c + sc][x] = m
+    mines, steps = field.get("mines") or {}, {}
+    levels = _mine_levels(d, field, u, (s, limit, size), (mines, steps))
     ends = [(levels[c][goal], c) for c in range(limit + 1) if goal in levels[c]]
     if not ends:
         return None
     m, c = min(ends)
     return _way_back(d, field, u, (goal, c, m), (levels, steps, mines, size, s))
+
+
+def _mine_levels(d: Data, field: dict, u: dict, run: tuple, ms: tuple) -> list:
+    """For each movement spent (0 to limit), {hex: the fewest known enemy minefield hexes
+    crossed to reach it for exactly that movement}, from start."""
+    (s, limit, size), (mines, steps) = run, ms
+    levels = [{} for _ in range(limit + 1)]
+    levels[0][s] = 0
+    for c in range(limit + 1):
+        for h, m0 in sorted(levels[c].items()):
+            for x, sc in _steps_cached(d, field, u, h, size, steps):
+                m = m0 + _known_mines_at(d, u, x, mines) if c + sc <= limit else None
+                if m is not None and m < levels[c + sc].get(x, 10**9):
+                    levels[c + sc][x] = m
+    return levels
 
 
 def _steps_cached(d: Data, field: dict, u: dict, h: tuple, size: tuple, steps: dict) -> list:
@@ -2064,28 +2071,36 @@ def _step_into(d: Data, field: dict, u: dict, ph: tuple, ss: tuple) -> int | Non
     return next((k for x, k in _steps_cached(d, field, u, p, size, steps) if x == h), None)
 
 
-def _way_back(d: Data, field: dict, u: dict, end: tuple, ctx: tuple) -> list:
+def _way_back(d: Data, field: dict, u: dict, end: tuple, ctx: tuple) -> list | None:
     """From (hex, cost, mines) back to the start: at each hex the neighbour that steps into it at
     a level and mines count that fit, the nearest the straight line from the start (the first by
-    direction of equals). -> the hexes after the start."""
+    direction of equals). -> the hexes after the start, or None if the trail breaks."""
     (h, c, m), (levels, steps, mines, size, start) = end, ctx
-    line = ray(list(start), list(h), hdist(start, h))
-    out = [list(h)]
+    line, out = ray(list(start), list(h), hdist(start, h)), [list(h)]
     while c > 0:
-        here, best = _known_mines_at(d, u, h, mines), None
-        for dirn in range(6):
-            p = tuple(step(list(h), dirn))
-            sc = _step_into(d, field, u, (p, h), (size, steps))
-            if sc is not None and sc <= c and levels[c - sc].get(p) == m - here:
-                off = min(hdist(p, x) for x in line)
-                if best is None or off < best[0]:
-                    best = (off, p, sc)
+        here = _known_mines_at(d, u, h, mines)
+        best = _step_back(d, field, u, (h, c, m - here), (levels, steps, size, line))
         if best is None:
             return None
         h, c, m = best[1], c - best[2], m - here
         if c > 0:
             out.append(list(h))
     return out[::-1]
+
+
+def _step_back(d: Data, field: dict, u: dict, at: tuple, ctx: tuple) -> tuple | None:
+    """(off the line, hex, cost) of the neighbour of h that steps into it from the level below
+    with `want` mines: the nearest the straight line, the first by direction of equals."""
+    (h, c, want), (levels, steps, size, line), best = at, ctx, None
+    for dirn in range(6):
+        p = tuple(step(list(h), dirn))
+        sc = _step_into(d, field, u, (p, h), (size, steps))
+        if sc is None or sc > c or levels[c - sc].get(p) != want:
+            continue
+        off = min(hdist(p, x) for x in line)
+        if best is None or off < best[0]:
+            best = (off, p, sc)
+    return best
 
 
 def _mines_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | None) -> list:
