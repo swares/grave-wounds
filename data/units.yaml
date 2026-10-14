@@ -675,7 +675,7 @@ heroes:
   cautery:
     from_bleed: 2
     pain: 1
-    battles: [Crusades, "Visby 1361", "Wars of the Roses", "Thirty Years' War", "American Revolution", "Napoleonic Wars", "War of 1812", "American Civil War", "American Indian Wars"]
+    battles: [Crusades, "Visby 1361", "Wars of the Roses", "Thirty Years' War", "American Revolution", "Napoleonic Wars", "War of 1812", "Crimean War", "American Civil War", "American Indian Wars"]
   # A hero left on the field when the battle ends (left behind, or down with a unit that broke,
   # fled or was destroyed): found by his own side if it holds the field (has a unit still
   # standing); if only the enemy holds it, d100 at or under `quarter` % for the war (by the wound
@@ -691,6 +691,7 @@ heroes:
     "American Revolution": 70
     "Napoleonic Wars": 80
     "War of 1812": 80
+    "Crimean War": 75
     "American Civil War": 85
     "American Indian Wars": 20
     WWI: 70

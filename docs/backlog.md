@@ -98,38 +98,18 @@ When an item is done, delete it here and note it in the pull request that closes
   about an hour where the real fight took two and a half; the rest of that time went in the
   North Koreans moving round the flanks, which the static test does not play. Worth a second
   look once Osan has been played through by hand.
-- **Siege warfare tables: researched, not built yet.** The question is whether wound data
-  exists to give sieges their own hit tables (men firing over parapets and through
-  loopholes, storming breaches). What turned up:
-  - **The best source:** the British Army's *Medical and Surgical History of the British
-    Army which served in Turkey and the Crimea* (1858, public domain), volume 2,
-    "History of wounds and injuries". Its returns (pp. 257-259) give wounds received in
-    action by kind and part of the body in two periods: 14 Sep 1854 - 31 Mar 1855
-    (the Alma, Balaklava, Inkerman and the first winter's siege) and 1 Apr 1855 - the end
-    (almost all the siege of Sevastopol: the trenches, the Mamelon and the Redan). The second
-    period is a large siege sample (over 10,000 gunshot admissions in the war), and the
-    difference between the periods shows what siege fighting does to where men are hit.
-    The French surgeon-general Chenu's report on the Crimea (1865) is a second, larger
-    source of the same kind. Not retrieved yet: the scans are on the Internet Archive, the
-    National Library of Medicine and HathiTrust, which this workspace cannot reach without
-    the browser being allowed onto them.
-  - **Smaller samples:**
-    - The Peninsular War database already behind the Napoleonic tables (Planas Campos and
-      Grajal de Blas, 2021) records the action for each wound, including 159 wounded at
-      Zaragoza. The by-action data is not published.
-    - The 1491 siege of Rennes mass graves (Colleter et al., PLOS ONE 2021) have only 17
-      unhealed blade blows on 28 men: skull 5, forearms and arms 5, legs 4, back 3. That's
-      too few for a table, but it agrees with the medieval sword tables.
-    - The 1179 Crusader garrison of Vadum Iacob (Jacob's Ford), Snake Hill at Fort Erie
-      (1814) and a 17th-century massacre of castle defenders in Central Europe are each a
-      handful of skeletons.
-  - **Not found:** any table splitting Civil War wounds between the sieges (Vicksburg,
-    Petersburg) and open battle. The Civil War figures are for the whole war.
-  - **What it would make:** a siege table for the mid-19th century from the Crimean second
-    period, and a better-founded `behind_cover` modifier (today extrapolated: head x1.5,
-    torso x0.3, legs x0.05) from the ratio of the siege period to the field period. That
-    modifier would then serve the earlier sieges (Thirty Years' War, Peninsula, 1812,
-    Civil War) on their own tables, rather than inventing a table for each.
+- **Siege warfare tables, first cut.** The Crimean War now has a wounded table for the siege
+  of Sevastopol (British rank and file, April 1855 to the end of the war, from the 1858
+  official medical history) and an all-hits blend, with the earlier period beside it in the
+  conflict notes. Still left out:
+  - siege tables for the other wars: the Peninsular War database's Zaragoza wounded (159) are
+    not published by action, and no Civil War split between sieges and open battle was found;
+  - the earlier Crimean period as its own table (its limb wounds are not split into arms and
+    legs, and a third of its wounded have no record of region);
+  - the French surgeon-general Chenu's larger Crimea report (1865), not yet read;
+  - the `behind_cover` modifier's torso and leg factors, which whole-army totals cannot set
+    (the head factor of 1.5 agrees with the Crimean returns);
+  - Crimean characters in the team builder, and a Crimean battlefield.
 - **Guns, still simplified.** The Thirty Years' War still borrows the Peninsula's gun wounds,
   because no 1618-48 artillery wound counts were found. Sections share the battery's rounds
   in order rather than each carrying its own.

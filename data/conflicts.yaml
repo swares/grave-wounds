@@ -263,6 +263,57 @@ conflicts:
       - "US losses of about 2,260 killed in action and 4,505 wounded: commonly cited totals (e.g. New World Encyclopedia, 'War of 1812'); British and Canadian losses are usually given only combined (about 4,400 killed or wounded)."
       - "Sides, armour and dress: general historical knowledge, not from the wound data."
 
+  "Crimean War":
+    period: "1854-1856"
+    map: {bbox: [27, 40.3, 40, 47.5], sites: [{name: Sevastopol, lat: 44.60, lon: 33.53}, {name: The Alma, lat: 44.86, lon: 33.66, context: true}, {name: Balaklava, lat: 44.50, lon: 33.60, context: true}, {name: Inkerman, lat: 44.61, lon: 33.61, context: true}, {name: Scutari, lat: 41.01, lon: 29.02, context: true}]}
+    summary: >
+      Britain, France, the Ottoman Empire and from 1855 Sardinia fought Russia, chiefly in
+      the Crimea. After the Alma, Balaklava and Inkerman (1854) the war became the siege of
+      Sevastopol, the Black Sea naval base: eleven months of trenches, batteries and
+      assaults on the Mamelon, the Redan and the Malakoff, until the Russians left the town
+      in September 1855. The allied infantry carried percussion rifle-muskets firing the
+      Minié bullet, most Russians still smoothbore muskets; smoothbore guns and mortars threw
+      round shot, shell and grape. No one wore armour. The table is the British surgeons'
+      count of the wounded of the siege, from April 1855 to the end of the war; the British
+      lost 2,598 rank and file killed in action in the whole war.
+    sides:
+      - name: "British Army (1854-56)"
+        who: "Regular infantry of the line, Guards and Highlanders, rifle battalions, cavalry, Royal Artillery and Royal Engineers, and the Naval Brigade's guns."
+        armour: "None."
+        look: {colour: "#b3262b", trousers: "#3d3f45", hat: field_cap, beard: beard}
+      - name: "French Army (1854-56)"
+        who: "Line infantry, chasseurs a pied, Zouaves and Algerian tirailleurs, artillery and engineers; the largest allied army in the siege."
+        armour: "None (cuirassiers did not serve in the Crimea)."
+        look: {colour: "#2f3f6e", trousers: "#b3262b", hat: kepi, beard: moustache}
+      - name: "Russian Army (1854-56)"
+        who: "Line and Black Sea Fleet sailors manning the bastions of Sevastopol, field armies, Cossacks."
+        armour: "None."
+        look: {colour: "#3e4a3a", trousers: "#3e4a3a", hat: field_cap, beard: moustache}
+    examples:
+      - {name: "British infantryman, 1855", side: "British Army (1854-56)", kit: none, weapon: rifle_musket, notes: "Minie or Enfield rifle-musket; a winter in the trenches before Sevastopol."}
+      - {name: "Royal Artillery gunner", side: "British Army (1854-56)", kit: none, weapon: artillery_smoothbore, notes: "Siege batteries and the Naval Brigade's guns."}
+      - {name: "Light cavalryman", side: "British Army (1854-56)", kit: none, weapon: saber, notes: "Balaklava, 1854.", look: {hat: shako}}
+      - {name: "Zouave", side: "French Army (1854-56)", kit: none, weapon: rifle_musket, notes: "Stormed the Mamelon and the Malakoff.", look: {colour: "#2f3f6e", trousers: "#b3262b", hat: turban}}
+      - {name: "Russian infantryman", side: "Russian Army (1854-56)", kit: none, weapon: musket_smoothbore, notes: "Most still had smoothbore percussion muskets."}
+      - {name: "Black Sea Fleet sailor on the bastions", side: "Russian Army (1854-56)", kit: none, weapon: bayonet, notes: "Sailors manned much of Sevastopol's defences.", look: {colour: "#1e2a44", trousers: "#1e2a44"}}
+    comparison:
+      title: "Where British rank and file were hit by gunfire (% of known regions)"
+      columns: ["1854-55", "Siege", "Ratio"]
+      rows:
+        - ["Head", "8.2", "12.2", "1.49"]
+        - ["Face", "5.0", "7.6", "1.54"]
+        - ["Neck", "2.5", "1.8", "0.72"]
+        - ["Chest", "6.3", "6.0", "0.96"]
+        - ["Abdomen", "4.0", "3.4", "0.85"]
+        - ["Perineum", "0.6", "0.8", "1.32"]
+        - ["Back and spine", "3.3", "4.7", "1.40"]
+        - ["Limbs", "70.1", "63.5", "0.91"]
+      note: "1854-55: 14 September 1854 to 31 March 1855 (the Alma, Balaklava, Inkerman and the first winter); siege: 1 April 1855 to the end of the war; ratio: siege share over the earlier one. 2,515 and 6,984 gunshot wounds of known region (Returns Nos. 1 and 3). The earlier period also holds the first winter in the trenches, so the contrast between siege and open-field fighting is if anything understated; 1,815 of its wounded have no record of region. Men firing over parapets and lying flat under shellfire were hit more often in the head, face and back."
+      source: "Medical and Surgical History of the British Army ... in the Crimea (1858), vol. 2, pp. 257-258 and 286-339."
+    sources:
+      - "Medical and Surgical History of the British Army which served in Turkey and the Crimea during the war against Russia in the years 1854-55-56 (London, 1858), vol. 2: the returns of wounds received in action (pp. 257-259), the returns by region (pp. 286-339) and the killed in action (Concluding Observations)."
+      - "Sides, weapons and dress: general historical knowledge, not from the wound data."
+
   "American Civil War":
     period: "1861-1865"
     map: {bbox: [-93, 29, -72, 42], sites: [{name: First Bull Run, lat: 38.81, lon: -77.52}, {name: Antietam, lat: 39.47, lon: -77.74}, {name: Gettysburg, lat: 39.83, lon: -77.23}, {name: Shiloh, lat: 35.15, lon: -88.32}, {name: Chickamauga, lat: 34.92, lon: -85.26}, {name: Vicksburg, lat: 32.35, lon: -90.88}]}

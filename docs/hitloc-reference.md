@@ -4,7 +4,7 @@
 
 
 Data-driven **d100 hit-location tables** weighted by real wound records - from the
-crusader mass graves at Sidon (13th century), the Visby skeletons of 1361, Towton (1461) and the Thirty Years' War through the American Revolution, the Napoleonic Wars and the War of 1812, the Civil
+crusader mass graves at Sidon (13th century), the Visby skeletons of 1361, Towton (1461) and the Thirty Years' War through the American Revolution, the Napoleonic Wars, the War of 1812 and the siege of Sevastopol, the Civil
 War and the Indian Wars to both World Wars, Korea, Vietnam, Iraq and Afghanistan - with
 **system-agnostic wound effects**, armour, and wounded-fighter tracking for any tabletop
 RPG. All outputs are generated from the YAML files in `data/`, so the printed tables and
@@ -363,7 +363,7 @@ Firearms and explosives (any weapon with a `threat`) roll severity on the firear
   (three-quarter plate), harquebusier (buff coat, breastplate, pot helmet), pikeman
   (morion and corslet); new material: buff coat.
 
-## Musket era: American Revolution, Napoleonic Wars, War of 1812
+## Musket era: American Revolution, Napoleonic Wars, War of 1812, Crimean War
 
 - **American Revolution** - *disabled veterans' wounds*, tallied wound by wound from the
   federal invalid pension lists of 1792-95 (344 men, 379 located wounds;
@@ -376,11 +376,18 @@ Firearms and explosives (any weapon with a `threat`) roll severity on the firear
   table. No region count survives for this war, so the table is built from the Peninsular
   records (same weapons and tactics; many British regulars were Peninsular veterans) at
   the war's own killed share. Leave armour off.
+- **Crimean War** - *siege of Sevastopol, wounded* (British rank and file, 1 April 1855 to
+  the end of the war: 6,984 gunshot wounds of known region, from the 1858 official medical
+  history, a public-domain report), plus an *all hits* blend. The same report's earlier
+  period (the Alma, Balaklava, Inkerman and the first winter) is shown beside it in the
+  conflict notes: in the siege, men were hit in the head and face about 1.5 times as often,
+  in the back 1.4 times, and in the limbs less. Leave armour off.
 - **All-hits blends (estimated)** - `tools/blend_tables.py` mixes each wounded table with
   the Civil War killed-in-action table (soft lead balls too) as a stand-in for the dead:
   46.5% killed for the Revolution (Peckham: 7,174 killed, 8,241 wounded), 25.5% for the
   Napoleonic Wars (about 3,500 killed to 10,200 wounded in Wellington's army at Waterloo)
-  and 33.4% for the War of 1812 (US forces: about 2,260 killed in action, 4,505 wounded).
+  33.4% for the War of 1812 (US forces: about 2,260 killed in action, 4,505 wounded) and
+  18.3% for the Crimea (2,598 British rank and file killed in action, 11,595 treated).
   Edit the shares there and re-run it.
 - New weapons: smoothbore musket, flintlock rifle and pistol, smoothbore artillery, cavalry
   lance, clubbed musket. New armour: steel cuirass and cavalry helmet (kits: cuirassier,
@@ -454,6 +461,8 @@ Locations whose weight rounds to 0% are left off that d100 column.
 | Peninsular War 1808-14 - French officers | evidence, armour allowed | historical (per weapon) | Planas Campos & Grajal de Blas, BJMH 2021, 3,995 wound events |
 | Napoleonic era - all hits | adjusted | extrapolated | 74.5% Peninsular + 25.5% Civil War killed (Waterloo killed:wounded) |
 | War of 1812 - all hits | adjusted | extrapolated (borrowed) | 66.6% Peninsular + 33.4% Civil War killed (US killed:wounded); no 1812 wound count survives |
+| Crimean War 1855-56 - siege of Sevastopol, wounded | evidence | historical (regions) | Medical and Surgical History of the British Army ... in the Crimea (1858), vol. 2: 6,984 gunshot wounds, British rank and file |
+| Crimean War - all hits | adjusted | extrapolated | 81.7% Sevastopol wounded + 18.3% Civil War killed (British killed:wounded) |
 | Civil War - wounded | evidence | historical (regions) | Medical and Surgical History of the War of the Rebellion, vol. 3 |
 | Civil War - killed in action | evidence | historical (regions) | same work, 1,173 KIA |
 | Civil War - all hits | adjusted | extrapolated | 4:1 blend of wounded and killed |
@@ -479,8 +488,10 @@ figures. Weapons with identical location bias share one situation page in the PD
 
 ## Data status
 
-The musket-era tables are survivors' records: pensioners disabled for life, and French
-officers of whom 95% survived. Their all-hits blends borrow the Civil War dead for where
+The musket-era tables are survivors' records: pensioners disabled for life, French
+officers of whom 95% survived, and British soldiers treated in the Crimea (where the
+trenches were so close to the hospitals that many who would have died on an open field
+reached them first). Their all-hits blends borrow the Civil War dead for where
 fatal hits landed, and the killed shares come from casualty totals; both are estimates.
 
 The Towton tables come from one grave of men killed in a rout, many probably after they
