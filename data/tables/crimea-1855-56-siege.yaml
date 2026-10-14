@@ -1,0 +1,40 @@
+id: crimea-1855-56-siege
+order: 19.7
+name: "Crimean War 1855-56 - siege of Sevastopol, wounded (surgeons' returns)"
+label: "Wounded: siege of Sevastopol (British rank and file)"
+battle: "Crimean War"
+context: "British rank and file treated for wounds received in action from 1 April 1855 to the end of the war: almost all of it the siege of Sevastopol (the trenches, the Mamelon, the Redan). Men who reached a surgeon alive."
+variant: evidence
+weapon_bias: pooled
+weapons: [rifle_musket, musket_smoothbore, artillery_smoothbore, revolver, saber, bayonet, lance]
+modifiers: [attacker_higher, attacker_lower, target_fleeing, flanked, behind_cover]
+confidence: historical
+confidence_note: >
+  Region totals are from the source: 6,984 gunshot wounds of known region (with 167 sword,
+  bayonet and miscellaneous wounds left out). The split inside each region uses body
+  exposure (design estimate). The 155 wounds of the larger arteries, nerves and joints of
+  the limbs are shared between arms and legs as the other limb wounds are.
+armor_note: >
+  Records of the wounded. Many men hit in the trenches who would have died on an open field
+  reached the hospitals alive and died there, so head and chest wounds are better counted
+  than in most wounded tables (a fifth of the head wounds and over a quarter of the chest
+  wounds died), but the instantly killed are still missing: use the all-hits table in play.
+  No armour was worn. These are men in a siege: more often hit in the head and face, and in
+  the back (lying flat under shellfire), less often in the limbs, than in field battles.
+sources:
+  - "Medical and Surgical History of the British Army which served in Turkey and the Crimea during the war against Russia in the years 1854-55-56 (London, 1858), vol. 2, Part II, Return No. 3 (p. 258) and the returns by region, Section II (pp. 286-339): non-commissioned officers and privates, 1 April 1855 to the end of the war - gunshot wounds of the head 851, face 533, neck 128, chest 420, abdomen (with gunshot fractures of the pelvis) 235, perineum and genito-urinary organs 55, back and spine 326, extremities 4,436 (upper 2,083, lower 2,198, with direct injury of the larger arteries 12 and nerves 22, and penetration of the larger joints 121 by difference); sword, lance and bayonet wounds 41 and miscellaneous wounds 126; 7,161 treated in all."
+  - "Same work, Return No. 1 (p. 257), for comparison: 14 Sep 1854 - 31 Mar 1855 (the Alma, Balaklava, Inkerman and the first winter's siege), head 206, face 125, neck 64, chest 158, abdomen 100, perineum 15, back and spine 84, extremities 1,763 of 2,515 gunshot wounds of known region (1,815 more unrecorded). Against this period the siege period has 1.5 times the share of head and of face wounds, 1.4 times the back, and fewer limb wounds (63.5% against 70.1%)."
+status: >
+  Historical at region level, from a public-domain official report (1858; scanned by the US
+  National Library of Medicine, on the Internet Archive). The joints' count is the
+  extremities' total less the four other lines, as the scan of that line is unreadable.
+regions:
+  - {label: "Head (851)", locs: [skull_l, skull_r], count: 851}
+  - {label: "Face (533)", locs: [face], count: 533}
+  - {label: "Neck (128)", locs: [neck], count: 128}
+  - {label: "Chest (420)", locs: [chest_l, chest_r], count: 420}
+  - {label: "Abdomen and pelvis (235)", locs: [abdomen], count: 235}
+  - {label: "Perineum and genito-urinary organs (55)", locs: [groin], count: 55}
+  - {label: "Back and spine (326)", locs: [back_upper, back_lower], count: 326}
+  - {label: "Upper extremities (2,083, and 75 of the 155 arteries, nerves and joints)", zone: arms, count: 2158}
+  - {label: "Lower extremities (2,198, and 80 of the 155 arteries, nerves and joints)", zone: legs, count: 2278}

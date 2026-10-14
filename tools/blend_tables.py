@@ -4,7 +4,7 @@ all hits = (1 - k) x wounded table + k x killed table, location by location, whe
 the share of hits that killed outright. Where no region counts of a war's killed survive,
 the Civil War killed-in-action table (1,173 men, soft lead balls) stands in for them; where
 no wounded records survive (the Thirty Years' War, the War of 1812), the Peninsular War
-records stand in.
+records stand in. The Crimea's blend is built on its siege returns.
 Run from the project root after changing a source table:  python tools/blend_tables.py
 """
 import sys
@@ -19,6 +19,7 @@ BLENDS = [
     ("peninsular-1808-14-all-hits", "peninsular-1808-14-officers", "acw-1861-killed", 0.255),
     ("war-1812-all-hits", "peninsular-1808-14-officers", "acw-1861-killed", 0.334),
     ("thirty-years-war-all-hits", "peninsular-1808-14-officers", "lutzen-1632-mass-grave", 0.255),
+    ("crimea-1854-56-all-hits", "crimea-1855-56-siege", "acw-1861-killed", 0.183),
 ]
 
 

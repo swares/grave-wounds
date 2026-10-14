@@ -436,7 +436,7 @@ weapons:
     icon: long_gun
     range: [50, 150, 250]
     ignition: percussion
-    era: "1860s"
+    era: "1850s-1860s"
     threat: rifle
     mechanisms: {ballistic: 100}
     zone_bias: {}

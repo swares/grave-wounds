@@ -1274,7 +1274,7 @@
     250
    ],
    "ignition": "percussion",
-   "era": "1860s",
+   "era": "1850s-1860s",
    "threat": "rifle",
    "mechanisms": {
     "ballistic": 100
@@ -6167,6 +6167,501 @@
     "lower_leg_r": 5.432,
     "foot_l": 1.781,
     "foot_r": 1.781
+   }
+  },
+  "crimea-1855-56-siege": {
+   "id": "crimea-1855-56-siege",
+   "name": "Crimean War 1855-56 - siege of Sevastopol, wounded (surgeons' returns)",
+   "label": "Wounded: siege of Sevastopol (British rank and file)",
+   "variant": "evidence",
+   "context": "British rank and file treated for wounds received in action from 1 April 1855 to the end of the war: almost all of it the siege of Sevastopol (the trenches, the Mamelon, the Redan). Men who reached a surgeon alive.",
+   "confidence": "historical",
+   "armor_note": "Records of the wounded. Many men hit in the trenches who would have died on an open field reached the hospitals alive and died there, so head and chest wounds are better counted than in most wounded tables (a fifth of the head wounds and over a quarter of the chest wounds died), but the instantly killed are still missing: use the all-hits table in play. No armour was worn. These are men in a siege: more often hit in the head and face, and in the back (lying flat under shellfire), less often in the limbs, than in field battles.",
+   "status": "Historical at region level, from a public-domain official report (1858; scanned by the US National Library of Medicine, on the Internet Archive). The joints' count is the extremities' total less the four other lines, as the scan of that line is unreadable.",
+   "sources": [
+    "Medical and Surgical History of the British Army which served in Turkey and the Crimea during the war against Russia in the years 1854-55-56 (London, 1858), vol. 2, Part II, Return No. 3 (p. 258) and the returns by region, Section II (pp. 286-339): non-commissioned officers and privates, 1 April 1855 to the end of the war - gunshot wounds of the head 851, face 533, neck 128, chest 420, abdomen (with gunshot fractures of the pelvis) 235, perineum and genito-urinary organs 55, back and spine 326, extremities 4,436 (upper 2,083, lower 2,198, with direct injury of the larger arteries 12 and nerves 22, and penetration of the larger joints 121 by difference); sword, lance and bayonet wounds 41 and miscellaneous wounds 126; 7,161 treated in all.",
+    "Same work, Return No. 1 (p. 257), for comparison: 14 Sep 1854 - 31 Mar 1855 (the Alma, Balaklava, Inkerman and the first winter's siege), head 206, face 125, neck 64, chest 158, abdomen 100, perineum 15, back and spine 84, extremities 1,763 of 2,515 gunshot wounds of known region (1,815 more unrecorded). Against this period the siege period has 1.5 times the share of head and of face wounds, 1.4 times the back, and fewer limb wounds (63.5% against 70.1%)."
+   ],
+   "weapons": [
+    "rifle_musket",
+    "musket_smoothbore",
+    "artillery_smoothbore",
+    "revolver",
+    "saber",
+    "bayonet",
+    "lance",
+    "dagger",
+    "sword",
+    "axe",
+    "spiked_club",
+    "spear",
+    "punch",
+    "kick",
+    "elbow_knee"
+   ],
+   "own_weapons": [
+    "rifle_musket",
+    "musket_smoothbore",
+    "artillery_smoothbore",
+    "revolver",
+    "saber",
+    "bayonet",
+    "lance"
+   ],
+   "resolve": {
+    "rifle_musket": "crimea-1855-56-siege",
+    "musket_smoothbore": "crimea-1855-56-siege",
+    "artillery_smoothbore": "crimea-1855-56-siege",
+    "revolver": "crimea-1855-56-siege",
+    "saber": "peninsular-1808-14-officers",
+    "bayonet": "peninsular-1808-14-officers",
+    "lance": "peninsular-1808-14-officers",
+    "dagger": "knife-assault",
+    "sword": "visby-1361-adjusted",
+    "axe": "visby-1361-adjusted",
+    "spiked_club": "visby-1361-adjusted",
+    "spear": "visby-1361-adjusted",
+    "punch": "unarmed-mma",
+    "kick": "unarmed-mma",
+    "elbow_knee": "unarmed-mma"
+   },
+   "wmult": {
+    "artillery_smoothbore": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "musket_smoothbore": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "revolver": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "rifle_musket": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   "armor": "baked_in",
+   "native": "gunfire",
+   "weapon_bias": "pooled",
+   "assumes_shield": false,
+   "battle": "Crimean War",
+   "confidence_note": "Region totals are from the source: 6,984 gunshot wounds of known region (with 167 sword, bayonet and miscellaneous wounds left out). The split inside each region uses body exposure (design estimate). The 155 wounds of the larger arteries, nerves and joints of the limbs are shared between arms and legs as the other limb wounds are.\n",
+   "regions": [
+    {
+     "label": "Head (851)",
+     "locs": [
+      "skull_l",
+      "skull_r"
+     ],
+     "count": 851
+    },
+    {
+     "label": "Face (533)",
+     "locs": [
+      "face"
+     ],
+     "count": 533
+    },
+    {
+     "label": "Neck (128)",
+     "locs": [
+      "neck"
+     ],
+     "count": 128
+    },
+    {
+     "label": "Chest (420)",
+     "locs": [
+      "chest_l",
+      "chest_r"
+     ],
+     "count": 420
+    },
+    {
+     "label": "Abdomen and pelvis (235)",
+     "locs": [
+      "abdomen"
+     ],
+     "count": 235
+    },
+    {
+     "label": "Perineum and genito-urinary organs (55)",
+     "locs": [
+      "groin"
+     ],
+     "count": 55
+    },
+    {
+     "label": "Back and spine (326)",
+     "locs": [
+      "back_upper",
+      "back_lower"
+     ],
+     "count": 326
+    },
+    {
+     "label": "Upper extremities (2,083, and 75 of the 155 arteries, nerves and joints)",
+     "zone": "arms",
+     "count": 2158
+    },
+    {
+     "label": "Lower extremities (2,198, and 80 of the 155 arteries, nerves and joints)",
+     "zone": "legs",
+     "count": 2278
+    }
+   ],
+   "regions_text": "Head (851) = 12.2%; Face (533) = 7.6%; Neck (128) = 1.8%; Chest (420) = 6.0%; Abdomen and pelvis (235) = 3.4%; Perineum and genito-urinary organs (55) = 0.8%; Back and spine (326) = 4.7%; Upper extremities (2,083, and 75 of the 155 arteries, nerves and joints) = 30.9%; Lower extremities (2,198, and 80 of the 155 arteries, nerves and joints) = 32.6% (n = 6,984)",
+   "modifiers": [
+    "attacker_higher",
+    "attacker_lower",
+    "target_fleeing",
+    "flanked",
+    "behind_cover"
+   ],
+   "weapon_mix": [],
+   "weapon_mix_source": "",
+   "weights": {
+    "skull_l": 425.5,
+    "skull_r": 425.5,
+    "face": 533.0,
+    "neck": 128.0,
+    "chest_l": 210.0,
+    "chest_r": 210.0,
+    "abdomen": 235.0,
+    "groin": 55.0,
+    "back_upper": 175.53846153846155,
+    "back_lower": 150.46153846153848,
+    "shoulder_l": 215.8,
+    "shoulder_r": 215.8,
+    "upper_arm_l": 323.7,
+    "upper_arm_r": 323.7,
+    "forearm_l": 323.7,
+    "forearm_r": 323.7,
+    "hand_l": 215.8,
+    "hand_r": 215.8,
+    "thigh_l": 455.6,
+    "thigh_r": 455.6,
+    "knee_l": 136.68,
+    "knee_r": 136.68,
+    "lower_leg_l": 387.26,
+    "lower_leg_r": 387.26,
+    "foot_l": 159.45999999999998,
+    "foot_r": 159.45999999999998
+   }
+  },
+  "crimea-1854-56-all-hits": {
+   "id": "crimea-1854-56-all-hits",
+   "name": "Crimean War 1854-56 - all hits (gameplay)",
+   "label": "All hits: gameplay blend (Sevastopol siege records)",
+   "variant": "adjusted",
+   "context": "Where Mini\u00e9 bullets, musket balls and shell land on a man in the trenches and works before Sevastopol, before survival sorts the records. Built from the British surgeons' siege returns and a stand-in table for the killed.",
+   "confidence": "extrapolated",
+   "armor_note": "Use this table for play. No armour was worn, so leave it off. The wounded it is built on were mostly hit in the siege works, so it already leans to the head and face; for an open field fight (the Alma, Inkerman) it overstates them a little.",
+   "status": "Estimated. No count of the killed by region survives for the Crimea, so the Civil War killed-in-action table (also soft lead bullets from rifle-muskets) stands in for the dead. Edit the share in tools/blend_tables.py if you prefer another.",
+   "sources": [
+    "Derived (tools/blend_tables.py): 81.7% crimea-1855-56-siege + 18.3% acw-1861-killed, location by location.",
+    "Killed share: 2,598 British rank and file killed in action in the whole war (Medical and Surgical History of the British Army ... in the Crimea, 1858, vol. 2, Concluding Observations) against 11,595 treated for wounds received in action (Returns Nos. 1 and 3: 4,434 and 7,161)."
+   ],
+   "weapons": [
+    "rifle_musket",
+    "musket_smoothbore",
+    "artillery_smoothbore",
+    "revolver",
+    "saber",
+    "bayonet",
+    "lance",
+    "dagger",
+    "sword",
+    "axe",
+    "spiked_club",
+    "spear",
+    "punch",
+    "kick",
+    "elbow_knee"
+   ],
+   "own_weapons": [
+    "rifle_musket",
+    "musket_smoothbore",
+    "artillery_smoothbore",
+    "revolver",
+    "saber",
+    "bayonet",
+    "lance"
+   ],
+   "resolve": {
+    "rifle_musket": "crimea-1854-56-all-hits",
+    "musket_smoothbore": "crimea-1854-56-all-hits",
+    "artillery_smoothbore": "crimea-1854-56-all-hits",
+    "revolver": "crimea-1854-56-all-hits",
+    "saber": "peninsular-1808-14-officers",
+    "bayonet": "peninsular-1808-14-officers",
+    "lance": "peninsular-1808-14-officers",
+    "dagger": "knife-assault",
+    "sword": "visby-1361-adjusted",
+    "axe": "visby-1361-adjusted",
+    "spiked_club": "visby-1361-adjusted",
+    "spear": "visby-1361-adjusted",
+    "punch": "unarmed-mma",
+    "kick": "unarmed-mma",
+    "elbow_knee": "unarmed-mma"
+   },
+   "wmult": {
+    "artillery_smoothbore": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "musket_smoothbore": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "revolver": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "rifle_musket": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   "armor": "allowed",
+   "native": "gunfire",
+   "weapon_bias": "pooled",
+   "assumes_shield": false,
+   "battle": "Crimean War",
+   "confidence_note": "Blend of the historical siege wounded table and a stand-in killed table; the mix is from the war's killed and wounded totals.",
+   "regions": [],
+   "regions_text": "",
+   "modifiers": [
+    "attacker_higher",
+    "attacker_lower",
+    "target_fleeing",
+    "flanked",
+    "behind_cover"
+   ],
+   "weapon_mix": [],
+   "weapon_mix_source": "",
+   "weights": {
+    "skull_l": 6.879,
+    "skull_r": 6.879,
+    "face": 8.517,
+    "neck": 3.018,
+    "chest_l": 4.524,
+    "chest_r": 4.524,
+    "abdomen": 4.628,
+    "groin": 1.583,
+    "back_upper": 3.369,
+    "back_lower": 2.888,
+    "shoulder_l": 2.572,
+    "shoulder_r": 2.572,
+    "upper_arm_l": 3.858,
+    "upper_arm_r": 3.858,
+    "forearm_l": 3.858,
+    "forearm_r": 3.858,
+    "hand_l": 2.572,
+    "hand_r": 2.572,
+    "thigh_l": 5.494,
+    "thigh_r": 5.494,
+    "knee_l": 1.648,
+    "knee_r": 1.648,
+    "lower_leg_l": 4.67,
+    "lower_leg_r": 4.67,
+    "foot_l": 1.923,
+    "foot_r": 1.923
    }
   },
   "acw-1861-wounded": {
@@ -20820,7 +21315,7 @@
     "back_lower": 0.3
    },
    "confidence": "extrapolated",
-   "notes": "For entrenched or firing-line fighting. Gunfire tables only by default."
+   "notes": "For entrenched or firing-line fighting. Gunfire tables only by default. The Crimean siege returns (1855-56) back the head factor: British rank and file in the siege were hit in the head 1.49 times as often (as a share) as in the field battles and first winter before it, in the face 1.54 times and in the limbs 0.91 times. Those are whole-army totals mixing men under cover and in the open, so they cannot set the torso and leg factors for a man actually behind a parapet."
   }
  ],
  "called_shot": {
@@ -23791,6 +24286,204 @@
     "Sides, armour and dress: general historical knowledge, not from the wound data."
    ]
   },
+  "Crimean War": {
+   "period": "1854-1856",
+   "map": {
+    "bbox": [
+     27,
+     40.3,
+     40,
+     47.5
+    ],
+    "sites": [
+     {
+      "name": "Sevastopol",
+      "lat": 44.6,
+      "lon": 33.53
+     },
+     {
+      "name": "The Alma",
+      "lat": 44.86,
+      "lon": 33.66,
+      "context": true
+     },
+     {
+      "name": "Balaklava",
+      "lat": 44.5,
+      "lon": 33.6,
+      "context": true
+     },
+     {
+      "name": "Inkerman",
+      "lat": 44.61,
+      "lon": 33.61,
+      "context": true
+     },
+     {
+      "name": "Scutari",
+      "lat": 41.01,
+      "lon": 29.02,
+      "context": true
+     }
+    ]
+   },
+   "summary": "Britain, France, the Ottoman Empire and from 1855 Sardinia fought Russia, chiefly in the Crimea. After the Alma, Balaklava and Inkerman (1854) the war became the siege of Sevastopol, the Black Sea naval base: eleven months of trenches, batteries and assaults on the Mamelon, the Redan and the Malakoff, until the Russians left the town in September 1855. The allied infantry carried percussion rifle-muskets firing the Mini\u00e9 bullet, most Russians still smoothbore muskets; smoothbore guns and mortars threw round shot, shell and grape. No one wore armour. The table is the British surgeons' count of the wounded of the siege, from April 1855 to the end of the war; the British lost 2,598 rank and file killed in action in the whole war.\n",
+   "sides": [
+    {
+     "name": "British Army (1854-56)",
+     "who": "Regular infantry of the line, Guards and Highlanders, rifle battalions, cavalry, Royal Artillery and Royal Engineers, and the Naval Brigade's guns.",
+     "armour": "None.",
+     "look": {
+      "colour": "#b3262b",
+      "trousers": "#3d3f45",
+      "hat": "field_cap",
+      "beard": "beard"
+     }
+    },
+    {
+     "name": "French Army (1854-56)",
+     "who": "Line infantry, chasseurs a pied, Zouaves and Algerian tirailleurs, artillery and engineers; the largest allied army in the siege.",
+     "armour": "None (cuirassiers did not serve in the Crimea).",
+     "look": {
+      "colour": "#2f3f6e",
+      "trousers": "#b3262b",
+      "hat": "kepi",
+      "beard": "moustache"
+     }
+    },
+    {
+     "name": "Russian Army (1854-56)",
+     "who": "Line and Black Sea Fleet sailors manning the bastions of Sevastopol, field armies, Cossacks.",
+     "armour": "None.",
+     "look": {
+      "colour": "#3e4a3a",
+      "trousers": "#3e4a3a",
+      "hat": "field_cap",
+      "beard": "moustache"
+     }
+    }
+   ],
+   "examples": [
+    {
+     "name": "British infantryman, 1855",
+     "side": "British Army (1854-56)",
+     "kit": "none",
+     "weapon": "rifle_musket",
+     "notes": "Minie or Enfield rifle-musket; a winter in the trenches before Sevastopol."
+    },
+    {
+     "name": "Royal Artillery gunner",
+     "side": "British Army (1854-56)",
+     "kit": "none",
+     "weapon": "artillery_smoothbore",
+     "notes": "Siege batteries and the Naval Brigade's guns."
+    },
+    {
+     "name": "Light cavalryman",
+     "side": "British Army (1854-56)",
+     "kit": "none",
+     "weapon": "saber",
+     "notes": "Balaklava, 1854.",
+     "look": {
+      "hat": "shako"
+     }
+    },
+    {
+     "name": "Zouave",
+     "side": "French Army (1854-56)",
+     "kit": "none",
+     "weapon": "rifle_musket",
+     "notes": "Stormed the Mamelon and the Malakoff.",
+     "look": {
+      "colour": "#2f3f6e",
+      "trousers": "#b3262b",
+      "hat": "turban"
+     }
+    },
+    {
+     "name": "Russian infantryman",
+     "side": "Russian Army (1854-56)",
+     "kit": "none",
+     "weapon": "musket_smoothbore",
+     "notes": "Most still had smoothbore percussion muskets."
+    },
+    {
+     "name": "Black Sea Fleet sailor on the bastions",
+     "side": "Russian Army (1854-56)",
+     "kit": "none",
+     "weapon": "bayonet",
+     "notes": "Sailors manned much of Sevastopol's defences.",
+     "look": {
+      "colour": "#1e2a44",
+      "trousers": "#1e2a44"
+     }
+    }
+   ],
+   "comparison": {
+    "title": "Where British rank and file were hit by gunfire (% of known regions)",
+    "columns": [
+     "1854-55",
+     "Siege",
+     "Ratio"
+    ],
+    "rows": [
+     [
+      "Head",
+      "8.2",
+      "12.2",
+      "1.49"
+     ],
+     [
+      "Face",
+      "5.0",
+      "7.6",
+      "1.54"
+     ],
+     [
+      "Neck",
+      "2.5",
+      "1.8",
+      "0.72"
+     ],
+     [
+      "Chest",
+      "6.3",
+      "6.0",
+      "0.96"
+     ],
+     [
+      "Abdomen",
+      "4.0",
+      "3.4",
+      "0.85"
+     ],
+     [
+      "Perineum",
+      "0.6",
+      "0.8",
+      "1.32"
+     ],
+     [
+      "Back and spine",
+      "3.3",
+      "4.7",
+      "1.40"
+     ],
+     [
+      "Limbs",
+      "70.1",
+      "63.5",
+      "0.91"
+     ]
+    ],
+    "note": "1854-55: 14 September 1854 to 31 March 1855 (the Alma, Balaklava, Inkerman and the first winter); siege: 1 April 1855 to the end of the war; ratio: siege share over the earlier one. 2,515 and 6,984 gunshot wounds of known region (Returns Nos. 1 and 3). The earlier period also holds the first winter in the trenches, so the contrast between siege and open-field fighting is if anything understated; 1,815 of its wounded have no record of region. Men firing over parapets and lying flat under shellfire were hit more often in the head, face and back.",
+    "source": "Medical and Surgical History of the British Army ... in the Crimea (1858), vol. 2, pp. 257-258 and 286-339."
+   },
+   "sources": [
+    "Medical and Surgical History of the British Army which served in Turkey and the Crimea during the war against Russia in the years 1854-55-56 (London, 1858), vol. 2: the returns of wounds received in action (pp. 257-259), the returns by region (pp. 286-339) and the killed in action (Concluding Observations).",
+    "Sides, weapons and dress: general historical knowledge, not from the wound data."
+   ]
+  },
   "American Civil War": {
    "period": "1861-1865",
    "map": {
@@ -25723,6 +26416,86 @@
        "y": 106.5,
        "names": [
         "New Orleans"
+       ],
+       "context": true
+      }
+     ]
+    }
+   ]
+  },
+  "Crimean War": {
+   "spec": {
+    "bbox": [
+     27,
+     40.3,
+     40,
+     47.5
+    ],
+    "sites": [
+     {
+      "name": "Sevastopol",
+      "lat": 44.6,
+      "lon": 33.53
+     },
+     {
+      "name": "The Alma",
+      "lat": 44.86,
+      "lon": 33.66,
+      "context": true
+     },
+     {
+      "name": "Balaklava",
+      "lat": 44.5,
+      "lon": 33.6,
+      "context": true
+     },
+     {
+      "name": "Inkerman",
+      "lat": 44.61,
+      "lon": 33.61,
+      "context": true
+     },
+     {
+      "name": "Scutari",
+      "lat": 41.01,
+      "lon": 29.02,
+      "context": true
+     }
+    ]
+   },
+   "w": 160,
+   "h": 120,
+   "gap": 8,
+   "panels": [
+    {
+     "label": "",
+     "land": "M2.8,120L2.8,119.9L3.1,118.3L4.5,117.8L6.2,115.4L9,112.6L11.9,112.7L13,111.9L14.7,111.8L15,112.4L15.2,112.9L16.8,113.7L19.4,113.6L20,113.3L20.6,112.9L19.4,111.5L19.8,111.1L20.9,111.1L22.1,111.4L22.2,111.7L21.9,112.1L21.5,112.9L21.9,113L25.3,112.6L28.8,112.9L30,112.8L32.8,112.8L33.3,112.3L32.5,111.7L31.6,111.5L31.1,111.2L30.5,110.8L32.3,109.4L33.3,109.2L38.1,108.4L41.6,108L41.7,107.6L41.1,107.6L36.6,107L35.5,106.4L34,105.2L33.6,104.8L33.2,104.2L33.5,102.9L33.7,101.8L34.3,101.2L36.1,101.1L42.4,102.2L46.9,101.6L51.8,103.1L56.4,102.8L57.4,102.1L58.6,99.9L65.1,96.1L67.4,94.1L69.9,93L74.2,91.8L77.7,90.2L78.8,90L87.3,90.8L93.1,90.9L95.8,89.4L97.4,89.9L97.2,90.4L96.9,90.9L97.1,91.8L98,93.2L98.9,94.1L101.6,95.5L105.4,94.3L106,94.5L106.8,94.8L108.1,98.4L109.2,99.6L110.5,100.5L111.6,100.7L112.4,99.8L113,99.4L114.4,99.3L116.7,100.5L117.5,101.7L121.3,102.7L124.8,103.2L126.3,104.3L131.3,105.4L133.1,105.2L136.2,104.1L142.2,102.8L146.2,104.6L147.3,104.8L148.3,104.6L149.6,105.1L151,104.8L155.5,102.8L156.9,101.7L158.3,101.4L159.6,100.7L160,100.4L160,120ZM160,78.3L159.4,77L157.1,75.1L153.8,74.3L153.1,74L150.2,71.5L148,70L146.9,69.2L143.2,65.5L141.2,63.1L134.8,57.4L134,56.9L130.5,56.1L129.2,55.4L125.7,51.3L124.2,51.9L122.8,51.7L122,51.3L121.1,50.8L120.5,50L119.7,48.2L118.9,47.3L116.2,45.8L113.1,45L112.9,44.6L112.7,44.1L115.4,43.1L116.1,42.5L114.8,41.8L114.3,41.6L113.8,41.3L114.6,40.7L115.4,40.5L116.5,41.1L117.8,42.3L119,42.8L119.5,42.2L123.6,41.2L123.8,40.4L123.8,39.5L123.4,39.6L123.2,39.4L123.2,38.4L123.8,37.1L125.6,34.9L126.5,31.8L127.4,31.1L128,31.6L128,32.3L128.1,32.8L128.7,31.8L129.2,30.4L130.5,30.4L131.5,30.7L132.4,30.5L130.6,28.2L128.1,25.9L127,26L126.4,25.7L125.3,23.8L124.8,22.2L125.9,22.2L126.9,22.5L128.9,21.4L129.7,21.2L130.9,21.5L132.5,21.8L132.4,20.7L131.9,19.5L133.9,18.6L135.7,18.1L139.1,16.2L140.6,15.9L140.8,15.5L140.8,15L140.3,13.5L139.8,12.5L138,12.4L137,13.9L134.3,14.4L133,14.3L134,13.3L135,13L135.3,12.6L133.3,12.9L132.4,13.9L129.5,15.2L129.1,15.4L125.4,15.1L122.5,15.5L120.3,17.9L119.1,17.9L117.2,18.5L116,19.3L114.6,21L113.5,20.2L112.1,20.2L110.8,20.7L109.2,21.8L108.3,22L106.5,21.7L104.4,22.4L100,26.1L98.5,28.8L97.9,29.3L97.1,29.9L96.3,30.3L95.9,30.3L98,28.3L98.7,27.6L98.8,27.1L98.8,26.2L98.2,25.2L96.4,27.8L95.4,28.2L94.2,29L94.1,30.7L94.3,32L94.8,33.7L96,36.4L98.5,40.2L99.7,41.6L100.6,42.1L101.6,42.2L103.6,41L104.5,40.8L106.4,41.3L107.1,40.5L108.1,40.1L109.3,40L110.7,40.4L112.3,41L111.6,42.3L111,43.4L110.7,44.5L110.4,45.9L108.7,46.5L106.8,46.4L104.9,46.8L104.2,46.3L103.7,45.8L102.9,45.3L101.7,45.1L100.7,45.4L99.5,47.2L97.4,48.4L96.7,49.8L94.6,49.4L92.8,49.7L90.2,51L88.2,53.7L86.1,55.4L84.3,55.9L82.7,55.7L81.6,55.2L79.5,53.4L79.6,52.8L79.9,52.5L80.3,51.6L81.2,48.2L81.1,47.1L80.6,45.4L78.9,44.1L77.5,44.3L76.7,44L73.9,41.6L72.4,41.5L70.7,42L70.1,41.6L69.6,40.8L72.9,38L76.3,35.6L77.7,35.4L79.7,34.3L81.7,32.7L81.4,31.4L81,30.4L80,30.7L79.2,31L77.5,29.9L76.9,29.2L74.1,30L72.6,29.9L69.3,30.6L67.7,29.9L64.6,27.9L63.5,27.5L62.5,27.6L61.9,26.9L62.6,26.6L63.4,26.6L64.2,26.3L64.4,26L64.3,25.3L62.7,24.8L61.2,24.7L60.3,24.1L59.6,23.4L61.2,23.4L63,23.9L65.6,24.1L68.1,24.6L68.7,24L70.1,22.9L70.3,22.5L68,23.3L65.6,22.8L64.7,22.1L64,21.1L63.7,19.9L63.9,18.8L63.6,16.9L62.8,15.1L62.5,14.2L61.7,13.3L62.5,15.3L62.8,16.6L63.3,17.7L63.2,20.9L62.9,22L61.9,22.3L60.6,22.1L59.3,21.8L59.7,20L59,20.6L58,22.3L57.1,22.5L55.2,22.4L51.6,23.5L51.3,24.7L50.8,26.3L50.3,27.3L50.1,27.8L48.6,30.3L48.4,30.5L45.6,33.9L45.2,34.1L43.3,34.9L42.2,35.6L41.4,35.9L39.9,35.6L39.4,36.1L39.1,36.7L39.1,37.9L39.8,38.8L40.4,41.7L40.2,43L40,44L39.9,44.6L39.4,47.1L39.1,48.1L38.6,49.2L33.2,50.4L33.6,49.8L33.5,48.8L33.2,48L33.7,47.2L32.6,47L32,47.3L31.6,48.1L31.9,49.7L31.4,50.6L31.2,51L31.1,52.2L30.8,52.7L30.7,53.3L31.6,53.1L31.2,54.1L29.6,56.1L29,57.2L29.2,61.8L28.4,64.5L28.4,65.3L28.1,68.8L27.1,70.4L25.6,69.9L23.6,70.3L22.6,72.2L22,72.7L21.5,73.4L21.1,75.7L21.1,79.6L20.3,80.1L19.7,80.3L16.8,83.6L18.5,84.6L19.2,85.3L20.4,87.3L22,89.6L22.4,90.7L22.1,92.3L22.8,94.1L24.3,96.6L25.9,97.8L32.2,100.9L33.3,101.1L33.1,102.4L32.7,103.5L32.3,104.2L30.4,104.7L25.3,103.3L24,103.2L23.1,103.5L21.4,104.4L19.6,104.1L17,104.7L16.3,106.5L14.4,108.7L11.5,110.4L9.3,111.3L6.2,114.5L4.7,116.4L4.1,116.8L3.4,117.1L3.6,116.2L4,115.3L3.9,114.7L3.9,113.8L5,112.8L5.9,112L8.8,110.6L9.6,109.5L7.3,109.5L5,109.8L3.6,109.6L2.3,109.7L1.9,108.7L1.6,108.1L1.4,107.5L0,106.7L0,0L160,0ZM64.4,28.8L65.8,29.5L64.3,29.3L61.1,28.6L59.7,27.9L59.3,27.2L59.1,26.2L59.9,27.3L60.5,27.7ZM0,114.9L0.4,114.9L1,115.7L0.9,116.2L0.9,116.2L0,116.4L0,114.9Z",
+     "lakes": "",
+     "highlight": "",
+     "borders": "",
+     "dots": [
+      {
+       "x": 80.3,
+       "y": 52.8,
+       "names": [
+        "Sevastopol"
+       ]
+      },
+      {
+       "x": 81.3,
+       "y": 52.1,
+       "names": [
+        "The Alma",
+        "Balaklava",
+        "Inkerman"
+       ],
+       "context": true
+      },
+      {
+       "x": 33,
+       "y": 104.2,
+       "names": [
+        "Scutari"
        ],
        "context": true
       }

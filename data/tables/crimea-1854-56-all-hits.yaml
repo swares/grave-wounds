@@ -1,0 +1,51 @@
+id: crimea-1854-56-all-hits
+order: 19.8
+name: "Crimean War 1854-56 - all hits (gameplay)"
+label: "All hits: gameplay blend (Sevastopol siege records)"
+battle: "Crimean War"
+context: "Where Minié bullets, musket balls and shell land on a man in the trenches and works before Sevastopol, before survival sorts the records. Built from the British surgeons' siege returns and a stand-in table for the killed."
+variant: adjusted
+armor: allowed
+weapon_bias: pooled
+weapons: [rifle_musket, musket_smoothbore, artillery_smoothbore, revolver, saber, bayonet, lance]
+modifiers: [attacker_higher, attacker_lower, target_fleeing, flanked, behind_cover]
+confidence: extrapolated
+confidence_note: "Blend of the historical siege wounded table and a stand-in killed table; the mix is from the war's killed and wounded totals."
+armor_note: >
+  Use this table for play. No armour was worn, so leave it off. The wounded it is built on
+  were mostly hit in the siege works, so it already leans to the head and face; for an open
+  field fight (the Alma, Inkerman) it overstates them a little.
+sources:
+  - "Derived (tools/blend_tables.py): 81.7% crimea-1855-56-siege + 18.3% acw-1861-killed, location by location."
+  - "Killed share: 2,598 British rank and file killed in action in the whole war (Medical and Surgical History of the British Army ... in the Crimea, 1858, vol. 2, Concluding Observations) against 11,595 treated for wounds received in action (Returns Nos. 1 and 3: 4,434 and 7,161)."
+status: >
+  Estimated. No count of the killed by region survives for the Crimea, so the Civil War
+  killed-in-action table (also soft lead bullets from rifle-muskets) stands in for the dead.
+  Edit the share in tools/blend_tables.py if you prefer another.
+weights:
+  skull_l: 6.879
+  skull_r: 6.879
+  face: 8.517
+  neck: 3.018
+  chest_l: 4.524
+  chest_r: 4.524
+  abdomen: 4.628
+  groin: 1.583
+  back_upper: 3.369
+  back_lower: 2.888
+  shoulder_l: 2.572
+  shoulder_r: 2.572
+  upper_arm_l: 3.858
+  upper_arm_r: 3.858
+  forearm_l: 3.858
+  forearm_r: 3.858
+  hand_l: 2.572
+  hand_r: 2.572
+  thigh_l: 5.494
+  thigh_r: 5.494
+  knee_l: 1.648
+  knee_r: 1.648
+  lower_leg_l: 4.67
+  lower_leg_r: 4.67
+  foot_l: 1.923
+  foot_r: 1.923

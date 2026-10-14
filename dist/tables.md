@@ -784,6 +784,139 @@ Sources:
 - Killed share: US forces lost about 2,260 killed in action and 4,505 wounded (commonly cited totals; British and Canadian losses are usually given only combined).
 - Peninsular War records: Planas Campos and Grajal de Blas, British Journal for Military History 7(3), 2021.
 
+# Crimean War (1854-1856)
+
+Britain, France, the Ottoman Empire and from 1855 Sardinia fought Russia, chiefly in the Crimea. After the Alma, Balaklava and Inkerman (1854) the war became the siege of Sevastopol, the Black Sea naval base: eleven months of trenches, batteries and assaults on the Mamelon, the Redan and the Malakoff, until the Russians left the town in September 1855. The allied infantry carried percussion rifle-muskets firing the Minié bullet, most Russians still smoothbore muskets; smoothbore guns and mortars threw round shot, shell and grape. No one wore armour. The table is the British surgeons' count of the wounded of the siege, from April 1855 to the end of the war; the British lost 2,598 rank and file killed in action in the whole war.
+
+| Side | Who | Armour |
+|---|---|---|
+| British Army (1854-56) | Regular infantry of the line, Guards and Highlanders, rifle battalions, cavalry, Royal Artillery and Royal Engineers, and the Naval Brigade's guns. | None. |
+| French Army (1854-56) | Line infantry, chasseurs a pied, Zouaves and Algerian tirailleurs, artillery and engineers; the largest allied army in the siege. | None (cuirassiers did not serve in the Crimea). |
+| Russian Army (1854-56) | Line and Black Sea Fleet sailors manning the bastions of Sevastopol, field armies, Cossacks. | None. |
+
+**Example combatants**
+
+| Name | Side | Wears | Fights with | Notes | Picture |
+|---|---|---|---|---|---|
+| British infantryman, 1855 | British Army (1854-56) | Unarmoured | Rifle-musket (Minie ball) | Minie or Enfield rifle-musket; a winter in the trenches before Sevastopol. |  |
+| Royal Artillery gunner | British Army (1854-56) | Unarmoured | Smoothbore artillery (round shot, canister, grape, shell) | Siege batteries and the Naval Brigade's guns. |  |
+| Light cavalryman | British Army (1854-56) | Unarmoured | Sabre or broadsword | Balaklava, 1854. |  |
+| Zouave | French Army (1854-56) | Unarmoured | Rifle-musket (Minie ball) | Stormed the Mamelon and the Malakoff. |  |
+| Russian infantryman | Russian Army (1854-56) | Unarmoured | Smoothbore musket (Brown Bess, Charleville) | Most still had smoothbore percussion muskets. |  |
+| Black Sea Fleet sailor on the bastions | Russian Army (1854-56) | Unarmoured | Bayonet (musket or rifle) | Sailors manned much of Sevastopol's defences. |  |
+
+**Where British rank and file were hit by gunfire (% of known regions)**
+
+| | 1854-55 | Siege | Ratio |
+|---|---|---|---|
+| Head | 8.2 | 12.2 | 1.49 |
+| Face | 5.0 | 7.6 | 1.54 |
+| Neck | 2.5 | 1.8 | 0.72 |
+| Chest | 6.3 | 6.0 | 0.96 |
+| Abdomen | 4.0 | 3.4 | 0.85 |
+| Perineum | 0.6 | 0.8 | 1.32 |
+| Back and spine | 3.3 | 4.7 | 1.40 |
+| Limbs | 70.1 | 63.5 | 0.91 |
+
+1854-55: 14 September 1854 to 31 March 1855 (the Alma, Balaklava, Inkerman and the first winter); siege: 1 April 1855 to the end of the war; ratio: siege share over the earlier one. 2,515 and 6,984 gunshot wounds of known region (Returns Nos. 1 and 3). The earlier period also holds the first winter in the trenches, so the contrast between siege and open-field fighting is if anything understated; 1,815 of its wounded have no record of region. Men firing over parapets and lying flat under shellfire were hit more often in the head, face and back.
+
+Source: Medical and Surgical History of the British Army ... in the Crimea (1858), vol. 2, pp. 257-258 and 286-339.
+
+Sources: Medical and Surgical History of the British Army which served in Turkey and the Crimea during the war against Russia in the years 1854-55-56 (London, 1858), vol. 2: the returns of wounds received in action (pp. 257-259), the returns by region (pp. 286-339) and the killed in action (Concluding Observations). Sides, weapons and dress: general historical knowledge, not from the wound data.
+
+## Crimean War 1855-56 - siege of Sevastopol, wounded (surgeons' returns)
+
+*British rank and file treated for wounds received in action from 1 April 1855 to the end of the war: almost all of it the siege of Sevastopol (the trenches, the Mamelon, the Redan). Men who reached a surgeon alive.*
+
+Confidence: **Historical - taken directly from a source** · Armour: **already reflected (do not apply)**
+
+| Location | Rifle-musket | Musket | Artillery | Revolver |
+|---|---|---|---|---|
+| Skull (left) | 01-06 | 01-06 | 01-06 | 01-06 |
+| Skull (right) | 07-12 | 07-12 | 07-12 | 07-12 |
+| Face | 13-20 | 13-20 | 13-20 | 13-20 |
+| Neck | 21-22 | 21-22 | 21-22 | 21-22 |
+| Chest (left) | 23-25 | 23-25 | 23-25 | 23-25 |
+| Chest (right) | 26-28 | 26-28 | 26-28 | 26-28 |
+| Abdomen | 29-31 | 29-31 | 29-31 | 29-31 |
+| Groin / pelvis | 32 | 32 | 32 | 32 |
+| Upper back | 33-34 | 33-34 | 33-34 | 33-34 |
+| Lower back | 35-36 | 35-36 | 35-36 | 35-36 |
+| Shoulder (left) | 37-39 | 37-39 | 37-39 | 37-39 |
+| Shoulder (right) | 40-42 | 40-42 | 40-42 | 40-42 |
+| Upper arm (left) | 43-47 | 43-47 | 43-47 | 43-47 |
+| Upper arm (right) | 48-52 | 48-52 | 48-52 | 48-52 |
+| Forearm (left) | 53-57 | 53-57 | 53-57 | 53-57 |
+| Forearm (right) | 58-62 | 58-62 | 58-62 | 58-62 |
+| Hand (left) | 63-65 | 63-65 | 63-65 | 63-65 |
+| Hand (right) | 66-68 | 66-68 | 66-68 | 66-68 |
+| Thigh (left) | 69-74 | 69-74 | 69-74 | 69-74 |
+| Thigh (right) | 75-80 | 75-80 | 75-80 | 75-80 |
+| Knee (left) | 81-82 | 81-82 | 81-82 | 81-82 |
+| Knee (right) | 83-84 | 83-84 | 83-84 | 83-84 |
+| Lower leg (left) | 85-90 | 85-90 | 85-90 | 85-90 |
+| Lower leg (right) | 91-96 | 91-96 | 91-96 | 91-96 |
+| Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 |
+| Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 |
+
+**Source totals:** Head (851) = 12.2%; Face (533) = 7.6%; Neck (128) = 1.8%; Chest (420) = 6.0%; Abdomen and pelvis (235) = 3.4%; Perineum and genito-urinary organs (55) = 0.8%; Back and spine (326) = 4.7%; Upper extremities (2,083, and 75 of the 155 arteries, nerves and joints) = 30.9%; Lower extremities (2,198, and 80 of the 155 arteries, nerves and joints) = 32.6% (n = 6,984). Region totals are from the source: 6,984 gunshot wounds of known region (with 167 sword, bayonet and miscellaneous wounds left out). The split inside each region uses body exposure (design estimate). The 155 wounds of the larger arteries, nerves and joints of the limbs are shared between arms and legs as the other limb wounds are.
+
+
+**Close combat:** Sabre, Bayonet, Lance: roll location on *Peninsular War 1808-14 - French officers' wounds*. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
+
+**Reading it:** Records of the wounded. Many men hit in the trenches who would have died on an open field reached the hospitals alive and died there, so head and chest wounds are better counted than in most wounded tables (a fifth of the head wounds and over a quarter of the chest wounds died), but the instantly killed are still missing: use the all-hits table in play. No armour was worn. These are men in a siege: more often hit in the head and face, and in the back (lying flat under shellfire), less often in the limbs, than in field battles.
+
+**Status:** Historical at region level, from a public-domain official report (1858; scanned by the US National Library of Medicine, on the Internet Archive). The joints' count is the extremities' total less the four other lines, as the scan of that line is unreadable.
+
+Sources:
+- Medical and Surgical History of the British Army which served in Turkey and the Crimea during the war against Russia in the years 1854-55-56 (London, 1858), vol. 2, Part II, Return No. 3 (p. 258) and the returns by region, Section II (pp. 286-339): non-commissioned officers and privates, 1 April 1855 to the end of the war - gunshot wounds of the head 851, face 533, neck 128, chest 420, abdomen (with gunshot fractures of the pelvis) 235, perineum and genito-urinary organs 55, back and spine 326, extremities 4,436 (upper 2,083, lower 2,198, with direct injury of the larger arteries 12 and nerves 22, and penetration of the larger joints 121 by difference); sword, lance and bayonet wounds 41 and miscellaneous wounds 126; 7,161 treated in all.
+- Same work, Return No. 1 (p. 257), for comparison: 14 Sep 1854 - 31 Mar 1855 (the Alma, Balaklava, Inkerman and the first winter's siege), head 206, face 125, neck 64, chest 158, abdomen 100, perineum 15, back and spine 84, extremities 1,763 of 2,515 gunshot wounds of known region (1,815 more unrecorded). Against this period the siege period has 1.5 times the share of head and of face wounds, 1.4 times the back, and fewer limb wounds (63.5% against 70.1%).
+
+## Crimean War 1854-56 - all hits (gameplay)
+
+*Where Minié bullets, musket balls and shell land on a man in the trenches and works before Sevastopol, before survival sorts the records. Built from the British surgeons' siege returns and a stand-in table for the killed.*
+
+Confidence: **Extrapolated - design estimate from analogous evidence** · Armour: **allowed**
+
+| Location | Rifle-musket | Musket | Artillery | Revolver |
+|---|---|---|---|---|
+| Skull (left) | 01-07 | 01-07 | 01-07 | 01-07 |
+| Skull (right) | 08-14 | 08-14 | 08-14 | 08-14 |
+| Face | 15-22 | 15-22 | 15-22 | 15-22 |
+| Neck | 23-25 | 23-25 | 23-25 | 23-25 |
+| Chest (left) | 26-29 | 26-29 | 26-29 | 26-29 |
+| Chest (right) | 30-33 | 30-33 | 30-33 | 30-33 |
+| Abdomen | 34-38 | 34-38 | 34-38 | 34-38 |
+| Groin / pelvis | 39-40 | 39-40 | 39-40 | 39-40 |
+| Upper back | 41-43 | 41-43 | 41-43 | 41-43 |
+| Lower back | 44-46 | 44-46 | 44-46 | 44-46 |
+| Shoulder (left) | 47-49 | 47-49 | 47-49 | 47-49 |
+| Shoulder (right) | 50-52 | 50-52 | 50-52 | 50-52 |
+| Upper arm (left) | 53-56 | 53-56 | 53-56 | 53-56 |
+| Upper arm (right) | 57-60 | 57-60 | 57-60 | 57-60 |
+| Forearm (left) | 61-64 | 61-64 | 61-64 | 61-64 |
+| Forearm (right) | 65-68 | 65-68 | 65-68 | 65-68 |
+| Hand (left) | 69-70 | 69-70 | 69-70 | 69-70 |
+| Hand (right) | 71-72 | 71-72 | 71-72 | 71-72 |
+| Thigh (left) | 73-77 | 73-77 | 73-77 | 73-77 |
+| Thigh (right) | 78-82 | 78-82 | 78-82 | 78-82 |
+| Knee (left) | 83-84 | 83-84 | 83-84 | 83-84 |
+| Knee (right) | 85-86 | 85-86 | 85-86 | 85-86 |
+| Lower leg (left) | 87-91 | 87-91 | 87-91 | 87-91 |
+| Lower leg (right) | 92-96 | 92-96 | 92-96 | 92-96 |
+| Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 |
+| Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 |
+
+**Close combat:** Sabre, Bayonet, Lance: roll location on *Peninsular War 1808-14 - French officers' wounds*. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
+
+**Reading it:** Use this table for play. No armour was worn, so leave it off. The wounded it is built on were mostly hit in the siege works, so it already leans to the head and face; for an open field fight (the Alma, Inkerman) it overstates them a little.
+
+**Status:** Estimated. No count of the killed by region survives for the Crimea, so the Civil War killed-in-action table (also soft lead bullets from rifle-muskets) stands in for the dead. Edit the share in tools/blend_tables.py if you prefer another.
+
+Sources:
+- Derived (tools/blend_tables.py): 81.7% crimea-1855-56-siege + 18.3% acw-1861-killed, location by location.
+- Killed share: 2,598 British rank and file killed in action in the whole war (Medical and Surgical History of the British Army ... in the Crimea, 1858, vol. 2, Concluding Observations) against 11,595 treated for wounds received in action (Returns Nos. 1 and 3: 4,434 and 7,161).
+
 # American Civil War (1861-1865)
 
 The United States (Union) against the seceded Confederate States. Most wounds came from the rifle-musket firing soft lead conoidal balls, which shattered bone and led to the war's many amputations. Artillery, especially canister at close range, did the rest; sabre and bayonet wounds were rare.
@@ -2279,14 +2412,14 @@ Modifiers stack in the roller and CLI (one per group). Printed columns below sho
 |---|---|---|---|
 | Attacker on target's shield side | facing | left side x1.8, right side x0.5 | Attacker works round to the target's left (shield) side. Tables: Sidon, mid-13th century, Visby 1361 |
 | Attacker on target's weapon side | facing | left side x0.5, right side x1.8 | Attacker is off the target's right (weapon-arm) side. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461 |
-| Attacker higher (mounted, uphill, on a wall) | height | head x1.6, arms x1.2, legs x0.4, shoulder (left) x1.3, shoulder (right) x1.3 | Blows come down onto the head and shoulders; legs out of reach. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
-| Attacker lower (in a ditch, kneeling, vs. rider) | height | head x0.5, legs x1.6, groin / pelvis x1.8, abdomen x1.3 | Blows come up into the legs, groin and belly. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
+| Attacker higher (mounted, uphill, on a wall) | height | head x1.6, arms x1.2, legs x0.4, shoulder (left) x1.3, shoulder (right) x1.3 | Blows come down onto the head and shoulders; legs out of reach. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
+| Attacker lower (in a ditch, kneeling, vs. rider) | height | head x0.5, legs x1.6, groin / pelvis x1.8, abdomen x1.3 | Blows come up into the legs, groin and belly. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
 | Target down (fallen, kneeling, helpless) | posture | head x2, torso x0.6, legs x0.6, upper back x3, lower back x2, forearm (left) x1.6, forearm (right) x1.6, hand (left) x1.6, hand (right) x1.6, face x0.7 | Towton pattern: repeated blows to the head and back; arms raised to ward. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Peninsular War 1808-14, Knife assault, Unarmed |
-| Target fleeing (back turned) | posture | head x1.2, arms x0.6, legs x1.3, upper back x4, lower back x3, face x0.1, chest (left) x0.15, chest (right) x0.15, abdomen x0.15, groin / pelvis x0.2 | Rout: back, back of the head and legs exposed; front almost unreachable. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
-| Target flanked (two or more attackers) | - | legs x1.3, upper back x2.5, lower back x2.5, skull (left) x1.2, skull (right) x1.2 | Visby team-fighting: one engages the front while others strike from behind and low. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Indian Wars 1865-71, Knife assault |
+| Target fleeing (back turned) | posture | head x1.2, arms x0.6, legs x1.3, upper back x4, lower back x3, face x0.1, chest (left) x0.15, chest (right) x0.15, abdomen x0.15, groin / pelvis x0.2 | Rout: back, back of the head and legs exposed; front almost unreachable. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
+| Target flanked (two or more attackers) | - | legs x1.3, upper back x2.5, lower back x2.5, skull (left) x1.2, skull (right) x1.2 | Visby team-fighting: one engages the front while others strike from behind and low. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Indian Wars 1865-71, Knife assault |
 | Target has no shield | - | head x1.1, torso x1.4, forearm (left) x0.7, hand (left) x0.7 | Tables assume a shield. Without one the body and head are more open. Tables: Sidon, mid-13th century, Visby 1361 |
 | Target warding with arms (unarmed or disarmed) | - | arms x1.5, forearm (left) x1.6, forearm (right) x1.6, hand (left) x1.6, hand (right) x1.6 | Defensive wounds: forearms and hands raised to block. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Peninsular War 1808-14, Knife assault |
-| Target behind cover (breastwork, wall, trench) | cover | head x1.5, torso x0.3, legs x0.05, shoulder (left) x1.5, shoulder (right) x1.5, abdomen x0.3, groin / pelvis x0.2, lower back x0.3 | Only head, shoulders and arms show over the parapet. Tables: Sidon, mid-13th century, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline |
+| Target behind cover (breastwork, wall, trench) | cover | head x1.5, torso x0.3, legs x0.05, shoulder (left) x1.5, shoulder (right) x1.5, abdomen x0.3, groin / pelvis x0.2, lower back x0.3 | Only head, shoulders and arms show over the parapet. Tables: Sidon, mid-13th century, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline |
 
 **Called shot:** Roll the location twice; keep whichever result lands in the called zone. If both or neither do, keep the first. Your system sets any to-hit penalty.
 
@@ -3440,6 +3573,68 @@ Modifiers stack in the roller and CLI (one per group). Printed columns below sho
 | Lower leg (right) | 92-96 | 97-98 | 89-96 | 90-96 | 91-96 | - |
 | Foot (left) | 97-98 | 99 | 97-98 | 97-98 | 97-98 | - |
 | Foot (right) | 99-00 | 00 | 99-00 | 99-00 | 99-00 | - |
+
+### Crimean War 1855-56 - siege of Sevastopol, wounded (surgeons' returns) - Rifle-musket / Musket / Artillery / Revolver
+
+| Location | Normal | Higher | Lower | Fleeing | Flanked | Cover |
+|---|---|---|---|---|---|---|
+| Skull (left) | 01-06 | 01-10 | 01-03 | 01-08 | 01-06 | 01-13 |
+| Skull (right) | 07-12 | 11-20 | 04-06 | 09-16 | 07-12 | 14-26 |
+| Face | 13-20 | 21-32 | 07-10 | 17 | 13-18 | 27-42 |
+| Neck | 21-22 | 33-35 | 11 | 18-19 | 19-20 | 43-46 |
+| Chest (left) | 23-25 | 36-38 | 12-14 | - | 21-23 | 47 |
+| Chest (right) | 26-28 | 39-41 | 15-17 | - | 24-25 | 48 |
+| Abdomen | 29-31 | 42-44 | 18-21 | - | 26-28 | - |
+| Groin / pelvis | 32 | 45 | 22 | - | 29 | - |
+| Upper back | 33-34 | 46-47 | 23-24 | 20-29 | 30-34 | 49 |
+| Lower back | 35-36 | 48-49 | 25-26 | 30-36 | 35-38 | - |
+| Shoulder (left) | 37-39 | 50-54 | 27-29 | 37-38 | 39-41 | 50-56 |
+| Shoulder (right) | 40-42 | 55-59 | 30-32 | 39-40 | 42-44 | 57-63 |
+| Upper arm (left) | 43-47 | 60-64 | 33-36 | 41-43 | 45-48 | 64-70 |
+| Upper arm (right) | 48-52 | 65-69 | 37-40 | 44-46 | 49-52 | 71-77 |
+| Forearm (left) | 53-57 | 70-74 | 41-44 | 47-49 | 53-56 | 78-84 |
+| Forearm (right) | 58-62 | 75-79 | 45-48 | 50-52 | 57-60 | 85-91 |
+| Hand (left) | 63-65 | 80-83 | 49-51 | 53-54 | 61-63 | 92-95 |
+| Hand (right) | 66-68 | 84-87 | 52-54 | 55-56 | 64-66 | 96-99 |
+| Thigh (left) | 69-74 | 88-90 | 55-63 | 57-65 | 67-73 | 00 |
+| Thigh (right) | 75-80 | 91-92 | 64-72 | 66-74 | 74-80 | - |
+| Knee (left) | 81-82 | 93 | 73-75 | 75-77 | 81-82 | - |
+| Knee (right) | 83-84 | 94 | 76-78 | 78-80 | 83-84 | - |
+| Lower leg (left) | 85-90 | 95-96 | 79-86 | 81-87 | 85-90 | - |
+| Lower leg (right) | 91-96 | 97-98 | 87-94 | 88-94 | 91-96 | - |
+| Foot (left) | 97-98 | 99 | 95-97 | 95-97 | 97-98 | - |
+| Foot (right) | 99-00 | 00 | 98-00 | 98-00 | 99-00 | - |
+
+### Crimean War 1854-56 - all hits (gameplay) - Rifle-musket / Musket / Artillery / Revolver
+
+| Location | Normal | Higher | Lower | Fleeing | Flanked | Cover |
+|---|---|---|---|---|---|---|
+| Skull (left) | 01-07 | 01-10 | 01-03 | 01-09 | 01-07 | 01-14 |
+| Skull (right) | 08-14 | 11-20 | 04-06 | 10-17 | 08-14 | 15-28 |
+| Face | 15-22 | 21-33 | 07-10 | 18 | 15-21 | 29-46 |
+| Neck | 23-25 | 34-38 | 11 | 19-22 | 22-24 | 47-52 |
+| Chest (left) | 26-29 | 39-42 | 12-15 | 23 | 25-28 | 53-54 |
+| Chest (right) | 30-33 | 43-46 | 16-19 | 24 | 29-32 | 55-56 |
+| Abdomen | 34-38 | 47-50 | 20-25 | 25 | 33-36 | 57 |
+| Groin / pelvis | 39-40 | 51-52 | 26-28 | - | 37 | - |
+| Upper back | 41-43 | 53-55 | 29-31 | 26-39 | 38-44 | 58-59 |
+| Lower back | 44-46 | 56-58 | 32-34 | 40-48 | 45-50 | 60 |
+| Shoulder (left) | 47-49 | 59-62 | 35-36 | 49-50 | 51-52 | 61-65 |
+| Shoulder (right) | 50-52 | 63-66 | 37-38 | 51-52 | 53-54 | 66-70 |
+| Upper arm (left) | 53-56 | 67-70 | 39-42 | 53-54 | 55-57 | 71-75 |
+| Upper arm (right) | 57-60 | 71-74 | 43-46 | 55-56 | 58-60 | 76-80 |
+| Forearm (left) | 61-64 | 75-78 | 47-50 | 57-58 | 61-63 | 81-85 |
+| Forearm (right) | 65-68 | 79-82 | 51-54 | 59-60 | 64-66 | 86-90 |
+| Hand (left) | 69-70 | 83-85 | 55-56 | 61-62 | 67-68 | 91-94 |
+| Hand (right) | 71-72 | 86-88 | 57-58 | 63-64 | 69-70 | 95-98 |
+| Thigh (left) | 73-77 | 89-90 | 59-66 | 65-71 | 71-76 | 99 |
+| Thigh (right) | 78-82 | 91-92 | 67-74 | 72-78 | 77-82 | 00 |
+| Knee (left) | 83-84 | 93 | 75-77 | 79-80 | 83-84 | - |
+| Knee (right) | 85-86 | 94 | 78-80 | 81-82 | 85-86 | - |
+| Lower leg (left) | 87-91 | 95-96 | 81-87 | 83-88 | 87-91 | - |
+| Lower leg (right) | 92-96 | 97-98 | 88-94 | 89-94 | 92-96 | - |
+| Foot (left) | 97-98 | 99 | 95-97 | 95-97 | 97-98 | - |
+| Foot (right) | 99-00 | 00 | 98-00 | 98-00 | 99-00 | - |
 
 ### Civil War 1861-65 - wounded (surgeon's records) - Rifle-musket / Breech-loader / Artillery / Revolver
 
