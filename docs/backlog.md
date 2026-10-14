@@ -106,7 +106,9 @@ When an item is done, delete it here and note it in the pull request that closes
     not published by action, and no Civil War split between sieges and open battle was found;
   - the earlier Crimean period as its own table (its limb wounds are not split into arms and
     legs, and a third of its wounded have no record of region);
-  - the French surgeon-general Chenu's larger Crimea report (1865), not yet read;
+  - a French table: Chenu's Crimea report (1865) has no count of all wounded by region, only
+    case notes on the pensioned wounded, by region (disabled survivors, so not used; see
+    `docs/hitloc-reference.md`);
   - the `behind_cover` modifier's torso and leg factors, which whole-army totals cannot set
     (the head factor of 1.5 agrees with the Crimean returns);
   - on the Great Redan battlefields, the siege guns of both sides, the French attack on the
