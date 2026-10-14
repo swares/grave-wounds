@@ -18,7 +18,9 @@ has a number of men, a quality (green, regular or veteran, as in
 {{table:formations}}
 
 Mounted units move {{f_mounted}} hexes. A unit that ends its move touching the enemy may have
-come up to {{f_charge_move}} times its move: a **charge**. A unit in contact cannot move.
+come up to {{f_charge_move}} times its move: a **charge**. A unit in contact cannot move. Units
+cannot pass through each other, except that a steady unit charging may pass through its own
+side's men to reach the enemy; the units it passes through lose half their move that exchange.
 
 ## An exchange {#exchange}
 

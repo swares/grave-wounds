@@ -551,6 +551,7 @@ const unitName = u => `${u.name} (${banner(u)})`;
 function startPhase(k){                           // a side's move; at the start of an exchange every broken unit runs first
   S.phase = k;
   S.aiDone = null;                                // the commander has not yet ordered this move
+  S.through = {};                                 // the friends charged through this move (manual moves)
   for (let i = 0; i < S.units.length; i++){
     if (k !== 0 || S.units[i].state !== "broken") continue;
     const through = ranThrough(S.units, i, flee(S.units, i, SIZE, S.field));
@@ -572,7 +573,11 @@ function tryMove(u, pos, facing){                 // a move from where it began 
   const r = moveUnit(base, i, pos, mod6(facing), SIZE, S.field);
   if (!r.ok){ S.msg = `${u.name} cannot go there: ${r.why}.`; return }
   S.units[i] = { ...S.start[i], pos, facing: mod6(facing), charged: r.charge };
-  S.msg = `${u.name}: ${r.cost} of ${allowance(u)} hexes${r.charge ? ", a charge" : ""}.`;
+  S.through = { ...(S.through || {}), [u.id]: (r.through || []).map(k => base[k].id) };   // this move's friends charged through (a fresh move replaces its last)
+  const hit = new Set(Object.values(S.through).flat());
+  S.units = S.units.map((x, k) => (hit.has(x.id) || S.start[k]?.jostled ? { ...x, jostled: true } : (({ jostled, ...rest }) => rest)(x)));
+  const past = r.through?.length ? `, through ${r.through.map(k => base[k].name).join(", ")}, who are jostled` : "";
+  S.msg = `${u.name}: ${r.cost} of ${allowance(u)} hexes${r.charge ? ", a charge" : ""}${past}.`;
 }
 // ----- fire support: off-map batteries on call (rules in units.js: indirectAll) -----
 const supports = () => S.field.support || (S.field.support = []);
@@ -1122,7 +1127,7 @@ function aiMemory(){                              // where the commander last sa
 const COMMIT_WHY = { broke: "one of its units has broken", gap: "the enemy is close", exploit: "to exploit an enemy unit that broke" };
 const ORDER_TEXT = {                              // (who, them, o, up, facing) -> the order's line
   commit: (who, them, o) => `${who} are committed from the reserve: ${COMMIT_WHY[o.why] || o.why}.`,
-  charge: (who, them, o, up) => `${who} ${up}charge ${them}.`,
+  charge: (who, them, o, up) => `${who} ${up}charge ${them}${o.through?.length ? `, through ${o.through.map(k => S.units[k]?.name).join(", ")}, who are jostled` : ""}.`,
   move: (who, them, o, up) => `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} toward ${them}.`,
   advance: (who, them, o, up, facing) => `${who} ${up}advance ${nOf(o.cost, "hex", "hexes")} on the objective${facing}.`,
   fall_back: (who, them, o, up, facing) => `${who} ${up}fall back ${nOf(o.cost, "hex", "hexes")} toward the objective${facing}.`,

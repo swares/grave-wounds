@@ -18,14 +18,14 @@ When an item is done, delete it here and note it in the pull request that closes
   the field map. It attacks or holds by its units' quality, knows only what its units see
   (remembering last sightings for a few exchanges), picks targets by threat and weakness,
   holds back and commits a reserve, steers round minefields it knows of, turns its guns and
-  calls its off-map batteries, limbers, tows and moves up its guns, storms works with black-powder infantry, sets its sappers to lay or lift mines, and takes or holds an
+  calls its off-map batteries, limbers, tows and moves up its guns, storms works with black-powder infantry, charges through its own waiting units, sets its sappers to lay or lift mines, and takes or holds an
   objective hex the GM marks; Undo puts
   its move back. It looks once at the start of each move. Attacking, it smokes enemies
   shooting at men who cannot reply, calls its aircraft, puts one battery on counter-battery fire and displaces batteries under it, and in the dark lights an enemy it has lost sight of. Its sappers lay one row and lift only the row ahead of
   them: no deep belts, and no clearing a whole path ahead of the attack. Its creeping barrages start on the enemy and lift a fixed 3 lines, and it plans none
   for riflemen who stop at range. Still left out: moving a placed
   battery to a new place when it displaces; guns falling back on tow; air controllers, riders, fixed lines and works; any plan beyond one
-  objective (phase lines, a second objective, feints, scouting); ladders only where the GM or a battlefield marks them (no battlefield does yet); a unit short of the odds with no friends touching it still waits just short of contact, and can block a stronger unit behind it. It does
+  objective (phase lines, a second objective, feints, scouting); ladders only where the GM or a battlefield marks them (no battlefield does yet). It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model
   with a key the player supplies, to explain its orders in prose.
 

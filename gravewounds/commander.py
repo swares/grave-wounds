@@ -908,7 +908,7 @@ def _best(d: Data, us: list, i: int, t: int, ctx: tuple) -> dict | None:
     if h == list(u["pos"]):
         return _stay(d, us, i, t, f, shooter)
     return {"act": "charge" if m["charge"] else "move", "target": t, "pos": h, "facing": f, "cost": m["cost"],
-            **({"up": True} if u.get("prone") else {})}
+            **({"up": True} if u.get("prone") else {}), **({"through": m["through"]} if m.get("through") else {})}
 
 
 def _turn_toward(d: Data, base: list, i: int, f: int, where: tuple) -> int | None:
@@ -934,21 +934,33 @@ def _first_move(d: Data, base: list, i: int, tu: dict, where: tuple, how: tuple)
     if hold and not charge:
         return None
     allow, tries, stuck = U.allowance(d, u), d.units["commander"]["tries"], bool(u.get("lost") or u.get("immobile") or u.get("emplaced"))
-    reach = reachable(d, base, i, size, allow * (d.units["charge_move"] if charge else 1), field)
+    reach = _reach(d, base, i, (size, allow * (d.units["charge_move"] if charge else 1), field), charge and u["state"] == "steady")
     foes = {k for k, j in U.occupancy(d, base).items() if base[j]["side"] != u["side"]}
-    for _, c, _, row, col in sorted((-score(d, field, u, tu, h, c, shooter, storm), c, aside(h, tu["pos"]), h[1], h[0]) for h, c in reach.items()):
-        h = [col, row]
+    for _, c, _, row, col in sorted((-score(d, field, u, tu, h, c, shooter, storm), c, aside(h, tu["pos"]), h[1], h[0]) for h, (c, _) in reach.items()):
+        h, via = [col, row], reach[(col, row)][1]
         f = keep_front(u, U.bearing(h, tu["pos"]))
         touch = _touches(d, {**u, "pos": h, "facing": f}, foes)
-        if _skips(touch, (charge, hold), c > allow, stuck and h != u["pos"]):
+        if _skips(touch, (charge, hold), c > allow, stuck and h != u["pos"]) or (via and not touch):
             continue
         if tries == 0:
             return None
         tries -= 1
         m = _legal(d, base, i, (h, f, c, touch), (size, field))
         if not _rejects(m, charge, hold):
-            return h, f, m
+            return h, f, ({**m, "through": U.passed_through(d, base, i, h)} if via else m)
     return None
+
+
+def _reach(d: Data, base: list, i: int, how: tuple, through: bool) -> dict:
+    """{hex: (least movement, passing through friends)}: hexes reached round its own side's
+    units, and (through: a steady unit that may charge) those reached only through them."""
+    size, limit, field = how
+    out = {h: (c, False) for h, c in reachable(d, base, i, size, limit, field).items()}
+    if through:
+        for h, c in reachable(d, base, i, size, limit, field, through=True).items():
+            if h not in out:
+                out[h] = (c, True)
+    return out
 
 
 def keep_front(u: dict, b: int) -> int:
@@ -1041,10 +1053,11 @@ def _mined(field: dict | None, a, h, side: int | None = None) -> int:
     return sum(1 for x in U.ray(list(a), list(h), U.hdist(a, h))[1:] if C.hkey(x) in known)
 
 
-def reachable(d: Data, units: list, i: int, size: tuple, limit: int, field: dict | None = None) -> dict:
+def reachable(d: Data, units: list, i: int, size: tuple, limit: int, field: dict | None = None, through: bool = False) -> dict:
     """{hex: least movement} for every hex the unit's middle hex can reach within limit (as
-    units._path_len, which it agrees with), its own hex included."""
-    occ = U.occupancy(d, [x for k, x in enumerate(units) if k != i])
+    units._path_len, which it agrees with), its own hex included; through: passing its own
+    side's units (for a charge)."""
+    occ = U.occupancy(d, U.mates(units, i, through))
     start = tuple(units[i]["pos"])
     best, heap, done = {start: 0}, [(0, start)], {}
     while heap:
@@ -1074,3 +1087,5 @@ def _apply(us: list, i: int, o: dict) -> None:
         us[i] = {**u, "facing": o["facing"]}
     elif o["act"] in ("move", "charge", "advance", "fall_back"):
         us[i] = {**u, "pos": o["pos"], "facing": o["facing"], "charged": o["act"] == "charge", **({"prone": False} if o.get("up") else {})}
+        for k in o.get("through", []):                # the friends it charged through are jostled
+            us[k] = {**us[k], "jostled": True}

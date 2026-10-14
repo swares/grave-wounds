@@ -1903,8 +1903,13 @@ function unitStepCost(field, u, a, b){            // movement for the middle hex
   const going = u.vehicle ? UD.vehicles.ground[groundKey(field, b)] : groundAt(field, b).move;
   return c + going - 1 + deepGoing(field.weather?.ground) + (coldOf(field)?.move || 0) + (lightOf(field)?.move || 0);
 }
-function pathLen(units, i, goal, size, limit, field = null){   // least movement for the middle hex to goal; null if more than limit
-  const occ = occupancy(units.filter((_, k) => k !== i)), u = units[i];
+const mates = (units, i, through) => units.filter((x, k) => k !== i && !(through && x.side === units[i].side));   // the units whose hexes unit i's middle hex may not pass: all, or (through, for a charge) the enemy's (as units.mates)
+function passedThrough(units, i, pos){             // the friendly units (not running) on the straight line of a charge from where unit i stands to pos (as units.passed_through)
+  const u = units[i], line = new Set(ray(u.pos, pos, hdist(u.pos, pos)).map(hk));
+  return units.flatMap((x, k) => (k !== i && x.side === u.side && x.state !== "broken" && x.state !== "fled" && footprint(x).flat().some(h => line.has(hk(h))) ? [k] : []));
+}
+function pathLen(units, i, goal, size, limit, field = null, through = false){   // least movement for the middle hex to goal (through: passing its own side's units); null if more than limit
+  const occ = occupancy(mates(units, i, through)), u = units[i];
   const best = new Map([[hk(u.pos), 0]]), done = new Set(), open = [[0, u.pos]];
   while (open.length){
     const [cost, h] = popCheapest(open);
@@ -1958,14 +1963,17 @@ function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, ch
   const rooted = (pos[0] !== u.pos[0] || pos[1] !== u.pos[1]) && rootedWhy(u);
   if (rooted) return { ok: false, why: rooted };
   const turns = Math.min(mod6(facing - u.facing), mod6(u.facing - facing)), most = allowance(u) * UD.charge_move;
-  const steps = pathLen(units, i, pos, size, most, field);
+  let steps = pathLen(units, i, pos, size, most, field), through = false;
+  if (steps === null && u.state === "steady"){ steps = pathLen(units, i, pos, size, most, field, true); through = true }   // a charge may pass through its own side's men
   if (steps === null) return { ok: false, why: "too far, or no way through" };
   const moved = { ...u, pos: pos.slice(), facing: mod6(facing) };
   if (!fits(units, i, moved, size, field)) return { ok: false, why: "no room there" };
   const cost = steps + turns * turnCost(u) + (turns ? sweepCost(field, { ...u, pos: pos.slice() }, moved) : 0), after = units.map((x, k) => (k === i ? moved : x));
   const contact = inContact(after, occupancy(after), i);
-  if (cost <= allowance(u)) return { ok: true, cost, charge: contact && steps > 0 };
-  if (contact && u.state === "steady" && cost <= most) return { ok: true, cost, charge: true };
+  if (through && !contact) return { ok: false, why: "it can pass through its own men only to charge" };
+  const passed = through ? { through: passedThrough(units, i, pos) } : {};
+  if (cost <= allowance(u)) return { ok: true, cost, charge: contact && steps > 0, ...passed };
+  if (contact && u.state === "steady" && cost <= most) return { ok: true, cost, charge: true, ...passed };
   return { ok: false, why: "too far" };
 }
 function flee(units, i, size, field = null){      // a broken unit runs straight back; off the map it has fled; through its own side's units to the first free ground beyond (as units.flee)
@@ -2519,7 +2527,7 @@ function bestOrder(us, i, t, [size, field, stance, known]){   // the best-scorin
   }
   const [h, f, m] = best;
   if (h[0] === u.pos[0] && h[1] === u.pos[1]) return stayOrder(us, i, t, f, shooter);
-  return { act: m.charge ? "charge" : "move", target: t, pos: h, facing: f, cost: m.cost, ...(u.prone ? { up: true } : {}) };
+  return { act: m.charge ? "charge" : "move", target: t, pos: h, facing: f, cost: m.cost, ...(u.prone ? { up: true } : {}), ...(m.through?.length ? { through: m.through } : {}) };
 }
 function firstMove(base, i, tu, [size, field], [charge, hold, shooter, storm]){   // [hex, facing, move] for the best-scoring hex it will move to, or null
   const u = base[i];
@@ -2527,17 +2535,23 @@ function firstMove(base, i, tu, [size, field], [charge, hold, shooter, storm]){ 
   const allow = allowance(u), occ = occupancy(base), stuck = !!(u.lost || u.immobile || u.emplaced);
   let tries = UD.commander.tries;
   const foes = new Set(Object.keys(occ).filter(k => base[occ[k]].side !== u.side));
-  const cands = [...reachable(base, i, size, allow * (charge ? UD.charge_move : 1), field).values()].map(([h, c]) => [-aiScore(field, u, tu, h, c, shooter, storm), c, aside(h, tu.pos), h[1], h[0]]);
+  const reach = aiReach(base, i, [size, allow * (charge ? UD.charge_move : 1), field], charge && u.state === "steady");
+  const cands = [...reach.values()].map(([h, c, via]) => [-aiScore(field, u, tu, h, c, shooter, storm), c, aside(h, tu.pos), h[1], h[0], via]);
   cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4]);
-  for (const [, c, , row, col] of cands){
+  for (const [, c, , row, col, via] of cands){
     const h = [col, row], f = keepFront(u, bearing(h, tu.pos)), touch = touches({ ...u, pos: h, facing: f }, foes);
-    if ((touch ? !charge : hold || c > allow) || (stuck && (h[0] !== u.pos[0] || h[1] !== u.pos[1]))) continue;
+    if ((touch ? !charge : hold || c > allow) || (stuck && (h[0] !== u.pos[0] || h[1] !== u.pos[1])) || (via && !touch)) continue;
     if (tries === 0) return null;
     tries -= 1;
     const m = legalMove(base, i, [h, f, c, touch], [size, field]);
-    if (!rejects(m, charge, hold)) return [h, f, m];
+    if (!rejects(m, charge, hold)) return [h, f, via ? { ...m, through: passedThrough(base, i, h) } : m];
   }
   return null;
+}
+function aiReach(base, i, [size, limit, field], through){   // Map hk -> [hex, least movement, through friends]: round its own side's units, and (a steady unit that may charge) only through them (as commander._reach)
+  const out = new Map([...reachable(base, i, size, limit, field).entries()].map(([k, [h, c]]) => [k, [h, c, false]]));
+  if (through) for (const [k, [h, c]] of reachable(base, i, size, limit, field, true)) if (!out.has(k)) out.set(k, [h, c, true]);
+  return out;
 }
 const keepFront = (u, b) => (arc(u.facing, b) === "front" ? u.facing : b);   // the facing to take toward direction b: its own if b is already in its front arc, else b (as commander.keep_front)
 function legalMove(base, i, [h, f, c, touch], [size, field]){   // moveUnit for a hex whose least movement and contact are known, without finding the path again
@@ -2577,8 +2591,8 @@ function mined(field, a, h, side = null){         // hexes of minefields its sid
   if (!Object.keys(mines).length || (a[0] === h[0] && a[1] === h[1])) return 0;
   return ray([...a], [...h], hdist(a, h)).slice(1).filter(x => { const m = mines[hk(x)]; return m && knownMine(m, side) }).length;
 }
-function reachable(units, i, size, limit, field = null){   // Map hk -> [hex, least movement] for every hex the middle hex can reach within limit
-  const occ = occupancy(units.filter((_, k) => k !== i)), u = units[i];
+function reachable(units, i, size, limit, field = null, through = false){   // Map hk -> [hex, least movement] for every hex the middle hex can reach within limit (through: passing its own side's units)
+  const occ = occupancy(mates(units, i, through)), u = units[i];
   const best = new Map([[hk(u.pos), 0]]), done = new Map(), open = [[0, u.pos]];
   while (open.length){
     const [cost, h] = popCheapest(open);
@@ -2599,7 +2613,10 @@ function applyOrder(us, i, o){                    // carry out an order (as the 
   else if (o.act === "lay") us[i] = { ...u, mining: { at: [...u.pos], facing: u.facing, n: 0, kind: o.kind } };
   else if (o.act === "lift") us[i] = { ...u, clearing: { at: [...u.pos], facing: u.facing, n: 0 } };
   else if (o.act === "turn") us[i] = { ...u, facing: o.facing };
-  else if (["move", "charge", "advance", "fall_back"].includes(o.act)) us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}) };
+  else if (["move", "charge", "advance", "fall_back"].includes(o.act)){
+    us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}) };
+    for (const k of o.through || []) us[k] = { ...us[k], jostled: true };   // the friends it charged through are jostled
+  }
 }
 
 // ---------- after the battle (as units.aftermath and disease.wound_case) ----------
