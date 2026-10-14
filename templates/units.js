@@ -2137,7 +2137,7 @@ function callFireAi(us, side, field, known, [stance, exchange] = ["attack", null
 }
 function callIllum(us, side, field, [known, exchange], free){   // in the dark: illumination over the lost enemy nearest its units, by the free battery with illumination that lands soonest (as commander._call_illum)
   const L = lightOf(field), ours = us.filter(u => u.side === side && u.men > 0 && u.state !== "fled");
-  if (!L || L.sight === null || L.sight === undefined || !ours.length) return [];
+  if ((L?.sight ?? null) === null || !ours.length) return [];
   const lost = knownFoes(known).filter(([, m]) => m.ex !== (exchange ?? 0) && !lit(field, m.pos))
     .map(([k, m]) => [Math.min(...ours.map(o => hdist(o.pos, m.pos))), Number(k)]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
   const sup = field?.support || [];
