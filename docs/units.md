@@ -1060,8 +1060,10 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   climb up a wall's height; the defenders' front rank strikes back at the men on the ladders.
   Stepping over the work costs 4 hexes of movement (`escalade.cross`), into hexes clear of
   the enemy. Mounted units and guns cannot use ladders. Without ladders, a unit still stops at
-  the foot, and only reach-2 weapons strike over. No battlefield marks ladders yet: the GM
-  marks the units that carried them.
+  the foot, and only reach-2 weapons strike over. The GM marks the units that carried them.
+  The ladder parties on the two Great Redan battlefields are marked, as in the accounts, but
+  there the ladders change nothing: the Redan is a ditch and an earth bank, which men cross
+  and fight over without them (no figures were found for how much the ladders helped).
 
 **The weather** (set under *Weather*, or brought from the travel map) works as on the
 battle map: no shooting beyond what can be seen (fog 5 hexes, heavy rain 15), wet strings
@@ -1495,7 +1497,8 @@ south, north at the top: the Redan's point toward the British trench at the bott
   back from it; open ground pitted with shell holes (rough ground) between; ravines down both
   sides; the shelled ruins of the Karabelnaya suburb (rubble and buildings) behind the Redan.
 - Fair and cold, with a strong north wind.
-- Just after noon: the covering party of riflemen and the ladder party out in front, the
+- Just after noon: the covering party of riflemen and the ladder party (marked with ladders,
+  which do nothing on an earthwork; see *Escalade*) out in front, the
   stormers of the Light and 2nd Divisions in the trench, and green supports behind.
 - The Russians: the Vladimirski Regiment at the salient and behind the breastwork, guns at
   each shoulder, riflemen on the line to the west, and the Kamchatski and Iakutski regiments
@@ -1525,7 +1528,8 @@ of the faces) and fewer shell holes.
 - Daybreak, fair and calm, light enough to see across the open ground (the columns were
   under fire as soon as they left the trenches).
 - Three British columns, each with covering riflemen of the Rifle Brigade, a ladder and
-  wool-bag party of sailors and soldiers, a storming party and green supports: the right
+  wool-bag party of sailors and soldiers (marked with ladders, which do nothing on an
+  earthwork), a storming party and green supports: the right
   column (Yea) facing the Redan's left face, the centre the salient, the left column
   (Campbell) the right face and the angle beyond it.
 - The Russians, the works fully manned: infantry at the salient and behind the breastwork,

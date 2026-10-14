@@ -13,6 +13,9 @@
 // for the field map, whose units stand in straight lines and could not otherwise reach the men
 // in a sharp point. The Russian infantry are on smoothbore muskets (most of them still were), their riflemen on
 // rifles; the British on the rifle-musket. The siege guns on both sides are not on the map.
+// The ladder party is marked as carrying ladders, as it did; on this field that changes
+// nothing, since the rules use ladders only on a wall, palisade or gate, and the Redan is a
+// ditch and an earth bank that men cross without them.
 import { unit, writeField } from "./field_lib.mjs";
 import { COLS, redan, BRITISH, RUSSIANS, RIFLE, MUSKET, GUNS, COMMON } from "./redan_lib.mjs";
 
@@ -22,7 +25,7 @@ const { grid, hexWorks, edgeWorks } = redan({ rows: ROWS, trenchRow: 67, holes: 
 // ---------- the armies (pos is the middle of the front row) ----------
 const units = [
   unit("Covering party (2nd Rifle Brigade and the Buffs)", BRITISH, 200, { ...RIFLE, formation: "open" }, [20, 40, 63]),
-  unit("Ladder party (the Buffs and the 97th)", BRITISH, 320, RIFLE, [10, 45, 65]),
+  unit("Ladder party (the Buffs and the 97th)", BRITISH, 320, { ...RIFLE, ladders: true }, [10, 45, 65]),
   unit("Light Division stormers (90th and 97th)", BRITISH, 1000, RIFLE, [20, 28, 68]),
   unit("2nd Division stormers (the Buffs, 41st and 62nd)", BRITISH, 760, { ...RIFLE, quality: "green" }, [16, 50, 68]),
   unit("Supports (7th, 23rd, 33rd, 34th and 77th)", BRITISH, 1500, { ...RIFLE, quality: "green" }, [30, 35, 74]),
@@ -47,6 +50,8 @@ The work, its ditch, the line either side, the breastwork, the trench, the ravin
 shell holes are drawn by hand to the shape the accounts give, not traced from any map (the
 point is cut off square, 120 m across, so that units in line can reach it); the
 deployment is just after noon, in our own words, with round numbers for play.
+The ladder party is marked as carrying ladders; on this earthwork (a ditch and a bank,
+not a wall) the rules give it nothing to do.
 
 What happened, briefly: after three days' bombardment the French stormed the Malakhov, east
 of the Redan, at noon and held it. On their signal the British went over from the advanced
