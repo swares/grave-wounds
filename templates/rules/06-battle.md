@@ -125,7 +125,10 @@ sometimes hesitate. With no enemy in sight, a unit holds.
   {{c_sap_clear}} hexes, they lay mines in the row ahead: mixed if the enemy it knows of has
   vehicles, otherwise anti-personnel.
 - **Guns.** It turns its guns to face the enemy and calls its off-map batteries on what it
-  sees. Attacking, it first has one battery smoke an enemy that is shooting at men who
+  sees. Attacking, guns with no enemy in reach go forward: a battery limbers, moves and
+  unlimbers once an enemy is in reach; anti-tank guns hook up to an empty tractor beside
+  them, are towed, and are unhooked in reach. They stop in reach but no nearer than
+  {{c_keep_off}} hexes. Holding, its guns unlimber or unhook where they stand. Attacking, it first has one battery smoke an enemy that is shooting at men who
   cannot reply (not in the dark, or in a gale).
 
 **Undo its orders** puts the move back for the GM to make by hand.

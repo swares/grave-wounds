@@ -67,7 +67,8 @@ Korean 45 mm and the Japanese 47 mm.
   anti-aircraft guns, machine guns or a battery). While it stands it counts as gone to
   ground, −{{at_ground}}% and hidden, but it cannot move all battle, though it can turn. A
   unit that breaks leaves its pits.
-- **The enemy commander** leaves anti-tank guns, like batteries, to the GM.
+- **The enemy commander** tows its anti-tank guns forward and unhooks them in reach (see
+  [the enemy commander](#commander)).
 
 ## Minefields {#mines}
 

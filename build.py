@@ -342,7 +342,7 @@ def _at_mine_rules(d) -> list[str]:
         out.append(f"<b>Anti-tank guns (1939-53):</b> a unit of towed guns, {A['crew']} men a gun, a gun a hex, manhandled {d.units['formations']['at_gun']['move']} hexes. "
                    f"Each gun served fires {g['rate']} round an exchange to {g['range']} hexes as a tank's main gun, vehicles first (hits {'/'.join(str(h[1]) for h in g['hit'])}% by range, "
                    f"knocking out by the armour's gun %), high explosive at men, {A['rounds']} rounds a gun (resupply as a battery). Gun tractors tow one gun each: hooked up the guns move with them and do not fire; unhooked, they fire from the next exchange. Its crews are men: small arms and shells strike them. "
-                   "The commander leaves them to the GM.")
+                   "The enemy commander tows them forward and unhooks them in reach.")
     S = d.units.get("gun_shields")
     if S:
         names = ", ".join(d.weapons[w]["name"].split(" (")[0].lower() + "s" for w in S["weapons"])
@@ -503,12 +503,14 @@ def _commander_rules(d) -> list[str]:
         f"or that would only stand or turn while its target is more than {K['objective']['guard']} from the objective, advances on it (nearest hex in its allowance). Holding, a unit more than "
         f"{K['objective']['hold']} from it falls back to it unless it can charge. Enemies within {K['objective']['guard']} of it score {K['objective']['bonus']} more as targets; the log names who holds it each exchange. "
         "A battlefield's objective has its own radius (the position as drawn), and the other distances widen by as much. "
-        f"Known minefields on the way cost {by(K['mines'])} points a hex. Its batteries and anti-tank guns on the map turn to face the nearest enemy it knows of; its off-map "
+        f"Known minefields on the way cost {by(K['mines'])} points a hex. Its batteries and anti-tank guns on the map, in action, turn to face the nearest enemy it knows of; its off-map "
         "batteries with no mission are called on the enemy it sees that scores best as a target, never where its own men are within the burst. "
         "Attacking, one battery first lays smoke (the soonest to land) on the nearest enemy shooting at its men who cannot reply, unless it is dark, a gale blows or the hex is smoked. "
         f"Its sappers, attacking, lift the known enemy mines in the row ahead when the straight way to their target (or the objective) crosses known mines; holding, or at the objective, "
         f"with no enemy it knows of within {K['sappers']['clear_of']} hexes, they lay mines in the row ahead (mixed if the enemy it knows of has vehicles, else anti-personnel). "
-        "It leaves aircraft and works to the GM.",
+        f"Attacking, its guns with no known enemy in reach go forward: a battery limbers, moves and unlimbers once one is in reach; anti-tank guns hook up to an empty tractor beside them and are unhooked in reach "
+        f"(the tractor counting 4 hexes less); moving guns stop in reach, no nearer than {K['keep_off']} hexes. Holding, its guns unlimber or unhook where they stand. "
+        "It leaves aircraft, works and empty tractors to the GM.",
     ]
 
 
