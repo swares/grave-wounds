@@ -253,6 +253,7 @@ legend{padding:0}
         <button class="small" id="btn-reserve" hidden title="Held in the enemy commander's reserve: it holds until the commander commits it (when a unit breaks or the enemy comes close). Marking any unit takes the choice of reserves from the commander.">Hold in reserve</button>
         <button class="small" id="btn-sappers" hidden title="Engineers or pioneers: during the battle they can lay a hidden minefield in the row of hexes ahead of their front, or lift a lane through a known one">Sappers</button>
         <label class="sr" for="sel-sap">Sapper work</label><select class="small" id="sel-sap" hidden style="width:auto" title="On their own move, before moving and out of contact: lay mines in the row ahead of their front, or lift the known minefield there. They neither move nor fire while they work."></select>
+        <button class="small" id="btn-ladders" hidden title="Scaling ladders: across a wall, palisade or barred gate a few men a hex fight from the ladders, and the unit can climb over it">Ladders</button>
         <button class="small" id="btn-fac" hidden title="A forward air controller talks aircraft onto a target he can see: they scatter less, and may attack close to their own men">Air controller</button>
         <label class="sr" for="sel-medics">Medics</label><select class="small" id="sel-medics" hidden style="width:auto" title="Medics with the unit (followers of a healing career, chosen before the battle): they give its heroes first aid at their quality's chance"></select>
         <label class="sr" for="sel-nv">Night vision</label><select class="small" id="sel-nv" hidden style="width:auto" title="The night-vision device the unit carries (chosen before the battle): by its armour kit, none, or a Starlight scope, goggles or a thermal sight"></select>
@@ -391,7 +392,7 @@ const newNv = o => o.nv || (o.vehicle ? vehicleDevice(S.table) : null);   // a u
 function newUnit(o){
   return { id: S.seq++, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, guns: isGun(o.weapon) ? gunKind(o) : undefined, width: o.width || Math.ceil(o.men / form(o).per_hex),
-    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(newNv(o) ? { nv: newNv(o) } : {}), ...(o.fac ? { fac: true } : {}), ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
+    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(newNv(o) ? { nv: newNv(o) } : {}), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
 }
 function newField(){                              // open ground of the default size (and the page goes back to that size)
   SIZE = DEFAULT_SIZE.slice();
@@ -1673,7 +1674,7 @@ function renderMap(){
   $("#hex-size").textContent = fmtM(FD.units.hex_m);
 }
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
-const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"], ["sappers", "sappers"], ["shielded", "shielded"], ["jostled", "jostled"], ["mining", "laying mines"], ["clearing", "lifting mines"]];
+const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"], ["sappers", "sappers"], ["shielded", "shielded"], ["ladders", "ladders"], ["jostled", "jostled"], ["mining", "laying mines"], ["clearing", "lifting mines"]];
 function unitMeta(u){
   if (u.state === "fled") return "fled";
   const down = u.down ? " · " + u.down + " down" : "", flags = META_FLAGS.filter(([k]) => u[k]).map(([, t]) => " · " + t).join("") + (dugHere(u) ? " · dug in" : "");
@@ -1770,6 +1771,7 @@ function renderSel(){
   renderNv(u, setup);
   renderMedics(u, setup);
   renderFac(u, setup);
+  renderLadders(u, setup);
   renderSappers(u, setup);
   renderShield(u, setup);
   if (!u){ $("#sel-info").innerHTML = ""; return }
@@ -2010,6 +2012,22 @@ function toggleSappers(){                          // set-up only: mark (or unma
   const u = selUnit(); if (!u || S.phase !== "setup" || !sapperLike(u)) return;
   if (u.sappers) delete u.sappers; else u.sappers = true;
   S.msg = u.sappers ? `${u.name} are sappers: during the battle they can lay mines ahead of them or lift a lane through a known minefield.` : `${u.name} are no longer sappers.`;
+  render();
+}
+const hasWalls = () => Object.values(S.field?.works?.edges || {}).flat().some(it => specOf("edge", it).blocks_melee);   // a work that blocks hand-to-hand fighting on this field
+function renderLadders(u, setup){                 // Ladders: on a unit on foot, chosen before the battle, on a field with walls, palisades or gates
+  const b = $("#btn-ladders");
+  b.hidden = !u || !!u.vehicle || !!u.mounted || isGun(u.weapon) || !hasWalls();
+  if (b.hidden) return;
+  b.disabled = !setup;
+  b.textContent = u.ladders ? "No ladders" : "Ladders";
+  b.setAttribute("aria-pressed", String(!!u.ladders));
+}
+function toggleLadders(){
+  const u = selUnit(); if (!u || S.phase !== "setup") return;
+  if (u.ladders) delete u.ladders; else u.ladders = true;
+  const E = FD.units.escalade;
+  S.msg = u.ladders ? `${u.name} carry scaling ladders: across a wall, palisade or barred gate ${Math.round(100 * E.share)}% of the front rank fight from the ladders at −${E.penalty}%, and they can climb over it (${nOf(E.cross, "hex", "hexes")} of movement).` : `${u.name} have no ladders.`;
   render();
 }
 function renderFac(u, setup){                     // forward air controller: on a unit on foot, chosen before the battle, while aircraft are on call
@@ -2432,6 +2450,7 @@ function init(){
   $("#btn-sup-unleg").onclick = () => { LEGS = Math.max(1, LEGS - 1); renderLegs() };
   $("#sel-medics").onchange = e => setMedics(e.target.value);
   $("#btn-fac").onclick = toggleFac;
+  $("#btn-ladders").onclick = toggleLadders;
   $("#btn-sappers").onclick = toggleSappers;
   $("#btn-shield").onclick = toggleShield;
   $("#sel-sap").onchange = e => setSap(e.target.value);

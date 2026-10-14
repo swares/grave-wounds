@@ -888,12 +888,17 @@ def _commander_errors(d: Data) -> list[str]:
 
 
 def _rout_errors(d: Data) -> list[str]:
-    """units.yaml rout: how far a broken unit runs through its friends, and how much it jostles them."""
+    """units.yaml rout (how far a broken unit runs through its friends, and how much it jostles
+    them) and escalade (ladders)."""
     R, errors = d.units.get("rout") or {}, []
     if not (isinstance(R.get("through", 1), int) and R.get("through", 1) >= 1):
         errors.append("units.yaml: rout.through must be a whole number of 1 or more")
     if not (isinstance(R.get("jostle", 0), (int, float)) and 0 <= R.get("jostle", 0) <= 1):
         errors.append("units.yaml: rout.jostle must be a share from 0 to 1")
+    E = d.units.get("escalade") or {}
+    if not (isinstance(E.get("share"), (int, float)) and 0 < E["share"] <= 1 and isinstance(E.get("penalty"), int) and E["penalty"] >= 0
+            and isinstance(E.get("cross"), int) and E["cross"] >= 1):
+        errors.append("units.yaml: escalade needs share (over 0, at most 1), penalty (a whole % of 0 or more) and cross (whole hexes, 1 or more)")
     return errors
 
 
@@ -1381,6 +1386,7 @@ def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_un
     errors += [f"{where}: unit {u.get('name')}: nv (a night-vision device) must be one of {', '.join(sorted(devices))}" for u in f.get("units", [])
                if "nv" in u and u["nv"] not in devices]
     errors += [f"{where}: unit {u.get('name')}: fac (a forward air controller) must be true or false" for u in f.get("units", []) if "fac" in u and not isinstance(u["fac"], bool)]
+    errors += [f"{where}: unit {u.get('name')}: ladders must be true or false" for u in f.get("units", []) if "ladders" in u and not isinstance(u["ladders"], bool)]
     if errors:
         return errors
     field, units = battlefield(d, f["id"]), battlefield_units(d, f["id"])
