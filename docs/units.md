@@ -268,8 +268,8 @@ general. All its numbers are in units.yaml `commander`.
     hexes of a reserve unit.
   - Veterans also commit to exploit when an enemy unit breaks.
   - The log says why ("committed from the reserve: one of its units has broken").
-- **Known minefields.** Each hex of a minefield it knows of (marked, or found by setting it
-  off) on the straight way to a hex costs that hex 5 points for green men, 40 for regulars
+- **Known minefields.** Each hex of a minefield it knows of (marked, found by setting it
+  off, or laid by its own sappers) on the straight way to a hex costs that hex 5 points for green men, 40 for regulars
   and 80 for veterans. Green men may still blunder in; veterans go round. Hidden fields it
   has not found it cannot see.
 - **An objective.** With **Clicking the map: Mark or clear the enemy commander's objective**
@@ -1105,8 +1105,23 @@ Click it again with the same choice to clear it.
   wound as one hit by a mine at 70%; mine wounds fall on the feet, legs and groin.
 - **Vehicles.** A vehicle struck is knocked out at 25% (heavy armour) or 60% (light), and
   otherwise has a track blown off: it is immobilised.
+- **Sappers.** In set-up, **Sappers** marks a foot unit (not mounted, guns or a battery) as
+  sappers. In play, on its own side's move, before it moves and out of contact, **Sapper
+  work** starts it laying anti-personnel, anti-tank or mixed mines, or lifting mines. While
+  it works it neither moves nor fires; moving, turning, breaking or coming into contact
+  stops it (so does **Stop work**).
+  - **Laying** takes 3 exchanges. Then the row of hexes just ahead of its front (as wide as
+    its front row, on the map) is a hidden minefield of that kind. Hexes where a unit stands
+    are left clear.
+  - **Lifting** takes 2 exchanges. Then the minefield hexes in that row its side knows of
+    (marked, found, or laid by its own sappers) are lifted: a lane. Hidden enemy mines stay.
+  - **Its own mines.** A side knows where its sappers laid mines: its commander steers round
+    them as round any known field, and they do not strike its own men. They show faintly on
+    the map for the GM; the enemy commander learns of them only once it sets them off.
+  - The log says when a field is laid or a lane lifted. The enemy commander does not set
+    sappers to work; the GM does.
 
-All design estimates (`mines` in `data/units.yaml`). No battlefield has minefields laid yet;
+All design estimates (`mines` and `mines.sappers` in `data/units.yaml`). No battlefield has minefields laid yet;
 they are for the GM to place, and for the battlefields only where the accounts name them.
 
 ## Landing by air

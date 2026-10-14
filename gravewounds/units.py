@@ -1252,7 +1252,7 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
     target hex; penalty and misfire: the weather's (gravewounds.combat.weather_attack)."""
     occ, out = occupancy(d, units), []
     for i, u in enumerate(units):
-        if u["state"] in ("broken", "fled") or u["men"] <= 0 or u.get("digging"):
+        if u["state"] in ("broken", "fled") or u["men"] <= 0 or busy_digging(u):
             continue
         if in_contact(d, units, occ, i) and not in_bunker(d, field, u):
             continue
@@ -1387,6 +1387,11 @@ def dug_here(u: dict) -> bool:
     return bool(u.get("dug")) and list(u["dug"]) == list(u["pos"])
 
 
+def busy_digging(u: dict) -> bool:
+    """Digging in, or sappers laying or lifting mines: it does not shoot."""
+    return bool(u.get("digging") or u.get("mining") or u.get("clearing"))
+
+
 def can_dig(d: Data, u: dict) -> bool:
     """A foot unit with a modern weapon (commander.ground_with) can dig in: not a vehicle,
     mounted men, a battery, anti-tank guns or emplaced."""
@@ -1413,6 +1418,71 @@ def _dig_all(d: Data, us: list) -> list:
         del u["digging"]
         u["dug"] = list(u["pos"])
         out.append({"kind": "dug", "unit": i})
+    return out
+
+
+def can_sap(d: Data, u: dict) -> bool:
+    """Sappers can lay or lift mines: a foot unit marked sappers, not mounted, a battery or guns."""
+    return (bool(u.get("sappers")) and not u.get("vehicle") and not u.get("mounted")
+            and not is_battery(d, u) and not is_at_gun(d, u))
+
+
+def ahead_row(d: Data, field: dict | None, u: dict) -> list:
+    """The row of hexes just ahead of unit u's front row (as wide as it), on the map."""
+    rows = footprint(d, u)
+    cols, nrows = _size(d, field)
+    return [x for x in (step(h, u["facing"]) for h in (rows[0] if rows else [])) if 0 <= x[0] < cols and 0 <= x[1] < nrows]
+
+
+def known_mine(m: dict, side: int | None = None) -> bool:
+    """A minefield hex a side knows of: marked, found (something went into it), or laid by
+    that side's sappers (side)."""
+    return not m.get("hidden") or bool(m.get("found")) or (side is not None and m.get("side") == side)
+
+
+def _sapper_done(d: Data, field: dict, u: dict, task: str, w: dict, occ: dict) -> tuple:
+    """Unit u's mining or clearing finished: (log kind, hexes) laid (where no unit stands) or
+    lifted in the row ahead."""
+    M = field.setdefault("mines", {})
+    row = ahead_row(d, field, u)
+    if task == "mining":
+        hexes = [x for x in row if C.hkey(x) not in M and C.hkey(x) not in occ]
+        for x in hexes:
+            M[C.hkey(x)] = {"kind": w["kind"], "hidden": True, "side": u["side"]}
+        return "laid", hexes
+    hexes = [x for x in row if C.hkey(x) in M and known_mine(M[C.hkey(x)], u["side"])]
+    for x in hexes:
+        del M[C.hkey(x)]
+    return "lifted", hexes
+
+
+def _sappers_all(d: Data, us: list, field: dict | None) -> list:
+    """End of the exchange: sappers mining ({at, facing, n, kind}) or clearing ({at, facing, n})
+    that are still where and as they began, standing and out of contact, work on (sappers only); after
+    mines.sappers lay (or clear) exchanges the row ahead of their front is mined, hidden, where no unit stands (or its
+    known minefield hexes lifted) and logged. One that moved, turned, broke or came into contact stops."""
+    if field is None:
+        for u in us:
+            u.pop("mining", None)
+            u.pop("clearing", None)
+        return []
+    occ, out, S = occupancy(d, us), [], d.units["mines"]["sappers"]
+    for i, u in enumerate(us):
+        task = "mining" if u.get("mining") else "clearing" if u.get("clearing") else None
+        if not task:
+            continue
+        w = u[task]
+        if (not can_sap(d, u) or list(w["at"]) != list(u["pos"]) or w["facing"] != u["facing"] or u["state"] in ("broken", "fled")
+                or u["men"] <= 0 or in_contact(d, us, occ, i)):
+            del u[task]
+            continue
+        n = w["n"] + 1
+        if n < S["lay" if task == "mining" else "clear"]:
+            u[task] = {**w, "at": list(w["at"]), "n": n}
+            continue
+        del u[task]
+        kind, hexes = _sapper_done(d, field, u, task, w, occ)
+        out.append({"kind": kind, "unit": i, "hexes": len(hexes), **({"mine": w["kind"]} if task == "mining" else {})})
     return out
 
 
@@ -1799,6 +1869,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _lying_after(d, us, table, rng)
     log += _posts_after(d, us, field, table, rng)
     log += _dig_all(d, us)
+    log += _sappers_all(d, us, field)
     _unhooked_after(us)
     for u in us:
         u["charged"] = False
@@ -1877,14 +1948,15 @@ def _mines_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
     """Units that went into minefield hexes (crossed) set them off, before the shooting: men
     struck at the kind's `men` % (a hex's worth a hex) and wounded as by a mine; vehicles struck
     at its `vehicles` %, then knocked out at their armour's `mine` %, else immobilised. Each
-    field set off is found (shown on the map)."""
+    field set off is found (shown on the map). Mines a side's own sappers laid (side) do not
+    strike that side: its men know where they lie."""
     mines, log = (field or {}).get("mines"), []
     if not mines:
         return log
     for i, u in enumerate(us):
         if u["men"] <= 0 or u["state"] == "fled":
             continue
-        hit = [x for x in crossed(d, u) if C.hkey(x) in mines]
+        hit = [x for x in crossed(d, u) if C.hkey(x) in mines and mines[C.hkey(x)].get("side") != u["side"]]
         if hit:
             for x in hit:
                 mines[C.hkey(x)]["found"] = True

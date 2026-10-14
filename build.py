@@ -354,7 +354,9 @@ def _at_mine_rules(d) -> list[str]:
         V = d.units["vehicles"]["armour"]
         out.append(f"<b>Minefields (1939 on):</b> painted before the battle, marked or hidden (shown once set off). A unit that moved into minefield hexes "
                    f"(its footprint on a straight line from where its move began) sets them off before the shooting, a hex's worth of men a hex struck at the kind's % ({kinds}), "
-                   f"wounded as by a mine at {M['attack']}%; a vehicle struck is knocked out at {V['heavy']['mine']}% (heavy) or {V['light']['mine']}% (light), else immobilised.")
+                   f"wounded as by a mine at {M['attack']}%; a vehicle struck is knocked out at {V['heavy']['mine']}% (heavy) or {V['light']['mine']}% (light), else immobilised. "
+                   f"Sappers (a foot unit so marked), standing out of contact and neither moving nor firing, lay a hidden field in the row ahead of their front in {M['sappers']['lay']} exchanges, "
+                   f"or lift the known mines there in {M['sappers']['clear']}; their own side knows their mines, which do not strike it.")
     return out
 
 

@@ -82,6 +82,16 @@ straight line from where its move began.
   fall mostly on the feet and legs.
 - **Vehicles.** A vehicle struck is knocked out at {{m_heavy}}% (heavy armour) or
   {{m_light}}% (light). Otherwise a track is blown off and it is immobilised.
+- **Sappers.** In set-up the GM can mark a foot unit as sappers. On its own side's move,
+  before it moves and out of contact, it can start to **lay** mines of any kind or to **lift**
+  them. While it works it neither moves nor fires. Moving, turning, breaking or coming into
+  contact stops the work.
+  - Laying takes {{m_lay}} exchanges. Then the row of hexes just ahead of its front, as wide
+    as its front, is a hidden minefield. Hexes where a unit stands are left clear.
+  - Lifting takes {{m_clear}} exchanges. Then the minefield hexes in that row that its side
+    knows of are lifted: a lane.
+  - A side knows the mines its own sappers laid: its commander steers round them, and they do
+    not strike its own men.
 
 ## Riders {#riders}
 
