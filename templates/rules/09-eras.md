@@ -12,7 +12,7 @@ skills, origins, careers, events, armies, teams and followers. Pick one with **E
 Brawl, Parry and Dodge carry over to every era, and so do the skills used outside a fight
 (Leechcraft, Fieldcraft, Watch, Stealth and the rest). Bow, Crossbow, Axe and Sling stay
 medieval (the Plains nations have their own Bow). Gunnery is the skill of men who serve guns,
-mortars and, in Korea, rocket launchers and recoilless rifles. From Vietnam on, the RPG is fired with Grenade and rocket.
+mortars (and, in the Crimea, of sailors serving ships' guns ashore) and, in Korea, rocket launchers and recoilless rifles. In the Crimea one Musket skill covers both the smoothbore musket and the rifle-musket. From Vietnam on, the RPG is fired with Grenade and rocket.
 
 ## What changes {#era-changes}
 

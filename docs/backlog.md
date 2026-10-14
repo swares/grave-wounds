@@ -109,7 +109,6 @@ When an item is done, delete it here and note it in the pull request that closes
   - the French surgeon-general Chenu's larger Crimea report (1865), not yet read;
   - the `behind_cover` modifier's torso and leg factors, which whole-army totals cannot set
     (the head factor of 1.5 agrees with the Crimean returns);
-  - Crimean characters in the team builder;
   - on the Great Redan battlefield, the siege guns of both sides, the French attack on the
     Malakhov and the flanking fire of the batteries either side of the Redan (only the guns in
     the work are on the map), and the 18 June attack as a second battlefield.
@@ -121,10 +120,10 @@ When an item is done, delete it here and note it in the pull request that closes
   Strength, Presence), and Leechcraft, Fieldcraft, Watch and Stealth work outside a fight.
   Followers have one-line stat blocks, and the gunpowder eras (1618-1876) and the world wars
   (1914-18, 1939-45), Korea, Vietnam and the later wars (1982-2014) have their own tables.
-- **Women under arms, first cut.** Women serve in the Civil War (disguised), the Soviet
+- **Women under arms, first cut.** Women serve as cantinières with the French in the Crimea, in the Civil War (disguised), the Soviet
   Union of 1941-45, Vietnam (the ARVN, the North and the Viet Cong) and the later wars (the US,
   Britain and Russia), chosen or rolled at the army's share. Still left out: the earlier eras
-  (women in medieval sieges, the Revolution's and 1812's few, Russia's women's battalions of
+  (women in medieval sieges, the Revolution's and 1812's few, the Napoleonic cantinières, Russia's women's battalions of
   1917 and Flora Sandes in Serbia), careers outside the fighting units (nurses, auxiliaries,
   anti-aircraft gunners, pilots, the Female Engagement Teams of Afghanistan), the Plains
   nations' women who fought, and shares by career rather than by army. The Viet Cong's and the

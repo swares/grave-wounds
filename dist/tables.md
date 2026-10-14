@@ -5214,6 +5214,158 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 | Militia | Officer (2), Line infantryman (1), Line infantryman (1), Rifleman or light infantryman (1), Scout or ranger (1) | 12 line infantryman, 4 rifleman or light infantryman (raw) |
 | A landing party | Officer (3), Sailor or marine (2), Sailor or marine (1), Sailor or marine (1), Surgeon's mate (1) | 10 sailor or marine (default) |
 
+### Crimean War (1854-1856)
+
+**Crimean War (1854-1856):** made exactly as the medieval era's, in the same five steps, from the tables below. Fighting skills: Musket, Pistol, Blade, Bayonet, Gunnery, Brawl, Parry, Dodge. Each region takes its war's wound table, for old wounds and for the roller.
+
+**Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
+
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The French Army of the East (no reliable share: chosen, never rolled): cantinière or canteen-keeper. Elsewhere these careers were closed to them.
+
+| Skill | Starts at | Weapons |
+|---|---|---|
+| Musket | Agility / 2 | rifle-musket, musket |
+| Pistol | Agility / 2 | revolver |
+| Blade | Agility / 2 | sabre, lance, dagger |
+| Bayonet | Strength / 2 | bayonet |
+| Gunnery | Wits / 2 | artillery |
+| Brawl | Strength / 2 | punch, kick, elbow/knee |
+| Parry | Agility / 2 |  |
+| Dodge | Agility / 3 |  |
+| Ride | Agility / 3 |  |
+| Fieldcraft | Wits / 3 |  |
+| Watch | Wits / 2 |  |
+| Stealth | Agility / 3 |  |
+| Leechcraft | Wits / 4 |  |
+| Seamanship | Wits / 4 |  |
+| Craft | Wits / 3 |  |
+| Letters | Wits / 5 |  |
+| Persuade | Presence / 2 |  |
+| Command | Presence / 3 |  |
+
+| d100 | Origin | Skill | Trait | Drawback |
+|---|---|---|---|---|
+| 01-04 | Farm labourer | Fieldcraft | Strong back (Strength +10) | Cannot read a word (Letters -15) |
+| 05-08 | Weaver thrown out of work | Craft | Patient (Wits +10) | Weak from hunger (Endurance -10) |
+| 09-12 | Townsman's son | Persuade | Quick tongue (Persuade +15) | Never slept rough (Fieldcraft -15) |
+| 13-16 | Fisherman's son | Seamanship | Swims like a seal (Endurance +10) | Cannot sit a horse (Ride -15) |
+| 17-20 | Clerk's apprentice | Letters | Good at sums (Wits +10) | Soft hands (Strength -10) |
+| 21-24 | Enlisted for the bounty | Brawl | Hard to frighten (Nerve +10) | Drinks his pay (Presence -10) |
+| 25-28 | Serf taken by the levy | Craft | Endures anything (Endurance +10) | Never left his village (Persuade -15) |
+| 29-32 | Gamekeeper's son | Musket | A steady aim (Musket +15) | Known as a poacher's friend (Persuade -15) |
+| 33-36 | Younger son of a gentleman | Ride | Raised to the sword (Blade +15) | Proud and touchy (Persuade -15) |
+| 37-40 | Apothecary's apprentice | Leechcraft | Knows his remedies (Leechcraft +15) | Faints at the sight of blood (Nerve -10) |
+| 41-44 | Blacksmith's apprentice | Craft | Arms like hams (Strength +10) | Half deaf from the anvil (Watch -15) |
+| 45-48 | Railway navvy | Craft | Digs all day (Endurance +10) | Known to the police (Persuade -15) |
+| 49-52 | Raised in the barracks | Musket | Knows the drill by heart (Nerve +10) | Knows nothing else (Fieldcraft -15) |
+| 53-56 | Groom in a great stable | Ride | Horse sense (Ride +15) | Kicked by a horse as a boy (Endurance -10) |
+| 57-60 | Street brawler | Brawl | Takes a punch (Endurance +10) | Quick to anger (Presence -10) |
+| 61-64 | Servant in a great house | Watch | Knows how to please his betters (Persuade +15) | Never held a weapon (Parry -15) |
+| 65-68 | Shepherd | Watch | Sees far (Watch +15) | Uneasy in crowds (Presence -10) |
+| 69-72 | Veteran of a colonial war | Fieldcraft | Seasoned to hardship (Endurance +10) | Fever comes back every summer (Endurance -10) |
+| 73-76 | Soldier's daughter born in the regiment | Watch | Knows every man by name (Persuade +15) | Never lived anywhere else (Fieldcraft -15) |
+| 77-80 | Married a sergeant of the regiment | Persuade | Hard to frighten (Nerve +10) | Stays by her husband (Presence -10) |
+| 81-84 | Innkeeper's daughter | Craft | Knows how to keep accounts (Letters +15) | Never slept rough (Fieldcraft -15) |
+| 85-88 | Widow who stayed with the regiment | Leechcraft | Tireless (Endurance +10) | Grieves still (Nerve -10) |
+
+| Career | Main skill | Second | Old wound | Hurt by |
+|---|---|---|---|---|
+| Line infantryman | Musket | Bayonet | 20% | rifle-musket |
+| Rifleman, chasseur or Zouave | Musket | Stealth | 20% | rifle-musket |
+| Light cavalryman (hussar, lancer, Cossack) | Blade | Ride | 20% | sabre |
+| Artilleryman | Gunnery | Craft | 20% | artillery |
+| Sailor serving guns ashore | Gunnery | Seamanship | 20% | artillery |
+| Sapper or miner | Craft | Musket | 20% | rifle-musket |
+| Sergeant or corporal | Command | Musket | 20% | rifle-musket |
+| Officer | Command | Pistol | 25% | rifle-musket |
+| Surgeon or orderly | Leechcraft | Craft | 5% | rifle-musket |
+| Cantinière or canteen-keeper | Persuade | Leechcraft | 10% | rifle-musket |
+
+| Career | d100 | Skill | Event |
+|---|---|---|---|
+| Line infantryman | 01-20 | Watch | Stood in the trenches through a winter night. |
+| Line infantryman | 21-40 | Fieldcraft | Lived through the winter on the heights with no proper shelter. |
+| Line infantryman | 41-55 | Craft | Dug and revetted a parallel under fire. |
+| Line infantryman | 56-70 | Dodge | Lay in a trench under a bombardment. |
+| Line infantryman | 71-85 | Bayonet | Fought hand to hand in fog and brushwood. * |
+| Line infantryman | 86-00 | Musket | Held a line of works against a night attack. * |
+| Rifleman, chasseur or Zouave | 01-20 | Watch | Lay out in a rifle pit, watching the enemy's embrasures. |
+| Rifleman, chasseur or Zouave | 21-40 | Fieldcraft | Skirmished ahead of a column across broken ground. |
+| Rifleman, chasseur or Zouave | 41-55 | Stealth | Crept out at night to take an enemy rifle pit. |
+| Rifleman, chasseur or Zouave | 56-70 | Dodge | Ran from cover to cover across open ground under fire. |
+| Rifleman, chasseur or Zouave | 71-85 | Bayonet | Went into an enemy work at the run. * |
+| Rifleman, chasseur or Zouave | 86-00 | Musket | Picked off the gunners at an embrasure all day. * |
+| Light cavalryman (hussar, lancer, Cossack) | 01-20 | Fieldcraft | Foraged for the horses through a hard winter. |
+| Light cavalryman (hussar, lancer, Cossack) | 21-40 | Watch | Rode outpost duty along a valley. |
+| Light cavalryman (hussar, lancer, Cossack) | 41-55 | Ride | Kept his horse alive on half rations. |
+| Light cavalryman (hussar, lancer, Cossack) | 56-70 | Parry | Fought a skirmish with enemy horse. * |
+| Light cavalryman (hussar, lancer, Cossack) | 71-85 | Stealth | Scouted an enemy camp at night. |
+| Light cavalryman (hussar, lancer, Cossack) | 86-00 | Blade | Rode in a charge against guns and cavalry. * |
+| Artilleryman | 01-20 | Craft | Rebuilt a battery's parapet by night. |
+| Artilleryman | 21-40 | Letters | Kept the battery's range book. |
+| Artilleryman | 41-55 | Ride | Drove a gun team through deep mud. |
+| Artilleryman | 56-70 | Watch | Spotted the fall of shot from the parapet. |
+| Artilleryman | 71-85 | Brawl | Defended the guns hand to hand. * |
+| Artilleryman | 86-00 | Gunnery | Fought his gun through a day-long bombardment. * |
+| Sailor serving guns ashore | 01-20 | Craft | Hauled a ship's gun up to the heights with tackle. |
+| Sailor serving guns ashore | 21-40 | Seamanship | Rode out a storm at anchor. |
+| Sailor serving guns ashore | 41-55 | Watch | Kept lookout from a battery for enemy mortar shells. |
+| Sailor serving guns ashore | 56-70 | Brawl | Fought a sortie off in the dark. * |
+| Sailor serving guns ashore | 71-85 | Musket | Stood in the works with a borrowed musket. |
+| Sailor serving guns ashore | 86-00 | Gunnery | Served a heavy gun until it burst or was dismounted. * |
+| Sapper or miner | 01-20 | Letters | Laid out a new parallel by compass and tape at night. |
+| Sapper or miner | 21-40 | Craft | Made gabions and fascines by the hundred. |
+| Sapper or miner | 41-55 | Watch | Listened underground for the enemy's miners. |
+| Sapper or miner | 56-70 | Stealth | Pushed a sap forward under a covering party. |
+| Sapper or miner | 71-85 | Brawl | Broke into an enemy gallery and fought in the dark. * |
+| Sapper or miner | 86-00 | Craft | Laid and fired a mine under an enemy work. * |
+| Sergeant or corporal | 01-20 | Letters | Kept the company's rolls through a sickly winter. |
+| Sergeant or corporal | 21-40 | Persuade | Kept his men at work in the trenches. |
+| Sergeant or corporal | 41-55 | Bayonet | Drilled a draft of new recruits. |
+| Sergeant or corporal | 56-70 | Watch | Set the sentries in an advanced trench. |
+| Sergeant or corporal | 71-85 | Parry | Carried the colours when the bearer fell. * |
+| Sergeant or corporal | 86-00 | Musket | Kept the line steady under a storm of grape. * |
+| Officer | 01-20 | Letters | Wrote the regiment's returns. |
+| Officer | 21-40 | Ride | Carried orders along the lines. |
+| Officer | 41-55 | Blade | Led a sortie, sword in hand. * |
+| Officer | 56-70 | Persuade | Begged stores for his men from the commissariat. |
+| Officer | 71-85 | Pistol | Fought at the head of his men in an enemy work. |
+| Officer | 86-00 | Command | Took command of the trenches when his senior fell. * |
+| Surgeon or orderly | 01-20 | Craft | Operated by lamplight in a hut hospital. |
+| Surgeon or orderly | 21-40 | Letters | Kept the regiment's sick book through the cholera. |
+| Surgeon or orderly | 41-55 | Leechcraft | Nursed a camp through fever and scurvy. |
+| Surgeon or orderly | 56-70 | Ride | Brought the sick down to the harbour in carts. |
+| Surgeon or orderly | 71-85 | Persuade | Begged chloroform from another regiment. |
+| Surgeon or orderly | 86-00 | Watch | Dressed wounds in the trenches under fire. * |
+| Cantinière or canteen-keeper | 01-20 | Craft | Kept the canteen going through a winter in the camps. |
+| Cantinière or canteen-keeper | 21-40 | Letters | Kept accounts of what the soldiers owed. |
+| Cantinière or canteen-keeper | 41-55 | Ride | Drove the canteen cart up from the harbour. |
+| Cantinière or canteen-keeper | 56-70 | Fieldcraft | Found food and drink where there was none. |
+| Cantinière or canteen-keeper | 71-85 | Leechcraft | Tended the wounded after an assault. |
+| Cantinière or canteen-keeper | 86-00 | Dodge | Carried drink to the men in the front line under fire. * |
+
+| Career | British | French | Russian |
+|---|---|---|---|
+| Line infantryman | Unarmoured; rifle-musket | Unarmoured; rifle-musket | Unarmoured; musket |
+| Rifleman, chasseur or Zouave | Unarmoured; rifle-musket | Unarmoured; rifle-musket | Unarmoured; rifle-musket |
+| Light cavalryman (hussar, lancer, Cossack) | Unarmoured; sabre | Unarmoured; sabre | Unarmoured; sabre |
+| Artilleryman | Unarmoured; artillery | Unarmoured; artillery | Unarmoured; artillery |
+| Sailor serving guns ashore | Unarmoured; artillery | Unarmoured; artillery | Unarmoured; artillery |
+| Sapper or miner | Unarmoured; rifle-musket | Unarmoured; rifle-musket | Unarmoured; musket |
+| Sergeant or corporal | Unarmoured; rifle-musket | Unarmoured; rifle-musket | Unarmoured; musket |
+| Officer | Unarmoured; revolver | Unarmoured; revolver | Unarmoured; revolver |
+| Surgeon or orderly | Unarmoured; revolver | Unarmoured; revolver | Unarmoured; revolver |
+| Cantinière or canteen-keeper | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
+
+| Team | Members (terms) | Followers (quality table) |
+|---|---|---|
+| A company in the trenches | Sergeant or corporal (3), Line infantryman (2), Line infantryman (1), Line infantryman (1), Surgeon or orderly (1) | 12 line infantryman (default) |
+| Riflemen in the pits | Officer (3), Rifleman, chasseur or Zouave (2), Rifleman, chasseur or Zouave (2), Sapper or miner (1) | 8 rifleman, chasseur or zouave (hardened) |
+| A cavalry patrol | Officer (3), Light cavalryman (hussar, lancer, Cossack) (2), Light cavalryman (hussar, lancer, Cossack) (2), Light cavalryman (hussar, lancer, Cossack) (1) | 10 light cavalryman (hussar, lancer, cossack) (default) |
+| A siege battery | Artilleryman (3), Artilleryman (2), Sailor serving guns ashore (2), Sapper or miner (1) | 6 artilleryman, 4 sailor serving guns ashore (default) |
+| A working party at the sap | Sapper or miner (3), Sapper or miner (2), Line infantryman (1), Line infantryman (1) | 6 sapper or miner, 6 line infantryman (default) |
+| A new draft | Officer (2), Sergeant or corporal (1), Line infantryman (1), Line infantryman (1), Surgeon or orderly (1) | 16 line infantryman (raw) |
+
 ### Civil War and frontier (1861-1876)
 
 **Civil War and frontier (1861-1876):** made exactly as the medieval era's, in the same five steps, from the tables below. Fighting skills: Rifle, Pistol, Blade, Bayonet, Gunnery, Brawl, Parry, Dodge. Each region takes its war's wound table, for old wounds and for the roller.

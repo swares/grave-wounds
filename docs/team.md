@@ -95,8 +95,8 @@ until you add them.
 
 ## The gunpowder eras, the world wars and after
 
-Nine more eras use the same five steps, with their own skills, origins, careers, events,
-regions, teams and followers (`data/teams/thirty_years.yaml`, `horse_musket.yaml`,
+Ten more eras use the same five steps, with their own skills, origins, careers, events,
+regions, teams and followers (`data/teams/thirty_years.yaml`, `horse_musket.yaml`, `crimea.yaml`,
 `civil_war.yaml`, `plains_nations.yaml`, `wwi.yaml`, `wwii.yaml`, `korea.yaml`, `vietnam.yaml`
 and `modern.yaml`). Pick one with **Era** on the page, or `--era` on the command line. Each
 region takes its war's wound table, for old wounds and for the roller.
@@ -105,6 +105,7 @@ region takes its war's wound table, for old wounds and for the roller.
 | --- | --- | --- | --- |
 | Thirty Years' War (1618-1648) | the Swedish army; the Imperial army and the Catholic League (Thirty Years' War) | Musket, Pistol, Blade, Pike | musketeer, pikeman, cuirassier, harquebusier, dragoon, sergeant, field surgeon, sutler, chaplain |
 | Horse and musket (1775-1815) | the Continental Army and the British in America (Revolution); the British and the French in the Peninsula (Peninsular War); the United States (1812) | Musket, Rifle, Pistol, Blade, Bayonet, Gunnery | line infantryman, rifleman, dragoon or hussar, artilleryman, sergeant, officer, surgeon's mate, scout, sailor or marine, sutler |
+| Crimean War (1854-1856) | the British, the French Army of the East, the Russians at Sevastopol (all the Crimean all-hits table) | Musket, Pistol, Blade, Bayonet, Gunnery | line infantryman, rifleman (chasseur or Zouave), light cavalryman, artilleryman, sailor serving guns ashore, sapper or miner, sergeant, officer, surgeon or orderly, cantinière or canteen-keeper |
 | Civil War and frontier (1861-1876) | the Union, the Confederacy, the US Army on the frontier (all the Civil War table) | Rifle, Pistol, Blade, Bayonet, Gunnery | infantryman, sharpshooter, cavalry trooper, artilleryman, sergeant, officer, surgeon or hospital steward, scout, teamster |
 | Plains nations (1860-1877) | the Lakota; the Cheyenne and Arapaho (the Army surgeons' arrow report, with Civil War gunshots) | Bow, Lance, Club and knife, Gun | warrior with bow and shield, warrior with lance and shield, warrior with a gun, scout, leader of war parties, healer, herder of the camp's horses |
 | First World War (1914-1918) | the British Empire, France, Germany, the United States (1917-18) (all the First World War table) | Rifle, Pistol, Machine gun, Bombing, Gunnery, Bayonet, Trench weapons | rifleman, machine gunner, bomber, sniper or observer, sapper or tunneller, stretcher-bearer or orderly, signaller or runner, corporal or sergeant, junior officer, gunner or trench mortarman |
@@ -119,7 +120,10 @@ artillerymen's skill. The wound tables have no pike wounds, so the pike rolls on
 melee table as a long spear (reach 3, no shield, more thrusts to the face and chest); a
 pikeman fights with it at his Pike skill, his sabre second. On the frontier, gunshots roll on
 the Civil War table, as the arrow-wound records have none; the frontier infantry carry the
-Springfield breech-loader of 1866 (Rifle), the Civil War's Sharps and Spencer carbines' kin.
+Springfield breech-loader of 1866 (Rifle), the Civil War's Sharps and Spencer carbines' kin. In the Crimea one Musket skill covers both the smoothbore musket most Russian
+infantry still carried and the British and French rifle-musket, fired by the same drill;
+sailors serve guns ashore with Gunnery, as the British Naval Brigade and the Russian Black Sea
+sailors did in the siege.
 
 The Plains nations' tables are written from plain ethnographic and historical fact: the
 buffalo and the horse, raids on the Crow and the Shoshone for horses and honours, counting
@@ -165,6 +169,7 @@ A woman takes the women's name lists, has no beard, rolls on the shared origins 
 
 | Era and army | Share | Careers open | Source |
 | --- | --- | --- | --- |
+| Crimean War: the French | not known: chosen, never rolled | cantinière (with her regiment, openly as a woman) | Vivandière (Military Wiki): Napoleon III doubled the cantinières in 1854; they served with their regiments in every campaign of the Second Empire, the Crimea included |
 | Civil War: the Union, the Confederacy | 0.02%, 0.03% | infantryman, sharpshooter, trooper, artilleryman, scout, teamster: enlisted disguised as men, under men's names | DeAnne Blanton, *Prologue* (National Archives, 1993): roughly 750 women, as many as 250 Confederates; the share is our arithmetic |
 | Second World War: the Soviet Union | 3% | rifleman, machine gunner, sniper, medic, radio operator, sergeant, officer, tank crewman | Over 800,000 women, over 3% of the forces (Air University Review, 1982); 2,484 women snipers |
 | Vietnam: the ARVN, the North's army, the Viet Cong | not known: chosen, never rolled | ARVN medic; the North's rifleman, scout, sapper, medic; the Viet Cong's rifleman, scout, sapper, medic, radio operator, squad leader, platoon leader | Women in the Vietnam War (Wikipedia, with its sources) |
