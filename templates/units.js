@@ -1583,12 +1583,15 @@ function objectiveRadii(field){                    // [radius, hold, guard] of t
   const R = UD.commander.objective, r = field?.objective_radius || R.radius;
   return [r, R.hold + r - R.radius, R.guard + r - R.radius];
 }
-function objectiveHeld(us, field){                 // with an objective marked: [{kind objective, hex, sides there (units' order), held (the one side there, else null)}]
-  const obj = field?.objective;
-  if (!obj) return [];
-  const r = objectiveRadii(field)[0];
+const secondView = field => ({ ...field, objective: [...field.objective2], objective_radius: null });   // the field as the commander sees it for the second objective, at its own radius (as units.second_view; read only)
+function objectiveHeld(us, field){                 // with an objective marked: [{kind objective, hex, sides there (units' order), held (the one side there, else null)}], and a second line (second: true) for a second objective
+  if (!field?.objective) return [];
+  return field.objective2 ? [heldAt(us, field), { ...heldAt(us, secondView(field)), second: true }] : [heldAt(us, field)];
+}
+function heldAt(us, field){                        // {kind objective, hex, sides, held} for the field's objective (as units._held_at)
+  const obj = field.objective, r = objectiveRadii(field)[0];
   const sides = [...new Set(us.filter(u => !ROUTED.has(u.state) && u.men > 0 && offObjective(u, obj) <= r).map(u => u.side))];
-  return [{ kind: "objective", hex: [...obj], sides, held: sides.length === 1 ? sides[0] : null }];
+  return { kind: "objective", hex: [...obj], sides, held: sides.length === 1 ? sides[0] : null };
 }
 function exchange(units, table, rng, field = null){   // -> {units, log}; works being breached are updated in field
   const us = units.map(copyUnit), n = us.length, log = [];
@@ -2026,18 +2029,32 @@ const ROUTED = new Set(["broken", "fled"]);
 function command(units, side, size, field, rng, exchange = null, { stance = "attack", memory = null, table = null } = {}){   // {units, orders}: each unit of side ordered in turn, by its quality (units.yaml commander); stance attack or hold; memory: where it last saw each enemy (updated in place)
   let us = units.map(u => ({ ...u }));
   const orders = [], mem = memory ?? {};
-  const known = sightings(us, side, field, exchange, mem);
-  { const h = hookUp(us, side, [field, known, exchange, stance]); us = h.units; orders.push(...h.orders) }
+  const known = sightings(us, side, field, exchange, mem), aim = aims(us, side, field, stance, mem);
+  const goal = aim[1];                              // the field with the objective most of its units go for (with a second one marked)
+  { const h = hookUp(us, side, [goal, known, exchange, stance]); us = h.units; orders.push(...h.orders) }
   holdBack(us, side, known);
   orders.push(...commitReserve(us, side, known, mem));
   for (let i = 0; i < us.length; i++){
     if (us[i].side !== side || !commandable(us, i, exchange)) continue;
-    const roll = rng.randint(1, 100), o = unitOrder(us, i, [size, field, stance, known, exchange], roll);
+    const roll = rng.randint(1, 100), o = unitOrder(us, i, [size, aimOf(i, aim), stance, known, exchange], roll);
     if (o){ orders.push({ unit: i, ...o }); applyOrder(us, i, o) }
   }
-  orders.push(...moveGuns(us, side, [size, field, stance, known, exchange]), ...layGuns(us, side, [size, field, known, exchange]), ...callFireAi(us, side, field, known, [stance, exchange, orders, table]));
+  orders.push(...moveGuns(us, side, [size, goal, stance, known, exchange]), ...layGuns(us, side, [size, goal, known, exchange]), ...callFireAi(us, side, goal, known, [stance, exchange, orders, table]));
   return { units: us, orders };
 }
+function aims(us, side, field, stance, mem){       // [the field as its garrison of the first objective sees it, as the rest see it, the garrison's indices] (as commander.aims)
+  if (!field?.objective || !field.objective2) return [field, field, []];
+  const held = objectiveHeld(us, field)[0].held, second = secondView(field), plan = mem.plan ?? (mem.plan = {});
+  if (stance !== "attack") return held !== null && held !== side ? [second, second, []] : [field, field, []];
+  if (held !== side){ delete plan.garrison; return [field, field, []] }
+  const at = [[...field.objective], [...field.objective2]];
+  if (!plan.garrison || JSON.stringify(plan.garrison.at) !== JSON.stringify(at)){
+    const r = objectiveRadii(field)[0];
+    plan.garrison = { at, units: us.map((u, k) => k).filter(k => us[k].side === side && us[k].men > 0 && !ROUTED.has(us[k].state) && offObjective(us[k], field.objective) <= r) };
+  }
+  return [field, second, plan.garrison.units];
+}
+const aimOf = (i, aim) => (aim[2].includes(i) ? aim[0] : aim[1]);   // the field (objective) unit i goes for: the first's if it is in the garrison (as commander._aim)
 const knownFoes = known => Object.entries(known).filter(([k]) => /^\d+$/.test(k));   // [index, {pos, facing, ex}] of the enemies it knows of
 function holdBack(us, side, known){                // at its first move (unless the GM marked reserves), its rearmost units up to commander.reserve % of its men are held back (as commander._hold_back)
   const mine = us.map((u, i) => i).filter(i => us[i].side === side && us[i].men > 0 && !ROUTED.has(us[i].state));

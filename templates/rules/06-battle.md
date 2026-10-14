@@ -132,6 +132,9 @@ steady friends touching it, who go in with it), and green units sometimes hesita
   it make better targets. The log says who holds it after each exchange. Most battlefields
   mark the place their battle was fought for, a hill, a bridge, an outpost, as theirs,
   taking in the whole position (a ring of trenches counts as the hill).
+  The GM can also mark a second objective. Attacking, once it holds the first, the units on
+  it stay and the rest go on to the second (and back to the first if the enemy retakes it);
+  holding, once the enemy holds the first, its units fall back to the second.
 - **Minefields.** It steers round minefields it knows of. Its sappers, attacking, lift a
   lane through known enemy mines in the row ahead when those mines lie on the way to their
   target or the objective. Holding, or at the objective, with no enemy it knows of within

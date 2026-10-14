@@ -61,7 +61,7 @@ Lundy's Lane, the Great Redan at Sevastopol (June and September 1855), First Bul
 Bougainville, the Rangers at Cisterna, Task Force Smith at Osan, the perimeter at Chipyong-ni, landing zone X-Ray, the crash sites in Mogadishu, the patrol base at Wanat, Cassino's ridges and ruins, Fox Hill at Toktong Pass, Hill 504 at Kapyong, Hill 931 on Heartbreak Ridge, Pork Chop Hill, the new city at Hue, Hill 861A at Khe Sanh, Hill 875 at Dak To, Hamburger Hill, Darwin Hill at Goose Green, the railway station in Grozny, the Jolan in Fallujah, or Combat Outpost Keating, with both armies drawn up). A fight on the travel
 map can be fought there, and its wounded go back to camp, where wound fever can take
 them. An optional scripted commander can play either side, attacking or holding (an objective
-hex the GM marks if wanted), with an Undo for each of its moves: it moves, digs in and lays or
+hex the GM marks if wanted, and a second to go on to or fall back to), with an Undo for each of its moves: it moves, digs in and lays or
 lifts mines with its men, limbers, tows and unlimbers its guns, and calls its batteries and
 aircraft (smoke, illumination at night, counter-battery fire, and moving batteries that are
 under it). See [docs/units.md](docs/units.md).
