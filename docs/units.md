@@ -164,7 +164,11 @@ each side is the flank; the two behind are the rear.
 - Turning the facing one step (60°) costs 1 hex for every 2 hexes of front (at least 1),
   plus the ground its ends sweep over: the worst extra going of the hexes it comes to stand
   on (+1 for rough ground or woods, +2 for marsh or rubble).
-- A unit cannot pass through other units' hexes.
+- A unit cannot pass through other units' hexes, except that a steady unit charging may pass
+  through its own side's men (not the enemy's) when it cannot get round them: its move must
+  end in contact with the enemy, and each friendly unit with a hex on the straight line from
+  where it started to where it ends is **jostled**, its move that exchange halved (as when
+  broken men run back through it).
 - A unit in contact with an enemy cannot move.
 - **A charge:** a steady unit whose move ends in contact may move up to twice its
   allowance. Mounted men who charge get the charge bonus (+20, twice the tempo) in that
@@ -266,7 +270,8 @@ general. All its numbers are in units.yaml `commander`.
     stronger, and veterans one two-thirds stronger.
   - Holding: green men want half as many again as the enemy, regulars a fifth more, and
     veterans even odds.
-  - Without the odds they close to just short of contact and wait.
+  - Without the odds they close to just short of contact and wait. A friend behind with the
+    odds may charge through such a waiting unit (see moving, above).
 - **Storming works.** Attacking, a unit armed with a smoothbore musket, a rifle-musket or a
   breech-loader (`commander.storm`: black powder with the bayonet) whose target holds works
   does not stop at range. The target holds works if it is dug in or emplaced where it
@@ -1495,9 +1500,10 @@ south, north at the top: the Redan's point toward the British trench at the bott
   ditch outside it are still attacking it.
 - Played by the enemy commander, the British storm the salient (see *Storming works*): the
   covering party and the stormers reach it in four or five exchanges. Broken units run back
-  through the supports, and the columns behind go in together; in test runs the British got
-  into the salient after 60 to 80 exchanges with heavy losses on both sides, where the real
-  assault was driven out.
+  through the supports, the columns behind go in together, and stronger units charge through
+  waiting ones. In three test runs the British got into the salient once, after about 80
+  exchanges; in the others they were held, or broke after about 50, as the real assault was
+  driven out.
 
 It is drawn by `tools/maps/make_redan_field.mjs`, the work and the ground by `tools/maps/redan_lib.mjs`.
 

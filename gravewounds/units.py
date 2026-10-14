@@ -3381,10 +3381,10 @@ def _ground_key(field: dict | None, h) -> str:
     return ((field or {}).get("ground") or {}).get(f"{h[0]},{h[1]}", "open")
 
 
-def _path_len(d: Data, units: list, i: int, goal, size: tuple, limit: int, field: dict | None = None) -> int | None:
+def _path_len(d: Data, units: list, i: int, goal, size: tuple, limit: int, field: dict | None = None, through: bool = False) -> int | None:
     """Least movement for the unit's middle hex from where it is to goal (step_cost), not
-    through other units' hexes; None if more than limit."""
-    occ = occupancy(d, [x for k, x in enumerate(units) if k != i])
+    through other units' hexes (through: only the enemy's); None if more than limit."""
+    occ = occupancy(d, mates(units, i, through))
     u, start = units[i], tuple(units[i]["pos"])
     best, heap, done = {start: 0}, [(0, start)], set()
     while heap:
@@ -3440,7 +3440,7 @@ def move(d: Data, units: list, i: int, pos, facing: int, size: tuple, field: dic
         return {"ok": False, "why": why}
     turns = min((facing - u["facing"]) % 6, (u["facing"] - facing) % 6)
     most = allowance(d, u) * d.units["charge_move"]
-    steps = _path_len(d, units, i, pos, size, most, field)
+    steps, through = _charge_path(d, units, i, pos, (size, most, field))
     if steps is None:
         return {"ok": False, "why": "too far, or no way through"}
     moved = {**u, "pos": list(pos), "facing": facing % 6}
@@ -3449,11 +3449,40 @@ def move(d: Data, units: list, i: int, pos, facing: int, size: tuple, field: dic
     cost = steps + turns * turn_cost(d, u) + (sweep_cost(d, field, {**u, "pos": list(pos)}, moved) if turns else 0)
     after = [moved if k == i else x for k, x in enumerate(units)]
     contact = in_contact(d, after, occupancy(d, after), i)
+    if through and not contact:
+        return {"ok": False, "why": "it can pass through its own men only to charge"}
+    passed = {"through": passed_through(d, units, i, pos)} if through else {}
     if cost <= allowance(d, u):
-        return {"ok": True, "cost": cost, "charge": contact and steps > 0}
+        return {"ok": True, "cost": cost, "charge": contact and steps > 0, **passed}
     if contact and u["state"] == "steady" and cost <= most:
-        return {"ok": True, "cost": cost, "charge": True}
+        return {"ok": True, "cost": cost, "charge": True, **passed}
     return {"ok": False, "why": "too far"}
+
+
+def _charge_path(d: Data, units: list, i: int, pos, how: tuple) -> tuple:
+    """(least movement, passing through friends): round its own side's units, else (a steady
+    unit, for a charge) through them."""
+    size, most, field = how
+    steps = _path_len(d, units, i, pos, size, most, field)
+    if steps is not None or units[i]["state"] != "steady":
+        return steps, False
+    return _path_len(d, units, i, pos, size, most, field, through=True), True
+
+
+def passed_through(d: Data, units: list, i: int, pos) -> list:
+    """The friendly units (not running) a charge from where unit i stands to pos passes
+    through: those with a hex on the straight line between (indices, in order)."""
+    u = units[i]
+    line = {C.hkey(x) for x in ray(list(u["pos"]), list(pos), hdist(u["pos"], pos))}
+    return [k for k, x in enumerate(units) if k != i and x["side"] == u["side"] and x["state"] not in ("broken", "fled")
+            and any(C.hkey(h) in line for row in footprint(d, x) for h in row)]
+
+
+def mates(units: list, i: int, through: bool) -> list:
+    """The other units whose hexes unit i's middle hex may not pass: all of them, or (through,
+    for a charge) only the enemy's."""
+    u = units[i]
+    return [x for k, x in enumerate(units) if k != i and not (through and x["side"] == u["side"])]
 
 
 def _held_still(d: Data, units: list, i: int, pos, facing: int) -> str | None:
