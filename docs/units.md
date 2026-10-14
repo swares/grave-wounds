@@ -313,10 +313,14 @@ general. All its numbers are in units.yaml `commander`.
     the way count as for other units.
   - Holding, its guns unlimber, or are unhooked, where they stand, and never move.
   - Emplaced guns stay put, and empty tractors are left to the GM.
-  - Its off-map batteries (not tanks or aircraft) with no mission are called on the enemy
-    unit it sees now that scores best as a target. It fires at the first of that unit's
-    hexes its side can see and the battery reaches, and never where its own men are within
-    the burst and scatter.
+  - Its off-map batteries (not tanks) with no mission are called on the enemy unit it sees
+    now that scores best as a target. It fires at the first of that unit's hexes its side
+    can see and the battery reaches, and never where its own men are within the burst and
+    scatter.
+  - **Aircraft.** Its aircraft on call with attacks left are called the same way, with
+    bombs or rockets (never a strafing run or napalm strip), unless the weather or the dark
+    grounds them. Fighter-bombers come in two exchanges later; a forward air controller of
+    its side who sees the aim cuts their scatter as usual.
   - **Smoke.** Attacking, before that, one battery lays smoke on the nearest enemy it knows
     of whose missiles reach one of its units that cannot shoot back at it (men without
     missiles, or out of their range): at the first of the enemy's hexes it can see and is not

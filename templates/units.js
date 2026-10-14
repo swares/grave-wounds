@@ -2125,7 +2125,8 @@ function callFireAi(us, side, field, known, [stance, exchange] = ["attack", null
   const out = callIllum(us, side, field, [known, exchange], free);
   if (stance === "attack") out.push(...callSmoke(us, side, field, known, free));
   out.push(...aiCounter(field, side, free));
-  free.forEach(k => {
+  const air = (field?.support || []).map((b, k) => k).filter(k => freeAir(field, field.support[k], side));
+  [...free, ...air].sort((a, b) => a - b).forEach(k => {
     const b = field.support[k], K = UD.indirect.kinds[b.kind];
     if (b.mission) return;
     const aim = fireAim(us, side, field, known, b, K);
@@ -2171,6 +2172,7 @@ function aiCounter(field, side, free){            // one free battery with the b
   sup[k].mission = { battery: j, wait: UD.indirect.kinds[sup[k].kind].delay, repeat: false };
   return [{ unit: null, act: "counter", battery: k, on: j }];
 }
+const freeAir = (field, b, side) => !!UD.indirect.kinds[b.kind].air && b.side === side && !b.mission && (b.rounds || 0) > 0 && (b.tubes || 0) > 0 && !grounded(field, b);   // its aircraft it can send: not grounded (as commander._free_air)
 function freeBattery(b, side){                     // one of its off-map batteries it can call: not tanks or aircraft, no mission, rounds and tubes, not displacing
   const K = UD.indirect.kinds[b.kind];
   return !(b.side !== side || b.mission || K.direct || K.air || b.displacing || (b.rounds || 0) <= 0 || servedTubes(b) <= 0);

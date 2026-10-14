@@ -297,8 +297,9 @@ def _gun_apply(d: Data, us: list, i: int, o: dict, where: tuple) -> bool:
 def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, how: tuple = ("attack", None)) -> list:
     """In the dark, first one battery lights an enemy it has lost sight of (_call_illum).
     Attacking, one battery lays smoke where its units are under fire (_call_smoke).
-    Then one battery fires counter-battery on a located enemy battery (_call_counter). Then each of its other off-map batteries (not tanks or aircraft) with no mission, rounds
-    and tubes, not displacing, is called on the enemy unit it sees now that scores best as a
+    Then one battery fires counter-battery on a located enemy battery (_call_counter). Then each
+    of its other off-map batteries (not tanks) with no mission, rounds and tubes, not
+    displacing, and its aircraft that can fly (_free_air), is called on the enemy unit it sees now that scores best as a
     target for the side's unit nearest it (threat_score), at the first of its hexes the side
     can see, in the battery's reach, with none of the side's men within the kind's radius and
     scatter."""
@@ -307,7 +308,8 @@ def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, how: tu
     out = _call_illum(d, us, side, field, (known, exchange), free)
     out += _call_smoke(d, us, side, field, known, free) if stance == "attack" else []
     out += _call_counter(d, field, side, free)
-    for k in free:
+    air = [k for k, b in enumerate((field or {}).get("support") or []) if _free_air(d, field, b, side)]
+    for k in sorted(free + air):
         b = field["support"][k]
         K = d.units["indirect"]["kinds"][b["kind"]]
         if b.get("mission"):
@@ -317,6 +319,14 @@ def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, how: tu
             b["mission"] = {"hex": aim[1], "wait": K["delay"], "repeat": False}
             out.append({"unit": None, "act": "fire", "battery": k, "target": aim[0], "hex": aim[1]})
     return out
+
+
+def _free_air(d: Data, field: dict | None, b: dict, side) -> bool:
+    """Its aircraft on call it can send: no mission, attacks and aircraft left, not grounded
+    by the weather or the dark (units.grounded)."""
+    K = d.units["indirect"]["kinds"][b["kind"]]
+    return bool(K.get("air")) and b["side"] == side and not b.get("mission") and b.get("rounds", 0) > 0 \
+        and b.get("tubes", 0) > 0 and U.grounded(d, field, b) is None
 
 
 def _call_illum(d: Data, us: list, side, field: dict | None, kx: tuple, free: list) -> list:

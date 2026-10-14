@@ -504,7 +504,7 @@ def _commander_rules(d) -> list[str]:
         f"{K['objective']['hold']} from it falls back to it unless it can charge. Enemies within {K['objective']['guard']} of it score {K['objective']['bonus']} more as targets; the log names who holds it each exchange. "
         "A battlefield's objective has its own radius (the position as drawn), and the other distances widen by as much. "
         f"Known minefields on the way cost {by(K['mines'])} points a hex. Its batteries and anti-tank guns on the map, in action, turn to face the nearest enemy it knows of; its off-map "
-        "batteries with no mission are called on the enemy it sees that scores best as a target, never where its own men are within the burst. "
+        "batteries with no mission, and its aircraft that can fly (bombs or rockets only), are called on the enemy it sees that scores best as a target, never where its own men are within the burst. "
         "Attacking, one battery first lays smoke (the soonest to land) on the nearest enemy shooting at its men who cannot reply, unless it is dark, a gale blows or the hex is smoked. "
         "In the dark, first one battery with illumination (the soonest to land) lights the enemy it has lost sight of nearest its men, where last seen, unless lit or a round is on its way. "
         "Then one battery, the one with the best counter % that reaches one, fires counter-battery on the located enemy battery with the most tubes served. "
@@ -512,7 +512,7 @@ def _commander_rules(d) -> list[str]:
         f"with no enemy it knows of within {K['sappers']['clear_of']} hexes, they lay mines in the row ahead (mixed if the enemy it knows of has vehicles, else anti-personnel). "
         f"Attacking, its guns with no known enemy in reach go forward: a battery limbers, moves and unlimbers once one is in reach; anti-tank guns hook up to an empty tractor beside them and are unhooked in reach "
         f"(the tractor counting 4 hexes less); moving guns stop in reach, no nearer than {K['keep_off']} hexes. Holding, its guns unlimber or unhook where they stand. "
-        "It leaves aircraft, works and empty tractors to the GM.",
+        "It leaves strafing runs, napalm, works and empty tractors to the GM.",
     ]
 
 
