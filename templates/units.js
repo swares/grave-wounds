@@ -2104,9 +2104,10 @@ function commandable(us, i, exchange){            // standing, not a battery, an
   if (exchange !== null && u.arrived === exchange) return false;
   return !inContact(us, occupancy(us), i);
 }
+const unsteady = (us, i, t) => (!us[i].prone && underFire(us, i) ? { act: "ground", target: t } : null);   // a shaken unit holds, going to ground under missile fire (as commander._unsteady)
 function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance, known, exchange]
   const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = aiTarget(us, i, ctx[3], ctx[1]);
-  if (u.state !== "steady") return !u.prone && underFire(us, i) ? { act: "ground", target: t } : null;
+  if (u.state !== "steady") return unsteady(us, i, t);
   if (u.reserve) return t === null ? null : stayOrder(us, i, t, u.facing, "range" in FD.weapons[u.weapon]);
   if (busyDigging(u)) return null;
   const sap = sapperOrder(us, i, t, ctx);

@@ -252,7 +252,7 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     obj = objective(ctx[1])
     t = target(d, us, i, ctx[3], ctx[1])
     if u["state"] != "steady":
-        return {"act": "ground", "target": t} if not u.get("prone") and under_fire(d, us, i) else None
+        return _unsteady(d, us, i, t)
     if u.get("reserve"):
         return None if t is None else _stay(d, us, i, t, u["facing"], "range" in d.weapons[u["weapon"]])
     if U.busy_digging(u):
@@ -268,6 +268,11 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return {"act": "hesitate", "target": t, "roll": roll}
     o = _best(d, us, i, t, ctx) if obj is None else _for_objective(d, us, i, t, ctx)
     return o if t is None else _last_seen(o, ctx[3], t, ctx[4])
+
+
+def _unsteady(d: Data, us: list, i: int, t: int | None) -> dict | None:
+    """A shaken unit holds, going to ground under missile fire."""
+    return {"act": "ground", "target": t} if not us[i].get("prone") and under_fire(d, us, i) else None
 
 
 def _digs(d: Data, us: list, i: int, ctx: tuple) -> bool:
