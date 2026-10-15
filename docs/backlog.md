@@ -65,7 +65,10 @@ When an item is done, delete it here and note it in the pull request that closes
   searchlights do not show the vehicle to an enemy with infrared, and no device washes out in
   a flare's light. A fixed line is laid on one hex, with no traverse limits or
   final protective fire called by flare. A lost unit strays only a hex along its wrong
-  facing, never into its friends or the enemy, and no further. The moon is a simple model, good to an hour or so.
+  facing, never into its friends or the enemy, and no further. To decide later: how long a
+  lost unit stays put. Now it cannot move the next exchange (`light.lost_for: 2` counts the
+  exchange it lost its way in), the same for every quality and light; it could last longer
+  on a dark night, or for green men. The moon is a simple model, good to an hour or so.
 - **Air support, third cut.** Ground fire hits aircraft (bringing some down, sending the
   rest home damaged), anti-aircraft guns add to it, forward air controllers and smoke on the
   target cut the scatter, and an attack can be a round burst, a strafing run or a napalm
