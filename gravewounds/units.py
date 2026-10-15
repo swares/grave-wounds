@@ -295,13 +295,21 @@ def _heroes_after(d: Data, us: list, rng, quiet: list | None = None, cautery: bo
         for hero in u.get("heroes", []):
             if hero["state"] in ("dead", "prisoner") or (hero.get("carried") and not hero.get("post")):   # off the map: out of the battle
                 continue
-            aid = None if hero.get("post") and u["side"] in closed else _aid_for(d, u, hero, rng, (quiet and quiet[i], cautery))
-            if aid:
-                log.append({"kind": "heroaid", "unit": i, **aid})
-            line = _hero_after(d, hero, rng)
-            if line:
-                log.append({"kind": "herobled", "unit": i, **line})
+            log += _hero_end(d, (i, u, hero), rng, (quiet and quiet[i], cautery, closed))
     return log + _bearers_back(us)
+
+
+def _hero_end(d: Data, iuh: tuple, rng, how: tuple) -> list:
+    """One hero's end of the exchange (_heroes_after): first aid (none at a post that is
+    moving), then bleeding. how: (quiet, cautery, closed sides). -> log lines."""
+    (i, u, hero), (quiet, cautery, closed), out = iuh, how, []
+    aid = None if hero.get("post") and u["side"] in closed else _aid_for(d, u, hero, rng, (quiet, cautery))
+    if aid:
+        out.append({"kind": "heroaid", "unit": i, **aid})
+    line = _hero_after(d, hero, rng)
+    if line:
+        out.append({"kind": "herobled", "unit": i, **line})
+    return out
 
 
 def _aid_for(d: Data, u: dict, hero: dict, rng, when: tuple) -> dict | None:
