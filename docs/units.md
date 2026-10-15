@@ -149,7 +149,11 @@ symbol:
   outright with `type` on a unit (units.yaml `markers.types` lists them).
 - **Size mark.** A unit that sets `size` (section, platoon, company, battery, battalion,
   regiment, brigade or division) shows its mark above the frame (•, •••, I, II, III, X, XX)
-  when size marks are on. A unit facing up has it above its arrow.
+  when size marks are on. A unit facing up has it above its arrow. On a field where no unit
+  sets a size, the *size marks* box is greyed out and says so. Both Redan battlefields
+  set sizes; most of their units are detachments, so their marks give the scale (a
+  detachment of a few companies marked I, two battalions' worth III, a group of regiments
+  X), not a formal organisation.
 - **Label.** The label sits beside the marker. *Unit labels* under the map chooses names,
   IDs or both. An ID is the side's initial and the unit's number on its side (B3), or A and
   B when the two sides share an initial. A unit keeps its ID for the whole battle, and the

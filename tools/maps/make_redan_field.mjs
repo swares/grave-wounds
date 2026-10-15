@@ -24,17 +24,17 @@ const { grid, hexWorks, edgeWorks } = redan({ rows: ROWS, trenchRow: 67, holes: 
 
 // ---------- the armies (pos is the middle of the front row) ----------
 const units = [
-  unit("Covering party (2nd Rifle Brigade and the Buffs)", BRITISH, 200, { ...RIFLE, formation: "open" }, [20, 40, 63]),
-  unit("Ladder party (the Buffs and the 97th)", BRITISH, 320, { ...RIFLE, ladders: true }, [10, 45, 65]),
-  unit("Light Division stormers (90th and 97th)", BRITISH, 1000, RIFLE, [20, 28, 68]),
-  unit("2nd Division stormers (the Buffs, 41st and 62nd)", BRITISH, 760, { ...RIFLE, quality: "green" }, [16, 50, 68]),
-  unit("Supports (7th, 23rd, 33rd, 34th and 77th)", BRITISH, 1500, { ...RIFLE, quality: "green" }, [30, 35, 74]),
-  unit("Vladimirski Regiment, at the salient", RUSSIANS, 400, MUSKET, [12, 44, 45]),
-  unit("Guns on the left face", RUSSIANS, 40, GUNS, [3, 35, 35]),
-  unit("Guns on the right face", RUSSIANS, 40, GUNS, [3, 62, 35]),
-  unit("Vladimirski Regiment, behind the breastwork", RUSSIANS, 1400, MUSKET, [26, 37, 24]),
-  unit("Riflemen on the line to the west", RUSSIANS, 300, { ...MUSKET, weapon: "rifle_musket", formation: "open" }, [20, 12, 34]),
-  unit("Kamchatski and Iakutski regiments (reserve)", RUSSIANS, 2000, MUSKET, [40, 30, 12]),
+  unit("Covering party (2nd Rifle Brigade and the Buffs)", BRITISH, 200, { ...RIFLE, formation: "open", size: "company" }, [20, 40, 63]),
+  unit("Ladder party (the Buffs and the 97th)", BRITISH, 320, { ...RIFLE, ladders: true, size: "company" }, [10, 45, 65]),
+  unit("Light Division stormers (90th and 97th)", BRITISH, 1000, { ...RIFLE, size: "regiment" }, [20, 28, 68]),
+  unit("2nd Division stormers (the Buffs, 41st and 62nd)", BRITISH, 760, { ...RIFLE, quality: "green", size: "regiment" }, [16, 50, 68]),
+  unit("Supports (7th, 23rd, 33rd, 34th and 77th)", BRITISH, 1500, { ...RIFLE, quality: "green", size: "brigade" }, [30, 35, 74]),
+  unit("Vladimirski Regiment, at the salient", RUSSIANS, 400, { ...MUSKET, size: "battalion" }, [12, 44, 45]),
+  unit("Guns on the left face", RUSSIANS, 40, { ...GUNS, size: "battery" }, [3, 35, 35]),
+  unit("Guns on the right face", RUSSIANS, 40, { ...GUNS, size: "battery" }, [3, 62, 35]),
+  unit("Vladimirski Regiment, behind the breastwork", RUSSIANS, 1400, { ...MUSKET, size: "regiment" }, [26, 37, 24]),
+  unit("Riflemen on the line to the west", RUSSIANS, 300, { ...MUSKET, weapon: "rifle_musket", formation: "open", size: "company" }, [20, 12, 34]),
+  unit("Kamchatski and Iakutski regiments (reserve)", RUSSIANS, 2000, { ...MUSKET, size: "brigade" }, [40, 30, 12]),
 ];
 
 writeField({
