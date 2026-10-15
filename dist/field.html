@@ -6110,7 +6110,8 @@ function stageText(){                             // the strip above the map: th
   if (i < 0) return "<b>Phases:</b> " + list.map(entry).join(" · ");
   const st = list[i], nx = list[i + 1];
   const late = waitingFor(i).length ? ` Waiting for room: ${esc(waitingFor(i).join(", "))}.` : "";
-  const next = nx ? ` <span class="muted">${esc(`Next, at exchange ${nx.at}: ${nx.name}${coming(i + 1)}.`)}</span>` : "";
+  const nextText = nx ? "Next, at exchange " + nx.at + ": " + nx.name + coming(i + 1) + "." : "";
+  const next = nx ? ` <span class="muted">${esc(nextText)}</span>` : "";
   return `<b>Phase ${i + 1} of ${list.length}: ${esc(st.name)}.</b> ${esc(st.note || "")}${late}${next}`;
 }
 function bringOn(u, k){                           // a unit joining during the battle: at its side's entry edge, facing into the map; it moves next exchange
