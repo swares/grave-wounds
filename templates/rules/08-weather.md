@@ -5,7 +5,8 @@
 Each day on the travel map rolls its weather from the climate's figures for the month: its
 highs and lows, its days of rain and fog, its winds. Wet and dry spells last, and a warm or
 cold spell carries over. Rain falls as snow when the day's high is {{w_snow_f}} °F
-({{w_snow}} °C) or less. The GM can roll again or set any of it by hand.
+({{w_snow}} °C) or less. The GM can roll again or set any of it by hand. A **sandstorm** is
+never rolled: a battlefield names it (73 Easting, 1991) or the GM sets it.
 
 **Mud and snow** build up and wear off day by day. On the travel map they slow the going;
 on the battle map, mud or snow at level {{w_deep}} or more costs one more hex of movement

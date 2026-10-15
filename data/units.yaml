@@ -353,7 +353,7 @@ indirect:
     fighter_bomber: {name: "Fighter-bombers (bombs, napalm)", rate: 2, rounds: 4, delay: 2, scatter: 3, radius: 4, struck: [45, 25, 12, 5, 2], counter: 0, knock: 15, air: true, by_night: false, exposed: 1, shot: [bomb, bombs]}
     gunship:  {name: "Helicopter gunships (rockets, guns)", rate: 4, rounds: 24, delay: 0, scatter: 1, radius: 1, struck: [20, 6], counter: 0, knock: 4, air: true, by_night: true, exposed: 2, shot: [rocket and gun pass, rocket and gun passes]}
   air:
-    grounded: [fog, storm, heavy_snow, blizzard]
+    grounded: [fog, storm, heavy_snow, blizzard, sandstorm]
     night: [moonlit, night]
     ground_fire: {reach: 30, mg: 0.5, rocket: 1, rifles: 0.2, cap: 12, rockets: [rpg, recoilless], aa: 3, aa_reach: 100, aa_cap: 35, aa_weapons: [aa_gun], downed: 40}
     fac: {danger: 10, scatter: 2}
