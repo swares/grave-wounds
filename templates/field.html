@@ -145,6 +145,8 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .flash{font:700 6px var(--mono);fill:#e0a000;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .post{fill:var(--panel);stroke:#2f6b3a;stroke-width:1;pointer-events:none}.post.gone{opacity:.4;stroke-dasharray:1.5 1}
 .post-t{font:700 4.6px var(--mono);fill:#2f6b3a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.dump{fill:var(--panel);stroke:#7a5a1a;stroke-width:1;pointer-events:none}.dump.coming{stroke-dasharray:1.5 1;opacity:.7}
+.dump-t{font:700 4.6px var(--mono);fill:#7a5a1a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .party{font:700 8px var(--mono);fill:#2f6b3a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .lying{font:700 6px var(--mono);fill:var(--blood);text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .mine{fill:#7a2a1a;fill-opacity:.18;stroke:#7a2a1a;stroke-width:.6;stroke-dasharray:1.2 1;pointer-events:none}.mine.hid{fill-opacity:.05;stroke-opacity:.45}
@@ -290,9 +292,10 @@ legend{padding:0}
         <button class="small" id="btn-ladders" hidden title="Scaling ladders: across a wall, palisade or barred gate a few men a hex fight from the ladders, and the unit can climb over it">Ladders</button>
         <button class="small" id="btn-fac" hidden title="A forward air controller talks aircraft onto a target he can see: they scatter less, and may attack close to their own men">Air controller</button>
         <label class="sr" for="sel-medics">Medics</label><select class="small" id="sel-medics" hidden style="width:auto" title="Medics with the unit (followers of a healing career, chosen before the battle): they give its heroes first aid at their quality's chance"></select>
+        <label class="sr" for="sel-ammo">Ammunition</label><select class="small" id="sel-ammo" hidden style="width:auto" title="How much ammunition the unit has (set before the battle; in play it runs down as the unit shoots)"></select>
         <label class="sr" for="sel-nv">Night vision</label><select class="small" id="sel-nv" hidden style="width:auto" title="The night-vision device the unit carries (chosen before the battle): by its armour kit, none, or a Starlight scope, goggles or a thermal sight"></select>
         <button class="small" id="btn-limber" hidden title="A battery limbered moves but cannot fire; unlimbered it fires but can only be manhandled. Changing over takes an exchange.">Limber</button>
-        <button class="small" id="btn-resupply" hidden title="The caissons come up: a full load of rounds again. It takes an exchange out of contact, in which the battery neither moves nor fires.">Resupply</button>
+        <button class="small" id="btn-resupply" hidden title="A full load again: the caissons come up for guns; for small arms, from its side's edge, a lorry or carrier, or a supply dump within reach. It takes an exchange out of contact, in which the unit neither moves nor fires.">Resupply</button>
         <button class="small" id="btn-abandon" hidden title="Leave the immobilised vehicles: their crews leave the fight unhurt, and the rest can move">Abandon immobilised</button>
         <button class="small" id="btn-dismount" hidden title="The riders get down beside the carriers, facing their way; they can move next exchange">Dismount the riders</button>
         <span id="mount-box" hidden><label class="sr" for="sel-carrier">Mount on</label><select class="small" id="sel-carrier" style="width:auto" title="Get aboard carriers of its side within a hex: the riders move with them and do not fight"></select></span>
@@ -821,6 +824,7 @@ function callCounter(i, j){                       // counter-battery: fire on a 
 }
 const f1 = n => n.toFixed(1);
 const glyph = (cls, ch) => h => { const [x, y] = xy(h); return `<text class="${cls}" x="${f1(x)}" y="${f1(y)}">${ch}</text>` };
+function dumpSvg(m, coming){ const [x, y] = xy(m.at); return `<rect class="dump${coming ? " coming" : ""}" x="${f1(x - 5)}" y="${f1(y - 3.5)}" width="10" height="7" rx="1"><title>${esc(poss(m.side))} supply dump${coming ? " (air drop on its way: lands at the end of the exchange)" : ""}</title></rect><text class="dump-t" x="${f1(x)}" y="${f1(y)}">SD</text>` }
 function lzSvg(h){ const [x, y] = xy(h); return `<circle class="lz" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.9)}"/><text class="lz-h" x="${f1(x)}" y="${f1(y)}">H</text>` }
 function litSvg(l){ const [cx, cy] = xy(l.at); return `<circle class="lit" cx="${f1(cx)}" cy="${f1(cy)}" r="${f1((l.radius + 0.5) * HW)}"/>` }
 function fixedSvg(u){ const f = footprint(u)[0], [x1, y1] = xy(f[Math.floor(f.length / 2)]), [x2, y2] = xy(u.fixed); return `<line class="fixed" x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2)}" y2="${f1(y2)}"/>` }
@@ -843,6 +847,7 @@ function supportSvg(){                            // smoke, landing zones, aid p
   return [
     Object.keys(F.smoke || {}).map(k => `<polygon class="smoke" points="${pts(xy(k.split(",").map(Number)))}"/>`),
     (F.lz || []).map(lzSvg),
+    (F.dumps || []).map(m => dumpSvg(m, false)), (F.drops || []).map(m => dumpSvg(m, true)),
     F.objective ? objectiveSvg(F.objective, F.objective_radius) : "",
     F.objective2 ? objectiveSvg(F.objective2, FD.units.commander.objective.radius, true) : "",
     minesSvg(),
@@ -991,6 +996,8 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   laid: (l, nm) => ({ cls: "", text: l.hexes ? `${nm(l.unit)} have laid ${nOf(l.hexes, "hex", "hexes")} of ${FD.units.mines.kinds[l.mine].name.toLowerCase()} ahead of them, hidden.` : `${nm(l.unit)} had nowhere free ahead of them to lay mines.` }),
   lifted: (l, nm) => ({ cls: "", text: l.hexes ? `${nm(l.unit)} have lifted the mines in ${nOf(l.hexes, "hex", "hexes")} ahead of them: a lane.` : `${nm(l.unit)} found no known minefield ahead of them to lift.` }),
   dug: (l, nm) => ({ cls: "", text: `${nm(l.unit)} have dug in: shots at them lose ${FD.units.to_ground.cover}% while they stay there.` }),
+  resupplied: (l, nm) => ({ cls: "", text: `${nm(l.unit)} have resupplied: a full load of ammunition again.` }),
+  drop: l => ({ cls: "", text: `${poss(l.side)} air drop lands at ${hexName(l.at)}${l.at[0] === l.aim[0] && l.at[1] === l.aim[1] ? ", on the mark" : `, ${nOf(hdist(l.aim, l.at), "hex", "hexes")} off the mark`}: a supply dump.` }),
   bearers: (l, nm) => ({ cls: "", text: `${nm(l.unit)}: ${nOf(l.men, "bearer")} come back from the rear.` }),
   party: (l, nm) => ({ cls: "hero", text: partyText(l, nm) }),
   partyhit: (l, nm) => ({ cls: "hero", text: partyHitText(l, nm) }),
@@ -1195,6 +1202,7 @@ const ORDER_TEXT = {                              // (who, them, o, up, facing) 
   fix: (who, them, o) => (o.relay ? `${who} shift their fixed line onto ${hexName(o.hex)}, where ${them} stand: in the dark they will fire blind down it.`
     : o.ahead ? `${who} lay their guns on a fixed line ahead to ${hexName(o.hex)}${o.target === null || o.target === undefined ? "" : ", toward " + them}: in the dark they will fire blind down it at any enemy that comes onto it.`
     : `${who} lay their guns on a fixed line to ${hexName(o.hex)}, where ${them} stand: in the dark they will fire blind down it.`),
+  resupply: who => `${who} resupply: their ammunition is low or gone (an exchange without moving or firing).`,
   dig: who => `${who} dig in where they stand (${nOf(FD.units.dig_in.exchanges, "exchange")} without moving or firing).`,
 };
 const facText = o => (o.fac ? ", a forward air controller talking them on" : "");   // an air order's controller, if one sees the aim
@@ -1409,6 +1417,7 @@ function fillTools(){
     + (FD.units.heliborne ? `<option value="lz">Mark or clear a landing zone</option>` : "")
     + `<option value="objective">Mark or clear the enemy commander's objective</option><option value="objective2">Mark or clear its second objective</option>`
     + `<optgroup label="Aid posts"><option value="post:0">Aid post: side A</option><option value="post:1">Aid post: side B</option></optgroup>`
+    + `<optgroup label="Supply dumps (in battle: an air drop, WWII on)"><option value="dump:0">Supply dump: side A</option><option value="dump:1">Supply dump: side B</option></optgroup>`
     + `<optgroup label="Minefields (1939 on; click again to clear)">${mineOptions()}</optgroup>`
     + `<optgroup label="Paint the ground">${g}</optgroup><optgroup label="Works on a hex side (click just inside it, on the high side)">${e}</optgroup><optgroup label="Works in a hex">${h}</optgroup>`;
   $("#sel-wx").innerHTML = Object.entries(WXD.conditions).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
@@ -1432,6 +1441,7 @@ function useTool(e, h){                           // paint the ground, or build 
   if (tool === "objective") return toggleObjective(h);
   if (tool === "objective2") return toggleObjective2(h);
   if (tool.startsWith("post:")) return placePost(h, Number(tool.slice(5)));
+  if (tool.startsWith("dump:")) return placeDump(h, Number(tool.slice(5)));
   if (tool.startsWith("mine:")) return placeMine(h, tool.split(":")[1], tool.endsWith(":hidden"));
   if (tool === "h:wreck") return placeWreck(h);
   if (S.phase !== "setup"){ S.msg = "Ground and works are set before the battle starts; gates can be opened or barred at any time."; return }
@@ -1489,6 +1499,21 @@ function toggleLz(h){                            // a landing zone, marked or cl
   const lz = S.field.lz || (S.field.lz = []), i = lz.findIndex(x => x[0] === h[0] && x[1] === h[1]);
   if (i >= 0) lz.splice(i, 1); else lz.push([...h]);
   S.msg = i >= 0 ? `Landing zone ${h[0] + 1},${h[1] + 1} cleared.` : `Landing zone marked at ${h[0] + 1},${h[1] + 1}: units can come on by air there (Add a unit, By air at).`;
+}
+const airDropHere = () => (FD.units.ammunition?.air_drop?.battles || []).includes(FD.tables[S.table]?.battle);   // a war with supply drops from the air
+function placeDump(h, k){                          // set-up: a side's supply dump placed or cleared; in battle, an air drop called on that side's move
+  const side = S.sides[k], dumps = S.field.dumps || (S.field.dumps = []);
+  if (S.phase === "setup"){
+    const i = dumps.findIndex(m => m.side === side && m.at[0] === h[0] && m.at[1] === h[1]);
+    if (i >= 0){ dumps.splice(i, 1); S.msg = `${poss(side)} supply dump cleared.`; return }
+    dumps.push({ side, at: [...h] });
+    S.msg = `${poss(side)} supply dump at ${hexName(h)}: its units within ${nOf(FD.units.ammunition.reach, "hex", "hexes")} can resupply there.`;
+    return;
+  }
+  if (!airDropHere()){ S.msg = "Supply dumps are placed before the battle; air drops come in only from the Second World War on."; return }
+  if (moving() !== side){ S.msg = `${poss(side)} air drop can be called only on ${poss(side)} move.`; return }
+  (S.field.drops || (S.field.drops = [])).push({ side, at: [...h] });
+  S.msg = `${poss(side)} air drop called on ${hexName(h)}: it lands at the end of the exchange, up to ${nOf(FD.units.ammunition.air_drop.scatter, "hex", "hexes")} off.`;
 }
 function placePost(h, k){                         // a side's aid post: placed, moved or cleared in set-up; in battle, moved on its side's move (closed for an exchange)
   const side = S.sides[k], posts = S.field.posts || (S.field.posts = []), i = posts.findIndex(p => p.side === side);
@@ -1964,7 +1989,8 @@ function unitMeta(u){
   let mg = isMg(u.weapon) ? " · " + gunsText(mgGuns(u), "gun") : "";
   if (isAtGun(u)) mg = " · " + gunsText(atGuns(u), "gun") + ", " + (atRounds(u) ? atRounds(u) + " rounds" : "no rounds left") + (u.resupplying ? ", resupplying" : "");
   if (u.vehicle) mg = vehicleMeta(u);
-  return `${u.men}/${u.start} · ${u.state}${down}${flags}${mg}${batteryMeta(u)}`;
+  const st = ammoState(u), ammo = st === "low" || st === "out" ? ` · ${st === "out" ? "no ammunition" : "ammunition low"}${u.resupplying ? ", resupplying" : ""}` : "";
+  return `${u.men}/${u.start} · ${u.state}${down}${flags}${mg}${ammo}${batteryMeta(u)}`;
 }
 function vehicleMeta(u){                          // " · 3 tanks, 1 immobilised · carrying 1st Squad (9)"
   const imm = u.immobile ? `, ${u.immobile} immobilised` : "", out = u.gunless ? `, ${nOf(u.gunless, "gun")} out` : "";
@@ -2052,6 +2078,7 @@ function renderSel(){
   renderReserve(u);
   renderFixed(u, setup);
   renderNv(u, setup);
+  renderAmmo(u, setup);
   renderMedics(u, setup);
   renderFac(u, setup);
   renderLadders(u, setup);
@@ -2074,15 +2101,17 @@ function renderSel(){
     + groundInfo(u)
     + (u.fixed ? `<dt>Fixed line</dt><dd>Laid on ${u.fixed[0] + 1},${u.fixed[1] + 1}: in the dark, with no target it can see, it fires blind at any enemy within ${nOf(FD.weather.light.fixed_line.width, "hex", "hexes")} of the line (−${FD.weather.light.fixed_line.aim}%)</dd>` : "")
     + (u.lost ? `<dt>Lost</dt><dd>It lost its way in the dark: it cannot move next exchange, but may turn</dd>` : "")
+    + (ammoFull(u) !== null ? `<dt>Ammunition</dt><dd>${ammoText(u)}${u.resupplying ? "; resupplying this exchange" : ""}</dd>` : "")
     + `<dt>Moves</dt><dd>${allowance(u)} hexes${(u.heroes || []).some(lamed) ? " (slowed by a wounded hero)" : ""}; turning costs ${turnCost(u)} a step</dd>`;
 }
 function renderGunOrders(u, setup){               // the Resupply button (batteries and anti-tank guns) and the target picker (batteries)
-  const b = $("#btn-resupply"), box = $("#target-box"), gun = !!u && isBattery(u), at = !!u && isAtGun(u);
-  b.hidden = !gun && !at;
+  const b = $("#btn-resupply"), box = $("#target-box"), gun = !!u && isBattery(u), at = !!u && isAtGun(u), arms = !!u && ammoFull(u) !== null;
+  b.hidden = !gun && !at && !arms;
   box.hidden = !gun;
   const gone = !!u && (S.phase === "over" || !!u.abandoned || u.state === "broken" || u.state === "fled");
   if (!b.hidden){
-    b.disabled = gone || (!setup && u.side !== moving()) || (!u.resupplying && !u.spent);
+    const short = arms ? fireLeft(u) < ammoFull(u) : !!u.spent;
+    b.disabled = gone || (!setup && u.side !== moving()) || (!u.resupplying && !short);
     b.textContent = u.resupplying ? "Stop resupplying" : "Resupply";
   }
   if (!gun){ $("#section-box").hidden = true; return }
@@ -2144,11 +2173,13 @@ function setTarget(v){                            // the GM names the battery's 
   render();
 }
 function toggleResupply(){                        // set-up: at once; in play: over this exchange, out of contact, instead of moving
-  const u = selUnit(); if (!u || !(isBattery(u) || isAtGun(u))) return;
-  if (S.phase === "setup"){ u.spent = 0; S.msg = `${u.name} has a full load of rounds.`; return render() }
+  const u = selUnit(); if (!u || !(isBattery(u) || isAtGun(u) || ammoFull(u) !== null)) return;
+  const arms = ammoFull(u) !== null;
+  if (S.phase === "setup"){ if (arms) delete u.ammo; else u.spent = 0; S.msg = `${u.name} has a full load ${arms ? "of ammunition" : "of rounds"}.`; return render() }
   const i = idx(u.id), was = S.start?.[i];
+  if (arms && !u.resupplying && supplyNear(S.units, i, S.field) === null){ S.msg = `${u.name} has no supplies within ${nOf(FD.units.ammunition.reach, "hex", "hexes")}: its side's edge, a lorry or carrier of its side, or a supply dump.`; return render() }
   if (!u.resupplying && was && (was.pos[0] !== u.pos[0] || was.pos[1] !== u.pos[1] || was.facing !== u.facing)){ S.msg = `${u.name} has moved this phase: undo the move first.`; return render() }
-  if (!u.resupplying && inContact(S.units, occupancy(S.units), i)){ S.msg = `${u.name} is in contact: the caissons cannot come up.`; return render() }
+  if (!u.resupplying && inContact(S.units, occupancy(S.units), i)){ S.msg = `${u.name} is in contact: ${arms ? "it cannot resupply" : "the caissons cannot come up"}.`; return render() }
   u.resupplying = !u.resupplying;
   S.msg = u.resupplying ? `${u.name} will resupply this exchange: it neither moves nor fires until it is done.` : "";
   render();
@@ -2327,6 +2358,25 @@ function toggleFac(){
   S.msg = u.fac ? `${u.name} has a forward air controller: aircraft attacking a hex he can see scatter less, and may attack within ${nOf(FD.units.indirect.air.fac.danger, "hex", "hexes")} of their own men.` : `${u.name} no longer has an air controller.`;
   render();
 }
+function renderAmmo(u, setup){                    // set-up: how much ammunition the unit starts with (full, low, out)
+  const el = $("#sel-ammo"), full = u ? ammoFull(u) : null;
+  el.hidden = full === null;
+  if (el.hidden) return;
+  const low = Math.floor(full * FD.units.ammunition.low);
+  el.innerHTML = `<option value="${full}">Ammunition: full (${nOf(full, "exchange")} of fire)</option><option value="${low}">Ammunition: low (${nOf(low, "exchange")})</option><option value="0">Ammunition: out</option>`;
+  const left = fireLeft(u);
+  if (![full, low, 0].includes(left)) el.insertAdjacentHTML("beforeend", `<option value="${left}">Ammunition: ${nOf(left, "exchange")} of fire left</option>`);
+  el.value = String(left);
+  el.disabled = !setup;
+}
+function setAmmo(v){                              // set-up: the unit's ammunition
+  const u = selUnit(); if (!u || S.phase !== "setup" || ammoFull(u) === null) return;
+  const n = Number(v);
+  if (n >= ammoFull(u)) delete u.ammo; else u.ammo = n;
+  S.msg = `${u.name}: ${ammoText(u)}.`;
+  render();
+}
+const ammoText = u => { const st = ammoState(u), left = fireLeft(u); return st === "out" ? "out of ammunition (it cannot shoot; morale " + FD.units.morale.mods.no_ammo + ")" : `${nOf(left, "exchange")} of fire left${st === "low" ? " (low: it shoots at half rate)" : ""}` };
 function renderNv(u, setup){                      // the unit's night-vision device, chosen before the battle
   const el = $("#sel-nv");
   el.hidden = !u || !FD.weather?.light;
@@ -2815,6 +2865,7 @@ function init(){
   $("#btn-reserve").onclick = toggleReserve;
   $("#btn-fixed").onclick = toggleFixed;
   $("#sel-nv").onchange = e => setNv(e.target.value);
+  $("#sel-ammo").onchange = e => setAmmo(e.target.value);
   $("#btn-sup-leg").onclick = () => { LEGS = Math.min(8, LEGS + 1); renderLegs() };
   $("#btn-sup-unleg").onclick = () => { LEGS = Math.max(1, LEGS - 1); renderLegs() };
   $("#sel-medics").onchange = e => setMedics(e.target.value);

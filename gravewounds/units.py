@@ -903,6 +903,8 @@ def _morale_mods(mods: dict, unit: dict) -> int:
         m += mods["in_order"]
     if unit.get("dug"):
         m += mods.get("dug_in", 0)
+    if unit.get("no_ammo"):
+        m += mods.get("no_ammo", 0)
     m -= min(mods["losing_cap"], mods["losing_per_man"] * max(0, unit.get("lost", 0) - unit.get("dealt", 0)))
     return m
 
@@ -1392,7 +1394,7 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
             continue
         if in_contact(d, units, occ, i) and not in_bunker(d, field, u):
             continue
-        if "range" in d.weapons[u["weapon"]]:
+        if "range" in d.weapons[u["weapon"]] and ammo_state(d, u) != "out" and not (u.get("resupplying") and ammo_full(d, u)):
             out += _volley_of(d, units, occ, field, i)
         out += _rider_volley(d, units, occ, field, i)
     return out
@@ -1411,7 +1413,8 @@ def _volley_of(d: Data, units: list, occ: dict, field: dict | None, i: int, men:
     if wx["blocked"]:
         return []
     up, longer = height_edge(d, field, u["weapon"], best[2], best[3])
-    v = {"att": i, "dfd": best[1], "men": _shooters(d, u, field) if men is None else men, "dist": best[0],
+    shooters = _shooters(d, u, field) if men is None else men
+    v = {"att": i, "dfd": best[1], "men": shooters / 2 if men is None and ammo_state(d, u) == "low" else shooters, "dist": best[0],
          "cover": share_cover(d, field, best[2], units[best[1]]) + ground_cover(d, units[best[1]]) + shield_cover(d, units[best[1]], best[3], best[2]),
          "penalty": wx["penalty"] - up, "misfire": wx["misfire"], "reach": wx.get("reach", 0) + longer, "from": best[2], "to": best[3], "height": up,
          "over": line_fire(d, units, occ, field, i, best[1], best[2], best[3], best[0]), "seen": seen_share(d, field, units[best[1]], best[3], u["weapon"])}
@@ -1439,10 +1442,10 @@ def rider_shooters(d: Data, u: dict) -> int:
 def _rider_volley(d: Data, units: list, occ: dict, field: dict | None, i: int) -> list:
     """Vehicle unit i's riders shooting from it (rider_shooters), at their own weapon's target
     from its hexes: [v with riders True] or []."""
-    n = rider_shooters(d, units[i])
-    if n <= 0:
+    n, R = rider_shooters(d, units[i]), units[i].get("riders")
+    if n <= 0 or ammo_state(d, R) == "out":
         return []
-    R = units[i]["riders"]
+    n = n / 2 if ammo_state(d, R) == "low" else n
     pseudo = [*units[:i], {**units[i], "weapon": R["weapon"], "kit": R.get("kit"), "quality": R["quality"], "nv": R.get("nv")}, *units[i + 1:]]
     return [{**v, "riders": True} for v in _volley_of(d, pseudo, occ, field, i, n)]
 
@@ -2085,9 +2088,11 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _dig_all(d, us)
     log += _sappers_all(d, us, field)
     _unhooked_after(us)
-    for u in us:
+    for i, u in enumerate(us):
         u["charged"] = False
         u.pop("jostled", None)
+        if u.get("resupplying") and ammo_full(d, u):
+            log.append({"kind": "resupplied", "unit": i})
         _battery_after(d, u)
         if u.get("pinned"):
             u["pinned"] -= 1
@@ -2103,6 +2108,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     _smoke_drifts(d, field)
     _lit_fades(field)
     log += landings(d, us, table, rng, field)
+    log += _air_drops(d, field, rng)
     log += _vehicles_after(d, us, field)
     log += objective_held(d, us, field)
     _mark_was(us, field)
@@ -2554,12 +2560,101 @@ def _duel(d: Data, units: tuple, pair: tuple, table: str, rng, s: dict, dueled: 
     return log
 
 
+def ammo_full(d: Data, u: dict) -> int | None:
+    """A unit's full load in exchanges of fire (ammunition.loads / (missile.rate * burn), rounded,
+    at least 1), or None if it does not count ammunition: no missile weapon or no load for it,
+    a vehicle, a battery or anti-tank guns (they count their own rounds)."""
+    A = d.units.get("ammunition") or {}
+    load = (A.get("loads") or {}).get(u["weapon"])
+    if not load or u.get("vehicle") or "range" not in d.weapons[u["weapon"]] or is_battery(d, u) or is_at_gun(d, u):
+        return None
+    S = d.units["missile"]
+    return max(1, math.floor(load / (S["rate"].get(u["weapon"], S["default_rate"]) * A["burn"]) + 0.5))
+
+
+def fire_left(d: Data, u: dict) -> int | None:
+    """Exchanges of fire it has left (its full load unless it has spent some: u.ammo), or None."""
+    full = ammo_full(d, u)
+    return None if full is None else min(full, u.get("ammo", full))
+
+
+def ammo_state(d: Data, u: dict) -> str | None:
+    """full, low (at or under ammunition.low of a full load) or out; None if it does not count."""
+    full, left = ammo_full(d, u), fire_left(d, u)
+    if full is None:
+        return None
+    if left <= 0:
+        return "out"
+    return "low" if left <= full * d.units["ammunition"]["low"] else "full"
+
+
+def _spend(d: Data, us: list, v: dict) -> None:
+    """A volley fired: its shooters (the vehicle's riders for a riders' volley) use an exchange of fire."""
+    u = us[v["att"]]
+    who = u["riders"] if v.get("riders") else u
+    left = fire_left(d, who)
+    if left is not None:
+        who["ammo"] = max(0, left - 1)
+
+
+def supply_edge(d: Data, us: list, side) -> str | None:
+    """The map edge its supplies come from: behind the way most of the side's standing men face
+    (N, S, E or W), or None if it has none."""
+    n = [0] * 6
+    for u in us:
+        if u["side"] == side and u["men"] > 0 and u["state"] != "fled":
+            n[u["facing"] % 6] += u["men"]
+    return None if max(n) == 0 else EDGE_BEHIND[n.index(max(n))]
+
+
+EDGE_BEHIND = ("W", "S", "E", "E", "N", "W")   # the map edge behind units facing 0-5
+
+
+def supply_near(d: Data, us: list, i: int, field: dict | None) -> str | None:
+    """What it can draw ammunition from within ammunition.reach hexes: edge (its side's supply
+    edge), vehicle (a steady supply vehicle of its side) or dump (a supply dump), or None."""
+    A, u = d.units["ammunition"], us[i]
+    reach, hexes = A["reach"], [h for row in footprint(d, u) for h in row]
+    edge = supply_edge(d, us, u["side"])
+    if edge is not None and min(_edge_gap(edge, h, _size(d, field)) for h in hexes) < reach:
+        return "edge"
+    for j, e in enumerate(us):
+        if j != i and e["side"] == u["side"] and e["state"] == "steady" and e["men"] > 0 and e.get("vehicle") in A["vehicles"] \
+                and min(hdist(h, x) for h in hexes for row in footprint(d, e) for x in row) <= reach:
+            return "vehicle"
+    if any(m.get("side") == u["side"] and min(hdist(h, m["at"]) for h in hexes) <= reach for m in (field or {}).get("dumps") or []):
+        return "dump"
+    return None
+
+
+def _air_drops(d: Data, field: dict | None, rng) -> list:
+    """End of the exchange: each supply drop called (field drops: {at, side}) lands as a dump,
+    a d6 direction and 0 to ammunition.air_drop.scatter hexes off where it was aimed (kept on
+    the map). -> [drop log lines]."""
+    drops = (field or {}).pop("drops", None) or []
+    out, (cols, rows) = [], _size(d, field)
+    for m in drops:
+        dirn, n = rng.randint(1, 6) - 1, rng.randint(0, d.units["ammunition"]["air_drop"]["scatter"])
+        h = step(m["at"], dirn, n)
+        at = [min(max(h[0], 0), cols - 1), min(max(h[1], 0), rows - 1)]
+        field.setdefault("dumps", []).append({"at": at, "side": m["side"]})
+        out.append({"kind": "drop", "side": m["side"], "aim": list(m["at"]), "at": at})
+    return out
+
+
+def _edge_gap(edge: str, h, size: tuple) -> int:
+    """How many hexes lie between hex h and map edge N, S, E or W (0 on the edge)."""
+    cols, rows = size
+    return {"N": h[1], "S": rows - 1 - h[1], "W": h[0], "E": cols - 1 - h[0]}[edge]
+
+
 def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | None = None, under: list | None = None) -> list:
     """Every volley, each unit's shooting heroes with it. under: marks the units a machine gun
     fired on (suppression)."""
     log = []
     for v in volleys(d, us, field):
         _mark_mg(d, us, v, under)
+        _spend(d, us, v)
         b = us[v["dfd"]]
         opts = {"factor": form(d, b)["missile_factor"] * (100 - v["misfire"]) / 100 * v["seen"], "exposed": _exposure(d, b, False, True),
                 "penalty": v["cover"] + v["penalty"] + v["over"], "reach": v["reach"]}
@@ -3524,7 +3619,7 @@ def _morale_all(d: Data, us: list, occ: dict, before: list, acc: tuple, rng, tab
                 "men": before[i], "state": u["state"], "leader": leader_state(u), "flanked": flanked[i],
                 "contact": any(us[j]["side"] != u["side"] for j in near),
                 "friends": any(us[j]["side"] == u["side"] and us[j]["state"] == "steady" for j in near),
-                "dug": low(u) or in_bunker(d, field, u)}
+                "dug": low(u) or in_bunker(d, field, u), "no_ammo": ammo_state(d, u) == "out"}
         m = morale(d, unit, rng.randint(1, 100))
         if m["check"]:
             log.append({"kind": "morale", "unit": i, "target": m["target"], "from": u["state"], "state": m["state"]})
@@ -3557,7 +3652,7 @@ def allowance(d: Data, u: dict) -> int:
     unlimbering or resupplying does not move; unlimbered, it can only be manhandled a hex or so."""
     if (u.get("prone") or u.get("pinned")) and u["state"] not in ("broken", "fled"):   # gone to ground or pinned (a broken unit gets up and runs)
         return 0
-    if is_at_gun(d, u) and u.get("resupplying") and u["state"] not in ("broken", "fled"):
+    if u.get("resupplying") and (is_at_gun(d, u) or ammo_full(d, u)) and u["state"] not in ("broken", "fled"):
         return 0
     if is_battery(d, u) and not u.get("abandoned") and u["state"] != "broken":   # crews running from their guns run on foot
         if u.get("limbering") or u.get("resupplying"):
@@ -4362,6 +4457,9 @@ def _battery_after(d: Data, u: dict) -> None:
     that was resupplying has its rounds again, and one that has broken has left its guns."""
     if is_at_gun(d, u) and u.get("resupplying"):
         u["spent"], u["resupplying"] = 0, False
+    if u.get("resupplying") and ammo_full(d, u):
+        u.pop("ammo", None)
+        u["resupplying"] = False
     if not is_battery(d, u):
         return
     u["laid"] = u.pop("fired", None) or {}

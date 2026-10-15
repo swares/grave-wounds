@@ -786,6 +786,62 @@ down: about one wounded hero in two ends the fight down.
 A hero matters most through morale and through what happens to him: in a press of hundreds,
 one man fells few. The numbers are in `data/units.yaml` (`heroes`).
 
+## Ammunition
+
+A unit with a missile weapon carries a load into action, and runs short as it shoots. The
+numbers are in `ammunition` in `data/units.yaml`.
+
+- **Who counts.** Every unit whose weapon shoots: bows, crossbows and slings, muskets,
+  rifles, pistols, machine guns, anti-aircraft guns, grenades and rockets. Not vehicles
+  (they carry far more than a fight uses; their riders do count), batteries or anti-tank
+  guns (they count their own rounds; see *Guns*).
+- **The load, in exchanges of fire.** The rounds, arrows or bolts a man carries (a gun's
+  belts, for machine guns and anti-aircraft guns), over the weapon's rate a minute, times
+  0.3: the share of its full rate a unit really spends in an exchange it shoots, since men
+  do not fire every round they could. That share is a design estimate, the one tuned figure;
+  the loads are sourced where a regulation or account gives one, else estimates (marked so
+  in the data):
+
+| Weapon | Load | Exchanges of fire |
+|---|---|---|
+| Longbow | 48 arrows (two sheaves) | 20 |
+| Crossbow | 18 bolts | 30 |
+| Matchlock musket | 12 charges | 40 |
+| Smoothbore musket | 60 rounds | 100 |
+| Rifle-musket | 60 rounds | 100 |
+| Breech-loader | 100 rounds | 42 |
+| Service rifle (1914-53) | 120 rounds | 40 |
+| Assault rifle | 300 rounds | 67 |
+| Machine gun | 2,000 rounds a gun | 22 |
+| Hand grenade | 4 | 13 |
+| RPG | 3 rockets | 10 |
+
+- **Spending it.** Each exchange a unit shoots (aimed or blind down a fixed line) uses one
+  exchange of fire; riders shooting from a vehicle use their own. At a quarter of a full load
+  or less it is **low** and shoots at half rate (half its shooters). With none it is **out**:
+  it cannot shoot, still fights hand to hand, and checks morale at −10. Heroes with missile
+  weapons shoot while their unit can.
+- **Resupply.** On its side's move, out of contact and before it moves, **Resupply** sets a
+  unit to resupply: it neither moves nor fires that exchange, and at its end it has a full
+  load again (logged). It needs a source within 5 hexes:
+  - its side's map edge: the edge behind the way most of its standing men face (as a rule
+    the edge its new units come on from);
+  - a lorry or armoured carrier (APC or IFV) of its side, steady;
+  - a **supply dump** of its side. **Clicking the map: Supply dump** places or clears one
+    in set-up. In the battle, from the Second World War on, the same tool calls an **air
+    drop** on the moving side's move: it lands at the end of the exchange as a dump, a d6
+    direction and 0 to 2 hexes off the mark (kept on the map).
+- **In set-up** **Ammunition** sets a unit full, low or out, and **Resupply** fills it at once.
+  No battlefield starts a unit short: none of the accounts used says a unit began its fight
+  low on ammunition.
+- **The enemy commander.** A unit that is out, or low with no enemy it knows of within its
+  weapon's range, resupplies when a source is in reach. Attacking, a unit out with no source
+  in reach falls back toward its side's edge (straight across, as it falls back to an
+  objective); holding, it stays and fights hand to hand.
+- **Not yet:** riders cannot resupply aboard their carrier (they get down first), the travel
+  map does not carry a force's ammunition from one fight to the next, and there is no
+  helicopter resupply yet (it comes with the helicopter lifts).
+
 ## Machine guns and modern infantry
 
 The wars after 1865 fight with magazine rifles and machine guns, and their infantry spread

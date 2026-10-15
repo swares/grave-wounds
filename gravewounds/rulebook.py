@@ -71,7 +71,9 @@ def _field_values(d: Data) -> dict:
     U, M = d.units, d.units["melee"]
     MO, H = U["morale"], U["heroes"]
     return {
-        "f_hex": _yd(U["hex_m"]), "f_see_into": U["line_of_fire"].get("see_into", 1), "f_crest": U["line_of_fire"].get("crest_clear", 1), "f_rounds": U["exchange_rounds"], "f_tempo": round(1 / M["tempo"]),
+        "f_hex": _yd(U["hex_m"]), "ammo_burn": round(U["ammunition"]["burn"] * 100), "ammo_low": round(U["ammunition"]["low"] * 100), "ammo_reach": U["ammunition"]["reach"],
+        "ammo_bow": round(U["ammunition"]["loads"]["longbow"] / (U["missile"]["rate"]["longbow"] * U["ammunition"]["burn"])), "ammo_rifle": round(U["ammunition"]["loads"]["rifle_service"] / (U["missile"]["rate"]["rifle_service"] * U["ammunition"]["burn"])),
+        "ammo_mg": round(U["ammunition"]["loads"]["machine_gun"] / (U["missile"]["rate"]["machine_gun"] * U["ammunition"]["burn"])), "ammo_morale": U["morale"]["mods"]["no_ammo"], "f_see_into": U["line_of_fire"].get("see_into", 1), "f_crest": U["line_of_fire"].get("crest_clear", 1), "f_rounds": U["exchange_rounds"], "f_tempo": round(1 / M["tempo"]),
         "f_flank": M["flank"]["attack"], "f_rear": M["rear"]["attack"], "f_charge": M["charge"]["attack"], "f_shaken": -M["shaken"]["attack"],
         "f_pikes": M["pikes"]["attack"], "f_charge_move": U["charge_move"], "f_mounted": U["mounted_move"],
         "f_trigger": _pct(MO["trigger"]), "f_shock": _pct(MO["shock"]), "f_shaken_by": MO["shaken_by"],
