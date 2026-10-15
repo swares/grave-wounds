@@ -30,6 +30,12 @@ weather: {cond: fair, wind: calm, ground: {mud: 0, snow: 0}}
 objective: {at: [50, 42], side: 0, name: "the Redan's salient", radius: 3}
 # Unit markers on the field map (labels: names, ids or both; strength; size marks): units.yaml markers otherwise.
 markers: {labels: ids}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "The columns go out", at: 1, note: "At daybreak the riflemen, the ladder and wool-bag parties and the storming parties leave the trenches under grape and musketry."}
+  - {name: "The supports follow", at: 4, note: "The supports come out behind the storming parties.", arrive: ["Right column (Yea): supports", "Centre column: supports", "Left column (Campbell): supports"]}
+  - {name: "The Russian reserve comes up", at: 15, note: "The reserve in the Karabelnaya comes up to the line; by now the attack is failing and is soon called off.", arrive: ["Russian reserve in the Karabelnaya"]}
 ground: |
   ........xTxxxTTTxTxxxxxxxTxTxxxxTxxTxTTxxTxTxxxxxTxxTxxxTTTxxTTTTTxxxxTxTxxTTxTxxTxTxxTxxxxxxxxTTTxx
   .......xxxxxxxxxxxxxxTxTxxxxxxxxTxxTxTTxTxxxxxTxxxxxTxxxxxTTTTxxTxxTxxTTxTTTxxxxxxTxxxxxTTTTxTxTxxxT

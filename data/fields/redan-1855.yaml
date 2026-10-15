@@ -33,6 +33,12 @@ weather: {cond: fair, wind: strong, dir: N, ground: {mud: 0, snow: 0}}
 objective: {at: [50, 42], side: 0, name: "the Redan's salient", radius: 3}
 # Unit markers on the field map (labels: names, ids or both; strength; size marks): units.yaml markers otherwise.
 markers: {labels: ids}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "The stormers go over", at: 1, note: "On the French signal from the Malakhov, the covering party, the ladders and the stormers leave the advanced trench."}
+  - {name: "The supports come forward", at: 10, note: "The supports follow up piecemeal and crowd into the salient behind the stormers.", arrive: ["Supports (7th, 23rd, 33rd, 34th and 77th)"]}
+  - {name: "The Russian counter-attack", at: 80, note: "After about an hour and a half the Russian reserves come up from the Karabelnaya and drive the British back over the parapet.", arrive: ["Kamchatski and Iakutski regiments (reserve)"]}
 ground: |
   ........xTxxxTTTxTxxxxxxxTxTxxxxTxxTxTTxxTxTxxxxxTxxTxxxTTTxxTTTTTxxxxTxTxxTTxTxxTxTxxTxxxxxxxxTTTxx
   .......xxxxxxxxxxxxxxTxTxxxxxxxxTxxTxTTxTxxxxxTxxxxxTxxxxxTTTTxxTxxTxxTTxTTTxxxxxxTxxxxxTTTTxTxTxxxT

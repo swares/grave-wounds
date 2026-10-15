@@ -89,6 +89,18 @@ button:disabled{opacity:.45;cursor:default}
 .mkicon{width:26px;height:22px;flex:none;vertical-align:middle}
 .legend .mkicon{width:22px;height:19px;margin-right:2px}
 .utag{font:700 .78rem var(--mono)}
+.rules{pointer-events:none}
+.stage{margin:0;font-size:.88rem;border-left:3px solid var(--steel);padding:2px 0 2px 8px}
+fieldset.rules-row{border:0;margin:0;padding:0;min-width:0}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.move{stroke-width:.5}.move.s0{fill:var(--side0);fill-opacity:.24;stroke:var(--side0);stroke-opacity:.4}.move.s1{fill:var(--side1);fill-opacity:.24;stroke:var(--side1);stroke-opacity:.4}
+.fire{stroke:none}.fire.s0{fill:var(--side0);fill-opacity:.08}.fire.s1{fill:var(--side1);fill-opacity:.08}
+.hatch{stroke-width:1.2;stroke-opacity:.45}.hatch.s0{stroke:var(--side0)}.hatch.s1{stroke:var(--side1)}.edge{stroke:none}
+.edge-t{font-size:9px}.edge-t.s0{fill:var(--side0)}.edge-t.s1{fill:var(--side1)}
+.ref{stroke:var(--ink);stroke-opacity:.15;stroke-dasharray:2 3;stroke-width:.8}.ref-t{font-size:8px}
+.scalebox{fill:var(--panel);fill-opacity:.85}.scale{stroke:var(--ink);stroke-width:1.2;fill:none}
+.chip{fill:var(--panel);stroke-width:1.4}.chip.s0{stroke:var(--side0)}.chip.s1{stroke:var(--side1)}.chip-arrow.s0{fill:var(--side0)}.chip-arrow.s1{fill:var(--side1)}
+.oncall{pointer-events:auto}
 .units{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .units li{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:3px;padding:6px 8px;cursor:pointer}
 .units li[aria-current="true"]{border-color:var(--blood);background:var(--blood-soft)}
@@ -169,6 +181,7 @@ legend{padding:0}
         <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-armies" checked> with the armies as drawn up</label></div>
         <div style="flex:0 0 auto;align-self:end"><button class="small" id="btn-field" title="Lay out this ground, its works and weather (set-up only)">Lay it out</button></div>
       </div>
+      <p class="stage" id="stage" hidden></p>
       <output class="msg" id="msg"></output>
       <div class="mapbox" id="map" title="Click a hex to place or move the selected unit"></div>
       <div class="row marks-row">
@@ -176,6 +189,12 @@ legend{padding:0}
         <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-strength"> strength</label></div>
         <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-size"> size marks</label> <span class="muted" id="size-note" style="font-size:.8rem" hidden>no unit here has a size set</span></div>
       </div>
+      <fieldset class="row marks-row rules-row"><legend class="sr-only">Rules on the map</legend>
+        <div style="flex:0 0 auto;align-self:end"><label class="check" title="The hexes the selected unit can reach this exchange, and the ground ahead of it within its weapon's reach"><input type="checkbox" id="show-reach"> move and fire (selected unit)</label></div>
+        <div style="flex:0 0 auto;align-self:end"><label class="check" title="Where new units come in, during set-up"><input type="checkbox" id="show-edges"> entry edges</label></div>
+        <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="show-refs"> grid references and scale</label></div>
+        <div style="flex:0 0 auto;align-self:end"><label class="check" title="Batteries on call with no place on the map, on the edge behind their army"><input type="checkbox" id="show-oncall"> batteries on call</label></div>
+      </fieldset>
       <div class="legend" id="unit-legend" aria-label="Unit markers"></div>
       <div class="legend" id="legend"></div>
       <p class="muted" style="margin:0">Each unit is a block of hexes along its front (the dark edge), facing the arrow. The marker on its centre hex shows its side (rectangle or diamond) and type: see the key above. Close order holds 40 men a hex, open order 20. Units touching across a front fight; archers shoot at the nearest enemy in range in front of them.</p>
@@ -420,7 +439,9 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
   if (travelWx) S.field.weather = travelWx;
   SIZE = S.field.size.slice();
   S.fieldId = B ? fid : null;
-  S.marks = { ...markDefaults(), ...(B?.markers || {}) };   // the battlefield's marker settings, else units.yaml's
+  S.marks = { ...markDefaults(), ...(B?.markers || {}) };
+  S.entry = B?.entry || null;                       // the battlefield's entry edges, if it names them
+  S.stages = null; S.stageNo = -1; S.waiting = [];   // its phases, with the armies as drawn up (holdForStages)   // the battlefield's marker settings, else units.yaml's
   S.camp = null;
   if (B && armies && !S.forces){
     S.sides = B.sides.slice();
@@ -429,6 +450,7 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
     S.units = [];
     S.field.lifts = [];
     B.units.forEach(u => standOrFly(newUnit({ ...u, side: B.sides[u.side] }), u.lands));
+    holdForStages(B.phases);
     S.sel = S.units[0]?.id ?? null;
     S.msg = `${B.name}: the armies as drawn up. Move, change or remove any unit before the battle starts.` + objectiveNote(B);
     return;
@@ -1104,7 +1126,7 @@ function markStarts(){                            // with minefields down, where
 }
 function next(){
   if (S.phase === "over") return;
-  if (S.phase === "setup"){ S.exchange = 1; S.aiMemory = null; markStarts(); startPhase(0); S.msg = `${S.sides[0]} to move.${caughtUnawares()}`; aiMove(); return render() }
+  if (S.phase === "setup"){ S.exchange = 1; S.aiMemory = null; const staged = advanceStages(); markStarts(); startPhase(0); S.msg = `${S.sides[0]} to move.${caughtUnawares()}${staged}`; aiMove(); return render() }
   if (S.phase === 0){ const lost = drifts(0); startPhase(1); S.msg = `${S.sides[1]} to move.${lost}`; aiMove(); return render() }
   const lostB = drifts(1);
   const r = exchange(S.units, S.table, dice, S.field);
@@ -1114,7 +1136,7 @@ function next(){
   S.exchange += 1;
   const lost = [0, 1].filter(k => !standing(k));
   const verb = lost.length > 1 ? "have" : "has";
-  S.msg = (lost.length ? `${lost.map(k => S.sides[k]).join(" and ")} ${verb} no unit left standing.` : "") + lostB;
+  S.msg = (lost.length ? `${lost.map(k => S.sides[k]).join(" and ")} ${verb} no unit left standing.` : "") + lostB + advanceStages();
   startPhase(0);
   aiMove();
   render();
@@ -1170,6 +1192,7 @@ const ORDER_TEXT = {                              // (who, them, o, up, facing) 
   unhook: (who, them) => `${who} unhook their guns facing ${them}: they fire from the next exchange.`,
   dig: who => `${who} dig in at the objective (${nOf(FD.units.dig_in.exchanges, "exchange")} without moving or firing).`,
 };
+const facText = o => (o.fac ? ", a forward air controller talking them on" : "");   // an air order's controller, if one sees the aim
 const airRunText = a => ({ napalm: ", a napalm strip along their front", strafe: ", a strafing run along their front" }[a] || "");   // what an air order flies, if not a plain attack
 function throughText(o){                          // ", through Covering party, who are jostled": the friends a charge passed through
   return o.through?.length ? ", through " + o.through.map(k => S.units[k]?.name).join(", ") + ", who are jostled" : "";
@@ -1178,7 +1201,7 @@ function orderText(o){                            // "Billmen (Yorkists) move 4 
   const t = S.units[o.target];
   let them = "the enemy";
   if (t) them = o.last ? `where ${unitName(t)} were last seen (exchange ${o.last})` : unitName(t);
-  if (o.act === "fire") return `${supports()[o.battery]?.name || "A battery"} are called on ${them} at ${hexName(o.hex)}${airRunText(o.attack)}.`;
+  if (o.act === "fire") return `${supports()[o.battery]?.name || "A battery"} are called on ${them} at ${hexName(o.hex)}${airRunText(o.attack)}${facText(o)}.`;
   if (o.act === "displace") return `${supports()[o.battery]?.name || "A battery"} displace${o.to ? " to " + hexName(o.to) : ""}: ${supports()[o.by]?.name || "enemy guns"} have them under counter-battery fire (silent for ${nOf(FD.units.indirect.kinds[supports()[o.battery]?.kind]?.displace || 1, "exchange")}, then no longer located).`;
   if (o.act === "illum") return `${supports()[o.battery]?.name || "A battery"} are called to fire illumination over ${hexName(o.hex)}, where ${them} were last seen.`;
   if (o.act === "creep") return `${supports()[o.battery]?.name || "A battery"} are called on ${them} at ${hexName(o.hex)} as a creeping barrage ahead of ${unitName(S.units[o.for])}: it lifts ${nOf(FD.units.commander.creep.step, "hex", "hexes")} a time for ${nOf(FD.units.commander.creep.lines, "line")}.`;
@@ -1748,6 +1771,126 @@ function unitSvg(u){
   g += `<text class="ulabel side" x="${(x + (k === 0 ? MK.w : MK.dw) + 2.5).toFixed(1)}" y="${(y + 3).toFixed(1)}">${name}${men}${star}${low}</text></g>`;
   return g;
 }
+// ---------- game rules drawn on the map: the selected unit's move and fire, entry edges, grid references and scale, batteries on call ----------
+const shows = () => S.show || (S.show = { reach: true, edges: true, refs: true, oncall: true });
+const hatchPattern = k => `<pattern id="hatch${k}" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(${k ? -45 : 45})"><line x1="0" y1="0" x2="0" y2="5" class="hatch s${k}"/></pattern>`;
+const hatchDefs = () => "<defs>" + hatchPattern(0) + hatchPattern(1) + "</defs>";
+let fireCache = { key: null, svg: "" }, moveCache = { key: null, svg: "" };
+function fireCap(u, mid){                         // the farthest it could reach in this light and weather (straight ahead, height allowed for): the fire scan stops there
+  const ahead = step(mid, u.facing);
+  let cap = 0;
+  while (cap < 400){
+    const d = cap + 1, wx = shotWeather(S.field, u.weapon, d, mid, step(ahead, u.facing, d - 1), seerOf(u));
+    if (wx.blocked || !reaches(u, d, (wx.reach || 0) + 40)) break;
+    cap = d;
+  }
+  return cap;
+}
+function nearestFront(fc, fv, t){                 // [distance, index] of the nearest front hex that t is ahead of (index -1: none)
+  const r = t[1], q = t[0] - (r - (r & 1)) / 2, z = -q - r;   // t's cube coordinates (as cube), without an array for each hex
+  let best = -1, bd = Infinity;
+  for (let j = 0; j < fc.length; j++){
+    const s = fc[j], dq = q - s[0], dr = r - s[1], dz = z - s[2];
+    const d = Math.max(Math.abs(dq), Math.abs(dr), Math.abs(dz));
+    if (dq * fv[0] + dr * fv[1] + dz * fv[2] > 0 && d < bd){ bd = d; best = j }
+  }
+  return [bd, best];
+}
+function inFire(u, h, t, dist){            // whether u's weapon reaches t from front hex h, with the weather and the height between (as nearestAhead)
+  const wx = shotWeather(S.field, u.weapon, dist, h, t, seerOf(u));
+  return !wx.blocked && reaches(u, dist, (wx.reach || 0) + heightEdge(S.field, u.weapon, h, t)[1]);
+}
+function fireHexes(u){                            // the hexes ahead of u's front within its weapon's reach, seen from the nearest front hex
+  const front = footprint(u)[0], fv = fvec(u.facing), fc = front.map(cube);
+  const cap = fireCap(u, front[Math.floor(front.length / 2)]);
+  if (!cap) return [];
+  const cols = front.map(h => h[0]), rows = front.map(h => h[1]), out = [];
+  const c0 = Math.max(0, Math.min(...cols) - cap - 1), c1 = Math.min(SIZE[0] - 1, Math.max(...cols) + cap + 1);
+  const r0 = Math.max(0, Math.min(...rows) - cap - 1), r1 = Math.min(SIZE[1] - 1, Math.max(...rows) + cap + 1);
+  for (let r = r0; r <= r1; r++){
+    for (let c = c0; c <= c1; c++){
+      const t = [c, r], [dist, j] = nearestFront(fc, fv, t);
+      if (j >= 0 && dist <= cap && inFire(u, front[j], t, dist)) out.push(t);
+    }
+  }
+  return out;
+}
+function fireSvg(u, k){                           // the ground u can shoot into, cached until it or the weather changes
+  const key = JSON.stringify([u.id, u.pos, u.facing, u.men, u.width, u.formation, u.weapon, u.kit, u.nv, S.field.weather, S.field.smoke, S.field.lit]);
+  if (fireCache.key !== key){
+    const hexes = isMeleeOnly(u) ? [] : fireHexes(u);
+    fireCache = { key, svg: hexes.map(t => `<polygon class="fire s${k}" points="${pts(xy(t))}"/>`).join("") };
+  }
+  return fireCache.svg;
+}
+function moveSvg(u, i, k){                        // the hexes its centre can reach this exchange (reachable, its allowance)
+  const key = JSON.stringify([u.id, u.state, u.prone, u.pinned, u.limbered, u.limbering, S.field.weather, S.field.ground && Object.keys(S.field.ground).length, S.units.map(v => [v.id, v.pos, v.facing, v.men, v.width, v.state])]);
+  if (moveCache.key === key) return moveCache.svg;
+  let g = "";
+  for (const [, [h]] of reachable(S.units, i, SIZE, allowance(u), S.field)) g += `<polygon class="move s${k}" points="${pts(xy(h))}"/>`;
+  moveCache = { key, svg: g };
+  return g;
+}
+function reachSvg(){                              // the selected unit's move this exchange and its field of fire
+  const u = selUnit(), i = u ? S.units.indexOf(u) : -1;
+  if (!shows().reach || !u || out_(u) || !footprint(u).length) return "";
+  const k = sideNo(u);
+  return `<g class="rules reach">${fireSvg(u, k)}${moveSvg(u, i, k)}</g>`;
+}
+const isMeleeOnly = u => !isGun(u.weapon) && !Array.from({ length: 3 }, (_, d) => reaches(u, d + 1)).some(Boolean);   // no reach at 1 to 3 hexes: a hand weapon
+const F1 = v => v.toFixed(1);
+function edgeBand(e){                             // [first row, last row, first column, last column] of the 8 hexes in from edge e
+  const [W, H] = SIZE;
+  return { N: [0, 7, 0, W - 1], S: [H - 8, H - 1, 0, W - 1], W: [0, H - 1, 0, 7], E: [0, H - 1, W - 8, W - 1] }[e];
+}
+function edgeLabel(e){                            // [hex, text-anchor] for edge e's label
+  const [W, H] = SIZE, mid = [Math.floor(W / 2), Math.floor(H / 2)];
+  return { N: [[mid[0], 2], "middle"], S: [[mid[0], H - 3], "middle"], W: [[1, mid[1]], "start"], E: [[W - 2, mid[1]], "end"] }[e];
+}
+function edgesSvg(){                              // set-up: where each side's new units come in (startSpots: 8 hexes in from its entry edge), hatched, with a label
+  if (!shows().edges || S.phase !== "setup") return "";
+  let g = "", t = "";
+  for (const k of [0, 1]){
+    const e = entryEdge(k), [r0, r1, c0, c1] = edgeBand(e), [at, anchor] = edgeLabel(e), [x, y] = xy(at);
+    for (let r = r0; r <= r1; r++){
+      for (let c = c0; c <= c1; c++) g += `<polygon class="edge" fill="url(#hatch${k})" points="${pts(xy([c, r]))}"/>`;
+    }
+    t += `<text class="ulabel edge-t s${k}" x="${F1(x)}" y="${F1(y + 4)}" style="text-anchor:${anchor}">${esc(S.sides[k])}: new units come in here</text>`;
+  }
+  return `<g class="rules">${g}${t}</g>`;
+}
+function refsSvg(){                               // every tenth column and row numbered and dashed (hexes are named 34,60 in messages), and a scale bar
+  if (!shows().refs) return "";
+  let g = "";
+  const [, yTop] = xy([0, 0]), [xLeft] = xy([0, 0]), [, yBot] = xy([0, SIZE[1] - 1]), [xRight] = xy([SIZE[0] - 1, 0]);
+  for (let c = 9; c < SIZE[0]; c += 10){ const [x] = xy([c, 0]); g += `<line class="ref" x1="${F1(x)}" y1="${F1(yTop + 6)}" x2="${F1(x)}" y2="${F1(yBot)}"/><text class="ulabel ref-t" x="${F1(x)}" y="${F1(yTop + 3)}">${c + 1}</text>` }
+  for (let r = 9; r < SIZE[1]; r += 10){ const [, y] = xy([0, r]); g += `<line class="ref" x1="${F1(xLeft + 12)}" y1="${F1(y)}" x2="${F1(xRight)}" y2="${F1(y)}"/><text class="ulabel side ref-t" x="${F1(xLeft - 4)}" y="${F1(y + 3)}">${r + 1}</text>` }
+  const n = SIZE[0] >= 60 ? 10 : 5, w = n * HW, [bx, by] = xy([2, SIZE[1] - 2]);
+  g += `<rect class="scalebox" x="${F1(bx - 4)}" y="${F1(by - 13)}" width="${F1(w + 58)}" height="19" rx="2"/><path class="scale" d="M${F1(bx)},${F1(by)}h${F1(w)}M${F1(bx)},${F1(by - 4)}v4M${F1(bx + w / 2)},${F1(by - 3)}v3M${F1(bx + w)},${F1(by - 4)}v4"/>`;
+  g += `<text class="ulabel side ref-t" x="${F1(bx + w + 4)}" y="${F1(by + 2)}">${n} hexes · ${fmtM(n * FD.units.hex_m)}</text>`;
+  return `<g class="rules">${g}</g>`;
+}
+function onCallSvg(){                             // each side's batteries on call with no place on the map: a chip on the edge behind its army
+  if (!shows().oncall) return "";
+  const bySide = [[], []];
+  supports().filter(b => !b.place).forEach(b => bySide[S.sides.indexOf(b.side) === 1 ? 1 : 0].push(b));
+  let g = "";
+  bySide.forEach((list, k) => {
+    if (!list.length) return;
+    const us = S.units.filter(u => sideNo(u) === k && !out_(u));
+    const up = us.length ? us.reduce((s, u) => s + Math.sin(-(60 * u.facing + 30) * Math.PI / 180), 0) < 0 : k === 0;   // its army faces up the map: the batteries are behind it, at the bottom
+    const [, yEdge] = xy([0, up ? SIZE[1] - 1 : 0]);
+    list.forEach((b, j) => {
+      const K = FD.units.indirect.kinds[b.kind] || {}, text = `${b.tubes} × ${(K.name || b.kind).toLowerCase()} · on call`;
+      const w = 30 + text.length * 4.6, [x] = xy([Math.round(SIZE[0] * (list.length > 1 ? 0.3 + 0.4 * j / (list.length - 1) : 0.5)), 0]), y = up ? yEdge - 20 : yEdge + 2;
+      g += `<g class="oncall"><title>${esc(b.name)} (${esc(b.side)})</title><rect class="chip s${k}" x="${F1(x - w / 2)}" y="${F1(y)}" width="${F1(w)}" height="18" rx="3"/>`
+        + `<g transform="translate(${F1(x - w / 2 + 12)},${F1(y + 9)}) scale(0.6)">${markSvg("artillery", k, 0, 0)}</g>`
+        + `<text class="ulabel side" x="${F1(x - w / 2 + 22)}" y="${F1(y + 12)}">${esc(text)}</text>`
+        + `<path class="chip-arrow s${k}" d="M${F1(x)},${F1(up ? y : y + 18)} l-4,${up ? -5 : 5} h8z"/></g>`;
+    });
+  });
+  return g ? `<g class="rules">${g}</g>` : "";
+}
 function unitLegend(){                            // the unit types on the map, each in the first side's frame that has one, and the two frames
   const seen = new Map();
   for (const u of S.units) if (u.state !== "fled" && !seen.has(unitType(u))) seen.set(unitType(u), sideNo(u));
@@ -1783,14 +1926,17 @@ function renderMap(){
   }
   ensureTags();
   const units = S.units.map(unitSvg).join(""), W = HW * (SIZE[0] + 0.5), H = 1.5 * R * (SIZE[1] - 1) + 2 * R;
-  $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" style="min-width:${SIZE[0] * 13}px">${hx}${worksSvg()}${units}${supportSvg()}</svg>`;
+  $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" style="min-width:${SIZE[0] * 13}px">${hatchDefs()}${hx}${worksSvg()}${edgesSvg()}${reachSvg()}${units}${supportSvg()}${refsSvg()}${onCallSvg()}</svg>`;
   $("#map-scale").textContent = `${SIZE[0]} × ${SIZE[1]} hexes · ${fmtM(FD.units.hex_m)} a hex · an exchange is about a minute`;
   $("#hex-size").textContent = fmtM(FD.units.hex_m);
   $("#unit-legend").innerHTML = unitLegend();
+  const stage = stageText();
+  $("#stage").hidden = !stage; $("#stage").innerHTML = stage;
   const M = marks();
   const sized = S.units.some(u => u.size);          // size marks need a unit with a size: say so rather than tick a box that draws nothing
   $("#sel-labels").value = M.labels; $("#chk-strength").checked = M.strength; $("#chk-size").checked = M.size && sized; $("#chk-size").disabled = !sized;
   $("#size-note").hidden = sized;
+  const V = shows(); for (const k of ["reach", "edges", "refs", "oncall"]) $("#show-" + k).checked = V[k];
 }
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
 const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"], ["sappers", "sappers"], ["shielded", "shielded"], ["ladders", "ladders"], ["jostled", "jostled"], ["mining", "laying mines"], ["clearing", "lifting mines"]];
@@ -2365,7 +2511,8 @@ function byAir(u, f){                             // the unit comes on by air at
   S.msg = `${unitName(u)} (${men} men) will come in by air at ${lz[0] + 1},${lz[1] + 1}: up to ${FD.units.heliborne.lift} men a landing zone at the end of each exchange.`;
   render();
 }
-function setUp(u, k){                             // set-up: inside the camp for its defenders, else the first free spot down its side's edge; as wide as asked, else narrower and deeper
+function setUp(u, k){                             // set-up: inside the camp for its defenders, else the first free spot along its side's entry edge, facing into the map; as wide as asked, else narrower and deeper
+  u = { ...u, facing: EDGE_FACING[entryEdge(k)] };
   for (const width of entryWidths(u.width)){
     const pos = startSpots(k, footprint({ ...u, width, pos: [0, 0] }).length).find(h => fits([...S.units, { ...u, width, pos: h }], S.units.length, { ...u, width, pos: h }, SIZE, S.field));
     if (!pos) continue;
@@ -2378,8 +2525,62 @@ function setUp(u, k){                             // set-up: inside the camp for
   S.msg = "No room for it along the edge, even in column: make room, or add fewer men.";
   render();
 }
-function bringOn(u, k){                           // a unit joining during the battle: at its side's back edge, facing the way the side faces; it moves next exchange
-  const facing = sideFacing(k);
+// ---------- phases: a battlefield's stages, each from an exchange, some bringing on units held back until then ----------
+function holdForStages(phases){                   // the battlefield's phases; the units they bring on wait off the map (numbered first, so B5 is still B5)
+  if (!phases?.length) return;
+  ensureTags();
+  S.stages = structuredClone(phases);
+  S.stageNo = -1;
+  S.waiting = [];
+  S.stages.forEach((st, i) => (st.arrive || []).forEach(name => {
+    const u = S.units.find(v => v.name === name);
+    if (u){ S.waiting.push({ stage: i, unit: u }); S.units = S.units.filter(v => v !== u) }
+  }));
+}
+function placeArrival(u, k){                      // where an arriving unit comes on: where the battlefield draws it if there is room, else at its side's entry edge
+  if (fits([...S.units, u], S.units.length, u, SIZE, S.field)) return u;
+  const facing = EDGE_FACING[entryEdge(k)];
+  for (const width of entryWidths(u.width)){
+    const pos = entrySpots(facing, footprint({ ...u, width, pos: [0, 0], facing }).length).find(h => fits([...S.units, { ...u, width, pos: h, facing }], S.units.length, { ...u, width, pos: h, facing }, SIZE, S.field));
+    if (pos) return { ...u, width, pos, facing };
+  }
+  return null;
+}
+function advanceStages(){                         // at the start of an exchange: begin each phase whose exchange has come, and bring on its units (any with no room wait for the next exchange)
+  if (!S.stages) return "";
+  const notes = [];
+  while (S.stageNo + 1 < S.stages.length && S.stages[S.stageNo + 1].at <= S.exchange){
+    S.stageNo += 1;
+    const st = S.stages[S.stageNo];
+    S.log.unshift({ cls: "head", text: `Phase ${S.stageNo + 1} of ${S.stages.length}: ${st.name}.${st.note ? " " + st.note : ""}` });
+    notes.push(`Phase ${S.stageNo + 1}: ${st.name}.`);
+  }
+  const came = [];
+  S.waiting = S.waiting.filter(w => {
+    if (w.stage > S.stageNo) return true;
+    const at = placeArrival(w.unit, sideNo(w.unit));
+    if (!at) return true;
+    S.units.push({ ...at, arrived: S.exchange });
+    came.push(`${unitName(at)} (${at.men})`);
+    return false;
+  });
+  if (came.length) S.log.unshift({ cls: "head", text: `Coming on: ${came.join(", ")}. They can move next exchange.` });
+  return (notes.length ? " " + notes.join(" ") : "") + (came.length ? ` Coming on: ${came.join(", ")}.` : "");
+}
+function stageText(){                             // the strip above the map: the phase now, what it brought, and what comes next
+  if (!S.stages) return "";
+  const list = S.stages, i = S.stageNo, waitingFor = j => S.waiting.filter(w => w.stage === j).map(w => w.unit.name);
+  const coming = j => (waitingFor(j).length ? "; brings on " + waitingFor(j).join(", ") : "");
+  const entry = (st, j) => esc(`${j + 1}. ${st.name} (exchange ${st.at}${coming(j)})`);
+  if (i < 0) return "<b>Phases:</b> " + list.map(entry).join(" · ");
+  const st = list[i], nx = list[i + 1];
+  const late = waitingFor(i).length ? ` Waiting for room: ${esc(waitingFor(i).join(", "))}.` : "";
+  const nextText = nx ? "Next, at exchange " + nx.at + ": " + nx.name + coming(i + 1) + "." : "";
+  const next = nx ? ` <span class="muted">${esc(nextText)}</span>` : "";
+  return `<b>Phase ${i + 1} of ${list.length}: ${esc(st.name)}.</b> ${esc(st.note || "")}${late}${next}`;
+}
+function bringOn(u, k){                           // a unit joining during the battle: at its side's entry edge, facing into the map; it moves next exchange
+  const facing = EDGE_FACING[entryEdge(k)];
   for (const width of entryWidths(u.width)){         // as wide as asked, else narrower and deeper until it fits
     const spots = entrySpots(facing, footprint({ ...u, width, pos: [0, 0], facing }).length);
     const pos = spots.find(h => fits([...S.units, { ...u, width, pos: h, facing }], S.units.length, { ...u, width, pos: h, facing }, SIZE, S.field));
@@ -2404,6 +2605,18 @@ function sideFacing(k){                           // the way most of a side's me
   if (Math.max(...n) > 0) return n.indexOf(Math.max(...n));
   return k ? 3 : 0;
 }
+const EDGE_FACING = { S: 1, N: 4, W: 0, E: 3 }, OPPOSITE = { S: "N", N: "S", W: "E", E: "W" };
+const EDGE_BEHIND = ["W", "S", "E", "E", "N", "W"];   // the map edge behind units facing 0-5 (as entrySpots)
+const edgeBehind = f => EDGE_BEHIND[mod6(f)];
+const fielded = k => S.units.some(u => sideNo(u) === k && u.men > 0 && u.state !== "fled");
+function entryEdge(k){                            // where side k's new units come in: the battlefield's entry, else the edge behind the way most of its men face; the other side's opposite edge if they would share one
+  if (S.entry) return S.entry[k];
+  const own = k => (fielded(k) ? edgeBehind(sideFacing(k)) : null);
+  const mine = own(k), theirs = own(1 - k);
+  if (mine && !(k === 1 && mine === theirs)) return mine;
+  if (theirs) return OPPOSITE[theirs];
+  return k ? "E" : "W";                           // no units on either side: west and east
+}
 function entrySpots(facing, ranks){               // front hexes for a unit `ranks` deep with its rear at the map edge behind a side facing this way, middle outwards
   const [W, H] = SIZE, mid = (n, m) => Array.from({ length: n }, (_, i) => Math.floor(m / 2) + (i % 2 ? -1 : 1) * Math.ceil(i / 2)).filter(x => x >= 0 && x < m);
   const inner = Array.from({ length: 12 }, (_, d) => d + ranks), out = [];
@@ -2422,10 +2635,16 @@ function formationFor(weapon, chosen){           // guns in battery order, machi
   if (isAtGun({ weapon })) return "at_gun";
   return ["battery", "mg", "at_gun"].includes(chosen) ? "close" : chosen;
 }
-function startSpots(k, ranks = 1){                // its front hexes down its side's edge, far enough in for `ranks` rows behind
-  const edge = [], c = k ? SIZE[0] - 8 - (ranks - 1) : 7 + (ranks - 1);
-  if (c < 0 || c >= SIZE[0]) return edge;
-  for (let r = 2; r < SIZE[1] - 2; r++) edge.push([c, r]);
+function edgeLine(e, d){                          // the hexes d in from edge e, along it (2 from each end), middle outwards
+  const [W, H] = SIZE, across = e === "W" || e === "E", n = across ? H : W;
+  if (d >= (across ? W : H)) return [];
+  const at = { W: i => [d, i], E: i => [W - 1 - d, i], N: i => [i, d], S: i => [i, H - 1 - d] }[e], line = [];
+  for (let i = 2; i < n - 2; i++) line.push(at(i));
+  const along = across ? 1 : 0;
+  return line.sort((a, b) => Math.abs(a[along] - n / 2) - Math.abs(b[along] - n / 2));
+}
+function startSpots(k, ranks = 1){                // its front hexes along its side's entry edge, 8 hexes in with `ranks` rows behind it (its defenders inside the camp first)
+  const edge = edgeLine(entryEdge(k), 7 + (ranks - 1));
   if (k || !S.camp) return edge;
   const inside = [];
   for (let r = 0; r <= S.camp.radius; r++) inside.push(...ringWalk(S.camp.centre, r));
@@ -2465,6 +2684,7 @@ function followerUnit(o, side, k){                // one career's followers as a
   const weapon = ok.includes(o.weapon) ? o.weapon : ok.find(w => ranged(w) === ranged(o.weapon) && !isGun(w)) || ok[0], shoots = ranged(weapon);
   const u = newUnit({ name: o.name, side, men: o.men, quality: o.quality, weapon, kit: FD.kits[o.kit] ? o.kit : "none",
     formation: shoots ? "open" : "close", mounted: o.mounted, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0, medics: o.medics, medic_quality: o.medic_quality });
+  u.facing = EDGE_FACING[entryEdge(k)];
   const spot = startSpots(k).find(pos => fits([...S.units, { ...u, pos }], S.units.length, { ...u, pos }, SIZE, S.field));
   if (!spot) return null;
   u.pos = spot;
@@ -2553,6 +2773,7 @@ function init(){
   $("#btn-narrow").onclick = () => reshape(-1);
   $("#btn-wider").onclick = () => reshape(1);
   $("#btn-undo").onclick = () => { const u = selUnit(); if (u && S.start){ const i = idx(u.id); S.units[i] = { ...S.start[i] }; S.msg = ""; render() } };
+  for (const k of ["reach", "edges", "refs", "oncall"]) $("#show-" + k).onchange = e => { shows()[k] = e.target.checked; render() };
   $("#sel-labels").onchange = e => { marks().labels = e.target.value; render() };
   $("#chk-strength").onchange = e => { marks().strength = e.target.checked; render() };
   $("#chk-size").onchange = e => { marks().size = e.target.checked; render() };
