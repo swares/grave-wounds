@@ -275,6 +275,18 @@ a street or along it, not through a block. At Fallujah, Keating and Hue a few un
 hex or a few nearer the edge of their cover than before, so that they fire from where they
 are drawn up.
 
+**Dead ground.** Ground on the line between two hexes that stands higher than both of them (a
+slope or high ground) hides each from the other. Two men on the flat either side of a rise
+cannot see each other, and neither can a man on the flat and one on a slope behind a higher
+crest. A man on the top sees down both slopes, because nothing between stands higher than
+him. Crest hexes within 1 hex of either end (`line_of_fire.crest_clear`) do not count, so a
+unit pulled up just behind a crest (a tank hull-down) sees over it and is seen. Dead ground
+blocks whatever sight blocks: aimed fire ("Higher ground between: dead ground" in the log),
+direct gun fire and vehicles' guns, calling fire, and what the enemy commander's units see.
+Shell fire, bombs and a machine gun firing blind down its fixed line still need no sight. It
+applies on the field map; the roller's battle map has no heights. At 73 Easting the Iraqi
+tanks dug in behind the rise cannot be seen, nor see, until Eagle Troop comes onto it.
+
 **Range** is the weapon's battle-map range in 2-yard (2 m) hexes, divided by 5 for field hexes:
 a longbow's long range of about 270 yards (250 m) is 25 field hexes.
 
@@ -1168,7 +1180,8 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   only the front rank. Striking up a bank, ditch or wall costs its height (−10%, a wall
   −20%), as does striking up onto high ground. Horses charging into stakes or felled trees
   get no charge bonus.
-- **Seeing:** woods and buildings block the sight of men calling fire and of aimed shots
+- **Seeing:** higher ground between two men than either stands on hides them from each other
+  (*Dead ground*). Woods and buildings block the sight of men calling fire and of aimed shots
   (*Sight through cover*), unless they stand higher than them: from high ground or a tall
   building a man sees over woods and lower roofs, and from a slope over woods and houses on
   the flat. A man sees one hex into cover, and out of it from its edge. **Scrub and

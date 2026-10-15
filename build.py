@@ -421,6 +421,7 @@ def _ground_rules(d) -> list[str]:
         "(a man sees out of a wood's edge and into it); "
         f"scrub and orchards thin sight instead: each hex of them between costs aimed fire {d.units['line_of_fire']['thin']['per']}%, and more than "
         f"{d.units['line_of_fire']['thin']['blind_past']} block it as woods do; rubble's low heaps give cover but do not block sight; from higher ground a man sees over lower woods and roofs and shoots over units below; "
+        f"ground between higher than both ends is dead ground and blocks sight, except within {d.units['line_of_fire'].get('crest_clear', 1)} hex of either end (hull-down); "
         "shell fire and a machine gun's fixed line need no sight. A unit ordered to breach puts half its front rank to hacking at the work in front "
         f"(a field-map side takes {d.units['hex_m'] / d.wounds['combat']['move']['hex_m']:g} times a battle-map side's breach figure). "
         f"Escalade: men on foot marked with ladders fight across a palisade, wall or barred gate, {round(100 * d.units['escalade']['share'])}% of each front hex's front rank (at least one) at -{d.units['escalade']['penalty']}%, the defenders' front rank striking back, "

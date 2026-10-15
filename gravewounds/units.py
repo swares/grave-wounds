@@ -1699,6 +1699,29 @@ def _screen_hexes(d: Data, field: dict | None, flag: str = "screen") -> set:
     return hit[2]
 
 
+def _raised_hexes(d: Data, field: dict | None) -> dict:
+    """The field's open ground that stands above the flat ("q,r": height): slopes and high ground
+    (tall buildings screen sight as buildings do, so they are left to clear_sight)."""
+    g, kinds = (field or {}).get("ground") or {}, d.units["ground"]
+    hit = _SCREENS.get((id(g), "height"))
+    if hit is None or hit[0] is not g or hit[1] != len(g):
+        hit = (g, len(g), {k: kinds[v]["height"] for k, v in g.items() if kinds.get(v, {}).get("height", 0) > 0 and not kinds[v].get("screen")})
+        _SCREENS[(id(g), "height")] = hit
+    return hit[2]
+
+
+def over_crest(d: Data, field: dict | None, h, t, line: list) -> bool:
+    """Dead ground: whether open ground (a slope or high ground) higher than both h and t stands
+    on the line between them (not within line_of_fire.crest_clear hexes of either end: a man just behind a crest sees
+    over it, and is seen)."""
+    raised = _raised_hexes(d, field)
+    if not raised:
+        return False
+    k = d.units["line_of_fire"].get("crest_clear", 1)
+    top = max(height_at(d, field, h), height_at(d, field, t))
+    return any(raised.get(f"{y[0]},{y[1]}", 0) > top for y in line[1 + k:len(line) - 1 - k])
+
+
 def thinned(d: Data, field: dict | None, h, t, dist: int, line: list | None = None) -> int:
     """How many hexes of light cover (scrub, orchards) lie on the line from h to t, not the
     ends, as high as where the man at h stands."""
@@ -1710,15 +1733,18 @@ def thinned(d: Data, field: dict | None, h, t, dist: int, line: list | None = No
 
 
 def clear_sight(d: Data, field: dict | None, h, t, dist: int, line: list | None = None) -> bool:
-    """Whether a man at hex h sees hex t to aim at it: no ground that screens (woods, buildings)
-    on the line between as high as where he stands, past the first line_of_fire.see_into hexes
+    """Whether a man at hex h sees hex t to aim at it: no ground higher than both ends between
+    (over_crest: dead ground), no ground that screens (woods, buildings) on the line between as
+    high as where he stands, past the first line_of_fire.see_into hexes
     at either end (he sees out of a screen's edge, and into it), and no more than
     line_of_fire.thin.blind_past hexes of light cover between. line: ray(h, t, dist), if known."""
     cover, L = _screen_hexes(d, field), d.units["line_of_fire"]
-    if not cover and not _screen_hexes(d, field, "light"):
+    if not cover and not _screen_hexes(d, field, "light") and not _raised_hexes(d, field):
         return True
     k = L.get("see_into", 1)
     line, up = line or ray(h, t, dist), height_at(d, field, h)
+    if over_crest(d, field, h, t, line):
+        return False
     if any(f"{y[0]},{y[1]}" in cover and height_at(d, field, y) >= up for y in line[1 + k:len(line) - 1 - k]):
         return False
     return thinned(d, field, h, t, dist, line) <= L["thin"]["blind_past"]
@@ -1729,9 +1755,12 @@ def shot_weather(d: Data, field: dict | None, weapon: str, dist: int, h=None, t=
     wind's direction): {blocked, penalty, misfire, reach}. Smoke on the line blocks it, and so
     do woods and buildings between (clear_sight), unless it is fired blind. seer:
     the shooter in the dark, {kit, blind} (see in_the_dark)."""
-    line = ray(h, t, dist) if h is not None and t is not None and ((field or {}).get("smoke") or _screen_hexes(d, field) or _screen_hexes(d, field, "light")) else None
+    line = ray(h, t, dist) if h is not None and t is not None and ((field or {}).get("smoke") or _screen_hexes(d, field) or _screen_hexes(d, field, "light")
+                                                                    or _raised_hexes(d, field)) else None
     if line and smoked(field, line) and not sees_smoke(d, seer):
         return {"blocked": "Smoke: no one can see to shoot through it.", "penalty": 0, "misfire": 0, "reach": 0}
+    if line and not (seer or {}).get("blind") and over_crest(d, field, h, t, line):
+        return {"blocked": "Higher ground between: dead ground, no one can see over it to shoot.", "penalty": 0, "misfire": 0, "reach": 0}
     if line and not (seer or {}).get("blind") and not clear_sight(d, field, h, t, dist, line):
         return {"blocked": "Woods, buildings or thick scrub between: no one can see to aim through them.", "penalty": 0, "misfire": 0, "reach": 0}
     if is_gun(d, weapon):

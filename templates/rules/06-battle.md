@@ -22,6 +22,13 @@ come up to {{f_charge_move}} times its move: a **charge**. A unit in contact can
 cannot pass through each other, except that a steady unit charging may pass through its own
 side's men to reach the enemy; the units it passes through lose half their move that exchange.
 
+**Seeing.** To aim, to lay a gun on a target or to call fire, a man must see it. Woods and
+buildings between block his sight unless they stand lower than he does; he sees
+{{f_see_into}} hex into them, and out of them from their edge. Ground between that stands
+higher than both him and his target is **dead ground**: a rise hides each from the other.
+A crest within {{f_crest}} hex of either man does not count, so a man or a tank pulled up
+just behind it sees over it and is seen, and a man on the top sees down both slopes.
+
 ## An exchange {#exchange}
 
 1. **Who strikes.** In melee, the front rank of each hex touching the enemy, and one more

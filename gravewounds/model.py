@@ -845,6 +845,9 @@ def _units_extra_errors(d: Data) -> list[str]:
     for wid in U.get("line_of_fire", {}).get("arcing", []):
         if wid not in d.weapons or "range" not in d.weapons[wid]:
             errors.append(f"units.yaml: line_of_fire.arcing names {wid}, which is not a weapon with a range")
+    cc = U.get("line_of_fire", {}).get("crest_clear", 1)
+    if not isinstance(cc, int) or cc < 0:
+        errors.append("units.yaml: line_of_fire.crest_clear must be a whole number of 0 or more")
     return errors + _pikes_errors(d) + _indirect_errors(d) + _assault_errors(d) + _guns_errors(d)
 
 
