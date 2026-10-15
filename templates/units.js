@@ -2231,7 +2231,7 @@ function gapLeft(us, side, plan){                 // where the first of its unit
   plan.stood = Object.fromEntries(us.map((u, j) => [u, j]).filter(([u]) => u.side === side && !ROUTED.has(u.state) && u.men > 0).map(([u, j]) => [String(u.id ?? j), [...u.pos]]));
   return hole;
 }
-const plugging = (field, u) => (u.plug ? { ...(field || {}), objective: [...u.plug], objective_radius: null } : field);   // a reserve unit sent to plug a gap sees that hex as its objective (as commander._plugging)
+const plugging = (field, u) => (u.plug ? { ...field, objective: [...u.plug], objective_radius: null } : field);   // a reserve unit sent to plug a gap sees that hex as its objective (as commander._plugging)
 function layGuns(us, side, [size, field, known, exchange]){   // its batteries and anti-tank guns on the map turn to face the nearest enemy it knows of (as commander._lay_guns)
   const out = [], occ = occupancy(us), kf = knownFoes(known);
   us.forEach((u, i) => {
