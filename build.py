@@ -441,7 +441,7 @@ def _gun_rules(d) -> list[str]:
         f"Round shot strikes the unit ({bands(rs['strike'])}), then each man in its path (the ranks deep, at most {rs['path_max']}) is hit at {rs['file']}%, so columns suffer most. "
         f"Canister throws {cn['balls']} chances a round ({bands(cn['strike'])}). Cover, the weather and open order cut both. Each man hit takes a wound roll at {A['attack']}% with no parry.",
         f"<b>Targets and line of fire:</b> the GM can name a battery's target; it fires at it when it can, otherwise at the nearest. "
-        "The GM can order its shot (canister only within canister range) and split off sections of its guns at other targets, each with its own shot (one gun stays with the battery). "
+        "The GM can order its shot (canister only within canister range) and split off sections of its guns at other targets, each with its own shot and its share of the rounds left, by its guns (one gun stays with the battery). "
         f"Gunners cut fuses: the air band of the fuse table grows by crew quality {_signed(A['set_fuse']['quality'])}, and {A['set_fuse']['ranged']} more on a target fired at last exchange "
         f"at much the same range. A battery charged in front fires {A['closing']} round of canister a gun into the charge as it comes in, and the men it cuts down do not strike. No unit shoots through another unit, "
         "friend or enemy, except from high ground over a unit on lower ground (guns: round shot, never canister); "

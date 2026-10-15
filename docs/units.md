@@ -1022,7 +1022,9 @@ spare: at least one gun stays with the battery.
   fire at the battery's target.
 - A section that cannot fire on its target (out of range, sight or line) fires with the
   rest.
-- The battery's guns get their rounds first, then each section in order.
+- Each section carries its own share of the rounds left, by its guns (12 guns with 9 rounds
+  left: a section of 4 has 3, one of 2 has 1, and the battery's other 6 guns the rest), so a
+  section is not left without rounds while the battery's guns still have some.
 - The list under the battery shows its sections, each with **Remove**. The log gives each
   section its own line, "a section of 2 guns, as ordered".
 

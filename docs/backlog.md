@@ -117,8 +117,7 @@ When an item is done, delete it here and note it in the pull request that closes
     (15 to 20 feet deep) and its bank are crossed without them, as no figures were found for
     how much slower or costlier it was to get in without ladders.
 - **Guns, still simplified.** The Thirty Years' War still borrows the Peninsula's gun wounds,
-  because no 1618-48 artillery wound counts were found. Sections share the battery's rounds
-  in order rather than each carrying its own.
+  because no 1618-48 artillery wound counts were found.
 - **Character generation, beyond the first cut.** The medieval tables are a first draft for
   a team playtest. Its characteristics now count in the roller (Agility, Endurance,
   Strength, Presence), and Leechcraft, Fieldcraft, Watch and Stealth work outside a fight.
