@@ -28,6 +28,8 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
     us, orders = _riders(d, us, side, (goal, known, exchange, stance), orders)
     _hold_back(d, us, side, known)
     orders += _commit(d, us, side, known, memory)
+    if stance == "hold":
+        orders += _fix_lines(d, us, side, (field, known, exchange))
     for i in range(len(us)):
         if us[i]["side"] != side or not _free(d, us, i, exchange):
             continue
@@ -143,6 +145,30 @@ def _commit(d: Data, us: list, side, known: dict, memory: dict) -> list:
         return []
     us[pick]["reserve"] = False
     return [{"unit": pick, "act": "commit", "why": why}]
+
+
+def _fix_lines(d: Data, us: list, side, ctx: tuple) -> list:
+    """Holding, by day or at dusk (a line cannot be laid in the dark), each of its machine guns
+    on foot, steady, with men and no fixed line yet, is laid on the hex where the nearest enemy
+    it knows of stands (or was last seen; the lowest index of equals), if its guns reach it.
+    -> [fix orders]."""
+    field, known, exchange = ctx
+    light = U.light_of(d, field)
+    if light is not None and ((field or {}).get("weather") or {}).get("light") != "dusk":
+        return []
+    out = []
+    for i, u in enumerate(us):
+        if u["side"] != side or u.get("fixed") or u.get("vehicle") or not U.is_mg(d, u["weapon"]) or u["state"] != "steady" or u["men"] <= 0:
+            continue
+        if exchange is not None and u.get("arrived") == exchange:
+            continue
+        foes = sorted((U.hdist(u["pos"], m["pos"]), int(k)) for k, m in known.items() if k.isdigit())
+        foes = [(dist, j) for dist, j in foes if dist > 0 and U.field_range(d, u["weapon"], dist) is not None]
+        if foes:
+            j = foes[0][1]
+            us[i] = {**u, "fixed": list(known[str(j)]["pos"])}
+            out.append({"unit": i, "act": "fix", "target": j, "hex": list(known[str(j)]["pos"])})
+    return out
 
 
 def _gap_left(us: list, side, plan: dict) -> list | None:
