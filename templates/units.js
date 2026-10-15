@@ -3170,13 +3170,19 @@ function woundCase(sev, lethal, inf, d100){     // a man carried from the field:
   const step = Math.max(trStep(W.start[sev]), trStep(W.clock_step[lethal] || "healed"));
   return { d: "wound", inc: 0, step, peak: 0, shown: 0, chronic: false, inf, fever: lo + (d100() - 1) % (hi - lo + 1) };
 }
-function diesOfWound(lethal, care, d100){
-  const A = UD.aftermath;
-  if (lethal === "minutes") return d100() > A.saved.minutes;
-  if (lethal === "hours") return d100() > A.saved.hours[care];
+function diesOfWound(lethal, [care, ev], d100){   // a wound that kills in minutes or hours: does it, before help comes? the medevac's figures where better (as units._dies)
+  const A = UD.aftermath, K = A.medevac?.kinds?.[ev] || {};
+  if (lethal === "minutes") return d100() > Math.max(A.saved.minutes, K.minutes || 0);
+  if (lethal === "hours") return d100() > Math.max(A.saved.hours[care], K.hours || 0);
   return false;
 }
-function aftermath(units, care, rng){            // per unit {left, died, cases}; care: each unit's camp care
+function medevacKind(table, hasLz, helosLeft){    // a side's medevac in this war, helicopters falling back without a landing zone or a helicopter left; null if none (as units.medevac_kind)
+  const M = UD.aftermath.medevac || {};
+  let kind = M.battles?.[FD.tables[table]?.battle] ?? null;
+  if (M.kinds?.[kind]?.fallback && !(hasLz && helosLeft)) kind = M.kinds[kind].fallback;
+  return kind;
+}
+function aftermath(units, care, rng, medevac = null){   // per unit {left, died, cases}; care: each unit's camp care; medevac: each unit's side's medevac kind or null
   const A = UD.aftermath, d100 = () => rng.randint(1, 100);
   const up = new Set(units.filter(standingUnit).map(u => u.side));
   return units.map((u, i) => {
@@ -3187,7 +3193,7 @@ function aftermath(units, care, rng){            // per unit {left, died, cases}
       room[down] -= n;
       if (down === "1" && abandon){ r.left += n; continue }
       for (let m = 0; m < n; m++){
-        if (diesOfWound(lethal, care[i], d100)) r.died++;
+        if (diesOfWound(lethal, [care[i], medevac ? medevac[i] : null], d100)) r.died++;
         else r.cases.push(woundCase(sev, lethal, inf, d100));
       }
     }

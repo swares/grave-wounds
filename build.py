@@ -579,7 +579,19 @@ def _aftermath_rules(d) -> list[str]:
         "<b>After the battle:</b> a side with no unit standing has lost the field, and its men down there are left behind, dead. "
         f"A wound fatal in minutes kills unless he is bound in time ({A['saved']['minutes']}%); one fatal in hours kills unless his camp treats it "
         f"(no camp {h['none']}%, a camp {h['field']}%, quarters {h['shelter']}%). The rest are carried to camp and heal on the wound track (Camp disease).",
-    ]
+    ] + _medevac_rule(A)
+
+
+def _medevac_rule(am: dict) -> list[str]:
+    """The printed rules' line on medevac, if any."""
+    M = am.get("medevac")
+    if not M:
+        return []
+    k = M["kinds"]
+    return [f"<b>Medevac:</b> a side's wounded carried off by {k['wagon']['name'].lower()} (the Civil War and the Indian Wars) are saved at {k['wagon']['hours']}% "
+            f"when a wound kills in hours, by {k['motor']['name'].lower()} (the world wars) at {k['motor']['hours']}%, and by {k['helicopter']['name'].lower()} "
+            f"(Korea on) at {k['helicopter']['hours']}%, and a wound that kills in minutes at {k['helicopter']['minutes']}% (the better of these and the camp's). "
+            "Helicopters need a landing zone on the field and a helicopter of the side not lost, else motor ambulances. The GM can untick a side that had none."]
 
 
 def unit_rows(d) -> list[list[str]]:

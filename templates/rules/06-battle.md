@@ -199,6 +199,11 @@ says who holds the field and the objective. Then:
 2. **The death clock.** A wound that kills in minutes kills before help comes, unless he is
    bound in time ({{f_saved_min}}%). One that kills in hours kills unless his camp can treat it:
    {{f_saved_field}}% saved in a camp, {{f_saved_shelter}}% in quarters, none with no camp.
+   **Medevac** does better where a side had it: ambulance wagons (the Civil War and the
+   Indian Wars) save {{ev_wagon}}%, motor ambulances (the world wars) {{ev_motor}}%, and
+   helicopters (Korea on) {{ev_heli}}%, and {{ev_heli_min}}% of those dying within minutes.
+   Helicopters need a landing zone on the field and a helicopter of the side not lost, or
+   it is motor ambulances; the GM can untick a side that had none.
 3. **To camp.** The rest are carried to their force's camp and go onto the track, as in
    [Recovery](#recovery). A battle set up from the travel map sends its dead and wounded back
    to the forces there.

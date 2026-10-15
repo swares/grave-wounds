@@ -4178,18 +4178,30 @@ def standing(u: dict) -> bool:
     return u["men"] > 0 and u["state"] in ("steady", "shaken")
 
 
-def aftermath(d: Data, units: list, care: list, rng) -> list:
+def aftermath(d: Data, units: list, care: list, rng, medevac: list | None = None) -> list:
     """What becomes of each unit's wounded when the battle ends (units.yaml aftermath). care:
-    each unit's camp care (none, field, shelter). Returns, per unit, {left (down men left on a
-    lost field, dead), died (of wounds before treatment), cases (survivors on the wound
-    track)}. A man wounded twice is counted once: the down are capped at those down and not
-    dead, the walking wounded at the men still on their feet."""
+    each unit's camp care (none, field, shelter); medevac: each unit's side's medevac kind
+    (aftermath.medevac.kinds) or None. Returns, per unit, {left (down men left on a lost field,
+    dead), died (of wounds before treatment), cases (survivors on the wound track)}. A man
+    wounded twice is counted once: the down are capped at those down and not dead, the walking
+    wounded at the men still on their feet."""
     am, d100 = d.units["aftermath"], (lambda: rng.randint(1, 100))
     lost_sides = {u["side"] for u in units} - {u["side"] for u in units if standing(u)}
-    return [_unit_after(d, u, care[i], am["left_behind"] and u["side"] in lost_sides, d100) for i, u in enumerate(units)]
+    ev = medevac or [None] * len(units)
+    return [_unit_after(d, u, (care[i], ev[i]), am["left_behind"] and u["side"] in lost_sides, d100) for i, u in enumerate(units)]
 
 
-def _unit_after(d: Data, u: dict, care: str, abandon: bool, d100) -> dict:
+def medevac_kind(d: Data, table: str, has_lz: bool, helos_left: bool) -> str | None:
+    """A side's medevac in this war (aftermath.medevac.battles by the table's battle), helicopters
+    falling back (fallback) without a landing zone or a helicopter left; None if none."""
+    M = d.units["aftermath"].get("medevac") or {}
+    kind = (M.get("battles") or {}).get((d.tables.get(table) or {}).get("battle"))
+    if kind and M["kinds"][kind].get("fallback") and not (has_lz and helos_left):
+        kind = M["kinds"][kind]["fallback"]
+    return kind
+
+
+def _unit_after(d: Data, u: dict, ce: tuple, abandon: bool, d100) -> dict:
     """One unit's wounded after the battle: left behind, dead of their wounds, or carried."""
     r = {"left": 0, "died": 0, "cases": []}
     room = {"1": max(0, u.get("down", 0) - u.get("dead", 0)), "0": max(0, u["men"])}
@@ -4201,19 +4213,22 @@ def _unit_after(d: Data, u: dict, care: str, abandon: bool, d100) -> dict:
             r["left"] += n
             continue
         for _ in range(n):
-            if _dies(d.units["aftermath"], lethal, care, d100):
+            if _dies(d.units["aftermath"], lethal, ce, d100):
                 r["died"] += 1
             else:
                 r["cases"].append(wound_case(d, sev, lethal, inf, d100))
     return r
 
 
-def _dies(am: dict, lethal: str, care: str, d100) -> bool:
-    """A wound that kills in minutes or hours: does it, before help comes?"""
+def _dies(am: dict, lethal: str, ce: tuple, d100) -> bool:
+    """A wound that kills in minutes or hours: does it, before help comes? ce: (camp care,
+    medevac kind or None): the medevac's figures where they are better."""
+    care, ev = ce
+    K = (am.get("medevac") or {}).get("kinds", {}).get(ev) or {}
     if lethal == "minutes":
-        return d100() > am["saved"]["minutes"]
+        return d100() > max(am["saved"]["minutes"], K.get("minutes", 0))
     if lethal == "hours":
-        return d100() > am["saved"]["hours"][care]
+        return d100() > max(am["saved"]["hours"][care], K.get("hours", 0))
     return False
 
 

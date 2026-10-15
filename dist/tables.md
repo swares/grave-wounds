@@ -4731,6 +4731,8 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **After the battle:** a side with no unit standing has lost the field, and its men down there are left behind, dead. A wound fatal in minutes kills unless he is bound in time (10%); one fatal in hours kills unless his camp treats it (no camp 0%, a camp 40%, quarters 60%). The rest are carried to camp and heal on the wound track (Camp disease).
 
+**Medevac:** a side's wounded carried off by ambulance wagons (the Civil War and the Indian Wars) are saved at 50% when a wound kills in hours, by motor ambulances (the world wars) at 65%, and by medevac helicopters (Korea on) at 85%, and a wound that kills in minutes at 20% (the better of these and the camp's). Helicopters need a landing zone on the field and a helicopter of the side not lost, else motor ambulances. The GM can untick a side that had none.
+
 | Quality | Attack | Defence | Nerve |
 |---|---|---|---|
 | Green | 40% | 25% | 35 |

@@ -723,6 +723,21 @@ aftermath:
   saved:
     minutes: 10
     hours: {none: 0, field: 40, shelter: 60}
+  # Medevac: a side's wounded carried off by ambulance or helicopter reach care sooner. A wound
+  # that kills in hours is survived at the better of his camp's % and the medevac's `hours`; one
+  # that kills in minutes at the medevac's `minutes` (else saved.minutes). The kind comes from
+  # the war (`battles`, by the wound table's battle); helicopters need a landing zone on the
+  # field and a helicopter of the side not lost, else they fall back to `fallback`. The GM can
+  # untick a side that had none. Design estimates, following the eras' died-of-wounds share of
+  # the wounded as commonly cited (about 14% in the Civil War, 8% in WWI, 4.5% in WWII, 2.5% in
+  # Korea and Vietnam).
+  medevac:
+    battles: {"American Civil War": wagon, "American Indian Wars": wagon, "WWI": motor, "WWII": motor, "Korea": helicopter,
+              "Vietnam": helicopter, "Late 20th century": helicopter, "Iraq & Afghanistan": helicopter}
+    kinds:
+      wagon: {name: "Ambulance wagons", hours: 50, minutes: 10}
+      motor: {name: "Motor ambulances", hours: 65, minutes: 10}
+      helicopter: {name: "Medevac helicopters", hours: 85, minutes: 20, fallback: motor}
 
 # ---------- heroes ----------
 # A named fighter from the wound roller can join a unit: in its front rank (a hand weapon),
