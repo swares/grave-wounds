@@ -263,6 +263,52 @@ missile:
     machine_gun: 300          # a gun, not a man: rounds a minute in bursts (see machine_guns)
   default_rate: 1
 
+# ---------- ammunition ----------
+# A unit with a missile weapon (not vehicles, batteries or anti-tank guns, which count their
+# own rounds) carries a load into action, counted in exchanges of fire: its weapon's `loads`
+# (rounds, arrows or bolts a man carries; a machine gun's or anti-aircraft gun's, a gun)
+# divided by its missile.rate times `burn`, rounded (at least 1). `burn` is the share of the
+# full rate a unit really spends in an exchange it shoots: men do not fire every round they
+# could (a design estimate, the one tuned figure here). Each exchange it shoots uses one.
+# At or under `low` of a full load it fires at half rate; with none left it cannot shoot
+# (it still fights hand to hand) and its morale is morale.mods.no_ammo. Resupply: an exchange
+# out of contact, neither moving nor firing, within `reach` hexes of a source - its side's
+# map edge (behind the way most of its men face), a supply vehicle of its side (`vehicles`:
+# kinds, steady), or a supply dump (field dumps: placed in set-up, or by air drop from the
+# battles in `air_drop.battles`, landing at the end of the exchange up to `air_drop.scatter`
+# hexes off). Then it has a full load again.
+# Loads: sourced figures where the regulations or accounts give one, else estimates (marked).
+ammunition:
+  burn: 0.3
+  low: 0.25
+  reach: 5
+  vehicles: [lorry, apc, ifv]
+  air_drop: {scatter: 2, battles: ["WWII", "Korea", "Vietnam", "Late 20th century", "Iraq & Afghanistan"]}
+  loads:
+    longbow: 48               # two sheaves of 24 (the usual figure; more were brought up)
+    bow: 24                   # a sheaf (estimate)
+    crossbow: 18              # a quiver of bolts (estimate)
+    sling: 20                 # estimate
+    matchlock_musket: 12      # the bandolier's twelve charges ("twelve apostles")
+    wheellock_pistol: 12      # estimate
+    musket_smoothbore: 60     # the British pouch of 60 rounds (French 50)
+    rifle_flintlock: 60       # estimate, as the musket
+    pistol_flintlock: 12      # estimate
+    rifle_musket: 60          # 40 in the cartridge box and 20 more (Civil War)
+    breechloader: 100         # 50 on the man and 50 in the saddlebags (US cavalry, 1870s)
+    revolver: 24              # estimate
+    rifle_service: 120        # 1914-53: 150 for the British in 1914, 80-136 for a US rifleman in 1944 (a middle figure)
+    rifle_ap: 120             # as the service rifle
+    rifle_assault: 300        # Vietnam: 300 or more in 20-round magazines (later wars about 210)
+    pistol_smg: 160           # eight magazines of 20 (estimate)
+    machine_gun: 2000         # a gun's belts with its team (estimate)
+    aa_gun: 1000              # a gun's ready rounds (estimate)
+    hand_grenade: 4           # estimate
+    rpg: 3                    # a gunner's rockets (estimate)
+    bazooka: 3                # estimate
+    recoilless: 4             # estimate
+    atgm: 3                   # estimate
+
 # ---------- machine guns ----------
 # A machine-gun team is a unit whose weapon is listed in `weapons`, in the mg formation: a
 # gun and its crew to a hex, `crew` men a gun, so 10 men serve 2 guns; as crews fall the guns
@@ -632,6 +678,7 @@ morale:
     losing_per_man: 5         # off for each man more it lost than it put down this exchange
     losing_cap: 30
     dug_in: 10                # gone to ground or in a bunker: men in holes stay put
+    no_ammo: -10              # out of ammunition (ammunition, below)
 
 # ---------- the rout ----------
 # A broken unit flees. Every enemy man in reach of it strikes, not just the front rank (the

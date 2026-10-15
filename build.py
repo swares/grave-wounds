@@ -266,7 +266,18 @@ def _mg_rules(d) -> list[str]:
         f"<b>Machine guns:</b> a team is a gun and {M['crew']} crew a hex, the gun served while one of its crew is up. Each gun fires {R['machine_gun']} rounds a minute, "
         f"{M['tempo'] * 100:g}% of them rolled as aimed shots. Its beaten zone: the first other unit, friend or foe, within {M['beaten']['beyond']} hexes past the target on the line "
         f"of fire takes {M['beaten']['share']}% as many shots at that range (ground that stops shot stops it).",
+        _ammo_rule(d),
     ] + _indirect_rules(d)
+
+
+def _ammo_rule(d) -> str:
+    """The printed rules' line on ammunition and resupply."""
+    A, U = d.units["ammunition"], d.units
+    return (f"<b>Ammunition:</b> a unit with a missile weapon (not vehicles or guns) carries its load in exchanges of fire: its rounds or arrows a man "
+            f"(a gun's for machine guns) over its rate a minute times {A['burn']:g} (the share it really spends), so a longbowman's {A['loads']['longbow']} arrows last "
+            f"{U['ammunition']['loads']['longbow'] / (U['missile']['rate']['longbow'] * A['burn']):.0f} exchanges of shooting. Each exchange it shoots uses one; at {round(A['low'] * 100)}% or less "
+            f"it shoots at half rate; with none it cannot shoot and has {U['morale']['mods']['no_ammo']} on morale. Resupply: an exchange out of contact, neither moving nor firing, "
+            f"within {A['reach']} hexes of its side's edge, a lorry or carrier, or a supply dump (placed in set-up, or by air drop from the Second World War on).")
 
 
 def _indirect_rules(d) -> list[str]:

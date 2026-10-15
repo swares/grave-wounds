@@ -81,19 +81,32 @@ When an item is done, delete it here and note it in the pull request that closes
   off, and a hot zone costs men, but the helicopters themselves cannot be shot down, the
   lift has no fixed number of aircraft or turnaround time, and nothing is flown out (the
   wounded, or a unit lifted away). The GM places a downed helicopter by hand.
-- **Medevac, unit stores and resupply (to consider).** Raised for a later design pass; nothing
-  is decided yet.
-  - *Medevac.* Wounded men go back only by bearer parties on foot to an aid post or off the
-    map, and the rank and file's wounded are reckoned after the battle. Nothing is flown out:
-    no medevac helicopters (Vietnam on), no ambulances, and so no faster care, no landing zone
-    for the wounded and no risk to the aircraft.
-  - *Unit stores.* Only guns count their rounds (batteries and anti-tank guns on the map, and
-    the stock of off-map batteries and aircraft). Riflemen, machine guns, grenades and rockets
-    never run out, and a unit carries no food, water or medical stores on the field map. The
-    travel map tracks fresh food for scurvy, but no stores a force runs short of.
-  - *Resupply.* Only guns on the map resupply (a full load over an exchange out of contact).
-    There is no ammunition carried forward to a unit, no supply by air drop or helicopter, and
-    no wagons, lorries or carriers bringing it up.
+- **Medevac (designed, to build next).** Wounded men go back only by bearer parties on foot
+  to an aid post or off the map, and the rank and file's wounded are reckoned after the
+  battle. Agreed design: wounded carried out by ambulance (1860 on: wagons, then motor
+  ambulances from 1914) or by helicopter (1950 on) reach care faster, so the after-the-battle
+  death clock spares more of them (each era's own figures, design estimates). It follows the
+  helicopter lifts below.
+- **Helicopter lifts, second cut (designed, to build next).** A lift today is 80 men an
+  exchange from uncounted aircraft. Agreed design: a side's lift is so many helicopters
+  carrying so many men, back for the next load after a turnaround (defaults from X-Ray); at a
+  hot landing zone each is hit at a design-estimate %, damaged (out for the battle) or
+  downed (a wreck on the zone); helicopters also bring in supply dumps (1965 on).
+- **Ammunition, beyond the first cut.** Units count their ammunition and resupply from their
+  edge, a supply vehicle or a dump (air drops from 1944). Still left out: riders resupplying
+  aboard their carrier, food, water and medical stores, and carrying a force's ammunition on
+  the travel map from one fight to the next.
+- **A narrator for the enemy commander (to consider).** Today the commander's orders are
+  logged one line each ("advance", "dig in where they stand", "move up to see ... for the
+  aircraft"). The commander item above already notes the choice made earlier: an optional
+  narrator, using a model with a key the player supplies, to explain its orders in prose.
+  To decide: whether it narrates each move or only turning points (a reserve committed, an
+  objective taken or lost, a retreat); the voice (a staff officer's report, a soldier's
+  memoir) by period; what happens with no key (the log as now, or a plainer built-in
+  summary); and keeping the player's key in the browser only.
+- **The enemy commander against itself.** A new mode: the enemy commander plays both sides
+  of a battle, attacking with one and holding (or attacking) with the other, the GM only
+  watching, stepping in or ending it. For trying out battlefields and the rules quickly.
 - **Cold, first cut.** Frostbite is a sickness on the force's track (and a named man's), not a
   wound on a body part, and cold-weather clothing, warming tents and fires are only the camp's
   shelter. In battle, only automatic weapons jam; mortars, grenades and vehicles do not freeze.

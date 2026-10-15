@@ -529,6 +529,7 @@ function moraleMods(mods, u){
   if (u.friends) m += mods.veteran_friends;
   if (u.state === "steady") m += mods.in_order;
   if (u.dug) m += mods.dug_in || 0;
+  if (u.no_ammo) m += mods.no_ammo || 0;
   m -= Math.min(mods.losing_cap, mods.losing_per_man * Math.max(0, (u.lost || 0) - (u.dealt || 0)));
   return m;
 }
@@ -764,7 +765,7 @@ function volleys(units, field = null){            // [{att, dfd, men, dist, cove
   const occ = occupancy(units), out = [];
   units.forEach((u, i) => {
     if (out_(u) || busyDigging(u) || (inContact(units, occ, i) && !inBunker(field, u))) return;   // a bunker's men shoot out even in contact
-    if ("range" in FD.weapons[u.weapon]) out.push(...volleyOf(units, occ, field, i));
+    if ("range" in FD.weapons[u.weapon] && ammoState(u) !== "out" && !(u.resupplying && ammoFull(u))) out.push(...volleyOf(units, occ, field, i));
     out.push(...riderVolley(units, occ, field, i));
   });
   return out;
@@ -776,7 +777,8 @@ function volleyOf(units, occ, field, i, men = null){   // unit i's volley at its
   if (!best) return [];
   const wx = shotWeather(field, u.weapon, best[0], best[2], best[3], seerOf(u, { blind })), [up, longer] = heightEdge(field, u.weapon, best[2], best[3]);
   if (wx.blocked) return [];
-  const v = { att: i, dfd: best[1], men: men === null ? shooters(u, field) : men, dist: best[0], cover: shareCover(field, best[2], units[best[1]]) + groundCover(units[best[1]]) + shieldCover(units[best[1]], best[3], best[2]), penalty: wx.penalty - up, misfire: wx.misfire, reach: (wx.reach || 0) + longer, from: best[2], to: best[3],
+  const shots = men === null ? shooters(u, field) : men;
+  const v = { att: i, dfd: best[1], men: men === null && ammoState(u) === "low" ? shots / 2 : shots, dist: best[0], cover: shareCover(field, best[2], units[best[1]]) + groundCover(units[best[1]]) + shieldCover(units[best[1]], best[3], best[2]), penalty: wx.penalty - up, misfire: wx.misfire, reach: (wx.reach || 0) + longer, from: best[2], to: best[3],
     height: up, over: lineFire(units, occ, field, i, best[1], [best[2], best[3], best[0]]), seen: seenShare(field, units[best[1]], best[3], u.weapon) };
   for (const k of ["blind", "flash"]) if (wx[k]) v[k] = true;
   if (men === null && isMg(u.weapon)) Object.assign(v, beaten(units, occ, field, i, best));
@@ -792,9 +794,9 @@ function riderShooters(u){                         // riders who can shoot: thro
   return Math.floor(R.men * share);
 }
 function riderVolley(units, occ, field, i){         // the riders' volley from vehicle unit i, with their own weapon (as units._rider_volley)
-  const n = riderShooters(units[i]);
-  if (n <= 0) return [];
-  const R = units[i].riders, pseudo = units.map((x, k) => (k === i ? { ...x, weapon: R.weapon, kit: R.kit, quality: R.quality, nv: R.nv } : x));
+  const R = units[i].riders, all = riderShooters(units[i]);
+  if (all <= 0 || ammoState(R) === "out") return [];
+  const n = ammoState(R) === "low" ? all / 2 : all, pseudo = units.map((x, k) => (k === i ? { ...x, weapon: R.weapon, kit: R.kit, quality: R.quality, nv: R.nv } : x));
   return volleyOf(pseudo, occ, field, i, n).map(v => ({ ...v, riders: true }));
 }
 const shooterOf = (us, v) => (v.riders ? us[v.att].riders : us[v.att]);   // the unit a volley is fired by
@@ -1507,9 +1509,63 @@ function heroShots(us, v, { table, rng, acc, log, field, exposed, mf }){   // th
     log.push(...logged({ kind: "hero", hero: hero.id, name: hero.name, att: v.att, dfd: v.dfd, dist: v.dist }, t));
   }
 }
+// ---------- ammunition (as gravewounds/units.py) ----------
+function ammoFull(u){                              // a full load in exchanges of fire (ammunition.loads / (missile.rate * burn), rounded, at least 1); null if it does not count: no load, a vehicle, a battery or anti-tank guns
+  const A = UD.ammunition || {}, load = (A.loads || {})[u.weapon];
+  if (!load || u.vehicle || !("range" in FD.weapons[u.weapon]) || isBattery(u) || isAtGun(u)) return null;
+  const S = UD.missile;
+  return Math.max(1, Math.floor(load / ((S.rate[u.weapon] ?? S.default_rate) * A.burn) + 0.5));
+}
+function fireLeft(u){                            // exchanges of fire left (u.ammo, else a full load), or null
+  const full = ammoFull(u);
+  return full === null ? null : Math.min(full, u.ammo ?? full);
+}
+function ammoState(u){                             // full, low (at or under ammunition.low of a full load) or out; null if it does not count
+  const full = ammoFull(u), left = fireLeft(u);
+  if (full === null) return null;
+  if (left <= 0) return "out";
+  return left <= full * UD.ammunition.low ? "low" : "full";
+}
+function spend(us, v){                             // a volley fired: its shooters (the riders for a riders' volley) use an exchange of fire
+  const u = us[v.att], who = v.riders ? u.riders : u, left = fireLeft(who);
+  if (left !== null) who.ammo = Math.max(0, left - 1);
+}
+const EDGE_BEHIND_OF = ["W", "S", "E", "E", "N", "W"];   // the map edge behind units facing 0-5
+function supplyEdge(us, side){                     // the map edge its supplies come from: behind the way most of the side's standing men face, or null
+  const n = [0, 0, 0, 0, 0, 0];
+  for (const u of us) if (u.side === side && u.men > 0 && u.state !== "fled") n[mod6(u.facing)] += u.men;
+  const top = Math.max(...n);
+  return top === 0 ? null : EDGE_BEHIND_OF[n.indexOf(top)];
+}
+function edgeGap(edge, h, [cols, rows]){           // hexes between h and map edge N, S, E or W
+  return { N: h[1], S: rows - 1 - h[1], W: h[0], E: cols - 1 - h[0] }[edge];
+}
+function supplyNear(us, i, field){                 // what it can draw ammunition from within ammunition.reach: edge, vehicle or dump; null
+  const A = UD.ammunition, u = us[i], reach = A.reach, hexes = footprint(u).flat(), edge = supplyEdge(us, u.side);
+  if (edge !== null && Math.min(...hexes.map(h => edgeGap(edge, h, fieldSize(field)))) < reach) return "edge";
+  for (let j = 0; j < us.length; j++){
+    const e = us[j];
+    if (j !== i && e.side === u.side && e.state === "steady" && e.men > 0 && A.vehicles.includes(e.vehicle)
+        && Math.min(...hexes.flatMap(h => footprint(e).flat().map(x => hdist(h, x)))) <= reach) return "vehicle";
+  }
+  if ((field?.dumps || []).some(m => m.side === u.side && Math.min(...hexes.map(h => hdist(h, m.at))) <= reach)) return "dump";
+  return null;
+}
+function airDrops(field, rng){                     // end of the exchange: each supply drop called lands as a dump, a d6 direction and 0 to air_drop.scatter hexes off (kept on the map)
+  const drops = field?.drops || [], out = [], [cols, rows] = fieldSize(field);
+  if (field) delete field.drops;
+  for (const m of drops){
+    const dirn = rng.randint(1, 6) - 1, n = rng.randint(0, UD.ammunition.air_drop.scatter), h = step(m.at, dirn, n);
+    const at = [Math.min(Math.max(h[0], 0), cols - 1), Math.min(Math.max(h[1], 0), rows - 1)];
+    (field.dumps || (field.dumps = [])).push({ at, side: m.side });
+    out.push({ kind: "drop", side: m.side, aim: [...m.at], at });
+  }
+  return out;
+}
 function shootAll(us, table, rng, acc, log, field, under = null){
   for (const v of volleys(us, field)){
     markMg(us, v, under);
+    spend(us, v);
     const b = us[v.dfd], exposed = exposure(b, false, true), mf = form(b).missile_factor;
     if (b.vehicle){ armourVolley(us, table, rng, acc, log, v, { factor: mf * (100 - v.misfire) / 100 * v.seen, penalty: v.cover + v.penalty + v.over, reach: v.reach }); continue }
     const t = takeHurt(b, volley(sideOfUnit(shooterOf(us, v), table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100 * v.seen, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
@@ -1703,7 +1759,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   postsSettle(field);
   for (const u of us) delete u.unhooked;             // guns unhooked this move are in action (as units._unhooked_after)
   afterExchange(us, field, log);
-  log.push(...landings(us, table, rng, field), ...vehiclesAfter(us, field), ...objectiveHeld(us, field));
+  log.push(...landings(us, table, rng, field), ...airDrops(field, rng), ...vehiclesAfter(us, field), ...objectiveHeld(us, field));
   if (field?.mines && Object.keys(field.mines).length) for (const u of us) u.was = [[...u.pos], u.facing];   // where its next moves begin: the ground it crosses
   return { units: us, log };
 }
@@ -1868,13 +1924,14 @@ function hotLanding(u, table, rng, n, line){      // each man landing struck at 
   return logged({ ...line, struck }, t);
 }
 function afterExchange(us, field, log = []){        // charges spent, batteries changed over, pins wear off, missions come due, batteries displace, smoke thins and drifts
-  for (const u of us){
+  us.forEach((u, i) => {
     u.charged = false;
     delete u.jostled;
+    if (u.resupplying && ammoFull(u)) log.push({ kind: "resupplied", unit: i });
     batteryAfter(u);
     if (u.pinned) u.pinned -= 1;
     if (u.lost) u.lost -= 1;
-  }
+  });
   flashes(us, log, field);
   for (const b of field?.support || []) if (b.mission && (b.mission.wait || 0) > 0) b.mission.wait -= 1;
   log.push(...displaceAll(field), ...overrunAll(us, field));
@@ -1924,7 +1981,7 @@ function moraleAll(us, occ, before, acc, rng, table, field = null){
     if (out_(u)) return;
     const near = adjacentUnits(us, occ, i);
     const unit = { quality: u.quality, start: u.start, down: u.down, lost: acc.lost[i], dealt: acc.dealt[i], men: before[i], state: u.state,
-      leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u) };
+      leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out" };
     const m = morale(unit, rng.randint(1, 100));
     if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state });
     if (m.state === "broken") broke.push(i);
@@ -1949,7 +2006,7 @@ function routStrike(us, occ, j, table, rng){     // a unit that has just broken 
 // ---------- movement ----------
 function allowance(u){                            // hexes a unit may move (twice for a charge); a battery changing over or resupplying not at all, unlimbered a hex or so
   if ((u.prone || u.pinned) && u.state !== "broken" && u.state !== "fled") return 0;   // gone to ground or pinned: no move
-  if (isAtGun(u) && u.resupplying && u.state !== "broken" && u.state !== "fled") return 0;
+  if (u.resupplying && (isAtGun(u) || ammoFull(u)) && u.state !== "broken" && u.state !== "fled") return 0;
   if (isBattery(u) && !u.abandoned && u.state !== "broken"){   // crews running from their guns run on foot
     if (u.limbering || u.resupplying) return 0;
     if (!u.limbered) return jostledMove(u, carrying(u, UD.artillery.pushed));
@@ -2761,7 +2818,9 @@ const unsteady = (us, i, t) => (!us[i].prone && underFire(us, i) ? { act: "groun
 function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance, known, exchange]
   const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = aiTarget(us, i, ctx[3], ctx[1]);
   if (u.state !== "steady") return unsteady(us, i, t);
-  if (busyDigging(u)) return null;
+  if (busyDigging(u) || u.resupplying) return null;
+  const ammo = ammoOrder(us, i, t, ctx);
+  if (ammo) return ammo;
   if (u.reserve) return reserveOrder(us, i, t, ctx);
   const sap = sapperOrder(us, i, t, ctx);
   if (sap) return sap;
@@ -2770,6 +2829,18 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
   const o = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx);
   return t === null ? o : lastSeen(o, ctx[3], t, ctx[4]);
+}
+function ammoOrder(us, i, t, [size, field, stance, known, exchange]){   // low or out with a supply source in reach: resupply (out at once; low with no known enemy in its range); out with none, attacking: fall back toward its supply edge (as commander._ammo_order)
+  const u = us[i], state = ammoState(u);
+  if (state !== "low" && state !== "out") return null;
+  if (supplyNear(us, i, field) !== null){
+    const near = knownFoes(known || {}).some(([, m]) => fieldRange(u.weapon, hdist(u.pos, m.pos)) !== null);
+    return state === "out" || !near ? { act: "resupply", target: t } : null;
+  }
+  const edge = supplyEdge(us, u.side);
+  if (state !== "out" || stance !== "attack" || edge === null) return null;
+  const [cols, rows] = fieldSize(field), goal = { N: [u.pos[0], 0], S: [u.pos[0], rows - 1], W: [0, u.pos[1]], E: [cols - 1, u.pos[1]] }[edge];
+  return toward(us, i, t, [size, { ...(field || {}), objective: goal, objective_radius: null }, stance, known, exchange], "fall_back");
 }
 function reserveOrder(us, i, t, ctx){             // a reserve held back digs in where it waits when safe, else stays facing its target (as commander._reserve_order)
   const u = us[i];
@@ -3033,6 +3104,7 @@ function applyOrder(us, i, o){                    // carry out an order (as the 
   const u = us[i];
   if (o.act === "ground") us[i] = { ...u, prone: true };
   else if (o.act === "dig") us[i] = { ...u, digging: { at: [...u.pos], n: 0 } };
+  else if (o.act === "resupply") us[i] = { ...u, resupplying: true };
   else if (o.act === "lay") us[i] = { ...u, mining: { at: [...u.pos], facing: u.facing, n: 0, kind: o.kind } };
   else if (o.act === "lift") us[i] = { ...u, clearing: { at: [...u.pos], facing: u.facing, n: 0 } };
   else if (o.act === "turn") us[i] = { ...u, facing: o.facing };
@@ -3247,6 +3319,7 @@ function ricochet(att, target, c, rng, exposed = []){   // balls bounding on int
 }
 function batteryAfter(u){                          // end of an exchange: changing over is done, resupply is in; a broken battery has left its guns
   if (isAtGun(u) && u.resupplying){ u.spent = 0; u.resupplying = false }
+  if (u.resupplying && ammoFull(u)){ delete u.ammo; u.resupplying = false }
   if (!isBattery(u)) return;
   u.laid = u.fired || {};
   delete u.fired;

@@ -944,8 +944,11 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     t = target(d, us, i, ctx[3], ctx[1])
     if u["state"] != "steady":
         return _unsteady(d, us, i, t)
-    if U.busy_digging(u):
+    if U.busy_digging(u) or u.get("resupplying"):
         return None
+    ammo = _ammo_order(d, us, i, t, ctx)
+    if ammo is not None:
+        return ammo
     if u.get("reserve"):
         return _reserve_order(d, us, i, t, ctx)
     sap = _sapper_order(d, us, i, t, ctx)
@@ -1037,6 +1040,33 @@ def _spot_in(d: Data, us: list, i: int, group: list, wt: tuple) -> tuple:
 def _unsteady(d: Data, us: list, i: int, t: int | None) -> dict | None:
     """A shaken unit holds, going to ground under missile fire."""
     return {"act": "ground", "target": t} if not us[i].get("prone") and under_fire(d, us, i) else None
+
+
+def _ammo_order(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict | None:
+    """A unit low on ammunition or out of it, with a supply source in reach (units.supply_near),
+    resupplies: out, at once; low, when no enemy it knows of is within its weapon's range.
+    Out with no source in reach, attacking, it falls back toward its side's supply edge
+    (holding, it stays and fights hand to hand). None otherwise."""
+    u, (size, field, stance, known, exchange) = us[i], ctx
+    state = U.ammo_state(d, u)
+    if state not in ("low", "out"):
+        return None
+    if U.supply_near(d, us, i, field) is not None:
+        seen = [m["pos"] for k, m in (known or {}).items() if k.isdigit()]
+        if state == "out" or not any(U.field_range(d, u["weapon"], U.hdist(u["pos"], p)) is not None for p in seen):
+            return {"act": "resupply", "target": t}
+        return None
+    edge = U.supply_edge(d, us, u["side"])
+    if state != "out" or stance != "attack" or edge is None:
+        return None
+    goal = _edge_hex(edge, u["pos"], U._size(d, field))
+    return _toward(d, us, i, t, (size, {**(field or {}), "objective": goal, "objective_radius": None}, stance, known, exchange), "fall_back")
+
+
+def _edge_hex(edge: str, h, size: tuple) -> list:
+    """The hex on map edge N, S, E or W straight across from h (in its column or row)."""
+    cols, rows = size
+    return {"N": [h[0], 0], "S": [h[0], rows - 1], "W": [0, h[1]], "E": [cols - 1, h[1]]}[edge]
 
 
 def _reserve_order(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict | None:
@@ -1530,6 +1560,8 @@ def _apply(us: list, i: int, o: dict) -> None:
         us[i] = {**u, "prone": True}
     elif o["act"] == "dig":
         us[i] = {**u, "digging": {"at": list(u["pos"]), "n": 0}}
+    elif o["act"] == "resupply":
+        us[i] = {**u, "resupplying": True}
     elif o["act"] == "lay":
         us[i] = {**u, "mining": {"at": list(u["pos"]), "facing": u["facing"], "n": 0, "kind": o["kind"]}}
     elif o["act"] == "lift":
