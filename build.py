@@ -441,7 +441,7 @@ def _gun_rules(d) -> list[str]:
         f"Round shot strikes the unit ({bands(rs['strike'])}), then each man in its path (the ranks deep, at most {rs['path_max']}) is hit at {rs['file']}%, so columns suffer most. "
         f"Canister throws {cn['balls']} chances a round ({bands(cn['strike'])}). Cover, the weather and open order cut both. Each man hit takes a wound roll at {A['attack']}% with no parry.",
         f"<b>Targets and line of fire:</b> the GM can name a battery's target; it fires at it when it can, otherwise at the nearest. "
-        "The GM can order its shot (canister only within canister range) and split off sections of its guns at other targets, each with its own shot (one gun stays with the battery). "
+        "The GM can order its shot (canister only within canister range) and split off sections of its guns at other targets, each with its own shot and its share of the rounds left, by its guns (one gun stays with the battery). "
         f"Gunners cut fuses: the air band of the fuse table grows by crew quality {_signed(A['set_fuse']['quality'])}, and {A['set_fuse']['ranged']} more on a target fired at last exchange "
         f"at much the same range. A battery charged in front fires {A['closing']} round of canister a gun into the charge as it comes in, and the men it cuts down do not strike. No unit shoots through another unit, "
         "friend or enemy, except from high ground over a unit on lower ground (guns: round shot, never canister); "
@@ -502,7 +502,7 @@ def _commander_rules(d) -> list[str]:
         "A unit whose target is already in its front arc keeps its facing. "
         f"Others charge only if their men × attack % (with those of steady friends touching them) is at least this % of the target's: attacking {by(K['charge_odds']['attack'])}; holding {by(K['charge_odds']['hold'])}. "
         "A steady unit charging may pass through its own side's units (not to move otherwise); those on its straight line are jostled, their move halved that exchange. "
-        f"Holding, a side leaves its ground only to charge. Reserve: at its first move (unless the GM marks reserves) it holds back its rearmost units up to {by(K['reserve'])}% of its men; "
+        f"Holding, a side leaves its ground only to charge, fall back to its objective, plug a gap or pull its guns back. Reserve: at its first move (unless the GM marks reserves) it holds back its rearmost units up to {by(K['reserve'])}% of its men; "
         f"they hold until it commits one a move, when a unit of its side breaks, an enemy it knows of comes within {K['gap']} hexes of one, or (veterans) an enemy breaks; committed because a unit broke, the reserve unit nearest where it stood goes there to plug the gap (as its own objective). "
         f"Objective (a hex the GM marks, optional): attacking, a unit within {K['objective']['radius']} of it holds it (charging only with holding odds); one with no enemy to go for, "
         f"or that would only stand or turn while its target is more than {K['objective']['guard']} from the objective, advances on it (nearest hex in its allowance). Holding, a unit more than "

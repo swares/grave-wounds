@@ -2993,21 +2993,16 @@ function sectionsOf(u){                           // the sections a battery has 
   if (u.sections?.length) return [...u.sections];
   return u.section ? [u.section] : [];
 }
-function batteryFires(units, occ, field, i, best){   // the battery's fire at best, then each section's at its own target (guns from those left, one stays; rounds to the battery first)
+function batteryFires(units, occ, field, i, best){   // the battery's fire at best, then each section's at its own target (guns from those left, one stays); each carries its share of the rounds left, by its guns (as units._battery_fires)
   const u = units[i], guns = gunsServed(u), ammo = ammoLeft(u), firing = [];
   let spare = guns - 1;
   for (const sec of sectionsOf(u)){
     const n = Math.min(sec.guns || 0, spare), at = n > 0 ? namedTarget(units, i, field, occ, sec.target) : null;
-    if (at){ firing.push([sec, n, at]); spare -= n }
+    if (at){ firing.push([sec, n, at, Math.floor(ammo * n / guns)]); spare -= n }
   }
-  const main = batteryFire(units, [occ, field], i, best, { guns: guns - firing.reduce((a, f) => a + f[1], 0), ammo, shot: u.shot }), out = [main];
-  let left = ammo - main.rounds;
-  for (const [sec, n, at] of firing){
-    if (left <= 0) break;
-    const f = batteryFire(units, [occ, field], i, at, { guns: n, ammo: left, shot: sec.shot, section: true });
-    out.push(f);
-    left -= f.rounds;
-  }
+  const mainGuns = guns - firing.reduce((a, f) => a + f[1], 0), mainAmmo = ammo - firing.reduce((a, f) => a + f[3], 0);
+  const out = [batteryFire(units, [occ, field], i, best, { guns: mainGuns, ammo: mainAmmo, shot: u.shot })];
+  for (const [sec, n, at, share] of firing) if (share > 0) out.push(batteryFire(units, [occ, field], i, at, { guns: n, ammo: share, shot: sec.shot, section: true }));
   return out;
 }
 function batteryFire(units, ground, i, best, order){   // guns of battery i at best; order {guns, ammo, shot, per, section}

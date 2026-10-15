@@ -4062,24 +4062,22 @@ def sections(u: dict) -> list:
 def _battery_fires(d: Data, units: list, occ: dict, field: dict | None, i: int, best: tuple) -> list:
     """Battery i's fire at best, and each section's at its own target, in order, if it can fire
     on it: a section takes its guns from those the battery still has, at least one staying with
-    the battery; one that cannot fire on its target fires with the rest. The rounds go to the
-    battery's guns first, then to the sections in order."""
+    the battery; one that cannot fire on its target fires with the rest. Each carries its own
+    share of the rounds left, by its guns (rounded down; the rest stay with the battery's
+    guns), so a section is not starved when rounds run low."""
     u = units[i]
     guns, ammo, spare, firing = guns_served(d, u), ammo_left(d, u), guns_served(d, u) - 1, []
     for sec in sections(u):
         n = min(sec.get("guns", 0), spare)
         at = _named_target(d, units, i, field, occ, sec.get("target")) if n > 0 else None
         if at is not None:
-            firing.append((sec, n, at))
+            firing.append((sec, n, at, ammo * n // guns))
             spare -= n
-    main = _battery_fire(d, units, (occ, field), i, best, {"guns": guns - sum(n for _, n, _ in firing), "ammo": ammo, "shot": u.get("shot")})
-    out, left = [main], ammo - main["rounds"]
-    for sec, n, at in firing:
-        if left <= 0:
-            break
-        f = _battery_fire(d, units, (occ, field), i, at, {"guns": n, "ammo": left, "shot": sec.get("shot"), "section": True})
-        out.append(f)
-        left -= f["rounds"]
+    main_guns, main_ammo = guns - sum(f[1] for f in firing), ammo - sum(f[3] for f in firing)
+    out = [_battery_fire(d, units, (occ, field), i, best, {"guns": main_guns, "ammo": main_ammo, "shot": u.get("shot")})]
+    for sec, n, at, share in firing:
+        if share > 0:
+            out.append(_battery_fire(d, units, (occ, field), i, at, {"guns": n, "ammo": share, "shot": sec.get("shot"), "section": True}))
     return out
 
 

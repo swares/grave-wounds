@@ -70,7 +70,8 @@ under it). See [docs/units.md](docs/units.md).
 aid and recovery, battles of hundreds, the march and the camp, and weather and works,
 following one team from the road to Towton into camp; then the other eras, guns and fire
 support, vehicles, night and the air, with a rifle squad in Vietnam followed through one
-night. GM notes are set apart. It prints cleanly from the browser.
+night. GM notes are set apart, and an index of its terms closes it. It prints cleanly from
+the browser, with page numbers in Chrome and Edge.
 
 **Team builder:** `dist/team.html` makes a team of four to six in a few rolls each, from the
 tables of eleven eras (medieval, the Thirty Years' War, horse and musket, the Crimean War, the Civil War and
@@ -123,7 +124,8 @@ python -m gravewounds roll --table towton-1461-all-hits --weapon bill -n 3
 `build.py` writes:
 
 - `dist/rules.html`, the rule book: chapters in `templates/rules/*.md`, every number filled
-  in from the data (`gravewounds/rulebook.py`, and `rulebook_later.py` for chapters 9-13)
+  in from the data (`gravewounds/rulebook.py`, and `rulebook_later.py` for chapters 9-13);
+  the index is gathered from the terms set in bold (`rulebook.index_terms`)
 - `dist/roller.html`, `dist/travel.html` and `dist/field.html`
 - `dist/tables.pdf` and `dist/tables.md`
 - `dist/gravewounds-data.json`
