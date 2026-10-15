@@ -120,7 +120,8 @@ light:
   # dark loses its direction (plus half of how far its quality's nerve is below 60, less half of
   # how far above): it ends turned one point off and a hex on that way (not into other units,
   # ground it cannot stand on or contact with the enemy), and cannot move for `lost_for`
-  # exchanges (it may still turn).
+  # exchanges (it may still turn), counting the one it lost its way in: 2 means it cannot
+  # move next exchange (the docs and rule book say "next exchange").
   lost_for: 2
 
 # ---------- the ground ----------
