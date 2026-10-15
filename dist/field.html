@@ -1032,8 +1032,8 @@ function partiesAfter(us, field){                 // each party goes on along th
   us.forEach((u, i) => {
     for (const hero of u.heroes || []){
       if (!hero.going) continue;
-      const line = partyStops(u, hero) || partyMoves(us, field, i, hero);
-      if (line) log.push({ kind: "party", unit: i, hero: hero.id, name: hero.name, ...line });
+      const stop = partyStops(u, hero);
+      for (const line of stop ? [stop] : partyMoves(us, field, i, hero)) log.push({ kind: "party", unit: i, hero: hero.id, name: hero.name, ...line });
     }
   });
   return log;
@@ -1044,18 +1044,18 @@ function partyStops(u, hero){                      // its hero killed or taken (
   if (g.bearers <= 0 && lame(hero)){ delete hero.going; hero.left = true; hero.at = g.pos; return { what: "lies", at: g.pos } }
   return null;
 }
-function partyMoves(us, field, i, hero){          // on along the cheapest way toward the post or the edge; arriving, the hero is carried (as units._party_moves)
+function partyMoves(us, field, i, hero){          // [its log line] or []: on along the cheapest way toward the post or the edge; arriving, the hero is carried (as units._party_moves)
   const u = us[i], g = hero.going, post = aidPost(field, u.side);
   g.ex += 1;
-  const [way, note] = partyWay(us, field, i, [g, post]);
-  if (way === null) return note;
+  const [way, note] = partyWay(us, field, i, [g, post]), noted = note ? [note] : [];
+  if (way === null) return noted;
   g.pos = way[0];
-  if (!way[1]) return note;
+  if (!way[1]) return noted;
   delete hero.going;
   hero.carried = true;
   if (post && !g.no_way) hero.post = true;
   bearersOff(u, g);
-  return { what: g.no_way || !post ? "edge" : "post", at: [...g.pos] };
+  return [{ what: g.no_way || !post ? "edge" : "post", at: [...g.pos] }];
 }
 function partyWay(us, field, i, [g, post]){       // [[where it gets this exchange, arrived?] or null, a log line or null]: to the post if a way leads there, else the edge the way back, else any edge (as units.party_way)
   const u = us[i], size = fieldSize(field), pos = [...g.pos], walker = { side: u.side, mounted: false };
@@ -1076,24 +1076,25 @@ function borderHexes([cols, rows]){              // every hex on the map's edge,
 function waysTo(field, walker, aims, blocked, size){   // Map hex -> least movement from it to the nearest aim, not through blocked hexes (as units._ways_to)
   const best = new Map(), todo = new Map([[0, []]]);
   for (const a of aims) if (!blocked.has(hk(a))){ best.set(hk(a), 0); todo.get(0).push(a) }
-  for (let k = 0; todo.size; k++){
+  let k = 0;
+  while (todo.size){
     const now = todo.get(k) || [];
     todo.delete(k);
-    for (const y of now){
-      if (best.get(hk(y)) !== k) continue;
-      for (let dn = 0; dn < 6; dn++){
-        const x = step(y, dn);
-        if (!onMap(x, size) || blocked.has(hk(x))) continue;
-        const c = unitStepCost(field, walker, x, y);
-        if (c !== null && k + c < (best.get(hk(x)) ?? 1e9)){
-          best.set(hk(x), k + c);
-          if (!todo.has(k + c)) todo.set(k + c, []);
-          todo.get(k + c).push(x);
-        }
-      }
-    }
+    for (const y of now) if (best.get(hk(y)) === k) relaxInto(field, walker, y, k, [best, todo, blocked, size]);
+    k += 1;
   }
   return best;
+}
+function relaxInto(field, walker, y, k, [best, todo, blocked, size]){   // each neighbour stepping into y more cheaply gets its new least movement and waits in todo (as units._relax_into)
+  for (let dn = 0; dn < 6; dn++){
+    const x = step(y, dn);
+    if (!onMap(x, size) || blocked.has(hk(x))) continue;
+    const c = unitStepCost(field, walker, x, y);
+    if (c === null || k + c >= (best.get(hk(x)) ?? 1e9)) continue;
+    best.set(hk(x), k + c);
+    if (!todo.has(k + c)) todo.set(k + c, []);
+    todo.get(k + c).push(x);
+  }
 }
 function goAlong(field, walker, [start, aim], ways, blocked){   // [where it gets, arrived?]: down the ways, nearest the straight line toward aim, while the pace lasts, at least a step (as units._go_along)
   const line = ray([...start], aim, hdist(start, aim));
@@ -1115,7 +1116,7 @@ function nextDown(field, walker, pos, ways, blocked, line){   // [hex, cost] of 
     const off = Math.min(...line.map(y => hdist(x, y)));
     if (best === null || off < best[0]) best = [off, x, c];
   }
-  return best && best.slice(1);
+  return best?.slice(1) ?? null;
 }
 function bearersOff(u, g){                         // a party's bearers set off back to their unit, due after as many exchanges as it went
   if (g.bearers > 0) u.away = [...(u.away || []), { men: g.bearers, left: Math.max(1, g.ex) }];

@@ -452,30 +452,35 @@ def _border(size: tuple) -> list:
 def _ways_to(d: Data, field: dict | None, walker: dict, aims: list, bs: tuple) -> dict:
     """{hex: the least movement from it to the nearest of aims} over the ground and works
     (step_cost), not through blocked hexes: a search out from the aims, a cost at a time."""
-    blocked, size = bs
-    best = {a: 0 for a in aims if a not in blocked}
+    best = {a: 0 for a in aims if a not in bs[0]}
     todo, k = {0: sorted(best)}, 0
     while todo:
         for y in todo.pop(k, []):
-            if best[y] != k:
-                continue
-            for dirn in range(6):
-                x = tuple(step(list(y), dirn))
-                if not (0 <= x[0] < size[0] and 0 <= x[1] < size[1]) or x in blocked:
-                    continue
-                c = step_cost(d, field, walker, list(x), list(y))
-                if c is not None and k + c < best.get(x, 10**9):
-                    best[x] = k + c
-                    todo.setdefault(k + c, []).append(x)
+            if best[y] == k:
+                _relax_into(d, field, walker, (y, k), (best, todo, bs))
         k += 1
     return best
+
+
+def _relax_into(d: Data, field: dict | None, walker: dict, yk: tuple, ctx: tuple) -> None:
+    """Each neighbour x of y (at least movement k from the aims) that steps into y more cheaply
+    than found so far gets its new least movement, and waits its turn in todo."""
+    (y, k), (best, todo, (blocked, size)) = yk, ctx
+    for dirn in range(6):
+        x = tuple(step(list(y), dirn))
+        if not (0 <= x[0] < size[0] and 0 <= x[1] < size[1]) or x in blocked:
+            continue
+        c = step_cost(d, field, walker, list(x), list(y))
+        if c is not None and k + c < best.get(x, 10**9):
+            best[x] = k + c
+            todo.setdefault(k + c, []).append(x)
 
 
 def _go_along(d: Data, field: dict | None, walker: dict, pa: tuple, wbs: tuple) -> tuple:
     """(where it gets, arrived?): from pos, step after step down the ways (to a neighbour whose
     step and way left add up to the way from here: the nearest the straight line toward aim,
     the first by direction of equals), while the pace lasts, at least a step."""
-    (pos, aim), (ways, blocked, size) = pa, wbs
+    (pos, aim), (ways, blocked, _) = pa, wbs
     line = ray(list(pos), list(aim), hdist(pos, aim))
     left, moved = d.units["heroes"]["aid_post"]["pace"], False
     while ways[pos] > 0:
