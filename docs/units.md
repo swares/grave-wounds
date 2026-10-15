@@ -502,6 +502,16 @@ general. All its numbers are in units.yaml `commander`.
       4 + 1 hexes rather than 4 + 3), so it can call them closer to its own men; the same
       goes for a strafing run's or napalm strip's line. The order says a controller is
       talking them on.
+    - **Moving a controller up.** Attacking, when its aircraft can fly and have no mission,
+      and none of its controllers sees where an enemy it knows of stands (woods, buildings
+      or a crest between), a controller unit that would otherwise stand or turn moves up to
+      see one instead ("move up to see ... for the aircraft"). It goes to the cheapest hex
+      within its move from which, facing that enemy, it sees where it was last seen: not its
+      own hex, not touching the enemy and with no known minefield on the straight way; of
+      equally cheap hexes, the one that sees the best target. It never gives up shooting,
+      charging, going to ground or digging for it, and a controller gone to ground, digging
+      or in reserve stays. If no hex within its move sees one, it stays. Holding, it does not
+      move its controllers: its aircraft wait for an enemy to come into their sight.
     - On an enemy whose front is as wide as a run, they fly it along that front: a napalm
       strip (3 hexes; fighter-bombers, in the wars that used napalm), else a strafing run
       (5 hexes). They do so only when none of its men are within the aircraft's scatter of
@@ -541,7 +551,8 @@ general. All its numbers are in units.yaml `commander`.
 
 What it does not do yet:
 - It leaves works alone, lays a fixed line only on an enemy it knows of (not on ground it
-  only expects them to cross), and does not move its air controllers to see a target; it plans no creeping barrage for
+  only expects them to cross), moves its air controllers to see a target only when attacking,
+  only a move's worth, and only when they would otherwise stand; it plans no creeping barrage for
   riflemen who stop at range.
 - Its reserve holds until committed; then a unit sent to plug a gap goes there, and others
   fight. Reserve units ignore the objective until committed.

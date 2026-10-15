@@ -9,7 +9,7 @@ from . import combat as C, units as U
 from .model import Data
 
 ROUTED = ("broken", "fled")
-MOVES = ("move", "charge", "advance", "fall_back", "close_up")   # orders that take a unit somewhere new
+MOVES = ("move", "charge", "advance", "fall_back", "close_up", "spot")   # orders that take a unit somewhere new
 
 
 def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, exchange=None, stance: str = "attack",
@@ -35,6 +35,7 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
             continue
         roll = rng.randint(1, 100)
         o = _order(d, us, i, (size, _plugging(_aim(us, i, aim), us[i]), stance, known, exchange), roll)
+        o = _spotter(d, us, i, o, (size, field, stance, known)) or o
         if o and us[i].get("plug") and o["act"] in ("advance", "fall_back"):
             o = {**o, "gap": True}                # going to plug the gap, not the side's objective
         if o:
@@ -914,6 +915,79 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     return o if t is None else _last_seen(o, ctx[3], t, ctx[4])
 
 
+def _spotter(d: Data, us: list, i: int, o: dict | None, cx: tuple) -> dict | None:
+    """Attacking, a forward air controller (a unit marked fac) that would otherwise stand or turn
+    moves up to see a target for its side's aircraft: when they can fly and none of its
+    controllers sees where an enemy it knows of stands (_to_see). cx: (size, field, stance, known)."""
+    size, field, stance, known = cx
+    u = us[i]
+    if stance != "attack" or not u.get("fac") or (o is not None and o["act"] != "turn"):
+        return None
+    if u.get("prone") or u.get("reserve") or U.busy_digging(u):
+        return None
+    if not any(_free_air(d, field, b, u["side"]) for b in (field or {}).get("support") or []):
+        return None
+    ranked = _ranked_foes(d, us, i, known, field)
+    if not ranked or any(U._fac_sees(d, us, field, u, p) for _, p in ranked):
+        return None
+    return _to_see(d, us, i, ranked, (size, field))
+
+
+def _ranked_foes(d: Data, us: list, i: int, known: dict | None, field: dict | None) -> list:
+    """The enemies its side knows of, best target first (as target ranks them), each with where
+    it was last seen: [(index, hex)]."""
+    u = us[i]
+    foes = sorted((-threat_score(d, u, us[j], _where(us, j, known)) - _guards(d, _where(us, j, known), field), j) for j, e in enumerate(us)
+                  if e["side"] != u["side"] and e["state"] not in ROUTED and e["men"] > 0 and str(j) in (known or {}))
+    return [(j, list(_where(us, j, known)["pos"])) for _, j in foes]
+
+
+def _to_see(d: Data, us: list, i: int, ranked: list, where: tuple) -> dict | None:
+    """The controller's spot: the cheapest hex in its allowance (not where it stands, no known
+    minefield on the straight way) from which, facing the enemy, it sees where an enemy it knows
+    of stands, touching none; of equally cheap ones, the one that sees the best target, then the
+    lowest row and column. -> a spot order, or None."""
+    size, field = where
+    u, tries = us[i], d.units["commander"]["tries"]
+    foes = {k for k, j in U.occupancy(d, us).items() if us[j]["side"] != u["side"]}
+    hexes = sorted(reachable(d, us, i, size, U.allowance(d, u), field).items(), key=lambda hc: (hc[1], hc[0][1], hc[0][0]))
+    group = []
+    for n, (h, c) in enumerate(hexes):
+        seen = None if list(h) == list(u["pos"]) or _mined(field, u["pos"], h, u["side"]) else _sees_from(d, field, {**u, "pos": list(h)}, ranked, foes)
+        if seen is not None:
+            group.append((seen[0], h[1], h[0], seen[1], seen[2]))
+        if group and (n + 1 == len(hexes) or hexes[n + 1][1] != c):
+            o, tries = _spot_in(d, us, i, sorted(group), (size, field, tries))
+            if o is not None or tries <= 0:
+                return o
+            group = []
+    return None
+
+
+def _sees_from(d: Data, field: dict | None, u: dict, ranked: list, foes: set) -> tuple | None:
+    """(rank, enemy, facing) of the best-ranked enemy unit u, where it is placed, would see if it
+    faced it without touching the enemy, or None."""
+    for r, (j, p) in enumerate(ranked):
+        there = {**u, "facing": U.bearing(u["pos"], p)}
+        if not _touches(d, there, foes) and U._sees(d, field, there, p, U._sight_hexes(d, field, p, U._seer(there))):
+            return r, j, there["facing"]
+    return None
+
+
+def _spot_in(d: Data, us: list, i: int, group: list, wt: tuple) -> tuple:
+    """The first legal spot among equally cheap hexes [(rank, row, col, enemy, facing)], each try
+    costing one of commander.tries. -> (order or None, tries left)."""
+    size, field, tries = wt
+    for _, row, col, j, f in group:
+        if tries <= 0:
+            break
+        tries -= 1
+        m = U.move(d, us, i, [col, row], f, size, field)
+        if m["ok"] and not m.get("charge"):
+            return {"act": "spot", "target": j, "pos": [col, row], "facing": f, "cost": m["cost"]}, tries
+    return None, tries
+
+
 def _unsteady(d: Data, us: list, i: int, t: int | None) -> dict | None:
     """A shaken unit holds, going to ground under missile fire."""
     return {"act": "ground", "target": t} if not us[i].get("prone") and under_fire(d, us, i) else None
@@ -1416,7 +1490,7 @@ def _apply(us: list, i: int, o: dict) -> None:
         us[i] = {**u, "clearing": {"at": list(u["pos"]), "facing": u["facing"], "n": 0}}
     elif o["act"] == "turn":
         us[i] = {**u, "facing": o["facing"]}
-    elif o["act"] in ("move", "charge", "advance", "fall_back", "close_up"):
+    elif o["act"] in MOVES:
         us[i] = {**u, "pos": o["pos"], "facing": o["facing"], "charged": o["act"] == "charge", **({"prone": False} if o.get("up") else {})}
         for k in o.get("through", []):                # the friends it charged through are jostled
             us[k] = {**us[k], "jostled": True}
