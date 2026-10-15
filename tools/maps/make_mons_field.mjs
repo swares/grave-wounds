@@ -55,6 +55,12 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded
+    { name: "The first assault", at: 1, note: "09:00: IR 84 comes at the bridges of the salient in close order." },
+    { name: "A renewed attack", at: 31, note: "Half an hour after the first is beaten off, a wider attack comes in through the woods (which battalion is our reading).", arrive: ["IR 86, I Battalion (from the woods)"] },
+    { name: "The attack in force", at: 121, note: "11:00: the Germans attack in force (that the supporting battalion went in then is our reading).", arrive: ["IR 84, III Battalion (in support)"] },
+    { name: "Withdrawal", at: 251, note: "13:10: the Fusiliers are ordered back; they go at 13:40." },
+  ],
   objective: { at: [railBridge, rowFor(railBridge, 1)], side: 1, name: "the railway bridge at Nimy", radius: 3 },
   id: "mons-1914", name: "Mons, 23 August 1914 (the Nimy salient)", sides: ["British", "Germans"], table: "wwi-1914-18-wounds",
   travel: { map: "mons-1914", place: "Nimy bridges", within: 2, sides: ["British", "Germans"] },

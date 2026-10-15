@@ -56,6 +56,13 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded
+    { name: "The Swedes advance on the ditches", at: 1, note: "About 11:00 the King's lines begin their final advance across the road ditches." },
+    { name: "Pappenheim strikes the Swedish right", at: 76, note: "Between 12:00 and 12:30 Pappenheim's horse arrive on the Imperial left and check the Swedish right.", arrive: ["Pappenheim's horse (coming up)"] },
+    { name: "The King is killed; the second line goes in", at: 151, note: "After 13:00, in the fog: Gustavus Adolphus is killed and Knyphausen holds the line with the second line (the time is our estimate).", arrive: ["Swedish second line"] },
+    { name: "Lull", at: 241, note: "By 15:00 Bernhard's attack has failed; a lull of about half an hour." },
+    { name: "The final assault on the windmill hill", at: 271, note: "15:30 to 17:00: as the light fades Bernhard's men take the windmill battery." },
+  ],
   objective: { at: [38, 67], side: 0, name: "the windmill battery", radius: 4 },
   id: "lutzen-1632", name: "Lützen, 16 November 1632", sides: ["Swedes", "Imperialists"], table: "thirty-years-war-all-hits",
   travel: { map: "lutzen-1632", place: "Lützen", within: 2, sides: ["Sweden", "Empire"] },

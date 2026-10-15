@@ -73,6 +73,11 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded
+    { name: "The attack on G Company", at: 1, note: "Soon after 22:00 on 14 February the Chinese regiment from Hill 397 breaks into G Company's line." },
+    { name: "G Company's hill falls; first reserves", at: 331, note: "About 03:30, with G Company's hill lost, a Ranger platoon and an F Company platoon reach it and counter-attack in the dark.", arrive: ["1st Ranger Company (reserve)"] },
+    { name: "The dawn counter-attack fails", at: 496, note: "06:15: the counter-attack by the Rangers, F Company's platoon and G Company's survivors is driven back." },
+  ],
   objective: { at: edge(95), side: 1, name: "G Company's hill on the southern perimeter", radius: 3 },
   id: "chipyong-1951", name: "The perimeter at Chipyong-ni, 14-15 February 1951", sides: ["United Nations", "Chinese"], table: "korea-1950-53-hospitalized",
   travel: { map: "chipyong-1951", place: "Chipyong-ni", within: 2, sides: ["United Nations", "Chinese"] },

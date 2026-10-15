@@ -24,6 +24,13 @@ size: [160, 130]
 weather: {cond: fair, wind: calm, light: night, ground: {mud: 0, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [76, 56], side: 1, name: "the top of Pork Chop Hill", radius: 9}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "E Company overrun", at: 1, note: "23:05: the lights come on all over the hill and the Chinese battalion comes up the north slope."}
+  - {name: "The first relief", at: 176, note: "Shortly after 02:00 L Company's platoons are sent up to reinforce E Company; most of the hill is in Chinese hands.", arrive: ["L Company, 31st Infantry (Hill 200)"]}
+  - {name: "K Company counter-attacks", at: 326, note: "04:30: the barrage lifts and K Company steps off; L Company attacks again at about the same time.", arrive: ["K Company, 31st Infantry (from the main line)"]}
+  - {name: "A fresh Chinese company", at: 550, note: "08:14: G Company of the 17th Infantry arrives as a fresh Chinese company appears (which company it was is our reading).", arrive: ["Chinese company from Old Baldy (the west)"]}
 ground: |
   rrm.r....r...rrr.r....mm.rmr....r..r.rr..r.r.....r..r...rrr..rrrrr..mmr.r.mrr.r.mr.rm.rmm....m.rrr..r..m.rrr..r.rr....rrr...r.rr.mrm...r.mr...r.m............rmr
   rr....rm...m.....m...r.r.......mr..r.rr.r.....r.....r...mmrrrr.mr..r.mrr.rrr.m....r....mrrrrmr.r...rrm.r.rrr.mr...rrr....rm....rrmr.rrm.rr..rr.mm.r.r.mmr..rrr..

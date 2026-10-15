@@ -54,6 +54,12 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded
+    { name: "Stopped below the crest", at: 1, note: "10:30: machine guns on the crest open on C and D Companies about 300 m below it." },
+    { name: "The attack from behind", at: 241, note: "14:30: North Vietnamese come up from the bottom of the hill onto A Company, cutting the landing zone, and drive it up the slope.", arrive: ["North Vietnamese company behind them (from the west)"] },
+    { name: "Surrounded", at: 271, note: "15:00: C Company's commander reports being surrounded by 200 to 300 North Vietnamese." },
+    { name: "The stray bomb", at: 509, note: "18:58: a Marine fighter-bomber's bombs fall among the paratroopers (one memoir says about 20:00)." },
+  ],
   objective: { at: TOP, side: 0, name: "the crest of Hill 875", radius: 4 },
   id: "dakto-1967", name: "Hill 875, Dak To, 19 November 1967", sides: ["United States and ARVN", "North Vietnamese"], table: "vietnam-1965-70-hospitalized",
   travel: { map: "dakto-1967", place: "Hill 875", within: 1, sides: ["United States and ARVN", "North Vietnamese"] },

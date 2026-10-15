@@ -24,6 +24,13 @@ size: [150, 120]
 weather: {cond: overcast, wind: calm, dir: SW, ground: {mud: 0, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [64, 38], side: 1, name: "the railway bridge at Nimy", radius: 3}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "The first assault", at: 1, note: "09:00: IR 84 comes at the bridges of the salient in close order."}
+  - {name: "A renewed attack", at: 31, note: "Half an hour after the first is beaten off, a wider attack comes in through the woods (which battalion is our reading).", arrive: ["IR 86, I Battalion (from the woods)"]}
+  - {name: "The attack in force", at: 121, note: "11:00: the Germans attack in force (that the supporting battalion went in then is our reading).", arrive: ["IR 84, III Battalion (in support)"]}
+  - {name: "Withdrawal", at: 251, note: "13:10: the Fusiliers are ordered back; they go at 13:40."}
 ground: |
   .....................................................................................................................FFFFFFFFFFFFFFFFFFFFFFFFFF.......
   ...................................................................................................................FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.....

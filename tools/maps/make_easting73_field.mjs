@@ -57,6 +57,11 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded
+    { name: "Over the rise", at: 1, note: "16:18: the troop commander's gunner kills the first T-72." },
+    { name: "Through the trenches", at: 5, note: "16:22: eight more T-72s are destroyed; the troop fights through the trenches and BMPs." },
+    { name: "The high ground beyond", at: 19, note: "About 16:36 the troop attacks into the main position; at 16:40 it halts at 73 Easting, the next line of tanks just out of range.", arrive: ["T-72s on the high ground beyond (about 74 Easting)"] },
+  ],
   objective: { at: [CREST(60) + 6, 60], side: 0, name: "the Iraqi position behind the rise at 73 Easting", radius: 9 },
   id: "easting73-1991", name: "73 Easting: Eagle Troop crests the rise, 26 February 1991", sides: ["Coalition", "Iraqis"], table: "gulf-1991-us-wounds",
   travel: { map: "easting73-1991", place: "The rise at 73 Easting", within: 1, sides: ["Coalition", "Iraqis"] },

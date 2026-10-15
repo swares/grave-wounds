@@ -29,6 +29,12 @@ size: [220, 110]
 weather: {cond: overcast, wind: calm, dir: S, ground: {mud: 1, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [40, 46], side: 1, name: "the saddle where the road crosses the ridge", radius: 6}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "The column deploys", at: 1, note: "About 11:45: the tanks have gone through and the infantry come off the road across the paddies."}
+  - {name: "The west flank", at: 46, note: "About 12:30 the enemy appears in force on the hill west of the highway; the platoon there is pulled back.", arrive: ["16th Regiment, battalion working round the west"]}
+  - {name: "The railroad, and withdrawal", at: 166, note: "About 14:30, with the enemy reported moving down the railroad, Smith orders the withdrawal.", arrive: ["18th Regiment, battalion moving down the railroad"]}
 ground: |
   .m.mmmmmm.mmmm..mmmmmm..m...mmmmmmmmmmmm...mmmmmm.mmmmmmmmmmm.m.mmmm..mmmm.mmmmm.mmm.mm..mmmm.mmmmmmmmm.mmmmmm.mmmmmmmmm.mmmmm.mm.m.mmmmm.mmmmmm.mmmmmmmmmmmmm.mm.mmm.mmmmmm..mm.mmmmmmmmmmmmm...m.mmmmmmmm.m.mmm.mmm..mmmmm
   ..mmmmm.mmm.mmmmm.mmmmmmmmmmmmm..mm.mmmm...mmmmmmmmm.mmm..m.mmm.mmmmm.mmmmmmm.mmmmmmmmm.mmmm.mmmmmmmm.mmmmmmm.mmmmmmmmmmmm.mmmmmm..mmm.mm.mm.mm..mmm.m..mmmmmmmm.m.mmmmmmmmmmmmmmmmmmm.m.m..mm...mmmmmmm.mmmmmm..mmmmm.mmmmm

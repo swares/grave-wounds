@@ -10,9 +10,11 @@
 #
 # What happened, briefly: the 23rd Infantry and the French Battalion attacked up the ridge from
 # 13 September 1951 and took and lost Hill 931 several times against North Koreans in bunkers,
-# with heavy losses on both sides. In October the 2nd Division attacked along the whole front
-# and sent tanks up the Mundung-ni valley behind the ridge; 931 fell on 13 October and the last
-# peak two days later.
+# with heavy losses on both sides. In October the 2nd Division attacked along the whole front:
+# the 23rd went in on the night of 5 October and before noon the next day Hill 931 was finally
+# taken. From 10 October tanks went up the Mundung-ni valley behind the ridge, and the French
+# took the last peak, Hill 851, at daybreak on 13 October. The tank company on this map came up
+# the valley four days after 931 fell: the GM can leave it off.
 id: heartbreak-1951
 name: "Hill 931 on Heartbreak Ridge, October 1951"
 sides: ["United Nations", "North Koreans"]
