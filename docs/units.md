@@ -335,7 +335,13 @@ general. All its numbers are in units.yaml `commander`.
     has broken or fled since its last move, or when an enemy it knows of comes within 12
     hexes of a reserve unit.
   - Veterans also commit to exploit when an enemy unit breaks.
-  - The log says why ("committed from the reserve: one of its units has broken").
+  - **Plugging the gap.** Committed because one of its units broke or fled, it sends the
+    reserve unit nearest where that unit stood at its side's last move, and that unit goes
+    to plug the gap: it treats that hex as its own objective (attacking or holding as its
+    side does, within 1 hex of it), going for the enemy only as a unit does on the way to an
+    objective. If it breaks in turn, the next reserve goes where it stood.
+  - The log says why ("committed from the reserve: one of its units has broken; they go to
+    plug the gap at 31,21, where it stood").
 - **Known minefields.** Each hex of a minefield it knows of (marked, found by setting it
   off, or laid by its own sappers) on the straight way to a hex costs that hex 5 points for green men, 40 for regulars
   and 80 for veterans. Green men may still blunder in; veterans go round. Hidden fields it
@@ -473,8 +479,8 @@ What it does not do yet:
   not tell the units ordered after it until the next move.
 - It leaves alone air controllers, fixed lines and works; it plans no creeping barrage for
   riflemen who stop at range.
-- Its reserve has no orders beyond holding and, once committed, fighting: it does not plug
-  a named gap, and reserve units ignore the objective until committed.
+- Its reserve holds until committed; then a unit sent to plug a gap goes there, and others
+  fight. Reserve units ignore the objective until committed.
 - It has at most two objectives, taken (or held) in turn: no third or more, no phase lines
   across the whole front, no feints or scouting. Battlefields mark only one. Victory is still the GM's call; the objective
   line in the log only says who stands on it.

@@ -17,7 +17,7 @@ When an item is done, delete it here and note it in the pull request that closes
 - **The enemy commander, beyond the second cut.** A scripted commander moves one side on
   the field map. It attacks or holds by its units' quality, knows only what its units see
   (remembering last sightings for a few exchanges), picks targets by threat and weakness,
-  holds back and commits a reserve, steers round minefields it knows of, turns its guns and
+  holds back and commits a reserve (sending it to plug the gap a broken unit left), steers round minefields it knows of, turns its guns and
   calls its off-map batteries, limbers, tows, moves up and pulls back its guns, puts its men aboard its carriers and sets them down, storms works with black-powder infantry, charges through its own waiting units, sets its sappers to lay or lift mines, and takes or holds an
   objective hex the GM marks (and a second it goes on to, or falls back to); Undo puts
   its move back. It looks once at the start of each move. Attacking, it smokes enemies
