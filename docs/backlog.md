@@ -77,23 +77,21 @@ When an item is done, delete it here and note it in the pull request that closes
   between its start and the target; napalm burning on, setting woods alight or reaching
   men in bunkers; heroes struck by napalm (only the rank and file are); and strafing or
   napalm against parties on their way back. Numbers are design estimates.
-- **Landing by air, first cut.** Helicopters are not on the map: a lift lands or is waved
-  off, and a hot zone costs men, but the helicopters themselves cannot be shot down, the
-  lift has no fixed number of aircraft or turnaround time, and nothing is flown out (the
-  wounded, or a unit lifted away). The GM places a downed helicopter by hand.
+- **Landing by air, second cut.** Each side has a set number of helicopters with a load and a
+  turnaround, at most 8 land at a zone in an exchange, hot zones hit them (damaged or
+  downed, a wreck placed on the zone), and they bring supplies in and lift units out. Still
+  left out: helicopters on the map as units (they are only ever landing or away), a downed
+  crew to rescue, door gunners firing as they come in, landing zones that move or are cut by
+  the GM mid-battle other than by hand, and battlefields setting their own helicopter
+  numbers (all use the defaults, which are X-Ray's).
 - **Medevac (designed, to build next).** Wounded men go back only by bearer parties on foot
   to an aid post or off the map, and the rank and file's wounded are reckoned after the
   battle. Agreed design: wounded carried out by ambulance (1860 on: wagons, then motor
   ambulances from 1914) or by helicopter (1950 on) reach care faster, so the after-the-battle
-  death clock spares more of them (each era's own figures, design estimates). It follows the
-  helicopter lifts below.
-- **Helicopter lifts, second cut (designed, to build next).** A lift today is 80 men an
-  exchange from uncounted aircraft. Agreed design: a side's lift is so many helicopters
-  carrying so many men, back for the next load after a turnaround (defaults from X-Ray); at a
-  hot landing zone each is hit at a design-estimate %, damaged (out for the battle) or
-  downed (a wreck on the zone); helicopters also bring in supply dumps (1965 on).
+  death clock spares more of them (each era's own figures, design estimates). Helicopter
+  medevac will use the side's helicopters (see *Landing by air*).
 - **Ammunition, beyond the first cut.** Units count their ammunition and resupply from their
-  edge, a supply vehicle or a dump (air drops from 1944). Still left out: riders resupplying
+  edge, a supply vehicle or a dump (air drops from 1944, helicopters from 1965). Still left out: riders resupplying
   aboard their carrier, food, water and medical stores, and carrying a force's ammunition on
   the travel map from one fight to the next.
 - **A narrator for the enemy commander (to consider).** Today the commander's orders are

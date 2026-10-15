@@ -269,6 +269,7 @@ legend{padding:0}
       <h2>Units</h2>
       <ul class="units" id="units" aria-label="Units"></ul>
       <p class="muted" id="lifts" hidden></p>
+      <div class="muted" id="helos" hidden></div>
 
       <h2>Selected unit <span class="muted" id="sel-name"></span></h2>
       <dl class="summary" id="sel-info"></dl>
@@ -297,6 +298,7 @@ legend{padding:0}
         <button class="small" id="btn-limber" hidden title="A battery limbered moves but cannot fire; unlimbered it fires but can only be manhandled. Changing over takes an exchange.">Limber</button>
         <button class="small" id="btn-resupply" hidden title="A full load again: the caissons come up for guns; for small arms, from its side's edge, a lorry or carrier, or a supply dump within reach. It takes an exchange out of contact, in which the unit neither moves nor fires.">Resupply</button>
         <button class="small" id="btn-abandon" hidden title="Leave the immobilised vehicles: their crews leave the fight unhurt, and the rest can move">Abandon immobilised</button>
+        <button class="small" id="btn-flyout" hidden title="Helicopters lift the unit away from a landing zone within reach: it does not move while it boards, and its men flown out are safe">Fly out</button>
         <button class="small" id="btn-dismount" hidden title="The riders get down beside the carriers, facing their way; they can move next exchange">Dismount the riders</button>
         <span id="mount-box" hidden><label class="sr" for="sel-carrier">Mount on</label><select class="small" id="sel-carrier" style="width:auto" title="Get aboard carriers of its side within a hex: the riders move with them and do not fight"></select></span>
       </div>
@@ -983,6 +985,9 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   barrage: l => ({ cls: "", text: fireText(l) }),
   landed: l => ({ cls: l.hot ? "morale" : "", text: landText(l) }),
   waveoff: l => ({ cls: "morale", text: landText(l) }),
+  flownout: l => ({ cls: "", text: `${l.men} men of ${l.name} (${l.side}) are lifted out from ${l.lz[0] + 1},${l.lz[1] + 1}${l.all ? ": the last of them are gone" : ""}.` }),
+  helisupply: l => ({ cls: "", text: `A helicopter sets ${poss(l.side)} supplies down at ${l.lz[0] + 1},${l.lz[1] + 1}: a supply dump.` }),
+  helohit: l => ({ cls: "morale", text: `${nOf(l.hit, "helicopter")} of ${poss(l.side)} hit at the hot landing zone ${l.lz[0] + 1},${l.lz[1] + 1}${l.downed ? `: ${l.downed} downed there, ${l.hit - l.downed} damaged` : ": damaged"}, lost for the battle.` }),
   displaced: l => ({ cls: "", text: `${l.name} (${l.side}) have displaced: no longer located` + (l.place ? "; now at " + hexName(l.place) : "") + "." }),
   overrun: l => ({ cls: "morale", text: `${l.name} (${l.side}) are overrun: their guns are lost.` }),
   airloss: l => ({ cls: "morale", text: airLossText(l) }),
@@ -1023,8 +1028,8 @@ function objectiveText(l){                      // who holds the objective after
 }
 function landText(l){                            // men landing by air, or waved off
   const at = `${l.lz[0] + 1},${l.lz[1] + 1}`;
-  const why = l.why === "blocked" ? "the enemy is on the landing zone" : "no room there";
-  if (l.kind === "waveoff") return `${l.name} (${l.side}) cannot land at ${at}: ${why}.`;
+  const why = { blocked: "the enemy is on the landing zone", contact: "they are in contact with the enemy", far: "they are no longer near the landing zone" }[l.why] || "no room there";
+  if (l.kind === "waveoff") return `${l.name} (${l.side}) cannot ${l.why === "contact" || l.why === "far" ? "board" : "land"} at ${at}: ${why}.`;
   let hot = "";
   if (l.hot) hot = ", under fire: " + l.struck + " struck";
   if (l.hot && l.struck) hot += ", " + l.down + " down";
@@ -1324,16 +1329,17 @@ function heroFate(h){                             // "came through", "carried to
   return h.state === "up" ? "came through" : h.state;
 }
 function sideTally(k){                            // one side's figures for the result table
-  const t = { start: 0, standing: 0, down: 0, killed: 0, died: 0, left: 0, carried: 0, units: 0, broke: 0, guns: 0, vehicles: 0 };
+  const t = { start: 0, standing: 0, flown: 0, down: 0, killed: 0, died: 0, left: 0, carried: 0, units: 0, broke: 0, guns: 0, vehicles: 0 };
   afterUnits().forEach((u, i) => {
     if (sideNo(u) !== k) return;
     const a = S.after[i], K = vehicleKind(u);
     t.start += u.start || 0;
     t.standing += out_(u) ? 0 : u.men;
+    t.flown += u.flown || 0;
     t.down += u.down || 0;
     t.killed += a.killed; t.died += a.died; t.left += a.left; t.carried += a.cases.length;
     t.units += 1;
-    t.broke += out_(u) ? 1 : 0;
+    t.broke += out_(u) && !(u.flown && u.men <= 0 && !ROUTED.has(u.state)) ? 1 : 0;
     t.guns += u.abandoned ? 1 : 0;
     t.vehicles += K ? Math.ceil((u.start || 0) / K.crew) - vehiclesLeft(u) : 0;
   });
@@ -1342,6 +1348,7 @@ function sideTally(k){                            // one side's figures for the 
 const RESULT_ROWS = [                             // [label, figure, shown only when either side has some]
   ["Men at the start", t => t.start],
   ["Men still standing", t => t.standing],
+  ["Flown out by helicopter", t => t.flown, true],
   ["Men down", t => t.down],
   ["Killed in the fighting", t => t.killed],
   ["Died of wounds before help came", t => t.died],
@@ -1418,6 +1425,7 @@ function fillTools(){
     + `<option value="objective">Mark or clear the enemy commander's objective</option><option value="objective2">Mark or clear its second objective</option>`
     + `<optgroup label="Aid posts"><option value="post:0">Aid post: side A</option><option value="post:1">Aid post: side B</option></optgroup>`
     + `<optgroup label="Supply dumps (in battle: an air drop, WWII on)"><option value="dump:0">Supply dump: side A</option><option value="dump:1">Supply dump: side B</option></optgroup>`
+    + (FD.units.heliborne ? `<optgroup label="Helicopter resupply (click a landing zone; Vietnam on)"><option value="heli:0">By helicopter: side A</option><option value="heli:1">By helicopter: side B</option></optgroup>` : "")
     + `<optgroup label="Minefields (1939 on; click again to clear)">${mineOptions()}</optgroup>`
     + `<optgroup label="Paint the ground">${g}</optgroup><optgroup label="Works on a hex side (click just inside it, on the high side)">${e}</optgroup><optgroup label="Works in a hex">${h}</optgroup>`;
   $("#sel-wx").innerHTML = Object.entries(WXD.conditions).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
@@ -1442,6 +1450,7 @@ function useTool(e, h){                           // paint the ground, or build 
   if (tool === "objective2") return toggleObjective2(h);
   if (tool.startsWith("post:")) return placePost(h, Number(tool.slice(5)));
   if (tool.startsWith("dump:")) return placeDump(h, Number(tool.slice(5)));
+  if (tool.startsWith("heli:")) return heliSupply(h, Number(tool.slice(5)));
   if (tool.startsWith("mine:")) return placeMine(h, tool.split(":")[1], tool.endsWith(":hidden"));
   if (tool === "h:wreck") return placeWreck(h);
   if (S.phase !== "setup"){ S.msg = "Ground and works are set before the battle starts; gates can be opened or barred at any time."; return }
@@ -1514,6 +1523,15 @@ function placeDump(h, k){                          // set-up: a side's supply du
   if (moving() !== side){ S.msg = `${poss(side)} air drop can be called only on ${poss(side)} move.`; return }
   (S.field.drops || (S.field.drops = [])).push({ side, at: [...h] });
   S.msg = `${poss(side)} air drop called on ${hexName(h)}: it lands at the end of the exchange, up to ${nOf(FD.units.ammunition.air_drop.scatter, "hex", "hexes")} off.`;
+}
+function heliSupply(h, k){                         // in battle: a helicopter brings a supply dump to the landing zone clicked, on its side's move
+  const side = S.sides[k], z = (S.field.lz || []).find(x => hdist(x, h) <= 1);
+  if (!(FD.units.heliborne.supply_battles || []).includes(FD.tables[S.table]?.battle)){ S.msg = "Helicopter resupply comes in only from Vietnam on."; return }
+  if (S.phase === "setup"){ S.msg = "Helicopter resupply is called in the battle; before it, place a supply dump."; return }
+  if (!z){ S.msg = "Click a landing zone (H): the helicopter sets the supplies down there."; return }
+  if (moving() !== side){ S.msg = `${poss(side)} helicopter resupply can be called only on ${poss(side)} move.`; return }
+  (S.field.lifts || (S.field.lifts = [])).push({ kind: "supply", unit: { name: "Supply helicopter", side }, lz: [...z], left: 1 });
+  S.msg = `A helicopter will bring ${poss(side)} supplies to ${hexName(z)} as one comes free (${helosText(side)}).`;
 }
 function placePost(h, k){                         // a side's aid post: placed, moved or cleared in set-up; in battle, moved on its side's move (closed for an exchange)
   const side = S.sides[k], posts = S.field.posts || (S.field.posts = []), i = posts.findIndex(p => p.side === side);
@@ -2033,8 +2051,41 @@ function renderUnits(){
   $("#sel-lz").innerHTML = lzs.map((h, i) => `<option value="${i}">${h[0] + 1},${h[1] + 1}</option>`).join("");
   if (pick && Number(pick) < lzs.length) $("#sel-lz").value = pick;
   $("#lifts").hidden = !lifts.length;
-  $("#lifts").textContent = lifts.length ? "In the air: " + lifts.map(lf => `${lf.unit.name} (${lf.unit.side}), ${lf.left} men for ${lf.lz[0] + 1},${lf.lz[1] + 1}`).join("; ") + "." : "";
+  $("#lifts").textContent = lifts.length ? "Helicopter lifts: " + lifts.map(liftText).join("; ") + "." : "";
+  renderHelos(lzs);
   $("#units").innerHTML = S.units.map(u => `<li data-id="${u.id}" aria-current="${u.id === S.sel}" tabindex="0"><svg class="mkicon" viewBox="-14 -12 28 24" aria-hidden="true">${markSvg(unitType(u), sideNo(u), 0, 0)}</svg><span><b class="utag">${unitTag(u)}</b> <b>${esc(u.name)}</b> <span class="muted">${esc(banner(u))}</span></span><span class="meta">${unitMeta(u)}</span></li>`).join("") || `<li class="muted">No units. Add one below.</li>`;
+}
+function liftText(lf){                            // one lift waiting, for the list
+  const at = `${lf.lz[0] + 1},${lf.lz[1] + 1}`;
+  if (lf.kind === "supply") return `a supply dump for ${lf.unit.side} to ${at}`;
+  if (lf.kind === "out") return `${lf.unit.name} (${lf.unit.side}) to be lifted out from ${at}, ${lf.left} men`;
+  return `${lf.unit.name} (${lf.unit.side}), ${lf.left} men for ${at}`;
+}
+function helosText(side){                         // "16 helicopters of 5 men, back 30 exchanges after landing: 12 free, 4 away"
+  const H = helos(S.field, side), bits = [`${helosFree(H)} free`];
+  if ((H.away || []).length) bits.push(`${H.away.length} away (the next back in ${nOf(Math.min(...H.away), "exchange")})`);
+  if (H.damaged) bits.push(`${H.damaged} damaged`);
+  if (H.downed) bits.push(`${H.downed} downed`);
+  return `${nOf(H.aircraft, "helicopter")} of ${H.carry} men, back ${nOf(H.turnaround, "exchange")} after landing: ${bits.join(", ")}`;
+}
+function renderHelos(lzs){                        // each side's helicopters: set in set-up, their state in the battle
+  const el = $("#helos");
+  el.hidden = !FD.units.heliborne || !lzs.length;
+  if (el.hidden) return;
+  const setup = S.phase === "setup", box = (k, key, v) => `<input type="number" class="small" min="${key === "aircraft" ? 0 : 1}" style="width:4.5em" data-helo="${k}" data-key="${key}" value="${v}" aria-label="${esc(S.sides[k])}: ${key}">`;
+  el.innerHTML = S.sides.map((side, k) => {
+    const H = helos(S.field, side);
+    return setup ? `<p style="margin:.2em 0">${esc(side)}: ${box(k, "aircraft", H.aircraft)} helicopters of ${box(k, "carry", H.carry)} men, back ${box(k, "turnaround", H.turnaround)} exchanges after landing.</p>`
+      : `<p style="margin:.2em 0">${esc(side)}: ${esc(helosText(side))}.</p>`;
+  }).join("");
+  el.querySelectorAll("input[data-helo]").forEach(inp => { inp.onchange = () => setHelos(Number(inp.dataset.helo), inp.dataset.key, inp.value) });
+}
+function setHelos(k, key, v){                     // set-up: a side's helicopters
+  if (S.phase !== "setup") return;
+  const H = helos(S.field, S.sides[k]);
+  H[key] = Math.max(key === "aircraft" ? 0 : 1, Math.floor(Number(v) || 0));
+  S.msg = `${S.sides[k]}: ${helosText(S.sides[k])}.`;
+  render();
 }
 function renderAssault(u){                        // the storming order, on tables with grenades and charges
   const el = $("#sel-assault"), A = FD.units.assault;
@@ -2434,7 +2485,28 @@ function toggleGround(){
   S.msg = u.prone ? `${u.name} goes to ground: shots at it lose ${FD.units.to_ground.cover}%, and it cannot move until it gets up.` : `${u.name} gets up and can move.`;
   render();
 }
+function flyOutZone(u){                          // the landing zone within heliborne.zone hexes of the unit, or null
+  return (S.field.lz || []).find(z => Math.min(...footprint(u).flat().map(h => hdist(h, z))) <= FD.units.heliborne.zone) || null;
+}
+function renderFlyOut(u, setup){                 // Fly out: in the battle, a foot unit of the moving side near a landing zone
+  const b = $("#btn-flyout"), lifting = !!u && (S.field.lifts || []).some(lf => lf.kind === "out" && lf.unit.id === u.id);
+  b.hidden = !FD.units.heliborne || !u || setup || S.phase === "over" || out_(u) || !!u.vehicle || isBattery(u) || u.side !== moving() || (!lifting && !flyOutZone(u));
+  b.textContent = lifting ? "Cancel the lift" : "Fly out";
+}
+function flyOut(){                                // the moving side's unit lifted out from a landing zone near it, or the lift cancelled
+  const u = selUnit(); if (!u || S.phase === "setup") return;
+  const lifts = S.field.lifts || (S.field.lifts = []), k = lifts.findIndex(lf => lf.kind === "out" && lf.unit.id === u.id);
+  if (k >= 0){ lifts.splice(k, 1); delete u.boarding; S.msg = `${u.name}: the lift is cancelled.`; return render() }
+  const z = flyOutZone(u), i = idx(u.id);
+  if (!z){ S.msg = `${u.name} is not within ${nOf(FD.units.heliborne.zone, "hex", "hexes")} of a landing zone.`; return render() }
+  if (inContact(S.units, occupancy(S.units), i)){ S.msg = `${u.name} is in contact: it cannot board.`; return render() }
+  lifts.push({ kind: "out", unit: { id: u.id, name: u.name, side: u.side }, lz: [...z], left: u.men });
+  u.boarding = true;
+  S.msg = `${u.name} will be lifted out from ${hexName(z)} as its side's helicopters come (${helosText(u.side)}); it does not move while it boards.`;
+  render();
+}
 function renderRiders(u, setup){                 // Abandon immobilised, Dismount, Mount on: for vehicles and the men they carry
+  renderFlyOut(u, setup);
   const mine = u && (setup || u.side === moving()) && S.phase !== "over" && !out_(u);
   $("#btn-abandon").hidden = !(mine && u.vehicle && u.immobile);
   $("#btn-dismount").hidden = !(mine && u.riders);
@@ -2570,14 +2642,14 @@ function addUnit(){
   if (FD.units.heliborne && $("#chk-air").checked) return byAir(u, f);
   return mid ? bringOn(u, k) : setUp(u, k);
 }
-function byAir(u, f){                             // the unit comes on by air at a landing zone, up to heliborne.lift men an exchange
+function byAir(u, f){                             // the unit comes on by air at a landing zone, as its side's helicopters carry it
   const lz = (S.field.lz || [])[Number($("#sel-lz").value)];
   if (!lz){ S.msg = "Mark a landing zone first (Clicking the map: Mark or clear a landing zone)."; return render() }
   const facing = S.phase === "setup" ? u.facing : sideFacing(S.sides.indexOf(u.side)), { men, start, down, dead, hurt, heroes, state, ...tmpl } = u;
-  const width = Math.max(1, Math.min(u.width, Math.ceil(FD.units.heliborne.lift / FD.units.formations[u.formation].per_hex / 2)));   // a lift lands two ranks deep
+  const H = FD.units.heliborne, width = Math.max(1, Math.min(u.width, Math.ceil(H.at_once * H.carry / FD.units.formations[u.formation].per_hex / 2)));   // a lift lands two ranks deep
   (S.field.lifts || (S.field.lifts = [])).push({ unit: { ...tmpl, facing, width, pos: [...lz] }, lz: [...lz], left: men });
   $("#in-name").value = "";
-  S.msg = `${unitName(u)} (${men} men) will come in by air at ${lz[0] + 1},${lz[1] + 1}: up to ${FD.units.heliborne.lift} men a landing zone at the end of each exchange.`;
+  S.msg = `${unitName(u)} (${men} men) will come in by air at ${lz[0] + 1},${lz[1] + 1}: as many as its side's free helicopters carry at the end of each exchange (${helosText(u.side)}).`;
   render();
 }
 function setUp(u, k){                             // set-up: inside the camp for its defenders, else the first free spot along its side's entry edge, facing into the map; as wide as asked, else narrower and deeper
@@ -2858,6 +2930,7 @@ function init(){
   $("#btn-limber").onclick = toggleLimber;
   $("#btn-abandon").onclick = abandonVehicles;
   $("#btn-dismount").onclick = dismountRiders;
+  $("#btn-flyout").onclick = flyOut;
   $("#sel-carrier").onchange = e => { if (e.target.value) mountOn(e.target.value) };
   $("#btn-ground").onclick = toggleGround;
   $("#btn-emplace").onclick = toggleEmplace;

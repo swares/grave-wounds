@@ -375,10 +375,12 @@ def _heliborne_rules(d) -> list[str]:
     H = d.units.get("heliborne")
     if not H:
         return []
-    return [f"<b>Landing by air:</b> a field can mark landing zones; a unit can come on by air at one, up to {H['lift']} men a zone at the end of each "
-            f"exchange, its first men on the zone or the nearest spot within {H['zone']} hexes where they fit. None land while an enemy unit stands within "
-            f"{H['blocked']} hexes of the zone. If an enemy unit could shoot at the zone it is hot: each man landing is struck at {H['hot']}% and wounds as by "
-            "shellfire. A downed helicopter (a work the GM places at any time) is cover for the men in its hex."]
+    return [f"<b>Landing by air:</b> a field can mark landing zones. Each side has helicopters (by default {H['aircraft']} of {H['carry']} men each, back for the "
+            f"next load {H['turnaround']} exchanges after landing; at most {H['at_once']} at a zone in an exchange). A unit can come on by air at a zone, its first men "
+            f"on the zone or the nearest spot within {H['zone']} hexes where they fit. None land while an enemy unit stands within {H['blocked']} hexes of the zone. "
+            f"If an enemy unit could shoot at the zone it is hot: each man landing is struck at {H['hot']}% and wounds as by shellfire, and each helicopter is hit "
+            f"at {H['hit']}% ({H['downed']}% of those downed, a wreck on the zone; the rest damaged; either is lost for the battle). Helicopters also bring supply "
+            "dumps to a zone (from Vietnam on) and lift units out. A downed helicopter's wreck is cover for the men in its hex."]
 
 
 def _air_rules(ind: dict) -> str:

@@ -132,7 +132,7 @@ def _air_values(d: Data) -> dict:
             "a_mg": f"{G['mg']:g}", "a_rocket": f"{G['rocket']:g}", "a_rifles": f"{G['rifles']:g}", "a_cap": G["cap"], "a_gs_exposed": GS["exposed"],
             "a_danger": _field(d, A["fac"]["danger"]), "a_aa": f"{G['aa']:g}", "a_aa_reach": _field(d, G["aa_reach"]), "a_aa_cap": G["aa_cap"], "a_downed": G["downed"],
             "r_s_len": A["runs"]["strafe"]["length"], "r_s_struck": A["runs"]["strafe"]["struck"], "r_n_len": A["runs"]["napalm"]["length"],
-            "r_n_struck": A["runs"]["napalm"]["struck"], "r_n_dead": A["runs"]["napalm"]["dead"], "h_lift": H["lift"], "h_blocked": H["blocked"], "h_hot": H["hot"], "h_zone": H["zone"]}
+            "r_n_struck": A["runs"]["napalm"]["struck"], "r_n_dead": A["runs"]["napalm"]["dead"], "h_lift": H["at_once"] * H["carry"], "h_aircraft": H["aircraft"], "h_carry": H["carry"], "h_turn": H["turnaround"], "h_at_once": H["at_once"], "h_hit": H["hit"], "h_downed": H["downed"], "h_blocked": H["blocked"], "h_hot": H["hot"], "h_zone": H["zone"]}
 
 
 # ---------- tables ----------
