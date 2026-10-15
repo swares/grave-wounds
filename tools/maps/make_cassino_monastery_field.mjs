@@ -21,7 +21,7 @@ const MG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", for
 const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("4/6th Rajputana Rifles (along Snakeshead Ridge)", AL, 450, SEPOY, 15, [P593[0] + 2, 12], S),
-  at("1st Royal Sussex (in reserve)", AL, 300, SEPOY, 15, [P593[0] - 22, 6], S),
+  at("1st Royal Sussex (three companies, with the Rajputanas)", AL, 300, SEPOY, 15, [P593[0] - 22, 6], S),
   at("1/9th Gurkha Rifles (across the slopes for Point 444)", AL, 450, SEPOY, 20, [P444[0] - 4, 40], S),
   at("1/2nd Gurkha Rifles (down for the abbey's hill)", AL, 450, SEPOY, 20, [ABBEY[0] - 10, 68], S),
   at("German paratroops on Point 593", DE, 120, PARA, 10, [P593[0], P593[1] + 2], N),
@@ -32,6 +32,12 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
+    { name: "For Point 593", at: 1, note: "Midnight: the Rajputana Rifles and three Sussex companies go for Point 593." },
+    { name: "The Gurkhas go in", at: 121, note: "Two hours later, as planned: the 1/2nd and 1/9th Gurkhas go down the slopes for the abbey (the plan's time).", arrive: ["1/9th Gurkha Rifles (across the slopes for Point 444)", "1/2nd Gurkha Rifles (down for the abbey's hill)"] },
+    { name: "A standstill", at: 211, note: "By 03:30 the attack is at a standstill." },
+    { name: "A fourth company", at: 271, note: "04:30: a fourth Rajputana company is thrown in and fails to regain the summit; before dawn a Gurkha company gets a lodgement on Point 445." },
+  ],
   objective: { at: P593, side: 0, name: "Point 593", radius: 4 },
   id: "cassino-monastery-1944", name: "Snakeshead Ridge and the abbey, 17-18 February 1944", sides: ["Allies", "Germans"], table: "owens-wwii",
   travel: { map: "cassino-1944", place: "Point 593 (Monte Calvario)", within: 1, sides: ["Allies", "Germans"] },
@@ -58,8 +64,9 @@ writeField({
     "",
     "What happened, briefly: after the abbey was bombed on 15 February, the 4th Indian Division",
     "attacked along the narrow ridge from the north. The Royal Sussex had already failed against",
-    "Point 593 on the two nights before; on the 17th the Rajputana Rifles went for it and the",
-    "Gurkhas down the slopes for Point 444 and the abbey's hill, into minefields, thorn scrub and",
+    "Point 593 on the two nights before; at midnight on the 17th the Rajputana Rifles, with three",
+    "Sussex companies, went for it, and two hours later the Gurkhas down the slopes for the abbey",
+    "(by Point 445, says The Tiger Triumphs; Point 444 in other accounts), into minefields, thorn scrub and",
     "machine-gun fire from the paratroops on the tops. By dawn on the 18th the attack had failed",
     "with heavy loss, and it was called off.",
   ],

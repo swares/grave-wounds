@@ -45,9 +45,17 @@ const units = [
   unit("14th Brooklyn", USA, 700, RIFLE, [18, 80, 46]),
   unit("Willcox's and Franklin's brigades", USA, 4000, RIFLE, [50, 30, 30]),
   unit("Sherman's brigade (coming over)", USA, 3000, RIFLE, [40, 80, 12]),
+  unit("Kirby Smith's and Early's brigades (onto Chinn Ridge)", CSA, 3500, RIFLE, [40, 2, 122]),
+  unit("Howard's brigade (Chinn Ridge)", USA, 2400, RIFLE, [30, 2, 16]),
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
+    { name: "The guns on Henry Hill", at: 1, note: "About 14:00: Ricketts's and Griffin's batteries unlimber near the Henry house; Willcox's and Franklin's men are already engaged." },
+    { name: "The blue regiment and Stuart's horse", at: 61, note: "About 15:00: the 33rd Virginia, in blue, comes out of the woods by the Sudley road and shoots down the gunners; Stuart's horse ride into the Zouaves.", arrive: ["33rd Virginia", "Stuart's cavalry"] },
+    { name: "Sherman's attacks", at: 76, note: "Sherman's regiments go up the hill one after another (est.); by about 15:30 his brigade is in confusion.", arrive: ["Sherman's brigade (coming over)"] },
+    { name: "Chinn Ridge", at: 121, note: "About 16:00: Kirby Smith's and Early's fresh brigades come in on Chinn Ridge against Howard, and the Union line begins to break.", arrive: ["Kirby Smith's and Early's brigades (onto Chinn Ridge)", "Howard's brigade (Chinn Ridge)"] },
+  ],
   objective: { at: [78, 60], side: 1, name: "the top of Henry Hill", radius: 8 },
   id: "bull-run-1861", name: "First Bull Run, 21 July 1861", sides: ["Confederates", "Union"], table: "acw-1861-all-hits",
   travel: { map: "bull-run-1861", place: "Henry Hill", within: 2, sides: ["Confederacy", "Union"] },

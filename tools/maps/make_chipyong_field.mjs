@@ -69,14 +69,18 @@ const units = [
   at("Chinese battalion (against C Company)", CH, 600, PVA, 40, [edge(-80, 26)[0], 6], S),
   at("Chinese battalion (against K Company)", CH, 500, PVA, 30, [edge(0, 18)[0], edge(0)[1]], 3),
   at("Chinese battalion (against the French)", CH, 500, PVA, 30, [16, edge(190)[1]], 0),
+  at("Task Force Crombez (tanks, up Route 24A)", { side: 0, facing: N }, 80, { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" }, 4, [CX - 1, ROWS - 5], N),
   at("Chinese machine guns (south)", CH, 15, { ...MG, kit: "none", quality: "veteran", prone: false }, 3, [edge(110)[0], 160], N),
 ];
 
 writeField({
-  phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
     { name: "The attack on G Company", at: 1, note: "Soon after 22:00 on 14 February the Chinese regiment from Hill 397 breaks into G Company's line." },
-    { name: "G Company's hill falls; first reserves", at: 331, note: "About 03:30, with G Company's hill lost, a Ranger platoon and an F Company platoon reach it and counter-attack in the dark.", arrive: ["1st Ranger Company (reserve)"] },
+    { name: "G Company's hill falls; first reserves", at: 331, note: "About 03:00 G Company gives up the rest of its hill; a Ranger platoon and an F Company platoon reach it and counter-attack in the dark.", arrive: ["1st Ranger Company (reserve)"] },
     { name: "The dawn counter-attack fails", at: 496, note: "06:15: the counter-attack by the Rangers, F Company's platoon and G Company's survivors is driven back." },
+    { name: "B Company counter-attacks", at: 721, note: "10:00: behind a mortar barrage and tank fire, B Company attacks G Company's hill; it is kept off the crest for hours (Mossman).", arrive: ["B Company, 23rd Infantry (reserve)"] },
+    { name: "The hill retaken; the Chinese run", at: 1111, note: "About 16:30 B Company regains the rest of the hill as tanks appear on Route 24A; the Chinese on Hill 397 begin to run." },
+    { name: "Task Force Crombez", at: 1156, note: "About 17:15: Crombez leads his tanks inside the perimeter (Mossman).", arrive: ["Task Force Crombez (tanks, up Route 24A)"] },
   ],
   objective: { at: edge(95), side: 1, name: "G Company's hill on the southern perimeter", radius: 3 },
   id: "chipyong-1951", name: "The perimeter at Chipyong-ni, 14-15 February 1951", sides: ["United Nations", "Chinese"], table: "korea-1950-53-hospitalized",

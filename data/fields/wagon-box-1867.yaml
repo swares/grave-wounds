@@ -12,7 +12,8 @@
 # men who could reached the corral. Through the morning mounted and foot attacks came at it from
 # several sides; the soldiers' breech-loaders, fired as fast as they could be loaded, held them
 # off. Lieutenant Jenness and two soldiers were killed. In the early afternoon a relief column
-# came out from the fort with a mountain howitzer (not on this map: the GM can bring it on),
+# came out from the fort with a mountain howitzer (it comes on in the last phase; the howitzer
+# itself is not on this map),
 # and the warriors drew off. Estimates of their losses run from a handful to sixty.
 id: wagon-box-1867
 name: "The Wagon Box Fight, 2 August 1867"
@@ -25,6 +26,12 @@ size: [100, 80]
 weather: {cond: fair, wind: breeze, dir: W, ground: {mud: 0, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [49, 40], side: 1, name: "the wagon-box corral", radius: 1}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "The mounted charge", at: 1, note: "About 09:15 some 800 mounted warriors surround the corral and are driven back (Powell's report)."}
+  - {name: "The foot attacks", at: 16, note: "The warriors strip on a hill and attack on foot, for three hours (est. for the start); Jenness is killed in the second attack.", arrive: ["Warriors on foot from the ravine"]}
+  - {name: "Smith's relief is seen", at: 196, note: "About 12:30 the relief from the fort is seen and the warriors draw off.", arrive: ["Major Smith's relief column"]}
 ground: |
   FFFFFFFFF............................................................F.F.FF..F.FF.F.FF.FFFFFFFF.....
   FFFFFFFFFF....................................................FF.FF.FF..F...FFFFFF.FFFFF....F.F.FFF.
@@ -114,4 +121,5 @@ units:
   - {name: "Woodcutters and teamsters (civilians, repeating rifles)", side: 0, men: 6, quality: green, weapon: breechloader, kit: none, formation: close, width: 1, pos: [49, 41], facing: 1, size: section}
   - {name: "Mounted warriors, the first charge (Lakota and Cheyenne)", side: 1, men: 300, quality: veteran, weapon: bow, kit: rawhide_shield, formation: open, width: 15, pos: [49, 12], facing: 4, mounted: true, size: battalion}
   - {name: "Warriors on foot from the ravine", side: 1, men: 250, quality: veteran, weapon: bow, kit: rawhide_shield, formation: open, width: 7, pos: [83, 20], facing: 4, size: company}
+  - {name: "Major Smith's relief column", side: 0, men: 100, quality: regular, weapon: breechloader, kit: none, formation: close, width: 10, pos: [86, 40], facing: 3, size: company}
   - {name: "Warriors with guns, along the plateau's edge", side: 1, men: 100, quality: veteran, weapon: rifle_musket, kit: none, formation: open, width: 5, pos: [24, 30], facing: 4, size: company}

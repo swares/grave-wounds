@@ -49,6 +49,7 @@ const units = [
   { ...at("E Company's machine guns", UN, 10, MG, 2, [TOP[0] + 6, TOP[1] - 7], N), fixed: [TOP[0], 18] },   // laid by day down the north slope
   at("L Company, 31st Infantry (Hill 200)", UN, 120, GI, 12, [H200[0], H200[1] - 5], 2),
   at("K Company, 31st Infantry (from the main line)", UN, 135, GI, 20, [80, 122], N),
+  at("G Company, 17th Infantry (from the main line)", UN, 130, GI, 13, [56, 124], N),
   at("Chinese battalion up the north slope", CH, 400, PVA, 30, [TOP[0], 18], S),
   at("Chinese company from Old Baldy (the west)", CH, 150, PVA, 12, [16, 60], 0),
   at("Chinese machine guns", CH, 10, { ...MG, kit: "none", quality: "veteran" }, 2, [50, 14], 5),
@@ -59,7 +60,7 @@ writeField({
     { name: "E Company overrun", at: 1, note: "23:05: the lights come on all over the hill and the Chinese battalion comes up the north slope." },
     { name: "The first relief", at: 176, note: "Shortly after 02:00 L Company's platoons are sent up to reinforce E Company; most of the hill is in Chinese hands.", arrive: ["L Company, 31st Infantry (Hill 200)"] },
     { name: "K Company counter-attacks", at: 326, note: "04:30: the barrage lifts and K Company steps off; L Company attacks again at about the same time.", arrive: ["K Company, 31st Infantry (from the main line)"] },
-    { name: "A fresh Chinese company", at: 550, note: "08:14: G Company of the 17th Infantry arrives as a fresh Chinese company appears (which company it was is our reading).", arrive: ["Chinese company from Old Baldy (the west)"] },
+    { name: "A fresh Chinese company", at: 550, note: "08:14: G Company of the 17th Infantry arrives as a fresh Chinese company appears (which company it was is our reading).", arrive: ["Chinese company from Old Baldy (the west)", "G Company, 17th Infantry (from the main line)"] },
   ],
   objective: { at: TOP, side: 1, name: "the top of Pork Chop Hill", radius: 9 },
   id: "porkchop-1953", name: "Pork Chop Hill, 16-17 April 1953", sides: ["United Nations", "Chinese"], table: "korea-1950-53-hospitalized",

@@ -26,6 +26,12 @@ size: [120, 100]
 weather: {cond: rain, wind: calm, dir: SE, ground: {mud: 1, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [60, 46], side: 1, name: "the saddle in the line", radius: 7}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "The saddle is seized", at: 1, note: "About 02:30 on 9 March the 23rd Infantry's 2nd Battalion blows the wire and takes the saddle."}
+  - {name: "The 3rd Battalion follows", at: 6, note: "The 3rd Battalion follows in the same column and is caught by American artillery (est. minutes).", arrive: ["23rd Infantry, III Battalion (east slope)"]}
+  - {name: "The reserve counter-attacks", at: 571, note: "About noon on 9 March, C Company of the 1st Battalion, 145th, starts up Hill 700 against the saddle.", arrive: ["145th Infantry, 1st Battalion (reserve)"]}
 ground: |
   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF

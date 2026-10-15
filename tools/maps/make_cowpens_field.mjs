@@ -43,6 +43,13 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
+    { name: "The British attack", at: 1, note: "About sunrise (about 07:00): Tarleton attacks at once after his night march." },
+    { name: "In musket range", at: 4, note: "In under three minutes the British are within musket range of the militia." },
+    { name: "The militia fall back", at: 13, note: "After 8 to 12 minutes of fire (est.) the militia fall back round the Continentals' left." },
+    { name: "About-face and bayonets", at: 46, note: "07:45: the Continentals face about, halt, fire and charge with the bayonet; Washington's horse come in." },
+    { name: "Over", at: 61, note: "By 08:00 the battle is over." },
+  ],
   id: "cowpens-1781", name: "Cowpens, 17 January 1781", sides: ["Americans", "British"], table: "revolution-1775-83-all-hits",
   travel: { map: "cowpens-1781", place: "Hannah's Cowpens", within: 2, sides: ["Americans", "British"] },
   weather: "{cond: fair, wind: calm, dir: NW, ground: {mud: 0, snow: 0}}",

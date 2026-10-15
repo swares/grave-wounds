@@ -27,6 +27,12 @@ size: [140, 120]
 weather: {cond: overcast, wind: breeze, dir: S, ground: {mud: 2, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [28, 30], side: 0, name: "Castle Hill", radius: 3}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "Into the rubble", at: 1, note: "Noon on 15 March: the bombing stops, the guns open and the 25th Battalion goes in from the north."}
+  - {name: "Castle Hill taken", at: 241, note: "About 16:00, four hours later: D Company of the 25th takes Castle Hill (Point 193)."}
+  - {name: "The 26th Battalion committed", at: 301, note: "Late afternoon (est.): the 26th Battalion is committed and takes three hours in the dark to reach Route 6.", arrive: ["26th New Zealand Battalion (following up)"]}
 ground: |
   FhhhhhFFFFhhhFhhhhFhFhhhhhFhhFhhhhhhFhh.............................................................................................www.....
   hFhFhhFFhFhhhhhhhFhhhhhhFhFhFhhhhFhhhFh.............................................................................................www.....

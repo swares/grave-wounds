@@ -59,6 +59,11 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
+    { name: "Into the rubble", at: 1, note: "Noon on 15 March: the bombing stops, the guns open and the 25th Battalion goes in from the north." },
+    { name: "Castle Hill taken", at: 241, note: "About 16:00, four hours later: D Company of the 25th takes Castle Hill (Point 193)." },
+    { name: "The 26th Battalion committed", at: 301, note: "Late afternoon (est.): the 26th Battalion is committed and takes three hours in the dark to reach Route 6.", arrive: ["26th New Zealand Battalion (following up)"] },
+  ],
   objective: { at: CASTLE, side: 0, name: "Castle Hill", radius: 3 },
   id: "cassino-town-1944", name: "Cassino town and Castle Hill, 15 March 1944", sides: ["Allies", "Germans"], table: "owens-wwii",
   travel: { map: "cassino-1944", place: "Cassino", within: 1, sides: ["Allies", "Germans"] },

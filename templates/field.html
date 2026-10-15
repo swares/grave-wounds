@@ -2547,11 +2547,12 @@ function holdForStages(phases){                   // the battlefield's phases; t
   S.stages = structuredClone(phases);
   S.stageNo = -1;
   S.waiting = [];
-  const lifts = S.field.lifts || [];
+  const lifts = S.field.lifts || [], sup = supports();
   S.stages.forEach((st, i) => (st.arrive || []).forEach(name => {
-    const u = S.units.find(v => v.name === name), lf = lifts.find(l => l.unit.name === name);
+    const u = S.units.find(v => v.name === name), lf = lifts.find(l => l.unit.name === name), b = sup.find(x => x.name === name);
     if (u){ S.waiting.push({ stage: i, unit: u }); S.units = S.units.filter(v => v !== u) }
     else if (lf){ S.waiting.push({ stage: i, unit: lf.unit, lift: lf }); S.field.lifts = S.field.lifts.filter(l => l !== lf) }   // coming in by air: it takes off when its phase begins
+    else if (b){ S.waiting.push({ stage: i, unit: { name: b.name }, support: b }); S.field.support = supports().filter(x => x !== b) }   // a battery or aircraft: on call from its phase
   }));
 }
 function placeArrival(u, k){                      // where an arriving unit comes on: where the battlefield draws it if there is room, else at its side's entry edge
@@ -2572,9 +2573,10 @@ function advanceStages(){                         // at the start of an exchange
     S.log.unshift({ cls: "head", text: `Phase ${S.stageNo + 1} of ${S.stages.length}: ${st.name}.${st.note ? " " + st.note : ""}` });
     notes.push(`Phase ${S.stageNo + 1}: ${st.name}.`);
   }
-  const came = [], flying = [];
+  const came = [], flying = [], onCall = [];
   S.waiting = S.waiting.filter(w => {
     if (w.stage > S.stageNo) return true;
+    if (w.support){ supports().push(w.support); onCall.push(w.support.name); return false }
     if (w.lift){ (S.field.lifts || (S.field.lifts = [])).push(w.lift); flying.push(`${w.unit.name} (${w.lift.left})`); return false }   // lands by the heliborne rules, a lift at a time
     const at = placeArrival(w.unit, sideNo(w.unit));
     if (!at) return true;
@@ -2584,7 +2586,8 @@ function advanceStages(){                         // at the start of an exchange
   });
   if (came.length) S.log.unshift({ cls: "head", text: `Coming on: ${came.join(", ")}. They can move next exchange.` });
   if (flying.length) S.log.unshift({ cls: "head", text: `In the air for the landing zone: ${flying.join(", ")}.` });
-  return (notes.length ? " " + notes.join(" ") : "") + (came.length ? ` Coming on: ${came.join(", ")}.` : "") + (flying.length ? ` In the air: ${flying.join(", ")}.` : "");
+  if (onCall.length) S.log.unshift({ cls: "head", text: `Now on call: ${onCall.join(", ")}.` });
+  return (notes.length ? " " + notes.join(" ") : "") + (came.length ? ` Coming on: ${came.join(", ")}.` : "") + (flying.length ? ` In the air: ${flying.join(", ")}.` : "") + (onCall.length ? ` Now on call: ${onCall.join(", ")}.` : "");
 }
 function stageText(){                             // the strip above the map: the phase now, what it brought, and what comes next
   if (!S.stages) return "";

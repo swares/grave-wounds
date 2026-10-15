@@ -50,11 +50,15 @@ const units = [
   at("E Company's reserve platoon", US, 50, { ...MARINE, prone: false }, 8, [TOP[0] + 2, TOP[1] + 4], N),
   { ...at("E Company's machine guns", US, 10, MG, 2, [TOP[0] + 5, TOP[1] - 6], N), fixed: [TOP[0], 16] },   // laid by day through the north wire
   at("North Vietnamese battalion (through the north wire)", NV, 400, PAVN, 30, [TOP[0], 16], S),
-  at("North Vietnamese company (from the north-west)", NV, 120, PAVN, 12, [24, 30], 5),
   at("North Vietnamese machine guns", NV, 10, { ...MG, kit: "none", quality: "veteran", nv: "none" }, 2, [TOP[0] + 20, 22], 4),
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
+    { name: "Through the north wire", at: 1, note: "About 03:05: Captain Breeding reports 200 North Vietnamese breaching the wire atop the hill." },
+    { name: "Shanley's counter-attack", at: 116, note: "05:00: Lieutenant Shanley leads the 1st Platoon out of its fall-back holes in a counter-attack." },
+    { name: "A half-hearted second attack", at: 131, note: "The survivors regroup and attack again, half-heartedly, and are repulsed (est.: no time given)." },
+  ],
   objective: { at: TOP, side: 1, name: "the top of Hill 861A", radius: 8 },
   id: "khesanh-1968", name: "Hill 861A, Khe Sanh, 5 February 1968", sides: ["United States and ARVN", "North Vietnamese"], table: "vietnam-1965-70-hospitalized",
   travel: { map: "khesanh-1968", place: "Hill 861A", within: 1, sides: ["United States and ARVN", "North Vietnamese"] },
@@ -79,10 +83,11 @@ writeField({
     "give, not traced from any map; the deployment is the North Vietnamese attack, in our own words,",
     "with round numbers for play. Fog and a dark night: fire illumination and flares.",
     "",
-    "What happened, briefly: at about 04:00 on 5 February 1968, after a heavy barrage, a North",
-    "Vietnamese battalion came through the wire on the north of Hill 861A and into E Company's",
-    "trenches. The reserve platoon counterattacked and the Marines threw them out hand to hand",
-    "before dawn, with the base's guns firing round the hill; seven Marines were killed, and more",
+    "What happened, briefly: at about 03:05 on 5 February 1968, as the base was shelled, about 200",
+    "North Vietnamese came through the wire on the north of Hill 861A and into E Company's",
+    "trenches. At 05:00 Lieutenant Shanley's 1st Platoon, pushed out to its alternate positions,",
+    "counterattacked and threw them out hand to hand; the survivors came again, half-heartedly, and",
+    "were repulsed before dawn, with the base's guns firing round the hill; seven Marines were killed, and more",
     "than a hundred North Vietnamese dead were counted.",
   ],
 });

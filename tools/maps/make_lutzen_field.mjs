@@ -53,6 +53,7 @@ const units = [
   unit("Imperial horse, right", IMP, 1500, HORSE, [20, 30, 58]),
   unit("Imperial cuirassiers, left", IMP, 2000, CUIRASS, [25, 155, 68]),
   unit("Pappenheim's horse (coming up)", IMP, 2500, CUIRASS, [30, 185, 10]),
+  unit("Pappenheim's foot (coming up, too late)", IMP, 3000, PIKE, [40, 120, 6]),
 ];
 
 writeField({
@@ -62,6 +63,7 @@ writeField({
     { name: "The King is killed; the second line goes in", at: 151, note: "After 13:00, in the fog: Gustavus Adolphus is killed and Knyphausen holds the line with the second line (the time is our estimate).", arrive: ["Swedish second line"] },
     { name: "Lull", at: 241, note: "By 15:00 Bernhard's attack has failed; a lull of about half an hour." },
     { name: "The final assault on the windmill hill", at: 271, note: "15:30 to 17:00: as the light fades Bernhard's men take the windmill battery." },
+    { name: "Pappenheim's foot arrive", at: 421, note: "18:00: Pappenheim's foot come up, too late; at 20:00 Wallenstein withdraws.", arrive: ["Pappenheim's foot (coming up, too late)"] },
   ],
   objective: { at: [38, 67], side: 0, name: "the windmill battery", radius: 4 },
   id: "lutzen-1632", name: "Lützen, 16 November 1632", sides: ["Swedes", "Imperialists"], table: "thirty-years-war-all-hits",

@@ -1268,19 +1268,20 @@ def _marker_default_errors(d: Data) -> list[str]:
 
 def _phase_errors(f: dict, where: str) -> list[str]:
     """A battlefield's phases: each a name, the exchange it begins (the first 1, then rising), an
-    optional note, and the units it brings on (the field's own, each in one phase only)."""
+    optional note, and the units or batteries on call it brings on (the field's own, each in one phase only)."""
     P = f.get("phases")
     if P is None:
         return []
     if not isinstance(P, list) or not P:
         return [f"{where}: phases must be a list"]
-    names, seen, ats = {u.get("name") for u in f.get("units", [])}, set(), [st.get("at") for st in P]
+    names = {u.get("name") for u in f.get("units", [])} | {s.get("name") for s in f.get("support", [])}
+    seen, ats = set(), [st.get("at") for st in P]
     errors = [f"{where}: phase {i + 1} needs a name and its exchange (the first 1, each later than the one before)"
               for i, st in enumerate(P) if not _phase_ok(st, ats[i - 1] if i else 0, first=not i)]
     for i, st in enumerate(P):
         for n in st.get("arrive", []):
             if n not in names or n in seen:
-                errors.append(f"{where}: phase {i + 1} brings on {n!r}, which is not a unit of the field or comes in another phase")
+                errors.append(f"{where}: phase {i + 1} brings on {n!r}, which is not a unit or battery of the field, or comes in another phase")
             seen.add(n)
     return errors
 

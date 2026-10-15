@@ -22,6 +22,13 @@ table: indian-wars-1865-71-arrows
 travel: {map: phil-kearny-1866, place: "Fetterman battlefield", within: 2, sides: ["US Army", "Lakota, Cheyenne and Arapaho"]}
 size: [150, 120]
 weather: {cond: fair, wind: calm, dir: NW, ground: {mud: 0, snow: 1}}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "On the crest", at: 1, note: "About 11:45 the column is on Lodge Trail Ridge, following the decoys."}
+  - {name: "The trap is sprung", at: 11, note: "At the signal the warriors come up out of the ravines and across the flats (est.: the firing is almost continuous by noon).", arrive: ["Lakota horsemen on the flats beyond the creek", "Lakota on foot in the west ravines", "Cheyenne and Arapaho in the east ravines"]}
+  - {name: "The infantry overrun", at: 31, note: "About 20 minutes after the signal the infantry are overrun (Ambrose); the cavalry hold out about 20 minutes more."}
+  - {name: "Silence", at: 61, note: "12:45: the firing dies as Ten Eyck reaches the ridge top."}
 ground: |
   r........r........r.........rr..............................................................................................r.........................
   ......r...........................r..r......r..................r.............r..................r...r.rrr..................r.......r.....rr...........

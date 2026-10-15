@@ -24,6 +24,13 @@ size: [140, 110]
 weather: {cond: overcast, wind: breeze, dir: W, light: dusk, ground: {mud: 1, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [84, 57], side: 0, name: "the crest of Darwin Hill", radius: 7}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "Pinned in the gully", at: 1, note: "09:00 (local): A Company is pinned below Darwin Hill, B Company on the open slope to the west."}
+  - {name: "Shortly before noon", at: 176, note: "11:55: the Scout sent to evacuate H. Jones is shot down; shortly before noon the advance resumes."}
+  - {name: "The Argentine counter-attack", at: 241, note: "13:00: an Argentine platoon counter-attacks at Darwin Hill.", arrive: ["Argentine reserve (Darwin)"]}
+  - {name: "Darwin Hill taken", at: 254, note: "13:13 local: A Company reports Darwin Hill taken."}
 ground: |
   wwww.....m.......mm..m..m...mm.m.......................m.........................m.......m............................m.....m...wwwwwwwwwwww
   wwww..m................m........m.m..m......m...m..m....m......m.............m...............m..m...m.mmm..............m...m....wwwwwwwwwwww

@@ -47,6 +47,8 @@ const units = [
   at("Rangers and Delta at the corner west of the crash", US, 25, RANGER, 4, [CRASH1[0] - 6, CRASH1[1] + 1], 3),
   at("Machine guns (SAWs and M60s) at the crash", US, 10, SAW, 2, [CRASH1[0] + 4, CRASH1[1] - 1], 0),
   at("Crash site 2: the crew, Gordon and Shughart", US, 6, RANGER, 2, [CRASH2[0] - 2, CRASH2[1]], S),
+  at("Relief column (10th Mountain infantry)", US, 150, { ...RANGER, quality: "regular" }, 15, [44, 100], N),
+  at("Relief column (Malaysian APCs and Pakistani tanks)", US, 36, { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "apc" }, 4, [60, 100], N),
   at("Militia from the Bakara Market", SNA, 300, MILITIA, 30, [30, 34], 0),
   at("Militia coming in from the north", SNA, 200, MILITIA, 30, [62, 5], S),
   at("Militia from the east", SNA, 150, MILITIA, 20, [90, 22], 3),
@@ -56,6 +58,11 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
+    { name: "Two crash sites", at: 1, note: "About 16:42: the Rangers and Delta hold the houses round Super 61; Gordon and Shughart are inserted at Super 64." },
+    { name: "Crash site 2 falls", at: 59, note: "About 17:40: the snipers run out of ammunition and are killed as the crowd overruns Durant's crash site." },
+    { name: "The relief column", at: 553, note: "01:55: the relief column of 10th Mountain troops in Malaysian APCs, with Pakistani tanks, reaches the trapped force.", arrive: ["Relief column (10th Mountain infantry)", "Relief column (Malaysian APCs and Pakistani tanks)"] },
+  ],
   objective: { at: CRASH1, side: 1, name: "Super 61's crash site", radius: 4 },
   id: "mogadishu-1993", name: "Mogadishu: the crash sites, 3 October 1993", sides: ["United States", "Somali National Alliance"], table: "somalia-1993-wounds",
   travel: { map: "mogadishu-1993", place: "Crash site 1 (Super 61)", within: 2, sides: ["United States", "Somali National Alliance"] },

@@ -33,6 +33,7 @@ phases:
   - {name: "The King is killed; the second line goes in", at: 151, note: "After 13:00, in the fog: Gustavus Adolphus is killed and Knyphausen holds the line with the second line (the time is our estimate).", arrive: ["Swedish second line"]}
   - {name: "Lull", at: 241, note: "By 15:00 Bernhard's attack has failed; a lull of about half an hour."}
   - {name: "The final assault on the windmill hill", at: 271, note: "15:30 to 17:00: as the light fades Bernhard's men take the windmill battery."}
+  - {name: "Pappenheim's foot arrive", at: 421, note: "18:00: Pappenheim's foot come up, too late; at 20:00 Wallenstein withdraws.", arrive: ["Pappenheim's foot (coming up, too late)"]}
 ground: |
   ............................................................................................................................................................................................................................
   ............................................................................................................................................................................................................................
@@ -174,3 +175,4 @@ units:
   - {name: "Imperial horse, right", side: 1, men: 1500, quality: veteran, weapon: sword, kit: harquebusier_1630, formation: close, width: 20, pos: [40, 58], facing: 4, mounted: true, size: regiment}
   - {name: "Imperial cuirassiers, left", side: 1, men: 2000, quality: veteran, weapon: sword, kit: cuirassier_1630, formation: close, width: 25, pos: [167, 68], facing: 4, mounted: true, size: regiment}
   - {name: "Pappenheim's horse (coming up)", side: 1, men: 2500, quality: veteran, weapon: sword, kit: cuirassier_1630, formation: close, width: 30, pos: [200, 10], facing: 4, mounted: true, size: regiment}
+  - {name: "Pappenheim's foot (coming up, too late)", side: 1, men: 3000, quality: regular, weapon: pike, kit: pikeman_1630, formation: close, width: 40, pos: [140, 6], facing: 4, size: brigade}

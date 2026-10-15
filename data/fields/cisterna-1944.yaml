@@ -11,7 +11,9 @@
 # houses, haystacks and dugouts start gone to ground; houses are buildings (cover).
 #
 # What happened, briefly: the Rangers had come four miles up the ditch in the dark, past German
-# posts, and were short of the town at dawn. Three self-propelled guns opened on them; the
+# posts, and were short of the town at dawn; the 3rd Reconnaissance Troop platoon following them
+# up the road had been caught on a German road block before dawn, and one man got back. Three
+# self-propelled guns opened on the Rangers at first light; the
 # Rangers knocked them out, but machine guns, mortars and snipers pinned them in the open, and
 # the Germans closed in from all sides. A few reached the buildings by the station. Around noon
 # tanks drove through them and split them into small groups; the last radio message came at
@@ -27,6 +29,13 @@ size: [150, 120]
 weather: {cond: fair, wind: calm, dir: N, ground: {mud: 1, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [80, 7], side: 0, name: "the edge of Cisterna", radius: 3}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "Caught at first light", at: 1, note: "About 06:10, short of the town: three self-propelled guns open on the column."}
+  - {name: "A hasty defence", at: 61, note: "By about 07:10 the battalions are in a crescent-shaped hasty defence; at 07:30 the 1st Battalion breaks radio silence."}
+  - {name: "The tanks", at: 351, note: "About noon tanks come down from Highway 7 and drive through the Rangers.", arrive: ["Tanks (later in the morning)"]}
+  - {name: "The last message", at: 366, note: "12:15 to 12:30: the last radio messages; the line is rolled up."}
 ground: |
   r.....TTT.TTT...T.TTTT..T...TTTTTTTTTTTTTTTTTTTTT.TTTTTTTTTTT.T.TTTT..TTTT.TTTTT.TTT.TT..TTTT.TTTTTTTTT.TTTTTT.TTTTTTTTT.TTTTT.TT.T.TTTTT.TTTT........
   .......TTTTTTTTTTTTTTTTTTTTTTTT..TT.TTTTTTTTTTTTTTTT.TTT..T.TTT.TTTTT.TTTTTTT.TTTTTTTTT.TTTT.TTTTTTTT.TTTTTTT.TTTTTTTTTTTT.TTTTTT..TTT.TT.TT.T........
@@ -158,7 +167,6 @@ support:
 units:
   - {name: "1st Ranger Battalion (at the road crossing)", side: 0, men: 380, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 40, pos: [63, 82], facing: 1, size: battalion}
   - {name: "3rd Ranger Battalion (along the ditch)", side: 0, men: 380, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 36, pos: [109, 96], facing: 1, size: battalion}
-  - {name: "3rd Reconnaissance Troop platoon (following up the road)", side: 0, men: 43, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 8, pos: [41, 112], facing: 1, size: platoon}
   - {name: "Hermann Göring Division infantry (the town's edge)", side: 1, men: 400, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 80, pos: [80, 9], facing: 4, prone: true, size: battalion}
   - {name: "Machine guns in the farmhouses (west)", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [52, 49], facing: 4, prone: true, size: section}
   - {name: "Machine guns in the farmhouses (east)", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [96, 43], facing: 4, prone: true, size: section}

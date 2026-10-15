@@ -46,10 +46,16 @@ const units = [
   unit("Woodcutters and teamsters (civilians, repeating rifles)", US, 6, { ...BREECH, quality: "green" }, [1, 49, 41]),
   unit("Mounted warriors, the first charge (Lakota and Cheyenne)", NATIONS, 300, BOWS, [15, 42, 12]),
   unit("Warriors on foot from the ravine", NATIONS, 250, { ...BOWS, mounted: false }, [7, 80, 20]),
+  unit("Major Smith's relief column", { side: 0, facing: 3 }, 100, BREECH, [10, 82, 40]),
   unit("Warriors with guns, along the plateau's edge", NATIONS, 100, { ...BOWS, weapon: "rifle_musket", kit: "none", mounted: false }, [5, 22, 30]),
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
+    { name: "The mounted charge", at: 1, note: "About 09:15 some 800 mounted warriors surround the corral and are driven back (Powell's report)." },
+    { name: "The foot attacks", at: 16, note: "The warriors strip on a hill and attack on foot, for three hours (est. for the start); Jenness is killed in the second attack.", arrive: ["Warriors on foot from the ravine"] },
+    { name: "Smith's relief is seen", at: 196, note: "About 12:30 the relief from the fort is seen and the warriors draw off.", arrive: ["Major Smith's relief column"] },
+  ],
   objective: { at: [49, 40], side: 1, name: "the wagon-box corral", radius: 1 },
   id: "wagon-box-1867", name: "The Wagon Box Fight, 2 August 1867", sides: ["US Army", "Lakota, Cheyenne and Arapaho"],
   table: "indian-wars-1865-71-arrows",
@@ -71,7 +77,8 @@ writeField({
     "men who could reached the corral. Through the morning mounted and foot attacks came at it from",
     "several sides; the soldiers' breech-loaders, fired as fast as they could be loaded, held them",
     "off. Lieutenant Jenness and two soldiers were killed. In the early afternoon a relief column",
-    "came out from the fort with a mountain howitzer (not on this map: the GM can bring it on),",
+    "came out from the fort with a mountain howitzer (it comes on in the last phase; the howitzer",
+    "itself is not on this map),",
     "and the warriors drew off. Estimates of their losses run from a handful to sixty.",
   ],
 });
