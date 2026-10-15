@@ -39,9 +39,8 @@ When an item is done, delete it here and note it in the pull request that closes
   medics, with tourniquets and (before 1914) cautery. A lamed hero slows his unit until he
   is carried back or left behind. Bearers carry him to his side's aid post across the map
   (or off it, with none), walking wounded go back alone, and a hero left lying is picked up
-  by a friendly unit or found by an enemy one. Still left out: parties go on a straight line
-  over any ground (water and woods included) and only shellfire can catch them, not aimed
-  fire; the rank and file have no aid post (their wounded are reckoned after the battle);
+  by a friendly unit or found by an enemy one. Still left out: only shellfire can catch parties, not aimed
+  fire (no figures for it); the rank and file have no aid post (their wounded are reckoned after the battle);
   an aid post cannot be moved once the battle starts; prisoners have no exchange, ransom or
   escape; and there is no two-handed great sword among the weapons, so no sword is barred
   to a one-armed hero.

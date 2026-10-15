@@ -543,7 +543,7 @@ def _hero_rules(d) -> list[str]:
         "With an arm hurt (an arm wound, a lost grip, a useless hand or arm, either side) he cannot use a two-handed weapon (bows, crossbows, long guns, pole arms): he only defends, "
         "here and in the roller. Lamed (a leg wound, cannot stand, collapsed, slowed) or down and carried, he halves his unit's move "
         f"(times {H['carried']:g}, at least 1 hex) until {H['bearers']} of its men carry him back or it leaves him behind, lying on its hex. "
-        f"With an aid post for his side (placed by the GM) they carry him there, {H['aid_post']['pace']} hexes an exchange, shells striking the party as men in the open, "
+        f"With an aid post for his side (placed by the GM) they carry him there, {H['aid_post']['pace']} movement an exchange by the cheapest way (round water, walls and enemy units; to the map edge if no way leads to the post), shells striking the party as men in the open, "
         f"and come back after as long; with none, he leaves the battle at once and they return after {H['back_after']} exchanges unless the unit has broken. "
         f"A wounded hero who can walk may go back alone the same way (to the post, or the map edge behind his unit). At the post he gets first aid every exchange at {H['aid_post']['first_aid']}%, "
         f"and his wounds go back to the roller treated; an enemy unit within {H['aid_post']['overrun']} hex of it overruns it, taking or killing the men there by quarter. "

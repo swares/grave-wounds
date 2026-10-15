@@ -88,7 +88,8 @@ hero who can still walk can **go back** alone. Where he goes depends on whether 
 an aid post:
 
 - **With an aid post** (the GM places one for each side), the party crosses the map
-  {{f_post_pace}} hexes an exchange, and shells can catch it on the way. At the post he gets
+  {{f_post_pace}} hexes an exchange on open ground by the cheapest way (round water, walls and
+  the enemy, slower through woods), and shells can catch it on the way. At the post he gets
   first aid every exchange at {{f_post_aid}}%, and his wounds come off the death clock. An
   enemy who reaches the post takes or kills the men there.
 - **With none**, he is carried off the map at once, and the bearers return after
