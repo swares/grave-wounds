@@ -2158,6 +2158,7 @@ function command(units, side, size, field, rng, exchange = null, { stance = "att
   { const r = ridersAi(us, side, [goal, known, exchange, stance], orders); us = r.units; orders.splice(0, orders.length, ...r.orders) }
   holdBack(us, side, known);
   orders.push(...commitReserve(us, side, known, mem));
+  if (stance === "hold") orders.push(...fixLines(us, side, [field, known, exchange]));
   for (let i = 0; i < us.length; i++){
     if (us[i].side !== side || !commandable(us, i, exchange)) continue;
     const roll = rng.randint(1, 100), o = unitOrder(us, i, [size, aimOf(us, i, aim), stance, known, exchange], roll);
@@ -2216,6 +2217,21 @@ function commitReserve(us, side, known, memory){   // one reserve unit committed
   else return [];
   us[pick].reserve = false;
   return [{ unit: pick, act: "commit", why }];
+}
+function fixLines(us, side, [field, known, exchange]){   // holding, by day or at dusk, its machine guns with no fixed line are laid on the nearest known enemy in reach (as commander._fix_lines)
+  if (lightOf(field) && field?.weather?.light !== "dusk") return [];
+  const out = [];
+  us.forEach((u, i) => {
+    if (u.side !== side || u.fixed || u.vehicle || !isMg(u.weapon) || u.state !== "steady" || u.men <= 0) return;
+    if (exchange !== null && u.arrived === exchange) return;
+    const foes = knownFoes(known).map(([k, m]) => [hdist(u.pos, m.pos), Number(k)]).filter(([dist]) => dist > 0 && fieldRange(u.weapon, dist) !== null)
+      .sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    if (!foes.length) return;
+    const j = foes[0][1], at = [...known[String(j)].pos];
+    us[i] = { ...u, fixed: at };
+    out.push({ unit: i, act: "fix", target: j, hex: at });
+  });
+  return out;
 }
 function layGuns(us, side, [size, field, known, exchange]){   // its batteries and anti-tank guns on the map turn to face the nearest enemy it knows of (as commander._lay_guns)
   const out = [], occ = occupancy(us), kf = knownFoes(known);

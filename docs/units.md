@@ -383,6 +383,11 @@ general. All its numbers are in units.yaml `commander`.
   - Its units weigh an enemy within 4 hexes of the objective 30 points more as a target.
   - A unit at the objective that can dig in, is not under fire and has no enemy it knows
     of in range digs in there (and keeps digging until it is done).
+- **Fixed lines.** Holding, by day or at dusk (a line cannot be laid in the dark), each of
+  its machine guns on foot, steady and with no fixed line yet, is laid on the hex where the
+  nearest enemy it knows of stands (or was last seen), if its guns reach it. Once dark, it
+  fires blind down that line as a machine gun the GM laid does (see Night). It does not
+  re-lay a line, and attacking it lays none.
 - **Its sappers** (units marked sappers; see Minefields).
   - **Attacking**, they lift the known enemy mines in the row ahead of their front when the
     straight way to their target (where last seen), or with no target to the objective,
@@ -505,7 +510,8 @@ general. All its numbers are in units.yaml `commander`.
 What it does not do yet:
 - It looks once, at the start of its move: a unit that moves into sight of an enemy does
   not tell the units ordered after it until the next move.
-- It leaves alone fixed lines and works, and does not move its air controllers to see a target; it plans no creeping barrage for
+- It leaves works alone, lays a fixed line only on an enemy it knows of (not on ground it
+  only expects them to cross), and does not move its air controllers to see a target; it plans no creeping barrage for
   riflemen who stop at range.
 - Its reserve has no orders beyond holding and, once committed, fighting: it does not plug
   a named gap, and reserve units ignore the objective until committed.

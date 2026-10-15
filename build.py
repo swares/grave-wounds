@@ -525,7 +525,7 @@ def _commander_rules(d) -> list[str]:
         "Attacking or holding, guns a known enemy could reach at a charge, with no steady unit of its side on the line between, limber (or hook up) and pull back to the hex in their allowance furthest from it. "
         "Attacking, an empty tractor drives beside the nearest guns that want a tow, to hook them up next move. "
         "Attacking, a foot unit beside empty carriers of its side (not tractors) with room for it gets aboard while no enemy it knows of is in reach of its weapon or the carriers'; its carriers set riders down once one is, or at the objective. "
-        "It leaves works to the GM.",
+        "Holding, by day or at dusk, its machine guns on foot with no fixed line are laid on the nearest enemy it knows of within their reach. It leaves works to the GM.",
     ]
 
 
