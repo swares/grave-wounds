@@ -1191,7 +1191,9 @@ const ORDER_TEXT = {                              // (who, them, o, up, facing) 
   pull_back: (who, them, o) => `${who} pull their guns back ${nOf(o.cost, "hex", "hexes")}, away from ${them}.`,
   unlimber: who => `${who} unlimber to fire (an exchange changing over).`,
   unhook: (who, them) => `${who} unhook their guns facing ${them}: they fire from the next exchange.`,
-  fix: (who, them, o) => `${who} lay their guns on a fixed line to ${hexName(o.hex)}, where ${them} stand: in the dark they will fire blind down it.`,
+  fix: (who, them, o) => (o.relay ? `${who} shift their fixed line onto ${hexName(o.hex)}, where ${them} stand: in the dark they will fire blind down it.`
+    : o.ahead ? `${who} lay their guns on a fixed line ahead to ${hexName(o.hex)}${o.target === null || o.target === undefined ? "" : ", toward " + them}: in the dark they will fire blind down it at any enemy that comes onto it.`
+    : `${who} lay their guns on a fixed line to ${hexName(o.hex)}, where ${them} stand: in the dark they will fire blind down it.`),
   dig: who => `${who} dig in where they stand (${nOf(FD.units.dig_in.exchanges, "exchange")} without moving or firing).`,
 };
 const facText = o => (o.fac ? ", a forward air controller talking them on" : "");   // an air order's controller, if one sees the aim
@@ -2360,7 +2362,7 @@ function setNv(v){
 }
 function toggleFixed(){
   const u = selUnit(); if (!u || !isMg(u.weapon)) return;
-  if (u.fixed){ delete u.fixed; S.laying = null; S.msg = `${u.name}: the fixed line is cleared.`; return render() }
+  if (u.fixed){ delete u.fixed; delete u.fix_ahead; S.laying = null; S.msg = `${u.name}: the fixed line is cleared.`; return render() }
   S.laying = S.laying === u.id ? null : u.id;
   S.msg = S.laying ? `Click the hex to lay ${u.name}'s guns on: in the dark they will fire blind down the line at any enemy within ${nOf(FD.weather.light.fixed_line.width, "hex", "hexes")} of it.` : "";
   render();
@@ -2370,6 +2372,7 @@ function layFixed(h){
   S.laying = null;
   if (!u) return render();
   u.fixed = [h[0], h[1]];
+  delete u.fix_ahead;
   S.msg = `${u.name} is laid on ${h[0] + 1},${h[1] + 1}.`;
   render();
 }
