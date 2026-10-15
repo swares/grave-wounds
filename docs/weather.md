@@ -32,6 +32,8 @@ Each day's weather is rolled from the climate's figures for that month:
 - On a wet day, rain falls as snow if the day's high is 36 °F (2 °C) or less.
 - On a dry day it may be foggy, fair or overcast.
 - The wind is rolled separately. A storm brings at least a strong wind, and a blizzard a gale.
+- A **sandstorm** is never rolled. It is set only where a battlefield names it (73 Easting,
+  1991) or the GM picks it: blowing sand with no rain, at least a strong wind.
 - So is the wind's **direction**, where it blows from, one of eight points. Half the time a
   day keeps the day before's; otherwise it is rolled from the climate's prevailing winds:
   mostly from the west and south-west in north-west Europe, from the west in central Europe
@@ -104,6 +106,7 @@ affected.
 | Snow, heavy snow | Can't aim beyond 75 or 40 hexes; bows and crossbows −10% |
 | Heavy rain, storm | Can't aim beyond 75 or 50 hexes; bows and crossbows −20% |
 | Blizzard | Can't aim beyond 15 hexes; bows and crossbows −20% |
+| Sandstorm | Can't aim beyond 200 hexes (440 yards, 400 m), thermal sights included |
 | Strong wind | Bows, crossbows, slings and thrown weapons −10% |
 | Gale | Bows, crossbows, slings and thrown weapons −20%; firearms −10% |
 
@@ -186,7 +189,8 @@ applies: whichever is shorter counts.
   thermal sights. **Vehicles** (tanks, carriers, lorries, tractors) with no device chosen
   carry their war's: infrared searchlights in Vietnam, thermal sights in the late 20th
   century and in Iraq and Afghanistan, none before (`light.night_vision.vehicles`); a vehicle
-  unit's **Night vision** has no "by kit" choice. The numbers are design estimates.
+  unit's **Night vision** has no "by kit" choice. No device sees past the weather's own
+  limit (fog, rain or a sandstorm). The numbers are design estimates.
 - **Fixed lines.** A machine-gun unit can be **laid on a fixed line** (**Lay a fixed line**,
   then click the hex). This is done before the battle, by day or at dusk, and the line
   shows as a red dashed line. In the dark, when it has no target it can see, the unit
@@ -222,7 +226,7 @@ A night's rest starts from the camp's own rest: poor without a camp, fair in a w
 staked camp, good when fortified or quartered.
 - It drops one step for every point by which the night's hardship is more than the camp's
   shelter.
-- Hardship: rain or snow 1; heavy rain, a storm or heavy snow 2; a blizzard 3. A frosty
+- Hardship: rain, snow or a sandstorm 1; heavy rain, a storm or heavy snow 2; a blizzard 3. A frosty
   night adds 1, and a hard frost (14 °F, −10 °C) adds 2.
 - Shelter: none for a bivouac; 1 for a watched, staked or fortified camp (fires and the
   wagons drawn up); 3 for quarters under a roof.

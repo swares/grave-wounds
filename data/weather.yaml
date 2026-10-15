@@ -64,6 +64,11 @@ conditions:
   snow:       {name: "Snow",       precip: snow, wet: 1, visibility: 75,   hardship: 1}
   heavy_snow: {name: "Heavy snow", precip: snow, wet: 1, visibility: 40,   hardship: 2}
   blizzard:   {name: "Blizzard",   precip: snow, wet: 2, visibility: 15,   hardship: 3, min_wind: gale}
+  # A desert sandstorm (shamal): blowing sand and dust, no rain. Never rolled from a climate:
+  # it is set only where a battlefield names it (73 Easting, 1991) or the GM picks it. Its sight
+  # is a hard limit like fog's; thermal sights see through smoke but not through it here (a
+  # design choice: the grit and heat haze cut what they show to the same range).
+  sandstorm:  {name: "Sandstorm",  precip: none, wet: 0, visibility: 200,  hardship: 1, min_wind: strong}
 
 # ---------- light ----------
 # The battle map's light (its weather's `light`; daylight if none). In the dark no one can be

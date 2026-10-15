@@ -856,8 +856,8 @@ with shell wounds (the First World War and later):
   - Gunships come at once: four rocket and gun passes an aircraft an exchange, scattering
     up to a hex, striking within 1 (20%, then 6%), 24 passes an aircraft.
   - Aircraft are never located (no counter-battery fire on them) and lose no crews. They do
-    not fly in fog, storm, heavy snow or a blizzard, and fighter-bombers not on a moonlit or
-    dark night: a mission called then waits, and flies when it clears. The support list shows
+    not fly in fog, storm, heavy snow, a blizzard or a sandstorm, and fighter-bombers not on a
+    moonlit or dark night: a mission called then waits, and flies when it clears. The support list shows
     **grounded** and why. They drop no smoke and carry no illumination.
   - **Strafing runs and napalm strips**: before calling, **Fire** picks *Strafing run* (fighter-bombers
     and gunships) or *Napalm strip* (fighter-bombers, in the wars from 1944 on), and
@@ -1413,16 +1413,17 @@ name and its radius), and laying out the field marks it on the map (O, with a da
 when it is wider than a hex).
 - **Radius.** A hill or a perimeter is more than one hex, so each battlefield gives its
   objective a radius that takes in the position as the map draws it: 9 hexes round Pork
-  Chop's top (its trench ring), 8 at Khe Sanh, Kapyong and Keating, 7 at Fox Hill, Darwin
+  Chop's top (its trench ring) and round the position behind the rise at 73 Easting, 8 at
+  Khe Sanh, Kapyong and Keating, 7 at Fox Hill, Darwin
   Hill and on Bougainville, down to 1 for the wagon-box corral. Within the radius counts as
   on the objective, for holding it and for the log. The commander's other distances widen to
   match: holding, units fall back if more than 2 hexes outside it; enemies within 3 hexes
   outside it count as guarding it. An objective the GM marks by hand has the commander's own
   radius, 1 hex. The enemy commander then takes
 it or holds it, as under [The enemy commander](#the-enemy-commander); the GM can move or
-clear it with **Clicking the map**. Twenty-nine battlefields have one: Point 593 at
+clear it with **Clicking the map**. Thirty battlefields have one: Point 593 at
 Cassino, Castle Hill in the town, the crests of Hills 875, 861A, 931 and 937, Pork Chop,
-Fox Hill, Hill 504 at Kapyong, G Company's hill at Chipyong-ni, Darwin Hill, the station
+Fox Hill, Hill 504 at Kapyong, G Company's hill at Chipyong-ni, Darwin Hill, the Iraqi position behind the rise at 73 Easting, the station
 at Grozny, the provincial headquarters at Hue, the crash site in Mogadishu, Observation
 Post Topside at Wanat, Combat Outpost Keating, X-Ray's landing zone, the saddle at Osan
 and on Bougainville, the railway bridge at Mons, Henry Hill, the Redan's salient (on both of its battlefields), the British guns at Lundy's
@@ -2095,6 +2096,25 @@ is 140 × 140 hexes, about 1,530 by 1,330 yards (1,400 by 1,210 m), north at the
   machine guns, and a reserve at Darwin.
 - Fire support: three 105 mm light guns and 81 mm mortars; Argentine pack howitzers and
   120 mm mortars.
+
+**73 Easting: Eagle Troop crests the rise, 26 February 1991** (`data/fields/easting73-1991.yaml`).
+The field is 200 × 120 hexes, about 2,190 by 1,310 yards (2,000 by 1,200 m), north at the top,
+from about 72.2 to 74.2 Easting on the military grid.
+- Flat, hard desert, stony in places. A low rise (**high ground**, a few metres) runs north
+  to south across the left middle; the Iraqi **trenches** and three **bunkers** lie on its
+  reverse (east) slope. The high ground about 74 Easting is on the right.
+- A **sandstorm**: sight cut to 440 yards (400 m), thermal sights included, a strong
+  north-westerly; no aircraft fly. Daylight, late afternoon.
+- Coalition (veteran, thermal sights): Eagle Troop of the 2nd Armored Cavalry Regiment, its
+  nine M1A1 **tanks** in two groups at the front and its M3 Bradleys (**infantry fighting
+  vehicles**) in two scout platoons on the flanks behind.
+- Iraqis (regular, no night sights): two groups of Tawakalna T-72s dug in behind the rise,
+  BMP-1s, infantry in the trenches with **RPG** teams, **lorries** behind the position, and
+  eighteen T-72s on the high ground beyond.
+- Fire support: Eagle Troop's two mortars and 2nd Squadron's howitzer battery; Tawakalna
+  guns.
+- No minefields: the accounts we used name none on this ground. The buildings where Eagle
+  first took fire lie further west, on the campaign map.
 
 **Grozny: the railway station, 31 December 1994** (`data/fields/grozny-1995.yaml`). The field
 is 140 × 110 hexes, about 1,530 by 1,040 yards (1,400 by 950 m), north at the top.

@@ -18,7 +18,8 @@ and whichever is shorter counts. The dark also slows a march and turns men round
   illumination rounds from mortars and guns light far more. A lit hex is seen as by day.
 - **Night vision.** From the 1960s, units can carry devices that see further in the dark.
   Vehicles carry their war's unless another is chosen: infrared searchlights in Vietnam,
-  thermal sights from the 1980s on.
+  thermal sights from the 1980s on. No device sees past the weather's own limit, a
+  sandstorm's included.
 
 {{table:nvd}}
 
