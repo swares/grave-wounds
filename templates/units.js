@@ -2161,7 +2161,8 @@ function command(units, side, size, field, rng, exchange = null, { stance = "att
   orders.push(...commitReserve(us, side, known, mem));
   for (let i = 0; i < us.length; i++){
     if (us[i].side !== side || !commandable(us, i, exchange)) continue;
-    const roll = rng.randint(1, 100), o = unitOrder(us, i, [size, aimOf(us, i, aim), stance, known, exchange], roll);
+    const roll = rng.randint(1, 100), o0 = unitOrder(us, i, [size, plugging(aimOf(us, i, aim), us[i]), stance, known, exchange], roll);
+    const o = o0 && us[i].plug && (o0.act === "advance" || o0.act === "fall_back") ? { ...o0, gap: true } : o0;   // going to plug the gap, not the side's objective
     if (o){
       orders.push({ unit: i, ...o });
       applyOrder(us, i, o);
@@ -2209,8 +2210,14 @@ function commitReserve(us, side, known, memory){   // one reserve unit committed
   const own = us.filter(u => u.side === side && ROUTED.has(u.state)).length, foe = us.filter(u => u.side !== side && ROUTED.has(u.state)).length;
   const broke = own > (plan.own ?? own), foeBroke = foe > (plan.foe ?? foe);
   Object.assign(plan, { own, foe });
+  const hole = gapLeft(us, side, plan);
   const held = us.map((u, i) => i).filter(i => us[i].side === side && us[i].reserve && us[i].men > 0 && !ROUTED.has(us[i].state));
   if (!held.length) return [];
+  if (broke && hole !== null){
+    const pick = held.reduce((a, i) => (hdist(us[i].pos, hole) < hdist(us[a].pos, hole) ? i : a), held[0]);
+    Object.assign(us[pick], { reserve: false, plug: [...hole] });
+    return [{ unit: pick, act: "commit", why: "broke", at: [...hole] }];
+  }
   const kf = knownFoes(known), near = {};
   for (const i of held) near[i] = kf.length ? Math.min(...kf.map(([, m]) => hdist(us[i].pos, m.pos))) : 10 ** 6;
   const nearest = list => list.reduce((a, i) => (near[i] < near[a] ? i : a), list[0]);
@@ -2222,6 +2229,14 @@ function commitReserve(us, side, known, memory){   // one reserve unit committed
   us[pick].reserve = false;
   return [{ unit: pick, act: "commit", why }];
 }
+function gapLeft(us, side, plan){                 // where the first of its units newly broken stood at its last move, or null; then where its standing units are now (as commander._gap_left)
+  const was = plan.stood || {};
+  const k = us.findIndex((u, j) => u.side === side && ROUTED.has(u.state) && String(u.id ?? j) in was);
+  const hole = k < 0 ? null : was[String(us[k].id ?? k)];
+  plan.stood = Object.fromEntries(us.map((u, j) => [u, j]).filter(([u]) => u.side === side && !ROUTED.has(u.state) && u.men > 0).map(([u, j]) => [String(u.id ?? j), [...u.pos]]));
+  return hole;
+}
+const plugging = (field, u) => (u.plug ? { ...field, objective: [...u.plug], objective_radius: null } : field);   // a reserve unit sent to plug a gap sees that hex as its objective (as commander._plugging)
 function layGuns(us, side, [size, field, known, exchange]){   // its batteries and anti-tank guns on the map turn to face the nearest enemy it knows of (as commander._lay_guns)
   const out = [], occ = occupancy(us), kf = knownFoes(known);
   us.forEach((u, i) => {

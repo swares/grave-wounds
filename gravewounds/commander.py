@@ -32,7 +32,9 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
         if us[i]["side"] != side or not _free(d, us, i, exchange):
             continue
         roll = rng.randint(1, 100)
-        o = _order(d, us, i, (size, _aim(us, i, aim), stance, known, exchange), roll)
+        o = _order(d, us, i, (size, _plugging(_aim(us, i, aim), us[i]), stance, known, exchange), roll)
+        if o and us[i].get("plug") and o["act"] in ("advance", "fall_back"):
+            o = {**o, "gap": True}                # going to plug the gap, not the side's objective
         if o:
             orders.append({"unit": i, **o})
             _apply(us, i, o)
@@ -115,15 +117,22 @@ def _commit(d: Data, us: list, side, known: dict, memory: dict) -> list:
     """Commit one reserve unit this move, the one nearest an enemy it knows of, when a unit of
     the side has broken or fled since its last move, when a known enemy is within
     commander.gap hexes of a reserve unit, or (a veteran reserve unit) when an enemy unit has
-    broken. -> [the commit order], or []."""
+    broken. Committed because a unit broke, it is the reserve unit nearest where that unit
+    stood at its side's last move (_gap_left), and it goes to plug the gap there (plug).
+    -> [the commit order], or []."""
     plan = memory.setdefault("plan", {})
     own = sum(1 for u in us if u["side"] == side and u["state"] in ROUTED)
     foe = sum(1 for u in us if u["side"] != side and u["state"] in ROUTED)
     broke, foe_broke = own > plan.get("own", own), foe > plan.get("foe", foe)
     plan.update(own=own, foe=foe)
+    hole = _gap_left(us, side, plan)
     held = [i for i, u in enumerate(us) if u["side"] == side and u.get("reserve") and u["men"] > 0 and u["state"] not in ROUTED]
     if not held:
         return []
+    if broke and hole is not None:
+        pick = min(held, key=lambda i: (U.hdist(us[i]["pos"], hole), i))
+        us[pick]["reserve"], us[pick]["plug"] = False, list(hole)
+        return [{"unit": pick, "act": "commit", "why": "broke", "at": list(hole)}]
     near = {i: min((U.hdist(us[i]["pos"], m["pos"]) for k, m in known.items() if k.isdigit()), default=10**6) for i in held}
     gap = [i for i in held if near[i] <= d.units["commander"]["gap"]]
     if broke or gap:
@@ -134,6 +143,22 @@ def _commit(d: Data, us: list, side, known: dict, memory: dict) -> list:
         return []
     us[pick]["reserve"] = False
     return [{"unit": pick, "act": "commit", "why": why}]
+
+
+def _gap_left(us: list, side, plan: dict) -> list | None:
+    """Where the first of its units (by id, else index) that has broken or fled since its last
+    move stood then (plan stood), or None; then plan stood is where its standing units are now."""
+    was = plan.get("stood") or {}
+    hole = next((was[str(u.get("id", k))] for k, u in enumerate(us)
+                 if u["side"] == side and u["state"] in ROUTED and str(u.get("id", k)) in was), None)
+    plan["stood"] = {str(u.get("id", k)): list(u["pos"]) for k, u in enumerate(us) if u["side"] == side and u["state"] not in ROUTED and u["men"] > 0}
+    return hole
+
+
+def _plugging(field: dict | None, u: dict) -> dict | None:
+    """The field as a reserve unit sent to plug a gap (plug) sees it: that hex its objective, at
+    the commander's own radius; else the field."""
+    return {**(field or {}), "objective": list(u["plug"]), "objective_radius": None} if u.get("plug") else field
 
 
 def _lay_guns(d: Data, us: list, side, ctx: tuple) -> list:
