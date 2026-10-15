@@ -782,19 +782,52 @@ def _digs(d: Data, us: list, i: int, ctx: tuple) -> bool:
 def _sapper_order(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict | None:
     """Sappers (units.can_sap) set to work: attacking, they lift the known mines (not their own
     side's) in the row ahead when the straight way to their target (where last seen) or the objective
-    crosses known mines; holding, or at the objective, they lay mines there (_lays)."""
+    crosses known mines, and with that row clear but known enemy mines further on that way, they
+    close up to the belt first (_close_up); holding, or at the objective, they lay mines there (_lays)."""
     u, field = us[i], ctx[1]
     if not U.can_sap(d, u):                       # (commanded units are out of contact)
         return None
     row = U.ahead_row(d, field, u)
     mines = (field or {}).get("mines") or {}
-    if ctx[2] == "attack" and any(_foes_mine(mines.get(C.hkey(x)), u["side"]) for x in row):
-        goal = _where(us, t, ctx[3])["pos"] if t is not None else objective(field)
-        if goal is not None and _mined(field, u["pos"], goal, u["side"]):
-            return {"act": "lift", "target": t}
+    goal = (_where(us, t, ctx[3])["pos"] if t is not None else objective(field)) if ctx[2] == "attack" else None
+    if goal is not None and any(_foes_mine(mines.get(C.hkey(x)), u["side"]) for x in row) and _mined(field, u["pos"], goal, u["side"]):
+        return {"act": "lift", "target": t}
+    if goal is not None and _foes_on_way(field, u["pos"], goal, u["side"]):
+        o = _close_up(d, us, i, (t, goal), ctx)
+        if o:
+            return o
     if _lays(d, us, i, ctx, row):
         return {"act": "lay", "target": t, "kind": _mine_kind(us, ctx[3])}
     return None
+
+
+def _foes_on_way(field: dict | None, a, h, side) -> bool:
+    """Known enemy minefield hexes (not its own side's) on the straight way from a to h."""
+    mines = (field or {}).get("mines") or {}
+    return list(a) != list(h) and any(_foes_mine(mines.get(C.hkey(x)), side) for x in U.ray(list(a), list(h), U.hdist(a, h))[1:])
+
+
+def _close_up(d: Data, us: list, i: int, tg: tuple, ctx: tuple) -> dict | None:
+    """Sappers close up to a known enemy minefield on their straight way to goal: step by step
+    along that way, facing it, as far as they legally can within their move without a hex of
+    theirs in known enemy mines, stopping once the row ahead is mined. -> a close_up order, or
+    None if they cannot get on (then they act as any unit)."""
+    (t, goal), (size, field) = tg, ctx[:2]
+    u, mines = us[i], (field or {}).get("mines") or {}
+    f, best = U.bearing(u["pos"], goal), None
+    for p in U.ray(list(u["pos"]), list(goal), U.hdist(u["pos"], goal))[1:]:
+        there = {**u, "pos": list(p), "facing": f}
+        if any(_foes_mine(mines.get(C.hkey(x)), u["side"]) for row in U.footprint(d, there) for x in row):
+            break
+        m = U.move(d, us, i, list(p), f, size, field)
+        if not m["ok"] or m.get("charge"):
+            break
+        best = (list(p), m["cost"])
+        if any(_foes_mine(mines.get(C.hkey(x)), u["side"]) for x in U.ahead_row(d, field, there)):
+            break
+    if best is None:
+        return None
+    return {"act": "close_up", "target": t, "pos": best[0], "facing": f, "cost": best[1]}
 
 
 def _foes_mine(m: dict | None, side) -> bool:
@@ -1211,7 +1244,7 @@ def _apply(us: list, i: int, o: dict) -> None:
         us[i] = {**u, "clearing": {"at": list(u["pos"]), "facing": u["facing"], "n": 0}}
     elif o["act"] == "turn":
         us[i] = {**u, "facing": o["facing"]}
-    elif o["act"] in ("move", "charge", "advance", "fall_back"):
+    elif o["act"] in ("move", "charge", "advance", "fall_back", "close_up"):
         us[i] = {**u, "pos": o["pos"], "facing": o["facing"], "charged": o["act"] == "charge", **({"prone": False} if o.get("up") else {})}
         for k in o.get("through", []):                # the friends it charged through are jostled
             us[k] = {**us[k], "jostled": True}

@@ -518,7 +518,7 @@ def _commander_rules(d) -> list[str]:
         f"Its located batteries that an enemy counter-battery mission is aimed at displace first (a placed one moves its place {d.units['indirect']['displace_shift']} hexes along the nearest map edge, away from the battery firing). "
         "In the dark, one battery with illumination (the soonest to land) lights the enemy it has lost sight of nearest its men, where last seen, unless lit or a round is on its way. "
         "Then one battery, the one with the best counter % that reaches one, fires counter-battery on the located enemy battery with the most tubes served. "
-        f"Its sappers, attacking, lift the known enemy mines in the row ahead when the straight way to their target (or the objective) crosses known mines; holding, or at the objective, "
+        f"Its sappers, attacking, lift the known enemy mines in the row ahead when the straight way to their target (or the objective) crosses known mines, first closing up along that way to the belt (as far as their move goes without entering known mines) and so working a lane through it row by row; holding, or at the objective, "
         f"with no enemy it knows of within {K['sappers']['clear_of']} hexes, they lay mines in the row ahead (mixed if the enemy it knows of has vehicles, else anti-personnel). "
         f"Attacking, its guns with no known enemy in reach go forward: a battery limbers, moves and unlimbers once one is in reach; anti-tank guns hook up to an empty tractor beside them and are unhooked in reach "
         f"(the tractor counting 4 hexes less; empty tractors fetch them); moving guns stop in reach, no nearer than {K['keep_off']} hexes. Holding, its guns unlimber or unhook where they stand. "

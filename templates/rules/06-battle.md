@@ -138,7 +138,7 @@ steady friends touching it, who go in with it), and green units sometimes hesita
   holding, once the enemy holds the first, its units fall back to the second.
 - **Minefields.** It steers round minefields it knows of. Its sappers, attacking, lift a
   lane through known enemy mines in the row ahead when those mines lie on the way to their
-  target or the objective. Holding, or at the objective, with no enemy it knows of within
+  target or the objective, closing up to the belt first and working through it row by row. Holding, or at the objective, with no enemy it knows of within
   {{c_sap_clear}} hexes, they lay mines in the row ahead: mixed if the enemy it knows of has
   vehicles, otherwise anti-personnel.
 - **Guns.** It turns its guns to face the enemy and calls its off-map batteries and its

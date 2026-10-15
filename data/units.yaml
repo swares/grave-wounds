@@ -788,7 +788,8 @@ commander:
   # and with no enemy it knows of within `clear_of` hexes, they lay mines in the
   # row ahead (mixed if the enemy it knows of has vehicles, else anti-personnel), where it is
   # not mined yet. Attacking, they lift the known mines in the row ahead when the straight way
-  # to their target (or the objective) crosses known mines. Design estimates.
+  # to their target (or the objective) crosses known mines, closing up along that way to the
+  # belt first (row by row through it). Design estimates.
   sappers: {clear_of: 8}
   # creep: attacking, when one of its units moves or charges on a known enemy it can see within
   # `near` hexes, one free battery (the soonest to land, none of its men within the burst and
