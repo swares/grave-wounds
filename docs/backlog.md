@@ -64,8 +64,8 @@ When an item is done, delete it here and note it in the pull request that closes
   unit's whole: a Starlight scope stands for the few rifles that had one. Vehicles' infrared
   searchlights do not show the vehicle to an enemy with infrared, and no device washes out in
   a flare's light. A fixed line is laid on one hex, with no traverse limits or
-  final protective fire called by flare. A lost unit only turns, and never strays onto
-  another path or into its friends. The moon is a simple model, good to an hour or so.
+  final protective fire called by flare. A lost unit strays only a hex along its wrong
+  facing, never into its friends or the enemy, and no further. The moon is a simple model, good to an hour or so.
 - **Air support, third cut.** Ground fire hits aircraft (bringing some down, sending the
   rest home damaged), anti-aircraft guns add to it, forward air controllers and smoke on the
   target cut the scatter, and an attack can be a round burst, a strafing run or a napalm
@@ -78,6 +78,19 @@ When an item is done, delete it here and note it in the pull request that closes
   off, and a hot zone costs men, but the helicopters themselves cannot be shot down, the
   lift has no fixed number of aircraft or turnaround time, and nothing is flown out (the
   wounded, or a unit lifted away). The GM places a downed helicopter by hand.
+- **Medevac, unit stores and resupply (to consider).** Raised for a later design pass; nothing
+  is decided yet.
+  - *Medevac.* Wounded men go back only by bearer parties on foot to an aid post or off the
+    map, and the rank and file's wounded are reckoned after the battle. Nothing is flown out:
+    no medevac helicopters (Vietnam on), no ambulances, and so no faster care, no landing zone
+    for the wounded and no risk to the aircraft.
+  - *Unit stores.* Only guns count their rounds (batteries and anti-tank guns on the map, and
+    the stock of off-map batteries and aircraft). Riflemen, machine guns, grenades and rockets
+    never run out, and a unit carries no food, water or medical stores on the field map. The
+    travel map tracks fresh food for scurvy, but no stores a force runs short of.
+  - *Resupply.* Only guns on the map resupply (a full load over an exchange out of contact).
+    There is no ammunition carried forward to a unit, no supply by air drop or helicopter, and
+    no wagons, lorries or carriers bringing it up.
 - **Cold, first cut.** Frostbite is a sickness on the force's track (and a named man's), not a
   wound on a body part, and cold-weather clothing, warming tents and fires are only the camp's
   shelter. In battle, only automatic weapons jam; mortars, grenades and vehicles do not freeze.

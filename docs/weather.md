@@ -200,8 +200,11 @@ applies: whichever is shorter counts.
 - **Losing direction.** Each unit that moved in the dark may lose its way when its side's
   move ends. The chance is the light's figure, plus half of how far its quality's Nerve is
   below 60 (less half of how far above): green +12%, regular +5%, veteran −3% (rounded down). A unit
-  that loses its way ends turned one point off its line, if it still fits. It cannot move
-  next exchange, though it may turn.
+  that loses its way ends turned one point off its line, if it still fits, and strays a hex
+  on that way: to the front hexside on the side it turned to (veering left, the left one). It
+  does not stray off the map, onto other units or ground it cannot stand on, or into contact
+  with the enemy; then it only turns. Straying into a minefield sets it off, as any move does.
+  It cannot move next exchange, though it may turn.
 
 ## Cold (the field map)
 

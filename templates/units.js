@@ -1382,14 +1382,22 @@ function flashes(us, log, field){                  // after the shooting, in poo
   hexes.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
   if (hexes.length) field.flashes = hexes; else delete field.flashes;
 }
-function nightDrift(units, i, size, field, rng){   // a unit that moved in the dark may lose its direction: {lost, unit}
+function nightDrift(units, i, size, field, rng){   // a unit that moved in the dark may lose its direction, turning a point off and straying a hex along it: {lost, unit, strayed} (as units.night_drift)
   const u = units[i], L = lightOf(field);
-  if (!L?.lost) return { lost: false, unit: u };
+  if (!L?.lost) return { lost: false, unit: u, strayed: false };
   const chance = Math.max(0, Math.min(100, L.lost + Math.floor((60 - quality(u.quality).nerve) / 2)));
-  if (rng.randint(1, 100) > chance) return { lost: false, unit: u };
-  const turned = { ...u, facing: mod6(u.facing + (rng.randint(1, 100) % 2 ? -1 : 1)), lost: FD.weather.light.lost_for };
-  if (!fits(units, i, turned, size, field)) turned.facing = u.facing;
-  return { lost: true, unit: turned };
+  if (rng.randint(1, 100) > chance) return { lost: false, unit: u, strayed: false };
+  const left = rng.randint(1, 100) % 2 === 0;
+  const turned = { ...u, facing: mod6(u.facing + (left ? 1 : -1)), lost: FD.weather.light.lost_for };
+  if (!fits(units, i, turned, size, field)) return { lost: true, unit: { ...turned, facing: u.facing }, strayed: false };
+  const gone = stray(units, i, turned, [left, size, field]);
+  return { lost: true, unit: gone || turned, strayed: !!gone };
+}
+function stray(units, i, u, [left, size, field]){  // a lost unit goes on a hex along its wrong facing (the front hexside it turned toward), unless that is off the map, on other units or ground it cannot stand on, or touching the enemy: the unit there, or null (as units._stray)
+  const moved = { ...u, pos: step(u.pos, u.facing + (left ? 1 : 0)) };
+  if (!fits(units, i, moved, size, field)) return null;
+  const after = units.map((x, k) => (k === i ? moved : x));
+  return inContact(after, occupancy(after), i) ? null : moved;
 }
 const reaches = (u, dist, reach = 0) => (isGun(u.weapon) ? dist <= gunRange(u) : !!fieldRange(u.weapon, dist, reach));   // a battery's guns to their range
 function shareCover(field, h, target){            // % off a volley from h at a unit: the average cover of its row nearest h, rounded down
