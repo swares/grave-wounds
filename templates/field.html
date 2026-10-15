@@ -2570,11 +2570,13 @@ function advanceStages(){                         // at the start of an exchange
 function stageText(){                             // the strip above the map: the phase now, what it brought, and what comes next
   if (!S.stages) return "";
   const list = S.stages, i = S.stageNo, waitingFor = j => S.waiting.filter(w => w.stage === j).map(w => w.unit.name);
-  const coming = j => (waitingFor(j).length ? `; brings on ${waitingFor(j).join(", ")}` : "");
-  if (i < 0) return `<b>Phases:</b> ${list.map((st, j) => `${j + 1}. ${esc(st.name)} (exchange ${st.at}${esc(coming(j))})`).join(" · ")}`;
+  const coming = j => (waitingFor(j).length ? "; brings on " + waitingFor(j).join(", ") : "");
+  const entry = (st, j) => esc(`${j + 1}. ${st.name} (exchange ${st.at}${coming(j)})`);
+  if (i < 0) return "<b>Phases:</b> " + list.map(entry).join(" · ");
   const st = list[i], nx = list[i + 1];
   const late = waitingFor(i).length ? ` Waiting for room: ${esc(waitingFor(i).join(", "))}.` : "";
-  return `<b>Phase ${i + 1} of ${list.length}: ${esc(st.name)}.</b> ${esc(st.note || "")}${late}${nx ? ` <span class="muted">Next, at exchange ${nx.at}: ${esc(nx.name)}${esc(coming(i + 1))}.</span>` : ""}`;
+  const next = nx ? ` <span class="muted">${esc(`Next, at exchange ${nx.at}: ${nx.name}${coming(i + 1)}.`)}</span>` : "";
+  return `<b>Phase ${i + 1} of ${list.length}: ${esc(st.name)}.</b> ${esc(st.note || "")}${late}${next}`;
 }
 function bringOn(u, k){                           // a unit joining during the battle: at its side's entry edge, facing into the map; it moves next exchange
   const facing = EDGE_FACING[entryEdge(k)];

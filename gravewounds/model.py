@@ -1271,17 +1271,21 @@ def _phase_errors(f: dict, where: str) -> list[str]:
         return []
     if not isinstance(P, list) or not P:
         return [f"{where}: phases must be a list"]
-    errors, names, seen, last = [], {u.get("name") for u in f.get("units", [])}, set(), 0
+    names, seen, ats = {u.get("name") for u in f.get("units", [])}, set(), [st.get("at") for st in P]
+    errors = [f"{where}: phase {i + 1} needs a name and its exchange (the first 1, each later than the one before)"
+              for i, st in enumerate(P) if not _phase_ok(st, ats[i - 1] if i else 0, first=not i)]
     for i, st in enumerate(P):
-        at = st.get("at")
-        if not (isinstance(st.get("name"), str) and st["name"] and isinstance(at, int) and at > last and (i or at == 1)):
-            errors.append(f"{where}: phase {i + 1} needs a name and its exchange (the first 1, each later than the one before)")
-        last = at if isinstance(at, int) else last
         for n in st.get("arrive", []):
             if n not in names or n in seen:
                 errors.append(f"{where}: phase {i + 1} brings on {n!r}, which is not a unit of the field or comes in another phase")
             seen.add(n)
     return errors
+
+
+def _phase_ok(st: dict, before, first: bool) -> bool:
+    """One phase's name and exchange: a name, and an exchange later than the one before (1 for the first)."""
+    at, last = st.get("at"), before if isinstance(before, int) else 0
+    return isinstance(st.get("name"), str) and bool(st["name"]) and isinstance(at, int) and at > last and (at == 1 or not first)
 
 
 def _field_marker_errors(d: Data, f: dict, where: str) -> list[str]:
