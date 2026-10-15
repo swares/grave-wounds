@@ -137,15 +137,15 @@ ground: |
   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF....................................................................FFFFFFFFFFFFFFFFF
   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF....................................................................FFFFFFFFFFFFFFFFF
 units:
-  - {name: "Scott's brigade (9th, 11th, 22nd)", side: 0, men: 800, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 24, pos: [63, 72], facing: 1}
-  - {name: "25th Infantry (Jesup)", side: 0, men: 300, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 8, pos: [107, 60], facing: 1}
-  - {name: "Towson's battery", side: 0, men: 60, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [73, 80], facing: 1}
-  - {name: "Ripley's brigade (21st, 23rd, coming up)", side: 0, men: 900, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 24, pos: [63, 100], facing: 1}
-  - {name: "Porter's volunteers (coming up)", side: 0, men: 500, quality: green, weapon: musket_smoothbore, kit: none, formation: open, width: 25, pos: [22, 100], facing: 1}
-  - {name: "British guns on the crest", side: 1, men: 50, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [50, 33], facing: 4}
-  - {name: "89th Foot", side: 1, men: 400, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 10, pos: [41, 35], facing: 4}
-  - {name: "Incorporated Militia", side: 1, men: 300, quality: green, weapon: musket_smoothbore, kit: none, formation: close, width: 8, pos: [60, 35], facing: 4}
-  - {name: "Glengarry Light Infantry", side: 1, men: 300, quality: regular, weapon: musket_smoothbore, kit: none, formation: open, width: 15, pos: [21, 40], facing: 4}
-  - {name: "8th and 41st Foot (on the lane)", side: 1, men: 400, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 10, pos: [71, 35], facing: 4}
-  - {name: "19th Light Dragoons", side: 1, men: 150, quality: regular, weapon: saber, kit: dragoon_helmet, formation: close, width: 6, pos: [89, 30], facing: 4, mounted: true}
-  - {name: "Drummond's column (coming up)", side: 1, men: 1000, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 25, pos: [52, 10], facing: 4}
+  - {name: "Scott's brigade (9th, 11th, 22nd)", side: 0, men: 800, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 24, pos: [63, 72], facing: 1, size: brigade}
+  - {name: "25th Infantry (Jesup)", side: 0, men: 300, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 8, pos: [107, 60], facing: 1, size: battalion}
+  - {name: "Towson's battery", side: 0, men: 60, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [73, 80], facing: 1, size: battery}
+  - {name: "Ripley's brigade (21st, 23rd, coming up)", side: 0, men: 900, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 24, pos: [63, 100], facing: 1, size: brigade}
+  - {name: "Porter's volunteers (coming up)", side: 0, men: 500, quality: green, weapon: musket_smoothbore, kit: none, formation: open, width: 25, pos: [22, 100], facing: 1, size: battalion}
+  - {name: "British guns on the crest", side: 1, men: 50, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [50, 33], facing: 4, size: battery}
+  - {name: "89th Foot", side: 1, men: 400, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 10, pos: [41, 35], facing: 4, size: battalion}
+  - {name: "Incorporated Militia", side: 1, men: 300, quality: green, weapon: musket_smoothbore, kit: none, formation: close, width: 8, pos: [60, 35], facing: 4, size: battalion}
+  - {name: "Glengarry Light Infantry", side: 1, men: 300, quality: regular, weapon: musket_smoothbore, kit: none, formation: open, width: 15, pos: [21, 40], facing: 4, size: battalion}
+  - {name: "8th and 41st Foot (on the lane)", side: 1, men: 400, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 10, pos: [71, 35], facing: 4, size: battalion}
+  - {name: "19th Light Dragoons", side: 1, men: 150, quality: regular, weapon: saber, kit: dragoon_helmet, formation: close, width: 6, pos: [89, 30], facing: 4, mounted: true, size: company}
+  - {name: "Drummond's column (coming up)", side: 1, men: 1000, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 25, pos: [52, 10], facing: 4, size: battalion}

@@ -150,10 +150,21 @@ symbol:
 - **Size mark.** A unit that sets `size` (section, platoon, company, battery, battalion,
   regiment, brigade or division) shows its mark above the frame (•, •••, I, II, III, X, XX)
   when size marks are on. A unit facing up has it above its arrow. On a field where no unit
-  sets a size, the *size marks* box is greyed out and says so. Both Redan battlefields
-  set sizes; most of their units are detachments, so their marks give the scale (a
-  detachment of a few companies marked I, two battalions' worth III, a group of regiments
-  X), not a formal organisation.
+  sets a size, the *size marks* box is greyed out and says so.
+
+  Every battlefield's units have a size. The marks give the scale of what stands on the map,
+  not a formal organisation: a detachment of a few companies is marked I, two battalions'
+  worth III, a group of regiments X. The Redan's sizes are set in its generators; the
+  others are in `tools/maps/unit_sizes.mjs`, which says how they were worked out:
+  - **Guns** are a battery; **vehicles** go by number; **machine-gun teams** go by men.
+  - **Named units:** the rest go by name where the name says what stands there (A Company,
+    1/9th Gurkha Rifles), if that is within a step of the numbers.
+  - **The scale:** otherwise by men on one scale for every period (up to 12 a section, 60 a
+    platoon, 250 a company, 1,000 a battalion, 3,000 a regiment, 6,000 a brigade, more a
+    division).
+
+  So "29th Regiment in the south bunkers", 60 men, is a platoon. Scott's and Ripley's
+  brigades at Lundy's Lane are brigades: whole brigades, under strength.
 - **Label.** The label sits beside the marker. *Unit labels* under the map chooses names,
   IDs or both. An ID is the side's initial and the unit's number on its side (B3), or A and
   B when the two sides share an initial. A unit keeps its ID for the whole battle, and the

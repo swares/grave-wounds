@@ -110,17 +110,17 @@ support:
   - {name: "Apaches (AH-64)", side: 0, kind: gunship, tubes: 2}
   - {name: "A-10, B-1B and F-15E (later in the morning)", side: 0, kind: fighter_bomber, tubes: 3}
 units:
-  - {name: "Observation Post Topside (paratroopers)", side: 0, men: 6, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 2, pos: [52, 29], facing: 1, prone: true}
-  - {name: "Observation Post Topside (the M240 and its crew)", side: 0, men: 3, quality: veteran, weapon: machine_gun, kit: interceptor, formation: mg, width: 1, pos: [54, 30], facing: 0, prone: true}
-  - {name: "2nd Platoon at the base's north end", side: 0, men: 15, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 5, pos: [39, 27], facing: 1, prone: true}
-  - {name: "2nd Platoon on the base's east side, facing the post", side: 0, men: 12, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 4, pos: [43, 40], facing: 0, prone: true}
-  - {name: "Humvee guns (.50 cal, Mk 19) and the TOW", side: 0, men: 6, quality: veteran, weapon: machine_gun, kit: interceptor, formation: mg, width: 2, pos: [37, 44], facing: 3}
-  - {name: "Engineers and the mortar section", side: 0, men: 10, quality: regular, weapon: rifle_assault, kit: interceptor, formation: extended, width: 4, pos: [39, 54], facing: 4, prone: true}
-  - {name: "Afghan National Army platoon (the base's west side)", side: 0, men: 24, quality: green, weapon: rifle_assault, kit: pasgt, formation: extended, width: 6, pos: [35, 40], facing: 3, prone: true}
-  - {name: "Fighters in the bazaar and the hotel", side: 1, men: 50, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [38, 18], facing: 4, prone: true}
-  - {name: "Fighters in the village and the mosque", side: 1, men: 40, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 8, pos: [26, 34], facing: 5, prone: true}
-  - {name: "Fighters on the high ground west of the river", side: 1, men: 30, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 6, pos: [6, 30], facing: 0, prone: true}
-  - {name: "Fighters in the draw north of the post", side: 1, men: 40, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [56, 15], facing: 4, prone: true}
-  - {name: "Fighters from the farmland and slopes east", side: 1, men: 60, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [72, 36], facing: 3, prone: true}
-  - {name: "RPG teams", side: 1, men: 15, quality: regular, weapon: rpg, kit: none, formation: extended, width: 3, pos: [46, 14], facing: 4, prone: true}
-  - {name: "PKM machine guns", side: 1, men: 10, quality: regular, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [64, 18], facing: 3, prone: true}
+  - {name: "Observation Post Topside (paratroopers)", side: 0, men: 6, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 2, pos: [52, 29], facing: 1, prone: true, size: section}
+  - {name: "Observation Post Topside (the M240 and its crew)", side: 0, men: 3, quality: veteran, weapon: machine_gun, kit: interceptor, formation: mg, width: 1, pos: [54, 30], facing: 0, prone: true, size: section}
+  - {name: "2nd Platoon at the base's north end", side: 0, men: 15, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 5, pos: [39, 27], facing: 1, prone: true, size: platoon}
+  - {name: "2nd Platoon on the base's east side, facing the post", side: 0, men: 12, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 4, pos: [43, 40], facing: 0, prone: true, size: platoon}
+  - {name: "Humvee guns (.50 cal, Mk 19) and the TOW", side: 0, men: 6, quality: veteran, weapon: machine_gun, kit: interceptor, formation: mg, width: 2, pos: [37, 44], facing: 3, size: section}
+  - {name: "Engineers and the mortar section", side: 0, men: 10, quality: regular, weapon: rifle_assault, kit: interceptor, formation: extended, width: 4, pos: [39, 54], facing: 4, prone: true, size: section}
+  - {name: "Afghan National Army platoon (the base's west side)", side: 0, men: 24, quality: green, weapon: rifle_assault, kit: pasgt, formation: extended, width: 6, pos: [35, 40], facing: 3, prone: true, size: platoon}
+  - {name: "Fighters in the bazaar and the hotel", side: 1, men: 50, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [38, 18], facing: 4, prone: true, size: platoon}
+  - {name: "Fighters in the village and the mosque", side: 1, men: 40, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 8, pos: [26, 34], facing: 5, prone: true, size: platoon}
+  - {name: "Fighters on the high ground west of the river", side: 1, men: 30, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 6, pos: [6, 30], facing: 0, prone: true, size: platoon}
+  - {name: "Fighters in the draw north of the post", side: 1, men: 40, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [56, 15], facing: 4, prone: true, size: platoon}
+  - {name: "Fighters from the farmland and slopes east", side: 1, men: 60, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [72, 36], facing: 3, prone: true, size: platoon}
+  - {name: "RPG teams", side: 1, men: 15, quality: regular, weapon: rpg, kit: none, formation: extended, width: 3, pos: [46, 14], facing: 4, prone: true, size: platoon}
+  - {name: "PKM machine guns", side: 1, men: 10, quality: regular, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [64, 18], facing: 3, prone: true, size: section}

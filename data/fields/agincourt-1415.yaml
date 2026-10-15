@@ -107,15 +107,15 @@ works:
   hexes:
     - {type: stakes, at: [[12, 65], [13, 65], [14, 65], [15, 65], [16, 65], [17, 65], [18, 65], [19, 65], [20, 65], [21, 65], [22, 65], [23, 65], [24, 65], [25, 65], [26, 65], [27, 65], [36, 65], [37, 65], [38, 65], [39, 65], [40, 65], [41, 65], [42, 65], [43, 65], [44, 65], [53, 65], [54, 65], [55, 65], [56, 65], [57, 65], [58, 65], [59, 65], [60, 65], [61, 65], [70, 65], [71, 65], [72, 65], [73, 65], [74, 65], [75, 65], [76, 65], [77, 65], [78, 65], [79, 65], [80, 65], [81, 65], [82, 65], [83, 65], [84, 65], [85, 65]]}
 units:
-  - {name: "Archers, left wing", side: 0, men: 1600, quality: veteran, weapon: longbow, kit: gambeson, formation: open, width: 16, pos: [19, 66], facing: 1}
-  - {name: "Rearward (Camoys)", side: 0, men: 320, quality: veteran, weapon: poleaxe, kit: full_plate, formation: close, width: 8, pos: [31, 66], facing: 1}
-  - {name: "Archers, left wedge", side: 0, men: 900, quality: veteran, weapon: longbow, kit: gambeson, formation: open, width: 9, pos: [40, 66], facing: 1}
-  - {name: "Main battle (the King)", side: 0, men: 320, quality: veteran, weapon: poleaxe, kit: full_plate, formation: close, width: 8, pos: [48, 66], facing: 1}
-  - {name: "Archers, right wedge", side: 0, men: 900, quality: veteran, weapon: longbow, kit: gambeson, formation: open, width: 9, pos: [57, 66], facing: 1}
-  - {name: "Vaward (York)", side: 0, men: 320, quality: veteran, weapon: poleaxe, kit: full_plate, formation: close, width: 8, pos: [65, 66], facing: 1}
-  - {name: "Archers, right wing", side: 0, men: 1600, quality: veteran, weapon: longbow, kit: gambeson, formation: open, width: 16, pos: [77, 66], facing: 1}
-  - {name: "Mounted wing, west", side: 1, men: 800, quality: veteran, weapon: spear, kit: full_plate, formation: close, width: 10, pos: [14, 42], facing: 4, mounted: true}
-  - {name: "Vanguard", side: 1, men: 4800, quality: veteran, weapon: poleaxe, kit: full_plate, formation: close, width: 60, pos: [50, 42], facing: 4}
-  - {name: "Mounted wing, east", side: 1, men: 800, quality: veteran, weapon: spear, kit: full_plate, formation: close, width: 10, pos: [86, 42], facing: 4, mounted: true}
-  - {name: "Main battle", side: 1, men: 4800, quality: regular, weapon: poleaxe, kit: full_plate, formation: close, width: 60, pos: [50, 30], facing: 4}
-  - {name: "Rearguard (mounted)", side: 1, men: 3000, quality: regular, weapon: spear, kit: full_plate, formation: close, width: 75, pos: [49, 16], facing: 4, mounted: true}
+  - {name: "Archers, left wing", side: 0, men: 1600, quality: veteran, weapon: longbow, kit: gambeson, formation: open, width: 16, pos: [19, 66], facing: 1, size: regiment}
+  - {name: "Rearward (Camoys)", side: 0, men: 320, quality: veteran, weapon: poleaxe, kit: full_plate, formation: close, width: 8, pos: [31, 66], facing: 1, size: battalion}
+  - {name: "Archers, left wedge", side: 0, men: 900, quality: veteran, weapon: longbow, kit: gambeson, formation: open, width: 9, pos: [40, 66], facing: 1, size: battalion}
+  - {name: "Main battle (the King)", side: 0, men: 320, quality: veteran, weapon: poleaxe, kit: full_plate, formation: close, width: 8, pos: [48, 66], facing: 1, size: battalion}
+  - {name: "Archers, right wedge", side: 0, men: 900, quality: veteran, weapon: longbow, kit: gambeson, formation: open, width: 9, pos: [57, 66], facing: 1, size: battalion}
+  - {name: "Vaward (York)", side: 0, men: 320, quality: veteran, weapon: poleaxe, kit: full_plate, formation: close, width: 8, pos: [65, 66], facing: 1, size: battalion}
+  - {name: "Archers, right wing", side: 0, men: 1600, quality: veteran, weapon: longbow, kit: gambeson, formation: open, width: 16, pos: [77, 66], facing: 1, size: regiment}
+  - {name: "Mounted wing, west", side: 1, men: 800, quality: veteran, weapon: spear, kit: full_plate, formation: close, width: 10, pos: [14, 42], facing: 4, mounted: true, size: battalion}
+  - {name: "Vanguard", side: 1, men: 4800, quality: veteran, weapon: poleaxe, kit: full_plate, formation: close, width: 60, pos: [50, 42], facing: 4, size: brigade}
+  - {name: "Mounted wing, east", side: 1, men: 800, quality: veteran, weapon: spear, kit: full_plate, formation: close, width: 10, pos: [86, 42], facing: 4, mounted: true, size: battalion}
+  - {name: "Main battle", side: 1, men: 4800, quality: regular, weapon: poleaxe, kit: full_plate, formation: close, width: 60, pos: [50, 30], facing: 4, size: brigade}
+  - {name: "Rearguard (mounted)", side: 1, men: 3000, quality: regular, weapon: spear, kit: full_plate, formation: close, width: 75, pos: [49, 16], facing: 4, mounted: true, size: regiment}

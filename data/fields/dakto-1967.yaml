@@ -174,11 +174,11 @@ support:
   - {name: "2/503's 81 mm mortars", side: 0, kind: mortar, tubes: 4}
   - {name: "North Vietnamese 82 mm mortars", side: 1, kind: mortar, tubes: 8}
 units:
-  - {name: "C Company, 2/503 Infantry (up the slope)", side: 0, men: 100, quality: veteran, weapon: rifle_assault, kit: vietnam_army, formation: extended, width: 12, pos: [54, 48], facing: 4}
-  - {name: "D Company, 2/503 Infantry (up the slope)", side: 0, men: 100, quality: veteran, weapon: rifle_assault, kit: vietnam_army, formation: extended, width: 12, pos: [68, 48], facing: 4}
-  - {name: "A Company, 2/503 Infantry (cutting the landing zone behind)", side: 0, men: 90, quality: veteran, weapon: rifle_assault, kit: vietnam_army, formation: extended, width: 12, pos: [60, 28], facing: 4}
-  - {name: "2/503's machine guns", side: 0, men: 10, quality: veteran, weapon: machine_gun, kit: vietnam_army, formation: mg, width: 2, pos: [60, 44], facing: 4}
-  - {name: "174th Regiment on the crest", side: 1, men: 250, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 14, pos: [60, 68], facing: 1, prone: true}
-  - {name: "174th Regiment in the lower trenches", side: 1, men: 150, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 14, pos: [62, 62], facing: 1, prone: true}
-  - {name: "North Vietnamese company behind them (from the west)", side: 1, men: 120, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 12, pos: [16, 28], facing: 0}
-  - {name: "North Vietnamese machine guns", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [46, 70], facing: 1, prone: true}
+  - {name: "C Company, 2/503 Infantry (up the slope)", side: 0, men: 100, quality: veteran, weapon: rifle_assault, kit: vietnam_army, formation: extended, width: 12, pos: [54, 48], facing: 4, size: company}
+  - {name: "D Company, 2/503 Infantry (up the slope)", side: 0, men: 100, quality: veteran, weapon: rifle_assault, kit: vietnam_army, formation: extended, width: 12, pos: [68, 48], facing: 4, size: company}
+  - {name: "A Company, 2/503 Infantry (cutting the landing zone behind)", side: 0, men: 90, quality: veteran, weapon: rifle_assault, kit: vietnam_army, formation: extended, width: 12, pos: [60, 28], facing: 4, size: company}
+  - {name: "2/503's machine guns", side: 0, men: 10, quality: veteran, weapon: machine_gun, kit: vietnam_army, formation: mg, width: 2, pos: [60, 44], facing: 4, size: section}
+  - {name: "174th Regiment on the crest", side: 1, men: 250, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 14, pos: [60, 68], facing: 1, prone: true, size: company}
+  - {name: "174th Regiment in the lower trenches", side: 1, men: 150, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 14, pos: [62, 62], facing: 1, prone: true, size: company}
+  - {name: "North Vietnamese company behind them (from the west)", side: 1, men: 120, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 12, pos: [16, 28], facing: 0, size: company}
+  - {name: "North Vietnamese machine guns", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [46, 70], facing: 1, prone: true, size: section}

@@ -258,18 +258,18 @@ ground: |
   ..................................................................................................................................mm..................
   ..................................................................................................................................mmm.................
 units:
-  - {name: "Zayas's Spanish", side: 0, men: 4000, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 70, pos: [80, 140], facing: 4}
-  - {name: "Colborne's brigade", side: 0, men: 1600, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 40, pos: [25, 142], facing: 4}
-  - {name: "Hoghton's and Abercrombie's brigades", side: 0, men: 3500, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 70, pos: [80, 128], facing: 4}
-  - {name: "Allied cavalry (Lumley)", side: 0, men: 2000, quality: regular, weapon: saber, kit: dragoon_helmet, formation: close, width: 25, pos: [87, 118], facing: 4, mounted: true}
-  - {name: "Cole's division (coming up)", side: 0, men: 5000, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 60, pos: [40, 110], facing: 4}
-  - {name: "Hamilton's Portuguese (reserve)", side: 0, men: 5000, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 60, pos: [65, 70], facing: 4}
-  - {name: "Alten's Germans in the village", side: 0, men: 1000, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 20, pos: [102, 32], facing: 4}
-  - {name: "Girard's division, in column", side: 1, men: 4500, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 30, pos: [74, 175], facing: 1}
-  - {name: "Gazan's division, in column", side: 1, men: 4000, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 30, pos: [106, 182], facing: 1}
-  - {name: "Werlé's brigade (reserve)", side: 1, men: 3500, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 30, pos: [84, 205], facing: 1}
-  - {name: "Polish lancers and hussars", side: 1, men: 1500, quality: veteran, weapon: lance, kit: dragoon_helmet, formation: close, width: 25, pos: [22, 172], facing: 1, mounted: true}
-  - {name: "Latour-Maubourg's dragoons", side: 1, men: 2000, quality: regular, weapon: saber, kit: dragoon_helmet, formation: close, width: 30, pos: [54, 222], facing: 1, mounted: true}
-  - {name: "French guns with the columns", side: 1, men: 200, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 10, pos: [54, 192], facing: 1}
-  - {name: "Allied guns on the heights", side: 0, men: 120, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 6, pos: [43, 136], facing: 4}
-  - {name: "Godinot's brigade (feint at the village)", side: 1, men: 3500, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 25, pos: [128, 40], facing: 3}
+  - {name: "Zayas's Spanish", side: 0, men: 4000, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 70, pos: [80, 140], facing: 4, size: brigade}
+  - {name: "Colborne's brigade", side: 0, men: 1600, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 40, pos: [25, 142], facing: 4, size: brigade}
+  - {name: "Hoghton's and Abercrombie's brigades", side: 0, men: 3500, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 70, pos: [80, 128], facing: 4, size: brigade}
+  - {name: "Allied cavalry (Lumley)", side: 0, men: 2000, quality: regular, weapon: saber, kit: dragoon_helmet, formation: close, width: 25, pos: [87, 118], facing: 4, mounted: true, size: regiment}
+  - {name: "Cole's division (coming up)", side: 0, men: 5000, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 60, pos: [40, 110], facing: 4, size: division}
+  - {name: "Hamilton's Portuguese (reserve)", side: 0, men: 5000, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 60, pos: [65, 70], facing: 4, size: brigade}
+  - {name: "Alten's Germans in the village", side: 0, men: 1000, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 20, pos: [102, 32], facing: 4, size: battalion}
+  - {name: "Girard's division, in column", side: 1, men: 4500, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 30, pos: [74, 175], facing: 1, size: division}
+  - {name: "Gazan's division, in column", side: 1, men: 4000, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 30, pos: [106, 182], facing: 1, size: division}
+  - {name: "Werlé's brigade (reserve)", side: 1, men: 3500, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 30, pos: [84, 205], facing: 1, size: brigade}
+  - {name: "Polish lancers and hussars", side: 1, men: 1500, quality: veteran, weapon: lance, kit: dragoon_helmet, formation: close, width: 25, pos: [22, 172], facing: 1, mounted: true, size: regiment}
+  - {name: "Latour-Maubourg's dragoons", side: 1, men: 2000, quality: regular, weapon: saber, kit: dragoon_helmet, formation: close, width: 30, pos: [54, 222], facing: 1, mounted: true, size: regiment}
+  - {name: "French guns with the columns", side: 1, men: 200, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 10, pos: [54, 192], facing: 1, size: battery}
+  - {name: "Allied guns on the heights", side: 0, men: 120, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 6, pos: [43, 136], facing: 4, size: battery}
+  - {name: "Godinot's brigade (feint at the village)", side: 1, men: 3500, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 25, pos: [128, 40], facing: 3, size: brigade}

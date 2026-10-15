@@ -137,11 +137,11 @@ support:
   - {name: "Japanese mountain guns", side: 1, kind: field, tubes: 8}
   - {name: "Japanese mortars", side: 1, kind: mortar, tubes: 6}
 units:
-  - {name: "145th Infantry, 2nd Battalion (west knob)", side: 0, men: 330, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 44, pos: [25, 47], facing: 1}
-  - {name: "145th Infantry, 2nd Battalion (east knob)", side: 0, men: 330, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 44, pos: [93, 46], facing: 1}
-  - {name: "Machine guns covering the saddle (west)", side: 0, men: 12, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 3, pos: [51, 46], facing: 1}
-  - {name: "Machine guns covering the saddle (east)", side: 0, men: 12, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 3, pos: [68, 46], facing: 1}
-  - {name: "145th Infantry, 3rd Battalion (reserve)", side: 0, men: 700, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 60, pos: [59, 82], facing: 1}
-  - {name: "23rd Infantry, II Battalion (on the saddle)", side: 1, men: 800, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 36, pos: [48, 20], facing: 4}
-  - {name: "23rd Infantry, III Battalion (east slope)", side: 1, men: 800, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 36, pos: [94, 14], facing: 4}
-  - {name: "23rd Infantry machine-gun company", side: 1, men: 30, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 6, pos: [63, 26], facing: 4}
+  - {name: "145th Infantry, 2nd Battalion (west knob)", side: 0, men: 330, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 44, pos: [25, 47], facing: 1, size: battalion}
+  - {name: "145th Infantry, 2nd Battalion (east knob)", side: 0, men: 330, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 44, pos: [93, 46], facing: 1, size: battalion}
+  - {name: "Machine guns covering the saddle (west)", side: 0, men: 12, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 3, pos: [51, 46], facing: 1, size: section}
+  - {name: "Machine guns covering the saddle (east)", side: 0, men: 12, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 3, pos: [68, 46], facing: 1, size: section}
+  - {name: "145th Infantry, 3rd Battalion (reserve)", side: 0, men: 700, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 60, pos: [59, 82], facing: 1, size: battalion}
+  - {name: "23rd Infantry, II Battalion (on the saddle)", side: 1, men: 800, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 36, pos: [48, 20], facing: 4, size: battalion}
+  - {name: "23rd Infantry, III Battalion (east slope)", side: 1, men: 800, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 36, pos: [94, 14], facing: 4, size: battalion}
+  - {name: "23rd Infantry machine-gun company", side: 1, men: 30, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 6, pos: [63, 26], facing: 4, size: company}

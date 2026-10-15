@@ -191,14 +191,14 @@ support:
   - {name: "3 RAR's mortars", side: 0, kind: mortar, tubes: 6}
   - {name: "Chinese mortars", side: 1, kind: mortar, tubes: 8}
 units:
-  - {name: "A Company, 3 RAR (the north spur)", side: 0, men: 120, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 14, pos: [150, 40], facing: 1, prone: true}
-  - {name: "D Company, 3 RAR (the summit)", side: 0, men: 120, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 14, pos: [176, 56], facing: 1, prone: true}
-  - {name: "B Company, 3 RAR (the knoll by the road)", side: 0, men: 120, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 12, pos: [106, 67], facing: 1, prone: true}
-  - {name: "C Company, 3 RAR (in reserve on the hill)", side: 0, men: 120, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 14, pos: [160, 96], facing: 1}
-  - {name: "Battalion machine guns", side: 0, men: 10, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [150, 48], facing: 1, prone: true}
-  - {name: "3 RAR headquarters (Chuktun-ni)", side: 0, men: 60, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [100, 126], facing: 1, prone: true}
-  - {name: "Platoon of Shermans (72nd Heavy Tank Battalion)", side: 0, men: 20, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 5, pos: [89, 56], facing: 1, vehicle: tank}
-  - {name: "Chinese battalion down the valley", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [89, 10], facing: 4}
-  - {name: "Chinese battalion onto the north spur", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [150, 12], facing: 4}
-  - {name: "Chinese battalion round the east of the hill", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [200, 30], facing: 3}
-  - {name: "Chinese machine guns", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [110, 20], facing: 4}
+  - {name: "A Company, 3 RAR (the north spur)", side: 0, men: 120, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 14, pos: [150, 40], facing: 1, prone: true, size: company}
+  - {name: "D Company, 3 RAR (the summit)", side: 0, men: 120, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 14, pos: [176, 56], facing: 1, prone: true, size: company}
+  - {name: "B Company, 3 RAR (the knoll by the road)", side: 0, men: 120, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 12, pos: [106, 67], facing: 1, prone: true, size: company}
+  - {name: "C Company, 3 RAR (in reserve on the hill)", side: 0, men: 120, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 14, pos: [160, 96], facing: 1, size: company}
+  - {name: "Battalion machine guns", side: 0, men: 10, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [150, 48], facing: 1, prone: true, size: section}
+  - {name: "3 RAR headquarters (Chuktun-ni)", side: 0, men: 60, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [100, 126], facing: 1, prone: true, size: platoon}
+  - {name: "Platoon of Shermans (72nd Heavy Tank Battalion)", side: 0, men: 20, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 5, pos: [89, 56], facing: 1, vehicle: tank, size: platoon}
+  - {name: "Chinese battalion down the valley", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [89, 10], facing: 4, size: battalion}
+  - {name: "Chinese battalion onto the north spur", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [150, 12], facing: 4, size: battalion}
+  - {name: "Chinese battalion round the east of the hill", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [200, 30], facing: 3, size: battalion}
+  - {name: "Chinese machine guns", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [110, 20], facing: 4, size: section}

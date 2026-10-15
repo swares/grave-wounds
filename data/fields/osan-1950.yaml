@@ -148,14 +148,14 @@ support:
   - {name: "T-34 tanks (107th Tank Regiment)", side: 1, kind: tank, tubes: 8}
   - {name: "North Korean mortars", side: 1, kind: mortar, tubes: 6}
 units:
-  - {name: "B Company, 21st Infantry (the saddle and east of it)", side: 0, men: 140, quality: green, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 47, pos: [66, 42], facing: 1, prone: true}
-  - {name: "B Company platoon (the hillock west of the road)", side: 0, men: 35, quality: green, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 12, pos: [17, 45], facing: 1, prone: true}
-  - {name: "Recoilless rifle and bazooka teams (by the road)", side: 0, men: 25, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 9, pos: [40, 47], facing: 1, prone: true}
-  - {name: "Battalion machine guns", side: 0, men: 10, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [60, 44], facing: 1, prone: true}
-  - {name: "C Company, 21st Infantry (the ridge east)", side: 0, men: 120, quality: green, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 40, pos: [129, 41], facing: 1, prone: true}
-  - {name: "C Company's right (bent back by the railroad)", side: 0, men: 30, quality: green, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [179, 55], facing: 1, prone: true}
-  - {name: "16th Regiment, leading battalion (across the paddies)", side: 1, men: 1000, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 90, pos: [65, 18], facing: 4}
-  - {name: "16th Regiment, battalion working round the west", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 40, pos: [20, 30], facing: 4}
-  - {name: "18th Regiment, column on the highway", side: 1, men: 1500, quality: veteran, weapon: rifle_service, kit: none, formation: close, width: 6, pos: [40, 10], facing: 4}
-  - {name: "18th Regiment, battalion moving down the railroad", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 44, pos: [182, 20], facing: 4}
-  - {name: "4th Division machine guns", side: 1, men: 15, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 3, pos: [61, 22], facing: 4}
+  - {name: "B Company, 21st Infantry (the saddle and east of it)", side: 0, men: 140, quality: green, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 47, pos: [66, 42], facing: 1, prone: true, size: company}
+  - {name: "B Company platoon (the hillock west of the road)", side: 0, men: 35, quality: green, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 12, pos: [17, 45], facing: 1, prone: true, size: platoon}
+  - {name: "Recoilless rifle and bazooka teams (by the road)", side: 0, men: 25, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 9, pos: [40, 47], facing: 1, prone: true, size: platoon}
+  - {name: "Battalion machine guns", side: 0, men: 10, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [60, 44], facing: 1, prone: true, size: section}
+  - {name: "C Company, 21st Infantry (the ridge east)", side: 0, men: 120, quality: green, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 40, pos: [129, 41], facing: 1, prone: true, size: company}
+  - {name: "C Company's right (bent back by the railroad)", side: 0, men: 30, quality: green, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [179, 55], facing: 1, prone: true, size: company}
+  - {name: "16th Regiment, leading battalion (across the paddies)", side: 1, men: 1000, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 90, pos: [65, 18], facing: 4, size: battalion}
+  - {name: "16th Regiment, battalion working round the west", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 40, pos: [20, 30], facing: 4, size: battalion}
+  - {name: "18th Regiment, column on the highway", side: 1, men: 1500, quality: veteran, weapon: rifle_service, kit: none, formation: close, width: 6, pos: [40, 10], facing: 4, size: regiment}
+  - {name: "18th Regiment, battalion moving down the railroad", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 44, pos: [182, 20], facing: 4, size: battalion}
+  - {name: "4th Division machine guns", side: 1, men: 15, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 3, pos: [61, 22], facing: 4, size: section}

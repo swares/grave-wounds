@@ -145,10 +145,10 @@ ground: |
   rrrmmmmFFFFFFFFFFFrrrr................................................................................................................................
   rrmmmmFFFFFFFFFFFrrrrr................................................................................................................................
 units:
-  - {name: "Archers (Fauconberg)", side: 0, men: 5000, quality: veteran, weapon: longbow, kit: jack_sallet, formation: open, width: 100, pos: [79, 75], facing: 1}
-  - {name: "Edward's battle", side: 0, men: 11000, quality: regular, weapon: bill, kit: jack_sallet, formation: close, width: 100, pos: [79, 79], facing: 1}
-  - {name: "Norfolk's men (coming up late)", side: 0, men: 5000, quality: regular, weapon: bill, kit: jack_sallet, formation: close, width: 30, pos: [130, 110], facing: 1}
-  - {name: "Lancastrian archers", side: 1, men: 6000, quality: regular, weapon: longbow, kit: jack_sallet, formation: open, width: 100, pos: [80, 50], facing: 4}
-  - {name: "Somerset's battle", side: 1, men: 14000, quality: regular, weapon: bill, kit: jack_sallet, formation: close, width: 100, pos: [80, 46], facing: 4}
-  - {name: "Rear battle (Exeter, Northumberland)", side: 1, men: 6000, quality: regular, weapon: bill, kit: jack_sallet, formation: close, width: 100, pos: [80, 40], facing: 4}
-  - {name: "Men in Castle Hill Wood", side: 1, men: 1500, quality: regular, weapon: bill, kit: jack_sallet, formation: close, width: 10, pos: [19, 28], facing: 4}
+  - {name: "Archers (Fauconberg)", side: 0, men: 5000, quality: veteran, weapon: longbow, kit: jack_sallet, formation: open, width: 100, pos: [79, 75], facing: 1, size: brigade}
+  - {name: "Edward's battle", side: 0, men: 11000, quality: regular, weapon: bill, kit: jack_sallet, formation: close, width: 100, pos: [79, 79], facing: 1, size: division}
+  - {name: "Norfolk's men (coming up late)", side: 0, men: 5000, quality: regular, weapon: bill, kit: jack_sallet, formation: close, width: 30, pos: [130, 110], facing: 1, size: brigade}
+  - {name: "Lancastrian archers", side: 1, men: 6000, quality: regular, weapon: longbow, kit: jack_sallet, formation: open, width: 100, pos: [80, 50], facing: 4, size: brigade}
+  - {name: "Somerset's battle", side: 1, men: 14000, quality: regular, weapon: bill, kit: jack_sallet, formation: close, width: 100, pos: [80, 46], facing: 4, size: division}
+  - {name: "Rear battle (Exeter, Northumberland)", side: 1, men: 6000, quality: regular, weapon: bill, kit: jack_sallet, formation: close, width: 100, pos: [80, 40], facing: 4, size: brigade}
+  - {name: "Men in Castle Hill Wood", side: 1, men: 1500, quality: regular, weapon: bill, kit: jack_sallet, formation: close, width: 10, pos: [19, 28], facing: 4, size: regiment}

@@ -170,14 +170,14 @@ support:
   - {name: "Skyraiders and jets (bombs, napalm)", side: 0, kind: fighter_bomber, tubes: 6}
   - {name: "North Vietnamese mortars", side: 1, kind: mortar, tubes: 6}
 units:
-  - {name: "B Company, 1st Battalion, 7th Cavalry (across the creek bed)", side: 0, men: 90, quality: regular, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 20, pos: [83, 50], facing: 3, prone: true}
-  - {name: "2nd Platoon, B Company (cut off on the knoll)", side: 0, men: 27, quality: regular, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 5, pos: [62, 34], facing: 2, prone: true}
-  - {name: "A Company (along the creek bed, B's left)", side: 0, men: 110, quality: regular, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 22, pos: [85, 80], facing: 3, prone: true}
-  - {name: "C Company (south of the clearing)", side: 0, men: 105, quality: regular, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 26, pos: [102, 92], facing: 4}
-  - {name: "Battalion machine guns and mortars (the command post's termite hill)", side: 0, men: 20, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 4, pos: [104, 68], facing: 3}
-  - {name: "D Company (landing)", side: 0, men: 110, quality: regular, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 12, pos: [104, 66], facing: 3, lands: 0}
-  - {name: "B Company, 2nd Battalion, 7th Cavalry (flown in at dusk)", side: 0, men: 120, quality: regular, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 12, pos: [104, 66], facing: 3, lands: 0}
-  - {name: "9th Battalion, 66th Regiment (down off the massif)", side: 1, men: 450, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 40, pos: [40, 46], facing: 0}
-  - {name: "7th Battalion, 66th Regiment (from the south-west)", side: 1, men: 450, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 40, pos: [64, 108], facing: 5}
-  - {name: "North Vietnamese company round the knoll", side: 1, men: 120, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 14, pos: [48, 30], facing: 0}
-  - {name: "66th Regiment machine guns", side: 1, men: 15, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 3, pos: [50, 70], facing: 0}
+  - {name: "B Company, 1st Battalion, 7th Cavalry (across the creek bed)", side: 0, men: 90, quality: regular, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 20, pos: [83, 50], facing: 3, prone: true, size: company}
+  - {name: "2nd Platoon, B Company (cut off on the knoll)", side: 0, men: 27, quality: regular, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 5, pos: [62, 34], facing: 2, prone: true, size: platoon}
+  - {name: "A Company (along the creek bed, B's left)", side: 0, men: 110, quality: regular, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 22, pos: [85, 80], facing: 3, prone: true, size: company}
+  - {name: "C Company (south of the clearing)", side: 0, men: 105, quality: regular, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 26, pos: [102, 92], facing: 4, size: company}
+  - {name: "Battalion machine guns and mortars (the command post's termite hill)", side: 0, men: 20, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 4, pos: [104, 68], facing: 3, size: platoon}
+  - {name: "D Company (landing)", side: 0, men: 110, quality: regular, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 12, pos: [104, 66], facing: 3, lands: 0, size: company}
+  - {name: "B Company, 2nd Battalion, 7th Cavalry (flown in at dusk)", side: 0, men: 120, quality: regular, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 12, pos: [104, 66], facing: 3, lands: 0, size: company}
+  - {name: "9th Battalion, 66th Regiment (down off the massif)", side: 1, men: 450, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 40, pos: [40, 46], facing: 0, size: battalion}
+  - {name: "7th Battalion, 66th Regiment (from the south-west)", side: 1, men: 450, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 40, pos: [64, 108], facing: 5, size: battalion}
+  - {name: "North Vietnamese company round the knoll", side: 1, men: 120, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 14, pos: [48, 30], facing: 0, size: company}
+  - {name: "66th Regiment machine guns", side: 1, men: 15, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 3, pos: [50, 70], facing: 0, size: section}
