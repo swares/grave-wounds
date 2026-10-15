@@ -25,6 +25,12 @@ size: [130, 110]
 weather: {cond: fair, wind: calm, dir: SW, ground: {mud: 0, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [49, 33], side: 0, name: "the British guns on the crest by the churchyard", radius: 3}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "Scott attacks the hill", at: 1, note: "About seven in the evening: Scott's brigade attacks the guns on the hill rather than wait, while Jesup's 25th works round the British left."}
+  - {name: "Ripley and Drummond come up", at: 120, note: "About nine, in the dark: Brown brings up Ripley's brigade and Porter's volunteers, and Drummond's column reaches the British line.", arrive: ["Ripley's brigade (21st, 23rd, coming up)", "Porter's volunteers (coming up)", "Drummond's column (coming up)"]}
+  - {name: "Drummond's counter-attacks", at: 150, note: "Drummond's reinforced line counter-attacks three times to win back the guns, until near midnight."}
 ground: |
   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF....................................................................................................
   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF....................................................................................................

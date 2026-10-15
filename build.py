@@ -1040,7 +1040,7 @@ def field_bundle(d) -> dict:
         "works": d.works,
         "weather": {k: d.weather[k] for k in ("winds", "conditions", "battle", "ground", "wind_points", "driven_sight", "light", "cold") if k in d.weather},
         "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
-        "fields": {fid: {"name": f["name"], "sides": f["sides"], "table": f["table"], "field": battlefield(d, fid), "units": f.get("units", []), "objective": f.get("objective"), "markers": f.get("markers"), "entry": f.get("entry"),
+        "fields": {fid: {"name": f["name"], "sides": f["sides"], "table": f["table"], "field": battlefield(d, fid), "units": f.get("units", []), "objective": f.get("objective"), "markers": f.get("markers"), "entry": f.get("entry"), "phases": f.get("phases"),
                          "travel": f.get("travel"), "period": periods(d)["fields"][fid]}
                    for fid, f in d.fields.items()},
         "period_order": periods(d)["order"],

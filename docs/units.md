@@ -1406,6 +1406,28 @@ wagon-box corral. The open-field battles (Agincourt, Towton, Visby, Cowpens), th
 on Lodge Trail Ridge, the Jolan at Fallujah and the unfinished wall at Sidon have none:
 they were not fought for one place, or the map does not place it.
 
+**Phases.** A battlefield can split its battle into phases (`phases` in its file). Each phase
+has a name, the exchange it begins (the first at 1; an exchange is about a minute), a note on
+what happened, and the units it brings on.
+- **Waiting units.** Laying out the armies holds those units off the map. They keep their
+  IDs, so the Redan's supports are still B5.
+- **The strip.** A strip above the map lists the phases during set-up. In the battle it
+  shows the current phase, its note and what comes next. The log marks each new phase.
+- **Arriving.** When a phase begins, its units come on where the battlefield draws them, or
+  at their side's entry edge if that ground is taken. Like any unit brought on, they can
+  move from the next exchange. A unit with no room at all waits and tries again each
+  exchange.
+- **Where they're used.** Phases apply with *the armies as drawn up*, not to forces sent
+  from the travel map.
+
+Three battlefields have phases so far. The times are our reading of the accounts, rounded:
+- **The Redan, 8 September:** the stormers go over (1); the supports come forward (10); the
+  Russian reserves counter-attack (80, after about an hour and a half).
+- **The Redan, 18 June:** the columns go out (1); their supports follow (4); the Russian
+  reserve comes up (15).
+- **Lundy's Lane:** Scott attacks the hill (1, about 7 pm); Ripley, Porter and Drummond's
+  column come up (120, about 9 pm); Drummond counter-attacks (150, until near midnight).
+
 **From the travel map.** A battlefield can name a place on a travel map and how close
 counts (`travel` in its file). Agincourt names Azincourt, within 1 hex. When the defender
 of a fight stands that close, the travel page offers the battlefield under **Fight it on**

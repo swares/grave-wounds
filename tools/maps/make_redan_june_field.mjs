@@ -45,6 +45,11 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; the times are our reading of the accounts, rounded
+    { name: "The columns go out", at: 1, note: "At daybreak the riflemen, the ladder and wool-bag parties and the storming parties leave the trenches under grape and musketry." },
+    { name: "The supports follow", at: 4, note: "The supports come out behind the storming parties.", arrive: ["Right column (Yea): supports", "Centre column: supports", "Left column (Campbell): supports"] },
+    { name: "The Russian reserve comes up", at: 15, note: "The reserve in the Karabelnaya comes up to the line; by now the attack is failing and is soon called off.", arrive: ["Russian reserve in the Karabelnaya"] },
+  ],
   ...COMMON,
   id: "redan-1855-june", name: "The Great Redan, 18 June 1855",
   weather: "{cond: fair, wind: calm, ground: {mud: 0, snow: 0}}",   // daybreak, but light enough: the columns were under fire as soon as they left the trenches

@@ -90,6 +90,7 @@ button:disabled{opacity:.45;cursor:default}
 .legend .mkicon{width:22px;height:19px;margin-right:2px}
 .utag{font:700 .78rem var(--mono)}
 .rules{pointer-events:none}
+.stage{margin:0;font-size:.88rem;border-left:3px solid var(--steel);padding:2px 0 2px 8px}
 fieldset.rules-row{border:0;margin:0;padding:0;min-width:0}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .move{stroke-width:.5}.move.s0{fill:var(--side0);fill-opacity:.24;stroke:var(--side0);stroke-opacity:.4}.move.s1{fill:var(--side1);fill-opacity:.24;stroke:var(--side1);stroke-opacity:.4}
@@ -180,6 +181,7 @@ legend{padding:0}
         <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-armies" checked> with the armies as drawn up</label></div>
         <div style="flex:0 0 auto;align-self:end"><button class="small" id="btn-field" title="Lay out this ground, its works and weather (set-up only)">Lay it out</button></div>
       </div>
+      <p class="stage" id="stage" hidden></p>
       <output class="msg" id="msg"></output>
       <div class="mapbox" id="map" title="Click a hex to place or move the selected unit"></div>
       <div class="row marks-row">
@@ -438,7 +440,8 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
   SIZE = S.field.size.slice();
   S.fieldId = B ? fid : null;
   S.marks = { ...markDefaults(), ...(B?.markers || {}) };
-  S.entry = B?.entry || null;                       // the battlefield's entry edges, if it names them   // the battlefield's marker settings, else units.yaml's
+  S.entry = B?.entry || null;                       // the battlefield's entry edges, if it names them
+  S.stages = null; S.stageNo = -1; S.waiting = [];   // its phases, with the armies as drawn up (holdForStages)   // the battlefield's marker settings, else units.yaml's
   S.camp = null;
   if (B && armies && !S.forces){
     S.sides = B.sides.slice();
@@ -447,6 +450,7 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
     S.units = [];
     S.field.lifts = [];
     B.units.forEach(u => standOrFly(newUnit({ ...u, side: B.sides[u.side] }), u.lands));
+    holdForStages(B.phases);
     S.sel = S.units[0]?.id ?? null;
     S.msg = `${B.name}: the armies as drawn up. Move, change or remove any unit before the battle starts.` + objectiveNote(B);
     return;
@@ -1122,7 +1126,7 @@ function markStarts(){                            // with minefields down, where
 }
 function next(){
   if (S.phase === "over") return;
-  if (S.phase === "setup"){ S.exchange = 1; S.aiMemory = null; markStarts(); startPhase(0); S.msg = `${S.sides[0]} to move.${caughtUnawares()}`; aiMove(); return render() }
+  if (S.phase === "setup"){ S.exchange = 1; S.aiMemory = null; const staged = advanceStages(); markStarts(); startPhase(0); S.msg = `${S.sides[0]} to move.${caughtUnawares()}${staged}`; aiMove(); return render() }
   if (S.phase === 0){ const lost = drifts(0); startPhase(1); S.msg = `${S.sides[1]} to move.${lost}`; aiMove(); return render() }
   const lostB = drifts(1);
   const r = exchange(S.units, S.table, dice, S.field);
@@ -1132,7 +1136,7 @@ function next(){
   S.exchange += 1;
   const lost = [0, 1].filter(k => !standing(k));
   const verb = lost.length > 1 ? "have" : "has";
-  S.msg = (lost.length ? `${lost.map(k => S.sides[k]).join(" and ")} ${verb} no unit left standing.` : "") + lostB;
+  S.msg = (lost.length ? `${lost.map(k => S.sides[k]).join(" and ")} ${verb} no unit left standing.` : "") + lostB + advanceStages();
   startPhase(0);
   aiMove();
   render();
@@ -1926,6 +1930,8 @@ function renderMap(){
   $("#map-scale").textContent = `${SIZE[0]} × ${SIZE[1]} hexes · ${fmtM(FD.units.hex_m)} a hex · an exchange is about a minute`;
   $("#hex-size").textContent = fmtM(FD.units.hex_m);
   $("#unit-legend").innerHTML = unitLegend();
+  const stage = stageText();
+  $("#stage").hidden = !stage; $("#stage").innerHTML = stage;
   const M = marks();
   const sized = S.units.some(u => u.size);          // size marks need a unit with a size: say so rather than tick a box that draws nothing
   $("#sel-labels").value = M.labels; $("#chk-strength").checked = M.strength; $("#chk-size").checked = M.size && sized; $("#chk-size").disabled = !sized;
@@ -2518,6 +2524,57 @@ function setUp(u, k){                             // set-up: inside the camp for
   }
   S.msg = "No room for it along the edge, even in column: make room, or add fewer men.";
   render();
+}
+// ---------- phases: a battlefield's stages, each from an exchange, some bringing on units held back until then ----------
+function holdForStages(phases){                   // the battlefield's phases; the units they bring on wait off the map (numbered first, so B5 is still B5)
+  if (!phases?.length) return;
+  ensureTags();
+  S.stages = structuredClone(phases);
+  S.stageNo = -1;
+  S.waiting = [];
+  S.stages.forEach((st, i) => (st.arrive || []).forEach(name => {
+    const u = S.units.find(v => v.name === name);
+    if (u){ S.waiting.push({ stage: i, unit: u }); S.units = S.units.filter(v => v !== u) }
+  }));
+}
+function placeArrival(u, k){                      // where an arriving unit comes on: where the battlefield draws it if there is room, else at its side's entry edge
+  if (fits([...S.units, u], S.units.length, u, SIZE, S.field)) return u;
+  const facing = EDGE_FACING[entryEdge(k)];
+  for (const width of entryWidths(u.width)){
+    const pos = entrySpots(facing, footprint({ ...u, width, pos: [0, 0], facing }).length).find(h => fits([...S.units, { ...u, width, pos: h, facing }], S.units.length, { ...u, width, pos: h, facing }, SIZE, S.field));
+    if (pos) return { ...u, width, pos, facing };
+  }
+  return null;
+}
+function advanceStages(){                         // at the start of an exchange: begin each phase whose exchange has come, and bring on its units (any with no room wait for the next exchange)
+  if (!S.stages) return "";
+  const notes = [];
+  while (S.stageNo + 1 < S.stages.length && S.stages[S.stageNo + 1].at <= S.exchange){
+    S.stageNo += 1;
+    const st = S.stages[S.stageNo];
+    S.log.unshift({ cls: "head", text: `Phase ${S.stageNo + 1} of ${S.stages.length}: ${st.name}.${st.note ? " " + st.note : ""}` });
+    notes.push(`Phase ${S.stageNo + 1}: ${st.name}.`);
+  }
+  const came = [];
+  S.waiting = S.waiting.filter(w => {
+    if (w.stage > S.stageNo) return true;
+    const at = placeArrival(w.unit, sideNo(w.unit));
+    if (!at) return true;
+    S.units.push({ ...at, arrived: S.exchange });
+    came.push(`${unitName(at)} (${at.men})`);
+    return false;
+  });
+  if (came.length) S.log.unshift({ cls: "head", text: `Coming on: ${came.join(", ")}. They can move next exchange.` });
+  return (notes.length ? " " + notes.join(" ") : "") + (came.length ? ` Coming on: ${came.join(", ")}.` : "");
+}
+function stageText(){                             // the strip above the map: the phase now, what it brought, and what comes next
+  if (!S.stages) return "";
+  const list = S.stages, i = S.stageNo, waitingFor = j => S.waiting.filter(w => w.stage === j).map(w => w.unit.name);
+  const coming = j => (waitingFor(j).length ? `; brings on ${waitingFor(j).join(", ")}` : "");
+  if (i < 0) return `<b>Phases:</b> ${list.map((st, j) => `${j + 1}. ${esc(st.name)} (exchange ${st.at}${esc(coming(j))})`).join(" · ")}`;
+  const st = list[i], nx = list[i + 1];
+  const late = waitingFor(i).length ? ` Waiting for room: ${esc(waitingFor(i).join(", "))}.` : "";
+  return `<b>Phase ${i + 1} of ${list.length}: ${esc(st.name)}.</b> ${esc(st.note || "")}${late}${nx ? ` <span class="muted">Next, at exchange ${nx.at}: ${esc(nx.name)}${esc(coming(i + 1))}.</span>` : ""}`;
 }
 function bringOn(u, k){                           // a unit joining during the battle: at its side's entry edge, facing into the map; it moves next exchange
   const facing = EDGE_FACING[entryEdge(k)];
