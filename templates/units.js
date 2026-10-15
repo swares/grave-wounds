@@ -2586,15 +2586,33 @@ function digs(us, i, [, field, , known]){          // a unit at the objective di
   return !knownFoes(known || {}).some(([, m]) => fieldRange(u.weapon, hdist(u.pos, m.pos)) !== null);
 }
 const foesMine = (m, side) => !!m && knownMine(m) && m.side !== side;   // a minefield hex it knows of that its own sappers did not lay (as commander._foes_mine)
-function sapperOrder(us, i, t, ctx){              // sappers set to work: attacking, lift known mines ahead in their way; holding or at the objective, lay (as commander._sapper_order)
+function sapperOrder(us, i, t, ctx){              // sappers set to work: attacking, lift known mines ahead in their way (closing up to the belt first); holding or at the objective, lay (as commander._sapper_order)
   const u = us[i], field = ctx[1];
   if (!canSap(u)) return null;
   const row = aheadRow(field, u), mines = field?.mines || {};
-  if (ctx[2] === "attack" && row.some(x => foesMine(mines[hk(x)], u.side))){
-    const goal = t === null ? objectiveOf(field) : knownAt(us, t, ctx[3]).pos;
-    if (goal !== null && mined(field, u.pos, goal, u.side)) return { act: "lift", target: t };
-  }
+  let goal = null;
+  if (ctx[2] === "attack") goal = t === null ? objectiveOf(field) : knownAt(us, t, ctx[3]).pos;
+  if (goal !== null && row.some(x => foesMine(mines[hk(x)], u.side)) && mined(field, u.pos, goal, u.side)) return { act: "lift", target: t };
+  const close = goal !== null && foesOnWay(field, u.pos, goal, u.side) ? closeUp(us, i, [t, goal], ctx) : null;
+  if (close) return close;
   return lays(us, i, ctx, row) ? { act: "lay", target: t, kind: mineKind(us, ctx[3]) } : null;
+}
+function foesOnWay(field, a, h, side){            // known enemy minefield hexes on the straight way from a to h (as commander._foes_on_way)
+  const mines = field?.mines || {};
+  return !(a[0] === h[0] && a[1] === h[1]) && ray([...a], [...h], hdist(a, h)).slice(1).some(x => foesMine(mines[hk(x)], side));
+}
+function closeUp(us, i, [t, goal], [size, field]){   // sappers close up along the straight way to the known belt, as far as they legally can without a hex in enemy mines, stopping once the row ahead is mined (as commander._close_up)
+  const u = us[i], mines = field?.mines || {}, f = bearing(u.pos, goal), inMines = xs => xs.some(x => foesMine(mines[hk(x)], u.side));
+  let best = null;
+  for (const p of ray([...u.pos], [...goal], hdist(u.pos, goal)).slice(1)){
+    const there = { ...u, pos: [...p], facing: f };
+    if (inMines(footprint(there).flat())) break;
+    const m = moveUnit(us, i, [...p], f, size, field);
+    if (!m.ok || m.charge) break;
+    best = [[...p], m.cost];
+    if (inMines(aheadRow(field, there))) break;
+  }
+  return best === null ? null : { act: "close_up", target: t, pos: best[0], facing: f, cost: best[1] };
 }
 function lays(us, i, [, field, stance, known], row){   // holding (or at the objective), no known enemy within commander.sappers.clear_of, a free hex ahead (as commander._lays)
   const u = us[i], obj = objectiveOf(field);
@@ -2815,7 +2833,7 @@ function applyOrder(us, i, o){                    // carry out an order (as the 
   else if (o.act === "lay") us[i] = { ...u, mining: { at: [...u.pos], facing: u.facing, n: 0, kind: o.kind } };
   else if (o.act === "lift") us[i] = { ...u, clearing: { at: [...u.pos], facing: u.facing, n: 0 } };
   else if (o.act === "turn") us[i] = { ...u, facing: o.facing };
-  else if (["move", "charge", "advance", "fall_back"].includes(o.act)){
+  else if (["move", "charge", "advance", "fall_back", "close_up"].includes(o.act)){
     us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}) };
     for (const k of o.through || []) us[k] = { ...us[k], jostled: true };   // the friends it charged through are jostled
   }

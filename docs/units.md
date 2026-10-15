@@ -321,6 +321,13 @@ general. All its numbers are in units.yaml `commander`.
   - **Attacking**, they lift the known enemy mines in the row ahead of their front when the
     straight way to their target (where last seen), or with no target to the objective,
     crosses known mines. Mines their own side laid are left: they do not strike its men.
+    With that row clear but known enemy mines further along that straight way, they first
+    **close up**: they turn to face along the way and go along it as far as their move
+    allows without a hex of theirs in known enemy mines, stopping once the row ahead is
+    mined. So they work a lane through a belt row by row: close up, lift (2 exchanges), step
+    into the gap, lift the next. Other units steer for the cleared ground as they steer
+    round known mines. If they cannot get on along that way (a unit or a work in it), they
+    move as any unit does.
   - **Holding, or at the objective** (within its radius), with no enemy it knows of within
     8 hexes, they lay mines in the row ahead where it is not mined yet and no unit stands:
     mixed if an enemy unit it knows of has vehicles, otherwise anti-personnel.
