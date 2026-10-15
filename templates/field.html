@@ -84,7 +84,7 @@ button:disabled{opacity:.45;cursor:default}
 .mk.rev.s0{fill:var(--side0);stroke:var(--panel)}.mk.rev.s1{fill:var(--side1);stroke:var(--panel)}
 .gl{fill:none;stroke-width:1.1;pointer-events:none}.gl.s0{stroke:var(--side0)}.gl.s1{stroke:var(--side1)}.gl.rev{stroke:var(--panel)}
 .gf{stroke:none;pointer-events:none}.gf.s0{fill:var(--side0)}.gf.s1{fill:var(--side1)}.gf.rev{fill:var(--panel)}
-.msize{font:700 6px var(--mono);text-anchor:middle;paint-order:stroke;stroke:var(--panel);stroke-width:2px;pointer-events:none}.msize.s0{fill:var(--side0)}.msize.s1{fill:var(--side1)}
+.msize{font:700 7px var(--mono);text-anchor:middle;paint-order:stroke;stroke:var(--panel);stroke-width:2.2px;pointer-events:none}.msize.s0{fill:var(--side0)}.msize.s1{fill:var(--side1)}
 .unit.shaken .mark{opacity:.7}.unit.broken .mark{opacity:.45}
 .mkicon{width:26px;height:22px;flex:none;vertical-align:middle}
 .legend .mkicon{width:22px;height:19px;margin-right:2px}
@@ -174,7 +174,7 @@ legend{padding:0}
       <div class="row marks-row">
         <div style="flex:0 1 180px"><label for="sel-labels">Unit labels</label><select id="sel-labels"><option value="names">Names</option><option value="ids">IDs (B3)</option><option value="both">IDs and names</option></select></div>
         <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-strength"> strength</label></div>
-        <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-size"> size marks</label></div>
+        <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-size"> size marks</label> <span class="muted" id="size-note" style="font-size:.8rem" hidden>no unit here has a size set</span></div>
       </div>
       <div class="legend" id="unit-legend" aria-label="Unit markers"></div>
       <div class="legend" id="legend"></div>
@@ -1786,7 +1786,9 @@ function renderMap(){
   $("#hex-size").textContent = fmtM(FD.units.hex_m);
   $("#unit-legend").innerHTML = unitLegend();
   const M = marks();
-  $("#sel-labels").value = M.labels; $("#chk-strength").checked = M.strength; $("#chk-size").checked = M.size;
+  const sized = S.units.some(u => u.size);          // size marks need a unit with a size: say so rather than tick a box that draws nothing
+  $("#sel-labels").value = M.labels; $("#chk-strength").checked = M.strength; $("#chk-size").checked = M.size && sized; $("#chk-size").disabled = !sized;
+  $("#size-note").hidden = sized;
 }
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
 const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"], ["sappers", "sappers"], ["shielded", "shielded"], ["ladders", "ladders"], ["jostled", "jostled"], ["mining", "laying mines"], ["clearing", "lifting mines"]];

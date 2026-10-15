@@ -24,24 +24,24 @@ const { grid, hexWorks, edgeWorks } = redan({ rows: ROWS, trenchRow: 92, holes: 
 // ---------- the armies (pos is the middle of the front row) ----------
 // A column: covering riflemen, the ladder and wool-bag party, the storming party and its supports.
 const column = (label, col0) => [
-  unit(`${label}: covering riflemen (Rifle Brigade)`, BRITISH, 100, { ...RIFLE, formation: "open" }, [10, col0, 89]),
-  unit(`${label}: ladders and wool-bags (sailors and soldiers)`, BRITISH, 120, { ...RIFLE, ladders: true }, [6, col0 + 2, 91]),
-  unit(`${label}: storming party`, BRITISH, 400, RIFLE, [10, col0, 94]),
-  unit(`${label}: supports`, BRITISH, 600, { ...RIFLE, quality: "green" }, [12, col0 - 1, 98]),
+  unit(`${label}: covering riflemen (Rifle Brigade)`, BRITISH, 100, { ...RIFLE, formation: "open", size: "company" }, [10, col0, 89]),
+  unit(`${label}: ladders and wool-bags (sailors and soldiers)`, BRITISH, 120, { ...RIFLE, ladders: true, size: "company" }, [6, col0 + 2, 91]),
+  unit(`${label}: storming party`, BRITISH, 400, { ...RIFLE, size: "battalion" }, [10, col0, 94]),
+  unit(`${label}: supports`, BRITISH, 600, { ...RIFLE, quality: "green", size: "battalion" }, [12, col0 - 1, 98]),
 ];
 const units = [
   ...column("Right column (Yea)", 25),
   ...column("Centre column", 45),
   ...column("Left column (Campbell)", 65),
-  unit("Russian infantry at the salient", RUSSIANS, 600, MUSKET, [12, 44, 45]),
-  unit("Guns on the left face", RUSSIANS, 40, GUNS, [3, 35, 35]),
-  unit("Guns on the right face", RUSSIANS, 40, GUNS, [3, 62, 35]),
-  unit("Battery on the line to the west", RUSSIANS, 60, GUNS, [4, 15, 34]),
-  unit("Battery on the line to the east", RUSSIANS, 60, GUNS, [4, 70, 33]),
-  unit("Russian infantry behind the breastwork", RUSSIANS, 1600, MUSKET, [26, 37, 24]),
-  unit("Riflemen on the line to the west", RUSSIANS, 200, { ...MUSKET, weapon: "rifle_musket", formation: "open" }, [10, 2, 34]),
-  unit("Riflemen on the line to the east", RUSSIANS, 200, { ...MUSKET, weapon: "rifle_musket", formation: "open" }, [10, 82, 33]),
-  unit("Russian reserve in the Karabelnaya", RUSSIANS, 2000, MUSKET, [40, 30, 12]),
+  unit("Russian infantry at the salient", RUSSIANS, 600, { ...MUSKET, size: "battalion" }, [12, 44, 45]),
+  unit("Guns on the left face", RUSSIANS, 40, { ...GUNS, size: "battery" }, [3, 35, 35]),
+  unit("Guns on the right face", RUSSIANS, 40, { ...GUNS, size: "battery" }, [3, 62, 35]),
+  unit("Battery on the line to the west", RUSSIANS, 60, { ...GUNS, size: "battery" }, [4, 15, 34]),
+  unit("Battery on the line to the east", RUSSIANS, 60, { ...GUNS, size: "battery" }, [4, 70, 33]),
+  unit("Russian infantry behind the breastwork", RUSSIANS, 1600, { ...MUSKET, size: "regiment" }, [26, 37, 24]),
+  unit("Riflemen on the line to the west", RUSSIANS, 200, { ...MUSKET, weapon: "rifle_musket", formation: "open", size: "company" }, [10, 2, 34]),
+  unit("Riflemen on the line to the east", RUSSIANS, 200, { ...MUSKET, weapon: "rifle_musket", formation: "open", size: "company" }, [10, 82, 33]),
+  unit("Russian reserve in the Karabelnaya", RUSSIANS, 2000, { ...MUSKET, size: "brigade" }, [40, 30, 12]),
 ];
 
 writeField({
