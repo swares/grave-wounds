@@ -23,13 +23,14 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
     aim = aims(d, us, side, field, stance, memory)
     goal = aim[1]                                # the field with the objective most of its units go for (with a second one marked)
     us, orders = _hook_up(d, us, side, (goal, known, exchange, stance))
+    us, orders = _riders(d, us, side, (goal, known, exchange, stance), orders)
     _hold_back(d, us, side, known)
     orders += _commit(d, us, side, known, memory)
     for i in range(len(us)):
         if us[i]["side"] != side or not _free(d, us, i, exchange):
             continue
         roll = rng.randint(1, 100)
-        o = _order(d, us, i, (size, _aim(i, aim), stance, known, exchange), roll)
+        o = _order(d, us, i, (size, _aim(us, i, aim), stance, known, exchange), roll)
         if o:
             orders.append({"unit": i, **o})
             _apply(us, i, o)
@@ -56,15 +57,15 @@ def aims(d: Data, us: list, side, field: dict | None, stance: str, memory: dict)
     at, g = [list(field["objective"]), list(field["objective2"])], plan.get("garrison")
     if not g or g["at"] != at:
         r = U.objective_radii(d, field)[0]
-        g = plan["garrison"] = {"at": at, "units": [k for k, u in enumerate(us) if u["side"] == side and u["men"] > 0 and u["state"] not in ROUTED
+        g = plan["garrison"] = {"at": at, "units": [u.get("id", k) for k, u in enumerate(us) if u["side"] == side and u["men"] > 0 and u["state"] not in ROUTED
                                                     and U.off_objective(d, u, field["objective"]) <= r]}
     return field, second, g["units"]
 
 
-def _aim(i: int, aim: tuple) -> dict | None:
-    """The field (objective) unit i goes for: the first's view if it is in the garrison, else the
-    rest's (see aims)."""
-    return aim[0] if i in aim[2] else aim[1]
+def _aim(us: list, i: int, aim: tuple) -> dict | None:
+    """The field (objective) unit i goes for: the first's view if it is in the garrison (by id,
+    else index), else the rest's (see aims)."""
+    return aim[0] if us[i].get("id", i) in aim[2] else aim[1]
 
 
 def _free(d: Data, us: list, i: int, exchange) -> bool:
@@ -222,6 +223,81 @@ def _hook_up(d: Data, us: list, side, ctx: tuple) -> tuple:
         out = [{**o, "unit": o["unit"] - (o["unit"] > i)} for o in out]
         out.append({"unit": j - (j > i), "act": "hook", "guns": u.get("name")})
     return us, out
+
+
+def _riders(d: Data, us: list, side, ctx: tuple, orders: list) -> tuple:
+    """At the start of its move: its carriers' riders get down (_get_down); then, attacking, its
+    foot units get aboard empty carriers beside them (_get_on). -> (units, orders)."""
+    field, known, exchange, stance = ctx
+    for j in range(len(us)):
+        o = _get_down(d, us, j, side, ctx)
+        if o:
+            orders.append(o)
+    if stance != "attack":
+        return us, orders
+    i = 0
+    while i < len(us):
+        j = _carrier_for(d, us, i, side, ctx)
+        if j is None:
+            i += 1
+            continue
+        name = us[i].get("name")
+        us = U.mount(d, us, i, j)["units"]
+        _drop_index(known, i)
+        orders = [{**o, "unit": o["unit"] - (o["unit"] > i)} if isinstance(o.get("unit"), int) else o for o in orders]
+        orders.append({"unit": j - (j > i), "act": "mount", "riders": name})
+    return us, orders
+
+
+def _in_reach(d: Data, weapons: list, dist: int) -> bool:
+    """Any of these weapons (that shoot) reaches dist field hexes."""
+    return any("range" in d.weapons[w] and U.field_range(d, w, dist) is not None for w in weapons)
+
+
+def _enemy_in_reach(d: Data, at, weapons: list, known: dict) -> bool:
+    """An enemy it knows of (where last seen) within reach of any of these weapons from hex at."""
+    return any(_in_reach(d, weapons, U.hdist(at, m["pos"])) for k, m in known.items() if k.isdigit())
+
+
+def _get_down(d: Data, us: list, j: int, side, ctx: tuple) -> dict | None:
+    """Carrier j of the side with men aboard (not towed guns), out of contact and not broken,
+    sets them down beside it (units.dismount; they move from the next exchange) once an enemy
+    it knows of is within reach of their weapon or its own, or it stands at the objective.
+    -> a dismount order, or None."""
+    field, known, exchange, _ = ctx
+    c, R = us[j], us[j].get("riders")
+    if c["side"] != side or not c.get("vehicle") or not R or R.get("men", 0) <= 0 or U.is_at_gun(d, R) or c["state"] in ROUTED:
+        return None
+    obj = objective(field)
+    at_obj = obj is not None and U.off_objective(d, c, obj) <= U.objective_radii(d, field)[0]
+    if not at_obj and not _enemy_in_reach(d, c["pos"], [R["weapon"], c["weapon"]], known):
+        return None
+    r = U.dismount(d, us, j, U._size(d, field), field)
+    if not r["ok"]:
+        return None
+    us[:] = r["units"][:-1] + [{**r["units"][-1], "arrived": exchange}]
+    return {"unit": j, "act": "dismount", "riders": R.get("name")}
+
+
+def _carrier_for(d: Data, us: list, i: int, side, ctx: tuple) -> int | None:
+    """The first empty carrier of the side beside foot unit i that it can get aboard (units.mount;
+    not gun tractors), if i is attacking, free, not in reserve or at the objective, and no enemy
+    it knows of is within reach of its weapon or the carrier's (from where either stands). Else None."""
+    field, known, exchange, _ = ctx
+    u = us[i]
+    if u["side"] != side or u.get("vehicle") or u.get("reserve") or not _free(d, us, i, exchange) or u["state"] != "steady":
+        return None
+    if u.get("digging") or u.get("mining") or u.get("clearing") or u.get("prone"):
+        return None
+    obj = objective(field)
+    if obj is not None and U.off_objective(d, u, obj) <= U.objective_radii(d, field)[0]:
+        return None
+    for j, c in enumerate(us):
+        if j == i or not c.get("vehicle") or _tractor(d, c) or c.get("immobile", 0) >= U.vehicles_left(d, c) or U._cannot_mount(d, us, i, j) is not None:
+            continue
+        if not any(_enemy_in_reach(d, at, [u["weapon"], c["weapon"]], known) for at in (u["pos"], c["pos"])):
+            return j
+    return None
 
 
 def _drop_index(known: dict, i: int) -> None:

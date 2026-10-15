@@ -62,7 +62,7 @@ Bougainville, the Rangers at Cisterna, Task Force Smith at Osan, the perimeter a
 map can be fought there, and its wounded go back to camp, where wound fever can take
 them. An optional scripted commander can play either side, attacking or holding (an objective
 hex the GM marks if wanted, and a second to go on to or fall back to), with an Undo for each of its moves: it moves, digs in and lays or
-lifts mines with its men, limbers, tows and unlimbers its guns, and calls its batteries and
+lifts mines with its men, carries them up in its vehicles, limbers, tows and unlimbers its guns, and calls its batteries and
 aircraft (smoke, illumination at night, counter-battery fire, and moving batteries that are
 under it). See [docs/units.md](docs/units.md).
 

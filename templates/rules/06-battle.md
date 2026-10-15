@@ -148,7 +148,7 @@ steady friends touching it, who go in with it), and green units sometimes hesita
   sight of nearest its men, where it was last seen. Attacking, guns with no enemy in reach go forward: a battery limbers, moves and
   unlimbers once an enemy is in reach; anti-tank guns hook up to an empty tractor beside
   them (an empty tractor drives over to fetch them), are towed, and are unhooked in reach. They stop in reach but no nearer than
-  {{c_keep_off}} hexes. Holding, its guns unlimber or unhook where they stand. Attacking or holding, guns an enemy could reach at a charge, with no steady friend on the line between, limber or hook up and pull back as far as they can from it. Attacking, it first has one battery smoke an enemy that is shooting at men who
+  {{c_keep_off}} hexes. Holding, its guns unlimber or unhook where they stand. Attacking, its foot units get aboard empty carriers beside them while no known enemy is in reach, and get down once one is (or at the objective). Attacking or holding, guns an enemy could reach at a charge, with no steady friend on the line between, limber or hook up and pull back as far as they can from it. Attacking, it first has one battery smoke an enemy that is shooting at men who
   cannot reply (not in the dark, or in a gale). Then one battery fires counter-battery on
   a located enemy battery it can reach: the one with the best counter % on the one with the
   most guns still served.

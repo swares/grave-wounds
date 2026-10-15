@@ -374,6 +374,19 @@ general. All its numbers are in units.yaml `commander`.
   - **Holding**, its units hold the first as above until the enemy holds it; then they all
     fall back to the second and hold that.
   - The move's first log line says when it goes on to (or falls back to) the second.
+- **Riders.** At the start of its move, before the other orders:
+  - **Getting down.** Its carriers (armoured carriers, fighting vehicles, lorries, tanks with
+    men on the hull) with men aboard set them down beside them (see Riders) once an enemy it
+    knows of is within reach of the riders' weapon or the carriers' own, or once the carriers
+    stand at the objective. The riders fight on foot from the next exchange.
+  - **Getting on.** Attacking, a foot unit (steady, out of contact, not in reserve, not at
+    the objective, not digging, laying or lifting mines, not gone to ground) gets aboard the
+    first empty carriers of its side beside it with room for all its men (not gun tractors,
+    not immobilised) when no enemy it knows of is within reach of its weapon or the
+    carriers', from where either stands. The carriers then move as any unit does, the riders
+    with them.
+  - With machine guns reaching 100 hexes (1,000 m), riders get down about that far out; a
+    carrier that knows of no enemy takes them to the objective.
 - **Its guns.**
   - Its batteries and anti-tank guns on the map, in action, turn to face the nearest enemy
     it knows of.
@@ -447,8 +460,8 @@ general. All its numbers are in units.yaml `commander`.
 What it does not do yet:
 - It looks once, at the start of its move: a unit that moves into sight of an enemy does
   not tell the units ordered after it until the next move.
-- It leaves alone illumination, creeping barrages, counter-battery fire, aircraft,
-  air controllers, vehicles' riders, fixed lines and works.
+- It leaves alone air controllers, fixed lines and works; it plans no creeping barrage for
+  riflemen who stop at range.
 - Its reserve has no orders beyond holding and, once committed, fighting: it does not plug
   a named gap, and reserve units ignore the objective until committed.
 - It has at most two objectives, taken (or held) in turn: no third or more, no phase lines
