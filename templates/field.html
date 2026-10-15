@@ -1172,11 +1172,11 @@ function aiMemory(){                              // where the commander last sa
 }
 const COMMIT_WHY = { broke: "one of its units has broken", gap: "the enemy is close", exploit: "to exploit an enemy unit that broke" };
 const ORDER_TEXT = {                              // (who, them, o, up, facing) -> the order's line
-  commit: (who, them, o) => `${who} are committed from the reserve: ${COMMIT_WHY[o.why] || o.why}.`,
+  commit: (who, them, o) => `${who} are committed from the reserve: ${COMMIT_WHY[o.why] || o.why}${o.at ? "; they go to plug the gap at " + hexName(o.at) + ", where it stood" : ""}.`,
   charge: (who, them, o, up) => `${who} ${up}charge ${them}${throughText(o)}.`,
   move: (who, them, o, up) => `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} toward ${them}.`,
-  advance: (who, them, o, up, facing) => `${who} ${up}advance ${nOf(o.cost, "hex", "hexes")} on the objective${facing}.`,
-  fall_back: (who, them, o, up, facing) => `${who} ${up}fall back ${nOf(o.cost, "hex", "hexes")} toward the objective${facing}.`,
+  advance: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} to plug the gap${facing}.` : `${who} ${up}advance ${nOf(o.cost, "hex", "hexes")} on the objective${facing}.`),
+  fall_back: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} to plug the gap${facing}.` : `${who} ${up}fall back ${nOf(o.cost, "hex", "hexes")} toward the objective${facing}.`),
   turn: (who, them) => `${who} turn to face ${them}.`,
   ground: who => `${who} go to ground under fire.`,
   lay: (who, them, o) => `${who} lay ${FD.units.mines.kinds[o.kind].name.toLowerCase()} ahead of them (${nOf(FD.units.mines.sappers.lay, "exchange")} without moving or firing).`,
