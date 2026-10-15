@@ -267,6 +267,8 @@ general. All its numbers are in units.yaml `commander`.
 - **What it knows.** It knows of an enemy unit one of its own units can see now, by the
   same sight as calling fire: the weather's and the light's reach, woods and buildings in
   the way, smoke. It is enough to see the enemy's middle hex or either end of its front.
+  It orders its units one after another, and an enemy that a unit sees from where it has
+  just moved is known to the units ordered after it in the same move.
   An enemy it saw before but cannot see now it remembers where it was last seen, for 3
   exchanges; then it forgets it. It never targets an enemy it does not know of, and a unit
   with no enemy known holds where it is. On a dark night, then, a side waits until the
@@ -469,8 +471,6 @@ general. All its numbers are in units.yaml `commander`.
   - **Undo its orders** calls that fire off again.
 
 What it does not do yet:
-- It looks once, at the start of its move: a unit that moves into sight of an enemy does
-  not tell the units ordered after it until the next move.
 - It leaves alone air controllers, fixed lines and works; it plans no creeping barrage for
   riflemen who stop at range.
 - Its reserve has no orders beyond holding and, once committed, fighting: it does not plug
