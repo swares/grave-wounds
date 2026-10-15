@@ -48,11 +48,16 @@ export function unit(name, army, men, kind, at){
 export const firstCol = u => u.pos[0] - Math.floor((u.width - 1) / 2);
 
 const yq = s => JSON.stringify(s);
-const unitLine = u => `  - {name: ${yq(u.name)}, side: ${u.side}, men: ${u.men}, quality: ${u.quality}, weapon: ${u.weapon}, kit: ${u.kit}, formation: ${u.formation}, width: ${u.width}, pos: [${u.pos.join(", ")}], facing: ${u.facing}${u.mounted ? ", mounted: true" : ""}${u.guns ? ", guns: " + u.guns : ""}${u.prone ? ", prone: true" : ""}${u.lands === undefined ? "" : ", lands: " + u.lands}${u.vehicle ? ", vehicle: " + u.vehicle : ""}${u.fixed ? ", fixed: [" + u.fixed.join(", ") + "]" : ""}${u.nv ? ", nv: " + u.nv : ""}${u.fac ? ", fac: true" : ""}${u.ladders ? ", ladders: true" : ""}}`;
+const unitLine = u => `  - {name: ${yq(u.name)}, side: ${u.side}, men: ${u.men}, quality: ${u.quality}, weapon: ${u.weapon}, kit: ${u.kit}, formation: ${u.formation}, width: ${u.width}, pos: [${u.pos.join(", ")}], facing: ${u.facing}${u.mounted ? ", mounted: true" : ""}${u.guns ? ", guns: " + u.guns : ""}${u.prone ? ", prone: true" : ""}${u.lands === undefined ? "" : ", lands: " + u.lands}${u.vehicle ? ", vehicle: " + u.vehicle : ""}${u.fixed ? ", fixed: [" + u.fixed.join(", ") + "]" : ""}${u.nv ? ", nv: " + u.nv : ""}${u.fac ? ", fac: true" : ""}${u.ladders ? ", ladders: true" : ""}${u.type ? ", type: " + u.type : ""}${u.size ? ", size: " + u.size : ""}}`;
 function objLine(o){                              // the objective's line (and its comment), or ""
   if (!o) return "";
   const radius = o.radius ? ", radius: " + o.radius : "";
   return `\n# The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.\nobjective: {at: [${o.at.map(Math.round).join(", ")}], side: ${o.side}, name: ${yq(o.name)}${radius}}`;
+}
+function markersLine(m){                         // the markers settings' line (and its comment), or ""
+  if (!m) return "";
+  const parts = Object.entries(m).map(([k, v]) => `${k}: ${v}`).join(", ");
+  return `\n# Unit markers on the field map (labels: names, ids or both; strength; size marks): units.yaml markers otherwise.\nmarkers: {${parts}}`;
 }
 const hexList = hs => hs.map(h => `[${h.join(", ")}]`).join(", ");
 
@@ -63,7 +68,8 @@ const hexList = hs => hs.map(h => `[${h.join(", ")}]`).join(", ");
 // call: [{name, side (0 or 1), kind (units.yaml indirect.kinds), tubes}]), lz (landing zones,
 // hexes; a unit with `lands: k` comes in by air at the k-th), objective (the place the battle
 // was fought for: {at: hex, side: the army that attacked it (0 or 1), name, radius: hexes round it
-// that count as on it})}.
+// that count as on it}), markers (the unit markers' settings: {labels, strength, size}, all
+// optional). A unit may also set type and size (units.yaml markers).
 export function writeField(spec){
   const { grid } = spec, works = Object.entries(spec.hexWorks || {});
   const edges = Object.entries(spec.edgeWorks || {});
@@ -84,7 +90,7 @@ table: ${spec.table}
 # the travel-map sides that stand where each army stands here (${spec.sides[0]} first).
 travel: {map: ${t.map}, place: ${yq(t.place)}, within: ${t.within}, sides: [${t.sides.map(yq).join(", ")}]}
 size: [${grid[0].length}, ${grid.length}]
-${upLine}weather: ${spec.weather}${spec.lz ? "\n" : ""}${spec.lz ? "lz: [" + hexList(spec.lz) + "]               # landing zones (units with `lands` come in by air at that one)" : ""}${objLine(spec.objective)}
+${upLine}weather: ${spec.weather}${spec.lz ? "\n" : ""}${spec.lz ? "lz: [" + hexList(spec.lz) + "]               # landing zones (units with `lands` come in by air at that one)" : ""}${objLine(spec.objective)}${markersLine(spec.markers)}
 ground: |
 ${grid.map(row => "  " + row.join("")).join("\n")}
 ${worksText}${supText}units:

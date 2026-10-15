@@ -79,10 +79,19 @@ button:disabled{opacity:.45;cursor:default}
 .arrow{fill:var(--ink);pointer-events:none}
 .pit{fill:none;stroke:var(--ink);stroke-width:2.2px;stroke-dasharray:2.5 1.5;pointer-events:none}
 .ulabel{font:700 8px var(--mono);fill:var(--ink);text-anchor:middle;paint-order:stroke;stroke:var(--panel);stroke-width:2.6px;pointer-events:none}
+.ulabel.side{text-anchor:start}
+.mk{stroke-width:1.5;pointer-events:none}.mk.s0{fill:var(--panel);stroke:var(--side0)}.mk.s1{fill:var(--panel);stroke:var(--side1)}
+.mk.rev.s0{fill:var(--side0);stroke:var(--panel)}.mk.rev.s1{fill:var(--side1);stroke:var(--panel)}
+.gl{fill:none;stroke-width:1.1;pointer-events:none}.gl.s0{stroke:var(--side0)}.gl.s1{stroke:var(--side1)}.gl.rev{stroke:var(--panel)}
+.gf{stroke:none;pointer-events:none}.gf.s0{fill:var(--side0)}.gf.s1{fill:var(--side1)}.gf.rev{fill:var(--panel)}
+.msize{font:700 6px var(--mono);text-anchor:middle;paint-order:stroke;stroke:var(--panel);stroke-width:2px;pointer-events:none}.msize.s0{fill:var(--side0)}.msize.s1{fill:var(--side1)}
+.unit.shaken .mark{opacity:.7}.unit.broken .mark{opacity:.45}
+.mkicon{width:26px;height:22px;flex:none;vertical-align:middle}
+.legend .mkicon{width:22px;height:19px;margin-right:2px}
+.utag{font:700 .78rem var(--mono)}
 .units{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .units li{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:3px;padding:6px 8px;cursor:pointer}
 .units li[aria-current="true"]{border-color:var(--blood);background:var(--blood-soft)}
-.units .dot{width:12px;height:12px;border-radius:50%;flex:none}
 .units .meta{margin-left:auto;font:500 .75rem var(--mono);color:var(--muted);text-align:right}
 .summary{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:.9rem;margin:0}
 .summary dt{color:var(--muted)}.summary dd{margin:0;font-weight:700}
@@ -162,8 +171,14 @@ legend{padding:0}
       </div>
       <output class="msg" id="msg"></output>
       <div class="mapbox" id="map" title="Click a hex to place or move the selected unit"></div>
+      <div class="row marks-row">
+        <div style="flex:0 1 180px"><label for="sel-labels">Unit labels</label><select id="sel-labels"><option value="names">Names</option><option value="ids">IDs (B3)</option><option value="both">IDs and names</option></select></div>
+        <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-strength"> strength</label></div>
+        <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-size"> size marks</label></div>
+      </div>
+      <div class="legend" id="unit-legend" aria-label="Unit markers"></div>
       <div class="legend" id="legend"></div>
-      <p class="muted" style="margin:0">Each unit is a block of hexes along its front (the dark edge), facing the arrow. Close order holds 40 men a hex, open order 20. Units touching across a front fight; archers shoot at the nearest enemy in range in front of them.</p>
+      <p class="muted" style="margin:0">Each unit is a block of hexes along its front (the dark edge), facing the arrow. The marker on its centre hex shows its side (rectangle or diamond) and type: see the key above. Close order holds 40 men a hex, open order 20. Units touching across a front fight; archers shoot at the nearest enemy in range in front of them.</p>
     </section>
 
     <section class="panel" aria-labelledby="h-battle">
@@ -392,7 +407,7 @@ const newNv = o => o.nv || (o.vehicle ? vehicleDevice(S.table) : null);   // a u
 function newUnit(o){
   return { id: S.seq++, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, guns: isGun(o.weapon) ? gunKind(o) : undefined, width: o.width || Math.ceil(o.men / form(o).per_hex),
-    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(newNv(o) ? { nv: newNv(o) } : {}), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
+    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(newNv(o) ? { nv: newNv(o) } : {}), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}), ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
 }
 function newField(){                              // open ground of the default size (and the page goes back to that size)
   SIZE = DEFAULT_SIZE.slice();
@@ -405,6 +420,7 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
   if (travelWx) S.field.weather = travelWx;
   SIZE = S.field.size.slice();
   S.fieldId = B ? fid : null;
+  S.marks = { ...markDefaults(), ...(B?.markers || {}) };   // the battlefield's marker settings, else units.yaml's
   S.camp = null;
   if (B && armies && !S.forces){
     S.sides = B.sides.slice();
@@ -1656,24 +1672,87 @@ function heroesToRoller(){                        // their wounds onto their rec
 const R = 7, HW = Math.sqrt(3) * R;
 const xy = ([c, r]) => [HW * (c + 0.5 * (r & 1)) + HW / 2, 1.5 * R * r + R];
 const pts = ([x, y]) => [0, 1, 2, 3, 4, 5].map(k => { const a = Math.PI / 180 * (60 * k - 30); return `${(x + R * Math.cos(a)).toFixed(1)},${(y + R * Math.sin(a)).toFixed(1)}` }).join(" ");
+// ---------- unit markers: a frame by side (rectangle, diamond), a glyph by type, a size mark, a label ----------
+const MK = { w: 9, h: 6, dw: 10.4, dh: 9.3 };     // the rectangle's and the diamond's half-width and half-height
+const markDefaults = () => { const M = FD.units.markers || {}; return { labels: M.labels || "names", strength: M.strength !== false, size: !!M.size } };
+const marks = () => S.marks || (S.marks = markDefaults());
+function unitType(u){                             // a battlefield's type, else from the unit's arms and order
+  if (u.type) return u.type;
+  if (u.vehicle){ const K = FD.units.vehicles.kinds[u.vehicle]; return K.gun && !K.carry ? "armour" : K.carry && K.armour !== "soft" ? "mechanised" : K.gun ? "armour" : "transport" }
+  if (isAtGun(u)) return "anti_tank";
+  if (isBattery(u)) return "artillery";
+  if (isMg(u.weapon)) return "machine_guns";
+  if (u.mounted) return "cavalry";
+  if ((FD.units.line_of_fire?.arcing || []).includes(u.weapon)) return "archers";
+  return u.formation === "open" ? "skirmishers" : "infantry";
+}
+function markEdge(k, a){                          // distance from the marker's centre to its frame along angle a
+  const c = Math.abs(Math.cos(a)), s = Math.abs(Math.sin(a));
+  return k === 0 ? Math.min(MK.w / (c || 1e-9), MK.h / (s || 1e-9)) : 1 / (c / MK.dw + s / MK.dh);
+}
+function markSvg(t, k, x, y, size, sizeY){        // the marker for type t on side k, centred on x, y (size: the size mark, or none; sizeY: its baseline if not just above the frame)
+  const rev = t === "skirmishers" ? " rev" : "", f = `class="mk s${k}${rev}"`, gl = `class="gl s${k}${rev}"`, gf = `class="gf s${k}${rev}"`;
+  const F = v => v.toFixed(1);
+  let frame, top;
+  if (k === 0){ frame = `<rect ${f} x="${F(x - MK.w)}" y="${F(y - MK.h)}" width="${2 * MK.w}" height="${2 * MK.h}"/>`; top = y - MK.h }
+  else { frame = `<polygon ${f} points="${F(x)},${F(y - MK.dh)} ${F(x + MK.dw)},${F(y)} ${F(x)},${F(y + MK.dh)} ${F(x - MK.dw)},${F(y)}"/>`; top = y - MK.dh }
+  const w = k === 0 ? MK.w : MK.w / 2, h = k === 0 ? MK.h : MK.h / 2;   // the glyph's box: inside the diamond, half size
+  const X = `M${F(x - w)},${F(y - h)}L${F(x + w)},${F(y + h)}M${F(x - w)},${F(y + h)}L${F(x + w)},${F(y - h)}`;
+  const oval = `<ellipse ${gl} cx="${F(x)}" cy="${F(y)}" rx="${F(w * 0.7)}" ry="${F(h * 0.6)}"/>`;
+  const G = {
+    infantry: `<path ${gl} d="${X}"/>`, skirmishers: `<path ${gl} d="${X}"/>`,
+    cavalry: `<path ${gl} d="M${F(x - w)},${F(y + h)}L${F(x + w)},${F(y - h)}"/>`,
+    archers: `<path ${gl} d="M${F(x - w * 0.6)},${F(y + h * 0.5)}Q${F(x)},${F(y - h * 1.1)} ${F(x + w * 0.6)},${F(y + h * 0.5)}"/>`,
+    artillery: `<circle ${gf} cx="${F(x)}" cy="${F(y)}" r="${k === 0 ? 2.4 : 2}"/>`,
+    machine_guns: `<rect ${gf} x="${F(x - w)}" y="${F(y - h)}" width="${F(2 * w)}" height="${F(h * 0.6)}"/><path ${gl} d="${X}"/>`,
+    anti_tank: `<path ${gl} d="M${F(x - w)},${F(y + h)}L${F(x)},${F(y - h)}L${F(x + w)},${F(y + h)}"/>`,
+    armour: oval, mechanised: oval + `<path ${gl} d="${X}"/>`,
+    transport: `<path ${gl} d="M${F(x - w)},${F(y)}H${F(x + w)}"/><circle ${gf} cx="${F(x - w * 0.45)}" cy="${F(y + h * 0.55)}" r="1.3"/><circle ${gf} cx="${F(x + w * 0.45)}" cy="${F(y + h * 0.55)}" r="1.3"/>`
+  };
+  const sz = size && FD.units.markers?.sizes?.[size];
+  return frame + (G[t] || G.infantry) + (sz ? `<text class="msize s${k}" x="${F(x)}" y="${F(sizeY ?? top - 1.5)}">${sz}</text>` : "");
+}
+function sideInitials(){                          // ["B", "R"]: the sides' initials, or A and B when they share one
+  const i = S.sides.map(s => (String(s).trim()[0] || "?").toUpperCase());
+  return i[0] === i[1] ? ["A", "B"] : i;
+}
+function ensureTags(){                            // each unit's number on its side, kept for the battle (B3 stays B3)
+  for (const u of [...S.units].sort((a, b) => a.id - b.id)) if (!u.n){
+    const k = sideNo(u);
+    u.n = 1 + Math.max(0, ...S.units.filter(v => v.n && sideNo(v) === k).map(v => v.n));
+  }
+}
+const unitTag = u => { if (!u.n) ensureTags(); return sideInitials()[sideNo(u)] + u.n };
 function unitSvg(u){
   const rows = footprint(u); if (!rows.length) return "";
-  const k = sideNo(u), sel = u.id === S.sel ? " sel" : "";
+  const k = sideNo(u), sel = u.id === S.sel ? " sel" : "", M = marks();
   let g = `<g class="unit ${u.state}${sel}">`;
   rows.forEach((row, ri) => { for (const h of row) g += `<polygon class="uh s${k}${ri === 0 ? " front" : ""}" points="${pts(xy(h))}"/>` });
-  const [x, y] = xy(u.pos), a = -(60 * u.facing + 30) * Math.PI / 180, tip = [x + 11 * Math.cos(a), y + 11 * Math.sin(a)];
-  const l = [x + 5 * Math.cos(a + 1.9), y + 5 * Math.sin(a + 1.9)], r = [x + 5 * Math.cos(a - 1.9), y + 5 * Math.sin(a - 1.9)];
+  const [x, y] = xy(u.pos), a = -(60 * u.facing + 30) * Math.PI / 180, e = markEdge(k, a);   // the arrow points out from the frame's edge
+  const tip = [x + (e + 5.5) * Math.cos(a), y + (e + 5.5) * Math.sin(a)];
+  const l = [x + (e + 1) * Math.cos(a + 0.45), y + (e + 1) * Math.sin(a + 0.45)], r = [x + (e + 1) * Math.cos(a - 0.45), y + (e + 1) * Math.sin(a - 0.45)];
   g += `<polygon class="arrow" points="${[tip, l, r].map(p => p.map(v => v.toFixed(1)).join(",")).join(" ")}"/>`;
-  const star = (u.heroes || []).some(h => h.state === "up" && !h.left) ? " \u2605" : "";
+  const star = (u.heroes || []).some(h => h.state === "up" && !h.left) ? " ★" : "";
   const dug = (u.emplaced || dugHere(u)) && u.state !== "broken" && u.state !== "fled";   // emplaced or dug in here, while it stands: a parapet across its front
   if (dug){
-    const p0 = [x + 9 * Math.cos(a - 1.05), y + 9 * Math.sin(a - 1.05)], p1 = [x + 9 * Math.cos(a + 1.05), y + 9 * Math.sin(a + 1.05)];
-    g += `<path class="pit" d="M${p0.map(v => v.toFixed(1)).join(",")} A9,9 0 0,1 ${p1.map(v => v.toFixed(1)).join(",")}"/>`;
+    const pr = e + 7, p0 = [x + pr * Math.cos(a - 1.05), y + pr * Math.sin(a - 1.05)], p1 = [x + pr * Math.cos(a + 1.05), y + pr * Math.sin(a + 1.05)];
+    g += `<path class="pit" d="M${p0.map(v => v.toFixed(1)).join(",")} A${pr.toFixed(1)},${pr.toFixed(1)} 0 0,1 ${p1.map(v => v.toFixed(1)).join(",")}"/>`;
   }
-  const low = (u.prone ? " \u2193" : "") + (dug ? " \u25e0" : "");   // gone to ground, emplaced
+  g += `<g class="mark">${markSvg(unitType(u), k, x, y, M.size && u.size, Math.sin(a) < -0.5 ? tip[1] - 1 : undefined)}</g>`;   // facing up: the size mark above the arrow
+  const low = (u.prone ? " ↓" : "") + (dug ? " ◠" : "");   // gone to ground, emplaced
   const aboard = u.riders ? ` +${u.riders.men}` : "";   // riders in the carriers
-  g += `<text class="ulabel" x="${x.toFixed(1)}" y="${(y - 8).toFixed(1)}">${esc(u.name)} ${u.men}${aboard}${star}${low}</text></g>`;
+  const name = M.labels === "ids" ? unitTag(u) : M.labels === "both" ? `${unitTag(u)} ${esc(u.name)}` : esc(u.name);
+  const men = M.strength ? ` ${u.men}${aboard}` : "";
+  g += `<text class="ulabel side" x="${(x + (k === 0 ? MK.w : MK.dw) + 2.5).toFixed(1)}" y="${(y + 3).toFixed(1)}">${name}${men}${star}${low}</text></g>`;
   return g;
+}
+function unitLegend(){                            // the unit types on the map, each in the first side's frame that has one, and the two frames
+  const seen = new Map();
+  for (const u of S.units) if (u.state !== "fled" && !seen.has(unitType(u))) seen.set(unitType(u), sideNo(u));
+  const icon = (t, k) => `<svg class="mkicon" viewBox="-14 -12 28 24" aria-hidden="true">${markSvg(t, k, 0, 0)}</svg>`;
+  const T = FD.units.markers?.types || {};
+  return [...seen].map(([t, k]) => `<span>${icon(t, k)}${esc(T[t] || t)}</span>`).join("")
+    + (S.units.length ? S.sides.map((s, k) => `<span>${icon("infantry", k)}${esc(s)}</span>`).join("") : "");
 }
 const HEX_GLYPH = { stakes: "\u2715", abatis: "\u2733", wagon: "\u25ad", pavise: "\u25ae", wire: "\u2a33", bunker: "\u25a3", trench: "\u2261", wreck: "\u2708" };
 function worksSvg(){                              // edge works along hex sides, hex works as marks in their hexes
@@ -1700,10 +1779,14 @@ function renderMap(){
     const kind = G[c + "," + r], cls = kind && kind !== "open" ? " g-" + kind : "";
     hx += `<polygon class="hx${cls}" data-h="${c},${r}" points="${pts(xy([c, r]))}"/>`;
   }
+  ensureTags();
   const units = S.units.map(unitSvg).join(""), W = HW * (SIZE[0] + 0.5), H = 1.5 * R * (SIZE[1] - 1) + 2 * R;
   $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" style="min-width:${SIZE[0] * 13}px">${hx}${worksSvg()}${units}${supportSvg()}</svg>`;
   $("#map-scale").textContent = `${SIZE[0]} × ${SIZE[1]} hexes · ${fmtM(FD.units.hex_m)} a hex · an exchange is about a minute`;
   $("#hex-size").textContent = fmtM(FD.units.hex_m);
+  $("#unit-legend").innerHTML = unitLegend();
+  const M = marks();
+  $("#sel-labels").value = M.labels; $("#chk-strength").checked = M.strength; $("#chk-size").checked = M.size;
 }
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
 const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"], ["sappers", "sappers"], ["shielded", "shielded"], ["ladders", "ladders"], ["jostled", "jostled"], ["mining", "laying mines"], ["clearing", "lifting mines"]];
@@ -1757,7 +1840,7 @@ function renderUnits(){
   if (pick && Number(pick) < lzs.length) $("#sel-lz").value = pick;
   $("#lifts").hidden = !lifts.length;
   $("#lifts").textContent = lifts.length ? "In the air: " + lifts.map(lf => `${lf.unit.name} (${lf.unit.side}), ${lf.left} men for ${lf.lz[0] + 1},${lf.lz[1] + 1}`).join("; ") + "." : "";
-  $("#units").innerHTML = S.units.map(u => `<li data-id="${u.id}" aria-current="${u.id === S.sel}" tabindex="0"><span class="dot" style="background:var(--side${sideNo(u)})"></span><span><b>${esc(u.name)}</b> <span class="muted">${esc(banner(u))}</span></span><span class="meta">${unitMeta(u)}</span></li>`).join("") || `<li class="muted">No units. Add one below.</li>`;
+  $("#units").innerHTML = S.units.map(u => `<li data-id="${u.id}" aria-current="${u.id === S.sel}" tabindex="0"><svg class="mkicon" viewBox="-14 -12 28 24" aria-hidden="true">${markSvg(unitType(u), sideNo(u), 0, 0)}</svg><span><b class="utag">${unitTag(u)}</b> <b>${esc(u.name)}</b> <span class="muted">${esc(banner(u))}</span></span><span class="meta">${unitMeta(u)}</span></li>`).join("") || `<li class="muted">No units. Add one below.</li>`;
 }
 function renderAssault(u){                        // the storming order, on tables with grenades and charges
   const el = $("#sel-assault"), A = FD.units.assault;
@@ -2466,6 +2549,9 @@ function init(){
   $("#btn-narrow").onclick = () => reshape(-1);
   $("#btn-wider").onclick = () => reshape(1);
   $("#btn-undo").onclick = () => { const u = selUnit(); if (u && S.start){ const i = idx(u.id); S.units[i] = { ...S.start[i] }; S.msg = ""; render() } };
+  $("#sel-labels").onchange = e => { marks().labels = e.target.value; render() };
+  $("#chk-strength").onchange = e => { marks().strength = e.target.checked; render() };
+  $("#chk-size").onchange = e => { marks().size = e.target.checked; render() };
   $("#btn-remove").onclick = () => { const u = selUnit(); if (u){ S.units = S.units.filter(x => x.id !== u.id); S.sel = S.units[0] ? S.units[0].id : null; render() } };
   $("#btn-add").onclick = addUnit;
   $("#btn-limber").onclick = toggleLimber;
