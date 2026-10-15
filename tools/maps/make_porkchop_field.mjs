@@ -55,6 +55,12 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded
+    { name: "E Company overrun", at: 1, note: "23:05: the lights come on all over the hill and the Chinese battalion comes up the north slope." },
+    { name: "The first relief", at: 176, note: "Shortly after 02:00 L Company's platoons are sent up to reinforce E Company; most of the hill is in Chinese hands.", arrive: ["L Company, 31st Infantry (Hill 200)"] },
+    { name: "K Company counter-attacks", at: 326, note: "04:30: the barrage lifts and K Company steps off; L Company attacks again at about the same time.", arrive: ["K Company, 31st Infantry (from the main line)"] },
+    { name: "A fresh Chinese company", at: 550, note: "08:14: G Company of the 17th Infantry arrives as a fresh Chinese company appears (which company it was is our reading).", arrive: ["Chinese company from Old Baldy (the west)"] },
+  ],
   objective: { at: TOP, side: 1, name: "the top of Pork Chop Hill", radius: 9 },
   id: "porkchop-1953", name: "Pork Chop Hill, 16-17 April 1953", sides: ["United Nations", "Chinese"], table: "korea-1950-53-hospitalized",
   travel: { map: "porkchop-1953", place: "Pork Chop Hill", within: 1, sides: ["United Nations", "Chinese"] },

@@ -161,7 +161,7 @@ support:
 units:
   - {name: "25th New Zealand Battalion (into the town from the north)", side: 0, men: 500, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [70, 40], facing: 4, size: battalion}
   - {name: "D Company, 25th Battalion (for Castle Hill)", side: 0, men: 100, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [34, 18], facing: 4, size: company}
-  - {name: "24th New Zealand Battalion (following up)", side: 0, men: 400, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [70, 20], facing: 4, size: battalion}
+  - {name: "26th New Zealand Battalion (following up)", side: 0, men: 400, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [70, 20], facing: 4, size: battalion}
   - {name: "19th Armoured Regiment (Shermans north of the town)", side: 0, men: 32, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 4, pos: [104, 30], facing: 4, vehicle: tank, size: company}
   - {name: "German paratroops in the cellars (the north of the town)", side: 1, men: 80, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [72, 54], facing: 1, prone: true, size: company}
   - {name: "German paratroops in the ruins (the middle of the town)", side: 1, men: 100, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 12, pos: [80, 72], facing: 1, prone: true, size: company}

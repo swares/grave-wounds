@@ -49,7 +49,7 @@ export const UNIT_SIZES = {
     "145th Infantry, 2nd Battalion (east knob)": "battalion",
     "Machine guns covering the saddle (west)": "section",
     "Machine guns covering the saddle (east)": "section",
-    "145th Infantry, 3rd Battalion (reserve)": "battalion",
+    "145th Infantry, 1st Battalion (reserve)": "battalion",
     "23rd Infantry, II Battalion (on the saddle)": "battalion",
     "23rd Infantry, III Battalion (east slope)": "battalion",
     "23rd Infantry machine-gun company": "company",
@@ -94,7 +94,7 @@ export const UNIT_SIZES = {
   "cassino-town-1944": {
     "25th New Zealand Battalion (into the town from the north)": "battalion",
     "D Company, 25th Battalion (for Castle Hill)": "company",
-    "24th New Zealand Battalion (following up)": "battalion",
+    "26th New Zealand Battalion (following up)": "battalion",
     "19th Armoured Regiment (Shermans north of the town)": "company",
     "German paratroops in the cellars (the north of the town)": "company",
     "German paratroops in the ruins (the middle of the town)": "company",

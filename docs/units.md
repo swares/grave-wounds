@@ -1456,16 +1456,39 @@ what happened, and the units it brings on.
   at their side's entry edge if that ground is taken. Like any unit brought on, they can
   move from the next exchange. A unit with no room at all waits and tries again each
   exchange.
+- **By air.** A unit that comes in by air (`lands`) takes off when its phase begins and lands
+  at its landing zone by the usual rules, as many men an exchange as the lift allows. That is
+  how X-Ray's D Company and the 2nd Battalion's B Company come in.
 - **Where they're used.** Phases apply with *the armies as drawn up*, not to forces sent
   from the travel map.
 
-Three battlefields have phases so far. The times are our reading of the accounts, rounded:
+Twelve battlefields have phases. Each phase's time is our reading of the accounts, rounded to the
+minute from the deployment moment (exchange 1). The sources are named in each generator's notes
+where they are not plain.
 - **The Redan, 8 September:** the stormers go over (1); the supports come forward (10); the
   Russian reserves counter-attack (80, after about an hour and a half).
 - **The Redan, 18 June:** the columns go out (1); their supports follow (4); the Russian
   reserve comes up (15).
 - **Lundy's Lane:** Scott attacks the hill (1, about 7 pm); Ripley, Porter and Drummond's
   column come up (120, about 9 pm); Drummond counter-attacks (150, until near midnight).
+- **Lützen** (from about 11:00): Pappenheim's horse arrive (76); the King is killed and the
+  second line goes in (151, an estimate); a lull (241); the windmill hill falls (271).
+- **Mons** (from 09:00): a renewed attack through the woods (31); the attack in force (121);
+  the Fusiliers withdraw (251). Which German battalion came in when is our reading.
+- **Osan** (from about 11:45): a battalion works round the west (46, 12:30); another comes
+  down the railroad and Smith withdraws (166, 14:30).
+- **Chipyong-ni**, the night of 14–15 February (from 22:00): G Company's hill falls and the
+  Rangers counter-attack (331, about 03:30); the dawn counter-attack fails (496, 06:15).
+- **Kapyong**, the night of 23–24 April (from 21:30): the Chinese reach headquarters (31);
+  the main assaults (201); headquarters pulls out (451); B Company called up the hill (586).
+- **Pork Chop Hill** (from 23:05): L Company (176, shortly after 02:00); K Company
+  counter-attacks (326, 04:30); a fresh Chinese company (550, 08:14).
+- **X-Ray** (from about 13:35): D Company lands (56, 14:30); the push for the cut-off platoon
+  (131); B Company of the 2nd Battalion at dusk (211, 17:05).
+- **Dak To** (from 10:30): the attack from behind onto A Company (241, 14:30); C Company
+  surrounded (271); the stray bomb (509, 18:58).
+- **73 Easting** (from 16:18): through the trenches (5); the T-72s on the high ground beyond
+  (19, about 16:36).
 
 **From the travel map.** A battlefield can name a place on a travel map and how close
 counts (`travel` in its file). Agincourt names Azincourt, within 1 hex. When the defender

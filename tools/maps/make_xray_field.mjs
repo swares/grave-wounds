@@ -52,6 +52,12 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded
+    { name: "The fight at the creek bed", at: 1, note: "About 13:35: B, A and C Companies are engaged and B Company's 2nd Platoon is cut off on the knoll." },
+    { name: "D Company lands", at: 56, note: "14:30: the last of C Company and the lead of D Company land under fire.", arrive: ["D Company (landing)"] },
+    { name: "The push for the cut-off platoon", at: 131, note: "15:45: A and B Companies push toward the cut-off platoon and are stopped; they try again at 16:20." },
+    { name: "Reinforcement at dusk", at: 211, note: "17:05: B Company of the 2nd Battalion flies in; at 17:40 A and B pull back to the edge of the landing zone.", arrive: ["B Company, 2nd Battalion, 7th Cavalry (flown in at dusk)"] },
+  ],
   objective: { at: LZ, side: 1, name: "the landing zone", radius: 6 },
   id: "xray-1965", name: "Landing zone X-Ray, 14 November 1965", sides: ["United States", "North Vietnamese"], table: "vietnam-1965-70-hospitalized",
   travel: { map: "iadrang-1965", place: "Landing zone X-Ray", within: 2, sides: ["United States", "North Vietnamese"] },

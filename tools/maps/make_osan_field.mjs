@@ -63,6 +63,11 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded
+    { name: "The column deploys", at: 1, note: "About 11:45: the tanks have gone through and the infantry come off the road across the paddies." },
+    { name: "The west flank", at: 46, note: "About 12:30 the enemy appears in force on the hill west of the highway; the platoon there is pulled back.", arrive: ["16th Regiment, battalion working round the west"] },
+    { name: "The railroad, and withdrawal", at: 166, note: "About 14:30, with the enemy reported moving down the railroad, Smith orders the withdrawal.", arrive: ["18th Regiment, battalion moving down the railroad"] },
+  ],
   objective: { at: [ROAD, Math.round(crest(ROAD))], side: 1, name: "the saddle where the road crosses the ridge", radius: 6 },
   id: "osan-1950", name: "Task Force Smith at Osan, 5 July 1950", sides: ["United Nations", "North Koreans"], table: "korea-1950-53-hospitalized",
   travel: { map: "osan-1950", place: "The saddle north of Osan (Jukmiryeong)", within: 2, sides: ["United Nations", "North Koreans"] },

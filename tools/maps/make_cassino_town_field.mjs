@@ -48,7 +48,7 @@ const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army,
 const units = [
   at("25th New Zealand Battalion (into the town from the north)", NZ, 500, KIWI, 30, [70, 40], S),
   at("D Company, 25th Battalion (for Castle Hill)", NZ, 100, KIWI, 10, [CASTLE[0] + 6, 18], S),
-  at("24th New Zealand Battalion (following up)", NZ, 400, KIWI, 30, [70, 20], S),
+  at("26th New Zealand Battalion (following up)", NZ, 400, KIWI, 30, [70, 20], S),
   at("19th Armoured Regiment (Shermans north of the town)", NZ, 32, { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" }, 4, [104, 30], S),
   at("German paratroops in the cellars (the north of the town)", DE, 80, PARA, 10, [72, 54], N),
   at("German paratroops in the ruins (the middle of the town)", DE, 100, PARA, 12, [80, 72], N),

@@ -27,6 +27,12 @@ size: [200, 120]
 weather: {cond: sandstorm, wind: strong, dir: NW, ground: {mud: 0, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [87, 60], side: 0, name: "the Iraqi position behind the rise at 73 Easting", radius: 9}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "Over the rise", at: 1, note: "16:18: the troop commander's gunner kills the first T-72."}
+  - {name: "Through the trenches", at: 5, note: "16:22: eight more T-72s are destroyed; the troop fights through the trenches and BMPs."}
+  - {name: "The high ground beyond", at: 19, note: "About 16:36 the troop attacks into the main position; at 16:40 it halts at 73 Easting, the next line of tanks just out of range.", arrive: ["T-72s on the high ground beyond (about 74 Easting)"]}
 ground: |
   r.r...........r..................................r.............r...............hhhhh.........r..........................r.....r....r...........................................................r........
   ...............................r...............................................hhhhh........................................................r..........r........r.r.....................................
