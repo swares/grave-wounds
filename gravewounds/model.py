@@ -842,6 +842,11 @@ def _units_extra_errors(d: Data) -> list[str]:
     saved = U.get("aftermath", {}).get("saved", {})
     if saved and set(saved.get("hours", {})) != set(d.disease.get("recovery", {}).get("care", {})):
         errors.append("units.yaml: aftermath.saved.hours needs every care level")
+    ME = U.get("aftermath", {}).get("medevac") or {}
+    kinds = ME.get("kinds") or {}
+    errors += [f"units.yaml: aftermath.medevac.kinds.{k} needs a name and hours and minutes (% 0-100) and a known fallback" for k, v in kinds.items()
+               if not (v.get("name") and all(isinstance(v.get(x), int) and 0 <= v[x] <= 100 for x in ("hours", "minutes")) and v.get("fallback", k) in kinds)]
+    errors += [f"units.yaml: aftermath.medevac.battles.{b} names unknown kind {k}" for b, k in (ME.get("battles") or {}).items() if k not in kinds]
     for wid in U.get("line_of_fire", {}).get("arcing", []):
         if wid not in d.weapons or "range" not in d.weapons[wid]:
             errors.append(f"units.yaml: line_of_fire.arcing names {wid}, which is not a weapon with a range")

@@ -593,6 +593,25 @@ untreated time to death and its infection risk, and whether he went down. Then:
 2. **The death clock.** A wound that kills in minutes kills before help comes, unless he is
    bound in time (1 in 10). One that kills in hours kills unless his camp can treat it: no
    chance with no camp, 40% in a camp, 60% in quarters.
+   - **Medevac.** Where a side had it, its wounded carried off reach care sooner, and each
+     gets the better of his camp's figures and these (`aftermath.medevac` in
+     `data/units.yaml`; design estimates, following the eras' died-of-wounds share of the
+     wounded as commonly cited: about 14% in the Civil War, 8% in WWI, 4.5% in WWII, 2.5% in
+     Korea and Vietnam):
+
+     | Medevac | Wars (by the wound tables) | Dying within hours saved | Within minutes |
+     |---|---|---|---|
+     | Ambulance wagons | Civil War, Indian Wars | 50% | 10% |
+     | Motor ambulances | WWI, WWII | 65% | 10% |
+     | Helicopters | Korea, Vietnam, the later wars | 85% | 20% |
+
+   - Helicopters need a landing zone on the field and a helicopter of the side that was not
+     lost (damaged or downed), else the side has motor ambulances.
+   - Under the side names, a tick for each side (both on) says it had medevac; the GM
+     unticks a side that had none (guerrillas, a besieged garrison). *After the battle* says
+     which each side had.
+   - Medevac does not save men left behind on a lost field, and it takes nothing from the
+     helicopters' lifts during the battle.
 3. **To camp.** The rest are carried to their force's camp and heal on the wound track,
    where wound fever can still take them (see [travel.md](travel.md), *The wounded*).
 

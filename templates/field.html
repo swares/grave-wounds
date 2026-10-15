@@ -248,6 +248,10 @@ legend{padding:0}
         <div><label for="in-side0">Side A</label><input type="text" id="in-side0"></div>
         <div><label for="in-side1">Side B</label><input type="text" id="in-side1"></div>
       </div>
+      <div class="row" id="medevac-box" hidden>
+        <label class="check"><input type="checkbox" id="chk-ev0" checked> <span id="ev-label0">Side A: medevac</span></label>
+        <label class="check"><input type="checkbox" id="chk-ev1" checked> <span id="ev-label1">Side B: medevac</span></label>
+      </div>
 
       <fieldset id="wx-box">
         <legend class="sr">Weather and ground</legend>
@@ -1264,10 +1268,33 @@ function renderAi(){
 }
 
 /* ---------- after the battle ---------- */
+function sideMedevac(k){                          // side k's medevac kind (its war's, helicopters falling back without a zone or a helicopter left), or null if unticked or none
+  if (S.medevac?.[k] === false) return null;
+  const H = FD.units.heliborne ? helos(S.field, S.sides[k]) : null, left = !!H && H.aircraft - (H.damaged || 0) - (H.downed || 0) > 0;
+  return medevacKind(S.table, (S.field.lz || []).length > 0, left);
+}
+function renderMedevac(){                         // the sides' medevac ticks, for wars that had it
+  const M = FD.units.aftermath.medevac, any = !!(M?.battles || {})[FD.tables[S.table]?.battle];
+  $("#medevac-box").hidden = !any;
+  if (!any) return;
+  [0, 1].forEach(k => {
+    const on = S.medevac?.[k] !== false, kind = medevacKind(S.table, (S.field.lz || []).length > 0, true), K = M.kinds[sideMedevac(k) || kind];
+    $("#chk-ev" + k).checked = on;
+    $("#chk-ev" + k).disabled = S.phase === "over";
+    $("#ev-label" + k).textContent = `${S.sides[k]}: ${K.name.toLowerCase()} (${K.hours}% of those dying within hours saved)`;
+  });
+}
+function setMedevac(k, on){                       // a side with or without medevac
+  S.medevac = S.medevac || [true, true];
+  S.medevac[k] = on;
+  S.msg = on ? `${S.sides[k]} have medevac: their wounded reach care sooner.` : `${S.sides[k]} have no medevac: their wounded wait for their camp.`;
+  render();
+}
 function endBattle(){                             // the dead counted; the wounded die, or are carried to camp
   if (S.phase !== 0 && S.phase !== 1) return;
   const all = afterUnits();
-  const am = aftermath(all, all.map(u => forceOf(u)?.care || "field"), dice);
+  S.evac = [sideMedevac(0), sideMedevac(1)];
+  const am = aftermath(all, all.map(u => forceOf(u)?.care || "field"), dice, all.map(u => S.evac[sideNo(u)]));
   S.after = all.map((u, i) => ({ id: u.id, killed: u.dead || 0, ...am[i] }));
   S.fates = heroFates(S.units, S.table, dice);     // heroes left on the field: found, taken prisoner or killed
   for (const f of S.fates){
@@ -1300,7 +1327,8 @@ function sideAfter(k){
   });
   const left = t.left ? `, ${t.left} left on the field` : "";
   const carried = t.cases.length ? `${t.cases.length} wounded carried to camp (${byStep(t.cases)})` : "no wounded to carry";
-  return `${S.sides[k]}: ${t.killed} killed${left}, ${t.died} died of their wounds before help came; ${carried}.`;
+  const ev = S.evac?.[k] ? ` Medevac: ${FD.units.aftermath.medevac.kinds[S.evac[k]].name.toLowerCase()}.` : "";
+  return `${S.sides[k]}: ${t.killed} killed${left}, ${t.died} died of their wounds before help came; ${carried}.${ev}`;
 }
 function travelResult(){                          // per travel-map force: {killed, left, died, lost, cases}
   const out = {};
@@ -2591,6 +2619,7 @@ function render(){
   $("#msg").textContent = S.msg || "";
   $("#log").innerHTML = S.log.map(l => `<li class="${l.cls}">${esc(l.text)}</li>`).join("");
   $("#in-side0").value = S.sides[0]; $("#in-side1").value = S.sides[1];
+  renderMedevac();
   renderAddSide();
   $("#handoff").hidden = !HANDOFF;
   $("#teamin").hidden = !TEAMIN;
@@ -2991,7 +3020,8 @@ function init(){
   });
   $("#btn-heroes-back").onclick = heroesToRoller;
   $("#sel-table").onchange = e => { S.table = e.target.value; const ok = FD.tables[S.table].weapons; S.units.forEach(u => { if (!ok.includes(u.weapon)) u.weapon = ok[0] }); fillChoices(); render() };
-  ["#in-side0", "#in-side1"].forEach((id, k) => { $(id).onchange = e => { const old = S.sides[k], v = e.target.value.trim() || old; S.units.forEach(u => { if (u.side === old) u.side = v }); (S.field.posts || []).forEach(p => { if (p.side === old) p.side = v }); S.sides[k] = v; render() } });
+  ["#in-side0", "#in-side1"].forEach((id, k) => { $(id).onchange = e => { const old = S.sides[k], v = e.target.value.trim() || old; S.units.forEach(u => { if (u.side === old) u.side = v }); (S.field.posts || []).forEach(p => { if (p.side === old) p.side = v }); [...(S.field.helos || []), ...(S.field.dumps || [])].forEach(x => { if (x.side === old) x.side = v }); S.sides[k] = v; render() } });
+  [0, 1].forEach(k => { $("#chk-ev" + k).onchange = e => setMedevac(k, e.target.checked) });
   render();
 }
 init();

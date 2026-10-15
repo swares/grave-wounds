@@ -84,12 +84,12 @@ When an item is done, delete it here and note it in the pull request that closes
   crew to rescue, door gunners firing as they come in, landing zones that move or are cut by
   the GM mid-battle other than by hand, and battlefields setting their own helicopter
   numbers (all use the defaults, which are X-Ray's).
-- **Medevac (designed, to build next).** Wounded men go back only by bearer parties on foot
-  to an aid post or off the map, and the rank and file's wounded are reckoned after the
-  battle. Agreed design: wounded carried out by ambulance (1860 on: wagons, then motor
-  ambulances from 1914) or by helicopter (1950 on) reach care faster, so the after-the-battle
-  death clock spares more of them (each era's own figures, design estimates). Helicopter
-  medevac will use the side's helicopters (see *Landing by air*).
+- **Medevac, first cut.** A side's wounded get better after-the-battle figures from its war's
+  ambulance wagons, motor ambulances or helicopters (helicopters needing a landing zone and a
+  helicopter left), unless the GM unticks it. Still left out: medevac flights during the
+  battle (using lift and landing zones, at risk at a hot zone), the wounded of the rank and
+  file carried back during the battle at all, ambulances before 1860 (Larrey's flying
+  ambulances of the 1790s, the Crimean War's few), and a side's medevac failing under fire.
 - **Ammunition, beyond the first cut.** Units count their ammunition and resupply from their
   edge, a supply vehicle or a dump (air drops from 1944, helicopters from 1965). Still left out: riders resupplying
   aboard their carrier, food, water and medical stores, and carrying a force's ammunition on
