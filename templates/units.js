@@ -3178,7 +3178,7 @@ function diesOfWound(lethal, [care, ev], d100){   // a wound that kills in minut
 }
 function medevacKind(table, hasLz, helosLeft){    // a side's medevac in this war, helicopters falling back without a landing zone or a helicopter left; null if none (as units.medevac_kind)
   const M = UD.aftermath.medevac || {};
-  let kind = (M.battles || {})[FD.tables[table]?.battle] ?? null;
+  let kind = M.battles?.[FD.tables[table]?.battle] ?? null;
   if (M.kinds?.[kind]?.fallback && !(hasLz && helosLeft)) kind = M.kinds[kind].fallback;
   return kind;
 }

@@ -852,9 +852,9 @@ def _units_extra_errors(d: Data) -> list[str]:
     return errors + _pikes_errors(d) + _indirect_errors(d) + _assault_errors(d) + _guns_errors(d)
 
 
-def _medevac_errors(U: dict) -> list[str]:
+def _medevac_errors(units: dict) -> list[str]:
     """units.yaml aftermath.medevac: each kind's name, hours and minutes (% 0-100) and fallback; each battle's kind known."""
-    ME = U.get("aftermath", {}).get("medevac") or {}
+    ME = units.get("aftermath", {}).get("medevac") or {}
     kinds = ME.get("kinds") or {}
 
     def ok(k, v):
