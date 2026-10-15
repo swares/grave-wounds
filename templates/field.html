@@ -2545,14 +2545,16 @@ function sideFacing(k){                           // the way most of a side's me
   return k ? 3 : 0;
 }
 const EDGE_FACING = { S: 1, N: 4, W: 0, E: 3 }, OPPOSITE = { S: "N", N: "S", W: "E", E: "W" };
-const edgeBehind = f => (f === 1 ? "S" : f === 4 ? "N" : f === 0 || f === 5 ? "W" : "E");   // the map edge behind units facing f (as entrySpots)
+const EDGE_BEHIND = ["W", "S", "E", "E", "N", "W"];   // the map edge behind units facing 0-5 (as entrySpots)
+const edgeBehind = f => EDGE_BEHIND[mod6(f)];
 const fielded = k => S.units.some(u => sideNo(u) === k && u.men > 0 && u.state !== "fled");
 function entryEdge(k){                            // where side k's new units come in: the battlefield's entry, else the edge behind the way most of its men face; the other side's opposite edge if they would share one
   if (S.entry) return S.entry[k];
   const own = k => (fielded(k) ? edgeBehind(sideFacing(k)) : null);
   const mine = own(k), theirs = own(1 - k);
-  if (!mine) return theirs ? OPPOSITE[theirs] : (k ? "E" : "W");
-  return k === 1 && mine === theirs ? OPPOSITE[theirs] : mine;
+  if (mine && !(k === 1 && mine === theirs)) return mine;
+  if (theirs) return OPPOSITE[theirs];
+  return k ? "E" : "W";                           // no units on either side: west and east
 }
 function entrySpots(facing, ranks){               // front hexes for a unit `ranks` deep with its rear at the map edge behind a side facing this way, middle outwards
   const [W, H] = SIZE, mid = (n, m) => Array.from({ length: n }, (_, i) => Math.floor(m / 2) + (i % 2 ? -1 : 1) * Math.ceil(i / 2)).filter(x => x >= 0 && x < m);
@@ -2572,13 +2574,16 @@ function formationFor(weapon, chosen){           // guns in battery order, machi
   if (isAtGun({ weapon })) return "at_gun";
   return ["battery", "mg", "at_gun"].includes(chosen) ? "close" : chosen;
 }
-function startSpots(k, ranks = 1){                // its front hexes along its side's entry edge, 8 hexes in with `ranks` rows behind it
-  const edge = [], e = entryEdge(k), d = 7 + (ranks - 1), [W, H] = SIZE;
-  if (d >= (e === "N" || e === "S" ? H : W)) return edge;
-  if (e === "W" || e === "E") for (let r = 2; r < H - 2; r++) edge.push([e === "W" ? d : W - 1 - d, r]);
-  else for (let c = 2; c < W - 2; c++) edge.push([c, e === "N" ? d : H - 1 - d]);
-  const along = e === "W" || e === "E" ? 1 : 0, mid = (along ? H : W) / 2;
-  edge.sort((a, b) => Math.abs(a[along] - mid) - Math.abs(b[along] - mid));   // middle outwards, as reinforcements come on
+function edgeLine(e, d){                          // the hexes d in from edge e, along it (2 from each end), middle outwards
+  const [W, H] = SIZE, across = e === "W" || e === "E", n = across ? H : W;
+  if (d >= (across ? W : H)) return [];
+  const at = { W: i => [d, i], E: i => [W - 1 - d, i], N: i => [i, d], S: i => [i, H - 1 - d] }[e], line = [];
+  for (let i = 2; i < n - 2; i++) line.push(at(i));
+  const along = across ? 1 : 0;
+  return line.sort((a, b) => Math.abs(a[along] - n / 2) - Math.abs(b[along] - n / 2));
+}
+function startSpots(k, ranks = 1){                // its front hexes along its side's entry edge, 8 hexes in with `ranks` rows behind it (its defenders inside the camp first)
+  const edge = edgeLine(entryEdge(k), 7 + (ranks - 1));
   if (k || !S.camp) return edge;
   const inside = [];
   for (let r = 0; r <= S.camp.radius; r++) inside.push(...ringWalk(S.camp.centre, r));
