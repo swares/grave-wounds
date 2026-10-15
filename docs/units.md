@@ -370,12 +370,22 @@ general. All its numbers are in units.yaml `commander`.
   are set out below: falling back to the objective (or the second objective), a reserve
   unit going to plug a gap, guns pulling back from an enemy that could charge them, and
   riders getting down.
+- **Digging in.** A unit that can dig in (a foot unit with a modern weapon; see *Digging in*
+  under the field map's rules) and is not dug in where it stands digs in there when it is
+  safe: not under fire, and no enemy it knows of within its weapon's range (a known enemy
+  further off does not stop it). A unit gone to ground digs too, and stays down. It does so:
+  - at the objective, within its radius (attacking or holding);
+  - holding with no objective, wherever it stands;
+  - in reserve, while it waits (attacking or holding).
+  Once digging it holds until the 3 exchanges are done, or until it is stopped (it moves,
+  breaks or comes into contact).
 - **Its reserve.** At its first move it holds back its rearmost units, those furthest from
   the nearest enemy. It takes them up to a share of the side's men, set by the quality most
   of its men have: regulars a quarter, veterans a third, green men none. The GM can decide
   instead: **Hold in reserve** on a unit of the commander's side marks or releases it, and
   once any is marked the commander leaves the choice to the GM.
-  - A reserve unit holds where it is, going to ground under fire as the rule above.
+  - A reserve unit holds where it is, going to ground under fire as the rule above. While it
+    waits it digs in there when it is safe to (see *Digging in*, below).
   - It commits one reserve unit a move, the one nearest the enemy, when one of its own units
     has broken or fled since its last move, or when an enemy it knows of comes within 12
     hexes of a reserve unit.
@@ -404,8 +414,7 @@ general. All its numbers are in units.yaml `commander`.
   - **Holding**, a unit more than 3 hexes from the objective falls back toward it, facing
     its target, unless it can charge. One with no enemy to go for and within 3 hexes stays.
   - Its units weigh an enemy within 4 hexes of the objective 30 points more as a target.
-  - A unit at the objective that can dig in, is not under fire and has no enemy it knows
-    of in range digs in there (and keeps digging until it is done).
+  - A unit at the objective digs in there when it is safe to (*Digging in*, above).
 - **Fixed lines.** Holding, by day or at dusk (a line cannot be laid in the dark), each of
   its machine guns on foot, steady and with no fixed line yet, is laid on the hex where the
   nearest enemy it knows of stands (or was last seen), if its guns reach it. Once dark, it

@@ -897,17 +897,17 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     t = target(d, us, i, ctx[3], ctx[1])
     if u["state"] != "steady":
         return _unsteady(d, us, i, t)
-    if u.get("reserve"):
-        return None if t is None else _stay(d, us, i, t, u["facing"], "range" in d.weapons[u["weapon"]])
     if U.busy_digging(u):
         return None
+    if u.get("reserve"):
+        return _reserve_order(d, us, i, t, ctx)
     sap = _sapper_order(d, us, i, t, ctx)
     if sap is not None:
         return sap
+    if (obj is not None or ctx[2] == "hold") and _digs(d, us, i, ctx):
+        return {"act": "dig", "target": t}
     if t is None and obj is None:
         return None
-    if obj is not None and _digs(d, us, i, ctx):
-        return {"act": "dig", "target": t}
     if roll <= C["hesitate"].get(u["quality"], 0):
         return {"act": "hesitate", "target": t, "roll": roll}
     o = _best(d, us, i, t, ctx) if obj is None else _for_objective(d, us, i, t, ctx)
@@ -919,15 +919,33 @@ def _unsteady(d: Data, us: list, i: int, t: int | None) -> dict | None:
     return {"act": "ground", "target": t} if not us[i].get("prone") and under_fire(d, us, i) else None
 
 
+def _reserve_order(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict | None:
+    """A reserve held back: it digs in where it waits when it is safe to (_safe_to_dig), else it
+    stays, turning to face its target."""
+    u = us[i]
+    if U.can_dig(d, u) and not U.dug_here(u) and _safe_to_dig(d, us, i, ctx[3]):
+        return {"act": "dig", "target": t}
+    return None if t is None else _stay(d, us, i, t, u["facing"], "range" in d.weapons[u["weapon"]])
+
+
 def _digs(d: Data, us: list, i: int, ctx: tuple) -> bool:
-    """A unit at the objective (within its radius) digs in: one that can (units.can_dig), not
-    dug in where it stands, not under fire, and with no enemy it knows of in its range."""
-    u, (_, field, _, known, _) = us[i], ctx
-    if not U.can_dig(d, u) or U.dug_here(u) or U.off_objective(d, u, objective(field)) > U.objective_radii(d, field)[0]:
+    """A unit digs in where it stands: at the objective (within its radius), or holding with no
+    objective. One that can (units.can_dig), not dug in there already, safe (_safe_to_dig)."""
+    u, field = us[i], ctx[1]
+    if not U.can_dig(d, u) or U.dug_here(u):
         return False
+    obj = objective(field)
+    if obj is not None and U.off_objective(d, u, obj) > U.objective_radii(d, field)[0]:
+        return False
+    return _safe_to_dig(d, us, i, ctx[3])
+
+
+def _safe_to_dig(d: Data, us: list, i: int, known: dict | None) -> bool:
+    """Safe to dig (three exchanges without moving or firing): not under fire, and no enemy it
+    knows of within its weapon's range. One gone to ground digs too."""
     if under_fire(d, us, i):
         return False
-    seen = [m["pos"] for k, m in (known or {}).items() if k.isdigit()]
+    u, seen = us[i], [m["pos"] for k, m in (known or {}).items() if k.isdigit()]
     return not any(U.field_range(d, u["weapon"], U.hdist(u["pos"], p)) is not None for p in seen)
 
 

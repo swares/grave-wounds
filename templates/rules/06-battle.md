@@ -136,6 +136,9 @@ steady friends touching it, who go in with it), and green units sometimes hesita
   unit of theirs breaks or the enemy comes close; veterans also commit to exploit an enemy
   rout. A unit committed because one broke goes to plug the gap where it stood. The GM can
   mark reserves instead.
+- **Digging in.** Its foot units with modern weapons dig in where they stand when it is
+  safe (not under fire, no enemy it knows of in their range): at the objective, holding
+  with no objective, and in reserve while they wait.
 - **Objective.** The GM can mark a hex as its objective. Attacking, its units advance on it
   when they have nothing better to do and hold it once there (within {{c_obj_radius}}
   hex); holding, units more than {{c_obj_hold}} hexes from it fall back to it. Enemies near

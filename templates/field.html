@@ -1191,7 +1191,7 @@ const ORDER_TEXT = {                              // (who, them, o, up, facing) 
   unlimber: who => `${who} unlimber to fire (an exchange changing over).`,
   unhook: (who, them) => `${who} unhook their guns facing ${them}: they fire from the next exchange.`,
   fix: (who, them, o) => `${who} lay their guns on a fixed line to ${hexName(o.hex)}, where ${them} stand: in the dark they will fire blind down it.`,
-  dig: who => `${who} dig in at the objective (${nOf(FD.units.dig_in.exchanges, "exchange")} without moving or firing).`,
+  dig: who => `${who} dig in where they stand (${nOf(FD.units.dig_in.exchanges, "exchange")} without moving or firing).`,
 };
 const facText = o => (o.fac ? ", a forward air controller talking them on" : "");   // an air order's controller, if one sees the aim
 const airRunText = a => ({ napalm: ", a napalm strip along their front", strafe: ", a strafing run along their front" }[a] || "");   // what an air order flies, if not a plain attack

@@ -3505,20 +3505,31 @@ const unsteady = (us, i, t) => (!us[i].prone && underFire(us, i) ? { act: "groun
 function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance, known, exchange]
   const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = aiTarget(us, i, ctx[3], ctx[1]);
   if (u.state !== "steady") return unsteady(us, i, t);
-  if (u.reserve) return t === null ? null : stayOrder(us, i, t, u.facing, "range" in FD.weapons[u.weapon]);
   if (busyDigging(u)) return null;
+  if (u.reserve) return reserveOrder(us, i, t, ctx);
   const sap = sapperOrder(us, i, t, ctx);
   if (sap) return sap;
+  if ((obj !== null || ctx[2] === "hold") && digs(us, i, ctx)) return { act: "dig", target: t };
   if (t === null && obj === null) return null;
-  if (obj !== null && digs(us, i, ctx)) return { act: "dig", target: t };
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
   const o = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx);
   return t === null ? o : lastSeen(o, ctx[3], t, ctx[4]);
 }
-function digs(us, i, [, field, , known]){          // a unit at the objective digs in: it can, is not dug in here, is not under fire, and no known enemy is in its range (as commander._digs)
+function reserveOrder(us, i, t, ctx){             // a reserve held back digs in where it waits when safe, else stays facing its target (as commander._reserve_order)
   const u = us[i];
-  if (!canDig(u) || dugHere(u) || offObjective(u, objectiveOf(field)) > objectiveRadii(field)[0]) return false;
+  if (canDig(u) && !dugHere(u) && safeToDig(us, i, ctx[3])) return { act: "dig", target: t };
+  return t === null ? null : stayOrder(us, i, t, u.facing, "range" in FD.weapons[u.weapon]);
+}
+function digs(us, i, [, field, , known]){          // a unit digs in where it stands: at the objective (within its radius) or holding with none; it can, is not dug in there, and is safe (as commander._digs)
+  const u = us[i];
+  if (!canDig(u) || dugHere(u)) return false;
+  const obj = objectiveOf(field);
+  if (obj !== null && offObjective(u, obj) > objectiveRadii(field)[0]) return false;
+  return safeToDig(us, i, known);
+}
+function safeToDig(us, i, known){                 // not under fire, and no enemy it knows of within its weapon's range (as commander._safe_to_dig)
   if (underFire(us, i)) return false;
+  const u = us[i];
   return !knownFoes(known || {}).some(([, m]) => fieldRange(u.weapon, hdist(u.pos, m.pos)) !== null);
 }
 const foesMine = (m, side) => !!m && knownMine(m) && m.side !== side;   // a minefield hex it knows of that its own sappers did not lay (as commander._foes_mine)
@@ -4775,7 +4786,7 @@ const ORDER_TEXT = {                              // (who, them, o, up, facing) 
   unlimber: who => `${who} unlimber to fire (an exchange changing over).`,
   unhook: (who, them) => `${who} unhook their guns facing ${them}: they fire from the next exchange.`,
   fix: (who, them, o) => `${who} lay their guns on a fixed line to ${hexName(o.hex)}, where ${them} stand: in the dark they will fire blind down it.`,
-  dig: who => `${who} dig in at the objective (${nOf(FD.units.dig_in.exchanges, "exchange")} without moving or firing).`,
+  dig: who => `${who} dig in where they stand (${nOf(FD.units.dig_in.exchanges, "exchange")} without moving or firing).`,
 };
 const facText = o => (o.fac ? ", a forward air controller talking them on" : "");   // an air order's controller, if one sees the aim
 const airRunText = a => ({ napalm: ", a napalm strip along their front", strafe: ", a strafing run along their front" }[a] || "");   // what an air order flies, if not a plain attack
