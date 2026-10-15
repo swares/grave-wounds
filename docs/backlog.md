@@ -45,8 +45,7 @@ When an item is done, delete it here and note it in the pull request that closes
   escape; and there is no two-handed great sword among the weapons, so no sword is barred
   to a one-armed hero.
 - **Indirect fire, simplified.** A battery placed off the map stands straight out from the
-  edge nearest where it was placed, not anywhere behind it. Its crews' wounds are counted
-  but not named. Counter-battery fire does not need to see a placed battery: it
+  edge nearest where it was placed, not anywhere behind it. Counter-battery fire does not need to see a placed battery: it
   finds it by flash and sound once located, wherever it stands within range.
 - **The travel clock, simplified.** Meetings are only between the forces' hexes: no
   scouting reach, and no seeing a dust cloud or campfires from further off.

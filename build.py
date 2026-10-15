@@ -299,7 +299,7 @@ def _support_rules(ind: dict) -> str:
     drift = ", ".join(f"{w} {n}" for w, n in I["smoke"]["drift"].items())
     return (f"<b>Counter-battery and fire plans:</b> crews a tube: {crews}. A located battery can be fired on with no one seeing it: each shell lands among "
             f"the guns at the kind's counter %, knocking out a tube and striking {CB['among']} crewmen, or at {CB['near']} times that bursts close by, striking "
-            f"{CB['near_struck']}; struck crewmen roll wounds and those put down are lost, and a tube without its men is silent. Displacing, a battery is silent "
+            f"{CB['near_struck']}; struck crewmen roll wounds and those put down are lost (their wounds count with their side after the battle, as a unit's), and a tube without its men is silent. Displacing, a battery is silent "
             f"for its exchanges ({moves}) and then unlocated. Smoke drifts downwind each exchange, by hexes: {drift}. A creeping barrage keeps a fire plan: "
             f"1 to {I['creep']['max']} hexes a lift, 1 to {I['creep']['every_max']} exchanges on each line, a set number of lines, then up to eight more legs, each the same way or turned. "
             "A battery may be placed on the map: it then reaches only its range ("

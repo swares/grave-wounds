@@ -1127,7 +1127,10 @@ function counterFire(field, fire, tw, rng){        // fire [k, battery, shells, 
   const t = blows({ table, weapon, kit: null, quality: "regular" }, { table, weapon, kit: "none", quality: "regular" }, struck, UD.indirect.attack, 0, rng, { exposed: [], shift: -1000 });
   tg.tubes -= knocked;
   tg.crew = crew - t.down;
+  tg.crew_down = (tg.crew_down || 0) + t.down;
   tg.crew_dead = (tg.crew_dead || 0) + t.dead;
+  tg.hurt ??= {};
+  takeHurt(tg, t);                                   // the crews' wounds, kept by kind for the after-battle reckoning (as units._counter_fire)
   if (servedTubes(tg) <= 0) tg.mission = null;
   return [{ kind: "counter", sup: k, name: b.name, side: b.side, shells, target: j, tname: tg.name, knocked, left: tg.tubes, struck, down: t.down, dead: t.dead, crew: tg.crew, served: servedTubes(tg) }];
 }

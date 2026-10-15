@@ -1269,7 +1269,11 @@ function byStep(cases){                           // "12 mending, 20 serious, 8 
   for (const c of cases) n[c.step] = (n[c.step] || 0) + 1;
   return Object.keys(n).sort((a, b) => a - b).map(k => n[k] + " " + FD.track.steps[k]).join(", ");
 }
-const afterUnits = () => [...S.units, ...S.units.filter(u => u.riders).map(u => u.riders)];   // every unit, the men still aboard carriers too
+const afterUnits = () => [...S.units, ...S.units.filter(u => u.riders).map(u => u.riders), ...crewsAfter()];   // every unit, the men still aboard carriers too, and the batteries' crews
+function crewsAfter(){                            // each fire-support battery with crews (not aircraft), as a unit for the after-battle reckoning: its crew at the start, down, killed, wounds
+  return supports().map((b, k) => [b, k]).filter(([b]) => !FD.units.indirect.kinds[b.kind]?.air && typeof b.crew === "number")
+    .map(([b, k]) => ({ id: `sup${k}`, name: b.name, side: b.side, men: b.crew, start: b.crew + (b.crew_down || 0), down: b.crew_down || 0, dead: b.crew_dead || 0, hurt: b.hurt || {}, state: "steady", heroes: [] }));
+}
 function sideAfter(k){
   const t = { killed: 0, left: 0, died: 0, cases: [] };
   afterUnits().forEach((u, i) => {

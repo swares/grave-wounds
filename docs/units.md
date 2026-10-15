@@ -560,7 +560,10 @@ have, the field is undecided) and, with an objective, who holds it (and the seco
 exchange log counts it. The table gives each side's men at the start and still standing,
 men down, killed in the fighting, died of wounds before help came, left on the field, the
 wounded taken to camp (the walking wounded too), units broken or fled, and batteries and
-vehicles lost (those rows only when there are some). The lines below it are as before.
+vehicles lost (those rows only when there are some). The crews of the fire-support batteries
+(not aircraft) count with their side as a unit does: their men at the start, those down and
+killed by counter-battery fire, and their wounded, who die before help comes or are carried
+to camp as other men are. The lines below it are as before.
 
 A man wounded twice is counted once. **Back to the travel map** (for a battle set up from
 there) takes the dead off each force, adds its wounded to its sick, and moves each force's
@@ -910,7 +913,8 @@ with shell wounds (the First World War and later):
   lands among its guns at 2% (field guns) or 4% (heavy howitzers), knocking out a tube and
   striking 2 of its crew; at three times that it bursts close by and strikes one. Mortars
   cannot reach. Struck crewmen roll wounds as men struck by shellfire, and those put down
-  are lost to the battery: it fires only the tubes it has men for (2 a mortar, 3 a field
+  are lost to the battery, their wounds kept on it as on a unit (they count in the
+  after-battle reckoning; see The result): it fires only the tubes it has men for (2 a mortar, 3 a field
   gun, 4 a howitzer), and with none left it is silenced. Six heavy howitzers firing on a
   located battery knock out about one tube every four minutes and put down a crewman or
   two: counter-battery wears a battery down over a battle, it does not end it in an

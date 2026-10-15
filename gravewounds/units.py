@@ -3123,7 +3123,8 @@ def _counter_fire(d: Data, field: dict, fire: tuple, tw: tuple, rng) -> list:
     """Counter-battery (fire: battery index, battery, shells, its kind; tw: table and shell
     weapon): each shell lands among the target's guns at the kind's counter %, knocking out a
     tube and striking `among` crewmen, or at `near` times that % bursts close by, striking
-    `near_struck`. The struck crewmen roll wounds; those put down are lost to the battery."""
+    `near_struck`. The struck crewmen roll wounds; those put down are lost to the battery
+    (crew_down, crew_dead), their wounds kept on it (hurt) as on a unit."""
     k, b, shells, kind = fire
     j, sup, CB = b["mission"]["battery"], field["support"], d.units["indirect"]["counter_battery"]
     tg = sup[j] if 0 <= j < len(sup) else None
@@ -3145,7 +3146,10 @@ def _counter_fire(d: Data, field: dict, fire: tuple, tw: tuple, rng) -> list:
                {"table": table, "weapon": weapon, "kit": "none", "quality": "regular"}, struck, d.units["indirect"]["attack"], 0, rng, (), -1000)
     tg["tubes"] -= knocked
     tg["crew"] = crew - t["down"]
+    tg["crew_down"] = tg.get("crew_down", 0) + t["down"]
     tg["crew_dead"] = tg.get("crew_dead", 0) + t["dead"]
+    tg.setdefault("hurt", {})
+    t = _take_hurt(tg, t)                       # the crews' wounds, kept by kind for the after-battle reckoning
     if served_tubes(d, tg) <= 0:
         tg["mission"] = None
     return [{"kind": "counter", "sup": k, "name": b["name"], "side": b["side"], "shells": shells, "target": j, "tname": tg["name"],
