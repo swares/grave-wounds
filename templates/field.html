@@ -837,7 +837,7 @@ function objectiveSvg(h, radius, second = false){ // O (or 2, the second) in two
   const [x, y] = xy(h), wide = radius > 1 ? `<circle class="objective wide" cx="${f1(x)}" cy="${f1(y)}" r="${f1(radius * HW + HW / 2)}"/>` : "";
   const title = second ? "The commander's second objective" : "The commander's objective";
   return wide + `<circle class="objective" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.95)}"><title>${title}</title></circle><circle class="objective" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.55)}"/><text class="objective-t" x="${f1(x)}" y="${f1(y)}">${second ? "2" : "O"}</text>` }
-function postSvg(p){ const [x, y] = xy(p.at); return `<rect class="post${p.overrun ? " gone" : ""}" x="${f1(x - 5)}" y="${f1(y - 3.5)}" width="10" height="7" rx="1.5"><title>${esc(poss(p.side))} aid post${p.overrun ? " (overrun)" : ""}</title></rect><text class="post-t" x="${f1(x)}" y="${f1(y)}">AP</text>` }
+function postSvg(p){ const [x, y] = xy(p.at); return `<rect class="post${p.overrun ? " gone" : ""}" x="${f1(x - 5)}" y="${f1(y - 3.5)}" width="10" height="7" rx="1.5"><title>${esc(poss(p.side))} aid post${p.overrun ? " (overrun)" : ""}${p.moving ? " (moving: no first aid this exchange)" : ""}</title></rect><text class="post-t" x="${f1(x)}" y="${f1(y)}">AP</text>` }
 function supportSvg(){                            // smoke, landing zones, aid posts, heroes going back or lying out, flares, fixed lines, flashes, the hexes fire is called on, batteries, and where the last exchange's shells burst
   const F = S.field, heroes = allHeroes();
   return [
@@ -1269,7 +1269,11 @@ function byStep(cases){                           // "12 mending, 20 serious, 8 
   for (const c of cases) n[c.step] = (n[c.step] || 0) + 1;
   return Object.keys(n).sort((a, b) => a - b).map(k => n[k] + " " + FD.track.steps[k]).join(", ");
 }
-const afterUnits = () => [...S.units, ...S.units.filter(u => u.riders).map(u => u.riders)];   // every unit, the men still aboard carriers too
+const afterUnits = () => [...S.units, ...S.units.filter(u => u.riders).map(u => u.riders), ...crewsAfter()];   // every unit, the men still aboard carriers too, and the batteries' crews
+function crewsAfter(){                            // each fire-support battery with crews (not aircraft), as a unit for the after-battle reckoning: its crew at the start, down, killed, wounds
+  return supports().map((b, k) => [b, k]).filter(([b]) => !FD.units.indirect.kinds[b.kind]?.air && typeof b.crew === "number")
+    .map(([b, k]) => ({ id: `sup${k}`, name: b.name, side: b.side, men: b.crew, start: b.crew + (b.crew_down || 0), down: b.crew_down || 0, dead: b.crew_dead || 0, hurt: b.hurt || {}, state: "steady", heroes: [] }));
+}
 function sideAfter(k){
   const t = { killed: 0, left: 0, died: 0, cases: [] };
   afterUnits().forEach((u, i) => {
@@ -1482,14 +1486,23 @@ function toggleLz(h){                            // a landing zone, marked or cl
   if (i >= 0) lz.splice(i, 1); else lz.push([...h]);
   S.msg = i >= 0 ? `Landing zone ${h[0] + 1},${h[1] + 1} cleared.` : `Landing zone marked at ${h[0] + 1},${h[1] + 1}: units can come on by air there (Add a unit, By air at).`;
 }
-function placePost(h, k){                         // a side's aid post: placed, moved or cleared (set-up only)
-  if (S.phase !== "setup"){ S.msg = "Aid posts are placed before the battle starts."; return }
+function placePost(h, k){                         // a side's aid post: placed, moved or cleared in set-up; in battle, moved on its side's move (closed for an exchange)
   const side = S.sides[k], posts = S.field.posts || (S.field.posts = []), i = posts.findIndex(p => p.side === side);
+  if (S.phase !== "setup") return movePost(h, side, posts[i]);
   const same = i >= 0 && posts[i].at[0] === h[0] && posts[i].at[1] === h[1];
   if (i >= 0) posts.splice(i, 1);
   if (same){ S.msg = `${poss(side)} aid post cleared: bearers carry men off the map.`; return }
   posts.push({ side, at: [...h] });
   S.msg = `${poss(side)} aid post at ${hexName(h)}: bearers carry their wounded heroes there, and walking wounded go back to it.`;
+}
+function movePost(h, side, p){                     // in battle: a side's aid post moves on that side's move; it gives no first aid for an exchange
+  if (!p){ S.msg = "Aid posts are placed before the battle starts; in battle one can only be moved."; return }
+  if (p.overrun){ S.msg = `${poss(side)} aid post has been overrun.`; return }
+  if (moving() !== side){ S.msg = `${poss(side)} aid post can be moved only on ${poss(side)} move.`; return }
+  if (p.at[0] === h[0] && p.at[1] === h[1]) return;
+  p.at = [...h];
+  p.moving = 1;
+  S.msg = `${poss(side)} aid post moves to ${hexName(h)}: it gives no first aid this exchange. The men there go with it, and bearers on their way head for it.`;
 }
 const minesHere = () => (FD.tables[S.table]?.weapons || []).includes(FD.units.mines.weapon);   // a table with mine wounds: 1939 on
 function placeMine(h, kind, hidden){              // a minefield hex painted, changed or cleared (set-up only)

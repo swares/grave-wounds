@@ -41,12 +41,11 @@ When an item is done, delete it here and note it in the pull request that closes
   (or off it, with none), walking wounded go back alone, and a hero left lying is picked up
   by a friendly unit or found by an enemy one. Still left out: only shellfire can catch parties, not aimed
   fire (no figures for it); the rank and file have no aid post (their wounded are reckoned after the battle);
-  an aid post cannot be moved once the battle starts; prisoners have no exchange, ransom or
+  prisoners have no exchange, ransom or
   escape; and there is no two-handed great sword among the weapons, so no sword is barred
   to a one-armed hero.
 - **Indirect fire, simplified.** A battery placed off the map stands straight out from the
-  edge nearest where it was placed, not anywhere behind it. Its crews' wounds are counted
-  but not named. Counter-battery fire does not need to see a placed battery: it
+  edge nearest where it was placed, not anywhere behind it. Counter-battery fire does not need to see a placed battery: it
   finds it by flash and sound once located, wherever it stands within range.
 - **The travel clock, simplified.** Meetings are only between the forces' hexes: no
   scouting reach, and no seeing a dust cloud or campfires from further off.

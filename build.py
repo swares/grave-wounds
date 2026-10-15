@@ -299,7 +299,7 @@ def _support_rules(ind: dict) -> str:
     drift = ", ".join(f"{w} {n}" for w, n in I["smoke"]["drift"].items())
     return (f"<b>Counter-battery and fire plans:</b> crews a tube: {crews}. A located battery can be fired on with no one seeing it: each shell lands among "
             f"the guns at the kind's counter %, knocking out a tube and striking {CB['among']} crewmen, or at {CB['near']} times that bursts close by, striking "
-            f"{CB['near_struck']}; struck crewmen roll wounds and those put down are lost, and a tube without its men is silent. Displacing, a battery is silent "
+            f"{CB['near_struck']}; struck crewmen roll wounds and those put down are lost (their wounds count with their side after the battle, as a unit's), and a tube without its men is silent. Displacing, a battery is silent "
             f"for its exchanges ({moves}) and then unlocated. Smoke drifts downwind each exchange, by hexes: {drift}. A creeping barrage keeps a fire plan: "
             f"1 to {I['creep']['max']} hexes a lift, 1 to {I['creep']['every_max']} exchanges on each line, a set number of lines, then up to eight more legs, each the same way or turned. "
             "A battery may be placed on the map: it then reaches only its range ("
@@ -547,7 +547,7 @@ def _hero_rules(d) -> list[str]:
         f"With an aid post for his side (placed by the GM) they carry him there, {H['aid_post']['pace']} movement an exchange by the cheapest way (round water, walls and enemy units; to the map edge if no way leads to the post), shells striking the party as men in the open, "
         f"and come back after as long; with none, he leaves the battle at once and they return after {H['back_after']} exchanges unless the unit has broken. "
         f"A wounded hero who can walk may go back alone the same way (to the post, or the map edge behind his unit). At the post he gets first aid every exchange at {H['aid_post']['first_aid']}%, "
-        f"and his wounds go back to the roller treated; an enemy unit within {H['aid_post']['overrun']} hex of it overruns it, taking or killing the men there by quarter. "
+        f"and his wounds go back to the roller treated; an enemy unit within {H['aid_post']['overrun']} hex of it overruns it, taking or killing the men there by quarter. On its side's move the GM can move a post: the men there go with it, and it gives no first aid that exchange. "
         "A hero left lying is picked up by a unit of his side standing on his hex, or found by an enemy one (quarter). A unit's medics give first aid at "
         f"{', '.join(f'{q} {v}%' for q, v in H['medic'].items())}. In the wars before 1914 a heavy bleed a tourniquet cannot reach is cauterised "
         f"(+{H['cautery']['pain']} pain unless a healer does it). A hero left on the field at the end (left behind, on his way back, or down with a unit that broke) is found if his side "

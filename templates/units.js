@@ -202,12 +202,13 @@ function impairEffect(w, imp, hand){              // [key, effect] of impairment
   const loc = FD.locations[w.loc] || {}, arm = loc.zone === "arms" && (loc.side === "L" || loc.side === "R") && loc.side !== hand ? "shield_arm" : "weapon_arm";
   return [imp + "|" + arm, rule[arm] || {}];
 }
-function heroesAfter(us, rng, quiet = null, cautery = false){   // end of an exchange: holds wear off, first aid (quiet exchange, or at the aid post), heroes bleed (with the unit, lying out, going back or at the post), Blood thresholds, pain checks; bearers back
+function heroesAfter(us, rng, quiet = null, cautery = false, closed = new Set()){   // closed: the sides whose aid post is moving this exchange (no first aid there)
+   // end of an exchange: holds wear off, first aid (quiet exchange, or at the aid post), heroes bleed (with the unit, lying out, going back or at the post), Blood thresholds, pain checks; bearers back
   const log = [];
   us.forEach((u, i) => {
     for (const hero of u.heroes || []){
       if (hero.state === "dead" || hero.state === "prisoner" || (hero.carried && !hero.post)) continue;   // off the map: out of the battle
-      const aid = aidFor(u, hero, rng, !!quiet?.[i], cautery);
+      const aid = hero.post && closed.has(u.side) ? null : aidFor(u, hero, rng, !!quiet?.[i], cautery);
       if (aid) log.push({ kind: "heroaid", unit: i, ...aid });
       const line = heroAfter(hero, rng);
       if (line) log.push({ kind: "herobled", unit: i, ...line });
@@ -222,6 +223,10 @@ function aidFor(u, hero, rng, quiet, cautery){    // first aid this exchange: at
 }
 const offField = h => !!(h.left || h.carried || h.going);   // left behind, on his way back, or carried to the rear or the aid post: out of his unit's fight
 const quarterOf = table => UD.heroes.quarter[FD.tables[table]?.battle] ?? UD.heroes.quarter.default;   // % a man the enemy finds lying out is taken prisoner, else killed
+const postsMoving = field => new Set((field?.posts || []).filter(p => p.moving).map(p => p.side));   // the sides whose aid post is moving this exchange (as units.posts_moving)
+function postsSettle(field){                       // after the exchange a moving aid post counts down; at 0 it is open again (as units._posts_settle)
+  for (const p of field?.posts || []) if (p.moving){ p.moving -= 1; if (p.moving <= 0) delete p.moving }
+}
 const aidPost = (field, side) => (field?.posts || []).find(p => p.side === side && !p.overrun) || null;   // side's aid post, if not overrun
 const party = (u, bearers) => ({ pos: [...u.pos], bearers, dir: mod6(u.facing + 3), ex: 0 });   // a party setting off back: where, its bearers, the way back, exchanges going
 function partiesAfter(us, field){                 // each party goes on along the cheapest way toward its post (or the map edge the way back); arriving, he is carried and the bearers head back (as units._parties_after)
@@ -1122,7 +1127,10 @@ function counterFire(field, fire, tw, rng){        // fire [k, battery, shells, 
   const t = blows({ table, weapon, kit: null, quality: "regular" }, { table, weapon, kit: "none", quality: "regular" }, struck, UD.indirect.attack, 0, rng, { exposed: [], shift: -1000 });
   tg.tubes -= knocked;
   tg.crew = crew - t.down;
+  tg.crew_down = (tg.crew_down || 0) + t.down;
   tg.crew_dead = (tg.crew_dead || 0) + t.dead;
+  tg.hurt ??= {};
+  takeHurt(tg, t);                                   // the crews' wounds, kept by kind for the after-battle reckoning (as units._counter_fire)
   if (servedTubes(tg) <= 0) tg.mission = null;
   return [{ kind: "counter", sup: k, name: b.name, side: b.side, shells, target: j, tname: tg.name, knocked, left: tg.tubes, struck, down: t.down, dead: t.dead, crew: tg.crew, served: servedTubes(tg) }];
 }
@@ -1673,8 +1681,9 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     const cut = Math.min(acc.lost[i], u.men);
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
   });
-  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table)),
+  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table), postsMoving(field)),
     ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng), ...digAll(us), ...sappersAll(us, field));
+  postsSettle(field);
   for (const u of us) delete u.unhooked;             // guns unhooked this move are in action (as units._unhooked_after)
   afterExchange(us, field, log);
   log.push(...landings(us, table, rng, field), ...vehiclesAfter(us, field), ...objectiveHeld(us, field));
