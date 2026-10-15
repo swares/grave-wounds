@@ -12,6 +12,29 @@ hex_m: 10                  # a field-map hex, metres across
 range_scale: 5             # weapon ranges are in 2 m battle-map hexes: divide by this for field hexes
 map: {cols: 60, rows: 40}  # the field map's default size (600 x 400 m)
 
+# Unit markers on the field map: a frame by side (a rectangle for the first side, a diamond for
+# the second), a glyph by type, an optional size mark above it, and a label beside it. A unit's
+# type comes from its arms and order unless it sets `type`; its size mark only if it sets `size`.
+# labels: names, ids (the side's initial and a number: B3) or both; strength: men after the label;
+# size: draw size marks. These are the defaults: a battlefield's `markers` overrides them, and
+# the board can change them during play.
+markers:
+  labels: names
+  strength: true
+  size: false
+  types:
+    infantry: "Infantry"
+    skirmishers: "Skirmishers (open order)"
+    cavalry: "Cavalry"
+    archers: "Archers"
+    artillery: "Artillery"
+    machine_guns: "Machine guns"
+    anti_tank: "Anti-tank guns"
+    armour: "Armour"
+    mechanised: "Mechanised infantry"
+    transport: "Transport"
+  sizes: {section: "•", platoon: "•••", company: "I", battery: "I", battalion: "II", regiment: "III", brigade: "X", division: "XX"}
+
 # Formations. per_hex = abreast x ranks men to a hex. move: hexes an exchange on foot.
 # missile_factor: shots at a unit in this order count this much (open order is harder to hit).
 formations:

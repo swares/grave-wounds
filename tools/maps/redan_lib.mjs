@@ -32,6 +32,7 @@ export const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "
 export const COMMON = {
   objective: { at: [50, 42], side: 0, name: "the Redan's salient", radius: 3 },
   sides: ["British", "Russians"], table: "crimea-1854-56-all-hits",
+  markers: { labels: "ids" },   // eleven or more units in a narrow space: short labels, full names in the units list
   travel: { map: "sevastopol-1855", place: "The Great Redan", within: 1, sides: ["Allies", "Russia"] },
 };
 

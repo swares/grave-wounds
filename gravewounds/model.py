@@ -1235,11 +1235,43 @@ def _fields_errors(d: Data) -> list[str]:
     """data/fields: battlefields for the field map, each with its ground, works, weather and
     (optionally) the armies as drawn up."""
     from .units import battlefield, battlefield_units, _fits   # here: units imports this module
-    errors = []
+    errors = _marker_default_errors(d)
     for fid, f in d.fields.items():
         where = f"fields/{fid}"
         bad = _field_shape_errors(d, f, where)
         errors += bad or _field_unit_errors(d, f, where, battlefield, battlefield_units, _fits)
+        errors += _field_marker_errors(d, f, where)
+    return errors
+
+
+MARKER_LABELS = ("names", "ids", "both")
+
+
+def _marker_settings_errors(m, where: str) -> list[str]:
+    """Marker settings: labels (names, ids or both), strength and size (true or false), all optional."""
+    if not isinstance(m, dict) or set(m) - {"labels", "strength", "size"}:
+        return [f"{where}: markers takes only labels, strength and size"]
+    errors = [f"{where}: markers.labels must be names, ids or both"] if "labels" in m and m["labels"] not in MARKER_LABELS else []
+    return errors + [f"{where}: markers.{k} must be true or false" for k in ("strength", "size") if k in m and not isinstance(m[k], bool)]
+
+
+def _marker_default_errors(d: Data) -> list[str]:
+    """units.yaml markers: the default settings, the unit types and the size marks."""
+    M = d.units.get("markers")
+    if not isinstance(M, dict) or not M.get("types") or not M.get("sizes"):
+        return ["units.yaml: markers needs types and sizes"]
+    return _marker_settings_errors({k: M[k] for k in ("labels", "strength", "size") if k in M}, "units.yaml")
+
+
+def _field_marker_errors(d: Data, f: dict, where: str) -> list[str]:
+    """A battlefield's markers settings, and each unit's type and size if it sets them."""
+    M = d.units.get("markers") or {}
+    errors = _marker_settings_errors(f["markers"], where) if "markers" in f else []
+    for u in f.get("units", []):
+        if "type" in u and u["type"] not in M.get("types", {}):
+            errors.append(f"{where}: unit {u.get('name')}: type must be one of {', '.join(M.get('types', {}))}")
+        if "size" in u and u["size"] not in M.get("sizes", {}):
+            errors.append(f"{where}: unit {u.get('name')}: size must be one of {', '.join(M.get('sizes', {}))}")
     return errors
 
 

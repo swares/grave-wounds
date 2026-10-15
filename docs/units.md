@@ -137,6 +137,29 @@ that does not fit down its side's edge, it is added narrower and deeper (a quart
 at a time, its rear still on the map) until it fits, and the message says so. **Wider**
 and **Narrower** change it afterwards.
 
+**Unit markers.** On its centre hex each unit carries a marker, drawn like a military map
+symbol:
+- **Frame.** The first side's units have a rectangle, the second side's a diamond, in the
+  side's colour. The sides stay apart in greyscale and for colour-blind players.
+- **Glyph.** The glyph shows the unit's type: ✕ infantry; a reversed marker (filled, with a
+  light ✕) for skirmishers in open order; one diagonal for cavalry; an arc for archers; a dot
+  for artillery; ✕ under a filled bar for machine guns; an inverted V for anti-tank guns; an
+  oval for armour; an oval with ✕ for mechanised infantry; a bar on wheels for transport.
+  The type comes from the unit's vehicle, arms, mounts and order. A battlefield can set it
+  outright with `type` on a unit (units.yaml `markers.types` lists them).
+- **Size mark.** A unit that sets `size` (section, platoon, company, battery, battalion,
+  regiment, brigade or division) shows its mark above the frame (•, •••, I, II, III, X, XX)
+  when size marks are on. A unit facing up has it above its arrow.
+- **Label.** The label sits beside the marker. *Unit labels* under the map chooses names,
+  IDs or both. An ID is the side's initial and the unit's number on its side (B3), or A and
+  B when the two sides share an initial. A unit keeps its ID for the whole battle, and the
+  units list shows it with each unit's full name. *Strength* adds the men after the label.
+
+The defaults are units.yaml `markers` (names, strength on, size marks off). A battlefield
+can set its own with `markers: {labels, strength, size}`: both Redan battlefields use IDs,
+because eleven or more units stand in a narrow space. The legend under the map shows the
+types on the field and each side's frame.
+
 **Arcs.** The two hexsides either side of the facing corner are the front; the next one on
 each side is the flank; the two behind are the rear.
 

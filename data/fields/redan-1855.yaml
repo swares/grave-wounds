@@ -31,6 +31,8 @@ size: [100, 80]
 weather: {cond: fair, wind: strong, dir: N, ground: {mud: 0, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [50, 42], side: 0, name: "the Redan's salient", radius: 3}
+# Unit markers on the field map (labels: names, ids or both; strength; size marks): units.yaml markers otherwise.
+markers: {labels: ids}
 ground: |
   ........xTxxxTTTxTxxxxxxxTxTxxxxTxxTxTTxxTxTxxxxxTxxTxxxTTTxxTTTTTxxxxTxTxxTTxTxxTxTxxTxxxxxxxxTTTxx
   .......xxxxxxxxxxxxxxTxTxxxxxxxxTxxTxTTxTxxxxxTxxxxxTxxxxxTTTTxxTxxTxxTTxTTTxxxxxxTxxxxxTTTTxTxTxxxT
