@@ -2270,7 +2270,7 @@ const weaponsReach = (weapons, dist) => weapons.some(w => "range" in FD.weapons[
 const enemyInReach = (at, weapons, known) => knownFoes(known).some(([, m]) => weaponsReach(weapons, hdist(at, m.pos)));   // a known enemy within reach of any of them from at (as commander._enemy_in_reach)
 function getDown(us, j, side, [field, known, exchange]){   // {units, order} when carrier j's riders get down: an enemy it knows of in reach of theirs or its weapon, or at the objective (as commander._get_down)
   const c = us[j], R = c.riders;
-  if (c.side !== side || !c.vehicle || !R || !(R.men > 0) || isAtGun(R) || ROUTED.has(c.state)) return null;
+  if (c.side !== side || !c.vehicle || !R || (R.men ?? 0) <= 0 || isAtGun(R) || ROUTED.has(c.state)) return null;
   const obj = objectiveOf(field), atObj = obj !== null && offObjective(c, obj) <= objectiveRadii(field)[0];
   if (!atObj && !enemyInReach(c.pos, [R.weapon, c.weapon], known)) return null;
   const r = dismountUnit(us, j, fieldSize(field), field);

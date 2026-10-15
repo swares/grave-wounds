@@ -227,8 +227,8 @@ def _hook_up(d: Data, us: list, side, ctx: tuple) -> tuple:
 
 def _riders(d: Data, us: list, side, ctx: tuple, orders: list) -> tuple:
     """At the start of its move: its carriers' riders get down (_get_down); then, attacking, its
-    foot units get aboard empty carriers beside them (_get_on). -> (units, orders)."""
-    field, known, exchange, stance = ctx
+    foot units get aboard empty carriers beside them (_carrier_for). -> (units, orders)."""
+    _, known, _, stance = ctx
     for j in range(len(us)):
         o = _get_down(d, us, j, side, ctx)
         if o:
