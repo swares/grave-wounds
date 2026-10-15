@@ -91,7 +91,8 @@ an aid post:
   {{f_post_pace}} hexes an exchange on open ground by the cheapest way (round water, walls and
   the enemy, slower through woods), and shells can catch it on the way. At the post he gets
   first aid every exchange at {{f_post_aid}}%, and his wounds come off the death clock. An
-  enemy who reaches the post takes or kills the men there.
+  enemy who reaches the post takes or kills the men there. On its side's move the GM can
+  move the post; the men there go with it, and it gives no first aid that exchange.
 - **With none**, he is carried off the map at once, and the bearers return after
   {{f_back}} exchanges.
 

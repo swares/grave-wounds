@@ -661,6 +661,10 @@ Out of his unit's fight any of these ways, a leader counts as a leader down.
 
 **Aid posts.** Before the battle the GM can place one aid post (AP) for each side, with
 **Clicking the map: Aid post**. Click the post's hex again to clear it.
+- **Moving it.** In battle, on its own side's move, the GM can move a side's post with the
+  same tool (it cannot be cleared then, or moved once overrun). The men at it go with it,
+  and parties on their way head for its new place; for that exchange it gives no first aid
+  (shown on the post: "moving").
 - **First aid.** A man at the post gets first aid every exchange, at 75% (as a skilled
   healer, binding 2 steps of bleeding). Its tourniquets and cautery work as with his unit.
 - **After the battle.** His wounds go back to the roller treated at the aid post, so they

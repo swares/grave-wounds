@@ -283,18 +283,19 @@ def _impair_effect(d: Data, w: dict, imp: str, hand: str) -> tuple:
     return (imp, arm), rule.get(arm, {})
 
 
-def _heroes_after(d: Data, us: list, rng, quiet: list | None = None, cautery: bool = False) -> list:
+def _heroes_after(d: Data, us: list, rng, quiet: list | None = None, cautery: bool = False, closed: frozenset = frozenset()) -> list:
     """End of an exchange for every hero not dead, taken or carried off the map: a hold wears
     off; first aid if his unit had a quiet exchange (quiet[i]; cautery: the battle's era
     cauterises), or at the aid post every exchange; he bleeds (with his unit, lying out, on
     his way back or at the post), his Blood's thresholds can put him down, and pain above the
-    cap calls for a stop check. Then bearers due back rejoin their units."""
+    cap calls for a stop check. Then bearers due back rejoin their units. closed: the sides whose
+    aid post is moving this exchange (no first aid there)."""
     log = []
     for i, u in enumerate(us):
         for hero in u.get("heroes", []):
             if hero["state"] in ("dead", "prisoner") or (hero.get("carried") and not hero.get("post")):   # off the map: out of the battle
                 continue
-            aid = _aid_for(d, u, hero, rng, (quiet and quiet[i], cautery))
+            aid = None if hero.get("post") and u["side"] in closed else _aid_for(d, u, hero, rng, (quiet and quiet[i], cautery))
             if aid:
                 log.append({"kind": "heroaid", "unit": i, **aid})
             line = _hero_after(d, hero, rng)
@@ -687,6 +688,20 @@ def _party(u: dict, bearers: int) -> dict:
     """A party setting off back from unit u: where it is, its bearers, the way back (away
     from the unit's front) and the exchanges it has been going."""
     return {"pos": list(u["pos"]), "bearers": bearers, "dir": (u["facing"] + 3) % 6, "ex": 0}
+
+
+def posts_moving(field: dict | None) -> frozenset:
+    """The sides whose aid post is moving this exchange (moving: exchanges left): closed, it gives no first aid."""
+    return frozenset(p["side"] for p in (field or {}).get("posts") or [] if p.get("moving"))
+
+
+def _posts_settle(field: dict | None) -> None:
+    """After the exchange, a moving aid post counts down; at 0 it is open again."""
+    for p in (field or {}).get("posts") or []:
+        if p.get("moving"):
+            p["moving"] -= 1
+            if p["moving"] <= 0:
+                del p["moving"]
 
 
 def aid_post(field: dict | None, side) -> dict | None:
@@ -2010,10 +2025,11 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
         u.update(men=u["men"] - cut, down=u.get("down", 0) + cut, dead=u.get("dead", 0) + min(dead[i], cut))
     log += _morale_all(d, us, occ, before, (lost, dealt, flanked), rng, table, field)
     log += _suppress_all(d, us, under, rng)
-    log += _heroes_after(d, us, rng, [not lost[i] and not under[i] and not in_contact(d, us, occ, i) for i in range(len(us))], cauterises(d, table))
+    log += _heroes_after(d, us, rng, [not lost[i] and not under[i] and not in_contact(d, us, occ, i) for i in range(len(us))], cauterises(d, table), posts_moving(field))
     log += _parties_after(d, us, field)
     log += _lying_after(d, us, table, rng)
     log += _posts_after(d, us, field, table, rng)
+    _posts_settle(field)
     log += _dig_all(d, us)
     log += _sappers_all(d, us, field)
     _unhooked_after(us)
