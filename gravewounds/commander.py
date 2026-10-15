@@ -789,7 +789,9 @@ def _sapper_order(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict 
         return None
     row = U.ahead_row(d, field, u)
     mines = (field or {}).get("mines") or {}
-    goal = (_where(us, t, ctx[3])["pos"] if t is not None else objective(field)) if ctx[2] == "attack" else None
+    goal = None
+    if ctx[2] == "attack":
+        goal = _where(us, t, ctx[3])["pos"] if t is not None else objective(field)
     if goal is not None and any(_foes_mine(mines.get(C.hkey(x)), u["side"]) for x in row) and _mined(field, u["pos"], goal, u["side"]):
         return {"act": "lift", "target": t}
     if goal is not None and _foes_on_way(field, u["pos"], goal, u["side"]):
