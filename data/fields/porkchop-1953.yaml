@@ -30,7 +30,7 @@ phases:
   - {name: "E Company overrun", at: 1, note: "23:05: the lights come on all over the hill and the Chinese battalion comes up the north slope."}
   - {name: "The first relief", at: 176, note: "Shortly after 02:00 L Company's platoons are sent up to reinforce E Company; most of the hill is in Chinese hands.", arrive: ["L Company, 31st Infantry (Hill 200)"]}
   - {name: "K Company counter-attacks", at: 326, note: "04:30: the barrage lifts and K Company steps off; L Company attacks again at about the same time.", arrive: ["K Company, 31st Infantry (from the main line)"]}
-  - {name: "A fresh Chinese company", at: 550, note: "08:14: G Company of the 17th Infantry arrives as a fresh Chinese company appears (which company it was is our reading).", arrive: ["Chinese company from Old Baldy (the west)"]}
+  - {name: "A fresh Chinese company", at: 550, note: "08:14: G Company of the 17th Infantry arrives as a fresh Chinese company appears (which company it was is our reading).", arrive: ["Chinese company from Old Baldy (the west)", "G Company, 17th Infantry (from the main line)"]}
 ground: |
   rrm.r....r...rrr.r....mm.rmr....r..r.rr..r.r.....r..r...rrr..rrrrr..mmr.r.mrr.r.mr.rm.rmm....m.rrr..r..m.rrr..r.rr....rrr...r.rr.mrm...r.mr...r.m............rmr
   rr....rm...m.....m...r.r.......mr..r.rr.r.....r.....r...mmrrrr.mr..r.mrr.rrr.m....r....mrrrrmr.r...rrm.r.rrr.mr...rrr....rm....rrmr.rrm.rr..rr.mm.r.r.mmr..rrr..
@@ -180,6 +180,7 @@ units:
   - {name: "E Company's machine guns", side: 0, men: 10, quality: regular, weapon: machine_gun, kit: vietnam_army, formation: mg, width: 2, pos: [82, 49], facing: 1, fixed: [76, 18], size: company}
   - {name: "L Company, 31st Infantry (Hill 200)", side: 0, men: 120, quality: regular, weapon: rifle_service, kit: vietnam_army, formation: extended, width: 12, pos: [124, 91], facing: 2, size: company}
   - {name: "K Company, 31st Infantry (from the main line)", side: 0, men: 135, quality: regular, weapon: rifle_service, kit: vietnam_army, formation: extended, width: 20, pos: [80, 122], facing: 1, size: company}
+  - {name: "G Company, 17th Infantry (from the main line)", side: 0, men: 130, quality: regular, weapon: rifle_service, kit: vietnam_army, formation: extended, width: 13, pos: [56, 124], facing: 1, size: company}
   - {name: "Chinese battalion up the north slope", side: 1, men: 400, quality: veteran, weapon: pistol_smg, kit: none, formation: extended, width: 30, pos: [76, 18], facing: 4, size: battalion}
   - {name: "Chinese company from Old Baldy (the west)", side: 1, men: 150, quality: veteran, weapon: pistol_smg, kit: none, formation: extended, width: 12, pos: [16, 60], facing: 0, size: company}
   - {name: "Chinese machine guns", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [50, 14], facing: 5, size: section}

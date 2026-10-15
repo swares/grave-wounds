@@ -11,7 +11,9 @@
 # What happened, briefly: the 23rd Infantry and the French Battalion attacked up the ridge from
 # 13 September 1951 and took and lost Hill 931 several times against North Koreans in bunkers,
 # with heavy losses on both sides. In October the 2nd Division attacked along the whole front:
-# the 23rd went in on the night of 5 October and before noon the next day Hill 931 was finally
+# the 23rd's 2nd Battalion went in along the crest on the night of 5 October with the 3rd behind it;
+# by 03:00 they held the southern half of 931, and by day the French closed in from the north. Before noon
+# Hill 931 was finally
 # taken. From 10 October tanks went up the Mundung-ni valley behind the ridge, and the French
 # took the last peak, Hill 851, at daybreak on 13 October. The tank company on this map came up
 # the valley four days after 931 fell: the GM can leave it off.
@@ -26,6 +28,12 @@ size: [170, 260]
 weather: {cond: fair, wind: breeze, dir: NW, ground: {mud: 0, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [97, 70], side: 0, name: "Hill 931", radius: 3}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "Touchdown: the night attack", at: 1, note: "21:00 on 5 October: the 2nd Battalion moves up the crest in the dark, without artillery preparation, the 3rd behind it."}
+  - {name: "The southern half of 931", at: 361, note: "By 03:00 the 2nd and 3rd Battalions hold the southern half of Hill 931 and beat off a counter-attack."}
+  - {name: "The French from the north", at: 541, note: "With daylight (est. 06:00) the French close in from the north as the battalions press on to meet them; 931 is taken before noon.", arrive: ["French Battalion (from the north)"]}
 ground: |
   FFrrFrrrrFrr.mmm.m...mmm........mrrFrFFrrFrFrrrrrFhhrhhhrrrhhrrrrrhhhhrhrhhrrhrhhrhrhhrhhhhhhhhrhhhhhrhhhrrrhhrhrrhhhhrrrhhhrhrrhhrhhhhrhhrhhhrhhhhhhrrrrrrrrFrFFrFrrrFFrr
   FFrrrrFrrrrr.........mmm........mrrFrFFrFrrrrrFrrrhhrhhhhhrrrrhhrhhrhhrrhrrrhhhhhhrhhhhhrrrrhrhrhrhhrhhrhrrrhhrhhhrrrhhhhrhhhhhrrhrhrrhhrrhhrrhhhhrhrrrrFrrFFFrrrFFrrFrFrF
@@ -300,8 +308,8 @@ support:
   - {name: "North Korean and Chinese guns", side: 1, kind: field, tubes: 8}
 units:
   - {name: "2nd Battalion, 23rd Infantry (along the crest from 894)", side: 0, men: 600, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 12, pos: [97, 180], facing: 1, size: battalion}
-  - {name: "French Battalion (up the east spur)", side: 0, men: 600, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [150, 126], facing: 2, size: battalion}
-  - {name: "1st Battalion, 23rd Infantry (up the west spur)", side: 0, men: 500, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [50, 124], facing: 0, size: battalion}
+  - {name: "French Battalion (from the north)", side: 0, men: 600, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [99, 20], facing: 4, size: battalion}
+  - {name: "3rd Battalion, 23rd Infantry (behind the 2nd)", side: 0, men: 500, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [94, 210], facing: 1, size: battalion}
   - {name: "72nd Tank Battalion company (the Mundung-ni valley)", side: 0, men: 40, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 4, pos: [27, 200], facing: 1, vehicle: tank, size: company}
   - {name: "North Koreans on Hill 931", side: 1, men: 300, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 14, pos: [97, 72], facing: 4, prone: true, size: battalion}
   - {name: "North Koreans on the crest south of 931", side: 1, men: 200, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 6, pos: [98, 100], facing: 4, prone: true, size: company}

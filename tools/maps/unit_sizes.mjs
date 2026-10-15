@@ -55,6 +55,8 @@ export const UNIT_SIZES = {
     "23rd Infantry machine-gun company": "company",
   },
   "bull-run-1861": {
+    "Kirby Smith's and Early's brigades (onto Chinn Ridge)": "brigade",
+    "Howard's brigade (Chinn Ridge)": "brigade",
     "Jackson's brigade": "brigade",
     "33rd Virginia": "battalion",
     "Confederate guns (Imboden, Stanard, Pendleton)": "battery",
@@ -71,7 +73,7 @@ export const UNIT_SIZES = {
   },
   "cassino-monastery-1944": {
     "4/6th Rajputana Rifles (along Snakeshead Ridge)": "battalion",
-    "1st Royal Sussex (in reserve)": "battalion",
+    "1st Royal Sussex (three companies, with the Rajputanas)": "battalion",
     "1/9th Gurkha Rifles (across the slopes for Point 444)": "battalion",
     "1/2nd Gurkha Rifles (down for the abbey's hill)": "battalion",
     "German paratroops on Point 593": "company",
@@ -81,8 +83,8 @@ export const UNIT_SIZES = {
     "German machine guns (the abbey)": "section",
   },
   "cassino-poles-1944": {
-    "3rd Carpathian Rifle Division, 1st Brigade (for Point 593)": "battalion",
-    "3rd Carpathian Rifle Division, 2nd Brigade (along Snakeshead)": "battalion",
+    "1st Carpathian Rifle Brigade, 2nd Battalion (for Point 593)": "battalion",
+    "1st Carpathian Rifle Brigade, 1st Battalion (along Snakeshead, for Albaneta)": "battalion",
     "5th Kresowa Division (for Phantom Ridge)": "battalion",
     "German paratroops on Point 593": "company",
     "German paratroops on Phantom Ridge": "company",
@@ -104,6 +106,7 @@ export const UNIT_SIZES = {
     "German machine guns (below the abbey)": "section",
   },
   "chipyong-1951": {
+    "Task Force Crombez (tanks, up Route 24A)": "company",
     "A Company, 23rd Infantry": "company",
     "C Company, 23rd Infantry (astride the road north)": "company",
     "I Company, 23rd Infantry": "company",
@@ -130,7 +133,6 @@ export const UNIT_SIZES = {
   "cisterna-1944": {
     "1st Ranger Battalion (at the road crossing)": "battalion",
     "3rd Ranger Battalion (along the ditch)": "battalion",
-    "3rd Reconnaissance Troop platoon (following up the road)": "platoon",
     "Hermann G\u00f6ring Division infantry (the town's edge)": "battalion",
     "Machine guns in the farmhouses (west)": "section",
     "Machine guns in the farmhouses (east)": "section",
@@ -199,14 +201,14 @@ export const UNIT_SIZES = {
     "Cheyenne and Arapaho in the east ravines": "battalion",
   },
   "foxhill-1950": {
+    "Chinese company from the heights (north)": "company",
+    "Chinese companies fed in against the 2nd and 3rd Platoons": "company",
+    "Chinese on the road (stumbling into the command post)": "company",
     "Fox Company, 3rd Platoon (the crest, facing north)": "platoon",
     "Fox Company, 1st Platoon (the east shoulder)": "platoon",
     "Fox Company, 2nd Platoon (the west shoulder)": "platoon",
     "Heavy machine guns": "section",
     "Company headquarters, mortars and the road block": "platoon",
-    "Chinese battalion from the heights (north)": "battalion",
-    "Chinese battalion from the north-east": "battalion",
-    "Chinese battalion across the road (south)": "battalion",
     "Chinese machine guns": "section",
   },
   "goosegreen-1982": {
@@ -243,8 +245,8 @@ export const UNIT_SIZES = {
   },
   "heartbreak-1951": {
     "2nd Battalion, 23rd Infantry (along the crest from 894)": "battalion",
-    "French Battalion (up the east spur)": "battalion",
-    "1st Battalion, 23rd Infantry (up the west spur)": "battalion",
+    "French Battalion (from the north)": "battalion",
+    "3rd Battalion, 23rd Infantry (behind the 2nd)": "battalion",
     "72nd Tank Battalion company (the Mundung-ni valley)": "company",
     "North Koreans on Hill 931": "battalion",
     "North Koreans on the crest south of 931": "company",
@@ -297,7 +299,6 @@ export const UNIT_SIZES = {
     "E Company's reserve platoon": "platoon",
     "E Company's machine guns": "company",
     "North Vietnamese battalion (through the north wire)": "battalion",
-    "North Vietnamese company (from the north-west)": "company",
     "North Vietnamese machine guns": "section",
   },
   "lundys-lane-1814": {
@@ -315,6 +316,7 @@ export const UNIT_SIZES = {
     "Drummond's column (coming up)": "battalion",
   },
   "lutzen-1632": {
+    "Pappenheim's foot (coming up, too late)": "brigade",
     "Swedish musketeers, first line": "regiment",
     "Swedish pike, first line": "regiment",
     "Swedish second line": "brigade",
@@ -332,6 +334,8 @@ export const UNIT_SIZES = {
     "Pappenheim's horse (coming up)": "regiment",
   },
   "mogadishu-1993": {
+    "Relief column (10th Mountain infantry)": "company",
+    "Relief column (Malaysian APCs and Pakistani tanks)": "company",
     "Rangers and Delta in the houses north of the crash": "platoon",
     "Rangers and Delta in the houses south of the crash": "platoon",
     "Rangers and Delta at the corner west of the crash": "platoon",
@@ -371,6 +375,7 @@ export const UNIT_SIZES = {
     "4th Division machine guns": "section",
   },
   "porkchop-1953": {
+    "G Company, 17th Infantry (from the main line)": "company",
     "E Company, 31st Infantry (the north trenches)": "company",
     "E Company, 31st Infantry (the west trenches)": "company",
     "E Company's machine guns": "company",
@@ -407,6 +412,7 @@ export const UNIT_SIZES = {
     "Men-at-arms": "battalion",
   },
   "wagon-box-1867": {
+    "Major Smith's relief column": "company",
     "27th Infantry, Company C (Powell and Jenness)": "company",
     "Woodcutters and teamsters (civilians, repeating rifles)": "section",
     "Mounted warriors, the first charge (Lakota and Cheyenne)": "battalion",
@@ -414,6 +420,8 @@ export const UNIT_SIZES = {
     "Warriors with guns, along the plateau's edge": "company",
   },
   "wanat-2008": {
+    "1st Platoon, Chosen Company (the QRF from Camp Blessing)": "platoon",
+    "3rd Platoon, A Company, and the scouts (the second QRF)": "platoon",
     "Observation Post Topside (paratroopers)": "section",
     "Observation Post Topside (the M240 and its crew)": "section",
     "2nd Platoon at the base's north end": "platoon",

@@ -26,6 +26,13 @@ size: [140, 130]
 weather: {cond: fair, wind: calm, dir: SW, ground: {mud: 0, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [78, 60], side: 1, name: "the top of Henry Hill", radius: 8}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "The guns on Henry Hill", at: 1, note: "About 14:00: Ricketts's and Griffin's batteries unlimber near the Henry house; Willcox's and Franklin's men are already engaged."}
+  - {name: "The blue regiment and Stuart's horse", at: 61, note: "About 15:00: the 33rd Virginia, in blue, comes out of the woods by the Sudley road and shoots down the gunners; Stuart's horse ride into the Zouaves.", arrive: ["33rd Virginia", "Stuart's cavalry"]}
+  - {name: "Sherman's attacks", at: 76, note: "Sherman's regiments go up the hill one after another (est.); by about 15:30 his brigade is in confusion.", arrive: ["Sherman's brigade (coming over)"]}
+  - {name: "Chinn Ridge", at: 121, note: "About 16:00: Kirby Smith's and Early's fresh brigades come in on Chinn Ridge against Howard, and the Union line begins to break.", arrive: ["Kirby Smith's and Early's brigades (onto Chinn Ridge)", "Howard's brigade (Chinn Ridge)"]}
 ground: |
   .........................................hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh.......................
   .........................................hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh.......................
@@ -171,3 +178,5 @@ units:
   - {name: "14th Brooklyn", side: 1, men: 700, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 18, pos: [89, 46], facing: 4, size: battalion}
   - {name: "Willcox's and Franklin's brigades", side: 1, men: 4000, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 50, pos: [55, 30], facing: 4, size: brigade}
   - {name: "Sherman's brigade (coming over)", side: 1, men: 3000, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 40, pos: [100, 12], facing: 4, size: brigade}
+  - {name: "Kirby Smith's and Early's brigades (onto Chinn Ridge)", side: 0, men: 3500, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 40, pos: [21, 122], facing: 1, size: brigade}
+  - {name: "Howard's brigade (Chinn Ridge)", side: 1, men: 2400, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 30, pos: [17, 16], facing: 4, size: brigade}

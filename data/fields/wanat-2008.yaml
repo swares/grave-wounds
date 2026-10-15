@@ -29,6 +29,16 @@ size: [90, 70]
 weather: {cond: fair, wind: calm, light: dusk, ground: {mud: 0, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [52, 30], side: 1, name: "Observation Post Topside", radius: 2}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "The first volley", at: 1, note: "04:20: some 200 fighters open fire on the base and above all on Observation Post Topside."}
+  - {name: "Running to the post", at: 26, note: "04:45: Brostrom and Hovater run from the base up to the post."}
+  - {name: "The Apaches arrive", at: 61, note: "About 05:20, an hour into the fight: two Apaches arrive; the first gun run is at 05:23.", arrive: ["Apaches (AH-64)"]}
+  - {name: "The first medevac", at: 93, note: "05:52 to 06:05: the first medevac helicopter lands under fire."}
+  - {name: "The QRF from Blessing", at: 102, note: "06:01: Chosen Company's 1st Platoon arrives in four Humvees after a 45-minute drive.", arrive: ["1st Platoon, Chosen Company (the QRF from Camp Blessing)"]}
+  - {name: "Topside held", at: 131, note: "06:30: the most desperate fighting at Topside is over; the jets are now on call.", arrive: ["A-10, B-1B and F-15E (later in the morning)"]}
+  - {name: "The second QRF", at: 241, note: "08:20: A Company's 3rd Platoon and the scouts arrive; by 08:30 the initiative is regained.", arrive: ["3rd Platoon, A Company, and the scouts (the second QRF)"]}
 ground: |
   FhhhhhFFFFhhr.wwwrTTTTTTTrTrTTTTrrrr.rrrrrr.r..rrrrr..rrrrFhhFFFFFhhhhFhFhhFFhFhhFhFhhFhhh
   hFhFhhFFhFhhrrwww.TTTrTrTTTTTTTTr.rrr.rrrrrr..r.rrrrrrrrrrFFFFhhFhhFhhFFhFFFhhhhhhFhhhhhFF
@@ -124,3 +134,5 @@ units:
   - {name: "Fighters from the farmland and slopes east", side: 1, men: 60, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [72, 36], facing: 3, prone: true, size: platoon}
   - {name: "RPG teams", side: 1, men: 15, quality: regular, weapon: rpg, kit: none, formation: extended, width: 3, pos: [46, 14], facing: 4, prone: true, size: platoon}
   - {name: "PKM machine guns", side: 1, men: 10, quality: regular, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [64, 18], facing: 3, prone: true, size: section}
+  - {name: "1st Platoon, Chosen Company (the QRF from Camp Blessing)", side: 0, men: 20, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 5, pos: [30, 66], facing: 1, size: platoon}
+  - {name: "3rd Platoon, A Company, and the scouts (the second QRF)", side: 0, men: 30, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 6, pos: [48, 66], facing: 1, size: platoon}

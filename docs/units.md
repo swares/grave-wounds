@@ -1471,7 +1471,7 @@ what happened, and the units it brings on.
 - **Where they're used.** Phases apply with *the armies as drawn up*, not to forces sent
   from the travel map.
 
-Twelve battlefields have phases. Each phase's time is our reading of the accounts, rounded to the
+Twenty-seven battlefields have phases. Each phase's time is our reading of the accounts, rounded to the
 minute from the deployment moment (exchange 1). The sources are named in each generator's notes
 where they are not plain.
 - **The Redan, 8 September:** the stormers go over (1); the supports come forward (10); the
@@ -1481,7 +1481,8 @@ where they are not plain.
 - **Lundy's Lane:** Scott attacks the hill (1, about 7 pm); Ripley, Porter and Drummond's
   column come up (120, about 9 pm); Drummond counter-attacks (150, until near midnight).
 - **Lützen** (from about 11:00): Pappenheim's horse arrive (76); the King is killed and the
-  second line goes in (151, an estimate); a lull (241); the windmill hill falls (271).
+  second line goes in (151, an estimate); a lull (241); the windmill hill falls (271); Pappenheim's foot
+  arrive, too late (421).
 - **Mons** (from 09:00): a renewed attack through the woods (31); the attack in force (121);
   the Fusiliers withdraw (251). Which German battalion came in when is our reading.
 - **Osan** (from about 11:45): a battalion works round the west (46, 12:30); another comes
@@ -1498,6 +1499,18 @@ where they are not plain.
   surrounded (271); the stray bomb (509, 18:58).
 - **73 Easting** (from 16:18): through the trenches (5); the T-72s on the high ground beyond
   (19, about 16:36).
+- **Chipyong-ni by day:** B Company counter-attacks (721, 10:00); the hill retaken (1111);
+  Task Force Crombez (1156, about 17:15).
+- **Pork Chop Hill:** G Company of the 17th Infantry comes up with the fresh Chinese company
+  (550).
+- Fifteen more, from the second round of research (times and sources in the project's
+  `battle-phases-research-round2.md`): Fox Hill, Wanat (the Apaches at 61, the QRFs at 102 and
+  241, the jets on call at 131), Khe Sanh 861A, First Bull Run (Chinn Ridge at 121), Cisterna
+  (the tanks at 351), Wagon Box, Fetterman, Cowpens, Goose Green, Bougainville, the Poles at
+  Cassino, the abbey and the town at Cassino, Heartbreak Ridge and Mogadishu (the relief column
+  at 553). Where a time is our estimate the phase's note says "(est.)".
+- **Batteries and aircraft.** A phase can also bring on a battery or aircraft on call (a
+  `support` entry, by name): it is not on call until its phase begins.
 
 **From the travel map.** A battlefield can name a place on a travel map and how close
 counts (`travel` in its file). Agincourt names Azincourt, within 1 hex. When the defender
@@ -1612,7 +1625,7 @@ about 2,410 by 1,140 yards (2,200 by 1,040 m), with north at the top:
 - The Imperialists, north of the road: 1,600 musketeers in the road ditch, 4,000 musketeers and
   4,000 pike in the centre, 800 musketeers guarding the battery on the windmill hill, 1,500
   horse on the right and 2,000 cuirassiers on the left, with Pappenheim's 2,500 horse coming
-  up at the north-east corner.
+  up at the north-east corner and his foot coming up, too late, at 18:00.
 - Pikemen fight with the spear's numbers, the nearest the Thirty Years' War tables offer.
 - The guns (see *Guns*): the windmill battery of 7 on the hill, 14 in the Imperial centre
   behind the road, and 20 heavy Swedish guns in front of their foot. The regimental guns are
@@ -1766,7 +1779,8 @@ down the west side and Chinn Ridge beyond it.
   brigades behind them and Sherman's coming over the turnpike.
 - The Confederates: Jackson's brigade and its guns at the edge of the pines, the 33rd Virginia
   in the woods by the Sudley road, Hampton's Legion by the Robinson farm, Bee's and Bartow's
-  men rallied behind, and Stuart's horse to the south-west.
+  men rallied behind, and Stuart's horse to the south-west. Kirby Smith's and Early's brigades
+  come in on Chinn Ridge at about 16:00, against Howard's Union brigade.
 - The wound tables are the Civil War's, its guns on the Civil War artillery wounds. Ricketts's
   six 10-pounder Parrotts and Griffin's battery are rifled guns; the Confederate guns, mostly
   6-pounders and howitzers, are smoothbore (see *Guns*).
@@ -1803,6 +1817,8 @@ north at the top: the plateau between the Big Piney (top) and the Little Piney (
 - The first charge: mounted warriors (Lakota and Cheyenne) from the north, warriors on foot
   from the ravine, and warriors with guns along the plateau's edge to the west. Estimates of
   the warriors present run from 300 to 1,000; here 650.
+- Major Smith's relief column (100 men) comes from the fort, to the east, in the last phase;
+  its mountain howitzer is not on the map.
 - The relief column with its mountain howitzer, which came in the early afternoon, is not on
   the map: on its move the Army side can bring it on with **Add a unit**.
 - Fair, a breeze from the west.
@@ -1856,7 +1872,8 @@ south, north at the top.
   (rough).
 - A cold, still dawn, the reclaimed ground soft.
 - The 1st and 3rd Ranger Battalions (veteran, extended order) in the open fields 800 yards
-  short of the town, with the 3rd Reconnaissance Troop's platoon behind them on the road.
+  short of the town. (The 3rd Reconnaissance Troop's platoon behind them on the road was caught
+  on a road block before dawn, so it is not on the map.)
 - The Germans gone to ground in the houses on the town's edge, in farmhouses with machine
   guns, and in haystacks and dugouts on both flanks; paratroops by the station.
 - Fire support: the 3rd Division's 105 mm howitzers and the Rangers' 4.2-inch mortars; German
@@ -1899,7 +1916,8 @@ field is 200 × 170 hexes, about 2,190 by 1,610 yards (2,000 by 1,470 m), north 
   and L (3rd) on the east, E, G and F (2nd) on the south, G on the southern hill, and the
   French Battalion's three companies on the west (veteran). The AAA's quad .50s and the
   battalion machine guns are on the line, and B Company and the 1st Ranger Company are in
-  reserve.
+  reserve. Task Force Crombez's tanks come up Route 24A from the south in the last phase
+  (about 17:15 on the 15th).
 - Chinese (veteran, extended order): a regiment from Hill 397 against G Company, and
   battalions against E, C and K Companies and the French, with machine guns.
 - Fire support: 105 mm and 155 mm howitzers, 4.2-inch mortars and the regimental tanks inside
@@ -1945,6 +1963,8 @@ is 110 × 110 hexes, about 1,200 by 1,040 yards (1,100 by 950 m), north at the t
   the first crash and their machine guns; at the second, the crew and the two Delta snipers.
 - Somali National Alliance militia (green, extended order): from the market, the north and the
   east, and the crowd at the second crash site, with RPG teams and machine guns.
+- The relief column (10th Mountain infantry, Malaysian APCs and Pakistani tanks) reaches the
+  trapped force at 01:55, in the last phase.
 - Fire support: Little Bird gunships.
 - There are no vehicle rules: the relief column can be brought on as infantry with **Add a
   unit**.
@@ -1967,7 +1987,9 @@ The field is 90 × 70 hexes, about 980 by 660 yards (900 by 600 m), north at the
   - 2nd Platoon at the base's north end and its east side;
   - the Humvee guns and the TOW;
   - the engineers and mortar section;
-  - the Afghan National Army platoon (green) on the west side.
+  - the Afghan National Army platoon (green) on the west side;
+  - later, the quick reaction forces: Chosen Company's 1st Platoon from Camp Blessing (06:01)
+    and A Company's 3rd Platoon with the scouts (08:20).
 - Insurgents (in cover): in the bazaar and hotel, the village and mosque, on the high ground
   west of the river, in the draw, and from the farmland and slopes east, with RPG teams and
   PKM machine guns.
@@ -1986,10 +2008,12 @@ and rock). Snakeshead Ridge runs from it to the south-east past Point 444 to the
 (rubble), and Phantom Ridge lies to the west. Steep slopes of scrub and broken rock (woods,
 rough) and gullies lie between.
 - February, a **dark night**:
-  - the 4/6th Rajputana Rifles along the ridge for Point 593, with the Royal Sussex in reserve;
-  - the 1/9th and 1/2nd Gurkhas down the slopes for Point 444 and the abbey's hill;
+  - the 4/6th Rajputana Rifles along the ridge for Point 593, with three Royal Sussex companies;
+  - two hours later, the 1/9th and 1/2nd Gurkhas down the slopes for the abbey (by Point 445
+    in *The Tiger Triumphs*, Point 444 in other accounts);
   - German paratroops (veteran, dug in) on the tops and in the ruins, with machine guns.
-- May, a **dark night**: the 3rd Carpathian Rifle Division for Point 593 and along Snakeshead,
+- May, a **dark night**: the 1st Carpathian Rifle Brigade's 2nd Battalion for Point 593 and
+  its 1st Battalion along Snakeshead for Albaneta,
   and the 5th Kresowa Division for Phantom Ridge, against the paratroops on all three tops and
   in the abbey.
 - Fire support on both sides; the wound tables are the Second World War's (Owens).
@@ -2023,8 +2047,10 @@ is 150 × 120 hexes, about 1,640 by 1,140 yards (1,500 by 1,040 m), north at the
 - United States (dug in): Fox Company's three platoons round the crest, its heavy machine
   guns (laid on a **fixed line** up the slope to the heights), and the headquarters, mortars
   and road block.
-- Chinese (veteran): battalions from the heights to the north, from the north-east and across
-  the road, with machine guns.
+- Chinese (veteran): a company from the heights to the north, companies fed in later against
+  the 2nd and 3rd Platoons, and men walking down the road into the command post, with machine
+  guns. The Marine official history (Montross and Canzona) opens the attack at about company
+  strength, so the Chinese here are that night's, not the regiment's.
 - Fire support: 105 mm howitzers at Hagaru-ri, the company's 60 mm mortars, Corsairs (by day
   only); Chinese mortars.
 - The wound tables are Korea's (hospitalized wounded).
@@ -2049,9 +2075,10 @@ is 170 × 260 hexes, about 1,860 by 2,460 yards (1,700 by 2,250 m), north at the
   wooded and shattered, and the Mundung-ni valley (paddies, a stream and a dry track) lies
   along the west edge.
 - The North Koreans' log-and-earth **bunkers** are dug into the crest. A fair day.
-- United Nations: the 2nd Battalion, 23rd Infantry along the crest from 894, the French
-  Battalion up the east spur, the 1st Battalion, 23rd Infantry up the west spur, and a company of
-  tanks (**vehicles**) in the valley.
+- United Nations: the 2nd Battalion, 23rd Infantry along the crest from 894 with the 3rd behind
+  it, and the French Battalion coming in from the north at daylight (Hermes, *Truce Tent and
+  Fighting Front*), and a company of tanks (**vehicles**) in the valley. The tanks came up the
+  valley from 10 October, four days after 931 fell, so the GM can leave them off.
 - North Koreans (veteran, dug in): on 931 and the crest either side, with machine guns.
 - Fire support: division and corps artillery, 4.2-inch mortars, fighter-bombers; North Korean
   mortars and guns.
@@ -2064,7 +2091,8 @@ hexes, about 1,750 by 1,240 yards (1,600 by 1,130 m), north at the top.
 - A **dark night**.
 - United Nations (M1952 flak vests): E Company, 31st Infantry in the north and west trenches
   with its machine guns (laid on a **fixed line** down the north slope), L Company on Hill
-  200, and K Company coming up from the main line.
+  200, and K Company coming up from the main line; G Company of the 17th Infantry comes up at
+  08:14.
 - Chinese (veteran, submachine guns): a battalion up the north slope, a company from Old Baldy
   in the west, and machine guns.
 - Fire support: the 7th Division's artillery ("flash fire" round the outposts), heavy
@@ -2094,9 +2122,10 @@ hexes, about 1,640 by 1,040 yards (1,500 by 950 m), north at the top.
 - **Fog** on a **dark night**.
 - United States (flak vests, in the trenches): E Company, 2nd Battalion, 26th Marines on the
   north and flanks, its reserve platoon, and its machine guns (laid on a **fixed line**
-  through the north wire).
-- North Vietnamese (veteran): a battalion through the north wire, a company from the
-  north-west, and machine guns.
+  through the north wire). The 05:00 counter-attack was Lieutenant Shanley's 1st Platoon, from
+  the alternate positions it had been pushed back to (Shulimson et al., *The Defining Year*).
+- North Vietnamese (veteran): about 200 through the north wire (here a battalion of 400), and
+  machine guns.
 - Fire support: the base's howitzers and 4.2-inch mortars and the guns on 881 South; North
   Vietnamese mortars, rockets and guns.
 

@@ -52,6 +52,11 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
+    { name: "The saddle is seized", at: 1, note: "About 02:30 on 9 March the 23rd Infantry's 2nd Battalion blows the wire and takes the saddle." },
+    { name: "The 3rd Battalion follows", at: 6, note: "The 3rd Battalion follows in the same column and is caught by American artillery (est. minutes).", arrive: ["23rd Infantry, III Battalion (east slope)"] },
+    { name: "The reserve counter-attacks", at: 571, note: "About noon on 9 March, C Company of the 1st Battalion, 145th, starts up Hill 700 against the saddle.", arrive: ["145th Infantry, 1st Battalion (reserve)"] },
+  ],
   objective: { at: [60, Math.round(crest(60))], side: 1, name: "the saddle in the line", radius: 7 },
   id: "bougainville-1944", name: "Hill 700, Bougainville, 8-12 March 1944", sides: ["Americans", "Japanese"], table: "bougainville-1944-all-hits",
   travel: { map: "bougainville-1944", place: "Hill 700", within: 2, sides: ["Americans", "Japanese"] },

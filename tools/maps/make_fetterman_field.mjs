@@ -54,6 +54,12 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
+    { name: "On the crest", at: 1, note: "About 11:45 the column is on Lodge Trail Ridge, following the decoys." },
+    { name: "The trap is sprung", at: 11, note: "At the signal the warriors come up out of the ravines and across the flats (est.: the firing is almost continuous by noon).", arrive: ["Lakota horsemen on the flats beyond the creek", "Lakota on foot in the west ravines", "Cheyenne and Arapaho in the east ravines"] },
+    { name: "The infantry overrun", at: 31, note: "About 20 minutes after the signal the infantry are overrun (Ambrose); the cavalry hold out about 20 minutes more." },
+    { name: "Silence", at: 61, note: "12:45: the firing dies as Ten Eyck reaches the ridge top." },
+  ],
   id: "fetterman-1866", name: "The Fetterman Fight, 21 December 1866", sides: ["US Army", "Lakota, Cheyenne and Arapaho"],
   table: "indian-wars-1865-71-arrows",
   travel: { map: "phil-kearny-1866", place: "Fetterman battlefield", within: 2, sides: ["US Army", "Lakota, Cheyenne and Arapaho"] },

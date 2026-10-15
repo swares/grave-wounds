@@ -42,8 +42,8 @@ const TANK = { quality: "regular", weapon: "machine_gun", kit: "none", formation
 const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("2nd Battalion, 23rd Infantry (along the crest from 894)", UN, 600, GI, 12, [CREST(180), 180], N),
-  at("French Battalion (up the east spur)", UN, 600, { ...GI, quality: "veteran" }, 20, [150, 126], 2),
-  at("1st Battalion, 23rd Infantry (up the west spur)", UN, 500, GI, 20, [50, 124], 0),
+  at("French Battalion (from the north)", { side: 0, facing: S }, 600, { ...GI, quality: "veteran" }, 20, [CREST(20), 20], S),
+  at("3rd Battalion, 23rd Infantry (behind the 2nd)", UN, 500, GI, 20, [CREST(210), 210], N),
   at("72nd Tank Battalion company (the Mundung-ni valley)", UN, 40, TANK, 4, [VALLEY + 5, 200], N),
   at("North Koreans on Hill 931", KP, 300, KPA, 14, [H931[0], H931[1] + 2], S),
   at("North Koreans on the crest south of 931", KP, 200, KPA, 6, [CREST(100), 100], S),
@@ -53,6 +53,11 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
+    { name: "Touchdown: the night attack", at: 1, note: "21:00 on 5 October: the 2nd Battalion moves up the crest in the dark, without artillery preparation, the 3rd behind it." },
+    { name: "The southern half of 931", at: 361, note: "By 03:00 the 2nd and 3rd Battalions hold the southern half of Hill 931 and beat off a counter-attack." },
+    { name: "The French from the north", at: 541, note: "With daylight (est. 06:00) the French close in from the north as the battalions press on to meet them; 931 is taken before noon.", arrive: ["French Battalion (from the north)"] },
+  ],
   objective: { at: H931, side: 0, name: "Hill 931", radius: 3 },
   id: "heartbreak-1951", name: "Hill 931 on Heartbreak Ridge, October 1951", sides: ["United Nations", "North Koreans"], table: "korea-1950-53-hospitalized",
   travel: { map: "heartbreak-1951", place: "Hill 931", within: 1, sides: ["United Nations", "North Koreans"] },
@@ -81,7 +86,9 @@ writeField({
     "What happened, briefly: the 23rd Infantry and the French Battalion attacked up the ridge from",
     "13 September 1951 and took and lost Hill 931 several times against North Koreans in bunkers,",
     "with heavy losses on both sides. In October the 2nd Division attacked along the whole front:",
-    "the 23rd went in on the night of 5 October and before noon the next day Hill 931 was finally",
+    "the 23rd's 2nd Battalion went in along the crest on the night of 5 October with the 3rd behind it;",
+    "by 03:00 they held the southern half of 931, and by day the French closed in from the north. Before noon",
+    "Hill 931 was finally",
     "taken. From 10 October tanks went up the Mundung-ni valley behind the ridge, and the French",
     "took the last peak, Hill 851, at daybreak on 13 October. The tank company on this map came up",
     "the valley four days after 931 fell: the GM can leave it off.",

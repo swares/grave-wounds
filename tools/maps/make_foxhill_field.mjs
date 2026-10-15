@@ -38,13 +38,18 @@ const units = [
   at("Fox Company, 2nd Platoon (the west shoulder)", US, 55, MARINE, 10, [HILL[0] - 14, HILL[1] - 1], 3),
   { ...at("Heavy machine guns", US, 15, MG, 3, [HILL[0] + 4, HILL[1] - 6], N), fixed: [HILL[0], 26] },   // laid by day up the slope to the heights
   at("Company headquarters, mortars and the road block", US, 40, MARINE, 10, [HILL[0], HILL[1] + 14], S),
-  at("Chinese battalion from the heights (north)", CH, 500, PVA, 40, [HILL[0], 24], S),
-  at("Chinese battalion from the north-east", CH, 400, PVA, 30, [HILL[0] + 40, 34], 2),
-  at("Chinese battalion across the road (south)", CH, 400, PVA, 40, [HILL[0], ROAD(HILL[0]) + 10], N),
+  at("Chinese company from the heights (north)", CH, 200, PVA, 20, [HILL[0], 24], S),
+  at("Chinese companies fed in against the 2nd and 3rd Platoons", CH, 200, PVA, 20, [HILL[0] - 27, 21], 5),
+  at("Chinese on the road (stumbling into the command post)", CH, 100, PVA, 10, [HILL[0] + 24, ROAD(HILL[0] + 24) - 2], 3),
   at("Chinese machine guns", CH, 10, { ...MG, kit: "none", quality: "veteran", prone: false }, 2, [HILL[0] - 30, 30], 5),
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
+    { name: "The assault", at: 1, note: "02:30: the Chinese strike the north, west and south of the perimeter; the 3rd Platoon's forward squads are overwhelmed almost at once." },
+    { name: "Fresh companies fed in", at: 31, note: "Fresh Chinese companies are thrown at the junction of the 2nd and 3rd Platoons (est.: the history gives no time).", arrive: ["Chinese companies fed in against the 2nd and 3rd Platoons"] },
+    { name: "The attack broken", at: 241, note: "06:30: the attack can no longer be called organised; individual Chinese crawl up and throw grenades." },
+  ],
   objective: { at: HILL, side: 1, name: "the crest Fox Company held", radius: 7 },
   id: "foxhill-1950", name: "Fox Hill at Toktong Pass, 27-28 November 1950", sides: ["United Nations", "Chinese"], table: "korea-1950-53-hospitalized",
   travel: { map: "chosin-1950", place: "Toktong Pass (Fox Hill)", within: 1, sides: ["United Nations", "Chinese"] },
@@ -68,7 +73,10 @@ writeField({
     "dark night with a strong wind from the north-west. Corsairs fly only by day.",
     "",
     "What happened, briefly: Fox Company was posted on the hill on 27 November to hold the pass for",
-    "the regiments at Yudam-ni. That night a Chinese regiment attacked it from three sides. The",
+    "the regiments at Yudam-ni. At 02:30 Chinese in about company strength struck the north, west",
+    "and south of the perimeter and overran the 3rd Platoon's forward squads; fresh companies were",
+    "fed in against the 2nd and 3rd Platoons, and Chinese walking down the road stumbled into the",
+    "command post and the mortars. By 06:30 the attack was broken (Montross and Canzona). The",
     "Marines held the crest, lost and retook part of it, and held on for five days and nights,",
     "supplied by air drops and covered by the howitzers at Hagaru-ri and by Corsairs, until the",
     "1st Battalion, 7th Marines reached them across the mountains on 2 December. Of about 240 men,",

@@ -47,7 +47,6 @@ const MG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", for
 const units = [
   unit("1st Ranger Battalion (at the road crossing)", US, 380, RANGERS, [40, 44, 82]),
   unit("3rd Ranger Battalion (along the ditch)", US, 380, RANGERS, [36, 92, 96]),
-  unit("3rd Reconnaissance Troop platoon (following up the road)", US, 43, RANGERS, [8, 38, 112]),
   unit("Hermann Göring Division infantry (the town's edge)", DE, 400, GREN, [80, 40, Math.round(townEdge(80)) + 1]),
   unit("Machine guns in the farmhouses (west)", DE, 10, MG, [2, 51, 49]),
   unit("Machine guns in the farmhouses (east)", DE, 10, MG, [2, 95, 43]),
@@ -58,6 +57,12 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
+    { name: "Caught at first light", at: 1, note: "About 06:10, short of the town: three self-propelled guns open on the column." },
+    { name: "A hasty defence", at: 61, note: "By about 07:10 the battalions are in a crescent-shaped hasty defence; at 07:30 the 1st Battalion breaks radio silence." },
+    { name: "The tanks", at: 351, note: "About noon tanks come down from Highway 7 and drive through the Rangers.", arrive: ["Tanks (later in the morning)"] },
+    { name: "The last message", at: 366, note: "12:15 to 12:30: the last radio messages; the line is rolled up." },
+  ],
   objective: { at: [80, Math.ceil(townEdge(80)) - 1], side: 0, name: "the edge of Cisterna", radius: 3 },
   id: "cisterna-1944", name: "The Rangers at Cisterna, 30 January 1944", sides: ["Americans", "Germans"], table: "owens-wwii",
   travel: { map: "anzio-1944", place: "Cisterna", within: 2, sides: ["Americans", "Germans"] },
@@ -84,7 +89,9 @@ writeField({
     "houses, haystacks and dugouts start gone to ground; houses are buildings (cover).",
     "",
     "What happened, briefly: the Rangers had come four miles up the ditch in the dark, past German",
-    "posts, and were short of the town at dawn. Three self-propelled guns opened on them; the",
+    "posts, and were short of the town at dawn; the 3rd Reconnaissance Troop platoon following them",
+    "up the road had been caught on a German road block before dawn, and one man got back. Three",
+    "self-propelled guns opened on the Rangers at first light; the",
     "Rangers knocked them out, but machine guns, mortars and snipers pinned them in the open, and",
     "the Germans closed in from all sides. A few reached the buildings by the station. Around noon",
     "tanks drove through them and split them into small groups; the last radio message came at",

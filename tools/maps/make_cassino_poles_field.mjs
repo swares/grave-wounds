@@ -20,8 +20,8 @@ const PARA = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman",
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
 const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
-  at("3rd Carpathian Rifle Division, 1st Brigade (for Point 593)", PL, 900, POLE, 30, [P593[0] + 4, 12], S),
-  at("3rd Carpathian Rifle Division, 2nd Brigade (along Snakeshead)", PL, 700, POLE, 25, [P444[0] - 10, 30], S),
+  at("1st Carpathian Rifle Brigade, 2nd Battalion (for Point 593)", PL, 900, POLE, 30, [P593[0] + 4, 12], S),
+  at("1st Carpathian Rifle Brigade, 1st Battalion (along Snakeshead, for Albaneta)", PL, 700, POLE, 25, [P444[0] - 10, 30], S),
   at("5th Kresowa Division (for Phantom Ridge)", PL, 900, POLE, 30, [PHANTOM[0] + 4, 30], S),
   at("German paratroops on Point 593", DE, 150, PARA, 10, [P593[0], P593[1] + 2], N),
   at("German paratroops on Phantom Ridge", DE, 150, PARA, 12, [PHANTOM[0] + 2, PHANTOM[1] + 2], N),
@@ -32,6 +32,14 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
+    { name: "The advance", at: 1, note: "01:00 on 12 May, after the bombardment: the 1st Battalion goes for Albaneta and the Kresowa for Phantom Ridge." },
+    { name: "For Point 593", at: 31, note: "01:30: the 2nd Battalion sets off for Point 593.", arrive: ["1st Carpathian Rifle Brigade, 2nd Battalion (for Point 593)"] },
+    { name: "Point 593 taken", at: 61, note: "About 02:00 to 02:30: Point 593 is taken, then held against counter-attack after counter-attack." },
+    { name: "Forced off 593", at: 461, note: "About 08:40 the Poles are forced off 593 by the fifth German attack (one source)." },
+    { name: "Abandon 593", at: 721, note: "After 13:00 the decision is taken to abandon 593; at 15:00 the 1st Battalion is ordered back." },
+    { name: "The last men leave", at: 1111, note: "19:30: the last men of 4th Company leave 593." },
+  ],
   objective: { at: P593, side: 0, name: "Point 593", radius: 4 },
   id: "cassino-poles-1944", name: "The Poles at Point 593 and Phantom Ridge, 12 May 1944", sides: ["Allies", "Germans"], table: "owens-wwii",
   travel: { map: "cassino-1944", place: "Phantom Ridge", within: 1, sides: ["Allies", "Germans"] },
@@ -58,7 +66,9 @@ writeField({
     "",
     "What happened, briefly: in the fourth battle the 2nd Polish Corps (General Wladyslaw Anders)",
     "attacked the massif from the north at 01:00 on 12 May after an enormous bombardment. The",
-    "Carpathians took Point 593 and were thrown off it; the Kresowa Division fought on Phantom Ridge.",
+    "1st Carpathian Rifle Brigade made the attack: its 2nd Battalion took Point 593 about 02:00 and",
+    "was thrown off it in the morning, its 1st went for Albaneta; the last men left 593 at 19:30.",
+    "The Kresowa Division fought on Phantom Ridge.",
     "Losses were very heavy on both sides. With the French and British through the Gustav Line in",
     "the valleys, the paratroops gave up the massif on the 17th, and a Polish patrol raised the flag",
     "over the abbey on the morning of the 18th.",

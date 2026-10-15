@@ -31,8 +31,11 @@ objective: {at: [94, 142], side: 1, name: "G Company's hill on the southern peri
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:
   - {name: "The attack on G Company", at: 1, note: "Soon after 22:00 on 14 February the Chinese regiment from Hill 397 breaks into G Company's line."}
-  - {name: "G Company's hill falls; first reserves", at: 331, note: "About 03:30, with G Company's hill lost, a Ranger platoon and an F Company platoon reach it and counter-attack in the dark.", arrive: ["1st Ranger Company (reserve)"]}
+  - {name: "G Company's hill falls; first reserves", at: 331, note: "About 03:00 G Company gives up the rest of its hill; a Ranger platoon and an F Company platoon reach it and counter-attack in the dark.", arrive: ["1st Ranger Company (reserve)"]}
   - {name: "The dawn counter-attack fails", at: 496, note: "06:15: the counter-attack by the Rangers, F Company's platoon and G Company's survivors is driven back."}
+  - {name: "B Company counter-attacks", at: 721, note: "10:00: behind a mortar barrage and tank fire, B Company attacks G Company's hill; it is kept off the crest for hours (Mossman).", arrive: ["B Company, 23rd Infantry (reserve)"]}
+  - {name: "The hill retaken; the Chinese run", at: 1111, note: "About 16:30 B Company regains the rest of the hill as tanks appear on Route 24A; the Chinese on Hill 397 begin to run."}
+  - {name: "Task Force Crombez", at: 1156, note: "About 17:15: Crombez leads his tanks inside the perimeter (Mossman).", arrive: ["Task Force Crombez (tanks, up Route 24A)"]}
 ground: |
   FF.h..hhhFh..F.F..hhh.hh..h.hh..Fh..hFFh.FhF.hh.....Fhh...FhhFF.F...hhF.F.hFF..hh.rFh.F.h..h..h......h...FFF..F...h.hh....hhFhFFhhFhh.hFhh.h.hFh.hhhh..rhrhhhFhFF.F..hF.hhr.....h..hh..F.hFhhF.rF..h.r..
   .F.hh.Fhhhh.h..h.h..hF.rh.h.h....hh..F.hF.h.hh.h.........hFFF.rh.hh.h..Fh...hh.hhh.h.h..F.....h.hh..F....F.F..F..hF.Fh..h.hhh..FF..hFFrrFFhh..h.h......hF.h..F...r...Fh.h..hrhhhFFrhh..hhFh.hhh...hhh..F
@@ -234,4 +237,5 @@ units:
   - {name: "Chinese battalion (against C Company)", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 40, pos: [117, 6], facing: 4, size: company}
   - {name: "Chinese battalion (against K Company)", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [187, 86], facing: 3, size: company}
   - {name: "Chinese battalion (against the French)", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [16, 76], facing: 0, size: battalion}
+  - {name: "Task Force Crombez (tanks, up Route 24A)", side: 0, men: 80, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 4, pos: [99, 165], facing: 1, vehicle: tank, size: company}
   - {name: "Chinese machine guns (south)", side: 1, men: 15, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 3, pos: [76, 160], facing: 1, size: section}

@@ -55,6 +55,12 @@ const units = [
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
+    { name: "Pinned in the gully", at: 1, note: "09:00 (local): A Company is pinned below Darwin Hill, B Company on the open slope to the west." },
+    { name: "Shortly before noon", at: 176, note: "11:55: the Scout sent to evacuate H. Jones is shot down; shortly before noon the advance resumes." },
+    { name: "The Argentine counter-attack", at: 241, note: "13:00: an Argentine platoon counter-attacks at Darwin Hill.", arrive: ["Argentine reserve (Darwin)"] },
+    { name: "Darwin Hill taken", at: 254, note: "13:13 local: A Company reports Darwin Hill taken." },
+  ],
   objective: { at: [84, RIDGE(84)], side: 0, name: "the crest of Darwin Hill", radius: 7 },
   id: "goosegreen-1982", name: "Darwin Hill, Goose Green, 28 May 1982", sides: ["British", "Argentines"], table: "falklands-1982-wounds",
   travel: { map: "goosegreen-1982", place: "Darwin Hill", within: 1, sides: ["British", "Argentines"] },

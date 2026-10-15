@@ -66,9 +66,20 @@ const units = [
   at("Fighters from the farmland and slopes east", INS, 60, FIGHTER, 10, [72, 36], 3),
   at("RPG teams", INS, 15, { ...FIGHTER, weapon: "rpg" }, 3, [46, 14], 4),
   at("PKM machine guns", INS, 10, { ...M240, kit: "none", quality: "regular" }, 2, [64, 18], 3),
+  at("1st Platoon, Chosen Company (the QRF from Camp Blessing)", US, 20, { ...PARA, prone: false }, 5, [30, 66], N),
+  at("3rd Platoon, A Company, and the scouts (the second QRF)", US, 30, { ...PARA, prone: false }, 6, [48, 66], N),
 ];
 
 writeField({
+  phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
+    { name: "The first volley", at: 1, note: "04:20: some 200 fighters open fire on the base and above all on Observation Post Topside." },
+    { name: "Running to the post", at: 26, note: "04:45: Brostrom and Hovater run from the base up to the post." },
+    { name: "The Apaches arrive", at: 61, note: "About 05:20, an hour into the fight: two Apaches arrive; the first gun run is at 05:23.", arrive: ["Apaches (AH-64)"] },
+    { name: "The first medevac", at: 93, note: "05:52 to 06:05: the first medevac helicopter lands under fire." },
+    { name: "The QRF from Blessing", at: 102, note: "06:01: Chosen Company's 1st Platoon arrives in four Humvees after a 45-minute drive.", arrive: ["1st Platoon, Chosen Company (the QRF from Camp Blessing)"] },
+    { name: "Topside held", at: 131, note: "06:30: the most desperate fighting at Topside is over; the jets are now on call.", arrive: ["A-10, B-1B and F-15E (later in the morning)"] },
+    { name: "The second QRF", at: 241, note: "08:20: A Company's 3rd Platoon and the scouts arrive; by 08:30 the initiative is regained.", arrive: ["3rd Platoon, A Company, and the scouts (the second QRF)"] },
+  ],
   objective: { at: OP, side: 1, name: "Observation Post Topside", radius: 2 },
   id: "wanat-2008", name: "Wanat: the patrol base and the observation post, 13 July 2008", sides: ["United States", "Insurgents"], table: "oif-oef-2001-wounds",
   travel: { map: "wanat-2008", place: "Wanat (Vehicle Patrol Base Kahler)", within: 1, sides: ["United States", "Insurgents"] },

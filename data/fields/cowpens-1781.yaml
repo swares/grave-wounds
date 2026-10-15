@@ -23,6 +23,14 @@ table: revolution-1775-83-all-hits
 travel: {map: cowpens-1781, place: "Hannah's Cowpens", within: 2, sides: ["Americans", "British"]}
 size: [120, 100]
 weather: {cond: fair, wind: calm, dir: NW, ground: {mud: 0, snow: 0}}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "The British attack", at: 1, note: "About sunrise (about 07:00): Tarleton attacks at once after his night march."}
+  - {name: "In musket range", at: 4, note: "In under three minutes the British are within musket range of the militia."}
+  - {name: "The militia fall back", at: 13, note: "After 8 to 12 minutes of fire (est.) the militia fall back round the Continentals' left."}
+  - {name: "About-face and bayonets", at: 46, note: "07:45: the Continentals face about, halt, fire and charge with the bayonet; Washington's horse come in."}
+  - {name: "Over", at: 61, note: "By 08:00 the battle is over."}
 ground: |
   FFFFFF..mmmm....................................................................................................mmmmFFFF
   FFFFFF..mmmm....................................................................................................mmmmFFFF
