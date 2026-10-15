@@ -150,8 +150,9 @@ def _commit(d: Data, us: list, side, known: dict, memory: dict) -> list:
 
 def _fix_lines(d: Data, us: list, side, ctx: tuple) -> list:
     """Holding, by day or at dusk (a line cannot be laid in the dark), each of its machine guns
-    on foot, steady, with men and no fixed line yet, is laid on the hex where the nearest enemy
-    it knows of stands (or was last seen; the lowest index of equals), if its guns reach it.
+    on foot, steady and with men (_fix_order): with no fixed line, laid on the nearest enemy it
+    knows of within its reach, else ahead toward the nearest enemy it knows of (or along its
+    facing); a line laid ahead is shifted once onto an enemy that comes into its reach off it.
     -> [fix orders]."""
     field, known, exchange = ctx
     light = U.light_of(d, field)
@@ -159,17 +160,62 @@ def _fix_lines(d: Data, us: list, side, ctx: tuple) -> list:
         return []
     out = []
     for i, u in enumerate(us):
-        if u["side"] != side or u.get("fixed") or u.get("vehicle") or not U.is_mg(d, u["weapon"]) or u["state"] != "steady" or u["men"] <= 0:
+        if u["side"] != side or u.get("vehicle") or not U.is_mg(d, u["weapon"]) or u["state"] != "steady" or u["men"] <= 0:
             continue
-        if exchange is not None and u.get("arrived") == exchange:
+        if (exchange is not None and u.get("arrived") == exchange) or (u.get("fixed") and not u.get("fix_ahead")):
             continue
-        foes = sorted((U.hdist(u["pos"], m["pos"]), int(k)) for k, m in known.items() if k.isdigit())
-        foes = [(dist, j) for dist, j in foes if dist > 0 and U.field_range(d, u["weapon"], dist) is not None]
-        if foes:
-            j = foes[0][1]
-            us[i] = {**u, "fixed": list(known[str(j)]["pos"])}
-            out.append({"unit": i, "act": "fix", "target": j, "hex": list(known[str(j)]["pos"])})
+        o = _fix_order(d, us, i, field, known)
+        if o is not None:
+            us[i] = {k: v for k, v in u.items() if k != "fix_ahead"} | {"fixed": o["hex"], **({"fix_ahead": True} if o.get("ahead") else {})}
+            out.append({"unit": i, **o})
     return out
+
+
+def _fix_order(d: Data, us: list, i: int, field: dict | None, known: dict) -> dict | None:
+    """Machine gun i's fixed line: on the nearest enemy it knows of within its reach (the lowest
+    index of equals); with none, and no line yet, ahead (_line_ahead); a line laid ahead is
+    shifted onto such an enemy only if it stands off the line (relay). None: no change."""
+    u = us[i]
+    foes = sorted((U.hdist(u["pos"], m["pos"]), int(k)) for k, m in known.items() if k.isdigit())
+    near = [(dist, j) for dist, j in foes if dist > 0 and U.field_range(d, u["weapon"], dist) is not None]
+    if near:
+        j = near[0][1]
+        at = list(known[str(j)]["pos"])
+        if u.get("fixed") and _on_line(d, u, at):
+            return None
+        return {"act": "fix", "target": j, "hex": at, **({"relay": True} if u.get("fixed") else {})}
+    if u.get("fixed"):
+        return None
+    toward = known[str(foes[0][1])]["pos"] if foes else None
+    at = _line_ahead(d, u, field, toward)
+    return None if at is None else {"act": "fix", "target": foes[0][1] if foes else None, "hex": at, "ahead": True}
+
+
+def _on_line(d: Data, u: dict, h) -> bool:
+    """Whether hex h lies within light.fixed_line.width of machine gun u's fixed line."""
+    front = U.footprint(d, u)[0]
+    g = front[len(front) // 2]
+    n = U.hdist(g, u["fixed"])
+    w = d.weather["light"]["fixed_line"]["width"]
+    return n > 0 and any(U.hdist(x, h) <= w for x in U.ray(g, u["fixed"], n)[1:])
+
+
+def _line_ahead(d: Data, u: dict, field: dict | None, toward) -> list | None:
+    """The hex a machine gun lays a line ahead on: along the line from the middle of its front
+    toward `toward` (an enemy it knows of, out of its reach), else along its facing, the
+    furthest hex before the first it cannot reach or see (or the map's edge). None if not one."""
+    front = U.footprint(d, u)[0]
+    g, reach = front[len(front) // 2], max((n for n in range(1, 400) if U.field_range(d, u["weapon"], n) is not None), default=0)
+    far = list(toward) if toward is not None else g
+    for k in range(0 if toward is not None else 2 * reach):
+        far = U.step(far, u["facing"] + k % 2)
+    size, best = (field or {}).get("size") or [10**6, 10**6], None
+    for x in U.ray(g, far, U.hdist(g, far))[1:]:
+        on = 0 <= x[0] < size[0] and 0 <= x[1] < size[1]
+        if not on or U.field_range(d, u["weapon"], U.hdist(u["pos"], x)) is None or not U._sees(d, field, u, x, U._sight_hexes(d, field, x, U._seer(u))):
+            break
+        best = list(x)
+    return best
 
 
 def _gap_left(us: list, side, plan: dict) -> list | None:

@@ -26,7 +26,9 @@ and whichever is shorter counts. The dark also slows a march and turns men round
 - **Fixed lines.** Before dark a machine gun can be laid on a fixed line. In the dark, with
   no target it can see, it fires blind down the line at an enemy within {{n_fixed_width}}
   hex of it, at −{{n_fixed}}%. The enemy commander, holding, lays its machine guns' lines by
-  day or at dusk on the nearest enemy it knows of.
+  day or at dusk on the nearest enemy it knows of in reach, or else ahead toward one (or
+  straight ahead) as far as it can reach and see, shifting such a line once onto an enemy
+  that comes into reach off it.
 - **The enemy commander** knows only what its units see, so at night it waits for the
   enemy to come close or to fire.
 

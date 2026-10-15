@@ -416,10 +416,20 @@ general. All its numbers are in units.yaml `commander`.
   - Its units weigh an enemy within 4 hexes of the objective 30 points more as a target.
   - A unit at the objective digs in there when it is safe to (*Digging in*, above).
 - **Fixed lines.** Holding, by day or at dusk (a line cannot be laid in the dark), each of
-  its machine guns on foot, steady and with no fixed line yet, is laid on the hex where the
-  nearest enemy it knows of stands (or was last seen), if its guns reach it. Once dark, it
-  fires blind down that line as a machine gun the GM laid does (see Night). It does not
-  re-lay a line, and attacking it lays none.
+  its machine guns on foot, steady and with men:
+  - **On an enemy.** With no fixed line yet, it is laid on the hex where the nearest enemy
+    it knows of stands (or was last seen), if its guns reach it.
+  - **Ahead.** With no enemy it knows of within its reach, it is laid ahead: from the middle
+    of its front toward the nearest enemy it knows of (out of reach), or along its facing if
+    it knows of none, as far as its guns reach and it can see now. The line stops before the
+    first hex it cannot reach or see (woods, buildings, a crest, the weather's sight or the
+    light's at dusk) or the map's edge; if it cannot see even the first hex, none is laid.
+  - **Shifted once.** A line laid ahead is shifted onto the hex of the nearest enemy it
+    knows of that comes into its reach, unless that enemy already stands within a hex of the
+    line. A line laid on an enemy, or by the GM, is not moved, and a shifted line is not
+    shifted again.
+  - Once dark, it fires blind down its line as a machine gun the GM laid does (see Night).
+    Attacking, it lays none.
 - **Its sappers** (units marked sappers; see Minefields).
   - **Attacking**, they lift the known enemy mines in the row ahead of their front when the
     straight way to their target (where last seen), or with no target to the objective,
@@ -550,8 +560,8 @@ general. All its numbers are in units.yaml `commander`.
   - **Undo its orders** calls that fire off again.
 
 What it does not do yet:
-- It leaves works alone, lays a fixed line only on an enemy it knows of (not on ground it
-  only expects them to cross), moves its air controllers to see a target only when attacking,
+- It leaves works alone, lays a fixed line ahead only straight toward the nearest enemy it
+  knows of or along its facing (no lines across its front, no interlocking lines), moves its air controllers to see a target only when attacking,
   only a move's worth, and only when they would otherwise stand; it plans no creeping barrage for
   riflemen who stop at range.
 - Its reserve holds until committed; then a unit sent to plug a gap goes there, and others

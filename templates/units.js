@@ -2249,20 +2249,52 @@ function commitReserve(us, side, known, memory){   // one reserve unit committed
   us[pick].reserve = false;
   return [{ unit: pick, act: "commit", why }];
 }
-function fixLines(us, side, [field, known, exchange]){   // holding, by day or at dusk, its machine guns with no fixed line are laid on the nearest known enemy in reach (as commander._fix_lines)
+function fixLines(us, side, [field, known, exchange]){   // holding, by day or at dusk, its machine guns: with no fixed line, laid on the nearest known enemy in reach, else ahead toward the nearest known enemy (or along its facing); a line laid ahead is shifted once onto an enemy in reach off it (as commander._fix_lines)
   if (lightOf(field) && field?.weather?.light !== "dusk") return [];
   const out = [];
   us.forEach((u, i) => {
-    if (u.side !== side || u.fixed || u.vehicle || !isMg(u.weapon) || u.state !== "steady" || u.men <= 0) return;
-    if (exchange !== null && u.arrived === exchange) return;
-    const foes = knownFoes(known).map(([k, m]) => [hdist(u.pos, m.pos), Number(k)]).filter(([dist]) => dist > 0 && fieldRange(u.weapon, dist) !== null)
-      .sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-    if (!foes.length) return;
-    const j = foes[0][1], at = [...known[String(j)].pos];
-    us[i] = { ...u, fixed: at };
-    out.push({ unit: i, act: "fix", target: j, hex: at });
+    if (u.side !== side || u.vehicle || !isMg(u.weapon) || u.state !== "steady" || u.men <= 0) return;
+    if ((exchange !== null && u.arrived === exchange) || (u.fixed && !u.fix_ahead)) return;
+    const o = fixOrder(us, i, field, known);
+    if (!o) return;
+    const rest = { ...u };
+    delete rest.fix_ahead;
+    us[i] = { ...rest, fixed: o.hex, ...(o.ahead ? { fix_ahead: true } : {}) };
+    out.push({ unit: i, ...o });
   });
   return out;
+}
+function fixOrder(us, i, field, known){           // machine gun i's fixed line: on the nearest known enemy in reach; with none and no line yet, ahead (lineAhead); a line laid ahead shifted onto such an enemy off it (relay); null: no change (as commander._fix_order)
+  const u = us[i];
+  const foes = knownFoes(known).map(([k, m]) => [hdist(u.pos, m.pos), Number(k)]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const near = foes.filter(([dist]) => dist > 0 && fieldRange(u.weapon, dist) !== null);
+  if (near.length){
+    const j = near[0][1], at = [...known[String(j)].pos];
+    if (u.fixed && onLine(u, at)) return null;
+    return { act: "fix", target: j, hex: at, ...(u.fixed ? { relay: true } : {}) };
+  }
+  if (u.fixed) return null;
+  const at = lineAhead(u, field, foes.length ? known[String(foes[0][1])].pos : null);
+  return at === null ? null : { act: "fix", target: foes.length ? foes[0][1] : null, hex: at, ahead: true };
+}
+function onLine(u, h){                            // hex h within light.fixed_line.width of machine gun u's fixed line (as commander._on_line)
+  const front = footprint(u)[0], g = front[Math.floor(front.length / 2)], n = hdist(g, u.fixed), w = FD.weather.light.fixed_line.width;
+  return n > 0 && ray(g, u.fixed, n).slice(1).some(x => hdist(x, h) <= w);
+}
+function lineAhead(u, field, toward){             // the hex a machine gun lays a line ahead on: along the line from its front's middle toward a known enemy out of reach, else along its facing, the furthest hex before the first it cannot reach or see, or the map's edge; null if none (as commander._line_ahead)
+  const front = footprint(u)[0], g = front[Math.floor(front.length / 2)];
+  let reach = 0;
+  for (let n = 1; n < 400; n++) if (fieldRange(u.weapon, n) !== null) reach = n;
+  let far = toward !== null ? [...toward] : g;
+  for (let k = 0; k < (toward !== null ? 0 : 2 * reach); k++) far = step(far, u.facing + (k % 2));
+  const size = field?.size || [1e6, 1e6];
+  let best = null;
+  for (const x of ray(g, far, hdist(g, far)).slice(1)){
+    const on = x[0] >= 0 && x[0] < size[0] && x[1] >= 0 && x[1] < size[1];
+    if (!on || fieldRange(u.weapon, hdist(u.pos, x)) === null || !sees(field, u, x, sightHexes(field, x, seerOf(u)))) break;
+    best = [...x];
+  }
+  return best;
 }
 function gapLeft(us, side, plan){                 // where the first of its units newly broken stood at its last move, or null; then where its standing units are now (as commander._gap_left)
   const was = plan.stood || {};
