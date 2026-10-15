@@ -2449,9 +2449,9 @@ function callFireAi(us, side, field, known, [stance, exchange, orders, table] = 
     if (b.mission) return;
     const aim = fireAim(us, side, field, known, b, K);
     if (!aim) return;
-    const run = K.air ? airRun(us, side, b, K, aim, table) : null;
+    const run = K.air ? airRun(us, side, b, K, aim, [table, field]) : null;
     b.mission = { hex: aim[1], wait: K.delay, repeat: false, ...run };
-    out.push({ unit: null, act: "fire", battery: k, target: aim[0], hex: aim[1], ...(run ? { attack: run.attack } : {}) });
+    out.push({ unit: null, act: "fire", battery: k, target: aim[0], hex: aim[1], ...(run ? { attack: run.attack } : {}), ...(K.air && facSees(us, field, b, aim[1]) ? { fac: true } : {}) });
   });
   return out;
 }
@@ -2474,14 +2474,14 @@ function callCreep(us, side, field, [known, orders], free){   // attacking: a cr
   }
   return [];
 }
-function airRun(us, side, b, K, [j, h], table){     // a strafing run or napalm strip along a wide enemy front, its line clear of its own men by the scatter; or null (as commander._air_run)
+function airRun(us, side, b, K, [j, h], [table, field]){   // a strafing run or napalm strip along a wide enemy front, its line clear of its own men by the scatter (cut where a controller sees the aim); or null (as commander._air_run)
   const R = UD.indirect.air.runs || {}, rows = footprint(us[j]), front = rows.length ? rows[0].length : 0;
   const war = table ? FD.tables[table]?.battle ?? null : null, dirn = (us[j].facing + 5) % 6;
   const ours = us.filter(u => u.side === side && u.men > 0 && u.state !== "fled");
   for (const mode of ["napalm", "strafe"]){
     const r = R[mode];
     if (!r?.kinds.includes(b.kind) || front < r.length || (r.wars && !r.wars.includes(war))) continue;
-    if (!runLine(h, dirn, mode).some(x => tooNear(ours, x, K.scatter))) return { attack: mode, dir: dirn };
+    if (!runLine(h, dirn, mode).some(x => tooNear(ours, x, airScatter(us, field, b, K, h)))) return { attack: mode, dir: dirn };
   }
   return null;
 }
@@ -2580,19 +2580,20 @@ function shootingAt(us, side, known){              // [[distance, enemy index]],
   }
   return [...seen.values()].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
 }
-function fireAim(us, side, field, known, b, K){    // [enemy index, hex] to fire on, or null
+function fireAim(us, side, field, known, b, K){    // [enemy index, hex] to fire on, or null: none of its men within burst and scatter (airScatter); aircraft prefer an aim a controller sees (as commander._fire_aim)
   const ours = us.filter(u => u.side === side && u.men > 0 && u.state !== "fled");
   let best = null;
   us.forEach((e, j) => {
     if (e.side === side || !(String(j) in known) || !ours.length) return;
     const h = marksOf(e).find(x => spotted(us, field, side, x));
-    if (!h || !inReach(b, h) || tooNear(ours, h, K.radius + K.scatter)) return;
+    if (!h || !inReach(b, h) || tooNear(ours, h, K.radius + airScatter(us, field, b, K, h))) return;
     const u = ours.reduce((a, o) => (hdist(o.pos, e.pos) < hdist(a.pos, e.pos) ? o : a), ours[0]);
-    const sc = threatScore(u, e, e);
-    if (!best || sc > best[0]) best = [sc, [j, [...h]]];
+    const talked = !!K.air && facSees(us, field, b, h), sc = threatScore(u, e, e);
+    if (!best || (talked && !best[0]) || (talked === best[0] && sc > best[1])) best = [talked, sc, [j, [...h]]];
   });
-  return best ? best[1] : null;
+  return best ? best[2] : null;
 }
+const airScatter = (us, field, b, K, h) => (K.air && field && facSees(us, field, b, h) ? Math.floor(K.scatter / UD.indirect.air.fac.scatter) : K.scatter);   // aircraft scatter at h: cut where a controller of their side sees it (as commander._air_scatter)
 const marksOf = e => { const rows = footprint(e); return [e.pos, ...(rows.length ? [rows[0][0], rows[0].at(-1)] : [])] };   // its middle hex, then either end of its front row
 const tooNear = (ours, h, r) => ours.some(u => footprint(u).flat().some(x => hdist(x, h) <= r));   // any of the side's hexes within r of h
 function sightings(us, side, field, exchange, memory){   // {index: {pos, facing, ex}}: enemies seen now where they stand; others where last seen, for remember exchanges

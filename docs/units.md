@@ -137,6 +137,17 @@ that does not fit down its side's edge, it is added narrower and deeper (a quart
 at a time, its rear still on the map) until it fits, and the message says so. **Wider**
 and **Narrower** change it afterwards.
 
+**Entry edges.** Each side brings new units in at its own map edge. In set-up they come in
+8 hexes in from it, from the middle of the edge outwards, facing into the map. During the
+battle they come on at the edge itself.
+- **Which edge.** A battlefield can name the edges (`entry: [S, N]`, side A's first).
+  Otherwise each side uses the edge behind the way most of its men face, which puts the
+  Redan's British in at the south and the Russians at the north.
+- **Sharing.** If both sides would use the same edge, the second side takes the opposite
+  one. That happens at Mogadishu, where both sides mostly face north.
+- **No units yet.** A side with no units uses the edge opposite the other side's. On open
+  ground with no units at all, side A uses the west edge and side B the east.
+
 **Unit markers.** On its centre hex each unit carries a marker, drawn like a military map
 symbol:
 - **Frame.** The first side's units have a rectangle, the second side's a diamond, in the
@@ -169,6 +180,23 @@ symbol:
   IDs or both. An ID is the side's initial and the unit's number on its side (B3), or A and
   B when the two sides share an initial. A unit keeps its ID for the whole battle, and the
   units list shows it with each unit's full name. *Strength* adds the men after the label.
+
+**Rules on the map.** Four overlays, each switched on or off under the map (all on by
+default):
+- **Move and fire (selected unit).** The hexes the selected unit's centre can reach this
+  exchange are shaded in its side's colour, from the same movement rules the board uses
+  for a move. Paler shading covers the ground it can shoot into: ahead of its front, within
+  its weapon's reach after the weather and the height between. The shading uses the same
+  test as choosing a target, seen from the nearest front hex. A unit or ground in the way
+  may still block a shot. Hand weapons have no field of fire.
+- **Entry edges (set-up only).** Hatching in each side's colour marks the 8 hexes in from
+  its entry edge (above), where its new units come in.
+- **Grid references and scale.** Every tenth column and row is numbered and dashed. These
+  are the numbers the messages use for hexes (34,60). A scale bar shows 10 hexes (5 on a
+  small field) in the distance units chosen at the top of the page.
+- **Batteries on call.** A side's batteries with no place on the map show as chips on the
+  edge behind its army: tubes, kind, "on call". The edge behind is the way its units face.
+  A placed battery is drawn where it stands, as before.
 
 The defaults are units.yaml `markers` (names, strength on, size marks off). A battlefield
 can set its own with `markers: {labels, strength, size}`: both Redan battlefields use IDs,
@@ -433,6 +461,12 @@ general. All its numbers are in units.yaml `commander`.
   - **Aircraft.** Its aircraft on call with attacks left are called the same way, unless the
     weather or the dark grounds them. Fighter-bombers come in two exchanges later; a forward
     air controller of its side who sees the aim cuts their scatter as usual.
+    - **With a controller.** It prefers an enemy one of its forward air controllers (a unit
+      marked Air controller) can see, then the best-scoring as above. Where a controller sees
+      the aim, it keeps its men clear of the burst and the cut scatter only (fighter-bombers:
+      4 + 1 hexes rather than 4 + 3), so it can call them closer to its own men; the same
+      goes for a strafing run's or napalm strip's line. The order says a controller is
+      talking them on.
     - On an enemy whose front is as wide as a run, they fly it along that front: a napalm
       strip (3 hexes; fighter-bombers, in the wars that used napalm), else a strafing run
       (5 hexes). They do so only when none of its men are within the aircraft's scatter of
@@ -471,7 +505,7 @@ general. All its numbers are in units.yaml `commander`.
   - **Undo its orders** calls that fire off again.
 
 What it does not do yet:
-- It leaves alone air controllers, fixed lines and works; it plans no creeping barrage for
+- It leaves alone fixed lines and works, and does not move its air controllers to see a target; it plans no creeping barrage for
   riflemen who stop at range.
 - Its reserve has no orders beyond holding and, once committed, fighting: it does not plug
   a named gap, and reserve units ignore the objective until committed.
@@ -1371,6 +1405,28 @@ Lane, the windmill battery at Lützen, the heights at Albuera, the edge of Ciste
 wagon-box corral. The open-field battles (Agincourt, Towton, Visby, Cowpens), the ambush
 on Lodge Trail Ridge, the Jolan at Fallujah and the unfinished wall at Sidon have none:
 they were not fought for one place, or the map does not place it.
+
+**Phases.** A battlefield can split its battle into phases (`phases` in its file). Each phase
+has a name, the exchange it begins (the first at 1; an exchange is about a minute), a note on
+what happened, and the units it brings on.
+- **Waiting units.** Laying out the armies holds those units off the map. They keep their
+  IDs, so the Redan's supports are still B5.
+- **The strip.** A strip above the map lists the phases during set-up. In the battle it
+  shows the current phase, its note and what comes next. The log marks each new phase.
+- **Arriving.** When a phase begins, its units come on where the battlefield draws them, or
+  at their side's entry edge if that ground is taken. Like any unit brought on, they can
+  move from the next exchange. A unit with no room at all waits and tries again each
+  exchange.
+- **Where they're used.** Phases apply with *the armies as drawn up*, not to forces sent
+  from the travel map.
+
+Three battlefields have phases so far. The times are our reading of the accounts, rounded:
+- **The Redan, 8 September:** the stormers go over (1); the supports come forward (10); the
+  Russian reserves counter-attack (80, after about an hour and a half).
+- **The Redan, 18 June:** the columns go out (1); their supports follow (4); the Russian
+  reserve comes up (15).
+- **Lundy's Lane:** Scott attacks the hill (1, about 7 pm); Ripley, Porter and Drummond's
+  column come up (120, about 9 pm); Drummond counter-attacks (150, until near midnight).
 
 **From the travel map.** A battlefield can name a place on a travel map and how close
 counts (`travel` in its file). Agincourt names Azincourt, within 1 hex. When the defender
