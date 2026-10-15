@@ -18,12 +18,12 @@ When an item is done, delete it here and note it in the pull request that closes
   the field map. It attacks or holds by its units' quality, knows only what its units see
   (remembering last sightings for a few exchanges), picks targets by threat and weakness,
   holds back and commits a reserve, steers round minefields it knows of, turns its guns and
-  calls its off-map batteries, limbers, tows, moves up and pulls back its guns, storms works with black-powder infantry, charges through its own waiting units, sets its sappers to lay or lift mines, and takes or holds an
+  calls its off-map batteries, limbers, tows, moves up and pulls back its guns, puts its men aboard its carriers and sets them down, storms works with black-powder infantry, charges through its own waiting units, sets its sappers to lay or lift mines, and takes or holds an
   objective hex the GM marks (and a second it goes on to, or falls back to); Undo puts
   its move back. It looks once at the start of each move. Attacking, it smokes enemies
   shooting at men who cannot reply, calls its aircraft, puts one battery on counter-battery fire and displaces batteries under it (moving a placed one along its map edge), and in the dark lights an enemy it has lost sight of. Its sappers lay one row at a time (no deep belts), and work a lane through a known belt
   row by row along their straight way, one lane as wide as their front; the other units are not held back for it. Its creeping barrages start on the enemy and lift a fixed 3 lines, and it plans none
-  for riflemen who stop at range. Still left out: air controllers, riders, fixed lines and works; any plan beyond two
+  for riflemen who stop at range. Its foot units ride its carriers up and get down once an enemy is in reach. Still left out: air controllers, fixed lines and works; any plan beyond two
   objectives (phase lines across the front, feints, scouting; no battlefield marks a second); ladders only where the GM or a battlefield marks them (the Great Redan's ladder parties are marked, but ladders do nothing on its ditch and bank). It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model
   with a key the player supplies, to explain its orders in prose.

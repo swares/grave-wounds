@@ -2958,11 +2958,12 @@ function command(units, side, size, field, rng, exchange = null, { stance = "att
   const known = sightings(us, side, field, exchange, mem), aim = aims(us, side, field, stance, mem);
   const goal = aim[1];                              // the field with the objective most of its units go for (with a second one marked)
   { const h = hookUp(us, side, [goal, known, exchange, stance]); us = h.units; orders.push(...h.orders) }
+  { const r = ridersAi(us, side, [goal, known, exchange, stance], orders); us = r.units; orders.splice(0, orders.length, ...r.orders) }
   holdBack(us, side, known);
   orders.push(...commitReserve(us, side, known, mem));
   for (let i = 0; i < us.length; i++){
     if (us[i].side !== side || !commandable(us, i, exchange)) continue;
-    const roll = rng.randint(1, 100), o = unitOrder(us, i, [size, aimOf(i, aim), stance, known, exchange], roll);
+    const roll = rng.randint(1, 100), o = unitOrder(us, i, [size, aimOf(us, i, aim), stance, known, exchange], roll);
     if (o){ orders.push({ unit: i, ...o }); applyOrder(us, i, o) }
   }
   orders.push(...moveGuns(us, side, [size, goal, stance, known, exchange]), ...layGuns(us, side, [size, goal, known, exchange]), ...callFireAi(us, side, goal, known, [stance, exchange, orders, table]));
@@ -2976,11 +2977,11 @@ function aims(us, side, field, stance, mem){       // [the field as its garrison
   const at = [[...field.objective], [...field.objective2]];
   if (!plan.garrison || JSON.stringify(plan.garrison.at) !== JSON.stringify(at)){
     const r = objectiveRadii(field)[0];
-    plan.garrison = { at, units: us.map((u, k) => k).filter(k => us[k].side === side && us[k].men > 0 && !ROUTED.has(us[k].state) && offObjective(us[k], field.objective) <= r) };
+    plan.garrison = { at, units: us.map((u, k) => k).filter(k => us[k].side === side && us[k].men > 0 && !ROUTED.has(us[k].state) && offObjective(us[k], field.objective) <= r).map(k => us[k].id ?? k) };
   }
   return [field, second, plan.garrison.units];
 }
-const aimOf = (i, aim) => (aim[2].includes(i) ? aim[0] : aim[1]);   // the field (objective) unit i goes for: the first's if it is in the garrison (as commander._aim)
+const aimOf = (us, i, aim) => (aim[2].includes(us[i].id ?? i) ? aim[0] : aim[1]);   // the field (objective) unit i goes for: the first's if it is in the garrison, by id (as commander._aim)
 const knownFoes = known => Object.entries(known).filter(([k]) => /^\d+$/.test(k));   // [index, {pos, facing, ex}] of the enemies it knows of
 function holdBack(us, side, known){                // at its first move (unless the GM marked reserves), its rearmost units up to commander.reserve % of its men are held back (as commander._hold_back)
   const mine = us.map((u, i) => i).filter(i => us[i].side === side && us[i].men > 0 && !ROUTED.has(us[i].state));
@@ -3048,6 +3049,49 @@ function gunReady(us, i, side, exchange){           // a gun unit of the side it
   if (u.side !== side || u.state !== "steady" || u.men <= 0 || u.abandoned) return false;
   if ((exchange !== null && u.arrived === exchange) || u.limbering || u.resupplying) return false;
   return !inContact(us, occupancy(us), i);
+}
+function ridersAi(units, side, ctx, orders0){     // {units, orders}: its carriers' riders get down; then, attacking, its foot units get aboard empty carriers beside them (as commander._riders)
+  let us = units, orders = orders0;
+  for (let j = 0; j < us.length; j++){
+    const r = getDown(us, j, side, ctx);
+    if (r){ us = r.units; orders.push(r.order) }
+  }
+  if (ctx[3] !== "attack") return { units: us, orders };
+  let i = 0;
+  while (i < us.length){
+    const j = carrierFor(us, i, side, ctx);
+    if (j === null){ i++; continue }
+    const name = us[i].name ?? null;
+    us = mountUnit(us, i, j).units;
+    dropIndex(ctx[1], i);
+    orders = orders.map(o => (Number.isInteger(o.unit) ? { ...o, unit: o.unit - (o.unit > i ? 1 : 0) } : o));
+    orders.push({ unit: j - (j > i ? 1 : 0), act: "mount", riders: name });
+  }
+  return { units: us, orders };
+}
+const weaponsReach = (weapons, dist) => weapons.some(w => "range" in FD.weapons[w] && fieldRange(w, dist) !== null);   // any of these weapons that shoot reaches dist (as commander._in_reach)
+const enemyInReach = (at, weapons, known) => knownFoes(known).some(([, m]) => weaponsReach(weapons, hdist(at, m.pos)));   // a known enemy within reach of any of them from at (as commander._enemy_in_reach)
+function getDown(us, j, side, [field, known, exchange]){   // {units, order} when carrier j's riders get down: an enemy it knows of in reach of theirs or its weapon, or at the objective (as commander._get_down)
+  const c = us[j], R = c.riders;
+  if (c.side !== side || !c.vehicle || !R || !(R.men > 0) || isAtGun(R) || ROUTED.has(c.state)) return null;
+  const obj = objectiveOf(field), atObj = obj !== null && offObjective(c, obj) <= objectiveRadii(field)[0];
+  if (!atObj && !enemyInReach(c.pos, [R.weapon, c.weapon], known)) return null;
+  const r = dismountUnit(us, j, fieldSize(field), field);
+  if (!r.ok) return null;
+  return { units: [...r.units.slice(0, -1), { ...r.units.at(-1), arrived: exchange }], order: { unit: j, act: "dismount", riders: R.name ?? null } };
+}
+function carrierFor(us, i, side, [field, known, exchange]){   // the first empty carrier beside attacking foot unit i it can board, with no known enemy in reach of its weapon or the carrier's; else null (as commander._carrier_for)
+  const u = us[i];
+  if (u.side !== side || u.vehicle || u.reserve || !commandable(us, i, exchange) || u.state !== "steady") return null;
+  if (u.digging || u.mining || u.clearing || u.prone) return null;
+  const obj = objectiveOf(field);
+  if (obj !== null && offObjective(u, obj) <= objectiveRadii(field)[0]) return null;
+  for (let j = 0; j < us.length; j++){
+    const c = us[j];
+    if (j === i || !c.vehicle || tractor(c) || (c.immobile || 0) >= vehiclesLeft(c) || !mountUnit(us, i, j).ok) continue;
+    if (![u.pos, c.pos].some(at => enemyInReach(at, [u.weapon, c.weapon], known))) return j;
+  }
+  return null;
 }
 function dropIndex(known, i){                       // unit i has left the list: the enemy indices remembered above it move down one (as commander._drop_index)
   const moved = Object.entries(known).map(([k, v]) => [/^\d+$/.test(k) && +k > i ? String(+k - 1) : k, v]);
@@ -4636,6 +4680,8 @@ const ORDER_TEXT = {                              // (who, them, o, up, facing) 
   close_up: (who, them, o) => `${who} close up ${nOf(o.cost, "hex", "hexes")} to the known minefield on their way to ${them}, to lift a lane through it.`,
   fetch: (who, them, o) => `${who} drive ${nOf(o.cost, "hex", "hexes")} to fetch ${S.units[o.guns]?.name || "their guns"}: they hook up next move.`,
   hook: (who, them, o) => `${who} hook up ${o.guns} to tow them forward: they do not fire until unhooked.`,
+  mount: (who, them, o) => `${o.riders} get aboard ${who}: they ride with them and do not fight until they get down.`,
+  dismount: (who, them, o) => `${o.riders} get down beside ${who}, to fight on foot from the next exchange.`,
   limber: (who, them, o) => (o.back ? `${who} limber up to pull back: ${them} could reach their guns (an exchange changing over).` : `${who} limber up to move forward (an exchange changing over).`),
   pull_back: (who, them, o) => `${who} pull their guns back ${nOf(o.cost, "hex", "hexes")}, away from ${them}.`,
   unlimber: who => `${who} unlimber to fire (an exchange changing over).`,

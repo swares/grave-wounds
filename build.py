@@ -524,7 +524,8 @@ def _commander_rules(d) -> list[str]:
         f"(the tractor counting 4 hexes less; empty tractors fetch them); moving guns stop in reach, no nearer than {K['keep_off']} hexes. Holding, its guns unlimber or unhook where they stand. "
         "Attacking or holding, guns a known enemy could reach at a charge, with no steady unit of its side on the line between, limber (or hook up) and pull back to the hex in their allowance furthest from it. "
         "Attacking, an empty tractor drives beside the nearest guns that want a tow, to hook them up next move. "
-        "It leaves strafing runs, napalm and works to the GM.",
+        "Attacking, a foot unit beside empty carriers of its side (not tractors) with room for it gets aboard while no enemy it knows of is in reach of its weapon or the carriers'; its carriers set riders down once one is, or at the objective. "
+        "It leaves works to the GM.",
     ]
 
 
