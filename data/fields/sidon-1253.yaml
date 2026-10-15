@@ -118,10 +118,10 @@ works:
     - {type: bank, at: [[[36, 60], [35, 59]], [[36, 60], [36, 59]], [[37, 60], [36, 59]], [[37, 60], [37, 59]], [[38, 60], [37, 59]], [[38, 60], [38, 59]], [[39, 60], [38, 59]], [[39, 60], [39, 59]], [[40, 60], [39, 59]], [[40, 60], [40, 59]], [[41, 60], [40, 59]], [[41, 60], [41, 59]], [[42, 60], [41, 59]], [[42, 60], [42, 59]], [[43, 60], [42, 59]], [[43, 60], [43, 59]], [[44, 60], [43, 59]], [[44, 60], [44, 59]], [[45, 60], [44, 59]], [[45, 60], [45, 59]], [[46, 60], [45, 59]], [[46, 60], [46, 59]]]}
     - {type: gate, at: [[[50, 60], [50, 59]]]}
 units:
-  - {name: "Crossbowmen of the garrison", side: 0, men: 300, quality: regular, weapon: crossbow, kit: hauberk, formation: open, width: 30, pos: [40, 61], facing: 1}
-  - {name: "Garrison sergeants", side: 0, men: 500, quality: regular, weapon: spear, kit: hauberk, formation: close, width: 25, pos: [40, 64], facing: 1}
-  - {name: "Knights", side: 0, men: 100, quality: veteran, weapon: sword, kit: hauberk, formation: close, width: 5, pos: [40, 67], facing: 1, mounted: true}
-  - {name: "Builders and townsmen", side: 0, men: 600, quality: green, weapon: axe, kit: none, formation: close, width: 30, pos: [40, 70], facing: 1}
-  - {name: "Horse archers", side: 1, men: 1500, quality: veteran, weapon: bow, kit: leather, formation: open, width: 40, pos: [42, 30], facing: 4, mounted: true}
-  - {name: "Heavy horse", side: 1, men: 800, quality: veteran, weapon: spear, kit: hauberk, formation: close, width: 20, pos: [42, 24], facing: 4, mounted: true}
-  - {name: "Foot", side: 1, men: 1500, quality: regular, weapon: sword, kit: gambeson, formation: close, width: 40, pos: [42, 20], facing: 4}
+  - {name: "Crossbowmen of the garrison", side: 0, men: 300, quality: regular, weapon: crossbow, kit: hauberk, formation: open, width: 30, pos: [40, 61], facing: 1, size: battalion}
+  - {name: "Garrison sergeants", side: 0, men: 500, quality: regular, weapon: spear, kit: hauberk, formation: close, width: 25, pos: [40, 64], facing: 1, size: battalion}
+  - {name: "Knights", side: 0, men: 100, quality: veteran, weapon: sword, kit: hauberk, formation: close, width: 5, pos: [40, 67], facing: 1, mounted: true, size: company}
+  - {name: "Builders and townsmen", side: 0, men: 600, quality: green, weapon: axe, kit: none, formation: close, width: 30, pos: [40, 70], facing: 1, size: battalion}
+  - {name: "Horse archers", side: 1, men: 1500, quality: veteran, weapon: bow, kit: leather, formation: open, width: 40, pos: [42, 30], facing: 4, mounted: true, size: regiment}
+  - {name: "Heavy horse", side: 1, men: 800, quality: veteran, weapon: spear, kit: hauberk, formation: close, width: 20, pos: [42, 24], facing: 4, mounted: true, size: battalion}
+  - {name: "Foot", side: 1, men: 1500, quality: regular, weapon: sword, kit: gambeson, formation: close, width: 40, pos: [42, 20], facing: 4, size: regiment}

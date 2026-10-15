@@ -156,13 +156,13 @@ support:
   - {name: "Tanks (later in the morning)", side: 1, kind: tank, tubes: 6}
   - {name: "German mortars", side: 1, kind: mortar, tubes: 8}
 units:
-  - {name: "1st Ranger Battalion (at the road crossing)", side: 0, men: 380, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 40, pos: [63, 82], facing: 1}
-  - {name: "3rd Ranger Battalion (along the ditch)", side: 0, men: 380, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 36, pos: [109, 96], facing: 1}
-  - {name: "3rd Reconnaissance Troop platoon (following up the road)", side: 0, men: 43, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 8, pos: [41, 112], facing: 1}
-  - {name: "Hermann Göring Division infantry (the town's edge)", side: 1, men: 400, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 80, pos: [80, 9], facing: 4, prone: true}
-  - {name: "Machine guns in the farmhouses (west)", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [52, 49], facing: 4, prone: true}
-  - {name: "Machine guns in the farmhouses (east)", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [96, 43], facing: 4, prone: true}
-  - {name: "Machine guns in the farmhouses (far east)", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [118, 61], facing: 4, prone: true}
-  - {name: "Riflemen in haystacks and dugouts (west)", side: 1, men: 150, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [19, 70], facing: 4, prone: true}
-  - {name: "Riflemen in haystacks and dugouts (east)", side: 1, men: 150, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [131, 84], facing: 4, prone: true}
-  - {name: "Paratroops by the station", side: 1, men: 120, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 24, pos: [14, 18], facing: 4}
+  - {name: "1st Ranger Battalion (at the road crossing)", side: 0, men: 380, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 40, pos: [63, 82], facing: 1, size: battalion}
+  - {name: "3rd Ranger Battalion (along the ditch)", side: 0, men: 380, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 36, pos: [109, 96], facing: 1, size: battalion}
+  - {name: "3rd Reconnaissance Troop platoon (following up the road)", side: 0, men: 43, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 8, pos: [41, 112], facing: 1, size: platoon}
+  - {name: "Hermann Göring Division infantry (the town's edge)", side: 1, men: 400, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 80, pos: [80, 9], facing: 4, prone: true, size: battalion}
+  - {name: "Machine guns in the farmhouses (west)", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [52, 49], facing: 4, prone: true, size: section}
+  - {name: "Machine guns in the farmhouses (east)", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [96, 43], facing: 4, prone: true, size: section}
+  - {name: "Machine guns in the farmhouses (far east)", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [118, 61], facing: 4, prone: true, size: section}
+  - {name: "Riflemen in haystacks and dugouts (west)", side: 1, men: 150, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [19, 70], facing: 4, prone: true, size: company}
+  - {name: "Riflemen in haystacks and dugouts (east)", side: 1, men: 150, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [131, 84], facing: 4, prone: true, size: company}
+  - {name: "Paratroops by the station", side: 1, men: 120, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 24, pos: [14, 18], facing: 4, size: company}

@@ -173,10 +173,10 @@ support:
   - {name: "Battalion 81 mm mortars", side: 0, kind: mortar, tubes: 8}
   - {name: "North Vietnamese mortars", side: 1, kind: mortar, tubes: 6}
 units:
-  - {name: "3/187 Infantry (up the north-west spur)", side: 0, men: 200, quality: veteran, weapon: rifle_assault, kit: vietnam_army, formation: extended, width: 14, pos: [48, 44], facing: 5}
-  - {name: "1/506 Infantry (up the south spur)", side: 0, men: 200, quality: veteran, weapon: rifle_assault, kit: vietnam_army, formation: extended, width: 14, pos: [72, 96], facing: 1}
-  - {name: "ARVN 2nd Battalion, 3rd Regiment (from the east)", side: 0, men: 200, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 14, pos: [102, 66], facing: 3}
-  - {name: "29th Regiment on the summit", side: 1, men: 120, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [70, 64], facing: 2, prone: true}
-  - {name: "29th Regiment in the north-west bunkers", side: 1, men: 60, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 8, pos: [60, 56], facing: 2, prone: true}
-  - {name: "29th Regiment in the south bunkers", side: 1, men: 60, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 8, pos: [72, 80], facing: 4, prone: true}
-  - {name: "North Vietnamese machine guns", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [78, 60], facing: 0, prone: true}
+  - {name: "3/187 Infantry (up the north-west spur)", side: 0, men: 200, quality: veteran, weapon: rifle_assault, kit: vietnam_army, formation: extended, width: 14, pos: [48, 44], facing: 5, size: battalion}
+  - {name: "1/506 Infantry (up the south spur)", side: 0, men: 200, quality: veteran, weapon: rifle_assault, kit: vietnam_army, formation: extended, width: 14, pos: [72, 96], facing: 1, size: battalion}
+  - {name: "ARVN 2nd Battalion, 3rd Regiment (from the east)", side: 0, men: 200, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 14, pos: [102, 66], facing: 3, size: battalion}
+  - {name: "29th Regiment on the summit", side: 1, men: 120, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [70, 64], facing: 2, prone: true, size: company}
+  - {name: "29th Regiment in the north-west bunkers", side: 1, men: 60, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 8, pos: [60, 56], facing: 2, prone: true, size: platoon}
+  - {name: "29th Regiment in the south bunkers", side: 1, men: 60, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 8, pos: [72, 80], facing: 4, prone: true, size: platoon}
+  - {name: "North Vietnamese machine guns", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [78, 60], facing: 0, prone: true, size: section}

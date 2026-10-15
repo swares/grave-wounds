@@ -146,12 +146,12 @@ support:
   - {name: "Argentine 105 mm pack howitzers", side: 1, kind: field, tubes: 3}
   - {name: "Argentine 120 mm mortars", side: 1, kind: mortar, tubes: 2}
 units:
-  - {name: "A Company, 2 Para (in the gorse gully)", side: 0, men: 90, quality: veteran, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 10, pos: [100, 38], facing: 4}
-  - {name: "B Company, 2 Para (on the open slope)", side: 0, men: 90, quality: veteran, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 14, pos: [44, 30], facing: 4}
-  - {name: "2 Para's headquarters (H. Jones)", side: 0, men: 20, quality: veteran, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 4, pos: [94, 26], facing: 4}
-  - {name: "D Company, 2 Para (coming up)", side: 0, men: 90, quality: veteran, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 14, pos: [70, 12], facing: 4}
-  - {name: "2 Para's machine guns", side: 0, men: 10, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [108, 30], facing: 4}
-  - {name: "Argentine platoons in the ridge trenches (west)", side: 1, men: 70, quality: green, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 14, pos: [70, 56], facing: 1, prone: true}
-  - {name: "Argentine platoons in the ridge trenches (Darwin Hill)", side: 1, men: 70, quality: green, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 14, pos: [98, 56], facing: 1, prone: true}
-  - {name: "Argentine machine guns", side: 1, men: 10, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [86, 57], facing: 1, prone: true}
-  - {name: "Argentine reserve (Darwin)", side: 1, men: 40, quality: green, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 6, pos: [106, 66], facing: 1}
+  - {name: "A Company, 2 Para (in the gorse gully)", side: 0, men: 90, quality: veteran, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 10, pos: [100, 38], facing: 4, size: company}
+  - {name: "B Company, 2 Para (on the open slope)", side: 0, men: 90, quality: veteran, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 14, pos: [44, 30], facing: 4, size: company}
+  - {name: "2 Para's headquarters (H. Jones)", side: 0, men: 20, quality: veteran, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 4, pos: [94, 26], facing: 4, size: platoon}
+  - {name: "D Company, 2 Para (coming up)", side: 0, men: 90, quality: veteran, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 14, pos: [70, 12], facing: 4, size: company}
+  - {name: "2 Para's machine guns", side: 0, men: 10, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [108, 30], facing: 4, size: section}
+  - {name: "Argentine platoons in the ridge trenches (west)", side: 1, men: 70, quality: green, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 14, pos: [70, 56], facing: 1, prone: true, size: company}
+  - {name: "Argentine platoons in the ridge trenches (Darwin Hill)", side: 1, men: 70, quality: green, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 14, pos: [98, 56], facing: 1, prone: true, size: company}
+  - {name: "Argentine machine guns", side: 1, men: 10, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [86, 57], facing: 1, prone: true, size: section}
+  - {name: "Argentine reserve (Darwin)", side: 1, men: 40, quality: green, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 6, pos: [106, 66], facing: 1, size: platoon}

@@ -207,25 +207,25 @@ support:
   - {name: "Fighter-bombers (by day)", side: 0, kind: fighter_bomber, tubes: 8}
   - {name: "Chinese mortars", side: 1, kind: mortar, tubes: 12}
 units:
-  - {name: "A Company, 23rd Infantry", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [70, 35], facing: 1, prone: true}
-  - {name: "C Company, 23rd Infantry (astride the road north)", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [112, 31], facing: 1, prone: true}
-  - {name: "I Company, 23rd Infantry", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [154, 50], facing: 0, prone: true}
-  - {name: "K Company, 23rd Infantry", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [170, 86], facing: 0, prone: true}
-  - {name: "L Company, 23rd Infantry", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [155, 121], facing: 5, prone: true}
-  - {name: "E Company, 23rd Infantry", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [130, 137], facing: 4, prone: true}
-  - {name: "G Company, 23rd Infantry (the southern hill)", side: 0, men: 140, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [94, 142], facing: 4, prone: true}
-  - {name: "F Company, 23rd Infantry", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [60, 132], facing: 4, prone: true}
-  - {name: "French Battalion, 3rd Company", side: 0, men: 200, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [35, 107], facing: 3, prone: true}
-  - {name: "French Battalion, 2nd Company", side: 0, men: 200, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [31, 76], facing: 3, prone: true}
-  - {name: "French Battalion, 1st Company", side: 0, men: 200, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [48, 48], facing: 2, prone: true}
-  - {name: "Quad .50s (82nd AAA), south", side: 0, men: 20, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 4, pos: [111, 136], facing: 4, prone: true}
-  - {name: "Quad .50s (82nd AAA), north", side: 0, men: 20, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 4, pos: [94, 36], facing: 1, prone: true}
-  - {name: "2nd Battalion machine guns", side: 0, men: 15, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 3, pos: [78, 133], facing: 4, prone: true}
-  - {name: "B Company, 23rd Infantry (reserve)", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [70, 98], facing: 4}
-  - {name: "1st Ranger Company (reserve)", side: 0, men: 100, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [130, 98], facing: 4}
-  - {name: "Chinese regiment from Hill 397 (against G Company)", side: 1, men: 1200, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 60, pos: [98, 150], facing: 1}
-  - {name: "Chinese battalion (against E Company)", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [159, 145], facing: 2}
-  - {name: "Chinese battalion (against C Company)", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 40, pos: [117, 6], facing: 4}
-  - {name: "Chinese battalion (against K Company)", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [187, 86], facing: 3}
-  - {name: "Chinese battalion (against the French)", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [16, 76], facing: 0}
-  - {name: "Chinese machine guns (south)", side: 1, men: 15, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 3, pos: [76, 160], facing: 1}
+  - {name: "A Company, 23rd Infantry", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [70, 35], facing: 1, prone: true, size: company}
+  - {name: "C Company, 23rd Infantry (astride the road north)", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [112, 31], facing: 1, prone: true, size: company}
+  - {name: "I Company, 23rd Infantry", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [154, 50], facing: 0, prone: true, size: company}
+  - {name: "K Company, 23rd Infantry", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [170, 86], facing: 0, prone: true, size: company}
+  - {name: "L Company, 23rd Infantry", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [155, 121], facing: 5, prone: true, size: company}
+  - {name: "E Company, 23rd Infantry", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [130, 137], facing: 4, prone: true, size: company}
+  - {name: "G Company, 23rd Infantry (the southern hill)", side: 0, men: 140, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [94, 142], facing: 4, prone: true, size: company}
+  - {name: "F Company, 23rd Infantry", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [60, 132], facing: 4, prone: true, size: company}
+  - {name: "French Battalion, 3rd Company", side: 0, men: 200, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [35, 107], facing: 3, prone: true, size: company}
+  - {name: "French Battalion, 2nd Company", side: 0, men: 200, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [31, 76], facing: 3, prone: true, size: company}
+  - {name: "French Battalion, 1st Company", side: 0, men: 200, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [48, 48], facing: 2, prone: true, size: company}
+  - {name: "Quad .50s (82nd AAA), south", side: 0, men: 20, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 4, pos: [111, 136], facing: 4, prone: true, size: platoon}
+  - {name: "Quad .50s (82nd AAA), north", side: 0, men: 20, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 4, pos: [94, 36], facing: 1, prone: true, size: platoon}
+  - {name: "2nd Battalion machine guns", side: 0, men: 15, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 3, pos: [78, 133], facing: 4, prone: true, size: section}
+  - {name: "B Company, 23rd Infantry (reserve)", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [70, 98], facing: 4, size: company}
+  - {name: "1st Ranger Company (reserve)", side: 0, men: 100, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [130, 98], facing: 4, size: company}
+  - {name: "Chinese regiment from Hill 397 (against G Company)", side: 1, men: 1200, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 60, pos: [98, 150], facing: 1, size: regiment}
+  - {name: "Chinese battalion (against E Company)", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [159, 145], facing: 2, size: company}
+  - {name: "Chinese battalion (against C Company)", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 40, pos: [117, 6], facing: 4, size: company}
+  - {name: "Chinese battalion (against K Company)", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [187, 86], facing: 3, size: company}
+  - {name: "Chinese battalion (against the French)", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [16, 76], facing: 0, size: battalion}
+  - {name: "Chinese machine guns (south)", side: 1, men: 15, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 3, pos: [76, 160], facing: 1, size: section}

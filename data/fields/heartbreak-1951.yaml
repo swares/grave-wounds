@@ -297,12 +297,12 @@ support:
   - {name: "North Korean mortars", side: 1, kind: mortar, tubes: 12}
   - {name: "North Korean and Chinese guns", side: 1, kind: field, tubes: 8}
 units:
-  - {name: "2nd Battalion, 23rd Infantry (along the crest from 894)", side: 0, men: 600, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 12, pos: [97, 180], facing: 1}
-  - {name: "French Battalion (up the east spur)", side: 0, men: 600, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [150, 126], facing: 2}
-  - {name: "1st Battalion, 23rd Infantry (up the west spur)", side: 0, men: 500, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [50, 124], facing: 0}
-  - {name: "72nd Tank Battalion company (the Mundung-ni valley)", side: 0, men: 40, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 4, pos: [27, 200], facing: 1, vehicle: tank}
-  - {name: "North Koreans on Hill 931", side: 1, men: 300, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 14, pos: [97, 72], facing: 4, prone: true}
-  - {name: "North Koreans on the crest south of 931", side: 1, men: 200, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 6, pos: [98, 100], facing: 4, prone: true}
-  - {name: "North Koreans on the crest north of 931", side: 1, men: 200, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 8, pos: [98, 40], facing: 4, prone: true}
-  - {name: "North Korean machine guns (931)", side: 1, men: 15, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 3, pos: [101, 78], facing: 4, prone: true}
-  - {name: "North Korean machine guns (the west spur)", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [85, 84], facing: 2, prone: true}
+  - {name: "2nd Battalion, 23rd Infantry (along the crest from 894)", side: 0, men: 600, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 12, pos: [97, 180], facing: 1, size: battalion}
+  - {name: "French Battalion (up the east spur)", side: 0, men: 600, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [150, 126], facing: 2, size: battalion}
+  - {name: "1st Battalion, 23rd Infantry (up the west spur)", side: 0, men: 500, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [50, 124], facing: 0, size: battalion}
+  - {name: "72nd Tank Battalion company (the Mundung-ni valley)", side: 0, men: 40, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 4, pos: [27, 200], facing: 1, vehicle: tank, size: company}
+  - {name: "North Koreans on Hill 931", side: 1, men: 300, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 14, pos: [97, 72], facing: 4, prone: true, size: battalion}
+  - {name: "North Koreans on the crest south of 931", side: 1, men: 200, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 6, pos: [98, 100], facing: 4, prone: true, size: company}
+  - {name: "North Koreans on the crest north of 931", side: 1, men: 200, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 8, pos: [98, 40], facing: 4, prone: true, size: company}
+  - {name: "North Korean machine guns (931)", side: 1, men: 15, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 3, pos: [101, 78], facing: 4, prone: true, size: section}
+  - {name: "North Korean machine guns (the west spur)", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [85, 84], facing: 2, prone: true, size: section}

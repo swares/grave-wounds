@@ -1,6 +1,7 @@
 // Shared drawing for the battlefields (make_agincourt_field.mjs, make_towton_field.mjs): a field
 // map of 10 m pointy-top hexes, ground painted as rows of letters (units.yaml ground keys), works
 // and the armies as drawn up, written to data/fields/<id>.yaml.
+import { UNIT_SIZES } from "./unit_sizes.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -59,6 +60,18 @@ function markersLine(m){                         // the markers settings' line (
   const parts = Object.entries(m).map(([k, v]) => `${k}: ${v}`).join(", ");
   return `\n# Unit markers on the field map (labels: names, ids or both; strength; size marks): units.yaml markers otherwise.\nmarkers: {${parts}}`;
 }
+// Each unit's size mark from unit_sizes.mjs, unless its generator set one. A field listed there must
+// list every unit it has without a size, and only units it has.
+function sized(id, units){
+  const table = UNIT_SIZES[id];
+  if (!table) return units;
+  const names = new Set(units.map(u => u.name));
+  const stray = Object.keys(table).filter(n => !names.has(n));
+  const missing = units.filter(u => !u.size && !table[u.name]).map(u => u.name);
+  if (stray.length || missing.length)
+    throw new Error(`unit_sizes.mjs, ${id}: ${stray.length ? "no such unit: " + stray.join("; ") : ""}${stray.length && missing.length ? " / " : ""}${missing.length ? "no size for: " + missing.join("; ") : ""}`);
+  return units.map(u => (u.size ? u : { ...u, size: table[u.name] }));
+}
 const hexList = hs => hs.map(h => `[${h.join(", ")}]`).join(", ");
 
 // Writes the battlefield file. spec: {id, script, header (comment lines), name, sides, table,
@@ -71,6 +84,7 @@ const hexList = hs => hs.map(h => `[${h.join(", ")}]`).join(", ");
 // that count as on it}), markers (the unit markers' settings: {labels, strength, size}, all
 // optional). A unit may also set type and size (units.yaml markers).
 export function writeField(spec){
+  spec = { ...spec, units: sized(spec.id, spec.units) };
   const { grid } = spec, works = Object.entries(spec.hexWorks || {});
   const edges = Object.entries(spec.edgeWorks || {});
   const workLine = ([type, hs]) => `    - {type: ${type}, at: [${hexList(hs)}]}`;

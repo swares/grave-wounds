@@ -110,8 +110,8 @@ works:
   hexes:
     - {type: wagon, at: [[50, 40], [48, 40], [48, 39], [49, 39], [48, 41], [50, 41], [49, 42], [50, 42]]}
 units:
-  - {name: "27th Infantry, Company C (Powell and Jenness)", side: 0, men: 26, quality: regular, weapon: breechloader, kit: none, formation: close, width: 1, pos: [49, 40], facing: 1}
-  - {name: "Woodcutters and teamsters (civilians, repeating rifles)", side: 0, men: 6, quality: green, weapon: breechloader, kit: none, formation: close, width: 1, pos: [49, 41], facing: 1}
-  - {name: "Mounted warriors, the first charge (Lakota and Cheyenne)", side: 1, men: 300, quality: veteran, weapon: bow, kit: rawhide_shield, formation: open, width: 15, pos: [49, 12], facing: 4, mounted: true}
-  - {name: "Warriors on foot from the ravine", side: 1, men: 250, quality: veteran, weapon: bow, kit: rawhide_shield, formation: open, width: 7, pos: [83, 20], facing: 4}
-  - {name: "Warriors with guns, along the plateau's edge", side: 1, men: 100, quality: veteran, weapon: rifle_musket, kit: none, formation: open, width: 5, pos: [24, 30], facing: 4}
+  - {name: "27th Infantry, Company C (Powell and Jenness)", side: 0, men: 26, quality: regular, weapon: breechloader, kit: none, formation: close, width: 1, pos: [49, 40], facing: 1, size: company}
+  - {name: "Woodcutters and teamsters (civilians, repeating rifles)", side: 0, men: 6, quality: green, weapon: breechloader, kit: none, formation: close, width: 1, pos: [49, 41], facing: 1, size: section}
+  - {name: "Mounted warriors, the first charge (Lakota and Cheyenne)", side: 1, men: 300, quality: veteran, weapon: bow, kit: rawhide_shield, formation: open, width: 15, pos: [49, 12], facing: 4, mounted: true, size: battalion}
+  - {name: "Warriors on foot from the ravine", side: 1, men: 250, quality: veteran, weapon: bow, kit: rawhide_shield, formation: open, width: 7, pos: [83, 20], facing: 4, size: company}
+  - {name: "Warriors with guns, along the plateau's edge", side: 1, men: 100, quality: veteran, weapon: rifle_musket, kit: none, formation: open, width: 5, pos: [24, 30], facing: 4, size: company}

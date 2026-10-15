@@ -150,14 +150,14 @@ support:
   - {name: "Close air support", side: 0, kind: fighter_bomber, tubes: 6}
   - {name: "Insurgent mortars", side: 1, kind: mortar, tubes: 4}
 units:
-  - {name: "2-7 Cavalry's M1A1 tanks (the main street)", side: 0, men: 16, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 2, pos: [72, 14], facing: 4, vehicle: tank, nv: thermal}
-  - {name: "2-7 Cavalry's Bradleys (behind the tanks)", side: 0, men: 12, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 2, pos: [72, 4], facing: 4, vehicle: ifv, nv: thermal}
-  - {name: "Marine company (west of the main street)", side: 0, men: 150, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 16, pos: [44, 14], facing: 4, fac: true}
-  - {name: "Marine company (east of the main street)", side: 0, men: 150, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 16, pos: [104, 14], facing: 4, fac: true}
-  - {name: "Marine machine guns", side: 0, men: 12, quality: veteran, weapon: machine_gun, kit: interceptor, formation: mg, width: 2, pos: [60, 6], facing: 4}
-  - {name: "Insurgents in the houses (north-west)", side: 1, men: 80, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [40, 32], facing: 1, prone: true}
-  - {name: "Insurgents in the houses (north-east)", side: 1, men: 80, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [110, 30], facing: 1, prone: true}
-  - {name: "Insurgent RPG teams (by the main street)", side: 1, men: 20, quality: regular, weapon: rpg, kit: none, formation: extended, width: 3, pos: [70, 34], facing: 1, prone: true}
-  - {name: "Insurgent RPG teams (the park)", side: 1, men: 20, quality: regular, weapon: rpg, kit: none, formation: extended, width: 3, pos: [86, 56], facing: 1, prone: true}
-  - {name: "Insurgents in the mosque and the houses south", side: 1, men: 120, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 12, pos: [58, 72], facing: 1, prone: true}
-  - {name: "Insurgent machine guns", side: 1, men: 10, quality: regular, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [99, 46], facing: 1, prone: true}
+  - {name: "2-7 Cavalry's M1A1 tanks (the main street)", side: 0, men: 16, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 2, pos: [72, 14], facing: 4, vehicle: tank, nv: thermal, size: platoon}
+  - {name: "2-7 Cavalry's Bradleys (behind the tanks)", side: 0, men: 12, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 2, pos: [72, 4], facing: 4, vehicle: ifv, nv: thermal, size: platoon}
+  - {name: "Marine company (west of the main street)", side: 0, men: 150, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 16, pos: [44, 14], facing: 4, fac: true, size: company}
+  - {name: "Marine company (east of the main street)", side: 0, men: 150, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 16, pos: [104, 14], facing: 4, fac: true, size: company}
+  - {name: "Marine machine guns", side: 0, men: 12, quality: veteran, weapon: machine_gun, kit: interceptor, formation: mg, width: 2, pos: [60, 6], facing: 4, size: section}
+  - {name: "Insurgents in the houses (north-west)", side: 1, men: 80, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [40, 32], facing: 1, prone: true, size: company}
+  - {name: "Insurgents in the houses (north-east)", side: 1, men: 80, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [110, 30], facing: 1, prone: true, size: company}
+  - {name: "Insurgent RPG teams (by the main street)", side: 1, men: 20, quality: regular, weapon: rpg, kit: none, formation: extended, width: 3, pos: [70, 34], facing: 1, prone: true, size: platoon}
+  - {name: "Insurgent RPG teams (the park)", side: 1, men: 20, quality: regular, weapon: rpg, kit: none, formation: extended, width: 3, pos: [86, 56], facing: 1, prone: true, size: platoon}
+  - {name: "Insurgents in the mosque and the houses south", side: 1, men: 120, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 12, pos: [58, 72], facing: 1, prone: true, size: company}
+  - {name: "Insurgent machine guns", side: 1, men: 10, quality: regular, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [99, 46], facing: 1, prone: true, size: section}
