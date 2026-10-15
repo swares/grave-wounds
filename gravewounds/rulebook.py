@@ -389,5 +389,54 @@ def render(d: Data, root: Path) -> str:
     body = "\n\n".join(_fill(p.read_text(encoding="utf-8"), vals, tabs, p.name) for p in sorted(src.glob("*.md")))
     md = markdown.Markdown(extensions=["tables", "admonition", "toc", "attr_list"], extension_configs={"toc": {"toc_depth": "1-2"}})
     html = md.convert(body)
+    idx = index_html(html)
+    toc = md.toc.replace("</ul>\n</div>", '<li><a href="#index">Index</a></li>\n</ul>\n</div>') if idx else md.toc
     page = (root / "templates" / "rules.html").read_text(encoding="utf-8")
-    return page.replace("{{TOC}}", md.toc).replace("{{BODY}}", html)
+    return page.replace("{{TOC}}", toc).replace("{{BODY}}", html + idx)
+
+
+HEAD = re.compile(r'<h([12]) id="([^"]+)">(.*?)</h\1>', re.S)
+EXAMPLE = re.compile(r'<div class="admonition example">.*?</div>', re.S)
+BOLD = re.compile(r"<strong>(.*?)</strong>", re.S)
+
+
+def index_terms(html: str) -> dict:
+    """{term: [(section id, section title)]}: each term set in bold in the book's text (not in
+    the worked examples), under the nearest chapter or section heading before it. Numbers,
+    dice and lead-ins of more than five words are left out; a lead-in's full stop, a step's
+    number ("2. Origin.") and a leading article are dropped."""
+    text = EXAMPLE.sub("", html)
+    marks = sorted([(m.start(), "h", m.group(2), re.sub("<[^>]+>", "", m.group(3)).strip()) for m in HEAD.finditer(text)]
+                   + [(m.start(), "b", re.sub("<[^>]+>", "", m.group(1)).strip(), None) for m in BOLD.finditer(text)])
+    out, here = {}, None
+    for _, kind, a, b in marks:
+        if kind == "h":
+            here = (a, b)
+            continue
+        term = _term(a)
+        if term and here and here not in out.setdefault(term, []):
+            out[term].append(here)
+    return out
+
+
+def _term(raw: str) -> str | None:
+    """A bold run as an index term, or None (numbers, dice, long phrases)."""
+    t = re.sub(r"^(\d+\.\s*|(a|an|the)\s+)", "", raw.strip(), flags=re.I).strip().rstrip(".:").strip()
+    if not t or len(t.split()) > 5 or re.fullmatch(r"[\d%+\-–—\s,.d×x/()]+", t) or re.fullmatch(r"d\d+.*", t):
+        return None
+    return t[0].upper() + t[1:]
+
+
+def index_html(html: str) -> str:
+    """The book's index: its terms (index_terms), A to Z, each linking to the sections it is in."""
+    terms = index_terms(html)
+    if not terms:
+        return ""
+    rows, letter = [], None
+    for term in sorted(terms, key=lambda t: (t.casefold(), t)):
+        if term[0].upper() != letter:
+            letter = term[0].upper()
+            rows.append(f'<h3 class="ix-letter">{letter}</h3>')
+        links = ", ".join(f'<a href="#{sid}">{title}</a>' for sid, title in terms[term])
+        rows.append(f'<p class="ix"><b>{term}</b>: {links}</p>')
+    return '\n<h1 id="index">Index</h1>\n<div class="index">\n' + "\n".join(rows) + "\n</div>\n"

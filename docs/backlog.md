@@ -13,7 +13,7 @@ When an item is done, delete it here and note it in the pull request that closes
   thirteen chapters, with a medieval retinue and a Vietnam rifle squad followed through.
   It summarises rather than repeats the docs: the black-powder guns' fire (sections, fuses,
   ricochet), the travel map's battle set-up and the battlefields are covered in the docs and
-  on the pages, not in the book. It has no index or page numbers in print.
+  on the pages, not in the book. It ends with an index of the terms set in bold, each linked to its sections, and prints page numbers (in Chrome and Edge; other browsers may leave them off). The index has no page numbers of its own, only section names.
 - **The enemy commander, beyond the second cut.** A scripted commander moves one side on
   the field map. It attacks or holds by its units' quality, knows only what its units see
   (remembering last sightings for a few exchanges), picks targets by threat and weakness,

@@ -63,6 +63,10 @@ tbody tr:nth-child(even){background:var(--panel)}
 .admonition.gm{border-left:4px solid var(--gm-edge);background:var(--gm)}
 .admonition.gm .admonition-title{color:var(--gm-edge)}
 .note{font:400 .85rem var(--body);color:var(--muted);margin-top:40px;border-top:1px solid var(--line);padding-top:12px}
+.index{columns:2 16rem;column-gap:28px}
+.ix{margin:0 0 4px;font-size:.9rem;break-inside:avoid}
+.ix-letter{font:700 .9rem var(--mono);color:var(--blood);margin:14px 0 4px;break-after:avoid}
+@page{margin:16mm 14mm 18mm;@bottom-center{content:counter(page);font:9pt sans-serif}}
 @media print{
   body{background:#fff;color:#000;font-size:11pt}
   header nav,.toc .noprint{display:none}
