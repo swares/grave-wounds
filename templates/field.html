@@ -1117,7 +1117,8 @@ function drifts(k){                              // in the dark, each unit of si
     if (!r.lost) return;
     S.units[i] = r.unit;
     names.push(u.name);
-    S.log.unshift({ cls: "morale", text: `${unitName(u)} lose their way in the dark: they end facing ${r.unit.facing === u.facing ? "as they were" : "off their line"} and cannot move next exchange (they may turn).` });
+    const how = r.strayed ? "they end off their line, a hex astray" : `they end facing ${r.unit.facing === u.facing ? "as they were" : "off their line"}`;
+    S.log.unshift({ cls: "morale", text: `${unitName(u)} lose their way in the dark: ${how}, and cannot move next exchange (they may turn).` });
   });
   return names.length ? ` ${names.join(", ")} lost their way in the dark.` : "";
 }

@@ -10,7 +10,8 @@ and whichever is shorter counts. The dark also slows a march and turns men round
 
 - **Losing direction.** Each unit that moved in the dark may lose its way when its side's
   move ends. Its chance is the light's, adjusted by its quality: {{n_lost}}. A lost unit
-  ends a point off its line and cannot move next exchange, though it can turn.
+  ends a point off its line, a hex astray that way (unless that is blocked or touches the
+  enemy), and cannot move next exchange, though it can turn.
 - **Muzzle flashes.** A unit that fires when the light limits sight to less than
   {{n_flash_under}} shows where it is. Through the next exchange, the hexes it fired from can
   be aimed at, and fire called on, from up to {{n_flash}} away.

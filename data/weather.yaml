@@ -118,8 +118,9 @@ light:
   fixed_line: {width: 1, aim: 15}
   # move: added to each hex's movement in the dark. lost: % chance that a unit that moved in the
   # dark loses its direction (plus half of how far its quality's nerve is below 60, less half of
-  # how far above): it ends turned one point off, and cannot move for `lost_for` exchanges
-  # (it may still turn).
+  # how far above): it ends turned one point off and a hex on that way (not into other units,
+  # ground it cannot stand on or contact with the enemy), and cannot move for `lost_for`
+  # exchanges (it may still turn).
   lost_for: 2
 
 # ---------- the ground ----------

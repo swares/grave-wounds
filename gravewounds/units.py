@@ -1879,18 +1879,33 @@ def _flashes(d: Data, us: list, log: list, field: dict | None) -> None:
 def night_drift(d: Data, units: list, i: int, size: tuple, field: dict | None, rng) -> dict:
     """A unit that moved in the dark may lose its direction: d100 at or under the light's `lost`
     % plus half of (60 - its nerve) (rounded down). Then it ends turned one point off (left on
-    an odd second d100, else right; not if it no longer fits) and cannot move for light.lost_for
-    exchanges. -> {lost (bool), unit}."""
+    an odd second d100, else right; not if it no longer fits), strays a hex on along that wrong
+    facing (_stray), and cannot move for light.lost_for exchanges. -> {lost (bool), unit,
+    strayed (bool)}."""
     u, L = units[i], light_of(d, field)
     if L is None or not L.get("lost"):
-        return {"lost": False, "unit": u}
+        return {"lost": False, "unit": u, "strayed": False}
     chance = max(0, min(100, L["lost"] + (60 - quality(d, u["quality"])["nerve"]) // 2))
     if rng.randint(1, 100) > chance:
-        return {"lost": False, "unit": u}
-    turned = {**u, "facing": (u["facing"] + (-1 if rng.randint(1, 100) % 2 else 1)) % 6, "lost": d.weather["light"]["lost_for"]}
+        return {"lost": False, "unit": u, "strayed": False}
+    left = rng.randint(1, 100) % 2 == 0
+    turned = {**u, "facing": (u["facing"] + (1 if left else -1)) % 6, "lost": d.weather["light"]["lost_for"]}
     if not _fits(d, units, i, turned, size, field):
-        turned["facing"] = u["facing"]
-    return {"lost": True, "unit": turned}
+        return {"lost": True, "unit": {**turned, "facing": u["facing"]}, "strayed": False}
+    gone = _stray(d, units, i, turned, (left, size, field))
+    return {"lost": True, "unit": gone or turned, "strayed": gone is not None}
+
+
+def _stray(d: Data, units: list, i: int, u: dict, how: tuple) -> dict | None:
+    """A lost unit, turned to u, goes on a hex along its wrong facing: the front hexside on the
+    side it turned to (veering left, the left one). None if that would take it off the map, onto
+    other units or ground it cannot stand on, or into contact with the enemy."""
+    left, size, field = how
+    moved = {**u, "pos": step(u["pos"], u["facing"] + (1 if left else 0))}
+    if not _fits(d, units, i, moved, size, field):
+        return None
+    after = units[:i] + [moved] + units[i + 1:]
+    return None if in_contact(d, after, occupancy(d, after), i) else moved
 
 
 def height_edge(d: Data, field: dict | None, weapon: str, h, t) -> tuple:
