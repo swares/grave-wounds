@@ -93,7 +93,8 @@ fires at, times {{ammo_burn}}% (men do not fire every round they could). Longbow
   hexes of a supply source: its side's map edge (behind the way most of its men face), a
   lorry or armoured carrier of its side, or a **supply dump**. The GM places dumps before the
   battle; from the Second World War on, an **air drop** called on a side's move lands as a
-  dump at the end of the exchange, a little off the mark.
+  dump at the end of the exchange, a little off the mark, and from Vietnam on a helicopter
+  can set one down on a landing zone ([Landing by air](#landing)).
 - **The enemy commander** resupplies a unit that is out, or low with no enemy in its
   range, when a source is in reach. Attacking, a unit out of ammunition with none in reach
   falls back toward its edge; holding, it stays and fights hand to hand.

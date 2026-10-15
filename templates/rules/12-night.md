@@ -65,14 +65,21 @@ aircraft. Fire can be called only where one of the side's units can see it fall.
 
 ## Landing by air {#landing}
 
-From Vietnam on, units can come in by helicopter to a **landing zone**. At the end of each
-exchange up to {{h_lift}} men land at each zone, on it or the nearest spot within
-{{h_zone}} hexes, and they can move the next exchange.
+From Vietnam on, units can come in by helicopter to a **landing zone**. Each side has so
+many helicopters: by default X-Ray's {{h_aircraft}} Hueys of {{h_carry}} men each, back for the
+next load {{h_turn}} exchanges after they land. At the end of each exchange the free ones fly
+the lifts in the order called, at most {{h_at_once}} at a zone. The men land on the zone or
+the nearest spot within {{h_zone}} hexes, and can move the next exchange.
 
 - **Waved off.** No one lands while an enemy unit stands within {{h_blocked}} hexes of the
   zone.
 - **A hot zone.** If any enemy unit could shoot at the zone, each man landing is struck at
-  {{h_hot}}% and wounded as by shellfire.
+  {{h_hot}}% and wounded as by shellfire, and each helicopter is hit at {{h_hit}}%: {{h_downed}}%
+  of those come down on the zone as a wreck, the rest go home damaged. Either way it is lost
+  for the battle.
+- **Supplies and extraction.** A helicopter can set a supply dump down on a zone, and the
+  helicopters can lift a unit out from near a zone (out of contact; it does not move while
+  it boards). Its men flown out are safe.
 - **A downed helicopter** gives the men in its hex cover and is slow ground to cross.
 
 !!! gm "For the GM"

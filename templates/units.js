@@ -1882,36 +1882,83 @@ function couldShoot(field, u, hexes, t){          // u has a weapon that reaches
   if (!("range" in FD.weapons[u.weapon])) return false;
   return hexes.some(x => { const dist = hdist(x, t), wx = shotWeather(field, u.weapon, dist, x, t, seerOf(u)); return !wx.blocked && reaches(u, dist, wx.reach || 0) });
 }
-function landings(us, table, rng, field){         // men coming on by air: up to heliborne.lift a landing zone this exchange, lifts in order
-  const lifts = field?.lifts || [], log = [];
-  if (!lifts.length || !UD.heliborne) return log;
-  const room = {};
-  for (const lf of lifts){
-    const key = `${lf.lz[0]},${lf.lz[1]}`;
-    if (!(key in room)) room[key] = UD.heliborne.lift;
-    if (room[key] > 0 && lf.left > 0) log.push(...land(us, table, rng, field, lf, room, key));
-  }
+function landings(us, table, rng, field){         // helicopters back from their turnaround, then the lifts in order: men in, supply dumps, units lifted out (as units.landings)
+  if (!UD.heliborne || !field) return [];
+  for (const H of field.helos || []) H.away = (H.away || []).filter(t => t > 1).map(t => t - 1);
+  const lifts = field.lifts || [], log = [], used = {};
+  for (const lf of lifts) if (lf.left > 0) log.push(...fly(us, [table, rng, field], lf, used));
   field.lifts = lifts.filter(lf => lf.left > 0);
   return log;
 }
-function land(us, table, rng, field, lf, room, key){   // one lift's men landing, if the zone is not blocked and they fit
+function helos(field, side){                      // a side's helicopters (field.helos, made from heliborne's defaults the first time) (as units.helos)
+  const list = field.helos || (field.helos = []), D = UD.heliborne;
+  let H = list.find(x => x.side === side);
+  if (!H){ H = { side, aircraft: D.aircraft, carry: D.carry, turnaround: D.turnaround, away: [], damaged: 0, downed: 0 }; list.push(H) }
+  return H;
+}
+const helosFree = H => Math.max(0, H.aircraft - (H.away || []).length - (H.damaged || 0) - (H.downed || 0));   // ready to fly
+function fly(us, [table, rng, field], lf, used){  // one lift this exchange, if its side has helicopters free and its zone room (as units._fly)
+  const side = lf.unit.side, key = `${lf.lz[0]},${lf.lz[1]}`, H = helos(field, side), kind = lf.kind || "in";
+  const can = Math.min(UD.heliborne.at_once - (used[key] || 0), helosFree(H));
+  if (can <= 0) return [];
+  const state = lzState(us, field, side, lf.lz);
+  if (state === "blocked") return [{ kind: "waveoff", name: lf.unit.name, side, lz: lf.lz, why: "blocked" }];
+  let n, log;
+  if (kind === "supply"){ n = 1; log = supplyLift(field, lf) }
+  else if (kind === "out") [n, log] = liftOut(us, [field, H, can], lf);
+  else { [n, log] = land(us, [table, rng, field], lf, Math.min(lf.left, can * H.carry)); n = Math.ceil(n / H.carry) }
+  if (n <= 0) return log;
+  used[key] = (used[key] || 0) + n;
+  return [...log, ...heloHits([rng, field], H, [n, state === "hot", lf])];
+}
+function supplyLift(field, lf){                    // a helicopter sets down a supply dump on its zone
+  (field.dumps || (field.dumps = [])).push({ at: [...lf.lz], side: lf.unit.side });
+  lf.left = 0;
+  return [{ kind: "helisupply", side: lf.unit.side, lz: [...lf.lz] }];
+}
+function liftOut(us, [field, H, can], lf){        // a unit lifted away, as many men as the free helicopters carry, if within zone hexes and out of contact: [helicopters used, log] (as units._lift_out)
+  const i = us.findIndex(u => u.id !== undefined && u.id !== null && u.id === lf.unit.id), u = i < 0 ? null : us[i];
+  if (!u || u.men <= 0 || ROUTED.has(u.state)){ lf.left = 0; return [0, []] }
+  const near = Math.min(...footprint(u).flat().map(h => hdist(h, lf.lz))) <= UD.heliborne.zone;
+  if (!near || inContact(us, occupancy(us), i)) return [0, [{ kind: "waveoff", name: lf.unit.name, side: u.side, lz: lf.lz, why: near ? "contact" : "far" }]];
+  const n = Math.min(u.men, can * H.carry);
+  Object.assign(u, { men: u.men - n, flown: (u.flown || 0) + n });
+  lf.left = u.men;
+  if (!u.men) delete u.boarding;
+  return [Math.ceil(n / H.carry), [{ kind: "flownout", unit: i, name: lf.unit.name, side: u.side, lz: lf.lz, men: n, all: !u.men }]];
+}
+function heloHits([rng, field], H, [n, hot, lf]){  // at a hot zone each helicopter hit at heliborne.hit %, downed at .downed % (a wreck) else damaged; the rest away for their turnaround (as units._helo_hits)
+  const D = UD.heliborne;
+  let hit = 0, downed = 0;
+  for (let k = 0; k < n; k++) if (hot && rng.randint(1, 100) <= D.hit) hit++;
+  for (let k = 0; k < hit; k++) if (rng.randint(1, 100) <= D.downed) downed++;
+  H.damaged = (H.damaged || 0) + hit - downed;
+  H.downed = (H.downed || 0) + downed;
+  (H.away || (H.away = [])).push(...new Array(n - hit).fill(H.turnaround));
+  for (let k = 0; k < downed; k++) wreckNear(field, lf.lz);
+  return hit ? [{ kind: "helohit", side: H.side, lz: [...lf.lz], hit, downed }] : [];
+}
+function wreckNear(field, lz){                     // a downed helicopter's wreck on the nearest hex to the zone with no work on it
+  if (!field.works) field.works = { edges: {}, hexes: {} };
+  const hexes = field.works.hexes || (field.works.hexes = {});
+  const h = within(lz, UD.heliborne.zone).find(x => !(`${x[0]},${x[1]}` in hexes));
+  if (h) hexes[`${h[0]},${h[1]}`] = { type: "wreck", progress: 0 };
+}
+function land(us, [table, rng, field], lf, n){    // n of a lift's men landing at its zone, if they fit: [men landed, log] (as units._land)
   const side = lf.unit.side, name = lf.unit.name, state = lzState(us, field, side, lf.lz);
-  if (state === "blocked") return [{ kind: "waveoff", name, side, lz: lf.lz, why: "blocked" }];
-  const n = Math.min(room[key], lf.left);
   let i = us.findIndex(u => u.id !== undefined && u.id !== null && u.id === lf.unit.id);
   if (i < 0) i = us.length;
   const u = i < us.length ? { ...us[i] } : { ...lf.unit, pos: [...lf.lz], men: 0, start: 0, down: 0, dead: 0, hurt: {}, heroes: [], state: "steady" };
   Object.assign(u, { men: u.men + n, start: u.start + n });
   const spots = i < us.length ? [u.pos] : within(lf.lz, UD.heliborne.zone);
   u.pos = spots.find(h => fits(us, i, { ...u, pos: [...h] }, fieldSize(field), field)) || null;
-  if (!u.pos) return [{ kind: "waveoff", name, side, lz: lf.lz, why: "room" }];
+  if (!u.pos) return [0, [{ kind: "waveoff", name, side, lz: lf.lz, why: "room" }]];
   u.pos = [...u.pos];
   if (i < us.length) Object.assign(us[i], { men: u.men, start: u.start });
   else us.push(u);
-  room[key] -= n;
   lf.left -= n;
   const line = { kind: "landed", unit: i, dfd: i, name, side, lz: lf.lz, men: n, hot: state === "hot", first: u.start === n };
-  return state === "hot" ? hotLanding(us[i], table, rng, n, line) : [line];
+  return [n, state === "hot" ? hotLanding(us[i], table, rng, n, line) : [line]];
 }
 function hotLanding(u, table, rng, n, line){      // each man landing struck at heliborne.hot %, wounds as shellfire
   const weapon = shellWeapon(table);
@@ -2006,7 +2053,7 @@ function routStrike(us, occ, j, table, rng){     // a unit that has just broken 
 // ---------- movement ----------
 function allowance(u){                            // hexes a unit may move (twice for a charge); a battery changing over or resupplying not at all, unlimbered a hex or so
   if ((u.prone || u.pinned) && u.state !== "broken" && u.state !== "fled") return 0;   // gone to ground or pinned: no move
-  if (u.resupplying && (isAtGun(u) || ammoFull(u)) && u.state !== "broken" && u.state !== "fled") return 0;
+  if ((u.boarding || (u.resupplying && (isAtGun(u) || ammoFull(u)))) && u.state !== "broken" && u.state !== "fled") return 0;
   if (isBattery(u) && !u.abandoned && u.state !== "broken"){   // crews running from their guns run on foot
     if (u.limbering || u.resupplying) return 0;
     if (!u.limbered) return jostledMove(u, carrying(u, UD.artillery.pushed));

@@ -560,15 +560,23 @@ mines:
   sappers: {lay: 3, clear: 2}
 
 # ---------- landing by air ----------
-# A field can mark landing zones (field.lz, hexes). A unit can come on by air at one: it waits
-# in field.lifts, and at the end of each exchange up to `lift` men land at each landing zone
-# (lifts in the order called), filling the unit's front first; it can move the exchange after
-# it first lands. A unit's first men come down on the zone's hex, or the nearest spot within
-# `zone` hexes of it where they fit (another unit may have landed there first). No one lands while an enemy unit (not fled) stands within `blocked` hexes
-# of the zone, or where the men would not fit. An enemy unit (not broken or fled) that could
-# shoot at the zone's hex makes it hot: each man landing is struck at `hot` % and rolls a wound
-# as a man struck by shellfire (indirect.attack). Design estimates.
-heliborne: {lift: 80, blocked: 2, hot: 10, zone: 4}
+# A field can mark landing zones (field.lz, hexes). Each side has helicopters (field.helos, else
+# these defaults, X-Ray's: `aircraft` Hueys of `carry` men each, back for the next load
+# `turnaround` exchanges after they land). A unit can come on by air at a zone: it waits in
+# field.lifts, and at the end of each exchange the side's free helicopters fly the lifts in the
+# order called, at most `at_once` landing at a zone in an exchange; each takes `carry` men. A
+# unit's first men come down on the zone's hex, or the nearest spot within `zone` hexes of it
+# where they fit; later loads fill it out. No one lands while an enemy unit (not fled) stands
+# within `blocked` hexes of the zone, or where the men would not fit. An enemy unit (not
+# broken or fled) that could shoot at the zone's hex makes it hot: each man landing is struck
+# at `hot` % and rolls a wound as a man struck by shellfire (indirect.attack), and each
+# helicopter landing there is hit at `hit` %: of those `downed` % come down on the zone (a
+# wreck, its crew out of the fight), the rest go home damaged; either way it is lost for the
+# battle. A helicopter can also bring a supply dump to a zone (the wars in `supply_battles`),
+# or lift a unit out from within `zone` hexes of one (out of contact; it does not move while
+# it boards; its men flown out are safe). Design estimates.
+heliborne: {aircraft: 16, carry: 5, turnaround: 30, at_once: 8, hit: 10, downed: 20, blocked: 2, hot: 10, zone: 4,
+            supply_battles: ["Vietnam", "Late 20th century", "Iraq & Afghanistan"]}
 
 # ---------- high ground ----------
 # A shooter on higher ground (a ground kind's `height`) shooting at men on lower ground gets

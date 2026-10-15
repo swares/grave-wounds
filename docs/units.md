@@ -839,8 +839,8 @@ numbers are in `ammunition` in `data/units.yaml`.
   in reach falls back toward its side's edge (straight across, as it falls back to an
   objective); holding, it stays and fights hand to hand.
 - **Not yet:** riders cannot resupply aboard their carrier (they get down first), the travel
-  map does not carry a force's ammunition from one fight to the next, and there is no
-  helicopter resupply yet (it comes with the helicopter lifts).
+  map does not carry a force's ammunition from one fight to the next. From Vietnam on a
+  helicopter can also bring a dump in (see *Landing by air*).
 
 ## Machine guns and modern infantry
 
@@ -1481,18 +1481,37 @@ For helicopter landings (Vietnam and later). The numbers are in `heliborne` in
 - **Landing zones.** A battlefield can mark landing zones, shown as a dashed ring with an H.
   Before the battle the GM can mark or clear one with **Clicking the map: Mark or clear a
   landing zone**.
+- **Helicopters.** Each side has so many helicopters: by default X-Ray's, 16 Hueys of 5 men
+  each, back for the next load 30 exchanges after they land (about the half-hour round trip
+  to the pick-up zone). With a landing zone marked, the list under the units sets them for
+  each side in set-up, and in the battle shows how many are free, away (and when the next is
+  back), damaged and downed. At most 8 land at one zone in an exchange (X-Ray's zone took
+  about eight at a time).
 - **Coming in by air.** With a landing zone marked, **Add a unit** offers **By air at** and
-  a zone. The unit waits in the air (listed under the units), and at the end of each
-  exchange up to 80 men land at each zone, the lifts in the order they were called. A lift
-  lands two ranks deep. The unit's first men come down on the zone, or the nearest spot
-  within 4 hexes where they fit; later lifts join them, filling the unit out. It can move
-  in the next exchange. A battlefield's units can start in the air too (`lands`).
+  a zone. The unit waits in the air (listed under the units as a lift), and at the end of
+  each exchange the side's free helicopters fly the lifts in the order they were called,
+  each with as many helicopters as it needs. A lift lands two ranks deep. The unit's first
+  men come down on the zone, or the nearest spot within 4 hexes where they fit; later loads
+  join them, filling the unit out. It can move in the next exchange. A battlefield's units
+  can start in the air too (`lands`).
+- **Helicopter resupply** (Vietnam on). In the battle, **Clicking the map: By helicopter**
+  and a click on a landing zone, on that side's move, sends one helicopter with supplies: it
+  sets a supply dump down on the zone when it flies (see *Ammunition*).
+- **Flying out.** On its side's move, **Fly out** lifts a unit (on foot, out of contact)
+  away from a landing zone within 4 hexes of it. It does not move while it boards; each
+  exchange the free helicopters take as many of its men as they carry, until all are gone.
+  It cannot board in contact or once it has left the zone's reach (the log says so; **Cancel
+  the lift** stops it). Its men flown out are safe: *After the battle* counts them on their
+  own row, not as standing on the field nor as lost.
 - **Blocked.** No one lands while an enemy unit stands within 2 hexes of the zone, or where
   there is no room: the lift is waved off and tries again next exchange.
 - **A hot landing zone.** If any enemy unit (not broken) could shoot at the zone's hex, with
   its weapon in range and in sight (in the weather and the light), the zone is hot. Each man
   landing is struck at 10% and rolls a wound as one struck by shellfire, and those put down
-  are down at once.
+  are down at once. Each helicopter that lands there (bringing men or supplies, or lifting
+  men out) is hit at 10%: a fifth of those are downed, a wreck on the nearest hex to the zone
+  with no work on it (its crew out of the fight), the rest go home damaged. Either way it is
+  lost for the battle. Design estimates.
 - **Downed helicopter.** The GM can put a downed helicopter (✈) on any hex at any time, with
   **Clicking the map: Downed helicopter**. Its hull is cover (30%) for the men in that hex,
   and it is slow ground to cross.

@@ -1108,8 +1108,8 @@ def _air_errors(d: Data, ind: dict) -> list[str]:
         errors.append("units.yaml: indirect.air needs ground_fire (reach, mg, rocket, rifles, cap, aa, aa_reach, downed; rockets and aa_weapons: known weapons) and fac (danger, scatter at least 1)")
     errors += _run_errors(d, ind)
     H = d.units.get("heliborne")
-    if H and not all(isinstance(H.get(k), int) and H[k] >= 0 for k in ("lift", "blocked", "hot", "zone")):
-        errors.append("units.yaml: heliborne needs whole-number lift, blocked, hot and zone")
+    if H and not all(isinstance(H.get(k), int) and H[k] >= 0 for k in ("aircraft", "carry", "turnaround", "at_once", "hit", "downed", "blocked", "hot", "zone")):
+        errors.append("units.yaml: heliborne needs whole numbers aircraft, carry, turnaround, at_once, hit, downed, blocked, hot and zone")
     return errors
 
 
