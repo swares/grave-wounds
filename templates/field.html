@@ -437,7 +437,8 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
   if (travelWx) S.field.weather = travelWx;
   SIZE = S.field.size.slice();
   S.fieldId = B ? fid : null;
-  S.marks = { ...markDefaults(), ...(B?.markers || {}) };   // the battlefield's marker settings, else units.yaml's
+  S.marks = { ...markDefaults(), ...(B?.markers || {}) };
+  S.entry = B?.entry || null;                       // the battlefield's entry edges, if it names them   // the battlefield's marker settings, else units.yaml's
   S.camp = null;
   if (B && armies && !S.forces){
     S.sides = B.sides.slice();
@@ -1832,17 +1833,27 @@ function reachSvg(){                              // the selected unit's move th
   return `<g class="rules reach">${fireSvg(u, k)}${moveSvg(u, i, k)}</g>`;
 }
 const isMeleeOnly = u => !isGun(u.weapon) && !Array.from({ length: 3 }, (_, d) => reaches(u, d + 1)).some(Boolean);   // no reach at 1 to 3 hexes: a hand weapon
-function edgesSvg(){                              // set-up: where a new unit comes in for each side (startSpots: its front at column 8 or SIZE-7, its rows behind toward the edge)
-  if (!shows().edges || S.phase !== "setup") return "";
-  let g = "";
-  for (let r = 0; r < SIZE[1]; r++){
-    for (let c = 0; c <= 7; c++) g += `<polygon class="edge" fill="url(#hatch0)" points="${pts(xy([c, r]))}"/>`;
-    for (let c = SIZE[0] - 8; c < SIZE[0]; c++) g += `<polygon class="edge" fill="url(#hatch1)" points="${pts(xy([c, r]))}"/>`;
-  }
-  const [, y] = xy([0, 2]), [x0] = xy([0, 2]), [x1] = xy([SIZE[0] - 1, 2]);
-  return `<g class="rules">${g}<text class="ulabel side edge-t s0" x="${F1(x0)}" y="${F1(y + 4)}">${esc(S.sides[0])}: new units here →</text><text class="ulabel edge-t s1" x="${F1(x1)}" y="${F1(y + 4)}" style="text-anchor:end">← ${esc(S.sides[1])}: new units here</text></g>`;
-}
 const F1 = v => v.toFixed(1);
+function edgeBand(e){                             // [first row, last row, first column, last column] of the 8 hexes in from edge e
+  const [W, H] = SIZE;
+  return { N: [0, 7, 0, W - 1], S: [H - 8, H - 1, 0, W - 1], W: [0, H - 1, 0, 7], E: [0, H - 1, W - 8, W - 1] }[e];
+}
+function edgeLabel(e){                            // [hex, text-anchor] for edge e's label
+  const [W, H] = SIZE, mid = [Math.floor(W / 2), Math.floor(H / 2)];
+  return { N: [[mid[0], 2], "middle"], S: [[mid[0], H - 3], "middle"], W: [[1, mid[1]], "start"], E: [[W - 2, mid[1]], "end"] }[e];
+}
+function edgesSvg(){                              // set-up: where each side's new units come in (startSpots: 8 hexes in from its entry edge), hatched, with a label
+  if (!shows().edges || S.phase !== "setup") return "";
+  let g = "", t = "";
+  for (const k of [0, 1]){
+    const e = entryEdge(k), [r0, r1, c0, c1] = edgeBand(e), [at, anchor] = edgeLabel(e), [x, y] = xy(at);
+    for (let r = r0; r <= r1; r++){
+      for (let c = c0; c <= c1; c++) g += `<polygon class="edge" fill="url(#hatch${k})" points="${pts(xy([c, r]))}"/>`;
+    }
+    t += `<text class="ulabel edge-t s${k}" x="${F1(x)}" y="${F1(y + 4)}" style="text-anchor:${anchor}">${esc(S.sides[k])}: new units come in here</text>`;
+  }
+  return `<g class="rules">${g}${t}</g>`;
+}
 function refsSvg(){                               // every tenth column and row numbered and dashed (hexes are named 34,60 in messages), and a scale bar
   if (!shows().refs) return "";
   let g = "";
@@ -2493,7 +2504,8 @@ function byAir(u, f){                             // the unit comes on by air at
   S.msg = `${unitName(u)} (${men} men) will come in by air at ${lz[0] + 1},${lz[1] + 1}: up to ${FD.units.heliborne.lift} men a landing zone at the end of each exchange.`;
   render();
 }
-function setUp(u, k){                             // set-up: inside the camp for its defenders, else the first free spot down its side's edge; as wide as asked, else narrower and deeper
+function setUp(u, k){                             // set-up: inside the camp for its defenders, else the first free spot along its side's entry edge, facing into the map; as wide as asked, else narrower and deeper
+  u = { ...u, facing: EDGE_FACING[entryEdge(k)] };
   for (const width of entryWidths(u.width)){
     const pos = startSpots(k, footprint({ ...u, width, pos: [0, 0] }).length).find(h => fits([...S.units, { ...u, width, pos: h }], S.units.length, { ...u, width, pos: h }, SIZE, S.field));
     if (!pos) continue;
@@ -2506,8 +2518,8 @@ function setUp(u, k){                             // set-up: inside the camp for
   S.msg = "No room for it along the edge, even in column: make room, or add fewer men.";
   render();
 }
-function bringOn(u, k){                           // a unit joining during the battle: at its side's back edge, facing the way the side faces; it moves next exchange
-  const facing = sideFacing(k);
+function bringOn(u, k){                           // a unit joining during the battle: at its side's entry edge, facing into the map; it moves next exchange
+  const facing = EDGE_FACING[entryEdge(k)];
   for (const width of entryWidths(u.width)){         // as wide as asked, else narrower and deeper until it fits
     const spots = entrySpots(facing, footprint({ ...u, width, pos: [0, 0], facing }).length);
     const pos = spots.find(h => fits([...S.units, { ...u, width, pos: h, facing }], S.units.length, { ...u, width, pos: h, facing }, SIZE, S.field));
@@ -2532,6 +2544,16 @@ function sideFacing(k){                           // the way most of a side's me
   if (Math.max(...n) > 0) return n.indexOf(Math.max(...n));
   return k ? 3 : 0;
 }
+const EDGE_FACING = { S: 1, N: 4, W: 0, E: 3 }, OPPOSITE = { S: "N", N: "S", W: "E", E: "W" };
+const edgeBehind = f => (f === 1 ? "S" : f === 4 ? "N" : f === 0 || f === 5 ? "W" : "E");   // the map edge behind units facing f (as entrySpots)
+const fielded = k => S.units.some(u => sideNo(u) === k && u.men > 0 && u.state !== "fled");
+function entryEdge(k){                            // where side k's new units come in: the battlefield's entry, else the edge behind the way most of its men face; the other side's opposite edge if they would share one
+  if (S.entry) return S.entry[k];
+  const own = k => (fielded(k) ? edgeBehind(sideFacing(k)) : null);
+  const mine = own(k), theirs = own(1 - k);
+  if (!mine) return theirs ? OPPOSITE[theirs] : (k ? "E" : "W");
+  return k === 1 && mine === theirs ? OPPOSITE[theirs] : mine;
+}
 function entrySpots(facing, ranks){               // front hexes for a unit `ranks` deep with its rear at the map edge behind a side facing this way, middle outwards
   const [W, H] = SIZE, mid = (n, m) => Array.from({ length: n }, (_, i) => Math.floor(m / 2) + (i % 2 ? -1 : 1) * Math.ceil(i / 2)).filter(x => x >= 0 && x < m);
   const inner = Array.from({ length: 12 }, (_, d) => d + ranks), out = [];
@@ -2550,10 +2572,13 @@ function formationFor(weapon, chosen){           // guns in battery order, machi
   if (isAtGun({ weapon })) return "at_gun";
   return ["battery", "mg", "at_gun"].includes(chosen) ? "close" : chosen;
 }
-function startSpots(k, ranks = 1){                // its front hexes down its side's edge, far enough in for `ranks` rows behind
-  const edge = [], c = k ? SIZE[0] - 8 - (ranks - 1) : 7 + (ranks - 1);
-  if (c < 0 || c >= SIZE[0]) return edge;
-  for (let r = 2; r < SIZE[1] - 2; r++) edge.push([c, r]);
+function startSpots(k, ranks = 1){                // its front hexes along its side's entry edge, 8 hexes in with `ranks` rows behind it
+  const edge = [], e = entryEdge(k), d = 7 + (ranks - 1), [W, H] = SIZE;
+  if (d >= (e === "N" || e === "S" ? H : W)) return edge;
+  if (e === "W" || e === "E") for (let r = 2; r < H - 2; r++) edge.push([e === "W" ? d : W - 1 - d, r]);
+  else for (let c = 2; c < W - 2; c++) edge.push([c, e === "N" ? d : H - 1 - d]);
+  const along = e === "W" || e === "E" ? 1 : 0, mid = (along ? H : W) / 2;
+  edge.sort((a, b) => Math.abs(a[along] - mid) - Math.abs(b[along] - mid));   // middle outwards, as reinforcements come on
   if (k || !S.camp) return edge;
   const inside = [];
   for (let r = 0; r <= S.camp.radius; r++) inside.push(...ringWalk(S.camp.centre, r));
@@ -2593,6 +2618,7 @@ function followerUnit(o, side, k){                // one career's followers as a
   const weapon = ok.includes(o.weapon) ? o.weapon : ok.find(w => ranged(w) === ranged(o.weapon) && !isGun(w)) || ok[0], shoots = ranged(weapon);
   const u = newUnit({ name: o.name, side, men: o.men, quality: o.quality, weapon, kit: FD.kits[o.kit] ? o.kit : "none",
     formation: shoots ? "open" : "close", mounted: o.mounted, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0, medics: o.medics, medic_quality: o.medic_quality });
+  u.facing = EDGE_FACING[entryEdge(k)];
   const spot = startSpots(k).find(pos => fits([...S.units, { ...u, pos }], S.units.length, { ...u, pos }, SIZE, S.field));
   if (!spot) return null;
   u.pos = spot;

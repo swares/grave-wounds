@@ -137,6 +137,17 @@ that does not fit down its side's edge, it is added narrower and deeper (a quart
 at a time, its rear still on the map) until it fits, and the message says so. **Wider**
 and **Narrower** change it afterwards.
 
+**Entry edges.** Each side brings new units in at its own map edge. In set-up they come in
+8 hexes in from it, from the middle of the edge outwards, facing into the map. During the
+battle they come on at the edge itself.
+- **Which edge.** A battlefield can name the edges (`entry: [S, N]`, side A's first).
+  Otherwise each side uses the edge behind the way most of its men face, which puts the
+  Redan's British in at the south and the Russians at the north.
+- **Sharing.** If both sides would use the same edge, the second side takes the opposite
+  one. That happens at Mogadishu, where both sides mostly face north.
+- **No units yet.** A side with no units uses the edge opposite the other side's. On open
+  ground with no units at all, side A uses the west edge and side B the east.
+
 **Unit markers.** On its centre hex each unit carries a marker, drawn like a military map
 symbol:
 - **Frame.** The first side's units have a rectangle, the second side's a diamond, in the
@@ -178,9 +189,8 @@ default):
   its weapon's reach after the weather and the height between. The shading uses the same
   test as choosing a target, seen from the nearest front hex. A unit or ground in the way
   may still block a shot. Hand weapons have no field of fire.
-- **Entry edges (set-up only).** Hatching in each side's colour marks where a new unit comes
-  in: the first side's front at column 8, the second side's at the eighth column from the
-  east edge.
+- **Entry edges (set-up only).** Hatching in each side's colour marks the 8 hexes in from
+  its entry edge (above), where its new units come in.
 - **Grid references and scale.** Every tenth column and row is numbered and dashed. These
   are the numbers the messages use for hexes (34,60). A scale bar shows 10 hexes (5 on a
   small field) in the distance units chosen at the top of the page.
