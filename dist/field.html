@@ -2986,6 +2986,7 @@ function runAway(units, i, size, field = null){   // units after broken unit i r
 
 // ---------- the enemy commander (as gravewounds.commander) ----------
 const ROUTED = new Set(["broken", "fled"]);
+const AI_MOVES = new Set(["move", "charge", "advance", "fall_back", "close_up"]);   // orders that take a unit somewhere new (as commander.MOVES)
 function command(units, side, size, field, rng, exchange = null, { stance = "attack", memory = null, table = null } = {}){   // {units, orders}: each unit of side ordered in turn, by its quality (units.yaml commander); stance attack or hold; memory: where it last saw each enemy (updated in place)
   let us = units.map(u => ({ ...u }));
   const orders = [], mem = memory ?? {};
@@ -2999,7 +3000,11 @@ function command(units, side, size, field, rng, exchange = null, { stance = "att
   for (let i = 0; i < us.length; i++){
     if (us[i].side !== side || !commandable(us, i, exchange)) continue;
     const roll = rng.randint(1, 100), o = unitOrder(us, i, [size, aimOf(us, i, aim), stance, known, exchange], roll);
-    if (o){ orders.push({ unit: i, ...o }); applyOrder(us, i, o) }
+    if (o){
+      orders.push({ unit: i, ...o });
+      applyOrder(us, i, o);
+      if (AI_MOVES.has(o.act)) sightings(us, side, field, exchange, mem);   // what it sees from where it went, the units after it know (as commander.command)
+    }
   }
   orders.push(...moveGuns(us, side, [size, goal, stance, known, exchange]), ...layGuns(us, side, [size, goal, known, exchange]), ...callFireAi(us, side, goal, known, [stance, exchange, orders, table]));
   return { units: us, orders };
