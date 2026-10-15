@@ -422,7 +422,7 @@ def index_terms(html: str) -> dict:
 def _term(raw: str) -> str | None:
     """A bold run as an index term, or None (numbers, dice, long phrases)."""
     t = re.sub(r"^(\d+\.\s*|(a|an|the)\s+)", "", raw.strip(), flags=re.I).strip().rstrip(".:").strip()
-    if not t or len(t.split()) > 5 or re.fullmatch(r"[\d%+\-–—\s,.d×x/()]+", t) or re.fullmatch(r"d\d+.*", t):
+    if not t or len(t.split()) > 5 or re.fullmatch(r"[\d%+\-–—\s,.d×x/()]+", t) or (t[0] == "d" and t[1:2].isdigit()):
         return None
     return t[0].upper() + t[1:]
 
