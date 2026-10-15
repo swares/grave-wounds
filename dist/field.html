@@ -90,6 +90,8 @@ button:disabled{opacity:.45;cursor:default}
 .legend .mkicon{width:22px;height:19px;margin-right:2px}
 .utag{font:700 .78rem var(--mono)}
 .rules{pointer-events:none}
+fieldset.rules-row{border:0;margin:0;padding:0;min-width:0}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .move{stroke-width:.5}.move.s0{fill:var(--side0);fill-opacity:.24;stroke:var(--side0);stroke-opacity:.4}.move.s1{fill:var(--side1);fill-opacity:.24;stroke:var(--side1);stroke-opacity:.4}
 .fire{stroke:none}.fire.s0{fill:var(--side0);fill-opacity:.08}.fire.s1{fill:var(--side1);fill-opacity:.08}
 .hatch{stroke-width:1.2;stroke-opacity:.45}.hatch.s0{stroke:var(--side0)}.hatch.s1{stroke:var(--side1)}.edge{stroke:none}
@@ -185,12 +187,12 @@ legend{padding:0}
         <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-strength"> strength</label></div>
         <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-size"> size marks</label> <span class="muted" id="size-note" style="font-size:.8rem" hidden>no unit here has a size set</span></div>
       </div>
-      <div class="row marks-row" role="group" aria-label="Rules on the map">
+      <fieldset class="row marks-row rules-row"><legend class="sr-only">Rules on the map</legend>
         <div style="flex:0 0 auto;align-self:end"><label class="check" title="The hexes the selected unit can reach this exchange, and the ground ahead of it within its weapon's reach"><input type="checkbox" id="show-reach"> move and fire (selected unit)</label></div>
         <div style="flex:0 0 auto;align-self:end"><label class="check" title="Where new units come in, during set-up"><input type="checkbox" id="show-edges"> entry edges</label></div>
         <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="show-refs"> grid references and scale</label></div>
         <div style="flex:0 0 auto;align-self:end"><label class="check" title="Batteries on call with no place on the map, on the edge behind their army"><input type="checkbox" id="show-oncall"> batteries on call</label></div>
-      </div>
+      </fieldset>
       <div class="legend" id="unit-legend" aria-label="Unit markers"></div>
       <div class="legend" id="legend"></div>
       <p class="muted" style="margin:0">Each unit is a block of hexes along its front (the dark edge), facing the arrow. The marker on its centre hex shows its side (rectangle or diamond) and type: see the key above. Close order holds 40 men a hex, open order 20. Units touching across a front fight; archers shoot at the nearest enemy in range in front of them.</p>
@@ -5299,36 +5301,55 @@ function unitSvg(u){
 }
 // ---------- game rules drawn on the map: the selected unit's move and fire, entry edges, grid references and scale, batteries on call ----------
 const shows = () => S.show || (S.show = { reach: true, edges: true, refs: true, oncall: true });
-const hatchDefs = () => `<defs>${[0, 1].map(k => `<pattern id="hatch${k}" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(${k ? -45 : 45})"><line x1="0" y1="0" x2="0" y2="5" class="hatch s${k}"/></pattern>`).join("")}</defs>`;
+const hatchPattern = k => `<pattern id="hatch${k}" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(${k ? -45 : 45})"><line x1="0" y1="0" x2="0" y2="5" class="hatch s${k}"/></pattern>`;
+const hatchDefs = () => "<defs>" + hatchPattern(0) + hatchPattern(1) + "</defs>";
 let fireCache = { key: null, svg: "" }, moveCache = { key: null, svg: "" };
-function fireSvg(u, k){                           // the ground ahead of its front within its weapon's reach (as nearestAhead: ahead of the front, in reach with the weather and the height between, seen from the nearest front hex)
-  const key = JSON.stringify([u.id, u.pos, u.facing, u.men, u.width, u.formation, u.weapon, u.kit, u.nv, S.field.weather, S.field.smoke, S.field.lit]);
-  if (fireCache.key === key) return fireCache.svg;
-  let g = "";
-  if (!isMeleeOnly(u)){
-    const front = footprint(u)[0], fv = fvec(u.facing), fc = front.map(cube), mid = front[Math.floor(front.length / 2)];
-    const ahead = step(mid, u.facing), far = d => step(ahead, u.facing, d - 1);
-    let cap = 0;                                  // the farthest it could reach in this light and weather (straight ahead, height allowed for): the scan stops there
-    while (cap < 400){ const d = cap + 1, wx = shotWeather(S.field, u.weapon, d, mid, far(d), seerOf(u)); if (wx.blocked || !reaches(u, d, (wx.reach || 0) + 40)) break; cap = d }
-    const cs = fc.map(c => c[0]), rs = front.map(h => h[1]);
-    const c0 = Math.max(0, Math.min(...front.map(h => h[0])) - cap - 1), c1 = Math.min(SIZE[0] - 1, Math.max(...front.map(h => h[0])) + cap + 1);
-    const r0 = Math.max(0, Math.min(...rs) - cap - 1), r1 = Math.min(SIZE[1] - 1, Math.max(...rs) + cap + 1);
-    for (let r = r0; cap && r <= r1; r++) for (let c = c0; c <= c1; c++){
-      const t = [c, r], q = c - (r - (r & 1)) / 2, z = -q - r;
-      let best = -1, bd = 1e9;
-      for (let j = 0; j < fc.length; j++){
-        const s = fc[j], dq = q - s[0], dr = r - s[1], dz = z - s[2];
-        if (dq * fv[0] + dr * fv[1] + dz * fv[2] <= 0) continue;
-        const d = Math.max(Math.abs(dq), Math.abs(dr), Math.abs(dz));
-        if (d < bd){ bd = d; best = j }
-      }
-      if (best < 0 || bd > cap) continue;
-      const h = front[best], wx = shotWeather(S.field, u.weapon, bd, h, t, seerOf(u));
-      if (!wx.blocked && reaches(u, bd, (wx.reach || 0) + heightEdge(S.field, u.weapon, h, t)[1])) g += `<polygon class="fire s${k}" points="${pts(xy(t))}"/>`;
+function fireCap(u, mid){                         // the farthest it could reach in this light and weather (straight ahead, height allowed for): the fire scan stops there
+  const ahead = step(mid, u.facing);
+  let cap = 0;
+  while (cap < 400){
+    const d = cap + 1, wx = shotWeather(S.field, u.weapon, d, mid, step(ahead, u.facing, d - 1), seerOf(u));
+    if (wx.blocked || !reaches(u, d, (wx.reach || 0) + 40)) break;
+    cap = d;
+  }
+  return cap;
+}
+function nearestFront(fc, fv, t){                 // [distance, index] of the nearest front hex that t is ahead of (index -1: none)
+  const r = t[1], q = t[0] - (r - (r & 1)) / 2, z = -q - r;   // t's cube coordinates (as cube), without an array for each hex
+  let best = -1, bd = Infinity;
+  for (let j = 0; j < fc.length; j++){
+    const s = fc[j], dq = q - s[0], dr = r - s[1], dz = z - s[2];
+    const d = Math.max(Math.abs(dq), Math.abs(dr), Math.abs(dz));
+    if (dq * fv[0] + dr * fv[1] + dz * fv[2] > 0 && d < bd){ bd = d; best = j }
+  }
+  return [bd, best];
+}
+function inFire(u, h, t, dist){            // whether u's weapon reaches t from front hex h, with the weather and the height between (as nearestAhead)
+  const wx = shotWeather(S.field, u.weapon, dist, h, t, seerOf(u));
+  return !wx.blocked && reaches(u, dist, (wx.reach || 0) + heightEdge(S.field, u.weapon, h, t)[1]);
+}
+function fireHexes(u){                            // the hexes ahead of u's front within its weapon's reach, seen from the nearest front hex
+  const front = footprint(u)[0], fv = fvec(u.facing), fc = front.map(cube);
+  const cap = fireCap(u, front[Math.floor(front.length / 2)]);
+  if (!cap) return [];
+  const cols = front.map(h => h[0]), rows = front.map(h => h[1]), out = [];
+  const c0 = Math.max(0, Math.min(...cols) - cap - 1), c1 = Math.min(SIZE[0] - 1, Math.max(...cols) + cap + 1);
+  const r0 = Math.max(0, Math.min(...rows) - cap - 1), r1 = Math.min(SIZE[1] - 1, Math.max(...rows) + cap + 1);
+  for (let r = r0; r <= r1; r++){
+    for (let c = c0; c <= c1; c++){
+      const t = [c, r], [dist, j] = nearestFront(fc, fv, t);
+      if (j >= 0 && dist <= cap && inFire(u, front[j], t, dist)) out.push(t);
     }
   }
-  fireCache = { key, svg: g };
-  return g;
+  return out;
+}
+function fireSvg(u, k){                           // the ground u can shoot into, cached until it or the weather changes
+  const key = JSON.stringify([u.id, u.pos, u.facing, u.men, u.width, u.formation, u.weapon, u.kit, u.nv, S.field.weather, S.field.smoke, S.field.lit]);
+  if (fireCache.key !== key){
+    const hexes = isMeleeOnly(u) ? [] : fireHexes(u);
+    fireCache = { key, svg: hexes.map(t => `<polygon class="fire s${k}" points="${pts(xy(t))}"/>`).join("") };
+  }
+  return fireCache.svg;
 }
 function moveSvg(u, i, k){                        // the hexes its centre can reach this exchange (reachable, its allowance)
   const key = JSON.stringify([u.id, u.state, u.prone, u.pinned, u.limbered, u.limbering, S.field.weather, S.field.ground && Object.keys(S.field.ground).length, S.units.map(v => [v.id, v.pos, v.facing, v.men, v.width, v.state])]);
