@@ -75,8 +75,9 @@ Korean 45 mm and the Japanese 47 mm.
 
 From 1939, the GM can paint minefields before the battle, marked or hidden. A hidden field
 shows on the map only once something has gone into it. A unit that moves into minefield
-hexes sets them off before the exchange's shooting. The ground it crossed is reckoned on a
-straight line from where its move began.
+hexes sets them off before the exchange's shooting. The ground it crossed is reckoned along
+the cheapest way it could have gone within its move that crosses the fewest minefield hexes
+its side knows of, so a known field it went round is not set off; a hidden one on its way is.
 
 {{table:mines}}
 

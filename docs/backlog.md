@@ -89,8 +89,9 @@ When an item is done, delete it here and note it in the pull request that closes
   towing them, lorries, tank riders and sappers laying and lifting mines in battle are in. Field guns with shields (about
   1900 on) only fire from off the map, so no battery on the map has one. Sappers lay or lift
   only the row just ahead of them, and a unit that turns in place onto mines sets them off
-  as if it had moved into them (except its own side's). A minefield is set off along a straight line from
-  where a unit's move began, not along the path it took. No battlefield has minefields yet:
+  as if it had moved into them (except its own side's). The way a unit went is reckoned as
+  the cheapest round known mines within its move, not the hexes actually clicked through (a
+  hand move is a destination, not a route). No battlefield has minefields yet:
   to be laid only where the accounts name them. Crews who bail out simply leave the fight.
 - **Fire at hidden men, first cut.** Men gone to ground, in bunkers or in buildings are now hit
   at 10% of aimed shots (machine guns 5%), and dug-in men hold better. Osan, left alone, lasts

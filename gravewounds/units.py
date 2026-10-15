@@ -1992,20 +1992,115 @@ def _mark_was(us: list, field: dict | None) -> None:
 
 # ---------- minefields ----------
 
-def crossed(d: Data, u: dict) -> list:
+def crossed(d: Data, u: dict, field: dict | None = None) -> list:
     """The hexes unit u went into since `was` (where it stood when the moves began): its footprint
-    at each step on a straight line from there to here, less the hexes it started on, in order."""
+    at each step of the way it went (went), less the hexes it started on, in order."""
     was = u.get("was")
     if not was or (list(was[0]) == list(u["pos"]) and was[1] == u["facing"]):
         return []
     old = {C.hkey(x) for row in footprint(d, {**u, "pos": list(was[0]), "facing": was[1]}) for x in row}
     out, seen = [], set(old)
-    for p in ray(list(was[0]), u["pos"], hdist(was[0], u["pos"]))[1:] or [u["pos"]]:
+    for p in went(d, field, u, was[0]):
         for x in (x for row in footprint(d, {**u, "pos": list(p)}) for x in row):
             if C.hkey(x) not in seen:
                 seen.add(C.hkey(x))
                 out.append(x)
     return out
+
+
+def went(d: Data, field: dict | None, u: dict, start) -> list:
+    """The middle hex's way from start to where unit u stands, start left out ([pos] if it only
+    turned): the cheapest way over the ground and works within its move (mine_path) that
+    crosses the fewest minefield hexes its side knows of; else a straight line."""
+    if list(start) == list(u["pos"]):
+        return [list(u["pos"])]
+    return (mine_path(d, field, u, start) if field else None) or ray(list(start), u["pos"], hdist(start, u["pos"]))[1:]
+
+
+def mine_path(d: Data, field: dict, u: dict, start) -> list | None:
+    """The way (hexes after start) to u's position, within its allowance (times charge_move if
+    it charged), crossing the fewest hexes of known enemy minefields (known_mine) in its
+    footprint, then costing the least; None if there is none. Other units are left out (they
+    have moved since). Of equal ways, the one nearest the straight line (_way_back)."""
+    limit = allowance(d, u) * (d.units["charge_move"] if u.get("charged") else 1)
+    size, goal, s = _size(d, field), tuple(u["pos"]), tuple(start)
+    if limit <= 0 or hdist(s, goal) > limit:
+        return None
+    mines, steps = field.get("mines") or {}, {}
+    levels = _mine_levels(d, field, u, (s, limit, size), (mines, steps))
+    ends = [(levels[c][goal], c) for c in range(limit + 1) if goal in levels[c]]
+    if not ends:
+        return None
+    m, c = min(ends)
+    return _way_back(d, field, u, (goal, c, m), (levels, steps, mines, size, s))
+
+
+def _mine_levels(d: Data, field: dict, u: dict, run: tuple, ms: tuple) -> list:
+    """For each movement spent (0 to limit), {hex: the fewest known enemy minefield hexes
+    crossed to reach it for exactly that movement}, from start."""
+    (s, limit, size), (mines, steps) = run, ms
+    levels = [{} for _ in range(limit + 1)]
+    levels[0][s] = 0
+    for c in range(limit + 1):
+        for h, m0 in sorted(levels[c].items()):
+            for x, sc in _steps_cached(d, field, u, h, size, steps):
+                m = m0 + _known_mines_at(d, u, x, mines) if c + sc <= limit else None
+                if m is not None and m < levels[c + sc].get(x, 10**9):
+                    levels[c + sc][x] = m
+    return levels
+
+
+def _steps_cached(d: Data, field: dict, u: dict, h: tuple, size: tuple, steps: dict) -> list:
+    """_steps_from for hex h, other units left out, worked out once."""
+    if h not in steps:
+        steps[h] = _steps_from(d, field, u, h, {}, size)
+    return steps[h]
+
+
+def _known_mines_at(d: Data, u: dict, x, mines: dict) -> int:
+    """Hexes of u's footprint at x in minefields its side knows of that are not its own side's."""
+    return sum(1 for row in footprint(d, {**u, "pos": list(x)}) for y in row
+               if C.hkey(y) in mines and mines[C.hkey(y)].get("side") != u["side"] and known_mine(mines[C.hkey(y)], u["side"]))
+
+
+def _step_into(d: Data, field: dict, u: dict, ph: tuple, ss: tuple) -> int | None:
+    """What it costs the middle hex to step from p into h (None if it cannot, or p is off the map)."""
+    (p, h), (size, steps) = ph, ss
+    if not (0 <= p[0] < size[0] and 0 <= p[1] < size[1]):
+        return None
+    return next((k for x, k in _steps_cached(d, field, u, p, size, steps) if x == h), None)
+
+
+def _way_back(d: Data, field: dict, u: dict, end: tuple, ctx: tuple) -> list | None:
+    """From (hex, cost, mines) back to the start: at each hex the neighbour that steps into it at
+    a level and mines count that fit, the nearest the straight line from the start (the first by
+    direction of equals). -> the hexes after the start, or None if the trail breaks."""
+    (h, c, m), (levels, steps, mines, size, start) = end, ctx
+    line, out = ray(list(start), list(h), hdist(start, h)), [list(h)]
+    while c > 0:
+        here = _known_mines_at(d, u, h, mines)
+        best = _step_back(d, field, u, (h, c, m - here), (levels, steps, size, line))
+        if best is None:
+            return None
+        h, c, m = best[1], c - best[2], m - here
+        if c > 0:
+            out.append(list(h))
+    return out[::-1]
+
+
+def _step_back(d: Data, field: dict, u: dict, at: tuple, ctx: tuple) -> tuple | None:
+    """(off the line, hex, cost) of the neighbour of h that steps into it from the level below
+    with `want` mines: the nearest the straight line, the first by direction of equals."""
+    (h, c, want), (levels, steps, size, line), best = at, ctx, None
+    for dirn in range(6):
+        p = tuple(step(list(h), dirn))
+        sc = _step_into(d, field, u, (p, h), (size, steps))
+        if sc is None or sc > c or levels[c - sc].get(p) != want:
+            continue
+        off = min(hdist(p, x) for x in line)
+        if best is None or off < best[0]:
+            best = (off, p, sc)
+    return best
 
 
 def _mines_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | None) -> list:
@@ -2020,7 +2115,7 @@ def _mines_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
     for i, u in enumerate(us):
         if u["men"] <= 0 or u["state"] == "fled":
             continue
-        hit = [x for x in crossed(d, u) if C.hkey(x) in mines and mines[C.hkey(x)].get("side") != u["side"]]
+        hit = [x for x in crossed(d, u, field) if C.hkey(x) in mines and mines[C.hkey(x)].get("side") != u["side"]]
         if hit:
             for x in hit:
                 mines[C.hkey(x)]["found"] = True
