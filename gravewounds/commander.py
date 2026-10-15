@@ -545,11 +545,18 @@ def _call_plain(d: Data, us: list, side, field: dict | None, kt: tuple) -> list:
         K = d.units["indirect"]["kinds"][b["kind"]]
         aim = None if b.get("mission") else _fire_aim(d, us, side, field, known, (b, K))
         if aim:
-            run = _air_run(d, us, side, (b, K), aim, (table, field)) if K.get("air") else None
-            b["mission"] = {"hex": aim[1], "wait": K["delay"], "repeat": False, **(run or {})}
-            talked = {"fac": True} if K.get("air") and U._fac_sees(d, us, field, b, aim[1]) else {}
-            out.append({"unit": None, "act": "fire", "battery": k, "target": aim[0], "hex": aim[1], **({"attack": run["attack"]} if run else {}), **talked})
+            out.append(_plain_order(d, us, side, (k, b, K), (aim, table, field)))
     return out
+
+
+def _plain_order(d: Data, us: list, side, bk: tuple, atf: tuple) -> dict:
+    """Battery or aircraft k (b, kind K) is called on aim: its mission set (aircraft: a run on
+    a wide front, _air_run). -> the fire order, noting a controller who sees the aim."""
+    (k, b, K), (aim, table, field) = bk, atf
+    run = _air_run(d, us, side, (b, K), aim, (table, field)) if K.get("air") else None
+    b["mission"] = {"hex": aim[1], "wait": K["delay"], "repeat": False, **(run or {})}
+    talked = {"fac": True} if K.get("air") and U._fac_sees(d, us, field, b, aim[1]) else {}
+    return {"unit": None, "act": "fire", "battery": k, "target": aim[0], "hex": aim[1], **({"attack": run["attack"]} if run else {}), **talked}
 
 
 def _call_creep(d: Data, us: list, side, field: dict | None, ko: tuple, free: list) -> list:
