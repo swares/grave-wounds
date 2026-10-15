@@ -89,6 +89,15 @@ button:disabled{opacity:.45;cursor:default}
 .mkicon{width:26px;height:22px;flex:none;vertical-align:middle}
 .legend .mkicon{width:22px;height:19px;margin-right:2px}
 .utag{font:700 .78rem var(--mono)}
+.rules{pointer-events:none}
+.move{stroke-width:.5}.move.s0{fill:var(--side0);fill-opacity:.24;stroke:var(--side0);stroke-opacity:.4}.move.s1{fill:var(--side1);fill-opacity:.24;stroke:var(--side1);stroke-opacity:.4}
+.fire{stroke:none}.fire.s0{fill:var(--side0);fill-opacity:.08}.fire.s1{fill:var(--side1);fill-opacity:.08}
+.hatch{stroke-width:1.2;stroke-opacity:.45}.hatch.s0{stroke:var(--side0)}.hatch.s1{stroke:var(--side1)}.edge{stroke:none}
+.edge-t{font-size:9px}.edge-t.s0{fill:var(--side0)}.edge-t.s1{fill:var(--side1)}
+.ref{stroke:var(--ink);stroke-opacity:.15;stroke-dasharray:2 3;stroke-width:.8}.ref-t{font-size:8px}
+.scalebox{fill:var(--panel);fill-opacity:.85}.scale{stroke:var(--ink);stroke-width:1.2;fill:none}
+.chip{fill:var(--panel);stroke-width:1.4}.chip.s0{stroke:var(--side0)}.chip.s1{stroke:var(--side1)}.chip-arrow.s0{fill:var(--side0)}.chip-arrow.s1{fill:var(--side1)}
+.oncall{pointer-events:auto}
 .units{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .units li{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:3px;padding:6px 8px;cursor:pointer}
 .units li[aria-current="true"]{border-color:var(--blood);background:var(--blood-soft)}
@@ -175,6 +184,12 @@ legend{padding:0}
         <div style="flex:0 1 180px"><label for="sel-labels">Unit labels</label><select id="sel-labels"><option value="names">Names</option><option value="ids">IDs (B3)</option><option value="both">IDs and names</option></select></div>
         <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-strength"> strength</label></div>
         <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-size"> size marks</label> <span class="muted" id="size-note" style="font-size:.8rem" hidden>no unit here has a size set</span></div>
+      </div>
+      <div class="row marks-row" role="group" aria-label="Rules on the map">
+        <div style="flex:0 0 auto;align-self:end"><label class="check" title="The hexes the selected unit can reach this exchange, and the ground ahead of it within its weapon's reach"><input type="checkbox" id="show-reach"> move and fire (selected unit)</label></div>
+        <div style="flex:0 0 auto;align-self:end"><label class="check" title="Where new units come in, during set-up"><input type="checkbox" id="show-edges"> entry edges</label></div>
+        <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="show-refs"> grid references and scale</label></div>
+        <div style="flex:0 0 auto;align-self:end"><label class="check" title="Batteries on call with no place on the map, on the edge behind their army"><input type="checkbox" id="show-oncall"> batteries on call</label></div>
       </div>
       <div class="legend" id="unit-legend" aria-label="Unit markers"></div>
       <div class="legend" id="legend"></div>
@@ -5282,6 +5297,97 @@ function unitSvg(u){
   g += `<text class="ulabel side" x="${(x + (k === 0 ? MK.w : MK.dw) + 2.5).toFixed(1)}" y="${(y + 3).toFixed(1)}">${name}${men}${star}${low}</text></g>`;
   return g;
 }
+// ---------- game rules drawn on the map: the selected unit's move and fire, entry edges, grid references and scale, batteries on call ----------
+const shows = () => S.show || (S.show = { reach: true, edges: true, refs: true, oncall: true });
+const hatchDefs = () => `<defs>${[0, 1].map(k => `<pattern id="hatch${k}" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(${k ? -45 : 45})"><line x1="0" y1="0" x2="0" y2="5" class="hatch s${k}"/></pattern>`).join("")}</defs>`;
+let fireCache = { key: null, svg: "" }, moveCache = { key: null, svg: "" };
+function fireSvg(u, k){                           // the ground ahead of its front within its weapon's reach (as nearestAhead: ahead of the front, in reach with the weather and the height between, seen from the nearest front hex)
+  const key = JSON.stringify([u.id, u.pos, u.facing, u.men, u.width, u.formation, u.weapon, u.kit, u.nv, S.field.weather, S.field.smoke, S.field.lit]);
+  if (fireCache.key === key) return fireCache.svg;
+  let g = "";
+  if (!isMeleeOnly(u)){
+    const front = footprint(u)[0], fv = fvec(u.facing), fc = front.map(cube), mid = front[Math.floor(front.length / 2)];
+    const ahead = step(mid, u.facing), far = d => step(ahead, u.facing, d - 1);
+    let cap = 0;                                  // the farthest it could reach in this light and weather (straight ahead, height allowed for): the scan stops there
+    while (cap < 400){ const d = cap + 1, wx = shotWeather(S.field, u.weapon, d, mid, far(d), seerOf(u)); if (wx.blocked || !reaches(u, d, (wx.reach || 0) + 40)) break; cap = d }
+    const cs = fc.map(c => c[0]), rs = front.map(h => h[1]);
+    const c0 = Math.max(0, Math.min(...front.map(h => h[0])) - cap - 1), c1 = Math.min(SIZE[0] - 1, Math.max(...front.map(h => h[0])) + cap + 1);
+    const r0 = Math.max(0, Math.min(...rs) - cap - 1), r1 = Math.min(SIZE[1] - 1, Math.max(...rs) + cap + 1);
+    for (let r = r0; cap && r <= r1; r++) for (let c = c0; c <= c1; c++){
+      const t = [c, r], q = c - (r - (r & 1)) / 2, z = -q - r;
+      let best = -1, bd = 1e9;
+      for (let j = 0; j < fc.length; j++){
+        const s = fc[j], dq = q - s[0], dr = r - s[1], dz = z - s[2];
+        if (dq * fv[0] + dr * fv[1] + dz * fv[2] <= 0) continue;
+        const d = Math.max(Math.abs(dq), Math.abs(dr), Math.abs(dz));
+        if (d < bd){ bd = d; best = j }
+      }
+      if (best < 0 || bd > cap) continue;
+      const h = front[best], wx = shotWeather(S.field, u.weapon, bd, h, t, seerOf(u));
+      if (!wx.blocked && reaches(u, bd, (wx.reach || 0) + heightEdge(S.field, u.weapon, h, t)[1])) g += `<polygon class="fire s${k}" points="${pts(xy(t))}"/>`;
+    }
+  }
+  fireCache = { key, svg: g };
+  return g;
+}
+function moveSvg(u, i, k){                        // the hexes its centre can reach this exchange (reachable, its allowance)
+  const key = JSON.stringify([u.id, u.state, u.prone, u.pinned, u.limbered, u.limbering, S.field.weather, S.field.ground && Object.keys(S.field.ground).length, S.units.map(v => [v.id, v.pos, v.facing, v.men, v.width, v.state])]);
+  if (moveCache.key === key) return moveCache.svg;
+  let g = "";
+  for (const [, [h]] of reachable(S.units, i, SIZE, allowance(u), S.field)) g += `<polygon class="move s${k}" points="${pts(xy(h))}"/>`;
+  moveCache = { key, svg: g };
+  return g;
+}
+function reachSvg(){                              // the selected unit's move this exchange and its field of fire
+  const u = selUnit(), i = u ? S.units.indexOf(u) : -1;
+  if (!shows().reach || !u || out_(u) || !footprint(u).length) return "";
+  const k = sideNo(u);
+  return `<g class="rules reach">${fireSvg(u, k)}${moveSvg(u, i, k)}</g>`;
+}
+const isMeleeOnly = u => !isGun(u.weapon) && !Array.from({ length: 3 }, (_, d) => reaches(u, d + 1)).some(Boolean);   // no reach at 1 to 3 hexes: a hand weapon
+function edgesSvg(){                              // set-up: where a new unit comes in for each side (startSpots: its front at column 8 or SIZE-7, its rows behind toward the edge)
+  if (!shows().edges || S.phase !== "setup") return "";
+  let g = "";
+  for (let r = 0; r < SIZE[1]; r++){
+    for (let c = 0; c <= 7; c++) g += `<polygon class="edge" fill="url(#hatch0)" points="${pts(xy([c, r]))}"/>`;
+    for (let c = SIZE[0] - 8; c < SIZE[0]; c++) g += `<polygon class="edge" fill="url(#hatch1)" points="${pts(xy([c, r]))}"/>`;
+  }
+  const [, y] = xy([0, 2]), [x0] = xy([0, 2]), [x1] = xy([SIZE[0] - 1, 2]);
+  return `<g class="rules">${g}<text class="ulabel side edge-t s0" x="${F1(x0)}" y="${F1(y + 4)}">${esc(S.sides[0])}: new units here →</text><text class="ulabel edge-t s1" x="${F1(x1)}" y="${F1(y + 4)}" style="text-anchor:end">← ${esc(S.sides[1])}: new units here</text></g>`;
+}
+const F1 = v => v.toFixed(1);
+function refsSvg(){                               // every tenth column and row numbered and dashed (hexes are named 34,60 in messages), and a scale bar
+  if (!shows().refs) return "";
+  let g = "";
+  const [, yTop] = xy([0, 0]), [xLeft] = xy([0, 0]), [, yBot] = xy([0, SIZE[1] - 1]), [xRight] = xy([SIZE[0] - 1, 0]);
+  for (let c = 9; c < SIZE[0]; c += 10){ const [x] = xy([c, 0]); g += `<line class="ref" x1="${F1(x)}" y1="${F1(yTop + 6)}" x2="${F1(x)}" y2="${F1(yBot)}"/><text class="ulabel ref-t" x="${F1(x)}" y="${F1(yTop + 3)}">${c + 1}</text>` }
+  for (let r = 9; r < SIZE[1]; r += 10){ const [, y] = xy([0, r]); g += `<line class="ref" x1="${F1(xLeft + 12)}" y1="${F1(y)}" x2="${F1(xRight)}" y2="${F1(y)}"/><text class="ulabel side ref-t" x="${F1(xLeft - 4)}" y="${F1(y + 3)}">${r + 1}</text>` }
+  const n = SIZE[0] >= 60 ? 10 : 5, w = n * HW, [bx, by] = xy([2, SIZE[1] - 2]);
+  g += `<rect class="scalebox" x="${F1(bx - 4)}" y="${F1(by - 13)}" width="${F1(w + 58)}" height="19" rx="2"/><path class="scale" d="M${F1(bx)},${F1(by)}h${F1(w)}M${F1(bx)},${F1(by - 4)}v4M${F1(bx + w / 2)},${F1(by - 3)}v3M${F1(bx + w)},${F1(by - 4)}v4"/>`;
+  g += `<text class="ulabel side ref-t" x="${F1(bx + w + 4)}" y="${F1(by + 2)}">${n} hexes · ${fmtM(n * FD.units.hex_m)}</text>`;
+  return `<g class="rules">${g}</g>`;
+}
+function onCallSvg(){                             // each side's batteries on call with no place on the map: a chip on the edge behind its army
+  if (!shows().oncall) return "";
+  const bySide = [[], []];
+  supports().filter(b => !b.place).forEach(b => bySide[S.sides.indexOf(b.side) === 1 ? 1 : 0].push(b));
+  let g = "";
+  bySide.forEach((list, k) => {
+    if (!list.length) return;
+    const us = S.units.filter(u => sideNo(u) === k && !out_(u));
+    const up = us.length ? us.reduce((s, u) => s + Math.sin(-(60 * u.facing + 30) * Math.PI / 180), 0) < 0 : k === 0;   // its army faces up the map: the batteries are behind it, at the bottom
+    const [, yEdge] = xy([0, up ? SIZE[1] - 1 : 0]);
+    list.forEach((b, j) => {
+      const K = FD.units.indirect.kinds[b.kind] || {}, text = `${b.tubes} × ${(K.name || b.kind).toLowerCase()} · on call`;
+      const w = 30 + text.length * 4.6, [x] = xy([Math.round(SIZE[0] * (list.length > 1 ? 0.3 + 0.4 * j / (list.length - 1) : 0.5)), 0]), y = up ? yEdge - 20 : yEdge + 2;
+      g += `<g class="oncall"><title>${esc(b.name)} (${esc(b.side)})</title><rect class="chip s${k}" x="${F1(x - w / 2)}" y="${F1(y)}" width="${F1(w)}" height="18" rx="3"/>`
+        + `<g transform="translate(${F1(x - w / 2 + 12)},${F1(y + 9)}) scale(0.6)">${markSvg("artillery", k, 0, 0)}</g>`
+        + `<text class="ulabel side" x="${F1(x - w / 2 + 22)}" y="${F1(y + 12)}">${esc(text)}</text>`
+        + `<path class="chip-arrow s${k}" d="M${F1(x)},${F1(up ? y : y + 18)} l-4,${up ? -5 : 5} h8z"/></g>`;
+    });
+  });
+  return g ? `<g class="rules">${g}</g>` : "";
+}
 function unitLegend(){                            // the unit types on the map, each in the first side's frame that has one, and the two frames
   const seen = new Map();
   for (const u of S.units) if (u.state !== "fled" && !seen.has(unitType(u))) seen.set(unitType(u), sideNo(u));
@@ -5317,7 +5423,7 @@ function renderMap(){
   }
   ensureTags();
   const units = S.units.map(unitSvg).join(""), W = HW * (SIZE[0] + 0.5), H = 1.5 * R * (SIZE[1] - 1) + 2 * R;
-  $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" style="min-width:${SIZE[0] * 13}px">${hx}${worksSvg()}${units}${supportSvg()}</svg>`;
+  $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" style="min-width:${SIZE[0] * 13}px">${hatchDefs()}${hx}${worksSvg()}${edgesSvg()}${reachSvg()}${units}${supportSvg()}${refsSvg()}${onCallSvg()}</svg>`;
   $("#map-scale").textContent = `${SIZE[0]} × ${SIZE[1]} hexes · ${fmtM(FD.units.hex_m)} a hex · an exchange is about a minute`;
   $("#hex-size").textContent = fmtM(FD.units.hex_m);
   $("#unit-legend").innerHTML = unitLegend();
@@ -5325,6 +5431,7 @@ function renderMap(){
   const sized = S.units.some(u => u.size);          // size marks need a unit with a size: say so rather than tick a box that draws nothing
   $("#sel-labels").value = M.labels; $("#chk-strength").checked = M.strength; $("#chk-size").checked = M.size && sized; $("#chk-size").disabled = !sized;
   $("#size-note").hidden = sized;
+  const V = shows(); for (const k of ["reach", "edges", "refs", "oncall"]) $("#show-" + k).checked = V[k];
 }
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
 const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"], ["sappers", "sappers"], ["shielded", "shielded"], ["ladders", "ladders"], ["jostled", "jostled"], ["mining", "laying mines"], ["clearing", "lifting mines"]];
@@ -6087,6 +6194,7 @@ function init(){
   $("#btn-narrow").onclick = () => reshape(-1);
   $("#btn-wider").onclick = () => reshape(1);
   $("#btn-undo").onclick = () => { const u = selUnit(); if (u && S.start){ const i = idx(u.id); S.units[i] = { ...S.start[i] }; S.msg = ""; render() } };
+  for (const k of ["reach", "edges", "refs", "oncall"]) $("#show-" + k).onchange = e => { shows()[k] = e.target.checked; render() };
   $("#sel-labels").onchange = e => { marks().labels = e.target.value; render() };
   $("#chk-strength").onchange = e => { marks().strength = e.target.checked; render() };
   $("#chk-size").onchange = e => { marks().size = e.target.checked; render() };
