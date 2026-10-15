@@ -517,8 +517,14 @@ there are two ways to stop that:
 
 - **Carry him back.** Two of the unit's men carry him back (the unit must be steady or
   shaken and have men to spare).
-  - **With an aid post** for his side, they carry him there across the map, 3 hexes an
-    exchange on a straight line (about half a man's move). The party shows as ↩.
+  - **With an aid post** for his side, they carry him there across the map, 3 points of
+    movement an exchange (3 hexes on open ground, about half a man's move), by the cheapest
+    way over the ground and works: woods, rough ground and banks cost them as they cost a
+    unit, they go round water, walls and enemy units, and they pass through their own
+    side's units. They make at least a step an exchange. The party shows as ↩.
+    - With no way to the post (a river with no crossing, say), they make for the map edge
+      behind the unit instead, the same way, and the log says so; with no way there either,
+      for whatever edge they can reach.
     - On the way, shell bursts strike its men as men in the open.
     - A bearer put down is lost to the unit. With no bearers left, a man who cannot walk
       lies where he is (▼).
@@ -539,8 +545,9 @@ there are two ways to stop that:
 
 A hero who is wounded but can still walk (up, not lamed) has a third choice:
 
-- **Go back.** He leaves his unit and walks back alone, 3 hexes an exchange. He goes to his
-  side's aid post, or with none to the map edge behind his unit. Shells can catch him on
+- **Go back.** He leaves his unit and walks back alone, 3 points of movement an exchange,
+  by the cheapest way, as a party goes. He goes to his side's aid post, or with none (or no
+  way there) to the map edge behind his unit. Shells can catch him on
   the way as they can a party, and a wound that lames him there leaves him lying.
 
 Out of his unit's fight any of these ways, a leader counts as a leader down.

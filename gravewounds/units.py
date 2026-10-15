@@ -361,18 +361,18 @@ def _off_field(hero: dict) -> bool:
 
 
 def _parties_after(d: Data, us: list, field: dict | None) -> list:
-    """Each party on its way back goes heroes.aid_post.pace hexes on a straight line to its
-    side's aid post (or, with none, to the map edge the way back), and arrives if it is
-    within reach: the hero is carried (safe; at the post, its care), and the bearers set off
-    back to their unit, due after as many exchanges as the carry took. A hero who cannot walk
-    with no bearers left lies where he is; one killed on the way leaves his bearers to go back."""
-    log, pace = [], d.units["heroes"]["aid_post"]["pace"]
+    """Each party on its way back goes on along the cheapest way to its side's aid post (or,
+    with none or no way there, to the map edge the way back; party_way), and arrives if it gets
+    there: the hero is carried (safe; at the post, its care), and the bearers set off back to
+    their unit, due after as many exchanges as the carry took. A hero who cannot walk with no
+    bearers left lies where he is; one killed on the way leaves his bearers to go back."""
+    log = []
     for i, u in enumerate(us):
         for hero in u.get("heroes", []):
             g = hero.get("going")
             if not g:
                 continue
-            line = _party_stops(d, u, hero) or _party_moves(d, field, u, hero, pace)
+            line = _party_stops(d, u, hero) or _party_moves(d, us, field, i, hero)
             if line:
                 log.append({"kind": "party", "unit": i, "hero": hero["id"], "name": hero["name"], **line})
     return log
@@ -393,21 +393,118 @@ def _party_stops(d: Data, u: dict, hero: dict) -> dict | None:
     return None
 
 
-def _party_moves(d: Data, field: dict | None, u: dict, hero: dict, pace: int) -> dict | None:
-    """The party goes on toward its aim (the post, or the edge); arriving, the hero is carried."""
-    g, post = hero["going"], aid_post(field, u["side"])
-    aim = post["at"] if post else _edge(d, field, g["pos"], g["dir"])
+def _party_moves(d: Data, us: list, field: dict | None, i: int, hero: dict) -> dict | None:
+    """The party goes on toward its aim (the post, or the edge), heroes.aid_post.pace movement an
+    exchange along the cheapest way (party_way); arriving, the hero is carried. With no way to
+    the post it makes for the map edge instead (logged once)."""
+    u, g = us[i], hero["going"]
+    post = aid_post(field, u["side"])
     g["ex"] += 1
-    dist = hdist(g["pos"], aim)
-    if dist > pace:
-        g["pos"] = ray(g["pos"], aim, pace)[pace]
-        return None
+    way, note = party_way(d, us, field, i, (g, post))
+    if way is None:
+        return note
+    g["pos"], arrived = way
+    if not arrived:
+        return note
     del hero["going"]
     hero["carried"] = True
-    if post:
+    if post and not g.get("no_way"):
         hero["post"] = True
     _bearers_off(u, g)
-    return {"what": "post" if post else "edge", "at": aim}
+    return {"what": "edge" if g.get("no_way") or not post else "post", "at": list(g["pos"])}
+
+
+def party_way(d: Data, us: list, field: dict | None, i: int, gp: tuple) -> tuple:
+    """((where the party gets to this exchange, arrived?), a log line or None), or (None, line)
+    if no way leads anywhere: to the post if a way leads there, else to the map edge the way
+    back (else any edge), by the cheapest way over the ground and works, through its own side's
+    units and round the enemy's (_ways_to). It spends heroes.aid_post.pace movement as a unit
+    would (at least a step an exchange)."""
+    (g, post), u = gp, us[i]
+    size, pos = _size(d, field), tuple(g["pos"])
+    blocked = {k for j, e in enumerate(us) if e["side"] != u["side"] and e["men"] > 0 for k in _hexes_of(d, e)} - {pos}
+    walker, note = {"side": u["side"], "mounted": False}, None
+    ways = _ways_to(d, field, walker, [tuple(post["at"])], (blocked, size)) if post and not g.get("no_way") else {}
+    aim = post["at"] if pos in ways else None
+    if post and pos not in ways and not g.get("no_way"):
+        g["no_way"], note = True, {"what": "no_way", "at": list(post["at"])}
+    if pos not in ways:
+        aim = _edge(d, field, list(pos), g["dir"])
+        ways = _ways_to(d, field, walker, [tuple(aim)], (blocked, size))
+    if pos not in ways:
+        ways = _ways_to(d, field, walker, _border(size), (blocked, size))
+    if pos not in ways:
+        return None, note
+    return _go_along(d, field, walker, (pos, aim), (ways, blocked, size)), note
+
+
+def _hexes_of(d: Data, u: dict) -> list:
+    """The hexes unit u stands on, as 'c,r' keys turned to tuples."""
+    return [tuple(x) for row in footprint(d, u) for x in row]
+
+
+def _border(size: tuple) -> list:
+    """Every hex on the map's edge, in column then row order."""
+    cols, rows = size
+    return sorted({(c, r) for c in range(cols) for r in range(rows) if c in (0, cols - 1) or r in (0, rows - 1)})
+
+
+def _ways_to(d: Data, field: dict | None, walker: dict, aims: list, bs: tuple) -> dict:
+    """{hex: the least movement from it to the nearest of aims} over the ground and works
+    (step_cost), not through blocked hexes: a search out from the aims, a cost at a time."""
+    best = {a: 0 for a in aims if a not in bs[0]}
+    todo, k = {0: sorted(best)}, 0
+    while todo:
+        for y in todo.pop(k, []):
+            if best[y] == k:
+                _relax_into(d, field, walker, (y, k), (best, todo, bs))
+        k += 1
+    return best
+
+
+def _relax_into(d: Data, field: dict | None, walker: dict, yk: tuple, ctx: tuple) -> None:
+    """Each neighbour x of y (at least movement k from the aims) that steps into y more cheaply
+    than found so far gets its new least movement, and waits its turn in todo."""
+    (y, k), (best, todo, (blocked, size)) = yk, ctx
+    for dirn in range(6):
+        x = tuple(step(list(y), dirn))
+        if not (0 <= x[0] < size[0] and 0 <= x[1] < size[1]) or x in blocked:
+            continue
+        c = step_cost(d, field, walker, list(x), list(y))
+        if c is not None and k + c < best.get(x, 10**9):
+            best[x] = k + c
+            todo.setdefault(k + c, []).append(x)
+
+
+def _go_along(d: Data, field: dict | None, walker: dict, pa: tuple, wbs: tuple) -> tuple:
+    """(where it gets, arrived?): from pos, step after step down the ways (to a neighbour whose
+    step and way left add up to the way from here: the nearest the straight line toward aim,
+    the first by direction of equals), while the pace lasts, at least a step."""
+    (pos, aim), (ways, blocked, _) = pa, wbs
+    line = ray(list(pos), list(aim), hdist(pos, aim))
+    left, moved = d.units["heroes"]["aid_post"]["pace"], False
+    while ways[pos] > 0:
+        nxt = _next_down(d, field, walker, pos, (ways, blocked, line))
+        if nxt is None or (moved and nxt[1] > left):
+            break
+        pos, left, moved = nxt[0], left - nxt[1], True
+    return list(pos), ways[pos] == 0
+
+
+def _next_down(d: Data, field: dict | None, walker: dict, pos: tuple, wbl: tuple) -> tuple | None:
+    """(hex, cost) of the step down the ways from pos nearest the line (first by direction of equals)."""
+    (ways, blocked, line), best = wbl, None
+    for dirn in range(6):
+        x = tuple(step(list(pos), dirn))
+        if x not in ways or x in blocked:
+            continue
+        c = step_cost(d, field, walker, list(pos), list(x))
+        if c is None or c + ways[x] != ways[pos]:
+            continue
+        off = min(hdist(x, y) for y in line)
+        if best is None or off < best[0]:
+            best = (off, x, c)
+    return best and best[1:]
 
 
 def _bearers_off(u: dict, g: dict) -> None:

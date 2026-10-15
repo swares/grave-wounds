@@ -918,6 +918,7 @@ function partyText(l, nm){                        // a party back: arrived, stop
   if (l.what === "post") return `${who} reaches the aid post at ${hexName(l.at)}.`;
   if (l.what === "edge") return `${who} is carried off the map at ${hexName(l.at)}, out of the battle.`;
   if (l.what === "lies") return `${who} cannot go on with no one to carry him: he lies at ${hexName(l.at)}.`;
+  if (l.what === "no_way") return `${who}: no way leads to the aid post at ${hexName(l.at)}; his bearers make for the map edge instead.`;
   return `${who} goes no further; his bearers head back to their unit.`;
 }
 const hitName = x => (x.graze ? "a graze" : x.sev) + " (" + (FD.locations[x.loc]?.name.toLowerCase() || x.loc) + ")";   // "serious (thigh (right))"
@@ -1586,10 +1587,10 @@ function heroButton(h, setup){                    // Remove (setting up); Carry 
   if (!lamed(h)){
     if (!h.wounds.length && !h.old?.length) return "";
     const to = post ? where : "the map edge behind it";
-    return `<button class="small" data-walk="${h.id}" aria-label="${esc(h.name)} goes back" title="He leaves his unit and walks back alone to ${to}, ${nOf(FD.units.heroes.aid_post.pace, "hex", "hexes")} an exchange; shells can catch him on the way">Go back</button>`;
+    return `<button class="small" data-walk="${h.id}" aria-label="${esc(h.name)} goes back" title="He leaves his unit and walks back alone to ${to}, ${nOf(FD.units.heroes.aid_post.pace, "hex", "hexes")} an exchange on open ground, by the cheapest way; shells can catch him on the way">Go back</button>`;
   }
   const can = (h.unit.state === "steady" || h.unit.state === "shaken") && h.unit.men > FD.units.heroes.bearers;
-  const how = post ? `carry him to ${where}, ${nOf(FD.units.heroes.aid_post.pace, "hex", "hexes")} an exchange, and come back after as long` : `carry him to the rear; they come back after ${nOf(FD.units.heroes.back_after, "exchange")}`;
+  const how = post ? `carry him to ${where}, ${nOf(FD.units.heroes.aid_post.pace, "hex", "hexes")} an exchange on open ground, by the cheapest way, and come back after as long` : `carry him to the rear; they come back after ${nOf(FD.units.heroes.back_after, "exchange")}`;
   return (can ? `<button class="small" data-carry="${h.id}" aria-label="Carry ${esc(h.name)} back" title="${FD.units.heroes.bearers} of his unit's men ${how}">Carry him back</button>` : "")
     + `<button class="small" data-leave="${h.id}" aria-label="Leave ${esc(h.name)} behind">Leave him</button>`;
 }
@@ -1600,7 +1601,7 @@ function carryHero(id){                            // bearers take a lamed or do
   if (why){ S.msg = `${h.name} cannot be carried back: ${why}.`; return render() }
   const u = S.units[i], post = aidPost(S.field, u.side), n = FD.units.heroes.bearers;
   if (S.start?.[i]) S.start[i] = { ...S.start[i], men: u.men, away: u.away };   // his unit's move this phase starts from its new strength
-  S.msg = post ? `${n} of ${unitName(u)} carry ${h.name} toward the aid post at ${hexName(post.at)}, ${nOf(FD.units.heroes.aid_post.pace, "hex", "hexes")} an exchange. They move at ${allowance(u)} hexes.`
+  S.msg = post ? `${n} of ${unitName(u)} carry ${h.name} toward the aid post at ${hexName(post.at)}, ${nOf(FD.units.heroes.aid_post.pace, "hex", "hexes")} an exchange on open ground, by the cheapest way. They move at ${allowance(u)} hexes.`
     : `${n} of ${unitName(u)} carry ${h.name} to the rear: he is out of the battle. They move at ${allowance(u)} hexes, and the bearers come back in ${nOf(FD.units.heroes.back_after, "exchange")}.`;
   save();
   render();
