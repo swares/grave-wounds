@@ -112,7 +112,7 @@ quarter decides.
 
 The GM can hand one side to a scripted **enemy commander**, attacking or holding. At the
 start of that side's move it orders each unit. It knows only the enemies its units can see
-(or saw in the last {{c_remember}} exchanges, where they were then); green units go for the
+(or saw in the last {{c_remember}} exchanges, where they were then; what a unit sees from where it has just moved, the units ordered after it know); green units go for the
 nearest, better ones for an enemy that is hurt, shaken or dangerous to them. It closes,
 takes cover, shoots from range or charges with the odds its quality wants (counting the
 steady friends touching it, who go in with it), and green units sometimes hesitate. With no enemy in sight, a unit holds.

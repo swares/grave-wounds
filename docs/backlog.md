@@ -20,7 +20,7 @@ When an item is done, delete it here and note it in the pull request that closes
   holds back and commits a reserve (sending it to plug the gap a broken unit left), steers round minefields it knows of, turns its guns and
   calls its off-map batteries, limbers, tows, moves up and pulls back its guns, puts its men aboard its carriers and sets them down, storms works with black-powder infantry, charges through its own waiting units, sets its sappers to lay or lift mines, and takes or holds an
   objective hex the GM marks (and a second it goes on to, or falls back to); Undo puts
-  its move back. It looks once at the start of each move. Attacking, it smokes enemies
+  its move back. What a unit sees from where it has just moved, the units ordered after it know. Attacking, it smokes enemies
   shooting at men who cannot reply, calls its aircraft, puts one battery on counter-battery fire and displaces batteries under it (moving a placed one along its map edge), and in the dark lights an enemy it has lost sight of. Its sappers lay one row at a time (no deep belts), and work a lane through a known belt
   row by row along their straight way, one lane as wide as their front; the other units are not held back for it. Its creeping barrages start on the enemy and lift a fixed 3 lines, and it plans none
   for riflemen who stop at range. Its foot units ride its carriers up and get down once an enemy is in reach. Its aircraft prefer a target its air controllers see and come closer there. Still left out: moving controllers to see, fixed lines and works; any plan beyond two
