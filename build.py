@@ -582,9 +582,9 @@ def _aftermath_rules(d) -> list[str]:
     ] + _medevac_rule(A)
 
 
-def _medevac_rule(A: dict) -> list[str]:
+def _medevac_rule(am: dict) -> list[str]:
     """The printed rules' line on medevac, if any."""
-    M = A.get("medevac")
+    M = am.get("medevac")
     if not M:
         return []
     k = M["kinds"]
