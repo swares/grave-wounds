@@ -170,6 +170,24 @@ symbol:
   B when the two sides share an initial. A unit keeps its ID for the whole battle, and the
   units list shows it with each unit's full name. *Strength* adds the men after the label.
 
+**Rules on the map.** Four overlays, each switched on or off under the map (all on by
+default):
+- **Move and fire (selected unit).** The hexes the selected unit's centre can reach this
+  exchange are shaded in its side's colour, from the same movement rules the board uses
+  for a move. Paler shading covers the ground it can shoot into: ahead of its front, within
+  its weapon's reach after the weather and the height between. The shading uses the same
+  test as choosing a target, seen from the nearest front hex. A unit or ground in the way
+  may still block a shot. Hand weapons have no field of fire.
+- **Entry edges (set-up only).** Hatching in each side's colour marks where a new unit comes
+  in: the first side's front at column 8, the second side's at the eighth column from the
+  east edge.
+- **Grid references and scale.** Every tenth column and row is numbered and dashed. These
+  are the numbers the messages use for hexes (34,60). A scale bar shows 10 hexes (5 on a
+  small field) in the distance units chosen at the top of the page.
+- **Batteries on call.** A side's batteries with no place on the map show as chips on the
+  edge behind its army: tubes, kind, "on call". The edge behind is the way its units face.
+  A placed battery is drawn where it stands, as before.
+
 The defaults are units.yaml `markers` (names, strength on, size marks off). A battlefield
 can set its own with `markers: {labels, strength, size}`: both Redan battlefields use IDs,
 because eleven or more units stand in a narrow space. The legend under the map shows the
