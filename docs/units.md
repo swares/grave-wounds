@@ -354,7 +354,10 @@ general. All its numbers are in units.yaml `commander`.
   turning to face it squarely, so a wide line does not spend its move turning.
   - Veterans prefer a hex off the target's front (30 points more).
 - **Holding.** A side that holds does not leave its ground. A unit only charges an enemy
-  it can reach with the odds, turns to face its target, or goes to ground.
+  it can reach with the odds, turns to face its target, or goes to ground; the exceptions
+  are set out below: falling back to the objective (or the second objective), a reserve
+  unit going to plug a gap, guns pulling back from an enemy that could charge them, and
+  riders getting down.
 - **Its reserve.** At its first move it holds back its rearmost units, those furthest from
   the nearest enemy. It takes them up to a share of the side's men, set by the quality most
   of its men have: regulars a quarter, veterans a third, green men none. The GM can decide
