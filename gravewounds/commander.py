@@ -545,9 +545,10 @@ def _call_plain(d: Data, us: list, side, field: dict | None, kt: tuple) -> list:
         K = d.units["indirect"]["kinds"][b["kind"]]
         aim = None if b.get("mission") else _fire_aim(d, us, side, field, known, (b, K))
         if aim:
-            run = _air_run(d, us, side, (b, K), aim, table) if K.get("air") else None
+            run = _air_run(d, us, side, (b, K), aim, (table, field)) if K.get("air") else None
             b["mission"] = {"hex": aim[1], "wait": K["delay"], "repeat": False, **(run or {})}
-            out.append({"unit": None, "act": "fire", "battery": k, "target": aim[0], "hex": aim[1], **({"attack": run["attack"]} if run else {})})
+            talked = {"fac": True} if K.get("air") and U._fac_sees(d, us, field, b, aim[1]) else {}
+            out.append({"unit": None, "act": "fire", "battery": k, "target": aim[0], "hex": aim[1], **({"attack": run["attack"]} if run else {}), **talked})
     return out
 
 
@@ -580,12 +581,13 @@ def _call_creep(d: Data, us: list, side, field: dict | None, ko: tuple, free: li
     return []
 
 
-def _air_run(d: Data, us: list, side, bk: tuple, aim: tuple, table: str | None) -> dict | None:
+def _air_run(d: Data, us: list, side, bk: tuple, aim: tuple, tf: tuple) -> dict | None:
     """A strafing run or napalm strip for aircraft b (kind K) on enemy aim[0] at aim[1]: napalm
     if the aircraft carry it and the war allows it (table's battle), else strafing, when the
     target's front is at least the run's length; along its front; only if none of the side's
-    men are within K's scatter of a hex of the line. -> {attack, dir}, or None (a plain attack)."""
-    (b, K), (j, h) = bk, aim
+    men are within the scatter (_air_scatter: cut where a controller sees the aim) of a hex of
+    the line. -> {attack, dir}, or None (a plain attack)."""
+    (b, K), (j, h), (table, field) = bk, aim, tf
     R = d.units["indirect"]["air"].get("runs") or {}
     rows = U.footprint(d, us[j])
     front = len(rows[0]) if rows else 0
@@ -596,7 +598,7 @@ def _air_run(d: Data, us: list, side, bk: tuple, aim: tuple, table: str | None) 
         r = R.get(mode)
         if not r or b["kind"] not in r["kinds"] or front < r["length"] or ("wars" in r and war not in r["wars"]):
             continue
-        if not any(_too_near(d, ours, x, K["scatter"]) for x in U.run_line(d, h, dirn, mode)):
+        if not any(_too_near(d, ours, x, _air_scatter(d, us, field, (b, K), h)) for x in U.run_line(d, h, dirn, mode)):
             return {"attack": mode, "dir": dirn}
     return None
 
@@ -758,7 +760,9 @@ def _shooting_at(d: Data, us: list, side, known: dict) -> list:
 
 
 def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tuple) -> tuple | None:
-    """(enemy index, hex) for battery b (kind K) to fire on, or None (_call_fire)."""
+    """(enemy index, hex) for battery b (kind K) to fire on, or None (_call_fire): none of its men
+    within the burst and scatter (_air_scatter); for aircraft, an aim a controller of its side
+    sees first, then the best-scoring."""
     b, K = bk
     best = None
     ours = [u for u in us if u["side"] == side and u["men"] > 0 and u["state"] != "fled"]
@@ -766,12 +770,22 @@ def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tupl
         if e["side"] == side or str(j) not in known or not ours:
             continue
         h = next((x for x in _marks(d, e) if U.spotted(d, us, field, side, x)), None)
-        if h is None or not U.in_reach(d, b, h) or _too_near(d, ours, h, K["radius"] + K["scatter"]):
+        if h is None or not U.in_reach(d, b, h) or _too_near(d, ours, h, K["radius"] + _air_scatter(d, us, field, bk, h)):
             continue
-        key = (-threat_score(d, _nearest(ours, e["pos"]), e, e), j)
+        talked = bool(K.get("air")) and U._fac_sees(d, us, field, b, h)
+        key = (not talked, -threat_score(d, _nearest(ours, e["pos"]), e, e), j)
         if best is None or key < best[0]:
             best = (key, (j, list(h)))
     return None if best is None else best[1]
+
+
+def _air_scatter(d: Data, us: list, field: dict | None, bk: tuple, h) -> int:
+    """The scatter battery b (kind K) would have at hex h: for aircraft with a forward air
+    controller of their side who sees h, cut by indirect.air.fac.scatter; else the kind's."""
+    b, K = bk
+    if K.get("air") and field and U._fac_sees(d, us, field, b, h):
+        return K["scatter"] // d.units["indirect"]["air"]["fac"]["scatter"]
+    return K["scatter"]
 
 
 def _nearest(ours: list, pos) -> dict:

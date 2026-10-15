@@ -431,6 +431,12 @@ general. All its numbers are in units.yaml `commander`.
   - **Aircraft.** Its aircraft on call with attacks left are called the same way, unless the
     weather or the dark grounds them. Fighter-bombers come in two exchanges later; a forward
     air controller of its side who sees the aim cuts their scatter as usual.
+    - **With a controller.** It prefers an enemy one of its forward air controllers (a unit
+      marked Air controller) can see, then the best-scoring as above. Where a controller sees
+      the aim, it keeps its men clear of the burst and the cut scatter only (fighter-bombers:
+      4 + 1 hexes rather than 4 + 3), so it can call them closer to its own men; the same
+      goes for a strafing run's or napalm strip's line. The order says a controller is
+      talking them on.
     - On an enemy whose front is as wide as a run, they fly it along that front: a napalm
       strip (3 hexes; fighter-bombers, in the wars that used napalm), else a strafing run
       (5 hexes). They do so only when none of its men are within the aircraft's scatter of
@@ -471,7 +477,7 @@ general. All its numbers are in units.yaml `commander`.
 What it does not do yet:
 - It looks once, at the start of its move: a unit that moves into sight of an enemy does
   not tell the units ordered after it until the next move.
-- It leaves alone air controllers, fixed lines and works; it plans no creeping barrage for
+- It leaves alone fixed lines and works, and does not move its air controllers to see a target; it plans no creeping barrage for
   riflemen who stop at range.
 - Its reserve has no orders beyond holding and, once committed, fighting: it does not plug
   a named gap, and reserve units ignore the objective until committed.

@@ -511,7 +511,7 @@ def _commander_rules(d) -> list[str]:
         "A second objective (GM-marked): attacking, once its side holds the first, the units on the first stay and the rest go for the second, going back for the first if the enemy retakes it; "
         "holding, once the enemy holds the first, its units fall back to the second. "
         f"Known minefields on the way cost {by(K['mines'])} points a hex. Its batteries and anti-tank guns on the map, in action, turn to face the nearest enemy it knows of; its off-map "
-        "batteries with no mission, and its aircraft that can fly, are called on the enemy it sees that scores best as a target, never where its own men are within the burst; "
+        "batteries with no mission, and its aircraft that can fly, are called on the enemy it sees that scores best as a target (aircraft: one its air controllers see first), never where its own men are within the burst and scatter (cut where a controller sees the aim); "
         "aircraft fly a napalm strip (where the war used it) or a strafing run along an enemy front as wide as the run, if its own men are clear of the line by the scatter. "
         f"Attacking, one battery puts a creeping barrage on an enemy within {K['creep']['near']} hexes of a unit moving or charging on it, lifting {K['creep']['step']} hex an exchange along the unit's facing for {K['creep']['lines']} lines. "
         "Attacking, one battery first lays smoke (the soonest to land) on the nearest enemy shooting at its men who cannot reply, unless it is dark, a gale blows or the hex is smoked. "
