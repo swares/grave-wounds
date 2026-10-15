@@ -9,11 +9,13 @@ from . import combat as C, units as U
 from .model import Data
 
 ROUTED = ("broken", "fled")
+MOVES = ("move", "charge", "advance", "fall_back", "close_up")   # orders that take a unit somewhere new
 
 
 def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, exchange=None, stance: str = "attack",
             memory: dict | None = None, table: str | None = None) -> tuple:
-    """Orders for every unit of `side`, in turn (each sees the moves before it). exchange: units
+    """Orders for every unit of `side`, in turn (each sees the moves before it, and knows of
+    the enemies a unit ordered before it sees from where it went). exchange: units
     that came on in it (arrived) wait. stance: attack (close with the enemy) or hold (stand,
     charging only what it can reach). memory: where it last saw each enemy unit, kept between
     its moves (updated in place; see sightings). -> (units after, orders [{unit, act, ...}])."""
@@ -34,6 +36,8 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
         if o:
             orders.append({"unit": i, **o})
             _apply(us, i, o)
+            if o["act"] in MOVES:                 # what it sees from where it went, the units after it know
+                sightings(d, us, side, field, exchange, known)
     orders += _move_guns(d, us, side, (size, goal, stance, known, exchange))
     orders += _lay_guns(d, us, side, (size, goal, known, exchange))
     return us, orders + _call_fire(d, us, side, goal, known, (stance, exchange, orders, table))
