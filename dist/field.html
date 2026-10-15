@@ -3004,7 +3004,7 @@ function runAway(units, i, size, field = null){   // units after broken unit i r
 
 // ---------- the enemy commander (as gravewounds.commander) ----------
 const ROUTED = new Set(["broken", "fled"]);
-const AI_MOVES = new Set(["move", "charge", "advance", "fall_back", "close_up"]);   // orders that take a unit somewhere new (as commander.MOVES)
+const AI_MOVES = new Set(["move", "charge", "advance", "fall_back", "close_up", "spot"]);   // orders that take a unit somewhere new (as commander.MOVES)
 function command(units, side, size, field, rng, exchange = null, { stance = "attack", memory = null, table = null } = {}){   // {units, orders}: each unit of side ordered in turn, by its quality (units.yaml commander); stance attack or hold; memory: where it last saw each enemy (updated in place)
   let us = units.map(u => ({ ...u }));
   const orders = [], mem = memory ?? {};
@@ -3017,7 +3017,8 @@ function command(units, side, size, field, rng, exchange = null, { stance = "att
   if (stance === "hold") orders.push(...fixLines(us, side, [field, known, exchange]));
   for (let i = 0; i < us.length; i++){
     if (us[i].side !== side || !commandable(us, i, exchange)) continue;
-    const roll = rng.randint(1, 100), o0 = unitOrder(us, i, [size, plugging(aimOf(us, i, aim), us[i]), stance, known, exchange], roll);
+    const roll = rng.randint(1, 100), o1 = unitOrder(us, i, [size, plugging(aimOf(us, i, aim), us[i]), stance, known, exchange], roll);
+    const o0 = spotter(us, i, o1, [size, field, stance, known]) || o1;
     const o = o0 && us[i].plug && (o0.act === "advance" || o0.act === "fall_back") ? { ...o0, gap: true } : o0;   // going to plug the gap, not the side's objective
     if (o){
       orders.push({ unit: i, ...o });
@@ -3501,6 +3502,58 @@ function commandable(us, i, exchange){            // standing, not a battery, an
   if (exchange !== null && u.arrived === exchange) return false;
   return !inContact(us, occupancy(us), i);
 }
+function spotter(us, i, o, [size, field, stance, known]){   // attacking, an air controller that would stand or turn moves up to see a target for its side's aircraft, when they can fly and no controller sees a known enemy (as commander._spotter)
+  const u = us[i];
+  if (stance !== "attack" || !u.fac || (o && o.act !== "turn")) return null;
+  if (u.prone || u.reserve || busyDigging(u)) return null;
+  if (!(field?.support || []).some(b => freeAir(field, b, u.side))) return null;
+  const ranked = rankedFoes(us, i, known, field);
+  if (!ranked.length || ranked.some(([, p]) => facSees(us, field, u, p))) return null;
+  return toSee(us, i, ranked, [size, field]);
+}
+function rankedFoes(us, i, known, field){         // the enemies its side knows of, best target first, with where each was last seen: [[index, hex]] (as commander._ranked_foes)
+  const u = us[i], out = [];
+  us.forEach((e, j) => {
+    if (e.side === u.side || ROUTED.has(e.state) || e.men <= 0 || !(String(j) in (known || {}))) return;
+    const seen = knownAt(us, j, known);
+    out.push([-(threatScore(u, e, seen) + guards(seen, field)), j, [...seen.pos]]);
+  });
+  return out.sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(([, j, p]) => [j, p]);
+}
+function toSee(us, i, ranked, [size, field]){     // the controller's spot: the cheapest hex in its allowance (not its own, no known mines on the way) from which, facing it, it sees a known enemy, touching none; of equals the best target, then lowest row and column (as commander._to_see)
+  const u = us[i], occ = occupancy(us), foes = new Set(Object.keys(occ).filter(k => us[occ[k]].side !== u.side));
+  const hexes = [...reachable(us, i, size, allowance(u), field).values()].sort((a, b) => a[1] - b[1] || a[0][1] - b[0][1] || a[0][0] - b[0][0]);
+  let group = [], tries = UD.commander.tries;
+  for (let n = 0; n < hexes.length; n++){
+    const [h, c] = hexes[n];
+    const seen = (h[0] === u.pos[0] && h[1] === u.pos[1]) || mined(field, u.pos, h, u.side) ? null : seesFrom(field, { ...u, pos: [...h] }, ranked, foes);
+    if (seen) group.push([seen[0], h[1], h[0], seen[1], seen[2]]);
+    if (group.length && (n + 1 === hexes.length || hexes[n + 1][1] !== c)){
+      group.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4]);
+      const r = spotIn(us, i, group, [size, field, tries]);
+      tries = r[1];
+      if (r[0] || tries <= 0) return r[0];
+      group = [];
+    }
+  }
+  return null;
+}
+function seesFrom(field, u, ranked, foes){        // [rank, enemy, facing] of the best-ranked enemy u, placed so, would see facing it without touching the enemy, or null (as commander._sees_from)
+  for (let r = 0; r < ranked.length; r++){
+    const [j, p] = ranked[r], there = { ...u, facing: bearing(u.pos, p) };
+    if (!touches(there, foes) && sees(field, there, p, sightHexes(field, p, seerOf(there)))) return [r, j, there.facing];
+  }
+  return null;
+}
+function spotIn(us, i, group, [size, field, tries]){   // the first legal spot among equally cheap hexes, each try costing one of commander.tries: [order or null, tries left] (as commander._spot_in)
+  for (const [, row, col, j, f] of group){
+    if (tries <= 0) break;
+    tries -= 1;
+    const m = moveUnit(us, i, [col, row], f, size, field);
+    if (m.ok && !m.charge) return [{ act: "spot", target: j, pos: [col, row], facing: f, cost: m.cost }, tries];
+  }
+  return [null, tries];
+}
 const unsteady = (us, i, t) => (!us[i].prone && underFire(us, i) ? { act: "ground", target: t } : null);   // a shaken unit holds, going to ground under missile fire (as commander._unsteady)
 function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance, known, exchange]
   const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = aiTarget(us, i, ctx[3], ctx[1]);
@@ -3780,7 +3833,7 @@ function applyOrder(us, i, o){                    // carry out an order (as the 
   else if (o.act === "lay") us[i] = { ...u, mining: { at: [...u.pos], facing: u.facing, n: 0, kind: o.kind } };
   else if (o.act === "lift") us[i] = { ...u, clearing: { at: [...u.pos], facing: u.facing, n: 0 } };
   else if (o.act === "turn") us[i] = { ...u, facing: o.facing };
-  else if (["move", "charge", "advance", "fall_back", "close_up"].includes(o.act)){
+  else if (AI_MOVES.has(o.act)){
     us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}) };
     for (const k of o.through || []) us[k] = { ...us[k], jostled: true };   // the friends it charged through are jostled
   }
@@ -4776,6 +4829,7 @@ const ORDER_TEXT = {                              // (who, them, o, up, facing) 
   ground: who => `${who} go to ground under fire.`,
   lay: (who, them, o) => `${who} lay ${FD.units.mines.kinds[o.kind].name.toLowerCase()} ahead of them (${nOf(FD.units.mines.sappers.lay, "exchange")} without moving or firing).`,
   lift: who => `${who} lift the known mines ahead of them, a lane (${nOf(FD.units.mines.sappers.clear, "exchange")} without moving or firing).`,
+  spot: (who, them, o) => `${who} move up ${nOf(o.cost, "hex", "hexes")} to see ${them} for the aircraft (air controller).`,
   close_up: (who, them, o) => `${who} close up ${nOf(o.cost, "hex", "hexes")} to the known minefield on their way to ${them}, to lift a lane through it.`,
   fetch: (who, them, o) => `${who} drive ${nOf(o.cost, "hex", "hexes")} to fetch ${S.units[o.guns]?.name || "their guns"}: they hook up next move.`,
   hook: (who, them, o) => `${who} hook up ${o.guns} to tow them forward: they do not fire until unhooked.`,
