@@ -62,6 +62,13 @@ line_of_fire:
   arcing: [bow, longbow, crossbow]
   arc_penalty: 20
   see_into: 1
+  # Dead ground: open ground on the line between two hexes that stands higher than both (a slope
+  # or high ground, from units.ground height; tall buildings block sight as buildings do) hides
+  # each from the other: no aimed fire, no guns laying, no calling fire, and the enemy commander
+  # does not see past it. Crest hexes within `crest_clear` of either end do not count: a man (or
+  # a tank, hull-down) just behind a crest sees over it, and is seen. A man on the top sees down
+  # both slopes.
+  crest_clear: 1
   # Light cover (ground marked `light`: scrub, brush, orchards, hedgerows, tall grass) thins
   # sight rather than blocking it: each hex of it on the line between a shooter and his target
   # (not the hexes they stand in), as high as he stands, costs aimed fire `per` %, and more than

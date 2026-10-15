@@ -29,7 +29,8 @@ When an item is done, delete it here and note it in the pull request that closes
   with a key the player supplies, to explain its orders in prose.
 
 - **Works and ground on the field map.** Height has three steps (flat, slope, high) and no
-  contour lines or dead ground behind a crest. Tall buildings give a view and a height, but
+  contour lines, so dead ground comes only from those steps: a fold of ground lower than a
+  slope hides no one, and a long gentle rise is drawn as a strip of high ground. Tall buildings give a view and a height, but
   not separate floors: there is no fighting room to room or stair by stair, and men upstairs
   are not safer from shells. Scrub and orchards thin aimed fire and block sight past 3 hexes,
   but calling fire has no roll for them to cost (only the block), and the roller's 2-yard

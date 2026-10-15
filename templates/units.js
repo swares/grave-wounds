@@ -1304,12 +1304,20 @@ function across(field, u, h, x, reach){           // [blocked: only reach 2 over
 const upOf = field => field?.up || "N";          // the compass point at the top of the field map
 const SMOKED = { blocked: "Smoke: no one can see to shoot through it.", penalty: 0, misfire: 0, reach: 0 };
 const SCREENED = { blocked: "Woods, buildings or thick scrub between: no one can see to aim through them.", penalty: 0, misfire: 0, reach: 0 };
-function clearSight(field, h, t, dist, line = null){   // a man at h sees t to aim: nothing that screens (woods, buildings) between past see_into hexes at either end, and no more than thin.blind_past hexes of light cover
+const CRESTED = { blocked: "Higher ground between: dead ground, no one can see over it to shoot.", penalty: 0, misfire: 0, reach: 0 };
+function clearSight(field, h, t, dist, line = null){   // a man at h sees t to aim: no ground higher than both ends between (overCrest: dead ground), nothing that screens (woods, buildings) between past see_into hexes at either end, and no more than thin.blind_past hexes of light cover
   if (!field?.ground) return true;
   const k = UD.line_of_fire.see_into ?? 1, up = heightAt(field, h);
   line ||= ray(h, t, dist);
+  if (overCrest(field, h, t, line)) return false;
   if (line.slice(1 + k, line.length - 1 - k).some(y => groundAt(field, y).screen && heightAt(field, y) >= up)) return false;
   return thinned(field, h, line) <= UD.line_of_fire.thin.blind_past;
+}
+function overCrest(field, h, t, line){           // dead ground: open ground (a slope or high ground; tall buildings screen as buildings) higher than both h and t on the line between, not within line_of_fire.crest_clear hexes of either end (a man just behind a crest sees over it)
+  if (!field?.ground) return false;
+  const k = UD.line_of_fire.crest_clear ?? 1, rise = y => (groundAt(field, y).screen ? 0 : heightAt(field, y));
+  const top = Math.max(heightAt(field, h), heightAt(field, t));
+  return line.slice(1 + k, line.length - 1 - k).some(y => rise(y) > top);
 }
 function thinned(field, h, line){                 // hexes of light cover (scrub, orchards) on the line, not the ends, as high as the man at h stands
   if (!field?.ground) return 0;
@@ -1318,6 +1326,7 @@ function thinned(field, h, line){                 // hexes of light cover (scrub
 }
 function shotWeather(field, weapon, dist, h = null, t = null, seer = null){   // the weather on a shot from h to t; smoke on the line blocks it; seer: {kit, blind} in the dark
   if (h && t && smoked(field, ray(h, t, dist)) && !seesSmoke(seer)) return { ...SMOKED };
+  if (h && t && !seer?.blind && overCrest(field, h, t, ray(h, t, dist))) return { ...CRESTED };
   if (h && t && !seer?.blind && !clearSight(field, h, t, dist)) return { ...SCREENED };
   if (isGun(weapon)) return gunWeather(field, dist, h, t, seer);
   const seen = seer?.blind ? 0 : dist * UD.range_scale;   // blind down a fixed line: the weather's sight does not count
