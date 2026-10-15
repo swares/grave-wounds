@@ -40,6 +40,11 @@ const units = [
 writeField({
   ...COMMON,
   id: "redan-1855", name: "The Great Redan, 8 September 1855",
+  phases: [   // an exchange is about a minute; the times are our reading of the accounts, rounded
+    { name: "The stormers go over", at: 1, note: "On the French signal from the Malakhov, the covering party, the ladders and the stormers leave the advanced trench." },
+    { name: "The supports come forward", at: 10, note: "The supports follow up piecemeal and crowd into the salient behind the stormers.", arrive: ["Supports (7th, 23rd, 33rd, 34th and 77th)"] },
+    { name: "The Russian counter-attack", at: 80, note: "After about an hour and a half the Russian reserves come up from the Karabelnaya and drive the British back over the parapet.", arrive: ["Kamchatski and Iakutski regiments (reserve)"] },
+  ],
   weather: "{cond: fair, wind: strong, dir: N, ground: {mud: 0, snow: 0}}",
   grid, units, hexWorks, edgeWorks,
   header: `The British assault on the Great Redan, Sevastopol, 8 September 1855, at 10 m a hex: ${COLS} x ${ROWS}

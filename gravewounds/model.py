@@ -1263,6 +1263,31 @@ def _marker_default_errors(d: Data) -> list[str]:
     return _marker_settings_errors({k: M[k] for k in ("labels", "strength", "size") if k in M}, "units.yaml")
 
 
+def _phase_errors(f: dict, where: str) -> list[str]:
+    """A battlefield's phases: each a name, the exchange it begins (the first 1, then rising), an
+    optional note, and the units it brings on (the field's own, each in one phase only)."""
+    P = f.get("phases")
+    if P is None:
+        return []
+    if not isinstance(P, list) or not P:
+        return [f"{where}: phases must be a list"]
+    names, seen, ats = {u.get("name") for u in f.get("units", [])}, set(), [st.get("at") for st in P]
+    errors = [f"{where}: phase {i + 1} needs a name and its exchange (the first 1, each later than the one before)"
+              for i, st in enumerate(P) if not _phase_ok(st, ats[i - 1] if i else 0, first=not i)]
+    for i, st in enumerate(P):
+        for n in st.get("arrive", []):
+            if n not in names or n in seen:
+                errors.append(f"{where}: phase {i + 1} brings on {n!r}, which is not a unit of the field or comes in another phase")
+            seen.add(n)
+    return errors
+
+
+def _phase_ok(st: dict, before, first: bool) -> bool:
+    """One phase's name and exchange: a name, and an exchange later than the one before (1 for the first)."""
+    at, last = st.get("at"), before if isinstance(before, int) else 0
+    return isinstance(st.get("name"), str) and bool(st["name"]) and isinstance(at, int) and at > last and (at == 1 or not first)
+
+
 def _field_marker_errors(d: Data, f: dict, where: str) -> list[str]:
     """A battlefield's markers settings and entry edges, and each unit's type and size if it sets them."""
     M = d.units.get("markers") or {}
@@ -1270,6 +1295,7 @@ def _field_marker_errors(d: Data, f: dict, where: str) -> list[str]:
     e = f.get("entry")
     if e is not None and not (isinstance(e, list) and len(e) == 2 and all(x in ("N", "S", "E", "W") for x in e) and e[0] != e[1]):
         errors.append(f"{where}: entry must be two different edges (N, S, E or W), side A's first")
+    errors += _phase_errors(f, where)
     for u in f.get("units", []):
         if "type" in u and u["type"] not in M.get("types", {}):
             errors.append(f"{where}: unit {u.get('name')}: type must be one of {', '.join(M.get('types', {}))}")
