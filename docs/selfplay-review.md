@@ -316,3 +316,14 @@ Sources: [Royal Artillery methods in WW2](https://nigelef.tripod.com/maindoc.htm
 [CSI Report 13, Tactical Responses to Concentrated Artillery](https://www.armyupress.army.mil/Portals/7/combat-studies-institute/csi-books/tactical.pdf);
 [Tank Archives, 25 pounds of death](https://www.tankarchives.com/2018/09/25-pounds-of-death.html).
 
+**Grozny: the night as it was fought.** The battlefield's objective named the Russians as its
+attacker, so in self-play they "attacked" a station they already held and the Chechens sat in
+their buildings and were destroyed (gone in 3 of 4 runs). The objective is now the Chechens' (the
+night was their attack on the station), and phases bring the dark at about 17:05 (sunset about
+16:30, the moon a day from new, the sky overcast). In four runs the Russians are harder hit (67-123
+of 290 down, against 32-76) and the Chechens survive in three, but they do not take the station
+within the run (61 exchanges, the first hour of the night), so every run now scores as a Russian
+win (one of four went the Chechens' way before). The brigade broke out of the station about 18:00
+the next day, some 25 hours on: a self-play run cannot reach it, and Grozny is recorded as not
+matching for that reason.
+

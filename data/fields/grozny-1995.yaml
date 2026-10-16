@@ -6,7 +6,9 @@
 # The square, station, yards, tracks and blocks are drawn by hand to that pattern, not traced from
 # any map or photograph; the deployment is the fight for the square at dusk, in our own words, with
 # round numbers for play. The apartment blocks are tall buildings (tall buildings), the houses
-# buildings; vehicles keep to the square, the streets and the tracks. Winter dusk, the dark coming on.
+# buildings; vehicles keep to the square, the streets and the tracks. Winter dusk, the dark coming on:
+# the phases bring a dark night at about 17:05 (sunset about 16:30, the moon a day from new, worked
+# out for the place and day). The objective is the Chechens': the night was their attack on the station.
 #
 # What happened, briefly: on the afternoon of 31 December 1994 the 131st Brigade's 1st Battalion
 # drove into the station square and took the station and the freight yard. Chechen fighters in
@@ -24,7 +26,12 @@ travel: {map: grozny-1995, place: "Grozny railway station", within: 1, sides: ["
 size: [140, 110]
 weather: {cond: overcast, wind: calm, light: dusk, ground: {mud: 1, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
-objective: {at: [70, 58], side: 0, name: "the railway station", radius: 5}
+objective: {at: [70, 58], side: 1, name: "the railway station", radius: 5}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "Dusk in the square", at: 1, note: "About 16:30, as the sun sets: the column is cut off in the square and the station, and the Chechens close in."}
+  - {name: "Dark", at: 31, note: "By about 17:05 it is dark; overcast, and the moon a day from new.", light: night}
 ground: |
   .BBBBB.....BB.BBBB.B.BBBBB.BB..BBBBB.BBBBBB.B..BBB.B..BBBBB.BBBBBBBBBB.B.BBB.BB..BB..B.B.B..BBBBBBBBB.BBB.BBBB.BBB.B..BBBB.BB.BB.B..BBBB..BB
   B.B.BB..B..BBBBBB.BBBBBB.B.B.B.BB.BBB.BBBBBB..B.BB.BBBBBBB.B.BB.B.BBBB...BBBBBB.BBB.B.BBBB.BBBBBB.BB.BBBBBB.BB.BB..B..BB.BBBBBB.BB.BB.BBBBBB

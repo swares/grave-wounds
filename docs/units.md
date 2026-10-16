@@ -619,8 +619,7 @@ at a time; **Run** (shown only then) plays a move about every 0.7 seconds until 
   with no standing enemy within `secure` (10) hexes of it and none still to come (a holding side standing on its own
   ground does not count, or a defended objective would end every run at once; nor does a hold
   with the enemy still close round it; nor a side that held it from the start, until it has
-  changed hands: Grozny's battlefield opens with the Russians in the station, and the real fight
-  was the night they were destroyed there);
+  changed hands);
 - `limit` (60) exchanges have been fought, or, on a battlefield with phases, `after_phases`
   (30) past the last phase's start if that is later, but at most `most` (240: a battle whose
   phases run for many hours is cut short).
@@ -2453,7 +2452,11 @@ is 140 × 110 hexes, about 1,530 by 1,040 yards (1,400 by 950 m), north at the t
   tracks and freight yard to the south.
 - Older houses (**buildings**) stand round the station, with five- and nine-storey apartment
   blocks (**tall buildings**) beyond and streets with wrecks and **rubble** between.
-- **Dusk** on a winter afternoon.
+- **Dusk** on a winter afternoon (about 16:30), and from exchange 31 (about 17:05) a **dark
+  night**: overcast, the moon a day from new (worked out for the place and day).
+- The objective is the Chechens': the night was their attack on the station the battalion
+  had taken that afternoon. Its self-play covers the first hour of the night (61 exchanges); the
+  survivors broke out about 18:00 the next day, far beyond it.
 - Russians (green): the 131st Brigade's 1st Battalion in the station and the freight yard,
   with its **infantry fighting vehicles** (BMPs) and **tanks** parked in the square.
 - Chechens (veteran, in cover): **RPG** teams in the buildings on three sides of the square

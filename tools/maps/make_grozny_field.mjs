@@ -53,7 +53,12 @@ const units = [
 ];
 
 writeField({
-  objective: { at: STATION, side: 0, name: "the railway station", radius: 5 },
+  phases: [   // an exchange is about a minute; sunset and the moon worked out for the place and day
+    { name: "Dusk in the square", at: 1, note: "About 16:30, as the sun sets: the column is cut off in the square and the station, and the Chechens close in." },
+    { name: "Dark", at: 31, note: "By about 17:05 it is dark; overcast, and the moon a day from new.", light: "night" },
+  ],
+  // The night's fight: the Chechens close in on the station the battalion holds (the afternoon's drive into it is over).
+  objective: { at: STATION, side: 1, name: "the railway station", radius: 5 },
   id: "grozny-1995", name: "Grozny: the railway station, 31 December 1994", sides: ["Russians", "Chechens"], table: "chechnya-wounds",
   travel: { map: "grozny-1995", place: "Grozny railway station", within: 1, sides: ["Russians", "Chechens"] },
   weather: "{cond: overcast, wind: calm, light: dusk, ground: {mud: 1, snow: 0}}",
@@ -72,7 +77,9 @@ writeField({
     "The square, station, yards, tracks and blocks are drawn by hand to that pattern, not traced from",
     "any map or photograph; the deployment is the fight for the square at dusk, in our own words, with",
     "round numbers for play. The apartment blocks are tall buildings (tall buildings), the houses",
-    "buildings; vehicles keep to the square, the streets and the tracks. Winter dusk, the dark coming on.",
+    "buildings; vehicles keep to the square, the streets and the tracks. Winter dusk, the dark coming on:",
+    "the phases bring a dark night at about 17:05 (sunset about 16:30, the moon a day from new, worked",
+    "out for the place and day). The objective is the Chechens': the night was their attack on the station.",
     "",
     "What happened, briefly: on the afternoon of 31 December 1994 the 131st Brigade's 1st Battalion",
     "drove into the station square and took the station and the freight yard. Chechen fighters in",
