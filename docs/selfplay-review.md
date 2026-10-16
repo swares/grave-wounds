@@ -259,3 +259,23 @@ phases bring dusk at sunset (about 19:30, exchange 31) and a moonlit night from 
 place and day. In four runs the darkness cut the Americans' losses (about 250-320 down against
 330-560 by day) but they still do not take the guns: the British hold them at the limit in every
 run, as before. In 1814 Miller's 21st took them with a rush in the dark.
+
+**Routes round a flank.** A battlefield can now give a unit waypoints (`via`) from its account,
+and its commander marches it round by them, turning aside only for an enemy in contact or
+across its way. Four battlefields have them (the waypoints are our reading of the accounts on
+our maps): Osan (the battalion round the west, the one down the railroad), Lundy's Lane (Jesup's
+25th round the British left), Kapyong (the Chinese battalion round the east of the hill to
+battalion headquarters) and the Poles at Cassino (the Kresowa's companies for Phantom Ridge).
+Mons was left out (the canal can be crossed only at the bridges on this map), and so was the
+Poles' 1st Battalion (Albaneta is not on the map). In four runs each against the build without
+routes, no winner changed:
+
+- *Lundy's Lane:* Jesup now goes round the east end of the hill and comes at the guns from behind
+  (a first try showed the commander holding him back as its reserve, the rearmost unit; a unit on
+  a route is now never held back), but the British still hold the guns at the limit.
+- *Kapyong:* the battalion round the east goes down its route and breaks on the hill's east side
+  in every run; the Australians hold, as before and as they did.
+- *The Poles:* the Kresowa's companies go for Phantom Ridge first; the Poles still take and hold 593.
+- *Osan:* unchanged: Task Force Smith breaks by exchange 26-31, before either flanking battalion
+  comes on (46 and 166).
+
