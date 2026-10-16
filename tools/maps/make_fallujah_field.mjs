@@ -58,6 +58,7 @@ const units = [
 ];
 
 writeField({
+  stances: ["attack", "hold"],   // as fought: the Coalition cleared the Jolan and the insurgents fought from the houses
   id: "fallujah-2004", name: "Fallujah: into the Jolan, 9 November 2004", sides: ["Coalition", "Insurgents"], table: "oif-oef-2001-wounds",
   travel: { map: "fallujah-2004", place: "The Jolan", within: 1, sides: ["Coalition", "Insurgents"] },
   weather: "{cond: overcast, wind: breeze, dir: NW, ground: {mud: 1, snow: 0}}",

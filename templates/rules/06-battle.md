@@ -144,12 +144,13 @@ start of that side's move it orders each unit. It knows only the enemies its uni
 (or saw in the last {{c_remember}} exchanges, where they were then; what a unit sees from where it has just moved, the units ordered after it know); green units go for the
 nearest, better ones for an enemy that is hurt, shaken or dangerous to them. It closes,
 takes cover, shoots from range or charges with the odds its quality wants (counting the
-steady friends touching it, who go in with it), and green units sometimes hesitate. With no enemy in sight, a unit holds.
+steady friends touching it, who go in with it), and green units sometimes hesitate. With no enemy in sight, a unit holds; attacking with no objective, it goes forward along its facing to find one.
 
-- **Storming works.** Attacking, infantry with muskets, rifle-muskets or breech-loaders do
-  not stop to trade fire with an enemy behind works (a parapet, trench or bank), dug in, or
-  in buildings or rubble: they close without seeking cover and charge it with the bayonet,
-  with the same odds. Riflemen, archers and modern infantry still fight by fire. A wall or
+- **Storming works.** Attacking, infantry with muskets, rifle-muskets, breech-loaders, or
+  modern rifles and sub-machine guns do not stop to trade fire with an enemy behind works (a
+  parapet, trench or bank), dug in, or in buildings or rubble: they close without seeking
+  cover, firing as they go, and charge it, with the same odds. Flintlock riflemen, archers
+  and machine guns still fight by fire. A wall or
   palisade that blocks hand-to-hand fighting stops them at its foot, unless they carry
   ladders: then they go up it (see [works](#works)). Breaching it is the GM's order.
 
@@ -178,7 +179,7 @@ steady friends touching it, who go in with it), and green units sometimes hesita
   aircraft (when they can fly; a strafing run or napalm strip along a wide enemy front) on
   what it sees, first what its forward air controllers see, and closer to its own men there. A controller with nothing
   to do and no target in its sight moves up to where it sees one (attacking only), up to {{c_spot_moves}} moves away, a move at a time,
-  preferring a spot out of the enemy's reach; not while it has a fight of its own (an enemy touching it or in its own reach, or pinned). Attacking, one battery lays a creeping barrage ahead of a unit closing on the
+  preferring a spot out of the enemy's reach; not while it has a fight of its own (an enemy touching it or in its own reach, pinned, or men lost the exchange before). Attacking, one battery lays a creeping barrage ahead of a unit closing on the
   enemy. Its batteries under counter-battery fire displace (a placed one moves its place {{c_displace_shift}} hexes along its map edge, away from the battery firing). In the dark it first has one battery fire illumination over the enemy it has lost
   sight of nearest its men, where it was last seen. Attacking, guns with no enemy in reach go forward: a battery limbers, moves and
   unlimbers once an enemy is in reach; anti-tank guns hook up to an empty tractor beside
@@ -193,10 +194,14 @@ steady friends touching it, who go in with it), and green units sometimes hesita
 **Both sides.** Each side has its own choice: moved by the GM, or the commander attacking or
 holding. With the commander on both sides the GM only watches: **Next** steps a move at a time,
 and **Run** plays on until the GM presses **Stop** or the run ends itself. It ends when a side
-has no unit left standing, when an attacking side has taken the objective and held it
-{{c_sp_held}} exchanges running, or after {{c_sp_limit}} exchanges; then the battle ends, as with
-*End the battle*. On a battlefield the side its objective names attacks and the other holds (the
-choice marked *as fought*); on open ground both attack. The GM can take either side back at any
+has no unit left standing and none still to come, when an attacking side has taken the
+objective and held it {{c_sp_held}} exchanges running with no enemy standing within
+{{c_sp_secure}} of it, or after {{c_sp_limit}} exchanges (on a
+battlefield with phases, {{c_sp_after}} past the last phase's start, if later, but never more
+than {{c_sp_most}}); then the battle
+ends, as with *End the battle*. On a battlefield the side its objective names attacks and the
+other holds, or the armies fight as the battlefield says they did (the choice marked *as
+fought*); on open ground both attack. The GM can take either side back at any
 time.
 
 **The narrative.** Under the map, the page tells the battle's turning points as they happen: a

@@ -9,7 +9,7 @@ from . import combat as C, units as U
 from .model import Data
 
 ROUTED = ("broken", "fled")
-MOVES = ("move", "charge", "advance", "fall_back", "close_up", "spot")   # orders that take a unit somewhere new
+MOVES = ("move", "charge", "advance", "fall_back", "close_up", "spot", "search")   # orders that take a unit somewhere new
 
 
 def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, exchange=None, stance: str = "attack",
@@ -957,11 +957,27 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     if (obj is not None or ctx[2] == "hold") and _digs(d, us, i, ctx):
         return {"act": "dig", "target": t}
     if t is None and obj is None:
-        return None
+        return _search(d, us, i, ctx) if ctx[2] == "attack" else None
     if roll <= C["hesitate"].get(u["quality"], 0):
         return {"act": "hesitate", "target": t, "roll": roll}
     o = _best(d, us, i, t, ctx) if obj is None else _for_objective(d, us, i, t, ctx)
     return o if t is None else _last_seen(o, ctx[3], t, ctx[4])
+
+
+def _search(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
+    """Attacking, with no objective and no enemy it knows of: it goes forward to find one, a move
+    toward the last hex on the map straight ahead along its facing (as toward an objective)."""
+    size, field, stance, known, exchange = ctx
+    u, cols_rows = us[i], U._size(d, field)
+    ahead, n = list(u["pos"]), 1
+    while True:
+        h = U.step(u["pos"], u["facing"], n)
+        if not (0 <= h[0] < cols_rows[0] and 0 <= h[1] < cols_rows[1]):
+            break
+        ahead, n = list(h), n + 1
+    if ahead == list(u["pos"]):
+        return None
+    return _toward(d, us, i, None, (size, {**(field or {}), "objective": ahead, "objective_radius": None}, stance, known, exchange), "search")
 
 
 def _spotter(d: Data, us: list, i: int, o: dict | None, cx: tuple) -> dict | None:
@@ -986,9 +1002,10 @@ def _spotter(d: Data, us: list, i: int, o: dict | None, cx: tuple) -> dict | Non
 
 def _own_fight(d: Data, us: list, i: int, field: dict | None) -> bool:
     """The controller has a fight of its own: an enemy touching it, an enemy it sees within its
-    own weapon's reach (it shoots instead), or pinned under fire."""
+    own weapon's reach (it shoots instead), or under fire: pinned, or it lost men last exchange
+    (hit)."""
     u = us[i]
-    if u.get("pinned") or U.in_contact(d, us, U.occupancy(d, us), i):
+    if u.get("pinned") or u.get("hit") or U.in_contact(d, us, U.occupancy(d, us), i):
         return True
     if "range" not in d.weapons[u["weapon"]]:
         return False
@@ -1092,7 +1109,7 @@ def _sees_from(d: Data, field: dict | None, u: dict, ranked: list, foes: set) ->
 
 def _unsteady(d: Data, us: list, i: int, t: int | None) -> dict | None:
     """A shaken unit holds, going to ground under missile fire."""
-    return {"act": "ground", "target": t} if not us[i].get("prone") and under_fire(d, us, i) else None
+    return {"act": "ground", "target": t} if not us[i].get("prone") and not us[i].get("vehicle") and under_fire(d, us, i) else None
 
 
 def _ammo_order(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict | None:
@@ -1552,7 +1569,7 @@ def _stay(d: Data, us: list, i: int, t: int, f: int, shooter: bool) -> dict | No
         return None
     if f != u["facing"]:
         return {"act": "turn", "target": t, "facing": f}
-    dig = shooter and u["weapon"] in C["ground_with"] and C["cover"].get(u["quality"], 0) > 0 and under_fire(d, us, i)
+    dig = shooter and not u.get("vehicle") and u["weapon"] in C["ground_with"] and C["cover"].get(u["quality"], 0) > 0 and under_fire(d, us, i)
     return {"act": "ground", "target": t} if dig else None
 
 

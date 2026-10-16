@@ -60,6 +60,10 @@ function phasesText(ps){                          // the phases (and their comme
   const line = p => `  - {name: ${yq(p.name)}, at: ${p.at}${p.note ? ", note: " + yq(p.note) : ""}${p.arrive?.length ? ", arrive: [" + p.arrive.map(yq).join(", ") + "]" : ""}}`;
   return `\n# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,\n# then come on where they are drawn, or at their side's entry edge if that is taken.\nphases:\n${ps.map(line).join("\n")}`;
 }
+function stancesLine(st){                        // the stances' line (and its comment), or "": a field with no objective
+  if (!st) return "";
+  return `\n# How each army fought (attack or hold), for the enemy commander on both sides; a field with an objective takes it from the objective.\nstances: [${st.join(", ")}]`;
+}
 function markersLine(m){                         // the markers settings' line (and its comment), or ""
   if (!m) return "";
   const parts = Object.entries(m).map(([k, v]) => `${k}: ${v}`).join(", ");
@@ -87,7 +91,7 @@ const hexList = hs => hs.map(h => `[${h.join(", ")}]`).join(", ");
 // hexes; a unit with `lands: k` comes in by air at the k-th), objective (the place the battle
 // was fought for: {at: hex, side: the army that attacked it (0 or 1), name, radius: hexes round it
 // that count as on it}), markers (the unit markers' settings: {labels, strength, size}, all
-// optional), phases (the battle's stages: [{name, at (the exchange it begins, the first 1), note,
+// optional), stances (with no objective: how each army fought, [attack|hold, attack|hold]), phases (the battle's stages: [{name, at (the exchange it begins, the first 1), note,
 // arrive (names of units held off the map until then)}]). A unit may also set type and size
 // (units.yaml markers).
 export function writeField(spec){
@@ -111,7 +115,7 @@ table: ${spec.table}
 # the travel-map sides that stand where each army stands here (${spec.sides[0]} first).
 travel: {map: ${t.map}, place: ${yq(t.place)}, within: ${t.within}, sides: [${t.sides.map(yq).join(", ")}]}
 size: [${grid[0].length}, ${grid.length}]
-${upLine}weather: ${spec.weather}${spec.lz ? "\n" : ""}${spec.lz ? "lz: [" + hexList(spec.lz) + "]               # landing zones (units with `lands` come in by air at that one)" : ""}${objLine(spec.objective)}${markersLine(spec.markers)}${phasesText(spec.phases)}
+${upLine}weather: ${spec.weather}${spec.lz ? "\n" : ""}${spec.lz ? "lz: [" + hexList(spec.lz) + "]               # landing zones (units with `lands` come in by air at that one)" : ""}${objLine(spec.objective)}${stancesLine(spec.stances)}${markersLine(spec.markers)}${phasesText(spec.phases)}
 ground: |
 ${grid.map(row => "  " + row.join("")).join("\n")}
 ${worksText}${supText}units:

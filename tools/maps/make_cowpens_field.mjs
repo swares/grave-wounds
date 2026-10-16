@@ -43,6 +43,7 @@ const units = [
 ];
 
 writeField({
+  stances: ["hold", "attack"],   // as fought: Morgan stood on the slope and Tarleton attacked
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
     { name: "The British attack", at: 1, note: "About sunrise (about 07:00): Tarleton attacks at once after his night march." },
     { name: "In musket range", at: 4, note: "In under three minutes the British are within musket range of the militia." },
