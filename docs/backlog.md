@@ -111,14 +111,15 @@ When an item is done, delete it here and note it in the pull request that closes
   modern infantry storm works, battlefields can give their stances, and self-play runs past the
   last phase and does not end on units still to come or an objective held from the start; a
   unit with no room to face its goal moves facing as near it as it can (Kapyong, Cassino). To
-  do, from the review: tank kinds by era and vehicle morale (73 Easting); archery against
+  do, from the review: the commander's handling of tanks (standing off at range when it outranges the enemy: 73 Easting); archery against
   horses and men in mud (Agincourt); men in rubble harder to shift (Cassino town: measured, see the review; shellfire decides it, and batteries' rate and ammunition are already within published figures; a sourced lethality figure scaled to 40% was measured and not applied); the Chechen
   ambush at Grozny (the night now fought as it was, the dark at 17:05; the breakout 25 hours on is beyond a run); an envelopment plan (Cowpens); the American
   rush on the guns at Lundy's Lane (dark now, but the guns still hold); the German counter-attacks on Point 593 (no sourced figures yet) and why small
   units take 593 so easily in February. Measured and not built: a holding commander that
   withdraws (no trigger tells the defences that held from those that went). Done: the Poles at
   Cassino as companies (February stays as battalions; see the review); phases that change the
-  light, and Lundy's Lane's sunset and moonlit night; routes round a flank from the accounts
+  light, and Lundy's Lane's sunset and moonlit night; tanks by fire control, composite armour,
+  thermal sights in a sandstorm and vehicle morale by vehicles lost (73 Easting still does not match); routes round a flank from the accounts
   (Osan, Lundy's Lane, Kapyong, the Poles; no winner changed, see the review). Done since: faster exchanges (sight lines, the ground and
   step costs remembered, the same battles about five times faster on the page).
 - **The enemy commander against itself, first cut.** Each side has its own commander choice;

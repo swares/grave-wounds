@@ -140,7 +140,7 @@ def _air_values(d: Data) -> dict:
 def tables(d: Data) -> dict:
     """The tables chapters 9-13 show, as Markdown, by name."""
     return {"eras": _eras(d), "women": _women(d), "indirect": _indirect(d), "smoke": _smoke(d), "assault": _assault(d),
-            "vehicles": _vehicles(d), "armour": _armour(d), "dark": _dark(d), "nvd": _nvd(d), "air": _air(d), "mines": _mines(d)}
+            "vehicles": _vehicles(d), "fire_control": _fire_control(d), "armour": _armour(d), "dark": _dark(d), "nvd": _nvd(d), "air": _air(d), "mines": _mines(d)}
 
 
 def _mines(d: Data) -> str:
@@ -210,6 +210,8 @@ def _vehicles(d: Data) -> str:
     for k in d.units["vehicles"]["kinds"].values():
         g = k.get("gun")
         gun = f"{_field(d, g['range'])}, {g['rate']} a vehicle, hits {'/'.join(str(h[1]) for h in g['hit'])}%" if g else "machine guns only"
+        if g and k.get("fc"):
+            gun = f"{g['rate']} a vehicle, reach and hits by its fire control (below)"
         carries = "—"
         if k.get("carry"):
             carries = f"{k['carry']} men"
@@ -217,6 +219,14 @@ def _vehicles(d: Data) -> str:
             carries = f"tows {k['tows']} gun"
         rows.append([k["name"], k["crew"], k["move"], k["armour"], gun, carries])
     return _md(["Vehicle", "Crew", "Move (hexes)", "Armour", "Main gun: reach, rounds, hits (close / mid / full)", "Carries"], rows)
+
+
+def _fire_control(d: Data) -> str:
+    F = {k: v for k, v in d.units["vehicles"]["fire_control"].items() if k != "by_war"}
+    wars = d.units["vehicles"]["fire_control"]["by_war"]
+    rows = [[v["name"], _field(d, v["range"]), ", ".join(f"{h[1]}% to {_field(d, h[0])}" for h in v["hit"]),
+             ", ".join(w for w, k2 in wars.items() if k2 == k) or "—"] for k, v in F.items()]
+    return _md(["Fire control", "Reach", "Hits a vehicle (first round, at a standing target)", "Its wars"], rows)
 
 
 def _armour(d: Data) -> str:

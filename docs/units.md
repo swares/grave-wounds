@@ -1470,10 +1470,27 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
 - **Main guns** fire each exchange at the nearest enemy in range, in sight (as guns are: the
   weather and the light) and in front, enemy vehicles first, with a clear line of fire. A
   vehicle whose gun is out does not fire it.
+- **Fire control.** A tank's gun hits and reaches by its fire control (`vehicles.fire_control`):
+  its war's (by the wound table's battle) unless the battlefield gives its own (`fc`). Hits at a
+  standing target, first round, by range:
+
+  | Fire control | Wars | 500 m | 1,000 m | 1,500 m | 2,000 m | 3,000 m |
+  |---|---|---|---|---|---|---|
+  | Optical sight | Second World War, Korea | 50% | 25% | 5% | — | — |
+  | Stadia reticle | Vietnam | 98% | 35% | 4% | 4% | — |
+  | Laser rangefinder | Late 20th century | 98% | 94% | 75% | 55% | 35% |
+  | Thermal fire control | Iraq & Afghanistan (and Eagle Troop's M1A1s) | 98% | 94% | 75% | 55% | 35% |
+
+  (The optical sight's nearer bands are the old tank figures, 75% to 200 m.) Sources: Isby,
+  *Weapons and Tactics of the Soviet Army* and *Armies of NATO's Central Front* (an M48's 90 mm
+  by stadia, a 125 mm with a laser rangefinder; a Second World War 76 mm tank needing about 13
+  rounds for an even chance of a hit at 1,500 m); the GAO's Desert Storm assessment (NSIAD-92-94)
+  for the M1A1, which hit at 3,000 m and more and did better than the projections: no published
+  figure, so the laser figures stand as its floor.
 
   | Kind | Range | Rounds a vehicle | Hits a vehicle (to 20 / mid / full range) | At men |
   |---|---|---|---|---|
-  | Tank | 100 hexes (1,090 yards, 1,000 m) | 1 | 75% / 50% (50 hexes) / 25% | bursts as a tank's round on call (25% in the hex, 5% next to it) |
+  | Tank | by its fire control (below) | 1 | by its fire control | bursts as a tank's round on call (25% in the hex, 5% next to it) |
   | Infantry fighting vehicle (autocannon) | 80 hexes (875 yards, 800 m) | 2 | 70% / 45% (40 hexes) / 20% | bursts as an autocannon round (20% in the hex) |
 
 - **Armour.** Small arms cannot hurt an armoured vehicle, and men armed only with them do
@@ -1527,7 +1544,11 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
   %: a heavy howitzer 2%, fighter-bombers 15%. Light armour is three times as likely to go.
 - **Knocked out.** A knocked-out vehicle's crew are out of the fight. Each is struck at 50% and
   rolls a wound as one hit by shellfire; the rest have bailed out. Vehicle units check morale
-  like any other.
+  like any other, but count whole vehicles lost, not crewmen hit in vehicles still fighting.
+- **Composite armour** (`armour: composite` on a battlefield's unit: the M1A1s at 73 Easting
+  and Fallujah): as heavy, but a main gun's round from its front does not knock one out. The
+  GAO found no T-72 round reported through an M1A1's front, even from 2,000 m, and no Abrams
+  destroyed by enemy fire in the war. From the flank or rear it is heavy armour.
 - **Riders.** Infantry fighting vehicles carry 7 men each and carriers 10. A foot unit of the
   same side within a hex of them can **Mount on** them (all its men must fit, and neither may
   be in contact).
@@ -2433,8 +2454,10 @@ from about 72.2 to 74.2 Easting on the military grid.
 - Flat, hard desert, stony in places. A low rise (**high ground**, a few metres) runs north
   to south across the left middle; the Iraqi **trenches** and three **bunkers** lie on its
   reverse (east) slope. The high ground about 74 Easting is on the right.
-- A **sandstorm**: sight cut to 440 yards (400 m), thermal sights included, a strong
-  north-westerly; no aircraft fly. Daylight, late afternoon.
+- A **sandstorm**: sight cut to 440 yards (400 m), but thermal sights see to about 985 yards
+  (900 m) through it; a strong north-westerly; no aircraft fly. Daylight, late afternoon.
+- Eagle Troop's M1A1s have the thermal fire control and **composite armour**; the T-72s the
+  war's laser rangefinder.
 - Coalition (veteran, thermal sights): Eagle Troop of the 2nd Armored Cavalry Regiment, its
   nine M1A1 **tanks** in two groups at the front and its M3 Bradleys (**infantry fighting
   vehicles**) in two scout platoons on the flanks behind.
