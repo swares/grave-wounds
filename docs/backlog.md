@@ -109,11 +109,12 @@ When an item is done, delete it here and note it in the pull request that closes
   battlefield was played with the commander on both sides and set against what happened; the
   commander now searches forward when it knows of no enemy, tanks no longer go to ground,
   modern infantry storm works, battlefields can give their stances, and self-play runs past the
-  last phase and does not end on units still to come or an objective held from the start. To
-  do, from the review: Cassino's battalions as companies (they cannot move on the ridge); tank
+  last phase and does not end on units still to come or an objective held from the start; a
+  unit with no room to face its goal moves facing as near it as it can (Kapyong, Cassino). To
+  do, from the review: Cassino's battalions as companies (they move as huge blocks on the ridge); tank
   kinds by era and vehicle morale (73 Easting); archery against horses and men in mud
-  (Agincourt); men in rubble harder to shift (Cassino town); other facings when the one toward the goal does not fit (Kapyong); the Chechen ambush at Grozny; a
-  holding commander that withdraws when outflanked (Osan, Mons) and an envelopment plan
+  (Agincourt); men in rubble harder to shift (Cassino town); the Chechen ambush at Grozny; a
+  holding commander that withdraws when outflanked (Mons) and an envelopment plan
   (Cowpens); darkness at Lundy's Lane; faster exchanges on the biggest fields.
 - **The enemy commander against itself, first cut.** Each side has its own commander choice;
   with both, Run plays on until Stop, a side with nothing left standing, an attacking side

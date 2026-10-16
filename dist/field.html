@@ -3906,12 +3906,13 @@ function toward(us, i, t, [size, field, , known], act){   // a move toward the o
   const occ = occupancy(base), foes = new Set(Object.keys(occ).filter(k => base[occ[k]].side !== u.side)), allow = allowance(free);
   let tries = UD.commander.tries;
   for (const [c, h] of towardHexes(base, i, tu, [size, field])){
-    const f = facingFrom(h, tu, obj, u.facing), turns = Math.min(mod6(f - u.facing), mod6(u.facing - f));
-    if (c + turns * turnCost(free) > allow || touches({ ...u, pos: h, facing: f }, foes)) continue;
+    const f = facingFrom(h, tu, obj, u.facing);
+    const fs = facingsFor(f, u.facing).filter(g => c + Math.min(mod6(g - u.facing), mod6(u.facing - g)) * turnCost(free) <= allow && !touches({ ...u, pos: h, facing: g }, foes));
+    if (!fs.length) continue;
     if (tries === 0) return null;
     tries -= 1;
-    const m = legalMove(base, i, [h, f, c, false], [size, field]);
-    if (m.ok) return { act, target: t, pos: h, facing: f, cost: m.cost, ...(u.prone ? { up: true } : {}) };
+    const [m, g] = legalFacing(base, i, [h, fs[0], c, false], [size, field, foes]);
+    if (m.ok) return { act, target: t, pos: h, facing: g, cost: m.cost, ...(u.prone ? { up: true } : {}) };
   }
   return null;
 }
@@ -4013,8 +4014,8 @@ function firstMove(base, i, tu, [size, field], [charge, hold, shooter, storm]){ 
     if (skipsHex(touch, [charge, hold, via], c > allow, stuck && (h[0] !== u.pos[0] || h[1] !== u.pos[1]))) continue;
     if (tries === 0) return null;
     tries -= 1;
-    const m = legalMove(base, i, [h, f, c, touch], [size, field]);
-    if (!rejects(m, charge, hold)) return [h, f, passing(base, i, h, m, via)];
+    const [m, g] = legalFacing(base, i, [h, f, c, touch], [size, field, foes]);
+    if (!rejects(m, charge, hold)) return [h, g, passing(base, i, h, m, via)];
   }
   return null;
 }
@@ -4029,6 +4030,22 @@ function aiReach(base, i, [size, limit, field], through){   // Map hk -> [hex, l
   return out;
 }
 const keepFront = (u, b) => (arc(u.facing, b) === "front" ? u.facing : b);   // the facing to take toward direction b: its own if b is already in its front arc, else b (as commander.keep_front)
+function facingsFor(f, now){                       // f, then a point either side, then two, then the facing it has now (each once) (as commander._facings)
+  const out = [];
+  for (const g of [f, f + 1, f - 1, f + 2, f - 2, now]) if (!out.includes(mod6(g))) out.push(mod6(g));
+  return out;
+}
+function legalFacing(base, i, [h, f, c, touch], [size, field, foes]){   // [move, facing]: legalMove facing f; if it may not move there so (no room, or the turn too dear), the nearest facing that it may, touching (or not) as before (as commander._legal_facing)
+  const m = legalMove(base, i, [h, f, c, touch], [size, field]);
+  if (m.ok) return [m, f];
+  const u = base[i];
+  for (const g of facingsFor(f, u.facing).slice(1)){
+    if (touches({ ...u, pos: h, facing: g }, foes) !== touch) continue;
+    const m2 = legalMove(base, i, [h, g, c, touch], [size, field]);
+    if (m2.ok) return [m2, g];
+  }
+  return [m, f];
+}
 function legalMove(base, i, [h, f, c, touch], [size, field]){   // moveUnit for a hex whose least movement and contact are known, without finding the path again
   const u = base[i], moved = { ...u, pos: h, facing: mod6(f) };
   if (!fits(base, i, moved, size, field)) return { ok: false };
@@ -4485,8 +4502,9 @@ function commandMove(B, stance, M, rng){           // the commander orders the m
 }
 const standingSide = (B, k) => B.units.some(u => u.side === B.sides[k] && u.men > 0 && (u.state === "steady" || u.state === "shaken"));
 const toCome = (B, k) => (B.waiting || []).some(w => !w.support && sideIndex(B, w.unit) === k) || (B.field.lifts || []).some(l => l.unit.side === B.sides[k] && l.left > 0);   // side k has units still to come on: a later phase's, or by air (as battle.to_come)
-function secured(B, side){                        // no standing enemy of side within commander.self_play.secure hexes of the (first) objective (as battle.secured)
+function secured(B, side){                        // no standing enemy of side within commander.self_play.secure hexes of the (first) objective, and none still to come (as battle.secured)
   const R = UD.commander.self_play.secure, at = B.field.objective;
+  if (toCome(B, 1 - B.sides.indexOf(side))) return false;
   return !B.units.some(u => u.side !== side && u.men > 0 && STANDING.has(u.state) && hdist(u.pos, at) <= R);
 }
 function playStop(B, held, stances){               // after an exchange of a self-played battle: why it stops, or null; held {side, n}: which attacking side held the (first) objective and for how many exchanges running, updated; stances: each side's; a side with none standing but units still to come is not gone (as battle.stop_reason)

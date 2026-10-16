@@ -34,12 +34,12 @@ field, judged by eye against short accounts of each battle.
      North Vietnamese lose a fifth of their men and the hill holds).
    - At Kapyong the two Chinese battalions (500 and 600 men, 30 hexes wide) never move in 240
      exchanges: the commander turns each unit to face its objective before moving, and turned,
-     the deep blocks do not fit ("no room there") from where they start. *Not fixed:* the
-     commander should try other facings (or its present one) when the one toward its goal does
-     not fit; this was found too late in the night to build and test.
+     the deep blocks do not fit ("no room there") from where they start. *Fixed in the retest
+     (below):* the commander now tries other facings when the one toward its goal does not fit.
    - At Cassino the Indian, British and Polish battalions (450-900 men in extended order, 100-300
      hexes of ground each) cannot fit along the narrow, rough ridge; after a move or two every
-     hex is "no room there" or "too far". *Not fixed: a data question* (below).
+     hex is "no room there" or "too far". *Fixed in the retest (below)* by the same change as
+     Kapyong: they now climb the ridge facing as near their goal as the ground allows.
 2. **The run stopped too soon or on the wrong thing**.
    - Fetterman ended at once: the warriors' side had only its ten decoys on the field, and they
      broke, with the thousand still to come. Pork Chop ended when E Company was overrun, before
@@ -155,9 +155,8 @@ men each, before the limit). Albuera ran before the changes that matter to it an
 
 ## Recommended, not built
 
-- **Cassino's battalions** (both battles) should come on as companies, or narrower and in closer
-  order, so they fit the ridge; as drawn they cannot move. This is the battlefields' data.
-- **A commander that tries other facings** when the one toward its goal does not fit (Kapyong).
+- **Cassino's battalions** (both battles) might better come on as companies: they now move, but
+  as 100-300-hex blocks on a narrow ridge. This is the battlefields' data.
 - **Tank kinds by era** (an M1A1 is not a T-34 or a T-72): fire control and armour by generation,
   and vehicle units' morale (a tank troop does not break on losing a few crewmen).
 - **Archery against armour and horses** at Agincourt: the arrow-storm's effect on horses and on
@@ -175,3 +174,34 @@ men each, before the limit). Albuera ran before the changes that matter to it an
 prints each battle's turning points; on the page, put the commander on both sides and press Run.
 The scripts used for this review (all battlefields, winners against the accounts) are not in the
 repository; the numbers above are from them.
+
+## Retest, 16 October 2026
+
+The merged build (with every change above) was played again on all 37 battlefields, two runs
+each, and so was a build with one more change: **a unit that cannot stand facing its goal (no
+room for its ranks, or the turn costs more than its move) moves facing as near its goal as it
+can** (a point either side, then two, then the way it faces now), and **a hold of the objective
+is not secure while the enemy still has units to come**.
+
+| | Merged build | With the facing change |
+| --- | --- | --- |
+| Battlefields where most runs matched the winner | 24 of 37 | 23 of 37 |
+| ... of those, with a real fight (both sides lost 2% or more) | 17 | 20 |
+| Runs matched | 52 of 74 | 47 of 74 |
+
+What the facing change did:
+
+- **Better:** Kapyong, Cassino (February) and Khe Sanh, where the attackers could not move or
+  arrived too late, are now fought; Kapyong's Chinese lose about half their men against the
+  hill, as they did. Osan now goes the North Koreans' way (Task Force Smith is overrun), Mons
+  and Mogadishu more consistently match. Lützen is a hard fight on both sides (about a quarter
+  of each army) instead of a Swedish walkover at 1%.
+- **Worse, or no longer a match:** Hamburger Hill becomes a coin-flip (both sides lose about
+  half; in both runs the attackers broke first). Lützen ends with the Imperialists still on the
+  windmill hill at 240 exchanges (in 1632 it fell late in the day). The Poles at Cassino take
+  Point 593 and hold it (in May 1944 they took it and were thrown off it that morning; the
+  throwing off comes long after this run). Pork Chop ends with the Chinese still on the hill
+  (the counter-attack companies come, but do not retake it).
+- The headline count is flat (24 to 23), but battles that were won by default because one side
+  never moved are now fought; the change fixes a fault rather than tuning results, and it stays.
+
