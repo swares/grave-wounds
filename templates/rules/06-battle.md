@@ -203,7 +203,8 @@ time.
 phase beginning (and who comes on), units breaking or fleeing, a reserve committed, the objective
 taken or lost, and the end with each side's losses. With an API key of the player's own, a
 language model retells each one in a short passage of at most {{n_words}} words, in a voice for
-the war (a chronicle, a dispatch, a war diary or a situation report). It is told to use only the
+the war (a chronicle, a dispatch, a war diary or a situation report), or one the GM picks for the
+battle (any of those, a soldier's account or a plain summary). It is told to use only the
 facts the game gives it and to write original prose; the plain line stays under each passage.
 The rules never depend on it.
 

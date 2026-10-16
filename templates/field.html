@@ -408,6 +408,7 @@ legend{padding:0}
           <label for="narr-provider">Provider</label>
           <select class="small" id="narr-provider" style="width:auto"><option value="anthropic">Anthropic (Claude)</option><option value="openai">OpenAI-compatible</option></select>
           <label for="narr-model">Model</label><input class="small" id="narr-model" style="width:12rem" autocomplete="off" spellcheck="false">
+          <label for="narr-voice">Voice</label><select class="small" id="narr-voice" style="width:auto" title="How the passages are written, for this battle: as the war by default. Passages already written stay as they are."></select>
         </div>
         <div class="toolbar" id="narr-url-box" hidden><label for="narr-url">Address</label><input class="small" id="narr-url" style="width:24rem" autocomplete="off" spellcheck="false"></div>
         <div class="toolbar">
@@ -1402,10 +1403,9 @@ const narratorOn = () => !!NARR.key && !!narrModel() && !!narrUrl();
 const narrProvider = () => FD.units.narrator.providers[NARR.provider];
 const narrModel = () => NARR.model || narrProvider().model;
 const narrUrl = () => (NARR.provider === "openai" ? NARR.url || narrProvider().url : narrProvider().url);
-function narrVoice(){                             // the voice for this battle's war
-  const N = FD.units.narrator;
-  return N.voices[N.battles[FD.tables[S.table]?.battle] || N.default];
-}
+const warVoice = () => { const N = FD.units.narrator; return N.battles[FD.tables[S.table]?.battle] || N.default };   // the voice for this battle's war
+const voiceKey = () => (S.voice && FD.units.narrator.voices[S.voice] ? S.voice : warVoice());   // the GM's choice for this battle, else the war's
+const narrVoice = () => FD.units.narrator.voices[voiceKey()].style;
 function narrPrompt(e){                           // [system, user]: the rules it writes by, and the facts it may use
   const N = FD.units.narrator, B = S.fieldId ? FD.fields[S.fieldId] : null;
   const system = `You are the narrator for Grave Wounds, a tabletop wargame. You retell the game's turning points as a short passage of at most ${N.words} words, written as ${narrVoice()}. `
@@ -1461,6 +1461,9 @@ function renderStory(){
 }
 function renderNarrator(){
   $("#narr-provider").value = NARR.provider;
+  const V = FD.units.narrator.voices;
+  $("#narr-voice").innerHTML = [["", `As the war: ${V[warVoice()].name.toLowerCase()}`], ...Object.entries(V).map(([k, v]) => [k, v.name])].map(([k, t]) => `<option value="${k}">${esc(t)}</option>`).join("");
+  $("#narr-voice").value = S.voice && V[S.voice] ? S.voice : "";
   $("#narr-url-box").hidden = NARR.provider !== "openai";
   $("#narr-model").placeholder = narrProvider().model || "the service's model name";
   $("#narr-url").placeholder = narrProvider().url;
@@ -1469,7 +1472,8 @@ function renderNarrator(){
   const host = (() => { try { return new URL(narrUrl()).host }catch(e){ return "the address above" /* not a full address yet */ } })();
   $("#narr-note").textContent = `Each turning point's plain text, the battlefield's name, the sides and the war, and the last ${nOf(FD.units.narrator.context, "passage")} are sent to ${host} with your key, and nowhere else; the service charges your key. `
     + (NARR.remember ? "The key is kept in this browser until you press Forget." : "The key is kept only while this page is open.") + " The passages use only what the game gives them; the plain line stays under each.";
-  $("#narr-status").textContent = narratorOn() ? `On: ${narrModel()}, writing as ${narrVoice()}.` : "Off: enter a key (and, for an OpenAI-compatible service, a model) to turn it on.";
+  const voice = FD.units.narrator.voices[voiceKey()].name.toLowerCase();
+  $("#narr-status").textContent = narratorOn() ? `On: ${narrModel()}, writing ${voice}.` : `Off: enter a key (and, for an OpenAI-compatible service, a model) to turn it on. Voice: ${voice}.`;
 }
 function narrSave(){                              // the settings kept only when Remember is ticked; otherwise nothing is stored
   try {
@@ -1487,6 +1491,7 @@ function narratorControls(){                      // the settings' controls, and
   $("#narr-url").value = NARR.url;
   const changed = () => { narrSave(); renderNarrator() };
   $("#narr-provider").onchange = e => { NARR.provider = e.target.value; changed() };
+  $("#narr-voice").onchange = e => { S.voice = e.target.value || null; save(); renderNarrator() };   // kept with the battle; passages already written stay as they are
   $("#narr-model").onchange = e => { NARR.model = e.target.value.trim(); changed() };
   $("#narr-url").onchange = e => { NARR.url = e.target.value.trim(); changed() };
   $("#narr-key").onchange = e => { NARR.key = e.target.value.trim(); changed() };
@@ -2971,6 +2976,7 @@ function newBattle(){                            // back to set-up: the travel m
     freshState();
     if (fid) loadBattlefield(fid, true);
   }
+  S.voice = null;                                 // a new battle's narrator writes as its war again
   fillChoices();
   render();
 }

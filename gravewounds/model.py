@@ -883,7 +883,8 @@ def _narrator_errors(d: Data) -> list[str]:
     if not N:
         return []
     V = N.get("voices") or {}
-    errors = [f"units.yaml: narrator.voices.{k} must be text" for k, v in V.items() if not (isinstance(v, str) and v.strip())]
+    errors = [f"units.yaml: narrator.voices.{k} needs a name and a style (text)" for k, v in V.items()
+              if not (isinstance(v, dict) and all(isinstance(v.get(x), str) and v[x].strip() for x in ("name", "style")))]
     errors += [f"units.yaml: narrator.battles.{b} names unknown voice {v}" for b, v in (N.get("battles") or {}).items() if v not in V]
     if N.get("default") not in V:
         errors.append("units.yaml: narrator.default must name a voice")
