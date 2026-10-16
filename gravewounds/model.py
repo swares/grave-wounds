@@ -905,6 +905,9 @@ def _self_play_errors(d: Data) -> list[str]:
               if not (isinstance(sp.get(k), int) and sp[k] >= 1)]
     if not (isinstance(spot.get("moves"), int) and spot["moves"] >= 1 and isinstance(spot.get("safe"), int) and spot["safe"] >= 0):
         errors.append("units.yaml: commander.spot needs moves (1 or more) and safe (0 or more), whole numbers")
+    reach = (K.get("route") or {}).get("reach")
+    if not (isinstance(reach, int) and reach >= 0):
+        errors.append("units.yaml: commander.route.reach must be a whole number of 0 or more")
     return errors
 
 
@@ -1512,6 +1515,9 @@ def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_un
                if not (isinstance(h, list) and len(h) == 2 and 0 <= h[0] < f["size"][0] and 0 <= h[1] < f["size"][1])]
     errors += [f"{where}: unit {u.get('name')} lands must be the number of a landing zone (0 to {len(lz) - 1})" for u in f.get("units", [])
                if "lands" in u and not (isinstance(u["lands"], int) and 0 <= u["lands"] < len(lz))]
+    on_map = lambda h: isinstance(h, list) and len(h) == 2 and all(isinstance(x, int) for x in h) and 0 <= h[0] < f["size"][0] and 0 <= h[1] < f["size"][1]
+    errors += [f"{where}: unit {u.get('name')}: via (its route) must be a list of hexes on the map" for u in f.get("units", [])
+               if "via" in u and not (isinstance(u["via"], list) and u["via"] and all(on_map(h) for h in u["via"]))]
     errors += [f"{where}: unit {u.get('name')}: fixed (a machine gun's fixed line) must be a hex on the map, for a machine gun" for u in f.get("units", [])
                if "fixed" in u and not (isinstance(u["fixed"], list) and len(u["fixed"]) == 2 and 0 <= u["fixed"][0] < f["size"][0]
                                         and 0 <= u["fixed"][1] < f["size"][1] and u.get("weapon") in (d.units.get("machine_guns") or {}).get("weapons", []))]

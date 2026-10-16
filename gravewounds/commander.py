@@ -103,8 +103,8 @@ def _tractor(d: Data, u: dict) -> bool:
 def _hold_back(d: Data, us: list, side, known: dict) -> None:
     """At its first move, unless the GM has marked reserves for the side (any of its units has
     `reserve` set), it holds back its rearmost units, furthest from the nearest enemy it knows
-    of (else any), up to commander.reserve % of the side's men by the quality most of them have.
-    Every unit of the side gets `reserve` (True or False), so it is done once."""
+    of (else any), up to commander.reserve % of the side's men by the quality most of them have
+    (not a unit the battlefield sends on a route, via). Every unit of the side gets `reserve` (True or False), so it is done once."""
     mine = [i for i, u in enumerate(us) if u["side"] == side and u["men"] > 0 and u["state"] not in ROUTED]
     if not mine or any("reserve" in us[i] for i in mine):
         return
@@ -118,7 +118,7 @@ def _hold_back(d: Data, us: list, side, known: dict) -> None:
     for i in mine:
         us[i]["reserve"] = False
     for i in far:
-        if U.is_battery(d, us[i]) or U.is_at_gun(d, us[i]) or _tractor(d, us[i]) or us[i]["men"] > room:
+        if U.is_battery(d, us[i]) or U.is_at_gun(d, us[i]) or _tractor(d, us[i]) or us[i].get("via") or us[i]["men"] > room:
             continue
         us[i]["reserve"] = True
         room -= us[i]["men"]
@@ -962,6 +962,9 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     sap = _sapper_order(d, us, i, t, ctx)
     if sap is not None:
         return sap
+    route = _route_order(d, us, i, ctx)
+    if route is not None:
+        return route
     if (obj is not None or ctx[2] == "hold") and _digs(d, us, i, ctx):
         return {"act": "dig", "target": t}
     if t is None and obj is None:
@@ -970,6 +973,37 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return {"act": "hesitate", "target": t, "roll": roll}
     o = _best(d, us, i, t, ctx) if obj is None else _for_objective(d, us, i, t, ctx)
     return o if t is None else _last_seen(o, ctx[3], t, ctx[4])
+
+
+def _route_order(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
+    """A unit on its route (via: waypoints the battlefield gives it from the accounts, a flank
+    march) goes on to the next, dropping each it reaches (within commander.route.reach hexes).
+    It turns aside only for an enemy in contact or right across its way (_route_blocked); with
+    none left, or no way on, None: it is ordered as any other unit."""
+    u, reach = us[i], d.units["commander"]["route"]["reach"]
+    if not u.get("via"):
+        return None
+    via = list(u["via"])
+    while via and U.hdist(u["pos"], via[0]) <= reach:
+        via.pop(0)
+    if via:
+        u["via"] = via
+    else:
+        del u["via"]
+    if not via or _route_blocked(d, us, i, via[0], ctx[3]):
+        return None
+    size, field, stance, known, exchange = ctx
+    return _toward(d, us, i, None, (size, {**(field or {}), "objective": via[0], "objective_radius": None}, stance, known, exchange), "advance")
+
+
+def _route_blocked(d: Data, us: list, i: int, w, known: dict | None) -> bool:
+    """In contact, or an enemy it knows of within its move of the straight way to waypoint w
+    (within a hex of it)."""
+    u = us[i]
+    if U.in_contact(d, us, U.occupancy(d, us), i):
+        return True
+    way = U.ray(u["pos"], w, U.hdist(u["pos"], w))[1:U.allowance(d, u) + 1]
+    return any(k.isdigit() and any(U.hdist(h, m["pos"]) <= 1 for h in way) for k, m in (known or {}).items())
 
 
 def _search(d: Data, us: list, i: int, ctx: tuple) -> dict | None:

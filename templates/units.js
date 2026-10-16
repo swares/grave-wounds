@@ -2391,7 +2391,7 @@ function aims(us, side, field, stance, mem){       // [the field as its garrison
 }
 const aimOf = (us, i, aim) => (aim[2].includes(us[i].id ?? i) ? aim[0] : aim[1]);   // the field (objective) unit i goes for: the first's if it is in the garrison, by id (as commander._aim)
 const knownFoes = known => Object.entries(known).filter(([k]) => /^\d+$/.test(k));   // [index, {pos, facing, ex}] of the enemies it knows of
-function holdBack(us, side, known){                // at its first move (unless the GM marked reserves), its rearmost units up to commander.reserve % of its men are held back (as commander._hold_back)
+function holdBack(us, side, known){                // at its first move (unless the GM marked reserves), its rearmost units up to commander.reserve % of its men are held back, not one on a route (as commander._hold_back)
   const mine = us.map((u, i) => i).filter(i => us[i].side === side && us[i].men > 0 && !ROUTED.has(us[i].state));
   if (!mine.length || mine.some(i => "reserve" in us[i])) return;
   const byQ = {};
@@ -2405,7 +2405,7 @@ function holdBack(us, side, known){                // at its first move (unless 
   const far = [...mine].sort((a, b) => away(b) - away(a) || a - b);
   for (const i of mine) us[i].reserve = false;
   for (const i of far){
-    if (isBattery(us[i]) || isAtGun(us[i]) || tractor(us[i]) || us[i].men > room) continue;
+    if (isBattery(us[i]) || isAtGun(us[i]) || tractor(us[i]) || us[i].via || us[i].men > room) continue;
     us[i].reserve = true;
     room -= us[i].men;
   }
@@ -2969,11 +2969,30 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   if (u.reserve) return reserveOrder(us, i, t, ctx);
   const sap = sapperOrder(us, i, t, ctx);
   if (sap) return sap;
+  const route = routeOrder(us, i, ctx);
+  if (route) return route;
   if ((obj !== null || ctx[2] === "hold") && digs(us, i, ctx)) return { act: "dig", target: t };
   if (t === null && obj === null) return search(us, i, ctx);
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
   const o = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx);
   return t === null ? o : lastSeen(o, ctx[3], t, ctx[4]);
+}
+function routeOrder(us, i, ctx){                   // a unit on its route (via: waypoints from the battlefield's account) goes on to the next, dropping each it reaches (within commander.route.reach hexes); it turns aside only for an enemy in contact or right across its way; with none left, or no way on, null: it is ordered as any other (as commander._route_order)
+  const u = us[i];
+  if (!u.via) return null;
+  const via = u.via.slice();
+  while (via.length && hdist(u.pos, via[0]) <= UD.commander.route.reach) via.shift();
+  if (via.length) u.via = via;
+  else delete u.via;
+  if (!via.length || routeBlocked(us, i, via[0], ctx[3])) return null;
+  const [size, field, stance, known, exchange] = ctx;
+  return toward(us, i, null, [size, { ...field, objective: via[0], objective_radius: null }, stance, known, exchange], "advance");
+}
+function routeBlocked(us, i, w, known){            // in contact, or an enemy it knows of within its move of the straight way to waypoint w (within a hex of it) (as commander._route_blocked)
+  const u = us[i];
+  if (inContact(us, occupancy(us), i)) return true;
+  const way = ray(u.pos, w, hdist(u.pos, w)).slice(1, allowance(u) + 1);
+  return Object.entries(known || {}).some(([k, m]) => /^\d+$/.test(k) && way.some(h => hdist(h, m.pos) <= 1));
 }
 function search(us, i, [size, field, stance, known, exchange]){   // attacking, with no objective and no enemy it knows of: a move toward the last hex on the map straight ahead along its facing; holding, null (as commander._search)
   if (stance !== "attack") return null;
@@ -3519,7 +3538,7 @@ function makeUnit(o, id, table){                   // a new unit as the GM or a 
   const nv = o.nv || (o.vehicle ? vehicleDevice(table) : null);
   return { id, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, ...(isGun(o.weapon) ? { guns: gunKind(o) } : {}), width: o.width || Math.ceil(o.men / form(o).per_hex),
-    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(nv ? { nv } : {}), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}), ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
+    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...(nv ? { nv } : {}), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}), ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
 }
 function ensureTags(B){                            // each unit's number on its side, kept for the battle (B3 stays B3) (as battle.ensure_tags)
   for (const u of [...B.units].sort((a, b) => a.id - b.id)) if (!u.n){

@@ -25,7 +25,7 @@ const companies = (name, where, army, kind, [men, width], [col, row], facing) =>
 const units = [
   ...companies("1st Carpathian Rifle Brigade, 2nd Battalion", "for Point 593", PL, POLE, [[225, 225, 225, 225], 8], [P593[0] + 4, 12], S),
   ...companies("1st Carpathian Rifle Brigade, 1st Battalion", "along Snakeshead, for Albaneta", PL, POLE, [[175, 175, 175, 175], 6], [P444[0] - 10, 30], S),
-  ...companies("5th Kresowa Division", "for Phantom Ridge", PL, POLE, [[225, 225, 225, 225], 8], [PHANTOM[0] + 4, 30], S),
+  ...companies("5th Kresowa Division", "for Phantom Ridge", PL, POLE, [[225, 225, 225, 225], 8], [PHANTOM[0] + 4, 30], S).map(u => ({ ...u, via: [[PHANTOM[0], PHANTOM[1] - 4]] })),   // for Phantom Ridge first, then 593
   at("German paratroops on Point 593", DE, 150, PARA, 10, [P593[0], P593[1] + 2], N),
   at("German paratroops on Phantom Ridge", DE, 150, PARA, 12, [PHANTOM[0] + 2, PHANTOM[1] + 2], N),
   at("German paratroops on Point 444", DE, 100, PARA, 10, [P444[0], P444[1] + 1], N),

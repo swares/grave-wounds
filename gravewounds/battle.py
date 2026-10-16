@@ -41,6 +41,8 @@ def make_unit(d: Data, o: dict, uid: int, table: str) -> dict:
             u[k] = o[k]
     if o.get("fixed"):
         u["fixed"] = list(o["fixed"])
+    if o.get("via"):
+        u["via"] = [list(h) for h in o["via"]]
     if nv:
         u["nv"] = nv
     if o.get("medics"):

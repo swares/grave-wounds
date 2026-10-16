@@ -31,7 +31,7 @@ const HORSE = { quality: "regular", weapon: "saber", kit: "dragoon_helmet", form
 const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
 const units = [
   unit("Scott's brigade (9th, 11th, 22nd)", US, 800, { ...LINE, quality: "veteran" }, [24, 52, 72]),
-  unit("25th Infantry (Jesup)", US, 300, { ...LINE, quality: "veteran" }, [8, 104, 60]),
+  { ...unit("25th Infantry (Jesup)", US, 300, { ...LINE, quality: "veteran" }, [8, 104, 60]), via: [[110, 40], [100, 18]] },   // round the British left (the east end of the hill) to behind their line (our reading)
   unit("Towson's battery", US, 60, GUNS, [3, 72, 80]),
   unit("Ripley's brigade (21st, 23rd, coming up)", US, 900, LINE, [24, 52, 100]),
   unit("Porter's volunteers (coming up)", US, 500, { ...LINE, quality: "green", formation: "open" }, [25, 10, 100]),

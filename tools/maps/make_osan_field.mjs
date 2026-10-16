@@ -56,9 +56,9 @@ const units = [
   unit("C Company, 21st Infantry (the ridge east)", UN, 120, RIFLES, [40, 110, row(130)]),
   unit("C Company's right (bent back by the railroad)", UN, 30, RIFLES, [10, RAIL - 15, row(RAIL - 10) + 10]),
   unit("16th Regiment, leading battalion (across the paddies)", NK, 1000, KPA, [90, 20, 18]),
-  unit("16th Regiment, battalion working round the west", NK, 600, KPA, [40, 0, 30]),
+  { ...unit("16th Regiment, battalion working round the west", NK, 600, KPA, [40, 0, 30]), via: [[12, 48], [24, 58]] },   // onto the hill west of the highway, then round behind the ridge (our reading)
   unit("18th Regiment, column on the highway", NK, 1500, { ...KPA, formation: "close" }, [6, ROAD - 3, 10]),
-  unit("18th Regiment, battalion moving down the railroad", NK, 600, KPA, [44, 160, 20]),
+  { ...unit("18th Regiment, battalion moving down the railroad", NK, 600, KPA, [44, 160, 20]), via: [[196, 58], [160, 62]] },   // down the railroad past C Company's right, then behind the ridge (our reading)
   unit("4th Division machine guns", NK, 15, { ...MG, kit: "none", quality: "veteran", prone: false }, [3, 60, 22]),
 ];
 

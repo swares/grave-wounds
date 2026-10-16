@@ -161,7 +161,7 @@ units:
   - {name: "C Company, 21st Infantry (the ridge east)", side: 0, men: 120, quality: green, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 40, pos: [129, 41], facing: 1, prone: true, size: company}
   - {name: "C Company's right (bent back by the railroad)", side: 0, men: 30, quality: green, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [179, 55], facing: 1, prone: true, size: company}
   - {name: "16th Regiment, leading battalion (across the paddies)", side: 1, men: 1000, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 90, pos: [65, 18], facing: 4, size: battalion}
-  - {name: "16th Regiment, battalion working round the west", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 40, pos: [20, 30], facing: 4, size: battalion}
+  - {name: "16th Regiment, battalion working round the west", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 40, pos: [20, 30], facing: 4, via: [[12, 48], [24, 58]], size: battalion}
   - {name: "18th Regiment, column on the highway", side: 1, men: 1500, quality: veteran, weapon: rifle_service, kit: none, formation: close, width: 6, pos: [40, 10], facing: 4, size: regiment}
-  - {name: "18th Regiment, battalion moving down the railroad", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 44, pos: [182, 20], facing: 4, size: battalion}
+  - {name: "18th Regiment, battalion moving down the railroad", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 44, pos: [182, 20], facing: 4, via: [[196, 58], [160, 62]], size: battalion}
   - {name: "4th Division machine guns", side: 1, men: 15, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 3, pos: [61, 22], facing: 4, size: section}

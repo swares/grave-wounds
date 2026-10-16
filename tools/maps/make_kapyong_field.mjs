@@ -53,7 +53,7 @@ const units = [
   at("Platoon of Shermans (72nd Heavy Tank Battalion)", UN, 20, TANK, 5, TANKS, N),
   at("Chinese battalion down the valley", CH, 600, PVA, 30, [ROAD(10), 10], S),
   at("Chinese battalion onto the north spur", CH, 500, PVA, 30, [150, 12], S),
-  at("Chinese battalion round the east of the hill", CH, 500, PVA, 30, [200, 30], 3),
+  { ...at("Chinese battalion round the east of the hill", CH, 500, PVA, 30, [200, 30], 3), via: [[214, 96], [150, 128], [100, 126]] },   // down the east of the hill and round its south to battalion headquarters (the phase note; the way is our reading)
   at("Chinese machine guns", CH, 10, { ...MG, kit: "none", prone: false }, 2, [110, 20], 4),
 ];
 

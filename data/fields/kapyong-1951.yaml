@@ -208,5 +208,5 @@ units:
   - {name: "Platoon of Shermans (72nd Heavy Tank Battalion)", side: 0, men: 20, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 5, pos: [89, 56], facing: 1, vehicle: tank, size: platoon}
   - {name: "Chinese battalion down the valley", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [89, 10], facing: 4, size: battalion}
   - {name: "Chinese battalion onto the north spur", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [150, 12], facing: 4, size: battalion}
-  - {name: "Chinese battalion round the east of the hill", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [200, 30], facing: 3, size: battalion}
+  - {name: "Chinese battalion round the east of the hill", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [200, 30], facing: 3, via: [[214, 96], [150, 128], [100, 126]], size: battalion}
   - {name: "Chinese machine guns", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [110, 20], facing: 4, size: section}
