@@ -379,21 +379,81 @@ def after_battle(d: Data, bt: dict, care: list, evac: list, rng) -> dict:
     return {"all": every, "after": after, "fates": fates}
 
 
+STANDING = ("steady", "shaken")
+
+
+def points_base(d: Data, bt: dict) -> dict:
+    """The state turning points are measured from: each unit's state by id, and who held each objective."""
+    return {"states": {u["id"]: u["state"] for u in bt["units"]}, "held": [o["held"] for o in U.objective_held(d, bt["units"], bt["field"])]}
+
+
+def commits_of(bt: dict, orders: list) -> list:
+    """The reserve units a commander's orders committed, by id."""
+    return [bt["units"][o["unit"]]["id"] for o in orders if o["act"] == "commit" and o["unit"] < len(bt["units"])]
+
+
+def turning_points(d: Data, bt: dict, base: dict, stages: dict | None, commits: list) -> list:
+    """Since base: phases begun (and who came on), units broken or fled by side, objectives taken
+    or lost, reserves committed (ids by side)."""
+    out = []
+    for i in (stages or {}).get("begun", []):
+        out.append({"kind": "phase", "stage": i, "came": [bt["units"][k]["id"] for k in stages.get("came", [])]})
+    for k, side in enumerate(bt["sides"]):
+        mine = [u for u in bt["units"] if u["side"] == side and u["id"] in base["states"]]
+        broke = [u["id"] for u in mine if base["states"][u["id"]] in STANDING and u["state"] not in STANDING]
+        fled = [u["id"] for u in mine if base["states"][u["id"]] != "fled" and u["state"] == "fled"]
+        if broke or fled:
+            out.append({"kind": "broke", "side": k, "units": broke, "fled": fled})
+        c = [x for x in commits if any(u["id"] == x and u["side"] == side for u in bt["units"])]
+        if c:
+            out.append({"kind": "commit", "side": k, "units": c})
+    for i, o in enumerate(U.objective_held(d, bt["units"], bt["field"])):
+        was = base["held"][i] if i < len(base["held"]) else None
+        if o["held"] != was:
+            out.append({"kind": "objective", "second": bool(o.get("second")), "held": o["held"], "was": was})
+    return out
+
+
+def end_point(d: Data, bt: dict, stop: dict | None, every: list, after: list) -> dict:
+    """The battle's end, as a turning point: why it stopped (None: the GM ended it), each side's men
+    killed, left on the field, died of wounds, carried to camp, and units still standing."""
+    sides = []
+    for side in bt["sides"]:
+        rows = [(u, a) for u, a in zip(every, after) if u["side"] == side]
+        sides.append({"start": sum(u.get("start") or 0 for u, _ in rows), "killed": sum(a["killed"] for _, a in rows),
+                      "left": sum(a["left"] for _, a in rows), "died": sum(a["died"] for _, a in rows),
+                      "carried": sum(len(a["cases"]) for _, a in rows),
+                      "standing": sum(1 for u in bt["units"] if u["side"] == side and u["men"] > 0 and u["state"] in STANDING)})
+    return {"kind": "end", "exchanges": bt["exchange"] - 1, "stop": stop, "sides": sides,
+            "held": [o["held"] for o in U.objective_held(d, bt["units"], bt["field"])]}
+
+
 def self_play(d: Data, fid: str, rng, how: list | None = None) -> dict:
-    """A battlefield played to its end by the commander on both sides: {battle, stop, orders, after, fates}."""
+    """A battlefield played to its end by the commander on both sides: {battle, stop, orders, after, fates, points}."""
     bt = set_up(d, fid)
     st, mem, held = how or stances(d, fid), [{"n": -1, "mem": {}}, {"n": -1, "mem": {}}], {"side": None, "n": 0}
-    begin(d, bt)
-    stop, orders = None, 0
+    opening = begin(d, bt)
+    points, stop, orders, base = [], None, 0, points_base(d, bt)
+    first = turning_points(d, bt, base, opening["stages"], [])
+    if first:
+        points.append({"exchange": 0, "points": first})
     while not stop:
+        ex, commits, stages = bt["exchange"], [], None
         for k in (0, 1):
-            orders += len(command_move(d, bt, st[k], mem[k], rng))
-            end_move(d, bt, rng)
+            o = command_move(d, bt, st[k], mem[k], rng)
+            orders += len(o)
+            commits += commits_of(bt, o)
+            stages = end_move(d, bt, rng)["stages"] or stages
+        pts = turning_points(d, bt, base, stages, commits)
+        if pts:
+            points.append({"exchange": ex, "points": pts})
+        base = points_base(d, bt)
         stop = stop_reason(d, bt, held, st)
     every = after_all(d, bt)
     evac = [side_medevac(d, bt, 0), side_medevac(d, bt, 1)]
     r = after_battle(d, bt, ["field"] * len(every), [evac[side_index(bt, u)] for u in every], rng)
-    return {"battle": bt, "stop": stop, "orders": orders, "after": r["after"], "fates": r["fates"]}
+    points.append({"exchange": bt["exchange"] - 1, "points": [end_point(d, bt, stop, every, r["after"])]})
+    return {"battle": bt, "stop": stop, "orders": orders, "after": r["after"], "fates": r["fates"], "points": points}
 
 
 STOP_TEXT = {"gone": "no unit left standing", "held": "the objective taken and held", "limit": "the exchange limit reached"}
@@ -418,3 +478,32 @@ def summary(d: Data, r: dict) -> list:
         out.append(f"  {side}: {n['start']} men; {n['killed']} killed, {n['left']} left on the field, {n['died']} died of wounds, "
                    f"{n['carried']} wounded carried to camp; {up} unit(s) still standing")
     return out
+
+
+def points_text(d: Data, r: dict) -> list:
+    """A self-played battle's turning points in plain words, a line an exchange (the page tells them
+    the same way in its narrative)."""
+    bt = r["battle"]
+    by_id = {u["id"]: u["name"] for u in bt["units"]}
+
+    def names(ids):
+        return ", ".join(by_id[i] for i in ids if i in by_id)
+
+    def say(p):
+        if p["kind"] == "phase":
+            st = bt["stages"][p["stage"]]
+            came = names(p["came"])
+            return f"Phase {p['stage'] + 1} of {len(bt['stages'])}: {st['name']}." + (f" Coming on: {came}." if came else "")
+        if p["kind"] == "broke":
+            side = bt["sides"][p["side"]]
+            return " ".join(x for x in (f"{side}: {names(p['units'])} broke." if p["units"] else "",
+                                        f"{side}: {names(p['fled'])} fled the field." if p["fled"] else "") if x)
+        if p["kind"] == "commit":
+            return f"{bt['sides'][p['side']]} committed {names(p['units'])} from the reserve."
+        if p["kind"] == "objective":
+            what = "the second objective" if p["second"] else "the objective"
+            if p["held"]:
+                return f"{p['held']} took {what}" + (f" from {p['was']}." if p["was"] else ".")
+            return f"{p['was']} no longer held {what}."
+        return f"The battle ended after {p['exchanges']} exchanges."
+    return [f"  {'Exchange ' + str(x['exchange']) if x['exchange'] else 'The opening'}: " + " ".join(say(p) for p in x["points"]) for x in r["points"]]

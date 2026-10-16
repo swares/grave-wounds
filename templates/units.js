@@ -3587,18 +3587,62 @@ function afterBattle(B, care, evac, rng){          // the battle over: each unit
   B.phase = "over";
   return { all, after, fates };
 }
-function selfPlay(fid, rng, stances = null){       // a battlefield played to its end by the commander on both sides (as battle.self_play): {battle, stop, orders, after}
+/* Turning points, for the narrative: what changed in an exchange that a reader would want told (as battle.py) */
+const STANDING = ["steady", "shaken"];
+function pointsBase(B){                            // the state turning points are measured from: each unit's state by id, and who held each objective (as battle.points_base)
+  return { states: Object.fromEntries(B.units.map(u => [u.id, u.state])), held: objectiveHeld(B.units, B.field).map(o => o.held) };
+}
+function commitsOf(B, orders){                     // the reserve units a commander's orders committed, by id (as battle.commits_of)
+  return orders.filter(o => o.act === "commit").map(o => B.units[o.unit]?.id).filter(x => x !== undefined);
+}
+function turningPoints(B, base, stages, commits){  // since base: phases begun (and who came on), units broken or fled by side, objectives taken or lost, reserves committed (ids by side): [point] (as battle.turning_points)
+  const out = [];
+  for (const i of stages?.begun || []) out.push({ kind: "phase", stage: i, came: (stages.came || []).map(k => B.units[k]?.id) });
+  for (const [k, side] of B.sides.entries()){
+    const mine = B.units.filter(u => u.side === side && u.id in base.states);
+    const broke = mine.filter(u => STANDING.includes(base.states[u.id]) && !STANDING.includes(u.state)).map(u => u.id);
+    const fled = mine.filter(u => base.states[u.id] !== "fled" && u.state === "fled").map(u => u.id);
+    if (broke.length || fled.length) out.push({ kind: "broke", side: k, units: broke, fled });
+    const c = commits.filter(id => B.units.some(u => u.id === id && u.side === side));
+    if (c.length) out.push({ kind: "commit", side: k, units: c });
+  }
+  objectiveHeld(B.units, B.field).forEach((o, i) => {
+    const was = base.held[i] ?? null;
+    if (o.held !== was) out.push({ kind: "objective", second: !!o.second, held: o.held, was });
+  });
+  return out;
+}
+function endPoint(B, stop, all, after){            // the battle's end, as a turning point: why it stopped (null: the GM ended it), each side's men killed, left on the field, died of wounds, carried to camp, and units still standing (as battle.end_point)
+  const sides = B.sides.map(side => {
+    const rows = all.map((u, i) => [u, after[i]]).filter(([u]) => u.side === side);
+    return { start: rows.reduce((n, [u]) => n + (u.start || 0), 0), killed: rows.reduce((n, [, a]) => n + a.killed, 0), left: rows.reduce((n, [, a]) => n + a.left, 0),
+      died: rows.reduce((n, [, a]) => n + a.died, 0), carried: rows.reduce((n, [, a]) => n + a.cases.length, 0),
+      standing: B.units.filter(u => u.side === side && u.men > 0 && STANDING.includes(u.state)).length };
+  });
+  return { kind: "end", exchanges: B.exchange - 1, stop, sides, held: objectiveHeld(B.units, B.field).map(o => o.held) };
+}
+function selfPlay(fid, rng, stances = null){       // a battlefield played to its end by the commander on both sides (as battle.self_play): {battle, stop, orders, after, fates, points}
   const B = setUpBattle(fid), st = stances || playStances(fid), mem = [{ n: -1, mem: {} }, { n: -1, mem: {} }], held = { side: null, n: 0 };
-  beginBattle(B);
-  let stop = null, orders = 0;
+  const opening = beginBattle(B), points = [];
+  let stop = null, orders = 0, base = pointsBase(B);
+  const first = turningPoints(B, base, opening.stages, []);
+  if (first.length) points.push({ exchange: 0, points: first });
   while (!stop){
+    const ex = B.exchange, commits = [];
+    let stages = null;
     for (const k of [0, 1]){
-      orders += commandMove(B, st[k], mem[k], rng).length;
-      endMove(B, rng);
+      const o = commandMove(B, st[k], mem[k], rng);
+      orders += o.length;
+      commits.push(...commitsOf(B, o));
+      stages = endMove(B, rng).stages || stages;
     }
+    const pts = turningPoints(B, base, stages, commits);
+    if (pts.length) points.push({ exchange: ex, points: pts });
+    base = pointsBase(B);
     stop = playStop(B, held, st);
   }
   const all = afterAll(B), evac = [sideEvac(B, 0), sideEvac(B, 1)];
   const r = afterBattle(B, all.map(() => "field"), all.map(u => evac[sideIndex(B, u)]), rng);
-  return { battle: B, stop, orders, after: r.after, fates: r.fates };
+  points.push({ exchange: B.exchange - 1, points: [endPoint(B, stop, all, r.after)] });
+  return { battle: B, stop, orders, after: r.after, fates: r.fates, points };
 }

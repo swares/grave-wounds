@@ -89,6 +89,7 @@ def _field_values(d: Data) -> dict:
         "c_remember": U["commander"]["remember"], "c_obj_radius": U["commander"]["objective"]["radius"],
         "c_obj_hold": U["commander"]["objective"]["hold"],
         "c_sp_held": U["commander"]["self_play"]["held"], "c_sp_limit": U["commander"]["self_play"]["limit"],
+        "n_words": U["narrator"]["words"],
         "c_sap_clear": U["commander"]["sappers"]["clear_of"],
         "c_keep_off": U["commander"]["keep_off"],
         "c_displace_shift": U["indirect"]["displace_shift"],

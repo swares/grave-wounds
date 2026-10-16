@@ -934,3 +934,29 @@ commander:
   shaken: 20
   threat: 20
   ground_with: [breechloader, rifle_service, rifle_assault, rifle_ap, machine_gun, pistol_smg, rpg, bazooka, recoilless, atgm]
+
+# narrator: an optional language model, called from the field page with the player's own key,
+# retells each turning point (a phase beginning, units breaking or fleeing, a reserve committed,
+# the objective taken or lost, the battle's end) in a short passage. `voices`: how it writes, by
+# the wound table's war (`battles`; `default` for the rest); original prose in the manner of the
+# period, imitating no real writer or document. `words`: the most a passage runs to; `max_tokens`:
+# the reply's cap; `context`: earlier passages sent with each for continuity. `providers`: where
+# each kind of service is called, and its default model (none for OpenAI-compatible services:
+# the player names one). It may use only the facts it is given. Design choices.
+narrator:
+  voices:
+    chronicle: "a chronicler's account of the day, as a clerk or herald might set it down soon after from those who were there: plain and formal, in modern English"
+    dispatch: "a commanding officer's dispatch to his superiors, in the measured, formal manner of the seventeenth to nineteenth centuries"
+    war_diary: "a unit's war diary or after-action report, in the terse, factual manner of the twentieth century"
+    sitrep: "a modern situation report: terse, plain military English, the facts first"
+  battles: {"Crusades": chronicle, "Visby 1361": chronicle, "Wars of the Roses": chronicle, "Thirty Years' War": dispatch,
+            "American Revolution": dispatch, "Napoleonic Wars": dispatch, "War of 1812": dispatch, "Crimean War": dispatch,
+            "American Civil War": dispatch, "American Indian Wars": dispatch, "WWI": war_diary, "WWII": war_diary,
+            "Korea": war_diary, "Vietnam": war_diary, "Late 20th century": sitrep, "Iraq & Afghanistan": sitrep}
+  default: war_diary
+  words: 70
+  max_tokens: 400
+  context: 2
+  providers:
+    anthropic: {url: "https://api.anthropic.com/v1/messages", model: "claude-haiku-5-5"}
+    openai: {url: "https://api.openai.com/v1/chat/completions", model: ""}

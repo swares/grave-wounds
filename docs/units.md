@@ -603,6 +603,39 @@ Each battle prints why it stopped, after how many exchanges, and each side's men
 on the field, died of wounds, carried to camp, and units still standing. Python is slower than
 the page (a second or so a move on a large field).
 
+### The narrative and the narrator
+
+Under the map, **Narrative** tells the battle's turning points, an entry an exchange when
+something worth telling happened (`turningPoints` in units.js, `turning_points` in battle.py,
+checked against each other):
+
+- a phase beginning, and the units it brings on;
+- units of a side breaking (no longer steady or shaken) or fleeing the field;
+- a reserve committed by the commander (an *Undo* takes it back out);
+- the objective (or the second) taken by a side, or no longer held;
+- the battle's end: why, and each side's killed, died of wounds, carried to camp and units
+  still standing.
+
+**Narrator** (folded under it) is optional. With an API key of the player's own, a language model
+retells each entry in a short passage (units.yaml `narrator`: at most `words`, 70). Its voice is
+set by the wound table's war: a chronicle for the medieval fields, a dispatch from the Thirty
+Years' War to the Indian Wars, a war diary for the world wars, Korea and Vietnam, a situation
+report after. It is told to use only the facts sent (the battlefield's name, the sides, the war,
+the entry's plain text and the last two passages for continuity), to invent no people, numbers,
+places or events, and to write original prose imitating no real writer or document. The plain
+line stays under each passage, so what the game decided can always be checked.
+
+- **Providers.** Anthropic (Claude, `claude-haiku-5-5` by default, called from the browser with
+  Anthropic's browser-access header) or any OpenAI-compatible chat-completions service (an
+  address and model the player enters). The model name can be changed.
+- **The key.** Sent only to the provider's address, in its header; never in the battle's save.
+  Kept only while the page is open, unless **Remember on this computer** is ticked; **Forget the
+  key** clears it. The service charges the key's owner.
+- **Pace.** During a Run, play does not wait: passages are written in turn and appear as they
+  arrive. With no key, or when a call fails, the plain entry stands, with the reason shown.
+
+From Python, `selfplay --story` prints the same turning points in plain words (no model).
+
 Still left out: the commander has no plan for finding an enemy it cannot see, so with no
 objective and no enemy in sight both sides stand until the limit (Visby, both attacking, can
 end that way); a run stops only after a whole exchange; no narrated summary of the battle.

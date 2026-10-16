@@ -71,6 +71,7 @@ def _main(argv=None) -> int:
     sp.add_argument("--stances", default=None, help="attack,hold etc., one per side (default: the side the objective names attacks, the other holds; both attack with no objective)")
     sp.add_argument("-n", type=int, default=1, help="number of battles")
     sp.add_argument("--seed", type=int, default=1, help="the first battle's dice; each next battle the next seed")
+    sp.add_argument("--story", action="store_true", help="also print each battle's turning points")
 
     a = p.parse_args(argv)
     try:
@@ -80,7 +81,7 @@ def _main(argv=None) -> int:
         return 1
 
     if a.cmd == "selfplay":
-        from .battle import self_play, stances, summary
+        from .battle import points_text, self_play, stances, summary
         from .units import SeededDice
         if a.field not in d.fields:
             print(f"error: no battlefield {a.field}; there are: {', '.join(sorted(d.fields))}", file=sys.stderr)
@@ -93,6 +94,8 @@ def _main(argv=None) -> int:
         for k in range(a.n):
             r = self_play(d, a.field, SeededDice(a.seed + k), how)
             print(f"Battle {k + 1} (seed {a.seed + k}): " + "\n".join(summary(d, r)))
+            if a.story:
+                print("\n".join(points_text(d, r)))
         return 0
     if a.cmd == "team":
         from .team import era, follower_line, make_followers, make_team, sheet
