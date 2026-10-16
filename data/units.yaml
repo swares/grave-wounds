@@ -948,15 +948,19 @@ commander:
 # the objective taken or lost, the battle's end) in a short passage. `voices`: how it writes, by
 # the wound table's war (`battles`; `default` for the rest); original prose in the manner of the
 # period, imitating no real writer or document. `words`: the most a passage runs to; `max_tokens`:
-# the reply's cap; `context`: earlier passages sent with each for continuity. `providers`: where
+# the reply's cap; `context`: earlier passages sent with each for continuity. The GM can pick any
+# voice for a battle on the page (kept with the battle); each has a `name` for that list and a
+# `style` the model is told to write as. `providers`: where
 # each kind of service is called, and its default model (none for OpenAI-compatible services:
 # the player names one). It may use only the facts it is given. Design choices.
 narrator:
   voices:
-    chronicle: "a chronicler's account of the day, as a clerk or herald might set it down soon after from those who were there: plain and formal, in modern English"
-    dispatch: "a commanding officer's dispatch to his superiors, in the measured, formal manner of the seventeenth to nineteenth centuries"
-    war_diary: "a unit's war diary or after-action report, in the terse, factual manner of the twentieth century"
-    sitrep: "a modern situation report: terse, plain military English, the facts first"
+    chronicle: {name: "A chronicle", style: "a chronicler's account of the day, as a clerk or herald might set it down soon after from those who were there: plain and formal, in modern English"}
+    dispatch: {name: "A dispatch", style: "a commanding officer's dispatch to his superiors, in the measured, formal manner of the seventeenth to nineteenth centuries"}
+    war_diary: {name: "A war diary", style: "a unit's war diary or after-action report, in the terse, factual manner of the twentieth century"}
+    sitrep: {name: "A situation report", style: "a modern situation report: terse, plain military English, the facts first"}
+    soldier: {name: "A soldier's account", style: "a soldier's own account in the first person, from an unnamed man in the ranks, in the plain, concrete manner of the battle's era; he gives no name and claims no deed or sight the facts do not state"}
+    plain: {name: "Plain and neutral", style: "a plain, modern summary in the third person, with no period flavour"}
   battles: {"Crusades": chronicle, "Visby 1361": chronicle, "Wars of the Roses": chronicle, "Thirty Years' War": dispatch,
             "American Revolution": dispatch, "Napoleonic Wars": dispatch, "War of 1812": dispatch, "Crimean War": dispatch,
             "American Civil War": dispatch, "American Indian Wars": dispatch, "WWI": war_diary, "WWII": war_diary,

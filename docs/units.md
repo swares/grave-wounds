@@ -628,7 +628,10 @@ checked against each other):
 retells each entry in a short passage (units.yaml `narrator`: at most `words`, 70). Its voice is
 set by the wound table's war: a chronicle for the medieval fields, a dispatch from the Thirty
 Years' War to the Indian Wars, a war diary for the world wars, Korea and Vietnam, a situation
-report after. It is told to use only the facts sent (the battlefield's name, the sides, the war,
+report after. **Voice** lets the GM pick another for the battle: any of those four, a soldier's
+account (first person, an unnamed man in the ranks, who claims nothing the facts do not state) or
+a plain, neutral summary. The choice is kept with the battle (*New battle* goes back to the war's),
+and applies to passages written after it; earlier ones stay as written. It is told to use only the facts sent (the battlefield's name, the sides, the war,
 the entry's plain text and the last two passages for continuity), to invent no people, numbers,
 places or events, and to write original prose imitating no real writer or document. The plain
 line stays under each passage, so what the game decided can always be checked.

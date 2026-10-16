@@ -102,7 +102,8 @@ When an item is done, delete it here and note it in the pull request that closes
   retells each in a short passage in a voice for the war, using only the facts given. The key
   is kept only while the page is open unless the player ticks Remember. Still left out: only what changed
   over a whole exchange is told (a unit that broke and rallied within one is missed), no rally or hero turning points, no narration on the travel map, no streamed or
-  regenerated passages, and the voices are fixed per war (no choice on the page).
+  regenerated passages. The GM can pick the voice for a battle (the war's by default); passages already written are
+  not retold in a new voice.
 - **The enemy commander against itself, first cut.** Each side has its own commander choice;
   with both, Run plays on until Stop, a side with nothing left standing, an attacking side
   holding the objective 5 exchanges running, or 60 exchanges, then ends the battle; Python
