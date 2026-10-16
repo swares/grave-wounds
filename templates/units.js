@@ -3588,7 +3588,7 @@ function afterBattle(B, care, evac, rng){          // the battle over: each unit
   return { all, after, fates };
 }
 /* Turning points, for the narrative: what changed in an exchange that a reader would want told (as battle.py) */
-const STANDING = ["steady", "shaken"];
+const STANDING = new Set(["steady", "shaken"]);
 function pointsBase(B){                            // the state turning points are measured from: each unit's state by id, and who held each objective (as battle.points_base)
   return { states: Object.fromEntries(B.units.map(u => [u.id, u.state])), held: objectiveHeld(B.units, B.field).map(o => o.held) };
 }
@@ -3600,7 +3600,7 @@ function turningPoints(B, base, stages, commits){  // since base: phases begun (
   for (const i of stages?.begun || []) out.push({ kind: "phase", stage: i, came: (stages.came || []).map(k => B.units[k]?.id) });
   for (const [k, side] of B.sides.entries()){
     const mine = B.units.filter(u => u.side === side && u.id in base.states);
-    const broke = mine.filter(u => STANDING.includes(base.states[u.id]) && !STANDING.includes(u.state)).map(u => u.id);
+    const broke = mine.filter(u => STANDING.has(base.states[u.id]) && !STANDING.has(u.state)).map(u => u.id);
     const fled = mine.filter(u => base.states[u.id] !== "fled" && u.state === "fled").map(u => u.id);
     if (broke.length || fled.length) out.push({ kind: "broke", side: k, units: broke, fled });
     const c = commits.filter(id => B.units.some(u => u.id === id && u.side === side));
@@ -3617,7 +3617,7 @@ function endPoint(B, stop, all, after){            // the battle's end, as a tur
     const rows = all.map((u, i) => [u, after[i]]).filter(([u]) => u.side === side);
     return { start: rows.reduce((n, [u]) => n + (u.start || 0), 0), killed: rows.reduce((n, [, a]) => n + a.killed, 0), left: rows.reduce((n, [, a]) => n + a.left, 0),
       died: rows.reduce((n, [, a]) => n + a.died, 0), carried: rows.reduce((n, [, a]) => n + a.cases.length, 0),
-      standing: B.units.filter(u => u.side === side && u.men > 0 && STANDING.includes(u.state)).length };
+      standing: B.units.filter(u => u.side === side && u.men > 0 && STANDING.has(u.state)).length };
   });
   return { kind: "end", exchanges: B.exchange - 1, stop, sides, held: objectiveHeld(B.units, B.field).map(o => o.held) };
 }

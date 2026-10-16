@@ -95,7 +95,7 @@ def _main(argv=None) -> int:
             r = self_play(d, a.field, SeededDice(a.seed + k), how)
             print(f"Battle {k + 1} (seed {a.seed + k}): " + "\n".join(summary(d, r)))
             if a.story:
-                print("\n".join(points_text(d, r)))
+                print("\n".join(points_text(r)))
         return 0
     if a.cmd == "team":
         from .team import era, follower_line, make_followers, make_team, sheet

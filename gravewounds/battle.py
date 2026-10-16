@@ -392,12 +392,9 @@ def commits_of(bt: dict, orders: list) -> list:
     return [bt["units"][o["unit"]]["id"] for o in orders if o["act"] == "commit" and o["unit"] < len(bt["units"])]
 
 
-def turning_points(d: Data, bt: dict, base: dict, stages: dict | None, commits: list) -> list:
-    """Since base: phases begun (and who came on), units broken or fled by side, objectives taken
-    or lost, reserves committed (ids by side)."""
+def _side_points(bt: dict, base: dict, commits: list) -> list:
+    """Each side's units broken or fled since base, and its reserves committed."""
     out = []
-    for i in (stages or {}).get("begun", []):
-        out.append({"kind": "phase", "stage": i, "came": [bt["units"][k]["id"] for k in stages.get("came", [])]})
     for k, side in enumerate(bt["sides"]):
         mine = [u for u in bt["units"] if u["side"] == side and u["id"] in base["states"]]
         broke = [u["id"] for u in mine if base["states"][u["id"]] in STANDING and u["state"] not in STANDING]
@@ -407,6 +404,15 @@ def turning_points(d: Data, bt: dict, base: dict, stages: dict | None, commits: 
         c = [x for x in commits if any(u["id"] == x and u["side"] == side for u in bt["units"])]
         if c:
             out.append({"kind": "commit", "side": k, "units": c})
+    return out
+
+
+def turning_points(d: Data, bt: dict, base: dict, stages: dict | None, commits: list) -> list:
+    """Since base: phases begun (and who came on), units broken or fled by side, objectives taken
+    or lost, reserves committed (ids by side)."""
+    out = [{"kind": "phase", "stage": i, "came": [bt["units"][k]["id"] for k in stages.get("came", [])]}
+           for i in (stages or {}).get("begun", [])]
+    out += _side_points(bt, base, commits)
     for i, o in enumerate(U.objective_held(d, bt["units"], bt["field"])):
         was = base["held"][i] if i < len(base["held"]) else None
         if o["held"] != was:
@@ -480,30 +486,32 @@ def summary(d: Data, r: dict) -> list:
     return out
 
 
-def points_text(d: Data, r: dict) -> list:
-    """A self-played battle's turning points in plain words, a line an exchange (the page tells them
-    the same way in its narrative)."""
-    bt = r["battle"]
+def _point_text(bt: dict, p: dict) -> str:
+    """One turning point in plain words."""
     by_id = {u["id"]: u["name"] for u in bt["units"]}
 
     def names(ids):
         return ", ".join(by_id[i] for i in ids if i in by_id)
-
-    def say(p):
-        if p["kind"] == "phase":
-            st = bt["stages"][p["stage"]]
-            came = names(p["came"])
-            return f"Phase {p['stage'] + 1} of {len(bt['stages'])}: {st['name']}." + (f" Coming on: {came}." if came else "")
-        if p["kind"] == "broke":
-            side = bt["sides"][p["side"]]
-            return " ".join(x for x in (f"{side}: {names(p['units'])} broke." if p["units"] else "",
-                                        f"{side}: {names(p['fled'])} fled the field." if p["fled"] else "") if x)
-        if p["kind"] == "commit":
-            return f"{bt['sides'][p['side']]} committed {names(p['units'])} from the reserve."
-        if p["kind"] == "objective":
-            what = "the second objective" if p["second"] else "the objective"
-            if p["held"]:
-                return f"{p['held']} took {what}" + (f" from {p['was']}." if p["was"] else ".")
+    if p["kind"] == "phase":
+        came = names(p["came"])
+        return f"Phase {p['stage'] + 1} of {len(bt['stages'])}: {bt['stages'][p['stage']]['name']}." + (f" Coming on: {came}." if came else "")
+    if p["kind"] == "broke":
+        side = bt["sides"][p["side"]]
+        bits = [f"{side}: {names(p['units'])} broke." if p["units"] else "", f"{side}: {names(p['fled'])} fled the field." if p["fled"] else ""]
+        return " ".join(x for x in bits if x)
+    if p["kind"] == "commit":
+        return f"{bt['sides'][p['side']]} committed {names(p['units'])} from the reserve."
+    if p["kind"] == "objective":
+        what = "the second objective" if p["second"] else "the objective"
+        if not p["held"]:
             return f"{p['was']} no longer held {what}."
-        return f"The battle ended after {p['exchanges']} exchanges."
-    return [f"  {'Exchange ' + str(x['exchange']) if x['exchange'] else 'The opening'}: " + " ".join(say(p) for p in x["points"]) for x in r["points"]]
+        return f"{p['held']} took {what}" + (f" from {p['was']}." if p["was"] else ".")
+    return f"The battle ended after {p['exchanges']} exchanges."
+
+
+def points_text(r: dict) -> list:
+    """A self-played battle's turning points in plain words, a line an exchange (the page tells them
+    the same way in its narrative)."""
+    bt = r["battle"]
+    return [f"  {'Exchange ' + str(x['exchange']) if x['exchange'] else 'The opening'}: " + " ".join(_point_text(bt, p) for p in x["points"])
+            for x in r["points"]]
