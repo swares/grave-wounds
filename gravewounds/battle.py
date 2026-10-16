@@ -193,6 +193,7 @@ def advance_stages(d: Data, bt: dict) -> dict:
     while bt["stageNo"] + 1 < len(bt["stages"]) and bt["stages"][bt["stageNo"] + 1]["at"] <= bt["exchange"]:
         bt["stageNo"] += 1
         out["begun"].append(bt["stageNo"])
+        _light_of_phase(d, bt, bt["stages"][bt["stageNo"]], out)
     keep = []
     for w in bt["waiting"]:
         if w["stage"] > bt["stageNo"]:
@@ -212,6 +213,15 @@ def advance_stages(d: Data, bt: dict) -> dict:
             out["came"].append(len(bt["units"]) - 1)
     bt["waiting"] = keep
     return out
+
+
+def _light_of_phase(d: Data, bt: dict, st: dict, out: dict) -> None:
+    """A phase that sets the light (light: a weather.yaml light level) changes the field's from
+    then on (sunset, dawn); out["light"]: {phase index: the level's name}."""
+    if not st.get("light"):
+        return
+    bt["field"]["weather"] = {**(bt["field"].get("weather") or {}), "light": st["light"]}
+    out.setdefault("light", {})[bt["stageNo"]] = d.weather["light"]["levels"][st["light"]]["name"]
 
 
 def mark_starts(bt: dict) -> None:
@@ -440,7 +450,8 @@ def _side_points(bt: dict, base: dict, commits: list) -> list:
 def turning_points(d: Data, bt: dict, base: dict, stages: dict | None, commits: list) -> list:
     """Since base: phases begun (and who came on), units broken or fled by side, objectives taken
     or lost, reserves committed (ids by side)."""
-    out = [{"kind": "phase", "stage": i, "came": [bt["units"][k]["id"] for k in stages.get("came", [])]}
+    lights = (stages or {}).get("light") or {}
+    out = [{"kind": "phase", "stage": i, "came": [bt["units"][k]["id"] for k in stages.get("came", [])], **({"light": lights[i]} if i in lights else {})}
            for i in (stages or {}).get("begun", [])]
     out += _side_points(bt, base, commits)
     for i, o in enumerate(U.objective_held(d, bt["units"], bt["field"])):
@@ -522,8 +533,8 @@ def _names(bt: dict, ids: list) -> str:
 
 
 def _phase_text(bt: dict, p: dict) -> str:
-    came = _names(bt, p["came"])
-    return f"Phase {p['stage'] + 1} of {len(bt['stages'])}: {bt['stages'][p['stage']]['name']}." + (f" Coming on: {came}." if came else "")
+    came, light = _names(bt, p["came"]), p.get("light")
+    return f"Phase {p['stage'] + 1} of {len(bt['stages'])}: {bt['stages'][p['stage']]['name']}." + (f" The light: {light}." if light else "") + (f" Coming on: {came}." if came else "")
 
 
 def _broke_text(bt: dict, p: dict) -> str:

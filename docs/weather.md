@@ -141,7 +141,7 @@ chance depends on how the weapon is fired:
 ## Light (the field map)
 
 The field map's weather has a **Light**: daylight, dusk or dawn, a moonlit night or a dark
-night. In the dark no one can see to aim at, or to call fire on, anything further than the
+night. A battlefield's phases can change it as the battle goes on (sunset at Lundy's Lane). In the dark no one can see to aim at, or to call fire on, anything further than the
 light allows, and aimed fire, the guns' too, is harder. The weather's own limit still
 applies: whichever is shorter counts.
 

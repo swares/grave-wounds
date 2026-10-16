@@ -36,7 +36,7 @@ character a step at a time; a good night's rest takes it back:
 ## Light {#light}
 
 In the dark no one can see to aim, or to call fire, past the light's reach, and aimed fire
-is harder. A flare or an illumination round lights its hexes as by day for a few exchanges,
+is harder. A battlefield can change the light as its battle goes on, at sunset or dawn. A flare or an illumination round lights its hexes as by day for a few exchanges,
 and night-vision devices of the later wars see further:
 
 {{table:light}}
