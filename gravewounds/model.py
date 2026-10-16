@@ -1072,10 +1072,10 @@ def _small_arms_errors(veh: dict) -> list[str]:
     return ["units.yaml: vehicles.small_arms needs rate and mg (aimed shots a man, above 0) when an armour has a small %"]
 
 
-def _fire_control_errors(V: dict) -> list[str]:
+def _fire_control_errors(vehicles: dict) -> list[str]:
     """units.yaml vehicles.fire_control: each kind a whole-number range and hit bands reaching it;
     by_war naming kinds that exist."""
-    F = V.get("fire_control") or {}
+    F = vehicles.get("fire_control") or {}
     kinds = {k: v for k, v in F.items() if k != "by_war"}
     errors = [f"units.yaml: vehicles.fire_control.{k} needs a whole-number range and hit bands [[hexes, %], ...] up to it" for k, v in kinds.items()
               if not (isinstance(v, dict) and isinstance(v.get("range"), int) and isinstance(v.get("hit"), list) and v["hit"] and v["hit"][-1][0] == v["range"])]
@@ -1519,12 +1519,15 @@ def _flag_errors(f: dict, where: str) -> list[str]:
 
 
 def _fc_errors(d: Data, f: dict, where: str) -> list[str]:
-    """Each battlefield unit's fire control (fc), if it gives one: a known one, on a vehicle kind
-    that has one (a tank)."""
+    """Each battlefield unit's fire control (fc) and armour, if it gives them: a known fire control,
+    on a vehicle kind that has one (a tank); a known armour, on a vehicle."""
     V = d.units.get("vehicles") or {}
     fcs, kinds = {k for k in (V.get("fire_control") or {}) if k != "by_war"}, V.get("kinds") or {}
-    return [f"{where}: unit {u.get('name')}: fc (fire control) must be one of {sorted(fcs)}, on a tank" for u in f.get("units", [])
-            if "fc" in u and (u["fc"] not in fcs or not (kinds.get(u.get("vehicle") or "") or {}).get("fc"))]
+    armours = set(V.get("armour") or {})
+    errors = [f"{where}: unit {u.get('name')}: fc (fire control) must be one of {sorted(fcs)}, on a tank" for u in f.get("units", [])
+              if "fc" in u and (u["fc"] not in fcs or not (kinds.get(u.get("vehicle") or "") or {}).get("fc"))]
+    return errors + [f"{where}: unit {u.get('name')}: armour must be one of {sorted(armours)}, on a vehicle" for u in f.get("units", [])
+                     if "armour" in u and (u["armour"] not in armours or not u.get("vehicle"))]
 
 
 def _via_errors(f: dict, where: str) -> list[str]:
@@ -1546,9 +1549,6 @@ def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_un
                if "lands" in u and not (isinstance(u["lands"], int) and 0 <= u["lands"] < len(lz))]
     errors += _via_errors(f, where)
     errors += _fc_errors(d, f, where)
-    armours = set((d.units.get("vehicles") or {}).get("armour") or {})
-    errors += [f"{where}: unit {u.get('name')}: armour must be one of {sorted(armours)}, on a vehicle" for u in f.get("units", [])
-               if "armour" in u and (u["armour"] not in armours or not u.get("vehicle"))]
     errors += [f"{where}: unit {u.get('name')}: fixed (a machine gun's fixed line) must be a hex on the map, for a machine gun" for u in f.get("units", [])
                if "fixed" in u and not (isinstance(u["fixed"], list) and len(u["fixed"]) == 2 and 0 <= u["fixed"][0] < f["size"][0]
                                         and 0 <= u["fixed"][1] < f["size"][1] and u.get("weapon") in (d.units.get("machine_guns") or {}).get("weapons", []))]
