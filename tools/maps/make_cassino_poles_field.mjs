@@ -19,10 +19,13 @@ const POLE = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman",
 const PARA = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
 const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
+// A battalion as companies (company 1, 2, ...) side by side across its front, a hex apart, centred on col at row: men each, the
+// battalion's men per hex of front kept (width: the companies' width)
+const companies = (name, where, army, kind, [men, width], [col, row], facing) => men.map((m, k) => ({ ...at(`${name}, company ${k + 1} (${where})`, army, m, kind, width, [Math.round(col + (k - (men.length - 1) / 2) * (width + 1)), row], facing), size: "company" }));
 const units = [
-  at("1st Carpathian Rifle Brigade, 2nd Battalion (for Point 593)", PL, 900, POLE, 30, [P593[0] + 4, 12], S),
-  at("1st Carpathian Rifle Brigade, 1st Battalion (along Snakeshead, for Albaneta)", PL, 700, POLE, 25, [P444[0] - 10, 30], S),
-  at("5th Kresowa Division (for Phantom Ridge)", PL, 900, POLE, 30, [PHANTOM[0] + 4, 30], S),
+  ...companies("1st Carpathian Rifle Brigade, 2nd Battalion", "for Point 593", PL, POLE, [[225, 225, 225, 225], 8], [P593[0] + 4, 12], S),
+  ...companies("1st Carpathian Rifle Brigade, 1st Battalion", "along Snakeshead, for Albaneta", PL, POLE, [[175, 175, 175, 175], 6], [P444[0] - 10, 30], S),
+  ...companies("5th Kresowa Division", "for Phantom Ridge", PL, POLE, [[225, 225, 225, 225], 8], [PHANTOM[0] + 4, 30], S),
   at("German paratroops on Point 593", DE, 150, PARA, 10, [P593[0], P593[1] + 2], N),
   at("German paratroops on Phantom Ridge", DE, 150, PARA, 12, [PHANTOM[0] + 2, PHANTOM[1] + 2], N),
   at("German paratroops on Point 444", DE, 100, PARA, 10, [P444[0], P444[1] + 1], N),
@@ -34,7 +37,7 @@ const units = [
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
     { name: "The advance", at: 1, note: "01:00 on 12 May, after the bombardment: the 1st Battalion goes for Albaneta and the Kresowa for Phantom Ridge." },
-    { name: "For Point 593", at: 31, note: "01:30: the 2nd Battalion sets off for Point 593.", arrive: ["1st Carpathian Rifle Brigade, 2nd Battalion (for Point 593)"] },
+    { name: "For Point 593", at: 31, note: "01:30: the 2nd Battalion sets off for Point 593.", arrive: [1, 2, 3, 4].map(k => `1st Carpathian Rifle Brigade, 2nd Battalion, company ${k} (for Point 593)`) },
     { name: "Point 593 taken", at: 61, note: "About 02:00 to 02:30: Point 593 is taken, then held against counter-attack after counter-attack." },
     { name: "Forced off 593", at: 461, note: "About 08:40 the Poles are forced off 593 by the fifth German attack (one source)." },
     { name: "Abandon 593", at: 721, note: "After 13:00 the decision is taken to abandon 593; at 15:00 the 1st Battalion is ordered back." },

@@ -31,9 +31,9 @@ objective: {at: [60, 34], side: 0, name: "Point 593", radius: 4}
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:
   - {name: "For Point 593", at: 1, note: "Midnight: the Rajputana Rifles and three Sussex companies go for Point 593."}
-  - {name: "The Gurkhas go in", at: 121, note: "Two hours later, as planned: the 1/2nd and 1/9th Gurkhas go down the slopes for the abbey (the plan's time).", arrive: ["1/9th Gurkha Rifles (across the slopes for Point 444)", "1/2nd Gurkha Rifles (down for the abbey's hill)"]}
+  - {name: "The Gurkhas go in", at: 121, note: "Two hours later, as planned: the 1/2nd and 1/9th Gurkhas go down the slopes for the abbey (the plan's time).", arrive: ["1/9th Gurkha Rifles, company 1 (across the slopes for Point 444)", "1/2nd Gurkha Rifles, company 1 (down for the abbey's hill)", "1/9th Gurkha Rifles, company 2 (across the slopes for Point 444)", "1/2nd Gurkha Rifles, company 2 (down for the abbey's hill)", "1/9th Gurkha Rifles, company 3 (across the slopes for Point 444)", "1/2nd Gurkha Rifles, company 3 (down for the abbey's hill)", "1/9th Gurkha Rifles, company 4 (across the slopes for Point 444)", "1/2nd Gurkha Rifles, company 4 (down for the abbey's hill)"]}
   - {name: "A standstill", at: 211, note: "By 03:30 the attack is at a standstill."}
-  - {name: "A fourth company", at: 271, note: "04:30: a fourth Rajputana company is thrown in and fails to regain the summit; before dawn a Gurkha company gets a lodgement on Point 445."}
+  - {name: "A fourth company", at: 271, note: "04:30: a fourth Rajputana company is thrown in and fails to regain the summit; before dawn a Gurkha company gets a lodgement on Point 445.", arrive: ["4/6th Rajputana Rifles, company 4 (thrown in at 04:30)"]}
 ground: |
   oorrorrrrorrrooororrrrrrrororrrrorroroorrororrrrrorrorrrooorrooooorrrrororroororrororrorrrrrrrrooorrorrrrooorroroorrrrooorrroroorrorrrrorrorrrorrrrrrrrrrrrrroroororrroorrrrrrorrorrrroorrorrorrorrrrrrr
   oorrrrorrrrrrrrrrrrrrororrrrrrrrorroroororrrrrorrrrrorrrrroooorrorrorroorooorrrrrrorrrrroooorororrroorrorooorrorrrooorrrrorrrrroororoorroorroorrrrororrrorrooorrroorrorororrrrrrooorrrorrorrrrrroorrrrro
@@ -193,10 +193,21 @@ support:
   - {name: "German mortars and Nebelwerfers", side: 1, kind: mortar, tubes: 12}
   - {name: "German guns in the Liri valley", side: 1, kind: field, tubes: 8}
 units:
-  - {name: "4/6th Rajputana Rifles (along Snakeshead Ridge)", side: 0, men: 450, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 15, pos: [62, 12], facing: 4, size: battalion}
-  - {name: "1st Royal Sussex (three companies, with the Rajputanas)", side: 0, men: 300, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 15, pos: [38, 6], facing: 4, size: battalion}
-  - {name: "1/9th Gurkha Rifles (across the slopes for Point 444)", side: 0, men: 450, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [108, 40], facing: 4, size: battalion}
-  - {name: "1/2nd Gurkha Rifles (down for the abbey's hill)", side: 0, men: 450, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [140, 68], facing: 4, size: battalion}
+  - {name: "4/6th Rajputana Rifles, company 1 (along Snakeshead Ridge)", side: 0, men: 113, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 4, pos: [57, 12], facing: 4, size: company}
+  - {name: "4/6th Rajputana Rifles, company 2 (along Snakeshead Ridge)", side: 0, men: 113, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 4, pos: [62, 12], facing: 4, size: company}
+  - {name: "4/6th Rajputana Rifles, company 3 (along Snakeshead Ridge)", side: 0, men: 112, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 4, pos: [67, 12], facing: 4, size: company}
+  - {name: "4/6th Rajputana Rifles, company 4 (thrown in at 04:30)", side: 0, men: 112, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 4, pos: [52, 12], facing: 4, size: company}
+  - {name: "1st Royal Sussex, company 1 (with the Rajputanas)", side: 0, men: 100, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 5, pos: [32, 6], facing: 4, size: company}
+  - {name: "1st Royal Sussex, company 2 (with the Rajputanas)", side: 0, men: 100, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 5, pos: [38, 6], facing: 4, size: company}
+  - {name: "1st Royal Sussex, company 3 (with the Rajputanas)", side: 0, men: 100, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 5, pos: [44, 6], facing: 4, size: company}
+  - {name: "1/9th Gurkha Rifles, company 1 (across the slopes for Point 444)", side: 0, men: 113, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 5, pos: [99, 40], facing: 4, size: company}
+  - {name: "1/9th Gurkha Rifles, company 2 (across the slopes for Point 444)", side: 0, men: 113, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 5, pos: [105, 40], facing: 4, size: company}
+  - {name: "1/9th Gurkha Rifles, company 3 (across the slopes for Point 444)", side: 0, men: 112, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 5, pos: [111, 40], facing: 4, size: company}
+  - {name: "1/9th Gurkha Rifles, company 4 (across the slopes for Point 444)", side: 0, men: 112, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 5, pos: [117, 40], facing: 4, size: company}
+  - {name: "1/2nd Gurkha Rifles, company 1 (down for the abbey's hill)", side: 0, men: 113, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 5, pos: [131, 68], facing: 4, size: company}
+  - {name: "1/2nd Gurkha Rifles, company 2 (down for the abbey's hill)", side: 0, men: 113, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 5, pos: [137, 68], facing: 4, size: company}
+  - {name: "1/2nd Gurkha Rifles, company 3 (down for the abbey's hill)", side: 0, men: 112, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 5, pos: [143, 68], facing: 4, size: company}
+  - {name: "1/2nd Gurkha Rifles, company 4 (down for the abbey's hill)", side: 0, men: 112, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 5, pos: [149, 68], facing: 4, size: company}
   - {name: "German paratroops on Point 593", side: 1, men: 120, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [60, 36], facing: 1, prone: true, size: company}
   - {name: "German paratroops on Point 444", side: 1, men: 100, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [112, 73], facing: 1, prone: true, size: company}
   - {name: "Germans in the abbey's ruins", side: 1, men: 200, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 18, pos: [150, 108], facing: 1, prone: true, size: company}

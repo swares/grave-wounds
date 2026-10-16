@@ -32,7 +32,7 @@ objective: {at: [60, 34], side: 0, name: "Point 593", radius: 4}
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:
   - {name: "The advance", at: 1, note: "01:00 on 12 May, after the bombardment: the 1st Battalion goes for Albaneta and the Kresowa for Phantom Ridge."}
-  - {name: "For Point 593", at: 31, note: "01:30: the 2nd Battalion sets off for Point 593.", arrive: ["1st Carpathian Rifle Brigade, 2nd Battalion (for Point 593)"]}
+  - {name: "For Point 593", at: 31, note: "01:30: the 2nd Battalion sets off for Point 593.", arrive: ["1st Carpathian Rifle Brigade, 2nd Battalion, company 1 (for Point 593)", "1st Carpathian Rifle Brigade, 2nd Battalion, company 2 (for Point 593)", "1st Carpathian Rifle Brigade, 2nd Battalion, company 3 (for Point 593)", "1st Carpathian Rifle Brigade, 2nd Battalion, company 4 (for Point 593)"]}
   - {name: "Point 593 taken", at: 61, note: "About 02:00 to 02:30: Point 593 is taken, then held against counter-attack after counter-attack."}
   - {name: "Forced off 593", at: 461, note: "About 08:40 the Poles are forced off 593 by the fifth German attack (one source)."}
   - {name: "Abandon 593", at: 721, note: "After 13:00 the decision is taken to abandon 593; at 15:00 the 1st Battalion is ordered back."}
@@ -196,9 +196,18 @@ support:
   - {name: "German mortars and Nebelwerfers", side: 1, kind: mortar, tubes: 12}
   - {name: "German guns", side: 1, kind: field, tubes: 8}
 units:
-  - {name: "1st Carpathian Rifle Brigade, 2nd Battalion (for Point 593)", side: 0, men: 900, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [64, 12], facing: 4, size: battalion}
-  - {name: "1st Carpathian Rifle Brigade, 1st Battalion (along Snakeshead, for Albaneta)", side: 0, men: 700, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [102, 30], facing: 4, size: battalion}
-  - {name: "5th Kresowa Division (for Phantom Ridge)", side: 0, men: 900, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 30, pos: [26, 30], facing: 4, size: battalion}
+  - {name: "1st Carpathian Rifle Brigade, 2nd Battalion, company 1 (for Point 593)", side: 0, men: 225, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 8, pos: [51, 12], facing: 4, size: company}
+  - {name: "1st Carpathian Rifle Brigade, 2nd Battalion, company 2 (for Point 593)", side: 0, men: 225, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 8, pos: [60, 12], facing: 4, size: company}
+  - {name: "1st Carpathian Rifle Brigade, 2nd Battalion, company 3 (for Point 593)", side: 0, men: 225, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 8, pos: [69, 12], facing: 4, size: company}
+  - {name: "1st Carpathian Rifle Brigade, 2nd Battalion, company 4 (for Point 593)", side: 0, men: 225, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 8, pos: [78, 12], facing: 4, size: company}
+  - {name: "1st Carpathian Rifle Brigade, 1st Battalion, company 1 (along Snakeshead, for Albaneta)", side: 0, men: 175, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 6, pos: [92, 30], facing: 4, size: company}
+  - {name: "1st Carpathian Rifle Brigade, 1st Battalion, company 2 (along Snakeshead, for Albaneta)", side: 0, men: 175, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 6, pos: [99, 30], facing: 4, size: company}
+  - {name: "1st Carpathian Rifle Brigade, 1st Battalion, company 3 (along Snakeshead, for Albaneta)", side: 0, men: 175, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 6, pos: [106, 30], facing: 4, size: company}
+  - {name: "1st Carpathian Rifle Brigade, 1st Battalion, company 4 (along Snakeshead, for Albaneta)", side: 0, men: 175, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 6, pos: [113, 30], facing: 4, size: company}
+  - {name: "5th Kresowa Division, company 1 (for Phantom Ridge)", side: 0, men: 225, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 8, pos: [13, 30], facing: 4, size: company}
+  - {name: "5th Kresowa Division, company 2 (for Phantom Ridge)", side: 0, men: 225, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 8, pos: [22, 30], facing: 4, size: company}
+  - {name: "5th Kresowa Division, company 3 (for Phantom Ridge)", side: 0, men: 225, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 8, pos: [31, 30], facing: 4, size: company}
+  - {name: "5th Kresowa Division, company 4 (for Phantom Ridge)", side: 0, men: 225, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 8, pos: [40, 30], facing: 4, size: company}
   - {name: "German paratroops on Point 593", side: 1, men: 150, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [60, 36], facing: 1, prone: true, size: company}
   - {name: "German paratroops on Phantom Ridge", side: 1, men: 150, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 12, pos: [24, 62], facing: 1, prone: true, size: company}
   - {name: "German paratroops on Point 444", side: 1, men: 100, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [112, 73], facing: 1, prone: true, size: company}

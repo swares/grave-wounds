@@ -19,11 +19,15 @@ const SEPOY = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman"
 const PARA = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
 const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
+// A battalion as companies (company 1, 2, ...) side by side across its front, a hex apart, centred on col at row: men each, the
+// battalion's men per hex of front kept (width: the companies' width)
+const companies = (name, where, army, kind, [men, width], [col, row], facing) => men.map((m, k) => ({ ...at(`${name}, company ${k + 1} (${where})`, army, m, kind, width, [Math.round(col + (k - (men.length - 1) / 2) * (width + 1)), row], facing), size: "company" }));
 const units = [
-  at("4/6th Rajputana Rifles (along Snakeshead Ridge)", AL, 450, SEPOY, 15, [P593[0] + 2, 12], S),
-  at("1st Royal Sussex (three companies, with the Rajputanas)", AL, 300, SEPOY, 15, [P593[0] - 22, 6], S),
-  at("1/9th Gurkha Rifles (across the slopes for Point 444)", AL, 450, SEPOY, 20, [P444[0] - 4, 40], S),
-  at("1/2nd Gurkha Rifles (down for the abbey's hill)", AL, 450, SEPOY, 20, [ABBEY[0] - 10, 68], S),
+  ...companies("4/6th Rajputana Rifles", "along Snakeshead Ridge", AL, SEPOY, [[113, 113, 112], 4], [P593[0] + 2, 12], S),
+  { ...at("4/6th Rajputana Rifles, company 4 (thrown in at 04:30)", AL, 112, SEPOY, 4, [P593[0] - 8, 12], S), size: "company" },   // waits off the map; drawn beside the others
+  ...companies("1st Royal Sussex", "with the Rajputanas", AL, SEPOY, [[100, 100, 100], 5], [P593[0] - 22, 6], S),
+  ...companies("1/9th Gurkha Rifles", "across the slopes for Point 444", AL, SEPOY, [[113, 113, 112, 112], 5], [P444[0] - 4, 40], S),
+  ...companies("1/2nd Gurkha Rifles", "down for the abbey's hill", AL, SEPOY, [[113, 113, 112, 112], 5], [ABBEY[0] - 10, 68], S),
   at("German paratroops on Point 593", DE, 120, PARA, 10, [P593[0], P593[1] + 2], N),
   at("German paratroops on Point 444", DE, 100, PARA, 10, [P444[0], P444[1] + 1], N),
   at("Germans in the abbey's ruins", DE, 200, PARA, 18, [ABBEY[0], ABBEY[1] - 4], N),
@@ -34,9 +38,9 @@ const units = [
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
     { name: "For Point 593", at: 1, note: "Midnight: the Rajputana Rifles and three Sussex companies go for Point 593." },
-    { name: "The Gurkhas go in", at: 121, note: "Two hours later, as planned: the 1/2nd and 1/9th Gurkhas go down the slopes for the abbey (the plan's time).", arrive: ["1/9th Gurkha Rifles (across the slopes for Point 444)", "1/2nd Gurkha Rifles (down for the abbey's hill)"] },
+    { name: "The Gurkhas go in", at: 121, note: "Two hours later, as planned: the 1/2nd and 1/9th Gurkhas go down the slopes for the abbey (the plan's time).", arrive: [1, 2, 3, 4].flatMap(k => [`1/9th Gurkha Rifles, company ${k} (across the slopes for Point 444)`, `1/2nd Gurkha Rifles, company ${k} (down for the abbey's hill)`]) },
     { name: "A standstill", at: 211, note: "By 03:30 the attack is at a standstill." },
-    { name: "A fourth company", at: 271, note: "04:30: a fourth Rajputana company is thrown in and fails to regain the summit; before dawn a Gurkha company gets a lodgement on Point 445." },
+    { name: "A fourth company", at: 271, note: "04:30: a fourth Rajputana company is thrown in and fails to regain the summit; before dawn a Gurkha company gets a lodgement on Point 445.", arrive: ["4/6th Rajputana Rifles, company 4 (thrown in at 04:30)"] },
   ],
   objective: { at: P593, side: 0, name: "Point 593", radius: 4 },
   id: "cassino-monastery-1944", name: "Snakeshead Ridge and the abbey, 17-18 February 1944", sides: ["Allies", "Germans"], table: "owens-wwii",
