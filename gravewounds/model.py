@@ -896,10 +896,15 @@ def _narrator_errors(d: Data) -> list[str]:
 
 
 def _self_play_errors(d: Data) -> list[str]:
-    """units.yaml commander.self_play: limit and held, whole numbers of 1 or more."""
-    sp = (d.units.get("commander") or {}).get("self_play") or {}
-    return [f"units.yaml: commander.self_play.{k} must be a whole number of 1 or more" for k in ("limit", "held")
-            if not (isinstance(sp.get(k), int) and sp[k] >= 1)]
+    """units.yaml commander.self_play: limit and held, whole numbers of 1 or more; commander.spot:
+    moves 1 or more, safe 0 or more."""
+    K = d.units.get("commander") or {}
+    sp, spot = K.get("self_play") or {}, K.get("spot") or {}
+    errors = [f"units.yaml: commander.self_play.{k} must be a whole number of 1 or more" for k in ("limit", "held")
+              if not (isinstance(sp.get(k), int) and sp[k] >= 1)]
+    if not (isinstance(spot.get("moves"), int) and spot["moves"] >= 1 and isinstance(spot.get("safe"), int) and spot["safe"] >= 0):
+        errors.append("units.yaml: commander.spot needs moves (1 or more) and safe (0 or more), whole numbers")
+    return errors
 
 
 def _commander_errors(d: Data) -> list[str]:

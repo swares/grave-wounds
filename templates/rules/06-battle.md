@@ -177,7 +177,8 @@ steady friends touching it, who go in with it), and green units sometimes hesita
 - **Guns.** It turns its guns to face the enemy and calls its off-map batteries and its
   aircraft (when they can fly; a strafing run or napalm strip along a wide enemy front) on
   what it sees, first what its forward air controllers see, and closer to its own men there. A controller with nothing
-  to do and no target in its sight moves up to where it sees one (attacking only). Attacking, one battery lays a creeping barrage ahead of a unit closing on the
+  to do and no target in its sight moves up to where it sees one (attacking only), up to {{c_spot_moves}} moves away, a move at a time,
+  preferring a spot out of the enemy's reach; not while it has a fight of its own (an enemy touching it or in its own reach, or pinned). Attacking, one battery lays a creeping barrage ahead of a unit closing on the
   enemy. Its batteries under counter-battery fire displace (a placed one moves its place {{c_displace_shift}} hexes along its map edge, away from the battery firing). In the dark it first has one battery fire illumination over the enemy it has lost
   sight of nearest its men, where it was last seen. Attacking, guns with no enemy in reach go forward: a battery limbers, moves and
   unlimbers once an enemy is in reach; anti-tank guns hook up to an empty tractor beside

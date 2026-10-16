@@ -976,10 +976,25 @@ def _spotter(d: Data, us: list, i: int, o: dict | None, cx: tuple) -> dict | Non
         return None
     if not any(_free_air(d, field, b, u["side"]) for b in (field or {}).get("support") or []):
         return None
+    if _own_fight(d, us, i, field):
+        return None
     ranked = _ranked_foes(d, us, i, known, field)
     if not ranked or any(U._fac_sees(d, us, field, u, p) for _, p in ranked):
         return None
     return _to_see(d, us, i, ranked, (size, field))
+
+
+def _own_fight(d: Data, us: list, i: int, field: dict | None) -> bool:
+    """The controller has a fight of its own: an enemy touching it, an enemy it sees within its
+    own weapon's reach (it shoots instead), or pinned under fire."""
+    u = us[i]
+    if u.get("pinned") or U.in_contact(d, us, U.occupancy(d, us), i):
+        return True
+    if "range" not in d.weapons[u["weapon"]]:
+        return False
+    return any(e["side"] != u["side"] and e["state"] not in ROUTED and e["men"] > 0
+               and U.field_range(d, u["weapon"], U.hdist(u["pos"], e["pos"])) is not None
+               and U._sees(d, field, u, e["pos"], U._sight_hexes(d, field, e["pos"], U._seer(u))) for e in us)
 
 
 def _ranked_foes(d: Data, us: list, i: int, known: dict | None, field: dict | None) -> list:
@@ -992,25 +1007,77 @@ def _ranked_foes(d: Data, us: list, i: int, known: dict | None, field: dict | No
 
 
 def _to_see(d: Data, us: list, i: int, ranked: list, where: tuple) -> dict | None:
-    """The controller's spot: the cheapest hex in its allowance (not where it stands, no known
-    minefield on the straight way) from which, facing the enemy, it sees where an enemy it knows
-    of stands, touching none; of equally cheap ones, the one that sees the best target, then the
-    lowest row and column. -> a spot order, or None."""
+    """The controller's spot: a hex within commander.spot.moves moves' worth of going (not where
+    it stands, no known minefield on the straight way) from which, facing the enemy, it sees where
+    an enemy it knows of stands, touching none. It prefers one out of the reach of the enemies it
+    knows of (_safe_spot), if one costs no more than the cheapest by `safe` moves; else the
+    cheapest. Of equally cheap ones, the one that sees the best target, then the lowest row and
+    column. Within one move it goes there; further, it moves a move toward it (_step_to).
+    -> a spot order, or None."""
     size, field = where
-    u, tries = us[i], d.units["commander"]["tries"]
+    u, C = us[i], d.units["commander"]
+    allow, tries = U.allowance(d, u), C["tries"]
     foes = {k for k, j in U.occupancy(d, us).items() if us[j]["side"] != u["side"]}
-    hexes = sorted(reachable(d, us, i, size, U.allowance(d, u), field).items(), key=lambda hc: (hc[1], hc[0][1], hc[0][0]))
-    group = []
-    for n, (h, c) in enumerate(hexes):
-        seen = None if list(h) == list(u["pos"]) or _mined(field, u["pos"], h, u["side"]) else _sees_from(d, field, {**u, "pos": list(h)}, ranked, foes)
-        if seen is not None:
-            group.append((seen[0], h[1], h[0], seen[1], seen[2]))
-        if group and (n + 1 == len(hexes) or hexes[n + 1][1] != c):
-            o, tries = _spot_in(d, us, i, sorted(group), (size, field, tries))
-            if o is not None or tries <= 0:
-                return o
-            group = []
+    cands = _spot_cands(d, us, i, ranked, (size, field, foes))
+    if not cands:
+        return None
+    safe = [x for x in cands if x[0] <= cands[0][0] + C["spot"]["safe"] * allow and _safe_spot(d, us, [x[3], x[2]], ranked)]
+    for c, _, row, col, j, f in safe or cands:
+        if tries <= 0:
+            return None
+        if c <= allow:
+            tries -= 1
+            m = U.move(d, us, i, [col, row], f, size, field)
+            if m["ok"] and not m.get("charge"):
+                return {"act": "spot", "target": j, "pos": [col, row], "facing": f, "cost": m["cost"]}
+            continue
+        o, tries = _step_to(d, us, i, ([col, row], j, ranked), (size, field, foes, tries))
+        if o is not None:
+            return o
     return None
+
+
+def _spot_cands(d: Data, us: list, i: int, ranked: list, where: tuple) -> list:
+    """[(movement, rank, row, col, enemy, facing)], cheapest first, for each hex within spot.moves
+    moves (not its own, no known mines on the straight way) from which it sees a known enemy."""
+    size, field, foes = where
+    u = us[i]
+    out = []
+    for h, c in reachable(d, us, i, size, U.allowance(d, u) * d.units["commander"]["spot"]["moves"], field).items():
+        if list(h) == list(u["pos"]) or _mined(field, u["pos"], h, u["side"]):
+            continue
+        seen = _sees_from(d, field, {**u, "pos": list(h)}, ranked, foes)
+        if seen is not None:
+            out.append((c, seen[0], h[1], h[0], seen[1], seen[2]))
+    return sorted(out)
+
+
+def _safe_spot(d: Data, us: list, h: list, ranked: list) -> bool:
+    """No enemy its side knows of, where it was last seen, reaches hex h with its missile weapon."""
+    return not any("range" in d.weapons[us[j]["weapon"]] and U.field_range(d, us[j]["weapon"], U.hdist(p, h)) is not None for j, p in ranked)
+
+
+def _step_to(d: Data, us: list, i: int, aim: tuple, wt: tuple) -> tuple:
+    """A move toward a spot beyond this move: the hex within its allowance nearest the spot (then
+    the cheapest, the lowest row and column), nearer than it stands, touching no enemy, facing the
+    enemy it goes to see; each try costs one of commander.tries. -> (order or None, tries left)."""
+    (spot, j, ranked), (size, field, foes, tries) = aim, wt
+    u = us[i]
+    p = next(q for k, q in ranked if k == j)
+    now = U.hdist(u["pos"], spot)
+    steps = sorted((U.hdist(list(h), spot), c, h[1], h[0]) for h, c in reachable(d, us, i, size, U.allowance(d, u), field).items()
+                   if U.hdist(list(h), spot) < now and not _mined(field, u["pos"], h, u["side"]))
+    for _, _, row, col in steps:
+        f = U.bearing([col, row], p)
+        if _touches(d, {**u, "pos": [col, row], "facing": f}, foes):
+            continue
+        if tries <= 0:
+            break
+        tries -= 1
+        m = U.move(d, us, i, [col, row], f, size, field)
+        if m["ok"] and not m.get("charge"):
+            return {"act": "spot", "target": j, "pos": [col, row], "facing": f, "cost": m["cost"], "toward": list(spot)}, tries
+    return None, tries
 
 
 def _sees_from(d: Data, field: dict | None, u: dict, ranked: list, foes: set) -> tuple | None:
@@ -1021,20 +1088,6 @@ def _sees_from(d: Data, field: dict | None, u: dict, ranked: list, foes: set) ->
         if not _touches(d, there, foes) and U._sees(d, field, there, p, U._sight_hexes(d, field, p, U._seer(there))):
             return r, j, there["facing"]
     return None
-
-
-def _spot_in(d: Data, us: list, i: int, group: list, wt: tuple) -> tuple:
-    """The first legal spot among equally cheap hexes [(rank, row, col, enemy, facing)], each try
-    costing one of commander.tries. -> (order or None, tries left)."""
-    size, field, tries = wt
-    for _, row, col, j, f in group:
-        if tries <= 0:
-            break
-        tries -= 1
-        m = U.move(d, us, i, [col, row], f, size, field)
-        if m["ok"] and not m.get("charge"):
-            return {"act": "spot", "target": j, "pos": [col, row], "facing": f, "cost": m["cost"]}, tries
-    return None, tries
 
 
 def _unsteady(d: Data, us: list, i: int, t: int | None) -> dict | None:

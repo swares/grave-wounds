@@ -517,12 +517,19 @@ general. All its numbers are in units.yaml `commander`.
     - **Moving a controller up.** Attacking, when its aircraft can fly and have no mission,
       and none of its controllers sees where an enemy it knows of stands (woods, buildings
       or a crest between), a controller unit that would otherwise stand or turn moves up to
-      see one instead ("move up to see ... for the aircraft"). It goes to the cheapest hex
-      within its move from which, facing that enemy, it sees where it was last seen: not its
-      own hex, not touching the enemy and with no known minefield on the straight way; of
-      equally cheap hexes, the one that sees the best target. It never gives up shooting,
-      charging, going to ground or digging for it, and a controller gone to ground, digging
-      or in reserve stays. If no hex within its move sees one, it stays. Holding, it does not
+      see one instead ("move up to see ... for the aircraft"). It looks for a spot within
+      three moves' worth of going (`commander.spot.moves`) from which, facing that enemy, it
+      sees where it was last seen: not its own hex, not touching the enemy and with no known
+      minefield on the straight way. It prefers a spot out of the reach of the enemies it knows
+      of (where each was last seen), if one costs no more than the cheapest by one move
+      (`spot.safe`); else the cheapest; of equals, the one that sees the best target. A spot
+      within this move it goes to; one further off it heads for, a move at a time, to the hex
+      within its move nearest the spot ("move up ... toward ..., from where they will see ..."),
+      choosing again each move from what its side knows then. It never gives up shooting,
+      charging, going to ground or digging for it, and stays while it has a fight of its own:
+      an enemy touching it, an enemy it sees within its own weapon's reach, or pinned. A
+      controller gone to ground, digging or in reserve stays too. If no spot within three moves
+      sees one, it stays. Holding, it does not
       move its controllers: its aircraft wait for an enemy to come into their sight.
     - On an enemy whose front is as wide as a run, they fly it along that front: a napalm
       strip (3 hexes; fighter-bombers, in the wars that used napalm), else a strafing run
@@ -564,7 +571,8 @@ general. All its numbers are in units.yaml `commander`.
 What it does not do yet:
 - It leaves works alone, lays a fixed line ahead only straight toward the nearest enemy it
   knows of or along its facing (no lines across its front, no interlocking lines), moves its air controllers to see a target only when attacking,
-  only a move's worth, and only when they would otherwise stand; it plans no creeping barrage for
+  at most three moves away, and only when they would otherwise stand (not when merely shot at
+  from out of their sight: "under fire" means pinned); it plans no creeping barrage for
   riflemen who stop at range.
 - Its reserve holds until committed; then a unit sent to plug a gap goes there, and others
   fight. Reserve units ignore the objective until committed.
