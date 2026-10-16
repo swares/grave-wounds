@@ -360,3 +360,13 @@ Sources: [Historical PHit and PKill (from Isby)](https://www.generalstaff.org/BB
 [HistoryNet, 73 Easting](https://historynet.com/learned-battle-73-easting/);
 [FAS, T-72](https://man.fas.org/dod-101/sys/land/row/t72tank.htm).
 
+**Tanks placed by their main gun.** The commander counted a shooter "in range" by its own weapon,
+so tanks (whose own weapon is the machine gun) were taken to machine-gun reach. Now a unit with
+a main gun counts the gun's reach where it can see the target, and a vehicle with a main gun
+prefers a spot where the target can neither reach it nor see it there. Over all 37 battlefields
+(two runs each, against main): 47 of 74 runs matched either way, and no winner changed. At 73
+Easting the T-72s are in dead ground behind the rise: Eagle Troop loses sight of them, advances
+on the objective and fights at the crest at close range, as it did in 1991, but takes the BMPs'
+and T-72s' fire there in the flank; what made that close fight one-sided in 1991 is not in the
+model.
+

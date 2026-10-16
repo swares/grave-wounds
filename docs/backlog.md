@@ -111,7 +111,7 @@ When an item is done, delete it here and note it in the pull request that closes
   modern infantry storm works, battlefields can give their stances, and self-play runs past the
   last phase and does not end on units still to come or an objective held from the start; a
   unit with no room to face its goal moves facing as near it as it can (Kapyong, Cassino). To
-  do, from the review: the commander's handling of tanks (standing off at range when it outranges the enemy: 73 Easting); archery against
+  do, from the review: 73 Easting's fight at the crest (tanks now placed by their main gun and standing off, but the T-72s are in dead ground until the crest); archery against
   horses and men in mud (Agincourt); men in rubble harder to shift (Cassino town: measured, see the review; shellfire decides it, and batteries' rate and ammunition are already within published figures; a sourced lethality figure scaled to 40% was measured and not applied); the Chechen
   ambush at Grozny (the night now fought as it was, the dark at 17:05; the breakout 25 hours on is beyond a run); an envelopment plan (Cowpens); the American
   rush on the guns at Lundy's Lane (dark now, but the guns still hold); the German counter-attacks on Point 593 (no sourced figures yet) and why small

@@ -361,7 +361,12 @@ general. All its numbers are in units.yaml `commander`.
     drifting to one side.
 - **Shooters.** A unit with missiles stops where the target is in range and shoots rather
   than closing. It keeps off the enemy (2 hexes or more) if it can, and never charges,
-  except when storming works (below).
+  except when storming works (below). A unit with a main gun (a vehicle's, or anti-tank guns)
+  counts the target in range where the gun reaches it and the weather and light let it see it
+  there, not only its own weapon's (self-play showed tanks closing to their machine guns'
+  reach). A vehicle with a main gun also likes (`commander.stand_off`, 500 points) a spot where
+  it can so hit the target but the target can neither reach it nor see it there: beyond the
+  enemy's weapons, or, with thermal sights in a sandstorm, beyond the enemy's sight.
   With a modern weapon (breech-loaders on), regulars and veterans under fire go to ground
   where they stand. Older armies stand up, and so do vehicles (tanks and carriers do not go
   to ground; self-play showed tanks lying still under fire for the rest of a battle).
