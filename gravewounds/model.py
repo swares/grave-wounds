@@ -1387,6 +1387,19 @@ def _cold_errors(d: Data) -> list[str]:
     return errors
 
 
+def _night_vision_errors(N: dict) -> list[str]:
+    """weather.yaml light.night_vision: kits and a kit device, devices with a name, sight and aim,
+    vehicles' devices known, and the infrared beam's reach."""
+    errors, devs = [], N.get("devices") or {}
+    if not (isinstance(N.get("kits"), list) and N.get("kit_device") in devs) or any(
+            not (v.get("name") and isinstance(v.get("sight"), int) and isinstance(v.get("aim"), int)) for v in devs.values()):
+        errors.append("weather.yaml: light.night_vision needs kits, a kit_device among its devices, and devices with a name, sight and aim")
+    errors += [f"weather.yaml: light.night_vision.vehicles.{w} names unknown device {v}" for w, v in (N.get("vehicles") or {}).items() if v not in devs]
+    if not (isinstance(N.get("beam"), int) and N["beam"] >= 1):
+        errors.append("weather.yaml: light.night_vision.beam must be a whole number of 1 or more")
+    return errors
+
+
 def _light_errors(wx: dict) -> list[str]:
     """weather.yaml light: levels with a name, a sight in battle hexes (or null) and an aim %;
     day among them; weather that shows the moon among the conditions."""
@@ -1401,14 +1414,8 @@ def _light_errors(wx: dict) -> list[str]:
     errors += [f"weather.yaml: light.moon_shows names unknown condition {c}" for c in L.get("moon_shows", []) if c not in wx["conditions"]]
     errors += [f"weather.yaml: light.levels.{k} needs move and lost (numbers)" for k, v in L.get("levels", {}).items()
                if not (isinstance(v.get("move"), int) and isinstance(v.get("lost"), int))]
-    N, F = L.get("night_vision") or {}, L.get("fixed_line") or {}
-    devs = N.get("devices") or {}
-    if not (isinstance(N.get("kits"), list) and N.get("kit_device") in devs) or any(
-            not (v.get("name") and isinstance(v.get("sight"), int) and isinstance(v.get("aim"), int)) for v in devs.values()):
-        errors.append("weather.yaml: light.night_vision needs kits, a kit_device among its devices, and devices with a name, sight and aim")
-    errors += [f"weather.yaml: light.night_vision.vehicles.{w} names unknown device {v}" for w, v in (N.get("vehicles") or {}).items() if v not in devs]
-    if not (isinstance(N.get("beam"), int) and N["beam"] >= 1):
-        errors.append("weather.yaml: light.night_vision.beam must be a whole number of 1 or more")
+    F = L.get("fixed_line") or {}
+    errors += _night_vision_errors(L.get("night_vision") or {})
     if not (isinstance(F.get("width"), int) and isinstance(F.get("aim"), int)):
         errors.append("weather.yaml: light.fixed_line needs width and aim")
     return errors + [f"weather.yaml: light.{k} must be a number" for k in ("dusk_hours", "moon_from", "lasts", "flare", "flash", "lost_for") if not isinstance(L.get(k), (int, float))]
