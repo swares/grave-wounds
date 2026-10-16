@@ -111,11 +111,13 @@ When an item is done, delete it here and note it in the pull request that closes
   modern infantry storm works, battlefields can give their stances, and self-play runs past the
   last phase and does not end on units still to come or an objective held from the start; a
   unit with no room to face its goal moves facing as near it as it can (Kapyong, Cassino). To
-  do, from the review: Cassino's battalions as companies (they move as huge blocks on the ridge); tank
-  kinds by era and vehicle morale (73 Easting); archery against horses and men in mud
-  (Agincourt); men in rubble harder to shift (Cassino town); the Chechen ambush at Grozny; a
-  holding commander that withdraws when outflanked (Mons) and an envelopment plan
-  (Cowpens); darkness at Lundy's Lane. Done since: faster exchanges (sight lines, the ground and
+  do, from the review: tank kinds by era and vehicle morale (73 Easting); archery against
+  horses and men in mud (Agincourt); men in rubble harder to shift (Cassino town); the Chechen
+  ambush at Grozny; working round a flank, and an envelopment plan (Cowpens); darkness at
+  Lundy's Lane; the German counter-attacks on Point 593 (no sourced figures yet) and why small
+  units take 593 so easily in February. Measured and not built: a holding commander that
+  withdraws (no trigger tells the defences that held from those that went). Done: the Poles at
+  Cassino as companies (February stays as battalions; see the review). Done since: faster exchanges (sight lines, the ground and
   step costs remembered, the same battles about five times faster on the page).
 - **The enemy commander against itself, first cut.** Each side has its own commander choice;
   with both, Run plays on until Stop, a side with nothing left standing, an attacking side

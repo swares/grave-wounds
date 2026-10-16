@@ -156,14 +156,16 @@ men each, before the limit). Albuera ran before the changes that matter to it an
 ## Recommended, not built
 
 - **Cassino's battalions** (both battles) might better come on as companies: they now move, but
-  as 100-300-hex blocks on a narrow ridge. This is the battlefields' data.
+  as 100-300-hex blocks on a narrow ridge. This is the battlefields' data. *Tried, 16 October: see
+  "Followed up" below; the Poles now come on as companies, February stays as battalions.*
 - **Tank kinds by era** (an M1A1 is not a T-34 or a T-72): fire control and armour by generation,
   and vehicle units' morale (a tank troop does not break on losing a few crewmen).
 - **Archery against armour and horses** at Agincourt: the arrow-storm's effect on horses and on
   men struggling in mud is missing.
 - **Men in rubble and cellars** (Cassino town): harder to find and to hit, or more of them.
 - **A holding commander that withdraws** when outflanked and outnumbered (Osan, Mons), and a
-  plan for an envelopment (Cowpens): these are plans, beyond a unit-by-unit commander.
+  plan for an envelopment (Cowpens): these are plans, beyond a unit-by-unit commander. *Measured,
+  16 October, and not built: see "Followed up" below.*
 - **Darkness at Lundy's Lane** (the battlefield's light).
 - **Faster exchanges** on the biggest fields (Albuera takes about 3 seconds an exchange even now:
   the ground and sight look-ups dominate).
@@ -209,4 +211,45 @@ What the facing change did:
   (the counter-attack companies come, but do not retake it).
 - The headline count is flat (24 to 23), but battles that were won by default because one side
   never moved are now fought; the change fixes a fault rather than tuning results, and it stays.
+
+## Followed up, 16 October 2026
+
+**A holding commander that withdraws: measured, not built.** Before writing any rule, each
+exchange of a self-play run of every battlefield was measured for two triggers a holding side
+might use (the rules unchanged):
+
+- *Outflanked and hurt* (standing enemy past either end of its line, level with it or behind it,
+  near its units, and a share of its men lost): it never fires at Mons or Osan, where the attackers
+  come straight on and never work round a flank, but it would fire at Mogadishu, Wanat, Pork Chop,
+  Keating, Albuera and Lützen, all defences that held.
+- *Losses alone* (30-50% of the side's men no longer standing): 15-17 holding sides, most of them
+  defences that held at heavy cost (X-Ray, Mogadishu, Wanat, Pork Chop, Kapyong).
+
+Meanwhile Mons and Osan already end close to the day: the defenders break and leave the field
+after losing about a quarter to a third of their men, near what they lost; it is a rout rather
+than an ordered withdrawal, and it comes earlier. Neither trigger tells the defences that held
+from those that went, so nothing was built. A withdrawal the battlefield orders (Osan's 14:30 and
+Mons' 13:10 are in their phases) would change no result today, since both break first. Working
+round a flank, and Cowpens' envelopment, remain to do.
+
+**Cassino as companies.** Each battalion was split into companies of equal strength (the same
+men, the same men per hex of front, so a company is a narrow, deep block), standing side by side
+across its battalion's old front:
+
+- *February:* the Rajputanas and the Sussex took Point 593 in all four runs, by exchange 25 to 50
+  (with battalions the paratroops held in every run). The accounts give no progress that night
+  (the defence held, at a cost of 196 Rajputanas, 149 of the 1/9th Gurkhas and 96 of the 1/2nd), so
+  the companies made the battle less like the day, and February stays as battalions. Why small
+  units take 593 so easily is still open; the accounts describe attacks along the narrow ridge
+  (the Sussex started one from about 70 yards off) under fire from the tops round it, which the
+  map and the night may not make hard enough.
+- *May:* the Polish battalions (and the Kresowa's 900) now come on as four companies each. The
+  result is unchanged in four runs: the Poles take 593 and hold it, by exchange 28 to 41. They took
+  it about 02:00 and were thrown off it in the morning by the paratroops' counter-attacks
+  (Heilmann's 4th Parachute Regiment, about 800 men on the massif). No source found gives the
+  counter-attacks' number, strength or times, so they are not on the map; until they are, the
+  run ends with 593 in Polish hands.
+
+Sources: [Battle of Monte Cassino (Wikipedia)](https://en.wikipedia.org/wiki/Battle_of_Monte_Cassino),
+citing Holmes (2001) and Whiting; the battlefields' own accounts.
 

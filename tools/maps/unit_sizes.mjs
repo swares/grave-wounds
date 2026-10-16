@@ -83,9 +83,6 @@ export const UNIT_SIZES = {
     "German machine guns (the abbey)": "section",
   },
   "cassino-poles-1944": {
-    "1st Carpathian Rifle Brigade, 2nd Battalion (for Point 593)": "battalion",
-    "1st Carpathian Rifle Brigade, 1st Battalion (along Snakeshead, for Albaneta)": "battalion",
-    "5th Kresowa Division (for Phantom Ridge)": "battalion",
     "German paratroops on Point 593": "company",
     "German paratroops on Phantom Ridge": "company",
     "German paratroops on Point 444": "company",
