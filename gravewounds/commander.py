@@ -1661,10 +1661,35 @@ def score(d: Data, field: dict | None, u: dict, tu: dict, h: tuple, cost: int, s
     dist = U.hdist(list(h), tu["pos"])
     s = (0 if storm else C["cover"].get(q, 0)) * U.cover_at(d, field, tu["pos"], list(h)) - cost - C["mines"].get(q, 0) * _mined(field, u["pos"], h, u["side"])
     if shooter:
-        inr = dist >= 1 and U.field_range(d, u["weapon"], dist) is not None
-        return s + (C["in_range"] if inr else -C["closing"] * dist) - (C["too_close"] if dist < C["keep_off"] else 0)
+        inr = dist >= 1 and (U.field_range(d, u["weapon"], dist) is not None or _gun_in_range(d, field, u, (h, tu["pos"], dist)))
+        stand = C["stand_off"] if inr and u.get("vehicle") and U._gun_of(d, u) and not _answers(d, field, tu, (tu["pos"], list(h), dist)) else 0
+        return s + stand + (C["in_range"] if inr else -C["closing"] * dist) - (C["too_close"] if dist < C["keep_off"] else 0)
     flank = C["flank"].get(q, 0) if U.arc(tu["facing"], U.bearing(tu["pos"], list(h))) != "front" else 0
     return s - C["closing"] * dist + flank
+
+
+def _gun_in_range(d: Data, field: dict | None, u: dict, shot: tuple) -> bool:
+    """Whether u's main gun (a vehicle's, or anti-tank guns) reaches from h to t, dist apart, and
+    the weather and light let it see t from there. shot: (h, t, dist)."""
+    h, t, dist = shot
+    G = U._gun_of(d, u)
+    if not G or dist > G["range"]:
+        return False
+    sight = U._sight_hexes(d, field, list(t), U._seer({**u, "pos": list(h)}))
+    return sight is None or dist <= sight
+
+
+def _answers(d: Data, field: dict | None, e: dict, shot: tuple) -> bool:
+    """Whether enemy unit e at a could shoot back at hex h, dist away: its own weapon or main gun
+    reaches, and the weather and light let it see h. shot: (a, h, dist)."""
+    a, h, dist = shot
+    sight = U._sight_hexes(d, field, h, U._seer({**e, "pos": list(a)}))
+    if sight is not None and dist > sight:
+        return False
+    if "range" in d.weapons.get(e["weapon"], {}) and U.field_range(d, e["weapon"], dist) is not None:
+        return True
+    G = U._gun_of(d, e)
+    return bool(G) and dist <= G["range"]
 
 
 def _mined(field: dict | None, a, h, side: int | None = None) -> int:

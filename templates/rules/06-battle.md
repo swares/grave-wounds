@@ -157,6 +157,8 @@ steady friends touching it, who go in with it), and green units sometimes hesita
 - **Routes.** A battlefield can send a unit on a route round a flank, as its account tells:
   the commander moves it from waypoint to waypoint, turning aside only for an enemy in contact
   or across its way, then orders it as any other.
+- **Tanks.** A unit with a main gun counts the target in range where the gun reaches and it
+  can see; a vehicle with one prefers a spot where the target can neither reach it nor see it.
 - **Reserve.** Regulars and veterans hold back their rearmost units (not one on a route), and commit one when a
   unit of theirs breaks or the enemy comes close; veterans also commit to exploit an enemy
   rout. A unit committed because one broke goes to plug the gap where it stood. The GM can

@@ -967,6 +967,12 @@ commander:
   in_range: 1000
   too_close: 500
   keep_off: 2
+  # A unit with a main gun (a vehicle's, or anti-tank guns) counts a target in range when the
+  # gun reaches it and the weather and light let it see it there; a vehicle with a main gun also
+  # likes (`stand_off`) a spot where it can so hit the target but the target can neither reach
+  # it with its own weapon or main gun nor see it there (thermal sights in a sandstorm, a longer
+  # gun). Design choice: self-play showed tanks closing to their machine guns' reach.
+  stand_off: 500
   tries: 30
   remember: 3
   reserve: {green: 0, regular: 25, veteran: 33}

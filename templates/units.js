@@ -3278,11 +3278,25 @@ function aiScore(field, u, tu, h, cost, shooter, storm = false){   // how much t
   const C = UD.commander, q = u.quality, dist = hdist(h, tu.pos);
   const s = (storm ? 0 : (C.cover[q] ?? 0)) * coverAt(field, tu.pos, h) - cost - (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side);
   if (shooter){
-    const inr = dist >= 1 && fieldRange(u.weapon, dist) !== null;
-    return s + (inr ? C.in_range : -C.closing * dist) - (dist < C.keep_off ? C.too_close : 0);
+    const inr = dist >= 1 && (fieldRange(u.weapon, dist) !== null || gunInRange(field, u, [h, tu.pos, dist]));
+    const stand = inr && u.vehicle && gunOf(u) && !answers(field, tu, [tu.pos, [...h], dist]) ? C.stand_off : 0;
+    return s + stand + (inr ? C.in_range : -C.closing * dist) - (dist < C.keep_off ? C.too_close : 0);
   }
   const flank = arc(tu.facing, bearing(tu.pos, h)) === "front" ? 0 : (C.flank[q] ?? 0);
   return s - C.closing * dist + flank;
+}
+function gunInRange(field, u, [h, t, dist]){      // u's main gun (a vehicle's, or anti-tank guns) reaches from h to t and the weather and light let it see t from there (as commander._gun_in_range)
+  const G = gunOf(u);
+  if (!G || dist > G.range) return false;
+  const sight = sightHexes(field, [...t], seerOf({ ...u, pos: [...h] }));
+  return sight === null || dist <= sight;
+}
+function answers(field, e, [a, h, dist]){          // enemy unit e at a could shoot back at hex h: its weapon or main gun reaches and the weather and light let it see h (as commander._answers)
+  const sight = sightHexes(field, h, seerOf({ ...e, pos: [...a] }));
+  if (sight !== null && dist > sight) return false;
+  if ("range" in FD.weapons[e.weapon] && fieldRange(e.weapon, dist) !== null) return true;
+  const G = gunOf(e);
+  return !!G && dist <= G.range;
 }
 function mined(field, a, h, side = null){         // hexes of minefields its side knows of (marked, found, or laid by its sappers) on the straight way from a to h
   const mines = field?.mines || {};
