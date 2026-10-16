@@ -355,8 +355,10 @@ def after_all(d: Data, bt: dict) -> list:
 
 def side_medevac(d: Data, bt: dict, k: int) -> str | None:
     """Side k's medevac kind (its war's, helicopters falling back without a zone or a helicopter left), or None."""
-    H = U.helos(d, bt["field"], bt["sides"][k]) if d.units.get("heliborne") else None
-    left = bool(H) and H["aircraft"] - (H.get("damaged") or 0) - (H.get("downed") or 0) > 0
+    left = False
+    if d.units.get("heliborne"):
+        H = U.helos(d, bt["field"], bt["sides"][k])
+        left = H["aircraft"] - (H.get("damaged") or 0) - (H.get("downed") or 0) > 0
     return U.medevac_kind(d, bt["table"], len(bt["field"].get("lz") or []) > 0, left)
 
 
