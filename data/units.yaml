@@ -908,6 +908,14 @@ commander:
   # the aircraft carry it), when none of its men are within the scatter of the run's line.
   # Design estimates.
   creep: {near: 20, step: 1, every: 1, lines: 3}
+  # spot: attacking, a forward air controller (fac) with no fight of its own (no enemy touching
+  # it, none it sees within its weapon's reach, not pinned),
+  # when its aircraft can fly and none of its side's controllers sees an enemy it knows of, goes
+  # to see one: to a spot within `moves` moves' worth of going from which, facing it, it sees one.
+  # It prefers a spot out of the reach of the enemies it knows of, if one costs no more than the
+  # cheapest by `safe` moves. A spot beyond this move it heads for a move at a time, choosing
+  # again each move. Design choices.
+  spot: {moves: 3, safe: 1}
   # storm: attacking, a unit armed with one of these (black powder with the bayonet) whose target
   # holds works (dug in or emplaced where it stands, behind works that give it cover toward the
   # attacker, or in ground that hides men: buildings, tall buildings, rubble) does not stop to

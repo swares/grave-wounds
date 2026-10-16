@@ -2832,6 +2832,7 @@ function spotter(us, i, o, [size, field, stance, known]){   // attacking, an air
   if (stance !== "attack" || !u.fac || (o && o.act !== "turn")) return null;
   if (u.prone || u.reserve || busyDigging(u)) return null;
   if (!(field?.support || []).some(b => freeAir(field, b, u.side))) return null;
+  if (ownFight(us, i, field)) return null;
   const ranked = rankedFoes(us, i, known, field);
   if (!ranked.length || ranked.some(([, p]) => facSees(us, field, u, p))) return null;
   return toSee(us, i, ranked, [size, field]);
@@ -2845,23 +2846,53 @@ function rankedFoes(us, i, known, field){         // the enemies its side knows 
   });
   return out.sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(([, j, p]) => [j, p]);
 }
-function toSee(us, i, ranked, [size, field]){     // the controller's spot: the cheapest hex in its allowance (not its own, no known mines on the way) from which, facing it, it sees a known enemy, touching none; of equals the best target, then lowest row and column (as commander._to_see)
-  const u = us[i], occ = occupancy(us), foes = new Set(Object.keys(occ).filter(k => us[occ[k]].side !== u.side));
-  const hexes = [...reachable(us, i, size, allowance(u), field).values()].sort((a, b) => a[1] - b[1] || a[0][1] - b[0][1] || a[0][0] - b[0][0]);
-  let group = [], tries = UD.commander.tries;
-  for (let n = 0; n < hexes.length; n++){
-    const [h, c] = hexes[n];
-    const seen = (h[0] === u.pos[0] && h[1] === u.pos[1]) || mined(field, u.pos, h, u.side) ? null : seesFrom(field, { ...u, pos: [...h] }, ranked, foes);
-    if (seen) group.push([seen[0], h[1], h[0], seen[1], seen[2]]);
-    if (group.length && (n + 1 === hexes.length || hexes[n + 1][1] !== c)){
-      group.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4]);
-      const r = spotIn(us, i, group, [size, field, tries]);
-      tries = r[1];
-      if (r[0] || tries <= 0) return r[0];
-      group = [];
+function ownFight(us, i, field){                  // the controller has a fight of its own: an enemy touching it, one it sees within its weapon's reach, or pinned under fire (as commander._own_fight)
+  const u = us[i];
+  if (u.pinned || inContact(us, occupancy(us), i)) return true;
+  if (!("range" in FD.weapons[u.weapon])) return false;
+  return us.some(e => e.side !== u.side && !ROUTED.has(e.state) && e.men > 0 && fieldRange(u.weapon, hdist(u.pos, e.pos)) !== null
+    && sees(field, u, e.pos, sightHexes(field, e.pos, seerOf(u))));
+}
+function toSee(us, i, ranked, [size, field]){     // the controller's spot within commander.spot.moves moves (not its own hex, no known mines on the way) from which, facing it, it sees a known enemy, touching none; a spot out of known enemies' reach preferred within spot.safe moves more; of equals the best target, then lowest row and column; beyond this move, a move toward it (as commander._to_see)
+  const u = us[i], C = UD.commander, allow = allowance(u), occ = occupancy(us), foes = new Set(Object.keys(occ).filter(k => us[occ[k]].side !== u.side));
+  let tries = C.tries;
+  const cands = [];
+  for (const [h, c] of reachable(us, i, size, allow * C.spot.moves, field).values()){
+    if ((h[0] === u.pos[0] && h[1] === u.pos[1]) || mined(field, u.pos, h, u.side)) continue;
+    const seen = seesFrom(field, { ...u, pos: [...h] }, ranked, foes);
+    if (seen) cands.push([c, seen[0], h[1], h[0], seen[1], seen[2]]);
+  }
+  if (!cands.length) return null;
+  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4] || a[5] - b[5]);
+  const safe = cands.filter(x => x[0] <= cands[0][0] + C.spot.safe * allow && safeSpot(us, [x[3], x[2]], ranked));
+  for (const [c, , row, col, j, f] of safe.length ? safe : cands){
+    if (tries <= 0) return null;
+    if (c <= allow){
+      tries -= 1;
+      const m = moveUnit(us, i, [col, row], f, size, field);
+      if (m.ok && !m.charge) return { act: "spot", target: j, pos: [col, row], facing: f, cost: m.cost };
+      continue;
     }
+    const r = stepTo(us, i, [[col, row], j, ranked], [size, field, foes, tries]);
+    tries = r[1];
+    if (r[0]) return r[0];
   }
   return null;
+}
+const safeSpot = (us, h, ranked) => !ranked.some(([j, p]) => "range" in FD.weapons[us[j].weapon] && fieldRange(us[j].weapon, hdist(p, h)) !== null);   // no known enemy, where last seen, reaches h with its missile weapon (as commander._safe_spot)
+function stepTo(us, i, [spot, j, ranked], [size, field, foes, tries]){   // a move toward a spot beyond this move: the hex in its allowance nearest the spot, then cheapest, lowest row and column, nearer than it stands, touching no enemy, facing the enemy it goes to see: [order or null, tries left] (as commander._step_to)
+  const u = us[i], p = ranked.find(([k]) => k === j)[1], now = hdist(u.pos, spot);
+  const steps = [...reachable(us, i, size, allowance(u), field).values()].filter(([h]) => hdist(h, spot) < now && !mined(field, u.pos, h, u.side))
+    .map(([h, c]) => [hdist(h, spot), c, h[1], h[0]]).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]);
+  for (const [, , row, col] of steps){
+    const f = bearing([col, row], p);
+    if (touches({ ...u, pos: [col, row], facing: f }, foes)) continue;
+    if (tries <= 0) break;
+    tries -= 1;
+    const m = moveUnit(us, i, [col, row], f, size, field);
+    if (m.ok && !m.charge) return [{ act: "spot", target: j, pos: [col, row], facing: f, cost: m.cost, toward: [...spot] }, tries];
+  }
+  return [null, tries];
 }
 function seesFrom(field, u, ranked, foes){        // [rank, enemy, facing] of the best-ranked enemy u, placed so, would see facing it without touching the enemy, or null (as commander._sees_from)
   for (let r = 0; r < ranked.length; r++){
@@ -2869,15 +2900,6 @@ function seesFrom(field, u, ranked, foes){        // [rank, enemy, facing] of th
     if (!touches(there, foes) && sees(field, there, p, sightHexes(field, p, seerOf(there)))) return [r, j, there.facing];
   }
   return null;
-}
-function spotIn(us, i, group, [size, field, tries]){   // the first legal spot among equally cheap hexes, each try costing one of commander.tries: [order or null, tries left] (as commander._spot_in)
-  for (const [, row, col, j, f] of group){
-    if (tries <= 0) break;
-    tries -= 1;
-    const m = moveUnit(us, i, [col, row], f, size, field);
-    if (m.ok && !m.charge) return [{ act: "spot", target: j, pos: [col, row], facing: f, cost: m.cost }, tries];
-  }
-  return [null, tries];
 }
 const unsteady = (us, i, t) => (!us[i].prone && underFire(us, i) ? { act: "ground", target: t } : null);   // a shaken unit holds, going to ground under missile fire (as commander._unsteady)
 function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance, known, exchange]
