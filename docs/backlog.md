@@ -112,7 +112,7 @@ When an item is done, delete it here and note it in the pull request that closes
   last phase and does not end on units still to come or an objective held from the start; a
   unit with no room to face its goal moves facing as near it as it can (Kapyong, Cassino). To
   do, from the review: tank kinds by era and vehicle morale (73 Easting); archery against
-  horses and men in mud (Agincourt); men in rubble harder to shift (Cassino town); the Chechen
+  horses and men in mud (Agincourt); men in rubble harder to shift (Cassino town: measured, see the review; shellfire, not rubble, decides it, so the open question is batteries' sustained fire); the Chechen
   ambush at Grozny; an envelopment plan (Cowpens); the American
   rush on the guns at Lundy's Lane (dark now, but the guns still hold); the German counter-attacks on Point 593 (no sourced figures yet) and why small
   units take 593 so easily in February. Measured and not built: a holding commander that

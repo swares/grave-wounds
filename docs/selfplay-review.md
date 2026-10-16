@@ -279,3 +279,21 @@ routes, no winner changed:
 - *Osan:* unchanged: Task Force Smith breaks by exchange 26-31, before either flanking battalion
   comes on (46 and 166).
 
+**Cassino town: measured, not built.** The paratroops are not shot out by rifle fire: in a trace
+of two runs, shellfire put down most of them (125-130 of about 325), the rout after they broke
+most of the rest, and the New Zealanders lost as many to the German mortars (130-155 of 600). Two
+fixes were measured over every battlefield with rubble (four runs each), and neither was kept:
+
+- *A morale check once, when a quarter of a unit is down,* instead of every exchange after it
+  (all 37 battlefields, two runs each): 45 of 74 runs matched against 47, 21 battlefields against
+  23. Cassino town's paratroops stood and died (75% lost) instead of breaking; Cisterna's Rangers
+  lost 94%; Mons stopped matching. The repeated check stays.
+- *Men in rubble sheltered from shells as in a bunker* (the cellars): no winner changed on any
+  rubble battlefield. Cassino town's paratroops lasted about 40 exchanges instead of 28 and
+  still went (68% lost); Grozny's Chechens held to the limit instead of going under.
+
+Shellfire still does most of the killing in both, because each side's batteries fire every
+exchange for as long as the battle lasts. Whether batteries should have a sustained rate or a
+battle's worth of ammunition (sourced rates of fire) is the open question, and it would touch
+every battle with guns.
+
