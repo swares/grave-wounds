@@ -11,6 +11,7 @@ from __future__ import annotations
 import heapq
 import math
 import random
+from contextlib import contextmanager
 
 from . import combat as C
 from .combat import weapon_reach
@@ -1344,8 +1345,40 @@ def battlefield_units(d: Data, fid: str) -> list:
 
 
 def ground_at(d: Data, field: dict | None, h) -> dict:
-    kind = ((field or {}).get("ground") or {}).get(f"{h[0]},{h[1]}", "open")
-    return d.units["ground"][kind]
+    """The ground kind's spec at hex h (open if unpainted), remembered for the field's ground (_ground_memo)."""
+    at = _ground_memo(d, field)["at"]
+    key = (h[0], h[1])
+    g = at.get(key)
+    if g is None:
+        g = at[key] = d.units["ground"][((field or {}).get("ground") or {}).get(f"{h[0]},{h[1]}", "open")]
+    return g
+
+
+_GROUND_MEMO = {}   # id(field ground) -> (that ground, its size, the data, {"at": hex -> ground spec, "lines": (h, t) -> sight line})
+_NO_GROUND = {}
+
+
+def _ground_memo(d: Data, field: dict | None) -> dict:
+    """What stands on each hex and what each sight line crosses, worked out once for a field's
+    ground: the rules never repaint a field during a battle (as the page's groundMemo)."""
+    g = (field or {}).get("ground") or _NO_GROUND
+    hit = _GROUND_MEMO.get(id(g))
+    if hit is None or hit[0] is not g or hit[1] != len(g) or hit[2] is not d:
+        hit = (g, len(g), d, {"at": {}, "lines": {}})
+        _GROUND_MEMO[id(g)] = hit
+    return hit[3]
+
+
+def _sight_line(d: Data, field: dict | None, h, t, dist: int) -> tuple:
+    """(crest, clear, thin, keys): the ground's part of a sight line from h to t (dist apart),
+    worked out once: dead ground between (_crest_on), a clear sight to aim (_sight_on), the hexes
+    of light cover between (_thin_on), and the line's hex keys (for smoke)."""
+    lines, key = _ground_memo(d, field)["lines"], (h[0], h[1], t[0], t[1])
+    s = lines.get(key)
+    if s is None:
+        line = ray(h, t, dist)
+        s = lines[key] = (_crest_on(d, field, h, t, line), _sight_on(d, field, h, t, line), _thin_on(d, field, h, line), [f"{y[0]},{y[1]}" for y in line])
+    return s
 
 
 def _works(field: dict | None):
@@ -1713,10 +1746,35 @@ def _raised_hexes(d: Data, field: dict | None) -> dict:
     return hit[2]
 
 
-def over_crest(d: Data, field: dict | None, h, t, line: list) -> bool:
+def over_crest(d: Data, field: dict | None, h, t, dist: int) -> bool:
     """Dead ground: whether open ground (a slope or high ground) higher than both h and t stands
-    on the line between them (not within line_of_fire.crest_clear hexes of either end: a man just behind a crest sees
-    over it, and is seen)."""
+    on the line between them (_crest_on), remembered for the field's ground."""
+    return bool(_raised_hexes(d, field)) and _sight_line(d, field, h, t, dist)[0]
+
+
+def thinned(d: Data, field: dict | None, h, t, dist: int) -> int:
+    """How many hexes of light cover (scrub, orchards) lie on the line from h to t, not the
+    ends, as high as where the man at h stands (_thin_on), remembered for the field's ground."""
+    return _sight_line(d, field, h, t, dist)[2] if _screen_hexes(d, field, "light") else 0
+
+
+def clear_sight(d: Data, field: dict | None, h, t, dist: int) -> bool:
+    """Whether a man at hex h sees hex t to aim at it (_sight_on), remembered for the field's ground."""
+    if not _screen_hexes(d, field) and not _screen_hexes(d, field, "light") and not _raised_hexes(d, field):
+        return True
+    return _sight_line(d, field, h, t, dist)[1]
+
+
+def smoked_line(d: Data, field: dict | None, h, t, dist: int) -> bool:
+    """Whether smoke hangs over any hex of the line from h to t."""
+    sm = (field or {}).get("smoke") or {}
+    return bool(sm) and any(k in sm for k in _sight_line(d, field, h, t, dist)[3])
+
+
+def _crest_on(d: Data, field: dict | None, h, t, line: list) -> bool:
+    """Dead ground on the line: open ground (a slope or high ground) higher than both h and t
+    between them (not within line_of_fire.crest_clear hexes of either end: a man just behind a
+    crest sees over it, and is seen)."""
     raised = _raised_hexes(d, field)
     if not raised:
         return False
@@ -1725,32 +1783,31 @@ def over_crest(d: Data, field: dict | None, h, t, line: list) -> bool:
     return any(raised.get(f"{y[0]},{y[1]}", 0) > top for y in line[1 + k:len(line) - 1 - k])
 
 
-def thinned(d: Data, field: dict | None, h, t, dist: int, line: list | None = None) -> int:
-    """How many hexes of light cover (scrub, orchards) lie on the line from h to t, not the
-    ends, as high as where the man at h stands."""
+def _thin_on(d: Data, field: dict | None, h, line: list) -> int:
+    """The hexes of light cover (scrub, orchards) on the line, not the ends, as high as where
+    the man at h stands."""
     thin = _screen_hexes(d, field, "light")
     if not thin:
         return 0
-    line, up = line or ray(h, t, dist), height_at(d, field, h)
+    up = height_at(d, field, h)
     return sum(1 for y in line[1:len(line) - 1] if f"{y[0]},{y[1]}" in thin and height_at(d, field, y) >= up)
 
 
-def clear_sight(d: Data, field: dict | None, h, t, dist: int, line: list | None = None) -> bool:
-    """Whether a man at hex h sees hex t to aim at it: no ground higher than both ends between
-    (over_crest: dead ground), no ground that screens (woods, buildings) on the line between as
-    high as where he stands, past the first line_of_fire.see_into hexes
-    at either end (he sees out of a screen's edge, and into it), and no more than
-    line_of_fire.thin.blind_past hexes of light cover between. line: ray(h, t, dist), if known."""
+def _sight_on(d: Data, field: dict | None, h, t, line: list) -> bool:
+    """Whether a man at h sees t to aim at it (line: the ray between them): no ground higher than both
+    ends between (_crest_on: dead ground), no ground that screens (woods, buildings) on the line
+    between as high as where he stands, past the first line_of_fire.see_into hexes at either end
+    (he sees out of a screen's edge, and into it), and no more than line_of_fire.thin.blind_past
+    hexes of light cover between."""
     cover, L = _screen_hexes(d, field), d.units["line_of_fire"]
     if not cover and not _screen_hexes(d, field, "light") and not _raised_hexes(d, field):
         return True
-    k = L.get("see_into", 1)
-    line, up = line or ray(h, t, dist), height_at(d, field, h)
-    if over_crest(d, field, h, t, line):
+    k, up = L.get("see_into", 1), height_at(d, field, h)
+    if _crest_on(d, field, h, t, line):
         return False
     if any(f"{y[0]},{y[1]}" in cover and height_at(d, field, y) >= up for y in line[1 + k:len(line) - 1 - k]):
         return False
-    return thinned(d, field, h, t, dist, line) <= L["thin"]["blind_past"]
+    return _thin_on(d, field, h, line) <= L["thin"]["blind_past"]
 
 
 def shot_weather(d: Data, field: dict | None, weapon: str, dist: int, h=None, t=None, seer: dict | None = None) -> dict:
@@ -1758,24 +1815,22 @@ def shot_weather(d: Data, field: dict | None, weapon: str, dist: int, h=None, t=
     wind's direction): {blocked, penalty, misfire, reach}. Smoke on the line blocks it, and so
     do woods and buildings between (clear_sight), unless it is fired blind. seer:
     the shooter in the dark, {kit, blind} (see in_the_dark)."""
-    line = ray(h, t, dist) if h is not None and t is not None and ((field or {}).get("smoke") or _screen_hexes(d, field) or _screen_hexes(d, field, "light")
-                                                                    or _raised_hexes(d, field)) else None
-    if line and smoked(field, line) and not sees_smoke(d, seer):
+    shot = h is not None and t is not None
+    if shot and smoked_line(d, field, h, t, dist) and not sees_smoke(d, seer):
         return {"blocked": "Smoke: no one can see to shoot through it.", "penalty": 0, "misfire": 0, "reach": 0}
-    if line and not (seer or {}).get("blind") and over_crest(d, field, h, t, line):
+    if shot and not (seer or {}).get("blind") and over_crest(d, field, h, t, dist):
         return {"blocked": "Higher ground between: dead ground, no one can see over it to shoot.", "penalty": 0, "misfire": 0, "reach": 0}
-    if line and not (seer or {}).get("blind") and not clear_sight(d, field, h, t, dist, line):
+    if shot and not (seer or {}).get("blind") and not clear_sight(d, field, h, t, dist):
         return {"blocked": "Woods, buildings or thick scrub between: no one can see to aim through them.", "penalty": 0, "misfire": 0, "reach": 0}
     if is_gun(d, weapon):
         return gun_weather(d, field, dist, h, t, seer)
     out = in_the_cold(d, field, weapon, in_the_dark(d, field, dist, t, C.weather_attack(d, (field or {}).get("weather"), weapon, 0 if (seer or {}).get("blind") else dist * d.units["range_scale"], h, t, _up(field)), seer))
-    return _thin_fire(d, field, out, (h, t, dist, line))
+    return _thin_fire(d, field, out, (h, t, dist) if shot else None)
 
 
 def _thin_fire(d: Data, field: dict | None, out: dict, shot: tuple) -> dict:
     """Aimed fire through light cover: line_of_fire.thin.per % off for each hex of it between."""
-    h, t, dist, line = shot
-    n = thinned(d, field, h, t, dist, line) if line and not out["blocked"] else 0
+    n = thinned(d, field, *shot) if shot and not out["blocked"] else 0
     return {**out, "penalty": out["penalty"] + n * d.units["line_of_fire"]["thin"]["per"]} if n else out
 
 
@@ -3086,16 +3141,9 @@ def _sees(d: Data, field: dict | None, u: dict, h, sight: int | None) -> bool:
         dist = hdist(x, h)
         if sight is not None and dist > sight:
             continue
-        line = ray(x, h, dist)
-        if clear_sight(d, field, x, h, dist, line) and (not smoked(field, line) or sees_smoke(d, _seer(u))):
+        if clear_sight(d, field, x, h, dist) and (not smoked_line(d, field, x, h, dist) or sees_smoke(d, _seer(u))):
             return True
     return False
-
-
-def smoked(field: dict | None, hexes) -> bool:
-    """Whether smoke hangs over any of these hexes."""
-    sm = (field or {}).get("smoke") or {}
-    return bool(sm) and any(f"{h[0]},{h[1]}" in sm for h in hexes)
 
 
 def within(h, radius: int) -> list:
@@ -3888,12 +3936,46 @@ def _wall_between(d: Data, field: dict, a, b) -> bool:
     return False
 
 
+_STEPS = []   # while a commander orders its side (steps_remembered): {(id(field), mover, a, b): movement}; nothing it orders changes the works, ground or weather
+
+
+@contextmanager
+def steps_remembered():
+    """Remember each step's movement while the commander orders its side (commander.command):
+    the works, ground and weather do not change until the exchange, so a step costs the same each
+    time a unit's moves are weighed."""
+    _STEPS.append({})
+    try:
+        yield
+    finally:
+        _STEPS.pop()
+
+
+def _mover(u: dict) -> str:
+    """What a step's movement depends on in the unit: vehicle, horse, ladders or foot."""
+    if u.get("vehicle"):
+        return "v"
+    if u.get("mounted"):
+        return "m"
+    return "l" if has_ladders(u) else "f"
+
+
 def step_cost(d: Data, field: dict | None, u: dict, a, b) -> int | None:
     """Movement for one hex of a unit to step from a to b: 1, plus works crossed and entered,
     plus the ground (rough, woods, marsh), plus deep mud or snow. None if it cannot. A unit pays
-    the worst of all its hexes' (_front_cost)."""
+    the worst of all its hexes' (_front_cost). Remembered while a commander orders its side."""
     if not field:
         return 1
+    if not _STEPS:
+        return _step_cost(d, field, u, a, b)
+    memo, key = _STEPS[-1], (id(field), _mover(u), a[0], a[1], b[0], b[1])
+    if key not in memo:
+        memo[key] = _step_cost(d, field, u, a, b)
+    return memo[key]
+
+
+def _step_cost(d: Data, field: dict, u: dict, a, b) -> int | None:
+    """step_cost, worked out."""
     if not _can_enter(d, field, u, b):
         return None
     c = C.step_cost(d, _works(field), a, b, climb=d.units["escalade"]["cross"] if has_ladders(u) else None)
