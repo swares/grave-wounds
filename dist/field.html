@@ -1621,8 +1621,12 @@ function lineFire(units, occ, field, i, j, path){   // path [from hex, to hex, d
   return pen;
 }
 const beyondReach = (weapon, dist) => !isGun(weapon) && !FD.weapons[weapon].off_map && fieldRange(weapon, dist, 100) === null;   // out of range even with its bands doubled (the wind and height add at most half): a shortcut that changes nothing (as units._beyond_reach)
+function canShoot(u, field, [h, t, dist], clear){  // u's weapon reaches from h to t, in sight, with a line of fire (as units._can_shoot)
+  if (beyondReach(u.weapon, dist)) return false;   // out of range however the wind and height help: no need to look
+  const wx = shotWeather(field, u.weapon, dist, h, t, seerOf(u)), reach = (wx.reach || 0) + heightEdge(field, u.weapon, h, t)[1];
+  return !wx.blocked && reaches(u, dist, reach) && (!clear || clear(h, t, dist));
+}
 function nearestAhead(u, front, fv, hexes, field, clear = null){  // [distance, front hex, target hex]: the shortest in range of u's weapon and in sight ahead of the line, with a line of fire
-  const weapon = u.weapon;
   let best = null;
   for (const t of hexes){
     const c = cube(t);
@@ -1630,10 +1634,7 @@ function nearestAhead(u, front, fv, hexes, field, clear = null){  // [distance, 
       const s = cube(h);
       if ((c[0] - s[0]) * fv[0] + (c[1] - s[1]) * fv[1] + (c[2] - s[2]) * fv[2] <= 0) continue;
       const dist = hdist(h, t);
-      if (best !== null && dist >= best[0]) continue;
-      if (beyondReach(weapon, dist)) continue;   // out of range however the wind and height help: no need to look
-      const wx = shotWeather(field, weapon, dist, h, t, seerOf(u)), reach = (wx.reach || 0) + heightEdge(field, weapon, h, t)[1];
-      if (!wx.blocked && reaches(u, dist, reach) && (!clear || clear(h, t, dist))) best = [dist, h, t];
+      if ((best === null || dist < best[0]) && canShoot(u, field, [h, t, dist], clear)) best = [dist, h, t];
     }
   }
   return best;
@@ -3793,12 +3794,13 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   const sap = sapperOrder(us, i, t, ctx);
   if (sap) return sap;
   if ((obj !== null || ctx[2] === "hold") && digs(us, i, ctx)) return { act: "dig", target: t };
-  if (t === null && obj === null) return ctx[2] === "attack" ? search(us, i, ctx) : null;
+  if (t === null && obj === null) return search(us, i, ctx);
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
   const o = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx);
   return t === null ? o : lastSeen(o, ctx[3], t, ctx[4]);
 }
-function search(us, i, [size, field, stance, known, exchange]){   // attacking, with no objective and no enemy it knows of: a move toward the last hex on the map straight ahead along its facing (as commander._search)
+function search(us, i, [size, field, stance, known, exchange]){   // attacking, with no objective and no enemy it knows of: a move toward the last hex on the map straight ahead along its facing; holding, null (as commander._search)
+  if (stance !== "attack") return null;
   const u = us[i], fs = fieldSize(field);
   let ahead = [...u.pos];
   for (let n = 1; ; n++){
@@ -3807,7 +3809,7 @@ function search(us, i, [size, field, stance, known, exchange]){   // attacking, 
     ahead = [...h];
   }
   if (ahead[0] === u.pos[0] && ahead[1] === u.pos[1]) return null;
-  return toward(us, i, null, [size, { ...(field || {}), objective: ahead, objective_radius: null }, stance, known, exchange], "search");
+  return toward(us, i, null, [size, { ...field, objective: ahead, objective_radius: null }, stance, known, exchange], "search");
 }
 function ammoOrder(us, i, t, [size, field, stance, known, exchange]){   // low or out with a supply source in reach: resupply (out at once; low with no known enemy in its range); out with none, attacking: fall back toward its supply edge (as commander._ammo_order)
   const u = us[i], state = ammoState(u);

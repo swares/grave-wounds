@@ -2078,10 +2078,20 @@ def _beyond_reach(d: Data, weapon: str, dist: int) -> bool:
     return not is_gun(d, weapon) and not d.weapons[weapon].get("off_map") and field_range(d, weapon, dist, 100) is None
 
 
+def _can_shoot(d: Data, u: dict, field: dict | None, shot: tuple, clear) -> bool:
+    """Unit u's weapon reaches from h to t (shot: (h, t, dist)), in sight, with a line of fire."""
+    h, t, dist = shot
+    if _beyond_reach(d, u["weapon"], dist):          # out of range however the wind and height help: no need to look
+        return False
+    wx = shot_weather(d, field, u["weapon"], dist, h, t, _seer(u))
+    reach = wx.get("reach", 0) + height_edge(d, field, u["weapon"], h, t)[1]
+    return not wx["blocked"] and _reaches(d, u, dist, reach) and (clear is None or clear(h, t, dist))
+
+
 def _nearest_ahead(d: Data, u: dict, front: list, fv: tuple, hexes: list, field: dict | None = None, clear=None):
     """(distance, front hex, target hex): the shortest distance in range of unit u's weapon and
     in sight from a front hex to one of `hexes` ahead of the line (with a line of fire), or None."""
-    best, weapon = None, u["weapon"]
+    best = None
     for t in hexes:
         c = _cube(t)
         for h in front:
@@ -2089,13 +2099,7 @@ def _nearest_ahead(d: Data, u: dict, front: list, fv: tuple, hexes: list, field:
             if sum((c[k] - s[k]) * fv[k] for k in range(3)) <= 0:
                 continue
             dist = hdist(h, t)
-            if best is not None and dist >= best[0]:
-                continue
-            if _beyond_reach(d, weapon, dist):        # out of range however the wind and height help: no need to look
-                continue
-            wx = shot_weather(d, field, weapon, dist, h, t, _seer(u))
-            reach = wx.get("reach", 0) + height_edge(d, field, weapon, h, t)[1]
-            if not wx["blocked"] and _reaches(d, u, dist, reach) and (clear is None or clear(h, t, dist)):
+            if (best is None or dist < best[0]) and _can_shoot(d, u, field, (h, t, dist), clear):
                 best = (dist, h, t)
     return best
 

@@ -957,7 +957,7 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     if (obj is not None or ctx[2] == "hold") and _digs(d, us, i, ctx):
         return {"act": "dig", "target": t}
     if t is None and obj is None:
-        return _search(d, us, i, ctx) if ctx[2] == "attack" else None
+        return _search(d, us, i, ctx)
     if roll <= C["hesitate"].get(u["quality"], 0):
         return {"act": "hesitate", "target": t, "roll": roll}
     o = _best(d, us, i, t, ctx) if obj is None else _for_objective(d, us, i, t, ctx)
@@ -966,8 +966,11 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
 
 def _search(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
     """Attacking, with no objective and no enemy it knows of: it goes forward to find one, a move
-    toward the last hex on the map straight ahead along its facing (as toward an objective)."""
+    toward the last hex on the map straight ahead along its facing (as toward an objective).
+    Holding, it stays (None)."""
     size, field, stance, known, exchange = ctx
+    if stance != "attack":
+        return None
     u, cols_rows = us[i], U._size(d, field)
     ahead, n = list(u["pos"]), 1
     while True:
