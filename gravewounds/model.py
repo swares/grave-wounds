@@ -1387,15 +1387,15 @@ def _cold_errors(d: Data) -> list[str]:
     return errors
 
 
-def _night_vision_errors(N: dict) -> list[str]:
+def _night_vision_errors(nv: dict) -> list[str]:
     """weather.yaml light.night_vision: kits and a kit device, devices with a name, sight and aim,
     vehicles' devices known, and the infrared beam's reach."""
-    errors, devs = [], N.get("devices") or {}
-    if not (isinstance(N.get("kits"), list) and N.get("kit_device") in devs) or any(
+    errors, devs = [], nv.get("devices") or {}
+    if not (isinstance(nv.get("kits"), list) and nv.get("kit_device") in devs) or any(
             not (v.get("name") and isinstance(v.get("sight"), int) and isinstance(v.get("aim"), int)) for v in devs.values()):
         errors.append("weather.yaml: light.night_vision needs kits, a kit_device among its devices, and devices with a name, sight and aim")
-    errors += [f"weather.yaml: light.night_vision.vehicles.{w} names unknown device {v}" for w, v in (N.get("vehicles") or {}).items() if v not in devs]
-    if not (isinstance(N.get("beam"), int) and N["beam"] >= 1):
+    errors += [f"weather.yaml: light.night_vision.vehicles.{w} names unknown device {v}" for w, v in (nv.get("vehicles") or {}).items() if v not in devs]
+    if not (isinstance(nv.get("beam"), int) and nv["beam"] >= 1):
         errors.append("weather.yaml: light.night_vision.beam must be a whole number of 1 or more")
     return errors
 
