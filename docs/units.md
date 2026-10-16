@@ -2247,7 +2247,9 @@ rough) and gullies lie between.
 - May, a **dark night**: the 1st Carpathian Rifle Brigade's 2nd Battalion for Point 593 and
   its 1st Battalion along Snakeshead for Albaneta,
   and the 5th Kresowa Division for Phantom Ridge, against the paratroops on all three tops and
-  in the abbey.
+  in the abbey. Each Polish battalion comes on as four companies of equal strength (our split,
+  as deep as the battalion stood), side by side across its front; the February battalions stay
+  whole (see `docs/selfplay-review.md`).
 - Fire support on both sides; the wound tables are the Second World War's (Owens).
 
 **Cassino town and Castle Hill, 15 March 1944** (`data/fields/cassino-town-1944.yaml`). The

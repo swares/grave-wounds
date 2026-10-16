@@ -72,6 +72,10 @@ export const UNIT_SIZES = {
     "Sherman's brigade (coming over)": "brigade",
   },
   "cassino-monastery-1944": {
+    "4/6th Rajputana Rifles (along Snakeshead Ridge)": "battalion",
+    "1st Royal Sussex (three companies, with the Rajputanas)": "battalion",
+    "1/9th Gurkha Rifles (across the slopes for Point 444)": "battalion",
+    "1/2nd Gurkha Rifles (down for the abbey's hill)": "battalion",
     "German paratroops on Point 593": "company",
     "German paratroops on Point 444": "company",
     "Germans in the abbey's ruins": "company",
