@@ -164,8 +164,8 @@ support:
   - {name: "2nd Squadron's howitzer battery", side: 0, kind: howitzer, tubes: 8}
   - {name: "Tawakalna guns", side: 1, kind: field, tubes: 4}
 units:
-  - {name: "Eagle Troop's tanks (the troop commander and the north platoon)", side: 0, men: 20, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 5, pos: [38, 50], facing: 0, vehicle: tank, nv: thermal, size: platoon}
-  - {name: "Eagle Troop's tanks (the south platoon)", side: 0, men: 16, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 4, pos: [36, 72], facing: 0, vehicle: tank, nv: thermal, size: platoon}
+  - {name: "Eagle Troop's tanks (the troop commander and the north platoon)", side: 0, men: 20, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 5, pos: [38, 50], facing: 0, vehicle: tank, nv: thermal, fc: thermal, armour: composite, size: platoon}
+  - {name: "Eagle Troop's tanks (the south platoon)", side: 0, men: 16, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 4, pos: [36, 72], facing: 0, vehicle: tank, nv: thermal, fc: thermal, armour: composite, size: platoon}
   - {name: "Eagle Troop's Bradleys (the north scout platoon)", side: 0, men: 18, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 6, pos: [24, 30], facing: 0, vehicle: ifv, nv: thermal, size: platoon}
   - {name: "Eagle Troop's Bradleys (the south scout platoon)", side: 0, men: 18, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 6, pos: [22, 92], facing: 0, vehicle: ifv, nv: thermal, size: platoon}
   - {name: "Tawakalna T-72s dug in behind the rise (north)", side: 1, men: 40, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 10, pos: [86, 44], facing: 3, vehicle: tank, nv: none, size: company}

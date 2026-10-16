@@ -1066,7 +1066,7 @@ def vehicles_left(d: Data, u: dict, lost: int = 0) -> int:
 def armour_of(d: Data, u: dict) -> dict | None:
     """A vehicle unit's armour (units.yaml vehicles.armour), or None."""
     K = vehicle_kind(d, u)
-    return d.units["vehicles"]["armour"][K["armour"]] if K else None
+    return d.units["vehicles"]["armour"][u.get("armour") or K["armour"]] if K else None   # its own (a battlefield's armour), else its kind's
 
 
 def hurts_armour(d: Data, weapon: str) -> bool:
@@ -1100,9 +1100,11 @@ def bearing(t, h) -> int:
 def kill_chance(d: Data, u: dict, row: str, h, t) -> int:
     """% that a hit from hex h on vehicle unit u (at its hex t) knocks a vehicle out: its armour's
     `row` %, times vehicles.aspect for a flank or rear shot (by u's facing), to 100 at most."""
-    p = armour_of(d, u)[row]
+    A = armour_of(d, u)
     side = arc(u["facing"], bearing(t, h)) if h is not None and t is not None and list(h) != list(t) else "front"
-    return min(100, int(p * (d.units["vehicles"].get("aspect") or {}).get(side, 1)))
+    if side == "front" and row in (A.get("front") or {}):
+        return A["front"][row]                    # composite armour: proof from the front
+    return min(100, int(A[row] * (d.units["vehicles"].get("aspect") or {}).get(side, 1)))
 
 
 def _harm(d: Data, u: dict, n: int, lost: int, rng) -> dict:
@@ -1324,6 +1326,15 @@ def _field_support(d: Data, f: dict) -> list:
     K = d.units["indirect"]["kinds"]
     return [{"name": s["name"], "army": s["side"], "side": f["sides"][s["side"]], "kind": s["kind"], "tubes": s["tubes"],
              "rounds": s["tubes"] * K[s["kind"]]["rounds"], "mission": None, **({"place": list(s["place"])} if s.get("place") else {})} for s in f["support"]]
+
+
+def fire_control_of(d: Data, o: dict, table: str) -> str | None:
+    """A tank unit's fire control (vehicles.fire_control): the battlefield's (fc), else its
+    war's by the wound table's battle; None for a vehicle kind without one, or no vehicle."""
+    kind = d.units["vehicles"]["kinds"].get(o.get("vehicle") or "") or {}
+    if not kind.get("fc"):
+        return None
+    return o.get("fc") or d.units["vehicles"]["fire_control"]["by_war"].get((d.tables.get(table) or {}).get("battle"))
 
 
 def vehicle_device(d: Data, table: str) -> str | None:
@@ -1829,8 +1840,19 @@ def shot_weather(d: Data, field: dict | None, weapon: str, dist: int, h=None, t=
         return {"blocked": "Woods, buildings or thick scrub between: no one can see to aim through them.", "penalty": 0, "misfire": 0, "reach": 0}
     if is_gun(d, weapon):
         return gun_weather(d, field, dist, h, t, seer)
-    out = in_the_cold(d, field, weapon, in_the_dark(d, field, dist, t, C.weather_attack(d, (field or {}).get("weather"), weapon, 0 if (seer or {}).get("blind") else dist * d.units["range_scale"], h, t, _up(field)), seer))
+    out = in_the_cold(d, field, weapon, in_the_dark(d, field, dist, t, C.weather_attack(d, (field or {}).get("weather"), weapon, _seen_at(d, field, dist, seer), h, t, _up(field)), seer))
     return _thin_fire(d, field, out, (h, t, dist) if shot else None)
+
+
+def _seen_at(d: Data, field: dict | None, dist: int, seer: dict | None) -> int:
+    """How far the shooter must see to aim, in 2 m hexes, against the weather's sight: 0 when it
+    does not count (fired blind down a fixed line, or a thermal sight within its reach in a
+    sandstorm)."""
+    far = dist * d.units["range_scale"]
+    cond = d.weather["conditions"].get(((field or {}).get("weather") or {}).get("cond")) if d.weather else None
+    if (seer or {}).get("blind") or ((cond or {}).get("thermal") and sees_smoke(d, seer) and far <= cond["thermal"]):
+        return 0
+    return far
 
 
 def _thin_fire(d: Data, field: dict | None, out: dict, shot: tuple) -> dict:
@@ -2999,7 +3021,10 @@ def _gun_of(d: Data, u: dict) -> dict | None:
     if is_at_gun(d, u):
         return None if u.get("resupplying") or u.get("unhooked") else d.units["anti_tank_guns"]["gun"]
     kind = vehicle_kind(d, u)
-    return kind.get("gun") if kind else None
+    if not kind or not kind.get("gun"):
+        return None
+    F = d.units["vehicles"]["fire_control"].get(u["fc"]) if u.get("fc") else None
+    return {**kind["gun"], "range": F["range"], "hit": F["hit"]} if F else kind["gun"]   # a tank's gun hits and reaches by its fire control
 
 
 def _guns_firing(d: Data, u: dict) -> int:
@@ -3126,7 +3151,7 @@ def _sight_hexes(d: Data, field: dict | None, h=None, seer: dict | None = None) 
     field hexes (None: as far as the map). A lit hex is seen as by day; one that fired in the
     dark last exchange, out to light.flash."""
     cond = ((field or {}).get("weather") or {}).get("cond")
-    vis = d.weather["conditions"][cond].get("visibility") if cond and d.weather else None
+    vis = _thermal_sight(d, d.weather["conditions"][cond], d.weather["conditions"][cond].get("visibility"), seer) if cond and d.weather else None
     L = light_of(d, field)
     dark = dark_sight(d, L, night_device(d, seer, field))[0] if L and not lit(field, h) else None
     if dark is not None and flashing(field, h):
@@ -3815,6 +3840,17 @@ def _tally(lost: list, dead: list, dealt: list, s: dict, t: dict) -> None:
     dealt[s["att"]] += t["down"]
 
 
+def _vehicle_losses(d: Data, u: dict, before: int, lost: int) -> tuple:
+    """(down, lost this exchange) for its morale: a vehicle unit's in whole vehicles gone (their
+    crews), not crewmen hit in vehicles still fighting."""
+    kind = vehicle_kind(d, u)
+    if not kind:
+        return u["down"], lost
+    crew = kind["crew"]
+    start_v, was_v, now_v = -(-u["start"] // crew), -(-before // crew), vehicles_left(d, u)
+    return (start_v - now_v) * crew, max(0, was_v - now_v) * crew
+
+
 def _morale_all(d: Data, us: list, occ: dict, before: list, acc: tuple, rng, table: str = "", field: dict | None = None) -> list:
     """Every unit still in the fight checks; any that breaks is struck at once by the enemies
     touching it, every man of them."""
@@ -3823,7 +3859,8 @@ def _morale_all(d: Data, us: list, occ: dict, before: list, acc: tuple, rng, tab
         if u["state"] in ("broken", "fled") or u["men"] <= 0:
             continue
         near = _adjacent_units(d, us, occ, i)
-        unit = {"quality": u["quality"], "start": u["start"], "down": u["down"], "lost": lost[i], "dealt": dealt[i],
+        down, lost_now = _vehicle_losses(d, u, before[i], lost[i])
+        unit = {"quality": u["quality"], "start": u["start"], "down": down, "lost": lost_now, "dealt": dealt[i],
                 "men": before[i], "state": u["state"], "leader": leader_state(u), "flanked": flanked[i],
                 "contact": any(us[j]["side"] != u["side"] for j in near),
                 "friends": any(us[j]["side"] == u["side"] and us[j]["state"] == "steady" for j in near),
@@ -4437,11 +4474,20 @@ def gun_weather(d: Data, field: dict | None, dist: int, h=None, t=None, seer: di
     vis = cond.get("visibility")
     if vis is not None and cond["precip"] != "none" and C.wind_lie(d, weather, h, t, _up(field)) == "against":
         vis = vis * d.weather["driven_sight"] // 100
+    vis = _thermal_sight(d, cond, vis, seer)
     if vis is not None and dist * d.units["range_scale"] > vis:
         out["blocked"] = f"{cond['name']}: the guns cannot be laid on what cannot be seen."
         return out
     out["penalty"] = next(x for x in d.weather["winds"] if x["id"] == weather["wind"])["firearm"]
     return in_the_dark(d, field, dist, t, out, seer)
+
+
+def _thermal_sight(d: Data, cond: dict | None, vis, seer: dict | None):
+    """How far a man sees to aim in this weather: a thermal sight further through a sandstorm
+    (weather.yaml conditions' thermal, in 2 m hexes)."""
+    if vis is not None and (cond or {}).get("thermal") and sees_smoke(d, seer):
+        return max(vis, cond["thermal"])
+    return vis
 
 
 def _chance_at(bands: list, dist: int) -> int:

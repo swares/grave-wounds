@@ -1072,6 +1072,17 @@ def _small_arms_errors(veh: dict) -> list[str]:
     return ["units.yaml: vehicles.small_arms needs rate and mg (aimed shots a man, above 0) when an armour has a small %"]
 
 
+def _fire_control_errors(V: dict) -> list[str]:
+    """units.yaml vehicles.fire_control: each kind a whole-number range and hit bands reaching it;
+    by_war naming kinds that exist."""
+    F = V.get("fire_control") or {}
+    kinds = {k: v for k, v in F.items() if k != "by_war"}
+    errors = [f"units.yaml: vehicles.fire_control.{k} needs a whole-number range and hit bands [[hexes, %], ...] up to it" for k, v in kinds.items()
+              if not (isinstance(v, dict) and isinstance(v.get("range"), int) and isinstance(v.get("hit"), list) and v["hit"] and v["hit"][-1][0] == v["range"])]
+    errors += [f"units.yaml: vehicles.fire_control.by_war names unknown fire control {x}" for x in (F.get("by_war") or {}).values() if x not in kinds]
+    return errors
+
+
 def _vehicle_errors(d: Data) -> list[str]:
     """units.yaml vehicles: kinds with a crew, move and known armour (and a gun with a range, rate,
     an indirect kind for its high explosive and hit bands); armour %s; anti-armour weapons and
@@ -1098,6 +1109,7 @@ def _vehicle_errors(d: Data) -> list[str]:
     if not (isinstance(D.get("turret"), int) and parts) or not isinstance(V.get("riders_struck"), int):
         errors.append("units.yaml: vehicles.damage needs turret (a %) and turret_hit and hull_hit (immobilised and gun %), and vehicles.riders_struck a whole number")
     errors += [f"units.yaml: vehicles.ground names unknown ground {g}" for g in V.get("ground", {}) if g not in d.units["ground"]]
+    errors += _fire_control_errors(V)
     return errors + _at_mine_errors(d)
 
 
@@ -1506,6 +1518,15 @@ def _flag_errors(f: dict, where: str) -> list[str]:
             if k in u and not isinstance(u[k], bool)]
 
 
+def _fc_errors(d: Data, f: dict, where: str) -> list[str]:
+    """Each battlefield unit's fire control (fc), if it gives one: a known one, on a vehicle kind
+    that has one (a tank)."""
+    V = d.units.get("vehicles") or {}
+    fcs, kinds = {k for k in (V.get("fire_control") or {}) if k != "by_war"}, V.get("kinds") or {}
+    return [f"{where}: unit {u.get('name')}: fc (fire control) must be one of {sorted(fcs)}, on a tank" for u in f.get("units", [])
+            if "fc" in u and (u["fc"] not in fcs or not (kinds.get(u.get("vehicle") or "") or {}).get("fc"))]
+
+
 def _via_errors(f: dict, where: str) -> list[str]:
     """Each battlefield unit's route (via), if it has one: a list of hexes on the map."""
     def on_map(h) -> bool:
@@ -1524,6 +1545,10 @@ def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_un
     errors += [f"{where}: unit {u.get('name')} lands must be the number of a landing zone (0 to {len(lz) - 1})" for u in f.get("units", [])
                if "lands" in u and not (isinstance(u["lands"], int) and 0 <= u["lands"] < len(lz))]
     errors += _via_errors(f, where)
+    errors += _fc_errors(d, f, where)
+    armours = set((d.units.get("vehicles") or {}).get("armour") or {})
+    errors += [f"{where}: unit {u.get('name')}: armour must be one of {sorted(armours)}, on a vehicle" for u in f.get("units", [])
+               if "armour" in u and (u["armour"] not in armours or not u.get("vehicle"))]
     errors += [f"{where}: unit {u.get('name')}: fixed (a machine gun's fixed line) must be a hex on the map, for a machine gun" for u in f.get("units", [])
                if "fixed" in u and not (isinstance(u["fixed"], list) and len(u["fixed"]) == 2 and 0 <= u["fixed"][0] < f["size"][0]
                                         and 0 <= u["fixed"][1] < f["size"][1] and u.get("weapon") in (d.units.get("machine_guns") or {}).get("weapons", []))]

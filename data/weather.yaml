@@ -66,9 +66,10 @@ conditions:
   blizzard:   {name: "Blizzard",   precip: snow, wet: 2, visibility: 15,   hardship: 3, min_wind: gale}
   # A desert sandstorm (shamal): blowing sand and dust, no rain. Never rolled from a climate:
   # it is set only where a battlefield names it (73 Easting, 1991) or the GM picks it. Its sight
-  # is a hard limit like fog's; thermal sights see through smoke but not through it here (a
-  # design choice: the grit and heat haze cut what they show to the same range).
-  sandstorm:  {name: "Sandstorm",  precip: none, wet: 0, visibility: 200,  hardship: 1, min_wind: strong}
+  # is a hard limit like fog's, but a thermal sight sees through it to `thermal` (2 m hexes):
+  # Eagle Troop's first kill at 73 Easting was at about 1,000 yards in the storm, and the GAO
+  # found thermal sights saw through haze and smoke.
+  sandstorm:  {name: "Sandstorm",  precip: none, wet: 0, visibility: 200,  hardship: 1, min_wind: strong, thermal: 450}
 
 # ---------- light ----------
 # The battle map's light (its weather's `light`; daylight if none). In the dark no one can be

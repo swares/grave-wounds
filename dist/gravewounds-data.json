@@ -17509,7 +17509,8 @@
     "wet": 0,
     "visibility": 200,
     "hardship": 1,
-    "min_wind": "strong"
+    "min_wind": "strong",
+    "thermal": 450
    }
   },
   "light": {

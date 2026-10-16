@@ -460,12 +460,35 @@ indirect:
 # struck at `riders_struck` %; when the last is, the riders get down where it stood.
 vehicles:
   kinds:
-    tank: {name: "Tanks", crew: 4, move: 12, armour: heavy, rides: 6, gun: {range: 100, rate: 1, he: tank, hit: [[20, 75], [50, 50], [100, 25]]}}
+    tank: {name: "Tanks", crew: 4, move: 12, armour: heavy, rides: 6, fc: true, gun: {range: 100, rate: 1, he: tank, hit: [[20, 75], [50, 50], [100, 25]]}}   # fc: its gun by its fire control (below)
     ifv:  {name: "Infantry fighting vehicles", crew: 3, move: 14, armour: light, carry: 7, ports: true, gun: {range: 80, rate: 2, he: autocannon, hit: [[20, 70], [40, 45], [80, 20]]}}
     apc:  {name: "Armoured carriers", crew: 3, move: 14, armour: light, carry: 10}
     tractor: {name: "Gun tractors and trucks", crew: 2, move: 12, armour: soft, tows: 1}
     lorry: {name: "Lorries", crew: 2, move: 14, armour: soft, carry: 20}
+  # A tank's main gun hits by its fire control, by range in field hexes (first round, at a
+  # stationary target), and reaches the last band: optical sights (the Second World War and
+  # Korea: one sourced point, about 5% a round at 1,500 m, a 76 mm tank needing some 13 rounds for
+  # an even chance; the nearer bands as before), a stadia reticle (the 1950s-60s: an M48's 90 mm),
+  # a laser rangefinder (the 1970s-80s: the 125 mm of a T-64 or T-72), and a modern thermal fire
+  # control (an M1A1: no published figure; the laser figures as a floor, since it did better than
+  # the projections, reaching 3,000 m). Figures from Isby (Weapons and Tactics of the Soviet Army;
+  # Armies of NATO's Central Front) and the GAO's Desert Storm assessment (NSIAD-92-94). A tank
+  # unit takes its war's (by the wound table's battle, `by_war`) unless the battlefield gives
+  # its own (`fc`).
+  fire_control:
+    optical: {name: "Optical sight", range: 150, hit: [[20, 75], [50, 50], [100, 25], [150, 5]]}
+    stadia:  {name: "Stadia reticle", range: 200, hit: [[50, 98], [100, 35], [200, 4]]}
+    laser:   {name: "Laser rangefinder", range: 300, hit: [[50, 98], [100, 94], [150, 75], [200, 55], [300, 35]]}
+    thermal: {name: "Thermal fire control", range: 300, hit: [[50, 98], [100, 94], [150, 75], [200, 55], [300, 35]]}
+    by_war: {"WWII": optical, "Korea": optical, "Vietnam": stadia, "Late 20th century": laser, "Iraq & Afghanistan": thermal}
+  # A vehicle unit's morale checks count whole vehicles lost (knocked out or abandoned), not
+  # crewmen hit in vehicles still fighting: its losses are its crews in vehicles gone. Design choice.
+  # A battlefield may give a vehicle unit its own armour (`armour`). Composite armour (the M1A1
+  # Abrams): as heavy, but a tank gun's round from its front does not knock one out (`front`):
+  # the GAO found no T-72 round reported through an M1A1's front, even from 2,000 m, and no
+  # Abrams destroyed by enemy fire in the Gulf War (NSIAD-92-94). Flank and rear as heavy.
   armour:
+    composite: {rpg: 15, atgm: 60, gun: 35, shell: 1, mine: 25, front: {gun: 0}}
     heavy: {rpg: 15, atgm: 60, gun: 35, shell: 1, mine: 25}
     light: {rpg: 50, atgm: 90, gun: 75, shell: 3, mine: 60}
     # Soft-skinned (lorries and gun tractors): small arms shoot at them too, each aimed shot that
