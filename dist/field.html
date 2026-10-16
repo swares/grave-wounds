@@ -4480,7 +4480,7 @@ function placeArrival(B, u, k){                    // where an arriving unit com
 }
 function lightOfPhase(B, st, out){                 // a phase that sets the light (light: a weather.yaml light level) changes the field's from then on (sunset, dawn); out.light: {phase index: the level's name} (as battle._light_of_phase)
   if (!st.light) return;
-  B.field.weather = { ...(B.field.weather || {}), light: st.light };
+  B.field.weather = { ...B.field.weather, light: st.light };
   (out.light || (out.light = {}))[B.stageNo] = FD.weather.light.levels[st.light].name;
 }
 function advanceStages(B){                         // at the start of an exchange: begin each phase whose exchange has come, and bring on its units (any with no room wait for the next exchange): {begun: [phase index], came: [unit index], flying: [{name, left}], onCall: [name]} (as battle.advance_stages)
