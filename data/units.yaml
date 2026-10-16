@@ -887,6 +887,11 @@ commander:
   # than `hold` fall back to it. Enemies within `guard` of it score `bonus` more as targets.
   # Who holds it is logged each exchange. Design estimates.
   objective: {radius: 1, hold: 3, guard: 4, bonus: 30}
+  # self_play: the commander on both sides (the GM watching). A run stops after `limit`
+  # exchanges, or when one side has held the (first) objective `held` exchanges running, or when
+  # a side has no unit left standing; then the battle ends. On a battlefield, the side its
+  # objective names attacks and the other holds; on open ground both attack. Design choices.
+  self_play: {limit: 60, held: 5}
   # sappers (units marked sappers: mines.sappers): holding, or at the objective, out of contact
   # and with no enemy it knows of within `clear_of` hexes, they lay mines in the
   # row ahead (mixed if the enemy it knows of has vehicles, else anti-personnel), where it is

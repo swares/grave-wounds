@@ -102,9 +102,13 @@ When an item is done, delete it here and note it in the pull request that closes
   objective taken or lost, a retreat); the voice (a staff officer's report, a soldier's
   memoir) by period; what happens with no key (the log as now, or a plainer built-in
   summary); and keeping the player's key in the browser only.
-- **The enemy commander against itself.** A new mode: the enemy commander plays both sides
-  of a battle, attacking with one and holding (or attacking) with the other, the GM only
-  watching, stepping in or ending it. For trying out battlefields and the rules quickly.
+- **The enemy commander against itself, first cut.** Each side has its own commander choice;
+  with both, Run plays on until Stop, a side with nothing left standing, an attacking side
+  holding the objective 5 exchanges running, or 60 exchanges, then ends the battle; Python
+  plays the same (`python -m gravewounds selfplay`), the turn now shared in the rules. Still
+  left out: a search plan when no enemy is in sight and no objective is marked (both sides
+  stand until the limit), many-battle statistics beyond running `-n` battles, and a narrated
+  summary (see the narrator).
 - **Cold, first cut.** Frostbite is a sickness on the force's track (and a named man's), not a
   wound on a body part, and cold-weather clothing, warming tents and fires are only the camp's
   shelter. In battle, only automatic weapons jam; mortars, grenades and vehicles do not freeze.

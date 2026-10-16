@@ -3380,3 +3380,225 @@ function batteryAfter(u){                          // end of an exchange: changi
   if (u.limbering){ u.limbered = !u.limbered; u.limbering = false }
   if (u.state === "broken" || u.state === "fled") u.abandoned = true;
 }
+
+/* ---------- the turn: a battle's moves and exchanges, shared by the page and self-play (as battle.py) ----------
+   B: a battle's state, {sides, table, units, field, size, exchange, phase ("setup", 0, 1 or "over"), stages,
+   stageNo, waiting, start, entry, seq}; the page's S is one. */
+const EDGE_FACING = { S: 1, N: 4, W: 0, E: 3 }, OPPOSITE = { S: "N", N: "S", W: "E", E: "W" };
+const EDGE_BEHIND = ["W", "S", "E", "E", "N", "W"];   // the map edge behind units facing 0-5 (as entrySpots)
+const sideIndex = (B, u) => (u.side === B.sides[0] ? 0 : 1);
+const fieldSupport = B => B.field.support || (B.field.support = []);
+function makeUnit(o, id, table){                   // a new unit as the GM or a battlefield draws it (as battle.make_unit)
+  const nv = o.nv || (o.vehicle ? vehicleDevice(table) : null);
+  return { id, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
+    kit: o.kit, formation: o.formation, mounted: !!o.mounted, ...(isGun(o.weapon) ? { guns: gunKind(o) } : {}), width: o.width || Math.ceil(o.men / form(o).per_hex),
+    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(nv ? { nv } : {}), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}), ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
+}
+function ensureTags(B){                            // each unit's number on its side, kept for the battle (B3 stays B3) (as battle.ensure_tags)
+  for (const u of [...B.units].sort((a, b) => a.id - b.id)) if (!u.n){
+    const k = sideIndex(B, u);
+    u.n = 1 + Math.max(0, ...B.units.filter(v => v.n && sideIndex(B, v) === k).map(v => v.n));
+  }
+}
+function standOrFly(B, unit, lands){               // a battlefield's unit: on the field, or (lands: a landing zone's index) waiting to come in by air (as battle.stand_or_fly)
+  const lz = lands === undefined || lands === null ? null : (B.field.lz || [])[lands];
+  if (!lz){ B.units.push(unit); return }
+  const { men, start, down, dead, hurt, heroes, state, ...tmpl } = unit;
+  (B.field.lifts || (B.field.lifts = [])).push({ unit: { ...tmpl, pos: [...lz] }, lz: [...lz], left: men });
+}
+function holdForStages(B, phases){                 // the battlefield's phases; the units they bring on wait off the map (numbered first, so B5 is still B5) (as battle.hold_for_stages)
+  if (!phases?.length) return;
+  ensureTags(B);
+  B.stages = structuredClone(phases);
+  B.stageNo = -1;
+  B.waiting = [];
+  const lifts = B.field.lifts || [], sup = fieldSupport(B);
+  B.stages.forEach((st, i) => (st.arrive || []).forEach(name => {
+    const u = B.units.find(v => v.name === name), lf = lifts.find(l => l.unit.name === name), b = sup.find(x => x.name === name);
+    if (u){ B.waiting.push({ stage: i, unit: u }); B.units = B.units.filter(v => v !== u) }
+    else if (lf){ B.waiting.push({ stage: i, unit: lf.unit, lift: lf }); B.field.lifts = B.field.lifts.filter(l => l !== lf) }   // coming in by air: it takes off when its phase begins
+    else if (b){ B.waiting.push({ stage: i, unit: { name: b.name }, support: b }); B.field.support = fieldSupport(B).filter(x => x !== b) }   // a battery or aircraft: on call from its phase
+  }));
+}
+function setUpBattle(fid){                         // a battlefield with its armies as drawn up, before the battle starts (as battle.set_up)
+  const F = FD.fields[fid];
+  const B = { sides: F.sides.slice(), table: F.table, units: [], field: structuredClone(F.field), exchange: 0, phase: "setup", stages: null, stageNo: -1, waiting: [], start: null, entry: F.entry || null, seq: 1 };
+  B.size = B.field.size.slice();
+  B.field.lifts = [];
+  F.units.forEach(u => standOrFly(B, makeUnit({ ...u, side: F.sides[u.side] }, B.seq++, B.table), u.lands));
+  holdForStages(B, F.phases);
+  return B;
+}
+const fielded = (B, k) => B.units.some(u => sideIndex(B, u) === k && u.men > 0 && u.state !== "fled");
+function sideFacing(B, k){                         // the way most of a side's men face (its starting edge's way if it has none left) (as battle.side_facing)
+  const n = [0, 0, 0, 0, 0, 0];
+  B.units.filter(u => sideIndex(B, u) === k && u.men > 0 && u.state !== "fled").forEach(u => { n[mod6(u.facing)] += u.men });
+  if (Math.max(...n) > 0) return n.indexOf(Math.max(...n));
+  return k ? 3 : 0;
+}
+function entryEdge(B, k){                          // where side k's new units come in: the battlefield's entry, else the edge behind the way most of its men face; the other side's opposite edge if they would share one (as battle.entry_edge)
+  if (B.entry) return B.entry[k];
+  const own = s => (fielded(B, s) ? EDGE_BEHIND[mod6(sideFacing(B, s))] : null);
+  const mine = own(k), theirs = own(1 - k);
+  if (mine && !(k === 1 && mine === theirs)) return mine;
+  if (theirs) return OPPOSITE[theirs];
+  return k ? "E" : "W";                           // no units on either side: west and east
+}
+function entrySpots(size, facing, ranks){          // front hexes for a unit `ranks` deep with its rear at the map edge behind a side facing this way, middle outwards (as battle.entry_spots)
+  const [W, H] = size, mid = m => Array.from({ length: m }, (_, i) => Math.floor(m / 2) + (i % 2 ? -1 : 1) * Math.ceil(i / 2)).filter(x => x >= 0 && x < m);
+  const out = [];
+  for (let d = ranks; d < ranks + 12; d++){
+    if (facing === 1) mid(W).forEach(c => out.push([c, H - 1 - d]));        // facing the top: come on at the bottom
+    else if (facing === 4) mid(W).forEach(c => out.push([c, d]));           // facing the bottom: at the top
+    else if (facing === 0 || facing === 5) mid(H).forEach(r => out.push([d, r]));   // facing right: at the left
+    else mid(H).forEach(r => out.push([W - 1 - d, r]));                     // facing left: at the right
+  }
+  return out;
+}
+function entryWidths(size, w){                     // the widths to try: as asked (at most the map's width), then a quarter narrower each time, to 1 (as battle.entry_widths)
+  const out = [];
+  for (let x = Math.min(w, size[0] - 4); x >= 1; x = x > 1 ? Math.min(x - 1, Math.floor(x * 0.75)) : 0) out.push(x);
+  return out;
+}
+function placeArrival(B, u, k){                    // where an arriving unit comes on: where the battlefield draws it if there is room, else at its side's entry edge; null if no room (as battle.place_arrival)
+  if (fits([...B.units, u], B.units.length, u, B.size, B.field)) return u;
+  const facing = EDGE_FACING[entryEdge(B, k)];
+  for (const width of entryWidths(B.size, u.width)){
+    const ranks = footprint({ ...u, width, pos: [0, 0], facing }).length;
+    const pos = entrySpots(B.size, facing, ranks).find(h => fits([...B.units, { ...u, width, pos: h, facing }], B.units.length, { ...u, width, pos: h, facing }, B.size, B.field));
+    if (pos) return { ...u, width, pos, facing };
+  }
+  return null;
+}
+function advanceStages(B){                         // at the start of an exchange: begin each phase whose exchange has come, and bring on its units (any with no room wait for the next exchange): {begun: [phase index], came: [unit index], flying: [{name, left}], onCall: [name]} (as battle.advance_stages)
+  const out = { begun: [], came: [], flying: [], onCall: [] };
+  if (!B.stages) return out;
+  while (B.stageNo + 1 < B.stages.length && B.stages[B.stageNo + 1].at <= B.exchange){
+    B.stageNo += 1;
+    out.begun.push(B.stageNo);
+  }
+  B.waiting = B.waiting.filter(w => {
+    if (w.stage > B.stageNo) return true;
+    if (w.support){ fieldSupport(B).push(w.support); out.onCall.push(w.support.name); return false }
+    if (w.lift){ (B.field.lifts || (B.field.lifts = [])).push(w.lift); out.flying.push({ name: w.unit.name, left: w.lift.left }); return false }   // lands by the heliborne rules, a lift at a time
+    const at = placeArrival(B, w.unit, sideIndex(B, w.unit));
+    if (!at) return true;
+    B.units.push({ ...at, arrived: B.exchange });
+    out.came.push(B.units.length - 1);
+    return false;
+  });
+  return out;
+}
+function markStarts(B){                            // with minefields down, where each unit's first moves begin (the ground it crosses) (as battle.mark_starts)
+  if (Object.keys(B.field.mines || {}).length) for (const u of B.units) u.was = [[...u.pos], u.facing];
+}
+function startPhase(B, k){                         // side k's move; at the start of an exchange every broken unit runs first: [{unit, through}] (as battle.start_phase)
+  B.phase = k;
+  const ran = [];
+  for (let i = 0; i < B.units.length; i++){
+    if (k !== 0 || B.units[i].state !== "broken") continue;
+    const through = ranThrough(B.units, i, flee(B.units, i, B.size, B.field));
+    B.units = runAway(B.units, i, B.size, B.field);
+    ran.push({ unit: i, through, fled: B.units[i].state === "fled" });
+  }
+  B.start = B.units.map(u => ({ ...u }));
+  return ran;
+}
+function drifts(B, k, rng){                        // in the dark, each unit of side k that moved this phase may lose its direction: [{unit, strayed, turned}] (as battle.drifts)
+  if (!lightOf(B.field)) return [];
+  const out = [];
+  B.units.forEach((u, i) => {
+    const was = B.start?.[i];
+    if (u.side !== B.sides[k] || !was || (was.pos[0] === u.pos[0] && was.pos[1] === u.pos[1])) return;
+    const r = nightDrift(B.units, i, B.size, B.field, rng);
+    if (!r.lost) return;
+    B.units[i] = r.unit;
+    out.push({ unit: i, strayed: !!r.strayed, turned: r.unit.facing !== u.facing });
+  });
+  return out;
+}
+function realignStarts(B){                         // B.start by unit id, after units joined or left the list (a unit whose riders changed starts as it is) (as battle.realign_starts)
+  const was = B.start || [];
+  B.start = B.units.map(u => { const s = was.find(x => x.id === u.id); return s && s.riders?.id === u.riders?.id ? s : { ...u } });
+}
+function beginBattle(B){                           // set-up done: the first exchange begins, side 0 to move: {stages, ran} (as battle.begin)
+  B.exchange = 1;
+  const stages = advanceStages(B);
+  markStarts(B);
+  return { stages, ran: startPhase(B, 0) };
+}
+function endMove(B, rng){                          // the moving side's move is done: after side 0, side 1 moves; after side 1, the exchange is fought and the next begins: {lost, log, stages, ran} (as battle.end_move)
+  if (B.phase === 0){
+    const lost = drifts(B, 0, rng);
+    return { lost, log: null, stages: null, ran: startPhase(B, 1) };
+  }
+  const lost = drifts(B, 1, rng), r = exchange(B.units, B.table, rng, B.field);
+  B.units = r.units;
+  B.exchange += 1;
+  const stages = advanceStages(B);
+  return { lost, log: r.log, stages, ran: startPhase(B, 0) };
+}
+function commanderMemory(B, M){                   // M {n, mem}: where a side's commander last saw each enemy unit (by index), forgotten when units joined or left the list since (as battle.commander_memory)
+  if (M.n !== B.units.length){ M.mem = {}; M.n = B.units.length }
+  return M.mem;
+}
+function commandMove(B, stance, M, rng){           // the commander orders the moving side (M: its memory, see commanderMemory): its orders (as battle.command_move)
+  const n = B.units.length, r = command(B.units, B.sides[B.phase], B.size, B.field, rng, B.exchange, { stance, memory: commanderMemory(B, M), table: B.table });
+  B.units = r.units;
+  if (B.units.length !== n) realignStarts(B);     // guns hooked up or unhooked: each unit's move this phase starts where it stood
+  M.n = B.units.length;
+  return r.orders;
+}
+const standingSide = (B, k) => B.units.some(u => u.side === B.sides[k] && u.men > 0 && (u.state === "steady" || u.state === "shaken"));
+function playStop(B, held, stances){               // after an exchange of a self-played battle: why it stops, or null; held {side, n}: which attacking side held the (first) objective and for how many exchanges running, updated; stances: each side's (as battle.stop_reason)
+  const P = UD.commander.self_play, gone = [0, 1].filter(k => !standingSide(B, k));
+  const h = objectiveHeld(B.units, B.field)[0]?.held ?? null, o = h !== null && stances[B.sides.indexOf(h)] === "attack" ? h : null;   // a holding side on its ground has not taken it
+  if (o === null) held.n = 0;
+  else held.n = o === held.side ? held.n + 1 : 1;
+  held.side = o;
+  if (gone.length) return { why: "gone", sides: gone };
+  if (held.n >= P.held) return { why: "held", side: o };
+  if (B.exchange - 1 >= P.limit) return { why: "limit" };
+  return null;
+}
+function playStances(fid){                         // a self-played battle's stances: the side the battlefield's objective names attacks and the other holds; else both attack (as battle.stances)
+  const o = fid ? FD.fields[fid]?.objective : null;
+  return o ? [0, 1].map(k => (k === o.side ? "attack" : "hold")) : ["attack", "attack"];
+}
+function crewsOf(B){                               // each fire-support battery with crews (not aircraft), as a unit for the after-battle reckoning (as battle.crews)
+  return fieldSupport(B).map((b, k) => [b, k]).filter(([b]) => !UD.indirect.kinds[b.kind]?.air && typeof b.crew === "number")
+    .map(([b, k]) => ({ id: `sup${k}`, name: b.name, side: b.side, men: b.crew, start: b.crew + (b.crew_down || 0), down: b.crew_down || 0, dead: b.crew_dead || 0, hurt: b.hurt || {}, state: "steady", heroes: [] }));
+}
+const afterAll = B => [...B.units, ...B.units.filter(u => u.riders).map(u => u.riders), ...crewsOf(B)];   // every unit, the men still aboard carriers too, and the batteries' crews
+function sideEvac(B, k){                           // side k's medevac kind (its war's, helicopters falling back without a zone or a helicopter left), or null if none (as battle.side_medevac)
+  const H = UD.heliborne ? helos(B.field, B.sides[k]) : null, left = !!H && H.aircraft - (H.damaged || 0) - (H.downed || 0) > 0;
+  return medevacKind(B.table, (B.field.lz || []).length > 0, left);
+}
+function afterBattle(B, care, evac, rng){          // the battle over: each unit's aftermath (care, evac: per unit) and the heroes' fates, applied: {all, after, fates} (as battle.after_battle)
+  const all = afterAll(B), am = aftermath(all, care, rng, evac);
+  const after = all.map((u, i) => ({ id: u.id, killed: u.dead || 0, ...am[i] }));
+  const fates = heroFates(B.units, B.table, rng);  // heroes left on the field: found, taken prisoner or killed
+  for (const f of fates){
+    const h = B.units[f.unit].heroes.find(x => x.id === f.hero);
+    if (f.fate === "killed") h.state = "dead";
+    else if (f.fate === "prisoner") h.state = "prisoner";
+    h.fate = f.fate;
+  }
+  B.phase = "over";
+  return { all, after, fates };
+}
+function selfPlay(fid, rng, stances = null){       // a battlefield played to its end by the commander on both sides (as battle.self_play): {battle, stop, orders, after}
+  const B = setUpBattle(fid), st = stances || playStances(fid), mem = [{ n: -1, mem: {} }, { n: -1, mem: {} }], held = { side: null, n: 0 };
+  beginBattle(B);
+  let stop = null, orders = 0;
+  while (!stop){
+    for (const k of [0, 1]){
+      orders += commandMove(B, st[k], mem[k], rng).length;
+      endMove(B, rng);
+    }
+    stop = playStop(B, held, st);
+  }
+  const all = afterAll(B), evac = [sideEvac(B, 0), sideEvac(B, 1)];
+  const r = afterBattle(B, all.map(() => "field"), all.map(u => evac[sideIndex(B, u)]), rng);
+  return { battle: B, stop, orders, after: r.after, fates: r.fates };
+}

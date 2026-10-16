@@ -8,8 +8,9 @@ a unit.
 All the numbers are in `data/units.yaml`. They are design estimates, tuned by simulation:
 `python3 -m gravewounds units` prints the pace and the example fights below.
 
-The rules and engine are in `gravewounds/units.py`; the field map page, `dist/field.html`,
-runs the same rules in the browser (`templates/units.js`, checked against the Python).
+The rules and engine are in `gravewounds/units.py` (the enemy commander in `commander.py`, the
+turn of a battle in `battle.py`); the field map page, `dist/field.html`, runs the same rules in
+the browser (`templates/units.js`, checked against the Python).
 
 ## The choices behind it
 
@@ -295,8 +296,9 @@ starts again from the starting units.
 
 ## The enemy commander
 
-**Enemy commander** (under the battle buttons) hands one side to a scripted commander, either
-**attacking** or **holding**. At the start of each of that side's moves it orders the side's
+**Enemy commander** (under the battle buttons) hands a side to a scripted commander, either
+**attacking** or **holding**; each side has its own choice, and *You move them* keeps it the
+GM's. At the start of each of that side's moves it orders the side's
 units, one after another, and logs each order ("Billmen (Lancastrians) move 6 hexes toward
 Billmen (Yorkists)."). **Undo its orders** puts the units back where they began the move, so
 you can move them yourself or press **Give its orders** for a fresh set. Nothing else
@@ -570,6 +572,40 @@ What it does not do yet:
   across the whole front, no feints or scouting. Battlefields mark only one. Victory is still the GM's call; the objective
   line in the log only says who stands on it.
 - It plays only on the field map, not the travel map.
+
+### Both sides (self-play)
+
+With the commander on both sides the GM only watches, steps in or ends it. **Next** steps a move
+at a time; **Run** (shown only then) plays a move about every 0.7 seconds until the GM presses
+**Stop**, takes a side back, or the run stops itself (units.yaml `commander.self_play`):
+
+- a side has no unit left standing (steady or shaken);
+- an attacking side has taken the (first) objective and held it `held` (5) exchanges running (a
+  holding side standing on its own ground does not count, or a defended objective would end
+  every run at once);
+- `limit` (60) exchanges have been fought.
+
+Then the battle ends, as with *End the battle* (the dead counted, the wounded carried off, each
+side's medevac as ticked). On a battlefield the side its objective names attacks and the other
+holds (marked *as fought* in the list); on open ground, or a battlefield with no objective, both
+attack. These are design choices.
+
+The turn itself (phases beginning and bringing on units, broken units running, losing the way
+in the dark, the exchange, the end of the battle) is in the rules, `templates/units.js` (the turn)
+and `gravewounds/battle.py`, so the page and Python play a battle the same way. From Python:
+
+```
+python -m gravewounds selfplay --field wanat-2008             # one battle, the stances as fought
+python -m gravewounds selfplay --field visby-1361 -n 5 --seed 3 --stances attack,attack
+```
+
+Each battle prints why it stopped, after how many exchanges, and each side's men: killed, left
+on the field, died of wounds, carried to camp, and units still standing. Python is slower than
+the page (a second or so a move on a large field).
+
+Still left out: the commander has no plan for finding an enemy it cannot see, so with no
+objective and no enemy in sight both sides stand until the limit (Visby, both attacking, can
+end that way); a run stops only after a whole exchange; no narrated summary of the battle.
 
 ## From the travel map
 
