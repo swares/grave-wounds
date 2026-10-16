@@ -1018,17 +1018,10 @@ def _to_see(d: Data, us: list, i: int, ranked: list, where: tuple) -> dict | Non
     u, C = us[i], d.units["commander"]
     allow, tries = U.allowance(d, u), C["tries"]
     foes = {k for k, j in U.occupancy(d, us).items() if us[j]["side"] != u["side"]}
-    cands = []
-    for h, c in reachable(d, us, i, size, allow * C["spot"]["moves"], field).items():
-        if list(h) == list(u["pos"]) or _mined(field, u["pos"], h, u["side"]):
-            continue
-        seen = _sees_from(d, field, {**u, "pos": list(h)}, ranked, foes)
-        if seen is not None:
-            cands.append((c, seen[0], h[1], h[0], seen[1], seen[2]))
+    cands = _spot_cands(d, us, i, ranked, (size, field, foes))
     if not cands:
         return None
-    cands.sort()
-    safe = [x for x in cands if x[0] <= cands[0][0] + C["spot"]["safe"] * allow and _safe_spot(d, us, i, [x[3], x[2]], ranked)]
+    safe = [x for x in cands if x[0] <= cands[0][0] + C["spot"]["safe"] * allow and _safe_spot(d, us, [x[3], x[2]], ranked)]
     for c, _, row, col, j, f in safe or cands:
         if tries <= 0:
             return None
@@ -1044,7 +1037,22 @@ def _to_see(d: Data, us: list, i: int, ranked: list, where: tuple) -> dict | Non
     return None
 
 
-def _safe_spot(d: Data, us: list, i: int, h: list, ranked: list) -> bool:
+def _spot_cands(d: Data, us: list, i: int, ranked: list, where: tuple) -> list:
+    """[(movement, rank, row, col, enemy, facing)], cheapest first, for each hex within spot.moves
+    moves (not its own, no known mines on the straight way) from which it sees a known enemy."""
+    size, field, foes = where
+    u = us[i]
+    out = []
+    for h, c in reachable(d, us, i, size, U.allowance(d, u) * d.units["commander"]["spot"]["moves"], field).items():
+        if list(h) == list(u["pos"]) or _mined(field, u["pos"], h, u["side"]):
+            continue
+        seen = _sees_from(d, field, {**u, "pos": list(h)}, ranked, foes)
+        if seen is not None:
+            out.append((c, seen[0], h[1], h[0], seen[1], seen[2]))
+    return sorted(out)
+
+
+def _safe_spot(d: Data, us: list, h: list, ranked: list) -> bool:
     """No enemy its side knows of, where it was last seen, reaches hex h with its missile weapon."""
     return not any("range" in d.weapons[us[j]["weapon"]] and U.field_range(d, us[j]["weapon"], U.hdist(p, h)) is not None for j, p in ranked)
 

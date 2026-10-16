@@ -2856,14 +2856,8 @@ function ownFight(us, i, field){                  // the controller has a fight 
 function toSee(us, i, ranked, [size, field]){     // the controller's spot within commander.spot.moves moves (not its own hex, no known mines on the way) from which, facing it, it sees a known enemy, touching none; a spot out of known enemies' reach preferred within spot.safe moves more; of equals the best target, then lowest row and column; beyond this move, a move toward it (as commander._to_see)
   const u = us[i], C = UD.commander, allow = allowance(u), occ = occupancy(us), foes = new Set(Object.keys(occ).filter(k => us[occ[k]].side !== u.side));
   let tries = C.tries;
-  const cands = [];
-  for (const [h, c] of reachable(us, i, size, allow * C.spot.moves, field).values()){
-    if ((h[0] === u.pos[0] && h[1] === u.pos[1]) || mined(field, u.pos, h, u.side)) continue;
-    const seen = seesFrom(field, { ...u, pos: [...h] }, ranked, foes);
-    if (seen) cands.push([c, seen[0], h[1], h[0], seen[1], seen[2]]);
-  }
+  const cands = spotCands(us, i, ranked, [size, field, foes]);
   if (!cands.length) return null;
-  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4] || a[5] - b[5]);
   const safe = cands.filter(x => x[0] <= cands[0][0] + C.spot.safe * allow && safeSpot(us, [x[3], x[2]], ranked));
   for (const [c, , row, col, j, f] of safe.length ? safe : cands){
     if (tries <= 0) return null;
@@ -2878,6 +2872,15 @@ function toSee(us, i, ranked, [size, field]){     // the controller's spot withi
     if (r[0]) return r[0];
   }
   return null;
+}
+function spotCands(us, i, ranked, [size, field, foes]){   // [movement, rank, row, col, enemy, facing], cheapest first, for each hex within spot.moves moves (not its own, no known mines on the way) from which it sees a known enemy (as commander._spot_cands)
+  const u = us[i], out = [];
+  for (const [h, c] of reachable(us, i, size, allowance(u) * UD.commander.spot.moves, field).values()){
+    if ((h[0] === u.pos[0] && h[1] === u.pos[1]) || mined(field, u.pos, h, u.side)) continue;
+    const seen = seesFrom(field, { ...u, pos: [...h] }, ranked, foes);
+    if (seen) out.push([c, seen[0], h[1], h[0], seen[1], seen[2]]);
+  }
+  return out.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4] || a[5] - b[5]);
 }
 const safeSpot = (us, h, ranked) => !ranked.some(([j, p]) => "range" in FD.weapons[us[j].weapon] && fieldRange(us[j].weapon, hdist(p, h)) !== null);   // no known enemy, where last seen, reaches h with its missile weapon (as commander._safe_spot)
 function stepTo(us, i, [spot, j, ranked], [size, field, foes, tries]){   // a move toward a spot beyond this move: the hex in its allowance nearest the spot, then cheapest, lowest row and column, nearer than it stands, touching no enemy, facing the enemy it goes to see: [order or null, tries left] (as commander._step_to)
