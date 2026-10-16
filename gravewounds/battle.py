@@ -308,15 +308,31 @@ def _standing(bt: dict, k: int) -> bool:
     return any(u["side"] == bt["sides"][k] and u["men"] > 0 and u["state"] in ("steady", "shaken") for u in bt["units"])
 
 
+def secured(d: Data, bt: dict, side) -> bool:
+    """No standing enemy of side within commander.self_play.secure hexes of the (first) objective."""
+    r, at = d.units["commander"]["self_play"]["secure"], bt["field"]["objective"]
+    return not any(u["side"] != side and u["men"] > 0 and u["state"] in STANDING and U.hdist(u["pos"], at) <= r for u in bt["units"])
+
+
+def to_come(bt: dict, k: int) -> bool:
+    """Side k has units still to come on: a later phase's (not fire support), or by air."""
+    return (any(not w.get("support") and side_index(bt, w["unit"]) == k for w in bt.get("waiting") or [])
+            or any(lf["unit"]["side"] == bt["sides"][k] and lf["left"] > 0 for lf in bt["field"].get("lifts") or []))
+
+
 def stop_reason(d: Data, bt: dict, held: dict, how: list) -> dict | None:
     """After an exchange of a self-played battle: why it stops, or None; held {side, n}: which
     attacking side held the (first) objective and for how many exchanges running, updated (a
     holding side on its own ground has not taken it); how: each side's stance (commander.self_play)."""
     P = d.units["commander"]["self_play"]
-    gone = [k for k in (0, 1) if not _standing(bt, k)]
+    gone = [k for k in (0, 1) if not _standing(bt, k) and not to_come(bt, k)]
     lines = U.objective_held(d, bt["units"], bt["field"])
     h = lines[0]["held"] if lines else None
-    o = h if h is not None and how[bt["sides"].index(h)] == "attack" else None
+    if not held.get("seen"):                       # who held it after the first exchange: holding it from the start is not taking it
+        held["seen"], held["start"] = True, h
+    elif h != held.get("start"):                   # once it has changed hands, taking it counts
+        held["start"] = None
+    o = h if h is not None and h != held.get("start") and how[bt["sides"].index(h)] == "attack" and secured(d, bt, h) else None
     if o is None:
         held["n"] = 0
     elif o == held["side"]:
@@ -328,16 +344,27 @@ def stop_reason(d: Data, bt: dict, held: dict, how: list) -> dict | None:
         return {"why": "gone", "sides": gone}
     if held["n"] >= P["held"]:
         return {"why": "held", "side": o}
-    if bt["exchange"] - 1 >= P["limit"]:
+    if bt["exchange"] - 1 >= play_limit(d, bt):
         return {"why": "limit"}
     return None
 
 
+def play_limit(d: Data, bt: dict) -> int:
+    """The exchanges a self-played battle runs at most: the limit, or after_phases past its last
+    phase's start."""
+    P = d.units["commander"]["self_play"]
+    last = max([0] + [s["at"] for s in bt.get("stages") or []])
+    return max(P["limit"], min(P["most"], last + P["after_phases"] if last else 0))
+
+
 def stances(d: Data, fid: str | None) -> list:
     """A self-played battle's stances: the side the battlefield's objective names attacks and the
-    other holds; else both attack."""
-    o = (d.fields.get(fid) or {}).get("objective") if fid else None
-    return ["attack" if k == o["side"] else "hold" for k in (0, 1)] if o else ["attack", "attack"]
+    other holds; else its stances as fought (a field with no objective); else both attack."""
+    F = d.fields.get(fid) or {} if fid else {}
+    o = F.get("objective")
+    if o:
+        return ["attack" if k == o["side"] else "hold" for k in (0, 1)]
+    return list(F["stances"]) if F.get("stances") else ["attack", "attack"]
 
 
 def crews(d: Data, bt: dict) -> list:
@@ -473,7 +500,7 @@ def summary(d: Data, r: dict) -> list:
     st = r["stop"]
     why = {"gone": lambda: " and ".join(bt["sides"][k] for k in st["sides"]) + " with no unit left standing",
            "held": lambda: f"{st['side']} took the objective and held it {P['held']} exchanges running",
-           "limit": lambda: f"{P['limit']} exchanges fought"}[st["why"]]()
+           "limit": lambda: f"{play_limit(d, bt)} exchanges fought"}[st["why"]]()
     out = [f"Stopped after {bt['exchange'] - 1} exchanges: {why}. {r['orders']} orders given."]
     every = after_all(d, bt)
     for k, side in enumerate(bt["sides"]):

@@ -23,6 +23,8 @@ table: revolution-1775-83-all-hits
 travel: {map: cowpens-1781, place: "Hannah's Cowpens", within: 2, sides: ["Americans", "British"]}
 size: [120, 100]
 weather: {cond: fair, wind: calm, dir: NW, ground: {mud: 0, snow: 0}}
+# How each army fought (attack or hold), for the enemy commander on both sides; a field with an objective takes it from the objective.
+stances: [hold, attack]
 # Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:

@@ -745,8 +745,13 @@ function lineFire(units, occ, field, i, j, path){   // path [from hex, to hex, d
   }
   return pen;
 }
+const beyondReach = (weapon, dist) => !isGun(weapon) && !FD.weapons[weapon].off_map && fieldRange(weapon, dist, 100) === null;   // out of range even with its bands doubled (the wind and height add at most half): a shortcut that changes nothing (as units._beyond_reach)
+function canShoot(u, field, [h, t, dist], clear){  // u's weapon reaches from h to t, in sight, with a line of fire (as units._can_shoot)
+  if (beyondReach(u.weapon, dist)) return false;   // out of range however the wind and height help: no need to look
+  const wx = shotWeather(field, u.weapon, dist, h, t, seerOf(u)), reach = (wx.reach || 0) + heightEdge(field, u.weapon, h, t)[1];
+  return !wx.blocked && reaches(u, dist, reach) && (!clear || clear(h, t, dist));
+}
 function nearestAhead(u, front, fv, hexes, field, clear = null){  // [distance, front hex, target hex]: the shortest in range of u's weapon and in sight ahead of the line, with a line of fire
-  const weapon = u.weapon;
   let best = null;
   for (const t of hexes){
     const c = cube(t);
@@ -754,9 +759,7 @@ function nearestAhead(u, front, fv, hexes, field, clear = null){  // [distance, 
       const s = cube(h);
       if ((c[0] - s[0]) * fv[0] + (c[1] - s[1]) * fv[1] + (c[2] - s[2]) * fv[2] <= 0) continue;
       const dist = hdist(h, t);
-      if (best !== null && dist >= best[0]) continue;
-      const wx = shotWeather(field, weapon, dist, h, t, seerOf(u)), reach = (wx.reach || 0) + heightEdge(field, weapon, h, t)[1];
-      if (!wx.blocked && reaches(u, dist, reach) && (!clear || clear(h, t, dist))) best = [dist, h, t];
+      if ((best === null || dist < best[0]) && canShoot(u, field, [h, t, dist], clear)) best = [dist, h, t];
     }
   }
   return best;
@@ -1770,6 +1773,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   us.forEach((u, i) => {
     const cut = Math.min(acc.lost[i], u.men);
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
+    if (cut > 0) u.hit = true; else delete u.hit;   // it lost men this exchange: under fire, for the next moves
   });
   log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table), postsMoving(field)),
     ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng), ...digAll(us), ...sappersAll(us, field));
@@ -2297,7 +2301,7 @@ function runAway(units, i, size, field = null){   // units after broken unit i r
 
 // ---------- the enemy commander (as gravewounds.commander) ----------
 const ROUTED = new Set(["broken", "fled"]);
-const AI_MOVES = new Set(["move", "charge", "advance", "fall_back", "close_up", "spot"]);   // orders that take a unit somewhere new (as commander.MOVES)
+const AI_MOVES = new Set(["move", "charge", "advance", "fall_back", "close_up", "spot", "search"]);   // orders that take a unit somewhere new (as commander.MOVES)
 function command(units, side, size, field, rng, exchange = null, { stance = "attack", memory = null, table = null } = {}){   // {units, orders}: each unit of side ordered in turn, by its quality (units.yaml commander); stance attack or hold; memory: where it last saw each enemy (updated in place)
   let us = units.map(u => ({ ...u }));
   const orders = [], mem = memory ?? {};
@@ -2846,9 +2850,9 @@ function rankedFoes(us, i, known, field){         // the enemies its side knows 
   });
   return out.sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(([, j, p]) => [j, p]);
 }
-function ownFight(us, i, field){                  // the controller has a fight of its own: an enemy touching it, one it sees within its weapon's reach, or pinned under fire (as commander._own_fight)
+function ownFight(us, i, field){                  // the controller has a fight of its own: an enemy touching it, one it sees within its weapon's reach, or under fire (pinned, or it lost men last exchange) (as commander._own_fight)
   const u = us[i];
-  if (u.pinned || inContact(us, occupancy(us), i)) return true;
+  if (u.pinned || u.hit || inContact(us, occupancy(us), i)) return true;
   if (!("range" in FD.weapons[u.weapon])) return false;
   return us.some(e => e.side !== u.side && !ROUTED.has(e.state) && e.men > 0 && fieldRange(u.weapon, hdist(u.pos, e.pos)) !== null
     && sees(field, u, e.pos, sightHexes(field, e.pos, seerOf(u))));
@@ -2904,7 +2908,7 @@ function seesFrom(field, u, ranked, foes){        // [rank, enemy, facing] of th
   }
   return null;
 }
-const unsteady = (us, i, t) => (!us[i].prone && underFire(us, i) ? { act: "ground", target: t } : null);   // a shaken unit holds, going to ground under missile fire (as commander._unsteady)
+const unsteady = (us, i, t) => (!us[i].prone && !us[i].vehicle && underFire(us, i) ? { act: "ground", target: t } : null);   // a shaken unit holds, going to ground under missile fire (not vehicles) (as commander._unsteady)
 function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance, known, exchange]
   const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = aiTarget(us, i, ctx[3], ctx[1]);
   if (u.state !== "steady") return unsteady(us, i, t);
@@ -2915,10 +2919,22 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   const sap = sapperOrder(us, i, t, ctx);
   if (sap) return sap;
   if ((obj !== null || ctx[2] === "hold") && digs(us, i, ctx)) return { act: "dig", target: t };
-  if (t === null && obj === null) return null;
+  if (t === null && obj === null) return search(us, i, ctx);
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
   const o = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx);
   return t === null ? o : lastSeen(o, ctx[3], t, ctx[4]);
+}
+function search(us, i, [size, field, stance, known, exchange]){   // attacking, with no objective and no enemy it knows of: a move toward the last hex on the map straight ahead along its facing; holding, null (as commander._search)
+  if (stance !== "attack") return null;
+  const u = us[i], fs = fieldSize(field);
+  let ahead = [...u.pos];
+  for (let n = 1; ; n++){
+    const h = step(u.pos, u.facing, n);
+    if (!onMap(h, fs)) break;
+    ahead = [...h];
+  }
+  if (ahead[0] === u.pos[0] && ahead[1] === u.pos[1]) return null;
+  return toward(us, i, null, [size, { ...field, objective: ahead, objective_radius: null }, stance, known, exchange], "search");
 }
 function ammoOrder(us, i, t, [size, field, stance, known, exchange]){   // low or out with a supply source in reach: resupply (out at once; low with no known enemy in its range); out with none, attacking: fall back toward its supply edge (as commander._ammo_order)
   const u = us[i], state = ammoState(u);
@@ -3156,7 +3172,7 @@ function stayOrder(us, i, t, f, shooter){         // on the ground it stays down
   const u = us[i], C = UD.commander;
   if (u.prone) return null;
   if (f !== u.facing) return { act: "turn", target: t, facing: f };
-  const dig = shooter && C.ground_with.includes(u.weapon) && (C.cover[u.quality] ?? 0) > 0 && underFire(us, i);
+  const dig = shooter && !u.vehicle && C.ground_with.includes(u.weapon) && (C.cover[u.quality] ?? 0) > 0 && underFire(us, i);   // vehicles do not go to ground
   return dig ? { act: "ground", target: t } : null;
 }
 const aside = (h, to) => { const x = 2 * h[0] + (h[1] & 1), tx = 2 * to[0] + (to[1] & 1); return (x - tx) ** 2 + 3 * (h[1] - to[1]) ** 2 };   // squared straight-line distance: ties go to the move nearer the straight line (as commander.aside)
@@ -3593,20 +3609,33 @@ function commandMove(B, stance, M, rng){           // the commander orders the m
   return r.orders;
 }
 const standingSide = (B, k) => B.units.some(u => u.side === B.sides[k] && u.men > 0 && (u.state === "steady" || u.state === "shaken"));
-function playStop(B, held, stances){               // after an exchange of a self-played battle: why it stops, or null; held {side, n}: which attacking side held the (first) objective and for how many exchanges running, updated; stances: each side's (as battle.stop_reason)
-  const P = UD.commander.self_play, gone = [0, 1].filter(k => !standingSide(B, k));
-  const h = objectiveHeld(B.units, B.field)[0]?.held ?? null, o = h !== null && stances[B.sides.indexOf(h)] === "attack" ? h : null;   // a holding side on its ground has not taken it
+const toCome = (B, k) => (B.waiting || []).some(w => !w.support && sideIndex(B, w.unit) === k) || (B.field.lifts || []).some(l => l.unit.side === B.sides[k] && l.left > 0);   // side k has units still to come on: a later phase's, or by air (as battle.to_come)
+function secured(B, side){                        // no standing enemy of side within commander.self_play.secure hexes of the (first) objective (as battle.secured)
+  const R = UD.commander.self_play.secure, at = B.field.objective;
+  return !B.units.some(u => u.side !== side && u.men > 0 && STANDING.has(u.state) && hdist(u.pos, at) <= R);
+}
+function playStop(B, held, stances){               // after an exchange of a self-played battle: why it stops, or null; held {side, n}: which attacking side held the (first) objective and for how many exchanges running, updated; stances: each side's; a side with none standing but units still to come is not gone (as battle.stop_reason)
+  const P = UD.commander.self_play, gone = [0, 1].filter(k => !standingSide(B, k) && !toCome(B, k));
+  const h = objectiveHeld(B.units, B.field)[0]?.held ?? null;
+  if (!held.seen){ held.seen = true; held.start = h }   // who held it after the first exchange: holding it from the start is not taking it
+  else if (h !== held.start) held.start = null;   // once it has changed hands, taking it counts
+  const o = h !== null && h !== held.start && stances[B.sides.indexOf(h)] === "attack" && secured(B, h) ? h : null;   // a holding side on its ground has not taken it; nor has one with the enemy still close round it
   if (o === null) held.n = 0;
   else held.n = o === held.side ? held.n + 1 : 1;
   held.side = o;
   if (gone.length) return { why: "gone", sides: gone };
   if (held.n >= P.held) return { why: "held", side: o };
-  if (B.exchange - 1 >= P.limit) return { why: "limit" };
+  if (B.exchange - 1 >= playLimit(B)) return { why: "limit" };
   return null;
 }
-function playStances(fid){                         // a self-played battle's stances: the side the battlefield's objective names attacks and the other holds; else both attack (as battle.stances)
-  const o = fid ? FD.fields[fid]?.objective : null;
-  return o ? [0, 1].map(k => (k === o.side ? "attack" : "hold")) : ["attack", "attack"];
+function playLimit(B){                            // the exchanges a self-played battle runs at most: the limit, or after_phases past its last phase's start (as battle.play_limit)
+  const P = UD.commander.self_play, last = Math.max(0, ...(B.stages || []).map(s => s.at));
+  return Math.max(P.limit, Math.min(P.most, last ? last + P.after_phases : 0));
+}
+function playStances(fid){                         // a self-played battle's stances: the side the battlefield's objective names attacks and the other holds; else its stances as fought; else both attack (as battle.stances)
+  const F = fid ? FD.fields[fid] : null, o = F?.objective;
+  if (o) return [0, 1].map(k => (k === o.side ? "attack" : "hold"));
+  return F?.stances ? [...F.stances] : ["attack", "attack"];
 }
 function crewsOf(B){                               // each fire-support battery with crews (not aircraft), as a unit for the after-battle reckoning (as battle.crews)
   return fieldSupport(B).map((b, k) => [b, k]).filter(([b]) => !UD.indirect.kinds[b.kind]?.air && typeof b.crew === "number")

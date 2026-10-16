@@ -325,7 +325,10 @@ general. All its numbers are in units.yaml `commander`.
   A remembered enemy is gone for where it was last seen, and the log says so ("move 4 hexes
   toward where Archers (Yorkists) were last seen (exchange 2)").
 - **Not steady.** A shaken unit stays where it is. If an enemy's missile weapon reaches it,
-  it goes to ground.
+  it goes to ground (not a vehicle unit).
+- **Searching.** Attacking, with no objective marked and no enemy its side knows of, a unit
+  goes forward to find one: a move toward the last hex on the map straight ahead along its
+  facing, as toward an objective ("move 6 hexes forward to find the enemy"). Holding, it stays.
 - **Nerves.** A steady unit first rolls d100. At or under its quality's chance it hesitates
   and does nothing this move: green men 30%, regulars 10%, veterans never.
 - **Where to go.** It scores every hex it could reach, facing the target, and takes the
@@ -344,7 +347,8 @@ general. All its numbers are in units.yaml `commander`.
   than closing. It keeps off the enemy (2 hexes or more) if it can, and never charges,
   except when storming works (below).
   With a modern weapon (breech-loaders on), regulars and veterans under fire go to ground
-  where they stand. Older armies stand up.
+  where they stand. Older armies stand up, and so do vehicles (tanks and carriers do not go
+  to ground; self-play showed tanks lying still under fire for the rest of a battle).
 - **Men without missiles** charge only with the odds their quality wants: their men times
   attack % against the target's. The men of steady friendly units touching it (not guns or
   vehicles) count with its own: a column backed by its supports goes in together.
@@ -354,14 +358,18 @@ general. All its numbers are in units.yaml `commander`.
     veterans even odds.
   - Without the odds they close to just short of contact and wait. A friend behind with the
     odds may charge through such a waiting unit (see moving, above).
-- **Storming works.** Attacking, a unit armed with a smoothbore musket, a rifle-musket or a
-  breech-loader (`commander.storm`: black powder with the bayonet) whose target holds works
+- **Storming works.** Attacking, a unit armed with a smoothbore musket, a rifle-musket, a
+  breech-loader, a modern service or assault rifle or a sub-machine gun (`commander.storm`)
+  whose target holds works
   does not stop at range. The target holds works if it is dug in or emplaced where it
   stands, if any of its hexes has cover from works toward the attacker (a bank, trench, wall,
   palisade or the like), or if it stands in buildings, tall buildings or rubble. The unit
   scores hexes as men without missiles do, taking no account of cover on the way, and
-  charges with the same odds. Holding units, other weapons (flintlock rifles, matchlocks,
-  bows, modern rifles) and targets in woods or scrub are not stormed. A wall or palisade
+  charges with the same odds; it still fires as it goes. Holding units, other weapons
+  (flintlock rifles, matchlocks, bows, machine guns, rocket launchers) and targets in woods or
+  scrub are not stormed. Modern infantry joined the list after self-play (see
+  `docs/selfplay-review.md`): firing from range alone almost never shifted men under cover, and
+  attacks stalled. A wall or palisade
   blocks hand-to-hand fighting, so stormers stop at its foot unless they carry ladders (see
   *Escalade*), when they go up it; breaching it is still the GM's order.
 - **Facing.** A unit whose target is already in its front arc keeps its facing rather than
@@ -527,7 +535,9 @@ general. All its numbers are in units.yaml `commander`.
       within its move nearest the spot ("move up ... toward ..., from where they will see ..."),
       choosing again each move from what its side knows then. It never gives up shooting,
       charging, going to ground or digging for it, and stays while it has a fight of its own:
-      an enemy touching it, an enemy it sees within its own weapon's reach, or pinned. A
+      an enemy touching it, an enemy it sees within its own weapon's reach, or under fire:
+      pinned, or it lost men last exchange (each unit is marked `hit` for the moves after an
+      exchange in which it lost men). A
       controller gone to ground, digging or in reserve stays too. If no spot within three moves
       sees one, it stays. Holding, it does not
       move its controllers: its aircraft wait for an enemy to come into their sight.
@@ -571,8 +581,8 @@ general. All its numbers are in units.yaml `commander`.
 What it does not do yet:
 - It leaves works alone, lays a fixed line ahead only straight toward the nearest enemy it
   knows of or along its facing (no lines across its front, no interlocking lines), moves its air controllers to see a target only when attacking,
-  at most three moves away, and only when they would otherwise stand (not when merely shot at
-  from out of their sight: "under fire" means pinned); it plans no creeping barrage for
+  at most three moves away, and only when they would otherwise stand (not when pinned or after
+  losing men the exchange before); it plans no creeping barrage for
   riflemen who stop at range.
 - Its reserve holds until committed; then a unit sent to plug a gap goes there, and others
   fight. Reserve units ignore the objective until committed.
@@ -587,16 +597,23 @@ With the commander on both sides the GM only watches, steps in or ends it. **Nex
 at a time; **Run** (shown only then) plays a move about every 0.7 seconds until the GM presses
 **Stop**, takes a side back, or the run stops itself (units.yaml `commander.self_play`):
 
-- a side has no unit left standing (steady or shaken);
-- an attacking side has taken the (first) objective and held it `held` (5) exchanges running (a
-  holding side standing on its own ground does not count, or a defended objective would end
-  every run at once);
-- `limit` (60) exchanges have been fought.
+- a side has no unit left standing (steady or shaken) and none still to come on (a later
+  phase's units, or a lift still in the air);
+- an attacking side has taken the (first) objective and held it `held` (5) exchanges running,
+  with no standing enemy within `secure` (10) hexes of it (a holding side standing on its own
+  ground does not count, or a defended objective would end every run at once; nor does a hold
+  with the enemy still close round it; nor a side that held it from the start, until it has
+  changed hands: Grozny's battlefield opens with the Russians in the station, and the real fight
+  was the night they were destroyed there);
+- `limit` (60) exchanges have been fought, or, on a battlefield with phases, `after_phases`
+  (30) past the last phase's start if that is later, but at most `most` (240: a battle whose
+  phases run for many hours is cut short).
 
 Then the battle ends, as with *End the battle* (the dead counted, the wounded carried off, each
 side's medevac as ticked). On a battlefield the side its objective names attacks and the other
-holds (marked *as fought* in the list); on open ground, or a battlefield with no objective, both
-attack. These are design choices.
+holds (marked *as fought* in the list); a battlefield with no objective may say how its armies
+fought (`stances`: Agincourt, Cowpens and Sidon hold and attack, Fallujah attack and hold);
+otherwise, and on open ground, both attack. These are design choices.
 
 The turn itself (phases beginning and bringing on units, broken units running, losing the way
 in the dark, the exchange, the end of the battle) is in the rules, `templates/units.js` (the turn)
@@ -647,9 +664,11 @@ line stays under each passage, so what the game decided can always be checked.
 
 From Python, `selfplay --story` prints the same turning points in plain words (no model).
 
-Still left out: the commander has no plan for finding an enemy it cannot see, so with no
-objective and no enemy in sight both sides stand until the limit (Visby, both attacking, can
-end that way); a run stops only after a whole exchange; no narrated summary of the battle.
+Every battlefield was played this way and set against the battle as fought:
+`docs/selfplay-review.md` says what went wrong, what was changed and what is left.
+
+Still left out: a commander's plan (an envelopment, a withdrawal when outflanked); a run stops
+only after a whole exchange; no narrated summary of the battle.
 
 ## From the travel map
 

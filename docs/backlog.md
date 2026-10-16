@@ -23,7 +23,7 @@ When an item is done, delete it here and note it in the pull request that closes
   its move back. What a unit sees from where it has just moved, the units ordered after it know. Attacking, it smokes enemies
   shooting at men who cannot reply, calls its aircraft, puts one battery on counter-battery fire and displaces batteries under it (moving a placed one along its map edge), and in the dark lights an enemy it has lost sight of. Its sappers lay one row at a time (no deep belts), and work a lane through a known belt
   row by row along their straight way, one lane as wide as their front; the other units are not held back for it. Its creeping barrages start on the enemy and lift a fixed 3 lines, and it plans none
-  for riflemen who stop at range. Its foot units ride its carriers up and get down once an enemy is in reach. Its aircraft prefer a target its air controllers see and come closer there. Holding, by day or at dusk, it lays its machine guns' fixed lines on the nearest enemy it knows of in reach, or else ahead toward one (or along its facing), shifting a line laid ahead once onto an enemy that comes into reach. It digs its foot units in where they stand when safe: at the objective, holding with none, and in reserve. Attacking, an air controller with nothing better to do moves up to see a target for its aircraft (up to three moves away; holding, it stays). An attacking air controller with nothing better to do goes up to three moves to see a target, preferring a spot out of reach, and not while it has a fight of its own. Still left out: a controller moving while merely shot at (under fire counts only when pinned) or past three moves, fixed lines across its front or interlocking with each other, and works other than digging in (no field works are built during a battle); any plan beyond two
+  for riflemen who stop at range. Its foot units ride its carriers up and get down once an enemy is in reach. Its aircraft prefer a target its air controllers see and come closer there. Holding, by day or at dusk, it lays its machine guns' fixed lines on the nearest enemy it knows of in reach, or else ahead toward one (or along its facing), shifting a line laid ahead once onto an enemy that comes into reach. It digs its foot units in where they stand when safe: at the objective, holding with none, and in reserve. Attacking, an air controller with nothing better to do moves up to see a target for its aircraft (up to three moves away; holding, it stays). An attacking air controller with nothing better to do goes up to three moves to see a target, preferring a spot out of reach, and not while it has a fight of its own. Still left out: a controller moving past three moves, fixed lines across its front or interlocking with each other, and works other than digging in (no field works are built during a battle); any plan beyond two
   objectives (phase lines across the front, feints, scouting; no battlefield marks a second); ladders only where the GM or a battlefield marks them (the Great Redan's ladder parties are marked, but ladders do nothing on its ditch and bank). It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model
   with a key the player supplies, to explain its orders in prose.
@@ -67,10 +67,11 @@ When an item is done, delete it here and note it in the pull request that closes
   intensifiers and infrared sets wash out for a unit standing in a flare's light (not when the
   light only lies between it and what it looks at). A fixed line is laid on one hex, with no traverse limits or
   final protective fire called by flare. A lost unit strays only a hex along its wrong
-  facing, never into its friends or the enemy, and no further. To decide later: how long a
-  lost unit stays put. Now it cannot move the next exchange (`light.lost_for: 2` counts the
-  exchange it lost its way in), the same for every quality and light; it could last longer
-  on a dark night, or for green men. The moon is a simple model, good to an hour or so.
+  facing, never into its friends or the enemy, and no further. How long a lost unit stays put
+  is decided (October 2026): it cannot move the next exchange (`light.lost_for: 2` counts the
+  exchange it lost its way in), the same for every quality and light. Its chance of losing its
+  way already depends on the light and its quality; we have no good figures for how much longer
+  a lost unit took to recover on a darker night or with greener men, so that is not built. The moon is a simple model, good to an hour or so.
 - **Air support, third cut.** Ground fire hits aircraft (bringing some down, sending the
   rest home damaged), anti-aircraft guns add to it, forward air controllers and smoke on the
   target cut the scatter, and an attack can be a round burst, a strafing run or a napalm
@@ -104,6 +105,16 @@ When an item is done, delete it here and note it in the pull request that closes
   over a whole exchange is told (a unit that broke and rallied within one is missed), no rally or hero turning points, no narration on the travel map, no streamed or
   regenerated passages. The GM can pick the voice for a battle (the war's by default); passages already written are
   not retold in a new voice.
+- **Self-play against the battles as fought, first review** (`docs/selfplay-review.md`). Every
+  battlefield was played with the commander on both sides and set against what happened; the
+  commander now searches forward when it knows of no enemy, tanks no longer go to ground,
+  modern infantry storm works, battlefields can give their stances, and self-play runs past the
+  last phase and does not end on units still to come or an objective held from the start. To
+  do, from the review: Cassino's battalions as companies (they cannot move on the ridge); tank
+  kinds by era and vehicle morale (73 Easting); archery against horses and men in mud
+  (Agincourt); men in rubble harder to shift (Cassino town); other facings when the one toward the goal does not fit (Kapyong); the Chechen ambush at Grozny; a
+  holding commander that withdraws when outflanked (Osan, Mons) and an envelopment plan
+  (Cowpens); darkness at Lundy's Lane; faster exchanges on the biggest fields.
 - **The enemy commander against itself, first cut.** Each side has its own commander choice;
   with both, Run plays on until Stop, a side with nothing left standing, an attacking side
   holding the objective 5 exchanges running, or 60 exchanges, then ends the battle; Python

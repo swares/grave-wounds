@@ -22,6 +22,8 @@ table: oif-oef-2001-wounds
 travel: {map: fallujah-2004, place: "The Jolan", within: 1, sides: ["Coalition", "Insurgents"]}
 size: [140, 120]
 weather: {cond: overcast, wind: breeze, dir: NW, ground: {mud: 1, snow: 0}}
+# How each army fought (attack or hold), for the enemy commander on both sides; a field with an objective takes it from the objective.
+stances: [attack, hold]
 ground: |
   wwwwwwFFF.BBB...B.BBBBBBB.B.BBBB.BB.B..BB.B.BBBBB.BB.BBB...BB.....BBBB....B..B.BB.B.BB.BBBBBBBB...BB.BBBB...BB.B..BBBB...BBB.B..BB.BBBB.BB.B
   wwwwww.FFFBBBBBBBBBBB.B.BBBBBBBB.BB.B..B.BBBBB.BBBBB.BBBBB....BB.BB.BB......BBBBBB.BBBBB....B.B.BBB..BB.B...BB.BBB...BBBB.BBBBB..B.B..BB..BB

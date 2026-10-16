@@ -901,7 +901,7 @@ def _self_play_errors(d: Data) -> list[str]:
     moves 1 or more, safe 0 or more."""
     K = d.units.get("commander") or {}
     sp, spot = K.get("self_play") or {}, K.get("spot") or {}
-    errors = [f"units.yaml: commander.self_play.{k} must be a whole number of 1 or more" for k in ("limit", "held")
+    errors = [f"units.yaml: commander.self_play.{k} must be a whole number of 1 or more" for k in ("limit", "held", "after_phases", "most", "secure")
               if not (isinstance(sp.get(k), int) and sp[k] >= 1)]
     if not (isinstance(spot.get("moves"), int) and spot["moves"] >= 1 and isinstance(spot.get("safe"), int) and spot["safe"] >= 0):
         errors.append("units.yaml: commander.spot needs moves (1 or more) and safe (0 or more), whole numbers")
@@ -1285,6 +1285,9 @@ def _fields_errors(d: Data) -> list[str]:
     errors = _marker_default_errors(d)
     for fid, f in d.fields.items():
         where = f"fields/{fid}"
+        st = f.get("stances")
+        if st is not None and not (isinstance(st, list) and len(st) == 2 and all(x in ("attack", "hold") for x in st)):
+            errors.append(f"{where}: stances must be two of attack or hold")
         bad = _field_shape_errors(d, f, where)
         errors += bad or _field_unit_errors(d, f, where, battlefield, battlefield_units, _fits)
         errors += _field_marker_errors(d, f, where)

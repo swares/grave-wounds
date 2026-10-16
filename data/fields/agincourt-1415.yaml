@@ -22,6 +22,8 @@ table: towton-1461-all-hits
 travel: {map: agincourt-1415, place: "Azincourt", within: 1, sides: ["England", "France"]}
 size: [100, 80]
 weather: {cond: overcast, wind: calm, ground: {mud: 3, snow: 0}}
+# How each army fought (attack or hold), for the enemy commander on both sides; a field with an objective takes it from the objective.
+stances: [hold, attack]
 ground: |
   rrrrrrrrrr.....................................................................................FFFFF
   rrrrrrrrrr.....................................................................................FFFFF

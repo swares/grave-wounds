@@ -1234,6 +1234,7 @@ const ORDER_TEXT = {                              // (who, them, o, up, facing) 
   move: (who, them, o, up) => `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} toward ${them}.`,
   advance: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} to plug the gap${facing}.` : `${who} ${up}advance ${nOf(o.cost, "hex", "hexes")} on the objective${facing}.`),
   fall_back: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} to plug the gap${facing}.` : `${who} ${up}fall back ${nOf(o.cost, "hex", "hexes")} toward the objective${facing}.`),
+  search: (who, them, o, up) => `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} forward to find the enemy (none in sight, no objective).`,
   turn: (who, them) => `${who} turn to face ${them}.`,
   ground: who => `${who} go to ground under fire.`,
   lay: (who, them, o) => `${who} lay ${FD.units.mines.kinds[o.kind].name.toLowerCase()} ahead of them (${nOf(FD.units.mines.sappers.lay, "exchange")} without moving or firing).`,
@@ -1304,7 +1305,7 @@ function setAi(k, v){                             // side k: "" (the GM moves it
   render();
 }
 function renderAi(){
-  const fought = S.fieldId ? playStances(S.fieldId) : null, asFought = (k, st) => (fought && FD.fields[S.fieldId]?.objective && fought[k] === st ? " (as fought)" : "");
+  const fought = S.fieldId ? playStances(S.fieldId) : null, asFought = (k, st) => (fought && (FD.fields[S.fieldId]?.objective || FD.fields[S.fieldId]?.stances) && fought[k] === st ? " (as fought)" : "");
   [0, 1].forEach(k => {
     const el = $("#sel-ai" + k), opts = [["", "You move them"], ["attack", "Commander, attacking" + asFought(k, "attack")], ["hold", "Commander, holding" + asFought(k, "hold")]];
     $("#ai-label" + k).textContent = S.sides[k];
@@ -1346,7 +1347,7 @@ function stopRun(show = false){
 const STOP_TEXT = {                               // why a run stopped (units.js: playStop)
   gone: st => `${st.sides.map(k => S.sides[k]).join(" and ")} ${st.sides.length > 1 ? "have" : "has"} no unit left standing`,
   held: st => `${st.side} have taken the objective and held it for ${nOf(FD.units.commander.self_play.held, "exchange")} running`,
-  limit: () => `${nOf(FD.units.commander.self_play.limit, "exchange")} have been fought`,
+  limit: () => `${nOf(playLimit(T()), "exchange")} have been fought`,
 };
 function runOver(stop){                           // the run stops on its own: the battle ends
   stopRun();

@@ -88,7 +88,7 @@ def _field_values(d: Data) -> dict:
         "f_bow_rate": U["missile"]["rate"]["longbow"], "f_aimed": round(1 / U["missile"]["tempo"]),
         "c_remember": U["commander"]["remember"], "c_obj_radius": U["commander"]["objective"]["radius"],
         "c_obj_hold": U["commander"]["objective"]["hold"],
-        "c_sp_held": U["commander"]["self_play"]["held"], "c_sp_limit": U["commander"]["self_play"]["limit"],
+        "c_sp_held": U["commander"]["self_play"]["held"], "c_sp_limit": U["commander"]["self_play"]["limit"], "c_sp_after": U["commander"]["self_play"]["after_phases"], "c_sp_most": U["commander"]["self_play"]["most"], "c_sp_secure": LATER._field(d, U["commander"]["self_play"]["secure"]),
         "n_words": U["narrator"]["words"], "c_spot_moves": U["commander"]["spot"]["moves"],
         "c_sap_clear": U["commander"]["sappers"]["clear_of"],
         "c_keep_off": U["commander"]["keep_off"],

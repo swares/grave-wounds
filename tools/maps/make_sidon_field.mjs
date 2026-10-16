@@ -52,6 +52,7 @@ const units = [
 ];
 
 writeField({
+  stances: ["hold", "attack"],   // as fought: the garrison held its unfinished walls and the Damascenes broke in
   id: "sidon-1253", name: "Sidon, 1253", sides: ["Franks", "Damascenes"], table: "sidon-1253-all-hits",
   travel: { map: "sidon-1253", place: "Sidon", within: 1, sides: ["Franks", "Damascus"] },
   weather: "{cond: fair, wind: calm, ground: {mud: 0, snow: 0}}", up: "E",

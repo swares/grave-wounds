@@ -879,7 +879,7 @@ heroes:
 #   enemy; holding, they come out only with the odds in their favour), and veterans score
 #   `flank` more for a hex off the target's front.
 # - A unit with a modern weapon (`ground_with`: breech-loaders on) staying where it is under
-#   fire goes to ground (veterans and regulars); older armies stand.
+#   fire goes to ground (veterans and regulars); older armies stand, and vehicles never do.
 # `tries`: the best-scoring hexes it tries in turn until one is a legal move.
 commander:
   # objective: a hex the GM marks for the commander's side. Attacking, units at it (within
@@ -889,9 +889,13 @@ commander:
   objective: {radius: 1, hold: 3, guard: 4, bonus: 30}
   # self_play: the commander on both sides (the GM watching). A run stops after `limit`
   # exchanges, or when one side has held the (first) objective `held` exchanges running, or when
-  # a side has no unit left standing; then the battle ends. On a battlefield, the side its
-  # objective names attacks and the other holds; on open ground both attack. Design choices.
-  self_play: {limit: 60, held: 5}
+  # a side has no unit left standing (and none still to come); then the battle ends. A battlefield
+  # with phases runs at least `after_phases` exchanges past its last phase's start, but never more
+  # than `most` (a battle whose phases run for many hours, as at Chipyong-ni, is cut short). On a
+  # battlefield, the side its objective names attacks and the other holds (else its `stances`, as
+  # fought); on open ground both attack. Design choices.
+  # The objective counts as taken only with no standing enemy within `secure` hexes of it.
+  self_play: {limit: 60, held: 5, after_phases: 30, most: 240, secure: 10}
   # sappers (units marked sappers: mines.sappers): holding, or at the objective, out of contact
   # and with no enemy it knows of within `clear_of` hexes, they lay mines in the
   # row ahead (mixed if the enemy it knows of has vehicles, else anti-personnel), where it is
@@ -909,19 +913,22 @@ commander:
   # Design estimates.
   creep: {near: 20, step: 1, every: 1, lines: 3}
   # spot: attacking, a forward air controller (fac) with no fight of its own (no enemy touching
-  # it, none it sees within its weapon's reach, not pinned),
+  # it, none it sees within its weapon's reach, not pinned and no men lost last exchange),
   # when its aircraft can fly and none of its side's controllers sees an enemy it knows of, goes
   # to see one: to a spot within `moves` moves' worth of going from which, facing it, it sees one.
   # It prefers a spot out of the reach of the enemies it knows of, if one costs no more than the
   # cheapest by `safe` moves. A spot beyond this move it heads for a move at a time, choosing
   # again each move. Design choices.
   spot: {moves: 3, safe: 1}
-  # storm: attacking, a unit armed with one of these (black powder with the bayonet) whose target
-  # holds works (dug in or emplaced where it stands, behind works that give it cover toward the
-  # attacker, or in ground that hides men: buildings, tall buildings, rubble) does not stop to
-  # fire at range: it closes and charges it, with its quality's attack odds (charge_odds), as
-  # men without missiles do. Design choice.
-  storm: [musket_smoothbore, rifle_musket, breechloader]
+  # storm: attacking, a unit armed with one of these whose target holds works (dug in or
+  # emplaced where it stands, behind works that give it cover toward the attacker, or in ground
+  # that hides men: buildings, tall buildings, rubble) does not stop to fire at range: it closes
+  # and charges it, with its quality's attack odds (charge_odds), as men without missiles do. It
+  # still fires as it goes. Black powder with the bayonet; and modern infantry rifles and
+  # sub-machine guns, which took trenches, bunkers and houses by closing in with grenades and
+  # the bayonet (fire alone rarely shifted men under cover: self-play showed attacks stalled
+  # trading fire at range). Design choice.
+  storm: [musket_smoothbore, rifle_musket, breechloader, rifle_service, rifle_assault, pistol_smg]
   hesitate: {green: 30, regular: 10, veteran: 0}
   charge_odds:
     attack: {green: 100, regular: 80, veteran: 60}

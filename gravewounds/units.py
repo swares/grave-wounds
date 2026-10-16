@@ -2072,10 +2072,26 @@ def line_fire(d: Data, units: list, occ: dict, field: dict | None, i: int, j: in
     return pen
 
 
+def _beyond_reach(d: Data, weapon: str, dist: int) -> bool:
+    """Out of range even with its bands doubled (the wind and height add at most half): a
+    shortcut that changes nothing."""
+    return not is_gun(d, weapon) and not d.weapons[weapon].get("off_map") and field_range(d, weapon, dist, 100) is None
+
+
+def _can_shoot(d: Data, u: dict, field: dict | None, shot: tuple, clear) -> bool:
+    """Unit u's weapon reaches from h to t (shot: (h, t, dist)), in sight, with a line of fire."""
+    h, t, dist = shot
+    if _beyond_reach(d, u["weapon"], dist):          # out of range however the wind and height help: no need to look
+        return False
+    wx = shot_weather(d, field, u["weapon"], dist, h, t, _seer(u))
+    reach = wx.get("reach", 0) + height_edge(d, field, u["weapon"], h, t)[1]
+    return not wx["blocked"] and _reaches(d, u, dist, reach) and (clear is None or clear(h, t, dist))
+
+
 def _nearest_ahead(d: Data, u: dict, front: list, fv: tuple, hexes: list, field: dict | None = None, clear=None):
     """(distance, front hex, target hex): the shortest distance in range of unit u's weapon and
     in sight from a front hex to one of `hexes` ahead of the line (with a line of fire), or None."""
-    best, weapon = None, u["weapon"]
+    best = None
     for t in hexes:
         c = _cube(t)
         for h in front:
@@ -2083,11 +2099,7 @@ def _nearest_ahead(d: Data, u: dict, front: list, fv: tuple, hexes: list, field:
             if sum((c[k] - s[k]) * fv[k] for k in range(3)) <= 0:
                 continue
             dist = hdist(h, t)
-            if best is not None and dist >= best[0]:
-                continue
-            wx = shot_weather(d, field, weapon, dist, h, t, _seer(u))
-            reach = wx.get("reach", 0) + height_edge(d, field, weapon, h, t)[1]
-            if not wx["blocked"] and _reaches(d, u, dist, reach) and (clear is None or clear(h, t, dist)):
+            if (best is None or dist < best[0]) and _can_shoot(d, u, field, (h, t, dist), clear):
                 best = (dist, h, t)
     return best
 
@@ -2120,6 +2132,10 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     for i, u in enumerate(us):
         cut = min(lost[i], u["men"])
         u.update(men=u["men"] - cut, down=u.get("down", 0) + cut, dead=u.get("dead", 0) + min(dead[i], cut))
+        if cut > 0:
+            u["hit"] = True                         # it lost men this exchange: under fire, for the next moves
+        else:
+            u.pop("hit", None)
     log += _morale_all(d, us, occ, before, (lost, dealt, flanked), rng, table, field)
     log += _suppress_all(d, us, under, rng)
     log += _heroes_after(d, us, rng, [not lost[i] and not under[i] and not in_contact(d, us, occ, i) for i in range(len(us))], cauterises(d, table), posts_moving(field))
