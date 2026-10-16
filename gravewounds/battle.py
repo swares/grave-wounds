@@ -39,10 +39,9 @@ def make_unit(d: Data, o: dict, uid: int, table: str) -> dict:
     for k in ("vehicle", "type", "size"):
         if o.get(k):
             u[k] = o[k]
-    if o.get("fixed"):
-        u["fixed"] = list(o["fixed"])
-    if o.get("via"):
-        u["via"] = [list(h) for h in o["via"]]
+    for k in ("fixed", "via"):                    # a machine gun's fixed line; a route's waypoints (copied)
+        if o.get(k):
+            u[k] = [list(x) if isinstance(x, list) else x for x in o[k]]
     if nv:
         u["nv"] = nv
     if o.get("medics"):
