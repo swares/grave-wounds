@@ -113,7 +113,7 @@ When an item is done, delete it here and note it in the pull request that closes
   unit with no room to face its goal moves facing as near it as it can (Kapyong, Cassino). To
   do, from the review: tank kinds by era and vehicle morale (73 Easting); archery against
   horses and men in mud (Agincourt); men in rubble harder to shift (Cassino town: measured, see the review; shellfire decides it, and batteries' rate and ammunition are already within published figures; a sourced lethality figure scaled to 40% was measured and not applied); the Chechen
-  ambush at Grozny; an envelopment plan (Cowpens); the American
+  ambush at Grozny (the night now fought as it was, the dark at 17:05; the breakout 25 hours on is beyond a run); an envelopment plan (Cowpens); the American
   rush on the guns at Lundy's Lane (dark now, but the guns still hold); the German counter-attacks on Point 593 (no sourced figures yet) and why small
   units take 593 so easily in February. Measured and not built: a holding commander that
   withdraws (no trigger tells the defences that held from those that went). Done: the Poles at
