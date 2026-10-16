@@ -883,6 +883,9 @@ def _commander_errors(d: Data) -> list[str]:
     if not K:
         return []
     qs, errors = set(d.units["quality"]), []
+    sp = K.get("self_play") or {}
+    errors += [f"units.yaml: commander.self_play.{k} must be a whole number of 1 or more" for k in ("limit", "held")
+               if not (isinstance(sp.get(k), int) and sp[k] >= 1)]
     tables = [(k, K.get(k)) for k in ("hesitate", "cover", "flank", "sense", "reserve", "mines")] + [(f"charge_odds.{s}", (K.get("charge_odds") or {}).get(s)) for s in ("attack", "hold")]
     for name, t in tables:
         if not isinstance(t, dict) or set(t) != qs or not all(isinstance(v, int) and v >= 0 for v in t.values()):

@@ -189,6 +189,15 @@ steady friends touching it, who go in with it), and green units sometimes hesita
 
 **Undo its orders** puts the move back for the GM to make by hand.
 
+**Both sides.** Each side has its own choice: moved by the GM, or the commander attacking or
+holding. With the commander on both sides the GM only watches: **Next** steps a move at a time,
+and **Run** plays on until the GM presses **Stop** or the run ends itself. It ends when a side
+has no unit left standing, when an attacking side has taken the objective and held it
+{{c_sp_held}} exchanges running, or after {{c_sp_limit}} exchanges; then the battle ends, as with
+*End the battle*. On a battlefield the side its objective names attacks and the other holds (the
+choice marked *as fought*); on open ground both attack. The GM can take either side back at any
+time.
+
 ## After the battle {#after}
 
 **End the battle** stops it. The page then sets the two sides' results side by side, and

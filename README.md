@@ -119,6 +119,7 @@ python build.py                  # rebuild dist/ and index.html
 python -m gravewounds check      # validate the data
 python -m gravewounds list
 python -m gravewounds roll --table towton-1461-all-hits --weapon bill -n 3
+python -m gravewounds selfplay --field wanat-2008   # the enemy commander on both sides
 ```
 
 `build.py` writes:

@@ -1,4 +1,4 @@
-"""Command line: python -m gravewounds roll|list|check|disease|units"""
+"""Command line: python -m gravewounds roll|list|check|disease|units|team|selfplay"""
 from __future__ import annotations
 
 import argparse
@@ -66,6 +66,12 @@ def _main(argv=None) -> int:
     ts.add_argument("--women", choices=["none", "roll"], default="none", help="roll each member and follower man or woman at the army's share")
     ts.add_argument("--seed", type=int, default=None, help="repeatable dice")
 
+    sp = sub.add_parser("selfplay", help="play a battlefield with the enemy commander on both sides, to its end")
+    sp.add_argument("--field", required=True, help="battlefield id (data/fields)")
+    sp.add_argument("--stances", default=None, help="attack,hold etc., one per side (default: the side the objective names attacks, the other holds; both attack with no objective)")
+    sp.add_argument("-n", type=int, default=1, help="number of battles")
+    sp.add_argument("--seed", type=int, default=1, help="the first battle's dice; each next battle the next seed")
+
     a = p.parse_args(argv)
     try:
         d = load(a.data)
@@ -73,6 +79,21 @@ def _main(argv=None) -> int:
         print("Data errors:\n" + str(e), file=sys.stderr)
         return 1
 
+    if a.cmd == "selfplay":
+        from .battle import self_play, stances, summary
+        from .units import SeededDice
+        if a.field not in d.fields:
+            print(f"error: no battlefield {a.field}; there are: {', '.join(sorted(d.fields))}", file=sys.stderr)
+            return 2
+        how = a.stances.split(",") if a.stances else stances(d, a.field)
+        if len(how) != 2 or any(x not in ("attack", "hold") for x in how):
+            print("error: --stances takes two of attack or hold, e.g. attack,hold", file=sys.stderr)
+            return 2
+        print(f"{d.fields[a.field]['name']}: {d.fields[a.field]['sides'][0]} {how[0]}ing, {d.fields[a.field]['sides'][1]} {how[1]}ing.")
+        for k in range(a.n):
+            r = self_play(d, a.field, SeededDice(a.seed + k), how)
+            print(f"Battle {k + 1} (seed {a.seed + k}): " + "\n".join(summary(d, r)))
+        return 0
     if a.cmd == "team":
         from .team import era, follower_line, make_followers, make_team, sheet
         from .units import SeededDice

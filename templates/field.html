@@ -221,8 +221,12 @@ legend{padding:0}
         <button class="small" id="btn-reset" title="Back to set-up with the starting units">New battle</button>
       </div>
       <div class="toolbar" id="ai-box">
-        <label for="sel-ai">Enemy commander</label>
-        <select class="small" id="sel-ai" style="width:auto" title="A scripted commander moves one side at the start of its move, by its units' quality: attacking, it closes with the enemy; holding, it stands and only charges what it can reach"></select>
+        <span>Enemy commander:</span>
+        <label for="sel-ai0" id="ai-label0"></label>
+        <select class="small" id="sel-ai0" style="width:auto" title="A scripted commander moves this side at the start of its move, by its units' quality: attacking, it closes with the enemy; holding, it stands and only charges what it can reach"></select>
+        <label for="sel-ai1" id="ai-label1"></label>
+        <select class="small" id="sel-ai1" style="width:auto" title="A scripted commander moves this side at the start of its move, by its units' quality: attacking, it closes with the enemy; holding, it stands and only charges what it can reach"></select>
+        <button class="small" id="btn-run" hidden title="With the commander on both sides: let it play on, a move at a time, until you stop it or the battle ends (a side with nothing left standing, the objective held a while, or the exchange limit)">Run</button>
         <button class="small" id="btn-ai-undo" hidden title="Put its units back where they began this move, to move them yourself">Undo its orders</button>
         <button class="small" id="btn-ai-go" hidden title="Let the commander order its side for this move">Give its orders</button>
       </div>
@@ -431,12 +435,8 @@ function fieldOptions(){                        // the battlefields under their 
     .filter(([, fs]) => fs.length).map(([p, fs]) => `<optgroup label="${esc(p)}">${fs.map(opt).join("")}</optgroup>`).join("")
     + all.filter(([, f]) => !order.includes(f.period)).map(opt).join("");
 }
-const newNv = o => o.nv || (o.vehicle ? vehicleDevice(S.table) : null);   // a unit's night device: as chosen, else a vehicle's war's
-function newUnit(o){
-  return { id: S.seq++, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
-    kit: o.kit, formation: o.formation, mounted: !!o.mounted, guns: isGun(o.weapon) ? gunKind(o) : undefined, width: o.width || Math.ceil(o.men / form(o).per_hex),
-    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(newNv(o) ? { nv: newNv(o) } : {}), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}), ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
-}
+const newUnit = o => makeUnit(o, S.seq++, S.table);   // a new unit, numbered in turn (units.js: makeUnit)
+const T = () => { S.size = SIZE; return S };   // the battle as the turn's rules see it (units.js: the turn)
 function newField(){                              // open ground of the default size (and the page goes back to that size)
   SIZE = DEFAULT_SIZE.slice();
   return { ground: {}, works: { edges: {}, hexes: {} }, weather: { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0 } }, size: SIZE.slice() };
@@ -458,8 +458,8 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
     S.seq = 1;
     S.units = [];
     S.field.lifts = [];
-    B.units.forEach(u => standOrFly(newUnit({ ...u, side: B.sides[u.side] }), u.lands));
-    holdForStages(B.phases);
+    B.units.forEach(u => standOrFly(S, newUnit({ ...u, side: B.sides[u.side] }), u.lands));
+    holdForStages(S, B.phases);
     S.sel = S.units[0]?.id ?? null;
     S.msg = `${B.name}: the armies as drawn up. Move, change or remove any unit before the battle starts.` + objectiveNote(B);
     return;
@@ -527,12 +527,6 @@ function scaledUnits(B, sides){
   }
   return out.sort((x, y) => x.i - y.i);                // back in the battlefield's order
 }
-function standOrFly(unit, lands){                 // a battlefield's unit: on the field, or (lands: a landing zone's index) waiting to come in by air
-  const lz = lands === undefined ? null : (S.field.lz || [])[lands];
-  if (!lz){ S.units.push(unit); return }
-  const { men, start, down, dead, hurt, heroes, state, ...tmpl } = unit;
-  (S.field.lifts || (S.field.lifts = [])).push({ unit: { ...tmpl, pos: [...lz] }, lz: [...lz], left: men });
-}
 function deployOnBattlefield(fid){
   const B = FD.fields[fid], sides = battleSides(B);
   loadBattlefield(fid, false);
@@ -540,7 +534,7 @@ function deployOnBattlefield(fid){
   let out = 0;
   for (const { u, f, men } of scaledUnits(B, sides)){
     const side = forceSide(f), unit = newUnit({ ...u, men, side, banner: f.side === side ? null : f.side, force: f.id, mounted: u.mounted && f.type === "mounted" });
-    if (u.lands !== undefined || fits([...S.units, unit], S.units.length, unit, SIZE, S.field)) standOrFly(unit, u.lands);
+    if (u.lands !== undefined || fits([...S.units, unit], S.units.length, unit, SIZE, S.field)) standOrFly(S, unit, u.lands);
     else out++;
   }
   S.sel = S.units[0]?.id ?? null;
@@ -586,6 +580,8 @@ function restore(){
   S.field ??= newField();
   SIZE = (S.field.size || DEFAULT_SIZE).slice();
   S.tool ??= "unit";
+  if (S.ai && !Array.isArray(S.ai)) S.ai = [0, 1].map(k => (S.ai.side === S.sides[k] ? S.ai.stance : null));   // a save from before both sides could have a commander
+  if (S.aiMemory && !Array.isArray(S.aiMemory)) S.aiMemory = null;
 }
 const idx = id => S.units.findIndex(u => u.id === id);
 const selUnit = () => S.units.find(u => u.id === S.sel) || null;
@@ -595,19 +591,6 @@ const banner = u => u.banner || u.side;         // the unit's own side: its forc
 const unitName = u => `${u.name} (${banner(u)})`;
 
 /* ---------- moving ---------- */
-function startPhase(k){                           // a side's move; at the start of an exchange every broken unit runs first
-  S.phase = k;
-  S.aiDone = null;                                // the commander has not yet ordered this move
-  S.through = {};                                 // the friends charged through this move (manual moves)
-  for (let i = 0; i < S.units.length; i++){
-    if (k !== 0 || S.units[i].state !== "broken") continue;
-    const through = ranThrough(S.units, i, flee(S.units, i, SIZE, S.field));
-    S.units = runAway(S.units, i, SIZE, S.field);
-    const f = S.units[i], past = through.length ? ` back through ${through.map(j => S.units[j].name).join(", ")}, who are jostled` : "";
-    S.log.unshift({ cls: "morale", text: f.state === "fled" ? `${unitName(f)} has fled the field.` : `${unitName(f)} runs${past}.` });
-  }
-  S.start = S.units.map(u => ({ ...u }));
-}
 function tryPlace(u, pos, facing){                // set-up: anywhere it fits
   const i = idx(u.id), moved = { ...u, pos, facing: mod6(facing) };
   if (!fits(S.units, i, moved, SIZE, S.field)){ S.msg = `${u.name} does not fit there.`; return }
@@ -1123,69 +1106,93 @@ function caughtUnawares(){                        // a fight from the travel map
   S.log = [{ cls: "head", text: `${sp.text} Rolled ${sp.roll}: ${said}.` }, ...S.log];
   return sp.surprised ? ` ${S.sides[0]} were caught unawares: their units start shaken.` : "";
 }
-function drifts(k){                              // in the dark, each unit of side k that moved this phase may lose its direction: " X lose their way." or ""
-  if (!lightOf(S.field)) return "";
-  const names = [];
-  S.units.forEach((u, i) => {
-    const was = S.start?.[i];
-    if (u.side !== S.sides[k] || !was || (was.pos[0] === u.pos[0] && was.pos[1] === u.pos[1])) return;
-    const r = nightDrift(S.units, i, SIZE, S.field, dice);
-    if (!r.lost) return;
-    S.units[i] = r.unit;
-    names.push(u.name);
-    const how = r.strayed ? "they end off their line, a hex astray" : `they end facing ${r.unit.facing === u.facing ? "as they were" : "off their line"}`;
-    S.log.unshift({ cls: "morale", text: `${unitName(u)} lose their way in the dark: ${how}, and cannot move next exchange (they may turn).` });
-  });
-  return names.length ? ` ${names.join(", ")} lost their way in the dark.` : "";
-}
-function markStarts(){                            // with minefields down, where each unit's first moves begin (the ground it crosses)
-  if (Object.keys(S.field.mines || {}).length) for (const u of S.units) u.was = [[...u.pos], u.facing];
-}
 function next(){
   if (S.phase === "over") return;
-  if (S.phase === "setup"){ S.exchange = 1; S.aiMemory = null; const staged = advanceStages(); markStarts(); startPhase(0); S.msg = `${S.sides[0]} to move.${caughtUnawares()}${staged}`; aiMove(); return render() }
-  if (S.phase === 0){ const lost = drifts(0); startPhase(1); S.msg = `${S.sides[1]} to move.${lost}`; aiMove(); return render() }
-  const lostB = drifts(1);
-  const r = exchange(S.units, S.table, dice, S.field);
-  S.units = r.units;
+  if (S.phase === "setup"){
+    S.aiMemory = [null, null]; S.held = { side: null, n: 0 };
+    const r = beginBattle(T());
+    newMove();
+    const staged = stagesNote(r.stages);
+    ranNote(r.ran);
+    S.msg = `${S.sides[0]} to move.${caughtUnawares()}${staged}`;
+    aiMove();
+    return render();
+  }
+  if (S.phase === 0){
+    const r = endMove(T(), dice);
+    newMove();
+    S.msg = `${S.sides[1]} to move.${lostNote(r.lost)}`;
+    aiMove();
+    return render();
+  }
+  const r = endMove(T(), dice), lostB = lostNote(r.lost);
+  newMove();
   S.bursts = r.log.filter(l => l.kind === "barrage").flatMap(l => l.bursts);
-  S.log = [...logLines(r.log, S.exchange), ...S.log].slice(0, 400);
-  S.exchange += 1;
+  S.log = [...logLines(r.log, S.exchange - 1), ...S.log].slice(0, 400);
   const lost = [0, 1].filter(k => !standing(k));
   const verb = lost.length > 1 ? "have" : "has";
-  S.msg = (lost.length ? `${lost.map(k => S.sides[k]).join(" and ")} ${verb} no unit left standing.` : "") + lostB + advanceStages();
-  startPhase(0);
+  S.msg = (lost.length ? `${lost.map(k => S.sides[k]).join(" and ")} ${verb} no unit left standing.` : "") + lostB + stagesNote(r.stages);
+  ranNote(r.ran);
+  const stop = playStop(T(), S.held || (S.held = { side: null, n: 0 }), [aiOf(0), aiOf(1)]);
+  if (RUN && stop) return runOver(stop);
   aiMove();
   render();
 }
-
-/* ---------- the enemy commander (rules in units.js: command) ---------- */
-const stanceWord = () => (S.ai.stance === "hold" ? "holding" : "attacking");
-const aiMoving = () => !!S.ai && moving() === S.ai.side;
-const aiThisMove = () => S.aiDone && S.aiDone.exchange === S.exchange && S.aiDone.phase === S.phase;
-function aiMove(){                                // at the start of its side's move, the commander orders that side
-  if (!aiMoving() || aiThisMove()) return;
-  const M = aiMemory(), mem = structuredClone(M.mem), sup = supports().map(b => (b.mission ? structuredClone(b.mission) : null));
-  const onward = aims(S.units, S.ai.side, S.field, S.ai.stance, structuredClone(M.mem))[1] !== S.field ? aimText() : "";
-  const before = S.units.map(copyUnit), r = command(S.units, S.ai.side, SIZE, S.field, dice, S.exchange, { stance: S.ai.stance, memory: M.mem, table: S.table });
-  S.units = r.units;
-  S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before, mem, sup, start: S.start };
-  if (S.units.length !== before.length) realignStarts();   // guns hooked up or unhooked: each unit's move this phase starts where it stood
-  M.n = S.units.length;
-  const lines = r.orders.map(o => ({ cls: o.act === "charge" ? "morale" : "", text: orderText(o) }));
-  S.log = [{ cls: "head", text: `The commander orders ${S.ai.side} (${stanceWord()}): ${r.orders.length ? nOf(r.orders.length, "order") : "every unit stands"}${Object.keys(M.mem).length ? "" : " (it knows of no enemy: none is in its units' sight)"}.${onward}` }, ...lines, ...S.log].slice(0, 400);
+function newMove(){                               // a side's move begins: the commander has not yet ordered it, and no friends have been charged through
+  S.aiDone = null;
+  S.through = {};
 }
-const aimText = () => (S.ai.stance === "attack"   // why its units go for the second objective this move
+function ranNote(ran){                            // the broken units that ran at the start of the exchange, logged
+  for (const r of ran){
+    const f = S.units[r.unit], past = r.through.length ? ` back through ${r.through.map(j => S.units[j].name).join(", ")}, who are jostled` : "";
+    S.log.unshift({ cls: "morale", text: r.fled ? `${unitName(f)} has fled the field.` : `${unitName(f)} runs${past}.` });
+  }
+}
+function lostNote(lost){                          // the units that lost their way in the dark, logged: " X lose their way." or ""
+  for (const l of lost){
+    const how = l.strayed ? "they end off their line, a hex astray" : `they end facing ${l.turned ? "off their line" : "as they were"}`;
+    S.log.unshift({ cls: "morale", text: `${unitName(S.units[l.unit])} lose their way in the dark: ${how}, and cannot move next exchange (they may turn).` });
+  }
+  return lost.length ? ` ${lost.map(l => S.units[l.unit].name).join(", ")} lost their way in the dark.` : "";
+}
+function stagesNote(st){                          // the phases begun and the units they brought on, logged: the message's words
+  const notes = [];
+  for (const i of st.begun){
+    const p = S.stages[i];
+    S.log.unshift({ cls: "head", text: `Phase ${i + 1} of ${S.stages.length}: ${p.name}.${p.note ? " " + p.note : ""}` });
+    notes.push(`Phase ${i + 1}: ${p.name}.`);
+  }
+  const came = st.came.map(i => `${unitName(S.units[i])} (${S.units[i].men})`), flying = st.flying.map(f => `${f.name} (${f.left})`), onCall = st.onCall;
+  if (came.length) S.log.unshift({ cls: "head", text: `Coming on: ${came.join(", ")}. They can move next exchange.` });
+  if (flying.length) S.log.unshift({ cls: "head", text: `In the air for the landing zone: ${flying.join(", ")}.` });
+  if (onCall.length) S.log.unshift({ cls: "head", text: `Now on call: ${onCall.join(", ")}.` });
+  return (notes.length ? " " + notes.join(" ") : "") + (came.length ? ` Coming on: ${came.join(", ")}.` : "") + (flying.length ? ` In the air: ${flying.join(", ")}.` : "") + (onCall.length ? ` Now on call: ${onCall.join(", ")}.` : "");
+}
+
+/* ---------- the enemy commander (rules in units.js: command, commandMove) ---------- */
+const aiOf = k => (Array.isArray(S.ai) ? S.ai[k] || null : null);   // side k's commander's stance (attack or hold), or null: the GM moves it
+const bothAi = () => !!aiOf(0) && !!aiOf(1);
+const stanceWord = k => (aiOf(k) === "hold" ? "holding" : "attacking");
+const aiMoving = () => (S.phase === 0 || S.phase === 1) && !!aiOf(S.phase);
+const aiThisMove = () => S.aiDone && S.aiDone.exchange === S.exchange && S.aiDone.phase === S.phase;
+function aiMove(){                                // at the start of a side's move, its commander (if it has one) orders it
+  if (!aiMoving() || aiThisMove()) return;
+  const k = S.phase, side = S.sides[k], stance = aiOf(k), M = aiMemory(k);
+  commanderMemory(T(), M);
+  const mem = structuredClone(M.mem), sup = supports().map(b => (b.mission ? structuredClone(b.mission) : null));
+  const onward = aims(S.units, side, S.field, stance, structuredClone(M.mem))[1] !== S.field ? aimText(stance) : "";
+  const before = S.units.map(copyUnit), start = S.start, orders = commandMove(T(), stance, M, dice);
+  S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before, mem, sup, start };
+  const lines = orders.map(o => ({ cls: o.act === "charge" ? "morale" : "", text: orderText(o) }));
+  S.log = [{ cls: "head", text: `The commander orders ${side} (${stanceWord(k)}): ${orders.length ? nOf(orders.length, "order") : "every unit stands"}${Object.keys(M.mem).length ? "" : " (it knows of no enemy: none is in its units' sight)"}.${onward}` }, ...lines, ...S.log].slice(0, 400);
+}
+const aimText = stance => (stance === "attack"   // why its units go for the second objective this move
   ? ` It holds the first objective: its units on it stay, the rest go on to the second at ${hexName(S.field.objective2)}.`
   : ` The enemy holds the first objective: its units fall back to the second at ${hexName(S.field.objective2)}.`);
-function realignStarts(){                         // S.start by unit id, after units joined or left the list (a unit whose riders changed starts as it is)
-  const was = S.start || [];
-  S.start = S.units.map(u => { const s = was.find(x => x.id === u.id); return s && s.riders?.id === u.riders?.id ? s : { ...u } });
-}
-function aiMemory(){                              // where the commander last saw each enemy unit (by index): fresh for a new side, battle or set of units
-  const M = S.aiMemory;
-  if (!M || M.side !== S.ai.side || M.n !== S.units.length) S.aiMemory = { side: S.ai.side, n: S.units.length, mem: {} };
-  return S.aiMemory;
+function aiMemory(k){                             // side k's commander's memory {n, mem} (units.js: commanderMemory): fresh for a new battle
+  if (!Array.isArray(S.aiMemory)) S.aiMemory = [null, null];
+  if (!S.aiMemory[k]) S.aiMemory[k] = { n: -1, mem: {} };
+  return S.aiMemory[k];
 }
 const COMMIT_WHY = { broke: "one of its units has broken", gap: "the enemy is close", exploit: "to exploit an enemy unit that broke" };
 const ORDER_TEXT = {                              // (who, them, o, up, facing) -> the order's line
@@ -1236,12 +1243,14 @@ function orderText(o){                            // "Billmen (Yorkists) move 4 
 }
 function aiUndo(){                                // its units back where they began this move, for the player to move by hand
   if (!aiThisMove() || !S.aiDone.undo) return;
+  stopRun();
   S.units = S.aiDone.undo;
   if (S.aiDone.start) S.start = S.aiDone.start;
-  if (S.aiMemory){ S.aiMemory.mem = S.aiDone.mem; S.aiMemory.n = S.units.length }
+  const M = aiMemory(S.phase);
+  M.mem = S.aiDone.mem; M.n = S.units.length;
   supports().forEach((b, k) => { b.mission = S.aiDone.sup?.[k] ?? null });   // the fire it called, called off
   S.aiDone.undo = null;
-  S.msg = `The commander's orders are undone: move ${S.ai.side} yourself, or let it order them again.`;
+  S.msg = `The commander's orders are undone: move ${S.sides[S.phase]} yourself, or let it order them again.`;
   render();
 }
 function aiAgain(){                               // the commander orders its side again (after an Undo, or once chosen mid-move)
@@ -1250,28 +1259,70 @@ function aiAgain(){                               // the commander orders its si
   aiMove();
   render();
 }
-function setAi(v){                                // "" (none), or "side|attack" / "side|hold"
-  const k = v.lastIndexOf("|");
-  S.ai = v ? { side: v.slice(0, k), stance: v.slice(k + 1) } : null;
-  S.msg = S.ai ? `The commander takes ${S.ai.side}, ${stanceWord()}: it orders them at the start of each of their moves.` : "No commander: you move both sides.";
+function setAi(k, v){                             // side k: "" (the GM moves it), "attack" or "hold"
+  if (!Array.isArray(S.ai)) S.ai = [null, null];
+  S.ai[k] = v || null;
+  if (!bothAi()) stopRun();
+  const who = S.sides[k];
+  S.msg = S.ai[k] ? `The commander takes ${who}, ${stanceWord(k)}: it orders them at the start of each of their moves.` : `You move ${who}.`;
+  if (bothAi()) S.msg += " The commander now plays both sides: press Next for each move, or Run to let it play on.";
   render();
 }
 function renderAi(){
-  const el = $("#sel-ai"), opts = [["", "None: you move both sides"], ...S.sides.flatMap(sd => [[`${sd}|attack`, `${sd}, attacking`], [`${sd}|hold`, `${sd}, holding`]])];
-  el.innerHTML = opts.map(([v, t]) => `<option value="${esc(v)}">${esc(t)}</option>`).join("");
-  if (S.ai && !S.sides.includes(S.ai.side)) S.ai = null;   // a side renamed or a new battle
-  el.value = S.ai ? `${S.ai.side}|${S.ai.stance}` : "";
-  el.disabled = S.phase === "over";
+  const fought = S.fieldId ? playStances(S.fieldId) : null, asFought = (k, st) => (fought && FD.fields[S.fieldId]?.objective && fought[k] === st ? " (as fought)" : "");
+  [0, 1].forEach(k => {
+    const el = $("#sel-ai" + k), opts = [["", "You move them"], ["attack", "Commander, attacking" + asFought(k, "attack")], ["hold", "Commander, holding" + asFought(k, "hold")]];
+    $("#ai-label" + k).textContent = S.sides[k];
+    el.innerHTML = opts.map(([v, t]) => `<option value="${v}">${esc(t)}</option>`).join("");
+    el.value = aiOf(k) || "";
+    el.disabled = S.phase === "over";
+  });
   const undo = aiMoving() && aiThisMove() && !!S.aiDone.undo;
   $("#btn-ai-undo").hidden = !undo;
   $("#btn-ai-go").hidden = !aiMoving() || undo;
+  const run = $("#btn-run");
+  run.hidden = !bothAi() || S.phase === "over";
+  run.textContent = RUN ? "Stop" : "Run";
+}
+/* ---------- the commander on both sides: Run plays on, a move at a time, until stopped or the battle ends ---------- */
+let RUN = null;                                   // the run's timer while it plays on (not saved)
+const RUN_MS = 700;                               // a move's pause, to follow it on the map
+function runToggle(){
+  if (RUN) return stopRun(true);
+  if (!bothAi() || S.phase === "over") return;
+  RUN = true;
+  S.msg = "The commander plays both sides: Stop to step in.";
+  render();
+  runTick();
+}
+function runTick(){
+  RUN = setTimeout(() => {
+    if (!RUN) return;
+    next();
+    if (RUN && S.phase !== "over" && bothAi()) runTick();
+    else if (RUN) stopRun(true);
+  }, RUN_MS);
+}
+function stopRun(show = false){
+  if (RUN && RUN !== true) clearTimeout(RUN);
+  RUN = null;
+  if (show) render();
+}
+const STOP_TEXT = {                               // why a run stopped (units.js: playStop)
+  gone: st => `${st.sides.map(k => S.sides[k]).join(" and ")} ${st.sides.length > 1 ? "have" : "has"} no unit left standing`,
+  held: st => `${st.side} have taken the objective and held it for ${nOf(FD.units.commander.self_play.held, "exchange")} running`,
+  limit: () => `${nOf(FD.units.commander.self_play.limit, "exchange")} have been fought`,
+};
+function runOver(stop){                           // the run stops on its own: the battle ends
+  stopRun();
+  endBattle();
+  S.msg = `The run stops: ${STOP_TEXT[stop.why](stop)}. The battle is over.`;
+  render();
 }
 
 /* ---------- after the battle ---------- */
-function sideMedevac(k){                          // side k's medevac kind (its war's, helicopters falling back without a zone or a helicopter left), or null if unticked or none
-  if (S.medevac?.[k] === false) return null;
-  const H = FD.units.heliborne ? helos(S.field, S.sides[k]) : null, left = !!H && H.aircraft - (H.damaged || 0) - (H.downed || 0) > 0;
-  return medevacKind(S.table, (S.field.lz || []).length > 0, left);
+function sideMedevac(k){                          // side k's medevac kind (units.js: sideEvac), or null if unticked
+  return S.medevac?.[k] === false ? null : sideEvac(T(), k);
 }
 function renderMedevac(){                         // the sides' medevac ticks, for wars that had it
   const M = FD.units.aftermath.medevac, any = !!(M?.battles || {})[FD.tables[S.table]?.battle];
@@ -1292,18 +1343,12 @@ function setMedevac(k, on){                       // a side with or without mede
 }
 function endBattle(){                             // the dead counted; the wounded die, or are carried to camp
   if (S.phase !== 0 && S.phase !== 1) return;
+  stopRun();
   const all = afterUnits();
   S.evac = [sideMedevac(0), sideMedevac(1)];
-  const am = aftermath(all, all.map(u => forceOf(u)?.care || "field"), dice, all.map(u => S.evac[sideNo(u)]));
-  S.after = all.map((u, i) => ({ id: u.id, killed: u.dead || 0, ...am[i] }));
-  S.fates = heroFates(S.units, S.table, dice);     // heroes left on the field: found, taken prisoner or killed
-  for (const f of S.fates){
-    const h = S.units[f.unit].heroes.find(x => x.id === f.hero);
-    if (f.fate === "killed") h.state = "dead";
-    else if (f.fate === "prisoner") h.state = "prisoner";
-    h.fate = f.fate;
-  }
-  S.phase = "over";
+  const r = afterBattle(T(), all.map(u => forceOf(u)?.care || "field"), all.map(u => S.evac[sideNo(u)]), dice);   // units.js: the dead counted, the wounded, the heroes' fates
+  S.after = r.after;
+  S.fates = r.fates;
   S.msg = "The battle is over.";
   S.log = [{ cls: "head", text: `The battle ends after ${S.exchange - 1} exchanges.` }, ...S.log];
   render();
@@ -1313,11 +1358,7 @@ function byStep(cases){                           // "12 mending, 20 serious, 8 
   for (const c of cases) n[c.step] = (n[c.step] || 0) + 1;
   return Object.keys(n).sort((a, b) => a - b).map(k => n[k] + " " + FD.track.steps[k]).join(", ");
 }
-const afterUnits = () => [...S.units, ...S.units.filter(u => u.riders).map(u => u.riders), ...crewsAfter()];   // every unit, the men still aboard carriers too, and the batteries' crews
-function crewsAfter(){                            // each fire-support battery with crews (not aircraft), as a unit for the after-battle reckoning: its crew at the start, down, killed, wounds
-  return supports().map((b, k) => [b, k]).filter(([b]) => !FD.units.indirect.kinds[b.kind]?.air && typeof b.crew === "number")
-    .map(([b, k]) => ({ id: `sup${k}`, name: b.name, side: b.side, men: b.crew, start: b.crew + (b.crew_down || 0), down: b.crew_down || 0, dead: b.crew_dead || 0, hurt: b.hurt || {}, state: "steady", heroes: [] }));
-}
+const afterUnits = () => afterAll(S);           // every unit, the men still aboard carriers too, and the batteries' crews (units.js: afterAll)
 function sideAfter(k){
   const t = { killed: 0, left: 0, died: 0, cases: [] };
   afterUnits().forEach((u, i) => {
@@ -1515,14 +1556,14 @@ function toggleObjective(h){                      // the enemy commander's objec
   const o = S.field.objective, same = !!o && o[0] === h[0] && o[1] === h[1];
   if (same) delete S.field.objective; else S.field.objective = [...h];
   delete S.field.objective_radius;                // a hex the GM marks counts within the commander's own radius
-  const R = FD.units.commander.objective, who = S.ai ? S.ai.side : "the commander's side";
+  const R = FD.units.commander.objective, ks = [0, 1].filter(k => aiOf(k)), who = ks.length ? ks.map(k => S.sides[k]).join(" and ") : "the commander's side";
   if (same){
     const two = !!S.field.objective2;
     delete S.field.objective2;
     S.msg = `Objective at ${hexName(h)} cleared${two ? ", and the second with it" : ""}: the commander goes for the enemy only.`;
     return;
   }
-  S.msg = `Objective marked at ${hexName(h)} for ${who}. Attacking, its units take it and hold it (within ${nOf(R.radius, "hex", "hexes")}); holding, they keep within ${nOf(R.hold, "hex", "hexes")} of it.` + (S.ai ? "" : " Choose a side for the enemy commander to use it.");
+  S.msg = `Objective marked at ${hexName(h)} for ${who}. Attacking, its units take it and hold it (within ${nOf(R.radius, "hex", "hexes")}); holding, they keep within ${nOf(R.hold, "hex", "hexes")} of it.` + (ks.length ? "" : " Choose a side for the enemy commander to use it.");
 }
 function toggleObjective2(h){                     // its second objective: marked, moved or cleared (at any time), once there is a first
   if (!S.field.objective){ S.msg = "Mark the commander's first objective before a second one."; return }
@@ -1830,13 +1871,7 @@ function sideInitials(){                          // ["B", "R"]: the sides' init
   const i = S.sides.map(s => (String(s).trim()[0] || "?").toUpperCase());
   return i[0] === i[1] ? ["A", "B"] : i;
 }
-function ensureTags(){                            // each unit's number on its side, kept for the battle (B3 stays B3)
-  for (const u of [...S.units].sort((a, b) => a.id - b.id)) if (!u.n){
-    const k = sideNo(u);
-    u.n = 1 + Math.max(0, ...S.units.filter(v => v.n && sideNo(v) === k).map(v => v.n));
-  }
-}
-const unitTag = u => { if (!u.n) ensureTags(); return sideInitials()[sideNo(u)] + u.n };
+const unitTag = u => { if (!u.n) ensureTags(S); return sideInitials()[sideNo(u)] + u.n };
 function unitSvg(u){
   const rows = footprint(u); if (!rows.length) return "";
   const k = sideNo(u), sel = u.id === S.sel ? " sel" : "", M = marks();
@@ -1940,7 +1975,7 @@ function edgesSvg(){                              // set-up: where each side's n
   if (!shows().edges || S.phase !== "setup") return "";
   let g = "", t = "";
   for (const k of [0, 1]){
-    const e = entryEdge(k), [r0, r1, c0, c1] = edgeBand(e), [at, anchor] = edgeLabel(e), [x, y] = xy(at);
+    const e = entryEdge(T(), k), [r0, r1, c0, c1] = edgeBand(e), [at, anchor] = edgeLabel(e), [x, y] = xy(at);
     for (let r = r0; r <= r1; r++){
       for (let c = c0; c <= c1; c++) g += `<polygon class="edge" fill="url(#hatch${k})" points="${pts(xy([c, r]))}"/>`;
     }
@@ -2013,7 +2048,7 @@ function renderMap(){
     const kind = G[c + "," + r], cls = kind && kind !== "open" ? " g-" + kind : "";
     hx += `<polygon class="hx${cls}" data-h="${c},${r}" points="${pts(xy([c, r]))}"/>`;
   }
-  ensureTags();
+  ensureTags(S);
   const units = S.units.map(unitSvg).join(""), W = HW * (SIZE[0] + 0.5), H = 1.5 * R * (SIZE[1] - 1) + 2 * R;
   $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" style="min-width:${SIZE[0] * 13}px">${hatchDefs()}${hx}${worksSvg()}${edgesSvg()}${reachSvg()}${units}${supportSvg()}${refsSvg()}${onCallSvg()}</svg>`;
   $("#map-scale").textContent = `${SIZE[0]} × ${SIZE[1]} hexes · ${fmtM(FD.units.hex_m)} a hex · an exchange is about a minute`;
@@ -2265,12 +2300,12 @@ function toggleResupply(){                        // set-up: at once; in play: o
 }
 function renderReserve(u){                        // Hold in reserve / Release it: the commander's side's units
   const b = $("#btn-reserve");
-  b.hidden = !u || !S.ai || u.side !== S.ai.side || S.phase === "over";
+  b.hidden = !u || !aiOf(sideNo(u)) || S.phase === "over";
   if (b.hidden) return;
   b.textContent = u.reserve ? "Release from reserve" : "Hold in reserve";
 }
 function toggleReserve(){                         // the GM marks or releases a reserve unit: the commander then leaves the choice of reserves to the GM
-  const u = selUnit(); if (!u || !S.ai || u.side !== S.ai.side) return;
+  const u = selUnit(); if (!u || !aiOf(sideNo(u))) return;
   for (const x of S.units) if (x.side === u.side && !("reserve" in x)) x.reserve = false;
   u.reserve = !u.reserve;
   S.msg = u.reserve ? `${unitName(u)} are held in reserve: they hold until the commander commits them.` : `${unitName(u)} are released: the commander orders them as any other unit.`;
@@ -2674,7 +2709,7 @@ function addUnit(){
 function byAir(u, f){                             // the unit comes on by air at a landing zone, as its side's helicopters carry it
   const lz = (S.field.lz || [])[Number($("#sel-lz").value)];
   if (!lz){ S.msg = "Mark a landing zone first (Clicking the map: Mark or clear a landing zone)."; return render() }
-  const facing = S.phase === "setup" ? u.facing : sideFacing(S.sides.indexOf(u.side)), { men, start, down, dead, hurt, heroes, state, ...tmpl } = u;
+  const facing = S.phase === "setup" ? u.facing : sideFacing(T(), S.sides.indexOf(u.side)), { men, start, down, dead, hurt, heroes, state, ...tmpl } = u;
   const H = FD.units.heliborne, width = Math.max(1, Math.min(u.width, Math.ceil(H.at_once * H.carry / FD.units.formations[u.formation].per_hex / 2)));   // a lift lands two ranks deep
   (S.field.lifts || (S.field.lifts = [])).push({ unit: { ...tmpl, facing, width, pos: [...lz] }, lz: [...lz], left: men });
   $("#in-name").value = "";
@@ -2682,8 +2717,8 @@ function byAir(u, f){                             // the unit comes on by air at
   render();
 }
 function setUp(u, k){                             // set-up: inside the camp for its defenders, else the first free spot along its side's entry edge, facing into the map; as wide as asked, else narrower and deeper
-  u = { ...u, facing: EDGE_FACING[entryEdge(k)] };
-  for (const width of entryWidths(u.width)){
+  u = { ...u, facing: EDGE_FACING[entryEdge(T(), k)] };
+  for (const width of entryWidths(SIZE, u.width)){
     const pos = startSpots(k, footprint({ ...u, width, pos: [0, 0] }).length).find(h => fits([...S.units, { ...u, width, pos: h }], S.units.length, { ...u, width, pos: h }, SIZE, S.field));
     if (!pos) continue;
     const at = { ...u, width, pos };
@@ -2696,54 +2731,6 @@ function setUp(u, k){                             // set-up: inside the camp for
   render();
 }
 // ---------- phases: a battlefield's stages, each from an exchange, some bringing on units held back until then ----------
-function holdForStages(phases){                   // the battlefield's phases; the units they bring on wait off the map (numbered first, so B5 is still B5)
-  if (!phases?.length) return;
-  ensureTags();
-  S.stages = structuredClone(phases);
-  S.stageNo = -1;
-  S.waiting = [];
-  const lifts = S.field.lifts || [], sup = supports();
-  S.stages.forEach((st, i) => (st.arrive || []).forEach(name => {
-    const u = S.units.find(v => v.name === name), lf = lifts.find(l => l.unit.name === name), b = sup.find(x => x.name === name);
-    if (u){ S.waiting.push({ stage: i, unit: u }); S.units = S.units.filter(v => v !== u) }
-    else if (lf){ S.waiting.push({ stage: i, unit: lf.unit, lift: lf }); S.field.lifts = S.field.lifts.filter(l => l !== lf) }   // coming in by air: it takes off when its phase begins
-    else if (b){ S.waiting.push({ stage: i, unit: { name: b.name }, support: b }); S.field.support = supports().filter(x => x !== b) }   // a battery or aircraft: on call from its phase
-  }));
-}
-function placeArrival(u, k){                      // where an arriving unit comes on: where the battlefield draws it if there is room, else at its side's entry edge
-  if (fits([...S.units, u], S.units.length, u, SIZE, S.field)) return u;
-  const facing = EDGE_FACING[entryEdge(k)];
-  for (const width of entryWidths(u.width)){
-    const pos = entrySpots(facing, footprint({ ...u, width, pos: [0, 0], facing }).length).find(h => fits([...S.units, { ...u, width, pos: h, facing }], S.units.length, { ...u, width, pos: h, facing }, SIZE, S.field));
-    if (pos) return { ...u, width, pos, facing };
-  }
-  return null;
-}
-function advanceStages(){                         // at the start of an exchange: begin each phase whose exchange has come, and bring on its units (any with no room wait for the next exchange)
-  if (!S.stages) return "";
-  const notes = [];
-  while (S.stageNo + 1 < S.stages.length && S.stages[S.stageNo + 1].at <= S.exchange){
-    S.stageNo += 1;
-    const st = S.stages[S.stageNo];
-    S.log.unshift({ cls: "head", text: `Phase ${S.stageNo + 1} of ${S.stages.length}: ${st.name}.${st.note ? " " + st.note : ""}` });
-    notes.push(`Phase ${S.stageNo + 1}: ${st.name}.`);
-  }
-  const came = [], flying = [], onCall = [];
-  S.waiting = S.waiting.filter(w => {
-    if (w.stage > S.stageNo) return true;
-    if (w.support){ supports().push(w.support); onCall.push(w.support.name); return false }
-    if (w.lift){ (S.field.lifts || (S.field.lifts = [])).push(w.lift); flying.push(`${w.unit.name} (${w.lift.left})`); return false }   // lands by the heliborne rules, a lift at a time
-    const at = placeArrival(w.unit, sideNo(w.unit));
-    if (!at) return true;
-    S.units.push({ ...at, arrived: S.exchange });
-    came.push(`${unitName(at)} (${at.men})`);
-    return false;
-  });
-  if (came.length) S.log.unshift({ cls: "head", text: `Coming on: ${came.join(", ")}. They can move next exchange.` });
-  if (flying.length) S.log.unshift({ cls: "head", text: `In the air for the landing zone: ${flying.join(", ")}.` });
-  if (onCall.length) S.log.unshift({ cls: "head", text: `Now on call: ${onCall.join(", ")}.` });
-  return (notes.length ? " " + notes.join(" ") : "") + (came.length ? ` Coming on: ${came.join(", ")}.` : "") + (flying.length ? ` In the air: ${flying.join(", ")}.` : "") + (onCall.length ? ` Now on call: ${onCall.join(", ")}.` : "");
-}
 function stageText(){                             // the strip above the map: the phase now, what it brought, and what comes next
   if (!S.stages) return "";
   const list = S.stages, i = S.stageNo, waitingFor = j => S.waiting.filter(w => w.stage === j).map(w => w.unit.name);
@@ -2757,9 +2744,9 @@ function stageText(){                             // the strip above the map: th
   return `<b>Phase ${i + 1} of ${list.length}: ${esc(st.name)}.</b> ${esc(st.note || "")}${late}${next}`;
 }
 function bringOn(u, k){                           // a unit joining during the battle: at its side's entry edge, facing into the map; it moves next exchange
-  const facing = EDGE_FACING[entryEdge(k)];
-  for (const width of entryWidths(u.width)){         // as wide as asked, else narrower and deeper until it fits
-    const spots = entrySpots(facing, footprint({ ...u, width, pos: [0, 0], facing }).length);
+  const facing = EDGE_FACING[entryEdge(T(), k)];
+  for (const width of entryWidths(SIZE, u.width)){         // as wide as asked, else narrower and deeper until it fits
+    const spots = entrySpots(SIZE, facing, footprint({ ...u, width, pos: [0, 0], facing }).length);
     const pos = spots.find(h => fits([...S.units, { ...u, width, pos: h, facing }], S.units.length, { ...u, width, pos: h, facing }, SIZE, S.field));
     if (!pos) continue;
     const at = { ...u, width, pos, facing, arrived: S.exchange };
@@ -2770,40 +2757,6 @@ function bringOn(u, k){                           // a unit joining during the b
   }
   S.msg = "No room for it at its side's edge, even in column: make room, or bring on fewer men.";
   render();
-}
-function entryWidths(w){                          // the widths to try: as asked (at most the map's width), then a quarter narrower each time, to 1
-  const out = [];
-  for (let x = Math.min(w, SIZE[0] - 4); x >= 1; x = x > 1 ? Math.min(x - 1, Math.floor(x * 0.75)) : 0) out.push(x);
-  return out;
-}
-function sideFacing(k){                           // the way most of a side's men face (its starting edge's way if it has none left)
-  const n = [0, 0, 0, 0, 0, 0];
-  S.units.filter(u => sideNo(u) === k && u.men > 0 && u.state !== "fled").forEach(u => { n[mod6(u.facing)] += u.men });
-  if (Math.max(...n) > 0) return n.indexOf(Math.max(...n));
-  return k ? 3 : 0;
-}
-const EDGE_FACING = { S: 1, N: 4, W: 0, E: 3 }, OPPOSITE = { S: "N", N: "S", W: "E", E: "W" };
-const EDGE_BEHIND = ["W", "S", "E", "E", "N", "W"];   // the map edge behind units facing 0-5 (as entrySpots)
-const edgeBehind = f => EDGE_BEHIND[mod6(f)];
-const fielded = k => S.units.some(u => sideNo(u) === k && u.men > 0 && u.state !== "fled");
-function entryEdge(k){                            // where side k's new units come in: the battlefield's entry, else the edge behind the way most of its men face; the other side's opposite edge if they would share one
-  if (S.entry) return S.entry[k];
-  const own = k => (fielded(k) ? edgeBehind(sideFacing(k)) : null);
-  const mine = own(k), theirs = own(1 - k);
-  if (mine && !(k === 1 && mine === theirs)) return mine;
-  if (theirs) return OPPOSITE[theirs];
-  return k ? "E" : "W";                           // no units on either side: west and east
-}
-function entrySpots(facing, ranks){               // front hexes for a unit `ranks` deep with its rear at the map edge behind a side facing this way, middle outwards
-  const [W, H] = SIZE, mid = (n, m) => Array.from({ length: n }, (_, i) => Math.floor(m / 2) + (i % 2 ? -1 : 1) * Math.ceil(i / 2)).filter(x => x >= 0 && x < m);
-  const inner = Array.from({ length: 12 }, (_, d) => d + ranks), out = [];
-  for (const d of inner){
-    if (facing === 1) mid(W, W).forEach(c => out.push([c, H - 1 - d]));        // facing the top: come on at the bottom
-    else if (facing === 4) mid(W, W).forEach(c => out.push([c, d]));           // facing the bottom: at the top
-    else if (facing === 0 || facing === 5) mid(H, H).forEach(r => out.push([d, r]));   // facing right: at the left
-    else mid(H, H).forEach(r => out.push([W - 1 - d, r]));                     // facing left: at the right
-  }
-  return out;
 }
 const vehiclesHere = () => !!FD.units.vehicles && !!S.table && FD.tables[S.table]?.weapons.some(w => hurtsArmour(w) || w === "machine_gun");   // tables of the machine-gun age and later
 function formationFor(weapon, chosen){           // guns in battery order, machine guns as teams, anti-tank guns a gun a hex; the rest as chosen (not those)
@@ -2821,7 +2774,7 @@ function edgeLine(e, d){                          // the hexes d in from edge e,
   return line.sort((a, b) => Math.abs(a[along] - n / 2) - Math.abs(b[along] - n / 2));
 }
 function startSpots(k, ranks = 1){                // its front hexes along its side's entry edge, 8 hexes in with `ranks` rows behind it (its defenders inside the camp first)
-  const edge = edgeLine(entryEdge(k), 7 + (ranks - 1));
+  const edge = edgeLine(entryEdge(T(), k), 7 + (ranks - 1));
   if (k || !S.camp) return edge;
   const inside = [];
   for (let r = 0; r <= S.camp.radius; r++) inside.push(...ringWalk(S.camp.centre, r));
@@ -2861,7 +2814,7 @@ function followerUnit(o, side, k){                // one career's followers as a
   const weapon = ok.includes(o.weapon) ? o.weapon : ok.find(w => ranged(w) === ranged(o.weapon) && !isGun(w)) || ok[0], shoots = ranged(weapon);
   const u = newUnit({ name: o.name, side, men: o.men, quality: o.quality, weapon, kit: FD.kits[o.kit] ? o.kit : "none",
     formation: shoots ? "open" : "close", mounted: o.mounted, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0, medics: o.medics, medic_quality: o.medic_quality });
-  u.facing = EDGE_FACING[entryEdge(k)];
+  u.facing = EDGE_FACING[entryEdge(T(), k)];
   const spot = startSpots(k).find(pos => fits([...S.units, { ...u, pos }], S.units.length, { ...u, pos }, SIZE, S.field));
   if (!spot) return null;
   u.pos = spot;
@@ -2976,7 +2929,9 @@ function init(){
   $("#btn-sappers").onclick = toggleSappers;
   $("#btn-shield").onclick = toggleShield;
   $("#sel-sap").onchange = e => setSap(e.target.value);
-  $("#sel-ai").onchange = e => setAi(e.target.value);
+  $("#sel-ai0").onchange = e => setAi(0, e.target.value);
+  $("#sel-ai1").onchange = e => setAi(1, e.target.value);
+  $("#btn-run").onclick = runToggle;
   $("#btn-ai-undo").onclick = aiUndo;
   $("#btn-ai-go").onclick = aiAgain;
   $("#btn-add-sup").onclick = addSupport;

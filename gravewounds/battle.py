@@ -1,0 +1,413 @@
+"""The turn of the field map: a battle's moves and exchanges, from set-up to the end, as the
+page plays them, and self-play (the enemy commander on both sides). A battle's state B is a
+dict: sides, table, units, field, size, exchange, phase ("setup", 0, 1 or "over"), stages,
+stageNo, waiting, start, entry, seq. Mirrored exactly by templates/units.js (the turn)."""
+from __future__ import annotations
+
+import copy
+import math
+
+from . import commander as K, units as U
+from .model import Data
+
+EDGE_FACING = {"S": 1, "N": 4, "W": 0, "E": 3}
+OPPOSITE = {"S": "N", "N": "S", "W": "E", "E": "W"}
+EDGE_BEHIND = ["W", "S", "E", "E", "N", "W"]      # the map edge behind units facing 0-5
+
+
+def side_index(B: dict, u: dict) -> int:
+    return 0 if u["side"] == B["sides"][0] else 1
+
+
+def _support(B: dict) -> list:
+    return B["field"].setdefault("support", [])
+
+
+def make_unit(d: Data, o: dict, uid: int, table: str) -> dict:
+    """A new unit as the GM or a battlefield draws it."""
+    nv = o.get("nv") or (U.vehicle_device(d, table) if o.get("vehicle") else None)
+    u = {"id": uid, "name": o["name"], "side": o["side"], "banner": o.get("banner") or None, "force": o.get("force"), "men": o["men"],
+         "start": o["men"], "down": 0, "dead": 0, "hurt": {}, "heroes": [], "quality": o["quality"], "weapon": o["weapon"],
+         "kit": o["kit"], "formation": o["formation"], "mounted": bool(o.get("mounted"))}
+    if U.is_gun(d, o["weapon"]):
+        u["guns"] = U.gun_kind(o)
+    u.update({"width": o.get("width") or math.ceil(o["men"] / U.form(d, o)["per_hex"]), "pos": o["pos"], "facing": o["facing"],
+              "state": "steady", "charged": False})
+    for k in ("prone", "emplaced", "fac", "ladders"):
+        if o.get(k):
+            u[k] = True
+    for k in ("vehicle", "type", "size"):
+        if o.get(k):
+            u[k] = o[k]
+    if o.get("fixed"):
+        u["fixed"] = list(o["fixed"])
+    if nv:
+        u["nv"] = nv
+    if o.get("medics"):
+        u.update({"medics": o["medics"], "medic_quality": o.get("medic_quality") or o["quality"]})
+    return u
+
+
+def ensure_tags(B: dict) -> None:
+    """Each unit's number on its side, kept for the battle (B3 stays B3)."""
+    for u in sorted(B["units"], key=lambda x: x["id"]):
+        if not u.get("n"):
+            k = side_index(B, u)
+            u["n"] = 1 + max([0] + [v["n"] for v in B["units"] if v.get("n") and side_index(B, v) == k])
+
+
+def stand_or_fly(B: dict, unit: dict, lands) -> None:
+    """A battlefield's unit: on the field, or (lands: a landing zone's index) waiting to come in by air."""
+    zones = B["field"].get("lz") or []
+    lz = zones[lands] if lands is not None and lands < len(zones) else None
+    if not lz:
+        B["units"].append(unit)
+        return
+    tmpl = {k: v for k, v in unit.items() if k not in ("men", "start", "down", "dead", "hurt", "heroes", "state")}
+    B["field"].setdefault("lifts", []).append({"unit": {**tmpl, "pos": list(lz)}, "lz": list(lz), "left": unit["men"]})
+
+
+def hold_for_stages(B: dict, phases) -> None:
+    """The battlefield's phases; the units they bring on wait off the map (numbered first)."""
+    if not phases:
+        return
+    ensure_tags(B)
+    B["stages"], B["stageNo"], B["waiting"] = copy.deepcopy(phases), -1, []
+    lifts, sup = B["field"].get("lifts") or [], _support(B)
+    for i, st in enumerate(B["stages"]):
+        for name in st.get("arrive") or []:
+            u = next((v for v in B["units"] if v["name"] == name), None)
+            lf = next((x for x in lifts if x["unit"]["name"] == name), None)
+            b = next((x for x in sup if x["name"] == name), None)
+            if u:
+                B["waiting"].append({"stage": i, "unit": u})
+                B["units"] = [v for v in B["units"] if v is not u]
+            elif lf:
+                B["waiting"].append({"stage": i, "unit": lf["unit"], "lift": lf})
+                B["field"]["lifts"] = [x for x in B["field"]["lifts"] if x is not lf]
+            elif b:
+                B["waiting"].append({"stage": i, "unit": {"name": b["name"]}, "support": b})
+                B["field"]["support"] = [x for x in _support(B) if x is not b]
+
+
+def set_up(d: Data, fid: str) -> dict:
+    """A battlefield with its armies as drawn up, before the battle starts."""
+    F = d.fields[fid]
+    field = U.battlefield(d, fid)
+    B = {"sides": list(F["sides"]), "table": F["table"], "units": [], "field": field, "exchange": 0, "phase": "setup", "stages": None,
+         "stageNo": -1, "waiting": [], "start": None, "entry": F.get("entry") or None, "seq": 1}
+    B["size"] = list(field["size"])
+    field["lifts"] = []
+    for u in F.get("units", []):
+        unit = make_unit(d, {**u, "side": F["sides"][u["side"]]}, B["seq"], B["table"])
+        B["seq"] += 1
+        stand_or_fly(B, unit, u.get("lands"))
+    hold_for_stages(B, F.get("phases"))
+    return B
+
+
+def _fielded(B: dict, k: int) -> bool:
+    return any(side_index(B, u) == k and u["men"] > 0 and u["state"] != "fled" for u in B["units"])
+
+
+def side_facing(B: dict, k: int) -> int:
+    """The way most of a side's men face (its starting edge's way if it has none left)."""
+    n = [0] * 6
+    for u in B["units"]:
+        if side_index(B, u) == k and u["men"] > 0 and u["state"] != "fled":
+            n[u["facing"] % 6] += u["men"]
+    if max(n) > 0:
+        return n.index(max(n))
+    return 3 if k else 0
+
+
+def entry_edge(B: dict, k: int) -> str:
+    """Where side k's new units come in: the battlefield's entry, else the edge behind the way most
+    of its men face; the other side's opposite edge if they would share one."""
+    if B.get("entry"):
+        return B["entry"][k]
+
+    def own(s):
+        return EDGE_BEHIND[side_facing(B, s) % 6] if _fielded(B, s) else None
+    mine, theirs = own(k), own(1 - k)
+    if mine and not (k == 1 and mine == theirs):
+        return mine
+    if theirs:
+        return OPPOSITE[theirs]
+    return "E" if k else "W"
+
+
+def _mid(m: int) -> list:
+    out = [m // 2 + (-1 if i % 2 else 1) * math.ceil(i / 2) for i in range(m)]
+    return [x for x in out if 0 <= x < m]
+
+
+def entry_spots(size, facing: int, ranks: int) -> list:
+    """Front hexes for a unit `ranks` deep with its rear at the map edge behind a side facing this
+    way, middle outwards."""
+    W, H = size
+    out = []
+    for dd in range(ranks, ranks + 12):
+        if facing == 1:
+            out += [[c, H - 1 - dd] for c in _mid(W)]
+        elif facing == 4:
+            out += [[c, dd] for c in _mid(W)]
+        elif facing in (0, 5):
+            out += [[dd, r] for r in _mid(H)]
+        else:
+            out += [[W - 1 - dd, r] for r in _mid(H)]
+    return out
+
+
+def entry_widths(size, w: int) -> list:
+    """The widths to try: as asked (at most the map's width), then a quarter narrower each time, to 1."""
+    out, x = [], min(w, size[0] - 4)
+    while x >= 1:
+        out.append(x)
+        x = min(x - 1, math.floor(x * 0.75)) if x > 1 else 0
+    return out
+
+
+def place_arrival(d: Data, B: dict, u: dict, k: int) -> dict | None:
+    """Where an arriving unit comes on: where the battlefield draws it if there is room, else at
+    its side's entry edge; None if no room."""
+    n = len(B["units"])
+    if U._fits(d, B["units"] + [u], n, u, B["size"], B["field"]):
+        return u
+    facing = EDGE_FACING[entry_edge(B, k)]
+    for width in entry_widths(B["size"], u["width"]):
+        ranks = len(U.footprint(d, {**u, "width": width, "pos": [0, 0], "facing": facing}))
+        for h in entry_spots(B["size"], facing, ranks):
+            v = {**u, "width": width, "pos": h, "facing": facing}
+            if U._fits(d, B["units"] + [v], n, v, B["size"], B["field"]):
+                return v
+    return None
+
+
+def advance_stages(d: Data, B: dict) -> dict:
+    """At the start of an exchange: begin each phase whose exchange has come, and bring on its
+    units (any with no room wait for the next exchange)."""
+    out = {"begun": [], "came": [], "flying": [], "onCall": []}
+    if not B.get("stages"):
+        return out
+    while B["stageNo"] + 1 < len(B["stages"]) and B["stages"][B["stageNo"] + 1]["at"] <= B["exchange"]:
+        B["stageNo"] += 1
+        out["begun"].append(B["stageNo"])
+    keep = []
+    for w in B["waiting"]:
+        if w["stage"] > B["stageNo"]:
+            keep.append(w)
+        elif w.get("support"):
+            _support(B).append(w["support"])
+            out["onCall"].append(w["support"]["name"])
+        elif w.get("lift"):
+            B["field"].setdefault("lifts", []).append(w["lift"])
+            out["flying"].append({"name": w["unit"]["name"], "left": w["lift"]["left"]})
+        else:
+            at = place_arrival(d, B, w["unit"], side_index(B, w["unit"]))
+            if not at:
+                keep.append(w)
+                continue
+            B["units"].append({**at, "arrived": B["exchange"]})
+            out["came"].append(len(B["units"]) - 1)
+    B["waiting"] = keep
+    return out
+
+
+def mark_starts(B: dict) -> None:
+    """With minefields down, where each unit's first moves begin (the ground it crosses)."""
+    if B["field"].get("mines"):
+        for u in B["units"]:
+            u["was"] = [list(u["pos"]), u["facing"]]
+
+
+def start_phase(d: Data, B: dict, k: int) -> list:
+    """Side k's move; at the start of an exchange every broken unit runs first."""
+    B["phase"], ran = k, []
+    for i in range(len(B["units"])):
+        if k != 0 or B["units"][i]["state"] != "broken":
+            continue
+        through = U.ran_through(d, B["units"], i, U.flee(d, B["units"], i, B["size"], B["field"]))
+        B["units"] = U.run_away(d, B["units"], i, B["size"], B["field"])
+        ran.append({"unit": i, "through": through, "fled": B["units"][i]["state"] == "fled"})
+    B["start"] = [dict(u) for u in B["units"]]
+    return ran
+
+
+def drifts(d: Data, B: dict, k: int, rng) -> list:
+    """In the dark, each unit of side k that moved this phase may lose its direction."""
+    if not U.light_of(d, B["field"]):
+        return []
+    out = []
+    for i, u in enumerate(list(B["units"])):
+        was = (B.get("start") or [])[i] if i < len(B.get("start") or []) else None
+        if u["side"] != B["sides"][k] or not was or list(was["pos"]) == list(u["pos"]):
+            continue
+        r = U.night_drift(d, B["units"], i, B["size"], B["field"], rng)
+        if not r["lost"]:
+            continue
+        B["units"][i] = r["unit"]
+        out.append({"unit": i, "strayed": bool(r.get("strayed")), "turned": r["unit"]["facing"] != u["facing"]})
+    return out
+
+
+def realign_starts(B: dict) -> None:
+    """B.start by unit id, after units joined or left the list (a unit whose riders changed starts as it is)."""
+    was = B.get("start") or []
+
+    def rid(x):
+        return (x.get("riders") or {}).get("id")
+    out = []
+    for u in B["units"]:
+        s = next((x for x in was if x["id"] == u["id"]), None)
+        out.append(s if s and rid(s) == rid(u) else dict(u))
+    B["start"] = out
+
+
+def begin(d: Data, B: dict) -> dict:
+    """Set-up done: the first exchange begins, side 0 to move."""
+    B["exchange"] = 1
+    stages = advance_stages(d, B)
+    mark_starts(B)
+    return {"stages": stages, "ran": start_phase(d, B, 0)}
+
+
+def end_move(d: Data, B: dict, rng) -> dict:
+    """The moving side's move is done: after side 0, side 1 moves; after side 1, the exchange is
+    fought and the next begins."""
+    if B["phase"] == 0:
+        lost = drifts(d, B, 0, rng)
+        return {"lost": lost, "log": None, "stages": None, "ran": start_phase(d, B, 1)}
+    lost = drifts(d, B, 1, rng)
+    B["units"], log = U.exchange(d, B["units"], B["table"], rng, B["field"])
+    B["exchange"] += 1
+    stages = advance_stages(d, B)
+    return {"lost": lost, "log": log, "stages": stages, "ran": start_phase(d, B, 0)}
+
+
+def commander_memory(B: dict, M: dict) -> dict:
+    """M {n, mem}: where a side's commander last saw each enemy unit (by index), forgotten when
+    units joined or left the list since."""
+    if M["n"] != len(B["units"]):
+        M["mem"], M["n"] = {}, len(B["units"])
+    return M["mem"]
+
+
+def command_move(d: Data, B: dict, stance: str, M: dict, rng) -> list:
+    """The commander orders the moving side (M: its memory, see commander_memory): its orders."""
+    n = len(B["units"])
+    B["units"], orders = K.command(d, B["units"], B["sides"][B["phase"]], B["size"], B["field"], rng, B["exchange"], stance,
+                                   commander_memory(B, M), B["table"])
+    if len(B["units"]) != n:
+        realign_starts(B)
+    M["n"] = len(B["units"])
+    return orders
+
+
+def _standing(B: dict, k: int) -> bool:
+    return any(u["side"] == B["sides"][k] and u["men"] > 0 and u["state"] in ("steady", "shaken") for u in B["units"])
+
+
+def stop_reason(d: Data, B: dict, held: dict, how: list) -> dict | None:
+    """After an exchange of a self-played battle: why it stops, or None; held {side, n}: which
+    attacking side held the (first) objective and for how many exchanges running, updated (a
+    holding side on its own ground has not taken it); how: each side's stance (commander.self_play)."""
+    P = d.units["commander"]["self_play"]
+    gone = [k for k in (0, 1) if not _standing(B, k)]
+    lines = U.objective_held(d, B["units"], B["field"])
+    h = lines[0]["held"] if lines else None
+    o = h if h is not None and how[B["sides"].index(h)] == "attack" else None
+    held["n"] = 0 if o is None else (held["n"] + 1 if o == held["side"] else 1)
+    held["side"] = o
+    if gone:
+        return {"why": "gone", "sides": gone}
+    if held["n"] >= P["held"]:
+        return {"why": "held", "side": o}
+    if B["exchange"] - 1 >= P["limit"]:
+        return {"why": "limit"}
+    return None
+
+
+def stances(d: Data, fid: str | None) -> list:
+    """A self-played battle's stances: the side the battlefield's objective names attacks and the
+    other holds; else both attack."""
+    o = (d.fields.get(fid) or {}).get("objective") if fid else None
+    return ["attack" if k == o["side"] else "hold" for k in (0, 1)] if o else ["attack", "attack"]
+
+
+def crews(d: Data, B: dict) -> list:
+    """Each fire-support battery with crews (not aircraft), as a unit for the after-battle reckoning."""
+    kinds = d.units["indirect"]["kinds"]
+    return [{"id": f"sup{k}", "name": b["name"], "side": b["side"], "men": b["crew"], "start": b["crew"] + (b.get("crew_down") or 0),
+             "down": b.get("crew_down") or 0, "dead": b.get("crew_dead") or 0, "hurt": b.get("hurt") or {}, "state": "steady", "heroes": []}
+            for k, b in enumerate(_support(B)) if not (kinds.get(b["kind"]) or {}).get("air") and isinstance(b.get("crew"), int) and not isinstance(b.get("crew"), bool)]
+
+
+def after_all(d: Data, B: dict) -> list:
+    """Every unit, the men still aboard carriers too, and the batteries' crews."""
+    return B["units"] + [u["riders"] for u in B["units"] if u.get("riders")] + crews(d, B)
+
+
+def side_medevac(d: Data, B: dict, k: int) -> str | None:
+    """Side k's medevac kind (its war's, helicopters falling back without a zone or a helicopter left), or None."""
+    H = U.helos(d, B["field"], B["sides"][k]) if d.units.get("heliborne") else None
+    left = bool(H) and H["aircraft"] - (H.get("damaged") or 0) - (H.get("downed") or 0) > 0
+    return U.medevac_kind(d, B["table"], len(B["field"].get("lz") or []) > 0, left)
+
+
+def after_battle(d: Data, B: dict, care: list, evac: list, rng) -> dict:
+    """The battle over: each unit's aftermath (care, evac: per unit) and the heroes' fates, applied."""
+    every = after_all(d, B)
+    am = U.aftermath(d, every, care, rng, evac)
+    after = [{"id": u["id"], "killed": u.get("dead") or 0, **am[i]} for i, u in enumerate(every)]
+    fates = U.hero_fates(d, B["units"], B["table"], rng)
+    for f in fates:
+        h = next(x for x in B["units"][f["unit"]]["heroes"] if x["id"] == f["hero"])
+        if f["fate"] == "killed":
+            h["state"] = "dead"
+        elif f["fate"] == "prisoner":
+            h["state"] = "prisoner"
+        h["fate"] = f["fate"]
+    B["phase"] = "over"
+    return {"all": every, "after": after, "fates": fates}
+
+
+def self_play(d: Data, fid: str, rng, how: list | None = None) -> dict:
+    """A battlefield played to its end by the commander on both sides: {battle, stop, orders, after, fates}."""
+    B = set_up(d, fid)
+    st, mem, held = how or stances(d, fid), [{"n": -1, "mem": {}}, {"n": -1, "mem": {}}], {"side": None, "n": 0}
+    begin(d, B)
+    stop, orders = None, 0
+    while not stop:
+        for k in (0, 1):
+            orders += len(command_move(d, B, st[k], mem[k], rng))
+            end_move(d, B, rng)
+        stop = stop_reason(d, B, held, st)
+    every = after_all(d, B)
+    evac = [side_medevac(d, B, 0), side_medevac(d, B, 1)]
+    r = after_battle(d, B, ["field"] * len(every), [evac[side_index(B, u)] for u in every], rng)
+    return {"battle": B, "stop": stop, "orders": orders, "after": r["after"], "fates": r["fates"]}
+
+
+STOP_TEXT = {"gone": "no unit left standing", "held": "the objective taken and held", "limit": "the exchange limit reached"}
+
+
+def summary(d: Data, r: dict) -> list:
+    """A self-played battle in a few lines: why it stopped, after how many exchanges, and each
+    side's men: at the start, killed, left on the field, died of wounds, carried to camp, and
+    still standing."""
+    B, P = r["battle"], d.units["commander"]["self_play"]
+    st = r["stop"]
+    why = {"gone": lambda: " and ".join(B["sides"][k] for k in st["sides"]) + " with no unit left standing",
+           "held": lambda: f"{st['side']} took the objective and held it {P['held']} exchanges running",
+           "limit": lambda: f"{P['limit']} exchanges fought"}[st["why"]]()
+    out = [f"Stopped after {B['exchange'] - 1} exchanges: {why}. {r['orders']} orders given."]
+    every = after_all(d, B)
+    for k, side in enumerate(B["sides"]):
+        rows = [(u, a) for u, a in zip(every, r["after"]) if u["side"] == side]
+        n = {"start": sum(u.get("start", 0) for u, _ in rows), "killed": sum(a["killed"] for _, a in rows),
+             "left": sum(a["left"] for _, a in rows), "died": sum(a["died"] for _, a in rows), "carried": sum(len(a["cases"]) for _, a in rows)}
+        up = sum(1 for u in B["units"] if u["side"] == side and u["men"] > 0 and u["state"] in ("steady", "shaken"))
+        out.append(f"  {side}: {n['start']} men; {n['killed']} killed, {n['left']} left on the field, {n['died']} died of wounds, "
+                   f"{n['carried']} wounded carried to camp; {up} unit(s) still standing")
+    return out
