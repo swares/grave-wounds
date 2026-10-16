@@ -292,8 +292,27 @@ fixes were measured over every battlefield with rubble (four runs each), and nei
   rubble battlefield. Cassino town's paratroops lasted about 40 exchanges instead of 28 and
   still went (68% lost); Grozny's Chechens held to the limit instead of going under.
 
-Shellfire still does most of the killing in both, because each side's batteries fire every
-exchange for as long as the battle lasts. Whether batteries should have a sustained rate or a
-battle's worth of ammunition (sourced rates of fire) is the open question, and it would touch
-every battle with guns.
+Shellfire still does most of the killing in both.
+
+**Shellfire: measured, not changed.** Batteries already have a rate of fire and a battle's
+ammunition (field guns 2 rounds a minute a tube, 80 rounds), within the 25-pounder's published
+rates (1 to 5 rounds a minute by the manual's scales, 32 rounds in its trailer and more with the
+section; in big operations a gun fired some 100 to 335 rounds a day). What decides Cassino town is
+how deadly a shell is against men in cover. The one sourced figure found: British wartime findings,
+as summarised on a Royal Artillery history site, put 0.1 lb of shell a square yard (25-pounder
+terms) at about 20% casualties to troops in the open and 2% to troops in weapon pits. By that, our
+field and mortar shells are about two and a half times too deadly in the open (a 25-pounder shell
+for every 2.4 hexes, against the equivalent of about 1.2 hexes struck a shell here). Scaling them
+to 40% over all 37 battlefields, four runs each: 93 of 148 runs matched against 97, 22 battlefields
+against 24 (better: Pork Chop, Heartbreak, Hamburger; worse: Mons, from 4 of 4 to 1, Wanat, Cassino
+in February, Osan, Keating), and Cassino town unchanged (the paratroops still lose about 60%, more
+of it in the rout). One secondary figure and a mixed, slightly worse result: not applied.
+Other anchors found: Operation Cobra's bombardment caused "less than 10 percent" casualties to the
+Germans under it, and losses ran "in inverse proportion to the extent units were dug in" (the Army's
+Combat Studies Institute report on concentrated artillery).
+
+Sources: [Royal Artillery methods in WW2](https://nigelef.tripod.com/maindoc.htm);
+[Ordnance QF 25-pounder (Wikipedia)](https://en.wikipedia.org/wiki/Ordnance_QF_25-pounder);
+[CSI Report 13, Tactical Responses to Concentrated Artillery](https://www.armyupress.army.mil/Portals/7/combat-studies-institute/csi-books/tactical.pdf);
+[Tank Archives, 25 pounds of death](https://www.tankarchives.com/2018/09/25-pounds-of-death.html).
 
