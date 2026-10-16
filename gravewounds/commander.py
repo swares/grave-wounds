@@ -1307,14 +1307,15 @@ def _toward(d: Data, us: list, i: int, t: int | None, ctx: tuple, act: str) -> d
     tries, allow = d.units["commander"]["tries"], U.allowance(d, free)
     for c, h in _toward_hexes(d, base, i, tu, (size, field)):
         f = _facing(h, tu, obj, u["facing"])
-        if c + _turning(d, free, f) > allow or _touches(d, {**u, "pos": h, "facing": f}, foes):
+        fs = [g for g in _facings(f, u["facing"]) if c + _turning(d, free, g) <= allow and not _touches(d, {**u, "pos": h, "facing": g}, foes)]
+        if not fs:
             continue
         if tries == 0:
             return None
         tries -= 1
-        m = _legal(d, base, i, (h, f, c, False), (size, field))
+        m, g = _legal_facing(d, base, i, (h, fs[0], c, False), (size, field, foes))
         if m["ok"]:
-            return _rising(u, {"act": act, "target": t, "pos": h, "facing": f, "cost": m["cost"]})
+            return _rising(u, {"act": act, "target": t, "pos": h, "facing": g, "cost": m["cost"]})
     return None
 
 
@@ -1493,9 +1494,9 @@ def _first_move(d: Data, base: list, i: int, tu: dict, where: tuple, how: tuple)
         if tries == 0:
             return None
         tries -= 1
-        m = _legal(d, base, i, (h, f, c, touch), (size, field))
+        m, g = _legal_facing(d, base, i, (h, f, c, touch), (size, field, foes))
         if not _rejects(m, charge, hold):
-            return h, f, _passing(d, base, i, (h, m, via))
+            return h, g, _passing(d, base, i, (h, m, via))
     return None
 
 
@@ -1531,6 +1532,33 @@ def _skips(touch: bool, how: tuple, far: bool, stuck: bool) -> bool:
     if stuck or (via and not touch):
         return True
     return not charge if touch else hold or far
+
+
+def _facings(f: int, now: int) -> list:
+    """The facings to try for a move meant to face f: f, then a point either side, then two, then
+    the one it has now (each once)."""
+    out = []
+    for g in (f, f + 1, f - 1, f + 2, f - 2, now):
+        if g % 6 not in out:
+            out.append(g % 6)
+    return out
+
+
+def _legal_facing(d: Data, base: list, i: int, to: tuple, wf: tuple) -> tuple:
+    """(move, facing): _legal facing f; if it may not move there facing f (no room, or the turn
+    too dear), the nearest facing (_facings) that it may, touching (or not) as before."""
+    (h, f, c, touch), (size, field, foes) = to, wf
+    m = _legal(d, base, i, to, (size, field))
+    if m["ok"]:
+        return m, f
+    u = base[i]
+    for g in _facings(f, u["facing"])[1:]:
+        if _touches(d, {**u, "pos": h, "facing": g}, foes) != touch:
+            continue
+        m2 = _legal(d, base, i, (h, g, c, touch), (size, field))
+        if m2["ok"]:
+            return m2, g
+    return m, f
 
 
 def _legal(d: Data, base: list, i: int, to: tuple, where: tuple) -> dict:

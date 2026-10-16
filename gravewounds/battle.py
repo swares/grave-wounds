@@ -309,8 +309,11 @@ def _standing(bt: dict, k: int) -> bool:
 
 
 def secured(d: Data, bt: dict, side) -> bool:
-    """No standing enemy of side within commander.self_play.secure hexes of the (first) objective."""
+    """No standing enemy of side within commander.self_play.secure hexes of the (first) objective,
+    and none still to come."""
     r, at = d.units["commander"]["self_play"]["secure"], bt["field"]["objective"]
+    if to_come(bt, 1 - bt["sides"].index(side)):
+        return False
     return not any(u["side"] != side and u["men"] > 0 and u["state"] in STANDING and U.hdist(u["pos"], at) <= r for u in bt["units"])
 
 

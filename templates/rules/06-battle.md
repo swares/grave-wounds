@@ -144,7 +144,7 @@ start of that side's move it orders each unit. It knows only the enemies its uni
 (or saw in the last {{c_remember}} exchanges, where they were then; what a unit sees from where it has just moved, the units ordered after it know); green units go for the
 nearest, better ones for an enemy that is hurt, shaken or dangerous to them. It closes,
 takes cover, shoots from range or charges with the odds its quality wants (counting the
-steady friends touching it, who go in with it), and green units sometimes hesitate. With no enemy in sight, a unit holds; attacking with no objective, it goes forward along its facing to find one.
+steady friends touching it, who go in with it), and green units sometimes hesitate. With no enemy in sight, a unit holds; attacking with no objective, it goes forward along its facing to find one. A unit with no room to move facing its goal (or a turn too dear) moves facing as near its goal as it can.
 
 - **Storming works.** Attacking, infantry with muskets, rifle-muskets, breech-loaders, or
   modern rifles and sub-machine guns do not stop to trade fire with an enemy behind works (a
@@ -196,7 +196,7 @@ holding. With the commander on both sides the GM only watches: **Next** steps a 
 and **Run** plays on until the GM presses **Stop** or the run ends itself. It ends when a side
 has no unit left standing and none still to come, when an attacking side has taken the
 objective and held it {{c_sp_held}} exchanges running with no enemy standing within
-{{c_sp_secure}} of it, or after {{c_sp_limit}} exchanges (on a
+{{c_sp_secure}} of it and none still to come, or after {{c_sp_limit}} exchanges (on a
 battlefield with phases, {{c_sp_after}} past the last phase's start, if later, but never more
 than {{c_sp_most}}); then the battle
 ends, as with *End the battle*. On a battlefield the side its objective names attacks and the

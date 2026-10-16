@@ -340,6 +340,13 @@ general. All its numbers are in units.yaml `commander`.
   - If no hex it would move to is in reach (it faces away from the target, and turning alone
     takes its whole move), it turns where it stands toward the target, as far as its move
     allows, and moves on next time. Holding units do the same.
+  - **Room to move.** If a hex would do but the unit cannot stand there facing its target or
+    objective (no room for its ranks, or the turn costs more than its move), it tries the
+    facings a point either side, then two, then the way it faces now, and moves facing the
+    first that it can; it turns to face its goal later, when there is room. This goes for every
+    move the commander orders: on a target, on the objective, falling back, searching, plugging
+    a gap (not an air controller's spot, which must face what it is to see). Self-play showed
+    big units on narrow or rough ground (Kapyong, Cassino) never moving at all.
   - Of hexes that score the same and cost the same, it takes the one nearest the straight
     line to the target (or the objective), so a long advance goes straight rather than
     drifting to one side.
@@ -600,7 +607,7 @@ at a time; **Run** (shown only then) plays a move about every 0.7 seconds until 
 - a side has no unit left standing (steady or shaken) and none still to come on (a later
   phase's units, or a lift still in the air);
 - an attacking side has taken the (first) objective and held it `held` (5) exchanges running,
-  with no standing enemy within `secure` (10) hexes of it (a holding side standing on its own
+  with no standing enemy within `secure` (10) hexes of it and none still to come (a holding side standing on its own
   ground does not count, or a defended objective would end every run at once; nor does a hold
   with the enemy still close round it; nor a side that held it from the start, until it has
   changed hands: Grozny's battlefield opens with the Russians in the station, and the real fight
