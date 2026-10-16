@@ -33,7 +33,9 @@ Each day's weather is rolled from the climate's figures for that month:
 - On a dry day it may be foggy, fair or overcast.
 - The wind is rolled separately. A storm brings at least a strong wind, and a blizzard a gale.
 - A **sandstorm** is never rolled. It is set only where a battlefield names it (73 Easting,
-  1991) or the GM picks it: blowing sand with no rain, at least a strong wind.
+  1991) or the GM picks it: blowing sand with no rain, at least a strong wind. Thermal sights
+  see through it further (Eagle Troop's first kill was at about 1,000 yards in the storm, and
+  the GAO found thermal sights saw through haze and smoke).
 - So is the wind's **direction**, where it blows from, one of eight points. Half the time a
   day keeps the day before's; otherwise it is rolled from the climate's prevailing winds:
   mostly from the west and south-west in north-west Europe, from the west in central Europe
@@ -106,7 +108,7 @@ affected.
 | Snow, heavy snow | Can't aim beyond 75 or 40 hexes; bows and crossbows −10% |
 | Heavy rain, storm | Can't aim beyond 75 or 50 hexes; bows and crossbows −20% |
 | Blizzard | Can't aim beyond 15 hexes; bows and crossbows −20% |
-| Sandstorm | Can't aim beyond 200 hexes (440 yards, 400 m), thermal sights included |
+| Sandstorm | Can't aim beyond 200 hexes (440 yards, 400 m); thermal sights to 450 hexes (985 yards, 900 m) |
 | Strong wind | Bows, crossbows, slings and thrown weapons −10% |
 | Gale | Bows, crossbows, slings and thrown weapons −20%; firearms −10% |
 

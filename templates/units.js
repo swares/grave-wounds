@@ -572,7 +572,7 @@ function form(u){                                 // a unit's formation; a vehic
 }
 const vehicleKind = u => (u.vehicle ? UD.vehicles.kinds[u.vehicle] : null);   // a vehicle unit's kind, or null
 const vehiclesLeft = (u, lost = 0) => { const K = vehicleKind(u); return K ? Math.ceil(Math.max(0, u.men - lost) / K.crew) : 0 };
-const armourOf = u => { const K = vehicleKind(u); return K ? UD.vehicles.armour[K.armour] : null };
+const armourOf = u => { const K = vehicleKind(u); return K ? UD.vehicles.armour[u.armour || K.armour] : null };   // its own (a battlefield's armour), else its kind's
 const hurtsArmour = weapon => weapon in (UD.vehicles?.anti_armour || {});
 const soft = u => { const K = vehicleKind(u); return !!K && "small" in UD.vehicles.armour[K.armour] };   // a soft-skinned vehicle unit: small arms can hurt it
 function shotAtVehicle(weapon){                    // a weapon's line at vehicles: anti_armour, else small arms on the armour's small row (as units._shot_at_vehicle)
@@ -586,8 +586,9 @@ function bearing(t, h){                            // the direction (0-5) from h
   return dots.indexOf(Math.max(...dots));
 }
 function killChance(u, row, h, t){                 // % a hit from h on vehicle unit u (at t) knocks one out: its armour's row %, x aspect for a flank or rear shot, to 100
-  const p = armourOf(u)[row], side = h && t && (h[0] !== t[0] || h[1] !== t[1]) ? arc(u.facing, bearing(t, h)) : "front";
-  return Math.min(100, Math.trunc(p * (UD.vehicles.aspect?.[side] ?? 1)));
+  const A = armourOf(u), side = h && t && (h[0] !== t[0] || h[1] !== t[1]) ? arc(u.facing, bearing(t, h)) : "front";
+  if (side === "front" && A.front?.[row] !== undefined) return A.front[row];   // composite armour: proof from the front
+  return Math.min(100, Math.trunc(A[row] * (UD.vehicles.aspect?.[side] ?? 1)));
 }
 function harm(u, n, lost, rng){                    // hits that did not knock a vehicle out: on the turret (damage.turret %) or the hull, each may immobilise one or put its gun out -> {immobilised, gun, turret}
   const D = UD.vehicles.damage, left = vehiclesLeft(u, lost), out = { immobilised: 0, gun: 0, turret: 0 };
@@ -919,7 +920,7 @@ function markMg(us, v, under){                    // a machine gun's target, and
 const spotted = (units, field, side, h) => units.some(u => u.side === side && u.men > 0 && u.state !== "broken" && u.state !== "fled" && sees(field, u, h, sightHexes(field, h, seerOf(u))));
 function sightHexes(field, h = null, seer = null){  // how far the weather and the light let a man (seer: his kit and night device) see hex h, in field hexes (null: as far as the map); a lit hex as by day, one that fired out to light.flash
   const cond = field?.weather?.cond, L = lightOf(field);
-  let vis = cond && FD.weather ? FD.weather.conditions[cond].visibility : null;
+  let vis = cond && FD.weather ? thermalSight(FD.weather.conditions[cond], FD.weather.conditions[cond].visibility, seer) : null;
   if (vis === undefined) vis = null;
   let dark = L && !lit(field, h) ? darkSight(L, nightDevice(seer, field))[0] : null;
   if (dark !== null && flashing(field, h)) dark = Math.max(dark, FD.weather.light.flash);
@@ -1368,7 +1369,8 @@ function shotWeather(field, weapon, dist, h = null, t = null, seer = null){   //
   if (h && t && !seer?.blind && overCrest(field, h, t, dist)) return { ...CRESTED };
   if (h && t && !seer?.blind && !clearSight(field, h, t, dist)) return { ...SCREENED };
   if (isGun(weapon)) return gunWeather(field, dist, h, t, seer);
-  const seen = seer?.blind ? 0 : dist * UD.range_scale;   // blind down a fixed line: the weather's sight does not count
+  const cond = field?.weather ? FD.weather?.conditions?.[field.weather.cond] : null, far = dist * UD.range_scale;
+  const seen = seer?.blind || (cond?.thermal && seesSmoke(seer) && far <= cond.thermal) ? 0 : far;   // blind down a fixed line, or a thermal sight within its reach in a sandstorm: the weather's sight does not count
   const out = inTheCold(field, weapon, inTheDark(field, dist, t, weatherAttack(field?.weather || null, weapon, seen, h, t, upOf(field)), seer));
   const n = h && t && !out.blocked ? thinned(field, h, t, dist) : 0;   // light cover between: aimed fire thinned
   return n ? { ...out, penalty: out.penalty + n * UD.line_of_fire.thin.per } : out;
@@ -1398,6 +1400,7 @@ function inTheDark(field, dist, t, out, seer = null){   // no aiming beyond the 
   return out;
 }
 const NV = () => FD.weather?.light?.night_vision || {};
+const fireControlOf = (o, table) => (UD.vehicles.kinds[o.vehicle]?.fc ? o.fc || UD.vehicles.fire_control.by_war[FD.tables[table]?.battle] || null : null);   // a tank's fire control: the battlefield's, else its war's (as units.fire_control_of)
 const vehicleDevice = table => NV().vehicles?.[FD.tables[table]?.battle] ?? null;   // the night device a vehicle unit carries by default in this table's war (as units.vehicle_device)
 function nightDevice(seer, field = null){          // the night-vision device a shooter or watcher ({kit, nv, at}) carries: the unit's own ("none": none), else his kit's, else null; null if it washes out where he stands in a flare's light (with field)
   let dev = null;
@@ -1699,8 +1702,9 @@ function vehicleGuns(us, table, rng, acc, log, field, under){   // each vehicle 
 }
 function gunOf(u){                                // a unit's main gun: a vehicle kind's, or an anti-tank gun unit's (none while it resupplies)
   if (isAtGun(u)) return u.resupplying || u.unhooked ? null : UD.anti_tank_guns.gun;
-  const K = vehicleKind(u);
-  return K ? K.gun : null;
+  const K = vehicleKind(u), F = u.fc ? UD.vehicles.fire_control[u.fc] : null;
+  if (!K?.gun) return null;
+  return F ? { ...K.gun, range: F.range, hit: F.hit } : K.gun;   // a tank's gun hits and reaches by its fire control
 }
 const atRounds = u => Math.max(0, Math.ceil((u.start ?? u.men) / UD.anti_tank_guns.crew) * UD.anti_tank_guns.rounds - (u.spent || 0));   // an anti-tank gun unit's rounds left
 const gunsFiring = u => (isAtGun(u) ? atGuns(u) : Math.max(0, vehiclesLeft(u) - (u.gunless || 0)));   // its vehicles whose guns work, or its anti-tank guns served
@@ -2077,12 +2081,19 @@ function smokeDrifts(field){                      // smoke moves `drift` hexes d
   }
   field.smoke = out;
 }
+function vehicleLosses(u, before, lost){          // [down, lost this exchange] for its morale: a vehicle unit's in whole vehicles gone (their crews), not crewmen hit in vehicles still fighting (as units._vehicle_losses)
+  const K = vehicleKind(u);
+  if (!K) return [u.down, lost];
+  const startV = Math.ceil(u.start / K.crew), wasV = Math.ceil(before / K.crew), nowV = vehiclesLeft(u);
+  return [(startV - nowV) * K.crew, Math.max(0, wasV - nowV) * K.crew];
+}
 function moraleAll(us, occ, before, acc, rng, table, field = null){
   const log = [], broke = [];
   us.forEach((u, i) => {
     if (out_(u)) return;
     const near = adjacentUnits(us, occ, i);
-    const unit = { quality: u.quality, start: u.start, down: u.down, lost: acc.lost[i], dealt: acc.dealt[i], men: before[i], state: u.state,
+    const [down, lost] = vehicleLosses(u, before[i], acc.lost[i]);
+    const unit = { quality: u.quality, start: u.start, down, lost, dealt: acc.dealt[i], men: before[i], state: u.state,
       leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out" };
     const m = morale(unit, rng.randint(1, 100));
     if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state });
@@ -3361,12 +3372,14 @@ function meleeWeapon(u){                           // hand to hand, a battery's 
 const gunsOf = u => Math.ceil((u.start ?? u.men) / UD.artillery.crew);   // the guns it brought into action
 const gunsServed = u => Math.max(0, Math.min(gunsOf(u) - (u.guns_lost || 0), Math.ceil(Math.max(0, u.men) / UD.artillery.crew)));
 const ammoLeft = u => Math.max(0, gunsOf(u) * UD.artillery.ammo - (u.spent || 0));
+const thermalSight = (cond, vis, seer) => (vis !== null && vis !== undefined && cond?.thermal && seesSmoke(seer) ? Math.max(vis, cond.thermal) : vis);   // a thermal sight sees further through a sandstorm (weather.yaml thermal) (as units._thermal_sight)
 function gunWeather(field, dist, h = null, t = null, seer = null){   // no laying guns on what cannot be seen (less with rain or snow in the gunners' faces); the wind as on firearms
   const out = { blocked: null, penalty: 0, misfire: 0, reach: 0 }, w = field?.weather;
   if (!w) return out;
   const cond = WXD.conditions[w.cond];
   let vis = cond.visibility;
   if (vis !== null && vis !== undefined && cond.precip !== "none" && windLie(w, h, t, upOf(field)) === "against") vis = Math.floor(vis * WXD.driven_sight / 100);
+  vis = thermalSight(cond, vis, seer);
   if (vis !== null && vis !== undefined && dist * UD.range_scale > vis){ out.blocked = `${cond.name}: the guns cannot be laid on what cannot be seen.`; return out }
   out.penalty = WXD.winds.find(x => x.id === w.wind).firearm;
   return inTheDark(field, dist, t, out, seer);
@@ -3535,10 +3548,10 @@ const EDGE_BEHIND = ["W", "S", "E", "E", "N", "W"];   // the map edge behind uni
 const sideIndex = (B, u) => (u.side === B.sides[0] ? 0 : 1);
 const fieldSupport = B => B.field.support || (B.field.support = []);
 function makeUnit(o, id, table){                   // a new unit as the GM or a battlefield draws it (as battle.make_unit)
-  const nv = o.nv || (o.vehicle ? vehicleDevice(table) : null);
+  const nv = o.nv || (o.vehicle ? vehicleDevice(table) : null), fc = fireControlOf(o, table);
   return { id, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, ...(isGun(o.weapon) ? { guns: gunKind(o) } : {}), width: o.width || Math.ceil(o.men / form(o).per_hex),
-    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...(nv ? { nv } : {}), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}), ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
+    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.armour ? { armour: o.armour } : {}), ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...(nv ? { nv } : {}), ...(fc ? { fc } : {}), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}), ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
 }
 function ensureTags(B){                            // each unit's number on its side, kept for the battle (B3 stays B3) (as battle.ensure_tags)
   for (const u of [...B.units].sort((a, b) => a.id - b.id)) if (!u.n){

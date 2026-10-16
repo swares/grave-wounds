@@ -26,6 +26,7 @@ def _support(bt: dict) -> list:
 def make_unit(d: Data, o: dict, uid: int, table: str) -> dict:
     """A new unit as the GM or a battlefield draws it."""
     nv = o.get("nv") or (U.vehicle_device(d, table) if o.get("vehicle") else None)
+    fc = U.fire_control_of(d, o, table)
     u = {"id": uid, "name": o["name"], "side": o["side"], "banner": o.get("banner") or None, "force": o.get("force"), "men": o["men"],
          "start": o["men"], "down": 0, "dead": 0, "hurt": {}, "heroes": [], "quality": o["quality"], "weapon": o["weapon"],
          "kit": o["kit"], "formation": o["formation"], "mounted": bool(o.get("mounted"))}
@@ -36,6 +37,8 @@ def make_unit(d: Data, o: dict, uid: int, table: str) -> dict:
     u.update(_unit_marks(o))
     if nv:
         u["nv"] = nv
+    if fc:
+        u["fc"] = fc
     if o.get("medics"):
         u.update({"medics": o["medics"], "medic_quality": o.get("medic_quality") or o["quality"]})
     return u
@@ -45,7 +48,7 @@ def _unit_marks(o: dict) -> dict:
     """The marks a drawn unit carries if set: flags, its vehicle, type and size, a machine gun's
     fixed line and a route's waypoints (copied)."""
     out = {k: True for k in ("prone", "emplaced", "fac", "ladders") if o.get(k)}
-    out.update({k: o[k] for k in ("vehicle", "type", "size") if o.get(k)})
+    out.update({k: o[k] for k in ("vehicle", "type", "size", "armour") if o.get(k)})
     if o.get("fixed"):
         out["fixed"] = list(o["fixed"])
     if o.get("via"):

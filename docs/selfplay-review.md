@@ -327,3 +327,36 @@ win (one of four went the Chechens' way before). The brigade broke out of the st
 the next day, some 25 hours on: a self-play run cannot reach it, and Grozny is recorded as not
 matching for that reason.
 
+**Tanks by fire control, and 73 Easting.** Every tank used one gun table (75% to 200 m, 25% to
+1,000 m, nothing beyond), so Eagle Troop's M1A1s and the dug-in T-72s were equals, and the troop
+broke over a few wounded crewmen. Now, from sourced figures (approved before building):
+
+- A tank's gun hits and reaches by its **fire control**, its war's unless the battlefield gives
+  its own: an optical sight (WWII, Korea: as before, plus one sourced point, about 5% a round at
+  1,500 m), a stadia reticle (Vietnam: an M48's 98% / 35% / 4% at 500 / 1,000 / 2,000 m), a laser
+  rangefinder (the late 20th century: a 125 mm's 98% / 94% / 75% / 55% / 35% to 3,000 m), and a
+  thermal fire control (an M1A1: no published figure, so the laser figures as its floor; the GAO
+  found it hit at 3,000 m and more and beat the projections). Isby; GAO NSIAD-92-94.
+- **Thermal sights see through a sandstorm** to about 900 m (others 400 m): Eagle Troop's first
+  kill was at about 1,000 yards in the storm, and the GAO found thermal sights saw through haze
+  and smoke.
+- **Composite armour** (the M1A1s at 73 Easting and Fallujah): a main gun's round from the front
+  does not knock one out (the GAO: no T-72 round reported through an M1A1's front, even from
+  2,000 m, and no Abrams destroyed by enemy fire); flank and rear as heavy armour.
+- **Vehicle morale** counts whole vehicles lost, not crewmen hit in vehicles still fighting.
+- Kill chances once hit were to change only where sourced; the sourced figures (Isby: 1960s-70s
+  guns against 1960s tanks, 54-81%) match no battlefield, so none changed.
+
+73 Easting, four runs: no longer a massacre of Eagle Troop (losses about 14% a side, against the
+troop gone in 2 of 4), but it still matches 0 of 4: the commander drives the north platoon into
+the Iraqi position, where it is shot from the flanks and rear, and the Iraqis hold the position
+at the limit. Historically the troop fought from the ridge at 1,000 to 3,000 m. Of the other tank
+battlefields only Grozny changed (1 of 4 to 0; it does not match for the reason recorded above).
+How the commander handles tanks (standing off at range when it outranges the enemy) is a new
+backlog item.
+
+Sources: [Historical PHit and PKill (from Isby)](https://www.generalstaff.org/BBOW/Weapons/Hist_PHitsPKills.htm);
+[GAO NSIAD-92-94](https://www.gao.gov/assets/nsiad-92-94.pdf);
+[HistoryNet, 73 Easting](https://historynet.com/learned-battle-73-easting/);
+[FAS, T-72](https://man.fas.org/dod-101/sys/land/row/t72tank.htm).
+

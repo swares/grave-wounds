@@ -35,8 +35,8 @@ const BUNKERS = [[CREST(36) + 8, 36], [CREST(60) + 8, 60], [CREST(84) + 8, 84]];
 const isBunker = h => BUNKERS.some(b => b[0] === h[0] && b[1] === h[1]);
 
 const US = { side: 0, facing: E }, IQ = { side: 1, facing: W };
-const M1A1 = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank", nv: "thermal" };
-const M3 = { ...M1A1, vehicle: "ifv" };                                   // the cavalry's M3 Bradleys (their TOW missiles not drawn apart from the gun)
+const M1A1 = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank", nv: "thermal", fc: "thermal", armour: "composite" };   // modern thermal fire control (the T-72s take the war's: a laser rangefinder)
+const M3 = { ...M1A1, vehicle: "ifv", fc: undefined, armour: undefined };                                   // the cavalry's M3 Bradleys (their TOW missiles not drawn apart from the gun)
 const T72 = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank", nv: "none" };
 const BMP = { ...T72, vehicle: "ifv" };
 const LORRY = { ...T72, vehicle: "lorry" };

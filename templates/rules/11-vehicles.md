@@ -10,7 +10,11 @@ armoured carriers fight as units, one vehicle to a hex. The unit's men are its c
   town they keep to the streets.
 - **Their machine guns** fire as a machine-gun team's, about one gun to a vehicle.
 - **Main guns** fire each exchange at the nearest enemy in range, in sight and in front,
-  enemy vehicles first, with a clear line of fire.
+  enemy vehicles first, with a clear line of fire. A tank's gun hits and reaches by its fire
+  control, its war's unless the battlefield gives its own:
+
+{{table:fire_control}}
+
 - **Armour.** Small arms cannot hurt an armoured vehicle, and men armed only with them do
   not shoot at one. Trucks and gun tractors are **soft-skinned**: rifles and machine guns
   shoot at them too, every shot aimed, and each hit knocks one out at the chance below. No
@@ -26,6 +30,10 @@ as for shots at men. A hit knocks the vehicle out at:
 
 - **Where it is hit.** A hit into the flank counts ×{{v_flank}}, and into the rear
   ×{{v_rear}}, to 100% at most. Which it is depends on where the shooter stands.
+- **Composite armour** (a battlefield gives it to the M1A1): as heavy armour, but a main
+  gun's round from its front does not knock it out.
+- **Morale.** A vehicle unit's morale checks count whole vehicles lost, not crewmen hit in
+  vehicles still fighting.
 - **Damage short of that.** A hit that does not knock the vehicle out strikes the turret at
   {{v_turret}}%, else the hull.
   - On the turret it puts the main gun out at {{v_t_gun}}%, and immobilises the vehicle at

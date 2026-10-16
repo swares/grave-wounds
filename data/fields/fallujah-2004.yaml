@@ -152,7 +152,7 @@ support:
   - {name: "Close air support", side: 0, kind: fighter_bomber, tubes: 6}
   - {name: "Insurgent mortars", side: 1, kind: mortar, tubes: 4}
 units:
-  - {name: "2-7 Cavalry's M1A1 tanks (the main street)", side: 0, men: 16, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 2, pos: [72, 14], facing: 4, vehicle: tank, nv: thermal, size: platoon}
+  - {name: "2-7 Cavalry's M1A1 tanks (the main street)", side: 0, men: 16, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 2, pos: [72, 14], facing: 4, vehicle: tank, nv: thermal, armour: composite, size: platoon}
   - {name: "2-7 Cavalry's Bradleys (behind the tanks)", side: 0, men: 12, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 2, pos: [72, 4], facing: 4, vehicle: ifv, nv: thermal, size: platoon}
   - {name: "Marine company (west of the main street)", side: 0, men: 150, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 16, pos: [44, 14], facing: 4, fac: true, size: company}
   - {name: "Marine company (east of the main street)", side: 0, men: 150, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 16, pos: [104, 14], facing: 4, fac: true, size: company}
