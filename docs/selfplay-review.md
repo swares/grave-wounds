@@ -253,3 +253,9 @@ across its battalion's old front:
 Sources: [Battle of Monte Cassino (Wikipedia)](https://en.wikipedia.org/wiki/Battle_of_Monte_Cassino),
 citing Holmes (2001) and Whiting; the battlefields' own accounts.
 
+**Darkness at Lundy's Lane.** A phase can now set the light from then on, and Lundy's Lane's
+phases bring dusk at sunset (about 19:30, exchange 31) and a moonlit night from about 20:00
+(exchange 61): sunset and a moon about eight days old, more than half lit, worked out for the
+place and day. In four runs the darkness cut the Americans' losses (about 250-320 down against
+330-560 by day) but they still do not take the guns: the British hold them at the limit in every
+run, as before. In 1814 Miller's 21st took them with a rush in the dark.

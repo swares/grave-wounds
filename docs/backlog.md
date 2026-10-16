@@ -113,11 +113,12 @@ When an item is done, delete it here and note it in the pull request that closes
   unit with no room to face its goal moves facing as near it as it can (Kapyong, Cassino). To
   do, from the review: tank kinds by era and vehicle morale (73 Easting); archery against
   horses and men in mud (Agincourt); men in rubble harder to shift (Cassino town); the Chechen
-  ambush at Grozny; working round a flank, and an envelopment plan (Cowpens); darkness at
-  Lundy's Lane; the German counter-attacks on Point 593 (no sourced figures yet) and why small
+  ambush at Grozny; working round a flank, and an envelopment plan (Cowpens); the American
+  rush on the guns at Lundy's Lane (dark now, but the guns still hold); the German counter-attacks on Point 593 (no sourced figures yet) and why small
   units take 593 so easily in February. Measured and not built: a holding commander that
   withdraws (no trigger tells the defences that held from those that went). Done: the Poles at
-  Cassino as companies (February stays as battalions; see the review). Done since: faster exchanges (sight lines, the ground and
+  Cassino as companies (February stays as battalions; see the review); phases that change the
+  light, and Lundy's Lane's sunset and moonlit night. Done since: faster exchanges (sight lines, the ground and
   step costs remembered, the same battles about five times faster on the page).
 - **The enemy commander against itself, first cut.** Each side has its own commander choice;
   with both, Run plays on until Stop, a side with nothing left standing, an attacking side

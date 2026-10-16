@@ -13,7 +13,9 @@
 # Ripley's brigade; in the dark Colonel Miller's 21st Infantry rushed the guns and took them, and
 # the Americans held the crest. Drummond's reinforced line counter-attacked three times until
 # near midnight. Both sides were exhausted; the Americans fell back to Chippawa without the guns.
-# Most of it was fought at night: the field map has no darkness, so the GM may treat it as fog.
+# Most of it was fought at night: the phases bring dusk at sunset (about 19:30) and a moonlit night
+# from about 20:00 (a moon about eight days old, more than half lit: sunset and moon are worked out
+# for the place and the day, not from the accounts, which speak of darkness and thick smoke).
 id: lundys-lane-1814
 name: "Lundy's Lane, 25 July 1814"
 sides: ["Americans", "British"]
@@ -29,6 +31,8 @@ objective: {at: [49, 33], side: 0, name: "the British guns on the crest by the c
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:
   - {name: "Scott attacks the hill", at: 1, note: "About seven in the evening: Scott's brigade attacks the guns on the hill rather than wait, while Jesup's 25th works round the British left."}
+  - {name: "Sunset", at: 31, note: "About half past seven the sun sets (worked out for the place and day): dusk.", light: dusk}
+  - {name: "Dark, by moonlight", at: 61, note: "By about eight it is dark; a moon some eight days old, more than half lit, is up until after midnight.", light: moonlit}
   - {name: "Ripley and Drummond come up", at: 120, note: "About nine, in the dark: Brown brings up Ripley's brigade and Porter's volunteers, and Drummond's column reaches the British line.", arrive: ["Ripley's brigade (21st, 23rd, coming up)", "Porter's volunteers (coming up)", "Drummond's column (coming up)"]}
   - {name: "Drummond's counter-attacks", at: 150, note: "Drummond's reinforced line counter-attacks three times to win back the guns, until near midnight."}
 ground: |

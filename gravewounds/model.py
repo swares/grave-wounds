@@ -1347,6 +1347,8 @@ def _field_marker_errors(d: Data, f: dict, where: str) -> list[str]:
     if e is not None and not (isinstance(e, list) and len(e) == 2 and all(x in ("N", "S", "E", "W") for x in e) and e[0] != e[1]):
         errors.append(f"{where}: entry must be two different edges (N, S, E or W), side A's first")
     errors += _phase_errors(f, where)
+    errors += [f"{where}: phase {i + 1} sets unknown light {st['light']!r}" for i, st in enumerate(f.get("phases") or [])
+               if isinstance(st, dict) and "light" in st and st["light"] not in (d.weather.get("light") or {}).get("levels", {})]
     for u in f.get("units", []):
         if "type" in u and u["type"] not in M.get("types", {}):
             errors.append(f"{where}: unit {u.get('name')}: type must be one of {', '.join(M.get('types', {}))}")

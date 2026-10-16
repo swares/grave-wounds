@@ -1697,6 +1697,8 @@ what happened, and the units it brings on.
   at their side's entry edge if that ground is taken. Like any unit brought on, they can
   move from the next exchange. A unit with no room at all waits and tries again each
   exchange.
+- **The light.** A phase may set the light (`light`: dusk, moonlit, night or day) from then
+  on: the sun setting or rising during the battle. The log and the turning points say so.
 - **By air.** A unit that comes in by air (`lands`) takes off when its phase begins and lands
   at its landing zone by the usual rules, as many men an exchange as the lift allows. That is
   how X-Ray's D Company and the 2nd Battalion's B Company come in.
@@ -1710,8 +1712,9 @@ where they are not plain.
   Russian reserves counter-attack (80, after about an hour and a half).
 - **The Redan, 18 June:** the columns go out (1); their supports follow (4); the Russian
   reserve comes up (15).
-- **Lundy's Lane:** Scott attacks the hill (1, about 7 pm); Ripley, Porter and Drummond's
-  column come up (120, about 9 pm); Drummond counter-attacks (150, until near midnight).
+- **Lundy's Lane:** Scott attacks the hill (1, about 7 pm); sunset, dusk (31, about 7:30);
+  dark, by moonlight (61, about 8); Ripley, Porter and Drummond's column come up (120, about
+  9 pm); Drummond counter-attacks (150, until near midnight).
 - **Lützen** (from about 11:00): Pappenheim's horse arrive (76); the King is killed and the
   second line goes in (151, an estimate); a lull (241); the windmill hill falls (271); Pappenheim's foot
   arrive, too late (421).
@@ -1929,8 +1932,10 @@ hexes, about 1,420 yards (1,300 m) east to west and 1,040 yards (950 m) north to
 the top; the Portage road and the Niagara are off the map to the east.
 - A low hill across the north of the field, the lane along its crest, the churchyard behind the
   British guns; woods to the south-west, where Scott's men formed, and along the river side.
-- Fair. Most of the fighting was at night, which the field map does not have: the GM may
-  treat it as fog.
+- Fair, and most of the fighting at night: the phases bring dusk at sunset (about 7:30, exchange
+  31) and a moonlit night from about 8 (61). Sunset and the moon (about eight days old, more than
+  half lit, up until after midnight) are worked out for the place and the day; the accounts
+  speak only of darkness and thick smoke.
 - The evening's opening: Scott's 800 in front of the hill, Jesup's 25th working round the
   British left, Towson's guns, and Ripley's brigade and Porter's volunteers coming up behind.
 - On the hill: five British guns at the churchyard, the 89th, the 8th and 41st, the

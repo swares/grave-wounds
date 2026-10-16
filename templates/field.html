@@ -1190,8 +1190,9 @@ function stagesNote(st){                          // the phases begun and the un
   const notes = [];
   for (const i of st.begun){
     const p = S.stages[i];
-    S.log.unshift({ cls: "head", text: `Phase ${i + 1} of ${S.stages.length}: ${p.name}.${p.note ? " " + p.note : ""}` });
-    notes.push(`Phase ${i + 1}: ${p.name}.`);
+    const light = st.light?.[i] ? ` The light: ${st.light[i]}.` : "";
+    S.log.unshift({ cls: "head", text: `Phase ${i + 1} of ${S.stages.length}: ${p.name}.${p.note ? " " + p.note : ""}${light}` });
+    notes.push(`Phase ${i + 1}: ${p.name}.${light}`);
   }
   const came = st.came.map(i => `${unitName(S.units[i])} (${S.units[i].men})`), flying = st.flying.map(f => `${f.name} (${f.left})`), onCall = st.onCall;
   if (came.length) S.log.unshift({ cls: "head", text: `Coming on: ${came.join(", ")}. They can move next exchange.` });
@@ -1371,8 +1372,8 @@ const POINT_TEXT = {                              // a turning point in plain wo
 function phasePointText(p){
   const st = S.stages?.[p.stage];
   if (!st) return "";
-  const came = namesOf(p.came), note = st.note ? " " + st.note : "", coming = came ? ` Coming on: ${came}.` : "";
-  return `Phase ${p.stage + 1} of ${S.stages.length}: ${st.name}.${note}${coming}`;
+  const came = namesOf(p.came), note = st.note ? " " + st.note : "", coming = came ? ` Coming on: ${came}.` : "", light = p.light ? ` The light: ${p.light}.` : "";
+  return `Phase ${p.stage + 1} of ${S.stages.length}: ${st.name}.${note}${light}${coming}`;
 }
 function objectivePointText(p){
   const hex = p.second ? S.field.objective2 : S.field.objective, at = hex ? " at " + hexName(hex) : "";

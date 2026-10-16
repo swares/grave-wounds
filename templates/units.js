@@ -3597,12 +3597,18 @@ function placeArrival(B, u, k){                    // where an arriving unit com
   }
   return null;
 }
+function lightOfPhase(B, st, out){                 // a phase that sets the light (light: a weather.yaml light level) changes the field's from then on (sunset, dawn); out.light: {phase index: the level's name} (as battle._light_of_phase)
+  if (!st.light) return;
+  B.field.weather = { ...(B.field.weather || {}), light: st.light };
+  (out.light || (out.light = {}))[B.stageNo] = FD.weather.light.levels[st.light].name;
+}
 function advanceStages(B){                         // at the start of an exchange: begin each phase whose exchange has come, and bring on its units (any with no room wait for the next exchange): {begun: [phase index], came: [unit index], flying: [{name, left}], onCall: [name]} (as battle.advance_stages)
   const out = { begun: [], came: [], flying: [], onCall: [] };
   if (!B.stages) return out;
   while (B.stageNo + 1 < B.stages.length && B.stages[B.stageNo + 1].at <= B.exchange){
     B.stageNo += 1;
     out.begun.push(B.stageNo);
+    lightOfPhase(B, B.stages[B.stageNo], out);
   }
   B.waiting = B.waiting.filter(w => {
     if (w.stage > B.stageNo) return true;
@@ -3738,7 +3744,7 @@ function commitsOf(B, orders){                     // the reserve units a comman
 }
 function turningPoints(B, base, stages, commits){  // since base: phases begun (and who came on), units broken or fled by side, objectives taken or lost, reserves committed (ids by side): [point] (as battle.turning_points)
   const out = [];
-  for (const i of stages?.begun || []) out.push({ kind: "phase", stage: i, came: (stages.came || []).map(k => B.units[k]?.id) });
+  for (const i of stages?.begun || []) out.push({ kind: "phase", stage: i, came: (stages.came || []).map(k => B.units[k]?.id), ...(stages.light?.[i] ? { light: stages.light[i] } : {}) });
   for (const [k, side] of B.sides.entries()){
     const mine = B.units.filter(u => u.side === side && u.id in base.states);
     const broke = mine.filter(u => STANDING.has(base.states[u.id]) && !STANDING.has(u.state)).map(u => u.id);
