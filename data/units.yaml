@@ -896,6 +896,11 @@ commander:
   # fought); on open ground both attack. Design choices.
   # The objective counts as taken only with no standing enemy within `secure` hexes of it.
   self_play: {limit: 60, held: 5, after_phases: 30, most: 240, secure: 10}
+  # route: a battlefield can give a unit waypoints (via, from the accounts: a march round a
+  # flank). Its commander moves it on to each in turn, dropping one once its middle hex is within
+  # `reach` hexes; it turns aside only for an enemy in contact or one it knows of across its way
+  # within its move, and then fights as any other unit. Design choice.
+  route: {reach: 3}
   # sappers (units marked sappers: mines.sappers): holding, or at the objective, out of contact
   # and with no enemy it knows of within `clear_of` hexes, they lay mines in the
   # row ahead (mixed if the enemy it knows of has vehicles, else anti-personnel), where it is

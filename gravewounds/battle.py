@@ -33,19 +33,24 @@ def make_unit(d: Data, o: dict, uid: int, table: str) -> dict:
         u["guns"] = U.gun_kind(o)
     u.update({"width": o.get("width") or math.ceil(o["men"] / U.form(d, o)["per_hex"]), "pos": o["pos"], "facing": o["facing"],
               "state": "steady", "charged": False})
-    for k in ("prone", "emplaced", "fac", "ladders"):
-        if o.get(k):
-            u[k] = True
-    for k in ("vehicle", "type", "size"):
-        if o.get(k):
-            u[k] = o[k]
-    if o.get("fixed"):
-        u["fixed"] = list(o["fixed"])
+    u.update(_unit_marks(o))
     if nv:
         u["nv"] = nv
     if o.get("medics"):
         u.update({"medics": o["medics"], "medic_quality": o.get("medic_quality") or o["quality"]})
     return u
+
+
+def _unit_marks(o: dict) -> dict:
+    """The marks a drawn unit carries if set: flags, its vehicle, type and size, a machine gun's
+    fixed line and a route's waypoints (copied)."""
+    out = {k: True for k in ("prone", "emplaced", "fac", "ladders") if o.get(k)}
+    out.update({k: o[k] for k in ("vehicle", "type", "size") if o.get(k)})
+    if o.get("fixed"):
+        out["fixed"] = list(o["fixed"])
+    if o.get("via"):
+        out["via"] = [list(h) for h in o["via"]]
+    return out
 
 
 def ensure_tags(bt: dict) -> None:

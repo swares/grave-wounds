@@ -154,7 +154,10 @@ steady friends touching it, who go in with it), and green units sometimes hesita
   palisade that blocks hand-to-hand fighting stops them at its foot, unless they carry
   ladders: then they go up it (see [works](#works)). Breaching it is the GM's order.
 
-- **Reserve.** Regulars and veterans hold back their rearmost units, and commit one when a
+- **Routes.** A battlefield can send a unit on a route round a flank, as its account tells:
+  the commander moves it from waypoint to waypoint, turning aside only for an enemy in contact
+  or across its way, then orders it as any other.
+- **Reserve.** Regulars and veterans hold back their rearmost units (not one on a route), and commit one when a
   unit of theirs breaks or the enemy comes close; veterans also commit to exploit an enemy
   rout. A unit committed because one broke goes to plug the gap where it stood. The GM can
   mark reserves instead.

@@ -148,7 +148,7 @@ ground: |
   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF....................................................................FFFFFFFFFFFFFFFFF
 units:
   - {name: "Scott's brigade (9th, 11th, 22nd)", side: 0, men: 800, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 24, pos: [63, 72], facing: 1, size: brigade}
-  - {name: "25th Infantry (Jesup)", side: 0, men: 300, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 8, pos: [107, 60], facing: 1, size: battalion}
+  - {name: "25th Infantry (Jesup)", side: 0, men: 300, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 8, pos: [107, 60], facing: 1, via: [[110, 40], [100, 18]], size: battalion}
   - {name: "Towson's battery", side: 0, men: 60, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [73, 80], facing: 1, size: battery}
   - {name: "Ripley's brigade (21st, 23rd, coming up)", side: 0, men: 900, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 24, pos: [63, 100], facing: 1, size: brigade}
   - {name: "Porter's volunteers (coming up)", side: 0, men: 500, quality: green, weapon: musket_smoothbore, kit: none, formation: open, width: 25, pos: [22, 100], facing: 1, size: battalion}

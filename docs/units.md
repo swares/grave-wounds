@@ -347,6 +347,15 @@ general. All its numbers are in units.yaml `commander`.
     move the commander orders: on a target, on the objective, falling back, searching, plugging
     a gap (not an air controller's spot, which must face what it is to see). Self-play showed
     big units on narrow or rough ground (Kapyong, Cassino) never moving at all.
+  - **Routes.** A battlefield can give a unit a route (`via`: waypoints, from the account's
+    march round a flank). Its commander moves it on to each waypoint in turn, as it advances on
+    an objective, and drops each once the unit's middle hex is within `commander.route.reach`
+    (3) hexes of it. It shoots at what it can reach as it goes, as every unit does, but turns
+    aside only for an enemy in contact with it or one it knows of across its way within its
+    move (a hex either side of the straight line to the waypoint); then it fights as any other
+    unit, and takes up its route again when the way is clear. With no waypoints left it is
+    ordered as any other. A unit with a route is never held back in reserve. Design choice:
+    the battlefield says where the flank march went, so the commander does not guess.
   - Of hexes that score the same and cost the same, it takes the one nearest the straight
     line to the target (or the objective), so a long advance goes straight rather than
     drifting to one side.
@@ -1938,6 +1947,8 @@ the top; the Portage road and the Niagara are off the map to the east.
   speak only of darkness and thick smoke.
 - The evening's opening: Scott's 800 in front of the hill, Jesup's 25th working round the
   British left, Towson's guns, and Ripley's brigade and Porter's volunteers coming up behind.
+- Jesup's 25th has a route up the east side, round the British left, to behind their line
+  (our reading: he took Riall prisoner on the road behind it).
 - On the hill: five British guns at the churchyard, the 89th, the 8th and 41st, the
   Incorporated Militia, the Glengarry Light Infantry on the west, the 19th Light Dragoons, and
   Drummond's 1,000 coming up behind the crest.
@@ -2133,7 +2144,10 @@ north at the top.
   platoon on the hillock, the recoilless rifle and bazooka teams by the road, machine guns, C
   Company along the ridge east and its right bent back by the railroad.
 - The North Korean 4th Division's infantry (veteran, extended order) across the paddies, working
-  round the west, in column on the highway, and coming down the railroad, with machine guns.
+  round the west, in column on the highway, and coming down the railroad, with machine guns. The
+  battalion working round the west has a route over the hill west of the highway and round
+  behind the ridge; the one on the railroad, down past C Company's right and behind the ridge
+  (our reading of the account).
 - Fire support: American 105 mm howitzers, 4.2-inch and 60 mm mortars; North Korean mortars and
   the T-34s of the 107th Tank Regiment firing over open sights. There are no vehicle rules: the
   tanks are on call as fire support, and the recoilless rifles and bazookas fight as riflemen.
@@ -2253,7 +2267,9 @@ rough) and gullies lie between.
   its 1st Battalion along Snakeshead for Albaneta,
   and the 5th Kresowa Division for Phantom Ridge, against the paratroops on all three tops and
   in the abbey. Each Polish battalion comes on as four companies of equal strength (our split,
-  as deep as the battalion stood), side by side across its front; the February battalions stay
+  as deep as the battalion stood), side by side across its front; the Kresowa's companies have a
+  route to Phantom Ridge first (the 1st Battalion's Albaneta is not on this map, so it goes for
+  593); the February battalions stay
   whole (see `docs/selfplay-review.md`).
 - Fire support on both sides; the wound tables are the Second World War's (Owens).
 
@@ -2304,7 +2320,9 @@ field is 220 × 160 hexes, about 2,410 by 1,520 yards (2,200 by 1,390 m), north 
   machine guns and headquarters; a platoon of Shermans (**vehicles**) on dry ground by the
   road.
 - Chinese (veteran): battalions down the valley, onto the north spur and round the east of the
-  hill, with machine guns.
+  hill, with machine guns. The battalion round the east has a route down the east of the hill
+  and round its south to battalion headquarters at Chuktun-ni (where the phase note has the
+  Chinese at about 22:00; the way is our reading).
 - Fire support: the New Zealand 25-pounders and 3 RAR's mortars; Chinese mortars.
 
 **Hill 931 on Heartbreak Ridge, October 1951** (`data/fields/heartbreak-1951.yaml`). The field
