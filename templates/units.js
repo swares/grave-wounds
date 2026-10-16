@@ -780,7 +780,7 @@ function volleyOf(units, occ, field, i, men = null){   // unit i's volley at its
   const shots = men === null ? shooters(u, field) : men;
   const v = { att: i, dfd: best[1], men: men === null && ammoState(u) === "low" ? shots / 2 : shots, dist: best[0], cover: shareCover(field, best[2], units[best[1]]) + groundCover(units[best[1]]) + shieldCover(units[best[1]], best[3], best[2]), penalty: wx.penalty - up, misfire: wx.misfire, reach: (wx.reach || 0) + longer, from: best[2], to: best[3],
     height: up, over: lineFire(units, occ, field, i, best[1], [best[2], best[3], best[0]]), seen: seenShare(field, units[best[1]], best[3], u.weapon) };
-  for (const k of ["blind", "flash"]) if (wx[k]) v[k] = true;
+  for (const k of ["blind", "flash", "beam"]) if (wx[k]) v[k] = true;
   if (men === null && isMg(u.weapon)) Object.assign(v, beaten(units, occ, field, i, best));
   return [v];
 }
@@ -918,8 +918,9 @@ function sightHexes(field, h = null, seer = null){  // how far the weather and t
   const cond = field?.weather?.cond, L = lightOf(field);
   let vis = cond && FD.weather ? FD.weather.conditions[cond].visibility : null;
   if (vis === undefined) vis = null;
-  let dark = L && !lit(field, h) ? darkSight(L, nightDevice(seer))[0] : null;
+  let dark = L && !lit(field, h) ? darkSight(L, nightDevice(seer, field))[0] : null;
   if (dark !== null && flashing(field, h)) dark = Math.max(dark, FD.weather.light.flash);
+  if (dark !== null && beaming(field, h) && seesBeam(seer, field)) dark = Math.max(dark, NV().beam);
   if (dark !== null) vis = vis === null ? dark : Math.min(vis, dark);
   return vis === null ? null : Math.floor(vis / UD.range_scale);
 }
@@ -1351,21 +1352,26 @@ function inTheDark(field, dist, t, out, seer = null){   // no aiming beyond the 
   const L = lightOf(field);
   if (out.blocked || !L || lit(field, t)) return out;
   if (seer?.blind){ out.penalty += FD.weather.light.fixed_line.aim; out.blind = true; return out }
-  const [sight, aim] = darkSight(L, nightDevice(seer));
-  if (sight !== null && dist * UD.range_scale > sight){
-    if (!(flashing(field, t) && dist * UD.range_scale <= FD.weather.light.flash)){ out.blocked = `${L.name}: no one can be seen to aim at beyond ${Math.floor(sight / UD.range_scale)} hexes.`; return out }
-    out.flash = true;
+  const [sight, aim] = darkSight(L, nightDevice(seer, field)), far = dist * UD.range_scale;
+  if (sight !== null && far > sight){
+    if (flashing(field, t) && far <= FD.weather.light.flash) out.flash = true;
+    else if (beaming(field, t) && seesBeam(seer, field) && far <= NV().beam) out.beam = true;
+    else { out.blocked = `${L.name}: no one can be seen to aim at beyond ${Math.floor(sight / UD.range_scale)} hexes.`; return out }
   }
   out.penalty += aim;
   return out;
 }
 const NV = () => FD.weather?.light?.night_vision || {};
 const vehicleDevice = table => NV().vehicles?.[FD.tables[table]?.battle] ?? null;   // the night device a vehicle unit carries by default in this table's war (as units.vehicle_device)
-function nightDevice(seer){                        // the night-vision device a shooter or watcher ({kit, nv}) carries: the unit's own ("none": none), else his kit's, else null
-  if (seer?.nv) return seer.nv === "none" ? null : seer.nv;
-  return (NV().kits || []).includes(seer?.kit) ? NV().kit_device : null;
+function nightDevice(seer, field = null){          // the night-vision device a shooter or watcher ({kit, nv, at}) carries: the unit's own ("none": none), else his kit's, else null; null if it washes out where he stands in a flare's light (with field)
+  let dev = null;
+  if (seer?.nv) dev = seer.nv === "none" ? null : seer.nv;
+  else if ((NV().kits || []).includes(seer?.kit)) dev = NV().kit_device;
+  return dev && field && NV().devices?.[dev]?.washes && lit(field, seer?.at) ? null : dev;
 }
-const seerOf = (u, k = {}) => ({ kit: u.kit, nv: u.nv, ...k });   // a unit as a shooter or watcher in the dark
+const seerOf = (u, k = {}) => ({ kit: u.kit, nv: u.nv, at: u.pos, ...k });   // a unit as a shooter or watcher in the dark (at: where it stands, for a flare's washout)
+const beaming = (field, t) => !!t && (field?.beams || []).some(x => x[0] === t[0] && x[1] === t[1]);   // a hex a unit fired from by its infrared beam last exchange
+const seesBeam = (seer, field) => !!NV().devices?.[nightDevice(seer, field) || ""]?.sees_beam;   // the watcher's device picks up an infrared beam
 function darkSight(L, device){                      // [sight in battle hexes or null, aim % off] in light L for a man with this device (null: his eyes)
   const dev = NV().devices?.[device || ""], sight = L.sight ?? null;
   if (!dev) return [sight, L.aim];
@@ -1374,6 +1380,17 @@ function darkSight(L, device){                      // [sight in battle hexes or
 const seesSmoke = seer => !!NV().devices?.[nightDevice(seer) || ""]?.smoke;   // a thermal sight sees through smoke
 const flashing = (field, t) => !!t && (field?.flashes || []).some(x => x[0] === t[0] && x[1] === t[1]);   // a hex a unit fired from in the dark last exchange
 const FLASHING = new Set(["volley", "hero", "antiarmour", "tankfire", "cannon"]);
+function beams(us, log, field){                    // after the shooting, in any dark: the hexes of every unit that fired by its infrared searchlight (not washed out), seen by enemy infrared and intensifier devices through the next exchange (as units._beams)
+  if (!field) return;
+  const sight = lightOf(field)?.sight ?? null;
+  if (sight === null){ delete field.beams; return }
+  const fired = [...new Set(log.filter(x => FLASHING.has(x.kind) && x.att !== undefined && x.att !== null).map(x => x.att))]
+    .filter(i => NV().devices?.[nightDevice(seerOf(us[i]), field) || ""]?.beam);
+  const keys = new Set(), hexes = [];
+  for (const i of fired) for (const h of footprint(us[i]).flat()){ const k = hk(h); if (!keys.has(k)){ keys.add(k); hexes.push([h[0], h[1]]) } }
+  hexes.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  if (hexes.length) field.beams = hexes; else delete field.beams;
+}
 function flashes(us, log, field){                  // after the shooting, in poor light: the hexes of every unit that fired, seen by their flashes through the next exchange
   if (!field) return;
   const sight = lightOf(field)?.sight ?? null;
@@ -1980,6 +1997,7 @@ function afterExchange(us, field, log = []){        // charges spent, batteries 
     if (u.lost) u.lost -= 1;
   });
   flashes(us, log, field);
+  beams(us, log, field);
   for (const b of field?.support || []) if (b.mission && (b.mission.wait || 0) > 0) b.mission.wait -= 1;
   log.push(...displaceAll(field), ...overrunAll(us, field));
   if (field?.smoke) field.smoke = Object.fromEntries(Object.entries(field.smoke).filter(([, n]) => n > 1).map(([h, n]) => [h, n - 1]));   // smoke thins

@@ -191,6 +191,19 @@ applies: whichever is shorter counts.
   century and in Iraq and Afghanistan, none before (`light.night_vision.vehicles`); a vehicle
   unit's **Night vision** has no "by kit" choice. No device sees past the weather's own
   limit (fog, rain or a sandstorm). The numbers are design estimates.
+- **Infrared beams.** A unit whose device is an infrared searchlight (`beam`) that fires in the
+  dark lights its target with a beam. Through the next exchange the hexes it fired from can be
+  aimed at, and fire called on, from up to 100 hexes (1,094 yards, 1 km;
+  `light.night_vision.beam`) by an enemy whose device picks the beam up (`sees_beam`: other
+  infrared sets, Starlight scopes and goggles; not a thermal sight, which sees heat). They show
+  as a small red star (✦) on the map, and the log says when a volley was aimed at a beam. A
+  vehicle that only moves or watches by infrared is not shown (a design choice: it lit up only
+  to shoot), and in any dark (dusk included) the beam counts.
+- **Washed out.** A device that `washes` (Starlight scope, goggles, infrared set) is no use to a
+  unit standing in a flare's or illumination round's light (its own hex lit): its men see the
+  dark beyond with their own eyes, and an infrared searchlight there shows no beam. A thermal
+  sight is not washed out. The selected unit's panel says so. Light lying between a unit and
+  what it looks at does not wash its device out (a simplification).
 - **Fixed lines.** A machine-gun unit can be **laid on a fixed line** (**Lay a fixed line**,
   then click the hex). This is done before the battle, by day or at dusk, and the line
   shows as a red dashed line. In the dark, when it has no target it can see, the unit

@@ -105,10 +105,19 @@ light:
     kits: [ranger_1993, interceptor, plate_carrier]
     kit_device: goggles
     devices:
-      starlight: {name: "Starlight scope (1960s-70s)", sight: 100, aim: 15}
-      goggles:   {name: "Night-vision goggles (1990s on)", sight: 150, aim: 5}
+      starlight: {name: "Starlight scope (1960s-70s)", sight: 100, aim: 15, washes: true, sees_beam: true}
+      goggles:   {name: "Night-vision goggles (1990s on)", sight: 150, aim: 5, washes: true, sees_beam: true}
       thermal:   {name: "Thermal sight (tanks from the 1980s, teams from the 2000s)", sight: 300, aim: 0, smoke: true}
-      ir_searchlight: {name: "Infrared searchlight and sights (tanks, 1950s-70s)", sight: 80, aim: 20}
+      ir_searchlight: {name: "Infrared searchlight and sights (tanks, 1950s-70s)", sight: 80, aim: 20, washes: true, sees_beam: true, beam: true}
+    # Infrared and image intensifiers (design choices, round figures): a unit whose device has
+    # `beam` (an active infrared searchlight) that fires in the dark lights its target with an
+    # infrared beam, and is seen where it fired from, through the next exchange, out to `beam`
+    # battle hexes (2 m; about 1 km) by an enemy whose device `sees_beam` (other infrared sets and
+    # image intensifiers pick up near-infrared light; a thermal sight sees heat, not the beam). A
+    # device that `washes` (an image intensifier or infrared set) is washed out for a unit standing
+    # in a flare's or illumination round's light (its own hex lit): its men see the dark beyond
+    # with their own eyes, and it shows no beam. A thermal sight is not washed out.
+    beam: 500
     # Vehicles' sights by war (the wound table's `battle`): a vehicle unit with no device chosen
     # gets its war's (tanks and IFVs of that era carried them; design estimates).
     vehicles: {"Vietnam": ir_searchlight, "Late 20th century": thermal, "Iraq & Afghanistan": thermal}
