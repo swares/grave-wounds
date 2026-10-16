@@ -115,7 +115,8 @@ When an item is done, delete it here and note it in the pull request that closes
   kinds by era and vehicle morale (73 Easting); archery against horses and men in mud
   (Agincourt); men in rubble harder to shift (Cassino town); the Chechen ambush at Grozny; a
   holding commander that withdraws when outflanked (Mons) and an envelopment plan
-  (Cowpens); darkness at Lundy's Lane; faster exchanges on the biggest fields.
+  (Cowpens); darkness at Lundy's Lane. Done since: faster exchanges (sight lines, the ground and
+  step costs remembered, the same battles about five times faster on the page).
 - **The enemy commander against itself, first cut.** Each side has its own commander choice;
   with both, Run plays on until Stop, a side with nothing left standing, an attacking side
   holding the objective 5 exchanges running, or 60 exchanges, then ends the battle; Python

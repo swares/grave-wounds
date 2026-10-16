@@ -1719,6 +1719,7 @@ function fireFlare(h){                           // the GM's flare: lights the h
   S.msg = `A flare over ${h[0] + 1},${h[1] + 1}: the hexes within ${nOf(L.flare, "hex", "hexes")} (${fmtM(L.flare * FD.units.hex_m)}) are lit for ${nOf(L.lasts, "exchange")}.`;
 }
 function paintGround(h, kind){
+  forgetGround(S.field);
   if (kind === "open") delete S.field.ground[hkey(h)];
   else S.field.ground[hkey(h)] = kind;
 }

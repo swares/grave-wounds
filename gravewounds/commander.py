@@ -18,7 +18,15 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
     the enemies a unit ordered before it sees from where it went). exchange: units
     that came on in it (arrived) wait. stance: attack (close with the enemy) or hold (stand,
     charging only what it can reach). memory: where it last saw each enemy unit, kept between
-    its moves (updated in place; see sightings). -> (units after, orders [{unit, act, ...}])."""
+    its moves (updated in place; see sightings). -> (units after, orders [{unit, act, ...}]).
+    Each step's movement is worked out once while it orders (units.steps_remembered)."""
+    with U.steps_remembered():
+        return _command(d, units, side, (size, field, rng, exchange), stance, memory, table)
+
+
+def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict | None, table: str | None) -> tuple:
+    """command, worked out: where is (size, field, rng, exchange)."""
+    size, field, rng, exchange = where
     us, orders = [dict(u) for u in units], []
     memory = {} if memory is None else memory
     known = sightings(d, us, side, field, exchange, memory)
