@@ -61,9 +61,11 @@ When an item is done, delete it here and note it in the pull request that closes
   battlefield and its armies).
 - **Night, second cut.** Muzzle flashes, night vision, fixed lines, slower moves and losing
   direction are in. Night-vision devices (Starlight scope, goggles, thermal sight) are a
-  unit's whole: a Starlight scope stands for the few rifles that had one. Vehicles' infrared
-  searchlights do not show the vehicle to an enemy with infrared, and no device washes out in
-  a flare's light. A fixed line is laid on one hex, with no traverse limits or
+  unit's whole: a Starlight scope stands for the few rifles that had one. A vehicle firing by its
+  infrared searchlight shows itself to enemy infrared and intensifier devices out to about
+  1 km, through the next exchange (not while it only moves or watches), and image
+  intensifiers and infrared sets wash out for a unit standing in a flare's light (not when the
+  light only lies between it and what it looks at). A fixed line is laid on one hex, with no traverse limits or
   final protective fire called by flare. A lost unit strays only a hex along its wrong
   facing, never into its friends or the enemy, and no further. To decide later: how long a
   lost unit stays put. Now it cannot move the next exchange (`light.lost_for: 2` counts the

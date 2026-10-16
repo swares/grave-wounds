@@ -146,6 +146,7 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .bat{fill:#5a5a5a;stroke:#fff;stroke-width:.6}.bat.gone{fill:none;stroke:#999;stroke-dasharray:1.5 1}
 .fixed{stroke:#b03030;stroke-width:1.1;stroke-dasharray:3 2;fill:none;pointer-events:none}
 .flash{font:700 6px var(--mono);fill:#e0a000;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.beam{font:700 6px var(--mono);fill:#b0303a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .post{fill:var(--panel);stroke:#2f6b3a;stroke-width:1;pointer-events:none}.post.gone{opacity:.4;stroke-dasharray:1.5 1}
 .post-t{font:700 4.6px var(--mono);fill:#2f6b3a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .dump{fill:var(--panel);stroke:#7a5a1a;stroke-width:1;pointer-events:none}.dump.coming{stroke-dasharray:1.5 1;opacity:.7}
@@ -870,6 +871,7 @@ function supportSvg(){                            // smoke, landing zones, aid p
     (F.lit || []).map(litSvg),
     S.units.filter(u => u.fixed && !out_(u)).map(fixedSvg),
     (F.flashes || []).map(glyph("flash", "\u2739")),
+    (F.beams || []).map(glyph("beam", "\u2726")),
     supports().filter(b => b.mission?.hex).map(b => glyph("aim", "\u2316")(b.mission.hex)),
     supports().filter(b => b.place).map(batterySvg),
     (S.bursts || []).map(glyph("burst", "\u2737")),
@@ -933,7 +935,7 @@ function lostGuns(l){                             // "; 2 guns knocked out"
 }
 const signed = (n, up = "+", down = "−") => `${n > 0 ? up : down}${Math.abs(n)}%`;   // "+10%" or "−5%"
 function shotNotes(l){                            // " (cover -20%, weather -10%)"
-  const bits = [[l.blind, "blind, down its fixed line"], [l.flash, "seen by its muzzle flashes"]].filter(([on]) => on).map(([, text]) => text);
+  const bits = [[l.blind, "blind, down its fixed line"], [l.flash, "seen by its muzzle flashes"], [l.beam, "seen by its infrared beam"]].filter(([on]) => on).map(([, text]) => text);
   if (l.cover) bits.push(`cover −${l.cover}%`);
   if (l.over) bits.push(`loosing high over the units between −${l.over}%`);
   if (l.seen !== undefined && l.seen < 1) bits.push(`hidden: ${Math.round(l.seen * 100)}% of shots find a man`);
@@ -1675,7 +1677,7 @@ function fillTools(){
   $("#sel-cold").innerHTML = `<option value="">Not freezing hard</option>` + Object.entries(WXD.cold?.levels || {}).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-light").innerHTML = Object.entries(WXD.light?.levels || { day: { name: "Daylight" } }).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#legend").innerHTML = Object.entries(FD.units.ground).filter(([k]) => k !== "open").map(([k, v]) => `<span><i class="g-${k}" style="background:var(--g-${k})"></i>${esc(v.name)}</span>`).join("")
-    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span><i class="smoke-key" style="background:none;border:1.5px solid #8a1f1f;border-radius:50%"></i>O: the enemy commander's objective (2: its second)</span><span>\u2193 gone to ground; \u25e0 emplaced or dug in (a dashed parapet across its front)</span><span>AP: aid post; \u21a9 a hero going back; \u25bc a hero lying out</span><span><i class="smoke-key" style="background:#e9d3cc;border:1px dashed #7a2a1a"></i>a.p., a.t., mix: minefield (hidden ones faint, for the GM)</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
+    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span><i class="smoke-key" style="background:none;border:1.5px solid #8a1f1f;border-radius:50%"></i>O: the enemy commander's objective (2: its second)</span><span>\u2193 gone to ground; \u25e0 emplaced or dug in (a dashed parapet across its front)</span><span>AP: aid post; \u21a9 a hero going back; \u25bc a hero lying out</span><span>\u2739 fired in the dark, seen by its muzzle flashes; \u2726 fired by an infrared searchlight, seen by enemy infrared sets and intensifiers</span><span><i class="smoke-key" style="background:#e9d3cc;border:1px dashed #7a2a1a"></i>a.p., a.t., mix: minefield (hidden ones faint, for the GM)</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
 }
 function clickSide(e, h){                         // the neighbour across the hex side nearest the click
   const svg = $("#map svg"), pt = svg.createSVGPoint();
@@ -2558,7 +2560,8 @@ function renderFixed(u, setup){                  // Lay a fixed line / Clear it:
 const NVD = () => FD.weather?.light?.night_vision || { devices: {} };
 function nvName(u){                               // "Night-vision goggles (1990s on)", or "" with none
   const dev = nightDevice(seerOf(u));
-  return dev ? NVD().devices[dev].name : "";
+  if (!dev) return "";
+  return NVD().devices[dev].name + (nightDevice(seerOf(u), S.field) ? "" : " (washed out: it stands in a flare's light)");
 }
 const hasAir = () => supports().some(b => FD.units.indirect.kinds[b.kind]?.air);
 const SAP_KINDS = ["ap", "at", "mixed"];

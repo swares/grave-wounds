@@ -21,6 +21,13 @@ and whichever is shorter counts. The dark also slows a march and turns men round
   Vehicles carry their war's unless another is chosen: infrared searchlights in Vietnam,
   thermal sights from the 1980s on. No device sees past the weather's own limit, a
   sandstorm's included.
+- **Infrared beams.** A vehicle that fires in the dark by its infrared searchlight lights its
+  target with a beam that enemy infrared sets, Starlight scopes and goggles pick up: through the
+  next exchange, those enemies can aim at the hexes it fired from out to {{n_beam}}. A thermal
+  sight does not see the beam.
+- **Washed out.** A unit standing in a flare's or illumination round's light cannot use a
+  Starlight scope, goggles or infrared set (its men see the dark beyond with their own eyes),
+  and an infrared searchlight there shows no beam. Thermal sights are not washed out.
 
 {{table:nvd}}
 

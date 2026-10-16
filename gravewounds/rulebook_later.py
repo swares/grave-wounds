@@ -119,7 +119,7 @@ def _night_values(d: Data) -> dict:
     return {"n_flash_under": _sight(d, L["flash"]), "n_flash": _sight(d, L["flash"]), "n_flare": _field(d, L["flare"]),
             "n_lasts": L["lasts"], "n_fixed": L["fixed_line"]["aim"], "n_fixed_width": L["fixed_line"]["width"],
             "n_lost": ", ".join(f"{q} {_signed(lost[q])}" for q in Q), "n_dark": _sight(d, L["levels"]["night"]["sight"]),
-            "n_moon": _sight(d, L["levels"]["moonlit"]["sight"])}
+            "n_moon": _sight(d, L["levels"]["moonlit"]["sight"]), "n_beam": _sight(d, L["night_vision"]["beam"])}
 
 
 def _air_values(d: Data) -> dict:

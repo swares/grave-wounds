@@ -17562,12 +17562,16 @@
      "starlight": {
       "name": "Starlight scope (1960s-70s)",
       "sight": 100,
-      "aim": 15
+      "aim": 15,
+      "washes": true,
+      "sees_beam": true
      },
      "goggles": {
       "name": "Night-vision goggles (1990s on)",
       "sight": 150,
-      "aim": 5
+      "aim": 5,
+      "washes": true,
+      "sees_beam": true
      },
      "thermal": {
       "name": "Thermal sight (tanks from the 1980s, teams from the 2000s)",
@@ -17578,9 +17582,13 @@
      "ir_searchlight": {
       "name": "Infrared searchlight and sights (tanks, 1950s-70s)",
       "sight": 80,
-      "aim": 20
+      "aim": 20,
+      "washes": true,
+      "sees_beam": true,
+      "beam": true
      }
     },
+    "beam": 500,
     "vehicles": {
      "Vietnam": "ir_searchlight",
      "Late 20th century": "thermal",

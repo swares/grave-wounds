@@ -1418,7 +1418,7 @@ def _volley_of(d: Data, units: list, occ: dict, field: dict | None, i: int, men:
          "cover": share_cover(d, field, best[2], units[best[1]]) + ground_cover(d, units[best[1]]) + shield_cover(d, units[best[1]], best[3], best[2]),
          "penalty": wx["penalty"] - up, "misfire": wx["misfire"], "reach": wx.get("reach", 0) + longer, "from": best[2], "to": best[3], "height": up,
          "over": line_fire(d, units, occ, field, i, best[1], best[2], best[3], best[0]), "seen": seen_share(d, field, units[best[1]], best[3], u["weapon"])}
-    v.update({k: True for k in ("blind", "flash") if wx.get(k)})
+    v.update({k: True for k in ("blind", "flash", "beam") if wx.get(k)})
     if men is None and is_mg(d, u["weapon"]):
         v.update(_beaten(d, units, occ, field, i, best))
     return [v]
@@ -1816,28 +1816,50 @@ def in_the_dark(d: Data, field: dict | None, dist: int, t, out: dict, seer: dict
         out["penalty"] += d.weather["light"]["fixed_line"]["aim"]
         out["blind"] = True
         return out
-    sight, aim = dark_sight(d, L, night_device(d, seer))
-    if sight is not None and dist * d.units["range_scale"] > sight:
-        if not (flashing(field, t) and dist * d.units["range_scale"] <= d.weather["light"]["flash"]):
+    sight, aim = dark_sight(d, L, night_device(d, seer, field))
+    far = dist * d.units["range_scale"]
+    if sight is not None and far > sight:
+        if flashing(field, t) and far <= d.weather["light"]["flash"]:
+            out["flash"] = True
+        elif beaming(field, t) and sees_beam(d, seer, field) and far <= d.weather["light"]["night_vision"]["beam"]:
+            out["beam"] = True
+        else:
             out["blocked"] = f"{L['name']}: no one can be seen to aim at beyond {sight // d.units['range_scale']} hexes."
             return out
-        out["flash"] = True
     out["penalty"] += aim
     return out
 
 
-def night_device(d: Data, seer: dict | None) -> str | None:
-    """The night-vision device a shooter or watcher ({kit, nv}) carries: the unit's own (nv;
-    "none" for none), else his kit's (light.night_vision.kits carry its kit_device), else None."""
+def night_device(d: Data, seer: dict | None, field: dict | None = None) -> str | None:
+    """The night-vision device a shooter or watcher ({kit, nv, at}) carries: the unit's own (nv;
+    "none" for none), else his kit's (light.night_vision.kits carry its kit_device), else None.
+    With the field: None if the device `washes` out where he stands, in a flare's light."""
     s, N = seer or {}, (d.weather or {}).get("light", {}).get("night_vision") or {}
+    dev = None
     if s.get("nv"):
-        return None if s["nv"] == "none" else s["nv"]
-    return N.get("kit_device") if s.get("kit") in (N.get("kits") or []) else None
+        dev = None if s["nv"] == "none" else s["nv"]
+    elif s.get("kit") in (N.get("kits") or []):
+        dev = N.get("kit_device")
+    if dev and field is not None and ((N.get("devices") or {}).get(dev) or {}).get("washes") and lit(field, s.get("at")):
+        return None
+    return dev
 
 
 def _seer(u: dict, **k) -> dict:
-    """A unit as a shooter or watcher for the dark: its kit and its night-vision device."""
-    return {"kit": u.get("kit"), "nv": u.get("nv"), **k}
+    """A unit as a shooter or watcher for the dark: its kit, its night-vision device, and where it
+    stands (for a flare's washout)."""
+    return {"kit": u.get("kit"), "nv": u.get("nv"), "at": u.get("pos"), **k}
+
+
+def beaming(field: dict | None, t) -> bool:
+    """Whether hex t is one a unit fired from by its infrared beam last exchange (field.beams)."""
+    return t is not None and list(t) in ((field or {}).get("beams") or [])
+
+
+def sees_beam(d: Data, seer: dict | None, field: dict | None) -> bool:
+    """Whether the watcher's device (not washed out) picks up an infrared beam."""
+    dev = (d.weather["light"].get("night_vision") or {}).get("devices", {}).get(night_device(d, seer, field) or "")
+    return bool(dev and dev.get("sees_beam"))
 
 
 def dark_sight(d: Data, level: dict, device: str | None) -> tuple:
@@ -1861,6 +1883,26 @@ def flashing(field: dict | None, t) -> bool:
 
 
 FLASHING = ("volley", "hero", "antiarmour", "tankfire", "cannon")
+
+
+def _beams(d: Data, us: list, log: list, field: dict | None) -> None:
+    """After the shooting, in any dark: field.beams becomes the hexes of every unit that fired by its
+    infrared searchlight (a device with `beam`, not washed out), seen by enemy infrared and
+    intensifier devices through the next exchange; else none."""
+    if field is None:
+        return
+    L = light_of(d, field)
+    if L is None or L["sight"] is None:
+        field.pop("beams", None)
+        return
+    devs = d.weather["light"]["night_vision"].get("devices") or {}
+    fired = sorted({x["att"] for x in log if x.get("kind") in FLASHING and x.get("att") is not None})
+    fired = [i for i in fired if (devs.get(night_device(d, _seer(us[i]), field) or "") or {}).get("beam")]
+    hexes = sorted({tuple(h) for i in fired for row in footprint(d, us[i]) for h in row})
+    if hexes:
+        field["beams"] = [list(h) for h in hexes]
+    else:
+        field.pop("beams", None)
 
 
 def _flashes(d: Data, us: list, log: list, field: dict | None) -> None:
@@ -2099,6 +2141,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
         if u.get("lost"):
             u["lost"] -= 1
     _flashes(d, us, log, field)
+    _beams(d, us, log, field)
     for b in (field or {}).get("support") or []:
         if b.get("mission") and b["mission"].get("wait", 0) > 0:
             b["mission"]["wait"] -= 1
@@ -3009,9 +3052,11 @@ def _sight_hexes(d: Data, field: dict | None, h=None, seer: dict | None = None) 
     cond = ((field or {}).get("weather") or {}).get("cond")
     vis = d.weather["conditions"][cond].get("visibility") if cond and d.weather else None
     L = light_of(d, field)
-    dark = dark_sight(d, L, night_device(d, seer))[0] if L and not lit(field, h) else None
+    dark = dark_sight(d, L, night_device(d, seer, field))[0] if L and not lit(field, h) else None
     if dark is not None and flashing(field, h):
         dark = max(dark, d.weather["light"]["flash"])
+    if dark is not None and beaming(field, h) and sees_beam(d, seer, field):
+        dark = max(dark, d.weather["light"]["night_vision"]["beam"])
     if dark is not None:
         vis = dark if vis is None else min(vis, dark)
     return None if vis is None else vis // d.units["range_scale"]
