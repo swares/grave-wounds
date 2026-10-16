@@ -222,9 +222,9 @@ legend{padding:0}
       </div>
       <div class="toolbar" id="ai-box">
         <span>Enemy commander:</span>
-        <label for="sel-ai0" id="ai-label0"></label>
+        <label for="sel-ai0" id="ai-label0">First side</label>
         <select class="small" id="sel-ai0" style="width:auto" title="A scripted commander moves this side at the start of its move, by its units' quality: attacking, it closes with the enemy; holding, it stands and only charges what it can reach"></select>
-        <label for="sel-ai1" id="ai-label1"></label>
+        <label for="sel-ai1" id="ai-label1">Second side</label>
         <select class="small" id="sel-ai1" style="width:auto" title="A scripted commander moves this side at the start of its move, by its units' quality: attacking, it closes with the enemy; holding, it stands and only charges what it can reach"></select>
         <button class="small" id="btn-run" hidden title="With the commander on both sides: let it play on, a move at a time, until you stop it or the battle ends (a side with nothing left standing, the objective held a while, or the exchange limit)">Run</button>
         <button class="small" id="btn-ai-undo" hidden title="Put its units back where they began this move, to move them yourself">Undo its orders</button>
@@ -4403,7 +4403,8 @@ const standingSide = (B, k) => B.units.some(u => u.side === B.sides[k] && u.men 
 function playStop(B, held, stances){               // after an exchange of a self-played battle: why it stops, or null; held {side, n}: which attacking side held the (first) objective and for how many exchanges running, updated; stances: each side's (as battle.stop_reason)
   const P = UD.commander.self_play, gone = [0, 1].filter(k => !standingSide(B, k));
   const h = objectiveHeld(B.units, B.field)[0]?.held ?? null, o = h !== null && stances[B.sides.indexOf(h)] === "attack" ? h : null;   // a holding side on its ground has not taken it
-  held.n = o === null ? 0 : (o === held.side ? held.n + 1 : 1);
+  if (o === null) held.n = 0;
+  else held.n = o === held.side ? held.n + 1 : 1;
   held.side = o;
   if (gone.length) return { why: "gone", sides: gone };
   if (held.n >= P.held) return { why: "held", side: o };
@@ -5185,7 +5186,7 @@ function ranNote(ran){                            // the broken units that ran a
 }
 function lostNote(lost){                          // the units that lost their way in the dark, logged: " X lose their way." or ""
   for (const l of lost){
-    const how = l.strayed ? "they end off their line, a hex astray" : `they end facing ${l.turned ? "off their line" : "as they were"}`;
+    const facing = l.turned ? "off their line" : "as they were", how = l.strayed ? "they end off their line, a hex astray" : `they end facing ${facing}`;
     S.log.unshift({ cls: "morale", text: `${unitName(S.units[l.unit])} lose their way in the dark: ${how}, and cannot move next exchange (they may turn).` });
   }
   return lost.length ? ` ${lost.map(l => S.units[l.unit].name).join(", ")} lost their way in the dark.` : "";
@@ -5906,7 +5907,10 @@ function sideInitials(){                          // ["B", "R"]: the sides' init
   const i = S.sides.map(s => (String(s).trim()[0] || "?").toUpperCase());
   return i[0] === i[1] ? ["A", "B"] : i;
 }
-const unitTag = u => { if (!u.n) ensureTags(S); return sideInitials()[sideNo(u)] + u.n };
+function unitTag(u){                              // B3: the side's initial and the unit's number on its side
+  if (!u.n) ensureTags(S);
+  return sideInitials()[sideNo(u)] + u.n;
+}
 function unitSvg(u){
   const rows = footprint(u); if (!rows.length) return "";
   const k = sideNo(u), sel = u.id === S.sel ? " sel" : "", M = marks();

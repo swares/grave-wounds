@@ -838,7 +838,7 @@ def _units_extra_errors(d: Data) -> list[str]:
         errors.append("units.yaml: ground needs open, and a whole-number move of 1 or more for each kind")
     if "heroes" in U and not all(isinstance(U["heroes"].get(k), (int, float)) and U["heroes"][k] > 0 for k in ("tempo", "exposure")):
         errors.append("units.yaml: heroes.tempo and heroes.exposure must be positive")
-    errors += _limb_errors(d) + _commander_errors(d)
+    errors += _limb_errors(d) + _commander_errors(d) + _self_play_errors(d)
     saved = U.get("aftermath", {}).get("saved", {})
     if saved and set(saved.get("hours", {})) != set(d.disease.get("recovery", {}).get("care", {})):
         errors.append("units.yaml: aftermath.saved.hours needs every care level")
@@ -876,6 +876,13 @@ def _sapper_errors(d: Data) -> list:
                   if not (isinstance(SP.get(k), int) and SP[k] >= 1)]
 
 
+def _self_play_errors(d: Data) -> list[str]:
+    """units.yaml commander.self_play: limit and held, whole numbers of 1 or more."""
+    sp = (d.units.get("commander") or {}).get("self_play") or {}
+    return [f"units.yaml: commander.self_play.{k} must be a whole number of 1 or more" for k in ("limit", "held")
+            if not (isinstance(sp.get(k), int) and sp[k] >= 1)]
+
+
 def _commander_errors(d: Data) -> list[str]:
     """units.yaml commander: by-quality tables, charge odds by stance, whole-number weights and
     real weapons (storm: weapons that shoot)."""
@@ -883,9 +890,6 @@ def _commander_errors(d: Data) -> list[str]:
     if not K:
         return []
     qs, errors = set(d.units["quality"]), []
-    sp = K.get("self_play") or {}
-    errors += [f"units.yaml: commander.self_play.{k} must be a whole number of 1 or more" for k in ("limit", "held")
-               if not (isinstance(sp.get(k), int) and sp[k] >= 1)]
     tables = [(k, K.get(k)) for k in ("hesitate", "cover", "flank", "sense", "reserve", "mines")] + [(f"charge_odds.{s}", (K.get("charge_odds") or {}).get(s)) for s in ("attack", "hold")]
     for name, t in tables:
         if not isinstance(t, dict) or set(t) != qs or not all(isinstance(v, int) and v >= 0 for v in t.values()):

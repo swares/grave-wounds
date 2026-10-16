@@ -3553,7 +3553,8 @@ const standingSide = (B, k) => B.units.some(u => u.side === B.sides[k] && u.men 
 function playStop(B, held, stances){               // after an exchange of a self-played battle: why it stops, or null; held {side, n}: which attacking side held the (first) objective and for how many exchanges running, updated; stances: each side's (as battle.stop_reason)
   const P = UD.commander.self_play, gone = [0, 1].filter(k => !standingSide(B, k));
   const h = objectiveHeld(B.units, B.field)[0]?.held ?? null, o = h !== null && stances[B.sides.indexOf(h)] === "attack" ? h : null;   // a holding side on its ground has not taken it
-  held.n = o === null ? 0 : (o === held.side ? held.n + 1 : 1);
+  if (o === null) held.n = 0;
+  else held.n = o === held.side ? held.n + 1 : 1;
   held.side = o;
   if (gone.length) return { why: "gone", sides: gone };
   if (held.n >= P.held) return { why: "held", side: o };
