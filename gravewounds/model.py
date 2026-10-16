@@ -838,7 +838,7 @@ def _units_extra_errors(d: Data) -> list[str]:
         errors.append("units.yaml: ground needs open, and a whole-number move of 1 or more for each kind")
     if "heroes" in U and not all(isinstance(U["heroes"].get(k), (int, float)) and U["heroes"][k] > 0 for k in ("tempo", "exposure")):
         errors.append("units.yaml: heroes.tempo and heroes.exposure must be positive")
-    errors += _limb_errors(d) + _commander_errors(d) + _self_play_errors(d)
+    errors += _limb_errors(d) + _commander_errors(d) + _self_play_errors(d) + _narrator_errors(d)
     saved = U.get("aftermath", {}).get("saved", {})
     if saved and set(saved.get("hours", {})) != set(d.disease.get("recovery", {}).get("care", {})):
         errors.append("units.yaml: aftermath.saved.hours needs every care level")
@@ -874,6 +874,25 @@ def _sapper_errors(d: Data) -> list:
     bad = [] if isinstance(clear, int) and clear >= 0 else ["units.yaml: commander.sappers.clear_of must be a whole number of 0 or more"]
     return bad_cr + bad + [f"units.yaml: mines.sappers.{k} must be a whole number of 1 or more" for k in ("lay", "clear")
                   if not (isinstance(SP.get(k), int) and SP[k] >= 1)]
+
+
+def _narrator_errors(d: Data) -> list[str]:
+    """units.yaml narrator: voices as text, each war's voice known, whole-number limits, and each
+    provider an https address with a model (which may be empty)."""
+    N = d.units.get("narrator")
+    if not N:
+        return []
+    V = N.get("voices") or {}
+    errors = [f"units.yaml: narrator.voices.{k} must be text" for k, v in V.items() if not (isinstance(v, str) and v.strip())]
+    errors += [f"units.yaml: narrator.battles.{b} names unknown voice {v}" for b, v in (N.get("battles") or {}).items() if v not in V]
+    if N.get("default") not in V:
+        errors.append("units.yaml: narrator.default must name a voice")
+    errors += [f"units.yaml: narrator.{k} must be a whole number of 1 or more" for k in ("words", "max_tokens", "context")
+               if not (isinstance(N.get(k), int) and N[k] >= 1)]
+    errors += [f"units.yaml: narrator.providers.{k} needs an https url and a model" for k, p in (N.get("providers") or {}).items()
+               if not (str(p.get("url", "")).startswith("https://") and isinstance(p.get("model"), str))]
+    errors += [f"units.yaml: narrator.providers needs {k}" for k in ("anthropic", "openai") if k not in (N.get("providers") or {})]
+    return errors
 
 
 def _self_play_errors(d: Data) -> list[str]:

@@ -113,6 +113,9 @@ fieldset.rules-row{border:0;margin:0;padding:0;min-width:0}
 .log li.head{border-left-color:var(--steel);font-weight:700}
 .log li.morale{border-left-color:var(--warn)}
 .log li.hero{border-left-color:var(--blood)}
+.story li{border-left-color:var(--steel)}
+.story .prose{margin:2px 0 0;font-style:italic}
+.story .plain{display:block;font-size:.8rem;color:var(--muted)}
 fieldset{border:0;margin:0;padding:0;min-width:0}
 .banner{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:1px solid var(--line);border-left:3px solid var(--steel);border-radius:3px;padding:8px 10px;font-size:.9rem}
 .banner[hidden],label.check[hidden],#guns-box[hidden],#vehicle-box[hidden]{display:none}
@@ -395,6 +398,26 @@ legend{padding:0}
         </div>
       </fieldset>
 
+      <h2>Narrative</h2>
+      <ol class="log story" id="story" aria-label="The battle's turning points" aria-live="polite"></ol>
+      <p class="muted" id="story-empty">The battle's turning points are told here: phases beginning, units breaking, reserves committed, the objective taken or lost, and the end.</p>
+      <details id="narr">
+        <summary>Narrator (optional): a language model retells each turning point</summary>
+        <div class="toolbar">
+          <label for="narr-provider">Provider</label>
+          <select class="small" id="narr-provider" style="width:auto"><option value="anthropic">Anthropic (Claude)</option><option value="openai">OpenAI-compatible</option></select>
+          <label for="narr-model">Model</label><input class="small" id="narr-model" style="width:12rem" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="toolbar" id="narr-url-box" hidden><label for="narr-url">Address</label><input class="small" id="narr-url" style="width:24rem" autocomplete="off" spellcheck="false"></div>
+        <div class="toolbar">
+          <label for="narr-key">API key</label><input class="small" id="narr-key" type="password" style="width:16rem" autocomplete="off" spellcheck="false">
+          <label class="check"><input type="checkbox" id="narr-remember"> Remember on this computer</label>
+          <button class="small" id="narr-forget">Forget the key</button>
+        </div>
+        <p class="muted" id="narr-note"></p>
+        <p class="muted" id="narr-status" aria-live="polite"></p>
+      </details>
+
       <h2>Battle log</h2>
       <ol class="log" id="log" aria-label="Battle log" aria-live="polite"></ol>
     </section>
@@ -582,6 +605,7 @@ function restore(){
   S.tool ??= "unit";
   if (S.ai && !Array.isArray(S.ai)) S.ai = [0, 1].map(k => (S.ai.side === S.sides[k] ? S.ai.stance : null));   // a save from before both sides could have a commander
   if (S.aiMemory && !Array.isArray(S.aiMemory)) S.aiMemory = null;
+  for (const e of S.story || []) if (e.pending){ e.pending = false; e.err = "the page was closed before it answered" }
 }
 const idx = id => S.units.findIndex(u => u.id === id);
 const selUnit = () => S.units.find(u => u.id === S.sel) || null;
@@ -1109,11 +1133,13 @@ function caughtUnawares(){                        // a fight from the travel map
 function next(){
   if (S.phase === "over") return;
   if (S.phase === "setup"){
-    S.aiMemory = [null, null]; S.held = { side: null, n: 0 };
+    S.aiMemory = [null, null]; S.held = { side: null, n: 0 }; S.story = []; S.commits = [];
     const r = beginBattle(T());
     newMove();
     const staged = stagesNote(r.stages);
     ranNote(r.ran);
+    S.pbase = pointsBase(S);
+    tell(0, turningPoints(S, S.pbase, r.stages, []));
     S.msg = `${S.sides[0]} to move.${caughtUnawares()}${staged}`;
     aiMove();
     return render();
@@ -1125,7 +1151,7 @@ function next(){
     aiMove();
     return render();
   }
-  const r = endMove(T(), dice), lostB = lostNote(r.lost);
+  const ex = S.exchange, r = endMove(T(), dice), lostB = lostNote(r.lost);
   newMove();
   S.bursts = r.log.filter(l => l.kind === "barrage").flatMap(l => l.bursts);
   S.log = [...logLines(r.log, S.exchange - 1), ...S.log].slice(0, 400);
@@ -1133,6 +1159,8 @@ function next(){
   const verb = lost.length > 1 ? "have" : "has";
   S.msg = (lost.length ? `${lost.map(k => S.sides[k]).join(" and ")} ${verb} no unit left standing.` : "") + lostB + stagesNote(r.stages);
   ranNote(r.ran);
+  tell(ex, turningPoints(S, S.pbase || pointsBase(S), r.stages, S.commits || []));
+  S.pbase = pointsBase(S); S.commits = [];
   const stop = playStop(T(), S.held || (S.held = { side: null, n: 0 }), [aiOf(0), aiOf(1)]);
   if (RUN && stop) return runOver(stop);
   aiMove();
@@ -1182,7 +1210,9 @@ function aiMove(){                                // at the start of a side's mo
   const mem = structuredClone(M.mem), sup = supports().map(b => (b.mission ? structuredClone(b.mission) : null));
   const onward = aims(S.units, side, S.field, stance, structuredClone(M.mem))[1] !== S.field ? aimText(stance) : "";
   const before = S.units.map(copyUnit), start = S.start, orders = commandMove(T(), stance, M, dice);
-  S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before, mem, sup, start };
+  const commits = commitsOf(S, orders);
+  S.commits = [...(S.commits || []), ...commits];
+  S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before, mem, sup, start, commits };
   const lines = orders.map(o => ({ cls: o.act === "charge" ? "morale" : "", text: orderText(o) }));
   S.log = [{ cls: "head", text: `The commander orders ${side} (${stanceWord(k)}): ${orders.length ? nOf(orders.length, "order") : "every unit stands"}${Object.keys(M.mem).length ? "" : " (it knows of no enemy: none is in its units' sight)"}.${onward}` }, ...lines, ...S.log].slice(0, 400);
 }
@@ -1249,6 +1279,7 @@ function aiUndo(){                                // its units back where they b
   const M = aiMemory(S.phase);
   M.mem = S.aiDone.mem; M.n = S.units.length;
   supports().forEach((b, k) => { b.mission = S.aiDone.sup?.[k] ?? null });   // the fire it called, called off
+  S.commits = (S.commits || []).filter(id => !(S.aiDone.commits || []).includes(id));
   S.aiDone.undo = null;
   S.msg = `The commander's orders are undone: move ${S.sides[S.phase]} yourself, or let it order them again.`;
   render();
@@ -1315,9 +1346,150 @@ const STOP_TEXT = {                               // why a run stopped (units.js
 };
 function runOver(stop){                           // the run stops on its own: the battle ends
   stopRun();
-  endBattle();
+  endBattle(stop);
   S.msg = `The run stops: ${STOP_TEXT[stop.why](stop)}. The battle is over.`;
   render();
+}
+
+/* ---------- the narrative: the battle's turning points (units.js: turningPoints), told plainly and, with a key, by a language model ---------- */
+const NARR_KEY = "gravewounds-narrator";          // where the narrator's settings are kept, only when the player ticks Remember
+const NARR = { provider: "anthropic", key: "", model: "", url: "", remember: false, queue: Promise.resolve() };
+const idUnit = id => S.units.find(u => u.id === id) || null;
+const namesOf = ids => ids.map(id => idUnit(id)?.name).filter(Boolean).join(", ");
+const POINT_TEXT = {                              // a turning point in plain words
+  phase: p => phasePointText(p),
+  broke: p => { const side = S.sides[p.side], b = namesOf(p.units), f = namesOf(p.fled); return [b ? `${side}: ${b} broke.` : "", f ? `${side}: ${f} fled the field.` : ""].filter(Boolean).join(" ") },
+  commit: p => `${S.sides[p.side]} committed ${namesOf(p.units)} from the reserve.`,
+  objective: p => objectivePointText(p),
+  end: p => endPointText(p),
+};
+function phasePointText(p){
+  const st = S.stages?.[p.stage];
+  if (!st) return "";
+  const came = namesOf(p.came), note = st.note ? " " + st.note : "", coming = came ? ` Coming on: ${came}.` : "";
+  return `Phase ${p.stage + 1} of ${S.stages.length}: ${st.name}.${note}${coming}`;
+}
+function objectivePointText(p){
+  const hex = p.second ? S.field.objective2 : S.field.objective, at = hex ? " at " + hexName(hex) : "";
+  const what = `the ${p.second ? "second " : ""}objective${at}`;
+  if (p.held && p.was) return `${p.held} took ${what} from ${p.was}.`;
+  if (p.held) return `${p.held} took ${what}.`;
+  return `${p.was} no longer held ${what}.`;
+}
+const END_WHY = {                                 // why the battle ended, in the narrative
+  gone: st => `${st.sides.map(k => S.sides[k]).join(" and ")} had no unit left standing`,
+  held: st => `${st.side} took the objective and held it for ${nOf(FD.units.commander.self_play.held, "exchange")}`,
+  limit: () => "the exchange limit was reached",
+};
+function endPointText(p){
+  const why = p.stop ? END_WHY[p.stop.why](p.stop) : "the GM ended it";
+  const sides = p.sides.map((x, k) => `${S.sides[k]}: ${x.killed} killed, ${x.died} died of their wounds, ${x.carried} wounded carried to camp, ${nOf(x.standing, "unit")} still standing.`);
+  const held = p.held[0] ? ` ${p.held[0]} held the objective.` : "";
+  return `The battle ended after ${nOf(p.exchanges, "exchange")}: ${why}. ${sides.join(" ")}${held}`;
+}
+function tell(exchange, points){                  // a new entry in the narrative, narrated if the narrator is on
+  if (!points.length) return;
+  S.story = S.story || [];
+  const e = { exchange, text: points.map(p => POINT_TEXT[p.kind](p)).filter(Boolean).join(" ") };
+  if (!e.text) return;
+  S.story.push(e);
+  if (narratorOn()) narrate(e);
+}
+const narratorOn = () => !!NARR.key && !!narrModel() && !!narrUrl();
+const narrProvider = () => FD.units.narrator.providers[NARR.provider];
+const narrModel = () => NARR.model || narrProvider().model;
+const narrUrl = () => (NARR.provider === "openai" ? NARR.url || narrProvider().url : narrProvider().url);
+function narrVoice(){                             // the voice for this battle's war
+  const N = FD.units.narrator;
+  return N.voices[N.battles[FD.tables[S.table]?.battle] || N.default];
+}
+function narrPrompt(e){                           // [system, user]: the rules it writes by, and the facts it may use
+  const N = FD.units.narrator, B = S.fieldId ? FD.fields[S.fieldId] : null;
+  const system = `You are the narrator for Grave Wounds, a tabletop wargame. You retell the game's turning points as a short passage of at most ${N.words} words, written as ${narrVoice()}. `
+    + "Use only the facts in the message: the battle, the sides, the units' names, the numbers and the places stated there. Do not invent people, names, ranks, casualties, places, weather, motives or events, and do not say what happens next. "
+    + "Write original prose: do not quote or imitate any real writer, document or published account. No headings, lists or markdown; plain sentences only.";
+  const earlier = (S.story || []).filter(x => x !== e && x.prose).slice(-N.context).map(x => x.prose);
+  const user = [`Battle: ${B ? B.name : "an open field"}. Sides: ${S.sides[0]} and ${S.sides[1]}. War: ${FD.tables[S.table]?.battle || "unknown"}.`,
+    earlier.length ? "Earlier passages, for continuity only:\n" + earlier.join("\n") : "",
+    `${e.exchange ? "Exchange " + e.exchange : "The opening"}. Turning points:\n${e.text}`, "Write the passage."].filter(Boolean).join("\n\n");
+  return [system, user];
+}
+function narrRequest(system, user){               // [url, fetch options] for the provider; the key goes only in its header
+  const N = FD.units.narrator;
+  if (NARR.provider === "openai") return [narrUrl(), { method: "POST", headers: { "content-type": "application/json", authorization: "Bearer " + NARR.key },
+    body: JSON.stringify({ model: narrModel(), max_tokens: N.max_tokens, messages: [{ role: "system", content: system }, { role: "user", content: user }] }) }];
+  return [narrUrl(), { method: "POST", headers: { "content-type": "application/json", "x-api-key": NARR.key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+    body: JSON.stringify({ model: narrModel(), max_tokens: N.max_tokens, system, messages: [{ role: "user", content: user }] }) }];
+}
+function narrText(j){                             // the passage from the provider's answer
+  if (NARR.provider === "openai") return j?.choices?.[0]?.message?.content?.trim() || "";
+  return (j?.content || []).filter(b => b.type === "text").map(b => b.text).join("").trim();
+}
+function narrate(e){                              // one passage, in turn after the ones before it (so each can follow the last)
+  e.pending = true;
+  NARR.queue = NARR.queue.then(async () => {
+    try {
+      const [system, user] = narrPrompt(e), [url, opts] = narrRequest(system, user);
+      const res = await fetch(url, opts);
+      let j = null;
+      try { j = await res.json() }catch(err){ j = null /* not JSON: the status says what went wrong */ }
+      if (!res.ok) throw new Error(j?.error?.message || `the service answered ${res.status}`);
+      e.prose = narrText(j) || null;
+      if (!e.prose) e.err = "an empty answer";
+    } catch (err){ e.err = String(err.message || err).slice(0, 160) }
+    e.pending = false;
+    renderStory();
+    save();
+  });
+}
+function renderStory(){
+  const list = S.story || [];
+  $("#story-empty").hidden = list.length > 0;
+  $("#story").innerHTML = list.map(e => {
+    const head = `<b>${e.exchange ? "Exchange " + e.exchange : "The opening"}.</b> `;
+    if (e.prose) return `<li><p class="prose">${head}${esc(e.prose)}</p><span class="plain">${esc(e.text)}</span></li>`;
+    let note = "";
+    if (e.pending) note = ` <span class="muted">(the narrator is writing)</span>`;
+    else if (e.err) note = ` <span class="muted">(the narrator could not answer: ${esc(e.err)})</span>`;
+    return `<li>${head}${esc(e.text)}${note}</li>`;
+  }).join("");
+  $("#story").scrollTop = $("#story").scrollHeight;
+  renderNarrator();
+}
+function renderNarrator(){
+  $("#narr-provider").value = NARR.provider;
+  $("#narr-url-box").hidden = NARR.provider !== "openai";
+  $("#narr-model").placeholder = narrProvider().model || "the service's model name";
+  $("#narr-url").placeholder = narrProvider().url;
+  $("#narr-remember").checked = NARR.remember;
+  $("#narr-forget").disabled = !NARR.key;
+  const host = (() => { try { return new URL(narrUrl()).host }catch(e){ return "the address above" /* not a full address yet */ } })();
+  $("#narr-note").textContent = `Each turning point's plain text, the battlefield's name, the sides and the war, and the last ${nOf(FD.units.narrator.context, "passage")} are sent to ${host} with your key, and nowhere else; the service charges your key. `
+    + (NARR.remember ? "The key is kept in this browser until you press Forget." : "The key is kept only while this page is open.") + " The passages use only what the game gives them; the plain line stays under each.";
+  $("#narr-status").textContent = narratorOn() ? `On: ${narrModel()}, writing as ${narrVoice()}.` : "Off: enter a key (and, for an OpenAI-compatible service, a model) to turn it on.";
+}
+function narrSave(){                              // the settings kept only when Remember is ticked; otherwise nothing is stored
+  try {
+    if (NARR.remember) localStorage.setItem(NARR_KEY, JSON.stringify({ provider: NARR.provider, key: NARR.key, model: NARR.model, url: NARR.url }));
+    else localStorage.removeItem(NARR_KEY);
+  }catch(e){ /* storage off: the key lasts while the page is open */ }
+}
+function narratorControls(){                      // the settings' controls, and any remembered settings
+  try {
+    const j = JSON.parse(localStorage.getItem(NARR_KEY) || "null");
+    if (j){ Object.assign(NARR, { provider: FD.units.narrator.providers[j.provider] ? j.provider : "anthropic", key: j.key || "", model: j.model || "", url: j.url || "", remember: true }) }
+  }catch(e){ /* unreadable: start without a key */ }
+  $("#narr-key").value = NARR.key;
+  $("#narr-model").value = NARR.model;
+  $("#narr-url").value = NARR.url;
+  const changed = () => { narrSave(); renderNarrator() };
+  $("#narr-provider").onchange = e => { NARR.provider = e.target.value; changed() };
+  $("#narr-model").onchange = e => { NARR.model = e.target.value.trim(); changed() };
+  $("#narr-url").onchange = e => { NARR.url = e.target.value.trim(); changed() };
+  $("#narr-key").onchange = e => { NARR.key = e.target.value.trim(); changed() };
+  $("#narr-remember").onchange = e => { NARR.remember = e.target.checked; changed() };
+  $("#narr-forget").onclick = () => { NARR.key = ""; $("#narr-key").value = ""; changed() };
+  renderNarrator();
 }
 
 /* ---------- after the battle ---------- */
@@ -1341,7 +1513,7 @@ function setMedevac(k, on){                       // a side with or without mede
   S.msg = on ? `${S.sides[k]} have medevac: their wounded reach care sooner.` : `${S.sides[k]} have no medevac: their wounded wait for their camp.`;
   render();
 }
-function endBattle(){                             // the dead counted; the wounded die, or are carried to camp
+function endBattle(stop = null){                  // the dead counted; the wounded die, or are carried to camp (stop: why a run stopped, or null: the GM ended it)
   if (S.phase !== 0 && S.phase !== 1) return;
   stopRun();
   const all = afterUnits();
@@ -1349,6 +1521,7 @@ function endBattle(){                             // the dead counted; the wound
   const r = afterBattle(T(), all.map(u => forceOf(u)?.care || "field"), all.map(u => S.evac[sideNo(u)]), dice);   // units.js: the dead counted, the wounded, the heroes' fates
   S.after = r.after;
   S.fates = r.fates;
+  tell(S.exchange - 1, [endPoint(S, stop, all, r.after)]);
   S.msg = "The battle is over.";
   S.log = [{ cls: "head", text: `The battle ends after ${S.exchange - 1} exchanges.` }, ...S.log];
   render();
@@ -2658,6 +2831,7 @@ function render(){
   $("#log").innerHTML = S.log.map(l => `<li class="${l.cls}">${esc(l.text)}</li>`).join("");
   $("#in-side0").value = S.sides[0]; $("#in-side1").value = S.sides[1];
   renderMedevac();
+  renderStory();
   renderAddSide();
   $("#handoff").hidden = !HANDOFF;
   $("#teamin").hidden = !TEAMIN;
@@ -2894,6 +3068,7 @@ function init(){
   $("#units").addEventListener("keydown", e => { if (e.key === "Enter"){ const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; render() } } });
   $("#btn-next").onclick = next;
   $("#btn-reset").onclick = newBattle;
+  narratorControls();
   $("#btn-end").onclick = endBattle;
   $("#btn-back").onclick = backToTravel;
   $("#btn-handoff").onclick = () => { fromTravel(HANDOFF); HANDOFF = null; dropHandoff(); fillChoices(); render() };

@@ -198,6 +198,14 @@ has no unit left standing, when an attacking side has taken the objective and he
 choice marked *as fought*); on open ground both attack. The GM can take either side back at any
 time.
 
+**The narrative.** Under the map, the page tells the battle's turning points as they happen: a
+phase beginning (and who comes on), units breaking or fleeing, a reserve committed, the objective
+taken or lost, and the end with each side's losses. With an API key of the player's own, a
+language model retells each one in a short passage of at most {{n_words}} words, in a voice for
+the war (a chronicle, a dispatch, a war diary or a situation report). It is told to use only the
+facts the game gives it and to write original prose; the plain line stays under each passage.
+The rules never depend on it.
+
 ## After the battle {#after}
 
 **End the battle** stops it. The page then sets the two sides' results side by side, and

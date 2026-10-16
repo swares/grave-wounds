@@ -94,14 +94,13 @@ When an item is done, delete it here and note it in the pull request that closes
   edge, a supply vehicle or a dump (air drops from 1944, helicopters from 1965). Still left out: riders resupplying
   aboard their carrier, food, water and medical stores, and carrying a force's ammunition on
   the travel map from one fight to the next.
-- **A narrator for the enemy commander (to consider).** Today the commander's orders are
-  logged one line each ("advance", "dig in where they stand", "move up to see ... for the
-  aircraft"). The commander item above already notes the choice made earlier: an optional
-  narrator, using a model with a key the player supplies, to explain its orders in prose.
-  To decide: whether it narrates each move or only turning points (a reserve committed, an
-  objective taken or lost, a retreat); the voice (a staff officer's report, a soldier's
-  memoir) by period; what happens with no key (the log as now, or a plainer built-in
-  summary); and keeping the player's key in the browser only.
+- **A narrator, first cut.** The field page tells each exchange's turning points (phases,
+  units breaking or fleeing, reserves committed, the objective taken or lost, the end) in plain
+  words, and with the player's own key (Anthropic, or any OpenAI-compatible service) a model
+  retells each in a short passage in a voice for the war, using only the facts given. The key
+  is kept only while the page is open unless the player ticks Remember. Still left out: only what changed
+  over a whole exchange is told (a unit that broke and rallied within one is missed), no rally or hero turning points, no narration on the travel map, no streamed or
+  regenerated passages, and the voices are fixed per war (no choice on the page).
 - **The enemy commander against itself, first cut.** Each side has its own commander choice;
   with both, Run plays on until Stop, a side with nothing left standing, an attacking side
   holding the objective 5 exchanges running, or 60 exchanges, then ends the battle; Python
