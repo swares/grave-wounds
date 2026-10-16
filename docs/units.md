@@ -635,6 +635,17 @@ Each battle prints why it stopped, after how many exchanges, and each side's men
 on the field, died of wounds, carried to camp, and units still standing. Python is slower than
 the page (a second or so a move on a large field).
 
+Three things are worked out once and remembered, because nothing in a battle changes them; they
+change no result, only the time a battle takes (every battlefield plays move for move as before,
+the page about five times faster):
+
+- what the ground lets a man see from one hex to another (dead ground behind a crest, woods
+  and buildings between, light cover thinning his aim), and what ground stands on each hex,
+  kept for the field's ground until the GM paints it (smoke drifts and thins, so it is
+  looked at every shot);
+- what each step costs a unit to move (works, ground, mud and snow, the dark), kept while a
+  commander orders its side: nothing changes the works, ground or weather until the exchange.
+
 ### The narrative and the narrator
 
 Under the map, **Narrative** tells the battle's turning points, an entry an exchange when

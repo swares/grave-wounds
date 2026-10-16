@@ -175,6 +175,11 @@ prints each battle's turning points; on the page, put the commander on both side
 The scripts used for this review (all battlefields, winners against the accounts) are not in the
 repository; the numbers above are from them.
 
+Since 16 October the rules remember sight lines, the ground and step costs (see units.md, Both
+sides): the same battles, move for move, about five times faster. Both runs of all 37
+battlefields now take about 13 minutes of computing, against about 70, with Chipyong under a
+minute and a half a run instead of nine and a half.
+
 ## Retest, 16 October 2026
 
 The merged build (with every change above) was played again on all 37 battlefields, two runs
