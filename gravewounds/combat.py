@@ -275,13 +275,23 @@ def _cube_round(x: float, y: float, z: float) -> list:
     return [rx + (ry - (ry & 1)) // 2, ry]
 
 
+def _ray_point(s, c, k: int, i: int) -> list:
+    """Step i of the line from cube s toward cube c, k steps apart (nudged off ties)."""
+    return _cube_round(s[0] + (c[0] - s[0]) * i / k + 1e-6, s[1] + (c[1] - s[1]) * i / k + 2e-6, s[2] + (c[2] - s[2]) * i / k - 3e-6)
+
+
 def ray(a, b, n: int) -> list:
     """The hexes on the line from hex a through hex b, n steps (b is step hdist(a, b))."""
     s, c, k = _cube(a), _cube(b), hex_distance(a, b)
     if k == 0:
         return [list(a)]
-    return [_cube_round(s[0] + (c[0] - s[0]) * i / k + 1e-6, s[1] + (c[1] - s[1]) * i / k + 2e-6,
-                        s[2] + (c[2] - s[2]) * i / k - 3e-6) for i in range(n + 1)]
+    return [_ray_point(s, c, k, i) for i in range(n + 1)]
+
+
+def ray_at(a, b, i: int) -> list:
+    """Step i of ray(a, b, ...): the one hex of the line i hexes from a."""
+    k = hex_distance(a, b)
+    return list(a) if k == 0 else _ray_point(_cube(a), _cube(b), k, i)
 
 
 def neighbours(h, cols: int, rows: int) -> list[list[int]]:

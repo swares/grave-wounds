@@ -572,8 +572,14 @@ function hexRay(a, b, n){                        // the hexes on the line from a
   const s = cu(a), c = cu(b), k = Math.max(Math.abs(s[0] - c[0]), Math.abs(s[1] - c[1]), Math.abs(s[2] - c[2]));
   if (k === 0) return [[...a]];
   const out = [];
-  for (let i = 0; i <= n; i++) out.push(cubeRound(s[0] + (c[0] - s[0]) * i / k + 1e-6, s[1] + (c[1] - s[1]) * i / k + 2e-6, s[2] + (c[2] - s[2]) * i / k - 3e-6));
+  for (let i = 0; i <= n; i++) out.push(rayPoint(s, c, k, i));
   return out;
+}
+const rayPoint = (s, c, k, i) => cubeRound(s[0] + (c[0] - s[0]) * i / k + 1e-6, s[1] + (c[1] - s[1]) * i / k + 2e-6, s[2] + (c[2] - s[2]) * i / k - 3e-6);   // step i of the line from cube s toward cube c, k steps apart (nudged off ties)
+function rayAt(a, b, i){                        // step i of hexRay(a, b, ...): the one hex of the line i hexes from a (as combat.ray_at)
+  const cu = h => { const q = h[0] - (h[1] - (h[1] & 1)) / 2; return [q, h[1], -q - h[1]] };
+  const s = cu(a), c = cu(b), k = Math.max(Math.abs(s[0] - c[0]), Math.abs(s[1] - c[1]), Math.abs(s[2] - c[2]));
+  return k === 0 ? [...a] : rayPoint(s, c, k, i);
 }
 function facing(target, attacker, cols, rows){
   const ns = neighbours(target, cols, rows);
@@ -2169,7 +2175,7 @@ function beatenFire(us, table, rng, acc, log, v){ // the cone falling on into th
 const fieldSize = field => field?.size || [UD.map.cols, UD.map.rows];
 // The ground never changes during a battle (only the GM's painting in setup, which calls forgetGround), so what stands on
 // each hex and what a sight line between two hexes crosses are worked out once and remembered, keyed by the field's ground
-const GROUND_MEMO = new WeakMap();                // field ground -> {at: [column][row] ground spec, lines: Map "q,r>q,r" -> sight line}
+const GROUND_MEMO = new WeakMap();                // field ground -> {at: [column][row] ground spec, lines: Map sightKey -> packed sight line}
 const NO_GROUND = {};
 function groundMemo(field){
   const g = field?.ground || NO_GROUND;
@@ -2184,12 +2190,13 @@ function groundAt(field, h){                      // the ground kind's spec at h
   if (g === undefined){ g = UD.ground[field?.ground?.[hk(h)] || "open"]; c[h[1]] = g }
   return g;
 }
-function sightLine(field, h, t, dist){            // {crest, clear, thin, keys}: the ground's part of a sight line from h to t (dist apart), worked out once (as units._sight_line)
-  const lines = groundMemo(field).lines, key = hk(h) + ">" + hk(t);
+const sightKey = (h, t) => ((h[0] + 1024) * 4096 + h[1] + 1024) * 16777216 + (t[0] + 1024) * 4096 + t[1] + 1024;   // one number for a pair of hexes (columns and rows -1024 to 3071)
+function sightLine(field, h, t, dist){            // the ground's part of a sight line from h to t (dist apart), worked out once, packed in a number: dead ground between (crestOn) 1, a clear sight to aim (sightOn) 2, the hexes of light cover between (thinOn) times 4 (as units._sight_line)
+  const lines = groundMemo(field).lines, key = sightKey(h, t);
   let s = lines.get(key);
   if (s === undefined){
     const line = ray(h, t, dist);
-    s = { crest: crestOn(field, h, t, line), clear: sightOn(field, h, t, line), thin: thinOn(field, h, line), keys: line.map(hk) };
+    s = (crestOn(field, h, t, line) ? 1 : 0) + (sightOn(field, h, t, line) ? 2 : 0) + 4 * thinOn(field, h, line);
     lines.set(key, s);
   }
   return s;
@@ -2207,10 +2214,18 @@ const upOf = field => field?.up || "N";          // the compass point at the top
 const SMOKED = { blocked: "Smoke: no one can see to shoot through it.", penalty: 0, misfire: 0, reach: 0 };
 const SCREENED = { blocked: "Woods, buildings or thick scrub between: no one can see to aim through them.", penalty: 0, misfire: 0, reach: 0 };
 const CRESTED = { blocked: "Higher ground between: dead ground, no one can see over it to shoot.", penalty: 0, misfire: 0, reach: 0 };
-const clearSight = (field, h, t, dist) => !field?.ground || sightLine(field, h, t, dist).clear;   // a man at h sees t to aim (sightOn)
-const overCrest = (field, h, t, dist) => !!field?.ground && sightLine(field, h, t, dist).crest;   // dead ground between (crestOn)
-const thinned = (field, h, t, dist) => (field?.ground ? sightLine(field, h, t, dist).thin : 0);   // hexes of light cover between (thinOn)
-const smokedLine = (field, h, t, dist) => !!field?.smoke && sightLine(field, h, t, dist).keys.some(k => k in field.smoke);   // smoke on the line from h to t
+const clearSight = (field, h, t, dist) => !field?.ground || (sightLine(field, h, t, dist) & 2) > 0;   // a man at h sees t to aim (sightOn)
+const overCrest = (field, h, t, dist) => !!field?.ground && (sightLine(field, h, t, dist) & 1) > 0;   // dead ground between (crestOn)
+const thinned = (field, h, t, dist) => (field?.ground ? sightLine(field, h, t, dist) >> 2 : 0);   // hexes of light cover between (thinOn)
+function smokedLine(field, h, t, dist){            // smoke over any hex of the line from h to t (ends too): a smoke hex i hexes from h is on it only as its step i (as units.smoked_line)
+  for (const k in field?.smoke || {}){
+    const x = k.split(",").map(Number), i = hdist(h, x);
+    if (i > dist || hdist(x, t) !== dist - i) continue;
+    const y = rayAt(h, t, i);
+    if (y[0] === x[0] && y[1] === x[1]) return true;
+  }
+  return false;
+}
 function sightOn(field, h, t, line){              // a man at h sees t to aim: no ground higher than both ends between (crestOn: dead ground), nothing that screens (woods, buildings) between past see_into hexes at either end, and no more than thin.blind_past hexes of light cover
   if (!field?.ground) return true;
   const k = UD.line_of_fire.see_into ?? 1, up = heightAt(field, h);
