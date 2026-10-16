@@ -486,32 +486,37 @@ def summary(d: Data, r: dict) -> list:
     return out
 
 
-def _point_text(bt: dict, p: dict) -> str:
-    """One turning point in plain words."""
+def _names(bt: dict, ids: list) -> str:
     by_id = {u["id"]: u["name"] for u in bt["units"]}
+    return ", ".join(by_id[i] for i in ids if i in by_id)
 
-    def names(ids):
-        return ", ".join(by_id[i] for i in ids if i in by_id)
-    if p["kind"] == "phase":
-        came = names(p["came"])
-        return f"Phase {p['stage'] + 1} of {len(bt['stages'])}: {bt['stages'][p['stage']]['name']}." + (f" Coming on: {came}." if came else "")
-    if p["kind"] == "broke":
-        side = bt["sides"][p["side"]]
-        bits = [f"{side}: {names(p['units'])} broke." if p["units"] else "", f"{side}: {names(p['fled'])} fled the field." if p["fled"] else ""]
-        return " ".join(x for x in bits if x)
-    if p["kind"] == "commit":
-        return f"{bt['sides'][p['side']]} committed {names(p['units'])} from the reserve."
-    if p["kind"] == "objective":
-        what = "the second objective" if p["second"] else "the objective"
-        if not p["held"]:
-            return f"{p['was']} no longer held {what}."
-        return f"{p['held']} took {what}" + (f" from {p['was']}." if p["was"] else ".")
-    return f"The battle ended after {p['exchanges']} exchanges."
+
+def _phase_text(bt: dict, p: dict) -> str:
+    came = _names(bt, p["came"])
+    return f"Phase {p['stage'] + 1} of {len(bt['stages'])}: {bt['stages'][p['stage']]['name']}." + (f" Coming on: {came}." if came else "")
+
+
+def _broke_text(bt: dict, p: dict) -> str:
+    side = bt["sides"][p["side"]]
+    bits = [f"{side}: {_names(bt, p['units'])} broke." if p["units"] else "", f"{side}: {_names(bt, p['fled'])} fled the field." if p["fled"] else ""]
+    return " ".join(x for x in bits if x)
+
+
+def _objective_text(bt: dict, p: dict) -> str:
+    what = "the second objective" if p["second"] else "the objective"
+    if not p["held"]:
+        return f"{p['was']} no longer held {what}."
+    return f"{p['held']} took {what}" + (f" from {p['was']}." if p["was"] else ".")
+
+
+POINT_TEXT = {"phase": _phase_text, "broke": _broke_text, "objective": _objective_text,
+              "commit": lambda bt, p: f"{bt['sides'][p['side']]} committed {_names(bt, p['units'])} from the reserve.",
+              "end": lambda bt, p: f"The battle ended after {p['exchanges']} exchanges."}
 
 
 def points_text(r: dict) -> list:
     """A self-played battle's turning points in plain words, a line an exchange (the page tells them
     the same way in its narrative)."""
     bt = r["battle"]
-    return [f"  {'Exchange ' + str(x['exchange']) if x['exchange'] else 'The opening'}: " + " ".join(_point_text(bt, p) for p in x["points"])
+    return [f"  {'Exchange ' + str(x['exchange']) if x['exchange'] else 'The opening'}: " + " ".join(POINT_TEXT[p["kind"]](bt, p) for p in x["points"])
             for x in r["points"]]
