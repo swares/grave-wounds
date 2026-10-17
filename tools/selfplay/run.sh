@@ -1,7 +1,7 @@
 #!/bin/bash
 # run.sh <seeds> <out dir> [page] [workers] [first seed] [tool]: every battlefield x seed as its own job, the longest
 # first (by times.txt, if there), shared among the workers. tool: play (default; out/<fid>.s<k>.json, joined by
-# report.py), quality (the commander report) or targets (play's runs with the morale targets). Progress and failures go to out/run.log.
+# report.py), quality (the commander report), targets (play's runs with the morale targets) or flanks (flanking chances and strikes). Progress and failures go to out/run.log.
 set -u
 here=$(cd "$(dirname "$0")" && pwd); root=$(cd "$here/../.." && pwd)
 seeds=$1; out=$2; page=${3:-$root/dist/field.html}; workers=${4:-2}; first=${5:-1}; tool=${6:-play}
@@ -16,7 +16,7 @@ for _, f, k in sorted(((float(t.get(f, 0)), f, k) for f in fids for k in range(f
 PY
 job(){
   local fid=$1 k=$2
-  if [[ "$tool" == quality || "$tool" == targets ]]; then node "$here/$tool.js" "$fid" "$k" "$page" > "$out/$fid.s$k.json"
+  if [[ "$tool" == quality || "$tool" == targets || "$tool" == flanks ]]; then node "$here/$tool.js" "$fid" "$k" "$page" > "$out/$fid.s$k.json"
   else node "$here/play.js" "$fid" 1 "$out/$fid.s$k.json" "$page" "$k"; fi
   return $?
 }
