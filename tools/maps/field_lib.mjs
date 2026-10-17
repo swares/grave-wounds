@@ -60,6 +60,13 @@ function phasesText(ps){                          // the phases (and their comme
   const line = p => `  - {name: ${yq(p.name)}, at: ${p.at}${p.note ? ", note: " + yq(p.note) : ""}${p.light ? ", light: " + p.light : ""}${p.arrive?.length ? ", arrive: [" + p.arrive.map(yq).join(", ") + "]" : ""}}`;
   return `\n# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,\n# then come on where they are drawn, or at their side's entry edge if that is taken.\nphases:\n${ps.map(line).join("\n")}`;
 }
+function eliteUnits(units, names){                // the units named in elite (selected, specially trained formations: units.yaml quality.elite) made elite; every name must be a unit's
+  const set = new Set(names || []), seen = new Set();
+  const out = units.map(u => (set.has(u.name) ? (seen.add(u.name), { ...u, quality: "elite" }) : u));
+  const missing = [...set].filter(n => !seen.has(n));
+  if (missing.length) throw new Error(`elite names no unit: ${missing.join("; ")}`);
+  return out;
+}
 function endsLine(e){                              // the account's length of the fight (and its comment), or ""
   if (!e) return "";
   return `\n# How long the fight went on, in exchanges from the first, by the account (${e.why}): self-play runs at least this long (never past commander.self_play.most).\nends: ${e.at}`;
@@ -95,12 +102,13 @@ const hexList = hs => hs.map(h => `[${h.join(", ")}]`).join(", ");
 // hexes; a unit with `lands: k` comes in by air at the k-th), objective (the place the battle
 // was fought for: {at: hex, side: the army that attacked it (0 or 1), name, radius: hexes round it
 // that count as on it}), markers (the unit markers' settings: {labels, strength, size}, all
-// optional), stances (with no objective: how each army fought, [attack|hold, attack|hold]), ends ({at: the
+// optional), elite (names of units that were selected, specially trained formations: their quality is
+// elite), stances (with no objective: how each army fought, [attack|hold, attack|hold]), ends ({at: the
 // exchange the account's fight ends, why: the words it rests on}), phases (the battle's stages: [{name, at (the exchange it begins, the first 1), note,
 // arrive (names of units held off the map until then)}]). A unit may also set type and size
 // (units.yaml markers).
 export function writeField(spec){
-  spec = { ...spec, units: sized(spec.id, spec.units) };
+  spec = { ...spec, units: sized(spec.id, eliteUnits(spec.units, spec.elite)) };
   const { grid } = spec, works = Object.entries(spec.hexWorks || {});
   const edges = Object.entries(spec.edgeWorks || {});
   const workLine = ([type, hs]) => `    - {type: ${type}, at: [${hexList(hs)}]}`;

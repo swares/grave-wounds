@@ -57,6 +57,7 @@ const units = [
 ];
 
 writeField({
+  elite: ["1st Ranger Battalion (at the road crossing)", "3rd Ranger Battalion (along the ditch)", "Paratroops by the station"],   // selected, specially trained formations (units.yaml quality.elite)
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
     { name: "Caught at first light", at: 1, note: "About 06:10, short of the town: three self-propelled guns open on the column." },
     { name: "A hasty defence", at: 61, note: "By about 07:10 the battalions are in a crescent-shaped hasty defence; at 07:30 the 1st Battalion breaks radio silence." },

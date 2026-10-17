@@ -156,11 +156,11 @@ works:
 support:
   - {name: "Little Bird gunships (AH-6)", side: 0, kind: gunship, tubes: 4}
 units:
-  - {name: "Rangers and Delta in the houses north of the crash", side: 0, men: 30, quality: veteran, weapon: rifle_assault, kit: ranger_1993, formation: extended, width: 6, pos: [61, 18], facing: 1, nv: none, fac: true, size: platoon}
-  - {name: "Rangers and Delta in the houses south of the crash", side: 0, men: 30, quality: veteran, weapon: rifle_assault, kit: ranger_1993, formation: extended, width: 6, pos: [64, 25], facing: 4, nv: none, size: platoon}
-  - {name: "Rangers and Delta at the corner west of the crash", side: 0, men: 25, quality: veteran, weapon: rifle_assault, kit: ranger_1993, formation: extended, width: 4, pos: [57, 22], facing: 3, nv: none, size: platoon}
-  - {name: "Machine guns (SAWs and M60s) at the crash", side: 0, men: 10, quality: veteran, weapon: machine_gun, kit: ranger_1993, formation: mg, width: 2, pos: [67, 20], facing: 0, nv: none, size: section}
-  - {name: "Crash site 2: the crew, Gordon and Shughart", side: 0, men: 6, quality: veteran, weapon: rifle_assault, kit: ranger_1993, formation: extended, width: 2, pos: [62, 91], facing: 4, nv: none, size: section}
+  - {name: "Rangers and Delta in the houses north of the crash", side: 0, men: 30, quality: elite, weapon: rifle_assault, kit: ranger_1993, formation: extended, width: 6, pos: [61, 18], facing: 1, nv: none, fac: true, size: platoon}
+  - {name: "Rangers and Delta in the houses south of the crash", side: 0, men: 30, quality: elite, weapon: rifle_assault, kit: ranger_1993, formation: extended, width: 6, pos: [64, 25], facing: 4, nv: none, size: platoon}
+  - {name: "Rangers and Delta at the corner west of the crash", side: 0, men: 25, quality: elite, weapon: rifle_assault, kit: ranger_1993, formation: extended, width: 4, pos: [57, 22], facing: 3, nv: none, size: platoon}
+  - {name: "Machine guns (SAWs and M60s) at the crash", side: 0, men: 10, quality: elite, weapon: machine_gun, kit: ranger_1993, formation: mg, width: 2, pos: [67, 20], facing: 0, nv: none, size: section}
+  - {name: "Crash site 2: the crew, Gordon and Shughart", side: 0, men: 6, quality: elite, weapon: rifle_assault, kit: ranger_1993, formation: extended, width: 2, pos: [62, 91], facing: 4, nv: none, size: section}
   - {name: "Relief column (10th Mountain infantry)", side: 0, men: 150, quality: regular, weapon: rifle_assault, kit: ranger_1993, formation: extended, width: 15, pos: [44, 100], facing: 1, nv: none, size: company}
   - {name: "Relief column (Malaysian APCs and Pakistani tanks)", side: 0, men: 36, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 4, pos: [60, 100], facing: 1, vehicle: apc, size: company}
   - {name: "Militia from the Bakara Market", side: 1, men: 300, quality: green, weapon: rifle_assault, kit: none, formation: extended, width: 30, pos: [30, 34], facing: 0, size: battalion}

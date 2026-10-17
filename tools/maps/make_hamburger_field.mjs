@@ -57,6 +57,7 @@ const units = [
 ];
 
 writeField({
+  elite: ["3/187 Infantry (up the north-west spur)", "1/506 Infantry (up the south spur)"],   // selected, specially trained formations (units.yaml quality.elite)
   objective: { at: TOP, side: 0, name: "the summit of Hill 937 (Hamburger Hill)", radius: 4 },
   id: "hamburger-1969", name: "Hamburger Hill (Dong Ap Bia), 20 May 1969", sides: ["United States and ARVN", "North Vietnamese"], table: "vietnam-1965-70-hospitalized",
   travel: { map: "hamburger-1969", place: "Dong Ap Bia (Hill 937)", within: 1, sides: ["United States and ARVN", "North Vietnamese"] },

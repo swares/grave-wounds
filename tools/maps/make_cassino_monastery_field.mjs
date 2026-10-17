@@ -32,6 +32,7 @@ const units = [
 ];
 
 writeField({
+  elite: ["1/9th Gurkha Rifles (across the slopes for Point 444)", "1/2nd Gurkha Rifles (down for the abbey's hill)", "German paratroops on Point 593", "German paratroops on Point 444", "German machine guns (Point 593)"],   // selected, specially trained formations (units.yaml quality.elite)
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
     { name: "For Point 593", at: 1, note: "Midnight: the Rajputana Rifles and three Sussex companies go for Point 593." },
     { name: "The Gurkhas go in", at: 121, note: "Two hours later, as planned: the 1/2nd and 1/9th Gurkhas go down the slopes for the abbey (the plan's time).", arrive: ["1/9th Gurkha Rifles (across the slopes for Point 444)", "1/2nd Gurkha Rifles (down for the abbey's hill)"] },

@@ -2512,7 +2512,7 @@ function commitReserve(us, side, known, memory, stance = "attack"){   // one res
   const kf = knownFoes(known), near = {};
   for (const i of held) near[i] = kf.length ? Math.min(...kf.map(([, m]) => hdist(us[i].pos, m.pos))) : 10 ** 6;
   const nearest = list => list.reduce((a, i) => (near[i] < near[a] ? i : a), list[0]);
-  const gap = held.some(i => near[i] <= UD.commander.gap), vets = held.filter(i => us[i].quality === "veteran");
+  const gap = held.some(i => near[i] <= UD.commander.gap), vets = held.filter(i => us[i].quality === "veteran" || us[i].quality === "elite");
   let pick, why;
   if (broke || gap){ pick = nearest(held); why = broke ? "broke" : "gap" }
   else if (foeBroke && vets.length){ pick = nearest(vets); why = "exploit" }

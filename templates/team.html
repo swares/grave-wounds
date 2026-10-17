@@ -319,7 +319,7 @@ function sendToRoller(){                         // the roller picks the team up
 // The field map: the followers of each career form one unit at the quality most of them have
 // (ties: the better), and the team goes with them as heroes (each with his own career's unit, else the biggest)
 function fieldUnits(){                            // one unit a career; followers of a healing career go with the biggest as its medics
-  const order = ["green", "regular", "veteran"], units = [], medics = [];
+  const order = ["green", "regular", "veteran", "elite"], units = [], medics = [];
   for (const [cid] of S.fcounts){
     const men = S.crew.filter(f => f.career === cid);
     if (!men.length) continue;

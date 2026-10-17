@@ -197,10 +197,10 @@ support:
 units:
   - {name: "4/6th Rajputana Rifles (along Snakeshead Ridge)", side: 0, men: 450, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 15, pos: [62, 12], facing: 4, size: battalion}
   - {name: "1st Royal Sussex (three companies, with the Rajputanas)", side: 0, men: 300, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 15, pos: [38, 6], facing: 4, size: battalion}
-  - {name: "1/9th Gurkha Rifles (across the slopes for Point 444)", side: 0, men: 450, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [108, 40], facing: 4, size: battalion}
-  - {name: "1/2nd Gurkha Rifles (down for the abbey's hill)", side: 0, men: 450, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [140, 68], facing: 4, size: battalion}
-  - {name: "German paratroops on Point 593", side: 1, men: 120, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [60, 36], facing: 1, prone: true, size: company}
-  - {name: "German paratroops on Point 444", side: 1, men: 100, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [112, 73], facing: 1, prone: true, size: company}
+  - {name: "1/9th Gurkha Rifles (across the slopes for Point 444)", side: 0, men: 450, quality: elite, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [108, 40], facing: 4, size: battalion}
+  - {name: "1/2nd Gurkha Rifles (down for the abbey's hill)", side: 0, men: 450, quality: elite, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [140, 68], facing: 4, size: battalion}
+  - {name: "German paratroops on Point 593", side: 1, men: 120, quality: elite, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [60, 36], facing: 1, prone: true, size: company}
+  - {name: "German paratroops on Point 444", side: 1, men: 100, quality: elite, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [112, 73], facing: 1, prone: true, size: company}
   - {name: "Germans in the abbey's ruins", side: 1, men: 200, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 18, pos: [150, 108], facing: 1, prone: true, size: company}
-  - {name: "German machine guns (Point 593)", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [68, 38], facing: 1, prone: true, size: section}
+  - {name: "German machine guns (Point 593)", side: 1, men: 10, quality: elite, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [68, 38], facing: 1, prone: true, size: section}
   - {name: "German machine guns (the abbey)", side: 1, men: 15, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 3, pos: [136, 110], facing: 2, prone: true, size: section}

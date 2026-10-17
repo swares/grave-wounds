@@ -9,6 +9,7 @@ from . import combat as C, units as U
 from .model import Data
 
 ROUTED = ("broken", "fled")
+VETERANS = ("veteran", "elite")                    # the qualities that commit a reserve to exploit an enemy rout
 MOVES = ("move", "charge", "advance", "fall_back", "close_up", "spot", "search")   # orders that take a unit somewhere new
 
 
@@ -254,8 +255,8 @@ def _commit(d: Data, us: list, side, known: dict, memory: dict, stance: str = "a
     gap = [i for i in held if near[i] <= d.units["commander"]["gap"]]
     if broke or gap:
         pick, why = min(held, key=lambda i: (near[i], i)), "broke" if broke else "gap"
-    elif foe_broke and any(us[i]["quality"] == "veteran" for i in held):
-        pick, why = min((i for i in held if us[i]["quality"] == "veteran"), key=lambda i: (near[i], i)), "exploit"
+    elif foe_broke and any(us[i]["quality"] in VETERANS for i in held):
+        pick, why = min((i for i in held if us[i]["quality"] in VETERANS), key=lambda i: (near[i], i)), "exploit"
     elif stall:
         pick, why = min(held, key=lambda i: (near[i], i)), "stall"
     else:

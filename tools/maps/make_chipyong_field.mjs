@@ -74,6 +74,7 @@ const units = [
 ];
 
 writeField({
+  elite: ["1st Ranger Company (reserve)"],   // selected, specially trained formations (units.yaml quality.elite)
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
     { name: "The attack on G Company", at: 1, note: "Soon after 22:00 on 14 February the Chinese regiment from Hill 397 breaks into G Company's line." },
     { name: "G Company's hill falls; first reserves", at: 331, note: "About 03:00 G Company gives up the rest of its hill; a Ranger platoon and an F Company platoon reach it and counter-attack in the dark.", arrive: ["1st Ranger Company (reserve)"] },

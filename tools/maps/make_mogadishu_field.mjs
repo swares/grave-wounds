@@ -58,6 +58,7 @@ const units = [
 ];
 
 writeField({
+  elite: ["Rangers and Delta in the houses north of the crash", "Rangers and Delta in the houses south of the crash", "Rangers and Delta at the corner west of the crash", "Machine guns (SAWs and M60s) at the crash", "Crash site 2: the crew, Gordon and Shughart"],   // selected, specially trained formations (units.yaml quality.elite)
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
     { name: "Two crash sites", at: 1, note: "About 16:42: the Rangers and Delta hold the houses round Super 61; Gordon and Shughart are inserted at Super 64." },
     { name: "Crash site 2 falls", at: 59, note: "About 17:40: the snipers run out of ammunition and are killed as the crowd overruns Durant's crash site." },

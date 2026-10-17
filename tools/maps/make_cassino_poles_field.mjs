@@ -35,6 +35,7 @@ const units = [
 ];
 
 writeField({
+  elite: ["German paratroops on Point 593", "German paratroops on Phantom Ridge", "German paratroops on Point 444", "Germans in the abbey's ruins", "German machine guns (Point 593)", "German machine guns (Phantom Ridge)"],   // selected, specially trained formations (units.yaml quality.elite)
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
     { name: "The advance", at: 1, note: "01:00 on 12 May, after the bombardment: the 1st Battalion goes for Albaneta and the Kresowa for Phantom Ridge." },
     { name: "For Point 593", at: 31, note: "01:30: the 2nd Battalion sets off for Point 593.", arrive: [1, 2, 3, 4].map(k => `1st Carpathian Rifle Brigade, 2nd Battalion, company ${k} (for Point 593)`) },

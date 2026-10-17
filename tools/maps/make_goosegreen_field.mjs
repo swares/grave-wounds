@@ -55,6 +55,7 @@ const units = [
 ];
 
 writeField({
+  elite: ["A Company, 2 Para (in the gorse gully)", "B Company, 2 Para (on the open slope)", "2 Para's headquarters (H. Jones)", "D Company, 2 Para (coming up)", "2 Para's machine guns"],   // selected, specially trained formations (units.yaml quality.elite)
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
     { name: "Pinned in the gully", at: 1, note: "09:00 (local): A Company is pinned below Darwin Hill, B Company on the open slope to the west." },
     { name: "Shortly before noon", at: 176, note: "11:55: the Scout sent to evacuate H. Jones is shot down; shortly before noon the advance resumes." },

@@ -59,6 +59,7 @@ const units = [
 ];
 
 writeField({
+  elite: ["German paratroops in the cellars (the north of the town)", "German paratroops in the ruins (the middle of the town)", "German paratroops at the Continental Hotel", "German paratroops by the station", "German machine guns (the town)"],   // selected, specially trained formations (units.yaml quality.elite)
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
     { name: "Into the rubble", at: 1, note: "Noon on 15 March: the bombing stops, the guns open and the 25th Battalion goes in from the north." },
     { name: "Castle Hill taken", at: 241, note: "About 16:00, four hours later: D Company of the 25th takes Castle Hill (Point 193)." },

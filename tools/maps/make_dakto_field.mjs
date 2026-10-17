@@ -54,6 +54,7 @@ const units = [
 ];
 
 writeField({
+  elite: ["C Company, 2/503 Infantry (up the slope)", "D Company, 2/503 Infantry (up the slope)", "A Company, 2/503 Infantry (cutting the landing zone behind)", "2/503's machine guns"],   // selected, specially trained formations (units.yaml quality.elite)
   phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded
     { name: "Stopped below the crest", at: 1, note: "10:30: machine guns on the crest open on C and D Companies about 300 m below it." },
     { name: "The attack from behind", at: 241, note: "14:30: North Vietnamese come up from the bottom of the hill onto A Company, cutting the landing zone, and drive it up the slope.", arrive: ["North Vietnamese company behind them (from the west)"] },

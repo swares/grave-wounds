@@ -207,7 +207,7 @@ artillery:
   set_fuse:
     ranged: 15
     within: 2
-    quality: {green: -10, regular: 0, veteran: 10}
+    quality: {green: -10, regular: 0, veteran: 10, elite: 10}
   closing: 1
 
 # ---------- quality ----------
@@ -217,6 +217,11 @@ quality:
   green:   {attack: 40, defence: 25, nerve: 35}
   regular: {attack: 50, defence: 35, nerve: 50}
   veteran: {attack: 60, defence: 45, nerve: 65}
+  # elite: volunteer formations with selection and special training beyond the line (parachute and
+  # airborne troops, Rangers, Delta and other special forces, Gurkhas), marked by what the unit was, on
+  # both sides of every battlefield. A design estimate (no sourced figures): mostly more nerve, for the
+  # stop check when a man is hit and for the unit's morale. Elsewhere (commander, fuses, medics) as veterans.
+  elite:   {attack: 65, defence: 50, nerve: 80}
 
 # ---------- melee ----------
 # Fighting men: the front rank of each hex touching the enemy (the formation's `abreast` men),
@@ -808,7 +813,7 @@ heroes:
   # Medics: a unit's medics (followers of a healing career, which the team builder adds to the
   # team's biggest unit; the GM can give any unit medics) give first aid at `medic` % by their
   # quality, as a hero's Leechcraft. Design estimates.
-  medic: {green: 30, regular: 45, veteran: 60}
+  medic: {green: 30, regular: 45, veteran: 60, elite: 60}
   # Cautery: where a tourniquet cannot go (head, neck, body), a wound bleeding `from_bleed` or
   # more is cauterised on a successful first aid in the wars listed (before the world wars):
   # the bleeding stops, at `pain` more pain unless a healer (Leechcraft or medics) did it.
@@ -965,12 +970,12 @@ commander:
   # the bayonet (fire alone rarely shifted men under cover: self-play showed attacks stalled
   # trading fire at range). Design choice.
   storm: [musket_smoothbore, rifle_musket, breechloader, rifle_service, rifle_assault, pistol_smg]
-  hesitate: {green: 30, regular: 10, veteran: 0}
+  hesitate: {green: 30, regular: 10, veteran: 0, elite: 0}
   charge_odds:
-    attack: {green: 100, regular: 80, veteran: 60}
-    hold: {green: 150, regular: 120, veteran: 100}
-  cover: {green: 0, regular: 1, veteran: 2}
-  flank: {green: 0, regular: 0, veteran: 30}
+    attack: {green: 100, regular: 80, veteran: 60, elite: 60}
+    hold: {green: 150, regular: 120, veteran: 100, elite: 100}
+  cover: {green: 0, regular: 1, veteran: 2, elite: 2}
+  flank: {green: 0, regular: 0, veteran: 30, elite: 30}
   closing: 10
   in_range: 1000
   too_close: 500
@@ -983,12 +988,12 @@ commander:
   stand_off: 500
   tries: 30
   remember: 3
-  reserve: {green: 0, regular: 25, veteran: 33}
+  reserve: {green: 0, regular: 25, veteran: 33, elite: 33}
   gap: 12
   give_way: 4                 # a formed unit held up by its own open-order shooters within this many hexes: they step aside
   stall: {moves: 5, down: 1}  # attacking: this many moves without putting down this % of the enemy or closing: commit a reserve
-  mines: {green: 5, regular: 40, veteran: 80}
-  sense: {green: 0, regular: 1, veteran: 2}
+  mines: {green: 5, regular: 40, veteran: 80, elite: 80}
+  sense: {green: 0, regular: 1, veteran: 2, elite: 2}
   hurt: 1
   shaken: 20
   threat: 20

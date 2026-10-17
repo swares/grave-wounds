@@ -231,7 +231,7 @@ units:
   - {name: "Quad .50s (82nd AAA), north", side: 0, men: 20, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 4, pos: [94, 36], facing: 1, prone: true, size: platoon}
   - {name: "2nd Battalion machine guns", side: 0, men: 15, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 3, pos: [78, 133], facing: 4, prone: true, size: section}
   - {name: "B Company, 23rd Infantry (reserve)", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [70, 98], facing: 4, size: company}
-  - {name: "1st Ranger Company (reserve)", side: 0, men: 100, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [130, 98], facing: 4, size: company}
+  - {name: "1st Ranger Company (reserve)", side: 0, men: 100, quality: elite, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [130, 98], facing: 4, size: company}
   - {name: "Chinese regiment from Hill 397 (against G Company)", side: 1, men: 1200, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 60, pos: [98, 150], facing: 1, size: regiment}
   - {name: "Chinese battalion (against E Company)", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [159, 145], facing: 2, size: company}
   - {name: "Chinese battalion (against C Company)", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 40, pos: [117, 6], facing: 4, size: company}

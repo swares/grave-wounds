@@ -71,6 +71,7 @@ const units = [
 ];
 
 writeField({
+  elite: ["Observation Post Topside (paratroopers)", "Observation Post Topside (the M240 and its crew)", "2nd Platoon at the base's north end", "2nd Platoon on the base's east side, facing the post", "Humvee guns (.50 cal, Mk 19) and the TOW", "1st Platoon, Chosen Company (the QRF from Camp Blessing)", "3rd Platoon, A Company, and the scouts (the second QRF)"],   // selected, specially trained formations (units.yaml quality.elite)
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
     { name: "The first volley", at: 1, note: "04:20: some 200 fighters open fire on the base and above all on Observation Post Topside." },
     { name: "Running to the post", at: 26, note: "04:45: Brostrom and Hovater run from the base up to the post." },
