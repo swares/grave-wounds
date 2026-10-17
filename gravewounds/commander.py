@@ -1067,12 +1067,9 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return ammo
     if u.get("reserve"):
         return _reserve_order(d, us, i, t, ctx)
-    sap = _sapper_order(d, us, i, t, ctx)
-    if sap is not None:
-        return sap
-    route = _route_order(d, us, i, ctx)
-    if route is not None:
-        return route
+    first = _pursuit(d, us, i, ctx) or _sapper_order(d, us, i, t, ctx) or _route_order(d, us, i, ctx)   # in that order
+    if first is not None:
+        return first
     if (obj is not None or ctx[2] == "hold") and _digs(d, us, i, ctx):
         return {"act": "dig", "target": t}
     if t is None and obj is None:
@@ -1081,6 +1078,56 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return {"act": "hesitate", "target": t, "roll": roll}
     o = _best(d, us, i, t, ctx) if obj is None else _for_objective(d, us, i, t, ctx)
     return o if t is None else _last_seen(o, ctx[3], t, ctx[4])
+
+
+VETERANS = ("veteran", "elite")                    # the qualities that rally from a pursuit
+
+
+def _pursuit(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
+    """A steady unit that fights hand to hand (or a mounted one) goes after a broken enemy: horse
+    one within a charge of it (its move times charge_move) with no standing enemy as near, foot
+    one within its move nearer than any standing enemy; veterans give it up after
+    commander.pursuit.rally moves with a standing enemy in reach. The move or charge toward it
+    (pursue), its count kept on the unit (chased), or None (and the count dropped)."""
+    u = us[i]
+    o = _chase(d, us, i, ctx) if _may_pursue(d, u) else None
+    if o is None:
+        u.pop("chased", None)
+        return None
+    u["chased"] = u.get("chased", 0) + 1
+    return {**o, "pursue": True}
+
+
+def _may_pursue(d: Data, u: dict) -> bool:
+    """Steady, not a vehicle, not on a route, and not a shooter on foot."""
+    return u["state"] == "steady" and not u.get("vehicle") and not u.get("via") and ("range" not in d.weapons[u["weapon"]] or bool(u.get("mounted")))
+
+
+def _chase(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
+    """The move or charge toward the broken enemy unit i goes after (_pursuit), or None."""
+    u = us[i]
+    reach = U.allowance(d, u) * (d.units["charge_move"] if u.get("mounted") else 1)
+    best, standing = _broken_near(d, us, i, reach)
+    if best is None or standing <= (reach if u.get("mounted") else best[0]):
+        return None
+    if u["quality"] in VETERANS and u.get("chased", 0) >= d.units["commander"]["pursuit"]["rally"] and standing <= reach:
+        return None
+    o = _best(d, us, i, best[1], (ctx[0], ctx[1], "attack", None, ctx[4]))
+    return o if o and o["act"] in MOVES else None
+
+
+def _broken_near(d: Data, us: list, i: int, reach: int) -> tuple:
+    """((gap, index) of the nearest broken enemy within reach, or None; the gap to the nearest standing enemy)."""
+    u, best, standing = us[i], None, float("inf")
+    for j, e in enumerate(us):
+        if e["side"] == u["side"] or e["men"] <= 0:
+            continue
+        gap = U.unit_gap(d, u, e)
+        if e["state"] in ("steady", "shaken"):
+            standing = min(standing, gap)
+        elif e["state"] == "broken" and gap <= reach and (best is None or gap < best[0]):
+            best = (gap, j)
+    return best, standing
 
 
 def _route_order(d: Data, us: list, i: int, ctx: tuple) -> dict | None:

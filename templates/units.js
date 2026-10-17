@@ -3054,6 +3054,8 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   const ammo = ammoOrder(us, i, t, ctx);
   if (ammo) return ammo;
   if (u.reserve) return reserveOrder(us, i, t, ctx);
+  const chase = pursuit(us, i, ctx);
+  if (chase) return chase;
   const sap = sapperOrder(us, i, t, ctx);
   if (sap) return sap;
   const route = routeOrder(us, i, ctx);
@@ -3063,6 +3065,32 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
   const o = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx);
   return t === null ? o : lastSeen(o, ctx[3], t, ctx[4]);
+}
+function pursuit(us, i, ctx){                      // a steady unit that fights hand to hand goes after a broken enemy: horse one within a charge of it with no standing enemy as near, foot one within its move nearer than any standing enemy; veterans give it up after commander.pursuit.rally moves with a standing enemy in reach (as commander._pursuit)
+  const u = us[i], P = UD.commander.pursuit;
+  const quit = () => { delete u.chased; return null };
+  if (u.state !== "steady" || u.vehicle || u.via || ("range" in FD.weapons[u.weapon] && !u.mounted)) return quit();
+  const reach = allowance(u) * (u.mounted ? UD.charge_move : 1);
+  let best = null, standing = Infinity;
+  us.forEach((e, j) => {
+    if (e.side === u.side || e.men <= 0) return;
+    const gap = unitGap(u, e);
+    if (e.state === "steady" || e.state === "shaken") standing = Math.min(standing, gap);
+    else if (e.state === "broken" && gap <= reach && (best === null || gap < best[0])) best = [gap, j];
+  });
+  if (best === null || (u.mounted ? standing <= reach : standing <= best[0])) return quit();
+  if (VETERANS.has(u.quality) && (u.chased || 0) >= P.rally && standing <= reach) return quit();
+  const o = bestOrder(us, i, best[1], [ctx[0], ctx[1], "attack", null]);
+  if (!o || !AI_MOVES.has(o.act)) return quit();
+  u.chased = (u.chased || 0) + 1;
+  return { ...o, pursue: true };
+}
+const VETERANS = new Set(["veteran", "elite"]);   // the qualities that rally from a pursuit and commit a reserve to exploit a rout
+function unitGap(a, b){                              // hexes between the nearest hexes of two units (1: side by side) (as units.unit_gap)
+  let best = Infinity;
+  const hb = footprint(b).flat();
+  for (const h of footprint(a).flat()) for (const x of hb){ const d = hdist(h, x); if (d < best) best = d }
+  return best;
 }
 function routeOrder(us, i, ctx){                   // a unit on its route (via: waypoints from the battlefield's account) goes on to the next, dropping each it reaches (within commander.route.reach hexes); it turns aside only for an enemy in contact or right across its way; with none left, or no way on, null: it is ordered as any other (as commander._route_order)
   const u = us[i];

@@ -919,6 +919,12 @@ def _stall_errors(commander: dict) -> list[str]:
     return ["units.yaml: commander.stall needs moves (a positive whole number) and down (a % of 0 or more)"]
 
 
+def _pursuit_errors(commander: dict) -> list[str]:
+    """units.yaml commander.pursuit.rally: a whole number of 0 or more."""
+    rally = (commander.get("pursuit") or {}).get("rally")
+    return [] if isinstance(rally, int) and rally >= 0 else ["units.yaml: commander.pursuit.rally must be a whole number of 0 or more"]
+
+
 def _commander_errors(d: Data) -> list[str]:
     """units.yaml commander: by-quality tables, charge odds by stance, whole-number weights and
     real weapons (storm: weapons that shoot)."""
@@ -934,6 +940,7 @@ def _commander_errors(d: Data) -> list[str]:
                if not (isinstance(K.get(k), int) and K[k] >= 0)]
     if not (isinstance(K.get("tries"), int) and K["tries"] > 0):
         errors.append("units.yaml: commander.tries must be a positive whole number")
+    errors += _pursuit_errors(K)
     errors += _stall_errors(K)
     if not (isinstance((d.units.get("dig_in") or {}).get("exchanges"), int) and d.units["dig_in"]["exchanges"] >= 1):
         errors.append("units.yaml: dig_in.exchanges must be a whole number of 1 or more")
