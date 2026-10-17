@@ -483,3 +483,23 @@ about 300 minutes, but a run ends at 180).
 
 The scripts behind these measurements are now in `tools/selfplay` (see its README): self-play,
 the commander report, a runner for every battlefield and seed, and a comparison of two runs.
+
+**Runs as long as the accounts say, 17 October 2026.** Thirteen battlefields now give `ends`: how
+long their account says the fight went on, in exchanges, the earliest the words allow ("the next
+afternoon" is 12:00; "at dawn" the sunrise worked out for the place and day). A run lasts at least
+that long, within the 1,200 cap. Lundy's Lane runs 271 (180 before), the Monastery 418, Keating
+361 (60), Lützen 541, Mogadishu 783, Kapyong 871, Heartbreak Ridge 901, and X-Ray, Pork Chop,
+Grozny, Bougainville, Dak To and Cassino town to the cap. All 37 battlefields, four runs each: 98
+of 148 matched, against 101. It was kept, because the runs are now the length of the battles they
+stand for, and the three runs lost are faults the short runs hid:
+
+- **Keating** 4 → 3: the outpost holds the first hour, but one run of four is lost by the time
+  the fight would have been won back that afternoon (Coalition losses 56% to 68%).
+- **X-Ray** 4 → 3: run to the cap (748 exchanges on the median), one run goes to the North
+  Vietnamese.
+- **Pork Chop** 2 → 1 (American losses 8% to 13%).
+- Lundy's Lane stays 0 of 4 at 271 exchanges (Americans 59% lost, against 49%); Grozny now runs
+  640 exchanges (61), still 0 of 4.
+
+In each the defenders are worn down over hours with no relief, rest or resupply beyond what the
+battlefield brings on; that is the next thing to look at in a long fight.
