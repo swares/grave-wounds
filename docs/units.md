@@ -670,8 +670,13 @@ at a time; **Run** (shown only then) plays a move about every 0.7 seconds until 
   with the enemy still close round it; nor a side that held it from the start, until it has
   changed hands);
 - `limit` (60) exchanges have been fought, or, on a battlefield with phases, `after_phases`
-  (30) past the last phase's start if that is later, but at most `most` (240: a battle whose
-  phases run for many hours is cut short).
+  (30) past the last phase's start if that is later, but at most `most` (1,200, about twenty
+  hours: every battlefield's phases now all come, Chipyong-ni's last at 1,156; a battle that
+  went on for days after its last phase, such as Cassino town, is still cut short).
+  Until 17 October 2026 it was 240, which stopped a run before the last phase began on fifteen
+  battlefields (Bougainville, the Poles at Cassino, Cassino town, the Monastery, Chipyong-ni,
+  Cisterna, Dak To, Goose Green, Heartbreak Ridge, Kapyong, Lützen, Mogadishu, Mons, Pork Chop
+  and Wanat), unless the battle had ended sooner.
 
 Then the battle ends, as with *End the battle* (the dead counted, the wounded carried off, each
 side's medevac as ticked). On a battlefield the side its objective names attacks and the other

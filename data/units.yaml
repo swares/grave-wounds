@@ -920,11 +920,12 @@ commander:
   # exchanges, or when one side has held the (first) objective `held` exchanges running, or when
   # a side has no unit left standing (and none still to come); then the battle ends. A battlefield
   # with phases runs at least `after_phases` exchanges past its last phase's start, but never more
-  # than `most` (a battle whose phases run for many hours, as at Chipyong-ni, is cut short). On a
+  # than `most` (enough for every battlefield's last phase now, Chipyong-ni's at 1,156 the latest;
+  # a battle that goes on for days past its last phase is still cut short). On a
   # battlefield, the side its objective names attacks and the other holds (else its `stances`, as
   # fought); on open ground both attack. Design choices.
   # The objective counts as taken only with no standing enemy within `secure` hexes of it.
-  self_play: {limit: 60, held: 5, after_phases: 30, most: 240, secure: 10}
+  self_play: {limit: 60, held: 5, after_phases: 30, most: 1200, secure: 10}
   # route: a battlefield can give a unit waypoints (via, from the accounts: a march round a
   # flank). Its commander moves it on to each in turn, dropping one once its middle hex is within
   # `reach` hexes; it turns aside only for an enemy in contact or one it knows of across its way
