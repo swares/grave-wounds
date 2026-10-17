@@ -459,6 +459,18 @@ general. All its numbers are in units.yaml `commander`.
     objective. If it breaks in turn, the next reserve goes where it stood.
   - The log says why ("committed from the reserve: one of its units has broken; they go to
     plug the gap at 31,21, where it stood").
+- **Pursuit.** A steady unit that fights hand to hand goes after a broken enemy: horse one within
+  a charge of it (twice its move) when no standing enemy is as near, foot one within its own move
+  when it is nearer than any standing enemy. It moves or charges into contact, and the broken unit
+  is struck each exchange it stays in reach (*The rout*). It keeps on until the fugitives are out
+  of reach or off the map; veterans (and better) give it up after 2 moves (`commander.pursuit.rally`)
+  if a standing enemy is within their reach, and go back to the fight. Shooters on foot, vehicles
+  and units on a route do not pursue. Before 17 October 2026 the commander never went after a
+  broken unit, so the rout struck only while the fugitives happened to stay in contact. Measured on
+  all 37 battlefields, four runs each: 101 of 148 runs matched, against 98, Lützen 0 to 3 of 4 (the
+  Swedish horse run down the broken Imperial units). The loser's men lost after breaking did not
+  rise (a median 14-20% before 1914, against most in the sources): losers still lose most of their
+  men in the line before they break.
 - **Shooters give way.** Attacking, after its units' orders, a formed unit (close order, no
   missile weapon, not a vehicle, not in reserve or on a route) that neither moved nor
   hesitated looks at its own open-order shooters within 4 hexes (`commander.give_way`) that

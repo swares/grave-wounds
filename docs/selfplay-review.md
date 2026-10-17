@@ -570,3 +570,14 @@ battlefields match in 11 or 12 runs of 12; the Monastery (5), X-Ray (7), Keating
 Hill (9), Mogadishu (10), Pork Chop (4), Goose Green and 73 Easting (3) and Lützen (2) are
 coin-flips; Agincourt matches once, and the Poles at Cassino, Cassino town, Grozny, Hue, Lundy's
 Lane and the June Redan never.
+
+**Pursuit, 17 October 2026.** Looking into why so few of the loser's men go down after it breaks
+(target T3) found that the commander never went after a broken unit: its units choose targets
+only among enemies still standing, so the rout struck only while the fugitives happened to stay
+in contact. Now a steady unit that fights hand to hand goes after a broken enemy (horse one within
+a charge when no standing enemy is as near, foot one within its move nearer than any standing
+enemy; veterans rally back after two moves if a standing enemy is in reach). Four runs each, all
+37 battlefields: 101 of 148 matched, against 98; Lützen 0 to 3 of 4, the Swedish horse running
+down the broken Imperial units. T3 did not move (a median 14-20% of the loser's men after it
+breaks before 1914, none after): the losers still lose most of their men in the line before they
+break (T1). Pursuit is in; breaking too late is the open problem.
