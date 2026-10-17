@@ -696,6 +696,14 @@ modern_fire:
 # breaks at once. A shaken unit that fails breaks. A shaken unit out of contact that passes
 # a check rallies to steady. A broken unit runs.
 morale:
+  # model: drain (the rules above) or events (docs/morale-redesign.md: a check only when something
+  # happens to the unit; its losses make a check harder, not more frequent; a failed rally stays
+  # shaken; the rout struck only by the pursuers touching it). events: window (exchanges in contact
+  # its fight is counted over), margin (the share of its men in contact it must be losing by),
+  # neighbour (hexes within which a friend breaking calls a check), quarter (the penalty a quarter
+  # down), pursuit (mounted and dark factors on the pursuers). Our numbers, set by test.
+  model: drain
+  events: {window: 3, margin: 0.05, neighbour: 2, quarter: -10, pursuit: {mounted: 2, dark: 0.5}}
   trigger: 0.25
   shock: 0.10
   shaken_by: 20

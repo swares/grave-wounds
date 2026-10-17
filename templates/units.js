@@ -705,7 +705,7 @@ function strikes(units, field = null){            // [{att, dfd, men, situation,
     .filter(s => !units[s.att].vehicle && !units[s.dfd].vehicle);   // no one fights a vehicle hand to hand
   units.forEach((b, j) => {
     if (b.state !== "broken" || b.men <= 0 || b.vehicle) return;
-    for (const i of adjacentUnits(units, occ, j)) if (units[i].side !== b.side && units[i].state !== "broken" && units[i].state !== "fled" && !units[i].vehicle) out.push({ att: i, dfd: j, men: units[i].men, situation: "rear", rout: true });
+    for (const i of adjacentUnits(units, occ, j)) if (units[i].side !== b.side && units[i].state !== "broken" && units[i].state !== "fled" && !units[i].vehicle) out.push({ att: i, dfd: j, men: pursuers(units, occ, [i, j], field), situation: "rear", rout: true });
   });
   return out;
 }
@@ -2106,33 +2106,109 @@ function vehicleLosses(u, before, lost){          // [down, lost this exchange] 
   const startV = Math.ceil(u.start / K.crew), wasV = Math.ceil(before / K.crew), nowV = vehiclesLeft(u);
   return [(startV - nowV) * K.crew, Math.max(0, wasV - nowV) * K.crew];
 }
-function moraleAll(us, occ, before, acc, rng, table, field = null){
-  const log = [], broke = [];
+function moraleAll(us, occ, before, acc, rng, table, field = null){   // each unit still fighting checks (morale.model: drain, every exchange once a quarter down; events, when something happens to it); any that breaks is struck at once by the enemies touching it (as units._morale_all)
+  const log = [], broke = [], ev = UD.morale.model === "events", done = new Set(), seen = new Map();
   us.forEach((u, i) => {
     if (out_(u)) return;
-    const near = adjacentUnits(us, occ, i);
-    const [down, lost] = vehicleLosses(u, before[i], acc.lost[i]);
-    const unit = { quality: u.quality, start: u.start, down, lost, dealt: acc.dealt[i], men: before[i], state: u.state,
-      leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out" };
-    const m = morale(unit, rng.randint(1, 100));
-    if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state });
+    const unit = moraleView(us, occ, i, [before, acc], field);
+    if (ev){ unit.events = moraleEvents(us, occ, i, unit); seen.set(i, unit) }
+    const m = (ev ? moraleOnEvents : morale)(unit, rng.randint(1, 100));
+    if (m.check){ log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state, ...(ev ? { why: whyOf(unit.events) } : {}) }); done.add(i) }
     if (m.state === "broken") broke.push(i);
     u.state = m.state;
   });
-  for (const j of broke) log.push(...routStrike(us, occ, j, table, rng));
+  if (ev) broke.push(...neighboursBreak(us, seen, [rng, log], [broke, done]));
+  for (const j of broke) log.push(...routStrike(us, occ, j, table, rng, field));
   return log;
 }
-function routStrike(us, occ, j, table, rng){     // a unit that has just broken is struck by every man touching it
+function moraleView(us, occ, i, [before, acc], field){   // what a unit's morale check sees (as units._morale_view)
+  const u = us[i], near = adjacentUnits(us, occ, i);
+  const [down, lost] = vehicleLosses(u, before[i], acc.lost[i]);
+  return { quality: u.quality, start: u.start, down, lost, dealt: acc.dealt[i], men: before[i], state: u.state,
+    leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out" };
+}
+function menTouching(us, occ, i, foes){             // unit i's men in its hexes touching a hex of any unit in foes (as units.men_touching)
+  const u = us[i], men = menByHex(u);
+  let n = 0, k = 0;
+  for (const row of footprint(u)) for (const h of row){
+    if ([0, 1, 2, 3, 4, 5].some(dn => foes.has(occ[hk(step(h, dn))]))) n += men[k];
+    k++;
+  }
+  return n;
+}
+function moraleEvents(us, occ, i, unit){            // (events model) what happened to unit i this exchange that calls a check, its fight over the last exchanges in contact kept on it: {hit, flanked, losing, leader, mark, margin, rally} (as units._morale_events)
+  const u = us[i], E = UD.morale.events, M = UD.morale;
+  const enemies = new Set(us.map((x, j) => j).filter(j => us[j].side !== u.side && !out_(us[j])));
+  const contactMen = unit.contact ? menTouching(us, occ, i, enemies) : 0;
+  if (unit.contact) u.fight = [...(u.fight || []), [unit.lost, unit.dealt]].slice(-E.window);
+  const fight = u.fight || [], net = fight.reduce((s, [l, d]) => s + l - d, 0), step = Math.max(1, E.margin * contactMen);
+  const prev = unit.down - unit.lost, marks = [M.trigger, 0.5].filter(f => prev < f * unit.start && unit.down >= f * unit.start).length;
+  const fell = u.leader_was === "up" && unit.leader === "down";
+  u.leader_was = unit.leader;
+  return { hit: unit.lost >= M.shock * Math.max(1, unit.men), flanked: !!unit.flanked, losing: unit.contact && net >= step, leader: fell, mark: marks > 0,
+    margin: unit.contact ? Math.max(0, Math.floor(net / step)) : 0, rally: unit.state === "shaken" && !unit.contact && unit.lost === 0 };
+}
+function moraleOnEvents(u, roll){                  // (events model) {check, target, state}: a check only when something happened; losses make it harder, not more often; a failed rally stays shaken (as units.morale_on_events)
+  const M = UD.morale, e = u.events;
+  if (u.state === "broken") return { check: false, target: null, state: "broken" };
+  const struck = e.hit || e.flanked || e.losing || e.leader || e.mark || !!e.neighbour;
+  if (!struck && !e.rally) return { check: false, target: null, state: u.state };
+  const target = quality(u.quality).nerve + eventMods(M, u);
+  if (roll <= target) return { check: true, target, state: e.rally && !struck ? "steady" : u.state };
+  if (!struck) return { check: true, target, state: "shaken" };
+  return { check: true, target, state: failedState(M, u, roll - target) };
+}
+function eventMods(M, u){                           // the events model's modifiers: as moraleMods, with losses a standing penalty (a quarter, half) and losing measured against the men in contact
+  const mods = M.mods, E = M.events;
+  let m = 0;
+  if (u.leader === "up") m += mods.leader;
+  else if (u.leader === "down") m += mods.leader_down;
+  if (u.down >= u.start / 2) m += mods.heavy;
+  else if (u.down >= M.trigger * u.start) m += E.quarter;
+  if (u.flanked) m += mods.flank;
+  if (u.friends) m += mods.veteran_friends;
+  if (u.state === "steady") m += mods.in_order;
+  if (u.dug) m += mods.dug_in || 0;
+  if (u.no_ammo) m += mods.no_ammo || 0;
+  return m - Math.min(mods.losing_cap, mods.losing_per_man * u.events.margin);
+}
+function neighboursBreak(us, seen, [rng, log], [broke, done]){   // (events model) each unit not yet checked with one of its own side within morale.events.neighbour hexes that broke this exchange checks once: the ones that break (as units._neighbours_break)
+  const E = UD.morale.events, out = [];
+  for (const [i, unit] of seen){
+    const u = us[i];
+    if (out_(u) || done.has(i) || !broke.some(j => us[j].side === u.side && unitGap(u, us[j]) <= E.neighbour)) continue;
+    const m = moraleOnEvents({ ...unit, state: u.state, events: { ...unit.events, neighbour: true } }, rng.randint(1, 100));
+    log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state, why: ["neighbour"] });
+    if (m.state === "broken") out.push(i);
+    u.state = m.state;
+  }
+  return out;
+}
+const WHY = ["hit", "flanked", "losing", "leader", "mark", "rally"];
+const whyOf = e => WHY.filter(k => e[k]);           // the events that called a check, in order (as units.why_of)
+function unitGap(a, b){                              // hexes between the nearest hexes of two units (1: side by side) (as units.unit_gap)
+  let best = Infinity;
+  const hb = footprint(b).flat();
+  for (const h of footprint(a).flat()) for (const x of hb){ const d = hdist(h, x); if (d < best) best = d }
+  return best;
+}
+function routStrike(us, occ, j, table, rng, field = null){   // a unit that has just broken is struck by the enemies touching it: every man of them (drain), or their pursuers (events) (as units._rout_strike)
   const log = [];
   for (const i of adjacentUnits(us, occ, j)){
     const a = us[i], b = us[j];
     if (a.side === b.side || out_(a) || b.men <= 0) continue;
-    const t = takeHurt(b, melee(meleeSide(a, table), meleeSide(b, table), a.men, rng, { rout: true, exposed: exposure(b, true) }));
+    const men = pursuers(us, occ, [i, j], field);
+    const t = takeHurt(b, melee(meleeSide(a, table), meleeSide(b, table), men, rng, { rout: true, exposed: exposure(b, true) }));
     const cut = Math.min(t.down, b.men);
     Object.assign(b, { men: b.men - cut, down: b.down + cut, dead: b.dead + Math.min(t.dead, cut) });
-    log.push(...logged({ kind: "rout", att: i, dfd: j, men: a.men, situation: "rear", rout: true }, t));
+    log.push(...logged({ kind: "rout", att: i, dfd: j, men, situation: "rear", rout: true }, t));
   }
   return log;
+}
+function pursuers(us, occ, [i, j], field){          // the men of unit i who strike broken unit j: all of them (drain); (events) its men in the hexes touching j, twice for horse, half in the dark (as units.pursuers)
+  if (UD.morale.model !== "events") return us[i].men;
+  const P = UD.morale.events.pursuit;
+  return menTouching(us, occ, i, new Set([j])) * (us[i].mounted ? P.mounted : 1) * (lightOf(field) ? P.dark : 1);
 }
 
 // ---------- movement ----------
