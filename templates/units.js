@@ -1497,7 +1497,7 @@ function toilGoing(us, field){                    // in deep mud or snow, every 
   for (const u of us) if (u.toil_from && !u.vehicle) tire(u, hdist(u.toil_from, u.pos));
 }
 function toilFought(us, fought){                  // a toil for each unit that fought hand to hand; its next going counted from here (as units._toil_fought)
-  for (const k of fought) tire(us[k], 1);
+  for (const k of [...fought].sort((a, b) => a - b)) tire(us[k], 1);
   for (const u of us) u.toil_from = [...u.pos];
 }
 function tire(u, n){                              // (as units.tire) n more toil: a fatigue step worse each time its kit's load is reached, to worst at most
@@ -1535,7 +1535,6 @@ function strikeAll(us, table, rng, acc, log, field, thinned = null){   // thinne
     tallyLoss(acc, s, t);
     acc.flanked[s.dfd] = acc.flanked[s.dfd] || s.situation === "flank" || s.situation === "rear";
     log.push(...logged({ kind: s.rout ? "rout" : "melee", ...s }, t));
-    if (!s.rout && acc.fought){ acc.fought.add(s.att); acc.fought.add(s.dfd) }
     if (struck.has(s.att)) continue;
     struck.add(s.att);
     frontHeroes([a, b], s, { table, rng, acc, log }, opts, dueled);
@@ -1813,12 +1812,14 @@ function heldAt(us, field){                        // {kind objective, hex, side
 }
 function exchange(units, table, rng, field = null){   // -> {units, log}; works being breached are updated in field
   const us = units.map(copyUnit), n = us.length, log = [];
-  const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false), fought: new Set() };
+  const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false) };
   toilGoing(us, field);
   const under = new Array(n).fill(false);          // under shellfire or machine-gun fire this exchange (suppression)
   minesAll(us, table, rng, acc, log, field);
   for (const c of closingFire(us, field)) fireBattery(us, table, rng, acc, log, c);
+  const from = log.length;
   strikeAll(us, table, rng, acc, log, field, [...acc.lost]);
+  const fought = new Set(log.slice(from).filter(l => l.kind === "melee").flatMap(l => [l.att, l.dfd]));
   shootAll(us, table, rng, acc, log, field, under);
   indirectAll(us, table, rng, acc, log, field, under);
   assaultAll(us, table, rng, acc, log, field);
@@ -1832,7 +1833,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table), postsMoving(field)),
     ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng), ...digAll(us), ...sappersAll(us, field));
   postsSettle(field);
-  toilFought(us, acc.fought);
+  toilFought(us, fought);
   for (const u of us) delete u.unhooked;             // guns unhooked this move are in action (as units._unhooked_after)
   afterExchange(us, field, log);
   log.push(...landings(us, table, rng, field), ...airDrops(field, rng), ...vehiclesAfter(us, field), ...objectiveHeld(us, field));

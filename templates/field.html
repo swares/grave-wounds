@@ -2251,9 +2251,10 @@ function renderMap(){
 }
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
 const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"], ["sappers", "sappers"], ["shielded", "shielded"], ["ladders", "ladders"], ["jostled", "jostled"], ["mining", "laying mines"], ["clearing", "lifting mines"]];
+const fatigueMeta = u => (u.fatigue ? " · " + WXD.fatigue.levels[u.fatigue].name.toLowerCase() : "");   // " · weary"
 function unitMeta(u){
   if (u.state === "fled") return "fled";
-  const down = u.down ? " · " + u.down + " down" : "", flags = META_FLAGS.filter(([k]) => u[k]).map(([, t]) => " · " + t).join("") + (dugHere(u) ? " · dug in" : "") + (u.fatigue ? " · " + WXD.fatigue.levels[u.fatigue].name.toLowerCase() : "");
+  const down = u.down ? " · " + u.down + " down" : "", flags = META_FLAGS.filter(([k]) => u[k]).map(([, t]) => " · " + t).join("") + (dugHere(u) ? " · dug in" : "") + fatigueMeta(u);
   let mg = isMg(u.weapon) ? " · " + gunsText(mgGuns(u), "gun") : "";
   if (isAtGun(u)) mg = " · " + gunsText(atGuns(u), "gun") + ", " + (atRounds(u) ? atRounds(u) + " rounds" : "no rounds left") + (u.resupplying ? ", resupplying" : "");
   if (u.vehicle) mg = vehicleMeta(u);
