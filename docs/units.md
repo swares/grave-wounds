@@ -447,6 +447,11 @@ general. All its numbers are in units.yaml `commander`.
     has broken or fled since its last move, or when an enemy it knows of comes within 12
     hexes of a reserve unit.
   - Veterans also commit to exploit when an enemy unit breaks.
+  - Attacking, it also commits one when the attack has stalled: 5 of its moves in a row
+    (`commander.stall`) without putting down 1% of the enemy's starting men or bringing any
+    of its units (not reserves) nearer an enemy it knows of. The count starts again then.
+    Without this, an attack that stalled with nobody breaking kept its reserve out all
+    battle (Cowpens' Legion dragoons, Sidon's heavy horse, Visby's men-at-arms).
   - **Plugging the gap.** Committed because one of its units broke or fled, it sends the
     reserve unit nearest where that unit stood at its side's last move, and that unit goes
     to plug the gap: it treats that hex as its own objective (attacking or holding as its
@@ -454,6 +459,19 @@ general. All its numbers are in units.yaml `commander`.
     objective. If it breaks in turn, the next reserve goes where it stood.
   - The log says why ("committed from the reserve: one of its units has broken; they go to
     plug the gap at 31,21, where it stood").
+- **Shooters give way.** Attacking, after its units' orders, a formed unit (close order, no
+  missile weapon, not a vehicle, not in reserve or on a route) that neither moved nor
+  hesitated looks at its own open-order shooters within 4 hexes (`commander.give_way`) that
+  are nearer its target than it is. If, with them gone, it would move nearer its target,
+  those standing on the ground it would cross step aside. Each goes to the best spot it can
+  reach off that ground, facing as it was: in range of its own target if it can be, else the
+  least movement. Shooters that hesitated this move stay. The formed unit is then ordered again
+  and goes on (the log: "Danish crossbowmen step aside 6 hexes to let the formed men behind them
+  through"). Skirmishers and archers did this: they fell back through the intervals or to the
+  flanks as the formed men came up. Before, at Visby both sides' archers stood and shot while
+  the men behind them never came on, and three in four of the men never fought. A formed unit
+  held up behind another formed unit (the French main battle behind the vanguard at
+  Agincourt) is not covered.
 - **Known minefields.** Each hex of a minefield it knows of (marked, found by setting it
   off, or laid by its own sappers) on the straight way to a hex costs that hex 5 points for green men, 40 for regulars
   and 80 for veterans. Green men may still blunder in; veterans go round. Hidden fields it

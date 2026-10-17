@@ -163,11 +163,15 @@ steady friends touching it, who go in with it), and green units sometimes hesita
 - **Routes.** A battlefield can send a unit on a route round a flank, as its account tells:
   the commander moves it from waypoint to waypoint, turning aside only for an enemy in contact
   or across its way, then orders it as any other.
+- **Shooters give way.** Attacking, archers, crossbowmen and skirmishers in open order step
+  aside when they stand in the way of their own formed men behind them, and the formed men go
+  on.
 - **Tanks.** A unit with a main gun counts the target in range where the gun reaches and it
   can see; a vehicle with one prefers a spot where the target can neither reach it nor see it.
 - **Reserve.** Regulars and veterans hold back their rearmost units (not one on a route), and commit one when a
   unit of theirs breaks or the enemy comes close; veterans also commit to exploit an enemy
-  rout. A unit committed because one broke goes to plug the gap where it stood. The GM can
+  rout. Attacking, they also commit one when the attack has stalled: five moves without
+  putting down any real share of the enemy or getting nearer. A unit committed because one broke goes to plug the gap where it stood. The GM can
   mark reserves instead.
 - **Digging in.** Its foot units with modern weapons dig in where they stand when it is
   safe (not under fire, no enemy it knows of in their range): at the objective, holding

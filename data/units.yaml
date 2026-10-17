@@ -878,8 +878,14 @@ heroes:
 #   goes to ground under fire as the rule below). It commits one reserve unit a move, the one
 #   nearest the enemy, when one of its own units has broken or fled since its last move (then
 #   the one nearest where that unit stood, sent to plug the gap), when an enemy it knows of
-#   comes within `gap` hexes of a reserve unit, or (veterans only) when an enemy unit has
-#   broken: to exploit it.
+#   comes within `gap` hexes of a reserve unit, (veterans only) when an enemy unit has
+#   broken: to exploit it, or (attacking) when `stall.moves` of its moves in a row have
+#   neither put down `stall.down` % of the enemy's starting men nor brought one of its units
+#   nearer an enemy it knows of.
+# - Shooters give way: attacking, a formed unit (close order, no missile weapon) that did not
+#   move, held up by its own open-order shooters within `give_way` hexes and nearer its target,
+#   that would move nearer with them gone: those on the ground it would cross step aside to
+#   their best spot off it, and it is ordered again.
 # - Known minefields (marked, or found by setting them off): each hex of one on the straight
 #   way to a hex costs `mines` points by quality (green men may still blunder in).
 # - Guns: its batteries and anti-tank guns on the map turn to face the nearest enemy it knows
@@ -977,6 +983,8 @@ commander:
   remember: 3
   reserve: {green: 0, regular: 25, veteran: 33}
   gap: 12
+  give_way: 4                 # a formed unit held up by its own open-order shooters within this many hexes: they step aside
+  stall: {moves: 5, down: 1}  # attacking: this many moves without putting down this % of the enemy or closing: commit a reserve
   mines: {green: 5, regular: 40, veteran: 80}
   sense: {green: 0, regular: 1, veteran: 2}
   hurt: 1

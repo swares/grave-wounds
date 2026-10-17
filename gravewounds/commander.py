@@ -35,7 +35,7 @@ def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict
     us, orders = _hook_up(d, us, side, (goal, known, exchange, stance))
     us, orders = _riders(d, us, side, (goal, known, exchange, stance), orders)
     _hold_back(d, us, side, known)
-    orders += _commit(d, us, side, known, memory)
+    orders += _commit(d, us, side, known, memory, stance)
     if stance == "hold":
         orders += _fix_lines(d, us, side, (field, known, exchange))
     for i in range(len(us)):
@@ -51,6 +51,7 @@ def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict
             _apply(us, i, o)
             if o["act"] in MOVES:                 # what it sees from where it went, the units after it know
                 sightings(d, us, side, field, exchange, known)
+    us = _give_way(d, us, side, (size, field, stance, exchange), (aim, known), orders)
     orders += _move_guns(d, us, side, (size, goal, stance, known, exchange))
     orders += _lay_guns(d, us, side, (size, goal, known, exchange))
     return us, orders + _call_fire(d, us, side, goal, known, (stance, exchange, orders, table))
@@ -124,14 +125,119 @@ def _hold_back(d: Data, us: list, side, known: dict) -> None:
         room -= us[i]["men"]
 
 
-def _commit(d: Data, us: list, side, known: dict, memory: dict) -> list:
+def _formed(d: Data, u: dict) -> bool:
+    """Close-order men who fight hand to hand (no missile weapon, not open order, not vehicles)."""
+    return "range" not in d.weapons[u["weapon"]] and u.get("formation") != "open" and not u.get("vehicle")
+
+
+def _screening(d: Data, u: dict, side) -> bool:
+    """A steady open-order unit of the side with a missile weapon (not vehicles, batteries or anti-tank guns)."""
+    return (u["side"] == side and u["state"] == "steady" and u["men"] > 0 and u.get("formation") == "open" and "range" in d.weapons[u["weapon"]]
+            and not u.get("vehicle") and not U.is_battery(d, u) and not U.is_at_gun(d, u))
+
+
+def _give_way(d: Data, us: list, side, where: tuple, ak: tuple, orders: list) -> list:
+    """Attacking, after its units' orders: a formed unit that did not move or hesitate (not a
+    reserve, not on a route), held up behind its own open-order shooters, has them step aside
+    and is ordered again (_clear_way). where: (size, field, stance, exchange). Appends to
+    orders; -> the units after."""
+    if where[2] != "attack":
+        return us
+    done = {o["unit"] for o in orders if o["act"] in MOVES or o["act"] == "hesitate"}
+    held = {o["unit"] for o in orders if o["act"] == "hesitate"}
+    for i in range(len(us)):
+        f = us[i]
+        if f["side"] != side or i in done or f.get("via") or f.get("reserve") or f["state"] != "steady" or not _formed(d, f) or not _free(d, us, i, where[3]):
+            continue
+        orders += _clear_way(d, us, i, (where, ak, held))
+    return us
+
+
+def _clear_way(d: Data, us: list, i: int, ctx: tuple) -> list:
+    """Formed unit i's own open-order shooters within commander.give_way hexes that are nearer
+    its target than it is (not those that hesitated): if it would move nearer its target with
+    them gone, those standing on the ground it would cross (its footprint at each hex of the
+    straight way) step aside (_step_aside), and it is ordered again. -> the orders (the units
+    changed in place)."""
+    (size, field, _stance, exchange), (aim, known), held = ctx
+    f = us[i]
+    t = target(d, us, i, known, field)
+    if t is None:
+        return []
+    tp = _where(us, t, known)["pos"]
+    d0 = U.hdist(f["pos"], tp)
+    screen = [k for k in range(len(us)) if k != i and k not in held and _screening(d, us[k], f["side"])
+              and U.hdist(us[k]["pos"], f["pos"]) <= d.units["commander"]["give_way"] and U.hdist(us[k]["pos"], tp) < d0]
+    if not screen:
+        return []
+    octx = (size, _plugging(_aim(us, i, aim), f), "attack", known, exchange)
+    want = _order(d, [{**u, "pos": [-1000, -1000]} if k in screen else u for k, u in enumerate(us)], i, octx, 100)
+    if not want or want["act"] not in MOVES or U.hdist(want["pos"], tp) >= d0:
+        return []
+    lane = {tuple(h) for x in U.ray(f["pos"], want["pos"], U.hdist(f["pos"], want["pos"]))
+            for row in U.footprint(d, {**f, "pos": list(x), "facing": want["facing"]}) for h in row}
+    out = []
+    for k in screen:
+        o = _step_aside(d, us, k, lane, (size, field, known)) if any(tuple(h) in lane for row in U.footprint(d, us[k]) for h in row) else None
+        if o:
+            out.append({"unit": k, **o})
+            _apply(us, k, o)
+    o = _order(d, us, i, octx, 100)
+    if o and o["act"] in MOVES:
+        out.append({"unit": i, **o, "through_screen": True})
+        _apply(us, i, o)
+    return out
+
+
+def _step_aside(d: Data, us: list, k: int, lane: set, where: tuple) -> dict | None:
+    """The best spot shooter k can reach (by score against its target, else least movement;
+    then lowest row, then column) clear of the lane, facing as it is: a move order with why
+    give_way, or None."""
+    size, field, known = where
+    s = us[k]
+    t = target(d, us, k, known, field)
+    tu = None if t is None else _where(us, t, known)
+    best = None
+    for h, cost in reachable(d, us, k, size, U.allowance(d, s), field).items():
+        at = {**s, "pos": list(h)}
+        if any(tuple(x) in lane for row in U.footprint(d, at) for x in row) or not U._fits(d, us, k, at, size, field):
+            continue
+        sc = score(d, field, s, tu, h, cost, True) if tu else -cost
+        if best is None or sc > best[0] or (sc == best[0] and (h[1], h[0]) < (best[1][1], best[1][0])):
+            best = (sc, list(h), cost)
+    return {"act": "move", "pos": best[1], "facing": s["facing"], "cost": best[2], "why": "give_way"} if best else None
+
+
+def _stalled(d: Data, us: list, side, known: dict, plan: dict) -> bool:
+    """Attacking: True once commander.stall.moves of its moves in a row have neither put down
+    commander.stall.down % of the enemy's starting men nor brought one of its units (not a
+    reserve) nearer an enemy it knows of (the mark kept in plan, reset then)."""
+    S = d.units["commander"]["stall"]
+    foes = [u for u in us if u["side"] != side]
+    down, start = sum(u.get("down", 0) for u in foes), sum(u.get("start") or u["men"] for u in foes)
+    kf = [m for k, m in known.items() if k.isdigit()]
+    mine = [u for u in us if u["side"] == side and not u.get("reserve") and u["men"] > 0 and u["state"] not in ROUTED]
+    near = min((U.hdist(u["pos"], m["pos"]) for u in mine for m in kf), default=None) if kf and mine else None
+    mark = plan.get("mark")
+    if not mark or down - mark["down"] >= start * S["down"] / 100 or (near is not None and (mark["near"] is None or near < mark["near"])):
+        plan["mark"] = {"down": down, "near": near, "quiet": 0}
+        return False
+    mark["quiet"] += 1
+    if mark["quiet"] < S["moves"]:
+        return False
+    plan["mark"] = {"down": down, "near": near, "quiet": 0}
+    return True
+
+
+def _commit(d: Data, us: list, side, known: dict, memory: dict, stance: str = "attack") -> list:
     """Commit one reserve unit this move, the one nearest an enemy it knows of, when a unit of
     the side has broken or fled since its last move, when a known enemy is within
-    commander.gap hexes of a reserve unit, or (a veteran reserve unit) when an enemy unit has
-    broken. Committed because a unit broke, it is the reserve unit nearest where that unit
-    stood at its side's last move (_gap_left), and it goes to plug the gap there (plug).
-    -> [the commit order], or []."""
+    commander.gap hexes of a reserve unit, (a veteran reserve unit) when an enemy unit has
+    broken, or (attacking) when the attack has stalled (_stalled). Committed because a unit
+    broke, it is the reserve unit nearest where that unit stood at its side's last move
+    (_gap_left), and it goes to plug the gap there (plug). -> [the commit order], or []."""
     plan = memory.setdefault("plan", {})
+    stall = stance == "attack" and _stalled(d, us, side, known, plan)
     own = sum(1 for u in us if u["side"] == side and u["state"] in ROUTED)
     foe = sum(1 for u in us if u["side"] != side and u["state"] in ROUTED)
     broke, foe_broke = own > plan.get("own", own), foe > plan.get("foe", foe)
@@ -150,6 +256,8 @@ def _commit(d: Data, us: list, side, known: dict, memory: dict) -> list:
         pick, why = min(held, key=lambda i: (near[i], i)), "broke" if broke else "gap"
     elif foe_broke and any(us[i]["quality"] == "veteran" for i in held):
         pick, why = min((i for i in held if us[i]["quality"] == "veteran"), key=lambda i: (near[i], i)), "exploit"
+    elif stall:
+        pick, why = min(held, key=lambda i: (near[i], i)), "stall"
     else:
         return []
     us[pick]["reserve"] = False

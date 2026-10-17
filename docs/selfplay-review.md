@@ -387,3 +387,62 @@ check a unit in contact takes whenever it loses more men than it deals in an exc
 to 50 men of a block of thousands are touching, so one exchange lost 1 to 0 can call a check,
 and a run of them breaks the block. It broke the English on main and broke the French battles
 in the prototype after they had lost about 10 men. That check is the next item to measure.
+
+**The contact-scale morale check, measured and not built.** The losing check (a unit in
+contact that loses more men than it deals in an exchange) counts a handful of men touching as
+the whole unit, and so do the flank check and the rout strike, in which every man of the
+pursuing unit strikes. Four variants, all 37 battlefields, four runs each, against main's 96 of
+148:
+
+| Variant | Runs matched |
+| --- | --- |
+| The losing check and its penalty counted per 1% of the unit, not per man | 91 |
+| No losing check at all | 93 |
+| The rout strike by the pursuers' men in the hexes touching the broken unit | 93 |
+| Both scaled | 91 |
+
+The losing check is what decides the big medieval melees (scaled, Towton fell from 4 of 4 to 1
+of 4), and the whole-unit pursuit is what makes most of a battle's dead fall in the rout (with
+it scaled, Towton's Lancastrians lose 8.5% instead of 13.6%). Nothing was built.
+
+## The commander's own faults, 16 October 2026
+
+The match count mixes the rules, the battlefield and the commander, so a report on the
+commander alone was added to self-play (every battlefield, two runs). For each side it gives the
+share of men who never fired or fought, the most fighting at once, how far apart in exchanges
+its units first fought, the share of losses taken while they could not hit back, and which
+units broke and why idle units sat out. The largest fault on the attacking side was formed
+men held up behind their own shooters: the shooters went forward until in range and stood,
+and the close-order men behind could pass through them only to charge, and never went round.
+At Visby, 75% of the Danes and 84% of the Gotlanders never fought; the battle was a shoot-out
+at long range. The second was a reserve that never came in when an attack stalled with
+nobody breaking (Cowpens' Legion dragoons, Sidon's heavy horse, Visby's men-at-arms).
+
+Two changes (see docs/units.md, *The enemy commander*):
+
+- **Shooters give way.** Attacking, open-order shooters standing on the ground a formed unit
+  behind them would cross step aside to their best spot off it, and the formed unit goes on.
+- **A stalled attack commits a reserve**: five moves in a row without putting down 1% of the
+  enemy or getting any nearer.
+
+All 37 battlefields, four runs each: **100 of 148 runs matched, against 96.**
+
+- Better: Cowpens 0 → 4 of 4 (the British attack now goes in and is beaten: British losses
+  36%, Americans 19%; before, about 8% each and a stand-off); Heartbreak Ridge 2 → 3. Visby
+  still matches, but now as fought: the Danes break the Gotlanders, who are gone in all four
+  runs at about exchange 20, Gotlanders 29.5% lost (2.9% before).
+- Worse: the Redan (September) 4 → 3; the Russians now lose 42% (10% before).
+- Moved without changing the winner: Wagon Box's soldiers now lose 62% counted as hurt
+  (light wounds included) against 0.8%, though few go down (the Lakota's stalled attacks now
+  bring in their reserve); historically the corral lost a handful. Albuera's Allies 37%
+  (24%).
+- Agincourt does not change: the French main battle is held up behind the vanguard, a
+  formed unit, which this does not cover.
+
+The commander report: on attacking sides the share of men who never fought fell from 13.5% to
+10.0% on average (Visby 75% and 84% to 0; Cowpens' British 21% to 9%), and on holding sides
+more of their men fight too, because the attacks now reach them (the Redan's Russians 48% idle
+to 0, Khe Sanh 61% to 30%). Grozny's
+Chechens idled more in one of the two runs, which went another way by the dice from early on.
+The Poles at Cassino idled more (25% to 38%) because in one run they held Point 593 six
+exchanges sooner, before the second battalion's companies came up.
