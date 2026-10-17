@@ -163,6 +163,9 @@ steady friends touching it, who go in with it), and green units sometimes hesita
 - **Routes.** A battlefield can send a unit on a route round a flank, as its account tells:
   the commander moves it from waypoint to waypoint, turning aside only for an enemy in contact
   or across its way, then orders it as any other.
+- **Pursuit.** Its horse ride down a broken enemy within a charge when no standing enemy is as
+  near, and its foot go after one within their move that is nearer than any standing enemy.
+  Veterans rally back to the fight after a couple of moves if the enemy still stands near.
 - **Shooters give way.** Attacking, archers, crossbowmen and skirmishers in open order step
   aside when they stand in the way of their own formed men behind them, and the formed men go
   on.

@@ -1067,6 +1067,9 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return ammo
     if u.get("reserve"):
         return _reserve_order(d, us, i, t, ctx)
+    chase = _pursuit(d, us, i, ctx)
+    if chase is not None:
+        return chase
     sap = _sapper_order(d, us, i, t, ctx)
     if sap is not None:
         return sap
@@ -1081,6 +1084,41 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return {"act": "hesitate", "target": t, "roll": roll}
     o = _best(d, us, i, t, ctx) if obj is None else _for_objective(d, us, i, t, ctx)
     return o if t is None else _last_seen(o, ctx[3], t, ctx[4])
+
+
+VETERANS = ("veteran", "elite")                    # the qualities that rally from a pursuit
+
+
+def _pursuit(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
+    """A steady unit that fights hand to hand (or a mounted one) goes after a broken enemy: horse
+    one within a charge of it (its move times charge_move) with no standing enemy as near, foot
+    one within its move nearer than any standing enemy; veterans give it up after
+    commander.pursuit.rally moves with a standing enemy in reach. The move or charge toward it
+    (pursue), its count kept on the unit (chased), or None (and the count dropped)."""
+    u = us[i]
+    if u["state"] != "steady" or u.get("vehicle") or u.get("via") or ("range" in d.weapons[u["weapon"]] and not u.get("mounted")):
+        u.pop("chased", None)
+        return None
+    reach = U.allowance(d, u) * (d.units["charge_move"] if u.get("mounted") else 1)
+    best, standing = None, float("inf")
+    for j, e in enumerate(us):
+        if e["side"] == u["side"] or e["men"] <= 0:
+            continue
+        gap = U.unit_gap(d, u, e)
+        if e["state"] in ("steady", "shaken"):
+            standing = min(standing, gap)
+        elif e["state"] == "broken" and gap <= reach and (best is None or gap < best[0]):
+            best = (gap, j)
+    if best is None or (standing <= reach if u.get("mounted") else standing <= best[0]) \
+            or (u["quality"] in VETERANS and u.get("chased", 0) >= d.units["commander"]["pursuit"]["rally"] and standing <= reach):
+        u.pop("chased", None)
+        return None
+    o = _best(d, us, i, best[1], (ctx[0], ctx[1], "attack", None, ctx[4]))
+    if not o or o["act"] not in MOVES:
+        u.pop("chased", None)
+        return None
+    u["chased"] = u.get("chased", 0) + 1
+    return {**o, "pursue": True}
 
 
 def _route_order(d: Data, us: list, i: int, ctx: tuple) -> dict | None:

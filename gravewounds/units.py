@@ -1029,6 +1029,12 @@ def _cube(h) -> tuple:
     return q, h[1], -q - h[1]
 
 
+def unit_gap(d: Data, a: dict, b: dict) -> int:
+    """Hexes between the nearest hexes of two units (1: side by side)."""
+    hb = [h for row in footprint(d, b) for h in row]
+    return min((hdist(h, x) for row in footprint(d, a) for h in row for x in hb), default=10**9)
+
+
 def hdist(a, b) -> int:
     x, y = _cube(a), _cube(b)
     return max(abs(x[0] - y[0]), abs(x[1] - y[1]), abs(x[2] - y[2]))

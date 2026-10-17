@@ -934,6 +934,8 @@ def _commander_errors(d: Data) -> list[str]:
                if not (isinstance(K.get(k), int) and K[k] >= 0)]
     if not (isinstance(K.get("tries"), int) and K["tries"] > 0):
         errors.append("units.yaml: commander.tries must be a positive whole number")
+    if not (isinstance((K.get("pursuit") or {}).get("rally"), int) and K["pursuit"]["rally"] >= 0):
+        errors.append("units.yaml: commander.pursuit.rally must be a whole number of 0 or more")
     errors += _stall_errors(K)
     if not (isinstance((d.units.get("dig_in") or {}).get("exchanges"), int) and d.units["dig_in"]["exchanges"] >= 1):
         errors.append("units.yaml: dig_in.exchanges must be a whole number of 1 or more")
