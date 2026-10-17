@@ -2416,9 +2416,48 @@ function giveWay(us, side, where, ak, orders){      // attacking, after its unit
   for (let i = 0; i < us.length; i++){
     const F = us[i];
     if (F.side !== side || done.has(i) || F.via || F.reserve || F.state !== "steady" || !formed(F) || !commandable(us, i, where[3])) continue;
-    orders.push(...clearWay(us, i, [where, ak, held]));
+    const cleared = clearWay(us, i, [where, ak, held]);
+    orders.push(...(cleared.length ? cleared : behindWay(us, i, [where, ak])));
   }
   return us;
+}
+function behindWay(us, i, [[size, field, , exchange], [aim, known]]){   // formed unit i held up behind formed units of its own side nearer its target: it moves up beside the front one where there is room, else, when that one in contact is shaken or a quarter down, relieves it (they change places): the orders (units changed in place) (as commander._behind_way)
+  const F = us[i], t = aiTarget(us, i, known, field);
+  if (t === null) return [];
+  const tp = knownAt(us, t, known).pos, d0 = hdist(F.pos, tp);
+  const front = us.map((u, k) => k).filter(k => k !== i && us[k].side === F.side && !out_(us[k]) && formed(us[k]) && hdist(us[k].pos, F.pos) <= UD.commander.give_way && hdist(us[k].pos, tp) < d0)
+    .sort((a, b) => hdist(us[a].pos, F.pos) - hdist(us[b].pos, F.pos) || a - b);
+  if (!front.length) return [];
+  const ctx = [size, plugging(aimOf(us, i, aim), F), "attack", known, exchange];
+  const want = unitOrder(us.map((u, k) => (front.includes(k) ? { ...u, pos: [-1000, -1000] } : u)), i, ctx, 100);
+  if (!want || !AI_MOVES.has(want.act) || hdist(want.pos, tp) >= d0) return [];
+  for (const k of front){
+    const g = besideSpot(us, i, k, [size, field]);
+    const o = g && toward(us, i, t, [size, { ...field, objective: g, objective_radius: null }, "attack", known, exchange], "advance");
+    if (o){ applyOrder(us, i, o); return [{ unit: i, ...o, beside: k }] }
+  }
+  for (const k of front){
+    const o = relief(us, i, k, [size, field]);
+    if (o){ applyOrder(us, i, o); return [{ unit: i, ...o }] }
+  }
+  return [];
+}
+function besideSpot(us, i, k, [size, field]){      // the middle hex where formed unit i would stand in line beside unit k, at the end of k's front row nearer i, facing as k does, if it fits there (else the other end), or null (as commander._beside_spot)
+  const F = us[i], B = us[k], v = B.facing, rb = footprint(B)[0] || [], rf = footprint(F)[0] || [];
+  if (!rb.length || !rf.length) return null;
+  const wb = rb.length, wf = rf.length, hb = Math.floor((wb - 1) / 2), hf = Math.floor((wf - 1) / 2);
+  const spots = [step(B.pos, v + 2, hb + 1 + (wf - 1 - hf)), step(B.pos, v + 5, (wb - 1 - hb) + 1 + hf)]
+    .sort((a, b) => hdist(a, F.pos) - hdist(b, F.pos) || a[1] - b[1] || a[0] - b[0]);
+  return spots.find(g => fits(us, i, { ...F, pos: [...g], facing: v }, size, field)) || null;
+}
+function relief(us, i, k, [size, field]){          // formed unit i takes the place of unit k, in contact and shaken or a quarter down, and k its place: {act: "relieve", pos, facing, other: k, back, back_facing} if both fit, or null (as commander._relief)
+  const F = us[i], B = us[k];
+  if (B.state !== "shaken" && (B.down || 0) < UD.morale.trigger * B.start) return null;
+  if (!inContact(us, occupancy(us), k)) return null;
+  const nf = { ...F, pos: [...B.pos], facing: B.facing }, nb = { ...B, pos: [...F.pos], facing: F.facing };
+  const after = us.map((u, j) => (j === i ? nf : j === k ? nb : u));
+  if (!fits(after, i, nf, size, field) || !fits(after, k, nb, size, field)) return null;
+  return { act: "relieve", pos: [...B.pos], facing: B.facing, other: k, back: [...F.pos], back_facing: F.facing };
 }
 function clearWay(us, i, [[size, field, , exchange], [aim, known], held]){   // formed unit i's shooters in its way step aside and it is ordered again: the orders (units changed in place) (as commander._clear_way)
   const F = us[i], t = aiTarget(us, i, known, field);
@@ -3402,6 +3441,10 @@ function applyOrder(us, i, o){                    // carry out an order (as the 
   else if (o.act === "lay") us[i] = { ...u, mining: { at: [...u.pos], facing: u.facing, n: 0, kind: o.kind } };
   else if (o.act === "lift") us[i] = { ...u, clearing: { at: [...u.pos], facing: u.facing, n: 0 } };
   else if (o.act === "turn") us[i] = { ...u, facing: o.facing };
+  else if (o.act === "relieve"){                    // the two change places: the fresh unit forward, the spent one back behind it
+    us[o.other] = { ...us[o.other], pos: [...o.back], facing: o.back_facing, charged: false };
+    us[i] = { ...u, pos: [...o.pos], facing: o.facing, charged: false };
+  }
   else if (AI_MOVES.has(o.act)){
     us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}) };
     for (const k of o.through || []) us[k] = { ...us[k], jostled: true };   // the friends it charged through are jostled
