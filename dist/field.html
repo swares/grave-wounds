@@ -5613,7 +5613,9 @@ function aiMemory(k){                             // side k's commander's memory
 }
 function moveText(who, them, o, up){              // a move order's line: stepping aside for formed men, or toward the target
   if (o.why === "give_way") return `${who} ${up}step aside ${nOf(o.cost, "hex", "hexes")} to let the formed men behind them through.`;
-  const past = o.through_screen ? ", past their own skirmishers" : o.pursue ? ", in pursuit" : "";
+  let past = "";
+  if (o.through_screen) past = ", past their own skirmishers";
+  else if (o.pursue) past = ", in pursuit";
   return `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} toward ${them}${past}.`;
 }
 const COMMIT_WHY = { broke: "one of its units has broken", gap: "the enemy is close", exploit: "to exploit an enemy unit that broke", stall: "the attack has stalled" };
