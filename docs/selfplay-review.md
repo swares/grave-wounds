@@ -502,3 +502,20 @@ stand for, and the three runs lost are faults the short runs hid:
 
 The short runs had stopped some battles with the defenders close to breaking; why they break,
 where the accounts say they held, is the next thing to look at.
+
+**Morale only under pressure, measured and not built.** Traced at Keating: once a unit is a
+quarter down it checks morale every exchange from then on, whatever is happening to it. B Troop's
+machine guns held at 5 of 8 men from exchange 21 to 31, losing no one, checking at 95% each time;
+shaken at 26, and still a quarter down so unable to rally, they checked at 75% until they broke at
+31. Over a long run any unit a quarter down breaks in the end. Measured on all 37 battlefields,
+four runs each, against main's 98 of 148:
+
+| Variant | Runs matched |
+| --- | --- |
+| A: the quarter-down check only in an exchange the unit loses men | 96 |
+| B: a failed rally leaves a unit shaken, not broken | 97 |
+| A and B | 96 |
+
+A gains Keating, Mogadishu, Pork Chop, Hamburger Hill and Goose Green (+5) but loses the Monastery
+(3 to 1), Cowpens (4 to 2), Chipyong-ni, Mons and the Redan (−7): the same drain that wears down
+the long defences is what breaks the losers of the short, decisive fights. Neither was built.
