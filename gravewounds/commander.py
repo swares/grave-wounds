@@ -1067,12 +1067,9 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return ammo
     if u.get("reserve"):
         return _reserve_order(d, us, i, t, ctx)
-    sap = _pursuit(d, us, i, ctx) or _sapper_order(d, us, i, t, ctx)
-    if sap is not None:
-        return sap
-    route = _route_order(d, us, i, ctx)
-    if route is not None:
-        return route
+    first = _pursuit(d, us, i, ctx) or _sapper_order(d, us, i, t, ctx) or _route_order(d, us, i, ctx)   # in that order
+    if first is not None:
+        return first
     if (obj is not None or ctx[2] == "hold") and _digs(d, us, i, ctx):
         return {"act": "dig", "target": t}
     if t is None and obj is None:
