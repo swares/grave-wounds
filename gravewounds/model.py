@@ -911,9 +911,9 @@ def _self_play_errors(d: Data) -> list[str]:
     return errors
 
 
-def _stall_errors(K: dict) -> list[str]:
+def _stall_errors(commander: dict) -> list[str]:
     """units.yaml commander.stall: moves (a positive whole number) and down (a % of 0 or more)."""
-    st = K.get("stall") or {}
+    st = commander.get("stall") or {}
     if isinstance(st.get("moves"), int) and st["moves"] > 0 and isinstance(st.get("down"), (int, float)) and st["down"] >= 0:
         return []
     return ["units.yaml: commander.stall needs moves (a positive whole number) and down (a % of 0 or more)"]
