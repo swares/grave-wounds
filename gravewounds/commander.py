@@ -51,8 +51,7 @@ def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict
             _apply(us, i, o)
             if o["act"] in MOVES:                 # what it sees from where it went, the units after it know
                 sightings(d, us, side, field, exchange, known)
-    if stance == "attack":
-        us = _give_way(d, us, side, (size, field, rng, exchange), (aim, known), orders)
+    us = _give_way(d, us, side, (size, field, stance, exchange), (aim, known), orders)
     orders += _move_guns(d, us, side, (size, goal, stance, known, exchange))
     orders += _lay_guns(d, us, side, (size, goal, known, exchange))
     return us, orders + _call_fire(d, us, side, goal, known, (stance, exchange, orders, table))
@@ -139,47 +138,55 @@ def _screening(d: Data, u: dict, side) -> bool:
 
 def _give_way(d: Data, us: list, side, where: tuple, ak: tuple, orders: list) -> list:
     """Attacking, after its units' orders: a formed unit that did not move or hesitate (not a
-    reserve, not on a route), held up behind its own open-order shooters within
-    commander.give_way hexes that are nearer its target than it is: if it would move nearer its
-    target with them gone, those of them standing on the ground it would cross (its footprint
-    at each hex of the straight way) step aside (_step_aside), unless they hesitated this move,
-    and it is ordered again. Appends to orders; -> the units after."""
-    size, field, _rng, exchange = where
-    aim, known = ak
+    reserve, not on a route), held up behind its own open-order shooters, has them step aside
+    and is ordered again (_clear_way). where: (size, field, stance, exchange). Appends to
+    orders; -> the units after."""
+    if where[2] != "attack":
+        return us
     done = {o["unit"] for o in orders if o["act"] in MOVES or o["act"] == "hesitate"}
     held = {o["unit"] for o in orders if o["act"] == "hesitate"}
     for i in range(len(us)):
         f = us[i]
-        if f["side"] != side or i in done or f.get("via") or f.get("reserve") or f["state"] != "steady" or not _formed(d, f) or not _free(d, us, i, exchange):
+        if f["side"] != side or i in done or f.get("via") or f.get("reserve") or f["state"] != "steady" or not _formed(d, f) or not _free(d, us, i, where[3]):
             continue
-        t = target(d, us, i, known, field)
-        if t is None:
-            continue
-        tp = _where(us, t, known)["pos"]
-        d0 = U.hdist(f["pos"], tp)
-        screen = [k for k in range(len(us)) if k != i and k not in held and _screening(d, us[k], side)
-                  and U.hdist(us[k]["pos"], f["pos"]) <= d.units["commander"]["give_way"] and U.hdist(us[k]["pos"], tp) < d0]
-        if not screen:
-            continue
-        ctx = (size, _plugging(_aim(us, i, aim), f), "attack", known, exchange)
-        clear = [{**u, "pos": [-1000, -1000]} if k in screen else u for k, u in enumerate(us)]
-        want = _order(d, clear, i, ctx, 100)
-        if not want or want["act"] not in MOVES or U.hdist(want["pos"], tp) >= d0:
-            continue
-        lane = {tuple(h) for x in U.ray(f["pos"], want["pos"], U.hdist(f["pos"], want["pos"]))
-                for row in U.footprint(d, {**f, "pos": list(x), "facing": want["facing"]}) for h in row}
-        for k in screen:
-            if not any(tuple(h) in lane for row in U.footprint(d, us[k]) for h in row):
-                continue
-            o = _step_aside(d, us, k, lane, (size, field, known))
-            if o:
-                orders.append({"unit": k, **o})
-                _apply(us, k, o)
-        o = _order(d, us, i, ctx, 100)
-        if o and o["act"] in MOVES:
-            orders.append({"unit": i, **o, "through_screen": True})
-            _apply(us, i, o)
+        orders += _clear_way(d, us, i, (where, ak, held))
     return us
+
+
+def _clear_way(d: Data, us: list, i: int, ctx: tuple) -> list:
+    """Formed unit i's own open-order shooters within commander.give_way hexes that are nearer
+    its target than it is (not those that hesitated): if it would move nearer its target with
+    them gone, those standing on the ground it would cross (its footprint at each hex of the
+    straight way) step aside (_step_aside), and it is ordered again. -> the orders (the units
+    changed in place)."""
+    (size, field, _stance, exchange), (aim, known), held = ctx
+    f = us[i]
+    t = target(d, us, i, known, field)
+    if t is None:
+        return []
+    tp = _where(us, t, known)["pos"]
+    d0 = U.hdist(f["pos"], tp)
+    screen = [k for k in range(len(us)) if k != i and k not in held and _screening(d, us[k], f["side"])
+              and U.hdist(us[k]["pos"], f["pos"]) <= d.units["commander"]["give_way"] and U.hdist(us[k]["pos"], tp) < d0]
+    if not screen:
+        return []
+    octx = (size, _plugging(_aim(us, i, aim), f), "attack", known, exchange)
+    want = _order(d, [{**u, "pos": [-1000, -1000]} if k in screen else u for k, u in enumerate(us)], i, octx, 100)
+    if not want or want["act"] not in MOVES or U.hdist(want["pos"], tp) >= d0:
+        return []
+    lane = {tuple(h) for x in U.ray(f["pos"], want["pos"], U.hdist(f["pos"], want["pos"]))
+            for row in U.footprint(d, {**f, "pos": list(x), "facing": want["facing"]}) for h in row}
+    out = []
+    for k in screen:
+        o = _step_aside(d, us, k, lane, (size, field, known)) if any(tuple(h) in lane for row in U.footprint(d, us[k]) for h in row) else None
+        if o:
+            out.append({"unit": k, **o})
+            _apply(us, k, o)
+    o = _order(d, us, i, octx, 100)
+    if o and o["act"] in MOVES:
+        out.append({"unit": i, **o, "through_screen": True})
+        _apply(us, i, o)
+    return out
 
 
 def _step_aside(d: Data, us: list, k: int, lane: set, where: tuple) -> dict | None:

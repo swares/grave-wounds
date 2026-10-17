@@ -2404,39 +2404,40 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
       if (AI_MOVES.has(o.act)) sightings(us, side, field, exchange, mem);   // what it sees from where it went, the units after it know (as commander.command)
     }
   }
-  if (stance === "attack") us = giveWay(us, side, [size, field, rng, exchange], [aim, known, mem], orders);
+  us = giveWay(us, side, [size, field, stance, exchange], [aim, known], orders);
   orders.push(...moveGuns(us, side, [size, goal, stance, known, exchange]), ...layGuns(us, side, [size, goal, known, exchange]), ...callFireAi(us, side, goal, known, [stance, exchange, orders, table]));
   return { units: us, orders };
 }
 const formed = u => !("range" in FD.weapons[u.weapon]) && u.formation !== "open" && !u.vehicle;   // close-order men who fight hand to hand
 const screening = (u, side) => u.side === side && u.state === "steady" && u.men > 0 && u.formation === "open" && "range" in FD.weapons[u.weapon] && !u.vehicle && !isBattery(u) && !isAtGun(u);
-function giveWay(us, side, [size, field, rng, exchange], [aim, known, mem], orders){   // attacking: a formed unit that stood held up behind its own open-order shooters: they step aside, and it goes on (as commander._give_way)
+function giveWay(us, side, where, ak, orders){      // attacking, after its units' orders: a formed unit that stood (not in reserve or on a route) held up behind its own open-order shooters has them step aside and is ordered again; where [size, field, stance, exchange] (as commander._give_way)
+  if (where[2] !== "attack") return us;
   const done = new Set(orders.filter(o => AI_MOVES.has(o.act) || o.act === "hesitate").map(o => o.unit)), held = new Set(orders.filter(o => o.act === "hesitate").map(o => o.unit));
   for (let i = 0; i < us.length; i++){
     const F = us[i];
-    if (F.side !== side || done.has(i) || F.via || F.reserve || F.state !== "steady" || !formed(F) || !commandable(us, i, exchange)) continue;
-    const t = aiTarget(us, i, known, field);
-    if (t === null) continue;
-    const tp = knownAt(us, t, known).pos, d0 = hdist(F.pos, tp);
-    const screen = us.map((u, k) => k).filter(k => k !== i && !held.has(k) && screening(us[k], side) && hdist(us[k].pos, F.pos) <= UD.commander.give_way && hdist(us[k].pos, tp) < d0);
-    if (!screen.length) continue;
-    const ctx = [size, plugging(aimOf(us, i, aim), F), "attack", known, exchange];
-    const clear = us.map((u, k) => (screen.includes(k) ? { ...u, pos: [-1000, -1000] } : u));
-    const want = unitOrder(clear, i, ctx, 100);
-    if (!want || !AI_MOVES.has(want.act) || hdist(want.pos, tp) >= d0) continue;
-    const lane = new Set(ray(F.pos, want.pos, hdist(F.pos, want.pos)).flatMap(h => footprint({ ...F, pos: h, facing: want.facing }).flat()).map(hk));   // the ground it would cross, as it would stand at each step
-    const inWay = screen.filter(k => footprint(us[k]).flat().some(h => lane.has(hk(h))));
-    if (!inWay.length) continue;
-    for (const k of inWay){
-      const o = stepAside(us, k, lane, [size, field, known]);
-      if (!o) continue;
-      orders.push({ unit: k, ...o });
-      applyOrder(us, k, o);
-    }
-    const o = unitOrder(us, i, ctx, 100);
-    if (o && AI_MOVES.has(o.act)){ orders.push({ unit: i, ...o, through_screen: true }); applyOrder(us, i, o) }
+    if (F.side !== side || done.has(i) || F.via || F.reserve || F.state !== "steady" || !formed(F) || !commandable(us, i, where[3])) continue;
+    orders.push(...clearWay(us, i, [where, ak, held]));
   }
   return us;
+}
+function clearWay(us, i, [[size, field, , exchange], [aim, known], held]){   // formed unit i's shooters in its way step aside and it is ordered again: the orders (units changed in place) (as commander._clear_way)
+  const F = us[i], t = aiTarget(us, i, known, field);
+  if (t === null) return [];
+  const tp = knownAt(us, t, known).pos, d0 = hdist(F.pos, tp);
+  const screen = us.map((u, k) => k).filter(k => k !== i && !held.has(k) && screening(us[k], F.side) && hdist(us[k].pos, F.pos) <= UD.commander.give_way && hdist(us[k].pos, tp) < d0);
+  if (!screen.length) return [];
+  const ctx = [size, plugging(aimOf(us, i, aim), F), "attack", known, exchange];
+  const want = unitOrder(us.map((u, k) => (screen.includes(k) ? { ...u, pos: [-1000, -1000] } : u)), i, ctx, 100);
+  if (!want || !AI_MOVES.has(want.act) || hdist(want.pos, tp) >= d0) return [];
+  const lane = new Set(ray(F.pos, want.pos, hdist(F.pos, want.pos)).flatMap(h => footprint({ ...F, pos: h, facing: want.facing }).flat()).map(hk));   // the ground it would cross, as it would stand at each step
+  const out = [];
+  for (const k of screen){
+    const o = footprint(us[k]).flat().some(h => lane.has(hk(h))) ? stepAside(us, k, lane, [size, field, known]) : null;
+    if (o){ out.push({ unit: k, ...o }); applyOrder(us, k, o) }
+  }
+  const o = unitOrder(us, i, ctx, 100);
+  if (o && AI_MOVES.has(o.act)){ out.push({ unit: i, ...o, through_screen: true }); applyOrder(us, i, o) }
+  return out;
 }
 function stepAside(us, k, lane, [size, field, known]){   // the best spot shooter k can reach (by score against its target, else least movement; then lowest row, column), clear of the lane a formed unit wants, facing as it is: {act: "move", pos, facing, cost, why: "give_way"} or null (as commander._step_aside)
   const S = us[k], t = aiTarget(us, k, known, field), tu = t === null ? null : knownAt(us, t, known);
