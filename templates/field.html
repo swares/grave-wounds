@@ -1228,11 +1228,12 @@ function aiMemory(k){                             // side k's commander's memory
   if (!S.aiMemory[k]) S.aiMemory[k] = { n: -1, mem: {} };
   return S.aiMemory[k];
 }
-const COMMIT_WHY = { broke: "one of its units has broken", gap: "the enemy is close", exploit: "to exploit an enemy unit that broke" };
+const COMMIT_WHY = { broke: "one of its units has broken", gap: "the enemy is close", exploit: "to exploit an enemy unit that broke", stall: "the attack has stalled" };
 const ORDER_TEXT = {                              // (who, them, o, up, facing) -> the order's line
   commit: (who, them, o) => `${who} are committed from the reserve: ${COMMIT_WHY[o.why] || o.why}${o.at ? "; they go to plug the gap at " + hexName(o.at) + ", where it stood" : ""}.`,
   charge: (who, them, o, up) => `${who} ${up}charge ${them}${throughText(o)}.`,
-  move: (who, them, o, up) => `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} toward ${them}.`,
+  move: (who, them, o, up) => (o.why === "give_way" ? `${who} ${up}step aside ${nOf(o.cost, "hex", "hexes")} to let the formed men behind them through.`
+    : `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} toward ${them}${o.through_screen ? ", past their own skirmishers" : ""}.`),
   advance: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} to plug the gap${facing}.` : `${who} ${up}advance ${nOf(o.cost, "hex", "hexes")} on the objective${facing}.`),
   fall_back: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} to plug the gap${facing}.` : `${who} ${up}fall back ${nOf(o.cost, "hex", "hexes")} toward the objective${facing}.`),
   search: (who, them, o, up) => `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} forward to find the enemy (none in sight, no objective).`,

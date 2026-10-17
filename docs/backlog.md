@@ -115,7 +115,7 @@ When an item is done, delete it here and note it in the pull request that closes
   ambush at Grozny (the night now fought as it was, the dark at 17:05; the breakout 25 hours on is beyond a run); an envelopment plan (Cowpens); the American
   rush on the guns at Lundy's Lane (dark now, but the guns still hold); the German counter-attacks on Point 593 (no sourced figures yet) and why small
   units take 593 so easily in February. Measured and not built: a holding commander that
-  withdraws (no trigger tells the defences that held from those that went). Done: units tire by the toil rule, from hand-to-hand fighting and deep going (Agincourt, 0 of 4 to 1 of 4; see the review); the Poles at
+  withdraws (no trigger tells the defences that held from those that went). Done: the commander's shooters give way to their own formed men behind them, and a stalled attack commits a reserve (100 of 148 runs, from 96; see the review); measured and not built: the losing check, flank check and rout strike counted by the men touching rather than the whole unit; to do: a formed unit held up behind another formed unit (Agincourt's French main battle). Done: units tire by the toil rule, from hand-to-hand fighting and deep going (Agincourt, 0 of 4 to 1 of 4; see the review); the Poles at
   Cassino as companies (February stays as battalions; see the review); phases that change the
   light, and Lundy's Lane's sunset and moonlit night; tanks by fire control, composite armour,
   thermal sights in a sandstorm and vehicle morale by vehicles lost (73 Easting still does not match); routes round a flank from the accounts

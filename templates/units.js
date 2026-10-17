@@ -2391,7 +2391,7 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
   { const h = hookUp(us, side, [goal, known, exchange, stance]); us = h.units; orders.push(...h.orders) }
   { const r = ridersAi(us, side, [goal, known, exchange, stance], orders); us = r.units; orders.splice(0, orders.length, ...r.orders) }
   holdBack(us, side, known);
-  orders.push(...commitReserve(us, side, known, mem));
+  orders.push(...commitReserve(us, side, known, mem, stance));
   if (stance === "hold") orders.push(...fixLines(us, side, [field, known, exchange]));
   for (let i = 0; i < us.length; i++){
     if (us[i].side !== side || !commandable(us, i, exchange)) continue;
@@ -2404,8 +2404,50 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
       if (AI_MOVES.has(o.act)) sightings(us, side, field, exchange, mem);   // what it sees from where it went, the units after it know (as commander.command)
     }
   }
+  if (stance === "attack") us = giveWay(us, side, [size, field, rng, exchange], [aim, known, mem], orders);
   orders.push(...moveGuns(us, side, [size, goal, stance, known, exchange]), ...layGuns(us, side, [size, goal, known, exchange]), ...callFireAi(us, side, goal, known, [stance, exchange, orders, table]));
   return { units: us, orders };
+}
+const formed = u => !("range" in FD.weapons[u.weapon]) && u.formation !== "open" && !u.vehicle;   // close-order men who fight hand to hand
+const screening = (u, side) => u.side === side && u.state === "steady" && u.men > 0 && u.formation === "open" && "range" in FD.weapons[u.weapon] && !u.vehicle && !isBattery(u) && !isAtGun(u);
+function giveWay(us, side, [size, field, rng, exchange], [aim, known, mem], orders){   // attacking: a formed unit that stood held up behind its own open-order shooters: they step aside, and it goes on (as commander._give_way)
+  const done = new Set(orders.filter(o => AI_MOVES.has(o.act) || o.act === "hesitate").map(o => o.unit)), held = new Set(orders.filter(o => o.act === "hesitate").map(o => o.unit));
+  for (let i = 0; i < us.length; i++){
+    const F = us[i];
+    if (F.side !== side || done.has(i) || F.via || F.reserve || F.state !== "steady" || !formed(F) || !commandable(us, i, exchange)) continue;
+    const t = aiTarget(us, i, known, field);
+    if (t === null) continue;
+    const tp = knownAt(us, t, known).pos, d0 = hdist(F.pos, tp);
+    const screen = us.map((u, k) => k).filter(k => k !== i && !held.has(k) && screening(us[k], side) && hdist(us[k].pos, F.pos) <= UD.commander.give_way && hdist(us[k].pos, tp) < d0);
+    if (!screen.length) continue;
+    const ctx = [size, plugging(aimOf(us, i, aim), F), "attack", known, exchange];
+    const clear = us.map((u, k) => (screen.includes(k) ? { ...u, pos: [-1000, -1000] } : u));
+    const want = unitOrder(clear, i, ctx, 100);
+    if (!want || !AI_MOVES.has(want.act) || hdist(want.pos, tp) >= d0) continue;
+    const lane = new Set(ray(F.pos, want.pos, hdist(F.pos, want.pos)).flatMap(h => footprint({ ...F, pos: h, facing: want.facing }).flat()).map(hk));   // the ground it would cross, as it would stand at each step
+    const inWay = screen.filter(k => footprint(us[k]).flat().some(h => lane.has(hk(h))));
+    if (!inWay.length) continue;
+    for (const k of inWay){
+      const o = stepAside(us, k, lane, [size, field, known]);
+      if (!o) continue;
+      orders.push({ unit: k, ...o });
+      applyOrder(us, k, o);
+    }
+    const o = unitOrder(us, i, ctx, 100);
+    if (o && AI_MOVES.has(o.act)){ orders.push({ unit: i, ...o, through_screen: true }); applyOrder(us, i, o) }
+  }
+  return us;
+}
+function stepAside(us, k, lane, [size, field, known]){   // the best spot shooter k can reach (by score against its target, else least movement; then lowest row, column), clear of the lane a formed unit wants, facing as it is: {act: "move", pos, facing, cost, why: "give_way"} or null (as commander._step_aside)
+  const S = us[k], t = aiTarget(us, k, known, field), tu = t === null ? null : knownAt(us, t, known);
+  let best = null;
+  for (const [h, cost] of reachable(us, k, size, allowance(S), field).values()){
+    const at = { ...S, pos: [...h] };
+    if (footprint(at).flat().some(x => lane.has(hk(x))) || !fits(us, k, at, size, field)) continue;
+    const sc = tu ? aiScore(field, S, tu, h, cost, true) : -cost;
+    if (best === null || sc > best[0] || (sc === best[0] && (h[1] < best[1][1] || (h[1] === best[1][1] && h[0] < best[1][0])))) best = [sc, h, cost];
+  }
+  return best && { act: "move", pos: [...best[1]], facing: S.facing, cost: best[2], why: "give_way" };
 }
 function aims(us, side, field, stance, mem){       // [the field as its garrison of the first objective sees it, as the rest see it, the garrison's indices] (as commander.aims)
   if (!field?.objective || !field.objective2) return [field, field, []];
@@ -2440,8 +2482,21 @@ function holdBack(us, side, known){                // at its first move (unless 
     room -= us[i].men;
   }
 }
-function commitReserve(us, side, known, memory){   // one reserve unit committed when one of its units broke, an enemy is within gap of a reserve unit, or (veterans) an enemy broke (as commander._commit)
+function stalled(us, side, known, plan){           // attacking: moves in a row its side has neither put down commander.stall.down % of the enemy's men nor come nearer an enemy it knows of (as commander._stalled)
+  const S = UD.commander.stall, foes = us.filter(u => u.side !== side);
+  const down = foes.reduce((a, u) => a + (u.down || 0), 0), start = foes.reduce((a, u) => a + (u.start || u.men), 0);
+  const kf = knownFoes(known), mine = us.filter(u => u.side === side && !u.reserve && u.men > 0 && !ROUTED.has(u.state));
+  const near = kf.length && mine.length ? Math.min(...mine.flatMap(u => kf.map(([, m]) => hdist(u.pos, m.pos)))) : null;
+  const mark = plan.mark;
+  if (!mark || down - mark.down >= start * S.down / 100 || (near !== null && (mark.near === null || near < mark.near))){ plan.mark = { down, near, quiet: 0 }; return false }
+  mark.quiet++;
+  if (mark.quiet < S.moves) return false;
+  plan.mark = { down, near, quiet: 0 };
+  return true;
+}
+function commitReserve(us, side, known, memory, stance = "attack"){   // one reserve unit committed when one of its units broke, an enemy is within gap of a reserve unit, (veterans) an enemy broke, or (attacking) the attack has stalled (as commander._commit)
   const plan = memory.plan ?? (memory.plan = {});
+  const stall = stance === "attack" && stalled(us, side, known, plan);
   const own = us.filter(u => u.side === side && ROUTED.has(u.state)).length, foe = us.filter(u => u.side !== side && ROUTED.has(u.state)).length;
   const broke = own > (plan.own ?? own), foeBroke = foe > (plan.foe ?? foe);
   Object.assign(plan, { own, foe });
@@ -2460,6 +2515,7 @@ function commitReserve(us, side, known, memory){   // one reserve unit committed
   let pick, why;
   if (broke || gap){ pick = nearest(held); why = broke ? "broke" : "gap" }
   else if (foeBroke && vets.length){ pick = nearest(vets); why = "exploit" }
+  else if (stall){ pick = nearest(held); why = "stall" }
   else return [];
   us[pick].reserve = false;
   return [{ unit: pick, act: "commit", why }];
