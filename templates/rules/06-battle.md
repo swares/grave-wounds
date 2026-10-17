@@ -42,13 +42,19 @@ just behind it sees over it and is seen, and a man on the top sees down both slo
    +{{f_flank}} from the flank, +{{f_rear}} from the rear (and no parry), +{{f_charge}} for a
    mounted charge in its first exchange, −{{f_shaken}} for a shaken unit, +{{f_pikes}} for
    pikes in close order against horse to their front; range, weather and cover come off
-   missiles.
+   missiles. A tired unit loses its [fatigue](#fatigue) level's penalty off its attack and
+   its parry.
 4. **The wound** is rolled as for one man. A light wound or a graze: he fights on. Serious
    or critical: a stop check, and failing it puts him **down**. A wound that kills within
    rounds kills. Against **modern fire** (breech-loaders on, machine guns, shell, grenades),
    every serious or critical wound puts him down and a light one calls for the check: the
    casualty returns from 1914 on count nearly every man hit as out of the line.
 5. **Morale**, below; then the next exchange.
+
+**Fatigue.** A unit tires as a character does. Each exchange it fights hand to hand counts
+one toil, and so does each hex it goes in deep mud or snow. After 12 toil in heavy armour,
+20 in medium, or 30 in light, it is a fatigue step worse, to Exhausted at most, and stays
+so for the battle. Shooting costs none, and vehicles don't tire.
 
 ## Morale and the rout {#morale}
 

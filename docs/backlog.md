@@ -111,12 +111,11 @@ When an item is done, delete it here and note it in the pull request that closes
   modern infantry storm works, battlefields can give their stances, and self-play runs past the
   last phase and does not end on units still to come or an objective held from the start; a
   unit with no room to face its goal moves facing as near it as it can (Kapyong, Cassino). To
-  do, from the review: 73 Easting's fight at the crest (tanks now placed by their main gun and standing off, but the T-72s are in dead ground until the crest); archery against
-  horses and men in mud (Agincourt); men in rubble harder to shift (Cassino town: measured, see the review; shellfire decides it, and batteries' rate and ammunition are already within published figures; a sourced lethality figure scaled to 40% was measured and not applied); the Chechen
+  do, from the review: 73 Easting's fight at the crest (tanks now placed by their main gun and standing off, but the T-72s are in dead ground until the crest); the morale check a unit in contact takes when it loses more than it deals, however few are touching (it breaks blocks of thousands after a handful of losses: Agincourt, see the review); men in rubble harder to shift (Cassino town: measured, see the review; shellfire decides it, and batteries' rate and ammunition are already within published figures; a sourced lethality figure scaled to 40% was measured and not applied); the Chechen
   ambush at Grozny (the night now fought as it was, the dark at 17:05; the breakout 25 hours on is beyond a run); an envelopment plan (Cowpens); the American
   rush on the guns at Lundy's Lane (dark now, but the guns still hold); the German counter-attacks on Point 593 (no sourced figures yet) and why small
   units take 593 so easily in February. Measured and not built: a holding commander that
-  withdraws (no trigger tells the defences that held from those that went). Done: the Poles at
+  withdraws (no trigger tells the defences that held from those that went). Done: units tire by the toil rule, from hand-to-hand fighting and deep going (Agincourt, 0 of 4 to 1 of 4; see the review); the Poles at
   Cassino as companies (February stays as battalions; see the review); phases that change the
   light, and Lundy's Lane's sunset and moonlit night; tanks by fire control, composite armour,
   thermal sights in a sandstorm and vehicle morale by vehicles lost (73 Easting still does not match); routes round a flank from the accounts

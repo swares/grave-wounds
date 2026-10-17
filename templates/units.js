@@ -1490,7 +1490,22 @@ function coverAt(field, h, t){                    // % off shots from h at t: th
   const [cols, rows] = fieldSize(field);
   return Math.max(missileCover(field.works, h, t, cols, rows).cover, groundAt(field, t).cover || 0);
 }
-const sideOfUnit = (u, table) => ({ table, weapon: u.weapon, kit: u.kit, quality: u.quality });
+const fatiguePenalty = u => (u.fatigue ? WXD.fatigue.levels[u.fatigue].penalty : 0);
+const sideOfUnit = (u, table) => { const f = fatiguePenalty(u); return { table, weapon: u.weapon, kit: u.kit, quality: u.quality, ...(f ? { attack: -f, defence: -f } : {}) } };
+function toilGoing(us, field){                    // in deep mud or snow, every hex a unit (not a vehicle) went since the last exchange is a toil (as units._toil_going)
+  if (deepGoing(field?.weather?.ground) <= 0) return;
+  for (const u of us) if (u.toil_from && !u.vehicle) tire(u, hdist(u.toil_from, u.pos));
+}
+function toilFought(us, fought){                  // a toil for each unit that fought hand to hand; its next going counted from here (as units._toil_fought)
+  for (const k of fought) tire(us[k], 1);
+  for (const u of us) u.toil_from = [...u.pos];
+}
+function tire(u, n){                              // (as units.tire) n more toil: a fatigue step worse each time its kit's load is reached, to worst at most
+  const T = FD.toil, need = T.blows[T.load[u.kit] || "light"];
+  let toil = (u.toil || 0) + n, f = u.fatigue || 0;
+  while (toil >= need){ toil -= need; if (f < T.worst) f++ }
+  u.toil = toil; if (f) u.fatigue = f;
+}
 const meleeSide = (u, table) => ({ ...sideOfUnit(u, table), weapon: meleeWeapon(u) });   // hand to hand: a battery's crews fight with their own weapon
 function takeHurt(u, t){                         // the wounded go onto the unit struck; the tally (for the log) keeps the rest
   const { hurt, ...rest } = t;
@@ -1520,6 +1535,7 @@ function strikeAll(us, table, rng, acc, log, field, thinned = null){   // thinne
     tallyLoss(acc, s, t);
     acc.flanked[s.dfd] = acc.flanked[s.dfd] || s.situation === "flank" || s.situation === "rear";
     log.push(...logged({ kind: s.rout ? "rout" : "melee", ...s }, t));
+    if (!s.rout && acc.fought){ acc.fought.add(s.att); acc.fought.add(s.dfd) }
     if (struck.has(s.att)) continue;
     struck.add(s.att);
     frontHeroes([a, b], s, { table, rng, acc, log }, opts, dueled);
@@ -1797,7 +1813,8 @@ function heldAt(us, field){                        // {kind objective, hex, side
 }
 function exchange(units, table, rng, field = null){   // -> {units, log}; works being breached are updated in field
   const us = units.map(copyUnit), n = us.length, log = [];
-  const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false) };
+  const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false), fought: new Set() };
+  toilGoing(us, field);
   const under = new Array(n).fill(false);          // under shellfire or machine-gun fire this exchange (suppression)
   minesAll(us, table, rng, acc, log, field);
   for (const c of closingFire(us, field)) fireBattery(us, table, rng, acc, log, c);
@@ -1815,6 +1832,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table), postsMoving(field)),
     ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng), ...digAll(us), ...sappersAll(us, field));
   postsSettle(field);
+  toilFought(us, acc.fought);
   for (const u of us) delete u.unhooked;             // guns unhooked this move are in action (as units._unhooked_after)
   afterExchange(us, field, log);
   log.push(...landings(us, table, rng, field), ...airDrops(field, rng), ...vehiclesAfter(us, field), ...objectiveHeld(us, field));

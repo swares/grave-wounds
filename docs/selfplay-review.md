@@ -370,3 +370,20 @@ on the objective and fights at the crest at close range, as it did in 1991, but 
 and T-72s' fire there in the flank; what made that close fight one-sided in 1991 is not in the
 model.
 
+
+**Units tire (Agincourt).** Whole units now tire by the individual toil rule. Each
+hand-to-hand exchange a unit fights counts one toil, and so does each hex it goes in deep mud
+or snow. Twelve toil in heavy kit makes a step, 20 in medium and 30 in light, up to Exhausted.
+Each step's fight penalty comes off the unit's attack and parry. Over all 37 battlefields, four
+runs each against main, 96 of 148 runs matched the actual winner, against 95. Only Agincourt
+changed, from 0 of 4 to 1 of 4: the French reach the English line Tired and soon become
+Exhausted. The English now have units standing at the end of all four runs; before, two runs
+ended with the whole English army gone. Cassino town's German losses rose from 54% to 64%
+(still 0 of 4, for the reason recorded above), and nothing else moved by more than a few tenths.
+
+The other three Agincourt runs still go to the French on the share of men lost, because an
+English archer block of about 1,500 breaks and is cut down in the rout. The cause is the morale
+check a unit in contact takes whenever it loses more men than it deals in an exchange. Only 10
+to 50 men of a block of thousands are touching, so one exchange lost 1 to 0 can call a check,
+and a run of them breaks the block. It broke the English on main and broke the French battles
+in the prototype after they had lost about 10 men. That check is the next item to measure.

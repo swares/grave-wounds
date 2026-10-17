@@ -1053,6 +1053,7 @@ def field_bundle(d) -> dict:
         "in_fight": d.disease.get("in_fight") or {},
         "tracking": {k: d.wounds["tracking"][k] for k in ("blood_pool", "thresholds", "pain_cap", "bleed_per_round")},
         "blood_per": d.wounds["combat"]["characteristics"]["blood"]["per"],
+        "toil": d.wounds["combat"]["characteristics"]["toil"],
         "tables": tables,
         "weapons": {w: {k: d.weapons[w][k] for k in keep if k in d.weapons[w]} for w in used},
         "mechanisms": {w: rng3(mechanism_ranges(d, w)) for w in used},
@@ -1064,7 +1065,7 @@ def field_bundle(d) -> dict:
                     for l in d.locations},
         "track": {"steps": d.disease["steps"], "wounds": d.disease["wounds"]},
         "works": d.works,
-        "weather": {k: d.weather[k] for k in ("winds", "conditions", "battle", "ground", "wind_points", "driven_sight", "light", "cold") if k in d.weather},
+        "weather": {k: d.weather[k] for k in ("winds", "conditions", "battle", "ground", "wind_points", "driven_sight", "light", "cold", "fatigue") if k in d.weather},
         "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
         "fields": {fid: {"name": f["name"], "sides": f["sides"], "table": f["table"], "field": battlefield(d, fid), "units": f.get("units", []), "objective": f.get("objective"), "stances": f.get("stances"), "markers": f.get("markers"), "entry": f.get("entry"), "phases": f.get("phases"),
                          "travel": f.get("travel"), "period": periods(d)["fields"][fid]}

@@ -2187,9 +2187,54 @@ def _nearest_ahead(d: Data, u: dict, front: list, fv: tuple, hexes: list, field:
 
 
 def _side(u: dict, table: str, d: Data | None = None) -> dict:
-    """A unit as a fighting side: hand to hand, a battery's crews fight with their own weapon."""
+    """A unit as a fighting side: hand to hand (d given), a battery's crews fight with their own
+    weapon, and a tired unit strikes and parries worse."""
     weapon = melee_weapon(d, u) if d else u["weapon"]
-    return {"table": table, "weapon": weapon, "kit": u.get("kit"), "quality": u["quality"]}
+    return {"table": table, "weapon": weapon, "kit": u.get("kit"), "quality": u["quality"], **(_tired(d, u) if d else {})}
+
+
+def _shooter_side(d: Data, u: dict, table: str) -> dict:
+    """A unit as a side shooting: its own weapon, its aim worse if it is tired."""
+    return {**_side(u, table), **_tired(d, u)}
+
+
+def _tired(d: Data, u: dict) -> dict:
+    """The attack and defence a unit's fatigue costs it (weather.yaml fatigue levels); {} if fresh."""
+    pen = d.weather["fatigue"]["levels"][u["fatigue"]]["penalty"] if u.get("fatigue") else 0
+    return {"attack": -pen, "defence": -pen} if pen else {}
+
+
+def _toil_going(d: Data, us: list, field: dict | None) -> None:
+    """In deep mud or snow, every hex a unit (not a vehicle) went since the last exchange is a toil."""
+    if C.deep_going(d, ((field or {}).get("weather") or {}).get("ground")) <= 0:
+        return
+    for u in us:
+        if u.get("toil_from") and not u.get("vehicle"):
+            tire(d, u, hdist(u["toil_from"], u["pos"]))
+
+
+def _toil_fought(d: Data, us: list, fought: set) -> None:
+    """End of the exchange: a toil for each unit that struck or was struck hand to hand; where each
+    unit stands now is where its next going is counted from."""
+    for k in sorted(fought):
+        tire(d, us[k], 1)
+    for u in us:
+        u["toil_from"] = list(u["pos"])
+
+
+def tire(d: Data, u: dict, n: int) -> None:
+    """n more toil for unit u: a fatigue step worse each time its kit's load of toil is reached
+    (wounds.yaml characteristics.toil blows, kits not listed light), to `worst` at most."""
+    T = d.wounds["combat"]["characteristics"]["toil"]
+    need = T["blows"][T["load"].get(u.get("kit"), "light")]
+    toil, f = u.get("toil", 0) + n, u.get("fatigue", 0)
+    while toil >= need:
+        toil -= need
+        if f < T["worst"]:
+            f += 1
+    u["toil"] = toil
+    if f:
+        u["fatigue"] = f
 
 
 def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -> tuple[list, list]:
@@ -2202,9 +2247,12 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     lost, dead, dealt, flanked, log = [0] * len(us), [0] * len(us), [0] * len(us), [False] * len(us), []
     acc = (lost, dead, dealt)
     under = [False] * len(us)                     # under shellfire or machine-gun fire this exchange (suppression)
+    _toil_going(d, us, field)
     log += _mines_all(d, us, table, rng, acc, field)
     log += _closing_all(d, us, table, rng, acc, field)
-    log += _strike_all(d, us, table, rng, acc, flanked, field, list(lost))
+    struck = _strike_all(d, us, table, rng, acc, flanked, field, list(lost))
+    fought = {l[k] for l in struck if l["kind"] == "melee" for k in ("att", "dfd")}
+    log += struck
     log += _shoot_all(d, us, table, rng, acc, field, under)
     log += _indirect_all(d, us, table, rng, acc, field, under)
     log += _assault_all(d, us, table, rng, acc, field)
@@ -2227,6 +2275,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     _posts_settle(field)
     log += _dig_all(d, us)
     log += _sappers_all(d, us, field)
+    _toil_fought(d, us, fought)
     _unhooked_after(us)
     for i, u in enumerate(us):
         u["charged"] = False
@@ -2896,7 +2945,7 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
         if b.get("vehicle"):
             log += _armour_volley(d, us, (table, rng, acc), v, opts)
             continue
-        t = _take_hurt(b, volley(d, _side(_shooter(us, v), table), _side(b, table), v["men"], v["dist"], rng, **opts))
+        t = _take_hurt(b, volley(d, _shooter_side(d, _shooter(us, v), table), _side(b, table), v["men"], v["dist"], rng, **opts))
         _tally(*acc, v, t)
         log += _logged({"kind": "volley", **v}, t)
         if v.get("behind") is not None:
@@ -2921,7 +2970,7 @@ def _armour_volley(d: Data, us: list, ctx: tuple, v: dict, opts: dict) -> list:
     aimed shot that hits (as at men) knocks a vehicle out at its armour's row % (`rpg`, `atgm`,
     or `small`); a small-arms hit that does not does no other harm."""
     table, rng, acc = ctx
-    att = _side(_shooter(us, v), table)
+    att = _shooter_side(d, _shooter(us, v), table)
     band = field_range(d, att["weapon"], v["dist"], opts["reach"])
     if band is None:
         return []
@@ -3122,7 +3171,7 @@ def _beaten_fire(d: Data, us: list, table: str, rng, acc: tuple, v: dict) -> lis
     r = {**v, "dfd": k, "dist": v["dist"] + v["beyond"], "men": v["men"] * d.units["machine_guns"]["beaten"]["share"] / 100}
     opts = {"factor": form(d, bh)["missile_factor"] * (100 - v["misfire"]) / 100 * v.get("bseen", 1), "exposed": _exposure(d, bh, False, True),
             "penalty": v["bcover"] + v["penalty"], "reach": v["reach"]}
-    hits = volley(d, _side(us[v["att"]], table), _side(bh, table), r["men"], r["dist"], rng, **opts)
+    hits = volley(d, _shooter_side(d, us[v["att"]], table), _side(bh, table), r["men"], r["dist"], rng, **opts)
     if hits is None:
         return []
     t = _take_hurt(bh, hits)

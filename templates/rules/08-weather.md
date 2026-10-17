@@ -29,7 +29,8 @@ far he can see to aim. In the wet, a firearm can **misfire**, losing the shot:
 ## Fatigue {#fatigue}
 
 A hard march, heat or cold, deep going, a bad night and hand-to-hand fighting tire a
-character a step at a time; a good night's rest takes it back:
+character a step at a time; a good night's rest takes it back. On the field map whole units
+tire the same way, from hand-to-hand fighting and deep going ([an exchange](#exchange)):
 
 {{table:fatigue}}
 

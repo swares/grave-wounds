@@ -93,7 +93,8 @@ round it. The planned arrival time uses each day's ground where that day's weath
 and the summary says from which date the ground is a guess.
 
 On the **battle map**, deep mud or deep snow (level 2 or more) costs +1 movement for every
-hex.
+hex. On the field map each hex a unit goes in it also counts one toil toward its fatigue
+(*Fatigue*, below).
 
 ## Weather in battle
 
@@ -275,5 +276,12 @@ the clock to reach the next morning).
 
 On the battle map each fighter's card shows his fatigue. A fight set up from the travel
 map gives each side its force's level.
+
+On the field map, units tire by the same toil rule as a fighter. Each exchange a unit
+fights hand to hand counts one toil, and so does each hex it goes in deep mud or snow. The
+kit's load sets how much toil makes a step: heavy 12, medium 20, light 30. Units reach
+Exhausted at most, and the levels' fight penalty comes off their attack and parry. They
+start the battle fresh, and nothing takes the fatigue back before it ends. See
+`docs/units.md`, *Fatigue*.
 
 All of this is a first draft, to be tuned in play.
