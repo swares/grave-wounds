@@ -39,7 +39,9 @@ the browser (`templates/units.js`, checked against the Python).
    - plus situation: flank +20, rear +30, a mounted charge +20 (and twice the tempo) in
      its first exchange, shaken −10; pikemen striking horse to their front +20 (see *A
      front of pikes*, below);
-   - for missiles, minus the range band (medium −20, long −40), weather and cover.
+   - for missiles, minus the range band (medium −20, long −40), weather and cover;
+   - a tired unit: its fatigue level's penalty (*Fatigue*, below) off its attack, struck or
+     shot, and off its parry.
 
    A critical (a tenth of the chance or less) cannot be parried. Otherwise the defender
    parries on d100 against his unit's defence: green 25%, regular 35%, veteran 45%. There
@@ -61,6 +63,30 @@ the browser (`templates/units.js`, checked against the Python).
      five under the old rule), 72% on the 1944 table. Muskets, older guns and blades keep
      the rule above.
 5. **Morale** (below), then the next exchange.
+
+### Fatigue
+
+Units tire by the same rule as a single fighter's toil (`characteristics.toil` in
+`data/wounds.yaml`). Every exchange a unit strikes or is struck in hand to hand counts one
+toil, and so does every hex it goes in deep mud or snow (level 2 or more), counted as the
+hexes from where it stood at the end of the last exchange to where it stands now. Its kit's
+load sets how much toil makes it a step worse: 12 for heavy kit (plate harness, a 1630
+cuirassier's, the heaviest modern body armour), 20 for medium (a hauberk, a jack, a
+brigandine, most modern vests), 30 for light (everything not listed: a gambeson, no armour). Toil takes it to Exhausted at
+most (`worst`, 3 steps). Each step costs its fatigue level's penalty (`fatigue.levels` in
+`data/weather.yaml`: Tired 5, Weary 10, Exhausted 20) off its attack, in hand to hand and
+shooting, and off its parry. The unit's line on the map shows its level. Nothing takes it
+back during the battle. Shooting and being shot at cost no toil. Vehicles don't tire. Heroes
+fight on their own sheets, untouched by their unit's fatigue. Units start the battle fresh
+(a fight sent from the travel map does not yet carry the force's own level onto its units).
+
+This is what costs the French at Agincourt: their men in plate reach the English line
+already Tired from the mud, and the fighting and the mud behind them soon make them
+Exhausted. Measured over the 37 battlefields, 4 seeds each, only Agincourt changes its
+result. The English still have units standing at the end of all four runs (before, two runs
+ended with the whole English army gone), and they win one of the four outright. The other three still go to
+the French on the share of men lost, because one English archer block breaks and is cut
+down in the rout. See the review for the morale trigger behind that.
 
 ## Morale
 
