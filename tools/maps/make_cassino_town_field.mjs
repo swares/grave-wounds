@@ -64,6 +64,7 @@ writeField({
     { name: "Castle Hill taken", at: 241, note: "About 16:00, four hours later: D Company of the 25th takes Castle Hill (Point 193)." },
     { name: "The 26th Battalion committed", at: 301, note: "Late afternoon (est.): the 26th Battalion is committed and takes three hours in the dark to reach Route 6.", arrive: ["26th New Zealand Battalion (following up)"] },
   ],
+  ends: { at: 10801, why: "called off on 23 March: midnight from noon on the 15th" },
   objective: { at: CASTLE, side: 0, name: "Castle Hill", radius: 3 },
   id: "cassino-town-1944", name: "Cassino town and Castle Hill, 15 March 1944", sides: ["Allies", "Germans"], table: "owens-wwii",
   travel: { map: "cassino-1944", place: "Cassino", within: 1, sides: ["Allies", "Germans"] },

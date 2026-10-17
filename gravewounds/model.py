@@ -1312,6 +1312,8 @@ def _fields_errors(d: Data) -> list[str]:
         st = f.get("stances")
         if st is not None and not (isinstance(st, list) and len(st) == 2 and all(x in ("attack", "hold") for x in st)):
             errors.append(f"{where}: stances must be two of attack or hold")
+        if "ends" in f and not (isinstance(f["ends"], int) and not isinstance(f["ends"], bool) and f["ends"] >= 1):
+            errors.append(f"{where}: ends must be a whole number of exchanges, 1 or more")
         bad = _field_shape_errors(d, f, where)
         errors += bad or _field_unit_errors(d, f, where, battlefield, battlefield_units, _fits)
         errors += _field_marker_errors(d, f, where)

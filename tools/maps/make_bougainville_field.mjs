@@ -57,6 +57,7 @@ writeField({
     { name: "The 3rd Battalion follows", at: 6, note: "The 3rd Battalion follows in the same column and is caught by American artillery (est. minutes).", arrive: ["23rd Infantry, III Battalion (east slope)"] },
     { name: "The reserve counter-attacks", at: 571, note: "About noon on 9 March, C Company of the 1st Battalion, 145th, starts up Hill 700 against the saddle.", arrive: ["145th Infantry, 1st Battalion (reserve)"] },
   ],
+  ends: { at: 4171, why: "the line whole again by 12 March: midnight from 02:30 on the 9th" },
   objective: { at: [60, Math.round(crest(60))], side: 1, name: "the saddle in the line", radius: 7 },
   id: "bougainville-1944", name: "Hill 700, Bougainville, 8-12 March 1944", sides: ["Americans", "Japanese"], table: "bougainville-1944-all-hits",
   travel: { map: "bougainville-1944", place: "Hill 700", within: 2, sides: ["Americans", "Japanese"] },

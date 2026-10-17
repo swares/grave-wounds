@@ -103,7 +103,7 @@ def set_up(d: Data, fid: str) -> dict:
     F = d.fields[fid]
     field = U.battlefield(d, fid)
     bt = {"sides": list(F["sides"]), "table": F["table"], "units": [], "field": field, "exchange": 0, "phase": "setup", "stages": None,
-         "stageNo": -1, "waiting": [], "start": None, "entry": F.get("entry") or None, "seq": 1}
+         "stageNo": -1, "waiting": [], "start": None, "entry": F.get("entry") or None, "seq": 1, "ends": F.get("ends") or None}
     bt["size"] = list(field["size"])
     field["lifts"] = []
     for u in F.get("units", []):
@@ -372,10 +372,11 @@ def stop_reason(d: Data, bt: dict, held: dict, how: list) -> dict | None:
 
 def play_limit(d: Data, bt: dict) -> int:
     """The exchanges a self-played battle runs at most: the limit, or after_phases past its last
-    phase's start."""
+    phase's start, or as long as the battlefield's account says it was fought (ends) if later;
+    never more than most."""
     P = d.units["commander"]["self_play"]
     last = max([0] + [s["at"] for s in bt.get("stages") or []])
-    return max(P["limit"], min(P["most"], last + P["after_phases"] if last else 0))
+    return max(P["limit"], min(P["most"], max(last + P["after_phases"] if last else 0, bt.get("ends") or 0)))
 
 
 def stances(d: Data, fid: str | None) -> list:

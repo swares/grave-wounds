@@ -26,6 +26,8 @@ size: [120, 100]
 weather: {cond: rain, wind: calm, dir: SE, ground: {mud: 1, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [60, 46], side: 1, name: "the saddle in the line", radius: 7}
+# How long the fight went on, in exchanges from the first, by the account (the line whole again by 12 March: midnight from 02:30 on the 9th): self-play runs at least this long (never past commander.self_play.most).
+ends: 4171
 # Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:

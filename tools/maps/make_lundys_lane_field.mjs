@@ -52,6 +52,7 @@ writeField({
     { name: "Ripley and Drummond come up", at: 120, note: "About nine, in the dark: Brown brings up Ripley's brigade and Porter's volunteers, and Drummond's column reaches the British line.", arrive: ["Ripley's brigade (21st, 23rd, coming up)", "Porter's volunteers (coming up)", "Drummond's column (coming up)"] },
     { name: "Drummond's counter-attacks", at: 150, note: "Drummond's reinforced line counter-attacks three times to win back the guns, until near midnight." },
   ],
+  ends: { at: 271, why: "counter-attacks until near midnight: 23:30 from 19:00" },
   objective: { at: [49, 33], side: 0, name: "the British guns on the crest by the churchyard", radius: 3 },
   id: "lundys-lane-1814", name: "Lundy's Lane, 25 July 1814", sides: ["Americans", "British"], table: "war-1812-all-hits",
   travel: { map: "lundys-lane-1814", place: "Lundy's Lane", within: 2, sides: ["United States", "Britain"] },

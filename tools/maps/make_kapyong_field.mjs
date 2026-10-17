@@ -65,6 +65,7 @@ writeField({
     { name: "Headquarters pulls out", at: 451, note: "05:00 to 06:00: battalion headquarters withdraws down the valley, the Shermans escorting it." },
     { name: "B Company called up the hill", at: 586, note: "07:15: after the last assault on it at 04:45, B Company is ordered up onto the hill." },
   ],
+  ends: { at: 871, why: "fell back the next afternoon: 12:00 from 21:30" },
   objective: { at: SUMMIT, side: 1, name: "Hill 504's summit", radius: 8 },
   id: "kapyong-1951", name: "Hill 504 and the valley at Kapyong, 23-24 April 1951", sides: ["United Nations", "Chinese"], table: "korea-1950-53-hospitalized",
   travel: { map: "kapyong-1951", place: "Hill 504", within: 1, sides: ["United Nations", "Chinese"] },

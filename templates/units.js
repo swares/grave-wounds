@@ -3671,7 +3671,7 @@ function holdForStages(B, phases){                 // the battlefield's phases; 
 }
 function setUpBattle(fid){                         // a battlefield with its armies as drawn up, before the battle starts (as battle.set_up)
   const F = FD.fields[fid];
-  const B = { sides: F.sides.slice(), table: F.table, units: [], field: structuredClone(F.field), exchange: 0, phase: "setup", stages: null, stageNo: -1, waiting: [], start: null, entry: F.entry || null, seq: 1 };
+  const B = { sides: F.sides.slice(), table: F.table, units: [], field: structuredClone(F.field), exchange: 0, phase: "setup", stages: null, stageNo: -1, waiting: [], start: null, entry: F.entry || null, seq: 1, ends: F.ends || null };
   B.size = B.field.size.slice();
   B.field.lifts = [];
   F.units.forEach(u => standOrFly(B, makeUnit({ ...u, side: F.sides[u.side] }, B.seq++, B.table), u.lands));
@@ -3825,9 +3825,9 @@ function playStop(B, held, stances){               // after an exchange of a sel
   if (B.exchange - 1 >= playLimit(B)) return { why: "limit" };
   return null;
 }
-function playLimit(B){                            // the exchanges a self-played battle runs at most: the limit, or after_phases past its last phase's start (as battle.play_limit)
+function playLimit(B){                            // the exchanges a self-played battle runs at most: the limit, or after_phases past its last phase's start, or as long as the battlefield's account says it was fought (ends) if later; never more than most (as battle.play_limit)
   const P = UD.commander.self_play, last = Math.max(0, ...(B.stages || []).map(s => s.at));
-  return Math.max(P.limit, Math.min(P.most, last ? last + P.after_phases : 0));
+  return Math.max(P.limit, Math.min(P.most, Math.max(last ? last + P.after_phases : 0, B.ends || 0)));
 }
 function playStances(fid){                         // a self-played battle's stances: the side the battlefield's objective names attacks and the other holds; else its stances as fought; else both attack (as battle.stances)
   const F = fid ? FD.fields[fid] : null, o = F?.objective;

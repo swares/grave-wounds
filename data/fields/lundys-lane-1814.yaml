@@ -27,6 +27,8 @@ size: [130, 110]
 weather: {cond: fair, wind: calm, dir: SW, ground: {mud: 0, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [49, 33], side: 0, name: "the British guns on the crest by the churchyard", radius: 3}
+# How long the fight went on, in exchanges from the first, by the account (counter-attacks until near midnight: 23:30 from 19:00): self-play runs at least this long (never past commander.self_play.most).
+ends: 271
 # Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:

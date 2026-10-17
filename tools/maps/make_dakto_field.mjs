@@ -60,6 +60,7 @@ writeField({
     { name: "Surrounded", at: 271, note: "15:00: C Company's commander reports being surrounded by 200 to 300 North Vietnamese." },
     { name: "The stray bomb", at: 509, note: "18:58: a Marine fighter-bomber's bombs fall among the paratroopers (one memoir says about 20:00)." },
   ],
+  ends: { at: 5131, why: "the crest taken on 23 November: midnight from 10:30 on the 19th" },
   objective: { at: TOP, side: 0, name: "the crest of Hill 875", radius: 4 },
   id: "dakto-1967", name: "Hill 875, Dak To, 19 November 1967", sides: ["United States and ARVN", "North Vietnamese"], table: "vietnam-1965-70-hospitalized",
   travel: { map: "dakto-1967", place: "Hill 875", within: 1, sides: ["United States and ARVN", "North Vietnamese"] },

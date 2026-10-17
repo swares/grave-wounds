@@ -468,3 +468,37 @@ Neither was built. At Agincourt the French reaching the line does not help them,
 breaks the English is the morale check and rout strike counted on the whole unit when a few
 dozen men touch, measured above. That, not the commander, is what stands between Agincourt and
 its result.
+
+**Runs long enough for every phase, 17 October 2026.** Self-play stopped at 240 exchanges, which
+ended runs before the last phase began on fifteen battlefields (the Poles at Cassino's last phase
+is at 1,111, Chipyong-ni's at 1,156), unless the battle ended sooner. Runs are now fast enough
+(Lützen, the longest, about 77 seconds) to go to 1,200. All 37 battlefields, four runs each:
+101 of 148 runs matched, against 100. Pork Chop went from 1 to 2 of 4 and Heartbreak Ridge from 3
+to 4. Lützen went from 1 to 0: it now runs to 451 exchanges, and in three runs of four it ends with
+the Imperialists still on the windmill hill. Mogadishu's American losses fall from 70% to 25% once
+the relief column's phase comes; why has not been looked into. A battle that went on for days after
+its last phase (Cassino town) is still cut short, and a battlefield cannot yet run as long as its
+own account says when that is past its last phase (Lundy's Lane was fought until near midnight,
+about 300 minutes, but a run ends at 180).
+
+The scripts behind these measurements are now in `tools/selfplay` (see its README): self-play,
+the commander report, a runner for every battlefield and seed, and a comparison of two runs.
+
+**Runs as long as the accounts say, 17 October 2026.** Thirteen battlefields now give `ends`: how
+long their account says the fight went on, in exchanges, the earliest the words allow ("the next
+afternoon" is 12:00; "at dawn" the sunrise worked out for the place and day). A run lasts at least
+that long, within the 1,200 cap. Lundy's Lane runs 271 (180 before), the Monastery 418, Keating
+361 (60), Lützen 541, Mogadishu 783, Kapyong 871, Heartbreak Ridge 901, and X-Ray, Pork Chop,
+Grozny, Bougainville, Dak To and Cassino town to the cap. All 37 battlefields, four runs each: 98
+of 148 matched, against 101. It was kept, because the runs are now the length of the battles they
+stand for, and the three runs lost are faults the short runs hid:
+
+- **Keating** 4 → 3: in one run the outpost falls at exchange 63, just after the old stop at 60
+  (Coalition losses 56% to 68%).
+- **X-Ray** 4 → 3: in one run the Americans are gone at exchange 296; two run to the cap.
+- **Pork Chop** 2 → 1 (American losses 8% to 13%).
+- Lundy's Lane stays 0 of 4 at 271 exchanges (Americans 59% lost, against 49%); Grozny now runs
+  640 exchanges (61), still 0 of 4.
+
+The short runs had stopped some battles with the defenders close to breaking; why they break,
+where the accounts say they held, is the next thing to look at.

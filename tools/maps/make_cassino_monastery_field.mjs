@@ -38,6 +38,7 @@ writeField({
     { name: "A standstill", at: 211, note: "By 03:30 the attack is at a standstill." },
     { name: "A fourth company", at: 271, note: "04:30: a fourth Rajputana company is thrown in and fails to regain the summit; before dawn a Gurkha company gets a lodgement on Point 445." },
   ],
+  ends: { at: 418, why: "the attack had failed by dawn: sunrise about 06:57 Central European time, worked out for the place and day, from midnight" },
   objective: { at: P593, side: 0, name: "Point 593", radius: 4 },
   id: "cassino-monastery-1944", name: "Snakeshead Ridge and the abbey, 17-18 February 1944", sides: ["Allies", "Germans"], table: "owens-wwii",
   travel: { map: "cassino-1944", place: "Point 593 (Monte Calvario)", within: 1, sides: ["Allies", "Germans"] },

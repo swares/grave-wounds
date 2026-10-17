@@ -58,6 +58,7 @@ writeField({
     { name: "Dark", at: 31, note: "By about 17:05 it is dark; overcast, and the moon a day from new.", light: "night" },
   ],
   // The night's fight: the Chechens close in on the station the battalion holds (the afternoon's drive into it is over).
+  ends: { at: 1531, why: "the survivors broke out about 18:00 on 1 January, from 16:30 on 31 December" },
   objective: { at: STATION, side: 1, name: "the railway station", radius: 5 },
   id: "grozny-1995", name: "Grozny: the railway station, 31 December 1994", sides: ["Russians", "Chechens"], table: "chechnya-wounds",
   travel: { map: "grozny-1995", place: "Grozny railway station", within: 1, sides: ["Russians", "Chechens"] },

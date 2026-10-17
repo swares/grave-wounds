@@ -672,7 +672,16 @@ at a time; **Run** (shown only then) plays a move about every 0.7 seconds until 
 - `limit` (60) exchanges have been fought, or, on a battlefield with phases, `after_phases`
   (30) past the last phase's start if that is later, but at most `most` (1,200, about twenty
   hours: every battlefield's phases now all come, Chipyong-ni's last at 1,156; a battle that
-  went on for days after its last phase, such as Cassino town, is still cut short).
+  went on for days after its last phase, such as Cassino town, is still cut short). A
+  battlefield can also say how long its account says the fight went on (`ends`, in exchanges
+  from the first); a run then goes at least that long, still no more than `most`. Where the
+  account gives only a vague end, `ends` is the earliest the words allow: "before noon" is noon,
+  "the next afternoon" 12:00, "near midnight" 23:30, and "at dawn" the sunrise worked out for the
+  place and day. Thirteen battlefields set it: Lundy's Lane 271 (counter-attacks until near
+  midnight), the Monastery 418 (failed by dawn, sunrise about 06:57), Lützen 541 (Wallenstein
+  withdraws at 20:00), Keating 361, Mogadishu 783 (out at dawn, sunrise 05:44), Kapyong 871,
+  Heartbreak Ridge 901, and, past `most` and so cut short at 1,200, X-Ray, Pork Chop, Grozny,
+  Bougainville, Dak To and Cassino town. `ends` never shortens a run.
   Until 17 October 2026 it was 240, which stopped a run before the last phase began on fifteen
   battlefields (Bougainville, the Poles at Cassino, Cassino town, the Monastery, Chipyong-ni,
   Cisterna, Dak To, Goose Green, Heartbreak Ridge, Kapyong, Lützen, Mogadishu, Mons, Pork Chop

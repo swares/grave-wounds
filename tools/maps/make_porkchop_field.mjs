@@ -62,6 +62,7 @@ writeField({
     { name: "K Company counter-attacks", at: 326, note: "04:30: the barrage lifts and K Company steps off; L Company attacks again at about the same time.", arrive: ["K Company, 31st Infantry (from the main line)"] },
     { name: "A fresh Chinese company", at: 550, note: "08:14: G Company of the 17th Infantry arrives as a fresh Chinese company appears (which company it was is our reading).", arrive: ["Chinese company from Old Baldy (the west)", "G Company, 17th Infantry (from the main line)"] },
   ],
+  ends: { at: 1496, why: "the hill back in American hands by the 18th: midnight from 23:05 on the 16th" },
   objective: { at: TOP, side: 1, name: "the top of Pork Chop Hill", radius: 9 },
   id: "porkchop-1953", name: "Pork Chop Hill, 16-17 April 1953", sides: ["United Nations", "Chinese"], table: "korea-1950-53-hospitalized",
   travel: { map: "porkchop-1953", place: "Pork Chop Hill", within: 1, sides: ["United Nations", "Chinese"] },
