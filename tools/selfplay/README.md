@@ -3,7 +3,8 @@
 These scripts play every battlefield with the enemy commander on both sides, using the rules as
 they run in the built field page (`dist/field.html`, from `python3 build.py`). They then report
 how the runs compare with the battles as fought (`docs/selfplay-review.md`). They need Node and
-Python 3, and nothing else.
+Python 3, and nothing else. The page's rules are written once as a module to `.cache/` here
+(ignored by git) and loaded from there.
 
 | File | What it does |
 | --- | --- |

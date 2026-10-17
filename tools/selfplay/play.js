@@ -1,7 +1,7 @@
 // node play.js <field id> <seeds> <out.json> [page] [first seed]: self-play a battlefield with the stances as fought,
 // one run a seed (seed k is dice k x 101, k from first, default 1), and write what each run came to.
 "use strict";
-const fs = require("fs");
+const fs = require("node:fs");
 const { load } = require("./page.js");
 
 const [fid, nSeeds, outFile, htmlPath, firstArg] = process.argv.slice(2);

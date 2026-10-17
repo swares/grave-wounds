@@ -15,16 +15,20 @@ for _, f, k in sorted(((float(t.get(f, 0)), f, k) for f in fids for k in range(f
     print(f, k)
 PY
 job(){
-  if [ "$tool" = quality ]; then node "$here/quality.js" "$1" "$2" "$page" > "$out/$1.s$2.json"
-  else node "$here/play.js" "$1" 1 "$out/$1.s$2.json" "$page" "$2"; fi
+  local fid=$1 k=$2
+  if [[ "$tool" == quality ]]; then node "$here/quality.js" "$fid" "$k" "$page" > "$out/$fid.s$k.json"
+  else node "$here/play.js" "$fid" 1 "$out/$fid.s$k.json" "$page" "$k"; fi
+  return $?
 }
 worker(){
+  local j fid k
   while :; do
     j=$(flock "$queue.lock" sh -c 'j=$(head -1 "$0"); [ -n "$j" ] && sed -i 1d "$0"; echo "$j"' "$queue")
-    [ -z "$j" ] && break
-    set -- $j
-    job "$1" "$2" >> "$log" 2>&1 || echo "$1 s$2 FAILED" >> "$log"
+    [[ -z "$j" ]] && break
+    read -r fid k <<< "$j"
+    job "$fid" "$k" >> "$log" 2>&1 || echo "$fid s$k FAILED" >> "$log"
   done
+  return 0
 }
 for _ in $(seq "$workers"); do worker & done
 wait
