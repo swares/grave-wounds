@@ -526,3 +526,18 @@ Easting 0 to 1 and Pork Chop 1 to 2, but the Monastery 3 to 1 and Mons 4 to 2, a
 unchanged. At the Monastery and Mons the side that should fail is fighting at rifle range,
 beyond any charge, and the constant drain is what broke it. The drain carries the outcome of too
 many battles to take out piecemeal; it was left as it is.
+
+**The Monastery's Gurkhas, measured and not built.** The commander report on main showed the two
+Gurkha battalions at the Monastery (February) often never fighting. Traced: they come on at
+exchange 121, go to ground under fire within a couple of moves, and then score staying in the
+scrub's cover above closing on the only enemy they know of, the paratroops on Point 593, far off;
+they never get up. Their accounts name where they went, so they were given routes (the 1/9th
+across the slopes for Point 444, the 1/2nd straight down for the abbey's hill). They then went,
+but found the hills empty: the holding German commander pulls every unit more than a few hexes
+from the one objective (593) back to it, so the paratroops on 444 and the Germans in the abbey
+leave in the first hour. Marking those Germans to hold their own ground (`stand`) made it worse:
+over twelve runs, main matches 5, routes 4, routes and `stand` 1. With 444 and the abbey holding,
+593 is left to its own paratroops and the Rajputana take it in most runs; on main it is the
+Germans who abandon 444 and the abbey to reinforce 593 that let it hold at all. The fight for 593
+itself is too easy for the attackers. Nothing was built; that fight is the thing to look at next
+at the Monastery. (Twelve runs also show main's four-run 3 of 4 there was luck: 5 of 12.)
