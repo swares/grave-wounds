@@ -541,3 +541,32 @@ over twelve runs, main matches 5, routes 4, routes and `stand` 1. With 444 and t
 Germans who abandon 444 and the abbey to reinforce 593 that let it hold at all. The fight for 593
 itself is too easy for the attackers. Nothing was built; that fight is the thing to look at next
 at the Monastery. (Twelve runs also show main's four-run 3 of 4 there was luck: 5 of 12.)
+
+## Morale against the sources, 17 October 2026
+
+A research report (the project's `break-points-research.md`) found no sourced share of losses at
+which units break, in any era, but a set of patterns the sources agree on: the loser breaks having
+lost little; final losses run about 2-3 to 1, loser to winner; most of the loser's dead fall after
+it breaks; units quit mostly because they are outflanked or left exposed; the losses at breaking
+vary widely; and losses follow the men engaged, not the whole unit. Those became targets T1-T7
+(`docs/morale-redesign.md`), measured by `tools/selfplay/targets.js` and `targets.py`.
+
+The present rules meet T2 (2.5 to 1) and T5 (7% to 67% down at breaking), but miss T1 (units
+break at a median 18% down before 1914 and 37% after, against 5% or less and mostly under 10%) and
+T3 (7% of the loser's men go down after it breaks, against most).
+
+A redesign that checks morale only when something happens to a unit (hit hard, flanked, losing
+the fight, a neighbour broken, its leader down, a quarter or half down), with losses a standing
+penalty and the rout struck only by the pursuers touching it, was built behind a setting and
+measured twice (four runs each, all 37 battlefields): 87 and 90 of 148 runs matched, against 98;
+units broke less often and later, and none of the loser's men went down after breaking. Not
+adopted. The finding: a flank or a neighbour breaking called only a tenth of the breaking checks.
+The battles rarely produce the situations the sources say break units, so morale cannot be put
+right on its own; the present rules break units on their losses instead. The full tables are in
+`docs/morale-redesign.md`.
+
+A 12-run baseline of main was also taken: 303 of 444 runs matched (68%). Twenty-three
+battlefields match in 11 or 12 runs of 12; the Monastery (5), X-Ray (7), Keating and Hamburger
+Hill (9), Mogadishu (10), Pork Chop (4), Goose Green and 73 Easting (3) and Lützen (2) are
+coin-flips; Agincourt matches once, and the Poles at Cassino, Cassino town, Grozny, Hue, Lundy's
+Lane and the June Redan never.
