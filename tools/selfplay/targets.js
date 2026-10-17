@@ -6,16 +6,19 @@ const { load } = require("./page.js");
 
 const [fid, seed, htmlPath] = process.argv.slice(2);
 const breaks = [], down = {}, routDown = {}, why = {};
-const hook = (B, r) => {
-  for (const l of r.log || []){
-    const j = l.dfd ?? l.unit, u = B.units[j];
-    if (!u) continue;
-    const d = typeof l.down === "number" ? l.down : 0;
-    if (d && l.dfd !== undefined){ down[u.side] = (down[u.side] || 0) + d; if (l.kind === "rout") routDown[u.side] = (routDown[u.side] || 0) + d }
-    if (l.kind === "morale" && l.state === "broken" && l.from !== "broken") breaks.push({ side: u.side, unit: u.name, start: u.start, down: u.down || 0, share: Math.round(1000 * (u.down || 0) / Math.max(1, u.start)) / 10, at: B.exchange, why: l.why || null });
-    if (l.kind === "morale" && l.why) for (const w of l.why) why[w] = (why[w] || 0) + 1;
+function noteLine(B, l){                           // one log line: men down by side (and in the rout), a unit's break and why it checked
+  const j = l.dfd ?? l.unit, u = B.units[j];
+  if (!u) return;
+  const d = typeof l.down === "number" ? l.down : 0;
+  if (d && l.dfd !== undefined){
+    down[u.side] = (down[u.side] || 0) + d;
+    if (l.kind === "rout") routDown[u.side] = (routDown[u.side] || 0) + d;
   }
-};
+  if (l.kind !== "morale") return;
+  if (l.state === "broken" && l.from !== "broken") breaks.push({ side: u.side, unit: u.name, start: u.start, down: u.down || 0, share: Math.round(1000 * (u.down || 0) / Math.max(1, u.start)) / 10, at: B.exchange, why: l.why || null });
+  for (const w of l.why || []) why[w] = (why[w] || 0) + 1;
+}
+const hook = (B, r) => { for (const l of r.log || []) noteLine(B, l) };
 const { FD, api } = load(htmlPath, [], hook);
 const t0 = Date.now(), r = api.selfPlay(fid, new api.SeededDice(Number(seed) * 101)), F = FD.fields[fid];
 const B = r.battle, end = r.points.at(-1).points[0];
