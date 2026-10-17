@@ -446,3 +446,25 @@ to 0, Khe Sanh 61% to 30%). Grozny's
 Chechens idled more in one of the two runs, which went another way by the dice from early on.
 The Poles at Cassino idled more (25% to 38%) because in one run they held Point 593 six
 exchanges sooner, before the second battalion's companies came up.
+
+**A formed unit held up behind another, measured and not built.** The next fault after the
+shooters was a formed unit stuck behind a formed unit of its own side (Agincourt's French
+main battle behind the vanguard). Two answers were measured, each on all 37 battlefields,
+four runs, against main's 100 of 148:
+
+- *Extend, else relieve*: come up in line beside the front unit where there is room, else,
+  when the front unit in contact is shaken or a quarter down, change places with it. 100 of
+  148; only Towton and Visby moved, by a point or two of losses. At Agincourt neither ever
+  happened: there is no room beside the vanguard, and it is never shaken or a quarter down.
+- *Narrowing*: the real block at Agincourt is the ground. The field narrows between the woods
+  toward the English line, and the vanguard's 60-hex front cannot fit nearer than 4 rows
+  from it (only the GM's *Narrower* changes a unit's width). A formed unit that would stand
+  closed in a quarter at a time, deeper, to the widest front that let it move nearer its
+  target, and moved. The vanguard then reached the English line, but 98 of 148: Agincourt
+  1 to 0 of 4 (the English lose more, 31% against 25%, most of it in the rout in the run looked at; the
+  French still put down few men hand to hand) and Lützen 1 to 0; Albuera's Allies lose 48% (37%).
+
+Neither was built. At Agincourt the French reaching the line does not help them, because what
+breaks the English is the morale check and rout strike counted on the whole unit when a few
+dozen men touch, measured above. That, not the commander, is what stands between Agincourt and
+its result.
