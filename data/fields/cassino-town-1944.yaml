@@ -27,6 +27,8 @@ size: [140, 120]
 weather: {cond: overcast, wind: breeze, dir: S, ground: {mud: 2, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [28, 30], side: 0, name: "Castle Hill", radius: 3}
+# How long the fight went on, in exchanges from the first, by the account (called off on 23 March: midnight from noon on the 15th): self-play runs at least this long (never past commander.self_play.most).
+ends: 10801
 # Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:

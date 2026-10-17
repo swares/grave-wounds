@@ -24,6 +24,8 @@ size: [220, 160]
 weather: {cond: fair, wind: calm, light: night, ground: {mud: 0, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [176, 64], side: 1, name: "Hill 504's summit", radius: 8}
+# How long the fight went on, in exchanges from the first, by the account (fell back the next afternoon: 12:00 from 21:30): self-play runs at least this long (never past commander.self_play.most).
+ends: 871
 # Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:

@@ -27,6 +27,8 @@ size: [140, 110]
 weather: {cond: overcast, wind: calm, light: dusk, ground: {mud: 1, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [70, 58], side: 1, name: "the railway station", radius: 5}
+# How long the fight went on, in exchanges from the first, by the account (the survivors broke out about 18:00 on 1 January, from 16:30 on 31 December): self-play runs at least this long (never past commander.self_play.most).
+ends: 1531
 # Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:

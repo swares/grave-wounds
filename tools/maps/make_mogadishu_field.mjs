@@ -63,6 +63,7 @@ writeField({
     { name: "Crash site 2 falls", at: 59, note: "About 17:40: the snipers run out of ammunition and are killed as the crowd overruns Durant's crash site." },
     { name: "The relief column", at: 553, note: "01:55: the relief column of 10th Mountain troops in Malaysian APCs, with Pakistani tanks, reaches the trapped force.", arrive: ["Relief column (10th Mountain infantry)", "Relief column (Malaysian APCs and Pakistani tanks)"] },
   ],
+  ends: { at: 783, why: "out at dawn: sunrise 05:44, worked out for the place and day, from 16:42" },
   objective: { at: CRASH1, side: 1, name: "Super 61's crash site", radius: 4 },
   id: "mogadishu-1993", name: "Mogadishu: the crash sites, 3 October 1993", sides: ["United States", "Somali National Alliance"], table: "somalia-1993-wounds",
   travel: { map: "mogadishu-1993", place: "Crash site 1 (Super 61)", within: 2, sides: ["United States", "Somali National Alliance"] },

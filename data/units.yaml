@@ -921,7 +921,8 @@ commander:
   # a side has no unit left standing (and none still to come); then the battle ends. A battlefield
   # with phases runs at least `after_phases` exchanges past its last phase's start, but never more
   # than `most` (enough for every battlefield's last phase now, Chipyong-ni's at 1,156 the latest;
-  # a battle that goes on for days past its last phase is still cut short). On a
+  # a battle that goes on for days past its last phase is still cut short). A battlefield's `ends`
+  # (how long its account says the fight went on) makes a run at least that long, within `most`. On a
   # battlefield, the side its objective names attacks and the other holds (else its `stances`, as
   # fought); on open ground both attack. Design choices.
   # The objective counts as taken only with no standing enemy within `secure` hexes of it.

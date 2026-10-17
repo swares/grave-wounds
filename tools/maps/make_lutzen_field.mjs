@@ -65,6 +65,7 @@ writeField({
     { name: "The final assault on the windmill hill", at: 271, note: "15:30 to 17:00: as the light fades Bernhard's men take the windmill battery." },
     { name: "Pappenheim's foot arrive", at: 421, note: "18:00: Pappenheim's foot come up, too late; at 20:00 Wallenstein withdraws.", arrive: ["Pappenheim's foot (coming up, too late)"] },
   ],
+  ends: { at: 541, why: "Wallenstein withdraws at 20:00, from 11:00" },
   objective: { at: [38, 67], side: 0, name: "the windmill battery", radius: 4 },
   id: "lutzen-1632", name: "Lützen, 16 November 1632", sides: ["Swedes", "Imperialists"], table: "thirty-years-war-all-hits",
   travel: { map: "lutzen-1632", place: "Lützen", within: 2, sides: ["Sweden", "Empire"] },

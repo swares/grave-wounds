@@ -58,6 +58,7 @@ writeField({
     { name: "The southern half of 931", at: 361, note: "By 03:00 the 2nd and 3rd Battalions hold the southern half of Hill 931 and beat off a counter-attack." },
     { name: "The French from the north", at: 541, note: "With daylight (est. 06:00) the French close in from the north as the battalions press on to meet them; 931 is taken before noon.", arrive: ["French Battalion (from the north)"] },
   ],
+  ends: { at: 901, why: "Hill 931 taken before noon: 12:00 from 21:00" },
   objective: { at: H931, side: 0, name: "Hill 931", radius: 3 },
   id: "heartbreak-1951", name: "Hill 931 on Heartbreak Ridge, October 1951", sides: ["United Nations", "North Koreans"], table: "korea-1950-53-hospitalized",
   travel: { map: "heartbreak-1951", place: "Hill 931", within: 1, sides: ["United Nations", "North Koreans"] },
