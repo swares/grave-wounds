@@ -519,3 +519,10 @@ four runs each, against main's 98 of 148:
 A gains Keating, Mogadishu, Pork Chop, Hamburger Hill and Goose Green (+5) but loses the Monastery
 (3 to 1), Cowpens (4 to 2), Chipyong-ni, Mons and the Redan (−7): the same drain that wears down
 the long defences is what breaks the losers of the short, decisive fights. Neither was built.
+
+A third variant kept the check while the unit is under pressure: losing men that exchange, or a
+standing enemy within a charge of it (twice the enemy's move, edge to edge). 96 of 148 as well: 73
+Easting 0 to 1 and Pork Chop 1 to 2, but the Monastery 3 to 1 and Mons 4 to 2, and Keating
+unchanged. At the Monastery and Mons the side that should fail is fighting at rifle range,
+beyond any charge, and the constant drain is what broke it. The drain carries the outcome of too
+many battles to take out piecemeal; it was left as it is.
