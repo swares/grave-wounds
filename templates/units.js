@@ -530,8 +530,16 @@ function moraleMods(mods, u){
   if (u.state === "steady") m += mods.in_order;
   if (u.dug) m += mods.dug_in || 0;
   if (u.no_ammo) m += mods.no_ammo || 0;
-  m -= Math.min(mods.losing_cap, mods.losing_per_man * Math.max(0, (u.lost || 0) - (u.dealt || 0)));
+  m -= Math.min(mods.losing_cap, mods.losing_per_man * losingSteps(u));
   return m;
+}
+function losingSteps(u){                         // how far it is losing the fight: men lost past men put down, in men, or (morale.contact_scale) in twentieths of its men touching the enemy (at least one man)
+  const net = Math.max(0, (u.lost || 0) - (u.dealt || 0));
+  return u.touching === null || u.touching === undefined ? net : Math.floor(net / Math.max(1, u.touching / 20));
+}
+function enemyTouching(us, i){                    // unit i's men in its hexes touching an enemy unit
+  const u = us[i], foes = new Set(us.filter(e => e.side !== u.side && !out_(e)).flatMap(e => footprint(e).flat().map(hk))), men = menByHex(u);
+  return footprint(u).flat().reduce((a, h, q) => a + ([0, 1, 2, 3, 4, 5].some(d => foes.has(hk(step(h, d)))) ? men[q] : 0), 0);
 }
 function failedState(mo, u, by){
   if (u.state === "shaken") return "broken";
@@ -541,7 +549,7 @@ function failedState(mo, u, by){
 function morale(u, roll){                       // {check, target, state}
   const M = UD.morale;
   if (u.state === "broken") return { check: false, target: null, state: "broken" };
-  const losing = (u.lost || 0) > (u.dealt || 0) && u.contact;
+  const losing = u.contact && losingSteps(u) >= 1;
   const struck = u.down >= M.trigger * u.start || u.lost >= M.shock * Math.max(1, u.men) || u.flanked || losing;
   const rally = u.state === "shaken" && !u.contact;
   if (!struck && !rally) return { check: false, target: null, state: u.state };
@@ -2113,7 +2121,7 @@ function moraleAll(us, occ, before, acc, rng, table, field = null){
     const near = adjacentUnits(us, occ, i);
     const [down, lost] = vehicleLosses(u, before[i], acc.lost[i]);
     const unit = { quality: u.quality, start: u.start, down, lost, dealt: acc.dealt[i], men: before[i], state: u.state,
-      leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out" };
+      leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out", touching: UD.morale.contact_scale ? enemyTouching(us, i) : null };
     const m = morale(unit, rng.randint(1, 100));
     if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state });
     if (m.state === "broken") broke.push(i);
@@ -2122,15 +2130,20 @@ function moraleAll(us, occ, before, acc, rng, table, field = null){
   for (const j of broke) log.push(...routStrike(us, occ, j, table, rng));
   return log;
 }
+function touchingMen(g, f){                        // g's men in its hexes that touch f
+  const near = new Set(footprint(f).flat().flatMap(h => [0, 1, 2, 3, 4, 5].map(d => hk(step(h, d))))), men = menByHex(g);
+  return footprint(g).flat().reduce((a, h, q) => a + (near.has(hk(h)) ? men[q] : 0), 0);
+}
 function routStrike(us, occ, j, table, rng){     // a unit that has just broken is struck by every man touching it
   const log = [];
   for (const i of adjacentUnits(us, occ, j)){
     const a = us[i], b = us[j];
     if (a.side === b.side || out_(a) || b.men <= 0) continue;
-    const t = takeHurt(b, melee(meleeSide(a, table), meleeSide(b, table), a.men, rng, { rout: true, exposed: exposure(b, true) }));
+    const strikers = UD.rout.touching ? touchingMen(a, b) : a.men;   // rout.touching: only the pursuers' men in the hexes touching it
+    const t = takeHurt(b, melee(meleeSide(a, table), meleeSide(b, table), strikers, rng, { rout: true, exposed: exposure(b, true) }));
     const cut = Math.min(t.down, b.men);
     Object.assign(b, { men: b.men - cut, down: b.down + cut, dead: b.dead + Math.min(t.dead, cut) });
-    log.push(...logged({ kind: "rout", att: i, dfd: j, men: a.men, situation: "rear", rout: true }, t));
+    log.push(...logged({ kind: "rout", att: i, dfd: j, men: strikers, situation: "rear", rout: true }, t));
   }
   return log;
 }
@@ -3063,8 +3076,22 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   if ((obj !== null || ctx[2] === "hold") && digs(us, i, ctx)) return { act: "dig", target: t };
   if (t === null && obj === null) return search(us, i, ctx);
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
-  const o = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx);
+  const o0 = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx), o = narrowed(us, i, t, ctx, o0) || o0;
   return t === null ? o : lastSeen(o, ctx[3], t, ctx[4]);
+}
+function narrowed(us, i, t, ctx, o){               // commander.narrow: attacking, a formed unit out of contact that would not move nearer its target closes in a quarter at a time, deeper, to the widest front that lets it move nearer; the order with its new width, or null
+  const u = us[i];
+  if (!UD.commander.narrow || ctx[2] !== "attack" || t === null || !formed(u) || u.width <= 1 || inContact(us, occupancy(us), i)) return null;
+  if (o && AI_MOVES.has(o.act)) return null;
+  const tu = knownAt(us, t, ctx[3]), now = unitGap(u, tu), obj = objectiveOf(ctx[1]);
+  for (const q of [3, 2, 1]){
+    const w = Math.max(1, Math.ceil(u.width * q / 4));
+    if (w >= u.width) continue;
+    const trial = us.map((x, k) => (k === i ? { ...x, width: w } : x));
+    const o2 = obj === null ? bestOrder(trial, i, t, ctx) : forObjective(trial, i, t, ctx);
+    if (o2 && AI_MOVES.has(o2.act) && unitGap({ ...u, width: w, pos: o2.pos, facing: o2.facing }, tu) < now) return { ...o2, width: w };
+  }
+  return null;
 }
 function pursuit(us, i, ctx){                      // a steady unit that fights hand to hand goes after a broken enemy: horse one within a charge of it with no standing enemy as near, foot one within its move nearer than any standing enemy; veterans give it up after commander.pursuit.rally moves with a standing enemy in reach (as commander._pursuit)
   const u = us[i], P = UD.commander.pursuit;
@@ -3431,7 +3458,7 @@ function applyOrder(us, i, o){                    // carry out an order (as the 
   else if (o.act === "lift") us[i] = { ...u, clearing: { at: [...u.pos], facing: u.facing, n: 0 } };
   else if (o.act === "turn") us[i] = { ...u, facing: o.facing };
   else if (AI_MOVES.has(o.act)){
-    us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}) };
+    us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}), ...(o.width ? { width: o.width } : {}) };
     for (const k of o.through || []) us[k] = { ...us[k], jostled: true };   // the friends it charged through are jostled
   }
 }
