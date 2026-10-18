@@ -2094,11 +2094,13 @@ dawn: the same work, drawn by the same script (`tools/maps/redan_lib.mjs`), on a
 of the faces) and fewer shell holes.
 - Daybreak, fair and calm, light enough to see across the open ground (the columns were
   under fire as soon as they left the trenches).
-- Three British columns, each with covering riflemen of the Rifle Brigade, a ladder and
+- Two British columns, each with covering riflemen of the Rifle Brigade, a ladder and
   wool-bag party of sailors and soldiers (marked with ladders, which do nothing on an
   earthwork), a storming party and green supports: the right
-  column (Yea) facing the Redan's left face, the centre the salient, the left column
-  (Campbell) the right face and the angle beyond it.
+  column (Yea) facing the Redan's left face, the left column (Campbell) the right face and
+  the angle beyond it. The centre column, meant to follow against the salient, never left the
+  trenches (Engels, writing in 1855; the losses fell almost all in the flank columns'
+  brigades), so it is not on the map.
 - The Russians, the works fully manned: infantry at the salient and behind the breastwork,
   guns at each shoulder, a battery and riflemen on the line either side, and a reserve in the
   suburb.

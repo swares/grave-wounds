@@ -11,7 +11,8 @@
 # What happened, briefly: the French and British were to storm the Malakhov and the Redan together
 # after a bombardment, but the Russians had repaired their works in the night and saw the French
 # forming. The French went in early and piecemeal and were thrown back. At daybreak Lord Raglan
-# sent the British columns out of the trenches: riflemen in front, sailors with the ladders,
+# sent the two flank columns out of the trenches (the centre column, meant to follow, never left
+# them, and is not on the map): riflemen in front, sailors with the ladders,
 # soldiers with wool-bags, then the storming parties. Grape and musketry from the Redan and the
 # batteries either side swept the open ground, and the abatis in front of the work was still
 # whole. The leading men fell within yards of the trenches; Colonel Yea and Sir John Campbell
@@ -34,7 +35,7 @@ markers: {labels: ids}
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:
   - {name: "The columns go out", at: 1, note: "At daybreak the riflemen, the ladder and wool-bag parties and the storming parties leave the trenches under grape and musketry."}
-  - {name: "The supports follow", at: 4, note: "The supports come out behind the storming parties.", arrive: ["Right column (Yea): supports", "Centre column: supports", "Left column (Campbell): supports"]}
+  - {name: "The supports follow", at: 4, note: "The supports come out behind the storming parties.", arrive: ["Right column (Yea): supports", "Left column (Campbell): supports"]}
   - {name: "The Russian reserve comes up", at: 15, note: "The reserve in the Karabelnaya comes up to the line; by now the attack is failing and is soon called off.", arrive: ["Russian reserve in the Karabelnaya"]}
 ground: |
   ........xTxxxTTTxTxxxxxxxTxTxxxxTxxTxTTxxTxTxxxxxTxxTxxxTTTxxTTTTTxxxxTxTxxTTxTxxTxTxxTxxxxxxxxTTTxx
@@ -154,10 +155,6 @@ units:
   - {name: "Right column (Yea): ladders and wool-bags (sailors and soldiers)", side: 0, men: 120, quality: regular, weapon: rifle_musket, kit: none, formation: close, width: 6, pos: [29, 91], facing: 1, ladders: true, size: company}
   - {name: "Right column (Yea): storming party", side: 0, men: 400, quality: regular, weapon: rifle_musket, kit: none, formation: close, width: 10, pos: [29, 94], facing: 1, size: battalion}
   - {name: "Right column (Yea): supports", side: 0, men: 600, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 12, pos: [29, 98], facing: 1, size: battalion}
-  - {name: "Centre column: covering riflemen (Rifle Brigade)", side: 0, men: 100, quality: regular, weapon: rifle_musket, kit: none, formation: open, width: 10, pos: [49, 89], facing: 1, size: company}
-  - {name: "Centre column: ladders and wool-bags (sailors and soldiers)", side: 0, men: 120, quality: regular, weapon: rifle_musket, kit: none, formation: close, width: 6, pos: [49, 91], facing: 1, ladders: true, size: company}
-  - {name: "Centre column: storming party", side: 0, men: 400, quality: regular, weapon: rifle_musket, kit: none, formation: close, width: 10, pos: [49, 94], facing: 1, size: battalion}
-  - {name: "Centre column: supports", side: 0, men: 600, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 12, pos: [49, 98], facing: 1, size: battalion}
   - {name: "Left column (Campbell): covering riflemen (Rifle Brigade)", side: 0, men: 100, quality: regular, weapon: rifle_musket, kit: none, formation: open, width: 10, pos: [69, 89], facing: 1, size: company}
   - {name: "Left column (Campbell): ladders and wool-bags (sailors and soldiers)", side: 0, men: 120, quality: regular, weapon: rifle_musket, kit: none, formation: close, width: 6, pos: [69, 91], facing: 1, ladders: true, size: company}
   - {name: "Left column (Campbell): storming party", side: 0, men: 400, quality: regular, weapon: rifle_musket, kit: none, formation: close, width: 10, pos: [69, 94], facing: 1, size: battalion}
