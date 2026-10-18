@@ -60,18 +60,18 @@ function measure(B){                                 // the board after an excha
     if (any) T.exWith3++;
   }
 }
+function noteStrike(B, a, l){                       // one hand-to-hand line: a rout, a front strike, or a flank or rear strike (taken if the striker had the chance)
+  const T = side(a.side);
+  if (l.kind === "rout"){ T.rout++; return }
+  if (l.situation !== "flank" && l.situation !== "rear"){ T.front++; return }
+  T.strikes++;
+  const c = lastChance[a.id];
+  if (c !== undefined && B.exchange - 1 - c <= WINDOW) T.taken++;
+}
 function noteStrikes(B, log, before){                // flank and rear strikes in this exchange's log
   for (const l of log || []){
-    if (l.kind === "volley"){ noteVolley(before, l); continue }
-    if (l.kind !== "melee" && l.kind !== "rout") continue;
-    const a = before[l.att];
-    if (!a) continue;
-    const T = side(a.side);
-    if (l.kind === "rout"){ T.rout++; continue }
-    if (l.situation !== "flank" && l.situation !== "rear"){ T.front++; continue }
-    T.strikes++;
-    const c = lastChance[a.id];
-    if (c !== undefined && B.exchange - 1 - c <= WINDOW) T.taken++;
+    if (l.kind === "volley") noteVolley(before, l);
+    else if ((l.kind === "melee" || l.kind === "rout") && before[l.att]) noteStrike(B, before[l.att], l);
   }
 }
 const hook = (B, r) => {                             // after each side's move; after side 1's the exchange has been fought (its units keep their places in the list)
