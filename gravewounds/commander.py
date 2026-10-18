@@ -1609,13 +1609,9 @@ def under_fire(d: Data, us: list, i: int) -> bool:
 
 
 def storming(d: Data, u: dict, t: dict, field: dict | None, stance: str) -> bool:
-    """Attacking, a unit armed for storming (commander.storm) whose target holds works
-    (units.holds_works), or armed with black powder and the bayonet (commander.bayonet) with the
-    charge odds against a battery: it closes and charges rather than firing."""
-    C = d.units["commander"]
-    if stance != "attack" or u["weapon"] not in C["storm"]:
-        return False
-    return U.holds_works(d, field, u["pos"], t) or (u["weapon"] in C["bayonet"] and U.is_battery(d, t) and may_charge(d, u, t, stance, True))
+    """Attacking, a unit armed for storming (commander.storm: black powder with the bayonet)
+    whose target holds works (units.holds_works): it closes and charges rather than firing."""
+    return stance == "attack" and u["weapon"] in d.units["commander"]["storm"] and U.holds_works(d, field, u["pos"], t)
 
 
 def support(d: Data, us: list, i: int) -> int:
