@@ -699,6 +699,7 @@ morale:
   trigger: 0.25
   shock: 0.10
   shaken_by: 20
+  flank_fire: true            # a volley that puts men down from off a unit's front counts as striking its flank (not one gone to ground, dug in or in a bunker)
   mods:
     leader: 10                # a named leader with the unit, up and fighting
     leader_down: -20

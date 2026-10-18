@@ -1633,6 +1633,10 @@ function airDrops(field, rng){                     // end of the exchange: each 
   }
   return out;
 }
+function firedOnFlank(field, b, v){                // morale.flank_fire: a volley from off its target's front counts as striking its flank, unless the target faces all round (gone to ground, dug in or in a bunker) (as units._fired_on_flank)
+  if (!UD.morale.flank_fire || low(b) || inBunker(field, b) || (v.from[0] === v.to[0] && v.from[1] === v.to[1])) return false;
+  return arc(b.facing, bearing(v.to, v.from)) !== "front";
+}
 function shootAll(us, table, rng, acc, log, field, under = null){
   for (const v of volleys(us, field)){
     markMg(us, v, under);
@@ -1641,6 +1645,7 @@ function shootAll(us, table, rng, acc, log, field, under = null){
     if (b.vehicle){ armourVolley(us, table, rng, acc, log, v, { factor: mf * (100 - v.misfire) / 100 * v.seen, penalty: v.cover + v.penalty + v.over, reach: v.reach }); continue }
     const t = takeHurt(b, volley(sideOfUnit(shooterOf(us, v), table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100 * v.seen, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
     tallyLoss(acc, v, t);
+    if (t.down > 0 && firedOnFlank(field, b, v)){ acc.flanked[v.dfd] = true; v.flank = true }
     log.push(...logged({ kind: "volley", ...v }, t));
     if (v.behind !== undefined && v.behind !== null) beatenFire(us, table, rng, acc, log, v);
     if (!v.riders) heroShots(us, v, { table, rng, acc, log, field, exposed, mf });
