@@ -214,7 +214,8 @@ holding. With the commander on both sides the GM only watches: **Next** steps a 
 and **Run** plays on until the GM presses **Stop** or the run ends itself. It ends when a side
 has no unit left standing and none still to come, when an attacking side has taken the
 objective and held it {{c_sp_held}} exchanges running with no enemy standing within
-{{c_sp_secure}} of it and none still to come, or after {{c_sp_limit}} exchanges (on a
+{{c_sp_secure}} of it and none still to come (but not before the battlefield's last phase has
+begun), or after {{c_sp_limit}} exchanges (on a
 battlefield with phases, {{c_sp_after}} past the last phase's start, if later, but never more
 than {{c_sp_most}}); then the battle
 ends, as with *End the battle*. On a battlefield the side its objective names attacks and the

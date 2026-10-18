@@ -3839,7 +3839,7 @@ function secured(B, side){                        // no standing enemy of side w
   if (toCome(B, 1 - B.sides.indexOf(side))) return false;
   return !B.units.some(u => u.side !== side && u.men > 0 && STANDING.has(u.state) && hdist(u.pos, at) <= R);
 }
-function playStop(B, held, stances){               // after an exchange of a self-played battle: why it stops, or null; held {side, n}: which attacking side held the (first) objective and for how many exchanges running, updated; stances: each side's; a side with none standing but units still to come is not gone (as battle.stop_reason)
+function playStop(B, held, stances){               // after an exchange of a self-played battle: why it stops, or null; held {side, n}: which attacking side held the (first) objective and for how many exchanges running, updated (it ends the run only once every phase has begun); stances: each side's; a side with none standing but units still to come is not gone (as battle.stop_reason)
   const P = UD.commander.self_play, gone = [0, 1].filter(k => !standingSide(B, k) && !toCome(B, k));
   const h = objectiveHeld(B.units, B.field)[0]?.held ?? null;
   if (!held.seen){ held.seen = true; held.start = h }   // who held it after the first exchange: holding it from the start is not taking it
@@ -3849,10 +3849,11 @@ function playStop(B, held, stances){               // after an exchange of a sel
   else held.n = o === held.side ? held.n + 1 : 1;
   held.side = o;
   if (gone.length) return { why: "gone", sides: gone };
-  if (held.n >= P.held) return { why: "held", side: o };
+  if (held.n >= P.held && !phasesToCome(B)) return { why: "held", side: o };
   if (B.exchange - 1 >= playLimit(B)) return { why: "limit" };
   return null;
 }
+const phasesToCome = B => (B.stages || []).some(s => s.at >= B.exchange);   // a phase of the battlefield's account has still to begin: holding the objective does not end the run yet (as battle.phases_to_come)
 function playLimit(B){                            // the exchanges a self-played battle runs at most: the limit, or after_phases past its last phase's start, or as long as the battlefield's account says it was fought (ends) if later; never more than most (as battle.play_limit)
   const P = UD.commander.self_play, last = Math.max(0, ...(B.stages || []).map(s => s.at));
   return Math.max(P.limit, Math.min(P.most, Math.max(last ? last + P.after_phases : 0, B.ends || 0)));

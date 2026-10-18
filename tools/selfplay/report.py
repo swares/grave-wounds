@@ -34,8 +34,9 @@ def lost_share(r: dict, k: int) -> float:
 
 
 def winner(j: dict, r: dict):
-    """The side index that won run r (None: both gone): the side left standing; the attacker if it took and held
-    the objective; else with an objective the side holding it at the end; else the side with the smaller share lost."""
+    """The side index that won run r (None: a draw): the side left standing (both gone: a draw); the attacker if it
+    took and held the objective; else with an objective, a draw if the attacker holds it at the end with the enemy
+    still standing round it (not secured), else the side holding it; else the side with the smaller share lost."""
     sides, stop = j["sides"], r["stop"]
     if stop["why"] == "gone":
         return None if len(stop["sides"]) == 2 else 1 - stop["sides"][0]
@@ -43,7 +44,9 @@ def winner(j: dict, r: dict):
         return sides.index(stop["side"])
     if j["objective"]:
         att = j["objective"]["side"]
-        return att if (r["held"] or [None])[0] == sides[att] else 1 - att
+        if (r["held"] or [None])[0] != sides[att]:
+            return 1 - att
+        return None if r.get("secured") is False else att
     stand = [r["sides"][k]["standing"] for k in (0, 1)]
     if stand[0] == 0 and stand[1] > 0:
         return 1

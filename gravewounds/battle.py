@@ -344,7 +344,8 @@ def to_come(bt: dict, k: int) -> bool:
 def stop_reason(d: Data, bt: dict, held: dict, how: list) -> dict | None:
     """After an exchange of a self-played battle: why it stops, or None; held {side, n}: which
     attacking side held the (first) objective and for how many exchanges running, updated (a
-    holding side on its own ground has not taken it); how: each side's stance (commander.self_play)."""
+    holding side on its own ground has not taken it; it ends the run only once every phase has begun);
+    how: each side's stance (commander.self_play)."""
     P = d.units["commander"]["self_play"]
     gone = [k for k in (0, 1) if not _standing(bt, k) and not to_come(bt, k)]
     lines = U.objective_held(d, bt["units"], bt["field"])
@@ -363,11 +364,17 @@ def stop_reason(d: Data, bt: dict, held: dict, how: list) -> dict | None:
     held["side"] = o
     if gone:
         return {"why": "gone", "sides": gone}
-    if held["n"] >= P["held"]:
+    if held["n"] >= P["held"] and not phases_to_come(bt):
         return {"why": "held", "side": o}
     if bt["exchange"] - 1 >= play_limit(d, bt):
         return {"why": "limit"}
     return None
+
+
+def phases_to_come(bt: dict) -> bool:
+    """A phase of the battlefield's account has still to begin: holding the objective does not end
+    a self-played run yet."""
+    return any(s["at"] >= bt["exchange"] for s in bt.get("stages") or [])
 
 
 def play_limit(d: Data, bt: dict) -> int:

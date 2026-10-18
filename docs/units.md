@@ -677,7 +677,9 @@ at a time; **Run** (shown only then) plays a move about every 0.7 seconds until 
 - a side has no unit left standing (steady or shaken) and none still to come on (a later
   phase's units, or a lift still in the air);
 - an attacking side has taken the (first) objective and held it `held` (5) exchanges running,
-  with no standing enemy within `secure` (10) hexes of it and none still to come (a holding side standing on its own
+  with no standing enemy within `secure` (10) hexes of it and none still to come, once every
+  phase of the battlefield has begun (the account goes on: the Poles at Cassino take Point 593
+  in the first hour and are forced off it hours later) (a holding side standing on its own
   ground does not count, or a defended objective would end every run at once; nor does a hold
   with the enemy still close round it; nor a side that held it from the start, until it has
   changed hands);
