@@ -141,7 +141,7 @@ ground: |
   m.m.mm..mmm.......m.m.m..mm.mmmm..m........m..m....mm...m...m........m.....m....mm.m.m...mmm.....m.mmmm.m.m..m.mmm.m...m.........mm..mm....m.m.mm...m.
 works:
   hexes:
-    - {type: bunker, at: [[93, 42], [117, 30], [97, 74]]}
+    - {type: bunker, at: [[98, 46], [122, 34], [102, 78]]}
 # Batteries on call (off the map): loading the field fills the Fire support panel.
 support:
   - {name: "Marine 81 mm mortars", side: 0, kind: mortar, tubes: 8}

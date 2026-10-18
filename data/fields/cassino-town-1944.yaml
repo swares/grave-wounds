@@ -158,7 +158,7 @@ ground: |
   hFhFhhhhhhFFhhFFhhhhhhhhhhhhFFFhhhFFhhhm.....m....m........m..m.m...mm.......m..m.m.......m........mm.m.mm.....m.m........m......mmwwwm....m
 works:
   hexes:
-    - {type: bunker, at: [[66, 58], [86, 66], [76, 80], [56, 84]]}
+    - {type: bunker, at: [[72, 54], [80, 72], [50, 73], [104, 99]]}
 # Batteries on call (off the map): loading the field fills the Fire support panel.
 support:
   - {name: "New Zealand and British field guns", side: 0, kind: field, tubes: 36}

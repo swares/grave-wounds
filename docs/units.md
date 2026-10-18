@@ -416,7 +416,12 @@ general. All its numbers are in units.yaml `commander`.
   (flintlock rifles, matchlocks, bows, machine guns, rocket launchers) and targets in woods or
   scrub are not stormed. Modern infantry joined the list after self-play (see
   `docs/selfplay-review.md`): firing from range alone almost never shifted men under cover, and
-  attacks stalled. A wall or palisade
+  attacks stalled. A unit with black powder and the bayonet (a smoothbore musket, a
+  rifle-musket or a breech-loader, `commander.bayonet`) also closes and charges a target in
+  the open when it has the charge odds against it (not counting the friends beside it), as
+  men without missiles do; without them it fires as before. Musket-era infantry carried
+  positions and guns with the bayonet: at Lundy's Lane Miller's 21st rushed the British guns.
+  A wall or palisade
   blocks hand-to-hand fighting, so stormers stop at its foot unless they carry ladders (see
   *Escalade*), when they go up it; breaching it is still the GM's order.
 - **Facing.** A unit whose target is already in its front arc keeps its facing rather than

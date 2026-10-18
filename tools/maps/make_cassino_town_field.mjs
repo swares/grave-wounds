@@ -58,6 +58,10 @@ const units = [
   at("German machine guns (below the abbey)", DE, 10, MG, 2, [38, 70], 0),
 ];
 
+// The cellars the paratroops came up out of: a bunker under the middle of each paratroop unit's
+// front row (they were drawn a few hexes off the units before, so no unit stood in one).
+const CELLARS = units.filter(u => u.name.startsWith("German paratroops")).map(u => [...u.pos]);
+
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
     { name: "Into the rubble", at: 1, note: "Noon on 15 March: the bombing stops, the guns open and the 25th Battalion goes in from the north." },
@@ -70,7 +74,7 @@ writeField({
   travel: { map: "cassino-1944", place: "Cassino", within: 1, sides: ["Allies", "Germans"] },
   weather: "{cond: overcast, wind: breeze, dir: S, ground: {mud: 2, snow: 0}}",
   grid, units,
-  hexWorks: { bunker: [[66, 58], [86, 66], [76, 80], [56, 84]] },
+  hexWorks: { bunker: CELLARS },
   support: [
     { name: "New Zealand and British field guns", side: 0, kind: "field", tubes: 36 },
     { name: "Medium and heavy guns", side: 0, kind: "howitzer", tubes: 12 },

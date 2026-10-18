@@ -61,6 +61,10 @@ const units = [
   at("North Vietnamese machine guns", NV, 10, { ...MG, kit: "none", quality: "veteran", prone: true }, 2, [92, 32], 3),
 ];
 
+// A strongpoint (a bunker) under the middle of the North Vietnamese front in the Treasury, the
+// hospital and the prison (drawn five hexes in front of them before, so no unit stood in one).
+const STRONGPOINTS = units.filter(u => /in the (Treasury|hospital|prison)/.test(u.name)).map(u => [...u.pos]);
+
 writeField({
   objective: { at: PROVINCE, side: 0, name: "the provincial headquarters", radius: 3 },
   ends: { at: 3301, why: "the flag over the provincial headquarters a little past 14:00 on 6 February: from 07:00 on the 4th, when 2/5 Marines' attack went in" },
@@ -68,7 +72,7 @@ writeField({
   travel: { map: "hue-1968", place: "Hue, the new city (south bank)", within: 1, sides: ["United States and ARVN", "North Vietnamese"] },
   weather: "{cond: rain, wind: breeze, dir: NE, ground: {mud: 1, snow: 0}}",
   grid, units,
-  hexWorks: { bunker: [[TREASURY[0] - 5, TREASURY[1]], [HOSPITAL[0] - 5, HOSPITAL[1]], [PRISON[0] - 5, PRISON[1]]] },
+  hexWorks: { bunker: STRONGPOINTS },
   support: [
     { name: "Marine 81 mm mortars", side: 0, kind: "mortar", tubes: 8 },
     { name: "Marine 105 mm howitzers (held back at first)", side: 0, kind: "field", tubes: 6 },
