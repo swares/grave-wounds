@@ -718,3 +718,20 @@ same runs before it, scored the same way:
 - 73 Easting +1 and the June Redan +2.
 
 The targets hardly moved: T1 before 1914 is 17%, from 18%, and T2 is 2.8, from 2.6.
+
+**Holding units that keep their own ground, 18 October 2026.** At Cassino town the holding
+commander walks the paratroops off their cellars toward Castle Hill. That is the attackers'
+objective, and holding, every unit more than 3 hexes from it falls back. A unit dug in, gone
+to ground or in a bunker was let fight where it stood instead. Twelve runs of every
+battlefield: 285 of 444 matched, against 307. Not adopted.
+- **Defenders that gave way stood instead:**
+  - Mons, 12 to 0;
+  - Osan, 12 to 5;
+  - the Monastery, 5 to 1;
+  - Hamburger Hill, 9 to 6.
+- **Gains:** X-Ray, 7 to 12, and Mogadishu, 10 to 11.
+- **Unchanged:** Cassino town still lost its paratroops, later (about 55 exchanges, from 28).
+- **T3:** the loser's men down in the rout fell from 6% to 1%, since the losers no longer ran.
+
+Which units should stand and which should give way is a question of their orders and the
+account, not of whether they are in cover.
