@@ -1233,6 +1233,7 @@ function moveText(who, them, o, up){              // a move order's line: steppi
   let past = "";
   if (o.through_screen) past = ", past their own skirmishers";
   else if (o.pursue) past = ", in pursuit";
+  if (o.width) past += `, closing its front to ${nOf(o.width, "hex", "hexes")} to fit the ground`;
   return `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} toward ${them}${past}.`;
 }
 const COMMIT_WHY = { broke: "one of its units has broken", gap: "the enemy is close", exploit: "to exploit an enemy unit that broke", stall: "the attack has stalled" };

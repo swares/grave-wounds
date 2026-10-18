@@ -699,7 +699,6 @@ morale:
   trigger: 0.25
   shock: 0.10
   shaken_by: 20
-  contact_scale: false        # measuring: the losing check counted in twentieths of the men touching the enemy (at least one man), not in men
   mods:
     leader: 10                # a named leader with the unit, up and fighting
     leader_down: -20
@@ -723,7 +722,6 @@ morale:
 # unit it runs through is jostled: that exchange its move is cut by `jostle` (rounded down).
 # Design estimates.
 rout:
-  touching: false             # measuring: only the pursuers' men in the hexes touching the broken unit strike it, not the whole unit
   attack: 20
   tempo: 2.0
   exchanges: 3
@@ -988,7 +986,7 @@ commander:
   remember: 3
   reserve: {green: 0, regular: 25, veteran: 33}
   gap: 12
-  narrow: false               # measuring: attacking, a formed unit out of contact that cannot move nearer its target closes in a quarter at a time, deeper, to the widest front that lets it
+  narrow: true                # attacking, a formed unit out of contact that cannot move nearer its target closes in a quarter at a time, deeper, to the widest front that lets it (Agincourt's funnel)
   pursuit: {rally: 2}         # a broken enemy: horse within a charge of them, foot within their move (nearer than any standing enemy), go after it; veterans give it up after `rally` moves with a standing enemy in reach
   give_way: 4                 # a formed unit held up by its own open-order shooters within this many hexes: they step aside
   stall: {moves: 5, down: 1}  # attacking: this many moves without putting down this % of the enemy or closing: commit a reserve
