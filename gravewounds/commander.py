@@ -4,6 +4,7 @@ templates/units.js (command)."""
 from __future__ import annotations
 
 import heapq
+import math
 
 from . import combat as C, units as U
 from .model import Data
@@ -1093,14 +1094,15 @@ def _narrowed(d: Data, us: list, i: int, t: int | None, ctx: tuple, o: dict | No
         return None
     tu, obj = _where(us, t, ctx[3]), objective(ctx[1])
     now = U.unit_gap(d, u, tu)
+    least = math.ceil(u.get("width0", u["width"]) * d.units["commander"]["narrow_to"])   # never narrower than this share of the front it started with
     for q in (3, 2, 1):
-        w = max(1, -(-u["width"] * q // 4))
+        w = max(least, 1, -(-u["width"] * q // 4))
         if w >= u["width"]:
             continue
         trial = [{**x, "width": w} if k == i else x for k, x in enumerate(us)]
         o2 = _best(d, trial, i, t, ctx) if obj is None else _for_objective(d, trial, i, t, ctx)
         if o2 is not None and o2["act"] in MOVES and U.unit_gap(d, {**u, "width": w, "pos": o2["pos"], "facing": o2["facing"]}, tu) < now:
-            return {**o2, "width": w}
+            return {**o2, "width": w, "width0": u.get("width0", u["width"])}
     return None
 
 
@@ -1916,6 +1918,6 @@ def _apply(us: list, i: int, o: dict) -> None:
     elif o["act"] == "turn":
         us[i] = {**u, "facing": o["facing"]}
     elif o["act"] in MOVES:
-        us[i] = {**u, "pos": o["pos"], "facing": o["facing"], "charged": o["act"] == "charge", **({"prone": False} if o.get("up") else {}), **({"width": o["width"]} if o.get("width") else {})}
+        us[i] = {**u, "pos": o["pos"], "facing": o["facing"], "charged": o["act"] == "charge", **({"prone": False} if o.get("up") else {}), **({"width": o["width"], "width0": o["width0"]} if o.get("width") else {})}
         for k in o.get("through", []):                # the friends it charged through are jostled
             us[k] = {**us[k], "jostled": True}

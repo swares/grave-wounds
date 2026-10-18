@@ -987,6 +987,7 @@ commander:
   reserve: {green: 0, regular: 25, veteran: 33}
   gap: 12
   narrow: true                # attacking, a formed unit out of contact that cannot move nearer its target closes in a quarter at a time, deeper, to the widest front that lets it (Agincourt's funnel)
+  narrow_to: 0.5              # but never narrower than this share of the front it started with (unbounded, Towton's Norfolk closed to a 4-hex column)
   pursuit: {rally: 2}         # a broken enemy: horse within a charge of them, foot within their move (nearer than any standing enemy), go after it; veterans give it up after `rally` moves with a standing enemy in reach
   give_way: 4                 # a formed unit held up by its own open-order shooters within this many hexes: they step aside
   stall: {moves: 5, down: 1}  # attacking: this many moves without putting down this % of the enemy or closing: commit a reserve

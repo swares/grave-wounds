@@ -3071,12 +3071,13 @@ function narrowed(us, i, t, ctx, o){               // commander.narrow: attackin
   if (!UD.commander.narrow || ctx[2] !== "attack" || t === null || !formed(u) || u.width <= 1 || inContact(us, occupancy(us), i)) return null;
   if (o && AI_MOVES.has(o.act)) return null;
   const tu = knownAt(us, t, ctx[3]), now = unitGap(u, tu), obj = objectiveOf(ctx[1]);
+  const least = Math.ceil((u.width0 ?? u.width) * UD.commander.narrow_to);   // never narrower than this share of the front it started with
   for (const q of [3, 2, 1]){
-    const w = Math.max(1, Math.ceil(u.width * q / 4));
+    const w = Math.max(least, 1, Math.ceil(u.width * q / 4));
     if (w >= u.width) continue;
     const trial = us.map((x, k) => (k === i ? { ...x, width: w } : x));
     const o2 = obj === null ? bestOrder(trial, i, t, ctx) : forObjective(trial, i, t, ctx);
-    if (o2 && AI_MOVES.has(o2.act) && unitGap({ ...u, width: w, pos: o2.pos, facing: o2.facing }, tu) < now) return { ...o2, width: w };
+    if (o2 && AI_MOVES.has(o2.act) && unitGap({ ...u, width: w, pos: o2.pos, facing: o2.facing }, tu) < now) return { ...o2, width: w, width0: u.width0 ?? u.width };
   }
   return null;
 }
@@ -3445,7 +3446,7 @@ function applyOrder(us, i, o){                    // carry out an order (as the 
   else if (o.act === "lift") us[i] = { ...u, clearing: { at: [...u.pos], facing: u.facing, n: 0 } };
   else if (o.act === "turn") us[i] = { ...u, facing: o.facing };
   else if (AI_MOVES.has(o.act)){
-    us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}), ...(o.width ? { width: o.width } : {}) };
+    us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}), ...(o.width ? { width: o.width, width0: o.width0 } : {}) };
     for (const k of o.through || []) us[k] = { ...us[k], jostled: true };   // the friends it charged through are jostled
   }
 }
