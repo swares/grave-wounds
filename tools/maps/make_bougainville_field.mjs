@@ -11,7 +11,7 @@
 // saddle, the cleared belt and the line are drawn by hand to that shape, not traced from any
 // map, and are approximate. The deployment is the start of the attack, in our own words;
 // numbers are round figures for play.
-import { N, S, wobble, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { frontRow, N, S, wobble, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
 
 const COLS = 120, ROWS = 100;                 // 1200 m east to west, about 870 m north to south
 const crest = c => 48 + wobble(c / 3, 0.7, 2.2) * 0.8;               // the ridge's crest line, west to east
@@ -30,9 +30,8 @@ function kind(c, r){
 }
 const grid = groundGrid(COLS, ROWS, kind);
 
-// ---------- works: the pillbox line on the forward crest, wire below it ----------
-const bunkers = [], wire = [];
-for (let c = 4; c < COLS - 4; c += 7) bunkers.push([c, Math.round(crest(c)) - (saddle(c) ? 1 : 4)]);
+// ---------- works: wire below the crest (the pillboxes are under the line that held them, below) ----------
+const wire = [];
 for (let c = 2; c < COLS - 2; c++) if (c % 13 !== 6) wire.push([c, Math.round(crest(c)) - 12]);   // a belt with lanes through it
 
 // ---------- the armies (pos is the middle of the front row) ----------
@@ -50,6 +49,12 @@ const units = [
   unit("23rd Infantry, III Battalion (east slope)", JP, 800, JRIFLES, [36, 76, 14]),
   unit("23rd Infantry machine-gun company", JP, 30, { ...MG, kit: "none", quality: "veteran" }, [6, 60, 26]),
 ];
+
+// The pillbox line on the crest, held by the 145th Infantry: a pillbox every seventh hex along the
+// front rows of its battalions on the crest and under each machine-gun section (drawn a few hexes
+// ahead of them before, so no unit stood in one, and the Japanese could take them empty).
+const bunkers = units.filter(u => u.side === US.side && !u.name.includes("reserve"))
+  .flatMap(u => (u.weapon === "machine_gun" ? [[...u.pos]] : frontRow(u).filter((_, i) => i % 7 === 3)));
 
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate

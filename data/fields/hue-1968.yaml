@@ -26,6 +26,8 @@ size: [150, 110]
 weather: {cond: rain, wind: breeze, dir: NE, ground: {mud: 1, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [86, 24], side: 0, name: "the provincial headquarters", radius: 3}
+# How long the fight went on, in exchanges from the first, by the account (the flag over the provincial headquarters a little past 14:00 on 6 February: from 07:00 on the 4th, when 2/5 Marines' attack went in): self-play runs at least this long (never past commander.self_play.most).
+ends: 3301
 ground: |
   wwwwwwwwwwwwwwwwwwwwwwwwwwwww...wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
   wwwwwwwwwwwwwwwwwwwwwwwwwwwww...wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
@@ -139,7 +141,7 @@ ground: |
   m.m.mm..mmm.......m.m.m..mm.mmmm..m........m..m....mm...m...m........m.....m....mm.m.m...mmm.....m.mmmm.m.m..m.mmm.m...m.........mm..mm....m.m.mm...m.
 works:
   hexes:
-    - {type: bunker, at: [[93, 42], [117, 30], [97, 74]]}
+    - {type: bunker, at: [[98, 46], [122, 34], [102, 78]]}
 # Batteries on call (off the map): loading the field fills the Fire support panel.
 support:
   - {name: "Marine 81 mm mortars", side: 0, kind: mortar, tubes: 8}

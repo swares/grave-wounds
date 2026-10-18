@@ -3,11 +3,13 @@
 // editing: node make_redan_june_field.mjs (no packages needed).
 //
 // Sources, all plain fact, and the drawing is ours: Lord Raglan's despatch of 19 June (in the
-// Household Narrative of Current Events, 1855) and the published histories. Three columns of
-// detachments from the Light, 2nd and 4th Divisions went out of the trenches when the French
-// attack on the Malakhov ran into heavy fire at daybreak: the right column against the Redan's
-// left face, the centre against the salient, the left (Sir John Campbell's) against the angle
-// where the right face meets the line to the east. Riflemen covered them; sailors carried the
+// Household Narrative of Current Events, 1855) and the published histories. Columns of
+// detachments from the Light, 2nd and 4th Divisions were drawn up in the trenches: the right
+// (Colonel Yea's) against the Redan's left face, a centre column against the salient, the left
+// (Sir John Campbell's) against the angle where the right face meets the line to the east. When
+// the French attack on the Malakhov ran into heavy fire at daybreak the two flank columns went
+// out; the centre column never left the trenches (Engels, writing in 1855; and the losses fell
+// almost all in the two flank columns' brigades), so it is not on the map. Riflemen covered them; sailors carried the
 // ladders and soldiers the wool-bags. The open ground was about 400 m wide, the abatis was still
 // whole, and the works were fully manned: grape and musketry from the Redan and the batteries on
 // either side stopped the columns short of it, and their leaders fell. The work and the ground
@@ -31,7 +33,6 @@ const column = (label, col0) => [
 ];
 const units = [
   ...column("Right column (Yea)", 25),
-  ...column("Centre column", 45),
   ...column("Left column (Campbell)", 65),
   unit("Russian infantry at the salient", RUSSIANS, 600, { ...MUSKET, size: "battalion" }, [12, 44, 45]),
   unit("Guns on the left face", RUSSIANS, 40, { ...GUNS, size: "battery" }, [3, 35, 35]),
@@ -47,7 +48,7 @@ const units = [
 writeField({
   phases: [   // an exchange is about a minute; the times are our reading of the accounts, rounded
     { name: "The columns go out", at: 1, note: "At daybreak the riflemen, the ladder and wool-bag parties and the storming parties leave the trenches under grape and musketry." },
-    { name: "The supports follow", at: 4, note: "The supports come out behind the storming parties.", arrive: ["Right column (Yea): supports", "Centre column: supports", "Left column (Campbell): supports"] },
+    { name: "The supports follow", at: 4, note: "The supports come out behind the storming parties.", arrive: ["Right column (Yea): supports", "Left column (Campbell): supports"] },
     { name: "The Russian reserve comes up", at: 15, note: "The reserve in the Karabelnaya comes up to the line; by now the attack is failing and is soon called off.", arrive: ["Russian reserve in the Karabelnaya"] },
   ],
   ...COMMON,
@@ -67,7 +68,8 @@ not a wall) the rules give them nothing to do.
 What happened, briefly: the French and British were to storm the Malakhov and the Redan together
 after a bombardment, but the Russians had repaired their works in the night and saw the French
 forming. The French went in early and piecemeal and were thrown back. At daybreak Lord Raglan
-sent the British columns out of the trenches: riflemen in front, sailors with the ladders,
+sent the two flank columns out of the trenches (the centre column, meant to follow, never left
+them, and is not on the map): riflemen in front, sailors with the ladders,
 soldiers with wool-bags, then the storming parties. Grape and musketry from the Redan and the
 batteries either side swept the open ground, and the abatis in front of the work was still
 whole. The leading men fell within yards of the trenches; Colonel Yea and Sir John Campbell

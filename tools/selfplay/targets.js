@@ -19,10 +19,10 @@ function noteLine(B, l){                           // one log line: men down by 
   for (const w of l.why || []) why[w] = (why[w] || 0) + 1;
 }
 const hook = (B, r) => { for (const l of r.log || []) noteLine(B, l) };
-const { FD, api } = load(htmlPath, [], hook);
+const { FD, api } = load(htmlPath, ["secured"], hook);
 const t0 = Date.now(), r = api.selfPlay(fid, new api.SeededDice(Number(seed) * 101)), F = FD.fields[fid];
 const B = r.battle, end = r.points.at(-1).points[0];
-const run = { seed: Number(seed) * 101, ms: Date.now() - t0, stop: r.stop, exchanges: B.exchange - 1, orders: r.orders, sides: end.sides, held: end.held,
+const run = { seed: Number(seed) * 101, ms: Date.now() - t0, stop: r.stop, exchanges: B.exchange - 1, orders: r.orders, sides: end.sides, held: end.held, secured: F.objective && end.held[0] ? api.secured(B, end.held[0]) : null,
   units: B.units.map(u => ({ name: u.name, side: u.side, start: u.start, men: u.men, state: u.state, dead: u.dead || 0, down: u.down || 0, pos: u.pos })),
   targets: { start: Object.fromEntries(F.sides.map(s => [s, B.units.filter(u => u.side === s).reduce((a, u) => a + u.start, 0)])), down, routDown, breaks, why } };
 console.log(JSON.stringify({ fid, name: F.name, sides: F.sides, stances: api.playStances(fid), objective: F.objective || null, phases: (F.phases || []).length, runs: [run] }));

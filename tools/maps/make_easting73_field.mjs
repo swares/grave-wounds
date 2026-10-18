@@ -15,7 +15,7 @@
 // rise, the trenches and the high ground beyond are drawn by hand to that shape, not traced
 // from any map, and are approximate; the deployment is the moment of cresting, in our own words,
 // with round numbers for play. No minefields are drawn: the accounts we used name none here.
-import { wobble, speckle, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { frontRow, wobble, speckle, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
 
 const COLS = 200, ROWS = 120;                 // 2 km east to west (about 72.2 to 74.2 Easting), 1.2 km north to south
 const E = 0, W = 3;                           // facings: east (a little north) and west (a little south)
@@ -27,12 +27,6 @@ function kind(c, r){
   return speckle(c, r, 25) ? "r" : ".";                                                                  // flat, hard desert, stony in places
 }
 const grid = groundGrid(COLS, ROWS, kind);
-const TRENCH = [];
-for (let r = 24; r <= 96; r++){
-  if (r % 9 !== 0) TRENCH.push([CREST(r) + 8, r]);
-}
-const BUNKERS = [[CREST(36) + 8, 36], [CREST(60) + 8, 60], [CREST(84) + 8, 84]];
-const isBunker = h => BUNKERS.some(b => b[0] === h[0] && b[1] === h[1]);
 
 const US = { side: 0, facing: E }, IQ = { side: 1, facing: W };
 const M1A1 = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank", nv: "thermal", fc: "thermal", armour: "composite" };   // modern thermal fire control (the T-72s take the war's: a laser rangefinder)
@@ -55,6 +49,17 @@ const units = [
   at("Iraqi lorries behind the position", IQ, 16, LORRY, 8, [CREST(60) + 40, 60], W),
   at("T-72s on the high ground beyond (about 74 Easting)", IQ, 72, T72, 18, [BEYOND[0] - 4, BEYOND[1]], W),
 ];
+
+// The Iraqi trenches behind the rise, under the front rows of the infantry and RPG teams the account
+// puts in them (drawn a hex ahead of them before, so most of their men stood outside), and running on
+// where no unit stands; a bunker under the middle of each of those units.
+const HELD = units.filter(u => u.side === IQ.side && !u.vehicle);
+const heldRows = new Set(HELD.flatMap(u => frontRow(u).map(h => h[1])));
+const BUNKERS = HELD.map(u => [...u.pos]);
+const isBunker = h => BUNKERS.some(b => b[0] === h[0] && b[1] === h[1]);
+const TRENCH = [];
+for (let r = 24; r <= 96; r++) if (r % 9 !== 0 && !heldRows.has(r)) TRENCH.push([CREST(r) + 8, r]);
+for (const u of HELD) TRENCH.push(...frontRow(u));
 
 writeField({
   phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded

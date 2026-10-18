@@ -645,3 +645,76 @@ within reach, and the big blocks can't wheel onto the few that are. After 1914 f
 is common, but counting it breaks the defenders the accounts say held. Both prototypes are kept
 on the branch `flank-prototypes`, and `flanks.js` stays to measure the next attempt. The open
 problem stands: units break too late (T1), so few of the loser's men fall in the rout (T3).
+
+## The battlefields that never matched, 18 October 2026
+
+Six battlefields matched none of twelve runs: Lundy's Lane, the Poles at Cassino, Cassino town,
+Grozny, Hue and the June Redan. Each was traced. The faults found, and what was done:
+
+- **Scoring and stopping.**
+  - **Draws.** Lundy's Lane and Cassino town were fought to a draw, and a run could score one
+    only if both sides were gone, so neither could ever match. A battle fought to a draw in
+    which the attacker took the objective now matches a draw, or a run that ends with the
+    attacker holding the objective: on the field the fight went the attacker's way, and the
+    draw came after.
+  - **Runs ending early.** Holding the objective no longer ends a run while any of the
+    battlefield's phases are still to come. The Poles at Cassino used to stop on taking
+    Point 593 at about exchange 40, hours before the account has them forced off it.
+  - Neither change moved the total, scored either way.
+- **Works drawn off the units meant to hold them.** Five battlefields drew their bunkers or
+  trenches a hex or more from the units their accounts put in them, so no one stood in them:
+  - Cassino town's cellars;
+  - Bougainville's pillbox line;
+  - Goose Green's ridge trenches;
+  - 73 Easting's trenches;
+  - Hue's strongpoints.
+
+  Their generators now lay each work under the front row of the unit meant to hold it
+  (`frontRow` in `tools/maps/field_lib.mjs`). Goose Green fell from 3 to 0 of 12: with the
+  Argentines really in their trenches, 2 Para's attack breaks within about 21 exchanges. Its
+  matches before came partly from the misplaced works. 73 Easting rose from 3 to 4. Dak To,
+  Hamburger Hill, Heartbreak Ridge, Khe Sanh and Pork Chop have rings of works their
+  defenders partly fill, as drawn.
+- **The June Redan.** The centre column never left the trenches: Engels, writing in 1855, says
+  so, and the losses fell almost all in the two flank columns' brigades. So it is off the map,
+  and the battle went from 0 to 2 of 12. The fault the trace found is in the rules. The
+  600-man Russian battalion at the salient breaks with 3% of its men down: it fights a
+  46-man ladder party across the bank, loses one man to none, and checks as losing the fight.
+  The losing check counts the whole unit at any margin. That is the morale redesign's first
+  fault (`docs/morale-redesign.md`), still open.
+- **Hue.** The field had no length, so a run lasted 60 exchanges, for an attack the sources
+  put at about 55 hours. It now ends at 3,301 (07:00 on 4 February to the flag a little past
+  14:00 on the 6th), capped at 1,200. It still never matches. The Marines lose about 200 men to
+  the North Vietnamese's 120, while the sources have about 1,000 North Vietnamese dead south of
+  the river against 38 Marines killed. The headquarters fell to tanks and tear gas, with
+  recoilless rifles and Ontos; the field has none of these, and the rules have no gas.
+  No unit strengths were found.
+- **Cassino town.** With their cellars now under them, the paratroops still go by about
+  exchange 28. The holding commander walks them off their cellars toward Castle Hill: holding,
+  it pulls every unit to the objective, here the New Zealanders' objective, not the ground the
+  Germans held. That is the "units that hold their own ground" problem the Monastery showed.
+  The opening barrage also puts down a quarter of a company in one exchange; the sources say
+  the bombing killed about half the garrison.
+- **Lundy's Lane.** The guns were taken by Miller's 21st Infantry rushing them in the dark,
+  but the commander never lets a unit with a missile weapon charge, except when storming
+  works. Two versions of a bayonet charge for black-powder foot were measured and not
+  built:
+  - charging any target it had the odds against: 288 of 444, from 307. Lundy's Lane went to
+    5 of 12, but Albuera fell from 12 to 2 and Bull Run from 12 to 5, because the musketry
+    that decided them never fired;
+  - charging batteries only: 304. Albuera fell to 9, and Lundy's Lane did not move, because
+    the guns are never the target chosen.
+- **The Poles at Cassino.** The field has no German counter-attacking force. The Polish
+  Institute's account has the battalion beating off all six counter-attacks and worn down by
+  mortar and artillery fire to one officer and 17 men. No source found gives the German fire
+  strength or the counter-attacks' strength.
+- **Grozny.** One survivor's memoir puts about 1,200 Chechens near the station, against the
+  field's 380. Sources also place a battalion and tank company of the 81st Regiment there,
+  which the field lacks. These rest on a single witness and were not built.
+
+Twelve runs of every battlefield on the branch: 307 of 444 matched, against 308 for the
+same runs before it, scored the same way:
+- Goose Green −3 and Cassino town −1;
+- 73 Easting +1 and the June Redan +2.
+
+The targets hardly moved: T1 before 1914 is 17%, from 18%, and T2 is 2.8, from 2.6.

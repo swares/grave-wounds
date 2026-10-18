@@ -917,7 +917,8 @@ commander:
   # Who holds it is logged each exchange. Design estimates.
   objective: {radius: 1, hold: 3, guard: 4, bonus: 30}
   # self_play: the commander on both sides (the GM watching). A run stops after `limit`
-  # exchanges, or when one side has held the (first) objective `held` exchanges running, or when
+  # exchanges, or when one side has held the (first) objective `held` exchanges running (once all
+  # the battlefield's phases have begun), or when
   # a side has no unit left standing (and none still to come); then the battle ends. A battlefield
   # with phases runs at least `after_phases` exchanges past its last phase's start, but never more
   # than `most` (enough for every battlefield's last phase now, Chipyong-ni's at 1,156 the latest;

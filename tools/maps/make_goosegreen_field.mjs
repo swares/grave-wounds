@@ -11,7 +11,7 @@
 // later that morning. The ridge, the gully, the gorse, the shore and Darwin settlement are drawn by
 // hand to that shape, not traced from any map, and are approximate; the deployment is the fight
 // at dawn, in our own words, with round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { frontRow, N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
 
 const COLS = 140, ROWS = 110;                 // 1400 m east to west, about 950 m north to south
 const RIDGE = c => 56 + Math.round(wobble(c / 8, 0.6, 1.4));             // the crest of Darwin ridge, west to east
@@ -30,11 +30,6 @@ function slopes(c, r){                        // the gorse in the gully and alon
 }
 const kind = (c, r) => shoreAndSettlement(c, r) ?? slopes(c, r);
 const grid = groundGrid(COLS, ROWS, kind);
-const TRENCH = [];
-for (let c = 54; c <= 112; c++){
-  if (c % 7 !== 0) TRENCH.push([c, RIDGE(c) - 2]);
-}
-const BUNKERS = [[64, RIDGE(64) - 2], [84, RIDGE(84) - 2], [98, RIDGE(98) - 2], [108, RIDGE(108) - 2]];
 
 const UK = { side: 0, facing: S }, AR = { side: 1, facing: N };
 const PARA = { quality: "veteran", weapon: "rifle_assault", kit: "ww2_rifleman", formation: "extended", mounted: false };
@@ -53,6 +48,17 @@ const units = [
   at("Argentine machine guns", AR, 10, MAG, 2, [86, RIDGE(86)], N),
   at("Argentine reserve (Darwin)", AR, 40, { ...CONSCRIPT, prone: false }, 6, [DARWIN[0] - 8, DARWIN[1] - 8], N),
 ];
+
+// The Argentine trenches along the ridge, under the front rows of the platoons the account puts in
+// them (drawn a row ahead of them before, so no unit stood in one), and running on along the crest
+// where no unit stands; a bunker under the middle of each platoon line and under the machine guns.
+const HELD = units.filter(u => u.side === AR.side && !u.name.includes("reserve"));
+const heldCols = new Set(HELD.flatMap(u => frontRow(u).map(h => h[0])));
+const BUNKERS = HELD.map(u => [...u.pos]);
+const isBunker = h => BUNKERS.some(b => b[0] === h[0] && b[1] === h[1]);
+const TRENCH = [];
+for (let c = 54; c <= 112; c++) if (c % 7 !== 0 && !heldCols.has(c)) TRENCH.push([c, RIDGE(c) - 2]);
+for (const u of HELD) TRENCH.push(...frontRow(u));
 
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate

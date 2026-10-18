@@ -45,6 +45,21 @@ export function unit(name, army, men, kind, at){
   const [width, col0, row] = at;
   return { name, ...army, men, ...kind, width, pos: [middle(col0, width, army.facing), row] };
 }
+// Hexes as the rules count them (units.js step: odd rows shifted half a hex east): a hex n steps
+// from h in direction d (0 east, then anticlockwise: NE, NW, W, SW, SE).
+const AX = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
+export function stepHex(h, d, n = 1){
+  let q = h[0] - (h[1] - (h[1] & 1)) / 2, r = h[1];
+  const [dq, dr] = AX[((d % 6) + 6) % 6];
+  q += dq * n; r += dr * n;
+  return [q + (r - (r & 1)) / 2, r];
+}
+// The hexes of a unit's front row, as the rules lay it out (units.js footprint), for a unit with
+// at least as many hexes of men as its width: the works its account puts it in go under these.
+export function frontRow(u){
+  const start = stepHex(u.pos, u.facing + 2, Math.floor((u.width - 1) / 2));
+  return Array.from({ length: u.width }, (_, i) => stepHex(start, u.facing + 5, i));
+}
 // The first column of a unit's front row (facing north).
 export const firstCol = u => u.pos[0] - Math.floor((u.width - 1) / 2);
 
