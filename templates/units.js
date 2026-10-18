@@ -125,9 +125,9 @@ function volleyShots(att, men, hexes, rng, opts = {}){   // [aimed shots, attack
 // The share of tries that end each way (missed, parried, stopped, a light, serious or critical wound,
 // a man down or dead, and each kind of wound for the aftermath) is the per-blow rules' own, worked out
 // once for each pairing from quick.samples tries on dice of its own (the page's stand-in for the
-// printed table). A group's men down are then the tries times that share, moved by one roll: a d10
-// on quick.spread (how many square roots of the average more or fewer: the per-blow dice's own spread),
-// or, with less than one man down on average, a d100 at or under the average x 100 for one man.
+// printed table). A group's men down are then one d100 read on the binomial curve for its tries at
+// that share (the per-blow dice's own spread); the dead and the lightly wounded among them are the
+// averages, rounded at random (bookkeeping, not a table roll).
 const QUICK = new Map();
 function quickRates(att, dfd, atk, dfn){         // per try: {missed, parried, stopped, hits, light, serious, critical, down, dead, hurt: {key: share}}
   const key = [att.table, att.weapon, dfd.kit, dfd.quality, atk, dfn].join("|");
@@ -146,11 +146,26 @@ function quickRates(att, dfd, atk, dfn){         // per try: {missed, parried, s
   QUICK.set(key, rates);
   return rates;
 }
-function quickDown(mean, rng){                   // the men down for an average of mean: one roll
-  if (mean <= 0) return 0;
-  if (mean < 1) return rng.randint(1, 100) <= Math.round(mean * 100) ? 1 : 0;
-  return Math.max(0, Math.round(mean + UD.quick.spread[rng.randint(1, 10) - 1] * Math.sqrt(mean)));
+function quickDown(n, q, rng){                   // the men down of n tries that each put a man down at chance q: one d100 read on the binomial curve (its own percentiles for a small group, the normal curve's from quick.normal_from men's spread)
+  if (n <= 0 || q <= 0) return 0;
+  const p = (rng.randint(1, 100) - 0.5) / 100, mean = n * q, v = mean * (1 - q);
+  if (v >= UD.quick.normal_from) return Math.min(n, Math.max(0, Math.round(mean + normalAt(p) * Math.sqrt(v))));
+  let k = 0, term = (1 - q) ** n, cum = term;
+  while (cum < p && k < n){ term *= (n - k) / (k + 1) * q / (1 - q); k++; cum += term }
+  return k;
 }
+function normalAt(p){                              // the standard normal curve's p point (Acklam's approximation)
+  const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
+  const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+  const c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+  const d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+  const tail = x => { const q = Math.sqrt(-2 * Math.log(x)); return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1) };
+  if (p < 0.02425) return tail(p);
+  if (p > 1 - 0.02425) return -tail(1 - p);
+  const q = p - 0.5, r = q * q;
+  return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+}
+const randomRound = (x, rng) => Math.floor(x) + (rng.random() < x - Math.floor(x) ? 1 : 0);   // bookkeeping, not a table roll: whole men, right on average
 function shares(entries, total){                  // total split over [key, weight] by largest remainder -> {key: n}
   const sum = entries.reduce((a, [, w]) => a + w, 0), out = {};
   if (total <= 0 || sum <= 0) return out;
@@ -168,13 +183,13 @@ function quickBlows(att, dfd, n, atk, dfn, rng, aim){   // as blows, but the ran
     const hero = aimedAt(aim.exposed, rng);
     if (hero){ heroBlow(att, hero, { r: rng.randint(1, 100), atk, critAt, shift: aim.shift }, rng, t); tries-- }
   }
-  const R = quickRates(att, dfd, atk, dfn), mean = tries * R.down, down = quickDown(mean, rng), k = mean > 0 ? down / mean : 0;   // no tries (a volley at men it can hardly see): none down
-  for (const f of ["missed", "parried", "stopped"]) t[f] = Math.round(tries * R[f]);
+  const R = quickRates(att, dfd, atk, dfn), mean = tries * R.down, down = quickDown(tries, R.down, rng), k = mean > 0 ? down / mean : 0;   // no tries (a volley at men it can hardly see): none down
+  for (const f of ["missed", "parried", "stopped"]) t[f] = Math.round(tries * R[f]);   // for the log only
   t.down = down;
-  t.dead = Math.min(down, Math.round(tries * R.dead * k));
+  t.dead = Math.min(down, randomRound(tries * R.dead * k, rng));
   const hurtDown = Object.entries(R.hurt).filter(([key]) => key.endsWith("|1")), hurtUp = Object.entries(R.hurt).filter(([key]) => key.endsWith("|0"));
   Object.assign(t.hurt, shares(hurtDown, down - t.dead));
-  for (const [key, w] of hurtUp){ const m = Math.round(tries * w); if (m) t.hurt[key] = m }   // the lightly wounded who fight on: the average
+  for (const [key, w] of hurtUp){ const m = randomRound(tries * w, rng); if (m) t.hurt[key] = m }   // the lightly wounded who fight on: the average
   for (const [key, m] of Object.entries(t.hurt)){ const sev = key.split("|")[0]; t[sev] += m }
   t.hits = t.light + t.serious + t.critical + t.dead;
   return t;
