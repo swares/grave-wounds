@@ -1819,7 +1819,7 @@ minute from the deployment moment (exchange 1). The sources are named in each ge
 where they are not plain.
 - **The Redan, 8 September:** the stormers go over (1); the supports come forward (10); the
   Russian reserves counter-attack (80, after about an hour and a half).
-- **The Redan, 18 June:** the columns go out (1); their supports follow (4); the Russian
+- **The Redan, 18 June:** the two flank columns go out (1); their supports follow (4); the Russian
   reserve comes up (15).
 - **Lundy's Lane:** Scott attacks the hill (1, about 7 pm); sunset, dusk (31, about 7:30);
   dark, by moonlight (61, about 8); Ripley, Porter and Drummond's column come up (120, about
@@ -2198,7 +2198,8 @@ It is drawn by `tools/maps/make_mons_field.mjs`.
 is 120 × 100 hexes, about 1,310 yards (1,200 m) east to west and 950 yards (870 m) north to
 south, north at the top: the ridge across the middle.
 - Hill 700's crest (high ground) with a saddle between two knobs; a line of pillboxes
-  (bunkers: −50% to shots at men in them) on the forward crest, a belt of barbed wire below
+  (bunkers: −50% to shots at men in them) along the front of the 145th's battalions on the
+  crest, one every seventh hex, and under each machine-gun section, a belt of barbed wire below
   with lanes through it, a cleared belt of stumps and shell holes below that, and jungle
   (woods) beyond and behind.
 - Rain, the ground muddy.
@@ -2384,7 +2385,8 @@ field is 140 × 120 hexes, about 1,530 by 1,140 yards (1,400 by 1,040 m), north 
     the abbey along the left edge;
   - the road from Caira comes in from the north, with Route 6 and the station to the south
     and the Rapido on the right.
-- The paratroops' cellars are **bunkers**.
+- The paratroops' cellars are **bunkers**, one under the middle of each paratroop unit's
+  front.
 - The New Zealanders:
   - the 25th Battalion goes into the town from the north and its D Company for Castle Hill,
     with the 24th following;
@@ -2469,7 +2471,11 @@ hexes, about 1,640 by 1,040 yards (1,500 by 950 m), north at the top.
 - United States: three companies of the 2nd Battalion, 5th Marines and A Company, 1st
   Marines, attacking east, with machine guns and four M48 **tanks** on Highway 1.
 - North Vietnamese (veteran, in cover): the provincial headquarters, the Treasury, the
-  hospital and the prison held, with RPG teams that can knock out tanks, and machine guns.
+  hospital and the prison held (a strongpoint, a **bunker**, under the middle of the front
+  in the Treasury, the hospital and the prison), with RPG teams that can knock out tanks,
+  and machine guns.
+- A run goes on for the account's length (`ends` 3,301: 07:00 on 4 February to the flag over
+  the provincial headquarters a little past 14:00 on the 6th), so at most 1,200 exchanges.
 - Fire support: Marine 81 mm mortars and 105 mm howitzers (held back at first to spare the
   city); North Vietnamese mortars, rockets and guns.
 
@@ -2517,8 +2523,8 @@ is 140 × 140 hexes, about 1,530 by 1,330 yards (1,400 by 1,210 m), north at the
 
 **Darwin Hill, Goose Green, 28 May 1982** (`data/fields/goosegreen-1982.yaml`). The field is
 140 × 110 hexes, about 1,530 by 1,040 yards (1,400 by 950 m), north at the top.
-- Darwin ridge runs across the middle, with the Argentine **trenches** and **bunkers** along
-  its crest. The gorse gully lies below Darwin Hill on the right, and a gorse hedge crosses
+- Darwin ridge runs across the middle, with the Argentine **trenches** along its crest, under
+  the two groups of platoons, and **bunkers** in the middle of each and under the machine guns. The gorse gully lies below Darwin Hill on the right, and a gorse hedge crosses
   the open slope.
 - Darwin settlement sits by its inlet of Choiseul Sound in the lower right, with Brenton Loch
   along the left.
@@ -2534,8 +2540,8 @@ is 140 × 140 hexes, about 1,530 by 1,330 yards (1,400 by 1,210 m), north at the
 The field is 200 × 120 hexes, about 2,190 by 1,310 yards (2,000 by 1,200 m), north at the top,
 from about 72.2 to 74.2 Easting on the military grid.
 - Flat, hard desert, stony in places. A low rise (**high ground**, a few metres) runs north
-  to south across the left middle; the Iraqi **trenches** and three **bunkers** lie on its
-  reverse (east) slope. The high ground about 74 Easting is on the right.
+  to south across the left middle; the Iraqi **trenches** lie on its reverse (east) slope,
+  under the infantry and the RPG teams, with a **bunker** in the middle of each. The high ground about 74 Easting is on the right.
 - A **sandstorm**: sight cut to 440 yards (400 m), but thermal sights see to about 985 yards
   (900 m) through it; a strong north-westerly; no aircraft fly. Daylight, late afternoon.
 - Eagle Troop's M1A1s have the thermal fire control and **composite armour**; the T-72s the
