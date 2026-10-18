@@ -699,7 +699,7 @@ morale:
   trigger: 0.25
   shock: 0.10
   shaken_by: 20
-  flank_fire: true            # a volley that puts men down from off a unit's front counts as striking its flank (not one gone to ground, dug in or in a bunker)
+  flank_fire: false           # a volley that puts men down from off a unit's front counts as striking its flank (not one gone to ground, dug in or in a bunker)
   mods:
     leader: 10                # a named leader with the unit, up and fighting
     leader_down: -20
@@ -987,6 +987,7 @@ commander:
   reserve: {green: 0, regular: 25, veteran: 33}
   gap: 12
   pursuit: {rally: 2}         # a broken enemy: horse within a charge of them, foot within their move (nearer than any standing enemy), go after it; veterans give it up after `rally` moves with a standing enemy in reach
+  flanking: {moves: 3}        # a spare hand-to-hand unit goes for an open flank or rear of an enemy fighting its own within this many of its moves (holding, one)
   give_way: 4                 # a formed unit held up by its own open-order shooters within this many hexes: they step aside
   stall: {moves: 5, down: 1}  # attacking: this many moves without putting down this % of the enemy or closing: commit a reserve
   mines: {green: 5, regular: 40, veteran: 80}

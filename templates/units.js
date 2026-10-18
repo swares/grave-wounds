@@ -2396,7 +2396,7 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
   { const h = hookUp(us, side, [goal, known, exchange, stance]); us = h.units; orders.push(...h.orders) }
   { const r = ridersAi(us, side, [goal, known, exchange, stance], orders); us = r.units; orders.splice(0, orders.length, ...r.orders) }
   holdBack(us, side, known);
-  orders.push(...commitReserve(us, side, known, mem, stance));
+  orders.push(...commitReserve(us, side, known, mem, stance, [size, field]));
   if (stance === "hold") orders.push(...fixLines(us, side, [field, known, exchange]));
   for (let i = 0; i < us.length; i++){
     if (us[i].side !== side || !commandable(us, i, exchange)) continue;
@@ -2500,7 +2500,7 @@ function stalled(us, side, known, plan){           // attacking: moves in a row 
   plan.mark = { down, near, quiet: 0 };
   return true;
 }
-function commitReserve(us, side, known, memory, stance = "attack"){   // one reserve unit committed when one of its units broke, an enemy is within gap of a reserve unit, (veterans) an enemy broke, or (attacking) the attack has stalled (as commander._commit)
+function commitReserve(us, side, known, memory, stance = "attack", where = null){   // one reserve unit committed when one of its units broke, an enemy is within gap of a reserve unit, (veterans) an enemy broke, or (attacking) the attack has stalled (as commander._commit)
   const plan = memory.plan ?? (memory.plan = {});
   const stall = stance === "attack" && stalled(us, side, known, plan);
   const own = us.filter(u => u.side === side && ROUTED.has(u.state)).length, foe = us.filter(u => u.side !== side && ROUTED.has(u.state)).length;
@@ -2522,6 +2522,7 @@ function commitReserve(us, side, known, memory, stance = "attack"){   // one res
   if (broke || gap){ pick = nearest(held); why = broke ? "broke" : "gap" }
   else if (foeBroke && vets.length){ pick = nearest(vets); why = "exploit" }
   else if (stall){ pick = nearest(held); why = "stall" }
+  else if (where && (pick = held.find(i => flankTarget(us, i, [where[0], where[1], stance, known]) !== null)) !== undefined) why = "flank";
   else return [];
   us[pick].reserve = false;
   return [{ unit: pick, act: "commit", why }];
@@ -3061,6 +3062,8 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   if (u.reserve) return reserveOrder(us, i, t, ctx);
   const chase = pursuit(us, i, ctx);
   if (chase) return chase;
+  const turn = flankOrder(us, i, ctx);
+  if (turn) return turn;
   const sap = sapperOrder(us, i, t, ctx);
   if (sap) return sap;
   const route = routeOrder(us, i, ctx);
@@ -3089,6 +3092,64 @@ function pursuit(us, i, ctx){                      // a steady unit that fights 
   if (!o || !AI_MOVES.has(o.act)) return quit();
   u.chased = (u.chased || 0) + 1;
   return { ...o, pursue: true };
+}
+function flankTarget(us, i, [size, field, stance, known]){   // [movement, hex, enemy, facing]: the nearest open hex off the front of an enemy unit fighting one of its own that a steady hand-to-hand unit not in contact can reach within commander.flanking.moves of its moves (holding, one), and strike from with a facing it can turn to on a charge, or null (as commander._flank_target)
+  const u = us[i], F = UD.commander.flanking;
+  if (!F || u.state !== "steady" || u.vehicle || u.via || isBattery(u) || isAtGun(u) || u.lost || u.immobile || u.emplaced || ("range" in FD.weapons[u.weapon] && !u.mounted)) return null;
+  const a = allowance(u), occ = occupancy(us);
+  if (a <= 0 || inContact(us, occ, i)) return null;
+  const turnable = g => Math.min(mod6(g - u.facing), mod6(u.facing - g)) * turnCost(u) <= a * UD.charge_move;   // a facing it can still take on the charge
+  const open = new Map();
+  us.forEach((e, j) => {
+    if (e.side === u.side || e.men <= 0 || !STANDING.has(e.state) || (known && !(String(j) in known))) return;
+    if (!adjacentUnits(us, occ, j).some(k => us[k].side === u.side && STANDING.has(us[k].state))) return;
+    for (const x of footprint(e).flat()) for (let d = 0; d < 6; d++){
+      if (arc(e.facing, d) === "front") continue;
+      const h = step(x, d), k = hk(h);
+      const f = [mod6(d + 3), mod6(d + 2)].find(turnable);   // facing so, its front strikes x across that side
+      if (f !== undefined && occ[k] === undefined && !open.has(k)) open.set(k, [h, j, f]);
+    }
+  });
+  if (!open.size) return null;
+  let best = null;
+  for (const [k, [h, c]] of reachable(us, i, size, (stance === "hold" ? 1 : F.moves) * a, field)){
+    const o = open.get(k);
+    if (o && (best === null || c < best[0])) best = [c, h, o[1], o[2]];
+  }
+  return best;
+}
+function flankOrder(us, i, ctx){                   // a spare hand-to-hand unit goes for an open flank or rear of an enemy fighting its own (flankTarget): within a charge, it charges there if it has the odds; else it advances toward it (attacking) (as commander._flank_order)
+  const u = us[i], [size, field, stance, known] = ctx, ft = flankTarget(us, i, [size, field, stance, known]);
+  if (ft === null) return null;
+  const [c, h, j, f] = ft;
+  if (c <= allowance(u) * UD.charge_move){
+    if (!mayCharge(u, us[j], stance, false, support(us, i))) return null;
+    const hit = flankCharge(us, i, j, [size, field]);
+    return hit ? { act: "charge", target: j, pos: hit[0], facing: hit[1], cost: hit[2].cost, flank: true } : null;
+  }
+  if (stance === "hold") return null;
+  const o = toward(us, i, j, [size, { ...field, objective: h, objective_radius: null }, stance, known], "advance");
+  return o ? { ...o, flank: true } : null;
+}
+function flankCharge(us, i, j, [size, field]){      // [hex, facing, move]: the cheapest charge (by movement, then the first facing nearest the enemy) that puts unit i's front on enemy unit j off j's front, or null (as commander._flank_charge)
+  const u = us[i], occ0 = occupancy(us), foes = new Set(Object.keys(occ0).filter(k => us[occ0[k]].side !== u.side)), e = us[j];
+  const near = new Set(footprint(e).flat().flatMap(x => [0, 1, 2, 3, 4, 5].map(d => hk(step(x, d)))));
+  const cands = [...reachable(us, i, size, allowance(u) * UD.charge_move, field).values()].filter(([h]) => near.has(hk(h))).sort((p, q) => p[1] - q[1] || aside(p[0], e.pos) - aside(q[0], e.pos));
+  let tries = UD.commander.tries;
+  for (const [h, c] of cands){
+    for (const g of facingsFor(bearing(h, e.pos), u.facing)){
+      const moved = { ...u, pos: h, facing: g };
+      if (!touches(moved, foes) || !strikesFlank(us, i, moved, j)) continue;
+      if (tries-- === 0) return null;
+      const m = legalMove(us, i, [h, g, c, true], [size, field]);
+      if (m.ok && m.charge) return [h, g, m];
+    }
+  }
+  return null;
+}
+function strikesFlank(us, i, moved, j){           // placed so, unit i's front strikes enemy unit j on its flank or rear (as commander._strikes_flank)
+  const base = us.map((x, k) => (k === i ? moved : x)), occ = occupancy(base);
+  return (footprint(moved)[0] || []).some(h => { const hit = struckHex(base, occ, moved, h); return hit !== null && hit[0] === j && arc(us[j].facing, hit[1] + 3) !== "front" });
 }
 const VETERANS = new Set(["veteran", "elite"]);   // the qualities that rally from a pursuit and commit a reserve to exploit a rout
 function unitGap(a, b){                              // hexes between the nearest hexes of two units (1: side by side) (as units.unit_gap)

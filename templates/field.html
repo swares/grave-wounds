@@ -1233,9 +1233,10 @@ function moveText(who, them, o, up){              // a move order's line: steppi
   let past = "";
   if (o.through_screen) past = ", past their own skirmishers";
   else if (o.pursue) past = ", in pursuit";
+  else if (o.flank) past = ", for its flank";
   return `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} toward ${them}${past}.`;
 }
-const COMMIT_WHY = { broke: "one of its units has broken", gap: "the enemy is close", exploit: "to exploit an enemy unit that broke", stall: "the attack has stalled" };
+const COMMIT_WHY = { broke: "one of its units has broken", gap: "the enemy is close", exploit: "to exploit an enemy unit that broke", stall: "the attack has stalled", flank: "an enemy flank is open within reach" };
 const ORDER_TEXT = {                              // (who, them, o, up, facing) -> the order's line
   commit: (who, them, o) => `${who} are committed from the reserve: ${COMMIT_WHY[o.why] || o.why}${o.at ? "; they go to plug the gap at " + hexName(o.at) + ", where it stood" : ""}.`,
   charge: (who, them, o, up) => `${who} ${up}charge ${them}${throughText(o)}.`,
