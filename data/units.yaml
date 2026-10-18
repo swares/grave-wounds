@@ -687,6 +687,15 @@ modern_fire:
   weapons: [breechloader, rifle_service, rifle_assault, rifle_ap, machine_gun, pistol_smg, hand_grenade, mortar_artillery, rpg,
             mine_ied, explosive_fragment]
 
+# quick: quick-play blows for the table. With `blows` on, a striking group's blows on the rankers are
+# resolved in one roll instead of one at a time: the tries times the share of tries that put a man down
+# (worked out from the per-blow rules, `samples` tries for each pairing of weapon and wound table
+# against armour, quality, attack and parry), moved by a d10 on `spread` (square roots of the average:
+# the per-blow dice's own spread: the middles of the normal curve's tenths), or with less than one man
+# down on average a d100 for one. Blows
+# that fall on a hero are still rolled one at a time. Being measured in self-play.
+quick: {blows: false, samples: 4000, spread: [-1.6, -1.0, -0.7, -0.4, -0.1, 0.1, 0.4, 0.7, 1.0, 1.6]}
+
 # ---------- unit morale ----------
 # After each exchange a unit checks if it lost the exchange in contact (more of its men put
 # down than it put down), or has lost `trigger` of its starting men in all, or `shock` of

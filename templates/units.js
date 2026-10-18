@@ -80,6 +80,7 @@ function landWound(att, dfd, margin, critical, rng, t){
   noteHurt(t, h.severity, h, down);
 }
 function blows(att, dfd, n, atk, dfn, rng, aim){   // aim: the heroes a blow may fall on, and how their defence shifts
+  if (UD.quick?.blows) return quickBlows(att, dfd, n, Math.max(0, atk), dfn, rng, aim);
   const t = newTally();
   t.blows = n;
   atk = Math.max(0, atk);
@@ -118,6 +119,65 @@ function volleyShots(att, men, hexes, rng, opts = {}){   // [aimed shots, attack
   const S = UD.missile, tempo = isMg(att.weapon) ? UD.machine_guns.tempo : S.tempo;   // a machine gun's served guns, at its own tempo
   const shots = men * (S.rate[att.weapon] ?? S.default_rate) * tempo * factor;
   return [countBlows(shots, rng), attackOf(att) - band.penalty - penalty];
+}
+
+// ---------- quick-play blows (units.yaml quick.blows): one roll for a striking group ----------
+// The share of tries that end each way (missed, parried, stopped, a light, serious or critical wound,
+// a man down or dead, and each kind of wound for the aftermath) is the per-blow rules' own, worked out
+// once for each pairing from quick.samples tries on dice of its own (the page's stand-in for the
+// printed table). A group's men down are then the tries times that share, moved by one roll: a d10
+// on quick.spread (how many square roots of the average more or fewer: the per-blow dice's own spread),
+// or, with less than one man down on average, a d100 at or under the average x 100 for one man.
+const QUICK = new Map();
+function quickRates(att, dfd, atk, dfn){         // per try: {missed, parried, stopped, hits, light, serious, critical, down, dead, hurt: {key: share}}
+  const key = [att.table, att.weapon, dfd.kit, dfd.quality, atk, dfn].join("|");
+  if (QUICK.has(key)) return QUICK.get(key);
+  const S = UD.quick.samples, own = new SeededDice(1 + [...key].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 2147483646, 7)), t = newTally();
+  const critAt = Math.floor(atk * FD.combat.critical_fraction);
+  for (let i = 0; i < S; i++){
+    const r = own.randint(1, 100);
+    if (r > atk){ t.missed++; continue }
+    const critical = r <= critAt;
+    if (!critical && dfn > 0 && own.randint(1, 100) <= dfn){ t.parried++; continue }
+    landWound(att, dfd, atk - r, critical, own, t);
+  }
+  const rates = Object.fromEntries(Object.entries(t).filter(([k]) => k !== "hurt" && k !== "blows").map(([k, v]) => [k, v / S]));
+  rates.hurt = Object.fromEntries(Object.entries(t.hurt).map(([k, v]) => [k, v / S]));
+  QUICK.set(key, rates);
+  return rates;
+}
+function quickDown(mean, rng){                   // the men down for an average of mean: one roll
+  if (mean <= 0) return 0;
+  if (mean < 1) return rng.randint(1, 100) <= Math.round(mean * 100) ? 1 : 0;
+  return Math.max(0, Math.round(mean + UD.quick.spread[rng.randint(1, 10) - 1] * Math.sqrt(mean)));
+}
+function shares(entries, total){                  // total split over [key, weight] by largest remainder -> {key: n}
+  const sum = entries.reduce((a, [, w]) => a + w, 0), out = {};
+  if (total <= 0 || sum <= 0) return out;
+  const raw = entries.map(([k, w]) => [k, total * w / sum]);
+  let left = total;
+  for (const [k, x] of raw){ out[k] = Math.floor(x); left -= out[k] }
+  raw.map(([k, x]) => [k, x - Math.floor(x)]).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).slice(0, left).forEach(([k]) => { out[k]++ });
+  return out;
+}
+function quickBlows(att, dfd, n, atk, dfn, rng, aim){   // as blows, but the rankers' blows in one roll; a blow that falls on a hero is still rolled
+  const t = newTally(), critAt = Math.floor(atk * FD.combat.critical_fraction);
+  t.blows = n;
+  let tries = n;
+  if (aim.exposed.length) for (let i = 0; i < n; i++){
+    const hero = aimedAt(aim.exposed, rng);
+    if (hero){ heroBlow(att, hero, { r: rng.randint(1, 100), atk, critAt, shift: aim.shift }, rng, t); tries-- }
+  }
+  const R = quickRates(att, dfd, atk, dfn), down = quickDown(tries * R.down, rng), k = R.down > 0 ? down / (tries * R.down) : 0;
+  for (const f of ["missed", "parried", "stopped"]) t[f] = Math.round(tries * R[f]);
+  t.down = down;
+  t.dead = Math.min(down, Math.round(tries * R.dead * k));
+  const hurtDown = Object.entries(R.hurt).filter(([key]) => key.endsWith("|1")), hurtUp = Object.entries(R.hurt).filter(([key]) => key.endsWith("|0"));
+  Object.assign(t.hurt, shares(hurtDown, down - t.dead));
+  for (const [key, w] of hurtUp){ const m = Math.round(tries * w); if (m) t.hurt[key] = m }   // the lightly wounded who fight on: the average
+  for (const [key, m] of Object.entries(t.hurt)){ const sev = key.split("|")[0]; t[sev] += m }
+  t.hits = t.light + t.serious + t.critical + t.dead;
+  return t;
 }
 
 // ---------- heroes (as gravewounds/units.py) ----------
