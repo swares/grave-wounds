@@ -3999,14 +3999,15 @@ function flankTarget(us, i, [size, field, stance, known]){   // [movement, hex, 
   }
   return best;
 }
-function flankOrder(us, i, ctx){                   // a spare hand-to-hand unit goes for an open flank or rear of an enemy fighting its own (flankTarget): within a charge, it charges there if it has the odds; else it advances toward it (attacking) (as commander._flank_order)
+function flankOrder(us, i, ctx){                   // a spare hand-to-hand unit goes for an open flank or rear of an enemy fighting its own (flankTarget): within a charge, it charges there if it has the odds against the men it would strike; else it advances toward it (attacking) (as commander._flank_order)
   const u = us[i], [size, field, stance, known] = ctx, ft = flankTarget(us, i, [size, field, stance, known]);
   if (ft === null) return null;
   const [c, h, j, f] = ft;
   if (c <= allowance(u) * UD.charge_move){
-    if (!mayCharge(u, us[j], stance, false, support(us, i))) return null;
     const hit = flankCharge(us, i, j, [size, field]);
-    return hit ? { act: "charge", target: j, pos: hit[0], facing: hit[1], cost: hit[2].cost, flank: true } : null;
+    if (!hit) return null;
+    const struck = { ...us[j], men: struckMen(us, i, { ...u, pos: hit[0], facing: hit[1] }, j) };   // the odds against the men it would strike, not the whole unit
+    return mayCharge(u, struck, stance, false, support(us, i)) ? { act: "charge", target: j, pos: hit[0], facing: hit[1], cost: hit[2].cost, flank: true } : null;
   }
   if (stance === "hold") return null;
   const o = toward(us, i, j, [size, { ...field, objective: h, objective_radius: null }, stance, known], "advance");
@@ -4027,6 +4028,12 @@ function flankCharge(us, i, j, [size, field]){      // [hex, facing, move]: the 
     }
   }
   return null;
+}
+function struckMen(us, i, moved, j){              // placed so, the men of enemy unit j in the hexes unit i's front strikes (as commander._struck_men)
+  const base = us.map((x, k) => (k === i ? moved : x)), occ = occupancy(base), e = us[j], men = menByHex(e), hexes = footprint(e).flat().map(hk);
+  const hit = new Set();
+  for (const h of footprint(moved)[0] || []){ const x = struckHex(base, occ, moved, h); if (x !== null && x[0] === j) hit.add(hk(step(h, x[1]))) }
+  return hexes.reduce((n, k, q) => n + (hit.has(k) ? men[q] : 0), 0);
 }
 function strikesFlank(us, i, moved, j){           // placed so, unit i's front strikes enemy unit j on its flank or rear (as commander._strikes_flank)
   const base = us.map((x, k) => (k === i ? moved : x)), occ = occupancy(base);
