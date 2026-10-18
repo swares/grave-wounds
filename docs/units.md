@@ -502,7 +502,9 @@ general. All its numbers are in units.yaml `commander`.
     objective (cover from its target and known minefields count as above), facing its
     target, else the objective.
   - **Holding**, a unit more than 3 hexes from the objective falls back toward it, facing
-    its target, unless it can charge. One with no enemy to go for and within 3 hexes stays.
+    its target, unless it can charge or holds its own ground: one dug in, gone to ground or in
+    a bunker fights where it is (Cassino town's paratroops held their cellars and ruins; the
+    attackers' objective was Castle Hill). One with no enemy to go for and within 3 hexes stays.
   - Its units weigh an enemy within 4 hexes of the objective 30 points more as a target.
   - A unit at the objective digs in there when it is safe to (*Digging in*, above).
 - **Fixed lines.** Holding, by day or at dusk (a line cannot be laid in the dark), each of

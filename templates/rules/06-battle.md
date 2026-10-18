@@ -181,7 +181,8 @@ steady friends touching it, who go in with it), and green units sometimes hesita
   with no objective, and in reserve while they wait.
 - **Objective.** The GM can mark a hex as its objective. Attacking, its units advance on it
   when they have nothing better to do and hold it once there (within {{c_obj_radius}}
-  hex); holding, units more than {{c_obj_hold}} hexes from it fall back to it. Enemies near
+  hex); holding, units more than {{c_obj_hold}} hexes from it fall back to it, unless they are dug
+  in, gone to ground or in a bunker: those hold their own ground. Enemies near
   it make better targets. The log says who holds it after each exchange. Most battlefields
   mark the place their battle was fought for, a hill, a bridge, an outpost, as theirs,
   taking in the whole position (a ring of trenches counts as the hill).

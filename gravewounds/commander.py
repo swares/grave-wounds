@@ -1457,23 +1457,30 @@ def _for_objective(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict
     (stays, charging only with a holder's odds); one with no enemy to go for, or one that would
     only stand or turn while its target is not guarding the objective, advances on it.
     Holding: a unit further than objective.hold from it falls back toward it unless it can
-    charge; one with no enemy to go for and within that stays."""
+    charge or holds its own ground (_holds_own_ground); one with no enemy to go for and within
+    that stays."""
     off = U.off_objective(d, us[i], objective(ctx[1]))
     if t is None:
         return _no_target(d, us, i, ctx, off)
     if ctx[2] == "attack":
         return _attack_objective(d, us, i, t, ctx, off)
     o = _best(d, us, i, t, ctx)
-    if off > U.objective_radii(d, ctx[1])[1] and (o is None or o["act"] != "charge"):
+    if off > U.objective_radii(d, ctx[1])[1] and (o is None or o["act"] != "charge") and not _holds_own_ground(d, us[i], ctx[1]):
         return _toward(d, us, i, t, ctx, "fall_back") or o
     return o
 
 
+def _holds_own_ground(d: Data, u: dict, field: dict | None) -> bool:
+    """Holding, a unit dug in, gone to ground or in a bunker fights where it is rather than fall
+    back to the objective."""
+    return U.low(u) or U.in_bunker(d, field, u)
+
+
 def _no_target(d: Data, us: list, i: int, ctx: tuple, off: int) -> dict | None:
     """With no enemy to go for: attacking, it advances on the objective unless at it; holding,
-    it falls back toward it if further than objective.hold."""
+    it falls back toward it if further than objective.hold, unless it holds its own ground."""
     (radius, hold, _), attack = U.objective_radii(d, ctx[1]), ctx[2] == "attack"
-    if off <= (radius if attack else hold):
+    if off <= (radius if attack else hold) or (not attack and _holds_own_ground(d, us[i], ctx[1])):
         return None
     return _toward(d, us, i, None, ctx, "advance" if attack else "fall_back")
 

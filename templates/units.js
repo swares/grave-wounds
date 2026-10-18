@@ -3189,17 +3189,18 @@ function lays(us, i, [, field, stance, known], row){   // holding (or at the obj
 }
 const mineKind = (us, known) => (knownFoes(known || {}).some(([k]) => us[+k].vehicle) ? "mixed" : "ap");   // mixed if an enemy it knows of has vehicles (as commander._mine_kind)
 const objectiveOf = field => (field?.objective ? [...field.objective] : null);   // the hex the GM marked as the commander's objective, or null
-function forObjective(us, i, t, ctx){              // attacking: at the objective it holds, with no enemy or nothing better it advances; holding: too far out it falls back unless it can charge
+function forObjective(us, i, t, ctx){              // attacking: at the objective it holds, with no enemy or nothing better it advances; holding: too far out it falls back unless it can charge or holds its own ground
   const off = offObjective(us[i], objectiveOf(ctx[1]));
   if (t === null) return noTarget(us, i, ctx, off);
   if (ctx[2] === "attack") return attackObjective(us, i, t, ctx, off);
   const o = bestOrder(us, i, t, ctx);
-  if (off > objectiveRadii(ctx[1])[1] && o?.act !== "charge") return toward(us, i, t, ctx, "fall_back") || o;
+  if (off > objectiveRadii(ctx[1])[1] && o?.act !== "charge" && !holdsOwnGround(us[i], ctx[1])) return toward(us, i, t, ctx, "fall_back") || o;
   return o;
 }
-function noTarget(us, i, ctx, off){                // no enemy to go for: attacking, it advances unless at the objective; holding, it falls back if too far out
+const holdsOwnGround = (u, field) => low(u) || inBunker(field, u);   // holding, a unit dug in, gone to ground or in a bunker fights where it is rather than fall back to the objective (as commander._holds_own_ground)
+function noTarget(us, i, ctx, off){                // no enemy to go for: attacking, it advances unless at the objective; holding, it falls back if too far out, unless it holds its own ground
   const [radius, hold] = objectiveRadii(ctx[1]), attack = ctx[2] === "attack";
-  if (off <= (attack ? radius : hold)) return null;
+  if (off <= (attack ? radius : hold) || (!attack && holdsOwnGround(us[i], ctx[1]))) return null;
   return toward(us, i, null, ctx, attack ? "advance" : "fall_back");
 }
 function attackObjective(us, i, t, ctx, off){      // attacking with a target: at the objective it holds; else its best order, or an advance when that is only to stand or turn and the target is not guarding the objective
