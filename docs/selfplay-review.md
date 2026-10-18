@@ -581,3 +581,67 @@ enemy; veterans rally back after two moves if a standing enemy is in reach). Fou
 down the broken Imperial units. T3 did not move (a median 14-20% of the loser's men after it
 breaks before 1914, none after): the losers still lose most of their men in the line before they
 break (T1). Pursuit is in; breaking too late is the open problem.
+
+## Flanking, 17 October 2026
+
+The sources say units mostly break because they are outflanked or left exposed (T4), and the
+morale redesign found that self-play rarely puts a unit there. So the flanking itself was
+measured first (`tools/selfplay/flanks.js` and `flanks.py`, four runs of each of the 37
+battlefields). After every exchange, for each side, it counts the spare units: steady, not guns
+or vehicles, and not in contact. It checks whether each one could reach an open hex on the flank
+or rear of an enemy unit fighting one of its own, within one move or three, and strike from it
+with a facing it can still turn to on a charge.
+
+| | Before 1914 | 1914 on |
+| --- | --- | --- |
+| Spare unit-exchanges, while some enemy was in hand-to-hand contact | 2,772 | 4,815 |
+| ... that could reach an open flank within one move | 2% | 0% |
+| ... within three moves | 12% | 1% |
+| Flank or rear strikes, against front strikes | 69 / 1,460 | 87 / 864 |
+| Flank strikes by a unit that had such a chance in the five exchanges before | 4 (all at Lützen) | 0 |
+| Volleys fired from off the target's front | 18% | 23% |
+
+The flank and rear strikes there were came mostly from units already in contact, wrapping round
+the end of a line: 43 at Agincourt and 49 at Mogadishu. From 1914 on, the fighting is almost all
+by fire, so the chances to flank are fire from a flank. That fire was already happening, but the
+rules gave it no effect except against vehicles. Two changes were built in the page behind a
+setting and measured against the present rules (with pursuit) over twelve runs of every battlefield.
+
+**Fire from a flank counts as flanked for morale (`morale.flank_fire`).** A volley that put men
+down from off a unit's front counted as striking its flank: a morale check at −20, and breaking
+at once on a failure by more than 20. A unit gone to ground, dug in or in a bunker faces all
+round and was exempt.
+
+| | Present rules | Flank fire |
+| --- | --- | --- |
+| Runs matched | 307 of 444 | 299 |
+| T1: share down at breaking before 1914 (median) | 18% | 12% |
+| T1: breaks under 10% down, 1914 on | 1% | 9% |
+| T2: loser's share lost against the winner's (median) | 2.6 | 2.6 |
+| T3: loser's men down after breaking (median) | 4% | 2% |
+
+It moved T1 toward the sources, but cost eight runs, and T3 got worse. The Monastery fell from
+5 to 1 of 12: German paratroops who left their holes to shift or counter-attack took fire from
+the flank and broke. Kapyong and Wanat lost two runs each. Not adopted.
+
+**The commander sends spare units round an open flank (`commander.flanking`).** A steady unit
+that fights hand to hand, not in contact, looks for the nearest open hex on the flank or rear of
+an enemy fighting its own, within three of its moves (holding, one). Within a charge it charges
+there; otherwise it advances toward it. A reserve with such a flank in reach is committed to it.
+Traced first on the fifteen battlefields before 1914, two runs each, it never charged:
+- 47 of the 62 chances it found were refused by the charge odds, which set the charging unit
+  against the whole enemy unit. A small unit of horse never has those odds against a battalion.
+- The rest had no legal charge. A block 25 hexes wide pays 13 to turn, more than its whole
+  charge of 12, so it can only strike a flank it already faces.
+
+For a flank charge the odds were then counted against the enemy men in the hexes it would strike
+(T7: losses follow the men engaged). Twelve runs: 302 of 444 matched, against 307. Lützen fell
+from 6 to 3, as the Imperial horse struck the Swedish flanks, and Albuera and Cowpens lost one
+each. T1 hardly moved (a median of 17% down at breaking before 1914, against 18%), and T3 went
+from 4% to 3%. Not adopted.
+
+Neither change brings the battles nearer the sources. Before 1914 the flanks are seldom open
+within reach, and the big blocks can't wheel onto the few that are. After 1914 fire from a flank
+is common, but counting it breaks the defenders the accounts say held. Both prototypes are kept
+on the branch `flank-prototypes`, and `flanks.js` stays to measure the next attempt. The open
+problem stands: units break too late (T1), so few of the loser's men fall in the rout (T3).

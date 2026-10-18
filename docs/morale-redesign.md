@@ -182,3 +182,7 @@ appear.
 What all three miss alike: T1 before 1914 (losers break at a median 18% down, against 5% or
 less) and T3 (the loser's men down in the rout, 7% at best, against most). T3 is the narrower
 question, and the next to look at: the pursuit is too weak under every model.
+
+Followed up: the commander now pursues broken units, and flanking was measured and two ways of
+bringing it on were tried (fire from a flank counting as flanked, and a commander flank order);
+neither was adopted (`docs/selfplay-review.md`, *Pursuit* and *Flanking*).
