@@ -52,18 +52,19 @@ def winner(j: dict, r: dict):
     return 0 if lost_share(r, 0) < lost_share(r, 1) else 1
 
 
-def unfinished(j: dict, r: dict) -> bool:
-    """Run r ended at its limit with the attacker holding the objective and the enemy still standing round it
-    (not secured): the attacker is ahead but has not won, which matches a battle fought to a draw as well as
-    one the attacker won."""
+def took_it(j: dict, r: dict) -> bool:
+    """Run r ended with the attacker holding the objective (secured or not)."""
     att = (j["objective"] or {}).get("side")
-    return r["stop"]["why"] == "limit" and att is not None and (r["held"] or [None])[0] == j["sides"][att] and r.get("secured") is False
+    return att is not None and (r["held"] or [None])[0] == j["sides"][att]
 
 
-def matches(j: dict, r: dict, won) -> bool:
-    """Run r came out as the battle did: the same winner, or (a battle fought to a draw) a draw or an unfinished attack."""
+def matches(j: dict, r: dict, a: dict) -> bool:
+    """Run r came out as the battle did (a: its line in actual.json): the same winner; or, for a battle fought to a
+    draw in which the attacker took the objective (Lundy's Lane, Cassino town), a draw or the attacker holding it
+    at the end: the fight on the field went the attacker's way, and the draw came after (the Americans withdrew
+    from Lundy's Lane; the paratroops held the rest of Cassino)."""
     w = winner(j, r)
-    return w == won or (won is None and unfinished(j, r))
+    return w == a["won"] or (a["won"] is None and a.get("objective") == "taken" and took_it(j, r))
 
 
 def rows(d: str) -> dict:
@@ -72,7 +73,7 @@ def rows(d: str) -> dict:
     out = {}
     for j in joined(d):
         a, runs = actual[j["fid"]], j["runs"]
-        won = [matches(j, r, a["won"]) for r in runs]
+        won = [matches(j, r, a) for r in runs]
         stops = {}
         for r in runs:
             stops[r["stop"]["why"]] = stops.get(r["stop"]["why"], 0) + 1

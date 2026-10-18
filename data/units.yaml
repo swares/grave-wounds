@@ -967,10 +967,12 @@ commander:
   # trading fire at range). Design choice.
   storm: [musket_smoothbore, rifle_musket, breechloader, rifle_service, rifle_assault, pistol_smg]
   # bayonet: attacking, a unit armed with one of these (black powder with the bayonet) closes and
-  # charges any target it has the charge odds against (charge_odds, not counting friends beside
-  # it), as men without missiles do, works or no works; without the odds it fires as before.
-  # Infantry of the musket era carried positions and guns with the bayonet (Miller's 21st took the
-  # British guns at Lundy's Lane that way). Design choice.
+  # charges an enemy battery it has the charge odds against (charge_odds, not counting friends
+  # beside it), as men without missiles do, works or no works; without the odds, and against
+  # other infantry in the open, it fires as before. Musket-era infantry rushed guns with the
+  # bayonet (Miller's 21st took the British guns at Lundy's Lane that way; at Bull Run Griffin's
+  # and Ricketts' batteries were taken and retaken). Self-play: charging any target with the odds
+  # cost 19 runs of 444 (Albuera, Bull Run), the musketry that decided them never fired. Design choice.
   bayonet: [musket_smoothbore, rifle_musket, breechloader]
   hesitate: {green: 30, regular: 10, veteran: 0}
   charge_odds:

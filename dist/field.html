@@ -4156,9 +4156,9 @@ function underFire(us, i){                         // an enemy unit's missile we
   const u = us[i];
   return us.some(e => e.side !== u.side && !ROUTED.has(e.state) && e.men > 0 && "range" in FD.weapons[e.weapon] && fieldRange(e.weapon, hdist(e.pos, u.pos)) !== null);
 }
-function storming(u, t, field, stance){           // attacking, armed for storming, its target holding works, or (black powder with the bayonet, commander.bayonet) any target it has the charge odds against: it closes and charges (as commander.storming)
+function storming(u, t, field, stance){           // attacking, armed for storming, its target holding works, or (black powder with the bayonet, commander.bayonet) a battery it has the charge odds against: it closes and charges (as commander.storming)
   if (stance !== "attack" || !UD.commander.storm.includes(u.weapon)) return false;
-  return holdsWorks(field, u.pos, t) || (UD.commander.bayonet.includes(u.weapon) && mayCharge(u, t, stance, true));
+  return holdsWorks(field, u.pos, t) || (UD.commander.bayonet.includes(u.weapon) && isBattery(t) && mayCharge(u, t, stance, true));
 }
 function support(us, i){                          // men times attack % of the steady friendly units (not guns or vehicles) touching unit i: they go in with it (as commander.support)
   const u = us[i], near = new Set(footprint(u).flat().flatMap(h => [0, 1, 2, 3, 4, 5].map(n => hk(step(h, n)))));
