@@ -10,9 +10,11 @@ Python 3, and nothing else. The page's rules are written once as a module to `.c
 | --- | --- |
 | `play.js <field> <seeds> <out.json> [page] [first seed]` | Self-plays one battlefield, one run a seed (seed k rolls dice k × 101), with the stances the battlefield gives. |
 | `quality.js <field> <seed> [page]` | One run, reporting how each side's commander used its units (below). |
-| `run.sh <seeds> <out dir> [page] [workers] [first seed] [play\|quality\|targets]` | Every battlefield × seed as its own job, longest first (`times.txt`), shared among the workers. |
+| `run.sh <seeds> <out dir> [page] [workers] [first seed] [play\|quality\|targets\|flanks]` | Every battlefield × seed as its own job, longest first (`times.txt`), shared among the workers. |
 | `targets.js <field> <seed> [page]` | One run as `play.js` writes it, with the morale targets (`docs/morale-redesign.md`): each unit's share down when it broke and why it checked, and each side's men down in all and in the rout. |
 | `targets.py <dir> [<dir> ...]` | The targets T1-T5 from those runs, a column for each directory (`run.sh ... targets`). |
+| `flanks.js <field> <seed> [page]` | One run measured for flanking: after each exchange, each side's spare units (steady, not guns or vehicles, not in contact) and whether each could reach an open flank or rear of an enemy fighting its own within one move or three, with a facing it can still turn to on a charge; the flank and front strikes each side made, and how many came from a unit that had the chance; and the share of volleys fired from off the target's front. |
+| `flanks.py <dir>` | Those runs by battlefield and by era (`run.sh ... flanks`). |
 | `report.py winners <dir>` | Each battlefield's runs against the battle as fought (`actual.json`), and the total. |
 | `report.py diff <before> <after>` | The battlefields whose results changed between two runs, and both totals. |
 | `report.py quality <dir>` | The commander report, by battlefield and side. |
