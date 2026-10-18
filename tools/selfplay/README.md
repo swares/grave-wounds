@@ -34,8 +34,10 @@ All 37 battlefields × 4 seeds take well under an hour on two cores; Chipyong-ni
 
 **Who won a run.** If one side is gone, the side left standing wins (both gone: a draw). An
 attacker that took and held the objective wins. Otherwise, on a battlefield with an objective,
-the side holding it at the end wins, except that an attacker holding it with the enemy still
-standing within `secure` hexes of it has fought to a draw (Lundy's Lane, Cassino town). With no objective, the side with nobody standing loses, else the side that lost
+the side holding it at the end wins. A battle fought to a draw (Lundy's Lane, Cassino town)
+is matched by a draw, or by a run that ends at its limit with the attacker holding the
+objective and the enemy still standing within `secure` hexes of it: the attacker is ahead but
+has not won, as at Lundy's Lane. With no objective, the side with nobody standing loses, else the side that lost
 the larger share of its men loses.
 
 **The commander report.** A unit is *engaged* in an exchange when it fired, struck, or was struck

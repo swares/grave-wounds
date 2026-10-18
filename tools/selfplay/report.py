@@ -34,9 +34,8 @@ def lost_share(r: dict, k: int) -> float:
 
 
 def winner(j: dict, r: dict):
-    """The side index that won run r (None: a draw): the side left standing (both gone: a draw); the attacker if it
-    took and held the objective; else with an objective, a draw if the attacker holds it at the end with the enemy
-    still standing round it (not secured), else the side holding it; else the side with the smaller share lost."""
+    """The side index that won run r (None: both gone): the side left standing; the attacker if it took and held
+    the objective; else with an objective the side holding it at the end; else the side with the smaller share lost."""
     sides, stop = j["sides"], r["stop"]
     if stop["why"] == "gone":
         return None if len(stop["sides"]) == 2 else 1 - stop["sides"][0]
@@ -44,9 +43,7 @@ def winner(j: dict, r: dict):
         return sides.index(stop["side"])
     if j["objective"]:
         att = j["objective"]["side"]
-        if (r["held"] or [None])[0] != sides[att]:
-            return 1 - att
-        return None if r.get("secured") is False else att
+        return att if (r["held"] or [None])[0] == sides[att] else 1 - att
     stand = [r["sides"][k]["standing"] for k in (0, 1)]
     if stand[0] == 0 and stand[1] > 0:
         return 1
@@ -55,19 +52,33 @@ def winner(j: dict, r: dict):
     return 0 if lost_share(r, 0) < lost_share(r, 1) else 1
 
 
+def unfinished(j: dict, r: dict) -> bool:
+    """Run r ended at its limit with the attacker holding the objective and the enemy still standing round it
+    (not secured): the attacker is ahead but has not won, which matches a battle fought to a draw as well as
+    one the attacker won."""
+    att = (j["objective"] or {}).get("side")
+    return r["stop"]["why"] == "limit" and att is not None and (r["held"] or [None])[0] == j["sides"][att] and r.get("secured") is False
+
+
+def matches(j: dict, r: dict, won) -> bool:
+    """Run r came out as the battle did: the same winner, or (a battle fought to a draw) a draw or an unfinished attack."""
+    w = winner(j, r)
+    return w == won or (won is None and unfinished(j, r))
+
+
 def rows(d: str) -> dict:
     """{fid: (runs matched, runs, % lost side 0, % lost side 1, median exchanges, stops, as fought)}."""
     actual = json.load(open(os.path.join(HERE, "actual.json")))
     out = {}
     for j in joined(d):
         a, runs = actual[j["fid"]], j["runs"]
-        won = [winner(j, r) for r in runs]
+        won = [matches(j, r, a["won"]) for r in runs]
         stops = {}
         for r in runs:
             stops[r["stop"]["why"]] = stops.get(r["stop"]["why"], 0) + 1
         cas = [statistics.median(lost_share(r, k) * 100 for r in runs) for k in (0, 1)]
         who = "draw" if a["won"] is None else j["sides"][a["won"]]
-        out[j["fid"]] = (sum(1 for w in won if w == a["won"]), len(runs), cas[0], cas[1],
+        out[j["fid"]] = (sum(won), len(runs), cas[0], cas[1],
                          statistics.median(r["exchanges"] for r in runs), stops, who, j["sides"])
     return out
 
