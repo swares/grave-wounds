@@ -4,6 +4,7 @@ templates/units.js (command)."""
 from __future__ import annotations
 
 import heapq
+import math
 
 from . import combat as C, units as U
 from .model import Data
@@ -1076,8 +1077,39 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return _search(d, us, i, ctx)
     if roll <= C["hesitate"].get(u["quality"], 0):
         return {"act": "hesitate", "target": t, "roll": roll}
-    o = _best(d, us, i, t, ctx) if obj is None else _for_objective(d, us, i, t, ctx)
+    return _move_order(d, us, i, t, ctx)
+
+
+def _move_order(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict | None:
+    """Its best order for the target (or the objective), narrowed to fit the ground if it would
+    not move nearer (_narrowed), with when the target was last seen."""
+    o0 = _best(d, us, i, t, ctx) if objective(ctx[1]) is None else _for_objective(d, us, i, t, ctx)
+    o = _narrowed(d, us, i, t, ctx, o0) or o0
     return o if t is None else _last_seen(o, ctx[3], t, ctx[4])
+
+
+def _narrowed(d: Data, us: list, i: int, t: int | None, ctx: tuple, o: dict | None) -> dict | None:
+    """Attacking, a formed unit out of contact that would not move nearer its target closes in a
+    quarter at a time, deeper, to the widest front that lets it move nearer (commander.narrow):
+    the order with its new width, or None. Self-play showed the French at Agincourt held off by
+    the narrowing ground, their 60-hex front unable to fit nearer the English line."""
+    u = us[i]
+    if not d.units["commander"].get("narrow") or ctx[2] != "attack" or t is None or not _formed(d, u) or u["width"] <= 1:
+        return None
+    if U.in_contact(d, us, U.occupancy(d, us), i) or (o is not None and o["act"] in MOVES):
+        return None
+    tu, obj = _where(us, t, ctx[3]), objective(ctx[1])
+    now = U.unit_gap(d, u, tu)
+    least = math.ceil(u.get("width0", u["width"]) * d.units["commander"]["narrow_to"])   # never narrower than this share of the front it started with
+    for q in (3, 2, 1):
+        w = max(least, 1, -(-u["width"] * q // 4))
+        if w >= u["width"]:
+            continue
+        trial = [{**x, "width": w} if k == i else x for k, x in enumerate(us)]
+        o2 = _best(d, trial, i, t, ctx) if obj is None else _for_objective(d, trial, i, t, ctx)
+        if o2 is not None and o2["act"] in MOVES and U.unit_gap(d, {**u, "width": w, "pos": o2["pos"], "facing": o2["facing"]}, tu) < now:
+            return {**o2, "width": w, "width0": u.get("width0", u["width"])}
+    return None
 
 
 VETERANS = ("veteran", "elite")                    # the qualities that rally from a pursuit
@@ -1892,6 +1924,6 @@ def _apply(us: list, i: int, o: dict) -> None:
     elif o["act"] == "turn":
         us[i] = {**u, "facing": o["facing"]}
     elif o["act"] in MOVES:
-        us[i] = {**u, "pos": o["pos"], "facing": o["facing"], "charged": o["act"] == "charge", **({"prone": False} if o.get("up") else {})}
+        us[i] = {**u, "pos": o["pos"], "facing": o["facing"], "charged": o["act"] == "charge", **({"prone": False} if o.get("up") else {}), **({"width": o["width"], "width0": o["width0"]} if o.get("width") else {})}
         for k in o.get("through", []):                # the friends it charged through are jostled
             us[k] = {**us[k], "jostled": True}

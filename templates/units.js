@@ -3063,8 +3063,23 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   if ((obj !== null || ctx[2] === "hold") && digs(us, i, ctx)) return { act: "dig", target: t };
   if (t === null && obj === null) return search(us, i, ctx);
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
-  const o = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx);
+  const o0 = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx), o = narrowed(us, i, t, ctx, o0) || o0;
   return t === null ? o : lastSeen(o, ctx[3], t, ctx[4]);
+}
+function narrowed(us, i, t, ctx, o){               // commander.narrow: attacking, a formed unit out of contact that would not move nearer its target closes in a quarter at a time, deeper, to the widest front that lets it move nearer; the order with its new width, or null (as commander._narrowed)
+  const u = us[i];
+  if (!UD.commander.narrow || ctx[2] !== "attack" || t === null || !formed(u) || u.width <= 1 || inContact(us, occupancy(us), i)) return null;
+  if (o && AI_MOVES.has(o.act)) return null;
+  const tu = knownAt(us, t, ctx[3]), now = unitGap(u, tu), obj = objectiveOf(ctx[1]);
+  const least = Math.ceil((u.width0 ?? u.width) * UD.commander.narrow_to);   // never narrower than this share of the front it started with
+  for (const q of [3, 2, 1]){
+    const w = Math.max(least, 1, Math.ceil(u.width * q / 4));
+    if (w >= u.width) continue;
+    const trial = us.map((x, k) => (k === i ? { ...x, width: w } : x));
+    const o2 = obj === null ? bestOrder(trial, i, t, ctx) : forObjective(trial, i, t, ctx);
+    if (o2 && AI_MOVES.has(o2.act) && unitGap({ ...u, width: w, pos: o2.pos, facing: o2.facing }, tu) < now) return { ...o2, width: w, width0: u.width0 ?? u.width };
+  }
+  return null;
 }
 function pursuit(us, i, ctx){                      // a steady unit that fights hand to hand goes after a broken enemy: horse one within a charge of it with no standing enemy as near, foot one within its move nearer than any standing enemy; veterans give it up after commander.pursuit.rally moves with a standing enemy in reach (as commander._pursuit)
   const u = us[i], P = UD.commander.pursuit;
@@ -3431,7 +3446,7 @@ function applyOrder(us, i, o){                    // carry out an order (as the 
   else if (o.act === "lift") us[i] = { ...u, clearing: { at: [...u.pos], facing: u.facing, n: 0 } };
   else if (o.act === "turn") us[i] = { ...u, facing: o.facing };
   else if (AI_MOVES.has(o.act)){
-    us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}) };
+    us[i] = { ...u, pos: o.pos, facing: o.facing, charged: o.act === "charge", ...(o.up ? { prone: false } : {}), ...(o.width ? { width: o.width, width0: o.width0 } : {}) };
     for (const k of o.through || []) us[k] = { ...us[k], jostled: true };   // the friends it charged through are jostled
   }
 }

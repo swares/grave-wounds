@@ -163,6 +163,9 @@ steady friends touching it, who go in with it), and green units sometimes hesita
 - **Routes.** A battlefield can send a unit on a route round a flank, as its account tells:
   the commander moves it from waypoint to waypoint, turning aside only for an enemy in contact
   or across its way, then orders it as any other.
+- **Narrowing.** Attacking, a formed unit that the ground keeps from closing on its target
+  closes in its front, a quarter at a time and deeper, until it can move nearer, but never to
+  less than half the front it started with.
 - **Pursuit.** Its horse ride down a broken enemy within a charge when no standing enemy is as
   near, and its foot go after one within their move that is nearer than any standing enemy.
   Veterans rally back to the fight after a couple of moves if the enemy still stands near.
