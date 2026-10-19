@@ -251,6 +251,8 @@ legend{padding:0}
       </div>
       <div class="row">
         <div><label for="sel-table">Wound tables</label><select id="sel-table"></select></div>
+        <div style="flex:0 0 auto;align-self:end"><label class="check" title="A striking group's blows on the rankers in one roll, as the printed quick-play charts (tables, Quick-play blows), instead of one roll for each blow"><input type="checkbox" id="chk-quick"> quick-play blows</label></div>
+        <div style="flex:0 0 auto;align-self:end"><button id="btn-quick-sheet" type="button" title="Men down per 100 tries for the weapons and armour on this field, to print">Quick-play sheet</button></div>
       </div>
       <div class="row">
         <div><label for="in-side0">Side A</label><input type="text" id="in-side0"></div>
@@ -448,6 +450,69 @@ const $ = s => document.querySelector(s);
 const KEY = "gravewounds-field", DEFAULT_SIZE = [FD.units.map.cols, FD.units.map.rows];
 let SIZE = DEFAULT_SIZE.slice();                   // this battle's field, cols x rows: the default, or a battlefield's
 const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
+
+// ---------- the quick-play sheet: men down per 100 tries for this field's weapons and armour (as build.py's charts) ----------
+const QUICK_ATTACKS = [30, 45, 60, 75], QUICK_AVERAGES = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50, 75, 100];
+function quickPer100(table, weapon, dfd, atk, dfn){   // men down per 100 tries, or null for a weapon not on the table
+  if (!FD.tables[table].weapons.includes(weapon)) return null;
+  return 100 * quickRates({ table, weapon }, dfd, atk, dfn).down;
+}
+function quickSpread(){                             // d100 by tenths -> men down, for each average (Poisson below 9, the normal curve from 9)
+  return QUICK_AVERAGES.map(avg => [avg, Array.from({ length: 10 }, (_, k) => {
+    const p = (k + 0.5) / 10;
+    if (avg >= 9) return Math.max(0, Math.round(avg + normalAt(p) * Math.sqrt(avg)));
+    let n = 0, term = Math.exp(-avg), cum = term;
+    while (cum < p){ n++; term *= avg / n; cum += term }
+    return n;
+  })]);
+}
+function quickSheetRow(a, w, b){                    // [side, weapon, target, cells at the four attacks, hand to hand or null, attack, parry], or null off the table
+  const dfd = { kit: b.kit, quality: b.quality }, cells = QUICK_ATTACKS.map(atk => quickPer100(S.table, w, dfd, atk, 0));
+  if (cells[0] === null) return null;
+  const dfn = quality(b.quality).defence, hand = w === meleeWeapon(a) ? quickPer100(S.table, w, dfd, attackOf(a), dfn) : null;
+  return [a.side, FD.weapons[w].name, `${FD.kits[b.kit].name}, ${b.quality}`, cells, hand, attackOf(a), dfn];
+}
+function quickSheetRows(){                          // one row for each side's weapon against each enemy armour and quality on the field
+  const live = S.units.filter(u => u.men > 0), rows = [], seen = new Set();
+  for (const a of live) for (const w of new Set([a.weapon, meleeWeapon(a)])) for (const b of live){
+    const key = [a.side, w, b.kit, b.quality].join("|");
+    if (b.side === a.side || b.vehicle || seen.has(key)) continue;
+    seen.add(key);
+    const row = quickSheetRow(a, w, b);
+    if (row) rows.push(row);
+  }
+  return rows;
+}
+function quickFig(x){                              // a chart figure: one decimal under 10
+  if (x === null) return "";
+  return x.toFixed(x < 10 ? 1 : 0);
+}
+function quickHandCell(hand, atk, dfn){
+  if (hand === null) return "";
+  const note = "(" + atk + "% against parry " + dfn + "%)";
+  return quickFig(hand) + " <small>" + note + "</small>";
+}
+const quickTd = x => "<td>" + x + "</td>";
+function quickTenth(k){                             // a d100 band's heading: 01-10 ... 91-00
+  const lo = String(10 * k + 1).padStart(2, "0"), hi = k === 9 ? "00" : String(10 * k + 10).padStart(2, "0");
+  return "<th>" + lo + "-" + hi + "</th>";
+}
+function quickSheet(){                              // a printable window: this field's pairings, then the d100 spread chart
+  const body = quickSheetRows().map(([side, w, t, cells, hand, atk, dfn]) =>
+    "<tr>" + [esc(side), esc(w), esc(t), ...cells.map(quickFig), quickHandCell(hand, atk, dfn)].map(quickTd).join("") + "</tr>").join("");
+  const spread = quickSpread().map(([avg, ns]) => "<tr>" + [avg, ...ns].map(quickTd).join("") + "</tr>").join("");
+  const tenths = Array.from({ length: 10 }, (_, k) => quickTenth(k)).join("");
+  const heads = QUICK_ATTACKS.map(a => "<th>" + a + "%</th>").join("");
+  const title = esc($("#in-side0").value) + " against " + esc($("#in-side1").value);
+  const w = window.open("", "_blank");
+  if (!w) return;
+  w.document.write(`<!doctype html><meta charset="utf-8"><title>Quick-play sheet</title><style>body{font:14px system-ui,sans-serif;margin:1.5rem}table{border-collapse:collapse;margin:.5rem 0 1.5rem}td,th{border:1px solid #999;padding:.2rem .45rem;text-align:left}small{color:#555}</style>
+<h1>Quick-play sheet: ${title}</h1>
+<p>Men down per 100 tries, for each weapon here against each armour and quality here: at an attack of 30, 45, 60 or 75 with no parry (fire), and hand to hand at the striker's own attack against the target's own parry. Read between the columns for other attacks. Average = tries x this / 100; roll d100 on the spread chart. Blows that fall on a hero are rolled one at a time.</p>
+<table><tr><th>Side</th><th>Weapon</th><th>Against</th>${heads}<th>Hand to hand</th></tr>${body}</table>
+<h2>Men down for an average (roll d100)</h2><table><tr><th>Average</th>${tenths}</tr>${spread}</table>`);
+  w.document.close();
+}
 const dice = {                                     // real dice for play
   randint(a, b){ return a + crypto.getRandomValues(new Uint32Array(1))[0] % (b - a + 1) },
   random(){ return crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296 }
@@ -3177,6 +3242,9 @@ function init(){
   $("#sel-table").onchange = e => { S.table = e.target.value; const ok = FD.tables[S.table].weapons; S.units.forEach(u => { if (!ok.includes(u.weapon)) u.weapon = ok[0] }); fillChoices(); render() };
   ["#in-side0", "#in-side1"].forEach((id, k) => { $(id).onchange = e => { const old = S.sides[k], v = e.target.value.trim() || old; S.units.forEach(u => { if (u.side === old) u.side = v }); (S.field.posts || []).forEach(p => { if (p.side === old) p.side = v }); [...(S.field.helos || []), ...(S.field.dumps || [])].forEach(x => { if (x.side === old) x.side = v }); S.sides[k] = v; render() } });
   [0, 1].forEach(k => { $("#chk-ev" + k).onchange = e => setMedevac(k, e.target.checked) });
+  $("#chk-quick").checked = !!UD.quick.blows;
+  $("#chk-quick").onchange = e => { UD.quick.blows = e.target.checked };
+  $("#btn-quick-sheet").onclick = quickSheet;
   render();
 }
 init();
