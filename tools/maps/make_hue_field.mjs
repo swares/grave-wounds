@@ -44,6 +44,7 @@ const US = { side: 0, facing: 0 }, NV = { side: 1, facing: 3 };
 const MARINE = { quality: "regular", weapon: "rifle_assault", kit: "vietnam_usmc", formation: "extended", mounted: false };
 const MG = { quality: "regular", weapon: "machine_gun", kit: "vietnam_usmc", formation: "mg", mounted: false };
 const TANK = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" };
+const ONTOS = { ...TANK, vehicle: "ontos" };
 const PAVN = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, prone: true };
 const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
@@ -52,7 +53,8 @@ const units = [
   at("G Company, 2/5 Marines (the south blocks)", US, 120, MARINE, 12, [70, 62], 0),
   at("A Company, 1/1 Marines and the MACV compound", US, 160, MARINE, 10, [MACV[0], MACV[1] + 5], 0),
   at("Marine machine guns", US, 12, MG, 2, [UNIVERSITY[0], UNIVERSITY[1] + 3], 0),
-  at("Marine M48 tanks (Highway 1)", US, 16, TANK, 2, [HIGHWAY, 46], N),
+  at("Marine M48 tanks (Highway 1)", US, 8, TANK, 2, [HIGHWAY, 46], N),           // the 2 gun tanks the accounts name in the assaults (2 M67 flame tanks came too)
+  at("Marine Ontos (with H Company)", US, 6, ONTOS, 2, [56, 46], N),               // 2, which came in with H/2/5 on 2 February
   at("North Vietnamese in the provincial headquarters", NV, 120, PAVN, 10, [PROVINCE[0], PROVINCE[1] + 4], 3),
   at("North Vietnamese in the Treasury", NV, 150, PAVN, 10, [TREASURY[0], TREASURY[1] + 4], 3),
   at("North Vietnamese in the hospital", NV, 150, PAVN, 10, [HOSPITAL[0], HOSPITAL[1] + 4], 3),

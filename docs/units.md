@@ -1647,6 +1647,12 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
   |---|---|---|---|---|
   | Tank | by its fire control (below) | 1 | by its fire control | bursts as a tank's round on call (25% in the hex, 5% next to it) |
   | Infantry fighting vehicle (autocannon) | 80 hexes (875 yards, 800 m) | 2 | 70% / 45% (40 hexes) / 20% | bursts as an autocannon round (20% in the hex) |
+  | Ontos (106 mm recoilless rifles) | 100 hexes (1,100 yards, 1,000 m) | 1 | 75% / 50% (50 hexes) / 25% | bursts as a tank's round on call |
+
+  The Ontos (M50: six 106 mm recoilless rifles on a light tracked carrier, crew of 3, light
+  armour) is on the field map for Hue, where the Marines used it to blow holes in walls before
+  the infantry went in. Its gun as a tank's without fire control, one round a vehicle an
+  exchange (the rifles were fired singly and reloaded from outside): design estimates.
 
 - **Armour.** Small arms cannot hurt an armoured vehicle, and men armed only with them do
   not shoot at one. No one strikes a vehicle hand to hand, or is struck by it.

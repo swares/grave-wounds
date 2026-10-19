@@ -465,6 +465,13 @@ vehicles:
     apc:  {name: "Armoured carriers", crew: 3, move: 14, armour: light, carry: 10}
     tractor: {name: "Gun tractors and trucks", crew: 2, move: 12, armour: soft, tows: 1}
     lorry: {name: "Lorries", crew: 2, move: 14, armour: soft, carry: 20}
+    # The Ontos (M50): a light tracked carrier of six 106 mm recoilless rifles, which the Marines
+    # used at Hue to blow holes in walls before the infantry went in (USMC History Division, Camp,
+    # Death in the Imperial City, 2018; Nolan, Proceedings, 1982). Crew of 3; light armour (an RPG
+    # knocked one out at the provincial headquarters). Its main gun as a tank's without fire
+    # control, one round a vehicle an exchange (the rifles were fired singly and reloaded from
+    # outside): design estimates.
+    ontos: {name: "Ontos (106 mm recoilless rifles)", crew: 3, move: 14, armour: light, gun: {range: 100, rate: 1, he: tank, hit: [[20, 75], [50, 50], [100, 25]]}}
   # A tank's main gun hits by its fire control, by range in field hexes (first round, at a
   # stationary target), and reaches the last band: optical sights (the Second World War and
   # Korea: one sourced point, about 5% a round at 1,500 m, a 76 mm tank needing some 13 rounds for
