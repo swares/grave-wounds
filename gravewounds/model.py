@@ -927,14 +927,17 @@ def _apply_orders(fields: dict, orders: dict) -> None:
     """Mark each battlefield's units with their orders from data/orders.yaml: hold (fight where
     it stands) and withdraw {at, to} (from that exchange, fall back to a hex or a map edge)."""
     for fid, o in (orders or {}).items():
-        o = o or {}
-        units = {u["name"]: u for u in (fields.get(fid) or {}).get("units", [])}
-        for name in o.get("hold") or []:
-            if name in units:
-                units[name]["hold"] = True
-        for w in o.get("withdraw") or []:
-            if w.get("unit") in units:
-                units[w["unit"]]["withdraw"] = {"at": w["at"], "to": w["to"]}
+        _mark_orders({u["name"]: u for u in (fields.get(fid) or {}).get("units", [])}, o or {})
+
+
+def _mark_orders(units: dict, o: dict) -> None:
+    """One battlefield's orders onto its units (by name)."""
+    for name in o.get("hold") or []:
+        if name in units:
+            units[name]["hold"] = True
+    for w in o.get("withdraw") or []:
+        if w.get("unit") in units:
+            units[w["unit"]]["withdraw"] = {"at": w["at"], "to": w["to"]}
 
 
 def _orders_errors(d: Data) -> list[str]:
@@ -946,16 +949,22 @@ def _orders_errors(d: Data) -> list[str]:
         if F is None:
             errors.append(f"orders.yaml: no battlefield {fid}")
             continue
-        names, (cols, rows) = {u["name"] for u in F.get("units", [])}, F["size"]
-        for n in [*(o.get("hold") or []), *[w.get("unit") for w in o.get("withdraw") or []]]:
-            if n not in names:
-                errors.append(f"orders.yaml: {fid} has no unit {n!r}")
+        names = {u["name"] for u in F.get("units", [])}
+        errors += [f"orders.yaml: {fid} has no unit {n!r}" for n in [*(o.get("hold") or []), *[w.get("unit") for w in o.get("withdraw") or []]]
+                   if n not in names]
         for w in o.get("withdraw") or []:
-            to = w.get("to")
-            if not (isinstance(w.get("at"), int) and w["at"] >= 1):
-                errors.append(f"orders.yaml: {fid} {w.get('unit')!r}: at must be a whole number of 1 or more")
-            if not (to in ("N", "S", "E", "W") or (isinstance(to, list) and len(to) == 2 and 0 <= to[0] < cols and 0 <= to[1] < rows)):
-                errors.append(f"orders.yaml: {fid} {w.get('unit')!r}: to must be a hex on the map or N, S, E or W")
+            errors += _withdraw_errors(fid, w, F["size"])
+    return errors
+
+
+def _withdraw_errors(fid: str, w: dict, size: list) -> list[str]:
+    """One withdrawal: a whole-number exchange of 1 or more, and a hex on the map or a map edge."""
+    errors, to, (cols, rows) = [], w.get("to"), size
+    if not (isinstance(w.get("at"), int) and w["at"] >= 1):
+        errors.append(f"orders.yaml: {fid} {w.get('unit')!r}: at must be a whole number of 1 or more")
+    on_map = isinstance(to, list) and len(to) == 2 and 0 <= to[0] < cols and 0 <= to[1] < rows
+    if not (to in ("N", "S", "E", "W") or on_map):
+        errors.append(f"orders.yaml: {fid} {w.get('unit')!r}: to must be a hex on the map or N, S, E or W")
     return errors
 
 
