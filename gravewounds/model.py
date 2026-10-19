@@ -927,6 +927,7 @@ def _apply_orders(fields: dict, orders: dict) -> None:
     """Mark each battlefield's units with their orders from data/orders.yaml: hold (fight where
     it stands) and withdraw {at, to} (from that exchange, fall back to a hex or a map edge)."""
     for fid, o in (orders or {}).items():
+        o = o or {}
         units = {u["name"]: u for u in (fields.get(fid) or {}).get("units", [])}
         for name in o.get("hold") or []:
             if name in units:
@@ -941,7 +942,7 @@ def _orders_errors(d: Data) -> list[str]:
     exchange of 1 or more and a hex on the map or a map edge (N, S, E, W)."""
     errors = []
     for fid, o in (d.orders or {}).items():
-        F = d.fields.get(fid)
+        o, F = o or {}, d.fields.get(fid)
         if F is None:
             errors.append(f"orders.yaml: no battlefield {fid}")
             continue

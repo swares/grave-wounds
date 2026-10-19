@@ -32,12 +32,10 @@ bougainville-1944:
     - "Machine guns covering the saddle (west)"
     - "Machine guns covering the saddle (east)"
 bull-run-1861:
-  source: "https://www.npshistory.com/handbooks/historical/15/hh15e2.htm"
-  hold:
-    - "Jackson's brigade"
-    - "Confederate guns (Imboden, Stanard, Pendleton)"
-    - "Hampton's Legion"
-    - "Bee's and Bartow's men, rallied"
+  source: "https://www.nps.gov/places/imboden-s-confederate-artillery.htm"
+  # Jackson's, Hampton's and the rallied brigades held Henry Hill: the hill is the objective, so they
+  # go up onto it as any holding unit does (marked to hold where they stood, they let the Union take
+  # the empty summit: 12 of 12 runs to 5).
 cassino-monastery-1944:
   source: "https://en.wikipedia.org/wiki/Battle_of_Monte_Cassino"
   hold:
