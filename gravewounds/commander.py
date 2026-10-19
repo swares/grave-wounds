@@ -1105,12 +1105,12 @@ def _withdraw_order(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
         return None
     if edge and any(U._edge_gap(W["to"], h, size) == 0 for row in U.footprint(d, u) for h in row):
         return {"act": "leave"}
-    goal = _edge_hex(u["pos"], W["to"], size) if edge else W["to"]
+    goal = _edge_straight(u["pos"], W["to"], size) if edge else W["to"]
     o = _toward(d, us, i, None, (ctx[0], {**ctx[1], "objective": goal, "objective_radius": None}, ctx[2], ctx[3], ctx[4]), "fall_back")
     return o if o is not None or not edge else {"act": "leave"}
 
 
-def _edge_hex(h, edge: str, size) -> list:
+def _edge_straight(h, edge: str, size) -> list:
     """The hex on map edge N, S, E or W straight from h."""
     cols, rows = size
     return {"N": [h[0], 0], "S": [h[0], rows - 1], "W": [0, h[1]], "E": [cols - 1, h[1]]}[edge]

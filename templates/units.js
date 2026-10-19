@@ -3150,10 +3150,10 @@ function withdrawOrder(us, i, ctx){               // orders from the account (da
   const size = fieldSize(ctx[1]), edge = typeof W.to === "string";
   if (!edge && hdist(u.pos, W.to) <= UD.commander.route.reach){ delete u.withdraw; u.hold = true; return null }
   if (edge && footprint(u).flat().some(h => edgeGap(W.to, h, size) === 0)) return { act: "leave" };
-  const goal = edge ? edgeHex(u.pos, W.to, size) : W.to;
+  const goal = edge ? edgeStraight(u.pos, W.to, size) : W.to;
   return toward(us, i, null, [ctx[0], { ...ctx[1], objective: goal, objective_radius: null }, ctx[2], ctx[3], ctx[4]], "fall_back") || (edge ? { act: "leave" } : null);
 }
-const edgeHex = (h, edge, [cols, rows]) => ({ N: [h[0], 0], S: [h[0], rows - 1], W: [0, h[1]], E: [cols - 1, h[1]] })[edge];   // the hex on map edge straight from h
+const edgeStraight = (h, edge, [cols, rows]) => ({ N: [h[0], 0], S: [h[0], rows - 1], W: [0, h[1]], E: [cols - 1, h[1]] })[edge];   // the hex on map edge straight from h
 function narrowed(us, i, t, ctx, o){               // commander.narrow: attacking, a formed unit out of contact that would not move nearer its target closes in a quarter at a time, deeper, to the widest front that lets it move nearer; the order with its new width, or null (as commander._narrowed)
   const u = us[i];
   if (!UD.commander.narrow || ctx[2] !== "attack" || t === null || !formed(u) || u.width <= 1 || inContact(us, occupancy(us), i)) return null;
