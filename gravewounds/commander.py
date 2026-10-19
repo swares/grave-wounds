@@ -1077,7 +1077,13 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return _search(d, us, i, ctx)
     if roll <= C["hesitate"].get(u["quality"], 0):
         return {"act": "hesitate", "target": t, "roll": roll}
-    o0 = _best(d, us, i, t, ctx) if obj is None else _for_objective(d, us, i, t, ctx)
+    return _move_order(d, us, i, t, ctx)
+
+
+def _move_order(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict | None:
+    """Its best order for the target (or the objective), narrowed to fit the ground if it would
+    not move nearer (_narrowed), with when the target was last seen."""
+    o0 = _best(d, us, i, t, ctx) if objective(ctx[1]) is None else _for_objective(d, us, i, t, ctx)
     o = _narrowed(d, us, i, t, ctx, o0) or o0
     return o if t is None else _last_seen(o, ctx[3], t, ctx[4])
 
