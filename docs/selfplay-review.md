@@ -819,3 +819,16 @@ The two large gains are on battlefields with orders; the two losses are within a
 spread over 24 runs (about 2 to 3 runs). The morale targets did not move: T1 before 1914
 5/15/26% (from 5/15/27), from 1914 29/37/53%, T2 3.1 (2.8), T5 6/68%; T3 went from 8% to 5%,
 the target that varies most between seed sets. The orders are in.
+
+## Lopsided losers: Goose Green and the June Redan, 19 October 2026
+
+**The June Redan** (2 of 24). The trace: the 600 Russians in the salient lost one man more than
+they put down in contact, which calls the losing check (35% to fail when steady); shaken, they
+broke at the next. A block of hundreds checks over a single man. Built and measured: the check
+called only when the unit lost at least 1% of its men more than it dealt (one man for a unit
+under 100). The June Redan went from 2 to 24 of 24, but before 1914 units then broke far later:
+the median share down at breaking from 15% to 27% (5% of breaks under 10% down, from 41%),
+away from the sources. Towton fell from 23 to 3, Agincourt from 8 to 0, the September
+Redan from 22 to 16 and Lützen from 17 to 12: 610 of 888 against 620. The one-man trigger is
+what breaks the older armies early, as the accounts have them break; counting the men in contact
+(measured on 17 October) failed the same way. Not built. The salient's fault is still open.
