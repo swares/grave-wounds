@@ -1061,6 +1061,9 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     t = target(d, us, i, ctx[3], ctx[1])
     if u["state"] != "steady":
         return _unsteady(d, us, i, t)
+    away = _withdraw_order(d, us, i, ctx)
+    if away is not None:
+        return away
     if U.busy_digging(u) or u.get("resupplying"):
         return None
     ammo = _ammo_order(d, us, i, t, ctx)
@@ -1086,6 +1089,31 @@ def _move_order(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict | 
     o0 = _best(d, us, i, t, ctx) if objective(ctx[1]) is None else _for_objective(d, us, i, t, ctx)
     o = _narrowed(d, us, i, t, ctx, o0) or o0
     return o if t is None else _last_seen(o, ctx[3], t, ctx[4])
+
+
+def _withdraw_order(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
+    """Orders from the account (data/orders.yaml withdraw {at, to}): from exchange at, it falls
+    back to hex to and holds it once there, or to map edge to and leaves the field there."""
+    u = us[i]
+    W = u.get("withdraw")
+    if not W or (ctx[4] or 0) < W["at"]:
+        return None
+    size, edge = U._size(d, ctx[1]), isinstance(W["to"], str)
+    if not edge and U.hdist(u["pos"], W["to"]) <= d.units["commander"]["route"]["reach"]:
+        del u["withdraw"]
+        u["hold"] = True
+        return None
+    if edge and any(U._edge_gap(W["to"], h, size) == 0 for row in U.footprint(d, u) for h in row):
+        return {"act": "leave"}
+    goal = _edge_hex(u["pos"], W["to"], size) if edge else W["to"]
+    o = _toward(d, us, i, None, (ctx[0], {**ctx[1], "objective": goal, "objective_radius": None}, ctx[2], ctx[3], ctx[4]), "fall_back")
+    return o if o is not None or not edge else {"act": "leave"}
+
+
+def _edge_hex(h, edge: str, size) -> list:
+    """The hex on map edge N, S, E or W straight from h."""
+    cols, rows = size
+    return {"N": [h[0], 0], "S": [h[0], rows - 1], "W": [0, h[1]], "E": [cols - 1, h[1]]}[edge]
 
 
 def _narrowed(d: Data, us: list, i: int, t: int | None, ctx: tuple, o: dict | None) -> dict | None:
@@ -1496,7 +1524,7 @@ def _for_objective(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict
     if ctx[2] == "attack":
         return _attack_objective(d, us, i, t, ctx, off)
     o = _best(d, us, i, t, ctx)
-    if off > U.objective_radii(d, ctx[1])[1] and (o is None or o["act"] != "charge"):
+    if off > U.objective_radii(d, ctx[1])[1] and (o is None or o["act"] != "charge") and not us[i].get("hold"):   # hold: its account has it stand where it is
         return _toward(d, us, i, t, ctx, "fall_back") or o
     return o
 
@@ -1505,7 +1533,7 @@ def _no_target(d: Data, us: list, i: int, ctx: tuple, off: int) -> dict | None:
     """With no enemy to go for: attacking, it advances on the objective unless at it; holding,
     it falls back toward it if further than objective.hold."""
     (radius, hold, _), attack = U.objective_radii(d, ctx[1]), ctx[2] == "attack"
-    if off <= (radius if attack else hold):
+    if off <= (radius if attack else hold) or (not attack and us[i].get("hold")):
         return None
     return _toward(d, us, i, None, ctx, "advance" if attack else "fall_back")
 
@@ -1913,6 +1941,8 @@ def _apply(us: list, i: int, o: dict) -> None:
     u = us[i]
     if o["act"] == "ground":
         us[i] = {**u, "prone": True}
+    elif o["act"] == "leave":
+        us[i] = {**u, "state": "fled", "withdrew": True}
     elif o["act"] == "dig":
         us[i] = {**u, "digging": {"at": list(u["pos"]), "n": 0}}
     elif o["act"] == "resupply":

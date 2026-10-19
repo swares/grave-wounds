@@ -1,0 +1,219 @@
+# The defenders' orders, from the accounts, for the enemy commander in self-play.
+# Researched 18 October 2026 (the project's hold-or-give-way.md, with each unit's source and how far
+# it can be trusted). Per battlefield:
+#   hold: units the sources say held their ground to the end of the fight the set-up covers. Holding,
+#     they fight where they stand rather than fall back to the objective.
+#   withdraw: units that gave way on orders at a known time: from exchange `at` (a minute each, from the
+#     field's first) they fall back to `to`, a hex (then hold it) or a map edge (N, S, E, W: they leave
+#     the field there).
+# A unit the sources say was driven off, or that the sources do not cover, has no entry: the fight
+# decides. Zayas's Spanish at Albuera held and then drew back when relieved: no entry.
+
+agincourt-1415:
+  source: "https://ospreypublishing.com/us/osprey-blog/2015/agincourt-600-the-main-french-attack-and-melee"
+  hold:
+    - "Archers, left wing"
+    - "Rearward (Camoys)"
+    - "Archers, left wedge"
+    - "Main battle (the King)"
+    - "Archers, right wedge"
+    - "Vaward (York)"
+    - "Archers, right wing"
+albuera-1811:
+  source: "https://en.wikipedia.org/wiki/Battle_of_Albuera"
+  hold:
+    - "Allied cavalry (Lumley)"
+    - "Allied guns on the heights"
+bougainville-1944:
+  source: "https://ibiblio.org/hyperwar/USA/USA-P-Rabaul/USA-P-Rabaul-17.html"
+  hold:
+    - "145th Infantry, 2nd Battalion (west knob)"
+    - "145th Infantry, 2nd Battalion (east knob)"
+    - "Machine guns covering the saddle (west)"
+    - "Machine guns covering the saddle (east)"
+bull-run-1861:
+  source: "https://www.npshistory.com/handbooks/historical/15/hh15e2.htm"
+  hold:
+    - "Jackson's brigade"
+    - "Confederate guns (Imboden, Stanard, Pendleton)"
+    - "Hampton's Legion"
+    - "Bee's and Bartow's men, rallied"
+cassino-monastery-1944:
+  source: "https://en.wikipedia.org/wiki/Battle_of_Monte_Cassino"
+  hold:
+    - "German paratroops on Point 593"
+    - "German paratroops on Point 444"
+    - "Germans in the abbey's ruins"
+    - "German machine guns (Point 593)"
+    - "German machine guns (the abbey)"
+cassino-poles-1944:
+  source: "https://en.wikipedia.org/wiki/Battle_of_Monte_Cassino"
+  hold:
+    - "Germans in the abbey's ruins"
+cassino-town-1944:
+  source: "https://www.historyofwar.org/articles/battles_cassino_3rd.html;"
+  hold:
+    - "German paratroops in the ruins (the middle of the town)"
+    - "German paratroops at the Continental Hotel"
+    - "German paratroops by the station"
+    - "German machine guns (the town)"
+    - "German machine guns (below the abbey)"
+chipyong-1951:
+  source: "https://en.wikipedia.org/wiki/Battle_of_Chipyong-ni"
+  hold:
+    - "A Company, 23rd Infantry"
+    - "C Company, 23rd Infantry (astride the road north)"
+    - "I Company, 23rd Infantry"
+    - "K Company, 23rd Infantry"
+    - "L Company, 23rd Infantry"
+    - "F Company, 23rd Infantry"
+    - "French Battalion, 3rd Company"
+    - "French Battalion, 2nd Company"
+    - "French Battalion, 1st Company"
+cisterna-1944:
+  source: "https://ibiblio.org/hyperwar/USA/USA-A-Anzio/USA-A-Anzio-2.html"
+  hold:
+    - "Hermann G\u00f6ring Division infantry (the town's edge)"
+    - "Machine guns in the farmhouses (west)"
+    - "Machine guns in the farmhouses (east)"
+    - "Machine guns in the farmhouses (far east)"
+    - "Riflemen in haystacks and dugouts (west)"
+    - "Riflemen in haystacks and dugouts (east)"
+dakto-1967:
+  source: "https://VIRTUALWALL.org/units/hill875.htm;"
+  hold:
+    - "174th Regiment on the crest"
+    - "174th Regiment in the lower trenches"
+    - "North Vietnamese machine guns"
+easting73-1991:
+  source: "https://thestrategybridge.org/the-bridge/2016/2/26/eagle-troop-at-the-battle-of-73-easting"
+  hold:
+    - "Tawakalna T-72s dug in behind the rise (north)"
+    - "Tawakalna T-72s dug in behind the rise (south)"
+    - "BMP-1s in their positions behind the rise"
+    - "Iraqi infantry in the trenches"
+    - "Iraqi RPG teams"
+    - "T-72s on the high ground beyond (about 74 Easting)"
+foxhill-1950:
+  source: "https://sofrep.com/news/medal-of-honor-william-barber-held-fox-hill-and-kept-the-chosin-road-open/"
+  hold:
+    - "Fox Company, 1st Platoon (the east shoulder)"
+    - "Fox Company, 2nd Platoon (the west shoulder)"
+goosegreen-1982:
+  source: "https://en.wikipedia.org/wiki/Battle_of_Goose_Green"
+  hold:
+    - "Argentine platoons in the ridge trenches (west)"
+    - "Argentine platoons in the ridge trenches (Darwin Hill)"
+    - "Argentine machine guns"
+grozny-1995:
+  source: "https://novayagazeta.ru/articles/2021/12/31/groznyi-novogodnii-shturm-ot-pervogo-litsa;"
+  hold:
+    - "1st Battalion, 131st Brigade (in the station)"
+    - "131st Brigade's infantry carriers (the square)"
+    - "131st Brigade's tanks (the square)"
+    - "131st Brigade's men in the freight yard"
+hamburger-1969:
+  source: "https://en.wikipedia.org/wiki/Battle_of_Hamburger_Hill"
+  hold:
+    - "29th Regiment on the summit"
+    - "North Vietnamese machine guns"
+heartbreak-1951:
+  source: "https://en.wikipedia.org/wiki/Battle_of_Heartbreak_Ridge"
+  hold:
+    - "North Koreans on Hill 931"
+hue-1968:
+  source: "https://www.usni.org/magazines/proceedings/1982/april/battle-hue-city;"
+  hold:
+    - "North Vietnamese in the provincial headquarters"
+kapyong-1951:
+  source: "https://en.wikipedia.org/wiki/Battle_of_Kapyong"
+  hold:
+    - "A Company, 3 RAR (the north spur)"
+    - "D Company, 3 RAR (the summit)"
+    - "C Company, 3 RAR (in reserve on the hill)"
+  withdraw:
+    - {unit: "3 RAR headquarters (Chuktun-ni)", at: 466, to: S}   # between 05:15 and 06:00 Ferguson pulls headquarters back about 5 km into the Middlesex perimeter
+    - {unit: "Platoon of Shermans (72nd Heavy Tank Battalion)", at: 466, to: S}   # the tanks escort headquarters' withdrawal
+    - {unit: "B Company, 3 RAR (the knoll by the road)", at: 586, to: [176, 56]}   # at 07:15 withdrawn up onto the hill
+keating-2009:
+  source: "https://en.wikipedia.org/wiki/Battle_of_Kamdesh"
+  hold:
+    - "B Troop, 3-61 Cavalry (the barracks and command post)"
+khesanh-1968:
+  source: "https://homeofheroes.com/?p=93567"
+  hold:
+    - "E Company, 2/26 Marines (the west and east trenches)"
+    - "E Company's machine guns"
+lundys-lane-1814:
+  source: "https://en.wikipedia.org/wiki/Battle_of_Lundy%27s_Lane"
+  hold:
+    - "British guns on the crest"
+lutzen-1632:
+  source: "https://en.wikipedia.org/wiki/Battle_of_L%C3%BCtzen_(1632"
+  hold:
+    - "Imperial musketeers, centre"
+    - "Imperial pike, centre"
+    - "Windmill battery"
+    - "Imperial centre battery"
+    - "Imperial cuirassiers, left"
+mogadishu-1993:
+  source: "https://en.wikipedia.org/wiki/Timeline_of_the_1993_Battle_of_Mogadishu"
+  hold:
+    - "Rangers and Delta in the houses north of the crash"
+    - "Rangers and Delta in the houses south of the crash"
+    - "Rangers and Delta at the corner west of the crash"
+    - "Machine guns (SAWs and M60s) at the crash"
+    - "Crash site 2: the crew, Gordon and Shughart"
+mons-1914:
+  source: "https://visitmons.co.uk/see-do/top-sights/mons-the-first-the-last/battlefields-guide/3-the-rail-bridge"
+  hold:
+    - "Royal Fusiliers machine guns (railway bridge)"
+  withdraw:
+    - {unit: "4th Royal Fusiliers (C Coy, the railway bridge)", at: 281, to: S}   # ordered back at 13:10, went at 13:40, back through Nimy to Mons
+    - {unit: "4th Royal Fusiliers (B Coy, the road bridge)", at: 281, to: S}   # with the battalion at 13:40
+    - {unit: "4th Royal Fusiliers (A and D Coys, Nimy)", at: 281, to: S}   # with the battalion at 13:40, back through Nimy to Mons
+osan-1950:
+  source: "https://www.koreanwaronline.com/history/Appleman/Chapter6.htm"
+  withdraw:
+    - {unit: "B Company platoon (the hillock west of the road)", at: 46, to: [66, 42]}   # about 12:30, on Smith's order, pulled back east of the road to B Company
+    - {unit: "B Company, 21st Infantry (the saddle and east of it)", at: 166, to: S}   # Smith's withdrawal after about 14:30, last off the ridge
+    - {unit: "Recoilless rifle and bazooka teams (by the road)", at: 166, to: S}   # with the companies after about 14:30
+    - {unit: "Battalion machine guns", at: 166, to: S}   # with the companies after about 14:30
+    - {unit: "C Company, 21st Infantry (the ridge east)", at: 166, to: S}   # first to leave, about 14:30, toward Osan
+    - {unit: "C Company's right (bent back by the railroad)", at: 166, to: S}   # with C Company
+porkchop-1953:
+  source: "https://historynet.com/korean-war-battle-on-pork-chop-hill/;"
+  hold:
+    - "E Company, 31st Infantry (the north trenches)"
+    - "E Company, 31st Infantry (the west trenches)"
+redan-1855-june:
+  source: "https://weekend.rambler.ru/read/56631399-kak-byl-otbit-pervyy-shturm-sevastopolya-v-krymskuyu-voynu/"
+  hold:
+    - "Russian infantry at the salient"
+    - "Guns on the left face"
+    - "Guns on the right face"
+    - "Battery on the line to the west"
+    - "Battery on the line to the east"
+    - "Russian infantry behind the breastwork"
+    - "Riflemen on the line to the west"
+    - "Riflemen on the line to the east"
+wagon-box-1867:
+  source: "https://www.wyohistory.org/encyclopedia/wagon-box-fight-1867"
+  hold:
+    - "27th Infantry, Company C (Powell and Jenness)"
+    - "Woodcutters and teamsters (civilians, repeating rifles)"
+wanat-2008:
+  source: "https://www.dvidshub.net/news/printable/136800"
+  hold:
+    - "Observation Post Topside (paratroopers)"
+    - "Observation Post Topside (the M240 and its crew)"
+    - "2nd Platoon on the base's east side, facing the post"
+    - "Humvee guns (.50 cal, Mk 19) and the TOW"
+xray-1965:
+  source: "https://armyaviationmagazine.com/1965-ia-drang-part-i-lz-x-ray/"
+  hold:
+    - "2nd Platoon, B Company (cut off on the knoll)"
+    - "C Company (south of the clearing)"
+  withdraw:
+    - {unit: "B Company, 1st Battalion, 7th Cavalry (across the creek bed)", at: 246, to: [104, 66]}   # about 17:40 Moore pulls it back to the edge of the landing zone for the night
+    - {unit: "A Company (along the creek bed, B's left)", at: 246, to: [104, 66]}   # pulled back with B Company to the landing zone's edge

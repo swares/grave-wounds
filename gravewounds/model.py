@@ -100,6 +100,7 @@ class Data:
     disease: dict = field(default_factory=dict)     # disease.yaml: camp disease for travel-map forces
     units: dict = field(default_factory=dict)       # units.yaml: unit combat on the field map
     fields: dict = field(default_factory=dict)      # battlefield id -> battlefield (data/fields), `rows` = ground rows
+    orders: dict = field(default_factory=dict)      # battlefield id -> the defenders' orders from the accounts (data/orders.yaml): hold, withdraw
     teams: dict = field(default_factory=dict)       # era id -> character generation tables (data/teams)
     warnings: list = field(default_factory=list)
 
@@ -147,6 +148,8 @@ def load(root: str | Path = "data") -> Data:
     units = _optional(root / "units.yaml", {})
     maps = _read_dir(root / "maps", "terrain")
     fields = _read_dir(root / "fields", "ground")
+    orders = _optional(root / "orders.yaml", {})
+    _apply_orders(fields, orders)
     teams = _read_dir(root / "teams")
 
     data = Data(
@@ -170,6 +173,7 @@ def load(root: str | Path = "data") -> Data:
         disease=disease,
         units=units,
         fields=fields,
+        orders=orders,
         teams=teams,
     )
     for t in data.tables.values():
@@ -838,7 +842,7 @@ def _units_extra_errors(d: Data) -> list[str]:
         errors.append("units.yaml: ground needs open, and a whole-number move of 1 or more for each kind")
     if "heroes" in U and not all(isinstance(U["heroes"].get(k), (int, float)) and U["heroes"][k] > 0 for k in ("tempo", "exposure")):
         errors.append("units.yaml: heroes.tempo and heroes.exposure must be positive")
-    errors += _limb_errors(d) + _commander_errors(d) + _self_play_errors(d) + _narrator_errors(d)
+    errors += _limb_errors(d) + _commander_errors(d) + _self_play_errors(d) + _narrator_errors(d) + _orders_errors(d)
     saved = U.get("aftermath", {}).get("saved", {})
     if saved and set(saved.get("hours", {})) != set(d.disease.get("recovery", {}).get("care", {})):
         errors.append("units.yaml: aftermath.saved.hours needs every care level")
@@ -917,6 +921,41 @@ def _stall_errors(commander: dict) -> list[str]:
     if isinstance(st.get("moves"), int) and st["moves"] > 0 and isinstance(st.get("down"), (int, float)) and st["down"] >= 0:
         return []
     return ["units.yaml: commander.stall needs moves (a positive whole number) and down (a % of 0 or more)"]
+
+
+def _apply_orders(fields: dict, orders: dict) -> None:
+    """Mark each battlefield's units with their orders from data/orders.yaml: hold (fight where
+    it stands) and withdraw {at, to} (from that exchange, fall back to a hex or a map edge)."""
+    for fid, o in (orders or {}).items():
+        units = {u["name"]: u for u in (fields.get(fid) or {}).get("units", [])}
+        for name in o.get("hold") or []:
+            if name in units:
+                units[name]["hold"] = True
+        for w in o.get("withdraw") or []:
+            if w.get("unit") in units:
+                units[w["unit"]]["withdraw"] = {"at": w["at"], "to": w["to"]}
+
+
+def _orders_errors(d: Data) -> list[str]:
+    """data/orders.yaml: each battlefield and unit named exists; a withdrawal has a whole-number
+    exchange of 1 or more and a hex on the map or a map edge (N, S, E, W)."""
+    errors = []
+    for fid, o in (d.orders or {}).items():
+        F = d.fields.get(fid)
+        if F is None:
+            errors.append(f"orders.yaml: no battlefield {fid}")
+            continue
+        names, (cols, rows) = {u["name"] for u in F.get("units", [])}, F["size"]
+        for n in [*(o.get("hold") or []), *[w.get("unit") for w in o.get("withdraw") or []]]:
+            if n not in names:
+                errors.append(f"orders.yaml: {fid} has no unit {n!r}")
+        for w in o.get("withdraw") or []:
+            to = w.get("to")
+            if not (isinstance(w.get("at"), int) and w["at"] >= 1):
+                errors.append(f"orders.yaml: {fid} {w.get('unit')!r}: at must be a whole number of 1 or more")
+            if not (to in ("N", "S", "E", "W") or (isinstance(to, list) and len(to) == 2 and 0 <= to[0] < cols and 0 <= to[1] < rows)):
+                errors.append(f"orders.yaml: {fid} {w.get('unit')!r}: to must be a hex on the map or N, S, E or W")
+    return errors
 
 
 def _pursuit_errors(commander: dict) -> list[str]:
