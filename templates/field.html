@@ -483,7 +483,10 @@ function quickSheetRows(){                          // one row for each side's w
   }
   return rows;
 }
-const quickFig = x => x === null ? "" : x.toFixed(x < 10 ? 1 : 0);
+function quickFig(x){                              // a chart figure: one decimal under 10
+  if (x === null) return "";
+  return x.toFixed(x < 10 ? 1 : 0);
+}
 function quickHandCell(hand, atk, dfn){
   if (hand === null) return "";
   const note = "(" + atk + "% against parry " + dfn + "%)";
