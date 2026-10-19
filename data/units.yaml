@@ -693,7 +693,10 @@ modern_fire:
 # wound table against armour, quality, attack and parry), so the men down are one d100 read on the
 # binomial curve for that many tries: its own percentiles for a small group, the normal curve's once
 # the spread (variance) reaches `normal_from` men. Blows that fall on a hero are still rolled one at a
-# time. Being measured in self-play.
+# time. Off by default: a GM's choice (the field page's "quick-play blows" box turns it on for a
+# battle). The tables print a chart for each era from the same rates, and the field page a sheet for
+# the units on the field (docs/units.md, Quick-play blows). Measured in self-play: the share of blows
+# putting a man down matches the per-blow rules, and the runs matched are within the dice's own spread.
 quick: {blows: false, samples: 4000, normal_from: 9}
 
 # ---------- unit morale ----------

@@ -1136,6 +1136,100 @@ def bundle(d) -> dict:
 # --------------------------------------------------------------------------
 # Markdown
 # --------------------------------------------------------------------------
+QUICK_ATTACKS = (30, 45, 60, 75)
+QUICK_AVERAGES = (0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50, 75, 100)   # as the field page's sheet
+
+
+def quick_down(d, tid, weapon, kit, quality, atk) -> float:
+    """Men down per try (quick-play), or None if the weapon is not on the table."""
+    from gravewounds import units as U
+    try:
+        return U._quick_rates(d, {"table": tid, "weapon": weapon}, {"kit": kit, "quality": quality}, atk, 0)["down"]
+    except KeyError:
+        return None
+
+
+def quick_chart_rows(d, battle: str, c: dict):
+    """A conflict's quick-play chart, as (header, rows, note): men down per 100 tries for each example
+    weapon against each example armour, at attacks 30, 45, 60 and 75, against regular men; or None."""
+    tids = [tid for tid, t in d.tables.items() if t.get("battle") == battle]
+    ws = list(dict.fromkeys(e["weapon"] for e in c.get("examples") or []))
+    ks = list(dict.fromkeys(e["kit"] for e in c.get("examples") or []))
+    if not tids or not ws or not ks:
+        return None
+    rows, ratios = [], {"green": [], "veteran": []}
+    for w in ws:
+        tid = next((t for t in tids if quick_down(d, t, w, "none", "regular", 60) is not None), None)
+        if tid is None:
+            continue
+        cells = []
+        for k in ks:
+            vals = [quick_down(d, tid, w, k, "regular", a) for a in QUICK_ATTACKS]
+            cells.append(" / ".join(f"{100 * v:.0f}" for v in vals))
+            if vals[2] > 0.02:
+                for q in ratios:
+                    ratios[q].append(quick_down(d, tid, w, k, q, 60) / vals[2])
+        rows.append([d.weapons[w]["name"]] + cells)
+    if not rows:
+        return None
+    f = {q: sum(v) / len(v) for q, v in ratios.items() if v}
+    factors = f"; green men x{f['green']:.2f}, veterans x{f['veteran']:.2f}" if len(f) == 2 else ""
+    note = ("Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry"
+            + factors + "; against a parry, x(1 - parry% x 0.9).")
+    return ["Weapon"] + [d.armor["kits"][k]["name"] for k in ks], rows, note
+
+
+def quick_chart(d, battle: str, c: dict) -> list:
+    """The markdown for a conflict's quick-play chart."""
+    q = quick_chart_rows(d, battle, c)
+    if not q:
+        return []
+    head, rows, note = q
+    return ["**Quick-play: men down per 100 tries**", "", note, "", "| " + " | ".join(head) + " |", "|" + "---|" * len(head)] + [
+        "| " + " | ".join(r) + " |" for r in rows] + [""]
+
+
+def quick_spread() -> list:
+    """The d100 spread chart, header first: men down for an average, by tenths of the d100 (Poisson
+    below 9, the normal curve from 9; as the field page's quickSpread)."""
+    import math
+    from gravewounds import units as U
+    out = [["Average"] + [f"{10 * k + 1:02d}-{10 * k + 10:02d}".replace("91-100", "91-00") for k in range(10)]]
+    for avg in QUICK_AVERAGES:
+        cells = []
+        for k in range(10):
+            p = (k + 0.5) / 10
+            if avg >= 9:
+                cells.append(str(max(0, U._round(avg + U._normal_at(p) * math.sqrt(avg)))))
+            else:
+                n, term = 0, math.exp(-avg)
+                cum = term
+                while cum < p:
+                    n += 1
+                    term *= avg / n
+                    cum += term
+                cells.append(str(n))
+        out.append([f"{avg:g}"] + cells)
+    return out
+
+
+QUICK_RULE = ("Resolve a striking group's blows on the rankers in one roll instead of one at a time. "
+            "1) Count the tries as usual (strikers x tempo, or shooters x rate). 2) Find the men down per 100 "
+            "tries in the conflict's chart for the weapon against the armour, at the attack % after all modifiers "
+            "(read between the columns), times the quality factor, times (1 - parry% x 0.9) if the target can parry. "
+            "3) The average = tries x that / 100; roll d100 on the chart below, on the nearest average's row, "
+            "for the men down. Blows that fall on a hero are still rolled one "
+            "at a time. The field page rolls it the same way when Quick-play blows is ticked, and prints the exact "
+            "numbers for the battlefield in play (Quick-play sheet).")
+
+
+def quick_section() -> list:
+    """Quick-play blows in markdown: the procedure and the spread chart."""
+    sp = quick_spread()
+    return ["### Quick-play blows", "", QUICK_RULE, "", "**Men down for an average (roll d100)**", "",
+            "| " + " | ".join(sp[0]) + " |", "|" + "---|" * len(sp[0])] + ["| " + " | ".join(r) + " |" for r in sp[1:]] + [""]
+
+
 def markdown(d) -> str:
     out = ["# Hit Location & Wound Tables", "",
            f"Generated {date.today().isoformat()} from the data folder. Roll d100 (00 = 100).", "",
@@ -1165,6 +1259,7 @@ def markdown(d) -> str:
                     out += ["", " ".join(cmp_["note"].split()), "", f"Source: {cmp_['source']}", ""]
                 if c.get("sources"):
                     out += ["Sources: " + " ".join(c["sources"]), ""]
+                out += quick_chart(d, prev_battle, c)
         ws = own_weapons(d, tid)
         cols = {w: {r["id"]: r for r in table_ranges(d, tid, w)} for w in ws}
         out += [f"## {t['name']}", "", f"*{t.get('context','')}*", "",
@@ -1246,6 +1341,7 @@ def markdown(d) -> str:
         out += ["| Quality | Attack | Defence | Nerve |", "|---|---|---|---|"] + ["| " + " | ".join(r) + " |" for r in unit_rows(d)] + [""]
         rates = d.units["missile"]["rate"]
         out += ["| Missile weapon | Shots a minute |", "|---|---|"] + [f"| {d.weapons[w]['name']} | {n} |" for w, n in rates.items()] + [""]
+        out += quick_section()
     if d.teams:
         mdt = lambda rows: ["| " + " | ".join(rows[0]) + " |", "|" + "---|" * len(rows[0])] + ["| " + " | ".join(r) + " |" for r in rows[1:]] + [""]
         out += ["## Team generation", ""]
@@ -1480,6 +1576,12 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
                               Paragraph(f"<b>Source.</b> {cmp_['source']}", S), Spacer(1, 6)]
                 if c.get("sources"):
                     story += [Paragraph("<b>Sources.</b> " + " ".join(c["sources"]), S)]
+                qc = quick_chart_rows(d, prev_battle, c)
+                if qc:
+                    nk = len(qc[0]) - 1
+                    story += [Spacer(1, 6), KeepTogether([Paragraph("Quick-play: men down per 100 tries", H2), Paragraph(qc[2], S), Spacer(1, 3),
+                              grid([[Paragraph(x, CH) for x in qc[0]]] + [[Paragraph(r[0], C)] + r[1:] for r in qc[1]],
+                                   [1.6 * inch] + [(W - 1.6 * inch) / nk] * nk, font=7.5)])]
         ws = own_weapons(d, tid)
         cols = {w: {r["id"]: r for r in table_ranges(d, tid, w)} for w in ws}
         head = [Paragraph("Location", CH), Paragraph("Zone", CH)] + [Paragraph(wshort(d, w), CH) for w in ws]
@@ -1632,7 +1734,10 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
         rrow = [[Paragraph(x, CH) for x in ["Missile weapon", "Shots a minute"]]] + [[d.weapons[w]["name"], str(n)] for w, n in d.units["missile"]["rate"].items()]
         story += [PageBreak(), Paragraph("Unit combat", H1)] + [Paragraph(x, B) for x in unit_rules(d)] + [
             Spacer(1, 6), KeepTogether([Paragraph("Unit quality", H2), grid(qrow, [1.4 * inch, 1.0 * inch, 1.0 * inch, 1.0 * inch], font=8)]),
-            Spacer(1, 6), KeepTogether([Paragraph("Missile rates", H2), grid(rrow, [2.4 * inch, 1.2 * inch], font=8)])]
+            Spacer(1, 6), KeepTogether([Paragraph("Missile rates", H2), grid(rrow, [2.4 * inch, 1.2 * inch], font=8)]),
+            Spacer(1, 6), Paragraph("Quick-play blows", H2), Paragraph(QUICK_RULE, B), Spacer(1, 4),
+            KeepTogether([Paragraph("<b>Men down for an average (roll d100)</b>", S),
+                          grid([[Paragraph(x, CH) for x in quick_spread()[0]]] + quick_spread()[1:], [0.8 * inch] + [(W - 0.8 * inch) / 10] * 10, font=7.5)])]
     if d.teams:
         cell = lambda rows: [[Paragraph(x, CH) for x in rows[0]]] + [[Paragraph(str(c), C) for c in r] for r in rows[1:]]
         for k, eid in enumerate(team_eras(d)):

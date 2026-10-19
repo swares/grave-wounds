@@ -26,6 +26,19 @@ From 1099 to 1291 Frankish crusader states held the coast of the Levant. Sidon, 
 
 Sources: Mikulski R.N.R. et al., 'Weapon injuries in the crusader mass graves from a 13th century attack on the port city of Sidon (Lebanon)', PLoS ONE 16(8): e0256517 (2021). Joinville, Life of Saint Louis, on Louis IX burying the dead of Sidon (1253).
 
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.25, veterans x0.74; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Mail hauberk and helm (c.1100-1300) | Gambeson and cap | Unarmoured | Hardened leather |
+|---|---|---|---|---|
+| Sword (arming sword) | 1 / 2 / 4 / 7 | 5 / 11 / 18 / 31 | 6 / 13 / 23 / 34 | 6 / 12 / 19 / 29 |
+| Axe (hand or long-hafted) | 2 / 5 / 8 / 16 | 5 / 14 / 20 / 33 | 5 / 14 / 23 / 35 | 6 / 13 / 23 / 34 |
+| Crossbow (bolts) | 6 / 12 / 21 / 31 | 5 / 15 / 24 / 33 | 6 / 13 / 23 / 35 | 5 / 13 / 22 / 33 |
+| Spear / lance | 2 / 6 / 11 / 15 | 5 / 13 / 20 / 29 | 5 / 14 / 20 / 30 | 5 / 13 / 20 / 28 |
+| Spiked club / morning star (knout) | 4 / 9 / 16 / 24 | 4 / 9 / 16 / 26 | 5 / 14 / 21 / 31 | 5 / 12 / 22 / 31 |
+| Bow (war arrows) | 2 / 4 / 8 / 15 | 6 / 13 / 22 / 33 | 6 / 13 / 23 / 33 | 6 / 13 / 22 / 33 |
+
 ## Sidon, mid-13th century - crusader mass graves (bone evidence)
 
 *Bones of at least 25 men killed when Mamluk (1253) or Mongol (1260) forces sacked crusader Sidon, later gathered into the town ditch. Killed only.*
@@ -139,6 +152,18 @@ King Valdemar IV Atterdag of Denmark invaded Gotland, then a rich trading island
 
 Sources: Swedish History Museum, 'Skull from the Battle of Visby'. Medievalists.net, 'Medieval battle injuries' (2024), summarising Ingelmark in Thordeman (1939).
 
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.31, veterans x0.71; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Gotland levy: mail coif, padded coat | Gotland, better equipped: coif, coat of plates | Danish man-at-arms (1361) | Coat of plates and mail (c.1350) |
+|---|---|---|---|---|
+| Spear / lance | 5 / 10 / 17 / 26 | 4 / 9 / 15 / 21 | 2 / 4 / 6 / 11 | 1 / 3 / 6 / 10 |
+| Axe (hand or long-hafted) | 4 / 10 / 18 / 27 | 4 / 8 / 16 / 23 | 2 / 4 / 5 / 12 | 2 / 4 / 7 / 11 |
+| Sword (arming sword) | 4 / 9 / 14 / 22 | 3 / 8 / 12 / 20 | 1 / 3 / 5 / 8 | 1 / 3 / 4 / 7 |
+| Spiked club / morning star (knout) | 5 / 12 / 20 / 30 | 5 / 11 / 17 / 27 | 3 / 6 / 10 / 19 | 3 / 6 / 11 / 18 |
+| Crossbow (bolts) | 6 / 12 / 22 / 30 | 6 / 13 / 21 / 29 | 3 / 8 / 13 / 23 | 3 / 8 / 14 / 21 |
+
 ## Visby 1361 - bone evidence
 
 *Melee, Gotland peasant levy (mail, shields, few helmets) vs Danish professional troops.*
@@ -248,6 +273,17 @@ The Wars of the Roses (1455-1485) were fought between the houses of York and Lan
 
 Sources: Fiorato V., Boylston A. and Knüsel C. (eds), Blood Red Roses: the archaeology of a mass grave from the Battle of Towton AD 1461 (Oxbow, 2000; 2nd ed. 2007). Holst M. and Sutherland T., 'Towton Revisited', in Eickhoff and Schopper (eds), Schlachtfeld und Massengrab (2014), pp. 97-129.
 
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.27, veterans x0.74; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Full plate harness (c.1450) | Jack and sallet (archer or billman, c.1460) | Brigandine, sallet and arm splints (c.1460) |
+|---|---|---|---|
+| Poleaxe (axe, hammer and spike) | 3 / 6 / 11 / 18 | 4 / 9 / 16 / 23 | 4 / 9 / 15 / 22 |
+| Longbow (English war bow, bodkin and broadhead arrows) | 2 / 2 / 5 / 13 | 3 / 7 / 12 / 21 | 3 / 6 / 10 / 19 |
+| Bill (English bill, hooked polearm) | 0 / 0 / 0 / 1 | 2 / 5 / 9 / 13 | 2 / 4 / 6 / 10 |
+| Sword (arming sword) | 0 / 0 / 0 / 0 | 2 / 5 / 9 / 13 | 1 / 4 / 6 / 10 |
+
 ## Towton 1461 - mass grave (bone evidence)
 
 *Death wounds on the men buried at Towton Hall after the battle of 29 March 1461, most likely Lancastrians caught in the rout. Killed only.*
@@ -355,6 +391,17 @@ A war of religion and power across the Holy Roman Empire: the Catholic Emperor a
 | Croat light horseman | Imperial army and Catholic League | Unarmoured | Sabre or broadsword | Raiders and skirmishers. |  |
 
 Sources: Nicklisch et al., PLoS ONE 12(5): e0178252 (2017): the Lützen mass grave, the Blue Brigade, and contemporary advice to aim for the head and left chest. Sides, armour and dress: general historical knowledge, not from the grave study.
+
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.26, veterans x0.73; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Unarmoured | Pikeman: morion and corslet | Harquebusier: buff coat, breastplate, pot helmet | Cuirassier, three-quarter armour (1630s) |
+|---|---|---|---|---|
+| Matchlock musket | 9 / 18 / 27 / 39 | 8 / 15 / 25 / 34 | 9 / 16 / 26 / 35 | 8 / 16 / 23 / 35 |
+| Spear / lance | 6 / 13 / 22 / 33 | 3 / 7 / 12 / 18 | 3 / 5 / 9 / 14 | 1 / 2 / 5 / 6 |
+| Sabre or broadsword | 5 / 13 / 20 / 31 | 3 / 8 / 13 / 19 | 3 / 5 / 8 / 16 | 1 / 2 / 3 / 5 |
+| Wheellock pistol or carbine (cavalry) | 9 / 18 / 27 / 37 | 4 / 8 / 15 / 22 | 4 / 8 / 17 / 24 | 1 / 5 / 12 / 19 |
 
 ## Lützen 1632 - mass grave (bone evidence)
 
@@ -480,6 +527,18 @@ The thirteen colonies, joined by France from 1778 and later Spain and the Dutch 
 | Oneida scout | Native nations | Unarmoured | Smoothbore musket (Brown Bess, Charleville) | Allied with the Americans. |  |
 
 Sources: Peckham, The Toll of Independence (1974), via Journal of the American Revolution, 'The 25 Deadliest Battles of the Revolutionary War' (2014): 7,174 killed and 8,241 wounded. Federal Revolutionary War Invalid Pension Claims, 1792-1795, Magazine of Early American Datasets (Penn, 2021). Sides, alliances and dress: general historical knowledge, not from the pension data.
+
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.24, veterans x0.74; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Unarmoured | Dragoon or light dragoon helmet |
+|---|---|---|
+| Smoothbore musket (Brown Bess, Charleville) | 6 / 13 / 22 / 33 | 5 / 12 / 22 / 33 |
+| Flintlock rifle (Pennsylvania, Baker, Jäger) | 5 / 13 / 23 / 33 | 5 / 12 / 23 / 31 |
+| Sabre or broadsword | 5 / 14 / 21 / 31 | 3 / 8 / 14 / 21 |
+| Bayonet (musket or rifle) | 5 / 14 / 22 / 33 | 5 / 13 / 20 / 29 |
+| Axe (hand or long-hafted) | 6 / 14 / 20 / 30 | 5 / 10 / 19 / 28 |
 
 ## American Revolution 1775-83 - disabled veterans' wounds
 
@@ -608,6 +667,17 @@ France under Napoleon against shifting coalitions of Britain, Austria, Prussia, 
 | Spanish guerrilla | Britain and Peninsular allies | Unarmoured | Smoothbore musket (Brown Bess, Charleville) | Ambushes of convoys and couriers. | [Spaniards attack French soldiers: Goya, The Disasters of War, plate 2 (1810s)](https://commons.wikimedia.org/wiki/File:Goya-Guerra_%2802%29.jpg) |
 
 Sources: Planas Campos and Grajal de Blas, British Journal for Military History 7(3), 2021 (Peninsular War wound database). Sides, armour and dress: general historical knowledge, not from the wound data.
+
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.25, veterans x0.76; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Unarmoured | Cuirassier: steel cuirass and helmet | Dragoon or light dragoon helmet |
+|---|---|---|---|
+| Smoothbore musket (Brown Bess, Charleville) | 4 / 10 / 20 / 29 | 3 / 10 / 18 / 26 | 4 / 11 / 20 / 29 |
+| Sabre or broadsword | 5 / 12 / 20 / 30 | 3 / 8 / 13 / 21 | 4 / 8 / 14 / 20 |
+| Cavalry lance | 6 / 13 / 22 / 32 | 4 / 9 / 15 / 22 | 6 / 12 / 18 / 31 |
+| Flintlock rifle (Pennsylvania, Baker, Jäger) | 4 / 11 / 19 / 29 | 3 / 10 / 18 / 27 | 4 / 10 / 19 / 28 |
 
 ## Peninsular War 1808-14 - French officers' wounds
 
@@ -738,6 +808,16 @@ The United States fought Britain and its Canadian colonies, and Tecumseh's confe
 
 Sources: No wound-by-location record found for the War of 1812; the table borrows the Peninsular War data (Planas Campos and Grajal de Blas, British Journal for Military History 7(3), 2021). US losses of about 2,260 killed in action and 4,505 wounded: commonly cited totals (e.g. New World Encyclopedia, 'War of 1812'); British and Canadian losses are usually given only combined (about 4,400 killed or wounded). Sides, armour and dress: general historical knowledge, not from the wound data.
 
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.26, veterans x0.78; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Unarmoured |
+|---|---|
+| Smoothbore musket (Brown Bess, Charleville) | 6 / 15 / 24 / 34 |
+| Flintlock rifle (Pennsylvania, Baker, Jäger) | 6 / 14 / 24 / 34 |
+| Axe (hand or long-hafted) | 5 / 13 / 21 / 30 |
+
 ## War of 1812 - all hits (gameplay, borrowed records)
 
 *Where musket balls, rifle balls and shot land on a man in the open or in the woods, before survival sorts the records. No wound count survives for this war; the table is built from the Peninsular War records.*
@@ -823,6 +903,18 @@ Britain, France, the Ottoman Empire and from 1855 Sardinia fought Russia, chiefl
 Source: Medical and Surgical History of the British Army ... in the Crimea (1858), vol. 2, pp. 257-258 and 286-339.
 
 Sources: Medical and Surgical History of the British Army which served in Turkey and the Crimea during the war against Russia in the years 1854-55-56 (London, 1858), vol. 2: the returns of wounds received in action (pp. 257-259), the returns by region (pp. 286-339) and the killed in action (Concluding Observations). Sides, weapons and dress: general historical knowledge, not from the wound data.
+
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.25, veterans x0.75; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Unarmoured |
+|---|---|
+| Rifle-musket (Minie ball) | 5 / 12 / 21 / 30 |
+| Smoothbore artillery (round shot, canister, grape, shell) | 5 / 12 / 21 / 30 |
+| Sabre or broadsword | 5 / 14 / 21 / 30 |
+| Smoothbore musket (Brown Bess, Charleville) | 5 / 13 / 21 / 31 |
+| Bayonet (musket or rifle) | 6 / 13 / 22 / 31 |
 
 ## Crimean War 1855-56 - siege of Sevastopol, wounded (surgeons' returns)
 
@@ -937,6 +1029,16 @@ The United States (Union) against the seceded Confederate States. Most wounds ca
 | Union cavalryman | Union | Unarmoured | Sabre or broadsword | Sabre charge; carbine and revolver as well. | [Unidentified Union cavalryman with sabre, 1861-65 (Library of Congress)](https://commons.wikimedia.org/wiki/File:Unidentified_soldier_in_Union_cavalry_uniform_holding_cavalry_saber_LOC_5229167420.jpg) |
 
 Sources: Antietam on the Web, 'Saved by his steel vest' (2018): Atwater and G&D Cook vests, sales and use.
+
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.25, veterans x0.77; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Unarmoured | Private steel vest (Civil War, 1862) |
+|---|---|---|
+| Rifle-musket (Minie ball) | 5 / 11 / 21 / 31 | 4 / 12 / 21 / 31 |
+| Revolver | 5 / 12 / 21 / 31 | 4 / 10 / 18 / 27 |
+| Sabre or broadsword | 6 / 13 / 21 / 30 | 6 / 13 / 20 / 29 |
 
 ## Civil War 1861-65 - wounded (surgeon's records)
 
@@ -1091,6 +1193,17 @@ After the Civil War the US Army garrisoned the Plains and the Southwest and foug
 
 Sources: US Surgeon General's Office, Circular No. 3 (1871), 'Arrow-Wounds', pp. 144-161 (archive.org: reportofsurgical00unituoft). Places, tribes, units and the note on firearms and bows are from the case reports and Dr. Muller's note there. Rawhide shields: general ethnographic description, not from the report.
 
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.22, veterans x0.78; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Rawhide shield, no armour (Plains warrior) | Unarmoured |
+|---|---|---|
+| Bow (war arrows) | 6 / 14 / 23 / 35 | 6 / 14 / 22 / 33 |
+| Spear / lance | 6 / 13 / 23 / 32 | 5 / 13 / 23 / 33 |
+| Revolver | 5 / 13 / 23 / 32 | 6 / 14 / 24 / 34 |
+| Rifle-musket (Minie ball) | 5 / 14 / 23 / 33 | 6 / 13 / 23 / 33 |
+
 ## Indian Wars 1865-71 - arrow wounds (US Army surgeons)
 
 *Soldiers, scouts and civilians hit by arrows on the Plains and in the Southwest, mostly 1866-70. Killed and wounded together.*
@@ -1165,6 +1278,18 @@ The Allied powers (France, the British Empire, Russia, Italy, and from 1917 the 
 
 Sources: Military Wiki, 'Stahlhelm' (introduction of German and Allied steel helmets).
 
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.16, veterans x0.85; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Unarmoured | Steel helmet only (1915-1950s rifleman) | Steel helmet and Sappenpanzer (WWI German sentry) |
+|---|---|---|---|
+| Service rifle (bolt or semi-auto, 1914-53) | 18 / 32 / 45 / 61 | 17 / 31 / 45 / 61 | 16 / 31 / 44 / 60 |
+| Machine gun | 17 / 31 / 46 / 61 | 17 / 32 / 46 / 60 | 16 / 31 / 46 / 59 |
+| Sharpened entrenching tool (spade) | 5 / 13 / 21 / 30 | 4 / 10 / 17 / 25 | 3 / 8 / 13 / 19 |
+| Bayonet (musket or rifle) | 5 / 14 / 21 / 31 | 6 / 13 / 19 / 30 | 4 / 10 / 16 / 25 |
+| Hand grenade | 17 / 31 / 46 / 61 | 16 / 30 / 45 / 60 | 14 / 27 / 42 / 58 |
+
 ## WWI 1914-18 - penetrating wounds
 
 *Primary penetrating wounds in WWI casualties.*
@@ -1232,6 +1357,17 @@ The Allies against the Axis. This group's tables come from two theatres: the jun
 | German paratrooper, Cassino | Axis | Steel helmet only (1915-1950s rifleman) | Pistol or submachine gun | Rimless paratrooper helmet, MP 40; fought as infantry. | [German paratrooper near Monte Cassino, February 1944 (Bundesarchiv)](https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_146-1974-006-62%2C_Bei_Monte_Cassino%2C_Fallschirmj%C3%A4ger.jpg) |
 
 Sources: Borden Institute, Weapons Effects and War Wounds, Table 1-1 (Bougainville causes of injury).
+
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.05, veterans x0.93; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Steel helmet only (1915-1950s rifleman) | Aircrew flak vest and helmet (WWII bomber crew) | Unarmoured |
+|---|---|---|---|
+| Service rifle (bolt or semi-auto, 1914-53) | 20 / 34 / 48 / 64 | 19 / 34 / 49 / 63 | 19 / 34 / 49 / 65 |
+| Hand grenade | 18 / 32 / 47 / 63 | 11 / 21 / 37 / 48 | 19 / 32 / 50 / 63 |
+| Machine gun | 19 / 34 / 49 / 65 | 19 / 34 / 50 / 65 | 20 / 34 / 49 / 64 |
+| Pistol or submachine gun | 19 / 32 / 47 / 64 | 15 / 27 / 43 / 59 | 20 / 33 / 49 / 63 |
 
 ## WWII Italy 1944 - killed in action
 
@@ -1522,6 +1658,15 @@ The United Nations Command, led by the United States with South Korea, the Briti
 
 Sources: Wikipedia, 'M-1952 Flak Jacket'.
 
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.07, veterans x0.92; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Steel helmet only (1915-1950s rifleman) | M1 helmet, Doron vest (USMC M1951/M1955, 1951-75) | Unarmoured |
+|---|---|---|---|
+| Service rifle (bolt or semi-auto, 1914-53) | 17 / 32 / 47 / 63 | 18 / 33 / 47 / 61 | 19 / 31 / 48 / 61 |
+| Pistol or submachine gun | 17 / 32 / 46 / 62 | 14 / 27 / 41 / 55 | 19 / 32 / 48 / 63 |
+
 ## Korea 1950-53 - hospitalized wounded
 
 *Location of wounds in US Army casualties admitted to hospital, Korean War.*
@@ -1657,6 +1802,15 @@ South Vietnam, the United States and allies (Australia, New Zealand, South Korea
 | Viet Cong guerrilla | PAVN and Viet Cong | Unarmoured | Mine, booby trap or IED | Booby traps, mines and punji pits. |  |
 
 Sources: Neel, Medical Support of the U.S. Army in Vietnam (1973), ch. 3, Table 6. Wikipedia, 'Flak jacket' (M69 and M1955 protection).
+
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.08, veterans x0.92; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | M1 helmet, nylon flak vest (US Army M1952/M69, 1952-75) | M1 helmet, Doron vest (USMC M1951/M1955, 1951-75) | Steel helmet only (1915-1950s rifleman) | Unarmoured |
+|---|---|---|---|---|
+| Assault rifle (M16, AK) | 18 / 31 / 46 / 61 | 18 / 32 / 48 / 61 | 18 / 32 / 46 / 63 | 18 / 32 / 47 / 62 |
+| Mine, booby trap or IED | 14 / 28 / 43 / 56 | 15 / 28 / 43 / 58 | 17 / 29 / 44 / 60 | 17 / 31 / 46 / 61 |
 
 ## Vietnam 1965-70 - hospitalized wounded
 
@@ -1802,6 +1956,16 @@ Six smaller wars with very different fighting. Northern Ireland (1969-98): the B
 | Chechen fighter, Grozny | Chechnya | Unarmoured | RPG (rocket-propelled grenade) | Urban ambush teams. | [Chechen fighter near the Presidential Palace in Grozny, January 1995 (Mikhail Evstafiev)](https://commons.wikimedia.org/wiki/File:Evstafiev-chechnya-palace-gunman.jpg) |
 
 Sources: Wikipedia, 'Ranger Body Armor' (front plate only in 1993). Borden Institute, Weapons Effects and War Wounds, Table 1-2 (wound distributions).
+
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.14, veterans x0.86; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | PASGT vest and helmet (1980s-90s) | Unarmoured | Steel helmet only (1915-1950s rifleman) | Ranger Body Armor, front plate only (Mogadishu 1993) |
+|---|---|---|---|---|
+| Assault rifle (M16, AK) | 19 / 33 / 48 / 64 | 19 / 33 / 48 / 65 | 20 / 34 / 49 / 63 | 19 / 32 / 47 / 60 |
+| Bayonet (musket or rifle) | 5 / 12 / 19 / 27 | 6 / 13 / 22 / 30 | 5 / 12 / 19 / 30 | 4 / 12 / 19 / 28 |
+| RPG (rocket-propelled grenade) | 13 / 25 / 40 / 49 | 19 / 34 / 49 / 64 | 18 / 30 / 47 / 61 | 13 / 25 / 37 / 49 |
 
 ## Northern Ireland - penetrating wounds
 
@@ -2103,6 +2267,15 @@ US-led coalitions in Afghanistan from 2001 (against the Taliban and al-Qaeda) an
 
 Sources: Owens et al., J Trauma 2008; Borden Institute, Table 1-1 (DoD Trauma Registry 2007-17).
 
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.07, veterans x0.96; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Interceptor vest, SAPI plates, ACH (2000s) | Plate carrier, ESAPI plates, helmet (2010s-) | PASGT vest and helmet (1980s-90s) | Steel helmet only (1915-1950s rifleman) | Unarmoured |
+|---|---|---|---|---|---|
+| Assault rifle (M16, AK) | 19 / 32 / 47 / 62 | 20 / 32 / 47 / 62 | 19 / 34 / 50 / 66 | 21 / 35 / 48 / 64 | 20 / 34 / 49 / 65 |
+| Mine, booby trap or IED | 14 / 28 / 41 / 55 | 16 / 28 / 42 / 58 | 15 / 27 / 41 / 55 | 17 / 31 / 46 / 60 | 17 / 32 / 48 / 62 |
+
 ## Iraq & Afghanistan 2001-05 - combat wounds
 
 *6,609 combat wounds on 1,566 US soldiers, Operations Iraqi Freedom and Enduring Freedom, Oct 2001 - Jan 2005.*
@@ -2244,6 +2417,15 @@ Same source and counting rule for every row: hospitalized casualties, including 
 
 Source: Owens et al., 'Combat wounds in Operation Iraqi Freedom and Operation Enduring Freedom', J Trauma 2008 (National Academies 2014, Tables 3-2 and 3-4).
 
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.09, veterans x0.94; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Plate carrier, ESAPI plates, helmet (2010s-) | Concealable soft vest (police IIIA) | Unarmoured |
+|---|---|---|---|
+| Assault rifle (M16, AK) | 15 / 29 / 42 / 58 | 19 / 33 / 47 / 61 | 18 / 32 / 47 / 62 |
+| Pistol or submachine gun | 15 / 26 / 40 / 51 | 13 / 24 / 39 / 52 | 18 / 33 / 47 / 60 |
+
 ## Baseline - random hit (body surface area)
 
 *Each region's share of body surface area: where hits would land if every square inch were equally likely.*
@@ -2310,6 +2492,15 @@ Knife killings recorded by forensic pathologists: usually one attacker against a
 
 Sources: Karlsson 1998, via forensicmed.co.uk.
 
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.23, veterans x0.75; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Unarmoured | Concealable soft vest (police IIIA) | Plate carrier, ESAPI plates, helmet (2010s-) |
+|---|---|---|---|
+| Dagger / knife | 6 / 14 / 24 / 34 | 6 / 12 / 22 / 32 | 4 / 10 / 17 / 26 |
+| Bayonet (musket or rifle) | 6 / 14 / 23 / 34 | 6 / 13 / 22 / 34 | 4 / 11 / 17 / 26 |
+
 ## Knife assault - stab wounds (forensic)
 
 *Where stab and cut wounds were found on homicide victims, Stockholm 1983-1993. Used for knives and bayonets on any non-medieval table.*
@@ -2369,6 +2560,15 @@ Professional mixed martial arts under the Unified Rules: four-ounce gloves, no s
 | Kickboxer | Fighters | Unarmoured | Kick | Low kicks to the lead leg. |  |
 
 Sources: Fightshow, UFC Strike Map.
+
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.24, veterans x0.71; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Unarmoured |
+|---|---|
+| Punch | 5 / 13 / 21 / 29 |
+| Kick | 5 / 13 / 22 / 30 |
 
 ## Unarmed - landed strikes (MMA)
 
@@ -4755,6 +4955,36 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 | Assault rifle (M16, AK) | 15 |
 | Pistol or submachine gun | 12 |
 | Machine gun | 300 |
+
+### Quick-play blows
+
+Resolve a striking group's blows on the rankers in one roll instead of one at a time. 1) Count the tries as usual (strikers x tempo, or shooters x rate). 2) Find the men down per 100 tries in the conflict's chart for the weapon against the armour, at the attack % after all modifiers (read between the columns), times the quality factor, times (1 - parry% x 0.9) if the target can parry. 3) The average = tries x that / 100; roll d100 on the chart below, on the nearest average's row, for the men down. Blows that fall on a hero are still rolled one at a time. The field page rolls it the same way when Quick-play blows is ticked, and prints the exact numbers for the battlefield in play (Quick-play sheet).
+
+**Men down for an average (roll d100)**
+
+| Average | 01-10 | 11-20 | 21-30 | 31-40 | 41-50 | 51-60 | 61-70 | 71-80 | 81-90 | 91-00 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 0.25 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
+| 0.5 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 2 |
+| 0.75 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 2 | 2 |
+| 1 | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 2 | 2 | 3 |
+| 1.5 | 0 | 0 | 1 | 1 | 1 | 1 | 2 | 2 | 3 | 4 |
+| 2 | 0 | 1 | 1 | 1 | 2 | 2 | 2 | 3 | 3 | 5 |
+| 3 | 1 | 1 | 2 | 2 | 3 | 3 | 4 | 4 | 5 | 6 |
+| 4 | 1 | 2 | 3 | 3 | 4 | 4 | 5 | 5 | 6 | 8 |
+| 5 | 2 | 3 | 3 | 4 | 5 | 5 | 6 | 6 | 7 | 9 |
+| 6 | 2 | 3 | 4 | 5 | 6 | 6 | 7 | 8 | 9 | 10 |
+| 8 | 4 | 5 | 6 | 7 | 7 | 8 | 9 | 10 | 11 | 13 |
+| 10 | 5 | 7 | 8 | 9 | 10 | 10 | 11 | 12 | 13 | 15 |
+| 12 | 6 | 8 | 10 | 11 | 12 | 12 | 13 | 14 | 16 | 18 |
+| 15 | 9 | 11 | 12 | 14 | 15 | 15 | 16 | 18 | 19 | 21 |
+| 20 | 13 | 15 | 17 | 18 | 19 | 21 | 22 | 23 | 25 | 27 |
+| 25 | 17 | 20 | 22 | 23 | 24 | 26 | 27 | 28 | 30 | 33 |
+| 30 | 21 | 24 | 26 | 28 | 29 | 31 | 32 | 34 | 36 | 39 |
+| 40 | 30 | 33 | 36 | 38 | 39 | 41 | 42 | 44 | 47 | 50 |
+| 50 | 38 | 43 | 45 | 47 | 49 | 51 | 53 | 55 | 57 | 62 |
+| 75 | 61 | 66 | 69 | 72 | 74 | 76 | 78 | 81 | 84 | 89 |
+| 100 | 84 | 90 | 93 | 96 | 99 | 101 | 104 | 107 | 110 | 116 |
 
 ## Team generation
 

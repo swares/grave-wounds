@@ -767,3 +767,24 @@ runs: 313 of 444. Agincourt went from 1 to 8 and Lützen from 6 to 5; Towton is 
 nothing else moved. T1 before 1914 went from 17% to 15%, T3 from 6% to 9%, and T2 stays 2.8.
 At Agincourt the unit that narrows is the French western mounted wing, which closes from 10
 hexes to 5 and charges home.
+
+## The runs' own spread, and quick-play blows, 19 October 2026
+
+**How much do twelve runs vary?** The present rules, run again on seeds 13 to 24 instead of 1
+to 12, matched 290 of 444 runs against 313: about 20 runs of difference from the dice alone.
+The sourced targets T1, T2 and T5 held steady between the two sets; T3 (the loser's men down
+in the rout) moved from 6% to 9%. So several earlier verdicts made on a difference of a dozen
+runs or fewer (narrowing 309 against 307; the elite tier 304 against 303; flank fire 299 and the
+flank order 302 against 307) were within the noise. From here a change is judged on 24 runs of
+every battlefield pooled (seeds 1 to 24: 603 of 888 for the present rules) and on the morale
+targets, and a battlefield's change counts only when it moves well outside its own spread.
+
+**Quick-play blows** (`quick` in `data/units.yaml`; docs/units.md, Quick-play blows) roll a
+group's blows on the rankers as one d100 on the per-blow rules' own curve, for a GM who wants a
+faster table. With it on for every blow, twelve runs: 285 of 444 against 313, within the spread
+above, and the share of blows of each kind putting a man down matched the per-blow rules (a
+volley at North Vietnamese, 0.243 a try against 0.235). Two faults were found and fixed on the
+way: rounding a group's men down to whole men biased small groups (now a d100 on the binomial
+curve), and lightly wounded men were rounded away (now rounded at random, right on average).
+It is off by default: a GM's choice, with a chart for each era in the tables and an exact sheet
+for the field from the field page.

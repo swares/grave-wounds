@@ -183,6 +183,7 @@ function quickBlows(att, dfd, n, atk, dfn, rng, aim){   // as blows, but the ran
     const hero = aimedAt(aim.exposed, rng);
     if (hero){ heroBlow(att, hero, { r: rng.randint(1, 100), atk, critAt, shift: aim.shift }, rng, t); tries-- }
   }
+  if (tries <= 0) return t;                        // every blow fell on a hero, or none came
   const R = quickRates(att, dfd, atk, dfn), mean = tries * R.down, down = quickDown(tries, R.down, rng), k = mean > 0 ? down / mean : 0;   // no tries (a volley at men it can hardly see): none down
   for (const f of ["missed", "parried", "stopped"]) t[f] = Math.round(tries * R[f]);   // for the log only
   t.down = down;

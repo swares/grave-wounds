@@ -56,6 +56,16 @@ one toil, and so does each hex it goes in deep mud or snow. After 12 toil in hea
 20 in medium, or 30 in light, it is a fatigue step worse, to Exhausted at most, and stays
 so for the battle. Shooting costs none, and vehicles don't tire.
 
+**Quick-play blows (a GM's choice).** Rolling every blow is exact but slow on a table. To
+roll a group's blows in one go: count the tries as above, then find the men down per 100
+tries in the era's quick-play chart (in the tables) for the weapon against the target's
+armour, at the attack after all modifiers, times the quality factor printed with it, times
+(1 − parry × 0.9) if the target can parry. Tries × that ÷ 100 is the average; roll d100 on
+the spread chart for the men down. The field page's *Quick-play sheet* prints the exact
+figures for the units on the field, and ticking *quick-play blows* makes the page roll this
+way too. Blows that fall on a hero are still rolled one at a time. It gives the same losses
+on average, with the same spread, as rolling every blow.
+
 ## Morale and the rout {#morale}
 
 After an exchange a unit checks its morale if it lost the exchange in contact (more of its

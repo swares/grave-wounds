@@ -130,6 +130,8 @@ def _volley_shots(d: Data, att: dict, men: float, field_hexes: int, rng, mods: t
 
 def _blows(d: Data, att: dict, dfd: dict, n: int, atk: int, dfn: int, rng: random.Random,
            exposed: tuple = (), shift: int = 0) -> dict:
+    if (d.units.get("quick") or {}).get("blows"):
+        return _quick_blows(d, att, dfd, n, max(0, atk), dfn, rng, exposed, shift)
     t = _new_tally()
     t["blows"] = n
     atk = max(0, atk)
@@ -148,6 +150,148 @@ def _blows(d: Data, att: dict, dfd: dict, n: int, atk: int, dfn: int, rng: rando
             t["parried"] += 1
             continue
         _wound(d, att, dfd, atk - r, critical, rng, t)
+    return t
+
+
+# ---------- quick-play blows (units.yaml quick.blows): one roll for a striking group ----------
+# The share of tries that end each way (missed, parried, stopped, a light, serious or critical wound,
+# a man down or dead, and each kind of wound for the aftermath) is the per-blow rules' own, worked out
+# once for each pairing from quick.samples tries on dice of its own (the stand-in for the printed
+# table). A group's men down are then one d100 read on the binomial curve for its tries at that share
+# (the per-blow dice's own spread); the dead and the lightly wounded among them are the averages,
+# rounded at random (bookkeeping, not a table roll). As the field page's quickBlows.
+_QUICK: dict = {}
+
+
+def _num(x) -> str:
+    """A number as the page writes it (40, not 40.0)."""
+    return str(int(x)) if float(x).is_integer() else repr(float(x))
+
+
+def _quick_rates(d: Data, att: dict, dfd: dict, atk, dfn) -> dict:
+    """Per try: the share missed, parried, stopped, hit, light, serious, critical, down and dead, and
+    of each kind of wound (hurt), from quick.samples tries on the pairing's own dice."""
+    key = "|".join([att.get("table") or "", att.get("weapon") or "", dfd.get("kit") or "", dfd.get("quality") or "", _num(atk), _num(dfn)])
+    if key in _QUICK:
+        return _QUICK[key]
+    h = 7
+    for c in key:
+        h = (h * 31 + ord(c)) % 2147483646
+    own, S, t = SeededDice(1 + h), d.units["quick"]["samples"], _new_tally()
+    crit_at = math.floor(atk * d.wounds["combat"]["critical_fraction"])
+    for _ in range(S):
+        r = own.randint(1, 100)
+        if r > atk:
+            t["missed"] += 1
+            continue
+        critical = r <= crit_at
+        if not critical and dfn > 0 and own.randint(1, 100) <= dfn:
+            t["parried"] += 1
+            continue
+        _wound(d, att, dfd, atk - r, critical, own, t)
+    rates = {k: v / S for k, v in t.items() if k not in ("hurt", "blows")}
+    rates["hurt"] = {k: v / S for k, v in t["hurt"].items()}
+    _QUICK[key] = rates
+    return rates
+
+
+def _round(x: float) -> int:
+    """Half up, as the page rounds."""
+    return math.floor(x + 0.5)
+
+
+def _random_round(x: float, rng) -> int:
+    """Whole men, right on average: the fraction rounded up by chance."""
+    return math.floor(x) + (1 if rng.random() < x - math.floor(x) else 0)
+
+
+def _normal_at(p: float) -> float:
+    """The standard normal curve's p point (Acklam's approximation)."""
+    a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239]
+    b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572]
+    c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783]
+    e = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416]
+
+    def tail(x):
+        q = math.sqrt(-2 * math.log(x))
+        return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((e[0] * q + e[1]) * q + e[2]) * q + e[3]) * q + 1)
+    if p < 0.02425:
+        return tail(p)
+    if p > 1 - 0.02425:
+        return -tail(1 - p)
+    q = p - 0.5
+    r = q * q
+    return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1)
+
+
+def _quick_down(d: Data, n: int, q: float, rng) -> int:
+    """The men down of n tries that each put a man down at chance q: one d100 read on the binomial
+    curve (its own percentiles for a small group, the normal curve's from quick.normal_from men's spread)."""
+    if n <= 0 or q <= 0:
+        return 0
+    p = (rng.randint(1, 100) - 0.5) / 100
+    mean = n * q
+    v = mean * (1 - q)
+    if v >= d.units["quick"]["normal_from"]:
+        return min(n, max(0, _round(mean + _normal_at(p) * math.sqrt(v))))
+    k, term = 0, (1 - q) ** n
+    cum = term
+    while cum < p and k < n:
+        term *= (n - k) / (k + 1) * q / (1 - q)
+        k += 1
+        cum += term
+    return k
+
+
+def _shares(entries: list, total: int) -> dict:
+    """total split over (key, weight) by largest remainder."""
+    s, out = 0.0, {}
+    for _, w in entries:                     # added in order, as the page does (Python's sum() compensates, which can split a tie the other way)
+        s += w
+    if total <= 0 or s <= 0:
+        return out
+    raw = [(k, total * w / s) for k, w in entries]
+    left = total
+    for k, x in raw:
+        out[k] = math.floor(x)
+        left -= out[k]
+    for k, _ in sorted(((k, x - math.floor(x)) for k, x in raw), key=lambda kv: (-kv[1], kv[0]))[:left]:
+        out[k] += 1
+    return out
+
+
+def _quick_blows(d: Data, att: dict, dfd: dict, n: int, atk, dfn, rng, exposed: tuple, shift: int) -> dict:
+    """As _blows, but the rankers' blows in one roll; a blow that falls on a hero is still rolled."""
+    t = _new_tally()
+    crit_at = math.floor(atk * d.wounds["combat"]["critical_fraction"])
+    t["blows"] = n
+    tries = n
+    if exposed:
+        for _ in range(n):
+            hero = _aimed_at(exposed, rng)
+            if hero is not None:
+                _hero_blow(d, att, hero, rng.randint(1, 100), atk, crit_at, shift, rng, t)
+                tries -= 1
+    if tries <= 0:                            # every blow fell on a hero, or none came
+        return t
+    R = _quick_rates(d, att, dfd, atk, dfn)
+    mean = tries * R["down"]
+    down = _quick_down(d, tries, R["down"], rng)
+    k = down / mean if mean > 0 else 0
+    for f in ("missed", "parried", "stopped"):
+        t[f] = _round(tries * R[f])          # for the log only
+    t["down"] = down
+    t["dead"] = min(down, _random_round(tries * R["dead"] * k, rng))
+    hurt_down = [(key, w) for key, w in R["hurt"].items() if key.endswith("|1")]
+    hurt_up = [(key, w) for key, w in R["hurt"].items() if key.endswith("|0")]
+    t["hurt"].update(_shares(hurt_down, down - t["dead"]))
+    for key, w in hurt_up:
+        m = _random_round(tries * w, rng)     # the lightly wounded who fight on: the average
+        if m:
+            t["hurt"][key] = m
+    for key, m in t["hurt"].items():
+        t[key.split("|")[0]] += m
+    t["hits"] = t["light"] + t["serious"] + t["critical"] + t["dead"]
     return t
 
 

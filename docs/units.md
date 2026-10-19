@@ -88,6 +88,38 @@ ended with the whole English army gone), and they win one of the four outright. 
 the French on the share of men lost, because one English archer block breaks and is cut
 down in the rout. See the review for the morale trigger behind that.
 
+### Quick-play blows
+
+Rolling every blow (steps 3 and 4) is exact but slow at a table. `quick` in `data/units.yaml`
+gives a GM's alternative, **off by default** (`quick.blows: false`; the field page's
+*quick-play blows* box turns it on for the battle in hand):
+
+- **The rates.** For each pairing (wound table, weapon, armour kit, the target's quality,
+  attack %, parry %) the share of tries that end each way (missed, parried, stopped, a light,
+  serious or critical wound, a man down, a man dead, and each kind of wound for the
+  aftermath) is the per-blow rules' own, worked out once from `quick.samples` (4,000) tries
+  on dice of the pairing's own (seeded from the pairing, so the same every time). This is the
+  page's stand-in for the printed chart.
+- **The roll.** A group's men down are one d100 read on the binomial curve for its tries
+  at that share: the per-blow dice's own spread, not just their average. A small group
+  reads the curve's own percentiles; from a spread (variance) of `quick.normal_from` (9) it
+  reads the normal curve's. The dead among the men down, and the lightly wounded who fight
+  on, are the averages rounded at random (bookkeeping, not a table roll).
+- **Heroes.** A blow that falls on a hero is still rolled on its own, as before; quick-play
+  covers the rankers only.
+- **On paper.** The tables carry a chart for each era: men down per 100 tries for its
+  example weapons against its example armour at attacks 30, 45, 60 and 75, against regular
+  men, with the green and veteran factors and the parry factor (×(1 − parry × 0.9)), and a
+  d100 spread chart (Poisson below an average of 9, the normal curve above). The field page's
+  *Quick-play sheet* prints the exact figures for the units on the field.
+
+Measured in self-play (12 runs a battlefield, quick-play on): the share of blows of each
+kind that put a man down matched the per-blow rules (a volley at North Vietnamese 0.243 a
+try, against 0.235), and 285 of 444 runs matched the battle as fought, against 313 with
+per-blow dice. The same rules on seeds 13 to 24 gave 290 against 313 on seeds 1 to 12, so a
+12-run difference of this size is within the runs' own spread; it is a GM's choice, not a
+change to the rules. The Python mirror is `gravewounds/units.py` `_quick_blows`.
+
 ## Morale
 
 After each exchange a unit checks if any of these happened:
