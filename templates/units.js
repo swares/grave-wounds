@@ -618,7 +618,7 @@ function morale(u, roll){                       // {check, target, state}
   const M = UD.morale;
   if (u.state === "broken") return { check: false, target: null, state: "broken" };
   const losing = (u.lost || 0) > (u.dealt || 0) && u.contact;
-  const struck = u.down >= M.trigger * u.start || u.lost >= M.shock * Math.max(1, u.men) || u.flanked || losing;
+  const struck = (u.down >= M.trigger * u.start && u.lost > 0) || u.lost >= M.shock * Math.max(1, u.men) || u.flanked || losing;   // past a quarter down: in an exchange it lost men
   const rally = u.state === "shaken" && !u.contact;
   if (!struck && !rally) return { check: false, target: null, state: u.state };
   const target = quality(u.quality).nerve + moraleMods(M.mods, u);

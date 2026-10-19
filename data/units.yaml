@@ -701,7 +701,9 @@ quick: {blows: false, samples: 4000, normal_from: 9}
 
 # ---------- unit morale ----------
 # After each exchange a unit checks if it lost the exchange in contact (more of its men put
-# down than it put down), or has lost `trigger` of its starting men in all, or `shock` of
+# down than it put down), or has lost `trigger` of its starting men in all and lost men in this
+# exchange (self-play: a defence past a quarter down, checking every exchange whether hit or not,
+# broke in the long fights where the accounts say it held: Point 593), or `shock` of
 # its present men in this exchange, or was struck in flank or rear: d100 against its Nerve
 # with the modifiers below. A steady unit that fails is shaken (fights worse, cannot
 # charge); one that fails by more than `shaken_by` while flanked or with half its men down

@@ -46,8 +46,12 @@ cassino-monastery-1944:
     - "German machine guns (the abbey)"
 cassino-poles-1944:
   source: "https://en.wikipedia.org/wiki/Battle_of_Monte_Cassino"
+  # Phantom Ridge: the Kresowa men took the first bunkers, but withdrew to their start line, so the
+  # paratroops ended the day holding the ridge (https://kresyfamily.com/fh-jerzy-gradosielski_2.html,
+  # a participant's memoir; https://dzieje.pl/aktualnosci/67-rocznica-zdobycia-monte-cassino).
   hold:
     - "Germans in the abbey's ruins"
+    - "German paratroops on Phantom Ridge"
 cassino-town-1944:
   source: "https://www.historyofwar.org/articles/battles_cassino_3rd.html;"
   hold:
