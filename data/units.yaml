@@ -706,7 +706,9 @@ quick: {blows: false, samples: 4000, normal_from: 9}
 # with the modifiers below. A steady unit that fails is shaken (fights worse, cannot
 # charge); one that fails by more than `shaken_by` while flanked or with half its men down
 # breaks at once. A shaken unit that fails breaks. A shaken unit out of contact that passes
-# a check rallies to steady. A broken unit runs.
+# a check rallies to steady; failing it, with nothing new to check for, it stays shaken
+# (self-play: Hue's Marines broke on failed rally rolls alone, F Company with 125 of 140). A
+# broken unit runs.
 morale:
   trigger: 0.25
   shock: 0.10

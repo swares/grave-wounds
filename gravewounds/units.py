@@ -1020,6 +1020,8 @@ def morale(d: Data, unit: dict, roll: int) -> dict:
     target = quality(d, unit["quality"])["nerve"] + _morale_mods(M["mods"], unit)
     if roll <= target:
         return {"check": True, "target": target, "state": "steady" if rally and not struck else unit["state"]}
+    if rally and not struck:                  # a failed rally, nothing new struck it: still shaken
+        return {"check": True, "target": target, "state": "shaken"}
     return {"check": True, "target": target, "state": _failed(M, unit, roll - target)}
 
 
