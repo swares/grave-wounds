@@ -1140,13 +1140,22 @@ QUICK_ATTACKS = (30, 45, 60, 75)
 QUICK_AVERAGES = (0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50, 75, 100)   # as the field page's sheet
 
 
-def quick_down(d, tid, weapon, kit, quality, atk) -> float:
+def quick_down(d, tid, weapon, kit, quality, atk):
     """Men down per try (quick-play), or None if the weapon is not on the table."""
     from gravewounds import units as U
     try:
         return U._quick_rates(d, {"table": tid, "weapon": weapon}, {"kit": kit, "quality": quality}, atk, 0)["down"]
     except KeyError:
         return None
+
+
+def quick_cell(d, tid, w, k, ratios: dict) -> str:
+    """One chart cell (men down per 100 tries at each attack), noting the quality ratios at 60."""
+    vals = [quick_down(d, tid, w, k, "regular", a) for a in QUICK_ATTACKS]
+    if vals[2] > 0.02:
+        for q in ratios:
+            ratios[q].append(quick_down(d, tid, w, k, q, 60) / vals[2])
+    return " / ".join(f"{100 * v:.0f}" for v in vals)
 
 
 def quick_chart_rows(d, battle: str, c: dict):
@@ -1160,16 +1169,8 @@ def quick_chart_rows(d, battle: str, c: dict):
     rows, ratios = [], {"green": [], "veteran": []}
     for w in ws:
         tid = next((t for t in tids if quick_down(d, t, w, "none", "regular", 60) is not None), None)
-        if tid is None:
-            continue
-        cells = []
-        for k in ks:
-            vals = [quick_down(d, tid, w, k, "regular", a) for a in QUICK_ATTACKS]
-            cells.append(" / ".join(f"{100 * v:.0f}" for v in vals))
-            if vals[2] > 0.02:
-                for q in ratios:
-                    ratios[q].append(quick_down(d, tid, w, k, q, 60) / vals[2])
-        rows.append([d.weapons[w]["name"]] + cells)
+        if tid is not None:
+            rows.append([d.weapons[w]["name"]] + [quick_cell(d, tid, w, k, ratios) for k in ks])
     if not rows:
         return None
     f = {q: sum(v) / len(v) for q, v in ratios.items() if v}

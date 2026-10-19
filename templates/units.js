@@ -132,7 +132,7 @@ const QUICK = new Map();
 function quickRates(att, dfd, atk, dfn){         // per try: {missed, parried, stopped, hits, light, serious, critical, down, dead, hurt: {key: share}}
   const key = [att.table, att.weapon, dfd.kit, dfd.quality, atk, dfn].join("|");
   if (QUICK.has(key)) return QUICK.get(key);
-  const S = UD.quick.samples, own = new SeededDice(1 + [...key].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 2147483646, 7)), t = newTally();
+  const S = UD.quick.samples, own = new SeededDice(1 + [...key].reduce((h, c) => (h * 31 + c.codePointAt(0)) % 2147483646, 7)), t = newTally();
   const critAt = Math.floor(atk * FD.combat.critical_fraction);
   for (let i = 0; i < S; i++){
     const r = own.randint(1, 100);
