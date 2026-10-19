@@ -3440,7 +3440,7 @@ function holdBack(us, side, known){                // at its first move (unless 
   const far = [...mine].sort((a, b) => away(b) - away(a) || a - b);
   for (const i of mine) us[i].reserve = false;
   for (const i of far){
-    if (isBattery(us[i]) || isAtGun(us[i]) || tractor(us[i]) || us[i].via || us[i].men > room) continue;
+    if (isBattery(us[i]) || isAtGun(us[i]) || tractor(us[i]) || us[i].via || vehicleKind(us[i])?.gun || us[i].men > room) continue;   // vehicles with a main gun go in with the attack
     us[i].reserve = true;
     room -= us[i].men;
   }
@@ -4377,7 +4377,7 @@ function aiScore(field, u, tu, h, cost, shooter, storm = false){   // how much t
   const C = UD.commander, q = u.quality, dist = hdist(h, tu.pos);
   const s = (storm ? 0 : (C.cover[q] ?? 0)) * coverAt(field, tu.pos, h) - cost - (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side);
   if (shooter){
-    const inr = dist >= 1 && (fieldRange(u.weapon, dist) !== null || gunInRange(field, u, [h, tu.pos, dist]));
+    const inr = dist >= 1 && (fieldRange(u.weapon, dist) !== null || gunInRange(field, u, [h, tu.pos, dist])) && clearSight(field, h, tu.pos, dist);   // in range: and no woods, buildings or crest across the line from there
     const stand = inr && u.vehicle && gunOf(u) && !answers(field, tu, [tu.pos, [...h], dist]) ? C.stand_off : 0;
     return s + stand + (inr ? C.in_range : -C.closing * dist) - (dist < C.keep_off ? C.too_close : 0);
   }
