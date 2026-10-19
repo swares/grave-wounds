@@ -173,6 +173,9 @@ steady friends touching it, who go in with it), and green units sometimes hesita
 - **Routes.** A battlefield can send a unit on a route round a flank, as its account tells:
   the commander moves it from waypoint to waypoint, turning aside only for an enemy in contact
   or across its way, then orders it as any other.
+- **Orders from the accounts.** On the battlefields, units that the sources say held their
+  ground fight where they stand rather than fall back, and units the sources say withdrew on
+  orders fall back at the minute the accounts give, to a place or off the field.
 - **Narrowing.** Attacking, a formed unit that the ground keeps from closing on its target
   closes in its front, a quarter at a time and deeper, until it can move nearer, but never to
   less than half the front it started with.

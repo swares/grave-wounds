@@ -501,6 +501,25 @@ general. All its numbers are in units.yaml `commander`.
   French held off by the narrowing ground between the woods: Agincourt went from 1 of 12 runs
   matching to 8. Without the floor, Towton's Norfolk closed to a column 4 hexes wide and was cut
   down. The log says when a unit closes its front, and to how many hexes.
+- **Orders from the accounts** (`data/orders.yaml`, researched in the project's
+  hold-or-give-way notes, each battlefield with its source). Two kinds, for named units:
+  - **hold**: the sources say the unit held its ground to the end of the fight the set-up
+    covers. It fights where it stands: it does not fall back to the objective, and a holding
+    side's unit with no target stays put rather than drawing back.
+  - **withdraw** `{unit, at, to}`: the unit gave way on orders at a known time. From exchange
+    `at` (a minute each) it falls back to `to`, a hex (and then holds it) or a map edge (N, S,
+    E or W), and leaves the field there ("withdraw off the field, as ordered"; it counts as
+    gone, not broken). Mons (the Fusiliers at 281), Osan (the hillock platoon at 46, the rest
+    at 166), X-Ray (A and B Companies to the landing zone at 246) and Kapyong (the battalion
+    HQ and Shermans at 466, B Company at 586) give way so.
+  A unit the sources say was driven off, or that they do not cover, has no entry, and the fight
+  decides. Bull Run has none: its brigades held Henry Hill, which is the objective, so they go
+  up onto it as any holding unit does (marked to hold where they stood, they let the Union take
+  the empty summit: 12 of 12 runs to 5).
+  Measured on 24 runs of every battlefield: 620 of 888 matched, from 603. 73 Easting 7 to 19,
+  Lützen 9 to 17, X-Ray 12 to 15; Agincourt 11 to 8 and the Monastery 5 to 2, within their own
+  spread. The morale targets did not move (T1 before 1914 5/15/26%, T2 3.1, T5 6/68%; T3 8% to
+  5%, the target that varies most).
 - **Pursuit.** A steady unit that fights hand to hand goes after a broken enemy: horse one within
   a charge of it (twice its move) when no standing enemy is as near, foot one within its own move
   when it is nearer than any standing enemy. It moves or charges into contact, and the broken unit

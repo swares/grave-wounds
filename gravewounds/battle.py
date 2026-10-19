@@ -46,13 +46,17 @@ def make_unit(d: Data, o: dict, uid: int, table: str) -> dict:
 
 def _unit_marks(o: dict) -> dict:
     """The marks a drawn unit carries if set: flags, its vehicle, type and size, a machine gun's
-    fixed line and a route's waypoints (copied)."""
+    fixed line, a route's waypoints and its orders from the account (hold, withdraw; copied)."""
     out = {k: True for k in ("prone", "emplaced", "fac", "ladders") if o.get(k)}
     out.update({k: o[k] for k in ("vehicle", "type", "size", "armour") if o.get(k)})
     if o.get("fixed"):
         out["fixed"] = list(o["fixed"])
     if o.get("via"):
         out["via"] = [list(h) for h in o["via"]]
+    if o.get("hold"):
+        out["hold"] = True
+    if o.get("withdraw"):
+        out["withdraw"] = {"at": o["withdraw"]["at"], "to": o["withdraw"]["to"]}
     return out
 
 

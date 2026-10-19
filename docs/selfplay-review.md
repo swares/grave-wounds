@@ -788,3 +788,34 @@ way: rounding a group's men down to whole men biased small groups (now a d100 on
 curve), and lightly wounded men were rounded away (now rounded at random, right on average).
 It is off by default: a GM's choice, with a chart for each era in the tables and an exact sheet
 for the field from the field page.
+
+## The defenders' orders from the accounts, 19 October 2026
+
+Several battlefields failed because the commander pulled holding units off their ground to the
+objective, or kept units fighting that the accounts say were ordered out (the traces under *The
+battlefields that never matched*). The accounts were read for each battlefield's defenders
+(the project's hold-or-give-way notes): which units held to the end of the fight the set-up
+covers, and which gave way on orders, when and where to. `data/orders.yaml` carries what they
+say, with its source; a unit the sources say was driven off, or that they do not cover, has no
+entry.
+
+- **hold**: the unit fights where it stands; it does not fall back to the objective.
+- **withdraw**: from the minute given it falls back to a hex (and holds it) or off a map edge.
+  Mons (the Fusiliers), Osan (the hillock platoon, then the rest), X-Ray (A and B Companies to
+  the landing zone) and Kapyong (the HQ and Shermans, then B Company).
+
+On twelve runs, Bull Run fell from 12 to 5. Its brigades held Henry Hill, but Henry Hill is the
+objective: marked to hold where they stood, they let the Union walk onto the empty summit. Its
+hold entries were taken out (the summit is where a holding unit goes anyway).
+
+Twenty-four runs of every battlefield, against the present rules on the same seeds:
+
+| | Runs matched | 73 Easting | Lützen | X-Ray | Agincourt | Monastery |
+| --- | --- | --- | --- | --- | --- | --- |
+| Present rules | 603 of 888 | 7 | 9 | 12 | 11 | 5 |
+| With the orders | 620 of 888 | 19 | 17 | 15 | 8 | 2 |
+
+The two large gains are on battlefields with orders; the two losses are within a battlefield's
+spread over 24 runs (about 2 to 3 runs). The morale targets did not move: T1 before 1914
+5/15/26% (from 5/15/27), from 1914 29/37/53%, T2 3.1 (2.8), T5 6/68%; T3 went from 8% to 5%,
+the target that varies most between seed sets. The orders are in.

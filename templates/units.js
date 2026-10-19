@@ -3126,6 +3126,8 @@ const unsteady = (us, i, t) => (!us[i].prone && !us[i].vehicle && underFire(us, 
 function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance, known, exchange]
   const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = aiTarget(us, i, ctx[3], ctx[1]);
   if (u.state !== "steady") return unsteady(us, i, t);
+  const away = withdrawOrder(us, i, ctx);
+  if (away) return away;
   if (busyDigging(u) || u.resupplying) return null;
   const ammo = ammoOrder(us, i, t, ctx);
   if (ammo) return ammo;
@@ -3142,6 +3144,16 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   const o0 = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx), o = narrowed(us, i, t, ctx, o0) || o0;
   return t === null ? o : lastSeen(o, ctx[3], t, ctx[4]);
 }
+function withdrawOrder(us, i, ctx){               // orders from the account (data/orders.yaml withdraw {at, to}): from exchange at it falls back to hex to, and holds it once there, or to map edge to, and leaves the field there (as commander._withdraw_order)
+  const u = us[i], W = u.withdraw;
+  if (!W || (ctx[4] ?? 0) < W.at) return null;
+  const size = fieldSize(ctx[1]), edge = typeof W.to === "string";
+  if (!edge && hdist(u.pos, W.to) <= UD.commander.route.reach){ delete u.withdraw; u.hold = true; return null }
+  if (edge && footprint(u).flat().some(h => edgeGap(W.to, h, size) === 0)) return { act: "leave" };
+  const goal = edge ? edgeStraight(u.pos, W.to, size) : W.to;
+  return toward(us, i, null, [ctx[0], { ...ctx[1], objective: goal, objective_radius: null }, ctx[2], ctx[3], ctx[4]], "fall_back") || (edge ? { act: "leave" } : null);
+}
+const edgeStraight = (h, edge, [cols, rows]) => ({ N: [h[0], 0], S: [h[0], rows - 1], W: [0, h[1]], E: [cols - 1, h[1]] })[edge];   // the hex on map edge straight from h
 function narrowed(us, i, t, ctx, o){               // commander.narrow: attacking, a formed unit out of contact that would not move nearer its target closes in a quarter at a time, deeper, to the widest front that lets it move nearer; the order with its new width, or null (as commander._narrowed)
   const u = us[i];
   if (!UD.commander.narrow || ctx[2] !== "attack" || t === null || !formed(u) || u.width <= 1 || inContact(us, occupancy(us), i)) return null;
@@ -3285,12 +3297,12 @@ function forObjective(us, i, t, ctx){              // attacking: at the objectiv
   if (t === null) return noTarget(us, i, ctx, off);
   if (ctx[2] === "attack") return attackObjective(us, i, t, ctx, off);
   const o = bestOrder(us, i, t, ctx);
-  if (off > objectiveRadii(ctx[1])[1] && o?.act !== "charge") return toward(us, i, t, ctx, "fall_back") || o;
+  if (off > objectiveRadii(ctx[1])[1] && o?.act !== "charge" && !us[i].hold) return toward(us, i, t, ctx, "fall_back") || o;   // hold: its account has it stand where it is
   return o;
 }
 function noTarget(us, i, ctx, off){                // no enemy to go for: attacking, it advances unless at the objective; holding, it falls back if too far out
   const [radius, hold] = objectiveRadii(ctx[1]), attack = ctx[2] === "attack";
-  if (off <= (attack ? radius : hold)) return null;
+  if (off <= (attack ? radius : hold) || (!attack && us[i].hold)) return null;
   return toward(us, i, null, ctx, attack ? "advance" : "fall_back");
 }
 function attackObjective(us, i, t, ctx, off){      // attacking with a target: at the objective it holds; else its best order, or an advance when that is only to stand or turn and the target is not guarding the objective
@@ -3516,6 +3528,7 @@ function reachable(units, i, size, limit, field = null, through = false){   // M
 function applyOrder(us, i, o){                    // carry out an order (as the page's own move: charged when it charges)
   const u = us[i];
   if (o.act === "ground") us[i] = { ...u, prone: true };
+  else if (o.act === "leave") us[i] = { ...u, state: "fled", withdrew: true };
   else if (o.act === "dig") us[i] = { ...u, digging: { at: [...u.pos], n: 0 } };
   else if (o.act === "resupply") us[i] = { ...u, resupplying: true };
   else if (o.act === "lay") us[i] = { ...u, mining: { at: [...u.pos], facing: u.facing, n: 0, kind: o.kind } };
@@ -3760,8 +3773,14 @@ function makeUnit(o, id, table){                   // a new unit as the GM or a 
   const nv = o.nv || (o.vehicle ? vehicleDevice(table) : null), fc = fireControlOf(o, table);
   return { id, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, ...(isGun(o.weapon) ? { guns: gunKind(o) } : {}), width: o.width || Math.ceil(o.men / form(o).per_hex),
-    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.armour ? { armour: o.armour } : {}), ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...(nv ? { nv } : {}), ...(fc ? { fc } : {}), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}), ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
+    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...unitMarks(o), ...(nv ? { nv } : {}), ...(fc ? { fc } : {}) };
 }
+function unitMarks(o){                             // a drawn unit's optional marks, copied as given
+  return { ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.armour ? { armour: o.armour } : {}),
+    ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...unitOrders(o), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}),
+    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
+}
+const unitOrders = o => ({ ...(o.hold ? { hold: true } : {}), ...(o.withdraw ? { withdraw: { ...o.withdraw } } : {}) });   // its orders from the accounts
 function ensureTags(B){                            // each unit's number on its side, kept for the battle (B3 stays B3) (as battle.ensure_tags)
   for (const u of [...B.units].sort((a, b) => a.id - b.id)) if (!u.n){
     const k = sideIndex(B, u);
