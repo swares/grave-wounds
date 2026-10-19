@@ -462,6 +462,13 @@ general. All its numbers are in units.yaml `commander`.
     objective. If it breaks in turn, the next reserve goes where it stood.
   - The log says why ("committed from the reserve: one of its units has broken; they go to
     plug the gap at 31,21, where it stood").
+- **Narrowing to fit the ground.** Attacking, a formed unit (hand to hand, close order) out of
+  contact that cannot move nearer its target closes its front in a quarter at a time, deeper, to
+  the widest front that lets it move nearer, and moves (`commander.narrow`). It never goes
+  narrower than half the front it started with (`narrow_to`). Self-play showed Agincourt's
+  French held off by the narrowing ground between the woods: Agincourt went from 1 of 12 runs
+  matching to 8. Without the floor, Towton's Norfolk closed to a column 4 hexes wide and was cut
+  down. The log says when a unit closes its front, and to how many hexes.
 - **Pursuit.** A steady unit that fights hand to hand goes after a broken enemy: horse one within
   a charge of it (twice its move) when no standing enemy is as near, foot one within its own move
   when it is nearer than any standing enemy. It moves or charges into contact, and the broken unit

@@ -735,3 +735,35 @@ battlefield: 285 of 444 matched, against 307. Not adopted.
 
 Which units should stand and which should give way is a question of their orders and the
 account, not of whether they are in cover.
+
+## The blocked advance at Agincourt, 19 October 2026
+
+At Agincourt the French main battle, 4,800 men 60 hexes wide, stood a hex behind its own
+vanguard for the whole battle and never struck a blow. The vanguard in front of it was not
+fighting either: from exchange 12 it stood 2 hexes from the English, because the field narrows
+between the woods and its front could not fit nearer. Feeding men forward from the main battle
+into the vanguard was built and dropped, because the vanguard was never in contact to be fed.
+
+Three changes were screened, four runs of every battlefield each, against the present rules'
+102 of 148:
+
+| Change | Runs matched | Agincourt | T1 before 1914 (median down at breaking) | T3 (loser's men down in the rout) |
+| --- | --- | --- | --- | --- |
+| Present rules | 102 | 1 of 4 | 18% | 5% |
+| Narrowing the front | 104 | 4 of 4 | 16% | 9% |
+| The losing check counted in twentieths of the men in contact, and the rout strike by the pursuers' touching men | 101 | 0 of 4 | 28% | 2% |
+| Both | 101 | 0 of 4 | 27% | 2% |
+
+Counting only the men in contact made units break far later, away from the sources. It also
+cost Towton and Lützen, though it fixed the June Redan (0 to 4 of 4). It was not built.
+
+**Narrowing is in** (`commander.narrow`). Attacking, a formed unit out of contact that cannot
+move nearer its target closes in its front a quarter at a time, deeper, to the widest front
+that lets it move nearer. Twelve runs of every battlefield: 309 of 444, from 307. But Towton
+fell from 12 to 8. The trace showed Norfolk's 5,000, coming on late, closing again each
+exchange, from 30 hexes to 23, 18, 9, 7 and 4. A column 4 hexes wide broke at 5% down and was
+cut down in the rout. With a floor of half the front it started with (`narrow_to`), twelve
+runs: 313 of 444. Agincourt went from 1 to 8 and Lützen from 6 to 5; Towton is back at 12 and
+nothing else moved. T1 before 1914 went from 17% to 15%, T3 from 6% to 9%, and T2 stays 2.8.
+At Agincourt the unit that narrows is the French western mounted wing, which closes from 10
+hexes to 5 and charges home.
