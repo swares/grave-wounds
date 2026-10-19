@@ -701,7 +701,8 @@ quick: {blows: false, samples: 4000, normal_from: 9}
 
 # ---------- unit morale ----------
 # After each exchange a unit checks if it lost the exchange in contact (more of its men put
-# down than it put down), or has lost `trigger` of its starting men in all, or `shock` of
+# down than it put down, by `losing_margin` of its men at least: one man for a unit under 100,
+# 6 for one of 600, so a block of hundreds does not check over a single man), or has lost `trigger` of its starting men in all, or `shock` of
 # its present men in this exchange, or was struck in flank or rear: d100 against its Nerve
 # with the modifiers below. A steady unit that fails is shaken (fights worse, cannot
 # charge); one that fails by more than `shaken_by` while flanked or with half its men down
@@ -710,6 +711,7 @@ quick: {blows: false, samples: 4000, normal_from: 9}
 morale:
   trigger: 0.25
   shock: 0.10
+  losing_margin: 0.01         # self-play: the June Redan's 600 in the salient checked, and broke, over one man
   shaken_by: 20
   mods:
     leader: 10                # a named leader with the unit, up and fighting
@@ -978,6 +980,13 @@ commander:
   # the bayonet (fire alone rarely shifted men under cover: self-play showed attacks stalled
   # trading fire at range). Design choice.
   storm: [musket_smoothbore, rifle_musket, breechloader, rifle_service, rifle_assault, pistol_smg]
+  # bounds: storming in bounds. A storming unit with a modern weapon (ground_with) that heeds cover
+  # (regulars and better) and was hit or pinned in the last exchange goes to ground where it is
+  # and fires this move, rather than walking on upright; it gets up and goes on once a bound
+  # draws no fire, or at once if its target is pinned or it can charge home this move. Fire and movement, as
+  # 2 Para took Darwin Hill (self-play: walking upright into two machine guns, A Company broke
+  # in three minutes). Design choice.
+  bounds: true
   hesitate: {green: 30, regular: 10, veteran: 0}
   charge_odds:
     attack: {green: 100, regular: 80, veteran: 60}
