@@ -454,6 +454,15 @@ general. All its numbers are in units.yaml `commander`.
   A wall or palisade
   blocks hand-to-hand fighting, so stormers stop at its foot unless they carry ladders (see
   *Escalade*), when they go up it; breaching it is still the GM's order.
+  - **In bounds** (`commander.bounds`). Storming with a modern weapon (breech-loaders on), a
+    unit that heeds cover (regulars and better) and was hit or pinned in the last exchange
+    goes to ground where it is and fires this move, rather than walking on upright; it gets
+    up and goes on once a bound draws no fire, or at once if its target is pinned or it can
+    charge home this move. Fire and movement: self-play showed 2 Para's A Company walking
+    upright into two machine guns at Goose Green and breaking in three minutes. Measured on 24
+    runs of every battlefield: 628 of 888 from 620; Hamburger Hill 18 to 23, the morale
+    targets unchanged. Goose Green still does not match (British losses 63% to 55%): the bound
+    after a lull still goes into machine guns nothing has pinned.
 - **Facing.** A unit whose target is already in its front arc keeps its facing rather than
   turning to face it squarely, so a wide line does not spend its move turning.
   - Veterans prefer a hex off the target's front (30 points more).

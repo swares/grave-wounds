@@ -832,3 +832,18 @@ away from the sources. Towton fell from 23 to 3, Agincourt from 8 to 0, the Sept
 Redan from 22 to 16 and Lützen from 17 to 12: 610 of 888 against 620. The one-man trigger is
 what breaks the older armies early, as the accounts have them break; counting the men in contact
 (measured on 17 October) failed the same way. Not built. The salient's fault is still open.
+
+**Goose Green** (0 of 24). The trace: the Argentines hold trenches, so 2 Para's riflemen storm,
+and storming they walked upright across open ground into two machine guns; A Company lost 22
+of 74 in two minutes and broke. In 1982 A Company went to ground and took the hill by fire
+and movement over hours. Built: storming in bounds (`commander.bounds`; docs/units.md, Storming
+works): a storming modern unit hit or pinned in the last exchange goes to ground and fires,
+and goes on once a bound draws no fire, its target is pinned, or it can charge home. A first
+version let it walk on if the target was within a charge's distance (16 hexes), which was
+across the open; it now goes on only if the charge itself can be made. Twenty-four runs: 628
+of 888 from 620. Hamburger Hill went from 18 to 23, Pork Chop 7 to 9, Grozny 2 to 3, Keating
+16 to 17, the Monastery 2 to 1; the battlefields before 1914 are unchanged run for run, and so
+are the morale targets. Goose Green itself does not match: down after the first fire, A
+Company loses one or two men a minute rather than twenty, but its next bound still goes into
+machine guns nothing has pinned (British losses 63% to 55%). Suppressing them first, as the
+accounts have it done in the end (Milan and 66 mm rockets on the trenches), is to do.

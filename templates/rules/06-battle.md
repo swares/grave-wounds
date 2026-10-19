@@ -166,7 +166,9 @@ steady friends touching it, who go in with it), and green units sometimes hesita
   modern rifles and sub-machine guns do not stop to trade fire with an enemy behind works (a
   parapet, trench or bank), dug in, or in buildings or rubble: they close without seeking
   cover, firing as they go, and charge it, with the same odds. Flintlock riflemen, archers
-  and machine guns still fight by fire. A wall or
+  and machine guns still fight by fire. Modern infantry storm in bounds: a unit that took
+  fire in the last exchange goes to ground and fires this move, and goes on once a bound
+  draws no fire, its target is pinned, or it can charge home. A wall or
   palisade that blocks hand-to-hand fighting stops them at its foot, unless they carry
   ladders: then they go up it (see [works](#works)). Breaching it is the GM's order.
 
