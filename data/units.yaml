@@ -701,8 +701,7 @@ quick: {blows: false, samples: 4000, normal_from: 9}
 
 # ---------- unit morale ----------
 # After each exchange a unit checks if it lost the exchange in contact (more of its men put
-# down than it put down, by `losing_margin` of its men at least: one man for a unit under 100,
-# 6 for one of 600, so a block of hundreds does not check over a single man), or has lost `trigger` of its starting men in all, or `shock` of
+# down than it put down), or has lost `trigger` of its starting men in all, or `shock` of
 # its present men in this exchange, or was struck in flank or rear: d100 against its Nerve
 # with the modifiers below. A steady unit that fails is shaken (fights worse, cannot
 # charge); one that fails by more than `shaken_by` while flanked or with half its men down
@@ -711,7 +710,6 @@ quick: {blows: false, samples: 4000, normal_from: 9}
 morale:
   trigger: 0.25
   shock: 0.10
-  losing_margin: 0.01         # self-play: the June Redan's 600 in the salient checked, and broke, over one man
   shaken_by: 20
   mods:
     leader: 10                # a named leader with the unit, up and fighting

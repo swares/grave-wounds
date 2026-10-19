@@ -617,7 +617,7 @@ function failedState(mo, u, by){
 function morale(u, roll){                       // {check, target, state}
   const M = UD.morale;
   if (u.state === "broken") return { check: false, target: null, state: "broken" };
-  const losing = (u.lost || 0) - (u.dealt || 0) >= Math.max(1, Math.ceil(M.losing_margin * u.men)) && u.contact;   // lost the exchange by a share of its men (one man under 100)
+  const losing = (u.lost || 0) > (u.dealt || 0) && u.contact;
   const struck = u.down >= M.trigger * u.start || u.lost >= M.shock * Math.max(1, u.men) || u.flanked || losing;
   const rally = u.state === "shaken" && !u.contact;
   if (!struck && !rally) return { check: false, target: null, state: u.state };

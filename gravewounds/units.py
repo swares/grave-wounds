@@ -1011,8 +1011,7 @@ def morale(d: Data, unit: dict, roll: int) -> dict:
     M = d.units["morale"]
     if unit["state"] == "broken":
         return {"check": False, "target": None, "state": "broken"}
-    losing = (unit.get("lost", 0) - unit.get("dealt", 0) >= max(1, math.ceil(M["losing_margin"] * unit["men"]))
-              and unit.get("contact"))   # lost the exchange by a share of its men (one man under 100)
+    losing = unit.get("lost", 0) > unit.get("dealt", 0) and unit.get("contact")
     struck = (unit["down"] >= M["trigger"] * unit["start"] or unit["lost"] >= M["shock"] * max(1, unit["men"])
               or unit.get("flanked") or losing)
     rally = unit["state"] == "shaken" and not unit.get("contact")
