@@ -77,7 +77,8 @@ guns, heavy howitzers, and tanks or autocannon firing over open sights. Each is 
   scatter in hexes.
 - **What it does.** Every man in the burst is struck at the % for his distance from it,
   ×{{i_prone}} if gone to ground and less his cover. A struck man rolls a wound as one hit
-  by shell fragments at {{i_attack}}%.
+  by shell fragments at {{i_attack}}%. With quick-play, add up each man's chance (men × their
+  % for each burst) for the average and roll once on the spread chart for the men struck.
 - **Tree bursts.** Over woods, shells burst in the branches. The woods give no cover, the
   chance is ×{{i_tree}}, and going to ground only brings it to ×{{i_tree_prone}}.
 - **Smoke** spends the same rounds and wounds no one. No one sees or shoots into, out of or

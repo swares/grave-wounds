@@ -1220,14 +1220,16 @@ QUICK_RULE = ("Resolve a striking group's blows on the rankers in one roll inste
             "(read between the columns), times the quality factor, times (1 - parry% x 0.9) if the target can parry. "
             "3) The average = tries x that / 100; roll d100 on the chart below, on the nearest average's row, "
             "for the men down. Blows that fall on a hero are still rolled one "
-            "at a time. The field page rolls it the same way when Quick-play blows is ticked, and prints the exact "
+            "at a time. Shellfire the same way: for one battery's fire on one unit in an exchange, add up the men within "
+            "reach of each burst times their struck % (as for each man), which is the average; roll d100 on the chart "
+            "for the men struck. The field page rolls both so when quick-play is ticked, and prints the exact "
             "numbers for the battlefield in play (Quick-play sheet).")
 
 
 def quick_section() -> list:
     """Quick-play blows in markdown: the procedure and the spread chart."""
     sp = quick_spread()
-    return ["### Quick-play blows", "", QUICK_RULE, "", "**Men down for an average (roll d100)**", "",
+    return ["### Quick-play blows and shellfire", "", QUICK_RULE, "", "**Men down for an average (roll d100)**", "",
             "| " + " | ".join(sp[0]) + " |", "|" + "---|" * len(sp[0])] + ["| " + " | ".join(r) + " |" for r in sp[1:]] + [""]
 
 
@@ -1736,7 +1738,7 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
         story += [PageBreak(), Paragraph("Unit combat", H1)] + [Paragraph(x, B) for x in unit_rules(d)] + [
             Spacer(1, 6), KeepTogether([Paragraph("Unit quality", H2), grid(qrow, [1.4 * inch, 1.0 * inch, 1.0 * inch, 1.0 * inch], font=8)]),
             Spacer(1, 6), KeepTogether([Paragraph("Missile rates", H2), grid(rrow, [2.4 * inch, 1.2 * inch], font=8)]),
-            Spacer(1, 6), Paragraph("Quick-play blows", H2), Paragraph(QUICK_RULE, B), Spacer(1, 4),
+            Spacer(1, 6), Paragraph("Quick-play blows and shellfire", H2), Paragraph(QUICK_RULE, B), Spacer(1, 4),
             KeepTogether([Paragraph("<b>Men down for an average (roll d100)</b>", S),
                           grid([[Paragraph(x, CH) for x in quick_spread()[0]]] + quick_spread()[1:], [0.8 * inch] + [(W - 0.8 * inch) / 10] * 10, font=7.5)])]
     if d.teams:

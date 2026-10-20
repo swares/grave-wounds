@@ -3837,6 +3837,7 @@ def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, 
     hexes = [h for row in footprint(d, u) for h in row]
     men, near, struck = men_by_hex(d, u), False, 0
     cuts = [_shell_cut(d, field, h, low(u)) for h in hexes]
+    quick, tries, mean = bool((d.units.get("quick") or {}).get("blows")), 0, 0.0
     for at in bursts:
         for h, n, cut in zip(hexes, men, cuts):
             dist = hdist(h, at)
@@ -3844,7 +3845,13 @@ def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, 
                 continue
             near = True
             p = kind["struck"][dist] * cut
+            if quick:                         # quick-play: the average, rolled once below
+                tries += n
+                mean += n * min(100, max(0, math.floor(p))) / 100
+                continue
             struck += sum(1 for _ in range(n) if rng.randint(1, 100) <= p)
+    if quick and near:                        # one d100 on the curve for this fire on this unit
+        struck = _quick_down(d, tries, mean / tries if tries > 0 else 0, rng)
     return struck if near else None
 
 
