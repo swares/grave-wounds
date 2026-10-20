@@ -4263,7 +4263,7 @@ function underFire(us, i){                         // an enemy unit's missile we
 }
 function bounding(us, i, t){                     // storming in bounds (commander.bounds): a modern unit that heeds cover, hit or pinned last exchange, stays down and fires this move unless its target is pinned (or it can charge home now) (as commander.bounding)
   const u = us[i], C = UD.commander;
-  if (!C.bounds || u.vehicle || !C.ground_with.includes(u.weapon) || !((C.cover[u.quality] ?? 0) > 0)) return false;
+  if (!C.bounds || u.vehicle || !C.ground_with.includes(u.weapon) || (C.cover[u.quality] ?? 0) <= 0) return false;
   return !!(u.hit || u.pinned) && !us[t].pinned;
 }
 function storming(u, t, field, stance){           // attacking, armed for storming (black powder with the bayonet), its target holding works: it closes and charges (as commander.storming)
