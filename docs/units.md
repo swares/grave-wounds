@@ -426,7 +426,10 @@ general. All its numbers are in units.yaml `commander`.
     line to the target (or the objective), so a long advance goes straight rather than
     drifting to one side.
 - **Shooters.** A unit with missiles stops where the target is in range and shoots rather
-  than closing. It keeps off the enemy (2 hexes or more) if it can, and never charges,
+  than closing. In range means its weapon (or main gun) reaches, the light lets it see that
+  far, and nothing blocks the line from that hex (woods, buildings or a crest, as firing
+  itself checks). Before 20 October the line was not checked: Hue's tanks stopped 25 hexes
+  out behind blocks of houses, counting the Treasury in range, and never fired. It keeps off the enemy (2 hexes or more) if it can, and never charges,
   except when storming works (below). A unit with a main gun (a vehicle's, or anti-tank guns)
   counts the target in range where the gun reaches it and the weather and light let it see it
   there, not only its own weapon's (self-play showed tanks closing to their machine guns'
@@ -489,7 +492,9 @@ general. All its numbers are in units.yaml `commander`.
   Once digging it holds until the 3 exchanges are done, or until it is stopped (it moves,
   breaks or comes into contact).
 - **Its reserve.** At its first move it holds back its rearmost units, those furthest from
-  the nearest enemy. It takes them up to a share of the side's men, set by the quality most
+  the nearest enemy (not a unit on a route, nor vehicles with a main gun, which go in with the
+  attack: self-play held Hue's tanks and Ontos back, then sent them to plug gaps inside the
+  blocks, where vehicles cannot go). It takes them up to a share of the side's men, set by the quality most
   of its men have: regulars a quarter, veterans a third, green men none. The GM can decide
   instead: **Hold in reserve** on a unit of the commander's side marks or releases it, and
   once any is marked the commander leaves the choice to the GM.
