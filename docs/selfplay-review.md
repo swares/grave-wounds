@@ -819,3 +819,31 @@ The two large gains are on battlefields with orders; the two losses are within a
 spread over 24 runs (about 2 to 3 runs). The morale targets did not move: T1 before 1914
 5/15/26% (from 5/15/27), from 1914 29/37/53%, T2 3.1 (2.8), T5 6/68%; T3 went from 8% to 5%,
 the target that varies most between seed sets. The orders are in.
+
+## Lopsided losers: Goose Green and the June Redan, 19 October 2026
+
+**The June Redan** (2 of 24). The trace: the 600 Russians in the salient lost one man more than
+they put down in contact, which calls the losing check (35% to fail when steady); shaken, they
+broke at the next. A block of hundreds checks over a single man. Built and measured: the check
+called only when the unit lost at least 1% of its men more than it dealt (one man for a unit
+under 100). The June Redan went from 2 to 24 of 24, but before 1914 units then broke far later:
+the median share down at breaking from 15% to 27% (5% of breaks under 10% down, from 41%),
+away from the sources. Towton fell from 23 to 3, Agincourt from 8 to 0, the September
+Redan from 22 to 16 and Lützen from 17 to 12: 610 of 888 against 620. The one-man trigger is
+what breaks the older armies early, as the accounts have them break; counting the men in contact
+(measured on 17 October) failed the same way. Not built. The salient's fault is still open.
+
+**Goose Green** (0 of 24). The trace: the Argentines hold trenches, so 2 Para's riflemen storm,
+and storming they walked upright across open ground into two machine guns; A Company lost 22
+of 74 in two minutes and broke. In 1982 A Company went to ground and took the hill by fire
+and movement over hours. Built: storming in bounds (`commander.bounds`; docs/units.md, Storming
+works): a storming modern unit hit or pinned in the last exchange goes to ground and fires,
+and goes on once a bound draws no fire, its target is pinned, or it can charge home. A first
+version let it walk on if the target was within a charge's distance (16 hexes), which was
+across the open; it now goes on only if the charge itself can be made. Twenty-four runs: 628
+of 888 from 620. Hamburger Hill went from 18 to 23, Pork Chop 7 to 9, Grozny 2 to 3, Keating
+16 to 17, the Monastery 2 to 1; the battlefields before 1914 are unchanged run for run, and so
+are the morale targets. Goose Green itself does not match: down after the first fire, A
+Company loses one or two men a minute rather than twenty, but its next bound still goes into
+machine guns nothing has pinned (British losses 63% to 55%). Suppressing them first, as the
+accounts have it done in the end (Milan and 66 mm rockets on the trenches), is to do.

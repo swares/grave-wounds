@@ -3378,6 +3378,11 @@ function underFire(us, i){                         // an enemy unit's missile we
   const u = us[i];
   return us.some(e => e.side !== u.side && !ROUTED.has(e.state) && e.men > 0 && "range" in FD.weapons[e.weapon] && fieldRange(e.weapon, hdist(e.pos, u.pos)) !== null);
 }
+function bounding(us, i, t){                     // storming in bounds (commander.bounds): a modern unit that heeds cover, hit or pinned last exchange, stays down and fires this move unless its target is pinned (or it can charge home now) (as commander.bounding)
+  const u = us[i], C = UD.commander;
+  if (!C.bounds || u.vehicle || !C.ground_with.includes(u.weapon) || (C.cover[u.quality] ?? 0) <= 0) return false;
+  return !!(u.hit || u.pinned) && !us[t].pinned;
+}
 function storming(u, t, field, stance){           // attacking, armed for storming (black powder with the bayonet), its target holding works: it closes and charges (as commander.storming)
   return stance === "attack" && UD.commander.storm.includes(u.weapon) && holdsWorks(field, u.pos, t);
 }
@@ -3404,6 +3409,7 @@ function bestOrder(us, i, t, [size, field, stance, known]){   // the best-scorin
   const storm = storming(u, tu, field, stance);
   const shooter = "range" in FD.weapons[u.weapon] && !storm, charge = mayCharge(u, tu, stance, storm, support(us, i));
   const best = firstMove(base, i, tu, [size, field], [charge, hold, shooter, storm]);
+  if (storm && !best?.[2].charge && bounding(us, i, t)) return u.prone ? null : { act: "ground", target: t };   // storming in bounds: down and firing after a bound that drew fire
   if (best === null){
     const f = keepFront(u, bearing(u.pos, tu.pos));
     const g = turnToward(base, i, f, [size, field]);   // no hex it likes is in reach: it turns where it stands, as far toward the target as it can

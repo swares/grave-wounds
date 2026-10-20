@@ -1668,6 +1668,16 @@ def under_fire(d: Data, us: list, i: int) -> bool:
                and U.field_range(d, e["weapon"], U.hdist(e["pos"], u["pos"])) is not None for e in us)
 
 
+def bounding(d: Data, us: list, i: int, t: int) -> bool:
+    """Storming in bounds (commander.bounds): a modern unit (ground_with) that heeds cover, hit or
+    pinned last exchange, stays down and fires this move unless its target is pinned (or it can
+    charge home now: the caller's check)."""
+    u, C = us[i], d.units["commander"]
+    if not C.get("bounds") or u.get("vehicle") or u["weapon"] not in C["ground_with"] or C["cover"].get(u["quality"], 0) <= 0:
+        return False
+    return bool(u.get("hit") or u.get("pinned")) and not us[t].get("pinned")
+
+
 def storming(d: Data, u: dict, t: dict, field: dict | None, stance: str) -> bool:
     """Attacking, a unit armed for storming (commander.storm: black powder with the bayonet)
     whose target holds works (units.holds_works): it closes and charges rather than firing."""
@@ -1706,6 +1716,8 @@ def _best(d: Data, us: list, i: int, t: int, ctx: tuple) -> dict | None:
     storm = storming(d, u, tu, field, stance)
     shooter, charge = "range" in d.weapons[u["weapon"]] and not storm, may_charge(d, u, tu, stance, storm, support(d, us, i))
     best = _first_move(d, base, i, tu, (size, field), (charge, hold, shooter, storm))
+    if storm and not (best and best[2]["charge"]) and bounding(d, us, i, t):   # storming in bounds: down and firing after a bound that drew fire
+        return None if u.get("prone") else {"act": "ground", "target": t}
     if best is None:
         f = keep_front(u, U.bearing(u["pos"], tu["pos"]))
         f = _turn_toward(d, base, i, f, (size, field))
