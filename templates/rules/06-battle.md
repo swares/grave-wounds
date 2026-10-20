@@ -188,9 +188,11 @@ steady friends touching it, who go in with it), and green units sometimes hesita
 - **Shooters give way.** Attacking, archers, crossbowmen and skirmishers in open order step
   aside when they stand in the way of their own formed men behind them, and the formed men go
   on.
+- **In range** means the weapon reaches, the light lets it see, and nothing blocks the line
+  from where it would stand.
 - **Tanks.** A unit with a main gun counts the target in range where the gun reaches and it
   can see; a vehicle with one prefers a spot where the target can neither reach it nor see it.
-- **Reserve.** Regulars and veterans hold back their rearmost units (not one on a route), and commit one when a
+- **Reserve.** Regulars and veterans hold back their rearmost units (not one on a route, nor tanks and other vehicles with a main gun), and commit one when a
   unit of theirs breaks or the enemy comes close; veterans also commit to exploit an enemy
   rout. Attacking, they also commit one when the attack has stalled: five moves without
   putting down any real share of the enemy or getting nearer. A unit committed because one broke goes to plug the gap where it stood. The GM can

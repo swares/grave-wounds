@@ -873,3 +873,30 @@ Chop 7 to 17, Grozny 2 to 9, Keating 16 to 21), but Cowpens fell from 23 to 15, 
 down, from 37% (the sources put most quits under 10%). The standing check is what makes many
 attacks and defences give way when they did. Not built (branch cassino-drain). Cassino needs its
 counter-attacks (strengths unsourced) and a look at its shellfire.
+
+## Hue: the armour, and the line of fire, 20 October 2026
+
+Hue (0 of 24) had none of the supporting weapons the accounts credit. Research from the command
+chronologies (the project's hue-supports notes) gave counts for some: the two gun tanks named in
+the assaults (the four on the map were cut to two), and two Ontos (six 106 mm recoilless rifles
+on a light tracked carrier) with H Company, now a vehicle kind. The 106s on mules, the 3.5-inch
+launchers and CS gas have no counts and stay off; gas worked at the Treasury and failed in the
+wind at the provincial headquarters, with no numbers.
+
+The traces then showed two faults, not just Hue's:
+
+- **Vehicles in reserve.** The tanks and Ontos, the rearmost units, were held back, then sent
+  to plug a broken company's place inside the blocks, where vehicles cannot go, and stopped.
+  Vehicles with a main gun are now never held back.
+- **In range without a line.** Once forward, they stopped 25 hexes out behind houses: the
+  commander counted the Treasury in range (the gun reached, the light was good) though the
+  buildings blocked every line, and they never fired. In range now needs a clear line from the
+  hex, for every shooter, as firing itself does.
+
+Twenty-four runs (measured before storming in bounds was merged): 641 of 888 from 620, the
+morale targets unchanged. Cassino town 0 to 22, Pork Chop 7 to 16, Hamburger Hill 18 to 23,
+Grozny 2 to 6, Chipyong 23 to 24; Hue only 0 to 1. Two fell: X-Ray 15 to 1 and 73 Easting 19
+to 12. At X-Ray the North Vietnamese used to stop in the elephant grass "in range" of Americans
+they could not see; now they close until they can, and the American line fails though the
+artillery, rocket helicopters and air strikes of the account are on the field. The fix is
+right; what holds X-Ray up is to be traced, with 73 Easting's tanks and Hue itself.

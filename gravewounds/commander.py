@@ -106,7 +106,8 @@ def _hold_back(d: Data, us: list, side, known: dict) -> None:
     """At its first move, unless the GM has marked reserves for the side (any of its units has
     `reserve` set), it holds back its rearmost units, furthest from the nearest enemy it knows
     of (else any), up to commander.reserve % of the side's men by the quality most of them have
-    (not a unit the battlefield sends on a route, via). Every unit of the side gets `reserve` (True or False), so it is done once."""
+    (not a unit the battlefield sends on a route, via, nor a vehicle with a main gun: self-play held
+    Hue's tanks and Ontos back, then sent them to plug gaps in the blocks, where vehicles cannot go). Every unit of the side gets `reserve` (True or False), so it is done once."""
     mine = [i for i, u in enumerate(us) if u["side"] == side and u["men"] > 0 and u["state"] not in ROUTED]
     if not mine or any("reserve" in us[i] for i in mine):
         return
@@ -120,7 +121,8 @@ def _hold_back(d: Data, us: list, side, known: dict) -> None:
     for i in mine:
         us[i]["reserve"] = False
     for i in far:
-        if U.is_battery(d, us[i]) or U.is_at_gun(d, us[i]) or _tractor(d, us[i]) or us[i].get("via") or us[i]["men"] > room:
+        if (U.is_battery(d, us[i]) or U.is_at_gun(d, us[i]) or _tractor(d, us[i]) or us[i].get("via")
+                or (U.vehicle_kind(d, us[i]) or {}).get("gun") or us[i]["men"] > room):   # vehicles with a main gun go in with the attack
             continue
         us[i]["reserve"] = True
         room -= us[i]["men"]
@@ -1888,7 +1890,8 @@ def score(d: Data, field: dict | None, u: dict, tu: dict, h: tuple, cost: int, s
     dist = U.hdist(list(h), tu["pos"])
     s = (0 if storm else C["cover"].get(q, 0)) * U.cover_at(d, field, tu["pos"], list(h)) - cost - C["mines"].get(q, 0) * _mined(field, u["pos"], h, u["side"])
     if shooter:
-        inr = dist >= 1 and (U.field_range(d, u["weapon"], dist) is not None or _gun_in_range(d, field, u, (h, tu["pos"], dist)))
+        inr = (dist >= 1 and (U.field_range(d, u["weapon"], dist) is not None or _gun_in_range(d, field, u, (h, tu["pos"], dist)))
+               and U.clear_sight(d, field, list(h), tu["pos"], dist))   # in range: and no woods, buildings or crest across the line from there
         stand = C["stand_off"] if inr and u.get("vehicle") and U._gun_of(d, u) and not _answers(d, field, tu, (tu["pos"], list(h), dist)) else 0
         return s + stand + (C["in_range"] if inr else -C["closing"] * dist) - (C["too_close"] if dist < C["keep_off"] else 0)
     flank = C["flank"].get(q, 0) if U.arc(tu["facing"], U.bearing(tu["pos"], list(h))) != "front" else 0
