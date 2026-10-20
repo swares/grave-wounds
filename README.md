@@ -148,6 +148,8 @@ written in):
 
 ## Copyright and trademarks
 
+© 2026 Scott Wares. All rights reserved.
+
 Grave Wounds' rules, tables and text are its own. The design notes compare it with
 Aftermath!, Rolemaster, Gamma World, Traveller and The Morrow Project, describing how those
 games work in our own words; none of their rules text, tables or art is reproduced here.
