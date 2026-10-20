@@ -1233,9 +1233,13 @@ def quick_section() -> list:
             "| " + " | ".join(sp[0]) + " |", "|" + "---|" * len(sp[0])] + ["| " + " | ".join(r) + " |" for r in sp[1:]] + [""]
 
 
+COPYRIGHT = "© 2026 Scott Wares. All rights reserved."
+
+
 def markdown(d) -> str:
     out = ["# Hit Location & Wound Tables", "",
            f"Generated {date.today().isoformat()} from the data folder. Roll d100 (00 = 100).", "",
+           COPYRIGHT, "",
            "**Procedure:** 1) d100 location on the table for the fight and weapon (situation column if one applies; "
            "called shots roll twice). 2) d100 mechanism for the weapon. 3) Severity from your system's damage, or d100. "
            "4) Armour (adjusted tables): lower severity by the material's steps. "
@@ -1504,13 +1508,13 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
         canv.saveState()
         canv.setFont("Helvetica", 7)
         canv.setFillColor(colors.HexColor("#6b6255"))
-        canv.drawString(0.6 * inch, 0.45 * inch, "Hit Location & Wound Tables - generated from data/; weights marked 'fitted' are placeholders")
+        canv.drawString(0.6 * inch, 0.45 * inch, "Hit Location & Wound Tables - generated from data/; weights marked 'fitted' are placeholders. " + COPYRIGHT)
         canv.drawRightString(letter[0] - 0.6 * inch, 0.45 * inch, f"{doc.page}")
         canv.restoreState()
 
     doc = SimpleDocTemplate(str(path), pagesize=letter, leftMargin=0.6 * inch, rightMargin=0.6 * inch,
                             topMargin=0.6 * inch, bottomMargin=0.7 * inch,
-                            title="Hit Location & Wound Tables", author="Grave Wounds")
+                            title="Hit Location & Wound Tables", author="Scott Wares")
     W = letter[0] - 1.2 * inch
     story = [Paragraph("Hit Location &amp; Wound Tables", H1),
              Paragraph("Historically weighted d100 hit locations with system-agnostic wound effects. Roll d100; 00 = 100.", B),
