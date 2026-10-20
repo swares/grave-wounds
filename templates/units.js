@@ -1320,16 +1320,19 @@ function hullShelled(us, i, bursts, kind, table, rng, src){   // men riding on t
 function shellStruckUnit(field, u, bursts, kind, rng){   // men of u struck by these bursts, or null if none came near
   if (u.men <= 0 || u.state === "fled") return null;
   const hexes = footprint(u).flat(), men = menByHex(u), cuts = hexes.map(h => shellCut(field, h, low(u)));
-  let near = false, struck = 0;
+  const quick = !!UD.quick?.blows;
+  let near = false, struck = 0, tries = 0, mean = 0;
   for (const at of bursts){
     hexes.forEach((h, j) => {
       const dist = hdist(h, at);
       if (dist > kind.radius) return;
       near = true;
       const p = kind.struck[dist] * cuts[j];
+      if (quick){ tries += men[j]; mean += men[j] * Math.min(100, Math.max(0, Math.floor(p))) / 100; return }   // quick-play: the average, rolled once below
       for (let x = 0; x < men[j]; x++) if (rng.randint(1, 100) <= p) struck++;
     });
   }
+  if (quick && near) struck = quickDown(tries, tries > 0 ? mean / tries : 0, rng);   // one d100 on the curve for this fire on this unit (as units._shell_struck_unit)
   return near ? struck : null;
 }
 function shellCut(field, h, prone){               // shellfire's struck % times this: tree bursts in woods; else going to ground and the ground's cover

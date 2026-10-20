@@ -4956,9 +4956,9 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 | Pistol or submachine gun | 12 |
 | Machine gun | 300 |
 
-### Quick-play blows
+### Quick-play blows and shellfire
 
-Resolve a striking group's blows on the rankers in one roll instead of one at a time. 1) Count the tries as usual (strikers x tempo, or shooters x rate). 2) Find the men down per 100 tries in the conflict's chart for the weapon against the armour, at the attack % after all modifiers (read between the columns), times the quality factor, times (1 - parry% x 0.9) if the target can parry. 3) The average = tries x that / 100; roll d100 on the chart below, on the nearest average's row, for the men down. Blows that fall on a hero are still rolled one at a time. The field page rolls it the same way when Quick-play blows is ticked, and prints the exact numbers for the battlefield in play (Quick-play sheet).
+Resolve a striking group's blows on the rankers in one roll instead of one at a time. 1) Count the tries as usual (strikers x tempo, or shooters x rate). 2) Find the men down per 100 tries in the conflict's chart for the weapon against the armour, at the attack % after all modifiers (read between the columns), times the quality factor, times (1 - parry% x 0.9) if the target can parry. 3) The average = tries x that / 100; roll d100 on the chart below, on the nearest average's row, for the men down. Blows that fall on a hero are still rolled one at a time. Shellfire the same way: for one battery's fire on one unit in an exchange, add up the men within reach of each burst times their struck % (as for each man), which is the average; roll d100 on the chart for the men struck. The field page rolls both so when quick-play is ticked, and prints the exact numbers for the battlefield in play (Quick-play sheet).
 
 **Men down for an average (roll d100)**
 

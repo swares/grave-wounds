@@ -3831,21 +3831,32 @@ def _hull_shelled(d: Data, us: list, i: int, bursts: list, kind: dict, tr: tuple
 
 def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, rng) -> int | None:
     """Men of unit u struck by these bursts: each man in a hex within a burst's radius at the %
-    for his distance (gone to ground, less; ground cover, less). None if no burst came near."""
+    for his distance (gone to ground, less; ground cover, less). None if no burst came near.
+    Quick-play (quick.blows): the sum of those chances is the average, rolled once."""
     if u["men"] <= 0 or u["state"] == "fled":
         return None
     hexes = [h for row in footprint(d, u) for h in row]
-    men, near, struck = men_by_hex(d, u), False, 0
-    cuts = [_shell_cut(d, field, h, low(u)) for h in hexes]
-    for at in bursts:
-        for h, n, cut in zip(hexes, men, cuts):
-            dist = hdist(h, at)
-            if dist > kind["radius"]:
-                continue
-            near = True
-            p = kind["struck"][dist] * cut
-            struck += sum(1 for _ in range(n) if rng.randint(1, 100) <= p)
-    return struck if near else None
+    men, cuts = men_by_hex(d, u), [_shell_cut(d, field, h, low(u)) for h in hexes]
+    reached = [(n, p) for at in bursts for h, n, cut in zip(hexes, men, cuts) if (p := _burst_pct(kind, hdist(h, at), cut)) is not None]
+    if not reached:
+        return None
+    if (d.units.get("quick") or {}).get("blows"):
+        return _quick_struck(d, reached, rng)
+    return sum(1 for n, p in reached for _ in range(n) if rng.randint(1, 100) <= p)
+
+
+def _quick_struck(d: Data, reached: list, rng) -> int:
+    """Quick-play shellfire: (men, struck %) for each hex each burst reached; one d100 on the curve."""
+    tries, mean = 0, 0.0
+    for n, p in reached:
+        tries += n
+        mean += n * min(100, max(0, math.floor(p))) / 100
+    return _quick_down(d, tries, mean / tries if tries > 0 else 0, rng)
+
+
+def _burst_pct(kind: dict, dist: int, cut: float):
+    """A man's struck % this far from a burst (times the hex's cut), or None beyond its radius."""
+    return None if dist > kind["radius"] else kind["struck"][dist] * cut
 
 
 def _shell_cut(d: Data, field: dict | None, h, prone) -> float:

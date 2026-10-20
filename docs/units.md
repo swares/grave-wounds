@@ -88,7 +88,7 @@ ended with the whole English army gone), and they win one of the four outright. 
 the French on the share of men lost, because one English archer block breaks and is cut
 down in the rout. See the review for the morale trigger behind that.
 
-### Quick-play blows
+### Quick-play blows and shellfire
 
 Rolling every blow (steps 3 and 4) is exact but slow at a table. `quick` in `data/units.yaml`
 gives a GM's alternative, **off by default** (`quick.blows: false`; the field page's
@@ -107,6 +107,14 @@ gives a GM's alternative, **off by default** (`quick.blows: false`; the field pa
   on, are the averages rounded at random (bookkeeping, not a table roll).
 - **Heroes.** A blow that falls on a hero is still rolled on its own, as before; quick-play
   covers the rankers only.
+- **Shellfire.** The same switch rolls a battery's shellfire on a unit once: each man within a
+  burst's reach would be struck at the % for his distance (cut for going to ground and
+  cover), so the average is the sum of those chances over every burst of that fire, and the
+  men struck are one d100 on the binomial curve, as for blows (`_shell_struck_unit`). Each man
+  struck still rolls his wound. In the modern battlefields 89% of the d100s were these
+  per-man rolls; counted on one run of every battlefield, quick-play took the d100s an exchange
+  from 1914 on from 126 to 17 (blows alone: 120), and before 1914 from 296 to 52. The average is exact (the same per-man chances); the spread is a little wider than
+  rolling each man, since one curve stands for men at different distances from the bursts.
 - **On paper.** The tables carry a chart for each era: men down per 100 tries for its
   example weapons against its example armour at attacks 30, 45, 60 and 75, against regular
   men, with the green and veteran factors and the parry factor (×(1 − parry × 0.9)), and a

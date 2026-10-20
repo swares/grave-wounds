@@ -64,7 +64,8 @@ armour, at the attack after all modifiers, times the quality factor printed with
 the spread chart for the men down. The field page's *Quick-play sheet* prints the exact
 figures for the units on the field, and ticking *quick-play blows* makes the page roll this
 way too. Blows that fall on a hero are still rolled one at a time. It gives the same losses
-on average, with the same spread, as rolling every blow.
+on average, with the same spread, as rolling every blow. Shellfire goes the same way (see
+[fire support](#support)): one roll for one battery's fire on one unit.
 
 ## Morale and the rout {#morale}
 
