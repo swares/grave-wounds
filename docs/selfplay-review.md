@@ -847,3 +847,29 @@ are the morale targets. Goose Green itself does not match: down after the first 
 Company loses one or two men a minute rather than twenty, but its next bound still goes into
 machine guns nothing has pinned (British losses 63% to 55%). Suppressing them first, as the
 accounts have it done in the end (Milan and 66 mm rockets on the trenches), is to do.
+
+## The Cassino battlefields, 19 October 2026
+
+Three battlefields at 0 to 2 of 24 (the Poles, the town, the Monastery). The traces:
+
+- **The Monastery.** The Rajputana stop 12 hexes short of Point 593 and trade fire for half an
+  hour; the paratroops lose 34 of 120, then break with 86 left and no assault. Past a quarter of
+  their men down, a unit checks morale every exchange whether hit or not, and a long defence
+  sooner or later fails one.
+- **The Poles.** The Phantom Ridge paratroops walk off their ridge toward Point 593 (the
+  objective), and two artillery groups catch them in the open: 111 of 122 down in one minute.
+  On 12 May the Kresowa men took the first bunkers but withdrew, and the paratroops ended the
+  day holding the ridge. The paratroops' counter-attacks that threw the Poles off 593 that
+  morning are not on the map: the times are sourced, the strengths are not (the project's
+  point593-counterattacks notes).
+- Starting the massif's defenders dug in would change little: lying down already gives the
+  same cover, hiding, shellfire cut and morale.
+
+Built and measured together: the quarter-down check only in an exchange the unit lost men, and
+Phantom Ridge holding. Twenty-four runs: 614 of 888 against 620. The Cassino battlefields did not
+move (the Poles 0, the town 0, the Monastery 2 to 1). The long defences that held gained (Pork
+Chop 7 to 17, Grozny 2 to 9, Keating 16 to 21), but Cowpens fell from 23 to 15, 73 Easting 19 to
+12, Mons 23 to 18 and the September Redan 22 to 18, and from 1914 on units broke at a median 45%
+down, from 37% (the sources put most quits under 10%). The standing check is what makes many
+attacks and defences give way when they did. Not built (branch cassino-drain). Cassino needs its
+counter-attacks (strengths unsourced) and a look at its shellfire.
