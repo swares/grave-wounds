@@ -105,6 +105,7 @@ class Data:
     equipment: dict = field(default_factory=dict)   # era id -> coins, a Day's pay and priced kit (data/equipment)
     money: dict = field(default_factory=dict)       # money.yaml: purse per career term, pay for a day's work
     jobs: dict = field(default_factory=dict)        # era id -> jobs between fights and a trouble table (data/jobs)
+    replacements: dict = field(default_factory=dict)   # era id -> how losses are replaced, and a lost man's effects (data/replacements)
     warnings: list = field(default_factory=list)
 
 
@@ -157,6 +158,7 @@ def load(root: str | Path = "data") -> Data:
     equipment = _read_dir(root / "equipment")
     money = _optional(root / "money.yaml", {})
     jobs = _read_dir(root / "jobs")
+    replacements = _read_dir(root / "replacements")
 
     data = Data(
         root=root,
@@ -184,6 +186,7 @@ def load(root: str | Path = "data") -> Data:
         equipment=equipment,
         money=money,
         jobs=jobs,
+        replacements=replacements,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -505,6 +508,8 @@ def validate(d: Data) -> None:
         errors += _equipment_errors(d, E)
     for J in d.jobs.values():
         errors += _jobs_errors(d, J)
+    for R in d.replacements.values():
+        errors += _replacement_errors(d, R)
     errors += _ground_seed_errors(d, TT)
 
     # camps and works
@@ -1332,6 +1337,48 @@ def _equipment_errors(d: Data, E: dict) -> list[str]:
                     errors.append(f"{where}: {at}.{part} names unknown item {x.get('row')}")
                 if not isinstance(x.get("times", 1), int) or x.get("times", 1) < 1:
                     errors.append(f"{where}: {at}.{part} times must be a whole number, 1 or more")
+    return errors
+
+
+def _replacement_errors(d: Data, R: dict) -> list[str]:
+    """data/replacements: an era's assigned replacements (terms, a wait in days) and men to hire
+    (terms low-high, a cost in Days), each for some armies, careers and places, with a source
+    unless approx; and the practice with a lost man's effects (share, heirs or lost)."""
+    where, errors = f"replacements/{R['id']}", []
+    T = d.teams.get(R["id"])
+    if not T:
+        return [f"{where}: no team tables for this era"]
+    regions, careers = {r["id"] for r in T["regions"]}, {c["id"] for c in T["careers"]}
+    ids = [r["id"] for k in ("assigned", "hire") for r in R.get(k, [])]
+    errors += [f"{where}: duplicate {i}" for i in sorted({i for i in ids if ids.count(i) > 1})]
+    for kind in ("assigned", "hire"):
+        for r in R.get(kind, []):
+            at = f"{where}: {r['id']}"
+            errors += [f"{at}: unknown army {x}" for x in r.get("regions", []) if x not in regions]
+            cs = r.get("careers", "any")
+            if cs != "any" and (not isinstance(cs, list) or any(c not in careers for c in cs)):
+                errors.append(f"{at}: careers must be any or the era's careers")
+            t = r.get("terms")
+            ok = (isinstance(t, int) and 1 <= t <= 3) or (isinstance(t, list) and len(t) == 2 and all(isinstance(x, int) for x in t) and 1 <= t[0] <= t[1] <= 3)
+            if not ok:
+                errors.append(f"{at}: terms must be 1-3 or [low, high]")
+            if kind == "assigned":
+                w = r.get("wait")
+                if not (isinstance(w, list) and len(w) == 2 and all(isinstance(x, int) and x >= 0 for x in w) and w[0] <= w[1]):
+                    errors.append(f"{at}: wait must be [low, high] days")
+            else:
+                if not isinstance(r.get("cost"), (int, float)) or r["cost"] < 0 or not isinstance(r.get("per_term", 0), (int, float)):
+                    errors.append(f"{at}: cost (and per_term) must be Days")
+            if r.get("places") and not set(r["places"]) <= JOB_PLACES:
+                errors.append(f"{at}: unknown place in {r['places']}")
+            if not r.get("approx") and not r.get("source"):
+                errors.append(f"{at}: needs a source, or approx: true")
+    E = R.get("effects") or {}
+    for at, e in [("default", E.get("default"))] + list((E.get("regions") or {}).items()):
+        if at != "default" and at not in regions:
+            errors.append(f"{where}: effects for unknown army {at}")
+        if not e or e.get("practice") not in ("share", "heirs", "lost"):
+            errors.append(f"{where}: effects {at} practice must be share, heirs or lost")
     return errors
 
 

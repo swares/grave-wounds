@@ -2488,6 +2488,7 @@ function fieldHero(h){                         // one hero back from the field m
   fieldOldWounds(c, h.old);
   if (Number.isFinite(h.blood)) c.blood = Math.min(c.blood ?? h.blood, h.blood);   // what he bled on the field
   if (h.state !== "up") c.state = { id: "out", rounds: null };
+  if (h.state === "dead" || h.state === "prisoner") markLost(c.sheet && c.sheet.pid, h.state === "dead" ? "killed" : "taken prisoner");   // the team builder replaces him
   const what = h.wounds.map(w => `${w.graze ? "graze" : w.sev} (${LOC[w.loc].name.toLowerCase()})`).join(", ") || "unhurt";
   return `${c.name}: ${what}${{ dead: ", killed", down: ", down", prisoner: ", taken prisoner" }[h.state] || ""}`;
 }

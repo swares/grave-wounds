@@ -18,6 +18,13 @@ function daysQ(x){                               // '¾ Day', '1 Day', '1¼ Days
   const q = Math.floor(Math.max(x, 0) * 4 + 0.5);
   return `${quarterText(x)} Day${q > 0 && q <= 4 ? "" : "s"}`;
 }
+function markLost(pid, why){                      // the team builder takes him off the team when it next looks
+  if (!pid) return;
+  const all = readPurses();
+  if (!all[pid] || all[pid].lost) return;
+  all[pid].lost = { why };
+  writePurses(all);
+}
 function payKeep(have, days, food, bed){          // {paid, hungry, rough}: each day's food before its bed
   let paid = 0, hungry = 0, rough = 0;
   for (let i = 0; i < days; i++){
