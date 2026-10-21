@@ -79,6 +79,8 @@ QUARTERS = {0: "", 1: "¼", 2: "½", 3: "¾"}
 def pay_text(j: dict) -> str:
     """A job's pay, which is kept in quarter Days: '¾ Day a day', '1½ Days a day'."""
     q = round(j["pay"] * 4)
+    if not q:
+        return "unpaid"
     whole, part = divmod(q, 4)
     num = f"{whole if whole or not part else ''}{QUARTERS[part]}"
     return f"{num} Day{'s' if q > 4 else ''} a day"

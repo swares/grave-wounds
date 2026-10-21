@@ -1,0 +1,62 @@
+# Jobs between fights for the First World War (1914-1918). Format as data/jobs/medieval.yaml.
+# Pay is in Days of the army most likely to take the job (1 Day = 1s British, $1 American, about
+# 50 pfennigs German); the wage line says whose.
+id: wwi
+
+sources:
+  llt: &llt "https://www.longlongtrail.co.uk/army/regiments-and-corps/the-labour-corps-of-1917-1918/"
+
+jobs:
+  # Lawful work
+  - {id: us_shipyard, name: "Shipyard mechanic", what: "Riveting or fitting steel hulls for the Emergency Fleet.", skill: craft, min: 35, pay: 5.75, term: week, places: [city], who: any, risk: 5,
+     hook: "A union man wants you to walk out the week the troopship is due.", wage: "skilled craftsmen $5.80 an 8-hour day, Delaware River 1918 (American)", source: "https://fraser.stlouisfed.org/title/history-shipbuilding-labor-adjustment-board-1917-1919-3894/fulltext"}
+  - {id: munitions_hand, name: "Munitions hand", what: "Turning or filling shells in a factory at home.", skill: craft, min: 0, pay: 4, term: week, places: [town, city], who: any, risk: 10,
+     hook: "Your skin is turning yellow, and the foreman says it's nothing.", wage: "men 26s a week, women 18s-20s, Vickers Barrow 1916 (British)", source: "https://blog.nationalarchives.gov.uk/equal-pay-equal-work-female-munitions-workers"}
+  - {id: german_war_plant, name: "Hindenburg Programme worker", what: "Twelve-hour shifts in a Ruhr or Berlin arms plant.", skill: craft, min: 30, pay: 12, term: week, places: [city], who: any, risk: 10,
+     hook: "A Spartacist shop steward is planning a strike for January.", wage: "about 6 marks a day for a skilled war worker (German, an estimate)", approx: true}
+  - {id: us_farm_hand, name: "Hired farm hand", what: "Field work on an American farm, on furlough or after demobilisation.", skill: fieldcraft, min: 0, pay: 2.25, term: month, places: [village], who: any, risk: 0,
+     hook: "The 1918 influenza reaches the county the week you arrive.", wage: "about $2.15 a day with board, 1918 (American; read from an OCR scan)", source: "https://ageconsearch.umn.edu/record/341321/files/FarmWageRateBAE1943.pdf"}
+  - {id: spare_time_harvest, name: "Spare-time harvest hand", what: "Helping a farmer near camp bring in the harvest.", skill: fieldcraft, min: 0, pay: 1, term: day, places: [village], who: any, risk: 0,
+     hook: "The farmer's widow wants you to stay on after the war.", wage: "about 1s for a full day after army deductions, 1917 (British)", source: "https://hansard.parliament.uk/html/Commons/1917-02-26/WrittenAnswers"}
+  - {id: vad_nurse, name: "VAD nurse overseas", what: "Ward work, dressings and bedpans in a base hospital in France.", skill: leechcraft, min: 30, pay: 4, term: contract, days: [180, 180], places: [town, camp], who: [stretcher_bearer], risk: 5,
+     hook: "A patient whispers that his wound was self-inflicted.", wage: "£20 a year plus 3s a day field allowance in France (British)", source: "https://www.britisharmynurses.com/fairestforce/12.html"}
+  - {id: clc_interpreter, name: "Chinese Labour Corps interpreter", what: "Translating and keeping order for a Chinese Labour Corps company.", skill: letters, min: 40, pay: 4, term: contract, days: [30, 180], places: [camp], who: [nco, officer], risk: 5,
+     hook: "The men won't work till the rice ration is restored, and the captain wants names.", wage: "up to 5 francs for an interpreter, period not stated (British; read as a day)", source: "https://www.westernfrontassociation.com/world-war-i-articles/2020/september/one-man-s-war-with-the-chinese-labour-corps-in-france-1918/", approx: true}
+  - {id: trench_art, name: "Trench-art maker", what: "Hammering shell cases and fuzes into vases and lighters for men going home.", skill: craft, min: 30, pay: 1.5, term: week, places: [camp, town], who: any, risk: 5,
+     hook: "One of the cases still has a live primer in it.", wage: "sold to soldiers going home; no prices found", source: "https://www.iwm.org.uk/history/trench-art", approx: true}
+  - {id: estaminet_help, name: "Estaminet help", what: "Pouring vin blanc and frying egg and chips in a Flemish café.", skill: persuade, min: 0, pay: 1, term: week, places: [village, town], who: any, risk: 5,
+     hook: "Madame's 'cousin' asks a lot about battalion movements.", wage: "no figure found", approx: true}
+  - {id: afs_driver, name: "Volunteer ambulance driver", what: "Driving a Model T ambulance between the aid post and the clearing station.", min: 0, pay: 0, term: contract, days: [180, 180], places: [road, frontier], who: any, risk: 20,
+     hook: "The road to the poste de secours is ranged, and you go up it at night.", wage: "unpaid volunteers (American Field Service)", source: "https://doughboy.org/?p=7847"}
+  # Soldiering
+  - {id: clay_kicker, name: "Tunneller (clay-kicker)", what: "Digging silent mine galleries under no man's land.", skill: trench, min: 50, pay: 6, term: contract, days: [90, 365], places: [frontier], who: [sapper, rifleman], risk: 35,
+     hook: "The listening post hears German picks a few feet away, and getting closer.", wage: "experienced tunnellers 6s a day against 1s for infantry (British)", source: "https://www.westernfrontassociation.com/world-war-i-articles/2008/december/the-british-clay-kickers-and-moles-of-the-western-front/"}
+  - {id: labour_corps, name: "Labour Corps private", what: "Building roads, laying railways and filling sandbags behind the lines.", min: 0, pay: 1, term: contract, days: [90, 365], places: [camp, road], who: any, risk: 10,
+     hook: "In March 1918 the company is handed rifles and sent forward.", wage: "infantry of the line pay, 1s a day (British)", source: *llt}
+  - {id: docks_labourer, name: "Docks labourer", what: "Unloading ammunition and fodder at Le Havre, Boulogne or Rouen.", min: 0, pay: 1, term: week, places: [town, sea], who: any, risk: 5,
+     hook: "A crate of rum 'falls' every night, and the sergeant takes his cut.", wage: "labour companies on infantry pay, 1s a day (British)", source: *llt}
+  - {id: correspondent_guide, name: "Correspondent's guide", what: "Taking a newspaperman up the line and keeping him alive.", skill: fieldcraft, min: 50, pay: 2, term: week, places: [road, frontier], who: [nco, officer], risk: 15,
+     hook: "His story will name your battalion, and it breaks the censor's rules.", wage: "no figure found", approx: true}
+  - {id: foreign_legion, name: "Legionnaire", what: "Enlisting in the Foreign Legion for the duration, as foreigners could.", skill: rifle, min: 40, pay: 0.25, term: contract, days: [180, 730], places: [camp, frontier], who: any, risk: 30,
+     hook: "After Champagne in 1915, you may transfer to a French line regiment.", wage: "a French private's few sous a day (an estimate); duration terms from Military Trader", source: "https://www.militarytrader.com/militaria-collectibles/legionnaire-americans-in-the-french-foreign-legion-1914-1918", approx: true}
+  # Shady and illegal work
+  - {id: salvager, name: "Battlefield salvager", what: "Picking brass, copper driving bands and kit off old ground.", skill: fieldcraft, min: 0, pay: 1.5, term: day, places: [frontier, road], who: any, risk: 20,
+     hook: "A dud under the mud ticks when it's moved.", wage: "no figure found", approx: true}
+  - {id: rations_racketeer, name: "Rations racketeer", what: "Selling stolen rum, tins and boots to civilians.", skill: persuade, min: 40, pay: 3, term: week, places: [town, camp], who: any, risk: 25, illegal: true,
+     hook: "The Military Police have a list, and your quartermaster is on it.", wage: "no figure found", approx: true}
+  - {id: agent_belgium, name: "Agent in occupied Belgium", what: "Counting trains for an Allied network such as La Dame Blanche.", skill: stealth, min: 50, pay: 2, term: month, places: [town, road], who: any, risk: 40, illegal: true,
+     hook: "A new courier knows a little too much.", wage: "no figure found", approx: true}
+  - {id: deserter_gang, name: "Deserter gang", what: "Living wild behind the lines by robbing stores and travellers.", skill: brawl, min: 40, pay: 3, term: week, places: [frontier, road], who: any, risk: 40, illegal: true,
+     hook: "The gang plans to hit a paymaster's lorry.", wage: "no figure found", approx: true}
+
+trouble:
+  - {roll: 1, text: "An accident: hurt, and 1d6 days of work and pay lost."}
+  - {roll: 2, text: "Shellfire or a raid hits the workplace: a Dodge check, or a wound."}
+  - {roll: 3, text: "The Military Police check passes, and his papers must hold up."}
+  - {roll: 4, text: "Pay is stopped or docked for 'deductions'."}
+  - {roll: 5, text: "Gas, TNT or fumes: a Leechcraft check, or a week ill."}
+  - {roll: 6, text: "A comrade is caught pilfering and names him."}
+  - {roll: 7, text: "Recalled to the unit early: the term is cut short."}
+  - {roll: 8, text: "A quarrel with the locals over a woman, a debt or a fight."}
+  - {roll: 9, text: "Influenza sweeps the camp."}
+  - {roll: 10, text: "Suspected of spying: held and questioned for 1d3 days."}

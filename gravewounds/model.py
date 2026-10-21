@@ -1340,8 +1340,8 @@ def _jobs_errors(d: Data, J: dict) -> list[str]:
         if not isinstance(j.get("min", 0), int) or not 0 <= j.get("min", 0) <= T["skill_max"]:
             errors.append(f"{at}: min must be a skill level 0-{T['skill_max']}")
         p = j.get("pay")
-        if not isinstance(p, (int, float)) or p <= 0 or abs(p * 4 - round(p * 4)) > 1e-9:
-            errors.append(f"{at}: pay must be Days in quarters (0.25, 0.5, 1.75 ...)")
+        if not isinstance(p, (int, float)) or p < 0 or abs(p * 4 - round(p * 4)) > 1e-9:
+            errors.append(f"{at}: pay must be Days in quarters (0, 0.25, 0.5, 1.75 ...); 0 for an unpaid volunteer")
         if j.get("term") not in JOB_TERMS:
             errors.append(f"{at}: term must be one of {sorted(JOB_TERMS)}")
         if j.get("term") == "contract":
