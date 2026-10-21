@@ -173,6 +173,18 @@ When an item is done, delete it here and note it in the pull request that closes
   Strength, Presence), and Leechcraft, Fieldcraft, Watch and Stealth work outside a fight.
   Followers have one-line stat blocks, and the gunpowder eras (1618-1876) and the world wars
   (1914-18, 1939-45), Korea, Vietnam and the later wars (1982-2014) have their own tables.
+- **Experience, first cut.** Skills used well are ticked (job checks, hits, parries and
+  dodges, first aid, foraging, nursing, Stealth and Watch at a surprise) and roll to rise at
+  End of season; days served add a career term (`docs/team.md`, *Experience*). Still left out:
+  - the field map's battles tick nothing: a hero's hits, parries and first aid there are not
+    counted (his fight comes back to the roller as wounds, not as rolls), so a man who fights
+    only on the field map learns only from time served;
+  - a term served in play gives the term's skill gains and age, but does not roll the
+    career's event table (its +15 to a skill and its story line) or the career's wound chance,
+    as a term at creation does;
+  - characteristics never change in play, and age brings no decline;
+  - a skill is ticked by its use, not by teaching: no training with a master or drill in
+    camp (design.md's weekly "training" step).
 - **Women under arms, first cut.** Women serve as cantinières with the French in the Crimea, in the Civil War (disguised), the Soviet
   Union of 1941-45, Vietnam (the ARVN, the North and the Viet Cong) and the later wars (the US,
   Britain and Russia), chosen or rolled at the army's share. Still left out: the earlier eras
