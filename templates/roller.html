@@ -512,7 +512,7 @@ function moraleCheck(fighters, roll){
 // Battle map. Hexes are [col, row], pointy-top, odd rows shifted right.
 const MOVE = CMB.move, CAMP_HEX_M = MOVE.hex_m;
 // ----- named characters' sickness: a fighter can go with a force on the travel map, which runs his days -----
-const TD = { checks: DATA.checks, ranks: DATA.ranks, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): set to a fighter's era before use
+const TD = { checks: DATA.checks, ranks: DATA.ranks, loads: DATA.loads, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): set to a fighter's era before use
 const DZR = DATA.disease, NAMED_KEY = "gravewounds-named";   // {uid: {name, endurance, map, force, health, dead, log}}, shared with the travel map
 function readNamed(){ try{ return JSON.parse(localStorage.getItem(NAMED_KEY) || "{}") || {} }catch(e){ console.warn("named characters unreadable", e); return {} } }
 function writeNamed(all){ try{ localStorage.setItem(NAMED_KEY, JSON.stringify(all)) }catch(e){ /* storage off: not attached */ } }
@@ -566,7 +566,8 @@ function attachNamed(c, value){                   // put him with a travel force
   else {
     const [map, id] = [value.slice(0, value.lastIndexOf(":")), +value.slice(value.lastIndexOf(":") + 1)], was = all[c.uid] || {};
     all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id, old: oldWounds(c), skills: namedSkills(c), pid: (c.sheet && c.sheet.pid) || null,
-      drill: (c.sheet && c.sheet.skill_by && c.weapon && c.sheet.skill_by[c.weapon]) || null };   // the skill drill ticks on the travel map
+      drill: (c.sheet && c.sheet.skill_by && c.weapon && c.sheet.skill_by[c.weapon]) || null,
+      str: statOf(c, "str"), sex: (c.sheet && c.sheet.sex) || "m", kitLoad: kitLoad(c.kit), loadExtra: (c.sheet && c.sheet.load_extra) || 0, era: loadEra(c) };   // his load on the march   // the skill drill ticks on the travel map
   }
   writeNamed(all);
   NAMED = all;
@@ -633,7 +634,8 @@ const RKE = eid => ((DATA.ranks || {}).eras || {})[eid] || null;
 const eraOfChar = c => (c && c.sheet && c.sheet.era) || null;
 function newFightMarks(){                         // a new fight: no downs, coups, winner or marks carried over
   for (const c of S.chars){ delete c.downs; delete c.downedLeader; delete c.coups; delete c.fieldWon }
-  S.wonBy = null; S.deedsDone = []; S.afterLog = []; S.afterOpen = false;
+  S.wonBy = null; S.deedsDone = []; S.afterLog = []; S.afterOpen = false; S.packsDropped = {}; S.packsLost = [];
+  for (const c of S.chars) delete c.loadOrder;
 }
 function creditDown(a, c){                         // a put c down with his hit
   if (!a || a === c || sideOf(a) === sideOf(c)) return;
@@ -682,11 +684,28 @@ function renderAfterFight(){
   }).join("");
   const log = (S.afterLog || []).map(l => `<li>${attr(l)}</li>`).join("");
   box.innerHTML = `<details class="after" ${S.afterOpen || auto || S.wonBy ? "open" : ""}><summary><b>After the fight</b> <span class="muted">deeds and loot for the team builder's men</span></summary>
-    <div class="toolbar"><label>Won by ${sel}</label></div>
+    <div class="toolbar"><label>Won by ${sel}</label>${dropButtons()}</div>${packsLostText()}
     <ul class="xp">${rows}</ul>
     <div class="toolbar"><button class="small" id="btn-deeds" title="The ticked men did a deed: +20 to their next promotion roll on the team builder, and the wait waived">Mark deeds</button></div>
     ${men.length && kinds.length ? `<div class="toolbar"><select id="sel-loot" aria-label="What to loot">${kinds.map(k => `<option value="${k}"${k === K.kind ? " selected" : ""}>${LOOT_NAMES[k]}</option>`).join("")}</select>${whoSel}<button class="small" id="btn-loot" title="Each of the winners who is still up rolls, by his era's rules; winnings go into his purse">Loot (${men.filter(c => !isDown(c)).length} able)</button></div>` : `<p class="muted" style="margin:0">${wonBy() ? "None of the team builder's men are on the winning side." : "Loot once a side has won."}</p>`}
     ${log ? `<ol class="roundlog">${log}</ol>` : ""}</details>`;
+}
+function dropButtons(){                           // Drop packs, a side at a time (its team-builder men go to fighting order)
+  const sides = [...new Set(S.chars.filter(loadEra).map(sideOf))];
+  return sides.map(sd => (S.packsDropped || {})[sd] ? `<span class="muted"> ${attr(sd)}: packs dropped</span>` : ` <button class="small" data-drop="${attr(sd)}" title="Its men put down their packs and fight in fighting order; if it loses the field, the packs are lost">Drop packs: ${attr(sd)}</button>`).join("");
+}
+function packsLostText(){                         // a side that dropped its packs and lost the field loses them (once): the travel map's next night
+  const w = wonBy(); if (!w) return "";
+  const lost = Object.keys(S.packsDropped || {}).filter(sd => sd !== w);
+  for (const sd of lost){
+    if ((S.packsLost || []).includes(sd)) continue;
+    S.packsLost ||= [];
+    S.packsLost.push(sd);
+    const forces = [...new Set(S.chars.filter(c => sideOf(c) === sd && c.uid && NAMED[c.uid]).map(c => `${NAMED[c.uid].map}:${NAMED[c.uid].force}`))];
+    let all = []; try { all = JSON.parse(localStorage.getItem("gravewounds-packs-lost") || "[]") || [] } catch (e) { all = [] }
+    try { localStorage.setItem("gravewounds-packs-lost", JSON.stringify([...new Set([...all, ...forces])])) } catch (e) { /* storage off: the GM tells the travel map */ }
+  }
+  return lost.length ? `<p class="muted" style="margin:0">${attr(lost.join(", "))} lost the field and the packs they dropped: no blankets or rations tonight.</p>` : "";
 }
 function markDeeds(){
   const ids = [...document.querySelectorAll("#after-fight input[data-deed]:checked")].map(x => +x.dataset.deed), lines = [];
@@ -760,7 +779,7 @@ function namedRow(c){                             // Endurance, the force he goe
   return `<div class="siderow"${last}><label class="order" title="Endurance: resisting disease and getting over it">Endurance
     <input type="number" data-act="endurance" value="${enduranceOf(c)}" aria-label="Endurance for ${attr(c.name)}"></label>
     <label class="order" title="Goes with this force on the travel map: its days, camp, weather and marching run his sickness">With ${sel}</label>
-    ${nurseTick(n)}${sick}</div>`;
+    ${nurseTick(n)}${loadSel(c)}${sick}</div>`;
 }
 if (typeof window !== "undefined"){                // the travel map may have run his days
   window.addEventListener("focus", () => { syncNamed(); renderChars() });
@@ -782,7 +801,34 @@ function moveAllowance(wounds, state = null, sick = null){   // sick: a named ch
   if (MOVE.no_run_by.some(i => imp.has(i)) || rule.no_run) run = 0;
   return { advance: adv, run };
 }
-const allowanceOf = c => moveAllowance(c.wounds, c.state ? c.state.id : null, (sickOf(c) || {}).step);
+function allowanceOf(c){                          // his move: wounds, state and sickness; too heavy a load and he cannot run
+  const a = moveAllowance(c.wounds, c.state ? c.state.id : null, (sickOf(c) || {}).step), b = loadBand(c);
+  return b && b.run === false ? { ...a, run: Math.min(a.run, a.advance) } : a;
+}
+/* Loads (ranks.js: ldLoadKg, ldBody, ldBand; data DATA.loads): a team-builder man carries his era's
+   order (the era's usual in a fight unless the GM changes it, or Drop packs); his band costs Dodge
+   and, heavy enough, the run. A green man (one term) fights a band heavier under fire. */
+const loadEra = c => (c && c.sheet && c.sheet.era && ((DATA.loads || {}).eras || {})[c.sheet.era]) ? c.sheet.era : null;
+const loadOrderOf = c => c.loadOrder || ((DATA.loads.eras[loadEra(c)] || {}).fights_in) || "fighting";
+function loadInfo(c){                              // {kg, band (index), afraid} or null without a sheet's era
+  const eid = loadEra(c); if (!eid) return null;
+  const kg = ldLoadKg(eid, loadOrderOf(c), kitLoad(c.kit), c.sheet.load_extra || 0), afraid = (c.sheet.terms || 1) <= 1;
+  return { kg, afraid, band: ldBand(kg, ldBody(eid, c.sheet.sex || "m"), statOf(c, "str"), afraid) };
+}
+const loadBand = c => { const L = loadInfo(c); return L ? DATA.loads.bands[L.band] : null };
+function defenceFor(c){                            // his defence: the better of Parry and Dodge, Dodge less his load's cost
+  const sk = c.sheet.skills || {}, b = loadBand(c);
+  if (!b || sk.parry === undefined || sk.dodge === undefined) return c.sheet.defence;
+  return Math.max(sk.parry, Math.max(0, sk.dodge - b.dodge));
+}
+function loadSel(c){                               // his order, and what it weighs on him
+  const L = loadInfo(c); if (!L) return "";
+  const b = DATA.loads.bands[L.band], O = DATA.loads.orders;
+  const opts = Object.keys(O).map(o => `<option value="${o}"${o === loadOrderOf(c) ? " selected" : ""}>${attr(O[o])}</option>`).join("");
+  const heavier = L.afraid ? " (a band heavier: green under fire)" : "", norun = b.run === false ? ", cannot run" : "";
+  const tip = `${Math.round(L.kg)} kg on him: ${b.name.toLowerCase()}${heavier}; Dodge −${b.dodge}${norun}`;
+  return `<label class="order" title="${attr(tip)}">Load <select data-act="load" aria-label="What ${attr(c.name)} carries">${opts}</select> <span class="muted">${attr(b.name)}</span></label>`;
+}
 // Hexes he can end on within `steps`: Map "col,row" -> cost. Through friends, not onto them; never into an enemy.
 function reachable(start, steps, cols, rows, enemies, friends){
   const key = h => h[0] + "," + h[1], blocked = new Set(enemies.map(key)), friendly = new Set(friends.map(key));
@@ -906,7 +952,7 @@ function sevTiers(mech, zone, wid){
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK})) }catch(e){} }
+function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost})) }catch(e){} }
 function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); return true } }catch(e){} return false }
 
 /* ---------- body figure ---------- */
@@ -1349,7 +1395,7 @@ function fillFromSheets(){
   const at = a && a.sheet ? a.sheet.attack_by[S.weapon] : undefined;
   if (at !== undefined && at !== null) $("#in-atk").value = at;
   else if (a && a.follower) $("#in-atk").value = a.follower.attack;   // a follower: his quality's attack, whatever the weapon
-  if (dd && dd.sheet) $("#in-def").value = dd.sheet.defence;
+  if (dd && dd.sheet) $("#in-def").value = defenceFor(dd);
   else if (dd && dd.follower) $("#in-def").value = dd.follower.defence;
 }
 function sheetLine(c){                          // a team builder character's sheet, in a line or two, and his scars
@@ -2503,6 +2549,8 @@ $("#after-fight").addEventListener("change", e => {
   else if (e.target.id === "sel-loot-who"){ S.afterK.who = e.target.value; renderChars() }
 });
 $("#after-fight").addEventListener("click", e => {
+  const dp = e.target.closest("button[data-drop]");
+  if (dp){ const sd = dp.dataset.drop; S.packsDropped ||= {}; S.packsDropped[sd] = true; S.chars.filter(c => sideOf(c) === sd && loadEra(c)).forEach(c => { c.loadOrder = "fighting" }); S.afterOpen = true; return renderChars() }
   if (e.target.closest("#btn-deeds")){ S.afterOpen = true; markDeeds() }
   else if (e.target.closest("#btn-loot")){ S.afterOpen = true; rollAfterLoot() }
 });
@@ -2547,6 +2595,7 @@ function namedChange(c, act, value){             // his Endurance, his force, or
 }
 function cardChange(c, act, value){              // a card's side, nerve, fatigue, Endurance or force changed
   const pool = poolOf(c);
+  if (act === "load") c.loadOrder = value;
   namedChange(c, act, value);
   if (act === "endurance") c.blood = c.blood >= pool ? poolOf(c) : Math.min(c.blood, poolOf(c));   // a new pool: full stays full
   if (act === "side") c.side = value.trim() || "Side A";
@@ -2555,7 +2604,7 @@ function cardChange(c, act, value){              // a card's side, nerve, fatigu
   if (act === "nerve"){ c.nerve = value === "" ? RATINGS[DEFAULT_RATING] : +value; c.rating = Object.keys(RATINGS).find(r => RATINGS[r] === c.nerve) || "custom" }
 }
 $("#chars").addEventListener("change", e => {
-  const el = e.target.closest('[data-act="side"],[data-act="rating"],[data-act="nerve"],[data-act="fatigue"],[data-act="endurance"],[data-act="withforce"],[data-act="nurse"]');
+  const el = e.target.closest('[data-act="side"],[data-act="rating"],[data-act="nerve"],[data-act="fatigue"],[data-act="endurance"],[data-act="withforce"],[data-act="nurse"],[data-act="load"]');
   if (el){
     cardChange(S.chars[+el.closest(".char").dataset.i], el.dataset.act, el.type === "checkbox" ? el.checked : el.value);
     renderChars(); return;

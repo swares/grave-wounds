@@ -183,6 +183,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <label class="inline">Men <input id="in-men" type="number" min="1" style="width:5.5em"></label>
         <label class="inline" id="horses-box" hidden title="Its horses or draught teams: one a man until set. Too few and it slows (mounted: foot pace below half)">Horses <input id="in-horses" type="number" min="0" style="width:5.5em"></label>
         <label class="inline check"><input id="in-tools" type="checkbox"> Tools (spades, axes)</label>
+        <label class="inline" id="load-box" hidden title="What its men carry. The roads' paces are for marching order: heavier is slower and more tiring; lighter (packs on the wagons) is no faster">Load <select id="sel-load"></select></label>
         <label class="inline">March with <select id="sel-with"></select></label>
       </div>
       <dl class="summary" id="summary"></dl>
@@ -249,7 +250,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
 <script>/*__EVENTS_JS__*/</script>
 <script>
 const DATA = /*__TRAVEL_DATA__*/null;
-const TD = { checks: DATA.checks, training: DATA.training, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
+const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
 const $ = s => document.querySelector(s);
 const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
 const BYKEY = Object.fromEntries(Object.values(TT).map(t => [t.key, t]));
@@ -922,9 +923,59 @@ const healthOf = f => f.health || (f.health = newHealth());
 const fitOf = f => healthCounts(healthOf(f), f.men);
 const horsesOf = f => (f.horses === null || f.horses === undefined ? f.men : f.horses);   // one a man until the GM or a loss sets it
 const horsePct = f => (DATA.events && EV_HORSE_TYPES.includes(f.type) ? evHorseMarchPct(DATA.events, f.type, f.men, horsesOf(f)) : 100);
-function speedOf(f){                           // % of road speed: fatigue, the sick it must carry, horses it has lost
+function speedOf(f){                           // % of road speed: fatigue, the sick it must carry, horses it has lost, its load
   const c = fitOf(f);
-  return Math.min(WXD.fatigue.levels[f.fatigue || 0].march, sickMarchPct(c.fit, c.carried), horsePct(f));
+  return Math.min(WXD.fatigue.levels[f.fatigue || 0].march, sickMarchPct(c.fit, c.carried), horsePct(f), loadPct(f));
+}
+/* Loads (ranks.js; data DATA.loads): a force marches in its era's marching order unless the GM
+   changes it. The roads' paces are already those of men in marching order, so a heavier order
+   slows it and tires it more than that, and a lighter one does not speed it. Each named man's feet
+   take the load's blister chance for the day's marching. */
+const loadEraOf = f => { const e = forceEra(f); return e && ((DATA.loads || {}).eras || {})[e] ? e : null };
+const loadOrder = f => f.loadOrder || "marching";
+function forceBands(f){                         // [band, the era's usual marching band] for its average man, or null
+  const e = loadEraOf(f); if (!e) return null;
+  const body = ldBody(e), b = o => ldBand(ldLoadKg(e, o, "light"), body, 50);
+  return [b(loadOrder(f)), b("marching")];
+}
+function loadPct(f){
+  const fb = forceBands(f); if (!fb) return 100;
+  const B = DATA.loads.bands;
+  return Math.min(100, Math.round(B[fb[0]].march / B[fb[1]].march * 100));
+}
+function loadOptions(f){                       // the force panel's orders; the chosen one with its band and pace
+  const fb = forceBands(f), O = DATA.loads.orders, cur = loadOrder(f);
+  const now = `(${DATA.loads.bands[fb[0]].name.toLowerCase()}, ${loadPct(f)}% pace)`;
+  return Object.keys(O).map(o => o === cur ? `<option value="${o}" selected>${O[o]} ${now}</option>` : `<option value="${o}">${O[o]}</option>`).join("");
+}
+const marchedKm = f => (f.marched || 0) * FT[f.type].kmh;
+function loadTire(f){                           // fatigue steps the day's march adds for a load heavier than the usual
+  const fb = forceBands(f); if (!fb) return 0;
+  const km = marchedKm(f);
+  return Math.max(0, ldFatigue(fb[0], km) - ldFatigue(fb[1], km));
+}
+function blisters(f){                           // each named man who marched: his load's chance of blistered or hurt feet
+  const km = marchedKm(f), e = loadEraOf(f); if (!e || km <= 0) return [];
+  const all = readNamed(), out = [];
+  for (const [, n] of namedWith(all, f)){
+    if (!ableNow(n)) continue;
+    n.marchDays = (n.marchDays || 0) + 1;                // feet harden with days on the march
+    if (((n.health || {}).cases || []).some(c => c.feet && c.step >= DZ.steps.indexOf("mending"))) continue;   // still sore
+    const kg = ldLoadKg(e, loadOrder(f), n.kitLoad || "light", n.loadExtra || 0), band = ldBand(kg, ldBody(e, n.sex || "m"), n.str ?? 50);
+    if (roll100() > ldBlister(band, km, n.marchDays - 1)) continue;
+    const step = DZ.steps.indexOf("mending"), [lo, hi] = DZ.wounds.fever_after;
+    n.health = n.health || newHealth();
+    n.health.cases.push({ d: "wound", inc: 0, step, peak: 0, shown: 0, chronic: false, inf: "low", fever: lo + (roll100() - 1) % (hi - lo + 1), injury: true, feet: true });
+    out.push(`${n.name}'s feet are blistered raw (${DATA.loads.bands[band].name.toLowerCase()} load)`);
+  }
+  writeNamed(all);
+  return out;
+}
+function packsLost(f){                          // its men lost the packs they dropped before a fight: tonight without blankets or rations
+  let all = []; try { all = JSON.parse(localStorage.getItem("gravewounds-packs-lost") || "[]") || [] } catch (e) { all = [] }
+  const key = `${S.mapId}:${f.id}`; if (!all.includes(key)) return false;
+  try { localStorage.setItem("gravewounds-packs-lost", JSON.stringify(all.filter(k => k !== key))) } catch (e) { /* storage off */ }
+  return true;
 }
 function groundText(g){
   const bits = [];
@@ -956,9 +1007,13 @@ function endDay(f){
   const before_ = f.noFresh || 0;
   f.noFresh = fresh ? 0 : before_ + 1;              // days without fresh food, for scurvy
   keepNight(f, camp, before_);
-  const tire = eventsNight(f);
+  const lostPacks = packsLost(f);
+  if (lostPacks){ f.log.unshift(`${dateText(f.day, true)}: the packs were lost with the field: no blankets or rations tonight.`); f.packsNight = true }
+  const sore = blisters(f);
+  if (sore.length) f.log.unshift(`${dateText(f.day, true)}: ${sore.join("; ")}.`);
+  const tire = eventsNight(f) + loadTire(f) + (lostPacks ? 1 : 0);
   healthNight(f, today, camp);
-  f.fatigue = Math.min(L.length - 1, after + tire); f.day += 1; f.used = 0; f.marched = 0;
+  f.fatigue = Math.min(L.length - 1, after + tire); f.day += 1; f.used = 0; f.marched = 0; f.packsNight = false;
 }
 // ----- keep: a force its army does not feed; its named men pay from their purses (purse.js, money.py) -----
 const BED_TERRAIN = ["village", "town"];      // ground with a bed to be had for the night
@@ -1008,7 +1063,7 @@ function forceEra(f){                          // its own era (a map force may n
   return evEraOf(DATA.events || {}, curMap().period || baseMap().period, { era: f.era || (base && base.era) || null });
 }
 const eventsOn = f => f.events !== false;
-const conditionsOf = f => [f.shortFood && "hungry", f.unpaid && "unpaid"].filter(Boolean);
+const conditionsOf = f => [(f.shortFood || f.packsNight) && "hungry", f.unpaid && "unpaid"].filter(Boolean);
 function eventsNight(f){                      // the night's desertion, straggling, injuries, horses and incident -> fatigue steps added
   const EV = DATA.events, era = EV && eventsOn(f) ? forceEra(f) : null;
   if (!era || !EV.eras[era]) return 0;
@@ -1079,7 +1134,7 @@ function xpNight(f, wetCold){                 // experience: a night served for 
   for (const [, n] of mine){
     xpServe(n.pid, 1);                                     // a day served
     if (fedByArmy(f)) xpArmy(n.pid, !!f.unpaid);           // and his army's pay, or arrears
-    if (f.shortFood || wetCold || hasCases(n)) xpMark(n.pid, "hard", 1);   // a hard night: wear (ageing)
+    if (f.shortFood || f.packsNight || wetCold || hasCases(n)) xpMark(n.pid, "hard", 1);   // a hard night: wear (ageing)
   }
   if ((f.marched || 0) <= 0) f.campWeek = (f.campWeek || 0) + 1;     // drill: days of the week not marching
   if (f.day % DZ.week_days !== 0) return;
@@ -1653,6 +1708,8 @@ function renderSide(){
     + (f.camp ? `<dt>Camp</dt><dd>${esc(WK.camps[f.camp.kind].name)}</dd>` : "") + routeRows(L, m);
   $("#in-men").value = f.men; $("#in-tools").checked = !!f.tools;
   $("#horses-box").hidden = !EV_HORSE_TYPES.includes(f.type); $("#in-horses").value = horsesOf(f);
+  $("#load-box").hidden = !loadEraOf(f);
+  if (loadEraOf(f)) $("#sel-load").innerHTML = loadOptions(f);
   $("#sel-with").innerHTML = withOptions(f);
   const kinds = Object.keys(WK.camps), cur = S.campKind && kinds.includes(S.campKind) ? S.campKind : "watched";
   $("#sel-camp").innerHTML = kinds.map(k => campOption(f, k, cur)).join("");
@@ -1946,6 +2003,7 @@ function init(){
     forcesHere().push(f); S.sel[S.mapId] = f.id; $("#in-fname").value = ""; render();
   };
   $("#in-men").onchange = e => { const f = selForce(); if (f){ f.men = Math.max(1, parseInt(e.target.value, 10) || f.men); render() } };
+  $("#sel-load").onchange = e => { const f = selForce(); if (f){ f.loadOrder = e.target.value; render() } };
   $("#in-horses").onchange = e => { const f = selForce(); if (f){ const v = parseInt(e.target.value, 10); f.horses = Number.isFinite(v) ? Math.max(0, v) : null; render() } };
   $("#in-tools").onchange = e => { const f = selForce(); if (f){ f.tools = e.target.checked; render() } };
   $("#sel-camp").onchange = e => { S.campKind = e.target.value; render() };

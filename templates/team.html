@@ -302,6 +302,13 @@ function fightLine(c){                          // as gravewounds.team.fight_lin
   if (c.leader){ const m = Math.floor((s.pres - 50) / C.presence.per); bits.push(`leading, morale ${m >= 0 ? "+" : ""}${m}`) }
   return bits.join(", ");
 }
+function loadLine(c){                              // what each order weighs on him (loads.yaml)
+  const E = ((TD.loads || {}).eras || {})[T.id]; if (!E) return "";
+  const kc = (TD.fight.chr.toil.load || {})[c.kit] || "light", body = ldBody(T.id, c.sex || "m");
+  const extra = c.loadExtra || 0, i = S.team.indexOf(c);
+  const bits = Object.entries(TD.loads.orders).map(([o, name]) => { const kg = ldLoadKg(T.id, o, kc, extra); return `${name.toLowerCase()} ${Math.round(kg)} kg (${TD.loads.bands[ldBand(kg, body, c.stats.str)].name.toLowerCase()})` });
+  return `<div class="full muted" title="${esc(E.note || "")}">Loads: ${esc(bits.join(" · "))} <label>· extra <input type="number" min="0" step="0.5" data-loadx="${i}" value="${extra || ""}" placeholder="0" style="width:4em" aria-label="Extra kg he carries"> kg</label></div>`;
+}
 function sheetHtml(c, i){
   const career = careerOf(c), kit = TD.kits[c.kit], w = TD.weapons[c.weapon];
   const fig = FIG.svg({ kit, weapon: w, look: c.look, size: 150, title: c.name, wounds: oldMarks(c) });
@@ -322,6 +329,7 @@ function sheetHtml(c, i){
     <div class="full muted">Untrained: ${others || "none"}</div>
     <div class="full arms">${esc(w.name)}: attack <b>${c.attack ?? "—"}%</b> · defence <b>${c.defence}%</b> · Nerve <b>${c.nerve}</b> · ${esc(kit.name)}</div>
     <div class="full muted" title="${pron("What his characteristics do in the wound roller", sx)}">In a fight: ${esc(fightLine(c))}</div>
+    ${loadLine(c)}
     ${TD.equip ? `<div class="full muted money" title="A Day is a common soldier's day's pay in his army's coin">${esc(moneyLine(c))}</div>${ledgerHtml(c, i)}` : ""}
     <ol class="full life">${life}</ol>
     ${c.joined ? `<div class="full muted">${esc(joinedText(c))}</div>` : ""}
@@ -742,7 +750,7 @@ function rollerSheet(c){                          // what the roller keeps of a 
   const attackBy = Object.fromEntries(Object.keys(T.weapon_skill).map(w => [w, attackFor(c, w)]));
   const defBy = T.defence.reduce((a, s) => (c.skills[s] > c.skills[a] ? s : a), T.defence[0]);
   return { career: careerOf(c).name, terms: c.terms, age: c.age, leader: !!c.leader, stats: c.stats, defence: c.defence, attack_by: attackBy,
-    skill_by: T.weapon_skill, defence_by: defBy, era: T.id, rank: c.rank || null,   // which skill each weapon and his defence use: a hit or a parry ticks it
+    skill_by: T.weapon_skill, defence_by: defBy, era: T.id, rank: c.rank || null, sex: c.sex || "m", load_extra: c.loadExtra || 0,   // which skill each weapon and his defence use: a hit or a parry ticks it
     trained: T.skills.filter(s => (c.gains[s.id] || 0) > 0).map(s => [s.name, c.skills[s.id]]), origin: c.origin, old: c.old,
     skills: c.skills, pid: c.pid };   // every skill, trained or not: the roller and travel map use Leechcraft, Fieldcraft, Watch and Stealth
 }
@@ -938,7 +946,7 @@ function init(){
       return spendFrom(i, days, document.querySelector(`input[data-pay-what="${i}"]`).value.trim() || "paid out");
     }
   });
-  $("#sheets").addEventListener("change", e => { const n = e.target.closest("input[data-name]"); if (n){ S.team[+n.dataset.name].name = n.value.trim() || S.team[+n.dataset.name].name; save() } });
+  $("#sheets").addEventListener("change", e => { const lx = e.target.closest("input[data-loadx]"); if (lx){ S.team[+lx.dataset.loadx].loadExtra = Math.max(0, +lx.value || 0); return render() } const n = e.target.closest("input[data-name]"); if (n){ S.team[+n.dataset.name].name = n.value.trim() || S.team[+n.dataset.name].name; save() } });
   render();
 }
 init();

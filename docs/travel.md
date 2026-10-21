@@ -331,6 +331,31 @@ file has its source or `approx: true`. The best are Korea's injuries by kind of 
 Valley Forge's desertion, the 1812 and Civil War horses, Corunna and the 1914 retreat; the
 medieval and Thirty Years' War rates are thin, and incidents are design estimates throughout.
 
+## Loads
+
+`data/loads.yaml` (rules in `gravewounds/loads.py`, repeated in `templates/ranks.js`: `ldLoadKg`,
+`ldBody`, `ldBand`, `ldBlister`, `ldFatigue`; research in the project doc "load-research"). Each
+era gives the kg of fighting order, marching order and full kit (`kg`), its average man's weight
+(`body_kg`; a woman 12 kg less), the order it fights in (`fights_in`), and whether armour is
+already in the orders (from 1914). Otherwise his armour adds by its toil load (medium 12 kg, heavy
+22 kg). Load ÷ (body × Strength's multiplier) gives the band (Unburdened to Immobile at 15, 30, 45,
+65 and 90%).
+
+On the travel map the force panel's **Load** sets the force's order (marching by default). Its
+average man's band against the era's marching band gives `loadPct` (never above 100), part of
+`speedOf`; the day's km (marching hours × the force type's road pace) add fatigue steps for each
+`fatigue_km` beyond what the marching band's would; and each named man who marched rolls his own
+band's blister chance (`ldBlister`: the band's % for 20 km or more, pro rata below, a quarter after
+7 days on the march, none while a feet case is still open), a minor case on his track. Packs lost
+in the roller (below) arrive as `gravewounds-packs-lost` (map and force): that night the force is
+short of food for its events, a step more tired, and its named men have a hard night.
+
+In the roller each team-builder man has a **Load** select on his card (his era's `fights_in` by
+default). His band (a band heavier if he has one term: green under fire) costs Dodge in his
+defence (`defenceFor`: the better of Parry and Dodge less the band's) and, Overloaded or worse,
+the run. **Drop packs** (After the fight) puts a side in fighting order; if it loses the field its
+packs are lost, and the travel forces its named men go with are told.
+
 ## Calendar and weather
 
 Days have real dates, and daylight sets each day's marching hours. The weather is rolled

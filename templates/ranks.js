@@ -117,3 +117,29 @@ function trDrill(camped, bestCommand, roll){       // null if it did not camp en
   if (camped < D.camped_days) return null;
   return skillCheck(Math.max(bestCommand, D.nco), D.difficulty, roll);
 }
+/* Carrying weight (as gravewounds/loads.py, data TD.loads): his order's kg (and armour where the
+   era's orders leave it out) against his body weight and Strength gives a band. */
+const LDS = () => TD.loads || {};
+const ldEra = eid => LDS().eras?.[eid] || {};
+function ldLoadKg(eid, order, kitClass, extra = 0){ // his load in kg
+  const E = ldEra(eid);
+  let kg = (E.kg?.[order] || 0) + extra;
+  if (!E.armour_in_orders) kg += LDS().armour_kg?.[kitClass || "light"] || 0;
+  return kg;
+}
+const ldBody = (eid, sex = "m") => (ldEra(eid).body_kg ?? 65) + (sex === "f" ? (LDS().woman_kg || 0) : 0);
+const ldStrMult = strength => LDS().strength.findLast(r => strength >= r.from).mult;
+function ldBand(load, body, strength, afraid = false){   // the band's index; a green man under fire one heavier
+  const B = LDS().bands, r = load / (body * ldStrMult(strength));
+  const i = B.findIndex(b => r <= b.upto);
+  return Math.min(B.length - 1, i + (afraid ? 1 : 0));
+}
+function ldBlister(band, km, daysMarched = 0){       // % chance of sore feet: the band's for 20 km or more; a quarter once hardened
+  let p = (LDS().bands[band].blister || 0) * Math.min(km, 20) / 20;
+  if (daysMarched >= (LDS().hardened_days ?? 7)) p /= 4;
+  return Math.trunc(p);
+}
+function ldFatigue(band, km){                       // steps of fatigue a day's km add in this band
+  const fk = LDS().bands[band].fatigue_km;
+  return fk ? Math.floor(km / fk) : 0;
+}

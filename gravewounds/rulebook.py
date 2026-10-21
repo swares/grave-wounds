@@ -190,6 +190,13 @@ def tables(d: Data) -> dict:
                             for i, r in enumerate(RE.get("ladder") or [])])
         out["finds"] = _md(["d100", "He finds", "Worth (Days)"], [[f"{lo}–{f['to']}" if lo != f["to"] else str(f["to"]), f["what"], "—" if not f["days"][1] else f"{f['days'][0]}–{f['days'][1]}"]
                                                               for f, lo in zip(d.ranks["finds"], [1] + [x["to"] + 1 for x in d.ranks["finds"][:-1]])])
+    if d.loads:
+        LB = d.loads["bands"]
+        lo = [0] + [b["upto"] for b in LB[:-1]]
+        out["loads"] = _md(["Band", "Load (share of his weight)", "March (% of the usual)", "Dodge", "Blisters (20 km)", "Extra fatigue"],
+                           [[b["name"], f"{round(a * 100)}–{round(b['upto'] * 100)}%" if b["upto"] < 2 else f"over {round(a * 100)}%", f"{b['march']}%",
+                             f"−{b['dodge']}" + (", no run" if b.get("run") is False else ""), f"{b['blister']}%",
+                             f"a step every {b['fatigue_km']} km" if b.get("fatigue_km") else "—"] for b, a in zip(LB, lo)])
     if d.ageing:
         names = {"str": "Strength", "agi": "Agility", "end": "Endurance", "wits": "Wits"}
 

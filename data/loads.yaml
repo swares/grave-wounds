@@ -1,0 +1,101 @@
+# Carrying weight (rules in gravewounds/loads.py, repeated in templates/ranks.js). Research notes:
+# the project doc "load-research" (Knapik et al. 1996; Orr 2010, "The History of the Soldier's
+# Load"; Askew et al. 2012; the 1973 Natick report; CALL 2003). Figures there are tagged sourced,
+# estimate or gap; here `approx: true` marks an estimate.
+#
+# A man's load is his order's kilograms (what his era carried in fighting order, marching order
+# or full kit) plus his armour where the era's orders leave it out, plus anything the GM adds. As a
+# share of his body weight (his era's average; less for a woman), against his Strength (`strength`:
+# x0.8 to x1.3), it falls in a band. The band slows a force's march (its `march` %), tires it a
+# step for every `fatigue_km` marched in a day, blisters the feet (`blister` % over 20 km, for each
+# named man: the chance is the band's for a day's march of 20 km or more, less for shorter, and a
+# quarter of it once his feet have hardened after `hardened_days` days on the march; a man whose
+# feet are still sore is not blistered again), and in a fight costs Dodge (`dodge`) and, heavy enough, the run (`run: false`).
+# A green man under fire fights a band heavier (Marshall: "fear and fatigue"). The bands follow the
+# doctrinal shares (a fighting load of about 30% of body weight, an approach march of 45%), the
+# march trials (speed nearly flat to 40%, then falling) and Knapik's sprint and rush times (about
+# 1% worse for each kg); the step sizes are design choices.
+bands:
+  - {id: unburdened, name: "Unburdened", upto: 0.15, march: 100, dodge: 0, blister: 0}
+  - {id: light, name: "Light", upto: 0.30, march: 95, dodge: 10, blister: 5}
+  - {id: medium, name: "Medium", upto: 0.45, march: 85, dodge: 20, blister: 40, fatigue_km: 20}
+  - {id: heavy, name: "Heavy", upto: 0.65, march: 70, dodge: 35, blister: 50, fatigue_km: 12}
+  - {id: overloaded, name: "Overloaded", upto: 0.90, march: 50, dodge: 50, blister: 70, fatigue_km: 6, run: false}
+  - {id: immobile, name: "Immobile", upto: 99, march: 25, dodge: 75, blister: 70, fatigue_km: 2, run: false}
+strength:                    # Strength from: load multiplier
+  - {from: 0, mult: 0.8}
+  - {from: 30, mult: 0.9}
+  - {from: 45, mult: 1.0}
+  - {from: 60, mult: 1.15}
+  - {from: 75, mult: 1.3}
+hardened_days: 7
+woman_kg: -12                # a woman's body weight against her era's man's (and so what she carries well)
+woman_approx: true
+armour_kg: {light: 0, medium: 12, heavy: 22}   # by the kit's load (wounds.yaml toil): a field harness 21-23 kg (the Met, c.1525); light kit is in the orders
+armour_approx: true
+orders: {fighting: "Fighting order", marching: "Marching order", full: "Full kit"}
+
+eras:
+  medieval:
+    body_kg: 65
+    kg: {fighting: 4, marching: 12, full: 15}
+    fights_in: fighting
+    note: "Foot soldiers on the march rarely carried over 15 kg; men-at-arms rode to battle and fought in harness, their baggage with pages."
+    approx: true
+  thirty_years:
+    body_kg: 65
+    kg: {fighting: 6, marching: 15, full: 20}
+    fights_in: fighting
+    note: "A cuirassier's armour of the 1620s weighed 21.4 kg; an English pikeman's 22.5-29.5 kg with his pike."
+    approx: true
+  horse_musket:
+    body_kg: 62
+    kg: {fighting: 12, marching: 27, full: 35}
+    fights_in: marching
+    note: "The British infantryman marched with 50-60 lb, 75-80 lb with extra rations, and usually fought with his pack on (about 60 lb at Waterloo); the French with about 27.5 kg."
+  crimea:
+    body_kg: 62
+    kg: {fighting: 12, marching: 28, full: 33}
+    fights_in: fighting
+    note: "British 26-31 kg, French 33-36.5 kg; the knapsacks were left on the ships for the Alma."
+  civil_war:
+    body_kg: 63
+    kg: {fighting: 9, marching: 13, full: 22}
+    fights_in: fighting
+    note: "Issued kit came to 20.5-22.5 kg (a third or more of a man's weight); veterans soon marched in 'campaign trim' of about 25-30 lb."
+  plains_nations:
+    body_kg: 65
+    kg: {fighting: 4, marching: 8, full: 12}
+    fights_in: fighting
+    note: "No figures found for what a warrior carried: an estimate; a dog travois took 20-30 kg."
+    approx: true
+  wwi:
+    body_kg: 60
+    kg: {fighting: 18, marching: 27, full: 33}
+    fights_in: fighting
+    armour_in_orders: true
+    note: "The British soldier was issued 59 lb 11 oz, carried about 66 lb on the Somme and 74-80 lb later in the war."
+  wwii:
+    body_kg: 66
+    kg: {fighting: 18, marching: 27, full: 36}
+    fights_in: fighting
+    armour_in_orders: true
+    note: "The US rifleman's fighting load was about 40 lb; on D-Day men landed with 27.5-41 kg."
+  korea:
+    body_kg: 69
+    kg: {fighting: 18, marching: 23, full: 32}
+    fights_in: fighting
+    armour_in_orders: true
+    note: "Loads rose from about 18 to 22.5 kg, up to 54.5 kg for some."
+  vietnam:
+    body_kg: 69
+    kg: {fighting: 18, marching: 30, full: 36}
+    fights_in: fighting
+    armour_in_orders: true
+    note: "The rifleman's ruck brought him to 27.5-32 kg."
+  modern:
+    body_kg: 80
+    kg: {fighting: 29, marching: 43, full: 58}
+    fights_in: fighting
+    armour_in_orders: true
+    note: "A US rifleman in Afghanistan in 2003: a fighting load of 63 lb, an approach march of 96 lb, an emergency approach march of 127 lb; 45 Commando yomped across the Falklands with 54.5-66 kg."
