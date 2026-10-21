@@ -33,8 +33,11 @@ assigned:
   wait:
   - 3
   - 14
-  what: Individual replacements came out to units in theatre.
+  what: Individual replacements came out through reception and replacement centres; in 1991 one built for 400 a day handled 1,200, and some teams sat out the war there.
   approx: true
+  source:
+    url: https://apps.dtic.mil/sti/pdfs/ADA265514.pdf
+    note: Desert Storm replacement operations; the wait in days is an estimate
 - id: kontraktnik
   name: A contract soldier
   regions:

@@ -26,7 +26,6 @@ assigned:
 - id: depot_draft
   name: A draft from the depot or second battalion
   regions:
-  - british_rev
   - british_pen
   careers:
   - line
@@ -35,10 +34,29 @@ assigned:
   - gunner
   terms: 1
   wait:
+  - 30
+  - 90
+  what: 'A regiment in Spain was refilled by drafts from its home depot or second battalion: ten days to eight weeks at sea to Lisbon, then weeks of marching up-country.'
+  source:
+    url: https://www.napoleon-series.org/military-info/battles/1808/Peninsula/BritishArmy/AllBoundforLisbon.pdf
+    note: sailings to Lisbon took 10-57 days, 1808-10; the march up-country is an estimate
+- id: draft_to_america
+  name: A draft from home
+  regions:
+  - british_rev
+  careers:
+  - line
+  - rifleman
+  - marine
+  - gunner
+  terms: 1
+  wait:
   - 60
-  - 120
-  what: A regiment abroad was refilled by drafts sent out from its home depot or second battalion.
-  approx: true
+  - 150
+  what: 'Drafts and recruits crossed in convoy, six to eight weeks at sea, often after weeks waiting in port: one draft of German recruits took five months to join the 22nd Foot in 1776.'
+  source:
+    url: https://revwar75.com/library/hagist/FORTYGERMANRECRUITS2.htm
+    note: forty German recruits for the 22nd Foot, May-October 1776
 - id: conscript
   name: A conscript from the depot
   regions:
@@ -71,9 +89,8 @@ assigned:
   - 120
   what: Recruiting parties enlisted men at rendezvous for the bounty and the land warrant.
   source:
-    url: https://www.armyheritage.org/wp-content/uploads/ref-bibs/subjects/Pay/Bounties.pdf
-    note: 1812 bounties and land
-  approx: true
+    url: https://genealogy-quest.com/record-collections/pension-acts/24-december-1811-c-10-2-stat-669/
+    note: $16 bounty, three months' pay and 160 acres (Act of 24 December 1811)
 hire:
 - id: substitute
   name: A substitute for the state's draft
@@ -100,17 +117,19 @@ hire:
   - line
   - rifleman
   terms: 1
-  cost: 2000
+  cost: 3200
   places:
   - town
   - village
-  what: From 1800 a conscript could pay a man to go in his place; the price rose through the Empire.
+  what: 'From 1800 a conscript could pay a man to go in his place: 100-650 francs in 1801-02, 3,800-10,000 by 1809; on average 2,000 or more.'
   source:
-    url: https://histoiredemosset.fr/mossetpdf/n80_militaires_juillet_2011_5.pdf
-    note: 1,300 francs in 1825, the nearest price found; at a private's 0.62 F a day
-  approx: true
+    url: https://www.napoleon.org/histoire-des-2-empires/articles/la-conscription-sous-le-premier-empire/
+    note: 2,000 francs at a private's 0.62 F a day, about 3,200 Days
 effects:
   default:
     practice: heirs
-    what: His kit was sold, his debts paid, and the balance went to his estate.
-    approx: true
+    what: His company commander and two officers listed his effects beyond his clothing and arms, and they were accounted for and paid to his representative (Articles of War); the records give his effects
+      as a sum, so they were likely sold.
+    source:
+      url: https://andyreiter.com/wp-content/uploads/military-justice/uk/Laws%20and%20Decrees/United%20Kingdom%20-%201765%20-%20British%20Articles%20of%20War.pdf
+      note: 1765 Articles of War, section XVII, article II; the Continental Articles of 1776 copy it

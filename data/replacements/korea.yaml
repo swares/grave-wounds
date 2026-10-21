@@ -22,6 +22,21 @@ assigned:
   source:
     url: https://www.koreanwaronline.com/history/TruceTent/ch16.htm
     note: 36 points to go home, 1951
+- id: katusa
+  name: A KATUSA man
+  regions:
+  - us_1950
+  - us_1952
+  careers:
+  - rifleman
+  terms: 1
+  wait:
+  - 3
+  - 14
+  what: From August 1950 Korean recruits with only basic training at ROK replacement centres were put into American squads, a few to each.
+  source:
+    url: https://en.wikipedia.org/wiki/Korean_Augmentation_to_the_United_States_Army
+    note: 43,660 served in the war
 - id: draft
   name: A reinforcement draft
   regions:

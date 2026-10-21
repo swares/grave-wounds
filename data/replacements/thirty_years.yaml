@@ -63,17 +63,16 @@ hire:
   terms:
   - 1
   - 3
-  cost: 120
-  per_term: 30
+  cost: 195
+  per_term: 45
   places:
   - town
   - village
   - camp
-  what: Horse cost twice as much to raise as foot.
+  what: 'Horse cost over three times as much to raise as foot: 26 daler a trooper against 8 a foot recruit (1608); veterans were preferred.'
   source:
-    url: https://www.lwl.org/westfaelischer-friede-download/wfe-t/wfe-txt1-30.htm
-    note: cavalry twice the cost of infantry; the extra for a veteran is a guess
-  approx: true
+    url: https://www.ssns.org.uk/wp-content/uploads/2023/01/04_Bjorklund_Schiavone_2021_Vol_52_pp_53_97.pdf
+    note: 26 daler a trooper, 8 a foot recruit (1608); the extra for a veteran is a guess
 effects:
   default:
     practice: share

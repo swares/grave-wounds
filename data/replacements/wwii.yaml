@@ -105,3 +105,10 @@ effects:
       source:
         url: https://www.longlongtrail.co.uk/soldiers/how-to-research-a-soldier/records-of-military-deaths-burials-and-commemorations/soldiers-effects
         note: soldiers' effects registers
+    germany:
+      practice: heirs
+      what: His effects (Nachlass) were meant for his family; some are still being sent to relatives today.
+      source:
+        url: https://www.reservistenverband.de/magazin-die-reserve/lebende-behoerde-huetet-nachlass-der-toten/
+        note: about 20 sets of effects still sent to relatives each month
+      approx: true
