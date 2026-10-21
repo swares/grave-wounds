@@ -27,6 +27,14 @@ sources:
   sh: &sh "https://archives.sharlothallmuseum.org/articles/days-past-articles/1/sutler-store-records-tell-only-little-of-life-back-then"
   fosc: &fosc "https://www.nps.gov/fosc/learn/education/sutler9.htm"
 
+# keep - a day's food and a night's bed for a man his army does not feed (money.keep_days):
+#        price rows below, `times` for a per-meal row; an army may have its own under regions.
+keep:
+  food: {row: board_day}
+  bed: {row: cheap_bed}
+  regions:
+    frontier: {food: {row: frontier_board}, bed: {row: frontier_bed}}
+
 items:
   # Arms
   - {id: henry_private, name: "Henry rifle, bought privately", cat: weapon, price: 6500, when: "c.1863", source: {url: "https://en.wikipedia.org/wiki/Henry_rifle", note: "Wikipedia"}}
@@ -86,3 +94,7 @@ items:
   - {id: cs_trousers, name: "Trousers (Confederate issue)", cat: clothing, in: csd, price: 1000, when: "1863", source: {url: "https://csa-railroads.com/Essays/Orignial%20Docs/NA/NA,_QM_7-11B-63.htm", note: "Richmond QM list"}}
   - {id: cs_shoes, name: "Shoes (Confederate issue)", cat: clothing, in: csd, price: [600, 875], when: "1863", source: {url: "https://csa-railroads.com/Essays/Orignial%20Docs/NA/NA,_QM_7-11B-63.htm", note: "Richmond QM list"}}
   - {id: cs_shirt, name: "Shirt (Confederate issue)", cat: clothing, in: csd, price: 225, when: "1863", source: {url: "https://csa-railroads.com/Essays/Orignial%20Docs/NA/NA,_QM_7-11B-63.htm", note: "Richmond QM list"}}
+  - {id: board_day, name: "Board, a day (at $2 a week)", cat: food, price: 29, when: "1863", source: {url: "https://libraryguides.missouri.edu/pricesandwages/1860-1869", note: "board for working women, $2 a week (Virginia Penny, 1863)"}}
+  - {id: cheap_bed, name: "A cheap bed in a city lodging house", cat: lodging, price: 25, when: "1860s", approx: true}
+  - {id: frontier_board, name: "Board in a frontier town, a day (at $8 a week)", cat: food, price: 114, when: "1856", source: {url: "https://www.appeal-democrat.com/news/local_news/today-in-history-1856-downtown-marysville-hotels-in-fierce-competition-slashing-prices-for-boarding/article_4b75f091-77da-4bda-ba8b-1acfc5095ca8.html", note: "Marysville CA, 1856, before the war"}}
+  - {id: frontier_bed, name: "A bed in a frontier town", cat: lodging, price: [50, 100], when: "1856", source: {url: "https://www.appeal-democrat.com/news/local_news/today-in-history-1856-downtown-marysville-hotels-in-fierce-competition-slashing-prices-for-boarding/article_4b75f091-77da-4bda-ba8b-1acfc5095ca8.html", note: "beds 50¢-$1 a night, Marysville CA, 1856"}}

@@ -13,27 +13,27 @@ jobs:
   # Lawful work
   - {id: cat_aircrew, name: "CAT contract aircrew", what: "Flying or kicking cargo for Civil Air Transport on the airlift and on CIA drops.", skill: craft, min: 50, pay: 8, term: contract, days: [365, 365], places: [sea, frontier, city], who: [officer, radioman], risk: 20,
      hook: "A routine pickup over Manchuria, like the C-47 lost in November 1952 with two CIA men taken.", wage: "no pay figure found (US)", source: "https://en.wikipedia.org/wiki/Civil_Air_Transport", approx: true}
-  - {id: tech_rep, name: "Civilian tech rep", what: "A factory technician keeping tanks, radios or jets running in theatre.", skill: craft, min: 50, pay: 4, term: contract, days: [180, 365], places: [camp, city], who: [tanker, radioman], risk: 5,
+  - {id: tech_rep, name: "Civilian tech rep", what: "A factory technician keeping tanks, radios or jets running in theatre.", skill: craft, min: 50, pay: 4, term: contract, days: [180, 365], board: true, places: [camp, city], who: [tanker, radioman], risk: 5,
      hook: "The rep knows the new fuze is faulty, and the company wants it kept quiet.", wage: "no figure found (US)", approx: true}
   - {id: correspondent_driver, name: "War correspondent's driver", what: "Driving and guiding a reporter to the front and back.", skill: drive, min: 40, pay: 1.5, term: week, places: [road, frontier, city], who: any, risk: 20,
      hook: "The reporter wants the story the censors spiked.", wage: "no figure found (US)", approx: true}
-  - {id: minesweeper, name: "Minesweeper hand", what: "Sweeping Korean harbours under US orders in ex-Imperial Navy sweepers.", skill: craft, min: 40, pay: 1, term: contract, days: [90, 180], places: [sea], who: [sapper], risk: 30,
+  - {id: minesweeper, name: "Minesweeper hand", what: "Sweeping Korean harbours under US orders in ex-Imperial Navy sweepers.", skill: craft, min: 40, pay: 1, term: contract, days: [90, 180], board: true, places: [sea], who: [sapper], risk: 30,
      hook: "A sweeper hits a mine off Wonsan, and the crew's deaths are kept quiet.", wage: "about 1,200 Japanese sailors swept mines; no wage found (US Days)", source: *apjjf, approx: true}
   - {id: minefield_clearer, name: "Minefield clearance gang", what: "Lifting old friendly minefields that nobody mapped.", skill: fieldcraft, min: 40, pay: 1, term: week, places: [frontier, road, village], who: [sapper], risk: 30,
      hook: "The map shows one field; the farmer swears there are three.", wage: "no wage found; most mines shipped were never recorded (US Days)", source: "https://www.hrw.org/legacy/reports/1997/gen1/General-02.htm", approx: true}
-  - {id: ksc_porter, name: "A-frame porter (Korean Service Corps)", what: "Carrying ammunition, water, wire and beer up the ridges, and the wounded down.", min: 0, pay: 1, term: month, places: [frontier, camp], who: any, risk: 25,
+  - {id: ksc_porter, name: "A-frame porter (Korean Service Corps)", what: "Carrying ammunition, water, wire and beer up the ridges, and the wounded down.", min: 0, pay: 1, term: month, board: true, places: [frontier, camp], who: any, risk: 25,
      hook: "The war diaries list porters as numbers, and one of yours is missing after a night carry.", wage: "no KSC pay rate found; many porters were rounded up off farms (ROK Days)", source: "https://koreanwarlegacy.org/?p=7612", approx: true}
-  - {id: camp_labourer, name: "Camp labourer", what: "Digging, carrying rations and fetching water for a unit, for a pooled wage and army food.", min: 0, pay: 0.75, term: week, places: [camp, frontier], who: any, risk: 10,
+  - {id: camp_labourer, name: "Camp labourer", what: "Digging, carrying rations and fetching water for a unit, for a pooled wage and army food.", min: 0, pay: 0.75, term: week, board: true, places: [camp, frontier], who: any, risk: 10,
      hook: "A Canadian veteran remembered a 15-year-old wire carrier killed beside him.", wage: "'a couple of bucks a day', pooled by the men (US)", source: "https://veterans.gc.ca/en/node/711579"}
-  - {id: interpreter, name: "Interpreter", what: "Translating for a UN unit, interrogators or a civil affairs team.", skill: letters, min: 50, pay: 0.5, term: month, places: [camp, town, city], who: any, risk: 15,
+  - {id: interpreter, name: "Interpreter", what: "Translating for a UN unit, interrogators or a civil affairs team.", skill: letters, min: 50, pay: 0.5, term: month, board: true, places: [camp, town, city], who: any, risk: 15,
      hook: "A Chinese prisoner says something the interpreter will not translate.", wage: "no figure found (US)", approx: true}
-  - {id: japan_ship_crew, name: "Japanese landing-ship crew", what: "Crewing borrowed US landing ships and freighters to Korean ports, in secret.", skill: craft, min: 30, pay: 0.5, term: contract, days: [7, 30], places: [sea], who: any, risk: 15,
+  - {id: japan_ship_crew, name: "Japanese landing-ship crew", what: "Crewing borrowed US landing ships and freighters to Korean ports, in secret.", skill: craft, min: 30, pay: 0.5, term: contract, days: [7, 30], board: true, places: [sea], who: any, risk: 15,
      hook: "Officially Japan is not in the war, and the crew list is secret.", wage: "hardly any were paid regularly; some were promised pay in Japan (US)", source: *apjjf, approx: true}
-  - {id: houseboy, name: "Houseboy", what: "Keeping a tent: boots, laundry, water and errands.", min: 0, pay: 0.25, term: month, places: [camp], who: any, risk: 5,
+  - {id: houseboy, name: "Houseboy", what: "Keeping a tent: boots, laundry, water and errands.", min: 0, pay: 0.25, term: month, board: true, places: [camp], who: any, risk: 5,
      hook: "The houseboy's family in Seoul is hiding someone.", wage: "$10-15 a month, a substantial sum (US)", source: "https://www.koreatimes.co.kr/opinion/20220505/children-during-the-korean-war"}
   - {id: orphanage_helper, name: "Orphanage helper", what: "Running food, fuel and medicine to an orphanage a unit sponsors.", skill: leechcraft, min: 0, pay: 0, term: week, places: [town, city], who: any, risk: 5,
      hook: "The donated supplies are being sold out of the back door.", wage: "unpaid; good for reputation and contacts", approx: true}
-  - {id: reenlist, name: "Re-enlist for the bonus", what: "Signing on again for three years and taking the cash.", min: 0, pay: 84, term: contract, days: [1, 1], lump: true, places: [camp], who: any, risk: 0,
+  - {id: reenlist, name: "Re-enlist for the bonus", what: "Signing on again for three years and taking the cash.", min: 0, pay: 84, term: contract, days: [1, 1], lump: true, board: true, places: [camp], who: any, risk: 0,
      hook: "The bonus is real, and so is the next tour on the line.", wage: "monthly pay times the years signed: about $240 for three years (US)", source: "https://www.law.cornell.edu/supremecourt/text/431/864", approx: true}
   # Illegal
   - {id: line_smuggler, name: "Smuggler across the 38th", what: "Moving people, rice or letters through the lines.", skill: stealth, min: 50, pay: 5, term: week, places: [frontier, village], who: any, risk: 40, illegal: true,

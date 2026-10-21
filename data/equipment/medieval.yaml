@@ -55,6 +55,12 @@ sources:
   lum: &lum "https://luminarium.org/medlit/medprice.htm"
   mseffie: &mseffie "https://mseffie.com/assignments/canterbury_tales/medieval_prices.html"
 
+# keep - a day's food and a night's bed for a man his army does not feed (money.keep_days):
+#        price rows below, `times` for a per-meal row; an army may have its own under regions.
+keep:
+  food: {row: food_day}
+  bed: {row: inn_bed}
+
 items:
   # Armour
   - {id: milanese_harness, name: "Milanese harness, ready-made", cat: armour, price: 8000, when: "1441", kit: full_plate, source: {url: *ucdavis, note: "UC Davis price list"}}

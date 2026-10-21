@@ -174,21 +174,15 @@ function kitValue(region, kit, weapon){           // {days, unpriced}: issued ki
   return { days: total, unpriced };
 }
 /* The purse (as money.py): starting Days per career term plus the ledger, what he has earned and
-   spent since, as signed Days. */
-const ledgerDays = ledger => (ledger || []).reduce((a, e) => a + e.days, 0);
+   spent since, as signed Days (ledgerDays and quarterText are in purse.js). */
 function purseFor(region, terms, ledger){          // {days, text}: and that sum in his army's coin, halves up
   const days = (TD.money?.purse_days_per_term || 0) * terms + ledgerDays(ledger), cid = regionCoin(region), cur = cid ? TD.equip.currencies[cid] : null;
   return { days, text: cur && cur.day ? fmtMoney(cur, Math.floor(days * cur.day + 0.5)) : null };
 }
-const PURSE_Q = ["", "¼", "½", "¾"];
-function quarterText(x){                          // '104½', '1,200', '¾', '0'
-  const q = Math.floor(Math.max(x, 0) * 4 + 0.5), whole = Math.floor(q / 4), part = q % 4;
-  return whole ? `${group(whole)}${PURSE_Q[part]}` : (PURSE_Q[part] || "0");
-}
 function spendCheck(c, days){                     // why he can't spend that many Days, or null
   if (!days || days <= 0) return "nothing to spend";
   const have = purseFor(c.region, c.terms, c.ledger).days;
-  return days > have + 1e-9 ? `his purse holds ${quarterText(have)} Days` : null;
+  return days > have + 1e-9 ? `his purse holds ${daysQ(have)}` : null;
 }
 function shopFor(region){                         // the era's price list in his Days, as money.py shop
   const E = TD.equip, out = [];
@@ -206,7 +200,7 @@ const daysText = x => (x < 1 ? "under 1" : group(Math.round(x)));
 function moneyLine(c){                            // as money.py money_line
   const v = kitValue(c.region, c.kit, c.weapon), p = purseFor(c.region, c.terms, c.ledger);
   const kit = v.unpriced.length && !v.days ? "kit not priced" : `kit worth about ${daysText(v.days)} Days${v.unpriced.length ? " (part not priced)" : ""}`;
-  return `${kit[0].toUpperCase()}${kit.slice(1)}; purse ${quarterText(p.days)} Days${p.text ? ` (${p.text})` : ""}`;
+  return `${kit[0].toUpperCase()}${kit.slice(1)}; purse ${daysQ(p.days)}${p.text ? ` (${p.text})` : ""}`;
 }
 /* Work (as gravewounds/jobs.py): an era's jobs (TD.jobs) and TD.money.work's rules. One skill
    check a term settles the pay, one d100 at or under the risk brings trouble, and a d10 picks it
@@ -259,4 +253,11 @@ function termText(j){                              // 'a week', '7-21 days'
   if (j.term !== "contract") return { day: "a day", week: "a week", month: "a month" }[j.term];
   const [lo, hi] = j.days;
   return lo === hi ? `${lo} day${lo > 1 ? "s" : ""}` : `${lo}-${hi} days`;
+}
+const BED_PLACES = ["town", "city", "village", "road"];
+function keepFor(j, region, place){                // as jobs.py keep_for: {food, bed} a day, or null where the job feeds him
+  if (j.board) return null;
+  const k = (TD.keep || {})[region];
+  if (!k) return null;
+  return { food: k.food, bed: BED_PLACES.includes(place) ? k.bed : 0 };
 }

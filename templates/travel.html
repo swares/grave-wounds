@@ -219,6 +219,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <div style="flex:2 1 200px"><label for="sel-hyg">Camp hygiene</label><select id="sel-hyg"></select></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Washing, boiling, the sick kept apart: flux and typhoid do not reach the nurses (typhus and plague still can)"><input type="checkbox" id="chk-clean"> Nurses keep clean</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Fruit, greens, fresh meat or onions in the rations each day: no days go without fresh food (scurvy)"><input type="checkbox" id="chk-fresh"> Fresh food issued</label></div>
+        <div style="flex:1 1 140px;align-self:end"><label title="Its army feeds and quarters its men. Untick for a team on its own, on leave or off base: its named men then pay their keep from their purses each day"><input type="checkbox" id="chk-fed"> Fed by its army</label></div>
       </div>
       <p class="muted" id="health-note" style="margin:0"></p>
       <ol class="log" id="log" aria-label="March and camp log"></ol>
@@ -238,6 +239,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
   </div>
 </div>
 
+<script>/*__PURSE_JS__*/</script>
 <script>
 const DATA = /*__TRAVEL_DATA__*/null;
 const $ = s => document.querySelector(s);
@@ -940,9 +942,53 @@ function endDay(f){
   const forage = terrainAt(curMap(), f.pos).forage, campedAll = !!camp && (f.marched || 0) <= 0;
   const found = !f.freshIssued && fieldcraftNeeded(forage, campedAll) && foraged(f);
   const fresh = freshToday(forage, campedAll, !!f.freshIssued, found);
-  f.noFresh = fresh ? 0 : (f.noFresh || 0) + 1;     // days without fresh food, for scurvy
+  const before_ = f.noFresh || 0;
+  f.noFresh = fresh ? 0 : before_ + 1;              // days without fresh food, for scurvy
+  keepNight(f, camp, before_);
   healthNight(f, today, camp);
   f.fatigue = after; f.day += 1; f.used = 0; f.marched = 0;
+}
+// ----- keep: a force its army does not feed; its named men pay from their purses (purse.js, money.py) -----
+const BED_TERRAIN = ["village", "town"];      // ground with a bed to be had for the night
+const fedByArmy = f => f.fed !== false;
+function keepNight(f, camp, noFreshBefore){   // each named man's food, and a bed in a village or town unless camped
+  const all = readNamed(), mine = namedWith(all, f);
+  if (!mine.length) return;
+  const purses = readPurses(), bedHere = !camp && BED_TERRAIN.includes(terrainAt(curMap(), f.pos).id);
+  let spent = false;
+  for (const [, n] of mine){
+    const p = n.pid ? purses[n.pid] : null, k = p ? ((DATA.keep || {})[p.era] || {})[p.region] : null;
+    if (fedByArmy(f) || !k){ n.noFresh = f.noFresh; continue }   // fed with the force, or no money of his own to count
+    const pk = payKeep(purseLeft(p), 1, k.food, bedHere ? k.bed : 0);
+    if (pk.paid){
+      const last = p.ledger[p.ledger.length - 1];
+      if (last && last.keep && last.force === `${S.mapId}:${f.id}`){ last.days -= pk.paid; last.keep += 1 }
+      else p.ledger.push({ days: -pk.paid, keep: 1, force: `${S.mapId}:${f.id}` });
+      const e = p.ledger[p.ledger.length - 1];
+      e.what = `Keep with ${f.name}, ${e.keep} day${e.keep !== 1 ? "s" : ""}`;
+      spent = true;
+    }
+    const bits = [];
+    if (pk.hungry){
+      n.noFresh = (n.noFresh ?? noFreshBefore) + 1;  // he ate nothing: no fresh food for him either
+      n.hungry = (n.hungry || 0) + 1;               // and it tires him: the roller adds a step for each day it has not seen
+      bits.push("went hungry: no money for food");
+    } else n.noFresh = f.noFresh;
+    if (pk.rough) bits.push("slept rough: no money for a bed");
+    if (bits.length){
+      const line = `${dateText(f.day, true)}: ${n.name} ${bits.join("; ")}.`;
+      f.log.unshift(line);
+      n.log = [line, ...(n.log || [])].slice(0, 20);
+    }
+  }
+  writeNamed(all);
+  if (spent) writePurses(purses);
+}
+function keepText(f){                          // the health panel's word on who feeds the force
+  if (fedByArmy(f)) return "";
+  const purses = readPurses(), mine = namedWith(readNamed(), f);
+  const each = mine.map(([, n]) => { const p = n.pid ? purses[n.pid] : null; return p ? `${n.name} ${daysQ(purseLeft(p))}` : null }).filter(Boolean);
+  return `Not fed by its army: its named men pay a day's food from their purses, and a bed on nights in a village or town out of camp${each.length ? ` (left: ${each.join(", ")})` : ""}.`;
 }
 // ----- camp disease (rules in the shared block) -----
 const dzName = did => dzProfile(did).name.toLowerCase();
@@ -978,7 +1024,7 @@ function namedNight(f, ctx, factors){          // the day (and on the week's las
   for (const [, n] of mine){
     const tended = force.nurses > 0 || mine.some(([, o]) => o !== n && nursesNow(o));   // nursed first, if anyone can
     const bits = namedDay(n, ctx, tended ? 0 : 1);
-    if (factors && !n.dead) bits.push(...namedWeek(n, factors, contagionOf(fh, f.men), nursesNow(n) ? { ...force, nurses: 1 } : null, f.noFresh || 0));
+    if (factors && !n.dead) bits.push(...namedWeek(n, factors, contagionOf(fh, f.men), nursesNow(n) ? { ...force, nurses: 1 } : null, n.noFresh ?? f.noFresh ?? 0));
     if (!bits.length) continue;
     const line = `${dateText(f.day, true)}: ${n.name} ${bits.join("; ")}.`;
     f.log.unshift(line);
@@ -1419,6 +1465,7 @@ function renderHealth(f){
   const opts = [["", `From the camp (${campHygiene(null, kind)})`], ...DZ.hygiene.map(x => [x, x[0].toUpperCase() + x.slice(1)])];
   $("#chk-clean").checked = !!f.cleanNurses;
   $("#chk-fresh").checked = !!f.freshIssued;
+  $("#chk-fed").checked = fedByArmy(f);
   $("#sel-hyg").innerHTML = opts.map(([v, t]) => `<option value="${v}" ${(f.hygiene || "") === v ? "selected" : ""}>${t}</option>`).join("");
   const hyg = campHygiene(f.hygiene || null, kind), factors = weekFactorsFor(f, kind, hyg);
   const chances = Object.keys(DZ.diseases).map(did => [did, catchChance(did, factors, DZ.endurance, contagionOf(h, f.men))]).filter(([, n]) => n > 0).map(([did, n]) => `${dzName(did)} ${+n.toFixed(1)}%`);
@@ -1439,6 +1486,8 @@ function renderHealth(f){
   if (named) parts.push(`Named with it (from the wound roller): ${named}.`);
   const sc = scurvyChance(f.noFresh || 0);
   if (sc > 0) chances.push(`scurvy ${+sc.toFixed(1)}%`);
+  const kt = keepText(f);
+  if (kt) parts.push(kt);
   parts.push(foodText(f), `Weekly check: night of ${dateText(next, true)}. Each well man's chance of catching it this week: ${chances.join(", ") || "none"}.`);
   $("#health-note").textContent = parts.join(" ");
 }
@@ -1819,6 +1868,7 @@ function init(){
     if (f.freshIssued) f.noFresh = 0;
     render();
   };
+  $("#chk-fed").onchange = e => { const f = selForce(); if (f){ f.fed = e.target.checked; render() } };
   $("#chk-plague").onchange = e => { S.plague[S.mapId] = e.target.checked; render() };
   $("#btn-camp").onclick = () => { const f = selForce(); if (f){ makeCamp(f, $("#sel-camp").value); render() } };
   const sendFight = k => {                   // k: which of the fights on offer (0 attack now / the only one, 1 wait)

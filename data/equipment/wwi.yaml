@@ -40,6 +40,14 @@ sources:
   hull: &hull "https://ww1hull.com/?p=44926"
   nzef: &nzef "https://rnzaoc.com/wp-content/uploads/2018/08/instructions-regarding-care-issue-and-accounting-for-ordnance-stores-nzef-in-the-uk.pdf"
 
+# keep - a day's food and a night's bed for a man his army does not feed (money.keep_days):
+#        price rows below, `times` for a per-meal row; an army may have its own under regions.
+keep:
+  food: {row: club_food}
+  bed: {row: club_bed}
+  regions:
+    us: {food: {row: us_food_day}, bed: {row: us_bed}}
+
 items:
   # Vehicles, horses
   - {id: model_t, name: "Ford Model T, touring car", cat: travel, in: usd, price: 49000, when: "1914", source: {url: "https://www.thehenryford.org/collections-and-research/digital-collections/artifact/163928", note: "The Henry Ford"}}
@@ -103,3 +111,7 @@ items:
   - {id: us_drawers, name: "Wool drawers", cat: clothing, in: usd, price: 265, when: "1917", source: {url: *sears, note: "Sears 1917"}}
   - {id: us_hat, name: "Campaign hat", cat: clothing, in: usd, price: 250, when: "1917", source: {url: *sears, note: "Sears 1917"}}
   - {id: us_puttees, name: "Puttees, canvas", cat: clothing, in: usd, price: 125, when: "1917", source: {url: *sears, note: "Sears 1917"}}
+  - {id: club_food, name: "A day's meals at a soldiers' club (breakfast, lunch, dinner)", cat: food, price: 112, when: "1916", source: {url: "https://en.wikipedia.org/wiki/New_Zealand_Soldiers%27_Club", note: "8d, 8d and 1s, New Zealand Soldiers' Club, London"}}
+  - {id: club_bed, name: "A bed at a soldiers' club", cat: lodging, price: 32, when: "1916", source: {url: "https://en.wikipedia.org/wiki/New_Zealand_Soldiers%27_Club", note: "8d a night"}}
+  - {id: us_food_day, name: "A day's food on leave", cat: food, price: [100, 150], in: usd, when: "1918", approx: true}
+  - {id: us_bed, name: "A cheap bed on leave", cat: lodging, price: 50, in: usd, when: "1918", approx: true}

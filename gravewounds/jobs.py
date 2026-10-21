@@ -4,7 +4,8 @@ checked on and the least he needs to be hired, its pay in Days for each day work
 day, a week, a month or a contract; or, with `lump`, a sum for the whole contract, `per` a
 horse, a robe or a body), the places it is found, who may take it, its risk and a
 hook. One skill check a term settles the pay (in full, half, or nothing on a fumble); one d100
-a term at or under the risk brings trouble. The team builder page (templates/team.js) repeats
+a term at or under the risk brings trouble. A job that does not feed him (`board`) costs him his
+keep for each day of the term (keep_for, money.pay_keep). The team builder page (templates/team.js) repeats
 can_take and work_term exactly."""
 from __future__ import annotations
 
@@ -75,6 +76,23 @@ def work_term(d: Data, eid: str, j: dict, c: dict, rng, days: int | None = None)
     return {"check": check, "outcome": outcome, "days": n, "earned": earned, "trouble": trouble}
 
 
+BED_PLACES = ("town", "city", "village", "road")   # places with an inn or lodging to pay for
+
+
+def keep_for(d: Data, eid: str, j: dict, region: str, place: str | None) -> dict | None:
+    """What a term of the job costs him a day to live: none where the job feeds him (`board`: his
+    army's service, or wages paid with board and keep), else his army's keep (money.keep_days),
+    with a bed only where he works in a town, city, village or on the road.
+    -> {"food": float, "bed": float}, or None"""
+    from .money import keep_days
+    if j.get("board"):
+        return None
+    k = keep_days(d, eid, region)
+    if not k:
+        return None
+    return {"food": k["food"], "bed": k["bed"] if place in BED_PLACES else 0}
+
+
 QUARTERS = {0: "", 1: "¼", 2: "½", 3: "¾"}
 
 
@@ -107,7 +125,7 @@ def job_rows(d: Data, eid: str) -> list[list[str]]:
     for j in jobs_at(d, eid):
         skill = f"{skills[j['skill']]} {j.get('min', 0)}" if j.get("skill") else "none"
         who = "anyone" if j.get("who", "any") == "any" else ", ".join(names[w] for w in j["who"])
-        rows.append([j["name"] + (" †" if j.get("illegal") else ""), skill, pay_text(j), term_text(j), ", ".join(j["places"]), who,
+        rows.append([j["name"] + (" †" if j.get("illegal") else "") + (" (fed)" if j.get("board") else ""), skill, pay_text(j), term_text(j), ", ".join(j["places"]), who,
                      f"{j['risk']}%" if j.get("risk") else "none"])
     return rows
 
@@ -125,5 +143,6 @@ def work_rules(d: Data) -> list[str]:
         f"<b>A term:</b> a day, a week ({W['terms']['week']} days), a month ({W['terms']['month']} days) or a contract. One check on the job's skill a term: "
         f"at or under, full pay; over, {int(W['failure'] * 100)}%; {W['fumble_from']} or more and over, a fumble and nothing. A job with no skill pays in full.",
         "<b>Trouble:</b> a job with a risk takes one d100 a term: at or under the risk, trouble. The GM uses the job's hook, or rolls d10 on the era's trouble table. "
-        "Jobs marked † are against the law.",
+        "Jobs marked † are against the law. <b>Keep:</b> a man his army does not feed pays a day's food from his purse, and a bed in a town, city, "
+        "village or on the road; a job marked (fed) feeds him while he works. A day he cannot pay for food he goes hungry; a night without a bed he sleeps rough.",
     ]

@@ -38,6 +38,14 @@ sources:
   hh: &hh "https://ia800609.us.archive.org/14/items/h-h-campers-haven-1965/H_H_Campers_Haven_1965_djvu.txt"
   ww: &ww "https://wornandwound.com/the-px-watches-of-vietnam-a-survey-of-non-issued-popular-military-watches-of-the-vietnam-war/"
 
+# keep - a day's food and a night's bed for a man his army does not feed (money.keep_days):
+#        price rows below, `times` for a per-meal row; an army may have its own under regions.
+keep:
+  food: {row: us_food_saigon}
+  bed: {row: us_bed_saigon}
+  regions:
+    arvn: {food: {row: vn_food_day}, bed: {row: vn_bed}}
+
 items:
   # Arms and armour
   - {id: m16, name: "M16 rifle (to the Army)", cat: weapon, price: 14042, when: "1968", weapon: rifle_assault, regions: [us_army, us_marines, arvn], source: {url: "https://www.gao.gov/assets/b-164313.pdf", note: "GAO B-164313"}}
@@ -95,3 +103,7 @@ items:
   - {id: boonie_hat, name: "Boonie hat", cat: clothing, price: 150, approx: true}
   - {id: towel, name: "Towel", cat: gear, price: 50, approx: true}
   - {id: socks, name: "Pair of socks", cat: clothing, price: 40, approx: true}
+  - {id: us_food_saigon, name: "A day's food in Saigon", cat: food, price: [300, 500], when: "1967", approx: true}
+  - {id: us_bed_saigon, name: "A cheap hotel room in Saigon", cat: lodging, price: [500, 1000], when: "1967", approx: true}
+  - {id: vn_food_day, name: "A day's rice, fish and vegetables", cat: food, price: [60, 100], in: vnp, when: "1967", approx: true, source: {url: "https://kyoto-seas.org/pdf/15/3/150301.pdf", note: "estimate from Saigon rice at 27 piastres a kilo, 1967"}}
+  - {id: vn_bed, name: "A cheap bed, Vietnamese town", cat: lodging, price: [150, 300], in: vnp, when: "1967", approx: true}

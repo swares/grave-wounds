@@ -6668,7 +6668,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 **A term:** a day, a week (7 days), a month (30 days) or a contract. One check on the job's skill a term: at or under, full pay; over, 50%; 96 or more and over, a fumble and nothing. A job with no skill pays in full.
 
-**Trouble:** a job with a risk takes one d100 a term: at or under the risk, trouble. The GM uses the job's hook, or rolls d10 on the era's trouble table. Jobs marked † are against the law.
+**Trouble:** a job with a risk takes one d100 a term: at or under the risk, trouble. The GM uses the job's hook, or rolls d10 on the era's trouble table. Jobs marked † are against the law. **Keep:** a man his army does not feed pays a day's food from his purse, and a bed in a town, city, village or on the road; a job marked (fed) feeds him while he works. A day he cannot pay for food he goes hungry; a night without a bed he sleeps rough.
 
 ### Medieval (c.1250-1460)
 
@@ -6688,13 +6688,13 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Debt collector | Brawl 35 | ¾ Day a day | a week | town, city | anyone | 15% |
 | Harvest hand | Fieldcraft 0 | ¾ Day a day | a week | village | anyone | none |
 | Siege miner | Craft 30 | ¾ Day a day | a week | camp | anyone | 35% |
-| Cog crew | Seamanship 30 | ½ Day a day | 21-42 days | sea, town | anyone | 20% |
+| Cog crew (fed) | Seamanship 30 | ½ Day a day | 21-42 days | sea, town | anyone | 20% |
 | Minstrel | Persuade 30 | ½ Day a day | a day | town, city, village, camp | anyone | 5% |
-| Sick-nurse | Leechcraft 30 | ½ Day a day | a week | town, city, camp | anyone | 10% |
-| Tournament servitor | Ride 30 | ½ Day a day | 3-7 days | town, city | anyone | 15% |
-| Carter | Ride 20 | ¼ Day a day | a month | village, road | anyone | 5% |
+| Sick-nurse (fed) | Leechcraft 30 | ½ Day a day | a week | town, city, camp | anyone | 10% |
+| Tournament servitor (fed) | Ride 30 | ½ Day a day | 3-7 days | town, city | anyone | 15% |
+| Carter (fed) | Ride 20 | ¼ Day a day | a month | village, road | anyone | 5% |
 | Hired watchman | Watch 0 | ¼ Day a day | a week | town, city | anyone | 10% |
-| Ostler or tapster | Persuade 0 | ¼ Day a day | a month | town, city, road | anyone | 5% |
+| Ostler or tapster (fed) | Persuade 0 | ¼ Day a day | a month | town, city, road | anyone | 5% |
 | Battlefield stripper † | Stealth 0 | 2 Days a day | a day | camp, frontier | anyone | 35% |
 | Wool smuggler † | Seamanship 30 | 2 Days a day | 2-5 days | sea, village | anyone | 30% |
 | Highway robber † | Stealth 35 | 1½ Days a day | a week | road | anyone | 45% |
@@ -6717,26 +6717,26 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 | Job | Skill | Pay | Term | Where | Who | Risk |
 |---|---|---|---|---|---|---|
-| Sack of a town | Blade 40 | 90 Days for the job | 1-3 days | town, city | anyone | 40% |
-| Take the Laufgeld | none | 7½ Days for the job | 3-10 days | town, village, road | anyone | 10% |
-| Regimental preacher | Letters 50 | 4 Days a day | a month | camp | chaplain or clerk | 5% |
-| Feldwebel's post | Command 55 | 3½ Days a day | a month | camp, town | sergeant or corporal | 5% |
+| Sack of a town (fed) | Blade 40 | 90 Days for the job | 1-3 days | town, city | anyone | 40% |
+| Take the Laufgeld (fed) | none | 7½ Days for the job | 3-10 days | town, village, road | anyone | 10% |
+| Regimental preacher (fed) | Letters 50 | 4 Days a day | a month | camp | chaplain or clerk | 5% |
+| Feldwebel's post (fed) | Command 55 | 3½ Days a day | a month | camp, town | sergeant or corporal | 5% |
 | Plague gravedigging | none | 3 Days a day | a week | town, city | anyone | 30% |
-| Company Feldscher | Leechcraft 50 | 2¾ Days a day | a month | camp, town | field surgeon (feldscher) | 10% |
-| Hire as a trooper | Ride 45 | 2½ Days a day | a month | camp, town | cuirassier, harquebusier or light horseman, dragoon | 10% |
-| Contribution collecting | Command 40 | 2 Days a day | a week | town, village | sergeant or corporal, cuirassier, harquebusier or light horseman, dragoon | 15% |
+| Company Feldscher (fed) | Leechcraft 50 | 2¾ Days a day | a month | camp, town | field surgeon (feldscher) | 10% |
+| Hire as a trooper (fed) | Ride 45 | 2½ Days a day | a month | camp, town | cuirassier, harquebusier or light horseman, dragoon | 10% |
+| Contribution collecting (fed) | Command 40 | 2 Days a day | a week | town, village | sergeant or corporal, cuirassier, harquebusier or light horseman, dragoon | 15% |
 | Courier | Ride 40 | 2 Days a day | a day | road, frontier | dragoon, harquebusier or light horseman, cuirassier | 20% |
-| Salvaguardia | Command 40 | 2 Days a day | a week | village | anyone | 15% |
+| Salvaguardia (fed) | Command 40 | 2 Days a day | a week | village | anyone | 15% |
 | Sutling | Persuade 30 | 2 Days a day | a week | camp | anyone | 10% |
 | Journeyman's trade | Craft 35 | 1¾ Days a day | a day | town, city, camp | anyone | none |
 | Company scribe | Letters 45 | 1½ Days a day | a month | camp, town | anyone | none |
-| Foraging party | Fieldcraft 30 | 1½ Days a day | a day | village, frontier | anyone | 25% |
-| Carting for the train | Ride 30 | 1¼ Days a day | a week | road, camp | anyone | 10% |
-| Garrison duty | Watch 40 | 1 Day a day | a month | town, city | musketeer, pikeman, sergeant or corporal | 5% |
+| Foraging party (fed) | Fieldcraft 30 | 1½ Days a day | a day | village, frontier | anyone | 25% |
+| Carting for the train (fed) | Ride 30 | 1¼ Days a day | a week | road, camp | anyone | 10% |
+| Garrison duty (fed) | Watch 40 | 1 Day a day | a month | town, city | musketeer, pikeman, sergeant or corporal | 5% |
 | Harvest and hay work | none | 1 Day a day | a day | village | anyone | 5% |
 | Nursing the regiment's sick | Leechcraft 0 | ¾ Day a day | a week | camp, town | anyone | 15% |
 | Ransoming peasants † | Stealth 40 | 10 Days a raid | 2-4 days | village, frontier | anyone | 35% |
-| Desert and re-enlist † | Stealth 30 | 7½ Days a signing | 3-7 days | camp, road, town | anyone | 35% |
+| Desert and re-enlist † (fed) | Stealth 30 | 7½ Days a signing | 3-7 days | camp, road, town | anyone | 35% |
 | Smuggling across the lines † | Stealth 40 | 4 Days a day | a week | frontier, road | anyone | 30% |
 
 | d10 | Trouble |
@@ -6756,10 +6756,10 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 | Job | Skill | Pay | Term | Where | Who | Risk |
 |---|---|---|---|---|---|---|
-| Militia substitute | none | 400 Days for the job | 1 day | town, village | anyone | 5% |
-| Privateer cruise | Seamanship 30 | 60 Days a cruise | 60-90 days | sea | anyone | 30% |
-| US enlistment bounty | none | 59 Days for the job | 1 day | town, village, frontier | anyone | 15% |
-| Take the King's shilling | none | 42 Days for the job | 1 day | town, city, village | anyone | 15% |
+| Militia substitute (fed) | none | 400 Days for the job | 1 day | town, village | anyone | 5% |
+| Privateer cruise (fed) | Seamanship 30 | 60 Days a cruise | 60-90 days | sea | anyone | 30% |
+| US enlistment bounty (fed) | none | 59 Days for the job | 1 day | town, village, frontier | anyone | 15% |
+| Take the King's shilling (fed) | none | 42 Days for the job | 1 day | town, city, village | anyone | 15% |
 | Clerk | Letters 50 | 5½ Days a day | a month | city, town | anyone | none |
 | Journeyman carpenter | Craft 35 | 3½ Days a day | a day | town, city | anyone | none |
 | Mail coach guard | Musket 45 | 3 Days a day | a week | road | anyone | 10% |
@@ -6767,13 +6767,13 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Coal-heaving | Brawl 0 | 2 Days a day | a day | city, sea | anyone | 10% |
 | Guide for the army | Fieldcraft 45 | 2 Days a day | a day | frontier, road, village | scout or ranger, rifleman or light infantryman, dragoon or hussar | 25% |
 | Press-gang hand | Brawl 40 | 2 Days a day | a week | town, city, sea | anyone | 20% |
-| Teamster | Ride 30 | 2 Days a day | a month | road, camp, frontier | anyone | 10% |
-| Harvest hand | none | 1¾ Days a day | a day | village, frontier | anyone | 5% |
+| Teamster (fed) | Ride 30 | 2 Days a day | a month | road, camp, frontier | anyone | 10% |
+| Harvest hand (fed) | none | 1¾ Days a day | a day | village, frontier | anyone | 5% |
 | Militia tour | Musket 0 | 1¾ Days a day | 30-90 days | frontier, village | anyone | 15% |
 | Day labour | none | 1½ Days a day | a day | town, village | anyone | none |
-| Ship's crew (Royal Navy) | Seamanship 0 | 1 Day a day | a month | sea | anyone | 20% |
-| Servant or batman | Craft 30 | ½ Day a day | a month | town, city, camp | anyone | none |
-| Hospital nurse or laundress | Leechcraft 0 | ¼ Day a day | a month | camp, town | anyone | 15% |
+| Ship's crew (Royal Navy) (fed) | Seamanship 0 | 1 Day a day | a month | sea | anyone | 20% |
+| Servant or batman (fed) | Craft 30 | ½ Day a day | a month | town, city, camp | anyone | none |
+| Hospital nurse or laundress (fed) | Leechcraft 0 | ¼ Day a day | a month | camp, town | anyone | 15% |
 | Prize fight † | Brawl 50 | 100 Days a bout | 1 day | town, city, village | anyone | 30% |
 | Resurrection work † | Stealth 0 | 42 Days a body | 1-3 days | city, town | anyone | 25% |
 | Smuggling run † | Stealth 0 | 10 Days a run | 1 day | sea, village | anyone | 30% |
@@ -6797,18 +6797,18 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 |---|---|---|---|---|---|---|
 | Overseer of hired labourers | Command 50 | 10 Days a day | a day | camp, road | sergeant or corporal, officer, sapper or miner | 10% |
 | Artificer and hut builder | Craft 35 | 7½ Days a day | a day | camp, town | anyone | 5% |
-| Army Works Corps ganger | Command 40 | 6¾ Days a day | a week | camp, road | anyone | 10% |
-| Railway navvy | Craft 0 | 5 Days a day | a day | camp, road | anyone | 10% |
-| Interpreter to a labour gang | Letters 50 | 4½ Days a day | a day | camp, road | anyone | 5% |
+| Army Works Corps ganger (fed) | Command 40 | 6¾ Days a day | a week | camp, road | anyone | 10% |
+| Railway navvy (fed) | Craft 0 | 5 Days a day | a day | camp, road | anyone | 10% |
+| Interpreter to a labour gang (fed) | Letters 50 | 4½ Days a day | a day | camp, road | anyone | 5% |
 | Correspondent's fixer | Persuade 40 | 3 Days a day | a week | camp, town | anyone | 10% |
-| Hospital nurse | Leechcraft 30 | 3 Days a day | a week | city, camp | anyone | 15% |
+| Hospital nurse (fed) | Leechcraft 30 | 3 Days a day | a week | city, camp | anyone | 15% |
 | Sutling and hawking | Persuade 30 | 3 Days a day | a week | camp, town | anyone | 10% |
 | Money-lender | Letters 30 | 2 Days a day | a month | camp | anyone | 15% |
 | Tatar guide | Fieldcraft 50 | 2 Days a day | a day | frontier, village | rifleman, chasseur or zouave, light cavalryman (hussar, lancer, cossack), officer | 20% |
-| Hospital sergeant | Leechcraft 40 | 1¾ Days a day | a day | camp, city | sergeant or corporal | 15% |
-| British Hotel hand | Craft 0 | 1½ Days a day | a week | camp | anyone | 10% |
+| Hospital sergeant (fed) | Leechcraft 40 | 1¾ Days a day | a day | camp, city | sergeant or corporal | 15% |
+| British Hotel hand (fed) | Craft 0 | 1½ Days a day | a week | camp | anyone | 10% |
 | Dock labourer, Constantinople | none | 1½ Days a day | a day | city, sea | anyone | 5% |
-| Land Transport Corps driver | Ride 30 | 1½ Days a day | a month | road, camp | anyone | 15% |
+| Land Transport Corps driver (fed) | Ride 30 | 1½ Days a day | a month | road, camp | anyone | 15% |
 | Stores carrier | none | 1 Day a day | a day | road | anyone | 5% |
 | Plundering Kerch † | Stealth 0 | 10 Days for the job | 3-7 days | town | anyone | 30% |
 
@@ -6829,24 +6829,24 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 | Job | Skill | Pay | Term | Where | Who | Risk |
 |---|---|---|---|---|---|---|
-| Substitute or bounty volunteer | none | 698 Days for the job | 365-1095 days | town, city | anyone | 40% |
+| Substitute or bounty volunteer (fed) | none | 698 Days for the job | 365-1095 days | town, city | anyone | 40% |
 | Embalmer | Leechcraft 50 | 233 Days a body | 1 day | camp, town | anyone | 5% |
 | Contract buffalo hunter | Rifle 60 | 38¾ Days a day | a month | frontier | scout, sharpshooter or skirmisher | 20% |
 | Chief guide | Fieldcraft 60 | 23¼ Days a day | a day | frontier | scout | 25% |
 | Union Pacific labourer | none | 8 Days a day | a day | frontier, camp | anyone | 10% |
-| Wagon master | Command 50 | 5¾ Days a day | a month | road, camp | teamster or packer, sergeant or corporal | 15% |
-| Bullwhacker or mule-skinner | Ride 30 | 5 Days a day | a month | road, frontier | anyone | 25% |
+| Wagon master (fed) | Command 50 | 5¾ Days a day | a month | road, camp | teamster or packer, sergeant or corporal | 15% |
+| Bullwhacker or mule-skinner (fed) | Ride 30 | 5 Days a day | a month | road, frontier | anyone | 25% |
 | Placer miner, Montana | Craft 0 | 4¾ Days a day | a day | frontier, town | anyone | 15% |
-| Military telegraph lineman | Craft 30 | 3 Days a day | a month | road, camp | anyone | 20% |
-| Trail drive hand | Ride 30 | 2¼ Days a day | 60-90 days | frontier, road | anyone | 15% |
-| Army teamster | Ride 30 | 2 Days a day | a month | road, camp | anyone | 15% |
+| Military telegraph lineman (fed) | Craft 30 | 3 Days a day | a month | road, camp | anyone | 20% |
+| Trail drive hand (fed) | Ride 30 | 2¼ Days a day | 60-90 days | frontier, road | anyone | 15% |
+| Army teamster (fed) | Ride 30 | 2 Days a day | a month | road, camp | anyone | 15% |
 | Photographer's assistant | Craft 30 | 2 Days a day | a month | camp, road | anyone | 10% |
-| Steamboat deckhand | none | 2 Days a day | 7-21 days | sea, town | anyone | 10% |
+| Steamboat deckhand (fed) | none | 2 Days a day | 7-21 days | sea, town | anyone | 10% |
 | Sutler's clerk | Letters 30 | 2 Days a day | a month | camp | anyone | 15% |
-| Army nurse | Leechcraft 30 | 1½ Days a day | a month | city, camp | anyone | 10% |
-| Extra-duty man | Craft 0 | ¾ Day a day | a day | camp | infantryman, cavalry trooper, artilleryman | none |
+| Army nurse (fed) | Leechcraft 30 | 1½ Days a day | a month | city, camp | anyone | 10% |
+| Extra-duty man (fed) | Craft 0 | ¾ Day a day | a day | camp | infantryman, cavalry trooper, artilleryman | none |
 | Bounty jumper † | Stealth 30 | 2,326 Days a jump | 7 days | town, city | anyone | 40% |
-| Blockade runner seaman † | none | 581 Days a round trip | 14-21 days | sea | anyone | 35% |
+| Blockade runner seaman † (fed) | none | 581 Days a round trip | 14-21 days | sea | anyone | 35% |
 | Contraband cotton trader † | Persuade 40 | 20 Days a run | 7-21 days | town, road | anyone | 30% |
 | Horse thief † | Stealth 40 | 15 Days a horse | 1-3 days | frontier, road | anyone | 40% |
 
@@ -6900,21 +6900,21 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Job | Skill | Pay | Term | Where | Who | Risk |
 |---|---|---|---|---|---|---|
 | Hindenburg Programme worker | Craft 30 | 12 Days a day | a week | city | anyone | 10% |
-| Tunneller (clay-kicker) | Trench weapons 50 | 6 Days a day | 90-365 days | frontier | sapper or tunneller, rifleman | 35% |
+| Tunneller (clay-kicker) (fed) | Trench weapons 50 | 6 Days a day | 90-365 days | frontier | sapper or tunneller, rifleman | 35% |
 | Shipyard mechanic | Craft 35 | 5¾ Days a day | a week | city | anyone | 5% |
-| Chinese Labour Corps interpreter | Letters 40 | 4 Days a day | 30-180 days | camp | corporal or sergeant, junior officer | 5% |
+| Chinese Labour Corps interpreter (fed) | Letters 40 | 4 Days a day | 30-180 days | camp | corporal or sergeant, junior officer | 5% |
 | Munitions hand | Craft 0 | 4 Days a day | a week | town, city | anyone | 10% |
-| VAD nurse overseas | Leechcraft 30 | 4 Days a day | 180 days | town, camp | stretcher-bearer or orderly | 5% |
-| Hired farm hand | Fieldcraft 0 | 2¼ Days a day | a month | village | anyone | none |
+| VAD nurse overseas (fed) | Leechcraft 30 | 4 Days a day | 180 days | town, camp | stretcher-bearer or orderly | 5% |
+| Hired farm hand (fed) | Fieldcraft 0 | 2¼ Days a day | a month | village | anyone | none |
 | Correspondent's guide | Fieldcraft 50 | 2 Days a day | a week | road, frontier | corporal or sergeant, junior officer | 15% |
 | Battlefield salvager | Fieldcraft 0 | 1½ Days a day | a day | frontier, road | anyone | 20% |
 | Trench-art maker | Craft 30 | 1½ Days a day | a week | camp, town | anyone | 5% |
-| Docks labourer | none | 1 Day a day | a week | town, sea | anyone | 5% |
+| Docks labourer (fed) | none | 1 Day a day | a week | town, sea | anyone | 5% |
 | Estaminet help | Persuade 0 | 1 Day a day | a week | village, town | anyone | 5% |
-| Labour Corps private | none | 1 Day a day | 90-365 days | camp, road | anyone | 10% |
-| Spare-time harvest hand | Fieldcraft 0 | 1 Day a day | a day | village | anyone | none |
-| Legionnaire | Rifle 40 | ¼ Day a day | 180-730 days | camp, frontier | anyone | 30% |
-| Volunteer ambulance driver | none | unpaid | 180 days | road, frontier | anyone | 20% |
+| Labour Corps private (fed) | none | 1 Day a day | 90-365 days | camp, road | anyone | 10% |
+| Spare-time harvest hand (fed) | Fieldcraft 0 | 1 Day a day | a day | village | anyone | none |
+| Legionnaire (fed) | Rifle 40 | ¼ Day a day | 180-730 days | camp, frontier | anyone | 30% |
+| Volunteer ambulance driver (fed) | none | unpaid | 180 days | road, frontier | anyone | 20% |
 | Deserter gang † | Brawl 40 | 3 Days a day | a week | frontier, road | anyone | 40% |
 | Rations racketeer † | Persuade 40 | 3 Days a day | a week | town, camp | anyone | 25% |
 | Agent in occupied Belgium † | Stealth 50 | 2 Days a day | a month | town, road | anyone | 40% |
@@ -6936,20 +6936,20 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 | Job | Skill | Pay | Term | Where | Who | Risk |
 |---|---|---|---|---|---|---|
-| Flying Tiger pilot | Gunnery 60 | 12 Days a day | 365 days | frontier | junior officer | 40% |
+| Flying Tiger pilot (fed) | Gunnery 60 | 12 Days a day | 365 days | frontier | junior officer | 40% |
 | Arms factory worker | Craft 30 | 7 Days a day | a week | city | anyone | 20% |
-| Island base contractor | Craft 30 | 6 Days a day | 270-365 days | frontier, sea | anyone | 15% |
+| Island base contractor (fed) | Craft 30 | 6 Days a day | 270-365 days | frontier, sea | anyone | 15% |
 | Liberty-ship yard worker | Craft 30 | 6 Days a day | a week | city | anyone | 5% |
-| Flying Tiger ground crew | Craft 40 | 5 Days a day | 365 days | camp, frontier | combat engineer or sapper, tank crewman, radio operator or signaller | 15% |
-| Merchant seaman | none | 4 Days a day | 21-90 days | sea | anyone | 30% |
-| Salvage diver | Craft 50 | 4 Days a day | 30-60 days | sea | combat engineer or sapper | 30% |
+| Flying Tiger ground crew (fed) | Craft 40 | 5 Days a day | 365 days | camp, frontier | combat engineer or sapper, tank crewman, radio operator or signaller | 15% |
+| Merchant seaman (fed) | none | 4 Days a day | 21-90 days | sea | anyone | 30% |
+| Salvage diver (fed) | Craft 50 | 4 Days a day | 30-60 days | sea | combat engineer or sapper | 30% |
 | Dock and ship-repair labourer | none | 3¾ Days a day | a week | city, sea | anyone | 5% |
 | Ammunition loader | none | 3½ Days a day | a week | town | anyone | 10% |
 | War-plant riveter | Craft 0 | 3 Days a day | a week | city | anyone | 5% |
-| Military government interpreter | Letters 50 | 2 Days a day | a month | town, city | anyone | 5% |
-| Bomb disposal volunteer | Close combat 50 | 1½ Days a day | 90 days | city, town | combat engineer or sapper | 35% |
-| Free French or Polish volunteer | Rifle 40 | 1 Day a day | 180-730 days | camp | anyone | 30% |
-| CCC enrollee (before the war) | Fieldcraft 0 | ½ Day a day | a month | camp, frontier | anyone | 5% |
+| Military government interpreter (fed) | Letters 50 | 2 Days a day | a month | town, city | anyone | 5% |
+| Bomb disposal volunteer (fed) | Close combat 50 | 1½ Days a day | 90 days | city, town | combat engineer or sapper | 35% |
+| Free French or Polish volunteer (fed) | Rifle 40 | 1 Day a day | 180-730 days | camp | anyone | 30% |
+| CCC enrollee (before the war) (fed) | Fieldcraft 0 | ½ Day a day | a month | camp, frontier | anyone | 5% |
 | Tiergarten black-marketeer † | Persuade 30 | 15 Days a day | a week | city | anyone | 25% |
 | Naples fixer † | Persuade 40 | 8 Days a day | a week | city, sea | anyone | 30% |
 | Smuggler † | Stealth 40 | 6 Days a day | 7-14 days | frontier, sea, road | anyone | 35% |
@@ -6974,17 +6974,17 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 | Job | Skill | Pay | Term | Where | Who | Risk |
 |---|---|---|---|---|---|---|
-| Re-enlist for the bonus | none | 84 Days for the job | 1 day | camp | anyone | none |
+| Re-enlist for the bonus (fed) | none | 84 Days for the job | 1 day | camp | anyone | none |
 | CAT contract aircrew | Craft 50 | 8 Days a day | 365 days | sea, frontier, city | platoon leader, radio operator or wireman | 20% |
-| Civilian tech rep | Craft 50 | 4 Days a day | 180-365 days | camp, city | tank crewman, radio operator or wireman | 5% |
+| Civilian tech rep (fed) | Craft 50 | 4 Days a day | 180-365 days | camp, city | tank crewman, radio operator or wireman | 5% |
 | War correspondent's driver | Drive 40 | 1½ Days a day | a week | road, frontier, city | anyone | 20% |
-| A-frame porter (Korean Service Corps) | none | 1 Day a day | a month | frontier, camp | anyone | 25% |
+| A-frame porter (Korean Service Corps) (fed) | none | 1 Day a day | a month | frontier, camp | anyone | 25% |
 | Minefield clearance gang | Fieldcraft 40 | 1 Day a day | a week | frontier, road, village | combat engineer | 30% |
-| Minesweeper hand | Craft 40 | 1 Day a day | 90-180 days | sea | combat engineer | 30% |
-| Camp labourer | none | ¾ Day a day | a week | camp, frontier | anyone | 10% |
-| Interpreter | Letters 50 | ½ Day a day | a month | camp, town, city | anyone | 15% |
-| Japanese landing-ship crew | Craft 30 | ½ Day a day | 7-30 days | sea | anyone | 15% |
-| Houseboy | none | ¼ Day a day | a month | camp | anyone | 5% |
+| Minesweeper hand (fed) | Craft 40 | 1 Day a day | 90-180 days | sea | combat engineer | 30% |
+| Camp labourer (fed) | none | ¾ Day a day | a week | camp, frontier | anyone | 10% |
+| Interpreter (fed) | Letters 50 | ½ Day a day | a month | camp, town, city | anyone | 15% |
+| Japanese landing-ship crew (fed) | Craft 30 | ½ Day a day | 7-30 days | sea | anyone | 15% |
+| Houseboy (fed) | none | ¼ Day a day | a month | camp | anyone | 5% |
 | Orphanage helper | Leechcraft 0 | unpaid | a week | town, city | anyone | 5% |
 | Smuggler across the 38th † | Stealth 50 | 5 Days a day | a week | frontier, village | anyone | 40% |
 | R&R whiskey runner † | Stealth 30 | 3 Days a day | a week | camp, sea | anyone | 15% |
@@ -7007,21 +7007,21 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 | Job | Skill | Pay | Term | Where | Who | Risk |
 |---|---|---|---|---|---|---|
-| Re-enlist or extend | none | 200 Days for the job | 1 day | camp | anyone | none |
+| Re-enlist or extend (fed) | none | 200 Days for the job | 1 day | camp | anyone | none |
 | Air America crew | Craft 50 | 20 Days a day | 365 days | frontier, city | platoon leader, radio operator | 25% |
-| RMK-BRJ construction hand | Craft 40 | 12 Days a day | 540 days | camp, city, sea | combat engineer or sapper, squad leader or sergeant | 5% |
-| Contract fighter in Laos or Cambodia | Command 60 | 10 Days a day | 180 days | frontier | platoon leader, squad leader or sergeant, point man, scout or sniper | 45% |
+| RMK-BRJ construction hand (fed) | Craft 40 | 12 Days a day | 540 days | camp, city, sea | combat engineer or sapper, squad leader or sergeant | 5% |
+| Contract fighter in Laos or Cambodia (fed) | Command 60 | 10 Days a day | 180 days | frontier | platoon leader, squad leader or sergeant, point man, scout or sniper | 45% |
 | Skilled Vietnamese construction worker | Craft 30 | 9 Days a day | a day | camp, city | anyone | 5% |
 | Bar and R&R trade | Persuade 30 | 5 Days a day | a week | city, town | anyone | 10% |
 | Journalist's fixer | Persuade 40 | 4 Days a day | a day | city, road, frontier | anyone | 25% |
 | Advisor's interpreter | Letters 50 | 3 Days a day | a month | camp, village, frontier | anyone | 20% |
-| Base contractor's worker | Craft 30 | 3 Days a day | 365 days | camp, sea | anyone | 10% |
+| Base contractor's worker (fed) | Craft 30 | 3 Days a day | 365 days | camp, sea | anyone | 10% |
 | Crash salvage | Craft 30 | 3 Days a day | a week | frontier, village | anyone | 25% |
 | Base mess or laundry worker | none | 2¾ Days a day | a month | camp | anyone | 5% |
-| Mike Force mercenary | Rifle 50 | 2¼ Days a day | 180 days | frontier | rifleman, machine gunner, point man, scout or sniper, squad leader or sergeant | 35% |
-| Kit Carson Scout | Fieldcraft 50 | 2 Days a day | a month | frontier, village | point man, scout or sniper, rifleman | 35% |
+| Mike Force mercenary (fed) | Rifle 50 | 2¼ Days a day | 180 days | frontier | rifleman, machine gunner, point man, scout or sniper, squad leader or sergeant | 35% |
+| Kit Carson Scout (fed) | Fieldcraft 50 | 2 Days a day | a month | frontier, village | point man, scout or sniper, rifleman | 35% |
 | Mine and dud clearer | Fieldcraft 40 | 2 Days a day | a day | road, village | combat engineer or sapper, tunnel rat or tunnel fighter | 35% |
-| CIDG striker | Rifle 40 | ½ Day a day | a month | frontier, village, camp | anyone | 30% |
+| CIDG striker (fed) | Rifle 40 | ½ Day a day | a month | frontier, village, camp | anyone | 30% |
 | Heroin runner † | Stealth 40 | 15 Days a day | a week | city, camp, sea | anyone | 40% |
 | MPC and PX black marketeer † | Persuade 40 | 3 Days a day | a week | city, camp | anyone | 20% |
 
@@ -7042,21 +7042,21 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 | Job | Skill | Pay | Term | Where | Who | Risk |
 |---|---|---|---|---|---|---|
-| Re-enlistment bonus | none | 400 Days for the job | 1 day | camp | anyone | none |
-| Private security contractor | Rifle 60 | 11 Days a day | 90 days | road, city | rifleman, marksman or sniper, military police or convoy gunner, team or section leader, platoon leader | 25% |
+| Re-enlistment bonus (fed) | none | 400 Days for the job | 1 day | camp | anyone | none |
+| Private security contractor (fed) | Rifle 60 | 11 Days a day | 90 days | road, city | rifleman, marksman or sniper, military police or convoy gunner, team or section leader, platoon leader | 25% |
 | Press fixer | Persuade 50 | 10 Days a day | a day | city, road | anyone | 30% |
-| Anti-piracy ship guard | Rifle 60 | 9 Days a day | 3-10 days | sea | rifleman, marksman or sniper, team or section leader | 10% |
-| Cleared US linguist | Letters 60 | 9 Days a day | 365 days | camp, city | anyone | 10% |
-| Contract police trainer | Command 50 | 5 Days a day | 365 days | city, camp | military police or convoy gunner, team or section leader, platoon leader | 15% |
-| Convoy driver | Drive 40 | 5 Days a day | 365 days | road | anyone | 20% |
+| Anti-piracy ship guard (fed) | Rifle 60 | 9 Days a day | 3-10 days | sea | rifleman, marksman or sniper, team or section leader | 10% |
+| Cleared US linguist (fed) | Letters 60 | 9 Days a day | 365 days | camp, city | anyone | 10% |
+| Contract police trainer (fed) | Command 50 | 5 Days a day | 365 days | city, camp | military police or convoy gunner, team or section leader, platoon leader | 15% |
+| Convoy driver (fed) | Drive 40 | 5 Days a day | 365 days | road | anyone | 20% |
 | Local interpreter | Letters 50 | 2¾ Days a day | a month | city, road, camp | anyone | 35% |
-| Private military trainer | Command 60 | 2¼ Days a day | 90 days | frontier, camp | platoon leader, team or section leader, armoured vehicle crewman | 30% |
+| Private military trainer (fed) | Command 60 | 2¼ Days a day | 90 days | frontier, camp | platoon leader, team or section leader, armoured vehicle crewman | 30% |
 | Khat runner | Drive 30 | 2 Days a day | a day | road, town | anyone | 15% |
-| Falklands clearance and rebuilding | Fieldcraft 40 | 1½ Days a day | 90-180 days | frontier, camp | combat engineer or bomb searcher | 20% |
+| Falklands clearance and rebuilding (fed) | Fieldcraft 40 | 1½ Days a day | 90-180 days | frontier, camp | combat engineer or bomb searcher | 20% |
 | Deminer | Fieldcraft 40 | 1 Day a day | a month | village, road, frontier | combat engineer or bomb searcher | 15% |
 | Sons of Iraq guard | Rifle 40 | 1 Day a day | a month | city, village, road | anyone | 25% |
 | Technical gunner | Machine gun 40 | 1 Day a day | a week | city, road | machine gunner, armoured vehicle crewman | 35% |
-| Russian contract soldier | Rifle 40 | ¾ Day a day | 90 days | frontier, city | anyone | 40% |
+| Russian contract soldier (fed) | Rifle 40 | ¾ Day a day | 90 days | frontier, city | anyone | 40% |
 | Afghan National Police | Rifle 40 | ¼ Day a day | a month | village, road, town | anyone | 30% |
 | Smuggling-truck driver † | Drive 30 | 30 Days a run | 2-5 days | road, frontier | anyone | 25% |
 | Arms broker † | Persuade 50 | 20 Days a day | a week | city, sea, frontier | anyone | 35% |

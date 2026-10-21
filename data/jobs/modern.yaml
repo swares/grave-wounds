@@ -9,21 +9,21 @@ sources:
 
 jobs:
   # Contract war
-  - {id: psc_operator, name: "Private security contractor", what: "Armed escort and static guard in Iraq for Blackwater or DynCorp.", skill: rifle, min: 60, pay: 11, term: contract, days: [90, 90], places: [road, city], who: [rifleman, marksman, mp, nco, officer], risk: 25,
+  - {id: psc_operator, name: "Private security contractor", what: "Armed escort and static guard in Iraq for Blackwater or DynCorp.", skill: rifle, min: 60, pay: 11, term: contract, days: [90, 90], board: true, places: [road, city], who: [rifleman, marksman, mp, nco, officer], risk: 25,
      hook: "The client pays $815-1,075 a day for you; you see $600.", wage: "$600 a day to personnel, Blackwater 2004 (US 2008)", source: "https://www.corpwatch.org/article/us-us-pays-steep-price-private-security-iraq"}
-  - {id: linguist, name: "Cleared US linguist", what: "A contract interpreter with a security clearance, for intelligence units.", skill: letters, min: 60, pay: 9, term: contract, days: [365, 365], places: [camp, city], who: any, risk: 10,
+  - {id: linguist, name: "Cleared US linguist", what: "A contract interpreter with a security clearance, for intelligence units.", skill: letters, min: 60, pay: 9, term: contract, days: [365, 365], board: true, places: [camp, city], who: any, risk: 10,
      hook: "The interrogation you're translating crosses a line.", wage: "US-citizen translators averaged $176,000, 2007 (US 2008)", source: "https://www.deseret.com/2007/5/7/20017177/translators-in-iraq-command-top-dollar"}
-  - {id: ship_guard, name: "Anti-piracy ship guard", what: "An armed team riding merchant ships through the Gulf of Aden.", skill: rifle, min: 60, pay: 9, term: contract, days: [3, 10], places: [sea], who: [rifleman, marksman, nco], risk: 10,
+  - {id: ship_guard, name: "Anti-piracy ship guard", what: "An armed team riding merchant ships through the Gulf of Aden.", skill: rifle, min: 60, pay: 9, term: contract, days: [3, 10], board: true, places: [sea], who: [rifleman, marksman, nco], risk: 10,
      hook: "The flag state bans weapons in port: ditch the rifles or be arrested.", wage: "$21,000 a day for a 3-man team, 2010; about $500 a guard (US 2008, an estimate)", source: "https://www.navalreview.ca/2010/03/the-cost-of-armed-security-guards/", approx: true}
-  - {id: kbr_driver, name: "Convoy driver", what: "Driving fuel and supply trucks for KBR, 12 hours a day, 7 days a week.", skill: drive, min: 40, pay: 5, term: contract, days: [365, 365], places: [road], who: any, risk: 20,
+  - {id: kbr_driver, name: "Convoy driver", what: "Driving fuel and supply trucks for KBR, 12 hours a day, 7 days a week.", skill: drive, min: 40, pay: 5, term: contract, days: [365, 365], board: true, places: [road], who: any, risk: 20,
      hook: "The convoys run without armour, and KBR has lost 34 people.", wage: "$80-100,000 a year, the first $80,000 tax-free (US 2008)", source: "https://www.nbcnews.com/id/wbna4993755"}
-  - {id: police_trainer, name: "Contract police trainer", what: "Training Iraqi police for DynCorp under a State Department contract.", skill: command, min: 50, pay: 5, term: contract, days: [365, 365], places: [city, camp], who: [mp, nco, officer], risk: 15,
+  - {id: police_trainer, name: "Contract police trainer", what: "Training Iraqi police for DynCorp under a State Department contract.", skill: command, min: 50, pay: 5, term: contract, days: [365, 365], board: true, places: [city, camp], who: [mp, nco, officer], risk: 15,
      hook: "Half your class is on a militia payroll too.", wage: "most about $100,000, mostly tax-free (US 2008)", source: "https://www.nbcnews.com/id/wbna3404605"}
-  - {id: pmc_trainer, name: "Private military trainer", what: "Training and leading a client army in Sierra Leone or Angola, Executive Outcomes style.", skill: command, min: 60, pay: 2.25, term: contract, days: [90, 90], places: [frontier, camp], who: [officer, nco, crewman], risk: 30,
+  - {id: pmc_trainer, name: "Private military trainer", what: "Training and leading a client army in Sierra Leone or Angola, Executive Outcomes style.", skill: command, min: 60, pay: 2.25, term: contract, days: [90, 90], board: true, places: [frontier, camp], who: [officer, nco, crewman], risk: 30,
      hook: "The company was reportedly paid in diamond concessions.", wage: "$2,000 a month or more, 1995 (US 1991)", source: "https://www.csmonitor.com/1995/1019/19014.html"}
-  - {id: falklands_clearance, name: "Falklands clearance and rebuilding", what: "Clearing Argentine mines or rebuilding airfields after 1982.", skill: fieldcraft, min: 40, pay: 1.5, term: contract, days: [90, 180], places: [frontier, camp], who: [sapper], risk: 20,
+  - {id: falklands_clearance, name: "Falklands clearance and rebuilding", what: "Clearing Argentine mines or rebuilding airfields after 1982.", skill: fieldcraft, min: 40, pay: 1.5, term: contract, days: [90, 180], board: true, places: [frontier, camp], who: [sapper], risk: 20,
      hook: "Six killed or badly hurt before clearance stopped in 1983.", wage: "no wage found (British 1982)", source: "https://en.wikipedia.org/wiki/Land_mines_in_the_Falkland_Islands", approx: true}
-  - {id: reenlist_bonus, name: "Re-enlistment bonus", what: "Re-upping in a skill the Army is short of.", min: 0, pay: 400, term: contract, days: [1, 1], lump: true, places: [camp], who: any, risk: 0,
+  - {id: reenlist_bonus, name: "Re-enlistment bonus", what: "Re-upping in a skill the Army is short of.", min: 0, pay: 400, term: contract, days: [1, 1], lump: true, board: true, places: [camp], who: any, risk: 0,
      hook: "Signing means a third Iraq tour.", wage: "up to $90,000 for hard-to-fill skills, 2006; about $20,000 taken as typical (US 2008)", source: *bonus, approx: true}
   # Local work
   - {id: press_fixer, name: "Press fixer", what: "Guiding, translating and brokering access for foreign reporters.", skill: persuade, min: 50, pay: 10, term: day, places: [city, road], who: any, risk: 30,
@@ -38,7 +38,7 @@ jobs:
      hook: "The airport militia charges $100 to land, and you are the militia.", wage: "no wage found; aid agencies hired teenage gunmen, 1992 (local)", source: "https://csmonitor.com/1992/1130/30191.html", approx: true}
   - {id: deminer, name: "Deminer", what: "Clearing mines by hand in a HALO Trust-type team.", skill: fieldcraft, min: 40, pay: 1, term: month, places: [village, road, frontier], who: [sapper], risk: 15,
      hook: "Kidnap threats as well as mines.", wage: "about $300 a month (an Afghan figure of 2017; local)", source: "https://www.foxnews.com/world/afghan-de-miners-cling-to-hard-but-much-needed-jobs", approx: true}
-  - {id: kontraktnik, name: "Russian contract soldier", what: "Signing a three-month contract to serve in Chechnya.", skill: rifle, min: 40, pay: 0.75, term: contract, days: [90, 90], places: [frontier, city], who: any, risk: 40,
+  - {id: kontraktnik, name: "Russian contract soldier", what: "Signing a three-month contract to serve in Chechnya.", skill: rifle, min: 40, pay: 0.75, term: contract, days: [90, 90], board: true, places: [frontier, city], who: any, risk: 40,
      hook: "Families never got a kopek of the promised five million rubles.", wage: "promised 30,000 rubles a day, 1995, about $6-7 (local)", source: "https://jamestown.org/?p=39673", approx: true}
   - {id: afghan_police, name: "Afghan National Police", what: "A patrolman in a poorly equipped district post.", skill: rifle, min: 40, pay: 0.25, term: month, places: [village, road, town], who: any, risk: 30,
      hook: "210 police killed in three months, and pay three months late.", wage: "$70-77 a month, 2007 (local)", source: "https://www.globalsecurity.org/military/library/news/2007/06/mil-070612-irin02.htm"}

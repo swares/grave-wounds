@@ -9,30 +9,30 @@ sources:
 
 jobs:
   # Soldiering
-  - {id: kings_shilling, name: "Take the King's shilling", what: "Enlisting with a recruiting party for the bounty.", min: 0, pay: 42, term: contract, days: [1, 1], lump: true, places: [town, city, village], who: any, risk: 15,
+  - {id: kings_shilling, name: "Take the King's shilling", what: "Enlisting with a recruiting party for the bounty.", min: 0, pay: 42, term: contract, days: [1, 1], lump: true, board: true, places: [town, city, village], who: any, risk: 15,
      hook: "The bounty is paid, then the sergeant's stoppages take most of it back.", wage: "2 guineas and up; £23 17s 6d by 1812 (British)", source: "https://en.wikipedia.org/wiki/King%27s_shilling"}
-  - {id: us_bounty, name: "US enlistment bounty", what: "Enlisting in the regulars, 1812-15, for the bounty, pay and land.", min: 0, pay: 59, term: contract, days: [1, 1], lump: true, places: [town, village, frontier], who: any, risk: 15,
+  - {id: us_bounty, name: "US enlistment bounty", what: "Enlisting in the regulars, 1812-15, for the bounty, pay and land.", min: 0, pay: 59, term: contract, days: [1, 1], lump: true, board: true, places: [town, village, frontier], who: any, risk: 15,
      hook: "The 160-acre land warrant is worth more than the bounty, if you live five years.", wage: "$16 bounty, $8 a month and 160 acres (US)", source: "https://blog.genealogybank.com/war-of-1812-recruitment-advertisements-what-induced-your-ancestor-to-serve.html/amp"}
-  - {id: militia_substitute, name: "Militia substitute", what: "Serving in the militia in place of a balloted man, for his money.", min: 0, pay: 400, term: contract, days: [1, 1], lump: true, places: [town, village], who: any, risk: 5,
+  - {id: militia_substitute, name: "Militia substitute", what: "Serving in the militia in place of a balloted man, for his money.", min: 0, pay: 400, term: contract, days: [1, 1], lump: true, board: true, places: [town, village], who: any, risk: 5,
      hook: "Take the money in one county, then sign again in the next.", wage: "John Carrington paid £20 for a substitute, 1803 (British)", source: "https://www.hertsfhs.org.uk/resources/militia-lists.pdf"}
   - {id: militia_tour, name: "Militia tour", what: "Turning out with the state militia for a short tour.", skill: musket, min: 0, pay: 1.75, term: contract, days: [30, 90], places: [frontier, village], who: any, risk: 15,
      hook: "The state pays in paper the next county won't take.", wage: "Rhode Island 1780: 3s a day and 1s 6d a ration (US)", source: "https://founders.archives.gov/documents/Washington/03-29-02-0049"}
   - {id: army_guide, name: "Guide for the army", what: "Leading columns by night over country he knows.", skill: fieldcraft, min: 45, pay: 2, term: day, places: [frontier, road, village], who: [scout, rifleman, dragoon], risk: 25,
      hook: "The other side hangs guides as spies.", wage: "no figure found (US)", approx: true}
-  - {id: navy_crew, name: "Ship's crew (Royal Navy)", what: "Shipping as landsman, ordinary or able seaman for a commission.", skill: seamanship, min: 0, pay: 1, term: month, places: [sea], who: any, risk: 20,
+  - {id: navy_crew, name: "Ship's crew (Royal Navy)", what: "Shipping as landsman, ordinary or able seaman for a commission.", skill: seamanship, min: 0, pay: 1, term: month, board: true, places: [sea], who: any, risk: 20,
      hook: "Moneylenders on the quay buy pay tickets at 60% of face value.", wage: "able seaman 24s a 28-day month before 1797, £20 a year by 1806 (British)", source: "https://readyayeready.com/tradition/customs-of-the-navy/2-recruiting-and-conditions-of-service.php"}
-  - {id: privateer, name: "Privateer cruise", what: "Signing a privateer's articles for a share of prizes; no prize, no pay.", skill: seamanship, min: 30, pay: 60, term: contract, days: [60, 90], lump: true, per: "a cruise", places: [sea], who: any, risk: 30,
+  - {id: privateer, name: "Privateer cruise", what: "Signing a privateer's articles for a share of prizes; no prize, no pay.", skill: seamanship, min: 30, pay: 60, term: contract, days: [60, 90], lump: true, per: "a cruise", board: true, places: [sea], who: any, risk: 30,
      hook: "American privateers took 1,345 ships, and many of their crews ended in British prisons.", wage: "shares set by the articles; no per-man figure found (US)", source: "https://pride2.org/wp-content/uploads/2017/11/Panel-8.pdf", approx: true}
   - {id: press_gang, name: "Press-gang hand", what: "Hunting seamen in port towns for the Impress Service.", skill: brawl, min: 40, pay: 2, term: week, places: [town, city, sea], who: any, risk: 20,
      hook: "The sailor you seize has a protection certificate, and his shipmates are coming.", wage: "up to 10s a man pressed; the daily average is a guess (British)", source: "https://www.nelsonsnavy.co.uk/broadside7.html", approx: true}
   # Civilian work
   - {id: day_labour, name: "Day labour", what: "Digging, carrying and hedging for whoever is hiring.", min: 0, pay: 1.5, term: day, places: [town, village], who: any, risk: 0,
      hook: "The squire's steward hires by the day and asks too many questions.", wage: "7-9s a week on the south coast (British)", source: "https://shirehalldorset.org/5-things-you-might-not-know-about-smuggling/"}
-  - {id: harvest_hand, name: "Harvest hand", what: "Reaping, mowing and cradling grain at harvest.", min: 0, pay: 1.75, term: day, places: [village, frontier], who: any, risk: 5,
+  - {id: harvest_hand, name: "Harvest hand", what: "Reaping, mowing and cradling grain at harvest.", min: 0, pay: 1.75, term: day, board: true, places: [village, frontier], who: any, risk: 5,
      hook: "The farmer pays mowers in spirits as well as coin.", wage: "Pennsylvania 1792: reaper 3s-3s 9d a day with board, mower 5-6s (US)", source: "https://founders.archives.gov/documents/Washington/05-10-02-0320"}
   - {id: dock_work, name: "Coal-heaving", what: "Unloading colliers and merchantmen, paid by the bushel.", skill: brawl, min: 0, pay: 2, term: day, places: [city, sea], who: any, risk: 10,
      hook: "The gang boss runs fights on the side, and wants you in one.", wage: "1d a bushel moved; the daily total is a guess (British)", source: *bailey, approx: true}
-  - {id: teamster, name: "Teamster", what: "Driving an army or merchant wagon and team.", skill: ride, min: 30, pay: 2, term: month, places: [road, camp, frontier], who: any, risk: 10,
+  - {id: teamster, name: "Teamster", what: "Driving an army or merchant wagon and team.", skill: ride, min: 30, pay: 2, term: month, board: true, places: [road, camp, frontier], who: any, risk: 10,
      hook: "Private employers pay twice the army rate, and the army wants you back.", wage: "army wagoners £10 a month in depreciated paper, 1779 (US; turned into Days by guess)", source: "https://founders.archives.gov/documents/Washington/03-19-02-0283", approx: true}
   - {id: mail_guard, name: "Mail coach guard", what: "Riding the mail armed with blunderbuss, pistols and cutlass.", skill: musket, min: 45, pay: 3, term: week, places: [road], who: any, risk: 10,
      hook: "A highwayman offers a share to look the other way at the next tollgate.", wage: "about 10s 6d a week, more than doubled by tips (British)", source: "https://www.stortfordhistory.co.uk/guide9/mail-coaches/"}
@@ -40,9 +40,9 @@ jobs:
      hook: "The barracks contractor pays well and cheats on the timber.", wage: "2s 6d a day in 1700, about 5s by 1860; c.1800 is between (British)", source: *bailey, approx: true}
   - {id: clerk, name: "Clerk", what: "Copying and keeping accounts in an office.", skill: letters, min: 50, pay: 5.5, term: month, places: [city, town], who: any, risk: 0,
      hook: "The ledgers show the regiment is drawing pay for men who do not exist.", wage: "Treasury clerk £100 a year, 1782-1805 (British)", source: "https://www.british-history.ac.uk/node/10069"}
-  - {id: servant, name: "Servant or batman", what: "Valet, groom and cook to a gentleman or officer, with his keep.", skill: craft, min: 30, pay: 0.5, term: month, places: [town, city, camp], who: any, risk: 0,
+  - {id: servant, name: "Servant or batman", what: "Valet, groom and cook to a gentleman or officer, with his keep.", skill: craft, min: 30, pay: 0.5, term: month, board: true, places: [town, city, camp], who: any, risk: 0,
      hook: "Your master is in debt, and the creditors think you know where the plate is.", wage: "footman £8 a year and keep (British)", source: *bailey}
-  - {id: nurse, name: "Hospital nurse or laundress", what: "Nursing the sick or washing shirts for the regiment, with rations.", skill: leechcraft, min: 0, pay: 0.25, term: month, places: [camp, town], who: any, risk: 15,
+  - {id: nurse, name: "Hospital nurse or laundress", what: "Nursing the sick or washing shirts for the regiment, with rations.", skill: leechcraft, min: 0, pay: 0.25, term: month, board: true, places: [camp, town], who: any, risk: 15,
      hook: "Nurse Alice Redman complained that $2 a month had to buy her own brooms and soap.", wage: "Continental nurses $2 a month, 1775 (US)", source: "https://msamaryland400.com/2018/08/02/the-sick-suffered-much-for-want-of-good-female-nurses/"}
   - {id: sutling, name: "Sutling", what: "Selling liquor, tobacco and food from a cart behind the army.", skill: persuade, min: 30, pay: 3, term: week, places: [camp], who: any, risk: 10,
      hook: "The provost staves in your casks after the men get drunk.", wage: "no figure found (British)", approx: true}

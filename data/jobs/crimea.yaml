@@ -14,15 +14,15 @@ jobs:
      hook: "The men were promised 3s a day, but the agreement says 3d; there will be a riot.", wage: "10s a day to supervise Croats, 1855", source: *wigan}
   - {id: artificer, name: "Artificer and hut builder", what: "Carpenter's, smith's or mason's work on huts, stables and sidings.", skill: craft, min: 35, pay: 7.5, term: day, places: [camp, town], who: any, risk: 5,
      hook: "Every officer wants his hut up before winter, and timber is short.", wage: "7s-8s a day proposed for carpenters, smiths and masons, November 1854", source: *wigan}
-  - {id: works_ganger, name: "Army Works Corps ganger", what: "Bossing a gang of navvies on roads and huts.", skill: command, min: 40, pay: 6.75, term: week, places: [camp, road], who: any, risk: 10,
+  - {id: works_ganger, name: "Army Works Corps ganger", what: "Bossing a gang of navvies on roads and huts.", skill: command, min: 40, pay: 6.75, term: week, board: true, places: [camp, road], who: any, risk: 10,
      hook: "The £12 bonus is paid only to men still on the books at the end.", wage: "40s a week and a £12 bonus at the end", source: *sullivan}
-  - {id: railway_navvy, name: "Railway navvy", what: "Laying track and earthworks on the Balaklava railway, with free passage both ways.", skill: craft, min: 0, pay: 5, term: day, places: [camp, road], who: any, risk: 10,
+  - {id: railway_navvy, name: "Railway navvy", what: "Laying track and earthworks on the Balaklava railway, with free passage both ways.", skill: craft, min: 0, pay: 5, term: day, board: true, places: [camp, road], who: any, risk: 10,
      hook: "The line hauls the sick down and shot up, and the railhead is under Russian eyes.", wage: "5s a day and soldier's rations, December 1854", source: *sullivan}
-  - {id: interpreter, name: "Interpreter to a labour gang", what: "Translating between British engineers and hired labourers.", skill: letters, min: 50, pay: 4.5, term: day, places: [camp, road], who: any, risk: 5,
+  - {id: interpreter, name: "Interpreter to a labour gang", what: "Translating between British engineers and hired labourers.", skill: letters, min: 50, pay: 4.5, term: day, board: true, places: [camp, road], who: any, risk: 5,
      hook: "The Aga who supplied the men claims £3 a head, and someone is skimming.", wage: "4s 6d a day and rations", source: *wigan}
-  - {id: hospital_nurse, name: "Hospital nurse", what: "Dressing wounds and keeping wards at Scutari or Balaklava.", skill: leechcraft, min: 30, pay: 3, term: week, places: [city, camp], who: any, risk: 15,
+  - {id: hospital_nurse, name: "Hospital nurse", what: "Dressing wounds and keeping wards at Scutari or Balaklava.", skill: leechcraft, min: 30, pay: 3, term: week, board: true, places: [city, camp], who: any, risk: 15,
      hook: "Cholera in the barrack hospital, and the nurses packed close under strict rule.", wage: "army nurses about 18s a week with board and lodging", source: *nurse}
-  - {id: hospital_sergeant, name: "Hospital sergeant", what: "Running the orderlies and stores of a regimental hospital.", skill: leechcraft, min: 40, pay: 1.75, term: day, places: [camp, city], who: [sergeant], risk: 15,
+  - {id: hospital_sergeant, name: "Hospital sergeant", what: "Running the orderlies and stores of a regimental hospital.", skill: leechcraft, min: 40, pay: 1.75, term: day, board: true, places: [camp, city], who: [sergeant], risk: 15,
      hook: "The medical comforts keep vanishing from the store.", wage: "1s 10d a day", source: *nurse}
   - {id: correspondent_fixer, name: "Correspondent's fixer", what: "Finding horses, lodgings and gossip for a newspaperman.", skill: persuade, min: 40, pay: 3, term: week, places: [camp, town], who: any, risk: 10,
      hook: "Headquarters wants to know who leaked the trench returns.", wage: "no figure found", approx: true}
@@ -32,9 +32,9 @@ jobs:
      hook: "The Russians hang guides, and his family is behind their lines.", wage: "no figure found", approx: true}
   - {id: money_lender, name: "Money-lender", what: "Lending to men short before pay day, at interest.", skill: letters, min: 30, pay: 2, term: month, places: [camp], who: any, risk: 15,
      hook: "A debtor is killed in the trenches, and his mates won't pay.", wage: "no figure found", approx: true}
-  - {id: hotel_hand, name: "British Hotel hand", what: "Cooking, carrying and guarding stock at Mrs Seacole's store near Kadikoi.", skill: craft, min: 0, pay: 1.5, term: week, places: [camp], who: any, risk: 10,
+  - {id: hotel_hand, name: "British Hotel hand", what: "Cooking, carrying and guarding stock at Mrs Seacole's store near Kadikoi.", skill: craft, min: 0, pay: 1.5, term: week, board: true, places: [camp], who: any, risk: 10,
      hook: "Livestock thefts are constant: find who is lifting the goats.", wage: "no staff wage found", source: "https://en.wikipedia.org/wiki/Mary_Seacole", approx: true}
-  - {id: ltc_driver, name: "Land Transport Corps driver", what: "Driving mule and cart trains from Balaklava to the front.", skill: ride, min: 30, pay: 1.5, term: month, places: [road, camp], who: any, risk: 15,
+  - {id: ltc_driver, name: "Land Transport Corps driver", what: "Driving mule and cart trains from Balaklava to the front.", skill: ride, min: 30, pay: 1.5, term: month, board: true, places: [road, camp], who: any, risk: 15,
      hook: "Hundreds of Maltese muleteers, and one of them knows Russian.", wage: "no figure found", approx: true}
   - {id: dock_labourer, name: "Dock labourer, Constantinople", what: "Loading transports on the Golden Horn.", min: 0, pay: 1.5, term: day, places: [city, sea], who: any, risk: 5,
      hook: "A Greek boatman offers to sell army stores.", wage: "no figure found", approx: true}

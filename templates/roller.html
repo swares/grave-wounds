@@ -371,6 +371,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
 </div>
 
 <script>/*__FIGURE_JS__*/</script>
+<script>/*__PURSE_JS__*/</script>
 <script>
 const DATA = /*__GRAVEWOUNDS_DATA__*/null;
 const $ = s => document.querySelector(s);
@@ -562,7 +563,7 @@ function attachNamed(c, value){                   // put him with a travel force
   if (!value) delete all[c.uid];
   else {
     const [map, id] = [value.slice(0, value.lastIndexOf(":")), +value.slice(value.lastIndexOf(":") + 1)], was = all[c.uid] || {};
-    all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id, old: oldWounds(c), skills: namedSkills(c) };
+    all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id, old: oldWounds(c), skills: namedSkills(c), pid: (c.sheet && c.sheet.pid) || null };
   }
   writeNamed(all);
   NAMED = all;
@@ -612,7 +613,17 @@ function keepOld(c){                              // the travel map's copy of hi
   NAMED = all;
 }
 const campStep = (c, w) => { const n = c.uid ? NAMED[c.uid] : null, k = n && ((n.health || {}).cases || []).find(x => x.wid === w.wid); return k ? DZR.names[k.d].toLowerCase() + ", " + DZR.steps[k.step] : "" };
-function syncNamed(){ NAMED = readNamed(); S.chars.forEach(syncCamp) }
+function syncNamed(){
+  NAMED = readNamed(); S.chars.forEach(syncCamp);
+  let tired = false;                              // days he went hungry on the travel map tire him: a fatigue step each, once
+  for (const c of S.chars){
+    const n = c.uid ? NAMED[c.uid] : null, seen = c.hungerSeen || 0;
+    if (!n || (n.hungry || 0) <= seen) continue;
+    c.fatigue = Math.min(WXD.fatigue.levels.length - 1, (c.fatigue || 0) + n.hungry - seen);
+    c.hungerSeen = n.hungry; tired = true;
+  }
+  if (tired) save();
+}
 function forceSelect(c){                         // the travel-map force he goes with
   const n = c.uid ? NAMED[c.uid] : null, opts = travelForces(), cur = n ? `${n.map}:${n.force}` : "";
   if (n && !opts.some(o => o.value === cur)) opts.unshift({ value: cur, label: `a force on ${n.map}` });
@@ -648,7 +659,7 @@ function namedRow(c){                             // Endurance, the force he goe
 }
 if (typeof window !== "undefined"){                // the travel map may have run his days
   window.addEventListener("focus", () => { syncNamed(); renderChars() });
-  window.addEventListener("storage", e => { if (e.key === NAMED_KEY){ syncNamed(); renderChars() } });
+  window.addEventListener("storage", e => { if (e.key === NAMED_KEY){ syncNamed(); renderChars() } else if (e.key === PURSES_KEY) renderChars() });
 }
 function cubeOf([c, r]){ const q = c - (r - (r & 1)) / 2; return [q, r, -q - r] }
 function hexDistance(a, b){ const x = cubeOf(a), y = cubeOf(b); return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2])) }
@@ -1243,7 +1254,8 @@ function sheetLine(c){                          // a team builder character's sh
   const skills = h.trained.map(([n, v]) => `${n} ${v}`).join(", ");
   const olds = [...h.old.map(w => LOC[w.loc].name.toLowerCase()), ...scars];
   const old = olds.length ? ` · old wounds: ${olds.join(", ")}` : "";
-  return `<div class="wears">${attr(h.career)}, ${h.terms} term${h.terms > 1 ? "s" : ""}, age ${h.age}${h.leader ? " · leads" : ""} · ${stats}</div><div class="muted">${attr(skills)} · defence ${h.defence}%${attr(old)}</div>`;
+  const p = h.pid ? readPurses()[h.pid] : null, purse = p ? ` · purse ${daysQ(purseLeft(p))}` : "";   // shared with the team builder and the travel map
+  return `<div class="wears">${attr(h.career)}, ${h.terms} term${h.terms > 1 ? "s" : ""}, age ${h.age}${h.leader ? " · leads" : ""} · ${stats}</div><div class="muted">${attr(skills)} · defence ${h.defence}%${attr(old)}${purse}</div>`;
 }
 function addTeam(){                             // the team from the team builder joins the fighters
   const t = S.teamIn; if (!t) return;

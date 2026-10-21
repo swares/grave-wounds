@@ -55,7 +55,16 @@ and nothing. A job with no skill pays in full.
 
 A job with a **risk** takes one d100 a term as well: at or under the risk, trouble. The GM uses
 the job's hook, or rolls a d10 on the era's trouble table. Jobs marked † are against the law,
-and their trouble is the law's. The medieval jobs:
+and their trouble is the law's.
+
+**Keep.** A soldier with his army is fed by it. A man who is not (off on his own, on leave, or
+working for someone else) pays his **keep** from his purse each day: a day's food
+({{keep_food}} for an English archer), and a bed ({{keep_bed}}) where there is one to be had:
+in a town, city or village, or at an inn on the road (on the travel map, a night in a village or
+town out of camp). A job marked (fed) feeds him while he works:
+his army's own service, or wages paid with board. A day he cannot pay for his food he goes
+hungry: it counts as a day without fresh food, and tires him a step. A night he cannot pay for
+a bed he sleeps rough. The medieval jobs:
 
 {{table:jobs}}
 

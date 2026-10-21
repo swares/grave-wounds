@@ -3,8 +3,10 @@ soldier's day's pay (a Day) in each, and priced kit. A price is kept as a whole 
 coin's smallest unit (farthings for pounds, shillings and pence; kreuzer; cents), so nothing is
 lost to rounding; Days are worked out from it, never stored. A character's purse is his
 starting Days (money.yaml, per career term) plus his ledger: what he has earned at jobs and
-spent since, as signed Days. The team builder page (templates/team.js) repeats fmt, row_days,
-kit_value, purse, quarter_text, spend_check and shop exactly."""
+spent since, as signed Days. A man his army does not feed pays his keep: a day's food, and a
+bed where there is one to be had (keep_days, pay_keep). The pages repeat fmt, row_days,
+kit_value, purse, quarter_text, spend_check and shop (templates/team.js) and pay_keep
+(templates/purse.js) exactly; keep_days is worked out here and handed to them."""
 from __future__ import annotations
 
 from fractions import Fraction
@@ -131,12 +133,18 @@ def quarter_text(x: float) -> str:
     return f"{_group(whole)}{QUARTERS[part]}" if whole else (QUARTERS[part] or "0")
 
 
+def days_text_q(x: float) -> str:
+    """'¾ Day', '1 Day', '1¼ Days', '0 Days': quarter_text with its word."""
+    q = int(max(x, 0) * 4 + 0.5)
+    return f"{quarter_text(x)} Day{'' if 0 < q <= 4 else 's'}"
+
+
 def spend_check(d: Data, c: dict, days: float) -> str | None:
     """Why he can't spend that many Days (nothing, or more than his purse holds), or None."""
     if not days or days <= 0:
         return "nothing to spend"
     have = purse(d, c["era"], c["region"], c["terms"], c.get("ledger"))["days"]
-    return f"his purse holds {quarter_text(have)} Days" if days > have + 1e-9 else None
+    return f"his purse holds {days_text_q(have)}" if days > have + 1e-9 else None
 
 
 def spend(d: Data, c: dict, days: float, what: str) -> dict:
@@ -188,4 +196,46 @@ def money_line(d: Data, c: dict) -> str:
     else:
         kit = f"kit worth about {days_text(v['days'])} Days" + (" (part not priced)" if v["unpriced"] else "")
     coin = f" ({p['text']})" if p["text"] else ""
-    return f"{kit[0].upper()}{kit[1:]}; purse {quarter_text(p['days'])} Days{coin}"
+    return f"{kit[0].upper()}{kit[1:]}; purse {days_text_q(p['days'])}{coin}"
+
+
+BED_TERRAIN = ("village", "town")   # travel map ground with a bed to be had for the night
+
+
+def keep_days(d: Data, eid: str, region: str) -> dict | None:
+    """A day's keep for a man of this army whom no army feeds, in his Days: food, and a night's
+    bed, each from a row of the era's price list (its `keep` block, `times` for a per-meal row; an
+    army may have its own rows), a range at its middle. None where the era has no keep or a row
+    has no Day to count it in. -> {"food": float, "bed": float}"""
+    E = equipment(d, eid)
+    K = E.get("keep")
+    if not K:
+        return None
+    spec = {"food": K["food"], "bed": K["bed"], **((K.get("regions") or {}).get(region) or {})}
+    rows, out = {r["id"]: r for r in E["items"]}, {}
+    for part in ("food", "bed"):
+        span = row_days(d, eid, rows[spec[part]["row"]], region)
+        if span is None:
+            return None
+        out[part] = (span[0] + span[1]) / 2 * spec[part].get("times", 1)
+    return out
+
+
+def pay_keep(have: float, days: int, food: float, bed: float) -> dict:
+    """Pay `days` of keep out of `have` Days, each day's food before its bed (bed 0 where there is
+    none to be had). A day whose food he cannot pay he goes hungry; a night whose bed he cannot pay
+    he sleeps rough. -> {"paid": float, "hungry": int, "rough": int}"""
+    paid, hungry, rough = 0.0, 0, 0
+    for _ in range(days):
+        if have + 1e-9 >= food:
+            have -= food
+            paid += food
+        else:
+            hungry += 1
+        if bed:
+            if have + 1e-9 >= bed:
+                have -= bed
+                paid += bed
+            else:
+                rough += 1
+    return {"paid": paid, "hungry": hungry, "rough": rough}

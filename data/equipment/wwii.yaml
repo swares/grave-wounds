@@ -55,6 +55,14 @@ sources:
   who: &who "https://www.warhistoryonline.com/featured/rough-guide-costs-of-wwii_guns.html"
   ecu: &ecu "https://digital.lib.ecu.edu/pearlharbor/secondwave/rown/"
 
+# keep - a day's food and a night's bed for a man his army does not feed (money.keep_days):
+#        price rows below, `times` for a per-meal row; an army may have its own under regions.
+keep:
+  food: {row: us_food_day}
+  bed: {row: service_bed}
+  regions:
+    commonwealth: {food: {row: british_restaurant, times: 3}, bed: {row: uk_bed}}
+
 items:
   # Vehicles, arms
   - {id: jeep, name: "Jeep (to the Army)", cat: travel, price: [65000, 74000], approx: true}
@@ -163,3 +171,7 @@ items:
   - {id: demob_outfit, name: "British demob outfit, to the government", cat: clothing, in: gbp, price: 11520, when: "1945", source: {url: "https://tribunemag.co.uk/1945/03/civilian-outfit", note: "Tribune; about £20 in the shops"}}
   - {id: officers_cap, name: "British officer's peaked cap", cat: clothing, in: gbp, price: 2016, when: "1942", source: {url: "https://tribunemag.co.uk/1942/08/army-austerity", note: "Tribune"}}
   - {id: sam_browne, name: "Sam Browne belt", cat: clothing, in: gbp, price: 1680, when: "1942", source: {url: "https://tribunemag.co.uk/1942/08/army-austerity", note: "Tribune"}}
+  - {id: us_food_day, name: "A day's food on pass", cat: food, price: [125, 150], when: "1943", approx: true, source: {url: "https://text-message.blogs.archives.gov/2018/05/01/we-suggest-a-bacardi-cocktail-before-lunch-wwii-era-menus-from-the-mountain-west", note: "estimate from a 60¢ hamburger-steak dinner, Colorado Springs 1943"}}
+  - {id: service_bed, name: "A bed at a service men's center", cat: lodging, price: 50, when: "1944", source: {url: "https://mavmatrix.uta.edu/specialcollections_startelegram1940s/20185", note: "Fort Worth, January 1944"}}
+  - {id: british_restaurant, name: "A British Restaurant meal", cat: food, price: 36, in: gbp, when: "1943", source: {url: "https://en.wikipedia.org/wiki/British_Restaurant", note: "about 9d, capped"}}
+  - {id: uk_bed, name: "A cheap bed in Britain", cat: lodging, price: [48, 72], in: gbp, when: "1940s", approx: true, source: {url: "https://www.bgs.org.uk/resources/lord-rowton-and-the-homeless-in-london", note: "a Rowton House cubicle was 1s in 1933"}}

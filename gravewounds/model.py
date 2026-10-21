@@ -1316,6 +1316,22 @@ def _equipment_errors(d: Data, E: dict) -> list[str]:
             links = [links] if isinstance(links, str) else (links or [])
             errors += [f"{at}: {key} {x} is not in {'armor.yaml' if key == 'kit' else 'weapons.yaml'}" for x in links if x not in known]
         errors += [f"{at}: unknown army {x}" for x in r.get("regions", []) if x not in regions]
+    K = E.get("keep")
+    if K is not None:
+        known = set(ids)
+        specs = [("keep", K)] + [(f"keep.regions.{r}", v) for r, v in (K.get("regions") or {}).items()]
+        errors += [f"{where}: keep for unknown army {r}" for r in (K.get("regions") or {}) if r not in regions]
+        for at, spec in specs:
+            for part in ("food", "bed"):
+                x = spec.get(part)
+                if x is None:
+                    if at == "keep":
+                        errors.append(f"{where}: keep needs a {part}")
+                    continue
+                if x.get("row") not in known:
+                    errors.append(f"{where}: {at}.{part} names unknown item {x.get('row')}")
+                if not isinstance(x.get("times", 1), int) or x.get("times", 1) < 1:
+                    errors.append(f"{where}: {at}.{part} times must be a whole number, 1 or more")
     return errors
 
 
@@ -1362,6 +1378,7 @@ def _jobs_errors(d: Data, J: dict) -> list[str]:
     trouble = J.get("trouble", [])
     if [t.get("roll") for t in trouble] != list(range(1, len(trouble) + 1)) or len(trouble) != 10:
         errors.append(f"{where}: trouble must be a d10 table, rows 1-10 in order")
+    errors += [f"{where}: {j['id']}: board must be true or false" for j in J.get("jobs", []) if not isinstance(j.get("board", False), bool)]
     return errors
 
 
