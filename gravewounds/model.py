@@ -104,6 +104,7 @@ class Data:
     teams: dict = field(default_factory=dict)       # era id -> character generation tables (data/teams)
     equipment: dict = field(default_factory=dict)   # era id -> coins, a Day's pay and priced kit (data/equipment)
     money: dict = field(default_factory=dict)       # money.yaml: purse per career term, pay for a day's work
+    jobs: dict = field(default_factory=dict)        # era id -> jobs between fights and a trouble table (data/jobs)
     warnings: list = field(default_factory=list)
 
 
@@ -155,6 +156,7 @@ def load(root: str | Path = "data") -> Data:
     teams = _read_dir(root / "teams")
     equipment = _read_dir(root / "equipment")
     money = _optional(root / "money.yaml", {})
+    jobs = _read_dir(root / "jobs")
 
     data = Data(
         root=root,
@@ -181,6 +183,7 @@ def load(root: str | Path = "data") -> Data:
         teams=teams,
         equipment=equipment,
         money=money,
+        jobs=jobs,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -500,6 +503,8 @@ def validate(d: Data) -> None:
         errors += _team_errors(d, T)
     for E in d.equipment.values():
         errors += _equipment_errors(d, E)
+    for J in d.jobs.values():
+        errors += _jobs_errors(d, J)
     errors += _ground_seed_errors(d, TT)
 
     # camps and works
@@ -1311,6 +1316,50 @@ def _equipment_errors(d: Data, E: dict) -> list[str]:
             links = [links] if isinstance(links, str) else (links or [])
             errors += [f"{at}: {key} {x} is not in {'armor.yaml' if key == 'kit' else 'weapons.yaml'}" for x in links if x not in known]
         errors += [f"{at}: unknown army {x}" for x in r.get("regions", []) if x not in regions]
+    return errors
+
+
+JOB_PLACES = {"town", "city", "village", "camp", "road", "frontier", "sea"}
+JOB_TERMS = {"day", "week", "month", "contract"}
+
+
+def _jobs_errors(d: Data, J: dict) -> list[str]:
+    """data/jobs: an era's jobs (a skill of the era or none, a least skill, pay in quarter Days,
+    a term, places, who, risk, a source unless approx) and a d10 trouble table."""
+    where, errors = f"jobs/{J['id']}", []
+    T = d.teams.get(J["id"])
+    if not T:
+        return [f"{where}: no team tables for this era"]
+    skills, careers = {s["id"] for s in T["skills"]}, {c["id"] for c in T["careers"]}
+    ids = [j["id"] for j in J.get("jobs", [])]
+    errors += [f"{where}: duplicate job {i}" for i in sorted({i for i in ids if ids.count(i) > 1})]
+    for j in J.get("jobs", []):
+        at = f"{where}: {j['id']}"
+        if j.get("skill") is not None and j["skill"] not in skills:
+            errors.append(f"{at}: unknown skill {j['skill']}")
+        if not isinstance(j.get("min", 0), int) or not 0 <= j.get("min", 0) <= T["skill_max"]:
+            errors.append(f"{at}: min must be a skill level 0-{T['skill_max']}")
+        p = j.get("pay")
+        if not isinstance(p, (int, float)) or p <= 0 or abs(p * 4 - round(p * 4)) > 1e-9:
+            errors.append(f"{at}: pay must be Days in quarters (0.25, 0.5, 1.75 ...)")
+        if j.get("term") not in JOB_TERMS:
+            errors.append(f"{at}: term must be one of {sorted(JOB_TERMS)}")
+        if j.get("term") == "contract":
+            days = j.get("days")
+            if not (isinstance(days, list) and len(days) == 2 and all(isinstance(x, int) and x > 0 for x in days) and days[0] <= days[1]):
+                errors.append(f"{at}: a contract needs days: [low, high]")
+        if not j.get("places") or any(x not in JOB_PLACES for x in j["places"]):
+            errors.append(f"{at}: places must be some of {sorted(JOB_PLACES)}")
+        who = j.get("who", "any")
+        if who != "any" and (not isinstance(who, list) or any(x not in careers for x in who)):
+            errors.append(f"{at}: who must be any, or careers of this era")
+        if not isinstance(j.get("risk", 0), int) or not 0 <= j.get("risk", 0) <= 100:
+            errors.append(f"{at}: risk must be a % from 0 to 100")
+        if not j.get("approx") and not j.get("source"):
+            errors.append(f"{at}: needs a source, or approx: true")
+    trouble = J.get("trouble", [])
+    if [t.get("roll") for t in trouble] != list(range(1, len(trouble) + 1)) or len(trouble) != 10:
+        errors.append(f"{where}: trouble must be a d10 table, rows 1-10 in order")
     return errors
 
 
