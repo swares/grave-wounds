@@ -194,7 +194,10 @@ def tables(d: Data) -> dict:
         names = {"str": "Strength", "agi": "Agility", "end": "Endurance", "wits": "Wits"}
 
         def dice(v):
-            return f"−{v[0] if v[0] > 1 else ''}d{v[1]}" if v else "—"
+            if not v:
+                return "—"
+            n = v[0] if v[0] > 1 else ""
+            return f"−{n}d{v[1]}"
         bands = d.ageing["decline"]
         out["ageing"] = _md(["Age (middle of the 4 years)", *names.values()],
                             [[f"{b['from']}–{nb['from'] - 1}" if nb else f"{b['from']} and over", *[dice(b.get(k)) for k in names]]

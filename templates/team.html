@@ -461,7 +461,7 @@ function renderXp(){
   const rows = S.team.map(c => {
     const x = all[c.pid] || {}, ticks = Object.entries(x.ticks || {}), served = (c.served || 0) + (x.served || 0);
     const t = ticks.length ? ticks.map(([k, why]) => `<span title="${esc(why)}">${esc(skillName(k))} ${c.skills[k] ?? 0}</span>`).join(", ") : `<span class="muted">nothing yet</span>`;
-    const i = S.team.indexOf(c), age = TD.ageing ? ` · age ${c.age}, Wear ${c.wear || 0}${x.hard ? `, ${x.hard} hard night${x.hard !== 1 ? "s" : ""}` : ""}` : "";
+    const i = S.team.indexOf(c), age = TD.ageing ? ageText(c, x.hard || 0) : "";
     const hard = TD.ageing ? ` <label class="check" title="A hard season (siege, famine, a tropical station, a prison camp): +${TD.ageing.wear.hard_season} Wear at End of season. A month of hard nights on the travel map counts by itself."><input type="checkbox" data-hard="${i}"${c.hardSeason ? " checked" : ""}> Hard season</label>` : "";
     const worn = c.wornOut ? `<div class="spend"><b>${esc(c.wornOut[0].toUpperCase() + c.wornOut.slice(1))}.</b> <button class="small" data-discharge="${i}" title="Sent home, with a pension where his army gave one">Discharge him</button><button class="small" data-keepon="${i}" title="He stays; the check comes again next term">Keep him on</button></div>` : "";
     return `<li><b>${esc(c.name)}</b>: ${t} <span class="muted">· ${served.toLocaleString("en-US")} of ${per.toLocaleString("en-US")} days toward a term${age}</span>${hard}${worn}</li>`;
@@ -481,6 +481,14 @@ function teachersFor(c, skill){                     // [{id, name, value, fee}] 
   const out = trMasters(S.place || null, skill).map(m => ({ id: "m:" + m.skill, name: `${m.name} (${TRN().master_skill ?? 60}), ${daysQ(m.fee)} a week`, value: TRN().master_skill ?? 60, fee: m.fee }));
   S.team.forEach((o, k) => { if (o !== c && trTeammateOk(o.skills[skill] ?? 0, c.skills[skill] ?? 0)) out.push({ id: "t:" + k, name: `${o.name} (${o.skills[skill]})`, value: o.skills[skill], fee: 0, mate: o }) });
   return out;
+}
+function ageText(c, hard){                          // ' · age 32, Wear 5, 12 hard nights'
+  const nights = hard === 1 ? "1 hard night" : `${hard} hard nights`;
+  return ` · age ${c.age}, Wear ${c.wear || 0}` + (hard ? `, ${nights}` : "");
+}
+function wornText(w){                               // the Worn Out check, in words
+  if (!w.worn) return `fit to serve on (rolled ${w.roll} against ${w.threshold})`;
+  return w.threshold ? `${w.why} (rolled ${w.roll} against ${w.threshold})` : w.why;
 }
 function trainHtml(){
   if (!TD.training) return "";
@@ -533,7 +541,7 @@ function endSeason(){
       for (const a of aged){ const ch = Object.entries(a.changes).map(([k, v]) => `${statName(k)} ${v > 0 ? "+" : "−"}${Math.abs(v)}`); if (ch.length) bits.push(`by ${a.age}: ${ch.join(", ")}`) }
       for (let k = 0; k < r.terms; k++){
         const w = agWornOut(c, T.age.per_term, realDice.randint(1, 100));
-        if (w.checked) bits.push(w.worn ? `${w.why}${w.threshold ? ` (rolled ${w.roll} against ${w.threshold})` : ""}` : `fit to serve on (rolled ${w.roll} against ${w.threshold})`);
+        if (w.checked) bits.push(wornText(w));
         if (w.worn){ c.wornOut = w.why; break }
       }
       c.hardSeason = false;
