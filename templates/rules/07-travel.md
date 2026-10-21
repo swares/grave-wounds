@@ -108,14 +108,16 @@ rank below who have served its years in that rank (or did a **deed** in battle, 
 time and adds +{{deed_bonus}}) and, where the army demanded it, can read and write (Letters
 {{literate}} or more: British sergeants in the Napoleonic wars, officers in the Civil War). The most
 senior rolls Command first, at the rank's difficulty; the first to succeed is promoted, and his
-old rank falls vacant in turn. A man can be **reduced** to a lower rank at the GM's word.
+old rank falls vacant in turn. A man can be **reduced** to a lower rank at the GM's word. The roller suggests a deed for a man
+who put down two or more enemies, or their leader, in a fight; the GM confirms it.
 
 **Pay.** Each day his force is fed by its army, a man earns his rank's pay, less what the army
 stopped for his rations and necessaries, paid into his purse at the end of the season. Days
 when his force's pay is **in arrears** are owed instead, until the GM says the arrears are paid.
 Horsemen and surgeons may draw more; a sutler draws nothing.
 
-**Loot.** After a won fight, the field: each man rolls d100 (a stormed town's sack adds
+**Loot.** After a won fight (the roller sees when one side alone is still standing, or the GM
+names the winner, or the field map says who held the field), the field: each man rolls d100 (a stormed town's sack adds
 {{sack_bonus}}, though only a 100 is a windfall):
 
 {{table:finds}}
@@ -129,7 +131,8 @@ prize money each man draws his rank's shares (at Waterloo, a private one share o
 days' pay, a captain 35). A medieval or Thirty Years' War prisoner may be ransomed (with leave).
 
 **Honours.** The Plains nations had no ranks and no pay. A man's honours come from coups
-counted (the first to strike counts most) and horses taken from an enemy camp; his horses are
+counted (the first to strike counts most: the roller counts it when his blow lands in close
+combat) and horses taken from an enemy camp; his horses are
 his wealth, and giving them away turns wealth into standing.
 
 ## Sickness {#sickness}

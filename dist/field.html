@@ -6577,7 +6577,10 @@ function renderHeroes(){
   if (!$("#in-hero-atk").value) heroDefaults();
 }
 function heroesToRoller(){                        // their wounds onto their records in the wound roller
-  const heroes = allHeroes().map(h => ({ id: h.id, name: h.name, state: h.state, wounds: h.wounds, blood: h.blood, old: (h.old || []).map(o => ({ bleed: o.bleed, aid: o.aid })), ...(h.post ? { post: true } : {}) }));
+  const lost = [0, 1].filter(k => !standing(k)), held = lost.length === 1 ? S.sides[1 - lost[0]] : null;   // the side that holds the field, if one does
+  const sideOfHero = h => h.unit.side;   // allHeroes gives each hero his unit
+  const heroes = allHeroes().map(h => ({ id: h.id, name: h.name, state: h.state, wounds: h.wounds, blood: h.blood, old: (h.old || []).map(o => ({ bleed: o.bleed, aid: o.aid })), ...(h.post ? { post: true } : {}),
+    ...(held ? { won: sideOfHero(h) === held } : {}) }));   // the roller's After the fight: deeds and loot for the winners
   try{ localStorage.setItem("gravewounds-field-heroes", JSON.stringify({ place: S.from?.place || "", heroes })) }catch(e){ S.msg = "Could not save the heroes for the roller (storage is off)."; return render() }
   S.heroesSent = true;
   save();

@@ -86,7 +86,8 @@ and a chance of trouble. What a man earns goes into his purse, and he can buy fr
 price list out of it. Away from an army that feeds him he pays his keep, at a job or on the
 travel map, and one purse follows him from the team builder to the roller and the travel map. Men rise in rank by vacancy, time served and a roll of Command, draw their
 rank's pay while their army feeds them, and take loot, prize money or ransoms by the era's
-rules, with the provost to fear where plunder was forbidden; the Plains nations count coups and
+rules, with the provost to fear where plunder was forbidden (the roller suggests deeds from the
+enemies a man put down, counts coups, and offers the loot when a fight is won); the Plains nations count coups and
 horses instead. Skills used well (a job, a hit or a parry, first aid, foraging, nursing, keeping watch) roll
 to rise at the end of each season, and time served adds a career term. A man lost
 is replaced the era's way: rolled anew, assigned by the army after a wait, or hired. On the

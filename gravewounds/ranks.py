@@ -131,7 +131,7 @@ def loot(d: Data, eid: str, kind: str, c: dict, rng) -> dict:
         H = L.get("horses")
         if H:
             n = rng.randint(H["per_raid"][0], H["per_raid"][1])
-            out.update(what=f"{n} horse{'s' if n != 1 else ''} taken", horses=n, why=H.get("why", ""))
+            out.update(what=f"{n} horse{'s' if n != 1 else ''} taken" if n else "no horses taken", horses=n, why=H.get("why", ""))
         return out
     if kind == "ransom":
         X = L.get("ransom")

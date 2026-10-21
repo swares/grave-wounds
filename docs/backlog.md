@@ -175,8 +175,12 @@ When an item is done, delete it here and note it in the pull request that closes
   (1914-18, 1939-45), Korea, Vietnam and the later wars (1982-2014) have their own tables.
 - **Rank, pay and loot, first cut.** Ranks, promotion by vacancy, pay by rank, loot, prize money,
   ransom and the Plains nations' honours are on the team builder. Still left out:
-  - deeds, coups and loot are marked by the GM: the roller and the field map do not mark a deed
-    or a coup, or offer loot, when a fight is won;
+  - the roller marks deeds (suggested from downs), coups and loot, but the field map does not
+    count a hero's downs or coups: his deed there is the GM's to tick in the roller's After the
+    fight, and a Plains hero's coups on the field map are not counted;
+  - the deed suggestion (two downs, or the enemy's leader) is a design choice, and a down
+    credited is only one made by a wound applied in the roller (bleeding out later is not);
+  - a raid for horses is rolled after a fight, not played on the travel map;
   - rank does not count in a fight (who leads is the highest rank, then the longest served, on
     the team builder only), and the roller and field map do not show it;
   - many figures are estimates: pay below the British and American ladders (the Thirty Years'

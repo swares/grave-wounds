@@ -355,6 +355,17 @@ are in the project doc "promotion-loot-research"; `approx: true` marks estimates
   captain's third or the hospital's tenth; forbidden loot, or a trophy past the era's `cap`,
   risks the provost (his Watch against the man's Stealth; caught, it is lost; on the provost's
   critical or the man's fumble, the era's punishment). Winnings go into his purse.
+- **From the fight** (`templates/roller.html`, *After the fight* under Casualties; the rules are
+  shared in `templates/ranks.js`). The roller counts each fighter's **downs** (an enemy put down
+  by a wound he applied) and suggests a deed for two or more, or the enemy's leader; **Mark
+  deeds** sends the ticked men's deeds to the experience store (`deed`), which the team builder
+  takes up as the deed tick (+20, the wait waived). A Plains man's blow that lands in close
+  combat counts **coup** on that enemy if he is among the first three to strike (3, 2, 1
+  honours: `honours` in the store). The winner is the one side still standing, or the side the
+  GM names, or (heroes back from the field map) whether each hero's side held the field. The
+  winners still up roll **loot** by their era's rules, every one or one the GM picks (a ransom
+  is usually one man's); Days go straight into their purses, horses into the store (`horses`,
+  each also an honour). A new fight (from the travel map, or Reset count) clears the marks.
 - **Honours** (the Plains nations): coups 3, 2 and 1 for the first, second and third to strike,
   a horse taken 1, a horse given away 1; standing and wealth tiers (Ewers: under 6 horses poor,
   40 or more wealthy).
