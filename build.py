@@ -1358,6 +1358,13 @@ def markdown(d) -> str:
             tt = team_tables(d, eid)
             out += [f"### {d.teams[eid]['name']}", ""] + [re.sub("</?b>", "**", x) + "\n" for x in team_rules(d, eid)]
             out += mdt(tt["skills"]) + mdt(tt["origins"]) + mdt(tt["careers"]) + mdt(tt["events"]) + mdt(tt["kits"]) + mdt(tt["teams"])
+    if d.jobs:
+        from gravewounds.jobs import job_rows, trouble_rows, work_rules
+        mdt = lambda rows: ["| " + " | ".join(rows[0]) + " |", "|" + "---|" * len(rows[0])] + ["| " + " | ".join(r) + " |" for r in rows[1:]] + [""]
+        out += ["## Jobs between fights", ""] + [re.sub("</?b>", "**", x) + "\n" for x in work_rules(d)]
+        for eid in team_eras(d):
+            if eid in d.jobs:
+                out += [f"### {d.teams[eid]['name']}", ""] + mdt(job_rows(d, eid)) + mdt(trouble_rows(d, eid))
     if d.disease:
         out += ["## Camp disease", ""] + [re.sub("</?b>", "**", x) + "\n" for x in disease_rules(d)]
         out += ["| Disease | Caught from | Shows after | Outbreak chance a week | Peak (d100) | Deaths per case in the records |", SEP6]
@@ -1759,6 +1766,18 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
                 Spacer(1, 6), Paragraph("Career terms (* leaves an old wound)", H2), grid(cell(tt["events"]), [1.7 * inch, 0.6 * inch, 1.1 * inch, W - 3.4 * inch], font=7.5),
                 Spacer(1, 6), Paragraph("Kit and weapon by region", H2), grid(cell(tt["kits"]), [(1.1 if nreg > 6 else 1.5) * inch] + [(W - (1.1 if nreg > 6 else 1.5) * inch) / nreg] * nreg, font=6.5 if nreg > 6 else 7),
                 Spacer(1, 6), Paragraph("Teams", H2), grid(cell(tt["teams"]), [1.6 * inch, (W - 1.6 * inch) / 2, (W - 1.6 * inch) / 2], font=7.5)]
+    if d.jobs:
+        from gravewounds.jobs import job_rows, trouble_rows, work_rules
+        story += [PageBreak(), Paragraph("Jobs between fights", H1)] + [Paragraph(x, B) for x in work_rules(d)]
+        for eid in team_eras(d):
+            if eid not in d.jobs:
+                continue
+            jr, tr = job_rows(d, eid), trouble_rows(d, eid)
+            story += [Spacer(1, 8), Paragraph(d.teams[eid]["name"], H2),
+                      grid([[Paragraph(x, CH) for x in jr[0]]] + [[Paragraph(x, C) for x in r] for r in jr[1:]],
+                           [1.7 * inch, 0.9 * inch, 1.05 * inch, 0.75 * inch, 1.1 * inch, W - 6.0 * inch, 0.5 * inch], font=7),
+                      Spacer(1, 4),
+                      grid([[Paragraph(x, CH) for x in tr[0]]] + [[Paragraph(x, C) for x in r] for r in tr[1:]], [0.4 * inch, W - 0.4 * inch], font=7)]
     if d.disease:
         drow = [[Paragraph(x, CH) for x in ["Disease", "Caught from", "Shows after", "Outbreak chance a week", "Peak (d100)", "Deaths per case"]]]
         drow += [[Paragraph(c, C) for c in r] for r in disease_rows(d)]

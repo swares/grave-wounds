@@ -41,6 +41,28 @@ unawares: {{s_base}}%, plus the camp's figure above ({{s_none}} more with no cam
 defenders' best Watch ÷ {{s_per}}, and never under {{s_lo}}% or over {{s_hi}}%. Surprised men
 cannot attack or move in the first round.
 
+## Finding work {#work}
+
+Between fights a man may hire himself out. Where the team is (a town, city, village, camp, the
+road, the frontier or at sea) decides which jobs are on offer; he may take any of them that his
+career allows and his skill reaches (the least skill to be hired). Pay is in Days for each day
+worked, or a sum for the whole contract, a horse or a body.
+
+A job is worked in **terms**: a day, a week ({{w_week}} days), a month ({{w_month}} days) or a
+contract of so many days. Each term he makes **one check** on the job's skill. At or under it,
+he is paid in full; over it, {{w_fail}} of the pay; {{w_fumble}} or more and over, a fumble,
+and nothing. A job with no skill pays in full.
+
+A job with a **risk** takes one d100 a term as well: at or under the risk, trouble. The GM uses
+the job's hook, or rolls a d10 on the era's trouble table. Jobs marked † are against the law,
+and their trouble is the law's. The medieval jobs:
+
+{{table:jobs}}
+
+{{table:job_trouble}}
+
+The other {{w_eras}} eras' jobs are in the printed tables and the team builder.
+
 ## Sickness {#sickness}
 
 Before antibiotics, disease emptied armies faster than battle. Once a week every well man

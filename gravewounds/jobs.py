@@ -89,3 +89,41 @@ def pay_text(j: dict) -> str:
     if j.get("lump"):
         return f"{days} {j['per']}" if j.get("per") else f"{days} for the job"
     return f"{days} a day"
+
+
+def term_text(j: dict) -> str:
+    """'a week', 'a contract of 7-21 days'."""
+    if j["term"] != "contract":
+        return {"day": "a day", "week": "a week", "month": "a month"}[j["term"]]
+    lo, hi = j["days"]
+    return f"{lo} day{'s' if lo > 1 else ''}" if lo == hi else f"{lo}-{hi} days"
+
+
+def job_rows(d: Data, eid: str) -> list[list[str]]:
+    """An era's jobs as a table, header first: lawful work, then the illegal (marked †)."""
+    rows = [["Job", "Skill", "Pay", "Term", "Where", "Who", "Risk"]]
+    names = {c["id"]: c["name"].lower() for c in d.teams[eid]["careers"]}
+    skills = {s["id"]: s["name"] for s in d.teams[eid]["skills"]}
+    for j in jobs_at(d, eid):
+        skill = f"{skills[j['skill']]} {j.get('min', 0)}" if j.get("skill") else "none"
+        who = "anyone" if j.get("who", "any") == "any" else ", ".join(names[w] for w in j["who"])
+        rows.append([j["name"] + (" †" if j.get("illegal") else ""), skill, pay_text(j), term_text(j), ", ".join(j["places"]), who,
+                     f"{j['risk']}%" if j.get("risk") else "none"])
+    return rows
+
+
+def trouble_rows(d: Data, eid: str) -> list[list[str]]:
+    return [["d10", "Trouble"]] + [[str(t["roll"]), t["text"]] for t in jobs(d, eid)["trouble"]]
+
+
+def work_rules(d: Data) -> list[str]:
+    """Taking a job, as short rules for the PDF and Markdown (money.yaml work)."""
+    W = d.money["work"]
+    return [
+        "<b>Finding work:</b> in a town, city, village, camp, on the road, the frontier or at sea, a man may take any job of his era found there "
+        "that his career and skill allow (the job's least skill). Pay is in Days, a common soldier's day's pay, for each day worked, or a sum for a whole contract.",
+        f"<b>A term:</b> a day, a week ({W['terms']['week']} days), a month ({W['terms']['month']} days) or a contract. One check on the job's skill a term: "
+        f"at or under, full pay; over, {int(W['failure'] * 100)}%; {W['fumble_from']} or more and over, a fumble and nothing. A job with no skill pays in full.",
+        "<b>Trouble:</b> a job with a risk takes one d100 a term: at or under the risk, trouble. The GM uses the job's hook, or rolls d10 on the era's trouble table. "
+        "Jobs marked † are against the law.",
+    ]
