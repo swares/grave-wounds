@@ -143,3 +143,61 @@ function ldFatigue(band, km){                       // steps of fatigue a day's 
   const fk = LDS().bands[band].fatigue_km;
   return fk ? Math.floor(km / fk) : 0;
 }
+/* Combat stress (as gravewounds/stress.py, data TD.stress): Strain, a share of it into Toll, a Nerve
+   check at each multiple passed; rest, treatment, rotation and homecoming. */
+const STR = () => TD.stress || {};
+const ST_STATES = ["shaken", "strained", "exhaustion", "severe"];
+const stNew = () => ({ strain: 0, toll: 0, state: null, broke: false });
+const stTotal = st => st.strain + st.toll;
+const stWorse = (a, b) => (a === null || a === undefined || ST_STATES.indexOf(b) > ST_STATES.indexOf(a) ? b : a);
+function stAdd(st, amount, nerve, rng){            // [{at, roll, target, held, result}]: st changed in place
+  const S = STR(), before = stTotal(st), every = S.check_every, out = [];
+  st.strain += amount; st.toll += amount * S.toll_share;
+  for (let k = Math.floor(before / every) + 1; k <= Math.floor(stTotal(st) / every); k++){
+    const at = k * every, target = nerve + S.base - at - (st.broke ? S.relapse : 0), roll = rng.randint(1, 100);
+    const held = roll <= target && roll < S.fail_from, row = { at, roll, target, held, result: null };
+    if (!held){
+      const n = rng.randint(1, 10) + Math.floor(Math.max(0, roll - target) / 10);
+      row.result = S.results.find(r => n <= r.to).id;
+      st.state = stWorse(st.state, row.result);
+      if (row.result === "exhaustion" || row.result === "severe") st.broke = true;
+    }
+    out.push(row);
+  }
+  return out;
+}
+function stRest(st, days){                          // days out of the line
+  if (days <= 0) return;
+  st.strain = Math.max(0, st.strain - STR().rest_day * days);
+  if (st.state === "shaken") st.state = null;
+}
+const stTreatments = eid => Object.keys(STR().treatment || {}).filter(k => !STR().treatment[k].eras || STR().treatment[k].eras.includes(eid));
+function stTreat(st, where, roll){                  // {rtd, chance, roll, days}
+  const T = STR().treatment[where], chance = T.rtd[st.state || "shaken"] ?? 0;
+  st.strain = T.strain === "all" ? 0 : Math.max(0, st.strain - T.strain);
+  if (T.toll) st.toll *= T.toll;
+  const rtd = roll <= chance;
+  if (rtd) st.state = null;
+  return { rtd, chance, roll, days: T.days };
+}
+function stRelieve(st, kind){                       // rotation home or a homecoming
+  st.strain = 0; st.toll *= STR()[kind].toll; st.state = null;
+}
+const stName = (eid, state) => { const i = { shaken: 0, strained: 1, exhaustion: 2, severe: 2 }[state]; return ((STR().names || {})[eid] || ["shaken", "strained", "broken down"])[i] };
+const stRow = state => (STR().results || []).find(r => r.id === state) || {};
+const stRoll = { randint: (a, b) => a + crypto.getRandomValues(new Uint32Array(1))[0] % (b - a + 1) };
+function xpStress(pid, source, nerve, why){         // a man takes a source's Strain (the shared store): -> the checks made
+  if (!pid || !TD.stress) return [];
+  const all = readXp(), x = xpOf(all, pid), st = (x.stress ||= stNew()), amount = STR().sources[source].strain;
+  const ev = stAdd(st, amount, nerve, stRoll);
+  (x.stressLog ||= []).unshift({ source, why: why || STR().sources[source].name, amount, ev });
+  x.stressLog = x.stressLog.slice(0, 30);
+  writeXp(all);
+  return ev;
+}
+function xpStressDo(pid, fn){                        // change a man's stress record in the store with fn(st)
+  if (!pid) return null;
+  const all = readXp(), x = xpOf(all, pid), st = (x.stress ||= stNew()), r = fn(st);
+  writeXp(all);
+  return r;
+}

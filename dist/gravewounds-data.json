@@ -1455,6 +1455,248 @@
    }
   }
  },
+ "stress": {
+  "toll_share": 0.4,
+  "check_every": 10,
+  "base": 115,
+  "fail_from": 99,
+  "relapse": 10,
+  "rest_day": 3.5,
+  "sources": {
+   "light_day": {
+    "strain": 0.5,
+    "name": "A light day in the line (patrols, sniping)"
+   },
+   "line_day": {
+    "strain": 1,
+    "name": "A day in the line (holding, regular shelling)"
+   },
+   "fight": {
+    "strain": 2,
+    "name": "A fight (an attack, a defence, a bombardment)"
+   },
+   "extreme_day": {
+    "strain": 3,
+    "name": "An extreme day (street fighting, the bocage, a storm)"
+   },
+   "friend_down": {
+    "strain": 4,
+    "name": "A comrade killed or maimed"
+   },
+   "heavy_losses": {
+    "strain": 3,
+    "name": "His side lost a quarter or more"
+   },
+   "leader_down": {
+    "strain": 3,
+    "name": "His leader down"
+   },
+   "wounded": {
+    "strain": 2,
+    "name": "Wounded"
+   },
+   "wounded_badly": {
+    "strain": 3,
+    "name": "Badly wounded"
+   },
+   "near_miss": {
+    "strain": 2,
+    "name": "A near miss, buried by a shell"
+   },
+   "hard_sight": {
+    "strain": 2,
+    "name": "A hard sight or deed"
+   },
+   "no_sleep": {
+    "strain": 1,
+    "name": "Two days without sleep, cold and wet"
+   }
+  },
+  "results": [
+   {
+    "to": 4,
+    "id": "shaken",
+    "attack": 10,
+    "nerve": 10,
+    "what": "Shaken: a tremor, jumpy; -10 to attack and to Nerve until a day's rest."
+   },
+   {
+    "to": 7,
+    "id": "strained",
+    "attack": 20,
+    "nerve": 20,
+    "what": "Strained: sleepless, startled by every sound, will not volunteer; -20 to attack and Nerve until treated."
+   },
+   {
+    "to": 9,
+    "id": "exhaustion",
+    "out": true,
+    "what": "Broken down: shaking, weeping or numb; out of the fight until treated."
+   },
+   {
+    "to": 99,
+    "id": "severe",
+    "out": true,
+    "evacuate": true,
+    "what": "Severely broken down: out of the fight, to be sent back; before 1914 he may simply walk away."
+   }
+  ],
+  "treatment": {
+   "unit": {
+    "name": "With his unit (comrades, a sergeant, a priest)",
+    "days": 2,
+    "rtd": {
+     "shaken": 60,
+     "strained": 60,
+     "exhaustion": 30,
+     "severe": 10
+    },
+    "strain": 10
+   },
+   "forward": {
+    "name": "A forward exhaustion centre",
+    "days": 3,
+    "rtd": {
+     "shaken": 70,
+     "strained": 65,
+     "exhaustion": 60,
+     "severe": 30
+    },
+    "strain": 20,
+    "eras": [
+     "wwi",
+     "wwii",
+     "korea",
+     "vietnam",
+     "modern"
+    ]
+   },
+   "rear": {
+    "name": "A hospital in the rear",
+    "days": 14,
+    "rtd": {
+     "shaken": 50,
+     "strained": 40,
+     "exhaustion": 30,
+     "severe": 20
+    },
+    "strain": 30
+   },
+   "home": {
+    "name": "Sent home",
+    "days": 60,
+    "rtd": {
+     "shaken": 30,
+     "strained": 20,
+     "exhaustion": 13,
+     "severe": 10
+    },
+    "strain": "all",
+    "toll": 0.5
+   },
+   "furlough": {
+    "name": "Furlough home",
+    "days": 30,
+    "rtd": {
+     "shaken": 60,
+     "strained": 50,
+     "exhaustion": 40,
+     "severe": 30
+    },
+    "strain": "all",
+    "eras": [
+     "medieval",
+     "thirty_years",
+     "horse_musket",
+     "crimea",
+     "civil_war"
+    ]
+   }
+  },
+  "rotation": {
+   "toll": 0.25,
+   "eras": [
+    "korea",
+    "vietnam",
+    "modern"
+   ],
+   "name": "Rotated home at the end of his tour"
+  },
+  "homecoming": {
+   "toll": 0.5,
+   "eras": [
+    "plains_nations"
+   ],
+   "name": "Welcomed and honoured at home"
+  },
+  "names": {
+   "medieval": [
+    "afeard",
+    "heavy of heart",
+    "out of his wits"
+   ],
+   "thirty_years": [
+    "afeard",
+    "melancholy",
+    "distracted"
+   ],
+   "horse_musket": [
+    "the wind of the ball",
+    "nostalgia",
+    "nostalgia"
+   ],
+   "crimea": [
+    "shaken",
+    "nostalgia",
+    "exhaustion"
+   ],
+   "civil_war": [
+    "shaken",
+    "soldier's heart",
+    "nostalgia"
+   ],
+   "plains_nations": [
+    "shaken",
+    "strained",
+    "broken down"
+   ],
+   "wwi": [
+    "windy",
+    "NYDN (not yet diagnosed, nervous)",
+    "shell shock"
+   ],
+   "wwii": [
+    "jittery",
+    "combat fatigue",
+    "combat exhaustion"
+   ],
+   "korea": [
+    "jittery",
+    "combat exhaustion",
+    "combat exhaustion"
+   ],
+   "vietnam": [
+    "jittery",
+    "combat fatigue",
+    "combat exhaustion"
+   ],
+   "modern": [
+    "shaken",
+    "combat stress reaction",
+    "combat stress reaction"
+   ]
+  },
+  "lasting": [
+   "Sleeps badly; fights his battles again in his dreams",
+   "Starts at sudden noises; watches doors",
+   "Drinks more than he did",
+   "Keeps new men at a distance",
+   "A racing heart on exertion (soldier's heart)",
+   "Grieves for the men he lost; asks why he lived",
+   "Lost his faith, or his sense of what is right",
+   "Claims a pension for his nerves (from 1914)"
+  ]
+ },
  "locations": [
   {
    "id": "skull_l",

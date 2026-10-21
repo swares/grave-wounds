@@ -71,6 +71,8 @@ def values(d: Data) -> dict:
         "origin_gain": E["gain"], "first_term": E["first_term"], "term_main": E["term_main"], "term_second": E["term_second"],
         "event_gain": E["gain"], "age_start": E["age"]["start"], "age_term": E["age"]["per_term"], "skill_max": E["skill_max"],
         "deed_bonus": d.ranks.get("deed_bonus", 20), "literate": d.ranks.get("literate", 20), "sack_bonus": d.ranks.get("sack_bonus", 15),
+        "st_base": d.stress.get("base", 115), "st_every": d.stress.get("check_every", 10), "st_toll": round(d.stress.get("toll_share", 0.4) * 100),
+        "st_rest": d.stress.get("rest_day", 3.5),
         "chk_crit": round(d.checks.get("critical_fraction", 0.1) * 100), "chk_fumble": d.checks.get("fumble_from", 96),
         "haggle_seller": (d.checks.get("haggle") or {}).get("seller", 50), "haggle_win": round(-(d.checks.get("haggle") or {}).get("win", -0.1) * 100),
         "haggle_crit": round(-(d.checks.get("haggle") or {}).get("critical", -0.25) * 100),
@@ -190,6 +192,12 @@ def tables(d: Data) -> dict:
                             for i, r in enumerate(RE.get("ladder") or [])])
         out["finds"] = _md(["d100", "He finds", "Worth (Days)"], [[f"{lo}–{f['to']}" if lo != f["to"] else str(f["to"]), f["what"], "—" if not f["days"][1] else f"{f['days'][0]}–{f['days'][1]}"]
                                                               for f, lo in zip(d.ranks["finds"], [1] + [x["to"] + 1 for x in d.ranks["finds"][:-1]])])
+    if d.stress:
+        SX = d.stress
+        out["strain"] = _md(["What", "Strain"], [[v["name"], f"+{v['strain']:g}"] for v in SX["sources"].values()])
+        out["treatment"] = _md(["Where", "Days", "Back to duty: shaken", "strained", "broken down", "severely"],
+                               [[t["name"] + (" (from 1916)" if "forward" == k else " (before 1914)" if k == "furlough" else ""), t["days"],
+                                 *[f"{t['rtd'][x]}%" for x in ("shaken", "strained", "exhaustion", "severe")]] for k, t in SX["treatment"].items()])
     if d.loads:
         LB = d.loads["bands"]
         lo = [0] + [b["upto"] for b in LB[:-1]]

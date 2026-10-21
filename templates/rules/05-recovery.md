@@ -57,3 +57,38 @@ survived the battle.
     {{marched}}; camp in the open, and fever is likelier; stay in a filthy camp, and the
     flux comes. The travel map counts all of it for whole
     forces; the players only have to decide.
+
+## Strain {#strain}
+
+Fighting wears on a man's mind as well as his body. **Strain** builds from what he goes through:
+
+{{table:strain}}
+
+and {{st_toll}}% of every point also goes into his **Toll**, which only going home lowers. Each
+time Strain and Toll together pass {{st_every}}, 20, 30 and on, he rolls d100: at or under his
+Nerve + {{st_base}} − that total, he holds; a man who has broken down before rolls 10 less. If he
+fails, he rolls d10, adding 1 for each 10 he failed by: 1-4 **shaken** (−10 to attack and Nerve
+until a day's rest), 5-7 **strained** (−20 until treated), 8-9 **broken down** (out of the fight
+until treated), 10 or more **severely** (out, and to be sent back). Each era has its own words for
+these: nostalgia in the Napoleonic and Civil wars, shell shock in 1914-18, combat exhaustion in
+1944.
+
+A day out of the line, camped, takes {{st_rest}} Strain off. A man who breaks down is treated
+where he is, near the front or in the rear; the nearer and the sooner, the likelier he goes back
+to duty:
+
+{{table:treatment}}
+
+Korea, Vietnam and the later wars rotated men home at the end of a tour: Strain gone, the Toll
+cut to a quarter. For the Plains nations, a homecoming that welcomes and honours a man halves it.
+A man who ends a campaign with his Toll at or above his Nerve, or who broke down, may carry a
+lasting effect: the GM notes it as part of who he is (sleeping badly, starting at noises, drinking,
+grief), never as a penalty.
+
+!!! gm "For the GM"
+    These rules follow the US Army's figures of 1944: a man of ordinary Nerve in a rifle company
+    lasted about 80 to 90 days of combat, and nearly every man had broken down by 200 to 240 days;
+    British units, rested every twelve days, lasted about twice as long. Breaking down was not
+    weakness: it came to almost everyone who stayed in the line long enough. Handle it with the
+    respect the men who lived it deserve.
+
