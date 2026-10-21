@@ -89,8 +89,62 @@ function makeCharacter(region, careerId, terms, mode, rng, sexWanted = "m"){
   }
   const reg = byId(T.regions, region), name = nameFor(reg, sex, rng), look = lookFor(reg, sex, rng);
   const [kit, weapon] = kitFor(T, career, region);
-  return finishChar({ name, sex, era: T.id, region, career: careerId, terms, mode, base, stat_mods: statMods, gains, origin: origin.name,
-    trait: origin.trait.text, drawback: origin.drawback.text, events, old, age: T.age.start + T.age.per_term * terms, kit, weapon, look });
+  const c = ({ name, sex, era: T.id, region, career: careerId, terms, mode, base, stat_mods: statMods, gains, origin: origin.name,
+    trait: origin.trait.text, drawback: origin.drawback.text, events, old, age: T.age.start + T.age.per_term * terms, kit, weapon, look, aged_to: T.age.start });
+  agSteps(c, rng);                                 // the years of his terms: decline, maturity, wear (the last of the dice)
+  return finishChar(c);
+}
+/* Ageing (as gravewounds/ageing.py, data TD.ageing): each `step` years of his age, his band's
+   decline (older for his Wear), a step of maturity and Wear; the Worn Out check for each term. */
+const AG_DECLINE = ["str", "agi", "end", "wits"], AG_MATURE = ["pres", "wits", "nerve"];
+function agRoll(rng, dice){                       // dice[0]d(dice[1])
+  let n = 0;
+  for (let i = 0; i < dice[0]; i++){ n += rng.randint(1, dice[1]) }
+  return n;
+}
+function agDecline(band, wear, W, rng, ch){       // the band's losses into ch: Endurance twice, the worse, with heavy Wear
+  for (const k of AG_DECLINE){
+    if (!band[k]) continue;
+    let n = agRoll(rng, band[k]);
+    if (k === "end" && wear >= W.end_twice) n = Math.max(n, agRoll(rng, band[k]));
+    ch[k] = (ch[k] || 0) - n;
+  }
+}
+function agMature(mid, M, mat, ch){               // a step of maturity into ch, from M.from to each one's `to`, at most its cap
+  if (mid < M.from) return;
+  for (const k of AG_MATURE){
+    if (mid >= M[k].to || (mat[k] || 0) >= M[k].cap) continue;
+    mat[k] = (mat[k] || 0) + 1;
+    ch[k] = (ch[k] || 0) + 1;
+  }
+}
+const byKey = (a, b) => a.localeCompare(b);
+function agSteps(c, rng){                         // [{age, changes}]: c changed in place (stat_mods, wear, matured, aged_to)
+  const A = TD.ageing; if (!A) return [];
+  const step = A.step ?? 4, W = A.wear, out = [];
+  c.aged_to ??= c.age; c.wear ??= 0; const mat = (c.matured ||= {});
+  while (c.age - c.aged_to >= step){
+    const mid = c.aged_to + step / 2, eff = mid + Math.floor(c.wear / W.per) * W.add_years;
+    const band = A.decline.findLast(b => eff >= b.from), ch = {};
+    agDecline(band, c.wear, W, rng, ch);
+    agMature(mid, A.maturity, mat, ch);
+    for (const [k, v] of Object.entries(ch)) c.stat_mods[k] = (c.stat_mods[k] || 0) + v;
+    c.wear += W.per_step; c.aged_to += step;
+    out.push({ age: c.aged_to, changes: Object.fromEntries(Object.keys(ch).sort(byKey).map(k => [k, ch[k]])) });
+  }
+  return out;
+}
+const agAddWear = (c, hard) => { c.wear = (c.wear || 0) + hard * (TD.ageing?.wear?.hard_season ?? 1) };
+function agWornOut(c, years, roll){               // {checked, threshold, roll, worn, why}: stats current
+  const O = TD.ageing?.worn_out, s = c.stats, age = c.age, wear = c.wear || 0;
+  const out = { checked: false, threshold: 0, roll, worn: false, why: "" };
+  if (!O) return out;
+  if (age >= O.end_age && Math.min(s.str, s.agi, s.end) < O.any_below) return { ...out, checked: true, worn: true, why: "broken down: too weak to serve" };
+  if (age >= O.end_age && s.end < O.end_below) return { ...out, checked: true, worn: true, why: "worn out: his wind is gone" };
+  if (age < O.age && wear < O.wear) return out;
+  const t = Math.max(0, Math.trunc((wear * O.per_wear + Math.max(0, age - O.age) * O.per_year - (s.end - 50) / O.end_per) * years / 4));
+  const worn = roll <= t;
+  return { ...out, checked: true, threshold: t, worn, why: worn ? "worn out by service" : "" };
 }
 function finishChar(c){                           // stats, skills, attack, defence and nerve from the parts
   const T = TD.era, [lo, hi] = T.stat_range;

@@ -190,6 +190,19 @@ def tables(d: Data) -> dict:
                             for i, r in enumerate(RE.get("ladder") or [])])
         out["finds"] = _md(["d100", "He finds", "Worth (Days)"], [[f"{lo}–{f['to']}" if lo != f["to"] else str(f["to"]), f["what"], "—" if not f["days"][1] else f"{f['days'][0]}–{f['days'][1]}"]
                                                               for f, lo in zip(d.ranks["finds"], [1] + [x["to"] + 1 for x in d.ranks["finds"][:-1]])])
+    if d.ageing:
+        names = {"str": "Strength", "agi": "Agility", "end": "Endurance", "wits": "Wits"}
+
+        def dice(v):
+            if not v:
+                return "—"
+            n = v[0] if v[0] > 1 else ""
+            return f"−{n}d{v[1]}"
+        bands = d.ageing["decline"]
+        out["ageing"] = _md(["Age (middle of the 4 years)", *names.values()],
+                            [[f"{b['from']}–{nb['from'] - 1}" if nb else f"{b['from']} and over", *[dice(b.get(k)) for k in names]]
+                             for b, nb in zip(bands, bands[1:] + [None]) if b["from"] > 0]
+                            )
     if "medieval" in d.jobs:
         from .jobs import job_rows, trouble_rows
         jr, tr = job_rows(d, "medieval"), trouble_rows(d, "medieval")

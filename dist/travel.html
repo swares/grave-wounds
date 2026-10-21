@@ -1535,7 +1535,7 @@ function healthNight(f, today, camp){         // the sick get better or worse; o
   const ctx = { care: campCare(kind), marched: (f.marched || 0) > 0, wet_cold: nightHard(today.w, kind), filth: hyg === "poor", fresh: (f.noFresh || 0) < DZ.week_days,
     leech: leechBonus(bestSkill([f], "leechcraft")[0]), low: today.w.low, shelter: WXD.shelter[kind || "none"] };
   namedNight(f, ctx, f.day % DZ.week_days === 0 ? weekFactorsFor(f, kind, hyg) : null);
-  xpNight(f);
+  xpNight(f, ctx.wet_cold);
   const r = healthDay(healthOf(f), { ...ctx, men: f.men, unnursed: nursingOf(healthOf(f), f.men).unnursed }, roll100);
   f.health = r.health;
   const dead = Object.values(r.events.dead).reduce((t, n) => t + n, 0);
@@ -1550,23 +1550,30 @@ const NAMED_KEY = "gravewounds-named";        // {uid: {name, endurance, map, fo
 function readNamed(){ try{ return JSON.parse(localStorage.getItem(NAMED_KEY) || "{}") || {} }catch(e){ return {} } }
 function writeNamed(all){ try{ localStorage.setItem(NAMED_KEY, JSON.stringify(all)) }catch(e){ /* storage off: they stay as they were */ } }
 const namedWith = (all, f) => Object.entries(all).filter(([, n]) => n.map === S.mapId && n.force === f.id && !n.dead);
-function xpNight(f){                          // experience: a night served for each named man; a week nursing ticks the best Leechcraft
+const hasCases = n => (n.health?.cases || []).length > 0;
+function xpNight(f, wetCold){                 // experience: a night served for each named man; a week nursing ticks the best Leechcraft; drill
   const all = readNamed(), mine = namedWith(all, f).filter(([, n]) => !n.dead);
-  for (const [, n] of mine){ xpServe(n.pid, 1); if (fedByArmy(f)) xpArmy(n.pid, !!f.unpaid) }   // a day served; and his army's pay, or arrears
-  const sick = healthOf(f).cases.length > 0 || mine.some(([, n]) => ((n.health || {}).cases || []).length);
-  if (sick && f.day % DZ.week_days === 0){ const [lc, , pid] = bestSkill([f], "leechcraft", all); if (lc) xpTick(pid, "leechcraft", "nursing the sick") }
-  if ((f.marched || 0) <= 0) f.campWeek = (f.campWeek || 0) + 1;     // drill: days of the week not marching
-  if (f.day % DZ.week_days === 0){
-    const able = mine.filter(([, n]) => n.drill && ableNow(n));
-    if (fedByArmy(f) && able.length){
-      const [cmd, who] = bestSkill([f], "command", all), r = trDrill(f.campWeek || 0, cmd, roll100());
-      if (r){
-        if (r.success) for (const [, n] of able) xpTick(n.pid, n.drill, "drill in camp");
-        f.log.unshift(`${dateText(f.day, true)}: a week's drill in camp${cmd > (((DATA.training || {}).drill || {}).nco ?? 50) ? ` under ${who}` : ""} (${r.target}, rolled ${r.roll}): ${r.success ? "the named men's weapon skills are ticked" : "it came to little"}.`);
-      }
-    }
-    f.campWeek = 0;
+  for (const [, n] of mine){
+    xpServe(n.pid, 1);                                     // a day served
+    if (fedByArmy(f)) xpArmy(n.pid, !!f.unpaid);           // and his army's pay, or arrears
+    if (f.shortFood || wetCold || hasCases(n)) xpMark(n.pid, "hard", 1);   // a hard night: wear (ageing)
   }
+  if ((f.marched || 0) <= 0) f.campWeek = (f.campWeek || 0) + 1;     // drill: days of the week not marching
+  if (f.day % DZ.week_days !== 0) return;
+  const sick = healthOf(f).cases.length > 0 || mine.some(([, n]) => hasCases(n));
+  if (sick){ const [lc, , pid] = bestSkill([f], "leechcraft", all); if (lc) xpTick(pid, "leechcraft", "nursing the sick") }
+  drillWeek(f, all, mine);
+  f.campWeek = 0;
+}
+function drillWeek(f, all, mine){             // the week's drill for a force its army feeds: the best Command (or its sergeants) rolls
+  const able = mine.filter(([, n]) => n.drill && ableNow(n));
+  if (!fedByArmy(f) || !able.length) return;
+  const [cmd, who] = bestSkill([f], "command", all), r = trDrill(f.campWeek || 0, cmd, roll100());
+  if (!r) return;
+  if (r.success) for (const [, n] of able) xpTick(n.pid, n.drill, "drill in camp");
+  const under = cmd > (DATA.training?.drill?.nco ?? 50) ? ` under ${who}` : "";
+  const came = r.success ? "the named men's weapon skills are ticked" : "it came to little";
+  f.log.unshift(`${dateText(f.day, true)}: a week's drill in camp${under} (${r.target}, rolled ${r.roll}): ${came}.`);
 }
 function namedNight(f, ctx, factors){          // the day (and on the week's last day, the outbreak roll) for each named man with the force
   const all = readNamed(), mine = namedWith(all, f);

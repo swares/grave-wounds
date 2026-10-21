@@ -201,6 +201,14 @@ When an item is done, delete it here and note it in the pull request that closes
   - no difficulty from wounds, fatigue or hunger is added to a check out of a fight (the GM sets
     it);
   - haggling is only for buying: selling loot, and hiring a replacement, are at the list price.
+- **Ageing, first cut.** Decline, maturity, Wear and the Worn Out check. Still left out: the
+  decline dice are design choices scaled to the physiology (no game-scale figures exist); the best
+  sources for British invaliding by age (Tulloch's tables, 1838-53; Nielsen's Chelsea
+  applicants) and for breakdown by age in WWII (Stouffer vol. II; Beebe and Appel) were not read;
+  enlistment age limits by era, and older recruits wearing out faster (Civil War men enlisting at
+  about 39 had 1.8 then 2.4 times the odds of dying of disease), are not applied; Presence does
+  not rise with promotion; followers and men without a sheet do not age; age does not count in a
+  fight beyond the characteristics it has changed.
 - **Experience, first cut.** Skills used well are ticked (job checks, hits, parries and
   dodges, first aid, foraging, nursing, Stealth and Watch at a surprise) and roll to rise at
   End of season; days served add a career term (`docs/team.md`, *Experience*). Still left out:

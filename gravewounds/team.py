@@ -164,7 +164,10 @@ def make_character(d: Data, eid: str, region: str, career_id: str, terms: int, m
     c = {"name": name, "sex": sex, "era": eid, "region": region, "career": career_id, "terms": terms, "mode": mode,
          "base": base, "stat_mods": stat_mods, "gains": gains, "origin": origin["name"],
          "trait": origin["trait"]["text"], "drawback": origin["drawback"]["text"], "events": events, "old": old,
-         "age": T["age"]["start"] + T["age"]["per_term"] * terms, "kit": kit, "weapon": weapon, "look": look}
+         "age": T["age"]["start"] + T["age"]["per_term"] * terms, "kit": kit, "weapon": weapon, "look": look,
+         "aged_to": T["age"]["start"]}
+    from .ageing import steps
+    steps(d, c, rng)                               # the years of his terms: decline, maturity, wear (last of the dice)
     return finish(d, c)
 
 
