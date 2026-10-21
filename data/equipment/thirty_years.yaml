@@ -1,0 +1,58 @@
+# Prices for the Thirty Years' War (c.1630). Format as data/equipment/medieval.yaml.
+# Prices are in kreuzer (90 to the Reichstaler, 60 to the gulden). English prices of the 1590s and
+# 1620s are converted at about 4s 6d to the thaler (an estimate; noted on each row), and Dutch
+# prices of the mid-1600s are taken guilder for gulden as a stand-in for German ones.
+id: thirty_years
+
+currencies:
+  thaler:
+    name: "Reichstaler (1½ gulden, 90 kreuzer); the Swedish riksdaler is about the same"
+    coin: thaler
+    base: kreuzer
+    units: [{sym: " Rt", of: 90}, {sym: " kr", of: 1}]
+    day: 12
+    day_note: "a foot soldier's 4 thalers a month"
+
+currency: {default: thaler}
+
+sources:
+  lwl: &lwl "https://lwl.org/westfaelischer-friede-download/wfe-t/wfe-txt1-31.htm"
+  bvm: &bvm "https://bowvsmusket.com/2015/07/01/16th-century-prices-of-weapons/"
+  cuir: &cuir "https://en.wikipedia.org/wiki/Cuirassier"
+  hag: &hag "https://germanhistory-intersections.org/en/germanness/ghis:document-294"
+  vermeer: &vermeer "https://www.essentialvermeer.com/references/vermeer-economy.html"
+
+items:
+  # Arms and armour
+  - {id: cuirassier_armour, name: "Cuirassier's armour", cat: armour, price: 1800, when: "1629", kit: cuirassier_1630, source: {url: *cuir, note: "£4 10s in England, converted"}}
+  - {id: corslet, name: "Pikeman's corslet", cat: armour, price: 600, when: "1590s", kit: pikeman_1630, source: {url: *bvm, note: "30s in England, converted"}}
+  - {id: harquebusier_armour, name: "Harquebusier's armour", cat: armour, price: 520, when: "1629", kit: harquebusier_1630, source: {url: *cuir, note: "£1 6s in England, converted"}}
+  - {id: wheellock_pair, name: "Pair of wheellock pistols", cat: weapon, price: [900, 1800], weapon: wheellock_pistol, approx: true}
+  - {id: matchlock, name: "Matchlock musket", cat: weapon, price: 360, weapon: matchlock_musket, source: {url: *lwl, note: "about a month's pay, stopped from wages"}}
+  - {id: sword, name: "Sword", cat: weapon, price: 120, when: "1590s", weapon: saber, source: {url: *bvm, note: "6s in England, converted"}}
+  - {id: pike, name: "Pike", cat: weapon, price: 40, when: "1590s", weapon: pike, source: {url: *bvm, note: "2s in England, converted"}}
+  - {id: powder, name: "Gunpowder", cat: ammunition, price: 20, per: lb, when: "1590s", source: {url: *bvm, note: "1s in England, converted"}}
+  # Horses, land, goods
+  - {id: farm, name: "Farm", cat: service, price: 42000, when: "1636", source: {url: "https://germanhistory-intersections.org/en/germanness/ghis:document-293.pdf", note: "700 gulden, Hesse"}}
+  - {id: cavalry_horse, name: "Cavalry horse", cat: horse, price: [2700, 7200], approx: true}
+  - {id: company_flag, name: "Company flag", cat: gear, price: 1800, when: "1625", source: {url: *lwl, note: "30 gulden"}}
+  - {id: wheat_famine, name: "Wheat, famine price", cat: food, price: 720, per: Mütt, when: "1637", source: {url: "https://germanhistory-intersections.org/en/germanness/ghis:document-293.pdf", note: "Hesse"}}
+  - {id: coat_used, name: "Soldier's coat, sold second-hand", cat: clothing, price: 270, when: "c.1625", source: {url: *hag, note: "Hagendorf's diary"}}
+  - {id: billet_buyoff, name: "Buying off one billeted soldier", cat: service, price: 45, when: "1629", source: {url: *hag, note: "Hagendorf's diary"}}
+  - {id: billet_money, name: "Billet money for wood, salt and light, a day", cat: light, price: 4, when: "1639", source: {url: *lwl, note: "1 groschen, Leipzig"}}
+  # Field kit
+  - {id: tent, name: "Soldier's tent", cat: shelter, price: 180, approx: true}
+  - {id: blanket, name: "Blanket", cat: shelter, price: 45, approx: true}
+  - {id: lantern, name: "Horn or tin lantern", cat: light, price: 10, approx: true}
+  - {id: sundial_compass, name: "Pocket sundial-compass", cat: navigation, price: 90, approx: true}
+  - {id: guide_day, name: "Local guide, a day", cat: navigation, price: 15, approx: true}
+  - {id: flint_steel, name: "Flint, steel and tinderbox", cat: fire, price: 3, approx: true}
+  - {id: rope, name: "Rope", cat: rope, price: 2, per: fathom, approx: true}
+  # First aid
+  - {id: surgeon_chest, name: "Regimental surgeon's medicine chest", cat: first_aid, price: 3960, when: "1627", source: {url: "https://www.ssns.org.uk/wp-content/uploads/2020/04/Murdoch_2016_Vol_48_pp_50_65.pdf", note: "£10, converted"}}
+  - {id: apothecary, name: "Apothecary's medicines and care for two sick men", cat: first_aid, price: 3276, when: "1620", source: {url: "https://koetzting.blogspot.com/2020/03/der-30jahrige-krieg-im-landgericht_20.html", note: "54 fl 36 kr, Cham"}}
+  - {id: barber_surgeon_month, name: "Barber-surgeon's pay, a month (Swedish)", cat: pay, price: 360, when: "1630", source: {url: "https://www.ssns.org.uk/wp-content/uploads/2020/04/Murdoch_2016_Vol_48_pp_50_65.pdf", note: "4 riksdaler"}}
+  # Clothing (Dutch prices as a stand-in)
+  - {id: wool_coat, name: "Workman's wool coat", cat: clothing, price: [240, 480], when: "mid-1600s", source: {url: *vermeer, note: "4-8 Dutch guilders"}}
+  - {id: shoes, name: "Leather shoes", cat: clothing, price: [120, 180], when: "mid-1600s", source: {url: *vermeer, note: "2-3 Dutch guilders"}}
+  - {id: shirt, name: "Linen shirt", cat: clothing, price: [60, 120], when: "mid-1600s", source: {url: *vermeer, note: "1-2 Dutch guilders"}}

@@ -1,0 +1,101 @@
+# Prices for the Korean War (1950-1953). Format as data/equipment/medieval.yaml.
+# US prices in cents (US troops were paid in Military Payment Certificates, Series 481, swapped
+# one for one with dollars); British in farthings; Korean in won. Most item prices are estimates:
+# the Army supply catalogue that priced every item could not be read.
+id: korea
+
+currencies:
+  usd:
+    name: "Dollars and cents (Military Payment Certificates)"
+    coin: usd
+    base: cent
+    decimal: {sym: "$", per: 100, small: "¢"}
+    day: 285
+    day_note: "a US private's $85.80 a month base pay (1952)"
+  gbp:
+    name: "Pounds, shillings and pence"
+    coin: gbp
+    base: farthing
+    units: [{sym: "£", of: 960, pre: true}, {sym: "s", of: 48}, {sym: "d", of: 4}]
+    day: 192
+    day_note: "a British private's 28s a week (1948)"
+  won:
+    name: "South Korean won (4,000 to the dollar in 1950, 6,000 from April 1951; hwan from 1953)"
+    coin: won
+    base: won
+    units: [{sym: " won", of: 1}]
+    day: 100
+    day_note: "an ROK private's 3,000 won a month (1950; secondary source)"
+  yuan:
+    name: "Chinese yuan (about 35,000 old yuan to the dollar)"
+    coin: yuan
+    base: yuan
+    units: [{sym: " yuan", of: 1}]
+    day_note: "no Chinese soldier's pay found"
+  kpw:
+    name: "North Korean won"
+    coin: kpw
+    base: won
+    units: [{sym: " won", of: 1}]
+    day_note: "no North Korean soldier's pay found"
+
+currency: {default: usd, commonwealth: gbp, rok: won, chinese: yuan, north_korea: kpw}
+
+sources:
+  ls1951: &ls1951 "https://archive.org/stream/sim_leather-and-shoes_1951-01-20_121_3/sim_leather-and-shoes_1951-01-20_121_3_djvu.txt"
+  ls1950: &ls1950 "https://archive.org/stream/sim_leather-and-shoes_1950-10-07_120_15/sim_leather-and-shoes_1950-10-07_120_15_djvu.txt"
+
+items:
+  # Arms and armour
+  - {id: bar, name: "Browning automatic rifle (civilian price)", cat: weapon, price: 30000, source: {url: "https://en.wikipedia.org/wiki/M1918_Browning_Automatic_Rifle", note: "Wikipedia, 1931 Colt price"}}
+  - {id: garand, name: "M1 Garand rifle", cat: weapon, price: 8500, weapon: rifle_service, regions: [us_1950, us_1952, rok], source: {url: "https://en.wikipedia.org/wiki/M1_Garand", note: "Wikipedia, WWII cost"}}
+  - {id: armoured_vest, name: "Armoured vest (M1951)", cat: armour, price: 5000, kit: vietnam_army, regions: [us_1952], approx: true}
+  - {id: carbine, name: "M1 or M2 carbine", cat: weapon, price: 4500, source: {url: "https://en.wikipedia.org/wiki/M1_carbine", note: "Wikipedia, WWII cost"}}
+  - {id: m1911, name: "M1911A1 pistol", cat: weapon, price: 2638, weapon: pistol_smg, regions: [us_1950, us_1952], source: {url: "https://en.wikipedia.org/wiki/M1911_pistol", note: "Wikipedia, 1938 cost"}}
+  - {id: helmet, name: "M1 helmet and liner", cat: armour, price: 600, kit: [ww2_rifleman, vietnam_army], regions: [us_1950, us_1952, rok], approx: true}
+  - {id: knife, name: "Fighting knife", cat: weapon, price: 300, approx: true}
+  - {id: grenade, name: "Fragmentation grenade", cat: weapon, price: 150, approx: true}
+  - {id: round_3006, name: ".30-06 round", cat: ammunition, price: 6, approx: true}
+  # Vehicles, goods, leave
+  - {id: jeep, name: "Jeep (M38)", cat: travel, price: 135000, approx: true}
+  - {id: camera, name: "35 mm camera (bought in Japan)", cat: gear, price: 6000, approx: true}
+  - {id: radio, name: "Portable radio", cat: gear, price: 3000, approx: true}
+  - {id: watch, name: "Wristwatch (PX)", cat: navigation, price: 1500, approx: true}
+  - {id: hotel_tokyo, name: "Hotel night on R&R in Tokyo", cat: lodging, price: 350, approx: true}
+  - {id: cigarettes, name: "Carton of cigarettes (PX)", cat: food, price: 125, approx: true}
+  - {id: c_ration, name: "C-ration meal", cat: food, price: 75, approx: true}
+  - {id: beer, name: "Can of beer (PX)", cat: food, price: 12, approx: true}
+  - {id: gi_insurance, name: "GI life insurance, $10,000 (free from 1951)", cat: service, price: 0, approx: true}
+  # Field kit
+  - {id: flashlight, name: "Angle-head flashlight", cat: light, price: 150, approx: true}
+  - {id: batteries, name: "Pair of batteries", cat: light, price: 20, approx: true}
+  - {id: sleeping_bag, name: "Mountain sleeping bag", cat: shelter, price: 2000, approx: true}
+  - {id: poncho, name: "Poncho", cat: shelter, price: 400, approx: true}
+  - {id: shelter_half, name: "Shelter half", cat: shelter, price: 300, approx: true}
+  - {id: compass, name: "Lensatic compass", cat: navigation, price: 500, approx: true}
+  - {id: map_case, name: "Map case", cat: navigation, price: 100, approx: true}
+  - {id: zippo, name: "Zippo lighter (PX)", cat: fire, price: 250, approx: true}
+  - {id: matchbox, name: "Waterproof match box", cat: fire, price: 25, approx: true}
+  - {id: heat_tab, name: "Heat tab (trioxane)", cat: fire, price: 5, approx: true}
+  - {id: rope, name: "Rope", cat: rope, price: 3, per: foot, approx: true}
+  - {id: medic_bag, name: "Medic's aid bag, stocked", cat: first_aid, price: [1500, 3000], approx: true}
+  - {id: field_dressing, name: "Field dressing", cat: first_aid, price: [15, 25], approx: true}
+  - {id: syrette, name: "Morphine syrette", cat: first_aid, price: 35, approx: true}
+  - {id: purification, name: "Water-purification tablets, bottle", cat: first_aid, price: [25, 50], approx: true}
+  - {id: salt_tablets, name: "Salt tablets, bottle", cat: first_aid, price: 25, approx: true}
+  # Clothing (boots: Quartermaster contracts)
+  - {id: parka, name: "Parka with pile liner", cat: clothing, price: 2500, approx: true}
+  - {id: arctic_boots, name: "Felt arctic boots (Marines)", cat: clothing, price: 1984, when: "1951", source: {url: *ls1951, note: "Leather and Shoes, contract"}}
+  - {id: field_jacket, name: "Field jacket (M1950)", cat: clothing, price: 1200, approx: true}
+  - {id: combat_boots, name: "Black combat boots", cat: clothing, price: 1097, when: "1951", source: {url: *ls1951, note: "Leather and Shoes, contract"}}
+  - {id: shoepacs, name: "Shoe-pacs, new", cat: clothing, price: [792, 1115], when: "1950", source: {url: *ls1950, note: "Leather and Shoes, bids"}}
+  - {id: russet_boots, name: "Russet combat boots", cat: clothing, price: 787, when: "1950", source: {url: *ls1950, note: "Leather and Shoes, contract"}}
+  - {id: tropical_boots, name: "Tropical combat boots", cat: clothing, price: 779, when: "1950", source: {url: "https://archive.org/stream/sim_leather-and-shoes_1950-06-24_119_25/sim_leather-and-shoes_1950-06-24_119_25_djvu.txt", note: "Leather and Shoes, contract"}}
+  - {id: wool_trousers, name: "Wool trousers", cat: clothing, price: 600, approx: true}
+  - {id: wool_shirt, name: "Wool shirt", cat: clothing, price: 500, approx: true}
+  - {id: shoepacs_surplus, name: "Shoe-pacs, surplus stock", cat: clothing, price: 419, when: "1950", source: {url: *ls1950, note: "Leather and Shoes, bids"}}
+  - {id: long_underwear, name: "Long underwear", cat: clothing, price: 300, approx: true}
+  - {id: pile_cap, name: "Pile cap", cat: clothing, price: 200, approx: true}
+  - {id: gloves, name: "Gloves", cat: clothing, price: 200, approx: true}
+  - {id: towel, name: "Towel", cat: gear, price: 50, approx: true}
+  - {id: socks, name: "Pair of socks", cat: clothing, price: 40, approx: true}

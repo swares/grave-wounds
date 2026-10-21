@@ -79,6 +79,31 @@ spear, bill or poleaxe, and so on). His **defence** is the better of Parry and D
 **Nerve** is the characteristic, used by the roller's stop checks and morale. Kit and weapon
 come with his first career and his region.
 
+**Money.** A **Day** is a common soldier's day's pay in his army's coin: 6d for an English
+archer in 1415, 12 kreuzer in 1630, $13 a month (43¢) for a Union private, $1,588 a month
+($53) for an American soldier in 2008. Each character starts with 30 Days saved for each
+career term (`data/money.yaml`), and the downtime action "earn money" pays 1 Day for each day
+worked. His issued kit and weapon are free; the sheet shows what they are worth in Days.
+
+Prices live in `data/equipment/<era>.yaml`, one file to an era, like the team tables:
+
+- **currencies:** each coin, its units (or a decimal coin), its Day in its smallest unit, and
+  a `coin` family. Prices are whole numbers of the smallest unit (farthings for pounds,
+  shillings and pence; kreuzer; cents), so nothing is lost to rounding, and Days are worked
+  out, never stored.
+- **currency:** which coin each army was paid in. An army with no known pay (the Plains
+  nations, who traded in robes; the Confederacy, whose dollar collapsed) shows its purse in
+  Days only.
+- **items:** a name, a category, a price or a low-high range, and a source, or `approx: true`
+  for an estimate. A row's `kit` or `weapon` names the armour kits and weapons it prices (a
+  kit may be several rows: a brigandine and a sallet); `regions` limits it to some armies.
+
+Seen from an army whose coin is of the same family, a price is counted in that army's Day: an
+AK-47 costs an insurgent paid $10 a day more Days than it costs an American soldier. Kit with
+no price (machine guns, artillery, most enemy armies' kit) is shown as "part not priced".
+The prices, their sources and the gaps are set out in the project doc "Grave Wounds: money and
+price lists by period book".
+
 ## Teams
 
 | Team | Members (terms) | Followers (quality) |

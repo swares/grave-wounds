@@ -277,6 +277,9 @@ def sheet(d: Data, c: dict) -> list[str]:
              f"  Skills: {trained}",
              f"  Arms: {d.weapons[c['weapon']]['name']} (attack {c['attack']}%), defence {c['defence']}%; {d.armor['kits'][c['kit']]['name']}"]
     lines.append("  In a fight: " + fight_line(d, c))
+    if d.equipment.get(c["era"]):
+        from .money import money_line
+        lines.append("  Money: " + money_line(d, c))
     lines += [f"  Term {i + 1}: {pron(e, sx)}" for i, e in enumerate(c["events"])]
     for w in c["old"]:
         hurt = f", {T['lasting']} off {_by_id(T['characteristics'], w['stat'])['name']}" if w["kind"] == "lasting" else ""

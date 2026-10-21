@@ -1,0 +1,165 @@
+# Prices for the Second World War (1939-1945). Format as data/equipment/medieval.yaml.
+# US prices in cents, most from the Quartermaster price list AR 30-3000 of 16 October 1944
+# (average costs to the Army, used to charge a soldier for lost kit; page numbers are the scan's).
+# British prices in farthings; German in pfennigs (German weapon prices given in dollars are
+# converted at the official 2.50 Reichsmarks to the dollar); Japanese in sen; Allied Military
+# lire whole.
+id: wwii
+
+currencies:
+  usd:
+    name: "Dollars and cents"
+    coin: usd
+    base: cent
+    decimal: {sym: "$", per: 100, small: "¢"}
+    day: 167
+    day_note: "a US private's $50 a month (from June 1942)"
+  gbp:
+    name: "Pounds, shillings and pence ($4.03 to the pound)"
+    coin: gbp
+    base: farthing
+    units: [{sym: "£", of: 960, pre: true}, {sym: "s", of: 48}, {sym: "d", of: 4}]
+    day: 144
+    day_note: "a British private's 3s a day (May 1944)"
+  reichsmark:
+    name: "Reichsmarks (100 pfennigs)"
+    coin: reichsmark
+    base: pfennig
+    decimal: {sym: "", suf: " RM", per: 100, small: " Pf"}
+    day: 100
+    day_note: "a German Soldat's 30 RM a month (Wehrsold)"
+  yen:
+    name: "Yen (100 sen)"
+    coin: yen
+    base: sen
+    decimal: {sym: "¥", per: 100, small: " sen"}
+    day: 25
+    day_note: "a Japanese private's 6-9 yen a month"
+  am_lire:
+    name: "Allied Military lire (100 to the dollar)"
+    coin: am_lire
+    base: lira
+    units: [{sym: " lire", of: 1}]
+    day_note: "no Day: paid out by the Allies"
+  rub:
+    name: "Rubles (100 kopecks)"
+    coin: rub
+    base: kopeck
+    decimal: {sym: "", suf: " rub.", per: 100, small: " kop."}
+    day_note: "no Soviet soldier's pay found"
+
+currency: {default: usd, commonwealth: gbp, germany: reichsmark, japan: yen, soviet: rub}
+
+sources:
+  ar: &ar "https://www.usww2uniforms.com/bib_AR30-3000_16oct44.html"
+  who: &who "https://www.warhistoryonline.com/featured/rough-guide-costs-of-wwii_guns.html"
+  ecu: &ecu "https://digital.lib.ecu.edu/pearlharbor/secondwave/rown/"
+
+items:
+  # Vehicles, arms
+  - {id: jeep, name: "Jeep (to the Army)", cat: travel, price: [65000, 74000], approx: true}
+  - {id: harley_wla, name: "Harley-Davidson WLA motorcycle", cat: travel, price: 40000, approx: true}
+  - {id: bar, name: "BAR automatic rifle", cat: weapon, price: 31900, when: "1945", source: {url: *who, note: "War History Online"}}
+  - {id: mg42, name: "MG42 machine gun", cat: weapon, in: reichsmark, price: 25000, weapon: machine_gun, regions: [germany], source: {url: *who, note: "$100, converted"}}
+  - {id: garand, name: "M1 Garand rifle", cat: weapon, price: 8500, weapon: rifle_service, regions: [us, us_pacific], source: {url: "https://en.wikipedia.org/wiki/M1_Garand", note: "Wikipedia (uncited)"}}
+  - {id: thompson, name: "Thompson submachine gun", cat: weapon, price: [4500, 7000], when: "1942-44", weapon: pistol_smg, regions: [us, us_pacific], source: {url: "https://en.wikipedia.org/wiki/Thompson_submachine_gun", note: "Wikipedia"}}
+  - {id: carbine, name: "M1 carbine", cat: weapon, price: 4500, source: {url: "https://en.wikipedia.org/wiki/M1_carbine", note: "Wikipedia"}}
+  - {id: lee_enfield, name: "Lee-Enfield No. 4 rifle", cat: weapon, in: gbp, price: 7440, when: "1943", weapon: rifle_service, regions: [commonwealth], source: {url: "https://en.wikipedia.org/wiki/Lee%E2%80%93Enfield", note: "Wikipedia, citing Pegler"}}
+  - {id: kar98k, name: "Kar98k rifle", cat: weapon, in: reichsmark, price: 7000, weapon: rifle_service, regions: [germany], source: {url: *who, note: "$28, converted"}}
+  - {id: mp40, name: "MP40 submachine gun", cat: weapon, in: reichsmark, price: 6000, weapon: pistol_smg, regions: [germany], source: {url: *who, note: "$24, converted"}}
+  - {id: m1911, name: "M1911 pistol", cat: weapon, price: 2638, source: {url: "https://en.wikipedia.org/wiki/M1911_pistol", note: "Wikipedia"}}
+  - {id: grease_gun, name: "M3 grease gun", cat: weapon, price: 2000, source: {url: "https://thearmorylife.com/m3-grease-gun-taking-a-cheap-shot", note: "The Armory Life"}}
+  - {id: sten, name: "Sten gun", cat: weapon, in: gbp, price: 2208, when: "1942", weapon: pistol_smg, regions: [commonwealth], source: {url: "https://en.wikipedia.org/wiki/Sten", note: "Wikipedia"}}
+  - {id: ammo_3006, name: "100 rounds of .30-06", cat: ammunition, price: 450, approx: true}
+  - {id: grenade, name: "Hand grenade", cat: weapon, price: 75, approx: true}
+  - {id: helmet_m1, name: "M-1 helmet with liner", cat: armour, price: 268, when: "1944", kit: ww2_rifleman, regions: [us, us_pacific], source: {url: *ar, note: "AR 30-3000 p.5, p.7"}}
+  # Food, lodging, travel
+  - {id: cigarettes_berlin, name: "Pack of cigarettes, Berlin black market", cat: food, in: reichsmark, price: 30000, when: "1945", source: {url: "https://www.coinworld.com/voices/gerald-tebben/purchasing_powerin.html", note: "CoinWorld"}}
+  - {id: hotel, name: "Hotel night (US)", cat: lodging, price: 250, approx: true}
+  - {id: rail_100, name: "Rail fare, about 100 miles (US)", cat: travel, price: 250, approx: true}
+  - {id: trattoria, name: "Trattoria meal, Italy", cat: food, in: am_lire, price: [50, 100], approx: true}
+  - {id: k_ration, name: "A day's K-ration", cat: food, price: 75, approx: true}
+  - {id: diner_meal, name: "Diner meal (US)", cat: food, price: 50, approx: true}
+  - {id: mild, name: "Pint of mild, Britain", cat: food, in: gbp, price: [44, 48], when: "1943-45", source: {url: "https://www.lutterworth.com/wp-content/uploads/extracts/brewing-victory-nation.pdf", note: "Brewing Victory"}}
+  - {id: cigarettes_px, name: "Pack of cigarettes (PX)", cat: food, price: 5, source: {url: "https://www.coinworld.com/voices/gerald-tebben/purchasing_powerin.html", note: "CoinWorld"}}
+  - {id: nsli, name: "GI life insurance, $10,000, a month", cat: service, price: 650, when: "1942", source: {url: "https://archive.org/stream/Yank17June42_201504/Yank%2017%20June%2042_djvu.txt", note: "Yank"}}
+  # Light
+  - {id: wrist_flashlight, name: "Wrist flashlight with batteries", cat: light, price: 98, when: "1942", source: {url: "https://onetuberadio.com/category/flashlight-history/", note: "OneTubeRadio"}}
+  - {id: tl122, name: "TL-122 flashlight (Signal Corps)", cat: light, price: 100, approx: true}
+  # Shelter (AR 30-3000)
+  - {id: squad_tent, name: "Squad tent, M1942", cat: shelter, price: 17328, when: "1944", source: {url: *ar, note: "AR 30-3000 p.54"}}
+  - {id: pyramidal_tent, name: "Pyramidal tent, khaki", cat: shelter, price: 5187, when: "1944", source: {url: *ar, note: "AR 30-3000 p.55"}}
+  - {id: bag_arctic, name: "Sleeping bag, arctic", cat: shelter, price: 3687, when: "1944", source: {url: *ar, note: "AR 30-3000 p.15"}}
+  - {id: mountain_tent, name: "Two-man mountain tent, with pins and poles", cat: shelter, price: 2956, when: "1944", source: {url: *ar, note: "AR 30-3000 p.55"}}
+  - {id: bag_mountain, name: "Sleeping bag, mountain", cat: shelter, price: 2525, when: "1944", source: {url: *ar, note: "AR 30-3000 p.15"}}
+  - {id: jungle_hammock, name: "Jungle hammock, complete", cat: shelter, price: 1704, when: "1944", source: {url: *ar, note: "AR 30-3000 p.18"}}
+  - {id: bedding_roll, name: "Waterproof bedding roll, M1935", cat: shelter, price: 1158, when: "1944", source: {url: *ar, note: "AR 30-3000 p.20"}}
+  - {id: bag_wool, name: "Sleeping bag, wool", cat: shelter, price: 1089, when: "1944", source: {url: *ar, note: "AR 30-3000 p.15"}}
+  - {id: poncho_light, name: "Poncho, lightweight", cat: shelter, price: 918, when: "1944", source: {url: *ar, note: "AR 30-3000 p.8"}}
+  - {id: blanket_m1934, name: "Wool blanket, M1934", cat: shelter, price: 810, when: "1944", source: {url: *ar, note: "AR 30-3000 p.16"}}
+  - {id: poncho_resin, name: "Poncho, resin-coated", cat: shelter, price: 626, when: "1944", source: {url: *ar, note: "AR 30-3000 p.8"}}
+  - {id: mosquito_bar, name: "Mosquito bar", cat: shelter, price: 594, when: "1944", source: {url: *ar, note: "AR 30-3000 p.16"}}
+  - {id: blanket_light, name: "Wool blanket, lightweight", cat: shelter, price: 406, when: "1944", source: {url: *ar, note: "AR 30-3000 p.16"}}
+  - {id: shelter_half, name: "Shelter half", cat: shelter, price: 348, when: "1944", source: {url: *ar, note: "AR 30-3000 p.55; new type $4.83"}}
+  - {id: sleeping_pad, name: "Insulating sleeping pad", cat: shelter, price: 226, when: "1944", source: {url: *ar, note: "AR 30-3000 p.20"}}
+  - {id: headnet, name: "Mosquito headnet", cat: shelter, price: 40, when: "1944", source: {url: *ar, note: "AR 30-3000 p.19"}}
+  # Navigation
+  - {id: hamilton_watch, name: "Hamilton pocket watch", cat: navigation, price: 17200, when: "1942", source: {url: *ecu, note: "Pearl Harbor loss claim"}}
+  - {id: zeiss_binoculars, name: "Zeiss binoculars", cat: navigation, price: 10400, when: "1942", source: {url: *ecu, note: "Pearl Harbor loss claim"}}
+  - {id: binoculars, name: "Binoculars, 6x30", cat: navigation, price: 5000, approx: true}
+  - {id: map_case, name: "Map case, roll type", cat: navigation, price: 545, when: "1944", source: {url: *ar, note: "AR 30-3000 p.17"}}
+  - {id: lensatic, name: "Lensatic compass (Engineers)", cat: navigation, price: 300, approx: true}
+  - {id: wristwatch, name: "Wristwatch (PX grade)", cat: navigation, price: 2000, approx: true}
+  - {id: matchbox_compass, name: "Waterproof match box with compass", cat: navigation, price: 56, when: "1944", source: {url: *ar, note: "AR 30-3000 p.16"}}
+  # Fire
+  - {id: zippo, name: "Zippo lighter (forces only, 1942-45)", cat: fire, price: 195, when: "1933 on", source: {url: "https://kb.zippo.com/the-history-of-zippo", note: "Zippo"}}
+  - {id: matchbox, name: "Waterproof match box", cat: fire, price: 11, when: "1944", source: {url: *ar, note: "AR 30-3000 p.16"}}
+  - {id: matches_uk, name: "Box of 50 matches", cat: fire, in: gbp, price: 6, when: "1944", source: {url: "https://www.phillumeny.com/?p=2143", note: "Phillumeny"}}
+  # Rope
+  - {id: rope_nylon, name: "Nylon climbing rope, 7/16 in, 120 ft", cat: rope, price: 1904, when: "1944", source: {url: *ar, note: "AR 30-3000 p.21"}}
+  - {id: rope_manila, name: "Manila climbing rope, ½ in, 200 ft", cat: rope, price: 223, when: "1944", source: {url: *ar, note: "AR 30-3000 p.20"}}
+  - {id: letdown_rope, name: "Parachutist's let-down rope, 30 ft", cat: rope, price: 135, when: "1944", source: {url: *ar, note: "AR 30-3000 p.21"}}
+  - {id: toggle_rope, name: "Toggle rope (British)", cat: rope, in: gbp, price: 96, approx: true}
+  - {id: drag_rope, name: "Drag rope with shoulder strap", cat: rope, price: 91, when: "1944", source: {url: *ar, note: "AR 30-3000 p.21"}}
+  - {id: tent_line, name: "Tent line, 10 ft", cat: rope, price: 19, when: "1944", source: {url: *ar, note: "AR 30-3000 p.52"}}
+  # First aid
+  - {id: medical_pouch, name: "Parachutist's medical pouch", cat: first_aid, price: 1152, when: "1944", source: {url: *ar, note: "AR 30-3000 p.20"}}
+  - {id: carlisle, name: "Carlisle dressing with sulfa tablets", cat: first_aid, price: 25, approx: true}
+  - {id: syrette, name: "Morphine syrette", cat: first_aid, price: 25, approx: true}
+  - {id: first_aid_pouch, name: "First-aid packet pouch", cat: first_aid, price: 19, when: "1944", source: {url: *ar, note: "AR 30-3000 p.20"}}
+  # Clothing and personal kit (AR 30-3000, 1944)
+  - {id: overcoat, name: "Wool overcoat, melton", cat: clothing, price: 1585, when: "1944", source: {url: *ar, note: "AR 30-3000 p.7"}}
+  - {id: rucksack, name: "Rucksack", cat: gear, price: 1257, when: "1944", source: {url: *ar, note: "AR 30-3000 p.21"}}
+  - {id: pile_jacket, name: "Pile field jacket", cat: clothing, price: 1253, when: "1944", source: {url: *ar, note: "AR 30-3000 p.6"}}
+  - {id: m1943_jacket, name: "Field jacket, M1943", cat: clothing, price: 1050, when: "1944", source: {url: *ar, note: "AR 30-3000 p.6"}}
+  - {id: parka, name: "Cotton field parka", cat: clothing, price: 866, when: "1944", source: {url: *ar, note: "AR 30-3000 p.8"}}
+  - {id: combat_boots, name: "Combat service boots, composition sole", cat: clothing, price: 674, when: "1944", source: {url: *ar, note: "AR 30-3000 p.2"}}
+  - {id: shoepacs, name: "Shoepacs, 12-inch M1944", cat: clothing, price: 636, when: "1944", source: {url: *ar, note: "AR 30-3000 p.8"}}
+  - {id: wool_trousers, name: "Wool field trousers, 18-oz", cat: clothing, price: 485, when: "1944", source: {url: *ar, note: "AR 30-3000 p.10"}}
+  - {id: cotton_trousers, name: "Cotton field trousers", cat: clothing, price: 475, when: "1944", source: {url: *ar, note: "AR 30-3000 p.10"}}
+  - {id: field_pack, name: "Field pack", cat: gear, price: 458, when: "1944", source: {url: *ar, note: "AR 30-3000 p.20"}}
+  - {id: raincoat, name: "Raincoat, rubberized", cat: clothing, price: 451, when: "1944", source: {url: *ar, note: "AR 30-3000 p.8"}}
+  - {id: flannel_shirt, name: "Flannel shirt", cat: clothing, price: 435, when: "1944", source: {url: *ar, note: "AR 30-3000 p.8"}}
+  - {id: jungle_boots, name: "Jungle boots", cat: clothing, price: 320, when: "1944", source: {url: *ar, note: "AR 30-3000 p.2"}}
+  - {id: hbt_jacket, name: "HBT jacket", cat: clothing, price: 225, when: "1944", source: {url: *ar, note: "AR 30-3000 p.6"}}
+  - {id: hbt_trousers, name: "HBT trousers", cat: clothing, price: 225, when: "1944", source: {url: *ar, note: "AR 30-3000 p.10"}}
+  - {id: cartridge_belt, name: "Cartridge belt", cat: gear, price: 212, when: "1944", source: {url: *ar, note: "AR 30-3000 p.16"}}
+  - {id: shovel, name: "Intrenching shovel, M1943", cat: gear, price: 102, when: "1944", source: {url: *ar, note: "AR 30-3000 p.21"}}
+  - {id: leggings, name: "Leggings, canvas", cat: clothing, price: 95, when: "1944", source: {url: *ar, note: "AR 30-3000 p.7"}}
+  - {id: wool_gloves, name: "Wool gloves", cat: clothing, price: 94, when: "1944", source: {url: *ar, note: "AR 30-3000 p.5"}}
+  - {id: machete, name: "Machete, 18-inch", cat: gear, price: 94, when: "1944", source: {url: *ar, note: "AR 30-3000 p.19"}}
+  - {id: undershirt, name: "Cotton undershirt", cat: clothing, price: 65, when: "1944", source: {url: *ar, note: "AR 30-3000 p.11"}}
+  - {id: socks, name: "Wool socks, cushion sole", cat: clothing, price: 60, when: "1944", source: {url: *ar, note: "AR 30-3000 p.9"}}
+  - {id: canteen, name: "Canteen", cat: gear, price: 50, when: "1944", source: {url: *ar, note: "AR 30-3000 p.16"}}
+  - {id: knit_cap, name: "Wool knit cap, M1941", cat: clothing, price: 47, when: "1944", source: {url: *ar, note: "AR 30-3000 p.4"}}
+  - {id: drawers, name: "Cotton drawers", cat: clothing, price: 43, when: "1944", source: {url: *ar, note: "AR 30-3000 p.4"}}
+  - {id: towel, name: "Bath towel", cat: gear, price: 43, when: "1944", source: {url: *ar, note: "AR 30-3000 p.22"}}
+  - {id: canteen_cup, name: "Canteen cup", cat: gear, price: 29, when: "1944", source: {url: *ar, note: "AR 30-3000 p.18"}}
+  # Other clothing
+  - {id: clothing_issue_1941, name: "A soldier's whole clothing issue", cat: clothing, price: 15771, when: "1941", source: {url: "https://time.com/archive/6765256/national-defense-soldiers-clothes/", note: "TIME"}}
+  - {id: officers_overcoat, name: "Officer's overcoat", cat: clothing, price: 6500, when: "1942", source: {url: *ecu, note: "Pearl Harbor loss claim"}}
+  - {id: civilian_suit, name: "Civilian suit", cat: clothing, price: [5000, 6000], when: "1942", source: {url: *ecu, note: "Pearl Harbor loss claim"}}
+  - {id: oxford_shoes, name: "Civilian oxford shoes", cat: clothing, price: 1000, when: "1942", source: {url: *ecu, note: "Pearl Harbor loss claim"}}
+  - {id: demob_outfit, name: "British demob outfit, to the government", cat: clothing, in: gbp, price: 11520, when: "1945", source: {url: "https://tribunemag.co.uk/1945/03/civilian-outfit", note: "Tribune; about £20 in the shops"}}
+  - {id: officers_cap, name: "British officer's peaked cap", cat: clothing, in: gbp, price: 2016, when: "1942", source: {url: "https://tribunemag.co.uk/1942/08/army-austerity", note: "Tribune"}}
+  - {id: sam_browne, name: "Sam Browne belt", cat: clothing, in: gbp, price: 1680, when: "1942", source: {url: "https://tribunemag.co.uk/1942/08/army-austerity", note: "Tribune"}}

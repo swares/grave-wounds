@@ -1,0 +1,97 @@
+# Prices for the Vietnam War (1965-1973). Format as data/equipment/medieval.yaml.
+# US prices in cents (paid in Military Payment Certificates); South Vietnamese in piastres (80 to
+# the dollar officially from June 1966, 118 for US buyers, 160-180 on the street). Most item
+# prices are estimates: the Army supply catalogue that priced every item could not be read.
+id: vietnam
+
+currencies:
+  usd:
+    name: "Dollars and cents (Military Payment Certificates)"
+    coin: usd
+    base: cent
+    decimal: {sym: "$", per: 100, small: "¢"}
+    day: 380
+    day_note: "a US private's $113.40 a month base pay (1968)"
+  vnp:
+    name: "South Vietnamese piastres (đồng)"
+    coin: vnp
+    base: piastre
+    units: [{sym: " piastres", of: 1}]
+    day: 100
+    day_note: "an ARVN private's 3,000 piastres a month"
+  aud:
+    name: "Australian dollars"
+    coin: aud
+    base: cent
+    decimal: {sym: "A$", per: 100, small: "¢"}
+    day_note: "no Australian soldier's pay found"
+  vnd_north:
+    name: "North Vietnamese đồng"
+    coin: vnd_north
+    base: dong
+    units: [{sym: " đồng", of: 1}]
+    day_note: "no PAVN or NLF pay found"
+
+currency: {default: usd, anzac: aud, arvn: vnp, pavn: vnd_north, nlf: vnd_north}
+
+sources:
+  hh: &hh "https://ia800609.us.archive.org/14/items/h-h-campers-haven-1965/H_H_Campers_Haven_1965_djvu.txt"
+  ww: &ww "https://wornandwound.com/the-px-watches-of-vietnam-a-survey-of-non-issued-popular-military-watches-of-the-vietnam-war/"
+
+items:
+  # Arms and armour
+  - {id: m16, name: "M16 rifle (to the Army)", cat: weapon, price: 14042, when: "1968", weapon: rifle_assault, regions: [us_army, us_marines, arvn], source: {url: "https://www.gao.gov/assets/b-164313.pdf", note: "GAO B-164313"}}
+  - {id: ak47, name: "AK-47, captured or black market", cat: weapon, price: [5000, 20000], weapon: rifle_assault, regions: [pavn, nlf], approx: true}
+  - {id: flak_vest, name: "Flak vest (M69)", cat: armour, price: 5500, kit: [vietnam_army, vietnam_usmc], approx: true}
+  - {id: m1911, name: "M1911A1 pistol", cat: weapon, price: 4500, weapon: pistol_smg, regions: [us_army, us_marines], approx: true}
+  - {id: helmet, name: "M1 helmet", cat: armour, price: 800, kit: [vietnam_army, vietnam_usmc, ww2_rifleman], approx: true}
+  - {id: knife, name: "Fighting knife", cat: weapon, price: 450, approx: true}
+  - {id: grenade, name: "Fragmentation grenade", cat: weapon, price: 300, approx: true}
+  - {id: round_556, name: "5.56 mm round", cat: ammunition, price: 7, approx: true}
+  # Vehicles, goods, leave
+  - {id: jeep, name: "Jeep (M151)", cat: travel, price: 300000, approx: true}
+  - {id: honda_50, name: "Honda 50 motorbike", cat: travel, price: 32500, approx: true}
+  - {id: camera, name: "Camera (PX)", cat: gear, price: 16500, approx: true}
+  - {id: radio, name: "Transistor radio", cat: gear, price: 1700, approx: true}
+  - {id: hotel_rr, name: "Hotel night on R&R (Bangkok, Hong Kong)", cat: lodging, price: 1000, approx: true}
+  - {id: cigarettes, name: "Carton of cigarettes (PX)", cat: food, price: 175, approx: true}
+  - {id: saigon_tea, name: "Saigon bar drink (Saigon tea)", cat: food, price: 150, approx: true}
+  - {id: coke_roadside, name: "Coke from a roadside seller", cat: food, price: 100, source: {url: "https://www.mrfa.org/us-navy-army/beer-soda-available-during-the-vietnam-war/", note: "MRFA, veteran's memory"}}
+  - {id: mci, name: "C-ration meal (MCI)", cat: food, price: 100, approx: true}
+  - {id: beer, name: "Can of beer (PX or club)", cat: food, price: 15, source: {url: "https://warontherocks.com/2015/10/flat-tops-canned-beer-and-vietnam/", note: "War on the Rocks"}}
+  - {id: meal_saigon, name: "Meal in Saigon", cat: food, in: vnp, price: 200, approx: true}
+  - {id: sgli, name: "GI life insurance, $10,000, a month", cat: service, price: 200, when: "1965-69", source: {url: "https://www.finance.senate.gov/imo/media/doc/Rpt91-398.pdf", note: "Senate Rpt 91-398"}}
+  # Field kit
+  - {id: strobe, name: "Strobe light (signalling)", cat: light, price: 1500, approx: true}
+  - {id: flashlight, name: "Angle-head flashlight", cat: light, price: 200, approx: true}
+  - {id: penlight, name: "Pen-light", cat: light, price: 100, approx: true}
+  - {id: mountain_tent, name: "Mountain tent (retail)", cat: shelter, price: 12900, when: "1965", source: {url: *hh, note: "H&H Surplus catalogue (scan unclear)"}}
+  - {id: pup_tent, name: "Pup tent, with or without floor (retail)", cat: shelter, price: [695, 895], when: "1965", source: {url: *hh, note: "H&H Surplus catalogue"}}
+  - {id: air_mattress, name: "Air mattress, nylon (retail)", cat: shelter, price: 595, when: "1965", source: {url: *hh, note: "H&H Surplus catalogue"}}
+  - {id: hammock, name: "Jungle hammock", cat: shelter, price: 500, approx: true}
+  - {id: sleeping_bag, name: "GI wool sleeping bag, surplus", cat: shelter, price: 395, when: "1965", source: {url: *hh, note: "H&H Surplus catalogue"}}
+  - {id: ground_sheet, name: "Polyethylene ground sheet", cat: shelter, price: 360, when: "1965", source: {url: *hh, note: "H&H Surplus catalogue"}}
+  - {id: shelter_half, name: "Shelter half, surplus", cat: shelter, price: 299, when: "1965", source: {url: *hh, note: "H&H Surplus catalogue"}}
+  - {id: poncho_liner, name: "Poncho and liner", cat: shelter, price: 600, approx: true}
+  - {id: rolex, name: "Rolex Submariner or GMT-Master, base exchange", cat: navigation, price: [13100, 24000], when: "1969-70", source: {url: *ww, note: "Worn & Wound"}}
+  - {id: seiko, name: "Seiko 6105 diver's watch, PX", cat: navigation, price: [2700, 10000], source: {url: *ww, note: "Worn & Wound: under $100, veteran's memory"}}
+  - {id: compass, name: "Lensatic compass", cat: navigation, price: 600, approx: true}
+  - {id: map_case, name: "Map case", cat: navigation, price: 100, approx: true}
+  - {id: zippo, name: "Zippo lighter (PX)", cat: fire, price: 300, approx: true}
+  - {id: matchbox, name: "Waterproof match box", cat: fire, price: 25, approx: true}
+  - {id: heat_tab, name: "Heat tab (trioxane)", cat: fire, price: 5, approx: true}
+  - {id: rappel_rope, name: "Nylon rappelling rope, 120 ft", cat: rope, price: 1500, approx: true}
+  - {id: para_cord, name: "550 parachute cord, 100 ft", cat: rope, price: 200, approx: true}
+  - {id: medic_bag, name: "Medic's aid bag, stocked", cat: first_aid, price: [1500, 3000], approx: true}
+  - {id: field_dressing, name: "Field dressing", cat: first_aid, price: [15, 25], approx: true}
+  - {id: syrette, name: "Morphine syrette", cat: first_aid, price: 50, approx: true}
+  - {id: purification, name: "Water-purification tablets, bottle", cat: first_aid, price: [25, 50], approx: true}
+  - {id: malaria_pill, name: "Weekly malaria pill", cat: first_aid, price: 5, approx: true}
+  # Clothing
+  - {id: whole_kit, name: "A soldier's whole kit with M16, to the Army", cat: clothing, price: 111200, source: {url: "https://www.globeatwar.com/blog-entry/wwii-vs-today-cost-equipping-gi", note: "Globe at War, citing CSBA"}}
+  - {id: sleeping_bag_issue, name: "Sleeping bag (issue)", cat: shelter, price: 2500, approx: true}
+  - {id: jungle_boots, name: "Jungle boots", cat: clothing, price: 1250, approx: true}
+  - {id: jungle_fatigues, name: "Jungle fatigues, coat and trousers", cat: clothing, price: 1000, approx: true}
+  - {id: boonie_hat, name: "Boonie hat", cat: clothing, price: 150, approx: true}
+  - {id: towel, name: "Towel", cat: gear, price: 50, approx: true}
+  - {id: socks, name: "Pair of socks", cat: clothing, price: 40, approx: true}

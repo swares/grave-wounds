@@ -21,6 +21,18 @@ def _pct(x: float) -> str:
     return f"{round(x * 100)}%"
 
 
+
+def _money_vars(d) -> dict:
+    """The money rules' figures (money.yaml), with the medieval Day and a three-term purse in
+    English money as the worked example."""
+    from .money import equipment, fmt
+    M, E = d.money, equipment(d, "medieval")
+    cur = E["currencies"].get(E["currency"].get("default")) if E["currencies"] else None
+    per = M.get("purse_days_per_term", 0)
+    return {"purse_days": per, "earn_days": M.get("earn_days_per_day", 0), "purse_three": 3 * per,
+            "day_coin": fmt(cur, cur["day"]) if cur and cur.get("day") else "a day's pay",
+            "purse_three_coin": fmt(cur, 3 * per * cur["day"]) if cur and cur.get("day") else ""}
+
 def values(d: Data) -> dict:
     """The rule numbers the chapters quote, by name."""
     T, CB = d.wounds["tracking"], d.wounds["combat"]
@@ -45,7 +57,7 @@ def values(d: Data) -> dict:
         "origin_gain": E["gain"], "first_term": E["first_term"], "term_main": E["term_main"], "term_second": E["term_second"],
         "event_gain": E["gain"], "age_start": E["age"]["start"], "age_term": E["age"]["per_term"], "skill_max": E["skill_max"],
         "scar_upto": E["old_wound"][0]["to"], "lasting": E["lasting"], "origins": len(E["origins"]), "careers": len(E["careers"]),
-        "eras": len(d.teams),
+        "eras": len(d.teams), **_money_vars(d),
         "big": RC["big"], "care_none": RC["care"]["none"], "care_shelter": RC["care"]["shelter"],
         "marched": RC["activity"]["marched"], "rest": RC["activity"]["rest"], "wet_cold": RC["wet_cold"], "filth": RC["filth"],
         "wound_every": DZ["wounds"]["wound"]["every"], "wound_easier": -DZ["wounds"]["wound"]["virulence"],

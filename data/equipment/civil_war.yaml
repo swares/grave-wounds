@@ -1,0 +1,88 @@
+# Prices for the Civil War and frontier (1861-1867). Format as data/equipment/medieval.yaml.
+# Prices in cents. Union prices are in greenbacks; Confederate prices are in Confederate dollars,
+# which inflated a hundredfold by 1865, so they have no Day.
+id: civil_war
+
+currencies:
+  usd:
+    name: "Dollars and cents (greenbacks)"
+    coin: usd
+    base: cent
+    decimal: {sym: "$", per: 100, small: "¢"}
+    day: 43
+    day_note: "a Union private's $13 a month (1861-64)"
+  csd:
+    name: "Confederate dollars"
+    coin: csd
+    base: cent
+    decimal: {sym: "$", suf: " CS", per: 100, small: "¢ CS"}
+    day_note: "no Day: Confederate money lost almost all its value"
+
+currency: {default: usd, confederacy: csd}
+
+sources:
+  qm: &qm "https://homepages.rootsweb.com/~27thiowa/companyK/priceListForClothing.htm"
+  ecwc: &ecwc "https://essentialcivilwarcurriculum.com/soldiers-pay.html"
+  cwm: &cwm "https://www.civilwarmonitor.com/article/the-army-horse/"
+  sh: &sh "https://archives.sharlothallmuseum.org/articles/days-past-articles/1/sutler-store-records-tell-only-little-of-life-back-then"
+  fosc: &fosc "https://www.nps.gov/fosc/learn/education/sutler9.htm"
+
+items:
+  # Arms
+  - {id: henry_private, name: "Henry rifle, bought privately", cat: weapon, price: 6500, when: "c.1863", source: {url: "https://en.wikipedia.org/wiki/Henry_rifle", note: "Wikipedia"}}
+  - {id: spencer_rifle, name: "Spencer rifle", cat: weapon, price: 4000, when: "1861", source: {url: "https://en.wikipedia.org/wiki/Spencer_repeating_rifle", note: "Wikipedia"}}
+  - {id: sharps_carbine, name: "Sharps carbine", cat: weapon, price: 2700, when: "1861-66", weapon: breechloader, source: {url: "https://www.civilwarmonitor.com/?p=14075", note: "Civil War Monitor, from contract totals"}}
+  - {id: colt, name: "Colt revolver", cat: weapon, price: 2500, when: "1861", weapon: revolver, source: {url: "https://authentic-campaigner.com/forum/military-forums/the-sinks/14682-cost-of-colt-revolver-1862-1865", note: "forum, citing a contract list"}}
+  - {id: spencer_carbine, name: "Spencer carbine", cat: weapon, price: 2500, when: "1863", source: {url: "https://www.americanrifleman.org/articles/2013/7/23/excels-all-others-the-spencer-carbine/", note: "American Rifleman"}}
+  - {id: enfield, name: "Enfield rifle-musket", cat: weapon, price: 2000, when: "1861", weapon: rifle_musket, regions: [confederacy], source: {url: "https://en.wikipedia.org/wiki/Pattern_1853_Enfield", note: "Wikipedia"}}
+  - {id: remington, name: "Remington revolver", cat: weapon, price: 1500, when: "1861", source: {url: "https://authentic-campaigner.com/forum/military-forums/the-sinks/14682-cost-of-colt-revolver-1862-1865", note: "forum, citing a contract list"}}
+  - {id: springfield, name: "Springfield 1861 rifle-musket (to make)", cat: weapon, price: 1493, when: "1861", weapon: rifle_musket, regions: [union, frontier], source: {url: "https://historynet.com/61-springfield-rifle-musket/", note: "HistoryNet"}}
+  # Horses and travel
+  - {id: stage_sf, name: "Stagecoach, Tipton to San Francisco", cat: travel, price: 20000, source: {url: "https://truewestmagazine.com/?p=37229", note: "True West"}}
+  - {id: cavalry_horse, name: "Cavalry horse", cat: horse, price: [11900, 19000], when: "1861-65", source: {url: *cwm, note: "Civil War Monitor"}}
+  - {id: mule, name: "Mule", cat: horse, price: [10000, 15000], approx: true}
+  - {id: stage_mile, name: "Stagecoach, per mile", cat: travel, price: [10, 15], source: {url: "https://truewestmagazine.com/?p=37229", note: "True West"}}
+  # Sutler's goods
+  - {id: writing_paper, name: "Writing paper, 20-25 sheets, sutler", cat: gear, price: 500, when: "1864", source: {url: *ecwc, note: "ECWC"}}
+  - {id: butter, name: "Butter, sutler", cat: food, price: 75, per: lb, when: "1864", source: {url: *ecwc, note: "ECWC"}}
+  - {id: cheese, name: "Cheese, sutler", cat: food, price: 50, per: lb, when: "1864", source: {url: *ecwc, note: "ECWC"}}
+  - {id: molasses, name: "Molasses, sutler", cat: food, price: 50, per: pint, when: "1864", source: {url: *ecwc, note: "ECWC"}}
+  - {id: apple, name: "Apple, sutler", cat: food, price: 8, when: "1864", source: {url: *ecwc, note: "ECWC"}}
+  # Field kit
+  - {id: kerosene, name: "Kerosene (frontier sutler)", cat: light, price: 350, per: gallon, when: "1873", source: {url: *sh, note: "Fort Verde sutler"}}
+  - {id: candlesticks, name: "Brass candlesticks, pair", cat: light, price: 100, when: "1845", source: {url: *fosc, note: "Fort Scott sutler"}}
+  - {id: candles, name: "Candles", cat: light, price: 45, per: lb, when: "1845", source: {url: *fosc, note: "Fort Scott sutler"}}
+  - {id: sibley_tent, name: "Sibley tent", cat: shelter, price: 6371, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: wall_tent, name: "Wall tent", cat: shelter, price: 6288, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: common_tent, name: "Common (wedge) tent", cat: shelter, price: 2162, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: shelter_tent, name: "Shelter tent (two halves)", cat: shelter, price: [325, 548], when: "1863-64", source: {url: "https://www1.udel.edu/udaily/2012/jul/civil-war-tent-070611.html", note: "UDaily"}}
+  - {id: rubber_poncho, name: "Rubber poncho", cat: shelter, price: 310, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: wool_blanket, name: "Wool blanket", cat: shelter, price: 300, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: rubber_blanket, name: "Rubber blanket", cat: shelter, price: 250, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: compass, name: "Pocket compass", cat: navigation, price: 100, approx: true}
+  - {id: county_map, name: "County map", cat: navigation, price: 50, approx: true}
+  - {id: matches, name: "Package of matches (frontier sutler)", cat: fire, price: 75, when: "1873", source: {url: *sh, note: "Fort Verde sutler"}}
+  - {id: lariat, name: "Lariat", cat: rope, price: 150, approx: true}
+  - {id: pocket_case, name: "Surgeon's pocket case", cat: first_aid, price: 1500, approx: true}
+  # Clothing and kit (Quartermaster price list, July 1864)
+  - {id: greatcoat, name: "Greatcoat", cat: clothing, price: 850, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: sack_coat, name: "Sack coat, lined", cat: clothing, price: 325, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: trousers, name: "Trousers", cat: clothing, price: 310, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: bootees, name: "Bootees (shoes)", cat: clothing, price: 220, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: knapsack, name: "Knapsack", cat: gear, price: 215, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: hat, name: "Uniform hat", cat: clothing, price: 180, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: flannel_shirt, name: "Flannel shirt", cat: clothing, price: 159, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: drawers, name: "Flannel drawers", cat: clothing, price: 100, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: forage_cap, name: "Forage cap", cat: clothing, price: 65, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: haversack, name: "Haversack", cat: gear, price: [40, 67], when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: canteen, name: "Canteen", cat: gear, price: 45, when: "1864", source: {url: *qm, note: "QM price list"}}
+  - {id: stockings, name: "Stockings, a pair", cat: clothing, price: 30, when: "1864", source: {url: *qm, note: "QM price list"}}
+  # Frontier trade
+  - {id: trading_rifle, name: "Percussion rifle at a trading post", cat: weapon, price: 1100, when: "from 1840", source: {url: "https://www.nps.gov/fous/learn/historyculture/firearms-of-fort-union.htm", note: "NPS Fort Union"}}
+  # Confederate money, late war
+  - {id: cs_suit, name: "Suit of clothes", cat: clothing, in: csd, price: 270000, when: "1865", source: {url: "https://en.wikipedia.org/wiki/Confederate_States_dollar", note: "Wikipedia"}}
+  - {id: cs_ham, name: "Ham", cat: food, in: csd, price: 30000, when: "1864", source: {url: "https://en.wikipedia.org/wiki/Confederate_States_dollar", note: "Wikipedia"}}
+  - {id: cs_turkey, name: "Turkey", cat: food, in: csd, price: 15500, when: "1864", source: {url: "https://en.wikipedia.org/wiki/Confederate_States_dollar", note: "Wikipedia"}}
+  - {id: cs_trousers, name: "Trousers (Confederate issue)", cat: clothing, in: csd, price: 1000, when: "1863", source: {url: "https://csa-railroads.com/Essays/Orignial%20Docs/NA/NA,_QM_7-11B-63.htm", note: "Richmond QM list"}}
+  - {id: cs_shoes, name: "Shoes (Confederate issue)", cat: clothing, in: csd, price: [600, 875], when: "1863", source: {url: "https://csa-railroads.com/Essays/Orignial%20Docs/NA/NA,_QM_7-11B-63.htm", note: "Richmond QM list"}}
+  - {id: cs_shirt, name: "Shirt (Confederate issue)", cat: clothing, in: csd, price: 225, when: "1863", source: {url: "https://csa-railroads.com/Essays/Orignial%20Docs/NA/NA,_QM_7-11B-63.htm", note: "Richmond QM list"}}

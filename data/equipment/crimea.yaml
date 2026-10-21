@@ -1,0 +1,63 @@
+# Prices for the Crimean War (1854-1856). Format as data/equipment/medieval.yaml.
+# British prices in farthings; French in centimes.
+id: crimea
+
+currencies:
+  gbp:
+    name: "Pounds, shillings and pence (sovereign £1)"
+    coin: gbp
+    base: farthing
+    units: [{sym: "£", of: 960, pre: true}, {sym: "s", of: 48}, {sym: "d", of: 4}]
+    day: 48
+    day_note: "a British private's 1s a day before stoppages"
+  frf:
+    name: "Francs (100 centimes, 20 sous)"
+    coin: frf
+    base: centime
+    decimal: {sym: "", suf: " fr", per: 100, small: " c."}
+    day: 36
+    day_note: "a French private's 3½d a day in English money (c.1857)"
+  rub:
+    name: "Silver rubles (100 kopecks)"
+    coin: rub
+    base: kopeck
+    decimal: {sym: "", suf: " rub.", per: 100, small: " kop."}
+    day_note: "no Russian soldier's pay found"
+
+currency: {default: gbp, french: frf, russian: rub}
+
+sources:
+  fenton: &fenton "https://fentonletterbooks.dmu.ac.uk/josephTF.php?letterNo=5"
+  mayhew: &mayhew "https://www.victorianlondon.org/mayhew/mayhew08.htm"
+  rogue: &rogue "https://regimentalrogue.com/misc/1848_Army_Winter_Clothing.htm"
+
+items:
+  - {id: charger, name: "Officer's charger", cat: horse, price: [38400, 76800], approx: true}
+  - {id: saddle_bridle, name: "Saddle and bridle, Balaklava", cat: horse, price: 14400, when: "1855", source: {url: *fenton, note: "Fenton letters"}}
+  - {id: enfield, name: "Enfield rifle-musket", cat: weapon, price: [2880, 3840], weapon: rifle_musket, regions: [british], approx: true}
+  - {id: fez, name: "Gold-embroidered fez, Constantinople (asked)", cat: clothing, price: 1920, when: "1855", source: {url: "https://fentonletterbooks.dmu.ac.uk/josephTF.php?letterNo=3", note: "Fenton letters"}}
+  - {id: wine_bottle, name: "Bottle of wine (Mary Seacole's cost)", cat: food, price: 192, when: "1856", source: {url: "https://old-merseytimes.co.uk/seacole.html", note: "48s a dozen"}}
+  - {id: sherry_bottle, name: "Bottle of sherry (Crimean Fund)", cat: food, price: 96, when: "1855", source: {url: "https://victorianweb.org/history/crimea/improve.html", note: "24s a dozen"}}
+  - {id: loaf_sutler, name: "Sutler's loaf, Balaklava", cat: food, price: 96, when: "1855", source: {url: "https://ncse-os.kdl.kcl.ac.uk/periodicals/l/issues/cld_24021855/page/8", note: "The Leader"}}
+  - {id: cheese, name: "Cheese (Mary Seacole's cost)", cat: food, price: 40, per: lb, when: "1856", source: {url: "https://old-merseytimes.co.uk/seacole.html", note: "Seacole"}}
+  - {id: ration_cost, name: "A day's ration, real cost", cat: food, price: 28, when: "1854", source: {url: "https://rapc-association.org.uk/pay-services-history/notes-on-army-pay-4.html", note: "RAPC"}}
+  - {id: laundry, name: "Laundry, per piece", cat: service, price: 24, when: "1855", source: {url: "https://fentonletterbooks.dmu.ac.uk/josephTF.php?letterNo=7", note: "Fenton letters"}}
+  - {id: officers_mess, name: "French officers' mess, a month", cat: food, in: frf, price: [5000, 7500], when: "c.1857", source: {url: "https://djo.org.uk/household-words/volume-xv/page-92.html", note: "Household Words"}}
+  # Field kit
+  - {id: fuel_cakes, name: "Fuel cakes for a camp stove", cat: fire, price: 32, per: lb, when: "1855", source: {url: "https://ncse-os.kdl.kcl.ac.uk/periodicals/l/issues/cld_13011855/page/6", note: "The Leader (OCR to check)"}}
+  - {id: candles, name: "Candles", cat: light, price: 28, per: lb, approx: true}
+  - {id: bell_tent, name: "Bell tent", cat: shelter, price: 2880, approx: true}
+  - {id: blanket, name: "Blanket", cat: shelter, price: 288, approx: true}
+  - {id: compass, name: "Pocket compass", cat: navigation, price: 240, approx: true}
+  - {id: lucifers, name: "Box of lucifer matches", cat: fire, price: [2, 4], when: "1850", source: {url: "https://www.djo.org.uk/household-words/volume-i/page-56.html", note: "Household Words"}}
+  - {id: halter, name: "Halter", cat: rope, price: 48, approx: true}
+  - {id: rope, name: "Rope", cat: rope, price: 8, per: fathom, approx: true}
+  - {id: pocket_case, name: "Surgeon's pocket case", cat: first_aid, price: 960, approx: true}
+  # Clothing
+  - {id: infantry_suit, name: "British infantry suit and cap", cat: clothing, price: 1576, when: "1833-55", source: {url: *mayhew, note: "Mayhew, government figure"}}
+  - {id: boots, name: "Boots", cat: clothing, price: 576, when: "1848", source: {url: *rogue, note: "Regimental Rogue, from half-cost"}}
+  - {id: jacket, name: "Jacket, as charged to the man", cat: clothing, price: 384, when: "1849", source: {url: *mayhew, note: "Mayhew"}}
+  - {id: trousers, name: "Trousers, as charged to the man", cat: clothing, price: 384, when: "1849", source: {url: *mayhew, note: "Mayhew"}}
+  - {id: flannel_waistcoats, name: "Two flannel waistcoats", cat: clothing, price: 320, when: "1848", source: {url: *rogue, note: "Regimental Rogue"}}
+  - {id: drawers, name: "Two pairs of drawers", cat: clothing, price: 264, when: "1848", source: {url: *rogue, note: "Regimental Rogue"}}
+  - {id: fur_cap, name: "Fur cap", cat: clothing, price: 240, when: "1848", source: {url: *rogue, note: "Regimental Rogue"}}
