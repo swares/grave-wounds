@@ -423,7 +423,10 @@ const isOfficer = c => c.career === "officer" || (rkLadder().length > 0 && rkPay
 const dayPayOf = c => (rkLadder().length ? rkPay(c.region, c.career, c.rank || rkStart(c.career)) : 1);
 const rankAt = c => (rkLadder().length ? rkIndex(c.rank) : 0);
 const ransomOf = c => prRansom(T.id, c.prison.ctx, dayPayOf(c), rankAt(c));
-const tick = (attrs, on, label, title = "") => `<label class="check"${title ? ` title="${title}"` : ""}><input type="checkbox" ${attrs}${on ? " checked" : ""}> ${label}</label>`;
+function tick(attrs, on, label, title = ""){         // a labelled checkbox
+  const tip = title ? ' title="' + title + '"' : "", checked = on ? " checked" : "";
+  return `<label class="check"${tip}><input type="checkbox" ${attrs}${checked}> ${label}</label>`;
+}
 function takenHtml(c, k){                           // just taken: his captors' situation, the circumstances, the roll
   const P = c.prison, ctx = prContext(T.id, P.ctx), C = TD.prisoners.circumstances;
   const opts = prContexts(T.id).map(x => `<option value="${x.id}"${x.id === P.ctx ? " selected" : ""}>${esc(x.name)}</option>`).join("");
@@ -500,7 +503,10 @@ function rollCapture(k){
 function seasonOutcome(c, r){                       // what a season's roll means for him
   const P = c.prison;
   if (r.out === "released") return prRejoin(c, P.ctx === "cartel" ? "is paroled and exchanged (he may not fight until exchanged)" : "is released");
-  if (r.out === "escaped") return prRejoin(c, P.serving ? "deserts the captor's ranks" : `escapes and gets home${P.parole ? ", breaking his parole" : ""}`);
+  if (r.out === "escaped"){
+    const broke = P.parole ? ", breaking his parole" : "";
+    return prRejoin(c, P.serving ? "deserts the captor's ranks" : "escapes and gets home" + broke);
+  }
   if (r.out === "died") return prDies(c, r.why);
   if (r.rolls.break === undefined) return;
   prLog(`${c.name} tries to escape: ${r.rolls.home === undefined ? "caught before he was out" : "out, but retaken"}.`);
