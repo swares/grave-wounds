@@ -192,6 +192,15 @@ def tables(d: Data) -> dict:
                             for i, r in enumerate(RE.get("ladder") or [])])
         out["finds"] = _md(["d100", "He finds", "Worth (Days)"], [[f"{lo}–{f['to']}" if lo != f["to"] else str(f["to"]), f["what"], "—" if not f["days"][1] else f"{f['days'][0]}–{f['days'][1]}"]
                                                               for f, lo in zip(d.ranks["finds"], [1] + [x["to"] + 1 for x in d.ranks["finds"][:-1]])])
+    if d.prisoners:
+        en = {"medieval": "Medieval", "thirty_years": "Thirty Years' War", "horse_musket": "1700-1815", "crimea": "Crimea", "civil_war": "Civil War",
+              "plains_nations": "Plains", "wwi": "1914-18", "wwii": "1939-45", "korea": "Korea", "vietnam": "Vietnam", "modern": "1982-2014"}
+        rows = []
+        for eid, cs in d.prisoners["eras"].items():
+            for c in cs:
+                extra = [x for x, on in (("ransom", c.get("ransom")), ("parole", c.get("parole")), ("service", c.get("service"))) if on]
+                rows.append([en.get(eid, eid), c["name"], f"{c['capture'][0]}", f"{c['capture'][1]}", f"{c['release']}%", f"{c['hazard']:g}%" + (f" (then {c['after']:g}%)" if "after" in c else ""), ", ".join(extra) or "—"])
+        out["prisoners"] = _md(["Era", "Captors", "Killed at or under", "Stripped at or under", "Released a season", "Dies a season", "Also"], rows)
     if d.stress:
         SX = d.stress
         out["strain"] = _md(["What", "Strain"], [[v["name"], f"+{v['strain']:g}"] for v in SX["sources"].values()])

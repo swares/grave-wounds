@@ -393,6 +393,24 @@ check that succeeds, or wins, ticks the skill for experience; a characteristic i
 quarter on a critical, to the quarter Day, never under ¼), the list price if not, and no sale
 on a fumble; winning ticks Persuade.
 
+## Prisoners
+
+`data/prisoners.yaml` (rules in `gravewounds/prisoners.py`, repeated in `templates/ranks.js`:
+`prCapture`, `prSeason`, `prRansom`; research in the project doc "prisoner-research"). Each era
+lists its captors' situations (`contexts`): capture bands, release % a season, death % a season
+(and `after` for Korea's first winter), escape and home-run modifiers, the chance of being killed
+when retaken, and whether ransom, parole or service applied. A man lost as **taken prisoner**
+(on the team builder, or from the roller or field map through the purse store) goes to the
+**Prisoners** list instead of the losses: the GM picks the context and circumstances and rolls
+his capture (d100 less the circumstances; killed goes to the losses, stripped empties his purse).
+At End of season each held man rolls `prSeason`: release; an escape if ticked (Stealth +
+`escape`, then Fieldcraft + `home`; retaken, `recapture` % killed, +2% hazard after); the death
+check (`hazard`, ×2 in a hard winter, ×0.5 for an officer, ×0.25 on parole, + 2 per recapture);
+Strain (`captivity` +1, or `captivity_harsh` +2 at 3% or worse, with −1 Endurance). Ransom
+(`prRansom`: a medieval year of his pay × 1.2; a Thirty Years' War month a rank step; Chechnya 180
+Days) is paid by him or the leader. Service in the captor's ranks: 40% a season to desert back.
+A man back from captivity has his purse's lost mark cleared.
+
 ## Strain
 
 `data/stress.yaml` (rules in `gravewounds/stress.py`, repeated in `templates/ranks.js`: `stAdd`,

@@ -114,6 +114,7 @@ class Data:
     ageing: dict = field(default_factory=dict)      # decline, maturity, wear and worn out (data/ageing.yaml)
     loads: dict = field(default_factory=dict)       # carrying weight (data/loads.yaml)
     stress: dict = field(default_factory=dict)      # combat stress (data/stress.yaml)
+    prisoners: dict = field(default_factory=dict)   # capture and captivity (data/prisoners.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -175,6 +176,7 @@ def load(root: str | Path = "data") -> Data:
     ageing = _optional(root / "ageing.yaml", {})
     loads = _optional(root / "loads.yaml", {})
     stress = _optional(root / "stress.yaml", {})
+    prisoners = _optional(root / "prisoners.yaml", {})
 
     data = Data(
         root=root,
@@ -211,6 +213,7 @@ def load(root: str | Path = "data") -> Data:
         ageing=ageing,
         loads=loads,
         stress=stress,
+        prisoners=prisoners,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -576,6 +579,14 @@ def validate(d: Data) -> None:
         for e, n in (SX.get("names") or {}).items():
             if e not in d.teams or len(n) != 3:
                 errors.append(f"stress.yaml: names for {e} must be three, for a known era")
+    if d.prisoners:
+        for eid, cs in (d.prisoners.get("eras") or {}).items():
+            if eid not in d.teams:
+                errors.append(f"prisoners.yaml: unknown era {eid}")
+            for c in cs:
+                k, s_ = c.get("capture", [0, 0])
+                if not (0 <= k <= s_ <= 100) or not all(isinstance(c.get(x), (int, float)) for x in ("release", "hazard", "escape", "home", "recapture")):
+                    errors.append(f"prisoners.yaml: {eid} {c.get('id')} needs capture bands and release, hazard, escape, home, recapture")
     if d.training:
         TR, skills = d.training, {s["id"] for T in d.teams.values() for s in T["skills"]}
         for m in TR.get("masters", []):

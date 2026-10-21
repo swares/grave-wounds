@@ -162,6 +162,7 @@ label.radio input{margin-top:4px}
       <div class="sheets" id="sheets"><p class="muted">Pick where they come from and a team, then roll.</p></div>
       <div id="crew"></div>
       <div id="losses"></div>
+      <div id="prisoners"></div>
       <div id="work"></div>
       <div id="xp"></div>
       <div id="rank"></div>
@@ -194,12 +195,13 @@ function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)) } catch (e) 
    writes it whenever it saves, and takes back what they changed when it is opened or comes back
    into view. */
 function pushPurses(){
-  const everyone = [...S.team, ...(S.losses || [])];
+  const everyone = [...S.team, ...(S.losses || []), ...(S.prisoners || [])];
   if (!everyone.length) return;
   const all = readPurses();
   for (const c of everyone){
     c.pid ||= newPid();
-    const was = all[c.pid] || {};
+    const was = { ...(all[c.pid] || {}) };
+    if (!c.lost) delete was.lost;                  // back from captivity: no longer lost
     all[c.pid] = { ...was, name: c.name, era: c.era || T.id, region: c.region, terms: c.terms, start: purseFor(c.region, c.terms, []).days, ledger: c.ledger || [],
       ...(c.lost ? { lost: { why: c.lost.why } } : {}) };
   }
@@ -207,7 +209,7 @@ function pushPurses(){
 }
 function pullPurses(){                            // -> true if a ledger changed elsewhere, or the roller or travel map lost a man
   const all = readPurses(); let changed = false;
-  for (const c of [...S.team, ...(S.losses || [])]){
+  for (const c of [...S.team, ...(S.losses || []), ...(S.prisoners || [])]){
     const p = c.pid && all[c.pid];
     if (p && JSON.stringify(p.ledger || []) !== JSON.stringify(c.ledger || [])){ c.ledger = p.ledger || []; changed = true }
   }
@@ -242,6 +244,7 @@ function render(){
   renderWork();
   renderXp();
   renderRank();
+  renderPrisoners();
   renderStress();
   renderChecks();
   renderLosses();
@@ -411,6 +414,77 @@ function rollLoot(){
   }
   S.lootlog = [...lines, ...(S.lootlog || [])].slice(0, 40);
   render();
+}
+/* Prisoners (ranks.js: prCapture, prSeason, prRansom; data TD.prisoners). A man taken goes to the
+   Prisoners list: the GM picks his captor's situation and the circumstances and rolls his capture
+   (killed, stripped of his purse, or held); each End of season he may be released, may try to
+   escape, may die; ransom, parole and service where the context had them. Back, he rejoins. */
+const isOfficer = c => c.career === "officer" || (rkLadder().length > 0 && rkPay(c.region, "x", c.rank || rkStart(c.career)) >= 3);
+function prisonerHtml(c, k){
+  const P = c.prison, ctxs = prContexts(T.id), ctx = prContext(T.id, P.ctx), C = TD.prisoners.circumstances;
+  if (P.stage === "taken"){
+    const sel = `<select data-prctx="${k}" aria-label="His captors' situation">${ctxs.map(x => `<option value="${x.id}"${x.id === P.ctx ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</select>`;
+    const ticks = Object.entries(C).filter(([, m]) => !m.ransom_only || ctx.ransom).map(([id, m]) => `<label class="check"><input type="checkbox" data-prcirc="${k}" data-id="${id}"${P.circ.includes(id) ? " checked" : ""}> ${esc(m.name)} (${m.mod > 0 ? "+" : "−"}${Math.abs(m.mod)})</label>`).join(" ");
+    return `<li><b>${esc(c.name)}</b> is taken. ${sel}<div class="muted">${esc(ctx.note || "")}</div><div>${ticks}</div><button class="small" data-prroll="${k}">Roll his capture</button></li>`;
+  }
+  const off = isOfficer(c), ransom = prRansom(T.id, P.ctx, rkLadder().length ? rkPay(c.region, c.career, c.rank || rkStart(c.career)) : 1, rkLadder().length ? rkIndex(c.rank) : 0);
+  const opts = [];
+  if (P.stage === "serving") opts.push(`<span class="muted">In the captor's ranks: a ${TD.prisoners.service_desert}% chance a season to desert back.</span>`);
+  else {
+    if (ctx.parole && off) opts.push(`<label class="check" title="An officer on his word: freer and safer, but escaping breaks his parole"><input type="checkbox" data-prparole="${k}"${P.parole ? " checked" : ""}> On parole</label>`);
+    if (ctx.service && !off) opts.push(`<button class="small" data-prserve="${k}" title="He joins the captor's regiment and waits his chance to desert back">Take service with them</button>`);
+    opts.push(`<label class="check"><input type="checkbox" data-prescape="${k}"${P.escape ? " checked" : ""}> Try to escape this season</label>`);
+    if (ransom !== null) opts.push(`<button class="small" data-prransom="${k}" title="Paid by him, or by the team's leader if he cannot">Pay his ransom: ${daysQ(ransom)}</button>`);
+  }
+  opts.push(`<label class="check" title="A hard winter in captivity: the death chance doubles"><input type="checkbox" data-prwinter="${k}"${P.winter ? " checked" : ""}> Hard winter</label>`);
+  const h = prHazard(ctx, P, !!P.winter);
+  return `<li><b>${esc(c.name)}</b>: ${esc(ctx.name)}, ${P.seasons} season${P.seasons !== 1 ? "s" : ""}${P.stripped ? ", stripped" : ""}${P.recaptured ? `, retaken ${P.recaptured}×` : ""} <span class="muted">· ${Math.round(h * 10) / 10}% a season</span>
+    <div class="muted">${esc(ctx.note || "")}</div><div class="spend">${opts.join(" ")}</div></li>`;
+}
+function renderPrisoners(){
+  const box = $("#prisoners"), L = S.prisoners || [];
+  if (!TD.prisoners || (!L.length && !(S.prlog || []).length)){ box.innerHTML = ""; return }
+  const log = (S.prlog || []).map(l => `<li>${esc(l)}</li>`).join("");
+  box.innerHTML = `<section class="crew" aria-labelledby="h-prisoners"><h3 id="h-prisoners">Prisoners (${L.length})</h3>
+    <p class="muted note">Each End of season: release (exchange, parole, the war's end), an escape for a man who tries (Stealth to get out, Fieldcraft to get home), then the death check at his captors' rate, and Strain. The figures are in the rules and the project doc "prisoner-research".</p>
+    <ul class="xp">${L.map(prisonerHtml).join("")}</ul>${log ? `<ol class="log">${log}</ol>` : ""}</section>`;
+}
+function prLog(line){ S.prlog = [line, ...(S.prlog || [])].slice(0, 30) }
+function prRejoin(c, how){                          // back with the team
+  S.prisoners = S.prisoners.filter(x => x !== c);
+  delete c.lost; c.prison = null;
+  S.team.push(c);
+  prLog(`${c.name} ${how}, and rejoins the team.`);
+}
+function prDies(c, why){
+  S.prisoners = S.prisoners.filter(x => x !== c);
+  c.prison = null; c.lost = { why, auto: false, slot: S.team.length, settled: null, replaced: null };
+  (S.losses ||= []).push(c);
+  prLog(`${c.name} ${why}.`);
+}
+function rollCapture(k){
+  const c = S.prisoners[k], P = c.prison, r = prCapture(T.id, P.ctx, P.circ, realDice.randint(1, 100));
+  if (r.result === "killed") return prDies(c, `was killed when taken (d100 ${r.roll}, ${r.total})`);
+  if (r.result === "stripped"){
+    P.stripped = true;
+    const left = purseFor(c.region, c.terms, c.ledger).days;
+    if (left > 0) (c.ledger ||= []).push({ days: -left, what: "Robbed when taken prisoner" });
+  }
+  P.stage = "held";
+  prLog(`${c.name}: ${r.result === "stripped" ? "stripped and robbed, then held" : "held, his things left him"} (d100 ${r.roll}, ${r.total}).`);
+}
+function prisonSeason(){                            // End of season for every prisoner
+  for (const c of [...(S.prisoners || [])]){
+    const P = c.prison; if (P.stage === "taken") continue;
+    const r = prSeason(T.id, P, realDice, !!P.escape, c.skills.stealth || 0, c.skills.fieldcraft || 0, !!P.winter);
+    if (r.harsh){ c.stat_mods.end = (c.stat_mods.end || 0) - 1; finishChar(c) }
+    if (TD.stress) xpStress(c.pid, r.harsh ? "captivity_harsh" : "captivity", c.stats.nerve);
+    P.escape = false; P.winter = false;
+    if (r.out === "released") prRejoin(c, P.ctx === "cartel" ? "is paroled and exchanged (he may not fight until exchanged)" : "is released");
+    else if (r.out === "escaped") prRejoin(c, P.serving ? "deserts the captor's ranks" : `escapes and gets home${P.parole ? ", breaking his parole" : ""}`);
+    else if (r.out === "died") prDies(c, r.why);
+    else if (r.rolls.break !== undefined) prLog(`${c.name} tries to escape: ${r.rolls.home !== undefined ? "out, but retaken" : "caught before he was out"}.`);
+  }
 }
 /* Combat stress (ranks.js: xpStress, stRest, stTreat, stRelieve; the shared store holds each man's
    Strain, Toll and state, which the roller and the travel map add to). The GM adds Strain the pages
@@ -625,6 +699,7 @@ function endSeason(){
   }
   for (const c of S.team) Object.assign(all[c.pid], { sheet: rollerSheet(c), stamp });
   writeXp(all);
+  if (TD.prisoners) prisonSeason();
   let named = null;                                // the travel map's copy of his skills
   try { named = JSON.parse(localStorage.getItem("gravewounds-named") || "{}") || {} } catch (e) { named = null /* unreadable: the roller will pass them on */ }
   if (named){
@@ -693,6 +768,11 @@ function loseMember(i, why, auto = false){        // off the team and onto the l
   S.team.splice(i, 1);
   (S.losses ||= []).push(c);
   if (rkLadder().length && rkIndex(c.rank) > 0) (S.vacancies ||= {})[c.rank] = (S.vacancies[c.rank] || 0) + 1;   // his rank falls vacant
+  if (why === "taken prisoner" && TD.prisoners && prContexts(T.id).length){   // not lost yet: a prisoner, whose fate is rolled
+    S.losses.pop();
+    c.prison = { ctx: prContexts(T.id)[0].id, circ: [], stage: "taken", seasons: 0, recaptured: 0 };
+    (S.prisoners ||= []).push(c);
+  }
   if (c.leader && S.team.length){
     c.leader = false;
     const senior = m => rkIndex(m.rank) * 100 + m.terms;   // the highest rank, then the longest served
@@ -773,7 +853,7 @@ function oldWoundLine(w){
 }
 function rollTeam(){
   S.team = makeTeam(S.region, slotsNow(), S.mode, realDice);
-  S.lootlog = []; S.chklog = []; S.xplog = []; S.vacancies = {};   // a new team starts with clean logs
+  S.lootlog = []; S.chklog = []; S.xplog = []; S.vacancies = {}; S.prisoners = []; S.prlog = [];   // a new team starts with clean logs
   S.team.forEach(c => { c.pid = newPid() });
   rollCrew(); S.worklog = []; S.losses = [];
   S.swap = null; S.msg = "";
@@ -926,6 +1006,31 @@ function init(){
     if (b.dataset.payowed !== undefined){ const c = S.team[+b.dataset.payowed]; (c.ledger ||= []).push({ days: c.owed, what: "Arrears of pay" }); c.owed = 0; return render() }
     if (b.dataset.coup !== undefined){ const c = S.team[+b.dataset.coup]; c.honours = (c.honours || 0) + RK().honours.coup[+b.dataset.n - 1]; return render() }
     if (b.dataset.give !== undefined){ const c = S.team[+b.dataset.give]; if (c.horses > 0){ c.horses--; c.honours = (c.honours || 0) + RK().honours.horse_given } return render() }
+  });
+  $("#prisoners").addEventListener("change", e => {
+    const el = e.target, d = el.dataset, k = +(d.prctx ?? d.prcirc ?? d.prparole ?? d.prescape ?? d.prwinter);
+    const c = (S.prisoners || [])[k]; if (!c) return;
+    if (d.prctx !== undefined) c.prison.ctx = el.value;
+    else if (d.prcirc !== undefined) c.prison.circ = el.checked ? [...c.prison.circ, d.id] : c.prison.circ.filter(x => x !== d.id);
+    else if (d.prparole !== undefined) c.prison.parole = el.checked;
+    else if (d.prescape !== undefined) c.prison.escape = el.checked;
+    else if (d.prwinter !== undefined) c.prison.winter = el.checked;
+    render();
+  });
+  $("#prisoners").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    const d = b.dataset;
+    if (d.prroll !== undefined){ rollCapture(+d.prroll); return render() }
+    if (d.prserve !== undefined){ const c = S.prisoners[+d.prserve]; c.prison.stage = "serving"; c.prison.serving = true; prLog(`${c.name} takes service in his captors' ranks.`); return render() }
+    if (d.prransom !== undefined){
+      const c = S.prisoners[+d.prransom], P = c.prison;
+      const due = prRansom(T.id, P.ctx, rkLadder().length ? rkPay(c.region, c.career, c.rank || rkStart(c.career)) : 1, rkLadder().length ? rkIndex(c.rank) : 0);
+      const payer = purseFor(c.region, c.terms, c.ledger).days >= due ? c : S.team.find(m => m.leader) || S.team[0];
+      if (!payer || purseFor(payer.region, payer.terms, payer.ledger).days < due){ S.msg = `No one can pay ${c.name}'s ransom of ${daysQ(due)}.`; return render() }
+      (payer.ledger ||= []).push({ days: -due, what: `Ransom of ${c.name}` });
+      prRejoin(c, `is ransomed for ${daysQ(due)}${payer === c ? "" : ` (paid by ${payer.name})`}`);
+      return render();
+    }
   });
   $("#stress").addEventListener("change", e => {
     const el = e.target;
