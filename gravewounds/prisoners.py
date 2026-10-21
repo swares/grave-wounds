@@ -33,7 +33,11 @@ def capture(d: Data, eid: str, cid: str, circumstances, roll: int) -> dict:
                if k in C["circumstances"] and (not C["circumstances"][k].get("ransom_only") or ctx.get("ransom")))
     total = roll - mods
     k, s = ctx["capture"]
-    result = "killed" if total <= k else "stripped" if total <= s else "held"
+    result = "held"
+    if total <= k:
+        result = "killed"
+    elif total <= s:
+        result = "stripped"
     return {"roll": roll, "total": total, "result": result}
 
 
