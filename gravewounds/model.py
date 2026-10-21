@@ -113,6 +113,7 @@ class Data:
     training: dict = field(default_factory=dict)    # masters, teammates and drill (data/training.yaml)
     ageing: dict = field(default_factory=dict)      # decline, maturity, wear and worn out (data/ageing.yaml)
     loads: dict = field(default_factory=dict)       # carrying weight (data/loads.yaml)
+    stress: dict = field(default_factory=dict)      # combat stress (data/stress.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -173,6 +174,7 @@ def load(root: str | Path = "data") -> Data:
     training = _optional(root / "training.yaml", {})
     ageing = _optional(root / "ageing.yaml", {})
     loads = _optional(root / "loads.yaml", {})
+    stress = _optional(root / "stress.yaml", {})
 
     data = Data(
         root=root,
@@ -208,6 +210,7 @@ def load(root: str | Path = "data") -> Data:
         training=training,
         ageing=ageing,
         loads=loads,
+        stress=stress,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -561,6 +564,18 @@ def validate(d: Data) -> None:
                 errors.append(f"loads.yaml: unknown era {eid}")
             if set(E.get("kg", {})) != set(LD.get("orders", {})) or E.get("fights_in") not in LD.get("orders", {}):
                 errors.append(f"loads.yaml: {eid} needs kg for every order and a fights_in order")
+    if d.stress:
+        SX = d.stress
+        if [r.get("id") for r in SX.get("results", [])] != ["shaken", "strained", "exhaustion", "severe"]:
+            errors.append("stress.yaml: results must be shaken, strained, exhaustion, severe")
+        for k, t in (SX.get("treatment") or {}).items():
+            if set(t.get("rtd", {})) != {"shaken", "strained", "exhaustion", "severe"} or not (t.get("strain") == "all" or isinstance(t.get("strain"), (int, float))):
+                errors.append(f"stress.yaml: treatment {k} needs rtd for every state and a strain lifted")
+            if any(e not in d.teams for e in t.get("eras", [])):
+                errors.append(f"stress.yaml: treatment {k} names an unknown era")
+        for e, n in (SX.get("names") or {}).items():
+            if e not in d.teams or len(n) != 3:
+                errors.append(f"stress.yaml: names for {e} must be three, for a known era")
     if d.training:
         TR, skills = d.training, {s["id"] for T in d.teams.values() for s in T["skills"]}
         for m in TR.get("masters", []):

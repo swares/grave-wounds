@@ -225,6 +225,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <div style="flex:1 1 140px;align-self:end"><label title="It is falling back: straggling, desertion and injuries run higher"><input type="checkbox" id="chk-withdraw"> Withdrawing</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Short of food: desertion runs far higher (Nuremberg 1632, about 15 times) and straggling about 5 times"><input type="checkbox" id="chk-hungry"> Short of food</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Pay in arrears: desertion runs about 3 times higher"><input type="checkbox" id="chk-unpaid"> Pay in arrears</label></div>
+        <div style="flex:1 1 140px;align-self:end"><label title="In contact with the enemy: holding a line, under fire, besieging or besieged. Each day its named men take a day's Strain; a day camped out of the line is rest"><input type="checkbox" id="chk-inline"> In the line</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Its named men (from the wound roller) take the era's chance of an injury each night too"><input type="checkbox" id="chk-named-acc"> Named men can be injured</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Its army feeds and quarters its men. Untick for a team on its own, on leave or off base: its named men then pay their keep from their purses each day"><input type="checkbox" id="chk-fed"> Fed by its army</label></div>
       </div>
@@ -250,7 +251,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
 <script>/*__EVENTS_JS__*/</script>
 <script>
 const DATA = /*__TRAVEL_DATA__*/null;
-const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
+const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, stress: DATA.stress, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
 const $ = s => document.querySelector(s);
 const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
 const BYKEY = Object.fromEntries(Object.values(TT).map(t => [t.key, t]));
@@ -1128,6 +1129,14 @@ const NAMED_KEY = "gravewounds-named";        // {uid: {name, endurance, map, fo
 function readNamed(){ try{ return JSON.parse(localStorage.getItem(NAMED_KEY) || "{}") || {} }catch(e){ return {} } }
 function writeNamed(all){ try{ localStorage.setItem(NAMED_KEY, JSON.stringify(all)) }catch(e){ /* storage off: they stay as they were */ } }
 const namedWith = (all, f) => Object.entries(all).filter(([, n]) => n.map === S.mapId && n.force === f.id && !n.dead);
+function strainNight(f, n){                    // combat stress: a day in the line adds Strain; a day out of it, camped, is rest
+  if (!DATA.stress || !n.pid) return;
+  if (f.inLine){
+    const ev = xpStress(n.pid, "line_day", n.nerve ?? 50).filter(e => !e.held);
+    const era = forceEra(f);
+    for (const e of ev) f.log.unshift(`${dateText(f.day, true)}: ${n.name}: ${stName(era, e.result)} (Nerve ${e.target}, rolled ${e.roll}).`);
+  } else if ((f.marched || 0) <= 0) xpStressDo(n.pid, st => stRest(st, 1));
+}
 const hasCases = n => (n.health?.cases || []).length > 0;
 function xpNight(f, wetCold){                 // experience: a night served for each named man; a week nursing ticks the best Leechcraft; drill
   const all = readNamed(), mine = namedWith(all, f).filter(([, n]) => !n.dead);
@@ -1135,6 +1144,7 @@ function xpNight(f, wetCold){                 // experience: a night served for 
     xpServe(n.pid, 1);                                     // a day served
     if (fedByArmy(f)) xpArmy(n.pid, !!f.unpaid);           // and his army's pay, or arrears
     if (f.shortFood || f.packsNight || wetCold || hasCases(n)) xpMark(n.pid, "hard", 1);   // a hard night: wear (ageing)
+    strainNight(f, n);
   }
   if ((f.marched || 0) <= 0) f.campWeek = (f.campWeek || 0) + 1;     // drill: days of the week not marching
   if (f.day % DZ.week_days !== 0) return;
@@ -1607,6 +1617,7 @@ function renderHealth(f){
   $("#chk-withdraw").checked = !!f.withdrawing;
   $("#chk-named-acc").checked = !!f.namedAccidents;
   $("#chk-hungry").checked = !!f.shortFood;
+  $("#chk-inline").checked = !!f.inLine;
   $("#chk-unpaid").checked = !!f.unpaid;
   $("#sel-hyg").innerHTML = opts.map(([v, t]) => `<option value="${v}" ${(f.hygiene || "") === v ? "selected" : ""}>${t}</option>`).join("");
   const hyg = campHygiene(f.hygiene || null, kind), factors = weekFactorsFor(f, kind, hyg);
@@ -2019,6 +2030,7 @@ function init(){
   $("#chk-fed").onchange = e => { const f = selForce(); if (f){ f.fed = e.target.checked; render() } };
   $("#chk-events").onchange = e => { const f = selForce(); if (f){ f.events = e.target.checked; render() } };
   $("#chk-withdraw").onchange = e => { const f = selForce(); if (f){ f.withdrawing = e.target.checked; render() } };
+  $("#chk-inline").onchange = e => { const f = selForce(); if (f){ f.inLine = e.target.checked; render() } };
   $("#chk-hungry").onchange = e => { const f = selForce(); if (f){ f.shortFood = e.target.checked; render() } };
   $("#chk-unpaid").onchange = e => { const f = selForce(); if (f){ f.unpaid = e.target.checked; render() } };
   $("#chk-named-acc").onchange = e => { const f = selForce(); if (f){ f.namedAccidents = e.target.checked; render() } };

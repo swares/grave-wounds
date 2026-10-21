@@ -1,0 +1,80 @@
+# Combat stress (rules in gravewounds/stress.py, repeated in templates/ranks.js). Research notes:
+# the project doc "stress-research" (Appel and Beebe via Appel 1999 and Glass and Jones 2005; the
+# 1945 commission; Reister; the WRAIR report on Israel in 1982; Jones, Palmer and Wessely 2002;
+# NVVRS 1990 and its 2006 reanalysis; Hoge et al. 2004). Figures are tagged sourced, estimate or
+# gap there; every number here is a design choice calibrated to them.
+#
+# Strain builds from fighting and loss, and falls with rest; `toll_share` of every point also goes
+# to his Toll, which only rotation home (or, for the Plains nations, a homecoming that honours him)
+# lowers. Each time Strain + Toll passes a multiple of `check_every`, he rolls d100: at or under
+# Nerve + `base` - (Strain + Toll) he holds (a roll of `fail_from` or more never does; a man who has
+# broken before rolls `relapse` less). A failure rolls d10 + 1 for each 10 he failed by on `results`.
+# Calibration (4,000 simulated careers each, a day in the line with a comrade lost one day in
+# twenty): a Nerve 50 man under US-style rotation (30 days in the line, 3 out) breaks down at a
+# median 81 combat days (Appel: 88), one in thirty within his first month; by 240 days every man
+# has; British-style rest (12 in, 4 out) lasts twice as long, as Appel found.
+toll_share: 0.4
+check_every: 10
+base: 115
+fail_from: 99
+relapse: 10
+rest_day: 3.5
+
+sources:                      # Strain a man takes
+  light_day: {strain: 0.5, name: "A light day in the line (patrols, sniping)"}
+  line_day: {strain: 1, name: "A day in the line (holding, regular shelling)"}
+  fight: {strain: 2, name: "A fight (an attack, a defence, a bombardment)"}
+  extreme_day: {strain: 3, name: "An extreme day (street fighting, the bocage, a storm)"}
+  friend_down: {strain: 4, name: "A comrade killed or maimed"}
+  heavy_losses: {strain: 3, name: "His side lost a quarter or more"}
+  leader_down: {strain: 3, name: "His leader down"}
+  wounded: {strain: 2, name: "Wounded"}
+  wounded_badly: {strain: 3, name: "Badly wounded"}
+  near_miss: {strain: 2, name: "A near miss, buried by a shell"}
+  hard_sight: {strain: 2, name: "A hard sight or deed"}
+  no_sleep: {strain: 1, name: "Two days without sleep, cold and wet"}
+
+results:                      # d10 + margin/10: the first row it is at or under
+  - {to: 4, id: shaken, attack: 10, nerve: 10, what: "Shaken: a tremor, jumpy; -10 to attack and to Nerve until a day's rest."}
+  - {to: 7, id: strained, attack: 20, nerve: 20, what: "Strained: sleepless, startled by every sound, will not volunteer; -20 to attack and Nerve until treated."}
+  - {to: 9, id: exhaustion, out: true, what: "Broken down: shaking, weeping or numb; out of the fight until treated."}
+  - {to: 99, id: severe, out: true, evacuate: true, what: "Severely broken down: out of the fight, to be sent back; before 1914 he may simply walk away."}
+
+# Treatment: where and how soon (proximity, immediacy, expectancy: Salmon, 1917). The chance he goes
+# back to duty, the days it takes, and the Strain it lifts. `forward` from the eras that had
+# exhaustion centres near the front (late 1916 on); `furlough` before them (the cure for
+# nostalgia was going home).
+treatment:
+  unit: {name: "With his unit (comrades, a sergeant, a priest)", days: 2, rtd: {shaken: 60, strained: 60, exhaustion: 30, severe: 10}, strain: 10}
+  forward: {name: "A forward exhaustion centre", days: 3, rtd: {shaken: 70, strained: 65, exhaustion: 60, severe: 30}, strain: 20, eras: [wwi, wwii, korea, vietnam, modern]}
+  rear: {name: "A hospital in the rear", days: 14, rtd: {shaken: 50, strained: 40, exhaustion: 30, severe: 20}, strain: 30}
+  home: {name: "Sent home", days: 60, rtd: {shaken: 30, strained: 20, exhaustion: 13, severe: 10}, strain: all, toll: 0.5}
+  furlough: {name: "Furlough home", days: 30, rtd: {shaken: 60, strained: 50, exhaustion: 40, severe: 30}, strain: all, eras: [medieval, thirty_years, horse_musket, crimea, civil_war]}
+rotation: {toll: 0.25, eras: [korea, vietnam, modern], name: "Rotated home at the end of his tour"}
+homecoming: {toll: 0.5, eras: [plains_nations], name: "Welcomed and honoured at home"}
+
+# What each era called it (shaken, strained, broken down). The Plains nations: no outside labels.
+names:
+  medieval: ["afeard", "heavy of heart", "out of his wits"]
+  thirty_years: ["afeard", "melancholy", "distracted"]
+  horse_musket: ["the wind of the ball", "nostalgia", "nostalgia"]
+  crimea: ["shaken", "nostalgia", "exhaustion"]
+  civil_war: ["shaken", "soldier's heart", "nostalgia"]
+  plains_nations: ["shaken", "strained", "broken down"]
+  wwi: ["windy", "NYDN (not yet diagnosed, nervous)", "shell shock"]
+  wwii: ["jittery", "combat fatigue", "combat exhaustion"]
+  korea: ["jittery", "combat exhaustion", "combat exhaustion"]
+  vietnam: ["jittery", "combat fatigue", "combat exhaustion"]
+  modern: ["shaken", "combat stress reaction", "combat stress reaction"]
+
+# Lasting effects: the GM may note one (texture, never a penalty) when a man ends a campaign with
+# his Toll at or over his Nerve, or after he broke down.
+lasting:
+  - "Sleeps badly; fights his battles again in his dreams"
+  - "Starts at sudden noises; watches doors"
+  - "Drinks more than he did"
+  - "Keeps new men at a distance"
+  - "A racing heart on exertion (soldier's heart)"
+  - "Grieves for the men he lost; asks why he lived"
+  - "Lost his faith, or his sense of what is right"
+  - "Claims a pension for his nerves (from 1914)"

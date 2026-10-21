@@ -393,6 +393,25 @@ check that succeeds, or wins, ticks the skill for experience; a characteristic i
 quarter on a critical, to the quarter Day, never under ¼), the list price if not, and no sale
 on a fumble; winning ticks Persuade.
 
+## Strain
+
+`data/stress.yaml` (rules in `gravewounds/stress.py`, repeated in `templates/ranks.js`: `stAdd`,
+`stRest`, `stTreat`, `stRelieve`, and `xpStress` for the shared store; research in the project
+doc "stress-research"). Each man's Strain, Toll (0.4 of every Strain point), state and whether he
+has broken down before are kept in the experience store by purse id. Adding Strain checks each
+multiple of 10 the total passes: d100 at or under Nerve + 115 − the multiple (−10 after a
+breakdown; 99-00 always fail); a failure rolls d10 + margin/10 on the results (shaken, strained,
+exhaustion, severe; the worst holds). Sources: the roller (a wound +2, a bad one +3; a team-builder
+comrade down +4; the leader down +3; and once a side has won, the fight +2 and heavy losses +3
+where a quarter of his side is down), the travel map (each day a force is **In the line**, +1; a
+day camped out of it, rest) and the team builder's **Strain** panel (the GM's sources; Rest a
+day; treatment with the unit, forward from 1916, in the rear, sent home or on furlough before
+1914, each with return-to-duty odds by state; rotation home for Korea, Vietnam and later;
+homecoming for the Plains nations; a lasting-effect note once the Toll reaches his Nerve or he has
+broken down). In the roller, shaken and strained cost attack and Nerve (for stop and morale
+checks) and a breakdown takes him out of the fight. Calibrated by simulation: Nerve 50, 30 days in
+the line and 3 out, breaks down at a median 81 days (Appel: 88); 12 in and 4 out, twice as long.
+
 ## Loads
 
 Each sheet's **Loads** line gives what his era's fighting order, marching order and full kit weigh

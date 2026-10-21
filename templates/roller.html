@@ -459,6 +459,9 @@ function penalties(c){
   const sick = sickOf(c), rule = sick ? DZR.in_fight[sick.step] || {} : {};   // sickness, as gravewounds.combat._sick_penalties
   if (rule.penalty){ attack += rule.penalty; defence += rule.penalty; notes.push(`sick (${sick.step}) -${rule.penalty}%`) }
   if (rule.defend_only) flags.add("defend_only");
+  const st = stressOf(c), sr = st ? stRow(st.state) : {};      // combat stress (ranks.js): shaken or strained, or broken down
+  if (sr.attack){ attack += sr.attack; notes.push(`${stName(c.sheet.era, st.state)} -${sr.attack}%`) }
+  if (sr.out) flags.add("out");
   if (rule.out) flags.add("out");
   return { attack: Math.min(attack, CMB.cap), defence: Math.min(defence, CMB.cap), flags: [...flags].sort(), notes };
 }
@@ -512,7 +515,7 @@ function moraleCheck(fighters, roll){
 // Battle map. Hexes are [col, row], pointy-top, odd rows shifted right.
 const MOVE = CMB.move, CAMP_HEX_M = MOVE.hex_m;
 // ----- named characters' sickness: a fighter can go with a force on the travel map, which runs his days -----
-const TD = { checks: DATA.checks, ranks: DATA.ranks, loads: DATA.loads, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): set to a fighter's era before use
+const TD = { checks: DATA.checks, ranks: DATA.ranks, loads: DATA.loads, stress: DATA.stress, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): set to a fighter's era before use
 const DZR = DATA.disease, NAMED_KEY = "gravewounds-named";   // {uid: {name, endurance, map, force, health, dead, log}}, shared with the travel map
 function readNamed(){ try{ return JSON.parse(localStorage.getItem(NAMED_KEY) || "{}") || {} }catch(e){ console.warn("named characters unreadable", e); return {} } }
 function writeNamed(all){ try{ localStorage.setItem(NAMED_KEY, JSON.stringify(all)) }catch(e){ /* storage off: not attached */ } }
@@ -567,7 +570,7 @@ function attachNamed(c, value){                   // put him with a travel force
     const [map, id] = [value.slice(0, value.lastIndexOf(":")), +value.slice(value.lastIndexOf(":") + 1)], was = all[c.uid] || {};
     all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id, old: oldWounds(c), skills: namedSkills(c), pid: (c.sheet && c.sheet.pid) || null,
       drill: (c.sheet && c.sheet.skill_by && c.weapon && c.sheet.skill_by[c.weapon]) || null,
-      str: statOf(c, "str"), sex: (c.sheet && c.sheet.sex) || "m", kitLoad: kitLoad(c.kit), loadExtra: (c.sheet && c.sheet.load_extra) || 0, era: loadEra(c) };   // his load on the march   // the skill drill ticks on the travel map
+      str: statOf(c, "str"), nerve: statOf(c, "nerve"), sex: (c.sheet && c.sheet.sex) || "m", kitLoad: kitLoad(c.kit), loadExtra: (c.sheet && c.sheet.load_extra) || 0, era: loadEra(c) };   // his load on the march   // the skill drill ticks on the travel map
   }
   writeNamed(all);
   NAMED = all;
@@ -632,9 +635,42 @@ function pullSheets(){                           // a sheet the team builder cha
    who held the field), the winners' team men may be marked for deeds and roll their loot. */
 const RKE = eid => ((DATA.ranks || {}).eras || {})[eid] || null;
 const eraOfChar = c => (c && c.sheet && c.sheet.era) || null;
+/* Combat stress (ranks.js: xpStress; the shared store keeps each man's Strain, Toll and state). In a
+   fight a team-builder man takes Strain for his wounds, a comrade or his leader down, and at its end
+   the fight itself and heavy losses; a check he fails is logged under his era's name for it, and a
+   breakdown takes him out of the fight. */
+let STRESS = {};
+const refreshStress = () => { STRESS = Object.fromEntries(Object.entries(readXp()).filter(([, x]) => x.stress).map(([k, x]) => [k, x.stress])) };
+const stressOf = c => (c && c.sheet && c.sheet.pid && STRESS[c.sheet.pid]) || null;
+function strainFor(c, source, why){
+  if (!c || !c.sheet || !c.sheet.pid || !DATA.stress || c.dead) return;
+  const ev = xpStress(c.sheet.pid, source, statOf(c, "nerve"), why);
+  refreshStress();
+  for (const e of ev.filter(x => !x.held)){
+    S.pending = S.pending || [];
+    S.pending.push(`${c.name}: ${stName(c.sheet.era, e.result)} (Nerve ${e.target}, rolled ${e.roll})`);
+    if (stRow(e.result).out) c.state = { id: "out", rounds: null };
+  }
+}
+function strainOnDown(c){                         // c went down: his comrades (the team builder's men on his side) feel it
+  for (const o of S.chars){
+    if (o === c || !o.sheet || sideOf(o) !== sideOf(c) || isDown(o)) continue;
+    if (c.sheet) strainFor(o, "friend_down", `${c.name} down`);
+    if (c.leader) strainFor(o, "leader_down", `${c.name}, his leader, down`);
+  }
+}
+function strainAtEnd(){                           // once a side has won: the fight, and heavy losses, for every team man still in it
+  const w = wonBy(); if (!w || S.strainDone || !DATA.stress) return;
+  S.strainDone = true;
+  for (const c of S.chars.filter(o => o.sheet && o.sheet.pid)){
+    strainFor(c, "fight");
+    const mine = S.chars.filter(o => sideOf(o) === sideOf(c));
+    if (mine.filter(isDown).length >= mine.length / 4) strainFor(c, "heavy_losses");
+  }
+}
 function newFightMarks(){                         // a new fight: no downs, coups, winner or marks carried over
   for (const c of S.chars){ delete c.downs; delete c.downedLeader; delete c.coups; delete c.fieldWon }
-  S.wonBy = null; S.deedsDone = []; S.afterLog = []; S.afterOpen = false; S.packsDropped = {}; S.packsLost = [];
+  S.wonBy = null; S.deedsDone = []; S.afterLog = []; S.afterOpen = false; S.packsDropped = {}; S.packsLost = []; S.strainDone = false;
   for (const c of S.chars) delete c.loadOrder;
 }
 function creditDown(a, c){                         // a put c down with his hit
@@ -684,7 +720,7 @@ function renderAfterFight(){
   }).join("");
   const log = (S.afterLog || []).map(l => `<li>${attr(l)}</li>`).join("");
   box.innerHTML = `<details class="after" ${S.afterOpen || auto || S.wonBy ? "open" : ""}><summary><b>After the fight</b> <span class="muted">deeds and loot for the team builder's men</span></summary>
-    <div class="toolbar"><label>Won by ${sel}</label>${dropButtons()}</div>${packsLostText()}
+    <div class="toolbar"><label>Won by ${sel}</label>${dropButtons()}</div>${packsLostText()}${(strainAtEnd(), "")}
     <ul class="xp">${rows}</ul>
     <div class="toolbar"><button class="small" id="btn-deeds" title="The ticked men did a deed: +20 to their next promotion roll on the team builder, and the wait waived">Mark deeds</button></div>
     ${men.length && kinds.length ? `<div class="toolbar"><select id="sel-loot" aria-label="What to loot">${kinds.map(k => `<option value="${k}"${k === K.kind ? " selected" : ""}>${LOOT_NAMES[k]}</option>`).join("")}</select>${whoSel}<button class="small" id="btn-loot" title="Each of the winners who is still up rolls, by his era's rules; winnings go into his purse">Loot (${men.filter(c => !isDown(c)).length} able)</button></div>` : `<p class="muted" style="margin:0">${wonBy() ? "None of the team builder's men are on the winning side." : "Loot once a side has won."}</p>`}
@@ -952,7 +988,7 @@ function sevTiers(mech, zone, wid){
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost})) }catch(e){} }
+function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone})) }catch(e){} }
 function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); return true } }catch(e){} return false }
 
 /* ---------- body figure ---------- */
@@ -1336,7 +1372,7 @@ function newChar(name, kit = "none", weapon = null, look = {}, side = "Side A"){
   return { id: S.seq++, name, kit, weapon, look, init: null, blood: TRK.blood_pool, rounds: 0, wounds: [],
            side, leader: false, rating: DEFAULT_RATING, nerve: RATINGS[DEFAULT_RATING], state: null };
 }
-const nerveOf = c => Number.isFinite(+c.nerve) ? +c.nerve : RATINGS[DEFAULT_RATING];
+const nerveOf = c => (Number.isFinite(+c.nerve) ? +c.nerve : RATINGS[DEFAULT_RATING]) - (stRow((stressOf(c) || {}).state).nerve || 0);   // less what strain has taken
 const sideOf = c => (c.side || "Side A").trim() || "Side A";
 // Combatant figures (templates/figure.js): armour from the kit, weapon icon, side colours.
 // Period picture of such a combatant on Wikimedia Commons (conflicts.yaml `image`); same URL as gravewounds.model.commons_url
@@ -2489,6 +2525,7 @@ function clickHex(h, e){
   if (S.turn && !S.freePlace){ S.mapMsg = ""; moveActing(h) }
 }
 function renderChars(){
+  refreshStress();
   sortChars();
   if (S.turn != null && !S.chars.some(c => c.id === S.turn)) S.turn = null;
   const att = attackerChar();                // a fighter who cannot attack can't stay the attacker
@@ -2751,7 +2788,8 @@ function init(){
       line = applyStopCheck(c, c.wounds[c.wounds.length - 1]);
       (S.pending = S.pending || []).push(`${c.name}: ${h.graze ? "grazed" : h.sev} ${LOC[h.loc].name.toLowerCase()}`, ...(line ? [line] : []));
       countCoup(attackerChar(), c, h.weapon);              // a Plains man's blow landed: a coup
-      if (!wasDown && isDown(c)) creditDown(attackerChar(), c);
+      strainFor(c, ["serious", "critical"].includes(h.sev) ? "wounded_badly" : "wounded");
+      if (!wasDown && isDown(c)){ creditDown(attackerChar(), c); strainOnDown(c) }
     } else msg = `Armour stopped that blow: nothing to add to ${c.name}.`;
     $("#apply-msg").innerHTML = msg + (line ? `<br>${line}` : "");
     if (h.free && isFreePair()){ S.hit = { ...h, free: false }; freeDone("") }

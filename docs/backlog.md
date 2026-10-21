@@ -201,6 +201,15 @@ When an item is done, delete it here and note it in the pull request that closes
   - no difficulty from wounds, fatigue or hunger is added to a check out of a fight (the GM sets
     it);
   - haggling is only for buying: selling loot, and hiring a replacement, are at the list price.
+- **Strain, first cut.** Strain and Toll, Nerve checks, results by era name, treatment, rotation
+  and homecoming, lasting-effect notes. Still left out: the calibration rests on Appel and Glass
+  and Jones (Appel and Beebe 1946 and Swank and Marchand 1946 were not read in the original); no
+  figures before 1850 (the medieval, Thirty Years' War and Crimean rates are the same rules, not
+  data); cohesion, a trusted leader, a replacement without friends and an advance or retreat do not
+  change the Strain taken (the research suggests a quarter either way); the field map's units have
+  no Strain (their morale is their own), and its heroes take only the fight's when they come back
+  to the roller; treatment takes no time on the travel map; and the Plains nations' homecoming is
+  deliberately abstract.
 - **Loads, first cut.** Load orders by era, bands by body weight and Strength, march pace and
   fatigue, blisters, Dodge and the run, dropped and lost packs. Still left out: no item has a
   weight, so what a man buys adds to his load only as the extra kg the GM writes on his sheet;

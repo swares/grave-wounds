@@ -165,6 +165,7 @@ label.radio input{margin-top:4px}
       <div id="work"></div>
       <div id="xp"></div>
       <div id="rank"></div>
+      <div id="stress"></div>
       <div id="checks"></div>
     </section>
   </div>
@@ -241,6 +242,7 @@ function render(){
   renderWork();
   renderXp();
   renderRank();
+  renderStress();
   renderChecks();
   renderLosses();
   $("#msg").textContent = S.msg;
@@ -408,6 +410,51 @@ function rollLoot(){
     lines.push(t + ".");
   }
   S.lootlog = [...lines, ...(S.lootlog || [])].slice(0, 40);
+  render();
+}
+/* Combat stress (ranks.js: xpStress, stRest, stTreat, stRelieve; the shared store holds each man's
+   Strain, Toll and state, which the roller and the travel map add to). The GM adds Strain the pages
+   do not see, rests men, sends a man for treatment, rotates or welcomes him home, and may note a
+   lasting effect. */
+const stOf = c => (readXp()[c.pid] || {}).stress || stNew();
+function stressRow(c, i){
+  const st = stOf(c), nerve = c.stats.nerve, x = readXp()[c.pid] || {};
+  const state = st.state ? `<b>${esc(stName(T.id, st.state))}</b>: ${esc(stRow(st.state).what || "")}` : "steady";
+  const treat = st.state ? stTreatments(T.id).map(k => `<button class="small" data-treat="${i}" data-where="${k}" title="${esc(TD.stress.treatment[k].name)}: ${TD.stress.treatment[k].rtd[st.state]}% back to duty, ${TD.stress.treatment[k].days} days">${esc(TD.stress.treatment[k].name.split(" (")[0])}</button>`).join("") : "";
+  const relief = ["rotation", "homecoming"].filter(k => TD.stress[k].eras.includes(T.id)).map(k => `<button class="small" data-relieve="${i}" data-kind="${k}" title="Strain gone; Toll cut to ${Math.round(TD.stress[k].toll * 100)}%">${esc(TD.stress[k].name)}</button>`).join("");
+  const due = st.toll >= nerve || st.broke;
+  const lasting = due ? lastingSel(c, i) : "";
+  const last = (x.stressLog || [])[0], lastText = last ? ` <span class="muted">· last: ${esc(last.why)} (+${last.amount})</span>` : "";
+  return `<li><b>${esc(c.name)}</b>: Strain ${Math.round(st.strain * 10) / 10}, Toll ${Math.round(st.toll * 10) / 10} <span class="muted">(Nerve ${nerve}; next check at ${Math.floor(stTotal(st) / TD.stress.check_every + 1) * TD.stress.check_every})</span>${lastText}
+    <div>${state}</div><div class="spend">${treat}${relief}<button class="small" data-rest="${i}" title="A day out of the line, camped: −${TD.stress.rest_day} Strain">Rest a day</button>${lasting}</div>
+    ${lastingText(c)}</li>`;
+}
+function renderStress(){
+  const box = $("#stress");
+  if (!TD.stress || !S.team.length){ box.innerHTML = ""; return }
+  const K = (S.stK ||= { i: 0, source: "line_day" });
+  if (!S.team[K.i]) K.i = 0;
+  const src = Object.entries(TD.stress.sources).map(([k, v]) => `<option value="${k}"${k === K.source ? " selected" : ""}>${esc(v.name)} (+${v.strain})</option>`).join("");
+  const log = (S.stlog || []).map(l => `<li>${esc(l)}</li>`).join("");
+  box.innerHTML = `<section class="crew work" aria-labelledby="h-stress"><h3 id="h-stress">Strain</h3>
+    <p class="muted note">Fighting and loss build Strain, and part of it a lasting Toll; each time the two pass 10, 20, 30… he rolls d100 at or under Nerve + ${TD.stress.base} − the total, or is ${esc(stName(T.id, "shaken"))}, ${esc(stName(T.id, "strained"))} or ${esc(stName(T.id, "exhaustion"))}. Rest lowers Strain; only going home lowers the Toll. The roller adds wounds, comrades and leaders down and the fight; the travel map a day in the line and a day's rest. (After Appel: a man of ordinary Nerve under US rotation in 1944 lasted about 80-90 days of combat; rest out of the line doubled it.)</p>
+    <ul class="xp">${S.team.map(stressRow).join("")}</ul>
+    <div class="row"><div><label for="st-who">Who</label><select id="st-who">${S.team.map((m, k) => `<option value="${k}"${k === K.i ? " selected" : ""}>${esc(m.name)}</option>`).join("")}</select></div>
+    <div><label for="st-src">What</label><select id="st-src">${src}</select></div><div style="align-self:end"><button id="btn-strain">Add Strain</button></div></div>
+    ${log ? "<ol class=\"log\">" + log + "</ol>" : ""}</section>`;
+}
+function lastingSel(c, i){                          // the GM's lasting-effect note: texture, never a penalty
+  const opts = TD.stress.lasting.map(l => `<option${(c.lasting || []).includes(l) ? " selected" : ""}>${esc(l)}</option>`).join("");
+  return `<label class="check" title="A lasting effect, for the GM's notes: texture, never a penalty">Lasting <select data-lasting="${i}"><option value="">—</option>${opts}</select></label>`;
+}
+function lastingText(c){
+  return (c.lasting || []).length ? `<div class="muted">Lasting: ${esc(c.lasting.join("; "))}</div>` : "";
+}
+function stressLog(line){ S.stlog = [line, ...(S.stlog || [])].slice(0, 30) }
+function addStrain(){
+  const K = S.stK, c = S.team[K.i], ev = xpStress(c.pid, K.source, c.stats.nerve);
+  const bits = ev.map(e => e.held ? `holds (rolled ${e.roll} against ${e.target})` : `${stName(T.id, e.result)} (rolled ${e.roll} against ${e.target})`);
+  stressLog(`${c.name}: ${TD.stress.sources[K.source].name.toLowerCase()}, +${TD.stress.sources[K.source].strain}${bits.length ? "; " + bits.join("; ") : ""}.`);
   render();
 }
 /* Skill checks out of a fight (team.js: skillCheck, opposedCheck, checkUses; data TD.checks): a
@@ -879,6 +926,24 @@ function init(){
     if (b.dataset.payowed !== undefined){ const c = S.team[+b.dataset.payowed]; (c.ledger ||= []).push({ days: c.owed, what: "Arrears of pay" }); c.owed = 0; return render() }
     if (b.dataset.coup !== undefined){ const c = S.team[+b.dataset.coup]; c.honours = (c.honours || 0) + RK().honours.coup[+b.dataset.n - 1]; return render() }
     if (b.dataset.give !== undefined){ const c = S.team[+b.dataset.give]; if (c.horses > 0){ c.horses--; c.honours = (c.honours || 0) + RK().honours.horse_given } return render() }
+  });
+  $("#stress").addEventListener("change", e => {
+    const el = e.target;
+    if (el.id === "st-who") S.stK.i = +el.value; else if (el.id === "st-src") S.stK.source = el.value;
+    else if (el.dataset.lasting !== undefined){ const c = S.team[+el.dataset.lasting]; c.lasting = el.value ? [...new Set([...(c.lasting || []), el.value])] : c.lasting }
+    render();
+  });
+  $("#stress").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.id === "btn-strain") return addStrain();
+    if (b.dataset.rest !== undefined){ const c = S.team[+b.dataset.rest]; xpStressDo(c.pid, st => stRest(st, 1)); stressLog(`${c.name} rests a day.`); return render() }
+    if (b.dataset.treat !== undefined){
+      const c = S.team[+b.dataset.treat], where = b.dataset.where, was = stOf(c).state;
+      const r = xpStressDo(c.pid, st => stTreat(st, where, realDice.randint(1, 100)));
+      stressLog(`${c.name}, ${stName(T.id, was)}: ${TD.stress.treatment[where].name.toLowerCase()} (${r.days} days): ${r.rtd ? "back to duty" : "not fit to return yet"} (rolled ${r.roll} against ${r.chance}).`);
+      return render();
+    }
+    if (b.dataset.relieve !== undefined){ const c = S.team[+b.dataset.relieve]; xpStressDo(c.pid, st => stRelieve(st, b.dataset.kind)); stressLog(`${c.name}: ${TD.stress[b.dataset.kind].name.toLowerCase()}.`); return render() }
   });
   $("#checks").addEventListener("change", e => {
     const K = S.chk, id = e.target.id;
