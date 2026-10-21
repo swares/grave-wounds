@@ -20,23 +20,23 @@ def _roll(rng, dice) -> int:
     return sum(rng.randint(1, dice[1]) for _ in range(dice[0]))
 
 
-def _decline(band: dict, wear: int, W: dict, rng, ch: dict) -> None:
+def _decline(band: dict, wear: int, wcfg: dict, rng, ch: dict) -> None:
     """The band's losses into ch: Endurance twice, the worse, with heavy Wear."""
     for k in DECLINE_ORDER:
         if not band.get(k):
             continue
         n = _roll(rng, band[k])
-        if k == "end" and wear >= W["end_twice"]:
+        if k == "end" and wear >= wcfg["end_twice"]:
             n = max(n, _roll(rng, band[k]))
         ch[k] = ch.get(k, 0) - n
 
 
-def _mature(mid: float, M: dict, mat: dict, ch: dict) -> None:
-    """A step of maturity into ch, from M["from"] to each one's `to`, at most its cap."""
-    if mid < M["from"]:
+def _mature(mid: float, mcfg: dict, mat: dict, ch: dict) -> None:
+    """A step of maturity into ch, from mcfg["from"] to each one's `to`, at most its cap."""
+    if mid < mcfg["from"]:
         return
     for k in MATURE_ORDER:
-        if mid >= M[k]["to"] or mat.get(k, 0) >= M[k]["cap"]:
+        if mid >= mcfg[k]["to"] or mat.get(k, 0) >= mcfg[k]["cap"]:
             continue
         mat[k] = mat.get(k, 0) + 1
         ch[k] = ch.get(k, 0) + 1

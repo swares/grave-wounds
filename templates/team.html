@@ -462,7 +462,7 @@ function renderXp(){
     const x = all[c.pid] || {}, ticks = Object.entries(x.ticks || {}), served = (c.served || 0) + (x.served || 0);
     const t = ticks.length ? ticks.map(([k, why]) => `<span title="${esc(why)}">${esc(skillName(k))} ${c.skills[k] ?? 0}</span>`).join(", ") : `<span class="muted">nothing yet</span>`;
     const i = S.team.indexOf(c), age = TD.ageing ? ageText(c, x.hard || 0) : "";
-    const hard = TD.ageing ? ` <label class="check" title="A hard season (siege, famine, a tropical station, a prison camp): +${TD.ageing.wear.hard_season} Wear at End of season. A month of hard nights on the travel map counts by itself."><input type="checkbox" data-hard="${i}"${c.hardSeason ? " checked" : ""}> Hard season</label>` : "";
+    const hard = TD.ageing ? hardTick(c, i) : "";
     const worn = c.wornOut ? `<div class="spend"><b>${esc(c.wornOut[0].toUpperCase() + c.wornOut.slice(1))}.</b> <button class="small" data-discharge="${i}" title="Sent home, with a pension where his army gave one">Discharge him</button><button class="small" data-keepon="${i}" title="He stays; the check comes again next term">Keep him on</button></div>` : "";
     return `<li><b>${esc(c.name)}</b>: ${t} <span class="muted">· ${served.toLocaleString("en-US")} of ${per.toLocaleString("en-US")} days toward a term${age}</span>${hard}${worn}</li>`;
   }).join("");
@@ -485,6 +485,10 @@ function teachersFor(c, skill){                     // [{id, name, value, fee}] 
 function ageText(c, hard){                          // ' · age 32, Wear 5, 12 hard nights'
   const nights = hard === 1 ? "1 hard night" : `${hard} hard nights`;
   return ` · age ${c.age}, Wear ${c.wear || 0}` + (hard ? `, ${nights}` : "");
+}
+function hardTick(c, i){                            // the GM's Hard season tick for one man
+  const on = c.hardSeason ? " checked" : "";
+  return ` <label class="check" title="A hard season (siege, famine, a tropical station, a prison camp): +${TD.ageing.wear.hard_season} Wear at End of season. A month of hard nights on the travel map counts by itself."><input type="checkbox" data-hard="${i}"${on}> Hard season</label>`;
 }
 function wornText(w){                               // the Worn Out check, in words
   if (!w.worn) return `fit to serve on (rolled ${w.roll} against ${w.threshold})`;
