@@ -971,7 +971,7 @@ function keepNight(f, camp, noFreshBefore){   // each named man's food, and a be
     const bits = [];
     if (pk.hungry){
       n.noFresh = (n.noFresh ?? noFreshBefore) + 1;  // he ate nothing: no fresh food for him either
-      n.tire = (n.tire || 0) + 1;                   // and it tires him (the roller adds the step)
+      n.hungry = (n.hungry || 0) + 1;               // and it tires him: the roller adds a step for each day it has not seen
       bits.push("went hungry: no money for food");
     } else n.noFresh = f.noFresh;
     if (pk.rough) bits.push("slept rough: no money for a bed");
@@ -987,7 +987,7 @@ function keepNight(f, camp, noFreshBefore){   // each named man's food, and a be
 function keepText(f){                          // the health panel's word on who feeds the force
   if (fedByArmy(f)) return "";
   const purses = readPurses(), mine = namedWith(readNamed(), f);
-  const each = mine.map(([, n]) => { const p = n.pid ? purses[n.pid] : null; return p ? `${n.name} ${quarterText(purseLeft(p))} Days` : null }).filter(Boolean);
+  const each = mine.map(([, n]) => { const p = n.pid ? purses[n.pid] : null; return p ? `${n.name} ${daysQ(purseLeft(p))}` : null }).filter(Boolean);
   return `Not fed by its army: its named men pay a day's food from their purses, and a bed on nights in a village or town out of camp${each.length ? ` (left: ${each.join(", ")})` : ""}.`;
 }
 // ----- camp disease (rules in the shared block) -----

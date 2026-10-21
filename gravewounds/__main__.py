@@ -146,7 +146,7 @@ def _main(argv=None) -> int:
         r = J.work_term(d, a.era, j, c, rng, a.days)
         check = f"d100 {r['check']} against {c['skills'][j['skill']]}: {r['outcome']}" if r["check"] is not None else "no check"
         print(f"{j['name']}, {r['days']} day{'s' if r['days'] != 1 else ''}: {check}; earned {r['earned']:g} Days.")
-        from .money import pay_keep, quarter_text
+        from .money import pay_keep, days_text_q
         region = a.region or d.teams[a.era]["regions"][0]["id"]
         k = J.keep_for(d, a.era, j, region, a.place)
         if j.get("board"):
@@ -155,7 +155,7 @@ def _main(argv=None) -> int:
             pk = pay_keep((a.purse or 0) + r["earned"], r["days"], k["food"], k["bed"])
             more = (f"; went hungry {pk['hungry']} day{'s' if pk['hungry'] != 1 else ''}" if pk["hungry"] else "") + \
                    (f"; slept rough {pk['rough']} night{'s' if pk['rough'] != 1 else ''}" if pk["rough"] else "")
-            print(f"Keep ({quarter_text(k['food'])} Days food a day" + (f", {quarter_text(k['bed'])} a bed" if k["bed"] else "") + f"): paid {quarter_text(pk['paid'])} Days{more}.")
+            print(f"Keep ({days_text_q(k['food'])} for food a day" + (f", {days_text_q(k['bed'])} a bed" if k["bed"] else "") + f"): paid {days_text_q(pk['paid'])}{more}.")
         if r["trouble"]:
             print(f"Trouble (d100 {r['trouble']['roll']} under {j['risk']}%): {r['trouble']['text']}")
             print(f"  The job's hook: {j['hook']}")

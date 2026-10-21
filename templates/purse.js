@@ -14,6 +14,10 @@ function quarterText(x){                          // Days to the nearest quarter
   const q = Math.floor(Math.max(x, 0) * 4 + 0.5), whole = Math.floor(q / 4), part = q % 4;
   return whole ? `${whole.toLocaleString("en-US")}${PURSE_Q[part]}` : (PURSE_Q[part] || "0");
 }
+function daysQ(x){                               // '¾ Day', '1 Day', '1¼ Days', '0 Days'
+  const q = Math.floor(Math.max(x, 0) * 4 + 0.5);
+  return `${quarterText(x)} Day${q > 0 && q <= 4 ? "" : "s"}`;
+}
 function payKeep(have, days, food, bed){          // {paid, hungry, rough}: each day's food before its bed
   let paid = 0, hungry = 0, rough = 0;
   for (let i = 0; i < days; i++){

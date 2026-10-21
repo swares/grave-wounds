@@ -73,6 +73,15 @@ sources:
   swj: &swj "https://archive.smallwarsjournal.com/node/6525"
   gao: &gao "https://www.gao.gov/assets/a96771.html"
 
+# keep - a day's food and a night's bed for a man his army does not feed (money.keep_days):
+#        price rows below, `times` for a per-meal row; an army may have its own under regions.
+keep:
+  food: {row: us_meals}
+  bed: {row: us_lodging}
+  regions:
+    uk_1982: {food: {row: uk_food_1982}, bed: {row: uk_bnb_1982}}
+    insurgent: {food: {row: local_food}, bed: {row: local_guesthouse}}
+
 items:
   # Falklands, 1982
   - {id: night_sight, name: "Night sight (IWS)", cat: navigation, in: gbp_1982, price: 200000, approx: true}
@@ -169,3 +178,9 @@ items:
   - {id: ecwcs, name: "ECWCS cold-weather layers, whole system", cat: clothing, price: 130000, when: "2007", source: {url: "https://www.stripes.com/news/2007-06-09/cold-climate-troops-getting-new-gear-to-keep-them-warm-and-dry-2196989.html1", note: "Stars and Stripes"}}
   - {id: boots_private, name: "Boots bought privately (retail)", cat: clothing, price: 18000, when: "2008", source: {url: "https://www.csmonitor.com/2008/0306/p03s06-usmi.html", note: "CS Monitor"}}
   - {id: acu, name: "ACU coat and trousers (flame-resistant $129.61)", cat: clothing, price: 7585, source: {url: *gao, note: "GAO-10-669R"}}
+  - {id: us_meals, name: "Meals and incidentals, a day (government rate)", cat: food, price: 3900, when: "2008", source: {url: "https://www.govexec.com/federal-news/2007/08/gsa-raises-lodging-per-diem/25027/", note: "the standard US per diem, fiscal 2008: a ceiling"}}
+  - {id: us_lodging, name: "A night's lodging (government rate)", cat: lodging, price: 7000, when: "2008", source: {url: "https://www.govexec.com/federal-news/2007/08/gsa-raises-lodging-per-diem/25027/", note: "the standard US per diem, fiscal 2008: a cheap motel runs less"}}
+  - {id: uk_food_1982, name: "A day's food, Britain", cat: food, price: [400, 600], in: gbp_1982, when: "1982", approx: true}
+  - {id: uk_bnb_1982, name: "A bed and breakfast, single", cat: lodging, price: [700, 900], in: gbp_1982, when: "1980-1986", approx: true, source: {url: "https://www.csmonitor.com/layout/set/amphtml/1986/0418/qbbb.html", note: "£11 a couple in 1986; $15 single in London in 1980"}}
+  - {id: local_food, name: "A day's food, local", cat: food, price: [300, 600], in: usd_fighter, when: "2000s", approx: true}
+  - {id: local_guesthouse, name: "A guesthouse bed, local", cat: lodging, price: [1000, 2500], in: usd_fighter, when: "2000s", approx: true}

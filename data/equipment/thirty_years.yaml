@@ -22,6 +22,12 @@ sources:
   hag: &hag "https://germanhistory-intersections.org/en/germanness/ghis:document-294"
   vermeer: &vermeer "https://www.essentialvermeer.com/references/vermeer-economy.html"
 
+# keep - a day's food and a night's bed for a man his army does not feed (money.keep_days):
+#        price rows below, `times` for a per-meal row; an army may have its own under regions.
+keep:
+  food: {row: keep_food}
+  bed: {row: keep_bed}
+
 items:
   # Arms and armour
   - {id: cuirassier_armour, name: "Cuirassier's armour", cat: armour, price: 1800, when: "1629", kit: cuirassier_1630, source: {url: *cuir, note: "£4 10s in England, converted"}}
@@ -56,3 +62,5 @@ items:
   - {id: wool_coat, name: "Workman's wool coat", cat: clothing, price: [240, 480], when: "mid-1600s", source: {url: *vermeer, note: "4-8 Dutch guilders"}}
   - {id: shoes, name: "Leather shoes", cat: clothing, price: [120, 180], when: "mid-1600s", source: {url: *vermeer, note: "2-3 Dutch guilders"}}
   - {id: shirt, name: "Linen shirt", cat: clothing, price: [60, 120], when: "mid-1600s", source: {url: *vermeer, note: "1-2 Dutch guilders"}}
+  - {id: keep_food, name: "A day's plain food, bought", cat: food, price: [6, 9], when: "1629-1645", approx: true, source: {url: "https://www.gaukoenigshofen.de/storage/app/media/uploaded-files/Zeugnisse%20aus%20dem%20Dreissigjaehrigen%20Krieg.pdf", note: "estimate from a rider's overnight meal, 5 kr 24 pf (1645), and two soldiers' keep at 1 fl a week each (1643), Röttingen accounts"}}
+  - {id: keep_bed, name: "A night at an inn, a man", cat: lodging, price: [3, 4], when: "1629-1630", approx: true, source: {url: "https://www.gaukoenigshofen.de/storage/app/media/uploaded-files/Zeugnisse%20aus%20dem%20Dreissigjaehrigen%20Krieg.pdf", note: "16 soldiers and their families, one night, 1 fl 4 kr 8 pf (Röttingen 1629/30); the accounts' units are uncertain"}}

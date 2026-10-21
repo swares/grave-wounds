@@ -615,14 +615,14 @@ function keepOld(c){                              // the travel map's copy of hi
 const campStep = (c, w) => { const n = c.uid ? NAMED[c.uid] : null, k = n && ((n.health || {}).cases || []).find(x => x.wid === w.wid); return k ? DZR.names[k.d].toLowerCase() + ", " + DZR.steps[k.step] : "" };
 function syncNamed(){
   NAMED = readNamed(); S.chars.forEach(syncCamp);
-  let tired = false;                              // days he went hungry on the travel map tire him: a fatigue step each
+  let tired = false;                              // days he went hungry on the travel map tire him: a fatigue step each, once
   for (const c of S.chars){
-    const n = c.uid ? NAMED[c.uid] : null;
-    if (!n || !n.tire) continue;
-    c.fatigue = Math.min(WXD.fatigue.levels.length - 1, (c.fatigue || 0) + n.tire);
-    n.tire = 0; tired = true;
+    const n = c.uid ? NAMED[c.uid] : null, seen = c.hungerSeen || 0;
+    if (!n || (n.hungry || 0) <= seen) continue;
+    c.fatigue = Math.min(WXD.fatigue.levels.length - 1, (c.fatigue || 0) + n.hungry - seen);
+    c.hungerSeen = n.hungry; tired = true;
   }
-  if (tired){ writeNamed(NAMED); save() }
+  if (tired) save();
 }
 function forceSelect(c){                         // the travel-map force he goes with
   const n = c.uid ? NAMED[c.uid] : null, opts = travelForces(), cur = n ? `${n.map}:${n.force}` : "";
@@ -1254,7 +1254,7 @@ function sheetLine(c){                          // a team builder character's sh
   const skills = h.trained.map(([n, v]) => `${n} ${v}`).join(", ");
   const olds = [...h.old.map(w => LOC[w.loc].name.toLowerCase()), ...scars];
   const old = olds.length ? ` · old wounds: ${olds.join(", ")}` : "";
-  const p = h.pid ? readPurses()[h.pid] : null, purse = p ? ` · purse ${quarterText(purseLeft(p))} Days` : "";   // shared with the team builder and the travel map
+  const p = h.pid ? readPurses()[h.pid] : null, purse = p ? ` · purse ${daysQ(purseLeft(p))}` : "";   // shared with the team builder and the travel map
   return `<div class="wears">${attr(h.career)}, ${h.terms} term${h.terms > 1 ? "s" : ""}, age ${h.age}${h.leader ? " · leads" : ""} · ${stats}</div><div class="muted">${attr(skills)} · defence ${h.defence}%${attr(old)}${purse}</div>`;
 }
 function addTeam(){                             // the team from the team builder joins the fighters

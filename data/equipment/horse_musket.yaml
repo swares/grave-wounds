@@ -40,6 +40,15 @@ sources:
   lc26: &lc26 "https://lewis-clark.org/day-by-day/26-may-1803/"
   lc: &lc "https://lewis-clark.org/?p=39852"
 
+# keep - a day's food and a night's bed for a man his army does not feed (money.keep_days):
+#        price rows below, `times` for a per-meal row; an army may have its own under regions.
+keep:
+  food: {row: soldier_diet}
+  bed: {row: shared_bed}
+  regions:
+    continental: {food: {row: us_board_day}, bed: {row: us_tavern_bed}}
+    us_1812: {food: {row: us_board_day}, bed: {row: us_tavern_bed}}
+
 items:
   # Arms
   - {id: rifle_1776, name: "Rifle bought by the British Army", cat: weapon, price: 3024, when: "1776", weapon: rifle_flintlock, regions: [british_rev], source: {url: "https://95th-rifles.co.uk/equipment/baker-rifle", note: "3 guineas"}}
@@ -99,3 +108,6 @@ items:
   - {id: shirt_us, name: "Shirt", cat: clothing, in: usd, price: 90, when: "1791", source: {url: *wd, note: "War Department contract"}}
   - {id: shoes_us, name: "Shoes", cat: clothing, in: usd, price: 80, when: "1791", source: {url: *wd, note: "War Department contract"}}
   - {id: hat_us, name: "Hat", cat: clothing, in: usd, price: 60, when: "1791", source: {url: *wd, note: "War Department contract"}}
+  - {id: soldier_diet, name: "A soldier's food and small beer at an inn, a day", cat: food, price: 16, when: "1765", source: {url: "https://avalon.law.yale.edu/18th_century/quartering_act_165.asp", note: "the innkeeper's allowance of 4d a day (Quartering Act 1765)"}}
+  - {id: us_board_day, name: "Board, a day (at $1.25 a week)", cat: food, price: 18, in: usd, when: "1815", source: {url: "https://theoldstonefort.org/Exhibits/vMONEY/DOLLAR-A-DAY_files/WAGE%20DATA.pdf", note: "weekly board in Maine, 1815"}}
+  - {id: us_tavern_bed, name: "A night's lodging at a tavern", cat: lodging, price: [12, 20], in: usd, when: "1801", source: {url: "https://media.alexandriava.gov/docs-archives/historic/info/gadsbys/gtresearchrateofliquors.pdf", note: "lodging 20¢ at Alexandria, 12¢ at New Brunswick NJ (foodtimeline.org), 1801"}}

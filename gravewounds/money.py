@@ -133,12 +133,18 @@ def quarter_text(x: float) -> str:
     return f"{_group(whole)}{QUARTERS[part]}" if whole else (QUARTERS[part] or "0")
 
 
+def days_text_q(x: float) -> str:
+    """'¾ Day', '1 Day', '1¼ Days', '0 Days': quarter_text with its word."""
+    q = int(max(x, 0) * 4 + 0.5)
+    return f"{quarter_text(x)} Day{'' if 0 < q <= 4 else 's'}"
+
+
 def spend_check(d: Data, c: dict, days: float) -> str | None:
     """Why he can't spend that many Days (nothing, or more than his purse holds), or None."""
     if not days or days <= 0:
         return "nothing to spend"
     have = purse(d, c["era"], c["region"], c["terms"], c.get("ledger"))["days"]
-    return f"his purse holds {quarter_text(have)} Days" if days > have + 1e-9 else None
+    return f"his purse holds {days_text_q(have)}" if days > have + 1e-9 else None
 
 
 def spend(d: Data, c: dict, days: float, what: str) -> dict:
@@ -190,7 +196,7 @@ def money_line(d: Data, c: dict) -> str:
     else:
         kit = f"kit worth about {days_text(v['days'])} Days" + (" (part not priced)" if v["unpriced"] else "")
     coin = f" ({p['text']})" if p["text"] else ""
-    return f"{kit[0].upper()}{kit[1:]}; purse {quarter_text(p['days'])} Days{coin}"
+    return f"{kit[0].upper()}{kit[1:]}; purse {days_text_q(p['days'])}{coin}"
 
 
 BED_TERRAIN = ("village", "town")   # travel map ground with a bed to be had for the night

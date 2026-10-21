@@ -59,8 +59,9 @@ and their trouble is the law's.
 
 **Keep.** A soldier with his army is fed by it. A man who is not (off on his own, on leave, or
 working for someone else) pays his **keep** from his purse each day: a day's food
-({{keep_food}} for an English archer), and a bed ({{keep_bed}}) where there is one to be had,
-in a town, city or village or at an inn on the road. A job marked *fed* feeds him while he works:
+({{keep_food}} for an English archer), and a bed ({{keep_bed}}) where there is one to be had:
+in a town, city or village, or at an inn on the road (on the travel map, a night in a village or
+town out of camp). A job marked (fed) feeds him while he works:
 his army's own service, or wages paid with board. A day he cannot pay for his food he goes
 hungry: it counts as a day without fresh food, and tires him a step. A night he cannot pay for
 a bed he sleeps rough. The medieval jobs:

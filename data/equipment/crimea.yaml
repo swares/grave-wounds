@@ -31,6 +31,12 @@ sources:
   mayhew: &mayhew "https://www.victorianlondon.org/mayhew/mayhew08.htm"
   rogue: &rogue "https://regimentalrogue.com/misc/1848_Army_Winter_Clothing.htm"
 
+# keep - a day's food and a night's bed for a man his army does not feed (money.keep_days):
+#        price rows below, `times` for a per-meal row; an army may have its own under regions.
+keep:
+  food: {row: keep_food}
+  bed: {row: keep_bed}
+
 items:
   - {id: charger, name: "Officer's charger", cat: horse, price: [38400, 76800], approx: true}
   - {id: saddle_bridle, name: "Saddle and bridle, Balaklava", cat: horse, price: 14400, when: "1855", source: {url: *fenton, note: "Fenton letters"}}
@@ -61,3 +67,5 @@ items:
   - {id: flannel_waistcoats, name: "Two flannel waistcoats", cat: clothing, price: 320, when: "1848", source: {url: *rogue, note: "Regimental Rogue"}}
   - {id: drawers, name: "Two pairs of drawers", cat: clothing, price: 264, when: "1848", source: {url: *rogue, note: "Regimental Rogue"}}
   - {id: fur_cap, name: "Fur cap", cat: clothing, price: 240, when: "1848", source: {url: *rogue, note: "Regimental Rogue"}}
+  - {id: keep_food, name: "A day's food bought from sutlers and shops", cat: food, price: [48, 72], when: "1855", approx: true}
+  - {id: keep_bed, name: "A cheap bed, Constantinople", cat: lodging, price: [12, 24], when: "1856", approx: true, source: {url: "https://downrabbitholes.com.au/drake/drake-crimean-letters/drakeletters-105-18560623/", note: "estimated well below a rented room in Pera at 500 piastres a month (about 2s 9d a day)"}}

@@ -125,7 +125,7 @@ def job_rows(d: Data, eid: str) -> list[list[str]]:
     for j in jobs_at(d, eid):
         skill = f"{skills[j['skill']]} {j.get('min', 0)}" if j.get("skill") else "none"
         who = "anyone" if j.get("who", "any") == "any" else ", ".join(names[w] for w in j["who"])
-        rows.append([j["name"] + (" †" if j.get("illegal") else ""), skill, pay_text(j), term_text(j), ", ".join(j["places"]), who,
+        rows.append([j["name"] + (" †" if j.get("illegal") else "") + (" (fed)" if j.get("board") else ""), skill, pay_text(j), term_text(j), ", ".join(j["places"]), who,
                      f"{j['risk']}%" if j.get("risk") else "none"])
     return rows
 
@@ -143,5 +143,6 @@ def work_rules(d: Data) -> list[str]:
         f"<b>A term:</b> a day, a week ({W['terms']['week']} days), a month ({W['terms']['month']} days) or a contract. One check on the job's skill a term: "
         f"at or under, full pay; over, {int(W['failure'] * 100)}%; {W['fumble_from']} or more and over, a fumble and nothing. A job with no skill pays in full.",
         "<b>Trouble:</b> a job with a risk takes one d100 a term: at or under the risk, trouble. The GM uses the job's hook, or rolls d10 on the era's trouble table. "
-        "Jobs marked † are against the law.",
+        "Jobs marked † are against the law. <b>Keep:</b> a man his army does not feed pays a day's food from his purse, and a bed in a town, city, "
+        "village or on the road; a job marked (fed) feeds him while he works. A day he cannot pay for food he goes hungry; a night without a bed he sleeps rough.",
     ]

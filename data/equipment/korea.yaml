@@ -45,6 +45,14 @@ sources:
   ls1951: &ls1951 "https://archive.org/stream/sim_leather-and-shoes_1951-01-20_121_3/sim_leather-and-shoes_1951-01-20_121_3_djvu.txt"
   ls1950: &ls1950 "https://archive.org/stream/sim_leather-and-shoes_1950-10-07_120_15/sim_leather-and-shoes_1950-10-07_120_15_djvu.txt"
 
+# keep - a day's food and a night's bed for a man his army does not feed (money.keep_days):
+#        price rows below, `times` for a per-meal row; an army may have its own under regions.
+keep:
+  food: {row: rr_food}
+  bed: {row: rr_hotel}
+  regions:
+    rok: {food: {row: rok_food}, bed: {row: rok_inn}}
+
 items:
   # Arms and armour
   - {id: bar, name: "Browning automatic rifle (civilian price)", cat: weapon, price: 30000, source: {url: "https://en.wikipedia.org/wiki/M1918_Browning_Automatic_Rifle", note: "Wikipedia, 1931 Colt price"}}
@@ -99,3 +107,7 @@ items:
   - {id: gloves, name: "Gloves", cat: clothing, price: 200, approx: true}
   - {id: towel, name: "Towel", cat: gear, price: 50, approx: true}
   - {id: socks, name: "Pair of socks", cat: clothing, price: 40, approx: true}
+  - {id: rr_food, name: "A day's food on R&R", cat: food, price: [100, 200], when: "1951", approx: true}
+  - {id: rr_hotel, name: "An Army R&R hotel in Japan, enlisted rate", cat: lodging, price: [117, 122], when: "1951", source: {url: "https://academic.oup.com/ahr/article/127/2/691/6705101", note: "420-440 yen a night at 360 yen to the dollar"}}
+  - {id: rok_food, name: "A day's food, Korean town", cat: food, price: [60, 100], in: won, when: "1950", approx: true}
+  - {id: rok_inn, name: "A bed at a yeogwan (inn)", cat: lodging, price: [50, 100], in: won, when: "1950", approx: true}
