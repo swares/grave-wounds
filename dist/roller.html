@@ -653,6 +653,13 @@ function daysQ(x){                               // '¾ Day', '1 Day', '1¼ Days
   const q = Math.floor(Math.max(x, 0) * 4 + 0.5);
   return `${quarterText(x)} Day${q > 0 && q <= 4 ? "" : "s"}`;
 }
+function markLost(pid, why){                      // the team builder takes him off the team when it next looks
+  if (!pid) return;
+  const all = readPurses();
+  if (!all[pid] || all[pid].lost) return;
+  all[pid].lost = { why };
+  writePurses(all);
+}
 function payKeep(have, days, food, bed){          // {paid, hungry, rough}: each day's food before its bed
   let paid = 0, hungry = 0, rough = 0;
   for (let i = 0; i < days; i++){
@@ -3218,6 +3225,7 @@ function fieldHero(h){                         // one hero back from the field m
   fieldOldWounds(c, h.old);
   if (Number.isFinite(h.blood)) c.blood = Math.min(c.blood ?? h.blood, h.blood);   // what he bled on the field
   if (h.state !== "up") c.state = { id: "out", rounds: null };
+  if (h.state === "dead" || h.state === "prisoner") markLost(c.sheet && c.sheet.pid, h.state === "dead" ? "killed" : "taken prisoner");   // the team builder replaces him
   const what = h.wounds.map(w => `${w.graze ? "graze" : w.sev} (${LOC[w.loc].name.toLowerCase()})`).join(", ") || "unhurt";
   return `${c.name}: ${what}${{ dead: ", killed", down: ", down", prisoner: ", taken prisoner" }[h.state] || ""}`;
 }

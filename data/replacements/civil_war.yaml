@@ -1,0 +1,108 @@
+# Replacing losses for civil_war (gravewounds/replace.py). Union Days: 1 Day = 43¢.
+# assigned - the army's own way of filling a gap: regions (armies), careers (any, or a list),
+#            terms (the experience he usually came with, or [low, high]), wait ([low, high] days
+#            from the loss to his arrival), places (none: anywhere), what, source or approx.
+# hire     - a man the team can engage: as above, with cost (Days, paid from a purse, for the
+#            lowest terms) and per_term (Days more for each term past it), and places to find him.
+# effects  - what becomes of a lost man's purse: share (his comrades divide it), heirs (it goes
+#            home) or lost (given away or gone with him); default, and an army's own under regions.
+id: civil_war
+assigned:
+- id: distribution_camp
+  name: A recruit from a camp of distribution
+  regions:
+  - union
+  careers:
+  - infantry
+  - trooper
+  - gunner
+  terms: 1
+  wait:
+  - 30
+  - 120
+  what: 'Draftees and recruits went to the old regiments through camps of distribution, often under guard, with little training: the veterans would teach them.'
+  source:
+    url: https://civilwartalk.com/threads/replacements.155755/
+    note: camps of distribution at Alexandria and Cairo
+- id: veteran_furlough
+  name: A man back from veteran furlough
+  regions:
+  - union
+  careers:
+  - infantry
+  - trooper
+  - gunner
+  - sergeant
+  terms: 2
+  wait:
+  - 30
+  - 45
+  what: Regiments that re-enlisted went home on furlough and came back with their men and new recruits.
+  source:
+    url: https://civilwartalk.com/threads/replacements.155755/
+    note: 30-day furloughs for re-enlisting regiments
+- id: camp_of_instruction
+  name: A conscript from a camp of instruction
+  regions:
+  - confederacy
+  careers:
+  - infantry
+  - trooper
+  - gunner
+  terms: 1
+  wait:
+  - 30
+  - 90
+  what: Conscripts were sent on to the regiments from camps of instruction.
+  approx: true
+hire:
+- id: substitute
+  name: A substitute or bounty man
+  regions:
+  - union
+  careers:
+  - infantry
+  - trooper
+  terms:
+  - 1
+  - 2
+  cost: 698
+  per_term: 233
+  places:
+  - town
+  - city
+  what: A drafted man could hire a substitute, or pay $300 commutation; bounties ran $302 for a recruit and $402 for a veteran in 1863.
+  source:
+    url: https://civilwartalk.com/threads/replacements.155755/
+    note: $302 for recruits, $402 for veterans, 1863
+- id: hired_hand
+  name: A hired hand for the outfit
+  regions:
+  - frontier
+  careers:
+  - scout
+  - teamster
+  - sharpshooter
+  terms:
+  - 1
+  - 3
+  cost: 30
+  per_term: 10
+  places:
+  - town
+  - frontier
+  - road
+  what: On the frontier an outfit took on a man for wages and his keep.
+  approx: true
+effects:
+  default:
+    practice: heirs
+    what: An officer listed his effects on a printed form; what was in store was disposed of by the council of administration, and his pay and effects went to his family.
+    source:
+      url: https://www.nps.gov/stri/learn/historyculture/upload/Kasten_Augustus_Effects_Inventory_Transcription_508.pdf
+      note: the effects of Pvt. Kasten, 36th Illinois, 1863
+  regions:
+    frontier:
+      practice: share
+      what: On the frontier his partners divided his outfit, or sent it on if they knew his people.
+      approx: true

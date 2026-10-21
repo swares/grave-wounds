@@ -49,6 +49,17 @@ better or worse by the job ([Finding work](#work)). What he earns goes into his 
 he buys or pays comes out of it, at the era's prices in Days; he cannot spend more than he has.
 Away from an army that feeds him, his keep comes out of it too ([Keep](#work)).
 
+**Losses.** A man killed, dead of wounds or disease, taken prisoner, deserted or sent home
+leaves the team. First his purse is settled as his era did it: shared among his comrades
+(a free company, a frontier outfit), sent to his heirs (most armies from the 1850s), or lost
+with him (the Plains nations gave a dead man's things away); the GM may choose otherwise.
+Then the gap is filled one of three ways: a new man **rolled** like any other, of the lost
+man's career and terms; a man **assigned** by the army through its own system (a draft from
+the depot, a replacement depot, a new man on a twelve-month tour), free but green and only
+after a wait of days; or a man **hired** where the team is (a mercenary, a substitute, a
+contractor), at a price in Days from a purse, more for a veteran. If the leader is lost, the
+man with the most terms left leads.
+
 !!! example "The retinue: {{ex.arch}}"
     The team builder rolls a lord's retinue from England: {{ex.lead}}, a man-at-arms, leads
     it. Its senior archer is **{{ex.arch}}**, {{ex.a_terms}} terms, age {{ex.a_age}}:

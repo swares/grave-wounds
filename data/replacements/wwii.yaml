@@ -1,0 +1,107 @@
+# Replacing losses for wwii (gravewounds/replace.py). 1 Day = $1.67 American, 3s British.
+# assigned - the army's own way of filling a gap: regions (armies), careers (any, or a list),
+#            terms (the experience he usually came with, or [low, high]), wait ([low, high] days
+#            from the loss to his arrival), places (none: anywhere), what, source or approx.
+# hire     - a man the team can engage: as above, with cost (Days, paid from a purse, for the
+#            lowest terms) and per_term (Days more for each term past it), and places to find him.
+# effects  - what becomes of a lost man's purse: share (his comrades divide it), heirs (it goes
+#            home) or lost (given away or gone with him); default, and an army's own under regions.
+id: wwii
+assigned:
+- id: repple_depple
+  name: A man from the replacement depot
+  regions:
+  - us
+  - us_pacific
+  careers: any
+  terms: 1
+  wait:
+  - 3
+  - 14
+  what: Men waited for weeks as strangers in the depots, came up singly to units they did not know, and many broke or fell in their first days.
+  source:
+    url: https://tacticalnotebook.substack.com/p/the-individual-replacement-system
+    note: 38% of the first combat-exhaustion cases had under a week in combat
+- id: back_from_hospital
+  name: A man back from hospital
+  regions:
+  - us
+  - us_pacific
+  careers: any
+  terms:
+  - 2
+  - 3
+  wait:
+  - 14
+  - 60
+  what: From June 1944 a man back from hospital went to his own unit.
+  source:
+    url: https://en.wikipedia.org/wiki/Replacement_depot
+    note: hospital returnees to their own unit from 1944
+- id: reinforcement_pool
+  name: A reinforcement from the pool
+  regions:
+  - commonwealth
+  careers: any
+  terms: 1
+  wait:
+  - 7
+  - 21
+  what: Gunners and service troops were turned into infantry in six weeks when the riflemen ran out.
+  source:
+    url: https://activehistory.ca/blog/2019/10/25/not-enough-trained-infantrymen-the-1944-conscription-crisis/
+    note: the 1944 reinforcement crisis
+- id: march_battalion
+  name: A man from a march battalion
+  regions:
+  - germany
+  careers: any
+  terms: 1
+  wait:
+  - 7
+  - 21
+  what: Replacement battalions sent men forward in march battalions to the field replacement battalion.
+  source:
+    url: https://en.wikipedia.org/wiki/March_battalion
+    note: march battalions
+- id: march_company
+  name: A man from a march company
+  regions:
+  - soviet
+  careers: any
+  terms: 1
+  wait:
+  - 7
+  - 21
+  what: Replacement units sent march companies to the front; the wounded went back through them, not to their own unit.
+  source:
+    url: https://forum.axishistory.com/viewtopic.php?p=2360083
+    note: 1942 replacement figures
+- id: field_replacement
+  name: A man from a field replacement unit
+  regions:
+  - japan
+  careers: any
+  terms: 1
+  wait:
+  - 14
+  - 60
+  what: Units drew from their home district's depot division, keeping men of one district together.
+  source:
+    url: https://lonesentry.com/manuals/handbook-japanese-military/field-replacement-system.html
+    note: the field replacement system
+hire: []
+effects:
+  default:
+    practice: heirs
+    what: His effects went through the Army Effects Bureau at Kansas City, were cleaned and screened, and were sent to the proper person.
+    source:
+      url: https://thearrowheadclub.com/2014/06/13/army-effects/
+      note: the Army Effects Bureau
+  regions:
+    commonwealth:
+      practice: heirs
+      what: His pay owed went to his next of kin, and his personal things were sent home.
+      source:
+        url: https://www.longlongtrail.co.uk/soldiers/how-to-research-a-soldier/records-of-military-deaths-burials-and-commemorations/soldiers-effects
+        note: soldiers' effects registers

@@ -1,0 +1,116 @@
+# Replacing losses for horse_musket (gravewounds/replace.py). Days of the man's own army: British 1s, Continental 20¢, US 27¢.
+# assigned - the army's own way of filling a gap: regions (armies), careers (any, or a list),
+#            terms (the experience he usually came with, or [low, high]), wait ([low, high] days
+#            from the loss to his arrival), places (none: anywhere), what, source or approx.
+# hire     - a man the team can engage: as above, with cost (Days, paid from a purse, for the
+#            lowest terms) and per_term (Days more for each term past it), and places to find him.
+# effects  - what becomes of a lost man's purse: share (his comrades divide it), heirs (it goes
+#            home) or lost (given away or gone with him); default, and an army's own under regions.
+id: horse_musket
+assigned:
+- id: state_draft
+  name: A man from the state's draft
+  regions:
+  - continental
+  careers:
+  - line
+  - rifleman
+  terms: 1
+  wait:
+  - 90
+  - 270
+  what: States filled their regiments' quotas by drafts and bounties for the next campaign; many recruits were raw, some boys.
+  source:
+    url: https://www.americanrevolution.org/?p=3501
+    note: state quotas and drafts, 1777-81
+- id: depot_draft
+  name: A draft from the depot or second battalion
+  regions:
+  - british_rev
+  - british_pen
+  careers:
+  - line
+  - rifleman
+  - marine
+  - gunner
+  terms: 1
+  wait:
+  - 60
+  - 120
+  what: A regiment abroad was refilled by drafts sent out from its home depot or second battalion.
+  approx: true
+- id: conscript
+  name: A conscript from the depot
+  regions:
+  - french
+  careers:
+  - line
+  - rifleman
+  - dragoon
+  - gunner
+  terms: 1
+  wait:
+  - 60
+  - 120
+  what: Each year's class of conscripts walked for weeks to the regimental depot, drilled, and went on to the field battalions.
+  source:
+    url: https://www.napoleon.org/histoire-des-2-empires/articles/du-village-a-la-caserne-les-etapes-de-la-conscription-sous-le-consulat-et-lempire/
+    note: the conscript's road to the depot
+- id: rendezvous
+  name: A recruit from the rendezvous
+  regions:
+  - us_1812
+  careers:
+  - line
+  - rifleman
+  - dragoon
+  - gunner
+  terms: 1
+  wait:
+  - 60
+  - 120
+  what: Recruiting parties enlisted men at rendezvous for the bounty and the land warrant.
+  source:
+    url: https://www.armyheritage.org/wp-content/uploads/ref-bibs/subjects/Pay/Bounties.pdf
+    note: 1812 bounties and land
+  approx: true
+hire:
+- id: substitute
+  name: A substitute for the state's draft
+  regions:
+  - continental
+  careers:
+  - line
+  - rifleman
+  terms: 1
+  cost: 375
+  places:
+  - town
+  - village
+  what: A man drafted could hire a substitute; in 1779 Massachusetts substitutes asked about 1,500 paper dollars for nine months, perhaps 75 in silver.
+  source:
+    url: https://www.americanrevolution.org/?p=3501
+    note: 1,500 paper dollars (Massachusetts, 1779); the silver value is an estimate
+  approx: true
+- id: remplacant
+  name: A remplaçant
+  regions:
+  - french
+  careers:
+  - line
+  - rifleman
+  terms: 1
+  cost: 2000
+  places:
+  - town
+  - village
+  what: From 1800 a conscript could pay a man to go in his place; the price rose through the Empire.
+  source:
+    url: https://histoiredemosset.fr/mossetpdf/n80_militaires_juillet_2011_5.pdf
+    note: 1,300 francs in 1825, the nearest price found; at a private's 0.62 F a day
+  approx: true
+effects:
+  default:
+    practice: heirs
+    what: His kit was sold, his debts paid, and the balance went to his estate.
+    approx: true

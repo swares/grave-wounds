@@ -94,6 +94,7 @@ label.radio input{margin-top:4px}
 .work td.hire{min-width:110px}
 .work td.hire button{margin:0 4px 4px 0}
 .work .what{font-size:.8rem}
+.losses{columns:auto!important}
 .work .log{columns:auto;margin:10px 0 0;padding-left:22px;font-size:.88rem}
 .work .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .q-green{color:var(--muted)}.q-veteran{color:var(--blood);font-weight:600}
@@ -433,15 +434,15 @@ function replaceLoss(k){
   const terms = Math.min(o.terms[1], Math.max(o.terms[0], P.terms || o.terms[0]));
   if (o.kind === "hire"){
     const payer = S.team[P.payer ?? 0], cost = hireCost(o, terms), why = payer ? spendCheck(payer, cost) : "nobody to pay";
-    if (cost && why){ S.msg = `Can't hire: ${payer ? payer.name + "'s purse" : "nobody"} — ${why}.`; return }
+    if (cost && why){ S.msg = payer ? `${payer.name} can't pay ${daysQ(cost)} to hire him: ${why}.` : "There is nobody left to pay for him."; return }
   }
   const n = makeCharacter(c.region, career, terms, S.mode, realDice, "m");
   n.pid = newPid();
   if (o.kind === "hire"){
     const payer = S.team[P.payer ?? 0], cost = hireCost(o, terms);
     if (cost) (payer.ledger ||= []).push({ days: -cost, what: `Hired ${n.name} (${o.name})` });
-    n.joined = { how: `hired (${o.name})`, wait: 0 };
-  } else if (o.kind === "assigned") n.joined = { how: `assigned (${o.name})`, wait: realDice.randint(o.wait[0], o.wait[1]) };
+    n.joined = { how: `hired, ${o.name.replace(/^./, x => x.toLowerCase())}`, wait: 0 };
+  } else if (o.kind === "assigned") n.joined = { how: `assigned, ${o.name.replace(/^./, x => x.toLowerCase())}`, wait: realDice.randint(o.wait[0], o.wait[1]) };
   else n.joined = { how: "a new member", wait: 0 };
   if (!S.team.length) n.leader = true;
   S.team.splice(Math.min(L.slot, S.team.length), 0, n);

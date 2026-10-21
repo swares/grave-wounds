@@ -111,6 +111,20 @@ with a bed only in a town, city, village or on the road, unless the job is `boar
 army's service, or wages paid with board or keep: `jobs.keep_for`). `python3 -m gravewounds
 work` shows the keep with `--region` and `--purse`.
 
+**Losses and replacements.** `data/replacements/<era>.yaml` gives each era's ways of filling a
+gap (`gravewounds/replace.py`): `assigned` (the army's system: armies, careers, the terms a
+replacement usually came with, a wait in days), `hire` (men the team can engage: careers,
+terms low-high, a cost in Days and more per term, places), and `effects` (what becomes of a
+lost man's purse: `share`, `heirs` or `lost`, by army). Each row has a source, or `approx: true`.
+In the team builder, **Lost…** on a sheet takes a man off the team with a reason; a man the
+travel map records as dead of wounds or disease, or the field map as killed or taken prisoner,
+comes off by himself (through his shared purse). The Losses panel settles his purse (the era's
+practice offered first; a share is split equally among the survivors, in their ledgers), then
+offers the replacements: roll a new man of the same career and terms, an assigned man
+(the GM's choice of career where the system allows several; his wait is rolled and shown on
+his sheet), or a hire where the team is (the place in Find work), paid from the purse of the
+member the GM names. `templates/team.js` repeats `options`, `hire_cost`, `effects` and `settle`.
+
 Prices live in `data/equipment/<era>.yaml`, one file to an era, like the team tables:
 
 - **currencies:** each coin, its units (or a decimal coin), its Day in its smallest unit, and

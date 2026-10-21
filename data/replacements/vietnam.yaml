@@ -1,0 +1,67 @@
+# Replacing losses for vietnam (gravewounds/replace.py). 1 Day = $3.80 American.
+# assigned - the army's own way of filling a gap: regions (armies), careers (any, or a list),
+#            terms (the experience he usually came with, or [low, high]), wait ([low, high] days
+#            from the loss to his arrival), places (none: anywhere), what, source or approx.
+# hire     - a man the team can engage: as above, with cost (Days, paid from a purse, for the
+#            lowest terms) and per_term (Days more for each term past it), and places to find him.
+# effects  - what becomes of a lost man's purse: share (his comrades divide it), heirs (it goes
+#            home) or lost (given away or gone with him); default, and an army's own under regions.
+id: vietnam
+assigned:
+- id: individual
+  name: An individual replacement (a new guy)
+  regions:
+  - us_army
+  - us_marines
+  careers: any
+  terms: 1
+  wait:
+  - 1
+  - 7
+  what: Men came singly for twelve months (thirteen for Marines), counting the days; new men were shunned until they had proved themselves.
+  source:
+    url: https://historynet.com/vietnam-war-the-individual-rotation-policy/
+    note: the individual rotation policy
+- id: draft
+  name: A reinforcement
+  regions:
+  - anzac
+  careers: any
+  terms: 1
+  wait:
+  - 7
+  - 30
+  what: Battalions were refilled from home.
+  approx: true
+- id: conscript
+  name: A conscript
+  regions:
+  - arvn
+  careers: any
+  terms: 1
+  wait:
+  - 7
+  - 30
+  what: Replacements were conscripts, many with little training.
+  approx: true
+- id: down_the_trail
+  name: A replacement down the Trail
+  regions:
+  - pavn
+  - nlf
+  careers: any
+  terms: 1
+  wait:
+  - 30
+  - 120
+  what: Replacements came south down the Ho Chi Minh Trail, or were recruited locally.
+  approx: true
+hire: []
+effects:
+  default:
+    practice: heirs
+    what: A summary court officer listed his effects and sent them home.
+    source:
+      url: https://www.govinfo.gov/link/uscode/10/9712
+      note: the next-of-kin order for effects
+    approx: true
