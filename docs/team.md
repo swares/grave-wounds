@@ -330,6 +330,36 @@ forages fresh food on the march; **Watch** makes his force harder to surprise, a
 **Stealth** makes the force he attacks with likelier to surprise its enemy (see
 [combat.md](combat.md), [travel.md](travel.md) and [works.md](works.md), *Surprise*).
 
+## Experience
+
+`data/experience.yaml` (rules in `gravewounds/experience.py`, repeated as `xpSeason` in
+`templates/team.js`). A skill used well is **ticked** in a store the three pages share,
+`gravewounds-xp`, kept by purse id (`templates/xp.js`):
+
+- the team builder: a job term whose check succeeds ticks the job's skill (illegal jobs too; a
+  failed or fumbled check, or a job with no check, ticks nothing), and its days count as
+  served unless fumbled (a job with no check counts none);
+- the roller: a hit ticks the skill his weapon is fought with (`skill_by` on his sheet), a
+  parry or dodge that works ticks his defence skill (`defence_by`, the better of the two), and
+  first aid that works ticks the Leechcraft of the man who gave it;
+- the travel map: Fieldcraft that forages fresh food, the best Leechcraft with a force that has
+  sick or wounded on the week's last day, Stealth when the attack surprises and Watch when it
+  does not; and each night with a force is a day served for each named man.
+
+The team builder's **Experience** panel lists each member's ticks and days toward a term.
+**End of season** (the GM calls it; about 91 days) rolls d100 for each ticked skill in the
+era's skill order: over the skill, it rises 1d3 (to the cap). The days served are then added to
+his count, and each term of days (the era's `age.per_term` years of 365 days: 1,460 in most
+eras, 365 for Korea) gives `term_main` to his career's main skill, `term_second` to its second,
+and the years of age; the sheet shows "(+1 served)". His `terms`, and so his starting purse,
+stay as rolled. The new sheet goes into the store with a stamp, and the roller swaps it in when
+it next looks (focus, or the store changing); the travel map's copy of his skills is updated at
+once. The Python rules and the page give the same result from the same dice.
+
+Not ticked yet: the field map's battles (its heroes come back to the roller, which does not
+count their fight), and a term served does not roll the career's event table or its wound
+chance.
+
 Not yet done (see the backlog): women in the earlier eras (the medieval, gunpowder and First
 World War tables have no women blocks yet), and careers for women outside the fighting units
 (nurses, auxiliaries, anti-aircraft gunners, pilots).

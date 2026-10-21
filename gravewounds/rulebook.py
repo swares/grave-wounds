@@ -70,6 +70,7 @@ def values(d: Data) -> dict:
         "stat_lo": E["stat_range"][0], "stat_hi": E["stat_range"][1], "array": ", ".join(map(str, E["array"])),
         "origin_gain": E["gain"], "first_term": E["first_term"], "term_main": E["term_main"], "term_second": E["term_second"],
         "event_gain": E["gain"], "age_start": E["age"]["start"], "age_term": E["age"]["per_term"], "skill_max": E["skill_max"],
+        "xp_lo": d.experience.get("gain", [1, 3])[0], "xp_hi": d.experience.get("gain", [1, 3])[1], "xp_season": d.experience.get("season_days", 91),
         "scar_upto": E["old_wound"][0]["to"], "lasting": E["lasting"], "origins": len(E["origins"]), "careers": len(E["careers"]),
         "eras": len(d.teams), **_money_vars(d),
         "big": RC["big"], "care_none": RC["care"]["none"], "care_shelter": RC["care"]["shelter"],

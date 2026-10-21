@@ -107,6 +107,7 @@ class Data:
     jobs: dict = field(default_factory=dict)        # era id -> jobs between fights and a trouble table (data/jobs)
     replacements: dict = field(default_factory=dict)   # era id -> how losses are replaced, and a lost man's effects (data/replacements)
     events: dict = field(default_factory=dict)      # events on the march and in camp, by era (data/events.yaml)
+    experience: dict = field(default_factory=dict)  # skills rising in play (data/experience.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -161,6 +162,7 @@ def load(root: str | Path = "data") -> Data:
     jobs = _read_dir(root / "jobs")
     replacements = _read_dir(root / "replacements")
     events = _optional(root / "events.yaml", {})
+    experience = _optional(root / "experience.yaml", {})
 
     data = Data(
         root=root,
@@ -190,6 +192,7 @@ def load(root: str | Path = "data") -> Data:
         jobs=jobs,
         replacements=replacements,
         events=events,
+        experience=experience,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -515,6 +518,14 @@ def validate(d: Data) -> None:
         errors += _replacement_errors(d, R)
     if d.events:
         errors += _events_errors(d)
+    if d.experience:
+        X = d.experience
+        g = X.get("gain")
+        if not (isinstance(g, list) and len(g) == 2 and all(isinstance(v, int) for v in g) and 1 <= g[0] <= g[1]):
+            errors.append("experience.yaml: gain must be [low, high], whole numbers from 1")
+        for k in ("season_days", "days_a_year"):
+            if not (isinstance(X.get(k), int) and X[k] > 0):
+                errors.append(f"experience.yaml: {k} must be a positive whole number")
     errors += _ground_seed_errors(d, TT)
 
     # camps and works

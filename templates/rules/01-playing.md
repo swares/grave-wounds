@@ -44,6 +44,7 @@ The game's clock changes with what the team is doing:
 | Minute | 10 rounds | Binding wounds; the end of most fights |
 | Day | | Marching, camps, the weather, sickness |
 | Week | | Wounds healing in camp; catching disease |
+| Season | about {{xp_season}} days | Experience: ticked skills roll to rise |
 
 ## Characteristics and skills {#characteristics}
 
@@ -52,6 +53,21 @@ Every character has six **characteristics**, from {{stat_lo}} to {{stat_hi}}:
 ordinary person. **Skills** (Bow, Blade, Dodge, Leechcraft and the rest) start from a
 characteristic and grow with experience, up to {{skill_max}}. A character's **attack** is
 the skill his weapon is fought with, and his **defence** is the better of Parry and Dodge.
+
+**Experience.** A skill used well is **ticked**: a job's check that succeeds (lawful or not; a
+failed or fumbled check, or a job with no check, teaches nothing), a hit, a parry or dodge that
+works, first aid that works, Fieldcraft that finds fresh food on the march, a week nursing the
+sick (the best Leechcraft with the force), Stealth that surprises an enemy and Watch that stops
+one surprising his. A skill is ticked once however often it is used. At the **end of a season**
+(about {{xp_season}} days, when the GM calls it) each ticked skill rolls d100: over the skill,
+it rises {{xp_lo}}-{{xp_hi}}, never past {{skill_max}}; then the ticks clear. Low skills rise
+quickly and high ones slowly.
+
+**Time served.** Days at a job with a skill check (not fumbled) and every day with a force on the
+travel map count toward a **term**, as long as one of his career terms ({{age_term}} years in
+most eras). Each term served gives a later term's gains ({{term_main}} to his career's main skill
+and {{term_second}} to its second) and its years of age, at the next end of season. His starting
+purse is not changed.
 
 Anyone without a sheet (a bystander, an enemy the GM has not written up) counts as 50 in
 every characteristic, and fights at his **quality**:
