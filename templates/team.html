@@ -830,10 +830,11 @@ function init(){
     if (j.skill && r.outcome !== "fumble") xpServe(c.pid, r.days);            // and its days count toward a term
     render();
   });
-  $("#xp").addEventListener("click", e => { if (e.target.closest("#btn-season")) endSeason(); else if (e.target.closest("#btn-train")) trainWeek() });
   $("#xp").addEventListener("click", e => {
+    if (e.target.closest("#btn-season")) return endSeason();
+    if (e.target.closest("#btn-train")) return trainWeek();
     const d = e.target.closest("button[data-discharge]"), k = e.target.closest("button[data-keepon]");
-    if (d){ const i = +d.dataset.discharge, c = S.team[i]; c.wornOut = null; loseMember(i, "sent home"); S.msg = `${c.name} is discharged, worn out: sent home${(TD.repl || {}).effects ? "" : ""}, with a pension where his army gave one.`; return render() }
+    if (d){ const i = +d.dataset.discharge, c = S.team[i]; c.wornOut = null; loseMember(i, "sent home"); S.msg = `${c.name} is discharged, worn out: sent home, with a pension where his army gave one.`; return render() }
     if (k){ S.team[+k.dataset.keepon].wornOut = null; return render() }
   });
   $("#xp").addEventListener("change", e => {

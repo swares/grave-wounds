@@ -192,7 +192,9 @@ def tables(d: Data) -> dict:
                                                               for f, lo in zip(d.ranks["finds"], [1] + [x["to"] + 1 for x in d.ranks["finds"][:-1]])])
     if d.ageing:
         names = {"str": "Strength", "agi": "Agility", "end": "Endurance", "wits": "Wits"}
-        dice = lambda v: f"−{v[0] if v[0] > 1 else ''}d{v[1]}" if v else "—"
+
+        def dice(v):
+            return f"−{v[0] if v[0] > 1 else ''}d{v[1]}" if v else "—"
         bands = d.ageing["decline"]
         out["ageing"] = _md(["Age (middle of the 4 years)", *names.values()],
                             [[f"{b['from']}–{nb['from'] - 1}" if nb else f"{b['from']} and over", *[dice(b.get(k)) for k in names]]
