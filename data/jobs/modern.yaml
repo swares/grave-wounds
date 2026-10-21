@@ -1,0 +1,67 @@
+# Jobs between fights for the late wars (1982-2009). Format as data/jobs/medieval.yaml.
+# Pay is in Days of whoever most likely takes the job: US 2008 Days ($53), US 1991 Days ($29.30),
+# British 1982 Days (£14.40), or a local fighter's Day ($10, a Taliban fighter's reported pay,
+# used for Iraqi, Afghan, Somali and Chechen work); the wage line says whose.
+id: modern
+
+sources:
+  bonus: &bonus "https://abcnews.com/US/story?id=1519310"
+
+jobs:
+  # Contract war
+  - {id: psc_operator, name: "Private security contractor", what: "Armed escort and static guard in Iraq for Blackwater or DynCorp.", skill: rifle, min: 60, pay: 11, term: contract, days: [90, 90], places: [road, city], who: [rifleman, marksman, mp, nco, officer], risk: 25,
+     hook: "The client pays $815-1,075 a day for you; you see $600.", wage: "$600 a day to personnel, Blackwater 2004 (US 2008)", source: "https://www.corpwatch.org/article/us-us-pays-steep-price-private-security-iraq"}
+  - {id: linguist, name: "Cleared US linguist", what: "A contract interpreter with a security clearance, for intelligence units.", skill: letters, min: 60, pay: 9, term: contract, days: [365, 365], places: [camp, city], who: any, risk: 10,
+     hook: "The interrogation you're translating crosses a line.", wage: "US-citizen translators averaged $176,000, 2007 (US 2008)", source: "https://www.deseret.com/2007/5/7/20017177/translators-in-iraq-command-top-dollar"}
+  - {id: ship_guard, name: "Anti-piracy ship guard", what: "An armed team riding merchant ships through the Gulf of Aden.", skill: rifle, min: 60, pay: 9, term: contract, days: [3, 10], places: [sea], who: [rifleman, marksman, nco], risk: 10,
+     hook: "The flag state bans weapons in port: ditch the rifles or be arrested.", wage: "$21,000 a day for a 3-man team, 2010; about $500 a guard (US 2008, an estimate)", source: "https://www.navalreview.ca/2010/03/the-cost-of-armed-security-guards/", approx: true}
+  - {id: kbr_driver, name: "Convoy driver", what: "Driving fuel and supply trucks for KBR, 12 hours a day, 7 days a week.", skill: drive, min: 40, pay: 5, term: contract, days: [365, 365], places: [road], who: any, risk: 20,
+     hook: "The convoys run without armour, and KBR has lost 34 people.", wage: "$80-100,000 a year, the first $80,000 tax-free (US 2008)", source: "https://www.nbcnews.com/id/wbna4993755"}
+  - {id: police_trainer, name: "Contract police trainer", what: "Training Iraqi police for DynCorp under a State Department contract.", skill: command, min: 50, pay: 5, term: contract, days: [365, 365], places: [city, camp], who: [mp, nco, officer], risk: 15,
+     hook: "Half your class is on a militia payroll too.", wage: "most about $100,000, mostly tax-free (US 2008)", source: "https://www.nbcnews.com/id/wbna3404605"}
+  - {id: pmc_trainer, name: "Private military trainer", what: "Training and leading a client army in Sierra Leone or Angola, Executive Outcomes style.", skill: command, min: 60, pay: 2.25, term: contract, days: [90, 90], places: [frontier, camp], who: [officer, nco, crewman], risk: 30,
+     hook: "The company was reportedly paid in diamond concessions.", wage: "$2,000 a month or more, 1995 (US 1991)", source: "https://www.csmonitor.com/1995/1019/19014.html"}
+  - {id: falklands_clearance, name: "Falklands clearance and rebuilding", what: "Clearing Argentine mines or rebuilding airfields after 1982.", skill: fieldcraft, min: 40, pay: 1.5, term: contract, days: [90, 180], places: [frontier, camp], who: [sapper], risk: 20,
+     hook: "Six killed or badly hurt before clearance stopped in 1983.", wage: "no wage found (British 1982)", source: "https://en.wikipedia.org/wiki/Land_mines_in_the_Falkland_Islands", approx: true}
+  - {id: reenlist_bonus, name: "Re-enlistment bonus", what: "Re-upping in a skill the Army is short of.", min: 0, pay: 400, term: contract, days: [1, 1], lump: true, places: [camp], who: any, risk: 0,
+     hook: "Signing means a third Iraq tour.", wage: "up to $90,000 for hard-to-fill skills, 2006; about $20,000 taken as typical (US 2008)", source: *bonus, approx: true}
+  # Local work
+  - {id: press_fixer, name: "Press fixer", what: "Guiding, translating and brokering access for foreign reporters.", skill: persuade, min: 50, pay: 10, term: day, places: [city, road], who: any, risk: 30,
+     hook: "Nine fixers, translators and drivers were killed in Iraq in 2004.", wage: "Kabul rates rose from $30 to $300 a day in 2001; about $100 taken (local)", source: "https://cpj.org/reports/2004/10/fixers/", approx: true}
+  - {id: local_interpreter, name: "Local interpreter", what: "An Iraqi translating on patrols for a contractor such as Titan.", skill: letters, min: 50, pay: 2.75, term: month, places: [city, road, camp], who: any, risk: 35,
+     hook: "Your neighbours know who you work for.", wage: "$600 a month, over $1,000 for the most dangerous work (local)", source: "https://www.nbcnews.com/id/wbna7911356"}
+  - {id: khat_runner, name: "Khat runner", what: "Rushing fresh khat from Kenyan airstrips to Somali markets.", skill: drive, min: 30, pay: 2, term: day, places: [road, town], who: any, risk: 15,
+     hook: "A militia checkpoint wants its tax in leaves.", wage: "the trade was worth over $300,000 a day, 2004; no figure for a runner (local)", source: "https://www.ipsnews.net/?p=11374", approx: true}
+  - {id: sons_of_iraq, name: "Sons of Iraq guard", what: "Manning a neighbourhood checkpoint on a US payroll.", skill: rifle, min: 40, pay: 1, term: month, places: [city, village, road], who: any, risk: 25,
+     hook: "Insurgents offer $200-400 for one violent act.", wage: "$300 a month, 2008 (local)", source: "https://www.csmonitor.com/World/Middle-East/2008/0730/p10s01-wome.html"}
+  - {id: technical_gunner, name: "Technical gunner", what: "Riding a machine-gun pickup for a clan, a warlord or an aid agency.", skill: mg, min: 40, pay: 1, term: week, places: [city, road], who: [machine_gunner, crewman], risk: 35,
+     hook: "The airport militia charges $100 to land, and you are the militia.", wage: "no wage found; aid agencies hired teenage gunmen, 1992 (local)", source: "https://csmonitor.com/1992/1130/30191.html", approx: true}
+  - {id: deminer, name: "Deminer", what: "Clearing mines by hand in a HALO Trust-type team.", skill: fieldcraft, min: 40, pay: 1, term: month, places: [village, road, frontier], who: [sapper], risk: 15,
+     hook: "Kidnap threats as well as mines.", wage: "about $300 a month (an Afghan figure of 2017; local)", source: "https://www.foxnews.com/world/afghan-de-miners-cling-to-hard-but-much-needed-jobs", approx: true}
+  - {id: kontraktnik, name: "Russian contract soldier", what: "Signing a three-month contract to serve in Chechnya.", skill: rifle, min: 40, pay: 0.75, term: contract, days: [90, 90], places: [frontier, city], who: any, risk: 40,
+     hook: "Families never got a kopek of the promised five million rubles.", wage: "promised 30,000 rubles a day, 1995, about $6-7 (local)", source: "https://jamestown.org/?p=39673", approx: true}
+  - {id: afghan_police, name: "Afghan National Police", what: "A patrolman in a poorly equipped district post.", skill: rifle, min: 40, pay: 0.25, term: month, places: [village, road, town], who: any, risk: 30,
+     hook: "210 police killed in three months, and pay three months late.", wage: "$70-77 a month, 2007 (local)", source: "https://www.globalsecurity.org/military/library/news/2007/06/mil-070612-irin02.htm"}
+  # Illegal
+  - {id: oil_smuggler, name: "Smuggling-truck driver", what: "Running a crude tanker from Iraq into Syria.", skill: drive, min: 30, pay: 30, term: contract, days: [2, 5], lump: true, per: "a run", places: [road, frontier], who: any, risk: 25, illegal: true,
+     hook: "Someone offered the border chief $1 million to look away.", wage: "'a few hundred dollars' a run, 2006 (local)", source: "https://www.nbcnews.com/id/wbna12310253"}
+  - {id: arms_broker, name: "Arms broker", what: "Moving surplus AKs and RPGs between conflicts.", skill: persuade, min: 50, pay: 20, term: week, places: [city, sea, frontier], who: any, risk: 35, illegal: true,
+     hook: "The end-user certificate is forged.", wage: "no figure found (US 2008)", approx: true}
+  - {id: kidnap_gang, name: "Kidnap gang", what: "Snatching and ransoming people in the North Caucasus.", skill: stealth, min: 50, pay: 10, term: week, places: [road, town, frontier], who: any, risk: 45, illegal: true,
+     hook: "The family paid, and the gang's boss wants the hostage killed anyway.", wage: "ransoms from a few thousand rubles to tens of thousands of dollars (local)", source: "https://jamestown.org/?p=36779", approx: true}
+  - {id: poppy_lancer, name: "Poppy harvest labourer", what: "Scoring and scraping opium bulbs twelve hours a day at harvest.", min: 0, pay: 1.5, term: day, places: [village], who: any, risk: 10, illegal: true,
+     hook: "The fields belong to the district police chief.", wage: "about $15 a day in Helmand, $8 in Nangarhar, 2007 (local)", source: "https://www.globalsecurity.org/military/library/news/2007/05/mil-070521-irin01.htm"}
+  - {id: taliban_dayfighter, name: "Taliban day-fighter", what: "Storing arms, digging IED holes, firing a few rounds for cash.", min: 0, pay: 1.25, term: day, places: [village, road, frontier], who: any, risk: 30, illegal: true,
+     hook: "The recruiter pays cash, and asks for one more favour.", wage: "up to $12 a day, against an Afghan soldier's $4, 2007 (local)", source: "https://www.strategypage.com/htmw/htmoral/20070916.aspx"}
+
+trouble:
+  - {roll: 1, text: "An IED or an ambush on the route."}
+  - {roll: 2, text: "The contract is cancelled, and the last month is never paid."}
+  - {roll: 3, text: "His name is on a militia death list."}
+  - {roll: 4, text: "A shooting incident: investigators and lawyers."}
+  - {roll: 5, text: "Kidnapped: the ransom is set at a year's pay."}
+  - {roll: 6, text: "A checkpoint shakedown: pay a bribe or lose the cargo."}
+  - {roll: 7, text: "The employer goes bust, or is banned from the country."}
+  - {roll: 8, text: "A mine strike or an unexploded bomb."}
+  - {roll: 9, text: "A co-worker is skimming or selling information, and he is blamed."}
+  - {roll: 10, text: "The local police arrest him, and his visa is in doubt."}

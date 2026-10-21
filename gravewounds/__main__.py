@@ -66,6 +66,15 @@ def _main(argv=None) -> int:
     ts.add_argument("--women", choices=["none", "roll"], default="none", help="roll each member and follower man or woman at the army's share")
     ts.add_argument("--seed", type=int, default=None, help="repeatable dice")
 
+    ws = sub.add_parser("work", help="jobs between fights: list an era's jobs, or work a term of one")
+    ws.add_argument("--era", default="medieval")
+    ws.add_argument("--place", default=None, help="town, city, village, camp, road, frontier or sea")
+    ws.add_argument("--job", default=None, help="job id: work one term of it")
+    ws.add_argument("--career", default=None, help="his career (default: the job's first, or the era's first)")
+    ws.add_argument("--skill", type=int, default=None, help="his skill in the job's skill (default: the job's minimum)")
+    ws.add_argument("--days", type=int, default=None, help="days worked (default: the term's length, or a contract's shortest)")
+    ws.add_argument("--seed", type=int, default=None, help="repeatable dice")
+
     sp = sub.add_parser("selfplay", help="play a battlefield with the enemy commander on both sides, to its end")
     sp.add_argument("--field", required=True, help="battlefield id (data/fields)")
     sp.add_argument("--stances", default=None, help="attack,hold etc., one per side (default: the side the objective names attacks, the other holds; both attack with no objective)")
@@ -112,6 +121,32 @@ def _main(argv=None) -> int:
             print(f"Followers ({len(crew)}):")
             for f in crew:
                 print("  " + follower_line(d, f, a.era))
+        return 0
+    if a.cmd == "work":
+        from . import jobs as J
+        from .units import SeededDice
+        if not a.job:
+            for j in J.jobs_at(d, a.era, a.place):
+                skill = f"{j['skill']} {j.get('min', 0)}+" if j.get("skill") else "no skill"
+                who = "anyone" if j.get("who", "any") == "any" else ", ".join(j["who"])
+                tags = (" [illegal]" if j.get("illegal") else "") + (" [approx]" if j.get("approx") else "")
+                print(f"  {j['name']:<40} {J.pay_text(j):<24} {j['term']:<9} {skill:<16} risk {j.get('risk', 0):>2}%  {who}{tags}")
+            return 0
+        rng = SeededDice(a.seed) if a.seed is not None else random.Random()
+        j = J.job(d, a.era, a.job)
+        who = j.get("who", "any")
+        career = a.career or (who[0] if who != "any" else d.teams[a.era]["careers"][0]["id"])
+        c = {"career": career, "skills": {j["skill"]: a.skill if a.skill is not None else j.get("min", 0)} if j.get("skill") else {}}
+        ok, why = J.can_take(j, c)
+        if not ok:
+            print(f"Not hired: {why}.")
+            return 1
+        r = J.work_term(d, a.era, j, c, rng, a.days)
+        check = f"d100 {r['check']} against {c['skills'][j['skill']]}: {r['outcome']}" if r["check"] is not None else "no check"
+        print(f"{j['name']}, {r['days']} day{'s' if r['days'] != 1 else ''}: {check}; earned {r['earned']:g} Days.")
+        if r["trouble"]:
+            print(f"Trouble (d100 {r['trouble']['roll']} under {j['risk']}%): {r['trouble']['text']}")
+            print(f"  The job's hook: {j['hook']}")
         return 0
     if a.cmd == "disease":
         from .disease import seeded_d100, simulate

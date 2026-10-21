@@ -2,7 +2,7 @@
 
 Everything so far has used the medieval tables. The same rules carry a team through
 {{e_others}} more eras, from the Thirty Years' War to Afghanistan. Each era has its own
-skills, origins, careers, events, armies, teams and followers. Pick one with **Era** in the
+skills, origins, careers, events, armies, teams, followers and jobs. Pick one with **Era** in the
 [team builder](team.html).
 
 ## The eras {#era-list}

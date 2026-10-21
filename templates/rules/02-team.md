@@ -44,7 +44,8 @@ his first career and his region.
 English archer. Each character starts with **{{purse_days}} Days** saved for each career term,
 so a leader of three terms has {{purse_three}} Days ({{purse_three_coin}}). His issued kit and
 weapon cost him nothing; the team builder shows what they are worth in Days. In camp, a man who
-spends a day of rest earning money gets **{{earn_days}} Day** for it.
+spends a day of rest earning money gets **{{earn_days}} Day** for it; one who takes a job does
+better or worse by the job ([Finding work](#work)).
 
 !!! example "The retinue: {{ex.arch}}"
     The team builder rolls a lord's retinue from England: {{ex.lead}}, a man-at-arms, leads

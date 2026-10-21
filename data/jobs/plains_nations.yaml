@@ -1,0 +1,50 @@
+# Work for the Plains nations (Lakota and Cheyenne, 1860-1877). Format as data/jobs/medieval.yaml.
+# These peoples drew no pay; value is reckoned in Days at the trade value of goods (1 Day = 43¢,
+# so a prime buffalo robe, about $3 in goods at the post, is about 7 Days, and an ordinary riding
+# horse, 8 robes, about 56 Days). Robe dressing was women's work.
+id: plains_nations
+
+sources:
+  bent: &bent "https://home.nps.gov/safe/learn/historyculture/upload/Bents-Trading-Post-at-Big-Timbers-508.pdf"
+
+jobs:
+  - {id: horse_raid, name: "Horse raid", what: "Taking horses from an enemy camp.", skill: stealth, min: 40, pay: 56, term: contract, days: [14, 42], lump: true, per: "a horse", places: [frontier, village], who: [warrior, scout, war_leader], risk: 35,
+     hook: "A horse cut loose under fire by day is the higher honour.", wage: "an ordinary riding horse was worth 8 robes; a fine racer, 10 guns", source: "https://www.ndstudies.gov/gr8/node/549"}
+  - {id: robe_dressing, name: "Robe dressing", what: "Fleshing, tanning and finishing a winter buffalo robe for trade.", skill: craft, min: 30, pay: 7, term: contract, days: [7, 10], lump: true, per: "a robe", places: [village], who: any, risk: 0,
+     hook: "The robe trade has doubled the work of every lodge's women.", wage: "Bent paid about $3 in goods for a prime robe and sold it for $5", source: *bent}
+  - {id: post_trading, name: "Trading at a post", what: "Bargaining robes for cloth, kettles, guns and powder.", skill: persuade, min: 30, pay: 7, term: contract, days: [1, 1], lump: true, per: "a robe well traded", places: [frontier, town], who: any, risk: 5,
+     hook: "Fort Union takes 25,000 robes a year, and the trader's whiskey is a trap.", wage: "a robe's value as above; the bargaining margin is a guess", source: "https://home.nps.gov/articles/fort-union-s-trade-house.htm", approx: true}
+  - {id: doctoring, name: "Doctoring", what: "Treating the sick and wounded for gifts.", skill: leechcraft, min: 50, pay: 7, term: contract, days: [1, 7], lump: true, per: "a cure", places: [village], who: [healer], risk: 5,
+     hook: "A new sickness spreads from the agency.", wage: "paid in goods; one robe as a stand-in", approx: true}
+  - {id: horse_holder, name: "Horse holder", what: "Minding the spare horses while a party fights or raids, for a share.", skill: watch, min: 0, pay: 10, term: contract, days: [14, 42], lump: true, per: "a raid", places: [frontier], who: [herder, warrior], risk: 20,
+     hook: "A young man's first war party.", wage: "a share of what is taken; a guess", approx: true}
+  - {id: robe_hunt, name: "Winter robe hunt", what: "Hunting buffalo from November to March, when hides are fit for robes.", skill: ride, min: 40, pay: 3, term: contract, days: [7, 21], lump: true, per: "a hide", places: [frontier], who: [warrior, lancer, gunman, scout], risk: 15,
+     hook: "The akicita whip anyone who charges the herd early.", wage: "only winter hides made robes; the hunter's share is a guess", approx: true}
+  - {id: train_hunter, name: "Hunter for a wagon train", what: "Bringing in game for emigrants or freighters.", skill: gun, min: 40, pay: 3, term: day, places: [frontier, road], who: [scout, gunman], risk: 15,
+     hook: "The emigrants' guards fire at any rider.", wage: "no figure found", approx: true}
+  - {id: trader_escort, name: "Trader's escort", what: "Guarding a trader's goods through contested country.", skill: watch, min: 40, pay: 3, term: contract, days: [7, 21], places: [frontier, road], who: [warrior, gunman], risk: 20,
+     hook: "The trader carries guns he swore he wouldn't.", wage: "no figure found", approx: true}
+  - {id: agency_interpreter, name: "Agency interpreter", what: "Interpreting between the agent and the people at a Sioux agency, a yearly post.", skill: persuade, min: 50, pay: 2.5, term: month, places: [village, frontier], who: any, risk: 5,
+     hook: "Both sides suspect your words at treaty councils.", wage: "$400 a year at the Dakota, Nebraska and Fort Peck agencies", source: "https://www.govinfo.gov/link/statute/19/199"}
+  - {id: army_scout, name: "Enlisted army scout", what: "Scouting for the US Army on a six-month enlistment.", skill: fieldcraft, min: 50, pay: 2.25, term: month, places: [frontier, camp], who: [scout, warrior], risk: 25,
+     hook: "Crow and Shoshone scouts at the Rosebud fought a larger Lakota and Cheyenne force.", wage: "$16 a month and $12 for his own horse (Arikara scouts)", source: "https://en.wikipedia.org/wiki/Arikara_scouts"}
+  - {id: horse_breaking, name: "Horse breaking and trading", what: "Gentling captured horses and trading them on.", skill: ride, min: 40, pay: 2, term: day, places: [village, frontier], who: [herder, warrior], risk: 5,
+     hook: "A racer worth ten guns, and its owner wants it back.", wage: "no daily figure found", approx: true}
+  - {id: hide_work, name: "Moccasin and hide work", what: "Making moccasins, parfleches and lodge covers for trade or gift.", skill: craft, min: 30, pay: 1, term: day, places: [village], who: any, risk: 0,
+     hook: "Quillwork that honours a warrior's deeds.", wage: "no figure found", approx: true}
+  - {id: herd_keeping, name: "Herd keeping", what: "Grazing and guarding a wealthy family's horse herd.", skill: watch, min: 0, pay: 1, term: day, places: [village, frontier], who: [herder], risk: 10,
+     hook: "Crow raiders at dawn.", wage: "no figure found", approx: true}
+  - {id: akicita, name: "Akicita (camp police)", what: "Enforcing camp moves and the communal hunt, for honour.", skill: command, min: 50, pay: 0, term: contract, days: [90, 180], places: [village], who: [warrior, war_leader], risk: 10,
+     hook: "A respected man broke the hunt rules, and you must punish him.", wage: "unpaid; akicita later filled the Pine Ridge agency police (1879)", source: "https://plainshumanities.unl.edu/encyclopedia/doc/egp.law.022.html"}
+
+trouble:
+  - {roll: 1, text: "An enemy war party finds the trail."}
+  - {roll: 2, text: "An army column or patrol."}
+  - {roll: 3, text: "A fall or a goring on the hunt."}
+  - {roll: 4, text: "The trader cheats, or brings whiskey."}
+  - {roll: 5, text: "A blizzard: horses lost."}
+  - {roll: 6, text: "The akicita punish a broken rule."}
+  - {roll: 7, text: "Smallpox or measles in camp."}
+  - {roll: 8, text: "Agency rations are held back."}
+  - {roll: 9, text: "A quarrel over horses or a woman."}
+  - {roll: 10, text: "A rival claims his coup."}

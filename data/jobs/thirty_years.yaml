@@ -1,0 +1,71 @@
+# Jobs between fights for the Thirty Years' War (1618-1648). Format as data/jobs/medieval.yaml.
+# 1 Day = 12 kreuzer (kr), a labourer's day; 1 gulden (fl) = 60 kr, 1 thaler = 90 kr, 1 batzen = 4 kr.
+# Monthly army rates are turned into Days a day (30 days to the month). Some civilian rates are
+# from just after the war (1642-1667) and say so.
+id: thirty_years
+
+sources:
+  lwl: &lwl "https://lwl.org/westfaelischer-friede-download/wfe-t/wfe-txt1-31.htm"
+  lwl43: &lwl43 "https://lwl.org/westfaelischer-friede-download/wfe-t/wfe-txt1-43.htm"
+  maschwitz: &maschwitz "https://www.30jaehrigerkrieg.de/maschwitz-maschewiz-maschowitz-auf-mensdorf-johann-friedrich-von/"
+  hagendorf: &hagendorf "https://userpage.fu-berlin.de/~telehist/MvM/magisterarbeit(1.2.2005).pdf"
+  heberle: &heberle "https://germanhistorydocs.org/en/from-the-reformations-to-the-thirty-years-war-1500-1648/a-swabian-cobbler-farmer-survives-the-thirty-years-war-hans-heberle-1597-1677"
+
+jobs:
+  # Soldiering
+  - {id: laufgeld, name: "Take the Laufgeld", what: "Signing with a recruiting captain and marching to the muster place.", min: 0, pay: 7.5, term: contract, days: [3, 10], lump: true, places: [town, village, road], who: any, risk: 10,
+     hook: "Three captains are recruiting in the same town, and all want the same forty men.", wage: "recruits' marching money 1½ fl a man (Wallhausen); ordinary pay follows once mustered", source: *lwl}
+  - {id: garrison_duty, name: "Garrison duty", what: "Standing guard and drilling in a walled town, paid when the money comes.", skill: watch, min: 40, pay: 1, term: month, places: [town, city], who: [musketeer, pikeman, sergeant], risk: 5,
+     hook: "The pay chest is three months late, and the council will not open the granary.", wage: "Imperial private 6 fl 40 kr a month (1630); Swedish 6 fl (1639)", source: *maschwitz}
+  - {id: trooper_hire, name: "Hire as a trooper", what: "Joining a cuirassier or harquebusier company with your own horse.", skill: ride, min: 45, pay: 2.5, term: month, places: [camp, town], who: [cuirassier, harquebusier, dragoon], risk: 10,
+     hook: "The horse is worth more than your contract, and the captain knows it.", wage: "Swedish cuirassier 15 fl a month (1639); horse drew double foot pay", source: *maschwitz}
+  - {id: feldwebel, name: "Feldwebel's post", what: "Running a company's drill, watch roster and discipline.", skill: command, min: 55, pay: 3.5, term: month, places: [camp, town], who: [sergeant], risk: 5,
+     hook: "Half the company were Swedes a month ago and still answer to Swedish words of command.", wage: "Imperial Feldwebel 21 fl a month, corporal 12 fl (c.1630)", source: *maschwitz}
+  - {id: feldscher, name: "Company Feldscher", what: "Shaving, bleeding and cutting for a company on its muster roll.", skill: leechcraft, min: 50, pay: 2.75, term: month, places: [camp, town], who: [surgeon], risk: 10,
+     hook: "The colonel's nephew has a ball in his thigh, and you have one chance to get it out.", wage: "Swedish Feldscher 16 fl a month (1639)", source: *maschwitz}
+  - {id: preacher, name: "Regimental preacher", what: "Preaching, burying the dead and keeping the regiment's register.", skill: letters, min: 50, pay: 4, term: month, places: [camp], who: [chaplain], risk: 5,
+     hook: "A Catholic regiment takes a Lutheran town and wants you to say which preacher hangs.", wage: "preachers 25 fl a month (1625 memorandum)", source: *lwl}
+  - {id: salvaguardia, name: "Salvaguardia", what: "Living in a village under a protection letter, fed by it, and turning other soldiers away.", skill: command, min: 40, pay: 2, term: week, places: [village], who: any, risk: 15,
+     hook: "Your own regiment's foragers arrive and do not care what the letter says.", wage: "officers sold protection letters for about 5 thaler; the guard's take is a guess", source: *maschwitz, approx: true}
+  - {id: foraging, name: "Foraging party", what: "Marching out to strip the country of fodder and food, for a share.", skill: fieldcraft, min: 30, pay: 1.5, term: day, places: [village, frontier], who: any, risk: 25,
+     hook: "Peasants in the woods hold six foragers and will trade them for the village's cattle.", wage: "no wage; a share of what is taken (a guess)", approx: true}
+  - {id: contribution, name: "Contribution collecting", what: "Escorting a commissary and squeezing a town's war levy out of it.", skill: command, min: 40, pay: 2, term: week, places: [town, village], who: [sergeant, cuirassier, harquebusier, dragoon], risk: 15,
+     hook: "Demand 5,000 thaler of a council that says it has paid 8,000 already, as Holk did at Zwickau.", wage: "no figure found", approx: true}
+  - {id: courier, name: "Courier", what: "Carrying dispatches between garrisons.", skill: ride, min: 40, pay: 2, term: day, places: [road, frontier], who: [dragoon, harquebusier, cuirassier], risk: 20,
+     hook: "The letter is in cipher, and someone wants it badly enough to try for you.", wage: "no figure found", approx: true}
+  - {id: sack, name: "Sack of a town", what: "Joining the storm and taking a share of what is found.", skill: blade, min: 40, pay: 90, term: contract, days: [1, 3], lump: true, places: [town, city], who: any, risk: 40,
+     hook: "Hagendorf sold a cow from Heidelberg for 11 thaler; what will a town's silver fetch?", wage: "Hagendorf's share at Landshut (1634): 12 thaler in coin and clothes", source: *hagendorf}
+  # Camp and civilian work
+  - {id: sutling, name: "Sutling", what: "Baking or buying bread, beer and tobacco and selling it to the regiment.", skill: persuade, min: 30, pay: 2, term: week, places: [camp], who: any, risk: 10,
+     hook: "In famine bread sells for whatever you ask, and so does the rope for hanging profiteers.", wage: "2 lb of bread cost 45 kr at Remiremont (1635); the profit is a guess", source: *hagendorf, approx: true}
+  - {id: nursing, name: "Nursing the regiment's sick", what: "Washing, feeding and dressing the wounded in a hospital billet.", skill: leechcraft, min: 0, pay: 0.75, term: week, places: [camp, town], who: any, risk: 15,
+     hook: "The fever ward pays weekly, so long as you outlive the week.", wage: "nurses 1 fl a week (1625 memorandum)", source: *lwl}
+  - {id: scribe, name: "Company scribe", what: "Keeping muster lists, accounts and court records.", skill: letters, min: 45, pay: 1.5, term: month, places: [camp, town], who: any, risk: 0,
+     hook: "The muster list hides dead men's pay, and the commissary is coming.", wage: "no figure found; a Gefreiter drew 7 fl 30 kr a month", source: "https://de.wikipedia.org/wiki/Peter_Hagendorf", approx: true}
+  - {id: harvest, name: "Harvest and hay work", what: "Mowing, raking and threshing for a farmer short of hands.", min: 0, pay: 1, term: day, places: [village], who: any, risk: 5,
+     hook: "The widow pays in grain, but her fields lie where both armies forage.", wage: "Bergün 1642: mower 12-14 kr a day, maid 8 kr; thresher 7 kr (1650)", source: "https://kulturforschung.ch/storage/atlasgr/seiten/26_preise-und-lohne.pdf"}
+  - {id: journeyman, name: "Journeyman's trade", what: "Cobbling, smithing or carpentry in a town that still has customers.", skill: craft, min: 35, pay: 1.75, term: day, places: [town, city, camp], who: any, risk: 0,
+     hook: "The guild will not let an outsider work, but the garrison will.", wage: "master 20 kr a day, labourer 12 kr (1667, after the war)", source: "https://historisches-museum-frankfurt.de/iart/os-download-object/31325"}
+  - {id: carting, name: "Carting for the train", what: "Driving a requisitioned wagon of powder, bread or wounded.", skill: ride, min: 30, pay: 1.25, term: week, places: [road, camp], who: any, risk: 10,
+     hook: "The wagon's real owner is following the column.", wage: "no figure found; set near a labourer's pay", approx: true}
+  - {id: gravedigging, name: "Plague gravedigging", what: "Carrying out and burying the dead when the town's own diggers have fled.", min: 0, pay: 3, term: week, places: [town, city], who: any, risk: 30,
+     hook: "On some days of 1635 Ulm carried out 150-170 bodies; the council pays in coin and wine.", wage: "no wage found; danger pay is a guess", source: *heberle, approx: true}
+  # Illegal
+  - {id: ransoming, name: "Ransoming peasants", what: "Seizing villagers or livestock and selling them back.", skill: stealth, min: 40, pay: 10, term: contract, days: [2, 4], lump: true, per: "a raid", places: [village, frontier], who: any, risk: 35, illegal: true,
+     hook: "The peasants have their own guns now, and their own ransom prices.", wage: "no figure found", approx: true}
+  - {id: desert_reenlist, name: "Desert and re-enlist", what: "Slipping away with the bounty and signing with another captain.", skill: stealth, min: 30, pay: 7.5, term: contract, days: [3, 7], lump: true, per: "a signing", places: [camp, road, town], who: any, risk: 35, illegal: true,
+     hook: "Your old corporal is a sergeant in your new company.", wage: "the same 1½ fl Laufgeld; changing sides was common", source: *lwl43, approx: true}
+  - {id: smuggling, name: "Smuggling across the lines", what: "Carrying salt, letters or powder past both armies' patrols.", skill: stealth, min: 40, pay: 4, term: week, places: [frontier, road], who: any, risk: 30, illegal: true,
+     hook: "The besieged town will pay a thaler a pound for salt.", wage: "no figure found", approx: true}
+
+trouble:
+  - {roll: 1, text: "Pay in arrears: no coin this term, only the paymaster's note."}
+  - {roll: 2, text: "The provost asks questions: prove you are not a deserter."}
+  - {roll: 3, text: "Peasants ambush the party: roll a wound."}
+  - {roll: 4, text: "Camp fever or plague: the term is lost to sickness."}
+  - {roll: 5, text: "Taken by the enemy and pressed into their regiment."}
+  - {roll: 6, text: "Robbed by comrades: half the term's take is gone."}
+  - {roll: 7, text: "A wife or comrade is taken by the enemy: ransom or rescue."}
+  - {roll: 8, text: "Debased coin: the pay is worth half."}
+  - {roll: 9, text: "An officer takes the booty as his share."}
+  - {roll: 10, text: "To be hanged as an example, unless someone speaks for him."}

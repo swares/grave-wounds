@@ -183,3 +183,55 @@ function moneyLine(c){                            // as money.py money_line
   const kit = v.unpriced.length && !v.days ? "kit not priced" : `kit worth about ${daysText(v.days)} Days${v.unpriced.length ? " (part not priced)" : ""}`;
   return `${kit[0].toUpperCase()}${kit.slice(1)}; purse ${p.days} Days${p.text ? ` (${p.text})` : ""}`;
 }
+/* Work (as gravewounds/jobs.py): an era's jobs (TD.jobs) and TD.money.work's rules. One skill
+   check a term settles the pay, one d100 at or under the risk brings trouble, and a d10 picks it
+   from the era's trouble table: the dice in that order. */
+const QUARTERS = ["", "¼", "½", "¾"];
+function jobsAt(place){                            // lawful first, then by pay, then by name
+  const rows = (TD.jobs?.jobs || []).filter(j => !place || j.places.includes(place));
+  return rows.sort((a, b) => (!!a.illegal - !!b.illegal) || (b.pay - a.pay) || (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
+}
+function canTake(j, c){                            // [hired, why not]
+  const who = j.who ?? "any";
+  if (who !== "any" && !who.includes(c.career)) return [false, "not his trade"];
+  if (j.skill && (c.skills[j.skill] ?? 0) < (j.min ?? 0)) return [false, `needs ${j.skill} ${j.min}`];
+  return [true, null];
+}
+function termDays(j, days){                        // a term's length; a contract's low end unless told
+  if (days !== undefined && days !== null) return days;
+  if (j.term === "contract") return Array.isArray(j.days) ? j.days[0] : (j.days ?? 1);
+  return TD.money.work.terms[j.term];
+}
+function workTerm(j, c, rng, days){               // {check, outcome, days, earned, trouble}
+  const W = TD.money.work, n = termDays(j, days);
+  let check = null, outcome = "success";
+  if (j.skill){
+    check = rng.randint(1, 100);
+    const skill = c.skills[j.skill] ?? 0;
+    outcome = check <= skill ? "success" : (check >= W.fumble_from ? "fumble" : "failure");
+  }
+  const share = { success: W.success, failure: W.failure, fumble: 0 }[outcome];
+  let trouble = null;
+  if (j.risk){
+    const t = rng.randint(1, 100);
+    if (t <= j.risk){
+      const table = TD.jobs.trouble, pick = table.length ? rng.randint(1, table.length) : null;
+      trouble = { roll: t, text: pick ? table[pick - 1].text : (j.hook || "") };
+    }
+  }
+  return { check, outcome, days: n, earned: j.pay * share * (j.lump ? 1 : n), trouble };
+}
+function payText(j){                               // '¾ Day a day', '1½ Days a day', '56 Days a horse'
+  const q = Math.round(j.pay * 4);
+  if (!q) return "unpaid";
+  const whole = Math.floor(q / 4), part = q % 4;
+  const num = whole && !part ? whole.toLocaleString("en-US") : `${whole || ""}${QUARTERS[part]}`;
+  const days = `${num} Day${q > 4 ? "s" : ""}`;
+  if (j.lump) return j.per ? `${days} ${j.per}` : `${days} for the job`;
+  return `${days} a day`;
+}
+function termText(j){                              // 'a week', '7-21 days'
+  if (j.term !== "contract") return { day: "a day", week: "a week", month: "a month" }[j.term];
+  const [lo, hi] = j.days;
+  return lo === hi ? `${lo} day${lo > 1 ? "s" : ""}` : `${lo}-${hi} days`;
+}

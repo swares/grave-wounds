@@ -1,7 +1,21 @@
-# Money rules for every era (gravewounds/money.py). A Day is a common soldier's day's pay in his
-# army's coin (each era's data/equipment/<era>.yaml gives it), so these rules read the same in
-# 1461 and 2008.
+# Money rules for every era (gravewounds/money.py, gravewounds/jobs.py). A Day is a common
+# soldier's day's pay in his army's coin (each era's data/equipment/<era>.yaml gives it), so
+# these rules read the same in 1461 and 2008.
 #   purse_days_per_term - a new character's savings: this many Days for each career term
-#   earn_days_per_day   - the downtime action "earn money": Days earned for each day worked
+#   earn_days_per_day   - the downtime action "earn money" with no particular job: Days earned
+#                         for each day worked
+#   work                - taking a job (data/jobs/<era>.yaml):
+#     terms       - how many days a term of each kind runs (a contract gives its own days)
+#     success     - share of the job's pay for a skill check at or under his skill
+#     failure     - share for a failed check
+#     fumble_from - a failed check of this or more is a fumble: no pay at all
+#                   (one check a term; a job with no skill pays in full)
+#     trouble     - one d100 a term for a job with a risk: at or under its risk %, trouble
+#                   (the job's hook, or the era's trouble table)
 purse_days_per_term: 30
 earn_days_per_day: 1
+work:
+  terms: {day: 1, week: 7, month: 30}
+  success: 1
+  failure: 0.5
+  fumble_from: 96

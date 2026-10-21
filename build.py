@@ -1358,6 +1358,13 @@ def markdown(d) -> str:
             tt = team_tables(d, eid)
             out += [f"### {d.teams[eid]['name']}", ""] + [re.sub("</?b>", "**", x) + "\n" for x in team_rules(d, eid)]
             out += mdt(tt["skills"]) + mdt(tt["origins"]) + mdt(tt["careers"]) + mdt(tt["events"]) + mdt(tt["kits"]) + mdt(tt["teams"])
+    if d.jobs:
+        from gravewounds.jobs import job_rows, trouble_rows, work_rules
+        mdt = lambda rows: ["| " + " | ".join(rows[0]) + " |", "|" + "---|" * len(rows[0])] + ["| " + " | ".join(r) + " |" for r in rows[1:]] + [""]
+        out += ["## Jobs between fights", ""] + [re.sub("</?b>", "**", x) + "\n" for x in work_rules(d)]
+        for eid in team_eras(d):
+            if eid in d.jobs:
+                out += [f"### {d.teams[eid]['name']}", ""] + mdt(job_rows(d, eid)) + mdt(trouble_rows(d, eid))
     if d.disease:
         out += ["## Camp disease", ""] + [re.sub("</?b>", "**", x) + "\n" for x in disease_rules(d)]
         out += ["| Disease | Caught from | Shows after | Outbreak chance a week | Peak (d100) | Deaths per case in the records |", SEP6]
@@ -1759,6 +1766,18 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
                 Spacer(1, 6), Paragraph("Career terms (* leaves an old wound)", H2), grid(cell(tt["events"]), [1.7 * inch, 0.6 * inch, 1.1 * inch, W - 3.4 * inch], font=7.5),
                 Spacer(1, 6), Paragraph("Kit and weapon by region", H2), grid(cell(tt["kits"]), [(1.1 if nreg > 6 else 1.5) * inch] + [(W - (1.1 if nreg > 6 else 1.5) * inch) / nreg] * nreg, font=6.5 if nreg > 6 else 7),
                 Spacer(1, 6), Paragraph("Teams", H2), grid(cell(tt["teams"]), [1.6 * inch, (W - 1.6 * inch) / 2, (W - 1.6 * inch) / 2], font=7.5)]
+    if d.jobs:
+        from gravewounds.jobs import job_rows, trouble_rows, work_rules
+        story += [PageBreak(), Paragraph("Jobs between fights", H1)] + [Paragraph(x, B) for x in work_rules(d)]
+        for eid in team_eras(d):
+            if eid not in d.jobs:
+                continue
+            jr, tr = job_rows(d, eid), trouble_rows(d, eid)
+            story += [Spacer(1, 8), Paragraph(d.teams[eid]["name"], H2),
+                      grid([[Paragraph(x, CH) for x in jr[0]]] + [[Paragraph(x, C) for x in r] for r in jr[1:]],
+                           [1.7 * inch, 0.9 * inch, 1.05 * inch, 0.75 * inch, 1.1 * inch, W - 6.0 * inch, 0.5 * inch], font=7),
+                      Spacer(1, 4),
+                      grid([[Paragraph(x, CH) for x in tr[0]]] + [[Paragraph(x, C) for x in r] for r in tr[1:]], [0.4 * inch, W - 0.4 * inch], font=7)]
     if d.disease:
         drow = [[Paragraph(x, CH) for x in ["Disease", "Caught from", "Shows after", "Outbreak chance a week", "Peak (d100)", "Deaths per case"]]]
         drow += [[Paragraph(c, C) for c in r] for r in disease_rows(d)]
@@ -1937,6 +1956,16 @@ def equip_bundle(d, eid: str) -> dict | None:
     return {"currencies": E["currencies"], "currency": E["currency"], "items": rows}
 
 
+def jobs_bundle(d, eid: str) -> dict | None:
+    """An era's jobs for the team builder's Find work panel (gravewounds/jobs.py), or None."""
+    from gravewounds.jobs import jobs
+    J = d.jobs.get(eid)
+    if not J:
+        return None
+    keep = ("id", "name", "what", "skill", "min", "pay", "term", "days", "lump", "per", "places", "who", "risk", "illegal", "hook", "wage", "approx")
+    return {"jobs": [{k: j[k] for k in keep if k in j} for j in jobs(d, eid)["jobs"]], "trouble": J["trouble"]}
+
+
 def team_bundle(d) -> dict:
     """What the team builder needs: every era's tables and old-wound location ranges (TD.eras;
     the page points TD.era and TD.ranges at the one chosen), and the names, kits and weapons its
@@ -1947,7 +1976,7 @@ def team_bundle(d) -> dict:
         kits |= {c["kit"].get(r["id"], c["kit"]["default"]) for c in T["careers"] for r in T["regions"]}
         weapons |= set(T["weapon_skill"]) | {c["wound_weapon"] for c in T["careers"]}
         weapons |= {c["weapon"].get(r["id"], c["weapon"]["default"]) for c in T["careers"] for r in T["regions"]}
-    eras = {eid: {"era": d.teams[eid], "ranges": old_wound_ranges(d, eid), "equip": equip_bundle(d, eid)} for eid in team_eras(d)}
+    eras = {eid: {"era": d.teams[eid], "ranges": old_wound_ranges(d, eid), "equip": equip_bundle(d, eid), "jobs": jobs_bundle(d, eid)} for eid in team_eras(d)}
     first = team_eras(d)[0]
     return {"eras": eras, "era": eras[first]["era"], "ranges": eras[first]["ranges"], "equip": eras[first]["equip"], "money": d.money,
             "locs": {l["id"]: {"name": l["name"], "zone": l["zone"], "class": l["class"]} for l in d.locations},

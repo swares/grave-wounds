@@ -1,0 +1,86 @@
+# Jobs between fights for the medieval era (c.1250-1460): the work a soldier or adventurer can
+# take to "earn money" (data/money.yaml work, gravewounds/jobs.py).
+#
+# jobs    - id, name, what (one line), skill (checked once a term; none for unskilled work), min
+#           (least skill to be hired), pay (Days for each day worked, in quarter Days), term (day,
+#           week, month, or contract with days: [low, high]), places (town, city, village, camp,
+#           road, frontier, sea), who (any, or careers), risk (% chance of trouble each term),
+#           illegal, hook (one line for the GM), wage (the period figure), source or approx.
+#           lump: true makes pay the sum for the whole contract, not for each day (per: what it is
+#           paid for, as "a horse"); a contract's days are then how long it takes.
+# trouble - d10: what goes wrong when the trouble roll comes up.
+# 1 Day = 6d, an archer's pay (1415). Wages are from the Middlesex accounts (VCH, after Thorold
+# Rogers), which run above the statute caps of 1351 and 1445.
+id: medieval
+
+sources:
+  vch: &vch "https://prod.british-history.ac.uk/node/15304"
+  ucd: &ucd "https://medieval.ucdavis.edu/120D/Money.html"
+  felbrigg: &felbrigg "https://www.nationalarchives.gov.uk/agincourt/preparing-to-fight-raising-soldiers-and-supplies/sir-simon-felbriggs-indenture/"
+
+jobs:
+  # Lawful work
+  - {id: harvest_hand, name: "Harvest hand", what: "Reaping, binding and carting sheaves for a manor at harvest.", skill: fieldcraft, min: 0, pay: 0.75, term: week, places: [village], who: any, risk: 0,
+     hook: "The reeve is short-changing the harvesters and someone means to make him pay.", wage: "3d-4½d a day at harvest, Middlesex 1433-4", source: *vch}
+  - {id: day_labourer, name: "Day labourer", what: "Carrying hods, digging footings and hauling stone for builders.", min: 0, pay: 0.75, term: day, places: [town, city, village], who: any, risk: 5,
+     hook: "The scaffold on the church tower has been sawn half through.", wage: "helpers 4d-5d a day, Middlesex 1439-40", source: *vch}
+  - {id: carpenter, name: "Carpenter", what: "Framing roofs, hoardings and siege engines for a master.", skill: craft, min: 35, pay: 1, term: week, places: [town, city, village, camp], who: any, risk: 5,
+     hook: "The master pays above the statute rate, and the justices of labourers have heard about it.", wage: "6d a day, Harmondsworth 1433-4 (the 1445 statute capped it at 4d-5d)", source: *vch}
+  - {id: carter, name: "Carter", what: "Driving a manor's or merchant's cart for his board and a small wage.", skill: ride, min: 20, pay: 0.25, term: month, places: [village, road], who: any, risk: 5,
+     hook: "The load of 'grain' is too heavy and clinks.", wage: "16s a year with board, Middlesex 1433-4", source: *vch}
+  - {id: ostler, name: "Ostler or tapster", what: "Grooming horses, drawing ale and carrying baggage at an inn, for keep and tips.", skill: persuade, min: 0, pay: 0.25, term: month, places: [town, city, road], who: any, risk: 5,
+     hook: "A guest pays in foreign coin and leaves his saddlebags behind.", wage: "grooms 5s-8s 8d a year with keep (14th c.), tips extra", source: *ucd}
+  - {id: scribe, name: "Hired scribe", what: "Writing letters, deeds and accounts for people who cannot write.", skill: letters, min: 40, pay: 1, term: week, places: [town, city, camp], who: any, risk: 0,
+     hook: "A client asks for a deed backdated by ten years.", wage: "set level with a craftsman", approx: true}
+  - {id: sick_nurse, name: "Sick-nurse", what: "Tending the wounded and fevered in a hospital, camp or house.", skill: leechcraft, min: 30, pay: 0.5, term: week, places: [town, city, camp], who: any, risk: 10,
+     hook: "The patient is a captured knight whose ransom depends on him living.", wage: "set below a labourer, with food", approx: true}
+  - {id: minstrel, name: "Minstrel", what: "Playing and singing at feasts, fairs and alehouses for coin and supper.", skill: persuade, min: 30, pay: 0.5, term: day, places: [town, city, village, camp], who: any, risk: 5,
+     hook: "A lord wants a song mocking his rival, sung in the rival's own hall.", wage: "no figure found", approx: true}
+  - {id: watchman, name: "Hired watchman", what: "Taking a burgess's turn at night watch and gate ward for a fee.", skill: watch, min: 0, pay: 0.25, term: week, places: [town, city], who: any, risk: 10,
+     hook: "The man you stand in for has an enemy who knows his watch nights.", wage: "watch was an unpaid civic duty; a stand-in's fee is a guess", approx: true}
+  - {id: cog_crew, name: "Cog crew", what: "Working sail, pumps and cargo on a cog between Lübeck, Visby and Danzig.", skill: seamanship, min: 30, pay: 0.5, term: contract, days: [21, 42], places: [sea, town], who: any, risk: 20,
+     hook: "Danish ships stop the cog after Valdemar's sack of Visby and ask whose cargo it is.", wage: "English mariners 3d a day, Cinque Ports fleet 1293-4 (no Hanse figure)", source: "https://myjacobfamily.com/historical%20manuscripts/cinqueportaccount.htm", approx: true}
+  - {id: tournament_servitor, name: "Tournament servitor", what: "Arming a knight, holding his spare lances and dragging him clear at a joust.", skill: ride, min: 30, pay: 0.5, term: contract, days: [3, 7], places: [town, city], who: any, risk: 15,
+     hook: "Your knight's opponent offers you a purse to loosen a girth.", wage: "household squires 13s 4d-20s a year (14th c.); fees unrecorded", approx: true}
+  - {id: ransom_broker, name: "Ransom broker", what: "Carrying letters, safe-conducts and coin between captors and a prisoner's kin.", skill: persuade, min: 50, pay: 3, term: contract, days: [30, 90], places: [town, frontier, road], who: [clerk, merchant, man_at_arms, mercenary], risk: 20,
+     hook: "Two captains each claim to own the same prisoner.", wage: "a commission on the ransom; no figure", approx: true}
+  - {id: debt_collector, name: "Debt collector", what: "Pressing debtors for a moneylender or merchant, by words or otherwise.", skill: brawl, min: 35, pay: 0.75, term: week, places: [town, city], who: any, risk: 15,
+     hook: "The debtor has a sworn tally showing the debt was paid.", wage: "a share of what comes in; no figure", approx: true}
+  # Soldiering
+  - {id: garrison_archer, name: "Garrison archer", what: "Standing guard in a royal castle or march town such as Calais.", skill: watch, min: 40, pay: 1, term: month, places: [town, frontier], who: [archer, crossbowman, spearman, mercenary], risk: 10,
+     hook: "Pay is three quarters in arrears and the garrison talks of selling the gate.", wage: "archer 6d a day (1415)", source: "https://blog.nationalarchives.gov.uk/victorious-army-making-raising-king-henry-vs-army-1415/"}
+  - {id: retinue_archer, name: "Indentured archer", what: "Serving in a captain's retinue under a sealed indenture, paid by the quarter.", skill: bow, min: 45, pay: 1, term: contract, days: [90, 365], places: [camp, frontier], who: [archer, forester], risk: 30,
+     hook: "The captain is short of men at muster and pays to pass off a cook as an archer.", wage: "6d a day; the king takes a third of spoils (1415)", source: *felbrigg}
+  - {id: retinue_man_at_arms, name: "Man-at-arms in a retinue", what: "Serving armoured and horsed in a captain's indentured company.", skill: blade, min: 50, pay: 2, term: contract, days: [90, 365], places: [camp, frontier], who: [man_at_arms, mounted_sergeant], risk: 30,
+     hook: "You took a prisoner worth more than ten marks, and the captain wants his third first.", wage: "12d a day; knights 2s (1415)", source: *felbrigg}
+  - {id: merchant_guard, name: "Merchant's guard", what: "Riding with a merchant's packhorses between fairs.", skill: watch, min: 40, pay: 1, term: contract, days: [7, 21], places: [road], who: any, risk: 20,
+     hook: "The merchant has hired two escorts and told each that the other is a thief.", wage: "set at an archer's pay", approx: true}
+  - {id: siege_pioneer, name: "Siege miner", what: "Digging saps and mines and building mantlets before a besieged town.", skill: craft, min: 30, pay: 0.75, term: week, places: [camp], who: any, risk: 35,
+     hook: "The sound of countermining comes closer every night.", wage: "set near a skilled labourer", approx: true}
+  - {id: routier, name: "Free-company routier", what: "Fighting for a mercenary company that sells itself, and raids when unpaid.", skill: blade, min: 45, pay: 2, term: month, places: [camp, frontier, road], who: [mercenary, man_at_arms, crossbowman, archer, mounted_sergeant], risk: 40,
+     hook: "The company has made a 'treaty' with a town: pay up or burn.", wage: "a mercenary man-at-arms 1s a day (1316), booty extra", source: *ucd}
+  - {id: pilgrim_escort, name: "Pilgrim escort", what: "Guarding pilgrim bands from Acre to Nazareth and the shrines in truce years.", skill: ride, min: 45, pay: 1.5, term: contract, days: [7, 14], places: [road, frontier], who: [man_at_arms, mounted_sergeant, crossbowman, mercenary], risk: 25,
+     hook: "One pilgrim is a Venetian spy, and the Genoese want him dead before Nazareth.", wage: "no Levant figure; set above European rates", approx: true}
+  - {id: acre_crossbowman, name: "Crossbowman on the walls of Acre", what: "Paid service on the walls with the French regiment and the commune's levies.", skill: crossbow, min: 45, pay: 1.5, term: month, places: [city, frontier], who: [crossbowman, mercenary, spearman], risk: 20,
+     hook: "Pisans and Genoese are brawling in the streets and both quarters want hired bows.", wage: "no Levant figure; Acre crossbowmen drew about 10½ bezants a month in 1266", approx: true}
+  # Shady and illegal work
+  - {id: battlefield_stripper, name: "Battlefield stripper", what: "Stripping the dead and the dying after a fight before the heralds count them.", skill: stealth, min: 0, pay: 2, term: day, places: [camp, frontier], who: any, risk: 35, illegal: true,
+     hook: "A corpse wears a signet ring that his family will pay to get back, or kill to hide.", wage: "pure luck; no figure", approx: true}
+  - {id: wool_smuggler, name: "Wool smuggler", what: "Running uncustomed wool past the Staple to Flemish buyers by night.", skill: seamanship, min: 30, pay: 2, term: contract, days: [2, 5], places: [sea, village], who: any, risk: 30, illegal: true,
+     hook: "The customs searcher is in on it, until his own cut is late.", wage: "a share of untaxed profit; no figure", approx: true}
+  - {id: highway_robber, name: "Highway robber", what: "Ambushing travellers in a wooded stretch of the king's highway.", skill: stealth, min: 35, pay: 1.5, term: week, places: [road], who: any, risk: 45, illegal: true,
+     hook: "The fat purse you took belonged to the sheriff's brother.", wage: "no figure", approx: true}
+  - {id: poacher, name: "Poacher", what: "Taking deer and coneys from a lord's park or the king's forest.", skill: stealth, min: 30, pay: 0.5, term: week, places: [village, frontier], who: any, risk: 25, illegal: true,
+     hook: "The forester has started setting man-traps, and a child walks those woods.", wage: "venison sold quietly; no figure", approx: true}
+
+trouble:
+  - {roll: 1, text: "Hurt at the work: a fall, a kick or a blade. A light wound, and the rest of the term's pay is lost."}
+  - {roll: 2, text: "The employer won't pay, pays short or pays in clipped coin: half, unless he can be made to pay."}
+  - {roll: 3, text: "Taken before the justices for wages above the statute, or for vagrancy: fined a week's pay."}
+  - {roll: 4, text: "A brawl with rival workers, soldiers or locals: a Brawl check or a wound, and a grudge either way."}
+  - {roll: 5, text: "Fever, flux or plague in the lodging: a recovery check, or a week sick."}
+  - {roll: 6, text: "Robbed on the road or in bed: the term's earnings are gone."}
+  - {roll: 7, text: "Pressed into a lord's array or onto a king's ship, willing or not."}
+  - {roll: 8, text: "Falsely accused of theft or worse: find a witness, flee, or face the court."}
+  - {roll: 9, text: "Raiders, enemy soldiers or pirates fall on the place: a fight with a real enemy."}
+  - {roll: 10, text: "He saw something he should not have: a powerful man wants his silence, and may buy it or end it."}

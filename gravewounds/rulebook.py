@@ -29,7 +29,10 @@ def _money_vars(d) -> dict:
     M, E = d.money, equipment(d, "medieval")
     cur = E["currencies"].get(E["currency"].get("default")) if E["currencies"] else None
     per = M.get("purse_days_per_term", 0)
+    W = M.get("work") or {"terms": {"week": 7, "month": 30}, "failure": 0.5, "fumble_from": 96}
     return {"purse_days": per, "earn_days": M.get("earn_days_per_day", 0), "purse_three": 3 * per,
+            "w_week": W["terms"]["week"], "w_month": W["terms"]["month"], "w_fail": _pct(W["failure"]), "w_fumble": W["fumble_from"],
+            "w_eras": len(d.jobs) - 1,
             "day_coin": fmt(cur, cur["day"]) if cur and cur.get("day") else "a day's pay",
             "purse_three_coin": fmt(cur, 3 * per * cur["day"]) if cur and cur.get("day") else ""}
 
@@ -159,6 +162,10 @@ def tables(d: Data) -> dict:
     names = {s["id"]: s["name"] for s in E["skills"]}
     out["careers"] = _md(["Career", "Main skill", "Second skill"], [[c["name"], names[c["main"]], names[c["second"]]] for c in E["careers"]])
     out.update(_field_tables(d), **_travel_tables(d), **LATER.tables(d))
+    if "medieval" in d.jobs:
+        from .jobs import job_rows, trouble_rows
+        jr, tr = job_rows(d, "medieval"), trouble_rows(d, "medieval")
+        out["jobs"], out["job_trouble"] = _md(jr[0], jr[1:]), _md(tr[0], tr[1:])
     out["fq"] = _md(["Quality table", *[q.capitalize() for q in U["quality"]]],
                     [[k.capitalize(), *_ranges(rows)] for k, rows in E["followers"]["quality"].items()])
     return out

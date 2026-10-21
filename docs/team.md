@@ -104,6 +104,23 @@ no price (machine guns, artillery, most enemy armies' kit) is shown as "part not
 The prices, their sources and the gaps are set out in the project doc "Grave Wounds: money and
 price lists by period book".
 
+**Jobs.** Earning money can be a job: `data/jobs/<era>.yaml` lists the work a soldier or
+adventurer could take between fights in each era (a routier's contract, a Feldscher's post, a
+Kansas Pacific buffalo hunter, a KBR convoy driver). Each job has a skill and the least of it
+needed to be hired, pay in quarter Days for each day worked (or with `lump`, a sum for the
+whole contract, `per` a horse, a robe or a body), a term (a day, a week, a month, or a contract
+of so many days), the kinds of place it is found (town, city, village, camp, road, frontier,
+sea), who may take it (anyone, or some of the era's careers), a risk, a hook, and the period
+wage with its source, or `approx: true`. Each file ends with a d10 trouble table.
+
+The team picks from the jobs where it is. A term takes one check on the job's skill: at or
+under, full pay; over, half; 96 or more and over, nothing (`data/money.yaml` work). A job with
+a risk takes one d100 a term too; at or under the risk, trouble, a d10 on the era's table, or
+the hook. `gravewounds/jobs.py` has the rules, the team builder's Find work panel repeats them
+(`templates/team.js`, the same dice in the same order), and `python3 -m gravewounds work --era
+wwi --place camp` lists the jobs going, or with `--job` and `--skill` works one term. The
+printed tables carry every era's jobs and trouble, the rule book the medieval ones.
+
 ## Teams
 
 | Team | Members (terms) | Followers (quality) |

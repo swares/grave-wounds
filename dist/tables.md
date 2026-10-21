@@ -6662,6 +6662,421 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | A sniper pair and their cover | Team or section leader (3), Marksman or sniper (2), Marksman or sniper (2), Machine gunner (1) |  (hardened) |
 | Replacements fresh from training | Platoon leader (1), Team or section leader (2), Rifleman (1), Rifleman (1), Combat medic or corpsman (1) | 20 rifleman (raw) |
 
+## Jobs between fights
+
+**Finding work:** in a town, city, village, camp, on the road, the frontier or at sea, a man may take any job of his era found there that his career and skill allow (the job's least skill). Pay is in Days, a common soldier's day's pay, for each day worked, or a sum for a whole contract.
+
+**A term:** a day, a week (7 days), a month (30 days) or a contract. One check on the job's skill a term: at or under, full pay; over, 50%; 96 or more and over, a fumble and nothing. A job with no skill pays in full.
+
+**Trouble:** a job with a risk takes one d100 a term: at or under the risk, trouble. The GM uses the job's hook, or rolls d10 on the era's trouble table. Jobs marked † are against the law.
+
+### Medieval (c.1250-1460)
+
+| Job | Skill | Pay | Term | Where | Who | Risk |
+|---|---|---|---|---|---|---|
+| Ransom broker | Persuade 50 | 3 Days a day | 30-90 days | town, frontier, road | clerk or priest, merchant, man-at-arms, mercenary | 20% |
+| Free-company routier | Blade 45 | 2 Days a day | a month | camp, frontier, road | mercenary, man-at-arms, crossbowman, archer, mounted sergeant | 40% |
+| Man-at-arms in a retinue | Blade 50 | 2 Days a day | 90-365 days | camp, frontier | man-at-arms, mounted sergeant | 30% |
+| Crossbowman on the walls of Acre | Crossbow 45 | 1½ Days a day | a month | city, frontier | crossbowman, mercenary, spearman or billman | 20% |
+| Pilgrim escort | Ride 45 | 1½ Days a day | 7-14 days | road, frontier | man-at-arms, mounted sergeant, crossbowman, mercenary | 25% |
+| Carpenter | Craft 35 | 1 Day a day | a week | town, city, village, camp | anyone | 5% |
+| Garrison archer | Watch 40 | 1 Day a day | a month | town, frontier | archer, crossbowman, spearman or billman, mercenary | 10% |
+| Hired scribe | Letters 40 | 1 Day a day | a week | town, city, camp | anyone | none |
+| Indentured archer | Bow 45 | 1 Day a day | 90-365 days | camp, frontier | archer, forester or huntsman | 30% |
+| Merchant's guard | Watch 40 | 1 Day a day | 7-21 days | road | anyone | 20% |
+| Day labourer | none | ¾ Day a day | a day | town, city, village | anyone | 5% |
+| Debt collector | Brawl 35 | ¾ Day a day | a week | town, city | anyone | 15% |
+| Harvest hand | Fieldcraft 0 | ¾ Day a day | a week | village | anyone | none |
+| Siege miner | Craft 30 | ¾ Day a day | a week | camp | anyone | 35% |
+| Cog crew | Seamanship 30 | ½ Day a day | 21-42 days | sea, town | anyone | 20% |
+| Minstrel | Persuade 30 | ½ Day a day | a day | town, city, village, camp | anyone | 5% |
+| Sick-nurse | Leechcraft 30 | ½ Day a day | a week | town, city, camp | anyone | 10% |
+| Tournament servitor | Ride 30 | ½ Day a day | 3-7 days | town, city | anyone | 15% |
+| Carter | Ride 20 | ¼ Day a day | a month | village, road | anyone | 5% |
+| Hired watchman | Watch 0 | ¼ Day a day | a week | town, city | anyone | 10% |
+| Ostler or tapster | Persuade 0 | ¼ Day a day | a month | town, city, road | anyone | 5% |
+| Battlefield stripper † | Stealth 0 | 2 Days a day | a day | camp, frontier | anyone | 35% |
+| Wool smuggler † | Seamanship 30 | 2 Days a day | 2-5 days | sea, village | anyone | 30% |
+| Highway robber † | Stealth 35 | 1½ Days a day | a week | road | anyone | 45% |
+| Poacher † | Stealth 30 | ½ Day a day | a week | village, frontier | anyone | 25% |
+
+| d10 | Trouble |
+|---|---|
+| 1 | Hurt at the work: a fall, a kick or a blade. A light wound, and the rest of the term's pay is lost. |
+| 2 | The employer won't pay, pays short or pays in clipped coin: half, unless he can be made to pay. |
+| 3 | Taken before the justices for wages above the statute, or for vagrancy: fined a week's pay. |
+| 4 | A brawl with rival workers, soldiers or locals: a Brawl check or a wound, and a grudge either way. |
+| 5 | Fever, flux or plague in the lodging: a recovery check, or a week sick. |
+| 6 | Robbed on the road or in bed: the term's earnings are gone. |
+| 7 | Pressed into a lord's array or onto a king's ship, willing or not. |
+| 8 | Falsely accused of theft or worse: find a witness, flee, or face the court. |
+| 9 | Raiders, enemy soldiers or pirates fall on the place: a fight with a real enemy. |
+| 10 | He saw something he should not have: a powerful man wants his silence, and may buy it or end it. |
+
+### Thirty Years' War (1618-1648)
+
+| Job | Skill | Pay | Term | Where | Who | Risk |
+|---|---|---|---|---|---|---|
+| Sack of a town | Blade 40 | 90 Days for the job | 1-3 days | town, city | anyone | 40% |
+| Take the Laufgeld | none | 7½ Days for the job | 3-10 days | town, village, road | anyone | 10% |
+| Regimental preacher | Letters 50 | 4 Days a day | a month | camp | chaplain or clerk | 5% |
+| Feldwebel's post | Command 55 | 3½ Days a day | a month | camp, town | sergeant or corporal | 5% |
+| Plague gravedigging | none | 3 Days a day | a week | town, city | anyone | 30% |
+| Company Feldscher | Leechcraft 50 | 2¾ Days a day | a month | camp, town | field surgeon (feldscher) | 10% |
+| Hire as a trooper | Ride 45 | 2½ Days a day | a month | camp, town | cuirassier, harquebusier or light horseman, dragoon | 10% |
+| Contribution collecting | Command 40 | 2 Days a day | a week | town, village | sergeant or corporal, cuirassier, harquebusier or light horseman, dragoon | 15% |
+| Courier | Ride 40 | 2 Days a day | a day | road, frontier | dragoon, harquebusier or light horseman, cuirassier | 20% |
+| Salvaguardia | Command 40 | 2 Days a day | a week | village | anyone | 15% |
+| Sutling | Persuade 30 | 2 Days a day | a week | camp | anyone | 10% |
+| Journeyman's trade | Craft 35 | 1¾ Days a day | a day | town, city, camp | anyone | none |
+| Company scribe | Letters 45 | 1½ Days a day | a month | camp, town | anyone | none |
+| Foraging party | Fieldcraft 30 | 1½ Days a day | a day | village, frontier | anyone | 25% |
+| Carting for the train | Ride 30 | 1¼ Days a day | a week | road, camp | anyone | 10% |
+| Garrison duty | Watch 40 | 1 Day a day | a month | town, city | musketeer, pikeman, sergeant or corporal | 5% |
+| Harvest and hay work | none | 1 Day a day | a day | village | anyone | 5% |
+| Nursing the regiment's sick | Leechcraft 0 | ¾ Day a day | a week | camp, town | anyone | 15% |
+| Ransoming peasants † | Stealth 40 | 10 Days a raid | 2-4 days | village, frontier | anyone | 35% |
+| Desert and re-enlist † | Stealth 30 | 7½ Days a signing | 3-7 days | camp, road, town | anyone | 35% |
+| Smuggling across the lines † | Stealth 40 | 4 Days a day | a week | frontier, road | anyone | 30% |
+
+| d10 | Trouble |
+|---|---|
+| 1 | Pay in arrears: no coin this term, only the paymaster's note. |
+| 2 | The provost asks questions: prove you are not a deserter. |
+| 3 | Peasants ambush the party: roll a wound. |
+| 4 | Camp fever or plague: the term is lost to sickness. |
+| 5 | Taken by the enemy and pressed into their regiment. |
+| 6 | Robbed by comrades: half the term's take is gone. |
+| 7 | A wife or comrade is taken by the enemy: ransom or rescue. |
+| 8 | Debased coin: the pay is worth half. |
+| 9 | An officer takes the booty as his share. |
+| 10 | To be hanged as an example, unless someone speaks for him. |
+
+### Horse and musket (1775-1815)
+
+| Job | Skill | Pay | Term | Where | Who | Risk |
+|---|---|---|---|---|---|---|
+| Militia substitute | none | 400 Days for the job | 1 day | town, village | anyone | 5% |
+| Privateer cruise | Seamanship 30 | 60 Days a cruise | 60-90 days | sea | anyone | 30% |
+| US enlistment bounty | none | 59 Days for the job | 1 day | town, village, frontier | anyone | 15% |
+| Take the King's shilling | none | 42 Days for the job | 1 day | town, city, village | anyone | 15% |
+| Clerk | Letters 50 | 5½ Days a day | a month | city, town | anyone | none |
+| Journeyman carpenter | Craft 35 | 3½ Days a day | a day | town, city | anyone | none |
+| Mail coach guard | Musket 45 | 3 Days a day | a week | road | anyone | 10% |
+| Sutling | Persuade 30 | 3 Days a day | a week | camp | anyone | 10% |
+| Coal-heaving | Brawl 0 | 2 Days a day | a day | city, sea | anyone | 10% |
+| Guide for the army | Fieldcraft 45 | 2 Days a day | a day | frontier, road, village | scout or ranger, rifleman or light infantryman, dragoon or hussar | 25% |
+| Press-gang hand | Brawl 40 | 2 Days a day | a week | town, city, sea | anyone | 20% |
+| Teamster | Ride 30 | 2 Days a day | a month | road, camp, frontier | anyone | 10% |
+| Harvest hand | none | 1¾ Days a day | a day | village, frontier | anyone | 5% |
+| Militia tour | Musket 0 | 1¾ Days a day | 30-90 days | frontier, village | anyone | 15% |
+| Day labour | none | 1½ Days a day | a day | town, village | anyone | none |
+| Ship's crew (Royal Navy) | Seamanship 0 | 1 Day a day | a month | sea | anyone | 20% |
+| Servant or batman | Craft 30 | ½ Day a day | a month | town, city, camp | anyone | none |
+| Hospital nurse or laundress | Leechcraft 0 | ¼ Day a day | a month | camp, town | anyone | 15% |
+| Prize fight † | Brawl 50 | 100 Days a bout | 1 day | town, city, village | anyone | 30% |
+| Resurrection work † | Stealth 0 | 42 Days a body | 1-3 days | city, town | anyone | 25% |
+| Smuggling run † | Stealth 0 | 10 Days a run | 1 day | sea, village | anyone | 30% |
+
+| d10 | Trouble |
+|---|---|
+| 1 | A press gang or crimp seizes him: argue or fight. |
+| 2 | Taken up by the excise or a constable: fine, gaol or transportation. |
+| 3 | Paid in bad paper or a ticket, worth 60% at best. |
+| 4 | Fever or flux: the term is lost. |
+| 5 | Robbed on the road or by a crimp. |
+| 6 | A mob turns on him: roll a wound. |
+| 7 | The employer goes bankrupt or flees, owing him. |
+| 8 | A recruiting sergeant gets him drunk, and he wakes up enlisted. |
+| 9 | Taken at sea: a prison hulk or Dartmoor. |
+| 10 | An old crime comes to light: the assizes or a court-martial. |
+
+### Crimean War (1854-1856)
+
+| Job | Skill | Pay | Term | Where | Who | Risk |
+|---|---|---|---|---|---|---|
+| Overseer of hired labourers | Command 50 | 10 Days a day | a day | camp, road | sergeant or corporal, officer, sapper or miner | 10% |
+| Artificer and hut builder | Craft 35 | 7½ Days a day | a day | camp, town | anyone | 5% |
+| Army Works Corps ganger | Command 40 | 6¾ Days a day | a week | camp, road | anyone | 10% |
+| Railway navvy | Craft 0 | 5 Days a day | a day | camp, road | anyone | 10% |
+| Interpreter to a labour gang | Letters 50 | 4½ Days a day | a day | camp, road | anyone | 5% |
+| Correspondent's fixer | Persuade 40 | 3 Days a day | a week | camp, town | anyone | 10% |
+| Hospital nurse | Leechcraft 30 | 3 Days a day | a week | city, camp | anyone | 15% |
+| Sutling and hawking | Persuade 30 | 3 Days a day | a week | camp, town | anyone | 10% |
+| Money-lender | Letters 30 | 2 Days a day | a month | camp | anyone | 15% |
+| Tatar guide | Fieldcraft 50 | 2 Days a day | a day | frontier, village | rifleman, chasseur or zouave, light cavalryman (hussar, lancer, cossack), officer | 20% |
+| Hospital sergeant | Leechcraft 40 | 1¾ Days a day | a day | camp, city | sergeant or corporal | 15% |
+| British Hotel hand | Craft 0 | 1½ Days a day | a week | camp | anyone | 10% |
+| Dock labourer, Constantinople | none | 1½ Days a day | a day | city, sea | anyone | 5% |
+| Land Transport Corps driver | Ride 30 | 1½ Days a day | a month | road, camp | anyone | 15% |
+| Stores carrier | none | 1 Day a day | a day | road | anyone | 5% |
+| Plundering Kerch † | Stealth 0 | 10 Days for the job | 3-7 days | town | anyone | 30% |
+
+| d10 | Trouble |
+|---|---|
+| 1 | Cholera: the term is lost, and a recovery check. |
+| 2 | Pay stopped: a clerk has lost his name, and he must argue it back. |
+| 3 | A shell or a stray shot falls on the works. |
+| 4 | Theft: his kit or his earnings are gone. |
+| 5 | A drunken brawl with navvies or Zouaves. |
+| 6 | Accused of selling army stores. |
+| 7 | Recalled to his regiment at once. |
+| 8 | Frostbite or exposure on the col. |
+| 9 | A Cossack patrol near the outposts. |
+| 10 | An officer wants him as a servant, unpaid. |
+
+### Civil War and frontier (1861-1876)
+
+| Job | Skill | Pay | Term | Where | Who | Risk |
+|---|---|---|---|---|---|---|
+| Substitute or bounty volunteer | none | 698 Days for the job | 365-1095 days | town, city | anyone | 40% |
+| Embalmer | Leechcraft 50 | 233 Days a body | 1 day | camp, town | anyone | 5% |
+| Contract buffalo hunter | Rifle 60 | 38¾ Days a day | a month | frontier | scout, sharpshooter or skirmisher | 20% |
+| Chief guide | Fieldcraft 60 | 23¼ Days a day | a day | frontier | scout | 25% |
+| Union Pacific labourer | none | 8 Days a day | a day | frontier, camp | anyone | 10% |
+| Wagon master | Command 50 | 5¾ Days a day | a month | road, camp | teamster or packer, sergeant or corporal | 15% |
+| Bullwhacker or mule-skinner | Ride 30 | 5 Days a day | a month | road, frontier | anyone | 25% |
+| Placer miner, Montana | Craft 0 | 4¾ Days a day | a day | frontier, town | anyone | 15% |
+| Military telegraph lineman | Craft 30 | 3 Days a day | a month | road, camp | anyone | 20% |
+| Trail drive hand | Ride 30 | 2¼ Days a day | 60-90 days | frontier, road | anyone | 15% |
+| Army teamster | Ride 30 | 2 Days a day | a month | road, camp | anyone | 15% |
+| Photographer's assistant | Craft 30 | 2 Days a day | a month | camp, road | anyone | 10% |
+| Steamboat deckhand | none | 2 Days a day | 7-21 days | sea, town | anyone | 10% |
+| Sutler's clerk | Letters 30 | 2 Days a day | a month | camp | anyone | 15% |
+| Army nurse | Leechcraft 30 | 1½ Days a day | a month | city, camp | anyone | 10% |
+| Extra-duty man | Craft 0 | ¾ Day a day | a day | camp | infantryman, cavalry trooper, artilleryman | none |
+| Bounty jumper † | Stealth 30 | 2,326 Days a jump | 7 days | town, city | anyone | 40% |
+| Blockade runner seaman † | none | 581 Days a round trip | 14-21 days | sea | anyone | 35% |
+| Contraband cotton trader † | Persuade 40 | 20 Days a run | 7-21 days | town, road | anyone | 30% |
+| Horse thief † | Stealth 40 | 15 Days a horse | 1-3 days | frontier, road | anyone | 40% |
+
+| d10 | Trouble |
+|---|---|
+| 1 | Guerrillas raid the train or the store. |
+| 2 | The provost guard asks for his papers. |
+| 3 | Fever or dysentery. |
+| 4 | The employer skips town owing wages. |
+| 5 | A stampede or a wagon wreck. |
+| 6 | Swindled at cards. |
+| 7 | Mistaken for a deserter. |
+| 8 | A war party on the trail. |
+| 9 | A brawl with soldiers. |
+| 10 | Conscripted on the spot. |
+
+### Plains nations (1860-1877)
+
+| Job | Skill | Pay | Term | Where | Who | Risk |
+|---|---|---|---|---|---|---|
+| Horse raid | Stealth 40 | 56 Days a horse | 14-42 days | frontier, village | warrior with bow and shield, scout (a wolf, sent ahead of the camp), leader of war parties | 35% |
+| Horse holder | Watch 0 | 10 Days a raid | 14-42 days | frontier | herder of the camp's horses, warrior with bow and shield | 20% |
+| Doctoring | Leechcraft 50 | 7 Days a cure | 1-7 days | village | healer, who knows plants and medicines | 5% |
+| Robe dressing | Craft 30 | 7 Days a robe | 7-10 days | village | anyone | none |
+| Trading at a post | Persuade 30 | 7 Days a robe well traded | 1 day | frontier, town | anyone | 5% |
+| Hunter for a wagon train | Gun 40 | 3 Days a day | a day | frontier, road | scout (a wolf, sent ahead of the camp), warrior with a gun | 15% |
+| Trader's escort | Watch 40 | 3 Days a day | 7-21 days | frontier, road | warrior with bow and shield, warrior with a gun | 20% |
+| Winter robe hunt | Ride 40 | 3 Days a hide | 7-21 days | frontier | warrior with bow and shield, warrior with lance and shield, warrior with a gun, scout (a wolf, sent ahead of the camp) | 15% |
+| Agency interpreter | Persuade 50 | 2½ Days a day | a month | village, frontier | anyone | 5% |
+| Enlisted army scout | Fieldcraft 50 | 2¼ Days a day | a month | frontier, camp | scout (a wolf, sent ahead of the camp), warrior with bow and shield | 25% |
+| Horse breaking and trading | Ride 40 | 2 Days a day | a day | village, frontier | herder of the camp's horses, warrior with bow and shield | 5% |
+| Herd keeping | Watch 0 | 1 Day a day | a day | village, frontier | herder of the camp's horses | 10% |
+| Moccasin and hide work | Craft 30 | 1 Day a day | a day | village | anyone | none |
+| Akicita (camp police) | Command 50 | unpaid | 90-180 days | village | warrior with bow and shield, leader of war parties | 10% |
+
+| d10 | Trouble |
+|---|---|
+| 1 | An enemy war party finds the trail. |
+| 2 | An army column or patrol. |
+| 3 | A fall or a goring on the hunt. |
+| 4 | The trader cheats, or brings whiskey. |
+| 5 | A blizzard: horses lost. |
+| 6 | The akicita punish a broken rule. |
+| 7 | Smallpox or measles in camp. |
+| 8 | Agency rations are held back. |
+| 9 | A quarrel over horses or a woman. |
+| 10 | A rival claims his coup. |
+
+### First World War (1914-1918)
+
+| Job | Skill | Pay | Term | Where | Who | Risk |
+|---|---|---|---|---|---|---|
+| Hindenburg Programme worker | Craft 30 | 12 Days a day | a week | city | anyone | 10% |
+| Tunneller (clay-kicker) | Trench weapons 50 | 6 Days a day | 90-365 days | frontier | sapper or tunneller, rifleman | 35% |
+| Shipyard mechanic | Craft 35 | 5¾ Days a day | a week | city | anyone | 5% |
+| Chinese Labour Corps interpreter | Letters 40 | 4 Days a day | 30-180 days | camp | corporal or sergeant, junior officer | 5% |
+| Munitions hand | Craft 0 | 4 Days a day | a week | town, city | anyone | 10% |
+| VAD nurse overseas | Leechcraft 30 | 4 Days a day | 180 days | town, camp | stretcher-bearer or orderly | 5% |
+| Hired farm hand | Fieldcraft 0 | 2¼ Days a day | a month | village | anyone | none |
+| Correspondent's guide | Fieldcraft 50 | 2 Days a day | a week | road, frontier | corporal or sergeant, junior officer | 15% |
+| Battlefield salvager | Fieldcraft 0 | 1½ Days a day | a day | frontier, road | anyone | 20% |
+| Trench-art maker | Craft 30 | 1½ Days a day | a week | camp, town | anyone | 5% |
+| Docks labourer | none | 1 Day a day | a week | town, sea | anyone | 5% |
+| Estaminet help | Persuade 0 | 1 Day a day | a week | village, town | anyone | 5% |
+| Labour Corps private | none | 1 Day a day | 90-365 days | camp, road | anyone | 10% |
+| Spare-time harvest hand | Fieldcraft 0 | 1 Day a day | a day | village | anyone | none |
+| Legionnaire | Rifle 40 | ¼ Day a day | 180-730 days | camp, frontier | anyone | 30% |
+| Volunteer ambulance driver | none | unpaid | 180 days | road, frontier | anyone | 20% |
+| Deserter gang † | Brawl 40 | 3 Days a day | a week | frontier, road | anyone | 40% |
+| Rations racketeer † | Persuade 40 | 3 Days a day | a week | town, camp | anyone | 25% |
+| Agent in occupied Belgium † | Stealth 50 | 2 Days a day | a month | town, road | anyone | 40% |
+
+| d10 | Trouble |
+|---|---|
+| 1 | An accident: hurt, and 1d6 days of work and pay lost. |
+| 2 | Shellfire or a raid hits the workplace: a Dodge check, or a wound. |
+| 3 | The Military Police check passes, and his papers must hold up. |
+| 4 | Pay is stopped or docked for 'deductions'. |
+| 5 | Gas, TNT or fumes: a Leechcraft check, or a week ill. |
+| 6 | A comrade is caught pilfering and names him. |
+| 7 | Recalled to the unit early: the term is cut short. |
+| 8 | A quarrel with the locals over a woman, a debt or a fight. |
+| 9 | Influenza sweeps the camp. |
+| 10 | Suspected of spying: held and questioned for 1d3 days. |
+
+### Second World War (1939-1945)
+
+| Job | Skill | Pay | Term | Where | Who | Risk |
+|---|---|---|---|---|---|---|
+| Flying Tiger pilot | Gunnery 60 | 12 Days a day | 365 days | frontier | junior officer | 40% |
+| Arms factory worker | Craft 30 | 7 Days a day | a week | city | anyone | 20% |
+| Island base contractor | Craft 30 | 6 Days a day | 270-365 days | frontier, sea | anyone | 15% |
+| Liberty-ship yard worker | Craft 30 | 6 Days a day | a week | city | anyone | 5% |
+| Flying Tiger ground crew | Craft 40 | 5 Days a day | 365 days | camp, frontier | combat engineer or sapper, tank crewman, radio operator or signaller | 15% |
+| Merchant seaman | none | 4 Days a day | 21-90 days | sea | anyone | 30% |
+| Salvage diver | Craft 50 | 4 Days a day | 30-60 days | sea | combat engineer or sapper | 30% |
+| Dock and ship-repair labourer | none | 3¾ Days a day | a week | city, sea | anyone | 5% |
+| Ammunition loader | none | 3½ Days a day | a week | town | anyone | 10% |
+| War-plant riveter | Craft 0 | 3 Days a day | a week | city | anyone | 5% |
+| Military government interpreter | Letters 50 | 2 Days a day | a month | town, city | anyone | 5% |
+| Bomb disposal volunteer | Close combat 50 | 1½ Days a day | 90 days | city, town | combat engineer or sapper | 35% |
+| Free French or Polish volunteer | Rifle 40 | 1 Day a day | 180-730 days | camp | anyone | 30% |
+| CCC enrollee (before the war) | Fieldcraft 0 | ½ Day a day | a month | camp, frontier | anyone | 5% |
+| Tiergarten black-marketeer † | Persuade 30 | 15 Days a day | a week | city | anyone | 25% |
+| Naples fixer † | Persuade 40 | 8 Days a day | a week | city, sea | anyone | 30% |
+| Smuggler † | Stealth 40 | 6 Days a day | 7-14 days | frontier, sea, road | anyone | 35% |
+| Escape-line guide † | Fieldcraft 50 | 3 Days a day | 2-4 days | frontier | anyone | 45% |
+| Barracks card sharp † | Persuade 40 | 2 Days a day | a week | camp | anyone | 20% |
+| Resistance courier † | Stealth 40 | ½ Day a day | a week | town, village, road | anyone | 35% |
+
+| d10 | Trouble |
+|---|---|
+| 1 | An industrial accident: 1d6 days of work lost. |
+| 2 | An air raid or a torpedo: a Dodge check, or a wound. |
+| 3 | Military police, Feldgendarmerie or Kempeitai check papers. |
+| 4 | A black-market sting: the stake is lost, or he is arrested. |
+| 5 | A strike or a layoff: the term ends on half pay. |
+| 6 | An informer sells his name. |
+| 7 | Recalled or drafted early. |
+| 8 | A fight with a rival gang, crew or shift. |
+| 9 | Illness (malaria, typhus, VD): a Leechcraft check. |
+| 10 | The ship is sunk, the cell blown or the warehouse raided: a fight. |
+
+### Korean War (1950-1953)
+
+| Job | Skill | Pay | Term | Where | Who | Risk |
+|---|---|---|---|---|---|---|
+| Re-enlist for the bonus | none | 84 Days for the job | 1 day | camp | anyone | none |
+| CAT contract aircrew | Craft 50 | 8 Days a day | 365 days | sea, frontier, city | platoon leader, radio operator or wireman | 20% |
+| Civilian tech rep | Craft 50 | 4 Days a day | 180-365 days | camp, city | tank crewman, radio operator or wireman | 5% |
+| War correspondent's driver | Drive 40 | 1½ Days a day | a week | road, frontier, city | anyone | 20% |
+| A-frame porter (Korean Service Corps) | none | 1 Day a day | a month | frontier, camp | anyone | 25% |
+| Minefield clearance gang | Fieldcraft 40 | 1 Day a day | a week | frontier, road, village | combat engineer | 30% |
+| Minesweeper hand | Craft 40 | 1 Day a day | 90-180 days | sea | combat engineer | 30% |
+| Camp labourer | none | ¾ Day a day | a week | camp, frontier | anyone | 10% |
+| Interpreter | Letters 50 | ½ Day a day | a month | camp, town, city | anyone | 15% |
+| Japanese landing-ship crew | Craft 30 | ½ Day a day | 7-30 days | sea | anyone | 15% |
+| Houseboy | none | ¼ Day a day | a month | camp | anyone | 5% |
+| Orphanage helper | Leechcraft 0 | unpaid | a week | town, city | anyone | 5% |
+| Smuggler across the 38th † | Stealth 50 | 5 Days a day | a week | frontier, village | anyone | 40% |
+| R&R whiskey runner † | Stealth 30 | 3 Days a day | a week | camp, sea | anyone | 15% |
+| MPC money-changer † | Persuade 40 | 2 Days a day | a week | town, city, camp | anyone | 20% |
+
+| d10 | Trouble |
+|---|---|
+| 1 | MPs search his kit and find goods or money he can't explain. |
+| 2 | A surprise MPC conversion day: whatever old MPC he holds is worthless. |
+| 3 | Shelling or a night raid hits the work site. |
+| 4 | He walks into an unmarked friendly minefield. |
+| 5 | The pay never comes: the boss pocketed the payroll. |
+| 6 | A refugee family begs him to get them south. |
+| 7 | Accused of working for the North: counter-intelligence asks questions. |
+| 8 | Typhus or frostbite: a week lost. |
+| 9 | R&R goes bad: robbed, or brawling with the shore patrol. |
+| 10 | A Korean co-worker vanishes, and his family thinks he knows where. |
+
+### Vietnam War (1965-1973)
+
+| Job | Skill | Pay | Term | Where | Who | Risk |
+|---|---|---|---|---|---|---|
+| Re-enlist or extend | none | 200 Days for the job | 1 day | camp | anyone | none |
+| Air America crew | Craft 50 | 20 Days a day | 365 days | frontier, city | platoon leader, radio operator | 25% |
+| RMK-BRJ construction hand | Craft 40 | 12 Days a day | 540 days | camp, city, sea | combat engineer or sapper, squad leader or sergeant | 5% |
+| Contract fighter in Laos or Cambodia | Command 60 | 10 Days a day | 180 days | frontier | platoon leader, squad leader or sergeant, point man, scout or sniper | 45% |
+| Skilled Vietnamese construction worker | Craft 30 | 9 Days a day | a day | camp, city | anyone | 5% |
+| Bar and R&R trade | Persuade 30 | 5 Days a day | a week | city, town | anyone | 10% |
+| Journalist's fixer | Persuade 40 | 4 Days a day | a day | city, road, frontier | anyone | 25% |
+| Advisor's interpreter | Letters 50 | 3 Days a day | a month | camp, village, frontier | anyone | 20% |
+| Base contractor's worker | Craft 30 | 3 Days a day | 365 days | camp, sea | anyone | 10% |
+| Crash salvage | Craft 30 | 3 Days a day | a week | frontier, village | anyone | 25% |
+| Base mess or laundry worker | none | 2¾ Days a day | a month | camp | anyone | 5% |
+| Mike Force mercenary | Rifle 50 | 2¼ Days a day | 180 days | frontier | rifleman, machine gunner, point man, scout or sniper, squad leader or sergeant | 35% |
+| Kit Carson Scout | Fieldcraft 50 | 2 Days a day | a month | frontier, village | point man, scout or sniper, rifleman | 35% |
+| Mine and dud clearer | Fieldcraft 40 | 2 Days a day | a day | road, village | combat engineer or sapper, tunnel rat or tunnel fighter | 35% |
+| CIDG striker | Rifle 40 | ½ Day a day | a month | frontier, village, camp | anyone | 30% |
+| Heroin runner † | Stealth 40 | 15 Days a day | a week | city, camp, sea | anyone | 40% |
+| MPC and PX black marketeer † | Persuade 40 | 3 Days a day | a week | city, camp | anyone | 20% |
+
+| d10 | Trouble |
+|---|---|
+| 1 | A CID inquiry into currency or PX goods. |
+| 2 | A surprise MPC conversion day: locals holding old MPC beg him to swap it. |
+| 3 | A rocket or sapper attack on the site. |
+| 4 | The VC tax collector demands a share, or else. |
+| 5 | A road mine or booby trap on the way to work. |
+| 6 | His pay is skimmed by a camp commander or a boss. |
+| 7 | Heroin or a bad bar fight costs a week and his name. |
+| 8 | Inflation: wages buy a fifth less this month. |
+| 9 | The aircraft is shot up: walk out through hostile ground. |
+| 10 | A co-worker is VC, and he knows that he knows. |
+
+### The Falklands to Afghanistan (1982-2014)
+
+| Job | Skill | Pay | Term | Where | Who | Risk |
+|---|---|---|---|---|---|---|
+| Re-enlistment bonus | none | 400 Days for the job | 1 day | camp | anyone | none |
+| Private security contractor | Rifle 60 | 11 Days a day | 90 days | road, city | rifleman, marksman or sniper, military police or convoy gunner, team or section leader, platoon leader | 25% |
+| Press fixer | Persuade 50 | 10 Days a day | a day | city, road | anyone | 30% |
+| Anti-piracy ship guard | Rifle 60 | 9 Days a day | 3-10 days | sea | rifleman, marksman or sniper, team or section leader | 10% |
+| Cleared US linguist | Letters 60 | 9 Days a day | 365 days | camp, city | anyone | 10% |
+| Contract police trainer | Command 50 | 5 Days a day | 365 days | city, camp | military police or convoy gunner, team or section leader, platoon leader | 15% |
+| Convoy driver | Drive 40 | 5 Days a day | 365 days | road | anyone | 20% |
+| Local interpreter | Letters 50 | 2¾ Days a day | a month | city, road, camp | anyone | 35% |
+| Private military trainer | Command 60 | 2¼ Days a day | 90 days | frontier, camp | platoon leader, team or section leader, armoured vehicle crewman | 30% |
+| Khat runner | Drive 30 | 2 Days a day | a day | road, town | anyone | 15% |
+| Falklands clearance and rebuilding | Fieldcraft 40 | 1½ Days a day | 90-180 days | frontier, camp | combat engineer or bomb searcher | 20% |
+| Deminer | Fieldcraft 40 | 1 Day a day | a month | village, road, frontier | combat engineer or bomb searcher | 15% |
+| Sons of Iraq guard | Rifle 40 | 1 Day a day | a month | city, village, road | anyone | 25% |
+| Technical gunner | Machine gun 40 | 1 Day a day | a week | city, road | machine gunner, armoured vehicle crewman | 35% |
+| Russian contract soldier | Rifle 40 | ¾ Day a day | 90 days | frontier, city | anyone | 40% |
+| Afghan National Police | Rifle 40 | ¼ Day a day | a month | village, road, town | anyone | 30% |
+| Smuggling-truck driver † | Drive 30 | 30 Days a run | 2-5 days | road, frontier | anyone | 25% |
+| Arms broker † | Persuade 50 | 20 Days a day | a week | city, sea, frontier | anyone | 35% |
+| Kidnap gang † | Stealth 50 | 10 Days a day | a week | road, town, frontier | anyone | 45% |
+| Poppy harvest labourer † | none | 1½ Days a day | a day | village | anyone | 10% |
+| Taliban day-fighter † | none | 1¼ Days a day | a day | village, road, frontier | anyone | 30% |
+
+| d10 | Trouble |
+|---|---|
+| 1 | An IED or an ambush on the route. |
+| 2 | The contract is cancelled, and the last month is never paid. |
+| 3 | His name is on a militia death list. |
+| 4 | A shooting incident: investigators and lawyers. |
+| 5 | Kidnapped: the ransom is set at a year's pay. |
+| 6 | A checkpoint shakedown: pay a bribe or lose the cargo. |
+| 7 | The employer goes bust, or is banned from the country. |
+| 8 | A mine strike or an unexploded bomb. |
+| 9 | A co-worker is skimming or selling information, and he is blamed. |
+| 10 | The local police arrest him, and his visa is in doubt. |
+
 ## Camp disease
 
 **Camp disease (forces on the travel map):** each force counts its sick, by disease and by step on the track (mending, serious, grave, deadly). Once a week each well man may catch each disease: his chance is the outbreak chance below, with the week's modifiers, times the chance he fails to resist (half, at Endurance 50). A man carries one disease at a time.

@@ -80,7 +80,9 @@ Vietnam, and the Falklands to Afghanistan): characteristics (3d6 x 5 or a fixed 
 trait and a drawback, one to three career terms with their events, old wounds rolled on the
 region's wound table, and kit, with what that kit is worth and a purse of savings. Prices come from
 `data/equipment/<era>.yaml`, each army's coin with a common soldier's day's pay (a **Day**),
-so a sheet reads "kit worth about 21 Days; purse 60 Days (£1 10s)". Women serve where the records show they did (French cantinières in the Crimea, Civil War women
+so a sheet reads "kit worth about 21 Days; purse 60 Days (£1 10s)". Between fights the team can find work: each era has its own
+jobs (`data/jobs/<era>.yaml`), picked by where the team is, each with a skill check for the pay
+and a chance of trouble. Women serve where the records show they did (French cantinières in the Crimea, Civil War women
 disguised as men, Soviet women in 1941-45, the Vietnamese, and the Americans, British and
 Russians since 1991), chosen or rolled at the army's share. Sent to the roller, each character's skills fill in his attack
 and defence; a big team's followers get a line each. `python3 -m gravewounds team` makes one
