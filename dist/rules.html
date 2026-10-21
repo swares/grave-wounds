@@ -136,6 +136,7 @@ tbody tr:nth-child(even){background:var(--panel)}
 <li><a href="#travel">The march and the camp</a><ul>
 <li><a href="#marching">Marching</a></li>
 <li><a href="#events">On the road</a></li>
+<li><a href="#loads">Loads</a></li>
 <li><a href="#camps">Camps</a></li>
 <li><a href="#work">Finding work</a></li>
 <li><a href="#rank">Rank, pay and loot</a></li>
@@ -1829,6 +1830,87 @@ The larger applies, not both. A mounted force keeps its count of <strong>horses<
 the horses its deserters ride off on, come off it, and under half a horse a man it marches at
 foot pace. A wagon train short of teams slows to three quarters, and under half its teams to
 half. The GM adds remounts when the force finds them.</p>
+<h2 id="loads">Loads</h2>
+<p>What a man carries depends on his <strong>order</strong>: fighting order (weapon, ammunition, water), marching
+order (with his pack) or full kit (with extra rations and the rest). Each era has its own weights,
+from the records where they exist: about 12 kg in fighting order for a Napoleonic redcoat and 27 kg
+marching, 27 kg on the Somme in 1916, 43 kg on an approach march in Afghanistan. Armour is added
+where the era's orders leave it out (a medieval man-at-arms' harness, 12 to 22 kg). His <strong>load</strong>
+as a share of his body weight (his era's average man's; less for a woman), against his Strength
+(×0.8 under 30 up to ×1.3 at 75), falls in a band:</p>
+<table>
+<thead>
+<tr>
+<th>Band</th>
+<th>Load (share of his weight)</th>
+<th>March (% of the usual)</th>
+<th>Dodge</th>
+<th>Blisters (20 km)</th>
+<th>Extra fatigue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unburdened</td>
+<td>0–15%</td>
+<td>100%</td>
+<td>−0</td>
+<td>0%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Light</td>
+<td>15–30%</td>
+<td>95%</td>
+<td>−10</td>
+<td>5%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>30–45%</td>
+<td>85%</td>
+<td>−20</td>
+<td>40%</td>
+<td>a step every 20 km</td>
+</tr>
+<tr>
+<td>Heavy</td>
+<td>45–65%</td>
+<td>70%</td>
+<td>−35</td>
+<td>50%</td>
+<td>a step every 12 km</td>
+</tr>
+<tr>
+<td>Overloaded</td>
+<td>65–90%</td>
+<td>50%</td>
+<td>−50, no run</td>
+<td>70%</td>
+<td>a step every 6 km</td>
+</tr>
+<tr>
+<td>Immobile</td>
+<td>over 90%</td>
+<td>25%</td>
+<td>−75, no run</td>
+<td>70%</td>
+<td>a step every 2 km</td>
+</tr>
+</tbody>
+</table>
+<p><strong>On the march</strong> a force carries its era's marching order unless the GM changes it. The roads'
+paces are already those of men in marching order, so a heavier order slows the force (the
+band's march against the usual band's) and tires it more, and a lighter order is no faster. Each
+named man who marches takes his band's chance of blistered feet (a minor wound on his track): the
+full chance for 20 km or more, less for a shorter day, a quarter once his feet have hardened after
+a week on the road, and none while they are still sore.</p>
+<p><strong>In a fight</strong> a man's band costs his Dodge (his defence is the better of Parry and Dodge less
+that), and Overloaded or worse he cannot run. A green man (one term) fights a band heavier under
+fire. Each era fights in its usual order (the British of the Napoleonic wars with their packs on;
+most others in fighting order). A side may <strong>drop its packs</strong> before the fight; if it loses the
+field, the packs are lost with it, and that night its force has no blankets or rations.</p>
 <h2 id="camps">Camps</h2>
 <p>At the end of the march a force makes camp:</p>
 <table>
@@ -3722,6 +3804,7 @@ moments that matter: a gunner hit, a medic crawling out, a vest that held.</p>
 <p class="ix"><b>Downed helicopter</b>: <a href="#landing">Landing by air</a></p>
 <p class="ix"><b>Drawback</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>Drive a hard task</b>: <a href="#skills">Using skills</a></p>
+<p class="ix"><b>Drop its packs</b>: <a href="#loads">Loads</a></p>
 <h3 class="ix-letter">E</h3>
 <p class="ix"><b>Each attempt is one attack</b>: <a href="#exchange">An exchange</a></p>
 <p class="ix"><b>Either</b>: <a href="#penalties">Penalties</a></p>
@@ -3780,6 +3863,7 @@ moments that matter: a gunner hit, a medic crawling out, a vest that held.</p>
 <p class="ix"><b>Illumination</b>: <a href="#support">Fire support</a></p>
 <p class="ix"><b>Impairments</b>: <a href="#wounds">Wounds</a>, <a href="#penalties">Penalties</a></p>
 <p class="ix"><b>Impress</b>: <a href="#skills">Using skills</a></p>
+<p class="ix"><b>In a fight</b>: <a href="#loads">Loads</a></p>
 <p class="ix"><b>In arrears</b>: <a href="#rank">Rank, pay and loot</a></p>
 <p class="ix"><b>In range</b>: <a href="#commander">The enemy commander</a></p>
 <p class="ix"><b>Incident</b>: <a href="#events">On the road</a></p>
@@ -3804,6 +3888,7 @@ moments that matter: a gunner hit, a medic crawling out, a vest that held.</p>
 <p class="ix"><b>Lift</b>: <a href="#mines">Minefields</a></p>
 <p class="ix"><b>Light</b>: <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Limbering</b>: <a href="#guns">Guns of the black-powder wars</a></p>
+<p class="ix"><b>Load</b>: <a href="#loads">Loads</a></p>
 <p class="ix"><b>Located</b>: <a href="#support">Fire support</a></p>
 <p class="ix"><b>Loot</b>: <a href="#rank">Rank, pay and loot</a></p>
 <p class="ix"><b>Losing direction</b>: <a href="#dark">Fighting in the dark</a></p>
@@ -3845,8 +3930,10 @@ moments that matter: a gunner hit, a medic crawling out, a vest that held.</p>
 <p class="ix"><b>Objective</b>: <a href="#commander">The enemy commander</a></p>
 <p class="ix"><b>Old wounds</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>On the map</b>: <a href="#support">Fire support</a></p>
+<p class="ix"><b>On the march</b>: <a href="#loads">Loads</a></p>
 <p class="ix"><b>One check</b>: <a href="#work">Finding work</a></p>
 <p class="ix"><b>One man against another</b>: <a href="#roll">The one roll</a></p>
+<p class="ix"><b>Order</b>: <a href="#loads">Loads</a></p>
 <p class="ix"><b>Orders</b>: <a href="#marching">Marching</a></p>
 <p class="ix"><b>Orders from the accounts</b>: <a href="#commander">The enemy commander</a></p>
 <p class="ix"><b>Origin</b>: <a href="#five-steps">The five steps</a></p>

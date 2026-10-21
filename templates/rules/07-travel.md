@@ -46,6 +46,31 @@ the horses its deserters ride off on, come off it, and under half a horse a man 
 foot pace. A wagon train short of teams slows to three quarters, and under half its teams to
 half. The GM adds remounts when the force finds them.
 
+## Loads {#loads}
+
+What a man carries depends on his **order**: fighting order (weapon, ammunition, water), marching
+order (with his pack) or full kit (with extra rations and the rest). Each era has its own weights,
+from the records where they exist: about 12 kg in fighting order for a Napoleonic redcoat and 27 kg
+marching, 27 kg on the Somme in 1916, 43 kg on an approach march in Afghanistan. Armour is added
+where the era's orders leave it out (a medieval man-at-arms' harness, 12 to 22 kg). His **load**
+as a share of his body weight (his era's average man's; less for a woman), against his Strength
+(×0.8 under 30 up to ×1.3 at 75), falls in a band:
+
+{{table:loads}}
+
+**On the march** a force carries its era's marching order unless the GM changes it. The roads'
+paces are already those of men in marching order, so a heavier order slows the force (the
+band's march against the usual band's) and tires it more, and a lighter order is no faster. Each
+named man who marches takes his band's chance of blistered feet (a minor wound on his track): the
+full chance for 20 km or more, less for a shorter day, a quarter once his feet have hardened after
+a week on the road, and none while they are still sore.
+
+**In a fight** a man's band costs his Dodge (his defence is the better of Parry and Dodge less
+that), and Overloaded or worse he cannot run. A green man (one term) fights a band heavier under
+fire. Each era fights in its usual order (the British of the Napoleonic wars with their packs on;
+most others in fighting order). A side may **drop its packs** before the fight; if it loses the
+field, the packs are lost with it, and that night its force has no blankets or rations.
+
 ## Camps {#camps}
 
 At the end of the march a force makes camp:

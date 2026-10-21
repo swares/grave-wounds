@@ -92,7 +92,9 @@ horses instead. Skills used well (a job, a hit or a parry, first aid, foraging, 
 taught by a master, a better teammate or the army's drill in camp, roll to rise at the end of
 each season, and time served adds a career term. Men age: Endurance, then Agility, then
 Strength decline from 30, steadiness and judgement grow to 40, hard seasons wear them, and a long
-campaigner is in the end worn out and sent home. A man lost
+campaigner is in the end worn out and sent home. What a man carries counts: his era's fighting order,
+marching order or full kit against his weight and Strength slows the march, blisters the feet and
+costs him Dodge in a fight, and packs dropped before a fight are lost with the field. A man lost
 is replaced the era's way: rolled anew, assigned by the army after a wait, or hired. On the
 travel map forces lose men on the road as the records say they did: desertion, straggling,
 injuries and horses by era and by whether they are in camp, marching or withdrawing, with an

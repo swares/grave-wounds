@@ -112,6 +112,7 @@ class Data:
     ranks: dict = field(default_factory=dict)       # rank, pay, promotion and loot (data/ranks.yaml)
     training: dict = field(default_factory=dict)    # masters, teammates and drill (data/training.yaml)
     ageing: dict = field(default_factory=dict)      # decline, maturity, wear and worn out (data/ageing.yaml)
+    loads: dict = field(default_factory=dict)       # carrying weight (data/loads.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -171,6 +172,7 @@ def load(root: str | Path = "data") -> Data:
     ranks = _optional(root / "ranks.yaml", {})
     training = _optional(root / "training.yaml", {})
     ageing = _optional(root / "ageing.yaml", {})
+    loads = _optional(root / "loads.yaml", {})
 
     data = Data(
         root=root,
@@ -205,6 +207,7 @@ def load(root: str | Path = "data") -> Data:
         ranks=ranks,
         training=training,
         ageing=ageing,
+        loads=loads,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -546,6 +549,18 @@ def validate(d: Data) -> None:
         for k in ("pres", "wits", "nerve"):
             if not isinstance((AG.get("maturity") or {}).get(k, {}).get("cap"), int):
                 errors.append(f"ageing.yaml: maturity {k} needs to and cap")
+    if d.loads:
+        LD = d.loads
+        ups = [b.get("upto") for b in LD.get("bands", [])]
+        if not ups or ups != sorted(ups) or any(not (0 < b.get("march", 0) <= 100) for b in LD["bands"]):
+            errors.append("loads.yaml: bands must rise, each with a march % 1-100")
+        if [r.get("from") for r in LD.get("strength", [])][:1] != [0]:
+            errors.append("loads.yaml: strength rows must start from 0")
+        for eid, E in (LD.get("eras") or {}).items():
+            if eid not in d.teams:
+                errors.append(f"loads.yaml: unknown era {eid}")
+            if set(E.get("kg", {})) != set(LD.get("orders", {})) or E.get("fights_in") not in LD.get("orders", {}):
+                errors.append(f"loads.yaml: {eid} needs kg for every order and a fights_in order")
     if d.training:
         TR, skills = d.training, {s["id"] for T in d.teams.values() for s in T["skills"]}
         for m in TR.get("masters", []):

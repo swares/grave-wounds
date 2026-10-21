@@ -201,6 +201,14 @@ When an item is done, delete it here and note it in the pull request that closes
   - no difficulty from wounds, fatigue or hunger is added to a check out of a fight (the GM sets
     it);
   - haggling is only for buying: selling loot, and hiring a replacement, are at the list price.
+- **Loads, first cut.** Load orders by era, bands by body weight and Strength, march pace and
+  fatigue, blisters, Dodge and the run, dropped and lost packs. Still left out: no item has a
+  weight, so what a man buys adds to his load only as the extra kg the GM writes on his sheet;
+  a force's load is its average man's, with no armour for its rank and file; the band steps,
+  blister rule and the hardening of feet are design choices; the Plains nations' loads and most
+  medieval and 17th-century body weights are estimates; pack animals and carts that take the load
+  off the men are not modelled; the field map's units do not carry loads; and the terrain's extra
+  cost to a loaded man (Pandolf's terrain factors) is left to the map's existing going.
 - **Ageing, first cut.** Decline, maturity, Wear and the Worn Out check. Still left out: the
   decline dice are design choices scaled to the physiology (no game-scale figures exist); the best
   sources for British invaliding by age (Tulloch's tables, 1838-53; Nielsen's Chelsea

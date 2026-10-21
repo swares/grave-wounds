@@ -393,6 +393,14 @@ check that succeeds, or wins, ticks the skill for experience; a characteristic i
 quarter on a critical, to the quarter Day, never under ¼), the list price if not, and no sale
 on a fumble; winning ticks Persuade.
 
+## Loads
+
+Each sheet's **Loads** line gives what his era's fighting order, marching order and full kit weigh
+with his armour and any **extra** kg the GM writes there (what he has bought or picked up; it
+goes with him to the roller and the travel map), and the band each puts him in for his body weight
+and Strength (see
+[travel.md](travel.md), *Loads*).
+
 ## Age
 
 `data/ageing.yaml` (rules in `gravewounds/ageing.py`, repeated in `templates/team.js`:
