@@ -47,6 +47,7 @@ weapon cost him nothing; the team builder shows what they are worth in Days. In 
 spends a day of rest earning money gets **{{earn_days}} Day** for it; one who takes a job does
 better or worse by the job ([Finding work](#work)). What he earns goes into his purse and what
 he buys or pays comes out of it, at the era's prices in Days; he cannot spend more than he has.
+Away from an army that feeds him, his keep comes out of it too ([Keep](#work)).
 
 !!! example "The retinue: {{ex.arch}}"
     The team builder rolls a lord's retinue from England: {{ex.lead}}, a man-at-arms, leads

@@ -1016,6 +1016,7 @@ def travel_bundle(d) -> dict:
                  for mid, m in d.maps.items()},
         "period_order": periods(d)["order"],
         "battlefields": {fid: {"name": f["name"], **f["travel"]} for fid, f in d.fields.items() if f.get("travel")},
+        "keep": {eid: keep_bundle(d, eid) for eid in team_eras(d)},   # what a named man pays a day when his force is not fed by its army
     }
 
 
@@ -1958,13 +1959,20 @@ def equip_bundle(d, eid: str) -> dict | None:
     return {"currencies": E["currencies"], "currency": E["currency"], "items": rows, "shop": shop}
 
 
+def keep_bundle(d, eid: str) -> dict:
+    """A day's keep (food, bed) in each army's Days, for the pages that charge it (money.keep_days)."""
+    from gravewounds.money import keep_days
+    out = {r["id"]: keep_days(d, eid, r["id"]) for r in d.teams[eid]["regions"]}
+    return {k: v for k, v in out.items() if v}
+
+
 def jobs_bundle(d, eid: str) -> dict | None:
     """An era's jobs for the team builder's Find work panel (gravewounds/jobs.py), or None."""
     from gravewounds.jobs import jobs
     J = d.jobs.get(eid)
     if not J:
         return None
-    keep = ("id", "name", "what", "skill", "min", "pay", "term", "days", "lump", "per", "places", "who", "risk", "illegal", "hook", "wage", "approx")
+    keep = ("id", "name", "what", "skill", "min", "pay", "term", "days", "lump", "per", "places", "who", "risk", "illegal", "board", "hook", "wage", "approx")
     return {"jobs": [{k: j[k] for k in keep if k in j} for j in jobs(d, eid)["jobs"]], "trouble": J["trouble"]}
 
 
@@ -1978,7 +1986,7 @@ def team_bundle(d) -> dict:
         kits |= {c["kit"].get(r["id"], c["kit"]["default"]) for c in T["careers"] for r in T["regions"]}
         weapons |= set(T["weapon_skill"]) | {c["wound_weapon"] for c in T["careers"]}
         weapons |= {c["weapon"].get(r["id"], c["weapon"]["default"]) for c in T["careers"] for r in T["regions"]}
-    eras = {eid: {"era": d.teams[eid], "ranges": old_wound_ranges(d, eid), "equip": equip_bundle(d, eid), "jobs": jobs_bundle(d, eid)} for eid in team_eras(d)}
+    eras = {eid: {"era": d.teams[eid], "ranges": old_wound_ranges(d, eid), "equip": equip_bundle(d, eid), "jobs": jobs_bundle(d, eid), "keep": keep_bundle(d, eid)} for eid in team_eras(d)}
     first = team_eras(d)[0]
     return {"eras": eras, "era": eras[first]["era"], "ranges": eras[first]["ranges"], "equip": eras[first]["equip"], "money": d.money,
             "locs": {l["id"]: {"name": l["name"], "zone": l["zone"], "class": l["class"]} for l in d.locations},
@@ -2012,7 +2020,8 @@ def main() -> int:
     if missing:
         print("templates/figure.js lacks drawings named in gravewounds/model.py FIG_NAMES: " + ", ".join(missing), file=sys.stderr)
         return 1
-    html = tpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>"))
+    purse_js = (ROOT / "templates" / "purse.js").read_text(encoding="utf-8")
+    html = tpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>")).replace("/*__PURSE_JS__*/", purse_js)
     camp_js = (ROOT / "templates" / "camp.js").read_text(encoding="utf-8")
     works_js = (ROOT / "templates" / "works.js").read_text(encoding="utf-8")
     measure_js = (ROOT / "templates" / "measure.js").read_text(encoding="utf-8")
@@ -2021,7 +2030,7 @@ def main() -> int:
     (DIST / "roller.html").write_text(html, encoding="utf-8")
     tb = travel_bundle(d)
     ttpl = (ROOT / "templates" / "travel.html").read_text(encoding="utf-8")
-    thtml = ttpl.replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
+    thtml = ttpl.replace("/*__PURSE_JS__*/", purse_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
     (DIST / "travel.html").write_text(thtml, encoding="utf-8")
     units_js = (ROOT / "templates" / "units.js").read_text(encoding="utf-8")
     ftpl = (ROOT / "templates" / "field.html").read_text(encoding="utf-8")
@@ -2029,7 +2038,7 @@ def main() -> int:
     (DIST / "field.html").write_text(fhtml, encoding="utf-8")
     team_js = (ROOT / "templates" / "team.js").read_text(encoding="utf-8")
     gtpl = (ROOT / "templates" / "team.html").read_text(encoding="utf-8")
-    ghtml = gtpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>")).replace("/*__TEAM_JS__*/", team_js)
+    ghtml = gtpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>")).replace("/*__PURSE_JS__*/", purse_js).replace("/*__TEAM_JS__*/", team_js)
     (DIST / "team.html").write_text(ghtml.replace("/*__TEAM_DATA__*/null", json.dumps(team_bundle(d), separators=(",", ":"))), encoding="utf-8")
     from gravewounds.rulebook import render as rule_book
     (DIST / "rules.html").write_text(rule_book(d, ROOT), encoding="utf-8")

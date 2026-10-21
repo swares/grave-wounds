@@ -12,13 +12,13 @@ jobs:
   # Lawful work
   - {id: air_america, name: "Air America crew", what: "Flying or kicking cargo in Laos and Vietnam for a CIA airline.", skill: craft, min: 50, pay: 20, term: contract, days: [365, 365], places: [frontier, city], who: [officer, radioman], risk: 25,
      hook: "Rumour says $1,500 a rescue; one pilot said they got nothing but ulcers.", wage: "no salary found; 100 Air America staff died in Laos (US)", source: "https://biotech.law.lsu.edu/cases/nat-sec/Vietnam/air-america.htm", approx: true}
-  - {id: rmk_brj_american, name: "RMK-BRJ construction hand", what: "Building ports, airfields and bridges on an 18-month contract, up to 70 hours a week.", skill: craft, min: 40, pay: 12, term: contract, days: [540, 540], places: [camp, city, sea], who: [sapper, nco], risk: 5,
+  - {id: rmk_brj_american, name: "RMK-BRJ construction hand", what: "Building ports, airfields and bridges on an 18-month contract, up to 70 hours a week.", skill: craft, min: 40, pay: 12, term: contract, days: [540, 540], board: true, places: [camp, city, sea], who: [sapper, nco], risk: 5,
      hook: "The 13% completion bonus is forfeit if you leave early, and the site is near Da Nang.", wage: "tax-free pay about 25% above US rates (US; the dollar figure is an estimate)", source: *time, approx: true}
   - {id: rmk_brj_local, name: "Skilled Vietnamese construction worker", what: "A skilled trade on a US contract site, after a security check.", skill: craft, min: 30, pay: 9, term: day, places: [camp, city], who: any, risk: 5,
      hook: "The VC tax collector wants a cut of your wages.", wage: "up to 93 piastres an hour, 1965 (ARVN)", source: *time}
   - {id: press_fixer, name: "Journalist's fixer", what: "Guiding, translating and driving for the foreign press.", skill: persuade, min: 40, pay: 4, term: day, places: [city, road, frontier], who: any, risk: 25,
      hook: "The reporter wants to reach a VC-held village.", wage: "no figure found (ARVN)", approx: true}
-  - {id: pae_vinnell, name: "Base contractor's worker", what: "Utilities, repairs and port labour for PA&E or Vinnell; many were Korean or Filipino.", skill: craft, min: 30, pay: 3, term: contract, days: [365, 365], places: [camp, sea], who: any, risk: 10,
+  - {id: pae_vinnell, name: "Base contractor's worker", what: "Utilities, repairs and port labour for PA&E or Vinnell; many were Korean or Filipino.", skill: craft, min: 30, pay: 3, term: contract, days: [365, 365], board: true, places: [camp, sea], who: any, risk: 10,
      hook: "Two thousand Korean workers at Cam Ranh are close to rioting over the food.", wage: "no wage found (US)", source: "https://libcom.org/library/korean-workers-riot-vietnam-1967", approx: true}
   - {id: advisor_interpreter, name: "Advisor's interpreter", what: "Translating between a US advisor and an ARVN unit.", skill: letters, min: 50, pay: 3, term: month, places: [camp, village, frontier], who: any, risk: 20,
      hook: "What the ARVN major orders and what he says he ordered differ.", wage: "no figure found (ARVN)", approx: true}
@@ -31,15 +31,15 @@ jobs:
   - {id: bar_trade, name: "Bar and R&R trade", what: "Running, staffing or touting for a GI bar, tailor or taxi.", skill: persuade, min: 30, pay: 5, term: week, places: [city, town], who: any, risk: 10,
      hook: "The owner has a back room the Saigon police want.", wage: "some GI service workers out-earned a cabinet minister (ARVN)", source: "https://core-cms.cambridgecore.org/core/services/aop-cambridge-core/content/view/D577DFD4BC2DD9D44991FFB41C51A4F5/9781107105102c24_472-492.pdf/the-south-vietnamese-homefront.pdf", approx: true}
   # Soldiering
-  - {id: laos_contract, name: "Contract fighter in Laos or Cambodia", what: "Training or leading irregulars across the border, off the books.", skill: command, min: 60, pay: 10, term: contract, days: [180, 180], places: [frontier], who: [officer, nco, scout], risk: 45,
+  - {id: laos_contract, name: "Contract fighter in Laos or Cambodia", what: "Training or leading irregulars across the border, off the books.", skill: command, min: 60, pay: 10, term: contract, days: [180, 180], board: true, places: [frontier], who: [officer, nco, scout], risk: 45,
      hook: "If you're captured, you never existed.", wage: "no figure found (US)", approx: true}
-  - {id: mike_force, name: "Mike Force mercenary", what: "An elite reaction company of Nung under Special Forces officers.", skill: rifle, min: 50, pay: 2.25, term: contract, days: [180, 180], places: [frontier], who: [rifleman, machine_gunner, scout, nco], risk: 35,
+  - {id: mike_force, name: "Mike Force mercenary", what: "An elite reaction company of Nung under Special Forces officers.", skill: rifle, min: 50, pay: 2.25, term: contract, days: [180, 180], board: true, places: [frontier], who: [rifleman, machine_gunner, scout, nco], risk: 35,
      hook: "A camp is about to be overrun, and you are the only relief.", wage: "6,600 piastres (about $55) a month (ARVN)", source: *mike}
-  - {id: kit_carson_scout, name: "Kit Carson Scout", what: "An ex-VC defector guiding US units.", skill: fieldcraft, min: 50, pay: 2, term: month, places: [frontier, village], who: [scout, rifleman], risk: 35,
+  - {id: kit_carson_scout, name: "Kit Carson Scout", what: "An ex-VC defector guiding US units.", skill: fieldcraft, min: 50, pay: 2, term: month, board: true, places: [frontier, village], who: [scout, rifleman], risk: 35,
      hook: "Your old cadre knows your face.", wage: "paid as a staff sergeant; the amount not found (ARVN)", source: "https://en.wikipedia.org/wiki/Kit_Carson_Scouts", approx: true}
-  - {id: cidg_striker, name: "CIDG striker", what: "Montagnard camp-defence militia paid through US Special Forces.", skill: rifle, min: 40, pay: 0.5, term: month, places: [frontier, village, camp], who: any, risk: 30,
+  - {id: cidg_striker, name: "CIDG striker", what: "Montagnard camp-defence militia paid through US Special Forces.", skill: rifle, min: 40, pay: 0.5, term: month, board: true, places: [frontier, village, camp], who: any, risk: 30,
      hook: "The LLDB commander is skimming the strikers' pay.", wage: "1,500 piastres (about $12) a month (ARVN)", source: *mike}
-  - {id: reenlist_extend, name: "Re-enlist or extend", what: "Re-upping for the bonus, or extending six months in country.", min: 0, pay: 200, term: contract, days: [1, 1], lump: true, places: [camp], who: any, risk: 0,
+  - {id: reenlist_extend, name: "Re-enlist or extend", what: "Re-upping for the bonus, or extending six months in country.", min: 0, pay: 200, term: contract, days: [1, 1], lump: true, board: true, places: [camp], who: any, risk: 0,
      hook: "Extending gets you an early out, if you live.", wage: "monthly pay times years signed, up to four times that for scarce skills from 1965 (US)", source: *bonus, approx: true}
   # Illegal
   - {id: heroin_runner, name: "Heroin runner", what: "Carrying Golden Triangle heroin to the bases or home.", skill: stealth, min: 40, pay: 15, term: week, places: [city, camp, sea], who: any, risk: 40, illegal: true,

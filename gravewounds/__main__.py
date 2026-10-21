@@ -73,6 +73,8 @@ def _main(argv=None) -> int:
     ws.add_argument("--career", default=None, help="his career (default: the job's first, or the era's first)")
     ws.add_argument("--skill", type=int, default=None, help="his skill in the job's skill (default: the job's minimum)")
     ws.add_argument("--days", type=int, default=None, help="days worked (default: the term's length, or a contract's shortest)")
+    ws.add_argument("--region", default=None, help="his army (default: the era's first): whose keep he pays")
+    ws.add_argument("--purse", type=float, default=None, help="Days in his purse, to pay his keep from (default: what he earns)")
     ws.add_argument("--seed", type=int, default=None, help="repeatable dice")
 
     sp = sub.add_parser("selfplay", help="play a battlefield with the enemy commander on both sides, to its end")
@@ -144,6 +146,16 @@ def _main(argv=None) -> int:
         r = J.work_term(d, a.era, j, c, rng, a.days)
         check = f"d100 {r['check']} against {c['skills'][j['skill']]}: {r['outcome']}" if r["check"] is not None else "no check"
         print(f"{j['name']}, {r['days']} day{'s' if r['days'] != 1 else ''}: {check}; earned {r['earned']:g} Days.")
+        from .money import pay_keep, quarter_text
+        region = a.region or d.teams[a.era]["regions"][0]["id"]
+        k = J.keep_for(d, a.era, j, region, a.place)
+        if j.get("board"):
+            print("Fed by the job: no keep to pay.")
+        elif k:
+            pk = pay_keep((a.purse or 0) + r["earned"], r["days"], k["food"], k["bed"])
+            more = (f"; went hungry {pk['hungry']} day{'s' if pk['hungry'] != 1 else ''}" if pk["hungry"] else "") + \
+                   (f"; slept rough {pk['rough']} night{'s' if pk['rough'] != 1 else ''}" if pk["rough"] else "")
+            print(f"Keep ({quarter_text(k['food'])} Days food a day" + (f", {quarter_text(k['bed'])} a bed" if k["bed"] else "") + f"): paid {quarter_text(pk['paid'])} Days{more}.")
         if r["trouble"]:
             print(f"Trouble (d100 {r['trouble']['roll']} under {j['risk']}%): {r['trouble']['text']}")
             print(f"  The job's hook: {j['hook']}")

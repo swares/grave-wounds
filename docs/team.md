@@ -93,6 +93,24 @@ the era's price list (pay rows aside; a range at its middle, in his own army's D
 sum for anything else. He cannot spend more than his purse holds, and an entry taken back
 cannot leave it short. Purses show to the quarter Day.
 
+**One purse on every page.** The account is kept in the browser under `gravewounds-purses`,
+one entry for each character (his purse id, `pid`): his name, era, army, terms, starting Days
+and ledger (`templates/purse.js`). The team builder writes it whenever it saves and takes back
+what other pages changed when it is opened or comes back into view; a character sent to the
+wound roller carries his `pid`, his card shows his purse, and putting him **With** a force on
+the travel map carries it there. Spending, earning and keep on any page change the same
+account.
+
+**Keep.** A soldier with his army is fed by it; a man who is not pays his keep from his purse:
+a day's food, and a night's bed where there is one. Each era's equipment file names the price
+rows for both (`keep: {food: {row, times}, bed: {row}}`, `times` for a per-meal row; an army may
+have its own under `regions`), worked out in his army's Days (`money.keep_days`). Each day's
+food is paid before its bed (`money.pay_keep`): a day he cannot pay for food he goes hungry, a
+night he cannot pay for a bed he sleeps rough. A job term charges keep for each day worked,
+with a bed only in a town, city, village or on the road, unless the job is `board: true` (his
+army's service, or wages paid with board or keep: `jobs.keep_for`). `python3 -m gravewounds
+work` shows the keep with `--region` and `--purse`.
+
 Prices live in `data/equipment/<era>.yaml`, one file to an era, like the team tables:
 
 - **currencies:** each coin, its units (or a decimal coin), its Day in its smallest unit, and

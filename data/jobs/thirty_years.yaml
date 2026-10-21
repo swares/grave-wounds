@@ -13,27 +13,27 @@ sources:
 
 jobs:
   # Soldiering
-  - {id: laufgeld, name: "Take the Laufgeld", what: "Signing with a recruiting captain and marching to the muster place.", min: 0, pay: 7.5, term: contract, days: [3, 10], lump: true, places: [town, village, road], who: any, risk: 10,
+  - {id: laufgeld, name: "Take the Laufgeld", what: "Signing with a recruiting captain and marching to the muster place.", min: 0, pay: 7.5, term: contract, days: [3, 10], lump: true, board: true, places: [town, village, road], who: any, risk: 10,
      hook: "Three captains are recruiting in the same town, and all want the same forty men.", wage: "recruits' marching money 1½ fl a man (Wallhausen); ordinary pay follows once mustered", source: *lwl}
-  - {id: garrison_duty, name: "Garrison duty", what: "Standing guard and drilling in a walled town, paid when the money comes.", skill: watch, min: 40, pay: 1, term: month, places: [town, city], who: [musketeer, pikeman, sergeant], risk: 5,
+  - {id: garrison_duty, name: "Garrison duty", what: "Standing guard and drilling in a walled town, paid when the money comes.", skill: watch, min: 40, pay: 1, term: month, board: true, places: [town, city], who: [musketeer, pikeman, sergeant], risk: 5,
      hook: "The pay chest is three months late, and the council will not open the granary.", wage: "Imperial private 6 fl 40 kr a month (1630); Swedish 6 fl (1639)", source: *maschwitz}
-  - {id: trooper_hire, name: "Hire as a trooper", what: "Joining a cuirassier or harquebusier company with your own horse.", skill: ride, min: 45, pay: 2.5, term: month, places: [camp, town], who: [cuirassier, harquebusier, dragoon], risk: 10,
+  - {id: trooper_hire, name: "Hire as a trooper", what: "Joining a cuirassier or harquebusier company with your own horse.", skill: ride, min: 45, pay: 2.5, term: month, board: true, places: [camp, town], who: [cuirassier, harquebusier, dragoon], risk: 10,
      hook: "The horse is worth more than your contract, and the captain knows it.", wage: "Swedish cuirassier 15 fl a month (1639); horse drew double foot pay", source: *maschwitz}
-  - {id: feldwebel, name: "Feldwebel's post", what: "Running a company's drill, watch roster and discipline.", skill: command, min: 55, pay: 3.5, term: month, places: [camp, town], who: [sergeant], risk: 5,
+  - {id: feldwebel, name: "Feldwebel's post", what: "Running a company's drill, watch roster and discipline.", skill: command, min: 55, pay: 3.5, term: month, board: true, places: [camp, town], who: [sergeant], risk: 5,
      hook: "Half the company were Swedes a month ago and still answer to Swedish words of command.", wage: "Imperial Feldwebel 21 fl a month, corporal 12 fl (c.1630)", source: *maschwitz}
-  - {id: feldscher, name: "Company Feldscher", what: "Shaving, bleeding and cutting for a company on its muster roll.", skill: leechcraft, min: 50, pay: 2.75, term: month, places: [camp, town], who: [surgeon], risk: 10,
+  - {id: feldscher, name: "Company Feldscher", what: "Shaving, bleeding and cutting for a company on its muster roll.", skill: leechcraft, min: 50, pay: 2.75, term: month, board: true, places: [camp, town], who: [surgeon], risk: 10,
      hook: "The colonel's nephew has a ball in his thigh, and you have one chance to get it out.", wage: "Swedish Feldscher 16 fl a month (1639)", source: *maschwitz}
-  - {id: preacher, name: "Regimental preacher", what: "Preaching, burying the dead and keeping the regiment's register.", skill: letters, min: 50, pay: 4, term: month, places: [camp], who: [chaplain], risk: 5,
+  - {id: preacher, name: "Regimental preacher", what: "Preaching, burying the dead and keeping the regiment's register.", skill: letters, min: 50, pay: 4, term: month, board: true, places: [camp], who: [chaplain], risk: 5,
      hook: "A Catholic regiment takes a Lutheran town and wants you to say which preacher hangs.", wage: "preachers 25 fl a month (1625 memorandum)", source: *lwl}
-  - {id: salvaguardia, name: "Salvaguardia", what: "Living in a village under a protection letter, fed by it, and turning other soldiers away.", skill: command, min: 40, pay: 2, term: week, places: [village], who: any, risk: 15,
+  - {id: salvaguardia, name: "Salvaguardia", what: "Living in a village under a protection letter, fed by it, and turning other soldiers away.", skill: command, min: 40, pay: 2, term: week, board: true, places: [village], who: any, risk: 15,
      hook: "Your own regiment's foragers arrive and do not care what the letter says.", wage: "officers sold protection letters for about 5 thaler; the guard's take is a guess", source: *maschwitz, approx: true}
-  - {id: foraging, name: "Foraging party", what: "Marching out to strip the country of fodder and food, for a share.", skill: fieldcraft, min: 30, pay: 1.5, term: day, places: [village, frontier], who: any, risk: 25,
+  - {id: foraging, name: "Foraging party", what: "Marching out to strip the country of fodder and food, for a share.", skill: fieldcraft, min: 30, pay: 1.5, term: day, board: true, places: [village, frontier], who: any, risk: 25,
      hook: "Peasants in the woods hold six foragers and will trade them for the village's cattle.", wage: "no wage; a share of what is taken (a guess)", approx: true}
-  - {id: contribution, name: "Contribution collecting", what: "Escorting a commissary and squeezing a town's war levy out of it.", skill: command, min: 40, pay: 2, term: week, places: [town, village], who: [sergeant, cuirassier, harquebusier, dragoon], risk: 15,
+  - {id: contribution, name: "Contribution collecting", what: "Escorting a commissary and squeezing a town's war levy out of it.", skill: command, min: 40, pay: 2, term: week, board: true, places: [town, village], who: [sergeant, cuirassier, harquebusier, dragoon], risk: 15,
      hook: "Demand 5,000 thaler of a council that says it has paid 8,000 already, as Holk did at Zwickau.", wage: "no figure found", approx: true}
   - {id: courier, name: "Courier", what: "Carrying dispatches between garrisons.", skill: ride, min: 40, pay: 2, term: day, places: [road, frontier], who: [dragoon, harquebusier, cuirassier], risk: 20,
      hook: "The letter is in cipher, and someone wants it badly enough to try for you.", wage: "no figure found", approx: true}
-  - {id: sack, name: "Sack of a town", what: "Joining the storm and taking a share of what is found.", skill: blade, min: 40, pay: 90, term: contract, days: [1, 3], lump: true, places: [town, city], who: any, risk: 40,
+  - {id: sack, name: "Sack of a town", what: "Joining the storm and taking a share of what is found.", skill: blade, min: 40, pay: 90, term: contract, days: [1, 3], lump: true, board: true, places: [town, city], who: any, risk: 40,
      hook: "Hagendorf sold a cow from Heidelberg for 11 thaler; what will a town's silver fetch?", wage: "Hagendorf's share at Landshut (1634): 12 thaler in coin and clothes", source: *hagendorf}
   # Camp and civilian work
   - {id: sutling, name: "Sutling", what: "Baking or buying bread, beer and tobacco and selling it to the regiment.", skill: persuade, min: 30, pay: 2, term: week, places: [camp], who: any, risk: 10,
@@ -46,14 +46,14 @@ jobs:
      hook: "The widow pays in grain, but her fields lie where both armies forage.", wage: "Bergün 1642: mower 12-14 kr a day, maid 8 kr; thresher 7 kr (1650)", source: "https://kulturforschung.ch/storage/atlasgr/seiten/26_preise-und-lohne.pdf"}
   - {id: journeyman, name: "Journeyman's trade", what: "Cobbling, smithing or carpentry in a town that still has customers.", skill: craft, min: 35, pay: 1.75, term: day, places: [town, city, camp], who: any, risk: 0,
      hook: "The guild will not let an outsider work, but the garrison will.", wage: "master 20 kr a day, labourer 12 kr (1667, after the war)", source: "https://historisches-museum-frankfurt.de/iart/os-download-object/31325"}
-  - {id: carting, name: "Carting for the train", what: "Driving a requisitioned wagon of powder, bread or wounded.", skill: ride, min: 30, pay: 1.25, term: week, places: [road, camp], who: any, risk: 10,
+  - {id: carting, name: "Carting for the train", what: "Driving a requisitioned wagon of powder, bread or wounded.", skill: ride, min: 30, pay: 1.25, term: week, board: true, places: [road, camp], who: any, risk: 10,
      hook: "The wagon's real owner is following the column.", wage: "no figure found; set near a labourer's pay", approx: true}
   - {id: gravedigging, name: "Plague gravedigging", what: "Carrying out and burying the dead when the town's own diggers have fled.", min: 0, pay: 3, term: week, places: [town, city], who: any, risk: 30,
      hook: "On some days of 1635 Ulm carried out 150-170 bodies; the council pays in coin and wine.", wage: "no wage found; danger pay is a guess", source: *heberle, approx: true}
   # Illegal
   - {id: ransoming, name: "Ransoming peasants", what: "Seizing villagers or livestock and selling them back.", skill: stealth, min: 40, pay: 10, term: contract, days: [2, 4], lump: true, per: "a raid", places: [village, frontier], who: any, risk: 35, illegal: true,
      hook: "The peasants have their own guns now, and their own ransom prices.", wage: "no figure found", approx: true}
-  - {id: desert_reenlist, name: "Desert and re-enlist", what: "Slipping away with the bounty and signing with another captain.", skill: stealth, min: 30, pay: 7.5, term: contract, days: [3, 7], lump: true, per: "a signing", places: [camp, road, town], who: any, risk: 35, illegal: true,
+  - {id: desert_reenlist, name: "Desert and re-enlist", what: "Slipping away with the bounty and signing with another captain.", skill: stealth, min: 30, pay: 7.5, term: contract, days: [3, 7], lump: true, per: "a signing", board: true, places: [camp, road, town], who: any, risk: 35, illegal: true,
      hook: "Your old corporal is a sergeant in your new company.", wage: "the same 1½ fl Laufgeld; changing sides was common", source: *lwl43, approx: true}
   - {id: smuggling, name: "Smuggling across the lines", what: "Carrying salt, letters or powder past both armies' patrols.", skill: stealth, min: 40, pay: 4, term: week, places: [frontier, road], who: any, risk: 30, illegal: true,
      hook: "The besieged town will pay a thaler a pound for salt.", wage: "no figure found", approx: true}

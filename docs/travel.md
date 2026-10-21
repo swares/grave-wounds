@@ -232,6 +232,16 @@ anyone fit can tend him.
 A case still incubating does not show or weaken him. A named man who dies of disease is out
 of every fight.
 
+**Keep.** A force is **Fed by its army** unless the GM unticks it on its health panel: a team
+on its own, men on leave or off base. Then each night every named man with it who has a purse
+(from the team builder) pays his keep from it: a day's food, and a bed if the night falls in a
+village or town and the force has not made camp. The health note says the force is not fed
+and what each man has left; his purse shows the keep as one running entry ("Keep with the
+Retinue, 6 days"). A day he cannot pay for food he goes hungry: the log says so, it counts as a
+day without fresh food for his scurvy count, and back in the wound roller his fatigue goes up a
+step. A night he cannot pay for a bed he sleeps rough (the log says so). The force's own men
+are fed or not as the GM decides; only named men keep purses.
+
 **A named man's wounds in camp.** After a fight, the GM presses **To camp** on the card of a
 named man who is with a force. Each of his wounds then goes onto the wound track with the
 force's wounded. It starts at the step for its severity, or worse for a death clock, with its
@@ -305,8 +315,9 @@ each day, and mud, snow and flooded fords change the going. See [weather.md](wea
   - **Show map file** and **Download map file** give the painted map as YAML. Save it as
     `data/maps/<id>.yaml` and rebuild to keep it.
   - **Undo all painting** goes back to the map as built.
-- **Health.** The selected force's camp hygiene, **Nurses keep clean** and **Fresh food
-  issued**, with a note on its sick, nursing, days without fresh food and the week's chances.
+- **Health.** The selected force's camp hygiene, **Nurses keep clean**, **Fresh food
+  issued** and **Fed by its army**, with a note on its sick, nursing, days without fresh food,
+  its named men's keep and the week's chances.
 - Forces, routes, clocks and painting are kept in your browser.
 
 ## Maps

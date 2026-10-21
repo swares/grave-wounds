@@ -34,7 +34,18 @@ def _money_vars(d) -> dict:
             "w_week": W["terms"]["week"], "w_month": W["terms"]["month"], "w_fail": _pct(W["failure"]), "w_fumble": W["fumble_from"],
             "w_eras": len(d.jobs) - 1,
             "day_coin": fmt(cur, cur["day"]) if cur and cur.get("day") else "a day's pay",
-            "purse_three_coin": fmt(cur, 3 * per * cur["day"]) if cur and cur.get("day") else ""}
+            "purse_three_coin": fmt(cur, 3 * per * cur["day"]) if cur and cur.get("day") else "",
+            **_keep_vars(d, cur)}
+
+
+def _keep_vars(d, cur) -> dict:
+    """A day's keep for an English archer: in Days, and in pence where the coin has a Day."""
+    from .money import keep_days, quarter_text, fmt
+    k = keep_days(d, "medieval", "england") if "medieval" in d.equipment else None
+    if not k:
+        return {"keep_food": "a day's food", "keep_bed": "a night's bed"}
+    say = lambda x: f"{quarter_text(x)} Day" + ("" if x <= 1 else "s") + (f", {fmt(cur, int(x * cur['day'] + 0.5))}" if cur and cur.get("day") else "")
+    return {"keep_food": say(k["food"]), "keep_bed": say(k["bed"])}
 
 def values(d: Data) -> dict:
     """The rule numbers the chapters quote, by name."""

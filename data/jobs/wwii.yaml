@@ -18,24 +18,24 @@ jobs:
      hook: "Seniority rules mean you're first out when the contract ends.", wage: "women about $31.50 a week, men $54.65 (American; a historian's blog)", source: "https://www.lawyersgunsmoneyblog.com/2014/05/day-labor-history-may-29-1943"}
   - {id: german_war_plant, name: "Arms factory worker", what: "Running a lathe on a 60-hour week in a German arms factory.", skill: craft, min: 30, pay: 7, term: week, places: [city], who: any, risk: 20,
      hook: "Night raids, and forced labourers at the next bench.", wage: "about 7 RM a day (German, an estimate)", approx: true}
-  - {id: merchant_seaman, name: "Merchant seaman", what: "Shipping out on a convoy freighter.", min: 0, pay: 4, term: contract, days: [21, 90], places: [sea], who: any, risk: 30,
+  - {id: merchant_seaman, name: "Merchant seaman", what: "Shipping out on a convoy freighter.", min: 0, pay: 4, term: contract, days: [21, 90], board: true, places: [sea], who: any, risk: 30,
      hook: "A run to Archangel: 13 of 40 ships lost before the White Sea.", wage: "$87-100 a month plus $100 war-zone bonus (American)", source: "https://www.nationalww2museum.org/war/articles/brotherhood-sea-organized-labor-us-merchant-marine"}
-  - {id: ccc_enrollee, name: "CCC enrollee (before the war)", what: "Planting trees and cutting fire roads from a forest camp.", skill: fieldcraft, min: 0, pay: 0.5, term: month, places: [camp, frontier], who: any, risk: 5,
+  - {id: ccc_enrollee, name: "CCC enrollee (before the war)", what: "Planting trees and cutting fire roads from a forest camp.", skill: fieldcraft, min: 0, pay: 0.5, term: month, board: true, places: [camp, frontier], who: any, risk: 5,
      hook: "The camp's reserve officer is recruiting for something bigger.", wage: "$30 a month, $25 of it sent home (American)", source: "https://www.nps.gov/fone/learn/historyculture/civilian-conservation-corps.htm"}
-  - {id: pacific_contractor, name: "Island base contractor", what: "Building airstrips and barracks for a civilian contractor.", skill: craft, min: 30, pay: 6, term: contract, days: [270, 365], places: [frontier, sea], who: any, risk: 15,
+  - {id: pacific_contractor, name: "Island base contractor", what: "Building airstrips and barracks for a civilian contractor.", skill: craft, min: 30, pay: 6, term: contract, days: [270, 365], board: true, places: [frontier, sea], who: any, risk: 15,
      hook: "It's December 1941, and Wake has about 1,100 Morrison-Knudsen men.", wage: "no figure found; well above army pay", approx: true}
-  - {id: amg_interpreter, name: "Military government interpreter", what: "Translating for an Allied Military Government town major.", skill: letters, min: 50, pay: 2, term: month, places: [town, city], who: any, risk: 5,
+  - {id: amg_interpreter, name: "Military government interpreter", what: "Translating for an Allied Military Government town major.", skill: letters, min: 50, pay: 2, term: month, board: true, places: [town, city], who: any, risk: 5,
      hook: "Every candidate for mayor swears he was never a Fascist.", wage: "no figure found", approx: true}
   # Soldiering and contract war
-  - {id: avg_pilot, name: "Flying Tiger pilot", what: "Flying P-40s as a contract volunteer over Burma and China, with a bonus for each kill.", skill: gunnery, min: 60, pay: 12, term: contract, days: [365, 365], places: [frontier], who: [officer], risk: 40,
+  - {id: avg_pilot, name: "Flying Tiger pilot", what: "Flying P-40s as a contract volunteer over Burma and China, with a bonus for each kill.", skill: gunnery, min: 60, pay: 12, term: contract, days: [365, 365], board: true, places: [frontier], who: [officer], risk: 40,
      hook: "A Japanese plane destroyed pays $500, about 300 Days; the claims board is strict.", wage: "wingman $600 a month, $500 a plane (American)", source: *avg}
-  - {id: avg_ground_crew, name: "Flying Tiger ground crew", what: "Keeping the P-40s flying for Chennault.", skill: craft, min: 40, pay: 5, term: contract, days: [365, 365], places: [camp, frontier], who: [sapper, tanker, radioman], risk: 15,
+  - {id: avg_ground_crew, name: "Flying Tiger ground crew", what: "Keeping the P-40s flying for Chennault.", skill: craft, min: 40, pay: 5, term: contract, days: [365, 365], board: true, places: [camp, frontier], who: [sapper, tanker, radioman], risk: 15,
      hook: "A Japanese raid catches the field at dawn.", wage: "$150-350 a month by trade (American)", source: *avg}
-  - {id: bomb_disposal, name: "Bomb disposal volunteer", what: "Digging out and defusing unexploded bombs.", skill: trench, min: 50, pay: 1.5, term: contract, days: [90, 90], places: [city, town], who: [sapper], risk: 35,
+  - {id: bomb_disposal, name: "Bomb disposal volunteer", what: "Digging out and defusing unexploded bombs.", skill: trench, min: 50, pay: 1.5, term: contract, days: [90, 90], board: true, places: [city, town], who: [sapper], risk: 35,
      hook: "A new type of fuze; the last man who tried one was killed.", wage: "sapper's pay and small extras (an estimate)", approx: true}
-  - {id: salvage_diver, name: "Salvage diver", what: "Clearing wrecks from harbours such as Naples and Cherbourg.", skill: craft, min: 50, pay: 4, term: contract, days: [30, 60], places: [sea], who: [sapper], risk: 30,
+  - {id: salvage_diver, name: "Salvage diver", what: "Clearing wrecks from harbours such as Naples and Cherbourg.", skill: craft, min: 50, pay: 4, term: contract, days: [30, 60], board: true, places: [sea], who: [sapper], risk: 30,
      hook: "The wreck is booby-trapped and holds a paymaster's safe.", wage: "no figure found", approx: true}
-  - {id: exile_forces, name: "Free French or Polish volunteer", what: "Enlisting with an exile army in Britain or North Africa.", skill: rifle, min: 40, pay: 1, term: contract, days: [180, 730], places: [camp], who: any, risk: 30,
+  - {id: exile_forces, name: "Free French or Polish volunteer", what: "Enlisting with an exile army in Britain or North Africa.", skill: rifle, min: 40, pay: 1, term: contract, days: [180, 730], board: true, places: [camp], who: any, risk: 30,
      hook: "Your sergeant is sure you're a Vichy plant.", wage: "no figure found", approx: true}
   # Shady and illegal work
   - {id: berlin_black_market, name: "Tiergarten black-marketeer", what: "Trading PX cigarettes and goods for marks, cameras and watches.", skill: persuade, min: 30, pay: 15, term: week, places: [city], who: any, risk: 25, illegal: true,
