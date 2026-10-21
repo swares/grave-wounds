@@ -88,7 +88,8 @@ travel map, and one purse follows him from the team builder to the roller and th
 is replaced the era's way: rolled anew, assigned by the army after a wait, or hired. On the
 travel map forces lose men on the road as the records say they did: desertion, straggling,
 injuries and horses by era and by whether they are in camp, marching or withdrawing, with an
-era table of incidents. Women serve where the records show they did (French cantinières in the Crimea, Civil War women
+era table of incidents; a hungry or unpaid force deserts faster, and a mounted force that loses
+its horses marches as foot. Women serve where the records show they did (French cantinières in the Crimea, Civil War women
 disguised as men, Soviet women in 1941-45, the Vietnamese, and the Americans, British and
 Russians since 1991), chosen or rolled at the army's share. Sent to the roller, each character's skills fill in his attack
 and defence; a big team's followers get a line each. `python3 -m gravewounds team` makes one

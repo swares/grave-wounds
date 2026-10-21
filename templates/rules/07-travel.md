@@ -39,6 +39,13 @@ of fatigue, each with a hook for the GM. The rates come from the records where t
 are estimates where they do not; the incidents are estimates. At the GM's choice, named
 characters take the injury chance too.
 
+A force **short of food** deserts about fifteen times as fast (the starving camp at Nuremberg in
+1632) and straggles five times; one whose **pay is in arrears** deserts three times as fast.
+The larger applies, not both. A mounted force keeps its count of **horses**: lost horses, and
+the horses its deserters ride off on, come off it, and under half a horse a man it marches at
+foot pace. A wagon train short of teams slows to three quarters, and under half its teams to
+half. The GM adds remounts when the force finds them.
+
 ## Camps {#camps}
 
 At the end of the march a force makes camp:

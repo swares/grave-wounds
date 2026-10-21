@@ -10,7 +10,8 @@
 #                 desert   - he leaves for good (off the force's men)
 #                 straggle - he falls out and is lost to the force (off its men)
 #                 injury   - a fall, a kick, an accident: he joins the force's wound track
-#                 horses   - a horse or draught animal dies or is lamed (reported)
+#                 horses   - a horse or draught animal dies or is lamed: rolled for each of the force's
+#                            horses (one a man unless the GM sets the count), off its horses
 #               source {url, note}, or approx: true with the reasoning in note.
 #   incident  - % chance each day that something happens to the force; then d100 on `incidents`
 #               (to: the top of each row's range). A row may apply only to some force types
@@ -42,6 +43,22 @@ periods:
 injury:
   - {to: 85, step: mending}
   - {to: 100, step: serious}
+
+# conditions - what the GM ticks on a force's health panel, multiplying its chances: hungry (short
+#              of food) and unpaid (pay in arrears). They do not stack: the largest applies (a
+#              starving army is seldom paid, so Nuremberg's figure already holds both); never above 1.
+conditions:
+  hungry: {desert: 15, straggle: 5, source: {url: "https://en.wikipedia.org/wiki/Siege_of_Nuremberg", note: "the starving Swedish camp at Nuremberg, 1632, lost about 5e-3 a man a day to desertion, against the Army of Flanders' usual 2.5-3.3e-4 (about 15 times); Lee's hungry, barefoot army straggled at 1.8e-2 in Maryland, 1862, against about 2e-3 (Maryland campaign page), so straggling about 5 times, an estimate"}}
+  unpaid: {desert: 3, source: {url: "https://www.oocities.org/ao1617/life.html", note: "Army of Flanders (after Parker): foreign units, often in arrears, lost 2-7% a month against 0.7-2% for the tercios, about 3 times"}, approx: true}
+
+# horses_march - how a mounted force or a wagon train marches when it has lost horses: below
+#                `below` of a horse a man, it keeps `pct` of its speed (the highest band that applies).
+horses_march:
+  mounted:
+    - {below: 0.5, pct: 67, note: "most men on foot: the column goes at foot pace (4 km/h of 6)"}
+  wagons:
+    - {below: 0.75, pct: 75, note: "teams short: wagons double-teamed or left behind, an estimate"}
+    - {below: 0.5, pct: 50, note: "half the teams gone, an estimate"}
 
 eras:
   medieval:

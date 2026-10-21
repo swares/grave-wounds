@@ -1423,6 +1423,25 @@ def _events_errors(d: Data) -> list[str]:
             lo = r.get("lose")
             if lo is not None and not (isinstance(lo, list) and len(lo) == 2 and 0 <= lo[0] <= lo[1]):
                 errors.append(f"{where}: {e} incident {r.get('to')} lose must be [low, high]")
+    for c, x in (E.get("conditions") or {}).items():
+        at = f"{where}: condition {c}"
+        if c not in ("hungry", "unpaid"):
+            errors.append(f"{at}: unknown condition")
+        for k, v in x.items():
+            if k in ("source", "approx"):
+                continue
+            if k not in ("desert", "straggle", "injury", "horses"):
+                errors.append(f"{at}: unknown kind {k}")
+            elif not (isinstance(v, (int, float)) and v > 0):
+                errors.append(f"{at}: {k} must be a positive multiplier")
+        if not x.get("approx") and not x.get("source"):
+            errors.append(f"{at}: needs a source, or approx: true")
+    for t, bands in (E.get("horses_march") or {}).items():
+        if t not in ("mounted", "wagons"):
+            errors.append(f"{where}: horses_march names {t}, not mounted or wagons")
+        for b in bands:
+            if not (isinstance(b.get("below"), (int, float)) and 0 < b["below"] <= 1 and isinstance(b.get("pct"), int) and 0 < b["pct"] <= 100):
+                errors.append(f"{where}: horses_march {t} bands need below (0-1) and pct (1-100)")
     return errors
 
 
