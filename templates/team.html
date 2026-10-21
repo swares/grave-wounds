@@ -80,13 +80,14 @@ label.radio input{margin-top:4px}
 .crew h3{margin:0 0 6px;font:700 1rem var(--display)}
 .crew ol{margin:0;padding-left:22px;font-size:.88rem;columns:2 320px;column-gap:24px}
 .crew li{break-inside:avoid}
-.work table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:8px}
+.work .scroll{overflow-x:auto}
+.work table{width:100%;min-width:560px;border-collapse:collapse;font-size:.85rem;margin-top:8px}
 .work th,.work td{text-align:left;padding:5px 6px;border-top:1px solid var(--line);vertical-align:top}
 .work th{font-weight:700;border-top:0}
-.work td.hire{min-width:150px}
+.work td.hire{min-width:110px}
 .work td.hire button{margin:0 4px 4px 0}
 .work .what{font-size:.8rem}
-.work .log{margin:10px 0 0;padding-left:22px;font-size:.88rem}
+.work .log{columns:auto;margin:10px 0 0;padding-left:22px;font-size:.88rem}
 .work .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .q-green{color:var(--muted)}.q-veteran{color:var(--blood);font-weight:600}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -290,7 +291,7 @@ function renderWork(){                           // Find work: the jobs going wh
   if (!places.includes(S.place)) S.place = places.includes("town") ? "town" : places[0];
   const rows = jobsAt(S.place).map(j => {
     const hire = S.team.map((c, i) => [c, i, canTake(j, c)]).filter(([, , [ok]]) => ok)
-      .map(([c, i]) => `<button class="small" data-work="${esc(j.id)}" data-i="${i}" title="Work one term (${esc(termText(j))})">${esc(c.name.split(" ")[0])}</button>`).join("");
+      .map(([c, i]) => `<button class="small" data-work="${esc(j.id)}" data-i="${i}" title="Work one term (${esc(termText(j))})">${esc(c.name)}</button>`).join("");
     const skill = j.skill ? `${esc(skillName(j.skill))} ${j.min ?? 0}` : "none";
     const who = (j.who ?? "any") === "any" ? "" : ` · ${esc(j.who.map(w => byId(T.careers, w).name).join(", "))}`;
     const tags = (j.illegal ? " †" : "") + (j.approx ? ` <span class="muted" title="The pay is an estimate">≈</span>` : "");
@@ -298,12 +299,12 @@ function renderWork(){                           // Find work: the jobs going wh
       <td title="${esc(j.wage || "")}">${esc(payText(j))}</td><td>${esc(termText(j))}</td><td>${j.risk ? `${j.risk}%` : "none"}</td>
       <td class="hire">${hire || `<span class="muted">nobody</span>`}</td></tr>`;
   }).join("");
-  const totals = S.team.map(c => [c.name, (S.worklog || []).filter(l => l.who === c.name).reduce((a, l) => a + l.earned, 0)]).filter(([, t]) => t);
+  const totals = S.team.map((c, i) => [c.name, (S.worklog || []).filter(l => l.i === i).reduce((a, l) => a + l.earned, 0)]).filter(([, t]) => t);
   const log = (S.worklog || []).map(l => `<li>${esc(l.text)}</li>`).join("");
   box.innerHTML = `<section class="crew work" aria-labelledby="h-work"><h3 id="h-work">Find work</h3>
     <div class="row"><label for="sel-place">Where the team is</label><select id="sel-place">${places.map(p => `<option value="${p}"${p === S.place ? " selected" : ""}>${PLACE_NAMES[p]}</option>`).join("")}</select>
     <span class="muted note">One skill check a term: full pay, ${Math.round(TD.money.work.failure * 100)}% on a miss, nothing on a fumble (${TD.money.work.fumble_from}+). Risk is the chance of trouble each term. † against the law.</span></div>
-    <table><thead><tr><th>Job</th><th>Skill</th><th>Pay</th><th>Term</th><th>Risk</th><th>Work a term</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="scroll"><table><thead><tr><th>Job</th><th>Skill</th><th>Pay</th><th>Term</th><th>Risk</th><th>Work a term</th></tr></thead><tbody>${rows}</tbody></table></div>
     ${log ? `<ol class="log">${log}</ol><p class="muted">Earned: ${totals.map(([n, t]) => `${esc(n)} ${+t.toFixed(2)} Days`).join(" · ") || "nothing"}</p>
     <div class="toolbar" style="justify-content:flex-end"><button class="small" id="btn-clear-work">Clear the work</button></div>` : ""}</section>`;
 }
@@ -416,7 +417,7 @@ function init(){
     if (e.target.closest("#btn-clear-work")){ S.worklog = []; return render() }
     const b = e.target.closest("button[data-work]"); if (!b) return;
     const c = S.team[+b.dataset.i], j = TD.jobs.jobs.find(x => x.id === b.dataset.work), r = workTerm(j, c, realDice);
-    (S.worklog ||= []).push({ who: c.name, earned: r.earned, text: workLine(c, j, r) });
+    (S.worklog ||= []).push({ i: +b.dataset.i, earned: r.earned, text: workLine(c, j, r) });
     render();
   });
   $("#btn-field").onclick = sendToField;
