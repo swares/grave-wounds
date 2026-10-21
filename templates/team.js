@@ -101,6 +101,29 @@ function finishChar(c){                           // stats, skills, attack, defe
   c.nerve = c.stats.nerve;
   return c;
 }
+/* Skill checks out of a fight (as gravewounds/checks.py, data TD.checks): the one roll with a
+   difficulty, opposed rolls (ties and double failures go to the side resisting), haggling. */
+const CHK = () => TD.checks || { critical_fraction: 0.1, fumble_from: 96, difficulty: [{ id: "ordinary", mod: 0 }] };
+const chkMod = diff => (CHK().difficulty.find(x => x.id === diff) || { mod: 0 }).mod;
+function skillCheck(value, diff, roll){            // {target, roll, success, critical, fumble, margin}
+  const C = CHK(), target = Math.max(0, value + chkMod(diff)), ok = roll <= target;
+  return { target, roll, success: ok, critical: ok && roll <= Math.floor(target * C.critical_fraction), fumble: !ok && roll >= C.fumble_from, margin: ok ? target - roll : null };
+}
+const chkRank = c => [c.success ? 1 : 0, c.critical ? 1 : 0, c.success ? c.margin : 0];
+const rankAbove = (x, y) => { for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return x[i] > y[i]; return false };
+function opposedCheck(aValue, aDiff, aRoll, bValue, bRoll){   // {a, b, winner}: a must beat b
+  const a = skillCheck(aValue, aDiff, aRoll), b = skillCheck(bValue, "ordinary", bRoll);
+  return { a, b, winner: rankAbove(chkRank(a), chkRank(b)) ? "a" : "b" };
+}
+function haggle(price, persuade, aRoll, bRoll, seller = null){   // {outcome: win | critical | list | no_sale, price, opposed}
+  const H = CHK().haggle || { seller: 50, win: -0.1, critical: -0.25 };
+  const o = opposedCheck(persuade, "ordinary", aRoll, seller === null ? H.seller : seller, bRoll);
+  if (o.a.fumble) return { outcome: "no_sale", price: null, opposed: o };
+  if (o.winner === "a"){ const kind = o.a.critical ? "critical" : "win"; return { outcome: kind, price: price > 0 ? Math.max(0.25, Math.floor(price * (1 + H[kind]) * 4 + 0.5) / 4) : 0, opposed: o } }
+  return { outcome: "list", price, opposed: o };
+}
+const CHK_STATS = ["str", "agi", "end", "wits", "nerve", "pres"];
+const checkUses = () => (CHK().uses || []).filter(u => CHK_STATS.includes(u.skill) || TD.era.skills.some(s => s.id === u.skill));
 /* Experience in play (as gravewounds/experience.py, data TD.xp): End of season rolls each ticked
    skill (d100 over it rises by the gain die) and counts the days served toward a term. */
 const xpTermDays = () => TD.era.age.per_term * ((TD.xp || {}).days_a_year || 365);

@@ -70,6 +70,9 @@ def values(d: Data) -> dict:
         "stat_lo": E["stat_range"][0], "stat_hi": E["stat_range"][1], "array": ", ".join(map(str, E["array"])),
         "origin_gain": E["gain"], "first_term": E["first_term"], "term_main": E["term_main"], "term_second": E["term_second"],
         "event_gain": E["gain"], "age_start": E["age"]["start"], "age_term": E["age"]["per_term"], "skill_max": E["skill_max"],
+        "chk_crit": round(d.checks.get("critical_fraction", 0.1) * 100), "chk_fumble": d.checks.get("fumble_from", 96),
+        "haggle_seller": (d.checks.get("haggle") or {}).get("seller", 50), "haggle_win": round(-(d.checks.get("haggle") or {}).get("win", -0.1) * 100),
+        "haggle_crit": round(-(d.checks.get("haggle") or {}).get("critical", -0.25) * 100),
         "xp_lo": d.experience.get("gain", [1, 3])[0], "xp_hi": d.experience.get("gain", [1, 3])[1], "xp_season": d.experience.get("season_days", 91),
         "scar_upto": E["old_wound"][0]["to"], "lasting": E["lasting"], "origins": len(E["origins"]), "careers": len(E["careers"]),
         "eras": len(d.teams), **_money_vars(d),
@@ -174,6 +177,11 @@ def tables(d: Data) -> dict:
     names = {s["id"]: s["name"] for s in E["skills"]}
     out["careers"] = _md(["Career", "Main skill", "Second skill"], [[c["name"], names[c["main"]], names[c["second"]]] for c in E["careers"]])
     out.update(_field_tables(d), **_travel_tables(d), **LATER.tables(d))
+    if d.checks:
+        from .checks import use_rows
+        ur = use_rows(d, "medieval")
+        out["skill_uses"] = _md(ur[0], ur[1:])
+        out["difficulty"] = _md(["Difficulty", "Modifier", "When"], [[x["name"], _sign(x["mod"]) if x["mod"] else "±0", x.get("what", "")] for x in d.checks["difficulty"]])
     if "medieval" in d.jobs:
         from .jobs import job_rows, trouble_rows
         jr, tr = job_rows(d, "medieval"), trouble_rows(d, "medieval")

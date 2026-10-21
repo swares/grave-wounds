@@ -164,6 +164,7 @@ label.radio input{margin-top:4px}
       <div id="losses"></div>
       <div id="work"></div>
       <div id="xp"></div>
+      <div id="checks"></div>
     </section>
   </div>
 </div>
@@ -238,6 +239,7 @@ function render(){
   renderFollowers();
   renderWork();
   renderXp();
+  renderChecks();
   renderLosses();
   $("#msg").textContent = S.msg;
   $("#sheets").innerHTML = S.team.length ? S.team.map(sheetHtml).join("") : `<p class="muted">Pick where they come from and a team, then roll.</p>`;
@@ -325,6 +327,54 @@ function sheetHtml(c, i){
     <div class="tools"><button class="small" data-lose="${i}" title="${pron("Killed, taken, deserted or sent home: take him off the team and replace him", sx)}">Lost…</button><button class="small" data-reroll="${i}">${pron("Reroll him", sx)}</button></div>
   </article>`;
 }
+/* Skill checks out of a fight (team.js: skillCheck, opposedCheck, checkUses; data TD.checks): a
+   man, a use (which fills in the skill, difficulty and who resists), and the roll. A skill check
+   that succeeds ticks the skill for experience. */
+const anyName = id => (CHK_STATS.includes(id) ? statName(id) : skillName(id));
+const valueOf = (c, id) => (CHK_STATS.includes(id) ? c.stats[id] : c.skills[id] ?? 0);
+function renderChecks(){
+  const box = $("#checks");
+  if (!TD.checks || !S.team.length){ box.innerHTML = ""; return }
+  const K = (S.chk ||= { i: 0, use: "", skill: T.skills[0].id, diff: "ordinary", against: "" });
+  if (!S.team[K.i]) K.i = 0;
+  const U = checkUses(), u = U.find(x => x.id === K.use) || null, c = S.team[K.i];
+  const byGroup = {}; for (const x of U) (byGroup[anyName(x.skill)] ||= []).push(x);
+  const useOpts = `<option value="">Any check</option>` + Object.entries(byGroup).map(([g, xs]) => `<optgroup label="${esc(g)}">${xs.map(x => `<option value="${x.id}"${x.id === K.use ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</optgroup>`).join("");
+  const skillOpts = `<optgroup label="Skills">${T.skills.map(x => `<option value="${x.id}"${x.id === K.skill ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</optgroup><optgroup label="Characteristics">${T.characteristics.map(x => `<option value="${x.id}"${x.id === K.skill ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</optgroup>`;
+  const diffOpts = CHK().difficulty.map(x => `<option value="${x.id}"${x.id === K.diff ? " selected" : ""} title="${esc(x.what || "")}">${esc(x.name)} (${x.mod > 0 ? "+" : x.mod < 0 ? "−" : "±"}${Math.abs(x.mod)})</option>`).join("");
+  const who = u && u.against ? `${u.against.who} (${anyName(u.against.skill || u.against.stat)})` : "the other side";
+  const help = u ? `<p class="muted note">${esc(u.what)} <b>Success:</b> ${esc(u.success)} <b>Failure:</b> ${esc(u.failure)} <b>Fumble:</b> ${esc(u.fumble)}${u.note ? " " + esc(u.note) : ""}${u.page ? ` <i>(${esc(u.page)})</i>` : ""}</p>` : "";
+  const log = (S.chklog || []).map(l => `<li>${esc(l)}</li>`).join("");
+  box.innerHTML = `<section class="crew work" aria-labelledby="h-checks"><h3 id="h-checks">Skill checks</h3>
+    <p class="muted note">d100 at or under the skill plus the difficulty; ${Math.round(CHK().critical_fraction * 100)}% of that or under is a critical, a miss of ${CHK().fumble_from}+ a fumble. Against someone, both roll: he must beat them (a success over a failure, a critical over a success, else the wider margin); a tie goes to them.</p>
+    <div class="row">
+      <div><label for="chk-who">Who</label><select id="chk-who">${S.team.map((m, k) => `<option value="${k}"${k === K.i ? " selected" : ""}>${esc(m.name)}</option>`).join("")}</select></div>
+      <div><label for="chk-use">Use</label><select id="chk-use">${useOpts}</select></div>
+      <div><label for="chk-skill">Skill</label><select id="chk-skill">${skillOpts}</select></div>
+      <div><label for="chk-diff">Difficulty</label><select id="chk-diff">${diffOpts}</select></div>
+      <div><label for="chk-against" title="Leave empty for a check against no one">Against: ${esc(who)}</label><input id="chk-against" type="number" min="0" max="150" placeholder="no one" value="${esc(String(K.against))}" style="width:6em"></div>
+      <div style="align-self:end"><button id="btn-check">Roll ${esc(anyName(K.skill))} ${valueOf(c, K.skill)}</button></div>
+    </div>${help}
+    ${log ? `<ol class="log">${log}</ol><button class="small" id="btn-clear-checks">Clear</button>` : ""}</section>`;
+}
+function chkText(r){ return `rolled ${r.roll} against ${r.target}: ${r.critical ? "critical" : r.success ? "success" : r.fumble ? "fumble" : "failure"}` }
+function rollCheck(){
+  const K = S.chk, c = S.team[K.i], u = checkUses().find(x => x.id === K.use) || null, v = valueOf(c, K.skill);
+  const name = `${c.name}, ${u ? u.name.toLowerCase() : anyName(K.skill)}`, against = K.against === "" ? null : +K.against;
+  let line, won;
+  if (against === null){
+    const r = skillCheck(v, K.diff, realDice.randint(1, 100)); won = r.success;
+    line = `${name}: ${chkText(r)}` + (u ? ` — ${r.success ? u.success : r.fumble ? u.fumble : u.failure}` : "");
+  } else {
+    const o = opposedCheck(v, K.diff, realDice.randint(1, 100), against, realDice.randint(1, 100)); won = o.winner === "a";
+    const them = u && u.against ? u.against.who : "the other side";
+    line = `${name}: ${chkText(o.a)}; ${them} ${chkText(o.b)}: ${won ? "he wins" : "they hold"}` + (u ? ` — ${won ? u.success : o.a.fumble ? u.fumble : u.failure}` : "");
+  }
+  if (won && !CHK_STATS.includes(K.skill)) xpTick(c.pid, K.skill, u ? u.name : "a skill check");   // a skill used well
+  (S.chklog ||= []).unshift(line.replace(/\.$/, "") + ".");
+  S.chklog = S.chklog.slice(0, 30);
+  render();
+}
 /* Experience (xp.js, xpSeason in team.js): what each man has ticked since the last End of season,
    his days toward a term, and the last season's rolls. End of season settles them, then puts his
    new sheet in the shared store for the roller and his skills on the travel map. */
@@ -407,7 +457,7 @@ function ledgerHtml(c, i){                        // what he has earned and spen
   const opts = cats.map(cat => `<optgroup label="${esc(cat.replace("_", " "))}">${items.filter(r => r.cat === cat)
     .map(r => `<option value="${esc(r.id)}">${esc(r.name)}: ${esc(r.text)} (${daysQ(r.days)})</option>`).join("")}</optgroup>`).join("");
   return `${rows ? `<ol class="full ledger">${rows}</ol>` : ""}
-    <div class="full spend">${items.length ? `<select data-shop="${i}" aria-label="Buy from the price list"><option value="">Buy from the price list…</option>${opts}</select><button class="small" data-buy="${i}">Buy</button>` : ""}
+    <div class="full spend">${items.length ? `<select data-shop="${i}" aria-label="Buy from the price list"><option value="">Buy from the price list…</option>${opts}</select>${TD.checks && c.skills.persuade !== undefined ? `<label class="check" title="Persuade ${c.skills.persuade} against the seller's ${(TD.checks.haggle || {}).seller ?? 50}: a tenth off, a quarter on a critical; a fumble and there is no sale today"><input type="checkbox" data-haggle="${i}"> Haggle</label>` : ""}<button class="small" data-buy="${i}">Buy</button>` : ""}
       <span>or pay</span><input type="number" min="0" step="0.25" data-pay-days="${i}" aria-label="Days to pay"><span>Days for</span><input type="text" class="what" data-pay-what="${i}" aria-label="What for" placeholder="what"><button class="small" data-pay="${i}">Pay</button></div>`;
 }
 function spendFrom(i, days, what){                // take Days from his purse, or say why not
@@ -630,6 +680,16 @@ function init(){
     render();
   });
   $("#xp").addEventListener("click", e => { if (e.target.closest("#btn-season")) endSeason() });
+  $("#checks").addEventListener("change", e => {
+    const K = S.chk, id = e.target.id;
+    if (id === "chk-who") K.i = +e.target.value;
+    else if (id === "chk-use"){ K.use = e.target.value; const u = checkUses().find(x => x.id === K.use); if (u){ K.skill = u.skill; K.diff = u.difficulty; K.against = u.against ? u.against.value : "" } }
+    else if (id === "chk-skill"){ K.skill = e.target.value; K.use = "" }
+    else if (id === "chk-diff") K.diff = e.target.value;
+    else if (id === "chk-against") K.against = e.target.value === "" ? "" : Math.max(0, +e.target.value);
+    render();
+  });
+  $("#checks").addEventListener("click", e => { if (e.target.closest("#btn-check")) rollCheck(); else if (e.target.closest("#btn-clear-checks")){ S.chklog = []; render() } });
   $("#btn-field").onclick = sendToField;
   $("#sel-region").onchange = e => { S.region = e.target.value; render() };
   $("#sel-women").onchange = e => { S.women = e.target.value; render() };
@@ -670,8 +730,15 @@ function init(){
     const buy = e.target.closest("button[data-buy]");
     if (buy){
       const i = +buy.dataset.buy, id = document.querySelector(`select[data-shop="${i}"]`).value; if (!id) return;
-      const item = shopFor(S.team[i].region).find(r => r.id === id);
-      return spendFrom(i, item.days, item.name);
+      const item = shopFor(S.team[i].region).find(r => r.id === id), c = S.team[i];
+      if (!document.querySelector(`input[data-haggle="${i}"]`)?.checked) return spendFrom(i, item.days, item.name);
+      const h = haggle(item.days, c.skills.persuade ?? 0, realDice.randint(1, 100), realDice.randint(1, 100));
+      const how = `Persuade ${chkText(h.opposed.a)}, the seller ${chkText(h.opposed.b)}`;
+      if (h.outcome === "win" || h.outcome === "critical") xpTick(c.pid, "persuade", "haggling");
+      if (h.outcome === "no_sale"){ S.msg = `${c.name} haggles over the ${item.name.toLowerCase()} and fumbles (${how}): no sale today.`; return render() }
+      spendFrom(i, h.price, `${item.name}${h.outcome === "list" ? " (haggled: list price)" : ` (haggled down from ${daysQ(item.days)})`}`);
+      if (!S.msg) S.msg = `${c.name} haggles: ${how}; pays ${daysQ(h.price)}.`;
+      return render();
     }
     const pay = e.target.closest("button[data-pay]");
     if (pay){

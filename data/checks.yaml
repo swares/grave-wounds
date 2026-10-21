@@ -1,0 +1,109 @@
+# Skill checks out of a fight (rules in gravewounds/checks.py, repeated in templates/team.js).
+#
+# A check is the one roll: d100 at or under the skill (or characteristic) plus the difficulty's
+# modifier. At or under `critical_fraction` of that chance it is a critical; a failed roll of
+# `fumble_from` or more is a fumble (the same figures as a fight's criticals and a job's fumbles).
+#
+# Opposed: both roll. A success beats a failure, a critical beats a plain success, and between two
+# successes of the same kind the wider margin wins. Anything else, a tie or both failing, goes to
+# the side resisting (the guard, the seller, the man being looked for): nothing changes.
+#
+# A skill check that succeeds ticks the skill for experience (data/experience.yaml); a
+# characteristic does not rise.
+#
+# The difficulties and the effects are design choices, not figures from the records; the notes
+# on period practice say where a use comes from.
+
+critical_fraction: 0.1
+fumble_from: 96
+
+difficulty:
+  - {id: easy, name: "Easy", mod: 20, what: "time to spare, good tools, a friendly or careless other side"}
+  - {id: ordinary, name: "Ordinary", mod: 0, what: "the usual way of things"}
+  - {id: hard, name: "Hard", mod: -20, what: "in a hurry, at night, in a strange country or tongue, poor tools"}
+  - {id: very_hard, name: "Very hard", mod: -40, what: "under fire, in the dark and the rain, against a man who expects it"}
+
+# Haggling at the price list: Persuade against the seller's (`seller`, an ordinary trader).
+haggle:
+  seller: 50
+  win: -0.10        # he wins: the price falls a tenth
+  critical: -0.25   # he wins with a critical: a quarter off
+  fumble: no_sale   # he fumbles: the seller will not deal with him today
+  # the seller wins (or both fail): the list price
+
+# Uses: what a skill does out of a fight, its usual difficulty, who resists it, and what follows.
+# skill is a skill id, or a characteristic (str, agi, end, wits, nerve, pres). against: a skill or
+# characteristic of the other side, at `value` when the GM has no sheet for him. A use is offered
+# only in eras that have its skill. `page`: where a page already rolls it.
+uses:
+  # Persuade
+  - {id: haggle, skill: persuade, name: "Haggle", difficulty: ordinary, against: {skill: persuade, value: 50, who: "the seller"},
+     what: "Beat down a price.", success: "A tenth off (a quarter on a critical).", failure: "The list price.", fumble: "No sale today.", page: "team builder: Haggle when buying"}
+  - {id: billet, skill: persuade, name: "Find a billet", difficulty: ordinary, against: {stat: pres, value: 50, who: "the householder or headman"},
+     what: "Talk a village or a householder into a bed and a meal.", success: "Fed and bedded tonight: no keep to pay.", failure: "He pays his keep, or sleeps rough.", fumble: "The village turns against the party: trouble.",
+     note: "Hard in an enemy or plundered country, easy with a billeting ticket or a letter from an officer."}
+  - {id: provost, skill: persuade, name: "Talk past a guard", difficulty: hard, against: {stat: wits, value: 50, who: "the sentry or provost"},
+     what: "Get by a sentry, a gate or the provost without the right papers.", success: "Through.", failure: "Turned back.", fumble: "Held as a deserter or a spy.",
+     note: "From the 17th century a soldier away from his unit without a pass could be taken up as a deserter; easy with a good pass, very hard after a battle."}
+  - {id: question, skill: persuade, name: "Question a prisoner", difficulty: ordinary, against: {stat: nerve, value: 50, who: "the prisoner"},
+     what: "Get a prisoner or a local to talk.", success: "He tells what he knows (the GM decides how much is true).", failure: "Nothing.", fumble: "He lies, and is believed."}
+  # Command
+  - {id: order, skill: command, name: "Drive a hard task", difficulty: ordinary,
+     what: "Get men to do something hard and tiring: dig all night, march on after dark, cross a river.", success: "Done.", failure: "Done slowly, or only half.", fumble: "They refuse."}
+  - {id: discipline, skill: command, name: "Keep order", difficulty: hard,
+     what: "Stop plunder, drinking or a mutinous mood.", success: "They obey.", failure: "Some slip away to it.", fumble: "They turn on him."}
+  # Letters
+  - {id: read, skill: letters, name: "Read or write", difficulty: easy,
+     what: "Read an order, a letter or a map's names; write a report.", success: "Read or written.", failure: "Slowly, or with mistakes.", fumble: "He gets it wrong and does not know it.",
+     note: "Hard in a foreign tongue or a bad hand. A man with no Letters cannot read at all."}
+  - {id: forge, skill: letters, name: "Forge a pass", difficulty: hard, against: {skill: watch, value: 50, who: "whoever checks it"},
+     what: "Make a pass, an order or a billeting ticket that will be believed.", success: "It passes.", failure: "Doubted: Talk past a guard instead.", fumble: "Seen through: held as a deserter or a spy."}
+  # Craft
+  - {id: repair, skill: craft, name: "Mend kit", difficulty: ordinary,
+     what: "Mend a weapon, harness, boots, a cart or a radio set; a day's work.", success: "Mended.", failure: "Not yet: another day.", fumble: "Ruined."}
+  - {id: make, skill: craft, name: "Make something", difficulty: ordinary,
+     what: "Make ladders, a raft, a shelter, snowshoes or a litter from what is to hand.", success: "Made.", failure: "Takes twice as long.", fumble: "It fails when it is used."}
+  # Ride, Drive, Seamanship
+  - {id: ride_hard, skill: ride, name: "Ride hard", difficulty: ordinary, against: {skill: ride, value: 50, who: "the pursuer or the pursued"},
+     what: "Outride a pursuer, or catch a man who rides away.", success: "Away, or caught.", failure: "Still close.", fumble: "Thrown: roll a fall as a wound."}
+  - {id: ford, skill: ride, name: "Swim a horse", difficulty: hard,
+     what: "Cross a deep ford or swim a river mounted.", success: "Across.", failure: "Turned back.", fumble: "Swept away: Endurance check or drowned."}
+  - {id: drive_hard, skill: drive, name: "Drive under pressure", difficulty: ordinary,
+     what: "Drive off the road, at night without lights, or under fire.", success: "Through.", failure: "Slowed or lost.", fumble: "Ditched or overturned."}
+  - {id: boat, skill: seamanship, name: "Handle a boat", difficulty: ordinary,
+     what: "Take a boat across a river or along a coast; in rough water, hard.", success: "Across.", failure: "Driven back.", fumble: "Swamped: Endurance check or drowned."}
+  # Fieldcraft
+  - {id: track, skill: fieldcraft, name: "Track", difficulty: ordinary, against: {skill: stealth, value: 50, who: "the men being followed"},
+     what: "Follow men or animals.", success: "On their trail.", failure: "Lost it.", fumble: "On the wrong trail."}
+  - {id: way, skill: fieldcraft, name: "Find the way", difficulty: ordinary,
+     what: "Cross country without roads or a guide; at night, hard.", success: "On the way.", failure: "Half a day lost.", fumble: "Lost: a day, or into the enemy."}
+  - {id: hunt, skill: fieldcraft, name: "Hunt or gather", difficulty: ordinary,
+     what: "Find food or water for himself in the country.", success: "Fed today: no keep to pay.", failure: "Nothing found.", fumble: "Something that makes him ill.", page: "travel map: foraging on the march"}
+  # Watch and Stealth
+  - {id: spot, skill: watch, name: "Spot", difficulty: ordinary, against: {skill: stealth, value: 50, who: "whoever is hiding"},
+     what: "See an ambush, a man hiding, a trap or a thing out of place.", success: "Seen.", failure: "Missed.", fumble: "Sure there is nothing there.", page: "travel map: surprise"}
+  - {id: search, skill: watch, name: "Search", difficulty: easy,
+     what: "Search a house, a body or a baggage wagon.", success: "Found what there is.", failure: "Missed it.", fumble: "Missed it and left traces."}
+  - {id: sneak, skill: stealth, name: "Sneak", difficulty: ordinary, against: {skill: watch, value: 50, who: "the sentries"},
+     what: "Get past sentries, into a camp or away from one.", success: "Unseen.", failure: "Seen, but not yet caught.", fumble: "Walks into them.", page: "travel map: surprise"}
+  - {id: steal, skill: stealth, name: "Steal", difficulty: hard, against: {skill: watch, value: 50, who: "the owner or the guard"},
+     what: "Lift a purse, a horse or rations unseen.", success: "Taken.", failure: "Not taken.", fumble: "Caught in the act: the provost.",
+     note: "Theft from comrades or civilians could hang a man under most armies' articles of war."}
+  # Leechcraft and Signals
+  - {id: diagnose, skill: leechcraft, name: "Diagnose", difficulty: ordinary,
+     what: "Tell what a sick man has, and whether it will spread.", success: "Named: the GM tells which sickness.", failure: "Unsure.", fumble: "Wrong.", page: "roller: first aid; travel map: nursing"}
+  - {id: signal, skill: signals, name: "Get through", difficulty: ordinary,
+     what: "Raise another station, mend a line or a set, or send a message in code.", success: "Through.", failure: "Not yet: try again next hour.", fumble: "The set or line is out until mended."}
+  # Characteristics
+  - {id: force, skill: str, name: "Force or carry", difficulty: ordinary,
+     what: "Force a door, lift a beam, carry a wounded man.", success: "Done.", failure: "Not alone.", fumble: "Strained: a step of fatigue."}
+  - {id: climb, skill: agi, name: "Climb or jump", difficulty: ordinary,
+     what: "Climb a wall, jump a ditch, keep his feet on ice.", success: "Over.", failure: "Not this way.", fumble: "Falls: roll a fall as a wound."}
+  - {id: endure, skill: end, name: "Endure", difficulty: ordinary,
+     what: "Keep going: swim, go without sleep, hold out in the cold.", success: "Holds out.", failure: "A step of fatigue.", fumble: "Collapses, or goes under."}
+  - {id: notice, skill: wits, name: "Notice or remember", difficulty: ordinary,
+     what: "Recall a face, a road or a password; work something out.", success: "Yes.", failure: "No.", fumble: "Remembers it wrong."}
+  - {id: steady, skill: nerve, name: "Keep his head", difficulty: ordinary,
+     what: "Stay calm out of a fight: under shelling in a dugout, at a hanging, before an officer.", success: "Steady.", failure: "Shaken: −10 to his next check.", fumble: "Breaks: runs, freezes or lashes out."}
+  - {id: impress, skill: pres, name: "Impress", difficulty: ordinary, against: {stat: pres, value: 50, who: "the other man"},
+     what: "Stare a man down, make a first impression, be remembered.", success: "He gives way.", failure: "No effect.", fumble: "Made an enemy."}

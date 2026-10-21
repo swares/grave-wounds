@@ -95,6 +95,8 @@ tbody tr:nth-child(even){background:var(--panel)}
 <li><a href="#roll">The one roll</a></li>
 <li><a href="#time">Time</a></li>
 <li><a href="#characteristics">Characteristics and skills</a></li>
+<li><a href="#skills">Using skills</a></li>
+<li><a href="#experience">Experience</a></li>
 </ul>
 </li>
 <li><a href="#team">Making a team</a><ul>
@@ -207,6 +209,47 @@ is whether his friends can stop the bleeding, carry him to camp and keep the fev
 against succeeds. That number is a skill or a characteristic, less any penalties. How far
 under you rolled is the <strong>margin</strong>, and in a fight the margin matters: a hit by a wide
 margin is a worse wound.</p>
+<p>Out of a fight the GM calls for a roll only when failing would matter and the outcome is in
+doubt; a man with time and the right skill simply does the thing. The GM sets the
+<strong>difficulty</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Difficulty</th>
+<th>Modifier</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Easy</td>
+<td>+20</td>
+<td>time to spare, good tools, a friendly or careless other side</td>
+</tr>
+<tr>
+<td>Ordinary</td>
+<td>±0</td>
+<td>the usual way of things</td>
+</tr>
+<tr>
+<td>Hard</td>
+<td>−20</td>
+<td>in a hurry, at night, in a strange country or tongue, poor tools</td>
+</tr>
+<tr>
+<td>Very hard</td>
+<td>−40</td>
+<td>under fire, in the dark and the rain, against a man who expects it</td>
+</tr>
+</tbody>
+</table>
+<p>A roll of 10% of the chance or under is a <strong>critical</strong>: the best result. A failed
+roll of 96 or more is a <strong>fumble</strong>: the worst.</p>
+<p><strong>One man against another.</strong> When someone resists (a sentry watching for a man sneaking past,
+a seller holding out on a price), both roll, the resisting side at Ordinary. The man acting
+wins only by beating them: a success over a failure, a critical over a plain success, or the
+wider margin between two of the same. A tie, or both failing, goes to the side resisting, and
+nothing changes. Where the GM has no sheet for the other side, it counts as 50.</p>
 <div class="admonition example">
 <p class="admonition-title">The running example</p>
 <p>This book follows one team from start to finish: a lord's retinue on the road to
@@ -259,7 +302,274 @@ are the game's own; where a die is rolled, the book says what came up.</p>
 ordinary person. <strong>Skills</strong> (Bow, Blade, Dodge, Leechcraft and the rest) start from a
 characteristic and grow with experience, up to 90. A character's <strong>attack</strong> is
 the skill his weapon is fought with, and his <strong>defence</strong> is the better of Parry and Dodge.</p>
-<p><strong>Experience.</strong> A skill used well is <strong>ticked</strong>: a job's check that succeeds (lawful or not; a
+<h2 id="skills">Using skills</h2>
+<p>What each skill and characteristic is for out of a fight, its usual difficulty, who resists
+it, and what follows (the GM decides when a case is easier or harder):</p>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Use</th>
+<th>Usually</th>
+<th>Against</th>
+<th>Success</th>
+<th>Failure</th>
+<th>Fumble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Persuade</td>
+<td><strong>Haggle</strong>: Beat down a price.</td>
+<td>Ordinary</td>
+<td>the seller (Persuade)</td>
+<td>A tenth off (a quarter on a critical).</td>
+<td>The list price.</td>
+<td>No sale today.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Find a billet</strong>: Talk a village or a householder into a bed and a meal.</td>
+<td>Ordinary</td>
+<td>the householder or headman (Presence)</td>
+<td>Fed and bedded tonight: no keep to pay.</td>
+<td>He pays his keep, or sleeps rough.</td>
+<td>The village turns against the party: trouble.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Talk past a guard</strong>: Get by a sentry, a gate or the provost without the right papers.</td>
+<td>Hard</td>
+<td>the sentry or provost (Wits)</td>
+<td>Through.</td>
+<td>Turned back.</td>
+<td>Held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Question a prisoner</strong>: Get a prisoner or a local to talk.</td>
+<td>Ordinary</td>
+<td>the prisoner (Nerve)</td>
+<td>He tells what he knows (the GM decides how much is true).</td>
+<td>Nothing.</td>
+<td>He lies, and is believed.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Drive a hard task</strong>: Get men to do something hard and tiring: dig all night, march on after dark, cross a river.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Done slowly, or only half.</td>
+<td>They refuse.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Keep order</strong>: Stop plunder, drinking or a mutinous mood.</td>
+<td>Hard</td>
+<td>—</td>
+<td>They obey.</td>
+<td>Some slip away to it.</td>
+<td>They turn on him.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Read or write</strong>: Read an order, a letter or a map's names; write a report.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Read or written.</td>
+<td>Slowly, or with mistakes.</td>
+<td>He gets it wrong and does not know it.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Forge a pass</strong>: Make a pass, an order or a billeting ticket that will be believed.</td>
+<td>Hard</td>
+<td>whoever checks it (Watch)</td>
+<td>It passes.</td>
+<td>Doubted: Talk past a guard instead.</td>
+<td>Seen through: held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Mend kit</strong>: Mend a weapon, harness, boots, a cart or a radio set; a day's work.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Mended.</td>
+<td>Not yet: another day.</td>
+<td>Ruined.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Make something</strong>: Make ladders, a raft, a shelter, snowshoes or a litter from what is to hand.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Made.</td>
+<td>Takes twice as long.</td>
+<td>It fails when it is used.</td>
+</tr>
+<tr>
+<td>Ride</td>
+<td><strong>Ride hard</strong>: Outride a pursuer, or catch a man who rides away.</td>
+<td>Ordinary</td>
+<td>the pursuer or the pursued (Ride)</td>
+<td>Away, or caught.</td>
+<td>Still close.</td>
+<td>Thrown: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Ride</td>
+<td><strong>Swim a horse</strong>: Cross a deep ford or swim a river mounted.</td>
+<td>Hard</td>
+<td>—</td>
+<td>Across.</td>
+<td>Turned back.</td>
+<td>Swept away: Endurance check or drowned.</td>
+</tr>
+<tr>
+<td>Seamanship</td>
+<td><strong>Handle a boat</strong>: Take a boat across a river or along a coast; in rough water, hard.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Across.</td>
+<td>Driven back.</td>
+<td>Swamped: Endurance check or drowned.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Track</strong>: Follow men or animals.</td>
+<td>Ordinary</td>
+<td>the men being followed (Stealth)</td>
+<td>On their trail.</td>
+<td>Lost it.</td>
+<td>On the wrong trail.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Find the way</strong>: Cross country without roads or a guide; at night, hard.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>On the way.</td>
+<td>Half a day lost.</td>
+<td>Lost: a day, or into the enemy.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Hunt or gather</strong>: Find food or water for himself in the country.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Fed today: no keep to pay.</td>
+<td>Nothing found.</td>
+<td>Something that makes him ill.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Spot</strong>: See an ambush, a man hiding, a trap or a thing out of place.</td>
+<td>Ordinary</td>
+<td>whoever is hiding (Stealth)</td>
+<td>Seen.</td>
+<td>Missed.</td>
+<td>Sure there is nothing there.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Search</strong>: Search a house, a body or a baggage wagon.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Found what there is.</td>
+<td>Missed it.</td>
+<td>Missed it and left traces.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Sneak</strong>: Get past sentries, into a camp or away from one.</td>
+<td>Ordinary</td>
+<td>the sentries (Watch)</td>
+<td>Unseen.</td>
+<td>Seen, but not yet caught.</td>
+<td>Walks into them.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Steal</strong>: Lift a purse, a horse or rations unseen.</td>
+<td>Hard</td>
+<td>the owner or the guard (Watch)</td>
+<td>Taken.</td>
+<td>Not taken.</td>
+<td>Caught in the act: the provost.</td>
+</tr>
+<tr>
+<td>Leechcraft</td>
+<td><strong>Diagnose</strong>: Tell what a sick man has, and whether it will spread.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Named: the GM tells which sickness.</td>
+<td>Unsure.</td>
+<td>Wrong.</td>
+</tr>
+<tr>
+<td>Strength</td>
+<td><strong>Force or carry</strong>: Force a door, lift a beam, carry a wounded man.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Not alone.</td>
+<td>Strained: a step of fatigue.</td>
+</tr>
+<tr>
+<td>Agility</td>
+<td><strong>Climb or jump</strong>: Climb a wall, jump a ditch, keep his feet on ice.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Over.</td>
+<td>Not this way.</td>
+<td>Falls: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Endurance</td>
+<td><strong>Endure</strong>: Keep going: swim, go without sleep, hold out in the cold.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Holds out.</td>
+<td>A step of fatigue.</td>
+<td>Collapses, or goes under.</td>
+</tr>
+<tr>
+<td>Wits</td>
+<td><strong>Notice or remember</strong>: Recall a face, a road or a password; work something out.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Yes.</td>
+<td>No.</td>
+<td>Remembers it wrong.</td>
+</tr>
+<tr>
+<td>Nerve</td>
+<td><strong>Keep his head</strong>: Stay calm out of a fight: under shelling in a dugout, at a hanging, before an officer.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Steady.</td>
+<td>Shaken: −10 to his next check.</td>
+<td>Breaks: runs, freezes or lashes out.</td>
+</tr>
+<tr>
+<td>Presence</td>
+<td><strong>Impress</strong>: Stare a man down, make a first impression, be remembered.</td>
+<td>Ordinary</td>
+<td>the other man (Presence)</td>
+<td>He gives way.</td>
+<td>No effect.</td>
+<td>Made an enemy.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Haggling.</strong> Buying from the price list, a man may haggle: his Persuade against the
+seller's (50). If he wins he pays 10% less (25% on a
+critical); if not, the list price; and if he fumbles the seller will not deal with him today.</p>
+<p>A skill check that succeeds (or wins against someone) ticks the skill for experience; a
+characteristic is not ticked.</p>
+<h2 id="experience">Experience</h2>
+<p>A skill used well is <strong>ticked</strong>: a job's check that succeeds (lawful or not; a
 failed or fumbled check, or a job with no check, teaches nothing), a hit, a parry or dodge that
 works, first aid that works, Fieldcraft that finds fresh food on the march, a week nursing the
 sick (the best Leechcraft with the force), Stealth that surprises an enemy and Watch that stops
@@ -3212,11 +3522,12 @@ moments that matter: a gunner hit, a medic crawling out, a vest that held.</p>
 <p class="ix"><b>Cauterise</b>: <a href="#first-aid">First aid</a></p>
 <p class="ix"><b>Characteristics</b>: <a href="#characteristics">Characteristics and skills</a>, <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>Charge</b>: <a href="#field-map">The field map</a></p>
+<p class="ix"><b>Climb or jump</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Clock</b>: <a href="#wounds">Wounds</a>, <a href="#marching">Marching</a></p>
 <p class="ix"><b>Composite armour</b>: <a href="#knocking-out">Knocking them out</a></p>
 <p class="ix"><b>Counter-battery</b>: <a href="#support">Fire support</a></p>
 <p class="ix"><b>Crews</b>: <a href="#at-guns">Anti-tank guns</a></p>
-<p class="ix"><b>Critical</b>: <a href="#turn">A fighter's turn</a></p>
+<p class="ix"><b>Critical</b>: <a href="#roll">The one roll</a>, <a href="#turn">A fighter's turn</a></p>
 <h3 class="ix-letter">D</h3>
 <p class="ix"><b>Damage short of that</b>: <a href="#knocking-out">Knocking them out</a></p>
 <p class="ix"><b>Day</b>: <a href="#five-steps">The five steps</a></p>
@@ -3226,38 +3537,46 @@ moments that matter: a gunner hit, a medic crawling out, a vest that held.</p>
 <p class="ix"><b>Defence</b>: <a href="#characteristics">Characteristics and skills</a>, <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Defend only</b>: <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Deserting</b>: <a href="#events">On the road</a></p>
+<p class="ix"><b>Diagnose</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Dice</b>: <a href="#need">What you need</a></p>
+<p class="ix"><b>Difficulty</b>: <a href="#roll">The one roll</a></p>
 <p class="ix"><b>Digging in</b>: <a href="#commander">The enemy commander</a>, <a href="#modern-infantry">Modern infantry</a></p>
 <p class="ix"><b>Dismount</b>: <a href="#riders">Riders</a></p>
 <p class="ix"><b>Displacing</b>: <a href="#support">Fire support</a></p>
 <p class="ix"><b>Down</b>: <a href="#exchange">An exchange</a></p>
 <p class="ix"><b>Downed helicopter</b>: <a href="#landing">Landing by air</a></p>
 <p class="ix"><b>Drawback</b>: <a href="#five-steps">The five steps</a></p>
+<p class="ix"><b>Drive a hard task</b>: <a href="#skills">Using skills</a></p>
 <h3 class="ix-letter">E</h3>
 <p class="ix"><b>Each attempt is one attack</b>: <a href="#exchange">An exchange</a></p>
 <p class="ix"><b>Either</b>: <a href="#penalties">Penalties</a></p>
 <p class="ix"><b>Emplaced</b>: <a href="#at-guns">Anti-tank guns</a></p>
-<p class="ix"><b>End of a season</b>: <a href="#characteristics">Characteristics and skills</a></p>
+<p class="ix"><b>End of a season</b>: <a href="#experience">Experience</a></p>
 <p class="ix"><b>End the battle</b>: <a href="#after">After the battle</a></p>
 <p class="ix"><b>Endurance</b>: <a href="#characteristics">Characteristics and skills</a>, <a href="#check">The recovery check</a></p>
+<p class="ix"><b>Endure</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Enemy commander</b>: <a href="#ammunition">Ammunition</a>, <a href="#commander">The enemy commander</a>, <a href="#at-guns">Anti-tank guns</a>, <a href="#dark">Fighting in the dark</a></p>
 <p class="ix"><b>Equal to or under</b>: <a href="#roll">The one roll</a></p>
 <p class="ix"><b>Era</b>: <a href="#eras">Other wars</a></p>
 <p class="ix"><b>Event</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>Exchange</b>: <a href="#field-map">The field map</a></p>
 <p class="ix"><b>Exchanges of fire</b>: <a href="#ammunition">Ammunition</a></p>
-<p class="ix"><b>Experience</b>: <a href="#characteristics">Characteristics and skills</a></p>
 <p class="ix"><b>Extended order</b>: <a href="#modern-infantry">Modern infantry</a></p>
 <h3 class="ix-letter">F</h3>
 <p class="ix"><b>Falling out</b>: <a href="#events">On the road</a></p>
 <p class="ix"><b>Fatigue</b>: <a href="#exchange">An exchange</a></p>
 <p class="ix"><b>Field</b>: <a href="#after">After the battle</a></p>
+<p class="ix"><b>Find a billet</b>: <a href="#skills">Using skills</a></p>
+<p class="ix"><b>Find the way</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Fire</b>: <a href="#at-guns">Anti-tank guns</a></p>
 <p class="ix"><b>Fire plan</b>: <a href="#support">Fire support</a></p>
 <p class="ix"><b>Fixed lines</b>: <a href="#dark">Fighting in the dark</a></p>
 <p class="ix"><b>Flares</b>: <a href="#dark">Fighting in the dark</a></p>
+<p class="ix"><b>Force or carry</b>: <a href="#skills">Using skills</a></p>
+<p class="ix"><b>Forge a pass</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Formation</b>: <a href="#field-map">The field map</a></p>
 <p class="ix"><b>Frostbite</b>: <a href="#sickness">Sickness</a></p>
+<p class="ix"><b>Fumble</b>: <a href="#roll">The one roll</a></p>
 <h3 class="ix-letter">G</h3>
 <p class="ix"><b>GM and players</b>: <a href="#need">What you need</a></p>
 <p class="ix"><b>Go back</b>: <a href="#heroes">Heroes</a></p>
@@ -3268,6 +3587,9 @@ moments that matter: a gunner hit, a medic crawling out, a vest that held.</p>
 <p class="ix"><b>Ground fire</b>: <a href="#aircraft">Aircraft</a></p>
 <p class="ix"><b>Guns</b>: <a href="#commander">The enemy commander</a></p>
 <h3 class="ix-letter">H</h3>
+<p class="ix"><b>Haggle</b>: <a href="#skills">Using skills</a></p>
+<p class="ix"><b>Haggling</b>: <a href="#skills">Using skills</a></p>
+<p class="ix"><b>Handle a boat</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Heroes</b>: <a href="#followers">Followers</a>, <a href="#battle">Battles of hundreds</a>, <a href="#heroes">Heroes</a></p>
 <p class="ix"><b>Hidden men</b>: <a href="#modern-infantry">Modern infantry</a></p>
 <p class="ix"><b>Hired</b>: <a href="#five-steps">The five steps</a></p>
@@ -3276,10 +3598,12 @@ moments that matter: a gunner hit, a medic crawling out, a vest that held.</p>
 <p class="ix"><b>Hot zone</b>: <a href="#landing">Landing by air</a></p>
 <p class="ix"><b>How bad</b>: <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>How many blows tell</b>: <a href="#exchange">An exchange</a></p>
+<p class="ix"><b>Hunt or gather</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Hygiene</b>: <a href="#sickness">Sickness</a></p>
 <h3 class="ix-letter">I</h3>
 <p class="ix"><b>Illumination</b>: <a href="#support">Fire support</a></p>
 <p class="ix"><b>Impairments</b>: <a href="#wounds">Wounds</a>, <a href="#penalties">Penalties</a></p>
+<p class="ix"><b>Impress</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>In range</b>: <a href="#commander">The enemy commander</a></p>
 <p class="ix"><b>Incident</b>: <a href="#events">On the road</a></p>
 <p class="ix"><b>Infrared beams</b>: <a href="#dark">Fighting in the dark</a></p>
@@ -3289,6 +3613,8 @@ moments that matter: a gunner hit, a medic crawling out, a vest that held.</p>
 <p class="ix"><b>Its fire</b>: <a href="#guns">Guns of the black-powder wars</a></p>
 <h3 class="ix-letter">K</h3>
 <p class="ix"><b>Keep</b>: <a href="#work">Finding work</a></p>
+<p class="ix"><b>Keep his head</b>: <a href="#skills">Using skills</a></p>
+<p class="ix"><b>Keep order</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Kit and weapons</b>: <a href="#era-changes">What changes</a></p>
 <p class="ix"><b>Knocked out</b>: <a href="#knocking-out">Knocking them out</a></p>
 <h3 class="ix-letter">L</h3>
@@ -3308,10 +3634,12 @@ moments that matter: a gunner hit, a medic crawling out, a vest that held.</p>
 <h3 class="ix-letter">M</h3>
 <p class="ix"><b>Machine guns</b>: <a href="#modern-infantry">Modern infantry</a></p>
 <p class="ix"><b>Main guns</b>: <a href="#vehicles">Vehicles</a></p>
+<p class="ix"><b>Make something</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Margin</b>: <a href="#roll">The one roll</a>, <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Marking the target</b>: <a href="#aircraft">Aircraft</a></p>
 <p class="ix"><b>Medevac</b>: <a href="#after">After the battle</a></p>
 <p class="ix"><b>Men</b>: <a href="#mines">Minefields</a></p>
+<p class="ix"><b>Mend kit</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Mending</b>: <a href="#camp">Into camp</a></p>
 <p class="ix"><b>Minefields</b>: <a href="#commander">The enemy commander</a></p>
 <p class="ix"><b>Misfire</b>: <a href="#weather-fight">Weather in a fight</a></p>
@@ -3334,11 +3662,13 @@ moments that matter: a gunner hit, a medic crawling out, a vest that held.</p>
 <p class="ix"><b>Next fighter</b>: <a href="#fight">The fight</a></p>
 <p class="ix"><b>Next round</b>: <a href="#fight">The fight</a></p>
 <p class="ix"><b>Night vision</b>: <a href="#dark">Fighting in the dark</a></p>
+<p class="ix"><b>Notice or remember</b>: <a href="#skills">Using skills</a></p>
 <h3 class="ix-letter">O</h3>
 <p class="ix"><b>Objective</b>: <a href="#commander">The enemy commander</a></p>
 <p class="ix"><b>Old wounds</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>On the map</b>: <a href="#support">Fire support</a></p>
 <p class="ix"><b>One check</b>: <a href="#work">Finding work</a></p>
+<p class="ix"><b>One man against another</b>: <a href="#roll">The one roll</a></p>
 <p class="ix"><b>Orders</b>: <a href="#marching">Marching</a></p>
 <p class="ix"><b>Orders from the accounts</b>: <a href="#commander">The enemy commander</a></p>
 <p class="ix"><b>Origin</b>: <a href="#five-steps">The five steps</a></p>
@@ -3352,14 +3682,17 @@ moments that matter: a gunner hit, a medic crawling out, a vest that held.</p>
 <p class="ix"><b>Presence</b>: <a href="#characteristics">Characteristics and skills</a></p>
 <p class="ix"><b>Pursuit</b>: <a href="#commander">The enemy commander</a></p>
 <h3 class="ix-letter">Q</h3>
-<p class="ix"><b>Quality</b>: <a href="#characteristics">Characteristics and skills</a>, <a href="#followers">Followers</a></p>
+<p class="ix"><b>Quality</b>: <a href="#experience">Experience</a>, <a href="#followers">Followers</a></p>
 <p class="ix"><b>Quarter</b>: <a href="#heroes">Heroes</a></p>
+<p class="ix"><b>Question a prisoner</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Quick-play blows (a GM's choice)</b>: <a href="#exchange">An exchange</a></p>
 <h3 class="ix-letter">R</h3>
+<p class="ix"><b>Read or write</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Recovery check</b>: <a href="#check">The recovery check</a></p>
 <p class="ix"><b>Reserve</b>: <a href="#commander">The enemy commander</a></p>
 <p class="ix"><b>Results wear off</b>: <a href="#round-end">The end of the round</a></p>
 <p class="ix"><b>Resupply</b>: <a href="#ammunition">Ammunition</a>, <a href="#guns">Guns of the black-powder wars</a></p>
+<p class="ix"><b>Ride hard</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Rifles</b>: <a href="#modern-infantry">Modern infantry</a></p>
 <p class="ix"><b>Risk</b>: <a href="#work">Finding work</a></p>
 <p class="ix"><b>Rolled</b>: <a href="#five-steps">The five steps</a></p>
@@ -3372,6 +3705,7 @@ moments that matter: a gunner hit, a medic crawling out, a vest that held.</p>
 <p class="ix"><b>Sandstorm</b>: <a href="#days-weather">The day's weather</a></p>
 <p class="ix"><b>Sappers</b>: <a href="#mines">Minefields</a></p>
 <p class="ix"><b>Scurvy</b>: <a href="#sickness">Sickness</a></p>
+<p class="ix"><b>Search</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Seeing</b>: <a href="#field-map">The field map</a></p>
 <p class="ix"><b>Serious</b>: <a href="#turn">A fighter's turn</a>, <a href="#camp">Into camp</a>, <a href="#sickness">Sickness</a></p>
 <p class="ix"><b>Shaken</b>: <a href="#morale">Morale and the rout</a></p>
@@ -3390,8 +3724,11 @@ moments that matter: a gunner hit, a medic crawling out, a vest that held.</p>
 <p class="ix"><b>Skills and kit</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>Small arms</b>: <a href="#aircraft">Aircraft</a></p>
 <p class="ix"><b>Smoke</b>: <a href="#support">Fire support</a></p>
+<p class="ix"><b>Sneak</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Soft-skinned</b>: <a href="#vehicles">Vehicles</a></p>
+<p class="ix"><b>Spot</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Steady, fails</b>: <a href="#morale">Morale and the rout</a></p>
+<p class="ix"><b>Steal</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Stop</b>: <a href="#commander">The enemy commander</a></p>
 <p class="ix"><b>Stop check</b>: <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Storming works</b>: <a href="#commander">The enemy commander</a></p>
@@ -3403,18 +3740,20 @@ moments that matter: a gunner hit, a medic crawling out, a vest that held.</p>
 <p class="ix"><b>Supplies and extraction</b>: <a href="#landing">Landing by air</a></p>
 <p class="ix"><b>Supply dump</b>: <a href="#ammunition">Ammunition</a></p>
 <p class="ix"><b>Surprise</b>: <a href="#camps">Camps</a></p>
+<p class="ix"><b>Swim a horse</b>: <a href="#skills">Using skills</a></p>
 <h3 class="ix-letter">T</h3>
+<p class="ix"><b>Talk past a guard</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Tanks</b>: <a href="#commander">The enemy commander</a></p>
 <p class="ix"><b>Team</b>: <a href="#need">What you need</a></p>
-<p class="ix"><b>Term</b>: <a href="#characteristics">Characteristics and skills</a>, <a href="#era-changes">What changes</a></p>
+<p class="ix"><b>Term</b>: <a href="#experience">Experience</a>, <a href="#era-changes">What changes</a></p>
 <p class="ix"><b>Terms</b>: <a href="#work">Finding work</a></p>
 <p class="ix"><b>Their machine guns</b>: <a href="#vehicles">Vehicles</a></p>
-<p class="ix"><b>Ticked</b>: <a href="#characteristics">Characteristics and skills</a></p>
-<p class="ix"><b>Time served</b>: <a href="#characteristics">Characteristics and skills</a></p>
+<p class="ix"><b>Ticked</b>: <a href="#experience">Experience</a></p>
+<p class="ix"><b>Time served</b>: <a href="#experience">Experience</a></p>
 <p class="ix"><b>To camp</b>: <a href="#camp">Into camp</a>, <a href="#after">After the battle</a></p>
 <p class="ix"><b>Tourniquet</b>: <a href="#first-aid">First aid</a></p>
 <p class="ix"><b>Towing</b>: <a href="#at-guns">Anti-tank guns</a></p>
-<p class="ix"><b>Track</b>: <a href="#recovery">Recovery</a></p>
+<p class="ix"><b>Track</b>: <a href="#skills">Using skills</a>, <a href="#recovery">Recovery</a></p>
 <p class="ix"><b>Trait</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>Tree bursts</b>: <a href="#support">Fire support</a></p>
 <p class="ix"><b>Trench</b>: <a href="#bunkers">Trenches and bunkers</a></p>

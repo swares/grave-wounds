@@ -27,6 +27,21 @@ against succeeds. That number is a skill or a characteristic, less any penalties
 under you rolled is the **margin**, and in a fight the margin matters: a hit by a wide
 margin is a worse wound.
 
+Out of a fight the GM calls for a roll only when failing would matter and the outcome is in
+doubt; a man with time and the right skill simply does the thing. The GM sets the
+**difficulty**:
+
+{{table:difficulty}}
+
+A roll of {{chk_crit}}% of the chance or under is a **critical**: the best result. A failed
+roll of {{chk_fumble}} or more is a **fumble**: the worst.
+
+**One man against another.** When someone resists (a sentry watching for a man sneaking past,
+a seller holding out on a price), both roll, the resisting side at Ordinary. The man acting
+wins only by beating them: a success over a failure, a critical over a plain success, or the
+wider margin between two of the same. A tie, or both failing, goes to the side resisting, and
+nothing changes. Where the GM has no sheet for the other side, it counts as 50.
+
 !!! example "The running example"
     This book follows one team from start to finish: a lord's retinue on the road to
     Towton in 1461, led by {{ex.lead}}. Each chapter picks up the story where the last
@@ -54,7 +69,23 @@ ordinary person. **Skills** (Bow, Blade, Dodge, Leechcraft and the rest) start f
 characteristic and grow with experience, up to {{skill_max}}. A character's **attack** is
 the skill his weapon is fought with, and his **defence** is the better of Parry and Dodge.
 
-**Experience.** A skill used well is **ticked**: a job's check that succeeds (lawful or not; a
+## Using skills {#skills}
+
+What each skill and characteristic is for out of a fight, its usual difficulty, who resists
+it, and what follows (the GM decides when a case is easier or harder):
+
+{{table:skill_uses}}
+
+**Haggling.** Buying from the price list, a man may haggle: his Persuade against the
+seller's ({{haggle_seller}}). If he wins he pays {{haggle_win}}% less ({{haggle_crit}}% on a
+critical); if not, the list price; and if he fumbles the seller will not deal with him today.
+
+A skill check that succeeds (or wins against someone) ticks the skill for experience; a
+characteristic is not ticked.
+
+## Experience {#experience}
+
+A skill used well is **ticked**: a job's check that succeeds (lawful or not; a
 failed or fumbled check, or a job with no check, teaches nothing), a hit, a parry or dodge that
 works, first aid that works, Fieldcraft that finds fresh food on the march, a week nursing the
 sick (the best Leechcraft with the force), Stealth that surprises an enemy and Watch that stops
