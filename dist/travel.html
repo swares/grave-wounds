@@ -442,11 +442,11 @@ function trDrill(camped, bestCommand, roll){       // null if it did not camp en
 /* Carrying weight (as gravewounds/loads.py, data TD.loads): his order's kg (and armour where the
    era's orders leave it out) against his body weight and Strength gives a band. */
 const LDS = () => TD.loads || {};
-const ldEra = eid => (LDS().eras || {})[eid] || {};
+const ldEra = eid => LDS().eras?.[eid] || {};
 function ldLoadKg(eid, order, kitClass, extra = 0){ // his load in kg
   const E = ldEra(eid);
-  let kg = ((E.kg || {})[order] || 0) + extra;
-  if (!E.armour_in_orders) kg += (LDS().armour_kg || {})[kitClass || "light"] || 0;
+  let kg = (E.kg?.[order] || 0) + extra;
+  if (!E.armour_in_orders) kg += LDS().armour_kg?.[kitClass || "light"] || 0;
   return kg;
 }
 const ldBody = (eid, sex = "m") => (ldEra(eid).body_kg ?? 65) + (sex === "f" ? (LDS().woman_kg || 0) : 0);
@@ -1446,6 +1446,11 @@ function loadPct(f){
   const B = DATA.loads.bands;
   return Math.min(100, Math.round(B[fb[0]].march / B[fb[1]].march * 100));
 }
+function loadOptions(f){                       // the force panel's orders; the chosen one with its band and pace
+  const fb = forceBands(f), O = DATA.loads.orders, cur = loadOrder(f);
+  const now = `(${DATA.loads.bands[fb[0]].name.toLowerCase()}, ${loadPct(f)}% pace)`;
+  return Object.keys(O).map(o => o === cur ? `<option value="${o}" selected>${O[o]} ${now}</option>` : `<option value="${o}">${O[o]}</option>`).join("");
+}
 const marchedKm = f => (f.marched || 0) * FT[f.type].kmh;
 function loadTire(f){                           // fatigue steps the day's march adds for a load heavier than the usual
   const fb = forceBands(f); if (!fb) return 0;
@@ -2207,7 +2212,7 @@ function renderSide(){
   $("#in-men").value = f.men; $("#in-tools").checked = !!f.tools;
   $("#horses-box").hidden = !EV_HORSE_TYPES.includes(f.type); $("#in-horses").value = horsesOf(f);
   $("#load-box").hidden = !loadEraOf(f);
-  if (loadEraOf(f)){ const fb = forceBands(f), O = DATA.loads.orders; $("#sel-load").innerHTML = Object.keys(O).map(o => `<option value="${o}"${o === loadOrder(f) ? " selected" : ""}>${O[o]}${o === loadOrder(f) ? ` (${DATA.loads.bands[fb[0]].name.toLowerCase()}, ${loadPct(f)}% pace)` : ""}</option>`).join("") }
+  if (loadEraOf(f)) $("#sel-load").innerHTML = loadOptions(f);
   $("#sel-with").innerHTML = withOptions(f);
   const kinds = Object.keys(WK.camps), cur = S.campKind && kinds.includes(S.campKind) ? S.campKind : "watched";
   $("#sel-camp").innerHTML = kinds.map(k => campOption(f, k, cur)).join("");

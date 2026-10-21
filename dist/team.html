@@ -630,11 +630,11 @@ function trDrill(camped, bestCommand, roll){       // null if it did not camp en
 /* Carrying weight (as gravewounds/loads.py, data TD.loads): his order's kg (and armour where the
    era's orders leave it out) against his body weight and Strength gives a band. */
 const LDS = () => TD.loads || {};
-const ldEra = eid => (LDS().eras || {})[eid] || {};
+const ldEra = eid => LDS().eras?.[eid] || {};
 function ldLoadKg(eid, order, kitClass, extra = 0){ // his load in kg
   const E = ldEra(eid);
-  let kg = ((E.kg || {})[order] || 0) + extra;
-  if (!E.armour_in_orders) kg += (LDS().armour_kg || {})[kitClass || "light"] || 0;
+  let kg = (E.kg?.[order] || 0) + extra;
+  if (!E.armour_in_orders) kg += LDS().armour_kg?.[kitClass || "light"] || 0;
   return kg;
 }
 const ldBody = (eid, sex = "m") => (ldEra(eid).body_kg ?? 65) + (sex === "f" ? (LDS().woman_kg || 0) : 0);

@@ -830,11 +830,11 @@ function trDrill(camped, bestCommand, roll){       // null if it did not camp en
 /* Carrying weight (as gravewounds/loads.py, data TD.loads): his order's kg (and armour where the
    era's orders leave it out) against his body weight and Strength gives a band. */
 const LDS = () => TD.loads || {};
-const ldEra = eid => (LDS().eras || {})[eid] || {};
+const ldEra = eid => LDS().eras?.[eid] || {};
 function ldLoadKg(eid, order, kitClass, extra = 0){ // his load in kg
   const E = ldEra(eid);
-  let kg = ((E.kg || {})[order] || 0) + extra;
-  if (!E.armour_in_orders) kg += (LDS().armour_kg || {})[kitClass || "light"] || 0;
+  let kg = (E.kg?.[order] || 0) + extra;
+  if (!E.armour_in_orders) kg += LDS().armour_kg?.[kitClass || "light"] || 0;
   return kg;
 }
 const ldBody = (eid, sex = "m") => (ldEra(eid).body_kg ?? 65) + (sex === "f" ? (LDS().woman_kg || 0) : 0);
@@ -1180,7 +1180,8 @@ function packsLostText(){                         // a side that dropped its pac
   const lost = Object.keys(S.packsDropped || {}).filter(sd => sd !== w);
   for (const sd of lost){
     if ((S.packsLost || []).includes(sd)) continue;
-    (S.packsLost ||= []).push(sd);
+    S.packsLost ||= [];
+    S.packsLost.push(sd);
     const forces = [...new Set(S.chars.filter(c => sideOf(c) === sd && c.uid && NAMED[c.uid]).map(c => `${NAMED[c.uid].map}:${NAMED[c.uid].force}`))];
     let all = []; try { all = JSON.parse(localStorage.getItem("gravewounds-packs-lost") || "[]") || [] } catch (e) { all = [] }
     try { localStorage.setItem("gravewounds-packs-lost", JSON.stringify([...new Set([...all, ...forces])])) } catch (e) { /* storage off: the GM tells the travel map */ }
@@ -1305,7 +1306,9 @@ function loadSel(c){                               // his order, and what it wei
   const L = loadInfo(c); if (!L) return "";
   const b = DATA.loads.bands[L.band], O = DATA.loads.orders;
   const opts = Object.keys(O).map(o => `<option value="${o}"${o === loadOrderOf(c) ? " selected" : ""}>${attr(O[o])}</option>`).join("");
-  return `<label class="order" title="${attr(`${Math.round(L.kg)} kg on him: ${b.name.toLowerCase()}${L.afraid ? " (a band heavier: green under fire)" : ""}; Dodge −${b.dodge}${b.run === false ? ", cannot run" : ""}`)}">Load <select data-act="load" aria-label="What ${attr(c.name)} carries">${opts}</select> <span class="muted">${attr(b.name)}</span></label>`;
+  const heavier = L.afraid ? " (a band heavier: green under fire)" : "", norun = b.run === false ? ", cannot run" : "";
+  const tip = `${Math.round(L.kg)} kg on him: ${b.name.toLowerCase()}${heavier}; Dodge −${b.dodge}${norun}`;
+  return `<label class="order" title="${attr(tip)}">Load <select data-act="load" aria-label="What ${attr(c.name)} carries">${opts}</select> <span class="muted">${attr(b.name)}</span></label>`;
 }
 // Hexes he can end on within `steps`: Map "col,row" -> cost. Through friends, not onto them; never into an enemy.
 function reachable(start, steps, cols, rows, enemies, friends){
@@ -3466,7 +3469,7 @@ $("#after-fight").addEventListener("change", e => {
 });
 $("#after-fight").addEventListener("click", e => {
   const dp = e.target.closest("button[data-drop]");
-  if (dp){ const sd = dp.dataset.drop; (S.packsDropped ||= {})[sd] = true; S.chars.filter(c => sideOf(c) === sd && loadEra(c)).forEach(c => { c.loadOrder = "fighting" }); S.afterOpen = true; return renderChars() }
+  if (dp){ const sd = dp.dataset.drop; S.packsDropped ||= {}; S.packsDropped[sd] = true; S.chars.filter(c => sideOf(c) === sd && loadEra(c)).forEach(c => { c.loadOrder = "fighting" }); S.afterOpen = true; return renderChars() }
   if (e.target.closest("#btn-deeds")){ S.afterOpen = true; markDeeds() }
   else if (e.target.closest("#btn-loot")){ S.afterOpen = true; rollAfterLoot() }
 });
