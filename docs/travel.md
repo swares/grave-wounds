@@ -299,7 +299,7 @@ force did that day: **camp** (it did not march), **march**, or **withdraw** (the
 **Withdrawing** on its health panel). Each night, after its keep and before its sick have their
 night, every fit man rolls each chance in turn (one in a million); deserters and stragglers come
 off its men, the injured go on its wound track (at Mending, or Serious one time in seven, with
-a wound-fever day like any wound), and lost horses are reported. Then the era's **incident**
+a wound-fever day like any wound), and lost horses come off its horses. Then the era's **incident**
 chance (5-8% a day): a d100 row of its table, which may apply only to some force types or to
 small or large forces, may cost men or a step of fatigue, and carries a hook. The force's log
 says what happened.
@@ -309,6 +309,22 @@ for the Lakota and Cheyenne at Fort Phil Kearny). **Events on the march** on the
 turns them off for a force; **Named men can be injured** gives its named characters the
 injury chance too (a case on their own track, as a wound in camp). Sickness is not rolled here:
 camp disease, scurvy and frostbite already are.
+
+**Hunger and arrears.** Two more ticks on the health panel, **Short of food** and **Pay in
+arrears**, multiply its chances (`conditions`): hungry, desertion 15 times (the starving Swedish
+camp at Nuremberg in 1632 lost about 1 man in 200 a day, against 1 in 3,000-4,000 for a
+provisioned army) and straggling 5 times (Lee's barefoot army in Maryland, 1862, an estimate);
+in arrears, desertion 3 times (the Army of Flanders' often unpaid foreign units against the
+tercios, `approx`). With both ticked the larger applies; they do not stack, since a starving
+army is seldom paid and the Nuremberg figure holds both. No chance goes above 1.
+
+**Horses.** A mounted force or wagon train has a **Horses** count on its force panel: one a man
+until the GM sets it (for remounts, or a force with spare horses or too few) or the force loses
+one. Each night every horse rolls its chance; a mounted deserter rides off on his. With too few
+horses for its men (`horses_march`) it slows: a mounted force under half a horse a man marches
+at foot pace (67% of its speed: 4 km/h of 6), and a wagon train keeps 75% under three teams in
+four and 50% under half (estimates). The log says when it happens. Remounts are the GM's: raise
+the count when it finds or buys horses.
 
 The rates and their sources are in the project doc "travel-events-research"; each rate in the
 file has its source or `approx: true`. The best are Korea's injuries by kind of operation,
@@ -341,8 +357,8 @@ each day, and mud, snow and flooded fords change the going. See [weather.md](wea
     `data/maps/<id>.yaml` and rebuild to keep it.
   - **Undo all painting** goes back to the map as built.
 - **Health.** The selected force's camp hygiene, **Nurses keep clean**, **Fresh food
-  issued**, **Fed by its army**, **Events on the march**, **Withdrawing** and **Named men can be
-  injured**, with a note on its sick, nursing, days without fresh food,
+  issued**, **Fed by its army**, **Events on the march**, **Withdrawing**, **Short of food**,
+  **Pay in arrears** and **Named men can be injured**, with a note on its sick, nursing, days without fresh food,
   its named men's keep and the week's chances.
 - Forces, routes, clocks and painting are kept in your browser.
 

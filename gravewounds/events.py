@@ -51,16 +51,40 @@ def injury_case(d: Data, rng) -> dict:
             "inf": "low", "fever": _pick(lo, hi, rng), "injury": True}
 
 
-def day(d: Data, era: str, ftype: str, men: int, act: str, rng, horses: bool = True) -> dict:
-    """One night's events for a force of `men` fit men of type `ftype`, after a day of `act`.
+def rate(d: Data, era: str, kind: str, act: str, conditions=()) -> float:
+    """A chance per man per day: the era's for this activity, times the largest multiplier among
+    the force's conditions (events.yaml conditions: hungry, unpaid; they do not stack, since a
+    starving army is seldom paid), never above 1."""
+    r = (d.events["eras"][era]["rates"].get(kind) or {}).get(act, 0)
+    C = d.events.get("conditions") or {}
+    return min(1.0, r * max([C.get(c, {}).get(kind, 1) for c in conditions] + [1]))
+
+
+def horse_march_pct(d: Data, ftype: str, men: int, horses: int | None) -> int:
+    """% of its speed a mounted force or wagon train keeps with `horses` left for its `men`
+    (events.yaml horses_march: the lowest band it falls under); 100 with enough, or for others."""
+    bands = (d.events.get("horses_march") or {}).get(ftype)
+    if not bands or horses is None or men <= 0:
+        return 100
+    pct = 100
+    for b in bands:
+        if horses < b["below"] * men:
+            pct = min(pct, b["pct"])
+    return pct
+
+
+def day(d: Data, era: str, ftype: str, men: int, act: str, rng, horses: int | None = None, conditions=()) -> dict:
+    """One night's events for a force of `men` fit men of type `ftype`, after a day of `act`,
+    with `horses` horses (None: one a man still with it) and the GM's `conditions`.
     -> {"desert", "straggle", "injury" (count), "cases" (their wound-track cases), "horses",
         "incident" (the row, or None), "incident_lost", "fatigue"}"""
     E = d.events["eras"][era]
     R = E["rates"]
+    conditions = list(conditions)
     out = {"desert": 0, "straggle": 0, "injury": 0, "cases": [], "horses": 0, "incident": None, "incident_lost": 0, "fatigue": 0}
     left = men
     for kind in ("desert", "straggle"):
-        t = _threshold(R.get(kind, {}).get(act, 0))
+        t = _threshold(rate(d, era, kind, act, conditions))
         n = 0
         if t:
             for _ in range(left):
@@ -68,16 +92,16 @@ def day(d: Data, era: str, ftype: str, men: int, act: str, rng, horses: bool = T
                     n += 1
         out[kind] = n
         left -= n
-    t = _threshold(R.get("injury", {}).get(act, 0))
+    t = _threshold(rate(d, era, "injury", act, conditions))
     if t:
         for _ in range(left):
             if _d1e6(rng) <= t:
                 out["injury"] += 1
                 out["cases"].append(injury_case(d, rng))
-    if horses and ftype in HORSE_TYPES and "horses" in R:
-        t = _threshold(R["horses"].get(act, 0))
+    if ftype in HORSE_TYPES and "horses" in R:
+        t = _threshold(rate(d, era, "horses", act, conditions))
         if t:
-            for _ in range(left):
+            for _ in range(left if horses is None else max(0, horses)):
                 if _d1e6(rng) <= t:
                     out["horses"] += 1
     left -= out["injury"]
@@ -98,7 +122,7 @@ def day_text(r: dict) -> list[str]:
     bits = []
     for kind, word in (("desert", "deserted"), ("straggle", "fell out and were lost"), ("injury", "injured")):
         if r[kind]:
-            bits.append(f"{r[kind]} {word}")
+            bits.append(f"{r[kind]} {word.replace('were', 'was') if r[kind] == 1 else word}")
     if r["horses"]:
         bits.append(f"{r['horses']} horse{'s' if r['horses'] != 1 else ''} lost")
     if r["incident"] and not r["incident"].get("quiet"):

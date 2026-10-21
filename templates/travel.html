@@ -181,6 +181,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
       <div id="force-head" class="muted"></div>
       <div class="toolbar" id="force-kit">
         <label class="inline">Men <input id="in-men" type="number" min="1" style="width:5.5em"></label>
+        <label class="inline" id="horses-box" hidden title="Its horses or draught teams: one a man until set. Too few and it slows (mounted: foot pace below half)">Horses <input id="in-horses" type="number" min="0" style="width:5.5em"></label>
         <label class="inline check"><input id="in-tools" type="checkbox"> Tools (spades, axes)</label>
         <label class="inline">March with <select id="sel-with"></select></label>
       </div>
@@ -221,6 +222,8 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <div style="flex:1 1 140px;align-self:end"><label title="Fruit, greens, fresh meat or onions in the rations each day: no days go without fresh food (scurvy)"><input type="checkbox" id="chk-fresh"> Fresh food issued</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Each night its men may desert, straggle or be hurt, its horses die, and something may happen (the era's rates)"><input type="checkbox" id="chk-events"> Events on the march</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="It is falling back: straggling, desertion and injuries run higher"><input type="checkbox" id="chk-withdraw"> Withdrawing</label></div>
+        <div style="flex:1 1 140px;align-self:end"><label title="Short of food: desertion runs far higher (Nuremberg 1632, about 15 times) and straggling about 5 times"><input type="checkbox" id="chk-hungry"> Short of food</label></div>
+        <div style="flex:1 1 140px;align-self:end"><label title="Pay in arrears: desertion runs about 3 times higher"><input type="checkbox" id="chk-unpaid"> Pay in arrears</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Its named men (from the wound roller) take the era's chance of an injury each night too"><input type="checkbox" id="chk-named-acc"> Named men can be injured</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Its army feeds and quarters its men. Untick for a team on its own, on leave or off base: its named men then pay their keep from their purses each day"><input type="checkbox" id="chk-fed"> Fed by its army</label></div>
       </div>
@@ -916,9 +919,11 @@ function knownGround(day){                    // the ground of `day` and of ever
 }
 const healthOf = f => f.health || (f.health = newHealth());
 const fitOf = f => healthCounts(healthOf(f), f.men);
-function speedOf(f){                           // % of road speed: fatigue, and the sick it must carry
+const horsesOf = f => (f.horses === null || f.horses === undefined ? f.men : f.horses);   // one a man until the GM or a loss sets it
+const horsePct = f => (DATA.events && EV_HORSE_TYPES.includes(f.type) ? evHorseMarchPct(DATA.events, f.type, f.men, horsesOf(f)) : 100);
+function speedOf(f){                           // % of road speed: fatigue, the sick it must carry, horses it has lost
   const c = fitOf(f);
-  return Math.min(WXD.fatigue.levels[f.fatigue || 0].march, sickMarchPct(c.fit, c.carried));
+  return Math.min(WXD.fatigue.levels[f.fatigue || 0].march, sickMarchPct(c.fit, c.carried), horsePct(f));
 }
 function groundText(g){
   const bits = [];
@@ -1001,21 +1006,31 @@ function forceEra(f){                          // its own era (a map force may n
   return evEraOf(DATA.events || {}, curMap().period || baseMap().period, { era: f.era || (base && base.era) || null });
 }
 const eventsOn = f => f.events !== false;
+const conditionsOf = f => [f.shortFood && "hungry", f.unpaid && "unpaid"].filter(Boolean);
 function eventsNight(f){                      // the night's desertion, straggling, injuries, horses and incident -> fatigue steps added
   const EV = DATA.events, era = EV && eventsOn(f) ? forceEra(f) : null;
   if (!era || !EV.eras[era]) return 0;
   const act = evActivity(f.marched || 0, !!f.withdrawing), fit = fitOf(f).fit;
-  const r = evDay(EV, DZ, era, f.type, fit, act, roll100);
+  const horsed = EV_HORSE_TYPES.includes(f.type), before = horsed ? horsePct(f) : 100;
+  const r = evDay(EV, DZ, era, f.type, fit, act, roll100, horsed ? horsesOf(f) : null, conditionsOf(f));
   const lost = r.desert + r.straggle + r.incident_lost;
+  if (horsed){                                 // lost horses come off its count; a mounted deserter rides off on his
+    const took = f.type === "mounted" ? r.desert : 0;
+    if (r.horses || (took && f.horses !== null && f.horses !== undefined)) f.horses = Math.max(0, horsesOf(f) - r.horses - took);
+  }
   if (lost) f.men = Math.max(0, f.men - lost);
   if (r.cases.length) healthOf(f).cases.push(...r.cases);
   const bits = evDayText(r);
+  if (horsed && horsePct(f) < before){
+    const band = (EV.horses_march[f.type] || []).filter(b => horsesOf(f) < b.below * f.men).sort((a, b) => a.pct - b.pct)[0];
+    bits.push(f.type === "mounted" ? `too few horses: it now marches as foot (${horsePct(f)}% speed)` : `teams short: the wagons slow to ${horsePct(f)}% (${band ? band.note.split(":")[0] : ""})`);
+  }
   if (f.namedAccidents) bits.push(...namedAccidents(f, era, act));
   if (bits.length) f.log.unshift(`${dateText(f.day, true)}: ${bits.join("; ")}.${r.incident && r.incident.hook ? " (" + r.incident.hook + ")" : ""}`);
   return r.fatigue || 0;
 }
 function namedAccidents(f, era, act){          // the GM's option: each named man with the force takes the injury chance too
-  const all = readNamed(), t = evThreshold(((DATA.events.eras[era].rates.injury || {})[act]) || 0), out = [];
+  const all = readNamed(), t = evThreshold(evRate(DATA.events, era, "injury", act, conditionsOf(f))), out = [];
   if (!t) return out;
   for (const [, n] of namedWith(all, f)){
     if (evD1e6(roll100) > t) continue;
@@ -1508,6 +1523,8 @@ function renderHealth(f){
   $("#chk-events").checked = eventsOn(f);
   $("#chk-withdraw").checked = !!f.withdrawing;
   $("#chk-named-acc").checked = !!f.namedAccidents;
+  $("#chk-hungry").checked = !!f.shortFood;
+  $("#chk-unpaid").checked = !!f.unpaid;
   $("#sel-hyg").innerHTML = opts.map(([v, t]) => `<option value="${v}" ${(f.hygiene || "") === v ? "selected" : ""}>${t}</option>`).join("");
   const hyg = campHygiene(f.hygiene || null, kind), factors = weekFactorsFor(f, kind, hyg);
   const chances = Object.keys(DZ.diseases).map(did => [did, catchChance(did, factors, DZ.endurance, contagionOf(h, f.men))]).filter(([, n]) => n > 0).map(([did, n]) => `${dzName(did)} ${+n.toFixed(1)}%`);
@@ -1595,7 +1612,7 @@ function renderSide(){
   const on = !!f;
   renderClock();
   ["#sel-order", "#btn-undo-wp", "#btn-clear", "#btn-remove"].forEach(id => $(id).disabled = !on);
-  ["#btn-camp", "#btn-fight", "#in-men", "#in-tools", "#sel-camp", "#sel-with"].forEach(id => $(id).disabled = !on);
+  ["#btn-camp", "#btn-fight", "#in-men", "#in-horses", "#in-tools", "#sel-camp", "#sel-with"].forEach(id => $(id).disabled = !on);
   if (!f){ $("#force-head").textContent = ""; $("#summary").innerHTML = ""; $("#log").innerHTML = ""; $("#camp-est").textContent = ""; $("#fight-note").textContent = ""; $("#btn-fight-wait").hidden = true; return }
   const L = leaderOf(f), hpd = hpdOf(f.day), lv = WXD.fatigue.levels[f.fatigue || 0];
   $("#force-head").innerHTML = forceHead(f);
@@ -1607,6 +1624,7 @@ function renderSide(){
     + "<dt>Fatigue</dt><dd>" + lv.name + (lv.penalty ? " (\u2212" + lv.penalty + "% in a fight)" : "") + "</dd>"
     + (f.camp ? `<dt>Camp</dt><dd>${esc(WK.camps[f.camp.kind].name)}</dd>` : "") + routeRows(L, m);
   $("#in-men").value = f.men; $("#in-tools").checked = !!f.tools;
+  $("#horses-box").hidden = !EV_HORSE_TYPES.includes(f.type); $("#in-horses").value = horsesOf(f);
   $("#sel-with").innerHTML = withOptions(f);
   const kinds = Object.keys(WK.camps), cur = S.campKind && kinds.includes(S.campKind) ? S.campKind : "watched";
   $("#sel-camp").innerHTML = kinds.map(k => campOption(f, k, cur)).join("");
@@ -1899,6 +1917,7 @@ function init(){
     forcesHere().push(f); S.sel[S.mapId] = f.id; $("#in-fname").value = ""; render();
   };
   $("#in-men").onchange = e => { const f = selForce(); if (f){ f.men = Math.max(1, parseInt(e.target.value, 10) || f.men); render() } };
+  $("#in-horses").onchange = e => { const f = selForce(); if (f){ const v = parseInt(e.target.value, 10); f.horses = Number.isFinite(v) ? Math.max(0, v) : null; render() } };
   $("#in-tools").onchange = e => { const f = selForce(); if (f){ f.tools = e.target.checked; render() } };
   $("#sel-camp").onchange = e => { S.campKind = e.target.value; render() };
   $("#sel-hyg").onchange = e => { const f = selForce(); if (f){ f.hygiene = e.target.value || null; render() } };
@@ -1913,6 +1932,8 @@ function init(){
   $("#chk-fed").onchange = e => { const f = selForce(); if (f){ f.fed = e.target.checked; render() } };
   $("#chk-events").onchange = e => { const f = selForce(); if (f){ f.events = e.target.checked; render() } };
   $("#chk-withdraw").onchange = e => { const f = selForce(); if (f){ f.withdrawing = e.target.checked; render() } };
+  $("#chk-hungry").onchange = e => { const f = selForce(); if (f){ f.shortFood = e.target.checked; render() } };
+  $("#chk-unpaid").onchange = e => { const f = selForce(); if (f){ f.unpaid = e.target.checked; render() } };
   $("#chk-named-acc").onchange = e => { const f = selForce(); if (f){ f.namedAccidents = e.target.checked; render() } };
   $("#chk-plague").onchange = e => { S.plague[S.mapId] = e.target.checked; render() };
   $("#btn-camp").onclick = () => { const f = selForce(); if (f){ makeCamp(f, $("#sel-camp").value); render() } };
