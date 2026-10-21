@@ -109,6 +109,7 @@ class Data:
     events: dict = field(default_factory=dict)      # events on the march and in camp, by era (data/events.yaml)
     experience: dict = field(default_factory=dict)  # skills rising in play (data/experience.yaml)
     checks: dict = field(default_factory=dict)      # skill checks out of a fight (data/checks.yaml)
+    ranks: dict = field(default_factory=dict)       # rank, pay, promotion and loot (data/ranks.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -165,6 +166,7 @@ def load(root: str | Path = "data") -> Data:
     events = _optional(root / "events.yaml", {})
     experience = _optional(root / "experience.yaml", {})
     checks = _optional(root / "checks.yaml", {})
+    ranks = _optional(root / "ranks.yaml", {})
 
     data = Data(
         root=root,
@@ -196,6 +198,7 @@ def load(root: str | Path = "data") -> Data:
         events=events,
         experience=experience,
         checks=checks,
+        ranks=ranks,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -523,6 +526,8 @@ def validate(d: Data) -> None:
         errors += _events_errors(d)
     if d.checks:
         errors += _checks_errors(d)
+    if d.ranks:
+        errors += _ranks_errors(d)
     if d.experience:
         X = d.experience
         g = X.get("gain")
@@ -1458,6 +1463,52 @@ def _events_errors(d: Data) -> list[str]:
         for b in bands:
             if not (isinstance(b.get("below"), (int, float)) and 0 < b["below"] <= 1 and isinstance(b.get("pct"), int) and 0 < b["pct"] <= 100):
                 errors.append(f"{where}: horses_march {t} bands need below (0-1) and pct (1-100)")
+    return errors
+
+
+def _ranks_errors(d: Data) -> list[str]:
+    """data/ranks.yaml: each era's ladder (pay, years, a known difficulty), its regional pay the
+    ladder's length, careers it starts or pays known to the era; loot finds rising to 100; each
+    era's loot rules for an era with team tables."""
+    R, where, errors = d.ranks, "ranks.yaml", []
+    diffs = {x["id"] for x in (d.checks or {}).get("difficulty", [])} or {"ordinary"}
+    for eid, E in (R.get("eras") or {}).items():
+        at = f"{where}: {eid}"
+        T = d.teams.get(eid)
+        if not T:
+            errors.append(f"{at}: no team tables for this era")
+            continue
+        careers, regions = {c["id"] for c in T["careers"]}, {r["id"] for r in T["regions"]}
+        if E.get("honours"):
+            continue
+        L = E.get("ladder") or []
+        ids = [r.get("id") for r in L]
+        if not L or len(set(ids)) != len(ids):
+            errors.append(f"{at}: needs a ladder of distinct ranks")
+        for k, r in enumerate(L):
+            if not (isinstance(r.get("pay"), (int, float)) and r["pay"] > 0):
+                errors.append(f"{at}: {r.get('id')} pay must be positive")
+            if k and (r.get("diff") not in diffs or not isinstance(r.get("years", 0), (int, float))):
+                errors.append(f"{at}: {r.get('id')} needs a known diff and years")
+        for reg, arr in (E.get("pay_by") or {}).items():
+            if reg not in regions or len(arr) != len(L):
+                errors.append(f"{at}: pay_by {reg} must be a region of the era with one pay a rank")
+        for car, rid in (E.get("start") or {}).items():
+            if car not in careers or rid not in ids:
+                errors.append(f"{at}: start {car}: {rid} names an unknown career or rank")
+        for car in (E.get("career_pay") or {}):
+            if car not in careers:
+                errors.append(f"{at}: career_pay names unknown career {car}")
+        if not 0 < E.get("kept", 1) <= 1:
+            errors.append(f"{at}: kept must be 0-1")
+    tos = [f.get("to") for f in R.get("finds", [])]
+    if R.get("finds") and (tos != sorted(tos) or tos[-1] != 100):
+        errors.append(f"{where}: finds must rise to 100")
+    for eid, L in (R.get("loot") or {}).items():
+        if eid not in d.teams:
+            errors.append(f"{where}: loot for unknown era {eid}")
+        if not 0 < L.get("keep", 1) <= 1:
+            errors.append(f"{where}: loot {eid} keep must be 0-1")
     return errors
 
 

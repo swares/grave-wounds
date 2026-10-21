@@ -70,6 +70,7 @@ def values(d: Data) -> dict:
         "stat_lo": E["stat_range"][0], "stat_hi": E["stat_range"][1], "array": ", ".join(map(str, E["array"])),
         "origin_gain": E["gain"], "first_term": E["first_term"], "term_main": E["term_main"], "term_second": E["term_second"],
         "event_gain": E["gain"], "age_start": E["age"]["start"], "age_term": E["age"]["per_term"], "skill_max": E["skill_max"],
+        "deed_bonus": d.ranks.get("deed_bonus", 20), "literate": d.ranks.get("literate", 20), "sack_bonus": d.ranks.get("sack_bonus", 15),
         "chk_crit": round(d.checks.get("critical_fraction", 0.1) * 100), "chk_fumble": d.checks.get("fumble_from", 96),
         "haggle_seller": (d.checks.get("haggle") or {}).get("seller", 50), "haggle_win": round(-(d.checks.get("haggle") or {}).get("win", -0.1) * 100),
         "haggle_crit": round(-(d.checks.get("haggle") or {}).get("critical", -0.25) * 100),
@@ -182,6 +183,13 @@ def tables(d: Data) -> dict:
         ur = use_rows(d, "medieval")
         out["skill_uses"] = _md(ur[0], ur[1:])
         out["difficulty"] = _md(["Difficulty", "Modifier", "When"], [[x["name"], _sign(x["mod"]) if x["mod"] else "±0", x.get("what", "")] for x in d.checks["difficulty"]])
+    if d.ranks:
+        RE = (d.ranks.get("eras") or {}).get("medieval") or {}
+        out["ranks"] = _md(["Rank", "Pay (× a soldier's)", "Least years in the rank below", "Command check"],
+                           [[r["name"], f"{r['pay']:g}", f"{r.get('years', 0):g}" if i else "—", (next((x["name"] for x in d.checks.get("difficulty", []) if x["id"] == r.get("diff")), "") + (", only after a deed" if r.get("deed_only") else "")) if i else "—"]
+                            for i, r in enumerate(RE.get("ladder") or [])])
+        out["finds"] = _md(["d100", "He finds", "Worth (Days)"], [[f"{lo}–{f['to']}" if lo != f["to"] else str(f["to"]), f["what"], "—" if not f["days"][1] else f"{f['days'][0]}–{f['days'][1]}"]
+                                                              for f, lo in zip(d.ranks["finds"], [1] + [x["to"] + 1 for x in d.ranks["finds"][:-1]])])
     if "medieval" in d.jobs:
         from .jobs import job_rows, trouble_rows
         jr, tr = job_rows(d, "medieval"), trouble_rows(d, "medieval")

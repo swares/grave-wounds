@@ -1,0 +1,254 @@
+# Rank, pay, promotion and loot by era (rules in gravewounds/ranks.py, repeated in templates/team.js).
+# Research notes: the project doc "promotion-loot-research" (each figure there is tagged sourced,
+# weakly sourced, estimate or gap). Here, `approx: true` marks a figure that is an estimate.
+#
+# ladder - the era's ranks, lowest first:
+#   pay      - his wage as a multiple of a private's (1 Day is a common soldier's day's pay);
+#              `pay_by` gives other armies' figures, by region, where they differ
+#   years    - least years served in the rank below before he can be promoted to this one
+#   diff     - the difficulty of his Command check for it (checks.yaml)
+#   letters  - least Letters to hold it (an army that wanted its sergeants to read and write);
+#   unlettered - instead of a bar, a modifier to the check for a man under `literate` Letters
+#   deed_only - only a deed in battle opens it (a knighting on the field)
+#   shares   - his shares of prize money (eras with prize money)
+# start - the rank each career starts at (the rest start at the bottom)
+# career_pay - a career paid at another rate than the foot (horsemen, surgeons), multiplying his
+#              rank's pay; 0 for one the army does not pay (a sutler sells to it)
+# kept - the share of his pay left after stoppages for rations and necessaries
+#
+# Promotion (at End of season, on the team builder): a vacancy at a rank (a lost man of that
+# rank, or one the GM opens for the wider unit's losses) is offered to the team's men one rank
+# below, most senior first, who have served its `years` and can read where it asks; each rolls
+# Command at its difficulty (+`deed_bonus` and the years waived for a man who distinguished
+# himself) until one succeeds. His old rank is then vacant in turn.
+#
+# Wage: each night his force is fed by its army on the travel map he earns his rank's pay x kept;
+# a night his force's pay is in arrears it is owed instead. Paid at End of season.
+literate: 20        # Letters: reads and writes
+deed_bonus: 20
+days_a_year: 365
+
+eras:
+  medieval:
+    note: "No ranks as such: a man's place was his contract (archer, man-at-arms, esquire, knight) and his captain's favour. Pay from the Calais muster of 1346; rises like Fishlake's (archer to man-at-arms in about 25 years) were rare."
+    kept: 0.5
+    kept_approx: true
+    ladder:
+      - {id: soldier, name: "Soldier", pay: 1}
+      - {id: vintenar, name: "Vintenar", pay: 2, years: 2, diff: ordinary, approx: true}
+      - {id: man_at_arms, name: "Man-at-arms", pay: 4, years: 10, diff: very_hard, approx: true}
+      - {id: knight, name: "Knight", pay: 8, years: 4, diff: very_hard, deed_only: true}
+    start: {man_at_arms: man_at_arms}
+    career_pay: {mounted_sergeant: 2, merchant: 0}
+    source: "https://rapc-association.org.uk/pay-services-history/notes-on-army-pay.html"
+  thirty_years:
+    note: "Foot 4 Reichsthaler a month and horse twice that (Langer); no pay scale by rank found. Hagendorf rose from Gefreiter (1627) to Wachtmeister (1633), and could read and write."
+    kept: 0.5
+    kept_approx: true
+    ladder:
+      - {id: soldier, name: "Soldier", pay: 1}
+      - {id: gefreiter, name: "Gefreiter", pay: 1.25, years: 1, diff: ordinary, approx: true}
+      - {id: corporal, name: "Corporal", pay: 1.5, years: 2, diff: ordinary, approx: true}
+      - {id: feldwebel, name: "Feldwebel", pay: 3, years: 3, diff: hard, approx: true}
+      - {id: fahnrich, name: "Ensign", pay: 6, years: 4, diff: very_hard, approx: true}
+    start: {sergeant: feldwebel}
+    career_pay: {cuirassier: 2, harquebusier: 2, dragoon: 1.5, surgeon: 2.67, chaplain: 4, sutler: 0}
+    source: "https://lwl.org/westfaelischer-friede-download/wfe-t/wfe-txt1-31.htm"
+  horse_musket:
+    note: "British pay 1802-15; officers at the French rates of 1803 (British officer pay not verified). French minimum service of 1811: 2 years for corporal, 4 for sergeant, 8 for sous-lieutenant. British sergeants had to read and write; 5-6% of Peninsula officers came from the ranks. Prize shares as at Waterloo."
+    kept: 0.5
+    kept_approx: true
+    ladder:
+      - {id: private, name: "Private", pay: 1, shares: 1}
+      - {id: corporal, name: "Corporal", pay: 1.19, years: 2, diff: ordinary, shares: 1}
+      - {id: sergeant, name: "Sergeant", pay: 1.56, years: 2, diff: ordinary, letters: true, shares: 7.5}
+      - {id: sergeant_major, name: "Sergeant-major", pay: 2.06, years: 4, diff: hard, letters: true, shares: 7.5, approx: true}
+      - {id: ensign, name: "Ensign", pay: 6.7, years: 4, diff: very_hard, letters: true, shares: 13.5}
+      - {id: captain, name: "Captain", pay: 12.5, years: 6, diff: hard, letters: true, shares: 35, approx: true}
+    start: {sergeant: sergeant, officer: ensign, surgeon: ensign}
+    career_pay: {sutler: 0}
+    source: "https://rapc-association.org.uk/pay-services-history/notes-on-army-pay-4.html"
+  crimea:
+    note: "British rates as in 1802-15, with the 6d field allowance and a ration stoppage of 4½d (so about three quarters kept). No count of commissions from the ranks found; in Russia non-noble officers were 4% in the 1860s."
+    kept: 0.75
+    ladder:
+      - {id: private, name: "Private", pay: 1}
+      - {id: corporal, name: "Corporal", pay: 1.19, years: 2, diff: ordinary}
+      - {id: sergeant, name: "Sergeant", pay: 1.56, years: 2, diff: ordinary, letters: true}
+      - {id: sergeant_major, name: "Sergeant-major", pay: 2.06, years: 4, diff: hard, letters: true, approx: true}
+      - {id: ensign, name: "Ensign", pay: 6.7, years: 4, diff: very_hard, letters: true, approx: true}
+    start: {sergeant: sergeant, officer: ensign, surgeon: ensign}
+    career_pay: {cantiniere: 0}
+    source: "https://rapc-association.org.uk/pay-services-history/notes-on-army-pay-4.html"
+  civil_war:
+    note: "Monthly pay, Union and Confederate. Of 34,941 Union soldiers, about 9% ended as corporals, 7% as sergeants and 3% as officers; illiterate men almost never became officers and had a third the odds of making sergeant. The Confederacy promoted by seniority, and 'for valor and skill'."
+    kept: 0.5
+    kept_approx: true
+    ladder:
+      - {id: private, name: "Private", pay: 1}
+      - {id: corporal, name: "Corporal", pay: 1.0, years: 0.5, diff: ordinary, approx: true}
+      - {id: sergeant, name: "Sergeant", pay: 1.31, years: 1, diff: ordinary, unlettered: -20, approx: true}
+      - {id: first_sergeant, name: "First sergeant", pay: 1.54, years: 1, diff: hard, unlettered: -20, approx: true}
+      - {id: lieutenant, name: "Lieutenant", pay: 8.1, years: 1, diff: hard, letters: true, approx: true}
+      - {id: captain, name: "Captain", pay: 8.9, years: 1, diff: ordinary, letters: true, approx: true}
+    pay_by: {confederacy: [1, 1.18, 1.55, 1.82, 7.3, 11.8]}
+    start: {sergeant: sergeant, officer: lieutenant}
+    source: "https://www.nber.org/papers/w17382.pdf"
+  plains_nations:
+    note: "No ranks and no pay: a man's standing came from his deeds (coups, horses taken) and his generosity, and a war leader was followed, not appointed."
+    honours: true
+  wwi:
+    note: "British daily pay of 1914 (other armies' not found). About 10,000 British soldiers were commissioned straight from the ranks, and about 6,000 Americans in 1917-18."
+    kept: 0.75
+    kept_approx: true
+    ladder:
+      - {id: private, name: "Private", pay: 1}
+      - {id: corporal, name: "Corporal", pay: 1.67, years: 1, diff: ordinary, approx: true}
+      - {id: sergeant, name: "Sergeant", pay: 2.33, years: 1, diff: ordinary, approx: true}
+      - {id: csm, name: "Company sergeant-major", pay: 4, years: 2, diff: hard, approx: true}
+      - {id: lieutenant, name: "Second lieutenant", pay: 7.5, years: 1, diff: hard, approx: true}
+      - {id: captain, name: "Captain", pay: 12.5, years: 1, diff: ordinary, approx: true}
+    start: {nco: sergeant, officer: lieutenant}
+    source: "https://www.longlongtrail.co.uk/soldiers/a-soldiers-life-1914-1918/british-army-rates-pay-1914/"
+  wwii:
+    note: "US base pay of 1942 (the lieutenant's an estimate), British of 1940 and German front pay; Soviet pay not found. The US Army made about 25,500 battlefield commissions."
+    kept: 0.75
+    kept_approx: true
+    ladder:
+      - {id: private, name: "Private", pay: 1}
+      - {id: pfc, name: "Private first class", pay: 1.08, years: 0.5, diff: easy, approx: true}
+      - {id: corporal, name: "Corporal", pay: 1.32, years: 1, diff: ordinary, approx: true}
+      - {id: sergeant, name: "Sergeant", pay: 1.56, years: 1, diff: ordinary, approx: true}
+      - {id: staff_sergeant, name: "Staff sergeant", pay: 1.92, years: 1, diff: ordinary, approx: true}
+      - {id: lieutenant, name: "Second lieutenant", pay: 3, years: 1, diff: hard, approx: true}
+    pay_by:
+      commonwealth: [1, 1.6, 2, 3, 4, 6.5]
+      germany: [1, 1.53, 1.8, 2.07, 3.73, 6]
+    start: {nco: sergeant, officer: lieutenant}
+    source: "https://www.navycs.com/public-law/pl-77-607pg4.html"
+  korea:
+    note: "US pay of 1952 (grades to titles is our own match). Battlefield commissions continued as in 1945, uncounted."
+    kept: 0.75
+    kept_approx: true
+    ladder:
+      - {id: private, name: "Private", pay: 1}
+      - {id: corporal, name: "Corporal", pay: 1.47, years: 1, diff: ordinary, approx: true}
+      - {id: sergeant, name: "Sergeant", pay: 1.75, years: 1, diff: ordinary, approx: true}
+      - {id: sfc, name: "Sergeant first class", pay: 2.11, years: 1, diff: hard, approx: true}
+      - {id: lieutenant, name: "Second lieutenant", pay: 2.67, years: 1, diff: hard, approx: true}
+    start: {nco: sergeant, officer: lieutenant}
+    source: "https://www.navycs.com/charts/1952-military-pay-chart.html"
+  vietnam:
+    note: "US pay of 1968. The usual rise to sergeant took three to five years; the NCO Candidate Course made sergeants in 21-22 weeks."
+    kept: 0.75
+    kept_approx: true
+    ladder:
+      - {id: private, name: "Private", pay: 1}
+      - {id: corporal, name: "Specialist or corporal", pay: 1.74, years: 1, diff: ordinary, approx: true}
+      - {id: sergeant, name: "Sergeant", pay: 2.07, years: 2, diff: ordinary}
+      - {id: ssg, name: "Staff sergeant", pay: 2.4, years: 2, diff: hard, approx: true}
+      - {id: lieutenant, name: "Second lieutenant", pay: 3.13, years: 1, diff: hard, approx: true}
+    start: {nco: sergeant, officer: lieutenant}
+    source: "https://historynet.com/shake-n-bake-sergeants/"
+  modern:
+    note: "US pay of 2004 and the Army's promotion clock (PFC at a year, Specialist at two, Sergeant at about three to four); British pay of 2010 by region. Field promotions were brought back in 2009."
+    kept: 0.75
+    kept_approx: true
+    ladder:
+      - {id: private, name: "Private", pay: 1}
+      - {id: pfc, name: "Private first class", pay: 1.2, years: 1, diff: easy, approx: true}
+      - {id: specialist, name: "Specialist or lance corporal", pay: 1.52, years: 1, diff: easy}
+      - {id: sergeant, name: "Sergeant", pay: 1.67, years: 1, diff: ordinary}
+      - {id: ssg, name: "Staff sergeant", pay: 1.9, years: 2, diff: hard, approx: true}
+      - {id: lieutenant, name: "Second lieutenant", pay: 2.39, years: 1, diff: very_hard, approx: true}
+    pay_by:
+      uk_1982: [1, 1.1, 1.2, 1.9, 2.2, 1.45]
+      uk_2005: [1, 1.1, 1.2, 1.9, 2.2, 1.45]
+    start: {nco: sergeant, officer: lieutenant}
+    source: "https://www.navycs.com/charts/2004-military-pay-chart.html"
+
+# Honours (the Plains nations): a coup counted (touching an enemy: the first to strike counts
+# most, and up to three may count on one enemy), a horse taken from an enemy camp (which also
+# counts as a coup), and horses given away (generosity turned wealth into standing).
+honours:
+  coup: [3, 2, 1]          # first, second, third to strike
+  horse_taken: 1
+  horse_given: 1
+  standing:
+    - {from: 0, name: "Young man"}
+    - {from: 1, name: "Warrior"}           # a coup counted: "to rank as a warrior"
+    - {from: 10, name: "Warrior of standing", approx: true}
+    - {from: 25, name: "Man others follow", approx: true}
+  wealth:                  # horses (Ewers, The Horse in Blackfoot Indian Culture, pp. 20-31)
+    - {from: 0, name: "poor"}
+    - {from: 6, name: "middling"}
+    - {from: 40, name: "wealthy"}
+  source: "https://accessgenealogy.com/?p=49299"
+
+# Loot. A man rolls d100 on `finds` (Days; a sack adds `sack_bonus` to the roll, though only a
+# natural 100 is a windfall); his era keeps
+# a share for his captain or the hospital (`keep`); where taking it is forbidden, or past `cap`,
+# he risks the provost: the provost's Watch (`provost`) against his Stealth; if the provost wins he
+# loses it, and on the provost's critical or his own fumble the era's punishment follows. The finds are estimates set against a few anchors: a
+# private's Waterloo prize was about 51 days' pay, Hagendorf sold Magdeburg clothes for 12 thaler
+# (about three months' pay), a private at Seringapatam sold armlets for 1,500 rupees.
+finds:
+  - {to: 35, what: "nothing worth the carrying", days: [0, 0]}
+  - {to: 60, what: "food, tobacco, a blanket", days: [1, 3]}
+  - {to: 80, what: "boots, a good coat, a knife", days: [3, 8]}
+  - {to: 92, what: "a purse or a watch", days: [10, 30]}
+  - {to: 99, what: "silver, a fine weapon", days: [30, 90]}
+  - {to: 100, what: "a windfall: jewels, a paymaster's chest", days: [200, 1000]}
+sack_bonus: 15
+finds_approx: true
+
+loot:
+  medieval:
+    field: {allowed: true}
+    sack: {allowed: true}
+    keep: 0.667
+    keep_why: "a third to his lord or captain (the Durham ordinances, 1385)"
+    ransom: {days: [100, 1000], approx: true, why: "a prisoner of rank goes to the captain, who rewards the captor; an ordinary man-at-arms ransomed from 650 to 16,000 ducats after Agincourt"}
+    punish: "Robbing a church, or another man's victuals: beheaded or hanged (1385)."
+  thirty_years:
+    field: {allowed: true}
+    sack: {allowed: true}
+    keep: 0.9
+    keep_why: "a tenth to the hospitals; guns, powder and food to the king (Swedish articles, 1621)"
+    ransom: {days: [50, 500], approx: true, why: "only with leave: ransoming without it was death"}
+    punish: "Plundering before the enemy was beaten: killed by his officer, or a month in irons; robbing a church: death (1621)."
+  horse_musket:
+    field: {allowed: true, why: "stripping the dead was usual: soldiers first, then the camp followers and the peasants"}
+    sack: {allowed: true, why: "Badajoz and San Sebastian were sacked for three days; after the sack is called off it is the provost"}
+    prize: {share_days: 51, why: "a private's Waterloo share (£2 11s 4d) was about 51 days' pay; Seringapatam's about twice that"}
+    punish: "Found plundering after the order: hanged (Seringapatam, 1799) or flogged."
+  crimea:
+    field: {allowed: false, provost: 40}
+    sack: {allowed: false, provost: 50}
+    punish: "In the town after dark: the guardhouse, and flogged in the morning (Kertch, 1855)."
+  civil_war:
+    field: {allowed: false, provost: 30, why: "booty belonged to the government (Lieber Code, 1863), and a prisoner's watch was his own; stripping the dead went on"}
+    sack: {allowed: false, provost: 60}
+    punish: "Pillage: death or as a court-martial directs, and a superior may kill him on the spot (Lieber Code, art. 44)."
+  plains_nations:
+    horses: {per_raid: [0, 6], approx: true, why: "horses taken from the enemy were divided among the raiding party"}
+  wwi:
+    field: {allowed: true, cap: 30, why: "trophies he can carry in his kit, often sold to officers; pillage forbidden (Hague, 1907)"}
+    sack: {allowed: false, provost: 50}
+    punish: "Pillage: court-martial."
+  wwii:
+    field: {allowed: true, cap: 30, why: "trophies by an officer's certificate (US, 1944); Soviet soldiers might send one parcel home a month: 5 kg, officers 10, generals 16 (1944)"}
+    sack: {allowed: false, provost: 50}
+    punish: "Pillage: court-martial (some Soviet officers got 10-25 years in camps in 1948)."
+  korea:
+    field: {allowed: true, cap: 20, approx: true}
+    sack: {allowed: false, provost: 50}
+    punish: "Pillage: court-martial."
+  vietnam:
+    field: {allowed: true, cap: 20, why: "trophies: handguns and bolt or semi-automatic rifles with the papers, never automatic weapons"}
+    sack: {allowed: false, provost: 50}
+    punish: "Pillage: court-martial."
+  modern:
+    field: {allowed: true, cap: 5, why: "from 2004 no weapons of any kind; helmets, uniform items, flags by written request"}
+    sack: {allowed: false, provost: 60}
+    punish: "Looting: any punishment short of death (UCMJ art. 103)."

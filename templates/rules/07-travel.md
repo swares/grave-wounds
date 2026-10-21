@@ -94,6 +94,44 @@ a bed he sleeps rough. The medieval jobs:
 
 The other {{w_eras}} eras' jobs are in the printed tables and the team builder.
 
+## Rank, pay and loot {#rank}
+
+**Rank.** Each era has its ladder of ranks; a man starts at the bottom unless his career puts him
+higher (a sergeant, an officer). The medieval ladder, from the Calais muster of 1346 (in truth a
+man's place was his contract, and rises like an archer's to man-at-arms were rare):
+
+{{table:ranks}}
+
+**Promotion.** A rank falls **vacant** when a man of it is lost, or when the GM opens one for the
+wider company's losses. At the end of a season each vacancy is offered to the team's men one
+rank below who have served its years in that rank (or did a **deed** in battle, which waives the
+time and adds +{{deed_bonus}}) and, where the army demanded it, can read and write (Letters
+{{literate}} or more: British sergeants in the Napoleonic wars, officers in the Civil War). The most
+senior rolls Command first, at the rank's difficulty; the first to succeed is promoted, and his
+old rank falls vacant in turn. A man can be **reduced** to a lower rank at the GM's word.
+
+**Pay.** Each day his force is fed by its army, a man earns his rank's pay, less what the army
+stopped for his rations and necessaries, paid into his purse at the end of the season. Days
+when his force's pay is **in arrears** are owed instead, until the GM says the arrears are paid.
+Horsemen and surgeons may draw more; a sutler draws nothing.
+
+**Loot.** After a won fight, the field: each man rolls d100 (a stormed town's sack adds
+{{sack_bonus}}, though only a 100 is a windfall):
+
+{{table:finds}}
+
+His era takes its share (the medieval captain a third, the Swedish hospitals a tenth). Where
+plunder is forbidden (the Crimea's provost, the Lieber Code of 1863, the Hague rules of 1907),
+or past what a man may keep as a trophy, the **provost** rolls his Watch against the man's
+Stealth: if the provost wins, the loot is taken from him, and on the provost's critical or the
+man's fumble the era's punishment follows (hanging, flogging, a court-martial). In the eras of
+prize money each man draws his rank's shares (at Waterloo, a private one share of about 51
+days' pay, a captain 35). A medieval or Thirty Years' War prisoner may be ransomed (with leave).
+
+**Honours.** The Plains nations had no ranks and no pay. A man's honours come from coups
+counted (the first to strike counts most) and horses taken from an enemy camp; his horses are
+his wealth, and giving them away turns wealth into standing.
+
 ## Sickness {#sickness}
 
 Before antibiotics, disease emptied armies faster than battle. Once a week every well man
