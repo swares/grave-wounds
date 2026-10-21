@@ -1,0 +1,217 @@
+# Events on the march and in camp (gravewounds/events.py, templates/events.js): what happens to a
+# force on the travel map each day besides the weather and camp disease, by era.
+#
+# periods   - each map's period, as the era whose rates it rolls (a force may name its own `era`).
+# injury    - the step an injured man starts at on the force's wound track, on d100.
+# eras      - for each era:
+#   rates     - chances per man per day, in what the force did that day: camp (it did not march),
+#               march, or withdraw (the GM ticks Withdrawing). Each is rolled for every man (horses:
+#               for every man of a mounted force or a wagon train) and is rolled 1 in 1,000,000.
+#                 desert   - he leaves for good (off the force's men)
+#                 straggle - he falls out and is lost to the force (off its men)
+#                 injury   - a fall, a kick, an accident: he joins the force's wound track
+#                 horses   - a horse or draught animal dies or is lamed (reported)
+#               source {url, note}, or approx: true with the reasoning in note.
+#   incident  - % chance each day that something happens to the force; then d100 on `incidents`
+#               (to: the top of each row's range). A row may apply only to some force types
+#               (`types`), or to small or large forces (`max_men`, `min_men`); otherwise nothing
+#               happens. `lose: [low, high]` men lost, `fatigue: n` steps more tired. `hook` is for
+#               the GM. Incidents are described in the sources but rarely counted: their chances
+#               and rows are design estimates.
+# The research behind the rates is in the project doc "travel-events-research".
+
+periods:
+  "Crusades": medieval
+  "Visby 1361": medieval
+  "Hundred Years' War": medieval
+  "Wars of the Roses": medieval
+  "Thirty Years' War": thirty_years
+  "American Revolution": horse_musket
+  "Napoleonic Wars": horse_musket
+  "War of 1812": horse_musket
+  "Crimean War": crimea
+  "American Civil War": civil_war
+  "American Indian Wars": civil_war
+  "WWI": wwi
+  "WWII": wwii
+  "Korea": korea
+  "Vietnam": vietnam
+  "Late 20th century": modern
+  "Iraq & Afghanistan": modern
+
+injury:
+  - {to: 85, step: mending}
+  - {to: 100, step: serious}
+
+eras:
+  medieval:
+    rates:
+      desert:   {camp: 0.0003, march: 0.0003, withdraw: 0.001, approx: true, note: "no medieval rate found; set at the Army of Flanders' desertion share (about 2.5-3.3e-4)"}
+      straggle: {camp: 0, march: 0.001, withdraw: 0.002, source: {url: "https://en.wikipedia.org/wiki/Battle_of_Agincourt", note: "about 160 stragglers taken on the march from Harfleur, 1415: about 1e-3 a man a day; withdrawing doubled, an estimate"}}
+      injury:   {camp: 0.0002, march: 0.0002, withdraw: 0.0004, approx: true, note: "no medieval rate found; set at the Malta garrison's accident rate of 1860 (1.9e-4)"}
+      horses:   {camp: 0.0005, march: 0.0016, withdraw: 0.003, source: {url: "https://www.medievalists.net/2024/12/how-medieval-armies-cared-for-their-warhorses/", note: "Edward I's 1301 campaign lost about a third of his suite's horses: about 1.6e-3 a horse a day"}}
+    incident: 5
+    incidents:
+      - {to: 15, text: "Foragers are set on by peasants: some do not come back.", lose: [1, 6], min_men: 40, hook: "The village that did it is a mile off, and the men want it burned."}
+      - {to: 25, text: "A bridge is broken or held; the column must find a ford.", fatigue: 1, hook: "As at Ferrybridge in 1461, someone has pulled the planks."}
+      - {to: 35, text: "A storm or hail strikes the column in the open.", fatigue: 1, hook: "Black Monday, 1360: men and horses die of the cold in an hour."}
+      - {to: 45, text: "Men caught plundering a church; the captain wants an example.", hook: "Hang one, or have the whole retinue on the wrong side of God and the king."}
+      - {to: 55, text: "A small party is taken by enemy scouts.", lose: [1, 3], max_men: 20, hook: "They will be ransomed, if anyone pays."}
+      - {to: 65, text: "A crossing goes wrong: a man and a horse are swept away.", lose: [1, 2], hook: "The ford was deeper than the guide said."}
+      - {to: 75, text: "A merchant or sutler joins the march with wine and bread, at a price.", hook: "He knows the roads, and someone else's business."}
+      - {to: 85, text: "Pilgrims, beggars or refugees on the road beg for protection.", hook: "Among them is a man who is not what he says."}
+      - {to: 100, text: "Nothing worse than mud and grumbling.", quiet: true}
+  thirty_years:
+    rates:
+      desert:   {camp: 0.0003, march: 0.0005, withdraw: 0.002, source: {url: "https://www.oocities.org/ao1617/life.html", note: "Army of Flanders: 0.7-2% a month all causes, about half desertion (after Parker); a starving camp ran 5e-3 (Nuremberg 1632); march and withdrawal are estimates"}}
+      straggle: {camp: 0, march: 0.001, withdraw: 0.004, approx: true, note: "no counted rate; set between Agincourt and 1812"}
+      injury:   {camp: 0.0002, march: 0.0002, withdraw: 0.0004, approx: true, note: "no rate found; the 1860 garrison accident rate"}
+      horses:   {camp: 0.0005, march: 0.0016, withdraw: 0.003, approx: true, note: "no counted rate; as the medieval"}
+    incident: 6
+    incidents:
+      - {to: 15, text: "Peasants in the woods kill or take foragers.", lose: [1, 6], min_men: 40, hook: "The peasants trade them back for the village's cattle (Simplicissimus)."}
+      - {to: 25, text: "Men run off with the regiment's pay rumour, or a rival recruiter's money.", lose: [2, 10], min_men: 100, hook: "A captain of another army is recruiting in the next town."}
+      - {to: 35, text: "Marauders caught plundering: the provost wants them hanged.", hook: "One is a sergeant's brother."}
+      - {to: 45, text: "The baggage train falls behind; the women and sutlers are cut off.", min_men: 100, hook: "The enemy's horse are between the train and the column."}
+      - {to: 55, text: "A small party is taken by enemy horse.", lose: [1, 3], max_men: 20, hook: "They will be offered a place in the enemy's ranks."}
+      - {to: 65, text: "A village has plague: the column must go round or go through.", fatigue: 1, hook: "Going round costs a day; going through costs more."}
+      - {to: 75, text: "A storm floods the camp or the road.", fatigue: 1}
+      - {to: 85, text: "A sutler or a Jewish trader offers bread, beer and news, at famine prices.", hook: "He has heard where the enemy's winter quarters are."}
+      - {to: 100, text: "Nothing worse than mud and grumbling.", quiet: true}
+  horse_musket:
+    rates:
+      desert:   {camp: 0.0003, march: 0.0005, withdraw: 0.002, source: {url: "https://armyheritage.org/wp-content/uploads/ref-bibs/subjects/Military Service/Desertion/Desertion%20Statistics.pdf", note: "Valley Forge 1777-78: 1,334 of 23,539 in six months, 3.1e-4 a man a day; on the march and in retreat estimates"}}
+      straggle: {camp: 0, march: 0.002, withdraw: 0.006, source: {url: "https://journals.sagepub.com/doi/reader/10.1177/014107689108400517", note: "the retreat to Corunna lost about 1e-2 a man a day in all (sickness, capture and straggling; sickness is rolled apart); 1812's advance about 6e-3 before battle"}}
+      injury:   {camp: 0.0002, march: 0.0002, withdraw: 0.0004, source: {url: "https://maltaramc.com/regsurg/rs1860_1869/rmo1860.html", note: "Malta garrison 1860: 410 accidents among 5,950 men in a year, 1.9e-4 a man a day; doubled in retreat, an estimate"}}
+      horses:   {camp: 0.001, march: 0.004, withdraw: 0.008, source: {url: "https://en.wikipedia.org/wiki/French_invasion_of_Russia", note: "more than 5,000 of 150,000 horses dead from the Niemen to Vilnius in four days of 1812, 8e-3 a horse a day; ordinary marching half that, an estimate"}}
+    incident: 6
+    incidents:
+      - {to: 12, text: "Guerrillas or partisans take a courier or a straggling party.", lose: [1, 4], hook: "The dispatch he carried is now in enemy hands (the Peninsula, 1812)."}
+      - {to: 22, text: "A convoy or the baggage is ambushed on the road.", types: [wagons], lose: [2, 12], hook: "Almazan, 1810: two battalions on their way to the front lost 213."}
+      - {to: 32, text: "Marauders caught plundering: an example is made.", hook: "Davout hanged seventy at Wilna in 1812."}
+      - {to: 42, text: "A river crossing: men drown swimming the horses over.", types: [mounted], lose: [1, 5], hook: "The ford was deeper than the guide said."}
+      - {to: 52, text: "Men go off to drink and loot a wine store.", lose: [0, 6], min_men: 100, hook: "As on the road to Corunna: some never come back."}
+      - {to: 62, text: "A storm: the camp is flattened, horses die of cold.", fatigue: 1, hook: "Early July 1812: a quarter of one battery's horses dead in a night."}
+      - {to: 72, text: "A small party loses the road in the dark.", max_men: 20, fatigue: 1}
+      - {to: 82, text: "Peasants offer to sell food, or to guide the column.", hook: "The guide is in the enemy's pay."}
+      - {to: 100, text: "Nothing worse than mud and grumbling.", quiet: true}
+  crimea:
+    rates:
+      desert:   {camp: 0.0001, march: 0.0001, withdraw: 0.0005, approx: true, note: "no counted rate for the field army; low, as the men had nowhere to go"}
+      straggle: {camp: 0, march: 0.001, withdraw: 0.003, approx: true, note: "no counted rate; as the horse-and-musket march, halved"}
+      injury:   {camp: 0.0002, march: 0.0002, withdraw: 0.0004, source: {url: "https://maltaramc.com/regsurg/rs1860_1869/rmo1860.html", note: "Malta garrison 1860: 1.9e-4 a man a day"}}
+      horses:   {camp: 0.002, march: 0.003, withdraw: 0.005, source: {url: "https://chargeofthelightbrigade.com/regiments/13LD/intro-13LD.html", note: "the 13th Light Dragoons: 298 horses in May 1854, 28 by December (4.3e-3 a horse a day, the charge included); camp and march estimates"}}
+    incident: 5
+    incidents:
+      - {to: 15, text: "A storm wrecks the camp and the tents.", fatigue: 1, hook: "14 November 1854: one regiment had 160 men sick in a day."}
+      - {to: 25, text: "Cossacks fall on a foraging or watering party.", lose: [1, 4], max_men: 60}
+      - {to: 35, text: "A transport cart breaks down on the road from Balaklava.", types: [wagons], fatigue: 1, hook: "The biscuit is in the mud, and the regiment is hungry."}
+      - {to: 45, text: "Men found drunk on sutlers' spirits; the provost marshal flogs them.", hook: "One of them has stolen from the sutler, too."}
+      - {to: 55, text: "A Tatar offers to guide the column, or to sell what he has.", hook: "He has seen Russian horse in the next valley."}
+      - {to: 65, text: "Cholera breaks out in a village on the road.", fatigue: 1}
+      - {to: 100, text: "Nothing worse than mud and grumbling.", quiet: true}
+  civil_war:
+    rates:
+      desert:   {camp: 0.0002, march: 0.0002, withdraw: 0.001, source: {url: "https://essentialcivilwarcurriculum.com/desertion,-cowardice-and-punishment.html", note: "over 200,000 Union deserters in about 2.96 million man-years: 1.85e-4 a man a day; frontier garrisons ran 5.5-8.8e-4 (1871)"}}
+      straggle: {camp: 0, march: 0.002, withdraw: 0.01, source: {url: "https://en.wikipedia.org/wiki/Maryland_campaign", note: "Lee's army fell from 55,000 to 45,000 in ten days of 1862, 1.8e-2, a crisis; ordinary marching and retreat estimates"}}
+      injury:   {camp: 0.0002, march: 0.0002, withdraw: 0.0004, approx: true, note: "only deaths are counted (drowning 4.6e-6, other accidents 3.8e-6); non-fatal injuries set at the garrison rate"}
+      horses:   {camp: 0.001, march: 0.008, withdraw: 0.012, source: {url: "https://www.civilwarmonitor.com/article/the-army-horse/", note: "a Union cavalry horse lasted about four months on campaign, 8.3e-3 a horse a day; in cold and hunger Cole's column lost 3.6e-2 (1865)"}}
+    incident: 7
+    incidents:
+      - {to: 15, text: "Raiders run off the stock or attack a wood or hay train.", types: [wagons, mounted], lose: [0, 3], hook: "On the Bozeman Trail in 1866 one fort's wood trains were attacked fifteen times in ten weeks."}
+      - {to: 25, text: "Guerrillas strike the wagons.", types: [wagons], lose: [1, 6], hook: "Berryville, 1864: Mosby's men took a hundred wagons and two hundred prisoners."}
+      - {to: 35, text: "A river crossing: a wagon overturns, men drown.", lose: [0, 3], hook: "On the North Platte in 1850 nineteen drowned in eleven days."}
+      - {to: 45, text: "A stampede in the night.", types: [mounted, wagons], fatigue: 1}
+      - {to: 55, text: "A small party is cut off on the prairie.", lose: [1, 4], max_men: 20}
+      - {to: 65, text: "Deserters slip off to the goldfields with their arms.", lose: [1, 5], min_men: 50, hook: "They sold their carbines in the next town."}
+      - {to: 72, text: "A whiskey seller or a hog ranch by the road.", hook: "Half the company is drunk by morning."}
+      - {to: 80, text: "A prairie fire or a blizzard on the road.", fatigue: 1}
+      - {to: 100, text: "Nothing worse than dust and grumbling.", quiet: true}
+  plains_nations:
+    rates:
+      desert:   {camp: 0, march: 0, withdraw: 0, approx: true, note: "no desertion: men came and went as they chose"}
+      straggle: {camp: 0, march: 0, withdraw: 0.001, approx: true, note: "no counted rate"}
+      injury:   {camp: 0.0002, march: 0.0003, withdraw: 0.0004, approx: true, note: "winter counts record hunting and powder accidents in about 2 of 25 years; per man an estimate"}
+      horses:   {camp: 0.0005, march: 0.002, withdraw: 0.004, source: {url: "https://history.nd.gov/textbook/unit3_1_john_no_ears.html", note: "winter counts record whole herds starved in deep snow (1865-66); a day's rate is an estimate"}}
+    incident: 6
+    incidents:
+      - {to: 20, text: "An enemy party (Crow, Shoshone, Pawnee) finds the trail.", lose: [0, 2], hook: "In John No Ears' count a killing marks most years."}
+      - {to: 35, text: "Horses are run off in the night.", types: [mounted], hook: "300 Crow horses taken in 1863-64, and eight men lost when the Crows gave chase."}
+      - {to: 45, text: "A soldiers' column is seen.", hook: "Its scouts are Crows who know this country."}
+      - {to: 55, text: "Deep snow or a blizzard: the horses cannot graze.", fatigue: 1}
+      - {to: 65, text: "A trader with guns, cloth and whiskey.", hook: "His whiskey is watered, his powder damp."}
+      - {to: 75, text: "Buffalo are near: the akicita hold the hunters back.", hook: "A young man means to charge the herd early."}
+      - {to: 100, text: "Nothing out of the ordinary.", quiet: true}
+  wwi:
+    rates:
+      desert:   {camp: 0.00002, march: 0.00002, withdraw: 0.0001, approx: true, note: "French desertion about 1.5e-5 a man a day over the war (an assumed strength)"}
+      straggle: {camp: 0, march: 0.002, withdraw: 0.017, source: {url: "https://en.wikipedia.org/wiki/Battle_of_Le_Cateau", note: "2,500-3,000 footsore and exhausted men evacuated from II Corps in about four days of the 1914 retreat (an assumed 40,000): about 1.7e-2"}}
+      injury:   {camp: 0.00015, march: 0.0003, withdraw: 0.0004, source: {url: "https://greatwarforum.org/topic/204935-illness-as-opposed-to-combat-casualties", note: "BEF 1914 injured 55.85 per 1,000 of ration strength (1.5-4e-4 a day, the period unclear)"}}
+      horses:   {camp: 0.0003, march: 0.0005, withdraw: 0.002, source: {url: "https://en.wikipedia.org/wiki/Horses_in_World_War_I", note: "British horses lost about 17% a year in France, 4.7e-4 a horse a day"}}
+    incident: 6
+    incidents:
+      - {to: 15, text: "Shells fall on the road as the column passes.", lose: [0, 4], min_men: 30, hook: "A quiet sector lost a man a day or two to shelling."}
+      - {to: 25, text: "A mine or a dugout collapse in the billets.", lose: [0, 3], hook: "The 1/5th Lincolns lost twelve to a mine in 1915."}
+      - {to: 35, text: "Military police stop the column: papers, and men without them.", hook: "Two of the men are deserters from another battalion."}
+      - {to: 45, text: "An estaminet in the village: egg and chips, beer, and trouble.", hook: "A brawl with another regiment, or with the locals."}
+      - {to: 55, text: "Gas lingers in a hollow on the road.", lose: [0, 2], fatigue: 1}
+      - {to: 65, text: "The guide loses the way in the dark.", fatigue: 1, hook: "They come out in front of the wrong trench."}
+      - {to: 75, text: "Refugees and carts block the road.", fatigue: 1}
+      - {to: 100, text: "Nothing worse than mud and fatigues.", quiet: true}
+  wwii:
+    rates:
+      desert:   {camp: 0.00015, march: 0.00015, withdraw: 0.0005, source: {url: "https://apps.dtic.mil/sti/pdfs/ADA076712.pdf", note: "US Army desertion 63 per 1,000 a year in 1944, 1.7e-4 a man a day"}}
+      straggle: {camp: 0, march: 0.0005, withdraw: 0.002, approx: true, note: "straggling not counted for this war; an estimate"}
+      injury:   {camp: 0.00015, march: 0.00025, withdraw: 0.0005, source: {url: "https://apps.dtic.mil/sti/tr/pdf/ADA286758.pdf", note: "US non-battle injury overseas 92 per 1,000 a year, 2.5e-4; camp and withdrawal scaled as Korea's by operation"}}
+    incident: 6
+    incidents:
+      - {to: 12, text: "Aircraft strafe the road.", lose: [0, 5], min_men: 20, fatigue: 1}
+      - {to: 22, text: "A mine or a booby trap on the verge.", lose: [0, 2]}
+      - {to: 32, text: "A vehicle breaks down or bogs in the mud.", types: [mounted, wagons], fatigue: 1, hook: "The Red Ball Express wore out 40,000 tyres in a month."}
+      - {to: 42, text: "Friendly fire: another unit takes the column for the enemy.", lose: [0, 3], hook: "Recognition signals were changed this morning."}
+      - {to: 52, text: "Refugees on the road; among them, someone who wants out.", hook: "A family begs to be taken through the lines."}
+      - {to: 62, text: "Black-market traders want fuel, cigarettes or rations.", hook: "A jerrycan sells for a hundred dollars in Paris."}
+      - {to: 72, text: "A wrong turning: the column is lost.", fatigue: 1}
+      - {to: 100, text: "Nothing worse than dust, mud and rumours.", quiet: true}
+  korea:
+    rates:
+      desert:   {camp: 0.00006, march: 0.00006, withdraw: 0.0002, source: {url: "https://apps.dtic.mil/sti/pdfs/ADA076712.pdf", note: "US Army desertion 22 per 1,000 a year in 1952-53, 6e-5 a man a day (AWOL 5e-4)"}}
+      straggle: {camp: 0, march: 0.0003, withdraw: 0.002, approx: true, note: "not counted; withdrawals in 1950 left many behind"}
+      injury:   {camp: 0.00022, march: 0.00065, withdraw: 0.00124, source: {url: "https://thekwe.org/topics/casualties/surgeon_general/p_ch2.htm", note: "non-battle injury per 1,000 a day by operation: reserve 0.22, redeploying 0.65, withdrawal 1.24"}}
+    incident: 6
+    incidents:
+      - {to: 12, text: "Guerrillas or infiltrators fire on the column from the hills.", lose: [0, 3]}
+      - {to: 22, text: "A mine in the road.", lose: [0, 2], types: [mounted, wagons]}
+      - {to: 32, text: "Refugees crowd the road, and infiltrators may be among them.", fatigue: 1, hook: "White clothes, and a rifle under a bundle."}
+      - {to: 42, text: "Bitter cold: frostbite and frozen weapons.", fatigue: 1, hook: "Chosin, 1950: more than 8,000 frostbite cases."}
+      - {to: 52, text: "A vehicle slides off an icy mountain road.", types: [mounted, wagons], lose: [0, 2]}
+      - {to: 62, text: "Korean porters or a KSC train join with supplies.", hook: "One of them is a northern agent."}
+      - {to: 100, text: "Nothing worse than cold, dust and rumours.", quiet: true}
+  vietnam:
+    rates:
+      desert:   {camp: 0.0001, march: 0.0001, withdraw: 0.0002, source: {url: "https://apps.dtic.mil/sti/pdfs/ADA076712.pdf", note: "US Army desertion 73.5 per 1,000 a year in FY71 (2e-4), most of it away from Vietnam"}}
+      straggle: {camp: 0, march: 0, withdraw: 0.0005, approx: true, note: "not counted"}
+      injury:   {camp: 0.00015, march: 0.00025, withdraw: 0.0004, source: {url: "https://achh.army.mil/history/book-vietnam-medicalsupport-chapter2/", note: "US Army non-battle injury 60-76 per 1,000 a year, 1965-70, about 1.9e-4"}}
+    incident: 8
+    incidents:
+      - {to: 20, text: "A booby trap or a mine on the trail.", lose: [0, 2], hook: "Mines and booby traps caused most Marine casualties in 1965."}
+      - {to: 30, text: "Contact: a sniper or a brief ambush.", lose: [0, 2], hook: "About 3% of patrols made contact, mostly when the enemy chose."}
+      - {to: 40, text: "The road has been mined in the night.", types: [mounted, wagons], lose: [0, 2]}
+      - {to: 50, text: "Heat and the paddies: men go down with heat and immersion foot.", fatigue: 1}
+      - {to: 60, text: "Villagers in the way; a child sells Coke, a farmer will not talk.", hook: "The farmer's son is with the VC."}
+      - {to: 70, text: "A helicopter or air strike on the wrong grid.", lose: [0, 3]}
+      - {to: 100, text: "Nothing worse than heat, leeches and rumours.", quiet: true}
+  modern:
+    rates:
+      desert:   {camp: 0, march: 0, withdraw: 0, approx: true, note: "volunteer armies: no desertion in the field worth rolling"}
+      straggle: {camp: 0, march: 0, withdraw: 0, approx: true, note: "not counted"}
+      injury:   {camp: 0.00008, march: 0.00015, withdraw: 0.00025, source: {url: "https://apps.dtic.mil/sti/pdfs/ADA505957.pdf", note: "Iraq 2003-06 non-battle injuries: falls, sport, vehicles, lifting, weapons; a pooled DNBI of 1.4e-4 a man a day (disease included)"}}
+    incident: 8
+    incidents:
+      - {to: 20, text: "An IED on the route.", types: [mounted, wagons], lose: [0, 3], hook: "In 2006 about one contractor convoy in eleven was attacked."}
+      - {to: 30, text: "Small-arms fire or an RPG from a rooftop.", lose: [0, 2]}
+      - {to: 40, text: "A checkpoint: a car will not stop.", hook: "Escalation of force: shout, show, shove, shoot."}
+      - {to: 50, text: "A wrong turning into the city.", types: [mounted, wagons], fatigue: 1, hook: "As the 507th Maintenance Company did at Nasiriyah in 2003."}
+      - {to: 60, text: "A vehicle rolls or breaks down.", types: [mounted, wagons], lose: [0, 1]}
+      - {to: 70, text: "Civilians want help: a wounded child, a stolen goat, a dispute.", hook: "The elder will talk if the patrol stays for tea."}
+      - {to: 100, text: "Nothing worse than heat, dust and rumours.", quiet: true}

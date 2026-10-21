@@ -219,6 +219,9 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <div style="flex:2 1 200px"><label for="sel-hyg">Camp hygiene</label><select id="sel-hyg"></select></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Washing, boiling, the sick kept apart: flux and typhoid do not reach the nurses (typhus and plague still can)"><input type="checkbox" id="chk-clean"> Nurses keep clean</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Fruit, greens, fresh meat or onions in the rations each day: no days go without fresh food (scurvy)"><input type="checkbox" id="chk-fresh"> Fresh food issued</label></div>
+        <div style="flex:1 1 140px;align-self:end"><label title="Each night its men may desert, straggle or be hurt, its horses die, and something may happen (the era's rates)"><input type="checkbox" id="chk-events"> Events on the march</label></div>
+        <div style="flex:1 1 140px;align-self:end"><label title="It is falling back: straggling, desertion and injuries run higher"><input type="checkbox" id="chk-withdraw"> Withdrawing</label></div>
+        <div style="flex:1 1 140px;align-self:end"><label title="Its named men (from the wound roller) take the era's chance of an injury each night too"><input type="checkbox" id="chk-named-acc"> Named men can be injured</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Its army feeds and quarters its men. Untick for a team on its own, on leave or off base: its named men then pay their keep from their purses each day"><input type="checkbox" id="chk-fed"> Fed by its army</label></div>
       </div>
       <p class="muted" id="health-note" style="margin:0"></p>
@@ -240,6 +243,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
 </div>
 
 <script>/*__PURSE_JS__*/</script>
+<script>/*__EVENTS_JS__*/</script>
 <script>
 const DATA = /*__TRAVEL_DATA__*/null;
 const $ = s => document.querySelector(s);
@@ -842,7 +846,7 @@ function curMap(){                           // the map with any painting applie
 }
 const sameHex = (a, b) => !!(a && b) && a[0] === b[0] && a[1] === b[1];
 function forcesHere(){
-  if (!S.forces[S.mapId]) S.forces[S.mapId] = (baseMap().forces || []).map(f => newForce(f.name, f.type, f.side, f.hex, f.men, f.tools));
+  if (!S.forces[S.mapId]) S.forces[S.mapId] = (baseMap().forces || []).map(f => newForce(f.name, f.type, f.side, f.hex, f.men, f.tools, f.era));
   for (const f of S.forces[S.mapId]){
     if (!Number.isFinite(f.men) || f.men < 1) f.men = 10;
     if (typeof f.tools !== "boolean") f.tools = true;
@@ -852,8 +856,8 @@ function forcesHere(){
   }
   return S.forces[S.mapId];
 }
-function newForce(name, type, side, hex, men = 10, tools = true){
-  return { id: S.seq++, name, type, side: side || "Side A", men, tools, camp: null, pos: hex.slice(), waypoints: [], path: null, legs: [], index: 0, day: 1, used: 0, marched: 0, fatigue: 0, log: [] };
+function newForce(name, type, side, hex, men = 10, tools = true, era = null){
+  return { id: S.seq++, name, type, side: side || "Side A", men, tools, era: era || null, camp: null, pos: hex.slice(), waypoints: [], path: null, legs: [], index: 0, day: 1, used: 0, marched: 0, fatigue: 0, log: [] };
 }
 const selForce = () => { const fs = forcesHere(); return fs.find(f => f.id === S.sel[S.mapId]) || fs[0] || null };
 const sides = () => [...new Set(forcesHere().map(f => f.side))];
@@ -945,8 +949,9 @@ function endDay(f){
   const before_ = f.noFresh || 0;
   f.noFresh = fresh ? 0 : before_ + 1;              // days without fresh food, for scurvy
   keepNight(f, camp, before_);
+  const tire = eventsNight(f);
   healthNight(f, today, camp);
-  f.fatigue = after; f.day += 1; f.used = 0; f.marched = 0;
+  f.fatigue = Math.min(L.length - 1, after + tire); f.day += 1; f.used = 0; f.marched = 0;
 }
 // ----- keep: a force its army does not feed; its named men pay from their purses (purse.js, money.py) -----
 const BED_TERRAIN = ["village", "town"];      // ground with a bed to be had for the night
@@ -989,6 +994,39 @@ function keepText(f){                          // the health panel's word on who
   const purses = readPurses(), mine = namedWith(readNamed(), f);
   const each = mine.map(([, n]) => { const p = n.pid ? purses[n.pid] : null; return p ? `${n.name} ${daysQ(purseLeft(p))}` : null }).filter(Boolean);
   return `Not fed by its army: its named men pay a day's food from their purses, and a bed on nights in a village or town out of camp${each.length ? ` (left: ${each.join(", ")})` : ""}.`;
+}
+// ----- events on the march and in camp (events.js, gravewounds/events.py) -----
+function forceEra(f){                          // its own era (a map force may name one), or its map's period's
+  const base = (baseMap().forces || []).find(b => b.name === f.name);
+  return evEraOf(DATA.events || {}, curMap().period || baseMap().period, { era: f.era || (base && base.era) || null });
+}
+const eventsOn = f => f.events !== false;
+function eventsNight(f){                      // the night's desertion, straggling, injuries, horses and incident -> fatigue steps added
+  const EV = DATA.events, era = EV && eventsOn(f) ? forceEra(f) : null;
+  if (!era || !EV.eras[era]) return 0;
+  const act = evActivity(f.marched || 0, !!f.withdrawing), fit = fitOf(f).fit;
+  const r = evDay(EV, DZ, era, f.type, fit, act, roll100);
+  const lost = r.desert + r.straggle + r.incident_lost;
+  if (lost) f.men = Math.max(0, f.men - lost);
+  if (r.cases.length) healthOf(f).cases.push(...r.cases);
+  const bits = evDayText(r);
+  if (f.namedAccidents) bits.push(...namedAccidents(f, era, act));
+  if (bits.length) f.log.unshift(`${dateText(f.day, true)}: ${bits.join("; ")}.${r.incident && r.incident.hook ? " (" + r.incident.hook + ")" : ""}`);
+  return r.fatigue || 0;
+}
+function namedAccidents(f, era, act){          // the GM's option: each named man with the force takes the injury chance too
+  const all = readNamed(), t = evThreshold(((DATA.events.eras[era].rates.injury || {})[act]) || 0), out = [];
+  if (!t) return out;
+  for (const [, n] of namedWith(all, f)){
+    if (evD1e6(roll100) > t) continue;
+    const c = evInjuryCase(DATA.events, DZ, roll100);
+    n.health = n.health || newHealth();
+    n.health.cases.push(c);
+    out.push(`${n.name} was injured (${DZ.steps[c.step]})`);
+    n.log = [`${dateText(f.day, true)}: ${n.name} was injured on the march.`, ...(n.log || [])].slice(0, 20);
+  }
+  writeNamed(all);
+  return out;
 }
 // ----- camp disease (rules in the shared block) -----
 const dzName = did => dzProfile(did).name.toLowerCase();
@@ -1467,6 +1505,9 @@ function renderHealth(f){
   $("#chk-clean").checked = !!f.cleanNurses;
   $("#chk-fresh").checked = !!f.freshIssued;
   $("#chk-fed").checked = fedByArmy(f);
+  $("#chk-events").checked = eventsOn(f);
+  $("#chk-withdraw").checked = !!f.withdrawing;
+  $("#chk-named-acc").checked = !!f.namedAccidents;
   $("#sel-hyg").innerHTML = opts.map(([v, t]) => `<option value="${v}" ${(f.hygiene || "") === v ? "selected" : ""}>${t}</option>`).join("");
   const hyg = campHygiene(f.hygiene || null, kind), factors = weekFactorsFor(f, kind, hyg);
   const chances = Object.keys(DZ.diseases).map(did => [did, catchChance(did, factors, DZ.endurance, contagionOf(h, f.men))]).filter(([, n]) => n > 0).map(([did, n]) => `${dzName(did)} ${+n.toFixed(1)}%`);
@@ -1870,6 +1911,9 @@ function init(){
     render();
   };
   $("#chk-fed").onchange = e => { const f = selForce(); if (f){ f.fed = e.target.checked; render() } };
+  $("#chk-events").onchange = e => { const f = selForce(); if (f){ f.events = e.target.checked; render() } };
+  $("#chk-withdraw").onchange = e => { const f = selForce(); if (f){ f.withdrawing = e.target.checked; render() } };
+  $("#chk-named-acc").onchange = e => { const f = selForce(); if (f){ f.namedAccidents = e.target.checked; render() } };
   $("#chk-plague").onchange = e => { S.plague[S.mapId] = e.target.checked; render() };
   $("#btn-camp").onclick = () => { const f = selForce(); if (f){ makeCamp(f, $("#sel-camp").value); render() } };
   const sendFight = k => {                   // k: which of the fights on offer (0 attack now / the only one, 1 wait)

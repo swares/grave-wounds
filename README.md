@@ -85,7 +85,10 @@ jobs (`data/jobs/<era>.yaml`), picked by where the team is, each with a skill ch
 and a chance of trouble. What a man earns goes into his purse, and he can buy from the era's
 price list out of it. Away from an army that feeds him he pays his keep, at a job or on the
 travel map, and one purse follows him from the team builder to the roller and the travel map. A man lost
-is replaced the era's way: rolled anew, assigned by the army after a wait, or hired. Women serve where the records show they did (French cantinières in the Crimea, Civil War women
+is replaced the era's way: rolled anew, assigned by the army after a wait, or hired. On the
+travel map forces lose men on the road as the records say they did: desertion, straggling,
+injuries and horses by era and by whether they are in camp, marching or withdrawing, with an
+era table of incidents. Women serve where the records show they did (French cantinières in the Crimea, Civil War women
 disguised as men, Soviet women in 1941-45, the Vietnamese, and the Americans, British and
 Russians since 1991), chosen or rolled at the army's share. Sent to the roller, each character's skills fill in his attack
 and defence; a big team's followers get a line each. `python3 -m gravewounds team` makes one

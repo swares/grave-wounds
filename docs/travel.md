@@ -290,6 +290,31 @@ and every scar comes back on the wound track at Mending, and shows on his card a
 wounds reopened". They cannot heal while he has scurvy; after that they heal by the week as
 any wound. These numbers are design estimates.
 
+## Events on the march
+
+`data/events.yaml` (rules in `gravewounds/events.py`, repeated in `templates/events.js`) gives
+each era, per man per day, the chance of **desertion**, **straggling** (lost to the force), a
+**non-battle injury**, and for mounted forces and wagon trains a **horse** lost, by what the
+force did that day: **camp** (it did not march), **march**, or **withdraw** (the GM ticks
+**Withdrawing** on its health panel). Each night, after its keep and before its sick have their
+night, every fit man rolls each chance in turn (one in a million); deserters and stragglers come
+off its men, the injured go on its wound track (at Mending, or Serious one time in seven, with
+a wound-fever day like any wound), and lost horses are reported. Then the era's **incident**
+chance (5-8% a day): a d100 row of its table, which may apply only to some force types or to
+small or large forces, may cost men or a step of fatigue, and carries a hook. The force's log
+says what happened.
+
+A map's period gives the era (`periods`); a map force may name its own (`era: plains_nations`
+for the Lakota and Cheyenne at Fort Phil Kearny). **Events on the march** on the health panel
+turns them off for a force; **Named men can be injured** gives its named characters the
+injury chance too (a case on their own track, as a wound in camp). Sickness is not rolled here:
+camp disease, scurvy and frostbite already are.
+
+The rates and their sources are in the project doc "travel-events-research"; each rate in the
+file has its source or `approx: true`. The best are Korea's injuries by kind of operation,
+Valley Forge's desertion, the 1812 and Civil War horses, Corunna and the 1914 retreat; the
+medieval and Thirty Years' War rates are thin, and incidents are design estimates throughout.
+
 ## Calendar and weather
 
 Days have real dates, and daylight sets each day's marching hours. The weather is rolled
@@ -316,7 +341,8 @@ each day, and mud, snow and flooded fords change the going. See [weather.md](wea
     `data/maps/<id>.yaml` and rebuild to keep it.
   - **Undo all painting** goes back to the map as built.
 - **Health.** The selected force's camp hygiene, **Nurses keep clean**, **Fresh food
-  issued** and **Fed by its army**, with a note on its sick, nursing, days without fresh food,
+  issued**, **Fed by its army**, **Events on the march**, **Withdrawing** and **Named men can be
+  injured**, with a note on its sick, nursing, days without fresh food,
   its named men's keep and the week's chances.
 - Forces, routes, clocks and painting are kept in your browser.
 

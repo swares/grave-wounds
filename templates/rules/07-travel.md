@@ -24,6 +24,21 @@ marches on its route or halts. When forces of different sides come within {{t_wi
 each other, the clock stops and both halt: the fight can be set up, on the roller's battle
 map or the field map, or they can be given new orders.
 
+## On the road {#events}
+
+An army loses men without a battle. Each night every fit man takes his era's chance of
+**deserting**, of **falling out** and being lost to the force, and of being **injured** (a fall,
+a kick, an accident: he joins the sick and wounded), and every man of a mounted force or a
+wagon train of losing his **horse**. The chances depend on what the force did that day: in camp
+they are small (Valley Forge lost 3 men in 10,000 a day to desertion); on the march larger; and
+**withdrawing** far larger (the retreat to Corunna lost 1 in 100 a day, the British retreat from
+Mons nearly 2). A big force simply loses more men. Then there is a chance of an **incident**: a
+d100 on the era's table (foragers set on by peasants, a bridge down, a convoy ambushed, a mine
+in the road, a checkpoint), some for small parties or wagons only, some costing men or a step
+of fatigue, each with a hook for the GM. The rates come from the records where they exist and
+are estimates where they do not; the incidents are estimates. At the GM's choice, named
+characters take the injury chance too.
+
 ## Camps {#camps}
 
 At the end of the march a force makes camp:
