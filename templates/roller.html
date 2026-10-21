@@ -541,7 +541,7 @@ function travelForces(){                          // the forces on the travel ma
   }
 }
 // A skill from his team-builder sheet (an older sheet has only the trained ones), or 0 without one
-const SKILL_NAMES = { leechcraft: "Leechcraft", fieldcraft: "Fieldcraft", watch: "Watch", stealth: "Stealth" };
+const SKILL_NAMES = { leechcraft: "Leechcraft", fieldcraft: "Fieldcraft", watch: "Watch", stealth: "Stealth", command: "Command" };
 function skillOf(c, id){
   const h = c && c.sheet;
   if (!h) return 0;
@@ -565,7 +565,8 @@ function attachNamed(c, value){                   // put him with a travel force
   if (!value) delete all[c.uid];
   else {
     const [map, id] = [value.slice(0, value.lastIndexOf(":")), +value.slice(value.lastIndexOf(":") + 1)], was = all[c.uid] || {};
-    all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id, old: oldWounds(c), skills: namedSkills(c), pid: (c.sheet && c.sheet.pid) || null };
+    all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id, old: oldWounds(c), skills: namedSkills(c), pid: (c.sheet && c.sheet.pid) || null,
+      drill: (c.sheet && c.sheet.skill_by && c.weapon && c.sheet.skill_by[c.weapon]) || null };   // the skill drill ticks on the travel map
   }
   writeNamed(all);
   NAMED = all;

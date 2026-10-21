@@ -106,3 +106,14 @@ function rkLoot(kind, c, rng){                      // {kind, roll, what, found,
 const rkTier = (rows, n) => (rows || [{ from: 0, name: "" }]).filter(r => n >= r.from).pop().name;
 const rkStanding = honours => rkTier((RK().honours || {}).standing, honours);
 const rkWealth = horses => rkTier((RK().honours || {}).wealth, horses);
+/* Training (as gravewounds/training.py, data TD.training): a week with a teacher ticks the pupil's
+   skill if the teacher's check succeeds; a master for hire, a teammate well ahead, or drill. */
+const TRN = () => TD.training || {};
+const trMasters = (place, skill = null) => (TRN().masters || []).filter(m => TD.era.skills.some(s => s.id === m.skill) && (skill === null || m.skill === skill) && (place === null || m.places.includes(place)));
+const trTeammateOk = (teacher, pupil) => teacher >= pupil + (TRN().teammate_gap ?? 20);
+const trWeek = (teacher, roll) => skillCheck(teacher, "ordinary", roll);
+function trDrill(camped, bestCommand, roll){       // null if it did not camp enough of the week; else the drill check
+  const D = { camped_days: 4, nco: 50, difficulty: "ordinary", ...(TRN().drill || {}) };
+  if (camped < D.camped_days) return null;
+  return skillCheck(Math.max(bestCommand, D.nco), D.difficulty, roll);
+}

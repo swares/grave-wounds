@@ -85,6 +85,15 @@ characteristic is not ticked.
 
 ## Experience {#experience}
 
+**Training.** A skill can also be ticked by a week's teaching: from a master for hire where the
+team is (a riding master, a master of defence, a schoolmaster, a surgeon, a craftsman; his skill
+counts as 60, and he charges a fee by the week), or from a teammate at least 20 better (who gives
+up the week too). The teacher rolls his skill; a success ticks the pupil's skill, a failure wastes
+the week. The pupil pays the fee and his keep. An army drills its men: a week in which a force
+its army feeds spent four days or more not marching, the best Command with it (or the army's own
+sergeants, 50) rolls, and on a success each named man's weapon skill is ticked. Riding lessons
+in London in 1879 cost about six days of a private's pay each; the other fees are estimates.
+
 A skill used well is **ticked**: a job's check that succeeds (lawful or not; a
 failed or fumbled check, or a job with no check, teaches nothing), a hit, a parry or dodge that
 works, first aid that works, Fieldcraft that finds fresh food on the march, a week nursing the

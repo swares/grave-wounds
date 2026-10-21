@@ -88,8 +88,9 @@ travel map, and one purse follows him from the team builder to the roller and th
 rank's pay while their army feeds them, and take loot, prize money or ransoms by the era's
 rules, with the provost to fear where plunder was forbidden (the roller suggests deeds from the
 enemies a man put down, counts coups, and offers the loot when a fight is won); the Plains nations count coups and
-horses instead. Skills used well (a job, a hit or a parry, first aid, foraging, nursing, keeping watch) roll
-to rise at the end of each season, and time served adds a career term. A man lost
+horses instead. Skills used well (a job, a hit or a parry, first aid, foraging, nursing, keeping watch), or
+taught by a master, a better teammate or the army's drill in camp, roll to rise at the end of
+each season, and time served adds a career term. A man lost
 is replaced the era's way: rolled anew, assigned by the army after a wait, or hired. On the
 travel map forces lose men on the road as the records say they did: desertion, straggling,
 injuries and horses by era and by whether they are in camp, marching or withdrawing, with an

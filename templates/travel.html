@@ -249,6 +249,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
 <script>/*__EVENTS_JS__*/</script>
 <script>
 const DATA = /*__TRAVEL_DATA__*/null;
+const TD = { checks: DATA.checks, training: DATA.training, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
 const $ = s => document.querySelector(s);
 const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
 const BYKEY = Object.fromEntries(Object.values(TT).map(t => [t.key, t]));
@@ -1077,6 +1078,18 @@ function xpNight(f){                          // experience: a night served for 
   for (const [, n] of mine){ xpServe(n.pid, 1); if (fedByArmy(f)) xpArmy(n.pid, !!f.unpaid) }   // a day served; and his army's pay, or arrears
   const sick = healthOf(f).cases.length > 0 || mine.some(([, n]) => ((n.health || {}).cases || []).length);
   if (sick && f.day % DZ.week_days === 0){ const [lc, , pid] = bestSkill([f], "leechcraft", all); if (lc) xpTick(pid, "leechcraft", "nursing the sick") }
+  if ((f.marched || 0) <= 0) f.campWeek = (f.campWeek || 0) + 1;     // drill: days of the week not marching
+  if (f.day % DZ.week_days === 0){
+    const able = mine.filter(([, n]) => n.drill && ableNow(n));
+    if (fedByArmy(f) && able.length){
+      const [cmd, who] = bestSkill([f], "command", all), r = trDrill(f.campWeek || 0, cmd, roll100());
+      if (r){
+        if (r.success) for (const [, n] of able) xpTick(n.pid, n.drill, "drill in camp");
+        f.log.unshift(`${dateText(f.day, true)}: a week's drill in camp${cmd > (((DATA.training || {}).drill || {}).nco ?? 50) ? ` under ${who}` : ""} (${r.target}, rolled ${r.roll}): ${r.success ? "the named men's weapon skills are ticked" : "it came to little"}.`);
+      }
+    }
+    f.campWeek = 0;
+  }
 }
 function namedNight(f, ctx, factors){          // the day (and on the week's last day, the outbreak roll) for each named man with the force
   const all = readNamed(), mine = namedWith(all, f);
