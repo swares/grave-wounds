@@ -1109,6 +1109,7 @@ def bundle(d) -> dict:
                 wounds[f"{cid}|{m}|{s}"] = compose_wound(d, rep, m, s)
     return {
         "generated": date.today().isoformat(),
+        "checks": d.checks, "ranks": d.ranks,     # the shared rules in templates/ranks.js: loot, deeds, coups after a fight
         "locations": d.locations,
         "weapons": {wid: {**w, "mech_ranges": mechanism_ranges(d, wid)} for wid, w in d.weapons.items()},
         "tables": tables,
@@ -2021,7 +2022,7 @@ def main() -> int:
     if missing:
         print("templates/figure.js lacks drawings named in gravewounds/model.py FIG_NAMES: " + ", ".join(missing), file=sys.stderr)
         return 1
-    purse_js = (ROOT / "templates" / "purse.js").read_text(encoding="utf-8") + "\n" + (ROOT / "templates" / "xp.js").read_text(encoding="utf-8")
+    purse_js = (ROOT / "templates" / "purse.js").read_text(encoding="utf-8") + "\n" + (ROOT / "templates" / "xp.js").read_text(encoding="utf-8") + "\n" + (ROOT / "templates" / "ranks.js").read_text(encoding="utf-8")
     html = tpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>")).replace("/*__PURSE_JS__*/", purse_js)
     camp_js = (ROOT / "templates" / "camp.js").read_text(encoding="utf-8")
     works_js = (ROOT / "templates" / "works.js").read_text(encoding="utf-8")

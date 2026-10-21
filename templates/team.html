@@ -343,7 +343,18 @@ function rankLine(c){                               // 'Corporal, 120 days in ra
   c.rank ||= rkStart(c.career);
   return rkName(c.rank);
 }
+function pullMarks(){                               // deeds, coups and horses the roller marked (xp.js xpMark): onto the men, once
+  const all = readXp(); let changed = false;
+  for (const c of S.team){
+    const x = all[c.pid]; if (!x) continue;
+    if (x.deed){ c.deed = true; c.deedWhy = x.deed; delete x.deed; changed = true }
+    if (x.honours){ c.honours = (c.honours || 0) + x.honours; delete x.honours; changed = true }
+    if (x.horses){ c.horses = (c.horses || 0) + x.horses; c.honours = (c.honours || 0) + x.horses * ((RK().honours || {}).horse_taken ?? 1); delete x.horses; changed = true }
+  }
+  if (changed) writeXp(all);
+}
 function renderRank(){
+  pullMarks();
   const box = $("#rank"), E = rkEra(), L = (RK().loot || {})[T.id];
   if (!TD.ranks || !S.team.length || (!E && !L)){ box.innerHTML = ""; return }
   const K = (S.lootK ||= { kind: "field", who: "all" });
@@ -362,7 +373,7 @@ function renderRank(){
       const next = ladder[rkIndex(c.rank) + 1], why = next ? rkEligible(c, rkIndex(c.rank) + 1)[1] : "top of the ladder";
       return `<li><b>${esc(c.name)}</b>: <select data-rank="${i}" aria-label="Rank of ${esc(c.name)}">${opts}</select> ${(c.rank_days || 0).toLocaleString("en-US")} days in rank · ${daysQ(rkPay(c.region, c.career, c.rank))} a day
         <span class="muted">${next ? `· for ${esc(next.name.toLowerCase())}: ${esc(why || "eligible")}` : ""}</span>
-        <label class="check" title="He distinguished himself: +${RK().deed_bonus} to his next promotion roll, and the time waived"><input type="checkbox" data-deed="${i}"${c.deed ? " checked" : ""}> A deed</label>
+        <label class="check" title="He distinguished himself${c.deedWhy ? ` (${esc(c.deedWhy)})` : ""}: +${RK().deed_bonus} to his next promotion roll, and the time waived"><input type="checkbox" data-deed="${i}"${c.deed ? " checked" : ""}> A deed</label>
         ${c.owed ? `<button class="small" data-payowed="${i}" title="The arrears are paid">Pay ${daysQ(c.owed)} owed</button>` : ""}</li>`;
     }).join("");
     vac = `<div class="row">${ladder.slice(1).map(r => `<span>${esc(r.name)}: <b>${(S.vacancies || {})[r.id] || 0}</b> <button class="small" data-vac="${r.id}" data-d="-1" aria-label="One fewer ${esc(r.name)} vacancy">−</button><button class="small" data-vac="${r.id}" data-d="1" aria-label="Open a ${esc(r.name)} vacancy">+</button></span>`).join(" ")}</div>`;
@@ -485,6 +496,7 @@ function endSeason(){
   }
   if (rkLadder().length){                          // the season's promotions, then everyone's new sheet
     const rolls = rkPromote(S.team, (S.vacancies ||= {}), realDice);
+    for (const c of S.team) delete c.deedWhy;
     for (const k of rolls) lines.push(`${k.name} for ${rkName(k.to).toLowerCase()}: Command rolled ${k.roll} against ${k.target}: ${k.success ? "promoted" : "passed over"}.`);
     if (!rolls.length && Object.values(S.vacancies).some(n => n > 0)) lines.push("No one eligible for the vacancies yet.");
   }
@@ -662,7 +674,7 @@ function rollerSheet(c){                          // what the roller keeps of a 
   const attackBy = Object.fromEntries(Object.keys(T.weapon_skill).map(w => [w, attackFor(c, w)]));
   const defBy = T.defence.reduce((a, s) => (c.skills[s] > c.skills[a] ? s : a), T.defence[0]);
   return { career: careerOf(c).name, terms: c.terms, age: c.age, leader: !!c.leader, stats: c.stats, defence: c.defence, attack_by: attackBy,
-    skill_by: T.weapon_skill, defence_by: defBy,   // which skill each weapon and his defence use: a hit or a parry ticks it
+    skill_by: T.weapon_skill, defence_by: defBy, era: T.id, rank: c.rank || null,   // which skill each weapon and his defence use: a hit or a parry ticks it
     trained: T.skills.filter(s => (c.gains[s.id] || 0) > 0).map(s => [s.name, c.skills[s.id]]), origin: c.origin, old: c.old,
     skills: c.skills, pid: c.pid };   // every skill, trained or not: the roller and travel map use Leechcraft, Fieldcraft, Watch and Stealth
 }
