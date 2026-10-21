@@ -1,0 +1,29 @@
+# Prices for the Plains nations (1860-1877). Format as data/equipment/medieval.yaml.
+# The Lakota and Cheyenne traded in buffalo robes, not money, and drew no pay, so their coin has
+# no Day. Traders' prices are in cents.
+id: plains_nations
+
+currencies:
+  robe:
+    name: "Buffalo robes (a prime robe was worth $3 in goods at the post)"
+    coin: robe
+    base: robe
+    units: [{sym: " robes", of: 1}]
+    day_note: "no Day: the Plains nations traded and drew no pay"
+  usd:
+    name: "Dollars and cents (traders' prices)"
+    coin: usd
+    base: cent
+    decimal: {sym: "$", per: 100, small: "¢"}
+    day: 43
+    day_note: "a US private's $13 a month (1861-64)"
+
+currency: {default: robe}
+
+items:
+  - {id: horse, name: "Horse, in trade", cat: horse, price: [10, 15], approx: true}
+  - {id: navajo_blanket, name: "Good Navajo blanket", cat: shelter, price: 10, when: "1850s", source: {url: "https://www.nps.gov/safe/learn/historyculture/upload/Bents-Trading-Post-at-Big-Timbers-508.pdf", note: "NPS, Bent's Big Timbers"}}
+  - {id: trade_gun, name: "Trade gun", cat: weapon, price: [6, 10], when: "1851", weapon: rifle_musket, source: {url: "https://www.nps.gov/fous/learn/historyculture/firearms-of-fort-union.htm", note: "NPS Fort Union"}}
+  - {id: robe_post, name: "A prime robe, in goods at the trading post", cat: service, in: usd, price: 300, when: "1850s", source: {url: "https://www.nps.gov/safe/learn/historyculture/upload/Bents-Trading-Post-at-Big-Timbers-508.pdf", note: "NPS, Bent's Big Timbers; $5 in Missouri"}}
+  - {id: trade_gun_cost, name: "Trade gun, trader's cost", cat: weapon, in: usd, price: [300, 450], when: "1851", source: {url: "https://www.nps.gov/fous/learn/historyculture/firearms-of-fort-union.htm", note: "NPS Fort Union"}}
+  - {id: trading_rifle, name: "Percussion rifle at a trading post", cat: weapon, in: usd, price: 1100, when: "from 1840", source: {url: "https://www.nps.gov/fous/learn/historyculture/firearms-of-fort-union.htm", note: "NPS Fort Union"}}

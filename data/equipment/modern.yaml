@@ -1,0 +1,171 @@
+# Prices for the late wars (1982-2009). Format as data/equipment/medieval.yaml.
+# Three anchors with their own coins: Britain 1982 (decimal pence), the US 1991-95 and the US
+# 2004-09 (cents). Dollars of 1991 and of 2008 are kept apart (they are not the same money after
+# inflation). Black-market prices for fighters are in 2008 dollars, with a Day of $10, the
+# reported daily pay of a Taliban fighter.
+id: modern
+
+currencies:
+  gbp_1982:
+    name: "Pounds and new pence (1982)"
+    coin: gbp_1982
+    base: penny
+    decimal: {sym: "£", per: 100, small: "p"}
+    day: 1440
+    day_note: "a British private's pay, about £14.40 a day: an estimate, no source found"
+  ars_1982:
+    name: "Argentine pesos (about 12,000-14,000 to the dollar, May 1982)"
+    coin: ars_1982
+    base: peso
+    units: [{sym: " pesos", of: 1}]
+    day_note: "no Argentine conscript's pay found"
+  usd_1991:
+    name: "Dollars and cents (1991-95)"
+    coin: usd_1991
+    base: cent
+    decimal: {sym: "$", per: 100, small: "¢"}
+    day: 2930
+    day_note: "a US private first class's $878 a month base pay (1991)"
+  rub_1995:
+    name: "Russian rubles (about 4,000 to the dollar, 1995)"
+    coin: rub_1995
+    base: ruble
+    units: [{sym: " rubles", of: 1}]
+    day_note: "no Russian conscript's pay found"
+  usd_2008:
+    name: "Dollars and cents (2004-09)"
+    coin: usd_2008
+    base: cent
+    decimal: {sym: "$", per: 100, small: "¢"}
+    day: 5300
+    day_note: "a US private first class's $1,588 a month base pay (2008)"
+  usd_fighter:
+    name: "Dollars and cents (2004-09), as a fighter is paid"
+    coin: usd_2008
+    base: cent
+    decimal: {sym: "$", per: 100, small: "¢"}
+    day: 1000
+    day_note: "a Taliban fighter's reported $10 a day (2007-09)"
+  gbp_2005:
+    name: "Pounds and pence (2005)"
+    coin: gbp_2005
+    base: penny
+    decimal: {sym: "£", per: 100, small: "p"}
+    day_note: "no British soldier's pay found for 2005"
+  iqd:
+    name: "New Iraqi dinars (about 1,400 to the dollar)"
+    coin: iqd
+    base: dinar
+    units: [{sym: " dinars", of: 1}]
+    day_note: "no Iraqi pay found"
+  pkr:
+    name: "Pakistani rupees"
+    coin: pkr
+    base: rupee
+    units: [{sym: " rupees", of: 1}]
+    day_note: "no pay found"
+
+currency: {default: usd_2008, uk_1982: gbp_1982, argentina_1982: ars_1982, us_1991: usd_1991, us_1993: usd_1991, russia_1995: rub_1995, chechen: rub_1995, uk_2005: gbp_2005, insurgent: usd_fighter}
+
+sources:
+  ndo: &ndo "https://archives.nd.edu/Observer/1991-01-31_v23_083.pdf"
+  sp04: &sp04 "https://www.strategypage.com/htmw/htweap/articles/20041202.aspx"
+  swj: &swj "https://archive.smallwarsjournal.com/node/6525"
+  gao: &gao "https://www.gao.gov/assets/a96771.html"
+
+items:
+  # Falklands, 1982
+  - {id: night_sight, name: "Night sight (IWS)", cat: navigation, in: gbp_1982, price: 200000, approx: true}
+  - {id: slr, name: "L1A1 SLR rifle (to the MoD)", cat: weapon, in: gbp_1982, price: 30000, weapon: rifle_assault, regions: [uk_1982], approx: true}
+  - {id: helmet_1982, name: "Steel helmet", cat: armour, in: gbp_1982, price: 3000, kit: ww2_rifleman, regions: [uk_1982], approx: true}
+  - {id: petrol_1982, name: "Petrol, a gallon", cat: travel, in: gbp_1982, price: 160, approx: true}
+  - {id: cigarettes_1982, name: "20 cigarettes", cat: food, in: gbp_1982, price: 100, approx: true}
+  - {id: beer_1982, name: "Pint of beer", cat: food, in: gbp_1982, price: 60, approx: true}
+  - {id: argentine_family, name: "An Argentine family's month", cat: food, in: ars_1982, price: [40000000, 50000000], source: {url: "https://www.csmonitor.com/1982/0504/050434.html", note: "CS Monitor"}}
+  - {id: torch_1982, name: "Angle-head torch", cat: light, in: gbp_1982, price: 300, approx: true}
+  - {id: basha, name: "Basha (tarp-poncho)", cat: shelter, in: gbp_1982, price: 1500, approx: true}
+  - {id: bivvy_bag, name: "Bivvy bag", cat: shelter, in: gbp_1982, price: 6000, approx: true}
+  - {id: silva, name: "Silva compass", cat: navigation, in: gbp_1982, price: 1000, approx: true}
+  - {id: hexamine, name: "Hexamine stove and fuel", cat: fire, in: gbp_1982, price: 200, approx: true}
+  - {id: para_cord_1982, name: "Parachute cord, 10 m", cat: rope, in: gbp_1982, price: 200, approx: true}
+  - {id: morphine_1982, name: "Morphine auto-injector", cat: first_aid, in: gbp_1982, price: 500, approx: true}
+  - {id: dressing_1982, name: "Field dressing", cat: first_aid, in: gbp_1982, price: 100, approx: true}
+  - {id: dpm_jacket, name: "DPM combat jacket", cat: clothing, in: gbp_1982, price: 2500, approx: true}
+  - {id: dpm_trousers, name: "DPM combat trousers", cat: clothing, in: gbp_1982, price: 1500, approx: true}
+  - {id: shirt_jersey, name: "Shirt and wool jersey", cat: clothing, in: gbp_1982, price: 2300, approx: true}
+  - {id: dms_boots, name: "DMS boots and puttees", cat: clothing, in: gbp_1982, price: 2300, approx: true}
+  # Gulf, Somalia and Chechnya, 1991-95
+  - {id: humvee, name: "Humvee", cat: travel, in: usd_1991, price: 6500000, source: {url: "https://www.globalsecurity.org/military/systems/ground/m1114.htm", note: "GlobalSecurity"}}
+  - {id: psn8, name: "Military GPS (AN/PSN-8)", cat: navigation, in: usd_1991, price: 4500000, source: {url: "https://scientificamerican.com/article/gps-and-the-world-s-first-space-war/", note: "Scientific American"}}
+  - {id: pvs7, name: "Night-vision goggles (PVS-7B)", cat: navigation, in: usd_1991, price: 350000, approx: true}
+  - {id: civilian_gps_1991, name: "Civilian GPS mailed to a soldier", cat: navigation, in: usd_1991, price: 300000, source: {url: "https://scientificamerican.com/article/gps-and-the-world-s-first-space-war/", note: "Scientific American"}}
+  - {id: plgr, name: "PLGR military GPS", cat: navigation, in: usd_1991, price: 209100, when: "1996", source: {url: "https://water.usgs.gov/admin/memo/REFERENCE/1996/ADMIN-Announcement.for.Procurement.of.PLGR.Equipment", note: "USGS memo"}}
+  - {id: m16a2, name: "M16A2 rifle (to the Army)", cat: weapon, in: usd_1991, price: 47500, when: "1991", weapon: rifle_assault, regions: [us_1991, us_1993], source: {url: *ndo, note: "Notre Dame Observer, Army figures"}}
+  - {id: pasgt_vest, name: "PASGT vest, no plates", cat: armour, in: usd_1991, price: 25150, when: "1991", kit: pasgt, regions: [us_1991], source: {url: *ndo, note: "Notre Dame Observer, Army figures (frag vest)"}}
+  - {id: kevlar_helmet, name: "Kevlar helmet", cat: armour, in: usd_1991, price: 10300, when: "1991", kit: [pasgt, ranger_1993], regions: [us_1991, us_1993], source: {url: *ndo, note: "Notre Dame Observer, Army figures"}}
+  - {id: ak47_1990s, name: "AK-47, Mogadishu or Grozny", cat: weapon, in: usd_1991, price: [10000, 30000], weapon: rifle_assault, regions: [russia_1995, chechen], approx: true}
+  - {id: darra_ak, name: "AK copy made to order, Darra (Pakistan)", cat: weapon, in: usd_1991, price: [10000, 15000], when: "1996", source: {url: "https://ericellis.com/archive/pakistanguns.htm", note: "Ellis"}}
+  - {id: technical_hire, name: "Hire of a technical with crew, a day", cat: travel, in: usd_1991, price: 7500, approx: true}
+  - {id: khat, name: "Bundle of khat, Mogadishu", cat: food, in: usd_1991, price: 200, approx: true}
+  - {id: marlboro_moscow, name: "Pack of Marlboro, Moscow", cat: food, in: rub_1995, price: 2500, when: "1994", source: {url: "https://www.themoscowtimes.com/archive/ruble-nears-4000-prices-skyrocket", note: "Moscow Times"}}
+  - {id: snickers_moscow, name: "Snickers bar, Moscow", cat: food, in: rub_1995, price: 1500, when: "1994", source: {url: "https://www.themoscowtimes.com/archive/ruble-nears-4000-prices-skyrocket", note: "Moscow Times"}}
+  - {id: sgli_1991, name: "GI life insurance, $50,000, a month", cat: service, in: usd_1991, price: 400, approx: true}
+  - {id: maglite, name: "Maglite (retail)", cat: light, in: usd_1991, price: 2000, approx: true}
+  - {id: flashlight_1991, name: "Angle-head flashlight", cat: light, in: usd_1991, price: 500, approx: true}
+  - {id: chem_light, name: "Chemical light stick", cat: light, in: usd_1991, price: 100, approx: true}
+  - {id: sleeping_bag_1991, name: "Sleeping bag", cat: shelter, in: usd_1991, price: 6425, source: {url: *ndo, note: "Notre Dame Observer, Army figures"}}
+  - {id: field_pack_1991, name: "Field pack and frame", cat: gear, in: usd_1991, price: 5960, source: {url: *ndo, note: "Notre Dame Observer, Army figures"}}
+  - {id: poncho_1991, name: "Poncho and liner", cat: shelter, in: usd_1991, price: 3500, approx: true}
+  - {id: lensatic_1991, name: "Lensatic compass", cat: navigation, in: usd_1991, price: 4000, approx: true}
+  - {id: trioxane, name: "Trioxane bar", cat: fire, in: usd_1991, price: 11, when: "2000", source: {url: "https://bladeforums.com/threads/esbit-vs-hexamine-vs-trioxane-please-help.118243", note: "BladeForums, surplus price"}}
+  - {id: lighter_1991, name: "Disposable lighter", cat: fire, in: usd_1991, price: 100, approx: true}
+  - {id: para_cord_1991, name: "550 cord, 100 ft", cat: rope, in: usd_1991, price: [500, 800], approx: true}
+  - {id: atropine, name: "Nerve-agent antidote kit", cat: first_aid, in: usd_1991, price: 1400, source: {url: *ndo, note: "Notre Dame Observer, Army figures"}}
+  - {id: first_aid_case, name: "First aid case", cat: first_aid, in: usd_1991, price: 335, source: {url: *ndo, note: "Notre Dame Observer, Army figures"}}
+  - {id: whole_issue_1991, name: "A soldier's whole issue, rifle and armour included", cat: clothing, in: usd_1991, price: 145210, source: {url: *ndo, note: "Notre Dame Observer, Army figures"}}
+  - {id: parka_1991, name: "Light parka and liner", cat: clothing, in: usd_1991, price: 4055, source: {url: *ndo, note: "Notre Dame Observer, Army figures"}}
+  - {id: desert_coat, name: "Desert coat", cat: clothing, in: usd_1991, price: 1548, source: {url: *ndo, note: "Notre Dame Observer, Army figures"}}
+  - {id: desert_trousers, name: "Desert trousers", cat: clothing, in: usd_1991, price: 1440, source: {url: *ndo, note: "Notre Dame Observer, Army figures"}}
+  - {id: gloves_underwear_1991, name: "Gloves, undershirt, drawers", cat: clothing, in: usd_1991, price: 1175, source: {url: *ndo, note: "Notre Dame Observer, Army figures"}}
+  - {id: desert_hat, name: "Desert hat", cat: clothing, in: usd_1991, price: 490, source: {url: *ndo, note: "Notre Dame Observer, Army figures"}}
+  # Iraq and Afghanistan, 2004-09
+  - {id: humvee_armoured, name: "Up-armoured Humvee", cat: travel, price: 15000000, when: "2004", source: {url: "https://www.globalsecurity.org/military/library/news/2004/03/mil-040312-usa01.htm", note: "Army testimony"}}
+  - {id: hilux, name: "Toyota Hilux, used", cat: travel, price: 1250000, approx: true}
+  - {id: pvs14, name: "Night-vision monocular (PVS-14)", cat: navigation, price: 350000, approx: true}
+  - {id: dagr, name: "Military GPS (DAGR)", cat: navigation, price: 230000, when: "2010", source: {url: "https://www.strategypage.com/htmw/htecm/20100422.aspx", note: "StrategyPage"}}
+  - {id: glock_iraq, name: "Glock pistol, Iraqi black market", cat: weapon, price: 200000, when: "2007", weapon: pistol_smg, regions: [insurgent], source: {url: *swj, note: "Small Wars Journal"}}
+  - {id: svd_iraq, name: "SVD sniper rifle, Iraq", cat: weapon, price: 180000, when: "2007", source: {url: *swj, note: "Small Wars Journal"}}
+  - {id: esapi_pair, name: "Pair of ESAPI rifle plates", cat: armour, price: 120000, when: "2005", kit: interceptor, regions: [us_2005], source: {url: "https://www.defenseindustrydaily.com/?p=986", note: "Defense Industry Daily: $600 each"}}
+  - {id: thuraya, name: "Satellite phone (Thuraya)", cat: navigation, price: 85000, approx: true}
+  - {id: m4, name: "M4 carbine (to the Army)", cat: weapon, price: 70000, weapon: rifle_assault, regions: [us_2005, uk_2005], source: {url: "https://en.wikipedia.org/wiki/M4_carbine", note: "Wikipedia"}}
+  - {id: otv, name: "Interceptor outer vest, no plates", cat: armour, price: 49500, when: "2004", kit: interceptor, regions: [us_2005], source: {url: "https://www.globalsecurity.org/military/systems/ground/interceptor.htm", note: "GlobalSecurity, from contract totals"}}
+  - {id: ak47_iraq, name: "AK-47, Iraq", cat: weapon, price: [7000, 80000], when: "2004-06", weapon: rifle_assault, regions: [insurgent], source: {url: "https://www.smallarmssurvey.org/sites/default/files/resources/Small-Arms-Survey-2007-Chapter-08-summary-EN.pdf", note: "Small Arms Survey; Al Jazeera"}}
+  - {id: rpg7_iraq, name: "RPG-7 launcher, Iraq", cat: weapon, price: 22000, when: "2004", weapon: rpg, regions: [insurgent], source: {url: *sp04, note: "StrategyPage"}}
+  - {id: motorola, name: "Motorola handheld radio", cat: navigation, price: 20000, approx: true}
+  - {id: garmin, name: "Garmin handheld GPS", cat: navigation, price: 20000, approx: true}
+  - {id: hotel_baghdad, name: "Hotel night, Baghdad", cat: lodging, price: 11500, approx: true}
+  - {id: rpg_rocket, name: "RPG rocket, Iraq", cat: ammunition, price: [2000, 3000], when: "2004", source: {url: *sp04, note: "StrategyPage"}}
+  - {id: ak47_afghan, name: "AK-47, Afghanistan, worn", cat: weapon, price: 2000, when: "2008", source: {url: "https://www.strategypage.com/htmw/htweap/articles/20080111.aspx", note: "StrategyPage: under $20"}}
+  - {id: mre, name: "MRE ration", cat: food, price: 750, approx: true}
+  - {id: grenade_baghdad, name: "Grenade, Baghdad market", cat: weapon, price: 200, when: "2004", source: {url: "https://www.aljazeera.com/news/2004/4/4/crime-and-disorder-thriving-in-baghdad", note: "Al Jazeera"}}
+  - {id: ak_round, name: "AK round, Iraq", cat: ammunition, price: 100, when: "2007", source: {url: *swj, note: "Small Wars Journal"}}
+  - {id: petrol_basra, name: "20 litres of petrol, Basra", cat: travel, in: iqd, price: [1000, 5000], when: "2004", source: {url: "https://www.globalsecurity.org/wmd/library/news/iraq/2004/06/iraq-040622-irin01.htm", note: "IRIN"}}
+  - {id: darra_kalashnikov, name: "Russian-made Kalashnikov, Darra", cat: weapon, in: pkr, price: [55000, 80000], when: "2007", source: {url: "https://dawn.com/news/232200", note: "Dawn"}}
+  - {id: sgli_2008, name: "GI life insurance, $400,000, a month", cat: service, price: 2600, when: "2005", source: {url: "https://www.af.mil/News/Article-Display/Article/134379/new-law-to-affect-sgli-payments-premiums/", note: "AF.mil"}}
+  - {id: tactical_light, name: "SureFire or similar tactical light (retail)", cat: light, price: [10000, 20000], when: "2008", source: {url: "https://www.csmonitor.com/2008/0306/p03s06-usmi.html", note: "CS Monitor"}}
+  - {id: flashlight_2008, name: "Angle-head flashlight", cat: light, price: 400, approx: true}
+  - {id: mss, name: "Modular Sleep System (retail)", cat: shelter, price: [50000, 70000], when: "2005-07", source: {url: "https://www.defenseindustrydaily.com/?p=1276", note: "Defense Industry Daily"}}
+  - {id: molle, name: "MOLLE load-carrying set", cat: gear, price: 46400, when: "2009", source: {url: *gao, note: "GAO-10-669R"}}
+  - {id: microdagr, name: "MicroDAGR", cat: navigation, price: 150000, when: "2012", source: {url: "https://www.strategypage.com/htmw/htecm/20120809.aspx", note: "StrategyPage"}}
+  - {id: esbit_stove, name: "Esbit stove", cat: fire, price: 450, when: "2002", source: {url: "https://bladeforums.com/threads/military-trioxane-bars-really-suck.234570", note: "BladeForums"}}
+  - {id: esbit_tabs, name: "12 Esbit fuel tabs", cat: fire, price: 600, when: "2002", source: {url: "https://bladeforums.com/threads/military-trioxane-bars-really-suck.234570", note: "BladeForums"}}
+  - {id: climbing_rope, name: "Climbing rope, 50 m (retail)", cat: rope, price: 15000, approx: true}
+  - {id: hemcon, name: "HemCon bandage", cat: first_aid, price: 8800, when: "2008", source: {url: "https://www.army.mil/article-amp/14824/army_fields_new_equipment_to_stop_bleeding", note: "Army.mil"}}
+  - {id: ifak, name: "Individual first aid kit (IFAK)", cat: first_aid, price: [5000, 10000], approx: true}
+  - {id: combat_gauze, name: "Combat Gauze", cat: first_aid, price: 3000, when: "2008", source: {url: "https://www.army.mil/article-amp/14824/army_fields_new_equipment_to_stop_bleeding", note: "Army.mil: under $30"}}
+  - {id: cat, name: "Combat tourniquet (CAT)", cat: first_aid, price: 2728, when: "2010", source: {url: "https://www.army.mil/article-amp/40655/bogus_tourniquets_could_endanger_lives_in_combat_situations", note: "Army.mil"}}
+  - {id: quikclot, name: "QuikClot trauma pack", cat: first_aid, price: 2200, when: "2003", source: {url: "https://archive.seattletimes.com/archive/20030727/quickclot27/a-gift-from-the-battlefield-quikclot-can-stop-massive-blood-loss", note: "Seattle Times"}}
+  - {id: whole_outfit_2007, name: "A soldier's whole outfit for Iraq", cat: clothing, price: 1750000, when: "2007", source: {url: "https://www.graphicnews.com/en/pages/21612/us-rising-cost-of-outfitting-troops", note: "GraphicNews"}}
+  - {id: ecwcs, name: "ECWCS cold-weather layers, whole system", cat: clothing, price: 130000, when: "2007", source: {url: "https://www.stripes.com/news/2007-06-09/cold-climate-troops-getting-new-gear-to-keep-them-warm-and-dry-2196989.html1", note: "Stars and Stripes"}}
+  - {id: boots_private, name: "Boots bought privately (retail)", cat: clothing, price: 18000, when: "2008", source: {url: "https://www.csmonitor.com/2008/0306/p03s06-usmi.html", note: "CS Monitor"}}
+  - {id: acu, name: "ACU coat and trousers (flame-resistant $129.61)", cat: clothing, price: 7585, source: {url: *gao, note: "GAO-10-669R"}}

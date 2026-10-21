@@ -102,6 +102,8 @@ class Data:
     fields: dict = field(default_factory=dict)      # battlefield id -> battlefield (data/fields), `rows` = ground rows
     orders: dict = field(default_factory=dict)      # battlefield id -> the defenders' orders from the accounts (data/orders.yaml): hold, withdraw
     teams: dict = field(default_factory=dict)       # era id -> character generation tables (data/teams)
+    equipment: dict = field(default_factory=dict)   # era id -> coins, a Day's pay and priced kit (data/equipment)
+    money: dict = field(default_factory=dict)       # money.yaml: purse per career term, pay for a day's work
     warnings: list = field(default_factory=list)
 
 
@@ -151,6 +153,8 @@ def load(root: str | Path = "data") -> Data:
     orders = _optional(root / "orders.yaml", {})
     _apply_orders(fields, orders)
     teams = _read_dir(root / "teams")
+    equipment = _read_dir(root / "equipment")
+    money = _optional(root / "money.yaml", {})
 
     data = Data(
         root=root,
@@ -175,6 +179,8 @@ def load(root: str | Path = "data") -> Data:
         fields=fields,
         orders=orders,
         teams=teams,
+        equipment=equipment,
+        money=money,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -492,6 +498,8 @@ def validate(d: Data) -> None:
         errors += _fields_errors(d)
     for T in d.teams.values():
         errors += _team_errors(d, T)
+    for E in d.equipment.values():
+        errors += _equipment_errors(d, E)
     errors += _ground_seed_errors(d, TT)
 
     # camps and works
@@ -1254,6 +1262,55 @@ def _ground_seed_errors(d: Data, terrain: dict) -> list[str]:
     for what, T in G.get("through", {}).items():
         errors += [f"wounds.yaml: combat.ground.through.{what} names unknown terrain {t}"
                    for t in T.get("hexes", []) + T.get("links", []) if t not in terrain]
+    return errors
+
+
+EQUIPMENT_CATS = {"weapon", "ammunition", "armour", "horse", "clothing", "light", "shelter", "navigation", "fire", "rope",
+                  "first_aid", "food", "lodging", "travel", "gear", "service", "pay"}
+
+
+def _equipment_errors(d: Data, E: dict) -> list[str]:
+    """data/equipment: an era's coins (units or decimal, a Day in base units or none) and priced
+    rows (whole base units or a low-high range; a source unless approx; links to known armour
+    kits and weapons; armies of the era)."""
+    where, errors = f"equipment/{E['id']}", []
+    if E["id"] not in d.teams:
+        errors.append(f"{where}: no team tables for this era")
+    regions = {r["id"] for r in d.teams.get(E["id"], {}).get("regions", [])}
+    C = E.get("currencies") or {}
+    for cid, c in C.items():
+        if bool(c.get("units")) == bool(c.get("decimal")):
+            errors.append(f"{where}: currency {cid} needs units or decimal, not both")
+        if c.get("units") and [u["of"] for u in c["units"]] != sorted((u["of"] for u in c["units"]), reverse=True):
+            errors.append(f"{where}: currency {cid} units must run largest first")
+        if c.get("day") is not None and (not isinstance(c["day"], int) or c["day"] <= 0):
+            errors.append(f"{where}: currency {cid} day must be a whole number of base units")
+        if not c.get("coin"):
+            errors.append(f"{where}: currency {cid} needs a coin family")
+    cur = E.get("currency") or {}
+    if cur.get("default") not in C:
+        errors.append(f"{where}: currency.default names an unknown currency")
+    errors += [f"{where}: currency for unknown army {r}" for r in cur if r != "default" and r not in regions]
+    errors += [f"{where}: army {r} paid in unknown currency {c}" for r, c in cur.items() if c not in C]
+    ids = [r["id"] for r in E.get("items", [])]
+    errors += [f"{where}: duplicate item {i}" for i in sorted({i for i in ids if ids.count(i) > 1})]
+    for r in E.get("items", []):
+        at = f"{where}: {r['id']}"
+        p = r.get("price")
+        ok = isinstance(p, int) or (isinstance(p, list) and len(p) == 2 and all(isinstance(x, int) for x in p) and p[0] <= p[1])
+        if not ok or (isinstance(p, int) and p < 0):
+            errors.append(f"{at}: price must be whole base units or [low, high]")
+        if r.get("cat") not in EQUIPMENT_CATS:
+            errors.append(f"{at}: unknown category {r.get('cat')}")
+        if r.get("in") and r["in"] not in C:
+            errors.append(f"{at}: unknown currency {r['in']}")
+        if not r.get("approx") and not r.get("source"):
+            errors.append(f"{at}: needs a source, or approx: true")
+        for key, known in (("kit", d.armor["kits"]), ("weapon", d.weapons)):
+            links = r.get(key)
+            links = [links] if isinstance(links, str) else (links or [])
+            errors += [f"{at}: {key} {x} is not in {'armor.yaml' if key == 'kit' else 'weapons.yaml'}" for x in links if x not in known]
+        errors += [f"{at}: unknown army {x}" for x in r.get("regions", []) if x not in regions]
     return errors
 
 

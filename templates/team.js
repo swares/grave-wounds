@@ -126,3 +126,60 @@ function followerLine(f){                         // as team.py follower_line
   const career = byId(TD.era.careers, f.career).name.toLowerCase(), kit = TD.kits[f.kit].name.split(" (")[0].toLowerCase();
   return `${f.name}${f.sex === "f" ? " (a woman)" : ""}, ${career}, ${f.quality}: ${TD.weapons[f.weapon].short.toLowerCase()} ${f.attack}%, defence ${f.defence}%, Nerve ${f.nerve}; ${kit}`;
 }
+
+/* Money (as gravewounds/money.py): an era's coins (TD.equip.currencies), which coin each army was
+   paid in (TD.equip.currency), the rows that price issued kit, and TD.money's rules. Prices are
+   whole numbers of a coin's smallest unit; Days (a common soldier's day's pay) are worked out. */
+const FRACS = { "1/4": "¼", "1/2": "½", "3/4": "¾", "1/3": "⅓", "2/3": "⅔" };
+const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+const group = n => n.toLocaleString("en-US");
+function fmtMoney(cur, amount){                   // £8 6s 8d, 6½d, 4 Rt 30 kr, $12.54, 75¢
+  const dec = cur.decimal;
+  if (dec){
+    if (amount < dec.per && dec.small) return `${amount}${dec.small}`;
+    const whole = Math.floor(amount / dec.per), part = amount % dec.per;
+    return `${dec.sym}${group(whole)}${part ? "." + String(part).padStart(String(dec.per).length - 1, "0") : ""}${dec.suf || ""}`;
+  }
+  const out = []; let left = amount;
+  cur.units.forEach((u, i) => {
+    const n = Math.floor(left / u.of); left = left % u.of;
+    const last = i === cur.units.length - 1;
+    let frac = "";
+    if (last && left){ const g = gcd(left, u.of), key = `${left / g}/${u.of / g}`; frac = FRACS[key] || ` ${left}/${u.of}` }
+    if (n || frac){ const num = `${n ? group(n) : ""}${frac}`; out.push(u.pre ? `${u.sym}${num}` : `${num}${u.sym}`) }
+  });
+  return out.join(" ") || "nothing";
+}
+const regionCoin = region => { const c = TD.equip?.currency || {}; return c[region] ?? c.default ?? null };
+function rowDays(row, region){                    // [low, high] in Days, or null where the coin has no Day
+  const E = TD.equip, cid = row.in || E.currency.default, rc = region ? regionCoin(region) : null;
+  let cur = E.currencies[cid];
+  if (rc && E.currencies[rc].coin === cur.coin) cur = E.currencies[rc];
+  if (!cur.day) return null;
+  const [lo, hi] = Array.isArray(row.price) ? row.price : [row.price, row.price];
+  return [lo / cur.day, hi / cur.day];
+}
+function linked(row, key, value, region){
+  const links = typeof row[key] === "string" ? [row[key]] : row[key] || [];
+  return links.includes(value) && (row.regions || [region]).includes(region);
+}
+function kitValue(region, kit, weapon){           // {days, unpriced}: issued kit and weapon, ranges at their middle
+  let total = 0; const unpriced = [];
+  for (const [key, value] of [["kit", kit], ["weapon", weapon]]){
+    if (key === "kit" && value === "none") continue;
+    const found = (TD.equip?.items || []).filter(r => linked(r, key, value, region)), spans = found.map(r => rowDays(r, region));
+    if (!found.length || spans.some(s => s === null)){ unpriced.push(value); continue }
+    total += spans.reduce((a, [lo, hi]) => a + (lo + hi) / 2, 0);
+  }
+  return { days: total, unpriced };
+}
+function purseFor(region, terms){                 // {days, text}: Days per term, and that sum in his army's coin
+  const days = (TD.money?.purse_days_per_term || 0) * terms, cid = regionCoin(region), cur = cid ? TD.equip.currencies[cid] : null;
+  return { days, text: cur && cur.day ? fmtMoney(cur, days * cur.day) : null };
+}
+const daysText = x => (x < 1 ? "under 1" : group(Math.round(x)));
+function moneyLine(c){                            // as money.py money_line
+  const v = kitValue(c.region, c.kit, c.weapon), p = purseFor(c.region, c.terms);
+  const kit = v.unpriced.length && !v.days ? "kit not priced" : `kit worth about ${daysText(v.days)} Days${v.unpriced.length ? " (part not priced)" : ""}`;
+  return `${kit[0].toUpperCase()}${kit.slice(1)}; purse ${p.days} Days${p.text ? ` (${p.text})` : ""}`;
+}

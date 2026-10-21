@@ -40,6 +40,12 @@ Agility for the legs, Endurance for the body).
 (rounded down), plus what he gained, to {{skill_max}} at most. His kit and weapon come with
 his first career and his region.
 
+**Money.** A **Day** is a common soldier's day's pay in his army's coin: {{day_coin}} for an
+English archer. Each character starts with **{{purse_days}} Days** saved for each career term,
+so a leader of three terms has {{purse_three}} Days ({{purse_three_coin}}). His issued kit and
+weapon cost him nothing; the team builder shows what they are worth in Days. In camp, a man who
+spends a day of rest earning money gets **{{earn_days}} Day** for it.
+
 !!! example "The retinue: {{ex.arch}}"
     The team builder rolls a lord's retinue from England: {{ex.lead}}, a man-at-arms, leads
     it. Its senior archer is **{{ex.arch}}**, {{ex.a_terms}} terms, age {{ex.a_age}}:

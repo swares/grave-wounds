@@ -1,0 +1,154 @@
+# Prices for the medieval era (c.1250-1460), anchored on England c.1415-1461 (Agincourt,
+# Towton). Read by gravewounds/money.py; the team builder prices each character's issued kit
+# and gives him a purse from these.
+#
+# currencies - each army's coin. Prices are whole numbers of the coin's smallest unit (`base`):
+#              units (largest first, `of` = how many base units) or a decimal coin. `day` is a
+#              common soldier's day's pay in base units (none where no pay figure is known);
+#              `coin` groups coins that are the same money.
+# currency   - which coin each army (region) was paid in; default for any not listed.
+# items      - id, name, cat (category), price (base units, or [low, high]), in (a coin other
+#              than the default), per (the unit: lb, yard), when (the year or years), kit / weapon
+#              (the armor.yaml kits or weapons.yaml weapons the row prices: a kit or weapon may
+#              be several rows), regions (only these armies), source {url, note}, approx: true
+#              (no source found: an estimate).
+# The prices, their sources and the gaps are set out in the project doc "Grave Wounds: money
+# and price lists by period book".
+id: medieval
+
+currencies:
+  gbp:
+    name: "English pounds, shillings and pence"
+    coin: gbp
+    base: farthing
+    units: [{sym: "£", of: 960, pre: true}, {sym: "s", of: 48}, {sym: "d", of: 4}]
+    day: 24
+    day_note: "an archer's 6d a day (1415)"
+  livre_t:
+    name: "French livres tournois (20 sous, 240 deniers)"
+    coin: livre_t
+    base: denier
+    units: [{sym: " l.", of: 240}, {sym: " s.", of: 12}, {sym: " d.", of: 1}]
+    day_note: "no French soldier's pay found for 1415"
+  bezant:
+    name: "Saracen bezants of Acre (24 quarrobles)"
+    coin: bezant
+    base: quarroble
+    units: [{sym: " bezants", of: 24}, {sym: " q.", of: 1}]
+    day: 8
+    day_note: "a crossbowman at Acre, about 10½ bezants a month (1266)"
+  gotland:
+    name: "Gotland marks (8 öre, 24 örtugar, 288 penningar)"
+    coin: gotland
+    base: penning
+    units: [{sym: " marks", of: 288}, {sym: " örtugar", of: 12}, {sym: " pen.", of: 1}]
+    day_note: "no soldier's pay found for 1361"
+
+currency: {default: gbp, france: livre_t, latin_east: bezant, baltic: gotland}
+
+sources:
+  rogers: &rogers "https://archive.org/details/historyofagricul04rogeuoft"
+  ucdavis: &ucdavis "http://medieval.ucdavis.edu/120D/Money.html"
+  howard: &howard "https://www.tota.world/article/2137/"
+  vch: &vch "https://prod.british-history.ac.uk/node/15304"
+  bvm: &bvm "https://bowvsmusket.com/2015/07/01/16th-century-prices-of-weapons/"
+  lum: &lum "https://luminarium.org/medlit/medprice.htm"
+  mseffie: &mseffie "https://mseffie.com/assignments/canterbury_tales/medieval_prices.html"
+
+items:
+  # Armour
+  - {id: milanese_harness, name: "Milanese harness, ready-made", cat: armour, price: 8000, when: "1441", kit: full_plate, source: {url: *ucdavis, note: "UC Davis price list"}}
+  - {id: squire_armour, name: "Squire's armour", cat: armour, price: [4800, 6560], when: "1441", kit: transitional, source: {url: *ucdavis, note: "UC Davis price list"}}
+  - {id: brigandine, name: "Brigandine", cat: armour, price: [576, 1440], when: "1460s", kit: brigandine_sallet, source: {url: *howard, note: "Howard household accounts"}}
+  - {id: sallet_visor, name: "Sallet with half-visor", cat: armour, price: 352, when: "1460s", kit: brigandine_sallet, source: {url: *howard, note: "Howard household accounts"}}
+  - {id: shaffron, name: "Shaffron (horse's head armour)", cat: armour, price: 200, when: "1460s", source: {url: *howard, note: "Howard household accounts"}}
+  - {id: sallet_plain, name: "Plain sallet", cat: armour, price: 96, when: "1460s", kit: jack_sallet, source: {url: *howard, note: "Howard household accounts"}}
+  - {id: doublet_fence, name: "Doublet of fence (a padded jack)", cat: armour, price: 80, when: "1460s", kit: jack_sallet, source: {url: *howard, note: "Howard household accounts; may be the making only"}}
+  - {id: mail_hauberk, name: "Mail hauberk", cat: armour, price: [960, 1920], kit: hauberk, approx: true}
+  - {id: gambeson, name: "Gambeson (padded coat)", cat: armour, price: [240, 480], kit: gambeson, approx: true}
+  - {id: leather_coat, name: "Hardened leather coat", cat: armour, price: [240, 480], kit: leather, approx: true}
+  # Weapons
+  - {id: crossbow, name: "Crossbow", cat: weapon, price: [240, 960], weapon: crossbow, approx: true}
+  - {id: sword, name: "Soldier's sword", cat: weapon, price: 288, when: "16th c.", weapon: sword, source: {url: *bvm, note: "Roberts, 16th-century prices"}}
+  - {id: poleaxe, name: "Poleaxe", cat: weapon, price: [144, 288], weapon: poleaxe, approx: true}
+  - {id: arrows_sheaf, name: "Sheaf of 24 arrows", cat: ammunition, price: 192, when: "1482", weapon: [longbow, bow], source: {url: "https://ereed.org/records/suffk-rid238/", note: "REED Suffolk, Howard household"}}
+  - {id: longbow, name: "Longbow", cat: weapon, price: [96, 160], when: "16th c.", weapon: [longbow, bow], source: {url: *bvm, note: "Roberts, 16th-century prices"}}
+  - {id: war_axe, name: "War axe", cat: weapon, price: [48, 144], weapon: axe, approx: true}
+  - {id: bill, name: "Bill", cat: weapon, price: [48, 96], weapon: bill, approx: true}
+  - {id: spear, name: "Spear", cat: weapon, price: [24, 96], weapon: spear, approx: true}
+  - {id: bow_stave, name: "Bow stave", cat: weapon, price: [20, 76], when: "1483", source: {url: "https://en.wikipedia.org/wiki/English_longbow", note: "Wikipedia, English longbow"}}
+  - {id: dagger, name: "Dagger", cat: weapon, price: [16, 48], weapon: dagger, approx: true}
+  # Horses
+  - {id: destrier, name: "Great destrier", cat: horse, price: [76800, 96000], when: "13th-14th c.", source: {url: "https://en.wikipedia.org/wiki/Destrier", note: "Wikipedia, Destrier"}}
+  - {id: warhorse, name: "Warhorse", cat: horse, price: [7680, 12800], when: "1337", source: {url: "https://hull-repository.worktribe.com/OutputFile/4210487", note: "Hull thesis"}}
+  - {id: hackney, name: "Riding horse (hackney)", cat: horse, price: [640, 1920], approx: true}
+  - {id: packhorse, name: "Packhorse", cat: horse, price: [480, 960], approx: true}
+  - {id: saddle, name: "Saddle", cat: horse, price: [96, 480], approx: true}
+  # Clothing: a working man's set
+  - {id: gown_good, name: "Gown in good cloth", cat: clothing, price: 960, source: {url: *lum, note: "from Dyer's yardage"}}
+  - {id: cloth_good, name: "Good cloth (tawny, russet)", cat: clothing, price: 288, per: yard, when: "1480", source: {url: *ucdavis, note: "UC Davis price list"}}
+  - {id: cloak_frieze, name: "Cloak of 3-4 yards of frieze", cat: clothing, price: 144, approx: true}
+  - {id: doublet, name: "Doublet", cat: clothing, price: [96, 240], approx: true}
+  - {id: double_cap, name: "Double cap", cat: clothing, price: 80, when: "1455", source: {url: *rogers, note: "Rogers IV p.606"}}
+  - {id: boots, name: "Boots", cat: clothing, price: [48, 120], when: "1454-72", source: {url: *rogers, note: "Rogers IV p.606"}}
+  - {id: felt_hat, name: "Felt hat", cat: clothing, price: 40, when: "1457", source: {url: *rogers, note: "Rogers IV p.606"}}
+  - {id: frieze, name: "Frieze (rough wool cloth)", cat: clothing, price: [32, 52], per: yard, when: "1431", source: {url: *rogers, note: "Rogers IV p.593"}}
+  - {id: shoes, name: "Shoes", cat: clothing, price: 26, when: "1457", source: {url: *rogers, note: "Rogers IV p.606"}}
+  - {id: shirt, name: "Linen shirt", cat: clothing, price: 24, when: "1482", source: {url: *rogers, note: "Rogers IV p.579"}}
+  - {id: hood, name: "Hood", cat: clothing, price: 24, approx: true}
+  - {id: hose, name: "Hose", cat: clothing, price: 20, source: {url: *rogers, note: "Rogers IV p.606"}}
+  - {id: gloves, name: "Gloves", cat: clothing, price: 16, when: "1457", source: {url: *rogers, note: "Rogers IV p.607"}}
+  - {id: girdle, name: "Belt (girdle)", cat: clothing, price: 16, source: {url: *rogers, note: "Rogers IV p.607 (OCR to check)"}}
+  - {id: purse, name: "Purse", cat: clothing, price: 6, when: "1470s", source: {url: *ucdavis, note: "UC Davis price list"}}
+  # Food and drink
+  - {id: ox, name: "Ox", cat: food, price: 720, when: "1434", source: {url: *vch, note: "VCH Middlesex"}}
+  - {id: pig, name: "Pig", cat: food, price: [96, 160], when: "1434", source: {url: *vch, note: "VCH Middlesex"}}
+  - {id: sheep, name: "Sheep", cat: food, price: 68, when: "14th c.", source: {url: *mseffie, note: "Jusserand"}}
+  - {id: wheat, name: "Wheat", cat: food, price: 32, per: bushel, when: "1434", source: {url: *vch, note: "VCH Middlesex"}}
+  - {id: salt, name: "Salt", cat: food, price: 28, per: bushel, when: "1434", source: {url: *vch, note: "VCH Middlesex"}}
+  - {id: wine, name: "Wine (Gascon to Rhenish)", cat: food, price: [16, 32], per: gallon, when: "1331", source: {url: *mseffie, note: "Myers"}}
+  - {id: eggs, name: "Eggs", cat: food, price: 20, per: "100", when: "1434", source: {url: *vch, note: "VCH Middlesex"}}
+  - {id: goose, name: "Goose", cat: food, price: 16, when: "1434", source: {url: *vch, note: "VCH Middlesex"}}
+  - {id: food_day, name: "A yeoman's food for a day", cat: food, price: 12, when: "c.1380", source: {url: *lum, note: "Dyer"}}
+  - {id: hen, name: "Hen", cat: food, price: 8, when: "1434", source: {url: *vch, note: "VCH Middlesex"}}
+  - {id: ale, name: "Good ale", cat: food, price: [4, 5], per: gallon, source: {url: *ucdavis, note: "UC Davis price list"}}
+  # Lodging, light, shelter, navigation, fire, rope
+  - {id: inn_bed, name: "Bed at an inn, a night", cat: lodging, price: [4, 8], when: "1331", source: {url: *lum, note: "Jusserand"}}
+  - {id: lodging_acre, name: "A knight's lodging at Acre, a month", cat: lodging, in: bezant, price: [72, 216], when: "1266", regions: [latin_east], source: {url: "https://cornellpress.manifoldapp.org/read/a-crusader-s-death-and-life-in-acre/section/14eea136-fe5b-464b-b25e-44618e97d2c6", note: "Eudes of Nevers' accounts"}}
+  - {id: courier_paris, name: "Courier to Paris", cat: service, in: livre_t, price: 1200, when: "1415", regions: [france], source: {url: "https://www.quaritch.com/books/hundred-years-war/royal-order-in-french-authorising-payment-to-vario/M846/", note: "Quaritch, royal order"}}
+  - {id: great_lantern, name: "Great lantern", cat: light, price: 112, when: "1478", source: {url: *rogers, note: "Rogers IV p.441"}}
+  - {id: horn_lantern, name: "Horn lantern (iron frame)", cat: light, price: 32, source: {url: *rogers, note: "Rogers IV p.441 (OCR to check)"}}
+  - {id: wax_candles, name: "Wax candles", cat: light, price: 26, per: lb, source: {url: *ucdavis, note: "UC Davis price list"}}
+  - {id: wick_yarn, name: "Candle wick yarn", cat: light, price: 24, per: lb, when: "1455", source: {url: *rogers, note: "Rogers IV p.394"}}
+  - {id: tallow_candles, name: "Tallow candles", cat: light, price: 6, per: lb, source: {url: *ucdavis, note: "UC Davis price list"}}
+  - {id: lamp_glass, name: "Glass for an oil lamp", cat: light, price: 6, when: "1452", source: {url: *rogers, note: "Rogers IV p.660"}}
+  - {id: pavilion, name: "Canvas for a lord's pavilion", cat: shelter, price: 3456, when: "1513", source: {url: "https://www.scottisharchivesforschools.org/Flodden/InvasionSource02.asp", note: "Scottish Archives, Flodden"}}
+  - {id: soldier_tent, name: "Soldier's tent of oiled cloth", cat: shelter, price: 480, approx: true}
+  - {id: sheets, name: "Pair of sheets", cat: shelter, price: 168, when: "1450", source: {url: *rogers, note: "Rogers IV p.602"}}
+  - {id: blanket_cloth, name: "Blanket cloth", cat: shelter, price: 56, per: yard, when: "1447", source: {url: *rogers, note: "Rogers IV p.593"}}
+  - {id: blanket, name: "Blanket", cat: shelter, price: 48, approx: true}
+  - {id: canvas, name: "Canvas", cat: shelter, price: [6, 18], per: ell, source: {url: *rogers, note: "Rogers IV p.579, p.601"}}
+  - {id: mattress, name: "Mattress", cat: shelter, price: 8, when: "1457", source: {url: *ucdavis, note: "UC Davis price list"}}
+  - {id: compass_ship, name: "Mariner's compass (ships only)", cat: navigation, price: 128, when: "1561", source: {url: *rogers, note: "Rogers IV p.659"}}
+  - {id: guide_night, name: "Guide for a night", cat: navigation, price: 4, when: "14th c.", source: {url: *ucdavis, note: "UC Davis price list"}}
+  - {id: flint_steel, name: "Flint, fire-steel and fungus tinder", cat: fire, price: 8, approx: true}
+  - {id: hemp, name: "Hemp", cat: rope, price: 40, per: stone, source: {url: *rogers, note: "Rogers IV p.480 (OCR to check)"}}
+  - {id: halter, name: "Halter", cat: rope, price: 8, approx: true}
+  - {id: rope, name: "Rope", cat: rope, price: 4, per: fathom, approx: true}
+  - {id: oakum, name: "Oakum (loose hemp)", cat: rope, price: 4, per: lb, source: {url: *rogers, note: "Rogers IV p.480"}}
+  # Gear
+  - {id: cooking_pot, name: "Brass cooking pot", cat: gear, price: [48, 144], approx: true}
+  - {id: chest, name: "Chest", cat: gear, price: 104, when: "1457", source: {url: *ucdavis, note: "UC Davis price list"}}
+  - {id: tool_axe, name: "Axe (tool)", cat: gear, price: 20, when: "1457", source: {url: *ucdavis, note: "UC Davis price list"}}
+  - {id: sheet, name: "Sheet", cat: gear, price: 16, when: "1457", source: {url: *ucdavis, note: "UC Davis price list"}}
+  - {id: spade, name: "Spade and shovel", cat: gear, price: 12, when: "1457", source: {url: *ucdavis, note: "UC Davis price list"}}
+  # First aid
+  - {id: saffron, name: "Saffron", cat: first_aid, price: 704, per: lb, when: "1438", source: {url: "https://www.economics.utoronto.ca/munro5/SpicePrices15thCentToronto2.pdf", note: "Munro spice prices, Oxford"}}
+  - {id: ginger, name: "Ginger", cat: first_aid, price: 112, per: lb, when: "1438", source: {url: "https://www.economics.utoronto.ca/munro5/SpicePrices15thCentToronto2.pdf", note: "Munro spice prices, Oxford"}}
+  - {id: sugar, name: "Sugar", cat: first_aid, price: 96, per: lb, when: "1438", source: {url: "https://www.economics.utoronto.ca/munro5/SpicePrices15thCentToronto2.pdf", note: "Munro spice prices, Oxford"}}
+  - {id: surgeon_day, name: "Army surgeon, a day (assistant 6d)", cat: service, price: 48, when: "1415", source: {url: "https://dorkingmuseum.org.uk/?p=14962", note: "Dorking Museum, Morstede"}}
+  - {id: honey, name: "Honey (for wounds)", cat: first_aid, price: 44, per: gallon, source: {url: *rogers, note: "Rogers IV p.387 (OCR to check)"}}
+  - {id: linen_bandage, name: "Linen for bandages", cat: first_aid, price: 16, per: ell, when: "1482", source: {url: *rogers, note: "Rogers IV p.579"}}
+  - {id: salve, name: "Salve or plaster", cat: first_aid, price: 8, approx: true}
+  # Ransom
+  - {id: ransom_man_at_arms, name: "Ransom of a man-at-arms taken at Agincourt (650 ducats and up)", cat: service, price: 129600, when: "1415", source: {url: "https://www.macs.hw.ac.uk/~hwloidl/hundredyearswar.com/Books/History/Some_Agi.htm", note: "fan site; weak"}}

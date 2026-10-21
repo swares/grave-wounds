@@ -1,0 +1,105 @@
+# Prices for the First World War (1914-1918). Format as data/equipment/medieval.yaml.
+# British prices in farthings; American (the 1917 Sears military catalogue) in cents; German in
+# pfennigs; French in centimes.
+id: wwi
+
+currencies:
+  gbp:
+    name: "Pounds, shillings and pence (10s and £1 Treasury notes from 1914)"
+    coin: gbp
+    base: farthing
+    units: [{sym: "£", of: 960, pre: true}, {sym: "s", of: 48}, {sym: "d", of: 4}]
+    day: 48
+    day_note: "a British private's 1s a day (1914)"
+  usd:
+    name: "Dollars and cents"
+    coin: usd
+    base: cent
+    decimal: {sym: "$", per: 100, small: "¢"}
+    day: 100
+    day_note: "a US private's $30 a month (1917-18)"
+  mark:
+    name: "Marks (100 pfennigs)"
+    coin: mark
+    base: pfennig
+    decimal: {sym: "", suf: " M", per: 100, small: " Pf"}
+    day: 50
+    day_note: "about 50 pfennigs a day: an estimate, no source found"
+  frf:
+    name: "Francs (100 centimes)"
+    coin: frf
+    base: centime
+    decimal: {sym: "", suf: " fr", per: 100, small: " c."}
+    day_note: "no French soldier's pay found"
+
+currency: {default: gbp, us: usd, germany: mark, france: frf}
+
+sources:
+  sears: &sears "https://www.gutenberg.org/ebooks/54213.txt.utf-8"
+  gwf: &gwf "https://www.greatwarforum.org/topic/120780-price-of-loaf-of-bread-1914-18/"
+  hull: &hull "https://ww1hull.com/?p=44926"
+  nzef: &nzef "https://rnzaoc.com/wp-content/uploads/2018/08/instructions-regarding-care-issue-and-accounting-for-ordnance-stores-nzef-in-the-uk.pdf"
+
+items:
+  # Vehicles, horses
+  - {id: model_t, name: "Ford Model T, touring car", cat: travel, in: usd, price: 49000, when: "1914", source: {url: "https://www.thehenryford.org/collections-and-research/digital-collections/artifact/163928", note: "The Henry Ford"}}
+  - {id: remount, name: "Army remount horse, bought and delivered", cat: horse, price: 54720, when: "1914-20", source: {url: "https://blog.nationalarchives.gov.uk/making-horses-war-army-remount-service/", note: "National Archives, from totals"}}
+  - {id: motorcycle, name: "Motorcycle", cat: travel, price: [38400, 67200], approx: true}
+  - {id: bicycle, name: "Bicycle", cat: travel, price: [4800, 7680], approx: true}
+  # Arms and armour
+  - {id: smle, name: "SMLE rifle (to the War Office)", cat: weapon, price: 3600, weapon: rifle_service, regions: [british], source: {url: "https://en.wikipedia.org/wiki/Lee%E2%80%93Enfield", note: "Wikipedia"}}
+  - {id: webley, name: "Webley revolver (contract)", cat: weapon, price: 2932, when: "1887", weapon: pistol_smg, regions: [british], source: {url: "https://en.wikipedia.org/wiki/Webley_Revolver", note: "Wikipedia, citing Skennerton"}}
+  - {id: gewehr_98, name: "Gewehr 98 rifle", cat: weapon, in: mark, price: [4000, 6000], weapon: rifle_service, regions: [germany], approx: true}
+  - {id: bayonet, name: "Sword bayonet and scabbard", cat: weapon, price: 1020, when: "1919", source: {url: "https://nationalarchives.gov.fk/jdownloads/Defence%20and%20War/FIDF/DEF-FID-1-34.%20Crown%20Agents.%20Advising%20placing%20of%20order%20for%20rifles%20for%20Volunteers.pdf", note: "Falklands archives"}}
+  - {id: ammo_303, name: "100 rounds of .303", cat: ammunition, price: 480, approx: true}
+  - {id: mills_bomb, name: "Mills bomb", cat: weapon, price: [48, 72], weapon: hand_grenade, regions: [british], approx: true}
+  - {id: brodie, name: "Brodie steel helmet", cat: armour, price: [144, 240], kit: ww2_rifleman, regions: [british], approx: true}
+  # Food, drink, lodging, travel
+  - {id: tobacco, name: "Pipe tobacco", cat: food, price: [308, 392], per: lb, source: {url: *hull, note: "WW1 Hull"}}
+  - {id: hotel, name: "Hotel night, provincial", cat: lodging, price: [144, 240], approx: true}
+  - {id: butter, name: "Butter", cat: food, price: 72, per: lb, when: "1914", source: {url: *gwf, note: "Great War Forum, 1914 cap"}}
+  - {id: bacon, name: "Bacon", cat: food, price: 56, per: lb, when: "1914", source: {url: *gwf, note: "Great War Forum"}}
+  - {id: egg_chips, name: "Egg and chips in an estaminet", cat: food, in: frf, price: 100, approx: true}
+  - {id: loaf, name: "4-lb loaf", cat: food, price: [22, 36], when: "1914-18", source: {url: "https://hansard.parliament.uk/html/Commons/1918-08-01/WrittenAnswers", note: "Hansard: 5½d in 1914, 9d in 1918"}}
+  - {id: rail_short, name: "Short rail trip", cat: travel, price: [24, 36], when: "1917", source: {url: *gwf, note: "Great War Forum"}}
+  - {id: kitchen_meal, name: "Communal kitchen meal", cat: food, price: 24, when: "1918", source: {url: *hull, note: "WW1 Hull"}}
+  - {id: beer, name: "Pint of beer", cat: food, price: [8, 20], source: {url: "https://www.beeradvocate.com/articles/18065/how-world-war-i-changed-pub-culture-and-beer-itself/", note: "BeerAdvocate: 4-5d in 1918"}}
+  - {id: woodbines, name: "Five Woodbine cigarettes", cat: food, price: 4, approx: true}
+  # Field kit
+  - {id: torch, name: "Electric torch (British)", cat: light, price: [96, 240], approx: true}
+  - {id: flashlight_3, name: "Three-cell flashlight", cat: light, in: usd, price: 105, when: "1917", source: {url: *sears, note: "Sears 1917"}}
+  - {id: flashlight_2, name: "Two-cell flashlight", cat: light, in: usd, price: 74, when: "1917", source: {url: *sears, note: "Sears 1917"}}
+  - {id: candle, name: "Candle", cat: light, price: 4, approx: true}
+  - {id: valise, name: "Officer's waterproof sleeping valise", cat: shelter, price: 2400, source: {url: "https://www.greatwarforum.org/topic/211692-officers-clothing-advert/", note: "Great War Forum, advert"}}
+  - {id: poncho_army, name: "Army poncho", cat: shelter, in: usd, price: 550, when: "1917", source: {url: *sears, note: "Sears 1917"}}
+  - {id: poncho_rubber, name: "Rubber-sheet poncho", cat: shelter, in: usd, price: 240, when: "1917", source: {url: *sears, note: "Sears 1917"}}
+  - {id: blanket, name: "Blanket", cat: shelter, price: 240, approx: true}
+  - {id: groundsheet, name: "Groundsheet (British)", cat: shelter, price: 192, approx: true}
+  - {id: binoculars, name: "Field binoculars", cat: navigation, price: [2880, 7680], approx: true}
+  - {id: watch_harrods, name: "Wristwatch with hunter lid (Harrods)", cat: navigation, price: 2880, when: "1917", source: {url: "https://vintagewatchstraps.com/blogadvertisingtrenchwatches.php", note: "VintageWatchStraps"}}
+  - {id: watch_officer, name: "Officer's wristwatch", cat: navigation, price: [960, 2880], approx: true}
+  - {id: prismatic_compass, name: "Prismatic compass", cat: navigation, price: [1920, 3840], approx: true}
+  - {id: watch_us, name: "Wristwatch, nickel to gold-filled", cat: navigation, in: usd, price: [268, 1350], when: "1917", source: {url: *sears, note: "Sears 1917"}}
+  - {id: compass_jewelled, name: "Jewelled pocket compass", cat: navigation, in: usd, price: 108, when: "1917", source: {url: *sears, note: "Sears 1917"}}
+  - {id: tommy_refill, name: "Tommy's Cooker refill", cat: fire, price: 96, when: "1916", source: {url: "https://en.wikipedia.org/wiki/Tommy_cooker", note: "Wikipedia"}}
+  - {id: tommy_cooker, name: "Tommy's Cooker", cat: fire, price: 48, when: "1916", source: {url: "https://en.wikipedia.org/wiki/Tommy_cooker", note: "Wikipedia"}}
+  - {id: matchbox_us, name: "Waterproof match box", cat: fire, in: usd, price: 46, when: "1917", source: {url: *sears, note: "Sears 1917"}}
+  - {id: tinned_heat, name: "Tinned Heat stove", cat: fire, price: 42, when: "1916", source: {url: "https://en.wikipedia.org/wiki/Tommy_cooker", note: "Wikipedia"}}
+  - {id: matches, name: "Three boxes of matches", cat: fire, price: 8, when: "1916", source: {url: "https://phillumeny.com/johnwalker/?p=1398", note: "Phillumeny"}}
+  - {id: rope, name: "Rope", cat: rope, price: 12, per: fathom, approx: true}
+  - {id: field_dressing, name: "First field dressing", cat: first_aid, price: 24, approx: true}
+  - {id: iodine, name: "Iodine ampoule", cat: first_aid, price: 8, approx: true}
+  # Clothing
+  - {id: officers_kit, name: "Officer's kit, jacket to greatcoat", cat: clothing, price: 13800, when: "1914", source: {url: "https://greatwarforum.org/topic/186577-cost-of-officers-equipment", note: "Great War Forum, quoting Behrend"}}
+  - {id: trench_coat, name: "Officer's trench coat", cat: clothing, price: 6048, when: "1914", source: {url: "https://blogs.kent.ac.uk/munitions-of-the-mind/2023/09/18/entrenched/", note: "University of Kent"}}
+  - {id: officers_jacket, name: "Officer's tailored jacket", cat: clothing, price: [2400, 3360], source: {url: "https://greatwarforum.org/topic/186577-cost-of-officers-equipment", note: "Great War Forum"}}
+  - {id: greatcoat, name: "Greatcoat (British)", cat: clothing, price: 960, approx: true}
+  - {id: boots, name: "Ammunition boots", cat: clothing, price: [576, 768], approx: true}
+  - {id: trousers, name: "Service trousers", cat: clothing, price: 492, when: "1918", source: {url: *nzef, note: "NZEF ordnance table"}}
+  - {id: vest, name: "Woollen vest", cat: clothing, price: 272, when: "1918", source: {url: *nzef, note: "NZEF ordnance table"}}
+  - {id: us_uniform, name: "US enlisted coat and trousers", cat: clothing, in: usd, price: 850, when: "1917", source: {url: *sears, note: "Sears 1917"}}
+  - {id: us_shoes, name: "US army shoes", cat: clothing, in: usd, price: 675, when: "1917", source: {url: *sears, note: "Sears 1917"}}
+  - {id: us_flannel_shirt, name: "Flannel shirt", cat: clothing, in: usd, price: 335, when: "1917", source: {url: *sears, note: "Sears 1917"}}
+  - {id: us_drawers, name: "Wool drawers", cat: clothing, in: usd, price: 265, when: "1917", source: {url: *sears, note: "Sears 1917"}}
+  - {id: us_hat, name: "Campaign hat", cat: clothing, in: usd, price: 250, when: "1917", source: {url: *sears, note: "Sears 1917"}}
+  - {id: us_puttees, name: "Puttees, canvas", cat: clothing, in: usd, price: 125, when: "1917", source: {url: *sears, note: "Sears 1917"}}

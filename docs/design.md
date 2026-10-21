@@ -223,7 +223,7 @@ Later eras add their own diet diseases: beriberi on polished-rice rations, pella
 
 History gives the weather its weight: chroniclers say rain slackened the Genoese crossbow strings at Crécy in 1346, the French advanced through deep mud at Agincourt in 1415, and rain-soaked ground delayed the start of Waterloo in 1815.
 
-**Downtime.** Every day or week the team stops, each member who is not recovering takes one downtime action: nurse a patient (the patient's care bonus comes from that skill), train a skill, craft or repair, forage or scavenge, scout, earn money, or stand guard. A team that moves on instead travels at its slowest member's pace, carries the Grave on litters, and every condition rolls with the activity penalty, so recovery becomes a real decision rather than a rest button.
+**Downtime.** Every day or week the team stops, each member who is not recovering takes one downtime action: nurse a patient (the patient's care bonus comes from that skill), train a skill, craft or repair, forage or scavenge, scout, earn money (one Day, a common soldier's day's pay, for each day worked: data/money.yaml), or stand guard. A team that moves on instead travels at its slowest member's pace, carries the Grave on litters, and every condition rolls with the activity penalty, so recovery becomes a real decision rather than a rest button.
 
 ## Leading a team: fast, rich character generation
 

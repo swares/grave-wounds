@@ -159,7 +159,7 @@ const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").repl
 let T = TD.era;                                  // the chosen era's tables (team.js reads TD.era and TD.ranges)
 function setEra(id){
   const e = TD.eras[id] || Object.values(TD.eras)[0];
-  TD.era = e.era; TD.ranges = e.ranges; T = e.era;
+  TD.era = e.era; TD.ranges = e.ranges; TD.equip = e.equip; T = e.era;
 }
 const tplFollowers = id => (id === "own" ? [] : (byId(T.templates, id).followers || []).map(s => [...s]));
 const tplQuality = id => (id === "own" ? "default" : byId(T.templates, id).follower_quality || "default");
@@ -267,6 +267,7 @@ function sheetHtml(c, i){
     <div class="full muted">Untrained: ${others || "none"}</div>
     <div class="full arms">${esc(w.name)}: attack <b>${c.attack ?? "—"}%</b> · defence <b>${c.defence}%</b> · Nerve <b>${c.nerve}</b> · ${esc(kit.name)}</div>
     <div class="full muted" title="${pron("What his characteristics do in the wound roller", sx)}">In a fight: ${esc(fightLine(c))}</div>
+    ${TD.equip ? `<div class="full muted money" title="A Day is a common soldier's day's pay in his army's coin">${esc(moneyLine(c))}</div>` : ""}
     <ol class="full life">${life}</ol>
     <div class="tools"><button class="small" data-reroll="${i}">${pron("Reroll him", sx)}</button></div>
   </article>`;

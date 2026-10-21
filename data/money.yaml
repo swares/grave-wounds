@@ -1,0 +1,7 @@
+# Money rules for every era (gravewounds/money.py). A Day is a common soldier's day's pay in his
+# army's coin (each era's data/equipment/<era>.yaml gives it), so these rules read the same in
+# 1461 and 2008.
+#   purse_days_per_term - a new character's savings: this many Days for each career term
+#   earn_days_per_day   - the downtime action "earn money": Days earned for each day worked
+purse_days_per_term: 30
+earn_days_per_day: 1

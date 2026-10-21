@@ -628,7 +628,9 @@ def team_rules(d, eid: str = "medieval") -> list[str]:
         f"-{T['lasting']} to Wits (head), Presence (face), Strength (arms), Agility (legs) or Endurance (body).",
         f"<b>5. Skills and kit:</b> each skill starts at a characteristic divided as shown (rounded down), plus what he gained, at most {T['skill_max']}. "
         "His attack is the skill his weapon is fought with; his defence the better of Parry and Dodge; his Nerve the characteristic. "
-        "Kit and weapon come with his career and region (the table below).",
+        "Kit and weapon come with his career and region (the table below). He starts with "
+        f"{d.money.get('purse_days_per_term', 0)} Days' pay saved for each term (a Day is a common soldier's day's pay in his army's coin), "
+        f"and earns {d.money.get('earn_days_per_day', 0)} Day for each day of rest spent earning money.",
         _follower_rule(d, T),
     ]
 
@@ -1924,6 +1926,17 @@ def index_page(d) -> str:
     return out
 
 
+def equip_bundle(d, eid: str) -> dict | None:
+    """What the team builder needs of an era's prices (data/equipment): its coins, which coin each
+    army was paid in, and the rows that price an issued armour kit or weapon."""
+    E = d.equipment.get(eid)
+    if not E:
+        return None
+    keep = ("id", "price", "in", "kit", "weapon", "regions")
+    rows = [{k: r[k] for k in keep if k in r} for r in E["items"] if r.get("kit") or r.get("weapon")]
+    return {"currencies": E["currencies"], "currency": E["currency"], "items": rows}
+
+
 def team_bundle(d) -> dict:
     """What the team builder needs: every era's tables and old-wound location ranges (TD.eras;
     the page points TD.era and TD.ranges at the one chosen), and the names, kits and weapons its
@@ -1934,9 +1947,9 @@ def team_bundle(d) -> dict:
         kits |= {c["kit"].get(r["id"], c["kit"]["default"]) for c in T["careers"] for r in T["regions"]}
         weapons |= set(T["weapon_skill"]) | {c["wound_weapon"] for c in T["careers"]}
         weapons |= {c["weapon"].get(r["id"], c["weapon"]["default"]) for c in T["careers"] for r in T["regions"]}
-    eras = {eid: {"era": d.teams[eid], "ranges": old_wound_ranges(d, eid)} for eid in team_eras(d)}
+    eras = {eid: {"era": d.teams[eid], "ranges": old_wound_ranges(d, eid), "equip": equip_bundle(d, eid)} for eid in team_eras(d)}
     first = team_eras(d)[0]
-    return {"eras": eras, "era": eras[first]["era"], "ranges": eras[first]["ranges"],
+    return {"eras": eras, "era": eras[first]["era"], "ranges": eras[first]["ranges"], "equip": eras[first]["equip"], "money": d.money,
             "locs": {l["id"]: {"name": l["name"], "zone": l["zone"], "class": l["class"]} for l in d.locations},
             "kits": {k: d.armor["kits"][k] for k in sorted(kits)},
             "fight": {"blood_pool": d.wounds["tracking"]["blood_pool"], "chr": d.wounds["combat"]["characteristics"]},

@@ -5002,7 +5002,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 **4. Old wounds:** a row marked * leaves an old wound, as does d100 at or under the career's old-wound %. Roll its location on the region's wound table for the weapon shown, then d100: 70 or less a healed scar; more, a lasting hurt: -5 to Wits (head), Presence (face), Strength (arms), Agility (legs) or Endurance (body).
 
-**5. Skills and kit:** each skill starts at a characteristic divided as shown (rounded down), plus what he gained, at most 90. His attack is the skill his weapon is fought with; his defence the better of Parry and Dodge; his Nerve the characteristic. Kit and weapon come with his career and region (the table below).
+**5. Skills and kit:** each skill starts at a characteristic divided as shown (rounded down), plus what he gained, at most 90. His attack is the skill his weapon is fought with; his defence the better of Parry and Dodge; his Nerve the characteristic. Kit and weapon come with his career and region (the table below). He starts with 30 Days' pay saved for each term (a Day is a common soldier's day's pay in his army's coin), and earns 1 Day for each day of rest spent earning money.
 
 **Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
 

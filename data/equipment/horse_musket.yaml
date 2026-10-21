@@ -1,0 +1,101 @@
+# Prices for the horse-and-musket era (1775-1815). Format as data/equipment/medieval.yaml.
+# British prices in farthings; American prices in cents (the Spanish dollar, then the US dollar
+# from 1792); French in centimes (81 livres made 80 francs, so livres are taken as francs).
+id: horse_musket
+
+currencies:
+  gbp:
+    name: "Pounds, shillings and pence (guinea 21s)"
+    coin: gbp
+    base: farthing
+    units: [{sym: "£", of: 960, pre: true}, {sym: "s", of: 48}, {sym: "d", of: 4}]
+    day: 48
+    day_note: "a British private's 1s a day (1812-15)"
+  usd:
+    name: "Dollars and cents"
+    coin: usd
+    base: cent
+    decimal: {sym: "$", per: 100, small: "¢"}
+    day: 27
+    day_note: "a US private's $8 a month (1812)"
+  usd_continental:
+    name: "Dollars in hard money (Continental paper fell to 100 for 1 by 1780)"
+    coin: usd
+    base: cent
+    decimal: {sym: "$", per: 100, small: "¢"}
+    day: 20
+    day_note: "a Continental private's $6 a month (1776)"
+  frf:
+    name: "Francs (100 centimes); livres before 1795"
+    coin: frf
+    base: centime
+    decimal: {sym: "", suf: " fr", per: 100, small: " c."}
+    day_note: "no French soldier's pay found"
+
+currency: {default: gbp, continental: usd_continental, us_1812: usd, french: frf}
+
+sources:
+  ob: &ob "https://www.oldbaileyonline.org/static/Coinage.jsp"
+  wd: &wd "https://wardepartmentpapers.org/document/41494/"
+  lc26: &lc26 "https://lewis-clark.org/day-by-day/26-may-1803/"
+  lc: &lc "https://lewis-clark.org/?p=39852"
+
+items:
+  # Arms
+  - {id: rifle_1776, name: "Rifle bought by the British Army", cat: weapon, price: 3024, when: "1776", weapon: rifle_flintlock, regions: [british_rev], source: {url: "https://95th-rifles.co.uk/equipment/baker-rifle", note: "3 guineas"}}
+  - {id: pennsylvania_rifle, name: "Pennsylvania rifle", cat: weapon, price: [2880, 4800], weapon: rifle_flintlock, regions: [continental, us_1812], approx: true}
+  - {id: baker_rifle, name: "Baker rifle", cat: weapon, price: 1728, when: "1800", weapon: rifle_flintlock, regions: [british_pen], source: {url: "https://95th-rifles.co.uk/equipment/baker-rifle", note: "95th Rifles"}}
+  - {id: brown_bess, name: "Brown Bess musket", cat: weapon, price: 884, when: "1795-1815", weapon: musket_smoothbore, regions: [british_rev, british_pen], source: {url: "https://www.martellotowers.co.uk/assets/fileman/Uploads/Documents/Brown_Bess_Musket.pdf", note: "Ordnance average"}}
+  - {id: us_musket, name: "US musket", cat: weapon, in: usd, price: 1233, when: "1796", weapon: musket_smoothbore, regions: [continental, us_1812], source: {url: "https://wardepartmentpapers.org/document/52709/", note: "War Department"}}
+  - {id: charleville, name: "Charleville musket", cat: weapon, in: frf, price: [1500, 2000], weapon: musket_smoothbore, regions: [french], approx: true}
+  - {id: pistol, name: "Flintlock pistol", cat: weapon, price: [960, 1920], weapon: pistol_flintlock, approx: true}
+  - {id: saber, name: "Cavalry saber", cat: weapon, price: [720, 1440], weapon: saber, approx: true}
+  - {id: cartridge_box, name: "Cartridge box and belt", cat: gear, in: usd, price: 133, when: "1796", source: {url: "https://wardepartmentpapers.org/document/52709/", note: "War Department"}}
+  - {id: bayonet, name: "Bayonet and scabbard", cat: weapon, in: usd, price: 100, when: "1796", source: {url: "https://wardepartmentpapers.org/document/52709/", note: "War Department"}}
+  - {id: gun_sling, name: "Gun sling", cat: gear, in: usd, price: 26, when: "1796", source: {url: "https://wardepartmentpapers.org/document/52709/", note: "War Department"}}
+  # Horses and travel
+  - {id: cavalry_horse, name: "Cavalry horse, hard money", cat: horse, in: usd_continental, price: 10000, when: "1780", source: {url: "https://founders.archives.gov/documents/Jefferson/01-03-02-0712", note: "Jefferson to Huntington"}}
+  - {id: coach_inside, name: "Stagecoach inside, London-Glasgow (404 miles)", cat: travel, price: 9984, when: "1812", source: {url: "https://www.gutenberg.org/files/58668/58668-h/58668-h.htm", note: "Stage-coach and Mail"}}
+  - {id: coach_outside, name: "Stagecoach outside, London-Glasgow", cat: travel, price: 6000, when: "1812", source: {url: "https://www.gutenberg.org/files/58668/58668-h/58668-h.htm", note: "Stage-coach and Mail"}}
+  - {id: waterman, name: "Waterman's fare across London", cat: travel, price: 24, source: {url: *ob, note: "Old Bailey Online"}}
+  # Food and lodging
+  - {id: room_week, name: "Unfurnished room, a week", cat: lodging, price: 64, source: {url: *ob, note: "Old Bailey Online"}}
+  - {id: loaf, name: "4-lb loaf", cat: food, price: [20, 40], when: "c.1800", source: {url: *ob, note: "over 1s at the 1810s peak"}}
+  - {id: ordinary, name: "Ordinary (meal of meat, broth and beer)", cat: food, price: 12, source: {url: *ob, note: "Old Bailey Online"}}
+  - {id: shared_bed, name: "Shared bed in a lodging house", cat: lodging, price: 8, source: {url: *ob, note: "Old Bailey Online"}}
+  - {id: gin, name: "Half-pint of gin", cat: food, price: 8, source: {url: *ob, note: "Old Bailey Online"}}
+  - {id: beer, name: "Quart of beer", cat: food, price: 4, source: {url: *ob, note: "Old Bailey Online"}}
+  - {id: coffee, name: "Cup of coffee", cat: food, price: 4, source: {url: *ob, note: "Old Bailey Online"}}
+  # Field kit
+  - {id: tin_lantern, name: "Tin lantern", cat: light, in: usd, price: 100, when: "1803", source: {url: "https://lewis-clark.org/?p=39778", note: "Lewis and Clark purchases"}}
+  - {id: tin_lamp, name: "Tin lamp", cat: light, in: usd, price: 25, when: "1803", source: {url: "https://lewis-clark.org/?p=39778", note: "Lewis and Clark purchases"}}
+  - {id: candles_box, name: "Box of candles", cat: light, price: 44, when: "1769", source: {url: "https://adverts250project.org/tag/candles/", note: "Williamsburg advert"}}
+  - {id: tent_making, name: "Making a tent of brown linen", cat: shelter, in: usd, price: 200, when: "1803", source: {url: *lc, note: "Lewis and Clark purchases"}}
+  - {id: oilcloth, name: "Oiled linen (oilcloth)", cat: shelter, price: 120, per: "square yard", when: "1803", source: {url: *lc, note: "Lewis and Clark purchases"}}
+  - {id: tent_linen, name: "Tent linen", cat: shelter, price: 72, per: yard, when: "1803", source: {url: *lc, note: "Lewis and Clark purchases"}}
+  - {id: blanket, name: "Blanket (army contract)", cat: shelter, in: usd, price: 133, when: "1791", source: {url: *wd, note: "War Department"}}
+  - {id: compass_silver, name: "Silver-plated pocket compass", cat: navigation, in: usd, price: 500, when: "1803", source: {url: "https://lewis-clark.org/day-by-day/31-may-1803/", note: "Lewis and Clark purchases"}}
+  - {id: compass_brass, name: "Brass pocket compass", cat: navigation, in: usd, price: 250, when: "1803", source: {url: "https://lewis-clark.org/day-by-day/31-may-1803/", note: "Lewis and Clark purchases"}}
+  - {id: tinderbox, name: "Flint, steel and tinderbox", cat: fire, price: 24, approx: true}
+  - {id: halter, name: "Halter", cat: rope, price: 48, approx: true}
+  - {id: rope, name: "Rope", cat: rope, price: 8, per: fathom, approx: true}
+  # First aid
+  - {id: instruments, name: "Small set of surgical instruments", cat: first_aid, in: usd, price: 950, when: "1803", source: {url: *lc26, note: "Lewis and Clark purchases"}}
+  - {id: medicine_chest, name: "Walnut medicine chest", cat: first_aid, in: usd, price: 450, when: "1803", source: {url: *lc26, note: "Lewis and Clark purchases"}}
+  - {id: tourniquet, name: "Tourniquet", cat: first_aid, in: usd, price: 350, when: "1803", source: {url: *lc26, note: "Lewis and Clark purchases"}}
+  - {id: lancets, name: "Three lancets", cat: first_aid, in: usd, price: 240, when: "1803", source: {url: *lc26, note: "Lewis and Clark purchases"}}
+  - {id: peruvian_bark, name: "Peruvian bark (for fever)", cat: first_aid, in: usd, price: 200, per: lb, when: "1803", source: {url: *lc26, note: "Lewis and Clark purchases"}}
+  - {id: laudanum, name: "Laudanum, 4 oz", cat: first_aid, in: usd, price: 50, when: "1803", source: {url: *lc26, note: "Lewis and Clark purchases"}}
+  - {id: lint, name: "Lint, 2 oz", cat: first_aid, in: usd, price: 25, when: "1803", source: {url: *lc26, note: "Lewis and Clark purchases"}}
+  # Clothing
+  - {id: mans_suit, name: "Man's suit", cat: clothing, price: 7680, source: {url: *ob, note: "Old Bailey Online"}}
+  - {id: british_suit, name: "British coat, waistcoat, breeches and shoes", cat: clothing, price: 1620, when: "1808", source: {url: "https://hansard.parliament.uk/html/Commons/1808-06-23/CommonsChamber", note: "Hansard, colonels' cost"}}
+  - {id: us_coat_new, name: "US uniform coat, new pattern", cat: clothing, in: usd, price: 850, when: "1800", source: {url: "https://founders.archives.gov/documents/Hamilton/02-01-02-2373", note: "Hodgdon to Hamilton"}}
+  - {id: us_coat_old, name: "US uniform coat, old pattern", cat: clothing, in: usd, price: 450, when: "1800", source: {url: "https://founders.archives.gov/documents/Hamilton/02-01-02-2373", note: "Hodgdon to Hamilton"}}
+  - {id: greatcoat, name: "British greatcoat", cat: clothing, price: 792, when: "1803", source: {url: "https://hansard.parliament.uk/html/Commons/1808-06-23/CommonsChamber", note: "Hansard"}}
+  - {id: shirt_british, name: "Soldier's shirt", cat: clothing, price: 240, when: "1813", source: {url: "https://warof1812.ca/shirts.htm", note: "warof1812.ca"}}
+  - {id: overalls, name: "Wool overalls", cat: clothing, in: usd, price: 150, when: "1791", source: {url: *wd, note: "War Department contract"}}
+  - {id: waistcoat, name: "Waistcoat (vest)", cat: clothing, in: usd, price: 125, when: "1791", source: {url: *wd, note: "War Department contract"}}
+  - {id: shirt_us, name: "Shirt", cat: clothing, in: usd, price: 90, when: "1791", source: {url: *wd, note: "War Department contract"}}
+  - {id: shoes_us, name: "Shoes", cat: clothing, in: usd, price: 80, when: "1791", source: {url: *wd, note: "War Department contract"}}
+  - {id: hat_us, name: "Hat", cat: clothing, in: usd, price: 60, when: "1791", source: {url: *wd, note: "War Department contract"}}
