@@ -1956,6 +1956,16 @@ def equip_bundle(d, eid: str) -> dict | None:
     return {"currencies": E["currencies"], "currency": E["currency"], "items": rows}
 
 
+def jobs_bundle(d, eid: str) -> dict | None:
+    """An era's jobs for the team builder's Find work panel (gravewounds/jobs.py), or None."""
+    from gravewounds.jobs import jobs
+    J = d.jobs.get(eid)
+    if not J:
+        return None
+    keep = ("id", "name", "what", "skill", "min", "pay", "term", "days", "lump", "per", "places", "who", "risk", "illegal", "hook", "wage", "approx")
+    return {"jobs": [{k: j[k] for k in keep if k in j} for j in jobs(d, eid)["jobs"]], "trouble": J["trouble"]}
+
+
 def team_bundle(d) -> dict:
     """What the team builder needs: every era's tables and old-wound location ranges (TD.eras;
     the page points TD.era and TD.ranges at the one chosen), and the names, kits and weapons its
@@ -1966,7 +1976,7 @@ def team_bundle(d) -> dict:
         kits |= {c["kit"].get(r["id"], c["kit"]["default"]) for c in T["careers"] for r in T["regions"]}
         weapons |= set(T["weapon_skill"]) | {c["wound_weapon"] for c in T["careers"]}
         weapons |= {c["weapon"].get(r["id"], c["weapon"]["default"]) for c in T["careers"] for r in T["regions"]}
-    eras = {eid: {"era": d.teams[eid], "ranges": old_wound_ranges(d, eid), "equip": equip_bundle(d, eid)} for eid in team_eras(d)}
+    eras = {eid: {"era": d.teams[eid], "ranges": old_wound_ranges(d, eid), "equip": equip_bundle(d, eid), "jobs": jobs_bundle(d, eid)} for eid in team_eras(d)}
     first = team_eras(d)[0]
     return {"eras": eras, "era": eras[first]["era"], "ranges": eras[first]["ranges"], "equip": eras[first]["equip"], "money": d.money,
             "locs": {l["id"]: {"name": l["name"], "zone": l["zone"], "class": l["class"]} for l in d.locations},
