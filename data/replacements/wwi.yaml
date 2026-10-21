@@ -1,0 +1,56 @@
+# Replacing losses for wwi (gravewounds/replace.py). 1 Day = 1s British; $1 American.
+# assigned - the army's own way of filling a gap: regions (armies), careers (any, or a list),
+#            terms (the experience he usually came with, or [low, high]), wait ([low, high] days
+#            from the loss to his arrival), places (none: anywhere), what, source or approx.
+# hire     - a man the team can engage: as above, with cost (Days, paid from a purse, for the
+#            lowest terms) and per_term (Days more for each term past it), and places to find him.
+# effects  - what becomes of a lost man's purse: share (his comrades divide it), heirs (it goes
+#            home) or lost (given away or gone with him); default, and an army's own under regions.
+id: wwi
+assigned:
+- id: base_depot
+  name: A reinforcement draft through the base depot
+  regions:
+  - british
+  careers: any
+  terms: 1
+  wait:
+  - 7
+  - 21
+  what: Recruits and men back from hospital alike went through the base depots on the coast, a fortnight in the Bull Ring at Étaples, then up the line.
+  source:
+    url: https://en.wikipedia.org/wiki/%C3%89taples_mutiny
+    note: about two weeks at Étaples
+- id: depot_division
+  name: A replacement from a depot division
+  regions:
+  - us
+  careers: any
+  terms: 1
+  wait:
+  - 7
+  - 30
+  what: With too few depot divisions, divisions were broken up for replacements; some reached the front not knowing how to load their rifles.
+  source:
+    url: https://tacticalnotebook.substack.com/p/battalion-an-organizational-study-669
+    note: a shortfall of 119,690 replacements by October 1918
+- id: ersatz
+  name: A draft from the depot battalion
+  regions:
+  - germany
+  - france
+  careers: any
+  terms: 1
+  wait:
+  - 7
+  - 21
+  what: Each regiment's depot (Ersatz) battalion trained and sent on its replacements.
+  approx: true
+hire: []
+effects:
+  default:
+    practice: heirs
+    what: His pay owed went to his next of kin, and his personal things (letters, photographs, watch) were sent home; a war gratuity followed.
+    source:
+      url: https://www.longlongtrail.co.uk/soldiers/how-to-research-a-soldier/records-of-military-deaths-burials-and-commemorations/soldiers-effects
+      note: soldiers' effects registers

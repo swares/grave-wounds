@@ -94,6 +94,7 @@ label.radio input{margin-top:4px}
 .work td.hire{min-width:110px}
 .work td.hire button{margin:0 4px 4px 0}
 .work .what{font-size:.8rem}
+.losses{columns:auto!important}
 .work .log{columns:auto;margin:10px 0 0;padding-left:22px;font-size:.88rem}
 .work .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .q-green{color:var(--muted)}.q-veteran{color:var(--blood);font-weight:600}
@@ -160,6 +161,7 @@ label.radio input{margin-top:4px}
       <h2 id="h-team" class="sr">The team</h2>
       <div class="sheets" id="sheets"><p class="muted">Pick where they come from and a team, then roll.</p></div>
       <div id="crew"></div>
+      <div id="losses"></div>
       <div id="work"></div>
     </section>
   </div>
@@ -177,7 +179,7 @@ const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").repl
 let T = TD.era;                                  // the chosen era's tables (team.js reads TD.era and TD.ranges)
 function setEra(id){
   const e = TD.eras[id] || Object.values(TD.eras)[0];
-  TD.era = e.era; TD.ranges = e.ranges; TD.equip = e.equip; TD.jobs = e.jobs; TD.keep = e.keep; T = e.era;
+  TD.era = e.era; TD.ranges = e.ranges; TD.equip = e.equip; TD.jobs = e.jobs; TD.keep = e.keep; TD.repl = e.repl; T = e.era;
 }
 const tplFollowers = id => (id === "own" ? [] : (byId(T.templates, id).followers || []).map(s => [...s]));
 const tplQuality = id => (id === "own" ? "default" : byId(T.templates, id).follower_quality || "default");
@@ -188,19 +190,26 @@ function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)) } catch (e) 
    writes it whenever it saves, and takes back what they changed when it is opened or comes back
    into view. */
 function pushPurses(){
-  if (!S.team.length) return;
+  const everyone = [...S.team, ...(S.losses || [])];
+  if (!everyone.length) return;
   const all = readPurses();
-  for (const c of S.team){
+  for (const c of everyone){
     c.pid ||= newPid();
-    all[c.pid] = { name: c.name, era: c.era || T.id, region: c.region, terms: c.terms, start: purseFor(c.region, c.terms, []).days, ledger: c.ledger || [] };
+    const was = all[c.pid] || {};
+    all[c.pid] = { ...was, name: c.name, era: c.era || T.id, region: c.region, terms: c.terms, start: purseFor(c.region, c.terms, []).days, ledger: c.ledger || [],
+      ...(c.lost ? { lost: { why: c.lost.why } } : {}) };
   }
   writePurses(all);
 }
-function pullPurses(){                            // -> true if any ledger changed elsewhere
+function pullPurses(){                            // -> true if a ledger changed elsewhere, or the roller or travel map lost a man
   const all = readPurses(); let changed = false;
-  for (const c of S.team){
+  for (const c of [...S.team, ...(S.losses || [])]){
     const p = c.pid && all[c.pid];
     if (p && JSON.stringify(p.ledger || []) !== JSON.stringify(c.ledger || [])){ c.ledger = p.ledger || []; changed = true }
+  }
+  for (const c of [...S.team]){
+    const p = c.pid && all[c.pid];
+    if (p && p.lost && !c.lost){ loseMember(S.team.indexOf(c), p.lost.why, true); changed = true }
   }
   return changed;
 }
@@ -227,6 +236,7 @@ function render(){
   renderWomen();
   renderFollowers();
   renderWork();
+  renderLosses();
   $("#msg").textContent = S.msg;
   $("#sheets").innerHTML = S.team.length ? S.team.map(sheetHtml).join("") : `<p class="muted">Pick where they come from and a team, then roll.</p>`;
   save();
@@ -308,7 +318,9 @@ function sheetHtml(c, i){
     <div class="full muted" title="${pron("What his characteristics do in the wound roller", sx)}">In a fight: ${esc(fightLine(c))}</div>
     ${TD.equip ? `<div class="full muted money" title="A Day is a common soldier's day's pay in his army's coin">${esc(moneyLine(c))}</div>${ledgerHtml(c, i)}` : ""}
     <ol class="full life">${life}</ol>
-    <div class="tools"><button class="small" data-reroll="${i}">${pron("Reroll him", sx)}</button></div>
+    ${c.joined ? `<div class="full muted">${esc(joinedText(c))}</div>` : ""}
+    ${S.losing === i ? loseForm(c, i) : ""}
+    <div class="tools"><button class="small" data-lose="${i}" title="${pron("Killed, taken, deserted or sent home: take him off the team and replace him", sx)}">Lost…</button><button class="small" data-reroll="${i}">${pron("Reroll him", sx)}</button></div>
   </article>`;
 }
 const PLACE_NAMES = { town: "a town", city: "a city", village: "a village", camp: "a camp", road: "on the road", frontier: "the frontier", sea: "at sea" };
@@ -327,7 +339,7 @@ function renderWork(){                           // Find work: the jobs going wh
       <td title="${esc(j.wage || "")}">${esc(payText(j))}</td><td>${esc(termText(j))}</td><td>${j.risk ? `${j.risk}%` : "none"}</td>
       <td class="hire">${hire || `<span class="muted">nobody</span>`}</td></tr>`;
   }).join("");
-  const totals = S.team.map((c, i) => [c.name, (S.worklog || []).filter(l => l.i === i).reduce((a, l) => a + l.earned, 0)]).filter(([, t]) => t);
+  const totals = S.team.map(c => [c.name, (S.worklog || []).filter(l => l.pid === c.pid).reduce((a, l) => a + l.earned, 0)]).filter(([, t]) => t);
   const log = (S.worklog || []).map(l => `<li>${esc(l.text)}</li>`).join("");
   box.innerHTML = `<section class="crew work" aria-labelledby="h-work"><h3 id="h-work">Find work</h3>
     <div class="row"><label for="sel-place">Where the team is</label><select id="sel-place">${places.map(p => `<option value="${p}"${p === S.place ? " selected" : ""}>${PLACE_NAMES[p]}</option>`).join("")}</select>
@@ -358,6 +370,85 @@ function spendFrom(i, days, what){                // take Days from his purse, o
   (c.ledger ||= []).push({ days: -days, what });
   S.msg = ""; render();
 }
+/* ---------- losses and replacements (team.js: replaceOptions, hireCost, effectsFor, settleLost) ---------- */
+const joinedText = c => c.joined.wait ? `Joins in ${c.joined.wait} day${c.joined.wait !== 1 ? "s" : ""}: ${c.joined.how}.` : `Joined: ${c.joined.how}.`;
+function loseForm(c, i){                          // why he is lost
+  return `<div class="full spend"><label>Lost: <select data-lose-why="${i}">${LOST_WHY.map(w => `<option>${w}</option>`).join("")}</select></label>
+    <button class="small" data-lose-ok="${i}">Take him off the team</button><button class="small" data-lose-cancel="1">Cancel</button></div>`;
+}
+function loseMember(i, why, auto = false){        // off the team and onto the losses; leadership passes to the most experienced left
+  const c = S.team[i]; if (!c) return;
+  c.lost = { why, auto, slot: i, settled: null, replaced: null };
+  S.team.splice(i, 1);
+  (S.losses ||= []).push(c);
+  if (c.leader && S.team.length){
+    c.leader = false;
+    const next = S.team.reduce((a, b) => (b.terms > a.terms ? b : a));
+    next.leader = true;
+    S.msg = `${c.name} is lost (${why}); ${next.name} leads now.`;
+  } else S.msg = `${c.name} is lost (${why}).`;
+  S.losing = null;
+}
+function lossHtml(c, k){                          // one lost man: settle his purse, then replace him
+  const career = byId(T.careers, c.career), L = c.lost, left = purseFor(c.region, c.terms, c.ledger).days;
+  const head = `<b>${esc(c.name)}</b>, ${esc(career.name.toLowerCase())}, ${c.terms} term${c.terms > 1 ? "s" : ""}: ${esc(L.why)}${L.auto ? " (from the roller or travel map)" : ""}.`;
+  if (!L.settled){
+    const E = effectsFor(c.region), pick = L.practice || E.practice;
+    const opt = (v, t) => `<option value="${v}"${v === pick ? " selected" : ""}>${t}${v === E.practice ? " (the era's practice)" : ""}</option>`;
+    return `<li>${head} His purse holds ${daysQ(left)}. ${E.what ? `<span class="muted">${esc(E.what)}</span>` : ""}
+      <div class="spend"><select data-practice="${k}" aria-label="What becomes of his purse">${opt("share", "Shared among his comrades")}${opt("heirs", "Sent to his heirs")}${opt("lost", "Lost with him")}</select>
+      <button class="small" data-settle="${k}">Settle his purse</button></div></li>`;
+  }
+  const settled = { share: "his purse was shared among his comrades", heirs: "his purse went to his heirs", lost: "his purse was lost with him" }[L.settled];
+  if (L.replaced) return `<li>${head} ${settled[0].toUpperCase() + settled.slice(1)}; ${esc(L.replaced)}.</li>`;
+  const opts = replaceOptions(c.region, S.place, c.career, c.terms), P = L.pick || {}, o = opts.find(x => x.kind + ":" + x.id === P.opt) || opts[0];
+  const career2 = P.career && o.careers.includes(P.career) ? P.career : pickCareer(o, c.career);
+  const terms2 = Math.min(o.terms[1], Math.max(o.terms[0], P.terms || o.terms[0]));
+  const kinds = { roll: "", assigned: "Assigned: ", hire: "Hire: " };
+  const sel = `<select data-ropt="${k}" aria-label="How he is replaced">${opts.map(x => `<option value="${x.kind}:${esc(x.id)}"${x === o ? " selected" : ""}>${kinds[x.kind]}${esc(x.name)}</option>`).join("")}</select>`;
+  const cs = o.careers.length > 1 ? `<select data-rcareer="${k}" aria-label="His career">${o.careers.map(id => `<option value="${id}"${id === career2 ? " selected" : ""}>${esc(byId(T.careers, id).name)}</option>`).join("")}</select>` : esc(byId(T.careers, career2).name);
+  const ts = o.terms[0] < o.terms[1] ? `<select data-rterms="${k}" aria-label="His terms">${Array.from({ length: o.terms[1] - o.terms[0] + 1 }, (_, n) => o.terms[0] + n).map(n => `<option${n === terms2 ? " selected" : ""}>${n}</option>`).join("")}</select> terms` : `${terms2} term${terms2 > 1 ? "s" : ""}`;
+  const payer = o.kind === "hire" ? ` for ${daysQ(hireCost(o, terms2))}, paid by <select data-rpayer="${k}" aria-label="Who pays">${S.team.map((m, i) => `<option value="${i}"${i === (P.payer ?? 0) ? " selected" : ""}>${esc(m.name)} (${daysQ(purseFor(m.region, m.terms, m.ledger).days)})</option>`).join("")}</select>` : "";
+  const wait = o.wait ? ` · arrives in ${o.wait[0]}–${o.wait[1]} days` : "";
+  return `<li>${head} ${settled[0].toUpperCase() + settled.slice(1)}.
+    <div class="spend">${sel} ${cs} · ${ts}${payer}${wait} <button class="small" data-replace="${k}">Replace him</button></div>
+    ${o.what ? `<div class="muted">${esc(o.what)}</div>` : ""}</li>`;
+}
+function renderLosses(){
+  const L = S.losses || [], box = $("#losses");
+  box.innerHTML = L.length ? `<section class="crew" aria-labelledby="h-losses"><h3 id="h-losses">Losses (${L.length})</h3>
+    <p class="muted note">Replacements are offered where the team is: ${esc(PLACE_NAMES[S.place] || "anywhere")} (set it in Find work).</p><ol class="losses">${L.map(lossHtml).join("")}</ol></section>` : "";
+}
+function settleLoss(k){
+  const c = S.losses[k], L = c.lost, practice = L.practice || effectsFor(c.region).practice;
+  const left = purseFor(c.region, c.terms, c.ledger).days, r = settleLost(left, S.team.length, practice);
+  const said = { share: "Shared among his comrades", heirs: "Sent to his heirs", lost: "Lost with him" }[practice];
+  if (left > 0) (c.ledger ||= []).push({ days: -left, what: said });
+  if (r.each) for (const m of S.team) (m.ledger ||= []).push({ days: r.each, what: `Share of ${c.name}'s purse` });
+  L.settled = r.each ? "share" : practice === "share" ? "lost" : practice;
+}
+function replaceLoss(k){
+  const c = S.losses[k], L = c.lost, P = L.pick || {};
+  const opts = replaceOptions(c.region, S.place, c.career, c.terms), o = opts.find(x => x.kind + ":" + x.id === P.opt) || opts[0];
+  const career = P.career && o.careers.includes(P.career) ? P.career : pickCareer(o, c.career);
+  const terms = Math.min(o.terms[1], Math.max(o.terms[0], P.terms || o.terms[0]));
+  if (o.kind === "hire"){
+    const payer = S.team[P.payer ?? 0], cost = hireCost(o, terms), why = payer ? spendCheck(payer, cost) : "nobody to pay";
+    if (cost && why){ S.msg = payer ? `${payer.name} can't pay ${daysQ(cost)} to hire him: ${why}.` : "There is nobody left to pay for him."; return }
+  }
+  const n = makeCharacter(c.region, career, terms, S.mode, realDice, "m");
+  n.pid = newPid();
+  if (o.kind === "hire"){
+    const payer = S.team[P.payer ?? 0], cost = hireCost(o, terms);
+    if (cost) (payer.ledger ||= []).push({ days: -cost, what: `Hired ${n.name} (${o.name})` });
+    n.joined = { how: `hired, ${o.name.replace(/^./, x => x.toLowerCase())}`, wait: 0 };
+  } else if (o.kind === "assigned") n.joined = { how: `assigned, ${o.name.replace(/^./, x => x.toLowerCase())}`, wait: realDice.randint(o.wait[0], o.wait[1]) };
+  else n.joined = { how: "a new member", wait: 0 };
+  if (!S.team.length) n.leader = true;
+  S.team.splice(Math.min(L.slot, S.team.length), 0, n);
+  L.replaced = `replaced by ${n.name} (${n.joined.how})`;
+  S.msg = "";
+}
 function womanTag(c){                            // "Woman", or "Woman, enlisted as a man"
   if (c.sex !== "f") return "";
   return `<span class="tag">${byId(T.regions, c.region)?.women?.disguised ? "Woman, enlisted as a man" : "Woman"}</span>`;
@@ -370,7 +461,7 @@ function oldWoundLine(w){
 function rollTeam(){
   S.team = makeTeam(S.region, slotsNow(), S.mode, realDice);
   S.team.forEach(c => { c.pid = newPid() });
-  rollCrew(); S.worklog = [];
+  rollCrew(); S.worklog = []; S.losses = [];
   S.swap = null; S.msg = "";
   render();
 }
@@ -440,7 +531,7 @@ function sendToField(){
 function startEra(){                             // a new era (or an old save from another): its first region and team, nothing rolled
   S.region = T.regions[0].id; S.template = T.templates[0].id;
   S.slots = T.templates[0].slots.map(s => [...s]); S.fcounts = tplFollowers(S.template);
-  S.team = []; S.crew = []; S.swap = null; S.worklog = [];
+  S.team = []; S.crew = []; S.swap = null; S.worklog = []; S.losses = [];
 }
 function init(){
   restore();
@@ -462,6 +553,20 @@ function init(){
   });
   $("#btn-fadd").onclick = () => { const v = $("#sel-fadd").value; if (v){ S.fcounts.push([v, 1]); render() } };
   $("#crew").addEventListener("click", e => { if (e.target.closest("#btn-reroll-crew")){ rollCrew(); render() } });
+  $("#losses").addEventListener("change", e => {
+    const el = e.target, k = +(el.dataset.practice ?? el.dataset.ropt ?? el.dataset.rcareer ?? el.dataset.rterms ?? el.dataset.rpayer), c = S.losses[k]; if (!c) return;
+    const P = (c.lost.pick ||= {});
+    if (el.dataset.practice !== undefined) c.lost.practice = el.value;
+    else if (el.dataset.ropt !== undefined){ P.opt = el.value; delete P.career; delete P.terms }
+    else if (el.dataset.rcareer !== undefined) P.career = el.value;
+    else if (el.dataset.rterms !== undefined) P.terms = +el.value;
+    else P.payer = +el.value;
+    render();
+  });
+  $("#losses").addEventListener("click", e => {
+    const s = e.target.closest("button[data-settle]"); if (s){ settleLoss(+s.dataset.settle); return render() }
+    const r = e.target.closest("button[data-replace]"); if (r){ replaceLoss(+r.dataset.replace); return render() }
+  });
   $("#work").addEventListener("change", e => { if (e.target.id === "sel-place"){ S.place = e.target.value; render() } });
   $("#work").addEventListener("click", e => {
     if (e.target.closest("#btn-clear-work")){ S.worklog = []; return render() }
@@ -471,7 +576,7 @@ function init(){
     if (r.earned) (c.ledger ||= []).push({ days: r.earned, what: `${j.name}, ${r.days} day${r.days !== 1 ? "s" : ""}` });
     const k = keepFor(j, c.region, S.place), pk = k ? payKeep(purseFor(c.region, c.terms, c.ledger).days, r.days, k.food, k.bed) : null;
     if (pk && pk.paid) (c.ledger ||= []).push({ days: -pk.paid, what: `Keep while working: ${j.name}` });
-    (S.worklog ||= []).push({ i: +b.dataset.i, earned: r.earned, text: workLine(c, j, r, pk) });
+    (S.worklog ||= []).push({ pid: c.pid, earned: r.earned, text: workLine(c, j, r, pk) });
     render();
   });
   $("#btn-field").onclick = sendToField;
@@ -500,6 +605,10 @@ function init(){
   $("#btn-print").onclick = () => window.print();
   $("#sheets").addEventListener("click", e => {
     const r = e.target.closest("button[data-reroll]"); if (r) return reroll(+r.dataset.reroll);
+    const lo = e.target.closest("button[data-lose]"); if (lo){ S.losing = +lo.dataset.lose; return render() }
+    if (e.target.closest("button[data-lose-cancel]")){ S.losing = null; return render() }
+    const lok = e.target.closest("button[data-lose-ok]");
+    if (lok){ const i = +lok.dataset.loseOk; loseMember(i, document.querySelector(`select[data-lose-why="${i}"]`).value); return render() }
     const st = e.target.closest("button[data-stat]"); if (st) return clickStat(+st.dataset.i, st.dataset.stat);
     const un = e.target.closest("button[data-unledger]");
     if (un){                                     // take an entry back, unless that leaves the purse short

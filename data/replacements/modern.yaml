@@ -1,0 +1,130 @@
+# Replacing losses for modern (gravewounds/replace.py). Days of the man's own army.
+# assigned - the army's own way of filling a gap: regions (armies), careers (any, or a list),
+#            terms (the experience he usually came with, or [low, high]), wait ([low, high] days
+#            from the loss to his arrival), places (none: anywhere), what, source or approx.
+# hire     - a man the team can engage: as above, with cost (Days, paid from a purse, for the
+#            lowest terms) and per_term (Days more for each term past it), and places to find him.
+# effects  - what becomes of a lost man's purse: share (his comrades divide it), heirs (it goes
+#            home) or lost (given away or gone with him); default, and an army's own under regions.
+id: modern
+assigned:
+- id: composite
+  name: Men from another unit
+  regions:
+  - uk_1982
+  careers: any
+  terms: 2
+  wait:
+  - 1
+  - 3
+  what: There were no individual replacements in the land campaign; a battalion's losses were made up with whole companies from another unit.
+  source:
+    url: https://www.globalsecurity.org/military/library/report/1984/HTJ.htm
+    note: the Welsh Guards made up with 40 Commando's companies
+- id: bcr
+  name: A battle casualty replacement
+  regions:
+  - us_1991
+  - us_1993
+  - us_2005
+  - uk_2005
+  careers: any
+  terms: 1
+  wait:
+  - 3
+  - 14
+  what: Individual replacements came out through reception and replacement centres; in 1991 one built for 400 a day handled 1,200, and some teams sat out the war there.
+  approx: true
+  source:
+    url: https://apps.dtic.mil/sti/pdfs/ADA265514.pdf
+    note: Desert Storm replacement operations; the wait in days is an estimate
+- id: kontraktnik
+  name: A contract soldier
+  regions:
+  - russia_1995
+  careers: any
+  terms: 1
+  wait:
+  - 7
+  - 30
+  what: Short-term contract soldiers filled the gaps in composite units.
+  source:
+    url: https://www.hrw.org/legacy/reports/2000/russia_chechnya3/Chech006-06.htm
+    note: kontraktniki in Chechnya
+hire:
+- id: contractor
+  name: A security contractor
+  regions:
+  - us_2005
+  - uk_2005
+  careers:
+  - rifleman
+  - marksman
+  - mp
+  - medic
+  terms:
+  - 2
+  - 3
+  cost: 280
+  per_term: 60
+  places:
+  - city
+  - camp
+  what: Contractors, mostly ex-special forces, were paid $400-600 a day, up to $1,000; a month's pay ahead.
+  source:
+    url: https://www.pbs.org/wgbh/pages/frontline/shows/warriors/faqs
+    note: $400-600 a day, 2005; a month ahead is an estimate
+- id: paid_fighter
+  name: A paid fighter
+  regions:
+  - insurgent
+  - chechen
+  careers:
+  - rifleman
+  - grenadier
+  terms: 1
+  cost: 15
+  places:
+  - city
+  - village
+  - road
+  what: Some fighters were paid as little as $150 to plant a bomb, with no cause of their own.
+  source:
+    url: https://www.globalsecurity.org/military/library/news/2005/06/mil-050621-3b7e029e.htm
+    note: $150 to plant an IED, 2005
+effects:
+  default:
+    practice: heirs
+    what: A summary court officer lists his effects within hours and they go home to his next of kin through the effects depot.
+    source:
+      url: https://www.army.mil/article/104747
+      note: personal effects after a death, 2013
+  regions:
+    uk_1982:
+      practice: heirs
+      what: A committee of adjustment listed and settled his effects for his family.
+      source:
+        url: https://www.legislation.gov.uk/ukpga/Vict/56-57/5/data.htm
+        note: the Regimental Debts Act 1893
+    uk_2005:
+      practice: heirs
+      what: A committee of adjustment listed and settled his effects for his family.
+      source:
+        url: https://www.legislation.gov.uk/ukpga/Vict/56-57/5/data.htm
+        note: the Regimental Debts Act 1893
+    insurgent:
+      practice: share
+      what: His cell kept his weapons and money.
+      approx: true
+    chechen:
+      practice: share
+      what: His comrades kept his weapons and money.
+      approx: true
+    argentina_1982:
+      practice: heirs
+      what: His effects went home.
+      approx: true
+    russia_1995:
+      practice: heirs
+      what: His effects went home, when they did.
+      approx: true

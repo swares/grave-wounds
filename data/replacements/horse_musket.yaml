@@ -1,0 +1,135 @@
+# Replacing losses for horse_musket (gravewounds/replace.py). Days of the man's own army: British 1s, Continental 20¢, US 27¢.
+# assigned - the army's own way of filling a gap: regions (armies), careers (any, or a list),
+#            terms (the experience he usually came with, or [low, high]), wait ([low, high] days
+#            from the loss to his arrival), places (none: anywhere), what, source or approx.
+# hire     - a man the team can engage: as above, with cost (Days, paid from a purse, for the
+#            lowest terms) and per_term (Days more for each term past it), and places to find him.
+# effects  - what becomes of a lost man's purse: share (his comrades divide it), heirs (it goes
+#            home) or lost (given away or gone with him); default, and an army's own under regions.
+id: horse_musket
+assigned:
+- id: state_draft
+  name: A man from the state's draft
+  regions:
+  - continental
+  careers:
+  - line
+  - rifleman
+  terms: 1
+  wait:
+  - 90
+  - 270
+  what: States filled their regiments' quotas by drafts and bounties for the next campaign; many recruits were raw, some boys.
+  source:
+    url: https://www.americanrevolution.org/?p=3501
+    note: state quotas and drafts, 1777-81
+- id: depot_draft
+  name: A draft from the depot or second battalion
+  regions:
+  - british_pen
+  careers:
+  - line
+  - rifleman
+  - marine
+  - gunner
+  terms: 1
+  wait:
+  - 30
+  - 90
+  what: 'A regiment in Spain was refilled by drafts from its home depot or second battalion: ten days to eight weeks at sea to Lisbon, then weeks of marching up-country.'
+  source:
+    url: https://www.napoleon-series.org/military-info/battles/1808/Peninsula/BritishArmy/AllBoundforLisbon.pdf
+    note: sailings to Lisbon took 10-57 days, 1808-10; the march up-country is an estimate
+- id: draft_to_america
+  name: A draft from home
+  regions:
+  - british_rev
+  careers:
+  - line
+  - rifleman
+  - marine
+  - gunner
+  terms: 1
+  wait:
+  - 60
+  - 150
+  what: 'Drafts and recruits crossed in convoy, six to eight weeks at sea, often after weeks waiting in port: one draft of German recruits took five months to join the 22nd Foot in 1776.'
+  source:
+    url: https://revwar75.com/library/hagist/FORTYGERMANRECRUITS2.htm
+    note: forty German recruits for the 22nd Foot, May-October 1776
+- id: conscript
+  name: A conscript from the depot
+  regions:
+  - french
+  careers:
+  - line
+  - rifleman
+  - dragoon
+  - gunner
+  terms: 1
+  wait:
+  - 60
+  - 120
+  what: Each year's class of conscripts walked for weeks to the regimental depot, drilled, and went on to the field battalions.
+  source:
+    url: https://www.napoleon.org/histoire-des-2-empires/articles/du-village-a-la-caserne-les-etapes-de-la-conscription-sous-le-consulat-et-lempire/
+    note: the conscript's road to the depot
+- id: rendezvous
+  name: A recruit from the rendezvous
+  regions:
+  - us_1812
+  careers:
+  - line
+  - rifleman
+  - dragoon
+  - gunner
+  terms: 1
+  wait:
+  - 60
+  - 120
+  what: Recruiting parties enlisted men at rendezvous for the bounty and the land warrant.
+  source:
+    url: https://genealogy-quest.com/record-collections/pension-acts/24-december-1811-c-10-2-stat-669/
+    note: $16 bounty, three months' pay and 160 acres (Act of 24 December 1811)
+hire:
+- id: substitute
+  name: A substitute for the state's draft
+  regions:
+  - continental
+  careers:
+  - line
+  - rifleman
+  terms: 1
+  cost: 375
+  places:
+  - town
+  - village
+  what: A man drafted could hire a substitute; in 1779 Massachusetts substitutes asked about 1,500 paper dollars for nine months, perhaps 75 in silver.
+  source:
+    url: https://www.americanrevolution.org/?p=3501
+    note: 1,500 paper dollars (Massachusetts, 1779); the silver value is an estimate
+  approx: true
+- id: remplacant
+  name: A remplaçant
+  regions:
+  - french
+  careers:
+  - line
+  - rifleman
+  terms: 1
+  cost: 3200
+  places:
+  - town
+  - village
+  what: 'From 1800 a conscript could pay a man to go in his place: 100-650 francs in 1801-02, 3,800-10,000 by 1809; on average 2,000 or more.'
+  source:
+    url: https://www.napoleon.org/histoire-des-2-empires/articles/la-conscription-sous-le-premier-empire/
+    note: 2,000 francs at a private's 0.62 F a day, about 3,200 Days
+effects:
+  default:
+    practice: heirs
+    what: His company commander and two officers listed his effects beyond his clothing and arms, and they were accounted for and paid to his representative (Articles of War); the records give his effects
+      as a sum, so they were likely sold.
+    source:
+      url: https://andyreiter.com/wp-content/uploads/military-justice/uk/Laws%20and%20Decrees/United%20Kingdom%20-%201765%20-%20British%20Articles%20of%20War.pdf
+      note: 1765 Articles of War, section XVII, article II; the Continental Articles of 1776 copy it

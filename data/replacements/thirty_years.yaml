@@ -1,0 +1,83 @@
+# Replacing losses for thirty_years (gravewounds/replace.py). 1 Day = 12 kreuzer; 1 riksdaler about 90 kr.
+# assigned - the army's own way of filling a gap: regions (armies), careers (any, or a list),
+#            terms (the experience he usually came with, or [low, high]), wait ([low, high] days
+#            from the loss to his arrival), places (none: anywhere), what, source or approx.
+# hire     - a man the team can engage: as above, with cost (Days, paid from a purse, for the
+#            lowest terms) and per_term (Days more for each term past it), and places to find him.
+# effects  - what becomes of a lost man's purse: share (his comrades divide it), heirs (it goes
+#            home) or lost (given away or gone with him); default, and an army's own under regions.
+id: thirty_years
+assigned:
+- id: werbeplatz
+  name: Recruits from the recruiting place
+  careers:
+  - musketeer
+  - pikeman
+  terms: 1
+  wait:
+  - 60
+  - 180
+  what: Captains recruited through the winter under a colonel's patent; the new men often marched before they were trained, and paid for it.
+  source:
+    url: https://www.lwl.org/westfaelischer-friede-download/wfe-t/wfe-txt1-30.htm
+    note: regiments refilled before the summer campaign
+- id: prisoners
+  name: Prisoners taken into the ranks
+  careers:
+  - musketeer
+  - pikeman
+  - dragoon
+  terms: 2
+  wait:
+  - 1
+  - 7
+  what: 'After a battle the beaten army''s men were put into the winners'' regiments: veterans who had changed sides.'
+  source:
+    url: https://en.wikipedia.org/wiki/Battle_of_Breitenfeld_(1631)
+    note: Breitenfeld, 1631
+hire:
+- id: mercenary_foot
+  name: A mercenary musketeer or pikeman
+  careers:
+  - musketeer
+  - pikeman
+  terms:
+  - 1
+  - 3
+  cost: 60
+  per_term: 15
+  places:
+  - town
+  - village
+  - camp
+  what: Unpaid soldiers moved between employers; the recruiting money was 8 riksdaler a man in the 1620s, falling to 4 by the early 1630s.
+  source:
+    url: https://weaponsandwarfare.com/?p=14390
+    note: 8 riksdaler a man, 1620-30; the extra for a veteran is a guess
+- id: mercenary_horse
+  name: A mercenary trooper with his horse
+  careers:
+  - cuirassier
+  - harquebusier
+  - dragoon
+  terms:
+  - 1
+  - 3
+  cost: 195
+  per_term: 45
+  places:
+  - town
+  - village
+  - camp
+  what: 'Horse cost over three times as much to raise as foot: 26 daler a trooper against 8 a foot recruit (1608); veterans were preferred.'
+  source:
+    url: https://www.ssns.org.uk/wp-content/uploads/2023/01/04_Bjorklund_Schiavone_2021_Vol_52_pp_53_97.pdf
+    note: 26 daler a trooper, 8 a foot recruit (1608); the extra for a veteran is a guess
+effects:
+  default:
+    practice: share
+    what: His comrades and the sutler took his goods, and what he had went round the company and his woman; no rule is recorded.
+    source:
+      url: https://userpage.fu-berlin.de/~telehist/MvM/magisterarbeit(1.2.2005).pdf
+      note: Hagendorf's comrades gave him money when he lay wounded, 1631
+    approx: true

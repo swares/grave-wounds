@@ -84,7 +84,8 @@ so a sheet reads "kit worth about 21 Days; purse 60 Days (£1 10s)". Between fig
 jobs (`data/jobs/<era>.yaml`), picked by where the team is, each with a skill check for the pay
 and a chance of trouble. What a man earns goes into his purse, and he can buy from the era's
 price list out of it. Away from an army that feeds him he pays his keep, at a job or on the
-travel map, and one purse follows him from the team builder to the roller and the travel map. Women serve where the records show they did (French cantinières in the Crimea, Civil War women
+travel map, and one purse follows him from the team builder to the roller and the travel map. A man lost
+is replaced the era's way: rolled anew, assigned by the army after a wait, or hired. Women serve where the records show they did (French cantinières in the Crimea, Civil War women
 disguised as men, Soviet women in 1941-45, the Vietnamese, and the Americans, British and
 Russians since 1991), chosen or rolled at the army's share. Sent to the roller, each character's skills fill in his attack
 and defence; a big team's followers get a line each. `python3 -m gravewounds team` makes one

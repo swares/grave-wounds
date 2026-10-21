@@ -261,3 +261,34 @@ function keepFor(j, region, place){                // as jobs.py keep_for: {food
   if (!k) return null;
   return { food: k.food, bed: BED_PLACES.includes(place) ? k.bed : 0 };
 }
+/* Replacing losses (as gravewounds/replace.py): TD.repl is the era's data/replacements file. */
+const LOST_WHY = ["killed", "died of wounds", "died of disease", "taken prisoner", "deserted", "sent home"];
+const replFor = (row, region) => !row.regions || !row.regions.length || row.regions.includes(region);
+const replCareers = row => TD.era.careers.map(c => c.id).filter(id => (row.careers ?? "any") === "any" || row.careers.includes(id));
+function replaceOptions(region, place, career, terms){   // roll first, then assigned, then hire
+  const R = TD.repl || { assigned: [], hire: [] };
+  const out = [{ kind: "roll", id: "roll", name: "Roll a new member", careers: [career], terms: [terms, terms], wait: null, cost: null, per_term: 0,
+    what: "A new man of the same career and terms, rolled like any other." }];
+  for (const kind of ["assigned", "hire"]){
+    for (const r of R[kind] || []){
+      if (!replFor(r, region) || (place && r.places && r.places.length && !r.places.includes(place))) continue;
+      const cs = replCareers(r);
+      if (!cs.length) continue;
+      const t = Array.isArray(r.terms) ? r.terms : [r.terms, r.terms];
+      out.push({ kind, id: r.id, name: r.name, careers: cs, terms: t, wait: kind === "assigned" ? (r.wait ?? null) : null,
+        cost: kind === "hire" ? (r.cost ?? 0) : null, per_term: kind === "hire" ? (r.per_term ?? 0) : 0, what: r.what || "" });
+    }
+  }
+  return out;
+}
+const pickCareer = (opt, career) => (opt.careers.includes(career) ? career : opt.careers[0]);
+const hireCost = (opt, terms) => (opt.cost || 0) + (opt.per_term || 0) * Math.max(0, terms - opt.terms[0]);
+function effectsFor(region){                       // the era's practice with a lost man's purse, for his army
+  const E = (TD.repl && TD.repl.effects) || {};
+  return { ...(E.default || { practice: "heirs", what: "" }), ...((E.regions || {})[region] || {}) };
+}
+function settleLost(left, survivors, practice){    // {each, gone}
+  left = Math.max(0, left);
+  if (practice === "share" && survivors > 0) return { each: left / survivors, gone: 0 };
+  return { each: 0, gone: left };
+}

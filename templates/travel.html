@@ -1042,6 +1042,7 @@ function namedDay(n, ctx, unnursed){            // his night: his cases run thei
   if (r.health.dead){
     n.dead = true;
     n.died = Object.keys(r.events.dead)[0];
+    markLost(n.pid, ["wound", "fever"].includes(n.died) ? "died of wounds" : "died of disease");
     bits.push(`died (${Object.keys(r.events.dead).map(dzShort).join(", ")})`);
   }
   return bits;

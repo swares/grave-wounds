@@ -1,0 +1,34 @@
+# Replacing losses for plains_nations (gravewounds/replace.py). No pay: value in Days of trade goods.
+# assigned - the army's own way of filling a gap: regions (armies), careers (any, or a list),
+#            terms (the experience he usually came with, or [low, high]), wait ([low, high] days
+#            from the loss to his arrival), places (none: anywhere), what, source or approx.
+# hire     - a man the team can engage: as above, with cost (Days, paid from a purse, for the
+#            lowest terms) and per_term (Days more for each term past it), and places to find him.
+# effects  - what becomes of a lost man's purse: share (his comrades divide it), heirs (it goes
+#            home) or lost (given away or gone with him); default, and an army's own under regions.
+id: plains_nations
+assigned: []
+hire:
+- id: joins_party
+  name: A young man joins the war party
+  careers:
+  - warrior
+  - lancer
+  - gunman
+  - scout
+  terms: 1
+  cost: 0
+  places:
+  - village
+  - camp
+  what: 'No one is paid: young men join a party on their own, under the men who carry the pipe.'
+  source:
+    url: https://ia804709.us.archive.org/27/items/fightingcheyenne00lcgrin/fightingcheyenne00lcgrin.pdf
+    note: 'Grinnell: the two who carried the pipes'
+effects:
+  default:
+    practice: lost
+    what: At his funeral his things and his relatives' were given away; goods were left at the scaffold. His comrades keep nothing.
+    source:
+      url: https://leportedellanno.unito.it/4_eng_ind_morti_pianure.html
+      note: Lakota funerals, after DeMallie

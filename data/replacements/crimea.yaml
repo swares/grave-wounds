@@ -1,0 +1,83 @@
+# Replacing losses for crimea (gravewounds/replace.py). 1 Day = 1s British; French 36 centimes.
+# assigned - the army's own way of filling a gap: regions (armies), careers (any, or a list),
+#            terms (the experience he usually came with, or [low, high]), wait ([low, high] days
+#            from the loss to his arrival), places (none: anywhere), what, source or approx.
+# hire     - a man the team can engage: as above, with cost (Days, paid from a purse, for the
+#            lowest terms) and per_term (Days more for each term past it), and places to find him.
+# effects  - what becomes of a lost man's purse: share (his comrades divide it), heirs (it goes
+#            home) or lost (given away or gone with him); default, and an army's own under regions.
+id: crimea
+assigned:
+- id: scutari_draft
+  name: A draft through the Scutari depot
+  regions:
+  - british
+  careers:
+  - line
+  - rifleman
+  - trooper
+  - gunner
+  - sapper
+  terms: 1
+  wait:
+  - 30
+  - 60
+  what: Recruits and militia volunteers were trained at home and sent out in drafts through Scutari; 27,000 men grew to 111,000 who served.
+  source:
+    url: https://bjmh.gold.ac.uk/index.php/bjmh/article/download/1711/1838
+    note: drafts through the Scutari depot
+- id: conscript_draft
+  name: A conscript draft
+  regions:
+  - french
+  careers:
+  - line
+  - rifleman
+  - trooper
+  - gunner
+  - sapper
+  terms: 1
+  wait:
+  - 30
+  - 60
+  what: The army refilled its regiments from each year's conscripts.
+  approx: true
+- id: levy
+  name: A recruit from the levy or the militia
+  regions:
+  - russian
+  careers:
+  - line
+  - rifleman
+  - gunner
+  - sapper
+  terms: 1
+  wait:
+  - 14
+  - 60
+  what: Recruits came from the levies, and local militia (opolchenie) were raised for the war.
+  approx: true
+hire:
+- id: remplacant
+  name: A remplaçant
+  regions:
+  - french
+  careers:
+  - line
+  - rifleman
+  terms: 1
+  cost: 4700
+  places:
+  - town
+  - village
+  what: A conscript could buy his way out for 2,500 francs, or contract a substitute for 1,400-2,000.
+  source:
+    url: https://histoiredemosset.fr/mossetpdf/n80_militaires_juillet_2011_5.pdf
+    note: 1,400-2,000 francs, c.1855
+effects:
+  default:
+    practice: heirs
+    what: A committee listed his effects, sold them, paid his debts and funeral, and the balance went to his family.
+    source:
+      url: https://www.thegazette.co.uk/London/issue/24281/page/8/data.pdf
+      note: unclaimed balances advertised for next of kin under the Regimental Debts Act 1863

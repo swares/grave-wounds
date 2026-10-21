@@ -1,0 +1,69 @@
+# Replacing losses for korea (gravewounds/replace.py). 1 Day = $2.85 American.
+# assigned - the army's own way of filling a gap: regions (armies), careers (any, or a list),
+#            terms (the experience he usually came with, or [low, high]), wait ([low, high] days
+#            from the loss to his arrival), places (none: anywhere), what, source or approx.
+# hire     - a man the team can engage: as above, with cost (Days, paid from a purse, for the
+#            lowest terms) and per_term (Days more for each term past it), and places to find him.
+# effects  - what becomes of a lost man's purse: share (his comrades divide it), heirs (it goes
+#            home) or lost (given away or gone with him); default, and an army's own under regions.
+id: korea
+assigned:
+- id: rotation
+  name: A replacement under the points rotation
+  regions:
+  - us_1950
+  - us_1952
+  careers: any
+  terms: 1
+  wait:
+  - 3
+  - 14
+  what: Men rotated home on points; by 1952 the replacements had little or no acquaintance with the battlefield, and left once they had learned.
+  source:
+    url: https://www.koreanwaronline.com/history/TruceTent/ch16.htm
+    note: 36 points to go home, 1951
+- id: katusa
+  name: A KATUSA man
+  regions:
+  - us_1950
+  - us_1952
+  careers:
+  - rifleman
+  terms: 1
+  wait:
+  - 3
+  - 14
+  what: From August 1950 Korean recruits with only basic training at ROK replacement centres were put into American squads, a few to each.
+  source:
+    url: https://en.wikipedia.org/wiki/Korean_Augmentation_to_the_United_States_Army
+    note: 43,660 served in the war
+- id: draft
+  name: A reinforcement draft
+  regions:
+  - commonwealth
+  careers: any
+  terms: 1
+  wait:
+  - 7
+  - 30
+  what: Commonwealth battalions were refilled by drafts from home.
+  approx: true
+- id: conscript
+  name: A conscript
+  regions:
+  - rok
+  - chinese
+  - north_korea
+  careers: any
+  terms: 1
+  wait:
+  - 1
+  - 14
+  what: Replacements were conscripts, many with little training.
+  approx: true
+hire: []
+effects:
+  default:
+    practice: heirs
+    what: A summary court officer listed his effects and sent them home.
+    approx: true

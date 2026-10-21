@@ -1,0 +1,131 @@
+# Replacing losses for civil_war (gravewounds/replace.py). Union Days: 1 Day = 43¢.
+# assigned - the army's own way of filling a gap: regions (armies), careers (any, or a list),
+#            terms (the experience he usually came with, or [low, high]), wait ([low, high] days
+#            from the loss to his arrival), places (none: anywhere), what, source or approx.
+# hire     - a man the team can engage: as above, with cost (Days, paid from a purse, for the
+#            lowest terms) and per_term (Days more for each term past it), and places to find him.
+# effects  - what becomes of a lost man's purse: share (his comrades divide it), heirs (it goes
+#            home) or lost (given away or gone with him); default, and an army's own under regions.
+id: civil_war
+assigned:
+- id: distribution_camp
+  name: A recruit from a camp of distribution
+  regions:
+  - union
+  careers:
+  - infantry
+  - trooper
+  - gunner
+  terms: 1
+  wait:
+  - 30
+  - 120
+  what: 'Draftees and recruits went to the old regiments through camps of distribution, often under guard, with little training: the veterans would teach them.'
+  source:
+    url: https://civilwartalk.com/threads/replacements.155755/
+    note: camps of distribution at Alexandria and Cairo
+- id: veteran_furlough
+  name: A man back from veteran furlough
+  regions:
+  - union
+  careers:
+  - infantry
+  - trooper
+  - gunner
+  - sergeant
+  terms: 2
+  wait:
+  - 30
+  - 45
+  what: Regiments that re-enlisted went home on furlough and came back with their men and new recruits.
+  source:
+    url: https://civilwartalk.com/threads/replacements.155755/
+    note: 30-day furloughs for re-enlisting regiments
+- id: camp_of_instruction
+  name: A conscript from a camp of instruction
+  regions:
+  - confederacy
+  careers:
+  - infantry
+  - trooper
+  - gunner
+  terms: 1
+  wait:
+  - 30
+  - 90
+  what: Conscripts went to camps of instruction and on to the old regiments in proportion to what each lacked.
+  source:
+    url: https://www.perseus.tufts.edu/hopper/text?doc=Perseus%3Atext%3A2006.05.0502%3Aarticle%3D2
+    note: 'Conscription Act 1862: camps of instruction, recruits to the old regiments by their deficiency'
+hire:
+- id: substitute
+  name: A substitute or bounty man
+  regions:
+  - union
+  careers:
+  - infantry
+  - trooper
+  terms:
+  - 1
+  - 2
+  cost: 698
+  per_term: 233
+  places:
+  - town
+  - city
+  what: A drafted man could hire a substitute or pay $300 commutation, a labourer's year's wage; bounties ran $302 for a recruit and $402 for a veteran in 1863.
+  source:
+    url: https://civilwartalk.com/threads/replacements.155755/
+    note: $302 for recruits, $402 for veterans, 1863
+- id: csa_substitute
+  name: A substitute
+  regions:
+  - confederacy
+  careers:
+  - infantry
+  - trooper
+  terms:
+  - 1
+  - 2
+  cost: 2300
+  per_term: 500
+  places:
+  - town
+  - city
+  what: Until substitution ended in December 1863, advertisements asked $1,500-6,000 in Confederate money for a substitute.
+  source:
+    url: https://scholarworks.sfasu.edu/cgi/viewcontent.cgi?httpsredir=1&article=2435&context=ethj
+    note: $1,500-6,000 advertised after April 1862; turned into Union Days at an estimated gold value
+  approx: true
+- id: hired_hand
+  name: A hired hand for the outfit
+  regions:
+  - frontier
+  careers:
+  - scout
+  - teamster
+  - sharpshooter
+  terms:
+  - 1
+  - 3
+  cost: 30
+  per_term: 10
+  places:
+  - town
+  - frontier
+  - road
+  what: On the frontier an outfit took on a man for wages and his keep.
+  approx: true
+effects:
+  default:
+    practice: heirs
+    what: His company commander sent the inventory and his final pay statement to the Adjutant-General; effects no one claimed were sold by the council of administration, his sutler debts paid from his
+      pay, and the rest held for his legal representatives.
+    source:
+      url: https://suvcw.org/sites/default/files/2024-10/1861-us-army-regs.pdf
+      note: Revised Regulations 1861, paragraphs 152-154 and 218
+  regions:
+    frontier:
+      practice: share
+      what: On the frontier his partners divided his outfit, or sent it on if they knew his people.
+      approx: true

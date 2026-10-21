@@ -1,0 +1,75 @@
+# Replacing losses for medieval (gravewounds/replace.py). 1 Day = an archer's 6d (1415).
+# assigned - the army's own way of filling a gap: regions (armies), careers (any, or a list),
+#            terms (the experience he usually came with, or [low, high]), wait ([low, high] days
+#            from the loss to his arrival), places (none: anywhere), what, source or approx.
+# hire     - a man the team can engage: as above, with cost (Days, paid from a purse, for the
+#            lowest terms) and per_term (Days more for each term past it), and places to find him.
+# effects  - what becomes of a lost man's purse: share (his comrades divide it), heirs (it goes
+#            home) or lost (given away or gone with him); default, and an army's own under regions.
+id: medieval
+assigned:
+- id: next_indenture
+  name: Kin and tenants at the next indenture
+  regions:
+  - england
+  - france
+  careers:
+  - archer
+  - spearman
+  - man_at_arms
+  - servant
+  terms: 1
+  wait:
+  - 90
+  - 365
+  what: No one replaced a man during a campaign; a captain refilled his retinue from his family and tenants when he next indented, often a season or a year later.
+  source:
+    url: https://www.ihgs.ac.uk/was-your-ancestor-a-late-medieval-soldier-part-2-1812
+    note: Standish retinue refilled in 1441 after Gerberoy, 1435
+hire:
+- id: demobbed_soldier
+  name: A demobilised soldier from the London pool
+  careers:
+  - archer
+  - man_at_arms
+  - mercenary
+  terms:
+  - 1
+  - 3
+  cost: 90
+  per_term: 15
+  places:
+  - town
+  - city
+  what: Out-of-work soldiers waited in London for a captain; he paid a quarter's wages ahead, and citizens stood pledge that the man would not take it and go.
+  source:
+    url: https://deremilitari.org/?p=2246
+    note: 'Strother, 1374: £40 a year for a man-at-arms and his archer; a quarter ahead for an archer is about 90 Days; the extra for a veteran is a guess'
+- id: free_company_man
+  name: A free company's man
+  careers:
+  - mercenary
+  - crossbowman
+  - mounted_sergeant
+  terms:
+  - 2
+  - 3
+  cost: 120
+  per_term: 20
+  places:
+  - camp
+  - frontier
+  - road
+  what: Free companies took on demobilised soldiers for a share of the gains of war; no rate a man is recorded.
+  source:
+    url: https://en.wikipedia.org/wiki/Free_company
+    note: no per-man rate found
+  approx: true
+effects:
+  default:
+    practice: share
+    what: In the field a dead man's goods went to his captain and comrades, who took a share of each other's gains of war; a man with a will left it to his heirs.
+    source:
+      url: https://deremilitari.org/?p=2246
+      note: the captain's third of his men's gains
+    approx: true
