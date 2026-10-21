@@ -3,7 +3,7 @@
    builder, the roller and the travel map. The team builder settles them at End of season
    (xpSeason in team.js) and puts his new sheet here (`sheet`, `stamp`) for the roller to pick up.
    Storage can be off: every read and write is guarded. */
-const XP_KEY = "gravewounds-xp";                   // {pid: {ticks: {skill: why}, served: days, sheet?, stamp?}}
+const XP_KEY = "gravewounds-xp";                   // {pid: {ticks: {skill: why}, served: days, army: days paid, owed: days in arrears, sheet?, stamp?}}
 function readXp(){ try{ return JSON.parse(localStorage.getItem(XP_KEY) || "{}") || {} }catch(e){ return {} } }
 function writeXp(all){ try{ localStorage.setItem(XP_KEY, JSON.stringify(all)) }catch(e){ /* storage off: no experience kept */ } }
 const xpOf = (all, pid) => (all[pid] ||= { ticks: {}, served: 0 });
@@ -18,5 +18,11 @@ function xpServe(pid, days){                       // days toward his next term
   if (!pid || !(days > 0)) return;
   const all = readXp(), x = xpOf(all, pid);
   x.served = (x.served || 0) + days;
+  writeXp(all);
+}
+function xpArmy(pid, owed){                        // a day with a force its army feeds: paid at End of season, or owed while pay is in arrears
+  if (!pid) return;
+  const all = readXp(), x = xpOf(all, pid), k = owed ? "owed" : "army";
+  x[k] = (x[k] || 0) + 1;
   writeXp(all);
 }

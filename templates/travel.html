@@ -1074,7 +1074,7 @@ function writeNamed(all){ try{ localStorage.setItem(NAMED_KEY, JSON.stringify(al
 const namedWith = (all, f) => Object.entries(all).filter(([, n]) => n.map === S.mapId && n.force === f.id && !n.dead);
 function xpNight(f){                          // experience: a night served for each named man; a week nursing ticks the best Leechcraft
   const all = readNamed(), mine = namedWith(all, f).filter(([, n]) => !n.dead);
-  for (const [, n] of mine) xpServe(n.pid, 1);
+  for (const [, n] of mine){ xpServe(n.pid, 1); if (fedByArmy(f)) xpArmy(n.pid, !!f.unpaid) }   // a day served; and his army's pay, or arrears
   const sick = healthOf(f).cases.length > 0 || mine.some(([, n]) => ((n.health || {}).cases || []).length);
   if (sick && f.day % DZ.week_days === 0){ const [lc, , pid] = bestSkill([f], "leechcraft", all); if (lc) xpTick(pid, "leechcraft", "nursing the sick") }
 }

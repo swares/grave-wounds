@@ -330,6 +330,35 @@ forages fresh food on the march; **Watch** makes his force harder to surprise, a
 **Stealth** makes the force he attacks with likelier to surprise its enemy (see
 [combat.md](combat.md), [travel.md](travel.md) and [works.md](works.md), *Surprise*).
 
+## Rank, pay and loot
+
+`data/ranks.yaml` (rules in `gravewounds/ranks.py`, repeated in `templates/team.js` as `rkStart`,
+`rkPay`, `rkWage`, `rkPromote`, `rkLoot`, `rkStanding`, `rkWealth`). Figures and their sources
+are in the project doc "promotion-loot-research"; `approx: true` marks estimates.
+
+- **Ladders.** Each era's ranks, lowest first, with pay as a multiple of a private's (other
+  armies' by region in `pay_by`), least years in the rank below, the Command check's difficulty,
+  a literacy bar (`letters`) or penalty (`unlettered`), `deed_only` (a medieval knighting), and
+  prize `shares`. `start` puts careers higher (sergeants, officers); `career_pay` multiplies
+  (horse twice the foot in the Thirty Years' War; sutlers and cantinières 0).
+- **Promotion** at End of season, vacancy by vacancy from the top: the eligible men one rank
+  below, most days in rank first, roll Command (+20 and no wait for a deed) until one succeeds;
+  his old rank then falls vacant. A lost man's rank falls vacant by itself; the GM opens others
+  with + and −, sets any man's rank (a reduction resets his days in rank), and ticks deeds.
+- **Pay.** The travel map counts each night a named man's force is fed by its army (`army` in
+  the experience store), or owed when its pay is in arrears. End of season pays days × pay ×
+  `kept` into his purse and adds the arrears to his debt, paid when the GM presses Pay owed.
+- **Loot** (*After the fight*): the field, a sack, plunder after the sack is called off, prize
+  money (the Napoleonic wars), a ransom (medieval, Thirty Years' War), or a raid for horses (the
+  Plains). Finds are one d100 table in Days for every era (estimates set against Waterloo's
+  prize, Hagendorf's Magdeburg sale and the Seringapatam armlets); the era's `keep` takes the
+  captain's third or the hospital's tenth; forbidden loot, or a trophy past the era's `cap`,
+  risks the provost (his Watch against the man's Stealth; caught, it is lost; on the provost's
+  critical or the man's fumble, the era's punishment). Winnings go into his purse.
+- **Honours** (the Plains nations): coups 3, 2 and 1 for the first, second and third to strike,
+  a horse taken 1, a horse given away 1; standing and wealth tiers (Ewers: under 6 horses poor,
+  40 or more wealthy).
+
 ## Skill checks
 
 `data/checks.yaml` (rules in `gravewounds/checks.py`, repeated in `templates/team.js`:

@@ -164,6 +164,7 @@ label.radio input{margin-top:4px}
       <div id="losses"></div>
       <div id="work"></div>
       <div id="xp"></div>
+      <div id="rank"></div>
       <div id="checks"></div>
     </section>
   </div>
@@ -239,6 +240,7 @@ function render(){
   renderFollowers();
   renderWork();
   renderXp();
+  renderRank();
   renderChecks();
   renderLosses();
   $("#msg").textContent = S.msg;
@@ -313,7 +315,7 @@ function sheetHtml(c, i){
   return `<article class="sheet" aria-label="${esc(c.name)}">
     <div class="fig">${fig}</div>
     <div class="who"><input type="text" value="${esc(c.name)}" data-name="${i}" aria-label="Name">${c.leader ? `<span class="tag">Leader</span>` : ""}${womanTag(c)}</div>
-    <div class="what">${esc(career.name)} · ${c.terms} term${c.terms > 1 ? "s" : ""}${c.xp_terms ? ` (+${c.xp_terms} served)` : ""} · age ${c.age} · ${esc(byId(T.regions, c.region).name.replace(/ \(.*/, ""))}</div>
+    <div class="what">${rankLine(c) ? `${esc(rankLine(c))} · ` : ""}${esc(career.name)} · ${c.terms} term${c.terms > 1 ? "s" : ""}${c.xp_terms ? ` (+${c.xp_terms} served)` : ""} · age ${c.age} · ${esc(byId(T.regions, c.region).name.replace(/ \(.*/, ""))}</div>
     <div class="stats${c.mode === "array" ? " place" : ""}">${stats}</div>
     <div class="full what"><b>${esc(c.origin)}.</b> ${esc(pron(c.trait, sx))}; ${esc(pron(c.drawback, sx).toLowerCase())}.</div>
     <div class="full skills">${trained}</div>
@@ -327,6 +329,68 @@ function sheetHtml(c, i){
     <div class="tools"><button class="small" data-lose="${i}" title="${pron("Killed, taken, deserted or sent home: take him off the team and replace him", sx)}">Lost…</button><button class="small" data-reroll="${i}">${pron("Reroll him", sx)}</button></div>
   </article>`;
 }
+/* Rank, pay and loot (team.js: rkStart, rkWage, rkPromote, rkLoot; data TD.ranks). Each man's
+   rank, days in it and a deed to his name; the vacancies the GM opens (a lost man's open
+   themselves); pay owed; and the loot after a fight. The Plains nations keep honours and horses. */
+const rkName = rid => (rkLadder().find(r => r.id === rid) || { name: "" }).name;
+const LOOT_KINDS = { field: "The field, after a win", sack: "A town stormed: the sack", sack_after: "Plunder after the sack is called off", prize: "Prize money", ransom: "Ransom a prisoner", horses: "A raid for horses" };
+function lootKinds(){
+  const L = (RK().loot || {})[T.id] || {};
+  return Object.keys(LOOT_KINDS).filter(k => (k === "field" && L.field) || ((k === "sack" || k === "sack_after") && L.sack) || L[k]);
+}
+function rankLine(c){                               // 'Corporal, 120 days in rank, 1¼ Days a day'
+  if (!rkLadder().length) return "";
+  c.rank ||= rkStart(c.career);
+  return rkName(c.rank);
+}
+function renderRank(){
+  const box = $("#rank"), E = rkEra(), L = (RK().loot || {})[T.id];
+  if (!TD.ranks || !S.team.length || (!E && !L)){ box.innerHTML = ""; return }
+  const K = (S.lootK ||= { kind: "field", who: "all" });
+  const kinds = lootKinds(); if (!kinds.includes(K.kind)) K.kind = kinds[0];
+  let men = "", vac = "", head = "";
+  if (E && E.honours){
+    head = `<p class="muted note">${esc(E.note)} A coup counts ${RK().honours.coup.join(", ")} for the first, second and third to strike; a horse taken from an enemy camp ${RK().honours.horse_taken}; a horse given away ${RK().honours.horse_given}.</p>`;
+    men = S.team.map((c, i) => `<li><b>${esc(c.name)}</b>: ${c.honours || 0} honours, ${esc(rkStanding(c.honours || 0).toLowerCase())}; ${c.horses || 0} horses, ${esc(rkWealth(c.horses || 0))}
+      <span class="tools">${[1, 2, 3].map(n => `<button class="small" data-coup="${i}" data-n="${n}" title="He counted coup, ${["first", "second", "third"][n - 1]} to strike">Coup ${n}${["st", "nd", "rd"][n - 1]}</button>`).join("")}<button class="small" data-give="${i}" ${c.horses ? "" : "disabled"} title="He gives a horse away">Give a horse</button></span></li>`).join("");
+  } else if (E){
+    const ladder = rkLadder();
+    head = `<p class="muted note">${esc(E.note)} A vacancy goes at End of season to the men one rank below who have served its time (or did a deed) and can read where it asks, the most senior first, each rolling Command. Pay: each day his force is fed by its army on the travel map, his rank's pay times ${E.kept} kept after stoppages; days in arrears are owed.</p>`;
+    men = S.team.map((c, i) => {
+      rankLine(c);
+      const opts = ladder.map(r => `<option value="${r.id}"${r.id === c.rank ? " selected" : ""}>${esc(r.name)}</option>`).join("");
+      const next = ladder[rkIndex(c.rank) + 1], why = next ? rkEligible(c, rkIndex(c.rank) + 1)[1] : "top of the ladder";
+      return `<li><b>${esc(c.name)}</b>: <select data-rank="${i}" aria-label="Rank of ${esc(c.name)}">${opts}</select> ${(c.rank_days || 0).toLocaleString("en-US")} days in rank · ${daysQ(rkPay(c.region, c.career, c.rank))} a day
+        <span class="muted">${next ? `· for ${esc(next.name.toLowerCase())}: ${esc(why || "eligible")}` : ""}</span>
+        <label class="check" title="He distinguished himself: +${RK().deed_bonus} to his next promotion roll, and the time waived"><input type="checkbox" data-deed="${i}"${c.deed ? " checked" : ""}> A deed</label>
+        ${c.owed ? `<button class="small" data-payowed="${i}" title="The arrears are paid">Pay ${daysQ(c.owed)} owed</button>` : ""}</li>`;
+    }).join("");
+    vac = `<div class="row">${ladder.slice(1).map(r => `<span>${esc(r.name)}: <b>${(S.vacancies || {})[r.id] || 0}</b> <button class="small" data-vac="${r.id}" data-d="-1" aria-label="One fewer ${esc(r.name)} vacancy">−</button><button class="small" data-vac="${r.id}" data-d="1" aria-label="Open a ${esc(r.name)} vacancy">+</button></span>`).join(" ")}</div>`;
+  }
+  const kindOpts = kinds.map(k => `<option value="${k}"${k === K.kind ? " selected" : ""}>${LOOT_KINDS[k]}</option>`).join("");
+  const whoOpts = `<option value="all">Everyone</option>` + S.team.map((c, i) => `<option value="${i}"${String(i) === String(K.who) ? " selected" : ""}>${esc(c.name)}</option>`).join("");
+  const rule = L ? [L.keep_why ? `He keeps ${Math.round((L.keep ?? 1) * 100)}%: ${L.keep_why}.` : "", L.punish ? `Punishment: ${L.punish}` : ""].filter(Boolean).join(" ") : "";
+  const log = (S.lootlog || []).map(l => `<li>${esc(l)}</li>`).join("");
+  box.innerHTML = `<section class="crew work" aria-labelledby="h-rank"><h3 id="h-rank">${E && E.honours ? "Honours and horses" : "Rank and pay"}</h3>${head}
+    <ul class="xp">${men}</ul>${vac ? `<h4>Vacancies</h4>${vac}` : ""}
+    ${kinds.length ? `<h4>After the fight</h4><p class="muted note">${esc(rule)}</p><div class="row"><div><label for="loot-kind">What</label><select id="loot-kind">${kindOpts}</select></div><div><label for="loot-who">Who</label><select id="loot-who">${whoOpts}</select></div><div style="align-self:end"><button id="btn-loot">Roll</button></div></div>` : ""}
+    ${log ? `<ol class="log">${log}</ol><button class="small" id="btn-clear-loot">Clear</button>` : ""}</section>`;
+}
+function rollLoot(){
+  const K = S.lootK, L = (RK().loot || {})[T.id] || {}, who = K.who === "all" ? S.team : [S.team[+K.who]].filter(Boolean), lines = [];
+  for (const c of who){
+    const r = rkLoot(K.kind, c, realDice);
+    let t = `${c.name}: ${r.what || "nothing"}`;
+    if (r.roll !== null) t += ` (d100 ${r.roll}${r.found ? `, ${daysQ(r.found)}` : ""})`;
+    if (r.risk) t += `; the provost ${chkText(r.opposed.a)} against his Stealth ${chkText(r.opposed.b)}: ${r.caught ? "caught, and it is taken from him" : "not caught"}`;
+    if (r.punished) t += `. ${(L.punish || "Punished.").replace(/\.$/, "")}`;
+    if (r.days){ (c.ledger ||= []).push({ days: r.days, what: `Loot: ${r.what}` }); t += `; ${daysQ(r.days)} into his purse${L.keep && L.keep < 1 && K.kind !== "prize" ? ` after the ${L.keep >= 0.9 ? "hospital's tenth" : "captain's third"}` : ""}` }
+    if (r.horses){ c.horses = (c.horses || 0) + r.horses; c.honours = (c.honours || 0) + r.horses * RK().honours.horse_taken }
+    lines.push(t + ".");
+  }
+  S.lootlog = [...lines, ...(S.lootlog || [])].slice(0, 40);
+  render();
+}
 /* Skill checks out of a fight (team.js: skillCheck, opposedCheck, checkUses; data TD.checks): a
    man, a use (which fills in the skill, difficulty and who resists), and the roll. A skill check
    that succeeds ticks the skill for experience. */
@@ -337,6 +401,7 @@ function renderChecks(){
   if (!TD.checks || !S.team.length){ box.innerHTML = ""; return }
   const K = (S.chk ||= { i: 0, use: "", skill: T.skills[0].id, diff: "ordinary", against: "" });
   if (!S.team[K.i]) K.i = 0;
+  if (!CHK_STATS.includes(K.skill) && !T.skills.some(x => x.id === K.skill)){ K.skill = T.skills[0].id; K.use = "" }   // another era's skill
   const U = checkUses(), u = U.find(x => x.id === K.use) || null, c = S.team[K.i];
   const byGroup = {}; for (const x of U) (byGroup[anyName(x.skill)] ||= []).push(x);
   const useOpts = `<option value="">Any check</option>` + Object.entries(byGroup).map(([g, xs]) => `<optgroup label="${esc(g)}">${xs.map(x => `<option value="${x.id}"${x.id === K.use ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</optgroup>`).join("");
@@ -406,9 +471,24 @@ function endSeason(){
   for (const c of S.team){
     const x = all[c.pid] || {};
     const r = xpSeason(c, Object.keys(x.ticks || {}), x.served || 0, realDice);
-    lines.push(seasonLine(c, r));
-    all[c.pid] = { ticks: {}, served: 0, sheet: rollerSheet(c), stamp };
+    let line = seasonLine(c, r);
+    if (rkLadder().length){                        // his days in rank, his pay, and any arrears
+      c.rank ||= rkStart(c.career);
+      c.rank_days = (c.rank_days || 0) + (x.served || 0);
+      const paid = rkWage(c.region, c.career, c.rank, x.army || 0), owed = rkWage(c.region, c.career, c.rank, x.owed || 0);
+      if (paid) (c.ledger ||= []).push({ days: paid, what: `Pay: ${x.army} day${x.army !== 1 ? "s" : ""} as ${rkName(c.rank).toLowerCase()}` });
+      if (owed) c.owed = (c.owed || 0) + owed;
+      if (paid || owed) line = line.replace(/\.$/, "") + `; pay ${daysQ(paid)}${owed ? `, ${daysQ(owed)} owed` : ""}.`;
+    }
+    lines.push(line);
+    all[c.pid] = { ticks: {}, served: 0, army: 0, owed: 0 };
   }
+  if (rkLadder().length){                          // the season's promotions, then everyone's new sheet
+    const rolls = rkPromote(S.team, (S.vacancies ||= {}), realDice);
+    for (const k of rolls) lines.push(`${k.name} for ${rkName(k.to).toLowerCase()}: Command rolled ${k.roll} against ${k.target}: ${k.success ? "promoted" : "passed over"}.`);
+    if (!rolls.length && Object.values(S.vacancies).some(n => n > 0)) lines.push("No one eligible for the vacancies yet.");
+  }
+  for (const c of S.team) Object.assign(all[c.pid], { sheet: rollerSheet(c), stamp });
   writeXp(all);
   let named = null;                                // the travel map's copy of his skills
   try { named = JSON.parse(localStorage.getItem("gravewounds-named") || "{}") || {} } catch (e) { named = null /* unreadable: the roller will pass them on */ }
@@ -477,9 +557,11 @@ function loseMember(i, why, auto = false){        // off the team and onto the l
   c.lost = { why, auto, slot: i, settled: null, replaced: null };
   S.team.splice(i, 1);
   (S.losses ||= []).push(c);
+  if (rkLadder().length && rkIndex(c.rank) > 0) (S.vacancies ||= {})[c.rank] = (S.vacancies[c.rank] || 0) + 1;   // his rank falls vacant
   if (c.leader && S.team.length){
     c.leader = false;
-    const next = S.team.reduce((a, b) => (b.terms > a.terms ? b : a));
+    const senior = m => rkIndex(m.rank) * 100 + m.terms;   // the highest rank, then the longest served
+    const next = S.team.reduce((a, b) => (senior(b) > senior(a) ? b : a));
     next.leader = true;
     S.msg = `${c.name} is lost (${why}); ${next.name} leads now.`;
   } else S.msg = `${c.name} is lost (${why}).`;
@@ -556,6 +638,7 @@ function oldWoundLine(w){
 }
 function rollTeam(){
   S.team = makeTeam(S.region, slotsNow(), S.mode, realDice);
+  S.lootlog = []; S.chklog = []; S.xplog = []; S.vacancies = {};   // a new team starts with clean logs
   S.team.forEach(c => { c.pid = newPid() });
   rollCrew(); S.worklog = []; S.losses = [];
   S.swap = null; S.msg = "";
@@ -680,6 +763,23 @@ function init(){
     render();
   });
   $("#xp").addEventListener("click", e => { if (e.target.closest("#btn-season")) endSeason() });
+  $("#rank").addEventListener("change", e => {
+    const el = e.target;
+    if (el.dataset.rank !== undefined){ const c = S.team[+el.dataset.rank], down = rkIndex(el.value) < rkIndex(c.rank); c.rank = el.value; c.rank_days = 0; if (down) S.msg = `${c.name} is reduced to ${rkName(c.rank).toLowerCase()}.` }
+    else if (el.dataset.deed !== undefined) S.team[+el.dataset.deed].deed = el.checked;
+    else if (el.id === "loot-kind") S.lootK.kind = el.value;
+    else if (el.id === "loot-who") S.lootK.who = el.value;
+    render();
+  });
+  $("#rank").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.id === "btn-loot") return rollLoot();
+    if (b.id === "btn-clear-loot"){ S.lootlog = []; return render() }
+    if (b.dataset.vac){ const v = (S.vacancies ||= {}); v[b.dataset.vac] = Math.max(0, (v[b.dataset.vac] || 0) + +b.dataset.d); return render() }
+    if (b.dataset.payowed !== undefined){ const c = S.team[+b.dataset.payowed]; (c.ledger ||= []).push({ days: c.owed, what: "Arrears of pay" }); c.owed = 0; return render() }
+    if (b.dataset.coup !== undefined){ const c = S.team[+b.dataset.coup]; c.honours = (c.honours || 0) + RK().honours.coup[+b.dataset.n - 1]; return render() }
+    if (b.dataset.give !== undefined){ const c = S.team[+b.dataset.give]; if (c.horses > 0){ c.horses--; c.honours = (c.honours || 0) + RK().honours.horse_given } return render() }
+  });
   $("#checks").addEventListener("change", e => {
     const K = S.chk, id = e.target.id;
     if (id === "chk-who") K.i = +e.target.value;

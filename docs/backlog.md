@@ -173,6 +173,20 @@ When an item is done, delete it here and note it in the pull request that closes
   Strength, Presence), and Leechcraft, Fieldcraft, Watch and Stealth work outside a fight.
   Followers have one-line stat blocks, and the gunpowder eras (1618-1876) and the world wars
   (1914-18, 1939-45), Korea, Vietnam and the later wars (1982-2014) have their own tables.
+- **Rank, pay and loot, first cut.** Ranks, promotion by vacancy, pay by rank, loot, prize money,
+  ransom and the Plains nations' honours are on the team builder. Still left out:
+  - deeds, coups and loot are marked by the GM: the roller and the field map do not mark a deed
+    or a coup, or offer loot, when a fight is won;
+  - rank does not count in a fight (who leads is the highest rank, then the longest served, on
+    the team builder only), and the roller and field map do not show it;
+  - many figures are estimates: pay below the British and American ladders (the Thirty Years'
+    War, the medieval vintenar's rises, German, French and Soviet armies by region), the share
+    of pay kept after stoppages, the loot finds and ransoms, and the honours tiers;
+  - no figures for demotion (it is the GM's), for how often looters were punished (only
+    Seringapatam's four hanged), for the Soviet parcels (described, not rolled), or for Plains
+    raiding (Ewers' pages on dividing horses and how often raids went out were not read);
+  - every career draws the soldier's wage when fed by the army, the medieval clerk and servant
+    included.
 - **Skill checks, first cut.** The team builder rolls any check, opposed or not, and haggles at
   the price list. Still left out:
   - the uses are words for the GM: Find a billet does not waive the night's keep on the travel
