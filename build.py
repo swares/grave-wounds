@@ -1989,7 +1989,7 @@ def team_bundle(d) -> dict:
         weapons |= {c["weapon"].get(r["id"], c["weapon"]["default"]) for c in T["careers"] for r in T["regions"]}
     eras = {eid: {"era": d.teams[eid], "ranges": old_wound_ranges(d, eid), "equip": equip_bundle(d, eid), "jobs": jobs_bundle(d, eid), "keep": keep_bundle(d, eid), "repl": d.replacements.get(eid)} for eid in team_eras(d)}
     first = team_eras(d)[0]
-    return {"eras": eras, "era": eras[first]["era"], "ranges": eras[first]["ranges"], "equip": eras[first]["equip"], "money": d.money,
+    return {"eras": eras, "era": eras[first]["era"], "ranges": eras[first]["ranges"], "equip": eras[first]["equip"], "money": d.money, "xp": d.experience,
             "locs": {l["id"]: {"name": l["name"], "zone": l["zone"], "class": l["class"]} for l in d.locations},
             "kits": {k: d.armor["kits"][k] for k in sorted(kits)},
             "fight": {"blood_pool": d.wounds["tracking"]["blood_pool"], "chr": d.wounds["combat"]["characteristics"]},
@@ -2021,7 +2021,7 @@ def main() -> int:
     if missing:
         print("templates/figure.js lacks drawings named in gravewounds/model.py FIG_NAMES: " + ", ".join(missing), file=sys.stderr)
         return 1
-    purse_js = (ROOT / "templates" / "purse.js").read_text(encoding="utf-8")
+    purse_js = (ROOT / "templates" / "purse.js").read_text(encoding="utf-8") + "\n" + (ROOT / "templates" / "xp.js").read_text(encoding="utf-8")
     html = tpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>")).replace("/*__PURSE_JS__*/", purse_js)
     camp_js = (ROOT / "templates" / "camp.js").read_text(encoding="utf-8")
     works_js = (ROOT / "templates" / "works.js").read_text(encoding="utf-8")

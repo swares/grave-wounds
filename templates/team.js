@@ -101,6 +101,31 @@ function finishChar(c){                           // stats, skills, attack, defe
   c.nerve = c.stats.nerve;
   return c;
 }
+/* Experience in play (as gravewounds/experience.py, data TD.xp): End of season rolls each ticked
+   skill (d100 over it rises by the gain die) and counts the days served toward a term. */
+const xpTermDays = () => TD.era.age.per_term * ((TD.xp || {}).days_a_year || 365);
+function xpSeason(c, ticks, served, rng){         // {rolls: [{skill, roll, was, gain}], terms, served}: c changed in place
+  const T = TD.era, [lo, hi] = (TD.xp || {}).gain || [1, 3], want = new Set(ticks), rolls = [];
+  for (const s of T.skills.map(x => x.id).filter(id => want.has(id))){
+    const was = c.skills[s], roll = rng.randint(1, 100);
+    const gain = roll > was && was < T.skill_max ? rng.randint(lo, hi) : 0;
+    if (gain){ c.gains[s] = (c.gains[s] || 0) + gain; finishChar(c) }
+    rolls.push({ skill: s, roll, was, gain: c.skills[s] - was });
+  }
+  c.served = (c.served || 0) + Math.max(0, served);
+  const per = xpTermDays(); let done = 0;
+  while (c.served >= per){
+    c.served -= per;
+    const car = byId(T.careers, c.career);
+    c.gains[car.main] = (c.gains[car.main] || 0) + T.term_main;
+    c.gains[car.second] = (c.gains[car.second] || 0) + T.term_second;
+    c.age = (c.age || 0) + T.age.per_term;
+    c.xp_terms = (c.xp_terms || 0) + 1;
+    done++;
+  }
+  if (done) finishChar(c);
+  return { rolls, terms: done, served: c.served };
+}
 function attackFor(c, weapon){                    // his attack % with a weapon: its skill, or null
   const s = TD.era.weapon_skill[weapon];
   return s ? c.skills[s] : null;

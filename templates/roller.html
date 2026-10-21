@@ -613,7 +613,17 @@ function keepOld(c){                              // the travel map's copy of hi
   NAMED = all;
 }
 const campStep = (c, w) => { const n = c.uid ? NAMED[c.uid] : null, k = n && ((n.health || {}).cases || []).find(x => x.wid === w.wid); return k ? DZR.names[k.d].toLowerCase() + ", " + DZR.steps[k.step] : "" };
+function pullSheets(){                           // a sheet the team builder changed at End of season (xp.js): his new skills
+  const X = readXp(); let changed = false;
+  for (const c of S.chars){
+    const x = c.sheet && c.sheet.pid ? X[c.sheet.pid] : null;
+    if (x && x.sheet && (x.stamp || 0) > (c.sheet.stamp || 0)){ c.sheet = { ...x.sheet, stamp: x.stamp }; changed = true }
+  }
+  if (changed) save();
+}
+function xpHit(c, skill, why){ if (c && c.sheet && c.sheet.pid) xpTick(c.sheet.pid, skill, why) }   // experience: a skill used well ticks it
 function syncNamed(){
+  pullSheets();
   NAMED = readNamed(); S.chars.forEach(syncCamp);
   let tired = false;                              // days he went hungry on the travel map tire him: a fatigue step each, once
   for (const c of S.chars){
@@ -659,7 +669,7 @@ function namedRow(c){                             // Endurance, the force he goe
 }
 if (typeof window !== "undefined"){                // the travel map may have run his days
   window.addEventListener("focus", () => { syncNamed(); renderChars() });
-  window.addEventListener("storage", e => { if (e.key === NAMED_KEY){ syncNamed(); renderChars() } else if (e.key === PURSES_KEY) renderChars() });
+  window.addEventListener("storage", e => { if (e.key === NAMED_KEY || e.key === XP_KEY){ syncNamed(); renderChars() } else if (e.key === PURSES_KEY) renderChars() });
 }
 function cubeOf([c, r]){ const q = c - (r - (r & 1)) / 2; return [q, r, -q - r] }
 function hexDistance(a, b){ const x = cubeOf(a), y = cubeOf(b); return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2])) }
@@ -926,6 +936,7 @@ function attackPhase(atkPct, rc, freeHit){        // the attack and defence roll
   closeIn();
   const ar = attackRoll(atkPct, readDie("#in-atk-roll") ?? d100(), (A ? A.attack : 0) + (rc.range ? rc.range.penalty : 0));
   const combat = { atk: ar, def: null, range: rc.range };
+  if (ar.hit){ const a = attackerChar(); xpHit(a, a && a.sheet && a.sheet.skill_by ? a.sheet.skill_by[S.weapon] : null, "a hit in a fight") }
   if (!ar.hit){
     if (freeHit) freeDone("miss");
     return { end: { miss: true, combat, stray: strayRoll(rc.range) } };
@@ -934,6 +945,7 @@ function attackPhase(atkPct, rc, freeHit){        // the attack and defence roll
     const dr = defenceRoll(defPct, readDie("#in-def-roll") ?? d100(), D ? D.defence : 0);
     combat.def = dr;
     if (dr.defended){
+      const dd = defenderChar(); xpHit(dd, dd && dd.sheet ? dd.sheet.defence_by : null, "a parry or dodge in a fight");
       if (freeHit) freeDone("parried or dodged");
       return { end: { defended: true, combat } };
     }
@@ -1330,11 +1342,11 @@ function firstAid(how, fx, limb, leechcraft = null, roll = null){
   if (how === "tourniquet") return { done: true, bleed: 0, pain: fx.pain };
   return { done: true, bleed: 0, pain: good ? fx.pain : Math.min(3, fx.pain + 1) };   // cauterise
 }
-function leechFor(c){                             // the best Leechcraft among his side's team-builder men still up: [skill, name], or null
+function leechFor(c){                             // the best Leechcraft among his side's team-builder men still up: [skill, name, him], or null
   const mine = S.chars.filter(o => sideOf(o) === sideOf(c) && o.sheet);
   if (!mine.length) return null;
   const up = mine.filter(o => !isDown(o) && !(o.state && CMB.states[o.state.id].out));
-  return up.reduce((a, o) => (skillOf(o, "leechcraft") > a[0] ? [skillOf(o, "leechcraft"), o.name] : a), [0, up[0] ? up[0].name : "no one"]);
+  return up.reduce((a, o) => (skillOf(o, "leechcraft") > a[0] ? [skillOf(o, "leechcraft"), o.name, o] : a), [0, up[0] ? up[0].name : "no one", null]);
 }
 function treat(c, w, how){
   const isLimb = ["arms","legs"].includes(LOC[w.loc].zone), leech = leechFor(c);
@@ -1342,6 +1354,7 @@ function treat(c, w, how){
   const said = leech ? `${leech[1]} (Leechcraft ${leech[0]}) rolled ${roll}` : "";
   if (leech) $("#apply-msg").textContent = r.done ? `${how[0].toUpperCase() + how.slice(1)} on ${c.name}: ${said}, success.` : `${how[0].toUpperCase() + how.slice(1)} on ${c.name} failed: ${said}. Try again.`;
   if (!r.done) return renderChars();
+  if (leech && leech[2]) xpHit(leech[2], "leechcraft", "first aid in a fight");   // experience: his first aid worked
   w.fx.bleed = r.bleed;
   w.fx.pain = r.pain;
   w.treated = (w.treated ? w.treated + ", " : "") + how + (leech ? " (skilled)" : "");

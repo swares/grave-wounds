@@ -163,6 +163,7 @@ label.radio input{margin-top:4px}
       <div id="crew"></div>
       <div id="losses"></div>
       <div id="work"></div>
+      <div id="xp"></div>
     </section>
   </div>
 </div>
@@ -236,6 +237,7 @@ function render(){
   renderWomen();
   renderFollowers();
   renderWork();
+  renderXp();
   renderLosses();
   $("#msg").textContent = S.msg;
   $("#sheets").innerHTML = S.team.length ? S.team.map(sheetHtml).join("") : `<p class="muted">Pick where they come from and a team, then roll.</p>`;
@@ -309,7 +311,7 @@ function sheetHtml(c, i){
   return `<article class="sheet" aria-label="${esc(c.name)}">
     <div class="fig">${fig}</div>
     <div class="who"><input type="text" value="${esc(c.name)}" data-name="${i}" aria-label="Name">${c.leader ? `<span class="tag">Leader</span>` : ""}${womanTag(c)}</div>
-    <div class="what">${esc(career.name)} · ${c.terms} term${c.terms > 1 ? "s" : ""} · age ${c.age} · ${esc(byId(T.regions, c.region).name.replace(/ \(.*/, ""))}</div>
+    <div class="what">${esc(career.name)} · ${c.terms} term${c.terms > 1 ? "s" : ""}${c.xp_terms ? ` (+${c.xp_terms} served)` : ""} · age ${c.age} · ${esc(byId(T.regions, c.region).name.replace(/ \(.*/, ""))}</div>
     <div class="stats${c.mode === "array" ? " place" : ""}">${stats}</div>
     <div class="full what"><b>${esc(c.origin)}.</b> ${esc(pron(c.trait, sx))}; ${esc(pron(c.drawback, sx).toLowerCase())}.</div>
     <div class="full skills">${trained}</div>
@@ -322,6 +324,50 @@ function sheetHtml(c, i){
     ${S.losing === i ? loseForm(c, i) : ""}
     <div class="tools"><button class="small" data-lose="${i}" title="${pron("Killed, taken, deserted or sent home: take him off the team and replace him", sx)}">Lost…</button><button class="small" data-reroll="${i}">${pron("Reroll him", sx)}</button></div>
   </article>`;
+}
+/* Experience (xp.js, xpSeason in team.js): what each man has ticked since the last End of season,
+   his days toward a term, and the last season's rolls. End of season settles them, then puts his
+   new sheet in the shared store for the roller and his skills on the travel map. */
+function renderXp(){
+  const box = $("#xp");
+  if (!TD.xp || !S.team.length){ box.innerHTML = ""; return }
+  const all = readXp(), per = xpTermDays();
+  const rows = S.team.map(c => {
+    const x = all[c.pid] || {}, ticks = Object.entries(x.ticks || {}), served = (c.served || 0) + (x.served || 0);
+    const t = ticks.length ? ticks.map(([k, why]) => `<span title="${esc(why)}">${esc(skillName(k))} ${c.skills[k] ?? 0}</span>`).join(", ") : `<span class="muted">nothing yet</span>`;
+    return `<li><b>${esc(c.name)}</b>: ${t} <span class="muted">· ${served.toLocaleString("en-US")} of ${per.toLocaleString("en-US")} days toward a term</span></li>`;
+  }).join("");
+  const log = (S.xplog || []).map(l => `<li>${esc(l)}</li>`).join("");
+  box.innerHTML = `<section class="crew work" aria-labelledby="h-xp"><h3 id="h-xp">Experience</h3>
+    <p class="muted note">Used well since the last season: a job check that succeeds, a hit or a parry or dodge in the roller, Fieldcraft that finds food, a week nursing, Stealth that surprises and Watch that stops it. At End of season each rolls d100: over the skill, it rises ${TD.xp.gain[0]}-${TD.xp.gain[1]}. Days at skilled work (not fumbled) and nights with a force count toward a term (${TD.era.age.per_term} year${TD.era.age.per_term > 1 ? "s" : ""}): his career's main skill +${T.term_main} and second +${T.term_second}. A season is about ${TD.xp.season_days} days.</p>
+    <ul class="xp">${rows}</ul>
+    <div class="row"><button id="btn-season" title="Roll each ticked skill, count the days served, and clear the ticks">End of season</button></div>
+    ${log ? `<h4>Last season</h4><ul class="log">${log}</ul>` : ""}</section>`;
+}
+function seasonLine(c, r){                         // 'Hans: Blade 42 → 44 (rolled 77); Watch stays 60 (rolled 31); 120 days toward a term'
+  const bits = r.rolls.map(x => x.gain ? `${skillName(x.skill)} ${x.was} → ${x.was + x.gain} (rolled ${x.roll})` : `${skillName(x.skill)} stays ${x.was} (rolled ${x.roll})`);
+  if (r.terms){ const car = careerOf(c); bits.push(`${r.terms} term${r.terms > 1 ? "s" : ""} served: ${skillName(car.main)} +${T.term_main * r.terms}, ${skillName(car.second)} +${T.term_second * r.terms}, now age ${c.age}`) }
+  if (!bits.length) bits.push("nothing ticked");
+  bits.push(`${r.served.toLocaleString("en-US")} days toward a term`);
+  return `${c.name}: ${bits.join("; ")}.`;
+}
+function endSeason(){
+  const all = readXp(), lines = [], stamp = Date.now();
+  for (const c of S.team){
+    const x = all[c.pid] || {};
+    const r = xpSeason(c, Object.keys(x.ticks || {}), x.served || 0, realDice);
+    lines.push(seasonLine(c, r));
+    all[c.pid] = { ticks: {}, served: 0, sheet: rollerSheet(c), stamp };
+  }
+  writeXp(all);
+  let named = null;                                // the travel map's copy of his skills
+  try { named = JSON.parse(localStorage.getItem("gravewounds-named") || "{}") || {} } catch (e) { named = null /* unreadable: the roller will pass them on */ }
+  if (named){
+    for (const n of Object.values(named)){ const c = S.team.find(m => m.pid && m.pid === n.pid); if (c && n.skills) for (const k of Object.keys(n.skills)) n.skills[k] = c.skills[k] ?? n.skills[k] }
+    try { localStorage.setItem("gravewounds-named", JSON.stringify(named)) } catch (e) { /* storage off */ }
+  }
+  S.xplog = lines;
+  render();
 }
 const PLACE_NAMES = { town: "a town", city: "a city", village: "a village", camp: "a camp", road: "on the road", frontier: "the frontier", sea: "at sea" };
 function renderWork(){                           // Find work: the jobs going where the team is, who may take each, and the terms worked
@@ -481,7 +527,9 @@ function clickStat(i, id){                       // fixed array: click two chara
 }
 function rollerSheet(c){                          // what the roller keeps of a sheet: enough to show it and to fill attack and defence
   const attackBy = Object.fromEntries(Object.keys(T.weapon_skill).map(w => [w, attackFor(c, w)]));
+  const defBy = T.defence.reduce((a, s) => (c.skills[s] > c.skills[a] ? s : a), T.defence[0]);
   return { career: careerOf(c).name, terms: c.terms, age: c.age, leader: !!c.leader, stats: c.stats, defence: c.defence, attack_by: attackBy,
+    skill_by: T.weapon_skill, defence_by: defBy,   // which skill each weapon and his defence use: a hit or a parry ticks it
     trained: T.skills.filter(s => (c.gains[s.id] || 0) > 0).map(s => [s.name, c.skills[s.id]]), origin: c.origin, old: c.old,
     skills: c.skills, pid: c.pid };   // every skill, trained or not: the roller and travel map use Leechcraft, Fieldcraft, Watch and Stealth
 }
@@ -541,7 +589,7 @@ function init(){
   if (!S.fcounts) S.fcounts = tplFollowers(S.template);
   pullPurses();
   window.addEventListener("focus", () => { if (pullPurses()) render() });
-  window.addEventListener("storage", e => { if (e.key === PURSES_KEY && pullPurses()) render() });
+  window.addEventListener("storage", e => { if ((e.key === PURSES_KEY && pullPurses()) || e.key === XP_KEY) render() });
   fill();
   $("#sel-era").onchange = e => { setEra(e.target.value); S.era = T.id; startEra(); fill(); render() };
   $("#fcounts").addEventListener("click", e => {
@@ -577,8 +625,11 @@ function init(){
     const k = keepFor(j, c.region, S.place), pk = k ? payKeep(purseFor(c.region, c.terms, c.ledger).days, r.days, k.food, k.bed) : null;
     if (pk && pk.paid) (c.ledger ||= []).push({ days: -pk.paid, what: `Keep while working: ${j.name}` });
     (S.worklog ||= []).push({ pid: c.pid, earned: r.earned, text: workLine(c, j, r, pk) });
+    if (j.skill && r.outcome === "success") xpTick(c.pid, j.skill, j.name);   // experience: a check that succeeds ticks it
+    if (j.skill && r.outcome !== "fumble") xpServe(c.pid, r.days);            // and its days count toward a term
     render();
   });
+  $("#xp").addEventListener("click", e => { if (e.target.closest("#btn-season")) endSeason() });
   $("#btn-field").onclick = sendToField;
   $("#sel-region").onchange = e => { S.region = e.target.value; render() };
   $("#sel-women").onchange = e => { S.women = e.target.value; render() };

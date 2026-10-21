@@ -1,0 +1,21 @@
+# Experience in play (rules in gravewounds/experience.py, repeated in templates/team.js; the
+# ticks are kept by templates/xp.js, shared by the team builder, the roller and the travel map).
+#
+# A skill a man uses well is ticked:
+#   - a job term whose check succeeds ticks the job's skill (lawful or not; a failed or fumbled
+#     check, or a job with no check, ticks nothing);
+#   - in the roller, an attack that hits ticks the skill his weapon is fought with, a parry or
+#     dodge that works ticks his defence skill, and first aid that works ticks Leechcraft;
+#   - on the travel map, Fieldcraft that finds fresh food, a week nursing the force's sick
+#     (Leechcraft), Stealth that surprises an enemy and Watch that stops one surprising his.
+# At the end of a season the GM presses End of season on the team builder: each ticked skill
+# rolls d100, and over the skill it rises by `gain` (low-high), never past the era's skill_max.
+# The ticks then clear.
+#
+# Time served: the days of his skill jobs that were not fumbled, and every night with a force on
+# the travel map, add up. Each era term of days (its age per_term years of `days_a_year`) gives
+# him a later term's gains (term_main to his career's main skill, term_second to its second) and
+# the term's years of age, at the next End of season. His starting purse is not changed.
+gain: [1, 3]
+season_days: 91      # a guide for the GM: about three months
+days_a_year: 365
