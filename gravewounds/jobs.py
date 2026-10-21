@@ -1,7 +1,8 @@
 """Work (data/money.yaml work, data/jobs/<era>.yaml): the jobs a soldier or adventurer can take
 between fights, to give the downtime action "earn money" a shape. A job names the skill it is
 checked on and the least he needs to be hired, its pay in Days for each day worked, its term (a
-day, a week, a month or a contract), the places it is found, who may take it, its risk and a
+day, a week, a month or a contract; or, with `lump`, a sum for the whole contract, `per` a
+horse, a robe or a body), the places it is found, who may take it, its risk and a
 hook. One skill check a term settles the pay (in full, half, or nothing on a fumble); one d100
 a term at or under the risk brings trouble. The team builder page (templates/team.js) repeats
 can_take and work_term exactly."""
@@ -70,7 +71,8 @@ def work_term(d: Data, eid: str, j: dict, c: dict, rng, days: int | None = None)
             table = jobs(d, eid)["trouble"]
             pick = rng.randint(1, len(table)) if table else None
             trouble = {"roll": t, "text": table[pick - 1]["text"] if pick else j.get("hook", "")}
-    return {"check": check, "outcome": outcome, "days": n, "earned": j["pay"] * n * share, "trouble": trouble}
+    earned = j["pay"] * share * (1 if j.get("lump") else n)
+    return {"check": check, "outcome": outcome, "days": n, "earned": earned, "trouble": trouble}
 
 
 QUARTERS = {0: "", 1: "¼", 2: "½", 3: "¾"}
@@ -82,5 +84,8 @@ def pay_text(j: dict) -> str:
     if not q:
         return "unpaid"
     whole, part = divmod(q, 4)
-    num = f"{whole if whole or not part else ''}{QUARTERS[part]}"
-    return f"{num} Day{'s' if q > 4 else ''} a day"
+    num = f"{whole:,}" if whole and not part else f"{whole if whole else ''}{QUARTERS[part]}"
+    days = f"{num} Day{'s' if q > 4 else ''}"
+    if j.get("lump"):
+        return f"{days} {j['per']}" if j.get("per") else f"{days} for the job"
+    return f"{days} a day"

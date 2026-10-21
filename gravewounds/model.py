@@ -1348,6 +1348,8 @@ def _jobs_errors(d: Data, J: dict) -> list[str]:
             days = j.get("days")
             if not (isinstance(days, list) and len(days) == 2 and all(isinstance(x, int) and x > 0 for x in days) and days[0] <= days[1]):
                 errors.append(f"{at}: a contract needs days: [low, high]")
+        if j.get("lump") and j.get("term") != "contract":
+            errors.append(f"{at}: a lump sum is paid only for a contract")
         if not j.get("places") or any(x not in JOB_PLACES for x in j["places"]):
             errors.append(f"{at}: places must be some of {sorted(JOB_PLACES)}")
         who = j.get("who", "any")

@@ -6,6 +6,8 @@
 #           week, month, or contract with days: [low, high]), places (town, city, village, camp,
 #           road, frontier, sea), who (any, or careers), risk (% chance of trouble each term),
 #           illegal, hook (one line for the GM), wage (the period figure), source or approx.
+#           lump: true makes pay the sum for the whole contract, not for each day (per: what it is
+#           paid for, as "a horse"); a contract's days are then how long it takes.
 # trouble - d10: what goes wrong when the trouble roll comes up.
 # 1 Day = 6d, an archer's pay (1415). Wages are from the Middlesex accounts (VCH, after Thorold
 # Rogers), which run above the statute caps of 1351 and 1445.
