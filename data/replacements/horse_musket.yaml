@@ -128,8 +128,11 @@ hire:
 effects:
   default:
     practice: heirs
-    what: His company commander and two officers listed his effects beyond his clothing and arms, and they were accounted for and paid to his representative (Articles of War); the records give his effects
-      as a sum, so they were likely sold.
+    what: His company commander and two officers listed his effects beyond his clothing and arms (Articles of War), and every regiment kept a register of its dead with the amount of their effects and sums
+      due, for their relatives (General Regulations 1822). His kit was sold, and the balance went to his representative.
     source:
       url: https://andyreiter.com/wp-content/uploads/military-justice/uk/Laws%20and%20Decrees/United%20Kingdom%20-%201765%20-%20British%20Articles%20of%20War.pdf
-      note: 1765 Articles of War, section XVII, article II; the Continental Articles of 1776 copy it
+      note: '1765 Articles of War, section XVII, article II (the Continental Articles of 1776 copy it); General Regulations and Orders for the Army, 1822: the registry of deceased soldiers'
+    sources:
+    - url: https://archive.org/stream/dli.bengal.10689.20091/10689.20091_djvu.txt
+      note: 'General Regulations and Orders for the Army (1822), regimental books 13: registry of deceased soldiers'

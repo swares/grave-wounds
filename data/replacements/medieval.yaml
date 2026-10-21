@@ -67,9 +67,13 @@ hire:
   approx: true
 effects:
   default:
-    practice: share
-    what: In the field a dead man's goods went to his captain and comrades, who took a share of each other's gains of war; a man with a will left it to his heirs.
+    practice: heirs
+    what: A man going to war often made his will before he went, and his executors saw his goods to his family and church; his share of the gains of war was another matter, a third of it owed to his captain.
+      The GM may let comrades divide what a poor man carried.
     source:
-      url: https://deremilitari.org/?p=2246
-      note: the captain's third of his men's gains
+      url: https://archive.org/stream/historyofwarring00beam/historyofwarring00beam_djvu.txt
+      note: William Mainwaring of Peover made his will on 4 October 1394, about to go to the wars in Guienne (Mainwaring papers)
     approx: true
+    sources:
+    - url: https://deremilitari.org/?p=2246
+      note: the captain's third of his men's gains of war

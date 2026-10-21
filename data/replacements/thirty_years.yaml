@@ -75,9 +75,12 @@ hire:
     note: 26 daler a trooper, 8 a foot recruit (1608); the extra for a veteran is a guess
 effects:
   default:
-    practice: share
-    what: His comrades and the sutler took his goods, and what he had went round the company and his woman; no rule is recorded.
+    practice: heirs
+    what: When a mercenary died, the regiment's judge (Schultheiß) took his goods into safekeeping, paid his hospital and like costs from them, and handed the rest to his lawful family, writing to the authorities
+      at home; captains and ensigns saw to it, and those who kept a larger estate gave surety that it reached the right heirs. A man could make his will before the judge.
     source:
-      url: https://userpage.fu-berlin.de/~telehist/MvM/magisterarbeit(1.2.2005).pdf
-      note: Hagendorf's comrades gave him money when he lay wounded, 1631
-    approx: true
+      url: https://archive.org/stream/grundzgederrech00bonigoog/grundzgederrech00bonigoog_djvu.txt
+      note: Bonin, Grundzüge der Rechtsverfassung in den deutschen Heeren zu Beginn der Neuzeit (1904), pp. 115-116, after the articles of 1575 and 1583
+    sources:
+    - url: https://archive.org/stream/cu31924030726537/cu31924030726537_djvu.txt
+      note: 'Essex''s Lawes and Ordinances of Warre (1642): no man shall take or spoil the goods of him that dieth or is killed in service, on pain of restoring double'

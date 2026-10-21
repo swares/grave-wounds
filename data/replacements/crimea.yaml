@@ -77,7 +77,10 @@ hire:
 effects:
   default:
     practice: heirs
-    what: A committee listed his effects, sold them, paid his debts and funeral, and the balance went to his family.
+    what: A board of officers listed his effects and valued his knapsack; within a month they were sold by barrack auction among the men, and the proceeds went to his account for his family.
     source:
-      url: https://www.thegazette.co.uk/London/issue/24281/page/8/data.pdf
+      url: https://archive.org/stream/cihm_68466/cihm_68466_djvu.txt
+      note: 'Regimental standing orders of the Royal Newfoundland Companies (1850): effects of deceased soldiers sold by barrack auction within one month, proceeds to his account'
+    sources:
+    - url: https://www.thegazette.co.uk/London/issue/24281/page/8/data.pdf
       note: unclaimed balances advertised for next of kin under the Regimental Debts Act 1863

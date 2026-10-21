@@ -51,7 +51,8 @@ Away from an army that feeds him, his keep comes out of it too ([Keep](#work)).
 
 **Losses.** A man killed, dead of wounds or disease, taken prisoner, deserted or sent home
 leaves the team. First his purse is settled as his era did it: shared among his comrades
-(a free company, a frontier outfit), sent to his heirs (most armies from the 1850s), or lost
+(a frontier outfit, an insurgent cell), sent to his heirs (by his will in the Middle Ages, through
+the regiment's judge in the Thirty Years' War, and by the articles of war after), or lost
 with him (the Plains nations gave a dead man's things away); the GM may choose otherwise.
 Then the gap is filled one of three ways: a new man **rolled** like any other, of the lost
 man's career and terms; a man **assigned** by the army through its own system (a draft from
