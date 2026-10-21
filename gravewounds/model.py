@@ -108,6 +108,7 @@ class Data:
     replacements: dict = field(default_factory=dict)   # era id -> how losses are replaced, and a lost man's effects (data/replacements)
     events: dict = field(default_factory=dict)      # events on the march and in camp, by era (data/events.yaml)
     experience: dict = field(default_factory=dict)  # skills rising in play (data/experience.yaml)
+    checks: dict = field(default_factory=dict)      # skill checks out of a fight (data/checks.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -163,6 +164,7 @@ def load(root: str | Path = "data") -> Data:
     replacements = _read_dir(root / "replacements")
     events = _optional(root / "events.yaml", {})
     experience = _optional(root / "experience.yaml", {})
+    checks = _optional(root / "checks.yaml", {})
 
     data = Data(
         root=root,
@@ -193,6 +195,7 @@ def load(root: str | Path = "data") -> Data:
         replacements=replacements,
         events=events,
         experience=experience,
+        checks=checks,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -518,6 +521,8 @@ def validate(d: Data) -> None:
         errors += _replacement_errors(d, R)
     if d.events:
         errors += _events_errors(d)
+    if d.checks:
+        errors += _checks_errors(d)
     if d.experience:
         X = d.experience
         g = X.get("gain")
@@ -1453,6 +1458,39 @@ def _events_errors(d: Data) -> list[str]:
         for b in bands:
             if not (isinstance(b.get("below"), (int, float)) and 0 < b["below"] <= 1 and isinstance(b.get("pct"), int) and 0 < b["pct"] <= 100):
                 errors.append(f"{where}: horses_march {t} bands need below (0-1) and pct (1-100)")
+    return errors
+
+
+def _checks_errors(d: Data) -> list[str]:
+    """data/checks.yaml: difficulties with whole modifiers; haggle figures; each use names a skill
+    some era has (or a characteristic), a known difficulty, a known skill or characteristic
+    against it, and its results."""
+    C, where, errors = d.checks, "checks.yaml", []
+    stats = {"str", "agi", "end", "wits", "nerve", "pres"}
+    skills = {s["id"] for T in d.teams.values() for s in T["skills"]}
+    if not (0 < C.get("critical_fraction", 0) < 1) or not (isinstance(C.get("fumble_from"), int) and 1 < C["fumble_from"] <= 100):
+        errors.append(f"{where}: critical_fraction must be 0-1 and fumble_from 2-100")
+    diffs = [x.get("id") for x in C.get("difficulty", [])]
+    if "ordinary" not in diffs or len(set(diffs)) != len(diffs) or any(not isinstance(x.get("mod"), int) for x in C.get("difficulty", [])):
+        errors.append(f"{where}: difficulties need unique ids, an ordinary one, and whole modifiers")
+    H = C.get("haggle") or {}
+    if H and not (isinstance(H.get("seller"), int) and -1 < H.get("win", 0) < 0 and -1 < H.get("critical", 0) <= H.get("win", 0)):
+        errors.append(f"{where}: haggle needs a seller skill and win/critical as falls in price (critical at least win)")
+    ids = set()
+    for u in C.get("uses", []):
+        at = f"{where}: use {u.get('id')}"
+        if u.get("id") in ids:
+            errors.append(f"{at}: id used twice")
+        ids.add(u.get("id"))
+        if u.get("skill") not in skills | stats:
+            errors.append(f"{at}: unknown skill {u.get('skill')}")
+        if u.get("difficulty") not in diffs:
+            errors.append(f"{at}: unknown difficulty {u.get('difficulty')}")
+        ag = u.get("against")
+        if ag is not None and not ((ag.get("skill") in skills or ag.get("stat") in stats) and isinstance(ag.get("value"), int)):
+            errors.append(f"{at}: against needs a known skill or stat and a value")
+        if not all(u.get(k) for k in ("name", "what", "success", "failure", "fumble")):
+            errors.append(f"{at}: needs name, what, success, failure and fumble")
     return errors
 
 

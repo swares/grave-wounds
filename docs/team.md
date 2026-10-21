@@ -330,6 +330,29 @@ forages fresh food on the march; **Watch** makes his force harder to surprise, a
 **Stealth** makes the force he attacks with likelier to surprise its enemy (see
 [combat.md](combat.md), [travel.md](travel.md) and [works.md](works.md), *Surprise*).
 
+## Skill checks
+
+`data/checks.yaml` (rules in `gravewounds/checks.py`, repeated in `templates/team.js`:
+`skillCheck`, `opposedCheck`, `haggle`, `checkUses`). The one roll gets a **difficulty** (Easy
++20, Ordinary, Hard −20, Very hard −40), a **critical** at 10% of the chance and a **fumble**
+on a failed 96+ (the fight's and the jobs' figures). **Opposed**: both roll, the resisting side
+at Ordinary; the man acting must beat them (success over failure, critical over success, else
+the wider margin); a tie or two failures goes to the side resisting. The other side counts as
+50 without a sheet.
+
+`uses` lists what each skill and characteristic does out of a fight, each with its usual
+difficulty, who resists it (`against`: a skill or characteristic, and the value to use), and
+its success, failure and fumble; an era is offered only the uses whose skill it has. The
+difficulties and effects are design choices; the notes on period practice (passes, billeting,
+articles of war) are general and carry no figures.
+
+The team builder's **Skill checks** panel: pick a man and a use (it fills in the skill, the
+difficulty and the other side's value), or any skill or characteristic, and roll. A skill
+check that succeeds, or wins, ticks the skill for experience; a characteristic is not ticked.
+**Haggle** beside Buy rolls his Persuade against the seller's 50: a tenth off if he wins (a
+quarter on a critical, to the quarter Day, never under ¼), the list price if not, and no sale
+on a fumble; winning ticks Persuade.
+
 ## Experience
 
 `data/experience.yaml` (rules in `gravewounds/experience.py`, repeated as `xpSeason` in
