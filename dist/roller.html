@@ -893,14 +893,16 @@ function stTreat(st, where, roll){                  // {rtd, chance, roll, days}
 function stRelieve(st, kind){                       // rotation home or a homecoming
   st.strain = 0; st.toll *= STR()[kind].toll; st.state = null;
 }
-const stName = (eid, state) => { const i = { shaken: 0, strained: 1, exhaustion: 2, severe: 2 }[state]; return ((STR().names || {})[eid] || ["shaken", "strained", "broken down"])[i] };
+const ST_NAME_AT = { shaken: 0, strained: 1, exhaustion: 2, severe: 2 };
+const stName = (eid, state) => (STR().names?.[eid] || ["shaken", "strained", "broken down"])[ST_NAME_AT[state]];
 const stRow = state => (STR().results || []).find(r => r.id === state) || {};
 const stRoll = { randint: (a, b) => a + crypto.getRandomValues(new Uint32Array(1))[0] % (b - a + 1) };
 function xpStress(pid, source, nerve, why){         // a man takes a source's Strain (the shared store): -> the checks made
   if (!pid || !TD.stress) return [];
   const all = readXp(), x = xpOf(all, pid), st = (x.stress ||= stNew()), amount = STR().sources[source].strain;
   const ev = stAdd(st, amount, nerve, stRoll);
-  (x.stressLog ||= []).unshift({ source, why: why || STR().sources[source].name, amount, ev });
+  x.stressLog ||= [];
+  x.stressLog.unshift({ source, why: why || STR().sources[source].name, amount, ev });
   x.stressLog = x.stressLog.slice(0, 30);
   writeXp(all);
   return ev;
@@ -1186,7 +1188,8 @@ function strainFor(c, source, why){
   const ev = xpStress(c.sheet.pid, source, statOf(c, "nerve"), why);
   refreshStress();
   for (const e of ev.filter(x => !x.held)){
-    (S.pending = S.pending || []).push(`${c.name}: ${stName(c.sheet.era, e.result)} (Nerve ${e.target}, rolled ${e.roll})`);
+    S.pending = S.pending || [];
+    S.pending.push(`${c.name}: ${stName(c.sheet.era, e.result)} (Nerve ${e.target}, rolled ${e.roll})`);
     if (stRow(e.result).out) c.state = { id: "out", rounds: null };
   }
 }

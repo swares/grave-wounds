@@ -647,7 +647,8 @@ function strainFor(c, source, why){
   const ev = xpStress(c.sheet.pid, source, statOf(c, "nerve"), why);
   refreshStress();
   for (const e of ev.filter(x => !x.held)){
-    (S.pending = S.pending || []).push(`${c.name}: ${stName(c.sheet.era, e.result)} (Nerve ${e.target}, rolled ${e.roll})`);
+    S.pending = S.pending || [];
+    S.pending.push(`${c.name}: ${stName(c.sheet.era, e.result)} (Nerve ${e.target}, rolled ${e.roll})`);
     if (stRow(e.result).out) c.state = { id: "out", rounds: null };
   }
 }
