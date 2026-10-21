@@ -111,6 +111,7 @@ class Data:
     checks: dict = field(default_factory=dict)      # skill checks out of a fight (data/checks.yaml)
     ranks: dict = field(default_factory=dict)       # rank, pay, promotion and loot (data/ranks.yaml)
     training: dict = field(default_factory=dict)    # masters, teammates and drill (data/training.yaml)
+    ageing: dict = field(default_factory=dict)      # decline, maturity, wear and worn out (data/ageing.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -169,6 +170,7 @@ def load(root: str | Path = "data") -> Data:
     checks = _optional(root / "checks.yaml", {})
     ranks = _optional(root / "ranks.yaml", {})
     training = _optional(root / "training.yaml", {})
+    ageing = _optional(root / "ageing.yaml", {})
 
     data = Data(
         root=root,
@@ -202,6 +204,7 @@ def load(root: str | Path = "data") -> Data:
         checks=checks,
         ranks=ranks,
         training=training,
+        ageing=ageing,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -531,6 +534,18 @@ def validate(d: Data) -> None:
         errors += _checks_errors(d)
     if d.ranks:
         errors += _ranks_errors(d)
+    if d.ageing:
+        AG, stats = d.ageing, {"str", "agi", "end", "wits", "nerve", "pres"}
+        fr = [b.get("from") for b in AG.get("decline", [])]
+        if not fr or fr != sorted(fr) or fr[0] != 0:
+            errors.append("ageing.yaml: decline bands must rise from 0")
+        for b in AG.get("decline", []):
+            for k, v in b.items():
+                if k != "from" and (k not in stats or not (isinstance(v, list) and len(v) == 2 and v[0] >= 1 and v[1] >= 1)):
+                    errors.append(f"ageing.yaml: decline {b.get('from')} {k} must be [dice, sides] of a characteristic")
+        for k in ("pres", "wits", "nerve"):
+            if not isinstance((AG.get("maturity") or {}).get(k, {}).get("cap"), int):
+                errors.append(f"ageing.yaml: maturity {k} needs to and cap")
     if d.training:
         TR, skills = d.training, {s["id"] for T in d.teams.values() for s in T["skills"]}
         for m in TR.get("masters", []):

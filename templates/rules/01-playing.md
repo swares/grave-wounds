@@ -83,6 +83,28 @@ critical); if not, the list price; and if he fumbles the seller will not deal wi
 A skill check that succeeds (or wins against someone) ticks the skill for experience; a
 characteristic is not ticked.
 
+## Age {#age}
+
+A man ages with his terms. For every 4 years of his life past the start of his service (at the
+making of a character, the years of his terms; in play, each term served) he rolls his age band's
+decline, taken from his characteristics as a lasting hurt is (his skills that rest on them fall
+with them), and, from 20, gains a step of maturity: +1 Presence and +1 Nerve until 40, +1 Wits
+until 45 (at most +5 each). Endurance goes first, then Agility, then Strength; Wits slows from
+50:
+
+{{table:ageing}}
+
+**Wear.** Service wears a man: +1 Wear for each 4 years, and +1 for each hard season (a month of
+hard nights on the travel map, hungry, sick or wounded, or colder and wetter than his shelter; or
+the GM's word for a siege, a famine or a tropical station). Each 4 Wear makes him 2 years older
+for his decline, and from 6 Wear his Endurance rolls twice and takes the worse.
+
+**Worn out.** For each term he serves from 35, or with 8 Wear or more, he rolls d100: at or under
+3 × Wear + 2 × (his age − 35) − (Endurance − 50) ÷ 2, he is worn out (a 1-year term rolls a
+quarter of that). From 40, Endurance under 30, or Strength, Agility or Endurance under 25, wears
+him out at once. The GM may send him home (with a pension where his army gave one) or keep him
+on. British soldiers discharged "worn out" were mostly 41 to 44, after 21 to 25 years.
+
 ## Experience {#experience}
 
 **Training.** A skill can also be ticked by a week's teaching: from a master for hire where the

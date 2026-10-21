@@ -1058,7 +1058,7 @@ function healthNight(f, today, camp){         // the sick get better or worse; o
   const ctx = { care: campCare(kind), marched: (f.marched || 0) > 0, wet_cold: nightHard(today.w, kind), filth: hyg === "poor", fresh: (f.noFresh || 0) < DZ.week_days,
     leech: leechBonus(bestSkill([f], "leechcraft")[0]), low: today.w.low, shelter: WXD.shelter[kind || "none"] };
   namedNight(f, ctx, f.day % DZ.week_days === 0 ? weekFactorsFor(f, kind, hyg) : null);
-  xpNight(f);
+  xpNight(f, ctx.wet_cold);
   const r = healthDay(healthOf(f), { ...ctx, men: f.men, unnursed: nursingOf(healthOf(f), f.men).unnursed }, roll100);
   f.health = r.health;
   const dead = Object.values(r.events.dead).reduce((t, n) => t + n, 0);
@@ -1073,9 +1073,12 @@ const NAMED_KEY = "gravewounds-named";        // {uid: {name, endurance, map, fo
 function readNamed(){ try{ return JSON.parse(localStorage.getItem(NAMED_KEY) || "{}") || {} }catch(e){ return {} } }
 function writeNamed(all){ try{ localStorage.setItem(NAMED_KEY, JSON.stringify(all)) }catch(e){ /* storage off: they stay as they were */ } }
 const namedWith = (all, f) => Object.entries(all).filter(([, n]) => n.map === S.mapId && n.force === f.id && !n.dead);
-function xpNight(f){                          // experience: a night served for each named man; a week nursing ticks the best Leechcraft
+function xpNight(f, wetCold){                 // experience: a night served for each named man; a week nursing ticks the best Leechcraft
   const all = readNamed(), mine = namedWith(all, f).filter(([, n]) => !n.dead);
-  for (const [, n] of mine){ xpServe(n.pid, 1); if (fedByArmy(f)) xpArmy(n.pid, !!f.unpaid) }   // a day served; and his army's pay, or arrears
+  for (const [, n] of mine){
+    xpServe(n.pid, 1); if (fedByArmy(f)) xpArmy(n.pid, !!f.unpaid);   // a day served; and his army's pay, or arrears
+    if (f.shortFood || wetCold || ((n.health || {}).cases || []).length) xpMark(n.pid, "hard", 1);   // a hard night: wear (ageing)
+  }
   const sick = healthOf(f).cases.length > 0 || mine.some(([, n]) => ((n.health || {}).cases || []).length);
   if (sick && f.day % DZ.week_days === 0){ const [lc, , pid] = bestSkill([f], "leechcraft", all); if (lc) xpTick(pid, "leechcraft", "nursing the sick") }
   if ((f.marched || 0) <= 0) f.campWeek = (f.campWeek || 0) + 1;     // drill: days of the week not marching

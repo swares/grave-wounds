@@ -393,6 +393,24 @@ check that succeeds, or wins, ticks the skill for experience; a characteristic i
 quarter on a critical, to the quarter Day, never under ¼), the list price if not, and no sale
 on a fumble; winning ticks Persuade.
 
+## Age
+
+`data/ageing.yaml` (rules in `gravewounds/ageing.py`, repeated in `templates/team.js`:
+`agSteps`, `agAddWear`, `agWornOut`; research in the project doc "ageing-research").
+`steps` takes every 4 years from `aged_to` to `age`: the band of the middle year (plus 2 years for
+each 4 Wear) gives the dice each of Strength, Agility, Endurance and Wits loses (Endurance twice,
+the worse, from 6 Wear); maturity adds 1 to Presence and Nerve to 40 and Wits to 45 (cap 5 each)
+from 20; Wear rises 1. Changes go into `stat_mods`, so skills fall with their characteristics.
+`make_character` ages a new man through his terms (the last dice taken; so a 3-term man of 28
+has some maturity and 3 Wear, but no decline yet). At End of season, a season with 30 or more
+hard nights (counted on the travel map: short of food, a night harder than the shelter, sick or
+wounded) or the GM's **Hard season** tick adds 1 Wear; the terms served age him; and each term
+from 35 (or 8 Wear) rolls the Worn Out check (3 × Wear + 2 × (age − 35) − (End − 50) ÷ 2, scaled
+by the term's years ÷ 4; from 40, End under 30 or any of Str/Agi/End under 25 at once). A worn-out
+man's row offers **Discharge him** (lost: sent home) or **Keep him on**. Tuned by simulation: a
+line private serving from 16 is worn out by 40 about half the time, by 44 three times in four.
+A man made before ageing starts from his age then (`aged_to`).
+
 ## Experience
 
 **Training** (`data/training.yaml`, rules in `gravewounds/training.py`, repeated in

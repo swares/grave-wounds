@@ -1,0 +1,66 @@
+# Ageing (rules in gravewounds/ageing.py, repeated in templates/team.js). Research notes: the
+# project doc "ageing-research" (figures tagged sourced, estimate or gap).
+#
+# Every `step` years of his age (at creation, for the years of his terms; in play, for each term
+# served) a man rolls the decline of his age band (by the middle of those years, plus
+# `wear.add_years` for each `wear.per` Wear) and gains a step of maturity, and his Wear rises.
+# Declines and gains go into his characteristics' changes, as a lasting hurt does, so his skills
+# that rest on them fall too; no characteristic goes below the era's least.
+#
+# The bands follow the physiology: aerobic capacity (Endurance) falls from about 25 at roughly
+# 10% a decade, faster later; sprint speed and reaction (Agility) about 5-6% a decade from the
+# 30s; grip and leg strength hold until about 40-50 and then fall about 1% a year; processing
+# speed (Wits) falls from about 50, though knowledge holds (Fleg 2005; Korhonen 2003; Fozard
+# 1994; Dodds 2014; Kemmler 2018; Hartshorne and Germine 2015). The dice are design choices
+# scaled to the 15-95 characteristics.
+step: 4
+decline:                      # [dice, sides] lost by each characteristic, by the band the step falls in
+  - {from: 0}
+  - {from: 30, agi: [1, 3], end: [1, 2]}
+  - {from: 40, str: [1, 3], agi: [1, 4], end: [1, 4]}
+  - {from: 50, str: [1, 4], agi: [1, 6], end: [1, 6], wits: [1, 2]}
+  - {from: 60, str: [1, 6], agi: [2, 4], end: [2, 4], wits: [1, 2]}
+decline_approx: true
+
+# Maturity: a point a step from `from` to each characteristic's `to`, at most `cap` in all (steadier
+# and surer between 20 and 40: Roberts et al. 2006; judgement and knowledge to about 45). The WWII
+# studies found breakdown followed days in combat, not age, so Nerve's rise is small.
+maturity:
+  from: 20
+  pres: {to: 40, cap: 5}
+  wits: {to: 45, cap: 5}
+  nerve: {to: 40, cap: 5}
+  approx: true
+
+# Wear: service and hardship. Each step of service adds `per_step`; a hard season (a month or more
+# of hard nights on the travel map - hungry, sick or wounded, or colder and wetter than his
+# shelter - or the GM's tick) adds `hard_season`. Each `per` Wear makes him `add_years` older for
+# his decline, and from `end_twice` Wear his Endurance rolls twice and takes the worse.
+# (Civil War: men enlisting at about 39 had 1.8 times the odds of dying of disease of men of 20 in
+# their first year and 2.4 after: service wore the older men faster. Smith, NY regiments.)
+wear:
+  per_step: 1
+  hard_season: 1
+  hard_nights: 30
+  per: 4
+  add_years: 2
+  end_twice: 6
+  approx: true
+
+# Worn out: for each term he serves from `age` (or with `wear` Wear or more), d100 at or under
+# (Wear x per_wear + (age - age) x per_year - (Endurance - 50) / end_per) x the term's years / 4,
+# and he is worn out; so too, at once, from `end_age`, with Endurance under `end_below` or any of
+# Strength, Agility and Endurance under `any_below` (a man who was always weak is not worn out by it). The GM may discharge him (sent home, with a
+# pension where his army gave one) or keep him on. Tuned so a long-service ranker is worn out
+# about 40-44 after 20-24 years, as the British "worn out" discharges were (Chelsea records): a
+# simulated line private enlisting at 16 is worn out by 40 half the time, by 44 three times in four.
+worn_out:
+  age: 35
+  wear: 8
+  per_wear: 3
+  per_year: 2
+  end_per: 2
+  end_below: 30
+  end_age: 40
+  any_below: 25
+  approx: true

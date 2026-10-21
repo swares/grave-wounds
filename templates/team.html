@@ -461,7 +461,10 @@ function renderXp(){
   const rows = S.team.map(c => {
     const x = all[c.pid] || {}, ticks = Object.entries(x.ticks || {}), served = (c.served || 0) + (x.served || 0);
     const t = ticks.length ? ticks.map(([k, why]) => `<span title="${esc(why)}">${esc(skillName(k))} ${c.skills[k] ?? 0}</span>`).join(", ") : `<span class="muted">nothing yet</span>`;
-    return `<li><b>${esc(c.name)}</b>: ${t} <span class="muted">· ${served.toLocaleString("en-US")} of ${per.toLocaleString("en-US")} days toward a term</span></li>`;
+    const i = S.team.indexOf(c), age = TD.ageing ? ` · age ${c.age}, Wear ${c.wear || 0}${x.hard ? `, ${x.hard} hard night${x.hard !== 1 ? "s" : ""}` : ""}` : "";
+    const hard = TD.ageing ? ` <label class="check" title="A hard season (siege, famine, a tropical station, a prison camp): +${TD.ageing.wear.hard_season} Wear at End of season. A month of hard nights on the travel map counts by itself."><input type="checkbox" data-hard="${i}"${c.hardSeason ? " checked" : ""}> Hard season</label>` : "";
+    const worn = c.wornOut ? `<div class="spend"><b>${esc(c.wornOut[0].toUpperCase() + c.wornOut.slice(1))}.</b> <button class="small" data-discharge="${i}" title="Sent home, with a pension where his army gave one">Discharge him</button><button class="small" data-keepon="${i}" title="He stays; the check comes again next term">Keep him on</button></div>` : "";
+    return `<li><b>${esc(c.name)}</b>: ${t} <span class="muted">· ${served.toLocaleString("en-US")} of ${per.toLocaleString("en-US")} days toward a term${age}</span>${hard}${worn}</li>`;
   }).join("");
   const log = (S.xplog || []).map(l => `<li>${esc(l)}</li>`).join("");
   box.innerHTML = `<section class="crew work" aria-labelledby="h-xp"><h3 id="h-xp">Experience</h3>
@@ -518,8 +521,24 @@ function endSeason(){
   const all = readXp(), lines = [], stamp = Date.now();
   for (const c of S.team){
     const x = all[c.pid] || {};
+    c.aged_to ??= c.age;                           // a man made before ageing: from now on
     const r = xpSeason(c, Object.keys(x.ticks || {}), x.served || 0, realDice);
     let line = seasonLine(c, r);
+    if (TD.ageing){                                 // a hard season wears him; the years of any term served age him; each term, the Worn Out check
+      const hard = c.hardSeason || (x.hard || 0) >= TD.ageing.wear.hard_nights;
+      if (hard) agAddWear(c, 1);
+      const aged = agSteps(c, realDice); finishChar(c);
+      const bits = [];
+      if (hard) bits.push(`a hard season (${x.hard || 0} hard nights${c.hardSeason ? ", and the GM's word" : ""}): Wear ${c.wear}`);
+      for (const a of aged){ const ch = Object.entries(a.changes).map(([k, v]) => `${statName(k)} ${v > 0 ? "+" : "−"}${Math.abs(v)}`); if (ch.length) bits.push(`by ${a.age}: ${ch.join(", ")}`) }
+      for (let k = 0; k < r.terms; k++){
+        const w = agWornOut(c, T.age.per_term, realDice.randint(1, 100));
+        if (w.checked) bits.push(w.worn ? `${w.why}${w.threshold ? ` (rolled ${w.roll} against ${w.threshold})` : ""}` : `fit to serve on (rolled ${w.roll} against ${w.threshold})`);
+        if (w.worn){ c.wornOut = w.why; break }
+      }
+      c.hardSeason = false;
+      if (bits.length) line = line.replace(/\.$/, "") + "; " + bits.join("; ") + ".";
+    }
     if (rkLadder().length){                        // his days in rank, his pay, and any arrears
       c.rank ||= rkStart(c.career);
       c.rank_days = (c.rank_days || 0) + (x.served || 0);
@@ -529,7 +548,7 @@ function endSeason(){
       if (paid || owed) line = line.replace(/\.$/, "") + `; pay ${daysQ(paid)}${owed ? `, ${daysQ(owed)} owed` : ""}.`;
     }
     lines.push(line);
-    all[c.pid] = { ticks: {}, served: 0, army: 0, owed: 0 };
+    all[c.pid] = { ticks: {}, served: 0, army: 0, owed: 0, hard: 0 };
   }
   if (rkLadder().length){                          // the season's promotions, then everyone's new sheet
     const rolls = rkPromote(S.team, (S.vacancies ||= {}), realDice);
@@ -812,7 +831,13 @@ function init(){
     render();
   });
   $("#xp").addEventListener("click", e => { if (e.target.closest("#btn-season")) endSeason(); else if (e.target.closest("#btn-train")) trainWeek() });
+  $("#xp").addEventListener("click", e => {
+    const d = e.target.closest("button[data-discharge]"), k = e.target.closest("button[data-keepon]");
+    if (d){ const i = +d.dataset.discharge, c = S.team[i]; c.wornOut = null; loseMember(i, "sent home"); S.msg = `${c.name} is discharged, worn out: sent home${(TD.repl || {}).effects ? "" : ""}, with a pension where his army gave one.`; return render() }
+    if (k){ S.team[+k.dataset.keepon].wornOut = null; return render() }
+  });
   $("#xp").addEventListener("change", e => {
+    if (e.target.dataset.hard !== undefined){ S.team[+e.target.dataset.hard].hardSeason = e.target.checked; return render() }
     const K = S.train, id = e.target.id;
     if (id === "tr-who") K.i = +e.target.value; else if (id === "tr-skill") K.skill = e.target.value; else if (id === "tr-teacher") K.teacher = e.target.value; else return;
     render();

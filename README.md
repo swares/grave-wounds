@@ -90,7 +90,9 @@ rules, with the provost to fear where plunder was forbidden (the roller suggests
 enemies a man put down, counts coups, and offers the loot when a fight is won); the Plains nations count coups and
 horses instead. Skills used well (a job, a hit or a parry, first aid, foraging, nursing, keeping watch), or
 taught by a master, a better teammate or the army's drill in camp, roll to rise at the end of
-each season, and time served adds a career term. A man lost
+each season, and time served adds a career term. Men age: Endurance, then Agility, then
+Strength decline from 30, steadiness and judgement grow to 40, hard seasons wear them, and a long
+campaigner is in the end worn out and sent home. A man lost
 is replaced the era's way: rolled anew, assigned by the army after a wait, or hired. On the
 travel map forces lose men on the road as the records say they did: desertion, straggling,
 injuries and horses by era and by whether they are in camp, marching or withdrawing, with an
