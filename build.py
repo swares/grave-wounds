@@ -1947,13 +1947,15 @@ def index_page(d) -> str:
 
 def equip_bundle(d, eid: str) -> dict | None:
     """What the team builder needs of an era's prices (data/equipment): its coins, which coin each
-    army was paid in, and the rows that price an issued armour kit or weapon."""
+    army was paid in, the rows that price an issued armour kit or weapon, and the whole price list
+    but pay, for buying from a character's purse."""
     E = d.equipment.get(eid)
     if not E:
         return None
     keep = ("id", "price", "in", "kit", "weapon", "regions")
     rows = [{k: r[k] for k in keep if k in r} for r in E["items"] if r.get("kit") or r.get("weapon")]
-    return {"currencies": E["currencies"], "currency": E["currency"], "items": rows}
+    shop = [{k: r[k] for k in ("id", "name", "cat", "price", "in", "per") if k in r} for r in E["items"] if r.get("cat") != "pay"]
+    return {"currencies": E["currencies"], "currency": E["currency"], "items": rows, "shop": shop}
 
 
 def jobs_bundle(d, eid: str) -> dict | None:

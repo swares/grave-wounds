@@ -85,6 +85,14 @@ archer in 1415, 12 kreuzer in 1630, $13 a month (43¢) for a Union private, $1,5
 career term (`data/money.yaml`), and the downtime action "earn money" pays 1 Day for each day
 worked. His issued kit and weapon are free; the sheet shows what they are worth in Days.
 
+The purse is kept as an account: a character's `ledger` lists what he has earned and spent
+since he was made, in signed Days, and his purse is his starting Days plus the ledger
+(`gravewounds/money.py` purse, earn, spend). In the team builder each sheet shows the account
+under the money line: a term worked in the Find work panel pays into it, and he can buy from
+the era's price list (pay rows aside; a range at its middle, in his own army's Day) or pay any
+sum for anything else. He cannot spend more than his purse holds, and an entry taken back
+cannot leave it short. Purses show to the quarter Day.
+
 Prices live in `data/equipment/<era>.yaml`, one file to an era, like the team tables:
 
 - **currencies:** each coin, its units (or a decimal coin), its Day in its smallest unit, and
