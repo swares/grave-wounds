@@ -106,6 +106,7 @@ class Data:
     money: dict = field(default_factory=dict)       # money.yaml: purse per career term, pay for a day's work
     jobs: dict = field(default_factory=dict)        # era id -> jobs between fights and a trouble table (data/jobs)
     replacements: dict = field(default_factory=dict)   # era id -> how losses are replaced, and a lost man's effects (data/replacements)
+    events: dict = field(default_factory=dict)      # events on the march and in camp, by era (data/events.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -159,6 +160,7 @@ def load(root: str | Path = "data") -> Data:
     money = _optional(root / "money.yaml", {})
     jobs = _read_dir(root / "jobs")
     replacements = _read_dir(root / "replacements")
+    events = _optional(root / "events.yaml", {})
 
     data = Data(
         root=root,
@@ -187,6 +189,7 @@ def load(root: str | Path = "data") -> Data:
         money=money,
         jobs=jobs,
         replacements=replacements,
+        events=events,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -510,6 +513,8 @@ def validate(d: Data) -> None:
         errors += _jobs_errors(d, J)
     for R in d.replacements.values():
         errors += _replacement_errors(d, R)
+    if d.events:
+        errors += _events_errors(d)
     errors += _ground_seed_errors(d, TT)
 
     # camps and works
@@ -1379,6 +1384,45 @@ def _replacement_errors(d: Data, R: dict) -> list[str]:
             errors.append(f"{where}: effects for unknown army {at}")
         if not e or e.get("practice") not in ("share", "heirs", "lost"):
             errors.append(f"{where}: effects {at} practice must be share, heirs or lost")
+    return errors
+
+
+def _events_errors(d: Data) -> list[str]:
+    """data/events.yaml: periods name eras; each era's rates are chances (0-1) per man per day by
+    activity, with a source or approx; its incident rows rise to 100, for known force types."""
+    E, errors, where = d.events, [], "events"
+    eras = E.get("eras") or {}
+    errors += [f"{where}: period {p} names unknown era {e}" for p, e in (E.get("periods") or {}).items() if e not in eras]
+    errors += [f"{where}: era {e} has no team tables" for e in eras if e not in d.teams]
+    tos = [r.get("to") for r in E.get("injury", [])]
+    if not tos or tos != sorted(tos) or tos[-1] != 100 or any(r.get("step") not in d.disease.get("steps", []) for r in E.get("injury", [])):
+        errors.append(f"{where}: injury rows must rise to 100 with known steps")
+    ftypes = set(d.terrain.get("forces", {}))
+    for mid, m in d.maps.items():
+        errors += [f"{where}: map {mid} force {f.get('name')} names unknown era {f['era']}" for f in m.get("forces", []) if f.get("era") and f["era"] not in eras]
+    for e, x in eras.items():
+        for kind, r in (x.get("rates") or {}).items():
+            at = f"{where}: {e} {kind}"
+            if kind not in ("desert", "straggle", "injury", "horses"):
+                errors.append(f"{at}: unknown kind")
+            for a in ("camp", "march", "withdraw"):
+                v = r.get(a)
+                if not isinstance(v, (int, float)) or not 0 <= v <= 1:
+                    errors.append(f"{at}: {a} must be a chance 0-1")
+            if not r.get("approx") and not r.get("source"):
+                errors.append(f"{at}: needs a source, or approx: true")
+        if not isinstance(x.get("incident", 0), (int, float)) or not 0 <= x.get("incident", 0) <= 100:
+            errors.append(f"{where}: {e} incident must be a % 0-100")
+        rows = x.get("incidents") or []
+        tos = [r.get("to") for r in rows]
+        if rows and (tos != sorted(tos) or tos[-1] != 100):
+            errors.append(f"{where}: {e} incidents must rise to 100")
+        for r in rows:
+            if r.get("types") and not set(r["types"]) <= ftypes:
+                errors.append(f"{where}: {e} incident {r.get('to')} has unknown types {r['types']}")
+            lo = r.get("lose")
+            if lo is not None and not (isinstance(lo, list) and len(lo) == 2 and 0 <= lo[0] <= lo[1]):
+                errors.append(f"{where}: {e} incident {r.get('to')} lose must be [low, high]")
     return errors
 
 

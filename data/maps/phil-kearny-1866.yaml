@@ -66,5 +66,5 @@ forces:
   - {name: "Fort Phil Kearny garrison (Carrington)", type: foot, side: "US Army", men: 350, tools: true, hex: [18, 17]}
   - {name: "2nd Cavalry, Company C", type: mounted, side: "US Army", men: 60, tools: false, hex: [18, 17]}
   - {name: "Wood train and its guard", type: wagons, side: "US Army", men: 90, tools: true, hex: [11, 12]}
-  - {name: "Lakota war parties (Oglala, Minneconjou, Brulé)", type: mounted, side: "Lakota, Cheyenne and Arapaho", men: 700, tools: false, hex: [21, 2]}
-  - {name: "Cheyenne and Arapaho warriors", type: mounted, side: "Lakota, Cheyenne and Arapaho", men: 300, tools: false, hex: [14, 2]}
+  - {name: "Lakota war parties (Oglala, Minneconjou, Brulé)", era: plains_nations, type: mounted, side: "Lakota, Cheyenne and Arapaho", men: 700, tools: false, hex: [21, 2]}
+  - {name: "Cheyenne and Arapaho warriors", era: plains_nations, type: mounted, side: "Lakota, Cheyenne and Arapaho", men: 300, tools: false, hex: [14, 2]}

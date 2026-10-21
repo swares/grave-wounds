@@ -1016,7 +1016,8 @@ def travel_bundle(d) -> dict:
                  for mid, m in d.maps.items()},
         "period_order": periods(d)["order"],
         "battlefields": {fid: {"name": f["name"], **f["travel"]} for fid, f in d.fields.items() if f.get("travel")},
-        "keep": {eid: keep_bundle(d, eid) for eid in team_eras(d)},   # what a named man pays a day when his force is not fed by its army
+        "keep": {eid: keep_bundle(d, eid) for eid in team_eras(d)},
+        "events": d.events,   # events on the march and in camp (events.js)   # what a named man pays a day when his force is not fed by its army
     }
 
 
@@ -2030,7 +2031,8 @@ def main() -> int:
     (DIST / "roller.html").write_text(html, encoding="utf-8")
     tb = travel_bundle(d)
     ttpl = (ROOT / "templates" / "travel.html").read_text(encoding="utf-8")
-    thtml = ttpl.replace("/*__PURSE_JS__*/", purse_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
+    events_js = (ROOT / "templates" / "events.js").read_text(encoding="utf-8")
+    thtml = ttpl.replace("/*__PURSE_JS__*/", purse_js).replace("/*__EVENTS_JS__*/", events_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
     (DIST / "travel.html").write_text(thtml, encoding="utf-8")
     units_js = (ROOT / "templates" / "units.js").read_text(encoding="utf-8")
     ftpl = (ROOT / "templates" / "field.html").read_text(encoding="utf-8")
