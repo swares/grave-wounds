@@ -395,6 +395,18 @@ on a fumble; winning ticks Persuade.
 
 ## Experience
 
+**Training** (`data/training.yaml`, rules in `gravewounds/training.py`, repeated in
+`templates/ranks.js`: `trMasters`, `trTeammateOk`, `trWeek`, `trDrill`). On the team builder's
+Experience panel: a pupil, a skill and a teacher, from the masters for hire where the team is
+(Find work's place; `masters`: skill, fee a week, places; skill `master_skill`, 60) or a
+teammate `teammate_gap` (20) or more better. The teacher's Ordinary check ticks the pupil's
+skill; the fee and the week's keep (as a job without board) come from the pupil's purse. On the
+travel map, on each week's last day a force fed by its army that spent `drill.camped_days` (4)
+or more days not marching drills: the best Command among its named men (or `nco`, 50) rolls,
+and a success ticks each able named man's weapon skill (`drill` on his record: the skill his
+weapon is fought with, set by the roller). The riding fee is from 1879 London; the rest are
+estimates.
+
 `data/experience.yaml` (rules in `gravewounds/experience.py`, repeated as `xpSeason` in
 `templates/team.js`). A skill used well is **ticked** in a store the three pages share,
 `gravewounds-xp`, kept by purse id (`templates/xp.js`):

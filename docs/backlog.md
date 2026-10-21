@@ -211,8 +211,12 @@ When an item is done, delete it here and note it in the pull request that closes
     career's event table (its +15 to a skill and its story line) or the career's wound chance,
     as a term at creation does;
   - characteristics never change in play, and age brings no decline;
-  - a skill is ticked by its use, not by teaching: no training with a master or drill in
-    camp (design.md's weekly "training" step).
+- **Training, first cut.** Masters for hire, teammates and drill in camp tick a skill. Still left
+  out: the masters' fees are estimates apart from riding lessons (London, 1879), and a master's
+  skill is always 60; a teammate who teaches is not stopped from working that week (the page says
+  he gives it up, but does not hold him to it); drill ticks only the skill of the weapon a man
+  carries in the roller, and only for named men; there is no apprenticeship, school or
+  officer-cadet course that runs for months.
 - **Women under arms, first cut.** Women serve as cantinières with the French in the Crimea, in the Civil War (disguised), the Soviet
   Union of 1941-45, Vietnam (the ARVN, the North and the Viet Cong) and the later wars (the US,
   Britain and Russia), chosen or rolled at the army's share. Still left out: the earlier eras

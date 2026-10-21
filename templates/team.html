@@ -467,8 +467,45 @@ function renderXp(){
   box.innerHTML = `<section class="crew work" aria-labelledby="h-xp"><h3 id="h-xp">Experience</h3>
     <p class="muted note">Used well since the last season: a job check that succeeds, a hit or a parry or dodge in the roller, Fieldcraft that finds food, a week nursing, Stealth that surprises and Watch that stops it. At End of season each rolls d100: over the skill, it rises ${TD.xp.gain[0]}-${TD.xp.gain[1]}. Days at skilled work (not fumbled) and nights with a force count toward a term (${TD.era.age.per_term} year${TD.era.age.per_term > 1 ? "s" : ""}): his career's main skill +${T.term_main} and second +${T.term_second}. A season is about ${TD.xp.season_days} days.</p>
     <ul class="xp">${rows}</ul>
+    ${trainHtml()}
     <div class="row"><button id="btn-season" title="Roll each ticked skill, count the days served, and clear the ticks">End of season</button></div>
     ${log ? `<h4>Last season</h4><ul class="log">${log}</ul>` : ""}</section>`;
+}
+/* Training (ranks.js: trMasters, trTeammateOk, trWeek; data TD.training): a week with a master for
+   hire where the team is (his fee, and the pupil's keep), or a teammate well ahead of him; the
+   teacher's check ticks the pupil's skill. */
+function teachersFor(c, skill){                     // [{id, name, value, fee}] for this pupil and skill
+  const out = trMasters(S.place || null, skill).map(m => ({ id: "m:" + m.skill, name: `${m.name} (${TRN().master_skill ?? 60}), ${daysQ(m.fee)} a week`, value: TRN().master_skill ?? 60, fee: m.fee }));
+  S.team.forEach((o, k) => { if (o !== c && trTeammateOk(o.skills[skill] ?? 0, c.skills[skill] ?? 0)) out.push({ id: "t:" + k, name: `${o.name} (${o.skills[skill]})`, value: o.skills[skill], fee: 0, mate: o }) });
+  return out;
+}
+function trainHtml(){
+  if (!TD.training) return "";
+  const K = (S.train ||= { i: 0, skill: T.skills[0].id, teacher: "" });
+  if (!S.team[K.i]) K.i = 0;
+  if (!T.skills.some(x => x.id === K.skill)) K.skill = T.skills[0].id;
+  const c = S.team[K.i], ts = teachersFor(c, K.skill);
+  if (!ts.some(t => t.id === K.teacher)) K.teacher = ts[0] ? ts[0].id : "";
+  const log = (S.trainlog || []).map(l => `<li>${esc(l)}</li>`).join("");
+  return `<h4>Training</h4><p class="muted note">A week with a teacher: a master for hire where the team is (${esc(PLACE_NAMES[S.place] || "anywhere")}; his skill counts as ${TRN().master_skill ?? 60}), or a teammate at least ${TRN().teammate_gap ?? 20} better (he gives up the week too). The teacher rolls his skill: success ticks the pupil's. The pupil pays the fee and his keep. Armies drill their men in camp on the travel map.</p>
+    <div class="row"><div><label for="tr-who">Pupil</label><select id="tr-who">${S.team.map((m, k) => `<option value="${k}"${k === K.i ? " selected" : ""}>${esc(m.name)}</option>`).join("")}</select></div>
+    <div><label for="tr-skill">Skill</label><select id="tr-skill">${T.skills.map(x => `<option value="${x.id}"${x.id === K.skill ? " selected" : ""}>${esc(x.name)} ${c.skills[x.id] ?? 0}</option>`).join("")}</select></div>
+    <div><label for="tr-teacher">Teacher</label><select id="tr-teacher">${ts.map(t => `<option value="${t.id}"${t.id === K.teacher ? " selected" : ""}>${esc(t.name)}</option>`).join("") || `<option value="">No one here can teach it</option>`}</select></div>
+    <div style="align-self:end"><button id="btn-train"${ts.length ? "" : " disabled"}>Train a week</button></div></div>
+    ${log ? `<ol class="log">${log}</ol>` : ""}`;
+}
+function trainWeek(){
+  const K = S.train, c = S.team[K.i], t = teachersFor(c, K.skill).find(x => x.id === K.teacher); if (!t) return;
+  pullPurses();
+  const k = keepFor({ board: false }, c.region, S.place), pk = k ? payKeep(purseFor(c.region, c.terms, c.ledger).days - t.fee, 7, k.food, k.bed) : null;
+  if (t.fee){ const why = spendCheck(c, t.fee); if (why){ S.msg = `${c.name} can't pay the ${daysQ(t.fee)} fee: ${why}.`; return render() } (c.ledger ||= []).push({ days: -t.fee, what: `Lessons: ${skillName(K.skill)}, a week` }) }
+  if (pk && pk.paid) (c.ledger ||= []).push({ days: -pk.paid, what: "Keep while training" });
+  const r = trWeek(t.value, realDice.randint(1, 100)), had = !!((readXp()[c.pid] || {}).ticks || {})[K.skill];
+  if (r.success) xpTick(c.pid, K.skill, t.mate ? `lessons with ${t.mate.name}` : "lessons with a master");
+  const who = t.mate ? t.mate.name : t.name.split(" (")[0].toLowerCase();
+  (S.trainlog ||= []).unshift(`${c.name}, a week of ${skillName(K.skill)} with ${who}: ${chkText(r)}${r.success ? (had ? `, but ${skillName(K.skill)} was already ticked this season` : `, ${skillName(K.skill)} ticked`) : ", the week wasted"}${t.fee ? `; fee ${daysQ(t.fee)}` : ""}${pk && pk.paid ? `; keep ${daysQ(pk.paid)}` : ""}${pk && pk.hungry ? `; ${pk.hungry} day${pk.hungry > 1 ? "s" : ""} hungry` : ""}.`);
+  S.trainlog = S.trainlog.slice(0, 20);
+  render();
 }
 function seasonLine(c, r){                         // 'Hans: Blade 42 → 44 (rolled 77); Watch stays 60 (rolled 31); 120 days toward a term'
   const bits = r.rolls.map(x => x.gain ? `${skillName(x.skill)} ${x.was} → ${x.was + x.gain} (rolled ${x.roll})` : `${skillName(x.skill)} stays ${x.was} (rolled ${x.roll})`);
@@ -774,7 +811,12 @@ function init(){
     if (j.skill && r.outcome !== "fumble") xpServe(c.pid, r.days);            // and its days count toward a term
     render();
   });
-  $("#xp").addEventListener("click", e => { if (e.target.closest("#btn-season")) endSeason() });
+  $("#xp").addEventListener("click", e => { if (e.target.closest("#btn-season")) endSeason(); else if (e.target.closest("#btn-train")) trainWeek() });
+  $("#xp").addEventListener("change", e => {
+    const K = S.train, id = e.target.id;
+    if (id === "tr-who") K.i = +e.target.value; else if (id === "tr-skill") K.skill = e.target.value; else if (id === "tr-teacher") K.teacher = e.target.value; else return;
+    render();
+  });
   $("#rank").addEventListener("change", e => {
     const el = e.target;
     if (el.dataset.rank !== undefined){ const c = S.team[+el.dataset.rank], down = rkIndex(el.value) < rkIndex(c.rank); c.rank = el.value; c.rank_days = 0; if (down) S.msg = `${c.name} is reduced to ${rkName(c.rank).toLowerCase()}.` }

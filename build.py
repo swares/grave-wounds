@@ -1006,6 +1006,7 @@ def travel_bundle(d) -> dict:
     return {
         "generated": date.today().isoformat(),
         "terrain": d.terrain,
+        "checks": d.checks, "training": d.training,   # drill in camp (templates/ranks.js)
         "works": d.works,
         "weather": d.weather,
         "disease": d.disease,
@@ -1990,7 +1991,7 @@ def team_bundle(d) -> dict:
         weapons |= {c["weapon"].get(r["id"], c["weapon"]["default"]) for c in T["careers"] for r in T["regions"]}
     eras = {eid: {"era": d.teams[eid], "ranges": old_wound_ranges(d, eid), "equip": equip_bundle(d, eid), "jobs": jobs_bundle(d, eid), "keep": keep_bundle(d, eid), "repl": d.replacements.get(eid)} for eid in team_eras(d)}
     first = team_eras(d)[0]
-    return {"eras": eras, "era": eras[first]["era"], "ranges": eras[first]["ranges"], "equip": eras[first]["equip"], "money": d.money, "xp": d.experience, "checks": d.checks, "ranks": d.ranks,
+    return {"eras": eras, "era": eras[first]["era"], "ranges": eras[first]["ranges"], "equip": eras[first]["equip"], "money": d.money, "xp": d.experience, "checks": d.checks, "ranks": d.ranks, "training": d.training,
             "locs": {l["id"]: {"name": l["name"], "zone": l["zone"], "class": l["class"]} for l in d.locations},
             "kits": {k: d.armor["kits"][k] for k in sorted(kits)},
             "fight": {"blood_pool": d.wounds["tracking"]["blood_pool"], "chr": d.wounds["combat"]["characteristics"]},

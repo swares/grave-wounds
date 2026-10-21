@@ -1,0 +1,37 @@
+# Training (rules in gravewounds/training.py, repeated in templates/ranks.js). A week of training
+# ticks the pupil's skill, as using it well does, so that it rolls to rise at End of season
+# (data/experience.yaml) - if the teacher's check succeeds; a failed check wastes the week.
+#
+# Teachers:
+#   - a master for hire (`masters`): his skill counts as `master_skill`; a fee in Days a week, in
+#     the places listed; a master is offered in an era that has his skill;
+#   - a teammate whose skill is at least `teammate_gap` above the pupil's: no fee, but the week
+#     is his as well as the pupil's;
+#   - drill (`drill`): on the travel map, a week in which a force its army feeds spent at least
+#     `camped_days` days not marching drills its named men: the best Command among them (or
+#     `nco`, the army's own sergeants, when none has more) rolls, and on a success each named
+#     man's weapon skill is ticked.
+# The pupil pays his keep for the week where the place does not feed him (as a job without board).
+#
+# Fees are in Days (a common soldier's day's pay). One anchor: in London in 1879 two dozen riding
+# lessons cost 7 guineas at the school (Dickens's Dictionary of London), about six days of a
+# private's shilling a lesson; three lessons a week is then some 18 Days. The rest are estimates.
+master_skill: 60
+teammate_gap: 20
+lessons_source: "https://www.victorianlondon.org/entertainment/dickens-riding.htm"
+
+masters:
+  - {skill: ride, name: "Riding master", fee: 18, places: [town, city]}
+  - {skill: blade, name: "Master of defence (fencing)", fee: 18, places: [town, city], approx: true}
+  - {skill: letters, name: "Schoolmaster or clerk", fee: 1, places: [town, city, village], approx: true}
+  - {skill: leechcraft, name: "Surgeon or physician", fee: 6, places: [town, city, camp], approx: true}
+  - {skill: craft, name: "Master craftsman", fee: 2, places: [town, city, village], approx: true}
+  - {skill: seamanship, name: "Boatman or mate", fee: 3, places: [town, city, sea], approx: true}
+  - {skill: drive, name: "Driving instructor", fee: 6, places: [town, city], approx: true}
+  - {skill: signals, name: "Signals instructor", fee: 6, places: [city, camp], approx: true}
+
+drill:
+  camped_days: 4
+  nco: 50
+  difficulty: ordinary
+  approx: true

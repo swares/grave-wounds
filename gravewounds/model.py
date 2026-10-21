@@ -110,6 +110,7 @@ class Data:
     experience: dict = field(default_factory=dict)  # skills rising in play (data/experience.yaml)
     checks: dict = field(default_factory=dict)      # skill checks out of a fight (data/checks.yaml)
     ranks: dict = field(default_factory=dict)       # rank, pay, promotion and loot (data/ranks.yaml)
+    training: dict = field(default_factory=dict)    # masters, teammates and drill (data/training.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -167,6 +168,7 @@ def load(root: str | Path = "data") -> Data:
     experience = _optional(root / "experience.yaml", {})
     checks = _optional(root / "checks.yaml", {})
     ranks = _optional(root / "ranks.yaml", {})
+    training = _optional(root / "training.yaml", {})
 
     data = Data(
         root=root,
@@ -199,6 +201,7 @@ def load(root: str | Path = "data") -> Data:
         experience=experience,
         checks=checks,
         ranks=ranks,
+        training=training,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -528,6 +531,14 @@ def validate(d: Data) -> None:
         errors += _checks_errors(d)
     if d.ranks:
         errors += _ranks_errors(d)
+    if d.training:
+        TR, skills = d.training, {s["id"] for T in d.teams.values() for s in T["skills"]}
+        for m in TR.get("masters", []):
+            if m.get("skill") not in skills or not (isinstance(m.get("fee"), (int, float)) and m["fee"] >= 0) or not set(m.get("places") or []) <= JOB_PLACES:
+                errors.append(f"training.yaml: master {m.get('name')} needs a known skill, a fee and known places")
+        for k in ("master_skill", "teammate_gap"):
+            if not isinstance(TR.get(k), int):
+                errors.append(f"training.yaml: {k} must be a whole number")
     if d.experience:
         X = d.experience
         g = X.get("gain")
