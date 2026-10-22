@@ -724,7 +724,7 @@ morale:
   #   quarter down only in an exchange it lost men; units in the open check every exchange.
   # neighbour: hexes; a steady unit checks when a unit of its own side within this many hexes broke
   #   in the last exchange (0: off).
-  posture: false
+  posture: true
   neighbour: 0
   shaken_by: 20
   mods:
