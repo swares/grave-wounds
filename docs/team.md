@@ -393,6 +393,20 @@ check that succeeds, or wins, ticks the skill for experience; a characteristic i
 quarter on a critical, to the quarter Day, never under ¼), the list price if not, and no sale
 on a fumble; winning ticks Persuade.
 
+## Patrons
+
+`data/patrons.yaml` (rules in `gravewounds/patrons.py`, repeated in `templates/ranks.js`: `ptBand`,
+`ptFavour`, `ptMove`, `ptRival`, `ptFate`, `ptFateName`, `ptClient`; research in the project doc
+"patrons-research"). The **Patrons** panel keeps the team's patrons (a lord, a colonel, a governor,
+a band chief, a commanding officer) and each man's Standing with each (`c.patronOf`), shown on his
+sheet. A man becomes a client at the start figure (or what he carried from a patron gone, if more);
+he asks favours (Standing + Persuade ÷ 10 at the favour's difficulty: money, a horse, a month's
+work, the patron's word for the next vacancy, which `rkPromote` adds to his Command, his ransom
+paid while a prisoner); the GM marks what moves Standing (a deed noticed, a gift from his purse,
+horses given away on the Plains, a refused order, changing sides); two clients settle a rival claim
+by opposed Standing. End of season adds a season's service, then rolls each patron's fate by era
+(dies, falls, changes sides, goes) and each client's lot.
+
 ## Tongues
 
 `data/languages.yaml` (rules in `gravewounds/languages.py`, repeated in `templates/ranks.js`:

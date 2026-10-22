@@ -4302,6 +4302,347 @@
    "wanat-2008": "nuristani"
   }
  },
+ "patrons": {
+  "start": 30,
+  "max": 95,
+  "bands": [
+   {
+    "from": 0,
+    "name": "a stranger to him"
+   },
+   {
+    "from": 1,
+    "name": "known to him"
+   },
+   {
+    "from": 26,
+    "name": "his client"
+   },
+   {
+    "from": 51,
+    "name": "trusted"
+   },
+   {
+    "from": 76,
+    "name": "his right hand"
+   }
+  ],
+  "persuade_div": 10,
+  "promotion_bonus": 20,
+  "offended": -10,
+  "critical_free": true,
+  "favours": [
+   {
+    "id": "word",
+    "name": "A word for him: a letter, a recommendation, a meal and a bed",
+    "difficulty": "easy",
+    "cost": 2
+   },
+   {
+    "id": "promotion",
+    "name": "His word for the next vacancy",
+    "difficulty": "ordinary",
+    "cost": 10,
+    "promotion": true
+   },
+   {
+    "id": "money",
+    "name": "Money: a fee, or pay advanced",
+    "difficulty": "ordinary",
+    "cost": 10,
+    "days": 30
+   },
+   {
+    "id": "kit",
+    "name": "A horse or arms",
+    "difficulty": "ordinary",
+    "cost": 10,
+    "days": 40
+   },
+   {
+    "id": "work",
+    "name": "Work: a month in his service",
+    "difficulty": "ordinary",
+    "cost": 5,
+    "days": 30,
+    "served": 30
+   },
+   {
+    "id": "kin",
+    "name": "A place for his kin",
+    "difficulty": "hard",
+    "cost": 15
+   },
+   {
+    "id": "commission",
+    "name": "A commission: a free vacancy, or the loan of its price",
+    "difficulty": "hard",
+    "cost": 20,
+    "promotion": true
+   },
+   {
+    "id": "ransom",
+    "name": "His ransom paid",
+    "difficulty": "hard",
+    "cost": 20,
+    "ransom": true
+   },
+   {
+    "id": "shield",
+    "name": "Spared a punishment or a debt",
+    "difficulty": "hard",
+    "cost": 15
+   },
+   {
+    "id": "hanging",
+    "name": "Saved from the gallows or a court-martial",
+    "difficulty": "very_hard",
+    "cost": 30
+   }
+  ],
+  "events": {
+   "deed": {
+    "name": "A deed he noticed",
+    "dice": [
+     1,
+     10
+    ]
+   },
+   "season": {
+    "name": "A season in his service",
+    "add": 2
+   },
+   "gift": {
+    "name": "A gift or his share of the loot",
+    "per_days": 5
+   },
+   "horses": {
+    "name": "Horses given away (the Plains nations)",
+    "per": 4
+   },
+   "refused": {
+    "name": "Refused his order or his call",
+    "add": -10
+   },
+   "failed": {
+    "name": "Failed on his errand",
+    "add": -5
+   },
+   "caught": {
+    "name": "Caught looting or disgraced",
+    "add": -5
+   },
+   "sides": {
+    "name": "Changed sides",
+    "to": 0,
+    "enemy": true
+   }
+  },
+  "rivals": true,
+  "fate": {
+   "medieval": [
+    {
+     "id": "dies",
+     "chance": 3
+    },
+    {
+     "id": "falls",
+     "chance": 2
+    },
+    {
+     "id": "sides",
+     "chance": 1
+    }
+   ],
+   "thirty_years": [
+    {
+     "id": "dies",
+     "chance": 4
+    },
+    {
+     "id": "falls",
+     "chance": 2
+    },
+    {
+     "id": "sides",
+     "chance": 3
+    },
+    {
+     "id": "goes",
+     "chance": 4,
+     "name": "disbands his regiment"
+    }
+   ],
+   "horse_musket": [
+    {
+     "id": "dies",
+     "chance": 3
+    },
+    {
+     "id": "falls",
+     "chance": 1
+    },
+    {
+     "id": "goes",
+     "chance": 4,
+     "name": "sells out or is posted"
+    }
+   ],
+   "crimea": [
+    {
+     "id": "dies",
+     "chance": 5
+    },
+    {
+     "id": "falls",
+     "chance": 1
+    },
+    {
+     "id": "goes",
+     "chance": 3,
+     "name": "sells out or goes home"
+    }
+   ],
+   "civil_war": [
+    {
+     "id": "dies",
+     "chance": 4
+    },
+    {
+     "id": "falls",
+     "chance": 6,
+     "name": "is dismissed by the examining board or resigns"
+    },
+    {
+     "id": "goes",
+     "chance": 4,
+     "name": "is promoted away"
+    }
+   ],
+   "plains_nations": [
+    {
+     "id": "dies",
+     "chance": 3
+    },
+    {
+     "id": "falls",
+     "chance": 3,
+     "name": "loses his following"
+    }
+   ],
+   "wwi": [
+    {
+     "id": "dies",
+     "chance": 6
+    },
+    {
+     "id": "falls",
+     "chance": 2,
+     "name": "is sent home (stellenbosched)"
+    },
+    {
+     "id": "goes",
+     "chance": 10,
+     "name": "is posted away"
+    }
+   ],
+   "wwii": [
+    {
+     "id": "dies",
+     "chance": 4
+    },
+    {
+     "id": "falls",
+     "chance": 2,
+     "name": "is relieved"
+    },
+    {
+     "id": "goes",
+     "chance": 10,
+     "name": "is posted away"
+    }
+   ],
+   "korea": [
+    {
+     "id": "dies",
+     "chance": 3
+    },
+    {
+     "id": "falls",
+     "chance": 2,
+     "name": "is relieved"
+    },
+    {
+     "id": "goes",
+     "chance": 20,
+     "name": "rotates home"
+    }
+   ],
+   "vietnam": [
+    {
+     "id": "dies",
+     "chance": 3
+    },
+    {
+     "id": "falls",
+     "chance": 2,
+     "name": "is relieved"
+    },
+    {
+     "id": "goes",
+     "chance": 40,
+     "name": "ends his six months in command"
+    }
+   ],
+   "modern": [
+    {
+     "id": "dies",
+     "chance": 2
+    },
+    {
+     "id": "falls",
+     "chance": 2,
+     "name": "is relieved"
+    },
+    {
+     "id": "goes",
+     "chance": 25,
+     "name": "is posted away"
+    }
+   ]
+  },
+  "fates": {
+   "dies": {
+    "name": "dies",
+    "clients": "heir"
+   },
+   "falls": {
+    "name": "falls from favour",
+    "clients": "ruin"
+   },
+   "sides": {
+    "name": "changes sides",
+    "clients": "choose"
+   },
+   "goes": {
+    "name": "goes",
+    "clients": "half"
+   }
+  },
+  "kinds": {
+   "medieval": "his lord",
+   "thirty_years": "his colonel",
+   "horse_musket": "his colonel",
+   "crimea": "his colonel",
+   "civil_war": "his colonel or governor",
+   "plains_nations": "his band chief or society headman",
+   "wwi": "his commanding officer",
+   "wwii": "his commanding officer",
+   "korea": "his commanding officer",
+   "vietnam": "his commanding officer",
+   "modern": "his commanding officer or mentor"
+  }
+ },
  "locations": [
   {
    "id": "skull_l",

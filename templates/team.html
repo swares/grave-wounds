@@ -166,6 +166,7 @@ label.radio input{margin-top:4px}
       <div id="work"></div>
       <div id="xp"></div>
       <div id="rank"></div>
+      <div id="patrons"></div>
       <div id="stress"></div>
       <div id="checks"></div>
     </section>
@@ -267,6 +268,7 @@ function render(){
   renderWork();
   renderXp();
   renderRank();
+  renderPatrons();
   renderPrisoners();
   renderStress();
   renderChecks();
@@ -355,7 +357,7 @@ function sheetHtml(c, i){
     <div class="full what"><b>${esc(c.origin)}.</b> ${esc(pron(c.trait, sx))}; ${esc(pron(c.drawback, sx).toLowerCase())}.</div>
     <div class="full skills">${trained}</div>
     <div class="full muted">Untrained: ${others || "none"}</div>
-    ${tongueDiv(c)}
+    ${tongueDiv(c)}${patronDiv(c)}
     <div class="full arms">${esc(w.name)}: attack <b>${c.attack ?? "—"}%</b> · defence <b>${c.defence}%</b> · Nerve <b>${c.nerve}</b> · ${esc(kit.name)}</div>
     <div class="full muted" title="${pron("What his characteristics do in the wound roller", sx)}">In a fight: ${esc(fightLine(c))}</div>
     ${loadLine(c)}
@@ -546,6 +548,145 @@ function prisonSeason(){                            // End of season for every p
     P.escape = false; P.winter = false;
     seasonOutcome(c, r);
   }
+}
+/* Standing with patrons (ranks.js: ptBand, ptFavour, ptMove, ptRival, ptFate, ptClient; data
+   TD.patrons). The team's patrons (a lord, a colonel, a band chief); each man's Standing with each
+   (c.patronOf[id]: {standing, enemy, follow}). Ask a favour, mark what moves Standing, settle two
+   clients' rival claims; at End of season a season's service, then each patron's fate. */
+const PTD = () => TD.patrons;
+function patronDiv(c){                              // 'Patrons: Sir John Cornwall 28 (his client)' on his sheet
+  const bits = (S.patrons || []).filter(p => clientOf(c, p)).map(p => { const cl = clientOf(c, p); return cl.enemy ? p.name + " (his enemy)" : `${p.name} ${cl.standing} (${ptBand(cl.standing)})` });
+  if (c.patron_help) bits.push("his patron's word for the next vacancy");
+  return bits.length ? "<div class=\"full muted\">Patrons: " + esc(bits.join("; ")) + "</div>" : "";
+}
+const clientOf = (c, p) => (c.patronOf || {})[p.id] || null;
+const everyoneHere = () => [...S.team, ...(S.prisoners || [])];
+function ptLog(line){ S.ptlog = [line, ...(S.ptlog || [])].slice(0, 30) }
+function patronRow(p, k){                           // a patron and his clients
+  const rows = everyoneHere().map(c => {
+    const cl = clientOf(c, p), i = everyoneHere().indexOf(c);
+    if (!cl) return `<li>${esc(c.name)}: not his man <button class="small" data-ptjoin="${k}" data-i="${i}">Becomes his client</button></li>`;
+    if (cl.enemy) return `<li>${esc(c.name)}: <b>his enemy</b></li>`;
+    const follow = PTD().fates.sides ? tick(`data-ptfollow="${k}" data-i="${i}"`, cl.follow !== false, "would follow him", "If he changes sides, this man goes with him") : "";
+    return `<li>${esc(c.name)}: Standing <b>${cl.standing}</b> (${esc(ptBand(cl.standing))}) ${follow}</li>`;
+  }).join("");
+  return `<li><b>${esc(p.name)}</b> <span class="muted">${esc(p.kind)}</span> <button class="small" data-ptdrop="${k}" title="Strike him off the team's patrons">Remove</button><ul>${rows}</ul></li>`;
+}
+function patronControls(){                          // who, which patron, what: a favour or an event
+  const K = (S.ptK ||= { i: 0, p: 0, what: "f:word", amount: 10, rival: 1 }), all = everyoneHere();
+  if (!all[K.i]) K.i = 0;
+  if (!S.patrons[K.p]) K.p = 0;
+  const who = optionTags(all.map((c, k) => [String(k), c.name + (c.prison ? " (prisoner)" : "")]), String(K.i));
+  const pat = optionTags(S.patrons.map((p, k) => [String(k), p.name]), String(K.p));
+  const plains = !!RK().honours;
+  const favours = PTD().favours.map(f => ["f:" + f.id, f.name + " (" + CHK().difficulty.find(x => x.id === f.difficulty).name + ")"]);
+  const events = Object.entries(PTD().events).filter(([id]) => id !== "horses" || plains).map(([id, e]) => ["e:" + id, e.name]);
+  const what = "<optgroup label=\"Ask a favour\">" + optionTags(favours, K.what) + "</optgroup><optgroup label=\"What moves Standing\">" + optionTags(events, K.what) + "</optgroup>";
+  const needs = K.what === "e:gift" || K.what === "e:horses";
+  const amount = needs ? `<label>${K.what === "e:gift" ? "Days" : "Horses"} <input type="number" id="pt-amount" min="1" value="${K.amount}" style="width:5em"></label>` : "";
+  const rival = optionTags(all.map((c, k) => [String(k), c.name]), String(K.rival));
+  return `<div class="row"><div><label for="pt-who">Who</label><select id="pt-who">${who}</select></div>
+    <div><label for="pt-pat">Patron</label><select id="pt-pat">${pat}</select></div>
+    <div><label for="pt-what">What</label><select id="pt-what">${what}</select></div>${amount}
+    <div style="align-self:end"><button id="btn-pt">Do it</button></div></div>
+    <div class="row"><div><label for="pt-rival">Rival claim against</label><select id="pt-rival">${rival}</select></div>
+    <div style="align-self:end"><button id="btn-pt-rival" title="Two clients want one favour or one vacancy: their Standing against each other">Settle the rival claim</button></div></div>`;
+}
+function renderPatrons(){
+  const box = $("#patrons");
+  if (!PTD() || !S.team.length){ box.innerHTML = ""; return }
+  S.patrons ||= [];
+  const list = S.patrons.length ? `<ul class="xp">${S.patrons.map(patronRow).join("")}</ul>${patronControls()}` : `<p class="muted">No patron yet.</p>`;
+  const items = (S.ptlog || []).map(l => `<li>${esc(l)}</li>`).join(""), log = items ? `<ol class="log">${items}</ol>` : "";
+  const kind = PTD().kinds[T.id] || "his patron";
+  box.innerHTML = `<section class="crew work" aria-labelledby="h-patrons"><h3 id="h-patrons">Patrons</h3>
+    <p class="muted note">A man's Standing with ${esc(kind)} (d100): a favour rolls Standing + Persuade ÷ ${PTD().persuade_div} at its difficulty; granted, it spends Standing (a critical nothing), and a fumble offends him (${PTD().offended}). A new client starts at ${PTD().start}. At End of season each client gains ${PTD().events.season.add}, then the patron's fate is rolled: he may die, fall, change sides or go.</p>
+    <div class="row"><div><label for="pt-name">A patron</label><input type="text" id="pt-name" placeholder="${esc(kind[4].toUpperCase() + kind.slice(5))}"></div><div style="align-self:end"><button id="btn-pt-add">Add</button></div></div>
+    ${list}${log}</section>`;
+}
+function favourDone(c, p, F){                       // what a granted favour gives him
+  const bits = [];
+  if (F.promotion){ c.patron_help = true; bits.push(`+${PTD().promotion_bonus} to his Command for the next vacancy`) }
+  if (F.days && !F.served){ (c.ledger ||= []).push({ days: F.days, what: `${F.name.split(":")[0]} from ${p.name}` }); bits.push(daysQ(F.days)) }
+  if (F.served){ (c.ledger ||= []).push({ days: F.days, what: `A month in ${p.name}'s service` }); xpServe(c.pid, F.served); bits.push(`${daysQ(F.days)} and ${F.served} days served`) }
+  if (F.ransom && c.prison){ prRejoin(c, `is ransomed by ${p.name}`); bits.push("ransomed") }
+  return bits.length ? " (" + bits.join(", ") + ")" : "";
+}
+function askFavour(c, p, cl, fid){
+  const F = ptFavourRow(fid);
+  if (F.ransom && !c.prison){ S.msg = `${c.name} is not a prisoner.`; return }
+  const r = ptFavour(cl.standing, c.skills.persuade || 0, fid, realDice.randint(1, 100));
+  cl.standing = r.standing;
+  let how = "refused";
+  if (r.granted) how = "granted" + favourDone(c, p, F);
+  else if (r.offended) how = `refused, and he is offended (${PTD().offended})`;
+  ptLog(`${c.name} asks ${p.name}: ${F.name.toLowerCase()}: ${chkText(r.check)}: ${how}; Standing ${cl.standing}.`);
+}
+function standingEvent(c, p, cl, ev, amount){
+  const E = PTD().events[ev];
+  if (ev === "gift"){ const why = spendCheck(c, amount); if (why){ S.msg = `${c.name} can't give ${daysQ(amount)}: ${why}.`; return } spend(c, amount, `A gift to ${p.name}`) }
+  if (ev === "horses"){
+    if ((c.horses || 0) < amount){ S.msg = `${c.name} has ${c.horses || 0} horses.`; return }
+    c.horses -= amount; c.honours = (c.honours || 0) + amount * (RK().honours.horse_given ?? 1);
+  }
+  const was = cl.standing, r = ptMove(cl.standing, ev, realDice, amount);
+  cl.standing = r.standing;
+  if (r.enemy) cl.enemy = true;
+  ptLog(`${c.name}, ${E.name[0].toLowerCase() + E.name.slice(1)}${amount && (ev === "gift" || ev === "horses") ? ` (${amount})` : ""}: Standing with ${p.name} ${was} → ${cl.standing}${r.enemy ? "; he is now his enemy" : ""}.`);
+}
+function patronAct(){
+  const K = S.ptK, c = everyoneHere()[K.i], p = S.patrons[K.p];
+  if (!c || !p) return;
+  const cl = clientOf(c, p);
+  if (!cl){ S.msg = `${c.name} is not ${p.name}'s man.`; return render() }
+  if (cl.enemy){ S.msg = `${p.name} will do nothing for ${c.name}.`; return render() }
+  if (K.what.startsWith("f:")) askFavour(c, p, cl, K.what.slice(2));
+  else standingEvent(c, p, cl, K.what.slice(2), Math.max(0, +K.amount || 0));
+  render();
+}
+function rivalClaim(){
+  const K = S.ptK, all = everyoneHere(), a = all[K.i], b = all[K.rival], p = S.patrons[K.p];
+  if (!a || !b || a === b || !p){ S.msg = "Pick two different men and a patron."; return render() }
+  const ca = clientOf(a, p), cb = clientOf(b, p);
+  if (!ca || !cb){ S.msg = `Both must be ${p.name}'s clients.`; return render() }
+  const o = ptRival(ca.standing, cb.standing, realDice.randint(1, 100), realDice.randint(1, 100));
+  ptLog(`Rival claim before ${p.name}: ${a.name} ${chkText(o.a)}; ${b.name} ${chkText(o.b)}: ${o.winner === "a" ? a.name : b.name} has it.`);
+  render();
+}
+function clientLot(c, p, cl, fid){                  // one client's lot from his patron's fate: a line
+  const ruinRoll = PTD().fates[fid].clients === "ruin" ? realDice.randint(1, 100) : null;
+  const r = ptClient(fid, cl.standing, ruinRoll, cl.follow !== false), was = cl.standing;
+  cl.standing = r.standing;
+  if (r.result === "ruined"){
+    if (rkLadder().length && rkIndex(c.rank) > 0) c.rank = rkLadder()[rkIndex(c.rank) - 1].id;
+    return `${c.name} shares his fall (rolled ${ruinRoll} against ${was}): Standing gone, a rank lost; the GM may rule worse`;
+  }
+  if (r.result === "clear") return `${c.name} gets clear (rolled ${ruinRoll} against ${was}), with ${r.standing} to take to a new patron`;
+  if (r.result === "follows") return `${c.name} follows him`;
+  if (r.result === "stays") return `${c.name} stays`;
+  if (r.result === "heir") return `${c.name} serves his heir, at ${r.standing}`;
+  return `${c.name} has ${r.standing} to take to a new patron`;
+}
+function patronFate(p, lines){                      // End of season for one patron: true if he is gone
+  const fid = ptFate(T.id, realDice.randint(1, 100));
+  if (!fid) return false;
+  const how = PTD().fates[fid].clients, bits = [];
+  for (const c of everyoneHere()){
+    const cl = clientOf(c, p);
+    if (!cl || cl.enemy) continue;
+    bits.push(clientLot(c, p, cl, fid));
+    if (how === "half" || how === "ruin" || (how === "choose" && cl.follow === false)){ c.carry = Math.max(c.carry || 0, cl.standing); delete c.patronOf[p.id] }
+  }
+  const line = `${p.name} ${ptFateName(T.id, fid)}` + (bits.length ? ": " + bits.join("; ") : "") + ".";
+  lines.push(line); ptLog(line);
+  if (how === "heir"){ p.name = `${p.name}'s heir`; return false }
+  return how === "half" || how === "ruin";
+}
+function patronSeason(lines){                      // a season's service, then each patron's fate
+  for (const p of S.patrons || []){
+    for (const c of S.team){ const cl = clientOf(c, p); if (cl && !cl.enemy) cl.standing = ptMove(cl.standing, "season", realDice).standing }
+  }
+  S.patrons = (S.patrons || []).filter(p => !patronFate(p, lines));
 }
 /* Combat stress (ranks.js: xpStress, stRest, stTreat, stRelieve; the shared store holds each man's
    Strain, Toll and state, which the roller and the travel map add to). The GM adds Strain the pages
@@ -811,6 +952,7 @@ function endSeason(){
   for (const c of S.team) Object.assign(all[c.pid], { sheet: rollerSheet(c), stamp });
   writeXp(all);
   if (TD.prisoners) prisonSeason();
+  if (TD.patrons) patronSeason(lines);
   let named = null;                                // the travel map's copy of his skills
   try { named = JSON.parse(localStorage.getItem("gravewounds-named") || "{}") || {} } catch (e) { named = null /* unreadable: the roller will pass them on */ }
   if (named){
@@ -1040,6 +1182,7 @@ function startEra(){                             // a new era (or an old save fr
   S.region = T.regions[0].id; S.template = T.templates[0].id;
   S.slots = T.templates[0].slots.map(s => [...s]); S.fcounts = tplFollowers(S.template);
   S.team = []; S.crew = []; S.swap = null; S.worklog = []; S.losses = [];
+  S.patrons = []; S.ptlog = [];                    // another era's lords and colonels stay behind
 }
 function init(){
   restore();
@@ -1153,6 +1296,32 @@ function init(){
       return render();
     }
     if (b.dataset.relieve !== undefined){ const c = S.team[+b.dataset.relieve]; xpStressDo(c.pid, st => stRelieve(st, b.dataset.kind)); stressLog(`${c.name}: ${TD.stress[b.dataset.kind].name.toLowerCase()}.`); return render() }
+  });
+  const PT_SET = { "pt-who": (K, v) => { K.i = +v }, "pt-pat": (K, v) => { K.p = +v }, "pt-what": (K, v) => { K.what = v }, "pt-amount": (K, v) => { K.amount = Math.max(1, +v || 1) }, "pt-rival": (K, v) => { K.rival = +v } };
+  $("#patrons").addEventListener("change", e => {
+    const el = e.target;
+    if (PT_SET[el.id]){ PT_SET[el.id](S.ptK, el.value); if (el.type !== "number") render(); return }   // a typed number keeps its box until a button is pressed
+    if (el.dataset.ptfollow !== undefined){ const cl = clientOf(everyoneHere()[+el.dataset.i], S.patrons[+el.dataset.ptfollow]); if (cl) cl.follow = el.checked; render() }
+  });
+  function addPatron(){
+    const name = $("#pt-name").value.trim() || (PTD().kinds[T.id] || "his patron").replace(/^his /, "the ");
+    S.patrons = [...(S.patrons || []), { id: "p" + Date.now().toString(36), name: name[0].toUpperCase() + name.slice(1), kind: PTD().kinds[T.id] || "" }];
+    ptLog(`${S.patrons[S.patrons.length - 1].name} is taken as a patron.`);
+  }
+  function joinPatron(p, c){                        // a new client: the start, or what he carried from a patron gone
+    const v = Math.max(PTD().start, c.carry || 0);
+    (c.patronOf ||= {})[p.id] = { standing: v, enemy: false, follow: true };
+    c.carry = 0;
+    ptLog(`${c.name} becomes ${p.name}'s client (Standing ${v}).`);
+  }
+  $("#patrons").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.id === "btn-pt-add") addPatron();
+    else if (b.id === "btn-pt") return patronAct();
+    else if (b.id === "btn-pt-rival") return rivalClaim();
+    else if (b.dataset.ptjoin !== undefined) joinPatron(S.patrons[+b.dataset.ptjoin], everyoneHere()[+b.dataset.i]);
+    else if (b.dataset.ptdrop !== undefined){ const p = S.patrons[+b.dataset.ptdrop]; S.patrons = S.patrons.filter(x => x !== p); for (const c of everyoneHere()) if (c.patronOf) delete c.patronOf[p.id]; ptLog(`${p.name} is struck off.`) }
+    render();
   });
   $("#checks").addEventListener("change", e => {
     const K = S.chk, id = e.target.id;

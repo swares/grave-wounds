@@ -96,6 +96,8 @@ def promote(d: Data, eid: str, team: list[dict], vacancies: dict, rng) -> list[d
             won = None
             for c in cands:
                 mod = (R.get("deed_bonus", 20) if c.get("deed") else 0)
+                if c.get("patron_help"):          # his patron's word (data/patrons.yaml)
+                    mod += (d.patrons or {}).get("promotion_bonus", 20)
                 if r.get("unlettered") and c["skills"].get("letters", 0) < R.get("literate", 20):
                     mod += r["unlettered"]
                 k = check(d, c["skills"].get("command", 0) + mod, r.get("diff", "ordinary"), rng.randint(1, 100))
@@ -105,7 +107,7 @@ def promote(d: Data, eid: str, team: list[dict], vacancies: dict, rng) -> list[d
                     break
             if not won:
                 break
-            won["rank"], won["rank_days"], won["deed"] = r["id"], 0, False
+            won["rank"], won["rank_days"], won["deed"], won["patron_help"] = r["id"], 0, False, False
             vacancies[r["id"]] -= 1
             if idx - 1 > 0:
                 vacancies[L[idx - 1]["id"]] = vacancies.get(L[idx - 1]["id"], 0) + 1
