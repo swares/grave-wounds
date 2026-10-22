@@ -1658,11 +1658,11 @@ def _ranks_errors(d: Data) -> list[str]:
     return errors
 
 
-def _weight_pattern_errors(W: dict, where: str) -> list[str]:
+def _weight_pattern_errors(w: dict, where: str) -> list[str]:
     """weights.yaml patterns: each compiles and has a weight."""
     import re
     errors = []
-    for p in W.get("patterns", []):
+    for p in w.get("patterns", []):
         try:
             re.compile(p.get("match", ""))
         except re.error:

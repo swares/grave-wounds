@@ -2457,6 +2457,13 @@ function seasonLine(c, r){                         // 'Hans: Blade 42 → 44 (ro
   bits.push(`${r.served.toLocaleString("en-US")} days toward a term`);
   return `${c.name}: ${bits.join("; ")}.`;
 }
+const CHK_FIELDS = { "chk-diff": ["diff", "value"], "chk-tongue": ["tongue", "value"], "chk-book": ["book", "checked"], "chk-pass": ["pass", "checked"],
+  "chk-via": ["via", "checked"], "chk-itongue": ["itongue", "value"] };   // the checks panel's plain boxes: the setting and what it takes
+function chkUse(K, value){                         // a use of a skill sets its skill, difficulty and what it is against
+  K.use = value;
+  const u = checkUses().find(x => x.id === K.use);
+  if (u){ K.skill = u.skill; K.diff = u.difficulty; K.against = u.against ? u.against.value : "" }
+}
 function endSeason(){
   const all = readXp(), lines = [], stamp = Date.now();
   for (const c of S.team){
@@ -2928,13 +2935,6 @@ function init(){
     else if (b.dataset.ptdrop !== undefined) dropPatron(S.patrons[+b.dataset.ptdrop]);
     render();
   });
-  const CHK_FIELDS = { "chk-diff": ["diff", "value"], "chk-tongue": ["tongue", "value"], "chk-book": ["book", "checked"], "chk-pass": ["pass", "checked"],
-    "chk-via": ["via", "checked"], "chk-itongue": ["itongue", "value"] };   // the checks panel's plain boxes: the setting and what it takes
-  function chkUse(K, value){                       // a use of a skill sets its skill, difficulty and what it is against
-    K.use = value;
-    const u = checkUses().find(x => x.id === K.use);
-    if (u){ K.skill = u.skill; K.diff = u.difficulty; K.against = u.against ? u.against.value : "" }
-  }
   $("#checks").addEventListener("change", e => {
     const K = S.chk, id = e.target.id, plain = CHK_FIELDS[id];
     if (plain) K[plain[0]] = e.target[plain[1]];
