@@ -1,0 +1,56 @@
+# Compare two self-play measurements made by the selfplay workflow: finds the latest artifacts
+# selfplay-<before> and selfplay-<after>, runs tools/selfplay/report.py diff and targets.py on them, and
+# writes the result to the run summary and as notices on the run (readable through the API as the
+# check run's annotations). Read-only: started by hand (Run workflow) or with
+# `gh workflow run selfplay-compare.yml -f before=<label> -f after=<label>`.
+name: selfplay-compare
+
+on:
+  workflow_dispatch:
+    inputs:
+      before:
+        description: "Label of the earlier measurement (selfplay-<label>)"
+        required: true
+        default: main
+      after:
+        description: "Label of the later measurement"
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch both measurements
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BEFORE: ${{ inputs.before }}
+          AFTER: ${{ inputs.after }}
+        run: |
+          for label in "$BEFORE" "$AFTER"; do
+            id=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=selfplay-$label&per_page=1" --jq '.artifacts[0].id')
+            [ -n "$id" ] && [ "$id" != "null" ] || { echo "::error::no artifact selfplay-$label"; exit 1; }
+            gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > "$label.zip"
+            mkdir -p "m/$label" && unzip -q -o "$label.zip" -d "m/$label"
+            echo "$label: $(ls m/$label/*.json | wc -l) runs"
+          done
+      - name: Compare
+        env:
+          BEFORE: ${{ inputs.before }}
+          AFTER: ${{ inputs.after }}
+        run: |
+          python3 tools/selfplay/report.py diff "m/$BEFORE" "m/$AFTER" > diff.txt
+          python3 tools/selfplay/targets.py "m/$BEFORE" "m/$AFTER" > targets.txt
+          { echo '```'; cat diff.txt; echo; cat targets.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          python3 - <<'PY'
+          # each block of 25 lines as one notice (the API gives them back as annotations)
+          for name in ("diff.txt", "targets.txt"):
+              lines = open(name).read().splitlines()
+              for n in range(0, len(lines), 25):
+                  body = "%0A".join(l.replace("%", "%25").replace("\r", "") for l in lines[n:n + 25])
+                  print(f"::notice title={name} {n // 25 + 1}::{body}")
+          PY
