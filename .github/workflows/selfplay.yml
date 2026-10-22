@@ -1,6 +1,7 @@
 # Self-play measurement (docs/selfplay-review.md, How it was done): every battlefield played by the
 # enemy commander on both sides, `seeds` runs each, with the morale targets recorded (targets.js), on
-# the chosen branch, tag or commit. The runs are split over 16 parallel jobs; the results are one
+# the chosen branch, tag or commit (its page and battlefields; the tools come from this workflow's commit,
+# so a branch made before the tools existed can still be measured). The runs are split over 16 parallel jobs; the results are one
 # artifact (selfplay-<label>), a folder of <field>.s<seed>.json files that tools/selfplay/report.py
 # and targets.py read. Started by hand from the Actions tab (Run workflow) or with
 # `gh workflow run selfplay.yml -f ref=<branch> -f label=<name>`.
@@ -38,9 +39,11 @@ jobs:
       matrix:
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4        # the tools, from the workflow's own commit
+      - uses: actions/checkout@v4        # the game being measured: its page and battlefields
         with:
           ref: ${{ inputs.ref }}
+          path: subject
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
@@ -51,9 +54,9 @@ jobs:
           FIRST: ${{ inputs.first }}
         run: |
           mkdir -p out
-          python3 tools/selfplay/shard.py "$SHARD" 16 "$SEEDS" "$FIRST" > jobs.txt
+          python3 tools/selfplay/shard.py "$SHARD" 16 "$SEEDS" "$FIRST" subject/data/fields > jobs.txt
           wc -l < jobs.txt
-          xargs -P "$(nproc)" -L 1 sh -c 'node tools/selfplay/targets.js "$0" "$1" dist/field.html > "out/$0.s$1.json" || echo "$0 s$1 FAILED"' < jobs.txt
+          xargs -P "$(nproc)" -L 1 sh -c 'node tools/selfplay/targets.js "$0" "$1" subject/dist/field.html > "out/$0.s$1.json" || echo "$0 s$1 FAILED"' < jobs.txt
       - uses: actions/upload-artifact@v4
         with:
           name: shard-${{ matrix.shard }}
@@ -65,8 +68,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.ref }}
       - uses: actions/download-artifact@v4
         with:
           pattern: shard-*
