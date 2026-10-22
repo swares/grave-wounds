@@ -24,7 +24,10 @@ function noteRan(B, x){                           // a cornered unit that surren
   down[u.side] = (down[u.side] || 0) + n;
   routDown[u.side] = (routDown[u.side] || 0) + n;
 }
-const hook = (B, r) => { for (const l of r.log || []) noteLine(B, l); for (const x of r.ran || []) noteRan(B, x) };
+const hook = (B, r) => {
+  for (const l of r.log || []) noteLine(B, l);
+  for (const x of r.ran || []) noteRan(B, x);
+};
 const { FD, api } = load(htmlPath, ["secured"], hook);
 const t0 = Date.now(), r = api.selfPlay(fid, new api.SeededDice(Number(seed) * 101)), F = FD.fields[fid];
 const B = r.battle, end = r.points.at(-1).points[0];
