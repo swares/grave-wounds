@@ -101,7 +101,8 @@ robbed on capture, exchanged, paroled or ransomed, escaping, or dying at the rat
 give, from Cabrera and Andersonville to Japan and Korea. Men swim or drown by their load, armour and the cold, climb
 walls and cliffs, fall, wade fords on the march, and run or ride each other down. Each speaks his
 own tongue and perhaps others, by army: orders, surrenders and questions across tongues can be
-misheard, and a good speaker can pass as one of the enemy. A man lost
+misheard, and a good speaker can pass as one of the enemy. Men stand well or badly with a lord, a
+colonel or a band chief who can grant favours, and who may die, fall or change sides. A man lost
 is replaced the era's way: rolled anew, assigned by the army after a wait, or hired. On the
 travel map forces lose men on the road as the records say they did: desertion, straggling,
 injuries and horses by era and by whether they are in camp, marching or withdrawing, with an

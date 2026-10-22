@@ -201,6 +201,15 @@ When an item is done, delete it here and note it in the pull request that closes
   - no difficulty from wounds, fatigue or hunger is added to a check out of a fight (the GM sets
     it);
   - haggling is only for buying: selling loot, and hiring a replacement, are at the list price.
+- **Patrons, first cut.** Standing per patron, favours, events, rival claims, the patron's fate
+  and his clients' lot. Still left out: the fate chances and the Standing moves are design
+  estimates; British commission prices (the 1837 regulation table, £450 an ensigncy to £4,500 a
+  lieutenant-colonelcy) and private-income needs are in the research but not priced into the
+  commission favour, which is a +20 and the GM's word; patrons are not yet named people with their
+  own rank, side and purse, nor do they appear on the field map or the roller; thirds (the captain's
+  third of his men's winnings) are not taken from loot automatically; no drift without events
+  (Pendragon's winter check); and Visby, the Napoleonic marshals, Korea, Vietnam, the Falklands and
+  Chechnya had no patronage sources.
 - **Tongues, first cut.** Own tongue, others by army, bands, related tongues, talk caps, words
   across tongues, passing, phrase books, capture and escape, learning by use, lessons and living
   among speakers. Still left out: the shares of who spoke what are estimates throughout (no muster

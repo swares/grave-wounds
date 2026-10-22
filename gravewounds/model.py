@@ -117,6 +117,7 @@ class Data:
     prisoners: dict = field(default_factory=dict)   # capture and captivity (data/prisoners.yaml)
     hazards: dict = field(default_factory=dict)     # swimming, climbing, falls, chases (data/hazards.yaml)
     languages: dict = field(default_factory=dict)   # tongues by army, bands, passing (data/languages.yaml)
+    patrons: dict = field(default_factory=dict)     # standing, favours, a patron's fate (data/patrons.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -181,6 +182,7 @@ def load(root: str | Path = "data") -> Data:
     prisoners = _optional(root / "prisoners.yaml", {})
     hazards = _optional(root / "hazards.yaml", {})
     languages = _optional(root / "languages.yaml", {})
+    patrons = _optional(root / "patrons.yaml", {})
 
     data = Data(
         root=root,
@@ -220,6 +222,7 @@ def load(root: str | Path = "data") -> Data:
         prisoners=prisoners,
         hazards=hazards,
         languages=languages,
+        patrons=patrons,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -629,6 +632,18 @@ def validate(d: Data) -> None:
         for t in LG.get("traits", {}):
             if t not in traits:
                 errors.append(f"languages.yaml: no background has the trait {t!r}")
+    if d.patrons:
+        PT, diffs = d.patrons, {x["id"] for x in d.checks.get("difficulty", [])}
+        for f in PT["favours"]:
+            if f["difficulty"] not in diffs:
+                errors.append(f"patrons.yaml: favour {f['id']} has an unknown difficulty")
+        for eid, rows in PT.get("fate", {}).items():
+            if eid not in d.teams:
+                errors.append(f"patrons.yaml: fate for an unknown era {eid}")
+            if any(r["id"] not in PT["fates"] for r in rows) or sum(r["chance"] for r in rows) > 100:
+                errors.append(f"patrons.yaml: {eid} fates must be known and total at most 100")
+        if any(f["clients"] not in ("heir", "half", "ruin", "choose") for f in PT["fates"].values()):
+            errors.append("patrons.yaml: a fate's clients must be heir, half, ruin or choose")
     if d.prisoners:
         for eid, cs in (d.prisoners.get("eras") or {}).items():
             if eid not in d.teams:

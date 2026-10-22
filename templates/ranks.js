@@ -56,13 +56,14 @@ function rkPromote(team, vacancies, rng){          // every roll made: [{name, t
       let won = null;
       for (const c of cands){
         let mod = c.deed ? (R.deed_bonus ?? 20) : 0;
+        if (c.patron_help) mod += TD.patrons?.promotion_bonus ?? 20;   // his patron's word (data/patrons.yaml)
         if (r.unlettered && (c.skills.letters || 0) < (R.literate ?? 20)) mod += r.unlettered;
         const k = skillCheck((c.skills.command || 0) + mod, r.diff || "ordinary", rng.randint(1, 100));
         out.push({ name: c.name, to: r.id, roll: k.roll, target: k.target, success: k.success });
         if (k.success){ won = c; break }
       }
       if (!won) break;
-      won.rank = r.id; won.rank_days = 0; won.deed = false;
+      won.rank = r.id; won.rank_days = 0; won.deed = false; won.patron_help = false;
       vacancies[r.id] -= 1;
       if (idx - 1 > 0) vacancies[L[idx - 1].id] = (vacancies[L[idx - 1].id] || 0) + 1;
     }
@@ -392,4 +393,46 @@ function lgSeason(c, ticks, rng, gain = [1, 3]){   // [{tongue, roll, was, gain}
     out.push({ tongue: t, roll: r, was, gain: c.tongues[t] - was });
   }
   return out;
+}
+
+/* Standing with patrons (as gravewounds/patrons.py, data TD.patrons): d100 Standing with each
+   patron, read in bands; a favour at Standing + Persuade / 10 spends its cost (a critical nothing,
+   a fumble offends him); events move it; rivals oppose; each season the patron's fate by era and
+   each client's lot. */
+const PT = () => TD.patrons || {};
+const ptClamp = v => Math.max(0, Math.min(PT().max ?? 95, v));
+const ptBand = v => PT().bands.findLast(b => v >= b.from).name;
+const ptFavourRow = fid => PT().favours.find(f => f.id === fid);
+function ptFavour(standing, persuade, fid, roll){   // {check, granted, offended, standing}
+  const P = PT(), F = ptFavourRow(fid);
+  const k = skillCheck(standing + Math.floor(persuade / (P.persuade_div ?? 10)), F.difficulty, roll);
+  let after = standing;
+  if (k.success && !(k.critical && (P.critical_free ?? true))) after = standing - F.cost;
+  else if (k.fumble) after = standing + (P.offended ?? -10);
+  return { check: k, granted: k.success, offended: k.fumble, standing: ptClamp(after) };
+}
+function ptMove(standing, event, rng, amount = 0){  // {standing, enemy}: a deed rolls its dice
+  const E = PT().events[event];
+  if ("to" in E) return { standing: E.to, enemy: !!E.enemy };
+  let add = E.add ?? 0;
+  if (E.dice) add = rng.randint(E.dice[0], E.dice[1]);
+  else if (E.per_days) add = Math.floor(amount / E.per_days);
+  else if (E.per) add = Math.trunc(amount) * E.per;
+  return { standing: ptClamp(standing + add), enemy: false };
+}
+const ptRival = (a, b, aRoll, bRoll) => opposedCheck(a, "ordinary", aRoll, b, bRoll);
+function ptFate(eid, roll){                         // the patron's fate this season, or null
+  let acc = 0;
+  for (const r of PT().fate?.[eid] || []){ acc += r.chance; if (roll <= acc) return r.id }
+  return null;
+}
+function ptFateName(eid, fid){
+  const row = (PT().fate?.[eid] || []).find(r => r.id === fid);
+  return row?.name || PT().fates[fid].name;
+}
+function ptClient(fid, standing, roll = null, follow = true){   // {standing, result}
+  const how = PT().fates[fid].clients;
+  if (how === "ruin") return roll !== null && roll <= standing ? { standing: 0, result: "ruined" } : { standing: Math.floor(standing / 2), result: "clear" };
+  if (how === "choose") return follow ? { standing, result: "follows" } : { standing: 0, result: "stays" };
+  return { standing: Math.floor(standing / 2), result: how };
 }

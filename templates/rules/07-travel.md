@@ -115,6 +115,42 @@ open ground gains a step every second round whatever the dice; in cover the man 
 against him. A man on foot tires a step every three rounds, and a horse galloped more than
 fifteen is blown. Most of the dead of a beaten army fell in the pursuit, not the fight.
 
+## Patrons {#patrons}
+
+A **patron** is a lord, a colonel, a governor, a band chief or a commanding officer: a man who can
+do things for his clients and expects service. A man's **Standing** with each patron is a d100
+figure, {{pt_start}} when he is taken on:
+
+{{table:patron_bands}}
+
+**Asking a favour.** d100 at his Standing + his Persuade ÷ {{pt_persuade}} (asking well), at the
+favour's difficulty. Granted, it spends Standing: he expects it repaid (a critical spends
+nothing). Refused, nothing changes; a fumble offends him ({{pt_offended}}).
+
+{{table:favours}}
+
+His word for a vacancy adds {{pt_promotion}} to the man's Command when it is next rolled. Two
+clients who want the one favour or the one vacancy roll their Standing against each other.
+
+**What moves Standing:**
+
+{{table:standing_events}}
+
+**The patron's fate.** At End of season each client gains {{pt_season}} for the season served,
+then the patron rolls d100 on his era's line: he may die (his heir takes his clients on at half
+Standing), fall from favour (each client rolls d100: at or under his Standing he shares the fall,
+losing his Standing and a rank, or worse at the GM's word; otherwise he gets clear with half),
+change sides (each client follows, keeping his Standing, or stays and loses it) or go (sold out,
+disbanded, posted or rotated home: each client may take half his Standing to a new patron).
+
+{{table:patron_fate}}
+
+Of Hastings' sixty-seven indentures only two paid a fee: the rest rested on his promise of good
+lordship. After Wallenstein's murder in 1634 seven generals who had signed for him were demoted
+and imprisoned, and the men who betrayed him took the estates. Among the Lakota, generosity
+counted for more than possession: horses given away raise a man's Standing as they raise his
+honours.
+
 ## Prisoners {#prisoners}
 
 A man **taken prisoner** is not simply lost. The GM picks his captors' situation from his era's

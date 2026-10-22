@@ -17,6 +17,19 @@ from .model import Data
 PLACE = re.compile(r"\{\{\s*([a-z_:.0-9]+)\s*\}\}")
 
 
+def _band_rows(bands: list) -> list:
+    """[[span, name]] for bands given by their `from`: '0', '1-25', ..., '76+'."""
+    rows = []
+    for k, b in enumerate(bands):
+        if k + 1 == len(bands):
+            span = f"{b['from']}+"
+        elif bands[k + 1]["from"] - 1 == b["from"]:
+            span = str(b["from"])
+        else:
+            span = f"{b['from']}-{bands[k + 1]['from'] - 1}"
+        rows.append([span, b["name"]])
+    return rows
+
 def _pct(x: float) -> str:
     return f"{round(x * 100)}%"
 
@@ -47,6 +60,16 @@ def _keep_vars(d, cur) -> dict:
     say = lambda x: days_text_q(x) + (f", {fmt(cur, int(x * cur['day'] + 0.5))}" if cur and cur.get("day") else "")
     return {"keep_food": say(k["food"]), "keep_bed": say(k["bed"])}
 
+def _talk_values(d: Data) -> dict:
+    """The tongues' and patrons' numbers the chapters quote."""
+    LG, PT = d.languages or {}, d.patrons or {}
+    tongues = LG.get("tongues", {})
+    return {"lg_native": LG.get("native", 90), "lg_max": LG.get("max", 85), "lg_book": LG.get("phrase_book", 25),
+            "lg_pidgin": (tongues.get("bamboo_english") or {}).get("cap", 35), "lg_sign": (tongues.get("plains_sign") or {}).get("cap", 75),
+            "pt_start": PT.get("start", 30), "pt_persuade": PT.get("persuade_div", 10), "pt_offended": PT.get("offended", -10),
+            "pt_promotion": PT.get("promotion_bonus", 20), "pt_season": (PT.get("events", {}).get("season") or {}).get("add", 2)}
+
+
 def values(d: Data) -> dict:
     """The rule numbers the chapters quote, by name."""
     T, CB = d.wounds["tracking"], d.wounds["combat"]
@@ -76,9 +99,7 @@ def values(d: Data) -> dict:
         "chk_crit": round(d.checks.get("critical_fraction", 0.1) * 100), "chk_fumble": d.checks.get("fumble_from", 96),
         "haggle_seller": (d.checks.get("haggle") or {}).get("seller", 50), "haggle_win": round(-(d.checks.get("haggle") or {}).get("win", -0.1) * 100),
         "haggle_crit": round(-(d.checks.get("haggle") or {}).get("critical", -0.25) * 100),
-        "lg_native": (d.languages or {}).get("native", 90), "lg_max": (d.languages or {}).get("max", 85), "lg_book": (d.languages or {}).get("phrase_book", 25),
-        "lg_pidgin": ((d.languages or {}).get("tongues", {}).get("bamboo_english") or {}).get("cap", 35),
-        "lg_sign": ((d.languages or {}).get("tongues", {}).get("plains_sign") or {}).get("cap", 75),
+        **_talk_values(d),
         "xp_lo": d.experience.get("gain", [1, 3])[0], "xp_hi": d.experience.get("gain", [1, 3])[1], "xp_season": d.experience.get("season_days", 91),
         "scar_upto": E["old_wound"][0]["to"], "lasting": E["lasting"], "origins": len(E["origins"]), "careers": len(E["careers"]),
         "eras": len(d.teams), **_money_vars(d),
@@ -197,9 +218,6 @@ def tables(d: Data) -> dict:
                                                               for f, lo in zip(d.ranks["finds"], [1] + [x["to"] + 1 for x in d.ranks["finds"][:-1]])])
     if d.languages:
         LG = d.languages
-
-        def _span(lo, hi):
-            return str(lo) if lo == hi else f"{lo}-{hi}"
         tn = {k: v["name"] for k, v in LG["tongues"].items()}
         rows = []
         for eid, armies in LG["armies"].items():
@@ -210,8 +228,40 @@ def tables(d: Data) -> dict:
                 rows.append([regions[rid], own, others or "—"])
         out["tongue_armies"] = _md(["Army", "His own tongue (d100)", "Others he may have: chance (figure)"], rows)
         bands = LG["bands"]
-        out["tongue_bands"] = _md(["Figure", "Reads as"], [[_span(b["from"], bands[k + 1]["from"] - 1) if k + 1 < len(bands) else f"{b['from']}+", b["name"]]
-                                                          for k, b in enumerate(bands)])
+        out["tongue_bands"] = _md(["Figure", "Reads as"], _band_rows(bands))
+    if d.patrons:
+        PT = d.patrons
+        pb = PT["bands"]
+        out["patron_bands"] = _md(["Standing", "He is"], _band_rows(pb))
+        dn = {x["id"]: x["name"] for x in d.checks["difficulty"]}
+
+        def _gives(f):
+            bits = []
+            if f.get("days"):
+                bits.append(f"{f['days']} Days")
+            if f.get("served"):
+                bits.append(f"{f['served']} days served")
+            if f.get("promotion"):
+                bits.append(f"+{PT['promotion_bonus']} for the next vacancy")
+            if f.get("ransom"):
+                bits.append("his ransom")
+            return ", ".join(bits) or "the GM's word"
+        out["favours"] = _md(["Favour", "Difficulty", "Costs", "Gives"], [[f["name"], dn[f["difficulty"]], f"{f['cost']} Standing", _gives(f)] for f in PT["favours"]])
+
+        def _ev(e):
+            if "to" in e:
+                return "Standing 0, and the patron is his enemy" if e.get("enemy") else f"Standing {e['to']}"
+            if "dice" in e:
+                return f"+1d{e['dice'][1]}"
+            if "per_days" in e:
+                return f"+1 for each {e['per_days']} Days"
+            if "per" in e:
+                return f"+{e['per']} a horse"
+            return f"{e['add']:+d}"
+        out["standing_events"] = _md(["Event", "Standing"], [[e["name"], _ev(e)] for e in PT["events"].values()])
+        names = {e: d.teams[e]["name"] for e in d.teams}
+        out["patron_fate"] = _md(["Era", "d100"], [[names[e], ", ".join(f"{r['chance']}% {r.get('name') or PT['fates'][r['id']]['name']}" for r in rows)]
+                                                   for e, rows in PT["fate"].items()])
     if d.hazards:
         HZ = d.hazards
         sev = HZ["falls"]["severities"]
