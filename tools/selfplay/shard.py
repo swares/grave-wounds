@@ -16,7 +16,8 @@ fields = here.parent.parent / "data" / "fields"
 def jobs(seeds: int, first: int) -> list:
     """Every (field id, seed), longest first."""
     times = here / "times.txt"
-    t = dict(line.split() for line in times.read_text().splitlines() if line.strip()) if times.exists() else {}
+    rows = [line.split() for line in times.read_text().splitlines() if line.strip()] if times.exists() else []
+    t = {f: s for f, s in rows}
     fids = sorted(f[:-5] for f in os.listdir(fields) if f.endswith(".yaml"))
     return [(f, k) for _, f, k in sorted(((float(t.get(f, 0)), f, k) for f in fids for k in range(first, first + seeds)),
                                          key=lambda x: (-x[0], x[1], x[2]))]
