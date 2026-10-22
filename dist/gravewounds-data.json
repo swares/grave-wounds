@@ -673,6 +673,33 @@
      "day": 25,
      "day_note": "no Serbian private's pay found: the French poilu's 5 sous, the dinar at par with the franc; an unskilled worker earned about 1.2 dinars a day (1910)",
      "day_approx": true
+    },
+    "krone": {
+     "name": "Kronen (100 Heller)",
+     "coin": "krone",
+     "base": "heller",
+     "decimal": {
+      "sym": "",
+      "suf": " K",
+      "per": 100,
+      "small": " h"
+     },
+     "day": 36,
+     "day_note": "a private's 36 Heller a day in wartime (Hautmann 2008, a secondary source); an unskilled builder in Vienna earned 3.50 K a day in 1914"
+    },
+    "lev": {
+     "name": "Leva (100 stotinki)",
+     "coin": "lev",
+     "base": "stotinka",
+     "decimal": {
+      "sym": "",
+      "suf": " lv",
+      "per": 100,
+      "small": " st."
+     },
+     "day": 25,
+     "day_note": "no Bulgarian private's pay found: the French poilu's 5 sous, the lev at par with the franc before the war (an estimate)",
+     "day_approx": true
     }
    },
    "currency": {
@@ -681,7 +708,9 @@
     "germany": "mark",
     "france": "frf",
     "russia": "rub",
-    "serbia": "dinar"
+    "serbia": "dinar",
+    "austria_hungary": "krone",
+    "bulgaria": "lev"
    }
   },
   "wwii": {
@@ -1496,7 +1525,7 @@
     "honours": true
    },
    "wwi": {
-    "note": "British daily pay of 1914; Russian of 1914 (a private 6 roubles a year, a senior NCO 48, a feldfebel 72, a podporuchik 70 a month, a captain 145: Podpryatov and Poperechnaya 2019, and a blog for the officers); Serbian pay not found. About 10,000 British soldiers were commissioned straight from the ranks, and about 6,000 Americans in 1917-18; Russia's 62 praporshchik schools turned out some 225,000 wartime officers in three-month courses.",
+    "note": "British daily pay of 1914; Russian of 1914 (a private 6 roubles a year, a senior NCO 48, a feldfebel 72, a podporuchik 70 a month, a captain 145: Podpryatov and Poperechnaya 2019, and a blog for the officers); Serbian, Austro-Hungarian (but a private's 36 Heller a day) and Bulgarian rank pay not found: they take the British steps. About 10,000 British soldiers were commissioned straight from the ranks, and about 6,000 Americans in 1917-18; Russia's 62 praporshchik schools turned out some 225,000 wartime officers in three-month courses.",
     "kept": 0.75,
     "kept_approx": true,
     "ladder": [
@@ -3595,6 +3624,15 @@
    "yiddish": {
     "name": "Yiddish"
    },
+   "romanian": {
+    "name": "Romanian"
+   },
+   "slovak": {
+    "name": "Slovak"
+   },
+   "slovene": {
+    "name": "Slovene"
+   },
    "hungarian": {
     "name": "Hungarian"
    },
@@ -3783,6 +3821,31 @@
     "yiddish",
     "german",
     0.5
+   ],
+   [
+    "slovak",
+    "czech",
+    0.75
+   ],
+   [
+    "slovak",
+    "polish",
+    0.25
+   ],
+   [
+    "slovene",
+    "croatian",
+    0.5
+   ],
+   [
+    "bulgarian",
+    "russian",
+    0.25
+   ],
+   [
+    "romanian",
+    "italian",
+    0.25
    ]
   ],
   "traits": {
@@ -4721,6 +4784,108 @@
        [
         10,
         40
+       ]
+      ]
+     ]
+    },
+    "austria_hungary": {
+     "own": [
+      [
+       "german",
+       27
+      ],
+      [
+       "hungarian",
+       22
+      ],
+      [
+       "czech",
+       14
+      ],
+      [
+       "polish",
+       9
+      ],
+      [
+       "ukrainian",
+       8
+      ],
+      [
+       "croatian",
+       7
+      ],
+      [
+       "romanian",
+       6
+      ],
+      [
+       "slovak",
+       4
+      ],
+      [
+       "slovene",
+       2
+      ],
+      [
+       "italian",
+       1
+      ]
+     ],
+     "enemy": "russian",
+     "others": [
+      [
+       "german",
+       40,
+       [
+        10,
+        40
+       ]
+      ],
+      [
+       "hungarian",
+       10,
+       [
+        10,
+        40
+       ]
+      ]
+     ]
+    },
+    "bulgaria": {
+     "own": [
+      [
+       "bulgarian",
+       90
+      ],
+      [
+       "turkish",
+       10
+      ]
+     ],
+     "enemy": "serbian",
+     "others": [
+      [
+       "turkish",
+       10,
+       [
+        10,
+        40
+       ]
+      ],
+      [
+       "russian",
+       5,
+       [
+        5,
+        25
+       ]
+      ],
+      [
+       "german",
+       5,
+       [
+        5,
+        25
        ]
       ]
      ]

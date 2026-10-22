@@ -130,6 +130,37 @@ regions:
       names: [Milunka, Sofija, Živana, Antonija, Nadežda, Jelena, Milica, Desanka, Ljubica, Stana, Draginja, Flora]
       closed: "A few Serbian women fought in the ranks, most as sergeants (Milunka Savić, Sofija Jovanović), and Flora Sandes, a British nurse, enlisted as a private in the 1915 retreat; women nursed in great numbers."
       source: "Mladenović, Women's mobilization for war (South East Europe), 1914-1918-online: five women on the Salonika front, Antonija Javornik and Živana Terzić sergeants; the Circle of Serbian Sisters listed 1,500 nurses. Milunka Savić, wounded nine times; Flora Sandes, sergeant-major by 1916, commissioned 1919 (Wikipedia)."
+  - id: austria_hungary
+    name: "Austria-Hungary (1914-1918)"
+    short: "Austro-Hungarian"
+    table: wwi-1914-18-wounds
+    colours: ["#7f8a86", "#6e7874", "#6a5a3a", "#e6e0d2"]
+    names: [Franz, Josef, Johann, Karl, Anton, János, István, József, Jan, Václav, Stanisław, Ivan, Mihai, Luigi, Jože, Stjepan]
+    bynames: [Huber, Gruber, Wagner, Nagy, Kovács, Tóth, Novák, Svoboda, Kowalski, Horvat, Popescu, Hofer]
+    women:
+      share: null
+      careers: [rifleman, nco, officer, nurse, auxiliary]
+      shares: {nurse: 100, auxiliary: 100}
+      disguised: [rifleman, nco]
+      names: [Maria, Anna, Theresia, Rosa, Erzsébet, Mária, Marie, Anna, Zofia, Wanda, Olena, Viktoria]
+      bynames: [Huber, Gruber, Wagner, Nagy, Kovács, Tóth, Nováková, Svobodová, Kowalska, Horvat, Stepaniv, Savs]
+      closed: "A few women fought, most disguised as men at first (Viktoria Savs with the Standschützen, Wanda Gertz with the Polish Legions); Olena Stepaniv of the Ukrainian Sich Riflemen was made an officer after Makivka in 1915. Some 36,000-50,000 women served as auxiliaries from March 1917, and over 25,000 as nurses and aides."
+      source: "Scharf, Women in the armed forces (habsburger.net): the number of women combatants is impossible to determine; Helping hands (habsburger.net): 36,000-50,000 weibliche Hilfskräfte der Armee im Felde from March 1917. Viktoria Savs, Olena Stepaniv, Wanda Gertz (Wikipedia)."
+  - id: bulgaria
+    name: "Bulgaria (1915-1918)"
+    short: "Bulgarian"
+    table: wwi-1914-18-wounds
+    colours: ["#6a6f4a", "#5b6040", "#7a5a3a", "#e6e0d2"]
+    names: [Ivan, Georgi, Dimitar, Petar, Nikola, Stoyan, Todor, Hristo, Vasil, Atanas, Kiril, Angel, Iliya, Stefan, Mehmed, Ahmed]
+    bynames: [Ivanov, Georgiev, Dimitrov, Petrov, Nikolov, Hristov, Stoyanov, Todorov, Iliev, Vasilev, Atanasov, Angelov]
+    women:
+      share: null
+      careers: [nurse]
+      shares: {nurse: 100}
+      names: [Maria, Ivanka, Elena, Yordanka, Rayna, Tsveta, Stoyanka, Radka, Vasilka, Penka, Donka, Neda]
+      bynames: [Ivanova, Georgieva, Dimitrova, Petrova, Nikolova, Hristova, Stoyanova, Todorova, Ilieva, Vasileva, Atanasova, Kasabova]
+      closed: "Bulgarian women served as volunteer nurses (the 'Samaritans'; Queen Eleonore among them): no record of women in the fighting careers was found."
+      source: "Mladenović, Women's mobilization for war (South East Europe), 1914-1918-online. No count of nurses or of their deaths."
 origins:
   - {name: "Farm hand", gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Never been far from home", persuade: -15}}
   - {name: "Coal miner", gain: craft, trait: {text: "At home underground", end: 10}, drawback: {text: "Coughs in the cold", stealth: -15}}

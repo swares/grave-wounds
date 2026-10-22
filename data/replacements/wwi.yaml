@@ -57,6 +57,32 @@ assigned:
   - 45
   what: Reserve (zapasnye) battalions in the rear trained and sent on march companies; by 1916 men of the second-category opolchenie, who had never served, came too.
   approx: true
+- id: marsch
+  name: A march company (Marschkompanie) from the replacement battalion
+  regions:
+  - austria_hungary
+  careers: any
+  terms: 1
+  wait:
+  - 14
+  - 40
+  what: Each regiment's replacement (Ersatz) battalion formed numbered march battalions and companies, about one a month until December 1915 and one every 40 days in 1916; Landsturm men had at least four weeks' retraining.
+  source:
+    url: https://austria-forum.org/web-books/en/firstworldwar01en2014isds/000148
+    note: Rauchensteiner, the regimental pool and the march formations
+- id: young_contingent
+  name: A man of the young contingents
+  regions:
+  - bulgaria
+  careers: any
+  terms: 1
+  wait:
+  - 14
+  - 45
+  what: Bulgaria made good its losses from early-called young contingents, 214,343 men against 181,515 casualties from late 1915 to early 1918, trained in the supplementary battalions.
+  source:
+    url: https://en.wikipedia.org/wiki/Mobilization_of_the_Bulgarian_Army_in_1915
+    note: citing the Bulgarian official history
 - id: next_ban
   name: A man of the next ban
   regions:

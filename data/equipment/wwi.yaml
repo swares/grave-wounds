@@ -49,7 +49,22 @@ currencies:
     day: 25
     day_note: "no Serbian private's pay found: the French poilu's 5 sous, the dinar at par with the franc; an unskilled worker earned about 1.2 dinars a day (1910)"
     day_approx: true
-currency: {default: gbp, us: usd, germany: mark, france: frf, russia: rub, serbia: dinar}
+  krone:
+    name: "Kronen (100 Heller)"
+    coin: krone
+    base: heller
+    decimal: {sym: "", suf: " K", per: 100, small: " h"}
+    day: 36
+    day_note: "a private's 36 Heller a day in wartime (Hautmann 2008, a secondary source); an unskilled builder in Vienna earned 3.50 K a day in 1914"
+  lev:
+    name: "Leva (100 stotinki)"
+    coin: lev
+    base: stotinka
+    decimal: {sym: "", suf: " lv", per: 100, small: " st."}
+    day: 25
+    day_note: "no Bulgarian private's pay found: the French poilu's 5 sous, the lev at par with the franc before the war (an estimate)"
+    day_approx: true
+currency: {default: gbp, us: usd, germany: mark, france: frf, russia: rub, serbia: dinar, austria_hungary: krone, bulgaria: lev}
 
 sources:
   sears: &sears "https://www.gutenberg.org/ebooks/54213.txt.utf-8"
@@ -73,6 +88,10 @@ items:
   - {id: shoes_ru, name: "Men's shoes, a pair, Moscow", cat: clothing, in: rub, price: 4800, when: "1914 (144 roubles by 1917)", source: {url: "https://standardebooks.org/ebooks/john-reed/ten-days-that-shook-the-world/text/appendix-1", note: "John Reed, Ten Days, appendix"}}
   - {id: suit_ru, name: "Men's suit of clothes, Moscow", cat: clothing, in: rub, price: 16000, when: "1914 (400-455 roubles by 1917)", source: {url: "https://standardebooks.org/ebooks/john-reed/ten-days-that-shook-the-world/text/appendix-1", note: "John Reed, Ten Days, appendix"}}
   - {id: horse_ru, name: "Army horse, bought by the Zemstvo Union", cat: horse, in: rub, price: [65200, 115600], when: "1915-16", source: {url: "https://digi.econbiz.de/viewer/fulltext/1794855874/272", note: "Zemstvo Union purchases"}}
+  - {id: bread_at, name: "Bread, a kilo, Vienna", cat: food, in: krone, price: 40, when: "1914 (56 h rationed in 1918; prices rose sixteenfold over the war)", source: {url: "https://www.geschichtewiki.wien.gv.at/Krone_(W%C3%A4hrungseinheit)/Kaufkraft", note: "Wien Geschichte Wiki, Kaufkraft"}}
+  - {id: meat_at, name: "Meat, a kilo, Vienna", cat: food, in: krone, price: 222, when: "1914 (845 h in 1917)", source: {url: "https://www.geschichtewiki.wien.gv.at/Krone_(W%C3%A4hrungseinheit)/Kaufkraft", note: "Wien Geschichte Wiki, Kaufkraft"}}
+  - {id: wine_at, name: "Wine, a litre, Vienna", cat: food, in: krone, price: 124, when: "1914 (900 h in 1918)", source: {url: "https://www.geschichtewiki.wien.gv.at/Krone_(W%C3%A4hrungseinheit)/Kaufkraft", note: "Wien Geschichte Wiki, Kaufkraft"}}
+  - {id: beer_at, name: "Beer, a litre, Vienna", cat: food, in: krone, price: [37, 38], when: "1914 (230 h in 1918)", source: {url: "https://www.geschichtewiki.wien.gv.at/Krone_(W%C3%A4hrungseinheit)/Kaufkraft", note: "Wien Geschichte Wiki, Kaufkraft"}}
   - {id: ford_ambulance, name: "Ford Model T ambulance, equipped and shipped", cat: travel, in: usd, price: 66039, when: "1917", source: {url: "https://siarchives.si.edu/blog/smithsonian-sent-healing-wheels-wwi", note: "Smithsonian Institution Archives: $475 bare"}}
   - {id: remount, name: "Army remount horse, bought and delivered", cat: horse, price: 54720, when: "1914-20", source: {url: "https://blog.nationalarchives.gov.uk/making-horses-war-army-remount-service/", note: "National Archives, from totals"}}
   - {id: motorcycle, name: "Motorcycle", cat: travel, price: [38400, 67200], approx: true}

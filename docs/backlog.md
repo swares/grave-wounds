@@ -338,6 +338,15 @@ When an item is done, delete it here and note it in the pull request that closes
   carries in the roller, and only for named men; courses (data/training.yaml `courses`) are a
   set of examples with estimated gains and fees, the man is not missing from the team while away,
   and an apprenticeship is a year of its seven.
+- **Austria-Hungary and Bulgaria in the First World War, first cut.** Both on the team builder,
+  as Russia and Serbia are (project doc "central-armies-research"). Still left out: no wound table
+  of their own (none by region or cause was found for either); rank pay for neither (Austria-
+  Hungary's Day is a private's 36 Heller from one secondary source, Bulgaria's the poilu's, an
+  estimate); prices only for Vienna's bread, meat, wine and beer in 1914, none for Bulgaria; the
+  wartime Landsturm ages (the 50-55 often given is the war-labour law's) and the 1912 Wehrgesetz's
+  terms unconfirmed; the Bulgarian army's tongues (Bulgarian, Turkish; Pomaks and Macedonians as
+  Bulgarian) and its name for shell shock are estimates; Bulgarians in Entente hands have no
+  death rate; an Austro-Hungarian's first name, surname and tongue are rolled apart, so a Polish name may come with a Hungarian tongue (no nationality is rolled first); and the Ottoman and German armies of the eastern fronts are not armies here.
 - **Russia and Serbia in the First World War, first cut.** Both armies are on the team builder
   (and so the roller, travel and field pages): names, careers, women, money, pay, prices,
   prisoners, tongues, enlistment ages and replacements (project doc "eastern-armies-research").
