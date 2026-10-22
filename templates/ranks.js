@@ -477,15 +477,14 @@ function lgHexDist(a, b){                          // hexes apart, odd rows shif
   const x = cube(a), y = cube(b);
   return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2]));
 }
-function lgTonguesAt(m, mid, h){                   // the tongues at a hex of map m, main first: the nearest place within place_km naming its own, else the map's
+function lgTonguesAt(m, mid, h){                   // the tongues at a hex of map m, main first: the nearest place within place_km decides (its own, if it names them), else the map's
   const reach = (LG().place_km || 0) / (m?.hex_km || 1);
   let best = null, near = null;
   for (const p of m?.places || []){
-    if (!p.tongues?.length) continue;
     const dist = lgHexDist(p.hex, h);
     if (dist <= reach && (near === null || dist < near)){ best = p; near = dist }
   }
-  return best ? [...best.tongues] : lgMapDefault(mid);
+  return best?.tongues?.length ? [...best.tongues] : lgMapDefault(mid);
 }
 function lgSeason(c, ticks, rng, gain = [1, 3]){   // [{tongue, roll, was, gain}]: his ticked tongues, by id
   const out = [];

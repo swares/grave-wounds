@@ -20,9 +20,10 @@
 #     Escaping, his Fieldcraft to reach his own side gains `escape_home` by his grade in the
 #     country's tongue.
 #   - The travel map: foraging where no named man in the force gets by in the local tongue is
-#     Hard (`forage_without`). The local tongues are those of the nearest place within `place_km`
-#     that names its own (a map place's `tongues`, main first: mixed country lists several, and
-#     getting by in any of them will do), else the map's (`maps`: one tongue or a list).
+#     Hard (`forage_without`). The local tongues are those the nearest place within `place_km`
+#     names (a map place's `tongues`, main first: mixed country lists several, and getting by in
+#     any of them will do); a place that names none, or open country, has the map's (`maps`: one
+#     tongue or a list).
 # Learning: a tongue used well is ticked and rolls to rise at End of season like a skill (one at 0
 # always rises); `among_days` nights among people who speak it (their main tongue) tick it; a season held prisoner
 # ticks his captors' tongue; and the training masters teach one (data/training.yaml).
@@ -57,7 +58,7 @@ readings:                     # what words across tongues come to, by the roll
   error: "a dangerous error: the wrong thing understood"
 getting_by: 26
 among_days: 30
-place_km: 10                   # how far from a place its own tongues are spoken (else the map's)
+place_km: 10                   # how far a place's people reach: the nearest place within it decides
 source: "https://en.wikipedia.org/wiki/Operation_Greif"
 
 # A hired interpreter (the team builder): he speaks the team's own tongue and one other at
@@ -112,6 +113,8 @@ tongues:
   albanian: {name: Albanian}
   aromanian: {name: Aromanian}
   flemish: {name: Flemish}
+  picard: {name: Picard}
+  walloon: {name: Walloon}
   tatar: {name: Crimean Tatar}
   hindustani: {name: Hindustani}
   nepali: {name: Nepali}
@@ -165,6 +168,9 @@ related:                       # [a, b, share]: a man with one knows the other a
   - [aromanian, romanian, 0.5]
   - [flemish, low_german, 0.5]
   - [flemish, german, 0.25]
+  - [picard, french, 0.75]       # dialects of the north: French speakers follow them, less so Walloon
+  - [walloon, french, 0.5]
+  - [picard, walloon, 0.5]
 
 traits:                        # background traits and drawbacks that give or take tongues
   "Speaks three tongues": {extra: 2, range: [30, 60]}
@@ -319,9 +325,9 @@ maps:                          # the tongue (or tongues, main first) of the peop
   lundys-lane-1814: english
   lutzen-1632: german
   mogadishu-1993: somali
-  mons-1914: french
+  mons-1914: [picard, french]   # the Borinage and Mons spoke Picard at home, French at school; Binche names Walloon
   osan-1950: korean
-  phil-kearny-1866: lakota
+  phil-kearny-1866: [lakota, cheyenne, arapaho, plains_sign]   # the three nations who held the Powder River country; the sign language between them
   porkchop-1953: korean
   serbia-1915: albanian        # Kosovo, Albania and western Macedonia, where the retreat went; its towns name their own (Serbian, Bulgarian, Turkish...)
   sevastopol-1855: russian

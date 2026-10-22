@@ -460,8 +460,9 @@ gains by his grade in it, and each season held ticks it. Ticked tongues roll at 
 the skills. The roller's **Words across tongues** panel has any team-builder fighter give an
 order, call a surrender, ask a question or pass as one of them, to another fighter or to someone
 who speaks one tongue. On the travel map the people where a force stands speak a tongue or several
-(`ranks.js: lgTonguesAt`, `languages.py: tongues_at`): those of the nearest place within
-`place_km` that lists its own `tongues` (main first), else the map's (`maps`, one or a list). A
+(`ranks.js: lgTonguesAt`, `languages.py: tongues_at`): the nearest place within `place_km`
+decides, with its own `tongues` (main first) if it lists them, else the map's (`maps`, one or a
+list), as in open country. A
 force with no named man who gets by in any of them forages Hard, talk uses the best of them each
 man has, and a month among them ticks the main one.
 

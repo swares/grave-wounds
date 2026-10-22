@@ -68,6 +68,8 @@ const notes = {
   symphorien: "The military cemetery here holds the first and last British soldiers killed in the war",
 };
 
+// The map's people speak Picard and French (data/languages.yaml); Binche, in the Centre, Walloon
+// (our reading: the line between the two runs about La Louvière).
 const map = buildCampaign({
   id: "mons-1914", script: "make_mons.mjs", title: "The battle of Mons, August 1914, from Condé to Binche",
   name: "Mons, 1914 (Condé to Binche)",
@@ -90,6 +92,7 @@ const map = buildCampaign({
   woods: WOODS, hills: HILLS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { mons: "objective", maubeuge: "camp" },
   depots: { maubeuge: ["British"] },   // where each side resupplies (project doc "depots-research")
+  tongues: { binche: ["walloon", "french"] },   // the people's own tongues where they differ from the map's (project doc "tongues-research")
   forces: [
     { name: "3rd Division (Hamilton)", type: "foot", side: "British", men: 15000, tools: true, at: "mons" },
     { name: "5th Division (Fergusson)", type: "foot", side: "British", men: 15000, tools: true, at: "boussu" },

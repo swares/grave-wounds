@@ -126,8 +126,8 @@ capture roll is 10 better: a surrender had to be accepted to protect him). Escap
 to get home is +10 if he converses in their tongue and +20 if it is his own.
 
 **On the travel map** the people where a force stands speak a tongue, or in mixed country several:
-those of the nearest town, village or landmark within {{lg_place_km}} that names its own, else the
-map's. A force with no named man who gets by in any of them forages Hard, its talk is in the best
+the nearest town, village or landmark within {{lg_place_km}} decides (its own, if it names them),
+and everywhere else has the map's. A force with no named man who gets by in any of them forages Hard, its talk is in the best
 of them he has, and a month among them ticks their main tongue. The map shows a place's tongues
 when you point at it.
 

@@ -78,6 +78,7 @@ const map = buildCampaign({
   towns: ["citadel", "newcity", "giahoi", ...Object.keys(CITY)], villages: ["lachu", "thienmu", "pk17"],
   kinds: { citadel: "objective", macv: "objective", phubai: "camp" },
   depots: { phubai: ["United States and ARVN"], lachu: ["North Vietnamese"] },   // where each side resupplies (project doc "depots-research")
+  tongues: { giahoi: ["vietnamese", "chinese"] },   // the people's own tongues where they differ from the map's (project doc "tongues-research")
   forces: [
     { name: "ARVN 1st Division headquarters and the Black Panther company", type: "foot", side: "United States and ARVN", men: 400, tools: true, at: "mangca" },
     { name: "MACV advisers' compound", type: "foot", side: "United States and ARVN", men: 200, tools: true, at: "macv" },

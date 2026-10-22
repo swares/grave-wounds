@@ -178,16 +178,15 @@ def map_default(d: Data, mid: str) -> list[str]:
 
 
 def tongues_at(d: Data, mid: str, hex_) -> list[str]:
-    """The tongues of the people at a hex of a travel map, main first: those of the nearest place
-    within `place_km` that names its own (`tongues`; the first listed of two as near), else the
-    map's. A man getting by in any of them gets by there."""
+    """The tongues of the people at a hex of a travel map, main first: the nearest place within
+    `place_km` (the first listed of two as near) decides, with its own `tongues` if it names them,
+    else the map's, as is everywhere further from a place. A man getting by in any of them gets by
+    there."""
     m = d.maps.get(mid) or {}
     reach = (_cfg(d).get("place_km") or 0) / (m.get("hex_km") or 1)
     best, near = None, None
     for p in m.get("places") or []:
-        if not p.get("tongues"):
-            continue
         dist = hex_distance(p["hex"], hex_)
         if dist <= reach and (near is None or dist < near):
             best, near = p, dist
-    return list(best["tongues"]) if best else map_default(d, mid)
+    return list(best["tongues"]) if best and best.get("tongues") else map_default(d, mid)

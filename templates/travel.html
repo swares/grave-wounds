@@ -1013,8 +1013,8 @@ function groundText(g){
 const wxLine = d => { const w = d.w, c = WXD.conditions[w.cond], wn = WXD.winds.find(x => x.id === w.wind), from = w.dir && w.wind !== "calm" ? ` from the ${WIND_NAMES[w.dir]}` : ""; return `${c.name}, ${wn.name.toLowerCase()}${from}, ${tempOut(w.low)}\u2013${tempOut(w.high)} ${tempUnit()}` };
 // The night: rest by camp and weather, fatigue for the day, and the next morning.
 /* Languages (ranks.js: lgValue, lgTonguesAt; data DATA.languages.maps and the places' tongues):
-   the people where a force stands speak a tongue, or several in mixed country (the nearest place
-   within place_km that names its own, else the map's); foraging where no named man in the force
+   the people where a force stands speak a tongue, or several in mixed country (those the nearest
+   place within place_km names, else the map's); foraging where no named man in the force
    gets by in any of them is Hard, and a man who spends `among_days` nights among them has their
    main tongue ticked. */
 const localTongues = f => lgTonguesAt(baseMap(), S.mapId, f.pos);
