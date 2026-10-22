@@ -53,7 +53,7 @@ const frontPairs = line(...frontDitch).map(h => [[h[0], h[1] - 1], h]);
 const pits = [];                              // the pit field on the vanguard's right (west), about 1 ha
 for (let r = FRONT_PT + 1; r <= FRONT_PT + 13; r++) for (let c = 27; c <= 38; c++) if ((r + c) % 2 === 0 || r % 3 === 0) pits.push([c, r]);
 const wagons = [];                            // the baggage, behind the rearguard
-for (let c = 42; c <= 58; c += 2) { wagons.push([c, 8]); wagons.push([c, 16]) }
+for (let c = 42; c <= 58; c += 2) wagons.push([c, 8], [c, 16]);
 
 // ---------- the armies (pos is the middle of the front row) ----------
 const PT = { side: 0, facing: S }, CA = { side: 1, facing: N };
