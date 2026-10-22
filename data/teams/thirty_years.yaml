@@ -64,13 +64,26 @@ regions:
     colours: ["#2f4f8a", "#c9a227", "#6b5d45", "#4f5d3a"]
     names: [Anders, Erik, Johan, Lars, Per, Olof, Mats, Nils, Hans, Jakob, Alexander, Robert, James, Andrew, Matthias, Christoph]
     bynames: [Andersson, Eriksson, Larsson, Persson, "the Finn", Munro, Mackay, Hamilton, Lindqvist, "of Uppsala", "from Pomerania", "of Stralsund"]
+    women:
+      share: null
+      careers: [camp_woman, sutler]
+      shares: {camp_woman: 100}
+      names: [Anna, Karin, Brita, Kerstin, Margareta, Elin, Ingrid, Maria, Kristina, Elisabet]
+      closed: "Women went with the army in its baggage train, not in its fighting careers."
+      source: "Tross (Wikipedia): a regiment of 1,000 might bring 500 women and 300 children; they washed, sewed, nursed, cooked and sold drink, and some ran sutling businesses (Camp follower; Historic UK). No count of women sutlers."
   - id: imperial
     name: "The Imperial army and the Catholic League"
     table: thirty-years-war-all-hits
     colours: ["#e6e0d2", "#8a2b2b", "#4a5a3a", "#7a6a4f"]
     names: [Johann, Georg, Michael, Wolfgang, Kaspar, Balthasar, Franz, Matthias, Lorenz, Sebastian, Ferdinand, Andreas, Jan, Václav, Antonio, Paul]
     bynames: [Huber, Bauer, Wagner, Schmid, Fischer, Weber, "the Walloon", "of Bohemia", "from Bavaria", "the Croat", "of Vienna", "from Tyrol"]
-
+    women:
+      share: null
+      careers: [camp_woman, sutler]
+      shares: {camp_woman: 100}
+      names: [Anna, Maria, Barbara, Margaretha, Katharina, Elisabeth, Ursula, Magdalena, Dorothea, Sophia]
+      closed: "Women went with the army in its baggage train, not in its fighting careers."
+      source: "Tross (Wikipedia): a regiment of 1,000 might bring 500 women and 300 children; they washed, sewed, nursed, cooked and sold drink, and some ran sutling businesses (Camp follower; Historic UK). No count of women sutlers."
 origins:
   - {name: "Peasant's son from a burned village", gain: fieldcraft, trait: {text: "Hard to starve", end: 10}, drawback: {text: "Cannot read a word", letters: -15}}
   - {name: "Weaver's apprentice", gain: craft, trait: {text: "Nimble fingers", agi: 10}, drawback: {text: "Never slept rough", fieldcraft: -15}}
@@ -241,6 +254,22 @@ careers:
       - {to: 70, skill: watch, text: "Saw a town sacked and could not stop it."}
       - {to: 85, skill: command, text: "Kept a rout from turning into a massacre."}
       - {to: 100, skill: ride, text: "Carried dispatches between two armies."}
+  - id: camp_woman
+    name: "Woman of the baggage train (Tross)"
+    main: craft
+    second: fieldcraft
+    prefers: [end, pres, wits, nerve, agi, str]
+    wound: 10
+    wound_weapon: matchlock_musket
+    kit: {default: none}
+    weapon: {default: dagger}
+    terms:
+      - {to: 20, skill: craft, text: "Washed, sewed and mended for the company in winter quarters."}
+      - {to: 40, skill: persuade, text: "Sold beer and brandy from the company's wagon."}
+      - {to: 55, skill: leechcraft, text: "Nursed the sick through a camp fever."}
+      - {to: 70, skill: fieldcraft, text: "Foraged the country bare on the march."}
+      - {to: 85, skill: stealth, text: "Stripped the dead after a battle before the provost came."}
+      - {to: 100, skill: dodge, text: "Fled with the Tross when the enemy's horse fell on it.", wound: true}
 
 old_wound:
   - {to: 70, kind: mark, text: "a healed scar"}

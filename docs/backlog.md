@@ -205,11 +205,13 @@ When an item is done, delete it here and note it in the pull request that closes
     inventory of goods is kept).
 - **Patrons, first cut.** Standing per patron, favours, events, rival claims, the patron's fate
   and his clients' lot. Still left out: the fate chances and the Standing moves are design
-  estimates; British commission prices (the 1837 regulation table, £450 an ensigncy to £4,500 a
-  lieutenant-colonelcy) and private-income needs are in the research but not priced into the
-  commission favour, which is a +20 and the GM's word; patrons are not yet named people with their
-  own rank, side and purse, nor do they appear on the field map or the roller; thirds (the captain's
-  third of his men's winnings) are not taken from loot automatically; no drift without events
+  estimates; British commissions can now be bought and sold at the 1837 regulation prices (ranks.yaml
+  `purchase`), but only the ensign's and captain's prices are in the data (the lieutenant's,
+  major's and lieutenant-colonel's are not yet), the over-regulation price is the GM's to ask, and
+  private-income needs are not priced; the commission favour is still a +20 and the GM's word;
+  patrons are not yet named people with their own rank, side and purse, nor do they appear on the
+  field map or the roller; the medieval third of loot now goes to a patron who takes thirds as a
+  gift, but only to the first such patron, and the ransom of a prisoner of rank is not split; no drift without events
   (Pendragon's winter check); and Visby, the Napoleonic marshals, Korea, Vietnam, the Falklands and
   Chechnya had no patronage sources.
 - **Tongues, first cut.** Own tongue, others by army, bands, related tongues, talk caps, words
@@ -217,9 +219,10 @@ When an item is done, delete it here and note it in the pull request that closes
   among speakers. Still left out: the shares of who spoke what are estimates throughout (no muster
   counts by tongue were found); the Thirty Years' War's camp German is inferred, not sourced, and
   the King's German Legion's language of command, Crimean interpreters, Peninsula Spanish among the
-  British rank and file and interpreters' pay before 1990 were not found; interpreters are not hired
-  men with their own figure, reliability and pay (the research has Iraqi rates from $600 a month in
-  2005); dialects (Dari against Waziri, Flemish against French) are not told apart; the field map's
+  British rank and file and interpreters' pay before 1990 were not found; a team hires one
+  interpreter at a time, for a season, at an estimated wage before 1990 (Iraqi rates from $600 a
+  month in 2005 set the modern one), with no Python mirror of the hire, and the field map and travel
+  map do not use him; dialects (Dari against Waziri, Flemish against French) are not told apart; the field map's
   orders do not yet check a shared tongue between a leader and a mixed unit; and reading a foreign
   hand is left to Letters and the GM.
 - **Period money, first cut.** Every page shows money in the man's army's coin first, then Days;
@@ -236,9 +239,12 @@ When an item is done, delete it here and note it in the pull request that closes
   falls and chases in the roller; fords on the travel map. Still left out: no era has a sound
   count of who could swim (the shares are estimates); drowning counts for the Rapido, Omaha, the
   Ebro and the Berezina, fording limits from the modern field manuals, swimming in armour, ladder
-  climbing under fire and cavalry fall rates were not found; the travel map's fords have one depth
-  (ordinary, or flooded), with no current or temperature of their own, and horses are not swept
-  away; a fall's death is a critical head wound for the GM to rule on; and the pursuit on the
+  climbing under fire and cavalry fall rates were not found; each travel-map ford now has its own depth and
+  current (fixed by its place within its water's span, which are estimates, as are the horses'
+  drowning chances; the Kabul River's 46 men and 13 horses is the one anchor), and its water is as
+  cold as the week's air (no river temperatures were found); guns and wagons are not yet stopped by
+  a ford deeper than 2 ft 4 in, a map cannot set a ford's own depth, and only a mounted force's
+  horses can drown; a fall's death is a critical head wound for the GM to rule on; and the pursuit on the
   field map (units.yaml aftermath.pursuit) takes its killed and prisoners from the units' men,
   but its shares are the research's ranges, not counts, the Python self-play does not apply it,
   and no named man runs his own chase from it.
@@ -247,9 +253,11 @@ When an item is done, delete it here and note it in the pull request that closes
   bands are calibrations, not figures (the death hazards are worked from the sourced totals); the
   1743, 1759 and 1780 cartels' tariffs were not found, nor Napoleonic parole-breakers' numbers,
   WWI deaths in Russian hands or the Plains nations' adoption of captives (deliberately left
-  unnumbered); exchange values are shown but not traded (a release roll stands for them); the
-  team cannot take and hold prisoners of its own beyond the loot's ransom; and a man's captivity
-  does not touch the travel map.
+  unnumbered); the cartels' exchange values are shown but not traded between armies (a release roll stands for
+  them); the team now keeps captives of its own (keep, escape, ransom, exchange one for one, parole,
+  release and questioning), but taking one is the GM's word (the field map's pursuit prisoners are
+  not handed to the team), the escape and keep figures are estimates, and the questioning results
+  are design choices; and a man's captivity does not touch the travel map.
 - **Strain, first cut.** Strain and Toll, Nerve checks, results by era name, treatment, rotation
   and homecoming, lasting-effect notes. Still left out: the calibration rests on Appel and Glass
   and Jones (Appel and Beebe 1946 and Swank and Marchand 1946 were not read in the original); no
@@ -261,20 +269,27 @@ When an item is done, delete it here and note it in the pull request that closes
   to the roller; treatment takes no time on the travel map; and the Plains nations' homecoming is
   deliberately abstract.
 - **Loads, first cut.** Load orders by era, bands by body weight and Strength, march pace and
-  fatigue, blisters, Dodge and the run, dropped and lost packs. Still left out: no item has a
-  weight, so what a man buys adds to his load only as the extra kg the GM writes on his sheet;
-  a force's load is its average man's, with no armour for its rank and file; the band steps,
+  fatigue, blisters, Dodge and the run, dropped and lost packs. What a man buys now weighs
+  (data/weights.yaml: sourced weights where found, the rest by name pattern and category
+  estimates), and so does his coin; pack animals and carts bought from the price list carry kit off
+  him, wheels slow the force off the road and in mud, and fodder or fuel is paid nightly where the
+  army does not feed it. Still left out: kit he started with weighs only as his era's orders, not
+  item by item; carts, wagons, donkeys and camels are in the data but only the Civil War's mule and
+  ox teams are on a price list (no sourced prices for the rest), and the wagon itself is not priced;
+  an animal that goes short of fodder is only logged; a force's load is its average man's, with no armour for its rank and file; the band steps,
   blister rule and the hardening of feet are design choices; the Plains nations' loads and most
-  medieval and 17th-century body weights are estimates; pack animals and carts that take the load
-  off the men are not modelled; the field map's units do not carry loads; and the terrain's extra
+  medieval and 17th-century body weights are estimates; the field map's units do not carry loads; and the terrain's extra
   cost to a loaded man (Pandolf's terrain factors) is left to the map's existing going.
 - **Ageing, first cut.** Decline, maturity, Wear and the Worn Out check. Still left out: the
   decline dice are design choices scaled to the physiology (no game-scale figures exist); the best
   sources for British invaliding by age (Tulloch's tables, 1838-53; Nielsen's Chelsea
   applicants) and for breakdown by age in WWII (Stouffer vol. II; Beebe and Appel) were not read;
-  enlistment age limits by era, and older recruits wearing out faster (Civil War men enlisting at
-  about 39 had 1.8 then 2.4 times the odds of dying of disease), are not applied; Presence does
-  not rise with promotion; followers and men without a sheet do not age; age does not count in a
+  enlistment ages by army now bound a new man's age, with boys under age and older recruits
+  (found out at 10% a season: an estimate, as are the shares but the Union's tenth under 18 and
+  Britain's WWI boys), and older recruits take twice the Wear (the Civil War's disease odds, not
+  a measure of wear itself); the Thirty Years' War's limits are borrowed, the Plains nations have
+  none, and the Python self-play does not send a boy home; Presence rises with promotion by a
+  design estimate (no source); followers and men without a sheet do not age; age does not count in a
   fight beyond the characteristics it has changed.
 - **Experience, first cut.** Skills used well are ticked (job checks, hits, parries and
   dodges, first aid, foraging, nursing, Stealth and Watch at a surprise) and roll to rise at
@@ -284,16 +299,22 @@ When an item is done, delete it here and note it in the pull request that closes
   - characteristics never change in play, and age brings no decline;
 - **Training, first cut.** Masters for hire, teammates and drill in camp tick a skill. Still left
   out: the masters' fees are estimates apart from riding lessons (London, 1879), and a master's
-  skill is always 60; a teammate who teaches is not stopped from working that week (the page says
-  he gives it up, but does not hold him to it); drill ticks only the skill of the weapon a man
+  skill is always 60; drill ticks only the skill of the weapon a man
   carries in the roller, and only for named men; courses (data/training.yaml `courses`) are a
   set of examples with estimated gains and fees, the man is not missing from the team while away,
   and an apprenticeship is a year of its seven.
-- **Women under arms, first cut.** Women serve as cantinières with the French in the Crimea, in the Civil War (disguised), the Soviet
-  Union of 1941-45, Vietnam (the ARVN, the North and the Viet Cong) and the later wars (the US,
-  Britain and Russia), chosen or rolled at the army's share. Still left out: the earlier eras
-  (women in medieval sieges, the Revolution's and 1812's few, the Napoleonic cantinières, Russia's women's battalions of
-  1917 and Flora Sandes in Serbia), careers outside the fighting units (nurses, auxiliaries,
-  anti-aircraft gunners, pilots, the Female Engagement Teams of Afghanistan), the Plains
-  nations' women who fought, and shares by career rather than by army. The Viet Cong's and the
-  North's women have no reliable share, so they are chosen, never rolled.
+- **Women under arms, first cut.** Women serve as cantinières with the French in the Crimea, in the
+  Civil War (disguised in the ranks, openly as nurses and vivandières), the Soviet Union of
+  1941-45, Vietnam (the ARVN, the North and the Viet Cong) and the later wars (the US, Britain and
+  Russia); and now in the earlier eras and other roles: townswomen at medieval sieges, the Thirty
+  Years' War's camp women, French vivandières, British soldiers' wives and the Continental Army's
+  women (Margaret Corbin at the guns, Deborah Sampson in the line), nurses (Crimea, Civil War, both
+  world wars, Korea, Vietnam), auxiliaries (WAAC and QMAAC, ATS and WAC), the Female Engagement
+  Teams, and the Lakota and Cheyenne women who fought. A career may have its own share. Still left
+  out: no Russian or Serbian army in the WWI tables, so the women's battalions of 1917 and Flora
+  Sandes have nowhere to serve; no women nurses for the Confederacy or Russia at Sevastopol (not
+  in the research); the career shares of 100% are design choices (men nursed and sutled too); the
+  women's own careers draw the soldier's wage where their pay was not found (a vivandière, a camp
+  woman and a soldier's wife draw none); their term events are written from the research, not
+  rolled from records; and the Viet Cong's and the North's women have no reliable share, so they
+  are chosen, never rolled.

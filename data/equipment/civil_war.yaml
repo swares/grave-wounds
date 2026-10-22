@@ -50,6 +50,8 @@ items:
   - {id: stage_sf, name: "Stagecoach, Tipton to San Francisco", cat: travel, price: 20000, source: {url: "https://truewestmagazine.com/?p=37229", note: "True West"}}
   - {id: cavalry_horse, name: "Cavalry horse", cat: horse, price: [11900, 19000], when: "1861-65", source: {url: *cwm, note: "Civil War Monitor"}}
   - {id: mule, name: "Mule", cat: horse, price: [10000, 15000], approx: true}
+  - {id: mule_team, name: "Six-mule wagon team", cat: horse, price: 60000, when: "1859", source: {url: "https://gutenberg.org/files/23066/23066-h/23066-h.htm", note: "Marcy, The Prairie Traveler: the team; the wagon itself not priced"}}
+  - {id: ox_team, name: "Team of eight oxen, for a wagon", cat: horse, price: 20000, when: "1859", source: {url: "https://gutenberg.org/files/23066/23066-h/23066-h.htm", note: "Marcy, The Prairie Traveler: about $25 an ox; the wagon itself not priced"}}
   - {id: stage_mile, name: "Stagecoach, per mile", cat: travel, price: [10, 15], source: {url: "https://truewestmagazine.com/?p=37229", note: "True West"}}
   # Sutler's goods
   - {id: writing_paper, name: "Writing paper, 20-25 sheets, sutler", cat: gear, price: 500, when: "1864", source: {url: *ecwc, note: "ECWC"}}

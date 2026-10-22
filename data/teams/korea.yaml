@@ -73,7 +73,13 @@ regions:
     colours: ["#5b5a3a", "#6b5f3a", "#7a6a42", "#e6e0d2"]
     names: [Robert, James, John, William, Richard, Charles, Donald, George, Joseph, Edward, Thomas, Ronald, Kenneth, Billy, Carl, Jerry]
     bynames: [Smith, Johnson, Williams, Brown, Jones, Miller, Davis, Garcia, Wilson, Anderson, Washington, Kowalski]
-    no_women: "American servicewomen in Korea were nurses, not in fighting units."
+    women:
+      share: null
+      careers: [nurse]
+      shares: {nurse: 100}
+      names: [Mary, Barbara, Patricia, Shirley, Joan, Dorothy, Betty, Jean, Nancy, Margaret]
+      closed: "American servicewomen in Korea were nurses, not in the fighting careers."
+      source: "National Archives, Army nurses in Korea: 540 served; no woman nurse died by hostile action."
   - id: us_1952
     name: "US Army on the outpost line, 1952-53"
     short: "US 1952-53"
@@ -81,7 +87,13 @@ regions:
     colours: ["#5b5a3a", "#4f5a3a", "#6b6a4a", "#e6e0d2"]
     names: [Robert, James, John, William, Richard, Charles, Donald, Gerald, Joseph, Edward, Thomas, Ronald, Kenneth, Larry, Carl, Jerry]
     bynames: [Smith, Johnson, Williams, Brown, Jones, Miller, Davis, Hernandez, Wilson, Anderson, Jackson, Sullivan]
-    no_women: "American servicewomen in Korea were nurses, not in fighting units."
+    women:
+      share: null
+      careers: [nurse]
+      shares: {nurse: 100}
+      names: [Mary, Barbara, Patricia, Shirley, Joan, Dorothy, Betty, Jean, Nancy, Margaret]
+      closed: "American servicewomen in Korea were nurses, not in the fighting careers."
+      source: "National Archives, Army nurses in Korea: 540 served; no woman nurse died by hostile action."
   - id: commonwealth
     name: "The Commonwealth (Britain, Australia, Canada)"
     short: "Commonwealth"
@@ -314,6 +326,22 @@ careers:
       - {to: 70, skill: watch, text: "Watched for anti-tank teams from the turret."}
       - {to: 85, skill: dodge, text: "Bailed out of a burning tank.", wound: true}
       - {to: 100, skill: gunnery, text: "Fired the main gun for an attack on a hill."}
+  - id: nurse
+    name: "Army nurse"
+    main: leechcraft
+    second: letters
+    prefers: [wits, end, nerve, pres, agi, str]
+    wound: 2
+    wound_weapon: explosive_fragment
+    kit: {default: none}
+    weapon: {default: punch}
+    terms:
+      - {to: 20, skill: craft, text: "Set up a MASH in a school house."}
+      - {to: 40, skill: letters, text: "Kept a ward's charts through a winter."}
+      - {to: 55, skill: leechcraft, text: "Nursed frostbite cases from the reservoir."}
+      - {to: 70, skill: watch, text: "Did night duty in a post-operative ward."}
+      - {to: 85, skill: persuade, text: "Kept a ward going when the generator failed."}
+      - {to: 100, skill: dodge, text: "Moved with the hospital when the front broke.", wound: true}
 
 old_wound:
   - {to: 70, kind: mark, text: "a healed scar"}

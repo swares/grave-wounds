@@ -84,6 +84,17 @@ def eligible(d: Data, eid: str, c: dict, idx: int) -> tuple[bool, str | None]:
     return True, None
 
 
+def _presence(rk: dict, c: dict) -> None:
+    """A promotion's Presence (ranks.yaml presence), into his characteristics' changes, up to the cap."""
+    P = rk.get("presence")
+    if not P or "stat_mods" not in c:
+        return
+    gain = min(P["per_rank"], P["cap"] - c.get("pres_rank", 0))
+    if gain > 0:
+        c["stat_mods"]["pres"] = c["stat_mods"].get("pres", 0) + gain
+        c["pres_rank"] = c.get("pres_rank", 0) + gain
+
+
 def promote(d: Data, eid: str, team: list[dict], vacancies: dict, rng) -> list[dict]:
     """End of season's promotions (team and vacancies changed in place): from the top rank down,
     each vacancy is offered to the eligible men below, most senior first (rank_days, then their
@@ -112,6 +123,7 @@ def promote(d: Data, eid: str, team: list[dict], vacancies: dict, rng) -> list[d
             old = rank_index(d, eid, won.get("rank"))      # the rank he leaves (one below, or lower for a course's)
             won["rank"], won["rank_days"], won["deed"], won["patron_help"] = r["id"], 0, False, False
             won.pop("course_rank", None)
+            _presence(R, won)
             vacancies[r["id"]] -= 1
             if old > 0:
                 vacancies[L[old]["id"]] = vacancies.get(L[old]["id"], 0) + 1
@@ -162,6 +174,35 @@ def loot(d: Data, eid: str, kind: str, c: dict, rng) -> dict:
             return out
     out["days"] = _q(v * L.get("keep", 1))
     return out
+
+
+def purchase_price(d: Data, eid: str, region: str, c: dict, rid: str) -> int | None:
+    """What buying rank rid costs him (the coin's smallest unit): its regulation price, less the
+    one he holds (c["bought"]); None where commissions were not bought, or rid has no price."""
+    P = (d.ranks or {}).get("purchase") or {}
+    if eid not in P.get("eras", []) or region not in P.get("regions", []) or rid not in P.get("prices", {}):
+        return None
+    held = P["prices"].get(c.get("bought"), 0) if c.get("bought") else 0
+    return max(0, P["prices"][rid] - held)
+
+
+def can_buy(d: Data, eid: str, region: str, c: dict, vacancies: dict) -> tuple[str | None, str | None]:
+    """(the rank he may buy, None) or (None, why not): the next rank with a price, vacant, and his
+    eligibility but for the years (an ensigncy needs no rank below: a gentleman bought in)."""
+    L = ladder(d, eid)
+    i = rank_index(d, eid, c.get("rank"))
+    for idx in range(i + 1, len(L)):
+        rid = L[idx]["id"]
+        if purchase_price(d, eid, region, c, rid) is None:
+            continue
+        if vacancies.get(rid, 0) <= 0:
+            return None, f"no vacancy for {L[idx]['name'].lower()}"
+        ok, why = eligible(d, eid, c, idx)
+        first = idx == min(k for k, r in enumerate(L) if r["id"] in d.ranks["purchase"]["prices"])
+        if ok or why == "too soon" or (first and why == "not the rank below"):
+            return rid, None
+        return None, why
+    return None, "nothing to buy"
 
 
 def standing(d: Data, honours: int) -> str:

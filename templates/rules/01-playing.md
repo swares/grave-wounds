@@ -134,17 +134,38 @@ so does a week with a language master, a teammate who speaks it well, or (from 1
 course. The army's courses took three months for the better students to order a meal or rent a
 room; the Foreign Legion's recruits answered in French within ten days.
 
+**Interpreters.** The team may hire an interpreter for a season: a man of the other army who speaks
+the team's tongue and his own at {{int_lo}} to {{int_hi}} (rolled). He costs {{int_wage}} Day a day
+({{int_wage_modern}} for the modern wars, where Iraqi interpreters began at $600 a month in 2005). A
+man who talks through him uses the interpreter's figure in that tongue, not his own. Of those
+hired {{int_unrel}}% are unreliable (a whistleblower said 28% of one firm's Afghan hires failed the
+language standard): his roll of {{int_err}} or more is a dangerous error. Each End of season he may
+be killed ({{int_hazard}}%, {{int_hazard_modern}}% in the modern wars: in Iraq some fifteen times a US
+soldier's rate), and his season is up.
+
 Who speaks what, by army (the shares are estimates, not muster counts):
 
 {{table:tongue_armies}}
 
 ## Age {#age}
 
+**Enlisting.** A man enlists at his era's starting age, raised to his army's legal least (15 to
+60 under the Statute of Winchester; 17 to 25 for Victorian recruits; 18 to 37 in the American
+draft of 1942). Then d100: a few are **boys under age** (about a tenth of the Union army was under
+18), enlisted at up to {{en_under}} years below the least, and a few **older recruits**, from
+{{en_older}} up to {{en_over}} years past the most (over it, he lied). A man under or over age is
+found out at {{en_found}}% each End of season and sent home, until he is of age (a boy) or has
+served out his first term (an older man). Most characters are made after their terms, so a boy's
+lie matters only in the eras of one-year terms. A recruit who enlisted at {{en_older}} or more
+takes {{en_wear}} times the Wear for his service: Union men enlisting at about 39 had 1.8 times the
+odds of dying of disease of men of 20 in their first year, and 2.4 after.
+
 A man ages with his terms. For every 4 years of his life past the start of his service (at the
 making of a character, the years of his terms; in play, each term served) he rolls his age band's
 decline, taken from his characteristics as a lasting hurt is (his skills that rest on them fall
 with them), and, from 20, gains a step of maturity: +1 Presence and +1 Nerve until 40, +1 Wits
-until 45 (at most +5 each). Endurance goes first, then Agility, then Strength; Wits slows from
+until 45 (at most +5 each). Each promotion adds +{{pres_rank}} Presence, to +{{pres_cap}} in all (a
+design estimate: a man who leads grows into it). Endurance goes first, then Agility, then Strength; Wits slows from
 50:
 
 {{table:ageing}}

@@ -57,6 +57,11 @@ function rkEligible(c, idx){                       // [ok, why not]
   if (r.letters && (c.skills.letters || 0) < (R.literate ?? 20)) return [false, "cannot read and write"];
   return [true, null];
 }
+function rkPresence(R, c){                         // a promotion's Presence, into his characteristics' changes, up to the cap (ranks.py _presence)
+  const P = R.presence; if (!P || !c.stat_mods) return;
+  const gain = Math.min(P.per_rank, P.cap - (c.pres_rank || 0));
+  if (gain > 0){ c.stat_mods.pres = (c.stat_mods.pres || 0) + gain; c.pres_rank = (c.pres_rank || 0) + gain }
+}
 function rkPromote(team, vacancies, rng){          // every roll made: [{name, to, roll, target, success}]
   const L = rkLadder(), R = RK(), out = [];
   for (let idx = L.length - 1; idx > 0; idx--){
@@ -75,12 +80,31 @@ function rkPromote(team, vacancies, rng){          // every roll made: [{name, t
       if (!won) break;
       const old = rkIndex(won.rank);                  // the rank he leaves (one below, or lower for a course's)
       won.rank = r.id; won.rank_days = 0; won.deed = false; won.patron_help = false; delete won.course_rank;
+      rkPresence(R, won);
       vacancies[r.id] -= 1;
       if (old > 0) vacancies[L[old].id] = (vacancies[L[old].id] || 0) + 1;
     }
   }
   for (const c of team) c.deed = false;
   return out;
+}
+function rkPurchase(region, c, rid){                // what buying rank rid costs (the coin's smallest unit), less the commission he holds; null where not bought
+  const P = RK().purchase || {};
+  if (!(P.eras || []).includes(TD.era.id) || !(P.regions || []).includes(region) || !(rid in (P.prices || {}))) return null;
+  const held = c.bought ? P.prices[c.bought] || 0 : 0;
+  return Math.max(0, P.prices[rid] - held);
+}
+function rkCanBuy(region, c, vacancies){            // [rank he may buy, null] or [null, why not]
+  const L = rkLadder(), i = rkIndex(c.rank), P = RK().purchase || {};
+  for (let idx = i + 1; idx < L.length; idx++){
+    const rid = L[idx].id;
+    if (rkPurchase(region, c, rid) === null) continue;
+    if ((vacancies[rid] || 0) <= 0) return [null, `no vacancy for ${L[idx].name.toLowerCase()}`];
+    const [ok, why] = rkEligible(c, idx), first = idx === L.findIndex(r => r.id in P.prices);
+    if (ok || why === "too soon" || (first && why === "not the rank below")) return [rid, null];
+    return [null, why];
+  }
+  return [null, "nothing to buy"];
 }
 function rkLoot(kind, c, rng){                      // {kind, roll, what, found, risk, opposed, caught, punished, days, horses, why}
   const R = RK(), L = (R.loot || {})[TD.era.id] || {};
@@ -148,6 +172,24 @@ function trDrill(camped, bestCommand, roll){       // null if it did not camp en
    era's orders leave it out) against his body weight and Strength gives a band. */
 const LDS = () => TD.loads || {};
 const ldEra = eid => LDS().eras?.[eid] || {};
+const WTS = () => TD.weights || {};
+function ldItemKg(row){                             // what a bought row weighs (0: eaten, a lodging, a fare, a service, an animal)
+  const W = WTS();
+  if ((W.not_carried || []).includes(row.cat)) return 0;
+  if ("kg" in row) return row.kg;
+  const p = (W.patterns || []).find(x => new RegExp(x.match, "i").test(row.name));
+  return p ? p.kg : W.categories?.[row.cat] ?? 0.5;
+}
+function ldAnimal(row){                             // the pack animal or vehicle a horse or travel row buys, or null
+  if (row.cat !== "horse" && row.cat !== "travel") return null;
+  return (WTS().animals || []).find(a => new RegExp(a.match, "i").test(row.name))?.id || null;
+}
+const ldCoinKg = (eid, days) => Math.max(0, days) * (WTS().coin_kg_day?.[eid] ?? 0);
+const ldCarryKg = animals => (animals || []).reduce((t, a) => t + ((WTS().animals || []).find(x => x.id === a)?.load || 0), 0);
+function ldCarried(eid, order, kitClass, extra = 0, carry = 0){   // his load less what his animals carry, never below his fighting order and armour
+  const total = ldLoadKg(eid, order, kitClass, extra);
+  return carry ? Math.max(ldLoadKg(eid, "fighting", kitClass, 0), total - carry) : total;
+}
 function ldLoadKg(eid, order, kitClass, extra = 0){ // his load in kg
   const E = ldEra(eid);
   let kg = (E.kg?.[order] || 0) + extra;
@@ -311,7 +353,20 @@ function hzSwimStep(step, target, roll){             // {check, step}
   return { check: k, step: next };
 }
 const hzColdShock = (nerve, cold, roll) => skillCheck(nerve + HZ().cold[cold].shock, "ordinary", roll);
-function hzFordRisk(water, band){ const F = HZ().fords[water]; return band >= F.from_band ? F.difficulty : null }
+function hzFordWater(water, fd, fc){               // a ford's {depth, current, band} at fractions of its water's span (hazards.py ford_water)
+  const F = HZ().fords, W = F.water[water], r1 = x => Math.floor(x * 10 + 0.5) / 10;
+  const depth = r1(W.depth[0] + fd * (W.depth[1] - W.depth[0])), current = r1(W.current[0] + fc * (W.current[1] - W.current[0]));
+  return { depth, current, band: F.currents.find(b => current <= b.upto) };
+}
+function hzFordRisk(depth, bandId, loadBand, mounted){   // the difficulty he crosses at, or null: deeper than he wades, anyone; else a heavy load
+  const F = HZ().fords, b = F.currents.find(x => x.id === bandId), deep = depth > F.wade[mounted ? "mounted" : "foot"];
+  return deep || loadBand >= F.from_band ? b.difficulty : null;
+}
+const hzHorseLost = (bandId, roll) => roll <= HZ().fords.currents.find(x => x.id === bandId).horse;
+function hzWaterCold(high, low, flooded){          // the row of cold for the week's water
+  const mean = (high + low) / 2, at = HZ().fords.cold_at, i = at.findIndex(t => mean > t);
+  return Math.min(at.length, (i < 0 ? at.length : i) + (flooded ? 1 : 0));
+}
 function hzClimbTarget(agi, fieldcraft, surface, band, armour){
   const C = HZ().climb;
   return agi + Math.floor(fieldcraft / 2) + C.surfaces[surface].mod + C.load[band] + (C.armour[armour] || 0);

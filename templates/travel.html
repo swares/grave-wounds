@@ -254,7 +254,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
 <script>
 const DATA = /*__TRAVEL_DATA__*/null;
 Object.assign(COINS, DATA.coins || {});           // period money (purse.js)
-const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, stress: DATA.stress, hazards: DATA.hazards, languages: DATA.languages, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
+const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, weights: DATA.weights, stress: DATA.stress, hazards: DATA.hazards, languages: DATA.languages, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
 const $ = s => document.querySelector(s);
 const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
 const BYKEY = Object.fromEntries(Object.values(TT).map(t => [t.key, t]));
@@ -965,7 +965,7 @@ function blisters(f){                           // each named man who marched: h
     if (!ableNow(n)) continue;
     n.marchDays = (n.marchDays || 0) + 1;                // feet harden with days on the march
     if (((n.health || {}).cases || []).some(c => c.feet && c.step >= DZ.steps.indexOf("mending"))) continue;   // still sore
-    const kg = ldLoadKg(e, loadOrder(f), n.kitLoad || "light", n.loadExtra || 0), band = ldBand(kg, ldBody(e, n.sex || "m"), n.str ?? 50);
+    const kg = ldCarried(e, loadOrder(f), n.kitLoad || "light", n.loadExtra || 0, n.carry || 0), band = ldBand(kg, ldBody(e, n.sex || "m"), n.str ?? 50);
     if (roll100() > ldBlister(band, km, n.marchDays - 1)) continue;
     const step = DZ.steps.indexOf("mending"), [lo, hi] = DZ.wounds.fever_after;
     n.health = n.health || newHealth();
@@ -1043,6 +1043,21 @@ function huntNight(f){                         // Hunt for the pot: how many men
   const buffalo = (U.buffalo_maps || []).includes(S.mapId), fed = (buffalo ? U.buffalo : U.deer) * (k.critical ? 2 : 1);
   f.log.unshift(`${dateText(f.day, true)}: ${who} brings in ${k.critical ? "two " : "a "}${buffalo ? "buffalo" : "deer"} (Fieldcraft ${k.target}, rolled ${k.roll}): meat for ${fed} men.`);
   return fed;
+}
+// ----- pack animals and carts (weights.yaml): wheels slow the force off the road and in mud; fodder where they cannot graze -----
+const animalRow = a => (TD.weights?.animals || []).find(x => x.id === a);
+function wheelsToday(f, m, g){                 // the day's pace for wheels in the force: 1, or slower off the road and in mud
+  const W = TD.weights || {}, wheels = namedWith(readNamed(), f).some(([, n]) => (n.animals || []).some(a => animalRow(a)?.wheels));
+  if (!wheels || !f.path || f.index + 1 >= f.path.length) return 1;
+  const next = terrainAt(m, f.path[f.index + 1]).id, road = ["road", "bridge", "village", "town"].includes(next);
+  return (road ? 1 : 1 / (W.off_road || 1)) * (g.mud ? 1 / (W.mud || 1) : 1);
+}
+function fodderNight(f, n, p){                 // a night's fodder for his animals where they cannot graze: Days from his purse
+  const W = TD.weights || {}, grazes = (W.graze || []).includes(terrainAt(curMap(), f.pos).id);
+  const due = (n.animals || []).map(animalRow).filter(a => a && !(grazes && !a.fuel)).reduce((t, a) => t + (a.forage || 0), 0);
+  if (!due) return;
+  if (purseLeft(p) + 1e-9 < due){ n.log = [`${dateText(f.day, true)}: no money for fodder or fuel; his animals and machines go short.`, ...(n.log || [])].slice(0, 20); return }
+  p.ledger.push({ days: -due, what: `Fodder and fuel with ${f.name}` });
 }
 function wayToday(f, m){                       // the day's pace for finding the way: 1, or slower when the guide goes astray
   const U = USES().way;
@@ -1123,7 +1138,9 @@ function keepMan(f, n, p, k, ctx){                 // one named man's night's ke
   const pk = payKeep(purseLeft(p), 1, free ? 0 : k.food, ctx.bedHere ? k.bed : 0);
   if (pk.paid) keepLedger(p, f, pk.paid);
   keepWants(f, n, pk, ctx.noFreshBefore);
-  return !!pk.paid;
+  const before = p.ledger.length;
+  fodderNight(f, n, p);
+  return !!pk.paid || p.ledger.length > before;
 }
 function keepNight(f, camp, noFreshBefore, hunted = 0){   // each named man's food (none if the host or the hunt feeds him), and a bed in a village or town unless camped
   const all = readNamed(), mine = namedWith(all, f);
@@ -1222,33 +1239,45 @@ const namedWith = (all, f) => Object.entries(all).filter(([, n]) => n.map === S.
    bank: near-drowned, or drowned. */
 const hasWagons = f => forceTypes(colType(f)).includes("wagons");
 const riskGround = (f, g) => (f.riskFord && !hasWagons(f) && g && (g.flood || 0) > 0 ? { ...g, flood: 0 } : g);
-function sweptOff(f, n, water, band){            // he is in the water: minutes to the bank -> his fate
-  const H = DATA.hazards, F = H.fords[water];
-  let step = 0, worst = 0;
-  for (let m = 0; m < F.rounds && step < 4; m++){
-    const t = hzSwimTarget(n.end ?? 50, n.swim || "basic", band, n.kitLoad || "light", { current: F.current, minutes: m, cold: 2 });
+const fordFrac = (h, k) => { const x = Math.sin(h[0] * 12.9898 + h[1] * 78.233 + k * 37.719) * 43758.5453; return x - Math.floor(x) };   // fixed by the hex: its depth (k 0) and current (k 1)
+function sweptOff(f, n, ford, band){             // he is in the water: minutes to the bank -> his fate
+  const B = ford.water.band;
+  let step = hzColdShock(n.nerve ?? 50, ford.cold, roll100()).success ? 0 : 1, worst = step;   // cold shock, the first minute
+  for (let m = 0; m < B.rounds && step < 4; m++){
+    const t = hzSwimTarget(n.end ?? 50, n.swim || "basic", band, n.kitLoad || "light", { current: B.id, minutes: m, cold: ford.cold });
     step = hzSwimStep(step, t, roll100()).step; worst = Math.max(worst, step);
   }
   if (step >= 4) return "drowned";
   return worst >= 3 ? "near-drowned" : "struggled out";
 }
-function fordMan(f, n, water, e){               // one named man at the ford: a line if he is swept off
-  const band = e ? ldBand(ldLoadKg(e, loadOrder(f), n.kitLoad || "light", n.loadExtra || 0), ldBody(e, n.sex || "m"), n.str ?? 50) : 0;
-  const diff = hzFordRisk(water, band);
+function fordMan(f, n, ford, e){                // one named man at the ford: a line if he is swept off
+  const band = e ? ldBand(ldCarried(e, loadOrder(f), n.kitLoad || "light", n.loadExtra || 0, n.carry || 0), ldBody(e, n.sex || "m"), n.str ?? 50) : 0;
+  const mounted = f.type === "mounted", W = ford.water, diff = hzFordRisk(W.depth, W.band.id, band, mounted);
   if (!diff) return null;
-  const value = f.type === "mounted" ? (n.ride || n.agi || 50) : (n.agi ?? 50);
+  const value = mounted ? (n.ride || n.agi || 50) : (n.agi ?? 50);
   if (skillCheck(value, diff, roll100()).success) return null;
-  const fate = sweptOff(f, n, water, band);
+  const fate = sweptOff(f, n, ford, band);
   if (fate === "drowned"){ n.dead = true; markLost(n.pid, "killed") }
   else if (fate === "near-drowned" && n.pid && DATA.stress) xpStress(n.pid, "near_miss", n.nerve ?? 50, "nearly drowned at a ford");
-  return `${n.name} is swept off his feet in ${DATA.hazards.fords[water].name}: ${fate}`;
+  const horse = mounted && hzHorseLost(W.band.id, roll100()) ? ", and his horse is drowned" : "";
+  if (horse && (n.animals || []).includes("horse")){ n.animals.splice(n.animals.indexOf("horse"), 1); n.carry = Math.max(0, (n.carry || 0) - (animalRow("horse")?.load || 0)) }
+  return `${n.name} is swept off his feet: ${fate}${horse}`;
+}
+function fordAt(h, g, w){                         // this ford's water today, and how cold it is
+  const water = (g?.flood || 0) > 0 ? "flooded" : "normal";
+  return { water: hzFordWater(water, fordFrac(h, 0), fordFrac(h, 1)), name: DATA.hazards.fords.water[water].name, cold: hzWaterCold(w.high, w.low, water === "flooded") };
 }
 function fordsCrossed(f, from, to, g){
-  if (!DATA.hazards || !f.path.slice(from + 1, to + 1).some(h => terrainAt(curMap(), h).id === "ford")) return;
-  const water = (g?.flood || 0) > 0 ? "flooded" : "normal", e = loadEraOf(f), all = readNamed();
-  const lines = namedWith(all, f).filter(([, n]) => ableNow(n)).map(([, n]) => fordMan(f, n, water, e)).filter(Boolean);
+  if (!DATA.hazards) return;
+  const fords = f.path.slice(from + 1, to + 1).filter(h => terrainAt(curMap(), h).id === "ford");
+  if (!fords.length) return;
+  const e = loadEraOf(f), all = readNamed(), w = dayWeather(f.day).w;
+  for (const h of fords){
+    const ford = fordAt(h, g, w), W = ford.water, cn = DATA.hazards.cold[ford.cold].name, C = cn[0].toLowerCase() + cn.slice(1);
+    const lines = namedWith(all, f).filter(([, n]) => ableNow(n) && !n.dead).map(([, n]) => fordMan(f, n, ford, e)).filter(Boolean);
+    if (lines.length) f.log.unshift(`${dateText(f.day, true)}: ${ford.name}, ${W.depth} ft deep, the current ${W.current} m/s (${W.band.id}), the water ${C}: ${lines.join("; ")}.`);
+  }
   writeNamed(all);
-  if (lines.length) f.log.unshift(`${dateText(f.day, true)}: ${lines.join("; ")}.`);
 }
 function strainNight(f, n){                    // combat stress: a day in the line adds Strain; a day out of it, camped, is rest
   if (!DATA.stress || !n.pid) return;
@@ -1445,7 +1474,7 @@ function march(sel, hours){                    // the whole column marches toget
   if (!f.path || f.index >= f.path.length - 1) return { why: `${colName(f)} has no route to march.` };
   const m = curMap(), base = colSpeed(f);
   if (!base) return { why: noMarchText(f, col) };
-  const speed = base / wayToday(f, m), g = riskGround(f, groundOf(f.day));
+  const g = riskGround(f, groundOf(f.day)), speed = base / wayToday(f, m) / wheelsToday(f, m, g);
   if (f.path.slice(f.index + 1).some(h => !passable(m, h, colType(f), g)) && !replan(f))
     return { why: `${f.name} cannot get through today (${groundText(g)}). Wait, or add a waypoint to go round.` };
   const from = f.index, u0 = f.used;

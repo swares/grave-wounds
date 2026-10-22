@@ -26,6 +26,7 @@
 # a night his force's pay is in arrears it is owed instead. Paid at End of season.
 literate: 20        # Letters: reads and writes
 deed_bonus: 20
+presence: {per_rank: 2, cap: 6, approx: true}   # Presence a promotion adds, at most `cap` in all (a design estimate: no source found)
 days_a_year: 365
 
 eras:
@@ -52,7 +53,7 @@ eras:
       - {id: feldwebel, name: "Feldwebel", pay: 3, years: 3, diff: hard, approx: true}
       - {id: fahnrich, name: "Ensign", pay: 6, years: 4, diff: very_hard, approx: true}
     start: {sergeant: feldwebel}
-    career_pay: {cuirassier: 2, harquebusier: 2, dragoon: 1.5, surgeon: 2.67, chaplain: 4, sutler: 0}
+    career_pay: {cuirassier: 2, harquebusier: 2, dragoon: 1.5, surgeon: 2.67, chaplain: 4, sutler: 0, camp_woman: 0}
     source: "https://lwl.org/westfaelischer-friede-download/wfe-t/wfe-txt1-31.htm"
   horse_musket:
     note: "British pay 1802-15; officers at the French rates of 1803 (British officer pay not verified). French minimum service of 1811: 2 years for corporal, 4 for sergeant, 8 for sous-lieutenant. British sergeants had to read and write; 5-6% of Peninsula officers came from the ranks. Prize shares as at Waterloo."
@@ -66,7 +67,7 @@ eras:
       - {id: ensign, name: "Ensign", pay: 6.7, years: 4, diff: very_hard, letters: true, shares: 13.5}
       - {id: captain, name: "Captain", pay: 12.5, years: 6, diff: hard, letters: true, shares: 35, approx: true}
     start: {sergeant: sergeant, officer: ensign, surgeon: ensign}
-    career_pay: {sutler: 0}
+    career_pay: {sutler: 0, vivandiere: 0, soldiers_wife: 0}
     source: "https://rapc-association.org.uk/pay-services-history/notes-on-army-pay-4.html"
   crimea:
     note: "British rates as in 1802-15, with the 6d field allowance and a ration stoppage of 4½d (so about three quarters kept). No count of commissions from the ranks found; in Russia non-noble officers were 4% in the 1860s."
@@ -208,6 +209,7 @@ loot:
     sack: {allowed: true}
     keep: 0.667
     keep_why: "a third to his lord or captain (the Durham ordinances, 1385)"
+    keep_to_patron: true      # that third goes to his lord: to a patron who takes thirds it is a gift (data/patrons.yaml)
     ransom: {days: [100, 1000], approx: true, why: "a prisoner of rank goes to the captain, who rewards the captor; an ordinary man-at-arms ransomed from 650 to 16,000 ducats after Agincourt"}
     punish: "Robbing a church, or another man's victuals: beheaded or hanged (1385)."
   thirty_years:
@@ -252,3 +254,18 @@ loot:
     field: {allowed: true, cap: 5, why: "from 2004 no weapons of any kind; helmets, uniform items, flags by written request"}
     sack: {allowed: false, provost: 60}
     punish: "Looting: any punishment short of death (UCMJ art. 103)."
+
+# Purchase of commissions (the British army, 1683-1871): in these armies a man may buy his next
+# rank at the regulation price (in the coin's smallest unit) when it falls vacant and his purse
+# allows, paying the difference from the commission he already holds; selling out on leaving
+# returns his rank's price. Free commissions also went to sergeants promoted from the ranks, and
+# by vacancies from death in action (the ordinary promotion roll). The regulation prices for line
+# infantry as printed for 1837 (said to have held 1821-1871; the 1821 date is unconfirmed); the
+# unofficial "regimental value" ran half again to double. Project doc "patrons-research".
+purchase:
+  eras: [horse_musket, crimea]
+  regions: [british_rev, british_pen, british]
+  prices: {ensign: 432000, captain: 1728000}   # farthings: £450 and £1,800
+  over_regulation: [1.5, 2]
+  source: "https://en.wikipedia.org/wiki/Purchase_of_commissions_in_the_British_Army"
+

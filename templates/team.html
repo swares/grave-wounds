@@ -193,7 +193,10 @@ const tplFollowers = id => (id === "own" ? [] : (byId(T.templates, id).followers
 const tplQuality = id => (id === "own" ? "default" : byId(T.templates, id).follower_quality || "default");
 let S = { era: T.id, region: T.regions[0].id, template: T.templates[0].id, mode: "roll", women: "none", side: "Side A", slots: T.templates[0].slots.map(s => [...s]), team: [], swap: null, msg: "",
   fcounts: tplFollowers(T.templates[0].id), crew: [] };
-function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)) } catch (e) { /* storage may be off: the page still works */ } pushPurses() }
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify(S)); localStorage.setItem("gravewounds-interpreter", JSON.stringify(S.interp || null)) } catch (e) { /* storage may be off: the page still works */ }
+  pushPurses();
+}
 /* Each character's purse is shared with the wound roller and the travel map (purse.js): this page
    writes it whenever it saves, and takes back what they changed when it is opened or comes back
    into view. */
@@ -281,20 +284,27 @@ function render(){
   save();
 }
 function renderWomen(){                          // the women choice: offered where the region has a share to roll at; otherwise why not
-  const reg = byId(T.regions, S.region), W = reg.women, rolls = W?.share !== null && W?.share !== undefined;
+  const reg = byId(T.regions, S.region), W = reg.women, armyShare = W?.share !== null && W?.share !== undefined;
+  const rolls = armyShare || Object.keys(W?.shares || {}).length > 0;   // the army's share, or a career's own
   if (!rolls) S.women = "none";
   $("#sel-women").value = S.women;
   $("#sel-women").disabled = !rolls;
-  $("#sel-women").options[1].textContent = rolls ? `Roll each at the army's share (${W.share}%)` : "Roll each at the army's share";
+  $("#sel-women").options[1].textContent = armyShare ? `Roll each at the army's share (${W.share}%)` : "Roll each at the career's share";
   let note = reg.no_women || "";
   if (W) note = womenNote(W, rolls) + (W.closed || "");
   $("#women-note").textContent = note;
   $("#women-note").title = W?.source || "";
 }
 function womenNote(W, rolls){                     // what women did in this army, before why the rest is closed
+  const own = Object.keys(W.shares || {}), chosen = W.careers.filter(c => !own.includes(c));
+  if (own.length && W.share == null){
+    const rest = chosen.length ? ", and as " + womenCareers({ careers: chosen }) + " in numbers no one counted reliably: pick those in Your own team" : "";
+    return `Women served as ${womenCareers({ careers: own })} (rolled at the career's share)${rest}. `;
+  }
   if (!rolls) return `Women served as ${womenCareers(W)}, in numbers no one counted reliably: pick them in Your own team. `;
-  const how = W.disguised ? "enlisted disguised as men" : "served";
-  return `Women ${how} as ${womenCareers(W)}. `;
+  const hid = W.disguised === true ? W.careers : (W.disguised || []), open = W.careers.filter(c => !hid.includes(c));
+  const bits = [hid.length && `enlisted disguised as men as ${womenCareers({ careers: hid })}`, open.length && `served as ${womenCareers({ careers: open })}`].filter(Boolean);
+  return `Women ${bits.join(", and ")}. `;
 }
 const womenCareers = W => W.careers.map(cid => byId(T.careers, cid).name.toLowerCase()).join(", ");
 function sexOpts(i, cid, sex){                    // man, woman or roll for an own-team slot; closed choices say why
@@ -335,12 +345,22 @@ function fightLine(c){                          // as gravewounds.team.fight_lin
   if (c.leader){ const m = Math.floor((s.pres - 50) / C.presence.per); bits.push(`leading, morale ${m >= 0 ? "+" : ""}${m}`) }
   return bits.join(", ");
 }
+function loadNote(c, bought, carry){               // what his buying and his coin add, and what his animals take off him
+  const names = animalsOf(c).map(a => (TD.weights.animals.find(x => x.id === a) || {}).name || a);
+  return (bought >= 0.05 ? ` · bought and coin ${Math.round(bought * 10) / 10} kg` : "") + (names.length ? ` · ${esc(names.join(", ").toLowerCase())} carry ${Math.round(carry)} kg of it` : "");
+}
+function animalsOf(c){ return (c.ledger || []).filter(e => e.animal).map(e => e.animal) }   // his pack animals and carts, bought (weights.yaml)
+function extraKg(c){                               // what he has bought and his coin weigh, and any extra he wrote in
+  const bought = (c.ledger || []).reduce((t, e) => t + (e.kg || 0), 0);
+  return (c.loadExtra || 0) + bought + ldCoinKg(T.id, purseFor(c.region, c.terms, c.ledger).days);
+}
+const carryOf = c => ldCarryKg(animalsOf(c));
 function loadLine(c){                              // what each order weighs on him (loads.yaml)
   const E = ((TD.loads || {}).eras || {})[T.id]; if (!E) return "";
   const kc = (TD.fight.chr.toil.load || {})[c.kit] || "light", body = ldBody(T.id, c.sex || "m");
-  const extra = c.loadExtra || 0, i = S.team.indexOf(c);
-  const bits = Object.entries(TD.loads.orders).map(([o, name]) => { const kg = ldLoadKg(T.id, o, kc, extra); return `${name.toLowerCase()} ${Math.round(kg)} kg (${TD.loads.bands[ldBand(kg, body, c.stats.str)].name.toLowerCase()})` });
-  return `<div class="full muted" title="${esc(E.note || "")}">Loads: ${esc(bits.join(" · "))} <label>· extra <input type="number" min="0" step="0.5" data-loadx="${i}" value="${extra || ""}" placeholder="0" style="width:4em" aria-label="Extra kg he carries"> kg</label></div>`;
+  const extra = c.loadExtra || 0, i = S.team.indexOf(c), all = extraKg(c), carry = carryOf(c);
+  const bits = Object.entries(TD.loads.orders).map(([o, name]) => { const kg = ldCarried(T.id, o, kc, all, carry); return `${name.toLowerCase()} ${Math.round(kg)} kg (${TD.loads.bands[ldBand(kg, body, c.stats.str)].name.toLowerCase()})` });
+  return `<div class="full muted" title="${esc(E.note || "")}">Loads: ${esc(bits.join(" · "))} <label>· extra <input type="number" min="0" step="0.5" data-loadx="${i}" value="${extra || ""}" placeholder="0" style="width:4em" aria-label="Extra kg he carries"> kg</label>${loadNote(c, all - extra, carry)}</div>`;
 }
 function sheetHtml(c, i){
   const career = careerOf(c), kit = TD.kits[c.kit], w = TD.weapons[c.weapon];
@@ -354,7 +374,7 @@ function sheetHtml(c, i){
   const sx = c.sex || "m", life = c.events.map((e, k) => `<li>Term ${k + 1}: ${esc(pron(e, sx))}</li>`).join("") + c.old.map(oldWoundLine).join("");
   return `<article class="sheet" aria-label="${esc(c.name)}">
     <div class="fig">${fig}</div>
-    <div class="who"><input type="text" value="${esc(c.name)}" data-name="${i}" aria-label="Name">${c.leader ? `<span class="tag">Leader</span>` : ""}${womanTag(c)}</div>
+    <div class="who"><input type="text" value="${esc(c.name)}" data-name="${i}" aria-label="Name">${c.leader ? `<span class="tag">Leader</span>` : ""}${womanTag(c)}${lieTag(c)}</div>
     <div class="what">${rankLine(c) ? `${esc(rankLine(c))} · ` : ""}${esc(career.name)} · ${c.terms} term${c.terms > 1 ? "s" : ""}${c.xp_terms ? ` (+${c.xp_terms} served)` : ""} · age ${c.age} · ${esc(byId(T.regions, c.region).name.replace(/ \(.*/, ""))}</div>
     <div class="stats${c.mode === "array" ? " place" : ""}">${stats}</div>
     <div class="full what"><b>${esc(c.origin)}.</b> ${esc(pron(c.trait, sx))}; ${esc(pron(c.drawback, sx).toLowerCase())}.</div>
@@ -416,7 +436,7 @@ function renderRank(){
       return `<li><b>${esc(c.name)}</b>: <select data-rank="${i}" aria-label="Rank of ${esc(c.name)}">${opts}</select> ${(c.rank_days || 0).toLocaleString("en-US")} days in rank · ${cash(rkPay(c.region, c.career, c.rank))} a day
         <span class="muted">${next ? `· for ${esc(next.name.toLowerCase())}: ${esc(why || "eligible")}` : ""}</span>
         <label class="check" title="He distinguished himself${c.deedWhy ? ` (${esc(c.deedWhy)})` : ""}: +${RK().deed_bonus} to his next promotion roll, and the time waived"><input type="checkbox" data-deed="${i}"${c.deed ? " checked" : ""}> A deed</label>
-        ${c.owed ? "<button class=\"small\" data-payowed=\"" + i + "\" title=\"The arrears are paid\">Pay " + cash(c.owed) + " owed</button>" : ""}</li>`;
+        ${c.owed ? "<button class=\"small\" data-payowed=\"" + i + "\" title=\"The arrears are paid\">Pay " + cash(c.owed) + " owed</button>" : ""}${commissionHtml(c, i)}</li>`;
     }).join("");
     vac = `<div class="row">${ladder.slice(1).map(r => `<span>${esc(r.name)}: <b>${(S.vacancies || {})[r.id] || 0}</b> <button class="small" data-vac="${r.id}" data-d="-1" aria-label="One fewer ${esc(r.name)} vacancy">−</button><button class="small" data-vac="${r.id}" data-d="1" aria-label="Open a ${esc(r.name)} vacancy">+</button></span>`).join(" ")}</div>`;
   }
@@ -440,6 +460,52 @@ function sellHaggled(c, days){                     // [days, words]: his goods s
   const how = { win: "haggled up", critical: "haggled well up", list: "at the buyer's price", cheated: "cheated by a fence" }[h.outcome];
   return [h.price, ` (sold ${how}: Persuade ${chkText(h.opposed.a)})`];
 }
+/* Purchase of commissions (ranks.js rkPurchase, rkCanBuy; data TD.ranks.purchase): in the British
+   army before 1871 a man buys his next commission when it is vacant and his purse allows, paying the
+   difference from the one he holds; selling out on leaving returns his commission's price. */
+const coinDays = (base, c) => { const cur = coinOf(T.id, c.region); return cur ? base / cur.day : null };
+const boughtOf = c => c.bought || (isOfficer(c) && c.rank in (RK().purchase?.prices || {}) && rkPurchase(c.region, {}, c.rank) !== null ? c.rank : null);   // an officer of a purchase army holds his commission
+const asHeld = c => ({ ...c, bought: boughtOf(c) });
+function commissionHtml(c, i){
+  if (!RK().purchase) return "";
+  const h = asHeld(c), [rid, why] = rkCanBuy(c.region, h, S.vacancies || {}), bits = [];
+  if (rid){
+    const days = coinDays(rkPurchase(c.region, h, rid), c);
+    bits.push(`<button class="small" data-buy-rank="${i}" title="The regulation price, less the commission he holds; the unofficial price ran half again to double">Buy ${esc(rkName(rid).toLowerCase())}: ${cash(days)}</button>`);
+  } else if (why && why !== "nothing to buy" && rkPurchase(c.region, h, rkLadder()[rkIndex(c.rank) + 1]?.id) !== null) bits.push(`<span class="muted">buy: ${esc(why)}</span>`);
+  if (h.bought) bits.push(`<button class="small" data-sell-out="${i}" title="He leaves the army and his commission's price comes back to him">Sell out: ${cash(coinDays(RK().purchase.prices[h.bought], c))}</button>`);
+  return bits.length ? " " + bits.join(" ") : "";
+}
+function buyRank(c){
+  const h = asHeld(c), [rid] = rkCanBuy(c.region, h, S.vacancies || {});
+  if (!rid) return;
+  const days = coinDays(rkPurchase(c.region, h, rid), c), why = spendCheck(c, days);
+  if (why){ S.msg = `${c.name} can't buy ${rkName(rid).toLowerCase()} for ${cash(days)}: ${why}.`; return }
+  spend(c, days, `Commission: ${rkName(rid)}`);
+  const old = rkIndex(c.rank);
+  c.rank = rid; c.rank_days = 0; c.bought = rid; delete c.course_rank;
+  S.vacancies[rid] -= 1;
+  if (old > 0) S.vacancies[rkLadder()[old].id] = (S.vacancies[rkLadder()[old].id] || 0) + 1;   // the rank he leaves falls vacant
+  S.msg = `${c.name} buys ${rkName(rid).toLowerCase()} for ${cash(days)}.`;
+  leadByRank();
+}
+function sellOut(i){
+  const c = S.team[i], held = boughtOf(c), days = coinDays(RK().purchase.prices[held], c);
+  c.ledger = c.ledger || [];
+  c.ledger.push({ days, what: `Sold his commission (${rkName(held)})` });
+  delete c.bought;
+  loseMember(i, "sold out");
+  S.msg = `${c.name} sells out for ${cash(days)} and leaves the army.`;
+}
+function thirdsToPatron(c, found, keep){            // the medieval third of his winnings goes to his lord: a gift to a patron who takes thirds
+  const L = (RK().loot || {})[T.id] || {};
+  if (!L.keep_to_patron || !TD.patrons || !found || keep >= 1) return "";
+  const third = found * (1 - keep), p = (S.patrons || []).find(x => x.thirds !== false && clientOf(c, x) && !clientOf(c, x).enemy);
+  if (!p) return "";
+  const cl = clientOf(c, p), was = cl.standing;
+  cl.standing = ptMove(cl.standing, "gift", realDice, third).standing;
+  return was === cl.standing ? "" : `; the third to ${p.name} (Standing ${was} → ${cl.standing})`;
+}
 function rollLoot(){
   const K = S.lootK, L = (RK().loot || {})[T.id] || {}, who = K.who === "all" ? S.team : [S.team[+K.who]].filter(Boolean), lines = [];
   for (const c of who){
@@ -455,7 +521,7 @@ function rollLoot(){
       c.ledger = c.ledger || [];
       c.ledger.push({ days: r.days, what: `Loot: ${r.what}` });
       const share = L.keep >= 0.9 ? "hospital's tenth" : "captain's third", after = L.keep && L.keep < 1 && K.kind !== "prize" ? " after the " + share : "";
-      t += `; ${cash(r.days)} into his purse${after}${sold}`;
+      t += `; ${cash(r.days)} into his purse${after}${sold}${K.kind === "prize" ? "" : thirdsToPatron(c, r.found, L.keep || 1)}`;
     }
     if (r.horses){ c.horses = (c.horses || 0) + r.horses; c.honours = (c.honours || 0) + r.horses * RK().honours.horse_taken }
     lines.push(t + ".");
@@ -505,14 +571,83 @@ function prisonerHtml(c, k){
   return `<li><b>${esc(c.name)}</b>: ${esc(heldStatus(c))} <span class="muted">· ${h}% a season</span>
     <div class="muted">${esc(ctx.note || "")}</div><div class="spend">${opts.join(" ")}</div></li>`;
 }
+/* The team's own captives (data TD.prisoners.captives): taken, kept (food each season, guarded,
+   may escape), ransomed, exchanged for one of ours, paroled, let go, or questioned. */
+const CAP = () => TD.prisoners?.captives;
+const enemyArmies = () => T.regions.filter(r => r.id !== S.region);
+function captiveWorth(k){                           // his ransom in Days by the era's first context, or null
+  const ctx = prContexts(T.id)[0];
+  if (!ctx) return null;
+  const pay = k.officer ? CAP().officer_pay : 1, rank = k.officer ? 3 : 0;
+  return prRansom(T.id, ctx.id, pay, rank);
+}
+function captiveRow(k, n){
+  const worth = captiveWorth(k), held = (S.prisoners || []).filter(p => p.prison.stage !== "taken");
+  const ransom = worth ? `<button class="small" data-cransom="${n}" title="His people pay it to the team's leader">Ransom: ${cash(worth)}</button>` : "";
+  const swap = held.length ? `<select data-cswap="${n}" aria-label="Exchange him for"><option value="">Exchange for…</option>${optionTags(held.map(p => [p.pid, p.name]), "")}</select>` : "";
+  const parole = tick(`data-cparole="${n}"`, k.parole, "on parole", "He gives his word: he does not try to escape, and keeps himself");
+  return `<li><b>${esc(k.name)}</b> <span class="muted">${esc(k.army)}${k.officer ? ", an officer" : ""}, ${esc(tongueName(k.tongue || ""))}</span>
+    <div class="spend">${ransom}${swap} ${parole} <button class="small" data-cquestion="${n}">Question him</button><button class="small" data-crelease="${n}">Let him go</button></div></li>`;
+}
+function captivesHtml(){
+  if (!CAP()) return "";
+  const K = (S.capK ||= { army: enemyArmies()[0]?.id || S.region, officer: false });
+  const L = S.captives || [], items = (S.caplog || []).map(l => `<li>${esc(l)}</li>`).join(""), logHtml = items ? "<ol class=\"log\">" + items + "</ol>" : "";
+  return `<h4>Captives (${L.length})</h4><p class="muted note">Each End of season each eats ${cash(CAP().keep)} a day, and each not on parole tries to escape: his Stealth ${CAP().stealth} against the team's best Watch (${CAP().crowded} worse for each captive more than the team).</p>
+    <div class="row"><div><label for="cap-army">Take a prisoner from</label><select id="cap-army">${optionTags(T.regions.map(r => [r.id, r.name.replace(/ \(.*/, "")]), K.army)}</select></div>
+    <div style="align-self:end">${tick('id="cap-officer"', K.officer, "an officer")} <button class="small" id="btn-take">Take him</button></div></div>
+    <ul class="xp">${L.map(captiveRow).join("")}</ul>${logHtml}`;
+}
+function capLog(line){ S.caplog = [line, ...(S.caplog || [])].slice(0, 30) }
+function takeCaptive(){
+  const K = S.capK, reg = byId(T.regions, K.army), tongue = TD.languages ? lgArmy(T.id, K.army).own[0]?.[0] : null;
+  const k = { name: nameFor(reg, "m", realDice), army: reg.name.replace(/ \(.*/, ""), region: K.army, officer: !!K.officer, tongue, parole: false };
+  S.captives = [...(S.captives || []), k];
+  capLog(`${k.name} is taken.`);
+}
+function questionCaptive(k){                       // words across tongues with the best speaker (or the interpreter)
+  let best = null, bv = 0;
+  for (const m of S.team){ const v = m.tongues && k.tongue ? lgValue(m.tongues, k.tongue) : 0; if (v > bv){ best = m; bv = v } }
+  const I = interp(), via = I && I.tongue === k.tongue && I.figure > bv;
+  const v = via ? I.figure : bv, own = best ? best.name : "no one", who = via ? `${I.name} for the team` : own;
+  const w = lgWords(v, realDice.randint(1, 100));
+  if (via && !I.reliable && w.check.roll >= INT().error_from) w.reading = "error";
+  if (w.check.success && !via && best && k.tongue !== best.native) xpTick(best.pid, "tongue:" + k.tongue, "questioning a prisoner");
+  const what = { full: "he tells all he knows", meaning: "something useful", gist: "little of use", error: "a wrong answer, believed" }[w.reading];
+  capLog(`${who} questions ${k.name} in ${tongueName(k.tongue)} (${v}): ${chkText(w.check)} — ${what}.`);
+}
+function captiveSeason(lines){                     // End of season: their food, then each tries to escape
+  const L = S.captives || [];
+  if (!L.length || !CAP()) return;
+  const lead = S.team.find(m => m.leader) || S.team[0], fed = L.filter(k => !k.parole).length, cost = fed * CAP().keep * (TD.xp?.season_days || 91);
+  if (lead && cost) spend(lead, Math.min(cost, Math.max(0, purseFor(lead.region, lead.terms, lead.ledger).days)), `Keep of ${fed} captive${fed === 1 ? "" : "s"} for a season`);
+  const watch = Math.max(0, ...S.team.map(m => m.skills.watch || 0)) - CAP().crowded * Math.max(0, L.length - S.team.length);
+  S.captives = L.filter(k => {
+    if (k.parole) return true;
+    const o = opposedCheck(CAP().stealth, "ordinary", realDice.randint(1, 100), watch, realDice.randint(1, 100));
+    if (o.winner !== "a") return true;
+    lines.push(`${k.name}, a captive, escapes (Stealth ${o.a.roll} against ${o.a.target}; the guard's Watch ${o.b.roll} against ${o.b.target}).`);
+    return false;
+  });
+}
+function captiveAct(e){                             // the captives' buttons and boxes
+  const t = e.target, n = +(t.dataset.cransom ?? t.dataset.cquestion ?? t.dataset.crelease ?? t.dataset.cswap ?? t.dataset.cparole), k = (S.captives || [])[n];
+  if (!k) return false;
+  if (t.dataset.cransom !== undefined){ const lead = S.team.find(m => m.leader) || S.team[0], v = captiveWorth(k); lead.ledger = lead.ledger || []; lead.ledger.push({ days: v, what: `Ransom of ${k.name}` }); S.captives.splice(n, 1); capLog(`${k.name} is ransomed for ${cash(v)}.`) }
+  else if (t.dataset.cquestion !== undefined) questionCaptive(k);
+  else if (t.dataset.crelease !== undefined){ S.captives.splice(n, 1); capLog(`${k.name} is let go.`) }
+  else if (t.dataset.cparole !== undefined) k.parole = t.checked;
+  else if (t.dataset.cswap !== undefined && t.value){ const p = S.prisoners.find(x => x.pid === t.value); S.captives.splice(n, 1); if (p) prRejoin(p, `is exchanged for ${k.name}`) }
+  return true;
+}
 function renderPrisoners(){
   const box = $("#prisoners"), L = S.prisoners || [];
-  if (!TD.prisoners || (!L.length && !(S.prlog || []).length)){ box.innerHTML = ""; return }
+  if (!TD.prisoners || !S.team.length){ box.innerHTML = ""; return }
   const log = (S.prlog || []).map(l => `<li>${esc(l)}</li>`).join("");
   const logHtml = log ? "<ol class=\"log\">" + log + "</ol>" : "";
   box.innerHTML = `<section class="crew" aria-labelledby="h-prisoners"><h3 id="h-prisoners">Prisoners (${L.length})</h3>
     <p class="muted note">Each End of season: release (exchange, parole, the war's end), an escape for a man who tries (Stealth to get out, Fieldcraft to get home), then the death check at his captors' rate, and Strain. The figures are in the rules and the project doc "prisoner-research".</p>
-    <ul class="xp">${L.map(prisonerHtml).join("")}</ul>${logHtml}</section>`;
+    <ul class="xp">${L.map(prisonerHtml).join("") || "<li class=\"muted\">None of ours held.</li>"}</ul>${logHtml}${captivesHtml()}</section>`;
 }
 function prLog(line){ S.prlog = [line, ...(S.prlog || [])].slice(0, 30) }
 function prRejoin(c, how){                          // back with the team
@@ -807,7 +942,7 @@ function feltBody(c){                              // his skills less how he is,
 }
 function chkValue(c, K){                            // the figure he rolls: a talk skill capped by the tongue he speaks, less how he is
   let v = valueOf(c, K.skill);
-  if (isTalk(K.skill) && c.tongues && K.tongue && K.tongue !== c.native) v = lgTalk(v, c.tongues, c.native, K.tongue);
+  if (isTalk(K.skill) && c.tongues && K.tongue && K.tongue !== c.native) v = viaInterp(K, K.tongue) ? Math.min(v, interp().figure) : lgTalk(v, c.tongues, c.native, K.tongue);
   const b = bodyOf(c);
   return Math.max(0, v - (b ? b.penalty : 0));
 }
@@ -858,19 +993,52 @@ function renderChecks(){
       <div><label for="chk-against" title="Leave empty for a check against no one">Against: ${esc(who)}</label><input id="chk-against" type="number" min="0" max="150" placeholder="no one" value="${esc(String(K.against))}" style="width:6em"></div>
       ${tongueOpts(c, K)}
       <div style="align-self:end"><button id="btn-check">Roll ${esc(anyName(K.skill))} ${chkValue(c, K)}</button></div>
-    </div>${state}${help}
+    </div>${state}${help}${interpHtml()}
     ${log ? `<ol class="log">${log}</ol><button class="small" id="btn-clear-checks">Clear</button>` : ""}</section>`;
 }
 function chkText(r){ return `rolled ${r.roll} against ${r.target}: ${r.critical ? "critical" : r.success ? "success" : r.fumble ? "fumble" : "failure"}` }
+/* A hired interpreter (data TD.languages.interpreters): the team's own tongue and one other at his
+   figure; hired for a season from the leader's purse; an unreliable man's 90+ is an error. Words
+   across tongues, passing and the talk skills go through him when the box is ticked. */
+const INT = () => TD.languages?.interpreters;
+const interp = () => S.interp || null;
+const viaInterp = (K, t) => !!K.via && interp()?.tongue === t;
+function interpHtml(){                              // the checks panel's interpreter row
+  if (!INT()) return "";
+  const I = interp(), K = S.chk;
+  if (I) return `<div class="row"><p class="muted note">${esc(I.name)}, an interpreter: ${esc(tongueName(I.tongue))} ${I.figure}${I.reliable ? "" : " (not as good as he says)"}, until End of season. <label class="check"><input type="checkbox" id="chk-via"${K.via ? " checked" : ""}> Speak through him</label> <button class="small" id="btn-dismiss">Dismiss him</button></p></div>`;
+  const ts = armyTongues().filter(t => t !== S.team[0]?.native);
+  if (!K.itongue || !ts.includes(K.itongue)) K.itongue = ts[0];
+  const cost = interpWage() * (TD.xp?.season_days || 91);
+  return `<div class="row"><div><label for="chk-itongue">An interpreter for</label><select id="chk-itongue">${optionTags(ts.map(t => [t, tongueName(t)]), K.itongue)}</select></div><div style="align-self:end"><button id="btn-hire-interp">Hire him for a season (${cash(cost)})</button></div></div>`;
+}
+const interpWage = () => INT().wage[T.id] ?? INT().wage.default;
+function hireInterp(){
+  const K = S.chk, lead = S.team.find(m => m.leader) || S.team[0], cost = interpWage() * (TD.xp?.season_days || 91), why = spendCheck(lead, cost);
+  if (why){ S.msg = `${lead.name} can't pay ${cash(cost)} for an interpreter: ${why}.`; return }
+  spend(lead, cost, "An interpreter for a season");
+  const [lo, hi] = INT().figure, reg = T.regions.find(r => lgArmy(T.id, r.id).own.some(([t]) => t === K.itongue)) || byId(T.regions, S.region);   // a man of that tongue's own army, for his name
+  S.interp = { name: nameFor(reg, "m", realDice), tongue: K.itongue, figure: realDice.randint(lo, hi), reliable: realDice.randint(1, 100) > INT().unreliable };
+  S.msg = `${S.interp.name} is hired to interpret ${tongueName(S.interp.tongue)}.`;
+}
+function interpSeason(lines){                      // End of season: his hazard, then his season is up
+  const I = interp();
+  if (!I) return;
+  const h = INT().hazard[T.id] ?? INT().hazard.default, r = realDice.randint(1, 1000);
+  lines.push(r <= h * 10 ? `${I.name}, the interpreter, is killed (rolled ${r} in 1,000 against ${h * 10}).` : `${I.name}'s season as interpreter is up.`);
+  S.interp = null;
+}
 function tongueCheck(c, K, v, against){               // words across tongues, or passing as a native: [line, won]
-  const L = TD.languages, t = K.skill.slice(7), name = `${c.name}, in ${tongueName(t)}`;
+  const L = TD.languages, t = K.skill.slice(7), via = viaInterp(K, t), name = `${c.name}, in ${tongueName(t)}${via ? " through " + interp().name : ""}`;
+  if (via) v = interp().figure;
   if (K.pass){
     const p = lgPassing(v, against ?? 50, realDice.randint(1, 100), realDice.randint(1, 100));
     if (!p.opposed) return [`${name}: not good enough to pass as a native (${p.grade})`, false];
     return [`${name}, passing as a native (${p.grade}): ${chkText(p.opposed.a)}; the listener's Watch ${chkText(p.opposed.b)}: ${p.passed ? "taken for one of them" : "found out"}`, p.passed];
   }
   const w = lgWords(v, realDice.randint(1, 100), !!K.book, !!K.book, K.diff);
-  return [`${name}: ${chkText(w.check)} — ${L.readings[w.reading]}`, w.check.success];
+  if (via && !interp().reliable && w.check.roll >= INT().error_from) w.reading = "error";   // he gets it wrong, or lies
+  return [`${name}: ${chkText(w.check)} — ${L.readings[w.reading]}`, w.check.success && w.reading !== "error"];
 }
 function rollCheck(){
   const K = S.chk, c = S.team[K.i], u = checkUses().find(x => x.id === K.use) || null, v = chkValue(c, K);
@@ -1027,8 +1195,20 @@ function seasonLine(c, r){                         // 'Hans: Blade 42 → 44 (ro
   bits.push(`${r.served.toLocaleString("en-US")} days toward a term`);
   return `${c.name}: ${bits.join("; ")}.`;
 }
+const CHK_FIELDS = { "chk-diff": ["diff", "value"], "chk-tongue": ["tongue", "value"], "chk-book": ["book", "checked"], "chk-pass": ["pass", "checked"],
+  "chk-via": ["via", "checked"], "chk-itongue": ["itongue", "value"] };   // the checks panel's plain boxes: the setting and what it takes
+function chkUse(K, value){                         // a use of a skill sets its skill, difficulty and what it is against
+  K.use = value;
+  const u = checkUses().find(x => x.id === K.use);
+  if (u){ K.skill = u.skill; K.diff = u.difficulty; K.against = u.against ? u.against.value : "" }
+}
+function lieSeason(c, found){                     // a man under or over age: found out and sent home, or his lie still stands
+  if (!TD.ageing?.enlist || !c.lied) return;
+  const roll = realDice.randint(1, 100);
+  if (agFoundOut(c, roll)) found.push([c, roll]); else c.lied = agStillLying(c);
+}
 function endSeason(){
-  const all = readXp(), lines = [], stamp = Date.now();
+  const all = readXp(), lines = [], stamp = Date.now(), found = [];
   for (const c of S.team){
     const x = all[c.pid] || {};
     c.aged_to ??= c.age;                           // a man made before ageing: from now on
@@ -1048,6 +1228,7 @@ function endSeason(){
       }
       c.hardSeason = false;
       if (bits.length) line = line.replace(/\.$/, "") + "; " + bits.join("; ") + ".";
+      lieSeason(c, found);
     }
     if (rkLadder().length){                        // his days in rank, his pay, and any arrears
       c.rank ||= rkStart(c.career);
@@ -1061,8 +1242,14 @@ function endSeason(){
     lines.push(line);
     all[c.pid] = { ticks: {}, served: 0, army: 0, owed: 0, hard: 0 };
   }
+  for (const [c, roll] of found){                 // found out under or over age: sent home
+    const why = c.lied === "under" ? "found under age" : "found over age";
+    lines.push(`${c.name} is ${why} (rolled ${roll} against ${TD.ageing.enlist.found_out}) and sent home.`);
+    loseMember(S.team.indexOf(c), `sent home: ${why}`);
+  }
   if (rkLadder().length){                          // the season's promotions, then everyone's new sheet
     const rolls = rkPromote(S.team, (S.vacancies ||= {}), realDice);
+    for (const c of S.team) finishChar(c);         // his Presence may have risen with his rank
     for (const c of S.team) delete c.deedWhy;
     for (const k of rolls) lines.push(`${k.name} for ${rkName(k.to).toLowerCase()}: Command rolled ${k.roll} against ${k.target}: ${k.success ? "promoted" : "passed over"}.`);
     const was = S.team.find(m => m.leader), now = leadByRank();
@@ -1072,8 +1259,9 @@ function endSeason(){
   for (const c of S.team) Object.assign(all[c.pid], { sheet: rollerSheet(c), stamp });
   writeXp(all);
   for (const c of S.team) if (c.joined) c.joined.seasons = (c.joined.seasons || 0) + 1;   // a season with the team: no longer a stranger
-  if (TD.prisoners) prisonSeason();
+  if (TD.prisoners){ prisonSeason(); captiveSeason(lines) }
   if (TD.patrons) patronSeason(lines);
+  if (TD.languages) interpSeason(lines);
   let named = null;                                // the travel map's copy of his skills
   try { named = JSON.parse(localStorage.getItem("gravewounds-named") || "{}") || {} } catch (e) { named = null /* unreadable: the roller will pass them on */ }
   if (named){
@@ -1134,10 +1322,15 @@ function ledgerHtml(c, i){                        // what he has earned and spen
     <div class="full spend">${items.length ? `<select data-shop="${i}" aria-label="Buy from the price list"><option value="">Buy from the price list…</option>${opts}</select>${TD.checks && c.skills.persuade !== undefined ? `<label class="check" title="Persuade ${c.skills.persuade} against the seller's ${(TD.checks.haggle || {}).seller ?? 50}: a tenth off, a quarter on a critical; a fumble and there is no sale today"><input type="checkbox" data-haggle="${i}"> Haggle</label>` : ""}<button class="small" data-buy="${i}">Buy</button>` : ""}
       <span>or pay</span><input type="number" min="0" step="0.25" data-pay-days="${i}" aria-label="Days to pay"><span>Days for</span><input type="text" class="what" data-pay-what="${i}" aria-label="What for" placeholder="what"><button class="small" data-pay="${i}">Pay</button></div>`;
 }
-function spendFrom(i, days, what){                // take Days from his purse, or say why not
+function boughtMeta(item){                         // what a price-list row weighs once bought, or the animal it is
+  const animal = ldAnimal(item), kg = ldItemKg(item);
+  return { ...(animal ? { animal } : {}), ...(kg ? { kg } : {}) };
+}
+function spendFrom(i, days, what, meta = {}){      // take Days from his purse, or say why not
   const c = S.team[i], why = spendCheck(c, days);
   if (why){ S.msg = `${c.name} can't pay ${cash(days || 0)}: ${why}.`; return render() }
-  (c.ledger ||= []).push({ days: -days, what });
+  c.ledger ||= [];
+  c.ledger.push({ days: -days, what, ...meta });
   S.msg = ""; render();
 }
 /* ---------- losses and replacements (team.js: replaceOptions, hireCost, effectsFor, settleLost) ---------- */
@@ -1254,9 +1447,14 @@ function replaceLoss(k){
   L.replaced = `replaced by ${n.name} (${n.joined.how})`;
   S.msg = "";
 }
+function lieTag(c){                              // "Under age" or "Over age": he lied to enlist
+  if (!c.lied) return "";
+  const L = agLimits(T.id, c.region), what = c.lied === "under" ? `Under age (enlisted at ${c.enlisted}; the least ${L?.min})` : `Over age (enlisted at ${c.enlisted}; the most ${L?.max})`;
+  return `<span class="tag" title="Found out at ${TD.ageing.enlist.found_out}% each End of season, and sent home">${esc(what)}</span>`;
+}
 function womanTag(c){                            // "Woman", or "Woman, enlisted as a man"
   if (c.sex !== "f") return "";
-  return `<span class="tag">${byId(T.regions, c.region)?.women?.disguised ? "Woman, enlisted as a man" : "Woman"}</span>`;
+  return `<span class="tag">${disguisedAs(byId(T.regions, c.region), c.career) ? "Woman, enlisted as a man" : "Woman"}</span>`;
 }
 function oldWoundLine(w){
   const where = TD.locs[w.loc].name.toLowerCase(), from = TD.weapons[w.weapon].short.toLowerCase();
@@ -1289,7 +1487,7 @@ function rollerSheet(c){                          // what the roller keeps of a 
   const attackBy = Object.fromEntries(Object.keys(T.weapon_skill).map(w => [w, attackFor(c, w)]));
   const defBy = T.defence.reduce((a, s) => (c.skills[s] > c.skills[a] ? s : a), T.defence[0]);
   return { career: careerOf(c).name, terms: c.terms, age: c.age, leader: !!c.leader, stats: c.stats, defence: c.defence, attack_by: attackBy,
-    skill_by: T.weapon_skill, defence_by: defBy, era: T.id, rank: c.rank || null, sex: c.sex || "m", load_extra: c.loadExtra || 0, swim: c.swim || "basic",   // which skill each weapon and his defence use: a hit or a parry ticks it
+    skill_by: T.weapon_skill, defence_by: defBy, era: T.id, rank: c.rank || null, sex: c.sex || "m", load_extra: Math.round(extraKg(c) * 10) / 10, carry: carryOf(c), animals: animalsOf(c), swim: c.swim || "basic",   // which skill each weapon and his defence use: a hit or a parry ticks it
     trained: T.skills.filter(s => (c.gains[s.id] || 0) > 0).map(s => [s.name, c.skills[s.id]]), origin: c.origin, old: c.old,
     skills: c.skills, pid: c.pid, native: c.native || null, tongues: c.tongues || null };   // every skill, trained or not: the roller and travel map use Leechcraft, Fieldcraft, Watch and Stealth
 }
@@ -1422,12 +1620,18 @@ function init(){
     if (b.id === "btn-loot") return rollLoot();
     if (b.id === "btn-clear-loot"){ S.lootlog = []; return render() }
     if (b.dataset.vac){ const v = (S.vacancies ||= {}); v[b.dataset.vac] = Math.max(0, (v[b.dataset.vac] || 0) + +b.dataset.d); return render() }
+    if (b.dataset.buyRank !== undefined){ buyRank(S.team[+b.dataset.buyRank]); return render() }
+    if (b.dataset.sellOut !== undefined){ sellOut(+b.dataset.sellOut); return render() }
     if (b.dataset.payowed !== undefined){ const c = S.team[+b.dataset.payowed]; (c.ledger ||= []).push({ days: c.owed, what: "Arrears of pay" }); c.owed = 0; return render() }
     if (b.dataset.coup !== undefined){ const c = S.team[+b.dataset.coup]; c.honours = (c.honours || 0) + RK().honours.coup[+b.dataset.n - 1]; return render() }
     if (b.dataset.give !== undefined){ const c = S.team[+b.dataset.give]; if (c.horses > 0){ c.horses--; c.honours = (c.honours || 0) + RK().honours.horse_given } return render() }
   });
   $("#prisoners").addEventListener("change", e => {
-    const el = e.target, d = el.dataset, k = +(d.prctx ?? d.prcirc ?? d.prparole ?? d.prescape ?? d.prwinter);
+    const el = e.target, d = el.dataset;
+    if (el.id === "cap-army"){ S.capK.army = el.value; return render() }
+    if (el.id === "cap-officer"){ S.capK.officer = el.checked; return render() }
+    if (captiveAct(e)) return render();
+    const k = +(d.prctx ?? d.prcirc ?? d.prparole ?? d.prescape ?? d.prwinter);
     const c = (S.prisoners || [])[k]; if (!c) return;
     if (d.prctx !== undefined) c.prison.ctx = el.value;
     else if (d.prcirc !== undefined) c.prison.circ = el.checked ? [...c.prison.circ, d.id] : c.prison.circ.filter(x => x !== d.id);
@@ -1439,6 +1643,8 @@ function init(){
   $("#prisoners").addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
     const d = b.dataset;
+    if (b.id === "btn-take"){ takeCaptive(); return render() }
+    if (d.cransom !== undefined || d.cquestion !== undefined || d.crelease !== undefined){ captiveAct({ target: b }); return render() }
     if (d.prroll !== undefined){ rollCapture(+d.prroll); return render() }
     if (d.prserve !== undefined){ const c = S.prisoners[+d.prserve]; c.prison.stage = "serving"; c.prison.serving = true; prLog(`${c.name} takes service in his captors' ranks.`); return render() }
     if (d.prransom !== undefined){ payRansom(S.prisoners[+d.prransom]); return render() }
@@ -1485,18 +1691,20 @@ function init(){
     render();
   });
   $("#checks").addEventListener("change", e => {
-    const K = S.chk, id = e.target.id;
-    if (id === "chk-who") K.i = +e.target.value;
-    else if (id === "chk-use"){ K.use = e.target.value; const u = checkUses().find(x => x.id === K.use); if (u){ K.skill = u.skill; K.diff = u.difficulty; K.against = u.against ? u.against.value : "" } }
+    const K = S.chk, id = e.target.id, plain = CHK_FIELDS[id];
+    if (plain) K[plain[0]] = e.target[plain[1]];
+    else if (id === "chk-who") K.i = +e.target.value;
+    else if (id === "chk-use") chkUse(K, e.target.value);
     else if (id === "chk-skill"){ K.skill = e.target.value; K.use = "" }
-    else if (id === "chk-diff") K.diff = e.target.value;
-    else if (id === "chk-tongue") K.tongue = e.target.value;
-    else if (id === "chk-book") K.book = e.target.checked;
-    else if (id === "chk-pass") K.pass = e.target.checked;
     else if (id === "chk-against") K.against = e.target.value === "" ? "" : Math.max(0, +e.target.value);
     render();
   });
-  $("#checks").addEventListener("click", e => { if (e.target.closest("#btn-check")) rollCheck(); else if (e.target.closest("#btn-clear-checks")){ S.chklog = []; render() } });
+  $("#checks").addEventListener("click", e => {
+    if (e.target.closest("#btn-check")) return rollCheck();
+    if (e.target.closest("#btn-clear-checks")){ S.chklog = []; return render() }
+    if (e.target.closest("#btn-hire-interp")){ hireInterp(); return render() }
+    if (e.target.closest("#btn-dismiss")){ S.interp = null; return render() }
+  });
   $("#btn-field").onclick = sendToField;
   $("#sel-region").onchange = e => { S.region = e.target.value; render() };
   $("#sel-women").onchange = e => { S.women = e.target.value; render() };
@@ -1538,13 +1746,13 @@ function init(){
     if (buy){
       const i = +buy.dataset.buy, id = document.querySelector(`select[data-shop="${i}"]`).value; if (!id) return;
       const item = shopFor(S.team[i].region).find(r => r.id === id), c = S.team[i];
-      if (!document.querySelector(`input[data-haggle="${i}"]`)?.checked) return spendFrom(i, item.days, item.name);
+      if (!document.querySelector(`input[data-haggle="${i}"]`)?.checked) return spendFrom(i, item.days, item.name, boughtMeta(item));
       const h = haggle(item.days, c.skills.persuade ?? 0, realDice.randint(1, 100), realDice.randint(1, 100));
       const how = `Persuade ${chkText(h.opposed.a)}, the seller ${chkText(h.opposed.b)}`;
       if (h.outcome === "win" || h.outcome === "critical") xpTick(c.pid, "persuade", "haggling");
       if (h.outcome === "no_sale"){ S.msg = `${c.name} haggles over the ${item.name.toLowerCase()} and fumbles (${how}): no sale today.`; return render() }
       const haggled = h.outcome === "list" ? " (haggled: list price)" : " (haggled down from " + cash(item.days) + ")";
-      spendFrom(i, h.price, item.name + haggled);
+      spendFrom(i, h.price, item.name + haggled, boughtMeta(item));
       if (!S.msg) S.msg = `${c.name} haggles: ${how}; pays ${cash(h.price)}.`;
       return render();
     }

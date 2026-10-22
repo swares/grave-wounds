@@ -47,14 +47,31 @@ cold:
   - {name: "Very cold (5-10 C)", shock: -20, fail_after: 20}
   - {name: "Icy (5 C or under)", shock: -40, fail_after: 10}
 
-# Fords (the British field-engineering rule: infantry to 3 ft, cavalry 4 ft, guns 2 ft 4 in;
-# flume tests: adults are swept off once depth x current passes about 0.75-1.2). A force on the
-# travel map crossing a ford: each named man whose load band is `from_band` or heavier (or anyone,
-# in a flooded ford it chose to risk) makes an Agility check at the water's difficulty (Ride for a
-# mounted man); failing it, he is swept off and swims for `rounds` minutes to the bank.
+# Fords (project docs "hazards-research" and "ages-women-fords-research"). Each ford on the travel
+# map has its own depth and current, fixed by its place on the map within its water's span (an
+# ordinary ford, or one in flood after heavy rain). Men wade to `wade` feet (Galton 1855 and the
+# British field data: infantry 3 ft, cavalry 4 ft; guns 2 ft 4 in, not yet applied): within it only a man whose load
+# band is `from_band` or heavier is at risk; deeper, every man. The current's band (FM 90-13: under
+# 1.5 m/s is wanted; a float timed over 100 ft) sets the difficulty of his Agility check (Ride for a
+# mounted man) and how many minutes he swims for the bank if swept off. It is the current, not the
+# depth, that sweeps men away: the 10th Hussars' ford on the Kabul River in 1879 was about 3 ft deep
+# with a current of about 4 m/s, and 46 men drowned with 13 horses. A mounted man swept off loses
+# his horse at the current's `horse` % (a horse swims a short river well, but a laden rider much
+# worse). The water is as cold as the week: the day's mean air temperature picks its row of `cold`
+# (a flood one row colder: snowmelt and storm water).
 fords:
-  normal: {difficulty: easy, from_band: 3, current: moderate, rounds: 2, name: "an ordinary ford (thigh-deep, slow)"}
-  flooded: {difficulty: very_hard, from_band: 0, current: fast, rounds: 4, name: "a flooded ford (chest-deep, fast)"}
+  water:
+    normal: {depth: [1.5, 3.5], current: [0.3, 1.8], name: "an ordinary ford"}
+    flooded: {depth: [3, 5], current: [1.5, 4], name: "a flooded ford"}
+  wade: {foot: 3, mounted: 4}
+  from_band: 3
+  currents:
+    - {upto: 0.5, id: slow, difficulty: easy, rounds: 1, horse: 0}
+    - {upto: 1.5, id: moderate, difficulty: ordinary, rounds: 2, horse: 2}
+    - {upto: 3, id: fast, difficulty: hard, rounds: 3, horse: 10}
+    - {upto: 99, id: spate, difficulty: very_hard, rounds: 4, horse: 25}
+  horse_approx: true
+  cold_at: [20, 15, 10, 5]       # mean air temperature (C) above which the water is warm, cool, cold, very cold; else icy
 
 # Climbing: d100 at or under Agility + Fieldcraft / 2 + the surface's modifier + his load's, for each
 # `step_m` of height (a rope or ladder 10 m a step, a free climb 3 m). Failure: no progress this

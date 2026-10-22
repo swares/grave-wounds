@@ -65,6 +65,24 @@ named man who marches takes his band's chance of blistered feet (a minor wound o
 full chance for 20 km or more, less for a shorter day, a quarter once his feet have hardened after
 a week on the road, and none while they are still sore.
 
+**What he buys weighs.** Each thing bought from the price list adds its weight to his load: a
+musket about 5 kg, a blanket 2, a canteen 1.7, a mail hauberk 9.3 (from the records where they
+exist, the rest estimates). Food, a bed, a fare, a service and an animal weigh nothing on him.
+Taking the purchase back off his ledger takes its weight off too. **Coin weighs**: about a tenth
+of a kilo for a hundred medieval pennies, and a fat purse of silver is a load; paper money from the
+Civil War on next to nothing.
+
+**Pack animals and carts.** A packhorse, mule or wagon bought from the price list carries kit off
+him, though never what he fights in (his fighting order and his armour):
+
+{{table:pack_animals}}
+
+Wheels are slow off the road: a force with a cart, wagon or vehicle among its named men marches at
+{{wt_off_road}}% off the road and at {{wt_mud}}% of that in mud. Where the army does not feed it and
+the ground cannot graze it (open country, farmland, heath and hills graze), each animal eats its
+fodder from its owner's purse every night; a vehicle burns its fuel wherever it is. A man with no
+money for it sees his animals go short.
+
 **In a fight** a man's band costs his Dodge (his defence is the better of Parry and Dodge less
 that), and Overloaded or worse he cannot run. A green man (one term) fights a band heavier under
 fire. Each era fights in its usual order (the British of the Napoleonic wars with their packs on;
@@ -87,10 +105,18 @@ two steps of fatigue. **Cold water** takes his breath the first minute (a Nerve 
 minutes in icy water, 45 at 10-15 °C, he swims 10 worse for every ten minutes more (the 1-10-1
 rule; in 10 °C water half of a group of competent swimmers had failed within an hour).
 
-**Fords.** Infantry could wade to about 3 ft, cavalry 4 ft, guns 2 ft 4 in. On the travel map a
-force crossing an ordinary ford puts each named man with a Heavy load or worse to an Easy
-Agility check (Ride for a horseman); a force that chooses to risk a flooded ford (never with
-wagons or guns) puts every named man to a Very hard one. Swept off, he swims for the bank.
+**Fords.** Infantry could wade to about 3 ft, cavalry 4 ft, guns 2 ft 4 in. Each ford on the
+travel map has its own depth and current (fixed by its place, deeper and faster in flood). In
+water deeper than he wades, every named man is at risk; shallower, only a man with a Heavy load
+or worse. He makes an Agility check (Ride for a horseman) at the current's difficulty:
+
+{{table:ford_currents}}
+
+It is the current, not the depth, that sweeps men away: the 10th Hussars' ford on the Kabul River
+in 1879 was about 3 ft deep with a current of about 4 m/s, and 46 men drowned with 13 horses.
+Swept off, he takes the water's cold shock (the week's warmth sets how cold it is; a flood is a
+row colder), then swims for the bank for the current's minutes; a horseman's horse may drown
+too. A force may choose to risk a flooded ford (never with wagons or guns).
 
 **Climbing.** Agility + Fieldcraft ÷ 2, for each 10 m of a rope or ladder (3 m of a free climb):
 a ladder or slope +20, a knotted rope 0, a wet rope or a rough wall −20, a sheer face −40, less for
@@ -180,6 +206,17 @@ paroled man may not fight until he is exchanged. **Service**: in the Thirty Year
 Napoleon a captured man of the ranks might join his captors' regiment, and desert back when he
 could (at Stadtlohn in 1623 a thousand of four thousand prisoners joined Tilly, and most deserted).
 
+**The team's own captives.** A man the team takes is kept on its list. Each End of season each
+captive eats {{cap_keep}} Days a day from the leader's purse, and each not on parole tries to escape:
+his Stealth {{cap_stealth}} against the team's best Watch, {{cap_crowded}} worse for each captive more
+than the team's own number. He may be **ransomed** (his people pay the leader his era's ransom, an
+officer's at {{cap_officer}} times a soldier's pay), **exchanged** for one of the team held, put on
+**parole** (he gives his word, does not try to escape, and keeps himself), or **let go**.
+**Questioning** him is words across tongues with the team's best speaker of his tongue, or its
+interpreter: a critical, he tells all he knows; a success, something useful; a failure, little; a
+fumble, a wrong answer believed. (A postwar report credited the US Army's German-speaking
+interrogators, the Ritchie Boys, with nearly 60% of the credible intelligence gathered in Europe.)
+
 ## Camps {#camps}
 
 At the end of the march a force makes camp:
@@ -264,6 +301,14 @@ senior rolls Command first, at the rank's difficulty; the first to succeed is pr
 old rank falls vacant in turn. A man can be **reduced** to a lower rank at the GM's word. The roller suggests a deed for a man
 who put down two or more enemies, or their leader, in a fight; the GM confirms it.
 
+**Buying a commission.** In the British army of 1700 to 1871, most officers bought their rank. A
+British officer (or a man about to become one) may buy the next rank when it falls vacant, at the
+regulation price ({{buy_ensign}} for an ensign, {{buy_captain}} for a captain of the line), less the
+price of the commission he already holds; the unofficial price ran half again to double, which the
+GM may ask. On leaving the army he may **sell out** and take his commission's price with him.
+Free commissions still came by death in action and to sergeants promoted from the ranks (the
+ordinary roll above).
+
 **Pay.** Each day his force is fed by its army, a man earns his rank's pay, less what the army
 stopped for his rations and necessaries, paid into his purse at the end of the season. Days
 when his force's pay is **in arrears** are owed instead, until the GM says the arrears are paid.
@@ -275,7 +320,9 @@ names the winner, or the field map says who held the field), the field: each man
 
 {{table:finds}}
 
-His era takes its share (the medieval captain a third, the Swedish hospitals a tenth). Where
+His era takes its share (the medieval captain a third, the Swedish hospitals a tenth). The
+medieval third went to his lord: given to a patron who takes thirds, it is a gift and raises his
+Standing. Where
 plunder is forbidden (the Crimea's provost, the Lieber Code of 1863, the Hague rules of 1907),
 or past what a man may keep as a trophy, the **provost** rolls his Watch against the man's
 Stealth: if the provost wins, the loot is taken from him, and on the provost's critical or the

@@ -1,8 +1,10 @@
 """Character-scale hazards (data/hazards.yaml): who can swim, swimming and drowning, cold water,
 fords on the travel map, climbing, falls and chases. The pages (templates/ranks.js) repeat
-swim_ability, swim_target, swim_step, ford_risk, climb_target, fall and chase_step exactly, taking
+swim_ability, swim_target, swim_step, ford_water, ford_risk, horse_lost, water_cold, climb_target, fall and chase_step exactly, taking
 the dice in the same order."""
 from __future__ import annotations
+
+import math
 
 from .checks import check, opposed
 from .model import Data
@@ -59,10 +61,38 @@ def cold_shock(d: Data, nerve: int, cold: int, roll: int) -> dict:
     return check(d, nerve + _cfg(d)["cold"][cold]["shock"], "ordinary", roll)
 
 
-def ford_risk(d: Data, water: str, band: int) -> str | None:
-    """The difficulty a man of this load band crosses at, or None if this water is no risk to him."""
-    F = _cfg(d)["fords"][water]
-    return F["difficulty"] if band >= F["from_band"] else None
+def ford_water(d: Data, water: str, fd: float, fc: float) -> dict:
+    """A ford's water: its depth (ft) and current (m/s) at fractions fd and fc of its water's span
+    (fixed by the hex), and the current's band. -> {"depth", "current", "band": {...}}"""
+    F = _cfg(d)["fords"]
+    W = F["water"][water]
+    r1 = lambda x: math.floor(x * 10 + 0.5) / 10
+    depth = r1(W["depth"][0] + fd * (W["depth"][1] - W["depth"][0]))
+    current = r1(W["current"][0] + fc * (W["current"][1] - W["current"][0]))
+    band = next(b for b in F["currents"] if current <= b["upto"])
+    return {"depth": depth, "current": current, "band": band}
+
+
+def ford_risk(d: Data, depth: float, band_id: str, load_band: int, mounted: bool) -> str | None:
+    """The difficulty he crosses at, or None if this water is no risk to him: within his wading
+    depth only a heavy load is at risk; deeper, anyone."""
+    F = _cfg(d)["fords"]
+    b = next(x for x in F["currents"] if x["id"] == band_id)
+    deep = depth > F["wade"]["mounted" if mounted else "foot"]
+    return b["difficulty"] if deep or load_band >= F["from_band"] else None
+
+
+def horse_lost(d: Data, band_id: str, roll: int) -> bool:
+    """A mounted man swept off: is his horse drowned (d100 at or under the current's horse %)?"""
+    b = next(x for x in _cfg(d)["fords"]["currents"] if x["id"] == band_id)
+    return roll <= b["horse"]
+
+
+def water_cold(d: Data, high: float, low: float, flooded: bool) -> int:
+    """The row of `cold` for the week's water: by the day's mean air temperature, a flood a row colder."""
+    mean, at = (high + low) / 2, _cfg(d)["fords"]["cold_at"]
+    row = next((i for i, t in enumerate(at) if mean > t), len(at))
+    return min(len(at), row + (1 if flooded else 0))
 
 
 def climb_target(d: Data, agi: int, fieldcraft: int, surface: str, band: int, armour: str) -> int:

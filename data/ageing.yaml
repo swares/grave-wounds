@@ -64,3 +64,36 @@ worn_out:
   end_age: 40
   any_below: 25
   approx: true
+
+# Enlistment ages (project doc "ages-women-fords-research"). A man enlists at his era's start age,
+# raised to his army's legal least (`min`); then d100: at or under `under` he is a boy under age
+# (the least less 1 to `under_years`, a drummer or a boy who lied), over 100 - `older` an older
+# recruit (from `older_from` to the army's most plus `over_years`: over the most, he lied about it).
+# A man under age or over it is found out at `found_out` % each End of season and sent home, until
+# he reaches the least (a boy) or serves out his first term (an older man). A recruit who enlisted
+# at `older_from` or more takes `older_wear` times the Wear for each step of service (Civil War,
+# NY regiments: men enlisting at about 39 had 1.8 times the odds of dying of disease of men of 20 in
+# their first year, 2.4 after; the US let men of 38 or more go in 1943 as "less physically fit").
+# An army with no limits found (the Plains nations' young men went to war when they could) rolls
+# none. Shares are estimates but for the Union (about a tenth under 18) and British boys of WWI
+# (some 250,000 under 19, about 4% of those who served; Historyanswers, unsourced there).
+enlist:
+  under_years: 3
+  over_years: 6
+  older_from: 38
+  older_wear: 2
+  found_out: 10
+  found_out_approx: true
+  shares: {default: {under: 2, older: 2}, civil_war: {under: 10, older: 1}, wwi: {under: 4, older: 2}, wwii: {under: 2, older: 1}}
+  shares_approx: true
+  eras:
+    medieval: {min: 15, max: 60, source: "Statute of Winchester, 1285: men of 15 to 60 liable (Militia (England), Wikipedia)"}
+    thirty_years: {min: 16, max: 50, approx: true, source: "No muster age rules found: the British limits of the early 1700s, less a year"}
+    horse_musket: {min: 17, max: 50, source: "British recruits of 17 to 50 in the early 1700s (Recruitment in the British Army)", regions: {french: {min: 18, max: 30, source: "Jourdan law, 1798: volunteers 18 to 30, conscripts 20 to 25"}}}
+    crimea: {min: 17, max: 25, source: "Victorian recruits 17 to 25 (reubique.com, Physical requirements)"}
+    civil_war: {min: 18, max: 45, max_approx: true, source: "Union enlistment papers certified 18 or more; no legal most found (some 15,000 up to 44 served)"}
+    wwi: {min: 18, max: 40, source: "British: 18 to enlist, 19 to serve overseas; 40 under the Military Service Act 1916 (later 51)", regions: {us: {min: 21, max: 30, source: "Selective Service Act 1917: 21 to 30 (later 45)"}}}
+    wwii: {min: 18, max: 41, source: "British: 18 to 41 in 1939 (51 by 1942)", regions: {us: {min: 18, max: 37}, us_pacific: {min: 18, max: 37}}}
+    korea: {min: 18, max: 26, source: "US draft, 1948 act and 1951 amendment: 18 (18½) to 26"}
+    vietnam: {min: 18, max: 26, approx: true, source: "The 1951 framework stayed in force (inference)"}
+    modern: {min: 17, max: 42, source: "US Army: 35 until January 2006, 42 from June 2006 (Army News, 2006)"}

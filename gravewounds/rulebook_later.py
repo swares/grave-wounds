@@ -169,6 +169,15 @@ def _era_start(era: dict) -> int:
     return int(digits) if digits.isdigit() else 0
 
 
+def _woman_career(w: dict, careers: dict, c: str) -> str:
+    """A career open to women, with its own share and whether women took it disguised."""
+    own, hid = w.get("shares") or {}, w.get("disguised")
+    bits = [f"{own[c]:g}%"] if c in own else []
+    if hid is True or (isinstance(hid, list) and c in hid):
+        bits.append("disguised as a man")
+    return careers[c] + (f" ({', '.join(bits)})" if bits else "")
+
+
 def _women(d: Data) -> str:
     rows = []
     for E in sorted(d.teams.values(), key=_era_start):
@@ -177,7 +186,7 @@ def _women(d: Data) -> str:
             W = r.get("women")
             if W:
                 share = "chosen, never rolled" if W.get("share") is None else f"{W['share']:g}%"
-                rows.append([f"{E['name'].split(' (')[0]}: {r.get('short') or r['name']}", share, ", ".join(careers[c] for c in W["careers"])])
+                rows.append([f"{E['name'].split(' (')[0]}: {r.get('short') or r['name']}", share, ", ".join(_woman_career(W, careers, c) for c in W["careers"])])
     return _md(["Army", "Share", "Careers open to women"], rows)
 
 

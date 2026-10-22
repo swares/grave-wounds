@@ -67,24 +67,52 @@ regions:
     colours: ["#2e4f8a", "#7d5530", "#e6e0d2", "#4f5d3a"]
     names: [John, William, Samuel, Joseph, Daniel, Benjamin, Thomas, James, Nathan, Elijah, Ebenezer, Jonathan, Abraham, Isaac, Josiah, Peter]
     bynames: [Allen, Bradford, Clark, Cooper, Hale, Morgan, Porter, Sargent, Wheeler, Van Dyke, Ludwig, McKean]
+    women:
+      share: null
+      careers: [soldiers_wife, line, gunner]
+      shares: {soldiers_wife: 100}
+      names: [Mary, Elizabeth, Anne, Margaret, Sarah, Jane, Catherine, Ellen, Hannah, Martha, Susan, Alice]
+      closed: "A few women fought in the line or at the guns; these tables have no record of them in the other careers."
+      source: "Encyclopedia.com, Camp Followers: adult women were about 3% of the Continental Army's strength; Margaret Corbin fought beside her husband's gun at Fort Washington in 1776, and Deborah Sampson enlisted as Robert Shurtleff in 1782. No share of women who fought."
   - id: british_rev
     name: "The British Army in America (1775-1783)"
     table: revolution-1775-83-all-hits
     colours: ["#a33a2e", "#e6e0d2", "#2f3f6e", "#5c6b3a"]
     names: [John, William, Thomas, George, James, Richard, Robert, Henry, Edward, Charles, Patrick, Duncan, Hugh, Samuel, Francis, Joseph]
     bynames: [Smith, Taylor, Brown, Wright, Walker, Hughes, Murphy, Campbell, Fraser, Kelly, Morris, Lane]
+    women:
+      share: null
+      careers: [soldiers_wife]
+      shares: {soldiers_wife: 100}
+      names: [Mary, Elizabeth, Anne, Margaret, Sarah, Jane, Catherine, Ellen, Hannah, Martha, Susan, Alice]
+      closed: "Soldiers' wives went with the regiment on the strength, not in its fighting careers."
+      source: "Encyclopedia.com, Camp Followers: up to six women a company in the American war, rationed for nursing, washing and cooking."
   - id: british_pen
     name: "The British in the Peninsula (1808-1814)"
     table: peninsular-1808-14-all-hits
     colours: ["#a33a2e", "#2f3f3a", "#e6e0d2", "#2f3f6e"]
     names: [John, William, Thomas, James, George, Richard, Edward, Patrick, Michael, Daniel, Donald, Robert, Benjamin, Henry, Joseph, Edmund]
     bynames: [Harris, Costello, Green, Lawrence, Morris, Wheeler, Kincaid, Murray, Ross, Gallagher, Price, Evans]
+    women:
+      share: null
+      careers: [soldiers_wife]
+      shares: {soldiers_wife: 100}
+      names: [Mary, Elizabeth, Anne, Margaret, Sarah, Jane, Catherine, Ellen, Hannah, Martha, Susan, Alice]
+      closed: "Soldiers' wives went with the regiment on the strength, not in its fighting careers."
+      source: "Historic UK, Camp Followers: six wives in every hundred men were allowed to go overseas, chosen by lot."
   - id: french
     name: "The French Empire in Spain (1808-1814)"
     table: peninsular-1808-14-all-hits
     colours: ["#2b4a8a", "#e6e0d2", "#8a2b3c", "#2f3f6e"]
     names: [Jean, Pierre, Jacques, François, Louis, Antoine, Joseph, Nicolas, Michel, Étienne, Claude, André, Jan, Józef, Karl, Paul]
     bynames: [Martin, Bernard, Dubois, Moreau, Laurent, Lefebvre, Roux, Fournier, Girard, Mercier, Nowak, Kowalski]
+    women:
+      share: null
+      careers: [vivandiere]
+      shares: {vivandiere: 100}
+      names: [Marie, Jeanne, Louise, Marguerite, Catherine, Anne, Françoise, Madeleine, Rose, Thérèse]
+      closed: "French women served with their battalions as vivandières and blanchisseuses, not in its other careers."
+      source: "The law of 30 April 1793 dismissed all women from the armies but four a battalion, who washed and sold drink; the arrêté of 26 July 1800 held vivandières and blanchisseuses to four a battalion and two a squadron (Revista THEL); they nursed the wounded and gave out drink, often free, on battle days (Vivandière, Wikipedia)."
   - id: us_1812
     name: "The United States (1812-1815)"
     table: war-1812-all-hits
@@ -276,6 +304,38 @@ careers:
       - {to: 70, skill: letters, text: "Kept accounts of what the soldiers owed."}
       - {to: 85, skill: leechcraft, text: "Nursed the wounded after a battle."}
       - {to: 100, skill: dodge, text: "Was caught in the baggage when the enemy broke through.", wound: true}
+  - id: vivandiere
+    name: "Vivandière or blanchisseuse"
+    main: persuade
+    second: leechcraft
+    prefers: [end, pres, wits, nerve, agi, str]
+    wound: 10
+    wound_weapon: musket_smoothbore
+    kit: {default: none}
+    weapon: {default: dagger}
+    terms:
+      - {to: 20, skill: craft, text: "Washed the battalion's linen on the march."}
+      - {to: 40, skill: letters, text: "Kept the account of what the men owed her."}
+      - {to: 55, skill: ride, text: "Drove her cart up with the baggage."}
+      - {to: 70, skill: fieldcraft, text: "Found brandy and bread where there was none."}
+      - {to: 85, skill: leechcraft, text: "Tended the wounded after the battle."}
+      - {to: 100, skill: dodge, text: "Gave out drink, free, in the firing line on a battle day.", wound: true}
+  - id: soldiers_wife
+    name: "Soldier's wife on the strength"
+    main: craft
+    second: leechcraft
+    prefers: [end, pres, wits, nerve, agi, str]
+    wound: 10
+    wound_weapon: musket_smoothbore
+    kit: {default: none}
+    weapon: {default: dagger}
+    terms:
+      - {to: 20, skill: craft, text: "Washed and mended for the company for her ration."}
+      - {to: 40, skill: fieldcraft, text: "Cooked for her mess on the march."}
+      - {to: 55, skill: leechcraft, text: "Nursed the sick in the regimental hospital."}
+      - {to: 70, skill: persuade, text: "Drew the lot to go overseas with the regiment."}
+      - {to: 85, skill: stealth, text: "Went over a field after a battle for what she could find."}
+      - {to: 100, skill: dodge, text: "Carried water to the gun line under fire.", wound: true}
 
 old_wound:
   - {to: 70, kind: mark, text: "a healed scar"}

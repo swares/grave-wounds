@@ -138,10 +138,11 @@ regions:
     bynames: [Smith, Johnson, Williams, Brown, Jones, Garcia, Miller, Davis, Rodriguez, Martinez, Hernandez, Wilson]
     women:
       share: 11.4
-      careers: [medic, radioman, mp, nco, officer]
+      careers: [medic, radioman, mp, nco, officer, fet]
+      shares: {fet: 100}
       names: [Jessica, Ashley, Jennifer, Amanda, Sarah, Stephanie, Nicole, Melissa, Elizabeth, Heather, Maria, Tiffany]
       closed: "Infantry, armour, combat engineer and sniper careers were closed to women until 2016; women led and served in military police, medical and signal units."
-      source: "CRS, Women in Combat: Issues for Congress (R42075, 2013): in February 2013 women were 11.4% of the US forces deployed; 299,548 had deployed to Iraq and Afghanistan since 2001."
+      source: "CRS, Women in Combat: Issues for Congress (R42075, 2013): in February 2013 women were 11.4% of the US forces deployed; 299,548 had deployed to Iraq and Afghanistan since 2001. Female Engagement Teams and Lionesses, two or three women attached to infantry to search and talk with women (Leatherneck): at Fallujah on 23 June 2005 three women were killed and eleven wounded."
   - id: uk_2005
     name: "British forces in Iraq and Afghanistan, 2003-14"
     short: "UK 2003-14"
@@ -365,6 +366,22 @@ careers:
       - {to: 70, skill: persuade, text: "Wrote to the families of the dead."}
       - {to: 85, skill: rifle, text: "Led an assault on a defended position.", wound: true}
       - {to: 100, skill: command, text: "Held the platoon together when it was cut off.", wound: true}
+  - id: fet
+    name: "Female Engagement Team or Lioness"
+    main: persuade
+    second: watch
+    prefers: [pres, wits, nerve, end, agi, str]
+    wound: 15
+    wound_weapon: mine_ied
+    kit: {default: ww2_rifleman}
+    weapon: {default: rifle_assault}
+    terms:
+      - {to: 20, skill: craft, text: "Learned the local customs and greetings before deploying."}
+      - {to: 40, skill: persuade, text: "Talked with the women of a village the men could not speak to."}
+      - {to: 55, skill: watch, text: "Searched women at a checkpoint for weapons."}
+      - {to: 70, skill: rifle, text: "Went out on patrols attached to an infantry company."}
+      - {to: 85, skill: leechcraft, text: "Gave basic medical care to village women and children."}
+      - {to: 100, skill: dodge, text: "Was in a convoy hit by a suicide bomber, as at Fallujah in 2005.", wound: true}
 
 old_wound:
   - {to: 70, kind: mark, text: "a healed scar"}

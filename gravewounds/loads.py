@@ -21,6 +21,52 @@ def kit_class(d: Data, kit: str | None) -> str:
     return d.wounds["combat"]["characteristics"]["toil"]["load"].get(kit or "", "light")
 
 
+def _w(d: Data) -> dict:
+    return d.weights or {}
+
+
+def item_kg(d: Data, row: dict) -> float:
+    """What a price-list row weighs once bought (0 for what is eaten, a lodging, a fare, a service
+    or an animal): its own kg, else the first pattern its name matches, else its category's."""
+    import re
+    W = _w(d)
+    if row.get("cat") in W.get("not_carried", []):
+        return 0
+    if "kg" in row:
+        return row["kg"]
+    for p in W.get("patterns", []):
+        if re.search(p["match"], row["name"], re.I):
+            return p["kg"]
+    return W.get("categories", {}).get(row.get("cat"), 0.5)
+
+
+def animal_of(d: Data, row: dict) -> str | None:
+    """The pack animal or vehicle a horse or travel row buys, or None."""
+    import re
+    if row.get("cat") not in ("horse", "travel"):
+        return None
+    return next((a["id"] for a in _w(d).get("animals", []) if re.search(a["match"], row["name"], re.I)), None)
+
+
+def coin_kg(d: Data, eid: str, days: float) -> float:
+    """What his purse weighs: his era's kg a Day of its coin."""
+    return max(0, days) * _w(d).get("coin_kg_day", {}).get(eid, 0)
+
+
+def carry_kg(d: Data, animals: list) -> float:
+    """What his pack animals and carts carry."""
+    loads = {a["id"]: a["load"] for a in _w(d).get("animals", [])}
+    return sum(loads.get(a, 0) for a in animals or [])
+
+
+def carried(d: Data, eid: str, order: str, kit: str | None, extra: float = 0, carry: float = 0) -> float:
+    """His load less what his animals carry, never below his fighting order and armour."""
+    total = load_kg(d, eid, order, kit, extra)
+    if not carry:
+        return total
+    return max(load_kg(d, eid, "fighting", kit, 0), total - carry)
+
+
 def load_kg(d: Data, eid: str, order: str, kit: str | None, extra: float = 0) -> float:
     """His load in kg: his era's order, his armour where the orders leave it out, and the GM's extra."""
     E = era_loads(d, eid)

@@ -5065,6 +5065,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Forester or huntsman | Fieldcraft | Stealth | 10% | bow |
 | Servant or groom | Ride | Watch | 5% | dagger |
 | Merchant | Persuade | Letters | 5% | dagger |
+| Townswoman or castle household at a siege | Craft | Watch | 10% | crossbow |
 
 | Career | d100 | Skill | Event |
 |---|---|---|---|
@@ -5140,6 +5141,12 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Merchant | 56-70 | Command | Hired and paid guards for a caravan. |
 | Merchant | 71-85 | Watch | Was cheated once and learned from it. |
 | Merchant | 86-00 | Blade | Fought off robbers on the road. * |
+| Townswoman or castle household at a siege | 01-20 | Craft | Baked and brewed for the garrison through a winter. |
+| Townswoman or castle household at a siege | 21-40 | Leechcraft | Tended the wounded in the hall after an assault. |
+| Townswoman or castle household at a siege | 41-55 | Watch | Kept watch on the walls by night. |
+| Townswoman or castle household at a siege | 56-70 | Persuade | Bargained for grain brought in by the sea gate. |
+| Townswoman or castle household at a siege | 71-85 | Sling | Dropped stones on the besiegers' engines from the walls. |
+| Townswoman or castle household at a siege | 86-00 | Dodge | Rebuilt the barricades under the besiegers' shot. * |
 
 | Career | Latin East | Gotland and the Baltic | England | France |
 |---|---|---|---|---|
@@ -5155,6 +5162,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Forester or huntsman | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow |
 | Servant or groom | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
 | Merchant | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword |
+| Townswoman or castle household at a siege | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|
@@ -5170,6 +5178,8 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 **Thirty Years' War (1618-1648):** made exactly as the medieval era's, in the same five steps, from the tables below. Fighting skills: Musket, Pistol, Blade, Pike, Brawl, Parry, Dodge. Each region takes its war's wound table, for old wounds and for the roller.
 
 **Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
+
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The Swedish army (Swedes, Finns, Scots and Germans) (no reliable share: chosen, never rolled): woman of the baggage train (tross), sutler or camp follower; The Imperial army and the Catholic League (no reliable share: chosen, never rolled): woman of the baggage train (tross), sutler or camp follower. Elsewhere these careers were closed to them.
 
 | Skill | Starts at | Weapons |
 |---|---|---|
@@ -5224,6 +5234,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Field surgeon (feldscher) | Leechcraft | Craft | 5% | matchlock |
 | Sutler or camp follower | Persuade | Watch | 5% | sabre |
 | Chaplain or clerk | Letters | Persuade | 3% | matchlock |
+| Woman of the baggage train (Tross) | Craft | Fieldcraft | 10% | matchlock |
 
 | Career | d100 | Skill | Event |
 |---|---|---|---|
@@ -5281,6 +5292,12 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Chaplain or clerk | 56-70 | Watch | Saw a town sacked and could not stop it. |
 | Chaplain or clerk | 71-85 | Command | Kept a rout from turning into a massacre. |
 | Chaplain or clerk | 86-00 | Ride | Carried dispatches between two armies. |
+| Woman of the baggage train (Tross) | 01-20 | Craft | Washed, sewed and mended for the company in winter quarters. |
+| Woman of the baggage train (Tross) | 21-40 | Persuade | Sold beer and brandy from the company's wagon. |
+| Woman of the baggage train (Tross) | 41-55 | Leechcraft | Nursed the sick through a camp fever. |
+| Woman of the baggage train (Tross) | 56-70 | Fieldcraft | Foraged the country bare on the march. |
+| Woman of the baggage train (Tross) | 71-85 | Stealth | Stripped the dead after a battle before the provost came. |
+| Woman of the baggage train (Tross) | 86-00 | Dodge | Fled with the Tross when the enemy's horse fell on it. * |
 
 | Career | The Swedish army | The Imperial army and the Catholic League |
 |---|---|---|
@@ -5293,6 +5310,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Field surgeon (feldscher) | Unarmoured; sabre | Unarmoured; sabre |
 | Sutler or camp follower | Unarmoured; sabre | Unarmoured; sabre |
 | Chaplain or clerk | Unarmoured; sabre | Unarmoured; sabre |
+| Woman of the baggage train (Tross) | Unarmoured; dagger | Unarmoured; dagger |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|
@@ -5307,6 +5325,8 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 **Horse and musket (1775-1815):** made exactly as the medieval era's, in the same five steps, from the tables below. Fighting skills: Musket, Rifle, Pistol, Blade, Bayonet, Gunnery, Brawl, Parry, Dodge. Each region takes its war's wound table, for old wounds and for the roller.
 
 **Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
+
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The Continental Army (1775-1783) (no reliable share: chosen, never rolled): soldier's wife on the strength, line infantryman, artilleryman; The British Army in America (1775-1783) (no reliable share: chosen, never rolled): soldier's wife on the strength; The British in the Peninsula (1808-1814) (no reliable share: chosen, never rolled): soldier's wife on the strength; The French Empire in Spain (1808-1814) (no reliable share: chosen, never rolled): vivandière or blanchisseuse. Elsewhere these careers were closed to them.
 
 | Skill | Starts at | Weapons |
 |---|---|---|
@@ -5365,6 +5385,8 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Scout or ranger | Fieldcraft | Rifle | 15% | musket |
 | Sailor or marine | Seamanship | Musket | 15% | musket |
 | Sutler or camp follower | Persuade | Watch | 5% | musket |
+| Vivandière or blanchisseuse | Persuade | Leechcraft | 10% | musket |
+| Soldier's wife on the strength | Craft | Leechcraft | 10% | musket |
 
 | Career | d100 | Skill | Event |
 |---|---|---|---|
@@ -5428,6 +5450,18 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Sutler or camp follower | 56-70 | Letters | Kept accounts of what the soldiers owed. |
 | Sutler or camp follower | 71-85 | Leechcraft | Nursed the wounded after a battle. |
 | Sutler or camp follower | 86-00 | Dodge | Was caught in the baggage when the enemy broke through. * |
+| Vivandière or blanchisseuse | 01-20 | Craft | Washed the battalion's linen on the march. |
+| Vivandière or blanchisseuse | 21-40 | Letters | Kept the account of what the men owed her. |
+| Vivandière or blanchisseuse | 41-55 | Ride | Drove her cart up with the baggage. |
+| Vivandière or blanchisseuse | 56-70 | Fieldcraft | Found brandy and bread where there was none. |
+| Vivandière or blanchisseuse | 71-85 | Leechcraft | Tended the wounded after the battle. |
+| Vivandière or blanchisseuse | 86-00 | Dodge | Gave out drink, free, in the firing line on a battle day. * |
+| Soldier's wife on the strength | 01-20 | Craft | Washed and mended for the company for her ration. |
+| Soldier's wife on the strength | 21-40 | Fieldcraft | Cooked for her mess on the march. |
+| Soldier's wife on the strength | 41-55 | Leechcraft | Nursed the sick in the regimental hospital. |
+| Soldier's wife on the strength | 56-70 | Persuade | Drew the lot to go overseas with the regiment. |
+| Soldier's wife on the strength | 71-85 | Stealth | Went over a field after a battle for what she could find. |
+| Soldier's wife on the strength | 86-00 | Dodge | Carried water to the gun line under fire. * |
 
 | Career | The Continental Army | The British Army in America | The British in the Peninsula | The French Empire in Spain | The United States |
 |---|---|---|---|---|---|
@@ -5441,6 +5475,8 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Scout or ranger | Unarmoured; rifle | Unarmoured; rifle | Unarmoured; rifle | Unarmoured; rifle | Unarmoured; rifle |
 | Sailor or marine | Unarmoured; musket | Unarmoured; musket | Unarmoured; musket | Unarmoured; musket | Unarmoured; musket |
 | Sutler or camp follower | Unarmoured; pistol | Unarmoured; pistol | Unarmoured; pistol | Unarmoured; pistol | Unarmoured; pistol |
+| Vivandière or blanchisseuse | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
+| Soldier's wife on the strength | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|
@@ -5457,7 +5493,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 **Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
 
-**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The French Army of the East (no reliable share: chosen, never rolled): cantinière or canteen-keeper. Elsewhere these careers were closed to them.
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The British Army in the Crimea (no reliable share: chosen, never rolled): nurse at scutari or balaklava; The French Army of the East (no reliable share: chosen, never rolled): cantinière or canteen-keeper. Elsewhere these careers were closed to them.
 
 | Skill | Starts at | Weapons |
 |---|---|---|
@@ -5517,6 +5553,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Officer | Command | Pistol | 25% | rifle-musket |
 | Surgeon or orderly | Leechcraft | Craft | 5% | rifle-musket |
 | Cantinière or canteen-keeper | Persuade | Leechcraft | 10% | rifle-musket |
+| Nurse at Scutari or Balaklava | Leechcraft | Letters | 3% | rifle-musket |
 
 | Career | d100 | Skill | Event |
 |---|---|---|---|
@@ -5580,6 +5617,12 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Cantinière or canteen-keeper | 56-70 | Fieldcraft | Found food and drink where there was none. |
 | Cantinière or canteen-keeper | 71-85 | Leechcraft | Tended the wounded after an assault. |
 | Cantinière or canteen-keeper | 86-00 | Dodge | Carried drink to the men in the front line under fire. * |
+| Nurse at Scutari or Balaklava | 01-20 | Craft | Scrubbed a ward and boiled its linen. |
+| Nurse at Scutari or Balaklava | 21-40 | Letters | Wrote letters home for the dying. |
+| Nurse at Scutari or Balaklava | 41-55 | Leechcraft | Nursed a ward through the cholera. |
+| Nurse at Scutari or Balaklava | 56-70 | Persuade | Got stores out of the purveyor against the regulations. |
+| Nurse at Scutari or Balaklava | 71-85 | Watch | Walked the wards by lamplight. |
+| Nurse at Scutari or Balaklava | 86-00 | Leechcraft | Nursed in the huts at Balaklava within range of the siege. * |
 
 | Career | British | French | Russian |
 |---|---|---|---|
@@ -5593,6 +5636,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Officer | Unarmoured; revolver | Unarmoured; revolver | Unarmoured; revolver |
 | Surgeon or orderly | Unarmoured; revolver | Unarmoured; revolver | Unarmoured; revolver |
 | Cantinière or canteen-keeper | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
+| Nurse at Scutari or Balaklava | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|
@@ -5609,7 +5653,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 **Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
 
-**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The Union (1861-1865) (0.02%, enlisted disguised as men): infantryman, sharpshooter or skirmisher, cavalry trooper, artilleryman, scout, teamster or packer; The Confederacy (1861-1865) (0.03%, enlisted disguised as men): infantryman, sharpshooter or skirmisher, cavalry trooper, artilleryman, scout, teamster or packer. Elsewhere these careers were closed to them.
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The Union (1861-1865) (0.02%, enlisted disguised as men): infantryman, sharpshooter or skirmisher, cavalry trooper, artilleryman, scout, teamster or packer, army nurse, vivandière or daughter of the regiment; The Confederacy (1861-1865) (0.03%, enlisted disguised as men): infantryman, sharpshooter or skirmisher, cavalry trooper, artilleryman, scout, teamster or packer. Elsewhere these careers were closed to them.
 
 | Skill | Starts at | Weapons |
 |---|---|---|
@@ -5670,6 +5714,8 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Surgeon or hospital steward | Leechcraft | Craft | 5% | rifle-musket |
 | Scout | Fieldcraft | Rifle | 15% | revolver |
 | Teamster or packer | Ride | Craft | 5% | revolver |
+| Army nurse | Leechcraft | Letters | 3% | rifle-musket |
+| Vivandière or daughter of the regiment | Leechcraft | Persuade | 10% | rifle-musket |
 
 | Career | d100 | Skill | Event |
 |---|---|---|---|
@@ -5727,6 +5773,18 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Teamster or packer | 56-70 | Watch | Guarded the train at night. |
 | Teamster or packer | 71-85 | Brawl | Fought off raiders at the wagons. * |
 | Teamster or packer | 86-00 | Ride | Brought the train through a flooded ford. |
+| Army nurse | 01-20 | Craft | Cooked special diets in a general hospital. |
+| Army nurse | 21-40 | Letters | Wrote letters home for the wounded. |
+| Army nurse | 41-55 | Leechcraft | Dressed wounds on a hospital transport. |
+| Army nurse | 56-70 | Persuade | Faced down a surgeon over a drunk steward. |
+| Army nurse | 71-85 | Watch | Sat up with the fever cases. |
+| Army nurse | 86-00 | Dodge | Nursed in a field hospital within range of the guns. * |
+| Vivandière or daughter of the regiment | 01-20 | Craft | Cooked and washed for the regiment in camp. |
+| Vivandière or daughter of the regiment | 21-40 | Ride | Rode with the ambulances on the march. |
+| Vivandière or daughter of the regiment | 41-55 | Persuade | Sold to the men from the regiment's stores. |
+| Vivandière or daughter of the regiment | 56-70 | Leechcraft | Bound wounds at the regiment's aid station. |
+| Vivandière or daughter of the regiment | 71-85 | Fieldcraft | Found her way back to the regiment after a rout. |
+| Vivandière or daughter of the regiment | 86-00 | Dodge | Tended the wounded on the field under fire, as Anna Etheridge did. * |
 
 | Career | The Union | The Confederacy | The US Army on the frontier |
 |---|---|---|---|
@@ -5739,6 +5797,8 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Surgeon or hospital steward | Unarmoured; revolver | Unarmoured; revolver | Unarmoured; revolver |
 | Scout | Unarmoured; rifle-musket | Unarmoured; rifle-musket | Unarmoured; rifle-musket |
 | Teamster or packer | Unarmoured; revolver | Unarmoured; revolver | Unarmoured; revolver |
+| Army nurse | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch |
+| Vivandière or daughter of the regiment | Unarmoured; revolver | Unarmoured; revolver | Unarmoured; revolver |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|
@@ -5868,6 +5928,8 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 **Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
 
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The British Empire (no reliable share: chosen, never rolled): military nurse, army auxiliary; The United States (1917-1918) (no reliable share: chosen, never rolled): military nurse. Elsewhere these careers were closed to them.
+
 | Skill | Starts at | Weapons |
 |---|---|---|
 | Rifle | Agility / 2 | rifle |
@@ -5925,6 +5987,8 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Corporal or sergeant | Command | Rifle | 25% | rifle |
 | Junior officer | Command | Pistol | 30% | rifle |
 | Gunner or trench mortarman | Gunnery | Craft | 15% | mortar |
+| Military nurse | Leechcraft | Letters | 3% | mortar |
+| Army auxiliary | Craft | Signals | 3% | mortar |
 
 | Career | d100 | Skill | Event |
 |---|---|---|---|
@@ -5988,6 +6052,18 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Gunner or trench mortarman | 56-70 | Signals | Took fire orders by telephone from the front. |
 | Gunner or trench mortarman | 71-85 | Dodge | Was shelled in return by the enemy's guns. * |
 | Gunner or trench mortarman | 86-00 | Gunnery | Fired a box barrage round a raid. |
+| Military nurse | 01-20 | Craft | Kept a ward clean through a winter of trench foot. |
+| Military nurse | 21-40 | Letters | Kept the ward's records and wrote to families. |
+| Military nurse | 41-55 | Leechcraft | Nursed gas cases at a base hospital. |
+| Military nurse | 56-70 | Watch | Did night duty in a casualty clearing station. |
+| Military nurse | 71-85 | Persuade | Kept a shell-shocked man calm through a raid. |
+| Military nurse | 86-00 | Leechcraft | Nursed through an air raid on the hospital lines. * |
+| Army auxiliary | 01-20 | Craft | Cooked for a camp of a thousand men. |
+| Army auxiliary | 21-40 | Letters | Worked as a clerk at a base headquarters. |
+| Army auxiliary | 41-55 | Signals | Worked a telephone exchange behind the lines. |
+| Army auxiliary | 56-70 | Craft | Kept the vehicles of a motor transport depot running. |
+| Army auxiliary | 71-85 | Watch | Stood by in the trenches dug by the camp in the air raids. |
+| Army auxiliary | 86-00 | Dodge | Was in camp when the bombers came over at night, as at Abbeville in 1918. * |
 
 | Career | The British Empire | France | Germany | The United States |
 |---|---|---|---|---|
@@ -6001,6 +6077,8 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Corporal or sergeant | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
 | Junior officer | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
 | Gunner or trench mortarman | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar |
+| Military nurse | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch |
+| Army auxiliary | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|
@@ -6017,7 +6095,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 **Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
 
-**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The Soviet Union (3%): rifleman, machine gunner, sniper or scout, medic or stretcher-bearer, radio operator or signaller, corporal or sergeant, junior officer, tank crewman. Elsewhere these careers were closed to them.
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The United States in Europe (no reliable share: chosen, never rolled): army nurse, army auxiliary; The British Commonwealth (no reliable share: chosen, never rolled): army nurse, army auxiliary; The Soviet Union (3%): rifleman, machine gunner, sniper or scout, medic or stretcher-bearer, radio operator or signaller, corporal or sergeant, junior officer, tank crewman. Elsewhere these careers were closed to them.
 
 | Skill | Starts at | Weapons |
 |---|---|---|
@@ -6082,6 +6160,8 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Junior officer | Command | SMG and pistol | 30% | rifle |
 | Paratrooper or commando | SMG and pistol | Stealth | 30% | rifle |
 | Tank crewman | Gunnery | Drive | 20% | frags |
+| Army nurse | Leechcraft | Letters | 3% | frags |
+| Army auxiliary | Signals | Gunnery | 3% | frags |
 
 | Career | d100 | Skill | Event |
 |---|---|---|---|
@@ -6151,6 +6231,18 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Tank crewman | 56-70 | Watch | Watched for anti-tank guns from the turret. |
 | Tank crewman | 71-85 | Dodge | Bailed out of a burning tank. * |
 | Tank crewman | 86-00 | Gunnery | Fought a tank duel at long range. |
+| Army nurse | 01-20 | Craft | Set up a tented hospital on a muddy field. |
+| Army nurse | 21-40 | Letters | Kept the ward's charts and wrote to families. |
+| Army nurse | 41-55 | Leechcraft | Gave plasma and penicillin in an evacuation hospital. |
+| Army nurse | 56-70 | Watch | Did night duty on a ward of head wounds. |
+| Army nurse | 71-85 | Persuade | Talked a battle-fatigue case back to the line. |
+| Army nurse | 86-00 | Dodge | Nursed in a beachhead hospital within range of the guns. * |
+| Army auxiliary | 01-20 | Craft | Drove a lorry in a convoy. |
+| Army auxiliary | 21-40 | Letters | Worked as a clerk at a headquarters. |
+| Army auxiliary | 41-55 | Signals | Worked a switchboard through a raid. |
+| Army auxiliary | 56-70 | Gunnery | Worked the predictor of a mixed heavy anti-aircraft battery. |
+| Army auxiliary | 71-85 | Watch | Tracked raiders on the rangefinder at night. |
+| Army auxiliary | 86-00 | Dodge | Was on the gun site when the bombs fell. * |
 
 | Career | The United States in Europe | US Marines and Army in the Pacific | The British Commonwealth | Germany | The Soviet Union | Japan |
 |---|---|---|---|---|---|---|
@@ -6165,6 +6257,8 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Junior officer | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
 | Paratrooper or commando | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
 | Tank crewman | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
+| Army nurse | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch |
+| Army auxiliary | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|
@@ -6181,6 +6275,8 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 **Korean War (1950-1953):** made exactly as the medieval era's, in the same five steps, from the tables below. Fighting skills: Rifle, SMG and pistol, Machine gun, Grenade, Gunnery, Bayonet, Close combat, Brawl, Parry, Dodge. Each region takes its war's wound table, for old wounds and for the roller.
 
 **Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
+
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: US Army and Marines, 1950-51 (no reliable share: chosen, never rolled): army nurse; US Army on the outpost line, 1952-53 (no reliable share: chosen, never rolled): army nurse. Elsewhere these careers were closed to them.
 
 | Skill | Starts at | Weapons |
 |---|---|---|
@@ -6241,6 +6337,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Squad leader or sergeant | Command | Rifle | 25% | rifle |
 | Platoon leader | Command | SMG and pistol | 30% | rifle |
 | Tank crewman | Gunnery | Drive | 20% | frags |
+| Army nurse | Leechcraft | Letters | 2% | frags |
 
 | Career | d100 | Skill | Event |
 |---|---|---|---|
@@ -6310,6 +6407,12 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Tank crewman | 56-70 | Watch | Watched for anti-tank teams from the turret. |
 | Tank crewman | 71-85 | Dodge | Bailed out of a burning tank. * |
 | Tank crewman | 86-00 | Gunnery | Fired the main gun for an attack on a hill. |
+| Army nurse | 01-20 | Craft | Set up a MASH in a school house. |
+| Army nurse | 21-40 | Letters | Kept a ward's charts through a winter. |
+| Army nurse | 41-55 | Leechcraft | Nursed frostbite cases from the reservoir. |
+| Army nurse | 56-70 | Watch | Did night duty in a post-operative ward. |
+| Army nurse | 71-85 | Persuade | Kept a ward going when the generator failed. |
+| Army nurse | 86-00 | Dodge | Moved with the hospital when the front broke. * |
 
 | Career | US 1950-51 | US 1952-53 | Commonwealth | ROK | Chinese | North Korea |
 |---|---|---|---|---|---|---|
@@ -6324,6 +6427,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Squad leader or sergeant | Steel helmet only; rifle | M1 helmet, nylon flak vest; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Unarmoured; pistol/smg | Unarmoured; pistol/smg |
 | Platoon leader | Steel helmet only; pistol/smg | M1 helmet, nylon flak vest; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Unarmoured; pistol/smg | Unarmoured; pistol/smg |
 | Tank crewman | Steel helmet only; pistol/smg | M1 helmet, nylon flak vest; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Unarmoured; pistol/smg | Unarmoured; pistol/smg |
+| Army nurse | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|
@@ -6342,7 +6446,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 **Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
 
-**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: Army of the Republic of Vietnam (no reliable share: chosen, never rolled): medic or corpsman; People's Army of Vietnam (North Vietnamese) (no reliable share: chosen, never rolled): rifleman, point man, scout or sniper, combat engineer or sapper, medic or corpsman; National Liberation Front (Viet Cong) (no reliable share: chosen, never rolled): rifleman, point man, scout or sniper, combat engineer or sapper, medic or corpsman, radio operator, squad leader or sergeant, platoon leader. Elsewhere these careers were closed to them.
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The US Army (no reliable share: chosen, never rolled): army nurse; Army of the Republic of Vietnam (no reliable share: chosen, never rolled): medic or corpsman; People's Army of Vietnam (North Vietnamese) (no reliable share: chosen, never rolled): rifleman, point man, scout or sniper, combat engineer or sapper, medic or corpsman; National Liberation Front (Viet Cong) (no reliable share: chosen, never rolled): rifleman, point man, scout or sniper, combat engineer or sapper, medic or corpsman, radio operator, squad leader or sergeant, platoon leader. Elsewhere these careers were closed to them.
 
 | Skill | Starts at | Weapons |
 |---|---|---|
@@ -6405,6 +6509,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Radio operator | Signals | Fieldcraft | 20% | frags |
 | Squad leader or sergeant | Command | Rifle | 25% | assault rifle |
 | Platoon leader | Command | Rifle | 30% | assault rifle |
+| Army nurse | Leechcraft | Letters | 2% | frags |
 
 | Career | d100 | Skill | Event |
 |---|---|---|---|
@@ -6474,6 +6579,12 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Platoon leader | 56-70 | Persuade | Wrote to the families of the dead. |
 | Platoon leader | 71-85 | Rifle | Led an assault on a fortified village. * |
 | Platoon leader | 86-00 | Command | Held the company together when it was surrounded. * |
+| Army nurse | 01-20 | Craft | Worked twelve-hour shifts in an evacuation hospital. |
+| Army nurse | 21-40 | Letters | Kept the charts on a ward of amputees. |
+| Army nurse | 41-55 | Leechcraft | Triaged casualties off the helicopters. |
+| Army nurse | 56-70 | Watch | Did night duty on an intensive care ward. |
+| Army nurse | 71-85 | Persuade | Held a dying man's hand so he would not be alone. |
+| Army nurse | 86-00 | Dodge | Was on the hospital compound when the rockets came in. * |
 
 | Career | US Army | US Marines | ANZAC | ARVN | North Vietnam | Viet Cong |
 |---|---|---|---|---|---|---|
@@ -6488,6 +6599,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Radio operator | M1 helmet, nylon flak vest; assault rifle | M1 helmet, Doron vest; assault rifle | Unarmoured; assault rifle | Steel helmet only; assault rifle | Unarmoured; assault rifle | Unarmoured; assault rifle |
 | Squad leader or sergeant | M1 helmet, nylon flak vest; assault rifle | M1 helmet, Doron vest; assault rifle | Unarmoured; assault rifle | Steel helmet only; assault rifle | Unarmoured; assault rifle | Unarmoured; assault rifle |
 | Platoon leader | M1 helmet, nylon flak vest; assault rifle | M1 helmet, Doron vest; assault rifle | Unarmoured; assault rifle | Steel helmet only; assault rifle | Unarmoured; assault rifle | Unarmoured; assault rifle |
+| Army nurse | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|
@@ -6505,7 +6617,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 **Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
 
-**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: US forces in the Gulf, 1991 (7%): combat medic or corpsman, signaller or radio operator, military police or convoy gunner; Russian forces in Chechnya, 1994-96 (10%): combat medic or corpsman; US forces in Iraq and Afghanistan, 2003-14 (11.4%): combat medic or corpsman, signaller or radio operator, military police or convoy gunner, team or section leader, platoon leader; British forces in Iraq and Afghanistan, 2003-14 (8.3%): combat medic or corpsman, signaller or radio operator, military police or convoy gunner, team or section leader, platoon leader. Elsewhere these careers were closed to them.
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: US forces in the Gulf, 1991 (7%): combat medic or corpsman, signaller or radio operator, military police or convoy gunner; Russian forces in Chechnya, 1994-96 (10%): combat medic or corpsman; US forces in Iraq and Afghanistan, 2003-14 (11.4%): combat medic or corpsman, signaller or radio operator, military police or convoy gunner, team or section leader, platoon leader, female engagement team or lioness; British forces in Iraq and Afghanistan, 2003-14 (8.3%): combat medic or corpsman, signaller or radio operator, military police or convoy gunner, team or section leader, platoon leader. Elsewhere these careers were closed to them.
 
 | Skill | Starts at | Weapons |
 |---|---|---|
@@ -6568,6 +6680,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Armoured vehicle crewman | Gunnery | Drive | 20% | rpg |
 | Team or section leader | Command | Rifle | 25% | assault rifle |
 | Platoon leader | Command | Rifle | 30% | assault rifle |
+| Female Engagement Team or Lioness | Persuade | Watch | 15% | mine/ied |
 
 | Career | d100 | Skill | Event |
 |---|---|---|---|
@@ -6637,6 +6750,12 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Platoon leader | 56-70 | Persuade | Wrote to the families of the dead. |
 | Platoon leader | 71-85 | Rifle | Led an assault on a defended position. * |
 | Platoon leader | 86-00 | Command | Held the platoon together when it was cut off. * |
+| Female Engagement Team or Lioness | 01-20 | Craft | Learned the local customs and greetings before deploying. |
+| Female Engagement Team or Lioness | 21-40 | Persuade | Talked with the women of a village the men could not speak to. |
+| Female Engagement Team or Lioness | 41-55 | Watch | Searched women at a checkpoint for weapons. |
+| Female Engagement Team or Lioness | 56-70 | Rifle | Went out on patrols attached to an infantry company. |
+| Female Engagement Team or Lioness | 71-85 | Leechcraft | Gave basic medical care to village women and children. |
+| Female Engagement Team or Lioness | 86-00 | Dodge | Was in a convoy hit by a suicide bomber, as at Fallujah in 2005. * |
 
 | Career | UK 1982 | Argentina 1982 | US 1991 | US 1993 | Russia 1995 | Chechens | US 2003-14 | UK 2003-14 | Insurgents |
 |---|---|---|---|---|---|---|---|---|---|
@@ -6651,6 +6770,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Armoured vehicle crewman | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | PASGT vest and helmet; pistol/smg | Ranger Body Armor; pistol/smg | Steel helmet only; pistol/smg | No armour; pistol/smg | Interceptor vest; pistol/smg | Interceptor vest; pistol/smg | No armour; pistol/smg |
 | Team or section leader | Steel helmet only; assault rifle | Steel helmet only; assault rifle | PASGT vest and helmet; assault rifle | Ranger Body Armor; assault rifle | Steel helmet only; assault rifle | No armour; assault rifle | Interceptor vest; assault rifle | Interceptor vest; assault rifle | No armour; assault rifle |
 | Platoon leader | Steel helmet only; assault rifle | Steel helmet only; assault rifle | PASGT vest and helmet; assault rifle | Ranger Body Armor; assault rifle | Steel helmet only; assault rifle | No armour; assault rifle | Interceptor vest; assault rifle | Interceptor vest; assault rifle | No armour; assault rifle |
+| Female Engagement Team or Lioness | Steel helmet only; assault rifle | Steel helmet only; assault rifle | Steel helmet only; assault rifle | Steel helmet only; assault rifle | Steel helmet only; assault rifle | Steel helmet only; assault rifle | Steel helmet only; assault rifle | Steel helmet only; assault rifle | Steel helmet only; assault rifle |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|

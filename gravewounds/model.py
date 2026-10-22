@@ -119,6 +119,7 @@ class Data:
     languages: dict = field(default_factory=dict)   # tongues by army, bands, passing (data/languages.yaml)
     patrons: dict = field(default_factory=dict)     # standing, favours, a patron's fate (data/patrons.yaml)
     uses: dict = field(default_factory=dict)        # skills that do things on the travel map (data/uses.yaml)
+    weights: dict = field(default_factory=dict)     # item weights, coin, pack animals (data/weights.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -185,6 +186,7 @@ def load(root: str | Path = "data") -> Data:
     languages = _optional(root / "languages.yaml", {})
     patrons = _optional(root / "patrons.yaml", {})
     uses = _optional(root / "uses.yaml", {})
+    weights = _optional(root / "weights.yaml", {})
 
     data = Data(
         root=root,
@@ -226,6 +228,7 @@ def load(root: str | Path = "data") -> Data:
         languages=languages,
         patrons=patrons,
         uses=uses,
+        weights=weights,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -555,6 +558,8 @@ def validate(d: Data) -> None:
         errors += _checks_errors(d)
     if d.ranks:
         errors += _ranks_errors(d)
+    if d.weights:
+        errors += _weights_errors(d)
     if d.ageing:
         AG, stats = d.ageing, {"str", "agi", "end", "wits", "nerve", "pres"}
         fr = [b.get("from") for b in AG.get("decline", [])]
@@ -567,6 +572,13 @@ def validate(d: Data) -> None:
         for k in ("pres", "wits", "nerve"):
             if not isinstance((AG.get("maturity") or {}).get(k, {}).get("cap"), int):
                 errors.append(f"ageing.yaml: maturity {k} needs to and cap")
+        EN = AG.get("enlist") or {}
+        for eid, E in (EN.get("eras") or {}).items():
+            spans = [E, *(E.get("regions") or {}).values()]
+            if eid not in d.teams or any(not (0 < x.get("min", E["min"]) < x.get("max", E["max"])) for x in spans):
+                errors.append(f"ageing.yaml: enlist {eid} needs a known era and min under max")
+        if EN and not all(0 <= v.get(k, 0) <= 100 for v in EN.get("shares", {}).values() for k in ("under", "older")):
+            errors.append("ageing.yaml: enlist shares must be 0-100")
     if d.loads:
         LD = d.loads
         ups = [b.get("upto") for b in LD.get("bands", [])]
@@ -1653,6 +1665,41 @@ def _ranks_errors(d: Data) -> list[str]:
     return errors
 
 
+def _weight_pattern_errors(w: dict, where: str) -> list[str]:
+    """weights.yaml patterns: each compiles and has a weight."""
+    import re
+    errors = []
+    for p in w.get("patterns", []):
+        try:
+            re.compile(p.get("match", ""))
+        except re.error:
+            errors.append(f"{where}: pattern {p.get('match')!r} does not compile")
+        if not (isinstance(p.get("kg"), (int, float)) and p["kg"] > 0):
+            errors.append(f"{where}: pattern {p.get('match')!r} needs a weight")
+    return errors
+
+
+def _weights_errors(d: Data) -> list[str]:
+    """data/weights.yaml: patterns that compile with a weight; category weights; a coin weight an era
+    known; animals with unique ids, a pattern, a load and forage; road and mud factors 0-1."""
+    W, where = d.weights, "weights.yaml"
+    errors = _weight_pattern_errors(W, where)
+    if any(not (isinstance(v, (int, float)) and v >= 0) for v in (W.get("categories") or {}).values()):
+        errors.append(f"{where}: category weights must be 0 or more")
+    bad = sorted(set(W.get("coin_kg_day") or {}) - set(d.equipment))
+    if bad:
+        errors.append(f"{where}: coin_kg_day names unknown eras {bad}")
+    ids = [a.get("id") for a in W.get("animals", [])]
+    if len(set(ids)) != len(ids):
+        errors.append(f"{where}: animal ids must be unique")
+    for a in W.get("animals", []):
+        if not (a.get("match") and a.get("load", 0) > 0 and a.get("forage", -1) >= 0):
+            errors.append(f"{where}: animal {a.get('id')} needs a pattern, a load and forage")
+    if not all(0 < W.get(k, 1) <= 1 for k in ("off_road", "mud")):
+        errors.append(f"{where}: off_road and mud must be 0-1")
+    return errors
+
+
 def _checks_errors(d: Data) -> list[str]:
     """data/checks.yaml: difficulties with whole modifiers; haggle figures; each use names a skill
     some era has (or a characteristic), a known difficulty, a known skill or characteristic
@@ -1759,6 +1806,18 @@ def _team_errors(d: Data, era: dict) -> list[str]:
     return errors
 
 
+def _women_career_errors(w: dict, where: str, rid: str) -> list[str]:
+    """A women block's per-career settings: `disguised` and `shares` name its open careers."""
+    errors, open_ = [], set(w.get("careers") or [])
+    hid = w.get("disguised")
+    if isinstance(hid, list) and set(hid) - open_:
+        errors.append(f"{where}: region {rid} women disguised must name its open careers")
+    shares = w.get("shares") or {}
+    if set(shares) - open_ or any(not 0 < v <= 100 for v in shares.values()):
+        errors.append(f"{where}: region {rid} women shares must name its open careers, each over 0 and at most 100")
+    return errors
+
+
 def _women_errors(tables: dict, where: str, r: dict) -> list[str]:
     """A region's women block: known careers, a share (%) between 0 and 100 or null, name lists,
     and enough origins for a woman (shared or her own)."""
@@ -1770,6 +1829,7 @@ def _women_errors(tables: dict, where: str, r: dict) -> list[str]:
         errors.append(f"{where}: region {r['id']} women needs careers, all known")
     if W.get("share") is not None and not 0 < W["share"] <= 100:
         errors.append(f"{where}: region {r['id']} women share must be over 0 and at most 100 (or null)")
+    errors += _women_career_errors(W, where, r["id"])
     if any(k in W and not W[k] for k in ("names", "bynames")) or not W.get("source"):
         errors.append(f"{where}: region {r['id']} women name lists must not be empty, and the block needs a source")
     if not [o for o in tables["origins"] if o.get("who", "f") == "f"]:

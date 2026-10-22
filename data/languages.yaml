@@ -57,6 +57,22 @@ getting_by: 26
 among_days: 30
 source: "https://en.wikipedia.org/wiki/Operation_Greif"
 
+# A hired interpreter (the team builder): he speaks the team's own tongue and one other at
+# `figure` (rolled), and is unreliable at `unreliable` % (a whistleblower said 28% of one firm's
+# Afghan hires failed the language standard): an unreliable man's 90+ is a dangerous error. He is
+# hired for a season at `wage` Days a day (his era's, else `default`: no pay figures were found
+# before 1990; Iraqi interpreters began at $600 a month in 2005), and each End of season may be
+# killed (`hazard` %: about 30 in 1,000 a year died in Iraq, 2005-07, some fifteen times a US
+# soldier's rate; the Plains and later wars' interpreters were also killed).
+interpreters:
+  figure: [50, 85]
+  unreliable: 28
+  error_from: 90
+  wage: {default: 1, modern: 0.4}
+  hazard: {default: 0.5, modern: 1}
+  source: "https://www.strategypage.com/htmw/htintel/20081012.aspx"
+  approx: true
+
 tongues:
   english: {name: English}
   welsh: {name: Welsh}

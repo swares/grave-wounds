@@ -1,0 +1,104 @@
+# Weights (rules in gravewounds/loads.py `item_kg`, `carried`, repeated in templates/ranks.js;
+# research in the project doc "weights-research"). What a man buys from the price list adds to his
+# load (the extra kg on his sheet), unless it is eaten, a night's lodging, a fare or a service
+# (`not_carried`). An item's weight is its own `kg` in the price list where it has one, else the
+# first pattern here its name matches (case aside), else its category's. Weights in kg; sourced
+# figures in the patterns, the rest estimates (approx).
+not_carried: [food, lodging, travel, service, pay, horse]
+patterns:
+  # arms
+  - {match: "machine gun|MG42", kg: 11.6}
+  - {match: "BAR automatic|Browning automatic", kg: 9.45}
+  - {match: "RPG-7", kg: 7}
+  - {match: "Thompson", kg: 5.47}
+  - {match: "rifle-musket|Enfield rifle", kg: 4.3}
+  - {match: "Matchlock", kg: 7.5}
+  - {match: "musket|Brown Bess|Charleville", kg: 5}
+  - {match: "Garand", kg: 4.63}
+  - {match: "\\bAK\\b|AK-47|Kalashnikov|SVD", kg: 4}
+  - {match: "M16|M4 carbine|SLR", kg: 3.6}
+  - {match: "carbine|grease gun|Sten|MP40", kg: 3.5}
+  - {match: "rifle|Kar98|Gewehr|trade gun|Henry|Spencer", kg: 4.1}
+  - {match: "wheellock pistols", kg: 3.5}
+  - {match: "pistol|revolver|Glock|M1911", kg: 1.2}
+  - {match: "crossbow", kg: 6.6}
+  - {match: "longbow|bow stave", kg: 0.9}
+  - {match: "poleaxe|\\bbill\\b|war axe|\\bpike\\b", kg: 2.5}
+  - {match: "spear", kg: 2}
+  - {match: "saber|sword", kg: 1.4}
+  - {match: "bayonet|dagger|knife|machete", kg: 0.5}
+  - {match: "grenade|Mills bomb", kg: 0.6}
+  - {match: "100 rounds", kg: 3}
+  - {match: "\\bround\\b", kg: 0.03}
+  - {match: "RPG rocket", kg: 2.6}
+  - {match: "sheaf of 24 arrows", kg: 1.8}
+  - {match: "gunpowder", kg: 0.5}
+  # armour
+  - {match: "Milanese harness|squire's armour|cuirassier", kg: 20}
+  - {match: "harquebusier|pikeman's corslet", kg: 12}
+  - {match: "mail hauberk", kg: 9.3}
+  - {match: "brigandine", kg: 6}
+  - {match: "ESAPI|rifle plates", kg: 4}
+  - {match: "Interceptor", kg: 3.8}
+  - {match: "PASGT vest|flak vest|armoured vest", kg: 4}
+  - {match: "gambeson|doublet of fence|leather coat", kg: 4}
+  - {match: "shaffron", kg: 2.5}
+  - {match: "sallet|helmet", kg: 1.6}
+  # camp and kit
+  - {match: "pavilion|bell tent|wall tent|squad tent|pyramidal|Sibley", kg: 25}
+  - {match: "wedge|soldier's tent|mountain tent|pup tent|shelter tent", kg: 4}
+  - {match: "shelter half", kg: 1.5}
+  - {match: "sleeping bag|bedding roll|sleeping valise|Modular Sleep", kg: 2.5}
+  - {match: "blanket", kg: 2}
+  - {match: "poncho|groundsheet|ground sheet|basha|bivvy", kg: 0.8}
+  - {match: "canvas|linen|oilcloth|cloth", kg: 1.5}
+  - {match: "mattress", kg: 3}
+  - {match: "hammock|mosquito", kg: 0.6}
+  - {match: "medicine chest|aid bag|surgical instruments", kg: 3}
+  - {match: "chest", kg: 8}
+  - {match: "knapsack|rucksack|field pack|MOLLE", kg: 2.7}
+  - {match: "haversack", kg: 0.5}
+  - {match: "canteen cup", kg: 0.3}
+  - {match: "canteen", kg: 1.7}
+  - {match: "shovel|spade|axe \\(tool\\)", kg: 1.4}
+  - {match: "cooking pot", kg: 1.5}
+  - {match: "radio|satellite phone", kg: 1}
+  - {match: "rope|lariat|hemp", kg: 2}
+  - {match: "cord|tent line|halter", kg: 0.3}
+  - {match: "great lantern|lantern", kg: 0.8}
+  - {match: "candles|candle", kg: 0.5}
+  - {match: "binoculars", kg: 0.8}
+  - {match: "greatcoat|overcoat|cloak|parka", kg: 2.4}
+  - {match: "boots|shoe-pacs|shoepacs|shoes", kg: 1.5}
+  - {match: "whole clothing|whole issue|whole kit|whole outfit|ECWCS", kg: 10}
+categories: {clothing: 0.6, weapon: 2, armour: 4, shelter: 1.5, gear: 0.8, rope: 1, light: 0.3, fire: 0.2, navigation: 0.3, first_aid: 0.2, ammunition: 1}
+
+# Coin in his purse weighs too: about this many kg a Day of his era's money (100 English
+# pennies of 1412-64 about 0.1 kg, and an archer's Day 6d; a thaler 29 g; a Spanish dollar or a
+# shilling's silver; paper money nearly nothing).
+coin_kg_day: {medieval: 0.006, thirty_years: 0.004, horse_musket: 0.0056, crimea: 0.0056, civil_war: 0.0005, plains_nations: 0, wwi: 0.001, wwii: 0, korea: 0, vietnam: 0, modern: 0}
+
+# Pack animals and carts: bought from the price list (a row whose name matches), each carries
+# `load` kg of his kit off him (never what he fights in: his fighting order and armour), eats
+# `forage` Days a night on the travel map where his army does not feed him and it cannot graze
+# (a motor vehicle's is its fuel, `fuel`, and grazing does not help),
+# and a wheeled one slows his force off the road (`off_road`) and on wet or muddy ground (`mud`).
+animals:
+  - {id: packhorse, match: "packhorse|pack pony", name: "Packhorse", load: 100, forage: 0.25, source: "https://en.wikipedia.org/wiki/Packhorse"}
+  - {id: mule, match: "^mule", name: "Mule", load: 100, forage: 0.25, source: "https://tacticalnotebook.substack.com/p/meet-the-mule"}
+  - {id: camel, match: "camel", name: "Camel", load: 150, forage: 0.2}
+  - {id: donkey, match: "donkey", name: "Donkey", load: 50, forage: 0.15}
+  - {id: horse, match: "horse|charger|destrier|hackney|remount", name: "A horse (ridden, with saddlebags)", load: 30, forage: 0.25}
+  - {id: travois_dog, match: "dog travois", name: "Dog travois", load: 27, forage: 0.1, source: "https://plainshumanities.unl.edu/encyclopedia/doc/egp.tra.001.html"}
+  - {id: travois_horse, match: "horse travois", name: "Horse travois", load: 110, forage: 0}
+  - {id: cart, match: "cart", name: "Cart", load: 1200, forage: 0.5, wheels: true}
+  - {id: ox_wagon, match: "oxen", name: "Ox wagon", load: 900, forage: 0.1, wheels: true, source: "https://gutenberg.org/files/23066/23066-h/23066-h.htm"}
+  - {id: wagon, match: "wagon|wain", name: "Wagon", load: 1800, forage: 1.5, wheels: true, source: "https://acwrt.org.uk/post/animal-logistics-in-the-american-civil-war"}
+  - {id: jeep, match: "jeep|humvee|hilux", name: "Light vehicle", load: 360, forage: 0.3, fuel: true, wheels: true}
+  - {id: car, match: "Model T|touring car", name: "Motor car", load: 300, forage: 0.3, fuel: true, wheels: true}
+  - {id: motorcycle, match: "motorcycle|motorbike", name: "Motorcycle", load: 40, forage: 0.1, fuel: true, wheels: true}
+  - {id: bicycle, match: "bicycle", name: "Bicycle", load: 20, forage: 0, wheels: true}
+off_road: 0.75
+mud: 0.5
+graze: [open, farmland, heath, hills]
+approx: true
