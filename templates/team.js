@@ -265,7 +265,8 @@ const daysText = x => (x < 1 ? "under 1" : group(Math.round(x)));
 function moneyLine(c){                            // as money.py money_line
   const v = kitValue(c.region, c.kit, c.weapon), p = purseFor(c.region, c.terms, c.ledger);
   const coin = coinText(v.days, c.era || TD.era.id, c.region), worth = coin ? `${coin} (${daysText(v.days)} Days)` : `${daysText(v.days)} Days`;
-  const kit = v.unpriced.length && !v.days ? "kit not priced" : `kit worth about ${worth}${v.unpriced.length ? " (part not priced)" : ""}`;
+  const part = v.unpriced.length ? " (part not priced)" : "";
+  const kit = v.unpriced.length && !v.days ? "kit not priced" : `kit worth about ${worth}${part}`;
   const held = p.text ? `${p.text} (${daysQ(p.days)})` : daysQ(p.days);
   return `${kit[0].toUpperCase()}${kit.slice(1)}; purse ${held}`;
 }

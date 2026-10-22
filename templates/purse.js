@@ -45,12 +45,12 @@ function fmtMoney(cur, amount){                   // £8 6s 8d, 6½d, 4 Rt 30 kr
   });
   return out.join(" ") || "nothing";
 }
-let COINS = {};
+const COINS = {};                                 // each page fills it: Object.assign(COINS, ...)
 function coinOf(era, region){                      // his army's coin, where it has a Day; else null
   const E = COINS[era];
   if (!E || !E.currency) return null;
   const id = E.currency[region] ?? E.currency.default, cur = id ? E.currencies[id] : null;
-  return cur && cur.day ? cur : null;
+  return cur?.day ? cur : null;
 }
 function coinText(days, era, region){              // '3s 6d', or null where the coin has no Day
   const cur = coinOf(era, region);

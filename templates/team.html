@@ -183,7 +183,7 @@ const $ = s => document.querySelector(s);
 const KEY = "gravewounds-team-builder", HANDOFF = "gravewounds-team-handoff";
 const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
 let T = TD.era;                                  // the chosen era's tables (team.js reads TD.era and TD.ranges)
-COINS = Object.fromEntries(Object.entries(TD.eras).filter(([, v]) => v.equip).map(([k, v]) => [k, v.equip]));   // period money (purse.js)
+Object.assign(COINS, Object.fromEntries(Object.entries(TD.eras).filter(([, v]) => v.equip).map(([k, v]) => [k, v.equip])));   // period money (purse.js)
 const cash = (days, c = null) => moneyQ(days, T.id, c ? c.region : S.region);   // '3s 6d (7 Days)': coin first, then Days
 function setEra(id){
   const e = TD.eras[id] || Object.values(TD.eras)[0];
@@ -415,7 +415,7 @@ function renderRank(){
       return `<li><b>${esc(c.name)}</b>: <select data-rank="${i}" aria-label="Rank of ${esc(c.name)}">${opts}</select> ${(c.rank_days || 0).toLocaleString("en-US")} days in rank · ${cash(rkPay(c.region, c.career, c.rank))} a day
         <span class="muted">${next ? `· for ${esc(next.name.toLowerCase())}: ${esc(why || "eligible")}` : ""}</span>
         <label class="check" title="He distinguished himself${c.deedWhy ? ` (${esc(c.deedWhy)})` : ""}: +${RK().deed_bonus} to his next promotion roll, and the time waived"><input type="checkbox" data-deed="${i}"${c.deed ? " checked" : ""}> A deed</label>
-        ${c.owed ? `<button class="small" data-payowed="${i}" title="The arrears are paid">Pay ${cash(c.owed)} owed</button>` : ""}</li>`;
+        ${c.owed ? "<button class=\"small\" data-payowed=\"" + i + "\" title=\"The arrears are paid\">Pay " + cash(c.owed) + " owed</button>" : ""}</li>`;
     }).join("");
     vac = `<div class="row">${ladder.slice(1).map(r => `<span>${esc(r.name)}: <b>${(S.vacancies || {})[r.id] || 0}</b> <button class="small" data-vac="${r.id}" data-d="-1" aria-label="One fewer ${esc(r.name)} vacancy">−</button><button class="small" data-vac="${r.id}" data-d="1" aria-label="Open a ${esc(r.name)} vacancy">+</button></span>`).join(" ")}</div>`;
   }
@@ -436,7 +436,12 @@ function rollLoot(){
     if (r.roll !== null) t += ` (d100 ${r.roll}${r.found ? `, ${cash(r.found)}` : ""})`;
     if (r.risk) t += `; the provost ${chkText(r.opposed.a)} against his Stealth ${chkText(r.opposed.b)}: ${r.caught ? "caught, and it is taken from him" : "not caught"}`;
     if (r.punished) t += `. ${(L.punish || "Punished.").replace(/\.$/, "")}`;
-    if (r.days){ (c.ledger ||= []).push({ days: r.days, what: `Loot: ${r.what}` }); t += `; ${cash(r.days)} into his purse${L.keep && L.keep < 1 && K.kind !== "prize" ? ` after the ${L.keep >= 0.9 ? "hospital's tenth" : "captain's third"}` : ""}` }
+    if (r.days){
+      c.ledger = c.ledger || [];
+      c.ledger.push({ days: r.days, what: `Loot: ${r.what}` });
+      const share = L.keep >= 0.9 ? "hospital's tenth" : "captain's third", after = L.keep && L.keep < 1 && K.kind !== "prize" ? " after the " + share : "";
+      t += `; ${cash(r.days)} into his purse${after}`;
+    }
     if (r.horses){ c.horses = (c.horses || 0) + r.horses; c.honours = (c.honours || 0) + r.horses * RK().honours.horse_taken }
     lines.push(t + ".");
   }
@@ -916,12 +921,23 @@ function trainWeek(){
   const K = S.train, c = S.team[K.i], t = teachersFor(c, K.skill).find(x => x.id === K.teacher); if (!t) return;
   pullPurses();
   const k = keepFor({ board: false }, c.region, S.place), pk = k ? payKeep(purseFor(c.region, c.terms, c.ledger).days - t.fee, 7, k.food, k.bed) : null;
-  if (t.fee){ const why = spendCheck(c, t.fee); if (why){ S.msg = `${c.name} can't pay the ${cash(t.fee)} fee: ${why}.`; return render() } (c.ledger ||= []).push({ days: -t.fee, what: `Lessons: ${skillName(K.skill)}, a week` }) }
+  if (t.fee){
+    const why = spendCheck(c, t.fee);
+    if (why){ S.msg = `${c.name} can't pay the ${cash(t.fee)} fee: ${why}.`; return render() }
+    c.ledger = c.ledger || [];
+    c.ledger.push({ days: -t.fee, what: `Lessons: ${skillName(K.skill)}, a week` });
+  }
   if (pk && pk.paid) (c.ledger ||= []).push({ days: -pk.paid, what: "Keep while training" });
   const r = trWeek(t.value, realDice.randint(1, 100)), had = !!((readXp()[c.pid] || {}).ticks || {})[K.skill];
   if (r.success) xpTick(c.pid, K.skill, t.mate ? `lessons with ${t.mate.name}` : "lessons with a master");
   const who = t.mate ? t.mate.name : t.name.split(" (")[0].toLowerCase();
-  (S.trainlog ||= []).unshift(`${c.name}, a week of ${skillName(K.skill)} with ${who}: ${chkText(r)}${r.success ? (had ? `, but ${skillName(K.skill)} was already ticked this season` : `, ${skillName(K.skill)} ticked`) : ", the week wasted"}${t.fee ? `; fee ${cash(t.fee)}` : ""}${pk && pk.paid ? `; keep ${cash(pk.paid)}` : ""}${pk && pk.hungry ? `; ${pk.hungry} day${pk.hungry > 1 ? "s" : ""} hungry` : ""}.`);
+  const sk = skillName(K.skill);
+  let came = ", the week wasted";
+  if (r.success) came = had ? ", but " + sk + " was already ticked this season" : ", " + sk + " ticked";
+  const fee = t.fee ? "; fee " + cash(t.fee) : "", keep = pk && pk.paid ? "; keep " + cash(pk.paid) : "";
+  const hungry = pk && pk.hungry ? "; " + plural(pk.hungry, "day") + " hungry" : "";
+  S.trainlog = S.trainlog || [];
+  S.trainlog.unshift(`${c.name}, a week of ${sk} with ${who}: ${chkText(r)}${came}${fee}${keep}${hungry}.`);
   S.trainlog = S.trainlog.slice(0, 20);
   render();
 }
@@ -960,7 +976,8 @@ function endSeason(){
       const paid = rkWage(c.region, c.career, c.rank, x.army || 0), owed = rkWage(c.region, c.career, c.rank, x.owed || 0);
       if (paid) (c.ledger ||= []).push({ days: paid, what: `Pay: ${x.army} day${x.army !== 1 ? "s" : ""} as ${rkName(c.rank).toLowerCase()}` });
       if (owed) c.owed = (c.owed || 0) + owed;
-      if (paid || owed) line = line.replace(/\.$/, "") + `; pay ${cash(paid)}${owed ? `, ${cash(owed)} owed` : ""}.`;
+      const owedText = owed ? ", " + cash(owed) + " owed" : "";
+      if (paid || owed) line = line.replace(/\.$/, "") + `; pay ${cash(paid)}${owedText}.`;
     }
     lines.push(line);
     all[c.pid] = { ticks: {}, served: 0, army: 0, owed: 0, hard: 0 };
@@ -1010,21 +1027,22 @@ function renderWork(){                           // Find work: the jobs going wh
     <div class="row"><label for="sel-place">Where the team is</label><select id="sel-place">${places.map(p => `<option value="${p}"${p === S.place ? " selected" : ""}>${PLACE_NAMES[p]}</option>`).join("")}</select>
     <span class="muted note">One skill check a term: full pay, ${Math.round(TD.money.work.failure * 100)}% on a miss, nothing on a fumble (${TD.money.work.fumble_from}+). Risk is the chance of trouble each term. A job that does not feed him costs his keep each day: food, and a bed in a town, city, village or on the road. † against the law.</span></div>
     <div class="scroll"><table><thead><tr><th>Job</th><th>Skill</th><th>Pay</th><th>Term</th><th>Risk</th><th>Work a term</th></tr></thead><tbody>${rows}</tbody></table></div>
-    ${log ? `<ol class="log">${log}</ol><p class="muted">Earned, and paid into each purse: ${totals.map(([n, t]) => `${esc(n)} ${cash(t)}`).join(" · ") || "nothing"}</p>
+    ${log ? `<ol class="log">${log}</ol><p class="muted">Earned, and paid into each purse: ${totals.map(([n, t]) => esc(n) + " " + cash(t)).join(" · ") || "nothing"}</p>
     <div class="toolbar" style="justify-content:flex-end"><button class="small" id="btn-clear-work">Clear the work</button></div>` : ""}</section>`;
 }
 function workLine(c, j, r, pk){                  // as the work command: the check, the pay, his keep, any trouble and the job's hook
   const check = r.check === null ? "no check" : `d100 ${r.check} against ${c.skills[j.skill] ?? 0}: ${r.outcome}`;
   const trouble = r.trouble ? ` Trouble (${r.trouble.roll}): ${r.trouble.text} Hook: ${j.hook}` : "";
   const plural = (n, w) => `${n} ${w}${n !== 1 ? "s" : ""}`;
-  const keep = !pk ? (j.board ? "; fed by the job" : "") : `; keep ${cash(pk.paid)}` + (pk.hungry ? `, went hungry ${plural(pk.hungry, "day")}` : "") + (pk.rough ? `, slept rough ${plural(pk.rough, "night")}` : "");
+  let keep = j.board ? "; fed by the job" : "";
+  if (pk) keep = "; keep " + cash(pk.paid) + (pk.hungry ? ", went hungry " + plural(pk.hungry, "day") : "") + (pk.rough ? ", slept rough " + plural(pk.rough, "night") : "");
   return `${c.name}, ${j.name}, ${plural(r.days, "day")}: ${check}; earned ${cash(r.earned)}${keep}.${trouble}`;
 }
 function ledgerHtml(c, i){                        // what he has earned and spent, and the controls to buy or pay from his purse
   const rows = (c.ledger || []).map((e, k) => `<li class="${e.days < 0 ? "out" : ""}">${e.days < 0 ? "−" : "+"}${cash(Math.abs(e.days))}: ${esc(e.what)}<button type="button" data-unledger="${i}" data-k="${k}" title="Take this entry back" aria-label="Take back: ${esc(e.what)}">×</button></li>`).join("");
   const items = shopFor(c.region), cats = [...new Set(items.map(r => r.cat))];
   const opts = cats.map(cat => `<optgroup label="${esc(cat.replace("_", " "))}">${items.filter(r => r.cat === cat)
-    .map(r => `<option value="${esc(r.id)}">${esc(r.name)}: ${esc(r.text)} (${cash(r.days)})</option>`).join("")}</optgroup>`).join("");
+    .map(r => "<option value=\"" + esc(r.id) + "\">" + esc(r.name) + ": " + esc(r.text) + " (" + daysQ(r.days) + ")</option>").join("")}</optgroup>`).join("");
   return `${rows ? `<ol class="full ledger">${rows}</ol>` : ""}
     <div class="full spend">${items.length ? `<select data-shop="${i}" aria-label="Buy from the price list"><option value="">Buy from the price list…</option>${opts}</select>${TD.checks && c.skills.persuade !== undefined ? `<label class="check" title="Persuade ${c.skills.persuade} against the seller's ${(TD.checks.haggle || {}).seller ?? 50}: a tenth off, a quarter on a critical; a fumble and there is no sale today"><input type="checkbox" data-haggle="${i}"> Haggle</label>` : ""}<button class="small" data-buy="${i}">Buy</button>` : ""}
       <span>or pay</span><input type="number" min="0" step="0.25" data-pay-days="${i}" aria-label="Days to pay"><span>Days for</span><input type="text" class="what" data-pay-what="${i}" aria-label="What for" placeholder="what"><button class="small" data-pay="${i}">Pay</button></div>`;
@@ -1068,7 +1086,8 @@ function lossHtml(c, k){                          // one lost man: settle his pu
   if (!L.settled){
     const E = effectsFor(c.region), pick = L.practice || E.practice;
     const opt = (v, t) => `<option value="${v}"${v === pick ? " selected" : ""}>${t}${v === E.practice ? " (the era's practice)" : ""}</option>`;
-    return `<li>${head} His purse holds ${cash(left)}. ${E.what ? `<span class="muted">${esc(E.what)}</span>` : ""}
+    const what = E.what ? "<span class=\"muted\">" + esc(E.what) + "</span>" : "";
+    return `<li>${head} His purse holds ${cash(left)}. ${what}
       <div class="spend"><select data-practice="${k}" aria-label="What becomes of his purse">${opt("share", "Shared among his comrades")}${opt("heirs", "Sent to his heirs")}${opt("lost", "Lost with him")}</select>
       <button class="small" data-settle="${k}">Settle his purse</button></div></li>`;
   }
@@ -1081,7 +1100,8 @@ function lossHtml(c, k){                          // one lost man: settle his pu
   const sel = `<select data-ropt="${k}" aria-label="How he is replaced">${opts.map(x => `<option value="${x.kind}:${esc(x.id)}"${x === o ? " selected" : ""}>${kinds[x.kind]}${esc(x.name)}</option>`).join("")}</select>`;
   const cs = o.careers.length > 1 ? `<select data-rcareer="${k}" aria-label="His career">${o.careers.map(id => `<option value="${id}"${id === career2 ? " selected" : ""}>${esc(byId(T.careers, id).name)}</option>`).join("")}</select>` : esc(byId(T.careers, career2).name);
   const ts = o.terms[0] < o.terms[1] ? `<select data-rterms="${k}" aria-label="His terms">${Array.from({ length: o.terms[1] - o.terms[0] + 1 }, (_, n) => o.terms[0] + n).map(n => `<option${n === terms2 ? " selected" : ""}>${n}</option>`).join("")}</select> terms` : `${terms2} term${terms2 > 1 ? "s" : ""}`;
-  const payer = o.kind === "hire" ? ` for ${cash(hireCost(o, terms2))}, paid by <select data-rpayer="${k}" aria-label="Who pays">${S.team.map((m, i) => `<option value="${i}"${i === (P.payer ?? 0) ? " selected" : ""}>${esc(m.name)} (${cash(purseFor(m.region, m.terms, m.ledger).days)})</option>`).join("")}</select>` : "";
+  const payers = optionTags(S.team.map((m, i) => [String(i), m.name + " (" + cash(purseFor(m.region, m.terms, m.ledger).days) + ")"]), String(P.payer ?? 0));
+  const payer = o.kind === "hire" ? ` for ${cash(hireCost(o, terms2))}, paid by <select data-rpayer="${k}" aria-label="Who pays">${payers}</select>` : "";
   const wait = o.wait ? ` · arrives in ${o.wait[0]}–${o.wait[1]} days` : "";
   return `<li>${head} ${settled[0].toUpperCase() + settled.slice(1)}.
     <div class="spend">${sel} ${cs} · ${ts}${payer}${wait} <button class="small" data-replace="${k}">Replace him</button></div>
@@ -1405,7 +1425,8 @@ function init(){
       const how = `Persuade ${chkText(h.opposed.a)}, the seller ${chkText(h.opposed.b)}`;
       if (h.outcome === "win" || h.outcome === "critical") xpTick(c.pid, "persuade", "haggling");
       if (h.outcome === "no_sale"){ S.msg = `${c.name} haggles over the ${item.name.toLowerCase()} and fumbles (${how}): no sale today.`; return render() }
-      spendFrom(i, h.price, `${item.name}${h.outcome === "list" ? " (haggled: list price)" : ` (haggled down from ${cash(item.days)})`}`);
+      const haggled = h.outcome === "list" ? " (haggled: list price)" : " (haggled down from " + cash(item.days) + ")";
+      spendFrom(i, h.price, item.name + haggled);
       if (!S.msg) S.msg = `${c.name} haggles: ${how}; pays ${cash(h.price)}.`;
       return render();
     }
