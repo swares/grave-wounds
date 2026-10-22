@@ -96,6 +96,18 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Ammunition, beyond the first cut.** Units count their ammunition and resupply from their
   edge, a supply vehicle or a dump (air drops from 1944, helicopters from 1965). Still left out:
   riders resupplying aboard their carrier.
+- **Wear and reliability of weapons, wagons and vehicles (to consider).** Only the named men's
+  boots and clothing wear out (data/kit.yaml). Weapons (rust and fouling in the wet, worn barrels,
+  broken springs and stocks), harness and wagons (broken axles and wheels, lame or galled animals),
+  tanks, lorries and jeeps (breakdowns by miles run, track and engine wear, fuel and spare parts),
+  radios (batteries, damp) and machine guns (stoppages, barrel changes) do not. Worth considering:
+  a reliability by era and kind (e.g. the share of tanks that broke down on a road march, wagons
+  lost to breakage, misfires of flintlocks in rain against percussion caps), wear on the travel map
+  that lowers it, its effect in the roller and on the field map (misfires and stoppages, a vehicle
+  that will not start, a wagon left by the road), and Mend kit, a fitter or an armourer, spare parts
+  and the depot putting it right. Research first: breakdown rates (Panthers at Kursk, Shermans in
+  Normandy, M48s and M113s in Vietnam), stoppages by weapon (the M16 in 1967), and train wagons
+  lost on the march.
 - **Supplies between fights, first cut.** A travel-map force carries ammunition, rations, water
   and medical stores; a field battle takes its ammunition and sends back what is left; it refills
   at its depot, from its baggage train in the hex, and by buying rations in a village or town
@@ -106,7 +118,7 @@ When an item is done, delete it here and note it in the pull request that closes
   where a source names one (project doc "depots-research"; many rest on Wikipedia, and a side that
   lived off the land, or whose base lay off the map, has only its starting place: the Chinese in
   Korea, the North Vietnamese, the Germans at Mons, the British at Cowpens, the Plains nations,
-  Gotland's levy; Firebase Airborne and Plei Me are not yet on their maps), a force's own pack animals and the named men's
+  Gotland's levy; the Hamburger Hill and Ia Drang maps were widened to take in Firebase Airborne and Plei Me camp, though the land drawn there is only the maps' plain forest), a force's own pack animals and the named men's
   carts do not carry its rations, the field map's own units do not eat or drink, rations bought
   are priced at the first army's keep for the era, and hunger and thirst only add to desertion,
   straggling, fatigue and the hard nights (no march-rate or heat-casualty rule).
