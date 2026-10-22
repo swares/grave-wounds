@@ -7,7 +7,7 @@ context: "Leg bones of at least 414 men killed when the Portuguese and their Eng
 variant: evidence
 native: armed
 weapon_bias: raw
-weapons: [sword, axe, spiked_club, spear, dagger, bow, crossbow]
+weapons: [sword, axe, spiked_club, spear, dagger, bow, longbow, crossbow]
 modifiers: [weapon_side, attacker_higher, attacker_lower, target_down, target_fleeing, flanked, target_warding]
 confidence: historical
 confidence_note: >

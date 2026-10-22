@@ -307,6 +307,7 @@ armies:
 
 maps:                          # the tongue (or tongues, main first) of the people where each map lies, where no place names its own (none: no locals)
   agincourt-1415: french
+  aljubarrota-1385: portuguese
   albuera-1811: spanish
   anzio-1944: italian
   bougainville-1944: melanesian

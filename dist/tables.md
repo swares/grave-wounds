@@ -253,6 +253,64 @@ Confidence: **Extrapolated - design estimate from analogous evidence** · Armour
 Sources:
 - Derived from visby-1361-evidence.
 
+# Hundred Years' War (1337-1453 (Aljubarrota, 14 August 1385; Agincourt, 25 October 1415))
+
+England and France fought on and off from 1337 to 1453, and drew in their allies: in Iberia, the war of 1383-85 for the Portuguese crown set Castile and its French allies against João of Avis and his English. At Aljubarrota on 14 August 1385 the Portuguese, about a third as many, dug pits and ditches across a narrow plateau between two valleys, fought on foot with English archers and crossbowmen on their wings, and broke the French and Castilian attack in under an hour before sunset. The leg bones of at least 414 men lie in an ossuary on the field, the only battle grave of medieval Iberia yet studied.
+
+| Side | Who | Armour |
+|---|---|---|
+| Portugal and England | João I and the Constable Nuno Álvares Pereira: 1,700 lances, 800 crossbowmen and 4,000 foot by Fernão Lopes, with about 700 English and Gascons, some 300 of them archers. | Men-at-arms in mail with plates and bacinets, fighting on foot with cut-down lances; crossbowmen and foot in padded jacks. |
+| Castile and France | Juan I of Castile: French lances in the vanguard, with Portuguese who held for Queen Beatriz, the Masters of Alcántara and Calatrava on the wings, and the King's three mounted bodies; perhaps 20,000 in all (Monteiro). | Mail and plates, bacinets; the French in the best harness; ginetes light, with shields and javelins. |
+
+**Example combatants**
+
+| Name | Side | Wears | Fights with | Notes | Picture |
+|---|---|---|---|---|---|
+| Portuguese man-at-arms | Portugal and England | Coat of plates and mail (c.1350) | Spear / lance | Dismounted, his lance cut down, in the vanguard behind the ditch. |  |
+| Portuguese crossbowman | Portugal and England | Gambeson and cap | Crossbow (bolts) | A town crossbowman (besteiro do conto) on the wings. |  |
+| English archer | Portugal and England | Gambeson and cap | Longbow (English war bow, bodkin and broadhead arrows) | One of some 300 who landed in the spring of 1385. |  |
+| French man-at-arms | Castile and France | Coat of plates and mail (c.1350) | Spear / lance | In the vanguard that came on through the pits. |  |
+| Castilian ginete | Castile and France | Mail hauberk and helm (c.1100-1300) | Spear / lance | Light horseman of the Master of Alcántara's wing, who rode round to the baggage. |  |
+
+Sources: Monteiro J.G., Aljubarrota Revisitada (Coimbra, 2001; open access), and 'The Battle of Aljubarrota (1385): a reassessment', Journal of Medieval Military History VII (2009). Pérez Fernández Á. et al., 'Perimortem fractures in the osteological collection of Aljubarrota (Portugal)', Journal of Anthropological Archaeology 40 (2015); Cunha E. and Silva A.M., International Journal of Osteoarchaeology 7 (1997). Project docs aljubarrota-research and iberia1385-research.
+
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.35, veterans x0.76; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Coat of plates and mail (c.1350) | Gambeson and cap | Mail hauberk and helm (c.1100-1300) |
+|---|---|---|---|
+| Spear / lance | 1 / 2 / 4 / 12 | 5 / 13 / 21 / 30 | 3 / 8 / 12 / 21 |
+| Crossbow (bolts) | 5 / 12 / 20 / 30 | 5 / 13 / 21 / 30 | 5 / 13 / 21 / 30 |
+| Longbow (English war bow, bodkin and broadhead arrows) | 5 / 12 / 20 / 29 | 6 / 13 / 21 / 29 | 5 / 13 / 21 / 29 |
+
+## Aljubarrota 1385 - the São Jorge ossuary (bone evidence)
+
+*Leg bones of at least 414 men killed when the Portuguese and their English allies beat Castile and its French allies on 14 August 1385, gathered into an ossuary on the field. Killed only; long bones, few skulls.*
+
+Confidence: **Historical - taken directly from a source** · Armour: **already reflected (do not apply)**
+
+| Location | Sword | Axe | Spiked club | Spear | Dagger | Bow | Longbow | Crossbow |
+|---|---|---|---|---|---|---|---|---|
+| Thigh (left) | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 |
+| Thigh (right) | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 |
+| Lower leg (left) | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 |
+| Lower leg (right) | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 |
+
+**Source totals:** Left thigh (femur) (38) = 65.5%; Right thigh (femur) (11) = 19.0%; Thigh, side unknown (5) = 8.6%; Left shin (tibia) (3) = 5.2%; Right shin (tibia) (1) = 1.7% (n = 58). From the 58 perimortem blunt-force fractures counted in 2,762 bone fragments (54 femur, 4 tibia; 41 left, 12 right, 5 side unknown). The side split is applied to both bones alike, an estimate: the paper's table of bone by side was not seen. The 52 sharp and puncture wounds of the earlier study (38 and 14, cuts on skulls, a crossbow bolt through a frontal bone, cuts on tibiae and femora) are not located by bone in what was published, and are left out.
+
+
+**Close combat:** Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
+
+**Reading it:** Armour is already in these numbers, and so is what was kept: the ossuary holds mostly thigh and shin bones, with few skulls and almost no ribs, hands or feet, so this table shows only where the surviving bones broke. Most fractures are mid-shaft on the front of the thigh, more on the left, which the authors read as face-to-face fighting, some of it perhaps on horseback. It is not a picture of where men were hit. For play, the battlefield rolls Towton's gameplay table.
+
+**Status:** Historical, but partial: a mixed deposit of leg bones from the losers (most of the dead were Castilians and French), so only the legs can be read, and only their blunt fractures by bone.
+
+Sources:
+- Pérez Fernández Á., Alemán I., Botella M.C. and Cunha E., 'Perimortem fractures in the osteological collection of Aljubarrota (Portugal)', Journal of Anthropological Archaeology 40: 82-88 (2015), https://www.sciencedirect.com/science/article/abs/pii/S0278416515000446 (summary): MNI 414 adults, all sexed fragments male, aged about 20-60; 58 blunt fractures, 72% in the middle third of the shaft, 69% on the front.
+- Cunha E. and Silva A.M., 'War lesions from the famous Portuguese medieval battle of Aljubarrota', International Journal of Osteoarchaeology 7(6): 595-599 (1997): cuts on crania (frontal and parietal), a frontal bone probably pierced by a crossbow bolt, cut marks on tibiae and femora, and many healed old injuries; no frequencies.
+- Tally: data/sources/aljubarrota-1385-ossuary.csv.
+
 # Wars of the Roses (Towton, 29 March 1461)
 
 The Wars of the Roses (1455-1485) were fought between the houses of York and Lancaster for the English crown. At Towton in Yorkshire on Palm Sunday 1461, the Yorkist army of Edward IV defeated Henry VI's Lancastrians in a snowstorm, after an archery exchange and hours of fighting on foot; the Lancastrian army broke and was cut down in the rout. Contemporary claims of 28,000 dead are thought exaggerated, but it is often called the bloodiest battle fought in England. In 1996 building work at Towton Hall uncovered a mass grave of about 38 men, which gives the most detailed picture of medieval battle wounds yet recorded.
@@ -2613,14 +2671,14 @@ Modifiers stack in the roller and CLI (one per group). Printed columns below sho
 | Situation | Group | Effect on weights | Notes |
 |---|---|---|---|
 | Attacker on target's shield side | facing | left side x1.8, right side x0.5 | Attacker works round to the target's left (shield) side. Tables: Sidon, mid-13th century, Visby 1361 |
-| Attacker on target's weapon side | facing | left side x0.5, right side x1.8 | Attacker is off the target's right (weapon-arm) side. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461 |
-| Attacker higher (mounted, uphill, on a wall) | height | head x1.6, arms x1.2, legs x0.4, shoulder (left) x1.3, shoulder (right) x1.3 | Blows come down onto the head and shoulders; legs out of reach. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
-| Attacker lower (in a ditch, kneeling, vs. rider) | height | head x0.5, legs x1.6, groin / pelvis x1.8, abdomen x1.3 | Blows come up into the legs, groin and belly. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
-| Target down (fallen, kneeling, helpless) | posture | head x2, torso x0.6, legs x0.6, upper back x3, lower back x2, forearm (left) x1.6, forearm (right) x1.6, hand (left) x1.6, hand (right) x1.6, face x0.7 | Towton pattern: repeated blows to the head and back; arms raised to ward. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Peninsular War 1808-14, Knife assault, Unarmed |
-| Target fleeing (back turned) | posture | head x1.2, arms x0.6, legs x1.3, upper back x4, lower back x3, face x0.1, chest (left) x0.15, chest (right) x0.15, abdomen x0.15, groin / pelvis x0.2 | Rout: back, back of the head and legs exposed; front almost unreachable. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
-| Target flanked (two or more attackers) | - | legs x1.3, upper back x2.5, lower back x2.5, skull (left) x1.2, skull (right) x1.2 | Visby team-fighting: one engages the front while others strike from behind and low. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Indian Wars 1865-71, Knife assault |
+| Attacker on target's weapon side | facing | left side x0.5, right side x1.8 | Attacker is off the target's right (weapon-arm) side. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461 |
+| Attacker higher (mounted, uphill, on a wall) | height | head x1.6, arms x1.2, legs x0.4, shoulder (left) x1.3, shoulder (right) x1.3 | Blows come down onto the head and shoulders; legs out of reach. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
+| Attacker lower (in a ditch, kneeling, vs. rider) | height | head x0.5, legs x1.6, groin / pelvis x1.8, abdomen x1.3 | Blows come up into the legs, groin and belly. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
+| Target down (fallen, kneeling, helpless) | posture | head x2, torso x0.6, legs x0.6, upper back x3, lower back x2, forearm (left) x1.6, forearm (right) x1.6, hand (left) x1.6, hand (right) x1.6, face x0.7 | Towton pattern: repeated blows to the head and back; arms raised to ward. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Lützen 1632, Peninsular War 1808-14, Knife assault, Unarmed |
+| Target fleeing (back turned) | posture | head x1.2, arms x0.6, legs x1.3, upper back x4, lower back x3, face x0.1, chest (left) x0.15, chest (right) x0.15, abdomen x0.15, groin / pelvis x0.2 | Rout: back, back of the head and legs exposed; front almost unreachable. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
+| Target flanked (two or more attackers) | - | legs x1.3, upper back x2.5, lower back x2.5, skull (left) x1.2, skull (right) x1.2 | Visby team-fighting: one engages the front while others strike from behind and low. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Indian Wars 1865-71, Knife assault |
 | Target has no shield | - | head x1.1, torso x1.4, forearm (left) x0.7, hand (left) x0.7 | Tables assume a shield. Without one the body and head are more open. Tables: Sidon, mid-13th century, Visby 1361 |
-| Target warding with arms (unarmed or disarmed) | - | arms x1.5, forearm (left) x1.6, forearm (right) x1.6, hand (left) x1.6, hand (right) x1.6 | Defensive wounds: forearms and hands raised to block. Tables: Sidon, mid-13th century, Visby 1361, Towton 1461, Lützen 1632, Peninsular War 1808-14, Knife assault |
+| Target warding with arms (unarmed or disarmed) | - | arms x1.5, forearm (left) x1.6, forearm (right) x1.6, hand (left) x1.6, hand (right) x1.6 | Defensive wounds: forearms and hands raised to block. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Lützen 1632, Peninsular War 1808-14, Knife assault |
 | Target behind cover (breastwork, wall, trench) | cover | head x1.5, torso x0.3, legs x0.05, shoulder (left) x1.5, shoulder (right) x1.5, abdomen x0.3, groin / pelvis x0.2, lower back x0.3 | Only head, shoulders and arms show over the parapet. Tables: Sidon, mid-13th century, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline |
 
 **Called shot:** Roll the location twice; keep whichever result lands in the called zone. If both or neither do, keep the first. Your system sets any to-hit penalty.
@@ -3291,6 +3349,60 @@ Modifiers stack in the roller and CLI (one per group). Printed columns below sho
 | Lower leg (right) | 95-98 | 97-98 | 92-98 | 99 | 92-97 | 98-99 | 93-97 | 94-97 | 95-98 | 96-98 |
 | Foot (left) | 99 | 99-00 | 99 | 00 | 98-99 | 00 | 98-99 | 98-99 | 99 | 99 |
 | Foot (right) | 00 | - | 00 | - | 00 | - | 00 | 00 | 00 | 00 |
+
+### Aljubarrota 1385 - the São Jorge ossuary (bone evidence) - Sword / Bow / Longbow
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding |
+|---|---|---|---|---|---|---|---|---|
+| Thigh (left) | 01-70 | 01-42 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 |
+| Thigh (right) | 71-93 | 43-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 |
+| Lower leg (left) | 94-98 | 94-96 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 |
+| Lower leg (right) | 99-00 | 97-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 |
+
+### Aljubarrota 1385 - the São Jorge ossuary (bone evidence) - Axe
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding |
+|---|---|---|---|---|---|---|---|---|
+| Thigh (left) | 01-70 | 01-42 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 |
+| Thigh (right) | 71-93 | 43-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 |
+| Lower leg (left) | 94-98 | 94-96 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 |
+| Lower leg (right) | 99-00 | 97-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 |
+
+### Aljubarrota 1385 - the São Jorge ossuary (bone evidence) - Spiked club
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding |
+|---|---|---|---|---|---|---|---|---|
+| Thigh (left) | 01-70 | 01-42 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 |
+| Thigh (right) | 71-93 | 43-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 |
+| Lower leg (left) | 94-98 | 94-96 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 |
+| Lower leg (right) | 99-00 | 97-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 |
+
+### Aljubarrota 1385 - the São Jorge ossuary (bone evidence) - Spear
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding |
+|---|---|---|---|---|---|---|---|---|
+| Thigh (left) | 01-70 | 01-42 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 |
+| Thigh (right) | 71-93 | 43-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 |
+| Lower leg (left) | 94-98 | 94-96 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 |
+| Lower leg (right) | 99-00 | 97-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 |
+
+### Aljubarrota 1385 - the São Jorge ossuary (bone evidence) - Dagger
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding |
+|---|---|---|---|---|---|---|---|---|
+| Thigh (left) | 01-70 | 01-42 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 |
+| Thigh (right) | 71-93 | 43-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 |
+| Lower leg (left) | 94-98 | 94-96 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 |
+| Lower leg (right) | 99-00 | 97-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 |
+
+### Aljubarrota 1385 - the São Jorge ossuary (bone evidence) - Crossbow
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding |
+|---|---|---|---|---|---|---|---|---|
+| Thigh (left) | 01-70 | 01-42 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 |
+| Thigh (right) | 71-93 | 43-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 |
+| Lower leg (left) | 94-98 | 94-96 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 |
+| Lower leg (right) | 99-00 | 97-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 |
 
 ### Towton 1461 - mass grave (bone evidence) - Sword / Bill
 
@@ -4891,6 +5003,9 @@ Penalties add up; each total is capped at -60%.
 | Balkan uplands, cold winters | high/low °F | 37/21 | 43/25 | 52/32 | 63/39 | 72/48 | 77/54 | 82/55 | 82/55 | 75/48 | 64/41 | 50/32 | 39/25 |
 |  | (°C) | 3/-6 | 6/-4 | 11/0 | 17/4 | 22/9 | 25/12 | 28/13 | 28/13 | 24/9 | 18/5 | 10/0 | 4/-4 |
 |  | wet days | 11 | 11 | 11 | 12 | 13 | 11 | 8 | 7 | 7 | 9 | 12 | 13 |
+| Western Portugal, Atlantic Mediterranean | high/low °F | 57/41 | 59/43 | 64/46 | 66/48 | 72/54 | 77/57 | 82/61 | 82/61 | 79/59 | 72/54 | 63/46 | 59/43 |
+|  | (°C) | 14/5 | 15/6 | 18/8 | 19/9 | 22/12 | 25/14 | 28/16 | 28/16 | 26/15 | 22/12 | 17/8 | 15/6 |
+|  | wet days | 12 | 11 | 9 | 10 | 8 | 4 | 2 | 2 | 5 | 10 | 12 | 13 |
 
 ## Unit combat
 
@@ -5151,21 +5266,21 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Townswoman or castle household at a siege | 71-85 | Sling | Dropped stones on the besiegers' engines from the walls. |
 | Townswoman or castle household at a siege | 86-00 | Dodge | Rebuilt the barricades under the besiegers' shot. * |
 
-| Career | Latin East | Gotland and the Baltic | England | France |
-|---|---|---|---|---|
-| Man-at-arms | Mail hauberk and helm; sword | Danish man-at-arms; sword | Brigandine, sallet and arm splints; sword | Full plate harness; sword |
-| Archer | Gambeson and cap; bow | Gotland levy: mail coif, padded coat; bow | Jack and sallet; longbow | Jack and sallet; longbow |
-| Crossbowman | Hardened leather; crossbow | Gotland, better equipped: coif, coat of plates; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow |
-| Spearman or billman | Gambeson and cap; spear | Gotland levy: mail coif, padded coat; spear | Jack and sallet; bill | Jack and sallet; spear |
-| Mounted sergeant | Mail hauberk and helm; spear | Gotland, better equipped: coif, coat of plates; spear | Brigandine, sallet and arm splints; spear | Coat of plates and mail; spear |
-| Mercenary | Mail hauberk and helm; axe | Coat of plates and mail; axe | Brigandine, sallet and arm splints; axe | Brigandine, sallet and arm splints; axe |
-| Sailor | Unarmoured; dagger | Hardened leather; axe | Unarmoured; axe | Unarmoured; axe |
-| Clerk or priest | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
-| Barber-surgeon | Unarmoured; dagger | Unarmoured; dagger | Jack and sallet; dagger | Unarmoured; dagger |
-| Forester or huntsman | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow |
-| Servant or groom | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
-| Merchant | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword |
-| Townswoman or castle household at a siege | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
+| Career | Latin East | Gotland and the Baltic | England | France | Portugal | Castile |
+|---|---|---|---|---|---|---|
+| Man-at-arms | Mail hauberk and helm; sword | Danish man-at-arms; sword | Brigandine, sallet and arm splints; sword | Full plate harness; sword | Coat of plates and mail; sword | Coat of plates and mail; sword |
+| Archer | Gambeson and cap; bow | Gotland levy: mail coif, padded coat; bow | Jack and sallet; longbow | Jack and sallet; longbow | Gambeson and cap; longbow | Gambeson and cap; bow |
+| Crossbowman | Hardened leather; crossbow | Gotland, better equipped: coif, coat of plates; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow |
+| Spearman or billman | Gambeson and cap; spear | Gotland levy: mail coif, padded coat; spear | Jack and sallet; bill | Jack and sallet; spear | Gambeson and cap; spear | Gambeson and cap; spear |
+| Mounted sergeant | Mail hauberk and helm; spear | Gotland, better equipped: coif, coat of plates; spear | Brigandine, sallet and arm splints; spear | Coat of plates and mail; spear | Mail hauberk and helm; spear | Mail hauberk and helm; spear |
+| Mercenary | Mail hauberk and helm; axe | Coat of plates and mail; axe | Brigandine, sallet and arm splints; axe | Brigandine, sallet and arm splints; axe | Coat of plates and mail; axe | Coat of plates and mail; axe |
+| Sailor | Unarmoured; dagger | Hardened leather; axe | Unarmoured; axe | Unarmoured; axe | Unarmoured; axe | Unarmoured; axe |
+| Clerk or priest | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
+| Barber-surgeon | Unarmoured; dagger | Unarmoured; dagger | Jack and sallet; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
+| Forester or huntsman | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow |
+| Servant or groom | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
+| Merchant | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword |
+| Townswoman or castle household at a siege | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|

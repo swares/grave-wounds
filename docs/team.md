@@ -7,7 +7,7 @@ era) and in the printed tables (*Team generation*). Every table, event and trait
 this game. The names are common period names.
 
 The first table set covers the medieval era, c.1250-1460, the era of the Sidon, Visby,
-Agincourt and Towton battlefields. The team comes from one of four regions:
+Aljubarrota, Agincourt and Towton battlefields. The team comes from one of six regions:
 
 | Region | Wound table | Kit and weapons |
 | --- | --- | --- |
@@ -15,6 +15,8 @@ Agincourt and Towton battlefields. The team comes from one of four regions:
 | Gotland and the Baltic (c.1360) | Visby 1361 | Gotland levy and better kits, Danish men-at-arms |
 | England (c.1415-1460) | Towton 1461 | jacks and sallets, brigandines, longbows, bills |
 | France (c.1415) | Towton 1461 (the nearest records) | full plate, brigandines, jacks |
+| Portugal (c.1385) | Towton 1461 (the nearest records) | mail and plates, padded jacks, crossbows; its archers the English with it (longbows) |
+| Castile (c.1385) | Towton 1461 (the nearest records) | mail and plates, padded jacks, crossbows |
 
 ## Five steps
 

@@ -81,6 +81,37 @@ conflicts:
       - "Swedish History Museum, 'Skull from the Battle of Visby'."
       - "Medievalists.net, 'Medieval battle injuries' (2024), summarising Ingelmark in Thordeman (1939)."
 
+  "Hundred Years' War":
+    period: "1337-1453 (Aljubarrota, 14 August 1385; Agincourt, 25 October 1415)"
+    map: {bbox: [-10, 36, 6, 52], sites: [{name: Aljubarrota, lat: 39.64, lon: -8.85}, {name: Agincourt, lat: 50.46, lon: 2.14}]}
+    summary: >
+      England and France fought on and off from 1337 to 1453, and drew in their allies: in
+      Iberia, the war of 1383-85 for the Portuguese crown set Castile and its French allies
+      against João of Avis and his English. At Aljubarrota on 14 August 1385 the Portuguese,
+      about a third as many, dug pits and ditches across a narrow plateau between two valleys,
+      fought on foot with English archers and crossbowmen on their wings, and broke the French
+      and Castilian attack in under an hour before sunset. The leg bones of at least 414 men lie
+      in an ossuary on the field, the only battle grave of medieval Iberia yet studied.
+    sides:
+      - name: "Portugal and England"
+        who: "João I and the Constable Nuno Álvares Pereira: 1,700 lances, 800 crossbowmen and 4,000 foot by Fernão Lopes, with about 700 English and Gascons, some 300 of them archers."
+        armour: "Men-at-arms in mail with plates and bacinets, fighting on foot with cut-down lances; crossbowmen and foot in padded jacks."
+        look: {colour: "#2e5a3a", trousers: "#e6e0d2"}
+      - name: "Castile and France"
+        who: "Juan I of Castile: French lances in the vanguard, with Portuguese who held for Queen Beatriz, the Masters of Alcántara and Calatrava on the wings, and the King's three mounted bodies; perhaps 20,000 in all (Monteiro)."
+        armour: "Mail and plates, bacinets; the French in the best harness; ginetes light, with shields and javelins."
+        look: {colour: "#8a2b2b", trousers: "#d9b44a"}
+    examples:
+      - {name: "Portuguese man-at-arms", side: "Portugal and England", kit: transitional, weapon: spear, notes: "Dismounted, his lance cut down, in the vanguard behind the ditch."}
+      - {name: "Portuguese crossbowman", side: "Portugal and England", kit: gambeson, weapon: crossbow, notes: "A town crossbowman (besteiro do conto) on the wings."}
+      - {name: "English archer", side: "Portugal and England", kit: gambeson, weapon: longbow, notes: "One of some 300 who landed in the spring of 1385."}
+      - {name: "French man-at-arms", side: "Castile and France", kit: transitional, weapon: spear, notes: "In the vanguard that came on through the pits."}
+      - {name: "Castilian ginete", side: "Castile and France", kit: hauberk, weapon: spear, notes: "Light horseman of the Master of Alcántara's wing, who rode round to the baggage."}
+    sources:
+      - "Monteiro J.G., Aljubarrota Revisitada (Coimbra, 2001; open access), and 'The Battle of Aljubarrota (1385): a reassessment', Journal of Medieval Military History VII (2009)."
+      - "Pérez Fernández Á. et al., 'Perimortem fractures in the osteological collection of Aljubarrota (Portugal)', Journal of Anthropological Archaeology 40 (2015); Cunha E. and Silva A.M., International Journal of Osteoarchaeology 7 (1997)."
+      - "Project docs aljubarrota-research and iberia1385-research."
+
   "Wars of the Roses":
     period: "Towton, 29 March 1461"
     map: {bbox: [-6.5, 50, 2, 56.2], sites: [{name: Towton, lat: 53.83, lon: -1.27}]}
