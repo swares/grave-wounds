@@ -2207,7 +2207,7 @@ function moraleAll(us, occ, before, acc, rng, table, field = null){
     const [down, lost] = vehicleLosses(u, before[i], acc.lost[i]);
     const unit = { quality: u.quality, start: u.start, down, lost, dealt: acc.dealt[i], men: before[i], state: u.state,
       leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out",
-      holds: !!M.posture && holdsPosition(us, i, field), neighbour: fresh.some(k => k !== i && us[k].side === u.side && unitsWithin(us[k], u, reach)) };
+      holds: !!M.posture && !!u.holding && holdsPosition(us, i, field), neighbour: fresh.some(k => k !== i && us[k].side === u.side && unitsWithin(us[k], u, reach)) };
     const m = morale(unit, rng.randint(1, 100));
     if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state, ...(unit.neighbour ? { neighbour: true } : {}) });
     if (m.state === "broken"){ broke.push(i); if (reach) u.just_broke = true }
@@ -2479,6 +2479,7 @@ function command(units, side, size, field, rng, exchange = null, { stance = "att
 }
 function orderSide(units, side, [size, field, rng, exchange], { stance, memory, table }){   // command, worked out (as commander._command)
   let us = units.map(u => ({ ...u }));
+  if (UD.morale.posture) us.forEach(u => { if (u.side === side) u.holding = stance === "hold" });   // its stance, for morale.posture: only a holding side's units hold a position
   const orders = [], mem = memory ?? {};
   const known = sightings(us, side, field, exchange, mem), aim = aims(us, side, field, stance, mem);
   const goal = aim[1];                              // the field with the objective most of its units go for (with a second one marked)

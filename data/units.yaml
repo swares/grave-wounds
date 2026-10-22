@@ -719,7 +719,7 @@ morale:
   trigger: 0.25
   shock: 0.10
   # Two kinds of break (the project's morale-two-kinds notes), each off unless set:
-  # posture: a unit holding a position (in a bunker, dug in, emplaced, behind works with cover
+  # posture: a unit of a holding side (the commander's stance) holding a position (in a bunker, dug in, emplaced, behind works with cover
   #   toward the nearest enemy, or in ground that hides men), and not flanked, checks for being a
   #   quarter down only in an exchange it lost men; units in the open check every exchange.
   # neighbour: hexes; a steady unit checks when a unit of its own side within this many hexes broke
