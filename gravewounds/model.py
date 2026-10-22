@@ -483,6 +483,8 @@ def validate(d: Data) -> None:
         for pl in m.get("places", []):
             if pl.get("kind") not in d.terrain["place_kinds"]:
                 errors.append(f"maps/{mid}: place {pl.get('name')} has unknown kind {pl.get('kind')}")
+            if set(pl.get("depot") or []) - {fo.get("side") for fo in m.get("forces", [])}:
+                errors.append(f"maps/{mid}: place {pl.get('name')} is a depot of a side with no force on the map")
             if not inside(pl.get("hex")):
                 errors.append(f"maps/{mid}: place {pl.get('name')} is off the map")
             elif ("depth" in pl or "current" in pl) and not (keys.get(rows[pl["hex"][1]][pl["hex"][0]]) == "ford" and pl.get("depth", 0) > 0 and pl.get("current", -1) >= 0):

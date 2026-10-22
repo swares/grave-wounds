@@ -71,7 +71,7 @@ terrain: |
     wwwffffffffffffff~fffffffffffffffffffffffffffffff
     wffffffffffffffff~fffffffffffffffffffffffffffffff
 places:
-  - {name: "Harfleur", kind: camp, hex: [3, 41], note: "The English landed nearby in mid-August and took the town on 22 September, after a five-week siege"}
+  - {name: "Harfleur", kind: camp, hex: [3, 41], depot: ["England"], note: "The English landed nearby in mid-August and took the town on 22 September, after a five-week siege"}
   - {name: "Montivilliers", kind: village, hex: [3, 40]}
   - {name: "Fécamp", kind: town, hex: [6, 35]}
   - {name: "Saint-Valery-en-Caux", kind: village, hex: [11, 32]}
@@ -108,10 +108,10 @@ places:
   - {name: "Étaples", kind: village, hex: [24, 15]}
   - {name: "Boulogne", kind: town, hex: [24, 10]}
   - {name: "Guînes", kind: village, hex: [27, 6]}
-  - {name: "Calais", kind: objective, hex: [27, 4], note: "English since 1347: the army's goal"}
+  - {name: "Calais", kind: objective, hex: [27, 4], depot: ["England"], note: "English since 1347: the army's goal"}
   - {name: "Ardres", kind: village, hex: [29, 6]}
   - {name: "Fruges", kind: village, hex: [31, 15]}
-  - {name: "Rouen", kind: town, hex: [16, 43], note: "Where the French main army mustered; the King and the Dauphin stayed here"}
+  - {name: "Rouen", kind: town, hex: [16, 43], depot: ["France"], note: "Where the French main army mustered; the King and the Dauphin stayed here"}
   - {name: "Caudebec", kind: village, hex: [11, 40]}
   - {name: "Tancarville", kind: village, hex: [7, 42]}
   - {name: "Aumale", kind: village, hex: [26, 34]}

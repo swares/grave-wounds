@@ -70,7 +70,7 @@ places:
   - {name: "The Twin Tunnels", kind: landmark, hex: [23, 15], note: "The 23rd fought the Chinese here at the start of February, two weeks before the siege (approximate)"}
   - {name: "Hill 397", kind: landmark, hex: [20, 13], note: "The high ground south-east of the perimeter from which the Chinese came at E and G Companies (approximate)"}
   - {name: "Koksu-ri", kind: village, hex: [16, 21], note: "Where Task Force Crombez's tanks ran the gauntlet of Chinese fire on the road north (approximate)"}
-  - {name: "Yoju", kind: camp, hex: [19, 34], note: "Where Task Force Crombez set out on the afternoon of 15 February"}
+  - {name: "Yoju", kind: camp, hex: [19, 34], depot: ["United Nations"], note: "Where Task Force Crombez set out on the afternoon of 15 February"}
   - {name: "Yangpyong", kind: town, hex: [6, 9]}
   - {name: "Wonju", kind: town, hex: [44, 28]}
   - {name: "Hoengsong", kind: village, hex: [49, 9]}

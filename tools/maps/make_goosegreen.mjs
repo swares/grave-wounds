@@ -61,6 +61,7 @@ const map = buildCampaign({
   farms: [], woods: [], marsh: MARSH, hills: HILLS, mountains: [], roads: ROADS,
   towns: [], villages: ["darwin", "goosegreen", "camilla", "burntside", "boca"],
   kinds: { camilla: "camp", darwinhill: "objective", goosegreen: "objective" },
+  depots: { camilla: ["British"], goosegreen: ["Argentines"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "2nd Battalion, the Parachute Regiment", type: "foot", side: "British", men: 500, tools: true, at: "camilla" },
     { name: "Argentine company on Darwin Hill", type: "foot", side: "Argentines", men: 120, tools: true, at: "darwinhill" },

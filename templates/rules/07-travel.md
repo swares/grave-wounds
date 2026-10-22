@@ -241,7 +241,8 @@ cared for a step worse in camp. **Ammunition** goes into a battle on the field m
 load, and what is left comes back.
 
 It refills everything at its army's **depot** (where it started on the map, or a place marked a
-depot of its side), draws from its **baggage train** in the same hex (the train carries
+depot of its side, flagged ⚑ on the map: Harfleur and Calais for Henry V, Balaklava and Kamiesh
+before Sevastopol, Hagaru-ri and Koto-ri at Chosin), draws from its **baggage train** in the same hex (the train carries
 {{sp_train_rations}} days' rations, {{sp_train_ammo}} loads of ammunition and {{sp_train_med}} fills of medical
 stores for {{sp_serves}} men, and a larger force takes more of it), and where its army does not feed it
 its named men may **buy** a day's rations for every man in a village or town at their army's keep.

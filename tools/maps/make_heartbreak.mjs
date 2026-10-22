@@ -49,6 +49,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: {}, majorRivers: [], streams: STREAMS, bridges: [], fords: [],
   farms: FARMS, woods: [], hills: [], mountains: MOUNTAINS, roads: ROADS, towns: [], villages: ["mundung", "satae"],
   kinds: { h931: "objective", h851: "objective" },
+  depots: { mundung: ["North Koreans"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "23rd Infantry and the French Battalion", type: "foot", side: "United Nations", men: 3500, tools: true, at: "h894" },
     { name: "9th Infantry", type: "foot", side: "United Nations", men: 3000, tools: true, at: "bloody" },

@@ -140,8 +140,9 @@ export function buildCampaign(spec){
     return villages.has(k) ? "village" : "landmark";
   };
   const noteOf = k => (spec.notes[k] ? ", note: " + yq(spec.notes[k]) : "");
+  const depotOf = k => (spec.depots?.[k] ? ", depot: [" + spec.depots[k].map(yq).join(", ") + "]" : "");   // the sides that resupply here (data/supplies.yaml)
   const places = Object.keys(spec.names).filter(k => g.on(placeHex(k))).map(k =>
-    `  - {name: ${yq(spec.names[k])}, kind: ${kindOf(k)}, hex: [${placeHex(k).join(", ")}]${noteOf(k)}}`);
+    `  - {name: ${yq(spec.names[k])}, kind: ${kindOf(k)}, hex: [${placeHex(k).join(", ")}]${depotOf(k)}${noteOf(k)}}`);
   const forces = spec.forces.map(f =>
     `  - {name: ${yq(f.name)}, type: ${f.type}, side: ${yq(f.side)}, men: ${f.men}, tools: ${f.tools}, hex: [${placeHex(f.at).join(", ")}]}`);
   const size = `about ${Math.round(g.cols * g.hexKm)} by ${Math.round(g.rows * g.rowKm)} km`;

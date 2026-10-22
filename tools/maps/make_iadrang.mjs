@@ -73,6 +73,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["iadrang"], streams: STREAMS, bridges: BRIDGES, fords: FORDS,
   clearings: CLEARINGS, woods: [], hills: HILLS, mountains: MOUNTAINS, roads: ROADS, towns: [], villages: [],
   kinds: { xray: "objective", falcon: "camp" },
+  depots: { falcon: ["United States"], chupong: ["North Vietnamese"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "1st Battalion, 7th Cavalry (Moore)", type: "foot", side: "United States", men: 450, tools: true, at: "xray" },
     { name: "2nd Battalion, 7th Cavalry", type: "foot", side: "United States", men: 500, tools: true, at: "falcon" },

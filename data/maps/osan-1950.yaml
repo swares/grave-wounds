@@ -69,7 +69,7 @@ places:
   - {name: "Suwon", kind: town, hex: [5, 4], note: "Where the North Korean column came from: the tanks first, then the infantry in trucks and on foot"}
   - {name: "The saddle north of Osan (Jukmiryeong)", kind: objective, hex: [7, 15], note: "Task Force Smith dug in astride the highway here before dawn on 5 July 1950; a memorial stands there now"}
   - {name: "Osan", kind: objective, hex: [9, 19]}
-  - {name: "P'yongt'aek", kind: camp, hex: [11, 39]}
+  - {name: "P'yongt'aek", kind: camp, hex: [11, 39], depot: ["United Nations"]}
   - {name: "Ansong", kind: village, hex: [27, 37], note: "Where the survivors gathered that evening and the next day"}
   - {name: "The railroad over the hill line", kind: landmark, hex: [9, 15], note: "C Company's right flank was bent back along a finger ridge beside the railroad (approximate)"}
   - {name: "The howitzer position", kind: landmark, hex: [7, 17], note: "A battery of the 52nd Field Artillery, about 2,000 yards behind the ridge and just west of the highway (approximate)"}
@@ -80,7 +80,7 @@ places:
   - {name: "Hwasong", kind: village, hex: [4, 12]}
 forces:
   - {name: "Task Force Smith (1st Battalion, 21st Infantry, B and C Companies)", type: foot, side: "United Nations", men: 415, tools: true, hex: [7, 15]}
-  - {name: "A Battery, 52nd Field Artillery (105 mm howitzers)", type: foot, side: "United Nations", men: 125, tools: true, hex: [7, 17]}
+  - {name: "Battery of the 52nd Field Artillery (105 mm howitzers)", type: foot, side: "United Nations", men: 125, tools: true, hex: [7, 17]}
   - {name: "34th Infantry (forward battalion)", type: foot, side: "United Nations", men: 700, tools: true, hex: [11, 39]}
   - {name: "107th Tank Regiment (T-34s: fire support on the field map)", type: wagons, side: "North Koreans", men: 150, tools: false, hex: [4, 1]}
   - {name: "16th Regiment, 4th Division", type: foot, side: "North Koreans", men: 3000, tools: true, hex: [4, 1]}

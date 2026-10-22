@@ -81,6 +81,7 @@ const map = buildCampaign({
   fords: FORDS.map((p, i) => { P["ford" + i] = p; return "ford" + i }),
   marsh: MARSH, clearings: CLEARINGS, hills: HILLS, mountains: MOUNTAINS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { torokina: "camp", piva: "objective", hill700: "objective", hill260: "objective" },
+  depots: { torokina: ["Americans"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "37th Infantry Division (Beightler)", type: "foot", side: "Americans", men: 14000, tools: true, at: "piva" },
     { name: "145th Infantry, on Hill 700", type: "foot", side: "Americans", men: 2500, tools: true, at: "hill700" },

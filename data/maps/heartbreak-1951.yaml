@@ -67,7 +67,7 @@ places:
   - {name: "Hill 894", kind: landmark, hex: [17, 24], note: "The ridge's southern end, taken at the start of the battle"}
   - {name: "Hill 931", kind: objective, hex: [17, 20], note: "The ridge's highest peak, fought over for a month and taken by the 23rd Infantry and the French Battalion on 13 October 1951"}
   - {name: "Hill 851", kind: objective, hex: [17, 16], note: "Taken by the French Battalion on 13 October (approximate)"}
-  - {name: "Mundung-ni", kind: village, hex: [11, 11], note: "Tanks of the 72nd Tank Battalion drove up the valley to here on 10 October, behind the ridge (approximate)"}
+  - {name: "Mundung-ni", kind: village, hex: [11, 11], depot: ["North Koreans"], note: "Tanks of the 72nd Tank Battalion drove up the valley to here on 10 October, behind the ridge (approximate)"}
   - {name: "Sat'ae-ri", kind: village, hex: [22, 21]}
   - {name: "Bloody Ridge (south)", kind: landmark, hex: [14, 32]}
   - {name: "The 72nd Tank Battalion's start", kind: landmark, hex: [9, 33]}

@@ -82,6 +82,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["rapido"], streams: STREAMS, bridges: BRIDGES, fords: [],
   woods: WOODS, hills: HILLS, mountains: MOUNTAINS, roads: ROADS, towns: ["town"], villages: ["caira", "piedimonte", "santangelo", "cervaro"],
   kinds: { abbey: "objective", p593: "objective", town: "objective" },
+  depots: { caira: ["Allies"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "4th Indian Division", type: "foot", side: "Allies", men: 6000, tools: true, at: "north" },
     { name: "2nd New Zealand Division", type: "foot", side: "Allies", men: 6000, tools: true, at: "east" },

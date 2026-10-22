@@ -72,6 +72,7 @@ const map = buildCampaign({
   farms: FARMS, woods: [], hills: HILLS, mountains: [], roads: ROADS,
   towns: ["palace", "station", "minutka", ...Object.keys(CITY)], villages: [],
   kinds: { palace: "objective", station: "objective", severny: "camp" },
+  depots: { severny: ["Russians"], palace: ["Chechens"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "131st (Maikop) Motor Rifle Brigade", type: "foot", side: "Russians", men: 1500, tools: true, at: "northwest" },
     { name: "81st Motor Rifle Regiment", type: "foot", side: "Russians", men: 1300, tools: true, at: "north" },

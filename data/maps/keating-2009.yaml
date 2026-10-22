@@ -58,7 +58,7 @@ terrain: |
     MMMMM~MMMMMMMMMMMMMMMMMMMMMMM
     MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 places:
-  - {name: "Combat Outpost Keating", kind: objective, hex: [12, 19], note: "B Troop, 3-61 Cavalry's outpost at the bottom of the valley, attacked at dawn on 3 October 2009 (approximate)"}
+  - {name: "Combat Outpost Keating", kind: objective, hex: [12, 19], depot: ["Coalition"], note: "B Troop, 3-61 Cavalry's outpost at the bottom of the valley, attacked at dawn on 3 October 2009 (approximate)"}
   - {name: "Observation Post Fritsche", kind: objective, hex: [14, 22], note: "The observation post on the ridge above, with the outpost's mortars; attacked at the same time (approximate)"}
   - {name: "Urmul", kind: village, hex: [10, 19]}
   - {name: "Kamdesh", kind: village, hex: [15, 12], note: "The district's main village, on the mountainside above the outpost (approximate)"}

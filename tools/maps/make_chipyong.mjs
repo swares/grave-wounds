@@ -90,6 +90,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["han"], streams: STREAMS, bridges: BRIDGES, fords: FORDS,
   farms: FARMS, woods: [], hills: HILLS, mountains: MOUNTAINS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { chipyong: "objective", yoju: "camp" },
+  depots: { yoju: ["United Nations"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "23rd Infantry Regimental Combat Team (with the French Battalion)", type: "foot", side: "United Nations", men: 4500, tools: true, at: "chipyong" },
     { name: "Task Force Crombez (5th Cavalry, with tanks)", type: "foot", side: "United Nations", men: 1500, tools: true, at: "yoju" },

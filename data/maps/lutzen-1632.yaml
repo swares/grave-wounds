@@ -76,13 +76,13 @@ terrain: |
     ~fffffffffffffffFFFfffffffffffff~ffffffffffffff~ff
     ffffffffffffffffffffffffffffffffffffffffffffffffff
 places:
-  - {name: "Naumburg", kind: camp, hex: [4, 46], note: "The Swedish army's camp; it marched out on 15 November"}
+  - {name: "Naumburg", kind: camp, hex: [4, 46], depot: ["Sweden"], note: "The Swedish army's camp; it marched out on 15 November"}
   - {name: "Weißenfels", kind: town, hex: [15, 40]}
   - {name: "Rippach", kind: village, hex: [22, 37], note: "An Imperial rearguard held the crossing of the Rippach brook on 15 November, until dark"}
   - {name: "Lützen", kind: objective, hex: [27, 32], note: "Wallenstein stood north of the high road here on 16 November; the battle, in fog, where Gustavus Adolphus fell"}
   - {name: "Markranstädt", kind: village, hex: [32, 27]}
-  - {name: "Leipzig", kind: town, hex: [43, 22], note: "Where the Imperial army fell back after the battle"}
-  - {name: "Halle", kind: town, hex: [15, 3], note: "Where Pappenheim had gone; called back in the night, his horse reached the field about midday"}
+  - {name: "Leipzig", kind: town, hex: [43, 22], depot: ["Empire"], note: "Where the Imperial army fell back after the battle"}
+  - {name: "Halle", kind: town, hex: [15, 3], depot: ["Empire"], note: "Where Pappenheim had gone; called back in the night, his horse reached the field about midday"}
   - {name: "Merseburg", kind: town, hex: [17, 20]}
   - {name: "Dürrenberg", kind: village, hex: [22, 28]}
   - {name: "Großkorbetha", kind: village, hex: [19, 32]}

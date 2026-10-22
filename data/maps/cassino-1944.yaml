@@ -69,7 +69,7 @@ places:
   - {name: "Cassino station", kind: landmark, hex: [18, 20]}
   - {name: "Piedimonte San Germano", kind: village, hex: [5, 16]}
   - {name: "Monte Cairo", kind: landmark, hex: [7, 4]}
-  - {name: "Caira", kind: village, hex: [16, 13]}
+  - {name: "Caira", kind: village, hex: [16, 13], depot: ["Allies"]}
   - {name: "Sant'Angelo in Theodice", kind: village, hex: [13, 27]}
   - {name: "Cervaro", kind: village, hex: [30, 20]}
 forces:

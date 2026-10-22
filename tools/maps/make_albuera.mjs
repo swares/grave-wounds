@@ -80,6 +80,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["guadiana"], streams: STREAMS, fords: FORDS,
   woods: WOODS, hills: HILLS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { siege: "camp", badajoz: "objective" },
+  depots: { elvas: ["Allies"], badajoz: ["France"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Beresford's British", type: "foot", side: "Allies", men: 10000, tools: true, at: "siege" },
     { name: "Beresford's Portuguese", type: "foot", side: "Allies", men: 10000, tools: true, at: "siege" },

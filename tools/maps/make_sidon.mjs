@@ -79,6 +79,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["litani"], bridges: BRIDGES,
   hills: HILLS, mountains: MOUNTAINS, woods: WOODS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { banias: "camp", sidon: "objective" },
+  depots: { sidon: ["Franks"], banias: ["Damascus"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Army of Damascus, horse", type: "mounted", side: "Damascus", men: 3000, tools: false, at: "banias" },
     { name: "Army of Damascus, foot", type: "foot", side: "Damascus", men: 1500, tools: true, at: "banias" },

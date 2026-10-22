@@ -135,14 +135,14 @@ terrain: |
     MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMwwwwww
 places:
   - {name: "Yudam-ni", kind: village, hex: [6, 20]}
-  - {name: "Hagaru-ri", kind: camp, hex: [17, 33], note: "The division's base at the south end of the reservoir, with its airstrip: the wounded were flown out from here"}
+  - {name: "Hagaru-ri", kind: camp, hex: [17, 33], depot: ["United Nations"], note: "The division's base at the south end of the reservoir, with its airstrip: the wounded were flown out from here"}
   - {name: "Toktong Pass (Fox Hill)", kind: objective, hex: [11, 27], note: "Fox Company, 7th Marines held the hill over the pass from 27 November to 2 December 1950 (approximate)"}
-  - {name: "Koto-ri", kind: village, hex: [21, 46]}
+  - {name: "Koto-ri", kind: village, hex: [21, 46], depot: ["United Nations"]}
   - {name: "Funchilin Pass", kind: landmark, hex: [24, 52]}
   - {name: "The treadway bridge", kind: landmark, hex: [25, 53], note: "The Chinese blew the bridge over the gorge; a treadway bridge was dropped by air on 7 December and the division crossed (approximate)"}
   - {name: "Chinhung-ni", kind: village, hex: [26, 59]}
-  - {name: "Hamhung", kind: town, hex: [41, 93]}
-  - {name: "Hungnam", kind: objective, hex: [48, 103], note: "X Corps was taken off by sea from here, 11-24 December"}
+  - {name: "Hamhung", kind: town, hex: [41, 93], depot: ["United Nations"]}
+  - {name: "Hungnam", kind: objective, hex: [48, 103], depot: ["United Nations"], note: "X Corps was taken off by sea from here, 11-24 December"}
   - {name: "Sinhung-ni (east of the reservoir)", kind: village, hex: [22, 22], note: "The Army's regimental combat team (Task Force Faith) was cut off and destroyed east of the reservoir (approximate)"}
 forces:
   - {name: "5th and 7th Marines (Yudam-ni)", type: foot, side: "United Nations", men: 8000, tools: true, hex: [6, 20]}

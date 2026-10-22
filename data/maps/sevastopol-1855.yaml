@@ -57,9 +57,9 @@ places:
   - {name: "Inkerman", kind: village, hex: [18, 7]}
   - {name: "Home Ridge", kind: landmark, hex: [16, 9], note: "The heart of the Battle of Inkerman, 5 November 1854 (approximate)"}
   - {name: "The British camp (Cathcart's Hill)", kind: camp, hex: [13, 11], note: "The British army's camps on the upland"}
-  - {name: "Kamiesh", kind: camp, hex: [2, 10], note: "The French army's base and harbour"}
+  - {name: "Kamiesh", kind: camp, hex: [2, 10], depot: ["Allies"], note: "The French army's base and harbour"}
   - {name: "The French left attack", kind: landmark, hex: [9, 10]}
-  - {name: "Balaklava", kind: camp, hex: [17, 21], note: "The British army's harbour and base"}
+  - {name: "Balaklava", kind: camp, hex: [17, 21], depot: ["Allies"], note: "The British army's harbour and base"}
   - {name: "Kadikoi", kind: village, hex: [16, 20]}
   - {name: "The Col", kind: landmark, hex: [15, 17]}
   - {name: "The Causeway Heights", kind: landmark, hex: [20, 18], note: "The Battle of Balaklava, 25 October 1854, was fought across these heights and the valleys either side"}

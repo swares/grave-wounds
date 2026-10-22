@@ -72,6 +72,7 @@ const map = buildCampaign({
   farms: FARMS, woods: [], marsh: MARSH, hills: [], mountains: [], roads: ROADS,
   towns: ["jolan", "queens", "shuhada", "centre", ...Object.keys(CITY)], villages: [],
   kinds: { jolan: "objective", camp: "camp", station: "objective" },
+  depots: { camp: ["Coalition"], jolan: ["Insurgents"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Regimental Combat Team 1 (3/1 and 3/5 Marines, 2-7 Cavalry)", type: "foot", side: "Coalition", men: 3000, tools: true, at: "northwest" },
     { name: "Regimental Combat Team 7 (1/8 and 1/3 Marines, 2-2 Infantry)", type: "foot", side: "Coalition", men: 3000, tools: true, at: "northeast" },

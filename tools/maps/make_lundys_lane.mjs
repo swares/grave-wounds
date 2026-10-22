@@ -94,6 +94,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["niagara", "niagara_east"], streams: STREAMS, fords: FORDS,
   woods: WOODS, hills: HILLS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { chippawa: "camp", fortgeorge: "objective", forterie: "objective", fortniagara: "objective" },
+  depots: { fortgeorge: ["Britain"], fortniagara: ["Britain"], chippawa: ["United States"], forterie: ["United States"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Scott's brigade", type: "foot", side: "United States", men: 1100, tools: true, at: "chippawa" },
     { name: "Ripley's brigade", type: "foot", side: "United States", men: 1200, tools: true, at: "chippawa" },

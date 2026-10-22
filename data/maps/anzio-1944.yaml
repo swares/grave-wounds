@@ -65,12 +65,12 @@ terrain: |
     wwwwwwwwwwwwwwwwwwwwwwfffffffff
     wwwwwwwwwwwwwwwwwwwwwwwffffffff
 places:
-  - {name: "Anzio", kind: camp, hex: [2, 33]}
-  - {name: "Nettuno", kind: village, hex: [5, 31]}
+  - {name: "Anzio", kind: camp, hex: [2, 33], depot: ["Americans"]}
+  - {name: "Nettuno", kind: village, hex: [5, 31], depot: ["Americans"]}
   - {name: "Aprilia (the Factory)", kind: village, hex: [4, 14], note: "The British attacked north from here towards Campoleone the same night"}
   - {name: "Campoleone", kind: village, hex: [4, 7]}
-  - {name: "Velletri", kind: town, hex: [15, 2]}
-  - {name: "Cisterna", kind: objective, hex: [19, 14], note: "The Rangers' objective: by dawn they were in the open fields within 800 yards of the town"}
+  - {name: "Velletri", kind: town, hex: [15, 2], depot: ["Germans"]}
+  - {name: "Cisterna", kind: objective, hex: [19, 14], depot: ["Germans"], note: "The Rangers' objective: by dawn they were in the open fields within 800 yards of the town"}
   - {name: "Littoria (Latina)", kind: town, hex: [25, 31]}
   - {name: "Conca", kind: village, hex: [13, 25], note: "Where the 4th Rangers and the 3rd Battalion, 15th Infantry set off up the road to Cisterna (approximate)"}
   - {name: "Isola Bella", kind: objective, hex: [17, 16], note: "German machine guns in the farmhouses below it stopped the 4th Rangers on the road (approximate)"}

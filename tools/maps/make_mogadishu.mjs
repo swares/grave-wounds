@@ -76,6 +76,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: {}, majorRivers: [], streams: [], bridges: [], fords: [],
   clearings: CLEARINGS, woods: [], hills: [], mountains: [], roads: ROADS, towns: ["target", "bakara", "olympic"], villages: [],
   kinds: { target: "objective", crash1: "objective", compound: "camp" },
+  depots: { compound: ["United States"], newport: ["United States"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Task Force Ranger (Rangers and Delta)", type: "foot", side: "United States", men: 160, tools: false, at: "target" },
     { name: "Relief column (10th Mountain, with Malaysian and Pakistani armour)", type: "foot", side: "United States", men: 400, tools: false, at: "newport" },

@@ -61,10 +61,10 @@ terrain: |
     .....h.....................hhhhhh.......
     ...........................hhhhh........
 places:
-  - {name: "The Presidential Palace", kind: objective, hex: [18, 21], note: "Dudayev's headquarters; the 81st Motor Rifle Regiment's objective on 31 December 1994; taken on 19 January 1995 (approximate)"}
+  - {name: "The Presidential Palace", kind: objective, hex: [18, 21], depot: ["Chechens"], note: "Dudayev's headquarters; the 81st Motor Rifle Regiment's objective on 31 December 1994; taken on 19 January 1995 (approximate)"}
   - {name: "Grozny railway station", kind: objective, hex: [21, 24], note: "The 131st Brigade reached it on 31 December 1994 and was cut off and largely destroyed there (approximate)"}
   - {name: "Minutka square", kind: town, hex: [22, 26], note: "A Chechen stronghold in the south-east of the city, held into February (approximate)"}
-  - {name: "Severny airport", kind: camp, hex: [19, 3]}
+  - {name: "Severny airport", kind: camp, hex: [19, 3], depot: ["Russians"]}
   - {name: "Khankala airbase", kind: landmark, hex: [31, 26]}
 forces:
   - {name: "131st (Maikop) Motor Rifle Brigade", type: foot, side: "Russians", men: 1500, tools: true, hex: [6, 6]}

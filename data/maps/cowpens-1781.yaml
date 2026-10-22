@@ -86,7 +86,7 @@ terrain: |
     FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF~FF
     FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF~FFF
 places:
-  - {name: "Hannah's Cowpens", kind: landmark, hex: [18, 24], note: "A cattle pasture by the Green River road, where Morgan turned to fight on 17 January"}
+  - {name: "Hannah's Cowpens", kind: landmark, hex: [18, 24], depot: ["Americans"], note: "A cattle pasture by the Green River road, where Morgan turned to fight on 17 January"}
   - {name: "Thicketty Fort", kind: landmark, hex: [29, 36]}
   - {name: "Easterwood Shoals", kind: landmark, hex: [22, 52], note: "Where Tarleton crossed the Pacolet on 15 to 16 January (approximate)"}
   - {name: "Grindal Shoals", kind: landmark, hex: [34, 47], note: "The ford by Morgan's camp on the Pacolet (approximate)"}
@@ -97,7 +97,7 @@ places:
   - {name: "Toward Gilbert Town", kind: landmark, hex: [11, 6]}
   - {name: "Union Court House", kind: village, hex: [36, 59]}
   - {name: "Fair Forest", kind: village, hex: [8, 58]}
-  - {name: "Morgan's camp", kind: camp, hex: [33, 46], note: "Morgan's camp above Grindal Shoals until 15 January (approximate)"}
+  - {name: "Morgan's camp", kind: camp, hex: [33, 46], depot: ["Americans"], note: "Morgan's camp above Grindal Shoals until 15 January (approximate)"}
 forces:
   - {name: "Morgan's Continentals", type: foot, side: "Americans", men: 600, tools: true, hex: [33, 46]}
   - {name: "Militia and riflemen (Pickens)", type: foot, side: "Americans", men: 1000, tools: false, hex: [33, 46]}

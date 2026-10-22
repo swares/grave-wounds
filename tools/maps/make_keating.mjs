@@ -56,6 +56,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["landaysin"], streams: STREAMS, bridges: BRIDGES, fords: [],
   farms: FARMS, woods: WOODS, hills: HILLS, mountains: [], roads: ROADS, towns: [], villages: ["urmul", "kamdesh", "mandigal"],
   kinds: { keating: "objective", fritsche: "objective" },
+  depots: { keating: ["Coalition"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "B Troop, 3-61 Cavalry, with Afghan soldiers and Latvian advisers (COP Keating)", type: "foot", side: "Coalition", men: 70, tools: true, at: "keating" },
     { name: "Observation Post Fritsche", type: "foot", side: "Coalition", men: 20, tools: true, at: "fritsche" },

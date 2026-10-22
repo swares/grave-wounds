@@ -59,6 +59,7 @@ const map = buildCampaign({
   farms: FARMS, clearings: CLEARINGS, woods: [], hills: HILLS, mountains: MOUNTAINS, roads: ROADS,
   towns: [], villages: ["tancanh", "benhet"],
   kinds: { base: "camp", h875: "objective", h1338: "objective" },
+  depots: { base: ["United States and ARVN"], benhet: ["United States and ARVN"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "173rd Airborne Brigade (2/503 and 4/503)", type: "foot", side: "United States and ARVN", men: 1000, tools: true, at: "base" },
     { name: "1st Brigade, 4th Infantry Division", type: "foot", side: "United States and ARVN", men: 2000, tools: true, at: "base" },

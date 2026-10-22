@@ -104,6 +104,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["somme", "seine"], bridges: BRIDGES, fords: FORDS,
   woods: WOODS, marsh: MARSH, hills: HILLS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { harfleur: "camp", calais: "objective" },
+  depots: { harfleur: ["England"], calais: ["England"], rouen: ["France"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Henry V's army", type: "mounted", side: "England", men: 8500, tools: true, at: "harfleur" },
     { name: "English baggage", type: "wagons", side: "England", men: 300, tools: true, at: "montivilliers" },

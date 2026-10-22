@@ -93,6 +93,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["aire", "wharfe", "ouse"], streams: STREAMS,
   bridges: BRIDGES, fords: FORDS, woods: WOODS, marsh: MARSH, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { pontefract: "camp", york: "objective" },
+  depots: { york: ["Lancaster"], pontefract: ["York"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Edward's army", type: "foot", side: "York", men: 15000, tools: true, at: "pontefract" },
     { name: "Fauconberg's vanward", type: "mounted", side: "York", men: 2000, tools: false, at: "pontefract" },
