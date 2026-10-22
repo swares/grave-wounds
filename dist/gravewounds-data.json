@@ -2756,7 +2756,12 @@
    },
    "leader_down": {
     "strain": 3,
-    "name": "His leader down"
+    "name": "His leader killed"
+   },
+   "leader_trusted_down": {
+    "strain": 6,
+    "name": "His trusted leader killed",
+    "approx": true
    },
    "wounded": {
     "strain": 2,
@@ -2844,6 +2849,7 @@
   "treatment": {
    "unit": {
     "name": "With his unit (comrades, a sergeant, a priest)",
+    "with_force": true,
     "days": 2,
     "rtd": {
      "shaken": 60,

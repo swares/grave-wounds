@@ -1008,7 +1008,7 @@ def travel_bundle(d) -> dict:
         "terrain": d.terrain,
         "coins": {e: {"currencies": E["currencies"], "currency": E["currency"]} for e, E in d.equipment.items()},   # period money (purse.js)
         "uses": d.uses,                                # billets, hunting, finding the way
-        "checks": d.checks, "training": d.training, "loads": d.loads, "weights": d.weights, "stress": d.stress, "hazards": d.hazards, "languages": d.languages, "patrons": d.patrons,   # drill in camp, loads on the march (templates/ranks.js)
+        "checks": d.checks, "training": d.training, "loads": d.loads, "weights": d.weights, "supplies": d.supplies, "stress": d.stress, "hazards": d.hazards, "languages": d.languages, "patrons": d.patrons,   # drill in camp, loads on the march (templates/ranks.js)
         "works": d.works,
         "weather": d.weather,
         "disease": d.disease,

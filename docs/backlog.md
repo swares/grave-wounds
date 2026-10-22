@@ -10,7 +10,7 @@ When an item is done, delete it here and note it in the pull request that closes
 ## Deferred work
 
 - **The rule book, beyond the third part.** `dist/rules.html` covers the whole game in
-  thirteen chapters, with a medieval retinue and a Vietnam rifle squad followed through.
+  fourteen chapters, with a medieval retinue and a Vietnam rifle squad followed through.
   It summarises rather than repeats the docs: the black-powder guns' fire (sections, fuses,
   ricochet), the travel map's battle set-up and the battlefields are covered in the docs and
   on the pages, not in the book. It ends with an index of the terms set in bold, each linked to its sections, and prints page numbers (in Chrome and Edge; other browsers may leave them off). The index has no page numbers of its own, only section names.
@@ -94,9 +94,19 @@ When an item is done, delete it here and note it in the pull request that closes
   file carried back during the battle at all, ambulances before 1860 (Larrey's flying
   ambulances of the 1790s, the Crimean War's few), and a side's medevac failing under fire.
 - **Ammunition, beyond the first cut.** Units count their ammunition and resupply from their
-  edge, a supply vehicle or a dump (air drops from 1944, helicopters from 1965). Still left out: riders resupplying
-  aboard their carrier, food, water and medical stores, and carrying a force's ammunition on
-  the travel map from one fight to the next.
+  edge, a supply vehicle or a dump (air drops from 1944, helicopters from 1965). Still left out:
+  riders resupplying aboard their carrier.
+- **Supplies between fights, first cut.** A travel-map force carries ammunition, rations, water
+  and medical stores; a field battle takes its ammunition and sends back what is left; it refills
+  at its depot, from its baggage train in the hex, and by buying rations in a village or town
+  (project doc "supplies-research"). Still left out: the days carried are sourced for some eras
+  only (medieval, Thirty Years' War, Plains and modern are estimates), the water needed by heat and
+  the medical stores' reach are design figures (no dressings-per-wounded rule was found), a
+  baggage train's stock is one size whatever its wagons and does not refill itself, depots are only
+  a force's starting place (no map marks one yet), a force's own pack animals and the named men's
+  carts do not carry its rations, the field map's own units do not eat or drink, rations bought
+  are priced at the first army's keep for the era, and hunger and thirst only add to desertion,
+  straggling, fatigue and the hard nights (no march-rate or heat-casualty rule).
 - **A narrator, first cut.** The field page tells each exchange's turning points (phases,
   units breaking or fleeing, reserves committed, the objective taken or lost, the end) in plain
   words, and with the player's own key (Anthropic, or any OpenAI-compatible service) a model
@@ -265,10 +275,10 @@ When an item is done, delete it here and note it in the pull request that closes
   and Jones (Appel and Beebe 1946 and Swank and Marchand 1946 were not read in the original); no
   figures before 1850 (the medieval, Thirty Years' War and Crimean rates are the same rules, not
   data); cohesion, a trusted leader, a replacement and being on the move change a combat day's
-  Strain (the research's quarter and half), but a leader killed is a source of its own, not a
-  one-off +3 to everyone, and "trusted" is a Command of 60, not a record of how he led; the field map's units have
+  Strain (the research's quarter and half), and a leader killed now strikes each of his men (twice
+  over for a trusted one: a design estimate), and "trusted" is a Command of 60, not a record of how he led; the field map's units have
   no Strain (their morale is their own), and its heroes take only the fight's when they come back
-  to the roller; treatment takes no time on the travel map; and the Plains nations' homecoming is
+  to the roller; treatment away from the force is counted off on the travel map, but the roller and field map do not yet know he is away; and the Plains nations' homecoming is
   deliberately abstract.
 - **Loads, first cut.** Load orders by era, bands by body weight and Strength, march pace and
   fatigue, blisters, Dodge and the run, dropped and lost packs. What a man buys now weighs
@@ -301,7 +311,8 @@ When an item is done, delete it here and note it in the pull request that closes
   End of season; days served add a career term (`docs/team.md`, *Experience*). Still left out:
   - the field map's battles tick a hero's weapon skill for his hits, but not his parries or the
     first aid he gives;
-  - characteristics never change in play, and age brings no decline;
+  - characteristics change in play only by ageing, wounds and the Presence a promotion adds: no
+    training raises Strength or Endurance;
 - **Training, first cut.** Masters for hire, teammates and drill in camp tick a skill. Still left
   out: the masters' fees are estimates apart from riding lessons (London, 1879), and a master's
   skill is always 60; drill ticks only the skill of the weapon a man

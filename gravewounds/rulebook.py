@@ -119,6 +119,16 @@ def _talk_values(d: Data) -> dict:
             **_fight_values(d), **_campaign_values(d)}
 
 
+def _supply_values(d: Data) -> dict:
+    """Supplies between fights and Strain on the march: the numbers the chapters quote."""
+    SP = d.supplies or {}
+    need = [b["l"] for b in (SP.get("water") or {}).get("need", [])] + [0, 0, 0, 0]
+    TR, ST = SP.get("train") or {}, d.stress or {}
+    return {"st_leader": ((ST.get("sources") or {}).get("leader_down") or {}).get("strain", 3), "st_trusted": ST.get("leader_command", 60),
+            "sp_cool": need[0], "sp_warm": need[1], "sp_hot": need[2], "sp_vhot": need[3], "sp_cases": (SP.get("medical") or {}).get("cases", 10),
+            "sp_train_rations": TR.get("rations", 10), "sp_train_ammo": TR.get("ammo", 2), "sp_train_med": TR.get("medical", 2), "sp_serves": f"{TR.get('serves', 1000):,}"}
+
+
 def _campaign_values(d: Data) -> dict:
     """Interpreters, captives, bought commissions and weights: the numbers the chapters quote."""
     I = (d.languages or {}).get("interpreters") or {}
@@ -128,7 +138,8 @@ def _campaign_values(d: Data) -> dict:
     fig = I.get("figure", [50, 85])
     pounds = lambda f: f"£{round(f / 960):,}"
     AE, PR = (d.ageing or {}).get("enlist") or {}, (d.ranks or {}).get("presence") or {}
-    return {"en_under": AE.get("under_years", 3), "en_older": AE.get("older_from", 38), "en_over": AE.get("over_years", 6),
+    return {**_supply_values(d),
+            "en_under": AE.get("under_years", 3), "en_older": AE.get("older_from", 38), "en_over": AE.get("over_years", 6),
             "en_found": AE.get("found_out", 10), "en_wear": AE.get("older_wear", 2), "pres_rank": PR.get("per_rank", 2), "pres_cap": PR.get("cap", 6),
             "int_lo": fig[0], "int_hi": fig[1], "int_unrel": I.get("unreliable", 28), "int_err": I.get("error_from", 90),
             "int_wage": (I.get("wage") or {}).get("default", 1), "int_wage_modern": (I.get("wage") or {}).get("modern", 0.4),
@@ -401,6 +412,11 @@ def tables(d: Data) -> dict:
             rows.append([b["id"].capitalize(), span, b["difficulty"].replace("_", " ").capitalize(), b["rounds"], f"{b['horse']}%"])
             lo = b["upto"]
         out["ford_currents"] = _md(["Current", "Speed", "Agility (Ride)", "Minutes to the bank", "His horse drowns"], rows)
+    if d.supplies:
+        SP = d.supplies
+        names = {e: T["name"].split(" (")[0] for e, T in d.teams.items()}
+        out["supplies"] = _md(["Era", "Rations carried (days)", "Water carried (L a man)"],
+                              [[names[e], f"{SP['rations']['carried'][e]:g}", f"{SP['water']['carried'][e]:g}"] for e in d.teams])
     if d.weights:
         out["pack_animals"] = _md(["Animal or vehicle", "Carries", "Fodder or fuel a night", "Wheels"],
                                   [[a["name"], f"{a['load']:,} kg", f"{a['forage']} Days" + (" (fuel)" if a.get("fuel") else "") if a["forage"] else "—",

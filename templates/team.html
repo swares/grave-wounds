@@ -906,7 +906,9 @@ function stressRow(c, i){
   const lasting = due ? lastingSel(c, i) : "";
   const last = (x.stressLog || [])[0], lastText = last ? ` <span class="muted">· last: ${esc(last.why)} (+${last.amount})</span>` : "";
   const mods = (x.strainMods || []).map(m => TD.stress.mods?.[m]?.name).filter(Boolean), modText = mods.length ? " <span class=\"muted\">· a day in the line: " + esc(mods.join(", ")) + "</span>" : "";
-  return `<li><b>${esc(c.name)}</b>: Strain ${Math.round(st.strain * 10) / 10}, Toll ${Math.round(st.toll * 10) / 10} <span class="muted">(Nerve ${nerve}; next check at ${Math.floor(stTotal(st) / TD.stress.check_every + 1) * TD.stress.check_every})</span>${lastText}
+  const awayDays = x.away?.days ?? 0, plural = awayDays === 1 ? "" : "s", daysLeft = `${awayDays} day${plural}`;
+  const away = x.away ? ` <span class="tag" title="The travel map counts his days off; he is not with the force until they are done">Away for treatment: ${daysLeft} left</span>` : "";
+  return `<li><b>${esc(c.name)}</b>${away}: Strain ${Math.round(st.strain * 10) / 10}, Toll ${Math.round(st.toll * 10) / 10} <span class="muted">(Nerve ${nerve}; next check at ${Math.floor(stTotal(st) / TD.stress.check_every + 1) * TD.stress.check_every})</span>${lastText}
     <div>${state}</div><div class="spend">${treat}${relief}<button class="small" data-rest="${i}" title="A day out of the line, camped: −${TD.stress.rest_day} Strain">Rest a day</button>${lasting}</div>
     ${lastingText(c)}${modText}</li>`;
 }
@@ -1380,18 +1382,28 @@ function leadByRank(always = false){               // the highest rank leads, th
   S.team.forEach(m => { m.leader = m === next });
   return next;
 }
+function leaderKilled(lead){                      // the team's leader killed: each of his men takes the Strain of it, twice over for a trusted leader
+  if (!TD.stress) return;
+  const trusted = (lead.skills?.command || 0) >= (TD.stress.leader_command ?? 60), source = trusted ? "leader_trusted_down" : "leader_down";
+  for (const m of S.team){
+    const ev = xpStress(m.pid, source, m.nerve ?? 50, `${lead.name}, ${trusted ? "a trusted leader, " : ""}killed`);
+    for (const e of ev.filter(x => !x.held)) stressLog(`${m.name}: ${stName(T.id, e.result)} at the news of ${lead.name}'s death (Nerve ${e.target}, rolled ${e.roll}).`);
+  }
+}
+function toPrisoners(c){                          // off the losses and onto the prisoners: his capture to roll
+  S.losses.pop();
+  const foe = TD.languages ? lgArmy(T.id, c.region).enemy : null, speaks = foe && c.tongues && lgValue(c.tongues, foe) >= (TD.languages.getting_by ?? 26);
+  c.prison = { ctx: prContexts(T.id)[0].id, circ: speaks && TD.prisoners.circumstances.quarter_tongue ? ["quarter_tongue"] : [], stage: "taken", seasons: 0, recaptured: 0, tongue: foe };
+  S.prisoners = [...(S.prisoners || []), c];
+}
 function loseMember(i, why, auto = false){        // off the team and onto the losses; leadership passes to the most experienced left
   const c = S.team[i]; if (!c) return;
   c.lost = { why, auto, slot: i, settled: null, replaced: null };
   S.team.splice(i, 1);
   (S.losses ||= []).push(c);
   if (rkLadder().length && rkIndex(c.rank) > 0) (S.vacancies ||= {})[c.rank] = (S.vacancies[c.rank] || 0) + 1;   // his rank falls vacant
-  if (why === "taken prisoner" && TD.prisoners && prContexts(T.id).length){   // not lost yet: a prisoner, whose fate is rolled
-    S.losses.pop();
-    const foe = TD.languages ? lgArmy(T.id, c.region).enemy : null, speaks = foe && c.tongues && lgValue(c.tongues, foe) >= (TD.languages.getting_by ?? 26);
-    c.prison = { ctx: prContexts(T.id)[0].id, circ: speaks && TD.prisoners.circumstances.quarter_tongue ? ["quarter_tongue"] : [], stage: "taken", seasons: 0, recaptured: 0, tongue: foe };
-    S.prisoners = [...(S.prisoners || []), c];
-  }
+  if (why === "taken prisoner" && TD.prisoners && prContexts(T.id).length) toPrisoners(c);   // not lost yet: a prisoner, whose fate is rolled
+  if (c.leader && S.team.length && /killed|died/i.test(why)) leaderKilled(c);
   if (c.leader && S.team.length){
     c.leader = false;
     const next = leadByRank(true);
@@ -1691,7 +1703,8 @@ function init(){
     if (b.dataset.treat !== undefined){
       const c = S.team[+b.dataset.treat], where = b.dataset.where, was = stOf(c).state;
       const r = xpStressDo(c.pid, st => stTreat(st, where, realDice.randint(1, 100)));
-      stressLog(`${c.name}, ${stName(T.id, was)}: ${TD.stress.treatment[where].name.toLowerCase()} (${r.days} days): ${r.rtd ? "back to duty" : "not fit to return yet"} (rolled ${r.roll} against ${r.chance}).`);
+      if (!TD.stress.treatment[where].with_force) xpSendAway(c.pid, r.days, where);   // away from the force for its days (the travel map counts them off)
+      stressLog(`${c.name}, ${stName(T.id, was)}: ${TD.stress.treatment[where].name.toLowerCase()} (${r.days} days${TD.stress.treatment[where].with_force ? ", with the force" : " away"}): ${r.rtd ? "back to duty after them" : "not fit to return yet"} (rolled ${r.roll} against ${r.chance}).`);
       return render();
     }
     if (b.dataset.relieve !== undefined){ const c = S.team[+b.dataset.relieve]; xpStressDo(c.pid, st => stRelieve(st, b.dataset.kind)); stressLog(`${c.name}: ${TD.stress[b.dataset.kind].name.toLowerCase()}.`); return render() }
