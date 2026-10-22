@@ -245,13 +245,17 @@ When an item is done, delete it here and note it in the pull request that closes
   (Pendragon's winter check); and Visby, the Napoleonic marshals, Korea, Vietnam, the Falklands and
   Chechnya had no patronage sources.
 - **Tongues by place, first cut.** A map place can list its people's tongues (main first) and
-  the map keeps a default (one or a list); a force uses the nearest place within `place_km`.
+  the map keeps a default (one or a list); the nearest place within `place_km` decides.
   Places set so far (project doc "tongues-research"): Serbia 1915 (38 towns), Calais and Guînes
   (English, Flemish, French), Olivenza and Elvas (Portuguese), Balaklava (Greek) and the Tatar
   villages by Sevastopol, Sidon's Franks, Visby's Low German, Grozny (Russian and Chechen), Tan Canh
-  and Khe Sanh village (Vietnamese), and Pashto in the Pech and Kamdesh valleys. Still left out:
-  Picard and Walloon (French stands in), Mohawk, Cheyenne, Arapaho and Crow (no ids yet), Gujari,
-  Chinese at Hue; Grozny's districts and Visby's German share are not sourced, nor Vietnamese in
+  and Khe Sanh village (Vietnamese), Pashto in the Pech and Kamdesh valleys, Picard round Mons and
+  Walloon at Binche, Chinese at Gia Hoi, and the Lakota, Cheyenne and Arapaho with the Plains sign
+  language at Fort Phil Kearny. Still left out: the Crow (towards the Bighorn, off the map), the
+  Mohawk (the Grand River, off the Lundy's Lane map), German among the Niagara Mennonites (no source
+  it was still spoken), Gujari in Kamdesh's herders' hamlets (none named on the map), Picard in 1415
+  Artois (then simply the north's French); the Picard and Walloon line at Binche is our reading,
+  and Gia Hoi's Chinese in 1968 has no source for its size; Grozny's districts and Visby's German share are not sourced, nor Vietnamese in
   the highland district towns (inference); the Kosovo and Macedonian shares are from before the
   killings and flight of 1912-13, which made the towns more Serbian and Slavic by 1915 by an
   unknown amount; one tongue list a place, no shares within it.

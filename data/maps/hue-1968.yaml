@@ -72,7 +72,7 @@ places:
   - {name: "Tay Loc airfield", kind: landmark, hex: [14, 18]}
   - {name: "The MACV compound", kind: objective, hex: [19, 21], note: "The American advisers held it on the first night; the Marines came up to it from Phu Bai (approximate)"}
   - {name: "Hue, the new city (south bank)", kind: town, hex: [21, 22]}
-  - {name: "Gia Hoi", kind: town, hex: [21, 18]}
+  - {name: "Gia Hoi", kind: town, hex: [21, 18], tongues: [vietnamese, chinese]}
   - {name: "Thien Mu pagoda", kind: village, hex: [9, 23]}
   - {name: "La Chu", kind: village, hex: [10, 10], depot: ["North Vietnamese"], note: "The North Vietnamese command post, attacked by the 1st Cavalry Division's 3rd Brigade (approximate)"}
   - {name: "Phu Bai combat base", kind: camp, hex: [42, 37], depot: ["United States and ARVN"]}
