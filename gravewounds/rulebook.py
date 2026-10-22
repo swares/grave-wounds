@@ -60,6 +60,16 @@ def _keep_vars(d, cur) -> dict:
     say = lambda x: days_text_q(x) + (f", {fmt(cur, int(x * cur['day'] + 0.5))}" if cur and cur.get("day") else "")
     return {"keep_food": say(k["food"]), "keep_bed": say(k["bed"])}
 
+def _talk_values(d: Data) -> dict:
+    """The tongues' and patrons' numbers the chapters quote."""
+    LG, PT = d.languages or {}, d.patrons or {}
+    tongues = LG.get("tongues", {})
+    return {"lg_native": LG.get("native", 90), "lg_max": LG.get("max", 85), "lg_book": LG.get("phrase_book", 25),
+            "lg_pidgin": (tongues.get("bamboo_english") or {}).get("cap", 35), "lg_sign": (tongues.get("plains_sign") or {}).get("cap", 75),
+            "pt_start": PT.get("start", 30), "pt_persuade": PT.get("persuade_div", 10), "pt_offended": PT.get("offended", -10),
+            "pt_promotion": PT.get("promotion_bonus", 20), "pt_season": (PT.get("events", {}).get("season") or {}).get("add", 2)}
+
+
 def values(d: Data) -> dict:
     """The rule numbers the chapters quote, by name."""
     T, CB = d.wounds["tracking"], d.wounds["combat"]
@@ -89,12 +99,7 @@ def values(d: Data) -> dict:
         "chk_crit": round(d.checks.get("critical_fraction", 0.1) * 100), "chk_fumble": d.checks.get("fumble_from", 96),
         "haggle_seller": (d.checks.get("haggle") or {}).get("seller", 50), "haggle_win": round(-(d.checks.get("haggle") or {}).get("win", -0.1) * 100),
         "haggle_crit": round(-(d.checks.get("haggle") or {}).get("critical", -0.25) * 100),
-        "lg_native": (d.languages or {}).get("native", 90), "lg_max": (d.languages or {}).get("max", 85), "lg_book": (d.languages or {}).get("phrase_book", 25),
-        "lg_pidgin": ((d.languages or {}).get("tongues", {}).get("bamboo_english") or {}).get("cap", 35),
-        "lg_sign": ((d.languages or {}).get("tongues", {}).get("plains_sign") or {}).get("cap", 75),
-        "pt_start": (d.patrons or {}).get("start", 30), "pt_persuade": (d.patrons or {}).get("persuade_div", 10),
-        "pt_offended": (d.patrons or {}).get("offended", -10), "pt_promotion": (d.patrons or {}).get("promotion_bonus", 20),
-        "pt_season": ((d.patrons or {}).get("events", {}).get("season") or {}).get("add", 2),
+        **_talk_values(d),
         "xp_lo": d.experience.get("gain", [1, 3])[0], "xp_hi": d.experience.get("gain", [1, 3])[1], "xp_season": d.experience.get("season_days", 91),
         "scar_upto": E["old_wound"][0]["to"], "lasting": E["lasting"], "origins": len(E["origins"]), "careers": len(E["careers"]),
         "eras": len(d.teams), **_money_vars(d),

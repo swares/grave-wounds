@@ -583,7 +583,8 @@ function patronControls(){                          // who, which patron, what: 
   const events = Object.entries(PTD().events).filter(([id]) => id !== "horses" || plains).map(([id, e]) => ["e:" + id, e.name]);
   const what = "<optgroup label=\"Ask a favour\">" + optionTags(favours, K.what) + "</optgroup><optgroup label=\"What moves Standing\">" + optionTags(events, K.what) + "</optgroup>";
   const needs = K.what === "e:gift" || K.what === "e:horses";
-  const amount = needs ? `<label>${K.what === "e:gift" ? "Days" : "Horses"} <input type="number" id="pt-amount" min="1" value="${K.amount}" style="width:5em"></label>` : "";
+  const unit = K.what === "e:gift" ? "Days" : "Horses";
+  const amount = needs ? `<label>${unit} <input type="number" id="pt-amount" min="1" value="${K.amount}" style="width:5em"></label>` : "";
   const rival = optionTags(all.map((c, k) => [String(k), c.name]), String(K.rival));
   return `<div class="row"><div><label for="pt-who">Who</label><select id="pt-who">${who}</select></div>
     <div><label for="pt-pat">Patron</label><select id="pt-pat">${pat}</select></div>
@@ -607,8 +608,9 @@ function renderPatrons(){
 function favourDone(c, p, F){                       // what a granted favour gives him
   const bits = [];
   if (F.promotion){ c.patron_help = true; bits.push(`+${PTD().promotion_bonus} to his Command for the next vacancy`) }
-  if (F.days && !F.served){ (c.ledger ||= []).push({ days: F.days, what: `${F.name.split(":")[0]} from ${p.name}` }); bits.push(daysQ(F.days)) }
-  if (F.served){ (c.ledger ||= []).push({ days: F.days, what: `A month in ${p.name}'s service` }); xpServe(c.pid, F.served); bits.push(`${daysQ(F.days)} and ${F.served} days served`) }
+  c.ledger = c.ledger || [];
+  if (F.days && !F.served){ c.ledger.push({ days: F.days, what: `${F.name.split(":")[0]} from ${p.name}` }); bits.push(daysQ(F.days)) }
+  if (F.served){ c.ledger.push({ days: F.days, what: `A month in ${p.name}'s service` }); xpServe(c.pid, F.served); bits.push(`${daysQ(F.days)} and ${F.served} days served`) }
   if (F.ransom && c.prison){ prRejoin(c, `is ransomed by ${p.name}`); bits.push("ransomed") }
   return bits.length ? " (" + bits.join(", ") + ")" : "";
 }
@@ -632,7 +634,8 @@ function standingEvent(c, p, cl, ev, amount){
   const was = cl.standing, r = ptMove(cl.standing, ev, realDice, amount);
   cl.standing = r.standing;
   if (r.enemy) cl.enemy = true;
-  ptLog(`${c.name}, ${E.name[0].toLowerCase() + E.name.slice(1)}${amount && (ev === "gift" || ev === "horses") ? ` (${amount})` : ""}: Standing with ${p.name} ${was} → ${cl.standing}${r.enemy ? "; he is now his enemy" : ""}.`);
+  const counted = amount && (ev === "gift" || ev === "horses") ? " (" + amount + ")" : "", enemy = r.enemy ? "; he is now his enemy" : "";
+  ptLog(`${c.name}, ${E.name[0].toLowerCase() + E.name.slice(1)}${counted}: Standing with ${p.name} ${was} → ${cl.standing}${enemy}.`);
 }
 function patronAct(){
   const K = S.ptK, c = everyoneHere()[K.i], p = S.patrons[K.p];
@@ -681,6 +684,23 @@ function patronFate(p, lines){                      // End of season for one pat
   lines.push(line); ptLog(line);
   if (how === "heir"){ p.name = `${p.name}'s heir`; return false }
   return how === "half" || how === "ruin";
+}
+function addPatron(){
+  const name = $("#pt-name").value.trim() || (PTD().kinds[T.id] || "his patron").replace(/^his /, "the ");
+  S.patrons = [...(S.patrons || []), { id: "p" + Date.now().toString(36), name: name[0].toUpperCase() + name.slice(1), kind: PTD().kinds[T.id] || "" }];
+  ptLog(`${S.patrons[S.patrons.length - 1].name} is taken as a patron.`);
+}
+function joinPatron(p, c){                          // a new client: the start, or what he carried from a patron gone
+  const v = Math.max(PTD().start, c.carry || 0);
+  c.patronOf = c.patronOf || {};
+  c.patronOf[p.id] = { standing: v, enemy: false, follow: true };
+  c.carry = 0;
+  ptLog(`${c.name} becomes ${p.name}'s client (Standing ${v}).`);
+}
+function dropPatron(p){
+  S.patrons = S.patrons.filter(x => x !== p);
+  for (const c of everyoneHere()){ if (c.patronOf) delete c.patronOf[p.id] }
+  ptLog(`${p.name} is struck off.`);
 }
 function patronSeason(lines){                      // a season's service, then each patron's fate
   for (const p of S.patrons || []){
@@ -1300,27 +1320,24 @@ function init(){
   const PT_SET = { "pt-who": (K, v) => { K.i = +v }, "pt-pat": (K, v) => { K.p = +v }, "pt-what": (K, v) => { K.what = v }, "pt-amount": (K, v) => { K.amount = Math.max(1, +v || 1) }, "pt-rival": (K, v) => { K.rival = +v } };
   $("#patrons").addEventListener("change", e => {
     const el = e.target;
-    if (PT_SET[el.id]){ PT_SET[el.id](S.ptK, el.value); if (el.type !== "number") render(); return }   // a typed number keeps its box until a button is pressed
-    if (el.dataset.ptfollow !== undefined){ const cl = clientOf(everyoneHere()[+el.dataset.i], S.patrons[+el.dataset.ptfollow]); if (cl) cl.follow = el.checked; render() }
+    if (PT_SET[el.id]){
+      PT_SET[el.id](S.ptK, el.value);
+      if (el.type !== "number") render();               // a typed number keeps its box until a button is pressed
+      return;
+    }
+    if (el.dataset.ptfollow !== undefined){
+      const cl = clientOf(everyoneHere()[+el.dataset.i], S.patrons[+el.dataset.ptfollow]);
+      if (cl) cl.follow = el.checked;
+      render();
+    }
   });
-  function addPatron(){
-    const name = $("#pt-name").value.trim() || (PTD().kinds[T.id] || "his patron").replace(/^his /, "the ");
-    S.patrons = [...(S.patrons || []), { id: "p" + Date.now().toString(36), name: name[0].toUpperCase() + name.slice(1), kind: PTD().kinds[T.id] || "" }];
-    ptLog(`${S.patrons[S.patrons.length - 1].name} is taken as a patron.`);
-  }
-  function joinPatron(p, c){                        // a new client: the start, or what he carried from a patron gone
-    const v = Math.max(PTD().start, c.carry || 0);
-    (c.patronOf ||= {})[p.id] = { standing: v, enemy: false, follow: true };
-    c.carry = 0;
-    ptLog(`${c.name} becomes ${p.name}'s client (Standing ${v}).`);
-  }
   $("#patrons").addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
     if (b.id === "btn-pt-add") addPatron();
     else if (b.id === "btn-pt") return patronAct();
     else if (b.id === "btn-pt-rival") return rivalClaim();
     else if (b.dataset.ptjoin !== undefined) joinPatron(S.patrons[+b.dataset.ptjoin], everyoneHere()[+b.dataset.i]);
-    else if (b.dataset.ptdrop !== undefined){ const p = S.patrons[+b.dataset.ptdrop]; S.patrons = S.patrons.filter(x => x !== p); for (const c of everyoneHere()) if (c.patronOf) delete c.patronOf[p.id]; ptLog(`${p.name} is struck off.`) }
+    else if (b.dataset.ptdrop !== undefined) dropPatron(S.patrons[+b.dataset.ptdrop]);
     render();
   });
   $("#checks").addEventListener("change", e => {
