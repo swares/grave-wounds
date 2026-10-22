@@ -2470,6 +2470,16 @@ function ranThrough(units, i, after){             // indices of the friendly uni
   }
   return out;
 }
+function cornered(units, i, after){               // broken unit i cannot run (it would stand where it is) with an enemy touching it, and its side gives up (rout.surrender; not fights_on) (as units.cornered)
+  const u = units[i];
+  if (!UD.rout.surrender || u.fights_on || after.state === "fled" || after.pos[0] !== u.pos[0] || after.pos[1] !== u.pos[1]) return false;
+  return inContact(units, occupancy(units), i);
+}
+function surrender(u, quarter){                   // a cornered unit gives up: quarter % of its men standing taken prisoner, the rest killed; heroes on their feet taken -> {unit, taken, killed} (as units.surrender)
+  const taken = Math.floor(u.men * quarter / 100), killed = u.men - taken;
+  const heroes = (u.heroes || []).map(h => (h.state === "up" && !offField(h) ? { ...h, state: "prisoner" } : h));
+  return { unit: { ...u, state: "fled", men: 0, down: (u.down || 0) + u.men, dead: (u.dead || 0) + killed, taken: (u.taken || 0) + taken, surrendered: true, heroes }, taken, killed };
+}
 function runAway(units, i, size, field = null){   // units after broken unit i runs, the friends it ran through jostled (as units.run_away)
   const after = flee(units, i, size, field), hit = new Set(ranThrough(units, i, after));
   return units.map((x, k) => {
@@ -3812,7 +3822,7 @@ function makeUnit(o, id, table){                   // a new unit as the GM or a 
 function unitMarks(o){                             // a drawn unit's optional marks, copied as given
   return { ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.armour ? { armour: o.armour } : {}),
     ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...unitOrders(o), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}),
-    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}) };
+    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}) };
 }
 const unitOrders = o => ({ ...(o.hold ? { hold: true } : {}), ...(o.withdraw ? { withdraw: { ...o.withdraw } } : {}) });   // its orders from the accounts
 function ensureTags(B){                            // each unit's number on its side, kept for the battle (B3 stays B3) (as battle.ensure_tags)
@@ -3924,7 +3934,9 @@ function startPhase(B, k){                         // side k's move; at the star
   const ran = [];
   for (let i = 0; i < B.units.length; i++){
     if (k !== 0 || B.units[i].state !== "broken") continue;
-    const through = ranThrough(B.units, i, flee(B.units, i, B.size, B.field));
+    const after = flee(B.units, i, B.size, B.field);
+    if (cornered(B.units, i, after)){ const s = surrender(B.units[i], quarterOf(B.table)); B.units[i] = s.unit; ran.push({ unit: i, through: [], fled: true, surrendered: true, taken: s.taken, killed: s.killed }); continue }
+    const through = ranThrough(B.units, i, after);
     B.units = runAway(B.units, i, B.size, B.field);
     ran.push({ unit: i, through, fled: B.units[i].state === "fled" });
   }
@@ -4018,7 +4030,7 @@ function sideEvac(B, k){                           // side k's medevac kind (its
 }
 function afterBattle(B, care, evac, rng){          // the battle over: each unit's aftermath (care, evac: per unit) and the heroes' fates, applied: {all, after, fates} (as battle.after_battle)
   const all = afterAll(B), am = aftermath(all, care, rng, evac);
-  const after = all.map((u, i) => ({ id: u.id, killed: u.dead || 0, ...am[i] }));
+  const after = all.map((u, i) => ({ id: u.id, killed: u.dead || 0, ...am[i], ...(u.taken ? { taken: u.taken } : {}) }));   // taken: its men who surrendered, prisoners
   const fates = heroFates(B.units, B.table, rng);  // heroes left on the field: found, taken prisoner or killed
   for (const f of fates){
     const h = B.units[f.unit].heroes.find(x => x.id === f.hero);
@@ -4058,7 +4070,7 @@ function endPoint(B, stop, all, after){            // the battle's end, as a tur
   const sides = B.sides.map(side => {
     const rows = all.map((u, i) => [u, after[i]]).filter(([u]) => u.side === side);
     return { start: rows.reduce((n, [u]) => n + (u.start || 0), 0), killed: rows.reduce((n, [, a]) => n + a.killed, 0), left: rows.reduce((n, [, a]) => n + a.left, 0),
-      died: rows.reduce((n, [, a]) => n + a.died, 0), carried: rows.reduce((n, [, a]) => n + a.cases.length, 0),
+      died: rows.reduce((n, [, a]) => n + a.died, 0), carried: rows.reduce((n, [, a]) => n + a.cases.length, 0), taken: rows.reduce((n, [, a]) => n + (a.taken || 0), 0),
       standing: B.units.filter(u => u.side === side && u.men > 0 && STANDING.has(u.state)).length };
   });
   return { kind: "end", exchanges: B.exchange - 1, stop, sides, held: objectiveHeld(B.units, B.field).map(o => o.held) };
