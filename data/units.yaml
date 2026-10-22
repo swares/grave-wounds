@@ -734,7 +734,7 @@ morale:
   #   With every loss counted, a company in a house-to-house fight checked whenever it lost one
   #   man to fire and put none down (Hue: most such checks were over one or two men). The losing
   #   modifier (mods.losing_per_man) still counts all of them. false: every loss counts.
-  hand_to_hand: true
+  hand_to_hand: false
   shaken_by: 20
   mods:
     leader: 10                # a named leader with the unit, up and fighting
