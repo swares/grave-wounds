@@ -726,6 +726,12 @@ morale:
   #   runs of every battlefield: 642 of 888 from 628, the morale targets unchanged (the project's
   #   morale-two-kinds notes). false: the old rule.
   posture: true
+  # posture_cover: a unit gone to ground (prone) in ground that gives cover (woods, scrub,
+  #   buildings, rubble) holds a position too. At X-Ray no American company counted: they lay in
+  #   the trees, the elephant grass and the creek bed, not in works, and broke a quarter down.
+  #   Measured on 24 runs of every battlefield: 652 of 888 from 642, X-Ray 9 to 18, the morale
+  #   targets unchanged. false: only works, bunkers, digging in and ground that hides men count.
+  posture_cover: true
   shaken_by: 20
   mods:
     leader: 10                # a named leader with the unit, up and fighting

@@ -1008,7 +1008,7 @@ def morale(d: Data, unit: dict, roll: int) -> dict:
     """A unit's check after an exchange. unit: {quality, start, down (all so far), lost (this
     exchange), dealt (enemy put down by it this exchange), men (before this exchange), state
     (steady, shaken or broken), leader (None, up or down), flanked, friends (a steady friend
-    beside it), contact}. Returns {check (bool),
+    beside it), contact, holds (holding a position)}. Returns {check (bool),
     target, state}."""
     M = d.units["morale"]
     if unit["state"] == "broken":
@@ -2743,6 +2743,9 @@ def _fly(d: Data, us: list, ctx: tuple, lf: dict, used: dict) -> list:
     state = lz_state(d, us, field, side, lf["lz"])
     if state == "blocked":
         return [{"kind": "waveoff", "name": lf["unit"]["name"], "side": side, "lz": lf["lz"], "why": "blocked"}]
+    if kind == "in" and any(u.get("id") is not None and u.get("id") == lf["unit"].get("id") and u["state"] in ("broken", "fled") for u in us):
+        lf["left"] = 0                            # its men on the ground have broken: the rest of the lift turns back
+        return [{"kind": "waveoff", "name": lf["unit"]["name"], "side": side, "lz": lf["lz"], "why": "routed"}]
     if kind == "supply":
         n, log = 1, _supply_lift(field, lf)
     elif kind == "out":
@@ -4064,11 +4067,19 @@ def _vehicle_losses(d: Data, u: dict, before: int, lost: int) -> tuple:
     return (start_v - now_v) * crew, max(0, was_v - now_v) * crew
 
 
+def cover_lying(d: Data, field: dict | None, u: dict) -> bool:
+    """Gone to ground in ground that gives cover (morale.posture_cover)."""
+    if not d.units["morale"].get("posture_cover") or not u.get("prone") or not field:
+        return False
+    return any(ground_at(d, field, x).get("cover", 0) > 0 for row in footprint(d, u) for x in row)
+
+
 def holds_position(d: Data, us: list, i: int, field: dict | None) -> bool:
-    """Unit i holds a position: in a bunker, or holding works toward the nearest standing enemy
-    (dug in, emplaced, the works' cover, ground that hides men)."""
+    """Unit i holds a position: in a bunker, gone to ground in cover (morale.posture_cover), or
+    holding works toward the nearest standing enemy (dug in, emplaced, the works' cover, ground
+    that hides men)."""
     u = us[i]
-    if in_bunker(d, field, u):
+    if in_bunker(d, field, u) or cover_lying(d, field, u):
         return True
     at, best = None, math.inf
     for e in us:

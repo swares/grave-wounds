@@ -158,8 +158,9 @@ The check is d100 against its Nerve (green 35, regular 50, veteran 65), with mod
 **Holding a position** (`morale.posture`). A unit of a side the commander has holding its ground
 (not attacking), that holds a position, and is not struck in flank or rear, checks for being a
 quarter down only in an exchange in which it lost men. Holding a position means: in a bunker, dug
-in or emplaced, behind works with cover toward the nearest enemy, or in ground that hides men
-(buildings, tall buildings, rubble). Units in the open, and attackers wherever they lie, check
+in or emplaced, behind works with cover toward the nearest enemy, in ground that hides men
+(buildings, tall buildings, rubble), or gone to ground in ground that gives cover (woods, scrub;
+`morale.posture_cover`). Units in the open, and attackers wherever they lie, check
 every exchange as before. A garrison in its holes no longer breaks from the passing of time; one
 that is being hit still checks, as does any unit flanked, hit hard, or losing the fight in contact.
 The research behind it (the project's breakpoints-pre1914 and morale-two-kinds notes): breaks
@@ -168,6 +169,14 @@ units hold far past any threshold. Measured on 24 runs of every battlefield: 642
 the morale targets unchanged; Keating 12 to 20, Pork Chop 10 to 16, X-Ray 7 to 9. A first version
 applied it to attackers in cover too, and at Wanat the Taliban in the draw stopped breaking (23 to
 16); a check when a unit of its own side within 2 hexes broke was measured and changed nothing.
+
+Lying in cover was added later (`morale.posture_cover`). At X-Ray no American company counted as
+holding a position: they lay in the trees, the elephant grass and the dry creek bed, not in works,
+and still broke a quarter down. Measured on 24 runs of every battlefield against main at 642 of
+888: 652, X-Ray 9 to 18, Hamburger 19 to 20, the morale targets unchanged. Counting only losses hand
+to hand for "lost the exchange in contact" was measured with it and not built: it did not help Hue
+(1 to 0), where the Marines then broke from the hand-to-hand fights they met storming the
+buildings, and it cost Agincourt (8 to 3) while lifting the June Redan (2 to 13).
 
 ## The rout
 
@@ -1854,6 +1863,8 @@ For helicopter landings (Vietnam and later). The numbers are in `heliborne` in
   own row, not as standing on the field nor as lost.
 - **Blocked.** No one lands while an enemy unit stands within 2 hexes of the zone, or where
   there is no room: the lift is waved off and tries again next exchange.
+- **Turned back.** Once the men of a unit already down have broken or fled, the rest of its
+  lift turns back and does not land (before, they landed into the rout).
 - **A hot landing zone.** If any enemy unit (not broken) could shoot at the zone's hex, with
   its weapon in range and in sight (in the weather and the light), the zone is hot. Each man
   landing is struck at 10% and rolls a wound as one struck by shellfire, and those put down

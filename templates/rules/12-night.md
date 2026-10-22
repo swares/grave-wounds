@@ -80,6 +80,8 @@ the nearest spot within {{h_zone}} hexes, and can move the next exchange.
 
 - **Waved off.** No one lands while an enemy unit stands within {{h_blocked}} hexes of the
   zone.
+- **Turned back.** Once the men of a unit already down have broken, the rest of its lift turns
+  back.
 - **A hot zone.** If any enemy unit could shoot at the zone, each man landing is struck at
   {{h_hot}}% and wounded as by shellfire, and each helicopter is hit at {{h_hit}}%: {{h_downed}}%
   of those come down on the zone as a wreck, the rest go home damaged. Either way it is lost

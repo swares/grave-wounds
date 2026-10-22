@@ -1108,7 +1108,7 @@ function objectiveText(l){                      // who holds the objective after
 }
 function landText(l){                            // men landing by air, or waved off
   const at = `${l.lz[0] + 1},${l.lz[1] + 1}`;
-  const why = { blocked: "the enemy is on the landing zone", contact: "they are in contact with the enemy", far: "they are no longer near the landing zone" }[l.why] || "no room there";
+  const why = { blocked: "the enemy is on the landing zone", contact: "they are in contact with the enemy", far: "they are no longer near the landing zone", routed: "the men already down have broken, and the rest turn back" }[l.why] || "no room there";
   if (l.kind === "waveoff") return `${l.name} (${l.side}) cannot ${l.why === "contact" || l.why === "far" ? "board" : "land"} at ${at}: ${why}.`;
   let hot = "";
   if (l.hot) hot = ", under fire: " + l.struck + " struck";
