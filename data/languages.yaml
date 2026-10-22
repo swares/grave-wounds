@@ -98,6 +98,9 @@ tongues:
   bulgarian: {name: Bulgarian}
   belarusian: {name: Belarusian}
   yiddish: {name: Yiddish}
+  romanian: {name: Romanian}
+  slovak: {name: Slovak}
+  slovene: {name: Slovene}
   hungarian: {name: Hungarian}
   polish: {name: Polish}
   russian: {name: Russian}
@@ -148,6 +151,11 @@ related:                       # [a, b, share]: a man with one knows the other a
   - [belarusian, ukrainian, 0.5]
   - [belarusian, polish, 0.25]
   - [yiddish, german, 0.5]
+  - [slovak, czech, 0.75]
+  - [slovak, polish, 0.25]
+  - [slovene, croatian, 0.5]
+  - [bulgarian, russian, 0.25]
+  - [romanian, italian, 0.25]
 
 traits:                        # background traits and drawbacks that give or take tongues
   "Speaks three tongues": {extra: 2, range: [30, 60]}
@@ -208,6 +216,10 @@ armies:
              others: [[french, 60, [20, 60]], [german, 5, [10, 50]]]}
     russia: {own: [[russian, 55], [ukrainian, 20], [polish, 7], [belarusian, 6], [yiddish, 5], [tatar, 4], [german, 2], [finnish, 1]], enemy: german,
              others: [[russian, 70, [20, 60]], [german, 5, [10, 40]]]}   # the 1897 census's mother tongues as a proxy (no muster counts); units at least 75% Slavs
+    austria_hungary: {own: [[german, 27], [hungarian, 22], [czech, 14], [polish, 9], [ukrainian, 8], [croatian, 7], [romanian, 6], [slovak, 4], [slovene, 2], [italian, 1]], enemy: russian,
+             others: [[german, 40, [10, 40]], [hungarian, 10, [10, 40]]]}   # the 1906 recruits per 1,000 (Rothenberg); the 80 words of command in German
+    bulgaria: {own: [[bulgarian, 90], [turkish, 10]], enemy: serbian,
+             others: [[turkish, 10, [10, 40]], [russian, 5, [5, 25]], [german, 5, [5, 25]]]}
     serbia: {own: [[serbian, 100]], enemy: german,
              others: [[french, 10, [5, 30]], [german, 10, [10, 40]], [bulgarian, 5, [10, 40]], [russian, 5, [5, 25]]]}
     germany: {own: [[german, 90], [polish, 7], [french, 3]], enemy: french,

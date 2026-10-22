@@ -103,7 +103,7 @@ eras:
     note: "No ranks and no pay: a man's standing came from his deeds (coups, horses taken) and his generosity, and a war leader was followed, not appointed."
     honours: true
   wwi:
-    note: "British daily pay of 1914; Russian of 1914 (a private 6 roubles a year, a senior NCO 48, a feldfebel 72, a podporuchik 70 a month, a captain 145: Podpryatov and Poperechnaya 2019, and a blog for the officers); Serbian pay not found. About 10,000 British soldiers were commissioned straight from the ranks, and about 6,000 Americans in 1917-18; Russia's 62 praporshchik schools turned out some 225,000 wartime officers in three-month courses."
+    note: "British daily pay of 1914; Russian of 1914 (a private 6 roubles a year, a senior NCO 48, a feldfebel 72, a podporuchik 70 a month, a captain 145: Podpryatov and Poperechnaya 2019, and a blog for the officers); Serbian, Austro-Hungarian (but a private's 36 Heller a day) and Bulgarian rank pay not found: they take the British steps. About 10,000 British soldiers were commissioned straight from the ranks, and about 6,000 Americans in 1917-18; Russia's 62 praporshchik schools turned out some 225,000 wartime officers in three-month courses."
     kept: 0.75
     kept_approx: true
     ladder:

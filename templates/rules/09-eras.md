@@ -50,8 +50,10 @@ Female Engagement Teams of Iraq and Afghanistan. Women who fought are open where
 show them, chosen rather than rolled: the townswomen who defended Toulouse in 1218 and Dunbar
 in 1338, Margaret Corbin at her husband's gun and Deborah Sampson in the Continental line, the
 Lakota and Cheyenne women at the Rosebud and the Little Bighorn, the Russian women's battalions
-of 1917 (Bochkareva's reached the third German line at Smorgon), and Serbia's women sergeants and
-Flora Sandes, a British nurse who enlisted as a private in the retreat of 1915. In every other army a career
+of 1917 (Bochkareva's reached the third German line at Smorgon), Serbia's women sergeants and
+Flora Sandes, a British nurse who enlisted as a private in the retreat of 1915, and Austria-Hungary's
+few (Viktoria Savs, disguised as a man with the Standschützen; Olena Stepaniv, an officer of the
+Ukrainian Sich Riflemen). In every other army a career
 rolls a man, and the page gives the reason. An army's share is the women among its soldiers as
 a whole, not just in that career, so treat it as a rough guide. A GM may prefer to choose.
 

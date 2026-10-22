@@ -81,6 +81,10 @@ eras:
        note: "222,357 Serbs taken, about 60,000 died (Denda); 4,800 deaths at Nežider", approx: true}
     - {id: in_russia, name: "Germans or Austro-Hungarians in Russian hands", capture: [8, 40], release: 1, hazard: 2, escape: -20, home: 3, recapture: 0,
        note: "about 2.4 million held, over 400,000 died (17.6%, Sumpf); a German's chance worse (37%)", approx: true}
+    - {id: in_italy, name: "Austro-Hungarians in Italian hands", capture: [8, 40], release: 2, hazard: 1, escape: -10, home: 5, recapture: 0,
+       note: "477,024 came under Italian control, 18,049 died (an adjusted 10.2%, Gorgolini); over 7,000 of about 24,000 died on the transfer to Asinara", approx: true}
+    - {id: romanians_bulgaria, name: "Romanians in Bulgarian hands", capture: [8, 40], release: 1, hazard: 2, escape: -10, home: 5, recapture: 0,
+       note: "about 28,000 taken at Turtucaia in 1916 and held until June 1918: 21.6% died (Trifunović); 4,644 by the Romanian count", approx: true}
     - {id: in_serbia, name: "Austro-Hungarians in Serbian hands (the typhus, the retreat)", capture: [8, 40], release: 1, hazard: 6, escape: -10, home: 5, recapture: 0,
        note: "about 35,000 dead in the typhus of 1914-15 and 47,000 on the retreat of 1915; how many were taken is not known", approx: true}
   wwii:
