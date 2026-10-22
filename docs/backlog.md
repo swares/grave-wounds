@@ -201,9 +201,16 @@ When an item is done, delete it here and note it in the pull request that closes
   - no difficulty from wounds, fatigue or hunger is added to a check out of a fight (the GM sets
     it);
   - haggling is only for buying: selling loot, and hiring a replacement, are at the list price.
-- **Roller header at phone width.** At a 390 px window the roller page is about 499 px wide: the
-  header's right-hand group (`span.hdr-right`, with the `#conf` badge) does not wrap. It was so
-  before the hazards panel; the panels themselves fit.
+- **Period money everywhere.** Every price is kept in its period coin (data/equipment/<era>.yaml:
+  631 items in 41 coins, each a soldier's day in its coin where known), and the shop and the purse
+  show the coin beside the Days; the rest shows Days only. To do when the rules are settled: show
+  the period coin beside the Days for rank pay, army wages at End of season, job pay, loot,
+  ransoms, training fees and the ledger (rank pay is the rank's multiple times the coin's `day`);
+  give each job its period wage as a number in its coin, not only the `wage` text (113 of the 209
+  jobs are estimates or have no period figure); and find a soldier's day for the 22 coins without
+  one (French livres 1415, Gotland marks, Confederate dollars, the Crimean and 1940s roubles, the
+  Chinese and North Korean coins, AMG lire, the 1982 peso, the Iraqi dinar, the Pakistani rupee,
+  buffalo robes and others), whose prices cannot be put in Days.
 - **Water, heights and pursuit, first cut.** Swimming and drowning, cold water, fords, climbing,
   falls and chases in the roller; fords on the travel map. Still left out: no era has a sound
   count of who could swim (the shares are estimates); drowning counts for the Rapido, Omaha, the
