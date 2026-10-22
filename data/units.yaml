@@ -718,6 +718,14 @@ quick: {blows: false, samples: 4000, normal_from: 9}
 morale:
   trigger: 0.25
   shock: 0.10
+  # posture: a unit of a holding side (the commander's stance) holding a position (in a bunker, dug
+  #   in, emplaced, behind works with cover toward the nearest enemy, or in ground that hides men),
+  #   and not flanked, checks for being a quarter down only in an exchange it lost men; units in the
+  #   open, and attackers, check every exchange. Self-play: garrisons a quarter down broke from the
+  #   passing of time where the accounts say they held (Keating, Pork Chop, X-Ray). Measured on 24
+  #   runs of every battlefield: 642 of 888 from 628, the morale targets unchanged (the project's
+  #   morale-two-kinds notes). false: the old rule.
+  posture: true
   shaken_by: 20
   mods:
     leader: 10                # a named leader with the unit, up and fighting

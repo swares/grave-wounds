@@ -921,3 +921,31 @@ to 0, 73 Easting 19 to 15). The failed rally is not what holds those battlefield
 **Measuring.** The 24-run measurements now run on GitHub Actions (`.github/workflows/selfplay.yml`,
 16 parallel jobs, well under an hour) and are compared there (`selfplay-compare.yml`); runs in a
 Claude session died whenever the session went idle.
+
+## Two kinds of break: holding a position, 21 October 2026
+
+X-Ray, Keating, Pork Chop and the Monastery lose because their garrisons, a quarter down, check
+morale every exchange and fail one in the end; at X-Ray the fire support did its job (in one run
+323 of 367 North Vietnamese down came from artillery, mortars, rockets and air) and the American
+companies still broke at 25-35% down, most of their losses then coming in the rout. Taking the
+standing check away for everyone was measured on 20 October (614 of 888) and cost the attacks and
+defences that gave way on time. The research (the project's breakpoints-pre1914 notes) points to
+two kinds of break: cheap ones from flanks, charges and neighbours, late ones from frontal
+attrition, with dug-in units holding far past any threshold. The design (morale-two-kinds notes)
+kept the present rules and measured two changes on GitHub Actions, 24 runs of every battlefield,
+against main (628 of 888):
+
+| | Runs matched | Notes |
+|---|---|---|
+| Holding a position (posture), both sides | 637 | Keating 12 to 20, Pork Chop 10 to 16; but Wanat 23 to 16 |
+| A neighbour within 2 hexes broke calls a check | 627 | no effect |
+| Both | 633 | |
+| Holding a position, the holding side only | 642 | Keating 12 to 20, Pork Chop 10 to 16, X-Ray 7 to 9, Cassino town 17 to 19; Wanat 23; Hue 3 to 1 |
+
+At Wanat the first version let the Taliban fighters in the draw and their machine guns, lying in
+cover, stop breaking too; they kept their fire on Observation Post Topside, whose teams of two and
+three broke instead. Limited to the side holding its ground (the commander marks each unit with
+its side's stance), Wanat is back to 23 of 24. The battlefields that need breaks keep them
+(Cowpens, Mons, Towton, Osan unchanged; 73 Easting 12 to 11), and the targets did not move. Built,
+on by default (`morale.posture`). The neighbour check, which seldom fires because units seldom
+break beside each other in these battles, was not built.

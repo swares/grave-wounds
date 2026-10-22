@@ -25,10 +25,19 @@ def command(d: Data, units: list, side, size: tuple, field: dict | None, rng, ex
         return _command(d, units, side, (size, field, rng, exchange), stance, memory, table)
 
 
+def _mark_stance(d: Data, us: list, side, stance: str) -> None:
+    """Its stance on each of its units, for morale.posture: only a holding side's units hold a position."""
+    if d.units["morale"].get("posture"):
+        for u in us:
+            if u["side"] == side:
+                u["holding"] = stance == "hold"
+
+
 def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict | None, table: str | None) -> tuple:
     """command, worked out: where is (size, field, rng, exchange)."""
     size, field, rng, exchange = where
     us, orders = [dict(u) for u in units], []
+    _mark_stance(d, us, side, stance)
     memory = {} if memory is None else memory
     known = sightings(d, us, side, field, exchange, memory)
     aim = aims(d, us, side, field, stance, memory)

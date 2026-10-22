@@ -619,7 +619,8 @@ function morale(u, roll){                       // {check, target, state}
   const M = UD.morale;
   if (u.state === "broken") return { check: false, target: null, state: "broken" };
   const losing = (u.lost || 0) > (u.dealt || 0) && u.contact;
-  const struck = u.down >= M.trigger * u.start || u.lost >= M.shock * Math.max(1, u.men) || u.flanked || losing;
+  const attrition = u.down >= M.trigger * u.start && (u.lost > 0 || !(u.holds && !u.flanked));   // past a quarter down: every exchange in the open; holding a position, only when it lost men (morale.posture)
+  const struck = attrition || u.lost >= M.shock * Math.max(1, u.men) || u.flanked || losing;
   const rally = u.state === "shaken" && !u.contact;
   if (!struck && !rally) return { check: false, target: null, state: u.state };
   const target = quality(u.quality).nerve + moraleMods(M.mods, u);
@@ -2186,14 +2187,22 @@ function vehicleLosses(u, before, lost){          // [down, lost this exchange] 
   const startV = Math.ceil(u.start / K.crew), wasV = Math.ceil(before / K.crew), nowV = vehiclesLeft(u);
   return [(startV - nowV) * K.crew, Math.max(0, wasV - nowV) * K.crew];
 }
+function holdsPosition(us, i, field){             // unit i holds a position: in a bunker, or holding works toward the nearest standing enemy (dug in, emplaced, works' cover, ground that hides men) (as units.holds_position)
+  const u = us[i];
+  if (inBunker(field, u)) return true;
+  let at = null, best = Infinity;
+  for (const e of us) if (e.side !== u.side && e.men > 0 && !ROUTED.has(e.state)){ const dd = hdist(e.pos, u.pos); if (dd < best){ best = dd; at = e.pos } }
+  return holdsWorks(field, at || u.pos, u);
+}
 function moraleAll(us, occ, before, acc, rng, table, field = null){
-  const log = [], broke = [];
+  const log = [], broke = [], M = UD.morale;
   us.forEach((u, i) => {
     if (out_(u)) return;
     const near = adjacentUnits(us, occ, i);
     const [down, lost] = vehicleLosses(u, before[i], acc.lost[i]);
     const unit = { quality: u.quality, start: u.start, down, lost, dealt: acc.dealt[i], men: before[i], state: u.state,
-      leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out" };
+      leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out",
+      holds: !!M.posture && !!u.holding && holdsPosition(us, i, field) };
     const m = morale(unit, rng.randint(1, 100));
     if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state });
     if (m.state === "broken") broke.push(i);
@@ -2465,6 +2474,7 @@ function command(units, side, size, field, rng, exchange = null, { stance = "att
 }
 function orderSide(units, side, [size, field, rng, exchange], { stance, memory, table }){   // command, worked out (as commander._command)
   let us = units.map(u => ({ ...u }));
+  if (UD.morale.posture) us.forEach(u => { if (u.side === side) u.holding = stance === "hold" });   // its stance, for morale.posture: only a holding side's units hold a position
   const orders = [], mem = memory ?? {};
   const known = sightings(us, side, field, exchange, mem), aim = aims(us, side, field, stance, mem);
   const goal = aim[1];                              // the field with the objective most of its units go for (with a second one marked)
