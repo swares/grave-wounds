@@ -2778,8 +2778,16 @@ function clickHex(h, e){
   }
   if (S.turn && !S.freePlace){ S.mapMsg = ""; moveActing(h) }
 }
+function pushBodies(){                          // each team-builder fighter's penalties, for his checks out of a fight (xp.js xpBody)
+  for (const c of S.chars){
+    if (!c.sheet || !c.sheet.pid) continue;
+    const p = penalties(c);
+    xpBody(c.sheet.pid, p.attack || p.flags.includes("out") ? { penalty: p.attack, notes: p.notes, out: p.flags.includes("out") || p.flags.includes("incapacitated") } : null);
+  }
+}
 function renderChars(){
   refreshStress();
+  pushBodies();
   sortChars();
   if (S.turn != null && !S.chars.some(c => c.id === S.turn)) S.turn = null;
   const att = attackerChar();                // a fighter who cannot attack can't stay the attacker

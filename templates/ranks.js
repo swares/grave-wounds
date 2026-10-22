@@ -16,12 +16,21 @@ function opposedCheck(aValue, aDiff, aRoll, bValue, bRoll){   // {a, b, winner}:
   const a = skillCheck(aValue, aDiff, aRoll), b = skillCheck(bValue, "ordinary", bRoll);
   return { a, b, winner: rankAbove(chkRank(a), chkRank(b)) ? "a" : "b" };
 }
-function haggle(price, persuade, aRoll, bRoll, seller = null){   // {outcome: win | critical | list | no_sale, price, opposed}
+function haggle(price, persuade, aRoll, bRoll, seller = null, selling = false){   // {outcome: win | critical | list | no_sale | cheated, price, opposed}
   const H = CHK().haggle || { seller: 50, win: -0.1, critical: -0.25 };
   const o = opposedCheck(persuade, "ordinary", aRoll, seller === null ? H.seller : seller, bRoll);
+  if (selling) return haggleSell(H, price, o);
   if (o.a.fumble) return { outcome: "no_sale", price: null, opposed: o };
   if (o.winner === "a"){ const kind = o.a.critical ? "critical" : "win"; return { outcome: kind, price: price > 0 ? Math.max(0.25, Math.floor(price * (1 + H[kind]) * 4 + 0.5) / 4) : 0, opposed: o } }
   return { outcome: "list", price, opposed: o };
+}
+function haggleSell(H, price, o){                   // selling loot: a tenth more on a win, a quarter on a critical; a fumble, a fence cheats him
+  const S = H.sell || { win: 0.1, critical: 0.25, fumble: -0.25 };
+  let kind = "list";
+  if (o.a.fumble) kind = "cheated";
+  else if (o.winner === "a") kind = o.a.critical ? "critical" : "win";
+  const rate = { cheated: S.fumble, win: S.win, critical: S.critical }[kind] || 0;
+  return { outcome: kind, price: Math.floor(price * (1 + rate) * 4 + 0.5) / 4, opposed: o };
 }
 const CHK_STATS = ["str", "agi", "end", "wits", "nerve", "pres"];
 const checkUses = () => (CHK().uses || []).filter(u => CHK_STATS.includes(u.skill) || TD.era.skills.some(s => s.id === u.skill));
@@ -41,6 +50,7 @@ function rkPay(region, career, rid){
 const rkWage = (region, career, rid, days) => rkQ(days * rkPay(region, career, rid) * ((rkEra() || {}).kept ?? 1));
 function rkEligible(c, idx){                       // [ok, why not]
   const L = rkLadder(), R = RK(), r = L[idx];
+  if (c.course_rank === r.id && rkIndex(c.rank) < idx) return [true, null];   // an officer's course opens it
   if (rkIndex(c.rank) !== idx - 1) return [false, "not the rank below"];
   if (r.deed_only && !c.deed) return [false, "only for a deed"];
   if (!c.deed && (c.rank_days || 0) < (r.years || 0) * (R.days_a_year || 365)) return [false, "too soon"];
@@ -63,9 +73,10 @@ function rkPromote(team, vacancies, rng){          // every roll made: [{name, t
         if (k.success){ won = c; break }
       }
       if (!won) break;
-      won.rank = r.id; won.rank_days = 0; won.deed = false; won.patron_help = false;
+      const old = rkIndex(won.rank);                  // the rank he leaves (one below, or lower for a course's)
+      won.rank = r.id; won.rank_days = 0; won.deed = false; won.patron_help = false; delete won.course_rank;
       vacancies[r.id] -= 1;
-      if (idx - 1 > 0) vacancies[L[idx - 1].id] = (vacancies[L[idx - 1].id] || 0) + 1;
+      if (old > 0) vacancies[L[old].id] = (vacancies[L[old].id] || 0) + 1;
     }
   }
   for (const c of team) c.deed = false;
@@ -113,6 +124,17 @@ const TRN = () => TD.training || {};
 function trTeaches(m, skill){                      // a language master teaches any tongue ("tongue:<id>")
   if (m.skill === "tongue") return (m.eras || [TD.era.id]).includes(TD.era.id) && (skill === null || skill.startsWith("tongue:"));
   return TD.era.skills.some(s => s.id === m.skill) && (skill === null || m.skill === skill);
+}
+function trCourses(region, place){                 // the courses a man of this army can go on, where the team is
+  return (TRN().courses || []).filter(k => k.eras.includes(TD.era.id) && (k.regions || [region]).includes(region) && (k.served || place === null || !k.places || k.places.includes(place)));
+}
+function trCourse(c, cid){                          // {gains, served, fee, rank}: c changed in place
+  const k = TRN().courses.find(x => x.id === cid), have = new Set(TD.era.skills.map(s => s.id));
+  const gains = Object.fromEntries(Object.entries(k.gains || {}).filter(([s]) => have.has(s)));
+  for (const [s, n] of Object.entries(gains)) c.gains[s] = (c.gains[s] || 0) + n;
+  if (k.rank) c.course_rank = k.rank;
+  finishChar(c);
+  return { gains, served: k.served ? k.weeks * 7 : 0, fee: k.fee || 0, rank: k.rank || null };
 }
 const trMasters = (place, skill = null) => (TRN().masters || []).filter(m => trTeaches(m, skill) && (place === null || m.places.includes(place)));
 const trTeammateOk = (teacher, pupil) => teacher >= pupil + (TRN().teammate_gap ?? 20);

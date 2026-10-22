@@ -425,8 +425,19 @@ function renderRank(){
   const log = (S.lootlog || []).map(l => `<li>${esc(l)}</li>`).join("");
   box.innerHTML = `<section class="crew work" aria-labelledby="h-rank"><h3 id="h-rank">${E && E.honours ? "Honours and horses" : "Rank and pay"}</h3>${head}
     <ul class="xp">${men}</ul>${vac ? `<h4>Vacancies</h4>${vac}` : ""}
-    ${kinds.length ? `<h4>After the fight</h4><p class="muted note">${esc(rule)}</p><div class="row"><div><label for="loot-kind">What</label><select id="loot-kind">${kindOpts}</select></div><div><label for="loot-who">Who</label><select id="loot-who">${whoOpts}</select></div><div style="align-self:end"><button id="btn-loot">Roll</button></div></div>` : ""}
+    ${kinds.length ? `<h4>After the fight</h4><p class="muted note">${esc(rule)}</p><div class="row"><div><label for="loot-kind">What</label><select id="loot-kind">${kindOpts}</select></div><div><label for="loot-who">Who</label><select id="loot-who">${whoOpts}</select></div><div style="align-self:end">${sellTick(K)}<button id="btn-loot">Roll</button></div></div>` : ""}
     ${log ? `<ol class="log">${log}</ol><button class="small" id="btn-clear-loot">Clear</button>` : ""}</section>`;
+}
+const GOODS = new Set(["field", "sack", "sack_after"]);   // loot that is goods to be sold, not money
+function sellTick(K){                              // haggle when selling the goods
+  if (!TD.checks || !GOODS.has(K.kind)) return "";
+  return tick('id="loot-haggle"', K.haggle, "Haggle the sale", "His Persuade against the buyer's: a tenth more, a quarter on a critical; a fumble, and a fence cheats him of a quarter");
+}
+function sellHaggled(c, days){                     // [days, words]: his goods sold, haggling
+  const h = haggle(days, c.skills.persuade || 0, realDice.randint(1, 100), realDice.randint(1, 100), null, true);
+  if (h.outcome === "win" || h.outcome === "critical") xpTick(c.pid, "persuade", "haggling a sale");
+  const how = { win: "haggled up", critical: "haggled well up", list: "at the buyer's price", cheated: "cheated by a fence" }[h.outcome];
+  return [h.price, ` (sold ${how}: Persuade ${chkText(h.opposed.a)})`];
 }
 function rollLoot(){
   const K = S.lootK, L = (RK().loot || {})[T.id] || {}, who = K.who === "all" ? S.team : [S.team[+K.who]].filter(Boolean), lines = [];
@@ -437,11 +448,13 @@ function rollLoot(){
     if (r.roll !== null) t += ` (d100 ${r.roll}${found})`;
     if (r.risk) t += `; the provost ${chkText(r.opposed.a)} against his Stealth ${chkText(r.opposed.b)}: ${r.caught ? "caught, and it is taken from him" : "not caught"}`;
     if (r.punished) t += `. ${(L.punish || "Punished.").replace(/\.$/, "")}`;
+    let sold = "";
+    if (r.days && K.haggle && TD.checks && GOODS.has(K.kind)) [r.days, sold] = sellHaggled(c, r.days);
     if (r.days){
       c.ledger = c.ledger || [];
       c.ledger.push({ days: r.days, what: `Loot: ${r.what}` });
       const share = L.keep >= 0.9 ? "hospital's tenth" : "captain's third", after = L.keep && L.keep < 1 && K.kind !== "prize" ? " after the " + share : "";
-      t += `; ${cash(r.days)} into his purse${after}`;
+      t += `; ${cash(r.days)} into his purse${after}${sold}`;
     }
     if (r.horses){ c.horses = (c.horses || 0) + r.horses; c.honours = (c.honours || 0) + r.horses * RK().honours.horse_taken }
     lines.push(t + ".");
@@ -767,9 +780,27 @@ function addStrain(){
 const anyName = id => (CHK_STATS.includes(id) ? statName(id) : skillName(id));
 const valueOf = (c, id) => (CHK_STATS.includes(id) ? c.stats[id] : skillOf(c, id));
 const isTalk = id => !!TD.languages && (TD.languages.talk_skills || []).includes(id);
-function chkValue(c, K){                            // the figure he rolls: a talk skill capped by the tongue he speaks
-  const v = valueOf(c, K.skill);
-  return isTalk(K.skill) && c.tongues && K.tongue && K.tongue !== c.native ? lgTalk(v, c.tongues, c.native, K.tongue) : v;
+function bodyOf(c){                                // how he is: the roller's last word on his wounds, fatigue, sickness and Strain; else his Strain alone
+  const x = readXp()[c.pid] || {};
+  if (x.body) return x.body;
+  const sr = TD.stress && x.stress?.state ? stRow(x.stress.state) : {};
+  return sr.attack ? { penalty: sr.attack, notes: [`${stName(T.id, x.stress.state)} -${sr.attack}%`], out: !!sr.out } : null;
+}
+function bodyNote(c){                              // the checks panel's word on how he is
+  const body = bodyOf(c);
+  if (!body) return "";
+  const out = body.out ? "; he is in no state to do much" : "";
+  return `<p class="muted note">${esc(c.name)}, as the roller last had him: ${esc(body.notes.join(", ") || "hurt")} (−${body.penalty} on every check)${out}.</p>`;
+}
+function feltBody(c){                              // his skills less how he is, for a job's check
+  const b = bodyOf(c);
+  return b ? { ...c, skills: Object.fromEntries(Object.entries(c.skills).map(([k, v]) => [k, Math.max(0, v - b.penalty)])) } : c;
+}
+function chkValue(c, K){                            // the figure he rolls: a talk skill capped by the tongue he speaks, less how he is
+  let v = valueOf(c, K.skill);
+  if (isTalk(K.skill) && c.tongues && K.tongue && K.tongue !== c.native) v = lgTalk(v, c.tongues, c.native, K.tongue);
+  const b = bodyOf(c);
+  return Math.max(0, v - (b ? b.penalty : 0));
 }
 function tongueOpts(c, K){                          // the tongue picker and the tongue-check boxes in the checks panel
   if (!TD.languages || !c.tongues) return "";
@@ -807,6 +838,7 @@ function renderChecks(){
   const who = againstName(u, K);
   const help = u ? `<p class="muted note">${esc(u.what)} <b>Success:</b> ${esc(u.success)} <b>Failure:</b> ${esc(u.failure)} <b>Fumble:</b> ${esc(u.fumble)}${u.note ? " " + esc(u.note) : ""}${u.page ? ` <i>(${esc(u.page)})</i>` : ""}</p>` : "";
   const log = (S.chklog || []).map(l => `<li>${esc(l)}</li>`).join("");
+  const state = bodyNote(c);
   box.innerHTML = `<section class="crew work" aria-labelledby="h-checks"><h3 id="h-checks">Skill checks</h3>
     <p class="muted note">d100 at or under the skill plus the difficulty; ${Math.round(CHK().critical_fraction * 100)}% of that or under is a critical, a miss of ${CHK().fumble_from}+ a fumble. Against someone, both roll: he must beat them (a success over a failure, a critical over a success, else the wider margin); a tie goes to them.</p>
     <div class="row">
@@ -817,7 +849,7 @@ function renderChecks(){
       <div><label for="chk-against" title="Leave empty for a check against no one">Against: ${esc(who)}</label><input id="chk-against" type="number" min="0" max="150" placeholder="no one" value="${esc(String(K.against))}" style="width:6em"></div>
       ${tongueOpts(c, K)}
       <div style="align-self:end"><button id="btn-check">Roll ${esc(anyName(K.skill))} ${chkValue(c, K)}</button></div>
-    </div>${help}
+    </div>${state}${help}
     ${log ? `<ol class="log">${log}</ol><button class="small" id="btn-clear-checks">Clear</button>` : ""}</section>`;
 }
 function chkText(r){ return `rolled ${r.roll} against ${r.target}: ${r.critical ? "critical" : r.success ? "success" : r.fumble ? "fumble" : "failure"}` }
@@ -916,7 +948,38 @@ function trainHtml(){
     <div><label for="tr-skill">Skill</label><select id="tr-skill"><optgroup label="Skills">${skillList}</optgroup>${tongues}</select></div>
     <div><label for="tr-teacher">Teacher</label><select id="tr-teacher">${ts.map(t => `<option value="${t.id}"${t.id === K.teacher ? " selected" : ""}>${esc(t.name)}</option>`).join("") || `<option value="">No one here can teach it</option>`}</select></div>
     <div style="align-self:end"><button id="btn-train"${ts.length ? "" : " disabled"}>Train a week</button></div></div>
+    ${courseHtml(c)}
     ${log ? `<ol class="log">${log}</ol>` : ""}`;
+}
+function courseHtml(c){                           // a course away: a school, a camp, a master's or a knight's
+  const ks = TRN().courses ? trCourses(c.region, S.place || null) : [];
+  if (!ks.length) return "";
+  const K = S.train;
+  if (!ks.some(k => k.id === K.course)) K.course = ks[0].id;
+  const k = ks.find(x => x.id === K.course), fee = k.fee ? ", " + cash(k.fee) : "";
+  const gains = Object.entries(k.gains).filter(([g]) => T.skills.some(x => x.id === g)).map(([g, n]) => skillName(g) + " +" + n).join(", ");
+  const opens = k.rank ? "; opens " + rkName(k.rank).toLowerCase() + " at the next vacancy" : "";
+  return `<div class="row"><div><label for="tr-course">A course for ${esc(c.name)}</label><select id="tr-course">${optionTags(ks.map(x => [x.id, x.name]), K.course)}</select></div>
+    <div style="align-self:end"><button id="btn-course">Go (${k.weeks} weeks${fee})</button></div></div>
+    <p class="muted note">${esc(gains)}${esc(opens)}${k.served ? "; the weeks count as service" : ""}.${k.note ? " " + esc(k.note) + "." : ""}</p>`;
+}
+function goCourse(){
+  const K = S.train, c = S.team[K.i];
+  if (!c || !K.course) return;
+  pullPurses();
+  const k = TRN().courses.find(x => x.id === K.course);
+  if (k.fee){
+    const why = spendCheck(c, k.fee);
+    if (why){ S.msg = `${c.name} can't pay ${cash(k.fee)} for ${k.name}: ${why}.`; return render() }
+    c.ledger = c.ledger || [];
+    c.ledger.push({ days: -k.fee, what: k.name });
+  }
+  const r = trCourse(c, K.course);
+  if (r.served) xpServe(c.pid, r.served);
+  const gains = Object.entries(r.gains).map(([g, n]) => skillName(g) + " +" + n).join(", "), opens = r.rank ? `; ${rkName(r.rank).toLowerCase()} opened to him` : "";
+  S.trainlog = S.trainlog || [];
+  S.trainlog.unshift(`${c.name}, ${k.name.replace(/^A /, "a ")}: ${gains}${opens}.`);
+  render();
 }
 function trainWeek(){
   const K = S.train, c = S.team[K.i], t = teachersFor(c, K.skill).find(x => x.id === K.teacher); if (!t) return;
@@ -930,6 +993,7 @@ function trainWeek(){
   }
   if (pk && pk.paid) (c.ledger ||= []).push({ days: -pk.paid, what: "Keep while training" });
   const r = trWeek(t.value, realDice.randint(1, 100)), had = !!((readXp()[c.pid] || {}).ticks || {})[K.skill];
+  if (t.mate) t.mate.lostDays = (t.mate.lostDays || 0) + 7;   // the week is his too: his next job term is shorter
   if (r.success) xpTick(c.pid, K.skill, t.mate ? `lessons with ${t.mate.name}` : "lessons with a master");
   const who = t.mate ? t.mate.name : t.name.split(" (")[0].toLowerCase();
   const sk = skillName(K.skill);
@@ -945,6 +1009,11 @@ function trainWeek(){
 function seasonLine(c, r){                         // 'Hans: Blade 42 → 44 (rolled 77); Watch stays 60 (rolled 31); 120 days toward a term'
   const bits = r.rolls.map(x => x.gain ? `${skillName(x.skill)} ${x.was} → ${x.was + x.gain} (rolled ${x.roll})` : `${skillName(x.skill)} stays ${x.was} (rolled ${x.roll})`);
   if (r.terms){ const car = careerOf(c); bits.push(`${r.terms} term${r.terms > 1 ? "s" : ""} served: ${skillName(car.main)} +${T.term_main * r.terms}, ${skillName(car.second)} +${T.term_second * r.terms}, now age ${c.age}`) }
+  for (const t of r.lived || []){                  // what each term brought, as at creation
+    const mark = t.wound?.kind === "lasting" ? "a lasting hurt" : "a scar";
+    const hurt = t.wound ? `; ${mark} to the ${TD.locs[t.wound.loc].name.toLowerCase()}` : "";
+    bits.push(pron(t.event, c.sex || "m").replace(/\.$/, "") + hurt);
+  }
   if (!bits.length) bits.push("nothing ticked");
   bits.push(`${r.served.toLocaleString("en-US")} days toward a term`);
   return `${c.name}: ${bits.join("; ")}.`;
@@ -1086,6 +1155,10 @@ function loseMember(i, why, auto = false){        // off the team and onto the l
   } else S.msg = `${c.name} is lost (${why}).`;
   S.losing = null;
 }
+function hireHaggle(k, P){                         // the box to haggle a hired man's price
+  if (!TD.checks) return "";
+  return " " + tick(`data-rhaggle="${k}"`, P.haggle, "haggle", "The payer's Persuade against the man's: a tenth off, a quarter on a critical; a fumble and he will not sign today");
+}
 function lossHtml(c, k){                          // one lost man: settle his purse, then replace him
   const career = byId(T.careers, c.career), L = c.lost, left = purseFor(c.region, c.terms, c.ledger).days;
   const head = `<b>${esc(c.name)}</b>, ${esc(career.name.toLowerCase())}, ${c.terms} term${c.terms > 1 ? "s" : ""}: ${esc(L.why)}${L.auto ? " (from the roller or travel map)" : ""}.`;
@@ -1107,7 +1180,8 @@ function lossHtml(c, k){                          // one lost man: settle his pu
   const cs = o.careers.length > 1 ? `<select data-rcareer="${k}" aria-label="His career">${o.careers.map(id => `<option value="${id}"${id === career2 ? " selected" : ""}>${esc(byId(T.careers, id).name)}</option>`).join("")}</select>` : esc(byId(T.careers, career2).name);
   const ts = o.terms[0] < o.terms[1] ? `<select data-rterms="${k}" aria-label="His terms">${Array.from({ length: o.terms[1] - o.terms[0] + 1 }, (_, n) => o.terms[0] + n).map(n => `<option${n === terms2 ? " selected" : ""}>${n}</option>`).join("")}</select> terms` : `${terms2} term${terms2 > 1 ? "s" : ""}`;
   const payers = optionTags(S.team.map((m, i) => [String(i), m.name + " (" + cash(purseFor(m.region, m.terms, m.ledger).days) + ")"]), String(P.payer ?? 0));
-  const payer = o.kind === "hire" ? ` for ${cash(hireCost(o, terms2))}, paid by <select data-rpayer="${k}" aria-label="Who pays">${payers}</select>` : "";
+  const hag = hireHaggle(k, P);
+  const payer = o.kind === "hire" ? ` for ${cash(hireCost(o, terms2))}, paid by <select data-rpayer="${k}" aria-label="Who pays">${payers}</select>${hag}` : "";
   const wait = o.wait ? ` · arrives in ${o.wait[0]}–${o.wait[1]} days` : "";
   return `<li>${head} ${settled[0].toUpperCase() + settled.slice(1)}.
     <div class="spend">${sel} ${cs} · ${ts}${payer}${wait} <button class="small" data-replace="${k}">Replace him</button></div>
@@ -1131,15 +1205,23 @@ function replaceLoss(k){
   const opts = replaceOptions(c.region, S.place, c.career, c.terms), o = opts.find(x => x.kind + ":" + x.id === P.opt) || opts[0];
   const career = P.career && o.careers.includes(P.career) ? P.career : pickCareer(o, c.career);
   const terms = Math.min(o.terms[1], Math.max(o.terms[0], P.terms || o.terms[0]));
+  let cost = o.kind === "hire" ? hireCost(o, terms) : 0, haggled = "";
+  const payer = S.team[P.payer ?? 0];
+  if (cost && P.haggle && payer && TD.checks){      // haggling his price: the payer's Persuade against the man's
+    const h = haggle(cost, payer.skills.persuade || 0, realDice.randint(1, 100), realDice.randint(1, 100));
+    if (h.outcome === "no_sale"){ S.msg = `${payer.name} haggles too hard: the man will not sign today (Persuade ${chkText(h.opposed.a)}).`; return }
+    if (h.outcome !== "list") xpTick(payer.pid, "persuade", "haggling a hire");
+    haggled = h.outcome === "list" ? " (haggling got nothing off)" : ` (haggled down from ${cash(cost)})`;
+    cost = h.price;
+  }
   if (o.kind === "hire"){
-    const payer = S.team[P.payer ?? 0], cost = hireCost(o, terms), why = payer ? spendCheck(payer, cost) : "nobody to pay";
+    const why = payer ? spendCheck(payer, cost) : "nobody to pay";
     if (cost && why){ S.msg = payer ? `${payer.name} can't pay ${cash(cost)} to hire him: ${why}.` : "There is nobody left to pay for him."; return }
   }
   const n = makeCharacter(c.region, career, terms, S.mode, realDice, "m");
   n.pid = newPid();
   if (o.kind === "hire"){
-    const payer = S.team[P.payer ?? 0], cost = hireCost(o, terms);
-    if (cost) (payer.ledger ||= []).push({ days: -cost, what: `Hired ${n.name} (${o.name})` });
+    if (cost){ payer.ledger = payer.ledger || []; payer.ledger.push({ days: -cost, what: `Hired ${n.name} (${o.name})${haggled}` }) }
     n.joined = { how: `hired, ${o.name.replace(/^./, x => x.toLowerCase())}`, wait: 0 };
   } else if (o.kind === "assigned") n.joined = { how: `assigned, ${o.name.replace(/^./, x => x.toLowerCase())}`, wait: realDice.randint(o.wait[0], o.wait[1]) };
   else n.joined = { how: "a new member", wait: 0 };
@@ -1257,12 +1339,13 @@ function init(){
   $("#btn-fadd").onclick = () => { const v = $("#sel-fadd").value; if (v){ S.fcounts.push([v, 1]); render() } };
   $("#crew").addEventListener("click", e => { if (e.target.closest("#btn-reroll-crew")){ rollCrew(); render() } });
   $("#losses").addEventListener("change", e => {
-    const el = e.target, k = +(el.dataset.practice ?? el.dataset.ropt ?? el.dataset.rcareer ?? el.dataset.rterms ?? el.dataset.rpayer), c = S.losses[k]; if (!c) return;
+    const el = e.target, k = +(el.dataset.practice ?? el.dataset.ropt ?? el.dataset.rcareer ?? el.dataset.rterms ?? el.dataset.rpayer ?? el.dataset.rhaggle), c = S.losses[k]; if (!c) return;
     const P = (c.lost.pick ||= {});
     if (el.dataset.practice !== undefined) c.lost.practice = el.value;
     else if (el.dataset.ropt !== undefined){ P.opt = el.value; delete P.career; delete P.terms }
     else if (el.dataset.rcareer !== undefined) P.career = el.value;
     else if (el.dataset.rterms !== undefined) P.terms = +el.value;
+    else if (el.dataset.rhaggle !== undefined) P.haggle = el.checked;
     else P.payer = +el.value;
     render();
   });
@@ -1274,7 +1357,9 @@ function init(){
   $("#work").addEventListener("click", e => {
     if (e.target.closest("#btn-clear-work")){ S.worklog = []; return render() }
     const b = e.target.closest("button[data-work]"); if (!b) return;
-    const c = S.team[+b.dataset.i], j = TD.jobs.jobs.find(x => x.id === b.dataset.work), r = workTerm(j, c, realDice);
+    const c = S.team[+b.dataset.i], j = TD.jobs.jobs.find(x => x.id === b.dataset.work), lost = c.lostDays || 0;
+    const r = workTerm(j, feltBody(c), realDice, lost ? Math.max(1, termDays(j) - lost) : undefined);
+    c.lostDays = 0;                                  // the weeks he spent teaching come off this term
     pullPurses();                                  // the travel map may have spent from it since
     if (r.earned) (c.ledger ||= []).push({ days: r.earned, what: `${j.name}, ${r.days} day${r.days !== 1 ? "s" : ""}` });
     const k = keepFor(j, c.region, S.place), pk = k ? payKeep(purseFor(c.region, c.terms, c.ledger).days, r.days, k.food, k.bed) : null;
@@ -1287,6 +1372,7 @@ function init(){
   $("#xp").addEventListener("click", e => {
     if (e.target.closest("#btn-season")) return endSeason();
     if (e.target.closest("#btn-train")) return trainWeek();
+    if (e.target.closest("#btn-course")) return goCourse();
     const d = e.target.closest("button[data-discharge]"), k = e.target.closest("button[data-keepon]");
     if (d){ const i = +d.dataset.discharge, c = S.team[i]; c.wornOut = null; loseMember(i, "sent home"); S.msg = `${c.name} is discharged, worn out: sent home, with a pension where his army gave one.`; return render() }
     if (k){ S.team[+k.dataset.keepon].wornOut = null; return render() }
@@ -1294,7 +1380,7 @@ function init(){
   $("#xp").addEventListener("change", e => {
     if (e.target.dataset.hard !== undefined){ S.team[+e.target.dataset.hard].hardSeason = e.target.checked; return render() }
     const K = S.train, id = e.target.id;
-    if (id === "tr-who") K.i = +e.target.value; else if (id === "tr-skill") K.skill = e.target.value; else if (id === "tr-teacher") K.teacher = e.target.value; else return;
+    if (id === "tr-who") K.i = +e.target.value; else if (id === "tr-skill") K.skill = e.target.value; else if (id === "tr-teacher") K.teacher = e.target.value; else if (id === "tr-course") K.course = e.target.value; else return;
     render();
   });
   $("#rank").addEventListener("change", e => {
@@ -1303,6 +1389,7 @@ function init(){
     else if (el.dataset.deed !== undefined) S.team[+el.dataset.deed].deed = el.checked;
     else if (el.id === "loot-kind") S.lootK.kind = el.value;
     else if (el.id === "loot-who") S.lootK.who = el.value;
+    else if (el.id === "loot-haggle") S.lootK.haggle = el.checked;
     render();
   });
   $("#rank").addEventListener("click", e => {

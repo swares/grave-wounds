@@ -29,6 +29,7 @@ haggle:
   win: -0.10        # he wins: the price falls a tenth
   critical: -0.25   # he wins with a critical: a quarter off
   fumble: no_sale   # he fumbles: the seller will not deal with him today
+  sell: {win: 0.10, critical: 0.25, fumble: -0.25}   # selling loot: he wins a tenth more (a quarter on a critical); a fumble, a fence cheats him of a quarter
   # the seller wins (or both fail): the list price
 
 # Uses: what a skill does out of a fight, its usual difficulty, who resists it, and what follows.

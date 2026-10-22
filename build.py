@@ -1007,6 +1007,7 @@ def travel_bundle(d) -> dict:
         "generated": date.today().isoformat(),
         "terrain": d.terrain,
         "coins": {e: {"currencies": E["currencies"], "currency": E["currency"]} for e, E in d.equipment.items()},   # period money (purse.js)
+        "uses": d.uses,                                # billets, hunting, finding the way
         "checks": d.checks, "training": d.training, "loads": d.loads, "stress": d.stress, "hazards": d.hazards, "languages": d.languages, "patrons": d.patrons,   # drill in camp, loads on the march (templates/ranks.js)
         "works": d.works,
         "weather": d.weather,

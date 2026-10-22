@@ -780,7 +780,12 @@
    "seller": 50,
    "win": -0.1,
    "critical": -0.25,
-   "fumble": "no_sale"
+   "fumble": "no_sale",
+   "sell": {
+    "win": 0.1,
+    "critical": 0.25,
+    "fumble": -0.25
+   }
   },
   "uses": [
    {

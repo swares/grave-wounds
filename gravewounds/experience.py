@@ -46,7 +46,7 @@ def season(d: Data, c: dict, ticks, served: int, rng) -> dict:
         rolls += [{"skill": "tongue:" + r["tongue"], "roll": r["roll"], "was": r["was"], "gain": r["gain"]}
                   for r in tongue_season(d, c, ticks, rng, (lo, hi))]
     c["served"] = c.get("served", 0) + max(0, served)
-    per, done = term_days(d, c["era"]), 0
+    per, done, lived = term_days(d, c["era"]), 0, []
     while c["served"] >= per:
         c["served"] -= per
         car = _career(T, c["career"])
@@ -55,6 +55,26 @@ def season(d: Data, c: dict, ticks, served: int, rng) -> dict:
         c["age"] = c.get("age", 0) + T["age"]["per_term"]
         c["xp_terms"] = c.get("xp_terms", 0) + 1
         done += 1
+        lived.append(_term_lived(d, T, c, car, rng))
     if done:
         finish(d, c)
-    return {"rolls": rolls, "terms": done, "served": c["served"]}
+    return {"rolls": rolls, "terms": done, "served": c["served"], "lived": lived}
+
+
+def _term_lived(d: Data, tables: dict, c: dict, car: dict, rng) -> dict:
+    """A term served in play, as one at creation: his career's event (its skill +gain, its story
+    line), then its wound chance (an old wound: a scar or a lasting hurt). Dice: the event's d100,
+    the wound chance's d100 unless the row always wounds, then the wound's location and kind.
+    -> {"event", "wound" (or None)}"""
+    from .team import _fresh, _old_wound, old_wound_ranges
+    c.setdefault("events", [])
+    c.setdefault("old", [])
+    row = _fresh(car["terms"], rng.randint(1, 100), c["events"])
+    c["gains"][row["skill"]] = c["gains"].get(row["skill"], 0) + tables["gain"]
+    c["events"].append(row["text"])
+    wound = None
+    if row.get("wound") or rng.randint(1, 100) <= car["wound"]:
+        ranges = old_wound_ranges(d, c["era"])[c["region"]][car["wound_weapon"]]
+        wound = _old_wound(d, tables, ranges, car["wound_weapon"], c["stat_mods"], rng)
+        c["old"].append(wound)
+    return {"event": row["text"], "wound": wound}

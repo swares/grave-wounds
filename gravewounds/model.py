@@ -118,6 +118,7 @@ class Data:
     hazards: dict = field(default_factory=dict)     # swimming, climbing, falls, chases (data/hazards.yaml)
     languages: dict = field(default_factory=dict)   # tongues by army, bands, passing (data/languages.yaml)
     patrons: dict = field(default_factory=dict)     # standing, favours, a patron's fate (data/patrons.yaml)
+    uses: dict = field(default_factory=dict)        # skills that do things on the travel map (data/uses.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -183,6 +184,7 @@ def load(root: str | Path = "data") -> Data:
     hazards = _optional(root / "hazards.yaml", {})
     languages = _optional(root / "languages.yaml", {})
     patrons = _optional(root / "patrons.yaml", {})
+    uses = _optional(root / "uses.yaml", {})
 
     data = Data(
         root=root,
@@ -223,6 +225,7 @@ def load(root: str | Path = "data") -> Data:
         hazards=hazards,
         languages=languages,
         patrons=patrons,
+        uses=uses,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -632,6 +635,12 @@ def validate(d: Data) -> None:
         for t in LG.get("traits", {}):
             if t not in traits:
                 errors.append(f"languages.yaml: no background has the trait {t!r}")
+    for k in (d.training or {}).get("courses", []):
+        for eid in k["eras"]:
+            if eid not in d.teams:
+                errors.append(f"training.yaml: course {k['id']} names an unknown era {eid}")
+            elif k.get("rank") and k["rank"] not in {r["id"] for r in ((d.ranks or {}).get("eras", {}).get(eid) or {}).get("ladder", [])}:
+                errors.append(f"training.yaml: course {k['id']} opens {k['rank']}, not a rank in {eid}")
     if d.patrons:
         PT, diffs = d.patrons, {x["id"] for x in d.checks.get("difficulty", [])}
         for f in PT["favours"]:

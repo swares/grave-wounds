@@ -173,7 +173,7 @@ function xpSeason(c, ticks, served, rng){         // {rolls: [{skill, roll, was,
     for (const r of lgSeason(c, [...ticks], rng, [lo, hi])) rolls.push({ skill: "tongue:" + r.tongue, roll: r.roll, was: r.was, gain: r.gain });
   }
   c.served = (c.served || 0) + Math.max(0, served);
-  const per = xpTermDays(); let done = 0;
+  const per = xpTermDays(), lived = []; let done = 0;
   while (c.served >= per){
     c.served -= per;
     const car = byId(T.careers, c.career);
@@ -182,9 +182,22 @@ function xpSeason(c, ticks, served, rng){         // {rolls: [{skill, roll, was,
     c.age = (c.age || 0) + T.age.per_term;
     c.xp_terms = (c.xp_terms || 0) + 1;
     done++;
+    lived.push(termLived(T, c, car, rng));
   }
   if (done) finishChar(c);
-  return { rolls, terms: done, served: c.served };
+  return { rolls, terms: done, served: c.served, lived };
+}
+function termLived(T, c, car, rng){                // a term served in play, as at creation: its event, then its wound chance
+  c.events ||= []; c.old ||= [];
+  const row = freshRow(car.terms, rng.randint(1, 100), c.events);
+  c.gains[row.skill] = (c.gains[row.skill] || 0) + T.gain;
+  c.events.push(row.text);
+  let wound = null;
+  if (row.wound || rng.randint(1, 100) <= car.wound){
+    wound = oldWound(T, TD.ranges[c.region][car.wound_weapon], car.wound_weapon, c.stat_mods, rng);
+    c.old.push(wound);
+  }
+  return { event: row.text, wound };
 }
 function attackFor(c, weapon){                    // his attack % with a weapon: its skill, or null
   const s = TD.era.weapon_skill[weapon];

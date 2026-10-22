@@ -81,7 +81,15 @@ seller's ({{haggle_seller}}). If he wins he pays {{haggle_win}}% less ({{haggle_
 critical); if not, the list price; and if he fumbles the seller will not deal with him today.
 
 A skill check that succeeds (or wins against someone) ticks the skill for experience; a
-characteristic is not ticked.
+characteristic is not ticked. **A hurt man checks worse:** out of a fight a check (a job's
+included) takes the same penalty his attack would in the roller, from pain, blood lost, wounds,
+fatigue (a hungry day is a step of it), sickness and Strain; with no fight to go by, his Strain
+alone.
+
+**Selling and hiring.** Loot that is goods (not money, prize money or a ransom) may be sold
+haggling: his Persuade against the buyer's; a win gets {{sell_win}}% more ({{sell_crit}}% on a
+critical), a fumble lets a fence cheat him of {{sell_fumble}}%. A man hiring a replacement may
+haggle his price as at the price list; on a fumble the man will not sign today.
 
 ## Tongues {#tongues}
 
@@ -158,10 +166,20 @@ on. British soldiers discharged "worn out" were mostly 41 to 44, after 21 to 25 
 team is (a riding master, a master of defence, a schoolmaster, a surgeon, a craftsman; his skill
 counts as 60, and he charges a fee by the week), or from a teammate at least 20 better (who gives
 up the week too). The teacher rolls his skill; a success ticks the pupil's skill, a failure wastes
-the week. The pupil pays the fee and his keep. An army drills its men: a week in which a force
+the week. The pupil pays the fee and his keep; a teammate who teaches loses the week from his
+next job term. An army drills its men: a week in which a force
 its army feeds spent four days or more not marching, the best Command with it (or the army's own
 sergeants, 50) rolls, and on a success each named man's weapon skill is ticked. Riding lessons
 in London in 1879 cost about six days of a private's pay each; the other fees are estimates.
+
+**Courses.** Some training takes him away for weeks or a year, for set gains: a year as an
+apprentice or in a knight's household, two weeks at a Civil War camp of instruction, eighteen
+months at Sandhurst, four and a half at a 1916 officer cadet battalion, seventeen weeks at an
+American Officer Candidate School (22 in Korea, 23 in Vietnam, 12 today), Ranger School, the
+Special Forces course. An army's course counts as service, and an officer's course makes him
+eligible for its rank at the next vacancy, whatever his rank and years:
+
+{{table:courses}}
 
 A skill used well is **ticked**: a job's check that succeeds (lawful or not; a
 failed or fumbled check, or a job with no check, teaches nothing), a hit, a parry or dodge that
@@ -175,8 +193,10 @@ quickly and high ones slowly.
 **Time served.** Days at a job with a skill check (not fumbled) and every day with a force on the
 travel map count toward a **term**, as long as one of his career terms ({{age_term}} years in
 most eras). Each term served gives a later term's gains ({{term_main}} to his career's main skill
-and {{term_second}} to its second) and its years of age, at the next end of season. His starting
-purse is not changed.
+and {{term_second}} to its second) and its years of age, at the next end of season, and rolls on
+his career's term table as at the making of a character: its event (+{{event_gain}} to its skill,
+and a line of his story) and its wound chance (a scar, or a lasting hurt). His starting purse is
+not changed.
 
 Anyone without a sheet (a bystander, an enemy the GM has not written up) counts as 50 in
 every characteristic, and fights at his **quality**:

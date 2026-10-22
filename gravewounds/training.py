@@ -23,6 +23,28 @@ def masters_for(d: Data, eid: str, place: str | None, skill: str | None = None) 
     return [m for m in (d.training or {}).get("masters", []) if teaches(m) and (place is None or place in m["places"])]
 
 
+def courses_for(d: Data, eid: str, region: str, place: str | None) -> list[dict]:
+    """The courses a man of this army can go on in an era: the army's own (he is sent away to them)
+    anywhere; a master's or a knight's only where the team is (None: anywhere)."""
+    return [c for c in (d.training or {}).get("courses", []) if eid in c["eras"] and region in c.get("regions", [region])
+            and (c.get("served") or place is None or not c.get("places") or place in c["places"])]
+
+
+def course(d: Data, eid: str, c: dict, cid: str) -> dict:
+    """Course cid finished (c changed in place): its gains, and an officer's course's rank opened
+    (c["course_rank"]). -> {"gains", "served" (days), "fee" (Days), "rank"}"""
+    from .team import finish
+    k = next(x for x in d.training["courses"] if x["id"] == cid)
+    have = {s["id"] for s in d.teams[eid]["skills"]}
+    gains = {s: n for s, n in k.get("gains", {}).items() if s in have}
+    for s, n in gains.items():
+        c["gains"][s] = c["gains"].get(s, 0) + n
+    if k.get("rank"):
+        c["course_rank"] = k["rank"]
+    finish(d, c)
+    return {"gains": gains, "served": k["weeks"] * 7 if k.get("served") else 0, "fee": k.get("fee", 0), "rank": k.get("rank")}
+
+
 def teammate_ok(d: Data, teacher: int, pupil: int) -> bool:
     """A teammate can teach a skill he has at least teammate_gap above the pupil's."""
     return teacher >= pupil + (d.training or {}).get("teammate_gap", 20)
