@@ -31,25 +31,29 @@ for (let i = 0; i + 1 < ROUTE.length; i++){
   for (let j = 0; j <= n; j++) road.add(`${Math.round(a[0] + (b[0] - a[0]) * j / n)},${Math.round(a[1] + (b[1] - a[1]) * j / n)}`);
 }
 
+function northFace(c, r, k){                                                                       // the north face, up from Izvor
+  if (patch(c, r, { cx: 44, cy: k - 10, rx: 9, ry: 6, a: 0.4, b: 1.3 })) return "F";                 // beech in the gully west of the road
+  if (patch(c, r, { cx: 88, cy: k - 12, rx: 8, ry: 6, a: 1.7, b: 0.2 })) return "F";                 // and east of it
+  if (speckle(c, r, 6)) return "r";
+  return speckle(c, r, 3) ? "o" : "s";                                                              // scrub oak on the slope
+}
+function southSide(c, r, k){                                                                       // the reverse slope, then down towards Prilep
+  if (r <= k + 12) return speckle(c, r, 4) ? "o" : "s";
+  if (patch(c, r, { cx: 30, cy: 92, rx: 22, ry: 12, a: 0.9, b: 2.2 })) return "F";
+  if (patch(c, r, { cx: 108, cy: 96, rx: 18, ry: 10, a: 2.1, b: 0.6 })) return "F";
+  return speckle(c, r, 3) ? "o" : ".";
+}
+function foot(c, r){                                                                               // the foot of the pass, Izvor way
+  if (patch(c, r, { cx: 18, cy: 10, rx: 16, ry: 9, a: 0.2, b: 1.9 })) return "F";
+  if (patch(c, r, { cx: 112, cy: 8, rx: 16, ry: 8, a: 1.4, b: 0.7 })) return "F";
+  return speckle(c, r, 4) ? "o" : ".";
+}
 function kind(c, r){
   if (road.has(`${c},${r}`)) return ".";
   const k = ridge(c);
   if (Math.abs(r - k) <= 2) return speckle(c, r, 5) ? "r" : "h";                                   // the crest: rock and short turf
-  if (r < k && r >= k - 20){                                                                        // the north face, up from Izvor
-    if (patch(c, r, { cx: 44, cy: k - 10, rx: 9, ry: 6, a: 0.4, b: 1.3 })) return "F";               // beech in the gully west of the road
-    if (patch(c, r, { cx: 88, cy: k - 12, rx: 8, ry: 6, a: 1.7, b: 0.2 })) return "F";               // and east of it
-    if (speckle(c, r, 6)) return "r";
-    return speckle(c, r, 3) ? "o" : "s";                                                            // scrub oak on the slope
-  }
-  if (r > k && r <= k + 12) return speckle(c, r, 4) ? "o" : "s";                                    // the reverse slope
-  if (r > k){                                                                                      // down towards Prilep
-    if (patch(c, r, { cx: 30, cy: 92, rx: 22, ry: 12, a: 0.9, b: 2.2 })) return "F";
-    if (patch(c, r, { cx: 108, cy: 96, rx: 18, ry: 10, a: 2.1, b: 0.6 })) return "F";
-    return speckle(c, r, 3) ? "o" : ".";
-  }
-  if (patch(c, r, { cx: 18, cy: 10, rx: 16, ry: 9, a: 0.2, b: 1.9 })) return "F";                   // the foot of the pass, Izvor way
-  if (patch(c, r, { cx: 112, cy: 8, rx: 16, ry: 8, a: 1.4, b: 0.7 })) return "F";
-  return speckle(c, r, 4) ? "o" : ".";
+  if (r > k) return southSide(c, r, k);
+  return r >= k - 20 ? northFace(c, r, k) : foot(c, r);
 }
 const grid = groundGrid(COLS, ROWS, kind);
 
