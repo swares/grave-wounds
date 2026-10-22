@@ -201,6 +201,14 @@ When an item is done, delete it here and note it in the pull request that closes
   - no difficulty from wounds, fatigue or hunger is added to a check out of a fight (the GM sets
     it);
   - haggling is only for buying: selling loot, and hiring a replacement, are at the list price.
+- **Prisoners, first cut.** Capture, captivity by era and situation, release, escape, death,
+  ransom, parole and service. Still left out: the release chances, escape modifiers and capture
+  bands are calibrations, not figures (the death hazards are worked from the sourced totals); the
+  1743, 1759 and 1780 cartels' tariffs were not found, nor Napoleonic parole-breakers' numbers,
+  WWI deaths in Russian hands or the Plains nations' adoption of captives (deliberately left
+  unnumbered); exchange values are shown but not traded (a release roll stands for them); the
+  team cannot take and hold prisoners of its own beyond the loot's ransom; and a man's captivity
+  does not touch the travel map.
 - **Strain, first cut.** Strain and Toll, Nerve checks, results by era name, treatment, rotation
   and homecoming, lasting-effect notes. Still left out: the calibration rests on Appel and Glass
   and Jones (Appel and Beebe 1946 and Swank and Marchand 1946 were not read in the original); no

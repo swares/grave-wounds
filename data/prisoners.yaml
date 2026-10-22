@@ -1,0 +1,83 @@
+# Prisoners (rules in gravewounds/prisoners.py, repeated in templates/ranks.js). Research notes:
+# the project doc "prisoner-research" (figures tagged sourced, estimate or gap there). The death
+# hazards per season (3 months) are worked from the cohort rates with p = 1 - (1 - P)^(1/n); the
+# capture bands, release chances and escape modifiers are design calibrations of those sources.
+#
+# When a man is taken the GM picks his captor's situation (`contexts`, the era's first by default)
+# and any circumstances; d100 less the circumstances' figures (a stormed garrison +20 makes it worse,
+# a formal surrender -25 better) against `capture`: at or under the first figure he is killed out of
+# hand, at or under the second stripped and robbed (his purse taken), else held with his property. Then each End of season: a release roll (`release` %: exchange, parole, war's end),
+# an escape if he tries (Stealth + `escape` to break out, Fieldcraft + `home` to reach his own
+# side; recaptured, the context's `recapture` chance of being killed and a harsher captivity),
+# then the death check at `hazard` % (doubled in a hard winter, halved for a segregated officer,
+# quartered on parole), and Strain. Ransom (`ransom`), officers' parole (`parole`) and an offer of
+# service in the captor's army (`service`) where the context had them.
+circumstances:
+  stormed: {mod: 20, name: "A garrison stormed after refusing terms"}
+  massacre: {mod: 15, name: "His captors had just lost heavily"}
+  no_quarter: {mod: 30, name: "One his captors gave no quarter (by their own orders or practice)"}
+  surrendered: {mod: -25, name: "Surrendered formally with his unit"}
+  wealthy: {mod: -20, name: "Visibly worth a ransom", ransom_only: true}
+  wounded: {mod: 5, name: "Taken wounded"}
+harsh_hazard: 3               # a season at this hazard or more is harsh: 2 Strain and 1 Endurance lost
+service_desert: 40            # % a season a man in the captor's ranks finds his chance to desert
+officer_hazard: 0.5
+parole_hazard: 0.25
+recapture_hazard: 2           # added to the hazard for each recapture
+
+eras:
+  medieval:
+    - {id: field, name: "Taken in the field", capture: [45, 85], release: 5, hazard: 3, ransom: {years: 1, upkeep: 0.2}, escape: 0, home: 10, recapture: 10,
+       note: "Commoners were often killed or ransomed on the spot; a knight's ransom was about a year's income, and the captor's lord took a third"}
+    - {id: noble, name: "A man of rank, held for ransom", capture: [10, 40], release: 5, hazard: 1, ransom: {years: 1.5, upkeep: 0.2}, escape: 0, home: 10, recapture: 10}
+  thirty_years:
+    - {id: field, name: "Taken in the field", capture: [20, 70], release: 5, hazard: 3, service: true, ransom: {months_per_rank: 1}, escape: 10, home: 20, recapture: 20,
+       note: "Rank and file were commonly put into the victor's regiments (6,000 at Breitenfeld into the Swedish army); officers ransomed or exchanged within months"}
+  horse_musket:
+    - {id: cartel, name: "With a cartel in force (before 1793)", capture: [5, 45], release: 50, hazard: 1, parole: true, escape: 0, home: 30, recapture: 5}
+    - {id: hulks, name: "Anglo-French war, 1793-1814: depots and hulks", capture: [5, 45], release: 2, hazard: 1, parole: true, service: true, escape: 0, home: 30, recapture: 5,
+       note: "Held until the peace, some for eleven years; about 4,000 officers on parole in British towns in 1814"}
+    - {id: cabrera, name: "Cabrera (French prisoners, 1809-14)", capture: [5, 45], release: 2, hazard: 4, escape: -40, home: 0, recapture: 5,
+       note: "About 9,000 sent, about 3,600 came home"}
+  crimea:
+    - {id: field, name: "Taken in the field", capture: [5, 35], release: 5, hazard: 1, parole: true, escape: 0, home: 20, recapture: 5}
+  civil_war:
+    - {id: cartel, name: "Dix-Hill cartel in force (July 1862 - May 1863)", capture: [5, 50], release: 90, hazard: 1, parole: true, escape: 0, home: 40, recapture: 2,
+       note: "Paroled within ten days and exchanged by rank (captain 6 privates, colonel 15, general 60); a paroled man may not fight until exchanged"}
+    - {id: no_cartel, name: "No exchanges (mid-1863 to 1864)", capture: [5, 50], release: 5, hazard: 4, parole: true, escape: 0, home: 40, recapture: 2,
+       note: "Of Union men held by the Confederacy 15.4% died, of Confederates held by the Union 11.8%"}
+    - {id: andersonville, name: "Andersonville or Elmira (1864)", capture: [5, 50], release: 5, hazard: 15, escape: -10, home: 30, recapture: 5,
+       note: "About 13,000 of 45,000 died at Andersonville; 24% at Elmira"}
+    - {id: usct, name: "Black troops and their officers, 1863-65", capture: [40, 80], release: 0, hazard: 6, escape: 0, home: 30, recapture: 30,
+       note: "The Confederate Congress declared them fugitive slaves in May 1863; at Fort Pillow 64% of the Black troops died"}
+    - {id: exchange_1865, name: "Exchanges resumed (1865)", capture: [5, 50], release: 70, hazard: 4, parole: true, escape: 0, home: 40, recapture: 2}
+  plains_nations:
+    - {id: taken_by_army, name: "Taken by the US Army (held as a hostage or detained)", capture: [10, 30], release: 10, hazard: 4, escape: 10, home: 30, recapture: 40,
+       note: "Washita (1868): 53 women and children held as hostages; Fort Marion: 72 held three years without trial; Fort Robinson (1879): food and fuel withheld, 64 killed in the breakout"}
+    - {id: soldier_taken, name: "A US soldier taken by the Lakota or Cheyenne", capture: [75, 75], release: 10, hazard: 3, escape: 10, home: 30, recapture: 40,
+       note: "Few soldiers were kept alive; those who were were held as a counter in negotiation"}
+  wwi:
+    - {id: germany, name: "In German hands", capture: [8, 40], release: 3, hazard: 0.5, escape: -10, home: 5, recapture: 0,
+       note: "142,754 of 2,476,731 died (5.8%); seriously wounded and long-held men could be interned in Switzerland"}
+    - {id: hard, name: "Romanians in German, Italians in Austro-Hungarian hands", capture: [8, 40], release: 2, hazard: 3, escape: -10, home: 5, recapture: 0}
+  wwii:
+    - {id: west, name: "Western Allies and Germans, either way", capture: [5, 40], release: 2, hazard: 0.4, escape: -10, home: -30, recapture: 2,
+       note: "3.6% of British and US prisoners in German hands died; fewer than 1,200 of 170,000 British and Commonwealth prisoners got home by escaping"}
+    - {id: oflag, name: "An officers' camp or Colditz", capture: [5, 40], release: 2, hazard: 0.3, escape: -20, home: -30, recapture: 2}
+    - {id: east_1941, name: "Soviet prisoners of the Germans, 1941-42", capture: [25, 75], release: 0, hazard: 30, escape: -10, home: 0, recapture: 30,
+       note: "3.3 of 5.7 million Soviet prisoners died, most in the first winter"}
+    - {id: east, name: "The Eastern Front, 1942-45, either way", capture: [25, 75], release: 0, hazard: 5, escape: -10, home: 0, recapture: 30}
+    - {id: japan, name: "Allied prisoners of the Japanese", capture: [25, 70], release: 0, hazard: 2.2, escape: -40, home: -20, recapture: 50,
+       note: "27% died (Americans 40%); the Burma railway in 1943 far worse"}
+  korea:
+    - {id: winter_1950, name: "Taken in the winter of 1950-51", capture: [15, 60], release: 0, hazard: 25, after: 2, escape: -40, home: -20, recapture: 10,
+       note: "2,701 of 7,140 US prisoners died (37.8%), most in the first winter"}
+    - {id: later, name: "Taken after mid-1951", capture: [5, 40], release: 0, hazard: 1, escape: -40, home: -20, recapture: 10}
+  vietnam:
+    - {id: north, name: "Held in the North", capture: [5, 60], release: 1, hazard: 0.7, escape: -40, home: -30, recapture: 10,
+       note: "106 of 766 US prisoners died; released in 1973"}
+  modern:
+    - {id: conventional, name: "The Falklands or the Gulf", capture: [1, 20], release: 95, hazard: 0, escape: 0, home: 20, recapture: 0,
+       note: "11,313 Argentine prisoners home within weeks; 70,067 Iraqis repatriated"}
+    - {id: chechnya, name: "Chechnya", capture: [20, 70], release: 15, hazard: 8, ransom: {days: 180}, escape: -10, home: 10, recapture: 20,
+       note: "Russian soldiers bartered or ransomed by their families one by one"}

@@ -71,6 +71,35 @@ fire. Each era fights in its usual order (the British of the Napoleonic wars wit
 most others in fighting order). A side may **drop its packs** before the fight; if it loses the
 field, the packs are lost with it, and that night its force has no blankets or rations.
 
+## Prisoners {#prisoners}
+
+A man **taken prisoner** is not simply lost. The GM picks his captors' situation from his era's
+list, and any circumstances: a garrison stormed after refusing terms (+20), captors who had just
+lost heavily (+15), one they gave no quarter (+30), a formal surrender (−25), a man visibly worth a
+ransom (−20, where ransom was the custom), taken wounded (+5). Roll d100 less those figures: at or
+under the first figure below he is killed out of hand, at or under the second stripped and robbed
+(his purse is taken), and otherwise held with his things.
+
+Each season (3 months) he is held: first a d100 for **release** (an exchange, parole, the war's
+end); if not, an **escape** if he tries (Stealth, with the camp's figure, to get out, then
+Fieldcraft to get home; retaken, he may be killed for it, and every recapture makes his captivity
+harsher); then the **death** check at his captors' rate (doubled in a hard winter, halved for an
+officer kept apart, a quarter for an officer on parole). Each season adds Strain, two in a harsh
+camp (3% a season or worse), where he also loses a point of Endurance. Released, ransomed or
+escaped, he rejoins the team.
+
+{{table:prisoners}}
+
+**Ransom** (medieval, Thirty Years' War officers, Chechnya): about a year of his pay and his keep
+for a medieval man, a month's pay for each step of rank for an officer of the Thirty Years' War,
+and what a family could raise in Chechnya; paid from his purse or the leader's. **Parole**: an
+officer of 1700 to 1865 may give his word, and is held freer and safer; escaping then breaks it.
+Under the Dix-Hill cartel of 1862 men were paroled within ten days and exchanged by rank (a
+corporal or sergeant 2 privates, a lieutenant 4, a captain 6, a colonel 15, a general 60); a
+paroled man may not fight until he is exchanged. **Service**: in the Thirty Years' War and under
+Napoleon a captured man of the ranks might join his captors' regiment, and desert back when he
+could (at Stadtlohn in 1623 a thousand of four thousand prisoners joined Tilly, and most deserted).
+
 ## Camps {#camps}
 
 At the end of the march a force makes camp:

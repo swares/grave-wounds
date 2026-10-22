@@ -33,6 +33,8 @@ sources:                      # Strain a man takes
   near_miss: {strain: 2, name: "A near miss, buried by a shell"}
   hard_sight: {strain: 2, name: "A hard sight or deed"}
   no_sleep: {strain: 1, name: "Two days without sleep, cold and wet"}
+  captivity: {strain: 1, name: "A season in captivity"}
+  captivity_harsh: {strain: 2, name: "A season in a harsh camp"}
 
 results:                      # d10 + margin/10: the first row it is at or under
   - {to: 4, id: shaken, attack: 10, nerve: 10, what: "Shaken: a tremor, jumpy; -10 to attack and to Nerve until a day's rest."}

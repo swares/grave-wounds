@@ -203,3 +203,51 @@ function xpStressDo(pid, fn){                        // change a man's stress re
   writeXp(all);
   return r;
 }
+/* Prisoners (as gravewounds/prisoners.py, data TD.prisoners): the roll on capture, a season of
+   captivity, and ransom. */
+const PRS = () => TD.prisoners || {};
+const prContexts = eid => PRS().eras?.[eid] || [];
+const prContext = (eid, cid) => { const cs = prContexts(eid); return cs.find(c => c.id === cid) || cs[0] || {} };
+function prCapture(eid, cid, circumstances, roll){  // {roll, total, result: killed | stripped | held}
+  const C = PRS(), ctx = prContext(eid, cid);
+  const mods = circumstances.reduce((a, k) => { const m = C.circumstances[k]; return m && (!m.ransom_only || ctx.ransom) ? a + m.mod : a }, 0);
+  const total = roll - mods, [k, s] = ctx.capture;
+  let result = "held";
+  if (total <= k) result = "killed"; else if (total <= s) result = "stripped";
+  return { roll, total, result };
+}
+function prHazard(ctx, p, winter){
+  const C = PRS();
+  let h = (p.seasons || 0) === 0 || ctx.after === undefined ? ctx.hazard : ctx.after;
+  if (winter) h *= 2;
+  if (p.parole) h *= C.parole_hazard; else if (p.officer) h *= C.officer_hazard;
+  return h + C.recapture_hazard * (p.recaptured || 0);
+}
+function prSeason(eid, p, rng, escape = false, stealth = 0, fieldcraft = 0, winter = false){   // {out, rolls, hazard, harsh, why?}
+  const C = PRS(), ctx = prContext(eid, p.ctx), rolls = {}, h = prHazard(ctx, p, winter), harsh = h >= C.harsh_hazard;
+  p.seasons = (p.seasons || 0) + 1;
+  if (p.serving){ rolls.desert = rng.randint(1, 100); return { out: rolls.desert <= C.service_desert ? "escaped" : null, rolls, hazard: 0, harsh: false } }
+  rolls.release = rng.randint(1, 100);
+  if (rolls.release <= ctx.release) return { out: "released", rolls, hazard: h, harsh };
+  if (escape){
+    rolls.break = rng.randint(1, 100);
+    if (rolls.break <= stealth + ctx.escape){
+      rolls.home = rng.randint(1, 100);
+      if (rolls.home <= fieldcraft + ctx.home) return { out: "escaped", rolls, hazard: h, harsh };
+      p.recaptured = (p.recaptured || 0) + 1;
+      rolls.life = rng.randint(1, 100);
+      if (rolls.life <= ctx.recapture) return { out: "died", rolls, hazard: h, harsh, why: "killed when retaken" };
+    }
+  }
+  rolls.death = rng.randint(1, 100);
+  if (rolls.death <= h) return { out: "died", rolls, hazard: h, harsh, why: "died in captivity" };
+  return { out: null, rolls, hazard: h, harsh };
+}
+const prQ = x => Math.floor(x * 4 + 0.5) / 4;
+function prRansom(eid, cid, dayPay, rankIndex){       // his ransom in Days, or null
+  const R = prContext(eid, cid).ransom;
+  if (!R) return null;
+  if (R.days !== undefined) return R.days;
+  if (R.months_per_rank !== undefined) return prQ(R.months_per_rank * 30 * Math.max(1, dayPay) * (rankIndex + 1));
+  return prQ(R.years * 365 * Math.max(1, dayPay) * (1 + (R.upkeep || 0)));
+}

@@ -1510,6 +1510,14 @@
    "no_sleep": {
     "strain": 1,
     "name": "Two days without sleep, cold and wet"
+   },
+   "captivity": {
+    "strain": 1,
+    "name": "A season in captivity"
+   },
+   "captivity_harsh": {
+    "strain": 2,
+    "name": "A season in a harsh camp"
    }
   },
   "results": [

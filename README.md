@@ -96,7 +96,9 @@ campaigner is in the end worn out and sent home. What a man carries counts: his 
 marching order or full kit against his weight and Strength slows the march, blisters the feet and
 costs him Dodge in a fight, and packs dropped before a fight are lost with the field. And fighting wears on the mind: Strain from combat days,
 wounds and comrades lost builds toward a breakdown (nostalgia, shell shock, combat exhaustion, by
-era), calibrated to the US Army's 1944 figures, with forward treatment, rest and rotation home. A man lost
+era), calibrated to the US Army's 1944 figures, with forward treatment, rest and rotation home. A man taken prisoner faces his era's captivity: killed or
+robbed on capture, exchanged, paroled or ransomed, escaping, or dying at the rates the records
+give, from Cabrera and Andersonville to Japan and Korea. A man lost
 is replaced the era's way: rolled anew, assigned by the army after a wait, or hired. On the
 travel map forces lose men on the road as the records say they did: desertion, straggling,
 injuries and horses by era and by whether they are in camp, marching or withdrawing, with an
