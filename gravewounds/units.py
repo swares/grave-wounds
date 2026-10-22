@@ -4105,7 +4105,7 @@ def _morale_all(d: Data, us: list, occ: dict, before: list, acc: tuple, rng, tab
                 "contact": any(us[j]["side"] != u["side"] for j in near),
                 "friends": any(us[j]["side"] == u["side"] and us[j]["state"] == "steady" for j in near),
                 "dug": low(u) or in_bunker(d, field, u), "no_ammo": ammo_state(d, u) == "out",
-                "holds": bool(M.get("posture")) and holds_position(d, us, i, field),
+                "holds": bool(M.get("posture")) and bool(u.get("holding")) and holds_position(d, us, i, field),
                 "neighbour": any(k != i and us[k]["side"] == u["side"] and _units_within(d, us[k], u, reach) for k in fresh)}
         m = morale(d, unit, rng.randint(1, 100))
         if m["check"]:

@@ -29,6 +29,10 @@ def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict
     """command, worked out: where is (size, field, rng, exchange)."""
     size, field, rng, exchange = where
     us, orders = [dict(u) for u in units], []
+    if d.units["morale"].get("posture"):         # its stance, for morale.posture: only a holding side's units hold a position
+        for u in us:
+            if u["side"] == side:
+                u["holding"] = stance == "hold"
     memory = {} if memory is None else memory
     known = sightings(d, us, side, field, exchange, memory)
     aim = aims(d, us, side, field, stance, memory)
