@@ -354,6 +354,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
       <ol class="roundlog" id="round-log" aria-label="What happened each round"></ol>
       <div id="chars" style="display:flex;flex-direction:column;gap:10px"></div>
       <div id="after-fight"></div>
+      <div id="hazards"></div>
       <p class="muted" style="margin:0" id="trk-rule"></p>
     </section>
   </div>
@@ -515,7 +516,7 @@ function moraleCheck(fighters, roll){
 // Battle map. Hexes are [col, row], pointy-top, odd rows shifted right.
 const MOVE = CMB.move, CAMP_HEX_M = MOVE.hex_m;
 // ----- named characters' sickness: a fighter can go with a force on the travel map, which runs his days -----
-const TD = { checks: DATA.checks, ranks: DATA.ranks, loads: DATA.loads, stress: DATA.stress, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): set to a fighter's era before use
+const TD = { checks: DATA.checks, ranks: DATA.ranks, loads: DATA.loads, stress: DATA.stress, hazards: DATA.hazards, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): set to a fighter's era before use
 const DZR = DATA.disease, NAMED_KEY = "gravewounds-named";   // {uid: {name, endurance, map, force, health, dead, log}}, shared with the travel map
 function readNamed(){ try{ return JSON.parse(localStorage.getItem(NAMED_KEY) || "{}") || {} }catch(e){ console.warn("named characters unreadable", e); return {} } }
 function writeNamed(all){ try{ localStorage.setItem(NAMED_KEY, JSON.stringify(all)) }catch(e){ /* storage off: not attached */ } }
@@ -570,7 +571,7 @@ function attachNamed(c, value){                   // put him with a travel force
     const [map, id] = [value.slice(0, value.lastIndexOf(":")), +value.slice(value.lastIndexOf(":") + 1)], was = all[c.uid] || {};
     all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id, old: oldWounds(c), skills: namedSkills(c), pid: (c.sheet && c.sheet.pid) || null,
       drill: (c.sheet && c.sheet.skill_by && c.weapon && c.sheet.skill_by[c.weapon]) || null,
-      str: statOf(c, "str"), nerve: statOf(c, "nerve"), sex: (c.sheet && c.sheet.sex) || "m", kitLoad: kitLoad(c.kit), loadExtra: (c.sheet && c.sheet.load_extra) || 0, era: loadEra(c) };   // his load on the march   // the skill drill ticks on the travel map
+      str: statOf(c, "str"), nerve: statOf(c, "nerve"), agi: statOf(c, "agi"), end: statOf(c, "end"), ride: skillAt(c, "ride"), swim: (c.sheet && c.sheet.swim) || "basic", sex: (c.sheet && c.sheet.sex) || "m", kitLoad: kitLoad(c.kit), loadExtra: (c.sheet && c.sheet.load_extra) || 0, era: loadEra(c) };   // his load on the march   // the skill drill ticks on the travel map
   }
   writeNamed(all);
   NAMED = all;
@@ -771,6 +772,139 @@ function rollAfterLoot(){
   S.afterLog = [...lines, ...(S.afterLog || [])].slice(0, 40);
   renderChars();
 }
+/* ---------- hazards: swim, climb, fall, chase (ranks.js: hzSwimTarget, hzSwimStep, hzColdShock,
+   hzClimbTarget, hzFall, hzChaseStep; data DATA.hazards). Any fighter; a team-builder man brings
+   whether he can swim, his skills and his load. A fall or a climb gone wrong puts a crush wound on
+   his card; a man who drowns is out. ---------- */
+const HZD = () => DATA.hazards;
+const skillAt = (c, id) => (c && c.sheet && c.sheet.skills ? c.sheet.skills[id] || 0 : 0);
+const bandOf = c => (loadInfo(c) || { band: 0 }).band;
+const ZONE_LOCS = { legs: ["thigh_l", "thigh_r", "knee_l", "knee_r", "lower_leg_l", "lower_leg_r", "foot_l", "foot_r"], lower_back: ["back_lower"],
+  torso: ["chest_l", "chest_r", "abdomen", "back_upper"], arms: ["shoulder_l", "shoulder_r", "upper_arm_l", "upper_arm_r", "forearm_l", "forearm_r", "hand_l", "hand_r"], head: ["skull_l", "skull_r", "face", "neck"] };
+function hzLog(line){ S.hzlog = [line, ...(S.hzlog || [])].slice(0, 30) }
+function crushWound(c, sev, zone){                // a fall's wound on his card, with its stop check
+  const locs = ZONE_LOCS[zone] || ZONE_LOCS.torso, loc = locs[(d100() - 1) % locs.length], fx = DATA.wounds[`${LOC[loc].class}|crush|${sev}`];
+  if (!fx || !applyHit(c, { loc, mech: "crush", sev, fx })) return "";
+  const line = applyStopCheck(c, c.wounds[c.wounds.length - 1]);
+  return `${sev} ${LOC[loc].name.toLowerCase()}${line ? "; " + line.replace(/<[^>]+>/g, "") : ""}`;
+}
+function doFall(c, height, landing, shift, why){
+  const r = hzFall(height, landing, shift, d100(), d100());
+  let t = `${c.name} ${why} ${height} m: ${r.severity === "none" ? "unhurt" : r.severity}`;
+  if (r.wound) t += ` (${crushWound(c, r.wound, r.severity === "dead" ? "head" : r.zone)})`;
+  if (r.severity === "dead") t += ". A fatal fall, unless the GM rules otherwise";
+  hzLog(t + ".");
+}
+function hazardOpts(id, pairs, cur){ return `<select id="${id}">${pairs.map(([v, t]) => `<option value="${v}"${String(v) === String(cur) ? " selected" : ""}>${attr(t)}</option>`).join("")}</select>` }
+function renderHazards(){
+  const box = $("#hazards"); if (!box || !HZD() || !S.chars.length) { if (box) box.innerHTML = ""; return }
+  const K = (S.hz ||= { mode: "swim", who: S.chars[0].id, cold: 1, current: "moderate", float: false, shore: 3, surface: "rope", height: 10, landing: "thrown", ground: 0, jump: false, foe: null, cover: false, mounted: {} });
+  if (!S.chars.some(c => c.id === K.who)) K.who = S.chars[0].id;
+  const c = S.chars.find(x => x.id === K.who), H = HZD(), who = hazardOpts("hz-who", S.chars.map(x => [x.id, x.name]), K.who);
+  const modes = ["swim", "climb", "fall", "chase"].map(m => `<button class="small" data-hzmode="${m}" aria-pressed="${K.mode === m}">${m[0].toUpperCase() + m.slice(1)}</button>`).join("");
+  let body = "";
+  if (K.mode === "swim"){
+    const st = c.swimState;
+    let step = "on the bank";
+    if (st) step = st.out ? "out on the bank" : H.swim.steps[st.step];
+    body = `<div class="toolbar">Water ${hazardOpts("hz-cold", H.cold.map((x, i) => [i, x.name]), K.cold)} Current ${hazardOpts("hz-current", Object.keys(H.swim.current).map(k => [k, k]), K.current)}
+      <label class="check"><input type="checkbox" id="hz-float"${K.float ? " checked" : ""}> Something to float on</label> <label>Minutes to the bank <input type="number" id="hz-shore" min="1" value="${K.shore}" style="width:4em"></label></div>
+      <div class="toolbar"><button class="small" id="hz-in">Into the water</button><button class="small" id="hz-min"${st && !st.out && st.step < 4 ? "" : " disabled"}>A minute</button><button class="small" id="hz-shed"${loadInfo(c) && loadOrderOf(c) !== "fighting" ? "" : " disabled"}>Shed his pack</button>
+      <span class="muted">${attr(c.name)}: ${c.sheet ? attr(c.sheet.swim || "basic") + " swimmer" : "a basic swimmer"}, ${attr(step)}${st ? `, ${st.minutes} min` : ""}</span></div>`;
+  } else if (K.mode === "climb"){
+    const cl = c.climbState;
+    body = `<div class="toolbar">${hazardOpts("hz-surface", Object.entries(H.climb.surfaces).map(([k, v]) => [k, v.name]), K.surface)} <label>Height (m) <input type="number" id="hz-height" min="1" value="${K.height}" style="width:4em"></label>
+      <button class="small" id="hz-climb-start">Start the climb</button><button class="small" id="hz-climb"${cl && !cl.done ? "" : " disabled"}>Climb a step</button>
+      <span class="muted">${cl ? `${attr(c.name)}: ${cl.at} of ${cl.height} m${cl.done ? " (" + cl.done + ")" : ""}` : ""}</span></div>`;
+  } else if (K.mode === "fall"){
+    body = `<div class="toolbar"><label>Height (m) <input type="number" id="hz-height" min="0" step="0.5" value="${K.height}" style="width:4em"></label> ${hazardOpts("hz-landing", Object.entries(H.falls.landings).map(([k, v]) => [k, v.name]), K.landing)}
+      ${hazardOpts("hz-ground", [[-1, "Soft ground, water or snow"], [0, "Ordinary ground"], [1, "Rock or paving"]], K.ground)} <label class="check"><input type="checkbox" id="hz-jump"${K.jump ? " checked" : ""}> He jumps (Agility, feet first)</label>
+      <button class="small" id="hz-fall">Fall</button></div>`;
+  } else {
+    const ch = S.chase, foes = S.chars.filter(x => x.id !== K.who);
+    if (!foes.some(x => x.id === K.foe)) K.foe = foes[0] ? foes[0].id : null;
+    const mt = id => `<label class="check"><input type="checkbox" data-hzmount="${id}"${K.mounted[id] ? " checked" : ""}> mounted</label>`;
+    body = foes.length ? `<div class="toolbar">After him: ${hazardOpts("hz-foe", foes.map(x => [x.id, x.name]), K.foe)} ${mt(K.foe)} · ${attr(c.name)} ${mt(K.who)} <label class="check"><input type="checkbox" id="hz-cover"${K.cover ? " checked" : ""}> Cover (woods, walls, marsh)</label>
+      <button class="small" id="hz-chase-start">Start the chase</button><button class="small" id="hz-chase"${ch && ch.gap > 0 && ch.gap < H.chase.gaps.length - 1 ? "" : " disabled"}>A round</button>
+      <span class="muted">${ch ? `Gap: ${H.chase.gaps[ch.gap]}, round ${ch.round}` : ""}</span></div>` : `<p class="muted">Add someone to chase him.</p>`;
+  }
+  const log = (S.hzlog || []).map(l => `<li>${attr(l)}</li>`).join("");
+  box.innerHTML = `<details class="after"${S.hzOpen ? " open" : ""}><summary><b>Swim, climb, fall, chase</b> <span class="muted">for ${attr(c.name)}</span></summary>
+    <div class="toolbar"><label>Who ${who}</label> ${modes}</div>${body}${log ? `<ol class="roundlog">${log}</ol>` : ""}</details>`;
+}
+function swimMinute(c){                          // a minute in the water
+  const K = S.hz, st = c.swimState, H = HZD();
+  const t = hzSwimTarget(statOf(c, "end"), c.sheet ? c.sheet.swim || "basic" : "basic", bandOf(c), kitLoad(c.kit), K.current, K.float, st.minutes, +K.cold);
+  const r = hzSwimStep(st.step, t, d100());
+  st.step = r.step; st.minutes += 1; st.worst = Math.max(st.worst, st.step);
+  let t2 = `${c.name}, minute ${st.minutes}: swims at ${t}, rolled ${r.check.roll}: ${H.swim.steps[st.step]}`;
+  if (st.step >= 4){ c.state = { id: "out", rounds: null }; t2 += ". He drowns" }
+  else if (st.minutes >= K.shore){
+    t2 += ". He reaches the bank";
+    if (st.worst >= 3){ c.fatigue = Math.min(WXD.fatigue.levels.length - 1, (c.fatigue || 0) + 2); t2 += ", near-drowned (two steps of fatigue)" }
+    st.out = true;
+  }
+  hzLog(t2 + ".");
+}
+function climbStep(c){
+  const K = S.hz, cl = c.climbState, H = HZD(), sf = H.climb.surfaces[cl.surface];
+  const k = skillCheck(hzClimbTarget(statOf(c, "agi"), skillAt(c, "fieldcraft"), cl.surface, bandOf(c), kitLoad(c.kit)), "ordinary", d100());
+  if (cl.anchorAt !== null && cl.at >= cl.anchorAt){ cl.done = "the anchor failed"; doFall(c, cl.at, "thrown", 0, sf.name.includes("ladder") ? "is thrown from the ladder at" : "falls when the rope gives way at"); return }
+  if (k.fumble){ cl.done = "fell"; doFall(c, cl.at, "thrown", 0, "slips and falls from"); return }
+  if (k.success) cl.at = Math.min(cl.height, cl.at + sf.step_m);
+  hzLog(`${c.name} climbs (${k.target}, rolled ${k.roll}): ${k.success ? `up to ${cl.at} m` : "no higher"}.`);
+  if (cl.at >= cl.height) cl.done = "at the top";
+}
+function chaseRound(q, p){                        // q flees, p pursues
+  const K = S.hz, H = HZD(), ch = S.chase, C = H.chase, mq = !!K.mounted[q.id], mp = !!K.mounted[p.id];
+  ch.round += 1;
+  const speed = (c, m) => (m ? (ch.round > C.blown ? 3.6 : C.horse_speed) : C.foot_speed[bandOf(c)]);
+  let pt = mp ? skillAt(p, "ride") || statOf(p, "agi") : statOf(p, "agi"), qt = mq ? skillAt(q, "ride") || statOf(q, "agi") : statOf(q, "agi");
+  if (K.cover && mp && !mq) qt += C.cover;
+  if (!K.cover && mp && !mq) pt += C.open_horse;
+  const r = hzChaseStep(ch.gap, pt, d100(), qt, d100(), speed(p, mp), speed(q, mq));
+  ch.gap = r.gap;
+  if (!K.cover && mp && !mq && ch.round % 2 === 0) ch.gap = Math.max(0, ch.gap - 1);   // a horse runs a man down in the open
+  for (const [c, m] of [[q, mq], [p, mp]]) if (!m && ch.round % C.sprint_tire === 0) c.fatigue = Math.min(WXD.fatigue.levels.length - 1, (c.fatigue || 0) + 1);
+  let t = `Round ${ch.round}: ${p.name} ${r.opposed.a.roll} against ${pt}, ${q.name} ${r.opposed.b.roll} against ${qt}: ${C.gaps[ch.gap]}`;
+  if (ch.gap === 0) t += `. ${p.name} has him`;
+  if (ch.gap === C.gaps.length - 1) t += `. ${q.name} gets away`;
+  hzLog(t + ".");
+}
+$("#hazards").addEventListener("change", e => {
+  const K = S.hz, el = e.target, id = el.id;
+  if (id === "hz-who") K.who = +el.value; else if (id === "hz-cold") K.cold = +el.value; else if (id === "hz-current") K.current = el.value;
+  else if (id === "hz-float") K.float = el.checked; else if (id === "hz-shore") K.shore = Math.max(1, +el.value || 1);
+  else if (id === "hz-surface") K.surface = el.value; else if (id === "hz-height") K.height = Math.max(0, +el.value || 0);
+  else if (id === "hz-landing") K.landing = el.value; else if (id === "hz-ground") K.ground = +el.value; else if (id === "hz-jump") K.jump = el.checked;
+  else if (id === "hz-foe") K.foe = +el.value; else if (id === "hz-cover") K.cover = el.checked;
+  else if (el.dataset.hzmount !== undefined) K.mounted[el.dataset.hzmount] = el.checked;
+  S.hzOpen = true;
+  if (el.type !== "number") setTimeout(renderChars);           // a typed number keeps its box (and its focus) until a button is pressed
+});
+$("#hazards").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  const K = S.hz, c = S.chars.find(x => x.id === K.who); S.hzOpen = true;
+  if (b.dataset.hzmode){ K.mode = b.dataset.hzmode; return renderChars() }
+  if (b.id === "hz-in"){
+    c.swimState = { step: 0, minutes: 0, worst: 0 };
+    const k = hzColdShock(nerveOf(c), +K.cold, d100());
+    if (HZD().cold[K.cold].shock && !k.success){ c.swimState.step = 1; hzLog(`${c.name} goes in: the cold takes his breath (Nerve ${k.target}, rolled ${k.roll}).`) }
+    else hzLog(`${c.name} goes into the water.`);
+  }
+  else if (b.id === "hz-min") swimMinute(c);
+  else if (b.id === "hz-shed"){ c.loadOrder = "fighting"; hzLog(`${c.name} sheds his pack.`) }
+  else if (b.id === "hz-climb-start"){ const sf = HZD().climb.surfaces[K.surface], steps = hzClimbSteps(K.surface, K.height); c.climbState = { surface: K.surface, height: K.height, at: 0, done: null, anchorAt: sf.anchor && d100() <= sf.anchor ? sf.step_m * Math.floor((d100() - 1) * steps / 100) : null }; hzLog(`${c.name} starts up ${sf.name.toLowerCase()}, ${K.height} m.`) }
+  else if (b.id === "hz-climb") climbStep(c);
+  else if (b.id === "hz-fall"){
+    let shift = +K.ground + (bandOf(c) >= 3 || kitLoad(c.kit) === "heavy" ? 1 : 0) + (K.landing === "head" ? 1 : 0);
+    if (K.jump){ const k = skillCheck(statOf(c, "agi"), "ordinary", d100()); if (k.success) shift -= 1; hzLog(`${c.name} jumps (Agility ${k.target}, rolled ${k.roll}): ${k.success ? "lands feet first" : "lands badly"}.`) }
+    doFall(c, K.height, K.jump ? "feet" : K.landing, shift, "falls");
+  }
+  else if (b.id === "hz-chase-start"){ S.chase = { gap: HZD().chase.start, round: 0 }; hzLog(`${S.chars.find(x => x.id === K.foe).name} goes after ${c.name}.`) }
+  else if (b.id === "hz-chase") chaseRound(c, S.chars.find(x => x.id === K.foe));
+  renderChars();
+});
 function xpHit(c, skill, why){ if (c && c.sheet && c.sheet.pid) xpTick(c.sheet.pid, skill, why) }   // experience: a skill used well ticks it
 function syncNamed(){
   pullSheets();
@@ -2578,7 +2712,7 @@ function renderChars(){
   }).join("") || `<p class="muted">Add a combatant to start tracking wounds.</p>`;
   renderMap();
   save();
-  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight();
+  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards();
 }
 $("#after-fight").addEventListener("change", e => {
   if (e.target.id === "sel-won"){ S.wonBy = e.target.value || null; S.afterOpen = true; renderChars() }

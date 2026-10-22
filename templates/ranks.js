@@ -251,3 +251,54 @@ function prRansom(eid, cid, dayPay, rankIndex){       // his ransom in Days, or 
   if (R.months_per_rank !== undefined) return prQ(R.months_per_rank * 30 * Math.max(1, dayPay) * (rankIndex + 1));
   return prQ(R.years * 365 * Math.max(1, dayPay) * (1 + (R.upkeep || 0)));
 }
+/* Hazards (as gravewounds/hazards.py, data TD.hazards): who can swim, swimming and drowning, cold
+   water, fords, climbing, falls and chases. */
+const HZ = () => TD.hazards || {};
+function hzSwimAbility(eid, seamanship, roll){       // none, basic or strong
+  const H = HZ(), sh = H.swimmers?.[eid] || { none: 50, strong: 10 };
+  let a = "basic";
+  if (roll <= sh.none) a = "none"; else if (roll > 100 - sh.strong) a = "strong";
+  if (seamanship >= (H.seamanship_strong ?? 40)) return "strong";
+  if (seamanship >= (H.seamanship_basic ?? 20) && a === "none") return "basic";
+  return a;
+}
+function hzSwimTarget(end, ability, band, armour, current, flotation = false, minutes = 0, cold = 0){
+  const S = HZ().swim;
+  let t = end + S.ability[ability] + S.load[band] + (S.armour[armour] || 0) + (S.current[current] || 0);
+  if (flotation) t += S.flotation;
+  const over = minutes - HZ().cold[cold].fail_after;
+  if (over > 0) t -= 10 * (Math.floor(over / 10) + 1);
+  return t;
+}
+function hzSwimStep(step, target, roll){             // {check, step}
+  const k = skillCheck(target, "ordinary", roll), last = HZ().swim.steps.length - 1;
+  let next;
+  if (k.success) next = k.critical ? Math.max(0, step - 1) : step;
+  else next = Math.min(last, step + (k.fumble ? 2 : 1));
+  return { check: k, step: next };
+}
+const hzColdShock = (nerve, cold, roll) => skillCheck(nerve + HZ().cold[cold].shock, "ordinary", roll);
+function hzFordRisk(water, band){ const F = HZ().fords[water]; return band >= F.from_band ? F.difficulty : null }
+function hzClimbTarget(agi, fieldcraft, surface, band, armour){
+  const C = HZ().climb;
+  return agi + Math.floor(fieldcraft / 2) + C.surfaces[surface].mod + C.load[band] + (C.armour[armour] || 0);
+}
+const hzClimbSteps = (surface, height) => Math.max(1, Math.ceil(Math.trunc(height) / HZ().climb.surfaces[surface].step_m));
+function hzFall(height, landing, shift, roll, locRoll){   // {severity, wound, zone}
+  const F = HZ().falls, rows = F.heights;
+  let i = rows.findIndex(r => height <= r.upto);
+  i = Math.min(rows.length - 1, Math.max(0, i + shift));
+  let sevI = rows[i].bands.findIndex(b => roll <= b);
+  if (sevI < 0) sevI = rows[i].bands.length;
+  const sev = F.severities[sevI], zone = F.landings[landing].zones.find(([to]) => locRoll <= to)[1];
+  return { severity: sev, wound: F.wound[sev] ?? null, zone: sev === "none" ? null : zone };
+}
+function hzChaseStep(gap, aTarget, aRoll, bTarget, bRoll, aSpeed, bSpeed){   // {gap, opposed}
+  const C = HZ().chase, o = opposedCheck(aTarget, "ordinary", aRoll, bTarget, bRoll), a = o.a, b = o.b;
+  let move;
+  if (o.winner === "a") move = -(a.critical ? 2 : 1);
+  else if (b.success && !(a.success && a.margin === b.margin && a.critical === b.critical)) move = b.critical ? 2 : 1;
+  else if (aSpeed > bSpeed) move = -1;
+  else move = bSpeed > aSpeed ? 1 : 0;
+  return { gap: Math.min(C.gaps.length - 1, Math.max(0, gap + move)), opposed: o };
+}

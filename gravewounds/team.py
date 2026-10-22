@@ -167,8 +167,12 @@ def make_character(d: Data, eid: str, region: str, career_id: str, terms: int, m
          "age": T["age"]["start"] + T["age"]["per_term"] * terms, "kit": kit, "weapon": weapon, "look": look,
          "aged_to": T["age"]["start"]}
     from .ageing import steps
-    steps(d, c, rng)                               # the years of his terms: decline, maturity, wear (last of the dice)
-    return finish(d, c)
+    from .hazards import swim_ability
+    steps(d, c, rng)                               # the years of his terms: decline, maturity, wear
+    finish(d, c)
+    if d.hazards:                                  # whether he can swim (the last of the dice)
+        c["swim"] = swim_ability(d, eid, c["skills"].get("seamanship", 0), rng.randint(1, 100))
+    return c
 
 
 def make_follower(d: Data, eid: str, region: str, career_id: str, table: str, rng, women: str = "none") -> dict:

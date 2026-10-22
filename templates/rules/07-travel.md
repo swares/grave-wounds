@@ -71,6 +71,50 @@ fire. Each era fights in its usual order (the British of the Napoleonic wars wit
 most others in fighting order). A side may **drop its packs** before the fight; if it loses the
 field, the packs are lost with it, and that night its force has no blankets or rations.
 
+## Water, heights and pursuit {#hazards}
+
+**Swimming.** Each man is a non-swimmer, a basic or a strong swimmer, rolled when he is made from
+his era's rough shares (most medieval men could not swim; perhaps a third of 1940s soldiers could
+not; a seaman can). In deep water he rolls each minute: d100 at or under his Endurance and:
+
+{{table:swim_mods}}
+
+A success holds him, a critical lifts him a step, a failure takes him down one (a fumble two):
+afloat, struggling, going under, drowning, drowned. He may shed his pack (a minute, a load band
+lighter); plate cannot be shed in the water. Reaching the bank after drowning, he is near-drowned:
+two steps of fatigue. **Cold water** takes his breath the first minute (a Nerve check, −20 below
+15 °C, −40 at 5 °C or less: failing, a step down), and after a while his limbs fail: from 10
+minutes in icy water, 45 at 10-15 °C, he swims 10 worse for every ten minutes more (the 1-10-1
+rule; in 10 °C water half of a group of competent swimmers had failed within an hour).
+
+**Fords.** Infantry could wade to about 3 ft, cavalry 4 ft, guns 2 ft 4 in. On the travel map a
+force crossing an ordinary ford puts each named man with a Heavy load or worse to an Easy
+Agility check (Ride for a horseman); a force that chooses to risk a flooded ford (never with
+wagons or guns) puts every named man to a Very hard one. Swept off, he swims for the bank.
+
+**Climbing.** Agility + Fieldcraft ÷ 2, for each 10 m of a rope or ladder (3 m of a free climb):
+a ladder or slope +20, a knotted rope 0, a wet rope or a rough wall −20, a sheer face −40, less for
+his load and armour. A failure gains no height; a fumble is a fall. A rope or ladder may give way
+once on the way (a grapnel pulls out, the defenders push the ladder off). At Pointe du Hoc the
+Rangers climbed 26-30 m cliffs, the first men up within ten minutes.
+
+**Falls.** By the height, d100:
+
+{{table:falls}}
+
+A deliberate feet-first jump that passes an Agility check, or soft ground, is a row lighter;
+head first, rock, or a heavy load or armour, a row heavier. A moderate injury is a light crush
+wound, a serious one serious, a grave one critical, and death a critical wound to the head; where
+it lands follows how he fell (feet first: mostly legs and lower back; thrown from a horse: arms
+and head). The dead in one modern study had fallen a median 15 m, the survivors 6 m.
+
+**Chases** are rounds of about ten seconds, the gap close, near, far, distant or lost. Pursuer and
+quarry roll Agility against each other (Ride on horseback); the winner moves the gap a step, two
+on a critical, and a tie goes to the faster (a man is slower the heavier his load). A horseman on
+open ground gains a step every second round whatever the dice; in cover the man on foot has +20
+against him. A man on foot tires a step every three rounds, and a horse galloped more than
+fifteen is blown. Most of the dead of a beaten army fell in the pursuit, not the fight.
+
 ## Prisoners {#prisoners}
 
 A man **taken prisoner** is not simply lost. The GM picks his captors' situation from his era's

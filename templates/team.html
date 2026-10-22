@@ -912,7 +912,7 @@ function rollerSheet(c){                          // what the roller keeps of a 
   const attackBy = Object.fromEntries(Object.keys(T.weapon_skill).map(w => [w, attackFor(c, w)]));
   const defBy = T.defence.reduce((a, s) => (c.skills[s] > c.skills[a] ? s : a), T.defence[0]);
   return { career: careerOf(c).name, terms: c.terms, age: c.age, leader: !!c.leader, stats: c.stats, defence: c.defence, attack_by: attackBy,
-    skill_by: T.weapon_skill, defence_by: defBy, era: T.id, rank: c.rank || null, sex: c.sex || "m", load_extra: c.loadExtra || 0,   // which skill each weapon and his defence use: a hit or a parry ticks it
+    skill_by: T.weapon_skill, defence_by: defBy, era: T.id, rank: c.rank || null, sex: c.sex || "m", load_extra: c.loadExtra || 0, swim: c.swim || "basic",   // which skill each weapon and his defence use: a hit or a parry ticks it
     trained: T.skills.filter(s => (c.gains[s.id] || 0) > 0).map(s => [s.name, c.skills[s.id]]), origin: c.origin, old: c.old,
     skills: c.skills, pid: c.pid };   // every skill, trained or not: the roller and travel map use Leechcraft, Fieldcraft, Watch and Stealth
 }

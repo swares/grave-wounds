@@ -201,6 +201,16 @@ When an item is done, delete it here and note it in the pull request that closes
   - no difficulty from wounds, fatigue or hunger is added to a check out of a fight (the GM sets
     it);
   - haggling is only for buying: selling loot, and hiring a replacement, are at the list price.
+- **Water, heights and pursuit, first cut.** Swimming and drowning, cold water, fords, climbing,
+  falls and chases in the roller; fords on the travel map. Still left out: no era has a sound
+  count of who could swim (the shares are estimates); drowning counts for the Rapido, Omaha, the
+  Ebro and the Berezina, fording limits from the modern field manuals, swimming in armour, ladder
+  climbing under fire and cavalry fall rates were not found; the travel map's fords have one depth
+  (ordinary, or flooded), with no current or temperature of their own, and horses are not swept
+  away; a fall's death is a critical head wound for the GM to rule on; and the beaten side's
+  pursuit losses on the field map by era (the research's multipliers: before 1500 one to three
+  times the losses on the field, 1500-1850 half to once, later mostly prisoners; ×1.5 fresh
+  cavalry, ×0.5 nightfall, ×2 a river behind them) are not yet applied.
 - **Prisoners, first cut.** Capture, captivity by era and situation, release, escape, death,
   ransom, parole and service. Still left out: the release chances, escape modifiers and capture
   bands are calibrations, not figures (the death hazards are worked from the sourced totals); the

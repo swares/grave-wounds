@@ -91,8 +91,10 @@ function makeCharacter(region, careerId, terms, mode, rng, sexWanted = "m"){
   const [kit, weapon] = kitFor(T, career, region);
   const c = ({ name, sex, era: T.id, region, career: careerId, terms, mode, base, stat_mods: statMods, gains, origin: origin.name,
     trait: origin.trait.text, drawback: origin.drawback.text, events, old, age: T.age.start + T.age.per_term * terms, kit, weapon, look, aged_to: T.age.start });
-  agSteps(c, rng);                                 // the years of his terms: decline, maturity, wear (the last of the dice)
-  return finishChar(c);
+  agSteps(c, rng);                                 // the years of his terms: decline, maturity, wear
+  finishChar(c);
+  if (TD.hazards) c.swim = hzSwimAbility(T.id, c.skills.seamanship || 0, rng.randint(1, 100));   // whether he can swim (the last of the dice)
+  return c;
 }
 /* Ageing (as gravewounds/ageing.py, data TD.ageing): each `step` years of his age, his band's
    decline (older for his Wear), a step of maturity and Wear; the Worn Out check for each term. */
