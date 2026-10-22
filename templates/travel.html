@@ -231,6 +231,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <div style="flex:1 1 140px;align-self:end"><label title="Its named men (from the wound roller) take the era's chance of an injury each night too"><input type="checkbox" id="chk-named-acc"> Named men can be injured</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Its army feeds and quarters its men. Untick for a team on its own, on leave or off base: its named men then pay their keep from their purses each day"><input type="checkbox" id="chk-fed"> Fed by its army</label></div>
       </div>
+      <p class="muted" id="supply-note" style="margin:0"></p>
       <p class="muted" id="health-note" style="margin:0"></p>
       <ol class="log" id="log" aria-label="March and camp log"></ol>
 
@@ -254,7 +255,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
 <script>
 const DATA = /*__TRAVEL_DATA__*/null;
 Object.assign(COINS, DATA.coins || {});           // period money (purse.js)
-const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, weights: DATA.weights, stress: DATA.stress, hazards: DATA.hazards, languages: DATA.languages, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
+const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, weights: DATA.weights, supplies: DATA.supplies, stress: DATA.stress, hazards: DATA.hazards, languages: DATA.languages, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
 const $ = s => document.querySelector(s);
 const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
 const BYKEY = Object.fromEntries(Object.values(TT).map(t => [t.key, t]));
@@ -618,7 +619,11 @@ function sickMarchPct(fit, carried){          // % of its speed a force keeps wh
   return fit < L.bearers * carried ? L.short : L.march;
 }
 const campHygiene = (gm, campKind) => gm || DZ.camp_hygiene[campKind || "none"];
-const campCare = campKind => DZ.camp_care[campKind || "none"];
+const CARE_STEPS = ["none", "field", "shelter"];
+const campCare = (campKind, f = null) => {        // the camp's care, a step worse when the force's medical stores are gone
+  const c = DZ.camp_care[campKind || "none"];
+  return f?.sup && DATA.supplies && spMedicalShort(f.sup) ? CARE_STEPS[Math.max(0, CARE_STEPS.indexOf(c) - 1)] : c;
+};
 function weekFactors(o){                       // o: {hygiene, camped_days, terrain, highs, wet, plague}
   const f = [];
   if (o.hygiene === "poor" || o.hygiene === "good") f.push(o.hygiene);
@@ -1123,13 +1128,77 @@ function endDay(f){
   f.huntFed = fed >= (f.men || 1);                   // the game feeds the whole force tonight
   if (f.huntFed && !fresh) f.noFresh = 0;
   keepNight(f, camp, before_, fed);
+  const thirst = supplyNight(f, found, today);
   const lostPacks = packsLost(f);
   if (lostPacks){ f.log.unshift(`${dateText(f.day, true)}: the packs were lost with the field: no blankets or rations tonight.`); f.packsNight = true }
   const sore = blisters(f);
   if (sore.length) f.log.unshift(`${dateText(f.day, true)}: ${sore.join("; ")}.`);
-  const tire = eventsNight(f) + loadTire(f) + (lostPacks ? 1 : 0);
+  const tire = eventsNight(f) + loadTire(f) + (lostPacks ? 1 : 0) + thirst;
   healthNight(f, today, camp);
-  f.fatigue = Math.min(L.length - 1, after + tire); f.day += 1; f.used = 0; f.marched = 0; f.packsNight = false; f.huntFed = false;
+  f.fatigue = Math.min(L.length - 1, after + tire); f.day += 1; f.used = 0; f.marched = 0; f.packsNight = false; f.huntFed = false; f.thirsty = false;
+}
+// ----- supplies between fights (ranks.js spDay, spRefill; data DATA.supplies) -----
+function supOf(f){                               // its supplies, full at first; a baggage train's stock too
+  if (!DATA.supplies || !f) return null;
+  f.sup ||= spStart(forceEra(f));
+  if (f.type === "wagons") f.stock ||= spTrainStock();
+  return f.sup;
+}
+function waterHere(f, w){                        // rain, or water at or beside its hex
+  if (WXD.conditions[w.cond].precip !== "none") return true;
+  const m = curMap(), src = DATA.supplies.water.sources;
+  return [f.pos, ...neighbours(f.pos, m.rows[0].length, m.rows.length)].some(h => src.includes(terrainAt(m, h).id));
+}
+function supplyNight(f, foraged, today){          // the day's rations, water and medical stores: -> extra fatigue for thirst
+  if (!supOf(f) || f.type === "wagons") return 0;
+  const r = spDay(forceEra(f), f.sup, fedByArmy(f), !!foraged || !!f.huntFed, waterHere(f, today.w), today.w.high, f.men, f.newWounded || 0, healthOf(f).cases.length);
+  const was = !!f.supHungry;
+  f.sup = r.sup; f.newWounded = 0; f.supHungry = r.hungry; f.thirsty = r.thirsty;
+  if (r.hungry && !was) f.log.unshift(`${dateText(f.day, true)}: its rations are gone: the force goes hungry until it is fed or refilled.`);
+  if (r.thirsty) f.log.unshift(`${dateText(f.day, true)}: no water to be had, and not enough carried: a thirsty night.`);
+  if (r.short && !f.medShortSaid){ f.log.unshift(`${dateText(f.day, true)}: its medical stores are used up: its sick and wounded are cared for a step worse.`); f.medShortSaid = true }
+  if (!r.short) f.medShortSaid = false;
+  return r.thirsty ? DATA.supplies.water.thirst_fatigue : 0;
+}
+function depotHere(f){                           // its army's depot: where it started on the map, or a place marked a depot of its side
+  const base = (baseMap().forces || []).find(b => b.name === f.name), at = h => h && h[0] === f.pos[0] && h[1] === f.pos[1];
+  return at(base?.hex) || (curMap().places || []).some(p => at(p.hex) && (p.depot || []).includes(f.side));
+}
+const trainHere = f => (S.forces[S.mapId] || []).find(o => o !== f && o.type === "wagons" && o.side === f.side && o.pos[0] === f.pos[0] && o.pos[1] === f.pos[1] && o.men > 0) || null;
+function refillForce(f, how){                    // at the depot, or from the train with it
+  const eid = forceEra(f);
+  if (how === "depot"){ f.sup = spRefill(eid, supOf(f), f.men).sup; f.supHungry = false; f.log.unshift(`${dateText(f.day, true)}: refilled at its depot.`); return }
+  const t = trainHere(f); if (!t) return;
+  supOf(t);
+  const r = spRefill(eid, supOf(f), f.men, t.stock);
+  f.sup = r.sup; t.stock = r.stock; if (f.sup.rations > 0) f.supHungry = false;
+  f.log.unshift(`${dateText(f.day, true)}: drew supplies from ${t.name}.`);
+}
+function rationCost(f){                          // a day's rations for its men bought here, in Days, or null where none are to be had
+  if (fedByArmy(f) || !BED_TERRAIN.includes(terrainAt(curMap(), f.pos).id)) return null;
+  const k = (DATA.keep || {})[forceEra(f)] || {}, food = Object.values(k)[0]?.food;
+  return food ? food * f.men : null;
+}
+function buyRations(f){                          // a day's rations for every man, paid by its named men from their purses
+  const cost = rationCost(f); if (!cost) return;
+  const purses = readPurses(), payers = namedWith(readNamed(), f).map(([, n]) => n.pid && purses[n.pid]).filter(Boolean);
+  const have = payers.reduce((t, p) => t + Math.max(0, purseLeft(p)), 0);
+  if (have + 1e-9 < cost){ S.msg = `${f.name} cannot buy a day's rations here: they cost ${cost.toFixed(1)} Days and its named men have ${have.toFixed(1)}.`; return }
+  let left = cost;
+  for (const p of payers){ const pay = Math.min(left, Math.max(0, purseLeft(p))); if (pay > 0){ p.ledger.push({ days: -pay, what: `Rations for ${f.name}` }); left -= pay } }
+  writePurses(purses);
+  f.sup.rations = spR(f.sup.rations + 1); f.supHungry = false;
+  f.log.unshift(`${dateText(f.day, true)}: bought a day's rations for its ${f.men} men (${cost.toFixed(1)} Days from its named men's purses).`);
+}
+function supplyHtml(f){                          // the supplies line and its buttons
+  const s = supOf(f); if (!s) return "";
+  if (f.type === "wagons"){ const t = f.stock; return `Baggage train: ${+t.rations.toFixed(1)} days' rations, ${Math.round(t.ammo * 100)}% of a load of ammunition and ${Math.round(t.medical * 100)}% of a fill of medical stores, each for ${DATA.supplies.train.serves.toLocaleString("en-US")} men.` }
+  const bits = [`ammunition ${Math.round(s.ammo * 100)}% of a load`, `rations ${+s.rations.toFixed(1)} day${s.rations === 1 ? "" : "s"}`, `water ${+s.water.toFixed(1)} L a man`, `medical stores ${Math.round(s.med * 100)}%`];
+  const btn = (id, label, title) => `<button class="small" id="${id}" title="${esc(title)}">${label}</button>`;
+  const acts = [depotHere(f) && btn("btn-sup-depot", "Refill at the depot", "Its army's depot: ammunition, rations and medical stores filled"),
+    trainHere(f) && btn("btn-sup-train", "Draw from the train", "Its baggage train in this hex: as much as the train has for a force of its size"),
+    rationCost(f) && btn("btn-sup-buy", "Buy a day's rations", `${rationCost(f).toFixed(1)} Days from its named men's purses`)].filter(Boolean).join(" ");
+  return `Supplies: ${bits.join(", ")}${hungryNow(f) ? " (hungry)" : ""}. ${acts}`;
 }
 // ----- keep: a force its army does not feed; its named men pay from their purses (purse.js, money.py) -----
 const BED_TERRAIN = ["village", "town"];      // ground with a bed to be had for the night
@@ -1190,7 +1259,8 @@ function forceEra(f){                          // its own era (a map force may n
   return evEraOf(DATA.events || {}, curMap().period || baseMap().period, { era: f.era || (base && base.era) || null });
 }
 const eventsOn = f => f.events !== false;
-const conditionsOf = f => [((f.shortFood && !f.huntFed) || f.packsNight) && "hungry", f.unpaid && "unpaid"].filter(Boolean);
+const hungryNow = f => (f.shortFood || f.supHungry) && !f.huntFed;   // the GM's word, or its rations run out
+const conditionsOf = f => [(hungryNow(f) || f.packsNight) && "hungry", f.unpaid && "unpaid"].filter(Boolean);
 function eventsNight(f){                      // the night's desertion, straggling, injuries, horses and incident -> fatigue steps added
   const EV = DATA.events, era = EV && eventsOn(f) ? forceEra(f) : null;
   if (!era || !EV.eras[era]) return 0;
@@ -1237,7 +1307,7 @@ function nightHard(w, kind){                  // the night was harder than the s
 }
 function healthNight(f, today, camp){         // the sick get better or worse; once a week, the outbreak roll
   const kind = camp ? camp.kind : null, hyg = campHygiene(f.hygiene || null, kind);
-  const ctx = { care: campCare(kind), marched: (f.marched || 0) > 0, wet_cold: nightHard(today.w, kind), filth: hyg === "poor", fresh: (f.noFresh || 0) < DZ.week_days,
+  const ctx = { care: campCare(kind, f), marched: (f.marched || 0) > 0, wet_cold: nightHard(today.w, kind), filth: hyg === "poor", fresh: (f.noFresh || 0) < DZ.week_days,
     leech: leechBonus(bestSkill([f], "leechcraft")[0]), low: today.w.low, shelter: WXD.shelter[kind || "none"] };
   namedNight(f, ctx, f.day % DZ.week_days === 0 ? weekFactorsFor(f, kind, hyg) : null);
   xpNight(f, ctx.wet_cold);
@@ -1318,7 +1388,7 @@ function xpNight(f, wetCold){                 // experience: a night served for 
     }
     xpServe(n.pid, 1);                                     // a day served
     if (fedByArmy(f)) xpArmy(n.pid, !!f.unpaid);           // and his army's pay, or arrears
-    if ((f.shortFood && !f.huntFed) || f.packsNight || wetCold || hasCases(n)) xpMark(n.pid, "hard", 1);   // a hard night: wear (ageing)
+    if (hungryNow(f) || f.packsNight || f.thirsty || wetCold || hasCases(n)) xpMark(n.pid, "hard", 1);   // a hard night: wear (ageing)
     strainNight(f, n);
     if (DATA.languages) amongNight(f, n);
   }
@@ -1796,6 +1866,7 @@ function renderHealth(f){
   $("#chk-withdraw").checked = !!f.withdrawing;
   $("#chk-named-acc").checked = !!f.namedAccidents;
   $("#chk-hungry").checked = !!f.shortFood;
+  if (DATA.supplies) $("#supply-note").innerHTML = supplyHtml(f);
   $("#chk-inline").checked = !!f.inLine;
   $("#chk-riskford").checked = !!f.riskFord;
   $("#chk-hunt").checked = !!f.hunt;
@@ -2109,6 +2180,7 @@ function applyFieldResult(){                 // a battle fought on the field map
   for (const [id, x] of Object.entries(r.forces)){
     const f = S.forces[r.mapId].find(o => o.id === +id); if (!f) continue;
     f.men = Math.max(0, f.men - x.lost);
+    if (supOf(f)){ if (x.ammo !== undefined && x.ammo !== null) f.sup.ammo = x.ammo; f.newWounded = (f.newWounded || 0) + x.cases.length }   // ammunition spent; the wounded draw on its medical stores
     const h = healthOf(f);
     h.cases.push(...x.cases);
     for (const k of Object.keys(h.immune)) h.immune[k] = Math.min(h.immune[k], f.men);
@@ -2215,6 +2287,13 @@ function init(){
   $("#chk-hunt").onchange = e => { const f = selForce(); if (f){ f.hunt = e.target.checked; render() } };
   $("#chk-inline").onchange = e => { const f = selForce(); if (f){ f.inLine = e.target.checked; render() } };
   $("#chk-hungry").onchange = e => { const f = selForce(); if (f){ f.shortFood = e.target.checked; render() } };
+  $("#supply-note").onclick = e => {
+    const f = selForce(), b = e.target.closest("button"); if (!f || !b) return;
+    if (b.id === "btn-sup-depot") refillForce(f, "depot");
+    else if (b.id === "btn-sup-train") refillForce(f, "train");
+    else if (b.id === "btn-sup-buy") buyRations(f);
+    save(); render();
+  };
   $("#chk-unpaid").onchange = e => { const f = selForce(); if (f){ f.unpaid = e.target.checked; render() } };
   $("#chk-named-acc").onchange = e => { const f = selForce(); if (f){ f.namedAccidents = e.target.checked; render() } };
   $("#chk-plague").onchange = e => { S.plague[S.mapId] = e.target.checked; render() };
@@ -2234,7 +2313,7 @@ function init(){
   };
   const sendField = (p, battlefield) => {    // the fight on the field map: on open ground the GM splits each force into units; on a battlefield they stand as drawn up
     const dfd = byId(p.defender), m = curMap(), today = dayWeather(p.day);
-    const brief = (o, role) => { const c = campHere(o); return { id: o.id, name: o.name, side: o.side, type: o.type, men: fitOf(o).fit, role, care: campCare(c ? c.kind : null), camp: c ? c.kind : null } };
+    const brief = (o, role) => { const c = campHere(o); return { id: o.id, name: o.name, side: o.side, type: o.type, men: fitOf(o).fit, role, care: campCare(c ? c.kind : null, o), camp: c ? c.kind : null, ammo: supOf(o)?.ammo ?? 1 } };
     const forces = [brief(dfd, "defender"), ...p.allies.map(byId).map(o => brief(o, "ally")), ...p.attackers.map(byId).map(o => brief(o, "attacker"))];
     const st = campStatus(dfd, p), lay = st.camp && WK.camps[st.camp.kind].layout;   // the camp's works, as far as they are built
     const camp = lay ? { kind: st.camp.kind, frac: st.done === null ? null : st.done / (st.camp.labour || 1), hauled: !nearWoods(m, dfd.pos), party: columnOf(dfd).length > 1 ? colType(dfd) : null } : null;

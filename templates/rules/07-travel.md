@@ -222,6 +222,30 @@ tenth. When the team's side chases a beaten enemy on the field map, the prisoner
 pursuit are offered to the team, as many as the GM will put in its charge. (A postwar report credited the US Army's German-speaking
 interrogators, the Ritchie Boys, with nearly 60% of the credible intelligence gathered in Europe.)
 
+## Supplies {#supplies}
+
+A force carries what it needs between fights: **ammunition** (a share of its full loads),
+**rations** (days a man carries), **water** (litres a man) and **medical stores**:
+
+{{table:supplies}}
+
+**Rations.** A day its army does not feed it, and it has not foraged or hunted its food, it eats a
+day's rations; with none left it goes hungry (desertion and straggling run higher, and its named
+men have a hard night). A Union quartermaster reckoned that of eight days issued, hardly five could
+be counted on. **Water.** By a river, lake, ford, marsh, bridge, village or town, or in rain, it
+fills up; elsewhere each man needs {{sp_cool}} L on a cool day, {{sp_warm}} L on a warm one, {{sp_hot}} L in
+heat and {{sp_vhot}} L in great heat; short of it, the force is thirsty: a step more fatigue and a
+hard night. **Medical stores** serve {{sp_cases}} wounded or sick for each hundred men; each new
+wounded man draws one and each sick man a seventh a day; with none left its sick and wounded are
+cared for a step worse in camp. **Ammunition** goes into a battle on the field map as its share of a
+load, and what is left comes back.
+
+It refills everything at its army's **depot** (where it started on the map, or a place marked a
+depot of its side), draws from its **baggage train** in the same hex (the train carries
+{{sp_train_rations}} days' rations, {{sp_train_ammo}} loads of ammunition and {{sp_train_med}} fills of medical
+stores for {{sp_serves}} men, and a larger force takes more of it), and where its army does not feed it
+its named men may **buy** a day's rations for every man in a village or town at their army's keep.
+
 ## Camps {#camps}
 
 At the end of the march a force makes camp:

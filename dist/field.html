@@ -5717,6 +5717,7 @@ function next(){
   if (S.phase === "over") return;
   if (S.phase === "setup"){
     S.aiMemory = [null, null]; S.held = { side: null, n: 0 }; S.story = []; S.commits = [];
+    forceAmmo();
     const r = beginBattle(T());
     newMove();
     const staged = stagesNote(r.stages);
@@ -6186,7 +6187,24 @@ function sideAfter(k){
   const ev = S.evac?.[k] ? ` Medevac: ${FD.units.aftermath.medevac.kinds[S.evac[k]].name.toLowerCase()}.` : "";
   return `${S.sides[k]}: ${t.killed} killed${left}, ${t.died} died of their wounds before help came; ${carried}.${ev}${chased}`;
 }
-function travelResult(){                          // per travel-map force: {killed, left, died, lost, cases}
+function forceAmmo(){                              // units of a travel-map force short of ammunition start the battle with its share of a load
+  for (const u of S.units){
+    const f = forceOf(u), share = f?.ammo;
+    if (share === undefined || share >= 1 || u.ammo !== undefined) continue;
+    const full = ammoFull(u);
+    if (full !== null) u.ammo = Math.max(0, Math.round(full * share));
+  }
+}
+function ammoShares(){                             // per travel-map force: the share of a full load its units have left (by men), or null where none counts
+  const t = {};
+  afterUnits().forEach(u => {
+    const f = forceOf(u), full = ammoFull(u); if (!f || full === null) return;
+    const x = (t[f.id] ??= { left: 0, of: 0 }), w = Math.max(1, u.men || 0);
+    x.left += w * fireLeft(u) / full; x.of += w;
+  });
+  return Object.fromEntries(Object.entries(t).map(([id, x]) => [id, x.of ? Math.round(x.left / x.of * 1000) / 1000 : null]));
+}
+function travelResult(){                          // per travel-map force: {killed, left, died, lost, cases, ammo}
   const out = {};
   afterUnits().forEach((u, i) => {
     const f = forceOf(u); if (!f) return;
@@ -6196,6 +6214,8 @@ function travelResult(){                          // per travel-map force: {kill
     x.killed += a.killed; x.left += a.left; x.died += a.died; x.cases.push(...a.cases); x.taken = (x.taken || 0) + (a.taken || 0);
   });
   for (const x of Object.values(out)) x.lost = x.killed + x.left + x.died + x.taken;
+  const am = ammoShares();
+  for (const [id, x] of Object.entries(out)) if (am[id] !== undefined) x.ammo = am[id];
   return { battle: S.from.battle, mapId: S.from.mapId, place: S.from.place, start: S.from.start || null, minutes: Math.max(0, S.exchange - 1), forces: out };
 }
 function backToTravel(){

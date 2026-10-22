@@ -1102,6 +1102,46 @@ function ptClient(fid, standing, roll = null, follow = true){   // {standing, re
   return { standing: Math.floor(standing / 2), result: how };
 }
 
+/* Supplies between fights (as gravewounds/supplies.py; data TD.supplies): ammunition (a share of
+   full loads), rations (days a man), water (litres a man), medical stores (a share). */
+const SPD = () => TD.supplies || {};
+const spStart = eid => ({ ammo: 1, rations: SPD().rations.carried[eid] ?? 3, water: SPD().water.carried[eid] ?? 1, med: 1 });
+const spWaterNeed = high => SPD().water.need.find(b => high <= b.upto).l;
+const spR = x => Math.round(x * 1000) / 1000;
+function spDay(eid, sup, fed, foraged, waterHere, high, men, wounded, sick){   // {sup, hungry, thirsty, short}
+  const S = SPD(), out = { ...sup };
+  let hungry = false;
+  if (!fed && !foraged){
+    if (out.rations <= 0) hungry = true;
+    out.rations = Math.max(0, out.rations - 1);
+  }
+  let thirsty = false;
+  if (waterHere) out.water = S.water.carried[eid] ?? 1;
+  else {
+    const left = out.water - spWaterNeed(high);
+    thirsty = left < 0;
+    out.water = spR(Math.max(0, left));
+  }
+  const M = S.medical, cap = Math.max(1, men) / 100 * M.cases;
+  out.med = spR(Math.max(0, out.med - (wounded + sick * M.sick_day) / cap));
+  return { sup: out, hungry, thirsty, short: out.med <= 0 };
+}
+function spRefill(eid, sup, men, stock = null){   // {sup, stock}: filled at a depot (no stock), or from a train's stock as far as it goes
+  const full = spStart(eid), out = { ...sup };
+  if (!stock){ Object.assign(out, { ammo: 1, rations: full.rations, med: 1 }); return { sup: out, stock: null } }
+  const st = { ...stock }, share = Math.max(1, men) / SPD().train.serves;
+  for (const [k, cap] of [["rations", full.rations], ["ammo", 1], ["med", 1]]){
+    const key = k === "med" ? "medical" : k, want = cap - out[k];
+    if (want <= 0 || st[key] <= 0) continue;
+    const got = Math.min(want, st[key] / share);
+    out[k] = spR(out[k] + got);
+    st[key] = spR(st[key] - got * share);
+  }
+  return { sup: out, stock: st };
+}
+const spTrainStock = () => ({ rations: SPD().train.rations, ammo: SPD().train.ammo, medical: SPD().train.medical });
+const spMedicalShort = sup => (sup.med ?? 1) <= 0;
+
 /* Character generation: same rules as gravewounds/team.py, from the team bundle TD that build.py
    writes into the team builder page (TD.era: the era's tables; TD.ranges: old-wound location
    ranges by region and weapon; TD.locs, TD.weapons, TD.kits). The dice are taken in the same

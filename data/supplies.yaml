@@ -1,0 +1,50 @@
+# Supplies a force carries between fights on the travel map (rules in gravewounds/supplies.py,
+# repeated in templates/ranks.js; research in the project doc "supplies-research"). A force
+# carries ammunition (a share of full loads), rations (days a man carries), water (litres a man)
+# and medical stores (a share of what serves its own sick and wounded).
+#
+# Rations: a day the army does not feed the force, and it neither foraged nor hunted its food,
+# eats a day; with none left it goes hungry. Days carried on the man (Ingalls, 1863: of 8 days
+# issued, hardly 5 can be counted on; Henry V's men were ordered to carry 8 for what became a
+# 17-day march; Napoleon 4 days' bread; Grant 3 in the haversack in 1864; the AIF 24 hours and an
+# emergency ration in 1915; a German iron ration in 1942; the Australians in Vietnam 5, the US 3).
+rations:
+  carried: {medieval: 4, thirty_years: 3, horse_musket: 4, crimea: 3, civil_war: 3, plains_nations: 3, wwi: 2, wwii: 2, korea: 3, vietnam: 3, modern: 3}
+  carried_approx: [medieval, thirty_years, plains_nations, korea, modern]
+
+# Water: litres a man carries (the French petit bidon 0.93 L, 1788; a wooden canteen about 1.4 L;
+# the US M1858 3 pints and the M1910 1 quart; in Vietnam 3 or 4 quarts), and what a marching man
+# needs a day by the day's high (TB MED 507: about ¾ quart an hour moderate work in heat, at most
+# 12 quarts a day; the Afrika Korps 5 pints a day at rest, 3 in battle, drinking and cooking).
+# A force by a river, lake, ford, marsh, bridge, village or town, or in rain, fills up; without
+# water for the day it is thirsty: a step more fatigue, and a hard night.
+water:
+  carried: {medieval: 1, thirty_years: 1, horse_musket: 1.4, crimea: 1.1, civil_war: 1.4, plains_nations: 1, wwi: 1.1, wwii: 0.95, korea: 0.95, vietnam: 3, modern: 3}
+  carried_approx: [medieval, thirty_years, crimea, plains_nations, wwi, modern]
+  need: [{upto: 15, l: 2}, {upto: 25, l: 3}, {upto: 32, l: 5}, {upto: 99, l: 8}]
+  need_approx: true
+  sources: [river, lake, ford, marsh, bridge, village, town]
+  thirst_fatigue: 1
+
+# Medical stores: enough for `cases` wounded or sick for each 100 men (a WWII aid man's kit held
+# 8 small dressings and 16 bandages; no per-man rule of thumb was found). Each new wounded man
+# draws one, each sick man a seventh a day; with none left, the force's care in camp is a step worse.
+medical:
+  cases: 10
+  sick_day: 0.143
+  approx: true
+
+# Refilling: at a depot of its army (its starting place on the map, or a place marked a depot of
+# its side) everything is filled. A baggage train (a force of wagons of its side in the same hex)
+# carries `train` for a body of `serves` men: Grant's wagons 10 days' rations in 1864, Sherman's
+# 200 rounds a man against 40-60 carried (about 3 full loads), the 1879 battalion reserve 30
+# rounds a man against 70; a force draws its own share and the train's stock falls by it.
+train:
+  serves: 1000
+  rations: 10
+  ammo: 2
+  medical: 2
+  approx: true
+
+# Buying rations in a village or town where the army does not feed it: the named men pay a day's
+# food (their army's keep) for each man for each day, from their purses.

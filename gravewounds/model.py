@@ -120,6 +120,7 @@ class Data:
     patrons: dict = field(default_factory=dict)     # standing, favours, a patron's fate (data/patrons.yaml)
     uses: dict = field(default_factory=dict)        # skills that do things on the travel map (data/uses.yaml)
     weights: dict = field(default_factory=dict)     # item weights, coin, pack animals (data/weights.yaml)
+    supplies: dict = field(default_factory=dict)    # what a force carries between fights (data/supplies.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -187,6 +188,7 @@ def load(root: str | Path = "data") -> Data:
     patrons = _optional(root / "patrons.yaml", {})
     uses = _optional(root / "uses.yaml", {})
     weights = _optional(root / "weights.yaml", {})
+    supplies = _optional(root / "supplies.yaml", {})
 
     data = Data(
         root=root,
@@ -229,6 +231,7 @@ def load(root: str | Path = "data") -> Data:
         patrons=patrons,
         uses=uses,
         weights=weights,
+        supplies=supplies,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -562,6 +565,8 @@ def validate(d: Data) -> None:
         errors += _ranks_errors(d)
     if d.weights:
         errors += _weights_errors(d)
+    if d.supplies:
+        errors += _supplies_errors(d)
     if d.ageing:
         AG, stats = d.ageing, {"str", "agi", "end", "wits", "nerve", "pres"}
         fr = [b.get("from") for b in AG.get("decline", [])]
@@ -1667,6 +1672,24 @@ def _ranks_errors(d: Data) -> list[str]:
             errors.append(f"{where}: loot for unknown era {eid}")
         if not 0 < L.get("keep", 1) <= 1:
             errors.append(f"{where}: loot {eid} keep must be 0-1")
+    return errors
+
+
+def _supplies_errors(d: Data) -> list[str]:
+    """data/supplies.yaml: rations and water for every era, rising need bands, known water
+    terrain, positive medical and train figures."""
+    S, where, errors = d.supplies, "supplies.yaml", []
+    for k in ("rations", "water"):
+        c = (S.get(k) or {}).get("carried") or {}
+        if set(c) != set(d.teams) or any(not v > 0 for v in c.values()):
+            errors.append(f"{where}: {k} carried needs every era, each over 0")
+    ups = [b.get("upto") for b in (S.get("water") or {}).get("need", [])]
+    if not ups or ups != sorted(ups):
+        errors.append(f"{where}: water need bands must rise")
+    if set((S.get("water") or {}).get("sources", [])) - set(d.terrain["terrain"]):
+        errors.append(f"{where}: water sources must be known terrain")
+    if not all((S.get(k) or {}).get(x, 0) > 0 for k, x in (("medical", "cases"), ("train", "serves"), ("train", "rations"))):
+        errors.append(f"{where}: medical cases and the train's figures must be over 0")
     return errors
 
 

@@ -82,6 +82,11 @@ to duty:
 
 {{table:treatment}}
 
+Except treatment with his unit, he is away from the force for those days: the travel map counts
+them off, and he comes back to it when they are done. If the team's leader is killed, each of his
+men takes the Strain of it ({{st_leader}}), twice that if he was a trusted leader (Command
+{{st_trusted}} or more): a design estimate, since no study measured it.
+
 Korea, Vietnam and the later wars rotated men home at the end of a tour: Strain gone, the Toll
 cut to a quarter. For the Plains nations, a homecoming that welcomes and honours a man halves it.
 A man who ends a campaign with his Toll at or above his Nerve, or who broke down, may carry a
