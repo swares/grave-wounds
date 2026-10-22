@@ -193,14 +193,16 @@ When an item is done, delete it here and note it in the pull request that closes
     included.
 - **Skill checks, first cut.** The team builder rolls any check, opposed or not, and haggles at
   the price list. Still left out:
-  - the uses are words for the GM: Find a billet does not waive the night's keep on the travel
-    map, Hunt or gather does not feed a man, Mend kit has no kit that wears out, Find the way
-    has no getting lost on the travel map (only at night on the field map);
+  - billets, hunting for the pot and finding the way now work on the travel map (data/uses.yaml),
+    but Mend kit has no kit that wears out, and getting lost at night on the travel map is not
+    rolled (only fog, snow and storms, and off the road);
   - the roller and the travel map have no checks panel of their own (only their built-in rolls:
     first aid, foraging, surprise);
-  - no difficulty from wounds, fatigue or hunger is added to a check out of a fight (the GM sets
-    it);
-  - haggling is only for buying: selling loot, and hiring a replacement, are at the list price.
+  - a check out of a fight takes the roller's last word on the man (pain, blood, wounds,
+    fatigue, sickness, Strain), so a man not seen in the roller since he healed still carries it
+    until the roller is opened again;
+  - haggling covers buying, selling loot and hiring, but not selling anything else (no
+    inventory of goods is kept).
 - **Patrons, first cut.** Standing per patron, favours, events, rival claims, the patron's fate
   and his clients' lot. Still left out: the fate chances and the Standing moves are design
   estimates; British commission prices (the 1837 regulation table, £450 an ensigncy to £4,500 a
@@ -279,16 +281,14 @@ When an item is done, delete it here and note it in the pull request that closes
   - the field map's battles tick nothing: a hero's hits, parries and first aid there are not
     counted (his fight comes back to the roller as wounds, not as rolls), so a man who fights
     only on the field map learns only from time served;
-  - a term served in play gives the term's skill gains and age, but does not roll the
-    career's event table (its +15 to a skill and its story line) or the career's wound chance,
-    as a term at creation does;
   - characteristics never change in play, and age brings no decline;
 - **Training, first cut.** Masters for hire, teammates and drill in camp tick a skill. Still left
   out: the masters' fees are estimates apart from riding lessons (London, 1879), and a master's
   skill is always 60; a teammate who teaches is not stopped from working that week (the page says
   he gives it up, but does not hold him to it); drill ticks only the skill of the weapon a man
-  carries in the roller, and only for named men; there is no apprenticeship, school or
-  officer-cadet course that runs for months.
+  carries in the roller, and only for named men; courses (data/training.yaml `courses`) are a
+  set of examples with estimated gains and fees, the man is not missing from the team while away,
+  and an apprenticeship is a year of its seven.
 - **Women under arms, first cut.** Women serve as cantinières with the French in the Crimea, in the Civil War (disguised), the Soviet
   Union of 1941-45, Vietnam (the ARVN, the North and the Viet Cong) and the later wars (the US,
   Britain and Russia), chosen or rolled at the army's share. Still left out: the earlier eras

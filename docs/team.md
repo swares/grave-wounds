@@ -330,6 +330,18 @@ forages fresh food on the march; **Watch** makes his force harder to surprise, a
 **Stealth** makes the force he attacks with likelier to surprise its enemy (see
 [combat.md](combat.md), [travel.md](travel.md) and [works.md](works.md), *Surprise*).
 
+## Characters in play
+
+A term served in play rolls the career's event and wound chance as at creation (`experience.py`
+`_term_lived`, `team.js` `termLived`). The roller writes each team-builder fighter's penalties to
+the shared store (`xp.js` `xpBody`); the skill checks and job terms take them off (`bodyOf`,
+`feltBody`), or his Strain alone. Haggling sells loot (`haggle(..., selling)`) and hires
+replacements. Training adds courses (`training.py` `courses_for`, `course`; `ranks.js`
+`trCourses`, `trCourse`): weeks away, gains, service, and an officer's course opens its rank to
+`rkEligible`. A teammate who teaches loses the week from his next job term. On the travel map,
+billets, hunting for the pot and finding the way (`data/uses.yaml`) are rolled by the best named
+man.
+
 ## Period money
 
 `templates/purse.js` holds the coin helpers every page shares (as `gravewounds/money.py`):

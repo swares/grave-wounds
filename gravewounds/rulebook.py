@@ -105,10 +105,13 @@ def _money_tables(d: Data) -> dict:
 
 
 def _talk_values(d: Data) -> dict:
-    """The tongues' and patrons' numbers the chapters quote."""
-    LG, PT = d.languages or {}, d.patrons or {}
+    """The tongues', patrons', haggling's and march skills' numbers the chapters quote."""
+    LG, PT, U = d.languages or {}, d.patrons or {}, d.uses or {}
     tongues = LG.get("tongues", {})
-    return {"lg_native": LG.get("native", 90), "lg_max": LG.get("max", 85), "lg_book": LG.get("phrase_book", 25),
+    sell = ((d.checks or {}).get("haggle") or {}).get("sell") or {"win": 0.1, "critical": 0.25, "fumble": -0.25}
+    return {"sell_win": round(sell["win"] * 100), "sell_crit": round(sell["critical"] * 100), "sell_fumble": round(-sell["fumble"] * 100),
+            "hunt_deer": (U.get("hunt") or {}).get("deer", 5), "hunt_buffalo": (U.get("hunt") or {}).get("buffalo", 40),
+            "way_slow": (U.get("way") or {}).get("slow", 1.4),"lg_native": LG.get("native", 90), "lg_max": LG.get("max", 85), "lg_book": LG.get("phrase_book", 25),
             "lg_pidgin": (tongues.get("bamboo_english") or {}).get("cap", 35), "lg_sign": (tongues.get("plains_sign") or {}).get("cap", 75),
             "pt_start": PT.get("start", 30), "pt_persuade": PT.get("persuade_div", 10), "pt_offended": PT.get("offended", -10),
             "pt_promotion": PT.get("promotion_bonus", 20), "pt_season": (PT.get("events", {}).get("season") or {}).get("add", 2)}
@@ -275,6 +278,13 @@ def tables(d: Data) -> dict:
         out["tongue_bands"] = _md(["Figure", "Reads as"], _band_rows(bands))
     if d.equipment:
         out.update(_money_tables(d))
+    if (d.training or {}).get("courses"):
+        names = {e: d.teams[e]["name"].split(" (")[0] for e in d.teams}
+        rows = []
+        for k in d.training["courses"]:
+            gains = ", ".join(f"{s} +{n}" for s, n in k.get("gains", {}).items())
+            rows.append([k["name"], ", ".join(names[e] for e in k["eras"]), f"{k['weeks']} weeks", gains + (f"; opens {k['rank'].replace('_', ' ')}" if k.get("rank") else "")])
+        out["courses"] = _md(["Course", "Eras", "Away", "Gains"], rows)
     if d.patrons:
         PT = d.patrons
         pb = PT["bands"]

@@ -41,3 +41,42 @@ drill:
   nco: 50
   difficulty: ordinary
   approx: true
+
+# Courses (`courses`): weeks away at a school, a camp, a master's or a knight's, for a fee (Days,
+# from his purse; 0 where board is found), then set gains to his skills; the weeks count as
+# service where `served`; an officer's course (`rank`) makes him eligible for that rank at the
+# next vacancy without the years or the rank below (rkEligible). Course lengths from the project
+# doc "skills-uses-research"; the gains and the fees are design estimates (approx).
+courses:
+  - {id: apprentice, name: "A year as an apprentice", eras: [medieval, thirty_years, horse_musket, crimea, civil_war], weeks: 52, fee: 0,
+     gains: {craft: 10, letters: 2}, places: [town, city], note: "Craft apprenticeships ran seven years (17th-century London); this is one of them", approx: true}
+  - {id: squire, name: "A year in a knight's household (page or squire)", eras: [medieval], weeks: 52, fee: 0,
+     gains: {blade: 5, ride: 5, command: 3, letters: 2}, note: "From page to knight took eight to fourteen years", approx: true}
+  - {id: sandhurst, name: "Royal Military College, Sandhurst (about 18 months)", eras: [horse_musket, crimea], regions: [british_pen, british_rev, british], weeks: 78, fee: 100,
+     gains: {command: 10, letters: 5, gunnery: 3}, rank: ensign, served: true, places: [town, city], note: "The fee is an estimate; no figure was found", approx: true,
+     source: "https://en.wikipedia.org/wiki/Royal_Military_College,_Sandhurst"}
+  - {id: camp_instruction, name: "A camp of instruction (about two weeks of drill)", eras: [civil_war], weeks: 2, fee: 0,
+     gains: {rifle: 5, bayonet: 3}, served: true, places: [camp], approx: true}
+  - {id: cadet_battalion, name: "An officer cadet battalion (4½ months, from 1916)", eras: [wwi], regions: [british], weeks: 19, fee: 0,
+     gains: {command: 10, letters: 3, signals: 2}, rank: lieutenant, served: true, places: [camp, city],
+     source: "https://en.wikipedia.org/wiki/Temporary_gentlemen"}
+  - {id: ocs_wwii, name: "Officer Candidate School (17 weeks)", eras: [wwii], regions: [us, us_pacific], weeks: 17, fee: 0,
+     gains: {command: 10, letters: 3, signals: 2}, rank: lieutenant, served: true, places: [camp, city],
+     source: "https://en.wikipedia.org/wiki/Officer_Candidate_School_(United_States_Army)"}
+  - {id: ocs_korea, name: "Officer Candidate School (22 weeks)", eras: [korea], regions: [us_1950, us_1952], weeks: 22, fee: 0,
+     gains: {command: 10, letters: 3, signals: 2}, rank: lieutenant, served: true, places: [camp, city],
+     source: "https://en.wikipedia.org/wiki/Officer_Candidate_School_(United_States_Army)"}
+  - {id: ocs_vietnam, name: "Officer Candidate School (23 weeks)", eras: [vietnam], regions: [us_army, us_marines], weeks: 23, fee: 0,
+     gains: {command: 10, letters: 3, signals: 2}, rank: lieutenant, served: true, places: [camp, city],
+     source: "https://en.wikipedia.org/wiki/Officer_Candidate_School_(United_States_Army)"}
+  - {id: ocs_modern, name: "Officer Candidate School (12 weeks)", eras: [modern], regions: [us_1991, us_1993, us_2005], weeks: 12, fee: 0,
+     gains: {command: 10, letters: 3, signals: 2}, rank: lieutenant, served: true, places: [camp, city],
+     source: "https://en.wikipedia.org/wiki/Officer_Candidate_School_(United_States_Army)"}
+  - {id: rmas, name: "Royal Military Academy Sandhurst (44 weeks)", eras: [modern], regions: [uk_1982, uk_2005], weeks: 44, fee: 0,
+     gains: {command: 12, letters: 3, signals: 2}, rank: lieutenant, served: true, places: [camp, city],
+     source: "https://www.army.mod.uk/support-and-training/our-schools-and-colleges/rma-sandhurst/officer-training"}
+  - {id: ranger, name: "Ranger School (about 9 weeks)", eras: [korea, vietnam, modern], regions: [us_1950, us_1952, us_army, us_marines, us_1991, us_1993, us_2005], weeks: 9, fee: 0,
+     gains: {fieldcraft: 8, stealth: 5, command: 3}, served: true, places: [camp], source: "https://taskandpurpose.com/military-life/army-ranger-school/"}
+  - {id: sfqc, name: "Special Forces Qualification Course (a year or more)", eras: [vietnam, modern], regions: [us_army, us_1991, us_1993, us_2005], weeks: 56, fee: 0,
+     gains: {fieldcraft: 8, signals: 8, leechcraft: 5, stealth: 5}, served: true, places: [camp],
+     source: "https://en.wikipedia.org/wiki/United_States_Army_Special_Forces_selection_and_training"}

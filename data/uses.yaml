@@ -1,0 +1,40 @@
+# Skills that do things on the travel map (templates/travel.html; research in the project doc
+# "skills-uses-research"). The best named man in the force rolls.
+#
+# billet - taking quarters in a village or town (the camp "Quartered") for a force its army does
+#          not feed: Persuade (capped by the local tongue). Fail, and no one will take them in.
+#          A force its army feeds is billeted by authority (the Mutiny Act's inns, France's
+#          billets de logement). Quartered, its named men pay no bed; where the host also fed
+#          his soldiers (`feeds`: the Thirty Years' War, a 1639 Leipzig ordinance's soup, bread,
+#          cheese and beer), no food either.
+# hunt   - "Hunt for the pot": at nightfall in game country, Fieldcraft. A deer feeds `deer` men
+#          for a day (about 52 lb of meat at Lewis and Clark's 9 lb a man), a buffalo `buffalo`
+#          (400 lb from a cow, on the maps where buffalo ran); a critical, twice as many. If it
+#          feeds the whole force it eats tonight however short of food, and the meat is fresh.
+# way    - finding the way: off the road, or in fog, snow or a storm, the guide's Fieldcraft once
+#          a day (Hard in fog, a blizzard or a sandstorm). Fail, and the day's march goes at
+#          1/`slow` (night navigation ran about 40% slower in a 1979 US Army study); fumble, and
+#          an hour is lost going the wrong way first.
+billet:
+  skill: persuade
+  difficulty: ordinary
+  feeds: [thirty_years]
+  source: "https://www.lwl.org/westfaelischer-friede-download/wfe-t/wfe-txt1-31.htm"
+hunt:
+  skill: fieldcraft
+  difficulty: ordinary
+  terrain: [open, heath, forest, hills, marsh]
+  deer: 5
+  buffalo: 40
+  buffalo_maps: [phil-kearny-1866]
+  source: "https://lewisandclarktrail.com/hunting.htm"
+  approx: true
+way:
+  skill: fieldcraft
+  difficulty: ordinary
+  hard_in: [fog, blizzard, sandstorm]
+  when: [fog, snow, heavy_snow, blizzard, storm, sandstorm]
+  slow: 1.4
+  lost_hours: 1
+  source: "https://apps.dtic.mil/sti/pdfs/ADA071104.pdf"
+  approx: true

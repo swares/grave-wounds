@@ -225,6 +225,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <div style="flex:1 1 140px;align-self:end"><label title="It is falling back: straggling, desertion and injuries run higher"><input type="checkbox" id="chk-withdraw"> Withdrawing</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Short of food: desertion runs far higher (Nuremberg 1632, about 15 times) and straggling about 5 times"><input type="checkbox" id="chk-hungry"> Short of food</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Pay in arrears: desertion runs about 3 times higher"><input type="checkbox" id="chk-unpaid"> Pay in arrears</label></div>
+        <div style="flex:1 1 140px;align-self:end"><label title="Each evening in game country its best named man hunts (Fieldcraft): a deer feeds 5 men, a buffalo 40"><input type="checkbox" id="chk-hunt"> Hunt for the pot</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="It will wade a flooded ford rather than wait (not with wagons or guns): every named man risks being swept off"><input type="checkbox" id="chk-riskford"> Risk a flooded ford</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="In contact with the enemy: holding a line, under fire, besieging or besieged. Each day its named men take a day's Strain; a day camped out of the line is rest"><input type="checkbox" id="chk-inline"> In the line</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Its named men (from the wound roller) take the era's chance of an injury each night too"><input type="checkbox" id="chk-named-acc"> Named men can be injured</label></div>
@@ -1008,6 +1009,58 @@ function foraged(f){                          // a named man's Fieldcraft roll f
   if (ok) f.log.unshift(`${dateText(f.day, true)}: ${who} foraged fresh food on the march (Fieldcraft ${target}${why}, rolled ${roll}).`);
   return ok;
 }
+/* Skills that do things (data DATA.uses): billets in a village or town, hunting for the pot, and
+   finding the way off the road or in bad weather. The best named man in the force rolls; a skill
+   used well is ticked. */
+const USES = () => DATA.uses || {};
+function bestTalk(f, skill){                   // [figure, name, pid]: the best named man at a talk skill, capped by the local tongue
+  const t = localTongue();
+  let best = [0, null, null];
+  for (const [, n] of namedWith(readNamed(), f)){
+    if (!ableNow(n)) continue;
+    let v = (n.skills || {})[skill] || 0;
+    if (t && n.tongues) v = lgTalk(v, n.tongues, n.native, t);
+    if (v > best[0]) best = [v, n.name, n.pid || null];
+  }
+  return best;
+}
+function billetCheck(f){                       // null if billeted; else why not (a force its army does not feed must find its own)
+  const U = USES().billet;
+  if (!U || fedByArmy(f) || !namedWith(readNamed(), f).length) return null;
+  const [v, who, pid] = bestTalk(f, U.skill), k = skillCheck(v, U.difficulty, roll100());
+  if (k.success){ xpTick(pid, U.skill, "finding billets"); f.log.unshift(`${dateText(f.day, true)}: ${who} finds them billets (Persuade ${k.target}, rolled ${k.roll}).`); return null }
+  return `no one will take them in (${who || "no one"}'s Persuade ${k.target}, rolled ${k.roll})`;
+}
+const hostFeeds = (camp, era) => !!camp && camp.kind === "quartered" && (USES().billet?.feeds || []).includes(era);
+function huntNight(f){                         // Hunt for the pot: how many men the game feeds tonight
+  const U = USES().hunt;
+  if (!U || !f.hunt || !U.terrain.includes(terrainAt(curMap(), f.pos).id)) return 0;
+  const [v, who, pid] = bestSkill([f], U.skill);
+  if (!who) return 0;
+  const k = skillCheck(v, U.difficulty, roll100());
+  if (!k.success){ f.log.unshift(`${dateText(f.day, true)}: ${who} hunts and finds nothing (Fieldcraft ${k.target}, rolled ${k.roll}).`); return 0 }
+  xpTick(pid, U.skill, "hunting for the pot");
+  const buffalo = (U.buffalo_maps || []).includes(S.mapId), fed = (buffalo ? U.buffalo : U.deer) * (k.critical ? 2 : 1);
+  f.log.unshift(`${dateText(f.day, true)}: ${who} brings in ${k.critical ? "two " : "a "}${buffalo ? "buffalo" : "deer"} (Fieldcraft ${k.target}, rolled ${k.roll}): meat for ${fed} men.`);
+  return fed;
+}
+function wayToday(f, m){                       // the day's pace for finding the way: 1, or slower when the guide goes astray
+  const U = USES().way;
+  if (!U || !f.path || f.index + 1 >= f.path.length) return 1;
+  if (f.wayDay === f.day) return f.waySlow || 1;
+  f.wayDay = f.day; f.waySlow = 1;
+  const cond = dayWeather(f.day).w.cond, next = terrainAt(m, f.path[f.index + 1]).id;
+  if (!U.when.includes(cond) && ["road", "bridge", "village", "town"].includes(next)) return 1;   // a road through: no need of a guide
+  const [v, who, pid] = bestSkill([f], U.skill);
+  if (!who) return 1;
+  const k = skillCheck(v, U.hard_in.includes(cond) ? "hard" : U.difficulty, roll100());
+  if (k.success){ xpTick(pid, U.skill, "finding the way"); return 1 }
+  f.waySlow = U.slow;
+  let why = `${who} loses the way (Fieldcraft ${k.target}, rolled ${k.roll}): the day's march is slower`;
+  if (k.fumble){ f.used = Math.min(hpdOf(f.day), (f.used || 0) + U.lost_hours); why += `, and an hour is lost going the wrong way` }
+  f.log.unshift(`${dateText(f.day, true)}: ${why}.`);
+  return U.slow;
+}
 function amongNight(f, n){                     // a night among the people of the map: a season of it ticks their tongue
   const t = localTongue();
   if (!t || !n.pid || !n.tongues || n.native === t) return;
@@ -1029,27 +1082,32 @@ function endDay(f){
   const fresh = freshToday(forage, campedAll, !!f.freshIssued, found);
   const before_ = f.noFresh || 0;
   f.noFresh = fresh ? 0 : before_ + 1;              // days without fresh food, for scurvy
-  keepNight(f, camp, before_);
+  const fed = huntNight(f);
+  f.huntFed = fed >= (f.men || 1);                   // the game feeds the whole force tonight
+  if (f.huntFed && !fresh) f.noFresh = 0;
+  keepNight(f, camp, before_, fed);
   const lostPacks = packsLost(f);
   if (lostPacks){ f.log.unshift(`${dateText(f.day, true)}: the packs were lost with the field: no blankets or rations tonight.`); f.packsNight = true }
   const sore = blisters(f);
   if (sore.length) f.log.unshift(`${dateText(f.day, true)}: ${sore.join("; ")}.`);
   const tire = eventsNight(f) + loadTire(f) + (lostPacks ? 1 : 0);
   healthNight(f, today, camp);
-  f.fatigue = Math.min(L.length - 1, after + tire); f.day += 1; f.used = 0; f.marched = 0; f.packsNight = false;
+  f.fatigue = Math.min(L.length - 1, after + tire); f.day += 1; f.used = 0; f.marched = 0; f.packsNight = false; f.huntFed = false;
 }
 // ----- keep: a force its army does not feed; its named men pay from their purses (purse.js, money.py) -----
 const BED_TERRAIN = ["village", "town"];      // ground with a bed to be had for the night
 const fedByArmy = f => f.fed !== false;
-function keepNight(f, camp, noFreshBefore){   // each named man's food, and a bed in a village or town unless camped
+function keepNight(f, camp, noFreshBefore, hunted = 0){   // each named man's food (none if the host or the hunt feeds him), and a bed in a village or town unless camped
   const all = readNamed(), mine = namedWith(all, f);
   if (!mine.length) return;
   const purses = readPurses(), bedHere = !camp && BED_TERRAIN.includes(terrainAt(curMap(), f.pos).id);
-  let spent = false;
+  let spent = false, meat = hunted;
   for (const [, n] of mine){
     const p = n.pid ? purses[n.pid] : null, k = p ? ((DATA.keep || {})[p.era] || {})[p.region] : null;
     if (fedByArmy(f) || !k){ n.noFresh = f.noFresh; continue }   // fed with the force, or no money of his own to count
-    const pk = payKeep(purseLeft(p), 1, k.food, bedHere ? k.bed : 0);
+    const free = hostFeeds(camp, p.era) || meat > 0;
+    if (!hostFeeds(camp, p.era) && meat > 0) meat -= 1;   // the hunt's meat, a man a share
+    const pk = payKeep(purseLeft(p), 1, free ? 0 : k.food, bedHere ? k.bed : 0);
     if (pk.paid){
       const last = p.ledger[p.ledger.length - 1];
       if (last && last.keep && last.force === `${S.mapId}:${f.id}`){ last.days -= pk.paid; last.keep += 1 }
@@ -1086,7 +1144,7 @@ function forceEra(f){                          // its own era (a map force may n
   return evEraOf(DATA.events || {}, curMap().period || baseMap().period, { era: f.era || (base && base.era) || null });
 }
 const eventsOn = f => f.events !== false;
-const conditionsOf = f => [(f.shortFood || f.packsNight) && "hungry", f.unpaid && "unpaid"].filter(Boolean);
+const conditionsOf = f => [((f.shortFood && !f.huntFed) || f.packsNight) && "hungry", f.unpaid && "unpaid"].filter(Boolean);
 function eventsNight(f){                      // the night's desertion, straggling, injuries, horses and incident -> fatigue steps added
   const EV = DATA.events, era = EV && eventsOn(f) ? forceEra(f) : null;
   if (!era || !EV.eras[era]) return 0;
@@ -1199,7 +1257,7 @@ function xpNight(f, wetCold){                 // experience: a night served for 
   for (const [, n] of mine){
     xpServe(n.pid, 1);                                     // a day served
     if (fedByArmy(f)) xpArmy(n.pid, !!f.unpaid);           // and his army's pay, or arrears
-    if (f.shortFood || f.packsNight || wetCold || hasCases(n)) xpMark(n.pid, "hard", 1);   // a hard night: wear (ageing)
+    if ((f.shortFood && !f.huntFed) || f.packsNight || wetCold || hasCases(n)) xpMark(n.pid, "hard", 1);   // a hard night: wear (ageing)
     strainNight(f, n);
     if (DATA.languages) amongNight(f, n);
   }
@@ -1378,9 +1436,9 @@ function noMarchText(f, col){                 // why a column cannot march at al
 function march(sel, hours){                    // the whole column marches together, at its slowest, within today's marching hours -> {steps, arrived} or {why}
   const f = leaderOf(sel), col = columnOf(f);
   if (!f.path || f.index >= f.path.length - 1) return { why: `${colName(f)} has no route to march.` };
-  const speed = colSpeed(f);
-  if (!speed) return { why: noMarchText(f, col) };
-  const m = curMap(), g = riskGround(f, groundOf(f.day));
+  const m = curMap(), base = colSpeed(f);
+  if (!base) return { why: noMarchText(f, col) };
+  const speed = base / wayToday(f, m), g = riskGround(f, groundOf(f.day));
   if (f.path.slice(f.index + 1).some(h => !passable(m, h, colType(f), g)) && !replan(f))
     return { why: `${f.name} cannot get through today (${groundText(g)}). Wait, or add a waypoint to go round.` };
   const from = f.index, u0 = f.used;
@@ -1552,6 +1610,8 @@ function campCost(sel, kind){                 // a column makes one camp: all it
 function makeCamp(sel, kind){
   const f = leaderOf(sel), col = columnOf(f), r = campCost(f, kind);
   if (r.error){ S.msg = `${colName(f)} cannot make a ${WK.camps[kind].name.toLowerCase()} here: it ${r.error}.`; return }
+  const refused = kind === "quartered" && !r.same ? billetCheck(f) : null;
+  if (refused){ S.msg = `${colName(f)} cannot take quarters: ${refused}.`; f.log.unshift(`${dateText(f.day, true)}: ${refused}.`); return }
   const ev = WK.evening_hours, came = { day: f.day, used: f.used };
   if (f.used >= hpdOf(f.day) + ev - 1e-9) col.forEach(endDay);
   const d0 = f.day, u0 = f.used;
@@ -1677,6 +1737,7 @@ function renderHealth(f){
   $("#chk-hungry").checked = !!f.shortFood;
   $("#chk-inline").checked = !!f.inLine;
   $("#chk-riskford").checked = !!f.riskFord;
+  $("#chk-hunt").checked = !!f.hunt;
   $("#chk-unpaid").checked = !!f.unpaid;
   $("#sel-hyg").innerHTML = opts.map(([v, t]) => `<option value="${v}" ${(f.hygiene || "") === v ? "selected" : ""}>${t}</option>`).join("");
   const hyg = campHygiene(f.hygiene || null, kind), factors = weekFactorsFor(f, kind, hyg);
@@ -2090,6 +2151,7 @@ function init(){
   $("#chk-events").onchange = e => { const f = selForce(); if (f){ f.events = e.target.checked; render() } };
   $("#chk-withdraw").onchange = e => { const f = selForce(); if (f){ f.withdrawing = e.target.checked; render() } };
   $("#chk-riskford").onchange = e => { const f = selForce(); if (f){ f.riskFord = e.target.checked; render() } };
+  $("#chk-hunt").onchange = e => { const f = selForce(); if (f){ f.hunt = e.target.checked; render() } };
   $("#chk-inline").onchange = e => { const f = selForce(); if (f){ f.inLine = e.target.checked; render() } };
   $("#chk-hungry").onchange = e => { const f = selForce(); if (f){ f.shortFood = e.target.checked; render() } };
   $("#chk-unpaid").onchange = e => { const f = selForce(); if (f){ f.unpaid = e.target.checked; render() } };

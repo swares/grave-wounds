@@ -71,6 +71,8 @@ def eligible(d: Data, eid: str, c: dict, idx: int) -> tuple[bool, str | None]:
     read where it asks, and for a deed-only rank, a deed."""
     L, R = ladder(d, eid), d.ranks
     r = L[idx]
+    if c.get("course_rank") == r["id"] and rank_index(d, eid, c.get("rank")) < idx:   # an officer's course opens it
+        return True, None
     if rank_index(d, eid, c.get("rank")) != idx - 1:
         return False, "not the rank below"
     if r.get("deed_only") and not c.get("deed"):
@@ -107,10 +109,12 @@ def promote(d: Data, eid: str, team: list[dict], vacancies: dict, rng) -> list[d
                     break
             if not won:
                 break
+            old = rank_index(d, eid, won.get("rank"))      # the rank he leaves (one below, or lower for a course's)
             won["rank"], won["rank_days"], won["deed"], won["patron_help"] = r["id"], 0, False, False
+            won.pop("course_rank", None)
             vacancies[r["id"]] -= 1
-            if idx - 1 > 0:
-                vacancies[L[idx - 1]["id"]] = vacancies.get(L[idx - 1]["id"], 0) + 1
+            if old > 0:
+                vacancies[L[old]["id"]] = vacancies.get(L[old]["id"], 0) + 1
     for c in team:
         c["deed"] = False
     return out

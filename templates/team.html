@@ -942,7 +942,38 @@ function trainHtml(){
     <div><label for="tr-skill">Skill</label><select id="tr-skill"><optgroup label="Skills">${skillList}</optgroup>${tongues}</select></div>
     <div><label for="tr-teacher">Teacher</label><select id="tr-teacher">${ts.map(t => `<option value="${t.id}"${t.id === K.teacher ? " selected" : ""}>${esc(t.name)}</option>`).join("") || `<option value="">No one here can teach it</option>`}</select></div>
     <div style="align-self:end"><button id="btn-train"${ts.length ? "" : " disabled"}>Train a week</button></div></div>
+    ${courseHtml(c)}
     ${log ? `<ol class="log">${log}</ol>` : ""}`;
+}
+function courseHtml(c){                           // a course away: a school, a camp, a master's or a knight's
+  const ks = TRN().courses ? trCourses(c.region, S.place || null) : [];
+  if (!ks.length) return "";
+  const K = S.train;
+  if (!ks.some(k => k.id === K.course)) K.course = ks[0].id;
+  const k = ks.find(x => x.id === K.course), fee = k.fee ? ", " + cash(k.fee) : "";
+  const gains = Object.entries(k.gains).filter(([g]) => T.skills.some(x => x.id === g)).map(([g, n]) => skillName(g) + " +" + n).join(", ");
+  const opens = k.rank ? "; opens " + rkName(k.rank).toLowerCase() + " at the next vacancy" : "";
+  return `<div class="row"><div><label for="tr-course">A course for ${esc(c.name)}</label><select id="tr-course">${optionTags(ks.map(x => [x.id, x.name]), K.course)}</select></div>
+    <div style="align-self:end"><button id="btn-course">Go (${k.weeks} weeks${fee})</button></div></div>
+    <p class="muted note">${esc(gains)}${esc(opens)}${k.served ? "; the weeks count as service" : ""}.${k.note ? " " + esc(k.note) + "." : ""}</p>`;
+}
+function goCourse(){
+  const K = S.train, c = S.team[K.i];
+  if (!c || !K.course) return;
+  pullPurses();
+  const k = TRN().courses.find(x => x.id === K.course);
+  if (k.fee){
+    const why = spendCheck(c, k.fee);
+    if (why){ S.msg = `${c.name} can't pay ${cash(k.fee)} for ${k.name}: ${why}.`; return render() }
+    c.ledger = c.ledger || [];
+    c.ledger.push({ days: -k.fee, what: k.name });
+  }
+  const r = trCourse(c, K.course);
+  if (r.served) xpServe(c.pid, r.served);
+  const gains = Object.entries(r.gains).map(([g, n]) => skillName(g) + " +" + n).join(", "), opens = r.rank ? `; ${rkName(r.rank).toLowerCase()} opened to him` : "";
+  S.trainlog = S.trainlog || [];
+  S.trainlog.unshift(`${c.name}, ${k.name.replace(/^A /, "a ")}: ${gains}${opens}.`);
+  render();
 }
 function trainWeek(){
   const K = S.train, c = S.team[K.i], t = teachersFor(c, K.skill).find(x => x.id === K.teacher); if (!t) return;
@@ -956,6 +987,7 @@ function trainWeek(){
   }
   if (pk && pk.paid) (c.ledger ||= []).push({ days: -pk.paid, what: "Keep while training" });
   const r = trWeek(t.value, realDice.randint(1, 100)), had = !!((readXp()[c.pid] || {}).ticks || {})[K.skill];
+  if (t.mate) t.mate.lostDays = (t.mate.lostDays || 0) + 7;   // the week is his too: his next job term is shorter
   if (r.success) xpTick(c.pid, K.skill, t.mate ? `lessons with ${t.mate.name}` : "lessons with a master");
   const who = t.mate ? t.mate.name : t.name.split(" (")[0].toLowerCase();
   const sk = skillName(K.skill);
@@ -973,7 +1005,7 @@ function seasonLine(c, r){                         // 'Hans: Blade 42 → 44 (ro
   if (r.terms){ const car = careerOf(c); bits.push(`${r.terms} term${r.terms > 1 ? "s" : ""} served: ${skillName(car.main)} +${T.term_main * r.terms}, ${skillName(car.second)} +${T.term_second * r.terms}, now age ${c.age}`) }
   for (const t of r.lived || []){                  // what each term brought, as at creation
     const hurt = t.wound ? `; ${t.wound.kind === "lasting" ? "a lasting hurt" : "a scar"} to the ${TD.locs[t.wound.loc].name.toLowerCase()}` : "";
-    bits.push(pron(t.event, c.sex || "m") + hurt);
+    bits.push(pron(t.event, c.sex || "m").replace(/\.$/, "") + hurt);
   }
   if (!bits.length) bits.push("nothing ticked");
   bits.push(`${r.served.toLocaleString("en-US")} days toward a term`);
@@ -1314,7 +1346,9 @@ function init(){
   $("#work").addEventListener("click", e => {
     if (e.target.closest("#btn-clear-work")){ S.worklog = []; return render() }
     const b = e.target.closest("button[data-work]"); if (!b) return;
-    const c = S.team[+b.dataset.i], j = TD.jobs.jobs.find(x => x.id === b.dataset.work), r = workTerm(j, feltBody(c), realDice);
+    const c = S.team[+b.dataset.i], j = TD.jobs.jobs.find(x => x.id === b.dataset.work), lost = c.lostDays || 0;
+    const r = workTerm(j, feltBody(c), realDice, lost ? Math.max(1, termDays(j) - lost) : undefined);
+    c.lostDays = 0;                                  // the weeks he spent teaching come off this term
     pullPurses();                                  // the travel map may have spent from it since
     if (r.earned) (c.ledger ||= []).push({ days: r.earned, what: `${j.name}, ${r.days} day${r.days !== 1 ? "s" : ""}` });
     const k = keepFor(j, c.region, S.place), pk = k ? payKeep(purseFor(c.region, c.terms, c.ledger).days, r.days, k.food, k.bed) : null;
@@ -1327,6 +1361,7 @@ function init(){
   $("#xp").addEventListener("click", e => {
     if (e.target.closest("#btn-season")) return endSeason();
     if (e.target.closest("#btn-train")) return trainWeek();
+    if (e.target.closest("#btn-course")) return goCourse();
     const d = e.target.closest("button[data-discharge]"), k = e.target.closest("button[data-keepon]");
     if (d){ const i = +d.dataset.discharge, c = S.team[i]; c.wornOut = null; loseMember(i, "sent home"); S.msg = `${c.name} is discharged, worn out: sent home, with a pension where his army gave one.`; return render() }
     if (k){ S.team[+k.dataset.keepon].wornOut = null; return render() }
@@ -1334,7 +1369,7 @@ function init(){
   $("#xp").addEventListener("change", e => {
     if (e.target.dataset.hard !== undefined){ S.team[+e.target.dataset.hard].hardSeason = e.target.checked; return render() }
     const K = S.train, id = e.target.id;
-    if (id === "tr-who") K.i = +e.target.value; else if (id === "tr-skill") K.skill = e.target.value; else if (id === "tr-teacher") K.teacher = e.target.value; else return;
+    if (id === "tr-who") K.i = +e.target.value; else if (id === "tr-skill") K.skill = e.target.value; else if (id === "tr-teacher") K.teacher = e.target.value; else if (id === "tr-course") K.course = e.target.value; else return;
     render();
   });
   $("#rank").addEventListener("change", e => {

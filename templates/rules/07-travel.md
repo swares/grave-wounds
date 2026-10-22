@@ -197,6 +197,25 @@ unawares: {{s_base}}%, plus the camp's figure above ({{s_none}} more with no cam
 defenders' best Watch ÷ {{s_per}}, and never under {{s_lo}}% or over {{s_hi}}%. Surprised men
 cannot attack or move in the first round.
 
+## Skills on the march {#march-skills}
+
+The best named man in the force rolls; a skill used well is ticked.
+
+**Billets.** A force its army does not feed must find its own quarters in a village or town: his
+Persuade (no better than his tongue there). Fail, and no one will take them in. Quartered, its
+named men pay no bed; in the Thirty Years' War the host fed them too (a Leipzig ordinance of
+1639: soup, a vegetable, cheese, bread and beer). A force its army feeds is billeted by authority.
+
+**Hunting for the pot.** In open country, heath, forest, hills or marsh, Fieldcraft at nightfall: a
+deer feeds {{hunt_deer}} men for a day (Lewis and Clark's party ate 9 lb of meat a man), a buffalo
+{{hunt_buffalo}} where they ran; a critical, twice that. Meat for the whole force feeds it however
+short of food, and it is fresh.
+
+**Finding the way.** Off the road, or in fog, snow, a storm or a sandstorm, the guide's Fieldcraft
+once a day (Hard in fog, a blizzard or a sandstorm). Fail, and the day's march goes {{way_slow}}
+times as long (night navigation ran about 40% slower in a 1979 US Army study); fumble, and an hour
+is lost going the wrong way first.
+
 ## Finding work {#work}
 
 Between fights a man may hire himself out. Where the team is (a town, city, village, camp, the
