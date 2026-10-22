@@ -24,7 +24,7 @@ function openToWomen(region, careerId){           // [open, why not]
 function sexFor(region, careerId, sex, rng){      // m or f: as chosen, or (roll) at the region's share, for an open career
   const ok = openToWomen(region, careerId)[0];
   if (sex === "roll"){
-    const W = womenOf(region) || {}, share = ok ? (W.shares || {})[careerId] ?? W.share : null;   // the career's own share, else the army's
+    const W = womenOf(region) || {}, share = ok ? W.shares?.[careerId] ?? W.share : null;   // the career's own share, else the army's
     return share !== null && share !== undefined && rng.randint(1, SHARE_DIE) <= Math.round(share * 100) ? "f" : "m";
   }
   return sex === "f" && ok ? "f" : "m";

@@ -1806,6 +1806,18 @@ def _team_errors(d: Data, era: dict) -> list[str]:
     return errors
 
 
+def _women_career_errors(w: dict, where: str, rid: str) -> list[str]:
+    """A women block's per-career settings: `disguised` and `shares` name its open careers."""
+    errors, open_ = [], set(w.get("careers") or [])
+    hid = w.get("disguised")
+    if isinstance(hid, list) and set(hid) - open_:
+        errors.append(f"{where}: region {rid} women disguised must name its open careers")
+    shares = w.get("shares") or {}
+    if set(shares) - open_ or any(not 0 < v <= 100 for v in shares.values()):
+        errors.append(f"{where}: region {rid} women shares must name its open careers, each over 0 and at most 100")
+    return errors
+
+
 def _women_errors(tables: dict, where: str, r: dict) -> list[str]:
     """A region's women block: known careers, a share (%) between 0 and 100 or null, name lists,
     and enough origins for a woman (shared or her own)."""
@@ -1817,12 +1829,7 @@ def _women_errors(tables: dict, where: str, r: dict) -> list[str]:
         errors.append(f"{where}: region {r['id']} women needs careers, all known")
     if W.get("share") is not None and not 0 < W["share"] <= 100:
         errors.append(f"{where}: region {r['id']} women share must be over 0 and at most 100 (or null)")
-    D = W.get("disguised")
-    if isinstance(D, list) and set(D) - set(W.get("careers") or []):
-        errors.append(f"{where}: region {r['id']} women disguised must name its open careers")
-    shares = W.get("shares") or {}
-    if set(shares) - set(W.get("careers") or []) or any(not 0 < v <= 100 for v in shares.values()):
-        errors.append(f"{where}: region {r['id']} women shares must name its open careers, each over 0 and at most 100")
+    errors += _women_career_errors(W, where, r["id"])
     if any(k in W and not W[k] for k in ("names", "bynames")) or not W.get("source"):
         errors.append(f"{where}: region {r['id']} women name lists must not be empty, and the block needs a source")
     if not [o for o in tables["origins"] if o.get("who", "f") == "f"]:

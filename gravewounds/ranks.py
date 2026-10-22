@@ -84,9 +84,9 @@ def eligible(d: Data, eid: str, c: dict, idx: int) -> tuple[bool, str | None]:
     return True, None
 
 
-def _presence(R: dict, c: dict) -> None:
+def _presence(rk: dict, c: dict) -> None:
     """A promotion's Presence (ranks.yaml presence), into his characteristics' changes, up to the cap."""
-    P = R.get("presence")
+    P = rk.get("presence")
     if not P or "stat_mods" not in c:
         return
     gain = min(P["per_rank"], P["cap"] - c.get("pres_rank", 0))

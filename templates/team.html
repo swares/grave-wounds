@@ -297,7 +297,10 @@ function renderWomen(){                          // the women choice: offered wh
 }
 function womenNote(W, rolls){                     // what women did in this army, before why the rest is closed
   const own = Object.keys(W.shares || {}), chosen = W.careers.filter(c => !own.includes(c));
-  if (own.length && W.share == null) return `Women served as ${womenCareers({ careers: own })} (rolled at the career's share)${chosen.length ? `, and as ${womenCareers({ careers: chosen })} in numbers no one counted reliably: pick those in Your own team` : ""}. `;
+  if (own.length && W.share == null){
+    const rest = chosen.length ? ", and as " + womenCareers({ careers: chosen }) + " in numbers no one counted reliably: pick those in Your own team" : "";
+    return `Women served as ${womenCareers({ careers: own })} (rolled at the career's share)${rest}. `;
+  }
   if (!rolls) return `Women served as ${womenCareers(W)}, in numbers no one counted reliably: pick them in Your own team. `;
   const hid = W.disguised === true ? W.careers : (W.disguised || []), open = W.careers.filter(c => !hid.includes(c));
   const bits = [hid.length && `enlisted disguised as men as ${womenCareers({ careers: hid })}`, open.length && `served as ${womenCareers({ careers: open })}`].filter(Boolean);
