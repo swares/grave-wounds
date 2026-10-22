@@ -115,6 +115,7 @@ class Data:
     loads: dict = field(default_factory=dict)       # carrying weight (data/loads.yaml)
     stress: dict = field(default_factory=dict)      # combat stress (data/stress.yaml)
     prisoners: dict = field(default_factory=dict)   # capture and captivity (data/prisoners.yaml)
+    hazards: dict = field(default_factory=dict)     # swimming, climbing, falls, chases (data/hazards.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -177,6 +178,7 @@ def load(root: str | Path = "data") -> Data:
     loads = _optional(root / "loads.yaml", {})
     stress = _optional(root / "stress.yaml", {})
     prisoners = _optional(root / "prisoners.yaml", {})
+    hazards = _optional(root / "hazards.yaml", {})
 
     data = Data(
         root=root,
@@ -214,6 +216,7 @@ def load(root: str | Path = "data") -> Data:
         loads=loads,
         stress=stress,
         prisoners=prisoners,
+        hazards=hazards,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -579,6 +582,18 @@ def validate(d: Data) -> None:
         for e, n in (SX.get("names") or {}).items():
             if e not in d.teams or len(n) != 3:
                 errors.append(f"stress.yaml: names for {e} must be three, for a known era")
+    if d.hazards:
+        HZ = d.hazards
+        if any(e not in d.teams for e in HZ.get("swimmers", {})):
+            errors.append("hazards.yaml: swimmers names an unknown era")
+        if len(HZ["swim"]["load"]) != 6 or len(HZ["climb"]["load"]) != 6:
+            errors.append("hazards.yaml: swim and climb load need one figure for each of the six load bands")
+        for r in HZ["falls"]["heights"]:
+            if len(r["bands"]) != 5 or r["bands"] != sorted(r["bands"]):
+                errors.append(f"hazards.yaml: fall row {r['name']} needs five rising bands")
+        for k, l in HZ["falls"]["landings"].items():
+            if l["zones"][-1][0] != 100:
+                errors.append(f"hazards.yaml: landing {k} zones must reach 100")
     if d.prisoners:
         for eid, cs in (d.prisoners.get("eras") or {}).items():
             if eid not in d.teams:

@@ -1,0 +1,112 @@
+# Character-scale hazards (rules in gravewounds/hazards.py, repeated in templates/ranks.js):
+# swimming and drowning, cold water, fords, climbing, falls and chases. Research notes: the project
+# doc "hazards-research" (figures tagged sourced, estimate or gap). Every number here is a design
+# calibration of those figures; the sourced anchors are named beside them.
+
+# Who can swim. No era has a sound count: a 1947 writer guessed a fifth to a third of British
+# servicemen had never swum, a WWII Navy instructor that more than half of his cadets could not.
+# Each man is rolled at creation: d100 at or under `none` a non-swimmer, over 100 - `strong` a strong
+# swimmer, else basic; Seamanship `seamanship_strong` or more makes him strong, `seamanship_basic`
+# at least basic.
+swimmers:
+  medieval: {none: 80, strong: 5}
+  thirty_years: {none: 75, strong: 5}
+  horse_musket: {none: 70, strong: 5}
+  crimea: {none: 65, strong: 5}
+  civil_war: {none: 60, strong: 10}
+  plains_nations: {none: 30, strong: 30}
+  wwi: {none: 50, strong: 10}
+  wwii: {none: 40, strong: 15}
+  korea: {none: 30, strong: 20}
+  vietnam: {none: 25, strong: 25}
+  modern: {none: 15, strong: 30}
+swimmers_approx: true
+seamanship_basic: 20
+seamanship_strong: 40
+
+# Swimming: each minute in deep water, d100 at or under Endurance + his ability + the modifiers.
+# A success holds him (a critical lifts him a step), a failure takes him a step down (a fumble two):
+# afloat, struggling, going under, drowning, drowned. Reaching the shore, or rescue, ends it; a man
+# who came to drowning is near-drowned (two steps of fatigue). Armour in the water is worse than its
+# weight on land; plate cannot be shed, a pack can (a band lighter, one minute).
+swim:
+  ability: {none: -50, basic: 0, strong: 20}
+  load: [0, -10, -25, -60, -90, -100]          # by load band, Unburdened to Immobile
+  armour: {light: 0, medium: -15, heavy: -30}
+  current: {slow: 0, moderate: -10, fast: -20, spate: -30}
+  flotation: 30
+  steps: ["afloat", "struggling", "going under", "drowning", "drowned"]
+
+# Cold water (the 1-10-1 rule; Tipton 1999: half of competent swimmers in 10 C water failed within
+# 22-61 minutes): the first minute, a Nerve check (`shock`; failing it takes him a step down); after
+# `fail_after` minutes his swimming falls by 10 for every further 10 minutes.
+cold:
+  - {name: "Warm (over 20 C)", shock: 0, fail_after: 999}
+  - {name: "Cool (15-20 C)", shock: 0, fail_after: 90}
+  - {name: "Cold (10-15 C)", shock: -20, fail_after: 45}
+  - {name: "Very cold (5-10 C)", shock: -20, fail_after: 20}
+  - {name: "Icy (5 C or under)", shock: -40, fail_after: 10}
+
+# Fords (the British field-engineering rule: infantry to 3 ft, cavalry 4 ft, guns 2 ft 4 in;
+# flume tests: adults are swept off once depth x current passes about 0.75-1.2). A force on the
+# travel map crossing a ford: each named man whose load band is `from_band` or heavier (or anyone,
+# in a flooded ford it chose to risk) makes an Agility check at the water's difficulty (Ride for a
+# mounted man); failing it, he is swept off and swims for `rounds` minutes to the bank.
+fords:
+  normal: {difficulty: easy, from_band: 3, current: moderate, rounds: 2, name: "an ordinary ford (thigh-deep, slow)"}
+  flooded: {difficulty: very_hard, from_band: 0, current: fast, rounds: 4, name: "a flooded ford (chest-deep, fast)"}
+
+# Climbing: d100 at or under Agility + Fieldcraft / 2 + the surface's modifier + his load's, for each
+# `step_m` of height (a rope or ladder 10 m a step, a free climb 3 m). Failure: no progress this
+# round; a fumble, he falls from where he is. A rope or ladder may fail once on the way (`anchor`
+# %: a grapnel pulls out, a ladder is pushed off). Pointe du Hoc: 26-30 m cliffs, the first men up
+# within about 10 minutes and nearly all 190 within 30; one man slid 9 m when his grapnel pulled out.
+climb:
+  surfaces:
+    slope: {name: "A steep slope or scramble", mod: 20, step_m: 3}
+    ladder: {name: "A ladder", mod: 20, step_m: 10, anchor: 15}
+    rope: {name: "A knotted rope", mod: 0, step_m: 10, anchor: 15}
+    wet_rope: {name: "A plain wet rope", mod: -20, step_m: 10, anchor: 15}
+    wall: {name: "A rough wall or cliff, free", mod: -20, step_m: 3}
+    sheer: {name: "A sheer face, free", mod: -40, step_m: 3}
+  load: [0, -5, -15, -30, -100, -100]
+  armour: {light: 0, medium: -5, heavy: -15}
+
+# Falls (Lapostolle 2005: the dead fell a median 15 m, survivors 6 m; head-first landings about
+# 17 times the odds of death; Hsieh 2020 for where the injuries fall). d100 on his height's row:
+# none, light, moderate, serious, grave, dead (a moderate injury is a light wound, a grave one a
+# critical, and death a critical wound to the head or neck). Shifts: a deliberate feet-first jump
+# (an Agility check) or soft ground one row lighter; head-first or rock one heavier; a heavy load or
+# armour one heavier. Then d100 on the landing for where.
+falls:
+  heights:
+    - {upto: 1, name: "a stumble (up to 1 m)", bands: [70, 95, 100, 100, 100]}
+    - {upto: 3, name: "a storey, or thrown from a horse (1-3 m)", bands: [0, 40, 85, 98, 100]}
+    - {upto: 6, name: "two storeys, or from a galloping horse (3-6 m)", bands: [0, 15, 55, 90, 98]}
+    - {upto: 12, name: "6-12 m", bands: [0, 0, 20, 55, 85]}
+    - {upto: 20, name: "12-20 m", bands: [0, 0, 0, 15, 50]}
+    - {upto: 9999, name: "over 20 m", bands: [0, 0, 0, 0, 10]}
+  severities: [none, light, moderate, serious, grave, dead]
+  wound: {light: light, moderate: light, serious: serious, grave: critical, dead: critical}
+  landings:
+    feet: {name: "Feet first", zones: [[55, legs], [75, lower_back], [85, torso], [93, arms], [100, head]]}
+    thrown: {name: "Thrown or uncontrolled (and from a horse)", zones: [[25, legs], [40, lower_back], [60, torso], [80, arms], [100, head]]}
+    head: {name: "Head first", zones: [[5, legs], [15, lower_back], [35, torso], [50, arms], [100, head]]}
+
+# Chases: rounds of about 10 seconds, the gap in bands (close, near, far, distant, lost). Each round
+# pursuer and quarry roll opposed (Agility, or Ride mounted; + Stealth for a quarry in cover, + Watch
+# for the pursuer to keep him in sight): the winner moves the gap a band (two on a critical); a tie
+# goes to the faster. On open ground a horse gains a band every second round on a man on foot
+# whatever the dice; in cover the quarry gets +20 against a horseman. Every `sprint_tire` rounds a
+# man on foot tires a step; a horse galloped `blown` rounds is blown (a trot). Speeds (m/s): men by
+# load band (sprinting, about 1% worse for each kg: Knapik), horses by gait (gallop 40-48 km/h for
+# 1.5-3 km).
+chase:
+  gaps: [close, near, far, distant, lost]
+  start: 1
+  foot_speed: [8, 7, 6, 4.5, 3, 1.3]
+  horse_speed: 12
+  cover: 20
+  open_horse: 20
+  sprint_tire: 3
+  blown: 15

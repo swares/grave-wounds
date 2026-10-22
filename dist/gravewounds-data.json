@@ -1705,6 +1705,369 @@
    "Claims a pension for his nerves (from 1914)"
   ]
  },
+ "hazards": {
+  "swimmers": {
+   "medieval": {
+    "none": 80,
+    "strong": 5
+   },
+   "thirty_years": {
+    "none": 75,
+    "strong": 5
+   },
+   "horse_musket": {
+    "none": 70,
+    "strong": 5
+   },
+   "crimea": {
+    "none": 65,
+    "strong": 5
+   },
+   "civil_war": {
+    "none": 60,
+    "strong": 10
+   },
+   "plains_nations": {
+    "none": 30,
+    "strong": 30
+   },
+   "wwi": {
+    "none": 50,
+    "strong": 10
+   },
+   "wwii": {
+    "none": 40,
+    "strong": 15
+   },
+   "korea": {
+    "none": 30,
+    "strong": 20
+   },
+   "vietnam": {
+    "none": 25,
+    "strong": 25
+   },
+   "modern": {
+    "none": 15,
+    "strong": 30
+   }
+  },
+  "swimmers_approx": true,
+  "seamanship_basic": 20,
+  "seamanship_strong": 40,
+  "swim": {
+   "ability": {
+    "none": -50,
+    "basic": 0,
+    "strong": 20
+   },
+   "load": [
+    0,
+    -10,
+    -25,
+    -60,
+    -90,
+    -100
+   ],
+   "armour": {
+    "light": 0,
+    "medium": -15,
+    "heavy": -30
+   },
+   "current": {
+    "slow": 0,
+    "moderate": -10,
+    "fast": -20,
+    "spate": -30
+   },
+   "flotation": 30,
+   "steps": [
+    "afloat",
+    "struggling",
+    "going under",
+    "drowning",
+    "drowned"
+   ]
+  },
+  "cold": [
+   {
+    "name": "Warm (over 20 C)",
+    "shock": 0,
+    "fail_after": 999
+   },
+   {
+    "name": "Cool (15-20 C)",
+    "shock": 0,
+    "fail_after": 90
+   },
+   {
+    "name": "Cold (10-15 C)",
+    "shock": -20,
+    "fail_after": 45
+   },
+   {
+    "name": "Very cold (5-10 C)",
+    "shock": -20,
+    "fail_after": 20
+   },
+   {
+    "name": "Icy (5 C or under)",
+    "shock": -40,
+    "fail_after": 10
+   }
+  ],
+  "fords": {
+   "normal": {
+    "difficulty": "easy",
+    "from_band": 3,
+    "current": "moderate",
+    "rounds": 2,
+    "name": "an ordinary ford (thigh-deep, slow)"
+   },
+   "flooded": {
+    "difficulty": "very_hard",
+    "from_band": 0,
+    "current": "fast",
+    "rounds": 4,
+    "name": "a flooded ford (chest-deep, fast)"
+   }
+  },
+  "climb": {
+   "surfaces": {
+    "slope": {
+     "name": "A steep slope or scramble",
+     "mod": 20,
+     "step_m": 3
+    },
+    "ladder": {
+     "name": "A ladder",
+     "mod": 20,
+     "step_m": 10,
+     "anchor": 15
+    },
+    "rope": {
+     "name": "A knotted rope",
+     "mod": 0,
+     "step_m": 10,
+     "anchor": 15
+    },
+    "wet_rope": {
+     "name": "A plain wet rope",
+     "mod": -20,
+     "step_m": 10,
+     "anchor": 15
+    },
+    "wall": {
+     "name": "A rough wall or cliff, free",
+     "mod": -20,
+     "step_m": 3
+    },
+    "sheer": {
+     "name": "A sheer face, free",
+     "mod": -40,
+     "step_m": 3
+    }
+   },
+   "load": [
+    0,
+    -5,
+    -15,
+    -30,
+    -100,
+    -100
+   ],
+   "armour": {
+    "light": 0,
+    "medium": -5,
+    "heavy": -15
+   }
+  },
+  "falls": {
+   "heights": [
+    {
+     "upto": 1,
+     "name": "a stumble (up to 1 m)",
+     "bands": [
+      70,
+      95,
+      100,
+      100,
+      100
+     ]
+    },
+    {
+     "upto": 3,
+     "name": "a storey, or thrown from a horse (1-3 m)",
+     "bands": [
+      0,
+      40,
+      85,
+      98,
+      100
+     ]
+    },
+    {
+     "upto": 6,
+     "name": "two storeys, or from a galloping horse (3-6 m)",
+     "bands": [
+      0,
+      15,
+      55,
+      90,
+      98
+     ]
+    },
+    {
+     "upto": 12,
+     "name": "6-12 m",
+     "bands": [
+      0,
+      0,
+      20,
+      55,
+      85
+     ]
+    },
+    {
+     "upto": 20,
+     "name": "12-20 m",
+     "bands": [
+      0,
+      0,
+      0,
+      15,
+      50
+     ]
+    },
+    {
+     "upto": 9999,
+     "name": "over 20 m",
+     "bands": [
+      0,
+      0,
+      0,
+      0,
+      10
+     ]
+    }
+   ],
+   "severities": [
+    "none",
+    "light",
+    "moderate",
+    "serious",
+    "grave",
+    "dead"
+   ],
+   "wound": {
+    "light": "light",
+    "moderate": "light",
+    "serious": "serious",
+    "grave": "critical",
+    "dead": "critical"
+   },
+   "landings": {
+    "feet": {
+     "name": "Feet first",
+     "zones": [
+      [
+       55,
+       "legs"
+      ],
+      [
+       75,
+       "lower_back"
+      ],
+      [
+       85,
+       "torso"
+      ],
+      [
+       93,
+       "arms"
+      ],
+      [
+       100,
+       "head"
+      ]
+     ]
+    },
+    "thrown": {
+     "name": "Thrown or uncontrolled (and from a horse)",
+     "zones": [
+      [
+       25,
+       "legs"
+      ],
+      [
+       40,
+       "lower_back"
+      ],
+      [
+       60,
+       "torso"
+      ],
+      [
+       80,
+       "arms"
+      ],
+      [
+       100,
+       "head"
+      ]
+     ]
+    },
+    "head": {
+     "name": "Head first",
+     "zones": [
+      [
+       5,
+       "legs"
+      ],
+      [
+       15,
+       "lower_back"
+      ],
+      [
+       35,
+       "torso"
+      ],
+      [
+       50,
+       "arms"
+      ],
+      [
+       100,
+       "head"
+      ]
+     ]
+    }
+   }
+  },
+  "chase": {
+   "gaps": [
+    "close",
+    "near",
+    "far",
+    "distant",
+    "lost"
+   ],
+   "start": 1,
+   "foot_speed": [
+    8,
+    7,
+    6,
+    4.5,
+    3,
+    1.3
+   ],
+   "horse_speed": 12,
+   "cover": 20,
+   "open_horse": 20,
+   "sprint_tire": 3,
+   "blown": 15
+  }
+ },
  "locations": [
   {
    "id": "skull_l",

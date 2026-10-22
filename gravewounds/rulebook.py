@@ -192,6 +192,23 @@ def tables(d: Data) -> dict:
                             for i, r in enumerate(RE.get("ladder") or [])])
         out["finds"] = _md(["d100", "He finds", "Worth (Days)"], [[f"{lo}–{f['to']}" if lo != f["to"] else str(f["to"]), f["what"], "—" if not f["days"][1] else f"{f['days'][0]}–{f['days'][1]}"]
                                                               for f, lo in zip(d.ranks["finds"], [1] + [x["to"] + 1 for x in d.ranks["finds"][:-1]])])
+    if d.hazards:
+        HZ = d.hazards
+        sev = HZ["falls"]["severities"]
+
+        def bands_text(bands):
+            lo, out = 1, []
+            for k, b in enumerate(bands + [100]):
+                if b >= lo:
+                    out.append(f"{lo}-{b} {sev[k]}" if b > lo else f"{b} {sev[k]}")
+                    lo = b + 1
+            return ", ".join(out)
+        out["falls"] = _md(["Height", "d100"], [[r["name"], bands_text(r["bands"])] for r in HZ["falls"]["heights"]])
+        out["swim_mods"] = _md(["", "Swimming"], [["A non-swimmer / basic / strong", " / ".join(f"{v:+d}" for v in HZ["swim"]["ability"].values())],
+                                                  ["Load band, Unburdened to Immobile", " / ".join(f"{v:+d}" for v in HZ["swim"]["load"])],
+                                                  ["Armour, light / medium / heavy", " / ".join(f"{v:+d}" for v in HZ["swim"]["armour"].values())],
+                                                  ["Current, slow / moderate / fast / spate", " / ".join(f"{v:+d}" for v in HZ["swim"]["current"].values())],
+                                                  ["Something to float on", f"+{HZ['swim']['flotation']}"]])
     if d.prisoners:
         en = {"medieval": "Medieval", "thirty_years": "Thirty Years' War", "horse_musket": "1700-1815", "crimea": "Crimea", "civil_war": "Civil War",
               "plains_nations": "Plains", "wwi": "1914-18", "wwii": "1939-45", "korea": "Korea", "vietnam": "Vietnam", "modern": "1982-2014"}

@@ -225,6 +225,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <div style="flex:1 1 140px;align-self:end"><label title="It is falling back: straggling, desertion and injuries run higher"><input type="checkbox" id="chk-withdraw"> Withdrawing</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Short of food: desertion runs far higher (Nuremberg 1632, about 15 times) and straggling about 5 times"><input type="checkbox" id="chk-hungry"> Short of food</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Pay in arrears: desertion runs about 3 times higher"><input type="checkbox" id="chk-unpaid"> Pay in arrears</label></div>
+        <div style="flex:1 1 140px;align-self:end"><label title="It will wade a flooded ford rather than wait (not with wagons or guns): every named man risks being swept off"><input type="checkbox" id="chk-riskford"> Risk a flooded ford</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="In contact with the enemy: holding a line, under fire, besieging or besieged. Each day its named men take a day's Strain; a day camped out of the line is rest"><input type="checkbox" id="chk-inline"> In the line</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Its named men (from the wound roller) take the era's chance of an injury each night too"><input type="checkbox" id="chk-named-acc"> Named men can be injured</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Its army feeds and quarters its men. Untick for a team on its own, on leave or off base: its named men then pay their keep from their purses each day"><input type="checkbox" id="chk-fed"> Fed by its army</label></div>
@@ -251,7 +252,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
 <script>/*__EVENTS_JS__*/</script>
 <script>
 const DATA = /*__TRAVEL_DATA__*/null;
-const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, stress: DATA.stress, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
+const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, stress: DATA.stress, hazards: DATA.hazards, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
 const $ = s => document.querySelector(s);
 const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
 const BYKEY = Object.fromEntries(Object.values(TT).map(t => [t.key, t]));
@@ -1129,6 +1130,40 @@ const NAMED_KEY = "gravewounds-named";        // {uid: {name, endurance, map, fo
 function readNamed(){ try{ return JSON.parse(localStorage.getItem(NAMED_KEY) || "{}") || {} }catch(e){ return {} } }
 function writeNamed(all){ try{ localStorage.setItem(NAMED_KEY, JSON.stringify(all)) }catch(e){ /* storage off: they stay as they were */ } }
 const namedWith = (all, f) => Object.entries(all).filter(([, n]) => n.map === S.mapId && n.force === f.id && !n.dead);
+/* Fords (ranks.js: hzFordRisk, hzSwimTarget, hzSwimStep; data DATA.hazards.fords). A force may risk a
+   flooded ford (not with wagons or guns). Crossing one, each named man heavy enough for the water
+   (or anyone, in a flood) makes an Agility check (Ride for a horseman); swept off, he swims for the
+   bank: near-drowned, or drowned. */
+const hasWagons = f => forceTypes(colType(f)).includes("wagons");
+const riskGround = (f, g) => (f.riskFord && !hasWagons(f) && g && (g.flood || 0) > 0 ? { ...g, flood: 0 } : g);
+function sweptOff(f, n, water, band){            // he is in the water: minutes to the bank -> his fate
+  const H = DATA.hazards, F = H.fords[water];
+  let step = 0, worst = 0;
+  for (let m = 0; m < F.rounds && step < 4; m++){
+    const t = hzSwimTarget(n.end ?? 50, n.swim || "basic", band, n.kitLoad || "light", { current: F.current, minutes: m, cold: 2 });
+    step = hzSwimStep(step, t, roll100()).step; worst = Math.max(worst, step);
+  }
+  if (step >= 4) return "drowned";
+  return worst >= 3 ? "near-drowned" : "struggled out";
+}
+function fordMan(f, n, water, e){               // one named man at the ford: a line if he is swept off
+  const band = e ? ldBand(ldLoadKg(e, loadOrder(f), n.kitLoad || "light", n.loadExtra || 0), ldBody(e, n.sex || "m"), n.str ?? 50) : 0;
+  const diff = hzFordRisk(water, band);
+  if (!diff) return null;
+  const value = f.type === "mounted" ? (n.ride || n.agi || 50) : (n.agi ?? 50);
+  if (skillCheck(value, diff, roll100()).success) return null;
+  const fate = sweptOff(f, n, water, band);
+  if (fate === "drowned"){ n.dead = true; markLost(n.pid, "killed") }
+  else if (fate === "near-drowned" && n.pid && DATA.stress) xpStress(n.pid, "near_miss", n.nerve ?? 50, "nearly drowned at a ford");
+  return `${n.name} is swept off his feet in ${DATA.hazards.fords[water].name}: ${fate}`;
+}
+function fordsCrossed(f, from, to, g){
+  if (!DATA.hazards || !f.path.slice(from + 1, to + 1).some(h => terrainAt(curMap(), h).id === "ford")) return;
+  const water = (g?.flood || 0) > 0 ? "flooded" : "normal", e = loadEraOf(f), all = readNamed();
+  const lines = namedWith(all, f).filter(([, n]) => ableNow(n)).map(([, n]) => fordMan(f, n, water, e)).filter(Boolean);
+  writeNamed(all);
+  if (lines.length) f.log.unshift(`${dateText(f.day, true)}: ${lines.join("; ")}.`);
+}
 function strainNight(f, n){                    // combat stress: a day in the line adds Strain; a day out of it, camped, is rest
   if (!DATA.stress || !n.pid) return;
   if (f.inLine){
@@ -1323,7 +1358,7 @@ function march(sel, hours){                    // the whole column marches toget
   if (!f.path || f.index >= f.path.length - 1) return { why: `${colName(f)} has no route to march.` };
   const speed = colSpeed(f);
   if (!speed) return { why: noMarchText(f, col) };
-  const m = curMap(), g = groundOf(f.day);
+  const m = curMap(), g = riskGround(f, groundOf(f.day));
   if (f.path.slice(f.index + 1).some(h => !passable(m, h, colType(f), g)) && !replan(f))
     return { why: `${f.name} cannot get through today (${groundText(g)}). Wait, or add a waypoint to go round.` };
   const from = f.index, u0 = f.used;
@@ -1331,6 +1366,7 @@ function march(sel, hours){                    // the whole column marches toget
   const steps = r.index - from;
   if (steps && f.camp){ f.log.unshift(`${dateText(f.day, true)}: breaks camp (${WK.camps[f.camp.kind].name.toLowerCase()}).`); f.camp = null }
   f.marched = (f.marched || 0) + (r.used - u0);
+  if (steps) fordsCrossed(f, from, r.index, groundOf(f.day));
   if (steps) f.cameFrom = f.path[r.index - 1].slice();     // the hex it last left: the way it came in
   f.index = r.index; f.used = r.used; f.carried = r.carried; f.pos = f.path[f.index].slice();
   const arrived = f.index >= f.path.length - 1;
@@ -1618,6 +1654,7 @@ function renderHealth(f){
   $("#chk-named-acc").checked = !!f.namedAccidents;
   $("#chk-hungry").checked = !!f.shortFood;
   $("#chk-inline").checked = !!f.inLine;
+  $("#chk-riskford").checked = !!f.riskFord;
   $("#chk-unpaid").checked = !!f.unpaid;
   $("#sel-hyg").innerHTML = opts.map(([v, t]) => `<option value="${v}" ${(f.hygiene || "") === v ? "selected" : ""}>${t}</option>`).join("");
   const hyg = campHygiene(f.hygiene || null, kind), factors = weekFactorsFor(f, kind, hyg);
@@ -2030,6 +2067,7 @@ function init(){
   $("#chk-fed").onchange = e => { const f = selForce(); if (f){ f.fed = e.target.checked; render() } };
   $("#chk-events").onchange = e => { const f = selForce(); if (f){ f.events = e.target.checked; render() } };
   $("#chk-withdraw").onchange = e => { const f = selForce(); if (f){ f.withdrawing = e.target.checked; render() } };
+  $("#chk-riskford").onchange = e => { const f = selForce(); if (f){ f.riskFord = e.target.checked; render() } };
   $("#chk-inline").onchange = e => { const f = selForce(); if (f){ f.inLine = e.target.checked; render() } };
   $("#chk-hungry").onchange = e => { const f = selForce(); if (f){ f.shortFood = e.target.checked; render() } };
   $("#chk-unpaid").onchange = e => { const f = selForce(); if (f){ f.unpaid = e.target.checked; render() } };

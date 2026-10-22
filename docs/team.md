@@ -393,6 +393,21 @@ check that succeeds, or wins, ticks the skill for experience; a characteristic i
 quarter on a critical, to the quarter Day, never under ¼), the list price if not, and no sale
 on a fumble; winning ticks Persuade.
 
+## Water, heights and pursuit
+
+`data/hazards.yaml` (rules in `gravewounds/hazards.py`, repeated in `templates/ranks.js`:
+`hzSwimAbility`, `hzSwimTarget`, `hzSwimStep`, `hzColdShock`, `hzFordRisk`, `hzClimbTarget`,
+`hzClimbSteps`, `hzFall`, `hzChaseStep`; research in the project doc "hazards-research"). A new
+character rolls whether he can swim (the last of his dice: `swimmers` by era; Seamanship 20 makes
+a non-swimmer basic, 40 strong); his sheet carries it to the roller and the travel map. The
+roller's **Swim, climb, fall, chase** panel (under Casualties) works on any fighter: into the water
+(the cold-shock Nerve check) and a minute at a time to the bank, shedding his pack; a climb step by
+step with the anchor that may fail; a fall by height, landing and ground, its crush wound on his
+card with its stop check; a chase in rounds between him and another fighter, mounted or not, in the
+open or in cover, tiring both. On the travel map a force crossing a ford checks each named man by
+his load band (`fords`), and **Risk a flooded ford** lets a force without wagons wade one;
+a man swept off swims for the bank on his own (drowned: lost; near-drowned: Strain).
+
 ## Prisoners
 
 `data/prisoners.yaml` (rules in `gravewounds/prisoners.py`, repeated in `templates/ranks.js`:

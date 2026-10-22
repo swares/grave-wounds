@@ -1006,7 +1006,7 @@ def travel_bundle(d) -> dict:
     return {
         "generated": date.today().isoformat(),
         "terrain": d.terrain,
-        "checks": d.checks, "training": d.training, "loads": d.loads, "stress": d.stress,   # drill in camp, loads on the march (templates/ranks.js)
+        "checks": d.checks, "training": d.training, "loads": d.loads, "stress": d.stress, "hazards": d.hazards,   # drill in camp, loads on the march (templates/ranks.js)
         "works": d.works,
         "weather": d.weather,
         "disease": d.disease,
@@ -1110,7 +1110,7 @@ def bundle(d) -> dict:
                 wounds[f"{cid}|{m}|{s}"] = compose_wound(d, rep, m, s)
     return {
         "generated": date.today().isoformat(),
-        "checks": d.checks, "ranks": d.ranks, "loads": d.loads, "stress": d.stress,     # the shared rules in templates/ranks.js: loot, deeds, coups after a fight
+        "checks": d.checks, "ranks": d.ranks, "loads": d.loads, "stress": d.stress, "hazards": d.hazards,     # the shared rules in templates/ranks.js: loot, deeds, coups after a fight
         "locations": d.locations,
         "weapons": {wid: {**w, "mech_ranges": mechanism_ranges(d, wid)} for wid, w in d.weapons.items()},
         "tables": tables,
@@ -1991,7 +1991,7 @@ def team_bundle(d) -> dict:
         weapons |= {c["weapon"].get(r["id"], c["weapon"]["default"]) for c in T["careers"] for r in T["regions"]}
     eras = {eid: {"era": d.teams[eid], "ranges": old_wound_ranges(d, eid), "equip": equip_bundle(d, eid), "jobs": jobs_bundle(d, eid), "keep": keep_bundle(d, eid), "repl": d.replacements.get(eid)} for eid in team_eras(d)}
     first = team_eras(d)[0]
-    return {"eras": eras, "era": eras[first]["era"], "ranges": eras[first]["ranges"], "equip": eras[first]["equip"], "money": d.money, "xp": d.experience, "checks": d.checks, "ranks": d.ranks, "training": d.training, "ageing": d.ageing, "loads": d.loads, "stress": d.stress, "prisoners": d.prisoners,
+    return {"eras": eras, "era": eras[first]["era"], "ranges": eras[first]["ranges"], "equip": eras[first]["equip"], "money": d.money, "xp": d.experience, "checks": d.checks, "ranks": d.ranks, "training": d.training, "ageing": d.ageing, "loads": d.loads, "stress": d.stress, "prisoners": d.prisoners, "hazards": d.hazards,
             "locs": {l["id"]: {"name": l["name"], "zone": l["zone"], "class": l["class"]} for l in d.locations},
             "kits": {k: d.armor["kits"][k] for k in sorted(kits)},
             "fight": {"blood_pool": d.wounds["tracking"]["blood_pool"], "chr": d.wounds["combat"]["characteristics"]},
