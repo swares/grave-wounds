@@ -28,10 +28,13 @@ def _r(x: float) -> float:
     return math.floor(x * 1000 + 0.5) / 1000
 
 
-def day(d: Data, eid: str, sup: dict, fed: bool, foraged: bool, water_here: bool, high: float, men: int, wounded: int, sick: int) -> dict:
-    """A day's use: rations unless fed or foraged; water unless by water (then filled); medical
-    stores by the new wounded and the sick. -> {"sup", "hungry", "thirsty", "short"}"""
+def day(d: Data, eid: str, sup: dict, ctx: dict) -> dict:
+    """A day's use (ctx: fed, foraged, water, high, men, wounded, sick): rations unless fed or
+    foraged; water unless by water (then filled); medical stores by the new wounded and the sick.
+    -> {"sup", "hungry", "thirsty", "short"}"""
     S, out = _cfg(d), dict(sup)
+    fed, foraged, water_here, high = ctx["fed"], ctx["foraged"], ctx["water"], ctx["high"]
+    men, wounded, sick = ctx["men"], ctx["wounded"], ctx["sick"]
     hungry = False
     if not fed and not foraged:
         if out["rations"] <= 0:
@@ -76,5 +79,6 @@ def train_stock(d: Data) -> dict:
     return {"rations": T["rations"], "ammo": T["ammo"], "medical": T["medical"]}
 
 
-def medical_short(d: Data, sup: dict) -> bool:
+def medical_short(sup: dict) -> bool:
+    """With no medical stores left, the force's care in camp is a step worse."""
     return sup.get("med", 1) <= 0

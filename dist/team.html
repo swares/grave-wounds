@@ -528,7 +528,12 @@ function writeXp(all){ try{ localStorage.setItem(XP_KEY, JSON.stringify(all)) }c
 const xpOf = (all, pid) => (all[pid] ||= { ticks: {}, served: 0 });
 // Away for treatment of Strain (the team builder sends him; the travel map counts the days off).
 const xpAwayDays = pid => (pid ? readXp()[pid]?.away?.days || 0 : 0);
-function xpSendAway(pid, days, where){ if (!pid) return; const all = readXp(); xpOf(all, pid).away = { days, where }; writeXp(all) }
+function xpSendAway(pid, days, where){
+  if (!pid) return;
+  const all = readXp();
+  xpOf(all, pid).away = { days, where };
+  writeXp(all);
+}
 function xpAwayNight(pid){                        // a night away: true when his days are done and he is back
   const all = readXp(), x = all[pid];
   if (!x?.away) return false;
@@ -1108,8 +1113,8 @@ const SPD = () => TD.supplies || {};
 const spStart = eid => ({ ammo: 1, rations: SPD().rations.carried[eid] ?? 3, water: SPD().water.carried[eid] ?? 1, med: 1 });
 const spWaterNeed = high => SPD().water.need.find(b => high <= b.upto).l;
 const spR = x => Math.round(x * 1000) / 1000;
-function spDay(eid, sup, fed, foraged, waterHere, high, men, wounded, sick){   // {sup, hungry, thirsty, short}
-  const S = SPD(), out = { ...sup };
+function spDay(eid, sup, ctx){                     // ctx {fed, foraged, water, high, men, wounded, sick} -> {sup, hungry, thirsty, short}
+  const S = SPD(), out = { ...sup }, { fed, foraged, water: waterHere, high, men, wounded, sick } = ctx;
   let hungry = false;
   if (!fed && !foraged){
     if (out.rations <= 0) hungry = true;
@@ -1140,7 +1145,7 @@ function spRefill(eid, sup, men, stock = null){   // {sup, stock}: filled at a d
   return { sup: out, stock: st };
 }
 const spTrainStock = () => ({ rations: SPD().train.rations, ammo: SPD().train.ammo, medical: SPD().train.medical });
-const spMedicalShort = sup => (sup.med ?? 1) <= 0;
+const spMedicalShort = sup => (sup.med ?? 1) <= 0;   // (supplies.py medical_short)
 
 /* Character generation: same rules as gravewounds/team.py, from the team bundle TD that build.py
    writes into the team builder page (TD.era: the era's tables; TD.ranges: old-wound location
@@ -2274,7 +2279,8 @@ function stressRow(c, i){
   const lasting = due ? lastingSel(c, i) : "";
   const last = (x.stressLog || [])[0], lastText = last ? ` <span class="muted">· last: ${esc(last.why)} (+${last.amount})</span>` : "";
   const mods = (x.strainMods || []).map(m => TD.stress.mods?.[m]?.name).filter(Boolean), modText = mods.length ? " <span class=\"muted\">· a day in the line: " + esc(mods.join(", ")) + "</span>" : "";
-  const away = x.away ? ` <span class="tag" title="The travel map counts his days off; he is not with the force until they are done">Away for treatment: ${x.away.days} day${x.away.days === 1 ? "" : "s"} left</span>` : "";
+  const daysLeft = x.away ? `${x.away.days} day${x.away.days === 1 ? "" : "s"}` : "";
+  const away = x.away ? ` <span class="tag" title="The travel map counts his days off; he is not with the force until they are done">Away for treatment: ${daysLeft} left</span>` : "";
   return `<li><b>${esc(c.name)}</b>${away}: Strain ${Math.round(st.strain * 10) / 10}, Toll ${Math.round(st.toll * 10) / 10} <span class="muted">(Nerve ${nerve}; next check at ${Math.floor(stTotal(st) / TD.stress.check_every + 1) * TD.stress.check_every})</span>${lastText}
     <div>${state}</div><div class="spend">${treat}${relief}<button class="small" data-rest="${i}" title="A day out of the line, camped: −${TD.stress.rest_day} Strain">Rest a day</button>${lasting}</div>
     ${lastingText(c)}${modText}</li>`;
@@ -2757,18 +2763,19 @@ function leaderKilled(lead){                      // the team's leader killed: e
     for (const e of ev.filter(x => !x.held)) stressLog(`${m.name}: ${stName(T.id, e.result)} at the news of ${lead.name}'s death (Nerve ${e.target}, rolled ${e.roll}).`);
   }
 }
+function toPrisoners(c){                          // off the losses and onto the prisoners: his capture to roll
+  S.losses.pop();
+  const foe = TD.languages ? lgArmy(T.id, c.region).enemy : null, speaks = foe && c.tongues && lgValue(c.tongues, foe) >= (TD.languages.getting_by ?? 26);
+  c.prison = { ctx: prContexts(T.id)[0].id, circ: speaks && TD.prisoners.circumstances.quarter_tongue ? ["quarter_tongue"] : [], stage: "taken", seasons: 0, recaptured: 0, tongue: foe };
+  S.prisoners = [...(S.prisoners || []), c];
+}
 function loseMember(i, why, auto = false){        // off the team and onto the losses; leadership passes to the most experienced left
   const c = S.team[i]; if (!c) return;
   c.lost = { why, auto, slot: i, settled: null, replaced: null };
   S.team.splice(i, 1);
   (S.losses ||= []).push(c);
   if (rkLadder().length && rkIndex(c.rank) > 0) (S.vacancies ||= {})[c.rank] = (S.vacancies[c.rank] || 0) + 1;   // his rank falls vacant
-  if (why === "taken prisoner" && TD.prisoners && prContexts(T.id).length){   // not lost yet: a prisoner, whose fate is rolled
-    S.losses.pop();
-    const foe = TD.languages ? lgArmy(T.id, c.region).enemy : null, speaks = foe && c.tongues && lgValue(c.tongues, foe) >= (TD.languages.getting_by ?? 26);
-    c.prison = { ctx: prContexts(T.id)[0].id, circ: speaks && TD.prisoners.circumstances.quarter_tongue ? ["quarter_tongue"] : [], stage: "taken", seasons: 0, recaptured: 0, tongue: foe };
-    S.prisoners = [...(S.prisoners || []), c];
-  }
+  if (why === "taken prisoner" && TD.prisoners && prContexts(T.id).length) toPrisoners(c);   // not lost yet: a prisoner, whose fate is rolled
   if (c.leader && S.team.length && /killed|died/i.test(why)) leaderKilled(c);
   if (c.leader && S.team.length){
     c.leader = false;

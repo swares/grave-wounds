@@ -9,7 +9,12 @@ function writeXp(all){ try{ localStorage.setItem(XP_KEY, JSON.stringify(all)) }c
 const xpOf = (all, pid) => (all[pid] ||= { ticks: {}, served: 0 });
 // Away for treatment of Strain (the team builder sends him; the travel map counts the days off).
 const xpAwayDays = pid => (pid ? readXp()[pid]?.away?.days || 0 : 0);
-function xpSendAway(pid, days, where){ if (!pid) return; const all = readXp(); xpOf(all, pid).away = { days, where }; writeXp(all) }
+function xpSendAway(pid, days, where){
+  if (!pid) return;
+  const all = readXp();
+  xpOf(all, pid).away = { days, where };
+  writeXp(all);
+}
 function xpAwayNight(pid){                        // a night away: true when his days are done and he is back
   const all = readXp(), x = all[pid];
   if (!x?.away) return false;

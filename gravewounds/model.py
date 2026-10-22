@@ -1681,7 +1681,7 @@ def _supplies_errors(d: Data) -> list[str]:
     S, where, errors = d.supplies, "supplies.yaml", []
     for k in ("rations", "water"):
         c = (S.get(k) or {}).get("carried") or {}
-        if set(c) != set(d.teams) or any(not v > 0 for v in c.values()):
+        if set(c) != set(d.teams) or any(v <= 0 for v in c.values()):
             errors.append(f"{where}: {k} carried needs every era, each over 0")
     ups = [b.get("upto") for b in (S.get("water") or {}).get("need", [])]
     if not ups or ups != sorted(ups):

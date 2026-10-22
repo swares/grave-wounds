@@ -1151,7 +1151,7 @@ function waterHere(f, w){                        // rain, or water at or beside 
 }
 function supplyNight(f, foraged, today){          // the day's rations, water and medical stores: -> extra fatigue for thirst
   if (!supOf(f) || f.type === "wagons") return 0;
-  const r = spDay(forceEra(f), f.sup, fedByArmy(f), !!foraged || !!f.huntFed, waterHere(f, today.w), today.w.high, f.men, f.newWounded || 0, healthOf(f).cases.length);
+  const r = spDay(forceEra(f), f.sup, { fed: fedByArmy(f), foraged: !!foraged || !!f.huntFed, water: waterHere(f, today.w), high: today.w.high, men: f.men, wounded: f.newWounded || 0, sick: healthOf(f).cases.length });
   const was = !!f.supHungry;
   f.sup = r.sup; f.newWounded = 0; f.supHungry = r.hungry; f.thirsty = r.thirsty;
   if (r.hungry && !was) f.log.unshift(`${dateText(f.day, true)}: its rations are gone: the force goes hungry until it is fed or refilled.`);
@@ -1379,13 +1379,15 @@ function strainNight(f, n){                    // combat stress: a day in the li
   } else if ((f.marched || 0) <= 0) xpStressDo(n.pid, st => stRest(st, 1));
 }
 const hasCases = n => (n.health?.cases || []).length > 0;
+function awayNight(f, n){                      // a night away for treatment counted off: true while he was away
+  if (!n.pid || xpAwayDays(n.pid) <= 0) return false;
+  if (xpAwayNight(n.pid)) f.log.unshift(`${dateText(f.day, true)}: ${n.name} is back from treatment.`);
+  return true;
+}
 function xpNight(f, wetCold){                 // experience: a night served for each named man; a week nursing ticks the best Leechcraft; drill
   const all = readNamed(), mine = namedWith(all, f).filter(([, n]) => !n.dead);
   for (const [, n] of mine){
-    if (n.pid && xpAwayDays(n.pid) > 0){                   // away for treatment: no day served with the force
-      if (xpAwayNight(n.pid)) f.log.unshift(`${dateText(f.day, true)}: ${n.name} is back from treatment.`);
-      continue;
-    }
+    if (awayNight(f, n)) continue;                        // away for treatment: no day served with the force
     xpServe(n.pid, 1);                                     // a day served
     if (fedByArmy(f)) xpArmy(n.pid, !!f.unpaid);           // and his army's pay, or arrears
     if (hungryNow(f) || f.packsNight || f.thirsty || wetCold || hasCases(n)) xpMark(n.pid, "hard", 1);   // a hard night: wear (ageing)
@@ -1856,7 +1858,9 @@ function foodText(f){                          // days without fresh food, and w
   const left = DZ.scurvy.after_days - n, risk = left > 0 ? `scurvy can start in ${left} days` : "scurvy can start now";
   return `${n} day${n === 1 ? "" : "s"} without fresh food (${here}; ${risk}).`;
 }
+function renderSupplies(f){ $("#supply-note").innerHTML = DATA.supplies ? supplyHtml(f) : "" }
 function renderHealth(f){
+  renderSupplies(f);
   const camp = campHere(f), kind = camp ? camp.kind : null, c = fitOf(f), h = healthOf(f);
   const opts = [["", `From the camp (${campHygiene(null, kind)})`], ...DZ.hygiene.map(x => [x, x[0].toUpperCase() + x.slice(1)])];
   $("#chk-clean").checked = !!f.cleanNurses;
@@ -1866,7 +1870,6 @@ function renderHealth(f){
   $("#chk-withdraw").checked = !!f.withdrawing;
   $("#chk-named-acc").checked = !!f.namedAccidents;
   $("#chk-hungry").checked = !!f.shortFood;
-  if (DATA.supplies) $("#supply-note").innerHTML = supplyHtml(f);
   $("#chk-inline").checked = !!f.inLine;
   $("#chk-riskford").checked = !!f.riskFord;
   $("#chk-hunt").checked = !!f.hunt;
@@ -2172,6 +2175,11 @@ function battleTime(f, start, hours){          // the force's clock moves on to 
   f.used += left;
   f.log.unshift(`The battle ended ${dateText(f.day, true)}, ${clock(f.used, f.day)}.`);
 }
+function fieldSupplies(f, x){                  // after a battle: its ammunition as the units left it; the wounded draw on its medical stores
+  if (!supOf(f)) return;
+  if (x.ammo !== undefined && x.ammo !== null) f.sup.ammo = x.ammo;
+  f.newWounded = (f.newWounded || 0) + x.cases.length;
+}
 function applyFieldResult(){                 // a battle fought on the field map: the dead come off, the wounded join the sick
   let r = null;
   try{ r = JSON.parse(localStorage.getItem("gravewounds-field-result") || "null") }catch(e){ r = null /* unreadable: nothing to apply */ }
@@ -2180,7 +2188,7 @@ function applyFieldResult(){                 // a battle fought on the field map
   for (const [id, x] of Object.entries(r.forces)){
     const f = S.forces[r.mapId].find(o => o.id === +id); if (!f) continue;
     f.men = Math.max(0, f.men - x.lost);
-    if (supOf(f)){ if (x.ammo !== undefined && x.ammo !== null) f.sup.ammo = x.ammo; f.newWounded = (f.newWounded || 0) + x.cases.length }   // ammunition spent; the wounded draw on its medical stores
+    fieldSupplies(f, x);
     const h = healthOf(f);
     h.cases.push(...x.cases);
     for (const k of Object.keys(h.immune)) h.immune[k] = Math.min(h.immune[k], f.men);

@@ -527,8 +527,8 @@ const SPD = () => TD.supplies || {};
 const spStart = eid => ({ ammo: 1, rations: SPD().rations.carried[eid] ?? 3, water: SPD().water.carried[eid] ?? 1, med: 1 });
 const spWaterNeed = high => SPD().water.need.find(b => high <= b.upto).l;
 const spR = x => Math.round(x * 1000) / 1000;
-function spDay(eid, sup, fed, foraged, waterHere, high, men, wounded, sick){   // {sup, hungry, thirsty, short}
-  const S = SPD(), out = { ...sup };
+function spDay(eid, sup, ctx){                     // ctx {fed, foraged, water, high, men, wounded, sick} -> {sup, hungry, thirsty, short}
+  const S = SPD(), out = { ...sup }, { fed, foraged, water: waterHere, high, men, wounded, sick } = ctx;
   let hungry = false;
   if (!fed && !foraged){
     if (out.rations <= 0) hungry = true;
@@ -559,4 +559,4 @@ function spRefill(eid, sup, men, stock = null){   // {sup, stock}: filled at a d
   return { sup: out, stock: st };
 }
 const spTrainStock = () => ({ rations: SPD().train.rations, ammo: SPD().train.ammo, medical: SPD().train.medical });
-const spMedicalShort = sup => (sup.med ?? 1) <= 0;
+const spMedicalShort = sup => (sup.med ?? 1) <= 0;   // (supplies.py medical_short)
