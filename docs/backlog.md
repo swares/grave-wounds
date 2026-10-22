@@ -220,16 +220,16 @@ When an item is done, delete it here and note it in the pull request that closes
   2005); dialects (Dari against Waziri, Flemish against French) are not told apart; the field map's
   orders do not yet check a shared tongue between a leader and a mixed unit; and reading a foreign
   hand is left to Letters and the GM.
-- **Period money everywhere.** Every price is kept in its period coin (data/equipment/<era>.yaml:
-  631 items in 41 coins, each a soldier's day in its coin where known), and the shop and the purse
-  show the coin beside the Days; the rest shows Days only. To do when the rules are settled: show
-  the period coin beside the Days for rank pay, army wages at End of season, job pay, loot,
-  ransoms, training fees and the ledger (rank pay is the rank's multiple times the coin's `day`);
-  give each job its period wage as a number in its coin, not only the `wage` text (113 of the 209
-  jobs are estimates or have no period figure); and find a soldier's day for the 22 coins without
-  one (French livres 1415, Gotland marks, Confederate dollars, the Crimean and 1940s roubles, the
-  Chinese and North Korean coins, AMG lire, the 1982 peso, the Iraqi dinar, the Pakistani rupee,
-  buffalo robes and others), whose prices cannot be put in Days.
+- **Period money, first cut.** Every page shows money in the man's army's coin first, then Days;
+  the rule book's money chapter has each army's Day, pay by rank and every era's price list; 13 more
+  coins have a Day (project doc "coin-days-research"). Still left out: five coins have no Day and
+  their prices stand in coin alone (buffalo robes, North Korean won, North Vietnamese đồng, the 1982
+  Argentine peso, AMG lire); several Days are stand-ins (the French livre of 1434 for 1415, a
+  Swedish labourer's öre for Gotland, the 1850s franc for the Napoleonic, the WWI poilu's 5 sous
+  unconfirmed, a Chinese Volunteer's pocket money below an officer's, the 1995 rouble as a ceiling);
+  the Confederate dollar keeps its 1861 Day though it was worth a cent a day in gold by 1865; job
+  pay is worked from Days, not each job's sourced wage; and Iraqi militia pay ($300 a month, Sons of
+  Iraq 2008) is not a second Day.
 - **Water, heights and pursuit, first cut.** Swimming and drowning, cold water, fords, climbing,
   falls and chases in the roller; fords on the travel map. Still left out: no era has a sound
   count of who could swim (the shares are estimates); drowning counts for the Rapido, Omaha, the

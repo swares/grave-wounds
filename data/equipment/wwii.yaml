@@ -46,7 +46,8 @@ currencies:
     coin: rub
     base: kopeck
     decimal: {sym: "", suf: " rub.", per: 100, small: " kop."}
-    day_note: "no Soviet soldier's pay found"
+    day: 57
+    day_note: "a Red Army private's 17 rubles a month in wartime (about a ruble a day with allowances)"
 
 currency: {default: usd, commonwealth: gbp, germany: reichsmark, japan: yen, soviet: rub}
 

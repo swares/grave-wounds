@@ -9,7 +9,7 @@ currencies:
     coin: robe
     base: robe
     units: [{sym: " robes", of: 1}]
-    day_note: "no Day: the Plains nations traded and drew no pay"
+    day_note: "no Day: the Plains nations drew no pay; dressing one robe took a woman about 10 days"
   usd:
     name: "Dollars and cents (traders' prices)"
     coin: usd

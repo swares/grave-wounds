@@ -22,7 +22,8 @@ currencies:
     coin: rub
     base: kopeck
     decimal: {sym: "", suf: " rub.", per: 100, small: " kop."}
-    day_note: "no Russian soldier's pay found"
+    day: 1
+    day_note: "a Russian private's 2 rubles 85 kopecks a year (1850s); he was fed and clothed in kind"
 
 currency: {default: gbp, french: frf, russian: rub}
 

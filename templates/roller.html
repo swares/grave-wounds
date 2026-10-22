@@ -517,6 +517,7 @@ function moraleCheck(fighters, roll){
 // Battle map. Hexes are [col, row], pointy-top, odd rows shifted right.
 const MOVE = CMB.move, CAMP_HEX_M = MOVE.hex_m;
 // ----- named characters' sickness: a fighter can go with a force on the travel map, which runs his days -----
+Object.assign(COINS, DATA.coins || {});           // period money (purse.js)
 const TD = { checks: DATA.checks, ranks: DATA.ranks, loads: DATA.loads, stress: DATA.stress, hazards: DATA.hazards, languages: DATA.languages, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): set to a fighter's era before use
 const DZR = DATA.disease, NAMED_KEY = "gravewounds-named";   // {uid: {name, endurance, map, force, health, dead, log}}, shared with the travel map
 function readNamed(){ try{ return JSON.parse(localStorage.getItem(NAMED_KEY) || "{}") || {} }catch(e){ console.warn("named characters unreadable", e); return {} } }
@@ -765,7 +766,12 @@ function rollAfterLoot(){
     let t = `${c.name}: ${r.what || "nothing"}`;
     if (r.risk) t += `; the provost ${r.caught ? "caught him, and it is taken" : "did not catch him"}`;
     if (r.punished) t += `. ${(L.punish || "Punished.").replace(/\.$/, "")}`;
-    if (r.days && all[c.sheet.pid]){ (all[c.sheet.pid].ledger ||= []).push({ days: r.days, what: `Loot: ${r.what}` }); t += `; ${daysQ(r.days)} into his purse` }
+    const purse = all[c.sheet.pid];
+    if (r.days && purse){
+      purse.ledger = purse.ledger || [];
+      purse.ledger.push({ days: r.days, what: `Loot: ${r.what}` });
+      t += `; ${moneyQ(r.days, purse.era, purse.region)} into his purse`;
+    }
     if (r.horses) xpMark(c.sheet.pid, "horses", r.horses);
     lines.push(t + ".");
   }
@@ -1690,7 +1696,7 @@ function sheetLine(c){                          // a team builder character's sh
   const skills = h.trained.map(([n, v]) => `${n} ${v}`).join(", ");
   const olds = [...h.old.map(w => LOC[w.loc].name.toLowerCase()), ...scars];
   const old = olds.length ? ` · old wounds: ${olds.join(", ")}` : "";
-  const p = h.pid ? readPurses()[h.pid] : null, purse = p ? ` · purse ${daysQ(purseLeft(p))}` : "";   // shared with the team builder and the travel map
+  const p = h.pid ? readPurses()[h.pid] : null, purse = p ? ` · purse ${moneyQ(purseLeft(p), p.era, p.region)}` : "";   // shared with the team builder and the travel map
   const tongues = h.tongues && DATA.languages ? " · " + [DATA.languages.tongues[h.native].name, ...Object.entries(h.tongues).filter(([t]) => t !== h.native).map(([t, v]) => `${DATA.languages.tongues[t].name} ${v}`)].join(", ") : "";
   return `<div class="wears">${attr(h.career)}, ${h.terms} term${h.terms > 1 ? "s" : ""}, age ${h.age}${h.leader ? " · leads" : ""} · ${stats}</div><div class="muted">${attr(skills)} · defence ${h.defence}%${attr(old)}${purse}${attr(tongues)}</div>`;
 }

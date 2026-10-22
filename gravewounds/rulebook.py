@@ -57,8 +57,52 @@ def _keep_vars(d, cur) -> dict:
     k = keep_days(d, "medieval", "england") if "medieval" in d.equipment else None
     if not k:
         return {"keep_food": "a day's food", "keep_bed": "a night's bed"}
-    say = lambda x: days_text_q(x) + (f", {fmt(cur, int(x * cur['day'] + 0.5))}" if cur and cur.get("day") else "")
+    say = lambda x: (f"{fmt(cur, int(x * cur['day'] + 0.5))} ({days_text_q(x)})" if cur and cur.get("day") else days_text_q(x))
     return {"keep_food": say(k["food"]), "keep_bed": say(k["bed"])}
+
+
+def _army_money_rows(d: Data, eid: str) -> tuple[list, list]:
+    """An era's armies: [era, army, coin, a Day, its source] rows, and [army, pay by rank] rows."""
+    from .money import coin_text, region_currency
+    from .ranks import ladder, pay_of
+    E, T, days, pays = d.equipment[eid], d.teams[eid], [], []
+    for reg in T["regions"]:
+        cur = E["currencies"].get(region_currency(d, eid, reg["id"]) or "")
+        if not cur:
+            continue
+        note = cur.get("day_note", "") + (" (an estimate)" if cur.get("day_approx") else "")
+        days.append([T["name"], reg["name"], cur["name"], coin_text(d, eid, reg["id"], 1) or "no Day", note])
+        if ladder(d, eid) and cur.get("day"):
+            pays.append([reg["name"], " · ".join(f"{r['name']} {coin_text(d, eid, reg['id'], pay_of(d, eid, reg['id'], 'x', r['id']))}" for r in ladder(d, eid))])
+    return days, pays
+
+
+def _price_rows(d: Data, eid: str) -> list:
+    """An era's price list: [item, when, price in its coin, about so many Days]."""
+    from .money import days_text_q, price_text, row_days
+    E, rows = d.equipment[eid], []
+    for r in E["items"]:
+        cur = E["currencies"][r.get("in") or E["currency"]["default"]]
+        span = row_days(d, eid, r)
+        days = "—" if span is None else days_text_q((span[0] + span[1]) / 2)
+        per = f" ({r['per']})" if r.get("per") else ""
+        rows.append([r["name"] + per, str(r.get("when", "")), price_text(cur, r["price"]), days])
+    return rows
+
+
+def _money_tables(d: Data) -> dict:
+    """The money chapter's tables: each army's coin and its Day, pay by rank in that coin, and each
+    era's price list in its coin with the Days it comes to."""
+    out, day_rows, pay_rows = {}, [], []
+    for eid in [e for e in d.teams if e in d.equipment]:
+        days, pays = _army_money_rows(d, eid)
+        day_rows += days
+        pay_rows += pays
+        out[f"prices_{eid}"] = _md(["Item", "When", "Price", "About"], _price_rows(d, eid))
+    out["money_days"] = _md(["Era", "Army", "Coin", "A Day", "From"], day_rows)
+    out["rank_pay"] = _md(["Army", "A day's pay by rank, before stoppages"], pay_rows)
+    return out
+
 
 def _talk_values(d: Data) -> dict:
     """The tongues' and patrons' numbers the chapters quote."""
@@ -229,6 +273,8 @@ def tables(d: Data) -> dict:
         out["tongue_armies"] = _md(["Army", "His own tongue (d100)", "Others he may have: chance (figure)"], rows)
         bands = LG["bands"]
         out["tongue_bands"] = _md(["Figure", "Reads as"], _band_rows(bands))
+    if d.equipment:
+        out.update(_money_tables(d))
     if d.patrons:
         PT = d.patrons
         pb = PT["bands"]

@@ -30,7 +30,9 @@ currencies:
     coin: frf
     base: centime
     decimal: {sym: "", suf: " fr", per: 100, small: " c."}
-    day_note: "no French soldier's pay found"
+    day: 25
+    day_note: "a poilu's 5 sous a day (the usual figure; raised with a combat allowance in 1917)"
+    day_approx: true
 
 currency: {default: gbp, us: usd, germany: mark, france: frf}
 

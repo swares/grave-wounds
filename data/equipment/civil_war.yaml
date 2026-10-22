@@ -16,7 +16,8 @@ currencies:
     coin: csd
     base: cent
     decimal: {sym: "$", suf: " CS", per: 100, small: "¢ CS"}
-    day_note: "no Day: Confederate money lost almost all its value"
+    day: 37
+    day_note: "a Confederate private's $11 a month (1861; $18 from June 1864), worth a cent a day in gold by 1865"
 
 currency: {default: usd, confederacy: csd}
 

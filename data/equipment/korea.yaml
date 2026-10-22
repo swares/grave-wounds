@@ -31,7 +31,9 @@ currencies:
     coin: yuan
     base: yuan
     units: [{sym: " yuan", of: 1}]
-    day_note: "no Chinese soldier's pay found"
+    day: 1000
+    day_note: "below the 36,700 old yuan a month of a 1951 officer: an estimate for a Volunteer's pocket money"
+    day_approx: true
   kpw:
     name: "North Korean won"
     coin: kpw
