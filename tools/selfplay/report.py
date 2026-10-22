@@ -28,9 +28,9 @@ def joined(d: str) -> list:
 
 
 def lost_share(r: dict, k: int) -> float:
-    """Side k's men lost in run r (killed, left, died, carried), as a share of its men."""
+    """Side k's men lost in run r (killed, left, died, carried, taken prisoner), as a share of its men."""
     s = r["sides"][k]
-    return (s["killed"] + s["left"] + s["died"] + s["carried"]) / max(1, s["start"])
+    return (s["killed"] + s["left"] + s["died"] + s["carried"] + s.get("taken", 0)) / max(1, s["start"])
 
 
 def winner(j: dict, r: dict):

@@ -3,6 +3,9 @@
 # it can be trusted). Per battlefield:
 #   hold: units the sources say held their ground to the end of the fight the set-up covers. Holding,
 #     they fight where they stand rather than fall back to the objective.
+#   fight_on: the sides (0, 1) the accounts show fighting to the end: their cornered units do not
+#     surrender (rout.surrender) but are struck as before. From the sourced ratios of killed to
+#     prisoners (the project's surrender notes); sides with no figure are left out.
 #   withdraw: units that gave way on orders at a known time: from exchange `at` (a minute each, from the
 #     field's first) they fall back to `to`, a hex (then hold it) or a map edge (N, S, E, W: they leave
 #     the field there).
@@ -42,6 +45,7 @@ babuna-1915:
     - {unit: "2nd Regiment machine guns (the saddle)", at: 931, to: S}   # the retreat ordered at ten that night (Sandes), down the road to Prilep
     - {unit: "2nd Regiment, a company behind the saddle", at: 931, to: S}   # the retreat ordered at ten that night (Sandes), down the road to Prilep
 bougainville-1944:
+  fight_on: [1]   # Japanese: about 83 killed for each prisoner on Iwo Jima; very few surrendered in 1944-45 (the project's surrender notes)
   source: "https://ibiblio.org/hyperwar/USA/USA-P-Rabaul/USA-P-Rabaul-17.html"
   hold:
     - "145th Infantry, 2nd Battalion (west knob)"
@@ -95,6 +99,7 @@ cisterna-1944:
     - "Riflemen in haystacks and dugouts (west)"
     - "Riflemen in haystacks and dugouts (east)"
 dakto-1967:
+  fight_on: [1]   # as X-Ray (the project's surrender notes)
   source: "https://VIRTUALWALL.org/units/hill875.htm;"
   hold:
     - "174th Regiment on the crest"
@@ -121,6 +126,7 @@ goosegreen-1982:
     - "Argentine platoons in the ridge trenches (Darwin Hill)"
     - "Argentine machine guns"
 grozny-1995:
+  fight_on: [1]   # Chechens: about 11 to 14 killed for each prisoner (Russian claims) (the project's surrender notes)
   source: "https://novayagazeta.ru/articles/2021/12/31/groznyi-novogodnii-shturm-ot-pervogo-litsa;"
   hold:
     - "1st Battalion, 131st Brigade (in the station)"
@@ -128,6 +134,7 @@ grozny-1995:
     - "131st Brigade's tanks (the square)"
     - "131st Brigade's men in the freight yard"
 hamburger-1969:
+  fight_on: [1]   # as X-Ray (the project's surrender notes)
   source: "https://en.wikipedia.org/wiki/Battle_of_Hamburger_Hill"
   hold:
     - "29th Regiment on the summit"
@@ -137,6 +144,7 @@ heartbreak-1951:
   hold:
     - "North Koreans on Hill 931"
 hue-1968:
+  fight_on: [1]   # Hue: about 52 North Vietnamese killed for each prisoner (US command figures) (the project's surrender notes)
   source: "https://www.usni.org/magazines/proceedings/1982/april/battle-hue-city;"
   hold:
     - "North Vietnamese in the provincial headquarters"
@@ -155,6 +163,7 @@ keating-2009:
   hold:
     - "B Troop, 3-61 Cavalry (the barracks and command post)"
 khesanh-1968:
+  fight_on: [1]   # as X-Ray (the project's surrender notes)
   source: "https://homeofheroes.com/?p=93567"
   hold:
     - "E Company, 2/26 Marines (the west and east trenches)"
@@ -225,6 +234,7 @@ wanat-2008:
     - "2nd Platoon on the base's east side, facing the post"
     - "Humvee guns (.50 cal, Mk 19) and the TOW"
 xray-1965:
+  fight_on: [1]   # North Vietnamese: about 20 killed for each prisoner in Vietnam's official counts, 1965-67 (Thayer) (the project's surrender notes)
   source: "https://armyaviationmagazine.com/1965-ia-drang-part-i-lz-x-ray/"
   hold:
     - "2nd Platoon, B Company (cut off on the knoll)"

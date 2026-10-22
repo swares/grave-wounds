@@ -55,6 +55,8 @@ def _unit_marks(o: dict) -> dict:
         out["via"] = [list(h) for h in o["via"]]
     if o.get("hold"):
         out["hold"] = True
+    if o.get("fights_on"):
+        out["fights_on"] = True
     if o.get("withdraw"):
         out["withdraw"] = {"at": o["withdraw"]["at"], "to": o["withdraw"]["to"]}
     return out
@@ -249,7 +251,13 @@ def start_phase(d: Data, bt: dict, k: int) -> list:
     for i in range(len(bt["units"])):
         if k != 0 or bt["units"][i]["state"] != "broken":
             continue
-        through = U.ran_through(d, bt["units"], i, U.flee(d, bt["units"], i, bt["size"], bt["field"]))
+        after = U.flee(d, bt["units"], i, bt["size"], bt["field"])
+        if U.cornered(d, bt["units"], i, after):
+            s = U.surrender(bt["units"][i], U.quarter(d, bt["table"]))
+            bt["units"][i] = s["unit"]
+            ran.append({"unit": i, "through": [], "fled": True, "surrendered": True, "taken": s["taken"], "killed": s["killed"]})
+            continue
+        through = U.ran_through(d, bt["units"], i, after)
         bt["units"] = U.run_away(d, bt["units"], i, bt["size"], bt["field"])
         ran.append({"unit": i, "through": through, "fled": bt["units"][i]["state"] == "fled"})
     bt["start"] = [dict(u) for u in bt["units"]]
@@ -426,7 +434,7 @@ def after_battle(d: Data, bt: dict, care: list, evac: list, rng) -> dict:
     """The battle over: each unit's aftermath (care, evac: per unit) and the heroes' fates, applied."""
     every = after_all(d, bt)
     am = U.aftermath(d, every, care, rng, evac)
-    after = [{"id": u["id"], "killed": u.get("dead") or 0, **am[i]} for i, u in enumerate(every)]
+    after = [{"id": u["id"], "killed": u.get("dead") or 0, **am[i], **({"taken": u["taken"]} if u.get("taken") else {})} for i, u in enumerate(every)]   # taken: its men who surrendered
     fates = U.hero_fates(d, bt["units"], bt["table"], rng)
     for f in fates:
         for h in (x for x in bt["units"][f["unit"]]["heroes"] if x["id"] == f["hero"]):
@@ -489,7 +497,7 @@ def end_point(d: Data, bt: dict, stop: dict | None, every: list, after: list) ->
         rows = [(u, a) for u, a in zip(every, after) if u["side"] == side]
         sides.append({"start": sum(u.get("start") or 0 for u, _ in rows), "killed": sum(a["killed"] for _, a in rows),
                       "left": sum(a["left"] for _, a in rows), "died": sum(a["died"] for _, a in rows),
-                      "carried": sum(len(a["cases"]) for _, a in rows),
+                      "carried": sum(len(a["cases"]) for _, a in rows), "taken": sum(a.get("taken", 0) for _, a in rows),
                       "standing": sum(1 for u in bt["units"] if u["side"] == side and u["men"] > 0 and u["state"] in STANDING)})
     return {"kind": "end", "exchanges": bt["exchange"] - 1, "stop": stop, "sides": sides,
             "held": [o["held"] for o in U.objective_held(d, bt["units"], bt["field"])]}

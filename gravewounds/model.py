@@ -1154,6 +1154,9 @@ def _mark_orders(units: dict, o: dict) -> None:
     for name in o.get("hold") or []:
         if name in units:
             units[name]["hold"] = True
+    for u in units.values():                      # fight_on: sides the accounts show fighting to the end (no surrender)
+        if u.get("side") in (o.get("fight_on") or []):
+            u["fights_on"] = True
     for w in o.get("withdraw") or []:
         if w.get("unit") in units:
             units[w["unit"]]["withdraw"] = {"at": w["at"], "to": w["to"]}
@@ -1173,6 +1176,7 @@ def _orders_errors(d: Data) -> list[str]:
                    if n not in names]
         for w in o.get("withdraw") or []:
             errors += _withdraw_errors(fid, w, F["size"])
+        errors += [f"orders.yaml: {fid} fight_on side {k!r} must be 0 or 1" for k in o.get("fight_on") or [] if k not in (0, 1)]
     return errors
 
 

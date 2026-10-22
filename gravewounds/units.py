@@ -1306,6 +1306,26 @@ def men_by_hex(d: Data, u: dict) -> list:
     return out
 
 
+def cornered(d: Data, units: list, i: int, after: dict) -> bool:
+    """Broken unit i cannot run (after its flee it would stand where it is) with an enemy touching
+    it, and its side gives up (rout.surrender; not fights_on)."""
+    u = units[i]
+    if not d.units["rout"].get("surrender") or u.get("fights_on") or after["state"] == "fled" or list(after["pos"]) != list(u["pos"]):
+        return False
+    return in_contact(d, units, occupancy(d, units), i)
+
+
+def surrender(u: dict, quarter_pct: int) -> dict:
+    """A cornered unit gives up: quarter % of its men standing taken prisoner, the rest killed;
+    its heroes on their feet taken. -> {unit, taken, killed}"""
+    taken = u["men"] * quarter_pct // 100
+    killed = u["men"] - taken
+    heroes = [{**h, "state": "prisoner"} if h.get("state") == "up" and not _off_field(h) else h for h in u.get("heroes") or []]
+    unit = {**u, "state": "fled", "men": 0, "down": u.get("down", 0) + u["men"], "dead": u.get("dead", 0) + killed,
+            "taken": u.get("taken", 0) + taken, "surrendered": True, "heroes": heroes}
+    return {"unit": unit, "taken": taken, "killed": killed}
+
+
 def occupancy(d: Data, units: list) -> dict:
     """hex key -> unit index, for every unit on the map."""
     occ = {}

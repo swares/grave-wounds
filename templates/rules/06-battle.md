@@ -92,6 +92,10 @@ On the field map it runs straight back as far as it can move. Its own side's uni
 stop it: it runs on through them to the first clear ground beyond, and each unit it runs
 through loses half its move that exchange as the fugitives push through its ranks.
 
+A broken unit with nowhere to run and an enemy touching it **surrenders** instead: the war's
+quarter of its men standing are taken prisoner, the rest killed. Some armies fought to the end
+and did not (the battlefield says so): they are struck as before.
+
 !!! gm "For the GM"
     A melee of ten or twenty minutes, decided by morale more than by wounds, with the beaten
     side losing most of its men in the rout: that is the shape the records show, and the

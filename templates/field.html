@@ -1244,7 +1244,8 @@ function newMove(){                               // a side's move begins: the c
 function ranNote(ran){                            // the broken units that ran at the start of the exchange, logged
   for (const r of ran){
     const f = S.units[r.unit], past = r.through.length ? ` back through ${r.through.map(j => S.units[j].name).join(", ")}, who are jostled` : "";
-    S.log.unshift({ cls: "morale", text: r.fled ? `${unitName(f)} has fled the field.` : `${unitName(f)} runs${past}.` });
+    const gone = r.surrendered ? `${unitName(f)}, cornered with nowhere to run, surrenders: ${r.taken} taken prisoner, ${r.killed} killed.` : `${unitName(f)} has fled the field.`;
+    S.log.unshift({ cls: "morale", text: r.fled ? gone : `${unitName(f)} runs${past}.` });
   }
 }
 function lostNote(lost){                          // the units that lost their way in the dark, logged: " X lose their way." or ""
@@ -1669,9 +1670,10 @@ function sideAfter(k){
   const left = t.left ? `, ${t.left} left on the field` : "", pu = S.pursuit?.side === k ? S.pursuit : null;
   const why = pu?.why.length ? " (" + pu.why.join(", ") + ")" : "";
   const chased = pu ? ` In the pursuit${why}: ${pu.killed} of those killed, and ${pu.taken} taken prisoner.` : "";
+  const gaveUp = surrenderedOf(k), yielded = gaveUp ? ` ${gaveUp} taken prisoner when cornered on the field.` : "";
   const carried = t.cases.length ? `${t.cases.length} wounded carried to camp (${byStep(t.cases)})` : "no wounded to carry";
   const ev = S.evac?.[k] ? ` Medevac: ${FD.units.aftermath.medevac.kinds[S.evac[k]].name.toLowerCase()}.` : "";
-  return `${S.sides[k]}: ${t.killed} killed${left}, ${t.died} died of their wounds before help came; ${carried}.${ev}${chased}`;
+  return `${S.sides[k]}: ${t.killed} killed${left}, ${t.died} died of their wounds before help came; ${carried}.${ev}${yielded}${chased}`;
 }
 function forceAmmo(){                              // units of a travel-map force short of ammunition start the battle with its share of a load
   for (const u of S.units){
@@ -2157,10 +2159,13 @@ function tallyHeroes(log){                         // each hero's hits and downs
     striker = null;
   }
 }
-function captivesToTeam(){                        // the team's side chased the other: its prisoners offered to the team builder's captives
-  const pu = S.pursuit, k = S.teamSide;
-  if (k === undefined || k === null || k < 0 || !pu?.taken || pu.side === k) return;
-  try{ localStorage.setItem("gravewounds-field-captives", JSON.stringify({ place: S.from?.place || "", side: S.sides[k], enemy: S.sides[pu.side], taken: pu.taken })) }catch(e){ /* storage off: the GM takes them by hand */ }
+const surrenderedOf = k => afterUnits().reduce((n, u) => n + (sideNo(u) === k ? u.taken || 0 : 0), 0);   // side k's men who surrendered, cornered on the field
+function captivesToTeam(){                        // the enemy's men the team's side took (surrendered on the field, or caught in the pursuit), offered to the team builder's captives
+  const k = S.teamSide;
+  if (k === undefined || k === null || k < 0) return;
+  const pu = S.pursuit, enemy = 1 - k, taken = surrenderedOf(enemy) + (pu && pu.side === enemy ? pu.taken : 0);
+  if (!taken) return;
+  try{ localStorage.setItem("gravewounds-field-captives", JSON.stringify({ place: S.from?.place || "", side: S.sides[k], enemy: S.sides[enemy], taken })) }catch(e){ /* storage off: the GM takes them by hand */ }
 }
 function heroesToRoller(){                        // their wounds onto their records in the wound roller
   const lost = [0, 1].filter(k => !standing(k)), held = lost.length === 1 ? S.sides[1 - lost[0]] : null;   // the side that holds the field, if one does
