@@ -32,19 +32,19 @@ permissions:
 
 jobs:
   run:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 300
     strategy:
       fail-fast: false
       matrix:
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
     steps:
-      - uses: actions/checkout@v4        # the tools, from the workflow's own commit
-      - uses: actions/checkout@v4        # the game being measured: its page and battlefields
+      - uses: actions/checkout@v5        # the tools, from the workflow's own commit
+      - uses: actions/checkout@v5        # the game being measured: its page and battlefields
         with:
           ref: ${{ inputs.ref }}
           path: subject
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: "22"
       - name: Run this shard
@@ -57,7 +57,7 @@ jobs:
           python3 tools/selfplay/shard.py "$SHARD" 16 "$SEEDS" "$FIRST" subject/data/fields > jobs.txt
           wc -l < jobs.txt
           xargs -P "$(nproc)" -L 1 sh -c 'node tools/selfplay/targets.js "$0" "$1" subject/dist/field.html > "out/$0.s$1.json" || echo "$0 s$1 FAILED"' < jobs.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: shard-${{ matrix.shard }}
           path: out/
@@ -65,10 +65,10 @@ jobs:
 
   collect:
     needs: run
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v5
         with:
           pattern: shard-*
           path: results
@@ -77,7 +77,7 @@ jobs:
         run: |
           ls results/*.json | wc -l
           { echo '```'; python3 tools/selfplay/report.py winners results | tail -40; python3 tools/selfplay/targets.py results; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: selfplay-${{ inputs.label }}
           path: results/
