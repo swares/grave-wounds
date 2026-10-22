@@ -70,6 +70,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["waygal", "pech"], streams: STREAMS, bridges: BRIDGES, fords: [],
   farms: FARMS, woods: WOODS, hills: HILLS, mountains: [], roads: ROADS, towns: [], villages: ["wanat", "nangalam", "waygal", "aranas"],
   kinds: { wanat: "objective", blessing: "camp" },
+  depots: { blessing: ["United States"], wanat: ["Insurgents"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "2nd Platoon, Chosen Company, 2-503rd Infantry (with engineers, Marines and ANA)", type: "foot", side: "United States", men: 72, tools: true, at: "wanat" },
     { name: "Chosen Company quick reaction force (Camp Blessing)", type: "foot", side: "United States", men: 60, tools: false, at: "blessing" },

@@ -77,6 +77,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["saale", "elster"], streams: STREAMS,
   woods: WOODS, marsh: MARSH, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { naumburg: "camp", lutzen: "objective" },
+  depots: { leipzig: ["Empire"], halle: ["Empire"], naumburg: ["Sweden"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Swedish foot", type: "foot", side: "Sweden", men: 12000, tools: true, at: "naumburg" },
     { name: "Swedish horse", type: "mounted", side: "Sweden", men: 6000, tools: false, at: "naumburg" },

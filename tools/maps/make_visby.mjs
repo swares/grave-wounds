@@ -69,6 +69,7 @@ const map = buildCampaign({
   ],
   places: P, names: NAMES, notes, woods: WOODS, marsh: MARSH, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { vivesholm: "camp", visby: "objective" },
+  depots: { vivesholm: ["Denmark"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Valdemar's army", type: "foot", side: "Denmark", men: 2500, tools: true, at: "vivesholm" },
     { name: "Gotland levy, southern districts", type: "foot", side: "Gotland", men: 2000, tools: false, at: "hejde" },

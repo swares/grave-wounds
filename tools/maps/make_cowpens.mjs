@@ -80,6 +80,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["broad", "pacolet"], streams: STREAMS, fords: FORDS,
   clearings: CLEARINGS, farms: FARMS, hills: HILLS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { camp: "camp" },
+  depots: { camp: ["Americans"], cowpens: ["Americans"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Morgan's Continentals", type: "foot", side: "Americans", men: 600, tools: true, at: "camp" },
     { name: "Militia and riflemen (Pickens)", type: "foot", side: "Americans", men: 1000, tools: false, at: "camp" },

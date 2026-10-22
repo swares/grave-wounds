@@ -76,6 +76,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: [], streams: STREAMS, bridges: BRIDGES, fords: [],
   farms: FARMS, woods: [], hills: HILLS, mountains: MOUNTAINS, roads: ROADS, towns: ["hamhung", "hungnam"], villages: ["yudam", "hagaru", "kotori", "chinhung", "sinhung"],
   kinds: { hagaru: "camp", toktong: "objective", hungnam: "objective" },
+  depots: { hagaru: ["United Nations"], kotori: ["United Nations"], hamhung: ["United Nations"], hungnam: ["United Nations"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "5th and 7th Marines (Yudam-ni)", type: "foot", side: "United Nations", men: 8000, tools: true, at: "yudam" },
     { name: "Fox Company, 7th Marines", type: "foot", side: "United Nations", men: 240, tools: true, at: "toktong" },

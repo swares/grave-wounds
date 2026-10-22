@@ -84,9 +84,9 @@ terrain: |
     fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
     fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 places:
-  - {name: "Badajoz", kind: objective, hex: [19, 9], note: "Held by a French garrison and besieged by Beresford in May 1811: the prize"}
+  - {name: "Badajoz", kind: objective, hex: [19, 9], depot: ["France"], note: "Held by a French garrison and besieged by Beresford in May 1811: the prize"}
   - {name: "Siege lines", kind: camp, hex: [22, 12], note: "Beresford's siege works; the siege was raised on 13 to 15 May as Soult came on"}
-  - {name: "Elvas", kind: town, hex: [3, 9], note: "The Portuguese fortress across the border: the allies' base"}
+  - {name: "Elvas", kind: town, hex: [3, 9], depot: ["Allies"], note: "The Portuguese fortress across the border: the allies' base"}
   - {name: "Olivenza", kind: town, hex: [9, 34]}
   - {name: "Valverde de Leganés", kind: village, hex: [19, 36]}
   - {name: "La Albuera", kind: village, hex: [33, 30], note: "Where Beresford and Blake joined and stood on 16 May; the battle, south of the village"}

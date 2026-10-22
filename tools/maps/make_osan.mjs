@@ -83,6 +83,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: [], streams: STREAMS, bridges: BRIDGES, fords: FORDS,
   woods: WOODS, hills: HILLS, mountains: MOUNTAINS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { saddle: "objective", osan: "objective", pyeongtaek: "camp" },
+  depots: { pyeongtaek: ["United Nations"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Task Force Smith (1st Battalion, 21st Infantry, B and C Companies)", type: "foot", side: "United Nations", men: 415, tools: true, at: "saddle" },
     { name: "Battery of the 52nd Field Artillery (105 mm howitzers)", type: "foot", side: "United Nations", men: 125, tools: true, at: "guns" },

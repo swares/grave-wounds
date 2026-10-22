@@ -72,9 +72,9 @@ places:
   - {name: "Crash site 2 (Super 64)", kind: landmark, hex: [18, 14], note: "Super 64 came down here, less than a mile south of the first; it was overrun and its pilot taken"}
   - {name: "The Olympic Hotel", kind: town, hex: [17, 13]}
   - {name: "The Bakara Market", kind: town, hex: [14, 15]}
-  - {name: "Task Force Ranger's compound (the airport)", kind: camp, hex: [6, 31]}
+  - {name: "Task Force Ranger's compound (the airport)", kind: camp, hex: [6, 31], depot: ["United States"]}
   - {name: "The K-4 traffic circle", kind: landmark, hex: [12, 21], note: "The 10th Mountain Division's quick reaction company was pinned near here and fell back (approximate)"}
-  - {name: "The New Port", kind: landmark, hex: [24, 22], note: "Where the relief column of Pakistani tanks, Malaysian armoured carriers and American infantry formed up (approximate)"}
+  - {name: "The New Port", kind: landmark, hex: [24, 22], depot: ["United States"], note: "Where the relief column of Pakistani tanks, Malaysian armoured carriers and American infantry formed up (approximate)"}
   - {name: "The Pakistani stadium", kind: landmark, hex: [23, 8], note: "Where the force came out to at about 06:30 on 4 October, after the run out on foot (approximate)"}
 forces:
   - {name: "Task Force Ranger (Rangers and Delta)", type: foot, side: "United States", men: 160, tools: false, hex: [18, 12]}

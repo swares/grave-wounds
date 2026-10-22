@@ -67,10 +67,10 @@ terrain: |
 places:
   - {name: "Landing zone X-Ray", kind: objective, hex: [27, 25], note: "A clearing about 100 m across at the foot of the Chu Pong; the 1st Battalion, 7th Cavalry landed here from 10:48 on 14 November 1965"}
   - {name: "Landing zone Albany", kind: landmark, hex: [28, 18], note: "The 2nd Battalion, 7th Cavalry was ambushed in the tall grass short of here on 17 November"}
-  - {name: "Landing zone Falcon (the guns)", kind: camp, hex: [38, 11], note: "Two batteries of 105 mm howitzers fired for X-Ray from here, about 8 km away"}
+  - {name: "Landing zone Falcon (the guns)", kind: camp, hex: [38, 11], depot: ["United States"], note: "Two batteries of 105 mm howitzers fired for X-Ray from here, about 8 km away"}
   - {name: "Landing zone Columbus", kind: landmark, hex: [35, 21], note: "Where the 2nd Battalion, 5th Cavalry marched on the 17th (approximate)"}
   - {name: "Landing zone Victor", kind: landmark, hex: [33, 29], note: "The 2nd Battalion, 5th Cavalry landed here on the 15th and marched to X-Ray (approximate)"}
-  - {name: "The Chu Pong massif", kind: landmark, hex: [18, 31]}
+  - {name: "The Chu Pong massif", kind: landmark, hex: [18, 31], depot: ["North Vietnamese"]}
   - {name: "The knoll of the cut-off platoon", kind: landmark, hex: [26, 24], note: "2nd Platoon, B Company was cut off here on the afternoon of the 14th and held until relieved the next afternoon (approximate)"}
 forces:
   - {name: "1st Battalion, 7th Cavalry (Moore)", type: foot, side: "United States", men: 450, tools: true, hex: [27, 25]}

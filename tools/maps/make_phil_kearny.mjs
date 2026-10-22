@@ -80,6 +80,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: [], streams: STREAMS, bridges: BRIDGES, fords: FORDS,
   woods: WOODS, hills: HILLS, mountains: MOUNTAINS, water: WATER, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { fort: "camp", fetterman: "objective", wagonbox: "objective", pinery: "objective" },
+  depots: { fort: ["US Army"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Fort Phil Kearny garrison (Carrington)", type: "foot", side: "US Army", men: 350, tools: true, at: "fort" },
     { name: "2nd Cavalry, Company C", type: "mounted", side: "US Army", men: 60, tools: false, at: "fort" },

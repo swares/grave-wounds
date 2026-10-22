@@ -65,7 +65,7 @@ terrain: |
     MMMMMFF~FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
     FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 places:
-  - {name: "Khe Sanh combat base", kind: camp, hex: [31, 23], note: "The 26th Marines' base on its plateau, with the airstrip; besieged from 21 January to early April 1968 (approximate)"}
+  - {name: "Khe Sanh combat base", kind: camp, hex: [31, 23], depot: ["United States and ARVN"], note: "The 26th Marines' base on its plateau, with the airstrip; besieged from 21 January to early April 1968 (approximate)"}
   - {name: "Hill 881 South", kind: objective, hex: [21, 17], note: "India and Mike Companies, 3rd Battalion, 26th Marines held it all through the siege (approximate)"}
   - {name: "Hill 881 North", kind: landmark, hex: [22, 12]}
   - {name: "Hill 861", kind: landmark, hex: [27, 16]}
@@ -74,7 +74,7 @@ places:
   - {name: "Hill 950", kind: landmark, hex: [29, 10]}
   - {name: "Khe Sanh village", kind: village, hex: [33, 30]}
   - {name: "Lang Vei Special Forces camp", kind: village, hex: [19, 34], note: "Overrun by North Vietnamese infantry with PT-76 tanks on the night of 6-7 February 1968 (approximate)"}
-  - {name: "Co Roc (Laos)", kind: landmark, hex: [2, 39], note: "North Vietnamese guns fired on the base from these cliffs across the border (approximate)"}
+  - {name: "Co Roc (Laos)", kind: landmark, hex: [2, 39], depot: ["North Vietnamese"], note: "North Vietnamese guns fired on the base from these cliffs across the border (approximate)"}
 forces:
   - {name: "26th Marines, 1/9 Marines and the 37th ARVN Rangers", type: foot, side: "United States and ARVN", men: 6000, tools: true, hex: [31, 23]}
   - {name: "Marines on the hill outposts (881 South, 861, 861A, 558)", type: foot, side: "United States and ARVN", men: 1200, tools: true, hex: [29, 14]}

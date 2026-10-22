@@ -76,7 +76,7 @@ terrain: |
     hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
     hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
 places:
-  - {name: "Kapyong", kind: camp, hex: [15, 41]}
+  - {name: "Kapyong", kind: camp, hex: [15, 41], depot: ["United Nations"]}
   - {name: "Hill 504", kind: objective, hex: [22, 28], note: "3rd Battalion, Royal Australian Regiment held it on the night of 23-24 April 1951 and withdrew the next afternoon (approximate)"}
   - {name: "Hill 677", kind: objective, hex: [14, 27], note: "2nd Battalion, PPCLI held it on the night of 24-25 April, surrounded and supplied by air (approximate)"}
   - {name: "Hill 794 (Sudok San)", kind: landmark, hex: [13, 22], note: "Left undefended: the brigade had too few men to hold it (approximate)"}

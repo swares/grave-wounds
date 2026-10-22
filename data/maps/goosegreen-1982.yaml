@@ -61,13 +61,13 @@ terrain: |
     wwwww..................wwwwwwwwwwwww
     wwww..................wwwwwwwwwwwwww
 places:
-  - {name: "Camilla Creek House", kind: camp, hex: [17, 8], note: "2 Para's start line for the night march south, 27 May 1982 (approximate)"}
+  - {name: "Camilla Creek House", kind: camp, hex: [17, 8], depot: ["British"], note: "2 Para's start line for the night march south, 27 May 1982 (approximate)"}
   - {name: "Burntside House", kind: village, hex: [15, 17]}
   - {name: "Coronation Point", kind: landmark, hex: [20, 19]}
   - {name: "Darwin", kind: village, hex: [20, 20]}
   - {name: "Darwin Hill", kind: objective, hex: [19, 22], note: "The Argentine line's eastern end, where Lieutenant-Colonel H. Jones was killed on 28 May (approximate)"}
   - {name: "Boca House", kind: village, hex: [12, 28], note: "The Argentine line's western end (approximate)"}
-  - {name: "Goose Green", kind: objective, hex: [17, 27], note: "The settlement and the Argentine garrison, which surrendered on 29 May 1982 (approximate)"}
+  - {name: "Goose Green", kind: objective, hex: [17, 27], depot: ["Argentines"], note: "The settlement and the Argentine garrison, which surrendered on 29 May 1982 (approximate)"}
   - {name: "Goose Green airstrip", kind: landmark, hex: [19, 28]}
 forces:
   - {name: "2nd Battalion, the Parachute Regiment", type: foot, side: "British", men: 500, tools: true, hex: [17, 8]}

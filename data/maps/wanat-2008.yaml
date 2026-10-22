@@ -70,8 +70,8 @@ terrain: |
     MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM~~M
     MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 places:
-  - {name: "Wanat (Vehicle Patrol Base Kahler)", kind: objective, hex: [20, 20], note: "2nd Platoon, Chosen Company dug in here from 9 July 2008; about 200 fighters attacked at about 04:20 on the 13th"}
-  - {name: "Camp Blessing (the guns)", kind: camp, hex: [12, 35], note: "Forward Operating Base Blessing on the Pech, about 5 miles away: its 155 mm guns fired for Wanat (approximate)"}
+  - {name: "Wanat (Vehicle Patrol Base Kahler)", kind: objective, hex: [20, 20], depot: ["Insurgents"], note: "2nd Platoon, Chosen Company dug in here from 9 July 2008; about 200 fighters attacked at about 04:20 on the 13th"}
+  - {name: "Camp Blessing (the guns)", kind: camp, hex: [12, 35], depot: ["United States"], note: "Forward Operating Base Blessing on the Pech, about 5 miles away: its 155 mm guns fired for Wanat (approximate)"}
   - {name: "Nangalam", kind: village, hex: [9, 37]}
   - {name: "Waygal", kind: village, hex: [23, 5]}
   - {name: "Aranas", kind: village, hex: [34, 12], note: "A smaller outpost up the side valley (approximate)"}

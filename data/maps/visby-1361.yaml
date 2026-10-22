@@ -91,7 +91,7 @@ places:
   - {name: "Sanda", kind: village, hex: [13, 32]}
   - {name: "Hejde", kind: village, hex: [23, 32]}
   - {name: "Klintehamn", kind: village, hex: [12, 38]}
-  - {name: "Vivesholm", kind: camp, hex: [10, 39], note: "One likely landing place of the Danish fleet, 22 July 1361"}
+  - {name: "Vivesholm", kind: camp, hex: [10, 39], depot: ["Denmark"], note: "One likely landing place of the Danish fleet, 22 July 1361"}
   - {name: "Fröjel", kind: village, hex: [11, 44]}
   - {name: "Eksta", kind: village, hex: [10, 50]}
   - {name: "Kronvald", kind: landmark, hex: [8, 49], note: "The other likely landing place, on the Eksta coast"}

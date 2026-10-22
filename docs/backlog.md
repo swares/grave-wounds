@@ -102,8 +102,11 @@ When an item is done, delete it here and note it in the pull request that closes
   (project doc "supplies-research"). Still left out: the days carried are sourced for some eras
   only (medieval, Thirty Years' War, Plains and modern are estimates), the water needed by heat and
   the medical stores' reach are design figures (no dressings-per-wounded rule was found), a
-  baggage train's stock is one size whatever its wagons and does not refill itself, depots are only
-  a force's starting place (no map marks one yet), a force's own pack animals and the named men's
+  baggage train's stock is one size whatever its wagons and does not refill itself, the maps mark each side's depots
+  where a source names one (project doc "depots-research"; many rest on Wikipedia, and a side that
+  lived off the land, or whose base lay off the map, has only its starting place: the Chinese in
+  Korea, the North Vietnamese, the Germans at Mons, the British at Cowpens, the Plains nations,
+  Gotland's levy; Firebase Airborne and Plei Me are not yet on their maps), a force's own pack animals and the named men's
   carts do not carry its rations, the field map's own units do not eat or drink, rations bought
   are priced at the first army's keep for the era, and hunger and thirst only add to desertion,
   straggling, fatigue and the hard nights (no march-rate or heat-casualty rule).

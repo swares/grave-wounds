@@ -87,7 +87,7 @@ places:
   - {name: "Ghost Troop's ridge above the wadi", kind: landmark, hex: [33, 16], note: "The northernmost troop held a ridge above a wadi here against counter-attacks for about six hours into the night (approximate)"}
   - {name: "Killer Troop's position", kind: landmark, hex: [17, 41]}
   - {name: "Objective Norfolk", kind: objective, hex: [56, 23], note: "Round the crossing of the IPSA pipeline road and desert tracks; taken by the 1st Infantry Division by dawn on 27 February (approximate)"}
-  - {name: "The Iraqi supply depot", kind: objective, hex: [59, 19]}
+  - {name: "The Iraqi supply depot", kind: objective, hex: [59, 19], depot: ["Iraqis"]}
 forces:
   - {name: "Eagle Troop, 2nd Squadron", type: foot, side: "Coalition", men: 120, tools: true, hex: [9, 27]}
   - {name: "Ghost Troop, 2nd Squadron", type: foot, side: "Coalition", men: 120, tools: true, hex: [9, 16]}

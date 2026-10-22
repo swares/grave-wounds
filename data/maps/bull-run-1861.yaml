@@ -54,10 +54,10 @@ terrain: |
     fffffffffffffffffffffff~fffffffffff
     ffffffffffffffffffffffff~ffffffffff
 places:
-  - {name: "Centreville", kind: camp, hex: [20, 12], note: "McDowell's army gathered here from 18 July"}
+  - {name: "Centreville", kind: camp, hex: [20, 12], depot: ["Union"], note: "McDowell's army gathered here from 18 July"}
   - {name: "Fairfax Court House", kind: village, hex: [30, 11]}
   - {name: "Fairfax Station", kind: landmark, hex: [29, 16]}
-  - {name: "Manassas Junction", kind: objective, hex: [16, 23], note: "The railway junction both armies wanted; Johnston's army came in here by train from 19 July"}
+  - {name: "Manassas Junction", kind: objective, hex: [16, 23], depot: ["Confederacy"], note: "The railway junction both armies wanted; Johnston's army came in here by train from 19 July"}
   - {name: "Stone Bridge", kind: landmark, hex: [10, 13], note: "Evans's small brigade held the turnpike crossing on the morning of 21 July"}
   - {name: "Sudley Springs Ford", kind: landmark, hex: [9, 9], note: "Where the Union flank march crossed Bull Run on 21 July (approximate)"}
   - {name: "Ball's Ford", kind: landmark, hex: [13, 14]}

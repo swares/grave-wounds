@@ -53,7 +53,7 @@ terrain: |
     wwwwwwwwwwwwwwwwwwwwwwwwwFFFFFFFFFFFF
     wwwwwwwwwwwwwwwwwwwwwwwwwwwFFFFFFFFFF
 places:
-  - {name: "Cape Torokina", kind: camp, hex: [13, 22], note: "Where the 3rd Marine Division landed on 1 November 1943"}
+  - {name: "Cape Torokina", kind: camp, hex: [13, 22], depot: ["Americans"], note: "Where the 3rd Marine Division landed on 1 November 1943"}
   - {name: "Piva airfields", kind: objective, hex: [16, 18], note: "The bomber and fighter strips the perimeter was built to hold"}
   - {name: "Hill 700", kind: objective, hex: [18, 14], note: "Held by the 145th Infantry; Japanese troops broke into its line on 8-9 March 1944 and were driven out in days of close fighting (approximate)"}
   - {name: "Hill 260", kind: objective, hex: [22, 17], note: "An outpost of the Americal Division on a knoll east of the Torokina, fought over for weeks in March 1944 (approximate)"}

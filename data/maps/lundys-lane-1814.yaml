@@ -80,14 +80,14 @@ terrain: |
     wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwff
     wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwff
 places:
-  - {name: "Chippawa", kind: camp, hex: [20, 31], note: "The American camp from 24 July, behind the creek where they had won on 5 July"}
+  - {name: "Chippawa", kind: camp, hex: [20, 31], depot: ["United States"], note: "The American camp from 24 July, behind the creek where they had won on 5 July"}
   - {name: "Lundy's Lane", kind: landmark, hex: [18, 27], note: "The lane over a low hill above the falls, with its churchyard: the British line and guns on 25 July"}
   - {name: "Niagara Falls", kind: landmark, hex: [20, 28]}
   - {name: "Queenston", kind: village, hex: [21, 18]}
   - {name: "Lewiston", kind: village, hex: [23, 17]}
-  - {name: "Fort George", kind: objective, hex: [19, 7], note: "The British fort at the river's mouth, where Drummond landed from York"}
-  - {name: "Fort Niagara", kind: objective, hex: [21, 5], note: "Held by the British since December 1813"}
-  - {name: "Fort Erie", kind: objective, hex: [31, 51], note: "Taken by the Americans on 3 July; their way home over the river"}
+  - {name: "Fort George", kind: objective, hex: [19, 7], depot: ["Britain"], note: "The British fort at the river's mouth, where Drummond landed from York"}
+  - {name: "Fort Niagara", kind: objective, hex: [21, 5], depot: ["Britain"], note: "Held by the British since December 1813"}
+  - {name: "Fort Erie", kind: objective, hex: [31, 51], depot: ["United States"], note: "Taken by the Americans on 3 July; their way home over the river"}
   - {name: "Black Rock", kind: village, hex: [35, 47]}
   - {name: "St. Davids", kind: village, hex: [17, 18]}
   - {name: "Fort Schlosser", kind: landmark, hex: [25, 29]}

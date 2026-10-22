@@ -75,6 +75,7 @@ const map = buildCampaign({
   farms: [], woods: [], marsh: [], hills: HILLS, mountains: [], roads: ROADS,
   towns: [], villages: ["village"],
   kinds: { e60: "camp", rise: "objective", norfolk: "objective", depot: "objective" },
+  depots: { depot: ["Iraqis"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Eagle Troop, 2nd Squadron", type: "foot", side: "Coalition", men: 120, tools: true, at: "eagleback" },
     { name: "Ghost Troop, 2nd Squadron", type: "foot", side: "Coalition", men: 120, tools: true, at: "ghostback" },

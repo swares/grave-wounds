@@ -83,7 +83,7 @@ terrain: |
     wwwfffffffffffffhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhff
     wwfffffffffffffhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhfff
 places:
-  - {name: "Sidon", kind: objective, hex: [20, 13], note: "Its walls were being rebuilt in 1253 when the raiders broke in; Louis IX later helped bury the dead here"}
+  - {name: "Sidon", kind: objective, hex: [20, 13], depot: ["Franks"], note: "Its walls were being rebuilt in 1253 when the raiders broke in; Louis IX later helped bury the dead here"}
   - {name: "Sea Castle", kind: landmark, hex: [21, 12], note: "The castle on its islet off the harbour, where some of the garrison held out"}
   - {name: "Tyre", kind: town, hex: [5, 51], note: "Stands in for Louis IX's army, which was further south when Sidon fell and came afterwards"}
   - {name: "Sarepta", kind: village, hex: [14, 26]}
@@ -92,7 +92,7 @@ places:
   - {name: "Beaufort", kind: landmark, hex: [35, 43], note: "The lords of Sidon's castle above the Litani gorge"}
   - {name: "Nabatieh", kind: village, hex: [31, 36]}
   - {name: "Marj Ayyun", kind: village, hex: [41, 38]}
-  - {name: "Banias", kind: camp, hex: [50, 53], note: "The Damascene frontier town the raid came from"}
+  - {name: "Banias", kind: camp, hex: [50, 53], depot: ["Damascus"], note: "The Damascene frontier town the raid came from"}
   - {name: "Subeibe", kind: landmark, hex: [52, 52], note: "The great castle above Banias"}
   - {name: "Hasbaya", kind: village, hex: [50, 34], note: "The road on to Damascus, off the map to the east"}
   - {name: "Jezzine", kind: village, hex: [40, 15]}

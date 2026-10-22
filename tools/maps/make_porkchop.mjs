@@ -50,6 +50,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: {}, majorRivers: [], streams: STREAMS, bridges: [], fords: [],
   farms: FARMS, woods: [], hills: HILLS, mountains: [], roads: ROADS, towns: ["yeoncheon"], villages: [],
   kinds: { porkchop: "objective", rear: "camp" },
+  depots: { mlr: ["United Nations"], rear: ["United Nations"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "E Company, 31st Infantry (Pork Chop)", type: "foot", side: "United Nations", men: 100, tools: true, at: "porkchop" },
     { name: "31st Infantry (the main line)", type: "foot", side: "United Nations", men: 2500, tools: true, at: "mlr" },

@@ -72,7 +72,7 @@ terrain: |
     ffffffffffffffffffFFFFFfffffffffffffffffff
     ffffffffffffffffffFFFfffffffffffffffffffff
 places:
-  - {name: "York", kind: objective, hex: [34, 4], note: "Henry VI and Queen Margaret waited here: the Yorkists' goal"}
+  - {name: "York", kind: objective, hex: [34, 4], depot: ["Lancaster"], note: "Henry VI and Queen Margaret waited here: the Yorkists' goal"}
   - {name: "Bishopthorpe", kind: village, hex: [33, 9]}
   - {name: "Tadcaster", kind: town, hex: [22, 14], note: "The Wharfe crossing on the road to York, where the rout made for"}
   - {name: "Towton", kind: village, hex: [22, 18], note: "The battle, Palm Sunday, 29 March 1461, on the plateau between here and Saxton"}
@@ -86,7 +86,7 @@ places:
   - {name: "Brotherton", kind: village, hex: [21, 35]}
   - {name: "Ferrybridge", kind: landmark, hex: [22, 36], note: "The Aire crossing: Lord Clifford's dawn attack on the Yorkists holding it, 28 March"}
   - {name: "Knottingley", kind: village, hex: [23, 37]}
-  - {name: "Pontefract", kind: camp, hex: [19, 38], note: "Where the Yorkist army gathered, 27 and 28 March"}
+  - {name: "Pontefract", kind: camp, hex: [19, 38], depot: ["York"], note: "Where the Yorkist army gathered, 27 and 28 March"}
   - {name: "Darrington", kind: village, hex: [22, 40]}
   - {name: "Wentbridge", kind: village, hex: [22, 44], note: "The Duke of Norfolk's men came up the road from the south, late"}
   - {name: "Castleford ford", kind: landmark, hex: [16, 34], note: "Lord Fauconberg crossed the Aire here on 28 March to get round Clifford"}

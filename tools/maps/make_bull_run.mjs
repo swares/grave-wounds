@@ -86,6 +86,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["bullrun"], streams: STREAMS, bridges: BRIDGES, fords: FORDS,
   woods: WOODS, hills: HILLS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { centreville: "camp", manassas: "objective" },
+  depots: { manassas: ["Confederacy"], centreville: ["Union"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Tyler's division", type: "foot", side: "Union", men: 9000, tools: true, at: "centreville" },
     { name: "Hunter's division", type: "foot", side: "Union", men: 2500, tools: true, at: "centreville" },

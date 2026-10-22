@@ -55,6 +55,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["pukhan"], streams: STREAMS, bridges: BRIDGES, fords: [],
   farms: FARMS, woods: [], hills: HILLS, mountains: MOUNTAINS, roads: ROADS, towns: ["kapyong"], villages: ["chuktun", "naechon"],
   kinds: { h504: "objective", h677: "objective", kapyong: "camp" },
+  depots: { kapyong: ["United Nations"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "3rd Battalion, Royal Australian Regiment", type: "foot", side: "United Nations", men: 700, tools: true, at: "h504" },
     { name: "2nd Battalion, Princess Patricia's Canadian Light Infantry", type: "foot", side: "United Nations", men: 700, tools: true, at: "h677" },

@@ -102,6 +102,7 @@ const map = buildCampaign({
   coast: "drawn", places: P, names: NAMES, notes, water: WATER, rivers: RIVERS, majorRivers: ["chernaya"], bridges: BRIDGES, fords: FORDS,
   base: ".", woods: WOODS, hills: HILLS, mountains: MOUNTAINS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { redan: "objective", malakhov: "objective", camp: "camp", kamiesh: "camp", balaklava: "camp" },
+  depots: { balaklava: ["Allies"], kamiesh: ["Allies"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Light Division", type: "foot", side: "Allies", men: 3500, tools: true, at: "camp" },
     { name: "2nd Division", type: "foot", side: "Allies", men: 3500, tools: true, at: "camp" },

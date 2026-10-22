@@ -55,9 +55,9 @@ places:
   - {name: "Hill 200", kind: landmark, hex: [13, 15], note: "The outpost beside Pork Chop (approximate)"}
   - {name: "Old Baldy (Hill 266)", kind: landmark, hex: [8, 13], note: "Taken by the Chinese on 23 March 1953, which left Pork Chop open on three sides (approximate)"}
   - {name: "T-Bone Hill", kind: landmark, hex: [16, 10], note: "Chinese-held hill across the valley (approximate)"}
-  - {name: "The main line of resistance", kind: landmark, hex: [12, 17]}
+  - {name: "The main line of resistance", kind: landmark, hex: [12, 17], depot: ["United Nations"]}
   - {name: "Yeoncheon", kind: town, hex: [21, 26]}
-  - {name: "The 17th Infantry's reserve", kind: camp, hex: [13, 23]}
+  - {name: "The 17th Infantry's reserve", kind: camp, hex: [13, 23], depot: ["United Nations"]}
 forces:
   - {name: "E Company, 31st Infantry (Pork Chop)", type: foot, side: "United Nations", men: 100, tools: true, hex: [12, 14]}
   - {name: "31st Infantry (the main line)", type: foot, side: "United Nations", men: 2500, tools: true, hex: [12, 17]}

@@ -90,6 +90,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["canal", "westcanal"], streams: STREAMS, bridges: BRIDGES, fords: FORDS,
   woods: WOODS, hills: HILLS, mountains: MOUNTAINS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { cisterna: "objective", isola: "objective", anzio: "camp" },
+  depots: { anzio: ["Americans"], nettuno: ["Americans"], cisterna: ["Germans"], velletri: ["Germans"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "Ranger Force, 1st and 3rd Ranger Battalions (Darby)", type: "foot", side: "Americans", men: 767, tools: false, at: "crossing" },
     { name: "4th Ranger Battalion", type: "foot", side: "Americans", men: 400, tools: false, at: "conca" },

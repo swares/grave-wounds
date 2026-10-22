@@ -89,6 +89,7 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["canal", "sambre"], streams: STREAMS, bridges: BRIDGES, fords: FORDS,
   woods: WOODS, hills: HILLS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { mons: "objective", maubeuge: "camp" },
+  depots: { maubeuge: ["British"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "3rd Division (Hamilton)", type: "foot", side: "British", men: 15000, tools: true, at: "mons" },
     { name: "5th Division (Fergusson)", type: "foot", side: "British", men: 15000, tools: true, at: "boussu" },
