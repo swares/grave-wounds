@@ -4299,7 +4299,7 @@ function bestOrder(us, i, t, [size, field, stance, known]){   // the best-scorin
   if (best === null){
     const f = keepFront(u, bearing(u.pos, tu.pos));
     const g = turnToward(base, i, f, [size, field]);   // no hex it likes is in reach: it turns where it stands, as far toward the target as it can
-    return g === null ? null : stayOrder(us, i, t, g, shooter);
+    return stayOrder(us, i, t, g ?? u.facing, shooter);   // no turn it can make: it still goes to ground under fire where it stands
   }
   const [h, f, m] = best;
   if (h[0] === u.pos[0] && h[1] === u.pos[1]) return stayOrder(us, i, t, f, shooter);

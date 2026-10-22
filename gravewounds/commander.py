@@ -1723,7 +1723,7 @@ def _best(d: Data, us: list, i: int, t: int, ctx: tuple) -> dict | None:
     if best is None:
         f = keep_front(u, U.bearing(u["pos"], tu["pos"]))
         f = _turn_toward(d, base, i, f, (size, field))
-        return None if f is None else _stay(d, us, i, t, f, shooter)
+        return _stay(d, us, i, t, u["facing"] if f is None else f, shooter)   # no turn it can make: it still goes to ground under fire
     h, f, m = best
     if h == list(u["pos"]):
         return _stay(d, us, i, t, f, shooter)
