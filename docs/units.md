@@ -405,7 +405,10 @@ general. All its numbers are in units.yaml `commander`.
   - One point off for each hex of movement.
   - If no hex it would move to is in reach (it faces away from the target, and turning alone
     takes its whole move), it turns where it stands toward the target, as far as its move
-    allows, and moves on next time. Holding units do the same.
+    allows, and moves on next time. Holding units do the same. If it cannot turn at all (a wide line with no room, or a turn its move cannot pay for), it
+    stays facing as it is and still goes to ground under fire where it stands. Before 21 October
+    such a unit had no order at all: at X-Ray C Company, a 26-hex line, stood in the open trading
+    volleys with a battalion at 6 to 9 hexes.
   - **Room to move.** If a hex would do but the unit cannot stand there facing its target or
     objective (no room for its ranks, or the turn costs more than its move), it tries the
     facings a point either side, then two, then the way it faces now, and moves facing the

@@ -900,3 +900,24 @@ to 12. At X-Ray the North Vietnamese used to stop in the elephant grass "in rang
 they could not see; now they close until they can, and the American line fails though the
 artillery, rocket helicopters and air strikes of the account are on the field. The fix is
 right; what holds X-Ray up is to be traced, with 73 Easting's tanks and Hue itself.
+
+## X-Ray: a line that cannot turn, and the rally, 21 October 2026
+
+With the line of fire checked (#248), X-Ray fell to 1 of 24. The trace: C Company, south of the
+clearing, a line 26 hexes wide, could make no turn toward the North Vietnamese, and the commander
+then gave it no order at all, which also skipped going to ground. It stood in the open trading
+volleys with a battalion at 6 to 9 hexes, lost 46 of 105 in five minutes, and broke. A unit that
+cannot turn now stays facing as it is and goes to ground under fire where it stands. Measured on
+GitHub Actions (the selfplay workflow, 24 runs of every battlefield) against main as it now
+stands (620 of 888, Hue 3 of 24, X-Ray 1): 628 of 888. X-Ray 1 to 7, nothing else more than a
+run either way, the morale targets unchanged. X-Ray still breaks too often.
+
+**A failed rally leaving the unit shaken** (it breaks now: a shaken unit out of contact that fails
+its rally) was measured again, since the traces at Hue and X-Ray showed companies going from
+shaken to broken: 613 of 888 against 620, nothing moving outside its spread (X-Ray 15 to 14, Hue 0
+to 0, 73 Easting 19 to 15). The failed rally is not what holds those battlefields back. Not built
+(branch rally-shaken), as on 17 October.
+
+**Measuring.** The 24-run measurements now run on GitHub Actions (`.github/workflows/selfplay.yml`,
+16 parallel jobs, well under an hour) and are compared there (`selfplay-compare.yml`); runs in a
+Claude session died whenever the session went idle.
