@@ -356,8 +356,9 @@ const hzColdShock = (nerve, cold, roll) => skillCheck(nerve + HZ().cold[cold].sh
 function hzFordWater(water, fd, fc){               // a ford's {depth, current, band} at fractions of its water's span (hazards.py ford_water)
   const F = HZ().fords, W = F.water[water], r1 = x => Math.floor(x * 10 + 0.5) / 10;
   const depth = r1(W.depth[0] + fd * (W.depth[1] - W.depth[0])), current = r1(W.current[0] + fc * (W.current[1] - W.current[0]));
-  return { depth, current, band: F.currents.find(b => current <= b.upto) };
+  return { depth, current, band: hzCurrentBand(current) };
 }
+const hzCurrentBand = current => HZ().fords.currents.find(b => current <= b.upto);
 function hzFordRisk(depth, bandId, loadBand, mounted){   // the difficulty he crosses at, or null: deeper than he wades, anyone; else a heavy load
   const F = HZ().fords, b = F.currents.find(x => x.id === bandId), deep = depth > F.wade[mounted ? "mounted" : "foot"];
   return deep || loadBand >= F.from_band ? b.difficulty : null;

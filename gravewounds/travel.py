@@ -30,11 +30,41 @@ def force_types(ftype) -> list:
     return [t for t, _ in party_of(0, ftype)]
 
 
+def ford_frac(h, k: int) -> float:
+    """A fraction fixed by the hex, for its ford's depth (k 0) and current (k 1): whole-number
+    arithmetic, so the page gets the same."""
+    n = h[0] * 73 + h[1] * 151 + k * 233 + 17
+    return n * n % 1000003 * 48271 % 1000003 / 1000003
+
+
+def ford_here(d: Data, m: dict, h, ground: dict | None = None) -> dict:
+    """This ford's water ({depth, current, band}): a map place on it may set its own depth and
+    current for ordinary water; else (and in flood) fixed by the hex within its water's span."""
+    from .hazards import current_band, ford_water
+    flood = (ground or {}).get("flood", 0) > 0
+    p = next((p for p in m.get("places") or [] if list(p.get("hex", [])) == list(h) and "depth" in p), None)
+    if p and not flood:
+        return {"depth": p["depth"], "current": p["current"], "band": current_band(d, p["current"])}
+    return ford_water(d, "flooded" if flood else "normal", ford_frac(h, 0), ford_frac(h, 1))
+
+
+def too_deep(d: Data, m: dict, h, ftype, ground: dict | None = None) -> bool:
+    """A ford deeper than wheels can cross, for a force with baggage wagons (on maps before the
+    motor age: later, the wagons type is tanks and lorries)."""
+    F = (d.hazards or {}).get("fords") or {}
+    W = F.get("wade", {})
+    if "wheels" not in W or "wagons" not in force_types(ftype) or terrain_at(d, m, h)["id"] != "ford":
+        return False
+    if int(str(m.get("start_date") or "9999")[:4]) >= W.get("wheels_before", 9999):
+        return False
+    return ford_here(d, m, h, ground)["depth"] > F["wade"]["wheels"]
+
+
 def passable(d: Data, m: dict, h, ftype, ground: dict | None = None) -> bool:
     """True if this force, or every force in this column, can enter hex h on this ground."""
     t = terrain_at(d, m, h)
     barred = {x for ft in force_types(ftype) for x in d.terrain["forces"][ft].get("cannot_enter", [])}
-    return t.get("cost") is not None and t["id"] not in barred and not flooded(d, t["id"], ground)
+    return t.get("cost") is not None and t["id"] not in barred and not flooded(d, t["id"], ground) and not too_deep(d, m, h, ftype, ground)
 
 
 def column_kmh(d: Data, ftype) -> float:

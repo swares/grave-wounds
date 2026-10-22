@@ -116,7 +116,9 @@ It is the current, not the depth, that sweeps men away: the 10th Hussars' ford o
 in 1879 was about 3 ft deep with a current of about 4 m/s, and 46 men drowned with 13 horses.
 Swept off, he takes the water's cold shock (the week's warmth sets how cold it is; a flood is a
 row colder), then swims for the bank for the current's minutes; a horseman's horse may drown
-too. A force may choose to risk a flooded ford (never with wagons or guns).
+too. A force may choose to risk a flooded ford (never with wagons or guns), and before the motor
+age baggage wagons cannot cross a ford deeper than 2 ft 4 in at all: they go round by a bridge or a
+shallower ford. A map may give a ford its own depth and current, where the record has them.
 
 **Climbing.** Agility + Fieldcraft ÷ 2, for each 10 m of a rope or ladder (3 m of a free climb):
 a ladder or slope +20, a knotted rope 0, a wet rope or a rough wall −20, a sheer face −40, less for
@@ -214,7 +216,10 @@ officer's at {{cap_officer}} times a soldier's pay), **exchanged** for one of th
 **parole** (he gives his word, does not try to escape, and keeps himself), or **let go**.
 **Questioning** him is words across tongues with the team's best speaker of his tongue, or its
 interpreter: a critical, he tells all he knows; a success, something useful; a failure, little; a
-fumble, a wrong answer believed. (A postwar report credited the US Army's German-speaking
+fumble, a wrong answer believed. A captive's ransom is shared as loot is: the medieval third
+goes to the leader's lord (a gift to a patron who takes thirds), the Swedish hospitals take their
+tenth. When the team's side chases a beaten enemy on the field map, the prisoners taken in the
+pursuit are offered to the team, as many as the GM will put in its charge. (A postwar report credited the US Army's German-speaking
 interrogators, the Ritchie Boys, with nearly 60% of the credible intelligence gathered in Europe.)
 
 ## Camps {#camps}

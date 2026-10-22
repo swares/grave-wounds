@@ -389,9 +389,24 @@ function neighbours([c, r], cols, rows){
 }
 const terrainAt = (m, h) => BYKEY[m.rows[h[1]][h[0]]];
 const forceTypes = ftype => partyOf(0, ftype).map(p => p[0]);   // one force's type, or a column's types
+function fordFrac(h, k){                        // a fraction fixed by the hex, for its ford's depth (k 0) and current (k 1)
+  const n = h[0] * 73 + h[1] * 151 + k * 233 + 17;
+  return n * n % 1000003 * 48271 % 1000003 / 1000003;
+}
+function fordHere(m, h, ground = null){           // this ford's {depth, current, band}: a map place may set its own for ordinary water
+  const flood = (ground?.flood || 0) > 0, p = (m.places || []).find(x => x.hex && x.hex[0] === h[0] && x.hex[1] === h[1] && "depth" in x);
+  if (p && !flood) return { depth: p.depth, current: p.current, band: hzCurrentBand(p.current) };
+  return hzFordWater(flood ? "flooded" : "normal", fordFrac(h, 0), fordFrac(h, 1));
+}
+function tooDeep(m, h, ftype, ground = null){    // a ford deeper than wheels can cross, for a force with baggage wagons
+  const F = DATA.hazards?.fords;
+  if (!F?.wade?.wheels || !forceTypes(ftype).includes("wagons") || terrainAt(m, h).id !== "ford") return false;
+  if (+String(m.start_date || "9999").slice(0, 4) >= (F.wade.wheels_before ?? 9999)) return false;   // later, the wagons type is tanks and lorries
+  return fordHere(m, h, ground).depth > F.wade.wheels;
+}
 function passable(m, h, ftype, ground = null){  // this force, or every force in this column, can enter h
   const t = terrainAt(m, h), barred = forceTypes(ftype).flatMap(ft => FT[ft].cannot_enter || []);
-  return t.cost !== null && t.cost !== undefined && !barred.includes(t.id) && !flooded(t.id, ground);
+  return t.cost !== null && t.cost !== undefined && !barred.includes(t.id) && !flooded(t.id, ground) && !tooDeep(m, h, ftype, ground);
 }
 const columnKmh = ftype => Math.min(...forceTypes(ftype).map(ft => FT[ft].kmh));   // the slowest force's road speed
 const hexWeight = (t, ground) => Math.floor(t.cost * terrainPct(t.id, ground) + 0.5);
@@ -995,9 +1010,15 @@ const wxLine = d => { const w = d.w, c = WXD.conditions[w.cond], wn = WXD.winds.
    `among_days` nights among them has it ticked. */
 const localTongue = () => (DATA.languages?.maps || {})[S.mapId] || null;
 const speaksLocal = (n, t) => !!n.tongues && lgValue(n.tongues, t) >= (DATA.languages.getting_by ?? 26);
-function forageTongue(f){                      // [modifier, note]: Hard where no one in the force gets by in the local tongue
+function interpHere(f){                        // the team's interpreter, if he speaks the local tongue and the team's named men are with this force
+  const t = localTongue(); if (!t) return null;
+  let I = null;
+  try { I = JSON.parse(localStorage.getItem("gravewounds-interpreter") || "null") } catch (e) { I = null /* unreadable: none */ }
+  return I?.tongue === t && namedWith(readNamed(), f).some(([, n]) => n.pid && ableNow(n)) ? I : null;
+}
+function forageTongue(f){                      // [modifier, note]: Hard where no one in the force gets by in the local tongue (or the team's interpreter speaks it)
   const t = localTongue();
-  if (!t || namedWith(readNamed(), f).some(([, n]) => ableNow(n) && (speaksLocal(n, t) || !n.tongues))) return [0, ""];
+  if (!t || interpHere(f) || namedWith(readNamed(), f).some(([, n]) => ableNow(n) && (speaksLocal(n, t) || !n.tongues))) return [0, ""];
   return [DATA.languages.forage_without ?? -20, `, no one speaking ${DATA.languages.tongues[t].name}`];
 }
 function foraged(f){                          // a named man's Fieldcraft roll finds fresh food on the day's march
@@ -1013,13 +1034,14 @@ function foraged(f){                          // a named man's Fieldcraft roll f
    finding the way off the road or in bad weather. The best named man in the force rolls; a skill
    used well is ticked. */
 const USES = () => DATA.uses || {};
-function bestTalk(f, skill){                   // [figure, name, pid]: the best named man at a talk skill, capped by the local tongue
-  const t = localTongue();
+function bestTalk(f, skill){                   // [figure, name, pid]: the best named man at a talk skill, capped by the local tongue (or by the interpreter's figure, through him)
+  const t = localTongue(), I = interpHere(f);
   let best = [0, null, null];
   for (const [, n] of namedWith(readNamed(), f)){
     if (!ableNow(n)) continue;
-    let v = (n.skills || {})[skill] || 0;
-    if (t && n.tongues) v = lgTalk(v, n.tongues, n.native, t);
+    const raw = (n.skills || {})[skill] || 0;
+    let v = t && n.tongues ? lgTalk(raw, n.tongues, n.native, t) : raw;
+    if (I && n.pid) v = Math.max(v, Math.min(raw, I.figure));
     if (v > best[0]) best = [v, n.name, n.pid || null];
   }
   return best;
@@ -1239,7 +1261,6 @@ const namedWith = (all, f) => Object.entries(all).filter(([, n]) => n.map === S.
    bank: near-drowned, or drowned. */
 const hasWagons = f => forceTypes(colType(f)).includes("wagons");
 const riskGround = (f, g) => (f.riskFord && !hasWagons(f) && g && (g.flood || 0) > 0 ? { ...g, flood: 0 } : g);
-const fordFrac = (h, k) => { const x = Math.sin(h[0] * 12.9898 + h[1] * 78.233 + k * 37.719) * 43758.5453; return x - Math.floor(x) };   // fixed by the hex: its depth (k 0) and current (k 1)
 function sweptOff(f, n, ford, band){             // he is in the water: minutes to the bank -> his fate
   const B = ford.water.band;
   let step = hzColdShock(n.nerve ?? 50, ford.cold, roll100()).success ? 0 : 1, worst = step;   // cold shock, the first minute
@@ -1265,7 +1286,7 @@ function fordMan(f, n, ford, e){                // one named man at the ford: a 
 }
 function fordAt(h, g, w){                         // this ford's water today, and how cold it is
   const water = (g?.flood || 0) > 0 ? "flooded" : "normal";
-  return { water: hzFordWater(water, fordFrac(h, 0), fordFrac(h, 1)), name: DATA.hazards.fords.water[water].name, cold: hzWaterCold(w.high, w.low, water === "flooded") };
+  return { water: fordHere(curMap(), h, g), name: DATA.hazards.fords.water[water].name, cold: hzWaterCold(w.high, w.low, water === "flooded") };
 }
 function fordsCrossed(f, from, to, g){
   if (!DATA.hazards) return;
