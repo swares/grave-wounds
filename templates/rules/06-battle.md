@@ -178,7 +178,9 @@ steady friends touching it, who go in with it), and green units sometimes hesita
   cover, firing as they go, and charge it, with the same odds. Flintlock riflemen, archers
   and machine guns still fight by fire. Modern infantry storm in bounds: a unit that took
   fire in the last exchange goes to ground and fires this move, and goes on once a bound
-  draws no fire, its target is pinned, or it can charge home. A wall or
+  draws no fire, its target is pinned, or it can charge home. They go in only on a
+  target that is pinned, shaken or broken: until then they close, take cover and fire, while
+  the machine guns, mortars, guns, tanks and rockets pin it. A wall or
   palisade that blocks hand-to-hand fighting stops them at its foot, unless they carry
   ladders: then they go up it (see [works](#works)). Breaching it is the GM's order.
 

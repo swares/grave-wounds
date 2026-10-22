@@ -501,6 +501,14 @@ general. All its numbers are in units.yaml `commander`.
     runs of every battlefield: 628 of 888 from 620; Hamburger Hill 18 to 23, the morale
     targets unchanged. Goose Green still does not match (British losses 63% to 55%): the bound
     after a lull still goes into machine guns nothing has pinned.
+  - **Suppress, then assault** (`commander.suppress_first`). A storming unit with a modern
+    weapon, on foot, goes in only on a target that is pinned, shaken or broken. Until then it
+    closes as a shooter does, taking cover, and fires, while machine guns, mortars, guns,
+    tanks and rockets pin the garrison (see *Suppression*). At Hue self-play sent Marine
+    companies charging unpinned North Vietnamese veterans in the buildings, and they lost the
+    hand-to-hand fights; the Marines in fact made the breach with 106s, 3.5-inch rockets,
+    tanks and CS and went in at small cost (the Treasury: 8 wounded against 6 North Vietnamese
+    killed; the hospital bunkers: 3 wounded against 25; 2/5's February chronology).
 - **Facing.** A unit whose target is already in its front arc keeps its facing rather than
   turning to face it squarely, so a wide line does not spend its move turning.
   - Veterans prefer a hex off the target's front (30 points more).
@@ -1407,7 +1415,19 @@ stormed at all. All design estimates (`assault` in `data/units.yaml`).
 **Suppression.** A unit that a shell burst near, or a machine gun fired on (or caught in its
 beaten zone), checks at the end of the exchange: d100 against its Nerve (+10 if gone to
 ground). A failure pins it for the next exchange: it cannot move and shoots at half its rate.
-The list shows "pinned". Broken units do not check.
+The list shows "pinned". Broken units do not check. Two cases pin with no roll:
+- **Heavy direct fire** (`suppression.heavy`): a main gun's rounds (a tank's, an Ontos's, an
+  anti-tank gun's) on a unit, or a rocket or recoilless round that hits it, pin it if it holds a
+  position (in buildings, works, a bunker, or lying in cover). In Vietnam, LAWs fired at bunkers
+  stopped their fire almost every time; at Hue the 106s and 3.5-inch rockets silenced the
+  buildings for the Marines to go in.
+- **Kept under fire** (`suppression.held`): a pinned unit under fire again in the next exchange
+  stays pinned. Suppression lasts while the fire keeps up and a few seconds after, and attacks
+  failed mainly when the assault came after the fire had lifted.
+
+The sources are in the project's suppression notes (US Army field experiments of the 1960s and
+1970s, Vietnam weapons evaluations, the Hue chronologies). Rifle fire alone still does not pin:
+in the experiments it needed misses within about 3 m and a heavy volume, and cover cut it.
 
 One minute of fire on the middle of 100 regular riflemen (`python3 -m gravewounds units`, 1000
 runs, the First World War table):

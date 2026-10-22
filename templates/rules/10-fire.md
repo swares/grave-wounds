@@ -34,7 +34,9 @@ is the weight of fire, and how men live under it.
 - **Pinned.** A unit near a shell burst, or under a machine gun's fire (in its beaten zone
   too), checks at the end of the exchange: d100 against its Nerve, +{{x_sup_prone}} if gone
   to ground. On a failure it is **pinned** for the next exchange: it cannot move, and it
-  shoots at half its rate.
+  shoots at half its rate. A tank's or other main gun's rounds, or a rocket or recoilless
+  round that hits, pin a unit in buildings, works, a bunker or lying in cover with no roll; and
+  a pinned unit kept under fire the next exchange stays pinned.
 
 ## Guns of the black-powder wars {#guns}
 
