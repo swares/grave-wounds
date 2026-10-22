@@ -308,6 +308,21 @@ When an item is done, delete it here and note it in the pull request that closes
   carries in the roller, and only for named men; courses (data/training.yaml `courses`) are a
   set of examples with estimated gains and fees, the man is not missing from the team while away,
   and an apprenticeship is a year of its seven.
+- **Russia and Serbia in the First World War, first cut.** Both armies are on the team builder
+  (and so the roller, travel and field pages): names, careers, women, money, pay, prices,
+  prisoners, tongues, enlistment ages and replacements (project doc "eastern-armies-research").
+  Still left out: both fight on the shared WWI wound table (a Petrograd hospital series and a 1915
+  Kiev Red Cross report count only survivors, and nothing was found for Serbia); no Serbian pay at
+  any rank (the Day is the French poilu's, the dinar at par with the franc), and the Russian
+  corporal's pay is an estimate; Russian stoppages (kit was issued free) are not modelled, so the
+  era's kept share applies; prices are a handful for Russia (bread, meat, shoes, a suit, an army
+  horse) and none for Serbia, and every era row is offered to both, as to every army; the
+  prisoner hazards are worked from totals that conflict (Russians 8% or 20%) or lack a count of
+  those taken (Austro-Hungarians in Serbian hands); the Russian army's tongues are the 1897
+  census's (no muster counts); Serbia's boys of 1915 and old men of the third ban use the era's
+  under- and over-age shares, not their own; the Russian and Serbian names for shell shock are not
+  shown (the era's are British); no Russian or Serbian campaign map or battlefield; and the
+  Austro-Hungarian and Bulgarian enemies are not armies of their own.
 - **Women under arms, first cut.** Women serve as cantinières with the French in the Crimea, in the
   Civil War (disguised in the ranks, openly as nurses and vivandières), the Soviet Union of
   1941-45, Vietnam (the ARVN, the North and the Viet Cong) and the later wars (the US, Britain and
@@ -316,8 +331,7 @@ When an item is done, delete it here and note it in the pull request that closes
   women (Margaret Corbin at the guns, Deborah Sampson in the line), nurses (Crimea, Civil War, both
   world wars, Korea, Vietnam), auxiliaries (WAAC and QMAAC, ATS and WAC), the Female Engagement
   Teams, and the Lakota and Cheyenne women who fought. A career may have its own share. Still left
-  out: no Russian or Serbian army in the WWI tables, so the women's battalions of 1917 and Flora
-  Sandes have nowhere to serve; no women nurses for the Confederacy or Russia at Sevastopol (not
+  out: no women nurses for the Confederacy or Russia at Sevastopol (not
   in the research); the career shares of 100% are design choices (men nursed and sutled too); nurses and auxiliaries draw their army's recorded rates (project doc "prices-nurses-research"),
   but Nightingale's nurses' pay rests on an uncited figure and is not used (they draw a private's),
   the Commonwealth's WWII nurses take the American rate, and the Russian Sisters of Mercy (120 at

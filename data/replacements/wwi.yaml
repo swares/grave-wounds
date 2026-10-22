@@ -46,6 +46,30 @@ assigned:
   - 21
   what: Each regiment's depot (Ersatz) battalion trained and sent on its replacements.
   approx: true
+- id: zapas
+  name: A march company from the reserve battalion
+  regions:
+  - russia
+  careers: any
+  terms: 1
+  wait:
+  - 14
+  - 45
+  what: Reserve (zapasnye) battalions in the rear trained and sent on march companies; by 1916 men of the second-category opolchenie, who had never served, came too.
+  approx: true
+- id: next_ban
+  name: A man of the next ban
+  regions:
+  - serbia
+  careers: any
+  terms: 1
+  wait:
+  - 7
+  - 30
+  what: Serbia filled its losses from the next ban of the call-up, down to the last defence of boys of 18 and men to 50; after the retreat of 1915, only from the volunteers and the men who reached Corfu.
+  source:
+    url: https://www.vig.mod.gov.rs/pdf_clanci/vig210/02_denda_srpska_vojska_1715667994.pdf
+    note: Denda, the bans and the call-ups
 hire: []
 effects:
   default:

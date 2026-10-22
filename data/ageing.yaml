@@ -92,7 +92,7 @@ enlist:
     horse_musket: {min: 17, max: 50, source: "British recruits of 17 to 50 in the early 1700s (Recruitment in the British Army)", regions: {french: {min: 18, max: 30, source: "Jourdan law, 1798: volunteers 18 to 30, conscripts 20 to 25"}}}
     crimea: {min: 17, max: 25, source: "Victorian recruits 17 to 25 (reubique.com, Physical requirements)"}
     civil_war: {min: 18, max: 45, max_approx: true, source: "Union enlistment papers certified 18 or more; no legal most found (some 15,000 up to 44 served)"}
-    wwi: {min: 18, max: 40, source: "British: 18 to enlist, 19 to serve overseas; 40 under the Military Service Act 1916 (later 51)", regions: {us: {min: 21, max: 30, source: "Selective Service Act 1917: 21 to 30 (later 45)"}}}
+    wwi: {min: 18, max: 40, source: "British: 18 to enlist, 19 to serve overseas; 40 under the Military Service Act 1916 (later 51)", regions: {us: {min: 21, max: 30, source: "Selective Service Act 1917: 21 to 30 (later 45)"}, russia: {min: 21, max: 43, source: "Called up at 21; the opolchenie's ratniki to 43 (Tarasov 2021)"}, serbia: {min: 18, max: 50, source: "The three bans 21-45 and the last defence 18-21 and 45-50 (Denda)"}}}
     wwii: {min: 18, max: 41, source: "British: 18 to 41 in 1939 (51 by 1942)", regions: {us: {min: 18, max: 37}, us_pacific: {min: 18, max: 37}}}
     korea: {min: 18, max: 26, source: "US draft, 1948 act and 1951 amendment: 18 (18½) to 26"}
     vietnam: {min: 18, max: 26, approx: true, source: "The 1951 framework stayed in force (inference)"}
