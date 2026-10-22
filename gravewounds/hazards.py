@@ -16,7 +16,11 @@ def swim_ability(d: Data, eid: str, seamanship: int, roll: int) -> str:
     """none, basic or strong: d100 against his era's shares; Seamanship lifts it."""
     H = _cfg(d)
     sh = (H.get("swimmers") or {}).get(eid, {"none": 50, "strong": 10})
-    a = "none" if roll <= sh["none"] else "strong" if roll > 100 - sh["strong"] else "basic"
+    a = "basic"
+    if roll <= sh["none"]:
+        a = "none"
+    elif roll > 100 - sh["strong"]:
+        a = "strong"
     if seamanship >= H.get("seamanship_strong", 40):
         return "strong"
     if seamanship >= H.get("seamanship_basic", 20) and a == "none":
@@ -97,5 +101,5 @@ def chase_step(d: Data, gap: int, a_target: int, a_roll: int, b_target: int, b_r
     elif b["success"] and not (a["success"] and a["margin"] == b["margin"] and a["critical"] == b["critical"]):
         move = 2 if b["critical"] else 1
     else:
-        move = -1 if a_speed > b_speed else 1 if b_speed > a_speed else 0
+        move = (b_speed > a_speed) - (a_speed > b_speed)   # a tie to the faster
     return {"gap": min(len(C["gaps"]) - 1, max(0, gap + move)), "opposed": o}

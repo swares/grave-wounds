@@ -262,8 +262,8 @@ function hzSwimAbility(eid, seamanship, roll){       // none, basic or strong
   if (seamanship >= (H.seamanship_basic ?? 20) && a === "none") return "basic";
   return a;
 }
-function hzSwimTarget(end, ability, band, armour, current, flotation = false, minutes = 0, cold = 0){
-  const S = HZ().swim;
+function hzSwimTarget(end, ability, band, armour, water = {}){   // water: {current, flotation, minutes, cold}
+  const S = HZ().swim, { current, flotation = false, minutes = 0, cold = 0 } = water;
   let t = end + S.ability[ability] + S.load[band] + (S.armour[armour] || 0) + (S.current[current] || 0);
   if (flotation) t += S.flotation;
   const over = minutes - HZ().cold[cold].fail_after;

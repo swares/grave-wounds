@@ -586,8 +586,8 @@ function hzSwimAbility(eid, seamanship, roll){       // none, basic or strong
   if (seamanship >= (H.seamanship_basic ?? 20) && a === "none") return "basic";
   return a;
 }
-function hzSwimTarget(end, ability, band, armour, current, flotation = false, minutes = 0, cold = 0){
-  const S = HZ().swim;
+function hzSwimTarget(end, ability, band, armour, water = {}){   // water: {current, flotation, minutes, cold}
+  const S = HZ().swim, { current, flotation = false, minutes = 0, cold = 0 } = water;
   let t = end + S.ability[ability] + S.load[band] + (S.armour[armour] || 0) + (S.current[current] || 0);
   if (flotation) t += S.flotation;
   const over = minutes - HZ().cold[cold].fail_after;
@@ -1802,26 +1802,27 @@ function sweptOff(f, n, water, band){            // he is in the water: minutes 
   const H = DATA.hazards, F = H.fords[water];
   let step = 0, worst = 0;
   for (let m = 0; m < F.rounds && step < 4; m++){
-    const t = hzSwimTarget(n.end ?? 50, n.swim || "basic", band, n.kitLoad || "light", F.current, false, m, 2);
+    const t = hzSwimTarget(n.end ?? 50, n.swim || "basic", band, n.kitLoad || "light", { current: F.current, minutes: m, cold: 2 });
     step = hzSwimStep(step, t, roll100()).step; worst = Math.max(worst, step);
   }
   if (step >= 4) return "drowned";
   return worst >= 3 ? "near-drowned" : "struggled out";
 }
+function fordMan(f, n, water, e){               // one named man at the ford: a line if he is swept off
+  const band = e ? ldBand(ldLoadKg(e, loadOrder(f), n.kitLoad || "light", n.loadExtra || 0), ldBody(e, n.sex || "m"), n.str ?? 50) : 0;
+  const diff = hzFordRisk(water, band);
+  if (!diff) return null;
+  const value = f.type === "mounted" ? (n.ride || n.agi || 50) : (n.agi ?? 50);
+  if (skillCheck(value, diff, roll100()).success) return null;
+  const fate = sweptOff(f, n, water, band);
+  if (fate === "drowned"){ n.dead = true; markLost(n.pid, "killed") }
+  else if (fate === "near-drowned" && n.pid && DATA.stress) xpStress(n.pid, "near_miss", n.nerve ?? 50, "nearly drowned at a ford");
+  return `${n.name} is swept off his feet in ${DATA.hazards.fords[water].name}: ${fate}`;
+}
 function fordsCrossed(f, from, to, g){
   if (!DATA.hazards || !f.path.slice(from + 1, to + 1).some(h => terrainAt(curMap(), h).id === "ford")) return;
-  const water = (g && (g.flood || 0) > 0) ? "flooded" : "normal", e = loadEraOf(f), all = readNamed(), lines = [];
-  for (const [, n] of namedWith(all, f)){
-    if (!ableNow(n)) continue;
-    const band = e ? ldBand(ldLoadKg(e, loadOrder(f), n.kitLoad || "light", n.loadExtra || 0), ldBody(e, n.sex || "m"), n.str ?? 50) : 0;
-    const diff = hzFordRisk(water, band); if (!diff) continue;
-    const mounted = f.type === "mounted", k = skillCheck(mounted ? (n.ride || n.agi || 50) : (n.agi ?? 50), diff, roll100());
-    if (k.success) continue;
-    const fate = sweptOff(f, n, water, band);
-    if (fate === "drowned"){ n.dead = true; markLost(n.pid, "killed"); }
-    else if (fate === "near-drowned" && n.pid && DATA.stress) xpStress(n.pid, "near_miss", n.nerve ?? 50, "nearly drowned at a ford");
-    lines.push(`${n.name} is swept off his feet in ${DATA.hazards.fords[water].name}: ${fate}`);
-  }
+  const water = (g?.flood || 0) > 0 ? "flooded" : "normal", e = loadEraOf(f), all = readNamed();
+  const lines = namedWith(all, f).filter(([, n]) => ableNow(n)).map(([, n]) => fordMan(f, n, water, e)).filter(Boolean);
   writeNamed(all);
   if (lines.length) f.log.unshift(`${dateText(f.day, true)}: ${lines.join("; ")}.`);
 }
