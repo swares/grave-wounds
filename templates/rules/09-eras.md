@@ -41,10 +41,17 @@ mortars (and, in the Crimea, of sailors serving ships' guns ashore) and, in Kore
 ## Women under arms {#women}
 
 Where the records show women serving in a career, the team builder can roll a woman for it
-at that army's share. In every other army a career rolls a man, and the page gives the
-reason, since nurses and auxiliaries served but not in these careers. Each share is the
-women among the army's soldiers as a whole, not just in that career, so treat it as a rough
-guide. A GM may prefer to choose.
+at that army's share. A career with its own share (in brackets below) rolls at that instead:
+the camp women of the Thirty Years' War's baggage train, the French vivandières (four to a
+battalion from 1793), the British soldiers' wives on the strength (six in a hundred men went
+overseas, by lot), the nurses from Scutari to Vietnam, the auxiliaries of both world wars (the
+ATS made up two-thirds of the crews of Britain's mixed heavy anti-aircraft batteries), and the
+Female Engagement Teams of Iraq and Afghanistan. Women who fought are open where the records
+show them, chosen rather than rolled: the townswomen who defended Toulouse in 1218 and Dunbar
+in 1338, Margaret Corbin at her husband's gun and Deborah Sampson in the Continental line, the
+Lakota and Cheyenne women at the Rosebud and the Little Bighorn. In every other army a career
+rolls a man, and the page gives the reason. An army's share is the women among its soldiers as
+a whole, not just in that career, so treat it as a rough guide. A GM may prefer to choose.
 
 {{table:women}}
 

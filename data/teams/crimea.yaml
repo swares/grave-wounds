@@ -68,7 +68,13 @@ regions:
     colours: ["#a33a2e", "#2f3f6e", "#e6e0d2", "#3a3a3a"]
     names: [John, William, Thomas, James, George, Henry, Charles, Patrick, Michael, Edward, Robert, Joseph, Richard, Daniel, Alexander, Samuel]
     bynames: [Smith, Jones, Williams, Brown, Taylor, Murphy, Kelly, Campbell, MacDonald, Evans, Walker, Wright]
-    no_women: "Women with the British army in the Crimea were soldiers' wives and the nurses at Scutari and Balaklava: none in these careers."
+    women:
+      share: null
+      careers: [nurse]
+      shares: {nurse: 100}
+      names: [Mary, Elizabeth, Anne, Margaret, Sarah, Jane, Catherine, Ellen, Hannah, Martha, Susan, Alice]
+      closed: "British women in the Crimea were nurses and soldiers' wives, not in the fighting careers."
+      source: "The National Archives, Florence Nightingale: 38 nurses arrived at Scutari on 4 November 1854. No count of nurses' deaths found."
   - id: french
     name: "The French Army of the East"
     short: "French"
@@ -277,6 +283,22 @@ careers:
       - {to: 70, skill: fieldcraft, text: "Found food and drink where there was none."}
       - {to: 85, skill: leechcraft, text: "Tended the wounded after an assault."}
       - {to: 100, skill: dodge, text: "Carried drink to the men in the front line under fire.", wound: true}
+  - id: nurse
+    name: "Nurse at Scutari or Balaklava"
+    main: leechcraft
+    second: letters
+    prefers: [wits, end, nerve, pres, agi, str]
+    wound: 3
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: punch}
+    terms:
+      - {to: 20, skill: craft, text: "Scrubbed a ward and boiled its linen."}
+      - {to: 40, skill: letters, text: "Wrote letters home for the dying."}
+      - {to: 55, skill: leechcraft, text: "Nursed a ward through the cholera."}
+      - {to: 70, skill: persuade, text: "Got stores out of the purveyor against the regulations."}
+      - {to: 85, skill: watch, text: "Walked the wards by lamplight."}
+      - {to: 100, skill: leechcraft, text: "Nursed in the huts at Balaklava within range of the siege.", wound: true}
 
 old_wound:
   - {to: 70, kind: mark, text: "a healed scar"}

@@ -26,6 +26,7 @@
 # a night his force's pay is in arrears it is owed instead. Paid at End of season.
 literate: 20        # Letters: reads and writes
 deed_bonus: 20
+presence: {per_rank: 2, cap: 6, approx: true}   # Presence a promotion adds, at most `cap` in all (a design estimate: no source found)
 days_a_year: 365
 
 eras:
@@ -52,7 +53,7 @@ eras:
       - {id: feldwebel, name: "Feldwebel", pay: 3, years: 3, diff: hard, approx: true}
       - {id: fahnrich, name: "Ensign", pay: 6, years: 4, diff: very_hard, approx: true}
     start: {sergeant: feldwebel}
-    career_pay: {cuirassier: 2, harquebusier: 2, dragoon: 1.5, surgeon: 2.67, chaplain: 4, sutler: 0}
+    career_pay: {cuirassier: 2, harquebusier: 2, dragoon: 1.5, surgeon: 2.67, chaplain: 4, sutler: 0, camp_woman: 0}
     source: "https://lwl.org/westfaelischer-friede-download/wfe-t/wfe-txt1-31.htm"
   horse_musket:
     note: "British pay 1802-15; officers at the French rates of 1803 (British officer pay not verified). French minimum service of 1811: 2 years for corporal, 4 for sergeant, 8 for sous-lieutenant. British sergeants had to read and write; 5-6% of Peninsula officers came from the ranks. Prize shares as at Waterloo."
@@ -66,7 +67,7 @@ eras:
       - {id: ensign, name: "Ensign", pay: 6.7, years: 4, diff: very_hard, letters: true, shares: 13.5}
       - {id: captain, name: "Captain", pay: 12.5, years: 6, diff: hard, letters: true, shares: 35, approx: true}
     start: {sergeant: sergeant, officer: ensign, surgeon: ensign}
-    career_pay: {sutler: 0}
+    career_pay: {sutler: 0, vivandiere: 0, soldiers_wife: 0}
     source: "https://rapc-association.org.uk/pay-services-history/notes-on-army-pay-4.html"
   crimea:
     note: "British rates as in 1802-15, with the 6d field allowance and a ration stoppage of 4½d (so about three quarters kept). No count of commissions from the ranks found; in Russia non-noble officers were 4% in the 1860s."

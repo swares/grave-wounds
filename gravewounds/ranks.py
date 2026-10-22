@@ -84,6 +84,17 @@ def eligible(d: Data, eid: str, c: dict, idx: int) -> tuple[bool, str | None]:
     return True, None
 
 
+def _presence(rk: dict, c: dict) -> None:
+    """A promotion's Presence (ranks.yaml presence), into his characteristics' changes, up to the cap."""
+    P = rk.get("presence")
+    if not P or "stat_mods" not in c:
+        return
+    gain = min(P["per_rank"], P["cap"] - c.get("pres_rank", 0))
+    if gain > 0:
+        c["stat_mods"]["pres"] = c["stat_mods"].get("pres", 0) + gain
+        c["pres_rank"] = c.get("pres_rank", 0) + gain
+
+
 def promote(d: Data, eid: str, team: list[dict], vacancies: dict, rng) -> list[dict]:
     """End of season's promotions (team and vacancies changed in place): from the top rank down,
     each vacancy is offered to the eligible men below, most senior first (rank_days, then their
@@ -112,6 +123,7 @@ def promote(d: Data, eid: str, team: list[dict], vacancies: dict, rng) -> list[d
             old = rank_index(d, eid, won.get("rank"))      # the rank he leaves (one below, or lower for a course's)
             won["rank"], won["rank_days"], won["deed"], won["patron_help"] = r["id"], 0, False, False
             won.pop("course_rank", None)
+            _presence(R, won)
             vacancies[r["id"]] -= 1
             if old > 0:
                 vacancies[L[old]["id"]] = vacancies.get(L[old]["id"], 0) + 1

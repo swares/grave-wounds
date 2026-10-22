@@ -1239,33 +1239,45 @@ const namedWith = (all, f) => Object.entries(all).filter(([, n]) => n.map === S.
    bank: near-drowned, or drowned. */
 const hasWagons = f => forceTypes(colType(f)).includes("wagons");
 const riskGround = (f, g) => (f.riskFord && !hasWagons(f) && g && (g.flood || 0) > 0 ? { ...g, flood: 0 } : g);
-function sweptOff(f, n, water, band){            // he is in the water: minutes to the bank -> his fate
-  const H = DATA.hazards, F = H.fords[water];
-  let step = 0, worst = 0;
-  for (let m = 0; m < F.rounds && step < 4; m++){
-    const t = hzSwimTarget(n.end ?? 50, n.swim || "basic", band, n.kitLoad || "light", { current: F.current, minutes: m, cold: 2 });
+const fordFrac = (h, k) => { const x = Math.sin(h[0] * 12.9898 + h[1] * 78.233 + k * 37.719) * 43758.5453; return x - Math.floor(x) };   // fixed by the hex: its depth (k 0) and current (k 1)
+function sweptOff(f, n, ford, band){             // he is in the water: minutes to the bank -> his fate
+  const B = ford.water.band;
+  let step = hzColdShock(n.nerve ?? 50, ford.cold, roll100()).success ? 0 : 1, worst = step;   // cold shock, the first minute
+  for (let m = 0; m < B.rounds && step < 4; m++){
+    const t = hzSwimTarget(n.end ?? 50, n.swim || "basic", band, n.kitLoad || "light", { current: B.id, minutes: m, cold: ford.cold });
     step = hzSwimStep(step, t, roll100()).step; worst = Math.max(worst, step);
   }
   if (step >= 4) return "drowned";
   return worst >= 3 ? "near-drowned" : "struggled out";
 }
-function fordMan(f, n, water, e){               // one named man at the ford: a line if he is swept off
+function fordMan(f, n, ford, e){                // one named man at the ford: a line if he is swept off
   const band = e ? ldBand(ldCarried(e, loadOrder(f), n.kitLoad || "light", n.loadExtra || 0, n.carry || 0), ldBody(e, n.sex || "m"), n.str ?? 50) : 0;
-  const diff = hzFordRisk(water, band);
+  const mounted = f.type === "mounted", W = ford.water, diff = hzFordRisk(W.depth, W.band.id, band, mounted);
   if (!diff) return null;
-  const value = f.type === "mounted" ? (n.ride || n.agi || 50) : (n.agi ?? 50);
+  const value = mounted ? (n.ride || n.agi || 50) : (n.agi ?? 50);
   if (skillCheck(value, diff, roll100()).success) return null;
-  const fate = sweptOff(f, n, water, band);
+  const fate = sweptOff(f, n, ford, band);
   if (fate === "drowned"){ n.dead = true; markLost(n.pid, "killed") }
   else if (fate === "near-drowned" && n.pid && DATA.stress) xpStress(n.pid, "near_miss", n.nerve ?? 50, "nearly drowned at a ford");
-  return `${n.name} is swept off his feet in ${DATA.hazards.fords[water].name}: ${fate}`;
+  const horse = mounted && hzHorseLost(W.band.id, roll100()) ? ", and his horse is drowned" : "";
+  if (horse && (n.animals || []).includes("horse")){ n.animals.splice(n.animals.indexOf("horse"), 1); n.carry = Math.max(0, (n.carry || 0) - (animalRow("horse")?.load || 0)) }
+  return `${n.name} is swept off his feet: ${fate}${horse}`;
+}
+function fordAt(h, g, w){                         // this ford's water today, and how cold it is
+  const water = (g?.flood || 0) > 0 ? "flooded" : "normal";
+  return { water: hzFordWater(water, fordFrac(h, 0), fordFrac(h, 1)), name: DATA.hazards.fords.water[water].name, cold: hzWaterCold(w.high, w.low, water === "flooded") };
 }
 function fordsCrossed(f, from, to, g){
-  if (!DATA.hazards || !f.path.slice(from + 1, to + 1).some(h => terrainAt(curMap(), h).id === "ford")) return;
-  const water = (g?.flood || 0) > 0 ? "flooded" : "normal", e = loadEraOf(f), all = readNamed();
-  const lines = namedWith(all, f).filter(([, n]) => ableNow(n)).map(([, n]) => fordMan(f, n, water, e)).filter(Boolean);
+  if (!DATA.hazards) return;
+  const fords = f.path.slice(from + 1, to + 1).filter(h => terrainAt(curMap(), h).id === "ford");
+  if (!fords.length) return;
+  const e = loadEraOf(f), all = readNamed(), w = dayWeather(f.day).w;
+  for (const h of fords){
+    const ford = fordAt(h, g, w), W = ford.water, cn = DATA.hazards.cold[ford.cold].name, C = cn[0].toLowerCase() + cn.slice(1);
+    const lines = namedWith(all, f).filter(([, n]) => ableNow(n) && !n.dead).map(([, n]) => fordMan(f, n, ford, e)).filter(Boolean);
+    if (lines.length) f.log.unshift(`${dateText(f.day, true)}: ${ford.name}, ${W.depth} ft deep, the current ${W.current} m/s (${W.band.id}), the water ${C}: ${lines.join("; ")}.`);
+  }
   writeNamed(all);
-  if (lines.length) f.log.unshift(`${dateText(f.day, true)}: ${lines.join("; ")}.`);
 }
 function strainNight(f, n){                    // combat stress: a day in the line adds Strain; a day out of it, camped, is rest
   if (!DATA.stress || !n.pid) return;

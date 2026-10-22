@@ -572,6 +572,13 @@ def validate(d: Data) -> None:
         for k in ("pres", "wits", "nerve"):
             if not isinstance((AG.get("maturity") or {}).get(k, {}).get("cap"), int):
                 errors.append(f"ageing.yaml: maturity {k} needs to and cap")
+        EN = AG.get("enlist") or {}
+        for eid, E in (EN.get("eras") or {}).items():
+            spans = [E, *(E.get("regions") or {}).values()]
+            if eid not in d.teams or any(not (0 < x.get("min", E["min"]) < x.get("max", E["max"])) for x in spans):
+                errors.append(f"ageing.yaml: enlist {eid} needs a known era and min under max")
+        if EN and not all(0 <= v.get(k, 0) <= 100 for v in EN.get("shares", {}).values() for k in ("under", "older")):
+            errors.append("ageing.yaml: enlist shares must be 0-100")
     if d.loads:
         LD = d.loads
         ups = [b.get("upto") for b in LD.get("bands", [])]
@@ -1799,6 +1806,18 @@ def _team_errors(d: Data, era: dict) -> list[str]:
     return errors
 
 
+def _women_career_errors(w: dict, where: str, rid: str) -> list[str]:
+    """A women block's per-career settings: `disguised` and `shares` name its open careers."""
+    errors, open_ = [], set(w.get("careers") or [])
+    hid = w.get("disguised")
+    if isinstance(hid, list) and set(hid) - open_:
+        errors.append(f"{where}: region {rid} women disguised must name its open careers")
+    shares = w.get("shares") or {}
+    if set(shares) - open_ or any(not 0 < v <= 100 for v in shares.values()):
+        errors.append(f"{where}: region {rid} women shares must name its open careers, each over 0 and at most 100")
+    return errors
+
+
 def _women_errors(tables: dict, where: str, r: dict) -> list[str]:
     """A region's women block: known careers, a share (%) between 0 and 100 or null, name lists,
     and enough origins for a woman (shared or her own)."""
@@ -1810,6 +1829,7 @@ def _women_errors(tables: dict, where: str, r: dict) -> list[str]:
         errors.append(f"{where}: region {r['id']} women needs careers, all known")
     if W.get("share") is not None and not 0 < W["share"] <= 100:
         errors.append(f"{where}: region {r['id']} women share must be over 0 and at most 100 (or null)")
+    errors += _women_career_errors(W, where, r["id"])
     if any(k in W and not W[k] for k in ("names", "bynames")) or not W.get("source"):
         errors.append(f"{where}: region {r['id']} women name lists must not be empty, and the block needs a source")
     if not [o for o in tables["origins"] if o.get("who", "f") == "f"]:

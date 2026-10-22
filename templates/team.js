@@ -24,11 +24,12 @@ function openToWomen(region, careerId){           // [open, why not]
 function sexFor(region, careerId, sex, rng){      // m or f: as chosen, or (roll) at the region's share, for an open career
   const ok = openToWomen(region, careerId)[0];
   if (sex === "roll"){
-    const share = ok ? womenOf(region)?.share : null;
+    const W = womenOf(region) || {}, share = ok ? W.shares?.[careerId] ?? W.share : null;   // the career's own share, else the army's
     return share !== null && share !== undefined && rng.randint(1, SHARE_DIE) <= Math.round(share * 100) ? "f" : "m";
   }
   return sex === "f" && ok ? "f" : "m";
 }
+const disguisedAs = (reg, careerId) => { const D = reg?.women?.disguised; return D === true || (Array.isArray(D) && D.includes(careerId)) };   // as team.py disguised
 function nameFor(reg, sex, rng){                  // a name; a woman's from the women's lists, where the region has them
   const W = sex === "f" ? reg.women || {} : {}, names = W.names || reg.names, bynames = W.bynames || reg.bynames;
   return `${names[rng.randint(1, names.length) - 1]} ${bynames[rng.randint(1, bynames.length) - 1]}`;
@@ -87,10 +88,13 @@ function makeCharacter(region, careerId, terms, mode, rng, sexWanted = "m"){
     events.push(row.text);
     if (row.wound || rng.randint(1, 100) <= career.wound) old.push(oldWound(T, TD.ranges[region][career.wound_weapon], career.wound_weapon, statMods, rng));
   }
-  const reg = byId(T.regions, region), name = nameFor(reg, sex, rng), look = lookFor(reg, sex, rng);
+  const reg = byId(T.regions, region), name = nameFor(reg, disguisedAs(reg, careerId) ? "m" : sex, rng), look = lookFor(reg, sex, rng);
   const [kit, weapon] = kitFor(T, career, region);
   const c = ({ name, sex, era: T.id, region, career: careerId, terms, mode, base, stat_mods: statMods, gains, origin: origin.name,
-    trait: origin.trait.text, drawback: origin.drawback.text, events, old, age: T.age.start + T.age.per_term * terms, kit, weapon, look, aged_to: T.age.start });
+    trait: origin.trait.text, drawback: origin.drawback.text, events, old, kit, weapon, look });
+  const e = agEnlist(T.id, region, T.age.start, rng);   // his age when he enlisted, and any lie about it
+  Object.assign(c, { enlisted: e.age, age: e.age + T.age.per_term * terms, aged_to: e.age, lied: e.lied });
+  c.lied = e.lied === "over" && terms > 1 ? null : agStillLying(c);   // an older man past his first term: it stands
   agSteps(c, rng);                                 // the years of his terms: decline, maturity, wear
   finishChar(c);
   if (TD.hazards) c.swim = hzSwimAbility(T.id, c.skills.seamanship || 0, rng.randint(1, 100));   // whether he can swim
@@ -122,6 +126,28 @@ function agMature(mid, M, mat, ch){               // a step of maturity into ch,
   }
 }
 const byKey = (a, b) => a.localeCompare(b);
+/* Enlistment ages (as gravewounds/ageing.py limits, enlist, found_out, still_lying). */
+function agLimits(eid, region){                   // {min, max} for his army's enlistment, or null
+  const E = TD.ageing?.enlist?.eras?.[eid]; if (!E) return null;
+  const R = E.regions?.[region] || {};
+  return { min: R.min ?? E.min, max: R.max ?? E.max };
+}
+function agEnlist(eid, region, start, rng){       // {age, lied}: the start age raised to the least, then d100 for a boy or an older recruit
+  const L = agLimits(eid, region); if (!L) return { age: start, lied: null };
+  const E = TD.ageing.enlist, sh = E.shares[eid] || E.shares.default, r = rng.randint(1, 100);
+  if (r <= sh.under) return { age: L.min - rng.randint(1, E.under_years), lied: "under" };
+  if (r > 100 - sh.older){
+    const age = rng.randint(E.older_from, Math.max(E.older_from, L.max + E.over_years));
+    return { age, lied: age > L.max ? "over" : null };
+  }
+  return { age: Math.max(start, L.min), lied: null };
+}
+const agFoundOut = (c, roll) => !!c.lied && roll <= TD.ageing.enlist.found_out;
+function agStillLying(c){                         // a boy until he is of age, an older man through his first term
+  const L = agLimits(c.era, c.region); if (!L || !c.lied) return null;
+  if (c.lied === "under") return c.age < L.min ? "under" : null;
+  return (c.xp_terms || 0) < 1 ? "over" : null;
+}
 function agSteps(c, rng){                         // [{age, changes}]: c changed in place (stat_mods, wear, matured, aged_to)
   const A = TD.ageing; if (!A) return [];
   const step = A.step ?? 4, W = A.wear, out = [];
@@ -132,7 +158,8 @@ function agSteps(c, rng){                         // [{age, changes}]: c changed
     agDecline(band, c.wear, W, rng, ch);
     agMature(mid, A.maturity, mat, ch);
     for (const [k, v] of Object.entries(ch)) c.stat_mods[k] = (c.stat_mods[k] || 0) + v;
-    c.wear += W.per_step; c.aged_to += step;
+    const older = (c.enlisted || 0) >= (A.enlist?.older_from ?? 999);   // an older recruit wears faster
+    c.wear += W.per_step * (older ? A.enlist?.older_wear ?? 1 : 1); c.aged_to += step;
     out.push({ age: c.aged_to, changes: Object.fromEntries(Object.keys(ch).sort(byKey).map(k => [k, ch[k]])) });
   }
   return out;
@@ -215,7 +242,7 @@ function makeFollower(region, careerId, table, rng, women = "none"){
   const T = TD.era, career = byId(T.careers, careerId);
   const quality = pickRow(T.followers.quality[table], rng.randint(1, 100)).quality, q = TD.quality[quality];
   const sex = women === "roll" ? sexFor(region, careerId, "roll", rng) : "m";
-  const reg = byId(T.regions, region), name = nameFor(reg, sex, rng), look = lookFor(reg, sex, rng);
+  const reg = byId(T.regions, region), name = nameFor(reg, disguisedAs(reg, careerId) ? "m" : sex, rng), look = lookFor(reg, sex, rng);
   const [kit, weapon] = kitFor(T, career, region);
   return { name, sex, career: careerId, quality, attack: q.attack, defence: q.defence, nerve: q.nerve, kit, weapon, look, mounted: !!career.mounted };
 }
