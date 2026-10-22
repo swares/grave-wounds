@@ -518,7 +518,7 @@ function moraleCheck(fighters, roll){
 const MOVE = CMB.move, CAMP_HEX_M = MOVE.hex_m;
 // ----- named characters' sickness: a fighter can go with a force on the travel map, which runs his days -----
 Object.assign(COINS, DATA.coins || {});           // period money (purse.js)
-const TD = { checks: DATA.checks, ranks: DATA.ranks, loads: DATA.loads, stress: DATA.stress, hazards: DATA.hazards, languages: DATA.languages, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): set to a fighter's era before use
+const TD = { checks: DATA.checks, ranks: DATA.ranks, loads: DATA.loads, weights: DATA.weights, stress: DATA.stress, hazards: DATA.hazards, languages: DATA.languages, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): set to a fighter's era before use
 const DZR = DATA.disease, NAMED_KEY = "gravewounds-named";   // {uid: {name, endurance, map, force, health, dead, log}}, shared with the travel map
 function readNamed(){ try{ return JSON.parse(localStorage.getItem(NAMED_KEY) || "{}") || {} }catch(e){ console.warn("named characters unreadable", e); return {} } }
 function writeNamed(all){ try{ localStorage.setItem(NAMED_KEY, JSON.stringify(all)) }catch(e){ /* storage off: not attached */ } }
@@ -573,7 +573,7 @@ function attachNamed(c, value){                   // put him with a travel force
     const [map, id] = [value.slice(0, value.lastIndexOf(":")), +value.slice(value.lastIndexOf(":") + 1)], was = all[c.uid] || {};
     all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id, old: oldWounds(c), skills: namedSkills(c), pid: (c.sheet && c.sheet.pid) || null,
       drill: (c.sheet && c.sheet.skill_by && c.weapon && c.sheet.skill_by[c.weapon]) || null,
-      str: statOf(c, "str"), nerve: statOf(c, "nerve"), agi: statOf(c, "agi"), end: statOf(c, "end"), ride: skillAt(c, "ride"), swim: (c.sheet && c.sheet.swim) || "basic", native: (c.sheet && c.sheet.native) || null, tongues: (c.sheet && c.sheet.tongues) || null, sex: (c.sheet && c.sheet.sex) || "m", kitLoad: kitLoad(c.kit), loadExtra: (c.sheet && c.sheet.load_extra) || 0, era: loadEra(c) };   // his load on the march   // the skill drill ticks on the travel map
+      str: statOf(c, "str"), nerve: statOf(c, "nerve"), agi: statOf(c, "agi"), end: statOf(c, "end"), ride: skillAt(c, "ride"), swim: (c.sheet && c.sheet.swim) || "basic", native: (c.sheet && c.sheet.native) || null, tongues: (c.sheet && c.sheet.tongues) || null, sex: (c.sheet && c.sheet.sex) || "m", kitLoad: kitLoad(c.kit), loadExtra: (c.sheet && c.sheet.load_extra) || 0, carry: (c.sheet && c.sheet.carry) || 0, animals: (c.sheet && c.sheet.animals) || [], era: loadEra(c) };   // his load on the march   // the skill drill ticks on the travel map
   }
   writeNamed(all);
   NAMED = all;
@@ -973,6 +973,7 @@ function eraTongues(eid){
   for (const A of Object.values(DATA.languages.armies[eid] || {})){ A.own.forEach(x => ids.add(x[0])); (A.others || []).forEach(x => ids.add(x[0])) }
   return [...ids].sort((a, b) => (DATA.languages.tongues[a].name < DATA.languages.tongues[b].name ? -1 : 1));
 }
+function teamInterp(){ try { return JSON.parse(localStorage.getItem("gravewounds-interpreter") || "null") } catch (e) { return null } }   // the team builder's hired interpreter
 function listenerOf(K){                          // {name, tongues, watch}: a fighter, or someone who speaks only one tongue
   if (K.to.startsWith("t:")){ const t = K.to.slice(2); return { name: `someone who speaks ${DATA.languages.tongues[t].name}`, tongues: { [t]: DATA.languages.native }, watch: 50 } }
   const c = S.chars.find(x => x.id === +K.to.slice(2));
@@ -989,10 +990,11 @@ function renderWords(){
   if (![...others, ...strangers].some(([v]) => v === K.to)) K.to = (others[0] || strangers[0])[0];
   const checked = K.book ? " checked" : "", hasBook = (DATA.languages.phrase_books || []).includes(eid) && K.purpose === "question";
   const book = hasBook ? `<label class="check"><input type="checkbox" id="wd-book"${checked}> Phrase book: a yes or no, a number, a direction</label>` : "";
+  const I = teamInterp(), via = I ? ` <label class="check"><input type="checkbox" id="wd-via"${K.via ? " checked" : ""}> Through ${attr(I.name)} (${attr(DATA.languages.tongues[I.tongue].name)})</label>` : "";
   const items = (S.wdlog || []).map(l => `<li>${attr(l)}</li>`).join(""), log = items ? `<ol class="roundlog">${items}</ol>` : "";
   box.innerHTML = `<details class="after"${S.wdOpen ? " open" : ""}><summary><b>Words across tongues</b> <span class="muted">orders, surrender, questions, passing</span></summary>
     <div class="toolbar"><label>Who ${hazardOpts("wd-who", sp.map(x => [x.id, x.name]), K.who)}</label> <label>To ${hazardOpts("wd-to", [...others, ...strangers], K.to)}</label></div>
-    <div class="toolbar">${hazardOpts("wd-purpose", Object.entries(WD_PURPOSES), K.purpose)} ${book} <button class="small" id="wd-roll">Speak</button></div>${log}</details>`;
+    <div class="toolbar">${hazardOpts("wd-purpose", Object.entries(WD_PURPOSES), K.purpose)} ${book}${via} <button class="small" id="wd-roll">Speak</button></div>${log}</details>`;
 }
 function speak(){
   const K = S.wd, c = S.chars.find(x => x.id === K.who), L = listenerOf(K), LG_ = DATA.languages;
@@ -1007,12 +1009,16 @@ function speak(){
     if (p.opposed) line = `${c.name} passes as one of them to ${L.name} in ${LG_.tongues[t].name} (${p.grade}): ${p.opposed.a.roll} against ${p.opposed.a.target}, Watch ${p.opposed.b.roll} against ${p.opposed.b.target}: ${verdict}`;
     else line = `${c.name} cannot pass in ${LG_.tongues[t].name} (${p.grade})`;
   } else {
-    const [st, v] = lgShared(mine, L.tongues);
-    t = st;
+    let [st, v] = lgShared(mine, L.tongues);
+    const I = teamInterp(), via = !!I && K.via && I.tongue in L.tongues && I.figure > v;
+    if (via){ st = I.tongue; v = I.figure }
+    t = via ? null : st;
     const closed = K.purpose === "question" && K.book;
     const w = lgWords(v, d100(), closed, closed);
-    ok = w.check.success;
-    const how = st ? `in ${LG_.tongues[st].name} (${v})` : "with no tongue in common";
+    if (via && !I.reliable && w.check.roll >= LG_.interpreters.error_from) w.reading = "error";
+    ok = w.check.success && w.reading !== "error";
+    let how = st ? `in ${LG_.tongues[st].name} (${v})` : "with no tongue in common";
+    if (via) how = `through ${I.name} (${LG_.tongues[st].name} ${v})`;
     line = `${c.name} to ${L.name}, ${WD_PURPOSES[K.purpose].toLowerCase()}, ${how}: rolled ${w.check.roll} against ${w.check.target}: ${LG_.readings[w.reading]}`;
   }
   if (ok && t && t !== c.sheet.native && pid) xpTick(pid, "tongue:" + t, "words across tongues");
@@ -1020,7 +1026,7 @@ function speak(){
 }
 $("#words").addEventListener("change", e => {
   const K = S.wd, el = e.target;
-  if (el.id === "wd-who") K.who = +el.value; else if (el.id === "wd-to") K.to = el.value; else if (el.id === "wd-purpose") K.purpose = el.value; else if (el.id === "wd-book") K.book = el.checked;
+  if (el.id === "wd-who") K.who = +el.value; else if (el.id === "wd-to") K.to = el.value; else if (el.id === "wd-purpose") K.purpose = el.value; else if (el.id === "wd-book") K.book = el.checked; else if (el.id === "wd-via") K.via = el.checked;
   S.wdOpen = true; setTimeout(renderChars);
 });
 $("#words").addEventListener("click", e => { if (e.target.closest("#wd-roll")){ S.wdOpen = true; speak(); renderChars() } });
@@ -1101,7 +1107,7 @@ const loadEra = c => (c && c.sheet && c.sheet.era && ((DATA.loads || {}).eras ||
 const loadOrderOf = c => c.loadOrder || ((DATA.loads.eras[loadEra(c)] || {}).fights_in) || "fighting";
 function loadInfo(c){                              // {kg, band (index), afraid} or null without a sheet's era
   const eid = loadEra(c); if (!eid) return null;
-  const kg = ldLoadKg(eid, loadOrderOf(c), kitLoad(c.kit), c.sheet.load_extra || 0), afraid = (c.sheet.terms || 1) <= 1;
+  const kg = ldCarried(eid, loadOrderOf(c), kitLoad(c.kit), c.sheet.load_extra || 0, c.sheet.carry || 0), afraid = (c.sheet.terms || 1) <= 1;
   return { kg, afraid, band: ldBand(kg, ldBody(eid, c.sheet.sex || "m"), statOf(c, "str"), afraid) };
 }
 const loadBand = c => { const L = loadInfo(c); return L ? DATA.loads.bands[L.band] : null };

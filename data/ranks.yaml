@@ -208,6 +208,7 @@ loot:
     sack: {allowed: true}
     keep: 0.667
     keep_why: "a third to his lord or captain (the Durham ordinances, 1385)"
+    keep_to_patron: true      # that third goes to his lord: to a patron who takes thirds it is a gift (data/patrons.yaml)
     ransom: {days: [100, 1000], approx: true, why: "a prisoner of rank goes to the captain, who rewards the captor; an ordinary man-at-arms ransomed from 650 to 16,000 ducats after Agincourt"}
     punish: "Robbing a church, or another man's victuals: beheaded or hanged (1385)."
   thirty_years:
@@ -252,3 +253,18 @@ loot:
     field: {allowed: true, cap: 5, why: "from 2004 no weapons of any kind; helmets, uniform items, flags by written request"}
     sack: {allowed: false, provost: 60}
     punish: "Looting: any punishment short of death (UCMJ art. 103)."
+
+# Purchase of commissions (the British army, 1683-1871): in these armies a man may buy his next
+# rank at the regulation price (in the coin's smallest unit) when it falls vacant and his purse
+# allows, paying the difference from the commission he already holds; selling out on leaving
+# returns his rank's price. Free commissions also went to sergeants promoted from the ranks, and
+# by vacancies from death in action (the ordinary promotion roll). The regulation prices for line
+# infantry as printed for 1837 (said to have held 1821-1871; the 1821 date is unconfirmed); the
+# unofficial "regimental value" ran half again to double. Project doc "patrons-research".
+purchase:
+  eras: [horse_musket, crimea]
+  regions: [british_rev, british_pen, british]
+  prices: {ensign: 432000, captain: 1728000}   # farthings: £450 and £1,800
+  over_regulation: [1.5, 2]
+  source: "https://en.wikipedia.org/wiki/Purchase_of_commissions_in_the_British_Army"
+

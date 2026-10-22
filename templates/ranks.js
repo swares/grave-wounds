@@ -82,6 +82,24 @@ function rkPromote(team, vacancies, rng){          // every roll made: [{name, t
   for (const c of team) c.deed = false;
   return out;
 }
+function rkPurchase(region, c, rid){                // what buying rank rid costs (the coin's smallest unit), less the commission he holds; null where not bought
+  const P = RK().purchase || {};
+  if (!(P.eras || []).includes(TD.era.id) || !(P.regions || []).includes(region) || !(rid in (P.prices || {}))) return null;
+  const held = c.bought ? P.prices[c.bought] || 0 : 0;
+  return Math.max(0, P.prices[rid] - held);
+}
+function rkCanBuy(region, c, vacancies){            // [rank he may buy, null] or [null, why not]
+  const L = rkLadder(), i = rkIndex(c.rank), P = RK().purchase || {};
+  for (let idx = i + 1; idx < L.length; idx++){
+    const rid = L[idx].id;
+    if (rkPurchase(region, c, rid) === null) continue;
+    if ((vacancies[rid] || 0) <= 0) return [null, `no vacancy for ${L[idx].name.toLowerCase()}`];
+    const [ok, why] = rkEligible(c, idx), first = idx === L.findIndex(r => r.id in P.prices);
+    if (ok || why === "too soon" || (first && why === "not the rank below")) return [rid, null];
+    return [null, why];
+  }
+  return [null, "nothing to buy"];
+}
 function rkLoot(kind, c, rng){                      // {kind, roll, what, found, risk, opposed, caught, punished, days, horses, why}
   const R = RK(), L = (R.loot || {})[TD.era.id] || {};
   const out = { kind, roll: null, what: "", found: 0, risk: false, opposed: null, caught: false, punished: false, days: 0, horses: 0, why: "" };
@@ -148,6 +166,24 @@ function trDrill(camped, bestCommand, roll){       // null if it did not camp en
    era's orders leave it out) against his body weight and Strength gives a band. */
 const LDS = () => TD.loads || {};
 const ldEra = eid => LDS().eras?.[eid] || {};
+const WTS = () => TD.weights || {};
+function ldItemKg(row){                             // what a bought row weighs (0: eaten, a lodging, a fare, a service, an animal)
+  const W = WTS();
+  if ((W.not_carried || []).includes(row.cat)) return 0;
+  if ("kg" in row) return row.kg;
+  const p = (W.patterns || []).find(x => new RegExp(x.match, "i").test(row.name));
+  return p ? p.kg : (W.categories || {})[row.cat] ?? 0.5;
+}
+function ldAnimal(row){                             // the pack animal or vehicle a horse or travel row buys, or null
+  if (row.cat !== "horse" && row.cat !== "travel") return null;
+  return (WTS().animals || []).find(a => new RegExp(a.match, "i").test(row.name))?.id || null;
+}
+const ldCoinKg = (eid, days) => Math.max(0, days) * (WTS().coin_kg_day?.[eid] ?? 0);
+const ldCarryKg = animals => (animals || []).reduce((t, a) => t + ((WTS().animals || []).find(x => x.id === a)?.load || 0), 0);
+function ldCarried(eid, order, kitClass, extra = 0, carry = 0){   // his load less what his animals carry, never below his fighting order and armour
+  const total = ldLoadKg(eid, order, kitClass, extra);
+  return carry ? Math.max(ldLoadKg(eid, "fighting", kitClass, 0), total - carry) : total;
+}
 function ldLoadKg(eid, order, kitClass, extra = 0){ // his load in kg
   const E = ldEra(eid);
   let kg = (E.kg?.[order] || 0) + extra;

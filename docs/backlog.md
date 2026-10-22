@@ -205,11 +205,13 @@ When an item is done, delete it here and note it in the pull request that closes
     inventory of goods is kept).
 - **Patrons, first cut.** Standing per patron, favours, events, rival claims, the patron's fate
   and his clients' lot. Still left out: the fate chances and the Standing moves are design
-  estimates; British commission prices (the 1837 regulation table, £450 an ensigncy to £4,500 a
-  lieutenant-colonelcy) and private-income needs are in the research but not priced into the
-  commission favour, which is a +20 and the GM's word; patrons are not yet named people with their
-  own rank, side and purse, nor do they appear on the field map or the roller; thirds (the captain's
-  third of his men's winnings) are not taken from loot automatically; no drift without events
+  estimates; British commissions can now be bought and sold at the 1837 regulation prices (ranks.yaml
+  `purchase`), but only the ensign's and captain's prices are in the data (the lieutenant's,
+  major's and lieutenant-colonel's are not yet), the over-regulation price is the GM's to ask, and
+  private-income needs are not priced; the commission favour is still a +20 and the GM's word;
+  patrons are not yet named people with their own rank, side and purse, nor do they appear on the
+  field map or the roller; the medieval third of loot now goes to a patron who takes thirds as a
+  gift, but only to the first such patron, and the ransom of a prisoner of rank is not split; no drift without events
   (Pendragon's winter check); and Visby, the Napoleonic marshals, Korea, Vietnam, the Falklands and
   Chechnya had no patronage sources.
 - **Tongues, first cut.** Own tongue, others by army, bands, related tongues, talk caps, words
@@ -217,9 +219,10 @@ When an item is done, delete it here and note it in the pull request that closes
   among speakers. Still left out: the shares of who spoke what are estimates throughout (no muster
   counts by tongue were found); the Thirty Years' War's camp German is inferred, not sourced, and
   the King's German Legion's language of command, Crimean interpreters, Peninsula Spanish among the
-  British rank and file and interpreters' pay before 1990 were not found; interpreters are not hired
-  men with their own figure, reliability and pay (the research has Iraqi rates from $600 a month in
-  2005); dialects (Dari against Waziri, Flemish against French) are not told apart; the field map's
+  British rank and file and interpreters' pay before 1990 were not found; a team hires one
+  interpreter at a time, for a season, at an estimated wage before 1990 (Iraqi rates from $600 a
+  month in 2005 set the modern one), with no Python mirror of the hire, and the field map and travel
+  map do not use him; dialects (Dari against Waziri, Flemish against French) are not told apart; the field map's
   orders do not yet check a shared tongue between a leader and a mixed unit; and reading a foreign
   hand is left to Letters and the GM.
 - **Period money, first cut.** Every page shows money in the man's army's coin first, then Days;
@@ -247,9 +250,11 @@ When an item is done, delete it here and note it in the pull request that closes
   bands are calibrations, not figures (the death hazards are worked from the sourced totals); the
   1743, 1759 and 1780 cartels' tariffs were not found, nor Napoleonic parole-breakers' numbers,
   WWI deaths in Russian hands or the Plains nations' adoption of captives (deliberately left
-  unnumbered); exchange values are shown but not traded (a release roll stands for them); the
-  team cannot take and hold prisoners of its own beyond the loot's ransom; and a man's captivity
-  does not touch the travel map.
+  unnumbered); the cartels' exchange values are shown but not traded between armies (a release roll stands for
+  them); the team now keeps captives of its own (keep, escape, ransom, exchange one for one, parole,
+  release and questioning), but taking one is the GM's word (the field map's pursuit prisoners are
+  not handed to the team), the escape and keep figures are estimates, and the questioning results
+  are design choices; and a man's captivity does not touch the travel map.
 - **Strain, first cut.** Strain and Toll, Nerve checks, results by era name, treatment, rotation
   and homecoming, lasting-effect notes. Still left out: the calibration rests on Appel and Glass
   and Jones (Appel and Beebe 1946 and Swank and Marchand 1946 were not read in the original); no
@@ -261,12 +266,16 @@ When an item is done, delete it here and note it in the pull request that closes
   to the roller; treatment takes no time on the travel map; and the Plains nations' homecoming is
   deliberately abstract.
 - **Loads, first cut.** Load orders by era, bands by body weight and Strength, march pace and
-  fatigue, blisters, Dodge and the run, dropped and lost packs. Still left out: no item has a
-  weight, so what a man buys adds to his load only as the extra kg the GM writes on his sheet;
-  a force's load is its average man's, with no armour for its rank and file; the band steps,
+  fatigue, blisters, Dodge and the run, dropped and lost packs. What a man buys now weighs
+  (data/weights.yaml: sourced weights where found, the rest by name pattern and category
+  estimates), and so does his coin; pack animals and carts bought from the price list carry kit off
+  him, wheels slow the force off the road and in mud, and fodder or fuel is paid nightly where the
+  army does not feed it. Still left out: kit he started with weighs only as his era's orders, not
+  item by item; carts, wagons, donkeys and camels are in the data but only the Civil War's mule and
+  ox teams are on a price list (no sourced prices for the rest), and the wagon itself is not priced;
+  an animal that goes short of fodder is only logged; a force's load is its average man's, with no armour for its rank and file; the band steps,
   blister rule and the hardening of feet are design choices; the Plains nations' loads and most
-  medieval and 17th-century body weights are estimates; pack animals and carts that take the load
-  off the men are not modelled; the field map's units do not carry loads; and the terrain's extra
+  medieval and 17th-century body weights are estimates; the field map's units do not carry loads; and the terrain's extra
   cost to a loaded man (Pandolf's terrain factors) is left to the map's existing going.
 - **Ageing, first cut.** Decline, maturity, Wear and the Worn Out check. Still left out: the
   decline dice are design choices scaled to the physiology (no game-scale figures exist); the best
@@ -284,8 +293,7 @@ When an item is done, delete it here and note it in the pull request that closes
   - characteristics never change in play, and age brings no decline;
 - **Training, first cut.** Masters for hire, teammates and drill in camp tick a skill. Still left
   out: the masters' fees are estimates apart from riding lessons (London, 1879), and a master's
-  skill is always 60; a teammate who teaches is not stopped from working that week (the page says
-  he gives it up, but does not hold him to it); drill ticks only the skill of the weapon a man
+  skill is always 60; drill ticks only the skill of the weapon a man
   carries in the roller, and only for named men; courses (data/training.yaml `courses`) are a
   set of examples with estimated gains and fees, the man is not missing from the team while away,
   and an apprenticeship is a year of its seven.

@@ -254,7 +254,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
 <script>
 const DATA = /*__TRAVEL_DATA__*/null;
 Object.assign(COINS, DATA.coins || {});           // period money (purse.js)
-const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, stress: DATA.stress, hazards: DATA.hazards, languages: DATA.languages, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
+const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, weights: DATA.weights, stress: DATA.stress, hazards: DATA.hazards, languages: DATA.languages, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
 const $ = s => document.querySelector(s);
 const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
 const BYKEY = Object.fromEntries(Object.values(TT).map(t => [t.key, t]));
@@ -965,7 +965,7 @@ function blisters(f){                           // each named man who marched: h
     if (!ableNow(n)) continue;
     n.marchDays = (n.marchDays || 0) + 1;                // feet harden with days on the march
     if (((n.health || {}).cases || []).some(c => c.feet && c.step >= DZ.steps.indexOf("mending"))) continue;   // still sore
-    const kg = ldLoadKg(e, loadOrder(f), n.kitLoad || "light", n.loadExtra || 0), band = ldBand(kg, ldBody(e, n.sex || "m"), n.str ?? 50);
+    const kg = ldCarried(e, loadOrder(f), n.kitLoad || "light", n.loadExtra || 0, n.carry || 0), band = ldBand(kg, ldBody(e, n.sex || "m"), n.str ?? 50);
     if (roll100() > ldBlister(band, km, n.marchDays - 1)) continue;
     const step = DZ.steps.indexOf("mending"), [lo, hi] = DZ.wounds.fever_after;
     n.health = n.health || newHealth();
@@ -1043,6 +1043,21 @@ function huntNight(f){                         // Hunt for the pot: how many men
   const buffalo = (U.buffalo_maps || []).includes(S.mapId), fed = (buffalo ? U.buffalo : U.deer) * (k.critical ? 2 : 1);
   f.log.unshift(`${dateText(f.day, true)}: ${who} brings in ${k.critical ? "two " : "a "}${buffalo ? "buffalo" : "deer"} (Fieldcraft ${k.target}, rolled ${k.roll}): meat for ${fed} men.`);
   return fed;
+}
+// ----- pack animals and carts (weights.yaml): wheels slow the force off the road and in mud; fodder where they cannot graze -----
+const animalRow = a => (TD.weights?.animals || []).find(x => x.id === a);
+function wheelsToday(f, m, g){                 // the day's pace for wheels in the force: 1, or slower off the road and in mud
+  const W = TD.weights || {}, wheels = namedWith(readNamed(), f).some(([, n]) => (n.animals || []).some(a => animalRow(a)?.wheels));
+  if (!wheels || !f.path || f.index + 1 >= f.path.length) return 1;
+  const next = terrainAt(m, f.path[f.index + 1]).id, road = ["road", "bridge", "village", "town"].includes(next);
+  return (road ? 1 : 1 / (W.off_road || 1)) * (g.mud ? 1 / (W.mud || 1) : 1);
+}
+function fodderNight(f, n, p){                 // a night's fodder for his animals where they cannot graze: Days from his purse
+  const W = TD.weights || {}, grazes = (W.graze || []).includes(terrainAt(curMap(), f.pos).id);
+  const due = (n.animals || []).map(animalRow).filter(a => a && !(grazes && !a.fuel)).reduce((t, a) => t + (a.forage || 0), 0);
+  if (!due) return;
+  if (purseLeft(p) + 1e-9 < due){ n.log = [`${dateText(f.day, true)}: no money for fodder or fuel; his animals and machines go short.`, ...(n.log || [])].slice(0, 20); return }
+  p.ledger.push({ days: -due, what: `Fodder and fuel with ${f.name}` });
 }
 function wayToday(f, m){                       // the day's pace for finding the way: 1, or slower when the guide goes astray
   const U = USES().way;
@@ -1123,7 +1138,9 @@ function keepMan(f, n, p, k, ctx){                 // one named man's night's ke
   const pk = payKeep(purseLeft(p), 1, free ? 0 : k.food, ctx.bedHere ? k.bed : 0);
   if (pk.paid) keepLedger(p, f, pk.paid);
   keepWants(f, n, pk, ctx.noFreshBefore);
-  return !!pk.paid;
+  const before = p.ledger.length;
+  fodderNight(f, n, p);
+  return !!pk.paid || p.ledger.length > before;
 }
 function keepNight(f, camp, noFreshBefore, hunted = 0){   // each named man's food (none if the host or the hunt feeds him), and a bed in a village or town unless camped
   const all = readNamed(), mine = namedWith(all, f);
@@ -1233,7 +1250,7 @@ function sweptOff(f, n, water, band){            // he is in the water: minutes 
   return worst >= 3 ? "near-drowned" : "struggled out";
 }
 function fordMan(f, n, water, e){               // one named man at the ford: a line if he is swept off
-  const band = e ? ldBand(ldLoadKg(e, loadOrder(f), n.kitLoad || "light", n.loadExtra || 0), ldBody(e, n.sex || "m"), n.str ?? 50) : 0;
+  const band = e ? ldBand(ldCarried(e, loadOrder(f), n.kitLoad || "light", n.loadExtra || 0, n.carry || 0), ldBody(e, n.sex || "m"), n.str ?? 50) : 0;
   const diff = hzFordRisk(water, band);
   if (!diff) return null;
   const value = f.type === "mounted" ? (n.ride || n.agi || 50) : (n.agi ?? 50);
@@ -1445,7 +1462,7 @@ function march(sel, hours){                    // the whole column marches toget
   if (!f.path || f.index >= f.path.length - 1) return { why: `${colName(f)} has no route to march.` };
   const m = curMap(), base = colSpeed(f);
   if (!base) return { why: noMarchText(f, col) };
-  const speed = base / wayToday(f, m), g = riskGround(f, groundOf(f.day));
+  const g = riskGround(f, groundOf(f.day)), speed = base / wayToday(f, m) / wheelsToday(f, m, g);
   if (f.path.slice(f.index + 1).some(h => !passable(m, h, colType(f), g)) && !replan(f))
     return { why: `${f.name} cannot get through today (${groundText(g)}). Wait, or add a waypoint to go round.` };
   const from = f.index, u0 = f.used;
