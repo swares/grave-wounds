@@ -906,7 +906,7 @@ function stressRow(c, i){
   const lasting = due ? lastingSel(c, i) : "";
   const last = (x.stressLog || [])[0], lastText = last ? ` <span class="muted">· last: ${esc(last.why)} (+${last.amount})</span>` : "";
   const mods = (x.strainMods || []).map(m => TD.stress.mods?.[m]?.name).filter(Boolean), modText = mods.length ? " <span class=\"muted\">· a day in the line: " + esc(mods.join(", ")) + "</span>" : "";
-  const daysLeft = x.away ? `${x.away.days} day${x.away.days === 1 ? "" : "s"}` : "";
+  const awayDays = x.away?.days ?? 0, plural = awayDays === 1 ? "" : "s", daysLeft = `${awayDays} day${plural}`;
   const away = x.away ? ` <span class="tag" title="The travel map counts his days off; he is not with the force until they are done">Away for treatment: ${daysLeft} left</span>` : "";
   return `<li><b>${esc(c.name)}</b>${away}: Strain ${Math.round(st.strain * 10) / 10}, Toll ${Math.round(st.toll * 10) / 10} <span class="muted">(Nerve ${nerve}; next check at ${Math.floor(stTotal(st) / TD.stress.check_every + 1) * TD.stress.check_every})</span>${lastText}
     <div>${state}</div><div class="spend">${treat}${relief}<button class="small" data-rest="${i}" title="A day out of the line, camped: −${TD.stress.rest_day} Strain">Rest a day</button>${lasting}</div>
