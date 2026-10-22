@@ -1261,7 +1261,7 @@ function lgPassing(v, watch, aRoll, bRoll){        // {grade, opposed (null: he 
 }
 const lgEscapeBonus = v => LG().escape_home.find(e => v >= e.from).mod;
 function lgMapDefault(mid){                       // the map's people's tongues where no place says otherwise (languages.py map_default)
-  const v = (LG().maps || {})[mid];
+  const v = LG().maps?.[mid];
   if (!v || v === "none") return [];
   return Array.isArray(v) ? [...v] : [v];
 }
