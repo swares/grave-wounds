@@ -397,11 +397,23 @@ indirect:
   fallback: explosive_fragment
   attack: 70
   prone: 0.35
+  # room: direct-fire HE (a tank's, an Ontos's or an anti-tank gun's main gun, the `tank` kind's
+  #   room; a rocket or recoilless round, `rocket` below) bursting in a building hex (room_ground)
+  #   strikes each man there at `room` %, with no cut for the building's cover or for lying down:
+  #   it bursts inside. British trials of 1944 (AORG Report 167, Street Fighting): a 2-inch
+  #   mortar bomb through a window put out about half the room's occupants, a PIAT bomb about
+  #   three-quarters; the lower is used. Small arms into rooms did little (about one man in five
+  #   per 100 Bren rounds that got in), which the hidden rules already give.
+  # rocket: rockets and recoilless rifles fired at men (vehicles.anti_armour weapons): each shot
+  #   is aimed at the target's hex, not at a man seen, and one that hits bursts there. Struck as
+  #   a tank round in the open (design estimate), room % in a building.
+  room_ground: [buildings, tall]
+  rocket: {name: "Rockets and recoilless rifles", radius: 0, struck: [25], room: 50}
   kinds:
     mortar:   {name: "Mortars",          range: 360,  rate: 3, rounds: 60, delay: 0, scatter: 2, radius: 2, struck: [15, 5, 1],                counter: 0, crew: 4, serve: 2, displace: 1, illum: 15}
     field:    {name: "Field guns",       range: 1100, rate: 2, rounds: 80, delay: 1, scatter: 4, radius: 3, struck: [20, 8, 3, 1],             counter: 2, crew: 6, serve: 3, displace: 2, illum: 30}
     howitzer: {name: "Heavy howitzers",  range: 1450, rate: 1, rounds: 40, delay: 1, scatter: 5, radius: 5, struck: [30, 12, 5, 2, 1, 0.5], counter: 4, knock: 2, crew: 8, serve: 4, displace: 3, illum: 40}
-    tank:     {name: "Tanks (direct fire)", rate: 2, rounds: 60, delay: 0, scatter: 0, radius: 1, struck: [25, 5],              counter: 0, knock: 8, direct: true, crew: 5, serve: 3, displace: 0}
+    tank:     {name: "Tanks (direct fire)", rate: 2, rounds: 60, delay: 0, scatter: 0, radius: 1, struck: [25, 5],              counter: 0, knock: 8, direct: true, crew: 5, serve: 3, displace: 0, room: 50}
     autocannon: {name: "Autocannon (direct fire)", rate: 3, rounds: 300, delay: 0, scatter: 0, radius: 0, struck: [20],              counter: 0, knock: 3, direct: true, crew: 3, serve: 2, displace: 0}
     fighter_bomber: {name: "Fighter-bombers (bombs, napalm)", rate: 2, rounds: 4, delay: 2, scatter: 3, radius: 4, struck: [45, 25, 12, 5, 2], counter: 0, knock: 15, air: true, by_night: false, exposed: 1, shot: [bomb, bombs]}
     gunship:  {name: "Helicopter gunships (rockets, guns)", rate: 4, rounds: 24, delay: 0, scatter: 1, radius: 1, struck: [20, 6], counter: 0, knock: 4, air: true, by_night: true, exposed: 2, shot: [rocket and gun pass, rocket and gun passes]}

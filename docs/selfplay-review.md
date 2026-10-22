@@ -1017,3 +1017,30 @@ British units under German machine guns could not make their ordered withdrawals
 
 Still open: fire in towns (how men in buildings are seen and hit, and what lines of fire armour
 gets), which storming has been standing in for; then suppress-first can be measured again.
+
+## Fire in towns, 22 October 2026
+
+Measured on main: in the town battlefields units fire in most exchanges while within 50 m of an
+enemy (at Hue 33 of 36 and 58 of 72 unit-exchanges in two runs; at Mogadishu 115 of 164), less from
+60 to 100 m, and seldom farther; the idle exchanges at long range came mostly after one side had
+broken. What little lands per shot is what the rules intend: men in buildings are hidden (10% of
+aimed shots find a man, 5% for machine guns) behind 30-40% cover. The research (the project's
+town-fire notes: British street-fighting trials of 1944, The Dupuy Institute's urban studies
+and their re-analysis, JRTC and doctrine) does not contradict those figures: about one occupant
+in five was killed for every 100 Bren rounds that got into a room. It does show HE that got into
+a room was far deadlier than the game had it: a 2-inch mortar bomb through a window put out
+about half the occupants, a PIAT bomb three-quarters, where a tank's round bursting on men lying
+in a building struck each at about 6%. Rockets and recoilless rifles fired at men were single
+aimed shots, with no burst.
+
+Built: a main gun's round or a rocket bursting in a building hex strikes each man there at 50%,
+with no cut for cover or lying down; a rocket or recoilless round fired at men is aimed at the
+hex and bursts there if it hits. 652 of 888, as before; the targets unchanged. Keating 20 to 23,
+Mogadishu 19 to 21; Wanat 23 to 19, Hue 1 to 0. Only the side whose rockets are on the map gains:
+Hue's and Wanat's RPG teams are; the Marines' 3.5-inch rockets, LAWs and 106s at Hue are not,
+for want of sourced counts (only expenditure: F/2/5 fired 35 rockets and 15 LAWs in one
+afternoon).
+
+Still open from the research: defenders in towns lost about three times as much a day as in the
+open (much of it as prisoners) once the attackers closed, which nothing in the rules gives; and
+attackers were hurt mostly in the streets, from buildings other than the one being assaulted.

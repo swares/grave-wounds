@@ -3101,24 +3101,54 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
         if b.get("vehicle"):
             log += _armour_volley(d, us, (table, rng, acc), v, opts)
             continue
+        if hurts_armour(d, _shooter(us, v)["weapon"]):
+            log += _rocket_volley(d, us, (table, rng, acc), (field, under), v)
+            continue
         t = _take_hurt(b, volley(d, _shooter_side(d, _shooter(us, v), table), _side(b, table), v["men"], v["dist"], rng, **opts))
         _tally(*acc, v, t)
         log += _logged({"kind": "volley", **v}, t)
         if v.get("behind") is not None:
             log += _beaten_fire(d, us, table, rng, acc, v)
-        for hero in ([] if v.get("riders") else _acting(d, us[v["att"]], ("ranged",))):
-            wx = shot_weather(d, field, hero["weapon"], v["dist"], v["from"], v["to"], {"kit": hero.get("kit"), "blind": v.get("blind", False)})
-            up, longer = height_edge(d, field, hero["weapon"], v["from"], v["to"])
-            if wx["blocked"] or field_range(d, hero["weapon"], v["dist"], wx["reach"] + longer) is None:
-                continue
-            hopts = {**opts, "factor": form(d, b)["missile_factor"] * (100 - wx["misfire"]) / 100 * v["seen"], "penalty": v["cover"] + wx["penalty"] - up + v["over"],
-                     "reach": wx["reach"] + longer}
-            t = _take_hurt(b, volley(d, _hero_side(us[v["att"]], hero, table, d), _side(b, table), d.units["heroes"]["tempo"], v["dist"], rng, **hopts))
-            _tally(*acc, v, t)
-            log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": v["att"], "dfd": v["dfd"], "dist": v["dist"]}, t)
+        if not v.get("riders"):
+            log += _hero_shots(d, us, (table, rng, acc), field, v, opts)
     for c in cannonades(d, us, field):
         log += _fire_battery(d, us, table, rng, acc, c)
     return log + _vehicle_guns(d, us, (table, rng, acc), field, under)
+
+
+def _hero_shots(d: Data, us: list, ctx: tuple, field: dict | None, v: dict, opts: dict) -> list:
+    """The shooting unit's heroes with missile weapons fire with its volley v."""
+    (table, rng, acc), b, log = ctx, us[v["dfd"]], []
+    for hero in _acting(d, us[v["att"]], ("ranged",)):
+        wx = shot_weather(d, field, hero["weapon"], v["dist"], v["from"], v["to"], {"kit": hero.get("kit"), "blind": v.get("blind", False)})
+        up, longer = height_edge(d, field, hero["weapon"], v["from"], v["to"])
+        if wx["blocked"] or field_range(d, hero["weapon"], v["dist"], wx["reach"] + longer) is None:
+            continue
+        hopts = {**opts, "factor": form(d, b)["missile_factor"] * (100 - wx["misfire"]) / 100 * v["seen"], "penalty": v["cover"] + wx["penalty"] - up + v["over"],
+                 "reach": wx["reach"] + longer}
+        t = _take_hurt(b, volley(d, _hero_side(us[v["att"]], hero, table, d), _side(b, table), d.units["heroes"]["tempo"], v["dist"], rng, **hopts))
+        _tally(*acc, v, t)
+        log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": v["att"], "dfd": v["dfd"], "dist": v["dist"]}, t)
+    return log
+
+
+def _rocket_volley(d: Data, us: list, ctx: tuple, env: tuple, v: dict) -> list:
+    """Rockets and recoilless rounds at men: each aimed at the target's hex (the window, not a man
+    seen) that hits bursts there as the indirect kind `rocket`."""
+    (table, rng, acc), (field, under) = ctx, env
+    att = _shooter_side(d, _shooter(us, v), table)
+    band = field_range(d, att["weapon"], v["dist"], v["reach"])
+    if band is None:
+        return []
+    n = _count(v["men"] * _shot_at_vehicle(d, att["weapon"])["rate"] * (100 - v["misfire"]) / 100, rng)
+    atk = _attack(d, att) - band["penalty"] - v["penalty"]
+    hits = sum(1 for _ in range(n) if rng.randint(1, 100) <= atk)
+    log = [{"kind": "rocketfire", "att": v["att"], "dfd": v["dfd"], "dist": v["dist"], "shots": n, "hit": hits, "at": list(v["to"])}]
+    weapon = shell_weapon(d, table)
+    if hits and weapon and field:
+        marks = under if under is not None else [False] * len(us)
+        log += _shell_units(d, us, (table, weapon), rng, acc, field, marks, None, {"kind": "rocket", "name": us[v["att"]].get("name"), "spec": d.units["indirect"]["rocket"]}, [list(v["to"])] * hits)
+    return log
 
 
 def _armour_volley(d: Data, us: list, ctx: tuple, v: dict, opts: dict) -> list:
@@ -3769,7 +3799,7 @@ def _lay_smoke(d: Data, field: dict, bursts: list) -> None:
 def _shell_units(d: Data, us: list, tw: tuple, rng, acc: tuple, field: dict, under: list, k: int | None, b: dict, bursts: list) -> list:
     """The men struck in every unit by a battery's bursts, and their wounds."""
     I, (table, weapon) = d.units["indirect"], tw
-    K, log = I["kinds"][b["kind"]], []
+    K, log = b.get("spec") or I["kinds"][b["kind"]], []   # spec: a burst that is no battery's (rockets at men)
     att = {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}
     lost, dead, _ = acc
     for i, u in enumerate(us):
@@ -3842,8 +3872,8 @@ def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, 
     if u["men"] <= 0 or u["state"] == "fled":
         return None
     hexes = [h for row in footprint(d, u) for h in row]
-    men, cuts = men_by_hex(d, u), [_shell_cut(d, field, h, low(u)) for h in hexes]
-    reached = [(n, p) for at in bursts for h, n, cut in zip(hexes, men, cuts) if (p := _burst_pct(kind, hdist(h, at), cut)) is not None]
+    men, cuts, rooms = men_by_hex(d, u), [_shell_cut(d, field, h, low(u)) for h in hexes], [_in_room(d, field, h) for h in hexes]
+    reached = [(n, p) for at in bursts for h, n, cut, room in zip(hexes, men, cuts, rooms) if (p := _burst_pct(kind, hdist(h, at), cut, room)) is not None]
     if not reached:
         return None
     if (d.units.get("quick") or {}).get("blows"):
@@ -3860,9 +3890,18 @@ def _quick_struck(d: Data, reached: list, rng) -> int:
     return _quick_down(d, tries, mean / tries if tries > 0 else 0, rng)
 
 
-def _burst_pct(kind: dict, dist: int, cut: float):
-    """A man's struck % this far from a burst (times the hex's cut), or None beyond its radius."""
-    return None if dist > kind["radius"] else kind["struck"][dist] * cut
+def _burst_pct(kind: dict, dist: int, cut: float, room: bool = False):
+    """A man's struck % this far from a burst (times the hex's cut), or None beyond its radius.
+    Direct-fire HE bursting in a building hex (room): the kind's `room` %, with no cut."""
+    if dist > kind["radius"]:
+        return None
+    return kind["room"] if kind.get("room") and dist == 0 and room else kind["struck"][dist] * cut
+
+
+def _in_room(d: Data, field: dict | None, h) -> bool:
+    """A building hex: direct-fire HE bursts in its rooms (indirect.room_ground)."""
+    ground = ((field or {}).get("ground") or {}).get(f"{h[0]},{h[1]}", "open")
+    return ground in (d.units["indirect"].get("room_ground") or [])
 
 
 def _shell_cut(d: Data, field: dict | None, h, prone) -> float:

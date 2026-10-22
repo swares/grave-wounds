@@ -1727,6 +1727,21 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
   missile** (the Falklands, the Gulf, Chechnya, Iraq and Afghanistan). A rocket, bazooka or
   recoilless team fires a round for every four men each exchange, and a missile team one for
   every ten. Every round is aimed, and range, cover and the weather count as for shots at men.
+  Fired at men, a rocket or recoilless round is aimed at the target's hex (the window, not a
+  man seen: the hidden rule does not cut it), and one that hits bursts there: each man in the
+  hex is struck at 25% in the open (as a tank's round), 50% in buildings (below).
+- **HE inside a building** (`indirect.room`). A main gun's round (a tank's, an Ontos's, an
+  anti-tank gun's, or tanks called as fire support) or a rocket bursting in a buildings or tall
+  buildings hex strikes each man there at 50%, with no cut for the building's cover or for
+  lying down: it bursts in the room. British trials of 1944 (AORG Report 167, *Street
+  Fighting*): a 2-inch mortar bomb through a window put out about half the room's occupants
+  and a PIAT bomb about three-quarters; the lower is used. Small arms into rooms did little
+  (about one occupant in five for every 100 Bren rounds that got in), which the hidden rule
+  already gives, and the same research (the project's town-fire notes) found nothing to raise
+  it. Measured on 24 runs of every battlefield: 652 of 888, as before, the morale targets
+  unchanged; Keating 20 to 23 and Mogadishu 19 to 21, but Wanat 23 to 19 and Hue 1 to 0. Only
+  the side whose rockets are on the map gains: Hue's North Vietnamese RPG teams are, the
+  Marines' 3.5-inch rockets, LAWs and 106s are not (no sourced counts).
 - **Damage.** A hit that does not knock a vehicle out strikes the turret (35%) or the hull.
   - On the turret, it puts the main gun out of action at 40% and immobilises the vehicle at 5%.
   - On the hull, it immobilises it at 35% and puts the gun out at 5%.

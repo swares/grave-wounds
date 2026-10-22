@@ -1275,7 +1275,7 @@ function bunkerStruck(us, j, x, M, ctx){          // the men in a bunker's hex w
 }
 function shellUnits(ctx, k, b, bursts){           // the men struck in every unit by a battery's bursts, and their wounds
   const { us, table, weapon, rng, acc, log, field, under } = ctx;
-  const I = UD.indirect, K = I.kinds[b.kind], att = { table, weapon, kit: null, quality: "regular" };
+  const I = UD.indirect, K = b.spec || I.kinds[b.kind], att = { table, weapon, kit: null, quality: "regular" };   // spec: a burst that is no battery's (rockets at men)
   us.forEach((u, i) => {
     if (u.vehicle){ shellVehicle(us, i, bursts, K, { table, rng, acc, log, src: [k, b] }); return }
     const struck = shellStruckUnit(field, u, bursts, K, rng);
@@ -1319,9 +1319,10 @@ function hullShelled(us, i, bursts, kind, table, rng, src){   // men riding on t
   Object.assign(R, { men: R.men - down, down: (R.down || 0) + down, dead: (R.dead || 0) + Math.min(t.dead, down) });
   return [{ kind: "hullshelled", sup: src[0], name: src[1].name, dfd: i, struck, down, dead: Math.min(t.dead, down) }];
 }
+const inRoom = (field, h) => (UD.indirect.room_ground || []).includes(field?.ground?.[`${h[0]},${h[1]}`] || "open");   // a building hex: direct-fire HE bursts in its rooms (indirect.room_ground) (as units._in_room)
 function shellStruckUnit(field, u, bursts, kind, rng){   // men of u struck by these bursts, or null if none came near
   if (u.men <= 0 || u.state === "fled") return null;
-  const hexes = footprint(u).flat(), men = menByHex(u), cuts = hexes.map(h => shellCut(field, h, low(u)));
+  const hexes = footprint(u).flat(), men = menByHex(u), cuts = hexes.map(h => shellCut(field, h, low(u))), rooms = hexes.map(h => inRoom(field, h));
   const quick = !!UD.quick?.blows;
   let near = false, struck = 0, tries = 0, mean = 0;
   for (const at of bursts){
@@ -1329,7 +1330,7 @@ function shellStruckUnit(field, u, bursts, kind, rng){   // men of u struck by t
       const dist = hdist(h, at);
       if (dist > kind.radius) return;
       near = true;
-      const p = kind.struck[dist] * cuts[j];
+      const p = kind.room && dist === 0 && rooms[j] ? kind.room : kind.struck[dist] * cuts[j];   // direct-fire HE bursting inside a building: its `room` %, no cut for cover or lying down
       if (quick){ tries += men[j]; mean += men[j] * Math.min(100, Math.max(0, Math.floor(p))) / 100; return }   // quick-play: the average, rolled once below
       for (let x = 0; x < men[j]; x++) if (rng.randint(1, 100) <= p) struck++;
     });
@@ -1721,6 +1722,7 @@ function shootAll(us, table, rng, acc, log, field, under = null){
     spend(us, v);
     const b = us[v.dfd], exposed = exposure(b, false, true), mf = form(b).missile_factor;
     if (b.vehicle){ armourVolley(us, table, rng, acc, log, v, { factor: mf * (100 - v.misfire) / 100 * v.seen, penalty: v.cover + v.penalty + v.over, reach: v.reach }); continue }
+    if (hurtsArmour(shooterOf(us, v).weapon)){ rocketVolley({ us, table, rng, acc, log, field, under }, v); continue }
     const t = takeHurt(b, volley(sideOfUnit(shooterOf(us, v), table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100 * v.seen, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
     tallyLoss(acc, v, t);
     log.push(...logged({ kind: "volley", ...v }, t));
@@ -1729,6 +1731,16 @@ function shootAll(us, table, rng, acc, log, field, under = null){
   }
   for (const c of cannonades(us, field)) fireBattery(us, table, rng, acc, log, c);
   vehicleGuns(us, table, rng, acc, log, field, under);
+}
+function rocketVolley(ctx, v){                    // rockets and recoilless rounds at men: each aimed at the target's hex (the window, not a man seen) that hits bursts there as the indirect kind `rocket` (as units._rocket_volley)
+  const { us, table, rng, log, field } = ctx, att = sideOfUnit(shooterOf(us, v), table), band = fieldRange(att.weapon, v.dist, v.reach || 0);
+  if (!band) return;
+  const n = countBlows(v.men * shotAtVehicle(att.weapon).rate * (100 - v.misfire) / 100, rng), atk = attackOf(att) - band.penalty - v.penalty;
+  let hits = 0;
+  for (let s = 0; s < n; s++) if (rng.randint(1, 100) <= atk) hits++;
+  log.push({ kind: "rocketfire", att: v.att, dfd: v.dfd, dist: v.dist, shots: n, hit: hits, at: [...v.to] });
+  const weapon = shellWeapon(table);
+  if (hits && weapon && field) shellUnits({ ...ctx, weapon, under: ctx.under || us.map(() => false) }, null, { kind: "rocket", name: us[v.att].name ?? null, spec: UD.indirect.rocket }, Array.from({ length: hits }, () => [...v.to]));
 }
 function armourVolley(us, table, rng, acc, log, v, opts){   // anti-armour shots that hit knock a vehicle out at its armour's rpg %
   const att = sideOfUnit(shooterOf(us, v), table), band = fieldRange(att.weapon, v.dist, opts.reach || 0);
