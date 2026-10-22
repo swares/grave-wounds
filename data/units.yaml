@@ -1032,6 +1032,14 @@ commander:
   # 2 Para took Darwin Hill (self-play: walking upright into two machine guns, A Company broke
   # in three minutes). Design choice.
   bounds: true
+  # suppress_first: a storming unit with a modern weapon (ground_with, on foot) goes in only on a
+  # target that is pinned, shaken or broken; till then it closes as a shooter does, takes cover
+  # and fires, while machine guns, mortars, guns and tanks pin the garrison. Suppress, then
+  # assault: at Hue the 106s, rockets, tanks and CS made the breach and the Marines went in at
+  # small cost (the Treasury 8 wounded against 6 North Vietnamese killed; the hospital bunkers
+  # 3 wounded against 25: 2/5's February chronology); 2 Para's bounds at Darwin Hill. Self-play:
+  # Marine companies charged unpinned veterans in the buildings and lost the hand-to-hand fights.
+  suppress_first: true
   hesitate: {green: 30, regular: 10, veteran: 0}
   charge_odds:
     attack: {green: 100, regular: 80, veteran: 60}

@@ -1695,6 +1695,13 @@ def storming(d: Data, u: dict, t: dict, field: dict | None, stance: str) -> bool
     return stance == "attack" and u["weapon"] in d.units["commander"]["storm"] and U.holds_works(d, field, u["pos"], t)
 
 
+def waits_to_storm(d: Data, us: list, i: int, t: int) -> bool:
+    """commander.suppress_first: a modern unit (ground_with, on foot) storms only a target that is
+    pinned, shaken or broken; till then it closes and fires as a shooter."""
+    u, C, e = us[i], d.units["commander"], us[t]
+    return bool(C.get("suppress_first")) and not u.get("vehicle") and u["weapon"] in C["ground_with"] and not e.get("pinned") and e["state"] == "steady"
+
+
 def support(d: Data, us: list, i: int) -> int:
     """Men times attack % of the steady friendly units (not guns or vehicles) touching unit i:
     they go in with it, and count toward its charge odds."""
@@ -1724,7 +1731,7 @@ def _best(d: Data, us: list, i: int, t: int, ctx: tuple) -> dict | None:
     tu, hold = _where(us, t, known), stance == "hold"
     free = {**u, "prone": False} if u.get("prone") else u
     base = [free if k == i else x for k, x in enumerate(us)]
-    storm = storming(d, u, tu, field, stance)
+    storm = storming(d, u, tu, field, stance) and not waits_to_storm(d, us, i, t)
     shooter, charge = "range" in d.weapons[u["weapon"]] and not storm, may_charge(d, u, tu, stance, storm, support(d, us, i))
     best = _first_move(d, base, i, tu, (size, field), (charge, hold, shooter, storm))
     if storm and not (best and best[2]["charge"]) and bounding(d, us, i, t):   # storming in bounds: down and firing after a bound that drew fire

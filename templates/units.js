@@ -3402,6 +3402,10 @@ function bounding(us, i, t){                     // storming in bounds (commande
 function storming(u, t, field, stance){           // attacking, armed for storming (black powder with the bayonet), its target holding works: it closes and charges (as commander.storming)
   return stance === "attack" && UD.commander.storm.includes(u.weapon) && holdsWorks(field, u.pos, t);
 }
+function waitsToStorm(us, i, t){                 // commander.suppress_first: a modern unit (ground_with, on foot) storms only a target pinned, shaken or broken; till then it closes and fires as a shooter (as commander.waits_to_storm)
+  const u = us[i], C = UD.commander, e = us[t];
+  return !!C.suppress_first && !u.vehicle && C.ground_with.includes(u.weapon) && !e.pinned && e.state === "steady";
+}
 function support(us, i){                          // men times attack % of the steady friendly units (not guns or vehicles) touching unit i: they go in with it (as commander.support)
   const u = us[i], near = new Set(footprint(u).flat().flatMap(h => [0, 1, 2, 3, 4, 5].map(n => hk(step(h, n)))));
   return us.reduce((a, x, k) => (k !== i && x.side === u.side && x.state === "steady" && !isBattery(x) && !x.vehicle && footprint(x).flat().some(h => near.has(hk(h))) ? a + x.men * quality(x.quality).attack : a), 0);
@@ -3422,7 +3426,7 @@ function turnToward(base, i, f, [size, field]){    // the facing nearest f, turn
 function bestOrder(us, i, t, [size, field, stance, known]){   // the best-scoring hex it can legally reach, facing the target (where last seen); holding, it only charges, else stays
   const u = us[i], tu = knownAt(us, t, known), hold = stance === "hold";
   const free = u.prone ? { ...u, prone: false } : u, base = us.map((x, k) => (k === i ? free : x));
-  const storm = storming(u, tu, field, stance);
+  const storm = storming(u, tu, field, stance) && !waitsToStorm(us, i, t);
   const shooter = "range" in FD.weapons[u.weapon] && !storm, charge = mayCharge(u, tu, stance, storm, support(us, i));
   const best = firstMove(base, i, tu, [size, field], [charge, hold, shooter, storm]);
   if (storm && !best?.[2].charge && bounding(us, i, t)) return u.prone ? null : { act: "ground", target: t };   // storming in bounds: down and firing after a bound that drew fire
