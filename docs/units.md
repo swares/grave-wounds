@@ -185,6 +185,29 @@ with no parry, at twice the melee tempo, for as long as the pursuers keep contac
 simulation assumes three exchanges). This is where most of a battle's dead fell: the
 defeated sides at Towton and Agincourt lost far more men in flight than in the press.
 
+**Cornered** (`rout.surrender`). A broken unit that cannot run (no clear ground back, so it
+would stand where it is) with an enemy touching it gives up at the start of the exchange,
+rather than being struck again and again. The war's quarter % of its men standing
+(`heroes.quarter`, the same figure as for a man found lying out) are taken prisoner and the
+rest killed; its heroes on their feet are taken. The log says so, *After the battle* counts
+the prisoners, and a team's side offers the enemy it took to the team builder's captives, as
+with the pursuit. Sides the accounts show fighting to the end do not surrender
+(`fight_on` in `data/orders.yaml`): the North Vietnamese at Hue (about 52 killed for each
+prisoner), X-Ray, Dak To, Hamburger Hill and Khe Sanh (about 20 for each in Vietnam's official
+counts, 1965-67), the Japanese at Bougainville (about 83 for each on Iwo Jima), and the
+Chechens at Grozny (about 11 to 14 for each). Sides with no figure (the Chinese in Korea, the
+insurgents, the Somali militia) can surrender. The research (the project's surrender notes:
+The Dupuy Institute's capture-rate study, Shils and Janowitz, Dstl): a defender's prisoners
+rise steeply once it is penetrated and again once it is enveloped; being cut off was the
+cause veterans gave most for units giving way; men trapped in cellars and bunkers gave up as
+a group; and towns cornered more defenders (a median 32% of urban defenders' losses were
+prisoners, 8% in the open). Self-play showed the gap: cornered Somali militia at Mogadishu
+were cut down almost to the last man over 79 and 187 exchanges. Measured on 24 runs of every
+battlefield: 658 of 912 from 657, the morale targets about as before (the rout's share of the
+loser's losses 5% to 4%, now counting prisoners); Visby 23 to 24 (the Gotlanders' losses 21% to
+32%: medieval quarter is 20%), X-Ray, Grozny, Lützen and Agincourt +1; Mogadishu 21 to 19, Wanat
+and the September Redan -1. The self-play tools count prisoners as losses.
+
 ## What the numbers give
 
 Regular swordsmen front to front, on the Towton tables, per minute:

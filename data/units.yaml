@@ -767,12 +767,23 @@ morale:
 # its move in all; if there is none in that, it stops where it last stood clear). Each friendly
 # unit it runs through is jostled: that exchange its move is cut by `jostle` (rounded down).
 # Design estimates.
+# surrender: a broken unit that is cornered (an enemy touching it, and it cannot run: no clear
+#   ground back) gives up at the start of the exchange rather than being struck again and
+#   again: the war's quarter % of its men standing (heroes.quarter) are taken prisoner, the rest
+#   killed, and its heroes on their feet are taken. Units whose side the accounts show fighting
+#   to the end (data/orders.yaml fight_on) do not. Being cut off was the cause veterans gave most
+#   for units giving way, and men trapped in cellars and bunkers gave up as a group; a defender's
+#   prisoners rise steeply once it is penetrated or enveloped, and towns cornered more defenders
+#   (a median 32% of urban defenders' losses were prisoners, 8% in the open). The project's
+#   surrender notes (The Dupuy Institute's capture-rate study, Shils and Janowitz, Dstl).
+#   Measured on 24 runs of every battlefield: 658 of 912 from 657, the targets about as before.
 rout:
   attack: 20
   tempo: 2.0
   exchanges: 3
   through: 3
   jostle: 0.5
+  surrender: true
 
 # ---------- after the battle ----------
 # Every wounded man is remembered by his wound's severity, its untreated time to death

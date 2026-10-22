@@ -18,7 +18,16 @@ function noteLine(B, l){                           // one log line: men down by 
   if (l.state === "broken" && l.from !== "broken") breaks.push({ side: u.side, unit: u.name, start: u.start, down: u.down || 0, share: Math.round(1000 * (u.down || 0) / Math.max(1, u.start)) / 10, at: B.exchange, why: l.why || null });
   for (const w of l.why || []) why[w] = (why[w] || 0) + 1;
 }
-const hook = (B, r) => { for (const l of r.log || []) noteLine(B, l) };
+function noteRan(B, x){                           // a cornered unit that surrendered at the start of the exchange: its men lost after breaking (taken and killed)
+  if (!x.surrendered) return;
+  const u = B.units[x.unit], n = x.taken + x.killed;
+  down[u.side] = (down[u.side] || 0) + n;
+  routDown[u.side] = (routDown[u.side] || 0) + n;
+}
+const hook = (B, r) => {
+  for (const l of r.log || []) noteLine(B, l);
+  for (const x of r.ran || []) noteRan(B, x);
+};
 const { FD, api } = load(htmlPath, ["secured"], hook);
 const t0 = Date.now(), r = api.selfPlay(fid, new api.SeededDice(Number(seed) * 101)), F = FD.fields[fid];
 const B = r.battle, end = r.points.at(-1).points[0];
