@@ -120,11 +120,12 @@ def _talk_values(d: Data) -> dict:
 
 
 def _supply_values(d: Data) -> dict:
-    """Supplies between fights and Strain on the march: the numbers the chapters quote."""
-    SP = d.supplies or {}
+    """Supplies between fights, night marches and Strain on the march: the numbers the chapters quote."""
+    SP, NT = d.supplies or {}, (d.uses or {}).get("night") or {}
     need = [b["l"] for b in (SP.get("water") or {}).get("need", [])] + [0, 0, 0, 0]
     TR, ST = SP.get("train") or {}, d.stress or {}
-    return {"st_leader": ((ST.get("sources") or {}).get("leader_down") or {}).get("strain", 3), "st_trusted": ST.get("leader_command", 60),
+    return {"nt_hours": NT.get("hours", 4), "nt_lost": NT.get("lost_hours", 2), "nt_min": NT.get("min_hours", 2),
+            "st_leader": ((ST.get("sources") or {}).get("leader_down") or {}).get("strain", 3), "st_trusted": ST.get("leader_command", 60),
             "sp_cool": need[0], "sp_warm": need[1], "sp_hot": need[2], "sp_vhot": need[3], "sp_cases": (SP.get("medical") or {}).get("cases", 10),
             "sp_train_rations": TR.get("rations", 10), "sp_train_ammo": TR.get("ammo", 2), "sp_train_med": TR.get("medical", 2), "sp_serves": f"{TR.get('serves', 1000):,}"}
 
@@ -412,6 +413,10 @@ def tables(d: Data) -> dict:
             rows.append([b["id"].capitalize(), span, b["difficulty"].replace("_", " ").capitalize(), b["rounds"], f"{b['horse']}%"])
             lo = b["upto"]
         out["ford_currents"] = _md(["Current", "Speed", "Agility (Ride)", "Minutes to the bank", "His horse drowns"], rows)
+    if d.kit:
+        K, names = d.kit, {e: T["name"].split(" (")[0] for e, T in d.teams.items()}
+        out["kit_life"] = _md(["Era", "Boots (marching days)", "Clothing (days)"],
+                              [[names[e], f"{K['boots']['life'][e]:g}", f"{K['clothing']['life'][e]:g}"] for e in d.teams])
     if d.supplies:
         SP = d.supplies
         names = {e: T["name"].split(" (")[0] for e, T in d.teams.items()}

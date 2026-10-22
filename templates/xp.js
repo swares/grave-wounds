@@ -7,6 +7,14 @@ const XP_KEY = "gravewounds-xp";                   // {pid: {ticks: {skill: why}
 function readXp(){ try{ return JSON.parse(localStorage.getItem(XP_KEY) || "{}") || {} }catch(e){ return {} } }
 function writeXp(all){ try{ localStorage.setItem(XP_KEY, JSON.stringify(all)) }catch(e){ /* storage off: no experience kept */ } }
 const xpOf = (all, pid) => (all[pid] ||= { ticks: {}, served: 0 });
+// Boots and clothing (data kit.yaml): each named man's wear, 0 new to 1 worn out.
+const xpKit = pid => ({ boots: 0, clothing: 0, ...(pid ? readXp()[pid]?.kit : null) });
+function xpKitSet(pid, kit){
+  if (!pid) return;
+  const all = readXp();
+  xpOf(all, pid).kit = kit;
+  writeXp(all);
+}
 // Away for treatment of Strain (the team builder sends him; the travel map counts the days off).
 const xpAwayDays = pid => (pid ? readXp()[pid]?.away?.days || 0 : 0);
 function xpSendAway(pid, days, where){

@@ -222,6 +222,30 @@ tenth. When the team's side chases a beaten enemy on the field map, the prisoner
 pursuit are offered to the team, as many as the GM will put in its charge. (A postwar report credited the US Army's German-speaking
 interrogators, the Ritchie Boys, with nearly 60% of the credible intelligence gathered in Europe.)
 
+## By night {#night}
+
+A force may **march on by night**, up to {{nt_hours}} hours after the day's marching hours, at about
+two-thirds of the pace (a 1979 US Army study timed night navigation about 40% slower). Its guide,
+the best Fieldcraft among its named men, rolls once a night to keep the way: Ordinary on a road,
+Hard off it. Failing, the night's march goes slower still; on a fumble the column spends
+{{nt_lost}} hours on the wrong road, as the guides did at Stormberg in 1899, wandering the veld until
+dawn. A night march of {{nt_min}} hours or more costs a step more fatigue.
+
+## Boots and clothing {#kit}
+
+Each named man's **boots** wear with every day he marches, faster on wet or muddy ground, and his
+**clothing and blankets** with every day, twice as fast on a hard night. Lives in days:
+
+{{table:kit_life}}
+
+Worn boots raise his chance of blistered feet (half again; worn out, three times); worn clothing
+makes his nights a step colder and wetter (worn out, two), for his recovery and for frostbite.
+On a day his force does not march, its best Craft mends the most worn boots or clothing among its
+named men (Mend kit: a success takes half the wear off, a fumble ruins them). He may buy new from
+the price list (boots, shoes, a coat, a blanket), and a force its army feeds is issued new at its
+depot. In October 1862 the 48th North Carolina returned 51 of its 619 men barefoot and 194 more
+nearly so; at Valley Forge 2,898 men were unfit for duty, "barefoot and otherwise naked".
+
 ## Supplies {#supplies}
 
 A force carries what it needs between fights: **ammunition** (a share of its full loads),
