@@ -2005,7 +2005,7 @@ function lastingText(c){
 function strainModsOf(c){                          // what changes his combat Strain (data stress.yaml mods): a trusted leader, comrades of long standing, or a replacement among strangers
   const S2 = TD.stress, lead = S.team.find(m => m.leader), out = [];
   if (lead && lead !== c && (lead.skills.command || 0) >= (S2.leader_command ?? 60)) out.push("leader");
-  out.push(c.joined && !(c.joined.seasons > 0) ? "replacement" : "cohesion");
+  out.push(c.joined && (c.joined.seasons || 0) <= 0 ? "replacement" : "cohesion");
   return out;
 }
 function pushStrainMods(){ if (TD.stress?.mods) for (const c of S.team) xpStrainMods(c.pid, strainModsOf(c)) }
@@ -2379,6 +2379,12 @@ function loseForm(c, i){                          // why he is lost
   return `<div class="full spend"><label>Lost: <select data-lose-why="${i}">${LOST_WHY.map(w => `<option>${w}</option>`).join("")}</select></label>
     <button class="small" data-lose-ok="${i}">Take him off the team</button><button class="small" data-lose-cancel="1">Cancel</button></div>`;
 }
+function setRank(c, rid){                          // the GM sets his rank: reduced, or raised; then who leads
+  const down = rkIndex(rid) < rkIndex(c.rank);
+  c.rank = rid; c.rank_days = 0;
+  if (down) S.msg = `${c.name} is reduced to ${rkName(c.rank).toLowerCase()}.`;
+  leadByRank();
+}
 const seniority = m => [rkLadder().length ? rkIndex(m.rank || rkStart(m.career)) : 0, m.rank_days || 0, m.terms + (m.xp_terms || 0)];
 function leadByRank(always = false){               // the highest rank leads, then the longest in it, then the longest served: the new leader
   if (!S.team.length || (!always && !rkLadder().length)) return null;
@@ -2637,7 +2643,7 @@ function init(){
   });
   $("#rank").addEventListener("change", e => {
     const el = e.target;
-    if (el.dataset.rank !== undefined){ const c = S.team[+el.dataset.rank], down = rkIndex(el.value) < rkIndex(c.rank); c.rank = el.value; c.rank_days = 0; if (down) S.msg = `${c.name} is reduced to ${rkName(c.rank).toLowerCase()}.`; leadByRank() }
+    if (el.dataset.rank !== undefined) setRank(S.team[+el.dataset.rank], el.value);
     else if (el.dataset.deed !== undefined) S.team[+el.dataset.deed].deed = el.checked;
     else if (el.id === "loot-kind") S.lootK.kind = el.value;
     else if (el.id === "loot-who") S.lootK.who = el.value;

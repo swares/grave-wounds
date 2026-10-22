@@ -6169,7 +6169,8 @@ function sideAfter(k){
     t.killed += a.killed; t.left += a.left; t.died += a.died; t.cases.push(...a.cases);
   });
   const left = t.left ? `, ${t.left} left on the field` : "", pu = S.pursuit?.side === k ? S.pursuit : null;
-  const chased = pu ? ` In the pursuit${pu.why.length ? " (" + pu.why.join(", ") + ")" : ""}: ${pu.killed} of those killed, and ${pu.taken} taken prisoner.` : "";
+  const why = pu?.why.length ? " (" + pu.why.join(", ") + ")" : "";
+  const chased = pu ? ` In the pursuit${why}: ${pu.killed} of those killed, and ${pu.taken} taken prisoner.` : "";
   const carried = t.cases.length ? `${t.cases.length} wounded carried to camp (${byStep(t.cases)})` : "no wounded to carry";
   const ev = S.evac?.[k] ? ` Medevac: ${FD.units.aftermath.medevac.kinds[S.evac[k]].name.toLowerCase()}.` : "";
   return `${S.sides[k]}: ${t.killed} killed${left}, ${t.died} died of their wounds before help came; ${carried}.${ev}${chased}`;
@@ -6643,7 +6644,7 @@ function heroesToRoller(){                        // their wounds onto their rec
   const lost = [0, 1].filter(k => !standing(k)), held = lost.length === 1 ? S.sides[1 - lost[0]] : null;   // the side that holds the field, if one does
   const sideOfHero = h => h.unit.side;   // allHeroes gives each hero his unit
   const heroes = allHeroes().map(h => ({ id: h.id, name: h.name, state: h.state, wounds: h.wounds, blood: h.blood, old: (h.old || []).map(o => ({ bleed: o.bleed, aid: o.aid })), ...(h.post ? { post: true } : {}),
-    ...(held ? { won: sideOfHero(h) === held } : {}), ...(S.htally?.[h.id] || {}) }));   // the roller's After the fight: deeds and loot for the winners; his hits and downs
+    ...(held ? { won: sideOfHero(h) === held } : {}), ...S.htally?.[h.id] }));   // the roller's After the fight: deeds and loot for the winners; his hits and downs
   try{ localStorage.setItem("gravewounds-field-heroes", JSON.stringify({ place: S.from?.place || "", heroes })) }catch(e){ S.msg = "Could not save the heroes for the roller (storage is off)."; return render() }
   S.heroesSent = true;
   save();
