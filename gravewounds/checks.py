@@ -47,6 +47,18 @@ def _q(x: float) -> float:
     return math.floor(x * 4 + 0.5) / 4
 
 
+def _sell(H: dict, price: float, o: dict) -> dict:
+    """Selling loot: a tenth more on a win, a quarter on a critical; a fumble, a fence cheats him."""
+    S = H.get("sell") or {"win": 0.1, "critical": 0.25, "fumble": -0.25}
+    kind = "list"
+    if o["a"]["fumble"]:
+        kind = "cheated"
+    elif o["winner"] == "a":
+        kind = "critical" if o["a"]["critical"] else "win"
+    rate = {"cheated": S["fumble"], "win": S["win"], "critical": S["critical"]}.get(kind, 0)
+    return {"outcome": kind, "price": _q(price * (1 + rate)), "opposed": o}
+
+
 def haggle(d: Data, price: float, persuade: int, a_roll: int, b_roll: int, seller: int | None = None, selling: bool = False) -> dict:
     """Haggling over `price` Days: his Persuade against the other side's. Buying, a win takes a
     tenth off (a quarter on a critical) and a fumble means no sale today; selling (`sell`), a win
@@ -55,14 +67,7 @@ def haggle(d: Data, price: float, persuade: int, a_roll: int, b_roll: int, selle
     H = _C(d).get("haggle") or {"seller": 50, "win": -0.1, "critical": -0.25}
     o = opposed(d, persuade, "ordinary", a_roll, H["seller"] if seller is None else seller, b_roll)
     if selling:
-        S = H.get("sell") or {"win": 0.1, "critical": 0.25, "fumble": -0.25}
-        kind = "list"
-        if o["a"]["fumble"]:
-            kind = "cheated"
-        elif o["winner"] == "a":
-            kind = "critical" if o["a"]["critical"] else "win"
-        rate = {"cheated": S["fumble"], "win": S["win"], "critical": S["critical"]}.get(kind, 0)
-        return {"outcome": kind, "price": _q(price * (1 + rate)), "opposed": o}
+        return _sell(H, price, o)
     if o["a"]["fumble"]:
         return {"outcome": "no_sale", "price": None, "opposed": o}
     if o["winner"] == "a":

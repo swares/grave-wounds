@@ -428,9 +428,9 @@ function renderRank(){
     ${kinds.length ? `<h4>After the fight</h4><p class="muted note">${esc(rule)}</p><div class="row"><div><label for="loot-kind">What</label><select id="loot-kind">${kindOpts}</select></div><div><label for="loot-who">Who</label><select id="loot-who">${whoOpts}</select></div><div style="align-self:end">${sellTick(K)}<button id="btn-loot">Roll</button></div></div>` : ""}
     ${log ? `<ol class="log">${log}</ol><button class="small" id="btn-clear-loot">Clear</button>` : ""}</section>`;
 }
-const GOODS = ["field", "sack", "sack_after"];      // loot that is goods to be sold, not money
+const GOODS = new Set(["field", "sack", "sack_after"]);   // loot that is goods to be sold, not money
 function sellTick(K){                              // haggle when selling the goods
-  if (!TD.checks || !GOODS.includes(K.kind)) return "";
+  if (!TD.checks || !GOODS.has(K.kind)) return "";
   return tick('id="loot-haggle"', K.haggle, "Haggle the sale", "His Persuade against the buyer's: a tenth more, a quarter on a critical; a fumble, and a fence cheats him of a quarter");
 }
 function sellHaggled(c, days){                     // [days, words]: his goods sold, haggling
@@ -449,7 +449,7 @@ function rollLoot(){
     if (r.risk) t += `; the provost ${chkText(r.opposed.a)} against his Stealth ${chkText(r.opposed.b)}: ${r.caught ? "caught, and it is taken from him" : "not caught"}`;
     if (r.punished) t += `. ${(L.punish || "Punished.").replace(/\.$/, "")}`;
     let sold = "";
-    if (r.days && K.haggle && TD.checks && GOODS.includes(K.kind)) [r.days, sold] = sellHaggled(c, r.days);
+    if (r.days && K.haggle && TD.checks && GOODS.has(K.kind)) [r.days, sold] = sellHaggled(c, r.days);
     if (r.days){
       c.ledger = c.ledger || [];
       c.ledger.push({ days: r.days, what: `Loot: ${r.what}` });
@@ -786,6 +786,12 @@ function bodyOf(c){                                // how he is: the roller's la
   const sr = TD.stress && x.stress?.state ? stRow(x.stress.state) : {};
   return sr.attack ? { penalty: sr.attack, notes: [`${stName(T.id, x.stress.state)} -${sr.attack}%`], out: !!sr.out } : null;
 }
+function bodyNote(c){                              // the checks panel's word on how he is
+  const body = bodyOf(c);
+  if (!body) return "";
+  const out = body.out ? "; he is in no state to do much" : "";
+  return `<p class="muted note">${esc(c.name)}, as the roller last had him: ${esc(body.notes.join(", ") || "hurt")} (−${body.penalty} on every check)${out}.</p>`;
+}
 function feltBody(c){                              // his skills less how he is, for a job's check
   const b = bodyOf(c);
   return b ? { ...c, skills: Object.fromEntries(Object.entries(c.skills).map(([k, v]) => [k, Math.max(0, v - b.penalty)])) } : c;
@@ -832,7 +838,7 @@ function renderChecks(){
   const who = againstName(u, K);
   const help = u ? `<p class="muted note">${esc(u.what)} <b>Success:</b> ${esc(u.success)} <b>Failure:</b> ${esc(u.failure)} <b>Fumble:</b> ${esc(u.fumble)}${u.note ? " " + esc(u.note) : ""}${u.page ? ` <i>(${esc(u.page)})</i>` : ""}</p>` : "";
   const log = (S.chklog || []).map(l => `<li>${esc(l)}</li>`).join("");
-  const body = bodyOf(c), state = body ? `<p class="muted note">${esc(c.name)}, as the roller last had him: ${esc(body.notes.join(", ") || "hurt")} (−${body.penalty} on every check)${body.out ? "; he is in no state to do much" : ""}.</p>` : "";
+  const state = bodyNote(c);
   box.innerHTML = `<section class="crew work" aria-labelledby="h-checks"><h3 id="h-checks">Skill checks</h3>
     <p class="muted note">d100 at or under the skill plus the difficulty; ${Math.round(CHK().critical_fraction * 100)}% of that or under is a critical, a miss of ${CHK().fumble_from}+ a fumble. Against someone, both roll: he must beat them (a success over a failure, a critical over a success, else the wider margin); a tie goes to them.</p>
     <div class="row">
@@ -1004,7 +1010,8 @@ function seasonLine(c, r){                         // 'Hans: Blade 42 → 44 (ro
   const bits = r.rolls.map(x => x.gain ? `${skillName(x.skill)} ${x.was} → ${x.was + x.gain} (rolled ${x.roll})` : `${skillName(x.skill)} stays ${x.was} (rolled ${x.roll})`);
   if (r.terms){ const car = careerOf(c); bits.push(`${r.terms} term${r.terms > 1 ? "s" : ""} served: ${skillName(car.main)} +${T.term_main * r.terms}, ${skillName(car.second)} +${T.term_second * r.terms}, now age ${c.age}`) }
   for (const t of r.lived || []){                  // what each term brought, as at creation
-    const hurt = t.wound ? `; ${t.wound.kind === "lasting" ? "a lasting hurt" : "a scar"} to the ${TD.locs[t.wound.loc].name.toLowerCase()}` : "";
+    const mark = t.wound?.kind === "lasting" ? "a lasting hurt" : "a scar";
+    const hurt = t.wound ? `; ${mark} to the ${TD.locs[t.wound.loc].name.toLowerCase()}` : "";
     bits.push(pron(t.event, c.sex || "m").replace(/\.$/, "") + hurt);
   }
   if (!bits.length) bits.push("nothing ticked");
@@ -1148,6 +1155,10 @@ function loseMember(i, why, auto = false){        // off the team and onto the l
   } else S.msg = `${c.name} is lost (${why}).`;
   S.losing = null;
 }
+function hireHaggle(k, P){                         // the box to haggle a hired man's price
+  if (!TD.checks) return "";
+  return " " + tick(`data-rhaggle="${k}"`, P.haggle, "haggle", "The payer's Persuade against the man's: a tenth off, a quarter on a critical; a fumble and he will not sign today");
+}
 function lossHtml(c, k){                          // one lost man: settle his purse, then replace him
   const career = byId(T.careers, c.career), L = c.lost, left = purseFor(c.region, c.terms, c.ledger).days;
   const head = `<b>${esc(c.name)}</b>, ${esc(career.name.toLowerCase())}, ${c.terms} term${c.terms > 1 ? "s" : ""}: ${esc(L.why)}${L.auto ? " (from the roller or travel map)" : ""}.`;
@@ -1169,7 +1180,7 @@ function lossHtml(c, k){                          // one lost man: settle his pu
   const cs = o.careers.length > 1 ? `<select data-rcareer="${k}" aria-label="His career">${o.careers.map(id => `<option value="${id}"${id === career2 ? " selected" : ""}>${esc(byId(T.careers, id).name)}</option>`).join("")}</select>` : esc(byId(T.careers, career2).name);
   const ts = o.terms[0] < o.terms[1] ? `<select data-rterms="${k}" aria-label="His terms">${Array.from({ length: o.terms[1] - o.terms[0] + 1 }, (_, n) => o.terms[0] + n).map(n => `<option${n === terms2 ? " selected" : ""}>${n}</option>`).join("")}</select> terms` : `${terms2} term${terms2 > 1 ? "s" : ""}`;
   const payers = optionTags(S.team.map((m, i) => [String(i), m.name + " (" + cash(purseFor(m.region, m.terms, m.ledger).days) + ")"]), String(P.payer ?? 0));
-  const hag = TD.checks ? " " + tick(`data-rhaggle="${k}"`, P.haggle, "haggle", "The payer's Persuade against the man's: a tenth off, a quarter on a critical; a fumble and he will not sign today") : "";
+  const hag = hireHaggle(k, P);
   const payer = o.kind === "hire" ? ` for ${cash(hireCost(o, terms2))}, paid by <select data-rpayer="${k}" aria-label="Who pays">${payers}</select>${hag}` : "";
   const wait = o.wait ? ` · arrives in ${o.wait[0]}–${o.wait[1]} days` : "";
   return `<li>${head} ${settled[0].toUpperCase() + settled.slice(1)}.

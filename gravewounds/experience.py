@@ -61,7 +61,7 @@ def season(d: Data, c: dict, ticks, served: int, rng) -> dict:
     return {"rolls": rolls, "terms": done, "served": c["served"], "lived": lived}
 
 
-def _term_lived(d: Data, T: dict, c: dict, car: dict, rng) -> dict:
+def _term_lived(d: Data, tables: dict, c: dict, car: dict, rng) -> dict:
     """A term served in play, as one at creation: his career's event (its skill +gain, its story
     line), then its wound chance (an old wound: a scar or a lasting hurt). Dice: the event's d100,
     the wound chance's d100 unless the row always wounds, then the wound's location and kind.
@@ -70,11 +70,11 @@ def _term_lived(d: Data, T: dict, c: dict, car: dict, rng) -> dict:
     c.setdefault("events", [])
     c.setdefault("old", [])
     row = _fresh(car["terms"], rng.randint(1, 100), c["events"])
-    c["gains"][row["skill"]] = c["gains"].get(row["skill"], 0) + T["gain"]
+    c["gains"][row["skill"]] = c["gains"].get(row["skill"], 0) + tables["gain"]
     c["events"].append(row["text"])
     wound = None
     if row.get("wound") or rng.randint(1, 100) <= car["wound"]:
         ranges = old_wound_ranges(d, c["era"])[c["region"]][car["wound_weapon"]]
-        wound = _old_wound(d, T, ranges, car["wound_weapon"], c["stat_mods"], rng)
+        wound = _old_wound(d, tables, ranges, car["wound_weapon"], c["stat_mods"], rng)
         c["old"].append(wound)
     return {"event": row["text"], "wound": wound}

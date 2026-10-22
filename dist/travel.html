@@ -1964,6 +1964,26 @@ function endDay(f){
 // ----- keep: a force its army does not feed; its named men pay from their purses (purse.js, money.py) -----
 const BED_TERRAIN = ["village", "town"];      // ground with a bed to be had for the night
 const fedByArmy = f => f.fed !== false;
+function keepLedger(p, f, paid){                  // a night's keep on his ledger: one line a stay with the force
+  const last = p.ledger[p.ledger.length - 1], key = `${S.mapId}:${f.id}`;
+  if (last?.keep && last.force === key){ last.days -= paid; last.keep += 1 }
+  else p.ledger.push({ days: -paid, keep: 1, force: key });
+  const e = p.ledger[p.ledger.length - 1];
+  e.what = `Keep with ${f.name}, ${e.keep} day${e.keep === 1 ? "" : "s"}`;
+}
+function keepWants(f, n, pk, noFreshBefore){       // what he went without: hunger (no fresh food, and tired) and a bed
+  const bits = [];
+  if (pk.hungry){
+    n.noFresh = (n.noFresh ?? noFreshBefore) + 1;  // he ate nothing: no fresh food for him either
+    n.hungry = (n.hungry || 0) + 1;               // and it tires him: the roller adds a step for each day it has not seen
+    bits.push("went hungry: no money for food");
+  } else n.noFresh = f.noFresh;
+  if (pk.rough) bits.push("slept rough: no money for a bed");
+  if (!bits.length) return;
+  const line = `${dateText(f.day, true)}: ${n.name} ${bits.join("; ")}.`;
+  f.log.unshift(line);
+  n.log = [line, ...(n.log || [])].slice(0, 20);
+}
 function keepNight(f, camp, noFreshBefore, hunted = 0){   // each named man's food (none if the host or the hunt feeds him), and a bed in a village or town unless camped
   const all = readNamed(), mine = namedWith(all, f);
   if (!mine.length) return;
@@ -1975,26 +1995,8 @@ function keepNight(f, camp, noFreshBefore, hunted = 0){   // each named man's fo
     const free = hostFeeds(camp, p.era) || meat > 0;
     if (!hostFeeds(camp, p.era) && meat > 0) meat -= 1;   // the hunt's meat, a man a share
     const pk = payKeep(purseLeft(p), 1, free ? 0 : k.food, bedHere ? k.bed : 0);
-    if (pk.paid){
-      const last = p.ledger[p.ledger.length - 1];
-      if (last && last.keep && last.force === `${S.mapId}:${f.id}`){ last.days -= pk.paid; last.keep += 1 }
-      else p.ledger.push({ days: -pk.paid, keep: 1, force: `${S.mapId}:${f.id}` });
-      const e = p.ledger[p.ledger.length - 1];
-      e.what = `Keep with ${f.name}, ${e.keep} day${e.keep !== 1 ? "s" : ""}`;
-      spent = true;
-    }
-    const bits = [];
-    if (pk.hungry){
-      n.noFresh = (n.noFresh ?? noFreshBefore) + 1;  // he ate nothing: no fresh food for him either
-      n.hungry = (n.hungry || 0) + 1;               // and it tires him: the roller adds a step for each day it has not seen
-      bits.push("went hungry: no money for food");
-    } else n.noFresh = f.noFresh;
-    if (pk.rough) bits.push("slept rough: no money for a bed");
-    if (bits.length){
-      const line = `${dateText(f.day, true)}: ${n.name} ${bits.join("; ")}.`;
-      f.log.unshift(line);
-      n.log = [line, ...(n.log || [])].slice(0, 20);
-    }
+    if (pk.paid){ keepLedger(p, f, pk.paid); spent = true }
+    keepWants(f, n, pk, noFreshBefore);
   }
   writeNamed(all);
   if (spent) writePurses(purses);
