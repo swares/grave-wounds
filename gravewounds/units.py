@@ -3109,19 +3109,27 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
         log += _logged({"kind": "volley", **v}, t)
         if v.get("behind") is not None:
             log += _beaten_fire(d, us, table, rng, acc, v)
-        for hero in ([] if v.get("riders") else _acting(d, us[v["att"]], ("ranged",))):
-            wx = shot_weather(d, field, hero["weapon"], v["dist"], v["from"], v["to"], {"kit": hero.get("kit"), "blind": v.get("blind", False)})
-            up, longer = height_edge(d, field, hero["weapon"], v["from"], v["to"])
-            if wx["blocked"] or field_range(d, hero["weapon"], v["dist"], wx["reach"] + longer) is None:
-                continue
-            hopts = {**opts, "factor": form(d, b)["missile_factor"] * (100 - wx["misfire"]) / 100 * v["seen"], "penalty": v["cover"] + wx["penalty"] - up + v["over"],
-                     "reach": wx["reach"] + longer}
-            t = _take_hurt(b, volley(d, _hero_side(us[v["att"]], hero, table, d), _side(b, table), d.units["heroes"]["tempo"], v["dist"], rng, **hopts))
-            _tally(*acc, v, t)
-            log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": v["att"], "dfd": v["dfd"], "dist": v["dist"]}, t)
+        if not v.get("riders"):
+            log += _hero_shots(d, us, (table, rng, acc), field, v, opts)
     for c in cannonades(d, us, field):
         log += _fire_battery(d, us, table, rng, acc, c)
     return log + _vehicle_guns(d, us, (table, rng, acc), field, under)
+
+
+def _hero_shots(d: Data, us: list, ctx: tuple, field: dict | None, v: dict, opts: dict) -> list:
+    """The shooting unit's heroes with missile weapons fire with its volley v."""
+    (table, rng, acc), b, log = ctx, us[v["dfd"]], []
+    for hero in _acting(d, us[v["att"]], ("ranged",)):
+        wx = shot_weather(d, field, hero["weapon"], v["dist"], v["from"], v["to"], {"kit": hero.get("kit"), "blind": v.get("blind", False)})
+        up, longer = height_edge(d, field, hero["weapon"], v["from"], v["to"])
+        if wx["blocked"] or field_range(d, hero["weapon"], v["dist"], wx["reach"] + longer) is None:
+            continue
+        hopts = {**opts, "factor": form(d, b)["missile_factor"] * (100 - wx["misfire"]) / 100 * v["seen"], "penalty": v["cover"] + wx["penalty"] - up + v["over"],
+                 "reach": wx["reach"] + longer}
+        t = _take_hurt(b, volley(d, _hero_side(us[v["att"]], hero, table, d), _side(b, table), d.units["heroes"]["tempo"], v["dist"], rng, **hopts))
+        _tally(*acc, v, t)
+        log += _logged({"kind": "hero", "hero": hero["id"], "name": hero["name"], "att": v["att"], "dfd": v["dfd"], "dist": v["dist"]}, t)
+    return log
 
 
 def _rocket_volley(d: Data, us: list, ctx: tuple, env: tuple, v: dict) -> list:
