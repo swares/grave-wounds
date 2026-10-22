@@ -1029,20 +1029,20 @@ def _holding(unit: dict) -> bool:
     return bool(unit.get("holds")) and not unit.get("flanked")
 
 
-def _losing(M: dict, unit: dict) -> bool:
+def _losing(mo: dict, unit: dict) -> bool:
     """Lost the exchange in contact: more men down than it put down; holding a position
     (morale.posture_hand), only by its losses hand to hand."""
     if not unit.get("contact"):
         return False
-    if M.get("posture_hand") and _holding(unit):
+    if mo.get("posture_hand") and _holding(unit):
         return unit.get("hand_lost", 0) > unit.get("hand_dealt", 0)
     return unit.get("lost", 0) > unit.get("dealt", 0)
 
 
-def _attrition(M: dict, unit: dict) -> bool:
+def _attrition(mo: dict, unit: dict) -> bool:
     """A quarter down (morale.trigger): every exchange in the open; holding a position, only in an
     exchange it lost men."""
-    return unit["down"] >= M["trigger"] * unit["start"] and (unit["lost"] > 0 or not _holding(unit))
+    return unit["down"] >= mo["trigger"] * unit["start"] and (unit["lost"] > 0 or not _holding(unit))
 
 
 def _failed(mo: dict, unit: dict, by: int) -> str:
