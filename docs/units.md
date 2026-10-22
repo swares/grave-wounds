@@ -132,7 +132,8 @@ change to the rules. The Python mirror is `gravewounds/units.py` `_quick_blows`.
 
 After each exchange a unit checks if any of these happened:
 - it lost the exchange in contact (more of its men put down than it put down);
-- a quarter of its starting men are down;
+- a quarter of its starting men are down (for a unit holding a position, below, only in an
+  exchange it lost men);
 - a tenth of its men went down in this exchange;
 - it was struck in flank or rear.
 
@@ -153,6 +154,20 @@ The check is d100 against its Nerve (green 35, regular 50, veteran 65), with mod
   once instead if it fails by more than 20 while flanked or with half its men down.
 - **Shaken, fails:** broken.
 - **Shaken, passes out of contact:** it rallies to steady.
+
+**Holding a position** (`morale.posture`). A unit of a side the commander has holding its ground
+(not attacking), that holds a position, and is not struck in flank or rear, checks for being a
+quarter down only in an exchange in which it lost men. Holding a position means: in a bunker, dug
+in or emplaced, behind works with cover toward the nearest enemy, or in ground that hides men
+(buildings, tall buildings, rubble). Units in the open, and attackers wherever they lie, check
+every exchange as before. A garrison in its holes no longer breaks from the passing of time; one
+that is being hit still checks, as does any unit flanked, hit hard, or losing the fight in contact.
+The research behind it (the project's breakpoints-pre1914 and morale-two-kinds notes): breaks
+come cheap from flanks, charges and neighbours running, but late from frontal attrition, and dug-in
+units hold far past any threshold. Measured on 24 runs of every battlefield: 642 of 888 from 628,
+the morale targets unchanged; Keating 12 to 20, Pork Chop 10 to 16, X-Ray 7 to 9. A first version
+applied it to attackers in cover too, and at Wanat the Taliban in the draw stopped breaking (23 to
+16); a check when a unit of its own side within 2 hexes broke was measured and changed nothing.
 
 ## The rout
 

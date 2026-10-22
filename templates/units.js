@@ -620,7 +620,7 @@ function morale(u, roll){                       // {check, target, state}
   if (u.state === "broken") return { check: false, target: null, state: "broken" };
   const losing = (u.lost || 0) > (u.dealt || 0) && u.contact;
   const attrition = u.down >= M.trigger * u.start && (u.lost > 0 || !(u.holds && !u.flanked));   // past a quarter down: every exchange in the open; holding a position, only when it lost men (morale.posture)
-  const struck = attrition || u.lost >= M.shock * Math.max(1, u.men) || u.flanked || losing || (u.neighbour && u.state === "steady");   // a neighbour broke (morale.neighbour)
+  const struck = attrition || u.lost >= M.shock * Math.max(1, u.men) || u.flanked || losing;
   const rally = u.state === "shaken" && !u.contact;
   if (!struck && !rally) return { check: false, target: null, state: u.state };
   const target = quality(u.quality).nerve + moraleMods(M.mods, u);
@@ -2194,24 +2194,18 @@ function holdsPosition(us, i, field){             // unit i holds a position: in
   for (const e of us) if (e.side !== u.side && e.men > 0 && !ROUTED.has(e.state)){ const dd = hdist(e.pos, u.pos); if (dd < best){ best = dd; at = e.pos } }
   return holdsWorks(field, at || u.pos, u);
 }
-function unitsWithin(a, b, r){                     // any hex of unit a within r hexes of any of unit b's
-  const hb = footprint(b).flat();
-  return footprint(a).flat().some(x => hb.some(y => hdist(x, y) <= r));
-}
 function moraleAll(us, occ, before, acc, rng, table, field = null){
-  const log = [], broke = [], M = UD.morale, reach = M.neighbour || 0;
-  const fresh = reach ? us.map((v, k) => (v.just_broke ? k : -1)).filter(k => k >= 0) : [];   // broke in the last exchange: their neighbours check now
-  for (const k of fresh) delete us[k].just_broke;
+  const log = [], broke = [], M = UD.morale;
   us.forEach((u, i) => {
     if (out_(u)) return;
     const near = adjacentUnits(us, occ, i);
     const [down, lost] = vehicleLosses(u, before[i], acc.lost[i]);
     const unit = { quality: u.quality, start: u.start, down, lost, dealt: acc.dealt[i], men: before[i], state: u.state,
       leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out",
-      holds: !!M.posture && !!u.holding && holdsPosition(us, i, field), neighbour: fresh.some(k => k !== i && us[k].side === u.side && unitsWithin(us[k], u, reach)) };
+      holds: !!M.posture && !!u.holding && holdsPosition(us, i, field) };
     const m = morale(unit, rng.randint(1, 100));
-    if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state, ...(unit.neighbour ? { neighbour: true } : {}) });
-    if (m.state === "broken"){ broke.push(i); if (reach) u.just_broke = true }
+    if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state });
+    if (m.state === "broken") broke.push(i);
     u.state = m.state;
   });
   for (const j of broke) log.push(...routStrike(us, occ, j, table, rng));
