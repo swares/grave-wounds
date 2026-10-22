@@ -94,6 +94,10 @@ tongues:
   scots: {name: Scots}
   czech: {name: Czech}
   croatian: {name: Croatian}
+  serbian: {name: Serbian}
+  bulgarian: {name: Bulgarian}
+  belarusian: {name: Belarusian}
+  yiddish: {name: Yiddish}
   hungarian: {name: Hungarian}
   polish: {name: Polish}
   russian: {name: Russian}
@@ -137,6 +141,13 @@ related:                       # [a, b, share]: a man with one knows the other a
   - [hindustani, urdu, 0.75]
   - [czech, polish, 0.25]
   - [croatian, czech, 0.25]
+  - [serbian, croatian, 0.9]
+  - [serbian, bulgarian, 0.25]
+  - [serbian, russian, 0.25]
+  - [russian, belarusian, 0.5]
+  - [belarusian, ukrainian, 0.5]
+  - [belarusian, polish, 0.25]
+  - [yiddish, german, 0.5]
 
 traits:                        # background traits and drawbacks that give or take tongues
   "Speaks three tongues": {extra: 2, range: [30, 60]}
@@ -195,6 +206,10 @@ armies:
               others: [[english, 60, [20, 60]], [french, 25, [5, 30]], [german, 2, [10, 50]]]}
     france: {own: [[french, 90], [arabic, 5], [breton, 5]], enemy: german,
              others: [[french, 60, [20, 60]], [german, 5, [10, 50]]]}
+    russia: {own: [[russian, 55], [ukrainian, 20], [polish, 7], [belarusian, 6], [yiddish, 5], [tatar, 4], [german, 2], [finnish, 1]], enemy: german,
+             others: [[russian, 70, [20, 60]], [german, 5, [10, 40]]]}   # the 1897 census's mother tongues as a proxy (no muster counts); units at least 75% Slavs
+    serbia: {own: [[serbian, 100]], enemy: german,
+             others: [[french, 10, [5, 30]], [german, 10, [10, 40]], [bulgarian, 5, [10, 40]], [russian, 5, [5, 25]]]}
     germany: {own: [[german, 90], [polish, 7], [french, 3]], enemy: french,
               others: [[german, 60, [20, 60]], [french, 10, [5, 40]], [english, 5, [5, 40]]]}
     us: {own: [[english, 85], [german, 7], [italian, 5], [polish, 3]], enemy: german,

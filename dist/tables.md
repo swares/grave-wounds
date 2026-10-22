@@ -5928,7 +5928,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 **Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
 
-**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The British Empire (no reliable share: chosen, never rolled): military nurse, army auxiliary; The United States (1917-1918) (no reliable share: chosen, never rolled): military nurse. Elsewhere these careers were closed to them.
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The British Empire (no reliable share: chosen, never rolled): military nurse, army auxiliary; The United States (1917-1918) (no reliable share: chosen, never rolled): military nurse; Imperial Russia (1914-1917) (no reliable share: chosen, never rolled): rifleman, machine gunner, signaller or runner, corporal or sergeant, junior officer, military nurse; Serbia (1914-1918) (no reliable share: chosen, never rolled): rifleman, bomber, corporal or sergeant, military nurse. Elsewhere these careers were closed to them.
 
 | Skill | Starts at | Weapons |
 |---|---|---|
@@ -6065,20 +6065,20 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Army auxiliary | 71-85 | Watch | Stood by in the trenches dug by the camp in the air raids. |
 | Army auxiliary | 86-00 | Dodge | Was in camp when the bombers came over at night, as at Abbeville in 1918. * |
 
-| Career | The British Empire | France | Germany | The United States |
-|---|---|---|---|---|
-| Rifleman | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
-| Machine gunner | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg |
-| Bomber | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade |
-| Sniper or observer | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
-| Sapper or tunneller | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
-| Stretcher-bearer or orderly | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
-| Signaller or runner | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
-| Corporal or sergeant | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
-| Junior officer | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
-| Gunner or trench mortarman | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar |
-| Military nurse | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch |
-| Army auxiliary | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch |
+| Career | The British Empire | France | Germany | The United States | Russian | Serbian |
+|---|---|---|---|---|---|---|
+| Rifleman | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
+| Machine gunner | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg |
+| Bomber | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade |
+| Sniper or observer | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
+| Sapper or tunneller | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
+| Stretcher-bearer or orderly | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
+| Signaller or runner | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
+| Corporal or sergeant | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
+| Junior officer | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
+| Gunner or trench mortarman | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar |
+| Military nurse | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch |
+| Army auxiliary | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|

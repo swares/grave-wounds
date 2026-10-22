@@ -103,7 +103,7 @@ eras:
     note: "No ranks and no pay: a man's standing came from his deeds (coups, horses taken) and his generosity, and a war leader was followed, not appointed."
     honours: true
   wwi:
-    note: "British daily pay of 1914 (other armies' not found). About 10,000 British soldiers were commissioned straight from the ranks, and about 6,000 Americans in 1917-18."
+    note: "British daily pay of 1914; Russian of 1914 (a private 6 roubles a year, a senior NCO 48, a feldfebel 72, a podporuchik 70 a month, a captain 145: Podpryatov and Poperechnaya 2019, and a blog for the officers); Serbian pay not found. About 10,000 British soldiers were commissioned straight from the ranks, and about 6,000 Americans in 1917-18; Russia's 62 praporshchik schools turned out some 225,000 wartime officers in three-month courses."
     kept: 0.75
     kept_approx: true
     ladder:
@@ -113,6 +113,7 @@ eras:
       - {id: csm, name: "Company sergeant-major", pay: 4, years: 2, diff: hard, approx: true}
       - {id: lieutenant, name: "Second lieutenant", pay: 7.5, years: 1, diff: hard, approx: true}
       - {id: captain, name: "Captain", pay: 12.5, years: 1, diff: ordinary, approx: true}
+    pay_by: {russia: [1, 4, 8, 12, 140, 290]}     # Russia: the corporal's an estimate (no source); the rest from the 1914 rates above
     start: {nco: sergeant, officer: lieutenant}
     career_pay: {nurse: 1.78, auxiliary: 1.1}     # QAIMNS staff nurse £30-£35 a year (1902 warrant), WAAC from £20 a year with board, against a private's 1s a day
     career_pay_by: {us: {nurse: 1.67}}            # Army Nurse Corps $50 a month overseas against a private's $30

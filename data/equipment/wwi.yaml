@@ -34,7 +34,22 @@ currencies:
     day_note: "a poilu's 5 sous a day (the usual figure; raised with a combat allowance in 1917)"
     day_approx: true
 
-currency: {default: gbp, us: usd, germany: mark, france: frf}
+  rub:
+    name: "Roubles (100 kopecks)"
+    coin: rub
+    base: polushka
+    units: [{sym: " rub.", of: 400}, {sym: " kop.", of: 4}]
+    day: 7
+    day_note: "a Russian private's 6 roubles a year, about 1¾ kopecks a day (Podpryatov and Poperechnaya 2019); a farm labourer earned about 75 kopecks a day (1910). In quarter-kopecks (polushki)"
+  dinar:
+    name: "Dinars (100 para)"
+    coin: dinar
+    base: para
+    decimal: {sym: "", suf: " din.", per: 100, small: " para"}
+    day: 25
+    day_note: "no Serbian private's pay found: the French poilu's 5 sous, the dinar at par with the franc; an unskilled worker earned about 1.2 dinars a day (1910)"
+    day_approx: true
+currency: {default: gbp, us: usd, germany: mark, france: frf, russia: rub, serbia: dinar}
 
 sources:
   sears: &sears "https://www.gutenberg.org/ebooks/54213.txt.utf-8"
@@ -53,6 +68,11 @@ keep:
 items:
   # Vehicles, horses
   - {id: model_t, name: "Ford Model T, touring car", cat: travel, in: usd, price: 49000, when: "1914", source: {url: "https://www.thehenryford.org/collections-and-research/digital-collections/artifact/163928", note: "The Henry Ford"}}
+  - {id: bread_ru, name: "Black bread, a funt, Moscow", cat: food, in: rub, price: 10, when: "August 1914 (12 kopecks by August 1917)", source: {url: "https://standardebooks.org/ebooks/john-reed/ten-days-that-shook-the-world/text/appendix-1", note: "John Reed, Ten Days, appendix"}}
+  - {id: meat_ru, name: "Meat, a funt", cat: food, in: rub, price: 76, when: "1914", source: {url: "https://minfin.com.ua/blogs/angry/35431/", note: "a blog, unsourced there"}}
+  - {id: shoes_ru, name: "Men's shoes, a pair, Moscow", cat: clothing, in: rub, price: 4800, when: "1914 (144 roubles by 1917)", source: {url: "https://standardebooks.org/ebooks/john-reed/ten-days-that-shook-the-world/text/appendix-1", note: "John Reed, Ten Days, appendix"}}
+  - {id: suit_ru, name: "Men's suit of clothes, Moscow", cat: clothing, in: rub, price: 16000, when: "1914 (400-455 roubles by 1917)", source: {url: "https://standardebooks.org/ebooks/john-reed/ten-days-that-shook-the-world/text/appendix-1", note: "John Reed, Ten Days, appendix"}}
+  - {id: horse_ru, name: "Army horse, bought by the Zemstvo Union", cat: horse, in: rub, price: [65200, 115600], when: "1915-16", source: {url: "https://digi.econbiz.de/viewer/fulltext/1794855874/272", note: "Zemstvo Union purchases"}}
   - {id: ford_ambulance, name: "Ford Model T ambulance, equipped and shipped", cat: travel, in: usd, price: 66039, when: "1917", source: {url: "https://siarchives.si.edu/blog/smithsonian-sent-healing-wheels-wwi", note: "Smithsonian Institution Archives: $475 bare"}}
   - {id: remount, name: "Army remount horse, bought and delivered", cat: horse, price: 54720, when: "1914-20", source: {url: "https://blog.nationalarchives.gov.uk/making-horses-war-army-remount-service/", note: "National Archives, from totals"}}
   - {id: motorcycle, name: "Motorcycle", cat: travel, price: [38400, 67200], approx: true}

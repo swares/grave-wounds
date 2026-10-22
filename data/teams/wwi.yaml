@@ -101,6 +101,35 @@ regions:
       names: [Mary, Helen, Ruth, Margaret, Dorothy, Frances, Florence, Edna, Marie, Mildred]
       closed: "American servicewomen in France were nurses, not in the fighting careers."
       source: "Army Nurse Corps (army.mil; med-dept.com): about 4,100 grew to 21,460 in 1917-18, 2,088 in France by March 1918; some died of influenza and pneumonia, none by enemy action."
+  - id: russia
+    name: "Imperial Russia (1914-1917)"
+    short: "Russian"
+    table: wwi-1914-18-wounds
+    colours: ["#6f6a4e", "#5f5b42", "#8a6a3a", "#e6e0d2"]
+    names: [Ivan, Vasily, Pyotr, Nikolai, Fyodor, Mikhail, Aleksei, Grigory, Semyon, Stepan, Yegor, Andrei, Pavel, Dmitry, Timofei, Mykola]
+    bynames: [Ivanov, Smirnov, Kuznetsov, Popov, Vasiliev, Petrov, Sokolov, Mikhailov, Fyodorov, Morozov, Volkov, Shevchenko]
+    women:
+      share: null
+      careers: [rifleman, machine_gunner, signaller, nco, officer, nurse]
+      shares: {nurse: 100}
+      names: [Maria, Anna, Olga, Yekaterina, Yelena, Natalya, Tatyana, Vera, Nadezhda, Aleksandra, Praskovya, Yevdokia]
+      bynames: [Ivanova, Smirnova, Kuznetsova, Popova, Vasilieva, Petrova, Sokolova, Mikhailova, Fyodorova, Morozova, Volkova, Shevchenko]
+      closed: "Before 1917 a woman served in the ranks only by the Tsar's leave (Bochkareva) or disguised; the women's battalions of 1917 had riflemen, machine gunners, signallers and their own NCOs and officers."
+      source: "Stoff, Women's mobilization for war (Russian Empire), 1914-1918-online: about 5,000 women in the units of 1917, 1,500 in the 1st Petrograd battalion, some 300 of Bochkareva's left after training, who reached the third German line at Smorgon on 9 July 1917; over 31,000 Sisters of Mercy nursed in the war. No share of all soldiers."
+  - id: serbia
+    name: "Serbia (1914-1918)"
+    short: "Serbian"
+    table: wwi-1914-18-wounds
+    colours: ["#5d6a5a", "#4f5b4c", "#8a5a3a", "#e6e0d2"]
+    names: [Milan, Dragutin, Živojin, Radomir, Miloš, Stevan, Petar, Dušan, Vojislav, Milorad, Jovan, Nikola, Stojan, Radovan, Đorđe, Miodrag]
+    bynames: [Jovanović, Petrović, Nikolić, Marković, Đorđević, Stojanović, Ilić, Stanković, Pavlović, Milošević, Todorović, Savić]
+    women:
+      share: null
+      careers: [rifleman, bomber, nco, nurse]
+      shares: {nurse: 100}
+      names: [Milunka, Sofija, Živana, Antonija, Nadežda, Jelena, Milica, Desanka, Ljubica, Stana, Draginja, Flora]
+      closed: "A few Serbian women fought in the ranks, most as sergeants (Milunka Savić, Sofija Jovanović), and Flora Sandes, a British nurse, enlisted as a private in the 1915 retreat; women nursed in great numbers."
+      source: "Mladenović, Women's mobilization for war (South East Europe), 1914-1918-online: five women on the Salonika front, Antonija Javornik and Živana Terzić sergeants; the Circle of Serbian Sisters listed 1,500 nurses. Milunka Savić, wounded nine times; Flora Sandes, sergeant-major by 1916, commissioned 1919 (Wikipedia)."
 origins:
   - {name: "Farm hand", gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Never been far from home", persuade: -15}}
   - {name: "Coal miner", gain: craft, trait: {text: "At home underground", end: 10}, drawback: {text: "Coughs in the cold", stealth: -15}}

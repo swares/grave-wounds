@@ -75,6 +75,14 @@ eras:
     - {id: germany, name: "In German hands", capture: [8, 40], release: 3, hazard: 0.5, escape: -10, home: 5, recapture: 0,
        note: "142,754 of 2,476,731 died (5.8%); seriously wounded and long-held men could be interned in Switzerland"}
     - {id: hard, name: "Romanians in German, Italians in Austro-Hungarian hands", capture: [8, 40], release: 2, hazard: 3, escape: -10, home: 5, recapture: 0}
+    - {id: russian_held, name: "Russians in German or Austro-Hungarian hands", capture: [8, 40], release: 2, hazard: 1, escape: -10, home: 5, recapture: 0,
+       note: "3.64 million Russians taken (Astashov); about 8% died over all (Oskin), about 20% in Austro-Hungarian hands; invalids exchanged with Germany from 1915, some 22,000 by 1917", approx: true}
+    - {id: serb_held, name: "Serbs in Austro-Hungarian, Bulgarian or German hands", capture: [8, 40], release: 1, hazard: 3, escape: -10, home: 5, recapture: 0,
+       note: "222,357 Serbs taken, about 60,000 died (Denda); 4,800 deaths at Nežider", approx: true}
+    - {id: in_russia, name: "Germans or Austro-Hungarians in Russian hands", capture: [8, 40], release: 1, hazard: 2, escape: -20, home: 3, recapture: 0,
+       note: "about 2.4 million held, over 400,000 died (17.6%, Sumpf); a German's chance worse (37%)", approx: true}
+    - {id: in_serbia, name: "Austro-Hungarians in Serbian hands (the typhus, the retreat)", capture: [8, 40], release: 1, hazard: 6, escape: -10, home: 5, recapture: 0,
+       note: "about 35,000 dead in the typhus of 1914-15 and 47,000 on the retreat of 1915; how many were taken is not known", approx: true}
   wwii:
     - {id: west, name: "Western Allies and Germans, either way", capture: [5, 40], release: 2, hazard: 0.4, escape: -10, home: -30, recapture: 2,
        note: "3.6% of British and US prisoners in German hands died; fewer than 1,200 of 170,000 British and Commonwealth prisoners got home by escaping"}
