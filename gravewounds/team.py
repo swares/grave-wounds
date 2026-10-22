@@ -68,13 +68,22 @@ def open_to_women(tables: dict, region: str, career_id: str) -> tuple:
 
 
 def _sex(tables: dict, region: str, career_id: str, sex: str, rng) -> str:
-    """m or f: as chosen, or (roll) d10000 at or under the region's share x 100, for a career
-    open to women in a region with a known share (no roll otherwise: a man)."""
+    """m or f: as chosen, or (roll) d10000 at or under the share x 100 (the career's own share in
+    the region where it has one, else the region's), for a career open to women with a known
+    share (no roll otherwise: a man)."""
     ok = open_to_women(tables, region, career_id)[0]
     if sex == "roll":
-        share = (women_of(tables, region) or {}).get("share") if ok else None
+        W = women_of(tables, region) or {}
+        share = (W.get("shares") or {}).get(career_id, W.get("share")) if ok else None
         return "f" if share is not None and rng.randint(1, SHARE_DIE) <= round(share * 100) else "m"
     return "f" if sex == "f" and ok else "m"
+
+
+def disguised(reg: dict, career_id: str) -> bool:
+    """Whether a woman of this career in this army enlisted disguised as a man (the block's
+    `disguised`: true for all its careers, or a list of them)."""
+    D = (reg.get("women") or {}).get("disguised")
+    return D is True or (isinstance(D, list) and career_id in D)
 
 
 def _name(reg: dict, sex: str, rng) -> str:
@@ -159,14 +168,16 @@ def make_character(d: Data, eid: str, region: str, career_id: str, terms: int, m
         if row.get("wound") or rng.randint(1, 100) <= career["wound"]:
             old.append(_old_wound(d, T, ranges[region][career["wound_weapon"]], career["wound_weapon"], stat_mods, rng))
     reg = _by_id(T["regions"], region)
-    name, look = _name(reg, sex, rng), _look(reg, sex, rng)
+    name, look = _name(reg, "m" if disguised(reg, career_id) else sex, rng), _look(reg, sex, rng)
     kit, weapon = kit_for(career, region)
     c = {"name": name, "sex": sex, "era": eid, "region": region, "career": career_id, "terms": terms, "mode": mode,
          "base": base, "stat_mods": stat_mods, "gains": gains, "origin": origin["name"],
          "trait": origin["trait"]["text"], "drawback": origin["drawback"]["text"], "events": events, "old": old,
-         "age": T["age"]["start"] + T["age"]["per_term"] * terms, "kit": kit, "weapon": weapon, "look": look,
-         "aged_to": T["age"]["start"]}
-    from .ageing import steps
+         "kit": kit, "weapon": weapon, "look": look}
+    from .ageing import enlist, steps, still_lying
+    e = enlist(d, eid, region, T["age"]["start"], rng)    # his age when he enlisted, and any lie about it
+    c.update({"enlisted": e["age"], "age": e["age"] + T["age"]["per_term"] * terms, "aged_to": e["age"], "lied": e["lied"]})
+    c["lied"] = None if e["lied"] == "over" and terms > 1 else still_lying(d, c)   # an older man past his first term: it stands
     from .hazards import swim_ability
     steps(d, c, rng)                               # the years of his terms: decline, maturity, wear
     finish(d, c)
@@ -189,7 +200,7 @@ def make_follower(d: Data, eid: str, region: str, career_id: str, table: str, rn
     q = d.units["quality"][quality]
     sex = _sex(T, region, career_id, "roll", rng) if women == "roll" else "m"
     reg = _by_id(T["regions"], region)
-    name, look = _name(reg, sex, rng), _look(reg, sex, rng)
+    name, look = _name(reg, "m" if disguised(reg, career_id) else sex, rng), _look(reg, sex, rng)
     kit, weapon = kit_for(career, region)
     return {"name": name, "sex": sex, "career": career_id, "quality": quality, "attack": q["attack"], "defence": q["defence"],
             "nerve": q["nerve"], "kit": kit, "weapon": weapon, "look": look, "mounted": bool(career.get("mounted"))}
@@ -268,8 +279,8 @@ def fight_line(d: Data, c: dict) -> str:
 
 def _woman_note(tables: dict, c: dict) -> str:
     """' (a woman)', or ' (a woman, enlisted as a man)' where women enlisted disguised."""
-    disguised = (_by_id(tables["regions"], c["region"]).get("women") or {}).get("disguised")
-    return " (a woman, enlisted as a man)" if disguised else " (a woman)"
+    hid = disguised(_by_id(tables["regions"], c["region"]), c["career"])
+    return " (a woman, enlisted as a man)" if hid else " (a woman)"
 
 
 def tongue_line(d: Data, c: dict) -> str:

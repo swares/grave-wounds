@@ -62,10 +62,53 @@ def steps(d: Data, c: dict, rng) -> list[dict]:
         _mature(mid, A["maturity"], mat, ch)
         for k, v in ch.items():
             c["stat_mods"][k] = c["stat_mods"].get(k, 0) + v
-        c["wear"] += W["per_step"]
+        older = c.get("enlisted", 0) >= (A.get("enlist") or {}).get("older_from", 999)
+        c["wear"] += W["per_step"] * ((A.get("enlist") or {}).get("older_wear", 1) if older else 1)
         c["aged_to"] += step
         out.append({"age": c["aged_to"], "changes": {k: ch[k] for k in sorted(ch)}})
     return out
+
+
+def limits(d: Data, eid: str, region: str) -> dict | None:
+    """{min, max} for his army's enlistment (a region's own where it has them), or None."""
+    E = ((_cfg(d).get("enlist") or {}).get("eras") or {}).get(eid)
+    if not E:
+        return None
+    R = (E.get("regions") or {}).get(region) or {}
+    return {"min": R.get("min", E["min"]), "max": R.get("max", E["max"])}
+
+
+def enlist(d: Data, eid: str, region: str, start: int, rng) -> dict:
+    """His age at enlistment: {"age", "lied"} (lied: "under", "over" or None). The era's start age
+    raised to the army's least; then d100 for a boy under age or an older recruit."""
+    L = limits(d, eid, region)
+    if not L:
+        return {"age": start, "lied": None}
+    E = _cfg(d)["enlist"]
+    sh = E["shares"].get(eid, E["shares"]["default"])
+    r = rng.randint(1, 100)
+    if r <= sh["under"]:
+        return {"age": L["min"] - rng.randint(1, E["under_years"]), "lied": "under"}
+    if r > 100 - sh["older"]:
+        top = max(E["older_from"], L["max"] + E["over_years"])
+        age = rng.randint(E["older_from"], top)
+        return {"age": age, "lied": "over" if age > L["max"] else None}
+    return {"age": max(start, L["min"]), "lied": None}
+
+
+def found_out(d: Data, c: dict, roll: int) -> bool:
+    """End of season: is a man under or over age found out (d100 at or under found_out)?"""
+    return bool(c.get("lied")) and roll <= _cfg(d)["enlist"]["found_out"]
+
+
+def still_lying(d: Data, c: dict) -> str | None:
+    """His lie still stands: a boy until he is of age, an older man through his first term."""
+    L = limits(d, c["era"], c["region"])
+    if not L or not c.get("lied"):
+        return None
+    if c["lied"] == "under":
+        return "under" if c["age"] < L["min"] else None
+    return "over" if c.get("xp_terms", 0) < 1 else None
 
 
 def add_wear(d: Data, c: dict, hard_seasons: int) -> None:

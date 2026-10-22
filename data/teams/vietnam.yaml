@@ -76,7 +76,13 @@ regions:
     colours: ["#4f5a3a", "#5b5a3a", "#3f4a30", "#e6e0d2"]
     names: [Michael, David, James, John, Robert, William, Richard, Thomas, Gary, Larry, Dennis, Steven, Ronald, Daniel, Ricky, Jose]
     bynames: [Smith, Johnson, Williams, Brown, Jones, Miller, Davis, Garcia, Rodriguez, Wilson, Washington, Martinez]
-    no_women: "About 7,500 American servicewomen served in Vietnam, most of them nurses, the rest in staff work: none in these careers."
+    women:
+      share: null
+      careers: [nurse]
+      shares: {nurse: 100}
+      names: [Mary, Linda, Patricia, Susan, Barbara, Karen, Donna, Sharon, Judy, Diane]
+      closed: "American servicewomen in Vietnam were nurses and staff, not in the fighting careers."
+      source: "History.com, Women in the Vietnam War: about 11,000 American military women, nine in ten nurses (about 5,000 Army nurses, 1962-73); eight died, one (Lt Sharon Lane, 1969) by enemy fire."
   - id: us_marines
     name: "The US Marines"
     short: "US Marines"
@@ -334,6 +340,22 @@ careers:
       - {to: 70, skill: persuade, text: "Wrote to the families of the dead."}
       - {to: 85, skill: rifle, text: "Led an assault on a fortified village.", wound: true}
       - {to: 100, skill: command, text: "Held the company together when it was surrounded.", wound: true}
+  - id: nurse
+    name: "Army nurse"
+    main: leechcraft
+    second: letters
+    prefers: [wits, end, nerve, pres, agi, str]
+    wound: 2
+    wound_weapon: explosive_fragment
+    kit: {default: none}
+    weapon: {default: punch}
+    terms:
+      - {to: 20, skill: craft, text: "Worked twelve-hour shifts in an evacuation hospital."}
+      - {to: 40, skill: letters, text: "Kept the charts on a ward of amputees."}
+      - {to: 55, skill: leechcraft, text: "Triaged casualties off the helicopters."}
+      - {to: 70, skill: watch, text: "Did night duty on an intensive care ward."}
+      - {to: 85, skill: persuade, text: "Held a dying man's hand so he would not be alone."}
+      - {to: 100, skill: dodge, text: "Was on the hospital compound when the rockets came in.", wound: true}
 
 old_wound:
   - {to: 70, kind: mark, text: "a healed scar"}

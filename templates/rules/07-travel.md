@@ -105,10 +105,18 @@ two steps of fatigue. **Cold water** takes his breath the first minute (a Nerve 
 minutes in icy water, 45 at 10-15 °C, he swims 10 worse for every ten minutes more (the 1-10-1
 rule; in 10 °C water half of a group of competent swimmers had failed within an hour).
 
-**Fords.** Infantry could wade to about 3 ft, cavalry 4 ft, guns 2 ft 4 in. On the travel map a
-force crossing an ordinary ford puts each named man with a Heavy load or worse to an Easy
-Agility check (Ride for a horseman); a force that chooses to risk a flooded ford (never with
-wagons or guns) puts every named man to a Very hard one. Swept off, he swims for the bank.
+**Fords.** Infantry could wade to about 3 ft, cavalry 4 ft, guns 2 ft 4 in. Each ford on the
+travel map has its own depth and current (fixed by its place, deeper and faster in flood). In
+water deeper than he wades, every named man is at risk; shallower, only a man with a Heavy load
+or worse. He makes an Agility check (Ride for a horseman) at the current's difficulty:
+
+{{table:ford_currents}}
+
+It is the current, not the depth, that sweeps men away: the 10th Hussars' ford on the Kabul River
+in 1879 was about 3 ft deep with a current of about 4 m/s, and 46 men drowned with 13 horses.
+Swept off, he takes the water's cold shock (the week's warmth sets how cold it is; a flood is a
+row colder), then swims for the bank for the current's minutes; a horseman's horse may drown
+too. A force may choose to risk a flooded ford (never with wagons or guns).
 
 **Climbing.** Agility + Fieldcraft ÷ 2, for each 10 m of a rope or ladder (3 m of a free climb):
 a ladder or slope +20, a knotted rope 0, a wet rope or a rough wall −20, a sheer face −40, less for

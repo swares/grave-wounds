@@ -69,7 +69,13 @@ regions:
     colours: ["#5b5a3a", "#6b5f3a", "#7a6a42", "#e6e0d2"]
     names: [Robert, James, John, William, Richard, Charles, Donald, George, Joseph, Edward, Thomas, Frank, Harold, Walter, Paul, Raymond]
     bynames: [Smith, Johnson, Williams, Brown, Jones, Miller, Davis, Garcia, Wilson, Anderson, Kowalski, O'Brien]
-    no_women: "American servicewomen served as nurses and in the women's corps, not in fighting units."
+    women:
+      share: null
+      careers: [nurse, auxiliary]
+      shares: {nurse: 100, auxiliary: 100}
+      names: [Mary, Dorothy, Helen, Betty, Margaret, Ruth, Virginia, Frances, Jean, Evelyn]
+      closed: "American servicewomen were nurses and auxiliaries, not in the fighting careers."
+      source: "Army Nurse Corps (med-dept.com; army.mil): over 59,000 nurses, 201 died, 67 held by Japan for 37 months; National WWII Museum: over 150,000 in the WAC."
   - id: us_pacific
     name: "US Marines and Army in the Pacific"
     table: bougainville-1944-all-hits
@@ -83,7 +89,13 @@ regions:
     colours: ["#7a6a42", "#6b5f3a", "#8a7a52", "#e6e0d2"]
     names: [Ronald, Kenneth, Dennis, Leslie, Stanley, Albert, Arthur, Frederick, George, Jack, Harold, Norman, Douglas, Bruce, Ian, Bill]
     bynames: [Smith, Jones, Brown, Taylor, Williams, Wilson, Campbell, Stewart, Murray, Macdonald, Clarke, Walker]
-    no_women: "Commonwealth servicewomen served in the women's services and as nurses, not in these careers."
+    women:
+      share: null
+      careers: [nurse, auxiliary]
+      shares: {nurse: 100, auxiliary: 100}
+      names: [Mary, Joan, Margaret, Jean, Joyce, Doris, Kathleen, Irene, Betty, Peggy]
+      closed: "Commonwealth women served as nurses and auxiliaries (in mixed anti-aircraft batteries, but not firing the guns), not in the fighting careers."
+      source: "Auxiliary Territorial Service (Wikipedia): over 190,000 by VE Day, two-thirds of the crews of mixed heavy anti-aircraft batteries, 717 casualties. No count of British army nurses' deaths found."
   - id: germany
     name: "Germany"
     table: owens-wwii
@@ -315,6 +327,38 @@ careers:
       - {to: 70, skill: watch, text: "Watched for anti-tank guns from the turret."}
       - {to: 85, skill: dodge, text: "Bailed out of a burning tank.", wound: true}
       - {to: 100, skill: gunnery, text: "Fought a tank duel at long range."}
+  - id: nurse
+    name: "Army nurse"
+    main: leechcraft
+    second: letters
+    prefers: [wits, end, nerve, pres, agi, str]
+    wound: 3
+    wound_weapon: explosive_fragment
+    kit: {default: none}
+    weapon: {default: punch}
+    terms:
+      - {to: 20, skill: craft, text: "Set up a tented hospital on a muddy field."}
+      - {to: 40, skill: letters, text: "Kept the ward's charts and wrote to families."}
+      - {to: 55, skill: leechcraft, text: "Gave plasma and penicillin in an evacuation hospital."}
+      - {to: 70, skill: watch, text: "Did night duty on a ward of head wounds."}
+      - {to: 85, skill: persuade, text: "Talked a battle-fatigue case back to the line."}
+      - {to: 100, skill: dodge, text: "Nursed in a beachhead hospital within range of the guns.", wound: true}
+  - id: auxiliary
+    name: "Army auxiliary"
+    main: signals
+    second: gunnery
+    prefers: [end, pres, wits, nerve, agi, str]
+    wound: 3
+    wound_weapon: explosive_fragment
+    kit: {default: none}
+    weapon: {default: punch}
+    terms:
+      - {to: 20, skill: craft, text: "Drove a lorry in a convoy."}
+      - {to: 40, skill: letters, text: "Worked as a clerk at a headquarters."}
+      - {to: 55, skill: signals, text: "Worked a switchboard through a raid."}
+      - {to: 70, skill: gunnery, text: "Worked the predictor of a mixed heavy anti-aircraft battery."}
+      - {to: 85, skill: watch, text: "Tracked raiders on the rangefinder at night."}
+      - {to: 100, skill: dodge, text: "Was on the gun site when the bombs fell.", wound: true}
 
 old_wound:
   - {to: 70, kind: mark, text: "a healed scar"}

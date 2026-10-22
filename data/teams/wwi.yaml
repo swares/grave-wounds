@@ -69,6 +69,13 @@ regions:
     colours: ["#7a6a42", "#6b5f3a", "#8a7a52", "#e6e0d2"]
     names: [Albert, Arthur, Alfred, Frederick, George, Harold, Henry, Herbert, John, Thomas, William, Walter, Ernest, Percy, Sidney, Charles]
     bynames: [Smith, Jones, Williams, Taylor, Brown, Davies, Evans, Wilson, Thomas, Roberts, Johnson, Wright]
+    women:
+      share: null
+      careers: [nurse, auxiliary]
+      shares: {nurse: 100, auxiliary: 100}
+      names: [Mary, Florence, Edith, Elsie, Dorothy, Annie, Ethel, Gladys, Alice, Winifred]
+      closed: "British women served as nurses and auxiliaries, not in the fighting careers."
+      source: "Nurses who died in WWI (Wikipedia): under 300 QAIMNS nurses in 1914, over 10,000 by 1918, about 150 British nurses killed; National Army Museum, QMAAC: about 50,000 auxiliaries, 81 killed, 9 at Abbeville on 29-30 May 1918."
   - id: france
     name: "France"
     table: wwi-1914-18-wounds
@@ -87,7 +94,13 @@ regions:
     colours: ["#6b5f3a", "#5b5236", "#7a6a42", "#e6e0d2"]
     names: [John, William, James, George, Charles, Joseph, Frank, Robert, Edward, Harry, Walter, Henry, Thomas, Paul, Raymond, Arthur]
     bynames: [Smith, Johnson, Brown, Miller, Davis, Wilson, Anderson, Taylor, Moore, Jackson, Martin, Thompson]
-
+    women:
+      share: null
+      careers: [nurse]
+      shares: {nurse: 100}
+      names: [Mary, Helen, Ruth, Margaret, Dorothy, Frances, Florence, Edna, Marie, Mildred]
+      closed: "American servicewomen in France were nurses, not in the fighting careers."
+      source: "Army Nurse Corps (army.mil; med-dept.com): about 4,100 grew to 21,460 in 1917-18, 2,088 in France by March 1918; some died of influenza and pneumonia, none by enemy action."
 origins:
   - {name: "Farm hand", gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Never been far from home", persuade: -15}}
   - {name: "Coal miner", gain: craft, trait: {text: "At home underground", end: 10}, drawback: {text: "Coughs in the cold", stealth: -15}}
@@ -271,6 +284,38 @@ careers:
       - {to: 70, skill: signals, text: "Took fire orders by telephone from the front."}
       - {to: 85, skill: dodge, text: "Was shelled in return by the enemy's guns.", wound: true}
       - {to: 100, skill: gunnery, text: "Fired a box barrage round a raid."}
+  - id: nurse
+    name: "Military nurse"
+    main: leechcraft
+    second: letters
+    prefers: [wits, end, nerve, pres, agi, str]
+    wound: 3
+    wound_weapon: mortar_artillery
+    kit: {default: none}
+    weapon: {default: punch}
+    terms:
+      - {to: 20, skill: craft, text: "Kept a ward clean through a winter of trench foot."}
+      - {to: 40, skill: letters, text: "Kept the ward's records and wrote to families."}
+      - {to: 55, skill: leechcraft, text: "Nursed gas cases at a base hospital."}
+      - {to: 70, skill: watch, text: "Did night duty in a casualty clearing station."}
+      - {to: 85, skill: persuade, text: "Kept a shell-shocked man calm through a raid."}
+      - {to: 100, skill: leechcraft, text: "Nursed through an air raid on the hospital lines.", wound: true}
+  - id: auxiliary
+    name: "Army auxiliary"
+    main: craft
+    second: signals
+    prefers: [end, pres, wits, nerve, agi, str]
+    wound: 3
+    wound_weapon: mortar_artillery
+    kit: {default: none}
+    weapon: {default: punch}
+    terms:
+      - {to: 20, skill: craft, text: "Cooked for a camp of a thousand men."}
+      - {to: 40, skill: letters, text: "Worked as a clerk at a base headquarters."}
+      - {to: 55, skill: signals, text: "Worked a telephone exchange behind the lines."}
+      - {to: 70, skill: craft, text: "Kept the vehicles of a motor transport depot running."}
+      - {to: 85, skill: watch, text: "Stood by in the trenches dug by the camp in the air raids."}
+      - {to: 100, skill: dodge, text: "Was in camp when the bombers came over at night, as at Abbeville in 1918.", wound: true}
 
 old_wound:
   - {to: 70, kind: mark, text: "a healed scar"}

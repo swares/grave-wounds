@@ -177,7 +177,13 @@ def _women(d: Data) -> str:
             W = r.get("women")
             if W:
                 share = "chosen, never rolled" if W.get("share") is None else f"{W['share']:g}%"
-                rows.append([f"{E['name'].split(' (')[0]}: {r.get('short') or r['name']}", share, ", ".join(careers[c] for c in W["careers"])])
+                own, hid = W.get("shares") or {}, W.get("disguised")
+                def one(c):
+                    bits = [f"{own[c]:g}%"] if c in own else []
+                    if hid is True or (isinstance(hid, list) and c in hid):
+                        bits.append("disguised as a man")
+                    return careers[c] + (f" ({', '.join(bits)})" if bits else "")
+                rows.append([f"{E['name'].split(' (')[0]}: {r.get('short') or r['name']}", share, ", ".join(one(c) for c in W["careers"])])
     return _md(["Army", "Share", "Careers open to women"], rows)
 
 

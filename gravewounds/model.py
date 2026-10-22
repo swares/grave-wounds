@@ -572,6 +572,13 @@ def validate(d: Data) -> None:
         for k in ("pres", "wits", "nerve"):
             if not isinstance((AG.get("maturity") or {}).get(k, {}).get("cap"), int):
                 errors.append(f"ageing.yaml: maturity {k} needs to and cap")
+        EN = AG.get("enlist") or {}
+        for eid, E in (EN.get("eras") or {}).items():
+            spans = [E, *(E.get("regions") or {}).values()]
+            if eid not in d.teams or any(not (0 < x.get("min", E["min"]) < x.get("max", E["max"])) for x in spans):
+                errors.append(f"ageing.yaml: enlist {eid} needs a known era and min under max")
+        if EN and not all(0 <= v.get(k, 0) <= 100 for v in EN.get("shares", {}).values() for k in ("under", "older")):
+            errors.append("ageing.yaml: enlist shares must be 0-100")
     if d.loads:
         LD = d.loads
         ups = [b.get("upto") for b in LD.get("bands", [])]
@@ -1810,6 +1817,12 @@ def _women_errors(tables: dict, where: str, r: dict) -> list[str]:
         errors.append(f"{where}: region {r['id']} women needs careers, all known")
     if W.get("share") is not None and not 0 < W["share"] <= 100:
         errors.append(f"{where}: region {r['id']} women share must be over 0 and at most 100 (or null)")
+    D = W.get("disguised")
+    if isinstance(D, list) and set(D) - set(W.get("careers") or []):
+        errors.append(f"{where}: region {r['id']} women disguised must name its open careers")
+    shares = W.get("shares") or {}
+    if set(shares) - set(W.get("careers") or []) or any(not 0 < v <= 100 for v in shares.values()):
+        errors.append(f"{where}: region {r['id']} women shares must name its open careers, each over 0 and at most 100")
     if any(k in W and not W[k] for k in ("names", "bynames")) or not W.get("source"):
         errors.append(f"{where}: region {r['id']} women name lists must not be empty, and the block needs a source")
     if not [o for o in tables["origins"] if o.get("who", "f") == "f"]:

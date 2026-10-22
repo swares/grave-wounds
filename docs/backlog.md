@@ -239,9 +239,12 @@ When an item is done, delete it here and note it in the pull request that closes
   falls and chases in the roller; fords on the travel map. Still left out: no era has a sound
   count of who could swim (the shares are estimates); drowning counts for the Rapido, Omaha, the
   Ebro and the Berezina, fording limits from the modern field manuals, swimming in armour, ladder
-  climbing under fire and cavalry fall rates were not found; the travel map's fords have one depth
-  (ordinary, or flooded), with no current or temperature of their own, and horses are not swept
-  away; a fall's death is a critical head wound for the GM to rule on; and the pursuit on the
+  climbing under fire and cavalry fall rates were not found; each travel-map ford now has its own depth and
+  current (fixed by its place within its water's span, which are estimates, as are the horses'
+  drowning chances; the Kabul River's 46 men and 13 horses is the one anchor), and its water is as
+  cold as the week's air (no river temperatures were found); guns and wagons are not yet stopped by
+  a ford deeper than 2 ft 4 in, a map cannot set a ford's own depth, and only a mounted force's
+  horses can drown; a fall's death is a critical head wound for the GM to rule on; and the pursuit on the
   field map (units.yaml aftermath.pursuit) takes its killed and prisoners from the units' men,
   but its shares are the research's ranges, not counts, the Python self-play does not apply it,
   and no named man runs his own chase from it.
@@ -281,9 +284,12 @@ When an item is done, delete it here and note it in the pull request that closes
   decline dice are design choices scaled to the physiology (no game-scale figures exist); the best
   sources for British invaliding by age (Tulloch's tables, 1838-53; Nielsen's Chelsea
   applicants) and for breakdown by age in WWII (Stouffer vol. II; Beebe and Appel) were not read;
-  enlistment age limits by era, and older recruits wearing out faster (Civil War men enlisting at
-  about 39 had 1.8 then 2.4 times the odds of dying of disease), are not applied; Presence does
-  not rise with promotion; followers and men without a sheet do not age; age does not count in a
+  enlistment ages by army now bound a new man's age, with boys under age and older recruits
+  (found out at 10% a season: an estimate, as are the shares but the Union's tenth under 18 and
+  Britain's WWI boys), and older recruits take twice the Wear (the Civil War's disease odds, not
+  a measure of wear itself); the Thirty Years' War's limits are borrowed, the Plains nations have
+  none, and the Python self-play does not send a boy home; Presence rises with promotion by a
+  design estimate (no source); followers and men without a sheet do not age; age does not count in a
   fight beyond the characteristics it has changed.
 - **Experience, first cut.** Skills used well are ticked (job checks, hits, parries and
   dodges, first aid, foraging, nursing, Stealth and Watch at a surprise) and roll to rise at
@@ -297,11 +303,18 @@ When an item is done, delete it here and note it in the pull request that closes
   carries in the roller, and only for named men; courses (data/training.yaml `courses`) are a
   set of examples with estimated gains and fees, the man is not missing from the team while away,
   and an apprenticeship is a year of its seven.
-- **Women under arms, first cut.** Women serve as cantinières with the French in the Crimea, in the Civil War (disguised), the Soviet
-  Union of 1941-45, Vietnam (the ARVN, the North and the Viet Cong) and the later wars (the US,
-  Britain and Russia), chosen or rolled at the army's share. Still left out: the earlier eras
-  (women in medieval sieges, the Revolution's and 1812's few, the Napoleonic cantinières, Russia's women's battalions of
-  1917 and Flora Sandes in Serbia), careers outside the fighting units (nurses, auxiliaries,
-  anti-aircraft gunners, pilots, the Female Engagement Teams of Afghanistan), the Plains
-  nations' women who fought, and shares by career rather than by army. The Viet Cong's and the
-  North's women have no reliable share, so they are chosen, never rolled.
+- **Women under arms, first cut.** Women serve as cantinières with the French in the Crimea, in the
+  Civil War (disguised in the ranks, openly as nurses and vivandières), the Soviet Union of
+  1941-45, Vietnam (the ARVN, the North and the Viet Cong) and the later wars (the US, Britain and
+  Russia); and now in the earlier eras and other roles: townswomen at medieval sieges, the Thirty
+  Years' War's camp women, French vivandières, British soldiers' wives and the Continental Army's
+  women (Margaret Corbin at the guns, Deborah Sampson in the line), nurses (Crimea, Civil War, both
+  world wars, Korea, Vietnam), auxiliaries (WAAC and QMAAC, ATS and WAC), the Female Engagement
+  Teams, and the Lakota and Cheyenne women who fought. A career may have its own share. Still left
+  out: no Russian or Serbian army in the WWI tables, so the women's battalions of 1917 and Flora
+  Sandes have nowhere to serve; no women nurses for the Confederacy or Russia at Sevastopol (not
+  in the research); the career shares of 100% are design choices (men nursed and sutled too); the
+  women's own careers draw the soldier's wage where their pay was not found (a vivandière, a camp
+  woman and a soldier's wife draw none); their term events are written from the research, not
+  rolled from records; and the Viet Cong's and the North's women have no reliable share, so they
+  are chosen, never rolled.

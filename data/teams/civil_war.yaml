@@ -65,10 +65,12 @@ regions:
     bynames: [Smith, Miller, Brown, Wilson, Murphy, Schmidt, Becker, Larsen, Taylor, Moore, Kelly, Johnson]
     women:
       share: 0.02
-      disguised: true
-      careers: [infantry, sharpshooter, trooper, gunner, scout, teamster]
+      disguised: [infantry, sharpshooter, trooper, gunner, scout, teamster]
+      careers: [infantry, sharpshooter, trooper, gunner, scout, teamster, nurse, vivandiere]
+      shares: {nurse: 100, vivandiere: 100}
+      names: [Mary, Sarah, Elizabeth, Anna, Clara, Margaret, Hannah, Emily, Harriet, Catherine, Louisa, Jane]
       closed: "A woman in the ranks had enlisted disguised as a man, as a private: none is known to have held these careers' ranks openly."
-      source: "DeAnne Blanton, Women Soldiers of the Civil War, Prologue (National Archives, 1993): roughly 750 women enlisted disguised as men, as many as 250 of them Confederates; the share is our arithmetic on armies of some two million and some 900,000."
+      source: "DeAnne Blanton, Women Soldiers of the Civil War, Prologue (National Archives, 1993): roughly 750 women enlisted disguised as men, as many as 250 of them Confederates; the share is our arithmetic on armies of some two million and some 900,000. Over 3,000 women nursed under Dorothea Dix; vivandières such as Anna Etheridge, wounded at Chancellorsville, went with their regiments (Timeline of women in warfare in the US; Vivandière, Wikipedia)."
   - id: confederacy
     name: "The Confederacy (1861-1865)"
     table: acw-1861-all-hits
@@ -262,6 +264,38 @@ careers:
       - {to: 70, skill: watch, text: "Guarded the train at night."}
       - {to: 85, skill: brawl, text: "Fought off raiders at the wagons.", wound: true}
       - {to: 100, skill: ride, text: "Brought the train through a flooded ford."}
+  - id: nurse
+    name: "Army nurse"
+    main: leechcraft
+    second: letters
+    prefers: [wits, end, nerve, pres, agi, str]
+    wound: 3
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: punch}
+    terms:
+      - {to: 20, skill: craft, text: "Cooked special diets in a general hospital."}
+      - {to: 40, skill: letters, text: "Wrote letters home for the wounded."}
+      - {to: 55, skill: leechcraft, text: "Dressed wounds on a hospital transport."}
+      - {to: 70, skill: persuade, text: "Faced down a surgeon over a drunk steward."}
+      - {to: 85, skill: watch, text: "Sat up with the fever cases."}
+      - {to: 100, skill: dodge, text: "Nursed in a field hospital within range of the guns.", wound: true}
+  - id: vivandiere
+    name: "Vivandière or daughter of the regiment"
+    main: leechcraft
+    second: persuade
+    prefers: [end, pres, wits, nerve, agi, str]
+    wound: 10
+    wound_weapon: rifle_musket
+    kit: {default: none}
+    weapon: {default: revolver}
+    terms:
+      - {to: 20, skill: craft, text: "Cooked and washed for the regiment in camp."}
+      - {to: 40, skill: ride, text: "Rode with the ambulances on the march."}
+      - {to: 55, skill: persuade, text: "Sold to the men from the regiment's stores."}
+      - {to: 70, skill: leechcraft, text: "Bound wounds at the regiment's aid station."}
+      - {to: 85, skill: fieldcraft, text: "Found her way back to the regiment after a rout."}
+      - {to: 100, skill: dodge, text: "Tended the wounded on the field under fire, as Anna Etheridge did.", wound: true}
 
 old_wound:
   - {to: 70, kind: mark, text: "a healed scar"}

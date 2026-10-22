@@ -96,6 +96,13 @@ regions:
     colours: ["#a33a2e", "#2e4f8a", "#e6e0d2", "#5c6b3a"]
     names: [John, William, Thomas, Richard, Robert, Henry, Walter, Roger, Hugh, Geoffrey, Nicholas, Ralph, Simon, Adam, Edmund, Gilbert]
     bynames: [Archer, Smith, Fletcher, Carter, Baker, Miller, Webb, Thatcher, Cooper, Hayward, "of York", "of Ely"]
+    women:
+      share: null
+      careers: [townswoman]
+      shares: {townswoman: 100}
+      names: [Alice, Joan, Agnes, Isabel, Margaret, Matilda, Emma, Katherine, Cecily, Elizabeth]
+      closed: "Women defended their towns and castles at sieges; these tables have no record of them in the army's other careers."
+      source: "Siege of Toulouse (Wikipedia): the stone that killed Simon de Montfort in 1218 came from an engine worked by women; Agnes Randolph held Dunbar for five months in 1338 (Undiscovered Scotland). No count of women at sieges."
   - id: france
     name: "France (c.1415)"
     table: towton-1461-all-hits
@@ -105,6 +112,13 @@ regions:
 
 # Origins: d100, 5 each. gain: a skill (+gain); trait and drawback: a characteristic (+/-10)
 # or a skill (+/-gain).
+    women:
+      share: null
+      careers: [townswoman]
+      shares: {townswoman: 100}
+      names: [Jeanne, Marie, Isabelle, Marguerite, Catherine, Agnès, Perrette, Guillemette, Alix, Blanche]
+      closed: "Women defended their towns and castles at sieges; these tables have no record of them in the army's other careers."
+      source: "Siege of Toulouse (Wikipedia): the stone that killed Simon de Montfort in 1218 came from an engine worked by 'ladies, girls and women'. No count of women at sieges."
 origins:
   - {name: "Ploughman's son", gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Cannot read a word", letters: -15}}
   - {name: "Shepherd", gain: watch, trait: {text: "Good with a sling", sling: 15}, drawback: {text: "Uneasy in crowds", pres: -10}}
@@ -329,6 +343,23 @@ careers:
 
 # Old wounds: d100 up to `to`: a healed mark, or a lasting hurt (lasting: points off the
 # characteristic its location's zone names).
+  - id: townswoman
+    name: "Townswoman or castle household at a siege"
+    main: craft
+    second: watch
+    prefers: [end, pres, wits, nerve, agi, str]
+    wound: 10
+    wound_weapon: crossbow
+    kit: {default: none}
+    weapon: {default: dagger}
+    terms:
+      - {to: 20, skill: craft, text: "Baked and brewed for the garrison through a winter."}
+      - {to: 40, skill: leechcraft, text: "Tended the wounded in the hall after an assault."}
+      - {to: 55, skill: watch, text: "Kept watch on the walls by night."}
+      - {to: 70, skill: persuade, text: "Bargained for grain brought in by the sea gate."}
+      - {to: 85, skill: sling, text: "Dropped stones on the besiegers' engines from the walls."}
+      - {to: 100, skill: dodge, text: "Rebuilt the barricades under the besiegers' shot.", wound: true}
+
 old_wound:
   - {to: 70, kind: mark, text: "a healed scar"}
   - {to: 100, kind: lasting, text: "a lasting hurt"}

@@ -284,20 +284,24 @@ function render(){
   save();
 }
 function renderWomen(){                          // the women choice: offered where the region has a share to roll at; otherwise why not
-  const reg = byId(T.regions, S.region), W = reg.women, rolls = W?.share !== null && W?.share !== undefined;
+  const reg = byId(T.regions, S.region), W = reg.women, armyShare = W?.share !== null && W?.share !== undefined;
+  const rolls = armyShare || Object.keys(W?.shares || {}).length > 0;   // the army's share, or a career's own
   if (!rolls) S.women = "none";
   $("#sel-women").value = S.women;
   $("#sel-women").disabled = !rolls;
-  $("#sel-women").options[1].textContent = rolls ? `Roll each at the army's share (${W.share}%)` : "Roll each at the army's share";
+  $("#sel-women").options[1].textContent = armyShare ? `Roll each at the army's share (${W.share}%)` : "Roll each at the career's share";
   let note = reg.no_women || "";
   if (W) note = womenNote(W, rolls) + (W.closed || "");
   $("#women-note").textContent = note;
   $("#women-note").title = W?.source || "";
 }
 function womenNote(W, rolls){                     // what women did in this army, before why the rest is closed
+  const own = Object.keys(W.shares || {}), chosen = W.careers.filter(c => !own.includes(c));
+  if (own.length && W.share == null) return `Women served as ${womenCareers({ careers: own })} (rolled at the career's share)${chosen.length ? `, and as ${womenCareers({ careers: chosen })} in numbers no one counted reliably: pick those in Your own team` : ""}. `;
   if (!rolls) return `Women served as ${womenCareers(W)}, in numbers no one counted reliably: pick them in Your own team. `;
-  const how = W.disguised ? "enlisted disguised as men" : "served";
-  return `Women ${how} as ${womenCareers(W)}. `;
+  const hid = W.disguised === true ? W.careers : (W.disguised || []), open = W.careers.filter(c => !hid.includes(c));
+  const bits = [hid.length && `enlisted disguised as men as ${womenCareers({ careers: hid })}`, open.length && `served as ${womenCareers({ careers: open })}`].filter(Boolean);
+  return `Women ${bits.join(", and ")}. `;
 }
 const womenCareers = W => W.careers.map(cid => byId(T.careers, cid).name.toLowerCase()).join(", ");
 function sexOpts(i, cid, sex){                    // man, woman or roll for an own-team slot; closed choices say why
@@ -367,7 +371,7 @@ function sheetHtml(c, i){
   const sx = c.sex || "m", life = c.events.map((e, k) => `<li>Term ${k + 1}: ${esc(pron(e, sx))}</li>`).join("") + c.old.map(oldWoundLine).join("");
   return `<article class="sheet" aria-label="${esc(c.name)}">
     <div class="fig">${fig}</div>
-    <div class="who"><input type="text" value="${esc(c.name)}" data-name="${i}" aria-label="Name">${c.leader ? `<span class="tag">Leader</span>` : ""}${womanTag(c)}</div>
+    <div class="who"><input type="text" value="${esc(c.name)}" data-name="${i}" aria-label="Name">${c.leader ? `<span class="tag">Leader</span>` : ""}${womanTag(c)}${lieTag(c)}</div>
     <div class="what">${rankLine(c) ? `${esc(rankLine(c))} · ` : ""}${esc(career.name)} · ${c.terms} term${c.terms > 1 ? "s" : ""}${c.xp_terms ? ` (+${c.xp_terms} served)` : ""} · age ${c.age} · ${esc(byId(T.regions, c.region).name.replace(/ \(.*/, ""))}</div>
     <div class="stats${c.mode === "array" ? " place" : ""}">${stats}</div>
     <div class="full what"><b>${esc(c.origin)}.</b> ${esc(pron(c.trait, sx))}; ${esc(pron(c.drawback, sx).toLowerCase())}.</div>
@@ -1195,8 +1199,13 @@ function chkUse(K, value){                         // a use of a skill sets its 
   const u = checkUses().find(x => x.id === K.use);
   if (u){ K.skill = u.skill; K.diff = u.difficulty; K.against = u.against ? u.against.value : "" }
 }
+function lieSeason(c, found){                     // a man under or over age: found out and sent home, or his lie still stands
+  if (!TD.ageing?.enlist || !c.lied) return;
+  const roll = realDice.randint(1, 100);
+  if (agFoundOut(c, roll)) found.push([c, roll]); else c.lied = agStillLying(c);
+}
 function endSeason(){
-  const all = readXp(), lines = [], stamp = Date.now();
+  const all = readXp(), lines = [], stamp = Date.now(), found = [];
   for (const c of S.team){
     const x = all[c.pid] || {};
     c.aged_to ??= c.age;                           // a man made before ageing: from now on
@@ -1216,6 +1225,7 @@ function endSeason(){
       }
       c.hardSeason = false;
       if (bits.length) line = line.replace(/\.$/, "") + "; " + bits.join("; ") + ".";
+      lieSeason(c, found);
     }
     if (rkLadder().length){                        // his days in rank, his pay, and any arrears
       c.rank ||= rkStart(c.career);
@@ -1229,8 +1239,14 @@ function endSeason(){
     lines.push(line);
     all[c.pid] = { ticks: {}, served: 0, army: 0, owed: 0, hard: 0 };
   }
+  for (const [c, roll] of found){                 // found out under or over age: sent home
+    const why = c.lied === "under" ? "found under age" : "found over age";
+    lines.push(`${c.name} is ${why} (rolled ${roll} against ${TD.ageing.enlist.found_out}) and sent home.`);
+    loseMember(S.team.indexOf(c), `sent home: ${why}`);
+  }
   if (rkLadder().length){                          // the season's promotions, then everyone's new sheet
     const rolls = rkPromote(S.team, (S.vacancies ||= {}), realDice);
+    for (const c of S.team) finishChar(c);         // his Presence may have risen with his rank
     for (const c of S.team) delete c.deedWhy;
     for (const k of rolls) lines.push(`${k.name} for ${rkName(k.to).toLowerCase()}: Command rolled ${k.roll} against ${k.target}: ${k.success ? "promoted" : "passed over"}.`);
     const was = S.team.find(m => m.leader), now = leadByRank();
@@ -1428,9 +1444,14 @@ function replaceLoss(k){
   L.replaced = `replaced by ${n.name} (${n.joined.how})`;
   S.msg = "";
 }
+function lieTag(c){                              // "Under age" or "Over age": he lied to enlist
+  if (!c.lied) return "";
+  const L = agLimits(T.id, c.region), what = c.lied === "under" ? `Under age (enlisted at ${c.enlisted}; the least ${L?.min})` : `Over age (enlisted at ${c.enlisted}; the most ${L?.max})`;
+  return `<span class="tag" title="Found out at ${TD.ageing.enlist.found_out}% each End of season, and sent home">${esc(what)}</span>`;
+}
 function womanTag(c){                            // "Woman", or "Woman, enlisted as a man"
   if (c.sex !== "f") return "";
-  return `<span class="tag">${byId(T.regions, c.region)?.women?.disguised ? "Woman, enlisted as a man" : "Woman"}</span>`;
+  return `<span class="tag">${disguisedAs(byId(T.regions, c.region), c.career) ? "Woman, enlisted as a man" : "Woman"}</span>`;
 }
 function oldWoundLine(w){
   const where = TD.locs[w.loc].name.toLowerCase(), from = TD.weapons[w.weapon].short.toLowerCase();
