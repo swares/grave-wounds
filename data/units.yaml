@@ -726,6 +726,15 @@ morale:
   #   runs of every battlefield: 642 of 888 from 628, the morale targets unchanged (the project's
   #   morale-two-kinds notes). false: the old rule.
   posture: true
+  # posture_cover: a unit gone to ground (prone) in ground that gives cover (woods, scrub,
+  #   buildings, rubble) holds a position too. At X-Ray no American company counted: they lay in
+  #   the trees, the elephant grass and the creek bed, not in works, and broke a quarter down.
+  posture_cover: true
+  # hand_to_hand: "lost the exchange in contact" counts only men lost and put down hand to hand.
+  #   With every loss counted, a company in a house-to-house fight checked whenever it lost one
+  #   man to fire and put none down (Hue: most such checks were over one or two men). The losing
+  #   modifier (mods.losing_per_man) still counts all of them. false: every loss counts.
+  hand_to_hand: true
   shaken_by: 20
   mods:
     leader: 10                # a named leader with the unit, up and fighting

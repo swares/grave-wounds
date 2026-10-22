@@ -618,7 +618,7 @@ function failedState(mo, u, by){
 function morale(u, roll){                       // {check, target, state}
   const M = UD.morale;
   if (u.state === "broken") return { check: false, target: null, state: "broken" };
-  const losing = (u.lost || 0) > (u.dealt || 0) && u.contact;
+  const losing = (M.hand_to_hand ? (u.hand_lost || 0) > (u.hand_dealt || 0) : (u.lost || 0) > (u.dealt || 0)) && u.contact;   // lost the exchange in contact: hand to hand only (morale.hand_to_hand), else all its losses
   const attrition = u.down >= M.trigger * u.start && (u.lost > 0 || !(u.holds && !u.flanked));   // past a quarter down: every exchange in the open; holding a position, only when it lost men (morale.posture)
   const struck = attrition || u.lost >= M.shock * Math.max(1, u.men) || u.flanked || losing;
   const rally = u.state === "shaken" && !u.contact;
@@ -1560,6 +1560,7 @@ function sweepCost(field, before, after){          // the ground a turning unit'
   const going = x => (after.vehicle ? UD.vehicles.ground[groundKey(field, x)] ?? 1 : groundAt(field, x).move);
   return Math.max(0, ...footprint(after).flat().filter(x => !old.has(hk(x))).map(x => going(x) - 1));
 }
+const coverLying = (field, u) => !!UD.morale.posture_cover && !!u.prone && !!field && footprint(u).some(row => row.some(x => (groundAt(field, x).cover || 0) > 0));   // gone to ground in ground that gives cover (morale.posture_cover) (as units.cover_lying)
 function holdsWorks(field, h, t){                 // unit t holds works against an attack from h: dug in or emplaced, cover from the works toward h in any of its hexes, or in ground that hides men (as units.holds_works)
   if (dugHere(t) || t.emplaced) return true;
   if (!field) return false;
@@ -1898,8 +1899,9 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   const under = new Array(n).fill(false);          // under shellfire or machine-gun fire this exchange (suppression)
   minesAll(us, table, rng, acc, log, field);
   for (const c of closingFire(us, field)) fireBattery(us, table, rng, acc, log, c);
-  const from = log.length;
-  strikeAll(us, table, rng, acc, log, field, [...acc.lost]);
+  const from = log.length, lost0 = [...acc.lost], dealt0 = [...acc.dealt];
+  strikeAll(us, table, rng, acc, log, field, lost0);
+  acc.hand = { lost: acc.lost.map((x, i) => x - lost0[i]), dealt: acc.dealt.map((x, i) => x - dealt0[i]) };   // hand to hand this exchange (morale.hand_to_hand)
   const fought = new Set(log.slice(from).filter(l => l.kind === "melee").flatMap(l => [l.att, l.dfd]));
   shootAll(us, table, rng, acc, log, field, under);
   indirectAll(us, table, rng, acc, log, field, under);
@@ -2061,6 +2063,7 @@ function fly(us, [table, rng, field], lf, used){  // one lift this exchange, if 
   if (can <= 0) return [];
   const state = lzState(us, field, side, lf.lz);
   if (state === "blocked") return [{ kind: "waveoff", name: lf.unit.name, side, lz: lf.lz, why: "blocked" }];
+  if (kind === "in" && us.some(u => u.id !== undefined && u.id !== null && u.id === lf.unit.id && ROUTED.has(u.state))){ lf.left = 0; return [{ kind: "waveoff", name: lf.unit.name, side, lz: lf.lz, why: "routed" }] }   // its men on the ground have broken: the rest of the lift turns back
   let n, log;
   if (kind === "supply"){ n = 1; log = supplyLift(field, lf) }
   else if (kind === "out") [n, log] = liftOut(us, [field, H, can], lf);
@@ -2187,9 +2190,9 @@ function vehicleLosses(u, before, lost){          // [down, lost this exchange] 
   const startV = Math.ceil(u.start / K.crew), wasV = Math.ceil(before / K.crew), nowV = vehiclesLeft(u);
   return [(startV - nowV) * K.crew, Math.max(0, wasV - nowV) * K.crew];
 }
-function holdsPosition(us, i, field){             // unit i holds a position: in a bunker, or holding works toward the nearest standing enemy (dug in, emplaced, works' cover, ground that hides men) (as units.holds_position)
+function holdsPosition(us, i, field){             // unit i holds a position: in a bunker, gone to ground in cover (morale.posture_cover), or holding works toward the nearest standing enemy (dug in, emplaced, works' cover, ground that hides men) (as units.holds_position)
   const u = us[i];
-  if (inBunker(field, u)) return true;
+  if (inBunker(field, u) || coverLying(field, u)) return true;
   let at = null, best = Infinity;
   for (const e of us) if (e.side !== u.side && e.men > 0 && !ROUTED.has(e.state)){ const dd = hdist(e.pos, u.pos); if (dd < best){ best = dd; at = e.pos } }
   return holdsWorks(field, at || u.pos, u);
@@ -2202,7 +2205,7 @@ function moraleAll(us, occ, before, acc, rng, table, field = null){
     const [down, lost] = vehicleLosses(u, before[i], acc.lost[i]);
     const unit = { quality: u.quality, start: u.start, down, lost, dealt: acc.dealt[i], men: before[i], state: u.state,
       leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out",
-      holds: !!M.posture && !!u.holding && holdsPosition(us, i, field) };
+      holds: !!M.posture && !!u.holding && holdsPosition(us, i, field), hand_lost: acc.hand.lost[i], hand_dealt: acc.hand.dealt[i] };
     const m = morale(unit, rng.randint(1, 100));
     if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state });
     if (m.state === "broken") broke.push(i);
