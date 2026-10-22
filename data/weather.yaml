@@ -351,3 +351,11 @@ climates:
     rain: [3, 3, 4, 6, 8, 10, 15, 14, 8, 5, 5, 4]
     fog:  [1, 1, 1, 1, 1, 2, 3, 3, 2, 1, 1, 1]
     wind_from: [25, 10, 5, 5, 10, 10, 10, 25]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW
+  balkan_highland:
+    name: "Balkan uplands, cold winters"
+    note: "Like the Kosovo basin at about 600 m (Priština): cold snowy winters with fogs in the basins, hot dry summers; the passes above 1,500 m are far colder and snowier, the Albanian coast milder. Rounded design estimates."
+    high: [3, 6, 11, 17, 22, 25, 28, 28, 24, 18, 10, 4]
+    low:  [-6, -4, 0, 4, 9, 12, 13, 13, 9, 5, 0, -4]
+    rain: [11, 11, 11, 12, 13, 11, 8, 7, 7, 9, 12, 13]
+    fog:  [8, 5, 3, 1, 1, 1, 0, 0, 2, 5, 8, 10]
+    wind_from: [22, 14, 6, 6, 12, 14, 10, 16]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW

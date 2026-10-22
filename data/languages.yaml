@@ -106,6 +106,7 @@ tongues:
   russian: {name: Russian}
   ukrainian: {name: Ukrainian}
   turkish: {name: Turkish}
+  albanian: {name: Albanian}
   tatar: {name: Crimean Tatar}
   hindustani: {name: Hindustani}
   nepali: {name: Nepali}
@@ -221,7 +222,7 @@ armies:
     bulgaria: {own: [[bulgarian, 90], [turkish, 10]], enemy: serbian,
              others: [[turkish, 10, [10, 40]], [russian, 5, [5, 25]], [german, 5, [5, 25]]]}
     serbia: {own: [[serbian, 100]], enemy: german,
-             others: [[french, 10, [5, 30]], [german, 10, [10, 40]], [bulgarian, 5, [10, 40]], [russian, 5, [5, 25]]]}
+             others: [[french, 10, [5, 30]], [german, 10, [10, 40]], [bulgarian, 5, [10, 40]], [russian, 5, [5, 25]], [albanian, 3, [10, 40]]]}
     germany: {own: [[german, 90], [polish, 7], [french, 3]], enemy: french,
               others: [[german, 60, [20, 60]], [french, 10, [5, 40]], [english, 5, [5, 40]]]}
     us: {own: [[english, 85], [german, 7], [italian, 5], [polish, 3]], enemy: german,
@@ -314,6 +315,7 @@ maps:                          # the tongue of the people where each map lies (n
   osan-1950: korean
   phil-kearny-1866: lakota
   porkchop-1953: korean
+  serbia-1915: albanian        # Kosovo, Albania and western Macedonia, where the retreat went; Serbian in the Morava valleys at the top
   sevastopol-1855: russian
   sidon-1253: arabic
   towton-1461: english

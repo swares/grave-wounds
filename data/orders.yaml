@@ -24,6 +24,14 @@ albuera-1811:
   hold:
     - "Allied cavalry (Lumley)"
     - "Allied guns on the heights"
+babuna-1915:
+  source: "https://gutenberg.org/files/71442/71442-h/71442-h.htm"
+  withdraw:
+    - {unit: "2nd Regiment, a company on the west spur", at: 931, to: S}   # the retreat ordered at ten that night (Sandes), down the road to Prilep
+    - {unit: "2nd Regiment, a company astride the road", at: 931, to: S}   # the retreat ordered at ten that night (Sandes), down the road to Prilep
+    - {unit: "2nd Regiment, a company on the east spur", at: 931, to: S}   # the retreat ordered at ten that night (Sandes), down the road to Prilep
+    - {unit: "2nd Regiment machine guns (the saddle)", at: 931, to: S}   # the retreat ordered at ten that night (Sandes), down the road to Prilep
+    - {unit: "2nd Regiment, a company behind the saddle", at: 931, to: S}   # the retreat ordered at ten that night (Sandes), down the road to Prilep
 bougainville-1944:
   source: "https://ibiblio.org/hyperwar/USA/USA-P-Rabaul/USA-P-Rabaul-17.html"
   hold:

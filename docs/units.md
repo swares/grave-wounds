@@ -559,8 +559,8 @@ general. All its numbers are in units.yaml `commander`.
     `at` (a minute each) it falls back to `to`, a hex (and then holds it) or a map edge (N, S,
     E or W), and leaves the field there ("withdraw off the field, as ordered"; it counts as
     gone, not broken). Mons (the Fusiliers at 281), Osan (the hillock platoon at 46, the rest
-    at 166), X-Ray (A and B Companies to the landing zone at 246) and Kapyong (the battalion
-    HQ and Shermans at 466, B Company at 586) give way so.
+    at 166), X-Ray (A and B Companies to the landing zone at 246), Kapyong (the battalion
+    HQ and Shermans at 466, B Company at 586) and the Babuna pass (the Serbs at 931) give way so.
   A unit the sources say was driven off, or that they do not cover, has no entry, and the fight
   decides. Bull Run has none: its brigades held Henry Hill, which is the objective, so they go
   up onto it as any holding unit does (marked to hold where they stood, they let the Union take
@@ -801,9 +801,10 @@ at a time; **Run** (shown only then) plays a move about every 0.7 seconds until 
   from the first); a run then goes at least that long, still no more than `most`. Where the
   account gives only a vague end, `ends` is the earliest the words allow: "before noon" is noon,
   "the next afternoon" 12:00, "near midnight" 23:30, and "at dawn" the sunrise worked out for the
-  place and day. Thirteen battlefields set it: Lundy's Lane 271 (counter-attacks until near
+  place and day. Fourteen battlefields set it: Lundy's Lane 271 (counter-attacks until near
   midnight), the Monastery 418 (failed by dawn, sunrise about 06:57), Lützen 541 (Wallenstein
   withdraws at 20:00), Keating 361, Mogadishu 783 (out at dawn, sunrise 05:44), Kapyong 871,
+  the Babuna pass 931 (the retreat ordered at 22:00),
   Heartbreak Ridge 901, and, past `most` and so cut short at 1,200, X-Ray, Pork Chop, Grozny,
   Bougainville, Dak To and Cassino town. `ends` never shortens a run.
   Until 17 October 2026 it was 240, which stopped a run before the last phase began on fifteen
@@ -1899,12 +1900,12 @@ when it is wider than a hex).
   outside it count as guarding it. An objective the GM marks by hand has the commander's own
   radius, 1 hex. The enemy commander then takes
 it or holds it, as under [The enemy commander](#the-enemy-commander); the GM can move or
-clear it with **Clicking the map**. Thirty battlefields have one: Point 593 at
+clear it with **Clicking the map**. Thirty-one battlefields have one: Point 593 at
 Cassino, Castle Hill in the town, the crests of Hills 875, 861A, 931 and 937, Pork Chop,
 Fox Hill, Hill 504 at Kapyong, G Company's hill at Chipyong-ni, Darwin Hill, the Iraqi position behind the rise at 73 Easting, the station
 at Grozny, the provincial headquarters at Hue, the crash site in Mogadishu, Observation
 Post Topside at Wanat, Combat Outpost Keating, X-Ray's landing zone, the saddle at Osan
-and on Bougainville, the railway bridge at Mons, Henry Hill, the Redan's salient (on both of its battlefields), the British guns at Lundy's
+and on Bougainville, the railway bridge at Mons, the saddle of the Babuna pass, Henry Hill, the Redan's salient (on both of its battlefields), the British guns at Lundy's
 Lane, the windmill battery at Lützen, the heights at Albuera, the edge of Cisterna and the
 wagon-box corral. The open-field battles (Agincourt, Towton, Visby, Cowpens), the ambush
 on Lodge Trail Ridge, the Jolan at Fallujah and the unfinished wall at Sidon have none:
@@ -1944,6 +1945,9 @@ where they are not plain.
   arrive, too late (421).
 - **Mons** (from 09:00): a renewed attack through the woods (31); the attack in force (121);
   the Fusiliers withdraw (251). Which German battalion came in when is our reading.
+- **The Babuna pass** (from dawn, about 06:30, a day of our reading): up the spurs (61); the
+  east spur pressed (391); a battalion from the Veles front (571); dusk (631) and night (661);
+  the retreat ordered at 22:00 (931).
 - **Osan** (from about 11:45): a battalion works round the west (46, 12:30); another comes
   down the railroad and Smith withdraws (166, 14:30).
 - **Chipyong-ni**, the night of 14–15 February (from 22:00): G Company's hill falls and the
@@ -2308,6 +2312,27 @@ the canal salient at Nimy.
 - The wound tables are the First World War's.
 
 It is drawn by `tools/maps/make_mons_field.mjs`.
+
+**The Babuna pass, November 1915** (`data/fields/babuna-1915.yaml`). The field is 130 × 110
+hexes, about 1,420 yards (1,300 m) east to west and 1,040 yards (950 m) north to south, north
+at the top: the pass on the road from Veles to Prilep.
+- The road climbs in hairpins from Izvor (north) to the saddle in the middle, between two
+  spurs that push north; the crest is high ground with rock, the faces slopes with scrub oak
+  and beech in the gullies; the road goes on down towards Prilep (south).
+- Overcast, a breeze from the north, the ground muddy.
+- The Serbian 2nd Regiment holds one battalion's stretch of the crest: a company on each spur
+  and one astride the road, in trenches and gone to ground, two machine guns at the saddle
+  and a company behind it. The Bulgarians: a battalion up the road, one onto the west spur,
+  their machine guns, and later one onto the east spur and one from the Veles front.
+- Fire support: two old Serbian mountain guns against twelve Bulgarian field guns and four
+  heavy guns.
+- The day is our reading of the accounts (Sandes and the Nelson history): the regiments held
+  the crest for a week and more and went at 22:00 on the night the retreat was ordered, which
+  is when the Serbian companies withdraw (data/orders.yaml). The machine guns, the companies
+  and which Bulgarian division attacked are not in the sources found.
+- The wound tables are the First World War's.
+
+It is drawn by `tools/maps/make_babuna_field.mjs`.
 
 **Hill 700, Bougainville, 8-12 March 1944** (`data/fields/bougainville-1944.yaml`). The field
 is 120 × 100 hexes, about 1,310 yards (1,200 m) east to west and 950 yards (870 m) north to
