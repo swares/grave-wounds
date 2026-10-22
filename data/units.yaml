@@ -718,6 +718,14 @@ quick: {blows: false, samples: 4000, normal_from: 9}
 morale:
   trigger: 0.25
   shock: 0.10
+  # Two kinds of break (the project's morale-two-kinds notes), each off unless set:
+  # posture: a unit holding a position (in a bunker, dug in, emplaced, behind works with cover
+  #   toward the nearest enemy, or in ground that hides men), and not flanked, checks for being a
+  #   quarter down only in an exchange it lost men; units in the open check every exchange.
+  # neighbour: hexes; a steady unit checks when a unit of its own side within this many hexes broke
+  #   in the last exchange (0: off).
+  posture: false
+  neighbour: 0
   shaken_by: 20
   mods:
     leader: 10                # a named leader with the unit, up and fighting
