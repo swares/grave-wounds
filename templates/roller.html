@@ -884,7 +884,8 @@ function chaseValue(c, mounted){ return mounted ? skillAt(c, "ride") || statOf(c
 function chaseRound(q, p){                        // q flees, p pursues
   const K = S.hz, ch = S.chase, C = HZD().chase, mq = !!K.mounted[q.id], mp = !!K.mounted[p.id];
   ch.round += 1;
-  const speed = (c, m) => (m ? (ch.round > C.blown ? 3.6 : C.horse_speed) : C.foot_speed[bandOf(c)]);
+  const horse = ch.round > C.blown ? 3.6 : C.horse_speed;     // a blown horse is down to a walk
+  const speed = (c, m) => (m ? horse : C.foot_speed[bandOf(c)]);
   const horseOnFoot = mp && !mq;
   let pt = chaseValue(p, mp), qt = chaseValue(q, mq);
   if (horseOnFoot && K.cover) qt += C.cover;
