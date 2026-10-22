@@ -244,6 +244,17 @@ When an item is done, delete it here and note it in the pull request that closes
   or the king (the team keeps him); no drift without events
   (Pendragon's winter check); and Visby, the Napoleonic marshals, Korea, Vietnam, the Falklands and
   Chechnya had no patronage sources.
+- **Tongues by place, first cut.** A map place can list its people's tongues (main first) and
+  the map keeps a default (one or a list); a force uses the nearest place within `place_km`.
+  Places set so far (project doc "tongues-research"): Serbia 1915 (38 towns), Calais and Guînes
+  (English, Flemish, French), Olivenza and Elvas (Portuguese), Balaklava (Greek) and the Tatar
+  villages by Sevastopol, Sidon's Franks, Visby's Low German, Grozny (Russian and Chechen), Tan Canh
+  and Khe Sanh village (Vietnamese), and Pashto in the Pech and Kamdesh valleys. Still left out:
+  Picard and Walloon (French stands in), Mohawk, Cheyenne, Arapaho and Crow (no ids yet), Gujari,
+  Chinese at Hue; Grozny's districts and Visby's German share are not sourced, nor Vietnamese in
+  the highland district towns (inference); the Kosovo and Macedonian shares are from before the
+  killings and flight of 1912-13, which made the towns more Serbian and Slavic by 1915 by an
+  unknown amount; one tongue list a place, no shares within it.
 - **Tongues, first cut.** Own tongue, others by army, bands, related tongues, talk caps, words
   across tongues, passing, phrase books, capture and escape, learning by use, lessons and living
   among speakers. Still left out: the shares of who spoke what are estimates throughout (no muster

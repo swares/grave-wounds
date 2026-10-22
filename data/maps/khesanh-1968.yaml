@@ -72,7 +72,7 @@ places:
   - {name: "Hill 861A", kind: objective, hex: [29, 14], note: "E Company, 2nd Battalion, 26th Marines held it against a night attack on 5 February 1968 (approximate)"}
   - {name: "Hill 558", kind: landmark, hex: [31, 18]}
   - {name: "Hill 950", kind: landmark, hex: [29, 10]}
-  - {name: "Khe Sanh village", kind: village, hex: [33, 30]}
+  - {name: "Khe Sanh village", kind: village, hex: [33, 30], tongues: [montagnard, vietnamese]}
   - {name: "Lang Vei Special Forces camp", kind: village, hex: [19, 34], note: "Overrun by North Vietnamese infantry with PT-76 tanks on the night of 6-7 February 1968 (approximate)"}
   - {name: "Co Roc (Laos)", kind: landmark, hex: [2, 39], depot: ["North Vietnamese"], note: "North Vietnamese guns fired on the base from these cliffs across the border (approximate)"}
 forces:

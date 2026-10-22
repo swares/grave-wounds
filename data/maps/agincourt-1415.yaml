@@ -107,8 +107,8 @@ places:
   - {name: "Montreuil", kind: town, hex: [26, 16]}
   - {name: "Étaples", kind: village, hex: [24, 15]}
   - {name: "Boulogne", kind: town, hex: [24, 10]}
-  - {name: "Guînes", kind: village, hex: [27, 6]}
-  - {name: "Calais", kind: objective, hex: [27, 4], depot: ["England"], note: "English since 1347: the army's goal"}
+  - {name: "Guînes", kind: village, hex: [27, 6], tongues: [flemish, english, french]}
+  - {name: "Calais", kind: objective, hex: [27, 4], depot: ["England"], tongues: [english, flemish, french], note: "English since 1347: the army's goal"}
   - {name: "Ardres", kind: village, hex: [29, 6]}
   - {name: "Fruges", kind: village, hex: [31, 15]}
   - {name: "Rouen", kind: town, hex: [16, 43], depot: ["France"], note: "Where the French main army mustered; the King and the Dauphin stayed here"}

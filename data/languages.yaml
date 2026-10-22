@@ -110,6 +110,8 @@ tongues:
   ukrainian: {name: Ukrainian}
   turkish: {name: Turkish}
   albanian: {name: Albanian}
+  aromanian: {name: Aromanian}
+  flemish: {name: Flemish}
   tatar: {name: Crimean Tatar}
   hindustani: {name: Hindustani}
   nepali: {name: Nepali}
@@ -160,6 +162,9 @@ related:                       # [a, b, share]: a man with one knows the other a
   - [slovene, croatian, 0.5]
   - [bulgarian, russian, 0.25]
   - [romanian, italian, 0.25]
+  - [aromanian, romanian, 0.5]
+  - [flemish, low_german, 0.5]
+  - [flemish, german, 0.25]
 
 traits:                        # background traits and drawbacks that give or take tongues
   "Speaks three tongues": {extra: 2, range: [30, 60]}
@@ -289,7 +294,7 @@ armies:
     insurgent: {own: [[arabic, 50], [pashto, 40], [dari, 10]], enemy: english,
                 others: [[arabic, 20, [20, 60]], [urdu, 10, [10, 50]], [dari, 20, [20, 60]], [english, 10, [5, 30]]]}
 
-maps:                          # the tongue of the people where each map lies (none: no locals)
+maps:                          # the tongue (or tongues, main first) of the people where each map lies, where no place names its own (none: no locals)
   agincourt-1415: french
   albuera-1811: spanish
   anzio-1944: italian
@@ -303,7 +308,7 @@ maps:                          # the tongue of the people where each map lies (n
   easting73-1991: arabic
   fallujah-2004: arabic
   goosegreen-1982: english
-  grozny-1995: russian
+  grozny-1995: [russian, chechen]   # the city, about two-fifths Russian and half Chechen (an estimate; project doc "tongues-research")
   hamburger-1969: montagnard
   heartbreak-1951: korean
   hue-1968: vietnamese
@@ -318,7 +323,7 @@ maps:                          # the tongue of the people where each map lies (n
   osan-1950: korean
   phil-kearny-1866: lakota
   porkchop-1953: korean
-  serbia-1915: albanian        # Kosovo, Albania and western Macedonia, where the retreat went; Serbian in the Morava valleys at the top
+  serbia-1915: albanian        # Kosovo, Albania and western Macedonia, where the retreat went; its towns name their own (Serbian, Bulgarian, Turkish...)
   sevastopol-1855: russian
   sidon-1253: arabic
   towton-1461: english

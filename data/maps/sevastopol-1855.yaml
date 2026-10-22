@@ -59,13 +59,13 @@ places:
   - {name: "The British camp (Cathcart's Hill)", kind: camp, hex: [13, 11], note: "The British army's camps on the upland"}
   - {name: "Kamiesh", kind: camp, hex: [2, 10], depot: ["Allies"], note: "The French army's base and harbour"}
   - {name: "The French left attack", kind: landmark, hex: [9, 10]}
-  - {name: "Balaklava", kind: camp, hex: [17, 21], depot: ["Allies"], note: "The British army's harbour and base"}
-  - {name: "Kadikoi", kind: village, hex: [16, 20]}
+  - {name: "Balaklava", kind: camp, hex: [17, 21], depot: ["Allies"], tongues: [greek, russian], note: "The British army's harbour and base"}
+  - {name: "Kadikoi", kind: village, hex: [16, 20], tongues: [tatar, russian]}
   - {name: "The Col", kind: landmark, hex: [15, 17]}
   - {name: "The Causeway Heights", kind: landmark, hex: [20, 18], note: "The Battle of Balaklava, 25 October 1854, was fought across these heights and the valleys either side"}
   - {name: "Traktir bridge", kind: landmark, hex: [22, 17], note: "Where the Russian field army's last attempt to relieve the town was beaten on 16 August 1855"}
   - {name: "The Fedyukhin heights", kind: landmark, hex: [22, 15]}
-  - {name: "Chorgun", kind: village, hex: [25, 21]}
+  - {name: "Chorgun", kind: village, hex: [25, 21], tongues: [tatar, russian]}
   - {name: "The Mackenzie heights", kind: landmark, hex: [22, 4]}
   - {name: "The Sapun ridge", kind: landmark, hex: [17, 14]}
   - {name: "Ford by Chorgun", kind: landmark, hex: [25, 20]}

@@ -1019,7 +1019,10 @@ const wxLine = d => { const w = d.w, c = WXD.conditions[w.cond], wn = WXD.winds.
    main tongue ticked. */
 const localTongues = f => lgTonguesAt(baseMap(), S.mapId, f.pos);
 const speaksLocal = (n, ts) => !!n.tongues && ts.some(t => lgValue(n.tongues, t) >= (DATA.languages.getting_by ?? 26));
-const tongueNames = ts => ts.map(t => DATA.languages.tongues[t].name).join(" or ");
+function tongueNames(ts){                      // "Turkish, Bulgarian or Albanian"
+  const n = ts.map(t => DATA.languages.tongues[t].name);
+  return n.length > 1 ? n.slice(0, -1).join(", ") + " or " + n.at(-1) : n.join("");
+}
 function interpHere(f){                        // the team's interpreter, if he speaks a local tongue and the team's named men are with this force
   const ts = localTongues(f); if (!ts.length) return null;
   let I = null;

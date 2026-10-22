@@ -68,6 +68,7 @@ const map = buildCampaign({
   towns: [], villages: ["village", "langvei"],
   kinds: { base: "camp", h861a: "objective", h881s: "objective" },
   depots: { base: ["United States and ARVN"], coroc: ["North Vietnamese"] },   // where each side resupplies (project doc "depots-research")
+  tongues: { village: ["montagnard", "vietnamese"] },   // the people's own tongues where they differ from the map's (project doc "tongues-research")
   forces: [
     { name: "26th Marines, 1/9 Marines and the 37th ARVN Rangers", type: "foot", side: "United States and ARVN", men: 6000, tools: true, at: "base" },
     { name: "Marines on the hill outposts (881 South, 861, 861A, 558)", type: "foot", side: "United States and ARVN", men: 1200, tools: true, at: "h861a" },

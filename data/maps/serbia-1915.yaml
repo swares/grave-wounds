@@ -100,38 +100,38 @@ terrain: |
     wwwwh~~~~hhhhhhhhhh~~MMMwwhhhhhh===T~hhhhhhhhhh
     wwwww~~hhhhhhhhhhhhhh~MMwwhhhhwhMMMf~hhhhhhhhhh
 places:
-  - {name: "Kraljevo", kind: town, hex: [24, 2], note: "The Supreme Command's seat until early November; the West Morava valley road runs east from here"}
-  - {name: "Kruševac", kind: town, hex: [35, 6]}
-  - {name: "Niš", kind: town, hex: [44, 12], depot: ["Central Powers"], note: "Taken by the Bulgarian 1st Army on 5 November"}
-  - {name: "Prokuplje", kind: village, hex: [39, 15]}
-  - {name: "Kuršumlija", kind: village, hex: [33, 17]}
-  - {name: "Raška", kind: village, hex: [23, 13]}
-  - {name: "Novi Pazar", kind: village, hex: [21, 17]}
-  - {name: "Leskovac", kind: town, hex: [45, 21]}
-  - {name: "Mitrovica", kind: town, hex: [27, 23], note: "Fell on 23 November, with Priština"}
-  - {name: "Vučitrn", kind: village, hex: [29, 25]}
+  - {name: "Kraljevo", kind: town, hex: [24, 2], tongues: [serbian], note: "The Supreme Command's seat until early November; the West Morava valley road runs east from here"}
+  - {name: "Kruševac", kind: town, hex: [35, 6], tongues: [serbian]}
+  - {name: "Niš", kind: town, hex: [44, 12], depot: ["Central Powers"], tongues: [serbian], note: "Taken by the Bulgarian 1st Army on 5 November"}
+  - {name: "Prokuplje", kind: village, hex: [39, 15], tongues: [serbian]}
+  - {name: "Kuršumlija", kind: village, hex: [33, 17], tongues: [serbian]}
+  - {name: "Raška", kind: village, hex: [23, 13], tongues: [serbian]}
+  - {name: "Novi Pazar", kind: village, hex: [21, 17], tongues: [serbian, albanian]}
+  - {name: "Leskovac", kind: town, hex: [45, 21], tongues: [serbian]}
+  - {name: "Mitrovica", kind: town, hex: [27, 23], tongues: [serbian, albanian], note: "Fell on 23 November, with Priština"}
+  - {name: "Vučitrn", kind: village, hex: [29, 25], tongues: [albanian, serbian]}
   - {name: "Podujevo", kind: village, hex: [32, 23]}
-  - {name: "Priština", kind: objective, hex: [32, 29], depot: ["Serbia and Montenegro"], note: "Fell on 23 November; the Serbian armies gathered on the Kosovo plain around it, with refugees"}
+  - {name: "Priština", kind: objective, hex: [32, 29], depot: ["Serbia and Montenegro"], tongues: [albanian, serbian, turkish], note: "Fell on 23 November; the Serbian armies gathered on the Kosovo plain around it, with refugees"}
   - {name: "Gazimestan (the field of Kosovo)", kind: landmark, hex: [31, 29], note: "The field of the battle of 1389, where the Serbian armies made their last stand in Kosovo"}
   - {name: "Lipljan", kind: village, hex: [31, 33]}
-  - {name: "Gnjilane", kind: village, hex: [37, 34]}
-  - {name: "Ferizaj", kind: village, hex: [32, 37]}
+  - {name: "Gnjilane", kind: village, hex: [37, 34], tongues: [albanian, serbian]}
+  - {name: "Ferizaj", kind: village, hex: [32, 37], tongues: [albanian, serbian]}
   - {name: "Kačanik gorge", kind: village, hex: [34, 40], note: "The gorge from Kosovo down to Skopje, taken by the Bulgarians on 26 October; Serbian attacks towards it failed in November"}
-  - {name: "Vranje", kind: village, hex: [44, 32]}
-  - {name: "Kumanovo", kind: village, hex: [41, 43]}
-  - {name: "Skopje", kind: town, hex: [37, 46], depot: ["Central Powers"], note: "Fell to the Bulgarians on 22 October, cutting the railway to Salonika"}
-  - {name: "Prizren", kind: town, hex: [25, 41], depot: ["Serbia and Montenegro"], note: "The King, the government and the Supreme Command left from here on 24-26 November; taken on 29 November"}
-  - {name: "Đakovica", kind: village, hex: [20, 36]}
-  - {name: "Peć", kind: town, hex: [17, 29], note: "Where the commanders met in council (29 November to 2 December); the northern column set out from here; taken on 7 December"}
+  - {name: "Vranje", kind: village, hex: [44, 32], tongues: [serbian]}
+  - {name: "Kumanovo", kind: village, hex: [41, 43], tongues: [bulgarian, turkish, albanian]}
+  - {name: "Skopje", kind: town, hex: [37, 46], depot: ["Central Powers"], tongues: [bulgarian, turkish, albanian], note: "Fell to the Bulgarians on 22 October, cutting the railway to Salonika"}
+  - {name: "Prizren", kind: town, hex: [25, 41], depot: ["Serbia and Montenegro"], tongues: [albanian, serbian, turkish], note: "The King, the government and the Supreme Command left from here on 24-26 November; taken on 29 November"}
+  - {name: "Đakovica", kind: village, hex: [20, 36], tongues: [albanian]}
+  - {name: "Peć", kind: town, hex: [17, 29], tongues: [albanian, serbian], note: "Where the commanders met in council (29 November to 2 December); the northern column set out from here; taken on 7 December"}
   - {name: "Patriarchate of Peć", kind: landmark, hex: [17, 29]}
   - {name: "Visoki Dečani", kind: landmark, hex: [18, 32]}
-  - {name: "Rožaje", kind: village, hex: [15, 25], note: "On the way north-west into Montenegro"}
+  - {name: "Rožaje", kind: village, hex: [15, 25], tongues: [serbian, albanian], note: "On the way north-west into Montenegro"}
   - {name: "Čakor pass", kind: landmark, hex: [14, 28], note: "The pass on the northern column's road into Montenegro, 1,844 m"}
-  - {name: "Plav", kind: village, hex: [12, 31]}
-  - {name: "Andrijevica", kind: village, hex: [9, 27]}
-  - {name: "Berane", kind: village, hex: [11, 24]}
-  - {name: "Podgorica", kind: town, hex: [1, 35], depot: ["Serbia and Montenegro"]}
-  - {name: "Shkodër (Scutari)", kind: camp, hex: [5, 44], depot: ["Serbia and Montenegro"], note: "Where the northern and central columns came out; about 89,000 soldiers reached it"}
+  - {name: "Plav", kind: village, hex: [12, 31], tongues: [albanian, serbian]}
+  - {name: "Andrijevica", kind: village, hex: [9, 27], tongues: [serbian]}
+  - {name: "Berane", kind: village, hex: [11, 24], tongues: [serbian]}
+  - {name: "Podgorica", kind: town, hex: [1, 35], depot: ["Serbia and Montenegro"], tongues: [serbian, albanian]}
+  - {name: "Shkodër (Scutari)", kind: camp, hex: [5, 44], depot: ["Serbia and Montenegro"], tongues: [albanian, serbian], note: "Where the northern and central columns came out; about 89,000 soldiers reached it"}
   - {name: "Kukës", kind: village, hex: [20, 44], note: "Where the White and Black Drin meet; the central and southern columns split near here (Ljum Kula)"}
   - {name: "Spas", kind: village, hex: [17, 41]}
   - {name: "Vizier's Bridge", kind: landmark, hex: [20, 43], note: "An old stone bridge on the central column's way from Prizren into Albania (approximate)"}
@@ -141,20 +141,20 @@ places:
   - {name: "Lezhë (Alessio)", kind: village, hex: [7, 52]}
   - {name: "Shëngjin (San Giovanni di Medua)", kind: village, hex: [6, 51], note: "The little port where some of the army and the refugees were taken off by ship"}
   - {name: "Durrës (Durazzo)", kind: camp, hex: [4, 63], depot: ["Serbia and Montenegro"], note: "The main port of the evacuation: about 95,000 soldiers were taken off here"}
-  - {name: "Debar", kind: village, hex: [21, 59], note: "Taken by the Bulgarians about 8-9 December"}
-  - {name: "Struga", kind: village, hex: [24, 68]}
-  - {name: "Ohrid", kind: town, hex: [26, 69], note: "Taken by the Bulgarians about 8-9 December"}
-  - {name: "Resen", kind: village, hex: [30, 70]}
+  - {name: "Debar", kind: village, hex: [21, 59], tongues: [albanian, bulgarian], note: "Taken by the Bulgarians about 8-9 December"}
+  - {name: "Struga", kind: village, hex: [24, 68], tongues: [bulgarian, turkish, albanian]}
+  - {name: "Ohrid", kind: town, hex: [26, 69], tongues: [bulgarian, turkish, albanian], note: "Taken by the Bulgarians about 8-9 December"}
+  - {name: "Resen", kind: village, hex: [30, 70], tongues: [bulgarian, turkish]}
   - {name: "Elbasan", kind: town, hex: [14, 69], note: "The southern column passed here on its way to Durrës; the Bulgarians took it on 29 January"}
-  - {name: "Tetovo", kind: village, hex: [29, 46]}
-  - {name: "Gostivar", kind: village, hex: [28, 52]}
-  - {name: "Kičevo", kind: village, hex: [28, 59]}
-  - {name: "Veles", kind: town, hex: [42, 53]}
-  - {name: "Izvor", kind: village, hex: [41, 58], note: "Where the Bulgarian attack was driven back to, in the first days of November"}
-  - {name: "Babuna pass", kind: objective, hex: [39, 60], note: "The pass where about 5,000 men of the 2nd and 14th Regiments held the road to Prilep for a week and more (approximate)"}
-  - {name: "Prilep", kind: town, hex: [38, 63], note: "Occupied by the Bulgarians on 17 November"}
-  - {name: "Topolčani", kind: village, hex: [37, 66], note: "Where Flora Sandes's company fought a rearguard in the snow, by a river and a mined bridge (approximate)"}
-  - {name: "Bitola (Monastir)", kind: town, hex: [35, 71]}
+  - {name: "Tetovo", kind: village, hex: [29, 46], tongues: [albanian, bulgarian, turkish]}
+  - {name: "Gostivar", kind: village, hex: [28, 52], tongues: [albanian, bulgarian, turkish]}
+  - {name: "Kičevo", kind: village, hex: [28, 59], tongues: [bulgarian, albanian]}
+  - {name: "Veles", kind: town, hex: [42, 53], tongues: [bulgarian, turkish]}
+  - {name: "Izvor", kind: village, hex: [41, 58], tongues: [bulgarian], note: "Where the Bulgarian attack was driven back to, in the first days of November"}
+  - {name: "Babuna pass", kind: objective, hex: [39, 60], tongues: [bulgarian], note: "The pass where about 5,000 men of the 2nd and 14th Regiments held the road to Prilep for a week and more (approximate)"}
+  - {name: "Prilep", kind: town, hex: [38, 63], tongues: [bulgarian, turkish], note: "Occupied by the Bulgarians on 17 November"}
+  - {name: "Topolčani", kind: village, hex: [37, 66], tongues: [bulgarian], note: "Where Flora Sandes's company fought a rearguard in the snow, by a river and a mined bridge (approximate)"}
+  - {name: "Bitola (Monastir)", kind: town, hex: [35, 71], tongues: [turkish, bulgarian, aromanian, spanish, albanian]}
 forces:
   - {name: "Serbian 1st Army (Mišić)", type: foot, side: "Serbia and Montenegro", men: 40000, tools: true, hex: [24, 2]}
   - {name: "Serbian 3rd Army (Šturm)", type: foot, side: "Serbia and Montenegro", men: 35000, tools: true, hex: [35, 6]}

@@ -105,6 +105,7 @@ const map = buildCampaign({
   woods: WOODS, marsh: MARSH, hills: HILLS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { harfleur: "camp", calais: "objective" },
   depots: { harfleur: ["England"], calais: ["England"], rouen: ["France"] },   // where each side resupplies (project doc "depots-research")
+  tongues: { calais: ["english", "flemish", "french"], guines: ["flemish", "english", "french"] },   // the people's own tongues where they differ from the map's (project doc "tongues-research")
   forces: [
     { name: "Henry V's army", type: "mounted", side: "England", men: 8500, tools: true, at: "harfleur" },
     { name: "English baggage", type: "wagons", side: "England", men: 300, tools: true, at: "montivilliers" },
