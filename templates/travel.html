@@ -1312,6 +1312,10 @@ const hasCases = n => (n.health?.cases || []).length > 0;
 function xpNight(f, wetCold){                 // experience: a night served for each named man; a week nursing ticks the best Leechcraft; drill
   const all = readNamed(), mine = namedWith(all, f).filter(([, n]) => !n.dead);
   for (const [, n] of mine){
+    if (n.pid && xpAwayDays(n.pid) > 0){                   // away for treatment: no day served with the force
+      if (xpAwayNight(n.pid)) f.log.unshift(`${dateText(f.day, true)}: ${n.name} is back from treatment.`);
+      continue;
+    }
     xpServe(n.pid, 1);                                     // a day served
     if (fedByArmy(f)) xpArmy(n.pid, !!f.unpaid);           // and his army's pay, or arrears
     if ((f.shortFood && !f.huntFed) || f.packsNight || wetCold || hasCases(n)) xpMark(n.pid, "hard", 1);   // a hard night: wear (ageing)
@@ -1377,7 +1381,7 @@ function namedWeek(n, factors, extra, nurse, noFresh = 0){
   return w.events.map(x => said[x.kind](x));
 }
 // A named man nurses the force's sick if the GM set him to and he is not too sick himself.
-const ableNow = n => !n.dead && !((n.health || {}).cases || []).some(c => c.inc === 0 && c.step >= dzStep(DZ.unfit_from));
+const ableNow = n => !n.dead && !(n.pid && xpAwayDays(n.pid) > 0) && !((n.health || {}).cases || []).some(c => c.inc === 0 && c.step >= dzStep(DZ.unfit_from));   // not away for treatment of Strain
 const nursesNow = n => !!n.nurse && ableNow(n);
 // The best of a skill (from the roller's sheets) among the named men with these forces who are well enough: [value, name]
 function bestSkill(forces, skill, all = readNamed()){

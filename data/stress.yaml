@@ -27,7 +27,8 @@ sources:                      # Strain a man takes
   extreme_day: {strain: 3, name: "An extreme day (street fighting, the bocage, a storm)"}
   friend_down: {strain: 4, name: "A comrade killed or maimed"}
   heavy_losses: {strain: 3, name: "His side lost a quarter or more"}
-  leader_down: {strain: 3, name: "His leader down"}
+  leader_down: {strain: 3, name: "His leader killed"}
+  leader_trusted_down: {strain: 6, name: "His trusted leader killed", approx: true}   # a leader of leader_command or more: the loss is felt twice over (design estimate)
   wounded: {strain: 2, name: "Wounded"}
   wounded_badly: {strain: 3, name: "Badly wounded"}
   near_miss: {strain: 2, name: "A near miss, buried by a shell"}
@@ -62,8 +63,8 @@ results:                      # d10 + margin/10: the first row it is at or under
 # back to duty, the days it takes, and the Strain it lifts. `forward` from the eras that had
 # exhaustion centres near the front (late 1916 on); `furlough` before them (the cure for
 # nostalgia was going home).
-treatment:
-  unit: {name: "With his unit (comrades, a sergeant, a priest)", days: 2, rtd: {shaken: 60, strained: 60, exhaustion: 30, severe: 10}, strain: 10}
+treatment:                     # the days he is away from the force (the travel map counts them off), unless with_force
+  unit: {name: "With his unit (comrades, a sergeant, a priest)", with_force: true, days: 2, rtd: {shaken: 60, strained: 60, exhaustion: 30, severe: 10}, strain: 10}
   forward: {name: "A forward exhaustion centre", days: 3, rtd: {shaken: 70, strained: 65, exhaustion: 60, severe: 30}, strain: 20, eras: [wwi, wwii, korea, vietnam, modern]}
   rear: {name: "A hospital in the rear", days: 14, rtd: {shaken: 50, strained: 40, exhaustion: 30, severe: 20}, strain: 30}
   home: {name: "Sent home", days: 60, rtd: {shaken: 30, strained: 20, exhaustion: 13, severe: 10}, strain: all, toll: 0.5}

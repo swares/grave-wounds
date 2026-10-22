@@ -7,6 +7,18 @@ const XP_KEY = "gravewounds-xp";                   // {pid: {ticks: {skill: why}
 function readXp(){ try{ return JSON.parse(localStorage.getItem(XP_KEY) || "{}") || {} }catch(e){ return {} } }
 function writeXp(all){ try{ localStorage.setItem(XP_KEY, JSON.stringify(all)) }catch(e){ /* storage off: no experience kept */ } }
 const xpOf = (all, pid) => (all[pid] ||= { ticks: {}, served: 0 });
+// Away for treatment of Strain (the team builder sends him; the travel map counts the days off).
+const xpAwayDays = pid => (pid ? readXp()[pid]?.away?.days || 0 : 0);
+function xpSendAway(pid, days, where){ if (!pid) return; const all = readXp(); xpOf(all, pid).away = { days, where }; writeXp(all) }
+function xpAwayNight(pid){                        // a night away: true when his days are done and he is back
+  const all = readXp(), x = all[pid];
+  if (!x?.away) return false;
+  x.away.days -= 1;
+  const back = x.away.days <= 0;
+  if (back) delete x.away;
+  writeXp(all);
+  return back;
+}
 function xpTick(pid, skill, why){                  // he used this skill well: it rolls to rise at End of season
   if (!pid || !skill) return;
   const all = readXp(), x = xpOf(all, pid);

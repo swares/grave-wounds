@@ -10,7 +10,7 @@ When an item is done, delete it here and note it in the pull request that closes
 ## Deferred work
 
 - **The rule book, beyond the third part.** `dist/rules.html` covers the whole game in
-  thirteen chapters, with a medieval retinue and a Vietnam rifle squad followed through.
+  fourteen chapters, with a medieval retinue and a Vietnam rifle squad followed through.
   It summarises rather than repeats the docs: the black-powder guns' fire (sections, fuses,
   ricochet), the travel map's battle set-up and the battlefields are covered in the docs and
   on the pages, not in the book. It ends with an index of the terms set in bold, each linked to its sections, and prints page numbers (in Chrome and Edge; other browsers may leave them off). The index has no page numbers of its own, only section names.
@@ -301,7 +301,8 @@ When an item is done, delete it here and note it in the pull request that closes
   End of season; days served add a career term (`docs/team.md`, *Experience*). Still left out:
   - the field map's battles tick a hero's weapon skill for his hits, but not his parries or the
     first aid he gives;
-  - characteristics never change in play, and age brings no decline;
+  - characteristics change in play only by ageing, wounds and the Presence a promotion adds: no
+    training raises Strength or Endurance;
 - **Training, first cut.** Masters for hire, teammates and drill in camp tick a skill. Still left
   out: the masters' fees are estimates apart from riding lessons (London, 1879), and a master's
   skill is always 60; drill ticks only the skill of the weapon a man
