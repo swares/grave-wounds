@@ -16,6 +16,7 @@
 import { buildCampaign } from "./campaign_lib.mjs";
 
 const P = {
+  airborne: [16.347, 107.225],   // Firebase Airborne, on its ridge north-east of the valley (Wikipedia, Firebase Airborne)
   apbia: [16.215, 107.140], h900: [16.208, 107.152], aluoi: [16.218, 107.225], tabat: [16.170, 107.268], lz: [16.232, 107.178],
   south: [16.172, 107.190], east: [16.215, 107.250], laos: [16.230, 107.090], northwest: [16.295, 107.130],
   north: [16.305, 107.170], southeast: [16.125, 107.315],
@@ -29,9 +30,11 @@ const HILLS = [[P.h900, 0.7], [[16.180, 107.160], 1.2], [[16.260, 107.150], 1.2]
 const MOUNTAINS = [[P.apbia, 1.0], [[16.280, 107.110], 2.2], [[16.150, 107.120], 2.4], [[16.200, 107.100], 1.6], [[16.270, 107.270], 2.4], [[16.200, 107.300], 2.2], [[16.140, 107.220], 1.6]];
 const ROADS = [["north", [16.265, 107.188], "aluoi", [16.190, 107.248], "tabat", "southeast"]];
 const NAMES = {
+  airborne: "Firebase Airborne",
   apbia: "Dong Ap Bia (Hill 937)", h900: "Hill 900", aluoi: "A Luoi", tabat: "Ta Bat", lz: "3/187's landing zone",
 };
 const notes = {
+  airborne: "The fire support base that backed Apache Snow: its guns and the 3rd Brigade's resupply by helicopter",
   apbia: "The 29th Regiment held it in bunkers from 10 to 20 May 1969; 'Hamburger Hill' (approximate)",
   aluoi: "An old airstrip on the valley floor (approximate)",
   lz: "Where the 3rd Battalion, 187th Infantry landed on 10 May 1969 (approximate)",
@@ -40,7 +43,7 @@ const map = buildCampaign({
   id: "hamburger-1969", script: "make_hamburger.mjs", title: "The A Shau valley, May 1969",
   name: "Hamburger Hill, 1969 (the A Shau valley)",
   start_date: "1969-05-10", calendar: "gregorian", latitude: 16, climate: "annamite", climate_shift: 0, base: "F",
-  bounds: [107.080, 16.310, 107.320, 16.120], midLat: 16.21, hexKm: 0.5,
+  bounds: [107.080, 16.360, 107.320, 16.120], midLat: 16.24, hexKm: 0.5,
   header: [
     "Ap Bia, A Luoi, Ta Bat and the valley are placed after the accounts and approximate; the A Sap",
     "and its streams, the valley road and the mountains are drawn by hand. Mountains under thick",
@@ -57,7 +60,8 @@ const map = buildCampaign({
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: [], streams: STREAMS, bridges: [], fords: [],
   farms: [], clearings: CLEARINGS, woods: [], hills: HILLS, mountains: MOUNTAINS, roads: ROADS,
   towns: [], villages: [],
-  kinds: { apbia: "objective", lz: "camp" },
+  kinds: { apbia: "objective", lz: "camp", airborne: "camp" },
+  depots: { airborne: ["United States and ARVN"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "3rd Battalion, 187th Infantry", type: "foot", side: "United States and ARVN", men: 450, tools: true, at: "lz" },
     { name: "1st Battalion, 506th Infantry", type: "foot", side: "United States and ARVN", men: 450, tools: true, at: "south" },

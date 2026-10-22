@@ -22,6 +22,7 @@ const P = {
   xray: [13.568, 107.714], albany: [13.595, 107.715], falcon: [13.623, 107.764], columbus: [13.585, 107.748], victor: [13.553, 107.738],
   chupong: [13.545, 107.672], knoll: [13.572, 107.706], border: [13.600, 107.585],
   west: [13.560, 107.600], northwest: [13.640, 107.640],   // where the North Vietnamese battalions come in (not places)
+  pleime: [13.6175, 107.9175],                              // the Special Forces camp, 23 km south-east of X-Ray (Wikipedia, Siege of Plei Me)
 };
 
 // ---------- the Ia Drang (crossed at its fords) and the streams ----------
@@ -41,8 +42,10 @@ const CLEARINGS = [[P.xray, 0.3], [P.albany, 0.3], [P.falcon, 0.4], [P.columbus,
 const ROADS = [];
 
 const NAMES = { xray: "Landing zone X-Ray", albany: "Landing zone Albany", falcon: "Landing zone Falcon (the guns)", columbus: "Landing zone Columbus",
-  victor: "Landing zone Victor", chupong: "The Chu Pong massif", knoll: "The knoll of the cut-off platoon", border: "The Cambodian border (just to the west)" };
+  victor: "Landing zone Victor", chupong: "The Chu Pong massif", knoll: "The knoll of the cut-off platoon", border: "The Cambodian border (just to the west)",
+  pleime: "Plei Me Special Forces camp" };
 const notes = {
+  pleime: "Besieged 19-25 October 1965; X-Ray's ammunition and water came up from here and Camp Holloway",
   xray: "A clearing about 100 m across at the foot of the Chu Pong; the 1st Battalion, 7th Cavalry landed here from 10:48 on 14 November 1965",
   knoll: "2nd Platoon, B Company was cut off here on the afternoon of the 14th and held until relieved the next afternoon (approximate)",
   falcon: "Two batteries of 105 mm howitzers fired for X-Ray from here, about 8 km away",
@@ -55,7 +58,7 @@ const map = buildCampaign({
   id: "iadrang-1965", script: "make_iadrang.mjs", title: "The Ia Drang valley and the Chu Pong massif, November 1965",
   name: "Ia Drang, 1965 (X-Ray and Albany)",
   start_date: "1965-11-14", calendar: "gregorian", latitude: 14, climate: "central_highlands", climate_shift: 0, base: "F",
-  bounds: [107.585, 13.665, 107.825, 13.505], midLat: 13.58, hexKm: 0.5,
+  bounds: [107.585, 13.665, 107.930, 13.505], midLat: 13.58, hexKm: 0.5,
   header: [
     "X-Ray, Albany and Falcon are at their published positions, rounded; Columbus, Victor and the",
     "cut-off platoon's knoll are placed after the accounts and approximate; the massif, hills,",
@@ -72,8 +75,8 @@ const map = buildCampaign({
   ],
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["iadrang"], streams: STREAMS, bridges: BRIDGES, fords: FORDS,
   clearings: CLEARINGS, woods: [], hills: HILLS, mountains: MOUNTAINS, roads: ROADS, towns: [], villages: [],
-  kinds: { xray: "objective", falcon: "camp" },
-  depots: { falcon: ["United States"], chupong: ["North Vietnamese"] },   // where each side resupplies (project doc "depots-research")
+  kinds: { xray: "objective", falcon: "camp", pleime: "camp" },
+  depots: { falcon: ["United States"], pleime: ["United States"], chupong: ["North Vietnamese"] },   // where each side resupplies (project doc "depots-research")
   forces: [
     { name: "1st Battalion, 7th Cavalry (Moore)", type: "foot", side: "United States", men: 450, tools: true, at: "xray" },
     { name: "2nd Battalion, 7th Cavalry", type: "foot", side: "United States", men: 500, tools: true, at: "falcon" },
