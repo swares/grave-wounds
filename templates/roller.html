@@ -981,8 +981,8 @@ function renderWords(){
   const c = sp.find(x => x.id === K.who), eid = c.sheet.era, ts = eraTongues(eid);
   const others = S.chars.filter(x => x.id !== K.who).map(x => ["c:" + x.id, x.name]), strangers = ts.map(t => ["t:" + t, "Someone who speaks " + DATA.languages.tongues[t].name]);
   if (![...others, ...strangers].some(([v]) => v === K.to)) K.to = (others[0] || strangers[0])[0];
-  const book = (DATA.languages.phrase_books || []).includes(eid) && K.purpose === "question"
-    ? `<label class="check"><input type="checkbox" id="wd-book"${K.book ? " checked" : ""}> Phrase book: a yes or no, a number, a direction</label>` : "";
+  const checked = K.book ? " checked" : "", hasBook = (DATA.languages.phrase_books || []).includes(eid) && K.purpose === "question";
+  const book = hasBook ? `<label class="check"><input type="checkbox" id="wd-book"${checked}> Phrase book: a yes or no, a number, a direction</label>` : "";
   const items = (S.wdlog || []).map(l => `<li>${attr(l)}</li>`).join(""), log = items ? `<ol class="roundlog">${items}</ol>` : "";
   box.innerHTML = `<details class="after"${S.wdOpen ? " open" : ""}><summary><b>Words across tongues</b> <span class="muted">orders, surrender, questions, passing</span></summary>
     <div class="toolbar"><label>Who ${hazardOpts("wd-who", sp.map(x => [x.id, x.name]), K.who)}</label> <label>To ${hazardOpts("wd-to", [...others, ...strangers], K.to)}</label></div>

@@ -39,48 +39,59 @@ def roll(d: Data, eid: str, region: str, trait: str, drawback: str, rng) -> dict
     L, A = _cfg(d), _army(d, eid, region)
     T = L.get("traits") or {}
     tr, dr = T.get(trait) or {}, T.get(drawback) or {}
-    r = rng.randint(1, 100)
-    if dr.get("own"):
-        native = dr["own"][(r - 1) * len(dr["own"]) // 100]
-    else:
-        native, acc = A["own"][-1][0], 0
-        for t, share in A["own"]:
-            acc += share
-            if r <= acc:
-                native = t
-                break
+    native = _native(A, dr, rng.randint(1, 100))
     c = {"native": native, "tongues": {native: L.get("native", 90)}}
     for t, chance, (lo, hi) in A.get("others", []):
-        if t in c["tongues"]:
-            continue
-        if rng.randint(1, 100) <= chance:
+        if t not in c["tongues"] and rng.randint(1, 100) <= chance:
             c["tongues"][t] = rng.randint(lo, hi)
     for row in (tr, dr):
-        if row.get("extra"):
-            pool = [t for t, _ in A["own"]] + [t for t, _, _ in A.get("others", [])]
-            for _ in range(row["extra"]):
-                left = [t for t in dict.fromkeys(pool) if t not in c["tongues"]]
-                if not left:
-                    break
-                t = left[(rng.randint(1, 100) - 1) * len(left) // 100]
-                lo, hi = row["range"]
-                c["tongues"][t] = rng.randint(lo, hi)
-        if row.get("enemy") and A.get("enemy"):
-            lo, hi = row["enemy"]
-            _set(c, A["enemy"], rng.randint(lo, hi))
-        for t, v in (row.get("also") or {}).items():
-            _set(c, t, v)
-        for t, (lo, hi) in (row.get("has") or {}).items():
-            _set(c, t, rng.randint(lo, hi))
+        _trait_tongues(c, A, row, rng)
     return c
+
+
+def _native(A: dict, dr: dict, r: int) -> str:
+    """His own tongue: among the drawback's `own` list, or by the army's shares."""
+    if dr.get("own"):
+        return dr["own"][(r - 1) * len(dr["own"]) // 100]
+    acc = 0
+    for t, share in A["own"]:
+        acc += share
+        if r <= acc:
+            return t
+    return A["own"][-1][0]
+
+
+def _extra(c: dict, A: dict, row: dict, rng) -> None:
+    """A background's extra tongues, from his army's tongues he lacks."""
+    pool = list(dict.fromkeys([t for t, _ in A["own"]] + [t for t, _, _ in A.get("others", [])]))
+    for _ in range(row["extra"]):
+        left = [t for t in pool if t not in c["tongues"]]
+        if not left:
+            return
+        t = left[(rng.randint(1, 100) - 1) * len(left) // 100]
+        c["tongues"][t] = rng.randint(row["range"][0], row["range"][1])
+
+
+def _trait_tongues(c: dict, A: dict, row: dict, rng) -> None:
+    """The tongues a trait or drawback gives: extra ones, the enemy's, set figures, ranges."""
+    if row.get("extra"):
+        _extra(c, A, row, rng)
+    if row.get("enemy") and A.get("enemy"):
+        _set(c, A["enemy"], rng.randint(row["enemy"][0], row["enemy"][1]))
+    for t, v in (row.get("also") or {}).items():
+        _set(c, t, v)
+    for t, (lo, hi) in (row.get("has") or {}).items():
+        _set(c, t, rng.randint(lo, hi))
 
 
 def value(d: Data, tongues: dict, t: str) -> int:
     """His figure in tongue t: his own, or a share of a related tongue he has (the better)."""
     best = tongues.get(t, 0)
     for a, b, share in _cfg(d).get("related", []):
-        other = b if a == t else a if b == t else None
-        if other and other in tongues:
+        if t not in (a, b):
+            continue
+        other = b if a == t else a
+        if other in tongues:
             best = max(best, int(tongues[other] * share))
     return best
 

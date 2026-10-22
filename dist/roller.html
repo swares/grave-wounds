@@ -1023,39 +1023,40 @@ function hzChaseStep(gap, aTarget, aRoll, bTarget, bRoll, aSpeed, bSpeed){   // 
    ticked; others a percentage read in bands; a related tongue known at a share; talk skills capped
    by the tongue; words across tongues at the best tongue two men share; passing as a native. */
 const LG = () => TD.languages || {};
-const lgCap = t => (LG().tongues[t] || {}).cap ?? (LG().max ?? 85);
+const lgCap = t => LG().tongues[t]?.cap ?? (LG().max ?? 85);
+const byCode = (a, b) => (a < b ? -1 : Number(a > b));     // as Python's sorted: by code point
 function lgSet(c, t, v){ if (t !== c.native) c.tongues[t] = Math.max(c.tongues[t] || 0, v) }
 function lgArmy(eid, region){ return LG().armies?.[eid]?.[region] || { own: [], others: [] } }
 function lgRoll(eid, region, trait, drawback, rng){   // {native, tongues}: the dice as languages.py roll
   const L = LG(), A = lgArmy(eid, region), T = L.traits || {}, tr = T[trait] || {}, dr = T[drawback] || {};
-  const r = rng.randint(1, 100);
-  let native;
-  if (dr.own?.length) native = dr.own[Math.floor((r - 1) * dr.own.length / 100)];
-  else {
-    native = A.own[A.own.length - 1][0];
-    let acc = 0;
-    for (const [t, share] of A.own){ acc += share; if (r <= acc){ native = t; break } }
-  }
+  const native = lgNative(A, dr, rng.randint(1, 100));
   const c = { native, tongues: { [native]: L.native ?? 90 } };
   for (const [t, chance, [lo, hi]] of A.others || []){
-    if (t in c.tongues) continue;
-    if (rng.randint(1, 100) <= chance) c.tongues[t] = rng.randint(lo, hi);
+    if (!(t in c.tongues) && rng.randint(1, 100) <= chance) c.tongues[t] = rng.randint(lo, hi);
   }
-  for (const row of [tr, dr]){
-    if (row.extra){
-      const pool = [...new Set([...A.own.map(x => x[0]), ...(A.others || []).map(x => x[0])])];
-      for (let k = 0; k < row.extra; k++){
-        const left = pool.filter(t => !(t in c.tongues));
-        if (!left.length) break;
-        const t = left[Math.floor((rng.randint(1, 100) - 1) * left.length / 100)];
-        c.tongues[t] = rng.randint(row.range[0], row.range[1]);
-      }
-    }
-    if (row.enemy && A.enemy) lgSet(c, A.enemy, rng.randint(row.enemy[0], row.enemy[1]));
-    for (const [t, v] of Object.entries(row.also || {})) lgSet(c, t, v);
-    for (const [t, [lo, hi]] of Object.entries(row.has || {})) lgSet(c, t, rng.randint(lo, hi));
-  }
+  for (const row of [tr, dr]) lgTraitTongues(c, A, row, rng);
   return c;
+}
+function lgNative(A, dr, r){                       // his own tongue: the drawback's list, or the army's shares
+  if (dr.own?.length) return dr.own[Math.floor((r - 1) * dr.own.length / 100)];
+  let acc = 0;
+  for (const [t, share] of A.own){ acc += share; if (r <= acc) return t }
+  return A.own[A.own.length - 1][0];
+}
+function lgExtra(c, A, row, rng){                  // a background's extra tongues, from his army's he lacks
+  const pool = [...new Set([...A.own.map(x => x[0]), ...(A.others || []).map(x => x[0])])];
+  for (let k = 0; k < row.extra; k++){
+    const left = pool.filter(t => !(t in c.tongues));
+    if (!left.length) return;
+    const t = left[Math.floor((rng.randint(1, 100) - 1) * left.length / 100)];
+    c.tongues[t] = rng.randint(row.range[0], row.range[1]);
+  }
+}
+function lgTraitTongues(c, A, row, rng){           // what a trait or drawback gives
+  if (row.extra) lgExtra(c, A, row, rng);
+  if (row.enemy && A.enemy) lgSet(c, A.enemy, rng.randint(row.enemy[0], row.enemy[1]));
+  for (const [t, v] of Object.entries(row.also || {})) lgSet(c, t, v);
+  for (const [t, [lo, hi]] of Object.entries(row.has || {})) lgSet(c, t, rng.randint(lo, hi));
 }
 function lgValue(tongues, t){                      // his own figure, or a share of a related tongue
   let best = tongues[t] || 0;
@@ -1066,12 +1067,12 @@ function lgValue(tongues, t){                      // his own figure, or a share
   }
   return best;
 }
-const lgBand = v => LG().bands.filter(b => v >= b.from).pop().name;
+const lgBand = v => LG().bands.findLast(b => v >= b.from).name;
 function lgShared(a, b){                           // [tongue, figure]: the best two men share
   const ids = new Set([...Object.keys(a), ...Object.keys(b)]);
   for (const r of LG().related || []){ ids.add(r[0]); ids.add(r[1]) }
   let best = null, bv = 0;
-  for (const t of [...ids].sort()){
+  for (const t of [...ids].sort(byCode)){
     const v = Math.min(lgValue(a, t), lgValue(b, t));
     if (v > bv){ best = t; bv = v }
   }
@@ -1095,7 +1096,7 @@ function lgPassing(v, watch, aRoll, bRoll){        // {grade, opposed (null: he 
 const lgEscapeBonus = v => LG().escape_home.find(e => v >= e.from).mod;
 function lgSeason(c, ticks, rng, gain = [1, 3]){   // [{tongue, roll, was, gain}]: his ticked tongues, by id
   const out = [];
-  for (const t of [...new Set(ticks.filter(k => k.startsWith("tongue:")).map(k => k.slice(7)))].sort()){
+  for (const t of [...new Set(ticks.filter(k => k.startsWith("tongue:")).map(k => k.slice(7)))].sort(byCode)){
     if (t === c.native || !LG().tongues[t]) continue;
     const was = c.tongues[t] || 0, r = rng.randint(1, 100);
     const up = r > was && was < lgCap(t) ? rng.randint(gain[0], gain[1]) : 0;
@@ -1711,8 +1712,8 @@ function renderWords(){
   const c = sp.find(x => x.id === K.who), eid = c.sheet.era, ts = eraTongues(eid);
   const others = S.chars.filter(x => x.id !== K.who).map(x => ["c:" + x.id, x.name]), strangers = ts.map(t => ["t:" + t, "Someone who speaks " + DATA.languages.tongues[t].name]);
   if (![...others, ...strangers].some(([v]) => v === K.to)) K.to = (others[0] || strangers[0])[0];
-  const book = (DATA.languages.phrase_books || []).includes(eid) && K.purpose === "question"
-    ? `<label class="check"><input type="checkbox" id="wd-book"${K.book ? " checked" : ""}> Phrase book: a yes or no, a number, a direction</label>` : "";
+  const checked = K.book ? " checked" : "", hasBook = (DATA.languages.phrase_books || []).includes(eid) && K.purpose === "question";
+  const book = hasBook ? `<label class="check"><input type="checkbox" id="wd-book"${checked}> Phrase book: a yes or no, a number, a direction</label>` : "";
   const items = (S.wdlog || []).map(l => `<li>${attr(l)}</li>`).join(""), log = items ? `<ol class="roundlog">${items}</ol>` : "";
   box.innerHTML = `<details class="after"${S.wdOpen ? " open" : ""}><summary><b>Words across tongues</b> <span class="muted">orders, surrender, questions, passing</span></summary>
     <div class="toolbar"><label>Who ${hazardOpts("wd-who", sp.map(x => [x.id, x.name]), K.who)}</label> <label>To ${hazardOpts("wd-to", [...others, ...strangers], K.to)}</label></div>

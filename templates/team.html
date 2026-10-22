@@ -611,8 +611,18 @@ function tongueOpts(c, K){                          // the tongue picker and the
   }
   if (!K.skill.startsWith("tongue:")) return "";
   const book = (TD.languages.phrase_books || []).includes(T.id)
-    ? tick(`id="chk-book"`, K.book, "Phrase book: a yes or no, a number, a direction", `Easy, at no worse than ${TD.languages.phrase_book}`) : "";
-  return `<div style="align-self:end">${book} ${tick(`id="chk-pass"`, K.pass, "Passing as a native", "His tongue at his grade's difficulty against the listener's Watch (Against)")}</div>`;
+    ? tick('id="chk-book"', K.book, "Phrase book: a yes or no, a number, a direction", "Easy, at no worse than " + TD.languages.phrase_book) : "";
+  const pass = tick('id="chk-pass"', K.pass, "Passing as a native", "His tongue at his grade's difficulty against the listener's Watch (Against)");
+  return `<div style="align-self:end">${book} ${pass}</div>`;
+}
+function checkSkillOptions(c, K){                  // the skill picker: skills, his tongues, characteristics
+  const tg = TD.languages && c.tongues ? tongueGroup(c, K.skill, "Tongues (words across them)", false) : "";
+  const group = (label, rows) => "<optgroup label=\"" + label + "\">" + optionTags(rows.map(x => [x.id, x.name]), K.skill) + "</optgroup>";
+  return group("Skills", T.skills) + tg + group("Characteristics", T.characteristics);
+}
+function againstName(u, K){                        // who resists: the use's, the listener when passing, or the other side
+  if (K.skill.startsWith("tongue:") && K.pass) return "the listener (Watch)";
+  return u && u.against ? `${u.against.who} (${anyName(u.against.skill || u.against.stat)})` : "the other side";
 }
 function renderChecks(){
   const box = $("#checks");
@@ -623,11 +633,9 @@ function renderChecks(){
   const U = checkUses(), u = U.find(x => x.id === K.use) || null, c = S.team[K.i];
   const byGroup = {}; for (const x of U) (byGroup[anyName(x.skill)] ||= []).push(x);
   const useOpts = `<option value="">Any check</option>` + Object.entries(byGroup).map(([g, xs]) => `<optgroup label="${esc(g)}">${xs.map(x => `<option value="${x.id}"${x.id === K.use ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</optgroup>`).join("");
-  const tg = TD.languages && c.tongues ? tongueGroup(c, K.skill, "Tongues (words across them)", false) : "";
-  const skillOpts = `<optgroup label="Skills">${T.skills.map(x => `<option value="${x.id}"${x.id === K.skill ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</optgroup>${tg}<optgroup label="Characteristics">${T.characteristics.map(x => `<option value="${x.id}"${x.id === K.skill ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</optgroup>`;
+  const skillOpts = checkSkillOptions(c, K);
   const diffOpts = CHK().difficulty.map(x => `<option value="${x.id}"${x.id === K.diff ? " selected" : ""} title="${esc(x.what || "")}">${esc(x.name)} (${x.mod > 0 ? "+" : x.mod < 0 ? "−" : "±"}${Math.abs(x.mod)})</option>`).join("");
-  let who = u && u.against ? `${u.against.who} (${anyName(u.against.skill || u.against.stat)})` : "the other side";
-  if (K.skill.startsWith("tongue:") && K.pass) who = "the listener (Watch)";
+  const who = againstName(u, K);
   const help = u ? `<p class="muted note">${esc(u.what)} <b>Success:</b> ${esc(u.success)} <b>Failure:</b> ${esc(u.failure)} <b>Fumble:</b> ${esc(u.fumble)}${u.note ? " " + esc(u.note) : ""}${u.page ? ` <i>(${esc(u.page)})</i>` : ""}</p>` : "";
   const log = (S.chklog || []).map(l => `<li>${esc(l)}</li>`).join("");
   box.innerHTML = `<section class="crew work" aria-labelledby="h-checks"><h3 id="h-checks">Skill checks</h3>
@@ -659,7 +667,8 @@ function rollCheck(){
   if (K.skill.startsWith("tongue:")){
     const [line, ok] = tongueCheck(c, K, v, K.against === "" ? null : +K.against);
     if (ok) xpTick(c.pid, K.skill, K.pass ? "passed as a native" : "words across tongues");
-    (S.chklog ||= []).unshift(line + ".");
+    S.chklog = S.chklog || [];
+    S.chklog.unshift(line + ".");
     S.chklog = S.chklog.slice(0, 30);
     return render();
   }
