@@ -44,6 +44,18 @@ export const UNIT_SIZES = {
     "Allied guns on the heights": "battery",
     "Godinot's brigade (feint at the village)": "brigade",
   },
+  "babuna-1915": {
+    "2nd Regiment, a company on the west spur": "company",
+    "2nd Regiment, a company astride the road": "company",
+    "2nd Regiment, a company on the east spur": "company",
+    "2nd Regiment machine guns (the saddle)": "section",
+    "2nd Regiment, a company behind the saddle": "company",
+    "Bulgarian battalion up the road": "battalion",
+    "Bulgarian battalion onto the west spur": "battalion",
+    "Bulgarian machine guns": "platoon",
+    "Bulgarian battalion onto the east spur": "battalion",
+    "Bulgarian battalion from the Veles front": "battalion",
+  },
   "bougainville-1944": {
     "145th Infantry, 2nd Battalion (west knob)": "battalion",
     "145th Infantry, 2nd Battalion (east knob)": "battalion",
