@@ -2420,7 +2420,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
         else:
             u.pop("hit", None)
     log += _morale_all(d, us, occ, before, (lost, dealt, flanked), rng, table, field)
-    log += _suppress_all(d, us, under, rng)
+    log += _suppress_all(d, us, under, rng, field)
     log += _heroes_after(d, us, rng, [not lost[i] and not under[i] and not in_contact(d, us, occ, i) for i in range(len(us))], cauterises(d, table), posts_moving(field))
     log += _parties_after(d, us, field)
     log += _lying_after(d, us, table, rng)
@@ -3103,6 +3103,8 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
             continue
         t = _take_hurt(b, volley(d, _shooter_side(d, _shooter(us, v), table), _side(b, table), v["men"], v["dist"], rng, **opts))
         _tally(*acc, v, t)
+        if under is not None and t["hits"] > 0 and hurts_armour(d, _shooter(us, v)["weapon"]):
+            under[v["dfd"]] = "heavy"               # a rocket or recoilless round on the men (suppression.heavy)
         log += _logged({"kind": "volley", **v}, t)
         if v.get("behind") is not None:
             log += _beaten_fire(d, us, table, rng, acc, v)
@@ -3262,8 +3264,11 @@ def _main_gun(d: Data, us: list, i: int, gun: dict, env: tuple) -> list:
         return _gun_at_vehicle(d, us, (i, j, dist, rounds, h, t), gun, ctx)
     log = [{"kind": "tankfire", "att": i, "dfd": j, "dist": dist, "rounds": rounds, "at": t}]
     weapon = shell_weapon(d, table)
+    marks = under if under is not None else [False] * len(us)
     if weapon and field:
-        log += _shell_units(d, us, (table, weapon), rng, acc, field, under or [False] * len(us), None, {"kind": gun["he"], "name": u.get("name")}, [list(t)] * rounds)
+        log += _shell_units(d, us, (table, weapon), rng, acc, field, marks, None, {"kind": gun["he"], "name": u.get("name")}, [list(t)] * rounds)
+    if marks[j]:
+        marks[j] = "heavy"                          # the main gun's rounds on its target (suppression.heavy)
     return log
 
 
@@ -3942,12 +3947,22 @@ def _bunker_struck(d: Data, us: list, j: int, x, means: dict, tw: tuple, rng, ac
     return {**t, "struck": struck}
 
 
-def _suppress_all(d: Data, us: list, under: list, rng) -> list:
+def _suppress_all(d: Data, us: list, under: list, rng, field: dict | None = None) -> list:
     """Units under shellfire or machine-gun fire this exchange check Nerve; a failure pins them
-    for the next exchange."""
+    for the next exchange. Heavy direct fire (a main gun, rocket or recoilless round: under is
+    "heavy") on a unit holding a position pins it with no roll (suppression.heavy), and a unit
+    already pinned that is kept under fire stays pinned (suppression.held)."""
     S, log = d.units["suppression"], []
     for i, u in enumerate(us):
         if not under[i] or u["men"] <= 0 or u["state"] in ("broken", "fled"):
+            continue
+        if S.get("heavy") and under[i] == "heavy" and holds_position(d, us, i, field):
+            u["pinned"] = 2
+            log.append({"kind": "pinned", "unit": i, "by": "heavy"})
+            continue
+        if S.get("held") and u.get("pinned"):
+            u["pinned"] = 2
+            log.append({"kind": "pinned", "unit": i, "by": "held"})
             continue
         target = quality(d, u["quality"])["nerve"] + (S["prone"] if low(u) else 0)
         roll = rng.randint(1, 100)

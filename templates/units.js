@@ -1343,10 +1343,12 @@ function shellCut(field, h, prone){               // shellfire's struck % times 
   if (TB.ground.includes(field?.ground?.[`${h[0]},${h[1]}`] || "open")) return TB.factor * (prone ? TB.prone : 1) * shelter;
   return (prone ? I.prone : 1) * (100 - (groundAt(field, h).cover || 0)) / 100 * shelter;
 }
-function suppressAll(us, under, rng){             // under fire: Nerve or pinned for the next exchange
+function suppressAll(us, under, rng, field = null){   // under fire: Nerve or pinned for the next exchange; heavy direct fire on a held position, or a pinned unit kept under fire, pins with no roll (as units._suppress_all)
   const S = UD.suppression, log = [];
   us.forEach((u, i) => {
     if (!under[i] || u.men <= 0 || u.state === "broken" || u.state === "fled") return;
+    if (S.heavy && under[i] === "heavy" && holdsPosition(us, i, field)){ u.pinned = 2; log.push({ kind: "pinned", unit: i, by: "heavy" }); return }
+    if (S.held && u.pinned){ u.pinned = 2; log.push({ kind: "pinned", unit: i, by: "held" }); return }
     const target = quality(u.quality).nerve + (low(u) ? S.prone : 0), roll = rng.randint(1, 100);
     if (roll > target){ u.pinned = 2; log.push({ kind: "pinned", unit: i, roll, target }) }
   });
@@ -1723,6 +1725,7 @@ function shootAll(us, table, rng, acc, log, field, under = null){
     if (b.vehicle){ armourVolley(us, table, rng, acc, log, v, { factor: mf * (100 - v.misfire) / 100 * v.seen, penalty: v.cover + v.penalty + v.over, reach: v.reach }); continue }
     const t = takeHurt(b, volley(sideOfUnit(shooterOf(us, v), table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100 * v.seen, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
     tallyLoss(acc, v, t);
+    if (under && t.hits > 0 && hurtsArmour(shooterOf(us, v).weapon)) under[v.dfd] = "heavy";   // a rocket or recoilless round on the men (suppression.heavy)
     log.push(...logged({ kind: "volley", ...v }, t));
     if (v.behind !== undefined && v.behind !== null) beatenFire(us, table, rng, acc, log, v);
     if (!v.riders) heroShots(us, v, { table, rng, acc, log, field, exposed, mf });
@@ -1794,7 +1797,9 @@ function vehicleGuns(us, table, rng, acc, log, field, under){   // each vehicle 
     if (us[j].vehicle){ gunAtVehicle(us, [i, j, dist, rounds, h, t], G, { table, rng, acc, log }); return }
     log.push({ kind: "tankfire", att: i, dfd: j, dist, rounds, at: t });
     const weapon = shellWeapon(table);
-    if (weapon && field) shellUnits({ us, table, weapon, rng, acc, log, field, under: under || us.map(() => false) }, null, { kind: G.he, name: u.name ?? null }, Array.from({ length: rounds }, () => [...t]));
+    const marks = under || us.map(() => false);
+    if (weapon && field) shellUnits({ us, table, weapon, rng, acc, log, field, under: marks }, null, { kind: G.he, name: u.name ?? null }, Array.from({ length: rounds }, () => [...t]));
+    if (marks[j]) marks[j] = "heavy";               // the main gun's rounds on its target (suppression.heavy)
   });
 }
 function gunOf(u){                                // a unit's main gun: a vehicle kind's, or an anti-tank gun unit's (none while it resupplies)
@@ -1912,7 +1917,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
     if (cut > 0) u.hit = true; else delete u.hit;   // it lost men this exchange: under fire, for the next moves
   });
-  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table), postsMoving(field)),
+  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng, field), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table), postsMoving(field)),
     ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng), ...digAll(us), ...sappersAll(us, field));
   postsSettle(field);
   toilFought(us, fought);

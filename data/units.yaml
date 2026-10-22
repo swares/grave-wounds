@@ -646,6 +646,17 @@ assault:
 suppression:
   prone: 10
   fire: 0.5
+  # heavy: a main gun's rounds (a tank's, an Ontos's, an anti-tank gun's) on a unit, or a rocket or
+  #   recoilless round (vehicles.anti_armour weapons) that hits it, pins it with no roll if it
+  #   holds a position (in buildings, works, a bunker, or lying in cover). Vietnam: LAW fired at
+  #   bunkers stopped their fire almost every time; at Hue the 106s and 3.5-inch rockets silenced
+  #   the buildings for the Marines to go in (the project's suppression notes).
+  heavy: true
+  # held: a pinned unit kept under fire (machine-gun, shell or heavy direct fire) that exchange
+  #   stays pinned with no roll. Suppression lasts while the fire keeps up and a few seconds
+  #   after; attacks failed mainly when the assault came after the fire had lifted (the
+  #   suppression notes).
+  held: true
 
 # ---------- going to ground ----------
 # Modern infantry (and anyone else) can go to ground: the men lie down, in folds of the
