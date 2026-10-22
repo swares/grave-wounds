@@ -29,6 +29,23 @@ hunt:
   buffalo_maps: [phil-kearny-1866]
   source: "https://lewisandclarktrail.com/hunting.htm"
   approx: true
+# night  - marching on after dark (a force's "March on by night"): up to `hours` more after the
+#          day's marching hours, at 1/`slow` the pace (the 1979 study: night navigation about 40%
+#          slower); the guide's Fieldcraft once a night, `difficulty` off the road (`road` on it:
+#          the study's checkpoint error about 60% greater by night). Fail, and the night's march
+#          goes slower again (way.slow); fumble, and `lost_hours` go on the wrong road, as at
+#          Stormberg in 1899, where the guides lost the column on the veld all night. A night
+#          march of `min_hours` or more costs `fatigue` steps more (an estimate).
+night:
+  hours: 4
+  slow: 1.4
+  difficulty: hard
+  road: ordinary
+  lost_hours: 2
+  min_hours: 2
+  fatigue: 1
+  source: "https://apps.dtic.mil/sti/pdfs/ADA071104.pdf"
+  approx: true
 way:
   skill: fieldcraft
   difficulty: ordinary

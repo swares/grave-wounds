@@ -227,6 +227,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <div style="flex:1 1 140px;align-self:end"><label title="Pay in arrears: desertion runs about 3 times higher"><input type="checkbox" id="chk-unpaid"> Pay in arrears</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Each evening in game country its best named man hunts (Fieldcraft): a deer feeds 5 men, a buffalo 40"><input type="checkbox" id="chk-hunt"> Hunt for the pot</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="It will wade a flooded ford rather than wait (not with wagons or guns): every named man risks being swept off"><input type="checkbox" id="chk-riskford"> Risk a flooded ford</label></div>
+        <div style="flex:1 1 140px;align-self:end"><label title="It marches on after the day's marching hours, up to 4 hours more by night: about 40% slower, the guide's Fieldcraft to keep the way, and more tiring"><input type="checkbox" id="chk-night"> March on by night</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="In contact with the enemy: holding a line, under fire, besieging or besieged. Each day its named men take a day's Strain; a day camped out of the line is rest"><input type="checkbox" id="chk-inline"> In the line</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Its named men (from the wound roller) take the era's chance of an injury each night too"><input type="checkbox" id="chk-named-acc"> Named men can be injured</label></div>
         <div style="flex:1 1 140px;align-self:end"><label title="Its army feeds and quarters its men. Untick for a team on its own, on leave or off base: its named men then pay their keep from their purses each day"><input type="checkbox" id="chk-fed"> Fed by its army</label></div>
@@ -1133,9 +1134,11 @@ function endDay(f){
   if (lostPacks){ f.log.unshift(`${dateText(f.day, true)}: the packs were lost with the field: no blankets or rations tonight.`); f.packsNight = true }
   const sore = blisters(f);
   if (sore.length) f.log.unshift(`${dateText(f.day, true)}: ${sore.join("; ")}.`);
-  const tire = eventsNight(f) + loadTire(f) + (lostPacks ? 1 : 0) + thirst;
+  const nightTire = NIGHT() && (f.nightMarched || 0) >= NIGHT().min_hours ? NIGHT().fatigue : 0;   // a long night march
+  if (nightTire) f.log.unshift(`${dateText(f.day, true)}: marched ${Math.round(f.nightMarched * 4) / 4} hours by night.`);
+  const tire = eventsNight(f) + loadTire(f) + (lostPacks ? 1 : 0) + thirst + nightTire;
   healthNight(f, today, camp);
-  f.fatigue = Math.min(L.length - 1, after + tire); f.day += 1; f.used = 0; f.marched = 0; f.packsNight = false; f.huntFed = false; f.thirsty = false;
+  f.fatigue = Math.min(L.length - 1, after + tire); f.day += 1; f.used = 0; f.marched = 0; f.packsNight = false; f.huntFed = false; f.thirsty = false; f.nightMarched = 0;
 }
 // ----- supplies between fights (ranks.js spDay, spRefill; data DATA.supplies) -----
 function supOf(f){                               // its supplies, full at first; a baggage train's stock too
@@ -1566,19 +1569,46 @@ function noMarchText(f, col){                 // why a column cannot march at al
   const carry = col.some(o => sickMarchPct(fitOf(o).fit, fitOf(o).carried) === 0);
   return carry ? `${colName(f)} has no fit men to carry its sick. Rest until some recover.` : `${colName(f)} is too spent to march. Rest until next morning.`;
 }
+/* Marching by night (data DATA.uses.night): a force may march on after the day's marching hours,
+   slower, with the guide's Fieldcraft once a night to keep the way. */
+const NIGHT = () => USES().night;
+const nightHoursOf = f => (leaderOf(f).nightMarch && NIGHT() ? NIGHT().hours : 0);
+function dayEnd(day){                           // the clock's end of the day: the marching hours, and longer while any column marches on by night
+  const extra = forcesHere().filter(f => f.day === day && marching(f)).map(nightHoursOf);
+  return hpdOf(day) + Math.max(0, ...extra);
+}
+const isNight = f => f.used >= hpdOf(f.day) - 1e-9;
+function nightWay(f, m){                        // the night's pace for finding the way: 1, or slower when the guide goes astray
+  const U = NIGHT();
+  if (f.nightWayDay === f.day) return f.nightSlow || 1;
+  f.nightWayDay = f.day; f.nightSlow = 1;
+  if (!f.path || f.index + 1 >= f.path.length) return 1;
+  const next = terrainAt(m, f.path[f.index + 1]).id, road = ["road", "bridge", "village", "town"].includes(next);
+  const [v, who, pid] = bestSkill([f], (USES().way || {}).skill || "fieldcraft");
+  if (!who){ f.nightSlow = USES().way?.slow || 1.4; return f.nightSlow }
+  const k = skillCheck(v, road ? U.road : U.difficulty, roll100());
+  if (k.success){ xpTick(pid, "fieldcraft", "finding the way by night"); return 1 }
+  f.nightSlow = USES().way?.slow || 1.4;
+  let why = `${who} loses the way in the dark (Fieldcraft ${k.target}, rolled ${k.roll}): the night's march is slower`;
+  if (k.fumble){ f.used = Math.min(hpdOf(f.day) + nightHoursOf(f), f.used + U.lost_hours); why += `, and ${U.lost_hours} hours go on the wrong road` }
+  f.log.unshift(`${dateText(f.day, true)}: ${why}.`);
+  return f.nightSlow;
+}
 function march(sel, hours){                    // the whole column marches together, at its slowest, within today's marching hours -> {steps, arrived} or {why}
   const f = leaderOf(sel), col = columnOf(f);
   if (!f.path || f.index >= f.path.length - 1) return { why: `${colName(f)} has no route to march.` };
   const m = curMap(), base = colSpeed(f);
   if (!base) return { why: noMarchText(f, col) };
-  const g = riskGround(f, groundOf(f.day)), speed = base / wayToday(f, m) / wheelsToday(f, m, g);
+  const g = riskGround(f, groundOf(f.day)), night = isNight(f);
+  const speed = base / (night ? NIGHT().slow * nightWay(f, m) : wayToday(f, m)) / wheelsToday(f, m, g);
   if (f.path.slice(f.index + 1).some(h => !passable(m, h, colType(f), g)) && !replan(f))
     return { why: `${f.name} cannot get through today (${groundText(g)}). Wait, or add a waypoint to go round.` };
   const from = f.index, u0 = f.used;
-  const r = advance(m, f.path, f.index, f.used, hours, { hpd: hpdOf(f.day), ftype: colType(f), ground: g, speed, carried: f.carried || 0 });
+  const r = advance(m, f.path, f.index, f.used, hours, { hpd: night ? hpdOf(f.day) + nightHoursOf(f) : hpdOf(f.day), ftype: colType(f), ground: g, speed, carried: f.carried || 0 });
   const steps = r.index - from;
   if (steps && f.camp){ f.log.unshift(`${dateText(f.day, true)}: breaks camp (${WK.camps[f.camp.kind].name.toLowerCase()}).`); f.camp = null }
   f.marched = (f.marched || 0) + (r.used - u0);
+  if (night) f.nightMarched = (f.nightMarched || 0) + (r.used - u0);
   if (steps) fordsCrossed(f, from, r.index, groundOf(f.day));
   if (steps) f.cameFrom = f.path[r.index - 1].slice();     // the hex it last left: the way it came in
   f.index = r.index; f.used = r.used; f.carried = r.carried; f.pos = f.path[f.index].slice();
@@ -1695,12 +1725,13 @@ function passNight(c){                         // at nightfall, any move of the 
 }
 function runClock(c, kind){                    // quarter hour by quarter hour to the stop, or the first event -> events [text]
   const seen = new Set(Object.keys(meetings())), moved = {}, days0 = c.day;
-  const end = kind === "hour" ? Math.min(c.used + 1, hpdOf(c.day)) : hpdOf(c.day);
+  const end = kind === "hour" ? Math.min(c.used + 1, dayEnd(c.day)) : dayEnd(c.day);
   let events = [];
   while (!events.length){
-    const stop = kind === "event" ? hpdOf(c.day) : end;
+    const stop = kind === "event" ? dayEnd(c.day) : end, dusk = hpdOf(c.day);
     if (c.used < stop - 1e-9){
-      events = tickClock(c, Math.min(nextTick(c), stop - c.used), seen, moved);
+      const toDusk = c.used < dusk - 1e-9 ? dusk - c.used : Infinity;   // no step straddles the end of the day's marching hours
+      events = tickClock(c, Math.min(nextTick(c), stop - c.used, toDusk), seen, moved);
       if (kind === "event" && !events.length && !anyAtWork(c)) events = ["Every force has halted."];
       continue;
     }
@@ -1714,11 +1745,11 @@ function runClock(c, kind){                    // quarter hour by quarter hour t
 }
 function moveClock(kind){                      // kind: "hour", "nightfall" or "event"; at nightfall any of them passes the night
   const c = clockNow();
-  if (c.used >= hpdOf(c.day) - 1e-9) return passNight(c);
+  if (c.used >= dayEnd(c.day) - 1e-9) return passNight(c);
   if (kind === "event" && !anyAtWork(c)){ S.msg = "Nothing will happen: no force is marching or making camp. Give a force a route first."; return }
   const events = runClock(c, kind), now = `${dateText(c.day, true)}, ${clock(c.used, c.day)}`;
   if (events.length){ S.msg = `${now}: ${events.join(" ")}`; return }
-  S.msg = c.used >= hpdOf(c.day) - 1e-9 ? `${now}: the day's marching is done; the next move passes the night.` : `${now}.`;
+  S.msg = c.used >= dayEnd(c.day) - 1e-9 ? `${now}: the day's marching is done; the next move passes the night.` : `${now}.`;
 }
 function setOrder(f, order){                   // a column's orders are its leader's
   const L = leaderOf(f);
@@ -1873,6 +1904,7 @@ function renderHealth(f){
   $("#chk-hungry").checked = !!f.shortFood;
   $("#chk-inline").checked = !!f.inLine;
   $("#chk-riskford").checked = !!f.riskFord;
+  $("#chk-night").checked = !!leaderOf(f).nightMarch;
   $("#chk-hunt").checked = !!f.hunt;
   $("#chk-unpaid").checked = !!f.unpaid;
   $("#sel-hyg").innerHTML = opts.map(([v, t]) => `<option value="${v}" ${(f.hygiene || "") === v ? "selected" : ""}>${t}</option>`).join("");
@@ -2298,6 +2330,7 @@ function init(){
   $("#chk-events").onchange = e => { const f = selForce(); if (f){ f.events = e.target.checked; render() } };
   $("#chk-withdraw").onchange = e => { const f = selForce(); if (f){ f.withdrawing = e.target.checked; render() } };
   $("#chk-riskford").onchange = e => { const f = selForce(); if (f){ f.riskFord = e.target.checked; render() } };
+  $("#chk-night").onchange = e => { const f = selForce(); if (f){ leaderOf(f).nightMarch = e.target.checked; save(); render() } };
   $("#chk-hunt").onchange = e => { const f = selForce(); if (f){ f.hunt = e.target.checked; render() } };
   $("#chk-inline").onchange = e => { const f = selForce(); if (f){ f.inLine = e.target.checked; render() } };
   $("#chk-hungry").onchange = e => { const f = selForce(); if (f){ f.shortFood = e.target.checked; render() } };
