@@ -15,8 +15,12 @@ def masters_for(d: Data, eid: str, place: str | None, skill: str | None = None) 
     """The masters to be hired in an era (one with his skill) at a kind of place (None: anywhere),
     for one skill or all."""
     have = {s["id"] for s in d.teams[eid]["skills"]}
-    return [m for m in (d.training or {}).get("masters", []) if m["skill"] in have and (skill is None or m["skill"] == skill)
-            and (place is None or place in m["places"])]
+
+    def teaches(m: dict) -> bool:               # a language master teaches any tongue ("tongue:<id>")
+        if m["skill"] == "tongue":
+            return eid in m.get("eras", [eid]) and (skill is None or skill.startswith("tongue:"))
+        return m["skill"] in have and (skill is None or m["skill"] == skill)
+    return [m for m in (d.training or {}).get("masters", []) if teaches(m) and (place is None or place in m["places"])]
 
 
 def teammate_ok(d: Data, teacher: int, pupil: int) -> bool:

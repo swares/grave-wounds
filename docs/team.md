@@ -393,6 +393,23 @@ check that succeeds, or wins, ticks the skill for experience; a characteristic i
 quarter on a critical, to the quarter Day, never under ¼), the list price if not, and no sale
 on a fumble; winning ticks Persuade.
 
+## Tongues
+
+`data/languages.yaml` (rules in `gravewounds/languages.py`, repeated in `templates/ranks.js`:
+`lgRoll`, `lgValue`, `lgBand`, `lgShared`, `lgTalk`, `lgWords`, `lgPassing`, `lgEscapeBonus`,
+`lgSeason`; research in the project doc "languages-research"). A new character rolls his tongues
+after whether he can swim: his own by his army's shares, then each other tongue's chance, then the
+tongues his background gives ("Speaks three tongues", "Speaks the enemy's language", "Speaks little
+English"). His sheet shows them; the skill checks can put Persuade or Command into another tongue
+(capped by it), roll words across tongues (with a phrase book from the Crimea on) or passing as a
+native against a Watch; training teaches a tongue (a language master, a teammate, an army course
+from 1943); a prisoner asking quarter in his captors' tongue is a circumstance, his escape home
+gains by his grade in it, and each season held ticks it. Ticked tongues roll at End of season with
+the skills. The roller's **Words across tongues** panel has any team-builder fighter give an
+order, call a surrender, ask a question or pass as one of them, to another fighter or to someone
+who speaks one tongue. On the travel map each map's people speak a tongue (`maps`): a force with no
+named man who gets by in it forages Hard, and a month among them ticks it.
+
 ## Water, heights and pursuit
 
 `data/hazards.yaml` (rules in `gravewounds/hazards.py`, repeated in `templates/ranks.js`:

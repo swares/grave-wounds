@@ -41,6 +41,10 @@ def season(d: Data, c: dict, ticks, served: int, rng) -> dict:
             c["gains"][s] = c["gains"].get(s, 0) + gain
             finish(d, c)
         rolls.append({"skill": s, "roll": roll, "was": was, "gain": c["skills"][s] - was})
+    if c.get("tongues"):                           # his ticked tongues, after his skills
+        from .languages import season as tongue_season
+        rolls += [{"skill": "tongue:" + r["tongue"], "roll": r["roll"], "was": r["was"], "gain": r["gain"]}
+                  for r in tongue_season(d, c, ticks, rng, (lo, hi))]
     c["served"] = c.get("served", 0) + max(0, served)
     per, done = term_days(d, c["era"]), 0
     while c["served"] >= per:

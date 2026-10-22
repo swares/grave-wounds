@@ -201,6 +201,16 @@ When an item is done, delete it here and note it in the pull request that closes
   - no difficulty from wounds, fatigue or hunger is added to a check out of a fight (the GM sets
     it);
   - haggling is only for buying: selling loot, and hiring a replacement, are at the list price.
+- **Tongues, first cut.** Own tongue, others by army, bands, related tongues, talk caps, words
+  across tongues, passing, phrase books, capture and escape, learning by use, lessons and living
+  among speakers. Still left out: the shares of who spoke what are estimates throughout (no muster
+  counts by tongue were found); the Thirty Years' War's camp German is inferred, not sourced, and
+  the King's German Legion's language of command, Crimean interpreters, Peninsula Spanish among the
+  British rank and file and interpreters' pay before 1990 were not found; interpreters are not hired
+  men with their own figure, reliability and pay (the research has Iraqi rates from $600 a month in
+  2005); dialects (Dari against Waziri, Flemish against French) are not told apart; the field map's
+  orders do not yet check a shared tongue between a leader and a mixed unit; and reading a foreign
+  hand is left to Letters and the GM.
 - **Period money everywhere.** Every price is kept in its period coin (data/equipment/<era>.yaml:
   631 items in 41 coins, each a soldier's day in its coin where known), and the shop and the purse
   show the coin beside the Days; the rest shows Days only. To do when the rules are settled: show

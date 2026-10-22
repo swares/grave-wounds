@@ -83,6 +83,53 @@ critical); if not, the list price; and if he fumbles the seller will not deal wi
 A skill check that succeeds (or wins against someone) ticks the skill for experience; a
 characteristic is not ticked.
 
+## Tongues {#tongues}
+
+A man speaks his own **tongue** at {{lg_native}}, which never changes (Letters is the separate
+skill of reading and writing). Any other is a figure read in bands:
+
+{{table:tongue_bands}}
+
+A tongue he lacks he knows at a share of a related one he has (half of German from Low German,
+three quarters of English from Scots). Pidgins rise no higher than {{lg_pidgin}} (Bamboo English
+in Korea, GI Vietnamese), the Plains sign language no higher than {{lg_sign}}, and a learned tongue
+no higher than {{lg_max}}.
+
+**Talking in a tongue.** Persuade and Command in another tongue are at most his figure in it: a
+fine talker with twenty words of French is a man with twenty words of French.
+
+**Words across tongues.** An order to a man of another tongue, a call on a foe to surrender (or
+his own surrender), a question to a prisoner or a villager: d100 at the best tongue the two share
+(the lower of their figures). A critical is understood in full; a success, understood; a failure,
+only the gist (an order half done, a surrender not understood); a fumble, a dangerous error, the
+wrong thing understood (at the Grattan fight of 1854 a drunk interpreter's broken Lakota began a
+war; in Afghanistan "fire an illume" was heard as "fire mortars"). From the Crimea on, armies
+issued phrase books: a yes or no, a number or a pointed direction is then Easy at no worse than
+{{lg_book}}.
+
+**Passing as a native.** His figure against the listener's Watch (both roll): Ordinary in his
+own tongue, Hard fluent without the idiom (76+), Very hard a good speaker (51-75), and below that
+he cannot pass. In 1944 Skorzeny found ten men with perfect English and idiom for Operation
+Greif, thirty or forty good speakers, and over a hundred moderate ones; those caught in American
+uniform were shot.
+
+**Taken and escaping.** A man who asks for quarter in his captors' tongue is a little safer (the
+capture roll is 10 better: a surrender had to be accepted to protect him). Escaping, his Fieldcraft
+to get home is +10 if he converses in their tongue and +20 if it is his own.
+
+**On the travel map** the people where the map lies speak a tongue: a force with no named man who
+gets by in it forages Hard.
+
+**Learning.** A tongue used well is ticked and rolls to rise at End of season like a skill (one at 0
+always rises). A month among its speakers on the travel map, or a season held prisoner, ticks it;
+so does a week with a language master, a teammate who speaks it well, or (from 1943) an army
+course. The army's courses took three months for the better students to order a meal or rent a
+room; the Foreign Legion's recruits answered in French within ten days.
+
+Who speaks what, by army (the shares are estimates, not muster counts):
+
+{{table:tongue_armies}}
+
 ## Age {#age}
 
 A man ages with his terms. For every 4 years of his life past the start of his service (at the
