@@ -67,6 +67,7 @@ keep:
 items:
   # Vehicles, arms
   - {id: jeep, name: "Jeep (to the Army)", cat: travel, price: [65000, 74000], approx: true}
+  - {id: remount_japan, name: "Army remount stallion, two years old (Iwate)", cat: horse, in: yen, price: 25300, when: "1935", source: {url: "https://square.umin.ac.jp/jsvh/archives/pdf/53/053032040.pdf", note: "Journal of the Japanese Society of Veterinary History: ¥307 in 1930, ¥253 in 1935"}}
   - {id: harley_wla, name: "Harley-Davidson WLA motorcycle", cat: travel, price: 40000, approx: true}
   - {id: bar, name: "BAR automatic rifle", cat: weapon, price: 31900, when: "1945", source: {url: *who, note: "War History Online"}}
   - {id: mg42, name: "MG42 machine gun", cat: weapon, in: reichsmark, price: 25000, weapon: machine_gun, regions: [germany], source: {url: *who, note: "$100, converted"}}

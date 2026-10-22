@@ -206,8 +206,8 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Patrons, first cut.** Standing per patron, favours, events, rival claims, the patron's fate
   and his clients' lot. Still left out: the fate chances and the Standing moves are design
   estimates; British commissions can now be bought and sold at the 1837 regulation prices (ranks.yaml
-  `purchase`), but only the ensign's and captain's prices are in the data (the lieutenant's,
-  major's and lieutenant-colonel's are not yet), the over-regulation price is the GM's to ask, and
+  `purchase`): the ensign's £450 is confirmed in a journal, the captain's £1,800 rests on Wikipedia
+  alone, and the ladders have no lieutenant, major or lieutenant-colonel to buy; the over-regulation price is the GM's to ask, and
   private-income needs are not priced; the commission favour is still a +20 and the GM's word;
   patrons are not yet named people with their own rank, side and purse, nor do they appear on the
   field map or the roller; the medieval third of loot and of a captive's ransom now goes to a patron who takes thirds as
@@ -276,8 +276,11 @@ When an item is done, delete it here and note it in the pull request that closes
   estimates), and so does his coin; pack animals and carts bought from the price list carry kit off
   him, wheels slow the force off the road and in mud, and fodder or fuel is paid nightly where the
   army does not feed it. Still left out: kit he started with weighs only as his era's orders, not
-  item by item; carts, wagons, donkeys and camels are in the data but only the Civil War's mule and
-  ox teams are on a price list (no sourced prices for the rest), and the wagon itself is not priced;
+  item by item; sourced transport prices are now on the price lists where found (a medieval cart and ox, Spanish
+  mules for the Crimea, Union and Confederate mules, a horse at Bent's Fort, a Ford ambulance, a
+  Japanese army remount, the Marines' Korean packhorse), but no wagon is priced in any era, nor any
+  donkey or camel, nor anything for the Thirty Years' War, the Latin East or the Baltic (the US
+  Quartermaster's price lists of 1861-76 and 1920 are the best leads);
   an animal that goes short of fodder is only logged; a force's load is its average man's, with no armour for its rank and file; the band steps,
   blister rule and the hardening of feet are design choices; the Plains nations' loads and most
   medieval and 17th-century body weights are estimates; the field map's units do not carry loads; and the terrain's extra
@@ -315,8 +318,9 @@ When an item is done, delete it here and note it in the pull request that closes
   Teams, and the Lakota and Cheyenne women who fought. A career may have its own share. Still left
   out: no Russian or Serbian army in the WWI tables, so the women's battalions of 1917 and Flora
   Sandes have nowhere to serve; no women nurses for the Confederacy or Russia at Sevastopol (not
-  in the research); the career shares of 100% are design choices (men nursed and sutled too); the
-  women's own careers draw the soldier's wage where their pay was not found (a vivandière, a camp
-  woman and a soldier's wife draw none); their term events are written from the research, not
+  in the research); the career shares of 100% are design choices (men nursed and sutled too); nurses and auxiliaries draw their army's recorded rates (project doc "prices-nurses-research"),
+  but Nightingale's nurses' pay rests on an uncited figure and is not used (they draw a private's),
+  the Commonwealth's WWII nurses take the American rate, and the Russian Sisters of Mercy (120 at
+  Sevastopol, 17 dead) are not yet a career; their term events are written from the research, not
   rolled from records; and the Viet Cong's and the North's women have no reliable share, so they
   are chosen, never rolled.

@@ -1654,6 +1654,9 @@ def _ranks_errors(d: Data) -> list[str]:
         for car in (E.get("career_pay") or {}):
             if car not in careers:
                 errors.append(f"{at}: career_pay names unknown career {car}")
+        for reg, cp in (E.get("career_pay_by") or {}).items():
+            if reg not in {r["id"] for r in d.teams[eid]["regions"]} or set(cp) - careers:
+                errors.append(f"{at}: career_pay_by {reg} names an unknown region or career")
         if not 0 < E.get("kept", 1) <= 1:
             errors.append(f"{at}: kept must be 0-1")
     tos = [f.get("to") for f in R.get("finds", [])]

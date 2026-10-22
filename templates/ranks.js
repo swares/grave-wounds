@@ -45,7 +45,7 @@ function rkPay(region, career, rid){
   const E = rkEra() || {}, L = rkLadder(), i = rkIndex(rid);
   if (!L.length) return 0;
   const by = (E.pay_by || {})[region], base = by ? by[i] : L[i].pay;
-  return base * ((E.career_pay || {})[career] ?? 1);
+  return base * (E.career_pay_by?.[region]?.[career] ?? (E.career_pay || {})[career] ?? 1);   // his army's own rate for the career, else the era's
 }
 const rkWage = (region, career, rid, days) => rkQ(days * rkPay(region, career, rid) * ((rkEra() || {}).kept ?? 1));
 function rkEligible(c, idx){                       // [ok, why not]

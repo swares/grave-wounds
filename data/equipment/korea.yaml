@@ -68,6 +68,7 @@ items:
   - {id: round_3006, name: ".30-06 round", cat: ammunition, price: 6, approx: true}
   # Vehicles, goods, leave
   - {id: jeep, name: "Jeep (M38)", cat: travel, price: 135000, approx: true}
+  - {id: packhorse_korea, name: "Packhorse, bought from a Korean stable boy", cat: horse, price: 25000, when: "1952", source: {url: "https://military.com/daily-news/2013/08/23/pack-animal-training-proves-worth-in-past-decade.html", note: "Military.com: the Marines' Reckless"}}
   - {id: camera, name: "35 mm camera (bought in Japan)", cat: gear, price: 6000, approx: true}
   - {id: radio, name: "Portable radio", cat: gear, price: 3000, approx: true}
   - {id: watch, name: "Wristwatch (PX)", cat: navigation, price: 1500, approx: true}

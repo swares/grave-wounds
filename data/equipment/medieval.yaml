@@ -95,6 +95,8 @@ items:
   - {id: hackney, name: "Riding horse (hackney)", cat: horse, price: [640, 1920], approx: true}
   - {id: packhorse, name: "Packhorse", cat: horse, price: [480, 960], approx: true}
   - {id: saddle, name: "Saddle", cat: horse, price: [96, 480], approx: true}
+  - {id: cart, name: "Cart, two-wheeled and iron-bound (its beasts not included)", cat: horse, price: 192, when: "c. 1350", source: {url: "https://git.captnemo.in/nemo/hn-classics/blame/branch/master/_stories/2006/15680005.md", note: "Dyer, Standards of Living, p. 170, via a copy of the UC Davis price list"}}
+  - {id: draught_ox, name: "Draught ox", cat: horse, price: 629, when: "mid-14th c.", source: {url: "https://mail.mseffie.com/assignments/canterbury_tales/medieval_prices.html", note: "Jusserand, p. 99, via a teaching price list"}}
   # Clothing: a working man's set
   - {id: gown_good, name: "Gown in good cloth", cat: clothing, price: 960, source: {url: *lum, note: "from Dyer's yardage"}}
   - {id: cloth_good, name: "Good cloth (tawny, russet)", cat: clothing, price: 288, per: yard, when: "1480", source: {url: *ucdavis, note: "UC Davis price list"}}

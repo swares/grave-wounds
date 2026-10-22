@@ -1447,6 +1447,15 @@
      "sergeant": "sergeant",
      "officer": "lieutenant"
     },
+    "career_pay": {
+     "nurse": 0.92,
+     "vivandiere": 0
+    },
+    "career_pay_by": {
+     "confederacy": {
+      "nurse": 2.27
+     }
+    },
     "source": "https://www.nber.org/papers/w17382.pdf"
    },
    "plains_nations": {
@@ -1507,6 +1516,15 @@
     "start": {
      "nco": "sergeant",
      "officer": "lieutenant"
+    },
+    "career_pay": {
+     "nurse": 1.78,
+     "auxiliary": 1.1
+    },
+    "career_pay_by": {
+     "us": {
+      "nurse": 1.67
+     }
     },
     "source": "https://www.longlongtrail.co.uk/soldiers/a-soldiers-life-1914-1918/british-army-rates-pay-1914/"
    },
@@ -1583,6 +1601,15 @@
      "nco": "sergeant",
      "officer": "lieutenant"
     },
+    "career_pay": {
+     "nurse": 2.22,
+     "auxiliary": 1
+    },
+    "career_pay_by": {
+     "commonwealth": {
+      "auxiliary": 0.67
+     }
+    },
     "source": "https://www.navycs.com/public-law/pl-77-607pg4.html"
    },
    "korea": {
@@ -1632,6 +1659,9 @@
      "nco": "sergeant",
      "officer": "lieutenant"
     },
+    "career_pay": {
+     "nurse": 2.67
+    },
     "source": "https://www.navycs.com/charts/1952-military-pay-chart.html"
    },
    "vietnam": {
@@ -1679,6 +1709,9 @@
     "start": {
      "nco": "sergeant",
      "officer": "lieutenant"
+    },
+    "career_pay": {
+     "nurse": 3.14
     },
     "source": "https://historynet.com/shake-n-bake-sergeants/"
    },
@@ -2532,7 +2565,7 @@
    },
    {
     "id": "mule",
-    "match": "^mule",
+    "match": "^mule|spanish mule",
     "name": "Mule",
     "load": 100,
     "forage": 0.25,

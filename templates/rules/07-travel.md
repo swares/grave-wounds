@@ -317,7 +317,11 @@ ordinary roll above).
 **Pay.** Each day his force is fed by its army, a man earns his rank's pay, less what the army
 stopped for his rations and necessaries, paid into his purse at the end of the season. Days
 when his force's pay is **in arrears** are owed instead, until the GM says the arrears are paid.
-Horsemen and surgeons may draw more; a sutler draws nothing.
+Horsemen and surgeons may draw more; a sutler draws nothing. Nurses and auxiliaries draw their
+own army's rates: a Union nurse 40 cents a day and a ration, a Confederate one up to $25 a month
+(more than twice a private's), a QAIMNS nurse of 1914 £30 to £35 a year, the ATS two-thirds of a
+private's pay, and from 1947 an American army nurse a second lieutenant's; a vivandière, a camp
+woman and a soldier's wife draw none.
 
 **Loot.** After a won fight (the roller sees when one side alone is still standing, or the GM
 names the winner, or the field map says who held the field), the field: each man rolls d100 (a stormed town's sack adds
