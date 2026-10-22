@@ -594,9 +594,27 @@ function captivesHtml(){
   const K = (S.capK ||= { army: enemyArmies()[0]?.id || S.region, officer: false });
   const L = S.captives || [], items = (S.caplog || []).map(l => `<li>${esc(l)}</li>`).join(""), logHtml = items ? "<ol class=\"log\">" + items + "</ol>" : "";
   return `<h4>Captives (${L.length})</h4><p class="muted note">Each End of season each eats ${cash(CAP().keep)} a day, and each not on parole tries to escape: his Stealth ${CAP().stealth} against the team's best Watch (${CAP().crowded} worse for each captive more than the team).</p>
+    ${fieldCaptivesHtml()}
     <div class="row"><div><label for="cap-army">Take a prisoner from</label><select id="cap-army">${optionTags(T.regions.map(r => [r.id, r.name.replace(/ \(.*/, "")]), K.army)}</select></div>
     <div style="align-self:end">${tick('id="cap-officer"', K.officer, "an officer")} <button class="small" id="btn-take">Take him</button></div></div>
     <ul class="xp">${L.map(captiveRow).join("")}</ul>${logHtml}`;
+}
+const FIELD_CAP = "gravewounds-field-captives";
+function fieldCaptives(){                          // prisoners the team's side took in a pursuit on the field map, or null
+  try { return JSON.parse(localStorage.getItem(FIELD_CAP) || "null") } catch (e) { return null /* unreadable: none */ }
+}
+function dropFieldCaptives(){ try { localStorage.removeItem(FIELD_CAP) } catch (e) { /* storage off: nothing kept */ } }
+function fieldCaptivesHtml(){
+  const F = fieldCaptives(); if (!F) return "";
+  const at = F.place ? " at " + esc(F.place) : "", most = Math.min(F.taken, 20);
+  return `<p class="note">From the field map${at}: ${esc(F.side)} took ${F.taken} of ${esc(F.enemy)} prisoner in the pursuit. <label>Into the team's charge <input type="number" id="cap-field-n" min="1" max="${most}" value="${Math.min(3, most)}" style="width:4em"></label> <button class="small" id="btn-take-field">Take them</button> <button class="small" id="btn-drop-field">Leave them to the army</button></p>`;
+}
+function takeFieldCaptives(){
+  const F = fieldCaptives(); if (!F) return;
+  const n = Math.max(1, Math.min(F.taken, 20, +($("#cap-field-n")?.value || 1)));
+  for (let k = 0; k < n; k++) takeCaptive();
+  capLog(`${n} of the prisoners taken in the pursuit${F.place ? " at " + F.place : ""} are given into the team's charge.`);
+  dropFieldCaptives();
 }
 function capLog(line){ S.caplog = [line, ...(S.caplog || [])].slice(0, 30) }
 function takeCaptive(){
@@ -630,10 +648,19 @@ function captiveSeason(lines){                     // End of season: their food,
     return false;
   });
 }
+function ransomCaptive(k, n){                      // his people pay: the leader keeps his era's share, the medieval third to his lord
+  const lead = S.team.find(m => m.leader) || S.team[0], v = captiveWorth(k), L = (RK().loot || {})[T.id] || {}, keep = L.keep && L.keep < 1 ? L.keep : 1;
+  lead.ledger ||= [];
+  lead.ledger.push({ days: v * keep, what: `Ransom of ${k.name}` });
+  S.captives.splice(n, 1);
+  const whose = keep >= 0.9 ? "hospital's tenth" : "captain's third";
+  const share = keep < 1 ? `, ${cash(v * keep)} kept after the ${whose}` : "";
+  capLog(`${k.name} is ransomed for ${cash(v)}${share}${thirdsToPatron(lead, v, keep)}.`);
+}
 function captiveAct(e){                             // the captives' buttons and boxes
   const t = e.target, n = +(t.dataset.cransom ?? t.dataset.cquestion ?? t.dataset.crelease ?? t.dataset.cswap ?? t.dataset.cparole), k = (S.captives || [])[n];
   if (!k) return false;
-  if (t.dataset.cransom !== undefined){ const lead = S.team.find(m => m.leader) || S.team[0], v = captiveWorth(k); lead.ledger = lead.ledger || []; lead.ledger.push({ days: v, what: `Ransom of ${k.name}` }); S.captives.splice(n, 1); capLog(`${k.name} is ransomed for ${cash(v)}.`) }
+  if (t.dataset.cransom !== undefined) ransomCaptive(k, n);
   else if (t.dataset.cquestion !== undefined) questionCaptive(k);
   else if (t.dataset.crelease !== undefined){ S.captives.splice(n, 1); capLog(`${k.name} is let go.`) }
   else if (t.dataset.cparole !== undefined) k.parole = t.checked;
@@ -1644,6 +1671,8 @@ function init(){
     const b = e.target.closest("button"); if (!b) return;
     const d = b.dataset;
     if (b.id === "btn-take"){ takeCaptive(); return render() }
+    if (b.id === "btn-take-field"){ takeFieldCaptives(); return render() }
+    if (b.id === "btn-drop-field"){ dropFieldCaptives(); return render() }
     if (d.cransom !== undefined || d.cquestion !== undefined || d.crelease !== undefined){ captiveAct({ target: b }); return render() }
     if (d.prroll !== undefined){ rollCapture(+d.prroll); return render() }
     if (d.prserve !== undefined){ const c = S.prisoners[+d.prserve]; c.prison.stage = "serving"; c.prison.serving = true; prLog(`${c.name} takes service in his captors' ranks.`); return render() }

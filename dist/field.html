@@ -6122,6 +6122,7 @@ function endBattle(stop = null){                  // the dead counted; the wound
   S.after = r.after;
   S.fates = r.fates;
   S.pursuit = pursue(all);
+  captivesToTeam();
   tell(S.exchange - 1, [endPoint(S, stop, all, r.after)]);
   S.msg = "The battle is over.";
   S.log = [{ cls: "head", text: `The battle ends after ${S.exchange - 1} exchanges.` }, ...S.log];
@@ -6649,6 +6650,11 @@ function tallyHeroes(log){                         // each hero's hits and downs
     }
     striker = null;
   }
+}
+function captivesToTeam(){                        // the team's side chased the other: its prisoners offered to the team builder's captives
+  const pu = S.pursuit, k = S.teamSide;
+  if (k === undefined || k === null || k < 0 || !pu?.taken || pu.side === k) return;
+  try{ localStorage.setItem("gravewounds-field-captives", JSON.stringify({ place: S.from?.place || "", side: S.sides[k], enemy: S.sides[pu.side], taken: pu.taken })) }catch(e){ /* storage off: the GM takes them by hand */ }
 }
 function heroesToRoller(){                        // their wounds onto their records in the wound roller
   const lost = [0, 1].filter(k => !standing(k)), held = lost.length === 1 ? S.sides[1 - lost[0]] : null;   // the side that holds the field, if one does
@@ -7687,6 +7693,7 @@ function teamHeroes(heroes, made){                // the team's men as heroes wi
 function fromTeam(t){
   if (S.phase !== "setup"){ S.msg = "Followers join before the battle starts: New battle first."; return false }
   const side = teamSide(t), k = S.sides.indexOf(side);
+  S.teamSide = k;                                   // the team's side: its pursuit's prisoners go to the team builder
   const made = t.units.map(o => followerUnit(o, side, k));
   teamHeroes(t.heroes, made);
   const lost = made.filter(u => !u).length, cut = lost ? "; " + lost + " did not fit along the edge" : "";

@@ -206,12 +206,13 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Patrons, first cut.** Standing per patron, favours, events, rival claims, the patron's fate
   and his clients' lot. Still left out: the fate chances and the Standing moves are design
   estimates; British commissions can now be bought and sold at the 1837 regulation prices (ranks.yaml
-  `purchase`), but only the ensign's and captain's prices are in the data (the lieutenant's,
-  major's and lieutenant-colonel's are not yet), the over-regulation price is the GM's to ask, and
+  `purchase`): the ensign's £450 is confirmed in a journal, the captain's £1,800 rests on Wikipedia
+  alone, and the ladders have no lieutenant, major or lieutenant-colonel to buy; the over-regulation price is the GM's to ask, and
   private-income needs are not priced; the commission favour is still a +20 and the GM's word;
   patrons are not yet named people with their own rank, side and purse, nor do they appear on the
-  field map or the roller; the medieval third of loot now goes to a patron who takes thirds as a
-  gift, but only to the first such patron, and the ransom of a prisoner of rank is not split; no drift without events
+  field map or the roller; the medieval third of loot and of a captive's ransom now goes to a patron who takes thirds as
+  a gift, but only to the first such patron, and a prisoner of rank is not handed up to the captain
+  or the king (the team keeps him); no drift without events
   (Pendragon's winter check); and Visby, the Napoleonic marshals, Korea, Vietnam, the Falklands and
   Chechnya had no patronage sources.
 - **Tongues, first cut.** Own tongue, others by army, bands, related tongues, talk caps, words
@@ -221,8 +222,8 @@ When an item is done, delete it here and note it in the pull request that closes
   the King's German Legion's language of command, Crimean interpreters, Peninsula Spanish among the
   British rank and file and interpreters' pay before 1990 were not found; a team hires one
   interpreter at a time, for a season, at an estimated wage before 1990 (Iraqi rates from $600 a
-  month in 2005 set the modern one), with no Python mirror of the hire, and the field map and travel
-  map do not use him; dialects (Dari against Waziri, Flemish against French) are not told apart; the field map's
+  month in 2005 set the modern one), with no Python mirror of the hire; he forages and talks for a
+  force on the travel map, but the field map does not use him; dialects (Dari against Waziri, Flemish against French) are not told apart; the field map's
   orders do not yet check a shared tongue between a leader and a mixed unit; and reading a foreign
   hand is left to Letters and the GM.
 - **Period money, first cut.** Every page shows money in the man's army's coin first, then Days;
@@ -242,9 +243,10 @@ When an item is done, delete it here and note it in the pull request that closes
   climbing under fire and cavalry fall rates were not found; each travel-map ford now has its own depth and
   current (fixed by its place within its water's span, which are estimates, as are the horses'
   drowning chances; the Kabul River's 46 men and 13 horses is the one anchor), and its water is as
-  cold as the week's air (no river temperatures were found); guns and wagons are not yet stopped by
-  a ford deeper than 2 ft 4 in, a map cannot set a ford's own depth, and only a mounted force's
-  horses can drown; a fall's death is a critical head wound for the GM to rule on; and the pursuit on the
+  cold as the week's air (no river temperatures were found); baggage wagons are stopped by a ford deeper than 2 ft 4 in on
+  maps before 1914 (later the wagons type stands for tanks and lorries, which have no fording depth
+  of their own yet), a map may set a ford's own depth and current but none does yet (no sourced
+  depths for the fords on the maps), and only a mounted force's horses can drown; a fall's death is a critical head wound for the GM to rule on; and the pursuit on the
   field map (units.yaml aftermath.pursuit) takes its killed and prisoners from the units' men,
   but its shares are the research's ranges, not counts, the Python self-play does not apply it,
   and no named man runs his own chase from it.
@@ -255,8 +257,8 @@ When an item is done, delete it here and note it in the pull request that closes
   WWI deaths in Russian hands or the Plains nations' adoption of captives (deliberately left
   unnumbered); the cartels' exchange values are shown but not traded between armies (a release roll stands for
   them); the team now keeps captives of its own (keep, escape, ransom, exchange one for one, parole,
-  release and questioning), but taking one is the GM's word (the field map's pursuit prisoners are
-  not handed to the team), the escape and keep figures are estimates, and the questioning results
+  release and questioning), and the field map's pursuit offers its prisoners to the team when the
+  team's side chased (taking any other is the GM's word); the escape and keep figures are estimates, and the questioning results
   are design choices; and a man's captivity does not touch the travel map.
 - **Strain, first cut.** Strain and Toll, Nerve checks, results by era name, treatment, rotation
   and homecoming, lasting-effect notes. Still left out: the calibration rests on Appel and Glass
@@ -274,8 +276,11 @@ When an item is done, delete it here and note it in the pull request that closes
   estimates), and so does his coin; pack animals and carts bought from the price list carry kit off
   him, wheels slow the force off the road and in mud, and fodder or fuel is paid nightly where the
   army does not feed it. Still left out: kit he started with weighs only as his era's orders, not
-  item by item; carts, wagons, donkeys and camels are in the data but only the Civil War's mule and
-  ox teams are on a price list (no sourced prices for the rest), and the wagon itself is not priced;
+  item by item; sourced transport prices are now on the price lists where found (a medieval cart and ox, Spanish
+  mules for the Crimea, Union and Confederate mules, a horse at Bent's Fort, a Ford ambulance, a
+  Japanese army remount, the Marines' Korean packhorse), but no wagon is priced in any era, nor any
+  donkey or camel, nor anything for the Thirty Years' War, the Latin East or the Baltic (the US
+  Quartermaster's price lists of 1861-76 and 1920 are the best leads);
   an animal that goes short of fodder is only logged; a force's load is its average man's, with no armour for its rank and file; the band steps,
   blister rule and the hardening of feet are design choices; the Plains nations' loads and most
   medieval and 17th-century body weights are estimates; the field map's units do not carry loads; and the terrain's extra
@@ -313,8 +318,9 @@ When an item is done, delete it here and note it in the pull request that closes
   Teams, and the Lakota and Cheyenne women who fought. A career may have its own share. Still left
   out: no Russian or Serbian army in the WWI tables, so the women's battalions of 1917 and Flora
   Sandes have nowhere to serve; no women nurses for the Confederacy or Russia at Sevastopol (not
-  in the research); the career shares of 100% are design choices (men nursed and sutled too); the
-  women's own careers draw the soldier's wage where their pay was not found (a vivandière, a camp
-  woman and a soldier's wife draw none); their term events are written from the research, not
+  in the research); the career shares of 100% are design choices (men nursed and sutled too); nurses and auxiliaries draw their army's recorded rates (project doc "prices-nurses-research"),
+  but Nightingale's nurses' pay rests on an uncited figure and is not used (they draw a private's),
+  the Commonwealth's WWII nurses take the American rate, and the Russian Sisters of Mercy (120 at
+  Sevastopol, 17 dead) are not yet a career; their term events are written from the research, not
   rolled from records; and the Viet Cong's and the North's women have no reliable share, so they
   are chosen, never rolled.

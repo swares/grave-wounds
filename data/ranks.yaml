@@ -14,6 +14,8 @@
 # start - the rank each career starts at (the rest start at the bottom)
 # career_pay - a career paid at another rate than the foot (horsemen, surgeons), multiplying his
 #              rank's pay; 0 for one the army does not pay (a sutler sells to it)
+# career_pay_by - an army's own rates for careers where they differ from the era's
+#              (nurses and auxiliaries: project doc "prices-nurses-research")
 # kept - the share of his pay left after stoppages for rations and necessaries
 #
 # Promotion (at End of season, on the team builder): a vacancy at a rank (a lost man of that
@@ -94,6 +96,8 @@ eras:
       - {id: captain, name: "Captain", pay: 8.9, years: 1, diff: ordinary, letters: true, approx: true}
     pay_by: {confederacy: [1, 1.18, 1.55, 1.82, 7.3, 11.8]}
     start: {sergeant: sergeant, officer: lieutenant}
+    career_pay: {nurse: 0.92, vivandiere: 0}      # Union nurses 40 cents a day and a ration (Act of 3 August 1861) against a private's $13 a month; a vivandière drew none
+    career_pay_by: {confederacy: {nurse: 2.27}}   # Confederate nurses up to $25 a month (Act of 27 September 1862) against a private's $11
     source: "https://www.nber.org/papers/w17382.pdf"
   plains_nations:
     note: "No ranks and no pay: a man's standing came from his deeds (coups, horses taken) and his generosity, and a war leader was followed, not appointed."
@@ -110,6 +114,8 @@ eras:
       - {id: lieutenant, name: "Second lieutenant", pay: 7.5, years: 1, diff: hard, approx: true}
       - {id: captain, name: "Captain", pay: 12.5, years: 1, diff: ordinary, approx: true}
     start: {nco: sergeant, officer: lieutenant}
+    career_pay: {nurse: 1.78, auxiliary: 1.1}     # QAIMNS staff nurse £30-£35 a year (1902 warrant), WAAC from £20 a year with board, against a private's 1s a day
+    career_pay_by: {us: {nurse: 1.67}}            # Army Nurse Corps $50 a month overseas against a private's $30
     source: "https://www.longlongtrail.co.uk/soldiers/a-soldiers-life-1914-1918/british-army-rates-pay-1914/"
   wwii:
     note: "US base pay of 1942 (the lieutenant's an estimate), British of 1940 and German front pay; Soviet pay not found. The US Army made about 25,500 battlefield commissions."
@@ -126,6 +132,8 @@ eras:
       commonwealth: [1, 1.6, 2, 3, 4, 6.5]
       germany: [1, 1.53, 1.8, 2.07, 3.73, 6]
     start: {nco: sergeant, officer: lieutenant}
+    career_pay: {nurse: 2.22, auxiliary: 1}       # US Army nurse about $111 a month (one account, 1942) against a private's $50; the WAC paid as men from November 1942
+    career_pay_by: {commonwealth: {auxiliary: 0.67}}   # ATS 1s 4d a day, two-thirds of a private's pay (Parliament, 1939)
     source: "https://www.navycs.com/public-law/pl-77-607pg4.html"
   korea:
     note: "US pay of 1952 (grades to titles is our own match). Battlefield commissions continued as in 1945, uncounted."
@@ -138,6 +146,7 @@ eras:
       - {id: sfc, name: "Sergeant first class", pay: 2.11, years: 1, diff: hard, approx: true}
       - {id: lieutenant, name: "Second lieutenant", pay: 2.67, years: 1, diff: hard, approx: true}
     start: {nco: sergeant, officer: lieutenant}
+    career_pay: {nurse: 2.67}                     # Army nurses commissioned from 1947, paid as second lieutenants: $222.30 a month in 1952 against $83.20
     source: "https://www.navycs.com/charts/1952-military-pay-chart.html"
   vietnam:
     note: "US pay of 1968. The usual rise to sergeant took three to five years; the NCO Candidate Course made sergeants in 21-22 weeks."
@@ -150,6 +159,7 @@ eras:
       - {id: ssg, name: "Staff sergeant", pay: 2.4, years: 2, diff: hard, approx: true}
       - {id: lieutenant, name: "Second lieutenant", pay: 3.13, years: 1, diff: hard, approx: true}
     start: {nco: sergeant, officer: lieutenant}
+    career_pay: {nurse: 3.14}                     # a second lieutenant's $294.60 a month in 1965 against a private's $93.90
     source: "https://historynet.com/shake-n-bake-sergeants/"
   modern:
     note: "US pay of 2004 and the Army's promotion clock (PFC at a year, Specialist at two, Sergeant at about three to four); British pay of 2010 by region. Field promotions were brought back in 2009."
@@ -261,7 +271,10 @@ loot:
 # returns his rank's price. Free commissions also went to sergeants promoted from the ranks, and
 # by vacancies from death in action (the ordinary promotion roll). The regulation prices for line
 # infantry as printed for 1837 (said to have held 1821-1871; the 1821 date is unconfirmed); the
-# unofficial "regimental value" ran half again to double. Project doc "patrons-research".
+# unofficial "regimental value" ran half again to double. Project docs "patrons-research" and
+# "prices-nurses-research": ensign £450 and lieutenant £700 are confirmed in a journal; captain
+# £1,800, major £3,200 and lieutenant-colonel £4,500 rest on Wikipedia alone (the ladders here
+# stop at captain, with no lieutenant).
 purchase:
   eras: [horse_musket, crimea]
   regions: [british_rev, british_pen, british]

@@ -53,6 +53,7 @@ keep:
 items:
   # Vehicles, horses
   - {id: model_t, name: "Ford Model T, touring car", cat: travel, in: usd, price: 49000, when: "1914", source: {url: "https://www.thehenryford.org/collections-and-research/digital-collections/artifact/163928", note: "The Henry Ford"}}
+  - {id: ford_ambulance, name: "Ford Model T ambulance, equipped and shipped", cat: travel, in: usd, price: 66039, when: "1917", source: {url: "https://siarchives.si.edu/blog/smithsonian-sent-healing-wheels-wwi", note: "Smithsonian Institution Archives: $475 bare"}}
   - {id: remount, name: "Army remount horse, bought and delivered", cat: horse, price: 54720, when: "1914-20", source: {url: "https://blog.nationalarchives.gov.uk/making-horses-war-army-remount-service/", note: "National Archives, from totals"}}
   - {id: motorcycle, name: "Motorcycle", cat: travel, price: [38400, 67200], approx: true}
   - {id: bicycle, name: "Bicycle", cat: travel, price: [4800, 7680], approx: true}

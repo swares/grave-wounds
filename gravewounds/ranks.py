@@ -50,14 +50,15 @@ def start_rank(d: Data, eid: str, career: str) -> str | None:
 
 def pay_of(d: Data, eid: str, region: str, career: str, rid: str) -> float:
     """His day's pay as a multiple of a private's: his rank's (his army's where it differs),
-    times his career's."""
+    times his career's (his army's own rate for it where it has one)."""
     E, i = era(d, eid) or {}, rank_index(d, eid, rid)
     L = ladder(d, eid)
     if not L:
         return 0
     by = (E.get("pay_by") or {}).get(region)
     base = by[i] if by else L[i]["pay"]
-    return base * (E.get("career_pay") or {}).get(career, 1)
+    own = ((E.get("career_pay_by") or {}).get(region) or {}).get(career)   # his army's own rate for the career, where it differs
+    return base * (own if own is not None else (E.get("career_pay") or {}).get(career, 1))
 
 
 def wage(d: Data, eid: str, region: str, career: str, rid: str, days: int) -> float:

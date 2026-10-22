@@ -40,6 +40,7 @@ keep:
 
 items:
   - {id: charger, name: "Officer's charger", cat: horse, price: [38400, 76800], approx: true}
+  - {id: spanish_mule, name: "Spanish mule, bought for the army", cat: horse, price: [14400, 28800], when: "1855", source: {url: "https://djo.org.uk/household-narrative-of-current-events/year-1855/page-61.html", note: "Household Narrative of Current Events, 1855: 500 bought in Spain at £15-£30"}}
   - {id: saddle_bridle, name: "Saddle and bridle, Balaklava", cat: horse, price: 14400, when: "1855", source: {url: *fenton, note: "Fenton letters"}}
   - {id: enfield, name: "Enfield rifle-musket", cat: weapon, price: [2880, 3840], weapon: rifle_musket, regions: [british], approx: true}
   - {id: fez, name: "Gold-embroidered fez, Constantinople (asked)", cat: clothing, price: 1920, when: "1855", source: {url: "https://fentonletterbooks.dmu.ac.uk/josephTF.php?letterNo=3", note: "Fenton letters"}}

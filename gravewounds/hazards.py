@@ -69,8 +69,12 @@ def ford_water(d: Data, water: str, fd: float, fc: float) -> dict:
     r1 = lambda x: math.floor(x * 10 + 0.5) / 10
     depth = r1(W["depth"][0] + fd * (W["depth"][1] - W["depth"][0]))
     current = r1(W["current"][0] + fc * (W["current"][1] - W["current"][0]))
-    band = next(b for b in F["currents"] if current <= b["upto"])
-    return {"depth": depth, "current": current, "band": band}
+    return {"depth": depth, "current": current, "band": current_band(d, current)}
+
+
+def current_band(d: Data, current: float) -> dict:
+    """The band a current (m/s) falls in."""
+    return next(b for b in _cfg(d)["fords"]["currents"] if current <= b["upto"])
 
 
 def ford_risk(d: Data, depth: float, band_id: str, load_band: int, mounted: bool) -> str | None:

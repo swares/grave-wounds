@@ -85,7 +85,7 @@ coin_kg_day: {medieval: 0.006, thirty_years: 0.004, horse_musket: 0.0056, crimea
 # and a wheeled one slows his force off the road (`off_road`) and on wet or muddy ground (`mud`).
 animals:
   - {id: packhorse, match: "packhorse|pack pony", name: "Packhorse", load: 100, forage: 0.25, source: "https://en.wikipedia.org/wiki/Packhorse"}
-  - {id: mule, match: "^mule", name: "Mule", load: 100, forage: 0.25, source: "https://tacticalnotebook.substack.com/p/meet-the-mule"}
+  - {id: mule, match: "^mule|spanish mule", name: "Mule", load: 100, forage: 0.25, source: "https://tacticalnotebook.substack.com/p/meet-the-mule"}
   - {id: camel, match: "camel", name: "Camel", load: 150, forage: 0.2}
   - {id: donkey, match: "donkey", name: "Donkey", load: 50, forage: 0.15}
   - {id: horse, match: "horse|charger|destrier|hackney|remount", name: "A horse (ridden, with saddlebags)", load: 30, forage: 0.25}

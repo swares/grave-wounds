@@ -22,6 +22,7 @@ currency: {default: robe}
 
 items:
   - {id: horse, name: "Horse, in trade", cat: horse, price: [10, 15], approx: true}
+  - {id: horse_bent, name: "Horse, bought for cash at Bent's Fort", cat: horse, in: usd, price: 5000, when: "1846-47", source: {url: "https://www.nps.gov/articles/000/beol_livestock.htm", note: "NPS, Bent's Old Fort livestock (Garrard)"}}
   - {id: navajo_blanket, name: "Good Navajo blanket", cat: shelter, price: 10, when: "1850s", source: {url: "https://www.nps.gov/safe/learn/historyculture/upload/Bents-Trading-Post-at-Big-Timbers-508.pdf", note: "NPS, Bent's Big Timbers"}}
   - {id: trade_gun, name: "Trade gun", cat: weapon, price: [6, 10], when: "1851", weapon: rifle_musket, source: {url: "https://www.nps.gov/fous/learn/historyculture/firearms-of-fort-union.htm", note: "NPS Fort Union"}}
   - {id: robe_post, name: "A prime robe, in goods at the trading post", cat: service, in: usd, price: 300, when: "1850s", source: {url: "https://www.nps.gov/safe/learn/historyculture/upload/Bents-Trading-Post-at-Big-Timbers-508.pdf", note: "NPS, Bent's Big Timbers; $5 in Missouri"}}

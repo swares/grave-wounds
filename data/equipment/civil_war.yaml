@@ -49,7 +49,8 @@ items:
   # Horses and travel
   - {id: stage_sf, name: "Stagecoach, Tipton to San Francisco", cat: travel, price: 20000, source: {url: "https://truewestmagazine.com/?p=37229", note: "True West"}}
   - {id: cavalry_horse, name: "Cavalry horse", cat: horse, price: [11900, 19000], when: "1861-65", source: {url: *cwm, note: "Civil War Monitor"}}
-  - {id: mule, name: "Mule", cat: horse, price: [10000, 15000], approx: true}
+  - {id: mule, name: "Mule, as the Union army bought them", cat: horse, price: [17000, 19500], when: "1864-65", source: {url: "https://sites.google.com/view/adrian-rexford/home", note: "Quartermaster figures in American Magazine, April 1888: 45,921 bought"}}
+  - {id: mule_csa, name: "Mule, as a Confederate quartermaster bought one", cat: horse, in: csd, price: 35000, when: "1863", source: {url: "https://csa-railroads.com/Essays/Orignial%20Docs/NA/NA,_RRB_10-1-63.htm", note: "National Archives receipt, 1 October 1863"}}
   - {id: mule_team, name: "Six-mule wagon team", cat: horse, price: 60000, when: "1859", source: {url: "https://gutenberg.org/files/23066/23066-h/23066-h.htm", note: "Marcy, The Prairie Traveler: the team; the wagon itself not priced"}}
   - {id: ox_team, name: "Team of eight oxen, for a wagon", cat: horse, price: 20000, when: "1859", source: {url: "https://gutenberg.org/files/23066/23066-h/23066-h.htm", note: "Marcy, The Prairie Traveler: about $25 an ox; the wagon itself not priced"}}
   - {id: stage_mile, name: "Stagecoach, per mile", cat: travel, price: [10, 15], source: {url: "https://truewestmagazine.com/?p=37229", note: "True West"}}

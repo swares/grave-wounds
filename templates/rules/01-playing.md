@@ -141,7 +141,9 @@ man who talks through him uses the interpreter's figure in that tongue, not his 
 hired {{int_unrel}}% are unreliable (a whistleblower said 28% of one firm's Afghan hires failed the
 language standard): his roll of {{int_err}} or more is a dangerous error. Each End of season he may
 be killed ({{int_hazard}}%, {{int_hazard_modern}}% in the modern wars: in Iraq some fifteen times a US
-soldier's rate), and his season is up.
+soldier's rate), and his season is up. On the travel map, where the people speak his tongue and
+the team's named men march with the force, he forages and talks for it: the force does not forage
+Hard for want of the tongue, and its billeting and talk go through him at his figure.
 
 Who speaks what, by army (the shares are estimates, not muster counts):
 
