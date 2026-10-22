@@ -16,12 +16,21 @@ function opposedCheck(aValue, aDiff, aRoll, bValue, bRoll){   // {a, b, winner}:
   const a = skillCheck(aValue, aDiff, aRoll), b = skillCheck(bValue, "ordinary", bRoll);
   return { a, b, winner: rankAbove(chkRank(a), chkRank(b)) ? "a" : "b" };
 }
-function haggle(price, persuade, aRoll, bRoll, seller = null){   // {outcome: win | critical | list | no_sale, price, opposed}
+function haggle(price, persuade, aRoll, bRoll, seller = null, selling = false){   // {outcome: win | critical | list | no_sale | cheated, price, opposed}
   const H = CHK().haggle || { seller: 50, win: -0.1, critical: -0.25 };
   const o = opposedCheck(persuade, "ordinary", aRoll, seller === null ? H.seller : seller, bRoll);
+  if (selling) return haggleSell(H, price, o);
   if (o.a.fumble) return { outcome: "no_sale", price: null, opposed: o };
   if (o.winner === "a"){ const kind = o.a.critical ? "critical" : "win"; return { outcome: kind, price: price > 0 ? Math.max(0.25, Math.floor(price * (1 + H[kind]) * 4 + 0.5) / 4) : 0, opposed: o } }
   return { outcome: "list", price, opposed: o };
+}
+function haggleSell(H, price, o){                   // selling loot: a tenth more on a win, a quarter on a critical; a fumble, a fence cheats him
+  const S = H.sell || { win: 0.1, critical: 0.25, fumble: -0.25 };
+  let kind = "list";
+  if (o.a.fumble) kind = "cheated";
+  else if (o.winner === "a") kind = o.a.critical ? "critical" : "win";
+  const rate = { cheated: S.fumble, win: S.win, critical: S.critical }[kind] || 0;
+  return { outcome: kind, price: Math.floor(price * (1 + rate) * 4 + 0.5) / 4, opposed: o };
 }
 const CHK_STATS = ["str", "agi", "end", "wits", "nerve", "pres"];
 const checkUses = () => (CHK().uses || []).filter(u => CHK_STATS.includes(u.skill) || TD.era.skills.some(s => s.id === u.skill));

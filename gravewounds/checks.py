@@ -9,7 +9,7 @@ import math
 from .model import Data
 
 STATS = ("str", "agi", "end", "wits", "nerve", "pres")
-OUTCOMES = ("win", "critical", "list", "no_sale")
+OUTCOMES = ("win", "critical", "list", "no_sale", "cheated")
 
 
 def _C(d: Data) -> dict:
@@ -43,11 +43,26 @@ def opposed(d: Data, a_value: int, a_diff: str, a_roll: int, b_value: int, b_rol
     return {"a": a, "b": b, "winner": "a" if _rank(a) > _rank(b) else "b"}
 
 
-def haggle(d: Data, price: float, persuade: int, a_roll: int, b_roll: int, seller: int | None = None) -> dict:
-    """Haggling over `price` Days: his Persuade against the seller's.
-    -> {"outcome": win | critical | list | no_sale, "price" (Days, to the quarter; None for no sale), "opposed"}"""
+def _q(x: float) -> float:
+    return math.floor(x * 4 + 0.5) / 4
+
+
+def haggle(d: Data, price: float, persuade: int, a_roll: int, b_roll: int, seller: int | None = None, selling: bool = False) -> dict:
+    """Haggling over `price` Days: his Persuade against the other side's. Buying, a win takes a
+    tenth off (a quarter on a critical) and a fumble means no sale today; selling (`sell`), a win
+    gets a tenth more (a quarter on a critical) and a fumble lets a fence cheat him of a quarter.
+    -> {"outcome": win | critical | list | no_sale | cheated, "price" (Days, to the quarter; None for no sale), "opposed"}"""
     H = _C(d).get("haggle") or {"seller": 50, "win": -0.1, "critical": -0.25}
     o = opposed(d, persuade, "ordinary", a_roll, H["seller"] if seller is None else seller, b_roll)
+    if selling:
+        S = H.get("sell") or {"win": 0.1, "critical": 0.25, "fumble": -0.25}
+        kind = "list"
+        if o["a"]["fumble"]:
+            kind = "cheated"
+        elif o["winner"] == "a":
+            kind = "critical" if o["a"]["critical"] else "win"
+        rate = {"cheated": S["fumble"], "win": S["win"], "critical": S["critical"]}.get(kind, 0)
+        return {"outcome": kind, "price": _q(price * (1 + rate)), "opposed": o}
     if o["a"]["fumble"]:
         return {"outcome": "no_sale", "price": None, "opposed": o}
     if o["winner"] == "a":
