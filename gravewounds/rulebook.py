@@ -116,7 +116,23 @@ def _talk_values(d: Data) -> dict:
             "lg_pidgin": (tongues.get("bamboo_english") or {}).get("cap", 35), "lg_sign": (tongues.get("plains_sign") or {}).get("cap", 75),
             "pt_start": PT.get("start", 30), "pt_persuade": PT.get("persuade_div", 10), "pt_offended": PT.get("offended", -10),
             "pt_promotion": PT.get("promotion_bonus", 20), "pt_season": (PT.get("events", {}).get("season") or {}).get("add", 2),
-            **_fight_values(d)}
+            **_fight_values(d), **_campaign_values(d)}
+
+
+def _campaign_values(d: Data) -> dict:
+    """Interpreters, captives, bought commissions and weights: the numbers the chapters quote."""
+    I = (d.languages or {}).get("interpreters") or {}
+    K = (d.prisoners or {}).get("captives") or {}
+    P = (d.ranks or {}).get("purchase") or {"prices": {}}
+    W = d.weights or {}
+    fig = I.get("figure", [50, 85])
+    pounds = lambda f: f"£{round(f / 960):,}"
+    return {"int_lo": fig[0], "int_hi": fig[1], "int_unrel": I.get("unreliable", 28), "int_err": I.get("error_from", 90),
+            "int_wage": (I.get("wage") or {}).get("default", 1), "int_wage_modern": (I.get("wage") or {}).get("modern", 0.4),
+            "int_hazard": (I.get("hazard") or {}).get("default", 0.5), "int_hazard_modern": (I.get("hazard") or {}).get("modern", 1),
+            "cap_keep": K.get("keep", 0.5), "cap_stealth": K.get("stealth", 50), "cap_crowded": K.get("crowded", 10), "cap_officer": K.get("officer_pay", 3),
+            "buy_ensign": pounds(P["prices"].get("ensign", 432000)), "buy_captain": pounds(P["prices"].get("captain", 1728000)),
+            "wt_off_road": round(W.get("off_road", 0.75) * 100), "wt_mud": round(W.get("mud", 0.5) * 100)}
 
 
 def _fight_values(d: Data) -> dict:
@@ -374,6 +390,10 @@ def tables(d: Data) -> dict:
                            [[b["name"], f"{round(a * 100)}–{round(b['upto'] * 100)}%" if b["upto"] < 2 else f"over {round(a * 100)}%", f"{b['march']}%",
                              f"−{b['dodge']}" + (", no run" if b.get("run") is False else ""), f"{b['blister']}%",
                              f"a step every {b['fatigue_km']} km" if b.get("fatigue_km") else "—"] for b, a in zip(LB, lo)])
+    if d.weights:
+        out["pack_animals"] = _md(["Animal or vehicle", "Carries", "Fodder or fuel a night", "Wheels"],
+                                  [[a["name"], f"{a['load']:,} kg", f"{a['forage']} Days" + (" (fuel)" if a.get("fuel") else "") if a["forage"] else "—",
+                                    "yes" if a.get("wheels") else "—"] for a in d.weights.get("animals", [])])
     if d.ageing:
         names = {"str": "Strength", "agi": "Agility", "end": "Endurance", "wits": "Wits"}
 

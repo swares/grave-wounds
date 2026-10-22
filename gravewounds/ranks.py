@@ -164,6 +164,35 @@ def loot(d: Data, eid: str, kind: str, c: dict, rng) -> dict:
     return out
 
 
+def purchase_price(d: Data, eid: str, region: str, c: dict, rid: str) -> int | None:
+    """What buying rank rid costs him (the coin's smallest unit): its regulation price, less the
+    one he holds (c["bought"]); None where commissions were not bought, or rid has no price."""
+    P = (d.ranks or {}).get("purchase") or {}
+    if eid not in P.get("eras", []) or region not in P.get("regions", []) or rid not in P.get("prices", {}):
+        return None
+    held = P["prices"].get(c.get("bought"), 0) if c.get("bought") else 0
+    return max(0, P["prices"][rid] - held)
+
+
+def can_buy(d: Data, eid: str, region: str, c: dict, vacancies: dict) -> tuple[str | None, str | None]:
+    """(the rank he may buy, None) or (None, why not): the next rank with a price, vacant, and his
+    eligibility but for the years (an ensigncy needs no rank below: a gentleman bought in)."""
+    L = ladder(d, eid)
+    i = rank_index(d, eid, c.get("rank"))
+    for idx in range(i + 1, len(L)):
+        rid = L[idx]["id"]
+        if purchase_price(d, eid, region, c, rid) is None:
+            continue
+        if vacancies.get(rid, 0) <= 0:
+            return None, f"no vacancy for {L[idx]['name'].lower()}"
+        ok, why = eligible(d, eid, c, idx)
+        first = idx == min(k for k, r in enumerate(L) if r["id"] in d.ranks["purchase"]["prices"])
+        if ok or why == "too soon" or (first and why == "not the rank below"):
+            return rid, None
+        return None, why
+    return None, "nothing to buy"
+
+
 def standing(d: Data, honours: int) -> str:
     """A Plains man's standing by his honours."""
     rows = (d.ranks.get("honours") or {}).get("standing") or [{"from": 0, "name": ""}]

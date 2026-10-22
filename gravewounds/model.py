@@ -119,6 +119,7 @@ class Data:
     languages: dict = field(default_factory=dict)   # tongues by army, bands, passing (data/languages.yaml)
     patrons: dict = field(default_factory=dict)     # standing, favours, a patron's fate (data/patrons.yaml)
     uses: dict = field(default_factory=dict)        # skills that do things on the travel map (data/uses.yaml)
+    weights: dict = field(default_factory=dict)     # item weights, coin, pack animals (data/weights.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -185,6 +186,7 @@ def load(root: str | Path = "data") -> Data:
     languages = _optional(root / "languages.yaml", {})
     patrons = _optional(root / "patrons.yaml", {})
     uses = _optional(root / "uses.yaml", {})
+    weights = _optional(root / "weights.yaml", {})
 
     data = Data(
         root=root,
@@ -226,6 +228,7 @@ def load(root: str | Path = "data") -> Data:
         languages=languages,
         patrons=patrons,
         uses=uses,
+        weights=weights,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -555,6 +558,8 @@ def validate(d: Data) -> None:
         errors += _checks_errors(d)
     if d.ranks:
         errors += _ranks_errors(d)
+    if d.weights:
+        errors += _weights_errors(d)
     if d.ageing:
         AG, stats = d.ageing, {"str", "agi", "end", "wits", "nerve", "pres"}
         fr = [b.get("from") for b in AG.get("decline", [])]
@@ -1650,6 +1655,41 @@ def _ranks_errors(d: Data) -> list[str]:
             errors.append(f"{where}: loot for unknown era {eid}")
         if not 0 < L.get("keep", 1) <= 1:
             errors.append(f"{where}: loot {eid} keep must be 0-1")
+    return errors
+
+
+def _weight_pattern_errors(w: dict, where: str) -> list[str]:
+    """weights.yaml patterns: each compiles and has a weight."""
+    import re
+    errors = []
+    for p in w.get("patterns", []):
+        try:
+            re.compile(p.get("match", ""))
+        except re.error:
+            errors.append(f"{where}: pattern {p.get('match')!r} does not compile")
+        if not (isinstance(p.get("kg"), (int, float)) and p["kg"] > 0):
+            errors.append(f"{where}: pattern {p.get('match')!r} needs a weight")
+    return errors
+
+
+def _weights_errors(d: Data) -> list[str]:
+    """data/weights.yaml: patterns that compile with a weight; category weights; a coin weight an era
+    known; animals with unique ids, a pattern, a load and forage; road and mud factors 0-1."""
+    W, where = d.weights, "weights.yaml"
+    errors = _weight_pattern_errors(W, where)
+    if any(not (isinstance(v, (int, float)) and v >= 0) for v in (W.get("categories") or {}).values()):
+        errors.append(f"{where}: category weights must be 0 or more")
+    bad = sorted(set(W.get("coin_kg_day") or {}) - set(d.equipment))
+    if bad:
+        errors.append(f"{where}: coin_kg_day names unknown eras {bad}")
+    ids = [a.get("id") for a in W.get("animals", [])]
+    if len(set(ids)) != len(ids):
+        errors.append(f"{where}: animal ids must be unique")
+    for a in W.get("animals", []):
+        if not (a.get("match") and a.get("load", 0) > 0 and a.get("forage", -1) >= 0):
+            errors.append(f"{where}: animal {a.get('id')} needs a pattern, a load and forage")
+    if not all(0 < W.get(k, 1) <= 1 for k in ("off_road", "mud")):
+        errors.append(f"{where}: off_road and mud must be 0-1")
     return errors
 
 

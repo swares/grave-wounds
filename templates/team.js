@@ -268,7 +268,7 @@ function shopFor(region){                         // the era's price list in his
     if (r.cat === "pay") continue;
     const span = rowDays(r, region); if (!span) continue;
     const cur = E.currencies[r.in || E.currency.default];
-    out.push({ id: r.id, name: r.name + (r.per ? ` (${r.per})` : ""), cat: r.cat, days: (span[0] + span[1]) / 2,
+    out.push({ id: r.id, name: r.name + (r.per ? ` (${r.per})` : ""), cat: r.cat, ...("kg" in r ? { kg: r.kg } : {}), days: (span[0] + span[1]) / 2,
       text: Array.isArray(r.price) ? `${fmtMoney(cur, r.price[0])}–${fmtMoney(cur, r.price[1])}` : fmtMoney(cur, r.price) });
   }
   const order = [...new Set(out.map(r => r.cat))].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));

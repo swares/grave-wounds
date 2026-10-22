@@ -20,6 +20,20 @@ circumstances:
   wealthy: {mod: -20, name: "Visibly worth a ransom", ransom_only: true}
   wounded: {mod: 5, name: "Taken wounded"}
   quarter_tongue: {mod: -10, name: "Asked for quarter in his captors' tongue", approx: true}   # a surrender had to be accepted to protect him (Cook); data/languages.yaml
+# The team's own captives (the team builder): each End of season they eat (`keep` Days a day
+# each, or the army's keep where the team pays its own), may escape (each his `stealth` against
+# the team's best Watch, `crowded` worse for each captive over the team's number; one on parole
+# does not try, and keeps himself), and may be ransomed (his worth by the era's first context:
+# an officer's at three times a soldier's pay), exchanged for one of the team held, paroled or let
+# go. Questioning one is words across tongues; a success gets something useful (a postwar report
+# credited the Ritchie Boys' interrogators with nearly 60% of the credible intelligence in Europe).
+captives:
+  keep: 0.5
+  stealth: 50
+  crowded: 10
+  officer_pay: 3
+  source: "https://en.wikipedia.org/wiki/Ritchie_Boys"
+  approx: true
 harsh_hazard: 3               # a season at this hazard or more is harsh: 2 Strain and 1 Endurance lost
 service_desert: 40            # % a season a man in the captor's ranks finds his chance to desert
 officer_hazard: 0.5
