@@ -1,0 +1,83 @@
+# Self-play measurement (docs/selfplay-review.md, How it was done): every battlefield played by the
+# enemy commander on both sides, `seeds` runs each, with the morale targets recorded (targets.js), on
+# the chosen branch, tag or commit. The runs are split over 16 parallel jobs; the results are one
+# artifact (selfplay-<label>), a folder of <field>.s<seed>.json files that tools/selfplay/report.py
+# and targets.py read. Started by hand from the Actions tab (Run workflow) or with
+# `gh workflow run selfplay.yml -f ref=<branch> -f label=<name>`.
+name: selfplay
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch, tag or commit to measure"
+        required: true
+        default: main
+      label:
+        description: "Name for the results artifact (selfplay-<label>)"
+        required: true
+        default: main
+      seeds:
+        description: "Runs of each battlefield"
+        required: true
+        default: "24"
+      first:
+        description: "First seed"
+        required: true
+        default: "1"
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run this shard
+        env:
+          SHARD: ${{ matrix.shard }}
+          SEEDS: ${{ inputs.seeds }}
+          FIRST: ${{ inputs.first }}
+        run: |
+          mkdir -p out
+          python3 tools/selfplay/shard.py "$SHARD" 16 "$SEEDS" "$FIRST" > jobs.txt
+          wc -l < jobs.txt
+          xargs -P "$(nproc)" -L 1 sh -c 'node tools/selfplay/targets.js "$0" "$1" dist/field.html > "out/$0.s$1.json" || echo "$0 s$1 FAILED"' < jobs.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shard-${{ matrix.shard }}
+          path: out/
+          retention-days: 3
+
+  collect:
+    needs: run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: shard-*
+          path: results
+          merge-multiple: true
+      - name: Summary
+        run: |
+          ls results/*.json | wc -l
+          { echo '```'; python3 tools/selfplay/report.py winners results | tail -40; python3 tools/selfplay/targets.py results; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: selfplay-${{ inputs.label }}
+          path: results/
+          retention-days: 30

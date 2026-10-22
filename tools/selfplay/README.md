@@ -52,3 +52,14 @@ hand to hand. For each side the report gives:
 
 `quality.js` also gives, for each idle unit, whether it moved, whether it was held in reserve and
 until when, its state, and how near it ended to the enemy.
+
+## On GitHub Actions
+
+`.github/workflows/selfplay.yml` runs a measurement on GitHub's machines, so it does not tie up a
+computer for hours: 16 parallel jobs (`shard.py` deals the battlefield x seed runs among them,
+longest first), each running `targets.js`, then one job that gathers the results into the
+artifact `selfplay-<label>` and writes `report.py winners` and `targets.py` to the run's summary.
+Start it from the repository's Actions tab (selfplay, Run workflow: the branch to measure, a
+label, seeds and the first seed), or `gh workflow run selfplay.yml -f ref=<branch> -f label=<name>`.
+Download the artifact and compare two measurements with `report.py diff <before> <after>` and
+`targets.py <before> <after>`.
