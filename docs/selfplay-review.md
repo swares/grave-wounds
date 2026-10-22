@@ -982,3 +982,38 @@ Measured on GitHub Actions, 24 runs of every battlefield, against main after #28
 
 Built: lying in cover and the lift turning back. Still to trace: Hue's storming (the Marines
 fighting hand to hand in the buildings), Agincourt and the June Redan under the losing check.
+
+## Hue's storming, and suppression, 22 October 2026 (measured, not built)
+
+**The trace.** With hand-to-hand losses no longer a separate cause (above), Hue still matched 1 of
+24. The Marine companies storm whenever their numbers give the odds (`commander.storm`), against a
+garrison nothing has suppressed: in one run 83 of their 93 hand-to-hand strikes went in against
+unpinned North Vietnamese veterans in the buildings, and those strikes put down 19 men against 31.
+The Marines in fact made the breach first, with 106s, 3.5-inch rockets, tanks and CS, and went in
+at small cost (the Treasury 8 wounded against 6 killed; the hospital bunkers 3 wounded against 25;
+2/5's February chronology).
+
+**Suppress, then assault** (branch suppress-first): a modern storming unit goes in only on a
+target that is pinned, shaken or broken, and till then closes, takes cover and fires. 666 of 888
+from 652: Hue 1 to 4, Mogadishu 19 to 24, Cassino town 19 to 23, Hamburger 20 to 23; Dak To 24 to
+20. But the rout's share of the loser's losses (T3) fell from a median 7% to 0, and the town
+fights stalled: Mogadishu's losses fell from 24% and 30% to 7% and 10%, Khe Sanh's to about a third.
+
+**Why they stall.** Almost nothing can suppress a garrison in buildings. Only shellfire and
+machine-gun fire pin, after a Nerve check that veterans lying down usually pass: at Hue the North
+Vietnamese were pinned in about 1% of unit-exchanges. Men in buildings are hidden and the
+buildings screen sight, so small arms rarely find them (at Hue the Marines' 306 volleys put down
+19 men in a run; at Mogadishu the Somalis' 185 volleys none), and the tanks and Ontos often have
+no line of fire (3 shots at men in one Hue run, 93 in another). Storming was what made the town
+fights bleed.
+
+**Suppression rules**, from the research (the project's suppression notes: US Army field
+experiments of the 1960s-70s, Vietnam weapons evaluations, the Hue chronologies), measured with
+suppress-first: heavy direct fire (a main gun's rounds, a rocket or recoilless round) on a unit
+holding a position pins it with no roll, and a pinned unit kept under fire stays pinned. 659 of
+888: Grozny 3 to 7, Hue 5, Goose Green 0 to 1; but Mons 23 to 16 (a guess, not traced: pinned
+British units under German machine guns could not make their ordered withdrawals), X-Ray 18 to
+16, and T3 still 0. Not built.
+
+Still open: fire in towns (how men in buildings are seen and hit, and what lines of fire armour
+gets), which storming has been standing in for; then suppress-first can be measured again.
