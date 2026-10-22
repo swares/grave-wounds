@@ -60,6 +60,6 @@ computer for hours: 16 parallel jobs (`shard.py` deals the battlefield x seed ru
 longest first), each running `targets.js`, then one job that gathers the results into the
 artifact `selfplay-<label>` and writes `report.py winners` and `targets.py` to the run's summary.
 Start it from the repository's Actions tab (selfplay, Run workflow: the branch to measure, a
-label, seeds and the first seed), or `gh workflow run selfplay.yml -f ref=<branch> -f label=<name>`.
+label, seeds and the first seed; the branch's page and battlefields are measured with the tools on main, so an older branch works too), or `gh workflow run selfplay.yml -f ref=<branch> -f label=<name>`.
 Download the artifact and compare two measurements with `report.py diff <before> <after>` and
 `targets.py <before> <after>`.
