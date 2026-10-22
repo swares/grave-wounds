@@ -1044,3 +1044,28 @@ afternoon).
 Still open from the research: defenders in towns lost about three times as much a day as in the
 open (much of it as prisoners) once the attackers closed, which nothing in the rules gives; and
 attackers were hurt mostly in the streets, from buildings other than the one being assaulted.
+
+## Cornered units surrender, 22 October 2026
+
+The town research found defenders losing about three times as much a day in towns as in the
+open, much of it as prisoners, once the attackers closed. The game had no surrender on the field:
+a broken unit ran straight back, and one that could not (no clear ground behind it) stood broken
+and was struck again and again. Traced: most broken units get away within 4 to 10 exchanges;
+those cornered were cut down almost to the last man (two Somali militia bodies at Mogadishu, over
+79 and 187 exchanges, 294 to 3 and 199 to 3 men: nearly all of Mogadishu's rout deaths).
+
+The research (the project's surrender notes): a defender's prisoners rise six times or more once
+it is penetrated and again once enveloped (The Dupuy Institute's capture-rate study); being cut
+off was the cause veterans gave most for units giving way; men trapped in cellars and bunkers gave
+up as a group (Shils and Janowitz); and how readily an army gave up sets the level, from Iraqis in
+1991 (93% of their losses prisoners) to the Japanese and North Vietnamese (about 1 prisoner for 50
+to 80 killed).
+
+Built: a broken unit that is cornered (an enemy touching it, nowhere to run) surrenders at the
+start of the exchange: the war's quarter % of its men taken prisoner, the rest killed, its heroes
+on their feet taken. Sides the accounts show fighting to the end do not (data/orders.yaml
+fight_on: the North Vietnamese, the Japanese at Bougainville, the Chechens at Grozny). The
+self-play tools now count prisoners as losses. Measured: 658 of 912 from 657 (main, with the Babuna
+pass); the targets about as before. Visby 23 to 24, X-Ray, Grozny, Lützen and Agincourt +1;
+Mogadishu 21 to 19, Wanat and the September Redan -1. Still open: no source gives how often a
+cut-off unit surrenders, so the rule makes every cornered unit of a side that gives up do so.

@@ -776,6 +776,7 @@ morale:
 #   prisoners rise steeply once it is penetrated or enveloped, and towns cornered more defenders
 #   (a median 32% of urban defenders' losses were prisoners, 8% in the open). The project's
 #   surrender notes (The Dupuy Institute's capture-rate study, Shils and Janowitz, Dstl).
+#   Measured on 24 runs of every battlefield: 658 of 912 from 657, the targets about as before.
 rout:
   attack: 20
   tempo: 2.0

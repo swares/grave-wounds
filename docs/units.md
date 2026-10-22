@@ -202,7 +202,11 @@ rise steeply once it is penetrated and again once it is enveloped; being cut off
 cause veterans gave most for units giving way; men trapped in cellars and bunkers gave up as
 a group; and towns cornered more defenders (a median 32% of urban defenders' losses were
 prisoners, 8% in the open). Self-play showed the gap: cornered Somali militia at Mogadishu
-were cut down almost to the last man over 79 and 187 exchanges.
+were cut down almost to the last man over 79 and 187 exchanges. Measured on 24 runs of every
+battlefield: 658 of 912 from 657, the morale targets about as before (the rout's share of the
+loser's losses 5% to 4%, now counting prisoners); Visby 23 to 24 (the Gotlanders' losses 21% to
+32%: medieval quarter is 20%), X-Ray, Grozny, Lützen and Agincourt +1; Mogadishu 21 to 19, Wanat
+and the September Redan -1. The self-play tools count prisoners as losses.
 
 ## What the numbers give
 
