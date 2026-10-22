@@ -342,7 +342,12 @@ function writeXp(all){ try{ localStorage.setItem(XP_KEY, JSON.stringify(all)) }c
 const xpOf = (all, pid) => (all[pid] ||= { ticks: {}, served: 0 });
 // Boots and clothing (data kit.yaml): each named man's wear, 0 new to 1 worn out.
 const xpKit = pid => ({ boots: 0, clothing: 0, ...(pid ? readXp()[pid]?.kit : null) });
-function xpKitSet(pid, kit){ if (!pid) return; const all = readXp(); xpOf(all, pid).kit = kit; writeXp(all) }
+function xpKitSet(pid, kit){
+  if (!pid) return;
+  const all = readXp();
+  xpOf(all, pid).kit = kit;
+  writeXp(all);
+}
 // Away for treatment of Strain (the team builder sends him; the travel map counts the days off).
 const xpAwayDays = pid => (pid ? readXp()[pid]?.away?.days || 0 : 0);
 function xpSendAway(pid, days, where){
@@ -2423,13 +2428,17 @@ function kitNight(f, mine, wetCold){
   }
   if ((f.marched || 0) <= 0) mendDay(f, mine);
 }
-function mendDay(f, mine){                      // a day out of the march: Mend kit on the most worn boots or clothing among the named men
+function worstKit(mine){                        // the most worn boots or clothing among the named men: {n, part, w}, or null
   let worst = null;
-  for (const [, n] of mine){
-    if (!n.pid) continue;
+  for (const [, n] of mine.filter(([, x]) => x.pid)){
     const k = xpKit(n.pid);
     for (const part of ["boots", "clothing"]) if (k[part] >= KTD().worn && (!worst || k[part] > worst.w)) worst = { n, part, w: k[part] };
   }
+  return worst;
+}
+const MEND_WORD = r => { if (r.fumble) return "ruins them"; return r.success ? "mends them" : "cannot mend them yet" };
+function mendDay(f, mine){                      // a day out of the march: Mend kit on the most worn boots or clothing among the named men
+  const worst = worstKit(mine);
   if (!worst) return;
   const [v, who, pid] = bestSkill([f], "craft");
   if (!who) return;
@@ -2437,7 +2446,7 @@ function mendDay(f, mine){                      // a day out of the march: Mend 
   kit[worst.part] = ktMend(kit[worst.part], r.success, r.fumble);
   xpKitSet(worst.n.pid, kit);
   if (r.success) xpTick(pid, "craft", "mending kit");
-  const what = r.fumble ? "ruins them" : r.success ? "mends them" : "cannot mend them yet";
+  const what = MEND_WORD(r);
   const whose = worst.n.name === who ? `his own ${worst.part}` : `${worst.n.name}'s ${worst.part}`;
   f.log.unshift(`${dateText(f.day, true)}: ${who} works on ${whose} (Craft ${r.target}, rolled ${r.roll}): ${what}.`);
 }
@@ -2789,6 +2798,11 @@ function passNight(c){                         // at nightfall, any move of the 
   const done = nightFalls(c), extra = done.length ? " " + done.join(" ") : "";
   S.msg = `Night passes. ${dateText(c.day)}, ${clock(0, c.day)}: marching from now until ${clock(hpdOf(c.day), c.day)}.${extra}`;
 }
+function clockStep(c, kind, stop, dusk, seen, moved){   // one tick of the clock, never across the end of the day's marching hours -> events
+  const toDusk = c.used < dusk - 1e-9 ? dusk - c.used : Infinity;
+  const events = tickClock(c, Math.min(nextTick(c), stop - c.used, toDusk), seen, moved);
+  return kind === "event" && !events.length && !anyAtWork(c) ? ["Every force has halted."] : events;
+}
 function runClock(c, kind){                    // quarter hour by quarter hour to the stop, or the first event -> events [text]
   const seen = new Set(Object.keys(meetings())), moved = {}, days0 = c.day;
   const end = kind === "hour" ? Math.min(c.used + 1, dayEnd(c.day)) : dayEnd(c.day);
@@ -2796,9 +2810,7 @@ function runClock(c, kind){                    // quarter hour by quarter hour t
   while (!events.length){
     const stop = kind === "event" ? dayEnd(c.day) : end, dusk = hpdOf(c.day);
     if (c.used < stop - 1e-9){
-      const toDusk = c.used < dusk - 1e-9 ? dusk - c.used : Infinity;   // no step straddles the end of the day's marching hours
-      events = tickClock(c, Math.min(nextTick(c), stop - c.used, toDusk), seen, moved);
-      if (kind === "event" && !events.length && !anyAtWork(c)) events = ["Every force has halted."];
+      events = clockStep(c, kind, stop, dusk, seen, moved);
       continue;
     }
     if (kind !== "event" || c.day - days0 >= 14) break;
