@@ -252,7 +252,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
 <script>/*__EVENTS_JS__*/</script>
 <script>
 const DATA = /*__TRAVEL_DATA__*/null;
-const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, stress: DATA.stress, hazards: DATA.hazards, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
+const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, stress: DATA.stress, hazards: DATA.hazards, languages: DATA.languages, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
 const $ = s => document.querySelector(s);
 const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
 const BYKEY = Object.fromEntries(Object.values(TT).map(t => [t.key, t]));
@@ -988,13 +988,33 @@ function groundText(g){
 }
 const wxLine = d => { const w = d.w, c = WXD.conditions[w.cond], wn = WXD.winds.find(x => x.id === w.wind), from = w.dir && w.wind !== "calm" ? ` from the ${WIND_NAMES[w.dir]}` : ""; return `${c.name}, ${wn.name.toLowerCase()}${from}, ${tempOut(w.low)}\u2013${tempOut(w.high)} ${tempUnit()}` };
 // The night: rest by camp and weather, fatigue for the day, and the next morning.
+/* Languages (ranks.js: lgValue; data DATA.languages.maps): the people where the map lies speak a
+   tongue; foraging where no named man in the force gets by in it is Hard, and a man who spends
+   `among_days` nights among them has it ticked. */
+const localTongue = () => (DATA.languages?.maps || {})[S.mapId] || null;
+const speaksLocal = (n, t) => !!n.tongues && lgValue(n.tongues, t) >= (DATA.languages.getting_by ?? 26);
+function forageTongue(f){                      // [modifier, note]: Hard where no one in the force gets by in the local tongue
+  const t = localTongue();
+  if (!t || namedWith(readNamed(), f).some(([, n]) => ableNow(n) && (speaksLocal(n, t) || !n.tongues))) return [0, ""];
+  return [DATA.languages.forage_without ?? -20, `, no one speaking ${DATA.languages.tongues[t].name}`];
+}
 function foraged(f){                          // a named man's Fieldcraft roll finds fresh food on the day's march
   const [skill, who, pid] = bestSkill([f], "fieldcraft");
   if (!skill) return false;
-  const roll = roll100(), ok = roll <= skill;
+  const [mod, why] = forageTongue(f), target = Math.max(0, skill + mod);
+  const roll = roll100(), ok = roll <= target;
   if (ok) xpTick(pid, "fieldcraft", "foraging on the march");
-  if (ok) f.log.unshift(`${dateText(f.day, true)}: ${who} foraged fresh food on the march (Fieldcraft ${skill}, rolled ${roll}).`);
+  if (ok) f.log.unshift(`${dateText(f.day, true)}: ${who} foraged fresh food on the march (Fieldcraft ${target}${why}, rolled ${roll}).`);
   return ok;
+}
+function amongNight(f, n){                     // a night among the people of the map: a season of it ticks their tongue
+  const t = localTongue();
+  if (!t || !n.pid || !n.tongues || n.native === t) return;
+  f.among ||= {};
+  f.among[n.pid] = (f.among[n.pid] || 0) + 1;
+  if (f.among[n.pid] < (DATA.languages.among_days ?? 30)) return;
+  f.among[n.pid] = 0;
+  xpTick(n.pid, "tongue:" + t, `a month among the ${DATA.languages.tongues[t].name} speakers`);
 }
 function endDay(f){
   const today = dayWeather(f.day), camp = campHere(f);
@@ -1180,6 +1200,7 @@ function xpNight(f, wetCold){                 // experience: a night served for 
     if (fedByArmy(f)) xpArmy(n.pid, !!f.unpaid);           // and his army's pay, or arrears
     if (f.shortFood || f.packsNight || wetCold || hasCases(n)) xpMark(n.pid, "hard", 1);   // a hard night: wear (ageing)
     strainNight(f, n);
+    if (DATA.languages) amongNight(f, n);
   }
   if ((f.marched || 0) <= 0) f.campWeek = (f.campWeek || 0) + 1;     // drill: days of the week not marching
   if (f.day % DZ.week_days !== 0) return;

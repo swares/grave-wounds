@@ -19,6 +19,7 @@ circumstances:
   surrendered: {mod: -25, name: "Surrendered formally with his unit"}
   wealthy: {mod: -20, name: "Visibly worth a ransom", ransom_only: true}
   wounded: {mod: 5, name: "Taken wounded"}
+  quarter_tongue: {mod: -10, name: "Asked for quarter in his captors' tongue", approx: true}   # a surrender had to be accepted to protect him (Cook); data/languages.yaml
 harsh_hazard: 3               # a season at this hazard or more is harsh: 2 Strain and 1 Endurance lost
 service_desert: 40            # % a season a man in the captor's ranks finds his chance to desert
 officer_hazard: 0.5

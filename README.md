@@ -99,7 +99,9 @@ wounds and comrades lost builds toward a breakdown (nostalgia, shell shock, comb
 era), calibrated to the US Army's 1944 figures, with forward treatment, rest and rotation home. A man taken prisoner faces his era's captivity: killed or
 robbed on capture, exchanged, paroled or ransomed, escaping, or dying at the rates the records
 give, from Cabrera and Andersonville to Japan and Korea. Men swim or drown by their load, armour and the cold, climb
-walls and cliffs, fall, wade fords on the march, and run or ride each other down. A man lost
+walls and cliffs, fall, wade fords on the march, and run or ride each other down. Each speaks his
+own tongue and perhaps others, by army: orders, surrenders and questions across tongues can be
+misheard, and a good speaker can pass as one of the enemy. A man lost
 is replaced the era's way: rolled anew, assigned by the army after a wait, or hired. On the
 travel map forces lose men on the road as the records say they did: desertion, straggling,
 injuries and horses by era and by whether they are in camp, marching or withdrawing, with an

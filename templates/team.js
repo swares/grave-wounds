@@ -93,7 +93,8 @@ function makeCharacter(region, careerId, terms, mode, rng, sexWanted = "m"){
     trait: origin.trait.text, drawback: origin.drawback.text, events, old, age: T.age.start + T.age.per_term * terms, kit, weapon, look, aged_to: T.age.start });
   agSteps(c, rng);                                 // the years of his terms: decline, maturity, wear
   finishChar(c);
-  if (TD.hazards) c.swim = hzSwimAbility(T.id, c.skills.seamanship || 0, rng.randint(1, 100));   // whether he can swim (the last of the dice)
+  if (TD.hazards) c.swim = hzSwimAbility(T.id, c.skills.seamanship || 0, rng.randint(1, 100));   // whether he can swim
+  if (TD.languages) Object.assign(c, lgRoll(T.id, region, c.trait, c.drawback, rng));            // his tongues, after it
   return c;
 }
 /* Ageing (as gravewounds/ageing.py, data TD.ageing): each `step` years of his age, his band's
@@ -167,6 +168,9 @@ function xpSeason(c, ticks, served, rng){         // {rolls: [{skill, roll, was,
     const gain = roll > was && was < T.skill_max ? rng.randint(lo, hi) : 0;
     if (gain){ c.gains[s] = (c.gains[s] || 0) + gain; finishChar(c) }
     rolls.push({ skill: s, roll, was, gain: c.skills[s] - was });
+  }
+  if (c.tongues){                                  // his ticked tongues, after his skills
+    for (const r of lgSeason(c, [...ticks], rng, [lo, hi])) rolls.push({ skill: "tongue:" + r.tongue, roll: r.roll, was: r.was, gain: r.gain });
   }
   c.served = (c.served || 0) + Math.max(0, served);
   const per = xpTermDays(); let done = 0;

@@ -172,6 +172,9 @@ def make_character(d: Data, eid: str, region: str, career_id: str, terms: int, m
     finish(d, c)
     if d.hazards:                                  # whether he can swim (the last of the dice)
         c["swim"] = swim_ability(d, eid, c["skills"].get("seamanship", 0), rng.randint(1, 100))
+    if d.languages:                                # his tongues, after it
+        from .languages import roll as tongues
+        c.update(tongues(d, eid, region, c["trait"], c["drawback"], rng))
     return c
 
 
@@ -269,6 +272,15 @@ def _woman_note(tables: dict, c: dict) -> str:
     return " (a woman, enlisted as a man)" if disguised else " (a woman)"
 
 
+def tongue_line(d: Data, c: dict) -> str:
+    """English (his own), French 34 (getting by)"""
+    from .languages import band
+    names = d.languages["tongues"]
+    own = [f"{names[c['native']]['name']} (his own)"]
+    rest = sorted(((t, v) for t, v in c["tongues"].items() if t != c["native"]), key=lambda x: (-x[1], x[0]))
+    return ", ".join(own + [f"{names[t]['name']} {v} ({band(d, v)})" for t, v in rest])
+
+
 def sheet(d: Data, c: dict) -> list[str]:
     """A character as lines of text."""
     T = era(d, c["era"])
@@ -282,6 +294,7 @@ def sheet(d: Data, c: dict) -> list[str]:
              f"  {stats}",
              f"  Origin: {c['origin'].lower()}. {pron(c['trait'], sx)}; {pron(c['drawback'], sx).lower()}.",
              f"  Skills: {trained}",
+             *([f"  Tongues: {tongue_line(d, c)}"] if c.get("tongues") else []),
              f"  Arms: {d.weapons[c['weapon']]['name']} (attack {c['attack']}%), defence {c['defence']}%; {d.armor['kits'][c['kit']]['name']}"]
     lines.append("  In a fight: " + fight_line(d, c))
     if d.equipment.get(c["era"]):

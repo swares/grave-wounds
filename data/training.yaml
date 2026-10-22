@@ -29,6 +29,12 @@ masters:
   - {skill: seamanship, name: "Boatman or mate", fee: 3, places: [town, city, sea], approx: true}
   - {skill: drive, name: "Driving instructor", fee: 6, places: [town, city], approx: true}
   - {skill: signals, name: "Signals instructor", fee: 6, places: [city, camp], approx: true}
+  # Tongues ("tongue": any tongue). The army's own courses ran 12-week terms (the ASTP, 1943-44)
+  # and today 26-64 weeks (DLI); after about three months the better students could order a meal
+  # or rent a room (ASTP Moroccan Arabic). A week's lessons tick the tongue like any skill.
+  - {skill: tongue, name: "Language master", fee: 6, places: [town, city], approx: true}
+  - {skill: tongue, name: "Army language course", fee: 0, places: [camp, city], eras: [wwii, korea, vietnam, modern],
+     source: "https://en.wikipedia.org/wiki/Army_Specialized_Training_Program"}
 
 drill:
   camped_days: 4

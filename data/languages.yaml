@@ -1,0 +1,278 @@
+# Languages (rules in gravewounds/languages.py, repeated in templates/ranks.js; research in the
+# project doc "languages-research"). Each man has his own tongue at `native` (never ticked: Letters
+# stays the separate skill of reading and writing) and any others as a percentage, read in bands
+# (Mythras's). A tongue he does not have is known at a fraction of a related one he has (`related`,
+# RuneQuest's rule). Pidgins and the Plains sign language rise no higher than their `cap`; any
+# other learned tongue no higher than `max` (a learned tongue is never quite native).
+#
+# What it does:
+#   - Talk in a tongue caps the talk skills (`talk_skills`): Persuade, Command and haggling in
+#     French are at most his French.
+#   - Words across tongues (an order to a man of another tongue, calling on a foe to surrender or
+#     offering it, questioning a prisoner): d100 at the best tongue the two share (the lower of
+#     their two figures). Critical, the full meaning; success, the meaning; failure, only the gist
+#     (an order half done, a surrender not understood); fumble, a dangerous error (the Grattan fight
+#     of 1854, "fire an illume" heard as "fire mortars"). A phrase book (the eras in `phrase_books`)
+#     makes a yes-or-no, a number or a pointed direction Easy at no worse than `phrase_book`.
+#   - Passing as a native: his tongue against the listener's Watch (opposed), the difficulty by
+#     his grade (`passing`, after Operation Greif's grades of English speakers, 1944).
+#   - Capture: asking for quarter in his captors' tongue is a circumstance (data/prisoners.yaml).
+#     Escaping, his Fieldcraft to reach his own side gains `escape_home` by his grade in the
+#     country's tongue.
+#   - The travel map: foraging where no named man in the force gets by in the country's tongue
+#     (`maps`) is Hard (`forage_without`).
+# Learning: a tongue used well is ticked and rolls to rise at End of season like a skill (one at 0
+# always rises); `among_days` nights on a map whose people speak it tick it; a season held prisoner
+# ticks his captors' tongue; and the training masters teach one (data/training.yaml).
+#
+# Who speaks what (`armies`): each army's own tongues by share (d100), then for each other tongue
+# a chance he has it and its range. These shares are estimates from the research's figures (about
+# 216,000 German-born men in the Union armies; a quarter of the British in America were German; a
+# 1:1 KATUSA company with almost no shared tongue; most Chechens Soviet-trained in Russian), not
+# muster counts: approx throughout.
+native: 90
+max: 85
+bands:
+  - {from: 0, name: "none"}
+  - {from: 1, name: "a few words"}
+  - {from: 26, name: "getting by"}
+  - {from: 51, name: "conversation"}
+  - {from: 76, name: "fluent"}
+talk_skills: [persuade, command]
+phrase_book: 25
+phrase_books: [crimea, wwi, wwii, korea, vietnam, modern]
+passing:                      # his grade in the tongue -> the difficulty of passing as a native
+  - {from: 90, diff: ordinary, name: "native"}
+  - {from: 76, diff: hard, name: "fluent, without the idiom"}
+  - {from: 51, diff: very_hard, name: "a good speaker"}
+  - {from: 0, diff: null, name: "cannot pass"}
+escape_home: [{from: 90, mod: 20}, {from: 51, mod: 10}, {from: 0, mod: 0}]
+forage_without: -20
+readings:                     # what words across tongues come to, by the roll
+  full: "understood in full"
+  meaning: "understood"
+  gist: "only the gist: an order half done, a surrender not understood"
+  error: "a dangerous error: the wrong thing understood"
+getting_by: 26
+among_days: 30
+source: "https://en.wikipedia.org/wiki/Operation_Greif"
+
+tongues:
+  english: {name: English}
+  welsh: {name: Welsh}
+  irish: {name: Irish}
+  french: {name: French}
+  latin: {name: Latin}
+  italian: {name: Italian}
+  spanish: {name: Spanish}
+  portuguese: {name: Portuguese}
+  arabic: {name: Arabic}
+  greek: {name: Greek}
+  breton: {name: Breton}
+  german: {name: German}
+  low_german: {name: Low German}
+  danish: {name: Danish}
+  swedish: {name: Swedish}
+  finnish: {name: Finnish}
+  gutnish: {name: Gutnish}
+  scots: {name: Scots}
+  czech: {name: Czech}
+  croatian: {name: Croatian}
+  hungarian: {name: Hungarian}
+  polish: {name: Polish}
+  russian: {name: Russian}
+  ukrainian: {name: Ukrainian}
+  turkish: {name: Turkish}
+  tatar: {name: Crimean Tatar}
+  hindustani: {name: Hindustani}
+  nepali: {name: Nepali}
+  lakota: {name: Lakota}
+  cheyenne: {name: Cheyenne}
+  arapaho: {name: Arapaho}
+  plains_sign: {name: Plains sign language, cap: 75}
+  japanese: {name: Japanese}
+  chinese: {name: Chinese}
+  korean: {name: Korean}
+  bamboo_english: {name: "Bamboo English (a GI pidgin)", cap: 35}
+  vietnamese: {name: Vietnamese}
+  gi_vietnamese: {name: "GI Vietnamese (a pidgin)", cap: 35}
+  montagnard: {name: "Montagnard tongues"}
+  khmer: {name: Khmer}
+  melanesian: {name: "Melanesian tongues"}
+  uzbek: {name: Uzbek}
+  chechen: {name: Chechen}
+  somali: {name: Somali}
+  pashto: {name: Pashto}
+  dari: {name: Dari}
+  nuristani: {name: Nuristani}
+  urdu: {name: Urdu}
+
+related:                       # [a, b, share]: a man with one knows the other at this share of it
+  - [german, low_german, 0.5]
+  - [low_german, danish, 0.25]
+  - [low_german, gutnish, 0.25]
+  - [danish, swedish, 0.5]
+  - [gutnish, swedish, 0.5]
+  - [gutnish, danish, 0.25]
+  - [scots, english, 0.75]
+  - [spanish, portuguese, 0.5]
+  - [spanish, italian, 0.25]
+  - [russian, ukrainian, 0.5]
+  - [hindustani, urdu, 0.75]
+  - [czech, polish, 0.25]
+  - [croatian, czech, 0.25]
+
+traits:                        # background traits and drawbacks that give or take tongues
+  "Speaks three tongues": {extra: 2, range: [30, 60]}
+  "Speaks two tongues, and the sign language": {extra: 1, range: [30, 60], also: {plains_sign: 60}}
+  "Speaks the enemy's language": {enemy: [40, 70]}
+  "Speaks little English": {native_not: english, own: [german, irish, italian, polish], has: {english: [10, 25]}}
+  "Speaks little of the lowland tongue": {native_not: vietnamese, own: [montagnard], has: {vietnamese: [10, 25]}}
+
+armies:
+  medieval:
+    latin_east: {own: [[french, 70], [italian, 15], [arabic, 15]], enemy: arabic,
+                 others: [[arabic, 30, [10, 40]], [latin, 10, [20, 50]], [greek, 5, [10, 40]], [french, 40, [20, 50]]]}
+    baltic: {own: [[gutnish, 50], [low_german, 30], [danish, 20]], enemy: danish,
+             others: [[low_german, 30, [10, 40]], [latin, 5, [20, 50]]]}
+    england: {own: [[english, 85], [welsh, 10], [french, 5]], enemy: french,
+              others: [[french, 15, [10, 50]], [latin, 5, [20, 50]]]}
+    france: {own: [[french, 90], [breton, 5], [italian, 5]], enemy: english,
+             others: [[latin, 5, [20, 50]], [english, 5, [10, 40]]]}
+  thirty_years:
+    swedish: {own: [[german, 40], [swedish, 30], [scots, 15], [finnish, 15]], enemy: german,
+              others: [[german, 50, [20, 60]], [swedish, 10, [10, 40]]]}
+    imperial: {own: [[german, 70], [croatian, 10], [italian, 10], [czech, 5], [spanish, 5]], enemy: swedish,
+               others: [[german, 40, [20, 60]], [italian, 5, [10, 40]]]}
+  horse_musket:
+    continental: {own: [[english, 85], [german, 10], [french, 5]], enemy: english,
+                  others: [[english, 60, [20, 60]], [french, 5, [10, 40]], [german, 5, [10, 40]]]}
+    british_rev: {own: [[english, 70], [german, 25], [irish, 5]], enemy: english,
+                  others: [[english, 40, [10, 40]]]}
+    british_pen: {own: [[english, 75], [irish, 15], [german, 10]], enemy: french,
+                  others: [[english, 50, [10, 50]], [spanish, 20, [5, 35]], [portuguese, 10, [5, 35]], [french, 5, [10, 50]]]}
+    french: {own: [[french, 85], [german, 8], [italian, 4], [polish, 3]], enemy: english,
+             others: [[french, 60, [20, 60]], [spanish, 20, [5, 35]]]}
+    us_1812: {own: [[english, 90], [german, 5], [french, 5]], enemy: english,
+              others: [[english, 60, [20, 60]], [french, 5, [10, 40]]]}
+  crimea:
+    british: {own: [[english, 90], [irish, 10]], enemy: russian,
+              others: [[english, 60, [20, 60]], [french, 5, [10, 50]], [turkish, 5, [5, 25]]]}
+    french: {own: [[french, 95], [arabic, 5]], enemy: russian,
+             others: [[french, 60, [20, 60]], [arabic, 5, [10, 40]]]}
+    russian: {own: [[russian, 80], [ukrainian, 15], [polish, 5]], enemy: french,
+              others: [[russian, 60, [20, 60]], [tatar, 5, [10, 40]], [french, 3, [20, 60]]]}
+  civil_war:
+    union: {own: [[english, 85], [german, 12], [french, 3]], enemy: english,
+            others: [[english, 60, [20, 60]], [german, 10, [10, 40]]]}
+    confederacy: {own: [[english, 95], [french, 5]], enemy: english,
+                  others: [[english, 70, [30, 70]], [french, 3, [10, 40]]]}
+    frontier: {own: [[english, 80], [german, 15], [irish, 5]], enemy: lakota,
+               others: [[english, 60, [20, 60]], [plains_sign, 10, [10, 30]], [lakota, 5, [5, 30]]]}
+  plains_nations:
+    lakota: {own: [[lakota, 100]], enemy: english,
+             others: [[plains_sign, 80, [25, 60]], [cheyenne, 10, [10, 40]], [english, 5, [5, 25]]]}
+    cheyenne: {own: [[cheyenne, 85], [arapaho, 15]], enemy: english,
+               others: [[plains_sign, 80, [25, 60]], [lakota, 15, [10, 40]], [arapaho, 10, [10, 40]], [english, 5, [5, 25]]]}
+  wwi:
+    british: {own: [[english, 90], [hindustani, 5], [french, 3], [welsh, 2]], enemy: german,
+              others: [[english, 60, [20, 60]], [french, 25, [5, 30]], [german, 2, [10, 50]]]}
+    france: {own: [[french, 90], [arabic, 5], [breton, 5]], enemy: german,
+             others: [[french, 60, [20, 60]], [german, 5, [10, 50]]]}
+    germany: {own: [[german, 90], [polish, 7], [french, 3]], enemy: french,
+              others: [[german, 60, [20, 60]], [french, 10, [5, 40]], [english, 5, [5, 40]]]}
+    us: {own: [[english, 85], [german, 7], [italian, 5], [polish, 3]], enemy: german,
+         others: [[english, 60, [20, 60]], [french, 10, [5, 25]]]}
+  wwii:
+    us: {own: [[english, 88], [german, 4], [italian, 4], [spanish, 4]], enemy: german,
+         others: [[english, 70, [30, 70]], [french, 5, [5, 40]]]}
+    us_pacific: {own: [[english, 95], [spanish, 4], [japanese, 1]], enemy: japanese,
+                 others: [[english, 70, [30, 70]], [japanese, 1, [20, 60]]]}
+    commonwealth: {own: [[english, 90], [french, 5], [hindustani, 5]], enemy: german,
+                   others: [[english, 60, [20, 60]], [french, 5, [5, 40]]]}
+    germany: {own: [[german, 95], [polish, 5]], enemy: russian,
+              others: [[german, 60, [20, 60]], [french, 15, [5, 40]], [english, 10, [5, 40]], [russian, 5, [5, 30]]]}
+    soviet: {own: [[russian, 75], [ukrainian, 15], [uzbek, 10]], enemy: german,
+             others: [[russian, 60, [10, 50]], [german, 10, [5, 30]]]}
+    japan: {own: [[japanese, 100]], enemy: english,
+            others: [[english, 10, [5, 40]], [chinese, 10, [5, 30]]]}
+  korea:
+    us_1950: {own: [[english, 95], [spanish, 5]], enemy: korean,
+              others: [[english, 70, [30, 70]], [bamboo_english, 50, [10, 30]], [japanese, 10, [5, 25]]]}
+    us_1952: {own: [[english, 95], [spanish, 5]], enemy: chinese,
+              others: [[english, 70, [30, 70]], [bamboo_english, 70, [10, 35]], [korean, 10, [5, 20]]]}
+    commonwealth: {own: [[english, 95], [french, 5]], enemy: chinese,
+                   others: [[english, 60, [20, 60]], [bamboo_english, 50, [10, 30]]]}
+    rok: {own: [[korean, 100]], enemy: korean,
+          others: [[japanese, 60, [30, 70]], [bamboo_english, 30, [10, 30]], [english, 10, [5, 30]]]}
+    chinese: {own: [[chinese, 100]], enemy: english,
+              others: [[korean, 5, [5, 30]], [russian, 3, [10, 40]]]}
+    north_korea: {own: [[korean, 100]], enemy: english,
+                  others: [[japanese, 60, [30, 70]], [russian, 10, [10, 40]], [chinese, 10, [10, 40]]]}
+  vietnam:
+    us_army: {own: [[english, 95], [spanish, 5]], enemy: vietnamese,
+              others: [[english, 70, [30, 70]], [gi_vietnamese, 60, [10, 30]], [vietnamese, 5, [5, 30]]]}
+    us_marines: {own: [[english, 95], [spanish, 5]], enemy: vietnamese,
+                 others: [[english, 70, [30, 70]], [gi_vietnamese, 60, [10, 30]], [vietnamese, 5, [5, 30]]]}
+    anzac: {own: [[english, 100]], enemy: vietnamese,
+            others: [[gi_vietnamese, 50, [10, 30]], [vietnamese, 3, [5, 30]]]}
+    arvn: {own: [[vietnamese, 90], [montagnard, 5], [khmer, 5]], enemy: vietnamese,
+           others: [[vietnamese, 70, [20, 60]], [french, 30, [20, 60]], [english, 15, [10, 40]]]}
+    pavn: {own: [[vietnamese, 100]], enemy: english,
+           others: [[russian, 5, [10, 40]], [chinese, 5, [10, 40]]]}
+    nlf: {own: [[vietnamese, 95], [khmer, 5]], enemy: english,
+          others: [[vietnamese, 70, [20, 60]], [french, 10, [10, 40]]]}
+  modern:
+    uk_1982: {own: [[english, 95], [nepali, 5]], enemy: spanish,
+              others: [[english, 70, [30, 60]], [spanish, 3, [10, 50]]]}
+    argentina_1982: {own: [[spanish, 100]], enemy: english,
+                     others: [[english, 10, [10, 40]]]}
+    us_1991: {own: [[english, 90], [spanish, 10]], enemy: arabic,
+              others: [[english, 70, [40, 80]], [arabic, 2, [20, 60]]]}
+    us_1993: {own: [[english, 95], [spanish, 5]], enemy: somali,
+              others: [[english, 70, [40, 80]], [arabic, 2, [20, 60]], [somali, 1, [10, 40]]]}
+    russia_1995: {own: [[russian, 95], [ukrainian, 5]], enemy: chechen,
+                  others: [[chechen, 2, [10, 40]]]}
+    chechen: {own: [[chechen, 100]], enemy: russian,
+              others: [[russian, 95, [50, 85]]]}
+    us_2005: {own: [[english, 90], [spanish, 10]], enemy: arabic,
+              others: [[english, 70, [40, 80]], [arabic, 5, [10, 30]], [pashto, 2, [10, 30]]]}
+    uk_2005: {own: [[english, 95], [nepali, 5]], enemy: arabic,
+              others: [[english, 70, [40, 80]], [arabic, 3, [10, 30]], [pashto, 3, [10, 30]]]}
+    insurgent: {own: [[arabic, 50], [pashto, 40], [dari, 10]], enemy: english,
+                others: [[arabic, 20, [20, 60]], [urdu, 10, [10, 50]], [dari, 20, [20, 60]], [english, 10, [5, 30]]]}
+
+maps:                          # the tongue of the people where each map lies (none: no locals)
+  agincourt-1415: french
+  albuera-1811: spanish
+  anzio-1944: italian
+  bougainville-1944: melanesian
+  bull-run-1861: english
+  cassino-1944: italian
+  chipyong-1951: korean
+  chosin-1950: korean
+  cowpens-1781: english
+  dakto-1967: montagnard
+  easting73-1991: arabic
+  fallujah-2004: arabic
+  goosegreen-1982: english
+  grozny-1995: russian
+  hamburger-1969: montagnard
+  heartbreak-1951: korean
+  hue-1968: vietnamese
+  iadrang-1965: montagnard
+  kapyong-1951: korean
+  keating-2009: nuristani
+  khesanh-1968: montagnard
+  lundys-lane-1814: english
+  lutzen-1632: german
+  mogadishu-1993: somali
+  mons-1914: french
+  osan-1950: korean
+  phil-kearny-1866: lakota
+  porkchop-1953: korean
+  sevastopol-1855: russian
+  sidon-1253: arabic
+  towton-1461: english
+  visby-1361: gutnish
+  wanat-2008: nuristani

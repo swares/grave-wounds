@@ -109,7 +109,11 @@ const rkWealth = horses => rkTier((RK().honours || {}).wealth, horses);
 /* Training (as gravewounds/training.py, data TD.training): a week with a teacher ticks the pupil's
    skill if the teacher's check succeeds; a master for hire, a teammate well ahead, or drill. */
 const TRN = () => TD.training || {};
-const trMasters = (place, skill = null) => (TRN().masters || []).filter(m => TD.era.skills.some(s => s.id === m.skill) && (skill === null || m.skill === skill) && (place === null || m.places.includes(place)));
+function trTeaches(m, skill){                      // a language master teaches any tongue ("tongue:<id>")
+  if (m.skill === "tongue") return (m.eras || [TD.era.id]).includes(TD.era.id) && (skill === null || skill.startsWith("tongue:"));
+  return TD.era.skills.some(s => s.id === m.skill) && (skill === null || m.skill === skill);
+}
+const trMasters = (place, skill = null) => (TRN().masters || []).filter(m => trTeaches(m, skill) && (place === null || m.places.includes(place)));
 const trTeammateOk = (teacher, pupil) => teacher >= pupil + (TRN().teammate_gap ?? 20);
 const trWeek = (teacher, roll) => skillCheck(teacher, "ordinary", roll);
 function trDrill(camped, bestCommand, roll){       // null if it did not camp enough of the week; else the drill check
@@ -301,4 +305,91 @@ function hzChaseStep(gap, aTarget, aRoll, bTarget, bRoll, aSpeed, bSpeed){   // 
   else if (aSpeed > bSpeed) move = -1;
   else move = bSpeed > aSpeed ? 1 : 0;
   return { gap: Math.min(C.gaps.length - 1, Math.max(0, gap + move)), opposed: o };
+}
+
+/* Languages (as gravewounds/languages.py, data TD.languages): his own tongue at `native`, never
+   ticked; others a percentage read in bands; a related tongue known at a share; talk skills capped
+   by the tongue; words across tongues at the best tongue two men share; passing as a native. */
+const LG = () => TD.languages || {};
+const lgCap = t => LG().tongues[t]?.cap ?? (LG().max ?? 85);
+const byCode = (a, b) => (a < b ? -1 : Number(a > b));     // as Python's sorted: by code point
+function lgSet(c, t, v){ if (t !== c.native) c.tongues[t] = Math.max(c.tongues[t] || 0, v) }
+function lgArmy(eid, region){ return LG().armies?.[eid]?.[region] || { own: [], others: [] } }
+function lgRoll(eid, region, trait, drawback, rng){   // {native, tongues}: the dice as languages.py roll
+  const L = LG(), A = lgArmy(eid, region), T = L.traits || {}, tr = T[trait] || {}, dr = T[drawback] || {};
+  const native = lgNative(A, dr, rng.randint(1, 100));
+  const c = { native, tongues: { [native]: L.native ?? 90 } };
+  for (const [t, chance, [lo, hi]] of A.others || []){
+    if (!(t in c.tongues) && rng.randint(1, 100) <= chance) c.tongues[t] = rng.randint(lo, hi);
+  }
+  for (const row of [tr, dr]) lgTraitTongues(c, A, row, rng);
+  return c;
+}
+function lgNative(A, dr, r){                       // his own tongue: the drawback's list, or the army's shares
+  if (dr.own?.length) return dr.own[Math.floor((r - 1) * dr.own.length / 100)];
+  let acc = 0;
+  for (const [t, share] of A.own){ acc += share; if (r <= acc) return t }
+  return A.own[A.own.length - 1][0];
+}
+function lgExtra(c, A, row, rng){                  // a background's extra tongues, from his army's he lacks
+  const pool = [...new Set([...A.own.map(x => x[0]), ...(A.others || []).map(x => x[0])])];
+  for (let k = 0; k < row.extra; k++){
+    const left = pool.filter(t => !(t in c.tongues));
+    if (!left.length) return;
+    const t = left[Math.floor((rng.randint(1, 100) - 1) * left.length / 100)];
+    c.tongues[t] = rng.randint(row.range[0], row.range[1]);
+  }
+}
+function lgTraitTongues(c, A, row, rng){           // what a trait or drawback gives
+  if (row.extra) lgExtra(c, A, row, rng);
+  if (row.enemy && A.enemy) lgSet(c, A.enemy, rng.randint(row.enemy[0], row.enemy[1]));
+  for (const [t, v] of Object.entries(row.also || {})) lgSet(c, t, v);
+  for (const [t, [lo, hi]] of Object.entries(row.has || {})) lgSet(c, t, rng.randint(lo, hi));
+}
+function lgValue(tongues, t){                      // his own figure, or a share of a related tongue
+  let best = tongues[t] || 0;
+  for (const [a, b, share] of LG().related || []){
+    let other = null;
+    if (a === t) other = b; else if (b === t) other = a;
+    if (other && other in tongues) best = Math.max(best, Math.trunc(tongues[other] * share));
+  }
+  return best;
+}
+const lgBand = v => LG().bands.findLast(b => v >= b.from).name;
+function lgShared(a, b){                           // [tongue, figure]: the best two men share
+  const ids = new Set([...Object.keys(a), ...Object.keys(b)]);
+  for (const r of LG().related || []){ ids.add(r[0]); ids.add(r[1]) }
+  let best = null, bv = 0;
+  for (const t of [...ids].sort(byCode)){
+    const v = Math.min(lgValue(a, t), lgValue(b, t));
+    if (v > bv){ best = t; bv = v }
+  }
+  return [best, bv];
+}
+const lgTalk = (skill, tongues, native, t) => (t === native ? skill : Math.min(skill, lgValue(tongues, t)));
+function lgWords(v, roll, book = false, closed = false, diff = "ordinary"){   // {check, reading: full | meaning | gist | error}
+  if (book && closed){ v = Math.max(v, LG().phrase_book ?? 25); diff = "easy" }
+  const k = skillCheck(v, diff, roll);
+  let reading = "gist";
+  if (k.critical) reading = "full"; else if (k.success) reading = "meaning"; else if (k.fumble) reading = "error";
+  return { check: k, reading };
+}
+const lgGrade = v => LG().passing.find(g => v >= g.from);
+function lgPassing(v, watch, aRoll, bRoll){        // {grade, opposed (null: he cannot pass), passed}
+  const g = lgGrade(v);
+  if (!g.diff) return { grade: g.name, opposed: null, passed: false };
+  const o = opposedCheck(v, g.diff, aRoll, watch, bRoll);
+  return { grade: g.name, opposed: o, passed: o.winner === "a" };
+}
+const lgEscapeBonus = v => LG().escape_home.find(e => v >= e.from).mod;
+function lgSeason(c, ticks, rng, gain = [1, 3]){   // [{tongue, roll, was, gain}]: his ticked tongues, by id
+  const out = [];
+  for (const t of [...new Set(ticks.filter(k => k.startsWith("tongue:")).map(k => k.slice(7)))].sort(byCode)){
+    if (t === c.native || !LG().tongues[t]) continue;
+    const was = c.tongues[t] || 0, r = rng.randint(1, 100);
+    const up = r > was && was < lgCap(t) ? rng.randint(gain[0], gain[1]) : 0;
+    c.tongues[t] = Math.min(lgCap(t), was + up);
+    out.push({ tongue: t, roll: r, was, gain: c.tongues[t] - was });
+  }
+  return out;
 }

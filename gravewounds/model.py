@@ -116,6 +116,7 @@ class Data:
     stress: dict = field(default_factory=dict)      # combat stress (data/stress.yaml)
     prisoners: dict = field(default_factory=dict)   # capture and captivity (data/prisoners.yaml)
     hazards: dict = field(default_factory=dict)     # swimming, climbing, falls, chases (data/hazards.yaml)
+    languages: dict = field(default_factory=dict)   # tongues by army, bands, passing (data/languages.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -179,6 +180,7 @@ def load(root: str | Path = "data") -> Data:
     stress = _optional(root / "stress.yaml", {})
     prisoners = _optional(root / "prisoners.yaml", {})
     hazards = _optional(root / "hazards.yaml", {})
+    languages = _optional(root / "languages.yaml", {})
 
     data = Data(
         root=root,
@@ -217,6 +219,7 @@ def load(root: str | Path = "data") -> Data:
         stress=stress,
         prisoners=prisoners,
         hazards=hazards,
+        languages=languages,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -594,6 +597,38 @@ def validate(d: Data) -> None:
         for k, l in HZ["falls"]["landings"].items():
             if l["zones"][-1][0] != 100:
                 errors.append(f"hazards.yaml: landing {k} zones must reach 100")
+    if d.languages:
+        LG = d.languages
+        known = set(LG["tongues"])
+        for eid, armies in LG.get("armies", {}).items():
+            if eid not in d.teams:
+                errors.append(f"languages.yaml: unknown era {eid}")
+                continue
+            regions = {r["id"] for r in d.teams[eid]["regions"]}
+            for rid, A in armies.items():
+                if rid not in regions:
+                    errors.append(f"languages.yaml: {eid} has no army {rid}")
+                if sum(s for _, s in A["own"]) != 100:
+                    errors.append(f"languages.yaml: {eid} {rid} own tongues must share 100")
+                for t in [t for t, _ in A["own"]] + [t for t, _, _ in A.get("others", [])] + [A.get("enemy")]:
+                    if t not in known:
+                        errors.append(f"languages.yaml: {eid} {rid} names an unknown tongue {t}")
+                for t, _, (lo, hi) in A.get("others", []):
+                    if t in known and hi > LG["tongues"][t].get("cap", LG["max"]):
+                        errors.append(f"languages.yaml: {eid} {rid} {t} range passes its cap")
+            for r in d.teams[eid]["regions"]:
+                if r["id"] not in armies:
+                    errors.append(f"languages.yaml: {eid} army {r['id']} has no tongues")
+        for a, b, _ in LG.get("related", []):
+            if a not in known or b not in known:
+                errors.append(f"languages.yaml: related names an unknown tongue ({a}, {b})")
+        for m, t in (LG.get("maps") or {}).items():
+            if t not in known:
+                errors.append(f"languages.yaml: map {m} names an unknown tongue {t}")
+        traits = {o[k]["text"] for T in d.teams.values() for o in T["origins"] for k in ("trait", "drawback")}
+        for t in LG.get("traits", {}):
+            if t not in traits:
+                errors.append(f"languages.yaml: no background has the trait {t!r}")
     if d.prisoners:
         for eid, cs in (d.prisoners.get("eras") or {}).items():
             if eid not in d.teams:
@@ -605,7 +640,7 @@ def validate(d: Data) -> None:
     if d.training:
         TR, skills = d.training, {s["id"] for T in d.teams.values() for s in T["skills"]}
         for m in TR.get("masters", []):
-            if m.get("skill") not in skills or not (isinstance(m.get("fee"), (int, float)) and m["fee"] >= 0) or not set(m.get("places") or []) <= JOB_PLACES:
+            if (m.get("skill") not in skills and m.get("skill") != "tongue") or not (isinstance(m.get("fee"), (int, float)) and m["fee"] >= 0) or not set(m.get("places") or []) <= JOB_PLACES:
                 errors.append(f"training.yaml: master {m.get('name')} needs a known skill, a fee and known places")
         for k in ("master_skill", "teammate_gap"):
             if not isinstance(TR.get(k), int):

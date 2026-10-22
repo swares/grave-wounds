@@ -355,6 +355,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
       <div id="chars" style="display:flex;flex-direction:column;gap:10px"></div>
       <div id="after-fight"></div>
       <div id="hazards"></div>
+      <div id="words"></div>
       <p class="muted" style="margin:0" id="trk-rule"></p>
     </section>
   </div>
@@ -516,7 +517,7 @@ function moraleCheck(fighters, roll){
 // Battle map. Hexes are [col, row], pointy-top, odd rows shifted right.
 const MOVE = CMB.move, CAMP_HEX_M = MOVE.hex_m;
 // ----- named characters' sickness: a fighter can go with a force on the travel map, which runs his days -----
-const TD = { checks: DATA.checks, ranks: DATA.ranks, loads: DATA.loads, stress: DATA.stress, hazards: DATA.hazards, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): set to a fighter's era before use
+const TD = { checks: DATA.checks, ranks: DATA.ranks, loads: DATA.loads, stress: DATA.stress, hazards: DATA.hazards, languages: DATA.languages, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): set to a fighter's era before use
 const DZR = DATA.disease, NAMED_KEY = "gravewounds-named";   // {uid: {name, endurance, map, force, health, dead, log}}, shared with the travel map
 function readNamed(){ try{ return JSON.parse(localStorage.getItem(NAMED_KEY) || "{}") || {} }catch(e){ console.warn("named characters unreadable", e); return {} } }
 function writeNamed(all){ try{ localStorage.setItem(NAMED_KEY, JSON.stringify(all)) }catch(e){ /* storage off: not attached */ } }
@@ -571,7 +572,7 @@ function attachNamed(c, value){                   // put him with a travel force
     const [map, id] = [value.slice(0, value.lastIndexOf(":")), +value.slice(value.lastIndexOf(":") + 1)], was = all[c.uid] || {};
     all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id, old: oldWounds(c), skills: namedSkills(c), pid: (c.sheet && c.sheet.pid) || null,
       drill: (c.sheet && c.sheet.skill_by && c.weapon && c.sheet.skill_by[c.weapon]) || null,
-      str: statOf(c, "str"), nerve: statOf(c, "nerve"), agi: statOf(c, "agi"), end: statOf(c, "end"), ride: skillAt(c, "ride"), swim: (c.sheet && c.sheet.swim) || "basic", sex: (c.sheet && c.sheet.sex) || "m", kitLoad: kitLoad(c.kit), loadExtra: (c.sheet && c.sheet.load_extra) || 0, era: loadEra(c) };   // his load on the march   // the skill drill ticks on the travel map
+      str: statOf(c, "str"), nerve: statOf(c, "nerve"), agi: statOf(c, "agi"), end: statOf(c, "end"), ride: skillAt(c, "ride"), swim: (c.sheet && c.sheet.swim) || "basic", native: (c.sheet && c.sheet.native) || null, tongues: (c.sheet && c.sheet.tongues) || null, sex: (c.sheet && c.sheet.sex) || "m", kitLoad: kitLoad(c.kit), loadExtra: (c.sheet && c.sheet.load_extra) || 0, era: loadEra(c) };   // his load on the march   // the skill drill ticks on the travel map
   }
   writeNamed(all);
   NAMED = all;
@@ -955,6 +956,68 @@ $("#hazards").addEventListener("click", e => {
   else if (HZ_DO[b.id]) HZ_DO[b.id](c, K);
   renderChars();
 });
+/* ---------- words across tongues (ranks.js: lgShared, lgWords, lgPassing; data DATA.languages). A
+   fighter from the team builder speaks to another, or to someone who speaks one tongue: an order,
+   a call to surrender (or his own), a question, or passing himself off as one of them against the
+   listener's Watch. Used well, the tongue is ticked. ---------- */
+const WD_PURPOSES = { order: "Give an order", surrender: "Call on him to surrender, or surrender", question: "Ask a question", pass: "Pass as one of them" };
+const speakers = () => S.chars.filter(c => c.sheet && c.sheet.tongues);
+function eraTongues(eid){
+  const ids = new Set();
+  for (const A of Object.values(DATA.languages.armies[eid] || {})){ A.own.forEach(x => ids.add(x[0])); (A.others || []).forEach(x => ids.add(x[0])) }
+  return [...ids].sort((a, b) => (DATA.languages.tongues[a].name < DATA.languages.tongues[b].name ? -1 : 1));
+}
+function listenerOf(K){                          // {name, tongues, watch}: a fighter, or someone who speaks only one tongue
+  if (K.to.startsWith("t:")){ const t = K.to.slice(2); return { name: `someone who speaks ${DATA.languages.tongues[t].name}`, tongues: { [t]: DATA.languages.native }, watch: 50 } }
+  const c = S.chars.find(x => x.id === +K.to.slice(2));
+  return c ? { name: c.name, tongues: (c.sheet && c.sheet.tongues) || {}, watch: skillAt(c, "watch") || 50 } : null;
+}
+function renderWords(){
+  const box = $("#words"), sp = speakers();
+  if (!box) return;
+  if (!DATA.languages || !sp.length){ box.innerHTML = ""; return }
+  const K = (S.wd ||= { who: sp[0].id, to: "", purpose: "order", book: false });
+  if (!sp.some(c => c.id === K.who)) K.who = sp[0].id;
+  const c = sp.find(x => x.id === K.who), eid = c.sheet.era, ts = eraTongues(eid);
+  const others = S.chars.filter(x => x.id !== K.who).map(x => ["c:" + x.id, x.name]), strangers = ts.map(t => ["t:" + t, "Someone who speaks " + DATA.languages.tongues[t].name]);
+  if (![...others, ...strangers].some(([v]) => v === K.to)) K.to = (others[0] || strangers[0])[0];
+  const checked = K.book ? " checked" : "", hasBook = (DATA.languages.phrase_books || []).includes(eid) && K.purpose === "question";
+  const book = hasBook ? `<label class="check"><input type="checkbox" id="wd-book"${checked}> Phrase book: a yes or no, a number, a direction</label>` : "";
+  const items = (S.wdlog || []).map(l => `<li>${attr(l)}</li>`).join(""), log = items ? `<ol class="roundlog">${items}</ol>` : "";
+  box.innerHTML = `<details class="after"${S.wdOpen ? " open" : ""}><summary><b>Words across tongues</b> <span class="muted">orders, surrender, questions, passing</span></summary>
+    <div class="toolbar"><label>Who ${hazardOpts("wd-who", sp.map(x => [x.id, x.name]), K.who)}</label> <label>To ${hazardOpts("wd-to", [...others, ...strangers], K.to)}</label></div>
+    <div class="toolbar">${hazardOpts("wd-purpose", Object.entries(WD_PURPOSES), K.purpose)} ${book} <button class="small" id="wd-roll">Speak</button></div>${log}</details>`;
+}
+function speak(){
+  const K = S.wd, c = S.chars.find(x => x.id === K.who), L = listenerOf(K), LG_ = DATA.languages;
+  if (!c || !L) return;
+  const mine = c.sheet.tongues, pid = c.sheet.pid;
+  let line, ok, t;
+  if (K.purpose === "pass"){
+    t = Object.keys(L.tongues).sort((a, b) => L.tongues[b] - L.tongues[a])[0];       // the listener's best tongue
+    const p = lgPassing(lgValue(mine, t), L.watch, d100(), d100());
+    ok = p.passed;
+    const verdict = ok ? "taken for one of them" : "found out";
+    if (p.opposed) line = `${c.name} passes as one of them to ${L.name} in ${LG_.tongues[t].name} (${p.grade}): ${p.opposed.a.roll} against ${p.opposed.a.target}, Watch ${p.opposed.b.roll} against ${p.opposed.b.target}: ${verdict}`;
+    else line = `${c.name} cannot pass in ${LG_.tongues[t].name} (${p.grade})`;
+  } else {
+    const [st, v] = lgShared(mine, L.tongues);
+    t = st;
+    const closed = K.purpose === "question" && K.book;
+    const w = lgWords(v, d100(), closed, closed);
+    ok = w.check.success;
+    const how = st ? `in ${LG_.tongues[st].name} (${v})` : "with no tongue in common";
+    line = `${c.name} to ${L.name}, ${WD_PURPOSES[K.purpose].toLowerCase()}, ${how}: rolled ${w.check.roll} against ${w.check.target}: ${LG_.readings[w.reading]}`;
+  }
+  if (ok && t && t !== c.sheet.native && pid) xpTick(pid, "tongue:" + t, "words across tongues");
+  S.wdlog = [line + ".", ...(S.wdlog || [])].slice(0, 30);
+}
+$("#words").addEventListener("change", e => {
+  const K = S.wd, el = e.target;
+  if (el.id === "wd-who") K.who = +el.value; else if (el.id === "wd-to") K.to = el.value; else if (el.id === "wd-purpose") K.purpose = el.value; else if (el.id === "wd-book") K.book = el.checked;
+  S.wdOpen = true; setTimeout(renderChars);
+});
+$("#words").addEventListener("click", e => { if (e.target.closest("#wd-roll")){ S.wdOpen = true; speak(); renderChars() } });
 function xpHit(c, skill, why){ if (c && c.sheet && c.sheet.pid) xpTick(c.sheet.pid, skill, why) }   // experience: a skill used well ticks it
 function syncNamed(){
   pullSheets();
@@ -1628,7 +1691,8 @@ function sheetLine(c){                          // a team builder character's sh
   const olds = [...h.old.map(w => LOC[w.loc].name.toLowerCase()), ...scars];
   const old = olds.length ? ` · old wounds: ${olds.join(", ")}` : "";
   const p = h.pid ? readPurses()[h.pid] : null, purse = p ? ` · purse ${daysQ(purseLeft(p))}` : "";   // shared with the team builder and the travel map
-  return `<div class="wears">${attr(h.career)}, ${h.terms} term${h.terms > 1 ? "s" : ""}, age ${h.age}${h.leader ? " · leads" : ""} · ${stats}</div><div class="muted">${attr(skills)} · defence ${h.defence}%${attr(old)}${purse}</div>`;
+  const tongues = h.tongues && DATA.languages ? " · " + [DATA.languages.tongues[h.native].name, ...Object.entries(h.tongues).filter(([t]) => t !== h.native).map(([t, v]) => `${DATA.languages.tongues[t].name} ${v}`)].join(", ") : "";
+  return `<div class="wears">${attr(h.career)}, ${h.terms} term${h.terms > 1 ? "s" : ""}, age ${h.age}${h.leader ? " · leads" : ""} · ${stats}</div><div class="muted">${attr(skills)} · defence ${h.defence}%${attr(old)}${purse}${attr(tongues)}</div>`;
 }
 function addTeam(){                             // the team from the team builder joins the fighters
   const t = S.teamIn; if (!t) return;
@@ -2762,7 +2826,7 @@ function renderChars(){
   }).join("") || `<p class="muted">Add a combatant to start tracking wounds.</p>`;
   renderMap();
   save();
-  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards();
+  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards(); renderWords();
 }
 $("#after-fight").addEventListener("change", e => {
   if (e.target.id === "sel-won"){ S.wonBy = e.target.value || null; S.afterOpen = true; renderChars() }
