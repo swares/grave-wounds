@@ -1969,7 +1969,8 @@ function ransomCaptive(k, n){                      // his people pay: the leader
   lead.ledger ||= [];
   lead.ledger.push({ days: v * keep, what: `Ransom of ${k.name}` });
   S.captives.splice(n, 1);
-  const share = keep < 1 ? `, ${cash(v * keep)} kept after the ${keep >= 0.9 ? "hospital's tenth" : "captain's third"}` : "";
+  const whose = keep >= 0.9 ? "hospital's tenth" : "captain's third";
+  const share = keep < 1 ? `, ${cash(v * keep)} kept after the ${whose}` : "";
   capLog(`${k.name} is ransomed for ${cash(v)}${share}${thirdsToPatron(lead, v, keep)}.`);
 }
 function captiveAct(e){                             // the captives' buttons and boxes
