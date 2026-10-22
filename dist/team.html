@@ -487,7 +487,7 @@ function fmtMoney(cur, amount){                   // £8 6s 8d, 6½d, 4 Rt 30 kr
 const COINS = {};                                 // each page fills it: Object.assign(COINS, ...)
 function coinOf(era, region){                      // his army's coin, where it has a Day; else null
   const E = COINS[era];
-  if (!E || !E.currency) return null;
+  if (!E?.currency) return null;
   const id = E.currency[region] ?? E.currency.default, cur = id ? E.currencies[id] : null;
   return cur?.day ? cur : null;
 }
@@ -1611,7 +1611,8 @@ function rollLoot(){
   for (const c of who){
     const r = rkLoot(K.kind, c, realDice);
     let t = `${c.name}: ${r.what || "nothing"}`;
-    if (r.roll !== null) t += ` (d100 ${r.roll}${r.found ? `, ${cash(r.found)}` : ""})`;
+    const found = r.found ? ", " + cash(r.found) : "";
+    if (r.roll !== null) t += ` (d100 ${r.roll}${found})`;
     if (r.risk) t += `; the provost ${chkText(r.opposed.a)} against his Stealth ${chkText(r.opposed.b)}: ${r.caught ? "caught, and it is taken from him" : "not caught"}`;
     if (r.punished) t += `. ${(L.punish || "Punished.").replace(/\.$/, "")}`;
     if (r.days){
@@ -2180,6 +2181,12 @@ function endSeason(){
   render();
 }
 const PLACE_NAMES = { town: "a town", city: "a city", village: "a village", camp: "a camp", road: "on the road", frontier: "the frontier", sea: "at sea" };
+function workLog(log, totals){                     // the terms worked, and what each man earned
+  if (!log) return "";
+  const earned = totals.map(([n, t]) => esc(n) + " " + cash(t)).join(" · ") || "nothing";
+  return `<ol class="log">${log}</ol><p class="muted">Earned, and paid into each purse: ${earned}</p>
+    <div class="toolbar" style="justify-content:flex-end"><button class="small" id="btn-clear-work">Clear the work</button></div>`;
+}
 function jobPay(j){                               // '3d (¾ Day) a day': the job's pay in his army's coin first
   const t = coinText(j.pay, T.id, S.region), p = payText(j);
   return t ? p.replace(/^\S+ Days?/, m => `${t} (${m})`) : p;
@@ -2205,8 +2212,7 @@ function renderWork(){                           // Find work: the jobs going wh
     <div class="row"><label for="sel-place">Where the team is</label><select id="sel-place">${places.map(p => `<option value="${p}"${p === S.place ? " selected" : ""}>${PLACE_NAMES[p]}</option>`).join("")}</select>
     <span class="muted note">One skill check a term: full pay, ${Math.round(TD.money.work.failure * 100)}% on a miss, nothing on a fumble (${TD.money.work.fumble_from}+). Risk is the chance of trouble each term. A job that does not feed him costs his keep each day: food, and a bed in a town, city, village or on the road. † against the law.</span></div>
     <div class="scroll"><table><thead><tr><th>Job</th><th>Skill</th><th>Pay</th><th>Term</th><th>Risk</th><th>Work a term</th></tr></thead><tbody>${rows}</tbody></table></div>
-    ${log ? `<ol class="log">${log}</ol><p class="muted">Earned, and paid into each purse: ${totals.map(([n, t]) => esc(n) + " " + cash(t)).join(" · ") || "nothing"}</p>
-    <div class="toolbar" style="justify-content:flex-end"><button class="small" id="btn-clear-work">Clear the work</button></div>` : ""}</section>`;
+    ${workLog(log, totals)}</section>`;
 }
 function workLine(c, j, r, pk){                  // as the work command: the check, the pay, his keep, any trouble and the job's hook
   const check = r.check === null ? "no check" : `d100 ${r.check} against ${c.skills[j.skill] ?? 0}: ${r.outcome}`;

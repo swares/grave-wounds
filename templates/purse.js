@@ -48,7 +48,7 @@ function fmtMoney(cur, amount){                   // £8 6s 8d, 6½d, 4 Rt 30 kr
 const COINS = {};                                 // each page fills it: Object.assign(COINS, ...)
 function coinOf(era, region){                      // his army's coin, where it has a Day; else null
   const E = COINS[era];
-  if (!E || !E.currency) return null;
+  if (!E?.currency) return null;
   const id = E.currency[region] ?? E.currency.default, cur = id ? E.currencies[id] : null;
   return cur?.day ? cur : null;
 }
