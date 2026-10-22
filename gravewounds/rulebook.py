@@ -112,7 +112,7 @@ def _talk_values(d: Data) -> dict:
     return {"sell_win": round(sell["win"] * 100), "sell_crit": round(sell["critical"] * 100), "sell_fumble": round(-sell["fumble"] * 100),
             "hunt_deer": (U.get("hunt") or {}).get("deer", 5), "hunt_buffalo": (U.get("hunt") or {}).get("buffalo", 40),
             "way_slow": (U.get("way") or {}).get("slow", 1.4),
-            "lg_native": LG.get("native", 90), "lg_max": LG.get("max", 85), "lg_book": LG.get("phrase_book", 25),
+            "lg_native": LG.get("native", 90), "lg_place_km": f"{LG.get('place_km', 10) / 1.609:.0f} miles ({LG.get('place_km', 10):g} km)", "lg_max": LG.get("max", 85), "lg_book": LG.get("phrase_book", 25),
             "lg_pidgin": (tongues.get("bamboo_english") or {}).get("cap", 35), "lg_sign": (tongues.get("plains_sign") or {}).get("cap", 75),
             "pt_start": PT.get("start", 30), "pt_persuade": PT.get("persuade_div", 10), "pt_offended": PT.get("offended", -10),
             "pt_promotion": PT.get("promotion_bonus", 20), "pt_season": (PT.get("events", {}).get("season") or {}).get("add", 2),

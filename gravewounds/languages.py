@@ -1,6 +1,6 @@
 """Languages (data/languages.yaml). The team builder, roller and travel map (templates/ranks.js)
-repeat roll, value, band, shared, talk, words, passing, escape_bonus and season exactly, taking
-the dice in the same order.
+repeat roll, value, band, shared, talk, words, passing, escape_bonus, season and tongues_at
+exactly, taking the dice in the same order.
 
 - A man's own tongue is at `native` and never ticked; others are a percentage, read in bands.
 - A tongue he lacks is known at a share of a related one he has.
@@ -9,6 +9,7 @@ the dice in the same order.
 from __future__ import annotations
 
 from .checks import check, opposed
+from .combat import hex_distance
 from .model import Data
 
 
@@ -165,3 +166,28 @@ def season(d: Data, c: dict, ticks, rng, gain=(1, 3)) -> list[dict]:
         c["tongues"][t] = min(cap(d, t), was + up)
         out.append({"tongue": t, "roll": r, "was": was, "gain": c["tongues"][t] - was})
     return out
+
+
+def map_default(d: Data, mid: str) -> list[str]:
+    """The tongues of a map's people where no place says otherwise (languages.yaml maps: one
+    tongue or a list, main first; none or absent: no locals)."""
+    v = (_cfg(d).get("maps") or {}).get(mid)
+    if not v or v == "none":
+        return []
+    return list(v) if isinstance(v, list) else [v]
+
+
+def tongues_at(d: Data, mid: str, hex_) -> list[str]:
+    """The tongues of the people at a hex of a travel map, main first: those of the nearest place
+    within `place_km` that names its own (`tongues`; the first listed of two as near), else the
+    map's. A man getting by in any of them gets by there."""
+    m = d.maps.get(mid) or {}
+    reach = (_cfg(d).get("place_km") or 0) / (m.get("hex_km") or 1)
+    best, near = None, None
+    for p in m.get("places") or []:
+        if not p.get("tongues"):
+            continue
+        dist = hex_distance(p["hex"], hex_)
+        if dist <= reach and (near is None or dist < near):
+            best, near = p, dist
+    return list(best["tongues"]) if best else map_default(d, mid)

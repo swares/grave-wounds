@@ -19,10 +19,12 @@
 #   - Capture: asking for quarter in his captors' tongue is a circumstance (data/prisoners.yaml).
 #     Escaping, his Fieldcraft to reach his own side gains `escape_home` by his grade in the
 #     country's tongue.
-#   - The travel map: foraging where no named man in the force gets by in the country's tongue
-#     (`maps`) is Hard (`forage_without`).
+#   - The travel map: foraging where no named man in the force gets by in the local tongue is
+#     Hard (`forage_without`). The local tongues are those of the nearest place within `place_km`
+#     that names its own (a map place's `tongues`, main first: mixed country lists several, and
+#     getting by in any of them will do), else the map's (`maps`: one tongue or a list).
 # Learning: a tongue used well is ticked and rolls to rise at End of season like a skill (one at 0
-# always rises); `among_days` nights on a map whose people speak it tick it; a season held prisoner
+# always rises); `among_days` nights among people who speak it (their main tongue) tick it; a season held prisoner
 # ticks his captors' tongue; and the training masters teach one (data/training.yaml).
 #
 # Who speaks what (`armies`): each army's own tongues by share (d100), then for each other tongue
@@ -55,6 +57,7 @@ readings:                     # what words across tongues come to, by the roll
   error: "a dangerous error: the wrong thing understood"
 getting_by: 26
 among_days: 30
+place_km: 10                   # how far from a place its own tongues are spoken (else the map's)
 source: "https://en.wikipedia.org/wiki/Operation_Greif"
 
 # A hired interpreter (the team builder): he speaks the team's own tongue and one other at
