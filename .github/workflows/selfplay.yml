@@ -57,7 +57,7 @@ jobs:
           python3 tools/selfplay/shard.py "$SHARD" 16 "$SEEDS" "$FIRST" subject/data/fields > jobs.txt
           wc -l < jobs.txt
           xargs -P "$(nproc)" -L 1 sh -c 'node tools/selfplay/targets.js "$0" "$1" subject/dist/field.html > "out/$0.s$1.json" || echo "$0 s$1 FAILED"' < jobs.txt
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: shard-${{ matrix.shard }}
           path: out/
@@ -77,7 +77,7 @@ jobs:
         run: |
           ls results/*.json | wc -l
           { echo '```'; python3 tools/selfplay/report.py winners results | tail -40; python3 tools/selfplay/targets.py results; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: selfplay-${{ inputs.label }}
           path: results/
