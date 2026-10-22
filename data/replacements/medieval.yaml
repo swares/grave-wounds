@@ -26,6 +26,57 @@ assigned:
   source:
     url: https://www.ihgs.ac.uk/was-your-ancestor-a-late-medieval-soldier-part-2-1812
     note: Standish retinue refilled in 1441 after Gerberoy, 1435
+- id: besteiros_do_conto
+  name: A new man enrolled by the anadel
+  regions:
+  - portugal
+  careers:
+  - crossbowman
+  terms: 1
+  wait:
+  - 30
+  - 180
+  what: The towns' crossbowmen (besteiros do conto) were drawn by quota from each town; when one died or retired, the anadel struck him off and enrolled another, preferably a married craftsman.
+  source:
+    url: https://www.brown.edu/Departments/Portuguese_Brazilian_Studies/ejph/html/issue23/pdf/v12n1a03.pdf
+    note: e-JPH 12:1, pp. 68-74; about 5,000 by 1421; the wait is a guess
+  approx: true
+- id: town_levy
+  name: A man of the town's levy, armed by his wealth
+  regions:
+  - portugal
+  - castile
+  careers:
+  - spearman
+  - crossbowman
+  - man_at_arms
+  terms: 1
+  wait:
+  - 30
+  - 120
+  what: Every householder kept arms by his assessed wealth (a crossbow and three dozen bolts at 600-2,000 maravedís in Castile); after Aljubarrota the Cortes armed every man of 20 to 60 and called six musters a year.
+  source:
+    url: https://www.rehj.cl/index.php/rehj/article/download/380/357/1435
+    note: Cortes of Valladolid, December 1385 (Pascual Sarria); the wait is a guess
+  approx: true
+- id: vasallo_lanza
+  name: A king's vassal's lance
+  regions:
+  - castile
+  careers:
+  - man_at_arms
+  - mounted_sergeant
+  terms:
+  - 1
+  - 2
+  wait:
+  - 60
+  - 365
+  what: The king's vassals held a yearly retainer for each lance they kept (1,500 maravedís a lance in 1387), and lords had quotas; a lost lance was made good at the next muster.
+  source:
+    url: https://revistas.um.es/medievalismo/article/download/505001/316321/1787521
+    note: Martín Vera, La lanza bajomedieval castellana (2021), table 3; the wait is a guess
+  approx: true
 hire:
 - id: demobbed_soldier
   name: A demobilised soldier from the London pool

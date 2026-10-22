@@ -49,7 +49,24 @@ currencies:
     day_note: "a labourer's 1 öre a day at Nyköping (1365), standing in for a soldier's"
     day_approx: true
 
-currency: {default: gbp, france: livre_t, latin_east: bezant, baltic: gotland}
+  libra_pt:
+    name: "Portuguese libras (20 soldos, 240 dinheiros), in the money of 1380"
+    coin: libra_pt
+    base: dinheiro
+    units: [{sym: " libras", of: 240}, {sym: " soldos", of: 12}, {sym: " d.", of: 1}]
+    day: 240
+    day_note: "a blacksmith's 20 soldos a day (1380), standing in for a soldier's: no Portuguese pay for 1383-85 was found. The libra lost two-thirds of its silver in 1384-85 (66 to the mark in 1385, 22 in 1380): prices from other years are turned into 1380 money by the mark"
+    day_approx: true
+  maravedi:
+    name: "Castilian maravedís of the old money (10 dineros)"
+    coin: maravedi
+    base: dinero
+    units: [{sym: " mrs", of: 10}, {sym: " d.", of: 1}]
+    day: 13
+    day_note: "a crossbowman's 13 dineros a day (Cortes of Burgos, 1338; a lancer 1 maravedí), the nearest found to 1385"
+    day_approx: true
+
+currency: {default: gbp, france: livre_t, latin_east: bezant, baltic: gotland, portugal: libra_pt, castile: maravedi}
 
 sources:
   rogers: &rogers "https://archive.org/details/historyofagricul04rogeuoft"
@@ -163,5 +180,17 @@ items:
   - {id: honey, name: "Honey (for wounds)", cat: first_aid, price: 44, per: gallon, source: {url: *rogers, note: "Rogers IV p.387 (OCR to check)"}}
   - {id: linen_bandage, name: "Linen for bandages", cat: first_aid, price: 16, per: ell, when: "1482", source: {url: *rogers, note: "Rogers IV p.579"}}
   - {id: salve, name: "Salve or plaster", cat: first_aid, price: 8, approx: true}
+  # Portugal and Castile, c.1385 (project doc "iberia1385-research"); Portuguese prices in the money of 1380
+  - {id: pt_mare, name: "Young mare (Portugal)", cat: horse, in: libra_pt, price: 2933, when: "1369", regions: [portugal], source: {url: "https://repositorio.uac.pt/server/api/core/bitstreams/9b4b3482-6c29-4811-8c38-2ab46ff467cc/content", note: "Sesimbra inventory, 1369: 15 libras, in 1380 money by the silver mark (27 to 22)"}}
+  - {id: pt_wheat, name: "Wheat, an alqueire (about 13 litres; Portugal)", cat: food, in: libra_pt, price: 181, when: "1359-65", regions: [portugal], source: {url: "https://repositorio-aberto.up.pt/bitstream/10216/14653/2/tesemestprecos000075145.pdf", note: "Santarém, 13 soldos (Ferreira p. 31), in 1380 money by the mark (19 to 22)"}}
+  - {id: pt_wine, name: "Wine, an almude (about 17 litres; Portugal)", cat: food, in: libra_pt, price: 42, when: "1394", regions: [portugal], source: {url: "https://repositorio-aberto.up.pt/bitstream/10216/14653/2/tesemestprecos000075145.pdf", note: "4 reais of 10 soldos (Ferreira p. 10), in 1380 money by the mark (250 to 22)"}}
+  - {id: pt_siege_hen, name: "A hen, in the siege of Lisbon (Portugal)", cat: food, in: libra_pt, price: 587, when: "1384", regions: [portugal], source: {url: "https://repositorio-aberto.up.pt/bitstream/10216/14653/2/tesemestprecos000075145.pdf", note: "80 soldos (Ferreira p. 19; Lopes gives 40), in 1380 money by the mark (36 to 22): a famine price"}}
+  - {id: ca_horse, name: "Horse of a man-at-arms (Castile)", cat: horse, in: maravedi, price: [6000, 8000], when: "1312-50", regions: [castile], source: {url: "https://revistaaequitas.wordpress.com/wp-content/uploads/2012/02/4-gonzalo-oliva-manso.pdf", note: "Oliva Manso: 600 maravedís for a caballero de cuantía's horse, 800 for a member of the mesnada (Alfonso XI)"}}
+  - {id: ca_saddle, name: "Saddle, plain to Moroccan leather (Castile)", cat: horse, in: maravedi, price: [300, 2000], when: "1351", regions: [castile], source: {url: "https://dialnet.unirioja.es/descarga/articulo/2049096.pdf", note: "Murcia price ordinance, 1351, art. 25"}}
+  - {id: ca_shield, name: "Horseman's shield (Castile)", cat: armour, in: maravedi, price: [1000, 1200], when: "1351", regions: [castile], source: {url: "https://dialnet.unirioja.es/descarga/articulo/2049096.pdf", note: "Murcia price ordinance, 1351, art. 22"}}
+  - {id: ca_adarga, name: "Adarga (leather shield; Castile)", cat: armour, in: maravedi, price: [70, 180], when: "1351", regions: [castile], source: {url: "https://www.filosofia.org/his/laf/p203zb.htm", note: "Ordenamiento de menestrales, 1351"}}
+  - {id: ca_shoes, name: "Men's shoes, goatskin to cordovan (Castile)", cat: clothing, in: maravedi, price: [25, 50], when: "1351", regions: [castile], source: {url: "https://www.filosofia.org/his/laf/p203zb.htm", note: "Ordenamiento de menestrales, 1351"}}
+  - {id: ca_carting, name: "A mule and its man for a day's carting (Castile)", cat: service, in: maravedi, price: 36, when: "1351", regions: [castile], source: {url: "https://dialnet.unirioja.es/descarga/articulo/2049096.pdf", note: "Murcia price ordinance, 1351, art. 12"}}
+  - {id: ransom_ayala, name: "Ransom of López de Ayala after Aljubarrota (30,000 dobras and 30 horses)", cat: service, in: maravedi, price: 10500000, when: "1385", regions: [portugal, castile], source: {url: "https://dialnet.unirioja.es/descarga/articulo/6087237.pdf", note: "Monteiro 2017, p. 265: a great lord's ransom; the dobra at 35 maravedís (1373)"}}
   # Ransom
   - {id: ransom_man_at_arms, name: "Ransom of a man-at-arms taken at Agincourt (650 ducats and up)", cat: service, price: 129600, when: "1415", source: {url: "https://www.macs.hw.ac.uk/~hwloidl/hundredyearswar.com/Books/History/Some_Agi.htm", note: "fan site; weak"}}

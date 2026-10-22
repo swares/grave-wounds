@@ -51,7 +51,7 @@ When an item is done, delete it here and note it in the pull request that closes
 - **The travel clock, simplified.** Meetings are only between the forces' hexes: no
   scouting reach, and no seeing a dust cloud or campfires from further off.
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
-  Agincourt (1415), Towton (1461), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
+  Aljubarrota (1385), Agincourt (1415), Towton (1461), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
   Lane (1814), Sevastopol (1855, two battlefields), First Bull Run (1861), Fort Phil Kearny (1866-67, with two battlefields), Mons
   (1914), the Serbian retreat (1915, the Babuna pass), Hill 700 on Bougainville (1944), Anzio and Cisterna (1944), Osan (1950), Chipyong-ni
   (1951), the Ia Drang (1965), Mogadishu (1993), Wanat (2008), Cassino (1944, three battlefields), the Chosin Reservoir (1950), Kapyong (1951), Heartbreak Ridge (1951), Pork Chop Hill (1953), Hue (1968), Khe Sanh (1968), Dak To (1967), Hamburger Hill (1969), Goose Green (1982), 73 Easting (1991), Grozny (1995), Fallujah (2004) and COP Keating (2009) have both a campaign map and a battlefield. The rest of Italy, the rest of the Gulf War (1991) and Northern Ireland
@@ -255,6 +255,21 @@ When an item is done, delete it here and note it in the pull request that closes
   or the king (the team keeps him); no drift without events
   (Pendragon's winter check); and Visby, the Napoleonic marshals, Korea, Vietnam, the Falklands and
   Chechnya had no patronage sources.
+- **Portugal and Castile, first cut.** Two medieval armies for the Aljubarrota campaign
+  (project docs "iberia1385-research", "aljubarrota-research"), its 1 km map and its battlefield,
+  and the São Jorge ossuary as a bone-evidence table. Still left out: no Portuguese soldier's pay
+  for 1383-85 was found (a blacksmith's day of 1380 stands in, and Portuguese prices are turned
+  into 1380 money by the silver mark, the libra having lost two-thirds of its silver in 1384-85);
+  Castile's day is a crossbowman's of 1338; no food, lodging, mule, sword or mail-coat prices for
+  either kingdom in 1370-1400; Portugal's service ages are borrowed from 1468; no Castilian women
+  recorded; the replacements' waits are guesses; no Galician, Catalan or Gascon tongue
+  (Portuguese and French stand in); the ranks are the medieval ladder, not the Constable's,
+  anadel's or almocadén's. The battle: Jardoeira, the first position and Chão da Feira have no
+  coordinates; which valley is the Vale da Mata, which way the ginetes went and the Castilian
+  wings' sides are our reading; the 52 cuts and stab wounds in the ossuary are not located by
+  bone in what was published (its table is the 58 leg fractures only), and the paper's table of
+  bone by side was not seen; the field plays the attack and not the rout and pursuit, where
+  most of the Castilians died.
 - **Tongues by place, first cut.** A map place can list its people's tongues (main first) and
   the map keeps a default (one or a list); the nearest place within `place_km` decides.
   Places set so far (project doc "tongues-research"): Serbia 1915 (38 towns), Calais and Guînes

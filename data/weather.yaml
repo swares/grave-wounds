@@ -359,3 +359,11 @@ climates:
     rain: [11, 11, 11, 12, 13, 11, 8, 7, 7, 9, 12, 13]
     fog:  [8, 5, 3, 1, 1, 1, 0, 0, 2, 5, 8, 10]
     wind_from: [22, 14, 6, 6, 12, 14, 10, 16]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW
+  atlantic_iberia:
+    name: "Western Portugal, Atlantic Mediterranean"
+    note: "Like Leiria and Alcobaça, behind the coast: warm dry summers with northerly winds (the nortada), mild wet winters. Rounded design estimates."
+    high: [14, 15, 18, 19, 22, 25, 28, 28, 26, 22, 17, 15]
+    low:  [5, 6, 8, 9, 12, 14, 16, 16, 15, 12, 8, 6]
+    rain: [12, 11, 9, 10, 8, 4, 2, 2, 5, 10, 12, 13]
+    fog:  [4, 3, 3, 2, 2, 2, 3, 3, 3, 3, 3, 4]
+    wind_from: [25, 8, 4, 4, 6, 10, 15, 28]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW

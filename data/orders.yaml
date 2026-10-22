@@ -27,6 +27,15 @@ albuera-1811:
   hold:
     - "Allied cavalry (Lumley)"
     - "Allied guns on the heights"
+aljubarrota-1385:
+  source: "https://dl.uc.pt/rest/bitstreams/11399009/retrieve"
+  hold:
+    - "Vanguard: the Constable's men-at-arms"
+    - "Vanguard foot"
+    - "Right wing: the Ala dos Namorados"
+    - "Left wing: Antão Vasques and the foreigners"
+    - "Rearguard: João I's men-at-arms"
+    - "Baggage guard"
 babuna-1915:
   source: "https://gutenberg.org/files/71442/71442-h/71442-h.htm"
   withdraw:
