@@ -201,6 +201,9 @@ When an item is done, delete it here and note it in the pull request that closes
   - no difficulty from wounds, fatigue or hunger is added to a check out of a fight (the GM sets
     it);
   - haggling is only for buying: selling loot, and hiring a replacement, are at the list price.
+- **Roller header at phone width.** At a 390 px window the roller page is about 499 px wide: the
+  header's right-hand group (`span.hdr-right`, with the `#conf` badge) does not wrap. It was so
+  before the hazards panel; the panels themselves fit.
 - **Water, heights and pursuit, first cut.** Swimming and drowning, cold water, fords, climbing,
   falls and chases in the roller; fords on the travel map. Still left out: no era has a sound
   count of who could swim (the shares are estimates); drowning counts for the Rapido, Omaha, the
