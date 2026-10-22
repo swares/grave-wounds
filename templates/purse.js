@@ -18,6 +18,48 @@ function daysQ(x){                               // '¾ Day', '1 Day', '1¼ Days
   const q = Math.floor(Math.max(x, 0) * 4 + 0.5);
   return `${quarterText(x)} Day${q > 0 && q <= 4 ? "" : "s"}`;
 }
+/* Period money (as money.py fmt, coin_text, money_q): an era's coins and which army was paid in
+   which (COINS, set by each page from its data: {era: {currencies, currency}}); an amount of a
+   coin's smallest unit as the period wrote it; and Days in his army's coin, coin first. */
+const FRACS = { "1/4": "¼", "1/2": "½", "3/4": "¾", "1/3": "⅓", "2/3": "⅔" };
+const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+const group = n => n.toLocaleString("en-US");
+const moneyPlural = sym => sym.startsWith(" ") && sym.endsWith("s") && sym.length > 3;   // ' bezants', not 's' or ' kr'
+function fmtMoney(cur, amount){                   // £8 6s 8d, 6½d, 4 Rt 30 kr, $12.54, 75¢
+  const dec = cur.decimal;
+  if (dec){
+    if (amount < dec.per && dec.small) return `${amount}${dec.small}`;
+    const whole = Math.floor(amount / dec.per), part = amount % dec.per;
+    return `${dec.sym}${group(whole)}${part ? "." + String(part).padStart(String(dec.per).length - 1, "0") : ""}${dec.suf || ""}`;
+  }
+  const out = []; let left = amount;
+  cur.units.forEach((u, i) => {
+    const n = Math.floor(left / u.of); left = left % u.of;
+    const last = i === cur.units.length - 1;
+    let frac = "";
+    if (last && left){ const g = gcd(left, u.of), key = `${left / g}/${u.of / g}`; frac = FRACS[key] || ` ${left}/${u.of}` }
+    if (n || frac){
+      const num = `${n ? group(n) : ""}${frac}`, sym = n === 1 && !frac && moneyPlural(u.sym) ? u.sym.slice(0, -1) : u.sym;   // 1 bezant, 2 bezants
+      out.push(u.pre ? `${sym}${num}` : `${num}${sym}`);
+    }
+  });
+  return out.join(" ") || "nothing";
+}
+let COINS = {};
+function coinOf(era, region){                      // his army's coin, where it has a Day; else null
+  const E = COINS[era];
+  if (!E || !E.currency) return null;
+  const id = E.currency[region] ?? E.currency.default, cur = id ? E.currencies[id] : null;
+  return cur && cur.day ? cur : null;
+}
+function coinText(days, era, region){              // '3s 6d', or null where the coin has no Day
+  const cur = coinOf(era, region);
+  return cur ? fmtMoney(cur, Math.floor(Math.abs(days) * cur.day + 0.5)) : null;
+}
+function moneyQ(days, era, region){                // '3s 6d (7 Days)', or '7 Days'
+  const t = coinText(days, era, region);
+  return t ? `${t} (${daysQ(days)})` : daysQ(days);
+}
 function markLost(pid, why){                      // the team builder takes him off the team when it next looks
   if (!pid) return;
   const all = readPurses();

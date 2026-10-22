@@ -215,26 +215,6 @@ function followerLine(f){                         // as team.py follower_line
 /* Money (as gravewounds/money.py): an era's coins (TD.equip.currencies), which coin each army was
    paid in (TD.equip.currency), the rows that price issued kit, and TD.money's rules. Prices are
    whole numbers of a coin's smallest unit; Days (a common soldier's day's pay) are worked out. */
-const FRACS = { "1/4": "¼", "1/2": "½", "3/4": "¾", "1/3": "⅓", "2/3": "⅔" };
-const gcd = (a, b) => (b ? gcd(b, a % b) : a);
-const group = n => n.toLocaleString("en-US");
-function fmtMoney(cur, amount){                   // £8 6s 8d, 6½d, 4 Rt 30 kr, $12.54, 75¢
-  const dec = cur.decimal;
-  if (dec){
-    if (amount < dec.per && dec.small) return `${amount}${dec.small}`;
-    const whole = Math.floor(amount / dec.per), part = amount % dec.per;
-    return `${dec.sym}${group(whole)}${part ? "." + String(part).padStart(String(dec.per).length - 1, "0") : ""}${dec.suf || ""}`;
-  }
-  const out = []; let left = amount;
-  cur.units.forEach((u, i) => {
-    const n = Math.floor(left / u.of); left = left % u.of;
-    const last = i === cur.units.length - 1;
-    let frac = "";
-    if (last && left){ const g = gcd(left, u.of), key = `${left / g}/${u.of / g}`; frac = FRACS[key] || ` ${left}/${u.of}` }
-    if (n || frac){ const num = `${n ? group(n) : ""}${frac}`; out.push(u.pre ? `${u.sym}${num}` : `${num}${u.sym}`) }
-  });
-  return out.join(" ") || "nothing";
-}
 const regionCoin = region => { const c = TD.equip?.currency || {}; return c[region] ?? c.default ?? null };
 function rowDays(row, region){                    // [low, high] in Days, or null where the coin has no Day
   const E = TD.equip, cid = row.in || E.currency.default, rc = region ? regionCoin(region) : null;
@@ -267,7 +247,7 @@ function purseFor(region, terms, ledger){          // {days, text}: and that sum
 function spendCheck(c, days){                     // why he can't spend that many Days, or null
   if (!days || days <= 0) return "nothing to spend";
   const have = purseFor(c.region, c.terms, c.ledger).days;
-  return days > have + 1e-9 ? `his purse holds ${daysQ(have)}` : null;
+  return days > have + 1e-9 ? `his purse holds ${moneyQ(have, c.era || TD.era.id, c.region)}` : null;
 }
 function shopFor(region){                         // the era's price list in his Days, as money.py shop
   const E = TD.equip, out = [];
@@ -284,8 +264,10 @@ function shopFor(region){                         // the era's price list in his
 const daysText = x => (x < 1 ? "under 1" : group(Math.round(x)));
 function moneyLine(c){                            // as money.py money_line
   const v = kitValue(c.region, c.kit, c.weapon), p = purseFor(c.region, c.terms, c.ledger);
-  const kit = v.unpriced.length && !v.days ? "kit not priced" : `kit worth about ${daysText(v.days)} Days${v.unpriced.length ? " (part not priced)" : ""}`;
-  return `${kit[0].toUpperCase()}${kit.slice(1)}; purse ${daysQ(p.days)}${p.text ? ` (${p.text})` : ""}`;
+  const coin = coinText(v.days, c.era || TD.era.id, c.region), worth = coin ? `${coin} (${daysText(v.days)} Days)` : `${daysText(v.days)} Days`;
+  const kit = v.unpriced.length && !v.days ? "kit not priced" : `kit worth about ${worth}${v.unpriced.length ? " (part not priced)" : ""}`;
+  const held = p.text ? `${p.text} (${daysQ(p.days)})` : daysQ(p.days);
+  return `${kit[0].toUpperCase()}${kit.slice(1)}; purse ${held}`;
 }
 /* Work (as gravewounds/jobs.py): an era's jobs (TD.jobs) and TD.money.work's rules. One skill
    check a term settles the pay, one d100 at or under the risk brings trouble, and a d10 picks it

@@ -1006,6 +1006,7 @@ def travel_bundle(d) -> dict:
     return {
         "generated": date.today().isoformat(),
         "terrain": d.terrain,
+        "coins": {e: {"currencies": E["currencies"], "currency": E["currency"]} for e, E in d.equipment.items()},   # period money (purse.js)
         "checks": d.checks, "training": d.training, "loads": d.loads, "stress": d.stress, "hazards": d.hazards, "languages": d.languages, "patrons": d.patrons,   # drill in camp, loads on the march (templates/ranks.js)
         "works": d.works,
         "weather": d.weather,
@@ -1110,6 +1111,7 @@ def bundle(d) -> dict:
                 wounds[f"{cid}|{m}|{s}"] = compose_wound(d, rep, m, s)
     return {
         "generated": date.today().isoformat(),
+        "coins": {e: {"currencies": E["currencies"], "currency": E["currency"]} for e, E in d.equipment.items()},   # period money (purse.js)
         "checks": d.checks, "ranks": d.ranks, "loads": d.loads, "stress": d.stress, "hazards": d.hazards, "languages": d.languages, "patrons": d.patrons,     # the shared rules in templates/ranks.js: loot, deeds, coups after a fight
         "locations": d.locations,
         "weapons": {wid: {**w, "mech_ranges": mechanism_ranges(d, wid)} for wid, w in d.weapons.items()},

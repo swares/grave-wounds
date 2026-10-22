@@ -252,6 +252,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
 <script>/*__EVENTS_JS__*/</script>
 <script>
 const DATA = /*__TRAVEL_DATA__*/null;
+COINS = DATA.coins || {};                         // period money (purse.js)
 const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, stress: DATA.stress, hazards: DATA.hazards, languages: DATA.languages, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
 const $ = s => document.querySelector(s);
 const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
@@ -1076,7 +1077,7 @@ function keepNight(f, camp, noFreshBefore){   // each named man's food, and a be
 function keepText(f){                          // the health panel's word on who feeds the force
   if (fedByArmy(f)) return "";
   const purses = readPurses(), mine = namedWith(readNamed(), f);
-  const each = mine.map(([, n]) => { const p = n.pid ? purses[n.pid] : null; return p ? `${n.name} ${daysQ(purseLeft(p))}` : null }).filter(Boolean);
+  const each = mine.map(([, n]) => { const p = n.pid ? purses[n.pid] : null; return p ? `${n.name} ${moneyQ(purseLeft(p), p.era, p.region)}` : null }).filter(Boolean);
   return `Not fed by its army: its named men pay a day's food from their purses, and a bed on nights in a village or town out of camp${each.length ? ` (left: ${each.join(", ")})` : ""}.`;
 }
 // ----- events on the march and in camp (events.js, gravewounds/events.py) -----

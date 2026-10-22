@@ -35,6 +35,11 @@ def _group(n: int) -> str:
     return f"{n:,}"
 
 
+def _plural(sym: str) -> bool:
+    """A worded unit in the plural (' bezants', ' marks'), not a symbol ('s', ' kr')."""
+    return sym.startswith(" ") and sym.endswith("s") and len(sym) > 3
+
+
 def fmt(cur: dict, amount: int) -> str:
     """An amount of base units as the period wrote it: £8 6s 8d, 6½d, 4 Rt 30 kr, $12.54, 75¢."""
     dec = cur.get("decimal")
@@ -52,7 +57,8 @@ def fmt(cur: dict, amount: int) -> str:
         frac = FRACTIONS.get(Fraction(left, u["of"]), f" {left}/{u['of']}") if last and left else ""
         if n or frac:
             num = f"{_group(n) if n else ''}{frac}"
-            out.append(f"{u['sym']}{num}" if u.get("pre") else f"{num}{u['sym']}")
+            sym = u["sym"][:-1] if n == 1 and not frac and _plural(u["sym"]) else u["sym"]   # 1 bezant, 2 bezants
+            out.append(f"{sym}{num}" if u.get("pre") else f"{num}{sym}")
     return " ".join(out) or "nothing"
 
 
@@ -139,12 +145,29 @@ def days_text_q(x: float) -> str:
     return f"{quarter_text(x)} Day{'' if 0 < q <= 4 else 's'}"
 
 
+def coin_text(d: Data, eid: str, region: str, days: float) -> str | None:
+    """Days in his army's coin ('3s 6d'), to the nearest smallest unit, halves up; None where the
+    coin has no Day."""
+    E = d.equipment.get(eid)
+    cid = region_currency(d, eid, region) if E else None
+    cur = E["currencies"].get(cid) if cid else None
+    if not cur or not cur.get("day"):
+        return None
+    return fmt(cur, int(abs(days) * cur["day"] + 0.5))
+
+
+def money_q(d: Data, eid: str, region: str, days: float) -> str:
+    """Coin first, then Days: '3s 6d (7 Days)'; only Days where the coin has no Day."""
+    t = coin_text(d, eid, region, days)
+    return f"{t} ({days_text_q(days)})" if t else days_text_q(days)
+
+
 def spend_check(d: Data, c: dict, days: float) -> str | None:
     """Why he can't spend that many Days (nothing, or more than his purse holds), or None."""
     if not days or days <= 0:
         return "nothing to spend"
     have = purse(d, c["era"], c["region"], c["terms"], c.get("ledger"))["days"]
-    return f"his purse holds {days_text_q(have)}" if days > have + 1e-9 else None
+    return f"his purse holds {money_q(d, c['era'], c['region'], have)}" if days > have + 1e-9 else None
 
 
 def spend(d: Data, c: dict, days: float, what: str) -> dict:
@@ -188,15 +211,17 @@ def days_text(x: float) -> str:
 
 
 def money_line(d: Data, c: dict) -> str:
-    """'Kit worth about 43 Days; purse 90 Days (£2 5s)' for a character sheet."""
+    """'Kit worth about 43 Days; purse £2 5s (90 Days)' for a character sheet."""
     v = kit_value(d, c["era"], c["region"], c["kit"], c["weapon"])
     p = purse(d, c["era"], c["region"], c["terms"], c.get("ledger"))
     if v["unpriced"] and not v["days"]:
         kit = "kit not priced"
     else:
-        kit = f"kit worth about {days_text(v['days'])} Days" + (" (part not priced)" if v["unpriced"] else "")
-    coin = f" ({p['text']})" if p["text"] else ""
-    return f"{kit[0].upper()}{kit[1:]}; purse {days_text_q(p['days'])}{coin}"
+        coin = coin_text(d, c["era"], c["region"], v["days"])
+        worth = f"{coin} ({days_text(v['days'])} Days)" if coin else f"{days_text(v['days'])} Days"
+        kit = f"kit worth about {worth}" + (" (part not priced)" if v["unpriced"] else "")
+    held = f"{p['text']} ({days_text_q(p['days'])})" if p["text"] else days_text_q(p["days"])
+    return f"{kit[0].upper()}{kit[1:]}; purse {held}"
 
 
 BED_TERRAIN = ("village", "town")   # travel map ground with a bed to be had for the night
