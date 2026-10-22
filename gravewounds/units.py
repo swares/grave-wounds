@@ -1012,8 +1012,10 @@ def morale(d: Data, unit: dict, roll: int) -> dict:
     if unit["state"] == "broken":
         return {"check": False, "target": None, "state": "broken"}
     losing = unit.get("lost", 0) > unit.get("dealt", 0) and unit.get("contact")
-    struck = (unit["down"] >= M["trigger"] * unit["start"] or unit["lost"] >= M["shock"] * max(1, unit["men"])
-              or unit.get("flanked") or losing)
+    attrition = (unit["down"] >= M["trigger"] * unit["start"]       # past a quarter down: every exchange in the open;
+                 and (unit["lost"] > 0 or not (unit.get("holds") and not unit.get("flanked"))))   # holding a position, only when it lost men
+    struck = (attrition or unit["lost"] >= M["shock"] * max(1, unit["men"]) or unit.get("flanked") or losing
+              or (unit.get("neighbour") and unit["state"] == "steady"))   # a neighbour broke (morale.neighbour)
     rally = unit["state"] == "shaken" and not unit.get("contact")
     if not struck and not rally:
         return {"check": False, "target": None, "state": unit["state"]}
@@ -4061,10 +4063,36 @@ def _vehicle_losses(d: Data, u: dict, before: int, lost: int) -> tuple:
     return (start_v - now_v) * crew, max(0, was_v - now_v) * crew
 
 
+def holds_position(d: Data, us: list, i: int, field: dict | None) -> bool:
+    """Unit i holds a position: in a bunker, or holding works toward the nearest standing enemy
+    (dug in, emplaced, the works' cover, ground that hides men)."""
+    u = us[i]
+    if in_bunker(d, field, u):
+        return True
+    at, best = None, math.inf
+    for e in us:
+        if e["side"] != u["side"] and e["men"] > 0 and e["state"] not in ("broken", "fled"):
+            dd = hdist(e["pos"], u["pos"])
+            if dd < best:
+                at, best = e["pos"], dd
+    return holds_works(d, field, at or u["pos"], u)
+
+
+def _units_within(d: Data, a: dict, b: dict, r: int) -> bool:
+    """Any hex of unit a within r hexes of any of unit b's."""
+    hb = [y for row in footprint(d, b) for y in row]
+    return any(hdist(x, y) <= r for row in footprint(d, a) for x in row for y in hb)
+
+
 def _morale_all(d: Data, us: list, occ: dict, before: list, acc: tuple, rng, table: str = "", field: dict | None = None) -> list:
     """Every unit still in the fight checks; any that breaks is struck at once by the enemies
     touching it, every man of them."""
     (lost, dealt, flanked), log, broke = acc, [], []
+    M = d.units["morale"]
+    reach = M.get("neighbour") or 0
+    fresh = [k for k, v in enumerate(us) if v.get("just_broke")] if reach else []   # broke in the last exchange: their neighbours check now
+    for k in fresh:
+        del us[k]["just_broke"]
     for i, u in enumerate(us):
         if u["state"] in ("broken", "fled") or u["men"] <= 0:
             continue
@@ -4074,12 +4102,17 @@ def _morale_all(d: Data, us: list, occ: dict, before: list, acc: tuple, rng, tab
                 "men": before[i], "state": u["state"], "leader": leader_state(u), "flanked": flanked[i],
                 "contact": any(us[j]["side"] != u["side"] for j in near),
                 "friends": any(us[j]["side"] == u["side"] and us[j]["state"] == "steady" for j in near),
-                "dug": low(u) or in_bunker(d, field, u), "no_ammo": ammo_state(d, u) == "out"}
+                "dug": low(u) or in_bunker(d, field, u), "no_ammo": ammo_state(d, u) == "out",
+                "holds": bool(M.get("posture")) and holds_position(d, us, i, field),
+                "neighbour": any(k != i and us[k]["side"] == u["side"] and _units_within(d, us[k], u, reach) for k in fresh)}
         m = morale(d, unit, rng.randint(1, 100))
         if m["check"]:
-            log.append({"kind": "morale", "unit": i, "target": m["target"], "from": u["state"], "state": m["state"]})
+            log.append({"kind": "morale", "unit": i, "target": m["target"], "from": u["state"], "state": m["state"],
+                        **({"neighbour": True} if unit["neighbour"] else {})})
         if m["state"] == "broken":
             broke.append(i)
+            if reach:
+                u["just_broke"] = True
         u["state"] = m["state"]
     for j in broke:
         log += _rout_strike(d, us, occ, j, table, rng)
