@@ -131,7 +131,9 @@ change to the rules. The Python mirror is `gravewounds/units.py` `_quick_blows`.
 ## Morale
 
 After each exchange a unit checks if any of these happened:
-- it lost the exchange in contact (more of its men put down than it put down);
+- it lost the exchange in contact: more of its men put down hand to hand than it put down hand
+  to hand (`morale.hand_to_hand`; losses to fire count in the other checks, and in the modifier
+  below);
 - a quarter of its starting men are down (for a unit holding a position, below, only in an
   exchange it lost men);
 - a tenth of its men went down in this exchange;
@@ -158,10 +160,11 @@ The check is d100 against its Nerve (green 35, regular 50, veteran 65), with mod
 **Holding a position** (`morale.posture`). A unit of a side the commander has holding its ground
 (not attacking), that holds a position, and is not struck in flank or rear, checks for being a
 quarter down only in an exchange in which it lost men. Holding a position means: in a bunker, dug
-in or emplaced, behind works with cover toward the nearest enemy, or in ground that hides men
-(buildings, tall buildings, rubble). Units in the open, and attackers wherever they lie, check
+in or emplaced, behind works with cover toward the nearest enemy, in ground that hides men
+(buildings, tall buildings, rubble), or gone to ground in ground that gives cover (woods, scrub;
+`morale.posture_cover`). Units in the open, and attackers wherever they lie, check
 every exchange as before. A garrison in its holes no longer breaks from the passing of time; one
-that is being hit still checks, as does any unit flanked, hit hard, or losing the fight in contact.
+that is being hit still checks, as does any unit flanked, hit hard, or losing a fight hand to hand.
 The research behind it (the project's breakpoints-pre1914 and morale-two-kinds notes): breaks
 come cheap from flanks, charges and neighbours running, but late from frontal attrition, and dug-in
 units hold far past any threshold. Measured on 24 runs of every battlefield: 642 of 888 from 628,
@@ -1854,6 +1857,8 @@ For helicopter landings (Vietnam and later). The numbers are in `heliborne` in
   own row, not as standing on the field nor as lost.
 - **Blocked.** No one lands while an enemy unit stands within 2 hexes of the zone, or where
   there is no room: the lift is waved off and tries again next exchange.
+- **Turned back.** Once the men of a unit already down have broken or fled, the rest of its
+  lift turns back and does not land (before, they landed into the rout).
 - **A hot landing zone.** If any enemy unit (not broken) could shoot at the zone's hex, with
   its weapon in range and in sight (in the weather and the light), the zone is hot. Each man
   landing is struck at 10% and rolls a wound as one struck by shellfire, and those put down
