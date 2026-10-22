@@ -24,7 +24,9 @@ armoured carriers fight as units, one vehicle to a hex. The unit's men are its c
 
 Rocket teams fire a round for every {{v_rocket_per}} men each exchange, and missile teams
 one for every {{v_atgm_per}}. Every round is aimed, and range, cover and the weather count
-as for shots at men. A hit knocks the vehicle out at:
+as for shots at men. Fired at men, a rocket is aimed at the hex and bursts there if it hits,
+striking each man in the hex as a tank's round does; in a building, a tank's round or a
+rocket bursts in the room and strikes each man there at half. A hit knocks the vehicle out at:
 
 {{table:armour}}
 
