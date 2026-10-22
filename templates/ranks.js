@@ -560,3 +560,27 @@ function spRefill(eid, sup, men, stock = null){   // {sup, stock}: filled at a d
 }
 const spTrainStock = () => ({ rations: SPD().train.rations, ammo: SPD().train.ammo, medical: SPD().train.medical });
 const spMedicalShort = sup => (sup.med ?? 1) <= 0;   // (supplies.py medical_short)
+
+/* Boots and clothing wearing out (as gravewounds/kit.py; data TD.kit). */
+const KTD = () => TD.kit || {};
+const ktR = x => Math.floor(x * 1000 + 0.5) / 1000;
+function ktDay(eid, wear, marched, wet, hard){   // a day's wear -> new {boots, clothing}
+  const K = KTD(), out = { boots: wear.boots || 0, clothing: wear.clothing || 0 };
+  if (marched >= K.boots.march_hours) out.boots = ktR(Math.min(1, out.boots + (wet ? K.boots.wet : 1) / (K.boots.life[eid] ?? 60)));
+  out.clothing = ktR(Math.min(1, out.clothing + (hard ? K.clothing.hard : 1) / (K.clothing.life[eid] ?? 120)));
+  return out;
+}
+function ktState(w){                              // good, worn or out
+  if (w >= 1) return "out";
+  return w >= KTD().worn ? "worn" : "good";
+}
+const ktBlister = w => (ktState(w) === "good" ? 1 : KTD().boots.blister[ktState(w)]);
+const ktShelterLoss = w => (ktState(w) === "good" ? 0 : KTD().clothing.shelter[ktState(w)]);
+function ktMend(w, success, fumble){              // a day's Mend kit
+  if (fumble) return 1;
+  return success ? ktR(Math.max(0, w - KTD().mend)) : w;
+}
+function ktRenews(name){                          // boots or clothing, if this price-list row replaces it
+  for (const [k, pat] of Object.entries(KTD().renew || {})) if (new RegExp(pat, "i").test(name)) return k;
+  return null;
+}

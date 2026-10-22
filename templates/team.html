@@ -355,6 +355,11 @@ function extraKg(c){                               // what he has bought and his
   return (c.loadExtra || 0) + bought + ldCoinKg(T.id, purseFor(c.region, c.terms, c.ledger).days);
 }
 const carryOf = c => ldCarryKg(animalsOf(c));
+function kitLine(c){                               // his boots and clothing (kit.yaml), as the travel map has worn them
+  if (!TD.kit || !c.pid) return "";
+  const k = xpKit(c.pid), word = w => ({ good: "good", worn: "worn", out: "worn out" })[ktState(w)];
+  return `<div class="full muted" title="Worn on the travel map by marching and hard nights; mended by Craft on a day off the march, bought new, or issued at his army's depot">Boots ${word(k.boots)} (${Math.round(k.boots * 100)}% worn), clothing ${word(k.clothing)} (${Math.round(k.clothing * 100)}% worn).</div>`;
+}
 function loadLine(c){                              // what each order weighs on him (loads.yaml)
   const E = ((TD.loads || {}).eras || {})[T.id]; if (!E) return "";
   const kc = (TD.fight.chr.toil.load || {})[c.kit] || "light", body = ldBody(T.id, c.sex || "m");
@@ -383,7 +388,7 @@ function sheetHtml(c, i){
     ${tongueDiv(c)}${patronDiv(c)}
     <div class="full arms">${esc(w.name)}: attack <b>${c.attack ?? "—"}%</b> · defence <b>${c.defence}%</b> · Nerve <b>${c.nerve}</b> · ${esc(kit.name)}</div>
     <div class="full muted" title="${pron("What his characteristics do in the wound roller", sx)}">In a fight: ${esc(fightLine(c))}</div>
-    ${loadLine(c)}
+    ${loadLine(c)}${kitLine(c)}
     ${TD.equip ? `<div class="full muted money" title="A Day is a common soldier's day's pay in his army's coin">${esc(moneyLine(c))}</div>${ledgerHtml(c, i)}` : ""}
     <ol class="full life">${life}</ol>
     ${c.joined ? `<div class="full muted">${esc(joinedText(c))}</div>` : ""}
@@ -1352,14 +1357,15 @@ function ledgerHtml(c, i){                        // what he has earned and spen
       <span>or pay</span><input type="number" min="0" step="0.25" data-pay-days="${i}" aria-label="Days to pay"><span>Days for</span><input type="text" class="what" data-pay-what="${i}" aria-label="What for" placeholder="what"><button class="small" data-pay="${i}">Pay</button></div>`;
 }
 function boughtMeta(item){                         // what a price-list row weighs once bought, or the animal it is
-  const animal = ldAnimal(item), kg = ldItemKg(item);
-  return { ...(animal ? { animal } : {}), ...(kg ? { kg } : {}) };
+  const animal = ldAnimal(item), kg = ldItemKg(item), renew = TD.kit ? ktRenews(item.name) : null;
+  return { ...(animal ? { animal } : {}), ...(kg ? { kg } : {}), ...(renew ? { renew } : {}) };
 }
 function spendFrom(i, days, what, meta = {}){      // take Days from his purse, or say why not
   const c = S.team[i], why = spendCheck(c, days);
   if (why){ S.msg = `${c.name} can't pay ${cash(days || 0)}: ${why}.`; return render() }
   c.ledger ||= [];
   c.ledger.push({ days: -days, what, ...meta });
+  if (meta.renew && c.pid) xpKitSet(c.pid, { ...xpKit(c.pid), [meta.renew]: 0 });   // new boots or clothing
   S.msg = ""; render();
 }
 /* ---------- losses and replacements (team.js: replaceOptions, hireCost, effectsFor, settleLost) ---------- */

@@ -206,9 +206,13 @@ When an item is done, delete it here and note it in the pull request that closes
     included.
 - **Skill checks, first cut.** The team builder rolls any check, opposed or not, and haggles at
   the price list. Still left out:
-  - billets, hunting for the pot and finding the way now work on the travel map (data/uses.yaml),
-    but Mend kit has no kit that wears out, and getting lost at night on the travel map is not
-    rolled (only fog, snow and storms, and off the road);
+  - billets, hunting for the pot, finding the way (by day and, marching on by night, by night) and
+    Mend kit (boots and clothing that wear out) work on the travel map (data/uses.yaml,
+    data/kit.yaml; project doc "kit-wear-research"); but the night march's extra fatigue and the
+    boot and clothing lives for the medieval, Thirty Years', Crimean, Civil War and later eras are
+    estimates, a night march is no harder for the enemy to see (meetings are by hex), only the
+    named men's kit wears (a force's men are not shod or clothed), weapons, harness and radios do
+    not wear, and Mend kit is rolled only on a day the force does not march;
   - the roller and the travel map have no checks panel of their own (only their built-in rolls:
     first aid, foraging, surprise);
   - a check out of a fight takes the roller's last word on the man (pain, blood, wounds,

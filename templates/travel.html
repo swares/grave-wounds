@@ -256,7 +256,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
 <script>
 const DATA = /*__TRAVEL_DATA__*/null;
 Object.assign(COINS, DATA.coins || {});           // period money (purse.js)
-const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, weights: DATA.weights, supplies: DATA.supplies, stress: DATA.stress, hazards: DATA.hazards, languages: DATA.languages, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
+const TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, weights: DATA.weights, supplies: DATA.supplies, kit: DATA.kit, stress: DATA.stress, hazards: DATA.hazards, languages: DATA.languages, era: { id: null, skills: [] } };   // for the shared rules (ranks.js): drill
 const $ = s => document.querySelector(s);
 const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
 const BYKEY = Object.fromEntries(Object.values(TT).map(t => [t.key, t]));
@@ -987,7 +987,8 @@ function blisters(f){                           // each named man who marched: h
     n.marchDays = (n.marchDays || 0) + 1;                // feet harden with days on the march
     if (((n.health || {}).cases || []).some(c => c.feet && c.step >= DZ.steps.indexOf("mending"))) continue;   // still sore
     const kg = ldCarried(e, loadOrder(f), n.kitLoad || "light", n.loadExtra || 0, n.carry || 0), band = ldBand(kg, ldBody(e, n.sex || "m"), n.str ?? 50);
-    if (roll100() > ldBlister(band, km, n.marchDays - 1)) continue;
+    const shod = DATA.kit && n.pid ? ktBlister(xpKit(n.pid).boots) : 1;     // worn boots: more blisters
+    if (roll100() > ldBlister(band, km, n.marchDays - 1) * shod) continue;
     const step = DZ.steps.indexOf("mending"), [lo, hi] = DZ.wounds.fever_after;
     n.health = n.health || newHealth();
     n.health.cases.push({ d: "wound", inc: 0, step, peak: 0, shown: 0, chronic: false, inf: "low", fever: lo + (roll100() - 1) % (hi - lo + 1), injury: true, feet: true });
@@ -1170,7 +1171,13 @@ function depotHere(f){                           // its army's depot: where it s
 const trainHere = f => (S.forces[S.mapId] || []).find(o => o !== f && o.type === "wagons" && o.side === f.side && o.pos[0] === f.pos[0] && o.pos[1] === f.pos[1] && o.men > 0) || null;
 function refillForce(f, how){                    // at the depot, or from the train with it
   const eid = forceEra(f);
-  if (how === "depot"){ f.sup = spRefill(eid, supOf(f), f.men).sup; f.supHungry = false; f.log.unshift(`${dateText(f.day, true)}: refilled at its depot.`); return }
+  if (how === "depot"){
+    f.sup = spRefill(eid, supOf(f), f.men).sup; f.supHungry = false;
+    const issued = DATA.kit && fedByArmy(f) ? namedWith(readNamed(), f).filter(([, n]) => n.pid) : [];   // its army issues new boots and clothing
+    for (const [, n] of issued) xpKitSet(n.pid, { boots: 0, clothing: 0 });
+    f.log.unshift(`${dateText(f.day, true)}: refilled at its depot${issued.length ? "; new boots and clothing issued to its named men" : ""}.`);
+    return;
+  }
   const t = trainHere(f); if (!t) return;
   supOf(t);
   const r = spRefill(eid, supOf(f), f.men, t.stock);
@@ -1304,14 +1311,15 @@ function namedAccidents(f, era, act){          // the GM's option: each named ma
 const dzName = did => dzProfile(did).name.toLowerCase();
 const dzShort = did => dzName(did).split(" (")[0];    // "camp fever (typhus)" -> "camp fever"
 const tallyText = (o, verb) => Object.entries(o).map(([did, n]) => `${n} ${verb} (${dzShort(did)})`);
-function nightHard(w, kind){                  // the night was harder than the shelter: cold and wet for recovery
+function nightHardness(w){                    // the night's hardship: the weather and the cold
   const cold = Math.max(0, ...WXD.cold_hardship.filter(c => w.low <= c.low_at_or_below).map(c => c.add));
-  return WXD.conditions[w.cond].hardship + cold > WXD.shelter[kind || "none"];
+  return WXD.conditions[w.cond].hardship + cold;
 }
+const nightHard = (w, kind) => nightHardness(w) > WXD.shelter[kind || "none"];   // the night was harder than the shelter: cold and wet for recovery
 function healthNight(f, today, camp){         // the sick get better or worse; once a week, the outbreak roll
   const kind = camp ? camp.kind : null, hyg = campHygiene(f.hygiene || null, kind);
   const ctx = { care: campCare(kind, f), marched: (f.marched || 0) > 0, wet_cold: nightHard(today.w, kind), filth: hyg === "poor", fresh: (f.noFresh || 0) < DZ.week_days,
-    leech: leechBonus(bestSkill([f], "leechcraft")[0]), low: today.w.low, shelter: WXD.shelter[kind || "none"] };
+    leech: leechBonus(bestSkill([f], "leechcraft")[0]), low: today.w.low, shelter: WXD.shelter[kind || "none"], hardness: nightHardness(today.w) };
   namedNight(f, ctx, f.day % DZ.week_days === 0 ? weekFactorsFor(f, kind, hyg) : null);
   xpNight(f, ctx.wet_cold);
   const r = healthDay(healthOf(f), { ...ctx, men: f.men, unnursed: nursingOf(healthOf(f), f.men).unnursed }, roll100);
@@ -1382,6 +1390,37 @@ function strainNight(f, n){                    // combat stress: a day in the li
   } else if ((f.marched || 0) <= 0) xpStressDo(n.pid, st => stRest(st, 1));
 }
 const hasCases = n => (n.health?.cases || []).length > 0;
+/* Boots and clothing (ranks.js kt*; data DATA.kit): a day's wear for each named man; on a day the
+   force did not march, its best Craft mends the most worn piece among them (Mend kit). */
+function kitNight(f, mine, wetCold){
+  const e = forceEra(f), g = groundOf(f.day), wet = (g?.mud || 0) > 0 || WXD.conditions[dayWeather(f.day).w.cond].precip !== "none";
+  for (const [, n] of mine){
+    if (!n.pid || !ableNow(n)) continue;
+    const was = xpKit(n.pid), now = ktDay(e, was, f.marched || 0, wet, wetCold || ktShelterLoss(was.clothing) > 0);
+    for (const k of ["boots", "clothing"]) if (ktState(now[k]) !== ktState(was[k]) && ktState(now[k]) !== "good")
+      f.log.unshift(`${dateText(f.day, true)}: ${n.name}'s ${k} are ${ktState(now[k]) === "out" ? "worn out" : "wearing thin"}.`);
+    xpKitSet(n.pid, now);
+  }
+  if ((f.marched || 0) <= 0) mendDay(f, mine);
+}
+function mendDay(f, mine){                      // a day out of the march: Mend kit on the most worn boots or clothing among the named men
+  let worst = null;
+  for (const [, n] of mine){
+    if (!n.pid) continue;
+    const k = xpKit(n.pid);
+    for (const part of ["boots", "clothing"]) if (k[part] >= KTD().worn && (!worst || k[part] > worst.w)) worst = { n, part, w: k[part] };
+  }
+  if (!worst) return;
+  const [v, who, pid] = bestSkill([f], "craft");
+  if (!who) return;
+  const r = skillCheck(v, "ordinary", roll100()), kit = xpKit(worst.n.pid);
+  kit[worst.part] = ktMend(kit[worst.part], r.success, r.fumble);
+  xpKitSet(worst.n.pid, kit);
+  if (r.success) xpTick(pid, "craft", "mending kit");
+  const what = r.fumble ? "ruins them" : r.success ? "mends them" : "cannot mend them yet";
+  const whose = worst.n.name === who ? `his own ${worst.part}` : `${worst.n.name}'s ${worst.part}`;
+  f.log.unshift(`${dateText(f.day, true)}: ${who} works on ${whose} (Craft ${r.target}, rolled ${r.roll}): ${what}.`);
+}
 function awayNight(f, n){                      // a night away for treatment counted off: true while he was away
   if (!n.pid || xpAwayDays(n.pid) <= 0) return false;
   if (xpAwayNight(n.pid)) f.log.unshift(`${dateText(f.day, true)}: ${n.name} is back from treatment.`);
@@ -1389,6 +1428,7 @@ function awayNight(f, n){                      // a night away for treatment cou
 }
 function xpNight(f, wetCold){                 // experience: a night served for each named man; a week nursing ticks the best Leechcraft; drill
   const all = readNamed(), mine = namedWith(all, f).filter(([, n]) => !n.dead);
+  if (DATA.kit) kitNight(f, mine, wetCold);
   for (const [, n] of mine){
     if (awayNight(f, n)) continue;                        // away for treatment: no day served with the force
     xpServe(n.pid, 1);                                     // a day served
@@ -1414,13 +1454,19 @@ function drillWeek(f, all, mine){             // the week's drill for a force it
   const came = r.success ? "the named men's weapon skills are ticked" : "it came to little";
   f.log.unshift(`${dateText(f.day, true)}: a week's drill in camp${under} (${r.target}, rolled ${r.roll}): ${came}.`);
 }
+function clothedCtx(n, ctx){                    // his night with worn clothing: a step or two less shelter, so colder and wetter
+  const loss = DATA.kit && n.pid ? ktShelterLoss(xpKit(n.pid).clothing) : 0;
+  if (!loss) return ctx;
+  const shelter = Math.max(0, ctx.shelter - loss);
+  return { ...ctx, shelter, wet_cold: ctx.hardness > shelter };
+}
 function namedNight(f, ctx, factors){          // the day (and on the week's last day, the outbreak roll) for each named man with the force
   const all = readNamed(), mine = namedWith(all, f);
   if (!mine.length) return;
   const fh = healthOf(f), force = nursingOf(fh, f.men, !!f.cleanNurses);
   for (const [, n] of mine){
     const tended = force.nurses > 0 || mine.some(([, o]) => o !== n && nursesNow(o));   // nursed first, if anyone can
-    const bits = namedDay(n, ctx, tended ? 0 : 1);
+    const bits = namedDay(n, clothedCtx(n, ctx), tended ? 0 : 1);
     if (factors && !n.dead) bits.push(...namedWeek(n, factors, contagionOf(fh, f.men), nursesNow(n) ? { ...force, nurses: 1 } : null, n.noFresh ?? f.noFresh ?? 0));
     if (!bits.length) continue;
     const line = `${dateText(f.day, true)}: ${n.name} ${bits.join("; ")}.`;

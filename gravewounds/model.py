@@ -121,6 +121,7 @@ class Data:
     uses: dict = field(default_factory=dict)        # skills that do things on the travel map (data/uses.yaml)
     weights: dict = field(default_factory=dict)     # item weights, coin, pack animals (data/weights.yaml)
     supplies: dict = field(default_factory=dict)    # what a force carries between fights (data/supplies.yaml)
+    kit: dict = field(default_factory=dict)         # boots and clothing wearing out (data/kit.yaml)
     warnings: list = field(default_factory=list)
 
 
@@ -189,6 +190,7 @@ def load(root: str | Path = "data") -> Data:
     uses = _optional(root / "uses.yaml", {})
     weights = _optional(root / "weights.yaml", {})
     supplies = _optional(root / "supplies.yaml", {})
+    kit = _optional(root / "kit.yaml", {})
 
     data = Data(
         root=root,
@@ -232,6 +234,7 @@ def load(root: str | Path = "data") -> Data:
         uses=uses,
         weights=weights,
         supplies=supplies,
+        kit=kit,
     )
     for t in data.tables.values():
         if "regions" in t and "weights" not in t:
@@ -569,6 +572,8 @@ def validate(d: Data) -> None:
         errors += _weights_errors(d)
     if d.supplies:
         errors += _supplies_errors(d)
+    if d.kit:
+        errors += _kit_errors(d)
     if d.ageing:
         AG, stats = d.ageing, {"str", "agi", "end", "wits", "nerve", "pres"}
         fr = [b.get("from") for b in AG.get("decline", [])]
@@ -1674,6 +1679,24 @@ def _ranks_errors(d: Data) -> list[str]:
             errors.append(f"{where}: loot for unknown era {eid}")
         if not 0 < L.get("keep", 1) <= 1:
             errors.append(f"{where}: loot {eid} keep must be 0-1")
+    return errors
+
+
+def _kit_errors(d: Data) -> list[str]:
+    """data/kit.yaml: boot and clothing lives for every era; wear thresholds and steps; patterns."""
+    import re
+    K, where, errors = d.kit, "kit.yaml", []
+    for k in ("boots", "clothing"):
+        life = (K.get(k) or {}).get("life") or {}
+        if set(life) != set(d.teams) or any(v <= 0 for v in life.values()):
+            errors.append(f"{where}: {k} life needs every era, each over 0")
+    if not (0 < K.get("worn", 0) < 1 and 0 < K.get("mend", 0) <= 1):
+        errors.append(f"{where}: worn and mend must be 0-1")
+    for k, pat in (K.get("renew") or {}).items():
+        try:
+            re.compile(pat)
+        except re.error:
+            errors.append(f"{where}: renew {k} does not compile")
     return errors
 
 

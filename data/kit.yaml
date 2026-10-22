@@ -1,0 +1,37 @@
+# Boots and clothing wear out (rules in gravewounds/kit.py, repeated in templates/ranks.js;
+# research in the project doc "kit-wear-research"). Each named man's boots and clothing carry a
+# wear from 0 (new) to 1 (worn out); at `worn` or more they are worn.
+#
+# Boots: each day he marches (`march_hours` or more), 1/`life` of their life, more on wet or muddy
+# ground (`wet`). Lives in marching days: the US 1918 front-line reissue every 51 days; the War
+# Department's 3½ months for a service shoe in 1944; Davout's men of 1806 with two pairs in the
+# pack and one on the feet; a Nassau regulation of 1814, eight months; a pair of moccasins "not
+# more than about 2 days" on Lewis and Clark's hard going (Plains men made their own). Worn boots
+# raise his chance of blistered feet (`blister`).
+#
+# Clothing and blankets: each day 1/`life`, twice on a hard night (wet and cold beyond his
+# shelter). The US 1918 reissue: a coat every 79 days, a blanket every two months, an overcoat
+# five; British greatcoats three years, two in the field from 1812. Worn clothing makes every
+# night a step harder for him (`shelter`): colder and wetter for his recovery, and frostbite.
+boots:
+  life: {medieval: 60, thirty_years: 60, horse_musket: 60, crimea: 60, civil_war: 45, plains_nations: 4, wwi: 51, wwii: 105, korea: 105, vietnam: 60, modern: 120}
+  life_approx: [medieval, thirty_years, crimea, civil_war, vietnam, modern]
+  march_hours: 2
+  wet: 1.5
+  blister: {worn: 1.5, out: 3}
+clothing:
+  life: {medieval: 180, thirty_years: 180, horse_musket: 365, crimea: 180, civil_war: 120, plains_nations: 90, wwi: 79, wwii: 90, korea: 90, vietnam: 60, modern: 120}
+  life_approx: [medieval, thirty_years, crimea, civil_war, plains_nations, wwii, korea, vietnam, modern]
+  hard: 2
+  shelter: {worn: 1, out: 2}
+worn: 0.5
+approx: true
+
+# Putting it right: Mend kit (Craft, a day's work out of the march: a success takes `mend` off
+# its wear, a fumble ruins it); buying new from the price list (a row whose name matches its
+# pattern); or, for a force its army feeds, at its depot, an issue of new. British regimental
+# costs of 1813: new shoes 7s 8d, a repair 3s 7d.
+mend: 0.5
+renew:
+  boots: "boots|shoes|shoe-pacs|shoepacs|brogan|bootees|moccasin"
+  clothing: "^(?!.*\\bhat\\b).*(greatcoat|overcoat|coat|blanket|uniform|clothing|jacket|tunic|parka|whole issue|whole kit)"
