@@ -709,7 +709,7 @@ quick: {blows: false, samples: 4000, normal_from: 9}
 
 # ---------- unit morale ----------
 # After each exchange a unit checks if it lost the exchange in contact (more of its men put
-# down hand to hand than it put down hand to hand: hand_to_hand, below), or has lost `trigger` of its starting men in all, or `shock` of
+# down than it put down), or has lost `trigger` of its starting men in all, or `shock` of
 # its present men in this exchange, or was struck in flank or rear: d100 against its Nerve
 # with the modifiers below. A steady unit that fails is shaken (fights worse, cannot
 # charge); one that fails by more than `shaken_by` while flanked or with half its men down
@@ -729,12 +729,9 @@ morale:
   # posture_cover: a unit gone to ground (prone) in ground that gives cover (woods, scrub,
   #   buildings, rubble) holds a position too. At X-Ray no American company counted: they lay in
   #   the trees, the elephant grass and the creek bed, not in works, and broke a quarter down.
+  #   Measured on 24 runs of every battlefield: 652 of 888 from 642, X-Ray 9 to 18, the morale
+  #   targets unchanged. false: only works, bunkers, digging in and ground that hides men count.
   posture_cover: true
-  # hand_to_hand: "lost the exchange in contact" counts only men lost and put down hand to hand.
-  #   With every loss counted, a company in a house-to-house fight checked whenever it lost one
-  #   man to fire and put none down (Hue: most such checks were over one or two men). The losing
-  #   modifier (mods.losing_per_man) still counts all of them. false: every loss counts.
-  hand_to_hand: true
   shaken_by: 20
   mods:
     leader: 10                # a named leader with the unit, up and fighting

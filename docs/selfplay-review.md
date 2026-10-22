@@ -949,3 +949,36 @@ its side's stance), Wanat is back to 23 of 24. The battlefields that need breaks
 (Cowpens, Mons, Towton, Osan unchanged; 73 Easting 12 to 11), and the targets did not move. Built,
 on by default (`morale.posture`). The neighbour check, which seldom fires because units seldom
 break beside each other in these battles, was not built.
+
+## X-Ray and Hue traced, 22 October 2026
+
+**X-Ray.** In 12 of 24 runs the Americans were gone at exchange 241-242, a red herring: by the
+time B Company of the 2nd Battalion flies in at dusk (211), every other American unit has already
+broken, and the run is scored once it breaks too. Traced, each company broke after checking on
+being a quarter down: no American unit counted as holding a position, because they lay in the
+trees, the elephant grass and the dry creek bed (woods, scrub and rough ground), not in works,
+dug in or in buildings. Built: a unit gone to ground in ground that gives cover holds a position
+too (`morale.posture_cover`). The trace also found a fault: a lift kept landing men into its unit
+after the men already down had fled (B Company of the 2nd Battalion went from 40 fled to 83).
+Fixed: the rest of the lift turns back.
+
+**Hue.** The Marine companies broke at 10-20% down from the losing check: a unit in contact that
+loses more men than it puts down checks, and most such checks were over one or two men (often to
+the North Vietnamese mortars) against none, in companies of 120 to 160. Counting only losses hand
+to hand was measured: the Marines then broke from losing the hand-to-hand fights they met storming
+the buildings, so Hue did not improve. Its next cause is the storming rule, which sends modern
+infantry in to fight hand to hand where the Marines cleared rooms with fire (recoilless rifles,
+rockets, the tanks, then grenades).
+
+Measured on GitHub Actions, 24 runs of every battlefield, against main after #281 (642 of 888, the same total as before
+#276 to #279):
+
+| | Runs matched | Notes |
+|---|---|---|
+| A lift for a routed unit turns back | 640 | X-Ray 9 to 7, within its spread; a fault fixed |
+| With lying in cover holding a position (built) | **652** | X-Ray 9 to 18, Hamburger 19 to 20; the targets unchanged |
+| With the losing check hand to hand only (not built) | 645 | the June Redan 2 to 13, Hamburger 19 to 22; but Agincourt 8 to 3, Keating 20 to 18, the September Redan 22 to 20, Hue 1 to 0; before 1914 breaks under 10% down 41% to 31% |
+| All three | 657 | |
+
+Built: lying in cover and the lift turning back. Still to trace: Hue's storming (the Marines
+fighting hand to hand in the buildings), Agincourt and the June Redan under the losing check.
