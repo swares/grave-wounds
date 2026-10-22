@@ -1411,7 +1411,10 @@ function worstKit(mine){                        // the most worn boots or clothi
   }
   return worst;
 }
-const MEND_WORD = r => { if (r.fumble) return "ruins them"; return r.success ? "mends them" : "cannot mend them yet" };
+function MEND_WORD(r){                          // what a day's Mend kit came to
+  if (r.fumble) return "ruins them";
+  return r.success ? "mends them" : "cannot mend them yet";
+}
 function mendDay(f, mine){                      // a day out of the march: Mend kit on the most worn boots or clothing among the named men
   const worst = worstKit(mine);
   if (!worst) return;
