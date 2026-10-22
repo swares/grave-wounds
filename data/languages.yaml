@@ -112,6 +112,7 @@ tongues:
   turkish: {name: Turkish}
   albanian: {name: Albanian}
   aromanian: {name: Aromanian}
+  basque: {name: Basque}
   flemish: {name: Flemish}
   picard: {name: Picard}
   walloon: {name: Walloon}
@@ -189,6 +190,10 @@ armies:
               others: [[french, 15, [10, 50]], [latin, 5, [20, 50]]]}
     france: {own: [[french, 90], [breton, 5], [italian, 5]], enemy: english,
              others: [[latin, 5, [20, 50]], [english, 5, [10, 40]]]}
+    portugal: {own: [[portuguese, 92], [english, 6], [french, 2]], enemy: spanish,
+               others: [[spanish, 50, [30, 60]], [latin, 5, [20, 50]], [french, 5, [10, 40]]]}   # the English and Gascons about 5-10% (600-700 men); Portuguese stands for Galician too (approx)
+    castile: {own: [[spanish, 72], [portuguese, 15], [french, 7], [basque, 4], [italian, 2]], enemy: portuguese,
+              others: [[portuguese, 40, [20, 50]], [latin, 5, [20, 50]], [arabic, 2, [10, 40]]]}   # Galicians and Portuguese loyal to Beatriz, the French lances, Biscayans; Mudéjares spoke Castilian (approx)
   thirty_years:
     swedish: {own: [[german, 40], [swedish, 30], [scots, 15], [finnish, 15]], enemy: german,
               others: [[german, 50, [20, 60]], [swedish, 10, [10, 40]]]}

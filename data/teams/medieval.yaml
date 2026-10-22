@@ -109,22 +109,6 @@ regions:
     colours: ["#2b4a8a", "#e6e0d2", "#8a2b3c", "#4a5a3a"]
     names: [Jean, Pierre, Guillaume, Jacques, Robert, Colin, Guiot, Perrin, Enguerrand, Hugues, Gautier, Renaud, Bertrand, Huguet, Thibaut, Jehan]
     bynames: ["le Fèvre", Boucher, "de Picardie", "le Normand", Bourgeois, Charpentier, "le Breton", Marchand, "d'Arras", "de Rouen"]
-
-  - id: portugal
-    name: "Portugal (c.1385)"
-    table: towton-1461-all-hits
-    colours: ["#2e5a3a", "#e6e0d2", "#a33a2e", "#2e4f8a"]
-    names: [João, Afonso, Nuno, Gonçalo, Martim, Vasco, Álvaro, Rodrigo, Lourenço, Fernão, Pedro, Diogo, Gil, Estêvão, Mem, Lopo]
-    bynames: [Pereira, "de Lisboa", "do Porto", Ferreiro, Pescador, "de Coimbra", Besteiro, Lavrador, "de Évora", Gomes]
-  - id: castile
-    name: "Castile (c.1385)"
-    table: towton-1461-all-hits
-    colours: ["#8a2b2b", "#d9b44a", "#e6e0d2", "#4a3a6b"]
-    names: [Juan, Pedro, Alfonso, Diego, Gonzalo, Fernando, Rodrigo, Martín, Ruy, García, Lope, Sancho, Íñigo, Gómez, Álvar, Pero]
-    bynames: [López, "de Toledo", "de Sevilla", "de Burgos", Herrero, Ballestero, "de Ávila", Pérez, "de Segovia", González]
-
-# Origins: d100, 5 each. gain: a skill (+gain); trait and drawback: a characteristic (+/-10)
-# or a skill (+/-gain).
     women:
       share: null
       careers: [townswoman]
@@ -132,6 +116,35 @@ regions:
       names: [Jeanne, Marie, Isabelle, Marguerite, Catherine, Agnès, Perrette, Guillemette, Alix, Blanche]
       closed: "Women defended their towns and castles at sieges; these tables have no record of them in the army's other careers."
       source: "Siege of Toulouse (Wikipedia): the stone that killed Simon de Montfort in 1218 came from an engine worked by 'ladies, girls and women'. No count of women at sieges."
+  - id: portugal
+    name: "Portugal (c.1385)"
+    table: towton-1461-all-hits
+    colours: ["#2e5a3a", "#e6e0d2", "#a33a2e", "#2e4f8a"]
+    names: [João, João, Afonso, Afonso, Gonçalo, Vasco, Martim, Álvaro, Pedro, Fernando, Martinho, Gil, Lourenço, Estêvão, Diogo, Nuno]
+    bynames: [Anes, Martins, Gonçalves, Domingues, Vasques, Pires, Esteves, Lourenço, Fernandes, Ferreiro, Sapateiro, "do Outeiro", "de Lisboa", "do Porto"]
+    women:
+      share: null
+      careers: [townswoman]
+      shares: {townswoman: 100}
+      names: [Maria, Senhorinha, Margarida, Catarina, Domingas, Constança, Leonor, Inês, Beatriz, Teresa]
+      closed: "Women defended their towns at sieges; these tables have no record of them in the army's other careers."
+      source: "Fernão Lopes, Crónica de D. João I, the siege of Lisbon in 1384: women carried baskets of stones to the walls and girls gathered stone for a barbican (Revista Minerva). Brites de Almeida, the baker of Aljubarrota who killed seven Castilians with her peel, is a legend first written down in 1642. Names: Porto, 1431-38 (Reis)."
+  - id: castile
+    name: "Castile (c.1385)"
+    table: towton-1461-all-hits
+    colours: ["#8a2b2b", "#d9b44a", "#e6e0d2", "#4a3a6b"]
+    names: [Juan, Juan, Pedro, Pedro, Fernando, Martín, Alfonso, Diego, Gonzalo, Gil, García, Domingo, Toribio, Suero, Ruy, Lope]
+    bynames: [Fernández, González, Sánchez, Martínez, Rodríguez, Díaz, Gómez, López, "el Mozo", Herrador, Calvo, "de Toledo", "de Burgos", "de Sevilla"]
+    women:
+      share: null
+      careers: [townswoman]
+      shares: {townswoman: 100}
+      names: [María, Sancha, Marina, Aldonza, Juana, Catalina, Teresa, Inés, Elvira, Constanza]
+      closed: "No Castilian women are recorded fighting or serving in 1383-85; these tables have no record of them in the army's other careers."
+      source: "No source found for Castilian women in the war of 1383-85; women and boys earned 1 maravedí a day at the harvests (Murcia, 1351). Names: Castilian documents (CODEA; Simón Parra 2010)."
+
+# Origins: d100, 5 each. gain: a skill (+gain); trait and drawback: a characteristic (+/-10)
+# or a skill (+/-gain).
 origins:
   - {name: "Ploughman's son", gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Cannot read a word", letters: -15}}
   - {name: "Shepherd", gain: watch, trait: {text: "Good with a sling", sling: 15}, drawback: {text: "Uneasy in crowds", pres: -10}}
@@ -167,7 +180,7 @@ careers:
     prefers: [str, agi, nerve, end, pres, wits]
     wound: 25
     wound_weapon: sword
-    kit: {default: hauberk, latin_east: hauberk, baltic: danish_maa, england: brigandine_sallet, france: full_plate}
+    kit: {default: hauberk, latin_east: hauberk, baltic: danish_maa, england: brigandine_sallet, france: full_plate, portugal: transitional, castile: transitional}
     weapon: {default: sword}
     terms:
       - {to: 20, skill: ride, text: "Rode in a lord's household for a season."}
@@ -184,7 +197,7 @@ careers:
     wound: 15
     wound_weapon: sword
     kit: {default: gambeson, baltic: gotland_levy, england: jack_sallet, france: jack_sallet}
-    weapon: {default: bow, england: longbow, france: longbow}
+    weapon: {default: bow, england: longbow, france: longbow, portugal: longbow}
     terms:
       - {to: 20, skill: watch, text: "Stood sentry on a border tower."}
       - {to: 40, skill: stealth, text: "Scouted ahead of the army."}
