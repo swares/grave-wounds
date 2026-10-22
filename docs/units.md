@@ -131,7 +131,8 @@ change to the rules. The Python mirror is `gravewounds/units.py` `_quick_blows`.
 ## Morale
 
 After each exchange a unit checks if any of these happened:
-- it lost the exchange in contact (more of its men put down than it put down);
+- it lost the exchange in contact (more of its men put down than it put down; for a unit holding
+  a position, below, only its losses hand to hand count here);
 - a quarter of its starting men are down (for a unit holding a position, below, only in an
   exchange it lost men);
 - a tenth of its men went down in this exchange;
@@ -169,6 +170,17 @@ units hold far past any threshold. Measured on 24 runs of every battlefield: 642
 the morale targets unchanged; Keating 12 to 20, Pork Chop 10 to 16, X-Ray 7 to 9. A first version
 applied it to attackers in cover too, and at Wanat the Taliban in the draw stopped breaking (23 to
 16); a check when a unit of its own side within 2 hexes broke was measured and changed nothing.
+
+**Losing the fight, holding a position** (`morale.posture_hand`). A unit holding a position (as
+above) and not flanked has lost the exchange in contact only if it lost more men hand to hand than
+it put down hand to hand. Men lost to fire from afar still count toward the quarter-down and shock
+checks. At the June Redan the 600 Russians behind the parapet checked, and broke, over men lost to
+British rifles about 180 m off, which their smoothbores could not answer, while the fight with the
+ladder party at the parapet was even. Units in the open and attackers count every loss: the French
+at Agincourt broke under the archery while at the English line, as they did in 1415. Measured on
+24 runs of every battlefield: 671 of 912 from 658; the June Redan 2 to 14 (British losses 25% to
+60%, as the assault was cut down), the September Redan 21 to 22, Babuna 5 to 6, Lützen 18 to 17;
+before 1914 units break at a median 20% down (from 17%) and the rout's share is 8% (from 4%).
 
 Lying in cover was added later (`morale.posture_cover`). At X-Ray no American company counted as
 holding a position: they lay in the trees, the elephant grass and the dry creek bed, not in works,

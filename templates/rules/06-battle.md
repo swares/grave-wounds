@@ -71,10 +71,11 @@ on average, with the same spread, as rolling every blow. Shellfire goes the same
 
 After an exchange a unit checks its morale if it lost the exchange in contact (more of its
 men down than it put down), has {{f_trigger}} of its men down, lost {{f_shock}} of its men in
-this exchange, or was struck in the flank or rear. A unit holding its ground in a position (in a bunker, dug in, behind works, in buildings or rubble, or
-lying down in woods or scrub), not flanked, counts its losses only
-in an exchange it lost men: a garrison does not break from the passing of time. It rolls d100
-against its quality's Nerve:
+this exchange, or was struck in the flank or rear. A unit holding its ground in a position (in
+a bunker, dug in, behind works, in buildings or rubble, or lying down in woods or scrub), not
+flanked, has lost the exchange only if it lost more men hand to hand than it put down hand to
+hand, and counts its losses only in an exchange it lost men: a garrison does not break from the
+passing of time, nor from fire it cannot answer. It rolls d100 against its quality's Nerve:
 
 {{table:morale}}
 

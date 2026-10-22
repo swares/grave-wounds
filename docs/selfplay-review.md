@@ -1069,3 +1069,25 @@ self-play tools now count prisoners as losses. Measured: 658 of 912 from 657 (ma
 pass); the targets about as before. Visby 23 to 24, X-Ray, Grozny, Lützen and Agincourt +1;
 Mogadishu 21 to 19, Wanat and the September Redan -1. Still open: no source gives how often a
 cut-off unit surrenders, so the rule makes every cornered unit of a side that gives up do so.
+
+## The June Redan and Agincourt under the losing check, 22 October 2026
+
+The June Redan (2 of 24): the 600 Russians in the salient, holding behind the parapet, checked
+because they lost more men than they put down in an exchange they were in contact: 5 against 0,
+3 against 2, 2 against 0. Their losses were mostly to the British covering riflemen about 180 m
+off, which their smoothbores could not answer (in one run the Russian infantry fired 17 volleys
+all battle and put down 10; the British Left column fired 86 at them and put down 28), while the
+hand-to-hand fight with the ladder party at the parapet was even. They failed twice and broke.
+Agincourt (9 of 24) needs the check as it is: the French Vanguard, 4,800 men, checks over one
+man lost to the archers while at the English line, and those checks are what break the French,
+as in 1415. Counting only hand-to-hand losses for everyone (measured on 22 October) stalled
+Agincourt; requiring a margin (19 October) made the older armies break far too late.
+
+Built: a unit holding a position (as the posture rule: the holding side, in works, buildings or
+cover, not flanked) has lost the exchange only by its hand-to-hand losses; attackers and units in
+the open count every loss as before (`morale.posture_hand`). 671 of 912 from 658: the June Redan
+2 to 14 (British losses 25% to 60%: the assault cut down at the salient, as fought), the September
+Redan 21 to 22, Babuna 5 to 6, Lützen 18 to 17; Agincourt, Towton, Mons and Cowpens unchanged.
+Before 1914 units break at a median 20% down (from 17%; 37% of breaks under 10% down, from 39%),
+within the sources (broken brigades lost a median of about 21% over the whole action); the rout's
+share of the loser's losses 8% (from 4%).
