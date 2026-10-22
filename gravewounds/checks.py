@@ -47,9 +47,9 @@ def _q(x: float) -> float:
     return math.floor(x * 4 + 0.5) / 4
 
 
-def _sell(H: dict, price: float, o: dict) -> dict:
+def _sell(cfg: dict, price: float, o: dict) -> dict:
     """Selling loot: a tenth more on a win, a quarter on a critical; a fumble, a fence cheats him."""
-    S = H.get("sell") or {"win": 0.1, "critical": 0.25, "fumble": -0.25}
+    S = cfg.get("sell") or {"win": 0.1, "critical": 0.25, "fumble": -0.25}
     kind = "list"
     if o["a"]["fumble"]:
         kind = "cheated"

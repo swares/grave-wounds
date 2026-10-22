@@ -1117,19 +1117,24 @@ function keepWants(f, n, pk, noFreshBefore){       // what he went without: hung
   f.log.unshift(line);
   n.log = [line, ...(n.log || [])].slice(0, 20);
 }
+function keepMan(f, n, p, k, ctx){                 // one named man's night's keep: true if he paid anything
+  const host = hostFeeds(ctx.camp, p.era), free = host || ctx.meat.left > 0;
+  if (!host && ctx.meat.left > 0) ctx.meat.left -= 1;   // the hunt's meat, a man a share
+  const pk = payKeep(purseLeft(p), 1, free ? 0 : k.food, ctx.bedHere ? k.bed : 0);
+  if (pk.paid) keepLedger(p, f, pk.paid);
+  keepWants(f, n, pk, ctx.noFreshBefore);
+  return !!pk.paid;
+}
 function keepNight(f, camp, noFreshBefore, hunted = 0){   // each named man's food (none if the host or the hunt feeds him), and a bed in a village or town unless camped
   const all = readNamed(), mine = namedWith(all, f);
   if (!mine.length) return;
   const purses = readPurses(), bedHere = !camp && BED_TERRAIN.includes(terrainAt(curMap(), f.pos).id);
-  let spent = false, meat = hunted;
+  let spent = false;
+  const meat = { left: hunted };
   for (const [, n] of mine){
     const p = n.pid ? purses[n.pid] : null, k = p ? ((DATA.keep || {})[p.era] || {})[p.region] : null;
     if (fedByArmy(f) || !k){ n.noFresh = f.noFresh; continue }   // fed with the force, or no money of his own to count
-    const free = hostFeeds(camp, p.era) || meat > 0;
-    if (!hostFeeds(camp, p.era) && meat > 0) meat -= 1;   // the hunt's meat, a man a share
-    const pk = payKeep(purseLeft(p), 1, free ? 0 : k.food, bedHere ? k.bed : 0);
-    if (pk.paid){ keepLedger(p, f, pk.paid); spent = true }
-    keepWants(f, n, pk, noFreshBefore);
+    spent = keepMan(f, n, p, k, { camp, bedHere, meat, noFreshBefore }) || spent;
   }
   writeNamed(all);
   if (spent) writePurses(purses);
