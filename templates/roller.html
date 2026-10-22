@@ -1698,7 +1698,8 @@ function sheetLine(c){                          // a team builder character's sh
   const old = olds.length ? ` · old wounds: ${olds.join(", ")}` : "";
   const p = h.pid ? readPurses()[h.pid] : null, purse = p ? ` · purse ${moneyQ(purseLeft(p), p.era, p.region)}` : "";   // shared with the team builder and the travel map
   const tongues = h.tongues && DATA.languages ? " · " + [DATA.languages.tongues[h.native].name, ...Object.entries(h.tongues).filter(([t]) => t !== h.native).map(([t, v]) => `${DATA.languages.tongues[t].name} ${v}`)].join(", ") : "";
-  return `<div class="wears">${attr(h.career)}, ${h.terms} term${h.terms > 1 ? "s" : ""}, age ${h.age}${h.leader ? " · leads" : ""} · ${stats}</div><div class="muted">${attr(skills)} · defence ${h.defence}%${attr(old)}${purse}${attr(tongues)}</div>`;
+  const rank = h.rank ? (RKE(h.era)?.ladder || []).find(r => r.id === h.rank)?.name : null, ranked = rank ? attr(rank) + ", " : "";
+  return `<div class="wears">${ranked}${attr(h.career)}, ${h.terms} term${h.terms > 1 ? "s" : ""}, age ${h.age}${h.leader ? " · leads" : ""} · ${stats}</div><div class="muted">${attr(skills)} · defence ${h.defence}%${attr(old)}${purse}${attr(tongues)}</div>`;
 }
 function addTeam(){                             // the team from the team builder joins the fighters
   const t = S.teamIn; if (!t) return;
@@ -2944,6 +2945,14 @@ function fieldWound(w){                          // a wound from the field map a
   if (Number.isFinite(w.pain) && w.pain > fx.pain) fx.pain = w.pain;   // cauterised on the field, unskilled: more pain
   return { loc: w.loc, mech: w.mech, sev: w.sev, graze: !!w.graze, fx, treated: bound ? `${w.aid || "bind"} (on the field)` : "" };
 }
+function fieldMarks(c, h){                        // a hero's fight on the field map for the team builder: a hit ticks his weapon skill; a Plains man's close-combat downs are coups
+  const pid = c.sheet && c.sheet.pid;
+  if (!pid) return;
+  const skill = c.sheet.skill_by && c.weapon ? c.sheet.skill_by[c.weapon] : null;
+  if ((h.hits || 0) > 0 && skill) xpTick(pid, skill, "hits on the field map");
+  const E = RKE(eraOfChar(c));
+  if (E && E.honours && (h.close || 0) > 0) xpMark(pid, "honours", h.close * DATA.ranks.honours.coup[0]);
+}
 function fieldHero(h){                         // one hero back from the field map: his wounds on his record; the log line
   const c = S.chars.find(x => x.id === h.id && x.name === h.name);
   if (!c) return null;
@@ -2953,7 +2962,9 @@ function fieldHero(h){                         // one hero back from the field m
   fieldOldWounds(c, h.old);
   if (Number.isFinite(h.blood)) c.blood = Math.min(c.blood ?? h.blood, h.blood);   // what he bled on the field
   if (h.state !== "up") c.state = { id: "out", rounds: null };
-  if (h.won !== undefined){ c.fieldWon = !!h.won; c.downs = h.downs || 0; S.afterOpen = true }   // the field map says whose side held the field
+  c.downs = h.downs || 0;                        // the enemies he put down there: a deed at two
+  if (h.won !== undefined){ c.fieldWon = !!h.won; S.afterOpen = true }   // the field map says whose side held the field
+  fieldMarks(c, h);
   if (h.state === "dead" || h.state === "prisoner") markLost(c.sheet && c.sheet.pid, h.state === "dead" ? "killed" : "taken prisoner");   // the team builder replaces him
   const what = h.wounds.map(w => `${w.graze ? "graze" : w.sev} (${LOC[w.loc].name.toLowerCase()})`).join(", ") || "unhurt";
   return `${c.name}: ${what}${{ dead: ", killed", down: ", down", prisoner: ", taken prisoner" }[h.state] || ""}`;

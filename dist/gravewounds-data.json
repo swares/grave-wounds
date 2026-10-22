@@ -2272,6 +2272,31 @@
     "name": "A season in a harsh camp"
    }
   },
+  "combat": [
+   "light_day",
+   "line_day",
+   "fight",
+   "extreme_day"
+  ],
+  "mods": {
+   "leader": {
+    "add": -0.25,
+    "name": "a trusted leader"
+   },
+   "cohesion": {
+    "add": -0.25,
+    "name": "comrades of long standing"
+   },
+   "replacement": {
+    "add": 0.25,
+    "name": "a replacement among strangers"
+   },
+   "moving": {
+    "add": -0.5,
+    "name": "on the move (an advance or a withdrawal)"
+   }
+  },
+  "leader_command": 60,
   "results": [
    {
     "to": 4,

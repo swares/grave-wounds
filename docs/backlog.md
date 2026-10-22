@@ -175,14 +175,14 @@ When an item is done, delete it here and note it in the pull request that closes
   (1914-18, 1939-45), Korea, Vietnam and the later wars (1982-2014) have their own tables.
 - **Rank, pay and loot, first cut.** Ranks, promotion by vacancy, pay by rank, loot, prize money,
   ransom and the Plains nations' honours are on the team builder. Still left out:
-  - the roller marks deeds (suggested from downs), coups and loot, but the field map does not
-    count a hero's downs or coups: his deed there is the GM's to tick in the roller's After the
-    fight, and a Plains hero's coups on the field map are not counted;
+  - the field map now counts a hero's hits and downs (a deed at two) and a Plains hero's
+    close-combat downs as coups, but not who struck first, nor a hero of the roller's own;
   - the deed suggestion (two downs, or the enemy's leader) is a design choice, and a down
     credited is only one made by a wound applied in the roller (bleeding out later is not);
   - a raid for horses is rolled after a fight, not played on the travel map;
-  - rank does not count in a fight (who leads is the highest rank, then the longest served, on
-    the team builder only), and the roller and field map do not show it;
+  - rank shows on the roller's card and the field map's heroes; the highest rank leads; a
+    leader's rank steadies his unit and officers draw fire, but the step and the officers'
+    exposure are design estimates, and only team-builder heroes carry a rank to the field map;
   - many figures are estimates: pay below the British and American ladders (the Thirty Years'
     War, the medieval vintenar's rises, German, French and Soviet armies by region), the share
     of pay kept after stoppages, the loot finds and ransoms, and the honours tiers;
@@ -238,10 +238,10 @@ When an item is done, delete it here and note it in the pull request that closes
   Ebro and the Berezina, fording limits from the modern field manuals, swimming in armour, ladder
   climbing under fire and cavalry fall rates were not found; the travel map's fords have one depth
   (ordinary, or flooded), with no current or temperature of their own, and horses are not swept
-  away; a fall's death is a critical head wound for the GM to rule on; and the beaten side's
-  pursuit losses on the field map by era (the research's multipliers: before 1500 one to three
-  times the losses on the field, 1500-1850 half to once, later mostly prisoners; ×1.5 fresh
-  cavalry, ×0.5 nightfall, ×2 a river behind them) are not yet applied.
+  away; a fall's death is a critical head wound for the GM to rule on; and the pursuit on the
+  field map (units.yaml aftermath.pursuit) takes its killed and prisoners from the units' men,
+  but its shares are the research's ranges, not counts, the Python self-play does not apply it,
+  and no named man runs his own chase from it.
 - **Prisoners, first cut.** Capture, captivity by era and situation, release, escape, death,
   ransom, parole and service. Still left out: the release chances, escape modifiers and capture
   bands are calibrations, not figures (the death hazards are worked from the sourced totals); the
@@ -254,8 +254,9 @@ When an item is done, delete it here and note it in the pull request that closes
   and homecoming, lasting-effect notes. Still left out: the calibration rests on Appel and Glass
   and Jones (Appel and Beebe 1946 and Swank and Marchand 1946 were not read in the original); no
   figures before 1850 (the medieval, Thirty Years' War and Crimean rates are the same rules, not
-  data); cohesion, a trusted leader, a replacement without friends and an advance or retreat do not
-  change the Strain taken (the research suggests a quarter either way); the field map's units have
+  data); cohesion, a trusted leader, a replacement and being on the move change a combat day's
+  Strain (the research's quarter and half), but a leader killed is a source of its own, not a
+  one-off +3 to everyone, and "trusted" is a Command of 60, not a record of how he led; the field map's units have
   no Strain (their morale is their own), and its heroes take only the fight's when they come back
   to the roller; treatment takes no time on the travel map; and the Plains nations' homecoming is
   deliberately abstract.
@@ -278,9 +279,8 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Experience, first cut.** Skills used well are ticked (job checks, hits, parries and
   dodges, first aid, foraging, nursing, Stealth and Watch at a surprise) and roll to rise at
   End of season; days served add a career term (`docs/team.md`, *Experience*). Still left out:
-  - the field map's battles tick nothing: a hero's hits, parries and first aid there are not
-    counted (his fight comes back to the roller as wounds, not as rolls), so a man who fights
-    only on the field map learns only from time served;
+  - the field map's battles tick a hero's weapon skill for his hits, but not his parries or the
+    first aid he gives;
   - characteristics never change in play, and age brings no decline;
 - **Training, first cut.** Masters for hire, teammates and drill in camp tick a skill. Still left
   out: the masters' fees are estimates apart from riding lessons (London, 1879), and a master's

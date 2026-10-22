@@ -272,6 +272,7 @@ function render(){
   renderRank();
   renderPatrons();
   renderPrisoners();
+  pushStrainMods();
   renderStress();
   renderChecks();
   renderLosses();
@@ -742,9 +743,10 @@ function stressRow(c, i){
   const due = st.toll >= nerve || st.broke;
   const lasting = due ? lastingSel(c, i) : "";
   const last = (x.stressLog || [])[0], lastText = last ? ` <span class="muted">· last: ${esc(last.why)} (+${last.amount})</span>` : "";
+  const mods = (x.strainMods || []).map(m => TD.stress.mods?.[m]?.name).filter(Boolean), modText = mods.length ? " <span class=\"muted\">· a day in the line: " + esc(mods.join(", ")) + "</span>" : "";
   return `<li><b>${esc(c.name)}</b>: Strain ${Math.round(st.strain * 10) / 10}, Toll ${Math.round(st.toll * 10) / 10} <span class="muted">(Nerve ${nerve}; next check at ${Math.floor(stTotal(st) / TD.stress.check_every + 1) * TD.stress.check_every})</span>${lastText}
     <div>${state}</div><div class="spend">${treat}${relief}<button class="small" data-rest="${i}" title="A day out of the line, camped: −${TD.stress.rest_day} Strain">Rest a day</button>${lasting}</div>
-    ${lastingText(c)}</li>`;
+    ${lastingText(c)}${modText}</li>`;
 }
 function renderStress(){
   const box = $("#stress");
@@ -767,6 +769,13 @@ function lastingSel(c, i){                          // the GM's lasting-effect n
 function lastingText(c){
   return (c.lasting || []).length ? `<div class="muted">Lasting: ${esc(c.lasting.join("; "))}</div>` : "";
 }
+function strainModsOf(c){                          // what changes his combat Strain (data stress.yaml mods): a trusted leader, comrades of long standing, or a replacement among strangers
+  const S2 = TD.stress, lead = S.team.find(m => m.leader), out = [];
+  if (lead && lead !== c && (lead.skills.command || 0) >= (S2.leader_command ?? 60)) out.push("leader");
+  out.push(c.joined && !(c.joined.seasons > 0) ? "replacement" : "cohesion");
+  return out;
+}
+function pushStrainMods(){ if (TD.stress?.mods) for (const c of S.team) xpStrainMods(c.pid, strainModsOf(c)) }
 function stressLog(line){ S.stlog = [line, ...(S.stlog || [])].slice(0, 30) }
 function addStrain(){
   const K = S.stK, c = S.team[K.i], ev = xpStress(c.pid, K.source, c.stats.nerve);
@@ -1056,10 +1065,13 @@ function endSeason(){
     const rolls = rkPromote(S.team, (S.vacancies ||= {}), realDice);
     for (const c of S.team) delete c.deedWhy;
     for (const k of rolls) lines.push(`${k.name} for ${rkName(k.to).toLowerCase()}: Command rolled ${k.roll} against ${k.target}: ${k.success ? "promoted" : "passed over"}.`);
+    const was = S.team.find(m => m.leader), now = leadByRank();
+    if (now && now !== was) lines.push(`${now.name} leads now, by rank.`);
     if (!rolls.length && Object.values(S.vacancies).some(n => n > 0)) lines.push("No one eligible for the vacancies yet.");
   }
   for (const c of S.team) Object.assign(all[c.pid], { sheet: rollerSheet(c), stamp });
   writeXp(all);
+  for (const c of S.team) if (c.joined) c.joined.seasons = (c.joined.seasons || 0) + 1;   // a season with the team: no longer a stranger
   if (TD.prisoners) prisonSeason();
   if (TD.patrons) patronSeason(lines);
   let named = null;                                // the travel map's copy of his skills
@@ -1134,6 +1146,14 @@ function loseForm(c, i){                          // why he is lost
   return `<div class="full spend"><label>Lost: <select data-lose-why="${i}">${LOST_WHY.map(w => `<option>${w}</option>`).join("")}</select></label>
     <button class="small" data-lose-ok="${i}">Take him off the team</button><button class="small" data-lose-cancel="1">Cancel</button></div>`;
 }
+const seniority = m => [rkLadder().length ? rkIndex(m.rank || rkStart(m.career)) : 0, m.rank_days || 0, m.terms + (m.xp_terms || 0)];
+function leadByRank(always = false){               // the highest rank leads, then the longest in it, then the longest served: the new leader
+  if (!S.team.length || (!always && !rkLadder().length)) return null;
+  const better = (a, b) => { const x = seniority(a), y = seniority(b); return x[0] - y[0] || x[1] - y[1] || x[2] - y[2] };
+  const next = S.team.reduce((a, b) => (better(b, a) > 0 ? b : a));
+  S.team.forEach(m => { m.leader = m === next });
+  return next;
+}
 function loseMember(i, why, auto = false){        // off the team and onto the losses; leadership passes to the most experienced left
   const c = S.team[i]; if (!c) return;
   c.lost = { why, auto, slot: i, settled: null, replaced: null };
@@ -1148,9 +1168,7 @@ function loseMember(i, why, auto = false){        // off the team and onto the l
   }
   if (c.leader && S.team.length){
     c.leader = false;
-    const senior = m => rkIndex(m.rank) * 100 + m.terms;   // the highest rank, then the longest served
-    const next = S.team.reduce((a, b) => (senior(b) > senior(a) ? b : a));
-    next.leader = true;
+    const next = leadByRank(true);
     S.msg = `${c.name} is lost (${why}); ${next.name} leads now.`;
   } else S.msg = `${c.name} is lost (${why}).`;
   S.losing = null;
@@ -1302,7 +1320,8 @@ function sendToField(){
   const units = fieldUnits();
   const biggest = units.reduce((a, u, i) => (u.men > units[a].men ? i : a), 0);
   const unitOf = c => { const k = units.findIndex(u => u.career === c.career); return k >= 0 ? k : biggest };
-  const heroes = S.team.map(c => ({ name: c.name, attack: c.attack ?? 0, defence: c.defence, nerve: c.nerve, kit: c.kit, weapon: c.weapon, leader: !!c.leader, unit: unitOf(c), endurance: c.stats?.end, leechcraft: c.skills?.leechcraft }));
+  const rankOf = c => (rkLadder().length ? { rank: rkName(c.rank || rkStart(c.career)), rank_index: rkIndex(c.rank || rkStart(c.career)), officer: isOfficer(c) } : {});
+  const heroes = S.team.map(c => ({ name: c.name, attack: c.attack ?? 0, defence: c.defence, nerve: c.nerve, kit: c.kit, weapon: c.weapon, leader: !!c.leader, unit: unitOf(c), endurance: c.stats?.end, leechcraft: c.skills?.leechcraft, ...rankOf(c) }));
   if (!units.length){ S.msg = "No followers to make units of: add some, roll, then send."; return render() }
   try {
     localStorage.setItem("gravewounds-team-field", JSON.stringify({ side: S.side.trim() || "Side A", table: byId(T.regions, S.region).table, units, heroes }));
@@ -1385,7 +1404,7 @@ function init(){
   });
   $("#rank").addEventListener("change", e => {
     const el = e.target;
-    if (el.dataset.rank !== undefined){ const c = S.team[+el.dataset.rank], down = rkIndex(el.value) < rkIndex(c.rank); c.rank = el.value; c.rank_days = 0; if (down) S.msg = `${c.name} is reduced to ${rkName(c.rank).toLowerCase()}.` }
+    if (el.dataset.rank !== undefined){ const c = S.team[+el.dataset.rank], down = rkIndex(el.value) < rkIndex(c.rank); c.rank = el.value; c.rank_days = 0; if (down) S.msg = `${c.name} is reduced to ${rkName(c.rank).toLowerCase()}.`; leadByRank() }
     else if (el.dataset.deed !== undefined) S.team[+el.dataset.deed].deed = el.checked;
     else if (el.id === "loot-kind") S.lootK.kind = el.value;
     else if (el.id === "loot-who") S.lootK.who = el.value;

@@ -222,6 +222,7 @@ legend{padding:0}
       <div class="toolbar">
         <button class="primary" id="btn-next">Start the battle</button>
         <button class="small" id="btn-end" title="Stop here: count the dead, and carry the wounded to camp">End the battle</button>
+        <label class="check" id="lbl-river" title="The beaten side has a river or marsh at its back: the pursuit takes twice as many (Towton, Ball's Bluff, the Berezina)"><input type="checkbox" id="chk-river"> River behind the beaten</label>
         <button class="small" id="btn-reset" title="Back to set-up with the starting units">New battle</button>
       </div>
       <div class="toolbar" id="ai-box">
@@ -1223,6 +1224,7 @@ function next(){
   newMove();
   S.bursts = r.log.filter(l => l.kind === "barrage").flatMap(l => l.bursts);
   S.log = [...logLines(r.log, S.exchange - 1), ...S.log].slice(0, 400);
+  tallyHeroes(r.log);
   const lost = [0, 1].filter(k => !standing(k));
   const verb = lost.length > 1 ? "have" : "has";
   S.msg = (lost.length ? `${lost.map(k => S.sides[k]).join(" and ")} ${verb} no unit left standing.` : "") + lostB + stagesNote(r.stages);
@@ -1605,10 +1607,49 @@ function endBattle(stop = null){                  // the dead counted; the wound
   const r = afterBattle(T(), all.map(u => forceOf(u)?.care || "field"), all.map(u => S.evac[sideNo(u)]), dice);   // units.js: the dead counted, the wounded, the heroes' fates
   S.after = r.after;
   S.fates = r.fates;
+  S.pursuit = pursue(all);
   tell(S.exchange - 1, [endPoint(S, stop, all, r.after)]);
   S.msg = "The battle is over.";
   S.log = [{ cls: "head", text: `The battle ends after ${S.exchange - 1} exchanges.` }, ...S.log];
   render();
+}
+/* The pursuit (units.yaml aftermath.pursuit): the beaten side, with no unit standing while the
+   other has some, loses more as it flees, killed and taken, as a share of its losses on the field. */
+function pursuitBand(){
+  const P = FD.units.aftermath?.pursuit, war = FD.tables[S.table]?.battle;
+  if (!P) return null;
+  const name = ["melee", "black_powder", "modern"].find(k => P[k].conflicts.includes(war));
+  return name ? [name, P[name]] : null;
+}
+function pursuitShare(range){ return range[0] + (range[1] - range[0]) * dice.randint(1, 100) / 100 }
+function pursuitMult(P, band, victor){              // [multiplier, reasons]
+  let m = 1;
+  const why = [];
+  if (P.horse_bands.includes(band)){
+    const horse = S.units.some(u => u.side === S.sides[victor] && u.mounted && u.state === "steady" && u.men > 0);
+    m *= horse ? P.horse : P.no_horse;
+    why.push(horse ? "fresh horse to follow" : "no horse to follow");
+  }
+  if (lightOf(S.field)){ m *= P.dark; why.push("the dark") }
+  if (S.riverBehind){ m *= P.river; why.push("a river or marsh behind them") }
+  return [m, why];
+}
+function pursue(all){                                // {side, killed, taken, why} or null; S.after changed in place
+  const beaten = [0, 1].filter(k => !standing(k)), band = pursuitBand();
+  if (beaten.length !== 1 || !band) return null;
+  const k = beaten[0], P = FD.units.aftermath.pursuit, [name, B] = band, [mult, why] = pursuitMult(P, name, 1 - k);
+  const mine = all.map((u, i) => [u, i]).filter(([u]) => sideNo(u) === k);
+  const fieldLost = mine.reduce((a, [, i]) => a + S.after[i].killed + S.after[i].left, 0), feet = mine.reduce((a, [u]) => a + Math.max(0, u.men), 0);
+  const killed = Math.min(feet, Math.round(fieldLost * pursuitShare(B.killed) * mult));
+  const taken = Math.min(feet - killed, Math.round(fieldLost * pursuitShare(B.prisoners) * mult));
+  if (!killed && !taken) return null;
+  let kLeft = killed, tLeft = taken;
+  mine.forEach(([u, i], n) => {                    // shared by the men each unit had on its feet
+    const last = n === mine.length - 1, share = feet ? Math.max(0, u.men) / feet : 0;
+    const kk = last ? kLeft : Math.min(kLeft, Math.round(killed * share)), tt = last ? tLeft : Math.min(tLeft, Math.round(taken * share));
+    S.after[i].killed += kk; S.after[i].taken = (S.after[i].taken || 0) + tt; kLeft -= kk; tLeft -= tt;
+  });
+  return { side: k, killed, taken, why };
 }
 function byStep(cases){                           // "12 mending, 20 serious, 8 grave"
   const n = {};
@@ -1623,10 +1664,11 @@ function sideAfter(k){
     const a = S.after[i];
     t.killed += a.killed; t.left += a.left; t.died += a.died; t.cases.push(...a.cases);
   });
-  const left = t.left ? `, ${t.left} left on the field` : "";
+  const left = t.left ? `, ${t.left} left on the field` : "", pu = S.pursuit?.side === k ? S.pursuit : null;
+  const chased = pu ? ` In the pursuit${pu.why.length ? " (" + pu.why.join(", ") + ")" : ""}: ${pu.killed} of those killed, and ${pu.taken} taken prisoner.` : "";
   const carried = t.cases.length ? `${t.cases.length} wounded carried to camp (${byStep(t.cases)})` : "no wounded to carry";
   const ev = S.evac?.[k] ? ` Medevac: ${FD.units.aftermath.medevac.kinds[S.evac[k]].name.toLowerCase()}.` : "";
-  return `${S.sides[k]}: ${t.killed} killed${left}, ${t.died} died of their wounds before help came; ${carried}.${ev}`;
+  return `${S.sides[k]}: ${t.killed} killed${left}, ${t.died} died of their wounds before help came; ${carried}.${ev}${chased}`;
 }
 function travelResult(){                          // per travel-map force: {killed, left, died, lost, cases}
   const out = {};
@@ -1635,9 +1677,9 @@ function travelResult(){                          // per travel-map force: {kill
     const a = S.after[i];
     out[f.id] ??= { killed: 0, left: 0, died: 0, lost: 0, cases: [] };
     const x = out[f.id];
-    x.killed += a.killed; x.left += a.left; x.died += a.died; x.cases.push(...a.cases);
+    x.killed += a.killed; x.left += a.left; x.died += a.died; x.cases.push(...a.cases); x.taken = (x.taken || 0) + (a.taken || 0);
   });
-  for (const x of Object.values(out)) x.lost = x.killed + x.left + x.died;
+  for (const x of Object.values(out)) x.lost = x.killed + x.left + x.died + x.taken;
   return { battle: S.from.battle, mapId: S.from.mapId, place: S.from.place, start: S.from.start || null, minutes: Math.max(0, S.exchange - 1), forces: out };
 }
 function backToTravel(){
@@ -1655,7 +1697,7 @@ function heroFate(h){                             // "came through", "carried to
   return h.state === "up" ? "came through" : h.state;
 }
 function sideTally(k){                            // one side's figures for the result table
-  const t = { start: 0, standing: 0, flown: 0, down: 0, killed: 0, died: 0, left: 0, carried: 0, units: 0, broke: 0, guns: 0, vehicles: 0 };
+  const t = { start: 0, standing: 0, flown: 0, down: 0, killed: 0, died: 0, left: 0, carried: 0, units: 0, broke: 0, guns: 0, vehicles: 0, taken: 0 };
   afterUnits().forEach((u, i) => {
     if (sideNo(u) !== k) return;
     const a = S.after[i], K = vehicleKind(u);
@@ -1663,7 +1705,7 @@ function sideTally(k){                            // one side's figures for the 
     t.standing += out_(u) ? 0 : u.men;
     t.flown += u.flown || 0;
     t.down += u.down || 0;
-    t.killed += a.killed; t.died += a.died; t.left += a.left; t.carried += a.cases.length;
+    t.killed += a.killed; t.died += a.died; t.left += a.left; t.carried += a.cases.length; t.taken += a.taken || 0;
     t.units += 1;
     t.broke += out_(u) && !(u.flown && u.men <= 0 && !ROUTED.has(u.state)) ? 1 : 0;
     t.guns += u.abandoned ? 1 : 0;
@@ -1679,6 +1721,7 @@ const RESULT_ROWS = [                             // [label, figure, shown only 
   ["Killed in the fighting", t => t.killed],
   ["Died of wounds before help came", t => t.died],
   ["Left on the field", t => t.left, true],
+  ["Taken prisoner in the pursuit", t => t.taken, true],
   ["Wounded to camp (the walking wounded too)", t => t.carried],
   ["Units broken or fled", (t) => `${t.broke} of ${t.units}`],
   ["Batteries lost", t => t.guns, true],
@@ -2061,7 +2104,7 @@ function renderHeroes(){
   $("#heroes").innerHTML = allHeroes().map(h => {
     const wounds = h.wounds.length ? " · " + nWounds(h.wounds.length) : "", [pa, pd] = heroPenalties(h), [blood, pool] = heroBlood(h);
     const hold = held(h) ? ` (${FD.combat.states[held(h)].name.toLowerCase()})` : "", body = ` · Blood ${blood}/${pool}${h.dying ? ", dying" : ""}`;
-    return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(unitName(h.unit))} · ${place[h.role]}${h.leader ? " · leader" : ""}</span></span><span class="meta">${Math.max(0, h.attack - pa)}/${Math.max(0, h.defence - pd)}% · ${h.state}${hold}${sickText(h)}${limbText(h)}${wounds}${body}</span>${heroButton(h, setup)}</li>`;
+    return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(unitName(h.unit))} · ${place[h.role]}${h.rank ? " · " + esc(h.rank.toLowerCase()) : ""}${h.leader ? " · leader" : ""}</span></span><span class="meta">${Math.max(0, h.attack - pa)}/${Math.max(0, h.defence - pd)}% · ${h.state}${hold}${sickText(h)}${limbText(h)}${wounds}${body}</span>${heroButton(h, setup)}</li>`;
   }).join("");
   const fighters = setup ? rollerFighters() : [];
   $("#hero-box").hidden = !setup;
@@ -2073,11 +2116,30 @@ function renderHeroes(){
   if ([...$("#sel-hero-unit").options].some(o => o.value === was[1])) $("#sel-hero-unit").value = was[1];
   if (!$("#in-hero-atk").value) heroDefaults();
 }
+function tallyHeroes(log){                         // each hero's hits and downs (and close-combat downs, a Plains man's coups), for the roller's deeds, honours and experience
+  S.htally = S.htally || {};
+  const tally = id => (S.htally[id] ||= { hits: 0, downs: 0, close: 0 });
+  let striker = null;
+  for (const l of log){
+    if (l.kind === "hero"){
+      const t = tally(l.hero);
+      t.hits += l.hits || 0; t.downs += l.down || 0;
+      if (!l.dist) t.close += l.down || 0;
+    }
+    if (l.kind === "duel"){ striker = l.hero; continue }
+    if (l.kind === "herohit" && striker !== null){
+      const t = tally(striker), felled = l.state !== "up" ? 1 : 0;
+      t.hits += 1; t.downs += felled; t.close += felled;
+      continue;
+    }
+    striker = null;
+  }
+}
 function heroesToRoller(){                        // their wounds onto their records in the wound roller
   const lost = [0, 1].filter(k => !standing(k)), held = lost.length === 1 ? S.sides[1 - lost[0]] : null;   // the side that holds the field, if one does
   const sideOfHero = h => h.unit.side;   // allHeroes gives each hero his unit
   const heroes = allHeroes().map(h => ({ id: h.id, name: h.name, state: h.state, wounds: h.wounds, blood: h.blood, old: (h.old || []).map(o => ({ bleed: o.bleed, aid: o.aid })), ...(h.post ? { post: true } : {}),
-    ...(held ? { won: sideOfHero(h) === held } : {}) }));   // the roller's After the fight: deeds and loot for the winners
+    ...(held ? { won: sideOfHero(h) === held } : {}), ...(S.htally?.[h.id] || {}) }));   // the roller's After the fight: deeds and loot for the winners; his hits and downs
   try{ localStorage.setItem("gravewounds-field-heroes", JSON.stringify({ place: S.from?.place || "", heroes })) }catch(e){ S.msg = "Could not save the heroes for the roller (storage is off)."; return render() }
   S.heroesSent = true;
   save();
@@ -2903,6 +2965,7 @@ function renderPhase(){
   $("#phase").textContent = ph;
   $("#btn-next").disabled = S.phase === "over";
   $("#btn-end").hidden = S.phase !== 0 && S.phase !== 1;
+  $("#lbl-river").hidden = $("#btn-end").hidden; $("#chk-river").checked = !!S.riverBehind;
   let label = `${S.sides[1]} done: fight`;
   if (S.phase === "setup") label = "Start the battle";
   else if (S.phase === 0) label = `${S.sides[0]} done`;
@@ -3058,6 +3121,7 @@ function newBattle(){                            // back to set-up: the travel m
     if (fid) loadBattlefield(fid, true);
   }
   S.voice = null;                                 // a new battle's narrator writes as its war again
+  S.htally = {};                                  // and no hero has struck anyone yet
   fillChoices();
   render();
 }
@@ -3089,6 +3153,11 @@ function followerUnit(o, side, k){                // one career's followers as a
   S.units.push(u);
   return u;
 }
+function heroRank(h){                              // his rank from the team builder: its name, what it adds to his unit's morale while he leads it up, and whether he is an officer (who draws fire)
+  if (!h.rank) return {};
+  const H = UD.heroes, bonus = Math.min(H.rank_cap ?? 12, (H.rank_step ?? 3) * (h.rank_index || 0));
+  return { rank: h.rank, ...(bonus ? { rank_bonus: bonus } : {}), ...(h.officer ? { officer: true } : {}) };
+}
 function teamHeroes(heroes, made){                // the team's men as heroes with their units; ids below zero (the roller's are above)
   const ok = FD.tables[S.table].weapons;
   let hid = Math.min(0, ...allHeroes().map(h => h.id)) - 1;
@@ -3097,7 +3166,7 @@ function teamHeroes(heroes, made){                // the team's men as heroes wi
     if (!u) continue;
     const weapon = ok.includes(h.weapon) ? h.weapon : u.weapon;
     u.heroes.push({ id: hid--, name: h.name, role: "range" in FD.weapons[weapon] ? "ranged" : "front", attack: h.attack, defence: h.defence, nerve: h.nerve,
-      weapon, kit: FD.kits[h.kit] ? h.kit : "none", leader: !!h.leader, state: "up", wounds: [], ...heroBody(h) });
+      weapon, kit: FD.kits[h.kit] ? h.kit : "none", leader: !!h.leader, state: "up", wounds: [], ...heroBody(h), ...heroRank(h) });
   }
 }
 function fromTeam(t){
@@ -3161,6 +3230,7 @@ function init(){
   $("#btn-reset").onclick = newBattle;
   narratorControls();
   $("#btn-end").onclick = endBattle;
+  $("#chk-river").onchange = e => { S.riverBehind = e.target.checked; save() };
   $("#btn-back").onclick = backToTravel;
   $("#btn-handoff").onclick = () => { fromTravel(HANDOFF); HANDOFF = null; dropHandoff(); fillChoices(); render() };
   $("#btn-nohandoff").onclick = () => { HANDOFF = null; dropHandoff(); render() };

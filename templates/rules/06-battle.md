@@ -125,6 +125,13 @@ there. His wounds use the full rules, his own Blood and his own stop check. Two 
 heroes in contact fight each other: {{f_duel}} attempts each an exchange, instead of at the
 rankers.
 
+**Rank.** A hero brings his rank from the team builder. Leading his unit and up, each rank step
+above the lowest adds {{f_rank_step}} to its morale (at most {{f_rank_cap}}). An officer (his rank
+pays three times a private's or more) draws fire: the blows that fall on his unit's heroes fall on
+him {{f_officer}} times as often. What a hero does is counted for the roller: his hits tick his
+weapon skill, two or more enemies put down are a deed, and a Plains man's close-combat downs are
+coups ({{f_coup}} honours each).
+
 His wounds slow him as in [Wounds](#wounds): an arm hurt stops a two-handed weapon, and a
 lamed hero halves his unit's move. In a quiet exchange his friends give first aid: the best
 Leechcraft in the unit, or its medics, else his comrades at {{f_first_aid}}%. A lamed or down
@@ -260,6 +267,14 @@ says who holds the field and the objective. Then:
 
 1. **The field.** A side with no unit still standing has lost the field: the men it had down
    there are left behind.
+1. **The pursuit.** If the other side still has units standing, the beaten side loses more as it
+   flees, as a share of its killed and left on the field (each share rolled between its figures):
+
+   {{table:pursuit}}
+
+   The victor's fresh horse makes it 1.5 times, and no horse half (before 1850); the dark, half; a
+   river or marsh at the beaten side's back, twice. Most of a beaten medieval army's dead fell in
+   the pursuit; by the 20th century the pursuit takes prisoners.
 2. **The death clock.** A wound that kills in minutes kills before help comes, unless he is
    bound in time ({{f_saved_min}}%). One that kills in hours kills unless his camp can treat it:
    {{f_saved_field}}% saved in a camp, {{f_saved_shelter}}% in quarters, none with no camp.

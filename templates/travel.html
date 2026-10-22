@@ -1253,7 +1253,7 @@ function fordsCrossed(f, from, to, g){
 function strainNight(f, n){                    // combat stress: a day in the line adds Strain; a day out of it, camped, is rest
   if (!DATA.stress || !n.pid) return;
   if (f.inLine){
-    const ev = xpStress(n.pid, "line_day", n.nerve ?? 50).filter(e => !e.held);
+    const ev = xpStress(n.pid, "line_day", n.nerve ?? 50, undefined, (f.marched || 0) > 0 ? ["moving"] : []).filter(e => !e.held);   // on the move in the line: an advance or a withdrawal
     const era = forceEra(f);
     for (const e of ev) f.log.unshift(`${dateText(f.day, true)}: ${n.name}: ${stName(era, e.result)} (Nerve ${e.target}, rolled ${e.roll}).`);
   } else if ((f.marched || 0) <= 0) xpStressDo(n.pid, st => stRest(st, 1));

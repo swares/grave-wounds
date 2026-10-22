@@ -33,6 +33,13 @@ function xpBody(pid, body){                        // the roller's word on how h
   x.body = body;
   writeXp(all);
 }
+function xpStrainMods(pid, mods){                  // the team builder's word on what changes his combat Strain: a trusted leader, cohesion, a replacement
+  if (!pid) return;
+  const all = readXp(), x = xpOf(all, pid);
+  if (JSON.stringify(x.strainMods || []) === JSON.stringify(mods)) return;
+  x.strainMods = mods;
+  writeXp(all);
+}
 function xpMark(pid, key, value){                  // from a fight: a deed (why), honours or horses (added), for the team builder to take up
   if (!pid) return;
   const all = readXp(), x = xpOf(all, pid);

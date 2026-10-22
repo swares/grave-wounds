@@ -762,6 +762,23 @@ rout:
 # Design estimates: the beaten side's dead at Towton and Agincourt were mostly men cut down
 # in flight or left on the field.
 aftermath:
+  # The pursuit (the field page, after the battle): when one side has no unit standing and the
+  # other has, the beaten side loses more as it flees, as a share of its losses on the field (each
+  # rolled between its two figures): killed, and taken prisoner. Before 1500 the pursuit killed
+  # one to three times the field's losses; 1500-1850 half to once, half of it as prisoners; after
+  # 1850 mostly prisoners (project doc "hazards-research", after Krentz, du Picq, Clausewitz).
+  # The victor's fresh horse (a steady mounted unit) makes it 1.5 times, none 0.5 times (before
+  # 1850); dark 0.5; a river or marsh behind the beaten side twice. Never more than the men it has
+  # left on their feet. Design estimates.
+  pursuit:
+    melee: {conflicts: [Crusades, Visby 1361, Wars of the Roses], killed: [1, 3], prisoners: [0, 0]}
+    black_powder: {conflicts: ["Thirty Years' War", American Revolution, Napoleonic Wars, War of 1812, Crimean War], killed: [0.25, 0.5], prisoners: [0.25, 0.5]}
+    modern: {conflicts: [American Civil War, American Indian Wars, WWI, WWII, Korea, Vietnam, Late 20th century, Iraq & Afghanistan], killed: [0.2, 0.5], prisoners: [0.5, 1.5]}
+    horse: 1.5
+    no_horse: 0.5
+    horse_bands: [melee, black_powder]
+    dark: 0.5
+    river: 2
   left_behind: true
   saved:
     minutes: 10
@@ -804,6 +821,14 @@ aftermath:
 heroes:
   tempo: 3.0
   exposure: 2.0
+  # Rank in a fight (a team-builder hero's rank, sent with him): his rank steps above the lowest,
+  # times `rank_step`, at most `rank_cap`, add to the morale of the unit he leads while he is up;
+  # an officer (his rank pays three times a private's or more, or an officer's career) is struck
+  # `officer_exposure` times as often by the blows that fall on his unit's heroes (officers drew
+  # fire: snipers' and sharpshooters' marks). Design estimates.
+  rank_step: 3
+  rank_cap: 12
+  officer_exposure: 2
   duel: 3                 # telling attempts each hero makes at the other in a duel, an exchange
   # First aid, each quiet exchange (his unit not in contact, not under fire, no losses), on his
   # worst-bleeding wound (from this battle or one he came with): the best Leechcraft among his

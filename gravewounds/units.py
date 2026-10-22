@@ -983,9 +983,11 @@ def front_men(d: Data, u: dict) -> int:
 
 def _exposure(d: Data, u: dict, rout: bool, missile: bool = False) -> tuple:
     """(hero, chance) for each hero of unit u a blow on it may fall on."""
+    H = d.units["heroes"]
+    mark = lambda h: H.get("officer_exposure", 1) if h.get("officer") else 1   # an officer draws fire
     if rout or missile:
-        return tuple((h, 1 / max(1, u["men"])) for h in _heroes(u, ("front", "ranged", "behind" if rout else "")))
-    return tuple((h, min(1, d.units["heroes"]["exposure"] / max(1, front_men(d, u)))) for h in _heroes(u, ("front", "ranged")))
+        return tuple((h, min(1, mark(h) / max(1, u["men"]))) for h in _heroes(u, ("front", "ranged", "behind" if rout else "")))
+    return tuple((h, min(1, mark(h) * H["exposure"] / max(1, front_men(d, u)))) for h in _heroes(u, ("front", "ranged")))
 
 
 def _hero_side(u: dict, hero: dict, table: str, d: Data | None = None) -> dict:
@@ -1035,7 +1037,7 @@ def _failed(mo: dict, unit: dict, by: int) -> str:
 def _morale_mods(mods: dict, unit: dict) -> int:
     m = 0
     if unit.get("leader") == "up":
-        m += mods["leader"]
+        m += mods["leader"] + max([h.get("rank_bonus", 0) for h in unit.get("heroes", []) if h.get("leader") and h.get("state") == "up"] or [0])
     elif unit.get("leader") == "down":
         m += mods["leader_down"]
     if unit["down"] >= unit["start"] / 2:
