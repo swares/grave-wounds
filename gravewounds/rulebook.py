@@ -73,7 +73,8 @@ def _money_tables(d: Data) -> dict:
             if not cur:
                 continue
             day = coin_text(d, eid, reg["id"], 1) or "no Day"
-            day_rows.append([T["name"], reg["name"], cur["name"], day, cur.get("day_note", "")])
+            note = cur.get("day_note", "") + (" (an estimate)" if cur.get("day_approx") else "")
+            day_rows.append([T["name"], reg["name"], cur["name"], day, note])
             if ladder(d, eid) and coin_text(d, eid, reg["id"], 1):
                 ranks = " · ".join(f"{r['name']} {coin_text(d, eid, reg['id'], pay_of(d, eid, reg['id'], 'x', r['id']))}" for r in ladder(d, eid))
                 pay_rows.append([reg["name"], ranks])

@@ -30,7 +30,9 @@ currencies:
     coin: frf
     base: centime
     decimal: {sym: "", suf: " fr", per: 100, small: " c."}
-    day_note: "no French soldier's pay found"
+    day: 37
+    day_note: "a French private's 3½d a day in English money (reported 1857); no Napoleonic scale confirmed"
+    day_approx: true
 
 currency: {default: gbp, continental: usd_continental, us_1812: usd, french: frf}
 

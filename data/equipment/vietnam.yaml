@@ -24,7 +24,8 @@ currencies:
     coin: aud
     base: cent
     decimal: {sym: "A$", per: 100, small: "¢"}
-    day_note: "no Australian soldier's pay found"
+    day: 488
+    day_note: "an unmarried Australian private's $34.16 a week (1966)"
   vnd_north:
     name: "North Vietnamese đồng"
     coin: vnd_north

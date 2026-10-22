@@ -5,7 +5,8 @@
 # currencies - each army's coin. Prices are whole numbers of the coin's smallest unit (`base`):
 #              units (largest first, `of` = how many base units) or a decimal coin. `day` is a
 #              common soldier's day's pay in base units (none where no pay figure is known);
-#              `coin` groups coins that are the same money.
+#              `coin` groups coins that are the same money. `day_approx`: the Day is a stand-in
+#              (another year's scale, a labourer's wage; the project doc "coin-days-research").
 # currency   - which coin each army (region) was paid in; default for any not listed.
 # items      - id, name, cat (category), price (base units, or [low, high]), in (a coin other
 #              than the default), per (the unit: lb, yard), when (the year or years), kit / weapon
@@ -29,7 +30,9 @@ currencies:
     coin: livre_t
     base: denier
     units: [{sym: " l.", of: 240}, {sym: " s.", of: 12}, {sym: " d.", of: 1}]
-    day_note: "no French soldier's pay found for 1415"
+    day: 32
+    day_note: "an archer's 48 livres a year (the 1434 scale, near enough to 1415)"
+    day_approx: true
   bezant:
     name: "Saracen bezants of Acre (24 quarrobles)"
     coin: bezant
@@ -42,7 +45,9 @@ currencies:
     coin: gotland
     base: penning
     units: [{sym: " marks", of: 288}, {sym: " örtugar", of: 12}, {sym: " pen.", of: 1}]
-    day_note: "no soldier's pay found for 1361"
+    day: 36
+    day_note: "a labourer's 1 öre a day at Nyköping (1365), standing in for a soldier's"
+    day_approx: true
 
 currency: {default: gbp, france: livre_t, latin_east: bezant, baltic: gotland}
 

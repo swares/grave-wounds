@@ -31,7 +31,9 @@ currencies:
     coin: rub_1995
     base: ruble
     units: [{sym: " rubles", of: 1}]
-    day_note: "no Russian conscript's pay found"
+    day: 150
+    day_note: "a Russian conscript's under a dollar a month (1995): a ceiling"
+    day_approx: true
   usd_2008:
     name: "Dollars and cents (2004-09)"
     coin: usd_2008
@@ -51,19 +53,22 @@ currencies:
     coin: gbp_2005
     base: penny
     decimal: {sym: "£", per: 100, small: "p"}
-    day_note: "no British soldier's pay found for 2005"
+    day: 3688
+    day_note: "a British private's £258.16 a week at the lowest rate (2005)"
   iqd:
     name: "New Iraqi dinars (about 1,400 to the dollar)"
     coin: iqd
     base: dinar
     units: [{sym: " dinars", of: 1}]
-    day_note: "no Iraqi pay found"
+    day: 5800
+    day_note: "an Iraqi army recruit's about $120 a month (2004-05), at 1,450 dinars to the dollar"
   pkr:
     name: "Pakistani rupees"
     coin: pkr
     base: rupee
     units: [{sym: " rupees", of: 1}]
-    day_note: "no pay found"
+    day: 367
+    day_note: "a Taliban foot soldier's 10,000-12,000 rupees a month (about 2010-13)"
 
 currency: {default: usd_2008, uk_1982: gbp_1982, argentina_1982: ars_1982, us_1991: usd_1991, us_1993: usd_1991, russia_1995: rub_1995, chechen: rub_1995, uk_2005: gbp_2005, insurgent: usd_fighter}
 

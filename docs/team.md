@@ -330,6 +330,16 @@ forages fresh food on the march; **Watch** makes his force harder to surprise, a
 **Stealth** makes the force he attacks with likelier to surprise its enemy (see
 [combat.md](combat.md), [travel.md](travel.md) and [works.md](works.md), *Surprise*).
 
+## Period money
+
+`templates/purse.js` holds the coin helpers every page shares (as `gravewounds/money.py`):
+`fmtMoney` (an amount of a coin's smallest unit as the period wrote it), `coinOf`, `coinText` and
+`moneyQ` (Days in his army's coin, coin first: "3s 6d (7 Days)"), reading `COINS`, which each page
+sets from its data (`TD.eras[*].equip` in the team builder, `DATA.coins` in the roller and the
+travel map). The team builder shows purse, ledger, kit, rank pay, wages, jobs, loot, ransoms,
+fees and favours so; the roller and the travel map, purses and loot. A coin with no `day` shows
+Days only. The rule book's "Money by era" chapter is built from the same data.
+
 ## Rank, pay and loot
 
 `data/ranks.yaml` (rules in `gravewounds/ranks.py`, repeated in `templates/team.js` as `rkStart`,

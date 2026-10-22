@@ -25,7 +25,8 @@
       "per": 100,
       "small": "\u00a2 CS"
      },
-     "day_note": "no Day: Confederate money lost almost all its value"
+     "day": 37,
+     "day_note": "a Confederate private's $11 a month (1861; $18 from June 1864), worth a cent a day in gold by 1865"
     }
    },
    "currency": {
@@ -80,7 +81,8 @@
       "per": 100,
       "small": " kop."
      },
-     "day_note": "no Russian soldier's pay found"
+     "day": 1,
+     "day_note": "a Russian private's 2 rubles 85 kopecks a year (1850s); he was fed and clothed in kind"
     }
    },
    "currency": {
@@ -147,7 +149,9 @@
       "per": 100,
       "small": " c."
      },
-     "day_note": "no French soldier's pay found"
+     "day": 37,
+     "day_note": "a French private's 3\u00bdd a day in English money (reported 1857); no Napoleonic scale confirmed",
+     "day_approx": true
     }
    },
    "currency": {
@@ -216,7 +220,9 @@
        "of": 1
       }
      ],
-     "day_note": "no Chinese soldier's pay found"
+     "day": 1000,
+     "day_note": "below the 36,700 old yuan a month of a 1951 officer: an estimate for a Volunteer's pocket money",
+     "day_approx": true
     },
     "kpw": {
      "name": "North Korean won",
@@ -281,7 +287,9 @@
        "of": 1
       }
      ],
-     "day_note": "no French soldier's pay found for 1415"
+     "day": 32,
+     "day_note": "an archer's 48 livres a year (the 1434 scale, near enough to 1415)",
+     "day_approx": true
     },
     "bezant": {
      "name": "Saracen bezants of Acre (24 quarrobles)",
@@ -318,7 +326,9 @@
        "of": 1
       }
      ],
-     "day_note": "no soldier's pay found for 1361"
+     "day": 36,
+     "day_note": "a labourer's 1 \u00f6re a day at Nyk\u00f6ping (1365), standing in for a soldier's",
+     "day_approx": true
     }
    },
    "currency": {
@@ -376,7 +386,9 @@
        "of": 1
       }
      ],
-     "day_note": "no Russian conscript's pay found"
+     "day": 150,
+     "day_note": "a Russian conscript's under a dollar a month (1995): a ceiling",
+     "day_approx": true
     },
     "usd_2008": {
      "name": "Dollars and cents (2004-09)",
@@ -411,7 +423,8 @@
       "per": 100,
       "small": "p"
      },
-     "day_note": "no British soldier's pay found for 2005"
+     "day": 3688,
+     "day_note": "a British private's \u00a3258.16 a week at the lowest rate (2005)"
     },
     "iqd": {
      "name": "New Iraqi dinars (about 1,400 to the dollar)",
@@ -423,7 +436,8 @@
        "of": 1
       }
      ],
-     "day_note": "no Iraqi pay found"
+     "day": 5800,
+     "day_note": "an Iraqi army recruit's about $120 a month (2004-05), at 1,450 dinars to the dollar"
     },
     "pkr": {
      "name": "Pakistani rupees",
@@ -435,7 +449,8 @@
        "of": 1
       }
      ],
-     "day_note": "no pay found"
+     "day": 367,
+     "day_note": "a Taliban foot soldier's 10,000-12,000 rupees a month (about 2010-13)"
     }
    },
    "currency": {
@@ -462,7 +477,7 @@
        "of": 1
       }
      ],
-     "day_note": "no Day: the Plains nations traded and drew no pay"
+     "day_note": "no Day: the Plains nations drew no pay; dressing one robe took a woman about 10 days"
     },
     "usd": {
      "name": "Dollars and cents (traders' prices)",
@@ -541,7 +556,8 @@
       "per": 100,
       "small": "\u00a2"
      },
-     "day_note": "no Australian soldier's pay found"
+     "day": 488,
+     "day_note": "an unmarried Australian private's $34.16 a week (1966)"
     },
     "vnd_north": {
      "name": "North Vietnamese \u0111\u1ed3ng",
@@ -623,7 +639,9 @@
       "per": 100,
       "small": " c."
      },
-     "day_note": "no French soldier's pay found"
+     "day": 25,
+     "day_note": "a poilu's 5 sous a day (the usual figure; raised with a combat allowance in 1917)",
+     "day_approx": true
     }
    },
    "currency": {
@@ -716,7 +734,8 @@
       "per": 100,
       "small": " kop."
      },
-     "day_note": "no Soviet soldier's pay found"
+     "day": 57,
+     "day_note": "a Red Army private's 17 rubles a month in wartime (about a ruble a day with allowances)"
     }
    },
    "currency": {
