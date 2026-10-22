@@ -110,6 +110,19 @@ regions:
     names: [Jean, Pierre, Guillaume, Jacques, Robert, Colin, Guiot, Perrin, Enguerrand, Hugues, Gautier, Renaud, Bertrand, Huguet, Thibaut, Jehan]
     bynames: ["le Fèvre", Boucher, "de Picardie", "le Normand", Bourgeois, Charpentier, "le Breton", Marchand, "d'Arras", "de Rouen"]
 
+  - id: portugal
+    name: "Portugal (c.1385)"
+    table: towton-1461-all-hits
+    colours: ["#2e5a3a", "#e6e0d2", "#a33a2e", "#2e4f8a"]
+    names: [João, Afonso, Nuno, Gonçalo, Martim, Vasco, Álvaro, Rodrigo, Lourenço, Fernão, Pedro, Diogo, Gil, Estêvão, Mem, Lopo]
+    bynames: [Pereira, "de Lisboa", "do Porto", Ferreiro, Pescador, "de Coimbra", Besteiro, Lavrador, "de Évora", Gomes]
+  - id: castile
+    name: "Castile (c.1385)"
+    table: towton-1461-all-hits
+    colours: ["#8a2b2b", "#d9b44a", "#e6e0d2", "#4a3a6b"]
+    names: [Juan, Pedro, Alfonso, Diego, Gonzalo, Fernando, Rodrigo, Martín, Ruy, García, Lope, Sancho, Íñigo, Gómez, Álvar, Pero]
+    bynames: [López, "de Toledo", "de Sevilla", "de Burgos", Herrero, Ballestero, "de Ávila", Pérez, "de Segovia", González]
+
 # Origins: d100, 5 each. gain: a skill (+gain); trait and drawback: a characteristic (+/-10)
 # or a skill (+/-gain).
     women:

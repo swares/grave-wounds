@@ -1,0 +1,15 @@
+# Perimortem blunt-force fractures in the Aljubarrota ossuary (São Jorge, battle of 14 August 1385;
+# minimum 414 adult men, commingled long-bone fragments), from Pérez Fernández Á., Alemán I.,
+# Botella M.C. and Cunha E., 'Perimortem fractures in the osteological collection of Aljubarrota
+# (Portugal)', Journal of Anthropological Archaeology 40: 82-88 (2015), via its published summary:
+# 58 fractures in 2,762 fragments, 54 on femora and 4 on tibiae; 41 left, 12 right, 5 side unknown.
+# The paper's cross-tabulation of bone by side was not seen: the side split is applied to both bones
+# alike (an estimate). The earlier study's 52 sharp and puncture wounds (38 and 14) are not located
+# by bone in what was seen, and are not counted here.
+bone,side,fractures
+femur,left,38
+femur,right,11
+femur,unknown,5
+tibia,left,3
+tibia,right,1
+tibia,unknown,0

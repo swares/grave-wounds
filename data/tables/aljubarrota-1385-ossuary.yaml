@@ -1,0 +1,37 @@
+id: aljubarrota-1385-ossuary
+order: 11.5
+name: "Aljubarrota 1385 - the São Jorge ossuary (bone evidence)"
+label: "Bone evidence: the São Jorge ossuary"
+battle: "Hundred Years' War"
+context: "Leg bones of at least 414 men killed when the Portuguese and their English allies beat Castile and its French allies on 14 August 1385, gathered into an ossuary on the field. Killed only; long bones, few skulls."
+variant: evidence
+native: armed
+weapon_bias: raw
+weapons: [sword, axe, spiked_club, spear, dagger, bow, crossbow]
+modifiers: [weapon_side, attacker_higher, attacker_lower, target_down, target_fleeing, flanked, target_warding]
+confidence: historical
+confidence_note: >
+  From the 58 perimortem blunt-force fractures counted in 2,762 bone fragments (54 femur, 4 tibia;
+  41 left, 12 right, 5 side unknown). The side split is applied to both bones alike, an estimate:
+  the paper's table of bone by side was not seen. The 52 sharp and puncture wounds of the earlier
+  study (38 and 14, cuts on skulls, a crossbow bolt through a frontal bone, cuts on tibiae and
+  femora) are not located by bone in what was published, and are left out.
+armor_note: >
+  Armour is already in these numbers, and so is what was kept: the ossuary holds mostly thigh and
+  shin bones, with few skulls and almost no ribs, hands or feet, so this table shows only where the
+  surviving bones broke. Most fractures are mid-shaft on the front of the thigh, more on the left,
+  which the authors read as face-to-face fighting, some of it perhaps on horseback. It is not a
+  picture of where men were hit. For play, the battlefield rolls Towton's gameplay table.
+sources:
+  - "Pérez Fernández Á., Alemán I., Botella M.C. and Cunha E., 'Perimortem fractures in the osteological collection of Aljubarrota (Portugal)', Journal of Anthropological Archaeology 40: 82-88 (2015), https://www.sciencedirect.com/science/article/abs/pii/S0278416515000446 (summary): MNI 414 adults, all sexed fragments male, aged about 20-60; 58 blunt fractures, 72% in the middle third of the shaft, 69% on the front."
+  - "Cunha E. and Silva A.M., 'War lesions from the famous Portuguese medieval battle of Aljubarrota', International Journal of Osteoarchaeology 7(6): 595-599 (1997): cuts on crania (frontal and parietal), a frontal bone probably pierced by a crossbow bolt, cut marks on tibiae and femora, and many healed old injuries; no frequencies."
+  - "Tally: data/sources/aljubarrota-1385-ossuary.csv."
+status: >
+  Historical, but partial: a mixed deposit of leg bones from the losers (most of the dead were
+  Castilians and French), so only the legs can be read, and only their blunt fractures by bone.
+regions:
+  - {label: "Left thigh (femur) (38)", locs: [thigh_l], count: 38}
+  - {label: "Right thigh (femur) (11)", locs: [thigh_r], count: 11}
+  - {label: "Thigh, side unknown (5)", locs: [thigh_l, thigh_r], count: 5}
+  - {label: "Left shin (tibia) (3)", locs: [lower_leg_l], count: 3}
+  - {label: "Right shin (tibia) (1)", locs: [lower_leg_r], count: 1}
