@@ -3111,12 +3111,17 @@ function renderLegend(){
 }
 
 /* ---------- map export (YAML) ---------- */
+function placeYaml(p){                          // one place's line in an exported map
+  const q = x => JSON.stringify(x);
+  const depot = p.depot?.length ? ", depot: [" + p.depot.map(q).join(", ") + "]" : "", note = p.note ? ", note: " + q(p.note) : "";
+  return "  - {name: " + q(p.name) + ", kind: " + p.kind + ", hex: [" + p.hex.join(", ") + "]" + depot + note + "}";
+}
 function mapYaml(){
   const b = baseMap(), m = curMap(), q = s => JSON.stringify(String(s));
   const fs = forcesHere();
   return [`# Painted in the travel page from ${b.id}. Save as data/maps/<id>.yaml and rebuild.`,
     `id: ${b.id}`, `name: ${q(b.name)}`, `hex_km: ${b.hex_km}`, `terrain: |`, ...m.rows.map(r => "    " + r),
-    `places:`, ...(b.places || []).map(p => `  - {name: ${q(p.name)}, kind: ${p.kind}, hex: [${p.hex.join(", ")}]${p.depot?.length ? `, depot: [${p.depot.map(q).join(", ")}]` : ""}${p.note ? `, note: ${q(p.note)}` : ""}}`),
+    `places:`, ...(b.places || []).map(placeYaml),
     `forces:`, ...fs.map(f => `  - {name: ${q(f.name)}, type: ${f.type}, side: ${q(f.side)}, men: ${f.men}, tools: ${!!f.tools}, hex: [${f.pos.join(", ")}]}`), ""].join("\n");
 }
 
