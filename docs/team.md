@@ -342,6 +342,18 @@ replacements. Training adds courses (`training.py` `courses_for`, `course`; `ran
 billets, hunting for the pot and finding the way (`data/uses.yaml`) are rolled by the best named
 man.
 
+## Fighting
+
+A hero's rank goes with him to the field map (`sendToField`: rank, rank index, officer); there a
+leader's rank adds `heroes.rank_step` a step to his unit's morale while he is up, at most
+`rank_cap`, and an officer is struck `officer_exposure` times as often (`units.js` and `units.py`
+`exposure` and the morale modifiers). The field page tallies each hero's hits, downs and
+close-combat downs and sends them back with his wounds: the roller ticks his weapon skill, credits
+his downs toward a deed and counts a Plains man's close downs as coups. The highest rank leads on
+the team builder. Strain's modifiers (`stress.yaml` `mods`) come from the team builder
+(`xpStrainMods`: a trusted leader, cohesion, a replacement) and the travel map (on the move). The
+field page's pursuit (`pursue`) adds the beaten side's killed and prisoners after a rout.
+
 ## Period money
 
 `templates/purse.js` holds the coin helpers every page shares (as `gravewounds/money.py`):

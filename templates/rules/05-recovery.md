@@ -64,6 +64,9 @@ Fighting wears on a man's mind as well as his body. **Strain** builds from what 
 
 {{table:strain}}
 
+A day in the line, a fight or an extreme day is changed by how he stands with his comrades,
+summed: {{table:strain_mods}}
+
 and {{st_toll}}% of every point also goes into his **Toll**, which only going home lowers. Each
 time Strain and Toll together pass {{st_every}}, 20, 30 and on, he rolls d100: at or under his
 Nerve + {{st_base}} − that total, he holds; a man who has broken down before rolls 10 less. If he

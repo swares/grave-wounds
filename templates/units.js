@@ -582,11 +582,12 @@ function lame(hero){                              // down, or lamed by a wound (
   return hero.state !== "up" || [...(hero.old || []), ...(hero.wounds || [])].some(w => (w.impair || []).some(i => L.includes(i)));
 }
 function exposure(u, rout, missile = false){        // [[hero, chance]] for the heroes of u a blow on it may fall on
+  const mark = h => (h.officer ? UD.heroes.officer_exposure ?? 1 : 1);   // an officer draws fire
   if (rout || missile){
     const roles = rout ? ["front", "ranged", "behind"] : ["front", "ranged"];
-    return heroesOf(u, roles).map(h => [h, 1 / Math.max(1, u.men)]);
+    return heroesOf(u, roles).map(h => [h, Math.min(1, mark(h) / Math.max(1, u.men))]);
   }
-  return heroesOf(u, ["front", "ranged"]).map(h => [h, Math.min(1, UD.heroes.exposure / Math.max(1, frontMen(u)))]);
+  return heroesOf(u, ["front", "ranged"]).map(h => [h, Math.min(1, mark(h) * UD.heroes.exposure / Math.max(1, frontMen(u)))]);
 }
 const heroSide = (u, hero, table) => ({ table, weapon: hero.weapon, kit: hero.kit, quality: u.quality, skill: hero.attack - heroPenalties(hero)[0] });
 function leaderState(u){
@@ -598,7 +599,7 @@ function leaderState(u){
 // ---------- morale ----------
 function moraleMods(mods, u){
   let m = 0;
-  if (u.leader === "up") m += mods.leader;
+  if (u.leader === "up") m += mods.leader + Math.max(0, ...(u.heroes || []).filter(h => h.leader && h.state === "up").map(h => h.rank_bonus || 0));   // his rank steadies them
   else if (u.leader === "down") m += mods.leader_down;
   if (u.down >= u.start / 2) m += mods.heavy;
   if (u.flanked) m += mods.flank;

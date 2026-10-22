@@ -111,10 +111,19 @@ def _talk_values(d: Data) -> dict:
     sell = ((d.checks or {}).get("haggle") or {}).get("sell") or {"win": 0.1, "critical": 0.25, "fumble": -0.25}
     return {"sell_win": round(sell["win"] * 100), "sell_crit": round(sell["critical"] * 100), "sell_fumble": round(-sell["fumble"] * 100),
             "hunt_deer": (U.get("hunt") or {}).get("deer", 5), "hunt_buffalo": (U.get("hunt") or {}).get("buffalo", 40),
-            "way_slow": (U.get("way") or {}).get("slow", 1.4),"lg_native": LG.get("native", 90), "lg_max": LG.get("max", 85), "lg_book": LG.get("phrase_book", 25),
+            "way_slow": (U.get("way") or {}).get("slow", 1.4),
+            "lg_native": LG.get("native", 90), "lg_max": LG.get("max", 85), "lg_book": LG.get("phrase_book", 25),
             "lg_pidgin": (tongues.get("bamboo_english") or {}).get("cap", 35), "lg_sign": (tongues.get("plains_sign") or {}).get("cap", 75),
             "pt_start": PT.get("start", 30), "pt_persuade": PT.get("persuade_div", 10), "pt_offended": PT.get("offended", -10),
-            "pt_promotion": PT.get("promotion_bonus", 20), "pt_season": (PT.get("events", {}).get("season") or {}).get("add", 2)}
+            "pt_promotion": PT.get("promotion_bonus", 20), "pt_season": (PT.get("events", {}).get("season") or {}).get("add", 2),
+            **_fight_values(d)}
+
+
+def _fight_values(d: Data) -> dict:
+    """Rank in a fight: the numbers the Heroes section quotes."""
+    H = (d.units or {}).get("heroes") or {}
+    coup = ((d.ranks or {}).get("honours") or {}).get("coup") or [3]
+    return {"f_rank_step": H.get("rank_step", 3), "f_rank_cap": H.get("rank_cap", 12), "f_officer": H.get("officer_exposure", 2), "f_coup": coup[0]}
 
 
 def values(d: Data) -> dict:
@@ -278,6 +287,14 @@ def tables(d: Data) -> dict:
         out["tongue_bands"] = _md(["Figure", "Reads as"], _band_rows(bands))
     if d.equipment:
         out.update(_money_tables(d))
+    PU = ((d.units or {}).get("aftermath") or {}).get("pursuit")
+    if PU:
+        span = lambda r: f"{r[0]:g}-{r[1]:g} times" if r[1] else "none"
+        out["pursuit"] = _md(["Wars", "Killed in the pursuit", "Taken prisoner"],
+                             [[", ".join(PU[k]["conflicts"]), span(PU[k]["killed"]), span(PU[k]["prisoners"])] for k in ("melee", "black_powder", "modern")])
+    SM = (d.stress or {}).get("mods")
+    if SM:
+        out["strain_mods"] = _md(["", "Strain"], [[m["name"][0].upper() + m["name"][1:], f"{m['add'] * 100:+.0f}%"] for m in SM.values()])
     if (d.training or {}).get("courses"):
         names = {e: d.teams[e]["name"].split(" (")[0] for e in d.teams}
         rows = []

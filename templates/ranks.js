@@ -214,9 +214,15 @@ const ST_NAME_AT = { shaken: 0, strained: 1, exhaustion: 2, severe: 2 };
 const stName = (eid, state) => (STR().names?.[eid] || ["shaken", "strained", "broken down"])[ST_NAME_AT[state]];
 const stRow = state => (STR().results || []).find(r => r.id === state) || {};
 const stRoll = { randint: (a, b) => a + crypto.getRandomValues(new Uint32Array(1))[0] % (b - a + 1) };
-function xpStress(pid, source, nerve, why){         // a man takes a source's Strain (the shared store): -> the checks made
+function stAmount(source, mods){                    // a source's Strain, a combat day's changed by his modifiers (summed, times 1 + the sum)
+  const S = STR(), base = S.sources[source].strain;
+  if (!(S.combat || []).includes(source)) return base;
+  const sum = [...new Set(mods)].reduce((a, m) => a + (S.mods?.[m]?.add || 0), 0);
+  return Math.max(0, base * (1 + sum));
+}
+function xpStress(pid, source, nerve, why, extra = []){   // a man takes a source's Strain (the shared store), with his own modifiers and any of the moment's: -> the checks made
   if (!pid || !TD.stress) return [];
-  const all = readXp(), x = xpOf(all, pid), st = (x.stress ||= stNew()), amount = STR().sources[source].strain;
+  const all = readXp(), x = xpOf(all, pid), st = (x.stress ||= stNew()), amount = stAmount(source, [...(x.strainMods || []), ...extra]);
   const ev = stAdd(st, amount, nerve, stRoll);
   x.stressLog ||= [];
   x.stressLog.unshift({ source, why: why || STR().sources[source].name, amount, ev });

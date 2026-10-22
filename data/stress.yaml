@@ -36,6 +36,22 @@ sources:                      # Strain a man takes
   captivity: {strain: 1, name: "A season in captivity"}
   captivity_harsh: {strain: 2, name: "A season in a harsh camp"}
 
+# Modifiers to a combat day's Strain (`combat`: the sources they touch), from the research's
+# accrual rules (project doc "stress-research"): a trusted leader present, strong cohesion (raised
+# together, a Plains society or band), an isolated replacement with no bonds, retreating in good
+# order or advancing fast (rates were low in withdrawals and pursuits). Summed, then the Strain is
+# times (1 + the sum), at least nothing. The team builder sets each man's (`xp.js` strainMods):
+# leader when the team's leader has `leader_command` Command or more and is not the man himself;
+# cohesion when he has served a full season with the team; replacement while he has served less
+# than one. The travel map adds moving for a force on the march that day.
+combat: [light_day, line_day, fight, extreme_day]
+mods:
+  leader: {add: -0.25, name: "a trusted leader"}
+  cohesion: {add: -0.25, name: "comrades of long standing"}
+  replacement: {add: 0.25, name: "a replacement among strangers"}
+  moving: {add: -0.5, name: "on the move (an advance or a withdrawal)"}
+leader_command: 60
+
 results:                      # d10 + margin/10: the first row it is at or under
   - {to: 4, id: shaken, attack: 10, nerve: 10, what: "Shaken: a tremor, jumpy; -10 to attack and to Nerve until a day's rest."}
   - {to: 7, id: strained, attack: 20, nerve: 20, what: "Strained: sleepless, startled by every sound, will not volunteer; -20 to attack and Nerve until treated."}
