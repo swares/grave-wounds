@@ -81,6 +81,7 @@ const map = buildCampaign({
   woods: WOODS, hills: HILLS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { siege: "camp", badajoz: "objective" },
   depots: { elvas: ["Allies"], badajoz: ["France"] },   // where each side resupplies (project doc "depots-research")
+  tongues: { olivenza: ["portuguese", "spanish"], elvas: ["portuguese"] },   // the people's own tongues where they differ from the map's (project doc "tongues-research")
   forces: [
     { name: "Beresford's British", type: "foot", side: "Allies", men: 10000, tools: true, at: "siege" },
     { name: "Beresford's Portuguese", type: "foot", side: "Allies", men: 10000, tools: true, at: "siege" },

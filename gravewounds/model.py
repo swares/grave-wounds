@@ -655,8 +655,16 @@ def validate(d: Data) -> None:
             if a not in known or b not in known:
                 errors.append(f"languages.yaml: related names an unknown tongue ({a}, {b})")
         for m, t in (LG.get("maps") or {}).items():
-            if t not in known:
-                errors.append(f"languages.yaml: map {m} names an unknown tongue {t}")
+            for x in (t if isinstance(t, list) else [t]):
+                if x not in known and x != "none":
+                    errors.append(f"languages.yaml: map {m} names an unknown tongue {x}")
+        if not isinstance(LG.get("place_km", 0), (int, float)) or LG.get("place_km", 0) < 0:
+            errors.append("languages.yaml: place_km must be a number of km, 0 or more")
+        for mid, m in d.maps.items():
+            for pl in m.get("places") or []:
+                ts = pl.get("tongues")
+                if ts is not None and not (isinstance(ts, list) and ts and all(x in known for x in ts)):
+                    errors.append(f"maps/{mid}: place {pl.get('name')} tongues must be a list of known tongues")
         traits = {o[k]["text"] for T in d.teams.values() for o in T["origins"] for k in ("trait", "drawback")}
         for t in LG.get("traits", {}):
             if t not in traits:

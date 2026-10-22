@@ -57,6 +57,7 @@ const map = buildCampaign({
   farms: FARMS, woods: WOODS, hills: HILLS, mountains: [], roads: ROADS, towns: [], villages: ["urmul", "kamdesh", "mandigal"],
   kinds: { keating: "objective", fritsche: "objective" },
   depots: { keating: ["Coalition"] },   // where each side resupplies (project doc "depots-research")
+  tongues: { kamdesh: ["nuristani", "pashto"], urmul: ["nuristani", "pashto"] },   // the people's own tongues where they differ from the map's (project doc "tongues-research")
   forces: [
     { name: "B Troop, 3-61 Cavalry, with Afghan soldiers and Latvian advisers (COP Keating)", type: "foot", side: "Coalition", men: 70, tools: true, at: "keating" },
     { name: "Observation Post Fritsche", type: "foot", side: "Coalition", men: 20, tools: true, at: "fritsche" },

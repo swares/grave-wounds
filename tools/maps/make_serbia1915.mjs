@@ -153,6 +153,9 @@ const notes = {
   ohrid: "Taken by the Bulgarians about 8-9 December",
 };
 
+// Serbian where the Serbs are: the Morava valleys (Muslims left after 1878) and highland Montenegro.
+// Macedonian Slavic counts as the game's Bulgarian (period sources count them so); Ladino as Spanish.
+const SR = ["serbian"];
 const map = buildCampaign({
   id: "serbia-1915", script: "make_serbia1915.mjs", title: "The Serbian retreat, November 1915 to January 1916, from Kraljevo to the Adriatic",
   name: "Serbia, 1915 (the great retreat)",
@@ -185,6 +188,18 @@ const map = buildCampaign({
   // by sea at the coast; the Bulgarians from Niš and Skopje.
   depots: { pristina: ["Serbia and Montenegro"], prizren: ["Serbia and Montenegro"], podgorica: ["Serbia and Montenegro"],
     shkoder: ["Serbia and Montenegro"], durres: ["Serbia and Montenegro"], nis: ["Central Powers"], skopje: ["Central Powers"] },
+  tongues: {
+    kraljevo: SR, krusevac: SR, nis: SR, prokuplje: SR, kursumlija: SR, raska: SR, leskovac: SR, vranje: SR, andrijevica: SR, berane: SR,
+    novipazar: ["serbian", "albanian"], rozaje: ["serbian", "albanian"], mitrovica: ["serbian", "albanian"], podgorica: ["serbian", "albanian"],
+    pristina: ["albanian", "serbian", "turkish"], prizren: ["albanian", "serbian", "turkish"], pec: ["albanian", "serbian"],
+    vucitrn: ["albanian", "serbian"], ferizaj: ["albanian", "serbian"], gnjilane: ["albanian", "serbian"], plav: ["albanian", "serbian"],
+    shkoder: ["albanian", "serbian"], djakovica: ["albanian"],
+    skopje: ["bulgarian", "turkish", "albanian"], kumanovo: ["bulgarian", "turkish", "albanian"], veles: ["bulgarian", "turkish"],
+    prilep: ["bulgarian", "turkish"], bitola: ["turkish", "bulgarian", "aromanian", "spanish", "albanian"],
+    ohrid: ["bulgarian", "turkish", "albanian"], struga: ["bulgarian", "turkish", "albanian"], debar: ["albanian", "bulgarian"],
+    tetovo: ["albanian", "bulgarian", "turkish"], gostivar: ["albanian", "bulgarian", "turkish"], kicevo: ["bulgarian", "albanian"],
+    resen: ["bulgarian", "turkish"], izvor: ["bulgarian"], babuna: ["bulgarian"], topolcani: ["bulgarian"],
+  },   // the people's own tongues where they differ from the map's (project doc "tongues-research")
   forces: [
     { name: "Serbian 1st Army (Mišić)", type: "foot", side: "Serbia and Montenegro", men: 40000, tools: true, at: "kraljevo" },
     { name: "Serbian 3rd Army (Šturm)", type: "foot", side: "Serbia and Montenegro", men: 35000, tools: true, at: "krusevac" },

@@ -77,7 +77,7 @@ terrain: |
     wwwwwwwfffffffffffffffffffffffffff
     wwwwwwwwffffffffffffffffffffffffff
 places:
-  - {name: "Visby", kind: objective, hex: [17, 5], note: "The walled Hanseatic town; its gates stayed shut during the battle outside, and it opened them two days later"}
+  - {name: "Visby", kind: objective, hex: [17, 5], tongues: [low_german, gutnish], note: "The walled Hanseatic town; its gates stayed shut during the battle outside, and it opened them two days later"}
   - {name: "Korsbetningen", kind: landmark, hex: [18, 6], note: "Outside the ring wall by the south gate: the battle of 27 July and the mass graves"}
   - {name: "Västerhejde", kind: village, hex: [12, 11]}
   - {name: "Stenkumla", kind: village, hex: [16, 16]}

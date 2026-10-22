@@ -73,7 +73,7 @@ terrain: |
     FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 places:
   - {name: "Dak To base and airstrip", kind: camp, hex: [50, 23], depot: ["United States and ARVN"], note: "The brigades' base and airstrip; its ammunition dump blew up under shellfire on 12 November 1967 (approximate)"}
-  - {name: "Tan Canh", kind: village, hex: [48, 19]}
+  - {name: "Tan Canh", kind: village, hex: [48, 19], tongues: [vietnamese, montagnard]}
   - {name: "Ben Het Special Forces camp", kind: village, hex: [20, 11], depot: ["United States and ARVN"], note: "A Special Forces and CIDG camp near the border, and a fire base for the guns (approximate)"}
   - {name: "Hill 875", kind: objective, hex: [8, 41], note: "The 2nd and 4th Battalions, 503rd Infantry fought up it from 19 to 23 November 1967 (approximate)"}
   - {name: "Hill 823", kind: landmark, hex: [28, 26]}

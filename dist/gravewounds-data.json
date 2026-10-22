@@ -3532,6 +3532,7 @@
   },
   "getting_by": 26,
   "among_days": 30,
+  "place_km": 10,
   "source": "https://en.wikipedia.org/wiki/Operation_Greif",
   "interpreters": {
    "figure": [
@@ -3650,6 +3651,12 @@
    },
    "albanian": {
     "name": "Albanian"
+   },
+   "aromanian": {
+    "name": "Aromanian"
+   },
+   "flemish": {
+    "name": "Flemish"
    },
    "tatar": {
     "name": "Crimean Tatar"
@@ -3848,6 +3855,21 @@
    [
     "romanian",
     "italian",
+    0.25
+   ],
+   [
+    "aromanian",
+    "romanian",
+    0.5
+   ],
+   [
+    "flemish",
+    "low_german",
+    0.5
+   ],
+   [
+    "flemish",
+    "german",
     0.25
    ]
   ],
@@ -5971,7 +5993,10 @@
    "easting73-1991": "arabic",
    "fallujah-2004": "arabic",
    "goosegreen-1982": "english",
-   "grozny-1995": "russian",
+   "grozny-1995": [
+    "russian",
+    "chechen"
+   ],
    "hamburger-1969": "montagnard",
    "heartbreak-1951": "korean",
    "hue-1968": "vietnamese",

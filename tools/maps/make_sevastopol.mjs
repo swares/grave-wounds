@@ -103,6 +103,7 @@ const map = buildCampaign({
   base: ".", woods: WOODS, hills: HILLS, mountains: MOUNTAINS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { redan: "objective", malakhov: "objective", camp: "camp", kamiesh: "camp", balaklava: "camp" },
   depots: { balaklava: ["Allies"], kamiesh: ["Allies"] },   // where each side resupplies (project doc "depots-research")
+  tongues: { balaklava: ["greek", "russian"], kadikoi: ["tatar", "russian"], chorgun: ["tatar", "russian"] },   // the people's own tongues where they differ from the map's (project doc "tongues-research")
   forces: [
     { name: "Light Division", type: "foot", side: "Allies", men: 3500, tools: true, at: "camp" },
     { name: "2nd Division", type: "foot", side: "Allies", men: 3500, tools: true, at: "camp" },

@@ -1012,21 +1012,27 @@ function groundText(g){
 }
 const wxLine = d => { const w = d.w, c = WXD.conditions[w.cond], wn = WXD.winds.find(x => x.id === w.wind), from = w.dir && w.wind !== "calm" ? ` from the ${WIND_NAMES[w.dir]}` : ""; return `${c.name}, ${wn.name.toLowerCase()}${from}, ${tempOut(w.low)}\u2013${tempOut(w.high)} ${tempUnit()}` };
 // The night: rest by camp and weather, fatigue for the day, and the next morning.
-/* Languages (ranks.js: lgValue; data DATA.languages.maps): the people where the map lies speak a
-   tongue; foraging where no named man in the force gets by in it is Hard, and a man who spends
-   `among_days` nights among them has it ticked. */
-const localTongue = () => (DATA.languages?.maps || {})[S.mapId] || null;
-const speaksLocal = (n, t) => !!n.tongues && lgValue(n.tongues, t) >= (DATA.languages.getting_by ?? 26);
-function interpHere(f){                        // the team's interpreter, if he speaks the local tongue and the team's named men are with this force
-  const t = localTongue(); if (!t) return null;
+/* Languages (ranks.js: lgValue, lgTonguesAt; data DATA.languages.maps and the places' tongues):
+   the people where a force stands speak a tongue, or several in mixed country (the nearest place
+   within place_km that names its own, else the map's); foraging where no named man in the force
+   gets by in any of them is Hard, and a man who spends `among_days` nights among them has their
+   main tongue ticked. */
+const localTongues = f => lgTonguesAt(baseMap(), S.mapId, f.pos);
+const speaksLocal = (n, ts) => !!n.tongues && ts.some(t => lgValue(n.tongues, t) >= (DATA.languages.getting_by ?? 26));
+function tongueNames(ts){                      // "Turkish, Bulgarian or Albanian"
+  const n = ts.map(t => DATA.languages.tongues[t].name);
+  return n.length > 1 ? n.slice(0, -1).join(", ") + " or " + n.at(-1) : n.join("");
+}
+function interpHere(f){                        // the team's interpreter, if he speaks a local tongue and the team's named men are with this force
+  const ts = localTongues(f); if (!ts.length) return null;
   let I = null;
   try { I = JSON.parse(localStorage.getItem("gravewounds-interpreter") || "null") } catch (e) { I = null /* unreadable: none */ }
-  return I?.tongue === t && namedWith(readNamed(), f).some(([, n]) => n.pid && ableNow(n)) ? I : null;
+  return ts.includes(I?.tongue) && namedWith(readNamed(), f).some(([, n]) => n.pid && ableNow(n)) ? I : null;
 }
-function forageTongue(f){                      // [modifier, note]: Hard where no one in the force gets by in the local tongue (or the team's interpreter speaks it)
-  const t = localTongue();
-  if (!t || interpHere(f) || namedWith(readNamed(), f).some(([, n]) => ableNow(n) && (speaksLocal(n, t) || !n.tongues))) return [0, ""];
-  return [DATA.languages.forage_without ?? -20, `, no one speaking ${DATA.languages.tongues[t].name}`];
+function forageTongue(f){                      // [modifier, note]: Hard where no one in the force gets by in a local tongue (or the team's interpreter speaks one)
+  const ts = localTongues(f);
+  if (!ts.length || interpHere(f) || namedWith(readNamed(), f).some(([, n]) => ableNow(n) && (speaksLocal(n, ts) || !n.tongues))) return [0, ""];
+  return [DATA.languages.forage_without ?? -20, `, no one speaking ${tongueNames(ts)}`];
 }
 function foraged(f){                          // a named man's Fieldcraft roll finds fresh food on the day's march
   const [skill, who, pid] = bestSkill([f], "fieldcraft");
@@ -1042,12 +1048,12 @@ function foraged(f){                          // a named man's Fieldcraft roll f
    used well is ticked. */
 const USES = () => DATA.uses || {};
 function bestTalk(f, skill){                   // [figure, name, pid]: the best named man at a talk skill, capped by the local tongue (or by the interpreter's figure, through him)
-  const t = localTongue(), I = interpHere(f);
+  const ts = localTongues(f), I = interpHere(f);
   let best = [0, null, null];
   for (const [, n] of namedWith(readNamed(), f)){
     if (!ableNow(n)) continue;
     const raw = (n.skills || {})[skill] || 0;
-    let v = t && n.tongues ? lgTalk(raw, n.tongues, n.native, t) : raw;
+    let v = ts.length && n.tongues ? Math.max(...ts.map(t => lgTalk(raw, n.tongues, n.native, t))) : raw;
     if (I && n.pid) v = Math.max(v, Math.min(raw, I.figure));
     if (v > best[0]) best = [v, n.name, n.pid || null];
   }
@@ -1105,8 +1111,8 @@ function wayToday(f, m){                       // the day's pace for finding the
   f.log.unshift(`${dateText(f.day, true)}: ${why}.`);
   return U.slow;
 }
-function amongNight(f, n){                     // a night among the people of the map: a season of it ticks their tongue
-  const t = localTongue();
+function amongNight(f, n){                     // a night among the people where the force stands: a month of it ticks their main tongue
+  const t = localTongues(f)[0];
   if (!t || !n.pid || !n.tongues || n.native === t) return;
   f.among ||= {};
   f.among[n.pid] = (f.among[n.pid] || 0) + 1;
@@ -1906,7 +1912,8 @@ function renderMap(){
       : p.kind === "landmark" ? `<circle class="mk" cx="${x}" cy="${y}" r="2.2"/>`
       : `<rect class="mk" x="${x - 3.5}" y="${y - 3.5}" width="7" height="7"/>`;
     const depot = p.depot?.length ? ` (depot of ${p.depot.join(", ")})` : "";   // where its sides' forces refill their supplies
-    over += `<g class="place ${p.kind}${depot ? " depot" : ""}"><title>${esc(p.name + depot)}</title>${mk}<text x="${(x + 8).toFixed(1)}" y="${(y - 7).toFixed(1)}">${esc(p.name)}${depot ? " ⚑" : ""}</text></g>`;
+    const spoken = p.tongues?.length ? `; people speak ${tongueNames(p.tongues)}` : "";   // the place's own tongues (else the map's)
+    over += `<g class="place ${p.kind}${depot ? " depot" : ""}"><title>${esc(p.name + depot + spoken)}</title>${mk}<text x="${(x + 8).toFixed(1)}" y="${(y - 7).toFixed(1)}">${esc(p.name)}${depot ? " ⚑" : ""}</text></g>`;
   }
   for (const o of forcesHere()) if (o.camp){
     const [x, y] = xy(o.camp.hex), letter = { bivouac: "B", watched: "W", staked: "S", fortified: "F", quartered: "Q" }[o.camp.kind] || "C";
@@ -2209,7 +2216,8 @@ function renderLegend(){
 function placeYaml(p){                          // one place's line in an exported map
   const q = x => JSON.stringify(x);
   const depot = p.depot?.length ? ", depot: [" + p.depot.map(q).join(", ") + "]" : "", note = p.note ? ", note: " + q(p.note) : "";
-  return "  - {name: " + q(p.name) + ", kind: " + p.kind + ", hex: [" + p.hex.join(", ") + "]" + depot + note + "}";
+  const tongues = p.tongues?.length ? ", tongues: [" + p.tongues.join(", ") + "]" : "";
+  return "  - {name: " + q(p.name) + ", kind: " + p.kind + ", hex: [" + p.hex.join(", ") + "]" + depot + tongues + note + "}";
 }
 function mapYaml(){
   const b = baseMap(), m = curMap(), q = s => JSON.stringify(String(s));
