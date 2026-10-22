@@ -990,37 +990,36 @@ function renderWords(){
   if (![...others, ...strangers].some(([v]) => v === K.to)) K.to = (others[0] || strangers[0])[0];
   const checked = K.book ? " checked" : "", hasBook = (DATA.languages.phrase_books || []).includes(eid) && K.purpose === "question";
   const book = hasBook ? `<label class="check"><input type="checkbox" id="wd-book"${checked}> Phrase book: a yes or no, a number, a direction</label>` : "";
-  const I = teamInterp(), via = I ? ` <label class="check"><input type="checkbox" id="wd-via"${K.via ? " checked" : ""}> Through ${attr(I.name)} (${attr(DATA.languages.tongues[I.tongue].name)})</label>` : "";
+  const I = teamInterp(), viaOn = K.via ? " checked" : "";
+  const via = I ? ` <label class="check"><input type="checkbox" id="wd-via"${viaOn}> Through ${attr(I.name)} (${attr(DATA.languages.tongues[I.tongue].name)})</label>` : "";
   const items = (S.wdlog || []).map(l => `<li>${attr(l)}</li>`).join(""), log = items ? `<ol class="roundlog">${items}</ol>` : "";
   box.innerHTML = `<details class="after"${S.wdOpen ? " open" : ""}><summary><b>Words across tongues</b> <span class="muted">orders, surrender, questions, passing</span></summary>
     <div class="toolbar"><label>Who ${hazardOpts("wd-who", sp.map(x => [x.id, x.name]), K.who)}</label> <label>To ${hazardOpts("wd-to", [...others, ...strangers], K.to)}</label></div>
     <div class="toolbar">${hazardOpts("wd-purpose", Object.entries(WD_PURPOSES), K.purpose)} ${book}${via} <button class="small" id="wd-roll">Speak</button></div>${log}</details>`;
 }
+function speakPass(c, L){                          // passing as one of them: {line, ok, t}
+  const LG_ = DATA.languages, t = Object.keys(L.tongues).sort((a, b) => L.tongues[b] - L.tongues[a])[0];   // the listener's best tongue
+  const p = lgPassing(lgValue(c.sheet.tongues, t), L.watch, d100(), d100()), ok = p.passed;
+  if (!p.opposed) return { line: `${c.name} cannot pass in ${LG_.tongues[t].name} (${p.grade})`, ok, t };
+  const verdict = ok ? "taken for one of them" : "found out";
+  return { line: `${c.name} passes as one of them to ${L.name} in ${LG_.tongues[t].name} (${p.grade}): ${p.opposed.a.roll} against ${p.opposed.a.target}, Watch ${p.opposed.b.roll} against ${p.opposed.b.target}: ${verdict}`, ok, t };
+}
+function speakWords(c, L, K){                      // words across tongues, his own or through the interpreter: {line, ok, t}
+  const LG_ = DATA.languages;
+  let [st, v] = lgShared(c.sheet.tongues, L.tongues);
+  const I = teamInterp(), via = !!I && K.via && I.tongue in L.tongues && I.figure > v;
+  if (via){ st = I.tongue; v = I.figure }
+  const closed = K.purpose === "question" && K.book, w = lgWords(v, d100(), closed, closed);
+  if (via && !I.reliable && w.check.roll >= LG_.interpreters.error_from) w.reading = "error";
+  let how = st ? `in ${LG_.tongues[st].name} (${v})` : "with no tongue in common";
+  if (via) how = `through ${I.name} (${LG_.tongues[st].name} ${v})`;
+  const line = `${c.name} to ${L.name}, ${WD_PURPOSES[K.purpose].toLowerCase()}, ${how}: rolled ${w.check.roll} against ${w.check.target}: ${LG_.readings[w.reading]}`;
+  return { line, ok: w.check.success && w.reading !== "error", t: via ? null : st };
+}
 function speak(){
-  const K = S.wd, c = S.chars.find(x => x.id === K.who), L = listenerOf(K), LG_ = DATA.languages;
+  const K = S.wd, c = S.chars.find(x => x.id === K.who), L = listenerOf(K);
   if (!c || !L) return;
-  const mine = c.sheet.tongues, pid = c.sheet.pid;
-  let line, ok, t;
-  if (K.purpose === "pass"){
-    t = Object.keys(L.tongues).sort((a, b) => L.tongues[b] - L.tongues[a])[0];       // the listener's best tongue
-    const p = lgPassing(lgValue(mine, t), L.watch, d100(), d100());
-    ok = p.passed;
-    const verdict = ok ? "taken for one of them" : "found out";
-    if (p.opposed) line = `${c.name} passes as one of them to ${L.name} in ${LG_.tongues[t].name} (${p.grade}): ${p.opposed.a.roll} against ${p.opposed.a.target}, Watch ${p.opposed.b.roll} against ${p.opposed.b.target}: ${verdict}`;
-    else line = `${c.name} cannot pass in ${LG_.tongues[t].name} (${p.grade})`;
-  } else {
-    let [st, v] = lgShared(mine, L.tongues);
-    const I = teamInterp(), via = !!I && K.via && I.tongue in L.tongues && I.figure > v;
-    if (via){ st = I.tongue; v = I.figure }
-    t = via ? null : st;
-    const closed = K.purpose === "question" && K.book;
-    const w = lgWords(v, d100(), closed, closed);
-    if (via && !I.reliable && w.check.roll >= LG_.interpreters.error_from) w.reading = "error";
-    ok = w.check.success && w.reading !== "error";
-    let how = st ? `in ${LG_.tongues[st].name} (${v})` : "with no tongue in common";
-    if (via) how = `through ${I.name} (${LG_.tongues[st].name} ${v})`;
-    line = `${c.name} to ${L.name}, ${WD_PURPOSES[K.purpose].toLowerCase()}, ${how}: rolled ${w.check.roll} against ${w.check.target}: ${LG_.readings[w.reading]}`;
-  }
+  const pid = c.sheet.pid, { line, ok, t } = K.purpose === "pass" ? speakPass(c, L) : speakWords(c, L, K);
   if (ok && t && t !== c.sheet.native && pid) xpTick(pid, "tongue:" + t, "words across tongues");
   S.wdlog = [line + ".", ...(S.wdlog || [])].slice(0, 30);
 }

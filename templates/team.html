@@ -570,7 +570,9 @@ const CAP = () => TD.prisoners?.captives;
 const enemyArmies = () => T.regions.filter(r => r.id !== S.region);
 function captiveWorth(k){                           // his ransom in Days by the era's first context, or null
   const ctx = prContexts(T.id)[0];
-  return ctx ? prRansom(T.id, ctx.id, k.officer ? CAP().officer_pay : 1, k.officer ? 3 : 0) : null;
+  if (!ctx) return null;
+  const pay = k.officer ? CAP().officer_pay : 1, rank = k.officer ? 3 : 0;
+  return prRansom(T.id, ctx.id, pay, rank);
 }
 function captiveRow(k, n){
   const worth = captiveWorth(k), held = (S.prisoners || []).filter(p => p.prison.stage !== "taken");
@@ -583,11 +585,11 @@ function captiveRow(k, n){
 function captivesHtml(){
   if (!CAP()) return "";
   const K = (S.capK ||= { army: enemyArmies()[0]?.id || S.region, officer: false });
-  const L = S.captives || [], items = (S.caplog || []).map(l => `<li>${esc(l)}</li>`).join("");
+  const L = S.captives || [], items = (S.caplog || []).map(l => `<li>${esc(l)}</li>`).join(""), logHtml = items ? "<ol class=\"log\">" + items + "</ol>" : "";
   return `<h4>Captives (${L.length})</h4><p class="muted note">Each End of season each eats ${cash(CAP().keep)} a day, and each not on parole tries to escape: his Stealth ${CAP().stealth} against the team's best Watch (${CAP().crowded} worse for each captive more than the team).</p>
     <div class="row"><div><label for="cap-army">Take a prisoner from</label><select id="cap-army">${optionTags(T.regions.map(r => [r.id, r.name.replace(/ \(.*/, "")]), K.army)}</select></div>
     <div style="align-self:end">${tick('id="cap-officer"', K.officer, "an officer")} <button class="small" id="btn-take">Take him</button></div></div>
-    <ul class="xp">${L.map(captiveRow).join("")}</ul>${items ? `<ol class="log">${items}</ol>` : ""}`;
+    <ul class="xp">${L.map(captiveRow).join("")}</ul>${logHtml}`;
 }
 function capLog(line){ S.caplog = [line, ...(S.caplog || [])].slice(0, 30) }
 function takeCaptive(){
@@ -600,7 +602,7 @@ function questionCaptive(k){                       // words across tongues with 
   let best = null, bv = 0;
   for (const m of S.team){ const v = m.tongues && k.tongue ? lgValue(m.tongues, k.tongue) : 0; if (v > bv){ best = m; bv = v } }
   const I = interp(), via = I && I.tongue === k.tongue && I.figure > bv;
-  const v = via ? I.figure : bv, who = via ? `${I.name} for the team` : (best ? best.name : "no one");
+  const v = via ? I.figure : bv, own = best ? best.name : "no one", who = via ? `${I.name} for the team` : own;
   const w = lgWords(v, realDice.randint(1, 100));
   if (via && !I.reliable && w.check.roll >= INT().error_from) w.reading = "error";
   if (w.check.success && !via && best && k.tongue !== best.native) xpTick(best.pid, "tongue:" + k.tongue, "questioning a prisoner");
@@ -1301,7 +1303,8 @@ function boughtMeta(item){                         // what a price-list row weig
 function spendFrom(i, days, what, meta = {}){      // take Days from his purse, or say why not
   const c = S.team[i], why = spendCheck(c, days);
   if (why){ S.msg = `${c.name} can't pay ${cash(days || 0)}: ${why}.`; return render() }
-  (c.ledger ||= []).push({ days: -days, what, ...meta });
+  c.ledger ||= [];
+  c.ledger.push({ days: -days, what, ...meta });
   S.msg = ""; render();
 }
 /* ---------- losses and replacements (team.js: replaceOptions, hireCost, effectsFor, settleLost) ---------- */
@@ -1656,17 +1659,19 @@ function init(){
     else if (b.dataset.ptdrop !== undefined) dropPatron(S.patrons[+b.dataset.ptdrop]);
     render();
   });
+  const CHK_FIELDS = { "chk-diff": ["diff", "value"], "chk-tongue": ["tongue", "value"], "chk-book": ["book", "checked"], "chk-pass": ["pass", "checked"],
+    "chk-via": ["via", "checked"], "chk-itongue": ["itongue", "value"] };   // the checks panel's plain boxes: the setting and what it takes
+  function chkUse(K, value){                       // a use of a skill sets its skill, difficulty and what it is against
+    K.use = value;
+    const u = checkUses().find(x => x.id === K.use);
+    if (u){ K.skill = u.skill; K.diff = u.difficulty; K.against = u.against ? u.against.value : "" }
+  }
   $("#checks").addEventListener("change", e => {
-    const K = S.chk, id = e.target.id;
-    if (id === "chk-who") K.i = +e.target.value;
-    else if (id === "chk-use"){ K.use = e.target.value; const u = checkUses().find(x => x.id === K.use); if (u){ K.skill = u.skill; K.diff = u.difficulty; K.against = u.against ? u.against.value : "" } }
+    const K = S.chk, id = e.target.id, plain = CHK_FIELDS[id];
+    if (plain) K[plain[0]] = e.target[plain[1]];
+    else if (id === "chk-who") K.i = +e.target.value;
+    else if (id === "chk-use") chkUse(K, e.target.value);
     else if (id === "chk-skill"){ K.skill = e.target.value; K.use = "" }
-    else if (id === "chk-diff") K.diff = e.target.value;
-    else if (id === "chk-tongue") K.tongue = e.target.value;
-    else if (id === "chk-book") K.book = e.target.checked;
-    else if (id === "chk-pass") K.pass = e.target.checked;
-    else if (id === "chk-via") K.via = e.target.checked;
-    else if (id === "chk-itongue") K.itongue = e.target.value;
     else if (id === "chk-against") K.against = e.target.value === "" ? "" : Math.max(0, +e.target.value);
     render();
   });

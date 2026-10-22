@@ -172,7 +172,7 @@ function ldItemKg(row){                             // what a bought row weighs 
   if ((W.not_carried || []).includes(row.cat)) return 0;
   if ("kg" in row) return row.kg;
   const p = (W.patterns || []).find(x => new RegExp(x.match, "i").test(row.name));
-  return p ? p.kg : (W.categories || {})[row.cat] ?? 0.5;
+  return p ? p.kg : W.categories?.[row.cat] ?? 0.5;
 }
 function ldAnimal(row){                             // the pack animal or vehicle a horse or travel row buys, or null
   if (row.cat !== "horse" && row.cat !== "travel") return null;

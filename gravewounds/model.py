@@ -1658,11 +1658,10 @@ def _ranks_errors(d: Data) -> list[str]:
     return errors
 
 
-def _weights_errors(d: Data) -> list[str]:
-    """data/weights.yaml: patterns that compile with a weight; category weights; a coin weight an era
-    known; animals with unique ids, a pattern, a load and forage; road and mud factors 0-1."""
+def _weight_pattern_errors(W: dict, where: str) -> list[str]:
+    """weights.yaml patterns: each compiles and has a weight."""
     import re
-    W, where, errors = d.weights, "weights.yaml", []
+    errors = []
     for p in W.get("patterns", []):
         try:
             re.compile(p.get("match", ""))
@@ -1670,6 +1669,14 @@ def _weights_errors(d: Data) -> list[str]:
             errors.append(f"{where}: pattern {p.get('match')!r} does not compile")
         if not (isinstance(p.get("kg"), (int, float)) and p["kg"] > 0):
             errors.append(f"{where}: pattern {p.get('match')!r} needs a weight")
+    return errors
+
+
+def _weights_errors(d: Data) -> list[str]:
+    """data/weights.yaml: patterns that compile with a weight; category weights; a coin weight an era
+    known; animals with unique ids, a pattern, a load and forage; road and mud factors 0-1."""
+    W, where = d.weights, "weights.yaml"
+    errors = _weight_pattern_errors(W, where)
     if any(not (isinstance(v, (int, float)) and v >= 0) for v in (W.get("categories") or {}).values()):
         errors.append(f"{where}: category weights must be 0 or more")
     bad = sorted(set(W.get("coin_kg_day") or {}) - set(d.equipment))
