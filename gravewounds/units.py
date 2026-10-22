@@ -1014,13 +1014,7 @@ def morale(d: Data, unit: dict, roll: int) -> dict:
     M = d.units["morale"]
     if unit["state"] == "broken":
         return {"check": False, "target": None, "state": "broken"}
-    if M.get("posture_hand") and unit.get("holds") and not unit.get("flanked"):   # holding a position: lost the fight hand to hand
-        losing = unit.get("hand_lost", 0) > unit.get("hand_dealt", 0) and unit.get("contact")
-    else:
-        losing = unit.get("lost", 0) > unit.get("dealt", 0) and unit.get("contact")
-    attrition = (unit["down"] >= M["trigger"] * unit["start"]       # past a quarter down: every exchange in the open;
-                 and (unit["lost"] > 0 or not (unit.get("holds") and not unit.get("flanked"))))   # holding a position, only when it lost men
-    struck = attrition or unit["lost"] >= M["shock"] * max(1, unit["men"]) or unit.get("flanked") or losing
+    struck = _attrition(M, unit) or unit["lost"] >= M["shock"] * max(1, unit["men"]) or unit.get("flanked") or _losing(M, unit)
     rally = unit["state"] == "shaken" and not unit.get("contact")
     if not struck and not rally:
         return {"check": False, "target": None, "state": unit["state"]}
@@ -1028,6 +1022,27 @@ def morale(d: Data, unit: dict, roll: int) -> dict:
     if roll <= target:
         return {"check": True, "target": target, "state": "steady" if rally and not struck else unit["state"]}
     return {"check": True, "target": target, "state": _failed(M, unit, roll - target)}
+
+
+def _holding(unit: dict) -> bool:
+    """Holding a position (morale.posture) and not struck in flank or rear."""
+    return bool(unit.get("holds")) and not unit.get("flanked")
+
+
+def _losing(M: dict, unit: dict) -> bool:
+    """Lost the exchange in contact: more men down than it put down; holding a position
+    (morale.posture_hand), only by its losses hand to hand."""
+    if not unit.get("contact"):
+        return False
+    if M.get("posture_hand") and _holding(unit):
+        return unit.get("hand_lost", 0) > unit.get("hand_dealt", 0)
+    return unit.get("lost", 0) > unit.get("dealt", 0)
+
+
+def _attrition(M: dict, unit: dict) -> bool:
+    """A quarter down (morale.trigger): every exchange in the open; holding a position, only in an
+    exchange it lost men."""
+    return unit["down"] >= M["trigger"] * unit["start"] and (unit["lost"] > 0 or not _holding(unit))
 
 
 def _failed(mo: dict, unit: dict, by: int) -> str:
