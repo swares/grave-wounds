@@ -1,4 +1,4 @@
-# Jobs between fights for the medieval era (c.1250-1460): the work a soldier or adventurer can
+# Jobs between fights for the medieval era (c.1250-1500): the work a soldier or adventurer can
 # take to "earn money" (data/money.yaml work, gravewounds/jobs.py).
 #
 # jobs    - id, name, what (one line), skill (checked once a term; none for unskilled work), min

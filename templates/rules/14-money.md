@@ -33,7 +33,7 @@ stoppages take, as the rank rules say):
 
 {{table:prices_korea}}
 
-## Medieval (c.1250-1460) {#money-medieval}
+## Medieval (c.1250-1500) {#money-medieval}
 
 {{table:prices_medieval}}
 

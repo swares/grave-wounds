@@ -1,0 +1,55 @@
+id: dornach-1499-all-hits
+order: 12.8
+name: "Dornach 1499 - gameplay-adjusted (before armour)"
+label: "Gameplay-adjusted (before armour)"
+battle: "Swabian War"
+context: "Where blows land on a man in a pike-and-halberd fight of about 1500, before armour: Towton's body with the head shared out as the Dornach skulls show. Use for the Swabian War and the Swiss and Landsknechte."
+variant: adjusted
+weapon_bias: raw
+native: armed
+derived_from: dornach-1499-crania
+armor: allowed
+weapons: [sword, poleaxe, pike, spear, bill, axe, dagger, spiked_club, bow, longbow, crossbow, matchlock_musket]
+modifiers: [weapon_side, attacker_higher, attacker_lower, target_down, target_fleeing, flanked, target_warding, behind_cover]
+confidence: extrapolated
+confidence_note: "Towton's gameplay weights for the body (the Dornach ossuary kept only skulls and thigh bones), with the skull's left and right from the Dornach crania; the corrections are design estimates."
+armor_note: >
+  These weights are where blows LAND. Resolve armour separately with the target's kit: a
+  pikeman in breastplate and sallet, a halberdier in a padded jack, a knight in full harness.
+sources:
+  - "Derived from dornach-1499-crania (Cooper 2010, Tables 23-32 and the catalogue) for the head, and from towton-1461-all-hits for the rest of the body."
+status: >
+  The Dornach evidence is 99% skull, from an ossuary that kept only skulls and femora, so it says
+  nothing of the body. Corrections: (1) The body below the head is Towton's gameplay table, the
+  nearest battle of the kind with whole skeletons. (2) The head keeps Towton's share (27%, lowered
+  from the bone evidence for blows struck on men already down: at least 25 Dornach skulls show
+  them too). (3) Within the skull, left and right as the Dornach crania (about 204 to 186 wounds,
+  midline ones shared). (4) The face keeps Towton's 6, as the Dornach skulls have no jaws. The
+  result is close to Towton's: both are head-heavy evidence corrected the same way.
+weights:
+  skull_l: 11
+  skull_r: 10
+  face: 6
+  neck: 4
+  chest_l: 7
+  chest_r: 6
+  abdomen: 7
+  groin: 3
+  back_upper: 4
+  back_lower: 3
+  shoulder_l: 2
+  shoulder_r: 1
+  upper_arm_l: 2
+  upper_arm_r: 2
+  forearm_l: 3
+  forearm_r: 3
+  hand_l: 4
+  hand_r: 4
+  thigh_l: 4
+  thigh_r: 4
+  knee_l: 1
+  knee_r: 1
+  lower_leg_l: 3
+  lower_leg_r: 2
+  foot_l: 2
+  foot_r: 1

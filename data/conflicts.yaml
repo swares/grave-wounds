@@ -144,6 +144,35 @@ conflicts:
       - "Fiorato V., Boylston A. and Knüsel C. (eds), Blood Red Roses: the archaeology of a mass grave from the Battle of Towton AD 1461 (Oxbow, 2000; 2nd ed. 2007)."
       - "Holst M. and Sutherland T., 'Towton Revisited', in Eickhoff and Schopper (eds), Schlachtfeld und Massengrab (2014), pp. 97-129."
 
+  "Swabian War":
+    period: "Dornach, 22 July 1499"
+    map: {bbox: [5, 45.5, 11, 49], sites: [{name: Dornach, lat: 47.48, lon: 7.62}]}
+    summary: >
+      In 1499 the Swiss Confederates fought the Swabian League and the Emperor Maximilian I along
+      the Rhine from the Grisons to Basel. At Dornach on 22 July some 5,000-6,000 Confederates
+      came down out of the woods below the Gempen onto the imperial army besieging Solothurn's
+      castle of Dorneck, killed its commander in the fight for the guns, held through hours of
+      counter-attacks by the Welsche Garde and the Landsknechte, and broke it when Lucerne and Zug
+      came up at evening. The Swiss had sworn to take no prisoners. The skulls of the dead, kept
+      in the ossuary at Dornach, are among the best-studied battle remains of the period.
+    sides:
+      - name: "Swiss Confederates"
+        who: "Solothurn, Bern, Zürich, then Lucerne and Zug, under Rudolf von Erlach: pikes, halberds, a few handguns and crossbows."
+        armour: "Pikemen in breastplates and sallets where they could; halberdiers lightly armoured; many men in their own clothes."
+        look: {colour: "#c8102e", trousers: "#e6e0d2"}
+      - name: "Swabian League and the Empire"
+        who: "Count Heinrich von Fürstenberg's army: Landsknechte, Swabian and Alsatian levies, Geldern mercenaries, knights, and the Welsche Garde of Burgundian horse under Louis de Vaudrey."
+        armour: "Landsknechte in corslets or none; knights in full harness; the Welsche Garde as heavy horse."
+        look: {colour: "#3a3a3a", trousers: "#d9b44a"}
+    examples:
+      - {name: "Swiss pikeman", side: "Swiss Confederates", kit: brigandine_sallet, weapon: pike, notes: "An 18-foot pike; the pikemen were the better armoured and better paid."}
+      - {name: "Swiss halberdier", side: "Swiss Confederates", kit: jack_sallet, weapon: poleaxe, notes: "The halberd (as the poleaxe); the cuts on the Dornach skulls fit sword or halberd."}
+      - {name: "Landsknecht", side: "Swabian League and the Empire", kit: jack_sallet, weapon: pike, notes: "Four gulden a month, when it was paid."}
+      - {name: "Imperial knight", side: "Swabian League and the Empire", kit: full_plate, weapon: sword, notes: "Fürstenberg and other lords fell in the fight for the guns."}
+    sources:
+      - "Cooper C., Forensisch-anthropologische und traumatologische Untersuchungen an den menschlichen Skeletten aus der spätmittelalterlichen Schlacht von Dornach (1499 n. Chr.), Mainz (2010)."
+      - "Leutenegger and Schubiger in the Solothurn jubilee yearbook (1999); Winkler on Dornach (2022) and the Swiss military of 1499 (2020); project docs dornach-research and dornach-wounds-research."
+
   "Thirty Years' War":
     period: "1618-1648"
     map: {bbox: [3, 46, 22, 56], sites: [{name: Lützen, lat: 51.25, lon: 12.14}]}

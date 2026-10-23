@@ -77,6 +77,20 @@ assigned:
     url: https://revistas.um.es/medievalismo/article/download/505001/316321/1787521
     note: Martín Vera, La lanza bajomedieval castellana (2021), table 3; the wait is a guess
   approx: true
+- id: swiss_auszug
+  name: A man of his canton's next levy (Auszug)
+  regions:
+  - swiss
+  careers: any
+  terms: 1
+  wait:
+  - 1
+  - 60
+  what: Each canton sent out picked men under its banner or Fähnlein; contingents came up day by day (at Dornach Lucerne and Zug on the 22nd, Uri and Unterwalden on the 23rd, Schwyz on the 24th), and a fallen man's widow might name his replacement.
+  source:
+    url: https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=1396&context=sahs_review
+    note: Winkler 2020, pp. 26-29, after Elgger; the wait is a guess
+  approx: true
 hire:
 - id: demobbed_soldier
   name: A demobilised soldier from the London pool
@@ -115,6 +129,48 @@ hire:
   source:
     url: https://en.wikipedia.org/wiki/Free_company
     note: no per-man rate found
+  approx: true
+- id: landsknecht_muster
+  name: A Landsknecht taken on at the muster place
+  regions:
+  - landsknecht
+  careers:
+  - spearman
+  - archer
+  - mercenary
+  terms:
+  - 1
+  - 3
+  cost: 30
+  per_term: 10
+  places:
+  - town
+  - camp
+  what: A captain beat the drum for men, paid each his Handgeld, and swore them to the articles of war at the muster place; a month's pay was 4 gulden.
+  source:
+    url: https://www.dhm.de/archiv/ausstellungen/eisenkleider/burschel.htm
+    note: Burschel; the cost (a month's pay) and the veteran's extra are guesses
+  approx: true
+- id: reislaeufer
+  name: A Swiss free man (Reisläufer) for hire
+  regions:
+  - swiss
+  careers:
+  - spearman
+  - man_at_arms
+  - mercenary
+  terms:
+  - 1
+  - 3
+  cost: 30
+  per_term: 10
+  places:
+  - town
+  - camp
+  what: Volunteers and free companions (Freiknechte) took service for pay and plunder and formed the front of the vanguard; in papal service in 1485 a Swiss foot soldier had 5 gulden a month.
+  source:
+    url: https://hvtg.ch/skin/frontend/PDF/publikationen/TextTB095.pdf
+    note: Kolb, Thurgauer als Landsknechte, p. 10; the cost (a month's pay) is a guess
   approx: true
 effects:
   default:

@@ -1,0 +1,18 @@
+# Perimortem injuries on the Dornach crania (battle of 22 July 1499; 106 crania without mandibles,
+# 33 femora; mostly the imperial dead), from Cooper C., Forensisch-anthropologische und
+# traumatologische Untersuchungen an den menschlichen Skeletten aus der spätmittelalterlichen
+# Schlacht von Dornach (1499 n. Chr.), Dr. phil. Mainz (2010), DOI 10.25358/openscience-979.
+# Mechanism totals (cut 315, point 69, blunt 28, shot 5) and sides (Tab. 28: 190 left, 173 right,
+# 54 midline) are the author's. The region of each lesion is our tally from the catalogue (Anhang F),
+# by the first bone named in its description; it matches the shares of the author's Table 30.
+# Femora: Tab. 31-32 and the catalogue (6 injuries on 4 of 33 femora).
+region,cut,point,blunt,shot,left,right,midline
+frontal,60,13,10,2,32,24,29
+parietal,134,21,12,1,85,80,3
+occipital,55,12,2,1,29,12,29
+temporal,39,13,2,0,25,21,8
+sphenoid,3,6,0,0,4,4,1
+face,22,4,1,1,9,12,7
+indeterminate,2,0,1,0,0,1,2
+femur_right,3,1,0,0,0,4,0
+femur_left,1,1,0,0,2,0,0
