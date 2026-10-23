@@ -355,6 +355,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
         <button id="btn-reset-rounds" class="small" title="Start the count again at round 1, clear the log and rally broken sides; wounds and stop-check results stay">Reset count</button>
       </div>
       <div id="gm-bar"></div>
+      <div id="net-bar"></div>
       <ol class="roundlog" id="round-log" aria-label="What happened each round"></ol>
       <div id="chars" style="display:flex;flex-direction:column;gap:10px"></div>
       <div id="after-fight"></div>
@@ -399,6 +400,7 @@ const shortName = w => DATA.weapons[w].short || DATA.weapons[w].name.split(" (")
 /*__STRIKE_JS__*/
 /*__GAMELOG_JS__*/
 /*__FIGHTER_JS__*/
+/*__NET_JS__*/
 const STRIKE = makeStrike(DATA);
 const { attackRoll, marginSeverity, armorAt, armorSteps, sevTiers, isGraze, cannotAttack } = STRIKE;   // defenceRoll and grazeFx need no data: strike.js defines them outright
 
@@ -1363,7 +1365,7 @@ function closeIn(){                               // a strike begins: rising fro
   if (!isShot(S.weapon)) [attackerChar(), defenderChar()].forEach(toil);
 }
 function initiativeAll(){                         // d10 + Agility / 10 for every fighter, then the order
-  for (const c of S.chars) c.init = rollInitiative(statOf(c, "agi"), 1 + crypto.getRandomValues(new Uint32Array(1))[0] % CHR.initiative.die);
+  for (const c of S.chars) c.init = rollInitiative(statOf(c, "agi"), DICE.randint(1, CHR.initiative.die));
   renderChars();
 }
 function riseToStrike(){                          // a man in cover rises to strike in close combat, which comes off his move
@@ -1395,7 +1397,7 @@ function veiledCard(c, i){                          // an enemy's card as the ta
     wounds: c.wounds.filter(w => !w.stopped).map(w => ({ loc: w.loc, sev: null })) });
   const hits = c.wounds.map(w => `<li><b>${LOC[w.loc].name}</b> <span class="muted">hit</span></li>`).join("") || `<li class="muted">Not hit yet.</li>`;
   const cls = ["char", "veiled", isDef ? "active" : "", isAtt ? "attacker" : "", isTurn ? "turn" : "", down ? "isdown" : ""].filter(Boolean).join(" ");
-  return `<div class="${cls}" data-i="${i}">
+  return `<div class="${cls}" data-i="${i}" data-id="${c.id}">
       <div class="orderrow"><span class="order">Init ${c.init ?? "–"}</span><span class="order">${esc(sideOf(c))}</span>${tag}</div>${state}
       <div class="charhead"><strong>${esc(c.name)}</strong>
         <button class="small" data-act="attacker" aria-pressed="${isAtt}">${isAtt ? "Attacking" : "Attacker"}</button>
@@ -1729,6 +1731,230 @@ $("#gm-bar").addEventListener("click", e => {
   else if (id === "gm-undo") gmUndo();
 });
 
+/* ---------- play online (net.js): this page as the host, each player's page joined to it ----------
+   The GM invites a player for a side: the invitation is a link; the player's page answers with a
+   reply code the GM pastes back. Then, after every change, this page draws the fight as that side's
+   Screen shows it and sends the drawing (the map, the cards, the result, the logs) to that player
+   only: what his side may not see never leaves this page. His page sends back his choices (a hex,
+   a target, Stay, Take cover, Undo move, the roll with his aim, gap, blow and any dice he typed,
+   Skip, Next fighter), and this page makes them, only for his side's fighter on its turn or its
+   free attack, through the same functions the buttons use. */
+const NETH = { peers: [], seq: 0, rendering: false, timer: null, stun: true };
+const netOpen = () => NETH.peers.filter(p => p.state === "open");
+function netSeatTurn(seat){                        // what this seat's player may do now: {acting, roll, free, blows, weapon}
+  const side = seat.slice(5), acting = actingChar(), f = (S.free || [])[0];
+  const fa = f && S.chars.find(c => c.id === f.att);
+  const mine = acting && sideOf(acting) === side && !f, free = !!fa && sideOf(fa) === side;
+  const striker = free ? fa : (mine ? acting : null), w = striker && DATA.weapons[S.weapon];
+  return { acting: mine ? acting.name : null, free, roll: !!striker && attackerChar() === striker && !!defenderChar() && defenderChar() !== striker,
+    weapon: w ? shortName(S.weapon) : "", blows: w && w.choose && striker.sheet ? Object.keys(w.mechanisms).filter(m => w.mechanisms[m]) : [] };
+}
+function netSeatScreen(seat){                      // the page as this seat's screen draws it, as HTML
+  const keep = S.screen;
+  NETH.rendering = true;
+  try {
+    S.screen = seat; renderChars(); renderResult();
+    return { t: "screen", seat, chars: $("#chars").innerHTML, map: $("#map").innerHTML, bar: $("#map-actions").innerHTML, key: $("#map-key").innerHTML,
+      result: $("#result").innerHTML, log: $("#round-log").innerHTML, round: $("#round-no").textContent, turn: $("#turn-no").innerHTML,
+      events: $("#events").innerHTML, msg: S.gmMsg || "", mine: netSeatTurn(seat) };
+  } finally {
+    S.screen = keep; renderChars(); renderResult();
+    NETH.rendering = false;
+  }
+}
+function netSync(){                                 // after a change: each connected player gets his side's screen, soon
+  if (NETH.rendering || !netOpen().length) return;
+  clearTimeout(NETH.timer);
+  NETH.timer = setTimeout(() => { for (const p of netOpen()) p.peer.send(netSeatScreen(p.seat)) }, 60);
+}
+const netInt = (v, lo, hi) => (Number.isInteger(v) && v >= lo && v <= hi ? v : null);
+function netRoll(m){                                // the player's roll: his aim, gap, blow and typed dice, then the strike
+  const zones = new Set(DATA.locations.map(l => l.zone)), w = DATA.weapons[S.weapon];
+  const keep = { aim: S.aim, gap: S.gap, blow: S.blow };
+  S.aim = zones.has(m.aim) ? m.aim : "";
+  S.gap = m.gap === true;
+  S.blow = w.choose && w.mechanisms[m.blow] ? m.blow : "";
+  const dice = m.rolls || {};
+  [["atk", "#in-atk-roll"], ["loc", "#in-loc"], ["mech", "#in-mech"], ["sev", "#in-sev"]].forEach(([k, id]) => { const v = netInt(dice[k], 1, 100); $(id).value = v === null ? "" : v });
+  $("#in-def-roll").value = "";
+  rollHit();
+  Object.assign(S, keep);
+}
+function netCommand(p, m){                          // a player's choice: made only if it is his to make now
+  if (!m || typeof m.t !== "string") return;
+  const may = netSeatTurn(p.seat), side = p.seat.slice(5);
+  const enemy = c => !!c && sideOf(c) !== side;
+  if (m.t === "hex" && may.acting && Array.isArray(m.h)){
+    const { cols, rows } = mapSize(), h = [netInt(m.h[0], 0, cols - 1), netInt(m.h[1], 0, rows - 1)];
+    if (h[0] !== null && h[1] !== null) moveActing(h);
+  }
+  else if (m.t === "target" && may.acting){
+    const c = S.chars.find(x => x.id === m.id);
+    if (enemy(c)) clickToken(c.id);
+  }
+  else if (m.t === "map" && may.acting && ["stay", "cover", "undo"].includes(m.act)){
+    ({ stay: () => { S.tm = { ...S.tm, moved: true, steps: 0, ran: false, prev: null } }, cover: takeCover, undo: undoMove })[m.act]();
+  }
+  else if (m.t === "next" && may.acting){ nextFighter(); gmKick() }
+  else if (m.t === "skip" && may.free) freeDone("skipped");
+  else if (m.t === "roll" && may.roll) netRoll(m);
+  else if (m.t === "stray" && S.hit?.stray?.hit && S.chars.find(x => x.id === S.hit.att && sideOf(x) === side)) strayHit();
+  renderChars();
+}
+async function netInvite(side){                     // a new invitation for a side's player
+  const seat = sideSeat(side), p = { n: ++NETH.seq, seat, state: "inviting", code: "", err: "" };
+  if (!gmOn()){ gmStart(); gmSoloScreen() }
+  S.gm.sides[side] = { ...gmSide(side), ctl: "player" };      // a person plays this side now
+  S.screen = null;                                   // the host's page is the GM's
+  NETH.peers.push(p);
+  p.peer = NET.hostPeer({ seat, stun: NETH.stun, onMessage: m => netCommand(p, m),
+    onState: st => { p.state = st; if (st === "open") p.peer.send(netSeatScreen(seat)); renderNet() } });
+  renderNet();
+  try { p.code = await p.peer.invite({ stun: NETH.stun }); p.state = "waiting for the reply" }
+  catch (e){ p.state = "failed"; p.err = String(e.message || e) }
+  renderNet(); renderChars();
+}
+async function netAccept(p, reply){
+  p.err = "";
+  try { await p.peer.accept(reply); p.state = "connecting" }
+  catch (e){ p.err = String(e.message || e) }
+  renderNet();
+}
+const netLink = code => `${location.href.split("#")[0]}#join=${code}`;
+function netPeerRow(p){
+  const side = esc(p.seat.slice(5)), st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[p.state] || p.state;
+  const invite = p.code && p.state !== "open" ? `<label class="muted" style="display:block">1. Send this link to the player for ${side}:
+      <textarea readonly rows="2" data-net-link="${p.n}" style="width:100%">${esc(netLink(p.code))}</textarea></label>
+      <button type="button" class="small" data-net="copy" data-n="${p.n}">Copy the link</button>
+      <label class="muted" style="display:block">2. Paste the reply code his page gives him:
+      <textarea rows="2" data-net-reply="${p.n}" style="width:100%"></textarea></label>
+      <button type="button" class="small" data-net="accept" data-n="${p.n}">Connect</button>` : "";
+  const err = p.err ? `<p class="ev-bad" style="margin:0">${esc(p.err)}</p>` : "";
+  return `<li><b>${side}</b>: ${esc(st)} <button type="button" class="small" data-net="drop" data-n="${p.n}">Drop</button>${invite}${err}</li>`;
+}
+function renderNet(){
+  const box = $("#net-bar"); if (!box) return;
+  const sides = sidesInOrder();
+  if (sides.length < 2){ box.innerHTML = ""; return }
+  const invites = sides.map(sd => `<button type="button" class="small" data-net="invite" data-side="${attr(sd)}">Invite a player for ${esc(sd)}</button>`).join("");
+  const rows = NETH.peers.length ? `<ul class="roundlog" style="max-height:none">${NETH.peers.map(netPeerRow).join("")}</ul>` : "";
+  box.innerHTML = `<details class="after"${NETH.open || NETH.peers.length ? " open" : ""}><summary><b>Play online</b> <span class="muted">${netOpen().length} player${netOpen().length === 1 ? "" : "s"} connected</span></summary>
+    <div class="toolbar" style="flex-wrap:wrap">${invites}</div>
+    <label class="check" title="Lets pages find each other across the internet; on one network it is not needed"><input type="checkbox" id="net-stun"${NETH.stun ? " checked" : ""}> Use a public STUN server (stun.l.google.com)</label>
+    ${rows}<p class="muted" style="margin:0">Each player sees his side's screen and plays his side's fighters on their turns; you see everything. No server: the link and the reply are passed by hand. Some strict networks will not connect.</p></details>`;
+}
+$("#net-bar").addEventListener("toggle", e => { NETH.open = e.target.open }, true);
+$("#net-bar").addEventListener("change", e => { if (e.target.id === "net-stun") NETH.stun = e.target.checked });
+$("#net-bar").addEventListener("click", e => {
+  const b = e.target.closest("button[data-net]"); if (!b) return;
+  const p = NETH.peers.find(x => x.n === +b.dataset.n);
+  if (b.dataset.net === "invite") netInvite(b.dataset.side);
+  else if (b.dataset.net === "copy" && p) navigator.clipboard?.writeText(netLink(p.code)).catch(() => { $(`[data-net-link="${p.n}"]`).select() });
+  else if (b.dataset.net === "accept" && p) netAccept(p, $(`[data-net-reply="${p.n}"]`).value);
+  else if (b.dataset.net === "drop" && p){ p.peer.close(); NETH.peers = NETH.peers.filter(x => x !== p); renderNet() }
+});
+
+/* ---------- the player's page: opened from an invitation link, it shows what the host sends ---------- */
+function guestLayout(){
+  document.body.innerHTML = `<div class="wrap" style="max-width:1200px;margin:0 auto;padding:12px;display:flex;flex-direction:column;gap:12px">
+    <h1 style="margin:0">Grave Wounds: player</h1>
+    <p id="g-status" aria-live="polite" style="margin:0"></p>
+    <section class="panel" id="g-join"></section>
+    <section class="panel" id="map-panel"><div class="mapbar" id="map-actions" aria-live="polite"></div>
+      <div class="hexmap" id="map" role="group" aria-label="Battle map"></div><div class="mapkey" id="map-key"></div></section>
+    <section class="panel" id="g-strike"><h2>Your strike</h2><div class="toolbar" style="flex-wrap:wrap" id="g-rollbar"></div><div class="result" id="result" aria-live="polite"></div></section>
+    <section class="panel tracker"><div class="roundbar"><span class="roundno" id="round-no"></span><span class="turnno" id="turn-no"></span></div>
+      <ol class="roundlog" id="round-log"></ol><div id="chars" style="display:flex;flex-direction:column;gap:10px"></div><div id="events"></div></section>
+  </div><style>#ev-save{display:none}
+    #chars button:not([data-act="select"]),#chars .grip{display:none}   /* the GM's card controls: not the player's */
+    #chars input,#chars select{pointer-events:none;border-color:transparent;background:transparent}
+    #g-rollbar select{width:auto}</style>`;
+}
+function guestRollBar(mine){                        // aim, gap, blow and the player's own dice, when he has a strike to make
+  const zones = [...new Set(DATA.locations.map(l => l.zone))];
+  const box = $("#g-rollbar");
+  if (!mine.roll){ box.innerHTML = `<span class="muted">${mine.acting ? `${esc(mine.acting)}'s turn: move, then click an enemy in reach to strike him.` : "Not your strike now."}</span>`; return }
+  const keep = Object.fromEntries([...box.querySelectorAll("[data-g]")].map(el => [el.dataset.g, el.type === "checkbox" ? el.checked : el.value]));
+  const blows = mine.blows.length ? `<select data-g="blow" aria-label="Blow"><option value="">Blow: rolled</option>${mine.blows.map(b => `<option value="${attr(b)}">${esc(DATA.mechanisms[b].name)}</option>`).join("")}</select>` : "";
+  const die = (k, ph) => `<input data-g="${k}" type="number" min="1" max="100" placeholder="${ph}" style="width:5.5em" aria-label="Your own d100 for the ${ph.toLowerCase()} (blank rolls for you)">`;
+  box.innerHTML = `<span><b>${esc(mine.weapon)}</b>${mine.free ? " (free attack)" : ""}</span>
+    <select data-g="aim" aria-label="Aim at"><option value="">No aim</option>${zones.map(z => `<option value="${attr(z)}">Aim: ${esc(z)}</option>`).join("")}</select>
+    <label class="check"><input type="checkbox" data-g="gap"> For a gap</label>${blows}
+    ${die("atk", "Attack")}${die("loc", "Loc")}${die("mech", "Mech")}${die("sev", "Sev")}
+    <button type="button" class="primary" id="g-roll">Roll the hit</button>${mine.free ? `<button type="button" class="small" id="g-skip">Skip</button>` : ""}`;
+  box.querySelectorAll("[data-g]").forEach(el => { if (el.dataset.g in keep){ if (el.type === "checkbox") el.checked = keep[el.dataset.g]; else el.value = keep[el.dataset.g] } });
+}
+const GUEST_DROP = "script,iframe,object,embed,link,meta,base,form";
+function guestClean(html){                          // the host's drawing as elements, with nothing in it that could run
+  const doc = new DOMParser().parseFromString(`<body>${typeof html === "string" ? html : ""}</body>`, "text/html");
+  doc.body.querySelectorAll(GUEST_DROP).forEach(el => el.remove());
+  for (const el of doc.body.querySelectorAll("*")){
+    for (const a of [...el.attributes]){
+      const v = a.value.replaceAll(/\s+/g, "").toLowerCase();
+      if (a.name.toLowerCase().startsWith("on") || ((a.name.endsWith("href") || a.name === "src") && v.startsWith("javascript:"))) el.removeAttribute(a.name);
+    }
+  }
+  return [...doc.body.childNodes];
+}
+function guestShow(m){                               // the host's drawing of this seat's screen
+  const open = !!$("#events details")?.open;
+  for (const [id, k] of [["chars", "chars"], ["map", "map"], ["map-actions", "bar"], ["map-key", "key"], ["result", "result"], ["round-log", "log"], ["turn-no", "turn"], ["events", "events"]]) $("#" + id).replaceChildren(...guestClean(m[k]));
+  $("#round-no").textContent = m.round || "";
+  if (open) $("#events details")?.setAttribute("open", "");
+  $("#g-status").textContent = m.mine.acting ? `Your turn: ${m.mine.acting}.` : m.msg || "Waiting for the other side.";
+  guestRollBar(m.mine);
+  GUEST.mine = m.mine;
+}
+const GUEST = { send: () => {}, mine: {} };
+function guestWire(){                                // the player's clicks, as choices sent to the host
+  $("#map").addEventListener("click", e => {
+    const tok = e.target.closest(".tok"), hx = e.target.closest(".hex");
+    if (tok) GUEST.send({ t: "target", id: +tok.dataset.id });
+    else if (hx) GUEST.send({ t: "hex", h: hx.dataset.h.split(",").map(Number) });
+  });
+  $("#map-actions").addEventListener("click", e => {
+    const b = e.target.closest("button[data-map]"); if (!b) return;
+    const act = b.dataset.map;
+    if (["stay", "cover", "undo"].includes(act)) GUEST.send({ t: "map", act });
+    else if (act === "next") GUEST.send({ t: "next" });
+    else if (act === "skipfree") GUEST.send({ t: "skip" });
+    else if (act === "roll") $("#g-roll")?.click();
+    else if (act === "stray") GUEST.send({ t: "stray" });
+  });
+  $("#chars").addEventListener("click", e => {
+    const b = e.target.closest('button[data-act="select"]'), card = b && b.closest(".char");
+    if (card) GUEST.send({ t: "target", id: +(card.dataset.id || -1), i: +card.dataset.i });
+  });
+  $("#result").addEventListener("click", e => { if (e.target.closest("#btn-stray")) GUEST.send({ t: "stray" }) });
+  $("#g-rollbar").addEventListener("click", e => {
+    if (e.target.id === "g-skip") return GUEST.send({ t: "skip" });
+    if (e.target.id !== "g-roll") return;
+    const v = k => $(`#g-rollbar [data-g="${k}"]`);
+    const rolls = {};
+    ["atk", "loc", "mech", "sev"].forEach(k => { const n = parseInt(v(k)?.value, 10); if (n >= 1 && n <= 100) rolls[k] = n });
+    GUEST.send({ t: "roll", aim: v("aim")?.value || "", gap: !!v("gap")?.checked, blow: v("blow")?.value || "", rolls });
+  });
+}
+async function guestMain(){
+  guestLayout(); guestWire();
+  const status = t => { $("#g-status").textContent = t };
+  let invite;
+  try { invite = await NET.unpackCode(location.hash) }
+  catch (e){ return status("This link is not a working invitation. Ask the GM for a new one.") }
+  const side = esc(invite.seat.slice(5));
+  status(`Joining the GM's fight as ${invite.seat.slice(5)}...`);
+  try {
+    const g = await NET.guestPeer({ invite, stun: invite.stun !== false, onMessage: m => { if (m.t === "screen") { $("#g-join").style.display = "none"; guestShow(m) } },
+      onState: st => { if (st !== "open") status("Lost the GM's page. Ask the GM for a new invitation.") } });
+    GUEST.send = g.send;
+    $("#g-join").innerHTML = `<h2>Send this reply to the GM</h2><p class="muted">The GM pastes it into Play online, under ${side}. This page then shows your side's view of the fight.</p>
+      <textarea readonly rows="3" id="g-reply" style="width:100%">${esc(g.reply)}</textarea>
+      <button type="button" class="small" id="g-copy">Copy the reply</button>`;
+    $("#g-copy").onclick = () => navigator.clipboard?.writeText(g.reply).catch(() => $("#g-reply").select());
+    status("Waiting for the GM to paste your reply.");
+  } catch (e){ status(`Could not answer the invitation: ${e.message || e}`) }
+}
+
 const FLAG_LABEL = { shock: "stop check" };   // the data's shock flag is the Grave Wounds stop check
 const pips = n => "●".repeat(n) + "○".repeat(3 - n);
 function fxList(fx){
@@ -1790,6 +2016,7 @@ function sitLine(h){                             // the range, cover and height 
   return g.penalty && !h.combat ? line + " (not applied: no attack roll)" : line;
 }
 function renderResult(){
+  netSync();                                        // a player online sees the result too
   const h = S.hit; if (!h){ $("#result").innerHTML = ""; return }
   const dd = S.chars.find(c => c.id === h.def);
   if (veiled(dd) && h.loc){ $("#result").innerHTML = veiledResult(h, dd); return }
@@ -2833,6 +3060,7 @@ function doWork(act, k, j){
 }
 function hitLine(h){                        // a roll in a few words, for the map's bar
   if (h.blocked) return "no attack";
+  if (h.loc && veiled(S.chars.find(c => c.id === h.def))) return `${LOC[h.loc].name.toLowerCase()}, hit`;   // how badly is the GM's
   if (h.miss) return h.stray && h.stray.hit ? `miss, into ${charName(h.stray.id)} in the way` : "miss";
   if (h.defended) return "parried or dodged";
   return `${LOC[h.loc].name.toLowerCase()}, ${sevLabel(h.sev).toLowerCase()}${h.fx ? "" : " (armour held)"}`;
@@ -2844,7 +3072,7 @@ function mapStrikeBits(){                    // roll and apply from the map; the
   const h = S.hit;
   if (!h) return out;
   out.push(`<span>Last roll: <b>${attr(hitLine(h))}</b> <span class="muted">(details under Strike)</span></span>`);
-  if (h.fx && !h.applied) out.push(`<button class="small" data-map="apply">Apply hit to ${attr(dd.name)}</button>`);
+  if (h.fx && !h.applied && !gmOn()) out.push(`<button class="small" data-map="apply">Apply hit to ${attr(dd.name)}</button>`);
   if (h.stray && h.stray.hit) out.push(`<button class="small" data-map="stray">Roll the hit on ${attr(charName(h.stray.id))}</button>`);
   return out;
 }
@@ -2981,7 +3209,8 @@ function renderWeather(){
 }
 function renderMap(){
   const { cols, rows } = mapSize(); placeUnplaced(); renderWeather();
-  const t = turnInfo(), acting = t && t.c, sides = sidesInOrder(), placing = !S.turn || S.freePlace;
+  const t0 = turnInfo(), acting = t0 && t0.c, sides = sidesInOrder(), placing = !S.turn || S.freePlace;
+  const t = veiled(acting) ? null : t0;              // an enemy's reach (his wounds slow him) is not on a side's screen
   const canAtk = acting && !cannotAttack(penalties(acting)) && !(S.tm && (S.tm.ran || S.tm.covered)) && attackerChar() === acting && !(S.free || []).length;
   let hx = "";
   for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){
@@ -3027,6 +3256,8 @@ function renderMap(){
     bits.push(`<span class="free"><b>Free attack:</b> ${attr(a.name)} on ${attr(dd.name)} as he leaves contact. Roll the hit and apply it.</span><button class="small" data-map="skipfree">Skip</button>`);
     const tm = S.tm || {};
     if (acting && tm.moved && tm.prev && S.free.length === tm.prev.free + (tm.queued || 0)) bits.push(`<button class="small" data-map="undo">Undo move</button>`);
+  } else if (acting && !t){
+    bits.push(`<span><b>${attr(acting.name)}</b> is acting.</span>`);
   } else if (acting){
     const tm = S.tm || {}, al = t.allow;
     const moveTxt = tm.moved ? (tm.steps ? `${tm.ran ? "ran" : "advanced"} ${hexes(tm.steps)}` : "stays in place")
@@ -3119,7 +3350,7 @@ function renderChars(){
     const isAtt = i === S.attacker, isDef = i === S.active, isTurn = c.id === S.turn, down = isDown(c), broken = !!(S.broken || {})[sideOf(c)];
     const cp = penalties(c), slow = cp.attack, tieUp = i > 0 && initOf(S.chars[i - 1]) === initOf(c), tieDn = i < S.chars.length - 1 && initOf(S.chars[i + 1]) === initOf(c);
     const incap = cannotAttack(cp);
-    return `<div class="char ${isDef ? "active" : ""} ${isAtt ? "attacker" : ""} ${isTurn ? "turn" : ""} ${down ? "isdown" : ""}" data-i="${i}">
+    return `<div class="char ${isDef ? "active" : ""} ${isAtt ? "attacker" : ""} ${isTurn ? "turn" : ""} ${down ? "isdown" : ""}" data-i="${i}" data-id="${c.id}">
       <div class="orderrow"><span class="grip" draggable="true" title="Drag to reorder fighters with the same initiative" aria-hidden="true">⋮⋮</span>
         <label class="order" title="Initiative: higher acts first. Use your game's number (reaction, speed, a roll).">Init
           <input type="number" step="any" data-act="init" value="${c.init ?? ""}" placeholder="0" aria-label="Initiative for ${attr(c.name)}"></label>
@@ -3161,7 +3392,7 @@ function renderChars(){
   renderMap();
   save();
   veilInputs();
-  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards(); renderWords(); renderEvents(); renderGM();
+  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards(); renderWords(); renderEvents(); renderGM(); netSync();
 }
 $("#after-fight").addEventListener("change", e => {
   if (e.target.id === "sel-won"){ S.wonBy = e.target.value || null; S.afterOpen = true; renderChars() }
@@ -3423,6 +3654,7 @@ function startExamples(){                       // example combatants from this 
   for (let i = 0; i < 12 && !applyHit(S.chars[0], (rollHit(false, false), S.hit)); i++);   // the examples' wounds are not logged
 }
 function init(){
+  if (location.hash.startsWith("#join=")) return guestMain();   // a player's page, joined to the GM's: it runs no rules of its own
   const ids = Object.keys(DATA.tables);   // already in data order
   S.table = ids.find(i => DATA.tables[i].variant === "adjusted") || ids[0];
   const battles = [...new Set(ids.map(id => DATA.tables[id].battle))];
@@ -3519,7 +3751,7 @@ function init(){
   });
   const att = attackerChar();
   S.weapon = att && att.weapon && DATA.tables[S.table].weapons.includes(att.weapon) ? att.weapon : "sword"; fillWeapons();
-  renderMods(); syncArmor(); rollHit(false, false); renderChars(); shadeFigure(); renderTable(); renderHistory();   // the opening roll is only to show one: not logged
+  renderMods(); syncArmor(); rollHit(false, false); renderChars(); shadeFigure(); renderTable(); renderHistory(); renderNet();   // the opening roll is only to show one: not logged
 }
 init();
 </script>

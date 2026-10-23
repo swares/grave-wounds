@@ -301,7 +301,28 @@ count goes on from there.
   he fell; the round log leaves out his Blood, wounds and stop checks; and the event log shows
   that side's view only. In solo play (one side yours, the rest the script's) Run the fight
   starts on your side's screen. It is a screen filter, not a lock: the rules do not change, and
-  the GM can switch back. Online, a player's page would be sent only this view.
+  the GM can switch back. Online (below), a player's page is sent only this view.
+- **Play online** (under Run the fight) lets players join from their own computers, with the GM's
+  page as host. There is no server: the GM clicks **Invite a player for** a side and sends the
+  player the link it gives; the player opens it, and his page shows a reply code he sends back;
+  the GM pastes it under that side and clicks **Connect**. The side is then a player's (Run the
+  fight turns on if it was off), and the GM's page stays on the GM's screen.
+  - After every change the GM's page draws the fight as that side's Screen shows it and sends
+    that drawing to the player: the enemy's Blood, wounds' severity and effects, penalties and
+    stop checks never leave the GM's page. While the enemy acts, the player sees that he acts, not
+    how far he could have gone.
+  - On his page the player clicks hexes and enemies on the map, uses Stay, Take cover, Undo move
+    and Next fighter, and rolls his strike with his own aim, gap, blow and any dice he types.
+    The GM's page makes each choice only if it is his to make (his side's fighter on its turn, or
+    his free attack), through the same functions as its own buttons. The GM's script plays on
+    after his Next fighter.
+  - **Use a public STUN server** (on by default) lets the pages find each other across the
+    internet through stun.l.google.com; on one network it is not needed. There is no relay
+    (TURN), so a few strict networks (some offices, some mobile networks) will not connect.
+  - A dropped player needs a new invitation (Drop, then Invite again). The GM's page sends whole
+    panels (tens of kB at each change), and the player's page shows only what it is sent.
+  - `node tools/net/test.js` tests the codes and the message pieces; `python3 tools/net/twopages.py`
+    connects a GM's page and a player's page in a headless browser and plays a turn from each.
   - The script's choices are design guesses, not calibrated against any record.
     `python3 tools/gm/selfplay.py` plays it against itself on a spread of tables and checks every
     fight runs to an end; `node tools/gm/test.js` checks its choices one by one.
