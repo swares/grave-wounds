@@ -1,6 +1,6 @@
 # Hit Location & Wound Tables
 
-Generated 2026-10-22 from the data folder. Roll d100 (00 = 100).
+Generated 2026-10-23 from the data folder. Roll d100 (00 = 100).
 
 © 2026 Scott Wares. All rights reserved.
 
@@ -6520,7 +6520,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 **Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
 
-**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The British Empire (no reliable share: chosen, never rolled): military nurse, army auxiliary; The United States (1917-1918) (no reliable share: chosen, never rolled): military nurse; Imperial Russia (1914-1917) (no reliable share: chosen, never rolled): rifleman, machine gunner, signaller or runner, corporal or sergeant, junior officer, military nurse; Serbia (1914-1918) (no reliable share: chosen, never rolled): rifleman, bomber, corporal or sergeant, military nurse; Austria-Hungary (1914-1918) (no reliable share: chosen, never rolled, enlisted disguised as men): rifleman, corporal or sergeant, junior officer, military nurse, army auxiliary; Bulgaria (1915-1918) (no reliable share: chosen, never rolled): military nurse. Elsewhere these careers were closed to them.
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The British Empire (no reliable share: chosen, never rolled): military nurse, army auxiliary; Newfoundland (1914-1918) (no reliable share: chosen, never rolled): military nurse; The United States (1917-1918) (no reliable share: chosen, never rolled): military nurse; Imperial Russia (1914-1917) (no reliable share: chosen, never rolled): rifleman, machine gunner, signaller or runner, corporal or sergeant, junior officer, military nurse; Serbia (1914-1918) (no reliable share: chosen, never rolled): rifleman, bomber, corporal or sergeant, military nurse; Austria-Hungary (1914-1918) (no reliable share: chosen, never rolled, enlisted disguised as men): rifleman, corporal or sergeant, junior officer, military nurse, army auxiliary; Bulgaria (1915-1918) (no reliable share: chosen, never rolled): military nurse. Elsewhere these careers were closed to them.
 
 | Skill | Starts at | Weapons |
 |---|---|---|
@@ -6546,26 +6546,27 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 | d100 | Origin | Skill | Trait | Drawback |
 |---|---|---|---|---|
-| 01-05 | Farm hand | Fieldcraft | Strong back (Strength +10) | Never been far from home (Persuade -15) |
-| 06-10 | Coal miner | Craft | At home underground (Endurance +10) | Coughs in the cold (Stealth -15) |
-| 11-15 | Clerk in an office | Letters | Good at sums (Wits +10) | Soft hands (Strength -10) |
-| 16-20 | Factory hand | Craft | Used to long hours (Endurance +10) | Half deaf from the machines (Watch -15) |
-| 21-25 | Gamekeeper's boy | Rifle | A steady aim (Rifle +15) | Hates drill (Presence -10) |
-| 26-30 | Poacher | Stealth | Moves quietly at night (Stealth +15) | Known to the police (Persuade -15) |
-| 31-35 | Schoolteacher | Letters | Well read (Letters +15) | Faints at the sight of blood (Nerve -10) |
-| 36-40 | Chemist's assistant | Leechcraft | Knows his remedies (Leechcraft +15) | Never stops talking (Stealth -15) |
-| 41-45 | Son of a good family | Command | Raised to command (Command +15) | Proud and touchy (Persuade -15) |
-| 46-50 | Railwayman | Craft | Not afraid of machines (Wits +10) | Short-sighted (Watch -15) |
-| 51-55 | Blacksmith's apprentice | Craft | Arms like hams (Strength +10) | Slow afoot (Agility -10) |
-| 56-60 | Docker | Brawl | Takes a punch (Endurance +10) | Drinks his pay (Presence -10) |
-| 61-65 | Post office telegraph boy | Signals | Quick with his hands (Agility +10) | Small for his age (Strength -10) |
-| 66-70 | Footballer | Dodge | Fast on his feet (Agility +10) | Bad knee (Endurance -10) |
-| 71-75 | Boxer | Brawl | Hard to frighten (Nerve +10) | Hot-tempered (Persuade -15) |
-| 76-80 | Shop assistant | Persuade | A ready smile (Presence +10) | Never slept rough (Fieldcraft -15) |
-| 81-85 | Fisherman | Craft | Weathered every storm (Endurance +10) | Never fired a gun (Rifle -15) |
-| 86-90 | Student | Letters | Speaks the enemy's language (Wits +10) | Never done a day's labour (Strength -10) |
-| 91-95 | Reservist called back to the colours | Rifle | Knows the drill (Rifle +15) | Older than the rest (Agility -10) |
-| 96-00 | Volunteer in the first rush | Persuade | Eager (Nerve +10) | Never held a weapon (Parry -15) |
+| 01-04 | Farm hand | Fieldcraft | Strong back (Strength +10) | Never been far from home (Persuade -15) |
+| 05-08 | Coal miner | Craft | At home underground (Endurance +10) | Coughs in the cold (Stealth -15) |
+| 09-12 | Clerk in an office | Letters | Good at sums (Wits +10) | Soft hands (Strength -10) |
+| 13-16 | Factory hand | Craft | Used to long hours (Endurance +10) | Half deaf from the machines (Watch -15) |
+| 17-20 | Gamekeeper's boy | Rifle | A steady aim (Rifle +15) | Hates drill (Presence -10) |
+| 21-24 | Poacher | Stealth | Moves quietly at night (Stealth +15) | Known to the police (Persuade -15) |
+| 25-28 | Schoolteacher | Letters | Well read (Letters +15) | Faints at the sight of blood (Nerve -10) |
+| 29-32 | Chemist's assistant | Leechcraft | Knows his remedies (Leechcraft +15) | Never stops talking (Stealth -15) |
+| 33-36 | Son of a good family | Command | Raised to command (Command +15) | Proud and touchy (Persuade -15) |
+| 37-40 | Railwayman | Craft | Not afraid of machines (Wits +10) | Short-sighted (Watch -15) |
+| 41-44 | Blacksmith's apprentice | Craft | Arms like hams (Strength +10) | Slow afoot (Agility -10) |
+| 45-48 | Docker | Brawl | Takes a punch (Endurance +10) | Drinks his pay (Presence -10) |
+| 49-52 | Post office telegraph boy | Signals | Quick with his hands (Agility +10) | Small for his age (Strength -10) |
+| 53-56 | Footballer | Dodge | Fast on his feet (Agility +10) | Bad knee (Endurance -10) |
+| 57-60 | Boxer | Brawl | Hard to frighten (Nerve +10) | Hot-tempered (Persuade -15) |
+| 61-64 | Shop assistant | Persuade | A ready smile (Presence +10) | Never slept rough (Fieldcraft -15) |
+| 65-68 | Logger | Craft | Swings an axe all day (Strength +10) | Lost in a town (Persuade -15) |
+| 69-72 | Fisherman | Craft | Weathered every storm (Endurance +10) | Never fired a gun (Rifle -15) |
+| 73-76 | Student | Letters | Speaks the enemy's language (Wits +10) | Never done a day's labour (Strength -10) |
+| 77-80 | Reservist called back to the colours | Rifle | Knows the drill (Rifle +15) | Older than the rest (Agility -10) |
+| 81-84 | Volunteer in the first rush | Persuade | Eager (Nerve +10) | Never held a weapon (Parry -15) |
 
 | Career | Main skill | Second | Old wound | Hurt by |
 |---|---|---|---|---|
@@ -6657,20 +6658,20 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Army auxiliary | 71-85 | Watch | Stood by in the trenches dug by the camp in the air raids. |
 | Army auxiliary | 86-00 | Dodge | Was in camp when the bombers came over at night, as at Abbeville in 1918. * |
 
-| Career | The British Empire | France | Germany | The United States | Russian | Serbian | Austro-Hungarian | Bulgarian |
-|---|---|---|---|---|---|---|---|---|
-| Rifleman | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
-| Machine gunner | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg |
-| Bomber | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade |
-| Sniper or observer | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
-| Sapper or tunneller | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
-| Stretcher-bearer or orderly | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
-| Signaller or runner | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
-| Corporal or sergeant | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
-| Junior officer | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
-| Gunner or trench mortarman | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar |
-| Military nurse | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch |
-| Army auxiliary | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch |
+| Career | The British Empire | Newfoundland | France | Germany | The United States | Russian | Serbian | Austro-Hungarian | Bulgarian |
+|---|---|---|---|---|---|---|---|---|---|
+| Rifleman | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
+| Machine gunner | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg |
+| Bomber | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade | Steel helmet only; grenade |
+| Sniper or observer | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
+| Sapper or tunneller | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
+| Stretcher-bearer or orderly | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
+| Signaller or runner | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
+| Corporal or sergeant | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
+| Junior officer | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
+| Gunner or trench mortarman | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar | Steel helmet only; mortar |
+| Military nurse | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch |
+| Army auxiliary | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|

@@ -76,6 +76,20 @@ regions:
       names: [Mary, Florence, Edith, Elsie, Dorothy, Annie, Ethel, Gladys, Alice, Winifred]
       closed: "British women served as nurses and auxiliaries, not in the fighting careers."
       source: "Nurses who died in WWI (Wikipedia): under 300 QAIMNS nurses in 1914, over 10,000 by 1918, about 150 British nurses killed; National Army Museum, QMAAC: about 50,000 auxiliaries, 81 killed, 9 at Abbeville on 29-30 May 1918."
+  - id: newfoundland
+    name: "Newfoundland (1914-1918)"
+    short: "Newfoundland"
+    table: wwi-1914-18-wounds
+    colours: ["#7a6a42", "#6b5f3a", "#8a7a52", "#e6e0d2"]
+    names: [George, John, William, James, Joseph, Stanley, Edward, Gilbert, Thomas, Charles, Israel, Wilfrid, Harry, Leonard, Francis, Owen]
+    bynames: [Parsons, White, Power, Walsh, Murphy, Butler, Penney, Dawe, Pike, Snow, Noseworthy, Squires, Hiscock, Bartlett, Abbott, Ayre]
+    women:
+      share: null
+      careers: [nurse]
+      shares: {nurse: 100}
+      names: [Mary, Margaret, Elizabeth, Florence, Annie, Ethel, Bride, Frances, Agnes, Edith]
+      closed: "Newfoundland women served overseas as VAD nurses, not in the fighting careers."
+      source: "Library and Archives Canada, Newfoundland at war: Newfoundland women went overseas as Voluntary Aid Detachment nurses; their number was not found. The names are the British list's and our reading."
   - id: france
     name: "France"
     table: wwi-1914-18-wounds
@@ -178,6 +192,7 @@ origins:
   - {name: "Footballer", gain: dodge, trait: {text: "Fast on his feet", agi: 10}, drawback: {text: "Bad knee", end: -10}}
   - {name: "Boxer", gain: brawl, trait: {text: "Hard to frighten", nerve: 10}, drawback: {text: "Hot-tempered", persuade: -15}}
   - {name: "Shop assistant", gain: persuade, trait: {text: "A ready smile", pres: 10}, drawback: {text: "Never slept rough", fieldcraft: -15}}
+  - {name: "Logger", gain: craft, trait: {text: "Swings an axe all day", str: 10}, drawback: {text: "Lost in a town", persuade: -15}}
   - {name: "Fisherman", gain: craft, trait: {text: "Weathered every storm", end: 10}, drawback: {text: "Never fired a gun", rifle: -15}}
   - {name: "Student", gain: letters, trait: {text: "Speaks the enemy's language", wits: 10}, drawback: {text: "Never done a day's labour", str: -10}}
   - {name: "Reservist called back to the colours", gain: rifle, trait: {text: "Knows the drill", rifle: 15}, drawback: {text: "Older than the rest", agi: -10}}

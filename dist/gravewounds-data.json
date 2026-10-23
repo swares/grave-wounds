@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-22",
+ "generated": "2026-10-23",
  "coins": {
   "civil_war": {
    "currencies": {
@@ -735,6 +735,18 @@
      "day": 50,
      "day_note": "about 50 pfennigs a day: an estimate, no source found"
     },
+    "nfd": {
+     "name": "Newfoundland dollars and cents",
+     "coin": "nfd",
+     "base": "cent",
+     "decimal": {
+      "sym": "$",
+      "per": 100,
+      "small": "\u00a2"
+     },
+     "day": 100,
+     "day_note": "a Newfoundland Regiment private's $1.00 a day and his rations (The Rooms), about four times a British private's 1s"
+    },
     "frf": {
      "name": "Francs (100 centimes)",
      "coin": "frf",
@@ -810,6 +822,7 @@
    },
    "currency": {
     "default": "gbp",
+    "newfoundland": "nfd",
     "us": "usd",
     "germany": "mark",
     "france": "frf",
@@ -5082,6 +5095,41 @@
       ]
      ]
     },
+    "newfoundland": {
+     "own": [
+      [
+       "english",
+       100
+      ]
+     ],
+     "enemy": "german",
+     "others": [
+      [
+       "english",
+       60,
+       [
+        20,
+        60
+       ]
+      ],
+      [
+       "french",
+       25,
+       [
+        5,
+        30
+       ]
+      ],
+      [
+       "german",
+       2,
+       [
+        10,
+        50
+       ]
+      ]
+     ]
+    },
     "france": {
      "own": [
       [
@@ -6343,6 +6391,10 @@
    "aljubarrota-1385": "portuguese",
    "albuera-1811": "spanish",
    "anzio-1944": "italian",
+   "beaumont-hamel-1916": [
+    "picard",
+    "french"
+   ],
    "bougainville-1944": "melanesian",
    "bull-run-1861": "english",
    "cassino-1944": "italian",

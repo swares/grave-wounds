@@ -3,6 +3,7 @@
  "albuera-1811": {"won": 0, "objective": "held", "losses": "both very heavy, allies heavier", "short": "French columns take the heights' edge; Allies stand and Cole drives the French off"},
  "aljubarrota-1385": {"won": 0, "objective": "held", "losses": "Castilians far heavier", "short": "The French and Castilian attack breaks in the pits and the narrow front in under an hour; Juan I flees"},
  "babuna-1915": {"won": 0, "objective": "held", "losses": "not known; Bulgarians likely heavier", "short": "Serbs hold the crest all day against the Bulgarians, then retreat on orders at 22:00"},
+ "beaumont-hamel-1916": {"won": 1, "objective": "held", "losses": "British far heavier", "short": "The 87th Brigade and then the Newfoundlanders are cut down in no man's land and at the wire; RIR 119 holds its line"},
  "bougainville-1944": {"won": 0, "objective": "held", "losses": "Japanese far heavier", "short": "Japanese seize pillboxes at the saddle; Americans restore the line over days"},
  "bull-run-1861": {"won": 0, "objective": "held", "losses": "similar; Union breaks", "short": "Henry Hill changes hands; late Confederate brigades break the Union line"},
  "cassino-monastery-1944": {"won": 1, "objective": "held", "losses": "attackers heavy", "short": "Indian Division's night attack on Point 593 fails with heavy loss"},

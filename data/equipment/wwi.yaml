@@ -25,6 +25,13 @@ currencies:
     decimal: {sym: "", suf: " M", per: 100, small: " Pf"}
     day: 50
     day_note: "about 50 pfennigs a day: an estimate, no source found"
+  nfd:
+    name: "Newfoundland dollars and cents"
+    coin: nfd
+    base: cent
+    decimal: {sym: "$", per: 100, small: "¢"}
+    day: 100
+    day_note: "a Newfoundland Regiment private's $1.00 a day and his rations (The Rooms), about four times a British private's 1s"
   frf:
     name: "Francs (100 centimes)"
     coin: frf
@@ -64,7 +71,7 @@ currencies:
     day: 25
     day_note: "no Bulgarian private's pay found: the French poilu's 5 sous, the lev at par with the franc before the war (an estimate)"
     day_approx: true
-currency: {default: gbp, us: usd, germany: mark, france: frf, russia: rub, serbia: dinar, austria_hungary: krone, bulgaria: lev}
+currency: {default: gbp, newfoundland: nfd, us: usd, germany: mark, france: frf, russia: rub, serbia: dinar, austria_hungary: krone, bulgaria: lev}
 
 sources:
   sears: &sears "https://www.gutenberg.org/ebooks/54213.txt.utf-8"
@@ -97,13 +104,13 @@ items:
   - {id: motorcycle, name: "Motorcycle", cat: travel, price: [38400, 67200], approx: true}
   - {id: bicycle, name: "Bicycle", cat: travel, price: [4800, 7680], approx: true}
   # Arms and armour
-  - {id: smle, name: "SMLE rifle (to the War Office)", cat: weapon, price: 3600, weapon: rifle_service, regions: [british], source: {url: "https://en.wikipedia.org/wiki/Lee%E2%80%93Enfield", note: "Wikipedia"}}
-  - {id: webley, name: "Webley revolver (contract)", cat: weapon, price: 2932, when: "1887", weapon: pistol_smg, regions: [british], source: {url: "https://en.wikipedia.org/wiki/Webley_Revolver", note: "Wikipedia, citing Skennerton"}}
+  - {id: smle, name: "SMLE rifle (to the War Office)", cat: weapon, price: 3600, weapon: rifle_service, regions: [british, newfoundland], source: {url: "https://en.wikipedia.org/wiki/Lee%E2%80%93Enfield", note: "Wikipedia"}}
+  - {id: webley, name: "Webley revolver (contract)", cat: weapon, price: 2932, when: "1887", weapon: pistol_smg, regions: [british, newfoundland], source: {url: "https://en.wikipedia.org/wiki/Webley_Revolver", note: "Wikipedia, citing Skennerton"}}
   - {id: gewehr_98, name: "Gewehr 98 rifle", cat: weapon, in: mark, price: [4000, 6000], weapon: rifle_service, regions: [germany], approx: true}
   - {id: bayonet, name: "Sword bayonet and scabbard", cat: weapon, price: 1020, when: "1919", source: {url: "https://nationalarchives.gov.fk/jdownloads/Defence%20and%20War/FIDF/DEF-FID-1-34.%20Crown%20Agents.%20Advising%20placing%20of%20order%20for%20rifles%20for%20Volunteers.pdf", note: "Falklands archives"}}
   - {id: ammo_303, name: "100 rounds of .303", cat: ammunition, price: 480, approx: true}
-  - {id: mills_bomb, name: "Mills bomb", cat: weapon, price: [48, 72], weapon: hand_grenade, regions: [british], approx: true}
-  - {id: brodie, name: "Brodie steel helmet", cat: armour, price: [144, 240], kit: ww2_rifleman, regions: [british], approx: true}
+  - {id: mills_bomb, name: "Mills bomb", cat: weapon, price: [48, 72], weapon: hand_grenade, regions: [british, newfoundland], approx: true}
+  - {id: brodie, name: "Brodie steel helmet", cat: armour, price: [144, 240], kit: ww2_rifleman, regions: [british, newfoundland], approx: true}
   # Food, drink, lodging, travel
   - {id: tobacco, name: "Pipe tobacco", cat: food, price: [308, 392], per: lb, source: {url: *hull, note: "WW1 Hull"}}
   - {id: hotel, name: "Hotel night, provincial", cat: lodging, price: [144, 240], approx: true}

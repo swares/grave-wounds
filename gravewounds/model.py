@@ -2206,6 +2206,18 @@ def _via_errors(f: dict, where: str) -> list[str]:
             if "via" in u and not (isinstance(u["via"], list) and u["via"] and all(on_map(h) for h in u["via"]))]
 
 
+def _dump_errors(f: dict, where: str) -> list[str]:
+    """The supply dumps a battlefield places, if any: each a hex on the map and a side (0 or 1)."""
+    def ok(m) -> bool:
+        h = m.get("at") if isinstance(m, dict) else None
+        return (isinstance(h, list) and len(h) == 2 and all(isinstance(x, int) for x in h) and 0 <= h[0] < f["size"][0]
+                and 0 <= h[1] < f["size"][1] and m.get("side") in (0, 1))
+    dumps = f.get("dumps") or []
+    if not isinstance(dumps, list):
+        return [f"{where}: dumps must be a list of supply dumps"]
+    return [f"{where}: dumps must each be {{at: a hex on the map, side: 0 or 1}}" for m in dumps if not ok(m)]
+
+
 def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_units, fits) -> list[str]:
     """The armies as drawn up: known arms, armour and formations, each unit standing where it can."""
     errors = [e for u in f.get("units", []) for e in _unit_spec_errors(d, f, where, u)]
@@ -2216,6 +2228,7 @@ def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_un
     errors += [f"{where}: unit {u.get('name')} lands must be the number of a landing zone (0 to {len(lz) - 1})" for u in f.get("units", [])
                if "lands" in u and not (isinstance(u["lands"], int) and 0 <= u["lands"] < len(lz))]
     errors += _via_errors(f, where)
+    errors += _dump_errors(f, where)
     errors += _fc_errors(d, f, where)
     errors += [f"{where}: unit {u.get('name')}: fixed (a machine gun's fixed line) must be a hex on the map, for a machine gun" for u in f.get("units", [])
                if "fixed" in u and not (isinstance(u["fixed"], list) and len(u["fixed"]) == 2 and 0 <= u["fixed"][0] < f["size"][0]
