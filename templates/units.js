@@ -2520,7 +2520,7 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
   for (let i = 0; i < us.length; i++){
     if (us[i].side !== side || !commandable(us, i, exchange)) continue;
     if (stance === "attack" && leavesDisabled(us[i])){ const n = us[i].immobile; us[i] = abandonImmobile(us[i]); orders.push({ unit: i, act: "abandon", n }) }   // it goes on without its immobilised vehicles
-    const roll = rng.randint(1, 100), o1 = unitOrder(us, i, [size, plugging(aimOf(us, i, aim), us[i]), stance, known, exchange], roll);
+    const roll = rng.randint(1, 100), o1 = downUnderFire(us, i, unitOrder(us, i, [size, plugging(aimOf(us, i, aim), us[i]), stance, known, exchange], roll), stance, table);
     const o0 = spotter(us, i, o1, [size, field, stance, known]) || o1;
     const o = o0 && us[i].plug && (o0.act === "advance" || o0.act === "fall_back") ? { ...o0, gap: true } : o0;   // going to plug the gap, not the side's objective
     if (o){
@@ -3191,10 +3191,11 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   if (t === null && obj === null) return search(us, i, ctx);
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
   const o0 = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx), o = narrowed(us, i, t, ctx, o0) || o0;
-  return downUnderFire(us, i, t, ctx[2], t === null ? o : lastSeen(o, ctx[3], t, ctx[4]));
+  return t === null ? o : lastSeen(o, ctx[3], t, ctx[4]);
 }
-function downUnderFire(us, i, t, stance, o){        // attacking, a modern foot unit fired on last exchange does not walk on: it goes to ground (or stays down) and fires, unless its target is pinned (commander.bounds_all) (as commander._down_under_fire)
-  if (!UD.commander.bounds_all || stance !== "attack" || !o || (o.act !== "move" && o.act !== "advance") || !bounding(us, i, t)) return o;
+function downUnderFire(us, i, o, stance, table){   // attacking, in a war of fire and movement (commander.bounds_all: the wound table's war), a modern foot unit fired on last exchange does not walk on: it goes to ground (or stays down) and fires, unless its target is pinned (as commander._down_under_fire)
+  const t = o?.target ?? null;
+  if (!(UD.commander.bounds_all || []).includes(FD.tables[table]?.battle) || stance !== "attack" || !o || (o.act !== "move" && o.act !== "advance") || !bounding(us, i, t)) return o;
   return us[i].prone ? null : { act: "ground", target: t };
 }
 function withdrawOrder(us, i, ctx){               // orders from the account (data/orders.yaml withdraw {at, to}): from exchange at it falls back to hex to, and holds it once there, or to map edge to, and leaves the field there (as commander._withdraw_order)

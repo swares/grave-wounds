@@ -56,7 +56,7 @@ def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict
             us[i] = U.abandon_immobile(d, us[i])
             orders.append({"unit": i, "act": "abandon", "n": n})
         roll = rng.randint(1, 100)
-        o = _order(d, us, i, (size, _plugging(_aim(us, i, aim), us[i]), stance, known, exchange), roll)
+        o = _down_under_fire(d, us, i, _order(d, us, i, (size, _plugging(_aim(us, i, aim), us[i]), stance, known, exchange), roll), stance, table)
         o = _spotter(d, us, i, o, (size, field, stance, known)) or o
         if o and us[i].get("plug") and o["act"] in ("advance", "fall_back"):
             o = {**o, "gap": True}                # going to plug the gap, not the side's objective
@@ -1095,13 +1095,16 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return _search(d, us, i, ctx)
     if roll <= C["hesitate"].get(u["quality"], 0):
         return {"act": "hesitate", "target": t, "roll": roll}
-    return _down_under_fire(d, us, i, t, ctx[2], _move_order(d, us, i, t, ctx))
+    return _move_order(d, us, i, t, ctx)
 
 
-def _down_under_fire(d: Data, us: list, i: int, t: int | None, stance: str, o: dict | None) -> dict | None:
-    """Attacking, a modern foot unit fired on last exchange does not walk on: it goes to ground (or
-    stays down) and fires, unless its target is pinned (commander.bounds_all)."""
-    if not d.units["commander"].get("bounds_all") or stance != "attack" or not o or o["act"] not in ("move", "advance") or not bounding(d, us, i, t):
+def _down_under_fire(d: Data, us: list, i: int, o: dict | None, stance: str, table: str | None) -> dict | None:
+    """Attacking, in a war of fire and movement (commander.bounds_all: the wound table's war), a
+    modern foot unit fired on last exchange does not walk on: it goes to ground (or stays down)
+    and fires, unless its target is pinned."""
+    t = o.get("target") if o else None
+    war = (d.tables.get(table) or {}).get("battle") if table else None
+    if war not in (d.units["commander"].get("bounds_all") or []) or stance != "attack" or not o or o["act"] not in ("move", "advance") or not bounding(d, us, i, t):
         return o
     return None if us[i].get("prone") else {"act": "ground", "target": t}
 
