@@ -105,6 +105,10 @@ def diff(a: str, b: str) -> None:
     ra, rb = rows(a), rows(b)
     print("before:", total(ra))
     print("after: ", total(rb))
+    for fid in sorted(set(ra) ^ set(rb)):
+        print("ONLY", "before" if fid in ra else "after", fid, (ra.get(fid) or rb.get(fid))[:2])
+    for fid in sorted(set(ra) | set(rb)):
+        print("ALL", fid, (ra.get(fid) or [None, None])[:2], (rb.get(fid) or [None, None])[:2])
     for fid in sorted(set(ra) & set(rb)):
         x, y = ra[fid], rb[fid]
         if x[:5] != y[:5]:
