@@ -1003,7 +1003,8 @@ heroes:
 # `tries`: the best-scoring hexes it tries in turn until one is a legal move.
 commander:
   # objective: a hex the GM marks for the commander's side. Attacking, units at it (within
-  # radius) hold it and units with no enemy to go for advance on it; holding, units further
+  # radius) hold it, unless their target is on it too (they go on attacking until it is clear),
+  # and units with no enemy to go for advance on it; holding, units further
   # than `hold` fall back to it. Enemies within `guard` of it score `bonus` more as targets.
   # Who holds it is logged each exchange. Design estimates.
   objective: {radius: 1, hold: 3, guard: 4, bonus: 30}

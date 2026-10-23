@@ -550,7 +550,10 @@ general. All its numbers are in units.yaml `commander`.
     Mons in 1914, who came on in close order, it cost Mons 23 to 15, so it is not used before
     WWII. Measured with the fixes below on 24 runs of every battlefield: 700 of 936 from 692.
 - **Facing.** A unit whose target is already in its front arc keeps its facing rather than
-  turning to face it squarely, so a wide line does not spend its move turning.
+  turning to face it squarely, so a wide line does not spend its move turning. A unit on the
+  ground whose target is out of its front arc turns toward it where it lies, and stays down.
+  Before 22 October a unit on the ground never turned: at Keating a guard post faced east all
+  battle while it was shot at from 30 m to the west, and never fired back.
   - Veterans prefer a hex off the target's front (30 points more).
 - **Holding.** A side that holds does not leave its ground. A unit only charges an enemy
   it can reach with the odds, turns to face its target, or goes to ground; the exceptions
@@ -650,7 +653,11 @@ general. All its numbers are in units.yaml `commander`.
   the GM marks one hex (O on the map) for the commander's side, at any time; click it again
   to clear it. Without one, the commander plays as above.
   - **Attacking**, a unit within 1 hex of the objective holds it: it stays, turning to its
-    target, and charges only with the odds a holding side wants. A unit with no enemy to go
+    target, and charges only with the odds a holding side wants. While its target (where
+    last seen) is on the objective too, it goes on attacking as before until the objective
+    is clear. Before 22 October it held at once, and at Keating an insurgent company inside
+    the wire lay 30 m from a guard post for 300 exchanges, firing at men it could not see,
+    without ever closing on them (6 runs in 24 ended with the outpost contested). A unit with no enemy to go
     for advances on it, and so does one that would only stand or turn where it is (a
     shooter already in range, say) while its target is not guarding the objective (within
     4 hexes of it). It advances as far as its allowance lets it, to the hex nearest the
