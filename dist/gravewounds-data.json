@@ -7197,6 +7197,23 @@
    "exposure": 0.7
   }
  ],
+ "quality": {
+  "green": {
+   "attack": 40,
+   "defence": 25,
+   "nerve": 35
+  },
+  "regular": {
+   "attack": 50,
+   "defence": 35,
+   "nerve": 50
+  },
+  "veteran": {
+   "attack": 60,
+   "defence": 45,
+   "nerve": 65
+  }
+ },
  "weapons": {
   "sword": {
    "id": "sword",

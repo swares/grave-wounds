@@ -1166,6 +1166,7 @@ def bundle(d) -> dict:
         "coins": {e: {"currencies": E["currencies"], "currency": E["currency"]} for e, E in d.equipment.items()},   # period money (purse.js)
         "checks": d.checks, "ranks": d.ranks, "loads": d.loads, "weights": d.weights, "stress": d.stress, "hazards": d.hazards, "languages": d.languages, "patrons": d.patrons,     # the shared rules in templates/ranks.js: loot, deeds, coups after a fight
         "locations": d.locations,
+        "quality": d.units["quality"],          # attack, defence and Nerve by quality: men without a sheet when the roller runs the fight
         "weapons": {wid: {**w, "mech_ranges": mechanism_ranges(d, wid)} for wid, w in d.weapons.items()},
         "tables": tables,
         "severity": d.wounds["severity"]["tiers"],
@@ -2097,9 +2098,10 @@ def main() -> int:
     lethal_js = (ROOT / "templates" / "lethality.js").read_text(encoding="utf-8").replace(
         "/*__LETHAL_DATA__*/null", json.dumps({"default": d.wounds["lethality"]["default"], "presets": d.wounds["lethality"]["presets"]}, separators=(",", ":")))
     strike_js = (ROOT / "templates" / "strike.js").read_text(encoding="utf-8")       # the strike's rules, with no page
+    fighter_js = (ROOT / "templates" / "fighter.js").read_text(encoding="utf-8")     # the scripted fighter's choices
     gamelog_js = (ROOT / "templates" / "gamelog.js").read_text(encoding="utf-8")     # the event log and who sees what
     html = html.replace(CAMP_MARK, camp_js).replace("/*__WORKS_JS__*/", works_js).replace(MEASURE_MARK, measure_js).replace("/*__LETHAL_JS__*/", lethal_js)
-    html = html.replace("/*__STRIKE_JS__*/", strike_js).replace("/*__GAMELOG_JS__*/", gamelog_js)
+    html = html.replace("/*__STRIKE_JS__*/", strike_js).replace("/*__GAMELOG_JS__*/", gamelog_js).replace("/*__FIGHTER_JS__*/", fighter_js)
     html = html.replace("/*__GRAVEWOUNDS_DATA__*/null", json.dumps(b, separators=(",", ":")))
     (DIST / "roller.html").write_text(html, encoding="utf-8")
     tb = travel_bundle(d)

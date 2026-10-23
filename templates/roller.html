@@ -352,6 +352,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
         <span class="spacer"></span>
         <button id="btn-reset-rounds" class="small" title="Start the count again at round 1, clear the log and rally broken sides; wounds and stop-check results stay">Reset count</button>
       </div>
+      <div id="gm-bar"></div>
       <ol class="roundlog" id="round-log" aria-label="What happened each round"></ol>
       <div id="chars" style="display:flex;flex-direction:column;gap:10px"></div>
       <div id="after-fight"></div>
@@ -395,6 +396,7 @@ const shortName = w => DATA.weapons[w].short || DATA.weapons[w].name.split(" (")
 /* ---------- the strike's rules (strike.js) and the event log (gamelog.js), with no page ---------- */
 /*__STRIKE_JS__*/
 /*__GAMELOG_JS__*/
+/*__FIGHTER_JS__*/
 const STRIKE = makeStrike(DATA);
 const { attackRoll, marginSeverity, armorAt, armorSteps, sevTiers, isGraze, cannotAttack } = STRIKE;   // defenceRoll and grazeFx need no data: strike.js defines them outright
 
@@ -1244,7 +1246,7 @@ function figRanges(){ return (S.aim && aimedRanges(S.weapon, S.aim)) || curRange
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,events:S.events,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone})) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
+function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,events:S.events,gm:S.gm,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone})) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
 function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if (j?.chars?.length){ Object.assign(S, j); if (!Array.isArray(S.events)) S.events = []; return true } }catch(e){ /* storage off or a damaged save: a fresh fight starts */ } return false }
 
 /* ---------- body figure ---------- */
@@ -1344,6 +1346,8 @@ function rollHit(stray = false, log = true){      // stray: a missed shot gone i
   S.hit = r.hit;
   if (log) logStrike(a, dd, cmd, r);
   showStrike(r.hit);
+  const h = r.hit;
+  if (log && gmOn() && dd && !(h.blocked || h.miss || h.defended)) applyCurrentHit();   // running the fight: no Apply to click
 }
 function toil(c){                                 // a hand-to-hand exchange tires him, by his kit and Strength
   if (!c) return;
@@ -1433,9 +1437,20 @@ function woundText(v){
   const own = d.stop?.by === "player" ? " (his own die)" : "";
   return `${head}<br><span class="muted">${esc(d.line)}${own}</span>`;
 }
+function turnText(v){                             // the script's move, and for the GM why
+  const d = v.data, where = d.to && d.to !== d.from ? " to " + d.to : "";
+  let why = "";
+  if (v.full && d.why){
+    const gap = d.gap ? "; aims for a gap" : "", blow = d.blow ? "; declares a " + esc(d.blow) : "";
+    why = `<br><span class="muted">GM's script: ${esc(d.why)}${gap}${blow}</span>`;
+  }
+  return `${evName(d.who)} ${d.did}${where}${why}`;
+}
 function eventText(v){                            // one event as a seat sees it, in a line
   if (v.type === "strike") return v.full ? strikeFullText(v.data) : strikeSeenText(v.data);
   if (v.type === "wound") return woundText(v);
+  if (v.type === "turn") return turnText(v);
+  if (v.type === "undo") return `The GM took back the script's last step (${v.data.events} event${v.data.events === 1 ? "" : "s"} undone).`;
   return esc(v.type);
 }
 function eventItem(v){
@@ -1467,6 +1482,191 @@ $("#events").addEventListener("click", e => {
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob); a.download = `grave-wounds-log-${S.evSeat.replace(/[^a-z0-9]+/gi, "-")}.json`; a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+
+/* ---------- running the fight: who plays each side, and the GM's script (fighter.js) ----------
+   With Run the fight on, each side is played by a player, by the GM by hand, or by the GM's script.
+   A scripted fighter's turn is played a step at a time (move, then strike, then the next fighter),
+   through the same functions the buttons use, so it follows the same rules; its dice are rolled
+   for it and land in the event log. A hit goes on the defender at once; men with no sheet fight at
+   their side's quality (units.yaml quality); a shot cannot be parried. Undo puts back the page as
+   it was before the script's last step. Off, the roller is as it always was. */
+const GM_CTL = { player: "Player", gm: "GM by hand", script: "GM's script" };
+const GM_STANCES = Object.keys(FIGHTER.STANCES);
+const GMQ = { undo: [], timer: null, steps: 0 };            // not saved: the undo stack and the running play
+const gmOn = () => !!S.gm?.on;
+const gmSide = side => (S.gm?.sides || {})[side] || { ctl: "player", stance: "steady", quality: "regular" };
+const scripted = c => gmOn() && !!c && gmSide(sideOf(c)).ctl === "script";
+const qualityOf = c => DATA.quality[gmSide(sideOf(c)).quality] || DATA.quality.regular;
+function gmStart(){                                // Run the fight on: who plays which side, by a first guess
+  const sides = sidesInOrder(), sheeted = sides.filter(sd => S.chars.some(c => sideOf(c) === sd && c.sheet));
+  const players = sheeted.length ? sheeted : sides.slice(0, 1);
+  S.gm = { on: true, auto: true, sides: Object.fromEntries(sides.map(sd => [sd, { ...gmSide(sd), ctl: players.includes(sd) ? "player" : "script" }])) };
+  placeUnplaced();
+  GMQ.undo = [];
+}
+function gmSnapshot(){
+  GMQ.undo.push(structuredClone(S));
+  if (GMQ.undo.length > 40) GMQ.undo.shift();
+}
+function gmUndo(){                                 // the page as it was before the script's last step
+  gmStop();
+  const snap = GMQ.undo.pop(); if (!snap) return;
+  const taken = (S.events || []).length - (snap.events || []).length;
+  for (const k of Object.keys(S)) delete S[k];
+  Object.assign(S, snap);
+  logEvent(S.events, { round: evRound(), type: "undo", vis: [], data: { events: taken }, pub: null });
+  S.gmMsg = "The script's last step taken back.";
+  renderChars();
+}
+const gmStop = () => { clearTimeout(GMQ.timer); GMQ.timer = null; GMQ.running = false };
+const brainSide = c => S.chars.filter(o => sideOf(o) === sideOf(c));
+function kitArmour(kit){                           // {armoured: a gap to aim for somewhere, plated: any armour at all}
+  const lay = Object.values(KITS[kit || "none"]?.layers || {}).filter(ls => ls.length);
+  return { armoured: lay.some(ls => !(ls.length === 1 && ls[0][1] === 1 && ls[0][2] === 100)), plated: lay.length > 0 };
+}
+function brainView(c){                             // what the script sees of the fight from c's place (fighter.js: view)
+  const t = turnInfo(), w = DATA.weapons[S.weapon], pen = penalties(c), here = hkey(c.pos);
+  const reach = t ? [...t.reach].filter(([, cost]) => cost <= Math.max(t.allow.advance, t.allow.run))
+    .map(([hex, cost]) => ({ hex, cost, run: cost > t.allow.advance })) : [];
+  const foes = S.chars.filter(o => o.pos && sideOf(o) !== sideOf(c) && !isOut(o));
+  const targetsFrom = hex => {                     // whom he could strike from that hex (he is put there for a moment to look)
+    const pos = c.pos; c.pos = parseHex(hex);
+    const out = foes.filter(o => canTarget(c, o)).map(o => { const dist = hexDistance(c.pos, o.pos); return { id: o.id, dist, penalty: weaponReach(S.weapon, dist)?.penalty || 0 } });
+    c.pos = pos;
+    return out;
+  };
+  const team = brainSide(c), down = team.filter(isDown).length;
+  return {
+    me: { id: c.id, ranged: isShot(S.weapon), frac: c.blood / poolOf(c), named: !!c.sheet, attack: (+$("#in-atk").value || qualityOf(c).attack) - pen.attack,
+      blows: w.choose ? Object.keys(w.mechanisms).filter(m => w.mechanisms[m]) : [],
+      able: !cannotAttack(pen) && !(pen.flags.includes("one_arm") && w.two_handed) && !(pen.flags.includes("cannot_wield") && w.melee !== "unarmed") },
+    here, reach, targetsFrom, stance: gmSide(sideOf(c)).stance, losing: down * 4 >= team.length,
+    enemies: foes.map(o => ({ id: o.id, hex: hkey(o.pos), frac: o.blood / poolOf(o), ...kitArmour(o.kit) })),
+    dist: (a, b) => hexDistance(parseHex(a), parseHex(b)),
+    coverAt: hex => groundCover(S.ground, parseHex(hex)).cover,
+  };
+}
+function gmTurnLine(c, plan, from){                // the script's choice in the log: the move for all, the reason for the GM
+  const to = c.pos ? hkey(c.pos) : from;
+  let did = "stays";
+  if (plan.cover) did = "takes cover";
+  else if (plan.move) did = S.tm?.ran ? "runs" : "advances";
+  logEvent(S.events, { round: evRound(), type: "turn", vis: [], data: { who: evWho(c), did, from, to, why: plan.why, gap: plan.gap, blow: plan.blow }, pub: { who: evWho(c), did, from, to } });
+}
+function gmMove(c){                                // the script's move: where to, or cover
+  const from = hkey(c.pos), plan = FIGHTER.chooseTurn(brainView(c));
+  S.gmTurn = { id: c.id, phase: "strike", plan };
+  if (plan.cover) takeCover();
+  else if (plan.move) moveActing(parseHex(plan.move));
+  gmTurnLine(c, plan, from);
+}
+function gmStrike(c){                              // the script's strike on the enemy it chose, with its aim and blow
+  const plan = S.gmTurn.plan, o = S.chars.find(x => x.id === plan.target);
+  S.gmTurn.phase = "end";
+  if (!o || isOut(o) || isOut(c) || cannotAttack(penalties(c)) || S.tm?.ran || S.tm?.covered) return;
+  const keep = { aim: S.aim, gap: S.gap, blow: S.blow };
+  S.attacker = S.chars.indexOf(c); applyAttackerWeapon();
+  S.active = S.chars.indexOf(o); syncDefenderArmour(); fillFromSheets();
+  if (rangeCheck().blocked) return;
+  S.aim = ""; S.gap = !!plan.gap; S.blow = plan.blow || "";
+  ["#in-atk-roll", "#in-def-roll", "#in-loc", "#in-mech", "#in-sev"].forEach(id => { $(id).value = "" });   // the script's dice are rolled, never a player's typed ones
+  rollHit();
+  if (S.hit?.stray?.hit) strayHit();               // a missed shot gone into a man in the way
+  Object.assign(S, keep);
+}
+function gmFree(f){                                // a scripted man's free attack on an enemy leaving contact: he takes it
+  const a = S.chars.find(x => x.id === f.att);
+  ["#in-atk-roll", "#in-def-roll", "#in-loc", "#in-mech", "#in-sev"].forEach(id => { $(id).value = "" });
+  fillFromSheets();
+  rollHit();
+  if ((S.free || [])[0] === f) freeDone(a ? "taken" : "");   // a miss or a parry has closed it already
+}
+function gmOver(){                                 // the fight's end, or null
+  const won = winningSide();
+  if (won) return `${won} still stand: the fight is over.`;
+  return S.chars.some(c => !isOut(c)) ? null : "No one is left fighting: the fight is over.";
+}
+function gmFreeStep(f){                            // a free attack waits at the head of the queue
+  const a = S.chars.find(x => x.id === f.att);
+  if (!scripted(a)){ S.gmMsg = `${a ? a.name : "?"}'s free attack: roll it or skip it.`; return "wait" }
+  gmSnapshot(); gmFree(f); return "acted";
+}
+function gmFirstTurn(){                            // no turn yet: initiative if nobody has any, then the first fighter
+  gmSnapshot();
+  if (S.chars.every(c => c.init === null || !Number.isFinite(+c.init))) initiativeAll();
+  nextFighter(); return "acted";
+}
+function gmStep(){                                 // one step of the script: "acted", or "wait" for a person, or "over"
+  if (!gmOn()) return "wait";
+  const over = gmOver();
+  if (over){ S.gmMsg = over; return "over" }
+  const f = (S.free || [])[0];
+  if (f) return gmFreeStep(f);
+  if (S.turn == null) return gmFirstTurn();
+  const c = actingChar();
+  if (!scripted(c)){
+    S.gmMsg = c ? `${c.name}'s turn (${GM_CTL[gmSide(sideOf(c)).ctl]}): move, strike, then Next fighter.` : "";
+    return "wait";
+  }
+  gmSnapshot();
+  if (S.gmTurn?.id !== c.id) gmMove(c);
+  else if (S.gmTurn.phase === "strike") gmStrike(c);
+  else { S.gmTurn = null; nextFighter() }
+  S.gmMsg = `The GM's script plays ${c.name}.`;
+  return "acted";
+}
+function gmPlay(steps = Infinity){                 // play the script until a person must choose (or for so many steps), a step every so often
+  gmStop(); GMQ.steps = 0; GMQ.running = true;
+  const go = () => {
+    const r = gmStep(); renderChars();
+    if (r !== "acted" || ++GMQ.steps >= steps || GMQ.steps > 2000) return gmStop();
+    GMQ.timer = setTimeout(go, S.gm.auto ? 450 : 0);
+  };
+  go();
+}
+const gmKick = () => { if (gmOn() && S.gm.auto) gmPlay() };   // after a person's turn, the script plays on by itself
+const gmOptions = (pairs, cur) => pairs.map(([v, t]) => `<option value="${v}"${v === cur ? " selected" : ""}>${t}</option>`).join("");
+function gmSideRow(sd){                            // a side: who plays it, how boldly the script does, and its men's quality
+  const g = gmSide(sd), k = attr(sd), wide = ' style="width:auto;flex:1 1 6.5em"';
+  const ctl = `<select data-gm="ctl" data-side="${k}"${wide} aria-label="Who plays ${k}">${gmOptions(Object.entries(GM_CTL), g.ctl)}</select>`;
+  const off = g.ctl === "script" ? "" : " disabled";
+  const stance = `<select data-gm="stance" data-side="${k}"${wide} aria-label="How boldly the script plays ${k}"${off}>${gmOptions(GM_STANCES.map(x => [x, x]), g.stance)}</select>`;
+  const qual = `<select data-gm="quality" data-side="${k}"${wide} aria-label="Quality of ${k}'s men with no sheet" title="Attack, defence and Nerve for men with no team-builder sheet">${gmOptions(Object.keys(DATA.quality).map(q => [q, q + " men"]), g.quality)}</select>`;
+  return `<div class="toolbar" style="flex-wrap:wrap"><b style="flex:1 1 100%">${esc(sd)}</b>${ctl}${stance}${qual}</div>`;
+}
+function gmControls(){                             // the switches and the script's buttons
+  const on = `<label class="check"><input type="checkbox" id="gm-on"${gmOn() ? " checked" : ""}> Run the fight</label>`;
+  if (!gmOn()) return `<div class="toolbar">${on}</div>`;
+  const auto = `<label class="check" title="After your turn, the script plays its fighters by itself"><input type="checkbox" id="gm-auto"${S.gm.auto ? " checked" : ""}> Play the script by itself</label>`;
+  const undo = GMQ.undo.length ? "" : " disabled";
+  return `<div class="toolbar">${on}${auto}<span class="spacer"></span><button type="button" class="small" id="gm-step">Step</button><button type="button" class="small" id="gm-play">Play to my turn</button><button type="button" class="small" id="gm-undo"${undo}>Undo the script</button></div>`;
+}
+function renderGM(){
+  const box = $("#gm-bar"); if (!box) return;
+  const sides = sidesInOrder();
+  if (sides.length < 2){ box.innerHTML = ""; return }
+  const open = S.gmOpen || gmOn() ? " open" : "";
+  const note = gmOn() ? "who plays each side" : "off: you play every fighter by hand";
+  const rows = gmOn() ? sides.map(gmSideRow).join("") : "";
+  const msg = gmOn() && S.gmMsg ? `<p class="muted" style="margin:0" aria-live="polite">${esc(S.gmMsg)}</p>` : "";
+  box.innerHTML = `<details class="after"${open}><summary><b>Run the fight</b> <span class="muted">${note}</span></summary>${gmControls()}${rows}${msg}</details>`;
+}
+$("#gm-bar").addEventListener("toggle", e => { S.gmOpen = e.target.open }, true);
+$("#gm-bar").addEventListener("change", e => {
+  const t = e.target;
+  if (t.id === "gm-on"){ if (t.checked) gmStart(); else { gmStop(); S.gm = { ...S.gm, on: false } } S.gmMsg = ""; return renderChars() }
+  if (t.id === "gm-auto"){ S.gm.auto = t.checked; return renderChars() }
+  const k = t.dataset.gm, sd = t.dataset.side;
+  if (!k || !sd) return;
+  S.gm.sides[sd] = { ...gmSide(sd), [k]: t.value };
+  renderChars();
+});
+$("#gm-bar").addEventListener("click", e => {
+  const id = e.target.id;
+  if (id === "gm-step") gmPlay(1);
+  else if (id === "gm-play") gmPlay();
+  else if (id === "gm-undo") gmUndo();
 });
 
 const FLAG_LABEL = { shock: "stop check" };   // the data's shock flag is the Grave Wounds stop check
@@ -1738,8 +1938,11 @@ function fillFromSheets(){
   const at = a && a.sheet ? a.sheet.attack_by[S.weapon] : undefined;
   if (at !== undefined && at !== null) $("#in-atk").value = at;
   else if (a && a.follower) $("#in-atk").value = a.follower.attack;   // a follower: his quality's attack, whatever the weapon
+  else if (a && gmOn()) $("#in-atk").value = qualityOf(a).attack;     // running the fight: a man with no sheet fights at his side's quality
   if (dd && dd.sheet) $("#in-def").value = defenceFor(dd);
   else if (dd && dd.follower) $("#in-def").value = dd.follower.defence;
+  else if (dd && gmOn()) $("#in-def").value = qualityOf(dd).defence;
+  if (gmOn() && isShot(S.weapon)) $("#in-def").value = "";           // no parry or dodge against a shot (as units.md)
 }
 function sheetLine(c){                          // a team builder character's sheet, in a line or two, and his scars
   const h = c.sheet, scars = (c.scars || []).map(w => LOC[w.loc].name.toLowerCase());
@@ -2365,6 +2568,7 @@ function freeDone(how){                      // the free attack at the head of t
   const a = S.chars.find(c => c.id === f.att), dd = S.chars.find(c => c.id === f.def);
   if (how) (S.pending = S.pending || []).push(`${a ? a.name : "?"}: free attack on ${dd ? dd.name : "?"} — ${how}`);
   S.free.shift(); startFreeAttack();
+  if (gmOn() && S.gm.auto && !GMQ.running) setTimeout(gmKick);   // a person's free attack settled: the script plays on
 }
 const isFreePair = () => { const f = (S.free || [])[0], a = attackerChar(), dd = defenderChar(); return !!(f && a && dd && f.att === a.id && f.def === dd.id) };
 function moveActing(h){
@@ -2890,7 +3094,7 @@ function renderChars(){
   }).join("") || `<p class="muted">Add a combatant to start tracking wounds.</p>`;
   renderMap();
   save();
-  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards(); renderWords(); renderEvents();
+  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards(); renderWords(); renderEvents(); renderGM();
 }
 $("#after-fight").addEventListener("change", e => {
   if (e.target.id === "sel-won"){ S.wonBy = e.target.value || null; S.afterOpen = true; renderChars() }
@@ -3074,6 +3278,29 @@ function stopResult(c, r, why){
 function stopNerve(c, sev){                       // his Nerve for a stop check: a player character's lethality adds to it, or spares him (null)
   return isPC(c) ? pcNerve(nerveOf(c), sev) : nerveOf(c);
 }
+function applyCurrentHit(){                       // Apply hit to defender: the wound on him, its stop check, and what follows
+  if (!S.hit) return;
+  if (S.hit.applied && gmOn()) return;             // running the fight: a hit goes on once
+  if (!S.chars.length) S.chars.push(newChar(`Combatant ${S.seq}`));
+  const c = S.chars[S.active], h = S.hit, wasDown = isDown(c);
+  let msg, line = "";
+  if (h.miss || h.defended || h.blocked) msg = `No hit landed: nothing to add to ${c.name}.`;
+  else if (applyHit(c, h)){
+    h.applied = true;
+    msg = `Added ${h.graze ? "grazing " : ""}${LOC[h.loc].name.toLowerCase()} wound to ${c.name}.`;
+    const prevState = c.state ? { ...c.state } : null, stop = {};
+    line = applyStopCheck(c, c.wounds[c.wounds.length - 1], stop);
+    S.fateOffer = isPC(c) ? { id: c.id, w: c.wounds.length - 1, prevState, failed: /failed by/.test(line) } : null;
+    (S.pending = S.pending || []).push(`${c.name}: ${h.graze ? "grazed" : h.sev} ${LOC[h.loc].name.toLowerCase()}`, ...(line ? [line] : []));
+    countCoup(attackerChar(), c, h.weapon);              // a Plains man's blow landed: a coup
+    strainFor(c, ["serious", "critical"].includes(h.sev) ? "wounded_badly" : "wounded");
+    if (!wasDown && isDown(c)){ creditDown(attackerChar(), c); strainOnDown(c) }
+    logWound(c, h, line, stop);
+  } else msg = `Armour stopped that blow: nothing to add to ${c.name}.`;
+  $("#apply-msg").innerHTML = msg + (line ? `<br>${line}` : "") + fateButtons();
+  if (h.free && isFreePair()){ S.hit = { ...h, free: false }; freeDone("") }
+  renderChars();
+}
 function applyStopCheck(c, w, rec = null){        // rec, if given, takes the check and its die for the event log
   if (penalties(c).flags.includes("out")) return "";
   const nerve = stopNerve(c, w.sev);
@@ -3151,30 +3378,9 @@ function init(){
   $("#btn-init").onclick = initiativeAll;
   $("#btn-add").onclick = () => { const n = $("#in-name").value.trim() || `Combatant ${S.seq}`; S.chars.push(newChar(n, S.armor, null, {}, S.addSide || "Side A")); $("#in-name").value = ""; selectChar(S.chars.length - 1) };
   $("#in-name").addEventListener("keydown", e => { if (e.key === "Enter") $("#btn-add").click() });
-  $("#btn-apply").onclick = () => {
-    if (!S.hit) return;
-    if (!S.chars.length) S.chars.push(newChar(`Combatant ${S.seq}`));
-    const c = S.chars[S.active], h = S.hit, wasDown = isDown(c);
-    let msg, line = "";
-    if (h.miss || h.defended || h.blocked) msg = `No hit landed: nothing to add to ${c.name}.`;
-    else if (applyHit(c, h)){
-      h.applied = true;
-      msg = `Added ${h.graze ? "grazing " : ""}${LOC[h.loc].name.toLowerCase()} wound to ${c.name}.`;
-      const prevState = c.state ? { ...c.state } : null, stop = {};
-      line = applyStopCheck(c, c.wounds[c.wounds.length - 1], stop);
-      S.fateOffer = isPC(c) ? { id: c.id, w: c.wounds.length - 1, prevState, failed: /failed by/.test(line) } : null;
-      (S.pending = S.pending || []).push(`${c.name}: ${h.graze ? "grazed" : h.sev} ${LOC[h.loc].name.toLowerCase()}`, ...(line ? [line] : []));
-      countCoup(attackerChar(), c, h.weapon);              // a Plains man's blow landed: a coup
-      strainFor(c, ["serious", "critical"].includes(h.sev) ? "wounded_badly" : "wounded");
-      if (!wasDown && isDown(c)){ creditDown(attackerChar(), c); strainOnDown(c) }
-      logWound(c, h, line, stop);
-    } else msg = `Armour stopped that blow: nothing to add to ${c.name}.`;
-    $("#apply-msg").innerHTML = msg + (line ? `<br>${line}` : "") + fateButtons();
-    if (h.free && isFreePair()){ S.hit = { ...h, free: false }; freeDone("") }
-    renderChars();
-  };
+  $("#btn-apply").onclick = applyCurrentHit;
   $("#apply-msg").addEventListener("click", e => { const b = e.target.closest("button[data-fate]"); if (b) spendFate(b.dataset.fate) });
-  $("#btn-next").onclick = nextFighter;
+  $("#btn-next").onclick = () => { nextFighter(); gmKick() };
   $("#btn-round").onclick = () => { S.turn = null; S.tm = null; S.free = []; advance(1) };      // a new round: no one has acted yet
   $("#btn-minute").onclick = () => { S.turn = null; S.tm = null; S.free = []; advance(10) };
   $("#btn-reset-rounds").onclick = () => { S.round = 1; S.log = []; S.pending = []; S.turn = null; S.broken = {}; S.tm = null; S.free = []; newFightMarks(); renderChars() };
@@ -3189,7 +3395,7 @@ function init(){
   const dropKey = k => { try{ localStorage.removeItem(k) }catch(e){ /* storage off: nothing was kept to drop */ } };
   const MAP_ACTS = {                              // the map bar's buttons, by data-map
     stay: () => { S.tm = { ...S.tm, moved: true, steps: 0, ran: false, prev: null }; renderChars() },
-    undo: undoMove, next: nextFighter, cover: takeCover, handoff: setupHandoff, roll: () => rollHit(), stray: strayHit, apply: applyFromMap, addteam: addTeam,
+    undo: undoMove, next: () => { nextFighter(); gmKick() }, cover: takeCover, handoff: setupHandoff, roll: () => rollHit(), stray: strayHit, apply: applyFromMap, addteam: addTeam,
     skipfree: () => { freeDone("skipped"); renderChars() },
     noteam: () => { S.teamIn = null; dropKey("gravewounds-team-handoff"); renderChars() },
     nohandoff: () => { S.handoff = null; dropKey("gravewounds-handoff"); renderChars() },

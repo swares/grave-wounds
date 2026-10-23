@@ -1,15 +1,15 @@
-# The roller's strike and event log (templates/strike.js, templates/gamelog.js): thousands of strikes
+# The roller's strike, event log and scripted fighter (templates/strike.js, gamelog.js, fighter.js): thousands of strikes
 # checked against gravewounds.engine.roll_hit on the same dice, then the unit tests
-# (tools/strike/parity.py runs tools/strike/test.js). A few seconds; runs on pull requests and on
+# (tools/strike/parity.py runs tools/strike/test.js), and the scripted fighter's choices (tools/gm/test.js). A few seconds; runs on pull requests and on
 # main when the rules it checks change.
 name: strike
 
 on:
   pull_request:
-    paths: ["templates/strike.js", "templates/gamelog.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**"]
+    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**"]
   push:
     branches: [main]
-    paths: ["templates/strike.js", "templates/gamelog.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**"]
+    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**"]
   workflow_dispatch:
 
 permissions:
@@ -28,3 +28,4 @@ jobs:
           node-version: "22"
       - run: "pip install --only-binary :all: PyYAML==6.0.3 Markdown==3.11 reportlab==5.0.1"
       - run: python3 tools/strike/parity.py 5000 1
+      - run: node tools/gm/test.js
