@@ -51,6 +51,10 @@ def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict
     for i in range(len(us)):
         if us[i]["side"] != side or not _free(d, us, i, exchange):
             continue
+        if stance == "attack" and _leaves_disabled(d, us[i]):   # it goes on without its immobilised vehicles
+            n = us[i]["immobile"]
+            us[i] = U.abandon_immobile(d, us[i])
+            orders.append({"unit": i, "act": "abandon", "n": n})
         roll = rng.randint(1, 100)
         o = _order(d, us, i, (size, _plugging(_aim(us, i, aim), us[i]), stance, known, exchange), roll)
         o = _spotter(d, us, i, o, (size, field, stance, known)) or o
@@ -1091,7 +1095,21 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
         return _search(d, us, i, ctx)
     if roll <= C["hesitate"].get(u["quality"], 0):
         return {"act": "hesitate", "target": t, "roll": roll}
-    return _move_order(d, us, i, t, ctx)
+    return _down_under_fire(d, us, i, t, ctx[2], _move_order(d, us, i, t, ctx))
+
+
+def _down_under_fire(d: Data, us: list, i: int, t: int | None, stance: str, o: dict | None) -> dict | None:
+    """Attacking, a modern foot unit fired on last exchange does not walk on: it goes to ground (or
+    stays down) and fires, unless its target is pinned (commander.bounds_all)."""
+    if not d.units["commander"].get("bounds_all") or stance != "attack" or not o or o["act"] not in ("move", "advance") or not bounding(d, us, i, t):
+        return o
+    return None if us[i].get("prone") else {"act": "ground", "target": t}
+
+
+def _leaves_disabled(d: Data, u: dict) -> bool:
+    """Attacking, a vehicle unit with some vehicles that can still move leaves its immobilised
+    ones (commander.leave_disabled)."""
+    return bool(d.units["commander"].get("leave_disabled")) and bool(u.get("vehicle")) and u.get("immobile", 0) > 0 and U.vehicles_left(d, u) > u["immobile"]
 
 
 def _move_order(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict | None:
@@ -1686,7 +1704,7 @@ def bounding(d: Data, us: list, i: int, t: int) -> bool:
     u, C = us[i], d.units["commander"]
     if not C.get("bounds") or u.get("vehicle") or u["weapon"] not in C["ground_with"] or C["cover"].get(u["quality"], 0) <= 0:
         return False
-    return bool(u.get("hit") or u.get("pinned")) and not us[t].get("pinned")
+    return bool(u.get("hit") or u.get("pinned") or u.get("fired_on")) and (t is None or not us[t].get("pinned"))   # fired on, even if no one fell
 
 
 def storming(d: Data, u: dict, t: dict, field: dict | None, stance: str) -> bool:
@@ -1899,12 +1917,19 @@ def score(d: Data, field: dict | None, u: dict, tu: dict, h: tuple, cost: int, s
     dist = U.hdist(list(h), tu["pos"])
     s = (0 if storm else C["cover"].get(q, 0)) * U.cover_at(d, field, tu["pos"], list(h)) - cost - C["mines"].get(q, 0) * _mined(field, u["pos"], h, u["side"])
     if shooter:
-        inr = (dist >= 1 and (U.field_range(d, u["weapon"], dist) is not None or _gun_in_range(d, field, u, (h, tu["pos"], dist)))
+        inr = (dist >= 1 and ((U.field_range(d, u["weapon"], dist) is not None and _sees_to(d, field, u, (h, tu["pos"], dist))) or _gun_in_range(d, field, u, (h, tu["pos"], dist)))
                and U.clear_sight(d, field, list(h), tu["pos"], dist))   # in range: and no woods, buildings or crest across the line from there
         stand = C["stand_off"] if inr and u.get("vehicle") and U._gun_of(d, u) and not _answers(d, field, tu, (tu["pos"], list(h), dist)) else 0
         return s + stand + (C["in_range"] if inr else -C["closing"] * dist) - (C["too_close"] if dist < C["keep_off"] else 0)
     flank = C["flank"].get(q, 0) if U.arc(tu["facing"], U.bearing(tu["pos"], list(h))) != "front" else 0
     return s - C["closing"] * dist + flank
+
+
+def _sees_to(d: Data, field: dict | None, u: dict, shot: tuple) -> bool:
+    """Whether the weather and light let u, at h, see t dist away. shot: (h, t, dist)."""
+    h, t, dist = shot
+    sight = U._sight_hexes(d, field, list(t), U._seer({**u, "pos": list(h)}))
+    return sight is None or dist <= sight
 
 
 def _gun_in_range(d: Data, field: dict | None, u: dict, shot: tuple) -> bool:
