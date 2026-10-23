@@ -41,6 +41,14 @@ currencies:
     base: lira
     units: [{sym: " lire", of: 1}]
     day_note: "no Day: paid out by the Allies"
+  lira:
+    name: "Lire (100 centesimi)"
+    coin: lira
+    base: centesimo
+    decimal: {sym: "", suf: " lire", per: 100, small: " cent."}
+    day: 96
+    day_note: "an Italian private's $1.51 a month (US Intelligence Bulletin, December 1942) at 5.26 US cents to the lira: about 0.96 lira a day, our arithmetic; any war or overseas supplement not found"
+    day_approx: true
   rub:
     name: "Rubles (100 kopecks)"
     coin: rub
@@ -49,7 +57,7 @@ currencies:
     day: 57
     day_note: "a Red Army private's 17 rubles a month in wartime (about a ruble a day with allowances)"
 
-currency: {default: usd, commonwealth: gbp, germany: reichsmark, japan: yen, soviet: rub}
+currency: {default: usd, commonwealth: gbp, germany: reichsmark, italy: lira, japan: yen, soviet: rub}
 
 sources:
   ar: &ar "https://www.usww2uniforms.com/bib_AR30-3000_16oct44.html"

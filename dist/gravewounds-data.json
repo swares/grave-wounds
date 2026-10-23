@@ -905,6 +905,20 @@
      ],
      "day_note": "no Day: paid out by the Allies"
     },
+    "lira": {
+     "name": "Lire (100 centesimi)",
+     "coin": "lira",
+     "base": "centesimo",
+     "decimal": {
+      "sym": "",
+      "suf": " lire",
+      "per": 100,
+      "small": " cent."
+     },
+     "day": 96,
+     "day_note": "an Italian private's $1.51 a month (US Intelligence Bulletin, December 1942) at 5.26 US cents to the lira: about 0.96 lira a day, our arithmetic; any war or overseas supplement not found",
+     "day_approx": true
+    },
     "rub": {
      "name": "Rubles (100 kopecks)",
      "coin": "rub",
@@ -923,6 +937,7 @@
     "default": "usd",
     "commonwealth": "gbp",
     "germany": "reichsmark",
+    "italy": "lira",
     "japan": "yen",
     "soviet": "rub"
    }
@@ -5613,6 +5628,49 @@
       ]
      ]
     },
+    "italy": {
+     "own": [
+      [
+       "italian",
+       100
+      ]
+     ],
+     "enemy": "english",
+     "others": [
+      [
+       "german",
+       10,
+       [
+        5,
+        40
+       ]
+      ],
+      [
+       "english",
+       5,
+       [
+        5,
+        30
+       ]
+      ],
+      [
+       "arabic",
+       5,
+       [
+        5,
+        30
+       ]
+      ],
+      [
+       "french",
+       5,
+       [
+        10,
+        40
+       ]
+      ]
+     ]
+    },
     "soviet": {
      "own": [
       [
@@ -6440,6 +6498,7 @@
    "serbia-1915": "albanian",
    "sevastopol-1855": "russian",
    "sidon-1253": "arabic",
+   "snipe-1942": "arabic",
    "towton-1461": "english",
    "visby-1361": "gutnish",
    "wanat-2008": "nuristani"
@@ -27392,6 +27451,76 @@
      28
     ]
    },
+   "egypt_coast": {
+    "name": "Egyptian Mediterranean coast, desert",
+    "note": "Like El Alamein: hot rainless summers tempered by the sea, sharp at night inland; north-westerly winds; dust in the khamsin of spring. October's mean high 27.5 C and low 16.7 C (Wikipedia, El Alamein); the other months rounded design estimates.",
+    "high": [
+     18,
+     19,
+     21,
+     24,
+     27,
+     29,
+     30,
+     31,
+     30,
+     28,
+     23,
+     20
+    ],
+    "low": [
+     8,
+     8,
+     10,
+     12,
+     15,
+     19,
+     21,
+     22,
+     20,
+     17,
+     13,
+     10
+    ],
+    "rain": [
+     6,
+     4,
+     3,
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     3,
+     5
+    ],
+    "fog": [
+     1,
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1
+    ],
+    "wind_from": [
+     22,
+     6,
+     3,
+     4,
+     6,
+     8,
+     18,
+     33
+    ]
+   },
    "jordan_valley": {
     "name": "Upper Jordan valley, hot and dry",
     "note": "Like Tiberias, below sea level by the Sea of Galilee: very hot, rainless summers with westerly afternoon winds, mild wet winters; the Hula end and the Galilee hills are cooler. Rounded design estimates.",
@@ -33716,7 +33845,7 @@
    ]
   },
   "WWII": {
-   "period": "1939-1945 (Bougainville 1943-45; Italy 1943-45)",
+   "period": "1939-1945 (El Alamein 1942; Bougainville 1943-45; Italy 1943-45)",
    "map": {
     "bbox": [
      -10,
@@ -33725,6 +33854,11 @@
      60
     ],
     "sites": [
+     {
+      "name": "El Alamein (Snipe)",
+      "lat": 30.82,
+      "lon": 28.76
+     },
      {
       "name": "Italy (Cassino)",
       "lat": 41.49,
@@ -33737,7 +33871,7 @@
      }
     ]
    },
-   "summary": "The Allies against the Axis. This group's tables come from two theatres: the jungle campaign on Bougainville in the Solomon Islands (US Marines and Army against the Imperial Japanese Army) and the Italian campaign (US, British and Commonwealth forces against the German army). Mortars and artillery caused half of the Bougainville wounds.\n",
+   "summary": "The Allies against the Axis. This group's tables come from two theatres: the jungle campaign on Bougainville in the Solomon Islands (US Marines and Army against the Imperial Japanese Army) and the Italian campaign (US, British and Commonwealth forces against the German army). Mortars and artillery caused half of the Bougainville wounds. The game's other front, North Africa, uses the Owens table too: at Snipe, by El Alamein, on 27 October 1942 a British motor battalion's six-pounders held a hollow in the desert against German and Italian tanks from dawn to dark.\n",
    "sides": [
     {
      "name": "Allies",
@@ -33750,7 +33884,7 @@
     },
     {
      "name": "Axis",
-     "who": "Imperial Japanese Army; German Wehrmacht.",
+     "who": "Imperial Japanese Army; German Wehrmacht; the Italian Regio Esercito in North Africa.",
      "armour": "Steel helmets (Japanese Type 90, German Stahlhelm); no infantry body armour.",
      "look": {
       "colour": "#6f7569",
@@ -33838,6 +33972,20 @@
      }
     },
     {
+     "name": "British rifleman, Snipe",
+     "side": "Allies",
+     "kit": "ww2_rifleman",
+     "weapon": "rifle_service",
+     "notes": "2nd Rifle Brigade, a motor battalion: Brodie helmet, Lee-Enfield, dug in by a six-pounder in the soft sand."
+    },
+    {
+     "name": "Italian tank crewman, Littorio",
+     "side": "Axis",
+     "kit": "none",
+     "weapon": "pistol_smg",
+     "notes": "A carrista of the 133rd Tank Regiment's M14/41s: leather helmet, Beretta pistol."
+    },
+    {
      "name": "German paratrooper, Cassino",
      "side": "Axis",
      "kit": "ww2_rifleman",
@@ -33853,7 +34001,8 @@
     }
    ],
    "sources": [
-    "Borden Institute, Weapons Effects and War Wounds, Table 1-1 (Bougainville causes of injury)."
+    "Borden Institute, Weapons Effects and War Wounds, Table 1-1 (Bougainville causes of injury).",
+    "Project doc snipe-research (Snipe: Wikipedia after Pitt and Latimer, the New Zealand official history, the US Intelligence Bulletin)."
    ]
   },
   "Korea": {

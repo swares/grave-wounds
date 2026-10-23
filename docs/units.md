@@ -856,10 +856,10 @@ at a time; **Run** (shown only then) plays a move about every 0.7 seconds until 
   from the first); a run then goes at least that long, still no more than `most`. Where the
   account gives only a vague end, `ends` is the earliest the words allow: "before noon" is noon,
   "the next afternoon" 12:00, "near midnight" 23:30, and "at dawn" the sunrise worked out for the
-  place and day. Nineteen battlefields set it: Lundy's Lane 271 (counter-attacks until near
+  place and day. Twenty battlefields set it: Lundy's Lane 271 (counter-attacks until near
   midnight), the Monastery 418 (failed by dawn, sunrise about 06:57), Lützen 541 (Wallenstein
   withdraws at 20:00), Keating 361, Mogadishu 783 (out at dawn, sunrise 05:44), Kapyong 871,
-  Crécy 241 (four hours into the moonlight, our cut), Beaumont-Hamel 181 (to the Essex's attack, our cut), Aljubarrota 61 (the attack broken in less than an hour), Dornach 241 (four to five hours), Jacob's Ford 121 (a morning's storm, our reading),
+  Crécy 241 (four hours into the moonlight, our cut), Beaumont-Hamel 181 (to the Essex's attack, our cut), Snipe 806 (the last round at 19:40), Aljubarrota 61 (the attack broken in less than an hour), Dornach 241 (four to five hours), Jacob's Ford 121 (a morning's storm, our reading),
   the Babuna pass 931 (the retreat ordered at 22:00),
   Heartbreak Ridge 901, and, past `most` and so cut short at 1,200, X-Ray, Pork Chop, Grozny,
   Bougainville, Dak To and Cassino town. `ends` never shortens a run.
@@ -1975,12 +1975,12 @@ when it is wider than a hex).
   outside it count as guarding it. An objective the GM marks by hand has the commander's own
   radius, 1 hex. The enemy commander then takes
 it or holds it, as under [The enemy commander](#the-enemy-commander); the GM can move or
-clear it with **Clicking the map**. Thirty-six battlefields have one: Point 593 at
+clear it with **Clicking the map**. Thirty-seven battlefields have one: Point 593 at
 Cassino, Castle Hill in the town, the crests of Hills 875, 861A, 931 and 937, Pork Chop,
 Fox Hill, Hill 504 at Kapyong, G Company's hill at Chipyong-ni, Darwin Hill, the Iraqi position behind the rise at 73 Easting, the station
 at Grozny, the provincial headquarters at Hue, the crash site in Mogadishu, Observation
 Post Topside at Wanat, Combat Outpost Keating, X-Ray's landing zone, the saddle at Osan
-and on Bougainville, the railway bridge at Mons, the German front line at Y Ravine (Beaumont-Hamel), the saddle of the Babuna pass, the English position between Crécy and Wadicourt, the Portuguese position at São Jorge (Aljubarrota), the imperial guns and camp at Dornach, the castle at Jacob's Ford, Henry Hill, the Redan's salient (on both of its battlefields), the British guns at Lundy's
+and on Bougainville, the railway bridge at Mons, the German front line at Y Ravine (Beaumont-Hamel), the hollow at Snipe, the saddle of the Babuna pass, the English position between Crécy and Wadicourt, the Portuguese position at São Jorge (Aljubarrota), the imperial guns and camp at Dornach, the castle at Jacob's Ford, Henry Hill, the Redan's salient (on both of its battlefields), the British guns at Lundy's
 Lane, the windmill battery at Lützen, the heights at Albuera, the edge of Cisterna and the
 wagon-box corral. The open-field battles (Agincourt, Towton, Visby, Cowpens), the ambush
 on Lodge Trail Ridge, the Jolan at Fallujah and the unfinished wall at Sidon have none:
@@ -2029,6 +2029,11 @@ where they are not plain.
 - **Aljubarrota** (from about 18:00): the vanguards meet (16); Juan I's main battle comes up
   and the Master of Alcántara's ginetes ride round to the baggage (31); sunset (51) and moonlight
   (76). Which way the ginetes went is our reading.
+- **Snipe** (from first light, 06:15 Egyptian summer time): civil dawn, daylight (36); sunrise (61); 24th Armoured Brigade
+  and the long-gunned Panzers (76, 07:30); the brigade pulls back (166, 09:00); Italian infantry
+  (226) and a dozen Italian tanks (256); the Italian tanks over the western ridge (406, 13:00);
+  Rommel's counter-stroke with the Stukas (646, 17:00); sunset (727) and dark (780). Where each
+  Axis attack came from is our reading.
 - **Beaumont-Hamel** (from zero, 07:30 BEF time): the second wave (6); the white rockets (31);
   the order to the 88th Brigade (76, 08:45); the Newfoundlanders go over (106, 09:15); Hadow
   reports failure (136); the Essex (146, 09:55 by the Museum, 10:50 by Veterans Affairs).
@@ -2570,6 +2575,41 @@ at the top: the pass on the road from Veles to Prilep.
 - The wound tables are the First World War's.
 
 It is drawn by `tools/maps/make_babuna_field.mjs`.
+
+**Snipe, 27 October 1942** (`data/fields/snipe-1942.yaml`). The field is 200 × 160 hexes, about
+2,190 yards (2,000 m) west to east and 1,520 yards (1,390 m) north to south, north at the top: the
+hollow of Snipe, west of the Kidney feature at El Alamein.
+- The hollow, an oval about 900 by 450 m with its long axis north-east to south-west, lies in the
+  middle of flat desert, with a low ridge to the west and another to the east (high ground with
+  slopes). The hollow plays as open ground, as the desert does: its depth is not known, and its
+  camelthorn is not drawn (the rules' scrub would keep tanks out of it); the objective's ring marks
+  it, and the British stand in it, dug in.
+- Fair and calm; first light at 06:15 (dusk light), daylight from civil dawn at 06:50 (the guns
+  were firing at 800 yards by then), sunrise 07:15, sunset 18:21, dark at 19:14,
+  the moon not up until about 20:55. The clock is Egyptian summer time (GMT+3).
+- British, all dug in: the 19 six-pounders by company sector (anti-tank guns, five men to a gun in
+  the rules): 239 Battery's six to the north and north-east, A Company's four to the north-west,
+  C Company's four to the south-west, B Company's five to the south-east; 30 riflemen of each of
+  A, B and C Companies behind their guns, the 22 carriers (armoured carriers) and the 16 sappers
+  in the middle. 47th and 41st RTR (24 tanks each, ours) come over the eastern ridge at 07:30
+  and go back at 09:00 (data/orders.yaml); the rest hold.
+- Axis, in waves (tanks four men to a tank; the Panzers heavy armour, the Italian M13s, M14s and
+  Semoventi light): 15 German tanks passing north and 17 Italian passing south at dawn; 25
+  long-gunned Panzers from the south at 07:30; 200 Bersaglieri at 10:00; a dozen Italian tanks
+  and eight German at 10:30; nine Italian over the western ridge at 13:00; and at 17:00 Rommel's
+  counter-stroke, 15 Panzer IIIs on the north-west with 30 German and 10 Italian tanks from the
+  south, after 20 Stukas. German guns and 88s (8, field) on call.
+- The wound tables are the Owens WWII table.
+
+How it is drawn: the hollow to the accounts' size, the ridges, its depth and the guns' places
+inside their sectors ours; the attacks the accounts number at those numbers, the rest ours, with
+round numbers. The British artillery (its observer lost at 04:00) and the friendly fire are not
+played. In self-play the battalion does not hold: all three runs end about 10:30 with every
+British unit gone (0 of 3 matched), the British losing about 40% of their men to the Axis 14%,
+where in fact 72 of under 300 were hit and some 32 tanks and 5 SP guns were left burnt out round
+the hollow. The guns break and run under the dawn and morning attacks; how the anti-tank guns,
+their crews' morale and the tanks' fire on dug-in guns play is a lead for the self-play review. It
+is drawn by `tools/maps/make_snipe_field.mjs`.
 
 **Hill 700, Bougainville, 8-12 March 1944** (`data/fields/bougainville-1944.yaml`). The field
 is 120 × 100 hexes, about 1,310 yards (1,200 m) east to west and 950 yards (870 m) north to
