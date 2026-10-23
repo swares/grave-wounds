@@ -116,7 +116,8 @@ fires at, times {{ammo_burn}}% (men do not fire every round they could). Longbow
 - **Resupply.** An exchange out of contact, neither moving nor firing, within {{ammo_reach}}
   hexes of a supply source: its side's map edge (behind the way most of its men face), a
   lorry or armoured carrier of its side, or a **supply dump**. The GM places dumps before the
-  battle; from the Second World War on, an **air drop** called on a side's move lands as a
+  battle (a battlefield may come with its own, as the stores in RIR 119's dugouts at
+  Beaumont-Hamel); from the Second World War on, an **air drop** called on a side's move lands as a
   dump at the end of the exchange, a little off the mark, and from Vietnam on a helicopter
   can set one down on a landing zone ([Landing by air](#landing)).
 - **The enemy commander** resupplies a unit that is out, or low with no enemy in its

@@ -21,6 +21,19 @@ assigned:
   source:
     url: https://en.wikipedia.org/wiki/%C3%89taples_mutiny
     note: about two weeks at Étaples
+- id: nfld_draft
+  name: A draft from home
+  regions:
+  - newfoundland
+  careers: any
+  terms: 1
+  wait:
+  - 14
+  - 60
+  what: The regiment, volunteers only until 1918, filled its ranks with drafts from Newfoundland; one of 66 men joined on 30 June 1916, the eve of Beaumont-Hamel.
+  source:
+    url: https://rnfldrmuseum.ca/history/regimental-history/first-world-war-1914-1918/beaumont-hamel-july-1-1916/
+    note: Royal Newfoundland Regiment Museum (the wait is our estimate)
 - id: depot_division
   name: A replacement from a depot division
   regions:

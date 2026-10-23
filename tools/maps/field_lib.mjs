@@ -65,6 +65,10 @@ export const firstCol = u => u.pos[0] - Math.floor((u.width - 1) / 2);
 
 const yq = s => JSON.stringify(s);
 const unitLine = u => `  - {name: ${yq(u.name)}, side: ${u.side}, men: ${u.men}, quality: ${u.quality}, weapon: ${u.weapon}, kit: ${u.kit}, formation: ${u.formation}, width: ${u.width}, pos: [${u.pos.join(", ")}], facing: ${u.facing}${u.mounted ? ", mounted: true" : ""}${u.guns ? ", guns: " + u.guns : ""}${u.prone ? ", prone: true" : ""}${u.lands === undefined ? "" : ", lands: " + u.lands}${u.vehicle ? ", vehicle: " + u.vehicle : ""}${u.fixed ? ", fixed: [" + u.fixed.join(", ") + "]" : ""}${u.via ? ", via: [" + u.via.map(h => "[" + h.join(", ") + "]").join(", ") + "]" : ""}${u.nv ? ", nv: " + u.nv : ""}${u.fc ? ", fc: " + u.fc : ""}${u.armour ? ", armour: " + u.armour : ""}${u.fac ? ", fac: true" : ""}${u.ladders ? ", ladders: true" : ""}${u.type ? ", type: " + u.type : ""}${u.size ? ", size: " + u.size : ""}}`;
+function dumpsLine(ds){                          // the supply dumps' line (and its comment), or ""
+  if (!ds?.length) return "";
+  return `\n# Supply dumps placed before the battle (side 0 or 1): its units within ammunition.reach of one can resupply there.\ndumps: [${ds.map(m => `{at: [${m.at.join(", ")}], side: ${m.side}}`).join(", ")}]`;
+}
 function objLine(o){                              // the objective's line (and its comment), or ""
   if (!o) return "";
   const radius = o.radius ? ", radius: " + o.radius : "";
@@ -107,7 +111,8 @@ const hexList = hs => hs.map(h => `[${h.join(", ")}]`).join(", ");
 // edgeWorks {type: [[hex, hex], ...]} (the first hex of each pair the high or inner side), units,
 // up (the compass point at the top of the map, if not north), support (each side's batteries on
 // call: [{name, side (0 or 1), kind (units.yaml indirect.kinds), tubes}]), lz (landing zones,
-// hexes; a unit with `lands: k` comes in by air at the k-th), objective (the place the battle
+// hexes; a unit with `lands: k` comes in by air at the k-th), dumps (supply dumps placed before the battle:
+// [{at: hex, side: 0 or 1}], where its side's units can draw ammunition), objective (the place the battle
 // was fought for: {at: hex, side: the army that attacked it (0 or 1), name, radius: hexes round it
 // that count as on it}), markers (the unit markers' settings: {labels, strength, size}, all
 // optional), stances (with no objective: how each army fought, [attack|hold, attack|hold]), ends ({at: the
@@ -135,7 +140,7 @@ table: ${spec.table}
 # the travel-map sides that stand where each army stands here (${spec.sides[0]} first).
 travel: {map: ${t.map}, place: ${yq(t.place)}, within: ${t.within}, sides: [${t.sides.map(yq).join(", ")}]}
 size: [${grid[0].length}, ${grid.length}]
-${upLine}weather: ${spec.weather}${spec.lz ? "\n" : ""}${spec.lz ? "lz: [" + hexList(spec.lz) + "]               # landing zones (units with `lands` come in by air at that one)" : ""}${objLine(spec.objective)}${stancesLine(spec.stances)}${endsLine(spec.ends)}${markersLine(spec.markers)}${phasesText(spec.phases)}
+${upLine}weather: ${spec.weather}${spec.lz ? "\n" : ""}${spec.lz ? "lz: [" + hexList(spec.lz) + "]               # landing zones (units with `lands` come in by air at that one)" : ""}${dumpsLine(spec.dumps)}${objLine(spec.objective)}${stancesLine(spec.stances)}${endsLine(spec.ends)}${markersLine(spec.markers)}${phasesText(spec.phases)}
 ground: |
 ${grid.map(row => "  " + row.join("")).join("\n")}
 ${worksText}${supText}units:

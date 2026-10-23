@@ -240,6 +240,8 @@ armies:
   wwi:
     british: {own: [[english, 90], [hindustani, 5], [french, 3], [welsh, 2]], enemy: german,
               others: [[english, 60, [20, 60]], [french, 25, [5, 30]], [german, 2, [10, 50]]]}
+    newfoundland: {own: [[english, 100]], enemy: german,
+                   others: [[english, 60, [20, 60]], [french, 25, [5, 30]], [german, 2, [10, 50]]]}   # English (Newfoundland English); an Irish share was not found
     france: {own: [[french, 90], [arabic, 5], [breton, 5]], enemy: german,
              others: [[french, 60, [20, 60]], [german, 5, [10, 50]]]}
     russia: {own: [[russian, 55], [ukrainian, 20], [polish, 7], [belarusian, 6], [yiddish, 5], [tatar, 4], [german, 2], [finnish, 1]], enemy: german,
@@ -318,6 +320,7 @@ maps:                          # the tongue (or tongues, main first) of the peop
   aljubarrota-1385: portuguese
   albuera-1811: spanish
   anzio-1944: italian
+  beaumont-hamel-1916: [picard, french]   # the Somme villages spoke Picard and French; those at the front were evacuated
   bougainville-1944: melanesian
   bull-run-1861: english
   cassino-1944: italian

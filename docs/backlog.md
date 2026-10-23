@@ -53,7 +53,7 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
   Jacob's Ford (1179), Crécy (1346), Aljubarrota (1385), Agincourt (1415), Towton (1461), Dornach (1499), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
   Lane (1814), Sevastopol (1855, two battlefields), First Bull Run (1861), Fort Phil Kearny (1866-67, with two battlefields), Mons
-  (1914), the Serbian retreat (1915, the Babuna pass), Hill 700 on Bougainville (1944), Anzio and Cisterna (1944), Osan (1950), Chipyong-ni
+  (1914), Beaumont-Hamel (1916), the Serbian retreat (1915, the Babuna pass), Hill 700 on Bougainville (1944), Anzio and Cisterna (1944), Osan (1950), Chipyong-ni
   (1951), the Ia Drang (1965), Mogadishu (1993), Wanat (2008), Cassino (1944, three battlefields), the Chosin Reservoir (1950), Kapyong (1951), Heartbreak Ridge (1951), Pork Chop Hill (1953), Hue (1968), Khe Sanh (1968), Dak To (1967), Hamburger Hill (1969), Goose Green (1982), 73 Easting (1991), Grozny (1995), Fallujah (2004) and COP Keating (2009) have both a campaign map and a battlefield. The rest of Italy, the rest of the Gulf War (1991) and Northern Ireland
   still play on the generic valley and open ground (the unit rules for them are in: machine
   guns, extended order, artillery and mortars on call, suppression). Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
@@ -266,6 +266,31 @@ When an item is done, delete it here and note it in the pull request that closes
   paper were not read in full; the Ayyubid ranks (amir, mamluk, halqa) are not a ladder of their
   own; Kurdish and Persian are new tongues with estimated shares. In self-play the storming column
   does not go in through the breach.
+- **Beaumont-Hamel and the Newfoundland Regiment, first cut.** The Somme map from Doullens to
+  Bapaume (1 km, from 30 June 1916), the battlefield on the ground of the Newfoundland Park (the
+  87th Brigade at 07:30, the Newfoundlanders at 09:15, the Essex at 09:55), and Newfoundland as a
+  First World War army (outport names, $1.00 a day, a draft from home, ages 19 to 35, VAD nurses;
+  a Logger origin for every army) (project doc "beaumont-research"). Still left out: RIR 119's
+  companies and machine guns opposite the park, their places and count (none found: ours); the
+  British battalions' strengths but the Inniskillings' and the Newfoundlanders'; St John's Road,
+  the Danger Tree and the Mary Redan have no coordinates, and the lines are drawn to the sources'
+  distances, not from a trench map; spot heights (the elevation services were blocked); whether
+  RIR 119 had the Stahlhelm on 1 July; a German private's pay in 1916 (the game's 50 pfennigs stays
+  an estimate); RIR 119 is the generic German army, not a Württemberg one (Swabian names, all
+  German-speaking, hardened by twenty months in the line); the Hawthorn Ridge mine and the 86th
+  Brigade (a second board) are not played; no wound locations for this sector were found (the
+  First World War table stands, and no field weights machine-gun fire above the 1916 average of
+  39% bullet); the Newfoundland ranks take the British pay steps; an Irish share of its tongues
+  and the number of its nurses were not found. The Newfoundland Day is his $1.00, though his pay
+  was about four times a British private's: the purse counts every army's Days alike, so his British-priced kit
+  (the SMLE, the Mills bomb, the Brodie) shows at a shilling to his dollar, about four times too dear.
+  In self-play the Germans hold but the British lose about 14% (in fact over half, the
+  Newfoundlanders 88%): the first wave, gone to ground in no man's land, draws the German fire as
+  the nearest target and screens the waves behind it (no unit shoots through another, even one
+  lying down), so the Newfoundlanders cross almost untouched. A lead for the self-play review, not
+  tuned here. No man's land plays as open ground (a slope hex would hide the forward slope). Done
+  with it: a battlefield file can place supply dumps (`dumps`), and RIR 119's dugouts hold its
+  ammunition.
 - **Crécy, first cut.** The campaign map from the Somme to Crécy (1 km, from the crossing at
   Blanchetaque on 24 August 1346) and the battlefield on the traditional site (Cassini's, 1757)
   with Preston's steep bank along the east side of the Vallée des Clercs (project doc

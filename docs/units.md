@@ -849,10 +849,10 @@ at a time; **Run** (shown only then) plays a move about every 0.7 seconds until 
   from the first); a run then goes at least that long, still no more than `most`. Where the
   account gives only a vague end, `ends` is the earliest the words allow: "before noon" is noon,
   "the next afternoon" 12:00, "near midnight" 23:30, and "at dawn" the sunrise worked out for the
-  place and day. Eighteen battlefields set it: Lundy's Lane 271 (counter-attacks until near
+  place and day. Nineteen battlefields set it: Lundy's Lane 271 (counter-attacks until near
   midnight), the Monastery 418 (failed by dawn, sunrise about 06:57), Lützen 541 (Wallenstein
   withdraws at 20:00), Keating 361, Mogadishu 783 (out at dawn, sunrise 05:44), Kapyong 871,
-  Crécy 241 (four hours into the moonlight, our cut), Aljubarrota 61 (the attack broken in less than an hour), Dornach 241 (four to five hours), Jacob's Ford 121 (a morning's storm, our reading),
+  Crécy 241 (four hours into the moonlight, our cut), Beaumont-Hamel 181 (to the Essex's attack, our cut), Aljubarrota 61 (the attack broken in less than an hour), Dornach 241 (four to five hours), Jacob's Ford 121 (a morning's storm, our reading),
   the Babuna pass 931 (the retreat ordered at 22:00),
   Heartbreak Ridge 901, and, past `most` and so cut short at 1,200, X-Ray, Pork Chop, Grozny,
   Bougainville, Dak To and Cassino town. `ends` never shortens a run.
@@ -1209,7 +1209,8 @@ numbers are in `ammunition` in `data/units.yaml`.
     the edge its new units come on from);
   - a lorry or armoured carrier (APC or IFV) of its side, steady;
   - a **supply dump** of its side. **Clicking the map: Supply dump** places or clears one
-    in set-up. In the battle, from the Second World War on, the same tool calls an **air
+    in set-up, and a battlefield file can place its own (`dumps: [{at, side}]`: RIR 119's
+    ammunition in its dugouts at Beaumont-Hamel). In the battle, from the Second World War on, the same tool calls an **air
     drop** on the moving side's move: it lands at the end of the exchange as a dump, a d6
     direction and 0 to 2 hexes off the mark (kept on the map).
 - **In set-up** **Ammunition** sets a unit full, low or out, and **Resupply** fills it at once.
@@ -1967,12 +1968,12 @@ when it is wider than a hex).
   outside it count as guarding it. An objective the GM marks by hand has the commander's own
   radius, 1 hex. The enemy commander then takes
 it or holds it, as under [The enemy commander](#the-enemy-commander); the GM can move or
-clear it with **Clicking the map**. Thirty-five battlefields have one: Point 593 at
+clear it with **Clicking the map**. Thirty-six battlefields have one: Point 593 at
 Cassino, Castle Hill in the town, the crests of Hills 875, 861A, 931 and 937, Pork Chop,
 Fox Hill, Hill 504 at Kapyong, G Company's hill at Chipyong-ni, Darwin Hill, the Iraqi position behind the rise at 73 Easting, the station
 at Grozny, the provincial headquarters at Hue, the crash site in Mogadishu, Observation
 Post Topside at Wanat, Combat Outpost Keating, X-Ray's landing zone, the saddle at Osan
-and on Bougainville, the railway bridge at Mons, the saddle of the Babuna pass, the English position between Crécy and Wadicourt, the Portuguese position at São Jorge (Aljubarrota), the imperial guns and camp at Dornach, the castle at Jacob's Ford, Henry Hill, the Redan's salient (on both of its battlefields), the British guns at Lundy's
+and on Bougainville, the railway bridge at Mons, the German front line at Y Ravine (Beaumont-Hamel), the saddle of the Babuna pass, the English position between Crécy and Wadicourt, the Portuguese position at São Jorge (Aljubarrota), the imperial guns and camp at Dornach, the castle at Jacob's Ford, Henry Hill, the Redan's salient (on both of its battlefields), the British guns at Lundy's
 Lane, the windmill battery at Lützen, the heights at Albuera, the edge of Cisterna and the
 wagon-box corral. The open-field battles (Agincourt, Towton, Visby, Cowpens), the ambush
 on Lodge Trail Ridge, the Jolan at Fallujah and the unfinished wall at Sidon have none:
@@ -2021,6 +2022,9 @@ where they are not plain.
 - **Aljubarrota** (from about 18:00): the vanguards meet (16); Juan I's main battle comes up
   and the Master of Alcántara's ginetes ride round to the baggage (31); sunset (51) and moonlight
   (76). Which way the ginetes went is our reading.
+- **Beaumont-Hamel** (from zero, 07:30 BEF time): the second wave (6); the white rockets (31);
+  the order to the 88th Brigade (76, 08:45); the Newfoundlanders go over (106, 09:15); Hadow
+  reports failure (136); the Essex (146, 09:55 by the Museum, 10:50 by Veterans Affairs).
 - **Mons** (from 09:00): a renewed attack through the woods (31); the attack in force (121);
   the Fusiliers withdraw (251). Which German battalion came in when is our reading.
 - **The Babuna pass** (from dawn, about 06:30, a day of our reading): up the spurs (61); the
@@ -2502,6 +2506,42 @@ the canal salient at Nimy.
 - The wound tables are the First World War's.
 
 It is drawn by `tools/maps/make_mons_field.mjs`.
+
+**Beaumont-Hamel, 1 July 1916** (`data/fields/beaumont-hamel-1916.yaml`). The field is 80 × 116
+hexes, about 870 yards (800 m) north to south and 1,100 yards (1,000 m) east to west, with EAST at
+the top: the ground of the Newfoundland Memorial Park.
+- St John's Road, the support trench, runs across the bottom; the British front line stands on
+  the crest about 230 m beyond it, with its wire in front and a lane cut every 80 m. No man's land
+  falls about 400 m to the German wire (three belts, a few shell gaps) and the German front system,
+  three trenches deep with dugouts every 46 m. Y Ravine runs up from the German front line on the
+  left (north), forking at its foot, with dugouts in its sides. The Danger Tree stands halfway
+  across.
+- Fair and calm, the ground dry; the sun is up from 04:43.
+- British, all in Brodie helmets in extended order: the 87th Brigade's first wave (2nd South Wales
+  Borderers on the left, opposite Y Ravine; the 1st Inniskillings, 952 strong by their war diary,
+  on the right) at zero, and its second wave (1st Border, 1st KOSB) five minutes later; the 1st
+  Newfoundland Regiment (780, by Nicholson: A and B Companies in front, C and D behind) from St
+  John's Road at 09:15; and two companies of the 1st Essex on their right at 09:55.
+- German: two companies of RIR 119 in the front trench, three pairs of machine guns (at the head
+  of Y Ravine, in the second trench, and on the right firing across), a company in Y Ravine and
+  another in the third trench, all dug in; twelve field guns and four howitzers on call for the
+  barrage on the British trenches. The British barrage lifted at zero and is not on call.
+- The Germans hold where they stand (data/orders.yaml).
+- The wound tables are the First World War's.
+
+How it is drawn: the lines, the slope and the ravine to the distances the sources give, not
+traced from a trench map. RIR 119's companies and machine guns here, and the British battalions'
+strengths but the Inniskillings' and the Newfoundlanders', are not known and are ours, with round
+numbers; whether RIR 119 wore steel helmets on 1 July is not known (it wears none here). No man's
+land plays as open ground, not slope: the rules count height in steps, and a slope hex would hide
+the forward slope from the German line. RIR 119's ammunition is in its dugouts (supply dumps the
+battlefield places), or its machine guns fall silent within twenty minutes. In self-play the
+Germans hold (3 of 3 runs, seeds 1 to 3), but the British lose about 14% of their men to the
+Germans' 6%, where the Newfoundlanders lost 88% and the 87th Brigade's battalions more than half:
+the first wave goes to ground in no man's land and the Germans go on firing at it, the nearest
+target, while it screens the waves behind (no unit shoots through another, even one lying down),
+so the Newfoundlanders cross almost untouched.
+It is drawn by `tools/maps/make_beaumont_field.mjs`.
 
 **The Babuna pass, November 1915** (`data/fields/babuna-1915.yaml`). The field is 130 × 110
 hexes, about 1,420 yards (1,300 m) east to west and 1,040 yards (950 m) north to south, north
