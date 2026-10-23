@@ -45,7 +45,7 @@ function ground(c, r){
 const grid = groundGrid(COLS, ROWS, ground);
 
 // ---------- the trenches, the wire, the dugouts ----------
-const line = (base, a, skip) => Array.from({ length: COLS }, (_, c) => [c, TRENCH(base, c, a)]).filter(h => !inRavine(h[0], h[1]) && !(skip && skip(h)));
+const line = (base, a, skip) => Array.from({ length: COLS }, (_, c) => [c, TRENCH(base, c, a)]).filter(h => !inRavine(h[0], h[1]) && !skip?.(h));
 const stJohns = line(ST_JOHNS, 0.3), britFront = line(BRIT, 1.7);
 const assembly = line(BRIT + 11, 2.5);                                    // the assembly and support trenches between (our drawing)
 const gerFront = line(GER, 0.9), gerSecond = line(GER - 9, 2.2), gerThird = line(GER - 18, 0.4);

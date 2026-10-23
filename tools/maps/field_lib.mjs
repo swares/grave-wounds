@@ -67,7 +67,8 @@ const yq = s => JSON.stringify(s);
 const unitLine = u => `  - {name: ${yq(u.name)}, side: ${u.side}, men: ${u.men}, quality: ${u.quality}, weapon: ${u.weapon}, kit: ${u.kit}, formation: ${u.formation}, width: ${u.width}, pos: [${u.pos.join(", ")}], facing: ${u.facing}${u.mounted ? ", mounted: true" : ""}${u.guns ? ", guns: " + u.guns : ""}${u.prone ? ", prone: true" : ""}${u.lands === undefined ? "" : ", lands: " + u.lands}${u.vehicle ? ", vehicle: " + u.vehicle : ""}${u.fixed ? ", fixed: [" + u.fixed.join(", ") + "]" : ""}${u.via ? ", via: [" + u.via.map(h => "[" + h.join(", ") + "]").join(", ") + "]" : ""}${u.nv ? ", nv: " + u.nv : ""}${u.fc ? ", fc: " + u.fc : ""}${u.armour ? ", armour: " + u.armour : ""}${u.fac ? ", fac: true" : ""}${u.ladders ? ", ladders: true" : ""}${u.type ? ", type: " + u.type : ""}${u.size ? ", size: " + u.size : ""}}`;
 function dumpsLine(ds){                          // the supply dumps' line (and its comment), or ""
   if (!ds?.length) return "";
-  return `\n# Supply dumps placed before the battle (side 0 or 1): its units within ammunition.reach of one can resupply there.\ndumps: [${ds.map(m => `{at: [${m.at.join(", ")}], side: ${m.side}}`).join(", ")}]`;
+  const one = m => "{at: [" + m.at.join(", ") + "], side: " + m.side + "}";
+  return `\n# Supply dumps placed before the battle (side 0 or 1): its units within ammunition.reach of one can resupply there.\ndumps: [${ds.map(one).join(", ")}]`;
 }
 function objLine(o){                              // the objective's line (and its comment), or ""
   if (!o) return "";
