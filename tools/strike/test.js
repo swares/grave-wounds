@@ -1,9 +1,10 @@
 // The strike's rules (templates/strike.js) and the event log (templates/gamelog.js), run with no page.
-//   node tools/strike/test.js <data.json> [cases.json]
-// data.json is the roller's data bundle (dist/gravewounds-data.json, or tools/strike/parity.py's).
-// cases.json, from parity.py, holds strikes played through gravewounds.engine.roll_hit: each is
-// played here on the same dice and must give the same wound. Then the unit tests: the attack phase,
-// the player's own dice, determinism with seeded dice, and who sees what in the log.
+//   node tools/strike/test.js                (the unit tests, on dist/gravewounds-data.json)
+//   python3 tools/strike/parity.py [n] [seed] (writes .cache/ and runs this with STRIKE_PARITY=1)
+// With STRIKE_PARITY=1 it reads parity.py's bundle and cases from .cache/: strikes played through
+// gravewounds.engine.roll_hit, each played here on the same dice, which must give the same wound.
+// Then the unit tests: the attack phase, the player's own dice, determinism with seeded dice, and
+// who sees what in the log.
 "use strict";
 const fs = require("node:fs");
 const path = require("node:path");
@@ -13,12 +14,11 @@ const ROOT = path.resolve(__dirname, "..", "..");
 const { makeStrike } = require("../../templates/strike.js");
 const G = require("../../templates/gamelog.js");
 
-function repoFile(arg, fallback){                   // a file named on the command line, which must be inside the repository
-  const p = path.resolve(arg || fallback);
-  if (!p.startsWith(ROOT + path.sep) || !p.endsWith(".json")) throw new Error("the data and cases files must be .json files inside the repository");
-  return JSON.parse(fs.readFileSync(p, "utf8"));
-}
-const DATA = repoFile(process.argv[2], path.join(ROOT, "dist", "gravewounds-data.json"));
+// The files are fixed: parity.py's bundle and cases when it has written them, else the built bundle (no cases).
+const CACHE = path.join(__dirname, ".cache");
+const readJson = p => JSON.parse(fs.readFileSync(p, "utf8"));
+const parityRun = fs.existsSync(path.join(CACHE, "cases.json")) && process.env.STRIKE_PARITY === "1";
+const DATA = readJson(parityRun ? path.join(CACHE, "data.json") : path.join(ROOT, "dist", "gravewounds-data.json"));
 const S = makeStrike(DATA);
 
 let failed = 0, passed = 0;
@@ -37,8 +37,8 @@ const ctxOf = c => ({ table: c.table, ltable: c.ltable, weapon: c.weapon, mods: 
   armor: c.kit, evidence: c.evidence, rc: { range: null }, freeHit: false, attacker: null, defender: null });
 
 /* ----- the wound, against Python's roll_hit ----- */
-if (process.argv[3]){
-  const cases = repoFile(process.argv[3]);
+if (parityRun){
+  const cases = readJson(path.join(CACHE, "cases.json"));
   let same = 0;
   cases.forEach((c, i) => check(`parity case ${i} (${c.table}, ${c.weapon}, ${c.kit})`, () => {
     const dice = scripted(c.dice);

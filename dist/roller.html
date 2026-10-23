@@ -1455,6 +1455,25 @@ function strikeDice(cmd, dice){                     // the dice a strike takes: 
   return { used, take };
 }
 
+function misfire(rc, take, effects, freeHit){     // wet priming: the shot is lost (text), or null
+  const mf = rc.range ? rc.range.misfire : 0;
+  if (!mf) return null;
+  const mr = take("misfire", 100);
+  if (mr > mf) return null;
+  if (freeHit) effects.free = "misfire";
+  return `Misfire: d100 ${strikeD2(mr)} against ${mf}% — the wet weather spoiled the priming. The shot is lost.`;
+}
+function strayShot(range, take){                  // after a miss: does the shot go into the first man in the way?
+  if (!range?.stray || !(range.way || []).length) return null;
+  const roll = take("stray", 100);
+  return { id: range.way[0], roll, chance: range.stray, hit: roll <= range.stray };
+}
+
+function coverDigit(att, take){                    // the attack roll's units digit (0 is 10), else a d10 (as gravewounds.engine.cover_digit)
+  const fromAtk = att.roll !== null && att.roll !== undefined;
+  return { digit: fromAtk ? (att.roll % 10 || 10) : take("cover", 10), fromAtk };
+}
+
 function makeStrike(DATA){
   const CMB = DATA.combat, MATS = DATA.armor.materials;
   const LOC = Object.fromEntries(DATA.locations.map(l => [l.id, l]));
@@ -1496,19 +1515,6 @@ function makeStrike(DATA){
     if (A.flags.includes("cannot_wield") && w.melee !== "unarmed") return `${att.name} cannot hold a weapon in either hand.`;
     if (A.flags.includes("one_arm") && w.two_handed) return `${att.name} cannot use the ${strikeLowerName(w.short || w.name)} with an arm hurt (it takes both hands): defend only.`;
     return null;
-  }
-  function misfire(rc, take, effects, freeHit){     // wet priming: the shot is lost (text), or null
-    const mf = rc.range ? rc.range.misfire : 0;
-    if (!mf) return null;
-    const mr = take("misfire", 100);
-    if (mr > mf) return null;
-    if (freeHit) effects.free = "misfire";
-    return `Misfire: d100 ${strikeD2(mr)} against ${mf}% — the wet weather spoiled the priming. The shot is lost.`;
-  }
-  function strayShot(range, take){                  // after a miss: does the shot go into the first man in the way?
-    if (!range?.stray || !(range.way || []).length) return null;
-    const roll = take("stray", 100);
-    return { id: range.way[0], roll, chance: range.stray, hit: roll <= range.stray };
   }
 
   // The attack and the defence: {end} if no wound follows, else {margin, crit, combat, roll}.
@@ -1555,10 +1561,6 @@ function makeStrike(DATA){
       return { sev: sevTiers(mech, zone, ctx.weapon).find(x => rs >= x.d100[0] && rs <= x.d100[1]).id, rs };
     }
     return { sev: marginSeverity(plan.left, att.crit, ctx.weapon, zone), rs: null };
-  }
-  function coverDigit(att, take){                    // the attack roll's units digit (0 is 10), else a d10 (as gravewounds.engine.cover_digit)
-    const fromAtk = att.roll !== null && att.roll !== undefined;
-    return { digit: fromAtk ? (att.roll % 10 || 10) : take("cover", 10), fromAtk };
   }
   function armourOn(armour, sev, mech, att, take, wid){   // {armor, final}: the armour on the place hit lowers the severity
     const { layers, whole, gapped } = armour;
@@ -2993,7 +2995,7 @@ const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
 function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,events:S.events,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone})) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
-function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); if (!Array.isArray(S.events)) S.events = []; return true } }catch(e){ /* storage off or a damaged save: a fresh fight starts */ } return false }
+function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if (j?.chars?.length){ Object.assign(S, j); if (!Array.isArray(S.events)) S.events = []; return true } }catch(e){ /* storage off or a damaged save: a fresh fight starts */ } return false }
 
 /* ---------- body figure ---------- */
 const C = 90;
@@ -3068,25 +3070,30 @@ function strikeCommand(stray){                    // what the player declares, a
   return { stray, atk: stray ? null : readPct("#in-atk"), def: readPct("#in-def"), aim: S.aim || "", gap: !!S.gap,
     blow: S.blow || "", sev: $("#sel-sev").value, rolls };
 }
+function strikeEffects(fx, a, dd){                // what the strike did to the fighters, in the order the rules take it
+  if (fx.closeIn) closeIn();
+  if (fx.xp === "hit") xpHit(a, a?.sheet?.skill_by?.[S.weapon] ?? null, "a hit in a fight");
+  if (fx.xp === "defended") xpHit(dd, dd?.sheet?.defence_by ?? null, "a parry or dodge in a fight");
+  if (fx.free) freeDone(fx.free);
+}
+function showStrike(h){                           // the result panel, figure and table after a strike
+  const wound = !(h.blocked || h.miss || h.defended);
+  const typed = wound ? ["#in-loc", "#in-mech", "#in-sev", "#in-atk-roll", "#in-def-roll"] : ["#in-atk-roll", "#in-def-roll"];
+  typed.forEach(id => { $(id).value = "" });
+  renderResult();
+  if (wound){
+    shadeFigure(); renderTable();
+    if (S.chars.length) renderMap();             // the map's bar shows the last roll
+  } else if (S.chars.length) renderChars();
+  else { shadeFigure(); renderTable() }
+}
 function rollHit(stray = false, log = true){      // stray: a missed shot gone into a man in the way; no attack roll, severity rolled
   const ctx = strikeContext(), cmd = strikeCommand(stray), a = attackerChar(), dd = defenderChar();
-  const r = STRIKE.resolveStrike(ctx, cmd, DICE), h = r.hit;
-  if (r.effects.closeIn) closeIn();               // what the strike did to the fighters, in the order the rules take it
-  if (r.effects.xp === "hit") xpHit(a, a && a.sheet && a.sheet.skill_by ? a.sheet.skill_by[S.weapon] : null, "a hit in a fight");
-  if (r.effects.xp === "defended") xpHit(dd, dd && dd.sheet ? dd.sheet.defence_by : null, "a parry or dodge in a fight");
-  if (r.effects.free) freeDone(r.effects.free);
-  S.hit = h;
+  const r = STRIKE.resolveStrike(ctx, cmd, DICE);
+  strikeEffects(r.effects, a, dd);
+  S.hit = r.hit;
   if (log) logStrike(a, dd, cmd, r);
-  const wound = !(h.blocked || h.miss || h.defended);
-  (wound ? ["#in-loc", "#in-mech", "#in-sev", "#in-atk-roll", "#in-def-roll"] : ["#in-atk-roll", "#in-def-roll"]).forEach(id => $(id).value = "");
-  renderResult();
-  if (!wound){
-    if (S.chars.length) renderChars();
-    else { shadeFigure(); renderTable() }
-    return;
-  }
-  shadeFigure(); renderTable();
-  if (S.chars.length) renderMap();               // the map's bar shows the last roll
+  showStrike(r.hit);
 }
 function toil(c){                                 // a hand-to-hand exchange tires him, by his kit and Strength
   if (!c) return;

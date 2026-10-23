@@ -11,6 +11,7 @@ event log. Needs Python 3 with PyYAML and Node; exits non-zero on any difference
 from __future__ import annotations
 
 import json
+import os
 import random
 import subprocess
 import sys
@@ -119,7 +120,8 @@ def main(argv) -> int:
     CACHE.mkdir(exist_ok=True)
     (CACHE / "data.json").write_text(json.dumps(b), encoding="utf-8")
     (CACHE / "cases.json").write_text(json.dumps(cases(d, b, n, seed)), encoding="utf-8")
-    return subprocess.call(["node", str(Path(__file__).parent / "test.js"), str(CACHE / "data.json"), str(CACHE / "cases.json")])
+    env = {**os.environ, "STRIKE_PARITY": "1"}           # test.js reads the bundle and cases just written to .cache/
+    return subprocess.call(["node", str(Path(__file__).parent / "test.js")], env=env)
 
 
 if __name__ == "__main__":

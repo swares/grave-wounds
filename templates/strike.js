@@ -38,6 +38,25 @@ function strikeDice(cmd, dice){                     // the dice a strike takes: 
   return { used, take };
 }
 
+function misfire(rc, take, effects, freeHit){     // wet priming: the shot is lost (text), or null
+  const mf = rc.range ? rc.range.misfire : 0;
+  if (!mf) return null;
+  const mr = take("misfire", 100);
+  if (mr > mf) return null;
+  if (freeHit) effects.free = "misfire";
+  return `Misfire: d100 ${strikeD2(mr)} against ${mf}% — the wet weather spoiled the priming. The shot is lost.`;
+}
+function strayShot(range, take){                  // after a miss: does the shot go into the first man in the way?
+  if (!range?.stray || !(range.way || []).length) return null;
+  const roll = take("stray", 100);
+  return { id: range.way[0], roll, chance: range.stray, hit: roll <= range.stray };
+}
+
+function coverDigit(att, take){                    // the attack roll's units digit (0 is 10), else a d10 (as gravewounds.engine.cover_digit)
+  const fromAtk = att.roll !== null && att.roll !== undefined;
+  return { digit: fromAtk ? (att.roll % 10 || 10) : take("cover", 10), fromAtk };
+}
+
 function makeStrike(DATA){
   const CMB = DATA.combat, MATS = DATA.armor.materials;
   const LOC = Object.fromEntries(DATA.locations.map(l => [l.id, l]));
@@ -79,19 +98,6 @@ function makeStrike(DATA){
     if (A.flags.includes("cannot_wield") && w.melee !== "unarmed") return `${att.name} cannot hold a weapon in either hand.`;
     if (A.flags.includes("one_arm") && w.two_handed) return `${att.name} cannot use the ${strikeLowerName(w.short || w.name)} with an arm hurt (it takes both hands): defend only.`;
     return null;
-  }
-  function misfire(rc, take, effects, freeHit){     // wet priming: the shot is lost (text), or null
-    const mf = rc.range ? rc.range.misfire : 0;
-    if (!mf) return null;
-    const mr = take("misfire", 100);
-    if (mr > mf) return null;
-    if (freeHit) effects.free = "misfire";
-    return `Misfire: d100 ${strikeD2(mr)} against ${mf}% — the wet weather spoiled the priming. The shot is lost.`;
-  }
-  function strayShot(range, take){                  // after a miss: does the shot go into the first man in the way?
-    if (!range?.stray || !(range.way || []).length) return null;
-    const roll = take("stray", 100);
-    return { id: range.way[0], roll, chance: range.stray, hit: roll <= range.stray };
   }
 
   // The attack and the defence: {end} if no wound follows, else {margin, crit, combat, roll}.
@@ -138,10 +144,6 @@ function makeStrike(DATA){
       return { sev: sevTiers(mech, zone, ctx.weapon).find(x => rs >= x.d100[0] && rs <= x.d100[1]).id, rs };
     }
     return { sev: marginSeverity(plan.left, att.crit, ctx.weapon, zone), rs: null };
-  }
-  function coverDigit(att, take){                    // the attack roll's units digit (0 is 10), else a d10 (as gravewounds.engine.cover_digit)
-    const fromAtk = att.roll !== null && att.roll !== undefined;
-    return { digit: fromAtk ? (att.roll % 10 || 10) : take("cover", 10), fromAtk };
   }
   function armourOn(armour, sev, mech, att, take, wid){   // {armor, final}: the armour on the place hit lowers the severity
     const { layers, whole, gapped } = armour;
