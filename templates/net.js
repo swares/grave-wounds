@@ -10,7 +10,7 @@
    net section), the player sends his choices. Messages are cut into pieces the channel carries.
    NET.packCode / NET.unpackCode turn a session description into a short code and back (deflated,
    then base64url). build.py puts this file into the roller at its NET_JS marker; in Node it is a
-   module (tools/net/test.js tests the codes and the pieces). */
+   module (tools/net/test.mjs tests the codes and the pieces). */
 const NET = (() => {
   const PIECE = 60000;                                   // under the 256 kB a Chromium data channel message may be
   const STUN = [{ urls: "stun:stun.l.google.com:19302" }];

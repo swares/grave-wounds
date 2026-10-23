@@ -1789,18 +1789,18 @@ function netHex(m){                                // a hex on the map from a pl
   return h[0] === null || h[1] === null ? null : h;
 }
 const NET_MAP_ACTS = { stay: () => { S.tm = { ...S.tm, moved: true, steps: 0, ran: false, prev: null } }, cover: () => takeCover(), undo: () => undoMove() };
-const NET_COMMANDS = {                              // each choice a player may send: (may, m, side); each checks it is his to make
-  hex: (may, m) => { const h = may.acting && netHex(m); if (h) moveActing(h) },
-  target: (may, m, side) => { const c = may.acting && S.chars.find(x => x.id === m.id); if (c && sideOf(c) !== side) clickToken(c.id) },
-  map: (may, m) => { if (may.acting && Object.hasOwn(NET_MAP_ACTS, m.act)) NET_MAP_ACTS[m.act]() },
-  next: may => { if (may.acting){ nextFighter(); gmKick() } },
-  skip: may => { if (may.free) freeDone("skipped") },
-  roll: (may, m) => { if (may.roll) netRoll(m) },
-  stray: (may, m, side) => { const mine = S.chars.find(x => x.id === S.hit?.att && sideOf(x) === side); if (S.hit?.stray?.hit && mine) strayHit() },
+const NET_COMMANDS = {                              // each choice a player may send: ({may, m, side}); each checks it is his to make
+  hex: ({ may, m }) => { const h = may.acting && netHex(m); if (h) moveActing(h) },
+  target: ({ may, m, side }) => { const c = may.acting && S.chars.find(x => x.id === m.id); if (c && sideOf(c) !== side) clickToken(c.id) },
+  map: ({ may, m }) => { if (may.acting && Object.hasOwn(NET_MAP_ACTS, m.act)) NET_MAP_ACTS[m.act]() },
+  next: ({ may }) => { if (may.acting){ nextFighter(); gmKick() } },
+  skip: ({ may }) => { if (may.free) freeDone("skipped") },
+  roll: ({ may, m }) => { if (may.roll) netRoll(m) },
+  stray: ({ side }) => { const mine = S.chars.find(x => x.id === S.hit?.att && sideOf(x) === side); if (S.hit?.stray?.hit && mine) strayHit() },
 };
 function netCommand(p, m){                          // a player's choice: made only if it is his to make now
   if (!m || typeof m.t !== "string" || !Object.hasOwn(NET_COMMANDS, m.t)) return;
-  NET_COMMANDS[m.t](netSeatTurn(p.seat), m, p.seat.slice(5));
+  NET_COMMANDS[m.t]({ may: netSeatTurn(p.seat), m, side: p.seat.slice(5) });
   renderChars();
 }
 async function netInvite(side){                     // a new invitation for a side's player

@@ -321,7 +321,7 @@ count goes on from there.
     (TURN), so a few strict networks (some offices, some mobile networks) will not connect.
   - A dropped player needs a new invitation (Drop, then Invite again). The GM's page sends whole
     panels (tens of kB at each change), and the player's page shows only what it is sent.
-  - `node tools/net/test.js` tests the codes and the message pieces; `python3 tools/net/twopages.py`
+  - `node tools/net/test.mjs` tests the codes and the message pieces; `python3 tools/net/twopages.py`
     connects a GM's page and a player's page in a headless browser and plays a turn from each.
   - The script's choices are design guesses, not calibrated against any record.
     `python3 tools/gm/selfplay.py` plays it against itself on a spread of tables and checks every
