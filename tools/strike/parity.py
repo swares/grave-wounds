@@ -27,14 +27,30 @@ from gravewounds.model import available_weapons, resolve_table        # noqa: E4
 CACHE = Path(__file__).parent / ".cache"
 
 
+class TestDice:
+    """The test's own randomness: seeded, so a run can be repeated, and never used for anything secret.
+    Every random choice the test makes goes through here."""
+    def __init__(self, seed):
+        self._rng = random.Random(seed)   # NOSONAR: test data that must repeat from its seed, not a security use
+
+    def int(self, a, b):
+        return self._rng.randint(a, b)    # NOSONAR: as above
+
+    def pick(self, items):
+        return items[self.int(0, len(items) - 1)]
+
+    def chance(self, p):
+        return self.int(1, 10000) <= p * 10000
+
+
 class Recorded:
-    """Dice that roll from a seeded source and keep what they gave, in order, for the other side to replay."""
-    def __init__(self, rng):
-        self.rng, self.taken = rng, []
+    """Dice that roll from the test's dice and keep what they gave, in order, for the JavaScript to replay."""
+    def __init__(self, source):
+        self.source, self.taken = source, []
 
     def randint(self, a, b):
-        v = self.rng.randint(a, b)
-        self.taken.append([a, b, v])
+        v = self.source.int(a, b)
+        self.taken.append(v)
         return v
 
 
@@ -45,45 +61,53 @@ def attack(js_combat, atk_pct, roll):
     return hit, (eff - roll) if hit else None, hit and roll <= int(eff * js_combat["critical_fraction"])
 
 
+def declared(d, b, td):
+    """A random strike as the page would declare it: table, weapon, armour, aim, gap and a chosen blow."""
+    tid = td.pick(list(d.tables))
+    wid = td.pick(available_weapons(d, tid))
+    ltid = resolve_table(d, tid, wid)
+    armour_ok = b["tables"][ltid]["armor"] == "allowed"
+    w = d.weapons[wid]
+    blows = [m for m, v in w["mechanisms"].items() if v]
+    return {
+        "table": tid, "ltable": ltid, "weapon": wid, "evidence": not armour_ok,
+        "kit": td.pick(list(d.armor["kits"])) if armour_ok and td.chance(0.8) else None,
+        "aim": td.pick(list(d.zones)) if td.chance(0.35) else None,
+        "gap": td.chance(0.3),
+        "blow": td.pick(blows) if w.get("choose") and td.chance(0.5) else None,
+    }
+
+
+def attack_and_severity(b, td):
+    """An attack roll that hits (so the margin decides the severity), or none, perhaps with the GM's pick."""
+    out = {"atk": None, "atkRoll": None, "margin": None, "critical": False, "sev": None}
+    if td.chance(0.7):
+        out["atk"] = td.int(20, 95)
+        out["atkRoll"] = td.int(1, out["atk"])
+        _, out["margin"], out["critical"] = attack(b["combat"], out["atk"], out["atkRoll"])
+    elif td.chance(0.2):
+        out["sev"] = td.pick(["light", "serious", "critical"])
+    return out
+
+
+def py_result(py):
+    armour = py["armor"] and {k: py["armor"][k] for k in ("material", "cover_roll", "covered", "gap_aimed", "steps", "from", "to")}
+    return {"loc": py["location"], "mech": py["mechanism"], "sev": py["severity"], "graze": py["graze"],
+            "fx": py["effects"], "aim": py["aim"], "rolls": py["rolls"], "armor": armour}
+
+
 def cases(d, b, n, seed):
-    rng = random.Random(seed)
-    tables = list(d.tables)
-    kits = list(d.armor["kits"])
-    zones = list(d.zones)
-    out = []
-    while len(out) < n:
-        tid = rng.choice(tables)
-        wid = rng.choice(available_weapons(d, tid))
-        ltid = resolve_table(d, tid, wid)
-        armour_ok = b["tables"][ltid]["armor"] == "allowed"
-        kit = rng.choice(kits) if armour_ok and rng.random() < 0.8 else None
-        aim = rng.choice(zones) if rng.random() < 0.35 else None
-        gap = rng.random() < 0.3
-        w = d.weapons[wid]
-        blows = [m for m, v in w["mechanisms"].items() if v]
-        blow = rng.choice(blows) if w.get("choose") and rng.random() < 0.5 else None
-        atk_pct = atk_roll = None
-        margin, critical = None, False
-        if rng.random() < 0.7:                          # an attack roll that hits, so the margin decides
-            atk_pct = rng.randint(20, 95)
-            atk_roll = rng.randint(1, atk_pct)
-            _, margin, critical = attack(b["combat"], atk_pct, atk_roll)
-        sev_pick = None
-        if margin is None and rng.random() < 0.2:      # the GM picks the severity
-            sev_pick = rng.choice(["light", "serious", "critical"])
-        dz = Recorded(random.Random(rng.random()))
-        py = roll_hit(d, tid, wid, severity=sev_pick, rng=dz, aim=aim, kit=kit, margin=margin, critical=critical,
-                      mechanism=blow, attack_roll=atk_roll, gap=gap)
-        out.append({
-            "table": tid, "ltable": ltid, "weapon": wid, "kit": kit or "none", "evidence": not armour_ok,
-            "aim": aim or "", "gap": gap, "blow": blow or "", "atk": atk_pct, "atkRoll": atk_roll, "sev": sev_pick or "roll",
-            "ranges": table_ranges(d, tid, wid),
-            "aimRanges": aimed_ranges(d, tid, wid, aim) if aim else None,
-            "dice": [v for _, _, v in dz.taken],
-            "py": {"loc": py["location"], "mech": py["mechanism"], "sev": py["severity"], "graze": py["graze"],
-                   "fx": py["effects"], "aim": py["aim"], "rolls": py["rolls"],
-                   "armor": py["armor"] and {k: py["armor"][k] for k in ("material", "cover_roll", "covered", "gap_aimed", "steps", "from", "to")}},
-        })
+    td, out = TestDice(seed), []
+    for _ in range(n):
+        c, a = declared(d, b, td), attack_and_severity(b, td)
+        dz = Recorded(td)
+        py = roll_hit(d, c["table"], c["weapon"], severity=a["sev"], rng=dz, aim=c["aim"], kit=c["kit"], margin=a["margin"],
+                      critical=a["critical"], mechanism=c["blow"], attack_roll=a["atkRoll"], gap=c["gap"])
+        out.append({**c, "kit": c["kit"] or "none", "aim": c["aim"] or "", "blow": c["blow"] or "",
+                    "atk": a["atk"], "atkRoll": a["atkRoll"], "sev": a["sev"] or "roll",
+                    "ranges": table_ranges(d, c["table"], c["weapon"]),
+                    "aimRanges": aimed_ranges(d, c["table"], c["weapon"], c["aim"]) if c["aim"] else None,
+                    "dice": dz.taken, "py": py_result(py)})
     return out
 
 

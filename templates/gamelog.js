@@ -11,13 +11,13 @@
    its slice, so a player never holds what he is not meant to see.
 
    The log is kept with the fight in the browser, the last LOG_KEEP events. build.py puts this file
-   into the roller at its GAMELOG_JS marker; tools/strike_test.js loads it in Node. */
+   into the roller at its GAMELOG_JS marker; in Node it is a module. */
 const LOG_KEEP = 500;
 const GM_SEAT = "gm";
 const sideSeat = side => `side:${side}`;
 
 function logEvent(log, ev){                      // append an event, numbered after the last; -> the event
-  const last = log.length ? log[log.length - 1].n : 0;
+  const last = log.length ? log.at(-1).n : 0;
   const e = { n: last + 1, round: ev.round ?? null, type: ev.type, vis: ev.vis || "public", data: ev.data || {}, pub: ev.pub ?? null };
   log.push(e);
   if (log.length > LOG_KEEP) log.splice(0, log.length - LOG_KEEP);
@@ -37,3 +37,5 @@ function viewFor(log, seat){                     // the events as one seat sees 
 function seatsIn(sides){                         // the seats at the table: the GM, then a seat per side
   return [GM_SEAT, ...[...new Set(sides)].map(sideSeat)];
 }
+
+if (typeof module !== "undefined") module.exports = { LOG_KEEP, GM_SEAT, sideSeat, logEvent, canSee, viewFor, seatsIn };   // Node (the tests)

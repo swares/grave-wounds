@@ -9,10 +9,17 @@ const fs = require("node:fs");
 const path = require("node:path");
 const assert = require("node:assert/strict");
 
-const TPL = path.join(__dirname, "..", "..", "templates");
-const DATA = JSON.parse(fs.readFileSync(process.argv[2] || path.join(__dirname, "..", "..", "dist", "gravewounds-data.json"), "utf8"));
-const S = new Function("DATA", fs.readFileSync(path.join(TPL, "strike.js"), "utf8") + "\nreturn makeStrike(DATA);")(DATA);
-const G = new Function(fs.readFileSync(path.join(TPL, "gamelog.js"), "utf8") + "\nreturn { logEvent, canSee, viewFor, seatsIn, GM_SEAT, sideSeat, LOG_KEEP };")();
+const ROOT = path.resolve(__dirname, "..", "..");
+const { makeStrike } = require("../../templates/strike.js");
+const G = require("../../templates/gamelog.js");
+
+function repoFile(arg, fallback){                   // a file named on the command line, which must be inside the repository
+  const p = path.resolve(arg || fallback);
+  if (!p.startsWith(ROOT + path.sep) || !p.endsWith(".json")) throw new Error("the data and cases files must be .json files inside the repository");
+  return JSON.parse(fs.readFileSync(p, "utf8"));
+}
+const DATA = repoFile(process.argv[2], path.join(ROOT, "dist", "gravewounds-data.json"));
+const S = makeStrike(DATA);
 
 let failed = 0, passed = 0;
 function check(name, fn){
@@ -30,9 +37,8 @@ const ctxOf = c => ({ table: c.table, ltable: c.ltable, weapon: c.weapon, mods: 
   armor: c.kit, evidence: c.evidence, rc: { range: null }, freeHit: false, attacker: null, defender: null });
 
 /* ----- the wound, against Python's roll_hit ----- */
-const casesFile = process.argv[3];
-if (casesFile){
-  const cases = JSON.parse(fs.readFileSync(casesFile, "utf8"));
+if (process.argv[3]){
+  const cases = repoFile(process.argv[3]);
   let same = 0;
   cases.forEach((c, i) => check(`parity case ${i} (${c.table}, ${c.weapon}, ${c.kit})`, () => {
     const dice = scripted(c.dice);
@@ -52,14 +58,13 @@ if (casesFile){
     } else assert.equal(h.armor, null, "no armour");
     same++;
   }));
-  console.log(`parity: ${same} of ${cases.length} strikes give the same wound as gravewounds.engine.roll_hit`);
+  console.log(`parity: ${same} strikes give the same wound as gravewounds.engine.roll_hit`);
 }
 
 /* ----- the attack phase ----- */
 const tid = Object.keys(DATA.tables).find(t => DATA.tables[t].weapons.includes("sword") && DATA.tables[t].resolve.sword === undefined) || Object.keys(DATA.tables)[0];
 const base = { table: tid, ltable: tid, weapon: "sword", mods: [], ranges: [{ id: DATA.locations[0].id, pct: 100, lo: 1, hi: 100 }], aimRanges: null,
   armor: "none", evidence: true, rc: { range: null }, freeHit: false, attacker: null, defender: null };
-const sword = DATA.weapons.sword;
 
 check("a miss ends the strike, with no wound dice", () => {
   const d = scripted([]);
@@ -111,7 +116,7 @@ check("a miss with a man in the way rolls the stray shot", () => {
   assert.deepEqual(r.hit.stray, { id: 7, roll: 20, chance: 25, hit: true });
 });
 check("the player's own dice are used and marked; the rest are rolled", () => {
-  const r = S.resolveStrike(base, { atk: 70, rolls: { atk: 33, loc: 50 } }, scripted(sword.choose ? [40] : [40]));
+  const r = S.resolveStrike(base, { atk: 70, rolls: { atk: 33, loc: 50 } }, scripted([40]));
   const by = Object.fromEntries(r.dice.map(x => [x.name, x.by]));
   assert.equal(by.atk, "player");
   assert.equal(by.loc, "player");
@@ -127,7 +132,7 @@ check("the same seed gives the same strike", () => {
   assert.deepEqual(a, b);
 });
 check("the strike changes neither its situation nor its command", () => {
-  const ctx = JSON.parse(JSON.stringify(base)), cmd = { atk: 55, def: 30, rolls: { atk: 20 } };
+  const ctx = structuredClone(base), cmd = { atk: 55, def: 30, rolls: { atk: 20 } };
   const before = JSON.stringify([ctx, cmd]);
   S.resolveStrike(ctx, cmd, seeded(3));
   assert.equal(JSON.stringify([ctx, cmd]), before);
@@ -139,7 +144,7 @@ check("events are numbered in order and kept to LOG_KEEP", () => {
   for (let i = 0; i < G.LOG_KEEP + 5; i++) G.logEvent(log, { type: "strike", data: { i } });
   assert.equal(log.length, G.LOG_KEEP);
   assert.equal(log[0].n, 6);
-  assert.equal(log[log.length - 1].n, G.LOG_KEEP + 5);
+  assert.equal(log.at(-1).n, G.LOG_KEEP + 5);
 });
 check("the GM sees everything; a side sees its own in full and the rest's public part", () => {
   const log = [], y = G.sideSeat("Yorkists"), l = G.sideSeat("Lancastrians");

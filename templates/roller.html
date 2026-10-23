@@ -396,7 +396,7 @@ const shortName = w => DATA.weapons[w].short || DATA.weapons[w].name.split(" (")
 /*__STRIKE_JS__*/
 /*__GAMELOG_JS__*/
 const STRIKE = makeStrike(DATA);
-const { attackRoll, defenceRoll, marginSeverity, armorAt, armorSteps, sevTiers, grazeFx, isGraze, cannotAttack } = STRIKE;
+const { attackRoll, marginSeverity, armorAt, armorSteps, sevTiers, isGraze, cannotAttack } = STRIKE;   // defenceRoll and grazeFx need no data: strike.js defines them outright
 
 const S = { table: null, weapon: null, hit: null, events: [], chars: [], active: 0, attacker: -1, seq: 1, mods: new Set(), aim: "", gap: false, armor: "none", round: 1, log: [], turn: null, broken: {}, pending: [], works: { edges: {}, hexes: {} }, ground: { kinds: {}, levels: {} }, weather: { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } };
 const CMB = DATA.combat;
@@ -1244,8 +1244,8 @@ function figRanges(){ return (S.aim && aimedRanges(S.weapon, S.aim)) || curRange
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,events:S.events,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone})) }catch(e){} }
-function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); if (!Array.isArray(S.events)) S.events = []; return true } }catch(e){} return false }
+function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,events:S.events,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone})) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
+function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); if (!Array.isArray(S.events)) S.events = []; return true } }catch(e){ /* storage off or a damaged save: a fresh fight starts */ } return false }
 
 /* ---------- body figure ---------- */
 const C = 90;
@@ -1365,14 +1365,19 @@ function riseToStrike(){                          // a man in cover rises to str
 const evWho = c => c ? { id: c.id, name: c.name, side: sideOf(c) } : null;
 const evRound = () => (S.chars.length ? S.round : null);
 function strikeOutcome(h){
-  return h.blocked ? "blocked" : h.miss ? "miss" : h.defended ? "parried or dodged" : h.sev === "stopped" ? "stopped by armour" : h.graze ? "graze" : "wound";
+  if (h.blocked) return "blocked";
+  if (h.miss) return "miss";
+  if (h.defended) return "parried or dodged";
+  if (h.sev === "stopped") return "stopped by armour";
+  return h.graze ? "graze" : "wound";
 }
 function logStrike(a, dd, cmd, r){                // the whole strike for the GM and the defender's side; for the rest, what the table saw
   const h = r.hit, outcome = strikeOutcome(h), landed = ["wound", "graze"].includes(outcome);
-  const seen = h.combat ? { atk: h.combat.atk.roll, def: h.combat.def ? h.combat.def.roll : null } : null;
+  const seen = h.combat ? { atk: h.combat.atk.roll, def: h.combat.def?.roll ?? null } : null;
+  const shown = landed || outcome === "stopped by armour";   // where a blow landed is seen, wound or not
   logEvent(S.events, { round: evRound(), type: "strike", vis: dd ? [sideSeat(sideOf(dd))] : "public",
     data: { attacker: evWho(a), defender: evWho(dd), weapon: h.weapon, outcome, cmd, dice: r.dice, hit: h },
-    pub: { attacker: evWho(a), defender: evWho(dd), weapon: h.weapon, outcome: landed ? "hit" : outcome, loc: landed || outcome === "stopped by armour" ? h.loc : null,
+    pub: { attacker: evWho(a), defender: evWho(dd), weapon: h.weapon, outcome: landed ? "hit" : outcome, loc: shown ? h.loc : null,
       seen, aim: cmd.aim || "", gap: cmd.gap, blow: cmd.blow || "", blocked: h.blocked || null, stray: h.stray || null } });
 }
 function logWound(c, h, line, stop){              // a wound applied: its effects and stop check for the GM and his side; the rest see where and whether he fell
@@ -1381,38 +1386,72 @@ function logWound(c, h, line, stop){              // a wound applied: its effect
     data: { who: evWho(c), loc: h.loc, mech: h.mech, sev: h.sev, graze: !!h.graze, fx: h.fx, stop: stop.check ? { ...stop } : null, line: line ? plainText(line) : "", state: st, down },
     pub: { who: evWho(c), loc: h.loc, state: st ? st.id : null, down } });
 }
+const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+const evName = x => (x ? esc(x.name) : "?");
+const evPlace = id => (id ? LOC[id].name.toLowerCase() : "");
+const evDie = x => `${x.name} ${x.sides === 10 ? x.v : d2(x.v)}${x.by === "player" ? "*" : ""}`;
+function strikeHead(d){
+  const who = d.attacker ? evName(d.attacker) : "A blow";
+  const at = d.defender ? " at " + evName(d.defender) : "";
+  return `${who}${at}, ${esc(shortName(d.weapon).toLowerCase())}`;
+}
+function strikeSeenText(d){                       // a strike as the other sides saw it
+  let line = `${strikeHead(d)}: ${d.outcome}`;
+  if (d.loc) line += ", " + evPlace(d.loc);
+  if (d.seen){
+    const def = d.seen.def === null ? "" : ", defence " + d2(d.seen.def);
+    line += ` (attack ${d2(d.seen.atk)}${def})`;
+  }
+  return line;
+}
+function strikeFullText(d){                       // a strike in full: the wound, and every die
+  const h = d.hit;
+  let line = `${strikeHead(d)}: ${d.outcome}`;
+  if (h.loc){
+    const sev = h.sev === "stopped" ? "stopped" : sevLabel(h.sev).toLowerCase();
+    line += ` — ${evPlace(h.loc)}, ${sev}${h.graze ? " graze" : ""}, ${DATA.mechanisms[h.mech].name.toLowerCase()}`;
+  }
+  if (h.blocked) line += ` (${esc(h.blocked)})`;
+  const dice = d.dice.map(evDie).join(" · ") || "none";
+  return `${line}<br><span class="muted">dice: ${dice}</span>`;
+}
+function woundText(v){
+  const d = v.data;
+  if (!v.full){
+    let fell = "";
+    if (d.down) fell = "down";
+    else if (d.state) fell = CMB.states[d.state].name.toLowerCase();
+    return `${evName(d.who)} is wounded in the ${evPlace(d.loc)}${fell ? ": " + fell : ""}`;
+  }
+  const head = `${evName(d.who)}: ${d.graze ? "grazing " : ""}${sevLabel(d.sev).toLowerCase()} ${evPlace(d.loc)} wound`;
+  if (!d.line) return head;
+  const own = d.stop?.by === "player" ? " (his own die)" : "";
+  return `${head}<br><span class="muted">${esc(d.line)}${own}</span>`;
+}
 function eventText(v){                            // one event as a seat sees it, in a line
-  const d = v.data, nm = x => (x ? esc(x.name) : "?"), at = id => (id ? LOC[id].name.toLowerCase() : "");
-  if (v.type === "strike"){
-    const head = `${d.attacker ? nm(d.attacker) : "A blow"}${d.defender ? ` at ${nm(d.defender)}` : ""}, ${esc(shortName(d.weapon).toLowerCase())}`;
-    if (!v.full){
-      const rolls = d.seen ? ` (attack ${d2(d.seen.atk)}${d.seen.def !== null ? `, defence ${d2(d.seen.def)}` : ""})` : "";
-      return `${head}: ${d.outcome}${d.loc ? `, ${at(d.loc)}` : ""}${rolls}`;
-    }
-    const h = d.hit, dice = d.dice.map(x => `${x.name} ${x.sides === 10 ? x.v : d2(x.v)}${x.by === "player" ? "*" : ""}`).join(" · ");
-    const what = h.loc ? `${at(h.loc)}, ${h.sev === "stopped" ? "stopped" : sevLabel(h.sev).toLowerCase()}${h.graze ? " graze" : ""}, ${DATA.mechanisms[h.mech].name.toLowerCase()}` : "";
-    return `${head}: ${d.outcome}${what ? ` — ${what}` : ""}${h.blocked ? ` (${esc(h.blocked)})` : ""}<br><span class="muted">dice: ${dice || "none"}</span>`;
-  }
-  if (v.type === "wound"){
-    const fell = d.down ? "down" : d.state ? CMB.states[d.state.id || d.state].name.toLowerCase() : "";
-    if (!v.full) return `${nm(d.who)} is wounded in the ${at(d.loc)}${fell ? `: ${fell}` : ""}`;
-    return `${nm(d.who)}: ${d.graze ? "grazing " : ""}${sevLabel(d.sev).toLowerCase()} ${at(d.loc)} wound${d.line ? `<br><span class="muted">${esc(d.line)}${d.stop && d.stop.by === "player" ? " (his own die)" : ""}</span>` : ""}`;
-  }
+  if (v.type === "strike") return v.full ? strikeFullText(v.data) : strikeSeenText(v.data);
+  if (v.type === "wound") return woundText(v);
   return esc(v.type);
 }
-const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function eventItem(v){
+  const when = v.round ? "Round " + v.round : "Roll";
+  const seen = v.full ? "" : ' <span class="muted">(what they saw)</span>';
+  return `<li><b>${when}</b>${seen}<br>${eventText(v)}</li>`;
+}
 function renderEvents(){
   const box = $("#events");
   if (!box) return;
   const seats = seatsIn(S.chars.map(sideOf));
   if (!seats.includes(S.evSeat)) S.evSeat = GM_SEAT;
-  const view = viewFor(S.events || [], S.evSeat).slice(-40).reverse();
+  const view = viewFor(S.events || [], S.evSeat).slice(-40).reverse(), n = (S.events || []).length;
   const label = s => (s === GM_SEAT ? "the GM (everything)" : esc(s.slice(5)));
-  box.innerHTML = `<details class="after"${S.evOpen ? " open" : ""}><summary><b>Event log</b> <span class="muted">${(S.events || []).length} event${(S.events || []).length === 1 ? "" : "s"}: each strike and wound, and who sees it</span></summary>
-    <div class="toolbar"><label for="ev-seat">As seen by</label><select id="ev-seat">${seats.map(s => `<option value="${attr(s)}" ${s === S.evSeat ? "selected" : ""}>${label(s)}</option>`).join("")}</select>
+  const opts = seats.map(s => `<option value="${attr(s)}"${s === S.evSeat ? " selected" : ""}>${label(s)}</option>`).join("");
+  const empty = `<p class="muted" style="margin:0">Nothing yet${S.evSeat === GM_SEAT ? "" : " that this side would see"}.</p>`;
+  const list = view.length ? `<ol class="roundlog" aria-label="Events, newest first" style="max-height:18rem;margin:6px 0">${view.map(eventItem).join("")}</ol>` : empty;
+  box.innerHTML = `<details class="after"${S.evOpen ? " open" : ""}><summary><b>Event log</b> <span class="muted">${n} event${n === 1 ? "" : "s"}: each strike and wound, and who sees it</span></summary>
+    <div class="toolbar"><label for="ev-seat">As seen by</label><select id="ev-seat">${opts}</select>
       <span class="spacer"></span><button type="button" class="small" id="ev-save" title="This seat's view of the log, as a JSON file">Save this view</button></div>
-    ${view.length ? `<ol class="roundlog" aria-label="Events, newest first" style="max-height:18rem;margin:6px 0">${view.map(v => `<li><b>${v.round ? `Round ${v.round}` : "Roll"}</b>${v.full ? "" : ' <span class="muted">(what they saw)</span>'}<br>${eventText(v)}</li>`).join("")}</ol>`
-      : `<p class="muted" style="margin:0">Nothing yet${S.evSeat === GM_SEAT ? "" : " that this side would see"}.</p>`}
+    ${list}
     <p class="muted" style="margin:0">The GM and the defender's side see a strike in full; the others see the outcome and where it landed. Dice marked * were typed in by the player.</p></details>`;
 }
 $("#events").addEventListener("toggle", e => { S.evOpen = e.target.open }, true);

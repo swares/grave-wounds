@@ -1431,14 +1431,34 @@ const shortName = w => DATA.weapons[w].short || DATA.weapons[w].name.split(" (")
            a skill used, close the free attack. The strike changes nothing itself.
 
    The wound takes its dice in the order gravewounds/engine.py roll_hit does (location, blow,
-   severity, cover), so the same dice give the same wound in both; tools/strike_test.js checks it.
-   build.py puts this file into the roller at its STRIKE_JS marker. */
+   severity, cover), so the same dice give the same wound in both; tools/strike/parity.py checks it.
+   build.py puts this file into the roller at its STRIKE_JS marker; in Node it is a module. */
+
+/* ----- pieces that need no data ----- */
+const STRIKE_LADDER = ["stopped", "light", "serious", "critical"];
+const strikeLook = (ranges, n) => ranges.find(r => n >= r.lo && n <= r.hi).id;
+const strikeD2 = n => (n === 100 ? "00" : String(n).padStart(2, "0"));
+const strikeLowerName = s => (/^[A-Z]{2}/.test(s) ? s : s.toLowerCase());   // "Bill" -> "bill", "MG" stays
+function defenceRoll(defence, roll, penalty){
+  const eff = Math.max(0, defence - penalty);
+  return { effective: eff, roll, defended: roll <= eff, base: defence, penalty };
+}
+function grazeFx(fx){ return { ...fx, bleed: Math.max(0, fx.bleed - 1), pain: Math.max(0, fx.pain - 1), shock: false } }
+function strikeDice(cmd, dice){                     // the dice a strike takes: the player's own if he gave one, else rolled
+  const used = [], own = cmd.rolls || {};
+  const take = (name, sides) => {
+    const p = own[name], mine = Number.isInteger(p) && p >= 1 && p <= sides;
+    const v = mine ? p : dice.randint(1, sides);
+    used.push({ name, v, sides, by: mine ? "player" : "dice" });
+    return v;
+  };
+  return { used, take };
+}
+
 function makeStrike(DATA){
   const CMB = DATA.combat, MATS = DATA.armor.materials;
   const LOC = Object.fromEntries(DATA.locations.map(l => [l.id, l]));
   const KITS = Object.fromEntries(DATA.armor.kits.map(k => [k.id, k]));
-  const LADDER = ["stopped", "light", "serious", "critical"];
-  const look = (ranges, n) => ranges.find(r => n >= r.lo && n <= r.hi).id;
 
   /* ----- the pieces, as gravewounds/combat.py and engine.py ----- */
   function marginSeverity(margin, critical, wid, zone){
@@ -1446,145 +1466,155 @@ function makeStrike(DATA){
     const bands = CMB.margin_bands;
     let b = bands.default;
     if (DATA.weapons[wid].threat && bands.ballistic) b = bands.ballistic.find(x => x.zones.includes(zone));
-    return margin >= b.critical ? "critical" : margin >= b.serious ? "serious" : "light";
+    if (margin >= b.critical) return "critical";
+    return margin >= b.serious ? "serious" : "light";
   }
   function attackRoll(attack, roll, penalty){
     const eff = Math.max(0, attack - penalty), critAt = Math.floor(eff * CMB.critical_fraction), hit = roll <= eff;
     return { effective: eff, roll, hit, critical: hit && roll <= critAt, margin: hit ? eff - roll : null, base: attack, penalty };
   }
-  function defenceRoll(defence, roll, penalty){
-    const eff = Math.max(0, defence - penalty);
-    return { effective: eff, roll, defended: roll <= eff, base: defence, penalty };
-  }
-  function armorAt(kitId, locId){ return ((KITS[kitId] || {}).layers || {})[LOC[locId].armor] || [] }
+  function armorAt(kitId, locId){ return KITS[kitId]?.layers?.[LOC[locId].armor] || [] }
   function armorSteps(mat, mech, wid){
     const w = DATA.weapons[wid], m = MATS[mat], th = m.threats || {};
     const steps = mech === "ballistic" && w.threat && w.threat in th ? th[w.threat] : m[mech];
-    const defeat = (w.armor_defeat || {})[mech] || 0;
+    const defeat = w.armor_defeat?.[mech] || 0;
     return Math.max(0, steps - defeat);
   }
   function sevTiers(mech, zone, wid){
     if (wid && DATA.weapons[wid].threat) mech = "ballistic";   // firearms and explosives
-    const spec = DATA.severity_by_mechanism[mech];
-    const tbl = spec && spec.tables.find(t => t.zones.includes(zone));
+    const tbl = DATA.severity_by_mechanism[mech]?.tables.find(t => t.zones.includes(zone));
     return tbl ? tbl.tiers : DATA.severity;
   }
-  function grazeFx(fx){ return { ...fx, bleed: Math.max(0, fx.bleed - 1), pain: Math.max(0, fx.pain - 1), shock: false } }
   function isGraze(margin, critical){ return margin !== null && margin !== undefined && !critical && margin <= CMB.graze_margin }
-  const cannotAttack = p => !!p && p.flags.some(f => f === "incapacitated" || (CMB.states[f] || {}).no_attack);
-  const lowerName = s => (/^[A-Z]{2}/.test(s) ? s : s.toLowerCase());   // "Bill" -> "bill", "MG" stays
-  const d2 = n => n === 100 ? "00" : String(n).padStart(2, "0");
+  const cannotAttack = p => !!p && p.flags.some(f => f === "incapacitated" || CMB.states[f]?.no_attack);
 
   function attackBlock(att, w){                     // why the attacker cannot attack at all, or null
-    const A = att && att.pen;
+    const A = att?.pen;
     if (!A) return null;
     if (A.flags.includes("incapacitated")) return `${att.name} is incapacitated and cannot attack.`;
     if (cannotAttack(A)) return `${att.name} cannot attack: ${CMB.states[att.state].name.toLowerCase()}.`;
     if (A.flags.includes("cannot_wield") && w.melee !== "unarmed") return `${att.name} cannot hold a weapon in either hand.`;
-    if (A.flags.includes("one_arm") && w.two_handed) return `${att.name} cannot use the ${lowerName(w.short || w.name)} with an arm hurt (it takes both hands): defend only.`;
+    if (A.flags.includes("one_arm") && w.two_handed) return `${att.name} cannot use the ${strikeLowerName(w.short || w.name)} with an arm hurt (it takes both hands): defend only.`;
     return null;
   }
+  function misfire(rc, take, effects, freeHit){     // wet priming: the shot is lost (text), or null
+    const mf = rc.range ? rc.range.misfire : 0;
+    if (!mf) return null;
+    const mr = take("misfire", 100);
+    if (mr > mf) return null;
+    if (freeHit) effects.free = "misfire";
+    return `Misfire: d100 ${strikeD2(mr)} against ${mf}% — the wet weather spoiled the priming. The shot is lost.`;
+  }
+  function strayShot(range, take){                  // after a miss: does the shot go into the first man in the way?
+    if (!range?.stray || !(range.way || []).length) return null;
+    const roll = take("stray", 100);
+    return { id: range.way[0], roll, chance: range.stray, hit: roll <= range.stray };
+  }
 
-  /* ----- the strike ----- */
-  function resolveStrike(ctx, cmd, dice){
-    const used = [], own = cmd.rolls || {};
-    const take = (name, sides) => {                 // the player's own die if he gave one, else a rolled one
-      const p = own[name], mine = Number.isInteger(p) && p >= 1 && p <= sides;
-      const v = mine ? p : dice.randint(1, sides);
-      used.push({ name, v, sides, by: mine ? "player" : "dice" });
-      return v;
-    };
-    const effects = { closeIn: false, xp: null, free: null };
-    const done = hit => ({ hit, dice: used, effects });
-    const stray = !!cmd.stray, wid = ctx.weapon, w = DATA.weapons[wid];
-    const atkPct = stray ? null : (cmd.atk ?? null);
-    const base = { weapon: wid, table: ctx.table, ltable: ctx.ltable, mods: ctx.mods, aim: stray ? "" : cmd.aim || "", gap: !stray && !!cmd.gap, stray };
-    const rc = ctx.rc || { range: null }, freeHit = !!ctx.freeHit;
-    if (rc.blocked) return done({ ...base, fx: null, blocked: rc.blocked });
-    base.range = rc.range;
-
-    // the attack and the defence: {end} if no wound follows
-    let att = { margin: null, crit: false, combat: null, roll: null };
-    if (atkPct !== null){
-      let blocked = attackBlock(ctx.attacker, w);
-      const mf = !blocked && rc.range ? rc.range.misfire : 0;
-      if (mf){                                      // wet priming: the shot may be lost
-        const mr = take("misfire", 100);
-        if (mr <= mf){
-          if (freeHit) effects.free = "misfire";
-          blocked = `Misfire: d100 ${d2(mr)} against ${mf}% — the wet weather spoiled the priming. The shot is lost.`;
-        }
-      }
-      if (blocked) return done({ ...base, fx: null, blocked });
-      effects.closeIn = true;
-      const A = ctx.attacker && ctx.attacker.pen, D = ctx.defender && ctx.defender.pen;
-      const ar = attackRoll(atkPct, take("atk", 100), (A ? A.attack : 0) + (rc.range ? rc.range.penalty : 0));
-      const combat = { atk: ar, def: null, range: rc.range };
-      if (ar.hit) effects.xp = "hit";
-      if (!ar.hit){
-        if (freeHit) effects.free = "miss";
-        let st = null;                              // after a miss: does the shot go into the first man in the way?
-        if (rc.range && rc.range.stray && (rc.range.way || []).length){
-          const roll = take("stray", 100);
-          st = { id: rc.range.way[0], roll, chance: rc.range.stray, hit: roll <= rc.range.stray };
-        }
-        return done({ ...base, fx: null, miss: true, combat, stray: st });
-      }
-      const defPct = cmd.def ?? null;
-      if (defPct !== null && !ar.critical){
-        const dr = defenceRoll(defPct, take("def", 100), D ? D.defence : 0);
-        combat.def = dr;
-        if (dr.defended){
-          effects.xp = "defended";
-          if (freeHit) effects.free = "parried or dodged";
-          return done({ ...base, fx: null, defended: true, combat });
-        }
-      }
-      att = { margin: ar.margin, crit: ar.critical, combat, roll: ar.roll };
+  // The attack and the defence: {end} if no wound follows, else {margin, crit, combat, roll}.
+  function attackPhase(ctx, cmd, atkPct, take, effects){
+    const rc = ctx.rc, freeHit = !!ctx.freeHit, w = DATA.weapons[ctx.weapon];
+    const blocked = attackBlock(ctx.attacker, w) || misfire(rc, take, effects, freeHit);
+    if (blocked) return { end: { blocked } };
+    effects.closeIn = true;
+    const A = ctx.attacker?.pen, D = ctx.defender?.pen;
+    const ar = attackRoll(atkPct, take("atk", 100), (A ? A.attack : 0) + (rc.range ? rc.range.penalty : 0));
+    const combat = { atk: ar, def: null, range: rc.range };
+    if (!ar.hit){
+      if (freeHit) effects.free = "miss";
+      return { end: { miss: true, combat, stray: strayShot(rc.range, take) } };
     }
-
-    // the wound: the aim paid for, then location, blow, severity and armour
-    const cost = CMB.aim.cost, aimZone = stray ? "" : cmd.aim || "", gapAim = !stray && !!cmd.gap;
-    let left = att.margin, zonePaid = false, zoned = null;
-    const pays = () => att.margin === null || att.crit || left >= cost;
-    if (aimZone && pays()){
-      zoned = ctx.aimRanges || null;
-      if (zoned){ zonePaid = true; if (att.margin !== null && !att.crit) left -= cost }
+    effects.xp = "hit";
+    const defPct = cmd.def ?? null;
+    if (defPct !== null && !ar.critical){
+      const dr = defenceRoll(defPct, take("def", 100), D ? D.defence : 0);
+      combat.def = dr;
+      if (dr.defended){
+        effects.xp = "defended";
+        if (freeHit) effects.free = "parried or dodged";
+        return { end: { defended: true, combat } };
+      }
     }
-    const rl = take("loc", 100), loc = look(zoned || ctx.ranges, rl);
+    return { margin: ar.margin, crit: ar.critical, combat, roll: ar.roll };
+  }
+
+  // What the declared aim costs (wounds.yaml combat.aim; as gravewounds.engine.roll_hit).
+  function aimPlan(ctx, cmd, att){
+    const stray = !!cmd.stray, plan = { zone: stray ? "" : cmd.aim || "", gap: !stray && !!cmd.gap, zonePaid: false, zoned: null, left: att.margin };
+    plan.pays = () => att.margin === null || att.crit || plan.left >= CMB.aim.cost;
+    plan.spend = () => { if (att.margin !== null && !att.crit) plan.left -= CMB.aim.cost };
+    if (plan.zone && plan.pays() && ctx.aimRanges){ plan.zoned = ctx.aimRanges; plan.zonePaid = true; plan.spend() }
+    return plan;
+  }
+  function severityOf(ctx, cmd, att, plan, mech, loc, take){   // {sev, rs}: from the margin, the GM's pick or the table
+    const zone = LOC[loc].zone;
+    if (cmd.stray || att.margin === null){
+      const mode = cmd.stray ? "roll" : cmd.sev || "roll";
+      if (mode !== "roll") return { sev: mode, rs: null };
+      const rs = take("sev", 100);
+      return { sev: sevTiers(mech, zone, ctx.weapon).find(x => rs >= x.d100[0] && rs <= x.d100[1]).id, rs };
+    }
+    return { sev: marginSeverity(plan.left, att.crit, ctx.weapon, zone), rs: null };
+  }
+  function coverDigit(att, take){                    // the attack roll's units digit (0 is 10), else a d10 (as gravewounds.engine.cover_digit)
+    const fromAtk = att.roll !== null && att.roll !== undefined;
+    return { digit: fromAtk ? (att.roll % 10 || 10) : take("cover", 10), fromAtk };
+  }
+  function armourOn(armour, sev, mech, att, take, wid){   // {armor, final}: the armour on the place hit lowers the severity
+    const { layers, whole, gapped } = armour;
+    if (!layers.length) return { armor: null, final: sev };
+    const cd = whole || gapped ? { digit: null, fromAtk: att.roll !== null && att.roll !== undefined } : coverDigit(att, take);
+    let hitLayer = null;
+    if (whole) hitLayer = layers[0];
+    else if (!gapped) hitLayer = layers.find(([, lo, hi]) => cd.digit * 10 >= lo && cd.digit * 10 <= hi) || null;
+    const mat = hitLayer ? hitLayer[0] : null, steps = hitLayer ? armorSteps(mat, mech, wid) : 0;
+    const final = STRIKE_LADDER[Math.max(0, STRIKE_LADDER.indexOf(sev) - steps)];
+    return { armor: { mat, layers, rc: cd.digit, rcAtk: !whole && cd.fromAtk, covered: !!hitLayer, gapped: !!gapped, steps, from: sev, to: final }, final };
+  }
+
+  // The wound: the aim paid for, then location, blow, severity and armour.
+  function woundPhase(ctx, cmd, att, take){
+    const wid = ctx.weapon, w = DATA.weapons[wid], plan = aimPlan(ctx, cmd, att);
+    const rl = take("loc", 100), loc = strikeLook(plan.zoned || ctx.ranges, rl);
     const layers = ctx.evidence ? [] : armorAt(ctx.armor, loc);
     const whole = layers.length === 1 && layers[0][1] === 1 && layers[0][2] === 100;
-    const gapped = gapAim && layers.length > 0 && !whole && pays();   // a gap is paid for only where there is one
-    if (gapped && att.margin !== null && !att.crit) left -= cost;
+    const gapped = plan.gap && layers.length > 0 && !whole && plan.pays();   // a gap is paid for only where there is one
+    if (gapped) plan.spend();
     const blow = w.choose && cmd.blow && w.mechanisms[cmd.blow] ? cmd.blow : null;   // a blow the attacker declared, or rolled
-    const rm = blow ? null : take("mech", 100), mech = blow || look(w.mech_ranges, rm);
-    let sevMode = att.margin !== null ? "margin" : cmd.sev || "roll";
-    if (stray) sevMode = "roll";
-    let sev, rs = null;
-    if (sevMode === "margin") sev = marginSeverity(left, att.crit, wid, LOC[loc].zone);
-    else if (sevMode !== "roll") sev = sevMode;      // the GM's pick
-    else { rs = take("sev", 100); sev = sevTiers(mech, LOC[loc].zone, wid).find(x => rs >= x.d100[0] && rs <= x.d100[1]).id }
-
-    let armor = null, final = sev;
-    if (layers.length){                             // the attack roll's units digit (0 is 10), else a d10 (as gravewounds.engine.cover_digit)
-      const fromAtk = att.roll !== null && att.roll !== undefined;
-      const cover = whole || gapped ? null : (fromAtk ? (att.roll % 10 || 10) : take("cover", 10));
-      const hitLayer = whole ? layers[0] : gapped ? null : layers.find(([, lo, hi]) => cover * 10 >= lo && cover * 10 <= hi);
-      const mat = hitLayer ? hitLayer[0] : null, steps = hitLayer ? armorSteps(mat, mech, wid) : 0;
-      final = LADDER[Math.max(0, LADDER.indexOf(sev) - steps)];
-      armor = { mat, layers, rc: cover, rcAtk: !whole && fromAtk, covered: !!hitLayer, gapped: !!gapped, steps, from: sev, to: final };
-    }
-    const grazed = final !== "stopped" && isGraze(left, att.crit);
+    const rm = blow ? null : take("mech", 100), mech = blow || strikeLook(w.mech_ranges, rm);
+    const { sev, rs } = severityOf(ctx, cmd, att, plan, mech, loc, take);
+    const { armor, final } = armourOn({ layers, whole, gapped }, sev, mech, att, take, wid);
+    const grazed = final !== "stopped" && isGraze(plan.left, att.crit);
     const fx0 = final === "stopped" ? null : DATA.wounds[`${LOC[loc].class}|${mech}|${final}`];
     const fx = fx0 && grazed ? grazeFx(fx0) : fx0;
-    return done({ loc, mech, sev: final, rolled: sev, fx, armor, combat: att.combat, graze: grazed, range: rc.range, free: freeHit, strayHit: stray,
+    return { loc, mech, sev: final, rolled: sev, fx, armor, combat: att.combat, graze: grazed, range: ctx.rc.range, free: !!ctx.freeHit, strayHit: !!cmd.stray,
       rolls: { loc: rl, mech: rm, sev: rs },
-      aim: { zone: aimZone, zonePaid, gap: gapAim, gapPaid: gapped, margin: att.margin, left },
-      weapon: wid, table: ctx.table, ltable: ctx.ltable, mods: ctx.mods });
+      aim: { zone: plan.zone, zonePaid: plan.zonePaid, gap: plan.gap, gapPaid: gapped, margin: att.margin, left: plan.left },
+      weapon: wid, table: ctx.table, ltable: ctx.ltable, mods: ctx.mods };
+  }
+
+  function resolveStrike(ctx0, cmd, dice){
+    const ctx = { ...ctx0, rc: ctx0.rc || { range: null } };
+    const { used, take } = strikeDice(cmd, dice);
+    const effects = { closeIn: false, xp: null, free: null };
+    const done = hit => ({ hit, dice: used, effects });
+    const stray = !!cmd.stray;
+    const base = { weapon: ctx.weapon, table: ctx.table, ltable: ctx.ltable, mods: ctx.mods, aim: stray ? "" : cmd.aim || "", gap: !stray && !!cmd.gap, stray };
+    if (ctx.rc.blocked) return done({ ...base, fx: null, blocked: ctx.rc.blocked });
+    base.range = ctx.rc.range;
+    let att = { margin: null, crit: false, combat: null, roll: null };
+    const atkPct = stray ? null : (cmd.atk ?? null);
+    if (atkPct !== null){
+      att = attackPhase(ctx, cmd, atkPct, take, effects);
+      if (att.end) return done({ ...base, fx: null, ...att.end });
+    }
+    return done(woundPhase(ctx, cmd, att, take));
   }
 
   return { resolveStrike, attackRoll, defenceRoll, marginSeverity, armorAt, armorSteps, sevTiers, grazeFx, isGraze, cannotAttack };
 }
+
+if (typeof module !== "undefined") module.exports = { makeStrike };   // Node (the tests); the page has no `module`
 
 /* The event log: what happened in the fight, in order, and who may see it in full. The page appends
    an event for each thing the rules decided (a strike, a wound applied); nothing is changed or taken
@@ -1599,13 +1629,13 @@ function makeStrike(DATA){
    its slice, so a player never holds what he is not meant to see.
 
    The log is kept with the fight in the browser, the last LOG_KEEP events. build.py puts this file
-   into the roller at its GAMELOG_JS marker; tools/strike_test.js loads it in Node. */
+   into the roller at its GAMELOG_JS marker; in Node it is a module. */
 const LOG_KEEP = 500;
 const GM_SEAT = "gm";
 const sideSeat = side => `side:${side}`;
 
 function logEvent(log, ev){                      // append an event, numbered after the last; -> the event
-  const last = log.length ? log[log.length - 1].n : 0;
+  const last = log.length ? log.at(-1).n : 0;
   const e = { n: last + 1, round: ev.round ?? null, type: ev.type, vis: ev.vis || "public", data: ev.data || {}, pub: ev.pub ?? null };
   log.push(e);
   if (log.length > LOG_KEEP) log.splice(0, log.length - LOG_KEEP);
@@ -1626,8 +1656,10 @@ function seatsIn(sides){                         // the seats at the table: the 
   return [GM_SEAT, ...[...new Set(sides)].map(sideSeat)];
 }
 
+if (typeof module !== "undefined") module.exports = { LOG_KEEP, GM_SEAT, sideSeat, logEvent, canSee, viewFor, seatsIn };   // Node (the tests)
+
 const STRIKE = makeStrike(DATA);
-const { attackRoll, defenceRoll, marginSeverity, armorAt, armorSteps, sevTiers, grazeFx, isGraze, cannotAttack } = STRIKE;
+const { attackRoll, marginSeverity, armorAt, armorSteps, sevTiers, isGraze, cannotAttack } = STRIKE;   // defenceRoll and grazeFx need no data: strike.js defines them outright
 
 const S = { table: null, weapon: null, hit: null, events: [], chars: [], active: 0, attacker: -1, seq: 1, mods: new Set(), aim: "", gap: false, armor: "none", round: 1, log: [], turn: null, broken: {}, pending: [], works: { edges: {}, hexes: {} }, ground: { kinds: {}, levels: {} }, weather: { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } };
 const CMB = DATA.combat;
@@ -2960,8 +2992,8 @@ function figRanges(){ return (S.aim && aimedRanges(S.weapon, S.aim)) || curRange
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,events:S.events,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone})) }catch(e){} }
-function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); if (!Array.isArray(S.events)) S.events = []; return true } }catch(e){} return false }
+function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,events:S.events,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone})) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
+function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); if (!Array.isArray(S.events)) S.events = []; return true } }catch(e){ /* storage off or a damaged save: a fresh fight starts */ } return false }
 
 /* ---------- body figure ---------- */
 const C = 90;
@@ -3081,14 +3113,19 @@ function riseToStrike(){                          // a man in cover rises to str
 const evWho = c => c ? { id: c.id, name: c.name, side: sideOf(c) } : null;
 const evRound = () => (S.chars.length ? S.round : null);
 function strikeOutcome(h){
-  return h.blocked ? "blocked" : h.miss ? "miss" : h.defended ? "parried or dodged" : h.sev === "stopped" ? "stopped by armour" : h.graze ? "graze" : "wound";
+  if (h.blocked) return "blocked";
+  if (h.miss) return "miss";
+  if (h.defended) return "parried or dodged";
+  if (h.sev === "stopped") return "stopped by armour";
+  return h.graze ? "graze" : "wound";
 }
 function logStrike(a, dd, cmd, r){                // the whole strike for the GM and the defender's side; for the rest, what the table saw
   const h = r.hit, outcome = strikeOutcome(h), landed = ["wound", "graze"].includes(outcome);
-  const seen = h.combat ? { atk: h.combat.atk.roll, def: h.combat.def ? h.combat.def.roll : null } : null;
+  const seen = h.combat ? { atk: h.combat.atk.roll, def: h.combat.def?.roll ?? null } : null;
+  const shown = landed || outcome === "stopped by armour";   // where a blow landed is seen, wound or not
   logEvent(S.events, { round: evRound(), type: "strike", vis: dd ? [sideSeat(sideOf(dd))] : "public",
     data: { attacker: evWho(a), defender: evWho(dd), weapon: h.weapon, outcome, cmd, dice: r.dice, hit: h },
-    pub: { attacker: evWho(a), defender: evWho(dd), weapon: h.weapon, outcome: landed ? "hit" : outcome, loc: landed || outcome === "stopped by armour" ? h.loc : null,
+    pub: { attacker: evWho(a), defender: evWho(dd), weapon: h.weapon, outcome: landed ? "hit" : outcome, loc: shown ? h.loc : null,
       seen, aim: cmd.aim || "", gap: cmd.gap, blow: cmd.blow || "", blocked: h.blocked || null, stray: h.stray || null } });
 }
 function logWound(c, h, line, stop){              // a wound applied: its effects and stop check for the GM and his side; the rest see where and whether he fell
@@ -3097,38 +3134,72 @@ function logWound(c, h, line, stop){              // a wound applied: its effect
     data: { who: evWho(c), loc: h.loc, mech: h.mech, sev: h.sev, graze: !!h.graze, fx: h.fx, stop: stop.check ? { ...stop } : null, line: line ? plainText(line) : "", state: st, down },
     pub: { who: evWho(c), loc: h.loc, state: st ? st.id : null, down } });
 }
+const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+const evName = x => (x ? esc(x.name) : "?");
+const evPlace = id => (id ? LOC[id].name.toLowerCase() : "");
+const evDie = x => `${x.name} ${x.sides === 10 ? x.v : d2(x.v)}${x.by === "player" ? "*" : ""}`;
+function strikeHead(d){
+  const who = d.attacker ? evName(d.attacker) : "A blow";
+  const at = d.defender ? " at " + evName(d.defender) : "";
+  return `${who}${at}, ${esc(shortName(d.weapon).toLowerCase())}`;
+}
+function strikeSeenText(d){                       // a strike as the other sides saw it
+  let line = `${strikeHead(d)}: ${d.outcome}`;
+  if (d.loc) line += ", " + evPlace(d.loc);
+  if (d.seen){
+    const def = d.seen.def === null ? "" : ", defence " + d2(d.seen.def);
+    line += ` (attack ${d2(d.seen.atk)}${def})`;
+  }
+  return line;
+}
+function strikeFullText(d){                       // a strike in full: the wound, and every die
+  const h = d.hit;
+  let line = `${strikeHead(d)}: ${d.outcome}`;
+  if (h.loc){
+    const sev = h.sev === "stopped" ? "stopped" : sevLabel(h.sev).toLowerCase();
+    line += ` — ${evPlace(h.loc)}, ${sev}${h.graze ? " graze" : ""}, ${DATA.mechanisms[h.mech].name.toLowerCase()}`;
+  }
+  if (h.blocked) line += ` (${esc(h.blocked)})`;
+  const dice = d.dice.map(evDie).join(" · ") || "none";
+  return `${line}<br><span class="muted">dice: ${dice}</span>`;
+}
+function woundText(v){
+  const d = v.data;
+  if (!v.full){
+    let fell = "";
+    if (d.down) fell = "down";
+    else if (d.state) fell = CMB.states[d.state].name.toLowerCase();
+    return `${evName(d.who)} is wounded in the ${evPlace(d.loc)}${fell ? ": " + fell : ""}`;
+  }
+  const head = `${evName(d.who)}: ${d.graze ? "grazing " : ""}${sevLabel(d.sev).toLowerCase()} ${evPlace(d.loc)} wound`;
+  if (!d.line) return head;
+  const own = d.stop?.by === "player" ? " (his own die)" : "";
+  return `${head}<br><span class="muted">${esc(d.line)}${own}</span>`;
+}
 function eventText(v){                            // one event as a seat sees it, in a line
-  const d = v.data, nm = x => (x ? esc(x.name) : "?"), at = id => (id ? LOC[id].name.toLowerCase() : "");
-  if (v.type === "strike"){
-    const head = `${d.attacker ? nm(d.attacker) : "A blow"}${d.defender ? ` at ${nm(d.defender)}` : ""}, ${esc(shortName(d.weapon).toLowerCase())}`;
-    if (!v.full){
-      const rolls = d.seen ? ` (attack ${d2(d.seen.atk)}${d.seen.def !== null ? `, defence ${d2(d.seen.def)}` : ""})` : "";
-      return `${head}: ${d.outcome}${d.loc ? `, ${at(d.loc)}` : ""}${rolls}`;
-    }
-    const h = d.hit, dice = d.dice.map(x => `${x.name} ${x.sides === 10 ? x.v : d2(x.v)}${x.by === "player" ? "*" : ""}`).join(" · ");
-    const what = h.loc ? `${at(h.loc)}, ${h.sev === "stopped" ? "stopped" : sevLabel(h.sev).toLowerCase()}${h.graze ? " graze" : ""}, ${DATA.mechanisms[h.mech].name.toLowerCase()}` : "";
-    return `${head}: ${d.outcome}${what ? ` — ${what}` : ""}${h.blocked ? ` (${esc(h.blocked)})` : ""}<br><span class="muted">dice: ${dice || "none"}</span>`;
-  }
-  if (v.type === "wound"){
-    const fell = d.down ? "down" : d.state ? CMB.states[d.state.id || d.state].name.toLowerCase() : "";
-    if (!v.full) return `${nm(d.who)} is wounded in the ${at(d.loc)}${fell ? `: ${fell}` : ""}`;
-    return `${nm(d.who)}: ${d.graze ? "grazing " : ""}${sevLabel(d.sev).toLowerCase()} ${at(d.loc)} wound${d.line ? `<br><span class="muted">${esc(d.line)}${d.stop && d.stop.by === "player" ? " (his own die)" : ""}</span>` : ""}`;
-  }
+  if (v.type === "strike") return v.full ? strikeFullText(v.data) : strikeSeenText(v.data);
+  if (v.type === "wound") return woundText(v);
   return esc(v.type);
 }
-const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function eventItem(v){
+  const when = v.round ? "Round " + v.round : "Roll";
+  const seen = v.full ? "" : ' <span class="muted">(what they saw)</span>';
+  return `<li><b>${when}</b>${seen}<br>${eventText(v)}</li>`;
+}
 function renderEvents(){
   const box = $("#events");
   if (!box) return;
   const seats = seatsIn(S.chars.map(sideOf));
   if (!seats.includes(S.evSeat)) S.evSeat = GM_SEAT;
-  const view = viewFor(S.events || [], S.evSeat).slice(-40).reverse();
+  const view = viewFor(S.events || [], S.evSeat).slice(-40).reverse(), n = (S.events || []).length;
   const label = s => (s === GM_SEAT ? "the GM (everything)" : esc(s.slice(5)));
-  box.innerHTML = `<details class="after"${S.evOpen ? " open" : ""}><summary><b>Event log</b> <span class="muted">${(S.events || []).length} event${(S.events || []).length === 1 ? "" : "s"}: each strike and wound, and who sees it</span></summary>
-    <div class="toolbar"><label for="ev-seat">As seen by</label><select id="ev-seat">${seats.map(s => `<option value="${attr(s)}" ${s === S.evSeat ? "selected" : ""}>${label(s)}</option>`).join("")}</select>
+  const opts = seats.map(s => `<option value="${attr(s)}"${s === S.evSeat ? " selected" : ""}>${label(s)}</option>`).join("");
+  const empty = `<p class="muted" style="margin:0">Nothing yet${S.evSeat === GM_SEAT ? "" : " that this side would see"}.</p>`;
+  const list = view.length ? `<ol class="roundlog" aria-label="Events, newest first" style="max-height:18rem;margin:6px 0">${view.map(eventItem).join("")}</ol>` : empty;
+  box.innerHTML = `<details class="after"${S.evOpen ? " open" : ""}><summary><b>Event log</b> <span class="muted">${n} event${n === 1 ? "" : "s"}: each strike and wound, and who sees it</span></summary>
+    <div class="toolbar"><label for="ev-seat">As seen by</label><select id="ev-seat">${opts}</select>
       <span class="spacer"></span><button type="button" class="small" id="ev-save" title="This seat's view of the log, as a JSON file">Save this view</button></div>
-    ${view.length ? `<ol class="roundlog" aria-label="Events, newest first" style="max-height:18rem;margin:6px 0">${view.map(v => `<li><b>${v.round ? `Round ${v.round}` : "Roll"}</b>${v.full ? "" : ' <span class="muted">(what they saw)</span>'}<br>${eventText(v)}</li>`).join("")}</ol>`
-      : `<p class="muted" style="margin:0">Nothing yet${S.evSeat === GM_SEAT ? "" : " that this side would see"}.</p>`}
+    ${list}
     <p class="muted" style="margin:0">The GM and the defender's side see a strike in full; the others see the outcome and where it landed. Dice marked * were typed in by the player.</p></details>`;
 }
 $("#events").addEventListener("toggle", e => { S.evOpen = e.target.open }, true);
