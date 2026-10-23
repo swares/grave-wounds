@@ -15,7 +15,7 @@ from datetime import date
 from pathlib import Path
 
 from gravewounds import load, DataError
-from gravewounds.engine import table_ranges, mechanism_ranges, severity_ranges, compose_wound, weapon_mix_ranges
+from gravewounds.engine import aimed_ranges, table_ranges, mechanism_ranges, severity_ranges, compose_wound, weapon_mix_ranges
 from gravewounds.model import MECHANISMS, SEVERITIES, THREATS, available_weapons, commons_url, resolve_table, slot_layers, periods
 
 ROOT = Path(__file__).parent
@@ -166,7 +166,8 @@ COMBAT_STEPS = [
     "Attacker rolls d100 against <b>attack % minus penalties</b> (on the battle map, also minus any range penalty and men in the way). Equal or under hits; the <b>margin</b> is the effective chance minus the roll. "
     "A roll at or under a tenth of the effective chance is a <b>critical</b>: it cannot be defended.",
     "If the defender may parry or dodge, they roll d100 against <b>defence % minus penalties</b>; equal or under avoids the blow.",
-    "On a hit, roll location. A cut-and-thrust weapon ({choose}) strikes the blow its wielder "
+    "On a hit, pay for any <b>aim</b> declared (see Aim), then roll location (on the Aimed columns if a zone was paid for). "
+    "A cut-and-thrust weapon ({choose}) strikes the blow its wielder "
     "declares; other weapons strike with their main mechanism. <b>Severity comes from the margin</b> "
     "(bands below) instead of the severity table, and the <b>attack roll's units digit</b> says whether partial armour is met.",
     "Wounds switch situations on by themselves: a defender who cannot stand is <b>Target down</b>, a defender whose shield arm is useless has "
@@ -1012,7 +1013,35 @@ def reach_rows(d) -> list[list[str]]:
     return out
 
 
-CALLED_RULE = "Roll the location twice; keep whichever result lands in the called zone. If both or neither do, keep the first. Your system sets any to-hit penalty."
+def aim_rule(d) -> str:
+    """The aim rule for print (wounds.yaml combat.aim)."""
+    c = d.wounds["combat"]["aim"]["cost"]
+    return (f"Declare it before the attack: a zone (head, body, arms or legs), a gap in the armour, or both. On a hit each "
+            f"costs {c} of the margin (nothing on a critical), and severity and graze come from what is left; one he cannot "
+            f"pay fails and the blow lands as rolled. A zone paid for is rolled on the table's <b>Aimed</b> columns, within "
+            f"that zone. A gap is paid for only where the armour covers part of the place hit, and the blow finds it.")
+
+
+def aimed_rows(d, tid: str, ws: list[str]) -> list[list[str]]:
+    """The PDF's Aimed grid: header plus one row per location that any weapon can reach."""
+    ac = aimed_cols(d, tid, ws)
+    rows = [["Location", "Zone"] + [wshort(d, w) for w in ws]]
+    for loc in d.locations:
+        cells = [rng(ac[w][loc["id"]]["lo"], ac[w][loc["id"]]["hi"]) if loc["id"] in ac[w] else "-" for w in ws]
+        if any(c != "-" for c in cells):
+            rows.append([loc["name"], loc["zone"]] + cells)
+    return rows
+
+
+def aimed_cols(d, tid: str, ws: list[str]) -> dict:
+    """{weapon: {loc: range}}: each zone's own d100 ranges (aimed_ranges), side by side."""
+    out = {}
+    for w in ws:
+        out[w] = {}
+        for z in d.wounds["combat"]["aim"]["zones"]:
+            for r in aimed_ranges(d, tid, w, z) or []:
+                out[w][r["id"]] = r
+    return out
 
 
 # --------------------------------------------------------------------------
@@ -1073,7 +1102,7 @@ def field_bundle(d) -> dict:
     return {
         "generated": date.today().isoformat(),
         "units": d.units,
-        "combat": {k: d.wounds["combat"][k] for k in ("critical_fraction", "graze_margin", "margin_bands", "range", "pain_step", "stop_check", "states", "impair", "cap", "first_aid", "one_arm")},
+        "combat": {k: d.wounds["combat"][k] for k in ("critical_fraction", "graze_margin", "aim", "margin_bands", "range", "pain_step", "stop_check", "states", "impair", "cap", "first_aid", "one_arm")},
         "in_fight": d.disease.get("in_fight") or {},
         "tracking": {k: d.wounds["tracking"][k] for k in ("blood_pool", "thresholds", "pain_cap", "bleed_per_round")},
         "blood_per": d.wounds["combat"]["characteristics"]["blood"]["per"],
@@ -1148,7 +1177,6 @@ def bundle(d) -> dict:
         "weather": d.weather,
         "wounds": wounds,
         "modifiers": list(d.modifiers.values()),
-        "called_shot": d.called_shot,
         "armor": {"materials": d.armor["materials"], "slots": d.armor["slots"],
                   "kits": [{**k, "layers": {sl: slot_layers(v) for sl, v in (k.get("slots") or {}).items()}}
                            for k in d.armor["kits"].values()],
@@ -1267,7 +1295,7 @@ def markdown(d) -> str:
            f"Generated {date.today().isoformat()} from the data folder. Roll d100 (00 = 100).", "",
            COPYRIGHT, "",
            "**Procedure:** 1) d100 location on the table for the fight and weapon (situation column if one applies; "
-           "called shots roll twice). 2) Mechanism: a cut-and-thrust weapon strikes the blow its wielder declares; "
+           "or, aimed at a zone, its Aimed columns). 2) Mechanism: a cut-and-thrust weapon strikes the blow its wielder declares; "
            "otherwise its main mechanism, or d100 on its mix. 3) Severity from your system's damage, or d100. "
            "4) Armour (adjusted tables): the attack roll's units digit (or a d10) says which layer the hit meets, if any; "
            "lower severity by the material's steps. "
@@ -1308,6 +1336,13 @@ def markdown(d) -> str:
                 cells.append(rng(r["lo"], r["hi"]) if r else "-")
             if any(c != "-" for c in cells):
                 out.append(f"| {loc['name']} | " + " | ".join(cells) + " |")
+        ac = aimed_cols(d, tid, ws)
+        out += ["", "**Aimed** (d100 within the zone aimed at, when the aim is paid):", "",
+                "| Zone | Location | " + " | ".join(wshort(d, w) for w in ws) + " |", "|---|---|" + "---|" * len(ws)]
+        for loc in d.locations:
+            cells = [rng(ac[w][loc["id"]]["lo"], ac[w][loc["id"]]["hi"]) if loc["id"] in ac[w] else "-" for w in ws]
+            if any(c != "-" for c in cells):
+                out.append(f"| {loc['zone']} | {loc['name']} | " + " | ".join(cells) + " |")
         if t.get("regions"):
             out += ["", f"**Source totals:** {regions_text(t)}. {t.get('confidence_note','')}"]
         if t.get("weapon_mix"):
@@ -1327,7 +1362,7 @@ def markdown(d) -> str:
     for m in d.modifiers.values():
         used = ", ".join(t["name"].split(" - ")[0] for tid, t in d.tables.items() if m["id"] in table_mods(d, tid))
         out.append(f"| {m['name']} | {m.get('group','-')} | {mod_effect(d, m)} | {m['desc']} Tables: {', '.join(dict.fromkeys(used.split(', ')))} |")
-    out += ["", f"**Called shot:** {CALLED_RULE}", ""]
+    out += ["", "**Aim:** " + re.sub("</?b>", "**", aim_rule(d)), ""]
     for tid, t in d.tables.items():
         groups = weapon_groups(d, tid)
         for group in (groups if t["native"] != "gunfire" else groups[:1]):
@@ -1558,11 +1593,13 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
     for i, step in enumerate([
         "Roll d100 on the <b>location table</b> for the fight, in the column for the attacking weapon. "
         "If a <b>situation</b> applies (shield side, target down, fleeing...), use that column on the weapon's situation page instead.",
-        "<b>Called shot:</b> " + CALLED_RULE,
-        "Roll d100 on the <b>mechanism table</b> for the weapon: cut, pierce or crush.",
+        "<b>Aim:</b> " + aim_rule(d),
+        "<b>Mechanism:</b> a cut-and-thrust weapon strikes the blow its wielder declares; any other weapon its main mechanism "
+        "(or d100 on the weapon's mechanism table).",
         "Set <b>severity</b> from your own system's damage (see guide), or roll d100 on the severity table "
         "(ballistic hits use their own table, by hit zone).",
-        "<b>Armour</b> (adjusted tables only): lower the severity by the armour's steps; see the Armour pages.",
+        "<b>Armour</b> (adjusted tables only): where it covers part of the place, the attack roll's units digit says whether "
+        "the blow met it; lower the severity by the armour's steps; see the Armour pages.",
         "Find the wound on the <b>wound effects</b> page for that mechanism: location row, severity column.",
         "Track it: Bleed drains Blood, Pain stacks as a penalty, the Lethal timer runs until treated."], 1):
         story.append(Paragraph(f"{i}. {step}", B))
@@ -1644,7 +1681,9 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
                   Paragraph(f"Confidence: <b>{CONF_LABEL[t['confidence']]}</b>. Armour: <b>"
                             + ("allowed" if t["armor"] == "allowed" else "already reflected, do not apply") + "</b>." + bias, B),
                   Spacer(1, 6),
-                  grid(rows, widths, font=8.2 if nw > 5 else 8.6), Spacer(1, 8),
+                  grid(rows, widths, font=8.2 if nw > 5 else 8.6), Spacer(1, 6),
+                  KeepTogether([Paragraph("Aimed: d100 within the zone aimed at, when the aim is paid", H2), Spacer(1, 3),
+                                grid(aimed_rows(d, tid, ws), widths, font=7.6 if nw > 5 else 8)]), Spacer(1, 8),
                   *( [Paragraph(f"<b>Close combat.</b> {cc}", S), Spacer(1, 3)] if cc else [] ),
                   *( [Paragraph(f"<b>Source totals.</b> {regions_text(t)}. {t.get('confidence_note','')}", S), Spacer(1, 3)]
                      if t.get("regions") else [] ),
@@ -1668,7 +1707,7 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
                         "(one per group: facing, height, posture, cover). On paper, each column shows one situation alone. "
                         "Each table offers only the situations that make sense for it.", B),
               Spacer(1, 6), grid(srows_, [1.7 * inch, 0.75 * inch, 2.2 * inch, W - 4.65 * inch]),
-              Spacer(1, 8), Paragraph(f"<b>Called shot.</b> {CALLED_RULE}", B)]
+              Spacer(1, 8), Paragraph(f"<b>Aim.</b> {aim_rule(d)}", B)]
     for tid, t in d.tables.items():
         groups = weapon_groups(d, tid)
         for group in (groups if t["native"] != "gunfire" else groups[:1]):

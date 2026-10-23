@@ -100,19 +100,35 @@ def table_ranges(d: Data, table_id: str, weapon_id: str | None = None, mods=None
     return to_d100(effective_weights(d, table_id, weapon_id, mods, shield))
 
 
-def called_odds(d: Data, ranges: list[dict], zone: str | None) -> dict:
-    """Exact location chances (%) after the called-shot rule (roll twice, keep the called zone)."""
-    p = {r["id"]: r["pct"] / 100.0 for r in ranges}
-    if not zone:
-        return {k: v * 100 for k, v in p.items()}
-    pz = sum(v for k, v in p.items() if d.loc[k]["zone"] == zone)
-    out = {}
-    for k, v in p.items():
-        if d.loc[k]["zone"] == zone:
-            out[k] = v * (2 - pz) * 100          # first in zone, or first out and second in
-        else:
-            out[k] = v * (1 - pz) * 100          # neither in zone: keep the first
-    return out
+def aimed_weights(d: Data, table_id: str, weapon_id: str | None, zone: str, mods=None,
+                  shield: bool | None = None) -> list[tuple[str, float]] | None:
+    """Location weights for a blow aimed at `zone`: the table's own (weapon, situations) inside
+    the zone, or the body's exposure there (times the situations) where the table gives the
+    zone nothing. None if the situation hides the whole zone (it cannot be aimed at)."""
+    w = [(k, v) for k, v in effective_weights(d, table_id, weapon_id, mods, shield) if d.loc[k]["zone"] == zone]
+    if sum(v for _, v in w) > 0:
+        return w
+    mods = list(mods or [])
+    mods += [m for m in shield_mods(d, table_id, weapon_id, shield) if m not in mods]
+    ms = [d.modifiers[m] for m in ordered_mods(d, mods)]
+    out = []
+    for loc in d.locations:
+        if loc["zone"] != zone:
+            continue
+        v = float(loc.get("exposure", 1.0))
+        for m in ms:
+            v *= (m.get("zone") or {}).get(loc["zone"], 1.0)
+            v *= (m.get("side") or {}).get(loc["side"], 1.0)
+            v *= (m.get("loc") or {}).get(loc["id"], 1.0)
+        out.append((loc["id"], v))
+    return out if sum(v for _, v in out) > 0 else None
+
+
+def aimed_ranges(d: Data, table_id: str, weapon_id: str | None, zone: str, mods=None,
+                 shield: bool | None = None) -> list[dict] | None:
+    """d100 ranges for a blow aimed at `zone` (aimed_weights), or None if it cannot be aimed at."""
+    w = aimed_weights(d, table_id, weapon_id, zone, mods, shield)
+    return to_d100(w) if w else None
 
 
 def weapon_mix_ranges(d: Data, table_id: str) -> list[dict]:
@@ -300,30 +316,35 @@ def reduce_severity(severity: str, steps: int) -> str:
 # Roll
 # --------------------------------------------------------------------------
 def roll_hit(d: Data, table_id: str, weapon_id: str, severity: str | None = None,
-             rng: random.Random | None = None, mods=None, called: str | None = None,
+             rng: random.Random | None = None, mods=None, aim: str | None = None,
              kit: str | None = None, margin: int | None = None, critical: bool = False,
              shield: bool | None = None, mechanism: str | None = None,
-             attack_roll: int | None = None) -> dict:
+             attack_roll: int | None = None, gap: bool = False) -> dict:
     """Roll location, mechanism and severity for a hit. If `margin` is given (from an attack
     roll made with gravewounds.combat), severity comes from the margin of success instead.
     `mechanism` is a blow the attacker chose (one of the weapon's mechanisms); without it the
-    mechanism is rolled. Armour coverage is read on `attack_roll`'s units digit (a d10 if none)."""
+    mechanism is rolled. Armour coverage is read on `attack_roll`'s units digit (a d10 if none).
+    `aim` (a zone) and `gap` are what the attacker declared he aimed at (wounds.yaml combat.aim):
+    each paid costs aim.cost of the margin (nothing on a critical, nothing without a margin)."""
     rng = rng or random.Random()
     if kit and kit not in d.armor["kits"]:
         raise KeyError(f"unknown armour kit {kit}")
-    if called and called not in d.zones:
-        raise KeyError(f"unknown zone {called}")
+    if aim and aim not in d.zones:
+        raise KeyError(f"unknown zone {aim}")
     if weapon_id not in available_weapons(d, table_id):
         raise KeyError(f"weapon {weapon_id} is not offered on table {table_id}")
-    ranges = table_ranges(d, table_id, weapon_id, mods, shield)
+    cost = d.wounds["combat"]["aim"]["cost"]
+    left = margin                                   # the margin after what the aim paid
+    def pays() -> bool:
+        return margin is None or critical or left >= cost
+    zoned = None
+    if aim and pays():
+        zoned = aimed_ranges(d, table_id, weapon_id, aim, mods, shield)
+        if zoned and margin is not None and not critical:
+            left -= cost
+    ranges = zoned or table_ranges(d, table_id, weapon_id, mods, shield)
     r_loc = rng.randint(1, 100)
     loc_id = lookup(ranges, r_loc)
-    r_loc2 = None
-    if called:
-        r_loc2 = rng.randint(1, 100)
-        second = lookup(ranges, r_loc2)
-        if d.loc[loc_id]["zone"] != called and d.loc[second]["zone"] == called:
-            loc_id = second
     if mechanism is not None:
         if not d.weapons[weapon_id]["mechanisms"].get(mechanism):
             raise KeyError(f"weapon {weapon_id} cannot strike a {mechanism} blow")
@@ -331,33 +352,38 @@ def roll_hit(d: Data, table_id: str, weapon_id: str, severity: str | None = None
     else:
         r_mech = rng.randint(1, 100)
         mech = lookup(mechanism_ranges(d, weapon_id), r_mech)
+    layers = armor_at(d, kit, loc_id)
+    whole = len(layers) == 1 and layers[0][1] == 1 and layers[0][2] == 100
+    gapped = bool(gap and layers and not whole and pays())   # a gap is paid for only where there is one
+    if gapped and margin is not None and not critical:
+        left -= cost
     r_sev = None
     if margin is not None:
         from .combat import margin_severity
-        severity = margin_severity(d, margin, critical, weapon_id, d.loc[loc_id]["zone"])
+        severity = margin_severity(d, left, critical, weapon_id, d.loc[loc_id]["zone"])
     elif severity is None:
         r_sev = rng.randint(1, 100)
         severity = lookup(severity_ranges(d, mech, d.loc[loc_id]["zone"], weapon_id), r_sev)
 
     armour = None
     final = severity
-    layers = armor_at(d, kit, loc_id)
     if layers:
-        whole = len(layers) == 1 and layers[0][1] == 1 and layers[0][2] == 100
-        r_cov = None if whole else cover_digit(attack_roll, rng)[0]
-        hit = layers[0] if whole else meets_layer(layers, r_cov)
+        r_cov = None if whole or gapped else cover_digit(attack_roll, rng)[0]
+        hit = layers[0] if whole else None if gapped else meets_layer(layers, r_cov)
         material = hit[0] if hit else None
         steps = armor_steps(d, material, mech, weapon_id) if hit else 0
         final = reduce_severity(severity, steps)
         armour = {"material": material, "layers": layers, "cover_roll": r_cov,
-                  "covered": hit is not None, "steps": steps, "from": severity, "to": final}
+                  "covered": hit is not None, "gap_aimed": gapped, "steps": steps, "from": severity, "to": final}
 
     from .combat import graze, is_graze
-    grazed = is_graze(d, margin, critical)
+    grazed = is_graze(d, left, critical)
     fx = None if final == "stopped" else compose_wound(d, loc_id, mech, final)
     return {
         "table": resolve_table(d, table_id, weapon_id),
-        "rolls": {"location": r_loc, "location2": r_loc2, "mechanism": r_mech, "severity": r_sev},
+        "rolls": {"location": r_loc, "mechanism": r_mech, "severity": r_sev},
+        "aim": {"zone": aim, "zone_paid": bool(aim and zoned), "gap": gap, "gap_paid": gapped,
+                "margin": margin, "left": left},
         "location": loc_id, "location_name": d.loc[loc_id]["name"],
         "mechanism": mech, "severity": final, "armor": armour,
         "effects": None if final == "stopped" else (graze(fx) if grazed else fx),

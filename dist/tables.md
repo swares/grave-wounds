@@ -4,7 +4,7 @@ Generated 2026-10-23 from the data folder. Roll d100 (00 = 100).
 
 © 2026 Scott Wares. All rights reserved.
 
-**Procedure:** 1) d100 location on the table for the fight and weapon (situation column if one applies; called shots roll twice). 2) Mechanism: a cut-and-thrust weapon strikes the blow its wielder declares; otherwise its main mechanism, or d100 on its mix. 3) Severity from your system's damage, or d100. 4) Armour (adjusted tables): the attack roll's units digit (or a d10) says which layer the hit meets, if any; lower severity by the material's steps. 5) Look up the wound by location class and severity, then apply the mechanism modifiers.
+**Procedure:** 1) d100 location on the table for the fight and weapon (situation column if one applies; or, aimed at a zone, its Aimed columns). 2) Mechanism: a cut-and-thrust weapon strikes the blow its wielder declares; otherwise its main mechanism, or d100 on its mix. 3) Severity from your system's damage, or d100. 4) Armour (adjusted tables): the attack roll's units digit (or a d10) says which layer the hit meets, if any; lower severity by the material's steps. 5) Look up the wound by location class and severity, then apply the mechanism modifiers.
 
 # Crusades (Jacob's Ford, 1179; Sidon, 1253 or 1260)
 
@@ -77,6 +77,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Foot (left) | - | - | 98-99 | - | 00 | 00 | 00 |
 | Foot (right) | - | - | 00 | - | - | - | - |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Sword | Axe | Spiked club | Spear | Dagger | Bow | Crossbow |
+|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-05 | 01-05 | 01-31 | 01-31 | 01-13 | 01-13 | 01-13 |
+| head | Skull (right) | 06-10 | 06-10 | 32-62 | 32-62 | 14-26 | 14-26 | 14-26 |
+| head | Face | 11-17 | 11-17 | 63-00 | 63-00 | 27-42 | 27-42 | 27-42 |
+| head | Neck | 18-00 | 18-00 | - | - | 43-00 | 43-00 | 43-00 |
+| torso | Chest (left) | 01-32 | 01-32 | 01-25 | 01-22 | 01-29 | 01-29 | 01-29 |
+| torso | Chest (right) | 33-63 | 33-63 | 26-50 | 23-44 | 30-57 | 30-57 | 30-57 |
+| torso | Abdomen | - | - | - | 45-64 | - | - | - |
+| torso | Groin / pelvis | - | - | 51-70 | 65-74 | 58-66 | 58-66 | 58-66 |
+| torso | Upper back | 64-83 | 64-83 | 71-86 | 75-88 | 67-84 | 67-84 | 67-84 |
+| torso | Lower back | 84-00 | 84-00 | 87-00 | 89-00 | 85-00 | 85-00 | 85-00 |
+| arms | Shoulder (left) | 01-13 | 01-13 | 01-21 | 01-10 | 01-15 | 01-15 | 01-15 |
+| arms | Shoulder (right) | 14-26 | 14-26 | 22-42 | 11-20 | 16-30 | 16-30 | 16-30 |
+| arms | Upper arm (left) | 27-33 | 27-33 | 43-53 | 21-35 | 31-38 | 31-38 | 31-38 |
+| arms | Upper arm (right) | 34-40 | 34-40 | 54-64 | 36-50 | 39-46 | 39-46 | 39-46 |
+| arms | Forearm (left) | 41-47 | 41-47 | 65-75 | 51-65 | 47-54 | 47-54 | 47-54 |
+| arms | Forearm (right) | 48-54 | 48-54 | 76-86 | 66-80 | 55-62 | 55-62 | 55-62 |
+| arms | Hand (left) | 55-77 | 55-77 | 87-93 | 81-90 | 63-81 | 63-81 | 63-81 |
+| arms | Hand (right) | 78-00 | 78-00 | 94-00 | 91-00 | 82-00 | 82-00 | 82-00 |
+| legs | Thigh (left) | 01-50 | 01-50 | 01-25 | 01-25 | 01-31 | 01-31 | 01-31 |
+| legs | Thigh (right) | 51-00 | 51-00 | 26-50 | 26-50 | 32-62 | 32-62 | 32-62 |
+| legs | Knee (left) | - | - | 51-56 | 51-57 | 63-66 | 63-66 | 63-66 |
+| legs | Knee (right) | - | - | 57-62 | 58-64 | 67-70 | 67-70 | 67-70 |
+| legs | Lower leg (left) | - | - | 63-77 | 65-82 | 71-82 | 71-82 | 71-82 |
+| legs | Lower leg (right) | - | - | 78-92 | 83-00 | 83-94 | 83-94 | 83-94 |
+| legs | Foot (left) | - | - | 93-96 | - | 95-97 | 95-97 | 95-97 |
+| legs | Foot (right) | - | - | 97-00 | - | 98-00 | 98-00 | 98-00 |
+
 **Source totals:** Head (cranium and mandible) (17) = 17.0%; Neck (cervical vertebrae) (24) = 24.0%; Shoulders (clavicle, scapula) (9) = 9.0%; Upper limbs (arm bones) (9) = 9.0%; Hands (11) = 11.0%; Torso (ribs, spine) (10) = 10.0%; Hips (1) = 1.0%; Thighs (12) = 12.0%; Legs (below the thigh) (6) = 6.0%; Feet (1) = 1.0% (n = 100). From the study's table of bones with definite battle injuries (100 bones; 62 sharp, 35 blunt and 5 penetrating injuries) by body region. Sides are not recorded, and each region is shared among its locations by body exposure. Swords and axes roll on the sharp-force bones, the mace (spiked club) on the blunt-force ones and the spear on the penetrating ones (spiked mace, arrow, lance or javelin, the authors suggest); other weapons use all bones together.
 
 
@@ -125,6 +156,37 @@ Confidence: **Extrapolated - design estimate from analogous evidence** · Armour
 | Lower leg (right) | 95-97 | 93-96 | 97-98 | 96-97 | 99 | 95-97 | 95-97 |
 | Foot (left) | 98-99 | 97-99 | 99 | 98-99 | 00 | 98-99 | 98-99 |
 | Foot (right) | 00 | 00 | 00 | 00 | - | 00 | 00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Sword | Axe | Spiked club | Spear | Dagger | Bow | Crossbow |
+|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-32 | 01-32 | 01-32 | 01-29 | 01-26 | 01-32 | 01-33 |
+| head | Skull (right) | 33-64 | 33-64 | 33-64 | 30-57 | 27-52 | 33-64 | 34-65 |
+| head | Face | 65-88 | 65-88 | 65-88 | 58-89 | 53-81 | 65-88 | 66-89 |
+| head | Neck | 89-00 | 89-00 | 89-00 | 90-00 | 82-00 | 89-00 | 90-00 |
+| torso | Chest (left) | 01-24 | 01-24 | 01-24 | 01-24 | 01-24 | 01-24 | 01-24 |
+| torso | Chest (right) | 25-47 | 25-47 | 25-47 | 25-47 | 25-47 | 25-47 | 25-47 |
+| torso | Abdomen | 48-70 | 48-70 | 48-70 | 48-70 | 48-70 | 48-70 | 48-70 |
+| torso | Groin / pelvis | 71-80 | 71-80 | 71-80 | 71-80 | 71-80 | 71-80 | 71-80 |
+| torso | Upper back | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| torso | Lower back | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| arms | Shoulder (left) | 01-13 | 01-13 | 01-13 | 01-13 | 01-13 | 01-13 | 01-13 |
+| arms | Shoulder (right) | 14-26 | 14-26 | 14-26 | 14-26 | 14-26 | 14-26 | 14-26 |
+| arms | Upper arm (left) | 27-34 | 27-34 | 27-34 | 27-34 | 27-34 | 27-34 | 27-34 |
+| arms | Upper arm (right) | 35-42 | 35-42 | 35-42 | 35-42 | 35-42 | 35-42 | 35-42 |
+| arms | Forearm (left) | 43-54 | 43-54 | 43-54 | 43-54 | 43-54 | 43-54 | 43-54 |
+| arms | Forearm (right) | 55-66 | 55-66 | 55-66 | 55-66 | 55-66 | 55-66 | 55-66 |
+| arms | Hand (left) | 67-83 | 67-83 | 67-83 | 67-83 | 67-83 | 67-83 | 67-83 |
+| arms | Hand (right) | 84-00 | 84-00 | 84-00 | 84-00 | 84-00 | 84-00 | 84-00 |
+| legs | Thigh (left) | 01-24 | 01-24 | 01-24 | 01-24 | 01-24 | 01-24 | 01-24 |
+| legs | Thigh (right) | 25-48 | 25-48 | 25-48 | 25-48 | 25-48 | 25-48 | 25-48 |
+| legs | Knee (left) | 49-53 | 49-53 | 49-53 | 49-53 | 49-53 | 49-53 | 49-53 |
+| legs | Knee (right) | 54-58 | 54-58 | 54-58 | 54-58 | 54-58 | 54-58 | 54-58 |
+| legs | Lower leg (left) | 59-72 | 59-72 | 59-72 | 59-72 | 59-72 | 59-72 | 59-72 |
+| legs | Lower leg (right) | 73-86 | 73-86 | 73-86 | 73-86 | 73-86 | 73-86 | 73-86 |
+| legs | Foot (left) | 87-95 | 87-95 | 87-95 | 87-95 | 87-95 | 87-95 | 87-95 |
+| legs | Foot (right) | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 |
 
 **Close combat:** Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
 
@@ -200,6 +262,34 @@ Confidence: **Fitted - estimated to match published summary figures** · Armour:
 | Foot (left) | 98-99 | 98-99 | 98-99 | 98-99 | 99 | 98-99 | 98-99 |
 | Foot (right) | 00 | 00 | 00 | 00 | 00 | 00 | 00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Sword | Axe | Spiked club | Spear | Dagger | Bow | Crossbow |
+|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-46 | 01-46 | 01-46 | 01-44 | 01-42 | 01-46 | 01-47 |
+| head | Skull (right) | 47-82 | 47-82 | 47-82 | 45-77 | 43-74 | 47-82 | 48-83 |
+| head | Face | 83-96 | 83-96 | 83-96 | 78-97 | 75-93 | 83-96 | 84-97 |
+| head | Neck | 97-00 | 97-00 | 97-00 | 98-00 | 94-00 | 97-00 | 98-00 |
+| torso | Chest (left) | 01-34 | 01-34 | 01-34 | 01-34 | 01-34 | 01-34 | 01-34 |
+| torso | Chest (right) | 35-67 | 35-67 | 35-67 | 35-67 | 35-67 | 35-67 | 35-67 |
+| torso | Upper back | 68-00 | 68-00 | 68-00 | 68-00 | 68-00 | 68-00 | 68-00 |
+| arms | Shoulder (left) | 01-13 | 01-13 | 01-13 | 01-13 | 01-13 | 01-13 | 01-13 |
+| arms | Shoulder (right) | 14-19 | 14-19 | 14-19 | 14-19 | 14-19 | 14-19 | 14-19 |
+| arms | Upper arm (left) | 20-32 | 20-32 | 20-32 | 20-32 | 20-32 | 20-32 | 20-32 |
+| arms | Upper arm (right) | 33-44 | 33-44 | 33-44 | 33-44 | 33-44 | 33-44 | 33-44 |
+| arms | Forearm (left) | 45-63 | 45-63 | 45-63 | 45-63 | 45-63 | 45-63 | 45-63 |
+| arms | Forearm (right) | 64-82 | 64-82 | 64-82 | 64-82 | 64-82 | 64-82 | 64-82 |
+| arms | Hand (left) | 83-88 | 83-88 | 83-88 | 83-88 | 83-88 | 83-88 | 83-88 |
+| arms | Hand (right) | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 |
+| legs | Thigh (left) | 01-11 | 01-11 | 01-11 | 01-11 | 01-11 | 01-11 | 01-11 |
+| legs | Thigh (right) | 12-19 | 12-19 | 12-19 | 12-19 | 12-19 | 12-19 | 12-19 |
+| legs | Knee (left) | 20-28 | 20-28 | 20-28 | 20-28 | 20-28 | 20-28 | 20-28 |
+| legs | Knee (right) | 29-34 | 29-34 | 29-34 | 29-34 | 29-34 | 29-34 | 29-34 |
+| legs | Lower leg (left) | 35-75 | 35-75 | 35-75 | 35-75 | 35-75 | 35-75 | 35-75 |
+| legs | Lower leg (right) | 76-94 | 76-94 | 76-94 | 76-94 | 76-94 | 76-94 | 76-94 |
+| legs | Foot (left) | 95-98 | 95-98 | 95-98 | 95-98 | 95-98 | 95-98 | 95-98 |
+| legs | Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 |
+
 **Close combat:** Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
 
 **Reading it:** These weights are where blows left marks on bone, so the defenders' armour is already baked in (mail and shields kept blades off the torso). When using this table, do not also subtract torso armour - or use the adjusted table instead.
@@ -245,6 +335,37 @@ Confidence: **Extrapolated - design estimate from analogous evidence** · Armour
 | Lower leg (right) | 93-97 | 92-97 | 95-98 | 94-97 | 97-99 | 93-97 | 93-97 | 95-98 |
 | Foot (left) | 98-99 | 98-99 | 99 | 98-99 | 00 | 98-99 | 98-99 | 99 |
 | Foot (right) | 00 | 00 | 00 | 00 | - | 00 | 00 | 00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Sword | Axe | Spiked club | Spear | Dagger | Bow | Crossbow | Sling |
+|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-38 | 01-38 | 01-38 | 01-35 | 01-32 | 01-38 | 01-39 | 01-36 |
+| head | Skull (right) | 39-71 | 39-71 | 39-71 | 36-65 | 33-60 | 39-71 | 40-73 | 37-68 |
+| head | Face | 72-90 | 72-90 | 72-90 | 66-91 | 61-84 | 72-90 | 74-92 | 69-91 |
+| head | Neck | 91-00 | 91-00 | 91-00 | 92-00 | 85-00 | 91-00 | 93-00 | 92-00 |
+| torso | Chest (left) | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 |
+| torso | Chest (right) | 27-48 | 27-48 | 27-48 | 27-48 | 27-48 | 27-48 | 27-48 | 27-48 |
+| torso | Abdomen | 49-74 | 49-74 | 49-74 | 49-74 | 49-74 | 49-74 | 49-74 | 49-74 |
+| torso | Groin / pelvis | 75-82 | 75-82 | 75-82 | 75-82 | 75-82 | 75-82 | 75-82 | 75-82 |
+| torso | Upper back | 83-93 | 83-93 | 83-93 | 83-93 | 83-93 | 83-93 | 83-93 | 83-93 |
+| torso | Lower back | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 |
+| arms | Shoulder (left) | 01-17 | 01-17 | 01-17 | 01-17 | 01-17 | 01-17 | 01-17 | 01-17 |
+| arms | Shoulder (right) | 18-34 | 18-34 | 18-34 | 18-34 | 18-34 | 18-34 | 18-34 | 18-34 |
+| arms | Upper arm (left) | 35-45 | 35-45 | 35-45 | 35-45 | 35-45 | 35-45 | 35-45 | 35-45 |
+| arms | Upper arm (right) | 46-56 | 46-56 | 46-56 | 46-56 | 46-56 | 46-56 | 46-56 | 46-56 |
+| arms | Forearm (left) | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 |
+| arms | Forearm (right) | 74-90 | 74-90 | 74-90 | 74-90 | 74-90 | 74-90 | 74-90 | 74-90 |
+| arms | Hand (left) | 91-95 | 91-95 | 91-95 | 91-95 | 91-95 | 91-95 | 91-95 | 91-95 |
+| arms | Hand (right) | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| legs | Knee (left) | 36-44 | 36-44 | 36-44 | 36-44 | 36-44 | 36-44 | 36-44 | 36-44 |
+| legs | Knee (right) | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 |
+| legs | Lower leg (left) | 51-76 | 51-76 | 51-76 | 51-76 | 51-76 | 51-76 | 51-76 | 51-76 |
+| legs | Lower leg (right) | 77-91 | 77-91 | 77-91 | 77-91 | 77-91 | 77-91 | 77-91 | 77-91 |
+| legs | Foot (left) | 92-97 | 92-97 | 92-97 | 92-97 | 92-97 | 92-97 | 92-97 | 92-97 |
+| legs | Foot (right) | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 |
 
 **Close combat:** Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
 
@@ -305,6 +426,33 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Thigh (right) | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 |
 | Lower leg (left) | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 |
 | Lower leg (right) | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Sword | Axe | Spiked club | Spear | Dagger | Bow | Longbow | Crossbow |
+|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 |
+| torso | Chest (right) | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 |
+| torso | Abdomen | 45-64 | 45-64 | 45-64 | 45-64 | 45-64 | 45-64 | 45-64 | 45-64 |
+| torso | Groin / pelvis | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 |
+| torso | Upper back | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 |
+| torso | Lower back | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 | 01-70 |
+| legs | Thigh (right) | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 | 71-93 |
+| legs | Lower leg (left) | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 | 94-98 |
+| legs | Lower leg (right) | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 |
 
 **Source totals:** Left thigh (femur) (38) = 65.5%; Right thigh (femur) (11) = 19.0%; Thigh, side unknown (5) = 8.6%; Left shin (tibia) (3) = 5.2%; Right shin (tibia) (1) = 1.7% (n = 58). From the 58 perimortem blunt-force fractures counted in 2,762 bone fragments (54 femur, 4 tibia; 41 left, 12 right, 5 side unknown). The side split is applied to both bones alike, an estimate: the paper's table of bone by side was not seen. The 52 sharp and puncture wounds of the earlier study (38 and 14, cuts on skulls, a crossbow bolt through a frontal bone, cuts on tibiae and femora) are not located by bone in what was published, and are left out.
 
@@ -380,6 +528,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Lower leg (left) | 98 | 98 | 98-00 | - | 98 | 98 |
 | Foot (left) | 99-00 | 99-00 | - | - | 99-00 | 99-00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Sword | Bill | Poleaxe | Dagger | Longbow | Bow |
+|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-42 | 01-42 | 01-46 | 01-54 | 01-44 | 01-44 |
+| head | Skull (right) | 43-74 | 43-74 | 47-64 | 55-00 | 45-74 | 45-74 |
+| head | Face | 75-91 | 75-91 | 65-97 | - | 75-93 | 75-93 |
+| head | Neck | 92-00 | 92-00 | 98-00 | - | 94-00 | 94-00 |
+| torso | Chest (left) | - | - | 01-22 | 01-22 | - | - |
+| torso | Chest (right) | - | - | 23-44 | 23-44 | - | - |
+| torso | Abdomen | - | - | 45-64 | 45-64 | - | - |
+| torso | Groin / pelvis | 01-00 | 01-00 | 65-74 | 65-74 | 01-00 | 01-00 |
+| torso | Upper back | - | - | 75-88 | 75-88 | - | - |
+| torso | Lower back | - | - | 89-00 | 89-00 | - | - |
+| arms | Shoulder (left) | 01-06 | 01-06 | - | 01-10 | 01-05 | 01-05 |
+| arms | Shoulder (right) | 07-09 | 07-09 | - | 11-20 | 06-08 | 06-08 |
+| arms | Upper arm (left) | 10-15 | 10-15 | - | 21-35 | 09-13 | 09-13 |
+| arms | Upper arm (right) | 16-18 | 16-18 | - | 36-50 | 14-16 | 14-16 |
+| arms | Forearm (left) | 19-29 | 19-29 | - | 51-65 | 17-27 | 17-27 |
+| arms | Forearm (right) | 30-40 | 30-40 | 01-50 | 66-80 | 28-41 | 28-41 |
+| arms | Hand (left) | 41-64 | 41-64 | - | 81-90 | 42-64 | 42-64 |
+| arms | Hand (right) | 65-00 | 65-00 | 51-00 | 91-00 | 65-00 | 65-00 |
+| legs | Thigh (left) | 01-13 | 01-13 | - | 01-20 | 01-11 | 01-11 |
+| legs | Thigh (right) | 14-38 | 14-38 | - | 21-40 | 12-33 | 12-33 |
+| legs | Knee (left) | - | - | - | 41-46 | - | - |
+| legs | Knee (right) | 39-51 | 39-51 | - | 47-52 | 34-44 | 34-44 |
+| legs | Lower leg (left) | 52-63 | 52-63 | 01-00 | 53-69 | 45-66 | 45-66 |
+| legs | Lower leg (right) | - | - | - | 70-86 | - | - |
+| legs | Foot (left) | 64-00 | 64-00 | - | 87-93 | 67-00 | 67-00 |
+| legs | Foot (right) | - | - | - | 94-00 | - | - |
+
 **Source totals:** Face and jaw (26) = 14.4%; Skull, left (48) = 26.7%; Skull, midline or both sides (21) = 11.7%; Skull, right (29) = 16.1%; Foot, left (3) = 1.7%; Forearm, left (4) = 2.2%; Forearm, right (5) = 2.8%; Pelvis (1) = 0.6%; Hand, left (8) = 4.4%; Hand, side not recorded (1) = 0.6%; Hand, right (13) = 7.2%; Knee, right (1) = 0.6%; Lower leg, left (2) = 1.1%; Neck (cervical vertebrae) (9) = 5.0%; Shoulder, left (2) = 1.1%; Shoulder, right (1) = 0.6%; Thigh, left (1) = 0.6%; Thigh, right (2) = 1.1%; Upper arm, left (2) = 1.1%; Upper arm, right (1) = 0.6% (n = 180). Counted wound by wound from the study's tables: 124 head wounds (79 blade, 32 blunt, 13 penetrating) on 31 skulls and 56 injured bones below the head (52 blade, 4 blunt). Head wounds are counted per wound and body injuries per bone, as published, so the body is slightly under-counted. Blade weapons roll on the blade wounds, the poleaxe on the blunt ones and the dagger on the penetrating ones (arrow, bolt, dagger and poleaxe-spike wounds to the skull). Bows use all the wounds together. Unsided skull wounds (frontal, occipital, both parietals) are shared between left and right.
 
 
@@ -429,6 +608,37 @@ Confidence: **Extrapolated - design estimate from analogous evidence** · Armour
 | Lower leg (right) | 96-97 | 96-97 | 96-97 | 94-96 | 99 | 96-97 | 96-97 | 96-97 | 96-97 |
 | Foot (left) | 98-99 | 98-99 | 98-99 | 97-99 | 00 | 98-99 | 98-99 | 98-99 | 98-99 |
 | Foot (right) | 00 | 00 | 00 | 00 | - | 00 | 00 | 00 | 00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Sword | Bill | Poleaxe | Axe | Dagger | Spear | Longbow | Bow | Crossbow |
+|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-39 | 01-39 | 01-39 | 01-39 | 01-31 | 01-35 | 01-39 | 01-39 | 01-39 |
+| head | Skull (right) | 40-68 | 40-68 | 40-68 | 40-68 | 32-55 | 36-61 | 40-68 | 40-68 | 40-69 |
+| head | Face | 69-87 | 69-87 | 69-87 | 69-87 | 56-79 | 62-88 | 69-87 | 69-87 | 70-89 |
+| head | Neck | 88-00 | 88-00 | 88-00 | 88-00 | 80-00 | 89-00 | 88-00 | 88-00 | 90-00 |
+| torso | Chest (left) | 01-23 | 01-23 | 01-23 | 01-23 | 01-24 | 01-24 | 01-23 | 01-23 | 01-23 |
+| torso | Chest (right) | 24-43 | 24-43 | 24-43 | 24-43 | 25-44 | 25-44 | 24-43 | 24-43 | 24-43 |
+| torso | Abdomen | 44-66 | 44-66 | 44-66 | 44-66 | 45-67 | 45-67 | 44-66 | 44-66 | 44-66 |
+| torso | Groin / pelvis | 67-76 | 67-76 | 67-76 | 67-76 | 68-77 | 68-77 | 67-76 | 67-76 | 67-76 |
+| torso | Upper back | 77-90 | 77-90 | 77-90 | 77-90 | 78-90 | 78-90 | 77-90 | 77-90 | 77-90 |
+| torso | Lower back | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 |
+| arms | Upper arm (left) | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 |
+| arms | Upper arm (right) | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 |
+| arms | Forearm (left) | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 |
+| arms | Forearm (right) | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 |
+| arms | Hand (left) | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 |
+| arms | Hand (right) | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 |
+| legs | Thigh (left) | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 |
+| legs | Thigh (right) | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 |
+| legs | Knee (left) | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 |
+| legs | Knee (right) | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 |
+| legs | Lower leg (left) | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 |
+| legs | Lower leg (right) | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 |
+| legs | Foot (left) | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 |
+| legs | Foot (right) | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 |
 
 **Close combat:** Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Spiked club: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
 
@@ -485,6 +695,36 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Thigh (left) | - | - | - | 99 | 99 | - | 99 | - | - | - |
 | Thigh (right) | 00 | 00 | 00 | 00 | 00 | - | 00 | - | - | 00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Sword | Halberd | Poleaxe | Pike | Spear | Spiked club | Crossbow | Handgun | Matchlock | Dagger |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-50 | 01-50 | 01-50 | 01-48 | 01-48 | 01-39 | 01-48 | 01-20 | 01-20 | 01-49 |
+| head | Skull (right) | 51-93 | 51-93 | 51-93 | 49-94 | 49-94 | 40-96 | 49-94 | 21-80 | 21-80 | 50-93 |
+| head | Face | 94-00 | 94-00 | 94-00 | 95-00 | 95-00 | 97-00 | 95-00 | 81-00 | 81-00 | 94-00 |
+| torso | Chest (left) | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 |
+| torso | Chest (right) | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 |
+| torso | Abdomen | 45-64 | 45-64 | 45-64 | 45-64 | 45-64 | 45-64 | 45-64 | 45-64 | 45-64 | 45-64 |
+| torso | Groin / pelvis | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 |
+| torso | Upper back | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 |
+| torso | Lower back | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-25 | 01-25 | 01-25 | 01-50 | 01-50 | 01-20 | 01-50 | 01-20 | 01-20 | 01-33 |
+| legs | Thigh (right) | 26-00 | 26-00 | 26-00 | 51-00 | 51-00 | 21-40 | 51-00 | 21-40 | 21-40 | 34-00 |
+| legs | Knee (left) | - | - | - | - | - | 41-46 | - | 41-46 | 41-46 | - |
+| legs | Knee (right) | - | - | - | - | - | 47-52 | - | 47-52 | 47-52 | - |
+| legs | Lower leg (left) | - | - | - | - | - | 53-69 | - | 53-69 | 53-69 | - |
+| legs | Lower leg (right) | - | - | - | - | - | 70-86 | - | 70-86 | 70-86 | - |
+| legs | Foot (left) | - | - | - | - | - | 87-93 | - | 87-93 | 87-93 | - |
+| legs | Foot (right) | - | - | - | - | - | 94-00 | - | 94-00 | 94-00 | - |
+
 **Source totals:** Skull, left (178) = 42.1%; Skull, right (160) = 37.8%; Skull, midline (51) = 12.1%; Face (28) = 6.6%; Right thigh (4) = 0.9%; Left thigh (2) = 0.5% (n = 423). From 417 perimortem injuries on 102 of 106 crania (315 cut, 69 point, 28 blunt, 5 gunshot) and 6 on 4 of 33 femora (Cooper 2010). Skull wounds are shared between the left and right of the skull by the author's sides for each kind (Table 28), midline ones evenly; the face's share is our tally from her catalogue. Swords and halberds (and the poleaxe) roll on the cuts, pikes and spears on the point wounds (thrust, stab and crossbow bolt counted together), the war hammer (spiked club) on the blunt ones, the handgun (and the matchlock) on the gunshot ones; others on all together.
 
 
@@ -533,6 +773,37 @@ Confidence: **Extrapolated - design estimate from analogous evidence** · Armour
 | Lower leg (right) | 96-97 | 96-97 | 96-97 | 98 | 96-97 | 96-97 | 94-96 | 99 | 98 | 96-97 | 96-97 | 96-97 | 96-97 | 96-97 | 96-97 |
 | Foot (left) | 98-99 | 98-99 | 98-99 | 99 | 98-99 | 98-99 | 97-99 | 00 | 99 | 98-99 | 98-99 | 98-99 | 98-99 | 98-99 | 98-99 |
 | Foot (right) | 00 | 00 | 00 | 00 | 00 | 00 | 00 | - | 00 | 00 | 00 | 00 | 00 | 00 | 00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Sword | Halberd | Poleaxe | Pike | Spear | Bill | Axe | Dagger | Spiked club | Bow | Longbow | Crossbow | Handgun | Matchlock | Artillery |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-36 | 01-36 | 01-36 | 01-32 | 01-32 | 01-36 | 01-36 | 01-29 | 01-36 | 01-36 | 01-36 | 01-36 | 01-36 | 01-36 | 01-36 |
+| head | Skull (right) | 37-68 | 37-68 | 37-68 | 33-61 | 33-61 | 37-68 | 37-68 | 30-55 | 37-68 | 37-68 | 37-68 | 37-69 | 37-68 | 37-68 | 37-68 |
+| head | Face | 69-87 | 69-87 | 69-87 | 62-88 | 62-88 | 69-87 | 69-87 | 56-79 | 69-87 | 69-87 | 69-87 | 70-89 | 69-87 | 69-87 | 69-87 |
+| head | Neck | 88-00 | 88-00 | 88-00 | 89-00 | 89-00 | 88-00 | 88-00 | 80-00 | 88-00 | 88-00 | 88-00 | 90-00 | 88-00 | 88-00 | 88-00 |
+| torso | Chest (left) | 01-23 | 01-23 | 01-23 | 01-23 | 01-24 | 01-23 | 01-23 | 01-24 | 01-23 | 01-23 | 01-23 | 01-23 | 01-23 | 01-23 | 01-23 |
+| torso | Chest (right) | 24-43 | 24-43 | 24-43 | 24-43 | 25-44 | 24-43 | 24-43 | 25-44 | 24-43 | 24-43 | 24-43 | 24-43 | 24-43 | 24-43 | 24-43 |
+| torso | Abdomen | 44-66 | 44-66 | 44-66 | 44-66 | 45-67 | 44-66 | 44-66 | 45-67 | 44-66 | 44-66 | 44-66 | 44-66 | 44-66 | 44-66 | 44-66 |
+| torso | Groin / pelvis | 67-76 | 67-76 | 67-76 | 67-76 | 68-77 | 67-76 | 67-76 | 68-77 | 67-76 | 67-76 | 67-76 | 67-76 | 67-76 | 67-76 | 67-76 |
+| torso | Upper back | 77-90 | 77-90 | 77-90 | 77-90 | 78-90 | 77-90 | 77-90 | 78-90 | 77-90 | 77-90 | 77-90 | 77-90 | 77-90 | 77-90 | 77-90 |
+| torso | Lower back | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 | 11-15 |
+| arms | Upper arm (left) | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 | 16-25 |
+| arms | Upper arm (right) | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 | 26-34 |
+| arms | Forearm (left) | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 | 35-48 |
+| arms | Forearm (right) | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 | 49-62 |
+| arms | Hand (left) | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 | 63-81 |
+| arms | Hand (right) | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 |
+| legs | Thigh (left) | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 |
+| legs | Thigh (right) | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 |
+| legs | Knee (left) | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 | 45-50 |
+| legs | Knee (right) | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 | 51-56 |
+| legs | Lower leg (left) | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 | 57-73 |
+| legs | Lower leg (right) | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 | 74-84 |
+| legs | Foot (left) | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 | 85-95 |
+| legs | Foot (right) | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 | 96-00 |
 
 **Close combat:** Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
 
@@ -602,6 +873,32 @@ Confidence: **Historical - taken directly from a source** · Armour: **allowed**
 | Lower leg (right) | 95-00 | 95-00 | 95-00 | - |
 | Foot (right) | - | - | - | 96-00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Pistol/carbine | Matchlock | Sabre | Musket butt |
+|---|---|---|---|---|---|
+| head | Skull (left) | 01-48 | 01-48 | 01-30 | 01-23 |
+| head | Skull (right) | 49-96 | 49-96 | 31-60 | 24-31 |
+| head | Face | 97-00 | 97-00 | 61-00 | 32-00 |
+| torso | Chest (left) | 01-10 | 01-10 | - | 01-38 |
+| torso | Chest (right) | 11-20 | 11-20 | - | 39-76 |
+| torso | Groin / pelvis | 21-60 | 21-60 | 01-28 | - |
+| torso | Upper back | 61-91 | 61-91 | 29-67 | 77-00 |
+| torso | Lower back | 92-00 | 92-00 | 68-00 | - |
+| arms | Shoulder (left) | 01-10 | 01-10 | - | - |
+| arms | Shoulder (right) | 11-20 | 11-20 | - | - |
+| arms | Upper arm (left) | 21-35 | 21-35 | 01-34 | - |
+| arms | Upper arm (right) | 36-50 | 36-50 | - | - |
+| arms | Forearm (left) | 51-65 | 51-65 | 35-67 | 01-50 |
+| arms | Forearm (right) | 66-80 | 66-80 | 68-00 | 51-75 |
+| arms | Hand (left) | 81-90 | 81-90 | - | 76-00 |
+| arms | Hand (right) | 91-00 | 91-00 | - | - |
+| legs | Thigh (left) | - | - | - | 01-67 |
+| legs | Thigh (right) | 01-20 | 01-20 | 01-75 | - |
+| legs | Lower leg (left) | 21-60 | 21-60 | - | - |
+| legs | Lower leg (right) | 61-00 | 61-00 | 76-00 | - |
+| legs | Foot (right) | - | - | - | 68-00 |
+
 **Source totals:** frontal R; parietal R; occipital R (11) = 15.9%; frontal L; parietal L; occipital L (13) = 18.8%; facial L; facial centre; facial R (12) = 17.4%; cranial base; parietal centre; occipital centre (4) = 5.8%; lower limb R (4) = 5.8%; lower limb R (3) = 4.3%; lower limb L (2) = 2.9%; torso (1) = 1.4%; torso (1) = 1.4%; torso (1) = 1.4%; torso (2) = 2.9%; upper limb R (2) = 2.9%; upper limb L (3) = 4.3%; upper limb L (1) = 1.4%; lower limb R (1) = 1.4%; lower limb L (2) = 2.9%; torso (1) = 1.4%; upper limb L (1) = 1.4%; torso (4) = 5.8% (n = 69). Counted from the study's tables of reliable battle injuries (69: 32 projectile, 21 blunt, 16 sharp), each weapon rolling on its own mechanism's injuries. Sides are as recorded; injuries the authors only call probable are left out. Where a bone could belong to more than one location (vertebra, ribcage, cranial base), it is shared by body exposure.
 
 
@@ -660,6 +957,37 @@ Confidence: **Extrapolated - design estimate from analogous evidence** · Armour
 | Lower leg (right) | 90-96 | 90-96 |
 | Foot (left) | 97-98 | 97-98 |
 | Foot (right) | 99-00 | 99-00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Matchlock | Pistol/carbine |
+|---|---|---|---|
+| head | Skull (left) | 01-38 | 01-38 |
+| head | Skull (right) | 39-73 | 39-73 |
+| head | Face | 74-97 | 74-97 |
+| head | Neck | 98-00 | 98-00 |
+| torso | Chest (left) | 01-16 | 01-16 |
+| torso | Chest (right) | 17-32 | 17-32 |
+| torso | Abdomen | 33-48 | 33-48 |
+| torso | Groin / pelvis | 49-76 | 49-76 |
+| torso | Upper back | 77-88 | 77-88 |
+| torso | Lower back | 89-00 | 89-00 |
+| arms | Shoulder (left) | 01-11 | 01-11 |
+| arms | Shoulder (right) | 12-22 | 12-22 |
+| arms | Upper arm (left) | 23-46 | 23-46 |
+| arms | Upper arm (right) | 47-69 | 47-69 |
+| arms | Forearm (left) | 70-76 | 70-76 |
+| arms | Forearm (right) | 77-82 | 77-82 |
+| arms | Hand (left) | 83-92 | 83-92 |
+| arms | Hand (right) | 93-00 | 93-00 |
+| legs | Thigh (left) | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-42 | 21-42 |
+| legs | Knee (left) | 43-46 | 43-46 |
+| legs | Knee (right) | 47-50 | 47-50 |
+| legs | Lower leg (left) | 51-69 | 51-69 |
+| legs | Lower leg (right) | 70-89 | 70-89 |
+| legs | Foot (left) | 90-94 | 90-94 |
+| legs | Foot (right) | 95-00 | 95-00 |
 
 **Close combat:** Sabre, Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Musket butt, Pike, Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted* with Target has no shield applied. Artillery: roll location on *Napoleonic era - all hits (gameplay)*. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
 
@@ -748,6 +1076,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **allowed**
 | Foot (left) | 99 | 99 | 99 | 99 |
 | Foot (right) | 00 | 00 | 00 | 00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Musket | Rifle | Pistol | Artillery |
+|---|---|---|---|---|---|
+| head | Skull (left) | 01-27 | 01-27 | 01-27 | 01-27 |
+| head | Skull (right) | 28-54 | 28-54 | 28-54 | 28-54 |
+| head | Face | 55-79 | 55-79 | 55-79 | 55-79 |
+| head | Neck | 80-00 | 80-00 | 80-00 | 80-00 |
+| torso | Chest (left) | 01-24 | 01-24 | 01-24 | 01-24 |
+| torso | Chest (right) | 25-47 | 25-47 | 25-47 | 25-47 |
+| torso | Abdomen | 48-59 | 48-59 | 48-59 | 48-59 |
+| torso | Groin / pelvis | 60-79 | 60-79 | 60-79 | 60-79 |
+| torso | Upper back | 80-89 | 80-89 | 80-89 | 80-89 |
+| torso | Lower back | 90-00 | 90-00 | 90-00 | 90-00 |
+| arms | Shoulder (left) | 01-12 | 01-12 | 01-12 | 01-12 |
+| arms | Shoulder (right) | 13-24 | 13-24 | 13-24 | 13-24 |
+| arms | Upper arm (left) | 25-37 | 25-37 | 25-37 | 25-37 |
+| arms | Upper arm (right) | 38-50 | 38-50 | 38-50 | 38-50 |
+| arms | Forearm (left) | 51-63 | 51-63 | 51-63 | 51-63 |
+| arms | Forearm (right) | 64-76 | 64-76 | 64-76 | 64-76 |
+| arms | Hand (left) | 77-88 | 77-88 | 77-88 | 77-88 |
+| arms | Hand (right) | 89-00 | 89-00 | 89-00 | 89-00 |
+| legs | Thigh (left) | 01-18 | 01-18 | 01-18 | 01-18 |
+| legs | Thigh (right) | 19-36 | 19-36 | 19-36 | 19-36 |
+| legs | Knee (left) | 37-38 | 37-38 | 37-38 | 37-38 |
+| legs | Knee (right) | 39-40 | 39-40 | 39-40 | 39-40 |
+| legs | Lower leg (left) | 41-65 | 41-65 | 41-65 | 41-65 |
+| legs | Lower leg (right) | 66-90 | 66-90 | 66-90 | 66-90 |
+| legs | Foot (left) | 91-95 | 91-95 | 91-95 | 91-95 |
+| legs | Foot (right) | 96-00 | 96-00 | 96-00 | 96-00 |
+
 **Source totals:** Head and scalp (24) = 6.3%; Face, eye, jaw (11) = 2.9%; Neck and throat (9) = 2.4%; Chest, breast and side (36) = 9.5%; Through the body (level not stated) (12) = 3.2%; Belly (8) = 2.1%; Hip, groin, testicles (18) = 4.7%; Back, shoulder blade (2) = 0.5%; Small of the back, loins (4) = 1.1%; Back, level not stated (9) = 2.4%; Shoulder and armpit (32) = 8.4%; Arm (not said which part) (49) = 12.9%; Upper arm and elbow (11) = 2.9%; Wrist and forearm (11) = 2.9%; Hand, fingers, thumb (32) = 8.4%; Thigh (40) = 10.6%; Knee (5) = 1.3%; Leg below the knee (55) = 14.5%; Foot, ankle, heel (11) = 2.9% (n = 379). Counted wound by wound from 344 men's entries (379 wounds whose site is named; 32 more not located). Sides are recorded for about half and were close to even (85 left, 99 right), so left and right are pooled and split by body exposure (design estimate). 'Arm' without more detail is shared between upper arm and forearm.
 
 
@@ -807,6 +1166,37 @@ Confidence: **Extrapolated - design estimate from analogous evidence** · Armour
 | Lower leg (right) | 95-98 | 95-98 | 95-98 | 95-98 |
 | Foot (left) | 99 | 99 | 99 | 99 |
 | Foot (right) | 00 | 00 | 00 | 00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Musket | Rifle | Pistol | Artillery |
+|---|---|---|---|---|---|
+| head | Skull (left) | 01-26 | 01-26 | 01-26 | 01-26 |
+| head | Skull (right) | 27-51 | 27-51 | 27-51 | 27-51 |
+| head | Face | 52-80 | 52-80 | 52-80 | 52-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-22 | 01-22 | 01-22 | 01-22 |
+| torso | Chest (right) | 23-44 | 23-44 | 23-44 | 23-44 |
+| torso | Abdomen | 45-61 | 45-61 | 45-61 | 45-61 |
+| torso | Groin / pelvis | 62-75 | 62-75 | 62-75 | 62-75 |
+| torso | Upper back | 76-88 | 76-88 | 76-88 | 76-88 |
+| torso | Lower back | 89-00 | 89-00 | 89-00 | 89-00 |
+| arms | Shoulder (left) | 01-12 | 01-12 | 01-12 | 01-12 |
+| arms | Shoulder (right) | 13-24 | 13-24 | 13-24 | 13-24 |
+| arms | Upper arm (left) | 25-37 | 25-37 | 25-37 | 25-37 |
+| arms | Upper arm (right) | 38-50 | 38-50 | 38-50 | 38-50 |
+| arms | Forearm (left) | 51-63 | 51-63 | 51-63 | 51-63 |
+| arms | Forearm (right) | 64-76 | 64-76 | 64-76 | 64-76 |
+| arms | Hand (left) | 77-88 | 77-88 | 77-88 | 77-88 |
+| arms | Hand (right) | 89-00 | 89-00 | 89-00 | 89-00 |
+| legs | Thigh (left) | 01-18 | 01-18 | 01-18 | 01-18 |
+| legs | Thigh (right) | 19-36 | 19-36 | 19-36 | 19-36 |
+| legs | Knee (left) | 37-39 | 37-39 | 37-39 | 37-39 |
+| legs | Knee (right) | 40-42 | 40-42 | 40-42 | 40-42 |
+| legs | Lower leg (left) | 43-66 | 43-66 | 43-66 | 43-66 |
+| legs | Lower leg (right) | 67-90 | 67-90 | 67-90 | 67-90 |
+| legs | Foot (left) | 91-95 | 91-95 | 91-95 | 91-95 |
+| legs | Foot (right) | 96-00 | 96-00 | 96-00 | 96-00 |
 
 **Close combat:** Bayonet, Sabre: roll location on *Peninsular War 1808-14 - French officers' wounds*. Musket butt, Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted* with Target has no shield applied. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
 
@@ -887,6 +1277,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **allowed**
 | Foot (left) | 95-97 | 95-97 | 95-97 | 93-96 | 99 | - | 99 |
 | Foot (right) | 98-00 | 98-00 | 98-00 | 97-00 | 00 | - | 00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Musket | Rifle | Pistol | Artillery | Sabre | Bayonet | Lance |
+|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-35 | 01-35 | 01-35 | 01-37 | 01-45 | 01-38 | 01-34 |
+| head | Skull (right) | 36-70 | 36-70 | 36-70 | 38-74 | 46-90 | 39-75 | 35-67 |
+| head | Face | 71-89 | 71-89 | 71-89 | 75-91 | 91-97 | 76-92 | 68-89 |
+| head | Neck | 90-00 | 90-00 | 90-00 | 92-00 | 98-00 | 93-00 | 90-00 |
+| torso | Chest (left) | 01-19 | 01-19 | 01-19 | 01-13 | 01-29 | 01-20 | 01-30 |
+| torso | Chest (right) | 20-38 | 20-38 | 20-38 | 14-26 | 30-58 | 21-39 | 31-60 |
+| torso | Abdomen | 39-62 | 39-62 | 39-62 | 27-51 | 59-91 | 40-61 | - |
+| torso | Groin / pelvis | 63-89 | 63-89 | 63-89 | 52-88 | - | 62-89 | 61-80 |
+| torso | Upper back | 90 | 90 | 90 | 89-90 | - | 90-92 | 81-85 |
+| torso | Lower back | 91-00 | 91-00 | 91-00 | 91-00 | 92-00 | 93-00 | 86-00 |
+| arms | Shoulder (left) | 01-13 | 01-13 | 01-13 | 01-17 | 01-09 | 01-08 | 01-09 |
+| arms | Shoulder (right) | 14-26 | 14-26 | 14-26 | 18-34 | 10-18 | 09-16 | 10-18 |
+| arms | Upper arm (left) | 27-51 | 27-51 | 27-51 | 35-54 | 19-37 | 17-39 | 19-41 |
+| arms | Upper arm (right) | 52-76 | 52-76 | 52-76 | 55-74 | 38-56 | 40-62 | 42-64 |
+| arms | Forearm (left) | 77-80 | 77-80 | 77-80 | 75 | 57-63 | 63-65 | 65-70 |
+| arms | Forearm (right) | 81-84 | 81-84 | 81-84 | 76 | 64-70 | 66-68 | 71-76 |
+| arms | Hand (left) | 85-92 | 85-92 | 85-92 | 77-88 | 71-85 | 69-84 | 77-88 |
+| arms | Hand (right) | 93-00 | 93-00 | 93-00 | 89-00 | 86-00 | 85-00 | 89-00 |
+| legs | Thigh (left) | 01-21 | 01-21 | 01-21 | 01-17 | 01-23 | 01-32 | 01-14 |
+| legs | Thigh (right) | 22-42 | 22-42 | 22-42 | 18-34 | 24-46 | 33-64 | 15-28 |
+| legs | Knee (left) | 43-47 | 43-47 | 43-47 | 35-38 | 47-55 | 65-72 | 29-50 |
+| legs | Knee (right) | 48-52 | 48-52 | 48-52 | 39-42 | 56-64 | 73-80 | 51-72 |
+| legs | Lower leg (left) | 53-70 | 53-70 | 53-70 | 43-62 | 65-73 | 81-88 | 73-79 |
+| legs | Lower leg (right) | 71-88 | 71-88 | 71-88 | 63-82 | 74-82 | 89-96 | 80-86 |
+| legs | Foot (left) | 89-94 | 89-94 | 89-94 | 83-91 | 83-91 | 97-98 | 87-93 |
+| legs | Foot (right) | 95-00 | 95-00 | 95-00 | 92-00 | 92-00 | 99-00 | 94-00 |
+
 **Source totals:** Arm (bras) (678) = 17.0%; Hand (245) = 6.1%; Wrist (35) = 0.9%; Forearm (63) = 1.6%; Leg below the knee (621) = 15.5%; Thigh (687) = 17.2%; Hip (99) = 2.5%; Foot (201) = 5.0%; Knee (155) = 3.9%; Chest (169) = 4.2%; Head (390) = 9.8%; Eye (3) = 0.1%; Forehead (18) = 0.5%; Neck (46) = 1.2%; Cheek (42) = 1.1%; Jaw (41) = 1.0%; Abdomen (102) = 2.6%; Shoulder (341) = 8.5%; Buttock (16) = 0.4%; Back (10) = 0.3%; Loins (kidneys) (33) = 0.8% (n = 3,995). Location counts are from the source (3,995 wound events). Each weapon rolls on its own recorded distribution (musket 2,848, sword 284, bayonet 97, lance 43, ordnance 209 wounds). Left and right are not recorded and are split evenly; 'arm' (bras) is put on the upper arm because wrist and forearm are listed apart. Rifles and pistols use the musket data.
 
 
@@ -948,6 +1369,37 @@ Confidence: **Extrapolated - design estimate from analogous evidence** · Armour
 | Lower leg (right) | 91-96 | 91-96 | 91-96 | 91-96 |
 | Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 |
 | Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Musket | Rifle | Pistol | Artillery |
+|---|---|---|---|---|---|
+| head | Skull (left) | 01-31 | 01-31 | 01-31 | 01-31 |
+| head | Skull (right) | 32-62 | 32-62 | 32-62 | 32-62 |
+| head | Face | 63-85 | 63-85 | 63-85 | 63-85 |
+| head | Neck | 86-00 | 86-00 | 86-00 | 86-00 |
+| torso | Chest (left) | 01-21 | 01-21 | 01-21 | 01-21 |
+| torso | Chest (right) | 22-42 | 22-42 | 22-42 | 22-42 |
+| torso | Abdomen | 43-64 | 43-64 | 43-64 | 43-64 |
+| torso | Groin / pelvis | 65-80 | 65-80 | 65-80 | 65-80 |
+| torso | Upper back | 81-89 | 81-89 | 81-89 | 81-89 |
+| torso | Lower back | 90-00 | 90-00 | 90-00 | 90-00 |
+| arms | Shoulder (left) | 01-12 | 01-12 | 01-12 | 01-12 |
+| arms | Shoulder (right) | 13-24 | 13-24 | 13-24 | 13-24 |
+| arms | Upper arm (left) | 25-49 | 25-49 | 25-49 | 25-49 |
+| arms | Upper arm (right) | 50-74 | 50-74 | 50-74 | 50-74 |
+| arms | Forearm (left) | 75-78 | 75-78 | 75-78 | 75-78 |
+| arms | Forearm (right) | 79-82 | 79-82 | 79-82 | 79-82 |
+| arms | Hand (left) | 83-91 | 83-91 | 83-91 | 83-91 |
+| arms | Hand (right) | 92-00 | 92-00 | 92-00 | 92-00 |
+| legs | Thigh (left) | 01-21 | 01-21 | 01-21 | 01-21 |
+| legs | Thigh (right) | 22-42 | 22-42 | 22-42 | 22-42 |
+| legs | Knee (left) | 43-47 | 43-47 | 43-47 | 43-47 |
+| legs | Knee (right) | 48-52 | 48-52 | 48-52 | 48-52 |
+| legs | Lower leg (left) | 53-70 | 53-70 | 53-70 | 53-70 |
+| legs | Lower leg (right) | 71-88 | 71-88 | 71-88 | 71-88 |
+| legs | Foot (left) | 89-94 | 89-94 | 89-94 | 89-94 |
+| legs | Foot (right) | 95-00 | 95-00 | 95-00 | 95-00 |
 
 **Close combat:** Sabre, Bayonet, Lance: roll location on *Peninsular War 1808-14 - French officers' wounds*. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
 
@@ -1025,6 +1477,37 @@ Confidence: **Extrapolated - design estimate from analogous evidence** · Armour
 | Lower leg (right) | 92-96 | 92-96 | 92-96 | 92-96 |
 | Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 |
 | Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Musket | Rifle | Pistol | Artillery |
+|---|---|---|---|---|---|
+| head | Skull (left) | 01-30 | 01-30 | 01-30 | 01-30 |
+| head | Skull (right) | 31-60 | 31-60 | 31-60 | 31-60 |
+| head | Face | 61-84 | 61-84 | 61-84 | 61-84 |
+| head | Neck | 85-00 | 85-00 | 85-00 | 85-00 |
+| torso | Chest (left) | 01-22 | 01-22 | 01-22 | 01-22 |
+| torso | Chest (right) | 23-43 | 23-43 | 23-43 | 23-43 |
+| torso | Abdomen | 44-64 | 44-64 | 44-64 | 44-64 |
+| torso | Groin / pelvis | 65-79 | 65-79 | 65-79 | 65-79 |
+| torso | Upper back | 80-89 | 80-89 | 80-89 | 80-89 |
+| torso | Lower back | 90-00 | 90-00 | 90-00 | 90-00 |
+| arms | Shoulder (left) | 01-12 | 01-12 | 01-12 | 01-12 |
+| arms | Shoulder (right) | 13-24 | 13-24 | 13-24 | 13-24 |
+| arms | Upper arm (left) | 25-49 | 25-49 | 25-49 | 25-49 |
+| arms | Upper arm (right) | 50-74 | 50-74 | 50-74 | 50-74 |
+| arms | Forearm (left) | 75-78 | 75-78 | 75-78 | 75-78 |
+| arms | Forearm (right) | 79-82 | 79-82 | 79-82 | 79-82 |
+| arms | Hand (left) | 83-91 | 83-91 | 83-91 | 83-91 |
+| arms | Hand (right) | 92-00 | 92-00 | 92-00 | 92-00 |
+| legs | Thigh (left) | 01-21 | 01-21 | 01-21 | 01-21 |
+| legs | Thigh (right) | 22-42 | 22-42 | 22-42 | 22-42 |
+| legs | Knee (left) | 43-47 | 43-47 | 43-47 | 43-47 |
+| legs | Knee (right) | 48-52 | 48-52 | 48-52 | 48-52 |
+| legs | Lower leg (left) | 53-70 | 53-70 | 53-70 | 53-70 |
+| legs | Lower leg (right) | 71-88 | 71-88 | 71-88 | 71-88 |
+| legs | Foot (left) | 89-94 | 89-94 | 89-94 | 89-94 |
+| legs | Foot (right) | 95-00 | 95-00 | 95-00 | 95-00 |
 
 **Close combat:** Sabre, Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
 
@@ -1124,6 +1607,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 |
 | Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Rifle-musket | Musket | Artillery | Revolver |
+|---|---|---|---|---|---|
+| head | Skull (left) | 01-28 | 01-28 | 01-28 | 01-28 |
+| head | Skull (right) | 29-56 | 29-56 | 29-56 | 29-56 |
+| head | Face | 57-91 | 57-91 | 57-91 | 57-91 |
+| head | Neck | 92-00 | 92-00 | 92-00 | 92-00 |
+| torso | Chest (left) | 01-20 | 01-20 | 01-20 | 01-20 |
+| torso | Chest (right) | 21-40 | 21-40 | 21-40 | 21-40 |
+| torso | Abdomen | 41-63 | 41-63 | 41-63 | 41-63 |
+| torso | Groin / pelvis | 64-68 | 64-68 | 64-68 | 64-68 |
+| torso | Upper back | 69-85 | 69-85 | 69-85 | 69-85 |
+| torso | Lower back | 86-00 | 86-00 | 86-00 | 86-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 |
+
 **Source totals:** Head (851) = 12.2%; Face (533) = 7.6%; Neck (128) = 1.8%; Chest (420) = 6.0%; Abdomen and pelvis (235) = 3.4%; Perineum and genito-urinary organs (55) = 0.8%; Back and spine (326) = 4.7%; Upper extremities (2,083, and 75 of the 155 arteries, nerves and joints) = 30.9%; Lower extremities (2,198, and 80 of the 155 arteries, nerves and joints) = 32.6% (n = 6,984). Region totals are from the source: 6,984 gunshot wounds of known region (with 167 sword, bayonet and miscellaneous wounds left out). The split inside each region uses body exposure (design estimate). The 155 wounds of the larger arteries, nerves and joints of the limbs are shared between arms and legs as the other limb wounds are.
 
 
@@ -1171,6 +1685,37 @@ Confidence: **Extrapolated - design estimate from analogous evidence** · Armour
 | Lower leg (right) | 92-96 | 92-96 | 92-96 | 92-96 |
 | Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 |
 | Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Rifle-musket | Musket | Artillery | Revolver |
+|---|---|---|---|---|---|
+| head | Skull (left) | 01-27 | 01-27 | 01-27 | 01-27 |
+| head | Skull (right) | 28-54 | 28-54 | 28-54 | 28-54 |
+| head | Face | 55-88 | 55-88 | 55-88 | 55-88 |
+| head | Neck | 89-00 | 89-00 | 89-00 | 89-00 |
+| torso | Chest (left) | 01-21 | 01-21 | 01-21 | 01-21 |
+| torso | Chest (right) | 22-42 | 22-42 | 22-42 | 22-42 |
+| torso | Abdomen | 43-64 | 43-64 | 43-64 | 43-64 |
+| torso | Groin / pelvis | 65-71 | 65-71 | 65-71 | 65-71 |
+| torso | Upper back | 72-87 | 72-87 | 72-87 | 72-87 |
+| torso | Lower back | 88-00 | 88-00 | 88-00 | 88-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 |
 
 **Close combat:** Sabre, Bayonet, Lance: roll location on *Peninsular War 1808-14 - French officers' wounds*. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
 
@@ -1248,6 +1793,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 |
 | Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Rifle-musket | Breech-loader | Artillery | Revolver |
+|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-22 | 01-22 | 01-22 | 01-22 |
+| torso | Chest (right) | 23-44 | 23-44 | 23-44 | 23-44 |
+| torso | Abdomen | 45-64 | 45-64 | 45-64 | 45-64 |
+| torso | Groin / pelvis | 65-74 | 65-74 | 65-74 | 65-74 |
+| torso | Upper back | 75-88 | 75-88 | 75-88 | 75-88 |
+| torso | Lower back | 89-00 | 89-00 | 89-00 | 89-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 |
+
 **Source totals:** Head, face, neck 11%; Trunk (chest, abdomen, back, pelvis) 18%; Upper extremities 35.6%; Lower extremities 35.2%. Region totals are from the source. The split inside each region uses body exposure (design estimate).
 
 **Close combat:** Sabre, Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
@@ -1286,6 +1862,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Thigh (right) | 98 | 98 | 98 | 98 |
 | Lower leg (left) | 99 | 99 | 99 | 99 |
 | Lower leg (right) | 00 | 00 | 00 | 00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Rifle-musket | Breech-loader | Artillery | Revolver |
+|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-22 | 01-22 | 01-22 | 01-22 |
+| torso | Chest (right) | 23-44 | 23-44 | 23-44 | 23-44 |
+| torso | Abdomen | 45-64 | 45-64 | 45-64 | 45-64 |
+| torso | Groin / pelvis | 65-74 | 65-74 | 65-74 | 65-74 |
+| torso | Upper back | 75-88 | 75-88 | 75-88 | 75-88 |
+| torso | Lower back | 89-00 | 89-00 | 89-00 | 89-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 |
 
 **Source totals:** Head and neck 41.6%; Trunk 51.4%; Upper extremities 2.6%; Lower extremities 4.5%. Region totals are from the source. The split inside each region uses body exposure (design estimate).
 
@@ -1332,6 +1939,37 @@ Confidence: **Extrapolated - design estimate from analogous evidence** · Armour
 | Lower leg (right) | 92-96 | 92-96 | 92-96 | 92-96 |
 | Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 |
 | Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Rifle-musket | Breech-loader | Artillery | Revolver |
+|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-22 | 01-22 | 01-22 | 01-22 |
+| torso | Chest (right) | 23-44 | 23-44 | 23-44 | 23-44 |
+| torso | Abdomen | 45-64 | 45-64 | 45-64 | 45-64 |
+| torso | Groin / pelvis | 65-74 | 65-74 | 65-74 | 65-74 |
+| torso | Upper back | 75-88 | 75-88 | 75-88 | 75-88 |
+| torso | Lower back | 89-00 | 89-00 | 89-00 | 89-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 |
 
 **Source totals:** Head and neck 17.1%; Trunk 24.7%; Upper extremities 29%; Lower extremities 29.1%. Blend of the two historical tables.
 
@@ -1409,6 +2047,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **allowed**
 | Knee (right) | 98 |
 | Lower leg (left) | 99 |
 | Lower leg (right) | 00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Bow |
+|---|---|---|
+| head | Skull (left) | 01-29 |
+| head | Skull (right) | 30-58 |
+| head | Face | 59-79 |
+| head | Neck | 80-00 |
+| torso | Chest (left) | 01-20 |
+| torso | Chest (right) | 21-40 |
+| torso | Abdomen | 41-51 |
+| torso | Groin / pelvis | 52-66 |
+| torso | Upper back | 67-89 |
+| torso | Lower back | 90-00 |
+| arms | Shoulder (left) | 01-10 |
+| arms | Shoulder (right) | 11-20 |
+| arms | Upper arm (left) | 21-42 |
+| arms | Upper arm (right) | 43-64 |
+| arms | Forearm (left) | 65-75 |
+| arms | Forearm (right) | 76-86 |
+| arms | Hand (left) | 87-93 |
+| arms | Hand (right) | 94-00 |
+| legs | Thigh (left) | 01-27 |
+| legs | Thigh (right) | 28-54 |
+| legs | Knee (left) | 55-63 |
+| legs | Knee (right) | 64-72 |
+| legs | Lower leg (left) | 73-82 |
+| legs | Lower leg (right) | 83-92 |
+| legs | Foot (left) | 93-96 |
+| legs | Foot (right) | 97-00 |
 
 **Source totals:** Skull and scalp (8) = 6.6%; Face (3) = 2.5%; Neck (3) = 2.5%; Chest, front and sides (24) = 19.7%; Upper back (13) = 10.7%; Lower back, lumbar (6) = 4.9%; Back, level not stated (2) = 1.6%; Abdomen (7) = 5.7%; Groin, hip, buttock, pelvis (9) = 7.4%; Shoulders and armpit (7) = 5.7%; Upper arms and elbows (16) = 13.1%; Forearms (8) = 6.6%; Hands (5) = 4.1%; Thighs (6) = 4.9%; Knees (2) = 1.6%; Lower legs and feet (3) = 2.5% (n = 122). Counts are tallied wound by wound from the report's 83 cases (122 arrow wounds whose site is given; 12 more are not located). Left and right are pooled because the sample is small, then split by body exposure (design estimate).
 
@@ -1497,6 +2166,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Foot (left) | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 |
 | Foot (right) | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Rifle | MG | Pistol/SMG | Grenade | Mortar |
+|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| torso | Chest (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| torso | Abdomen | 51-66 | 51-66 | 51-66 | 51-66 | 51-66 |
+| torso | Groin / pelvis | 67-74 | 67-74 | 67-74 | 67-74 | 67-74 |
+| torso | Upper back | 75-90 | 75-90 | 75-90 | 75-90 | 75-90 |
+| torso | Lower back | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 |
+
 **Source totals:** Head, neck, face 17%; Thorax 4%; Abdomen 2%; Upper extremities (40% of extremity) 28%; Lower extremities (60% of extremity) 42%. Region totals are from the source. The split inside each region uses body exposure (design estimate). Extremities are split 40% arms / 60% legs, the average of the WWII, Korea and Vietnam hospital figures in Neel (1973) Table 7 (design estimate).
 
 **Close combat:** Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Spade, Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted* with Target has no shield applied. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
@@ -1579,6 +2279,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 |
 | Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | Bazooka | AT gun | Mine/IED | Frags |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 |
+| head | Skull (right) | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 |
+| head | Face | 45-70 | 45-70 | 45-70 | 45-70 | 45-70 | 45-70 | 45-70 | 45-70 | 45-70 | 45-70 |
+| head | Neck | 71-00 | 71-00 | 71-00 | 71-00 | 71-00 | 71-00 | 71-00 | 71-00 | 71-00 | 71-00 |
+| torso | Chest (left) | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 |
+| torso | Chest (right) | 27-52 | 27-52 | 27-52 | 27-52 | 27-52 | 27-52 | 27-52 | 27-52 | 27-52 | 27-52 |
+| torso | Abdomen | 53-63 | 53-63 | 53-63 | 53-63 | 53-63 | 53-63 | 53-63 | 53-63 | 53-63 | 53-63 |
+| torso | Groin / pelvis | 64-70 | 64-70 | 64-70 | 64-70 | 64-70 | 64-70 | 64-70 | 64-70 | 64-70 | 64-70 |
+| torso | Upper back | 71-87 | 71-87 | 71-87 | 71-87 | 71-87 | 71-87 | 71-87 | 71-87 | 71-87 | 71-87 |
+| torso | Lower back | 88-00 | 88-00 | 88-00 | 88-00 | 88-00 | 88-00 | 88-00 | 88-00 | 88-00 | 88-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 |
+
 **Source totals:** Head 8.8%; Neck 3.7%; Thorax 25.7%; Abdomen 6.4%; Buttocks 4.9%; Genitalia 0.3%; Upper extremities 20.8%; Lower extremities 29.7%. Region totals are from the source. The split inside each region uses body exposure (design estimate).
 
 **Close combat:** Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Spade, Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted* with Target has no shield applied. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
@@ -1624,6 +2355,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Lower leg (right) | 91-96 | 89-94 | 91-96 | 91-96 | 88-94 | 92-96 | 91-96 | 91-96 | 74-84 | 91-96 |
 | Foot (left) | 97-98 | 95-97 | 97-98 | 97-98 | 95-97 | 97-98 | 97-98 | 97-98 | 85-92 | 97-98 |
 | Foot (right) | 99-00 | 98-00 | 99-00 | 99-00 | 98-00 | 99-00 | 99-00 | 99-00 | 93-00 | 99-00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | Bazooka | AT gun | Mine/IED | Frags |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-25 | 01-26 |
+| torso | Chest (right) | 27-52 | 27-52 | 27-52 | 27-52 | 27-52 | 27-52 | 27-52 | 27-52 | 26-50 | 27-52 |
+| torso | Abdomen | 53-67 | 53-67 | 53-67 | 53-67 | 53-67 | 53-67 | 53-67 | 53-67 | 51-64 | 53-67 |
+| torso | Groin / pelvis | 68-74 | 68-74 | 68-74 | 68-74 | 68-74 | 68-74 | 68-74 | 68-74 | 65-75 | 68-74 |
+| torso | Upper back | 75-91 | 75-91 | 75-91 | 75-91 | 75-91 | 75-91 | 75-91 | 75-91 | 76-91 | 75-91 |
+| torso | Lower back | 92-00 | 92-00 | 92-00 | 92-00 | 92-00 | 92-00 | 92-00 | 92-00 | 92-00 | 92-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-18 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 19-36 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 37-41 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 42-46 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 47-61 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 62-76 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 77-88 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 89-00 | 94-00 |
 
 **Source totals:** Head, face, neck (240) = 20.7%; Chest (144) = 12.4%; Abdomen (66) = 5.7%; Upper extremities (319) = 27.5%; Lower extremities (393) = 33.8% (n = 1,162). Region counts are from the source. The split inside each region uses body exposure (design estimate).
 
@@ -1674,6 +2436,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Lower leg (right) | 00 | 98 | 00 | 00 | 98 | 00 | 00 | 00 | 94-96 | 00 |
 | Foot (left) | - | 99 | - | - | 99 | - | - | - | 97-98 | - |
 | Foot (right) | - | 00 | - | - | 00 | - | - | - | 99-00 | - |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | Bazooka | AT gun | Mine/IED | Frags |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-24 | 01-25 |
+| torso | Chest (right) | 26-49 | 26-49 | 26-49 | 26-49 | 26-49 | 26-49 | 26-49 | 26-49 | 25-47 | 26-49 |
+| torso | Abdomen | 50-66 | 50-66 | 50-66 | 50-66 | 50-66 | 50-66 | 50-66 | 50-66 | 48-63 | 50-66 |
+| torso | Groin / pelvis | 67-74 | 67-74 | 67-74 | 67-74 | 67-74 | 67-74 | 67-74 | 67-74 | 64-75 | 67-74 |
+| torso | Upper back | 75-90 | 75-90 | 75-90 | 75-90 | 75-90 | 75-90 | 75-90 | 75-90 | 76-90 | 75-90 |
+| torso | Lower back | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-18 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 19-36 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 37-41 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 42-46 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 47-61 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 62-76 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 77-88 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 89-00 | 94-00 |
 
 **Source totals:** Head, face, neck (144) = 49.0%; Chest (87) = 29.6%; Abdomen (48) = 16.3%; Upper extremities (1) = 0.3%; Lower extremities (14) = 4.8% (n = 294). Region counts are from the source. The split inside each region uses body exposure (design estimate).
 
@@ -1733,6 +2526,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **allowed**
 | Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 | 85-92 | 97-98 |
 | Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 93-00 | 99-00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | Bazooka | AT gun | Mine/IED | Frags |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| torso | Chest (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-49 | 26-50 |
+| torso | Abdomen | 51-66 | 51-66 | 51-66 | 51-66 | 51-66 | 51-66 | 51-66 | 51-66 | 50-64 | 51-66 |
+| torso | Groin / pelvis | 67-74 | 67-74 | 67-74 | 67-74 | 67-74 | 67-74 | 67-74 | 67-74 | 65-75 | 67-74 |
+| torso | Upper back | 75-90 | 75-90 | 75-90 | 75-90 | 75-90 | 75-90 | 75-90 | 75-90 | 76-91 | 75-90 |
+| torso | Lower back | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 92-00 | 91-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-18 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 19-36 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 37-41 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 42-46 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 47-61 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 62-76 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 77-88 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 89-00 | 94-00 |
+
 **Source totals:** Head, face, neck (384) = 26.4%; Chest (231) = 15.9%; Abdomen (114) = 7.8%; Upper extremities (320) = 22.0%; Lower extremities (407) = 28.0% (n = 1,456). Region counts are from the source (wounded + killed). The split inside each region uses body exposure (design estimate).
 
 **What hit them? (d100)**
@@ -1790,6 +2614,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Lower leg (right) | 90-95 | 88-94 | 90-95 | 90-95 | 88-94 | 91-96 | 90-95 | 90-95 | 72-82 | 90-95 |
 | Foot (left) | 96-98 | 95-97 | 96-98 | 96-98 | 95-97 | 97-98 | 96-98 | 96-98 | 83-91 | 96-98 |
 | Foot (right) | 99-00 | 98-00 | 99-00 | 99-00 | 98-00 | 99-00 | 99-00 | 99-00 | 92-00 | 99-00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | Bazooka | AT gun | Mine/IED | Frags |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-24 | 01-24 | 01-24 | 01-24 | 01-24 | 01-24 | 01-24 | 01-24 | 01-23 | 01-24 |
+| torso | Chest (right) | 25-48 | 25-48 | 25-48 | 25-48 | 25-48 | 25-48 | 25-48 | 25-48 | 24-46 | 25-48 |
+| torso | Abdomen | 49-65 | 49-65 | 49-65 | 49-65 | 49-65 | 49-65 | 49-65 | 49-65 | 47-63 | 49-65 |
+| torso | Groin / pelvis | 66-74 | 66-74 | 66-74 | 66-74 | 66-74 | 66-74 | 66-74 | 66-74 | 64-75 | 66-74 |
+| torso | Upper back | 75-89 | 75-89 | 75-89 | 75-89 | 75-89 | 75-89 | 75-89 | 75-89 | 76-90 | 75-89 |
+| torso | Lower back | 90-00 | 90-00 | 90-00 | 90-00 | 90-00 | 90-00 | 90-00 | 90-00 | 91-00 | 90-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-18 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 19-36 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 37-41 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 42-46 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 47-61 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 62-76 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 77-88 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 89-00 | 94-00 |
 
 **Source totals:** Head and neck 21%; Thorax 14%; Abdomen 8%; Upper extremities (40% of 58) 23.2%; Lower extremities (60% of 58) 34.8%. Region totals are from the source. Extremities split 40% arms / 60% legs, the average of the WWII, Korea and Vietnam hospital figures in Neel (1973) Table 7 (design estimate), the same rule for every table in this set. The split inside each region uses body exposure (design estimate).
 
@@ -1877,6 +2732,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Foot (left) | 97-98 | 95-97 | 97-98 | 97-98 | 95-97 | 97-98 | 97-98 | 97-98 | 97-98 | 83-91 | 97-98 |
 | Foot (right) | 99-00 | 98-00 | 99-00 | 99-00 | 98-00 | 99-00 | 99-00 | 99-00 | 99-00 | 92-00 | 99-00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | Recoilless | Bazooka | AT gun | Mine/IED | Frags |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-19 | 01-19 | 01-19 | 01-19 | 01-19 | 01-19 | 01-19 | 01-19 | 01-19 | 01-18 | 01-19 |
+| torso | Chest (right) | 20-38 | 20-38 | 20-38 | 20-38 | 20-38 | 20-38 | 20-38 | 20-38 | 20-38 | 19-36 | 20-38 |
+| torso | Abdomen | 39-62 | 39-62 | 39-62 | 39-62 | 39-62 | 39-62 | 39-62 | 39-62 | 39-62 | 37-59 | 39-62 |
+| torso | Groin / pelvis | 63-74 | 63-74 | 63-74 | 63-74 | 63-74 | 63-74 | 63-74 | 63-74 | 63-74 | 60-76 | 63-74 |
+| torso | Upper back | 75-86 | 75-86 | 75-86 | 75-86 | 75-86 | 75-86 | 75-86 | 75-86 | 75-86 | 77-87 | 75-86 |
+| torso | Lower back | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 | 88-00 | 87-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-18 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 19-36 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 37-41 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 42-46 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 47-61 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 62-76 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 77-88 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 89-00 | 94-00 |
+
 **Source totals:** Head and neck 17%; Thorax 7%; Abdomen 7%; Upper extremities 30%; Lower extremities 37%. Region totals are from the source. The split inside each region uses body exposure (design estimate).
 
 **What hit them? (d100)**
@@ -1934,6 +2820,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Lower leg (right) | 89-94 | 88-94 | 89-94 | 89-94 | 87-94 | 91-96 | 89-94 | 89-94 | 89-94 | 72-82 | 89-94 |
 | Foot (left) | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 97-98 | 95-97 | 95-97 | 95-97 | 83-91 | 95-97 |
 | Foot (right) | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 99-00 | 98-00 | 98-00 | 98-00 | 92-00 | 98-00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | Recoilless | Bazooka | AT gun | Mine/IED | Frags |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-19 | 01-20 |
+| torso | Chest (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 20-38 | 21-40 |
+| torso | Abdomen | 41-63 | 41-63 | 41-63 | 41-63 | 41-63 | 41-63 | 41-63 | 41-63 | 41-63 | 39-59 | 41-63 |
+| torso | Groin / pelvis | 64-74 | 64-74 | 64-74 | 64-74 | 64-74 | 64-74 | 64-74 | 64-74 | 64-74 | 60-75 | 64-74 |
+| torso | Upper back | 75-87 | 75-87 | 75-87 | 75-87 | 75-87 | 75-87 | 75-87 | 75-87 | 75-87 | 76-87 | 75-87 |
+| torso | Lower back | 88-00 | 88-00 | 88-00 | 88-00 | 88-00 | 88-00 | 88-00 | 88-00 | 88-00 | 88-00 | 88-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-18 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 19-36 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 37-41 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 42-46 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 47-61 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 62-76 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 77-88 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 89-00 | 94-00 |
 
 **Source totals:** Head and neck 21%; Thorax 10%; Abdomen 9%; Upper extremities (40% of 60) 24%; Lower extremities (60% of 60) 36%. Region totals are from the source. Extremities split 40% arms / 60% legs, the average of the WWII, Korea and Vietnam hospital figures in Neel (1973) Table 7 (design estimate), the same rule for every table in this set. The split inside each region uses body exposure (design estimate).
 
@@ -2022,6 +2939,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 | 95-97 | 97-98 | 97-98 | 97-98 | 87-93 | 79-89 | 97-98 |
 | Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 | 98-00 | 99-00 | 99-00 | 99-00 | 94-00 | 90-00 | 99-00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Assault rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | RPG | Recoilless | Mine/IED | Punji | Frags |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-21 | 01-22 | 01-22 |
+| torso | Chest (right) | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 23-44 | 22-42 | 23-44 | 23-44 |
+| torso | Abdomen | 45-64 | 45-64 | 45-64 | 45-64 | 45-64 | 45-64 | 45-64 | 45-64 | 43-61 | 45-64 | 45-64 |
+| torso | Groin / pelvis | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 62-75 | 65-74 | 65-74 |
+| torso | Upper back | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 76-89 | 75-88 | 75-88 |
+| torso | Lower back | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 90-00 | 89-00 | 89-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-21 | 01-21 | 01-21 | 01-21 | 01-21 | 01-21 | 01-21 | 01-21 | 01-19 | 01-13 | 01-21 |
+| legs | Thigh (right) | 22-42 | 22-42 | 22-42 | 22-42 | 22-42 | 22-42 | 22-42 | 22-42 | 20-38 | 14-26 | 22-42 |
+| legs | Knee (left) | 43-48 | 43-48 | 43-48 | 43-48 | 43-48 | 43-48 | 43-48 | 43-48 | 39-44 | 27-30 | 43-48 |
+| legs | Knee (right) | 49-54 | 49-54 | 49-54 | 49-54 | 49-54 | 49-54 | 49-54 | 49-54 | 45-50 | 31-34 | 49-54 |
+| legs | Lower leg (left) | 55-71 | 55-71 | 55-71 | 55-71 | 55-71 | 55-71 | 55-71 | 55-71 | 51-65 | 35-56 | 55-71 |
+| legs | Lower leg (right) | 72-88 | 72-88 | 72-88 | 72-88 | 72-88 | 72-88 | 72-88 | 72-88 | 66-80 | 57-78 | 72-88 |
+| legs | Foot (left) | 89-94 | 89-94 | 89-94 | 89-94 | 89-94 | 89-94 | 89-94 | 89-94 | 81-90 | 79-89 | 89-94 |
+| legs | Foot (right) | 95-00 | 95-00 | 95-00 | 95-00 | 95-00 | 95-00 | 95-00 | 95-00 | 91-00 | 90-00 | 95-00 |
+
 **Source totals:** Head and neck 14%; Thorax 7%; Abdomen 5%; Upper extremities 18%; Lower extremities 36%. Region totals are from the source. The split inside each region uses body exposure (design estimate).
 
 **What hit them? (d100)**
@@ -2081,6 +3029,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Lower leg (right) | 89-94 | 88-94 | 89-94 | 89-94 | 88-94 | 91-96 | 89-94 | 89-94 | 72-82 | 54-74 | 89-94 |
 | Foot (left) | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 97-98 | 95-97 | 95-97 | 83-91 | 75-87 | 95-97 |
 | Foot (right) | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 99-00 | 98-00 | 98-00 | 92-00 | 88-00 | 98-00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Assault rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | RPG | Recoilless | Mine/IED | Punji | Frags |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-22 | 01-20 | 01-22 | 01-22 |
+| torso | Chest (right) | 23-43 | 23-43 | 23-43 | 23-43 | 23-43 | 23-43 | 23-43 | 23-43 | 21-40 | 23-44 | 23-43 |
+| torso | Abdomen | 44-64 | 44-64 | 44-64 | 44-64 | 44-64 | 44-64 | 44-64 | 44-64 | 41-60 | 45-64 | 44-64 |
+| torso | Groin / pelvis | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 61-75 | 65-74 | 65-74 |
+| torso | Upper back | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 76-88 | 75-88 | 75-88 |
+| torso | Lower back | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-18 | 01-12 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 19-36 | 13-24 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 37-41 | 25-28 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 42-46 | 29-32 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 47-61 | 33-53 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 62-76 | 54-74 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 77-88 | 75-87 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 89-00 | 88-00 | 94-00 |
 
 **Source totals:** Head and neck 16%; Thorax 13%; Abdomen 10%; Upper extremities (40% of 61) 24.4%; Lower extremities (60% of 61) 36.6%. Region totals are from the source. Extremities split 40% arms / 60% legs, the average of the WWII, Korea and Vietnam hospital figures in Neel (1973) Table 7 (design estimate), the same rule for every table in this set. The split inside each region uses body exposure (design estimate).
 
@@ -2177,6 +3156,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 |
 | Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Assault rifle | MG | Pistol/SMG | Grenade | Mortar | RPG | Mine/IED |
+|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-19 | 01-19 | 01-19 | 01-19 | 01-19 | 01-19 | 01-19 |
+| torso | Chest (right) | 20-38 | 20-38 | 20-38 | 20-38 | 20-38 | 20-38 | 20-38 |
+| torso | Abdomen | 39-62 | 39-62 | 39-62 | 39-62 | 39-62 | 39-62 | 39-62 |
+| torso | Groin / pelvis | 63-74 | 63-74 | 63-74 | 63-74 | 63-74 | 63-74 | 63-74 |
+| torso | Upper back | 75-86 | 75-86 | 75-86 | 75-86 | 75-86 | 75-86 | 75-86 |
+| torso | Lower back | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 |
+
 **Source totals:** Head, neck, face 20%; Thorax 15%; Abdomen 15%; Upper extremities (40% of extremity) 20%; Lower extremities (60% of extremity) 30%. Region totals are from the source. The split inside each region uses body exposure (design estimate). Extremities are split 40% arms / 60% legs, the average of the WWII, Korea and Vietnam hospital figures in Neel (1973) Table 7 (design estimate).
 
 **Close combat:** Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
@@ -2222,6 +3232,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Lower leg (right) | 91-96 | 91-96 | 91-96 | 91-96 | 91-96 | 91-96 | 91-96 | 91-96 | 91-96 |
 | Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 | 97-98 |
 | Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 | 99-00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Assault rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | RPG | ATGM | Mine/IED |
+|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-23 | 01-23 | 01-23 | 01-23 | 01-23 | 01-23 | 01-23 | 01-23 | 01-23 |
+| torso | Chest (right) | 24-46 | 24-46 | 24-46 | 24-46 | 24-46 | 24-46 | 24-46 | 24-46 | 24-46 |
+| torso | Abdomen | 47-65 | 47-65 | 47-65 | 47-65 | 47-65 | 47-65 | 47-65 | 47-65 | 47-65 |
+| torso | Groin / pelvis | 66-75 | 66-75 | 66-75 | 66-75 | 66-75 | 66-75 | 66-75 | 66-75 | 66-75 |
+| torso | Upper back | 76-89 | 76-89 | 76-89 | 76-89 | 76-89 | 76-89 | 76-89 | 76-89 | 76-89 |
+| torso | Lower back | 90-00 | 90-00 | 90-00 | 90-00 | 90-00 | 90-00 | 90-00 | 90-00 | 90-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 |
 
 **Source totals:** Head, neck, face 16%; Thorax 15%; Abdomen 10%; Upper extremities (40% of extremity) 23.6%; Lower extremities (60% of extremity) 35.4%. Region totals are from the source. The split inside each region uses body exposure (design estimate). Extremities are split 40% arms / 60% legs, the average of the WWII, Korea and Vietnam hospital figures in Neel (1973) Table 7 (design estimate).
 
@@ -2269,6 +3310,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Foot (left) | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 |
 | Foot (right) | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Assault rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | RPG | ATGM | Mine/IED |
+|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 |
+| torso | Chest (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 |
+| torso | Abdomen | 41-62 | 41-62 | 41-62 | 41-62 | 41-62 | 41-62 | 41-62 | 41-62 | 41-62 |
+| torso | Groin / pelvis | 63-73 | 63-73 | 63-73 | 63-73 | 63-73 | 63-73 | 63-73 | 63-73 | 63-73 |
+| torso | Upper back | 74-86 | 74-86 | 74-86 | 74-86 | 74-86 | 74-86 | 74-86 | 74-86 | 74-86 |
+| torso | Lower back | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 |
+
 **Source totals:** Head, neck, face 11%; Thorax 8%; Abdomen 7%; Upper extremities (40% of extremity) 22.4%; Lower extremities (60% of extremity) 33.6%. Region totals are from the source. The split inside each region uses body exposure (design estimate). Extremities are split 40% arms / 60% legs, the average of the WWII, Korea and Vietnam hospital figures in Neel (1973) Table 7 (design estimate).
 
 **Close combat:** Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
@@ -2314,6 +3386,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Lower leg (right) | 88-94 | 88-94 | 88-94 | 88-94 | 88-94 | 88-94 | 88-94 | 88-94 | 88-94 |
 | Foot (left) | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 |
 | Foot (right) | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Assault rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | RPG | ATGM | Mine/IED |
+|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 |
+| torso | Chest (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 |
+| torso | Abdomen | 41-63 | 41-63 | 41-63 | 41-63 | 41-63 | 41-63 | 41-63 | 41-63 | 41-63 |
+| torso | Groin / pelvis | 64-74 | 64-74 | 64-74 | 64-74 | 64-74 | 64-74 | 64-74 | 64-74 | 64-74 |
+| torso | Upper back | 75-86 | 75-86 | 75-86 | 75-86 | 75-86 | 75-86 | 75-86 | 75-86 | 75-86 |
+| torso | Lower back | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 | 87-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 |
 
 **Source totals:** Head, neck, face 6%; Thorax 12%; Abdomen 11%; Upper extremities (40% of extremity) 28.4%; Lower extremities (60% of extremity) 42.6%. Region totals are from the source. The split inside each region uses body exposure (design estimate). Extremities are split 40% arms / 60% legs, the average of the WWII, Korea and Vietnam hospital figures in Neel (1973) Table 7 (design estimate).
 
@@ -2361,6 +3464,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Foot (left) | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 |
 | Foot (right) | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Assault rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | RPG | Mine/IED |
+|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-24 | 01-24 | 01-24 | 01-24 | 01-24 | 01-24 | 01-24 | 01-24 |
+| torso | Chest (right) | 25-47 | 25-47 | 25-47 | 25-47 | 25-47 | 25-47 | 25-47 | 25-47 |
+| torso | Abdomen | 48-65 | 48-65 | 48-65 | 48-65 | 48-65 | 48-65 | 48-65 | 48-65 |
+| torso | Groin / pelvis | 66-74 | 66-74 | 66-74 | 66-74 | 66-74 | 66-74 | 66-74 | 66-74 |
+| torso | Upper back | 75-89 | 75-89 | 75-89 | 75-89 | 75-89 | 75-89 | 75-89 | 75-89 |
+| torso | Lower back | 90-00 | 90-00 | 90-00 | 90-00 | 90-00 | 90-00 | 90-00 | 90-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 |
+
 **Source totals:** Head, neck, face 20%; Thorax 8%; Abdomen 5%; Upper extremities (40% of extremity) 26%; Lower extremities (60% of extremity) 39%. Region totals are from the source. The split inside each region uses body exposure (design estimate). Extremities are split 40% arms / 60% legs, the average of the WWII, Korea and Vietnam hospital figures in Neel (1973) Table 7 (design estimate).
 
 **Close combat:** Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Dagger: roll location on *Knife assault - stab wounds (forensic)*. Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
@@ -2406,6 +3540,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Lower leg (right) | 89-94 | 89-94 | 89-94 | 89-94 | 89-94 | 89-94 | 89-94 | 89-94 | 89-94 |
 | Foot (left) | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 |
 | Foot (right) | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Assault rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | RPG | ATGM | Mine/IED |
+|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 | 01-26 |
+| torso | Chest (right) | 27-52 | 27-52 | 27-52 | 27-52 | 27-52 | 27-52 | 27-52 | 27-52 | 27-52 |
+| torso | Abdomen | 53-67 | 53-67 | 53-67 | 53-67 | 53-67 | 53-67 | 53-67 | 53-67 | 53-67 |
+| torso | Groin / pelvis | 68-74 | 68-74 | 68-74 | 68-74 | 68-74 | 68-74 | 68-74 | 68-74 | 68-74 |
+| torso | Upper back | 75-91 | 75-91 | 75-91 | 75-91 | 75-91 | 75-91 | 75-91 | 75-91 | 75-91 |
+| torso | Lower back | 92-00 | 92-00 | 92-00 | 92-00 | 92-00 | 92-00 | 92-00 | 92-00 | 92-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 |
 
 **Source totals:** Head, neck, face 24%; Thorax 9%; Abdomen 4%; Upper extremities (40% of extremity) 25.2%; Lower extremities (60% of extremity) 37.8%. Region totals are from the source. The split inside each region uses body exposure (design estimate). Extremities are split 40% arms / 60% legs, the average of the WWII, Korea and Vietnam hospital figures in Neel (1973) Table 7 (design estimate).
 
@@ -2486,6 +3651,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Foot (left) | - | - | - | - | - | 99 | - | - | - | 95-97 | - |
 | Foot (right) | - | - | - | - | - | 00 | - | - | - | 98-00 | - |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Assault rifle | AP rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | RPG | ATGM | Mine/IED | Frags |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-19 | 01-19 | 01-19 | 01-19 | 01-19 | 01-19 | 01-19 | 01-19 | 01-19 | 01-19 | 01-19 |
+| head | Skull (right) | 20-37 | 20-37 | 20-37 | 20-37 | 20-37 | 20-37 | 20-37 | 20-37 | 20-37 | 20-37 | 20-37 |
+| head | Face | 38-90 | 38-90 | 38-90 | 38-90 | 38-90 | 38-90 | 38-90 | 38-90 | 38-90 | 38-90 | 38-90 |
+| head | Neck | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| torso | Chest (left) | 01-14 | 01-14 | 01-14 | 01-14 | 01-14 | 01-14 | 01-14 | 01-14 | 01-14 | 01-13 | 01-14 |
+| torso | Chest (right) | 15-28 | 15-28 | 15-28 | 15-28 | 15-28 | 15-28 | 15-28 | 15-28 | 15-28 | 14-26 | 15-28 |
+| torso | Abdomen | 29-60 | 29-60 | 29-60 | 29-60 | 29-60 | 29-60 | 29-60 | 29-60 | 29-60 | 27-56 | 29-60 |
+| torso | Groin / pelvis | 61-72 | 61-72 | 61-72 | 61-72 | 61-72 | 61-72 | 61-72 | 61-72 | 61-72 | 57-74 | 61-72 |
+| torso | Upper back | 73-81 | 73-81 | 73-81 | 73-81 | 73-81 | 73-81 | 73-81 | 73-81 | 73-81 | 75-82 | 73-81 |
+| torso | Lower back | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 82-00 | 83-00 | 82-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-21 | 01-21 | 01-21 | 01-21 | 01-21 | 01-21 | 01-21 | 01-21 | 01-21 | 01-20 | 01-21 |
+| legs | Thigh (right) | 22-42 | 22-42 | 22-42 | 22-42 | 22-42 | 22-42 | 22-42 | 22-42 | 22-42 | 21-40 | 22-42 |
+| legs | Knee (left) | 43-49 | 43-49 | 43-49 | 43-49 | 43-49 | 43-49 | 43-49 | 43-49 | 43-49 | 41-46 | 43-49 |
+| legs | Knee (right) | 50-56 | 50-56 | 50-56 | 50-56 | 50-56 | 50-56 | 50-56 | 50-56 | 50-56 | 47-52 | 50-56 |
+| legs | Lower leg (left) | 57-74 | 57-74 | 57-74 | 57-74 | 57-74 | 57-74 | 57-74 | 57-74 | 57-74 | 53-69 | 57-74 |
+| legs | Lower leg (right) | 75-92 | 75-92 | 75-92 | 75-92 | 75-92 | 75-92 | 75-92 | 75-92 | 75-92 | 70-86 | 75-92 |
+| legs | Foot (left) | 93-96 | 93-96 | 93-96 | 93-96 | 93-96 | 93-96 | 93-96 | 93-96 | 93-96 | 87-93 | 93-96 |
+| legs | Foot (right) | 97-00 | 97-00 | 97-00 | 97-00 | 97-00 | 97-00 | 97-00 | 97-00 | 97-00 | 94-00 | 97-00 |
+
 **Source totals:** Head and ears (8 + 3) 11%; Face and eyes (10 + 6) 16%; Neck 3%; Thorax 6%; Abdomen 11%; Upper extremity (half of 54) 27%; Lower extremity (half of 54) 27%. Region totals are from the source. Extremities are split evenly between arms and legs (the companion study found fractures 50/50); the split inside each region uses body exposure (design estimate).
 
 **What hit them? (d100)**
@@ -2545,6 +3741,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 | Lower leg (right) | 91-96 | 91-96 | 89-94 | 91-96 | 91-96 | 88-94 | 92-96 | 91-96 | 91-96 | 72-82 | 91-96 |
 | Foot (left) | 97-98 | 97-98 | 95-97 | 97-98 | 97-98 | 95-97 | 97-98 | 97-98 | 97-98 | 83-91 | 97-98 |
 | Foot (right) | 99-00 | 99-00 | 98-00 | 99-00 | 99-00 | 98-00 | 99-00 | 99-00 | 99-00 | 92-00 | 99-00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Assault rifle | AP rifle | MG | AA gun | Pistol/SMG | Grenade | Mortar | RPG | ATGM | Mine/IED | Frags |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-15 | 01-15 | 01-15 | 01-15 | 01-15 | 01-15 | 01-15 | 01-15 | 01-15 | 01-14 | 01-15 |
+| torso | Chest (right) | 16-30 | 16-30 | 16-30 | 16-30 | 16-30 | 16-30 | 16-30 | 16-30 | 16-30 | 15-28 | 16-30 |
+| torso | Abdomen | 31-59 | 31-59 | 31-59 | 31-59 | 31-59 | 31-59 | 31-59 | 31-59 | 31-59 | 29-55 | 31-59 |
+| torso | Groin / pelvis | 60-73 | 60-73 | 60-73 | 60-73 | 60-73 | 60-73 | 60-73 | 60-73 | 60-73 | 56-75 | 60-73 |
+| torso | Upper back | 74-83 | 74-83 | 74-83 | 74-83 | 74-83 | 74-83 | 74-83 | 74-83 | 74-83 | 76-84 | 74-83 |
+| torso | Lower back | 84-00 | 84-00 | 84-00 | 84-00 | 84-00 | 84-00 | 84-00 | 84-00 | 84-00 | 85-00 | 84-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-18 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 19-36 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 37-41 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 42-46 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 47-61 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 62-76 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 77-88 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 89-00 | 94-00 |
 
 **Source totals:** Head and neck 30%; Thorax 6%; Abdomen 9%; Upper extremities (40% of 55) 22%; Lower extremities (60% of 55) 33%. Region totals are from the source. Extremities split 40% arms / 60% legs, the average of the WWII, Korea and Vietnam hospital figures in Neel (1973) Table 7 (design estimate), the same rule for every table in this set. The split inside each region uses body exposure (design estimate).
 
@@ -2636,6 +3863,37 @@ Confidence: **Fitted - estimated to match published summary figures** · Armour:
 | Foot (left) | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 95-97 | 83-91 | 95-97 | 95-97 | 95-97 | 95-97 | 97-98 |
 | Foot (right) | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 98-00 | 92-00 | 98-00 | 98-00 | 98-00 | 98-00 | 99-00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Rifle | Assault rifle | AP rifle | MG | Pistol/SMG | Grenade | Mortar | RPG | Mine/IED | Rifle-musket | Revolver | Bow | Crossbow | Sling |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-25 | 01-26 | 01-23 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 26-50 | 27-51 | 24-46 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 51-80 | 52-82 | 47-82 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 81-00 | 83-00 | 83-00 |
+| torso | Chest (left) | 01-23 | 01-23 | 01-23 | 01-23 | 01-23 | 01-23 | 01-23 | 01-23 | 01-21 | 01-23 | 01-23 | 01-23 | 01-23 | 01-23 |
+| torso | Chest (right) | 24-45 | 24-45 | 24-45 | 24-45 | 24-45 | 24-45 | 24-45 | 24-45 | 22-42 | 24-45 | 24-45 | 24-45 | 24-45 | 24-45 |
+| torso | Abdomen | 46-64 | 46-64 | 46-64 | 46-64 | 46-64 | 46-64 | 46-64 | 46-64 | 43-61 | 46-64 | 46-64 | 46-64 | 46-64 | 46-64 |
+| torso | Groin / pelvis | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 | 62-75 | 65-74 | 65-74 | 65-74 | 65-74 | 65-74 |
+| torso | Upper back | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 | 76-89 | 75-88 | 75-88 | 75-88 | 75-88 | 75-88 |
+| torso | Lower back | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 | 90-00 | 89-00 | 89-00 | 89-00 | 89-00 | 89-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 | 01-18 | 01-20 | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 | 19-36 | 21-40 | 21-40 | 21-40 | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 | 37-41 | 41-46 | 41-46 | 41-46 | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 | 42-46 | 47-52 | 47-52 | 47-52 | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 | 47-61 | 53-69 | 53-69 | 53-69 | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 | 62-76 | 70-86 | 70-86 | 70-86 | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 | 77-88 | 87-93 | 87-93 | 87-93 | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 | 89-00 | 94-00 | 94-00 | 94-00 | 94-00 | 94-00 |
+
 **Source totals:** Head and neck 12%; Thorax 16%; Abdomen 11%; Upper extremities (1/3 of 61) 20.33%; Lower extremities (2/3 of 61) 40.67%. Region totals are from the source. Extremities split 1/3 arms, 2/3 legs by surface (rule of nines: arms 18%, legs 36%). The split inside each region uses body exposure (design estimate).
 
 **Close combat:** Dagger: roll location on *Knife assault - stab wounds (forensic)*. Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
@@ -2708,6 +3966,37 @@ Confidence: **Historical - taken directly from a source** · Armour: **allowed**
 | Lower leg (right) | 99 | 99 |
 | Foot (left) | 00 | 00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Dagger | Bayonet |
+|---|---|---|---|
+| head | Skull (left) | 01-14 | 01-14 |
+| head | Skull (right) | 15-28 | 15-28 |
+| head | Face | 29-45 | 29-45 |
+| head | Neck | 46-00 | 46-00 |
+| torso | Chest (left) | 01-18 | 01-18 |
+| torso | Chest (right) | 19-36 | 19-36 |
+| torso | Abdomen | 37-54 | 37-54 |
+| torso | Groin / pelvis | 55-63 | 55-63 |
+| torso | Upper back | 64-83 | 64-83 |
+| torso | Lower back | 84-00 | 84-00 |
+| arms | Shoulder (left) | 01-06 | 01-06 |
+| arms | Shoulder (right) | 07-12 | 07-12 |
+| arms | Upper arm (left) | 13-25 | 13-25 |
+| arms | Upper arm (right) | 26-38 | 26-38 |
+| arms | Forearm (left) | 39-57 | 39-57 |
+| arms | Forearm (right) | 58-76 | 58-76 |
+| arms | Hand (left) | 77-88 | 77-88 |
+| arms | Hand (right) | 89-00 | 89-00 |
+| legs | Thigh (left) | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 |
+
 **Source totals:** Head (27% of victims) = 12.3%; Neck (33%) = 15.1%; Upper extremity (46%) = 21.0%; Chest (34%) = 15.5%; Back (34%) = 15.5%; Abdomen (26%) = 11.9%; Lower extremity (19%) = 8.7% (n = 219). Region figures are from the source (share of victims wounded in each region; victims usually had several wounds, so they sum to more than 100 and are normalised). Arm wounds favour forearms and hands (defensive wounds); other splits use body exposure (design estimate).
 
 **Close combat:** Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
@@ -2768,6 +4057,35 @@ Confidence: **Historical - taken directly from a source** · Armour: **allowed**
 | Lower leg (left) | - | 88-95 | 99 |
 | Lower leg (right) | - | 96-00 | 00 |
 
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | Punch | Kick | Elbow/knee |
+|---|---|---|---|---|
+| head | Skull (left) | 01-21 | 01-21 | 01-21 |
+| head | Skull (right) | 22-36 | 22-36 | 22-36 |
+| head | Face | 37-97 | 37-97 | 37-97 |
+| head | Neck | 98-00 | 98-00 | 98-00 |
+| torso | Chest (left) | 01-26 | 01-26 | 01-26 |
+| torso | Chest (right) | 27-58 | 27-58 | 27-58 |
+| torso | Abdomen | 59-96 | 59-96 | 59-96 |
+| torso | Upper back | 97-00 | 97-00 | 97-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-35 | 01-35 |
+| legs | Thigh (right) | 21-40 | 36-64 | 36-64 |
+| legs | Knee (left) | 41-46 | 65-68 | 65-68 |
+| legs | Knee (right) | 47-52 | 69-71 | 69-71 |
+| legs | Lower leg (left) | 53-69 | 72-88 | 72-88 |
+| legs | Lower leg (right) | 70-86 | 89-00 | 89-00 |
+| legs | Foot (left) | 87-93 | - | - |
+| legs | Foot (right) | 94-00 | - | - |
+
 **Source totals:** Head 64%; Body 21%; Legs 15%. Head / body / legs totals are from the source. The split inside each region is a design estimate (orthodox stance, legal targets only).
 
 **Close combat:** Dagger: roll location on *Knife assault - stab wounds (forensic)*. Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*.
@@ -2796,7 +4114,7 @@ Modifiers stack in the roller and CLI (one per group). Printed columns below sho
 | Target warding with arms (unarmed or disarmed) | - | arms x1.5, forearm (left) x1.6, forearm (right) x1.6, hand (left) x1.6, hand (right) x1.6 | Defensive wounds: forearms and hands raised to block. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Dornach 1499, Lützen 1632, Peninsular War 1808-14, Knife assault |
 | Target behind cover (breastwork, wall, trench) | cover | head x1.5, torso x0.3, legs x0.05, shoulder (left) x1.5, shoulder (right) x1.5, abdomen x0.3, groin / pelvis x0.2, lower back x0.3 | Only head, shoulders and arms show over the parapet. Tables: Sidon, mid-13th century, Towton 1461, Dornach 1499, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline |
 
-**Called shot:** Roll the location twice; keep whichever result lands in the called zone. If both or neither do, keep the first. Your system sets any to-hit penalty.
+**Aim:** Declare it before the attack: a zone (head, body, arms or legs), a gap in the armour, or both. On a hit each costs 20 of the margin (nothing on a critical), and severity and graze come from what is left; one he cannot pay fails and the blow lands as rolled. A zone paid for is rolled on the table's **Aimed** columns, within that zone. A gap is paid for only where the armour covers part of the place hit, and the blow finds it.
 
 ### Sidon, mid-13th century - crusader mass graves (bone evidence) - Sword / Axe
 
@@ -5207,7 +6525,7 @@ Modifiers stack in the roller and CLI (one per group). Printed columns below sho
 1. Pick the **attacker** and the **defender**. Add up each one's wound penalties (table below), capped at the limit shown.
 2. Attacker rolls d100 against **attack % minus penalties** (on the battle map, also minus any range penalty and men in the way). Equal or under hits; the **margin** is the effective chance minus the roll. A roll at or under a tenth of the effective chance is a **critical**: it cannot be defended.
 3. If the defender may parry or dodge, they roll d100 against **defence % minus penalties**; equal or under avoids the blow.
-4. On a hit, roll location. A cut-and-thrust weapon (bayonet, bill, dagger, halberd, poleaxe, sabre, spear or sword) strikes the blow its wielder declares; other weapons strike with their main mechanism. **Severity comes from the margin** (bands below) instead of the severity table, and the **attack roll's units digit** says whether partial armour is met.
+4. On a hit, pay for any **aim** declared (see Aim), then roll location (on the Aimed columns if a zone was paid for). A cut-and-thrust weapon (bayonet, bill, dagger, halberd, poleaxe, sabre, spear or sword) strikes the blow its wielder declares; other weapons strike with their main mechanism. **Severity comes from the margin** (bands below) instead of the severity table, and the **attack roll's units digit** says whether partial armour is met.
 5. Wounds switch situations on by themselves: a defender who cannot stand is **Target down**, a defender whose shield arm is useless has **No shield**, and an attacker on the ground fights as **Attacker lower**.
 
 Penalties add up; each total is capped at -60%.

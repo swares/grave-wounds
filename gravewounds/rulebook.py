@@ -168,6 +168,7 @@ def values(d: Data) -> dict:
         "cap": CB["cap"], "crit_tenth": round(1 / CB["critical_fraction"]), "graze": CB["graze_margin"],
         "band_serious": CB["margin_bands"]["default"]["serious"], "band_critical": CB["margin_bands"]["default"]["critical"],
         "choose_weapons": _choose_weapons(d),
+        "aim_cost": CB["aim"]["cost"],
         "crit_stop": SC["critical_penalty"], "fail1": res[0]["upto"], "fail2": res[1]["upto"], "rounds1": res[0]["rounds"],
         "stunned_def": CB["states"]["stunned"]["defence"],
         "blood_pool": T["blood_pool"], "blood_per": CH["blood"]["per"],

@@ -278,6 +278,15 @@ combat:
   # Graze: a hit by this margin of success or less (not a critical) only grazes. The wound
   # is rolled as usual, then its bleed and pain drop one step each and it causes no shock.
   graze_margin: 2
+  # Aim (Grave Wounds): an attacker may declare, before he rolls, a zone to aim at and/or a gap
+  # in the armour to aim for. On a hit each one paid costs `cost` of his margin (nothing on a
+  # critical), and the wound's severity and graze come from what margin is left; if he cannot
+  # pay, that aim fails and the blow lands as rolled. A paid zone rolls the location within that
+  # zone only (the table's own weights there; the body's exposure where the table has none). A
+  # gap is paid only where the armour on the location covers part of it: the blow finds the gap.
+  aim:
+    cost: 20
+    zones: [head, torso, arms, legs]
   # Stop check (Grave Wounds): a serious or critical wound that carries the `shock` flag
   # (most do; some limb wounds do not) calls for d100 against the fighter's Nerve, minus pain and blood-loss penalties, minus `critical_penalty` for a
   # critical wound. Equal or under: he fights on. Over: how far over (fail_by) picks the
