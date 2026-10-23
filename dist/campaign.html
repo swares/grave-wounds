@@ -177,8 +177,7 @@ const CAMPAIGN = (() => {
     const out = {};
     for (let i = 0; i < store.length; i++){
       const k = store.key(i);
-      if (!k || !k.startsWith(PREFIX) || KEEP_OUT.has(k)) continue;
-      out[k] = store.getItem(k);
+      if (k?.startsWith(PREFIX) && !KEEP_OUT.has(k)) out[k] = store.getItem(k);
     }
     return out;
   }
@@ -191,7 +190,7 @@ const CAMPAIGN = (() => {
 
   function teamStatus(snap, CD){
     const tb = obj(snap["gravewounds-team-builder"]) || {}, team = Array.isArray(tb.team) ? tb.team : [];
-    return { era: tb.era || null, eraName: (CD.eras || {})[tb.era] || tb.era || null, men: team.map(m => m.name).filter(Boolean),
+    return { era: tb.era || null, eraName: CD.eras?.[tb.era] || tb.era || null, men: team.map(m => m.name).filter(Boolean),
       lost: (tb.losses || []).length, prisoners: (tb.prisoners || []).length };
   }
   function namedStatus(snap){
@@ -201,9 +200,9 @@ const CAMPAIGN = (() => {
   }
   function travelStatus(snap, CD){
     const t = obj(snap["gravewounds-travel"]);
-    if (!t || !t.mapId) return null;
-    const forces = (t.forces || {})[t.mapId] || [], clock = (t.clock || {})[t.mapId] || null;
-    const m = (CD.maps || {})[t.mapId] || {};
+    if (!t?.mapId) return null;
+    const forces = t.forces?.[t.mapId] || [], clock = t.clock?.[t.mapId] || null;
+    const m = CD.maps?.[t.mapId] || {};
     return { mapId: t.mapId, mapName: m.name || t.mapId, start: m.start_date || null, day: clock ? clock.day : null,
       forces: forces.length, sides: [...new Set(forces.map(f => f.side))], fought: (t.fought || []).length };
   }
@@ -213,9 +212,11 @@ const CAMPAIGN = (() => {
     const roller = chars.length ? { fighters: chars.length, sides: [...new Set(chars.map(c => (c.side || "Side A").trim() || "Side A"))], round: r.round || 1,
       wonBy: r.wonBy || null, strikes: (r.events || []).filter(e => e.type === "strike").length } : null;
     const result = obj(snap["gravewounds-field-result"]);
+    let sent = null;                                 // a fight sent from the travel map and not yet set up
+    if (rh) sent = { page: "roller.html", key: "gravewounds-handoff", place: rh.place || "", force: rh.force?.name || "", foes: (rh.foes || []).map(f => f.name) };
+    else if (fh) sent = { page: "field.html", key: "gravewounds-field-handoff", place: fh.place || "", battle: fh.battle || "", day: fh.day || "", forces: (fh.forces || []).map(f => f.name) };
     return {
-      sent: rh ? { page: "roller.html", key: "gravewounds-handoff", place: rh.place || "", force: rh.force?.name || "", foes: (rh.foes || []).map(f => f.name) }
-        : fh ? { page: "field.html", key: "gravewounds-field-handoff", place: fh.place || "", battle: fh.battle || "", day: fh.day || "", forces: (fh.forces || []).map(f => f.name) } : null,
+      sent,
       roller,
       fieldResult: result ? { battle: result.battle || "", place: result.place || "", minutes: result.minutes || 0,
         lost: Object.values(result.forces || {}).reduce((a, x) => a + (x.lost || 0), 0) } : null,
@@ -228,7 +229,8 @@ const CAMPAIGN = (() => {
 
   // The campaign has moved on when the pages show it: noticed once each (seen holds what was noticed).
   function sentFight(sent, mark){
-    const who = sent.page === "field.html" ? `a battle at ${sent.place || "?"}` : `a fight at ${sent.place || "?"}${sent.foes?.length ? " against " + sent.foes.join(", ") : ""}`;
+    const place = sent.place || "?", against = sent.foes?.length ? " against " + sent.foes.join(", ") : "";
+    const who = sent.page === "field.html" ? "a battle at " + place : "a fight at " + place + against;
     return { phase: "fight", page: sent.page, why: `The travel map sent ${who}.`, mark };
   }
   function suggest(phase, st, seen = {}){
@@ -253,7 +255,7 @@ const CAMPAIGN = (() => {
     return { format: FORMAT, version: 1, name, saved: new Date().toISOString(), keys };
   }
   function checkFile(o){                             // the keys to write back, or an error saying what is wrong
-    if (!o || o.format !== FORMAT) throw new Error("That file is not a Grave Wounds save.");
+    if (o?.format !== FORMAT) throw new Error("That file is not a Grave Wounds save.");
     if (o.version !== 1) throw new Error(`That save is version ${o.version}; this page reads version 1.`);
     if (!o.keys || typeof o.keys !== "object") throw new Error("That save holds nothing.");
     const keys = {};
@@ -305,23 +307,31 @@ function setPhase(id, why = ""){
 }
 
 /* ---------- what to do in each phase ---------- */
-const GUIDE = {
-  muster: st => [
-    st.team.men.length ? `The team: ${esc(st.team.men.join(", "))}${st.team.eraName ? " (" + esc(st.team.eraName) + ")" : ""}.` : "Make the team: choose the era and the region, then roll or pick four to six men.",
-    "Kit them out and buy from their purses if you want to.",
-    "<b>Send to the roller</b>: that makes them named men, whom the travel map, the roller and the field map all know.",
-  ],
-  march: st => [
-    st.travel ? `On the map of ${esc(st.travel.mapName)}${st.travel.day ? ", day " + st.travel.day : ""}.` : "Choose the campaign's map on the travel map.",
+const bit = (cond, text) => (cond ? text : "");      // a piece of a line, there only when it applies
+function musterLines(st){
+  const era = bit(st.team.eraName, " (" + esc(st.team.eraName) + ")");
+  const team = st.team.men.length ? "The team: " + esc(st.team.men.join(", ")) + era + "." : "Make the team: choose the era and the region, then roll or pick four to six men.";
+  return [team, "Kit them out and buy from their purses if you want to.",
+    "<b>Send to the roller</b>: that makes them named men, whom the travel map, the roller and the field map all know."];
+}
+function marchLines(st){
+  const map = st.travel ? "On the map of " + esc(st.travel.mapName) + bit(st.travel.day, ", day " + st.travel.day) + "." : "Choose the campaign's map on the travel map.";
+  return [map,
     "Put the team's force on it (or use one of the map's own), and in the roller put each named man <b>With</b> it on his card.",
     "Plan the route, march, and make camp. Weather, food, the sick and the road's incidents come each day.",
-    "When the force meets the enemy, <b>Fight here</b> sends the fight to the roller (a skirmish) or the field map (a battle). This page notices and moves to the fight.",
-  ],
-  fight: st => [
-    st.fight.sent ? `A fight waits on the ${esc(PAGE_NAMES[st.fight.sent.page])}${st.fight.sent.place ? " at " + esc(st.fight.sent.place) : ""}: set it up there.` : "Fight it on the roller (a few men) or the field map (units).",
+    "When the force meets the enemy, <b>Fight here</b> sends the fight to the roller (a skirmish) or the field map (a battle). This page notices and moves to the fight."];
+}
+function fightLines(st){
+  const sent = st.fight.sent;
+  const first = sent ? "A fight waits on the " + esc(PAGE_NAMES[sent.page]) + bit(sent.place, " at " + esc(sent.place)) + ": set it up there." : "Fight it on the roller (a few men) or the field map (units).";
+  return [first,
     "On the roller, <b>Run the fight</b> lets the GM's script play the enemy, and <b>Play online</b> lets players join from their own computers.",
-    "When one side stands, mark who won in <b>After the fight</b> on the roller, or send the field map's result back to the travel map.",
-  ],
+    "When one side stands, mark who won in <b>After the fight</b> on the roller, or send the field map's result back to the travel map."];
+}
+const GUIDE = {
+  muster: musterLines,
+  march: marchLines,
+  fight: fightLines,
   aftermath: () => [
     "On the roller: first aid, then <b>After the fight</b> (deeds, loot, prisoners), and <b>To camp</b> for each named man's wounds.",
     "On the travel map: the battle's result and the wounded reach the camp; wound fever and the sick follow over the nights.",
@@ -350,17 +360,28 @@ function showing(){                                   // which page the frame sh
 }
 
 /* ---------- the console ---------- */
+const plural = (n, one) => n + " " + one + (n === 1 ? "" : "s");
+function teamRow(t){
+  if (!t.men.length) return "not made yet";
+  const n = t.men.length;
+  return n + (n === 1 ? " man" : " men") + bit(t.lost, ", " + t.lost + " lost") + bit(t.prisoners, ", " + t.prisoners + " prisoners");
+}
+function namedRow(n){
+  if (!n.men) return "none yet (Send to the roller)";
+  return n.men + ": " + n.withForce + " with a force on the map" + bit(n.sick, ", " + n.sick + " sick or mending") + bit(n.dead, ", " + n.dead + " dead");
+}
+function mapRow(t){
+  if (!t) return "none chosen";
+  return t.mapName + bit(t.day, ", day " + t.day) + ", " + plural(t.forces, "force") + bit(t.fought, ", " + t.fought + " fought");
+}
+function fightRow(f){
+  if (f.sent) return "waiting on the " + PAGE_NAMES[f.sent.page] + bit(f.sent.place, " at " + f.sent.place);
+  if (f.roller) return "on the roller: " + f.roller.fighters + " fighters, " + f.roller.sides.join(" against ") + ", round " + f.roller.round + bit(f.roller.wonBy, ", won by " + f.roller.wonBy);
+  return "none";
+}
 function statusRows(st){
-  const rows = [];
-  rows.push(["Team", st.team.men.length ? `${st.team.men.length} men${st.team.lost ? `, ${st.team.lost} lost` : ""}${st.team.prisoners ? `, ${st.team.prisoners} prisoners` : ""}` : "not made yet"]);
-  rows.push(["Named men", st.named.men ? `${st.named.men}: ${st.named.withForce} with a force on the map${st.named.sick ? `, ${st.named.sick} sick or mending` : ""}${st.named.dead ? `, ${st.named.dead} dead` : ""}` : "none yet (Send to the roller)"]);
-  rows.push(["Map", st.travel ? `${st.travel.mapName}${st.travel.day ? `, day ${st.travel.day}` : ""}, ${st.travel.forces} force${st.travel.forces === 1 ? "" : "s"}${st.travel.fought ? `, ${st.travel.fought} fought` : ""}` : "none chosen"]);
-  const f = st.fight;
-  let fight = "none";
-  if (f.sent) fight = `waiting on the ${PAGE_NAMES[f.sent.page]}${f.sent.place ? " at " + f.sent.place : ""}`;
-  else if (f.roller) fight = `on the roller: ${f.roller.fighters} fighters, ${f.roller.sides.join(" against ")}, round ${f.roller.round}${f.roller.wonBy ? `, won by ${f.roller.wonBy}` : ""}`;
-  rows.push(["Fight", fight]);
-  if (f.fieldResult) rows.push(["Battle result", `${f.fieldResult.place || "?"}: ${f.fieldResult.lost} lost, waiting for the travel map`]);
+  const rows = [["Team", teamRow(st.team)], ["Named men", namedRow(st.named)], ["Map", mapRow(st.travel)], ["Fight", fightRow(st.fight)]];
+  if (st.fight.fieldResult) rows.push(["Battle result", (st.fight.fieldResult.place || "?") + ": " + st.fight.fieldResult.lost + " lost, waiting for the travel map"]);
   return rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("");
 }
 function render(){
@@ -376,10 +397,12 @@ function render(){
   }
   if (document.activeElement !== $("#c-name")) $("#c-name").value = REC.name || "";   // not while the GM types it
   $("#c-phases").innerHTML = CAMPAIGN.PHASES.map(p => `<li><button type="button" data-phase="${p.id}"${p.id === ph.id ? ' aria-current="step"' : ""}>${p.name}</button></li>`).join("");
-  $("#c-guide").innerHTML = `<ul class="guide">${GUIDE[ph.id](st).map(x => `<li>${x}</li>`).join("")}</ul>`;
+  const items = GUIDE[ph.id](st).map(x => "<li>" + x + "</li>").join("");
+  $("#c-guide").innerHTML = `<ul class="guide">${items}</ul>`;
   const page = ph.id === "fight" && st.fight.sent ? st.fight.sent.page : ph.page;
-  const alt = ph.id === "fight" ? `<button type="button" data-open="${page === "roller.html" ? "field.html" : "roller.html"}">Open the ${page === "roller.html" ? "field map" : "roller"} instead</button>` : "";
-  const travel = ph.id === "aftermath" ? `<button type="button" data-open="travel.html">Open the travel map</button>` : "";
+  const other = page === "roller.html" ? "field.html" : "roller.html";
+  const alt = bit(ph.id === "fight", `<button type="button" data-open="${other}">Open the ${PAGE_NAMES[other].toLowerCase()} instead</button>`);
+  const travel = bit(ph.id === "aftermath", '<button type="button" data-open="travel.html">Open the travel map</button>');
   $("#c-actions").innerHTML = `<button type="button" class="primary" data-open="${page}">Open the ${PAGE_NAMES[page].toLowerCase()}</button>${alt}${travel}
     <span style="flex:1"></span><button type="button" id="c-next">Done: on to ${phaseOf(NEXT[ph.id]).name.toLowerCase()}</button>`;
   $("#c-status").innerHTML = statusRows(st);
@@ -394,7 +417,13 @@ $("#c-actions").addEventListener("click", e => {
   if (e.target.id === "c-next"){ const next = NEXT[REC.phase]; setPhase(next); $("#c-notice").hidden = true; render(); show(phaseOf(next).page) }
 });
 $("#c-name").addEventListener("change", e => { REC.name = e.target.value.trim(); saveRecord() });
-$("#c-add-note").addEventListener("click", () => { const t = $("#c-note").value.trim(); if (!t) return; note(t, $("#c-note-gm").checked); $("#c-note").value = ""; render() });
+$("#c-add-note").addEventListener("click", () => {
+  const t = $("#c-note").value.trim();
+  if (!t) return;
+  note(t, $("#c-note-gm").checked);
+  $("#c-note").value = "";
+  render();
+});
 $("#c-note").addEventListener("keydown", e => { if (e.key === "Enter") $("#c-add-note").click() });
 $("#c-frame").addEventListener("load", showing);
 window.addEventListener("storage", e => { if (!e.key || e.key.startsWith(CAMPAIGN.PREFIX)) render() });   // a page in the frame wrote: look again

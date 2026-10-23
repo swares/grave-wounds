@@ -23,8 +23,8 @@ def check(ok, what):
 
 
 class Quiet(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, *a):
-        pass
+    def log_message(self, format, *args):   # the server's request lines would drown the checks
+        return None
 
 
 server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(Quiet, directory=str(ROOT)))
@@ -41,10 +41,18 @@ with sync_playwright() as p:
     ctx.on("weberror", lambda e: errors.append(str(e.error)))
     pg.on("dialog", lambda d: d.accept())
     pg.goto(BASE + "campaign.html"); pg.evaluate("() => localStorage.clear()"); pg.reload()
-    frame = lambda: pg.frame_locator("#c-frame")
-    page_in_frame = lambda: pg.frames[1]
-    phase = lambda: pg.evaluate("() => REC.phase")
-    status = lambda: pg.inner_text("#c-status")
+    def frame():
+        return pg.frame_locator("#c-frame")
+
+    def page_in_frame():
+        return pg.frames[1]
+
+    def phase():
+        return pg.evaluate("() => REC.phase")
+
+    def status():
+        return pg.inner_text("#c-status")
+
     check(phase() == "muster" and "not made yet" in status(), "a new campaign starts at the muster, with no team")
     pg.wait_for_function("() => document.querySelector('#c-showing').textContent.includes('Team builder')", timeout=15000)
     check(True, "the team builder is in the frame")

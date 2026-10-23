@@ -30,8 +30,7 @@ const CAMPAIGN = (() => {
     const out = {};
     for (let i = 0; i < store.length; i++){
       const k = store.key(i);
-      if (!k || !k.startsWith(PREFIX) || KEEP_OUT.has(k)) continue;
-      out[k] = store.getItem(k);
+      if (k?.startsWith(PREFIX) && !KEEP_OUT.has(k)) out[k] = store.getItem(k);
     }
     return out;
   }
@@ -44,7 +43,7 @@ const CAMPAIGN = (() => {
 
   function teamStatus(snap, CD){
     const tb = obj(snap["gravewounds-team-builder"]) || {}, team = Array.isArray(tb.team) ? tb.team : [];
-    return { era: tb.era || null, eraName: (CD.eras || {})[tb.era] || tb.era || null, men: team.map(m => m.name).filter(Boolean),
+    return { era: tb.era || null, eraName: CD.eras?.[tb.era] || tb.era || null, men: team.map(m => m.name).filter(Boolean),
       lost: (tb.losses || []).length, prisoners: (tb.prisoners || []).length };
   }
   function namedStatus(snap){
@@ -54,9 +53,9 @@ const CAMPAIGN = (() => {
   }
   function travelStatus(snap, CD){
     const t = obj(snap["gravewounds-travel"]);
-    if (!t || !t.mapId) return null;
-    const forces = (t.forces || {})[t.mapId] || [], clock = (t.clock || {})[t.mapId] || null;
-    const m = (CD.maps || {})[t.mapId] || {};
+    if (!t?.mapId) return null;
+    const forces = t.forces?.[t.mapId] || [], clock = t.clock?.[t.mapId] || null;
+    const m = CD.maps?.[t.mapId] || {};
     return { mapId: t.mapId, mapName: m.name || t.mapId, start: m.start_date || null, day: clock ? clock.day : null,
       forces: forces.length, sides: [...new Set(forces.map(f => f.side))], fought: (t.fought || []).length };
   }
@@ -66,9 +65,11 @@ const CAMPAIGN = (() => {
     const roller = chars.length ? { fighters: chars.length, sides: [...new Set(chars.map(c => (c.side || "Side A").trim() || "Side A"))], round: r.round || 1,
       wonBy: r.wonBy || null, strikes: (r.events || []).filter(e => e.type === "strike").length } : null;
     const result = obj(snap["gravewounds-field-result"]);
+    let sent = null;                                 // a fight sent from the travel map and not yet set up
+    if (rh) sent = { page: "roller.html", key: "gravewounds-handoff", place: rh.place || "", force: rh.force?.name || "", foes: (rh.foes || []).map(f => f.name) };
+    else if (fh) sent = { page: "field.html", key: "gravewounds-field-handoff", place: fh.place || "", battle: fh.battle || "", day: fh.day || "", forces: (fh.forces || []).map(f => f.name) };
     return {
-      sent: rh ? { page: "roller.html", key: "gravewounds-handoff", place: rh.place || "", force: rh.force?.name || "", foes: (rh.foes || []).map(f => f.name) }
-        : fh ? { page: "field.html", key: "gravewounds-field-handoff", place: fh.place || "", battle: fh.battle || "", day: fh.day || "", forces: (fh.forces || []).map(f => f.name) } : null,
+      sent,
       roller,
       fieldResult: result ? { battle: result.battle || "", place: result.place || "", minutes: result.minutes || 0,
         lost: Object.values(result.forces || {}).reduce((a, x) => a + (x.lost || 0), 0) } : null,
@@ -81,7 +82,8 @@ const CAMPAIGN = (() => {
 
   // The campaign has moved on when the pages show it: noticed once each (seen holds what was noticed).
   function sentFight(sent, mark){
-    const who = sent.page === "field.html" ? `a battle at ${sent.place || "?"}` : `a fight at ${sent.place || "?"}${sent.foes?.length ? " against " + sent.foes.join(", ") : ""}`;
+    const place = sent.place || "?", against = sent.foes?.length ? " against " + sent.foes.join(", ") : "";
+    const who = sent.page === "field.html" ? "a battle at " + place : "a fight at " + place + against;
     return { phase: "fight", page: sent.page, why: `The travel map sent ${who}.`, mark };
   }
   function suggest(phase, st, seen = {}){
@@ -106,7 +108,7 @@ const CAMPAIGN = (() => {
     return { format: FORMAT, version: 1, name, saved: new Date().toISOString(), keys };
   }
   function checkFile(o){                             // the keys to write back, or an error saying what is wrong
-    if (!o || o.format !== FORMAT) throw new Error("That file is not a Grave Wounds save.");
+    if (o?.format !== FORMAT) throw new Error("That file is not a Grave Wounds save.");
     if (o.version !== 1) throw new Error(`That save is version ${o.version}; this page reads version 1.`);
     if (!o.keys || typeof o.keys !== "object") throw new Error("That save holds nothing.");
     const keys = {};
