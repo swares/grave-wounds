@@ -40,7 +40,7 @@ const SDP = "v=0\r\no=- 4611731400430051336 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r
     const a = NET.pieces({ who: "a", pad: "a".repeat(250) }, 100), b = NET.pieces({ who: "b", pad: "b".repeat(250) }, 100), feed = NET.joiner();
     const mixed = [a[2], b[0], a[0], b[2], b[1], a[1], ...a.slice(3), ...b.slice(3)];
     const whole = mixed.map(feed).filter(Boolean);
-    assert.deepEqual(whole.map(m => m.who).sort(), ["a", "b"]);
+    assert.deepEqual(whole.map(m => m.who).sort((x, y) => x.localeCompare(y)), ["a", "b"]);
   });
   await check("a short message is one piece, under the channel's limit", () => {
     const ps = NET.pieces({ t: "next" });

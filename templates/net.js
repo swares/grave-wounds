@@ -17,13 +17,15 @@ const NET = (() => {
 
   const toB64url = bytes => {
     let bin = "";
-    for (const b of bytes) bin += String.fromCharCode(b);
-    return btoa(bin).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
+    for (const b of bytes) bin += String.fromCodePoint(b);
+    let out = btoa(bin).replaceAll("+", "-").replaceAll("/", "_");
+    while (out.endsWith("=")) out = out.slice(0, -1);   // no padding: safe in a link
+    return out;
   };
   const fromB64url = text => {
     const b64 = text.replaceAll("-", "+").replaceAll("_", "/");
     const bin = atob(b64 + "=".repeat((4 - b64.length % 4) % 4));
-    return Uint8Array.from(bin, ch => ch.charCodeAt(0));
+    return Uint8Array.from(bin, ch => ch.codePointAt(0));
   };
   async function squeeze(bytes, how){                    // deflate or inflate through the browser's own streams
     const stream = new Blob([bytes]).stream().pipeThrough(how === "in" ? new DecompressionStream("deflate-raw") : new CompressionStream("deflate-raw"));

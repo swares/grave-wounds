@@ -1,6 +1,6 @@
 """The GM's roller and a player's page, connected over WebRTC in one headless browser (no STUN: same machine).
 
-    python3 tools/net/twopages.py [page] [shots dir] [seed]
+    python3 tools/net/twopages.py [page] [seed]
 
 The GM invites a player for the first side, the player's page answers, the GM pastes the reply. Then:
 the player's page shows his side's screen; the GM's script plays the other side; the player moves,
@@ -15,7 +15,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[2]
 URL = Path(sys.argv[1] if len(sys.argv) > 1 else ROOT / "dist" / "roller.html").resolve().as_uri()
-SHOTS = Path(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2] else None
+SHOTS = Path(__file__).parent / ".cache"                    # the player's page, as a picture, for a look
 ENEMY_SECRETS = ["Blood <b>", "Bleeding", "Worst untreated", "Nerve", "lethal:", "stop check d100", "Serious", "Critical", "Light ", "critical ", "serious "]
 failures = []
 
@@ -35,7 +35,7 @@ with sync_playwright() as p:
         pg.on("pageerror", lambda e: errors.append(str(e)))
     received = []                                      # every whole message the player's page gets, for the secrets check
     gm.goto(URL); gm.evaluate("() => localStorage.clear()"); gm.reload()
-    seed = int(sys.argv[3]) if len(sys.argv) > 3 else 7   # a seed whose fight reaches the player's turn (in some, the arrows end it first)
+    seed = int(sys.argv[2]) if len(sys.argv) > 2 else 7   # a seed whose fight reaches the player's turn (in some, the arrows end it first)
     gm.evaluate("""s => { let st = s; DICE.randint = (a, b) => { st = (st * 16807) % 2147483647; return a + (st % (b - a + 1)) } }""", seed * 101)   # the same fight each run
     gm.evaluate("""() => { const [a, b] = S.chars; for (const c of S.chars){ c.wounds = []; c.blood = poolOf(c); c.state = null }
       a.pos = [6, 5]; b.pos = [9, 5]; renderChars() }""")
@@ -102,9 +102,8 @@ with sync_playwright() as p:
         print("     result on his page:", pl.inner_text("#result")[:300], "| host hit:", gm.evaluate("() => [S.hit.def, S.hit.loc, S.hit.sev, screenSeat()]"))
         raise
     check(True, "his page shows where the blow landed, not how badly")
-    if SHOTS:
-        SHOTS.mkdir(parents=True, exist_ok=True)
-        pl.screenshot(path=str(SHOTS / "player-page.png"), full_page=True)
+    SHOTS.mkdir(parents=True, exist_ok=True)
+    pl.screenshot(path=str(SHOTS / "player-page.png"), full_page=True)
     pl.click('#map-actions button[data-map="next"]')
     gm.wait_for_function(f"() => !actingChar() || sideOf(actingChar()) !== {me!r} || S.round > 1", timeout=10000)
     check(True, "his Next fighter ends his turn on the GM's page")
