@@ -1905,6 +1905,12 @@ function heldAt(us, field){                        // {kind objective, hex, side
   const sides = [...new Set(us.filter(u => !ROUTED.has(u.state) && u.men > 0 && offObjective(u, obj) <= r).map(u => u.side))];
   return { kind: "objective", hex: [...obj], sides, held: sides.length === 1 ? sides[0] : null };
 }
+const FIRE = new Set(["volley", "beaten", "shelled", "tankfire", "antiarmour", "rocketfire", "cannon", "ricochet"]);
+function firedOn(log){                            // the units fired on in an exchange's log: missiles, guns, shells and rockets, not hand to hand (as units._fired_on)
+  const out = new Set();
+  log.forEach(l => { if (l.dfd !== undefined && l.dfd !== null && (FIRE.has(l.kind) || (l.kind === "hero" && l.dist !== undefined))) out.add(l.dfd) });
+  return out;
+}
 function exchange(units, table, rng, field = null){   // -> {units, log}; works being breached are updated in field
   const us = units.map(copyUnit), n = us.length, log = [];
   const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false) };
@@ -1920,8 +1926,9 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   indirectAll(us, table, rng, acc, log, field, under);
   assaultAll(us, table, rng, acc, log, field);
   breachAll(us, field, log);
-  const occ = occupancy(us), before = us.map(u => u.men);
+  const occ = occupancy(us), before = us.map(u => u.men), fired = firedOn(log);
   us.forEach((u, i) => {
+    if (fired.has(i)) u.fired_on = true; else delete u.fired_on;   // shot at this exchange, hit or not: for storming in bounds
     const cut = Math.min(acc.lost[i], u.men);
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
     if (cut > 0) u.hit = true; else delete u.hit;   // it lost men this exchange: under fire, for the next moves
@@ -2271,6 +2278,7 @@ function stands(field, u, hexes){                 // ground it can stand on, and
   const keys = new Set(hexes.map(hk));
   return hexes.every(h => canEnter(field, u, h) && [0, 1, 2, 3, 4, 5].every(dn => { const x = step(h, dn); return !keys.has(hk(x)) || !wallBetween(field, h, x) }));
 }
+const leavesDisabled = u => !!UD.commander.leave_disabled && !!u.vehicle && (u.immobile || 0) > 0 && vehiclesLeft(u) > u.immobile;   // attacking, a vehicle unit with some vehicles that can still move leaves its immobilised ones (commander.leave_disabled) (as commander._leaves_disabled)
 function abandonImmobile(u){                       // a vehicle unit leaves its immobilised vehicles: their crews leave the fight unhurt (bailed)
   const K = vehicleKind(u), n = u.immobile || 0;
   if (!K || n <= 0) return u;
@@ -2511,9 +2519,8 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
   if (stance === "hold") orders.push(...fixLines(us, side, [field, known, exchange]));
   for (let i = 0; i < us.length; i++){
     if (us[i].side !== side || !commandable(us, i, exchange)) continue;
-    const roll = rng.randint(1, 100), o1 = unitOrder(us, i, [size, plugging(aimOf(us, i, aim), us[i]), stance, known, exchange], roll);
-    const o0 = spotter(us, i, o1, [size, field, stance, known]) || o1;
-    const o = o0 && us[i].plug && (o0.act === "advance" || o0.act === "fall_back") ? { ...o0, gap: true } : o0;   // going to plug the gap, not the side's objective
+    if (stance === "attack" && leavesDisabled(us[i])){ const n = us[i].immobile; us[i] = abandonImmobile(us[i]); orders.push({ unit: i, act: "abandon", n }) }   // it goes on without its immobilised vehicles
+    const o = orderOne(us, i, [size, field, stance, known, exchange], [aim, table], rng.randint(1, 100));
     if (o){
       orders.push({ unit: i, ...o });
       applyOrder(us, i, o);
@@ -2523,6 +2530,11 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
   us = giveWay(us, side, [size, field, stance, exchange], [aim, known], orders);
   orders.push(...moveGuns(us, side, [size, goal, stance, known, exchange]), ...layGuns(us, side, [size, goal, known, exchange]), ...callFireAi(us, side, goal, known, [stance, exchange, orders, table]));
   return { units: us, orders };
+}
+function orderOne(us, i, [size, field, stance, known, exchange], [aim, table], roll){   // unit i's order this move, or null: its own, gone to ground under fire, an air controller's, marked if it goes to plug a gap (as commander._order_one)
+  const o1 = downUnderFire(us, i, unitOrder(us, i, [size, plugging(aimOf(us, i, aim), us[i]), stance, known, exchange], roll), stance, table);
+  const o0 = spotter(us, i, o1, [size, field, stance, known]) || o1;
+  return o0 && us[i].plug && (o0.act === "advance" || o0.act === "fall_back") ? { ...o0, gap: true } : o0;   // going to plug the gap, not the side's objective
 }
 const formed = u => !("range" in FD.weapons[u.weapon]) && u.formation !== "open" && !u.vehicle;   // close-order men who fight hand to hand
 const screening = (u, side) => u.side === side && u.state === "steady" && u.men > 0 && u.formation === "open" && "range" in FD.weapons[u.weapon] && !u.vehicle && !isBattery(u) && !isAtGun(u);
@@ -3184,6 +3196,11 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   const o0 = obj === null ? bestOrder(us, i, t, ctx) : forObjective(us, i, t, ctx), o = narrowed(us, i, t, ctx, o0) || o0;
   return t === null ? o : lastSeen(o, ctx[3], t, ctx[4]);
 }
+function downUnderFire(us, i, o, stance, table){   // attacking, in a war of fire and movement (commander.bounds_all: the wound table's war), a modern foot unit fired on last exchange does not walk on: it goes to ground (or stays down) and fires, unless its target is pinned (as commander._down_under_fire)
+  const t = o?.target ?? null;
+  if (!(UD.commander.bounds_all || []).includes(FD.tables[table]?.battle) || stance !== "attack" || !o || (o.act !== "move" && o.act !== "advance") || !bounding(us, i, t)) return o;
+  return us[i].prone ? null : { act: "ground", target: t };
+}
 function withdrawOrder(us, i, ctx){               // orders from the account (data/orders.yaml withdraw {at, to}): from exchange at it falls back to hex to, and holds it once there, or to map edge to, and leaves the field there (as commander._withdraw_order)
   const u = us[i], W = u.withdraw;
   if (!W || (ctx[4] ?? 0) < W.at) return null;
@@ -3421,7 +3438,7 @@ function underFire(us, i){                         // an enemy unit's missile we
 function bounding(us, i, t){                     // storming in bounds (commander.bounds): a modern unit that heeds cover, hit or pinned last exchange, stays down and fires this move unless its target is pinned (or it can charge home now) (as commander.bounding)
   const u = us[i], C = UD.commander;
   if (!C.bounds || u.vehicle || !C.ground_with.includes(u.weapon) || (C.cover[u.quality] ?? 0) <= 0) return false;
-  return !!(u.hit || u.pinned) && !us[t].pinned;
+  return !!(u.hit || u.pinned || u.fired_on) && (t === null || !us[t].pinned);   // fired on, even if no one fell: a bound drew fire
 }
 function storming(u, t, field, stance){           // attacking, armed for storming (black powder with the bayonet), its target holding works: it closes and charges (as commander.storming)
   return stance === "attack" && UD.commander.storm.includes(u.weapon) && holdsWorks(field, u.pos, t);
@@ -3531,12 +3548,16 @@ function aiScore(field, u, tu, h, cost, shooter, storm = false){   // how much t
   const C = UD.commander, q = u.quality, dist = hdist(h, tu.pos);
   const s = (storm ? 0 : (C.cover[q] ?? 0)) * coverAt(field, tu.pos, h) - cost - (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side);
   if (shooter){
-    const inr = dist >= 1 && (fieldRange(u.weapon, dist) !== null || gunInRange(field, u, [h, tu.pos, dist])) && clearSight(field, h, tu.pos, dist);   // in range: and no woods, buildings or crest across the line from there
+    const inr = dist >= 1 && ((fieldRange(u.weapon, dist) !== null && seesTo(field, u, [h, tu.pos, dist])) || gunInRange(field, u, [h, tu.pos, dist])) && clearSight(field, h, tu.pos, dist);   // in range, and the weather and light let it see there: and no woods, buildings or crest across the line from there
     const stand = inr && u.vehicle && gunOf(u) && !answers(field, tu, [tu.pos, [...h], dist]) ? C.stand_off : 0;
     return s + stand + (inr ? C.in_range : -C.closing * dist) - (dist < C.keep_off ? C.too_close : 0);
   }
   const flank = arc(tu.facing, bearing(tu.pos, h)) === "front" ? 0 : (C.flank[q] ?? 0);
   return s - C.closing * dist + flank;
+}
+function seesTo(field, u, [h, t, dist]){          // the weather and light let u, at h, see t dist away (as commander._sees_to)
+  const sight = sightHexes(field, [...t], seerOf({ ...u, pos: [...h] }));
+  return sight === null || dist <= sight;
 }
 function gunInRange(field, u, [h, t, dist]){      // u's main gun (a vehicle's, or anti-tank guns) reaches from h to t and the weather and light let it see t from there (as commander._gun_in_range)
   const G = gunOf(u);

@@ -488,8 +488,10 @@ general. All its numbers are in units.yaml `commander`.
     line to the target (or the objective), so a long advance goes straight rather than
     drifting to one side.
 - **Shooters.** A unit with missiles stops where the target is in range and shoots rather
-  than closing. In range means its weapon (or main gun) reaches, the light lets it see that
-  far, and nothing blocks the line from that hex (woods, buildings or a crest, as firing
+  than closing. In range means its weapon (or main gun) reaches, the weather and light let it
+  see that far (for its small arms as for a main gun: at 73 Easting the tanks, whose machine
+  guns reached the Iraqi trenches from 500 m, stopped there in a sandstorm their thermal
+  sights saw only 450 m through, and never fired), and nothing blocks the line from that hex (woods, buildings or a crest, as firing
   itself checks). Before 20 October the line was not checked: Hue's tanks stopped 25 hexes
   out behind blocks of houses, counting the Treasury in range, and never fired. It keeps off the enemy (2 hexes or more) if it can, and never charges,
   except when storming works (below). A unit with a main gun (a vehicle's, or anti-tank guns)
@@ -528,14 +530,25 @@ general. All its numbers are in units.yaml `commander`.
   blocks hand-to-hand fighting, so stormers stop at its foot unless they carry ladders (see
   *Escalade*), when they go up it; breaching it is still the GM's order.
   - **In bounds** (`commander.bounds`). Storming with a modern weapon (breech-loaders on), a
-    unit that heeds cover (regulars and better) and was hit or pinned in the last exchange
-    goes to ground where it is and fires this move, rather than walking on upright; it gets
+    unit that heeds cover (regulars and better) and was fired on (hit or not) or pinned in the
+    last exchange goes to ground where it is and fires this move, rather than walking on upright; it gets
     up and goes on once a bound draws no fire, or at once if its target is pinned or it can
     charge home this move. Fire and movement: self-play showed 2 Para's A Company walking
     upright into two machine guns at Goose Green and breaking in three minutes. Measured on 24
     runs of every battlefield: 628 of 888 from 620; Hamburger Hill 18 to 23, the morale
     targets unchanged. Goose Green still does not match (British losses 63% to 55%): the bound
     after a lull still goes into machine guns nothing has pinned.
+  - **Every advance** (`commander.bounds_all`). In the wars of fire and movement (WWII on, by
+    the wound table's war), the same holds for any attacking modern foot unit, not only one
+    storming works: fired on in the last exchange, it goes to ground and fires rather than
+    walking on to a better hex or the objective, unless its target is pinned or it can charge
+    home. And "drew fire" now means fired on, not only men lost: a company lying under fire
+    that lost no one had drawn fire. Self-play at Goose Green: A Company, moving as shooters on
+    a target not in works, walked upright under two machine guns and lost 30 men in two
+    exchanges, and, under the old test, a company that lay under the guns and lost no one got
+    up into them. Fire and movement became standard from 1917-18; applied to the Germans at
+    Mons in 1914, who came on in close order, it cost Mons 23 to 15, so it is not used before
+    WWII. Measured with the fixes below on 24 runs of every battlefield: 700 of 936 from 692.
 - **Facing.** A unit whose target is already in its front arc keeps its facing rather than
   turning to face it squarely, so a wide line does not spend its move turning.
   - Veterans prefer a hex off the target's front (30 points more).
@@ -1784,7 +1797,10 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
 
   Over all hits that comes to about the old 25% immobilised and 15% gun out. The log counts
   the turret hits. A unit with an immobilised vehicle cannot move (it can still turn) until
-  it **abandons** them. Their crews then leave the fight unhurt.
+  it **abandons** them. Their crews then leave the fight unhurt. The enemy commander, attacking,
+  abandons them when the unit has vehicles that can still move, and goes on with those
+  (`commander.leave_disabled`): at 73 Easting a platoon with one M1 immobilised stood where it
+  was for the rest of the battle.
 - **Shells and bombs** bursting in a vehicle's own hex knock it out at the firing kind's knock
   %: a heavy howitzer 2%, fighter-bombers 15%. Light armour is three times as likely to go.
 - **Knocked out.** A knocked-out vehicle's crew are out of the fight. Each is struck at 50% and

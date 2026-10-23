@@ -2453,7 +2453,12 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _breach_all(d, us, field)
     occ = occupancy(d, us)
     before = [u["men"] for u in us]
+    fired = _fired_on(log)
     for i, u in enumerate(us):
+        if i in fired:
+            u["fired_on"] = True                    # shot at this exchange, hit or not: for storming in bounds
+        else:
+            u.pop("fired_on", None)
         cut = min(lost[i], u["men"])
         u.update(men=u["men"] - cut, down=u.get("down", 0) + cut, dead=u.get("dead", 0) + min(dead[i], cut))
         if cut > 0:
@@ -2961,6 +2966,15 @@ def _closing_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | N
     for c in closing_fire(d, us, field):
         log += _fire_battery(d, us, table, rng, acc, c)
     return log
+
+
+_FIRE = {"volley", "beaten", "shelled", "tankfire", "antiarmour", "rocketfire", "cannon", "ricochet"}
+
+
+def _fired_on(log: list) -> set:
+    """The units fired on in an exchange's log: missiles, guns, shells and rockets, not hand to
+    hand."""
+    return {l["dfd"] for l in log if l.get("dfd") is not None and (l.get("kind") in _FIRE or (l.get("kind") == "hero" and "dist" in l))}
 
 
 def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, field: dict | None = None, thinned: list | None = None) -> list:
