@@ -1,0 +1,30 @@
+# The roller's strike and event log (templates/strike.js, templates/gamelog.js): thousands of strikes
+# checked against gravewounds.engine.roll_hit on the same dice, then the unit tests
+# (tools/strike/parity.py runs tools/strike/test.js). A few seconds; runs on pull requests and on
+# main when the rules it checks change.
+name: strike
+
+on:
+  pull_request:
+    paths: ["templates/strike.js", "templates/gamelog.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**"]
+  push:
+    branches: [main]
+    paths: ["templates/strike.js", "templates/gamelog.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: pip install "PyYAML>=6.0" "Markdown>=3.4" "reportlab>=4.0"
+      - run: python3 tools/strike/parity.py 5000 1

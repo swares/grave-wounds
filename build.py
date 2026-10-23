@@ -2096,7 +2096,10 @@ def main() -> int:
     measure_js = (ROOT / "templates" / "measure.js").read_text(encoding="utf-8")
     lethal_js = (ROOT / "templates" / "lethality.js").read_text(encoding="utf-8").replace(
         "/*__LETHAL_DATA__*/null", json.dumps({"default": d.wounds["lethality"]["default"], "presets": d.wounds["lethality"]["presets"]}, separators=(",", ":")))
+    strike_js = (ROOT / "templates" / "strike.js").read_text(encoding="utf-8")       # the strike's rules, with no page
+    gamelog_js = (ROOT / "templates" / "gamelog.js").read_text(encoding="utf-8")     # the event log and who sees what
     html = html.replace(CAMP_MARK, camp_js).replace("/*__WORKS_JS__*/", works_js).replace(MEASURE_MARK, measure_js).replace("/*__LETHAL_JS__*/", lethal_js)
+    html = html.replace("/*__STRIKE_JS__*/", strike_js).replace("/*__GAMELOG_JS__*/", gamelog_js)
     html = html.replace("/*__GRAVEWOUNDS_DATA__*/null", json.dumps(b, separators=(",", ":")))
     (DIST / "roller.html").write_text(html, encoding="utf-8")
     tb = travel_bundle(d)

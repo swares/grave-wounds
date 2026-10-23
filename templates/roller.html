@@ -357,6 +357,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
       <div id="after-fight"></div>
       <div id="hazards"></div>
       <div id="words"></div>
+      <div id="events"></div>
       <p class="muted" style="margin:0" id="trk-rule"></p>
     </section>
   </div>
@@ -384,11 +385,20 @@ const V = DATA.vocabulary, TRK = DATA.tracking;
 const LETHAL = V.lethal.order;
 const d2 = n => n === 100 ? "00" : String(n).padStart(2, "0");
 const rg = r => r.lo === r.hi ? d2(r.lo) : d2(r.lo) + "-" + d2(r.hi);
-const d100 = () => 1 + Math.floor(Math.random() * 100);
+const DICE = {                                   // real dice for play (a test or a replay gives the strike its own)
+  randint(a, b){ return a + crypto.getRandomValues(new Uint32Array(1))[0] % (b - a + 1) }
+};
+const d100 = () => DICE.randint(1, 100);
 const look = (ranges, n) => ranges.find(r => n >= r.lo && n <= r.hi).id;
 const shortName = w => DATA.weapons[w].short || DATA.weapons[w].name.split(" (")[0];
 
-const S = { table: null, weapon: null, hit: null, chars: [], active: 0, attacker: -1, seq: 1, mods: new Set(), aim: "", gap: false, armor: "none", round: 1, log: [], turn: null, broken: {}, pending: [], works: { edges: {}, hexes: {} }, ground: { kinds: {}, levels: {} }, weather: { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } };
+/* ---------- the strike's rules (strike.js) and the event log (gamelog.js), with no page ---------- */
+/*__STRIKE_JS__*/
+/*__GAMELOG_JS__*/
+const STRIKE = makeStrike(DATA);
+const { attackRoll, defenceRoll, marginSeverity, armorAt, armorSteps, sevTiers, grazeFx, isGraze, cannotAttack } = STRIKE;
+
+const S = { table: null, weapon: null, hit: null, events: [], chars: [], active: 0, attacker: -1, seq: 1, mods: new Set(), aim: "", gap: false, armor: "none", round: 1, log: [], turn: null, broken: {}, pending: [], works: { edges: {}, hexes: {} }, ground: { kinds: {}, levels: {} }, weather: { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } };
 const CMB = DATA.combat;
 const MODS = DATA.modifiers, KITS = Object.fromEntries(DATA.armor.kits.map(k => [k.id, k]));
 const MATS = DATA.armor.materials, LADDER = ["stopped", "light", "serious", "critical"];
@@ -468,11 +478,9 @@ function penalties(c){
   if (rule.out) flags.add("out");
   return { attack: Math.min(attack, CMB.cap), defence: Math.min(defence, CMB.cap), flags: [...flags].sort(), notes };
 }
-const cannotAttack = p => !!p && p.flags.some(f => f === "incapacitated" || (CMB.states[f] || {}).no_attack);
 
 /* ---------- graze, stop check and morale: same rules as gravewounds/combat.py ---------- */
-function grazeFx(fx){ return { ...fx, bleed: Math.max(0, fx.bleed - 1), pain: Math.max(0, fx.pain - 1), shock: false } }
-function isGraze(margin, critical){ return margin !== null && margin !== undefined && !critical && margin <= CMB.graze_margin }
+/* grazeFx and isGraze: strike.js */
 function stopTarget(nerve, severity, painSteps, bloodFrac = 1){
   let target = nerve - Math.min(painSteps, TRK.pain_cap) * CMB.pain_step;
   const th = [...TRK.thresholds].sort((a, b) => a.at - b.at).find(t => bloodFrac <= t.at);
@@ -1181,21 +1189,7 @@ function autoMods(){
   const allow = DATA.tables[rtid()].modifiers;
   return [...new Set(out)].filter(id => allow.includes(id));
 }
-function marginSeverity(margin, critical, wid, zone){
-  if (critical) return "critical";
-  const bands = CMB.margin_bands;
-  let b = bands.default;
-  if (DATA.weapons[wid].threat && bands.ballistic) b = bands.ballistic.find(x => x.zones.includes(zone));
-  return margin >= b.critical ? "critical" : margin >= b.serious ? "serious" : "light";
-}
-function attackRoll(attack, roll, penalty){
-  const eff = Math.max(0, attack - penalty), critAt = Math.floor(eff * CMB.critical_fraction), hit = roll <= eff;
-  return { effective: eff, roll, hit, critical: hit && roll <= critAt, margin: hit ? eff - roll : null, base: attack, penalty };
-}
-function defenceRoll(defence, roll, penalty){
-  const eff = Math.max(0, defence - penalty);
-  return { effective: eff, roll, defended: roll <= eff, base: defence, penalty };
-}
+/* marginSeverity, attackRoll and defenceRoll: strike.js */
 // Close-combat weapons on a table of another kind of fighting roll on the melee table.
 const resolveTid = (tid, wid) => DATA.tables[tid].resolve[wid] || tid;
 const rtid = () => resolveTid(S.table, S.weapon);
@@ -1246,24 +1240,12 @@ function aimedRanges(wid, zone){                 // d100 ranges for a blow aimed
   return toD100(w);
 }
 function figRanges(){ return (S.aim && aimedRanges(S.weapon, S.aim)) || curRanges() }   // what the figure shows: the aimed zone's odds when aiming
-function armorAt(kitId, locId){ return ((KITS[kitId] || {}).layers || {})[LOC[locId].armor] || [] }
-function armorSteps(mat, mech, wid){
-  const w = DATA.weapons[wid], m = MATS[mat], th = m.threats || {};
-  const steps = mech === "ballistic" && w.threat && w.threat in th ? th[w.threat] : m[mech];
-  const defeat = (w.armor_defeat || {})[mech] || 0;
-  return Math.max(0, steps - defeat);
-}
-function sevTiers(mech, zone, wid){
-  if (wid && DATA.weapons[wid].threat) mech = "ballistic";   // firearms and explosives
-  const spec = DATA.severity_by_mechanism[mech];
-  const tbl = spec && spec.tables.find(t => t.zones.includes(zone));
-  return tbl ? tbl.tiers : DATA.severity;
-}
+/* armorAt, armorSteps and sevTiers: strike.js */
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone})) }catch(e){} }
-function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); return true } }catch(e){} return false }
+function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,events:S.events,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone})) }catch(e){} }
+function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if(j && j.chars && j.chars.length){ Object.assign(S, j); if (!Array.isArray(S.events)) S.events = []; return true } }catch(e){} return false }
 
 /* ---------- body figure ---------- */
 const C = 90;
@@ -1321,42 +1303,42 @@ function shadeFigure(){
 /* ---------- roll ---------- */
 function readDie(id){ const v = parseInt($(id).value, 10); return v >= 1 && v <= 100 ? v : null }
 function readPct(id){ const v = parseInt($(id).value, 10); return v >= 0 && v <= 200 ? v : null }
-function rollHit(stray = false){                  // stray: a missed shot gone into a man in the way; no attack roll, severity rolled
-  const atkPct = stray ? null : readPct("#in-atk");
-  const base = { weapon: S.weapon, table: S.table, ltable: rtid(), mods: orderedMods().map(m => m.short || m.name), aim: stray ? "" : S.aim, gap: !stray && S.gap, stray };
-  const rc = rangeCheck(), freeHit = isFreePair();
-  if (rc.blocked) return hitDone(base, { blocked: rc.blocked });
-  base.range = rc.range;
-  let att = { margin: null, crit: false, combat: null, roll: null };
-  if (atkPct !== null){
-    att = attackPhase(atkPct, rc, freeHit);
-    if (att.end) return hitDone(base, att.end);
-  }
-  woundPhase(rc, freeHit, stray, att);
+function strikeContext(){                        // the situation the strike is rolled in, as the page sees it (strike.js: ctx)
+  const a = attackerChar(), dd = defenderChar();
+  return {
+    table: S.table, ltable: rtid(), weapon: S.weapon, mods: orderedMods().map(m => m.short || m.name),
+    ranges: curRanges(), aimRanges: S.aim ? aimedRanges(S.weapon, S.aim) : null,
+    armor: S.armor, evidence: isEvidence(), rc: rangeCheck(), freeHit: isFreePair(),
+    attacker: a ? { name: a.name, pen: penalties(a), state: a.state ? a.state.id : null } : null,
+    defender: dd ? { name: dd.name, pen: penalties(dd) } : null,
+  };
 }
-function hitDone(base, extra){                    // the roll ended before a wound: blocked, missed or parried
-  S.hit = { ...base, fx: null, ...extra };
-  ["#in-atk-roll", "#in-def-roll"].forEach(id => $(id).value = "");
+function strikeCommand(stray){                    // what the player declares, and any dice he typed (strike.js: cmd)
+  const rolls = {};
+  [["atk", "#in-atk-roll"], ["def", "#in-def-roll"], ["loc", "#in-loc"], ["mech", "#in-mech"], ["sev", "#in-sev"]]
+    .forEach(([k, id]) => { const v = readDie(id); if (v !== null) rolls[k] = v });
+  return { stray, atk: stray ? null : readPct("#in-atk"), def: readPct("#in-def"), aim: S.aim || "", gap: !!S.gap,
+    blow: S.blow || "", sev: $("#sel-sev").value, rolls };
+}
+function rollHit(stray = false, log = true){      // stray: a missed shot gone into a man in the way; no attack roll, severity rolled
+  const ctx = strikeContext(), cmd = strikeCommand(stray), a = attackerChar(), dd = defenderChar();
+  const r = STRIKE.resolveStrike(ctx, cmd, DICE), h = r.hit;
+  if (r.effects.closeIn) closeIn();               // what the strike did to the fighters, in the order the rules take it
+  if (r.effects.xp === "hit") xpHit(a, a && a.sheet && a.sheet.skill_by ? a.sheet.skill_by[S.weapon] : null, "a hit in a fight");
+  if (r.effects.xp === "defended") xpHit(dd, dd && dd.sheet ? dd.sheet.defence_by : null, "a parry or dodge in a fight");
+  if (r.effects.free) freeDone(r.effects.free);
+  S.hit = h;
+  if (log) logStrike(a, dd, cmd, r);
+  const wound = !(h.blocked || h.miss || h.defended);
+  (wound ? ["#in-loc", "#in-mech", "#in-sev", "#in-atk-roll", "#in-def-roll"] : ["#in-atk-roll", "#in-def-roll"]).forEach(id => $(id).value = "");
   renderResult();
-  if (S.chars.length) renderChars();
-  else { shadeFigure(); renderTable() }
-}
-const lowerName = s => (/^[A-Z]{2}/.test(s) ? s : s.toLowerCase());   // "Bill" -> "bill", "MG" stays
-function attackBlock(A, w){                       // why the attacker cannot attack at all, or null
-  const n = () => attackerChar().name;
-  if (A && A.flags.includes("incapacitated")) return `${n()} is incapacitated and cannot attack.`;
-  if (cannotAttack(A)) return `${n()} cannot attack: ${CMB.states[attackerChar().state.id].name.toLowerCase()}.`;
-  if (A && A.flags.includes("cannot_wield") && w.melee !== "unarmed") return `${n()} cannot hold a weapon in either hand.`;
-  if (A && A.flags.includes("one_arm") && w.two_handed) return `${n()} cannot use the ${lowerName(w.short || w.name)} with an arm hurt (it takes both hands): defend only.`;
-  return null;
-}
-function misfired(rc, freeHit){                   // wet priming: the shot is lost (text), or null
-  const mf = rc.range ? rc.range.misfire : 0;
-  if (!mf) return null;
-  const mr = d100();
-  if (mr > mf) return null;
-  if (freeHit) freeDone("misfire");
-  return `Misfire: d100 ${d2(mr)} against ${mf}% \u2014 the wet weather spoiled the priming. The shot is lost.`;
+  if (!wound){
+    if (S.chars.length) renderChars();
+    else { shadeFigure(); renderTable() }
+    return;
+  }
+  shadeFigure(); renderTable();
+  if (S.chars.length) renderMap();               // the map's bar shows the last roll
 }
 function toil(c){                                 // a hand-to-hand exchange tires him, by his kit and Strength
   if (!c) return;
@@ -1379,87 +1361,70 @@ function riseToStrike(){                          // a man in cover rises to str
   a.cover = false;
   if (S.tm && S.tm.id === a.id) S.tm.risen = GRD.rise;
 }
-function attackPhase(atkPct, rc, freeHit){        // the attack and defence rolls: {end} if no wound follows, else {margin, crit, combat}
-  const w = DATA.weapons[S.weapon], A = penalties(attackerChar()), D = penalties(defenderChar()), defPct = readPct("#in-def");
-  const blocked = attackBlock(A, w) || misfired(rc, freeHit);
-  if (blocked) return { end: { blocked } };
-  closeIn();
-  const ar = attackRoll(atkPct, readDie("#in-atk-roll") ?? d100(), (A ? A.attack : 0) + (rc.range ? rc.range.penalty : 0));
-  const combat = { atk: ar, def: null, range: rc.range };
-  if (ar.hit){ const a = attackerChar(); xpHit(a, a && a.sheet && a.sheet.skill_by ? a.sheet.skill_by[S.weapon] : null, "a hit in a fight") }
-  if (!ar.hit){
-    if (freeHit) freeDone("miss");
-    return { end: { miss: true, combat, stray: strayRoll(rc.range) } };
-  }
-  if (defPct !== null && !ar.critical){
-    const dr = defenceRoll(defPct, readDie("#in-def-roll") ?? d100(), D ? D.defence : 0);
-    combat.def = dr;
-    if (dr.defended){
-      const dd = defenderChar(); xpHit(dd, dd && dd.sheet ? dd.sheet.defence_by : null, "a parry or dodge in a fight");
-      if (freeHit) freeDone("parried or dodged");
-      return { end: { defended: true, combat } };
+/* ---------- the event log (gamelog.js): each strike and wound, and who sees it in full ---------- */
+const evWho = c => c ? { id: c.id, name: c.name, side: sideOf(c) } : null;
+const evRound = () => (S.chars.length ? S.round : null);
+function strikeOutcome(h){
+  return h.blocked ? "blocked" : h.miss ? "miss" : h.defended ? "parried or dodged" : h.sev === "stopped" ? "stopped by armour" : h.graze ? "graze" : "wound";
+}
+function logStrike(a, dd, cmd, r){                // the whole strike for the GM and the defender's side; for the rest, what the table saw
+  const h = r.hit, outcome = strikeOutcome(h), landed = ["wound", "graze"].includes(outcome);
+  const seen = h.combat ? { atk: h.combat.atk.roll, def: h.combat.def ? h.combat.def.roll : null } : null;
+  logEvent(S.events, { round: evRound(), type: "strike", vis: dd ? [sideSeat(sideOf(dd))] : "public",
+    data: { attacker: evWho(a), defender: evWho(dd), weapon: h.weapon, outcome, cmd, dice: r.dice, hit: h },
+    pub: { attacker: evWho(a), defender: evWho(dd), weapon: h.weapon, outcome: landed ? "hit" : outcome, loc: landed || outcome === "stopped by armour" ? h.loc : null,
+      seen, aim: cmd.aim || "", gap: cmd.gap, blow: cmd.blow || "", blocked: h.blocked || null, stray: h.stray || null } });
+}
+function logWound(c, h, line, stop){              // a wound applied: its effects and stop check for the GM and his side; the rest see where and whether he fell
+  const st = c.state ? { ...c.state } : null, down = isDown(c);
+  logEvent(S.events, { round: evRound(), type: "wound", vis: [sideSeat(sideOf(c))],
+    data: { who: evWho(c), loc: h.loc, mech: h.mech, sev: h.sev, graze: !!h.graze, fx: h.fx, stop: stop.check ? { ...stop } : null, line: line ? plainText(line) : "", state: st, down },
+    pub: { who: evWho(c), loc: h.loc, state: st ? st.id : null, down } });
+}
+function eventText(v){                            // one event as a seat sees it, in a line
+  const d = v.data, nm = x => (x ? esc(x.name) : "?"), at = id => (id ? LOC[id].name.toLowerCase() : "");
+  if (v.type === "strike"){
+    const head = `${d.attacker ? nm(d.attacker) : "A blow"}${d.defender ? ` at ${nm(d.defender)}` : ""}, ${esc(shortName(d.weapon).toLowerCase())}`;
+    if (!v.full){
+      const rolls = d.seen ? ` (attack ${d2(d.seen.atk)}${d.seen.def !== null ? `, defence ${d2(d.seen.def)}` : ""})` : "";
+      return `${head}: ${d.outcome}${d.loc ? `, ${at(d.loc)}` : ""}${rolls}`;
     }
+    const h = d.hit, dice = d.dice.map(x => `${x.name} ${x.sides === 10 ? x.v : d2(x.v)}${x.by === "player" ? "*" : ""}`).join(" · ");
+    const what = h.loc ? `${at(h.loc)}, ${h.sev === "stopped" ? "stopped" : sevLabel(h.sev).toLowerCase()}${h.graze ? " graze" : ""}, ${DATA.mechanisms[h.mech].name.toLowerCase()}` : "";
+    return `${head}: ${d.outcome}${what ? ` — ${what}` : ""}${h.blocked ? ` (${esc(h.blocked)})` : ""}<br><span class="muted">dice: ${dice || "none"}</span>`;
   }
-  return { margin: ar.margin, crit: ar.critical, combat, roll: ar.roll };
-}
-function rollLocation(zoned){                    // {loc, rl}: on the aimed zone's ranges if the aim was paid
-  const ranges = zoned || curRanges(), rl = readDie("#in-loc") ?? d100();
-  return { loc: look(ranges, rl), rl };
-}
-function payAim(att, stray){                      // {zoned, aimZone, gapAim, left}: what the declared aim costs (wounds.yaml combat.aim; as gravewounds.engine.roll_hit)
-  const cost = CMB.aim.cost, out = { zoned: null, aimZone: stray ? "" : S.aim, gapAim: !stray && !!S.gap, left: att.margin, zonePaid: false };
-  const pays = () => att.margin === null || att.crit || out.left >= cost;
-  if (out.aimZone && pays()){
-    out.zoned = aimedRanges(S.weapon, out.aimZone);
-    if (out.zoned){ out.zonePaid = true; if (att.margin !== null && !att.crit) out.left -= cost }
+  if (v.type === "wound"){
+    const fell = d.down ? "down" : d.state ? CMB.states[d.state.id || d.state].name.toLowerCase() : "";
+    if (!v.full) return `${nm(d.who)} is wounded in the ${at(d.loc)}${fell ? `: ${fell}` : ""}`;
+    return `${nm(d.who)}: ${d.graze ? "grazing " : ""}${sevLabel(d.sev).toLowerCase()} ${at(d.loc)} wound${d.line ? `<br><span class="muted">${esc(d.line)}${d.stop && d.stop.by === "player" ? " (his own die)" : ""}</span>` : ""}`;
   }
-  out.pays = pays;
-  return out;
+  return esc(v.type);
 }
-function rollSeverity(mech, loc, att, stray){     // {sev, rs}: from the margin, the severity table, or the GM's pick
-  let sevMode = att.margin !== null ? "margin" : $("#sel-sev").value;
-  if (stray) sevMode = "roll";
-  if (sevMode === "margin") return { sev: marginSeverity(att.margin, att.crit, S.weapon, LOC[loc].zone), rs: null };
-  if (sevMode !== "roll") return { sev: sevMode, rs: null };
-  const rs = readDie("#in-sev") ?? d100();
-  return { sev: sevTiers(mech, LOC[loc].zone, S.weapon).find(x => rs >= x.d100[0] && rs <= x.d100[1]).id, rs };
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function renderEvents(){
+  const box = $("#events");
+  if (!box) return;
+  const seats = seatsIn(S.chars.map(sideOf));
+  if (!seats.includes(S.evSeat)) S.evSeat = GM_SEAT;
+  const view = viewFor(S.events || [], S.evSeat).slice(-40).reverse();
+  const label = s => (s === GM_SEAT ? "the GM (everything)" : esc(s.slice(5)));
+  box.innerHTML = `<details class="after"${S.evOpen ? " open" : ""}><summary><b>Event log</b> <span class="muted">${(S.events || []).length} event${(S.events || []).length === 1 ? "" : "s"}: each strike and wound, and who sees it</span></summary>
+    <div class="toolbar"><label for="ev-seat">As seen by</label><select id="ev-seat">${seats.map(s => `<option value="${attr(s)}" ${s === S.evSeat ? "selected" : ""}>${label(s)}</option>`).join("")}</select>
+      <span class="spacer"></span><button type="button" class="small" id="ev-save" title="This seat's view of the log, as a JSON file">Save this view</button></div>
+    ${view.length ? `<ol class="roundlog" aria-label="Events, newest first" style="max-height:18rem;margin:6px 0">${view.map(v => `<li><b>${v.round ? `Round ${v.round}` : "Roll"}</b>${v.full ? "" : ' <span class="muted">(what they saw)</span>'}<br>${eventText(v)}</li>`).join("")}</ol>`
+      : `<p class="muted" style="margin:0">Nothing yet${S.evSeat === GM_SEAT ? "" : " that this side would see"}.</p>`}
+    <p class="muted" style="margin:0">The GM and the defender's side see a strike in full; the others see the outcome and where it landed. Dice marked * were typed in by the player.</p></details>`;
 }
-function armourLayers(loc){                       // {layers, whole}: the defender's armour on that location
-  const layers = isEvidence() ? [] : armorAt(S.armor, loc);
-  return { layers, whole: layers.length === 1 && layers[0][1] === 1 && layers[0][2] === 100 };
-}
-function armourOn(loc, mech, sev, att, gapped){   // {armor, final}: the defender's armour on that location lowers the severity; gapped: an aimed blow found the gap
-  const { layers, whole } = armourLayers(loc);
-  if (!layers.length) return { armor: null, final: sev };
-  const fromAtk = att && att.roll !== null && att.roll !== undefined;   // the attack roll's units digit (0 is 10), else a d10 (as gravewounds.engine.cover_digit)
-  const rc = whole || gapped ? null : (fromAtk ? (att.roll % 10 || 10) : 1 + Math.floor(Math.random() * 10));
-  const hit = whole ? layers[0] : gapped ? null : layers.find(([, lo, hi]) => rc * 10 >= lo && rc * 10 <= hi);
-  const mat = hit ? hit[0] : null, steps = hit ? armorSteps(mat, mech, S.weapon) : 0;
-  const final = LADDER[Math.max(0, LADDER.indexOf(sev) - steps)];
-  return { armor: { mat, layers, rc, rcAtk: !whole && fromAtk, covered: !!hit, gapped: !!gapped, steps, from: sev, to: final }, final };
-}
-function woundPhase(rc, freeHit, stray, att){     // location, mechanism, severity and armour: the wound
-  const w = DATA.weapons[S.weapon];
-  const aim = payAim(att, stray);
-  const { loc, rl } = rollLocation(aim.zoned);
-  const { layers, whole } = armourLayers(loc);
-  const gapped = aim.gapAim && layers.length > 0 && !whole && aim.pays();   // a gap is paid for only where there is one
-  if (gapped && att.margin !== null && !att.crit) aim.left -= CMB.aim.cost;
-  const paid = { ...att, margin: aim.left };      // severity and graze from the margin the aim left
-  const blow = w.choose && S.blow && w.mechanisms[S.blow] ? S.blow : null;   // a blow the attacker declared, or rolled
-  const rm = blow ? null : readDie("#in-mech") ?? d100(), mech = blow || look(w.mech_ranges, rm);
-  const { sev, rs } = rollSeverity(mech, loc, paid, stray);
-  const { armor, final } = armourOn(loc, mech, sev, att, gapped);
-  const grazed = final !== "stopped" && isGraze(paid.margin, att.crit);
-  const fx0 = final === "stopped" ? null : DATA.wounds[`${LOC[loc].class}|${mech}|${final}`];
-  const fx = fx0 && grazed ? grazeFx(fx0) : fx0;
-  S.hit = { loc, mech, sev: final, rolled: sev, fx, armor, combat: att.combat, graze: grazed, range: rc.range, free: freeHit, strayHit: stray, rolls:{loc:rl, mech:rm, sev:rs},
-            aim:{ zone: aim.aimZone, zonePaid: aim.zonePaid, gap: aim.gapAim, gapPaid: gapped, margin: att.margin, left: aim.left },
-            weapon:S.weapon, table:S.table, ltable:rtid(), mods:orderedMods().map(m => m.short || m.name) };
-  ["#in-loc","#in-mech","#in-sev","#in-atk-roll","#in-def-roll"].forEach(id => $(id).value = "");
-  renderResult(); shadeFigure(); renderTable();
-  if (S.chars.length) renderMap();             // the map's bar shows the last roll
-}
+$("#events").addEventListener("toggle", e => { S.evOpen = e.target.open }, true);
+$("#events").addEventListener("change", e => { if (e.target.id === "ev-seat"){ S.evSeat = e.target.value; S.evOpen = true; renderEvents() } });
+$("#events").addEventListener("click", e => {
+  if (e.target.id !== "ev-save") return;
+  const blob = new Blob([JSON.stringify({ seat: S.evSeat, events: viewFor(S.events || [], S.evSeat) }, null, 1)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = `grave-wounds-log-${S.evSeat.replace(/[^a-z0-9]+/gi, "-")}.json`; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+
 const FLAG_LABEL = { shock: "stop check" };   // the data's shock flag is the Grave Wounds stop check
 const pips = n => "●".repeat(n) + "○".repeat(3 - n);
 function fxList(fx){
@@ -2307,11 +2272,6 @@ function shotWay(a, dd){                        // who stands in the way of a's 
   if (!w.range || w.off_map) return { men: [], penalty: 0, stray: 0 };
   return inTheWay(S.weapon, a.pos, dd.pos, S.chars.filter(o => o !== a && o !== dd && o.pos && !isOut(o)).map(o => [o.id, o.pos]), S.ground);
 }
-function strayRoll(range){                      // after a miss: does the shot go into the first man in the way?
-  if (!range || !range.stray || !(range.way || []).length) return null;
-  const roll = d100();
-  return { id: range.way[0], roll, chance: range.stray, hit: roll <= range.stray };
-}
 function strayHit(){                            // roll the stray shot's hit on the man it went into
   const h = S.hit, i = h && h.stray && h.stray.hit ? S.chars.findIndex(c => c.id === h.stray.id) : -1;
   if (i < 0) return;
@@ -2886,7 +2846,7 @@ function renderChars(){
   }).join("") || `<p class="muted">Add a combatant to start tracking wounds.</p>`;
   renderMap();
   save();
-  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards(); renderWords();
+  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards(); renderWords(); renderEvents();
 }
 $("#after-fight").addEventListener("change", e => {
   if (e.target.id === "sel-won"){ S.wonBy = e.target.value || null; S.afterOpen = true; renderChars() }
@@ -3070,12 +3030,14 @@ function stopResult(c, r, why){
 function stopNerve(c, sev){                       // his Nerve for a stop check: a player character's lethality adds to it, or spares him (null)
   return isPC(c) ? pcNerve(nerveOf(c), sev) : nerveOf(c);
 }
-function applyStopCheck(c, w){
+function applyStopCheck(c, w, rec = null){        // rec, if given, takes the check and its die for the event log
   if (penalties(c).flags.includes("out")) return "";
   const nerve = stopNerve(c, w.sev);
   if (nerve === null) return CMB.stop_check.severities.includes(w.sev) && w.fx.shock ? `${c.name}: no stop check (${lethalSetting().name}: only for critical wounds)` : "";
-  const r = stopCheck(nerve, w.sev, painOf(c), readDie("#in-stop") ?? d100(), c.blood / poolOf(c), !!w.fx.shock);
+  const own = readDie("#in-stop"), roll = own ?? d100();
+  const r = stopCheck(nerve, w.sev, painOf(c), roll, c.blood / poolOf(c), !!w.fx.shock);
   $("#in-stop").value = "";
+  if (rec && r) Object.assign(rec, { check: r, die: roll, by: own === null ? "dice" : "player" });
   return r ? stopResult(c, r, "") : "";
 }
 // End of a round: pain above the cap calls for a stop check.
@@ -3119,7 +3081,7 @@ function startExamples(){                       // example combatants from this 
   selectChar(0);
   if (S.chars.length > 1) setAttacker(S.chars.length - 1);
   S.weapon = (pick[1] || pick[0]).weapon; fillWeapons();
-  for (let i = 0; i < 12 && !applyHit(S.chars[0], (rollHit(), S.hit)); i++);
+  for (let i = 0; i < 12 && !applyHit(S.chars[0], (rollHit(false, false), S.hit)); i++);   // the examples' wounds are not logged
 }
 function init(){
   const ids = Object.keys(DATA.tables);   // already in data order
@@ -3154,13 +3116,14 @@ function init(){
     else if (applyHit(c, h)){
       h.applied = true;
       msg = `Added ${h.graze ? "grazing " : ""}${LOC[h.loc].name.toLowerCase()} wound to ${c.name}.`;
-      const prevState = c.state ? { ...c.state } : null;
-      line = applyStopCheck(c, c.wounds[c.wounds.length - 1]);
+      const prevState = c.state ? { ...c.state } : null, stop = {};
+      line = applyStopCheck(c, c.wounds[c.wounds.length - 1], stop);
       S.fateOffer = isPC(c) ? { id: c.id, w: c.wounds.length - 1, prevState, failed: /failed by/.test(line) } : null;
       (S.pending = S.pending || []).push(`${c.name}: ${h.graze ? "grazed" : h.sev} ${LOC[h.loc].name.toLowerCase()}`, ...(line ? [line] : []));
       countCoup(attackerChar(), c, h.weapon);              // a Plains man's blow landed: a coup
       strainFor(c, ["serious", "critical"].includes(h.sev) ? "wounded_badly" : "wounded");
       if (!wasDown && isDown(c)){ creditDown(attackerChar(), c); strainOnDown(c) }
+      logWound(c, h, line, stop);
     } else msg = `Armour stopped that blow: nothing to add to ${c.name}.`;
     $("#apply-msg").innerHTML = msg + (line ? `<br>${line}` : "") + fateButtons();
     if (h.free && isFreePair()){ S.hit = { ...h, free: false }; freeDone("") }
@@ -3238,7 +3201,7 @@ function init(){
   });
   const att = attackerChar();
   S.weapon = att && att.weapon && DATA.tables[S.table].weapons.includes(att.weapon) ? att.weapon : "sword"; fillWeapons();
-  renderMods(); syncArmor(); rollHit(); renderChars(); shadeFigure(); renderTable(); renderHistory();
+  renderMods(); syncArmor(); rollHit(false, false); renderChars(); shadeFigure(); renderTable(); renderHistory();   // the opening roll is only to show one: not logged
 }
 init();
 </script>
