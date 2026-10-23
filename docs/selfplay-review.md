@@ -1091,3 +1091,37 @@ Redan 21 to 22, Babuna 5 to 6, Lützen 18 to 17; Agincourt, Towton, Mons and Cow
 Before 1914 units break at a median 20% down (from 17%; 37% of breaks under 10% down, from 39%),
 within the sources (broken brigades lost a median of about 21% over the whole action); the rout's
 share of the loser's losses 8% (from 4%).
+
+## Goose Green and 73 Easting traced, 22 October 2026
+
+**Goose Green** (0 of 24; 2 Para lost about 55% to the Argentines' 8%). Two Argentine
+machine-gun teams of two men put down 86 of 2 Para in one run, while 2 Para's riflemen, about
+1,700 man-volleys at the platoons in their trenches, put down none. Lying down, a company lost
+almost no one (the guns find a hidden man at 5%); on its feet it lost 5 to 14 men an exchange.
+Two faults stood it up: storming in bounds counted "drew fire" as "lost men", so a company that
+lay under the guns and lost no one got up into them; and a company moving as shooters on a
+target not in works was not storming, so it walked upright across the open under fire.
+
+**73 Easting** (11 of 24; the Iraqis lost 26% where they were destroyed). Eagle Troop's M1s
+stopped 500 m out and never fired: the commander counted the Iraqi trenches in range of their
+machine guns without asking whether the sandstorm let them see that far (their thermal sights
+saw 450 m). And a platoon with one tank immobilised stood for the rest of the battle: the
+commander never abandoned a disabled vehicle.
+
+Built: a unit fired on, hit or not, has drawn fire; from WWII on (by the wound table's war),
+every attacking modern foot unit fired on goes to ground and fires rather than walking on
+(commander.bounds_all); small arms count a target in range only where the weather and light
+let them see it; and an attacking vehicle unit leaves its immobilised vehicles and goes on
+(commander.leave_disabled). Measured on 24 runs of every battlefield against main (692 of 936):
+
+| | Runs matched | Notes |
+|---|---|---|
+| All, "every advance" in every era | 695 | Hue 0 to 6, Babuna 6 to 11; Mons 23 to 15 (the Germans of 1914 going to ground), Keating 23 to 19 |
+| All, "every advance" off | 692 | Hue 0 to 5, Lützen 17 to 20; Pork Chop 16 to 11, Keating 23 to 20, Wanat 18 to 15 |
+| **All, "every advance" from WWII on (built)** | **700** | Hue 0 to 6, Grozny 4 to 7, Hamburger 20 to 23, Lützen 17 to 20, Babuna 6 to 8, Cassino town 19 to 21, Goose Green 0 to 1, 73 Easting 11 to 12, Khe Sanh 23 to 24; Keating 23 to 19, Wanat 18 to 15, Chipyong-ni 24 to 22, the Monastery 2 to 0, Cisterna, X-Ray and Mogadishu -1 |
+
+The morale targets about as before (1914 on, 3% of breaks under 10% down; the rout's share 10%).
+Still open: Goose Green (2 Para still loses about half: its bounds go in before the guns are
+pinned) and 73 Easting (once the tanks close inside the 200 m the Iraqis see in the sandstorm,
+BMP and T-72 flank shots knock them out); Keating and Wanat, which lose in both variants, to
+one of the other fixes.

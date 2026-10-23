@@ -1072,7 +1072,9 @@ commander:
   #   Self-play: at Goose Green A Company, moving as shooters on a target not in works, walked
   #   upright under two machine guns and lost 30 men in two exchanges; in 1982 it went to ground.
   #   Fire and movement became standard infantry practice from 1917-18; the Germans at Mons in
-  #   1914 came on in close order and took the losses. Design choice.
+  #   1914 came on in close order and took the losses (applied to them, Mons fell 23 to 15). Design
+  #   choice. Measured with leave_disabled and the fixes to drawing fire and to range in the
+  #   weather on 24 runs of every battlefield: 700 of 936 from 692.
   bounds_all: [WWII, Korea, Vietnam, Late 20th century, Iraq & Afghanistan]
   # leave_disabled: attacking, a vehicle unit with some vehicles still able to move abandons its
   #   immobilised ones and goes on (their crews bail out, as the GM's Abandon). Self-play: at 73
