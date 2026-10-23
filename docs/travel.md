@@ -387,6 +387,13 @@ each day, and mud, snow and flooded fords change the going. See [weather.md](wea
   its named men's keep and the week's chances.
 - Forces, routes, clocks and painting are kept in your browser.
 
+The page's rules are in one file with no page, `templates/travelrules.js`: the calendar,
+daylight, weather, rest and fatigue; routes, marching, camps' hours and who fights; camp disease.
+They are the same rules as `gravewounds/weather.py`, `travel.py` and `disease.py`.
+`python3 tools/travel/parity.py` plays a few hundred cases of each through the Python and the
+JavaScript on the same inputs and dice and checks that every result is the same
+(`tools/travel/test.js`).
+
 ## Maps
 
 The test map, `data/maps/generic-valley.yaml`, is a made-up river valley about 25 by 16 miles

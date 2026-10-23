@@ -1,5 +1,5 @@
-"""Camp disease for forces on the travel map (Grave Wounds). Mirrored exactly by the travel
-page (templates/travel.html), between its 'shared with gravewounds/disease.py' markers.
+"""Camp disease for forces on the travel map (Grave Wounds). Mirrored exactly by
+templates/travelrules.js (the travel page's rules), checked by tools/travel/parity.py.
 
 A force's health is {cases, immune, had, dead}: cases is a list of the men now sick or
 incubating, one disease each, as {d, inc (days until it shows), step (index into steps),

@@ -1,6 +1,5 @@
-"""Travel map: terrain, routes and marching (Grave Wounds). Mirrored exactly by the
-travel page (templates/travel.html), between its 'shared with gravewounds/travel.py'
-markers.
+"""Travel map: terrain, routes and marching (Grave Wounds). Mirrored exactly by
+templates/travelrules.js (the travel page's rules), checked by tools/travel/parity.py.
 
 Hexes are [col, row] on a pointy-top grid with odd rows shifted right, as on the battle
 map. Crossing from one hex to the next costs the average of the two terrains' `cost`
