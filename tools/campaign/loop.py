@@ -27,6 +27,24 @@ class Quiet(http.server.SimpleHTTPRequestHandler):
         return None
 
 
+def frame_of(pg):
+    """The page in the console's frame, for locating its elements."""
+    return pg.frame_locator("#c-frame")
+
+
+def page_in_frame(pg):
+    """The page in the console's frame, for running code in it as the page does."""
+    return pg.frames[1]
+
+
+def phase_of(pg) -> str:
+    return str(pg.evaluate("() => REC.phase"))
+
+
+def status_of(pg) -> str:
+    return pg.inner_text("#c-status")
+
+
 server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(Quiet, directory=str(ROOT)))
 threading.Thread(target=server.serve_forever, daemon=True).start()
 BASE = f"http://127.0.0.1:{server.server_port}/dist/"
@@ -41,41 +59,29 @@ with sync_playwright() as p:
     ctx.on("weberror", lambda e: errors.append(str(e.error)))
     pg.on("dialog", lambda d: d.accept())
     pg.goto(BASE + "campaign.html"); pg.evaluate("() => localStorage.clear()"); pg.reload()
-    def frame():
-        return pg.frame_locator("#c-frame")
-
-    def page_in_frame():
-        return pg.frames[1]
-
-    def phase():
-        return pg.evaluate("() => REC.phase")
-
-    def status():
-        return pg.inner_text("#c-status")
-
-    check(phase() == "muster" and "not made yet" in status(), "a new campaign starts at the muster, with no team")
+    check(phase_of(pg) == "muster" and "not made yet" in status_of(pg), "a new campaign starts at the muster, with no team")
     pg.wait_for_function("() => document.querySelector('#c-showing').textContent.includes('Team builder')", timeout=15000)
     check(True, "the team builder is in the frame")
     # the team, made in the team builder in the frame
-    frame().locator("#btn-roll").click()
+    frame_of(pg).locator("#btn-roll").click()
     pg.wait_for_function("() => /\\d+ men/.test(document.querySelector('#c-status').textContent)", timeout=8000)
     check("Medieval" in pg.inner_text("#c-guide"), "the console sees the team the frame's page wrote, and its era")
     pg.click("#c-next")
     pg.wait_for_function("() => document.querySelector('#c-showing').textContent.includes('Travel map')", timeout=15000)
-    check(phase() == "march", "Done moves to the march, with the travel map in the frame")
+    check(phase_of(pg) == "march", "Done moves to the march, with the travel map in the frame")
     # the travel map's state, then a fight sent from it, as Fight here writes it
-    page_in_frame().evaluate(f"""() => localStorage.setItem('gravewounds-travel', {J(J({"mapId": "towton-1461", "forces": {"towton-1461": [{"side": "York"}, {"side": "Lancaster"}]}, "clock": {"towton-1461": {"day": 3, "used": 4}}, "fought": []}))})""")
-    page_in_frame().evaluate(f"""() => localStorage.setItem('gravewounds-handoff', {J(J({"from": "travel", "force": {"name": "Will's lances", "side": "York"}, "place": "Ferrybridge", "foes": [{"name": "Clifford's flankers"}]}))})""")
+    page_in_frame_of(pg).evaluate(f"""() => localStorage.setItem('gravewounds-travel', {J(J({"mapId": "towton-1461", "forces": {"towton-1461": [{"side": "York"}, {"side": "Lancaster"}]}, "clock": {"towton-1461": {"day": 3, "used": 4}}, "fought": []}))})""")
+    page_in_frame_of(pg).evaluate(f"""() => localStorage.setItem('gravewounds-handoff', {J(J({"from": "travel", "force": {"name": "Will's lances", "side": "York"}, "place": "Ferrybridge", "foes": [{"name": "Clifford's flankers"}]}))})""")
     pg.wait_for_function("() => REC.phase === 'fight'", timeout=6000)
     notice = pg.inner_text("#c-notice")
     check("Ferrybridge" in notice and "Fight" in notice, f"a fight sent from the travel map moves the console to the fight ({notice})")
-    check("day 3" in status().lower() and "waiting on the Wound roller" in status(), "the status shows the map's day and the fight waiting on the roller")
+    check("day 3" in status_of(pg).lower() and "waiting on the Wound roller" in status_of(pg), "the status shows the map's day and the fight waiting on the roller")
     check(any("Ferrybridge" in e["data"]["text"] for e in pg.evaluate("() => REC.log")), "the log records the encounter")
     # the roller, as Fight here sends it there; a fight won
     pg.click('#c-actions button.primary')
     pg.wait_for_function("() => document.querySelector('#c-showing').textContent.includes('Wound roller')", timeout=15000)
     pg.wait_for_function("() => { try { return typeof document.querySelector('#c-frame').contentWindow.renderChars === 'function' } catch { return false } }", timeout=15000)
-    page_in_frame().evaluate("() => { S.wonBy = 'York'; renderChars() }")   # the GM marks the winner in After the fight
+    page_in_frame_of(pg).evaluate("() => { S.wonBy = 'York'; renderChars() }")   # the GM marks the winner in After the fight
     pg.wait_for_function("() => REC.phase === 'aftermath'", timeout=6000)
     check("York won" in pg.inner_text("#c-notice"), "a fight won on the roller moves the console to the aftermath")
     # notes
@@ -93,10 +99,10 @@ with sync_playwright() as p:
     # cleared, then loaded back
     save_path = Path(dl.value.path())
     pg.evaluate("() => { for (const k of Object.keys(localStorage)) if (k !== 'gravewounds-narrator') localStorage.removeItem(k) }"); pg.reload()
-    check(pg.evaluate("() => REC.phase") == "muster" and "not made yet" in status(), "cleared, the console is back at a new campaign")
+    check(pg.evaluate("() => REC.phase") == "muster" and "not made yet" in status_of(pg), "cleared, the console is back at a new campaign")
     pg.set_input_files("#c-load", str(save_path))
     pg.wait_for_function("() => REC.phase === 'aftermath'", timeout=6000)
-    check(" men" in status() and "not made yet" not in status() and "Loaded the saved game" in pg.inner_text("#c-log"), "loading the file brings back the team, the phase and the log")
+    check(" men" in status_of(pg) and "not made yet" not in status_of(pg) and "Loaded the saved game" in pg.inner_text("#c-log"), "loading the file brings back the team, the phase and the log")
     check(pg.evaluate("() => localStorage.getItem('gravewounds-narrator')") is not None, "loading a save leaves this browser's narrator settings alone: they are not part of a game")
     bad = ROOT / "tools" / "campaign" / ".cache"; bad.mkdir(exist_ok=True)
     (bad / "not-a-save.json").write_text('{"hello": 1}')
