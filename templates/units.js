@@ -610,9 +610,10 @@ function moraleMods(mods, u){
   m -= Math.min(mods.losing_cap, mods.losing_per_man * Math.max(0, (u.lost || 0) - (u.dealt || 0)));
   return m;
 }
-function failedState(mo, u, by){
+function failedState(mo, u, by){                 // a steady unit is shaken, unless it fails badly while flanked (not while holding a position, with morale.posture_flank) or half down; a shaken unit breaks (as units._failed)
   if (u.state === "shaken") return "broken";
-  const hard = u.flanked || u.down >= u.start / 2;
+  const flank = u.flanked && !(mo.posture_flank && u.holds);
+  const hard = flank || u.down >= u.start / 2;
   return hard && by > mo.shaken_by ? "broken" : "shaken";
 }
 function morale(u, roll){                       // {check, target, state}
