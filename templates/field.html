@@ -172,7 +172,7 @@ legend{padding:0}
       <h1>Grave Wounds Field Map</h1>
       <p class="sub">Battles of hundreds: the rank and file fight as units, a minute an exchange, each hex <span id="hex-size">10 m</span>. Set up the units, then each exchange side A moves, side B moves, and every fight and volley is resolved together through the wound tables. Morale decides most fights; the rout does most of the killing.</p>
     </div>
-    <nav><span class="units-toggle" id="units-toggle" title="Units for distances and ranges"></span><a href="roller.html">Wound roller</a><a href="team.html">Team builder</a><a href="travel.html">Travel map</a><a href="rules.html">Rule book</a><a href="../index.html">Start page</a></nav>
+    <nav><span class="units-toggle" id="lethal-toggle" title="Lethality for player characters (the GM's setting, shared by every page)"></span><span class="units-toggle" id="units-toggle" title="Units for distances and ranges"></span><a href="roller.html">Wound roller</a><a href="team.html">Team builder</a><a href="travel.html">Travel map</a><a href="rules.html">Rule book</a><a href="../index.html">Start page</a></nav>
   </header>
 
   <div class="grid">
@@ -442,6 +442,7 @@ function hexDistance(a, b){
   return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2]));
 }
 /*__MEASURE_JS__*/
+/*__LETHAL_JS__*/
 /*__WORKS_JS__*/
 /*__CAMP_JS__*/
 /*__UNITS_JS__*/
@@ -1087,7 +1088,7 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   party: (l, nm) => ({ cls: "hero", text: partyText(l, nm) }),
   partyhit: (l, nm) => ({ cls: "hero", text: partyHitText(l, nm) }),
   fetched: (l, nm) => ({ cls: "hero", text: `${l.name} is picked up by ${nm(l.unit)}: he goes with them now.` }),
-  found: (l, nm) => ({ cls: "morale", text: `${l.name} (${nm(l.unit)}) is found by ${l.at_post ? "the enemy overrunning the aid post" : nm(l.by)}: ${l.fate === "prisoner" ? "taken prisoner" : "killed"} (rolled ${l.roll}, quarter ${l.chance}% or less).` }),
+  found: (l, nm) => ({ cls: "morale", text: `${l.name} (${nm(l.unit)}) is found by ${l.at_post ? "the enemy overrunning the aid post" : nm(l.by)}: ${l.fate === "prisoner" ? "taken prisoner" : "killed"} (rolled ${l.roll}, quarter ${l.chance}% or less${l.fate_spent ? "; fate spent: spared and taken" : ""}).` }),
   mines: (l, nm) => ({ cls: "morale", text: mineText(l, nm) }),
   hullshelled: (l, nm) => ({ cls: "", text: `${l.name || "Shells"} burst among the men riding on ${nm(l.dfd)}: ${l.struck} struck, ${l.down} down` + (l.dead ? ` (${l.dead} dead)` : "") + "." }),
   objective: l => ({ cls: "", text: objectiveText(l) }),
@@ -1182,7 +1183,8 @@ function heroStateText(l){                        // a duel's attempts, or a her
 function heroHitText(l){
   const where = FD.locations[l.loc].name.toLowerCase(), how = l.graze ? "a graze" : `a ${l.sev} wound`;
   const fate = { dead: "killed", down: "down, out of the fight", up: "fights on" }[l.state];
-  return `${l.name} takes ${how} (${where}): ${fate}.`;
+  const luck = l.fate_spent ? ` Fate spent (${l.fate_spent}): the wound a step less${l.sev === "stopped" ? ", turned by his armour" : ""}.` : "";
+  return l.sev === "stopped" ? `${l.name} is struck (${where}):${luck}` : `${l.name} takes ${how} (${where}): ${fate}.${luck}`;
 }
 function heroLineText(l, nm){
   const dead = l.dead ? " (" + l.dead + " dead)" : "", s = l.blows > 1 ? "s" : "";
@@ -1715,7 +1717,7 @@ function backToTravel(){
 }
 function heroFate(h){                             // "came through", "carried to the rear", "found on the field, down", "taken prisoner", "killed where he lay"
   const f = (S.fates || []).find(x => x.hero === h.id);
-  if (f?.fate === "prisoner") return `left on the field and taken prisoner (d100 ${f.roll}, quarter ${f.chance}%)`;
+  if (f?.fate === "prisoner") return `left on the field and taken prisoner (d100 ${f.roll}, quarter ${f.chance}%${f.fate_spent ? "; fate spent: spared" : ""})`;
   if (f?.fate === "killed") return `left on the field and killed where he lay (d100 ${f.roll}, quarter ${f.chance}%)`;
   if (f?.fate === "found") return `left on the field, found by his own side${h.state === "up" ? "" : ", " + h.state}`;
   if (h.carried) return `carried to the rear${h.state === "up" ? "" : ", " + h.state}`;
@@ -2041,17 +2043,22 @@ function addHero(){
   u.heroes ??= [];
   u.heroes.push({ id: c.id, name: c.name, role, attack: num("#in-hero-atk", q.attack), defence: num("#in-hero-def", q.defence), nerve: Number.isFinite(+c.nerve) ? +c.nerve : q.nerve,
     weapon, kit: FD.kits[c.kit] ? c.kit : "none", leader: $("#chk-hero-leader").checked, state: "up", wounds: [], hand: c.hand || "R",
-    ...(sick ? { sick } : {}), ...(rule.defend_only ? { defend_only: true } : {}), ...heroBody(c) });
+    ...(sick ? { sick } : {}), ...(rule.defend_only ? { defend_only: true } : {}), ...heroBody(c), ...heroLethal(c) });
   S.msg = `${c.name} joins ${u.name}${weapon === c.weapon ? "" : ", with the unit's weapon (his own is not on these tables)"}.`;
   render();
 }
 function heroBody(c){                             // {pool, blood, old_pain, old_bleed}: his Blood from his Endurance, and the wounds he comes with (the roller's)
   const end = [c.endurance, c.sheet?.stats?.end].find(Number.isFinite) ?? 50;
-  const pool = FD.tracking.blood_pool + Math.floor((end - 50) / FD.blood_per), ws = (c.wounds || []).filter(w => w.fx);
+  const raw = FD.tracking.blood_pool + Math.floor((end - 50) / FD.blood_per), pool = c.sheet ? pcPool(raw) : raw, ws = (c.wounds || []).filter(w => w.fx);   // a player character's Blood under the GM's lethality
   const perEx = b => Math.round((FD.tracking.bleed_per_round[b] || 0) * FD.units.exchange_rounds);
   const leech = [c.leechcraft, c.sheet?.skills?.leechcraft].find(Number.isFinite);   // his Leechcraft, from the team builder's sheet: he can give first aid
   return { pool, blood: Number.isFinite(c.blood) ? Math.min(c.blood, pool) : pool, old_pain: ws.reduce((a, w) => a + (w.fx.pain || 0), 0), old_bleed: ws.reduce((a, w) => a + perEx(w.fx.bleed), 0),
     old: ws.map(w => ({ loc: w.loc, pain: w.fx.pain || 0, impair: (w.fx.impair || []).slice(), bleed: w.fx.bleed || 0 })), ...(leech === undefined ? {} : { leech }) };
+}
+function heroLethal(c){                          // a player character (a team-builder sheet): the GM's lethality (lethality.js) for his stop checks and his fate points
+  if (!c.sheet) return {};
+  const L = lethalSetting(), pid = c.sheet.pid || null, f = pid ? fateLeft(pid) : L.fate;
+  return { pc: true, pid, fate: f, fate_start: f, stop_bonus: L.stop_bonus, stop_crit_only: L.stop_critical_only };
 }
 function heroSick(c){                             // a named man's worst showing step of sickness (the travel map runs it), as the roller's sickOf; null if well
   let all = {};
@@ -2172,7 +2179,8 @@ function heroesToRoller(){                        // their wounds onto their rec
   const lost = [0, 1].filter(k => !standing(k)), held = lost.length === 1 ? S.sides[1 - lost[0]] : null;   // the side that holds the field, if one does
   const sideOfHero = h => h.unit.side;   // allHeroes gives each hero his unit
   const heroes = allHeroes().map(h => ({ id: h.id, name: h.name, state: h.state, wounds: h.wounds, blood: h.blood, old: (h.old || []).map(o => ({ bleed: o.bleed, aid: o.aid })), ...(h.post ? { post: true } : {}),
-    ...(held ? { won: sideOfHero(h) === held } : {}), ...S.htally?.[h.id] }));   // the roller's After the fight: deeds and loot for the winners; his hits and downs
+    ...(held ? { won: sideOfHero(h) === held } : {}), ...S.htally?.[h.id],
+    ...(h.pc && h.fate_start > (h.fate || 0) ? { fate_spent: h.fate_start - (h.fate || 0) } : {}) }));   // his fate points spent here: the roller marks them   // the roller's After the fight: deeds and loot for the winners; his hits and downs
   try{ localStorage.setItem("gravewounds-field-heroes", JSON.stringify({ place: S.from?.place || "", heroes })) }catch(e){ S.msg = "Could not save the heroes for the roller (storage is off)."; return render() }
   S.heroesSent = true;
   save();
@@ -3231,6 +3239,7 @@ function init(){
   HANDOFF = readHandoff();
   TEAMIN = readTeamIn();
   unitToggle($("#units-toggle"), () => render());
+  lethalToggle($("#lethal-toggle"), () => render());
   fillChoices();
   fillTools();
   $("#map").addEventListener("click", e => {

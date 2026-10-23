@@ -9,6 +9,12 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
+- **Lethality, first cut.** Gritty | Standard | Heroic for player characters (wounds.yaml
+  lethality): fate a season, Blood and the stop check, on every page. Still left out: fate does
+  not save a man from drowning, a fall or the other hazards; the roller offers fate only on the hit
+  just applied (not on old wounds or a pain check); the field map's heroes spend it only on a
+  killing wound or a death when found, never on a stop check; and the CLI and self-play use the
+  default setting with no flag to change it.
 - **The rule book, beyond the third part.** `dist/rules.html` covers the whole game in
   fourteen chapters, with a medieval retinue and a Vietnam rifle squad followed through.
   It summarises rather than repeats the docs: the black-powder guns' fire (sections, fuses,

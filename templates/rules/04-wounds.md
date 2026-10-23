@@ -14,7 +14,8 @@ all of a fighter's wounds:
 ## Blood {#blood}
 
 Every fighter has a **Blood** pool: {{blood_pool}}, plus (Endurance − 50) ÷ {{blood_per}},
-rounded down ({{blood_lo}} at Endurance 15, {{blood_hi}} at 95). Each wound bleeds away
+rounded down ({{blood_lo}} at Endurance 15, {{blood_hi}} at 95). A player character's pool is
+multiplied by the [lethality](#lethality) setting. Each wound bleeds away
 Blood at its rate:
 
 {{table:bleed}}

@@ -739,6 +739,15 @@ def validate(d: Data) -> None:
         if w.get("breach") is not None and not (isinstance(w["breach"], int) and w["breach"] >= 1):
             errors.append(f"works.yaml: {wid} breach must be a whole number of man-rounds or null")
 
+    # lethality presets
+    LT = d.wounds.get("lethality") or {}
+    if LT.get("default") not in (LT.get("presets") or {}):
+        errors.append("wounds.yaml: lethality.default must name one of lethality.presets")
+    for pid, pr in (LT.get("presets") or {}).items():
+        if not (isinstance(pr.get("fate"), int) and pr["fate"] >= 0 and float(pr.get("blood", 0)) >= 1
+                and isinstance(pr.get("stop_bonus"), int) and isinstance(pr.get("stop_critical_only"), bool)):
+            errors.append(f"wounds.yaml: lethality preset {pid} needs fate (>= 0), blood (>= 1), stop_bonus and stop_critical_only")
+
     # weapons
     for wid, w in d.weapons.items():
         mech = w.get("mechanisms", {})

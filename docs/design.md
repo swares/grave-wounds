@@ -89,16 +89,17 @@ Together they give an effects line, the same five effects HitLoc already uses:
 
 ## Lethality dials
 
-The GM sets lethality with four dials before play; the wound data never changes, only how much of it reaches the player characters.
+*Decided (October 2026): three dials, set together as a preset, with fate points back at End of season.* The GM sets lethality before play; the wound data never changes, only how much of it reaches the player characters (the team builder's sheeted men, the field map's heroes). Followers, enemies and bystanders stay as fragile as real people. Every page has a Gritty | Standard | Heroic switch, shared like US | Metric; Standard is the default.
 
 | Dial | Gritty | Standard | Heroic |
 | --- | --- | --- | --- |
-| Severity shift on PCs | None | Critical wounds to PCs drop to serious on a lucky roll (01-10) | Every wound to a PC drops one severity step |
-| Fate points per PC | 0 | 1 per session | 3 per session |
-| Stop checks for PCs | As for anyone | +20 nerve | Only on critical wounds |
-| Lethality clock | As rolled | One step slower (minutes become hours) | Two steps slower; instant kills only from the skull and heart |
+| Fate points per season | 0 | 1 | 3 |
+| Blood pool | as rolled | x1.5 | x2 |
+| Stop check | as anyone | +20 Nerve | only on critical wounds |
 
-A **fate point** spent after the wound is rolled lowers its severity one step or moves the hit to the next location on the table. Fate points belong to PCs only, so named enemies and bystanders stay as fragile as real people. The dials mix freely: a gritty clock with heroic fate points makes a tense but survivable campaign.
+A **fate point**, spent after the dice, lowers a wound one severity step, rolls again a stop check, recovery check or wound-fever roll, or spares a capture or captivity roll that would kill him (held instead). The roller asks the player; pages that run on their own (travel nights, field-map heroes, captivity) spend one only to save a life.
+
+The first draft had a severity shift and a slower lethality clock as well. The shift was dropped because fate points do the same job by the player's choice; the clock because Blood, not the clock, is what kills in a fight, so the Blood dial does that work. The dials also reach the camp (recovery and fever), where most of the dying happened before antibiotics.
 
 ## Recovery, sickness and downtime
 

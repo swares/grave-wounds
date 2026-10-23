@@ -118,7 +118,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
       <h1>Grave Wounds Travel Map</h1>
       <p class="sub">March your forces from camp to the field. Each hex is <span id="hex-size">a kilometre</span>; terrain sets how long it takes. Plan a route with waypoints, then march it an hour or a day at a time.</p>
     </div>
-    <nav><span class="units-toggle" id="units-toggle" title="Units for distances, speeds and temperatures"></span><a href="roller.html">Wound roller</a><a href="team.html">Team builder</a><a href="field.html">Field map</a><a href="rules.html">Rule book</a><a href="../index.html">Start page</a></nav>
+    <nav><span class="units-toggle" id="lethal-toggle" title="Lethality for player characters (the GM's setting, shared by every page)"></span><span class="units-toggle" id="units-toggle" title="Units for distances, speeds and temperatures"></span><a href="roller.html">Wound roller</a><a href="team.html">Team builder</a><a href="field.html">Field map</a><a href="rules.html">Rule book</a><a href="../index.html">Start page</a></nav>
   </header>
 
   <div class="grid">
@@ -504,6 +504,7 @@ function hexDistance(a, b){
 const hkey = h => h[0] + "," + h[1];
 function edgeKey(a, b){ const [x, y] = [a, b].slice().sort((p, q) => p[1] - q[1] || p[0] - q[0]); return hkey(x) + "|" + hkey(y) }
 /*__MEASURE_JS__*/
+/*__LETHAL_JS__*/
 /*__CAMP_JS__*/
 const SIDE_NAMES = ["east", "north-east", "north-west", "west", "south-west", "south-east"];   // NEIGHBOURS' order, north up
 function sidesAround(m, h){                    // the terrain beyond each side of hex h, for the roller's battle map
@@ -1490,11 +1491,14 @@ function namedNight(f, ctx, factors){          // the day (and on the week's las
 }
 const namedEnd = n => (Number.isFinite(n.endurance) ? n.endurance : DZ.endurance);
 function namedDay(n, ctx, unnursed){            // his night: his cases run their course -> what happened, in words
-  const r = healthDay(n.health || newHealth(), { ...ctx, men: 1, unnursed }, roll100, namedEnd(n));
+  const before = n.health || newHealth(), night = () => healthDay(before, { ...ctx, men: 1, unnursed }, roll100, namedEnd(n));
+  let r = night(), spared = 0;
+  while (r.health.dead && fateSpend(n.pid, `spared ${Object.keys(r.events.dead).map(dzShort).join(", ")} on the march`)){ r = night(); spared += 1 }   // a player character's fate: the night's checks rolled again, only to save his life (lethality.js)
   n.health = r.health;
   n.rest = (n.rest || 0) + 1;                   // a night with the force: the roller gives him back some blood
   const one = (o, verb) => Object.entries(o).map(([did, k]) => `${verb} (${k > 1 ? k + " " : ""}${dzShort(did)})`);   // a man, not a force
   const bits = [...one(r.events.shown, "fell ill"), ...one(r.events.healed, "recovered")];
+  if (spared) bits.push(r.health.dead ? `spent his fate (${spared}) in vain` : `would have died, but fate spent${spared > 1 ? ` (${spared})` : ""}: he lives`);
   if (r.health.dead){
     n.dead = true;
     n.died = Object.keys(r.events.dead)[0];
@@ -2314,6 +2318,7 @@ function init(){
   restore();
   applyFieldResult();
   unitToggle($("#units-toggle"), () => render());
+  lethalToggle($("#lethal-toggle"), () => render());
   terrainCss(); renderLegend();
   $("#sel-map").innerHTML = mapOptions();
   $("#sel-map").value = S.mapId;

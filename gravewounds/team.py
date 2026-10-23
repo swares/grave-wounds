@@ -268,9 +268,9 @@ def _a(word: str) -> str:
 
 def fight_line(d: Data, c: dict) -> str:
     """What his characteristics do in a fight (combat.py): Blood, initiative, toil, and as leader, morale."""
-    from .combat import blood_pool, toil_blows
-    s, per = c["stats"], d.wounds["combat"]["characteristics"]
-    bits = [f"Blood {blood_pool(d, s['end'])}", f"initiative d{per['initiative']['die']}+{s['agi'] // per['initiative']['agi_per']}",
+    from .combat import blood_pool, lethality, toil_blows
+    s, per, L = c["stats"], d.wounds["combat"]["characteristics"], lethality(d)
+    bits = [f"Blood {blood_pool(d, s['end'], L)} ({L['name']}; {L['fate']} fate)", f"initiative d{per['initiative']['die']}+{s['agi'] // per['initiative']['agi_per']}",
             f"tires after {toil_blows(d, c['kit'], s['str'])} exchanges hand to hand"]
     if c.get("leader"):
         bits.append(f"leading, morale {(s['pres'] - 50) // per['presence']['per']:+d}")

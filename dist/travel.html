@@ -118,7 +118,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
       <h1>Grave Wounds Travel Map</h1>
       <p class="sub">March your forces from camp to the field. Each hex is <span id="hex-size">a kilometre</span>; terrain sets how long it takes. Plan a route with waypoints, then march it an hour or a day at a time.</p>
     </div>
-    <nav><span class="units-toggle" id="units-toggle" title="Units for distances, speeds and temperatures"></span><a href="roller.html">Wound roller</a><a href="team.html">Team builder</a><a href="field.html">Field map</a><a href="rules.html">Rule book</a><a href="../index.html">Start page</a></nav>
+    <nav><span class="units-toggle" id="lethal-toggle" title="Lethality for player characters (the GM's setting, shared by every page)"></span><span class="units-toggle" id="units-toggle" title="Units for distances, speeds and temperatures"></span><a href="roller.html">Wound roller</a><a href="team.html">Team builder</a><a href="field.html">Field map</a><a href="rules.html">Rule book</a><a href="../index.html">Start page</a></nav>
   </header>
 
   <div class="grid">
@@ -1361,6 +1361,54 @@ function unitToggle(el, onChange){
   draw();
 }
 
+/* Lethality: the GM's setting for how much the player characters (the team builder's sheeted
+   men, the field map's heroes) are spared. One setting for all pages, remembered in the
+   browser like US | Metric; wounds.yaml lethality holds the presets. build.py puts this file
+   into each page at its LETHAL_JS marker. */
+const LETHAL_KEY = "gravewounds-lethality";
+const LETHALITY = {"default":"standard","presets":{"gritty":{"name":"Gritty","fate":0,"blood":1.0,"stop_bonus":0,"stop_critical_only":false,"desc":"Player characters are as fragile as anyone."},"standard":{"name":"Standard","fate":1,"blood":1.5,"stop_bonus":20,"stop_critical_only":false,"desc":"A little luck and a little more blood for the team."},"heroic":{"name":"Heroic","fate":3,"blood":2.0,"stop_bonus":0,"stop_critical_only":true,"desc":"The team survives what would kill other men, mostly."}}};            // {default, presets: {id: {name, fate, blood, stop_bonus, stop_critical_only, desc}}}
+let lethalId = LETHALITY.default;
+try{ const v = localStorage.getItem(LETHAL_KEY); if (v && LETHALITY.presets[v]) lethalId = v }catch(e){ /* storage off: the default */ }
+const lethalSetting = () => ({ id: lethalId, ...LETHALITY.presets[lethalId] });
+// A player character's Blood pool under the setting (as gravewounds.combat.blood_pool with a preset).
+const pcPool = pool => Math.floor(pool * lethalSetting().blood);
+// A player character's Nerve for a stop check on a wound of this severity, or null if the
+// setting spares him the check (as gravewounds.combat.pc_stop).
+function pcNerve(nerve, sev){
+  const L = lethalSetting();
+  if (L.stop_critical_only && sev !== "critical") return null;
+  return nerve + L.stop_bonus;
+}
+// Fate points: what he has spent this season is kept with his experience, by his purse id (the
+// shared gravewounds-xp store, as xp.js), and End of season clears it. What he has left is the
+// setting's fate less that, so turning the dial changes it at once.
+const FATE_KEY = "gravewounds-xp";
+function fateRead(){ try{ return JSON.parse(localStorage.getItem(FATE_KEY) || "{}") || {} }catch(e){ return {} } }
+function fateLeft(pid){ return pid ? Math.max(0, lethalSetting().fate - ((fateRead()[pid] || {}).fate_spent || 0)) : 0 }
+function fateSpend(pid, why, n = 1){             // spend n of his fate points; false if he has too few
+  if (!pid || fateLeft(pid) < n) return false;
+  const all = fateRead(), x = (all[pid] ||= { ticks: {}, served: 0 });
+  x.fate_spent = (x.fate_spent || 0) + n;
+  (x.fate_log ||= []).push(why);
+  try{ localStorage.setItem(FATE_KEY, JSON.stringify(all)) }catch(e){ return false /* storage off: it cannot be kept */ }
+  return true;
+}
+// The Gritty | Standard | Heroic switch in a page's header. onChange redraws the page.
+function lethalToggle(el, onChange){
+  const draw = () => {
+    el.innerHTML = Object.entries(LETHALITY.presets).map(([id, p]) => `<button type="button" class="small" data-lethal="${id}" aria-pressed="${lethalId === id}" title="${p.desc} Player characters: ${p.fate} fate a season, Blood ×${p.blood}${p.stop_critical_only ? ", stop check only for critical wounds" : p.stop_bonus ? `, +${p.stop_bonus} Nerve on the stop check` : ""}.">${p.name}</button>`).join("");
+  };
+  el.addEventListener("click", e => {
+    const b = e.target.closest("button[data-lethal]");
+    if (!b || b.dataset.lethal === lethalId) return;
+    lethalId = b.dataset.lethal;
+    try{ localStorage.setItem(LETHAL_KEY, lethalId) }catch(err){ /* storage off: the choice lasts while the page is open */ }
+    draw();
+    onChange();
+  });
+  draw();
+}
+
 /* Camp layout and works labour, shared by the roller's battle map and the travel map.
    Same rules as gravewounds/combat.py (party_of, camp_radius, camp_map_size, camp_works, works_labour).
    A force type may be a column's party: [[type, men], ...].
@@ -2534,11 +2582,14 @@ function namedNight(f, ctx, factors){          // the day (and on the week's las
 }
 const namedEnd = n => (Number.isFinite(n.endurance) ? n.endurance : DZ.endurance);
 function namedDay(n, ctx, unnursed){            // his night: his cases run their course -> what happened, in words
-  const r = healthDay(n.health || newHealth(), { ...ctx, men: 1, unnursed }, roll100, namedEnd(n));
+  const before = n.health || newHealth(), night = () => healthDay(before, { ...ctx, men: 1, unnursed }, roll100, namedEnd(n));
+  let r = night(), spared = 0;
+  while (r.health.dead && fateSpend(n.pid, `spared ${Object.keys(r.events.dead).map(dzShort).join(", ")} on the march`)){ r = night(); spared += 1 }   // a player character's fate: the night's checks rolled again, only to save his life (lethality.js)
   n.health = r.health;
   n.rest = (n.rest || 0) + 1;                   // a night with the force: the roller gives him back some blood
   const one = (o, verb) => Object.entries(o).map(([did, k]) => `${verb} (${k > 1 ? k + " " : ""}${dzShort(did)})`);   // a man, not a force
   const bits = [...one(r.events.shown, "fell ill"), ...one(r.events.healed, "recovered")];
+  if (spared) bits.push(r.health.dead ? `spent his fate (${spared}) in vain` : `would have died, but fate spent${spared > 1 ? ` (${spared})` : ""}: he lives`);
   if (r.health.dead){
     n.dead = true;
     n.died = Object.keys(r.events.dead)[0];
@@ -3358,6 +3409,7 @@ function init(){
   restore();
   applyFieldResult();
   unitToggle($("#units-toggle"), () => render());
+  lethalToggle($("#lethal-toggle"), () => render());
   terrainCss(); renderLegend();
   $("#sel-map").innerHTML = mapOptions();
   $("#sel-map").value = S.mapId;

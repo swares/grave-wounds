@@ -16,7 +16,8 @@ from contextlib import contextmanager
 from . import combat as C
 from .combat import weapon_reach
 from .disease import wound_case
-from .engine import roll_hit
+from .combat import graze
+from .engine import compose_wound, reduce_severity, roll_hit
 from .model import Data
 
 
@@ -325,20 +326,42 @@ def _hero_blow(d: Data, att: dict, hero: dict, r: int, atk: int, crit_at: int, s
     h = roll_hit(d, att["table"], att["weapon"], rng=rng, kit=hero.get("kit"), margin=atk - r, critical=critical,
                  attack_roll=r)
     sev = h["severity"]
+    fx = None if sev == "stopped" else compose_wound(d, h["location"], h["mechanism"], sev)   # the wound before any graze
+    spent = 0
+    while sev != "stopped" and fx["lethal"] in d.units["dead_if"] and hero.get("fate", 0) > 0:
+        hero["fate"] -= 1                         # a player character's fate saves his life: the wound a step less
+        spent += 1
+        sev = reduce_severity(sev, 1)
+        fx = None if sev == "stopped" else compose_wound(d, h["location"], h["mechanism"], sev)
     if sev == "stopped":
+        if spent:
+            t.setdefault("heroes", []).append({"hero": hero["id"], "name": hero["name"], "sev": sev, "loc": h["location"],
+                                               "graze": False, "state": hero["state"], "fate_spent": spent})
         return
-    fx = h["effects"]
-    bleed, pain, shock = (max(0, fx["bleed"] - 1), max(0, fx["pain"] - 1), False) if h["graze"] else (fx["bleed"], fx["pain"], bool(fx.get("shock")))
+    if h["graze"]:
+        fx = graze(fx)
+    bleed, pain, shock = (fx["bleed"], fx["pain"], False) if h["graze"] else (fx["bleed"], fx["pain"], bool(fx.get("shock")))
     hero["wounds"].append({"loc": h["location"], "mech": h["mechanism"], "sev": sev, "graze": h["graze"], "bleed": bleed, "pain": pain, "impair": list(fx.get("impair") or [])})
     if fx["lethal"] in d.units["dead_if"]:
         hero["state"] = "dead"
     elif {"down", "incapacitated"} & set(hero_penalties(d, hero)[2]):
         hero["state"] = "down"                    # a wound that fells him or knocks him out (collapse, cannot stand, unconscious)
     else:
-        _hero_check(d, hero, C.stop_check(d, hero["nerve"], sev, hero_pain(hero), rng.randint(1, 100) if _checks(d, sev, shock) else 0,
-                                          hero_blood(d, hero)[0] / hero_blood(d, hero)[1], shock))
+        nerve = _hero_nerve(hero, sev)            # a player character's lethality: more Nerve, or no check below critical
+        if nerve is not None:
+            _hero_check(d, hero, C.stop_check(d, nerve, sev, hero_pain(hero), rng.randint(1, 100) if _checks(d, sev, shock) else 0,
+                                              hero_blood(d, hero)[0] / hero_blood(d, hero)[1], shock))
     t.setdefault("heroes", []).append({"hero": hero["id"], "name": hero["name"], "sev": sev, "loc": h["location"],
-                                        "graze": h["graze"], "state": hero["state"]})
+                                        "graze": h["graze"], "state": hero["state"], **({"fate_spent": spent} if spent else {})})
+
+
+def _hero_nerve(hero: dict, sev: str) -> int | None:
+    """A hero's Nerve for a stop check on a wound of this severity: a player character's
+    lethality (stop_bonus, stop_crit_only, set by the field page from the GM's setting) adds to
+    it, or spares him the check below critical (None). Others: his Nerve."""
+    if hero.get("stop_crit_only") and sev != "critical":
+        return None
+    return hero["nerve"] + hero.get("stop_bonus", 0)
 
 
 def _checks(d: Data, sev: str, shock: bool) -> bool:
@@ -492,7 +515,11 @@ def hero_fates(d: Data, units: list, table: str, rng) -> list:
                 out.append({**line, "fate": "found"})
                 continue
             roll = rng.randint(1, 100)
-            out.append({**line, "fate": "prisoner" if roll <= chance else "killed", "roll": roll, "chance": chance})
+            fate = "prisoner" if roll <= chance else "killed"
+            if fate == "killed" and h.get("fate", 0) > 0:
+                h["fate"] -= 1                    # a player character's fate spares his life: taken instead
+                fate, line["fate_spent"] = "prisoner", True
+            out.append({**line, "fate": fate, "roll": roll, "chance": chance})
     return out
 
 
@@ -712,9 +739,13 @@ def _lying_one(d: Data, us: list, ij: tuple, hero: dict, tr: tuple) -> dict | No
 def _taken(d: Data, hero: dict, table: str, rng) -> dict:
     """The enemy finds him: d100 at or under the war's quarter % takes him prisoner, else he is killed."""
     roll, chance = rng.randint(1, 100), quarter(d, table)
-    hero["state"] = "prisoner" if roll <= chance else "dead"
+    fate, spared = ("prisoner" if roll <= chance else "killed"), False
+    if fate == "killed" and hero.get("fate", 0) > 0:
+        hero["fate"] -= 1                         # a player character's fate spares his life: taken instead
+        fate, spared = "prisoner", True
+    hero["state"] = "prisoner" if fate == "prisoner" else "dead"
     hero.pop("post", None)
-    return {"hero": hero["id"], "name": hero["name"], "fate": "prisoner" if roll <= chance else "killed", "roll": roll, "chance": chance}
+    return {"hero": hero["id"], "name": hero["name"], "fate": fate, "roll": roll, "chance": chance, **({"fate_spent": True} if spared else {})}
 
 
 def _posts_after(d: Data, us: list, field: dict | None, table: str, rng) -> list:
@@ -940,8 +971,9 @@ def _hero_after(d: Data, hero: dict, rng) -> dict | None:
         hero["state"] = "down"
     if hero["blood"] <= 0:
         hero["dying"] = True
-    if hero["state"] == "up" and hero_pain(hero) > T["pain_cap"]:
-        _hero_check(d, hero, C.pain_check(d, hero["nerve"], hero_pain(hero), rng.randint(1, 100), hero["blood"] / pool))
+    nerve = _hero_nerve(hero, d.wounds["combat"]["stop_check"]["pain_round_as"])
+    if hero["state"] == "up" and hero_pain(hero) > T["pain_cap"] and nerve is not None:
+        _hero_check(d, hero, C.pain_check(d, nerve, hero_pain(hero), rng.randint(1, 100), hero["blood"] / pool))
     if after is before and not (was_up and hero["state"] != "up"):
         return None
     return {"hero": hero["id"], "name": hero["name"], "lost": lost, "blood": hero["blood"], "pool": pool, "state": hero["state"]}

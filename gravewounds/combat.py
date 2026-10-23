@@ -196,10 +196,28 @@ def initiative(d: Data, agility: int | None, roll: int) -> int:
     return roll + (50 if agility is None else agility) // I["agi_per"]
 
 
-def blood_pool(d: Data, endurance: int | None) -> int:
-    """A fighter's Blood pool: tracking.blood_pool + (Endurance - 50) / per, rounded down."""
+def lethality(d: Data, name: str | None = None) -> dict:
+    """A lethality preset (wounds.yaml lethality): the named one, else the default."""
+    L = d.wounds["lethality"]
+    return {"id": name or L["default"], **L["presets"][name or L["default"]]}
+
+
+def blood_pool(d: Data, endurance: int | None, preset: dict | None = None) -> int:
+    """A fighter's Blood pool: tracking.blood_pool + (Endurance - 50) / per, rounded down; a
+    player character's times his lethality preset's blood (preset: lethality(); None for anyone else)."""
     per = d.wounds["combat"]["characteristics"]["blood"]["per"]
-    return d.wounds["tracking"]["blood_pool"] + ((50 if endurance is None else endurance) - 50) // per
+    pool = d.wounds["tracking"]["blood_pool"] + ((50 if endurance is None else endurance) - 50) // per
+    return int(pool * float(preset["blood"])) if preset else pool
+
+
+def pc_stop(preset: dict | None, nerve: int, severity: str) -> int | None:
+    """A player character's Nerve for the stop check under his lethality preset, or None if
+    the preset spares him the check for this severity (stop_critical_only). Anyone else: nerve."""
+    if not preset:
+        return nerve
+    if preset["stop_critical_only"] and severity != "critical":
+        return None
+    return nerve + preset["stop_bonus"]
 
 
 def kit_load(d: Data, kit: str | None) -> str:

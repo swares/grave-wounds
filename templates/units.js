@@ -206,18 +206,37 @@ function heroBlow(att, hero, roll, rng, t){   // roll: {r, atk, critAt, shift}; 
   if (r > atk) return;
   const critical = r <= critAt, dfn = held(hero) === "stunned" ? 0 : hero.defence + shift - heroPenalties(hero)[1];
   if (!critical && dfn > 0 && rng.randint(1, 100) <= dfn) return;
-  const h = rollWound(att.table, att.weapon, hero.kit, atk - r, critical, rng, r);
-  if (h.severity === "stopped") return;
+  let h = rollWound(att.table, att.weapon, hero.kit, atk - r, critical, rng, r), spent = 0;
+  while (h.severity !== "stopped" && UD.dead_if.includes(h.lethal) && (hero.fate || 0) > 0){   // a player character's fate saves his life: the wound a step less (as units._hero_blow)
+    hero.fate -= 1; spent += 1;
+    const sev = reduceSeverity(h.severity, 1);
+    if (sev === "stopped"){ h = { ...h, severity: sev }; break }
+    const fx = FD.effects[h.loc][h.mech][sev];
+    h = { ...h, severity: sev, lethal: fx[0], infection: fx[1], bleed: fx[2], pain: fx[3], shock: fx[4], impair: fx[5] || [] };
+  }
+  if (h.severity === "stopped"){
+    if (spent){ t.heroes ??= []; t.heroes.push({ hero: hero.id, name: hero.name, sev: h.severity, loc: h.loc, graze: false, state: hero.state, fate_spent: spent }) }
+    return;
+  }
   const [bleed, pain, shock] = h.graze ? [Math.max(0, h.bleed - 1), Math.max(0, h.pain - 1), false] : [h.bleed, h.pain, !!h.shock];
   hero.wounds.push({ loc: h.loc, mech: h.mech, sev: h.severity, graze: h.graze, bleed, pain, impair: (h.impair || []).slice() });
   if (UD.dead_if.includes(h.lethal)) hero.state = "dead";
   else if (heroPenalties(hero)[2].some(f => f === "down" || f === "incapacitated")) hero.state = "down";   // a wound that fells him or knocks him out
   else {
-    const [blood, pool] = heroBlood(hero), roll2 = checks(h.severity, shock) ? rng.randint(1, 100) : 0;
-    heroCheck(hero, stopCheck(hero.nerve, h.severity, heroPain(hero), roll2, blood / pool, shock));
+    const nerve = heroNerve(hero, h.severity);    // a player character's lethality: more Nerve, or no check below critical
+    if (nerve !== null){
+      const [blood, pool] = heroBlood(hero), roll2 = checks(h.severity, shock) ? rng.randint(1, 100) : 0;
+      heroCheck(hero, stopCheck(nerve, h.severity, heroPain(hero), roll2, blood / pool, shock));
+    }
   }
   t.heroes ??= [];
-  t.heroes.push({ hero: hero.id, name: hero.name, sev: h.severity, loc: h.loc, graze: h.graze, state: hero.state });
+  t.heroes.push({ hero: hero.id, name: hero.name, sev: h.severity, loc: h.loc, graze: h.graze, state: hero.state, ...(spent ? { fate_spent: spent } : {}) });
+}
+// A hero's Nerve for a stop check on a wound of this severity: a player character's lethality (stop_bonus,
+// stop_crit_only, set when he joined from the GM's setting) adds to it, or spares him the check (null) (as units._hero_nerve).
+function heroNerve(hero, sev){
+  if (hero.stop_crit_only && sev !== "critical") return null;
+  return hero.nerve + (hero.stop_bonus || 0);
 }
 // ----- a hero's wounds, as the roller (gravewounds/combat.py stop_check, pain_check) -----
 const checks = (sev, shock) => shock && FD.combat.stop_check.severities.includes(sev);
@@ -426,10 +445,12 @@ function lyingAfter(us, table, rng){              // heroes lying out on a hex: 
   return log;
 }
 function taken(hero, table, rng){                 // found by the enemy: prisoner at the war's quarter %, else killed
-  const roll = rng.randint(1, 100), chance = quarterOf(table), fate = roll <= chance ? "prisoner" : "killed";
-  hero.state = roll <= chance ? "prisoner" : "dead";
+  const roll = rng.randint(1, 100), chance = quarterOf(table);
+  let fate = roll <= chance ? "prisoner" : "killed", spared = false;
+  if (fate === "killed" && (hero.fate || 0) > 0){ hero.fate -= 1; fate = "prisoner"; spared = true }   // a player character's fate spares his life: taken instead (as units._taken)
+  hero.state = fate === "prisoner" ? "prisoner" : "dead";
   delete hero.post;
-  return { hero: hero.id, name: hero.name, fate, roll, chance };
+  return { hero: hero.id, name: hero.name, fate, roll, chance, ...(spared ? { fate_spent: true } : {}) };
 }
 function postsAfter(us, field, table, rng){       // an aid post with an enemy unit (not out) within heroes.aid_post.overrun hexes is overrun: its heroes taken or killed
   const log = [], reach = UD.heroes.aid_post.overrun;
@@ -520,7 +541,9 @@ function heroFates(units, table, rng){            // after the battle: heroes le
       if (h.state === "dead" || h.state === "prisoner" || h.carried || !(h.left || h.going || (gone && h.state === "down"))) continue;
       if (up.has(u.side) || !up.size){ out.push({ unit: i, hero: h.id, name: h.name, fate: "found" }); continue }
       const roll = rng.randint(1, 100);
-      out.push({ unit: i, hero: h.id, name: h.name, fate: roll <= chance ? "prisoner" : "killed", roll, chance });
+      let fate = roll <= chance ? "prisoner" : "killed", spared = false;
+      if (fate === "killed" && (h.fate || 0) > 0){ h.fate -= 1; fate = "prisoner"; spared = true }   // a player character's fate spares his life: taken instead (as units.hero_fates)
+      out.push({ unit: i, hero: h.id, name: h.name, fate, roll, chance, ...(spared ? { fate_spent: true } : {}) });
     }
   });
   return out;
@@ -563,7 +586,8 @@ function heroAfter(hero, rng){                    // one hero's end of an exchan
   const after = bloodThreshold(hero.blood / pool);
   if (wasUp && after && (after.down || after.incapacitated)) hero.state = "down";
   if (hero.blood <= 0) hero.dying = true;
-  if (hero.state === "up" && heroPain(hero) > T.pain_cap) heroCheck(hero, painCheck(hero.nerve, heroPain(hero), rng.randint(1, 100), hero.blood / pool));
+  const nerve = heroNerve(hero, FD.combat.stop_check.pain_round_as);
+  if (hero.state === "up" && heroPain(hero) > T.pain_cap && nerve !== null) heroCheck(hero, painCheck(nerve, heroPain(hero), rng.randint(1, 100), hero.blood / pool));
   if (after === before && !(wasUp && hero.state !== "up")) return null;
   return { hero: hero.id, name: hero.name, lost, blood: hero.blood, pool, state: hero.state };
 }

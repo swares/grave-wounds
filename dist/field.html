@@ -172,7 +172,7 @@ legend{padding:0}
       <h1>Grave Wounds Field Map</h1>
       <p class="sub">Battles of hundreds: the rank and file fight as units, a minute an exchange, each hex <span id="hex-size">10 m</span>. Set up the units, then each exchange side A moves, side B moves, and every fight and volley is resolved together through the wound tables. Morale decides most fights; the rout does most of the killing.</p>
     </div>
-    <nav><span class="units-toggle" id="units-toggle" title="Units for distances and ranges"></span><a href="roller.html">Wound roller</a><a href="team.html">Team builder</a><a href="travel.html">Travel map</a><a href="rules.html">Rule book</a><a href="../index.html">Start page</a></nav>
+    <nav><span class="units-toggle" id="lethal-toggle" title="Lethality for player characters (the GM's setting, shared by every page)"></span><span class="units-toggle" id="units-toggle" title="Units for distances and ranges"></span><a href="roller.html">Wound roller</a><a href="team.html">Team builder</a><a href="travel.html">Travel map</a><a href="rules.html">Rule book</a><a href="../index.html">Start page</a></nav>
   </header>
 
   <div class="grid">
@@ -473,6 +473,54 @@ function unitToggle(el, onChange){
     if (!b || b.dataset.units === unitSystem) return;
     unitSystem = b.dataset.units;
     try{ localStorage.setItem(UNITS_KEY, unitSystem) }catch(err){ /* storage off: the choice lasts while the page is open */ }
+    draw();
+    onChange();
+  });
+  draw();
+}
+
+/* Lethality: the GM's setting for how much the player characters (the team builder's sheeted
+   men, the field map's heroes) are spared. One setting for all pages, remembered in the
+   browser like US | Metric; wounds.yaml lethality holds the presets. build.py puts this file
+   into each page at its LETHAL_JS marker. */
+const LETHAL_KEY = "gravewounds-lethality";
+const LETHALITY = {"default":"standard","presets":{"gritty":{"name":"Gritty","fate":0,"blood":1.0,"stop_bonus":0,"stop_critical_only":false,"desc":"Player characters are as fragile as anyone."},"standard":{"name":"Standard","fate":1,"blood":1.5,"stop_bonus":20,"stop_critical_only":false,"desc":"A little luck and a little more blood for the team."},"heroic":{"name":"Heroic","fate":3,"blood":2.0,"stop_bonus":0,"stop_critical_only":true,"desc":"The team survives what would kill other men, mostly."}}};            // {default, presets: {id: {name, fate, blood, stop_bonus, stop_critical_only, desc}}}
+let lethalId = LETHALITY.default;
+try{ const v = localStorage.getItem(LETHAL_KEY); if (v && LETHALITY.presets[v]) lethalId = v }catch(e){ /* storage off: the default */ }
+const lethalSetting = () => ({ id: lethalId, ...LETHALITY.presets[lethalId] });
+// A player character's Blood pool under the setting (as gravewounds.combat.blood_pool with a preset).
+const pcPool = pool => Math.floor(pool * lethalSetting().blood);
+// A player character's Nerve for a stop check on a wound of this severity, or null if the
+// setting spares him the check (as gravewounds.combat.pc_stop).
+function pcNerve(nerve, sev){
+  const L = lethalSetting();
+  if (L.stop_critical_only && sev !== "critical") return null;
+  return nerve + L.stop_bonus;
+}
+// Fate points: what he has spent this season is kept with his experience, by his purse id (the
+// shared gravewounds-xp store, as xp.js), and End of season clears it. What he has left is the
+// setting's fate less that, so turning the dial changes it at once.
+const FATE_KEY = "gravewounds-xp";
+function fateRead(){ try{ return JSON.parse(localStorage.getItem(FATE_KEY) || "{}") || {} }catch(e){ return {} } }
+function fateLeft(pid){ return pid ? Math.max(0, lethalSetting().fate - ((fateRead()[pid] || {}).fate_spent || 0)) : 0 }
+function fateSpend(pid, why, n = 1){             // spend n of his fate points; false if he has too few
+  if (!pid || fateLeft(pid) < n) return false;
+  const all = fateRead(), x = (all[pid] ||= { ticks: {}, served: 0 });
+  x.fate_spent = (x.fate_spent || 0) + n;
+  (x.fate_log ||= []).push(why);
+  try{ localStorage.setItem(FATE_KEY, JSON.stringify(all)) }catch(e){ return false /* storage off: it cannot be kept */ }
+  return true;
+}
+// The Gritty | Standard | Heroic switch in a page's header. onChange redraws the page.
+function lethalToggle(el, onChange){
+  const draw = () => {
+    el.innerHTML = Object.entries(LETHALITY.presets).map(([id, p]) => `<button type="button" class="small" data-lethal="${id}" aria-pressed="${lethalId === id}" title="${p.desc} Player characters: ${p.fate} fate a season, Blood ×${p.blood}${p.stop_critical_only ? ", stop check only for critical wounds" : p.stop_bonus ? `, +${p.stop_bonus} Nerve on the stop check` : ""}.">${p.name}</button>`).join("");
+  };
+  el.addEventListener("click", e => {
+    const b = e.target.closest("button[data-lethal]");
+    if (!b || b.dataset.lethal === lethalId) return;
+    lethalId = b.dataset.lethal;
+    try{ localStorage.setItem(LETHAL_KEY, lethalId) }catch(err){ /* storage off: the choice lasts while the page is open */ }
     draw();
     onChange();
   });
@@ -1090,18 +1138,37 @@ function heroBlow(att, hero, roll, rng, t){   // roll: {r, atk, critAt, shift}; 
   if (r > atk) return;
   const critical = r <= critAt, dfn = held(hero) === "stunned" ? 0 : hero.defence + shift - heroPenalties(hero)[1];
   if (!critical && dfn > 0 && rng.randint(1, 100) <= dfn) return;
-  const h = rollWound(att.table, att.weapon, hero.kit, atk - r, critical, rng, r);
-  if (h.severity === "stopped") return;
+  let h = rollWound(att.table, att.weapon, hero.kit, atk - r, critical, rng, r), spent = 0;
+  while (h.severity !== "stopped" && UD.dead_if.includes(h.lethal) && (hero.fate || 0) > 0){   // a player character's fate saves his life: the wound a step less (as units._hero_blow)
+    hero.fate -= 1; spent += 1;
+    const sev = reduceSeverity(h.severity, 1);
+    if (sev === "stopped"){ h = { ...h, severity: sev }; break }
+    const fx = FD.effects[h.loc][h.mech][sev];
+    h = { ...h, severity: sev, lethal: fx[0], infection: fx[1], bleed: fx[2], pain: fx[3], shock: fx[4], impair: fx[5] || [] };
+  }
+  if (h.severity === "stopped"){
+    if (spent){ t.heroes ??= []; t.heroes.push({ hero: hero.id, name: hero.name, sev: h.severity, loc: h.loc, graze: false, state: hero.state, fate_spent: spent }) }
+    return;
+  }
   const [bleed, pain, shock] = h.graze ? [Math.max(0, h.bleed - 1), Math.max(0, h.pain - 1), false] : [h.bleed, h.pain, !!h.shock];
   hero.wounds.push({ loc: h.loc, mech: h.mech, sev: h.severity, graze: h.graze, bleed, pain, impair: (h.impair || []).slice() });
   if (UD.dead_if.includes(h.lethal)) hero.state = "dead";
   else if (heroPenalties(hero)[2].some(f => f === "down" || f === "incapacitated")) hero.state = "down";   // a wound that fells him or knocks him out
   else {
-    const [blood, pool] = heroBlood(hero), roll2 = checks(h.severity, shock) ? rng.randint(1, 100) : 0;
-    heroCheck(hero, stopCheck(hero.nerve, h.severity, heroPain(hero), roll2, blood / pool, shock));
+    const nerve = heroNerve(hero, h.severity);    // a player character's lethality: more Nerve, or no check below critical
+    if (nerve !== null){
+      const [blood, pool] = heroBlood(hero), roll2 = checks(h.severity, shock) ? rng.randint(1, 100) : 0;
+      heroCheck(hero, stopCheck(nerve, h.severity, heroPain(hero), roll2, blood / pool, shock));
+    }
   }
   t.heroes ??= [];
-  t.heroes.push({ hero: hero.id, name: hero.name, sev: h.severity, loc: h.loc, graze: h.graze, state: hero.state });
+  t.heroes.push({ hero: hero.id, name: hero.name, sev: h.severity, loc: h.loc, graze: h.graze, state: hero.state, ...(spent ? { fate_spent: spent } : {}) });
+}
+// A hero's Nerve for a stop check on a wound of this severity: a player character's lethality (stop_bonus,
+// stop_crit_only, set when he joined from the GM's setting) adds to it, or spares him the check (null) (as units._hero_nerve).
+function heroNerve(hero, sev){
+  if (hero.stop_crit_only && sev !== "critical") return null;
+  return hero.nerve + (hero.stop_bonus || 0);
 }
 // ----- a hero's wounds, as the roller (gravewounds/combat.py stop_check, pain_check) -----
 const checks = (sev, shock) => shock && FD.combat.stop_check.severities.includes(sev);
@@ -1310,10 +1377,12 @@ function lyingAfter(us, table, rng){              // heroes lying out on a hex: 
   return log;
 }
 function taken(hero, table, rng){                 // found by the enemy: prisoner at the war's quarter %, else killed
-  const roll = rng.randint(1, 100), chance = quarterOf(table), fate = roll <= chance ? "prisoner" : "killed";
-  hero.state = roll <= chance ? "prisoner" : "dead";
+  const roll = rng.randint(1, 100), chance = quarterOf(table);
+  let fate = roll <= chance ? "prisoner" : "killed", spared = false;
+  if (fate === "killed" && (hero.fate || 0) > 0){ hero.fate -= 1; fate = "prisoner"; spared = true }   // a player character's fate spares his life: taken instead (as units._taken)
+  hero.state = fate === "prisoner" ? "prisoner" : "dead";
   delete hero.post;
-  return { hero: hero.id, name: hero.name, fate, roll, chance };
+  return { hero: hero.id, name: hero.name, fate, roll, chance, ...(spared ? { fate_spent: true } : {}) };
 }
 function postsAfter(us, field, table, rng){       // an aid post with an enemy unit (not out) within heroes.aid_post.overrun hexes is overrun: its heroes taken or killed
   const log = [], reach = UD.heroes.aid_post.overrun;
@@ -1404,7 +1473,9 @@ function heroFates(units, table, rng){            // after the battle: heroes le
       if (h.state === "dead" || h.state === "prisoner" || h.carried || !(h.left || h.going || (gone && h.state === "down"))) continue;
       if (up.has(u.side) || !up.size){ out.push({ unit: i, hero: h.id, name: h.name, fate: "found" }); continue }
       const roll = rng.randint(1, 100);
-      out.push({ unit: i, hero: h.id, name: h.name, fate: roll <= chance ? "prisoner" : "killed", roll, chance });
+      let fate = roll <= chance ? "prisoner" : "killed", spared = false;
+      if (fate === "killed" && (h.fate || 0) > 0){ h.fate -= 1; fate = "prisoner"; spared = true }   // a player character's fate spares his life: taken instead (as units.hero_fates)
+      out.push({ unit: i, hero: h.id, name: h.name, fate, roll, chance, ...(spared ? { fate_spent: true } : {}) });
     }
   });
   return out;
@@ -1447,7 +1518,8 @@ function heroAfter(hero, rng){                    // one hero's end of an exchan
   const after = bloodThreshold(hero.blood / pool);
   if (wasUp && after && (after.down || after.incapacitated)) hero.state = "down";
   if (hero.blood <= 0) hero.dying = true;
-  if (hero.state === "up" && heroPain(hero) > T.pain_cap) heroCheck(hero, painCheck(hero.nerve, heroPain(hero), rng.randint(1, 100), hero.blood / pool));
+  const nerve = heroNerve(hero, FD.combat.stop_check.pain_round_as);
+  if (hero.state === "up" && heroPain(hero) > T.pain_cap && nerve !== null) heroCheck(hero, painCheck(nerve, heroPain(hero), rng.randint(1, 100), hero.blood / pool));
   if (after === before && !(wasUp && hero.state !== "up")) return null;
   return { hero: hero.id, name: hero.name, lost, blood: hero.blood, pool, state: hero.state };
 }
@@ -5651,7 +5723,7 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   party: (l, nm) => ({ cls: "hero", text: partyText(l, nm) }),
   partyhit: (l, nm) => ({ cls: "hero", text: partyHitText(l, nm) }),
   fetched: (l, nm) => ({ cls: "hero", text: `${l.name} is picked up by ${nm(l.unit)}: he goes with them now.` }),
-  found: (l, nm) => ({ cls: "morale", text: `${l.name} (${nm(l.unit)}) is found by ${l.at_post ? "the enemy overrunning the aid post" : nm(l.by)}: ${l.fate === "prisoner" ? "taken prisoner" : "killed"} (rolled ${l.roll}, quarter ${l.chance}% or less).` }),
+  found: (l, nm) => ({ cls: "morale", text: `${l.name} (${nm(l.unit)}) is found by ${l.at_post ? "the enemy overrunning the aid post" : nm(l.by)}: ${l.fate === "prisoner" ? "taken prisoner" : "killed"} (rolled ${l.roll}, quarter ${l.chance}% or less${l.fate_spent ? "; fate spent: spared and taken" : ""}).` }),
   mines: (l, nm) => ({ cls: "morale", text: mineText(l, nm) }),
   hullshelled: (l, nm) => ({ cls: "", text: `${l.name || "Shells"} burst among the men riding on ${nm(l.dfd)}: ${l.struck} struck, ${l.down} down` + (l.dead ? ` (${l.dead} dead)` : "") + "." }),
   objective: l => ({ cls: "", text: objectiveText(l) }),
@@ -5746,7 +5818,8 @@ function heroStateText(l){                        // a duel's attempts, or a her
 function heroHitText(l){
   const where = FD.locations[l.loc].name.toLowerCase(), how = l.graze ? "a graze" : `a ${l.sev} wound`;
   const fate = { dead: "killed", down: "down, out of the fight", up: "fights on" }[l.state];
-  return `${l.name} takes ${how} (${where}): ${fate}.`;
+  const luck = l.fate_spent ? ` Fate spent (${l.fate_spent}): the wound a step less${l.sev === "stopped" ? ", turned by his armour" : ""}.` : "";
+  return l.sev === "stopped" ? `${l.name} is struck (${where}):${luck}` : `${l.name} takes ${how} (${where}): ${fate}.${luck}`;
 }
 function heroLineText(l, nm){
   const dead = l.dead ? " (" + l.dead + " dead)" : "", s = l.blows > 1 ? "s" : "";
@@ -6279,7 +6352,7 @@ function backToTravel(){
 }
 function heroFate(h){                             // "came through", "carried to the rear", "found on the field, down", "taken prisoner", "killed where he lay"
   const f = (S.fates || []).find(x => x.hero === h.id);
-  if (f?.fate === "prisoner") return `left on the field and taken prisoner (d100 ${f.roll}, quarter ${f.chance}%)`;
+  if (f?.fate === "prisoner") return `left on the field and taken prisoner (d100 ${f.roll}, quarter ${f.chance}%${f.fate_spent ? "; fate spent: spared" : ""})`;
   if (f?.fate === "killed") return `left on the field and killed where he lay (d100 ${f.roll}, quarter ${f.chance}%)`;
   if (f?.fate === "found") return `left on the field, found by his own side${h.state === "up" ? "" : ", " + h.state}`;
   if (h.carried) return `carried to the rear${h.state === "up" ? "" : ", " + h.state}`;
@@ -6605,17 +6678,22 @@ function addHero(){
   u.heroes ??= [];
   u.heroes.push({ id: c.id, name: c.name, role, attack: num("#in-hero-atk", q.attack), defence: num("#in-hero-def", q.defence), nerve: Number.isFinite(+c.nerve) ? +c.nerve : q.nerve,
     weapon, kit: FD.kits[c.kit] ? c.kit : "none", leader: $("#chk-hero-leader").checked, state: "up", wounds: [], hand: c.hand || "R",
-    ...(sick ? { sick } : {}), ...(rule.defend_only ? { defend_only: true } : {}), ...heroBody(c) });
+    ...(sick ? { sick } : {}), ...(rule.defend_only ? { defend_only: true } : {}), ...heroBody(c), ...heroLethal(c) });
   S.msg = `${c.name} joins ${u.name}${weapon === c.weapon ? "" : ", with the unit's weapon (his own is not on these tables)"}.`;
   render();
 }
 function heroBody(c){                             // {pool, blood, old_pain, old_bleed}: his Blood from his Endurance, and the wounds he comes with (the roller's)
   const end = [c.endurance, c.sheet?.stats?.end].find(Number.isFinite) ?? 50;
-  const pool = FD.tracking.blood_pool + Math.floor((end - 50) / FD.blood_per), ws = (c.wounds || []).filter(w => w.fx);
+  const raw = FD.tracking.blood_pool + Math.floor((end - 50) / FD.blood_per), pool = c.sheet ? pcPool(raw) : raw, ws = (c.wounds || []).filter(w => w.fx);   // a player character's Blood under the GM's lethality
   const perEx = b => Math.round((FD.tracking.bleed_per_round[b] || 0) * FD.units.exchange_rounds);
   const leech = [c.leechcraft, c.sheet?.skills?.leechcraft].find(Number.isFinite);   // his Leechcraft, from the team builder's sheet: he can give first aid
   return { pool, blood: Number.isFinite(c.blood) ? Math.min(c.blood, pool) : pool, old_pain: ws.reduce((a, w) => a + (w.fx.pain || 0), 0), old_bleed: ws.reduce((a, w) => a + perEx(w.fx.bleed), 0),
     old: ws.map(w => ({ loc: w.loc, pain: w.fx.pain || 0, impair: (w.fx.impair || []).slice(), bleed: w.fx.bleed || 0 })), ...(leech === undefined ? {} : { leech }) };
+}
+function heroLethal(c){                          // a player character (a team-builder sheet): the GM's lethality (lethality.js) for his stop checks and his fate points
+  if (!c.sheet) return {};
+  const L = lethalSetting(), pid = c.sheet.pid || null, f = pid ? fateLeft(pid) : L.fate;
+  return { pc: true, pid, fate: f, fate_start: f, stop_bonus: L.stop_bonus, stop_crit_only: L.stop_critical_only };
 }
 function heroSick(c){                             // a named man's worst showing step of sickness (the travel map runs it), as the roller's sickOf; null if well
   let all = {};
@@ -6736,7 +6814,8 @@ function heroesToRoller(){                        // their wounds onto their rec
   const lost = [0, 1].filter(k => !standing(k)), held = lost.length === 1 ? S.sides[1 - lost[0]] : null;   // the side that holds the field, if one does
   const sideOfHero = h => h.unit.side;   // allHeroes gives each hero his unit
   const heroes = allHeroes().map(h => ({ id: h.id, name: h.name, state: h.state, wounds: h.wounds, blood: h.blood, old: (h.old || []).map(o => ({ bleed: o.bleed, aid: o.aid })), ...(h.post ? { post: true } : {}),
-    ...(held ? { won: sideOfHero(h) === held } : {}), ...S.htally?.[h.id] }));   // the roller's After the fight: deeds and loot for the winners; his hits and downs
+    ...(held ? { won: sideOfHero(h) === held } : {}), ...S.htally?.[h.id],
+    ...(h.pc && h.fate_start > (h.fate || 0) ? { fate_spent: h.fate_start - (h.fate || 0) } : {}) }));   // his fate points spent here: the roller marks them   // the roller's After the fight: deeds and loot for the winners; his hits and downs
   try{ localStorage.setItem("gravewounds-field-heroes", JSON.stringify({ place: S.from?.place || "", heroes })) }catch(e){ S.msg = "Could not save the heroes for the roller (storage is off)."; return render() }
   S.heroesSent = true;
   save();
@@ -7795,6 +7874,7 @@ function init(){
   HANDOFF = readHandoff();
   TEAMIN = readTeamIn();
   unitToggle($("#units-toggle"), () => render());
+  lethalToggle($("#lethal-toggle"), () => render());
   fillChoices();
   fillTools();
   $("#map").addEventListener("click", e => {

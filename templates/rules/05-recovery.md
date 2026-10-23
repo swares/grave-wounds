@@ -28,6 +28,9 @@ Once every {{wound_every}} days, each wound makes a **recovery check**: d100 aga
 - Fail: it holds; at **deadly**, he dies.
 - Fail by {{big}} or more: one step **worse**.
 
+A player character may spend a fate point to roll a failed check again, or a wound-fever roll
+that went against him ([Lethality](#lethality)).
+
 A wound that reaches *healed* leaves a scar on his sheet and figure.
 
 ## Wound fever {#fever}
