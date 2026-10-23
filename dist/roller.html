@@ -119,6 +119,8 @@ button.small{font-size:.8rem;padding:3px 8px}
 .stat{display:flex;justify-content:space-between;gap:10px;font-size:.85rem;flex-wrap:wrap}
 .stat .warn{color:var(--warn);font-weight:700}.stat .crit,.siderow .crit{color:var(--crit);font-weight:700}
 .wounds{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+input.veil{color:transparent;text-shadow:0 0 6px var(--muted)}   /* an enemy's attack or defence %, on a side's screen */
+.char.veiled{border-style:dashed}
 .wounds li{border-top:1px dashed var(--line);padding-top:6px;font-size:.85rem;display:flex;flex-direction:column;gap:4px}
 .wounds .w1{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .wounds .treat{display:flex;gap:4px;flex-wrap:wrap}
@@ -3098,7 +3100,7 @@ function figRanges(){ return (S.aim && aimedRanges(S.weapon, S.aim)) || curRange
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,events:S.events,gm:S.gm,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone})) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
+function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,events:S.events,gm:S.gm,screen:S.screen,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone})) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
 function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if (j?.chars?.length){ Object.assign(S, j); if (!Array.isArray(S.events)) S.events = []; return true } }catch(e){ /* storage off or a damaged save: a fresh fight starts */ } return false }
 
 /* ---------- body figure ---------- */
@@ -3195,7 +3197,7 @@ function rollHit(stray = false, log = true){      // stray: a missed shot gone i
   const ctx = strikeContext(), cmd = strikeCommand(stray), a = attackerChar(), dd = defenderChar();
   const r = STRIKE.resolveStrike(ctx, cmd, DICE);
   strikeEffects(r.effects, a, dd);
-  S.hit = r.hit;
+  S.hit = { ...r.hit, def: dd ? dd.id : null, att: a ? a.id : null };     // whom it struck, for the screens
   if (log) logStrike(a, dd, cmd, r);
   showStrike(r.hit);
   const h = r.hit;
@@ -3222,6 +3224,50 @@ function riseToStrike(){                          // a man in cover rises to str
   a.cover = false;
   if (S.tm && S.tm.id === a.id) S.tm.risen = GRD.rise;
 }
+/* ---------- the screen: the GM's (everything) or one side's (its own men in full, the enemy as the table sees him) ----------
+   A screen filter only: the rules and the state are the same whichever screen is shown, and the GM can switch
+   back. On a side's screen an enemy's card shows his name, kit, weapon, where he has been hit and whether he
+   is down, not his Blood, wounds' effects, penalties or Nerve; the result panel, the Apply message, the round
+   log and the event log follow the same rule. It is the view a player's own page would be sent in online play. */
+const screenSeat = () => S.screen || GM_SEAT;
+const veiled = c => !!c && screenSeat() !== GM_SEAT && sideSeat(sideOf(c)) !== screenSeat();
+function veiledLine(line){                         // a round-log line about an enemy's Blood, wound or stop check: not on this screen
+  const text = plainText(line);
+  if (text.includes(": free attack on ")) return false;   // a free attack is seen by all
+  return S.chars.some(c => veiled(c) && text.startsWith(c.name + ":"));
+}
+function veiledCard(c, i){                          // an enemy's card as the table sees him
+  const isAtt = i === S.attacker, isDef = i === S.active, isTurn = c.id === S.turn, down = isDown(c), broken = !!(S.broken || {})[sideOf(c)];
+  let tag = "";
+  if (isTurn) tag = `<span class="turn-tag">Acting</span>`;
+  else if (down) tag = `<span class="turn-tag" style="background:var(--muted)">Down</span>`;
+  else if (broken) tag = `<span class="turn-tag" style="background:var(--crit)">Broken</span>`;
+  const state = c.state && !down ? `<div class="state"><span><b>${CMB.states[c.state.id].name}</b></span></div>` : "";
+  const fig = FIG.svg({ kit: KITS[c.kit || "none"], weapon: c.weapon ? DATA.weapons[c.weapon] : null, look: c.look || {}, size: 104, title: c.name,
+    wounds: c.wounds.filter(w => !w.stopped).map(w => ({ loc: w.loc, sev: null })) });
+  const hits = c.wounds.map(w => `<li><b>${LOC[w.loc].name}</b> <span class="muted">hit</span></li>`).join("") || `<li class="muted">Not hit yet.</li>`;
+  const cls = ["char", "veiled", isDef ? "active" : "", isAtt ? "attacker" : "", isTurn ? "turn" : "", down ? "isdown" : ""].filter(Boolean).join(" ");
+  return `<div class="${cls}" data-i="${i}">
+      <div class="orderrow"><span class="order">Init ${c.init ?? "–"}</span><span class="order">${esc(sideOf(c))}</span>${tag}</div>${state}
+      <div class="charhead"><strong>${esc(c.name)}</strong>
+        <button class="small" data-act="attacker" aria-pressed="${isAtt}">${isAtt ? "Attacking" : "Attacker"}</button>
+        <button class="small" data-act="select" aria-pressed="${isDef}">${isDef ? "Defending" : "Defender"}</button>${placeButton(c)}</div>
+      <div class="charid">${fig}<div style="display:flex;flex-direction:column;gap:6px">
+        <div class="wears">Wears: ${kitName(c.kit || "none")}${c.weapon ? " · Fights with: " + DATA.weapons[c.weapon].name : ""}</div>
+        <p class="muted" style="margin:0">The enemy, as your side sees him: how badly he is hurt is for the GM.</p></div></div>
+      <ul class="wounds">${hits}</ul>
+    </div>`;
+}
+function veilInputs(){                              // an enemy's attack or defence % in the roll form: not on this screen
+  $("#in-atk").classList.toggle("veil", veiled(attackerChar()));
+  $("#in-def").classList.toggle("veil", veiled(defenderChar()));
+}
+function veiledResult(h, dd){                       // the result panel when the man struck is an enemy on this screen
+  const att = h.combat ? `<div class="sitline">Attack d100 ${d2(h.combat.atk.roll)}: ${h.combat.atk.hit ? "hit" : "miss"}</div>` : "";
+  const fell = isDown(dd) ? " He goes down." : "";
+  return `${att}<p class="hitname">${LOC[h.loc].name}</p><p class="muted" style="margin:0">${esc(dd.name)} is hit${h.sev === "stopped" ? ", but the blow does not get through" : ""}.${fell} How badly is the GM's.</p>`;
+}
+
 /* ---------- the event log (gamelog.js): each strike and wound, and who sees it in full ---------- */
 const evWho = c => c ? { id: c.id, name: c.name, side: sideOf(c) } : null;
 const evRound = () => (S.chars.length ? S.round : null);
@@ -3315,13 +3361,14 @@ function renderEvents(){
   if (!box) return;
   const seats = seatsIn(S.chars.map(sideOf));
   if (!seats.includes(S.evSeat)) S.evSeat = GM_SEAT;
+  if (screenSeat() !== GM_SEAT) S.evSeat = screenSeat();   // a side's screen shows that side's log only
   const view = viewFor(S.events || [], S.evSeat).slice(-40).reverse(), n = (S.events || []).length;
   const label = s => (s === GM_SEAT ? "the GM (everything)" : esc(s.slice(5)));
   const opts = seats.map(s => `<option value="${attr(s)}"${s === S.evSeat ? " selected" : ""}>${label(s)}</option>`).join("");
   const empty = `<p class="muted" style="margin:0">Nothing yet${S.evSeat === GM_SEAT ? "" : " that this side would see"}.</p>`;
   const list = view.length ? `<ol class="roundlog" aria-label="Events, newest first" style="max-height:18rem;margin:6px 0">${view.map(eventItem).join("")}</ol>` : empty;
   box.innerHTML = `<details class="after"${S.evOpen ? " open" : ""}><summary><b>Event log</b> <span class="muted">${n} event${n === 1 ? "" : "s"}: each strike and wound, and who sees it</span></summary>
-    <div class="toolbar"><label for="ev-seat">As seen by</label><select id="ev-seat">${opts}</select>
+    <div class="toolbar"><label for="ev-seat">As seen by</label><select id="ev-seat"${screenSeat() === GM_SEAT ? "" : " disabled"}>${opts}</select>
       <span class="spacer"></span><button type="button" class="small" id="ev-save" title="This seat's view of the log, as a JSON file">Save this view</button></div>
     ${list}
     <p class="muted" style="margin:0">The GM and the defender's side see a strike in full; the others see the outcome and where it landed. Dice marked * were typed in by the player.</p></details>`;
@@ -3487,8 +3534,16 @@ function gmSideRow(sd){                            // a side: who plays it, how 
   const qual = `<select data-gm="quality" data-side="${k}"${wide} aria-label="Quality of ${k}'s men with no sheet" title="Attack, defence and Nerve for men with no team-builder sheet">${gmOptions(Object.keys(DATA.quality).map(q => [q, q + " men"]), g.quality)}</select>`;
   return `<div class="toolbar" style="flex-wrap:wrap"><b style="flex:1 1 100%">${esc(sd)}</b>${ctl}${stance}${qual}</div>`;
 }
+function gmSoloScreen(){                           // solo play (one player's side, the rest the script's): his screen
+  const sides = sidesInOrder(), players = sides.filter(sd => gmSide(sd).ctl === "player");
+  if (!S.screen && players.length === 1 && sides.some(sd => gmSide(sd).ctl === "script")) S.screen = sideSeat(players[0]);
+}
+function screenControl(){                          // whose screen this is: the GM's, or one side's
+  const opts = [[GM_SEAT, "the GM's (everything)"], ...sidesInOrder().map(sd => [sideSeat(sd), sd + "'s"])];
+  return `<label class="check" title="A side's screen shows the enemy as the table sees him. The GM can switch back.">Screen <select id="gm-screen" style="width:auto">${gmOptions(opts.map(([v, t]) => [attr(v), esc(t)]), attr(screenSeat()))}</select></label>`;
+}
 function gmControls(){                             // the switches and the script's buttons
-  const on = `<label class="check"><input type="checkbox" id="gm-on"${gmOn() ? " checked" : ""}> Run the fight</label>`;
+  const on = `<label class="check"><input type="checkbox" id="gm-on"${gmOn() ? " checked" : ""}> Run the fight</label>${screenControl()}`;
   if (!gmOn()) return `<div class="toolbar">${on}</div>`;
   const auto = `<label class="check" title="After your turn, the script plays its fighters by itself"><input type="checkbox" id="gm-auto"${S.gm.auto ? " checked" : ""}> Play the script by itself</label>`;
   const undo = GMQ.undo.length ? "" : " disabled";
@@ -3507,8 +3562,13 @@ function renderGM(){
 $("#gm-bar").addEventListener("toggle", e => { S.gmOpen = e.target.open }, true);
 $("#gm-bar").addEventListener("change", e => {
   const t = e.target;
-  if (t.id === "gm-on"){ if (t.checked) gmStart(); else { gmStop(); S.gm = { ...S.gm, on: false } } S.gmMsg = ""; return renderChars() }
+  if (t.id === "gm-on"){
+    if (t.checked){ gmStart(); gmSoloScreen() }
+    else { gmStop(); S.gm = { ...S.gm, on: false } }
+    S.gmMsg = ""; return renderChars();
+  }
   if (t.id === "gm-auto"){ S.gm.auto = t.checked; return renderChars() }
+  if (t.id === "gm-screen"){ S.screen = t.value === GM_SEAT ? null : t.value; renderResult(); return renderChars() }
   const k = t.dataset.gm, sd = t.dataset.side;
   if (!k || !sd) return;
   S.gm.sides[sd] = { ...gmSide(sd), [k]: t.value };
@@ -3545,6 +3605,7 @@ function combatLines(c){
     R0.cover ? ` − ${R0.cover} cover (${wkName(R0.coverWork)})` : "", R0.height ? ` − ${R0.height} fighting up (${wkName(R0.heightWork)})` : "", R0.weatherPen ? ` − ${R0.weatherPen} weather (${R0.weatherNotes.map(n => n.replace(/ -\d+%$/, "")).join(", ")})` : "",
     R0.wayPen ? ` − ${R0.wayPen} in the way (${R0.way.map(charName).join(", ")})` : ""].join("");
   const apen = parts ? ` (${a.base}${parts})` : "";
+  if (c.hide) return `<div class="sitline">Attack d100 ${d2(a.roll)}: ${a.hit ? "hit" : "miss"}</div>` + (c.def ? `<div class="sitline">Defence d100 ${d2(c.def.roll)}: ${c.def.defended ? "parried or dodged" : "failed"}</div>` : "");
   let out = `<div class="sitline">Attack d100 ${d2(a.roll)} vs ${a.effective}%${apen}: ${a.hit ? `hit, margin ${a.margin}${a.critical ? " · <b>critical</b>, cannot be defended" : ""}` : "miss"}</div>`;
   if (c.def) out += `<div class="sitline">Defence d100 ${d2(c.def.roll)} vs ${c.def.effective}%${pen(c.def)}: ${c.def.defended ? "parried or dodged" : "failed"}</div>`;
   return out;
@@ -3582,9 +3643,12 @@ function sitLine(h){                             // the range, cover and height 
 }
 function renderResult(){
   const h = S.hit; if (!h){ $("#result").innerHTML = ""; return }
+  const dd = S.chars.find(c => c.id === h.def);
+  if (veiled(dd) && h.loc){ $("#result").innerHTML = veiledResult(h, dd); return }
   if (h.blocked || h.miss || h.defended){
     const note = h.blocked ? '<p class="muted" style="margin:0">' + h.blocked + "</p>" : "";
-    $("#result").innerHTML = `${combatLines(h.combat)}<p class="outcome">${outcomeWord(h)}</p>${note}${strayLine(h.stray)}`;
+    const shownCombat = h.combat && veiled(S.chars.find(c => c.id === h.att)) ? { ...h.combat, hide: true } : h.combat;
+    $("#result").innerHTML = `${combatLines(shownCombat)}<p class="outcome">${outcomeWord(h)}</p>${note}${strayLine(h.stray)}`;
     $("#btn-stray")?.addEventListener("click", strayHit);
     return;
   }
@@ -4005,7 +4069,8 @@ function renderRounds(){
   const t = S.chars.find(c => c.id === S.turn);
   $("#turn-no").innerHTML = t ? `Acting: <b>${t.name}</b>` : S.chars.length > 1 ? "Order: highest initiative first" : "";
   const now = (S.pending || []).length ? [{ label: `Round ${S.round} so far`, lines: S.pending }] : [];
-  $("#round-log").innerHTML = [...now, ...S.log].map(e => `<li><b>${e.label}</b><br>${e.lines.join("<br>")}</li>`).join("");
+  const shown = [...now, ...S.log].map(e => ({ ...e, lines: e.lines.filter(l => !veiledLine(l)) }));   // an enemy's Blood and wounds are not on a side's screen
+  $("#round-log").innerHTML = shown.map(e => `<li><b>${e.label}</b><br>${e.lines.join("<br>") || '<span class="muted">nothing this side saw</span>'}</li>`).join("");
 }
 /* ---------- battle map ----------
    Each fighter has pos [col, row]. With no turn running (or Free placement on) you place
@@ -4899,6 +4964,7 @@ function renderChars(){
   const att = attackerChar();                // a fighter who cannot attack can't stay the attacker
   if (att && cannotAttack(penalties(att))) S.attacker = -1;
   $("#chars").innerHTML = S.chars.map((c, i) => {
+    if (veiled(c)) return veiledCard(c, i);
     const st = charStats(c);
     const painCls = st.pain > TRK.pain_cap ? "crit" : st.pain >= 2 ? "warn" : "";
     const lethCls = ["minutes","rounds","instant"].includes(st.worst) ? "crit" : st.worst !== "none" ? "warn" : "";
@@ -4946,6 +5012,7 @@ function renderChars(){
   }).join("") || `<p class="muted">Add a combatant to start tracking wounds.</p>`;
   renderMap();
   save();
+  veilInputs();
   renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards(); renderWords(); renderEvents(); renderGM();
 }
 $("#after-fight").addEventListener("change", e => {
@@ -5149,7 +5216,8 @@ function applyCurrentHit(){                       // Apply hit to defender: the 
     if (!wasDown && isDown(c)){ creditDown(attackerChar(), c); strainOnDown(c) }
     logWound(c, h, line, stop);
   } else msg = `Armour stopped that blow: nothing to add to ${c.name}.`;
-  $("#apply-msg").innerHTML = msg + (line ? `<br>${line}` : "") + fateButtons();
+  if (veiled(c) && h.loc) $("#apply-msg").textContent = `${c.name} is hit in the ${LOC[h.loc].name.toLowerCase()}.${isDown(c) ? " He goes down." : ""}`;
+  else $("#apply-msg").innerHTML = msg + (line ? `<br>${line}` : "") + fateButtons();
   if (h.free && isFreePair()){ S.hit = { ...h, free: false }; freeDone("") }
   renderChars();
 }
