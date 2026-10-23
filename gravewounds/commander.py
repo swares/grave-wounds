@@ -55,11 +55,7 @@ def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict
             n = us[i]["immobile"]
             us[i] = U.abandon_immobile(d, us[i])
             orders.append({"unit": i, "act": "abandon", "n": n})
-        roll = rng.randint(1, 100)
-        o = _down_under_fire(d, us, i, _order(d, us, i, (size, _plugging(_aim(us, i, aim), us[i]), stance, known, exchange), roll), stance, table)
-        o = _spotter(d, us, i, o, (size, field, stance, known)) or o
-        if o and us[i].get("plug") and o["act"] in ("advance", "fall_back"):
-            o = {**o, "gap": True}                # going to plug the gap, not the side's objective
+        o = _order_one(d, us, i, (size, field, stance, known, exchange), (aim, table), rng.randint(1, 100))
         if o:
             orders.append({"unit": i, **o})
             _apply(us, i, o)
@@ -1096,6 +1092,17 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     if roll <= C["hesitate"].get(u["quality"], 0):
         return {"act": "hesitate", "target": t, "roll": roll}
     return _move_order(d, us, i, t, ctx)
+
+
+def _order_one(d: Data, us: list, i: int, ctx: tuple, at: tuple, roll: int) -> dict | None:
+    """Unit i's order this move, or None: its own, gone to ground under fire, an air controller's,
+    marked if it goes to plug a gap. ctx: (size, field, stance, known, exchange); at: (aim, table)."""
+    (size, field, stance, known, exchange), (aim, table) = ctx, at
+    o = _down_under_fire(d, us, i, _order(d, us, i, (size, _plugging(_aim(us, i, aim), us[i]), stance, known, exchange), roll), stance, table)
+    o = _spotter(d, us, i, o, (size, field, stance, known)) or o
+    if o and us[i].get("plug") and o["act"] in ("advance", "fall_back"):
+        o = {**o, "gap": True}                    # going to plug the gap, not the side's objective
+    return o
 
 
 def _down_under_fire(d: Data, us: list, i: int, o: dict | None, stance: str, table: str | None) -> dict | None:

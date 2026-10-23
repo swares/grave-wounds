@@ -2520,9 +2520,7 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
   for (let i = 0; i < us.length; i++){
     if (us[i].side !== side || !commandable(us, i, exchange)) continue;
     if (stance === "attack" && leavesDisabled(us[i])){ const n = us[i].immobile; us[i] = abandonImmobile(us[i]); orders.push({ unit: i, act: "abandon", n }) }   // it goes on without its immobilised vehicles
-    const roll = rng.randint(1, 100), o1 = downUnderFire(us, i, unitOrder(us, i, [size, plugging(aimOf(us, i, aim), us[i]), stance, known, exchange], roll), stance, table);
-    const o0 = spotter(us, i, o1, [size, field, stance, known]) || o1;
-    const o = o0 && us[i].plug && (o0.act === "advance" || o0.act === "fall_back") ? { ...o0, gap: true } : o0;   // going to plug the gap, not the side's objective
+    const o = orderOne(us, i, [size, field, stance, known, exchange], [aim, table], rng.randint(1, 100));
     if (o){
       orders.push({ unit: i, ...o });
       applyOrder(us, i, o);
@@ -2532,6 +2530,11 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
   us = giveWay(us, side, [size, field, stance, exchange], [aim, known], orders);
   orders.push(...moveGuns(us, side, [size, goal, stance, known, exchange]), ...layGuns(us, side, [size, goal, known, exchange]), ...callFireAi(us, side, goal, known, [stance, exchange, orders, table]));
   return { units: us, orders };
+}
+function orderOne(us, i, [size, field, stance, known, exchange], [aim, table], roll){   // unit i's order this move, or null: its own, gone to ground under fire, an air controller's, marked if it goes to plug a gap (as commander._order_one)
+  const o1 = downUnderFire(us, i, unitOrder(us, i, [size, plugging(aimOf(us, i, aim), us[i]), stance, known, exchange], roll), stance, table);
+  const o0 = spotter(us, i, o1, [size, field, stance, known]) || o1;
+  return o0 && us[i].plug && (o0.act === "advance" || o0.act === "fall_back") ? { ...o0, gap: true } : o0;   // going to plug the gap, not the side's objective
 }
 const formed = u => !("range" in FD.weapons[u.weapon]) && u.formation !== "open" && !u.vehicle;   // close-order men who fight hand to hand
 const screening = (u, side) => u.side === side && u.state === "steady" && u.men > 0 && u.formation === "open" && "range" in FD.weapons[u.weapon] && !u.vehicle && !isBattery(u) && !isAtGun(u);
