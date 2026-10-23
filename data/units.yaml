@@ -759,8 +759,8 @@ morale:
   #   broke in 4 of 24 runs the first time one to three insurgents reached its flank hand to hand,
   #   losing no one or one man, where the accounts have the men in its buildings holding all
   #   morning; letting a failure only shake it changed nothing there (shaken and still flanked, it
-  #   broke the next exchange). Measured on 24 runs of every battlefield: 756 of 1,056 from 753 (Keating 17 to
-  #   20, Chipyong-ni 21 to 23, Mogadishu 17 to 19; Goose Green 5 to 3). false: the old rule.
+  #   broke the next exchange). Measured on 24 runs of every battlefield: 766 of 1,056 from 763 (Keating 18 to
+  #   19, Chipyong-ni 21 to 23, Mogadishu 17 to 18; Goose Green 5 to 3). false: the old rule.
   posture_flank: true
   shaken_by: 20
   mods:

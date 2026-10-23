@@ -1232,4 +1232,7 @@ and broke the next exchange. Built: a unit holding a position (in a bunker, dug 
 in buildings or rubble, or gone to ground in cover) is not flanked (`morale.posture_flank`). The
 morale targets did not move. Mogadishu's Somali losses fell from 27% to 13% (their militia hold
 buildings): to look at. Measured again once rebased on main after #308 (44 battlefields): 756 of
-1,056 from 753, with the same changes (Snipe and Beaumont-Hamel unchanged).
+1,056 from 753, with the same changes (Snipe and Beaumont-Hamel unchanged). And after #309 (fewer
+rolls per hit): 766 of 1,056 from 763; Keating 18 to 19, Chipyong-ni 21 to 23, Mogadishu 17 to 18,
+the Monastery 1 to 2, Goose Green 5 to 3. With #309 Keating gains less (main is now 18); its
+remaining misses are not traced yet.
