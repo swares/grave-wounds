@@ -1017,6 +1017,8 @@ def morale(d: Data, unit: dict, roll: int) -> dict:
     M = d.units["morale"]
     if unit["state"] == "broken":
         return {"check": False, "target": None, "state": "broken"}
+    if M.get("posture_flank") and unit.get("holds"):
+        unit = {**unit, "flanked": False}   # holding a position, its men face every way (morale.posture_flank)
     struck = _attrition(M, unit) or unit["lost"] >= M["shock"] * max(1, unit["men"]) or unit.get("flanked") or _losing(M, unit)
     rally = unit["state"] == "shaken" and not unit.get("contact")
     if not struck and not rally:

@@ -80,7 +80,8 @@ passing of time, nor from fire it cannot answer. It rolls d100 against its quali
 {{table:morale}}
 
 - **Steady, fails:** it is **shaken**: it fights at −{{f_shaken}} and cannot charge. Failing
-  by more than {{f_shaken_by}} while flanked, or with half its men down, it breaks at once.
+  by more than {{f_shaken_by}} while flanked, or with half its men down, it breaks at once. A unit
+  holding a position is never flanked: its men there face every way.
 - **Shaken, fails:** it **breaks**.
 - **Shaken, passes out of contact:** it rallies to steady.
 

@@ -1205,3 +1205,34 @@ lost three, so the rest gained nine: that drop was the runs' own spread. With th
 clear the windmill battery and the run ends once they hold it with every phase begun (exchange
 424), where before many runs went on to the limit with Imperial men still on the hill. The
 Imperialists lose about 27% rather than 34%, since the run ends sooner. Nothing to change.
+
+## Keating's retake, and holders flanked, 23 October 2026
+
+**The retake (researched, not built).** The sources (the project's keating-retake-research notes)
+have the Americans pull back into two or three unburned buildings once the wire was breached
+(about 06:48) and hold them; then two small parties retook the outpost: Romesha and five men
+to the ammunition point, the shura building and the gate, Hill and three men across the burned
+east side. No source gives a clock time for either; "about 5.5 hours in" is the only clue, and
+the official summary says control was regained in the afternoon. With no times, a dated
+counter-attack order is not built.
+
+**What Keating's misses were.** On main after #305 (17 of 24), six of the seven misses ended with
+the Coalition gone or the outpost held by no one: a retake would have had no one to make it. In
+four of them the barracks (B Troop, holding, steady, 10 to 21 men) broke the first time one to
+three insurgents reached its flank hand to hand, having lost no one or one man. A flanked unit
+checks every exchange at -20, and a bad failure while flanked breaks it at once.
+
+| Version | Runs matched (common battlefields) | Keating | Elsewhere |
+|---|---|---|---|
+| A failure while flanked only shakes a unit holding a position | +3 | 17 (unchanged) | Mogadishu 17 to 20, Chipyong-ni 21 to 22, Goose Green 5 to 4 |
+| A unit holding a position is not flanked (built) | +3 | 17 to 20 | Chipyong-ni 21 to 23, Mogadishu 17 to 19, the Monastery 1 to 2; Goose Green 5 to 3, Hamburger Hill, Khe Sanh and Pork Chop one fewer each |
+
+The first did nothing at Keating: shaken and still flanked, the barracks checked again at 40
+and broke the next exchange. Built: a unit holding a position (in a bunker, dug in, behind works,
+in buildings or rubble, or gone to ground in cover) is not flanked (`morale.posture_flank`). The
+morale targets did not move. Mogadishu's Somali losses fell from 27% to 13% (their militia hold
+buildings): to look at. Measured again once rebased on main after #308 (44 battlefields): 756 of
+1,056 from 753, with the same changes (Snipe and Beaumont-Hamel unchanged). And after #309 (fewer
+rolls per hit): 766 of 1,056 from 763; Keating 18 to 19, Chipyong-ni 21 to 23, Mogadishu 17 to 18,
+the Monastery 1 to 2, Goose Green 5 to 3. With #309 Keating gains less (main is now 18); its
+remaining misses are not traced yet.
