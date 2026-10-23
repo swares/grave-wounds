@@ -255,12 +255,14 @@ Confidence: **Extrapolated - design estimate from analogous evidence** · Armour
 Sources:
 - Derived from visby-1361-evidence.
 
-# Hundred Years' War (1337-1453 (Aljubarrota, 14 August 1385; Agincourt, 25 October 1415))
+# Hundred Years' War (1337-1453 (Crécy, 26 August 1346; Aljubarrota, 14 August 1385; Agincourt, 25 October 1415))
 
-England and France fought on and off from 1337 to 1453, and drew in their allies: in Iberia, the war of 1383-85 for the Portuguese crown set Castile and its French allies against João of Avis and his English. At Aljubarrota on 14 August 1385 the Portuguese, about a third as many, dug pits and ditches across a narrow plateau between two valleys, fought on foot with English archers and crossbowmen on their wings, and broke the French and Castilian attack in under an hour before sunset. The leg bones of at least 414 men lie in an ossuary on the field, the only battle grave of medieval Iberia yet studied.
+England and France fought on and off from 1337 to 1453, and drew in their allies. At Crécy on 26 August 1346 Edward III's army, dismounted on a slope above the Vallée des Clercs with its archers on the wings, broke the Genoese crossbowmen and charge after charge of French horse into the night; the heralds counted 1,542 French knights and squires dead. In Iberia, the war of 1383-85 for the Portuguese crown set Castile and its French allies against João of Avis and his English. At Aljubarrota on 14 August 1385 the Portuguese, about a third as many, dug pits and ditches across a narrow plateau between two valleys, fought on foot with English archers and crossbowmen on their wings, and broke the French and Castilian attack in under an hour before sunset. The leg bones of at least 414 men lie in an ossuary on the field, the only battle grave of medieval Iberia yet studied.
 
 | Side | Who | Armour |
 |---|---|---|
+| England and Wales (1346) | Edward III and the Prince of Wales: some 14,000 by Ayton's count, 2,500 men-at-arms, 5,000 longbowmen, 3,000 hobelars and mounted archers and 3,500 spearmen, many of them Welsh. | Men-at-arms in mail and a coat of plates with bascinets, fighting on foot; archers and spearmen in padded aketons, an iron cap or none. |
+| France and Genoa (1346) | Philip VI: about 12,000 men-at-arms (Edward III's letter; Sumption) and some 6,000 Genoese crossbowmen under Ottone Doria and Carlo Grimaldi; most of the foot never came up. | Mail and a coat of plates, bascinets, many with snouted visors; the Genoese in padded jacks, their pavises left on the road. |
 | Portugal and England | João I and the Constable Nuno Álvares Pereira: 1,700 lances, 800 crossbowmen and 4,000 foot by Fernão Lopes, with about 700 English and Gascons, some 300 of them archers. | Men-at-arms in mail with plates and bacinets, fighting on foot with cut-down lances; crossbowmen and foot in padded jacks. |
 | Castile and France | Juan I of Castile: French lances in the vanguard, with Portuguese who held for Queen Beatriz, the Masters of Alcántara and Calatrava on the wings, and the King's three mounted bodies; perhaps 20,000 in all (Monteiro). | Mail and plates, bacinets; the French in the best harness; ginetes light, with shields and javelins. |
 
@@ -268,23 +270,28 @@ England and France fought on and off from 1337 to 1453, and drew in their allies
 
 | Name | Side | Wears | Fights with | Notes | Picture |
 |---|---|---|---|---|---|
+| English archer | England and Wales (1346) | Gambeson and cap | Longbow (English war bow, bodkin and broadhead arrows) | A county foot archer at 3d a day, on the wing of the Prince's battle with 72 arrows. |  |
+| Welsh spearman | England and Wales (1346) | Gambeson and cap | Spear / lance | At 2d a day; one of the knife-men who killed the fallen French nobles. |  |
+| English man-at-arms | England and Wales (1346) | Coat of plates and mail (c.1350) | Spear / lance | Dismounted in the Prince's battle, his horse in the park behind. |  |
+| Genoese crossbowman | France and Genoa (1346) | Gambeson and cap | Crossbow (bolts) | Sent in first after a long march, without his pavise, his string wet from the shower. |  |
+| French man-at-arms | France and Genoa (1346) | Coat of plates and mail (c.1350) | Spear / lance | With Alençon's battle, which rode down the Genoese to get at the English. |  |
 | Portuguese man-at-arms | Portugal and England | Coat of plates and mail (c.1350) | Spear / lance | Dismounted, his lance cut down, in the vanguard behind the ditch. |  |
 | Portuguese crossbowman | Portugal and England | Gambeson and cap | Crossbow (bolts) | A town crossbowman (besteiro do conto) on the wings. |  |
 | English archer | Portugal and England | Gambeson and cap | Longbow (English war bow, bodkin and broadhead arrows) | One of some 300 who landed in the spring of 1385. |  |
 | French man-at-arms | Castile and France | Coat of plates and mail (c.1350) | Spear / lance | In the vanguard that came on through the pits. |  |
 | Castilian ginete | Castile and France | Mail hauberk and helm (c.1100-1300) | Spear / lance | Light horseman of the Master of Alcántara's wing, who rode round to the baggage. |  |
 
-Sources: Monteiro J.G., Aljubarrota Revisitada (Coimbra, 2001; open access), and 'The Battle of Aljubarrota (1385): a reassessment', Journal of Medieval Military History VII (2009). Pérez Fernández Á. et al., 'Perimortem fractures in the osteological collection of Aljubarrota (Portugal)', Journal of Anthropological Archaeology 40 (2015); Cunha E. and Silva A.M., International Journal of Osteoarchaeology 7 (1997). Project docs aljubarrota-research and iberia1385-research.
+Sources: Monteiro J.G., Aljubarrota Revisitada (Coimbra, 2001; open access), and 'The Battle of Aljubarrota (1385): a reassessment', Journal of Medieval Military History VII (2009). Pérez Fernández Á. et al., 'Perimortem fractures in the osteological collection of Aljubarrota (Portugal)', Journal of Anthropological Archaeology 40 (2015); Cunha E. and Silva A.M., International Journal of Osteoarchaeology 7 (1997). Ayton A. and Preston P., The Battle of Crécy, 1346 (Woodbridge, 2005); Sumption J., Trial by Battle (London, 1990). Project docs crecy-research, aljubarrota-research and iberia1385-research.
 
 **Quick-play: men down per 100 tries**
 
 Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.35, veterans x0.76; against a parry, x(1 - parry% x 0.9).
 
-| Weapon | Coat of plates and mail (c.1350) | Gambeson and cap | Mail hauberk and helm (c.1100-1300) |
+| Weapon | Gambeson and cap | Coat of plates and mail (c.1350) | Mail hauberk and helm (c.1100-1300) |
 |---|---|---|---|
-| Spear / lance | 1 / 2 / 4 / 12 | 5 / 13 / 21 / 30 | 3 / 8 / 12 / 21 |
-| Crossbow (bolts) | 5 / 12 / 20 / 30 | 5 / 13 / 21 / 30 | 5 / 13 / 21 / 30 |
-| Longbow (English war bow, bodkin and broadhead arrows) | 5 / 12 / 20 / 29 | 6 / 13 / 21 / 29 | 5 / 13 / 21 / 29 |
+| Longbow (English war bow, bodkin and broadhead arrows) | 6 / 13 / 21 / 29 | 5 / 12 / 20 / 29 | 5 / 13 / 21 / 29 |
+| Spear / lance | 5 / 13 / 21 / 30 | 1 / 2 / 4 / 12 | 3 / 8 / 12 / 21 |
+| Crossbow (bolts) | 5 / 13 / 21 / 30 | 5 / 12 / 20 / 30 | 5 / 13 / 21 / 30 |
 
 ## Aljubarrota 1385 - the São Jorge ossuary (bone evidence)
 

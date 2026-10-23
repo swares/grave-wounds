@@ -7,7 +7,9 @@ era) and in the printed tables (*Team generation*). Every table, event and trait
 this game. The names are common period names.
 
 The first table set covers the medieval era, c.1250-1500, the era of the Sidon, Visby,
-Jacob's Ford, Aljubarrota, Agincourt, Towton and Dornach battlefields. The team comes from one of nine regions:
+Jacob's Ford, Crécy, Aljubarrota, Agincourt, Towton and Dornach battlefields. The team comes from one of nine regions
+(there is no 1346 England or France yet: on the Crécy battlefield the units wear 1346 kit, but a team
+for Crécy is built from the c.1415 armies):
 
 | Region | Wound table | Kit and weapons |
 | --- | --- | --- |
