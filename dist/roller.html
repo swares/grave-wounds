@@ -3648,6 +3648,11 @@ function gmSideRow(sd){                            // a side: who plays it, how 
   const qual = `<select data-gm="quality" data-side="${k}"${wide} aria-label="Quality of ${k}'s men with no sheet" title="Attack, defence and Nerve for men with no team-builder sheet">${gmOptions(Object.keys(DATA.quality).map(q => [q, q + " men"]), g.quality)}</select>`;
   return `<div class="toolbar" style="flex-wrap:wrap"><b style="flex:1 1 100%">${esc(sd)}</b>${ctl}${stance}${qual}</div>`;
 }
+function oneSideNote(title, what){                 // a panel that needs two sides, while there is one: say so rather than hide
+  const n = S.chars.length;
+  const why = n ? `every fighter here is on one side (${esc(sidesInOrder()[0] || "Side A")}). Give one a different <b>Side</b> on his card.` : "add fighters on two sides first.";
+  return `<details class="after"><summary><b>${title}</b> <span class="muted">${what}</span></summary><p class="muted" style="margin:0">Needs fighters on two sides: ${why}</p></details>`;
+}
 function gmSoloScreen(){                           // solo play (one player's side, the rest the script's): his screen
   const sides = sidesInOrder(), players = sides.filter(sd => gmSide(sd).ctl === "player");
   if (!S.screen && players.length === 1 && sides.some(sd => gmSide(sd).ctl === "script")) S.screen = sideSeat(players[0]);
@@ -3666,7 +3671,7 @@ function gmControls(){                             // the switches and the scrip
 function renderGM(){
   const box = $("#gm-bar"); if (!box) return;
   const sides = sidesInOrder();
-  if (sides.length < 2){ box.innerHTML = ""; return }
+  if (sides.length < 2){ box.innerHTML = oneSideNote("Run the fight", "who plays each side"); return }
   const open = S.gmOpen || gmOn() ? " open" : "";
   const note = gmOn() ? "who plays each side" : "off: you play every fighter by hand";
   const rows = gmOn() ? sides.map(gmSideRow).join("") : "";
@@ -3805,10 +3810,14 @@ function netPeerRow(p){
   const err = p.err ? `<p class="ev-bad" style="margin:0">${esc(p.err)}</p>` : "";
   return `<li><b>${side}</b>: ${esc(st)} <button type="button" class="small" data-net="drop" data-n="${p.n}">Drop</button>${invite}${err}</li>`;
 }
+function netSides(){                               // the sides changed: Play online's invitations follow (not on every change: it would clear a reply being pasted)
+  const k = sidesInOrder().join("|");
+  if (k !== NETH.sidesKey){ NETH.sidesKey = k; renderNet() }
+}
 function renderNet(){
   const box = $("#net-bar"); if (!box) return;
   const sides = sidesInOrder();
-  if (sides.length < 2){ box.innerHTML = ""; return }
+  if (sides.length < 2){ box.innerHTML = oneSideNote("Play online", "players on their own computers"); return }
   const invites = sides.map(sd => `<button type="button" class="small" data-net="invite" data-side="${attr(sd)}">Invite a player for ${esc(sd)}</button>`).join("");
   const rows = NETH.peers.length ? `<ul class="roundlog" style="max-height:none">${NETH.peers.map(netPeerRow).join("")}</ul>` : "";
   box.innerHTML = `<details class="after"${NETH.open || NETH.peers.length ? " open" : ""}><summary><b>Play online</b> <span class="muted">${netOpen().length} player${netOpen().length === 1 ? "" : "s"} connected</span></summary>
@@ -5381,7 +5390,7 @@ function renderChars(){
   renderMap();
   save();
   veilInputs();
-  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards(); renderWords(); renderEvents(); renderGM(); netSync();
+  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards(); renderWords(); renderEvents(); renderGM(); netSides(); netSync();
 }
 $("#after-fight").addEventListener("change", e => {
   if (e.target.id === "sel-won"){ S.wonBy = e.target.value || null; S.afterOpen = true; renderChars() }
