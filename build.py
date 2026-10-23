@@ -114,8 +114,15 @@ def slot_text(d, v) -> str:
     parts = []
     for mat, lo, hi in layers:
         name = d.armor["materials"][mat]["name"].split(" (")[0]
-        parts.append(name if (lo, hi) == (1, 100) else f"{name} {rng(lo, hi)}")
+        parts.append(name if (lo, hi) == (1, 100) else f"{name} {digit_band(lo, hi)}")
     return " / ".join(parts)
+
+
+def digit_band(lo: int, hi: int) -> str:
+    """A coverage band (covers are in tens) as the attack roll's units digits it takes: 1-7, 5-0."""
+    a, b = (lo + 9) // 10, hi // 10
+    f = lambda n: "0" if n == 10 else str(n)
+    return f(a) if a == b else f"{f(a)}-{f(b)}"
 
 
 KIT_GROUPS = (("visby", "Armour Kits: Visby 1361"), ("roses", "Armour Kits: Wars of the Roses (c.1460)"),
@@ -145,8 +152,9 @@ ARMOR_STEPS = [
     "Use armour only on tables marked <b>armour allowed</b> (all-hits, baseline, knife and unarmed tables). "
     "The other tables already show the effect of what their soldiers wore.",
     "Find the hit location's <b>armour slot</b> in the target's kit. Empty slot: no protection.",
-    "If the slot shows d100 bands (e.g. <i>Rifle plate 01-65 / Soft Kevlar 66-00</i>), roll d100 to see which layer the hit meets. "
-    "A roll above the last band is a gap: no protection.",
+    "If the slot shows bands (e.g. <i>Rifle plate 1-6 / Soft Kevlar 7-0</i>), read the <b>units digit of the attack roll</b> "
+    "(0 is 10; roll a d10 if there was none): the band it falls in is the layer the hit meets. "
+    "A digit above the last band is a gap: no protection.",
     "Protection = the material's steps against the wound mechanism. For gunfire use the weapon's <b>threat</b> column "
     "(fragment, pistol, rifle, AP rifle). Subtract the weapon's armour defeat, if any.",
     "Lower the severity that many steps: Critical > Serious > Light > Stopped. Stopped is a bruise, no wound.",
@@ -158,10 +166,19 @@ COMBAT_STEPS = [
     "Attacker rolls d100 against <b>attack % minus penalties</b> (on the battle map, also minus any range penalty and men in the way). Equal or under hits; the <b>margin</b> is the effective chance minus the roll. "
     "A roll at or under a tenth of the effective chance is a <b>critical</b>: it cannot be defended.",
     "If the defender may parry or dodge, they roll d100 against <b>defence % minus penalties</b>; equal or under avoids the blow.",
-    "On a hit, roll location and mechanism as usual. <b>Severity comes from the margin</b> (bands below) instead of the severity table.",
+    "On a hit, roll location. A cut-and-thrust weapon ({choose}) strikes the blow its wielder "
+    "declares; other weapons strike with their main mechanism. <b>Severity comes from the margin</b> "
+    "(bands below) instead of the severity table, and the <b>attack roll's units digit</b> says whether partial armour is met.",
     "Wounds switch situations on by themselves: a defender who cannot stand is <b>Target down</b>, a defender whose shield arm is useless has "
     "<b>No shield</b>, and an attacker on the ground fights as <b>Attacker lower</b>.",
 ]
+def combat_steps(d) -> list[str]:
+    """COMBAT_STEPS with the cut-and-thrust weapons named from the data."""
+    names = sorted({w.get("short", w["name"]).lower() for w in d.weapons.values() if w.get("choose")})
+    choose = ", ".join(names[:-1]) + " or " + names[-1] if len(names) > 1 else "".join(names)
+    return [x.replace("{choose}", choose) for x in COMBAT_STEPS]
+
+
 # How wound flags are named in print: the data's `shock` flag is Grave Wounds' stop check.
 FLAG_LABEL = {"shock": "stop check"}
 
@@ -1250,8 +1267,10 @@ def markdown(d) -> str:
            f"Generated {date.today().isoformat()} from the data folder. Roll d100 (00 = 100).", "",
            COPYRIGHT, "",
            "**Procedure:** 1) d100 location on the table for the fight and weapon (situation column if one applies; "
-           "called shots roll twice). 2) d100 mechanism for the weapon. 3) Severity from your system's damage, or d100. "
-           "4) Armour (adjusted tables): lower severity by the material's steps. "
+           "called shots roll twice). 2) Mechanism: a cut-and-thrust weapon strikes the blow its wielder declares; "
+           "otherwise its main mechanism, or d100 on its mix. 3) Severity from your system's damage, or d100. "
+           "4) Armour (adjusted tables): the attack roll's units digit (or a d10) says which layer the hit meets, if any; "
+           "lower severity by the material's steps. "
            "5) Look up the wound by location class and severity, then apply the mechanism modifiers.", ""]
     prev_battle = None
     for tid, t in d.tables.items():
@@ -1323,7 +1342,7 @@ def markdown(d) -> str:
             out.append("")
 
     CB, TR = d.wounds["combat"], d.wounds["tracking"]
-    out += ["## Fighting while wounded", ""] + [f"{i}. {re.sub('</?b>', '**', x)}" for i, x in enumerate(COMBAT_STEPS, 1)]
+    out += ["## Fighting while wounded", ""] + [f"{i}. {re.sub('</?b>', '**', x)}" for i, x in enumerate(combat_steps(d), 1)]
     out += ["", f"Penalties add up; each total is capped at -{CB['cap']}%.", "", "| Cause | Attack | Defence | Also |", "|---|---|---|---|",
             f"| Pain, per step (max {TR['pain_cap']}) | -{CB['pain_step']}% | -{CB['pain_step']}% | |"]
     for th in sorted(TR["thresholds"], key=lambda t: -t["at"]):
@@ -1715,7 +1734,7 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
     story += [PageBreak(), Paragraph("Fighting While Wounded", H1),
               Paragraph("Optional: resolve the attack here so that wounds count. Skip this page if your own system rolls the attack; "
                         "you can still use the penalty table for it.", B), Spacer(1, 4)]
-    story += [Paragraph(f"{i}. {x}", B) for i, x in enumerate(COMBAT_STEPS, 1)]
+    story += [Paragraph(f"{i}. {x}", B) for i, x in enumerate(combat_steps(d), 1)]
     story += [Spacer(1, 6), Paragraph(f"Wound penalties (add up, each total capped at -{CB['cap']}%)", H2),
               Paragraph("Arm wounds count against the <b>weapon arm</b> (the side of the fighter's weapon hand, usually right) or the "
                         "<b>shield arm</b>. Wounds elsewhere that impair an arm count against the weapon arm. "

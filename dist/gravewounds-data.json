@@ -7211,6 +7211,7 @@
     "cut": 70,
     "pierce": 30
    },
+   "choose": true,
    "zone_bias": {},
    "confidence": "extrapolated",
    "notes": "Baseline weapon; the Visby tables are applied unchanged.",
@@ -7317,6 +7318,7 @@
     "pierce": 90,
     "cut": 10
    },
+   "choose": true,
    "zone_bias": {
     "head": 0.8,
     "torso": 1.4,
@@ -7401,6 +7403,7 @@
     "pierce": 30,
     "crush": 10
    },
+   "choose": true,
    "zone_bias": {
     "head": 1.2,
     "legs": 1.1
@@ -7443,6 +7446,7 @@
     "pierce": 35,
     "cut": 20
    },
+   "choose": true,
    "zone_bias": {
     "head": 1.3
    },
@@ -7488,6 +7492,7 @@
     "pierce": 35,
     "crush": 10
    },
+   "choose": true,
    "zone_bias": {
     "head": 1.2
    },
@@ -7672,6 +7677,7 @@
     "pierce": 70,
     "cut": 30
    },
+   "choose": true,
    "zone_bias": {
     "torso": 1.4,
     "arms": 1.1,
@@ -7712,6 +7718,7 @@
     "pierce": 85,
     "cut": 15
    },
+   "choose": true,
    "zone_bias": {
     "head": 0.7,
     "torso": 1.5,
@@ -7796,6 +7803,7 @@
     "cut": 80,
     "pierce": 20
    },
+   "choose": true,
    "zone_bias": {
     "head": 1.4,
     "arms": 1.3,
@@ -31307,7 +31315,7 @@
     "slots": {
      "helm": {
       "material": "plate",
-      "cover": 85
+      "cover": 80
      },
      "torso_upper": "cuirass",
      "torso_lower": {
@@ -31316,7 +31324,7 @@
      },
      "leg": {
       "material": "plate",
-      "cover": 35
+      "cover": 40
      }
     },
     "notes": "Open helmet, breast and back plates and short tassets. Many pikemen left the armour behind on campaign.",
@@ -31325,7 +31333,7 @@
       [
        "plate",
        1,
-       85
+       80
       ]
      ],
      "torso_upper": [
@@ -31346,7 +31354,7 @@
       [
        "plate",
        1,
-       35
+       40
       ]
      ]
     }
@@ -31413,7 +31421,7 @@
     "slots": {
      "torso_upper": {
       "material": "steel_vest",
-      "cover": 85
+      "cover": 80
      },
      "torso_lower": {
       "material": "steel_vest",
@@ -31426,7 +31434,7 @@
       [
        "steel_vest",
        1,
-       85
+       80
       ]
      ],
      "torso_lower": [
@@ -31601,7 +31609,7 @@
      "torso_upper": [
       {
        "material": "doron",
-       "cover": 75
+       "cover": 80
       },
       {
        "material": "nylon_flak"
@@ -31625,11 +31633,11 @@
       [
        "doron",
        1,
-       75
+       80
       ],
       [
        "nylon_flak",
-       76,
+       81,
        100
       ]
      ],
@@ -31710,7 +31718,7 @@
      "torso_upper": [
       {
        "material": "sapi",
-       "cover": 35
+       "cover": 40
       },
       {
        "material": "kevlar_soft"
@@ -31734,11 +31742,11 @@
       [
        "sapi",
        1,
-       35
+       40
       ],
       [
        "kevlar_soft",
-       36,
+       41,
        100
       ]
      ],
@@ -31767,7 +31775,7 @@
      "torso_upper": [
       {
        "material": "sapi",
-       "cover": 65
+       "cover": 60
       },
       {
        "material": "kevlar_soft"
@@ -31786,7 +31794,7 @@
       "cover": 50
      }
     },
-    "notes": "Plates cover the centre of the chest and back (about 65% of upper-torso hits); soft Kevlar elsewhere on the vest. Neck, groin and shoulder pieces were not always worn.",
+    "notes": "Plates cover the centre of the chest and back (about 65% of upper-torso hits, 60% in play); soft Kevlar elsewhere on the vest. Neck, groin and shoulder pieces were not always worn.",
     "layers": {
      "helm": [
       [
@@ -31806,11 +31814,11 @@
       [
        "sapi",
        1,
-       65
+       60
       ],
       [
        "kevlar_soft",
-       66,
+       61,
        100
       ]
      ],
@@ -31848,11 +31856,11 @@
      "helm": "kevlar_helmet",
      "torso_upper": {
       "material": "esapi",
-      "cover": 65
+      "cover": 60
      },
      "torso_lower": {
       "material": "kevlar_soft",
-      "cover": 25
+      "cover": 20
      }
     },
     "notes": "Lighter than a full vest: plates over the vital area, soft side panels only. Outside the plates is a gap.",
@@ -31868,14 +31876,14 @@
       [
        "esapi",
        1,
-       65
+       60
       ]
      ],
      "torso_lower": [
       [
        "kevlar_soft",
        1,
-       25
+       20
       ]
      ]
     }

@@ -749,6 +749,8 @@ def validate(d: Data) -> None:
             errors.append(f"weapons.yaml: {wid} unknown mechanisms {sorted(bad)}")
         if sum(mech.values()) != 100:
             errors.append(f"weapons.yaml: {wid} mechanisms sum to {sum(mech.values())}, not 100")
+        if w.get("choose") and len([m for m, v in mech.items() if v]) < 2:
+            errors.append(f"weapons.yaml: {wid} has choose but fewer than two mechanisms")
         for z in w.get("zone_bias", {}):
             if z not in d.zones:
                 errors.append(f"weapons.yaml: {wid} zone_bias has unknown zone {z}")
@@ -822,6 +824,8 @@ def validate(d: Data) -> None:
                     errors.append(f"armor.yaml: kit {kid} unknown material {mat}")
             if layers and layers[-1][2] > 100:
                 errors.append(f"armor.yaml: kit {kid} slot {slot} layers exceed 100%")
+            if any(hi % 10 for _, _, hi in layers):
+                errors.append(f"armor.yaml: kit {kid} slot {slot} covers must be in tens (read on the attack's units digit)")
     for wid, w in d.weapons.items():
         if w.get("threat") and w["threat"] not in THREATS:
             errors.append(f"weapons.yaml: {wid} threat must be one of {THREATS}")

@@ -311,6 +311,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
         <div class="dice">
           <input id="in-loc" type="number" min="1" max="100" placeholder="Loc" aria-label="Location d100">
           <input id="in-loc2" type="number" min="1" max="100" placeholder="Loc 2" aria-label="Second location d100 for a called shot" disabled>
+          <select id="sel-blow" aria-label="Blow: rolled, or the one the attacker declares" title="A cut-and-thrust weapon strikes the blow its wielder declares; Rolled is for unnamed fighters" hidden></select>
           <input id="in-mech" type="number" min="1" max="100" placeholder="Mech" aria-label="Mechanism d100">
           <input id="in-sev" type="number" min="1" max="100" placeholder="Sev" aria-label="Severity d100">
         </div>
@@ -1312,7 +1313,7 @@ function rollHit(stray = false){                  // stray: a missed shot gone i
   const rc = rangeCheck(), freeHit = isFreePair();
   if (rc.blocked) return hitDone(base, { blocked: rc.blocked });
   base.range = rc.range;
-  let att = { margin: null, crit: false, combat: null };
+  let att = { margin: null, crit: false, combat: null, roll: null };
   if (atkPct !== null){
     att = attackPhase(atkPct, rc, freeHit);
     if (att.end) return hitDone(base, att.end);
@@ -1385,7 +1386,7 @@ function attackPhase(atkPct, rc, freeHit){        // the attack and defence roll
       return { end: { defended: true, combat } };
     }
   }
-  return { margin: ar.margin, crit: ar.critical, combat };
+  return { margin: ar.margin, crit: ar.critical, combat, roll: ar.roll };
 }
 function rollLocation(){                          // {loc, rl, rl2}: a called shot takes the second roll if only it lands in the zone
   const ranges = curRanges(), rl = readDie("#in-loc") ?? d100();
@@ -1405,22 +1406,24 @@ function rollSeverity(mech, loc, att, stray){     // {sev, rs}: from the margin,
   const rs = readDie("#in-sev") ?? d100();
   return { sev: sevTiers(mech, LOC[loc].zone, S.weapon).find(x => rs >= x.d100[0] && rs <= x.d100[1]).id, rs };
 }
-function armourOn(loc, mech, sev){                // {armor, final}: the defender's armour on that location lowers the severity
+function armourOn(loc, mech, sev, att){           // {armor, final}: the defender's armour on that location lowers the severity
   const layers = isEvidence() ? [] : armorAt(S.armor, loc);
   if (!layers.length) return { armor: null, final: sev };
   const whole = layers.length === 1 && layers[0][1] === 1 && layers[0][2] === 100;
-  const rc = whole ? null : d100();
-  const hit = whole ? layers[0] : layers.find(([, lo, hi]) => rc >= lo && rc <= hi);
+  const fromAtk = att && att.roll !== null && att.roll !== undefined;   // the attack roll's units digit (0 is 10), else a d10 (as gravewounds.engine.cover_digit)
+  const rc = whole ? null : (fromAtk ? (att.roll % 10 || 10) : 1 + Math.floor(Math.random() * 10));
+  const hit = whole ? layers[0] : layers.find(([, lo, hi]) => rc * 10 >= lo && rc * 10 <= hi);
   const mat = hit ? hit[0] : null, steps = hit ? armorSteps(mat, mech, S.weapon) : 0;
   const final = LADDER[Math.max(0, LADDER.indexOf(sev) - steps)];
-  return { armor: { mat, layers, rc, covered: !!hit, steps, from: sev, to: final }, final };
+  return { armor: { mat, layers, rc, rcAtk: !whole && fromAtk, covered: !!hit, steps, from: sev, to: final }, final };
 }
 function woundPhase(rc, freeHit, stray, att){     // location, mechanism, severity and armour: the wound
   const w = DATA.weapons[S.weapon];
   const { loc, rl, rl2 } = rollLocation();
-  const rm = readDie("#in-mech") ?? d100(), mech = look(w.mech_ranges, rm);
+  const blow = w.choose && S.blow && w.mechanisms[S.blow] ? S.blow : null;   // a blow the attacker declared, or rolled
+  const rm = blow ? null : readDie("#in-mech") ?? d100(), mech = blow || look(w.mech_ranges, rm);
   const { sev, rs } = rollSeverity(mech, loc, att, stray);
-  const { armor, final } = armourOn(loc, mech, sev);
+  const { armor, final } = armourOn(loc, mech, sev, att);
   const grazed = final !== "stopped" && isGraze(att.margin, att.crit);
   const fx0 = final === "stopped" ? null : DATA.wounds[`${LOC[loc].class}|${mech}|${final}`];
   const fx = fx0 && grazed ? grazeFx(fx0) : fx0;
@@ -1491,7 +1494,7 @@ function renderResult(){
   const r = h.rolls, ar = h.armor;
   let armorLine = "";
   if (ar){
-    const cov = ar.rc !== null ? ` (cover roll ${d2(ar.rc)})` : "";
+    const cov = ar.rc !== null ? ` (${ar.rcAtk ? "attack's units digit" : "cover d10"} ${ar.rc % 10})` : "";
     armorLine = `<div class="armor-line">${ar.covered
       ? `<b>${MATS[ar.mat].name}</b>${cov}: ${ar.steps} step${ar.steps === 1 ? "" : "s"}, ${sevLabel(ar.from)} → <b>${sevLabel(ar.to)}</b>`
       : `Gap in the armour${cov}: no protection`}</div>`;
@@ -1501,7 +1504,7 @@ function renderResult(){
   const sit = [...h.mods, h.called ? `called ${h.called}` : ""].filter(Boolean).join(" · ");
   $("#result").innerHTML = `
     ${combatLines(h.combat)}
-    <div class="rolls"><span>loc ${d2(r.loc)}${r.loc2 ? "/" + d2(r.loc2) : ""}</span><span>mech ${d2(r.mech)}</span>${r.sev ? `<span>sev ${d2(r.sev)}</span>` : h.combat ? `<span>sev: margin</span>` : `<span>sev: your system</span>`}</div>
+    <div class="rolls"><span>loc ${d2(r.loc)}${r.loc2 ? "/" + d2(r.loc2) : ""}</span><span>${r.mech === null ? "blow: declared" : "mech " + d2(r.mech)}</span>${r.sev ? `<span>sev ${d2(r.sev)}</span>` : h.combat ? `<span>sev: margin</span>` : `<span>sev: your system</span>`}</div>
     <p class="hitname">${LOC[h.loc].name}</p>
     ${sit ? `<div class="sitline">${sit}</div>` : ""}
     ${h.strayHit ? `<div class="sitline">A stray shot: no attack roll, severity rolled</div>` : ""}
@@ -3014,6 +3017,14 @@ function painChecks(){
 }
 
 /* ---------- wiring ---------- */
+function syncBlow(){                             // the Blow choice: only for cut-and-thrust weapons; Rolled for unnamed fighters
+  const w = DATA.weapons[S.weapon], el = $("#sel-blow");
+  const mechs = w && w.choose ? Object.keys(w.mechanisms).filter(m => w.mechanisms[m]) : [];
+  if (!mechs.includes(S.blow)) S.blow = "";
+  el.hidden = !mechs.length;
+  el.innerHTML = `<option value="">Blow: rolled</option>` + mechs.map(m => `<option value="${m}" ${m === S.blow ? "selected" : ""}>${DATA.mechanisms[m].name}</option>`).join("");
+  $("#in-mech").disabled = !!S.blow;
+}
 function fillWeapons(){
   const t = DATA.tables[S.table];
   if (!t.weapons.includes(S.weapon)) S.weapon = t.weapons[0];
@@ -3021,6 +3032,7 @@ function fillWeapons(){
   const opt = w => `<option value="${w}" ${w === S.weapon ? "selected" : ""}>${DATA.weapons[w].name}</option>`;
   $("#sel-weapon").innerHTML = `<optgroup label="This fight">${own.map(opt).join("")}</optgroup>`
     + (cc.length ? `<optgroup label="Close combat, any era">${cc.map(opt).join("")}</optgroup>` : "");
+  syncBlow();
 }
 function startExamples(){                       // example combatants from this conflict, so the tracker shows what it does
   const conf = DATA.conflicts[DATA.tables[S.table].battle] || {}, ex = conf.examples || [];
@@ -3049,7 +3061,8 @@ function init(){
     const c = defenderChar(); if (c) c.kit = S.armor;
     renderChars();
   };
-  $("#sel-weapon").onchange = e => { S.weapon = e.target.value; fillFromSheets(); renderMods(); syncArmor(); shadeFigure(); renderTable() };
+  $("#sel-weapon").onchange = e => { S.weapon = e.target.value; syncBlow(); fillFromSheets(); renderMods(); syncArmor(); shadeFigure(); renderTable() };
+  $("#sel-blow").onchange = e => { S.blow = e.target.value; syncBlow() };
   $("#btn-roll").onclick = () => rollHit();
   $("#btn-init").onclick = initiativeAll;
   $("#btn-add").onclick = () => { const n = $("#in-name").value.trim() || `Combatant ${S.seq}`; S.chars.push(newChar(n, S.armor, null, {}, S.addSide || "Side A")); $("#in-name").value = ""; selectChar(S.chars.length - 1) };

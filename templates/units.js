@@ -34,7 +34,7 @@ function armorSteps(material, mech, wid){
 }
 const reduceSeverity = (sev, steps) => SEV_LADDER[Math.max(0, SEV_LADDER.indexOf(sev) - steps)];
 const isGraze = (margin, critical) => !critical && margin <= FD.combat.graze_margin;
-function rollWound(table, wid, kit, margin, critical, rng){   // {severity, lethal, graze}
+function rollWound(table, wid, kit, margin, critical, rng, attackRoll = null){   // {severity, lethal, graze}; armour read on the attack roll's units digit (as gravewounds.engine.roll_hit)
   const loc = lookupRange(FD.tables[table].ranges[wid], rng.randint(1, 100));
   const mech = lookupRange(FD.mechanisms[wid], rng.randint(1, 100));
   const sev = marginSeverity(margin, critical, wid, FD.locations[loc].zone);
@@ -42,7 +42,7 @@ function rollWound(table, wid, kit, margin, critical, rng){   // {severity, leth
   const layers = kit ? FD.kits[kit].layers[loc] : [];
   if (layers.length){
     const whole = layers.length === 1 && layers[0][1] === 1 && layers[0][2] === 100;
-    const cov = whole ? null : rng.randint(1, 100);
+    const cov = whole ? null : 10 * (attackRoll !== null ? (attackRoll % 10 || 10) : rng.randint(1, 10));
     const hit = whole ? layers[0] : layers.find(l => l[1] <= cov && cov <= l[2]);
     final = reduceSeverity(sev, hit ? armorSteps(hit[0], mech, wid) : 0);
   }
@@ -67,8 +67,8 @@ function noteHurt(t, sev, h, down){             // a wounded man: severity, deat
   const k = [sev, h.lethal, h.infection, down ? 1 : 0].join("|");
   t.hurt[k] = (t.hurt[k] || 0) + 1;
 }
-function landWound(att, dfd, margin, critical, rng, t){
-  const h = rollWound(att.table, att.weapon, dfd.kit, margin, critical, rng);
+function landWound(att, dfd, margin, critical, rng, t, attackRoll = null){
+  const h = rollWound(att.table, att.weapon, dfd.kit, margin, critical, rng, attackRoll);
   if (h.severity === "stopped"){ t.stopped++; return }
   t.hits++;
   t[h.severity]++;
@@ -91,7 +91,7 @@ function blows(att, dfd, n, atk, dfn, rng, aim){   // aim: the heroes a blow may
     if (r > atk){ t.missed++; continue }
     const critical = r <= critAt;
     if (!critical && dfn > 0 && rng.randint(1, 100) <= dfn){ t.parried++; continue }
-    landWound(att, dfd, atk - r, critical, rng, t);
+    landWound(att, dfd, atk - r, critical, rng, t, r);
   }
   return t;
 }
@@ -139,7 +139,7 @@ function quickRates(att, dfd, atk, dfn){         // per try: {missed, parried, s
     if (r > atk){ t.missed++; continue }
     const critical = r <= critAt;
     if (!critical && dfn > 0 && own.randint(1, 100) <= dfn){ t.parried++; continue }
-    landWound(att, dfd, atk - r, critical, own, t);
+    landWound(att, dfd, atk - r, critical, own, t, r);
   }
   const rates = Object.fromEntries(Object.entries(t).filter(([k]) => k !== "hurt" && k !== "blows").map(([k, v]) => [k, v / S]));
   rates.hurt = Object.fromEntries(Object.entries(t.hurt).map(([k, v]) => [k, v / S]));
@@ -206,7 +206,7 @@ function heroBlow(att, hero, roll, rng, t){   // roll: {r, atk, critAt, shift}; 
   if (r > atk) return;
   const critical = r <= critAt, dfn = held(hero) === "stunned" ? 0 : hero.defence + shift - heroPenalties(hero)[1];
   if (!critical && dfn > 0 && rng.randint(1, 100) <= dfn) return;
-  const h = rollWound(att.table, att.weapon, hero.kit, atk - r, critical, rng);
+  const h = rollWound(att.table, att.weapon, hero.kit, atk - r, critical, rng, r);
   if (h.severity === "stopped") return;
   const [bleed, pain, shock] = h.graze ? [Math.max(0, h.bleed - 1), Math.max(0, h.pain - 1), false] : [h.bleed, h.pain, !!h.shock];
   hero.wounds.push({ loc: h.loc, mech: h.mech, sev: h.severity, graze: h.graze, bleed, pain, impair: (h.impair || []).slice() });

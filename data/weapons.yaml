@@ -1,6 +1,9 @@
 # Weapons. Add a weapon by adding an entry; no code changes needed.
 # short        - column label for printed tables
 # mechanisms   - wound mechanism mix, percentages summing to 100 (cut, pierce, crush, ballistic)
+# choose       - true for cut-and-thrust weapons: a named character declares the blow (any of
+#                its mechanisms) instead of rolling. Unnamed fighters and the field map roll the
+#                mix in software; on paper they strike with the weapon's main (largest) mechanism.
 # threat       - for ballistic weapons: fragment | pistol | rifle | rifle_ap (armour.yaml)
 # melee        - armed | unarmed: a close-combat weapon. On a table whose own data is not
 #                that kind of fighting (e.g. a gunfire table), its location is rolled on the
@@ -54,6 +57,7 @@ weapons:
     melee: armed
     melee_table: visby-1361-adjusted
     mechanisms: {cut: 70, pierce: 30}
+    choose: true
     zone_bias: {}
     confidence: extrapolated
     notes: "Baseline weapon; the Visby tables are applied unchanged."
@@ -95,6 +99,7 @@ weapons:
     melee: armed
     melee_table: visby-1361-adjusted
     mechanisms: {pierce: 90, cut: 10}
+    choose: true
     zone_bias: {head: 0.8, torso: 1.4, arms: 0.9, legs: 0.9}
     loc_bias: {face: 1.5}
     confidence: extrapolated
@@ -130,6 +135,7 @@ weapons:
     melee: armed
     melee_table: towton-1461-all-hits
     mechanisms: {cut: 60, pierce: 30, crush: 10}
+    choose: true
     zone_bias: {head: 1.2, legs: 1.1}
     confidence: extrapolated
     notes: >
@@ -146,6 +152,7 @@ weapons:
     melee: armed
     melee_table: towton-1461-all-hits
     mechanisms: {crush: 45, pierce: 35, cut: 20}
+    choose: true
     zone_bias: {head: 1.3}
     armor_defeat: {crush: 1, pierce: 1}
     confidence: extrapolated
@@ -164,6 +171,7 @@ weapons:
     melee: armed
     melee_table: dornach-1499-all-hits
     mechanisms: {cut: 55, pierce: 35, crush: 10}
+    choose: true
     zone_bias: {head: 1.2}
     armor_defeat: {pierce: 1}
     confidence: extrapolated
@@ -254,6 +262,7 @@ weapons:
     era: any
     melee: armed
     mechanisms: {pierce: 70, cut: 30}
+    choose: true
     zone_bias: {torso: 1.4, arms: 1.1, legs: 0.5}
     loc_bias: {neck: 2.0, face: 1.5}
     confidence: extrapolated
@@ -269,6 +278,7 @@ weapons:
     melee: armed
     melee_table: peninsular-1808-14-officers
     mechanisms: {pierce: 85, cut: 15}
+    choose: true
     zone_bias: {head: 0.7, torso: 1.5, arms: 0.8, legs: 0.8}
     loc_bias: {abdomen: 1.3, groin: 1.2}
     confidence: historical
@@ -298,6 +308,7 @@ weapons:
     melee: armed
     melee_table: peninsular-1808-14-officers
     mechanisms: {cut: 80, pierce: 20}
+    choose: true
     zone_bias: {head: 1.4, arms: 1.3, legs: 0.5}
     confidence: historical
     notes: "Rolls on the Peninsular War table, which records where 284 sword wounds fell: a third on the head and face, then arms, hands and shoulders. Cuts from horseback. The zone bias is used only on tables with raw weapon biases."

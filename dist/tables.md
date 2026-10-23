@@ -4,7 +4,7 @@ Generated 2026-10-23 from the data folder. Roll d100 (00 = 100).
 
 © 2026 Scott Wares. All rights reserved.
 
-**Procedure:** 1) d100 location on the table for the fight and weapon (situation column if one applies; called shots roll twice). 2) d100 mechanism for the weapon. 3) Severity from your system's damage, or d100. 4) Armour (adjusted tables): lower severity by the material's steps. 5) Look up the wound by location class and severity, then apply the mechanism modifiers.
+**Procedure:** 1) d100 location on the table for the fight and weapon (situation column if one applies; called shots roll twice). 2) Mechanism: a cut-and-thrust weapon strikes the blow its wielder declares; otherwise its main mechanism, or d100 on its mix. 3) Severity from your system's damage, or d100. 4) Armour (adjusted tables): the attack roll's units digit (or a d10) says which layer the hit meets, if any; lower severity by the material's steps. 5) Look up the wound by location class and severity, then apply the mechanism modifiers.
 
 # Crusades (Jacob's Ford, 1179; Sidon, 1253 or 1260)
 
@@ -32,16 +32,16 @@ Sources: Mikulski R.N.R. et al., 'Weapon injuries in the crusader mass graves fr
 
 **Quick-play: men down per 100 tries**
 
-Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.25, veterans x0.74; against a parry, x(1 - parry% x 0.9).
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.25, veterans x0.73; against a parry, x(1 - parry% x 0.9).
 
 | Weapon | Mail hauberk and helm (c.1100-1300) | Gambeson and cap | Unarmoured | Hardened leather |
 |---|---|---|---|---|
-| Sword (arming sword) | 1 / 2 / 4 / 7 | 5 / 11 / 18 / 31 | 6 / 13 / 23 / 34 | 6 / 12 / 19 / 29 |
+| Sword (arming sword) | 1 / 2 / 4 / 6 | 5 / 11 / 18 / 30 | 6 / 13 / 23 / 34 | 6 / 12 / 19 / 29 |
 | Bow (war arrows) | 2 / 4 / 8 / 15 | 6 / 13 / 22 / 33 | 6 / 13 / 23 / 33 | 6 / 13 / 22 / 33 |
-| Axe (hand or long-hafted) | 2 / 5 / 8 / 16 | 5 / 14 / 20 / 33 | 5 / 14 / 23 / 35 | 6 / 13 / 23 / 34 |
-| Crossbow (bolts) | 6 / 12 / 21 / 31 | 5 / 15 / 24 / 33 | 6 / 13 / 23 / 35 | 5 / 13 / 22 / 33 |
-| Spear / lance | 2 / 6 / 11 / 15 | 5 / 13 / 20 / 29 | 5 / 14 / 20 / 30 | 5 / 13 / 20 / 28 |
-| Spiked club / morning star (knout) | 4 / 9 / 16 / 24 | 4 / 9 / 16 / 26 | 5 / 14 / 21 / 31 | 5 / 12 / 22 / 31 |
+| Axe (hand or long-hafted) | 2 / 5 / 8 / 16 | 6 / 14 / 22 / 33 | 5 / 14 / 23 / 35 | 6 / 13 / 23 / 34 |
+| Crossbow (bolts) | 6 / 13 / 23 / 31 | 5 / 14 / 24 / 34 | 6 / 13 / 23 / 35 | 5 / 13 / 22 / 33 |
+| Spear / lance | 3 / 6 / 11 / 16 | 5 / 13 / 19 / 30 | 5 / 14 / 20 / 30 | 5 / 13 / 20 / 28 |
+| Spiked club / morning star (knout) | 4 / 9 / 15 / 23 | 4 / 9 / 17 / 26 | 5 / 14 / 21 / 31 | 5 / 12 / 22 / 31 |
 
 ## Sidon, mid-13th century - crusader mass graves (bone evidence)
 
@@ -158,15 +158,15 @@ Sources: Swedish History Museum, 'Skull from the Battle of Visby'. Medievalists.
 
 **Quick-play: men down per 100 tries**
 
-Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.31, veterans x0.71; against a parry, x(1 - parry% x 0.9).
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.31, veterans x0.72; against a parry, x(1 - parry% x 0.9).
 
 | Weapon | Gotland levy: mail coif, padded coat | Gotland, better equipped: coif, coat of plates | Danish man-at-arms (1361) | Coat of plates and mail (c.1350) |
 |---|---|---|---|---|
-| Spear / lance | 5 / 10 / 17 / 26 | 4 / 9 / 15 / 21 | 2 / 4 / 6 / 11 | 1 / 3 / 6 / 10 |
-| Axe (hand or long-hafted) | 4 / 10 / 18 / 27 | 4 / 8 / 16 / 23 | 2 / 4 / 5 / 12 | 2 / 4 / 7 / 11 |
-| Sword (arming sword) | 4 / 9 / 14 / 22 | 3 / 8 / 12 / 20 | 1 / 3 / 5 / 8 | 1 / 3 / 4 / 7 |
-| Spiked club / morning star (knout) | 5 / 12 / 20 / 30 | 5 / 11 / 17 / 27 | 3 / 6 / 10 / 19 | 3 / 6 / 11 / 18 |
-| Crossbow (bolts) | 6 / 12 / 22 / 30 | 6 / 13 / 21 / 29 | 3 / 8 / 13 / 23 | 3 / 8 / 14 / 21 |
+| Spear / lance | 4 / 10 / 17 / 26 | 4 / 9 / 14 / 21 | 2 / 3 / 6 / 9 | 1 / 3 / 5 / 11 |
+| Axe (hand or long-hafted) | 4 / 10 / 18 / 27 | 4 / 9 / 16 / 23 | 2 / 3 / 7 / 11 | 2 / 3 / 7 / 11 |
+| Sword (arming sword) | 4 / 8 / 14 / 22 | 3 / 8 / 12 / 20 | 1 / 2 / 5 / 7 | 1 / 2 / 5 / 7 |
+| Spiked club / morning star (knout) | 5 / 12 / 20 / 30 | 5 / 11 / 17 / 26 | 3 / 5 / 11 / 19 | 3 / 5 / 11 / 19 |
+| Crossbow (bolts) | 6 / 13 / 22 / 30 | 6 / 12 / 21 / 29 | 4 / 8 / 13 / 23 | 3 / 7 / 14 / 22 |
 
 ## Visby 1361 - bone evidence
 
@@ -285,13 +285,13 @@ Sources: Monteiro J.G., Aljubarrota Revisitada (Coimbra, 2001; open access), and
 
 **Quick-play: men down per 100 tries**
 
-Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.35, veterans x0.76; against a parry, x(1 - parry% x 0.9).
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.36, veterans x0.75; against a parry, x(1 - parry% x 0.9).
 
 | Weapon | Gambeson and cap | Coat of plates and mail (c.1350) | Mail hauberk and helm (c.1100-1300) |
 |---|---|---|---|
-| Longbow (English war bow, bodkin and broadhead arrows) | 6 / 13 / 21 / 29 | 5 / 12 / 20 / 29 | 5 / 13 / 21 / 29 |
-| Spear / lance | 5 / 13 / 21 / 30 | 1 / 2 / 4 / 12 | 3 / 8 / 12 / 21 |
-| Crossbow (bolts) | 5 / 13 / 21 / 30 | 5 / 12 / 20 / 30 | 5 / 13 / 21 / 30 |
+| Longbow (English war bow, bodkin and broadhead arrows) | 6 / 13 / 19 / 30 | 5 / 12 / 20 / 28 | 5 / 12 / 19 / 30 |
+| Spear / lance | 6 / 12 / 21 / 29 | 1 / 2 / 4 / 11 | 4 / 8 / 13 / 20 |
+| Crossbow (bolts) | 6 / 14 / 21 / 30 | 5 / 12 / 20 / 30 | 5 / 13 / 21 / 30 |
 
 ## Aljubarrota 1385 - the São Jorge ossuary (bone evidence)
 
@@ -344,14 +344,14 @@ Sources: Fiorato V., Boylston A. and Knüsel C. (eds), Blood Red Roses: the arch
 
 **Quick-play: men down per 100 tries**
 
-Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.27, veterans x0.74; against a parry, x(1 - parry% x 0.9).
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.28, veterans x0.71; against a parry, x(1 - parry% x 0.9).
 
 | Weapon | Full plate harness (c.1450) | Jack and sallet (archer or billman, c.1460) | Brigandine, sallet and arm splints (c.1460) |
 |---|---|---|---|
-| Poleaxe (axe, hammer and spike) | 3 / 6 / 11 / 18 | 4 / 9 / 16 / 23 | 4 / 9 / 15 / 22 |
-| Longbow (English war bow, bodkin and broadhead arrows) | 2 / 2 / 5 / 13 | 3 / 7 / 12 / 21 | 3 / 6 / 10 / 19 |
-| Bill (English bill, hooked polearm) | 0 / 0 / 0 / 1 | 2 / 5 / 9 / 13 | 2 / 4 / 6 / 10 |
-| Sword (arming sword) | 0 / 0 / 0 / 0 | 2 / 5 / 9 / 13 | 1 / 4 / 6 / 10 |
+| Poleaxe (axe, hammer and spike) | 3 / 6 / 11 / 18 | 4 / 9 / 16 / 23 | 4 / 8 / 16 / 22 |
+| Longbow (English war bow, bodkin and broadhead arrows) | 2 / 2 / 5 / 13 | 3 / 7 / 12 / 20 | 3 / 6 / 11 / 19 |
+| Bill (English bill, hooked polearm) | 0 / 0 / 0 / 1 | 2 / 5 / 9 / 12 | 2 / 4 / 7 / 10 |
+| Sword (arming sword) | 0 / 0 / 0 / 0 | 2 / 5 / 9 / 12 | 2 / 4 / 6 / 9 |
 
 ## Towton 1461 - mass grave (bone evidence)
 
@@ -567,14 +567,14 @@ Sources: Nicklisch et al., PLoS ONE 12(5): e0178252 (2017): the Lützen mass gra
 
 **Quick-play: men down per 100 tries**
 
-Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.26, veterans x0.73; against a parry, x(1 - parry% x 0.9).
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.27, veterans x0.74; against a parry, x(1 - parry% x 0.9).
 
 | Weapon | Unarmoured | Pikeman: morion and corslet | Harquebusier: buff coat, breastplate, pot helmet | Cuirassier, three-quarter armour (1630s) |
 |---|---|---|---|---|
-| Matchlock musket | 9 / 18 / 27 / 39 | 8 / 15 / 25 / 34 | 9 / 16 / 26 / 35 | 8 / 16 / 23 / 35 |
-| Spear / lance | 6 / 13 / 22 / 33 | 3 / 7 / 12 / 18 | 3 / 5 / 9 / 14 | 1 / 2 / 5 / 6 |
-| Sabre or broadsword | 5 / 13 / 20 / 31 | 3 / 8 / 13 / 19 | 3 / 5 / 8 / 16 | 1 / 2 / 3 / 5 |
-| Wheellock pistol or carbine (cavalry) | 9 / 18 / 27 / 37 | 4 / 8 / 15 / 22 | 4 / 8 / 17 / 24 | 1 / 5 / 12 / 19 |
+| Matchlock musket | 9 / 18 / 27 / 39 | 8 / 16 / 25 / 34 | 9 / 17 / 24 / 34 | 8 / 16 / 23 / 34 |
+| Spear / lance | 6 / 13 / 22 / 33 | 2 / 7 / 12 / 18 | 2 / 5 / 9 / 14 | 1 / 2 / 5 / 7 |
+| Sabre or broadsword | 5 / 13 / 20 / 31 | 4 / 8 / 13 / 18 | 3 / 4 / 9 / 16 | 1 / 2 / 3 / 5 |
+| Wheellock pistol or carbine (cavalry) | 9 / 18 / 27 / 37 | 4 / 9 / 16 / 22 | 4 / 8 / 16 / 24 | 1 / 5 / 12 / 19 |
 
 ## Lützen 1632 - mass grave (bone evidence)
 
@@ -843,14 +843,14 @@ Sources: Planas Campos and Grajal de Blas, British Journal for Military History 
 
 **Quick-play: men down per 100 tries**
 
-Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.25, veterans x0.76; against a parry, x(1 - parry% x 0.9).
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.24, veterans x0.76; against a parry, x(1 - parry% x 0.9).
 
 | Weapon | Unarmoured | Cuirassier: steel cuirass and helmet | Dragoon or light dragoon helmet |
 |---|---|---|---|
 | Smoothbore musket (Brown Bess, Charleville) | 4 / 10 / 20 / 29 | 3 / 10 / 18 / 26 | 4 / 11 / 20 / 29 |
 | Sabre or broadsword | 5 / 12 / 20 / 30 | 3 / 8 / 13 / 21 | 4 / 8 / 14 / 20 |
-| Cavalry lance | 6 / 13 / 22 / 32 | 4 / 9 / 15 / 22 | 6 / 12 / 18 / 31 |
-| Flintlock rifle (Pennsylvania, Baker, Jäger) | 4 / 11 / 19 / 29 | 3 / 10 / 18 / 27 | 4 / 10 / 19 / 28 |
+| Cavalry lance | 6 / 13 / 22 / 32 | 4 / 9 / 16 / 22 | 6 / 12 / 18 / 31 |
+| Flintlock rifle (Pennsylvania, Baker, Jäger) | 4 / 11 / 19 / 29 | 3 / 10 / 18 / 26 | 4 / 10 / 19 / 28 |
 
 ## Peninsular War 1808-14 - French officers' wounds
 
@@ -1205,12 +1205,12 @@ Sources: Antietam on the Web, 'Saved by his steel vest' (2018): Atwater and G&D 
 
 **Quick-play: men down per 100 tries**
 
-Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.25, veterans x0.77; against a parry, x(1 - parry% x 0.9).
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.26, veterans x0.76; against a parry, x(1 - parry% x 0.9).
 
 | Weapon | Unarmoured | Private steel vest (Civil War, 1862) |
 |---|---|---|
-| Rifle-musket (Minie ball) | 5 / 11 / 21 / 31 | 4 / 12 / 21 / 31 |
-| Revolver | 5 / 12 / 21 / 31 | 4 / 10 / 18 / 27 |
+| Rifle-musket (Minie ball) | 5 / 11 / 21 / 31 | 4 / 13 / 20 / 31 |
+| Revolver | 5 / 12 / 21 / 31 | 3 / 10 / 18 / 27 |
 | Sabre or broadsword | 6 / 13 / 21 / 30 | 6 / 13 / 20 / 29 |
 
 ## Civil War 1861-65 - wounded (surgeon's records)
@@ -1539,10 +1539,10 @@ Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no 
 
 | Weapon | Steel helmet only (1915-1950s rifleman) | Aircrew flak vest and helmet (WWII bomber crew) | Unarmoured |
 |---|---|---|---|
-| Service rifle (bolt or semi-auto, 1914-53) | 20 / 34 / 48 / 64 | 19 / 34 / 49 / 63 | 19 / 34 / 49 / 65 |
-| Hand grenade | 18 / 32 / 47 / 63 | 11 / 21 / 37 / 48 | 19 / 32 / 50 / 63 |
-| Machine gun | 19 / 34 / 49 / 65 | 19 / 34 / 50 / 65 | 20 / 34 / 49 / 64 |
-| Pistol or submachine gun | 19 / 32 / 47 / 64 | 15 / 27 / 43 / 59 | 20 / 33 / 49 / 63 |
+| Service rifle (bolt or semi-auto, 1914-53) | 20 / 34 / 48 / 64 | 20 / 34 / 48 / 62 | 19 / 34 / 49 / 65 |
+| Hand grenade | 18 / 32 / 47 / 63 | 11 / 22 / 37 / 48 | 19 / 32 / 50 / 63 |
+| Machine gun | 19 / 34 / 49 / 65 | 20 / 34 / 49 / 64 | 20 / 34 / 49 / 64 |
+| Pistol or submachine gun | 19 / 32 / 47 / 64 | 15 / 26 / 42 / 58 | 20 / 33 / 49 / 63 |
 
 ## WWII Italy 1944 - killed in action
 
@@ -1835,12 +1835,12 @@ Sources: Wikipedia, 'M-1952 Flak Jacket'.
 
 **Quick-play: men down per 100 tries**
 
-Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.07, veterans x0.92; against a parry, x(1 - parry% x 0.9).
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.08, veterans x0.92; against a parry, x(1 - parry% x 0.9).
 
 | Weapon | Steel helmet only (1915-1950s rifleman) | M1 helmet, Doron vest (USMC M1951/M1955, 1951-75) | Unarmoured |
 |---|---|---|---|
-| Service rifle (bolt or semi-auto, 1914-53) | 17 / 32 / 47 / 63 | 18 / 33 / 47 / 61 | 19 / 31 / 48 / 61 |
-| Pistol or submachine gun | 17 / 32 / 46 / 62 | 14 / 27 / 41 / 55 | 19 / 32 / 48 / 63 |
+| Service rifle (bolt or semi-auto, 1914-53) | 17 / 32 / 47 / 63 | 18 / 33 / 46 / 61 | 19 / 31 / 48 / 61 |
+| Pistol or submachine gun | 17 / 32 / 46 / 62 | 14 / 27 / 40 / 56 | 19 / 32 / 48 / 63 |
 
 ## Korea 1950-53 - hospitalized wounded
 
@@ -1980,12 +1980,12 @@ Sources: Neel, Medical Support of the U.S. Army in Vietnam (1973), ch. 3, Table 
 
 **Quick-play: men down per 100 tries**
 
-Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.08, veterans x0.92; against a parry, x(1 - parry% x 0.9).
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.07, veterans x0.92; against a parry, x(1 - parry% x 0.9).
 
 | Weapon | M1 helmet, nylon flak vest (US Army M1952/M69, 1952-75) | M1 helmet, Doron vest (USMC M1951/M1955, 1951-75) | Steel helmet only (1915-1950s rifleman) | Unarmoured |
 |---|---|---|---|---|
-| Assault rifle (M16, AK) | 18 / 31 / 46 / 61 | 18 / 32 / 48 / 61 | 18 / 32 / 46 / 63 | 18 / 32 / 47 / 62 |
-| Mine, booby trap or IED | 14 / 28 / 43 / 56 | 15 / 28 / 43 / 58 | 17 / 29 / 44 / 60 | 17 / 31 / 46 / 61 |
+| Assault rifle (M16, AK) | 19 / 31 / 46 / 62 | 19 / 32 / 48 / 62 | 18 / 32 / 46 / 63 | 18 / 32 / 47 / 62 |
+| Mine, booby trap or IED | 15 / 28 / 43 / 57 | 14 / 28 / 44 / 58 | 17 / 29 / 44 / 60 | 17 / 31 / 46 / 61 |
 
 ## Vietnam 1965-70 - hospitalized wounded
 
@@ -2138,9 +2138,9 @@ Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no 
 
 | Weapon | PASGT vest and helmet (1980s-90s) | Unarmoured | Steel helmet only (1915-1950s rifleman) | Ranger Body Armor, front plate only (Mogadishu 1993) |
 |---|---|---|---|---|
-| Assault rifle (M16, AK) | 19 / 33 / 48 / 64 | 19 / 33 / 48 / 65 | 20 / 34 / 49 / 63 | 19 / 32 / 47 / 60 |
-| Bayonet (musket or rifle) | 5 / 12 / 19 / 27 | 6 / 13 / 22 / 30 | 5 / 12 / 19 / 30 | 4 / 12 / 19 / 28 |
-| RPG (rocket-propelled grenade) | 13 / 25 / 40 / 49 | 19 / 34 / 49 / 64 | 18 / 30 / 47 / 61 | 13 / 25 / 37 / 49 |
+| Assault rifle (M16, AK) | 19 / 33 / 48 / 63 | 19 / 33 / 48 / 65 | 20 / 34 / 49 / 63 | 19 / 32 / 47 / 59 |
+| Bayonet (musket or rifle) | 4 / 12 / 19 / 28 | 6 / 13 / 22 / 30 | 5 / 12 / 19 / 30 | 5 / 12 / 19 / 27 |
+| RPG (rocket-propelled grenade) | 13 / 24 / 39 / 50 | 19 / 34 / 49 / 64 | 18 / 30 / 47 / 61 | 12 / 25 / 36 / 50 |
 
 ## Northern Ireland - penetrating wounds
 
@@ -2444,12 +2444,12 @@ Sources: Owens et al., J Trauma 2008; Borden Institute, Table 1-1 (DoD Trauma Re
 
 **Quick-play: men down per 100 tries**
 
-Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.07, veterans x0.96; against a parry, x(1 - parry% x 0.9).
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.06, veterans x0.95; against a parry, x(1 - parry% x 0.9).
 
 | Weapon | Interceptor vest, SAPI plates, ACH (2000s) | Plate carrier, ESAPI plates, helmet (2010s-) | PASGT vest and helmet (1980s-90s) | Steel helmet only (1915-1950s rifleman) | Unarmoured |
 |---|---|---|---|---|---|
-| Assault rifle (M16, AK) | 19 / 32 / 47 / 62 | 20 / 32 / 47 / 62 | 19 / 34 / 50 / 66 | 21 / 35 / 48 / 64 | 20 / 34 / 49 / 65 |
-| Mine, booby trap or IED | 14 / 28 / 41 / 55 | 16 / 28 / 42 / 58 | 15 / 27 / 41 / 55 | 17 / 31 / 46 / 60 | 17 / 32 / 48 / 62 |
+| Assault rifle (M16, AK) | 19 / 32 / 47 / 61 | 20 / 31 / 47 / 62 | 19 / 34 / 51 / 65 | 21 / 35 / 48 / 64 | 20 / 34 / 49 / 65 |
+| Mine, booby trap or IED | 14 / 27 / 41 / 55 | 16 / 29 / 44 / 58 | 15 / 27 / 41 / 55 | 17 / 31 / 46 / 60 | 17 / 32 / 48 / 62 |
 
 ## Iraq & Afghanistan 2001-05 - combat wounds
 
@@ -2598,7 +2598,7 @@ Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no 
 
 | Weapon | Plate carrier, ESAPI plates, helmet (2010s-) | Concealable soft vest (police IIIA) | Unarmoured |
 |---|---|---|---|
-| Assault rifle (M16, AK) | 15 / 29 / 42 / 58 | 19 / 33 / 47 / 61 | 18 / 32 / 47 / 62 |
+| Assault rifle (M16, AK) | 16 / 30 / 42 / 58 | 19 / 33 / 47 / 61 | 18 / 32 / 47 / 62 |
 | Pistol or submachine gun | 15 / 26 / 40 / 51 | 13 / 24 / 39 / 52 | 18 / 33 / 47 / 60 |
 
 ## Baseline - random hit (body surface area)
@@ -2669,12 +2669,12 @@ Sources: Karlsson 1998, via forensicmed.co.uk.
 
 **Quick-play: men down per 100 tries**
 
-Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.23, veterans x0.75; against a parry, x(1 - parry% x 0.9).
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.22, veterans x0.74; against a parry, x(1 - parry% x 0.9).
 
 | Weapon | Unarmoured | Concealable soft vest (police IIIA) | Plate carrier, ESAPI plates, helmet (2010s-) |
 |---|---|---|---|
-| Dagger / knife | 6 / 14 / 24 / 34 | 6 / 12 / 22 / 32 | 4 / 10 / 17 / 26 |
-| Bayonet (musket or rifle) | 6 / 14 / 23 / 34 | 6 / 13 / 22 / 34 | 4 / 11 / 17 / 26 |
+| Dagger / knife | 6 / 14 / 24 / 34 | 6 / 12 / 23 / 32 | 4 / 10 / 17 / 25 |
+| Bayonet (musket or rifle) | 6 / 14 / 23 / 34 | 6 / 13 / 22 / 34 | 5 / 11 / 17 / 25 |
 
 ## Knife assault - stab wounds (forensic)
 
@@ -5207,7 +5207,7 @@ Modifiers stack in the roller and CLI (one per group). Printed columns below sho
 1. Pick the **attacker** and the **defender**. Add up each one's wound penalties (table below), capped at the limit shown.
 2. Attacker rolls d100 against **attack % minus penalties** (on the battle map, also minus any range penalty and men in the way). Equal or under hits; the **margin** is the effective chance minus the roll. A roll at or under a tenth of the effective chance is a **critical**: it cannot be defended.
 3. If the defender may parry or dodge, they roll d100 against **defence % minus penalties**; equal or under avoids the blow.
-4. On a hit, roll location and mechanism as usual. **Severity comes from the margin** (bands below) instead of the severity table.
+4. On a hit, roll location. A cut-and-thrust weapon (bayonet, bill, dagger, halberd, poleaxe, sabre, spear or sword) strikes the blow its wielder declares; other weapons strike with their main mechanism. **Severity comes from the margin** (bands below) instead of the severity table, and the **attack roll's units digit** says whether partial armour is met.
 5. Wounds switch situations on by themselves: a defender who cannot stand is **Target down**, a defender whose shield arm is useless has **No shield**, and an attacker on the ground fights as **Attacker lower**.
 
 Penalties add up; each total is capped at -60%.
@@ -7852,7 +7852,7 @@ Speeds are for a small, fit band. A large army's column made less ground a day; 
 
 1. Use armour only on tables marked **armour allowed** (all-hits, baseline, knife and unarmed tables). The other tables already show the effect of what their soldiers wore.
 2. Find the hit location's **armour slot** in the target's kit. Empty slot: no protection.
-3. If the slot shows d100 bands (e.g. **Rifle plate 01-65 / Soft Kevlar 66-00**), roll d100 to see which layer the hit meets. A roll above the last band is a gap: no protection.
+3. If the slot shows bands (e.g. **Rifle plate 1-6 / Soft Kevlar 7-0**), read the **units digit of the attack roll** (0 is 10; roll a d10 if there was none): the band it falls in is the layer the hit meets. A digit above the last band is a gap: no protection.
 4. Protection = the material's steps against the wound mechanism. For gunfire use the weapon's **threat** column (fragment, pistol, rifle, AP rifle). Subtract the weapon's armour defeat, if any.
 5. Lower the severity that many steps: Critical > Serious > Light > Stopped. Stopped is a bruise, no wound.
 6. **Shields.** The Visby tables assume the target carries a shield. If the target's kit has none (every modern kit, and full plate), use the **No shield** column or situation.
@@ -7893,10 +7893,10 @@ Weapon armour defeat: Axe (hand or long-hafted): -1 vs cut; Spiked club / mornin
 | torso_lower (Abdomen, lower back) | Padded | Coat of plates / brigandine | Coat of plates / brigandine |
 | skirt (Groin / pelvis) | Padded | Mail | Mail |
 | pauldron (Shoulders) | Padded | Mail | Mail over padding |
-| arm (Upper arms, forearms) | Padded 01-60 | Mail 01-70 | Mail over padding |
-| gauntlet (Hands) | - | Coat of plates / brigandine 01-50 | Coat of plates / brigandine |
+| arm (Upper arms, forearms) | Padded 1-6 | Mail 1-7 | Mail over padding |
+| gauntlet (Hands) | - | Coat of plates / brigandine 1-5 | Coat of plates / brigandine |
 | leg (Thighs, knees) | - | - | Mail over padding |
-| greave (Lower legs) | - | - | Plate 01-50 |
+| greave (Lower legs) | - | - | Plate 1-5 |
 | sabaton (Feet) | - | - | Mail |
 | shield (Visby tables) | Yes | Yes | Yes |
 
@@ -7906,14 +7906,14 @@ Weapon armour defeat: Axe (hand or long-hafted): -1 vs cut; Spiked club / mornin
 |---|---|---|
 | helm (Skull) | Plate | Plate |
 | visor (Face) | - | - |
-| gorget (Neck) | Mail 01-50 | Mail |
+| gorget (Neck) | Mail 1-5 | Mail |
 | torso_upper (Chest, upper back) | Jack | Coat of plates / brigandine |
 | torso_lower (Abdomen, lower back) | Jack | Coat of plates / brigandine |
 | skirt (Groin / pelvis) | Jack | Mail |
-| pauldron (Shoulders) | Jack | Plate 01-60 |
-| arm (Upper arms, forearms) | Jack 01-70 | Plate 01-50 |
-| gauntlet (Hands) | - | Plate 01-50 |
-| leg (Thighs, knees) | - | Mail over padding 01-40 |
+| pauldron (Shoulders) | Jack | Plate 1-6 |
+| arm (Upper arms, forearms) | Jack 1-7 | Plate 1-5 |
+| gauntlet (Hands) | - | Plate 1-5 |
+| leg (Thighs, knees) | - | Mail over padding 1-4 |
 | greave (Lower legs) | - | - |
 | sabaton (Feet) | - | - |
 | shield (Visby tables) | No | No |
@@ -7929,10 +7929,10 @@ Weapon armour defeat: Axe (hand or long-hafted): -1 vs cut; Spiked club / mornin
 | torso_lower (Abdomen, lower back) | - | Padded | Hardened leather | Mail over padding | Coat of plates / brigandine | Plate |
 | skirt (Groin / pelvis) | - | Padded | - | Mail | Mail | Mail over padding |
 | pauldron (Shoulders) | - | Padded | Hardened leather | Mail over padding | Mail over padding | Plate |
-| arm (Upper arms, forearms) | - | Padded 01-70 | Hardened leather | Mail over padding | Mail over padding | Plate |
-| gauntlet (Hands) | - | - | - | Mail 01-70 | Coat of plates / brigandine | Plate |
-| leg (Thighs, knees) | - | Padded 01-40 | - | Mail 01-50 | Mail over padding | Plate |
-| greave (Lower legs) | - | - | Hardened leather | - | Plate 01-50 | Plate |
+| arm (Upper arms, forearms) | - | Padded 1-7 | Hardened leather | Mail over padding | Mail over padding | Plate |
+| gauntlet (Hands) | - | - | - | Mail 1-7 | Coat of plates / brigandine | Plate |
+| leg (Thighs, knees) | - | Padded 1-4 | - | Mail 1-5 | Mail over padding | Plate |
+| greave (Lower legs) | - | - | Hardened leather | - | Plate 1-5 | Plate |
 | sabaton (Feet) | - | - | - | - | Mail | Plate |
 | shield (Visby tables) | Yes | Yes | Yes | Yes | Yes | No |
 
@@ -7940,16 +7940,16 @@ Weapon armour defeat: Axe (hand or long-hafted): -1 vs cut; Spiked club / mornin
 
 | Slot (covers) | Cuirassier, three-quarter armour (1630s) | Harquebusier: buff coat, breastplate, pot helmet | Pikeman: morion and corslet | Cuirassier: steel cuirass and helmet | Dragoon or light dragoon helmet |
 |---|---|---|---|---|---|
-| helm (Skull) | Plate | Plate 01-80 | Plate 01-85 | Cavalry helmet | Cavalry helmet |
-| visor (Face) | Plate 01-70 | - | - | - | - |
+| helm (Skull) | Plate | Plate 1-8 | Plate 1-8 | Cavalry helmet | Cavalry helmet |
+| visor (Face) | Plate 1-7 | - | - | - | - |
 | gorget (Neck) | Plate | - | - | - | - |
-| torso_upper (Chest, upper back) | Steel cuirass | Steel cuirass 01-80 / Buff coat 81-00 | Steel cuirass | Steel cuirass | - |
-| torso_lower (Abdomen, lower back) | Steel cuirass | Buff coat | Steel cuirass 01-60 | Steel cuirass 01-70 | - |
+| torso_upper (Chest, upper back) | Steel cuirass | Steel cuirass 1-8 / Buff coat 9-0 | Steel cuirass | Steel cuirass | - |
+| torso_lower (Abdomen, lower back) | Steel cuirass | Buff coat | Steel cuirass 1-6 | Steel cuirass 1-7 | - |
 | skirt (Groin / pelvis) | Plate | Buff coat | - | - | - |
 | pauldron (Shoulders) | Plate | Buff coat | - | - | - |
 | arm (Upper arms, forearms) | Plate | Buff coat | - | - | - |
-| gauntlet (Hands) | Plate 01-50 | Plate 01-50 | - | - | - |
-| leg (Thighs, knees) | Plate 01-70 | Buff coat 01-50 | Plate 01-35 | - | - |
+| gauntlet (Hands) | Plate 1-5 | Plate 1-5 | - | - | - |
+| leg (Thighs, knees) | Plate 1-7 | Buff coat 1-5 | Plate 1-4 | - | - |
 | greave (Lower legs) | - | - | - | - | - |
 | sabaton (Feet) | - | - | - | - | - |
 | shield (Visby tables) | No | No | No | No | No |
@@ -7960,11 +7960,11 @@ Weapon armour defeat: Axe (hand or long-hafted): -1 vs cut; Spiked club / mornin
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | helm (Skull) | - | Steel helmet | Steel helmet | Steel helmet | Steel helmet | Steel helmet | Kevlar helmet | Kevlar helmet | Kevlar helmet | Kevlar helmet | - |
 | visor (Face) | - | - | - | - | - | - | - | - | - | - | - |
-| gorget (Neck) | - | - | - | - | Nylon flak vest 01-30 | - | Soft Kevlar 01-50 | - | Soft Kevlar 01-60 | - | - |
-| torso_upper (Chest, upper back) | Thin steel vest 01-85 | Heavy steel plate | Steel plates in fabric | - | Nylon flak vest | Doron fibreglass plates 01-75 / Nylon flak vest 76-00 | Soft Kevlar | Rifle plate 01-35 / Soft Kevlar 36-00 | Rifle plate 01-65 / Soft Kevlar 66-00 | AP rifle plate 01-65 | Soft Kevlar |
-| torso_lower (Abdomen, lower back) | Thin steel vest 01-50 | Heavy steel plate 01-70 | Steel plates in fabric 01-70 | - | Nylon flak vest 01-70 | Doron fibreglass plates 01-70 | Soft Kevlar 01-80 | Soft Kevlar 01-70 | Soft Kevlar 01-70 | Soft Kevlar 01-25 | Soft Kevlar 01-70 |
-| skirt (Groin / pelvis) | - | - | Steel plates in fabric 01-60 | - | - | - | - | - | Soft Kevlar 01-50 | - | - |
-| pauldron (Shoulders) | - | - | - | - | - | - | Soft Kevlar 01-40 | - | Soft Kevlar 01-50 | - | - |
+| gorget (Neck) | - | - | - | - | Nylon flak vest 1-3 | - | Soft Kevlar 1-5 | - | Soft Kevlar 1-6 | - | - |
+| torso_upper (Chest, upper back) | Thin steel vest 1-8 | Heavy steel plate | Steel plates in fabric | - | Nylon flak vest | Doron fibreglass plates 1-8 / Nylon flak vest 9-0 | Soft Kevlar | Rifle plate 1-4 / Soft Kevlar 5-0 | Rifle plate 1-6 / Soft Kevlar 7-0 | AP rifle plate 1-6 | Soft Kevlar |
+| torso_lower (Abdomen, lower back) | Thin steel vest 1-5 | Heavy steel plate 1-7 | Steel plates in fabric 1-7 | - | Nylon flak vest 1-7 | Doron fibreglass plates 1-7 | Soft Kevlar 1-8 | Soft Kevlar 1-7 | Soft Kevlar 1-7 | Soft Kevlar 1-2 | Soft Kevlar 1-7 |
+| skirt (Groin / pelvis) | - | - | Steel plates in fabric 1-6 | - | - | - | - | - | Soft Kevlar 1-5 | - | - |
+| pauldron (Shoulders) | - | - | - | - | - | - | Soft Kevlar 1-4 | - | Soft Kevlar 1-5 | - | - |
 | arm (Upper arms, forearms) | - | - | - | - | - | - | - | - | - | - | - |
 | gauntlet (Hands) | - | - | - | - | - | - | - | - | - | - | - |
 | leg (Thighs, knees) | - | - | - | - | - | - | - | - | - | - | - |
