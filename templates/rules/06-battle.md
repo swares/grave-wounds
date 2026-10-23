@@ -175,7 +175,7 @@ start of that side's move it orders each unit. It knows only the enemies its uni
 (or saw in the last {{c_remember}} exchanges, where they were then; what a unit sees from where it has just moved, the units ordered after it know); green units go for the
 nearest, better ones for an enemy that is hurt, shaken or dangerous to them. It closes,
 takes cover, shoots from range or charges with the odds its quality wants (counting the
-steady friends touching it, who go in with it), and green units sometimes hesitate. With no enemy in sight, a unit holds; attacking with no objective, it goes forward along its facing to find one. A unit with no room to move facing its goal (or a turn too dear) moves facing as near its goal as it can.
+steady friends touching it, who go in with it), and green units sometimes hesitate. With no enemy in sight, a unit holds; attacking with no objective, it goes forward along its facing to find one. A unit with no room to move facing its goal (or a turn too dear) moves facing as near its goal as it can. A unit on the ground turns to face its target where it lies, and stays down.
 
 - **Storming works.** Attacking, infantry with muskets, rifle-muskets, breech-loaders, or
   modern rifles and sub-machine guns do not stop to trade fire with an enemy behind works (a
@@ -219,7 +219,7 @@ steady friends touching it, who go in with it), and green units sometimes hesita
   with no objective, and in reserve while they wait.
 - **Objective.** The GM can mark a hex as its objective. Attacking, its units advance on it
   when they have nothing better to do and hold it once there (within {{c_obj_radius}}
-  hex); holding, units more than {{c_obj_hold}} hexes from it fall back to it. Enemies near
+  hex), but go on attacking while their target is on it too; holding, units more than {{c_obj_hold}} hexes from it fall back to it. Enemies near
   it make better targets. The log says who holds it after each exchange. Most battlefields
   mark the place their battle was fought for, a hill, a bridge, an outpost, as theirs,
   taking in the whole position (a ring of trenches counts as the hill).

@@ -4246,8 +4246,9 @@ function noTarget(us, i, ctx, off){                // no enemy to go for: attack
   if (off <= (attack ? radius : hold) || (!attack && us[i].hold)) return null;
   return toward(us, i, null, ctx, attack ? "advance" : "fall_back");
 }
-function attackObjective(us, i, t, ctx, off){      // attacking with a target: at the objective it holds; else its best order, or an advance when that is only to stand or turn and the target is not guarding the objective
-  if (off <= objectiveRadii(ctx[1])[0]) return bestOrder(us, i, t, [ctx[0], ctx[1], "hold", ctx[3], ctx[4]]);
+function attackObjective(us, i, t, ctx, off){      // attacking with a target: at the objective it holds, unless its target is on the objective too (it goes on attacking until the objective is clear); else its best order, or an advance when that is only to stand or turn and the target is not guarding the objective
+  const radius = objectiveRadii(ctx[1])[0];
+  if (off <= radius && offObjective(knownAt(us, t, ctx[3]), objectiveOf(ctx[1])) > radius) return bestOrder(us, i, t, [ctx[0], ctx[1], "hold", ctx[3], ctx[4]]);
   const o = bestOrder(us, i, t, ctx);
   if ((o !== null && o.act !== "turn") || guards(knownAt(us, t, ctx[3]), ctx[1])) return o;
   return toward(us, i, t, ctx, "advance") || o;
@@ -4420,10 +4421,10 @@ function rejects(m, charge, hold){                // a move it will not make: il
   if (!m.ok) return true;
   return m.charge ? !charge : hold;
 }
-function stayOrder(us, i, t, f, shooter){         // on the ground it stays down; else turn to the target, or go to ground under fire with a modern weapon
+function stayOrder(us, i, t, f, shooter){         // turn to the target (on the ground, staying down); else on the ground it stays down, or it goes to ground under fire with a modern weapon
   const u = us[i], C = UD.commander;
-  if (u.prone) return null;
   if (f !== u.facing) return { act: "turn", target: t, facing: f };
+  if (u.prone) return null;
   const dig = shooter && !u.vehicle && C.ground_with.includes(u.weapon) && (C.cover[u.quality] ?? 0) > 0 && underFire(us, i);   // vehicles do not go to ground
   return dig ? { act: "ground", target: t } : null;
 }

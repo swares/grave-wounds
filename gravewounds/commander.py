@@ -1578,9 +1578,12 @@ def _no_target(d: Data, us: list, i: int, ctx: tuple, off: int) -> dict | None:
 
 
 def _attack_objective(d: Data, us: list, i: int, t: int, ctx: tuple, off: int) -> dict | None:
-    """Attacking with a target: at the objective it holds; else its best order, unless that
-    is only to stand or turn while the target is not guarding the objective: then it advances."""
-    if off <= U.objective_radii(d, ctx[1])[0]:
+    """Attacking with a target: at the objective it holds, unless its target (where last seen)
+    is on the objective too: then it goes on attacking until the objective is clear. Else its
+    best order, unless that is only to stand or turn while the target is not guarding the
+    objective: then it advances."""
+    radius = U.objective_radii(d, ctx[1])[0]
+    if off <= radius and U.off_objective(d, _where(us, t, ctx[3]), objective(ctx[1])) > radius:
         return _best(d, us, i, t, (ctx[0], ctx[1], "hold", ctx[3], ctx[4]))
     o = _best(d, us, i, t, ctx)
     if (o is not None and o["act"] != "turn") or _guards(d, _where(us, t, ctx[3]), ctx[1]):
@@ -1901,13 +1904,14 @@ def _rejects(m: dict, charge: bool, hold: bool) -> bool:
 
 
 def _stay(d: Data, us: list, i: int, t: int, f: int, shooter: bool) -> dict | None:
-    """Staying where it is: a unit on the ground stays down; else it turns to the target, or a
-    unit with a modern weapon (ground_with) under fire goes to ground (if its quality heeds cover)."""
+    """Staying where it is: it turns to the target (a unit on the ground turns and stays down);
+    else a unit on the ground stays down, or a unit with a modern weapon (ground_with) under
+    fire goes to ground (if its quality heeds cover)."""
     u, C = us[i], d.units["commander"]
-    if u.get("prone"):
-        return None
     if f != u["facing"]:
         return {"act": "turn", "target": t, "facing": f}
+    if u.get("prone"):
+        return None
     dig = shooter and not u.get("vehicle") and u["weapon"] in C["ground_with"] and C["cover"].get(u["quality"], 0) > 0 and under_fire(d, us, i)
     return {"act": "ground", "target": t} if dig else None
 

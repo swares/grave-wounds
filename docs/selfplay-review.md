@@ -1143,3 +1143,47 @@ when fired on even if no one fell, and break in less often. The rule is worth ni
 (all six of Hue's), so it stays. Wanat's is no single fix: undoing either makes it a little worse,
 and a swing of three in 24 runs is within the runs' own spread (about two either way). Kept as
 built; Keating's insurgents and their bounds are left to a later look.
+
+## Keating's insurgents traced: the contested outpost, 22 October 2026
+
+The insurgents' bounds are not what costs Keating. Over 24 runs on main they were given about
+5,100 orders to move or advance; about 410 (8%) were turned into going to ground and firing,
+nine in ten of those after fire that hit no one. The drawing-fire rule keeps them alive (27% lost,
+against 33% without it), so more of them reach the outpost. The note above, that they break in
+less often, was wrong.
+
+What the trace found was two faults once they are inside the wire. Six runs in 24 ended with
+the outpost contested, held by no one, which the report counts as the Coalition's.
+
+- **Attackers stopped attacking at the objective.** A unit within the objective's radius was
+  ordered as if holding, so riflemen neither stormed nor charged. In seed 20 the north-slope
+  company (79 men) lay 30 m from the guard post (15 men) from exchange 10 to the end and fired
+  64 volleys, about 2,700 rounds, for no one down: men gone to ground in buildings are seen 10%
+  of the time. Now a unit at the objective holds it only once its target (where last seen) is
+  off it; until then it goes on attacking.
+- **Units on the ground never turned.** The order to stay where it is kept a unit on the
+  ground as it lay before looking at its facing, so the guard post faced east all battle while
+  it was shot at from the west, and never fired back. Now it turns toward its target and stays
+  down.
+
+Measured on 24 runs of every battlefield against main after #303: 705 of 984 from 704 (the
+battlefields in common; main's artifact held an extra 24 runs this time, 1,008 in all).
+
+| Battlefield | Before | After |
+|---|---|---|
+| Dornach | 3 | 8 |
+| Goose Green | 1 | 5 |
+| Wanat | 15 | 19 |
+| Lützen | 20 | 17 |
+| Keating | 19 | 17 |
+| Hamburger Hill | 23 | 21 |
+
+Twelve others moved by one either way. Chipyong-ni's runs now end at a median exchange 175
+rather than running to the cap, still 21 of 24. The Wagon Box's soldiers lose about 31% rather
+than 61%. The rout's share (T3) rose from 9% to 13% down, nearer the sources.
+
+Keating falls as expected: the insurgents now clear the outpost, and nothing yet models what
+the account says came next, the Americans retaking it by the afternoon. A holding side never
+counter-attacks into its own objective. The stalemates had been scoring as held by accident.
+To do: the retake, with sourced timing and strength, or a general rule for holders retaking a
+lost objective.
