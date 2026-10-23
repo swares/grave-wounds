@@ -1058,12 +1058,29 @@ commander:
   # trading fire at range). Design choice.
   storm: [musket_smoothbore, rifle_musket, breechloader, rifle_service, rifle_assault, pistol_smg]
   # bounds: storming in bounds. A storming unit with a modern weapon (ground_with) that heeds cover
-  # (regulars and better) and was hit or pinned in the last exchange goes to ground where it is
+  # (regulars and better) and was fired on (hit or not: a unit lying under fire that lost no one
+  # has still drawn fire) or pinned in the last exchange goes to ground where it is
   # and fires this move, rather than walking on upright; it gets up and goes on once a bound
   # draws no fire, or at once if its target is pinned or it can charge home this move. Fire and movement, as
   # 2 Para took Darwin Hill (self-play: walking upright into two machine guns, A Company broke
   # in three minutes). Design choice.
   bounds: true
+  # bounds_all: the wars (by the wound table) of fire and movement: there, attacking, any modern
+  #   foot unit that heeds cover (as bounds) and was fired on in the last exchange, even if no one
+  #   fell, goes to ground and fires rather than walking on to a better hex or the objective,
+  #   unless its target is pinned or it can charge home: every advance, not only against works.
+  #   Self-play: at Goose Green A Company, moving as shooters on a target not in works, walked
+  #   upright under two machine guns and lost 30 men in two exchanges; in 1982 it went to ground.
+  #   Fire and movement became standard infantry practice from 1917-18; the Germans at Mons in
+  #   1914 came on in close order and took the losses (applied to them, Mons fell 23 to 15). Design
+  #   choice. Measured with leave_disabled and the fixes to drawing fire and to range in the
+  #   weather on 24 runs of every battlefield: 700 of 936 from 692.
+  bounds_all: [WWII, Korea, Vietnam, Late 20th century, Iraq & Afghanistan]
+  # leave_disabled: attacking, a vehicle unit with some vehicles still able to move abandons its
+  #   immobilised ones and goes on (their crews bail out, as the GM's Abandon). Self-play: at 73
+  #   Easting a platoon with one M1 immobilised stayed where it was for the rest of the battle.
+  #   Design choice.
+  leave_disabled: true
   hesitate: {green: 30, regular: 10, veteran: 0}
   charge_odds:
     attack: {green: 100, regular: 80, veteran: 60}
