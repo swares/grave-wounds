@@ -9,7 +9,7 @@ weapon_bias: raw
 native: armed
 derived_from: dornach-1499-crania
 armor: allowed
-weapons: [sword, poleaxe, pike, spear, bill, axe, dagger, spiked_club, bow, longbow, crossbow, matchlock_musket]
+weapons: [sword, poleaxe, pike, spear, bill, axe, dagger, spiked_club, bow, longbow, crossbow, matchlock_musket, artillery_smoothbore]
 modifiers: [weapon_side, attacker_higher, attacker_lower, target_down, target_fleeing, flanked, target_warding, behind_cover]
 confidence: extrapolated
 confidence_note: "Towton's gameplay weights for the body (the Dornach ossuary kept only skulls and thigh bones), with the skull's left and right from the Dornach crania; the corrections are design estimates."

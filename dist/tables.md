@@ -430,6 +430,108 @@ Confidence: **Extrapolated - design estimate from analogous evidence** · Armour
 Sources:
 - Derived from towton-1461-mass-grave (Holst and Sutherland 2014, Tab. 9 and 12).
 
+# Swabian War (Dornach, 22 July 1499)
+
+In 1499 the Swiss Confederates fought the Swabian League and the Emperor Maximilian I along the Rhine from the Grisons to Basel. At Dornach on 22 July some 5,000-6,000 Confederates came down out of the woods below the Gempen onto the imperial army besieging Solothurn's castle of Dorneck, killed its commander in the fight for the guns, held through hours of counter-attacks by the Welsche Garde and the Landsknechte, and broke it when Lucerne and Zug came up at evening. The Swiss had sworn to take no prisoners. The skulls of the dead, kept in the ossuary at Dornach, are among the best-studied battle remains of the period.
+
+| Side | Who | Armour |
+|---|---|---|
+| Swiss Confederates | Solothurn, Bern, Zürich, then Lucerne and Zug, under Rudolf von Erlach: pikes, halberds, a few handguns and crossbows. | Pikemen in breastplates and sallets where they could; halberdiers lightly armoured; many men in their own clothes. |
+| Swabian League and the Empire | Count Heinrich von Fürstenberg's army: Landsknechte, Swabian and Alsatian levies, Geldern mercenaries, knights, and the Welsche Garde of Burgundian horse under Louis de Vaudrey. | Landsknechte in corslets or none; knights in full harness; the Welsche Garde as heavy horse. |
+
+**Example combatants**
+
+| Name | Side | Wears | Fights with | Notes | Picture |
+|---|---|---|---|---|---|
+| Swiss pikeman | Swiss Confederates | Brigandine, sallet and arm splints (c.1460) | Pike (long infantry pike, 1450s-1700) | An 18-foot pike; the pikemen were the better armoured and better paid. |  |
+| Swiss halberdier | Swiss Confederates | Jack and sallet (archer or billman, c.1460) | Poleaxe (axe, hammer and spike) | The halberd (as the poleaxe); the cuts on the Dornach skulls fit sword or halberd. |  |
+| Landsknecht | Swabian League and the Empire | Jack and sallet (archer or billman, c.1460) | Pike (long infantry pike, 1450s-1700) | Four gulden a month, when it was paid. |  |
+| Imperial knight | Swabian League and the Empire | Full plate harness (c.1450) | Sword (arming sword) | Fürstenberg and other lords fell in the fight for the guns. |  |
+
+Sources: Cooper C., Forensisch-anthropologische und traumatologische Untersuchungen an den menschlichen Skeletten aus der spätmittelalterlichen Schlacht von Dornach (1499 n. Chr.), Mainz (2010). Leutenegger and Schubiger in the Solothurn jubilee yearbook (1999); Winkler on Dornach (2022) and the Swiss military of 1499 (2020); project docs dornach-research and dornach-wounds-research.
+
+**Quick-play: men down per 100 tries**
+
+Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no parry; green men x1.26, veterans x0.68; against a parry, x(1 - parry% x 0.9).
+
+| Weapon | Brigandine, sallet and arm splints (c.1460) | Jack and sallet (archer or billman, c.1460) | Full plate harness (c.1450) |
+|---|---|---|---|
+| Pike (long infantry pike, 1450s-1700) | 0 / 1 / 2 / 3 | 0 / 1 / 2 / 3 | 0 / 0 / 0 / 1 |
+| Poleaxe (axe, hammer and spike) | 3 / 7 / 12 / 19 | 3 / 8 / 12 / 18 | 3 / 6 / 11 / 19 |
+| Sword (arming sword) | 0 / 1 / 2 / 2 | 0 / 1 / 1 / 2 | 0 / 0 / 0 / 0 |
+
+## Dornach 1499 - the ossuary crania (bone evidence)
+
+*Skulls and thigh bones of men killed when the Swiss Confederates fell on the imperial camp below Dorneck on 22 July 1499, most of them the imperial dead, left out for a time and gathered into the ossuary. Killed only; skulls (no jaws) and femora.*
+
+Confidence: **Historical - taken directly from a source** · Armour: **already reflected (do not apply)**
+
+| Location | Sword | Poleaxe | Pike | Spear | Spiked club | Crossbow | Matchlock | Dagger |
+|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-50 | 01-50 | 01-47 | 01-47 | 01-39 | 01-47 | 01-20 | 01-48 |
+| Skull (right) | 51-92 | 51-92 | 48-92 | 48-92 | 40-96 | 48-92 | 21-80 | 49-92 |
+| Face | 93-99 | 93-99 | 93-98 | 93-98 | 97-00 | 93-98 | 81-00 | 93-99 |
+| Thigh (left) | - | - | 99 | 99 | - | 99 | - | - |
+| Thigh (right) | 00 | 00 | 00 | 00 | - | 00 | - | 00 |
+
+**Source totals:** Skull, left (178) = 42.1%; Skull, right (160) = 37.8%; Skull, midline (51) = 12.1%; Face (28) = 6.6%; Right thigh (4) = 0.9%; Left thigh (2) = 0.5% (n = 423). From 417 perimortem injuries on 102 of 106 crania (315 cut, 69 point, 28 blunt, 5 gunshot) and 6 on 4 of 33 femora (Cooper 2010). Skull wounds are shared between the left and right of the skull by the author's sides for each kind (Table 28), midline ones evenly; the face's share is our tally from her catalogue. Swords and halberds (the poleaxe) roll on the cuts, pikes and spears on the point wounds (thrust, stab and crossbow bolt counted together), the war hammer (spiked club) on the blunt ones, the handgun on the gunshot ones; others on all together.
+
+
+**Close combat:** Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Axe: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
+
+**Reading it:** Armour is already in these numbers, and so is what was kept: the ossuary held only skulls and thigh bones, so this table can show nothing of the neck, the body or the arms. Few skulls show helmets, and at least 25 show men struck again after they were down. It is not a picture of where men were hit in the fight. For play, use the gameplay table.
+
+**Status:** Historical, from about 106 men, mostly of the imperial army, killed in the battle and the rout and partly struck again where they lay; skulls without jaws, so the face is under-counted.
+
+Sources:
+- Cooper C., Forensisch-anthropologische und traumatologische Untersuchungen an den menschlichen Skeletten aus der spätmittelalterlichen Schlacht von Dornach (1499 n. Chr.), Dr. phil. dissertation, Universität Mainz (2010), https://openscience.ub.uni-mainz.de/handle/20.500.12030/981 : Tables 23-32 and the lesion catalogue.
+- Cooper C., 'Kriegsverletzungen an historischen Skeletten aus der Schweiz', in Piek and Terberger (eds) (2008): a pilot of 12 skulls, 57 lesions.
+- Tally: data/sources/dornach-1499-crania.csv (the region of each lesion is our tally from the catalogue).
+
+## Dornach 1499 - gameplay-adjusted (before armour)
+
+*Where blows land on a man in a pike-and-halberd fight of about 1500, before armour: Towton's body with the head shared out as the Dornach skulls show. Use for the Swabian War and the Swiss and Landsknechte.*
+
+Confidence: **Extrapolated - design estimate from analogous evidence** · Armour: **allowed**
+
+| Location | Sword | Poleaxe | Pike | Spear | Bill | Axe | Dagger | Spiked club | Bow | Longbow | Crossbow | Matchlock | Artillery |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-11 | 01-13 | 01-11 | 01-08 | 01-12 | 01-12 | 01-10 | 01-14 | 01-11 | 01-11 | 01-12 | 01-11 | 01-11 |
+| Skull (right) | 12-21 | 14-25 | 12-21 | 09-16 | 13-23 | 13-23 | 11-19 | 15-27 | 12-21 | 12-21 | 13-23 | 12-21 | 12-21 |
+| Face | 22-27 | 26-32 | 22-30 | 17-23 | 24-30 | 24-29 | 20-27 | 28-35 | 22-27 | 22-27 | 24-29 | 22-27 | 22-27 |
+| Neck | 28-31 | 33-37 | 31-34 | 24-26 | 31-34 | 30-33 | 28-34 | 36-40 | 28-31 | 28-31 | 30-33 | 28-31 | 28-31 |
+| Chest (left) | 32-38 | 38-43 | 35-44 | 27-35 | 35-40 | 34-39 | 35-43 | 41-46 | 32-38 | 32-38 | 34-39 | 32-38 | 32-38 |
+| Chest (right) | 39-44 | 44-48 | 45-52 | 36-43 | 41-45 | 40-44 | 44-50 | 47-51 | 39-44 | 39-44 | 40-45 | 39-44 | 39-44 |
+| Abdomen | 45-51 | 49-54 | 53-62 | 44-52 | 46-51 | 45-49 | 51-59 | 52-57 | 45-51 | 45-51 | 46-51 | 45-51 | 45-51 |
+| Groin / pelvis | 52-54 | 55-57 | 63-66 | 53-56 | 52-54 | 50-51 | 60-63 | 58-60 | 52-54 | 52-54 | 52-54 | 52-54 | 52-54 |
+| Upper back | 55-58 | 58-61 | 67-71 | 57-61 | 55-58 | 52-54 | 64-68 | 61-64 | 55-58 | 55-58 | 55-58 | 55-58 | 55-58 |
+| Lower back | 59-61 | 62-64 | 72-75 | 62-65 | 59-61 | 55-56 | 69-72 | 65-67 | 59-61 | 59-61 | 59-61 | 59-61 | 59-61 |
+| Shoulder (left) | 62-63 | 65-66 | 76 | 66-67 | 62-63 | 57-58 | 73-74 | 68-69 | 62-63 | 62-63 | 62-63 | 62-63 | 62-63 |
+| Shoulder (right) | 64 | 67 | 77 | 68 | 64 | 59 | 75 | 70 | 64 | 64 | 64 | 64 | 64 |
+| Upper arm (left) | 65-66 | 68-69 | 78 | 69-70 | 65-66 | 60-61 | 76-77 | 71-72 | 65-66 | 65-66 | 65-66 | 65-66 | 65-66 |
+| Upper arm (right) | 67-68 | 70-71 | 79 | 71-72 | 67-68 | 62-63 | 78-79 | 73-74 | 67-68 | 67-68 | 67-68 | 67-68 | 67-68 |
+| Forearm (left) | 69-71 | 72-74 | 80-81 | 73-75 | 69-71 | 64-66 | 80-82 | 75-77 | 69-71 | 69-71 | 69-71 | 69-71 | 69-71 |
+| Forearm (right) | 72-74 | 75-77 | 82-83 | 76-78 | 72-74 | 67-69 | 83-85 | 78-80 | 72-74 | 72-74 | 72-74 | 72-74 | 72-74 |
+| Hand (left) | 75-78 | 78-81 | 84-86 | 79-81 | 75-78 | 70-73 | 86-89 | 81-84 | 75-78 | 75-78 | 75-78 | 75-78 | 75-78 |
+| Hand (right) | 79-82 | 82-84 | 87-89 | 82-84 | 79-82 | 74-77 | 90-93 | 85-87 | 79-82 | 79-82 | 79-82 | 79-82 | 79-82 |
+| Thigh (left) | 83-86 | 85-87 | 90-91 | 85-87 | 83-86 | 78-82 | 94-95 | 88-90 | 83-86 | 83-86 | 83-86 | 83-86 | 83-86 |
+| Thigh (right) | 87-90 | 88-90 | 92-93 | 88-90 | 87-90 | 83-87 | 96-97 | 91-93 | 87-90 | 87-90 | 87-90 | 87-90 | 87-90 |
+| Knee (left) | 91 | 91 | 94 | 91 | 91 | 88 | - | 94 | 91 | 91 | 91 | 91 | 91 |
+| Knee (right) | 92 | 92 | 95 | 92 | 92 | 89 | - | 95 | 92 | 92 | 92 | 92 | 92 |
+| Lower leg (left) | 93-95 | 93-95 | 96-97 | 93-95 | 93-95 | 90-93 | 98 | 96-97 | 93-95 | 93-95 | 93-95 | 93-95 | 93-95 |
+| Lower leg (right) | 96-97 | 96-97 | 98 | 96-97 | 96-97 | 94-96 | 99 | 98 | 96-97 | 96-97 | 96-97 | 96-97 | 96-97 |
+| Foot (left) | 98-99 | 98-99 | 99 | 98-99 | 98-99 | 97-99 | 00 | 99 | 98-99 | 98-99 | 98-99 | 98-99 | 98-99 |
+| Foot (right) | 00 | 00 | 00 | 00 | 00 | 00 | - | 00 | 00 | 00 | 00 | 00 | 00 |
+
+**Close combat:** Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
+
+**Reading it:** These weights are where blows LAND. Resolve armour separately with the target's kit: a pikeman in breastplate and sallet, a halberdier in a padded jack, a knight in full harness.
+
+**Status:** The Dornach evidence is 99% skull, from an ossuary that kept only skulls and femora, so it says nothing of the body. Corrections: (1) The body below the head is Towton's gameplay table, the nearest battle of the kind with whole skeletons. (2) The head keeps Towton's share (27%, lowered from the bone evidence for blows struck on men already down: at least 25 Dornach skulls show them too). (3) Within the skull, left and right as the Dornach crania (about 204 to 186 wounds, midline ones shared). (4) The face keeps Towton's 6, as the Dornach skulls have no jaws. The result is close to Towton's: both are head-heavy evidence corrected the same way.
+
+Sources:
+- Derived from dornach-1499-crania (Cooper 2010, Tables 23-32 and the catalogue) for the head, and from towton-1461-all-hits for the rest of the body.
+
 # Thirty Years' War (1618-1648)
 
 A war of religion and power across the Holy Roman Empire: the Catholic Emperor and the Catholic League against Protestant princes, joined by Denmark, then Sweden under Gustavus Adolphus, and finally France. It was the age of pike and shot: squares of pikemen with musketeers on their flanks, and cavalry that fought with pistols and carbines as much as swords. At Lützen, near Leipzig, on 16 November 1632 the Swedes beat Wallenstein's imperial army but Gustavus Adolphus was killed. A mass grave of 47 men found there in 2011 is most likely part of the Swedish 'Blue Brigade', surprised in the flank by imperial cavalry; it is the source of this group's table.
@@ -2671,15 +2773,15 @@ Modifiers stack in the roller and CLI (one per group). Printed columns below sho
 | Situation | Group | Effect on weights | Notes |
 |---|---|---|---|
 | Attacker on target's shield side | facing | left side x1.8, right side x0.5 | Attacker works round to the target's left (shield) side. Tables: Sidon, mid-13th century, Visby 1361 |
-| Attacker on target's weapon side | facing | left side x0.5, right side x1.8 | Attacker is off the target's right (weapon-arm) side. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461 |
-| Attacker higher (mounted, uphill, on a wall) | height | head x1.6, arms x1.2, legs x0.4, shoulder (left) x1.3, shoulder (right) x1.3 | Blows come down onto the head and shoulders; legs out of reach. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
-| Attacker lower (in a ditch, kneeling, vs. rider) | height | head x0.5, legs x1.6, groin / pelvis x1.8, abdomen x1.3 | Blows come up into the legs, groin and belly. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
-| Target down (fallen, kneeling, helpless) | posture | head x2, torso x0.6, legs x0.6, upper back x3, lower back x2, forearm (left) x1.6, forearm (right) x1.6, hand (left) x1.6, hand (right) x1.6, face x0.7 | Towton pattern: repeated blows to the head and back; arms raised to ward. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Lützen 1632, Peninsular War 1808-14, Knife assault, Unarmed |
-| Target fleeing (back turned) | posture | head x1.2, arms x0.6, legs x1.3, upper back x4, lower back x3, face x0.1, chest (left) x0.15, chest (right) x0.15, abdomen x0.15, groin / pelvis x0.2 | Rout: back, back of the head and legs exposed; front almost unreachable. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
-| Target flanked (two or more attackers) | - | legs x1.3, upper back x2.5, lower back x2.5, skull (left) x1.2, skull (right) x1.2 | Visby team-fighting: one engages the front while others strike from behind and low. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Indian Wars 1865-71, Knife assault |
+| Attacker on target's weapon side | facing | left side x0.5, right side x1.8 | Attacker is off the target's right (weapon-arm) side. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Dornach 1499 |
+| Attacker higher (mounted, uphill, on a wall) | height | head x1.6, arms x1.2, legs x0.4, shoulder (left) x1.3, shoulder (right) x1.3 | Blows come down onto the head and shoulders; legs out of reach. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Dornach 1499, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
+| Attacker lower (in a ditch, kneeling, vs. rider) | height | head x0.5, legs x1.6, groin / pelvis x1.8, abdomen x1.3 | Blows come up into the legs, groin and belly. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Dornach 1499, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
+| Target down (fallen, kneeling, helpless) | posture | head x2, torso x0.6, legs x0.6, upper back x3, lower back x2, forearm (left) x1.6, forearm (right) x1.6, hand (left) x1.6, hand (right) x1.6, face x0.7 | Towton pattern: repeated blows to the head and back; arms raised to ward. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Dornach 1499, Lützen 1632, Peninsular War 1808-14, Knife assault, Unarmed |
+| Target fleeing (back turned) | posture | head x1.2, arms x0.6, legs x1.3, upper back x4, lower back x3, face x0.1, chest (left) x0.15, chest (right) x0.15, abdomen x0.15, groin / pelvis x0.2 | Rout: back, back of the head and legs exposed; front almost unreachable. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Dornach 1499, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline, Knife assault |
+| Target flanked (two or more attackers) | - | legs x1.3, upper back x2.5, lower back x2.5, skull (left) x1.2, skull (right) x1.2 | Visby team-fighting: one engages the front while others strike from behind and low. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Dornach 1499, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Indian Wars 1865-71, Knife assault |
 | Target has no shield | - | head x1.1, torso x1.4, forearm (left) x0.7, hand (left) x0.7 | Tables assume a shield. Without one the body and head are more open. Tables: Sidon, mid-13th century, Visby 1361 |
-| Target warding with arms (unarmed or disarmed) | - | arms x1.5, forearm (left) x1.6, forearm (right) x1.6, hand (left) x1.6, hand (right) x1.6 | Defensive wounds: forearms and hands raised to block. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Lützen 1632, Peninsular War 1808-14, Knife assault |
-| Target behind cover (breastwork, wall, trench) | cover | head x1.5, torso x0.3, legs x0.05, shoulder (left) x1.5, shoulder (right) x1.5, abdomen x0.3, groin / pelvis x0.2, lower back x0.3 | Only head, shoulders and arms show over the parapet. Tables: Sidon, mid-13th century, Towton 1461, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline |
+| Target warding with arms (unarmed or disarmed) | - | arms x1.5, forearm (left) x1.6, forearm (right) x1.6, hand (left) x1.6, hand (right) x1.6 | Defensive wounds: forearms and hands raised to block. Tables: Sidon, mid-13th century, Visby 1361, Aljubarrota 1385, Towton 1461, Dornach 1499, Lützen 1632, Peninsular War 1808-14, Knife assault |
+| Target behind cover (breastwork, wall, trench) | cover | head x1.5, torso x0.3, legs x0.05, shoulder (left) x1.5, shoulder (right) x1.5, abdomen x0.3, groin / pelvis x0.2, lower back x0.3 | Only head, shoulders and arms show over the parapet. Tables: Sidon, mid-13th century, Towton 1461, Dornach 1499, Lützen 1632, Thirty Years' War, American Revolution 1775-83, Peninsular War 1808-14, Napoleonic era, War of 1812, Crimean War 1855-56, Crimean War 1854-56, Civil War 1861-65, Indian Wars 1865-71, WWI 1914-18, WWII Italy 1944, Bougainville 1944, WWII 1941-45, Korea 1950-53, Vietnam 1965-70, Vietnam 1965-73, Northern Ireland, Falklands 1982, Gulf War 1991 (US), Gulf War 1991 (UK), Somalia 1993, Chechnya, Iraq & Afghanistan 2001-05, Baseline |
 
 **Called shot:** Roll the location twice; keep whichever result lands in the called zone. If both or neither do, keep the first. Your system sets any to-hit penalty.
 
@@ -3676,6 +3778,331 @@ Modifiers stack in the roller and CLI (one per group). Printed columns below sho
 | Forearm (left) | 69-71 | 70 | 82-84 | 59-61 | 76-79 | 70-71 | 73-74 | 58-63 | 83-86 |
 | Forearm (right) | 72-74 | 71-75 | 85-87 | 62-64 | 80-83 | 72-73 | 75-76 | 64-69 | 87-90 |
 | Hand (left) | 75-78 | 76-77 | 88-91 | 65-68 | 84-88 | 74-75 | 77-79 | 70-77 | 91-95 |
+| Hand (right) | 79-82 | 78-83 | 92-95 | 69-72 | 89-93 | 76-77 | 80-82 | 78-85 | 96-00 |
+| Thigh (left) | 83-86 | 84-85 | 96 | 73-78 | 94-95 | 78-82 | 83-86 | 86-88 | - |
+| Thigh (right) | 87-90 | 86-91 | 97 | 79-84 | 96-97 | 83-87 | 87-90 | 89-91 | - |
+| Knee (left) | 91 | - | - | 85-86 | - | 88 | 91 | 92 | - |
+| Knee (right) | 92 | 92-93 | - | 87-88 | - | 89 | 92 | 93 | - |
+| Lower leg (left) | 93-95 | 94 | 98 | 89-93 | 98 | 90-93 | 93-95 | 94-95 | - |
+| Lower leg (right) | 96-97 | 95-97 | 99 | 94-96 | 99 | 94-96 | 96-97 | 96-97 | - |
+| Foot (left) | 98-99 | 98 | 00 | 97-99 | 00 | 97-99 | 98-99 | 98-99 | - |
+| Foot (right) | 00 | 99-00 | - | 00 | - | 00 | 00 | 00 | - |
+
+### Dornach 1499 - the ossuary crania (bone evidence) - Sword / Poleaxe
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding |
+|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-50 | 01-23 | 01-50 | 01-48 | 01-51 | 01-53 | 01-50 | 01-50 |
+| Skull (right) | 51-92 | 24-92 | 51-93 | 49-89 | 52-95 | 54-98 | 51-93 | 51-92 |
+| Face | 93-99 | 93-98 | 94-00 | 90-96 | 96-00 | 99 | 94-99 | 93-99 |
+| Thigh (left) | - | - | - | 97 | - | - | - | - |
+| Thigh (right) | 00 | 99-00 | - | 98-00 | - | 00 | 00 | 00 |
+
+### Dornach 1499 - the ossuary crania (bone evidence) - Pike / Spear / Crossbow
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding |
+|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-47 | 01-20 | 01-48 | 01-44 | 01-48 | 01-49 | 01-47 | 01-47 |
+| Skull (right) | 48-92 | 21-92 | 49-94 | 45-87 | 49-95 | 50-96 | 48-92 | 48-92 |
+| Face | 93-98 | 93-97 | 95-00 | 88-92 | 96-99 | - | 93-97 | 93-98 |
+| Thigh (left) | 99 | 98 | - | 93-96 | 00 | 97-98 | 98-99 | 99 |
+| Thigh (right) | 00 | 99-00 | - | 97-00 | - | 99-00 | 00 | 00 |
+
+### Dornach 1499 - the ossuary crania (bone evidence) - Spiked club
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding |
+|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-39 | 01-15 | 01-39 | 01-39 | 01-40 | 01-41 | 01-40 | 01-39 |
+| Skull (right) | 40-96 | 16-97 | 40-96 | 40-96 | 41-98 | 42-00 | 41-97 | 40-96 |
+| Face | 97-00 | 98-00 | 97-00 | 97-00 | 99-00 | - | 98-00 | 97-00 |
+
+### Dornach 1499 - the ossuary crania (bone evidence) - Matchlock
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding |
+|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-20 | 01-07 | 01-20 | 01-20 | 01-21 | 01-24 | 01-21 | 01-20 |
+| Skull (right) | 21-80 | 08-85 | 21-80 | 21-80 | 22-85 | 25-97 | 22-83 | 21-80 |
+| Face | 81-00 | 86-00 | 81-00 | 81-00 | 86-00 | 98-00 | 84-00 | 81-00 |
+
+### Dornach 1499 - the ossuary crania (bone evidence) - Dagger
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding |
+|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-48 | 01-22 | 01-49 | 01-47 | 01-50 | 01-51 | 01-49 | 01-48 |
+| Skull (right) | 49-92 | 23-93 | 50-93 | 48-90 | 51-95 | 52-98 | 50-93 | 49-92 |
+| Face | 93-99 | 94-99 | 94-00 | 91-96 | 96-00 | 99 | 94-99 | 93-99 |
+| Thigh (left) | - | - | - | 97 | - | - | - | - |
+| Thigh (right) | 00 | 00 | - | 98-00 | - | 00 | 00 | 00 |
+
+### Dornach 1499 - gameplay-adjusted (before armour) - Sword / Bow / Longbow / Matchlock / Artillery
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding | Cover |
+|---|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-11 | 01-05 | 01-16 | 01-06 | 01-18 | 01-14 | 01-11 | 01-09 | 01-22 |
+| Skull (right) | 12-21 | 06-22 | 17-30 | 07-11 | 19-34 | 15-27 | 12-21 | 10-17 | 23-42 |
+| Face | 22-27 | 23-27 | 31-39 | 12-14 | 35-41 | 28 | 22-26 | 18-22 | 43-54 |
+| Neck | 28-31 | 28-31 | 40-45 | 15-16 | 42-48 | 29-33 | 27-29 | 23-25 | 55-62 |
+| Chest (left) | 32-38 | 32-34 | 46-51 | 17-23 | 49-51 | 34 | 30-35 | 26-31 | 63-65 |
+| Chest (right) | 39-44 | 35-44 | 52-56 | 24-29 | 52-54 | 35 | 36-40 | 32-36 | 66-67 |
+| Abdomen | 45-51 | 45-50 | 57-62 | 30-38 | 55-57 | 36 | 41-46 | 37-42 | 68 |
+| Groin / pelvis | 52-54 | 51-53 | 63-65 | 39-43 | 58 | 37 | 47-49 | 43-45 | - |
+| Upper back | 55-58 | 54-57 | 66-69 | 44-47 | 59-64 | 38-54 | 50-57 | 46-48 | 69-70 |
+| Lower back | 59-61 | 58-60 | 70-72 | 48-50 | 65-67 | 55-63 | 58-63 | 49-50 | - |
+| Shoulder (left) | 62-63 | 61 | 73-75 | 51-52 | 68-69 | 64 | 64-65 | 51-52 | 71-74 |
+| Shoulder (right) | 64 | 62-63 | 76 | 53 | 70 | 65 | 66 | 53 | 75-76 |
+| Upper arm (left) | 65-66 | 64 | 77-78 | 54-55 | 71-72 | 66 | 67-68 | 54-55 | 77-79 |
+| Upper arm (right) | 67-68 | 65-67 | 79-80 | 56-57 | 73-74 | 67 | 69-70 | 56-57 | 80-82 |
+| Forearm (left) | 69-71 | 68 | 81-83 | 58-60 | 75-78 | 68-69 | 71-73 | 58-63 | 83-86 |
+| Forearm (right) | 72-74 | 69-73 | 84-86 | 61-63 | 79-82 | 70-71 | 74-76 | 64-69 | 87-90 |
+| Hand (left) | 75-78 | 74-75 | 87-90 | 64-67 | 83-87 | 72-74 | 77-79 | 70-77 | 91-95 |
+| Hand (right) | 79-82 | 76-82 | 91-94 | 68-71 | 88-92 | 75-77 | 80-82 | 78-85 | 96-00 |
+| Thigh (left) | 83-86 | 83-84 | 95-96 | 72-77 | 93-94 | 78-82 | 83-86 | 86-88 | - |
+| Thigh (right) | 87-90 | 85-91 | 97 | 78-83 | 95-96 | 83-87 | 87-90 | 89-91 | - |
+| Knee (left) | 91 | - | - | 84-85 | 97 | 88 | 91 | 92 | - |
+| Knee (right) | 92 | 92-93 | - | 86-87 | - | 89 | 92 | 93 | - |
+| Lower leg (left) | 93-95 | 94 | 98 | 88-92 | 98 | 90-93 | 93-95 | 94-95 | - |
+| Lower leg (right) | 96-97 | 95-97 | 99 | 93-95 | 99 | 94-96 | 96-97 | 96-97 | - |
+| Foot (left) | 98-99 | 98 | 00 | 96-98 | 00 | 97-99 | 98-99 | 98-99 | - |
+| Foot (right) | 00 | 99-00 | - | 99-00 | - | 00 | 00 | 00 | - |
+
+### Dornach 1499 - gameplay-adjusted (before armour) - Poleaxe
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding | Cover |
+|---|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-13 | 01-06 | 01-18 | 01-07 | 01-20 | 01-16 | 01-13 | 01-11 | 01-24 |
+| Skull (right) | 14-25 | 07-26 | 19-34 | 08-13 | 21-39 | 17-31 | 14-25 | 12-21 | 25-46 |
+| Face | 26-32 | 27-33 | 35-44 | 14-17 | 40-47 | 32 | 26-31 | 22-27 | 47-59 |
+| Neck | 33-37 | 34-37 | 45-51 | 18-19 | 48-54 | 33-38 | 32-35 | 28-31 | 60-68 |
+| Chest (left) | 38-43 | 38-40 | 52-57 | 20-26 | 55-57 | 39 | 36-40 | 32-36 | 69-70 |
+| Chest (right) | 44-48 | 41-49 | 58-62 | 27-32 | 58-60 | 40 | 41-45 | 37-41 | 71-72 |
+| Abdomen | 49-54 | 50-55 | 63-67 | 33-41 | 61-63 | 41 | 46-50 | 42-46 | 73 |
+| Groin / pelvis | 55-57 | 56-58 | 68-69 | 42-46 | 64 | 42 | 51-52 | 47-48 | - |
+| Upper back | 58-61 | 59-61 | 70-72 | 47-50 | 65-69 | 43-57 | 53-60 | 49-51 | 74-75 |
+| Lower back | 62-64 | 62-64 | 73-74 | 51-53 | 70-72 | 58-66 | 61-66 | 52-53 | - |
+| Shoulder (left) | 65-66 | 65 | 75-76 | 54-55 | 73 | 67 | 67-68 | 54-55 | 76-78 |
+| Shoulder (right) | 67 | 66-67 | 77 | 56 | 74 | 68 | 69 | 56 | 79-80 |
+| Upper arm (left) | 68-69 | 68 | 78-79 | 57-58 | 75 | 69 | 70-71 | 57-58 | 81-82 |
+| Upper arm (right) | 70-71 | 69-71 | 80-81 | 59-60 | 76 | 70 | 72 | 59-60 | 83-84 |
+| Forearm (left) | 72-74 | 72 | 82-84 | 61-63 | 77-79 | 71-72 | 73-74 | 61-66 | 85-87 |
+| Forearm (right) | 75-77 | 73-77 | 85-87 | 64-66 | 80-82 | 73-74 | 75-76 | 67-71 | 88-90 |
+| Hand (left) | 78-81 | 78-79 | 88-91 | 67-70 | 83-87 | 75-76 | 77-79 | 72-78 | 91-95 |
+| Hand (right) | 82-84 | 80-85 | 92-95 | 71-74 | 88-92 | 77-78 | 80-82 | 79-85 | 96-00 |
+| Thigh (left) | 85-87 | 86-87 | 96 | 75-80 | 93-94 | 79-83 | 83-86 | 86-88 | - |
+| Thigh (right) | 88-90 | 88-93 | 97 | 81-86 | 95-96 | 84-88 | 87-90 | 89-91 | - |
+| Knee (left) | 91 | - | - | 87 | 97 | 89 | 91 | 92 | - |
+| Knee (right) | 92 | 94 | - | 88 | - | 90 | 92 | 93 | - |
+| Lower leg (left) | 93-95 | 95 | 98 | 89-93 | 98 | 91-94 | 93-95 | 94-95 | - |
+| Lower leg (right) | 96-97 | 96-98 | 99 | 94-96 | 99 | 95-97 | 96-97 | 96-97 | - |
+| Foot (left) | 98-99 | 99 | 00 | 97-99 | 00 | 98-99 | 98-99 | 98-99 | - |
+| Foot (right) | 00 | 00 | - | 00 | - | 00 | 00 | 00 | - |
+
+### Dornach 1499 - gameplay-adjusted (before armour) - Pike
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding | Cover |
+|---|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-11 | 01-05 | 01-15 | 01-06 | 01-18 | 01-14 | 01-11 | 01-09 | 01-22 |
+| Skull (right) | 12-21 | 06-22 | 16-29 | 07-11 | 19-34 | 15-27 | 12-21 | 10-18 | 23-42 |
+| Face | 22-30 | 23-30 | 30-41 | 12-16 | 35-44 | 28 | 22-28 | 19-26 | 43-60 |
+| Neck | 31-34 | 31-34 | 42-46 | 17-18 | 45-50 | 29-33 | 29-31 | 27-29 | 61-68 |
+| Chest (left) | 35-44 | 35-38 | 47-54 | 19-28 | 51-55 | 34-35 | 32-39 | 30-37 | 69-72 |
+| Chest (right) | 45-52 | 39-52 | 55-61 | 29-37 | 56-59 | 36 | 40-46 | 38-44 | 73-75 |
+| Abdomen | 53-62 | 53-61 | 62-69 | 38-50 | 60-64 | 37-38 | 47-54 | 45-52 | 76 |
+| Groin / pelvis | 63-66 | 62-65 | 70-72 | 51-58 | 65-66 | 39 | 55-57 | 53-56 | - |
+| Upper back | 67-71 | 66-70 | 73-77 | 59-64 | 67-74 | 40-63 | 58-68 | 57-61 | 77-78 |
+| Lower back | 72-75 | 71-74 | 78-80 | 65-68 | 75-78 | 64-76 | 69-77 | 62-65 | - |
+| Shoulder (left) | 76 | 75 | 81-82 | 69 | 79 | 77 | 78 | 66-67 | 79-81 |
+| Shoulder (right) | 77 | 76 | 83 | 70 | 80 | - | 79 | 68 | 82 |
+| Upper arm (left) | 78 | 77 | 84-85 | 71 | 81 | 78 | 80 | 69-70 | 83-84 |
+| Upper arm (right) | 79 | 78-79 | 86-87 | 72 | 82 | 79 | 81 | 71-72 | 85-86 |
+| Forearm (left) | 80-81 | 80 | 88-89 | 73-74 | 83-85 | 80 | 82-83 | 73-77 | 87-89 |
+| Forearm (right) | 82-83 | 81-84 | 90-91 | 75-76 | 86-88 | 81 | 84-85 | 78-81 | 90-92 |
+| Hand (left) | 84-86 | 85 | 92-94 | 77-79 | 89-92 | 82-83 | 86-87 | 82-87 | 93-96 |
+| Hand (right) | 87-89 | 86-90 | 95-97 | 80-82 | 93-96 | 84-85 | 88-89 | 88-93 | 97-00 |
+| Thigh (left) | 90-91 | 91 | 98 | 83-86 | 97 | 86-88 | 90-91 | 94-95 | - |
+| Thigh (right) | 92-93 | 92-95 | 99 | 87-90 | 98 | 89-91 | 92-93 | 96-97 | - |
+| Knee (left) | 94 | - | - | 91 | - | 92 | 94 | - | - |
+| Knee (right) | 95 | 96 | - | 92 | - | 93 | 95 | - | - |
+| Lower leg (left) | 96-97 | 97 | 00 | 93-95 | 99 | 94-95 | 96-97 | 98 | - |
+| Lower leg (right) | 98 | 98-99 | - | 96-97 | 00 | 96-97 | 98 | 99 | - |
+| Foot (left) | 99 | - | - | 98-99 | - | 98-99 | 99 | 00 | - |
+| Foot (right) | 00 | 00 | - | 00 | - | 00 | 00 | - | - |
+
+### Dornach 1499 - gameplay-adjusted (before armour) - Spear
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding | Cover |
+|---|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-08 | 01-04 | 01-12 | 01-04 | 01-15 | 01-11 | 01-08 | 01-07 | 01-19 |
+| Skull (right) | 09-16 | 05-17 | 13-23 | 05-08 | 16-28 | 12-21 | 09-15 | 08-13 | 20-36 |
+| Face | 17-23 | 18-23 | 24-33 | 09-11 | 29-36 | 22 | 16-21 | 14-19 | 37-51 |
+| Neck | 24-26 | 24-26 | 34-37 | 12-13 | 37-41 | 23-26 | 22-23 | 20-22 | 52-58 |
+| Chest (left) | 27-35 | 27-30 | 38-46 | 14-22 | 42-46 | 27-28 | 24-31 | 23-30 | 59-62 |
+| Chest (right) | 36-43 | 31-44 | 47-53 | 23-30 | 47-50 | 29 | 32-38 | 31-37 | 63-66 |
+| Abdomen | 44-52 | 45-53 | 54-61 | 31-42 | 51-55 | 30 | 39-46 | 38-45 | 67 |
+| Groin / pelvis | 53-56 | 54-57 | 62-65 | 43-49 | 56-57 | 31 | 47-49 | 46-48 | - |
+| Upper back | 57-61 | 58-62 | 66-70 | 50-54 | 58-65 | 32-54 | 50-60 | 49-53 | 68-69 |
+| Lower back | 62-65 | 63-66 | 71-74 | 55-58 | 66-69 | 55-67 | 61-68 | 54-56 | 70 |
+| Shoulder (left) | 66-67 | 67 | 75-76 | 59-60 | 70-71 | 68 | 69 | 57-58 | 71-74 |
+| Shoulder (right) | 68 | 68 | 77 | 61 | 72 | 69 | 70 | 59 | 75-76 |
+| Upper arm (left) | 69-70 | 69 | 78-79 | 62-63 | 73-74 | 70 | 71 | 60-61 | 77-79 |
+| Upper arm (right) | 71-72 | 70-72 | 80-81 | 64-65 | 75 | 71 | 72 | 62-63 | 80-82 |
+| Forearm (left) | 73-75 | 73 | 82-84 | 66-68 | 76-79 | 72-73 | 73-74 | 64-68 | 83-86 |
+| Forearm (right) | 76-78 | 74-77 | 85-87 | 69-71 | 80-83 | 74-75 | 75-76 | 69-73 | 87-90 |
+| Hand (left) | 79-81 | 78-79 | 88-91 | 72-74 | 84-88 | 76-77 | 77-79 | 74-80 | 91-95 |
+| Hand (right) | 82-84 | 80-85 | 92-95 | 75-77 | 89-93 | 78-79 | 80-82 | 81-87 | 96-00 |
+| Thigh (left) | 85-87 | 86-87 | 96 | 78-82 | 94-95 | 80-84 | 83-86 | 88-90 | - |
+| Thigh (right) | 88-90 | 88-93 | 97 | 83-87 | 96-97 | 85-89 | 87-90 | 91-93 | - |
+| Knee (left) | 91 | - | - | 88 | - | 90 | 91 | 94 | - |
+| Knee (right) | 92 | 94 | - | 89 | - | 91 | 92 | 95 | - |
+| Lower leg (left) | 93-95 | 95 | 98 | 90-93 | 98 | 92-95 | 93-95 | 96-97 | - |
+| Lower leg (right) | 96-97 | 96-98 | 99 | 94-96 | 99 | 96-97 | 96-97 | 98 | - |
+| Foot (left) | 98-99 | 99 | 00 | 97-99 | 00 | 98-99 | 98-99 | 99 | - |
+| Foot (right) | 00 | 00 | - | 00 | - | 00 | 00 | 00 | - |
+
+### Dornach 1499 - gameplay-adjusted (before armour) - Bill
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding | Cover |
+|---|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-12 | 01-06 | 01-17 | 01-06 | 01-19 | 01-15 | 01-12 | 01-10 | 01-23 |
+| Skull (right) | 13-23 | 07-25 | 18-33 | 07-12 | 20-37 | 16-29 | 13-23 | 11-19 | 24-44 |
+| Face | 24-30 | 26-31 | 34-42 | 13-15 | 38-44 | 30 | 24-29 | 20-25 | 45-57 |
+| Neck | 31-34 | 32-35 | 43-48 | 16-17 | 45-51 | 31-36 | 30-33 | 26-29 | 58-65 |
+| Chest (left) | 35-40 | 36-38 | 49-54 | 18-23 | 52-54 | 37 | 34-38 | 30-34 | 66-68 |
+| Chest (right) | 41-45 | 39-47 | 55-59 | 24-29 | 55-57 | 38 | 39-43 | 35-39 | 69-70 |
+| Abdomen | 46-51 | 48-53 | 60-65 | 30-37 | 58-60 | 39 | 44-48 | 40-44 | 71 |
+| Groin / pelvis | 52-54 | 54-56 | 66-68 | 38-42 | 61 | 40 | 49-50 | 45-46 | - |
+| Upper back | 55-58 | 57-59 | 69-71 | 43-46 | 62-66 | 41-55 | 51-58 | 47-49 | 72 |
+| Lower back | 59-61 | 60-62 | 72-73 | 47-49 | 67-69 | 56-64 | 59-64 | 50-51 | - |
+| Shoulder (left) | 62-63 | 63 | 74-76 | 50-51 | 70 | 65 | 65-66 | 52-53 | 73-76 |
+| Shoulder (right) | 64 | 64 | 77 | 52 | 71 | 66 | 67 | 54 | 77-78 |
+| Upper arm (left) | 65-66 | 65 | 78-79 | 53-54 | 72 | 67 | 68-69 | 55-56 | 79-80 |
+| Upper arm (right) | 67-68 | 66-68 | 80-81 | 55-56 | 73 | 68 | 70-71 | 57-58 | 81-82 |
+| Forearm (left) | 69-71 | 69 | 82-84 | 57-59 | 74-77 | 69-70 | 72-73 | 59-64 | 83-86 |
+| Forearm (right) | 72-74 | 70-74 | 85-87 | 60-62 | 78-81 | 71-72 | 74-75 | 65-70 | 87-90 |
+| Hand (left) | 75-78 | 75-76 | 88-91 | 63-66 | 82-86 | 73-74 | 76-78 | 71-77 | 91-95 |
+| Hand (right) | 79-82 | 77-82 | 92-95 | 67-70 | 87-91 | 75-76 | 79-81 | 78-84 | 96-00 |
+| Thigh (left) | 83-86 | 83-84 | 96 | 71-77 | 92-93 | 77-82 | 82-86 | 85-87 | - |
+| Thigh (right) | 87-90 | 85-91 | 97 | 78-83 | 94-95 | 83-87 | 87-90 | 88-90 | - |
+| Knee (left) | 91 | - | - | 84-85 | 96 | 88 | 91 | 91 | - |
+| Knee (right) | 92 | 92-93 | - | 86-87 | 97 | 89 | 92 | 92 | - |
+| Lower leg (left) | 93-95 | 94 | 98 | 88-92 | 98 | 90-93 | 93-95 | 93-95 | - |
+| Lower leg (right) | 96-97 | 95-97 | 99 | 93-95 | 99 | 94-96 | 96-97 | 96-97 | - |
+| Foot (left) | 98-99 | 98 | 00 | 96-98 | 00 | 97-99 | 98-99 | 98-99 | - |
+| Foot (right) | 00 | 99-00 | - | 99-00 | - | 00 | 00 | 00 | - |
+
+### Dornach 1499 - gameplay-adjusted (before armour) - Axe
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding | Cover |
+|---|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-12 | 01-05 | 01-17 | 01-06 | 01-19 | 01-15 | 01-12 | 01-10 | 01-23 |
+| Skull (right) | 13-23 | 06-23 | 18-32 | 07-11 | 20-36 | 16-28 | 13-23 | 11-19 | 24-44 |
+| Face | 24-29 | 24-29 | 33-41 | 12-14 | 37-43 | 29 | 24-28 | 20-24 | 45-56 |
+| Neck | 30-33 | 30-33 | 42-47 | 15-16 | 44-50 | 30-34 | 29-32 | 25-28 | 57-64 |
+| Chest (left) | 34-39 | 34-36 | 48-52 | 17-22 | 51-53 | 35 | 33-37 | 29-32 | 65-66 |
+| Chest (right) | 40-44 | 37-44 | 53-56 | 23-27 | 54-55 | 36 | 38-41 | 33-36 | 67-68 |
+| Abdomen | 45-49 | 45-49 | 57-61 | 28-34 | 56-58 | 37 | 42-46 | 37-40 | 69 |
+| Groin / pelvis | 50-51 | 50-51 | 62-63 | 35-38 | 59 | - | 47-48 | 41-42 | - |
+| Upper back | 52-54 | 52-54 | 64-66 | 39-41 | 60-63 | 38-50 | 49-55 | 43-45 | 70 |
+| Lower back | 55-56 | 55-56 | 67-68 | 42-43 | 64-65 | 51-57 | 56-60 | 46-47 | - |
+| Shoulder (left) | 57-58 | 57 | 69-71 | 44-45 | 66-67 | 58 | 61-62 | 48-49 | 71-74 |
+| Shoulder (right) | 59 | 58-59 | 72 | 46 | 68 | 59 | 63 | 50 | 75-76 |
+| Upper arm (left) | 60-61 | 60 | 73-74 | 47-48 | 69-70 | 60 | 64-65 | 51-52 | 77-79 |
+| Upper arm (right) | 62-63 | 61-63 | 75-76 | 49-50 | 71 | 61 | 66-67 | 53-54 | 80-82 |
+| Forearm (left) | 64-66 | 64 | 77-79 | 51-53 | 72-75 | 62-63 | 68-69 | 55-60 | 83-86 |
+| Forearm (right) | 67-69 | 65-69 | 80-82 | 54-56 | 76-79 | 64-65 | 70-71 | 61-66 | 87-90 |
+| Hand (left) | 70-73 | 70-71 | 83-86 | 57-60 | 80-84 | 66-67 | 72-74 | 67-74 | 91-95 |
+| Hand (right) | 74-77 | 72-78 | 87-90 | 61-64 | 85-89 | 68-69 | 75-77 | 75-82 | 96-00 |
+| Thigh (left) | 78-82 | 79-80 | 91-92 | 65-72 | 90-91 | 70-76 | 78-82 | 83-86 | - |
+| Thigh (right) | 83-87 | 81-88 | 93-94 | 73-80 | 92-93 | 77-83 | 83-87 | 87-90 | - |
+| Knee (left) | 88 | 89 | 95 | 81-82 | 94 | 84-85 | 88 | 91 | - |
+| Knee (right) | 89 | 90-91 | 96 | 83-84 | 95 | 86-87 | 89 | 92 | - |
+| Lower leg (left) | 90-93 | 92-93 | 97 | 85-90 | 96-97 | 88-92 | 90-93 | 93-95 | - |
+| Lower leg (right) | 94-96 | 94-97 | 98 | 91-94 | 98 | 93-95 | 94-96 | 96-97 | - |
+| Foot (left) | 97-99 | 98 | 99 | 95-98 | 99 | 96-98 | 97-99 | 98-99 | - |
+| Foot (right) | 00 | 99-00 | 00 | 99-00 | 00 | 99-00 | 00 | 00 | - |
+
+### Dornach 1499 - gameplay-adjusted (before armour) - Dagger
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding | Cover |
+|---|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-10 | 01-05 | 01-13 | 01-05 | 01-15 | 01-13 | 01-10 | 01-08 | 01-18 |
+| Skull (right) | 11-19 | 06-20 | 14-25 | 06-10 | 16-29 | 14-25 | 11-19 | 09-15 | 19-35 |
+| Face | 20-27 | 21-27 | 26-36 | 11-14 | 30-38 | 26 | 20-26 | 16-22 | 36-50 |
+| Neck | 28-34 | 28-34 | 37-46 | 15-18 | 39-49 | 27-35 | 27-32 | 23-28 | 51-63 |
+| Chest (left) | 35-43 | 35-38 | 47-53 | 19-28 | 50-53 | 36 | 33-39 | 29-35 | 64-66 |
+| Chest (right) | 44-50 | 39-51 | 54-59 | 29-36 | 54-56 | 37 | 40-45 | 36-41 | 67-69 |
+| Abdomen | 51-59 | 52-59 | 60-66 | 37-48 | 57-60 | 38 | 46-52 | 42-48 | 70 |
+| Groin / pelvis | 60-63 | 60-62 | 67-69 | 49-55 | 61-62 | 39 | 53-55 | 49-51 | - |
+| Upper back | 64-68 | 63-67 | 70-73 | 56-60 | 63-69 | 40-61 | 56-65 | 52-55 | 71-72 |
+| Lower back | 69-72 | 68-70 | 74-76 | 61-64 | 70-72 | 62-73 | 66-73 | 56-58 | - |
+| Shoulder (left) | 73-74 | 71 | 77-79 | 65-66 | 73-74 | 74 | 74-75 | 59-60 | 73-76 |
+| Shoulder (right) | 75 | 72-73 | 80 | 67 | 75 | 75 | 76 | 61 | 77-78 |
+| Upper arm (left) | 76-77 | 74 | 81-82 | 68-69 | 76-77 | 76 | 77-78 | 62-63 | 79-80 |
+| Upper arm (right) | 78-79 | 75-77 | 83-84 | 70-71 | 78-79 | 77 | 79-80 | 64-65 | 81-82 |
+| Forearm (left) | 80-82 | 78 | 85-87 | 72-74 | 80-83 | 78-79 | 81-82 | 66-71 | 83-86 |
+| Forearm (right) | 83-85 | 79-83 | 88-90 | 75-77 | 84-87 | 80-81 | 83-84 | 72-77 | 87-90 |
+| Hand (left) | 86-89 | 84-85 | 91-94 | 78-81 | 88-92 | 82-84 | 85-87 | 78-85 | 91-95 |
+| Hand (right) | 90-93 | 86-92 | 95-98 | 82-85 | 93-97 | 85-87 | 88-90 | 86-93 | 96-00 |
+| Thigh (left) | 94-95 | 93 | 99 | 86-88 | 98 | 88-90 | 91-92 | 94-95 | - |
+| Thigh (right) | 96-97 | 94-96 | 00 | 89-91 | 99 | 91-93 | 93-94 | 96-97 | - |
+| Knee (left) | - | - | - | 92 | - | 94 | 95 | - | - |
+| Knee (right) | - | 97 | - | 93 | - | 95 | 96 | - | - |
+| Lower leg (left) | 98 | 98 | - | 94-95 | 00 | 96-97 | 97 | 98 | - |
+| Lower leg (right) | 99 | 99 | - | 96-97 | - | 98 | 98 | 99 | - |
+| Foot (left) | 00 | - | - | 98-99 | - | 99 | 99 | 00 | - |
+| Foot (right) | - | 00 | - | 00 | - | 00 | 00 | - | - |
+
+### Dornach 1499 - gameplay-adjusted (before armour) - Spiked club
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding | Cover |
+|---|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-14 | 01-07 | 01-19 | 01-08 | 01-21 | 01-18 | 01-14 | 01-12 | 01-25 |
+| Skull (right) | 15-27 | 08-28 | 20-36 | 09-15 | 22-41 | 19-34 | 15-27 | 13-23 | 26-47 |
+| Face | 28-35 | 29-35 | 37-46 | 16-19 | 42-49 | 35 | 28-33 | 24-29 | 48-61 |
+| Neck | 36-40 | 36-40 | 47-53 | 20-22 | 50-57 | 36-41 | 34-37 | 30-33 | 62-70 |
+| Chest (left) | 41-46 | 41-43 | 54-58 | 23-29 | 58-60 | 42 | 38-42 | 34-38 | 71-72 |
+| Chest (right) | 47-51 | 44-52 | 59-63 | 30-35 | 61-63 | 43 | 43-47 | 39-43 | 73-74 |
+| Abdomen | 52-57 | 53-58 | 64-68 | 36-44 | 64-66 | 44 | 48-52 | 44-48 | 75 |
+| Groin / pelvis | 58-60 | 59-61 | 69-70 | 45-49 | 67 | 45 | 53-54 | 49-50 | - |
+| Upper back | 61-64 | 62-64 | 71-73 | 50-53 | 68-72 | 46-61 | 55-62 | 51-53 | 76 |
+| Lower back | 65-67 | 65-67 | 74-75 | 54-56 | 73-75 | 62-70 | 63-68 | 54-55 | 77 |
+| Shoulder (left) | 68-69 | 68 | 76-77 | 57-58 | 76 | 71 | 69-70 | 56-57 | 78-80 |
+| Shoulder (right) | 70 | 69-70 | 78 | 59 | 77 | 72 | 71 | 58 | 81-82 |
+| Upper arm (left) | 71-72 | 71 | 79-80 | 60-61 | 78 | 73 | 72-73 | 59-60 | 83-84 |
+| Upper arm (right) | 73-74 | 72-74 | 81-82 | 62-63 | 79 | 74 | 74-75 | 61-62 | 85-86 |
+| Forearm (left) | 75-77 | 75 | 83-85 | 64-66 | 80-82 | 75-76 | 76-77 | 63-68 | 87-89 |
+| Forearm (right) | 78-80 | 76-80 | 86-88 | 67-69 | 83-85 | 77-78 | 78-79 | 69-74 | 90-92 |
+| Hand (left) | 81-84 | 81-82 | 89-92 | 70-73 | 86-90 | 79-80 | 80-82 | 75-81 | 93-96 |
+| Hand (right) | 85-87 | 83-88 | 93-96 | 74-77 | 91-95 | 81-82 | 83-85 | 82-88 | 97-00 |
+| Thigh (left) | 88-90 | 89 | 97 | 78-82 | 96 | 83-86 | 86-88 | 89-91 | - |
+| Thigh (right) | 91-93 | 90-94 | 98 | 83-87 | 97 | 87-90 | 89-91 | 92-93 | - |
+| Knee (left) | 94 | - | - | 88 | - | 91 | 92 | 94 | - |
+| Knee (right) | 95 | 95 | - | 89 | - | 92 | 93 | 95 | - |
+| Lower leg (left) | 96-97 | 96 | 99 | 90-93 | 98 | 93-95 | 94-95 | 96-97 | - |
+| Lower leg (right) | 98 | 97-98 | 00 | 94-96 | 99 | 96-97 | 96-97 | 98 | - |
+| Foot (left) | 99 | 99 | - | 97-99 | 00 | 98-99 | 98-99 | 99 | - |
+| Foot (right) | 00 | 00 | - | 00 | - | 00 | 00 | 00 | - |
+
+### Dornach 1499 - gameplay-adjusted (before armour) - Crossbow
+
+| Location | Normal | Weapon side | Higher | Lower | Down | Fleeing | Flanked | Warding | Cover |
+|---|---|---|---|---|---|---|---|---|---|
+| Skull (left) | 01-12 | 01-06 | 01-17 | 01-06 | 01-19 | 01-15 | 01-12 | 01-10 | 01-23 |
+| Skull (right) | 13-23 | 07-24 | 18-33 | 07-12 | 20-37 | 16-29 | 13-23 | 11-19 | 24-44 |
+| Face | 24-29 | 25-30 | 34-42 | 13-15 | 38-44 | 30 | 24-29 | 20-24 | 45-57 |
+| Neck | 30-33 | 31-34 | 43-47 | 16-17 | 45-50 | 31-35 | 30-32 | 25-27 | 58-64 |
+| Chest (left) | 34-39 | 35-37 | 48-53 | 18-24 | 51-53 | 36 | 33-38 | 28-33 | 65-67 |
+| Chest (right) | 40-45 | 38-47 | 54-58 | 25-30 | 54-56 | 37 | 39-43 | 34-38 | 68-69 |
+| Abdomen | 46-51 | 48-53 | 59-64 | 31-39 | 57-59 | 38 | 44-49 | 39-43 | 70 |
+| Groin / pelvis | 52-54 | 54-56 | 65-67 | 40-44 | 60 | 39 | 50-51 | 44-45 | - |
+| Upper back | 55-58 | 57-59 | 68-70 | 45-48 | 61-65 | 40-55 | 52-59 | 46-48 | 71-72 |
+| Lower back | 59-61 | 60-62 | 71-73 | 49-51 | 66-68 | 56-64 | 60-65 | 49-50 | - |
+| Shoulder (left) | 62-63 | 63 | 74-76 | 52-53 | 69-70 | 65 | 66-67 | 51-52 | 73-76 |
+| Shoulder (right) | 64 | 64-65 | 77 | 54 | 71 | 66 | 68 | 53 | 77-78 |
+| Upper arm (left) | 65-66 | 66 | 78-79 | 55-56 | 72-73 | 67 | 69-70 | 54-55 | 79-80 |
+| Upper arm (right) | 67-68 | 67-69 | 80-81 | 57-58 | 74-75 | 68 | 71-72 | 56-57 | 81-82 |
+| Forearm (left) | 69-71 | 70 | 82-84 | 59-61 | 76-79 | 69-70 | 73-74 | 58-63 | 83-86 |
+| Forearm (right) | 72-74 | 71-75 | 85-87 | 62-64 | 80-83 | 71-72 | 75-76 | 64-69 | 87-90 |
+| Hand (left) | 75-78 | 76-77 | 88-91 | 65-68 | 84-88 | 73-75 | 77-79 | 70-77 | 91-95 |
 | Hand (right) | 79-82 | 78-83 | 92-95 | 69-72 | 89-93 | 76-77 | 80-82 | 78-85 | 96-00 |
 | Thigh (left) | 83-86 | 84-85 | 96 | 73-78 | 94-95 | 78-82 | 83-86 | 86-88 | - |
 | Thigh (right) | 87-90 | 86-91 | 97 | 79-84 | 96-97 | 83-87 | 87-90 | 89-91 | - |
@@ -5108,9 +5535,9 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 ## Team generation
 
-### Medieval (c.1250-1460)
+### Medieval (c.1250-1500)
 
-**Medieval (c.1250-1460): a team in twenty minutes.** A player runs a team of four to six; the first member leads. Each character is made in five steps.
+**Medieval (c.1250-1500): a team in twenty minutes.** A player runs a team of four to six; the first member leads. Each character is made in five steps.
 
 **1. Characteristics:** Strength, Agility, Endurance, Wits, Nerve, Presence: roll 3d6 x 5 for each in order (15-90), or take the array 70, 60, 55, 50, 45, 35 and place it, highest first, in the order his career prefers (the GM may let him swap two).
 
@@ -5266,21 +5693,21 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Townswoman or castle household at a siege | 71-85 | Sling | Dropped stones on the besiegers' engines from the walls. |
 | Townswoman or castle household at a siege | 86-00 | Dodge | Rebuilt the barricades under the besiegers' shot. * |
 
-| Career | Latin East | Gotland and the Baltic | England | France | Portugal | Castile |
-|---|---|---|---|---|---|---|
-| Man-at-arms | Mail hauberk and helm; sword | Danish man-at-arms; sword | Brigandine, sallet and arm splints; sword | Full plate harness; sword | Coat of plates and mail; sword | Coat of plates and mail; sword |
-| Archer | Gambeson and cap; bow | Gotland levy: mail coif, padded coat; bow | Jack and sallet; longbow | Jack and sallet; longbow | Gambeson and cap; longbow | Gambeson and cap; bow |
-| Crossbowman | Hardened leather; crossbow | Gotland, better equipped: coif, coat of plates; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow |
-| Spearman or billman | Gambeson and cap; spear | Gotland levy: mail coif, padded coat; spear | Jack and sallet; bill | Jack and sallet; spear | Gambeson and cap; spear | Gambeson and cap; spear |
-| Mounted sergeant | Mail hauberk and helm; spear | Gotland, better equipped: coif, coat of plates; spear | Brigandine, sallet and arm splints; spear | Coat of plates and mail; spear | Mail hauberk and helm; spear | Mail hauberk and helm; spear |
-| Mercenary | Mail hauberk and helm; axe | Coat of plates and mail; axe | Brigandine, sallet and arm splints; axe | Brigandine, sallet and arm splints; axe | Coat of plates and mail; axe | Coat of plates and mail; axe |
-| Sailor | Unarmoured; dagger | Hardened leather; axe | Unarmoured; axe | Unarmoured; axe | Unarmoured; axe | Unarmoured; axe |
-| Clerk or priest | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
-| Barber-surgeon | Unarmoured; dagger | Unarmoured; dagger | Jack and sallet; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
-| Forester or huntsman | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow |
-| Servant or groom | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
-| Merchant | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword |
-| Townswoman or castle household at a siege | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger | Unarmoured; dagger |
+| Career | Latin East | Gotland and the Baltic | England | France | Portugal | Castile | Swiss Confederates | Swabian League and Landsknechte |
+|---|---|---|---|---|---|---|---|---|
+| Man-at-arms | Mail hauberk and helm; sword | Danish man-at-arms; sword | Brigandine; sword | Full plate harness; sword | Coat of plates and mail; sword | Coat of plates and mail; sword | Brigandine; poleaxe | Full plate harness; sword |
+| Archer | Gambeson and cap; bow | Gotland levy: mail coif; bow | Jack and sallet; longbow | Jack and sallet; longbow | Gambeson and cap; longbow | Gambeson and cap; bow | Gambeson and cap; matchlock | Gambeson and cap; matchlock |
+| Crossbowman | Hardened leather; crossbow | Gotland; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow |
+| Spearman or billman | Gambeson and cap; spear | Gotland levy: mail coif; spear | Jack and sallet; bill | Jack and sallet; spear | Gambeson and cap; spear | Gambeson and cap; spear | Brigandine; pike | Jack and sallet; pike |
+| Mounted sergeant | Mail hauberk and helm; spear | Gotland; spear | Brigandine; spear | Coat of plates and mail; spear | Mail hauberk and helm; spear | Mail hauberk and helm; spear | Mail hauberk and helm; spear | Mail hauberk and helm; spear |
+| Mercenary | Mail hauberk and helm; axe | Coat of plates and mail; axe | Brigandine; axe | Brigandine; axe | Coat of plates and mail; axe | Coat of plates and mail; axe | Coat of plates and mail; axe | Coat of plates and mail; axe |
+| Sailor | No armour; dagger | Hardened leather; axe | No armour; axe | No armour; axe | No armour; axe | No armour; axe | No armour; axe | No armour; axe |
+| Clerk or priest | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger |
+| Barber-surgeon | No armour; dagger | No armour; dagger | Jack and sallet; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger |
+| Forester or huntsman | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow |
+| Servant or groom | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger |
+| Merchant | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword |
+| Townswoman or castle household at a siege | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|
@@ -6908,7 +7335,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 **Trouble:** a job with a risk takes one d100 a term: at or under the risk, trouble. The GM uses the job's hook, or rolls d10 on the era's trouble table. Jobs marked † are against the law. **Keep:** a man his army does not feed pays a day's food from his purse, and a bed in a town, city, village or on the road; a job marked (fed) feeds him while he works. A day he cannot pay for food he goes hungry; a night without a bed he sleeps rough.
 
-### Medieval (c.1250-1460)
+### Medieval (c.1250-1500)
 
 | Job | Skill | Pay | Term | Where | Who | Risk |
 |---|---|---|---|---|---|---|
