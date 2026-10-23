@@ -6,10 +6,10 @@ name: strike
 
 on:
   pull_request:
-    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**"]
+    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**"]
   push:
     branches: [main]
-    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**"]
+    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**"]
   workflow_dispatch:
 
 permissions:
@@ -30,3 +30,4 @@ jobs:
       - run: python3 tools/strike/parity.py 5000 1
       - run: node tools/gm/test.js
       - run: node tools/net/test.mjs
+      - run: node tools/campaign/test.js

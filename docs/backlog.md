@@ -9,6 +9,13 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
+- **The campaign, first cut** (`docs/campaign.md`). A console page over the others: the phase,
+  what to do, where things stand, the campaign's log, and save and load of the whole game as a
+  file. Still left out: it guides rather than runs the pages' rules (the march day, weather, camp
+  and disease need the travel map's rules lifted out of the page first); it notices fights sent and
+  won, not the end of a day or season, a death or sickness; the pages do not link back to it; the
+  pages' state is still per page; players online join a fight, not the campaign. Next: lift the
+  travel map's day out of the page, so the console can run a march day itself.
 - **Virtual GM, first cut.** The roller's strike is decided with no page (`templates/strike.js`),
   each strike, wound and scripted move goes into an event log tagged with who may see it
   (`templates/gamelog.js`), and Run the fight plays each side as a player, the GM by hand, or the

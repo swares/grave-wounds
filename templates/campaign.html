@@ -1,0 +1,298 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grave Wounds Campaign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* The campaign: the GM's console over the pages. Phase, what to do and where things stand | the page itself */
+:root{
+  --bg:#e9ecee; --panel:#f6f7f8; --ink:#1b2127; --muted:#5b6670; --line:#c5ccd2;
+  --steel:#3f4f5d; --blood:#8e1b2c; --blood-soft:#f1d9dc; --warn:#a86512; --ok:#2f6b3a;
+  --display:"Alegreya SC",Georgia,serif; --body:"Alegreya Sans","Gill Sans","Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
+  --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --warn:#e3a14d; --ok:#7fc28a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
+  --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --warn:#e3a14d; --ok:#7fc28a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--body);padding-inline:16px;padding-block:20px 40px;margin:0}
+.wrap{max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 20px;border-bottom:2px solid var(--ink);padding-bottom:10px}
+h1{font:700 clamp(1.5rem,3.4vw,2.2rem)/1.1 var(--display);margin:0;letter-spacing:.01em}
+h2{font:700 1.05rem/1.2 var(--display);margin:0;letter-spacing:.04em;color:var(--steel)}
+.sub,.muted{color:var(--muted)}
+.sub{font-size:.92rem;margin:0;max-width:80ch}
+nav a{color:var(--blood);font-size:.9rem;margin-left:14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.top{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:1000px){.top{grid-template-columns:minmax(0,1fr)}}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select,input,button,textarea{font:inherit;color:var(--ink)}
+input[type=text],textarea{background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:6px 8px}
+button{cursor:pointer;border:1px solid var(--steel);background:transparent;border-radius:3px;padding:6px 12px}
+button.primary{background:var(--blood);border-color:var(--blood);color:#fff}
+button.small{padding:3px 9px;font-size:.85rem}
+button:disabled{opacity:.45;cursor:default}
+.phases{display:flex;flex-wrap:wrap;gap:0;list-style:none;margin:0;padding:0}
+.phases li button{border-radius:0;margin-left:-1px;font-family:var(--display);letter-spacing:.04em}
+.phases li:first-child button{border-radius:3px 0 0 3px}.phases li:last-child button{border-radius:0 3px 3px 0}
+.phases li button[aria-current="step"]{background:var(--steel);color:var(--panel);border-color:var(--steel)}
+.guide{margin:0;max-width:78ch}
+.guide li{margin:3px 0}
+.status{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;margin:0;font-size:.92rem}
+.status dt{color:var(--muted)}
+.status dd{margin:0}
+.notice{border-left:4px solid var(--warn);background:var(--blood-soft);padding:8px 12px;border-radius:0 3px 3px 0;margin:0}
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:16rem;overflow-y:auto;font-size:.9rem}
+.log li{border-left:3px solid var(--line);padding:2px 0 2px 8px}
+.log li b{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-right:6px}
+.log li.gm{border-left-color:var(--warn)}
+.frame{border:1px solid var(--line);border-radius:4px;background:var(--panel);overflow:hidden}
+.framebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:6px 10px;border-bottom:1px solid var(--line);font-size:.9rem}
+iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
+</style>
+<div class="wrap">
+  <header>
+    <div><h1>Campaign</h1>
+      <p class="sub">The GM's console over the pages: the phase the campaign is in, what to do in it, where things stand, and the page itself below. The pages keep their own state and hand pieces to each other; this page reads them and keeps the campaign's log.</p></div>
+    <nav><a href="../index.html">Home</a><a href="roller.html">Wound roller</a><a href="travel.html">Travel map</a><a href="field.html">Field map</a><a href="team.html">Team builder</a><a href="rules.html">Rule book</a></nav>
+  </header>
+
+  <div class="top">
+    <section class="panel" aria-labelledby="h-phase">
+      <div class="toolbar" style="justify-content:space-between">
+        <h2 id="h-phase">The campaign</h2>
+        <label class="muted">Name <input type="text" id="c-name" placeholder="A name for this campaign" style="width:16em"></label>
+      </div>
+      <ol class="phases" id="c-phases" aria-label="Phases"></ol>
+      <p class="notice" id="c-notice" hidden aria-live="polite"></p>
+      <div id="c-guide"></div>
+      <div class="toolbar" id="c-actions"></div>
+    </section>
+    <section class="panel" aria-labelledby="h-status">
+      <h2 id="h-status">Where things stand</h2>
+      <dl class="status" id="c-status"></dl>
+      <div class="toolbar" style="border-top:1px dashed var(--line);padding-top:8px">
+        <button type="button" class="small" id="c-save" title="Every page's state, the campaign's log with it, as one file">Save the game to a file</button>
+        <label class="small" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer"><span>Load a saved game</span><input type="file" id="c-load" accept=".json,application/json" style="max-width:14em"></label>
+        <button type="button" class="small" id="c-new" title="A new campaign log; the pages keep what they hold">New campaign</button>
+      </div>
+      <p class="muted" id="c-saved" style="margin:0;font-size:.85rem" aria-live="polite"></p>
+    </section>
+  </div>
+
+  <section class="panel" aria-labelledby="h-log">
+    <div class="toolbar" style="justify-content:space-between"><h2 id="h-log">Campaign log</h2>
+      <span class="toolbar"><label for="c-note" class="muted" style="position:absolute;left:-9999px">A note for the log</label><input type="text" id="c-note" placeholder="A note for the log" style="width:24em">
+        <label class="muted" style="display:inline-flex;gap:4px;align-items:center"><input type="checkbox" id="c-note-gm" checked> GM only</label>
+        <button type="button" class="small" id="c-add-note">Add note</button></span></div>
+    <ol class="log" id="c-log" aria-label="The campaign's log, newest first"></ol>
+  </section>
+
+  <section class="frame" aria-label="The page for this step">
+    <div class="framebar"><span id="c-showing" class="muted"></span>
+      <span class="toolbar"><a id="c-own-tab" href="team.html" target="_blank" rel="noopener">Open in its own tab</a></span></div>
+    <iframe id="c-frame" title="The page for this step" src="about:blank"></iframe>
+  </section>
+</div>
+
+<script>
+const CD = /*__CAMPAIGN_DATA__*/null;
+/*__GAMELOG_JS__*/
+/*__CAMPAIGN_JS__*/
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+const PAGE_NAMES = { "team.html": "Team builder", "travel.html": "Travel map", "roller.html": "Wound roller", "field.html": "Field map", "rules.html": "Rule book" };
+
+/* ---------- the campaign's record: its name, phase, log, and what has been noticed ---------- */
+let REC = null;
+function freshRecord(){                             // a new campaign: what the pages already hold is old news, not news to follow
+  const rec = { name: "", phase: "muster", log: [], seen: {}, started: new Date().toISOString() };
+  const st = CAMPAIGN.status(CAMPAIGN.read(localStorage), CD);
+  for (const phase of Object.keys(GUIDE)){
+    for (let s = CAMPAIGN.suggest(phase, st, rec.seen); s; s = CAMPAIGN.suggest(phase, st, rec.seen)) rec.seen[s.mark] = true;
+  }
+  return rec;
+}
+function loadRecord(){
+  try { REC = JSON.parse(localStorage.getItem(CAMPAIGN.RECORD) || "null") } catch { REC = null }   // unreadable: a fresh one
+  if (!REC || !Array.isArray(REC.log)) REC = freshRecord();
+  REC.seen ||= {};
+}
+function saveRecord(){
+  try { localStorage.setItem(CAMPAIGN.RECORD, JSON.stringify(REC)) }
+  catch { $("#c-saved").textContent = "The browser would not keep the campaign's log (storage is off or full)." }
+}
+const phaseOf = id => CAMPAIGN.PHASES.find(p => p.id === id) || CAMPAIGN.PHASES[0];
+function note(text, gm = false){                     // a line in the campaign's log, at today's day on the travel map
+  const st = CAMPAIGN.status(CAMPAIGN.read(localStorage), CD);
+  logEvent(REC.log, { round: st.travel?.day ?? null, type: "note", vis: gm ? [] : "public", data: { phase: REC.phase, text } });
+  saveRecord();
+}
+function setPhase(id, why = ""){
+  if (REC.phase === id) return;
+  REC.phase = id;
+  note(why || `On to the ${phaseOf(id).name.toLowerCase()}`);   // the log's own column says which phase
+}
+
+/* ---------- what to do in each phase ---------- */
+const bit = (cond, text) => (cond ? text : "");      // a piece of a line, there only when it applies
+function musterLines(st){
+  const era = bit(st.team.eraName, " (" + esc(st.team.eraName) + ")");
+  const team = st.team.men.length ? "The team: " + esc(st.team.men.join(", ")) + era + "." : "Make the team: choose the era and the region, then roll or pick four to six men.";
+  return [team, "Kit them out and buy from their purses if you want to.",
+    "<b>Send to the roller</b>: that makes them named men, whom the travel map, the roller and the field map all know."];
+}
+function marchLines(st){
+  const map = st.travel ? "On the map of " + esc(st.travel.mapName) + bit(st.travel.day, ", day " + st.travel.day) + "." : "Choose the campaign's map on the travel map.";
+  return [map,
+    "Put the team's force on it (or use one of the map's own), and in the roller put each named man <b>With</b> it on his card.",
+    "Plan the route, march, and make camp. Weather, food, the sick and the road's incidents come each day.",
+    "When the force meets the enemy, <b>Fight here</b> sends the fight to the roller (a skirmish) or the field map (a battle). This page notices and moves to the fight."];
+}
+function fightLines(st){
+  const sent = st.fight.sent;
+  const first = sent ? "A fight waits on the " + esc(PAGE_NAMES[sent.page]) + bit(sent.place, " at " + esc(sent.place)) + ": set it up there." : "Fight it on the roller (a few men) or the field map (units).";
+  return [first,
+    "On the roller, <b>Run the fight</b> lets the GM's script play the enemy, and <b>Play online</b> lets players join from their own computers.",
+    "When one side stands, mark who won in <b>After the fight</b> on the roller, or send the field map's result back to the travel map."];
+}
+const GUIDE = {
+  muster: musterLines,
+  march: marchLines,
+  fight: fightLines,
+  aftermath: () => [
+    "On the roller: first aid, then <b>After the fight</b> (deeds, loot, prisoners), and <b>To camp</b> for each named man's wounds.",
+    "On the travel map: the battle's result and the wounded reach the camp; wound fever and the sick follow over the nights.",
+    "Then on to downtime, or straight back to the march.",
+  ],
+  downtime: () => [
+    "In the team builder: find work, buy and mend kit, and at the end of the season roll experience, rank and age.",
+    "Replace the men lost, the era's way.",
+    "Then back to the march.",
+  ],
+};
+const NEXT = { muster: "march", march: "fight", fight: "aftermath", aftermath: "downtime", downtime: "march" };
+
+/* ---------- the page in the frame ---------- */
+function show(page){
+  const f = $("#c-frame");
+  if (!(f.getAttribute("src") || "").endsWith(page)) f.setAttribute("src", page);
+  $("#c-own-tab").href = page;
+  showing();
+}
+function showing(){                                   // which page the frame shows (it may have moved on itself: Fight here goes to the roller)
+  let page = $("#c-frame").getAttribute("src") || "";
+  try { page = $("#c-frame").contentWindow.location.pathname.split("/").pop() || page } catch { /* another origin: keep the src */ }
+  $("#c-showing").textContent = PAGE_NAMES[page] ? `Showing: ${PAGE_NAMES[page]}` : "";
+  if (PAGE_NAMES[page]) $("#c-own-tab").href = page;
+}
+
+/* ---------- the console ---------- */
+const plural = (n, one) => n + " " + one + (n === 1 ? "" : "s");
+function teamRow(t){
+  if (!t.men.length) return "not made yet";
+  const n = t.men.length;
+  return n + (n === 1 ? " man" : " men") + bit(t.lost, ", " + t.lost + " lost") + bit(t.prisoners, ", " + t.prisoners + " prisoners");
+}
+function namedRow(n){
+  if (!n.men) return "none yet (Send to the roller)";
+  return n.men + ": " + n.withForce + " with a force on the map" + bit(n.sick, ", " + n.sick + " sick or mending") + bit(n.dead, ", " + n.dead + " dead");
+}
+function mapRow(t){
+  if (!t) return "none chosen";
+  return t.mapName + bit(t.day, ", day " + t.day) + ", " + plural(t.forces, "force") + bit(t.fought, ", " + t.fought + " fought");
+}
+function fightRow(f){
+  if (f.sent) return "waiting on the " + PAGE_NAMES[f.sent.page] + bit(f.sent.place, " at " + f.sent.place);
+  if (f.roller) return "on the roller: " + f.roller.fighters + " fighters, " + f.roller.sides.join(" against ") + ", round " + f.roller.round + bit(f.roller.wonBy, ", won by " + f.roller.wonBy);
+  return "none";
+}
+function statusRows(st){
+  const rows = [["Team", teamRow(st.team)], ["Named men", namedRow(st.named)], ["Map", mapRow(st.travel)], ["Fight", fightRow(st.fight)]];
+  if (st.fight.fieldResult) rows.push(["Battle result", (st.fight.fieldResult.place || "?") + ": " + st.fight.fieldResult.lost + " lost, waiting for the travel map"]);
+  return rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("");
+}
+function render(){
+  const raw = CAMPAIGN.read(localStorage), st = CAMPAIGN.status(raw, CD), ph = phaseOf(REC.phase);
+  const s = CAMPAIGN.suggest(REC.phase, st, REC.seen);
+  if (s){                                             // the pages show the campaign has moved on: follow, once, and say so
+    REC.seen[s.mark] = true;
+    setPhase(s.phase, s.why);
+    $("#c-notice").textContent = s.why + ` On to: ${phaseOf(s.phase).name}.`;
+    $("#c-notice").hidden = false;
+    saveRecord();
+    return render();
+  }
+  if (document.activeElement !== $("#c-name")) $("#c-name").value = REC.name || "";   // not while the GM types it
+  $("#c-phases").innerHTML = CAMPAIGN.PHASES.map(p => `<li><button type="button" data-phase="${p.id}"${p.id === ph.id ? ' aria-current="step"' : ""}>${p.name}</button></li>`).join("");
+  const items = GUIDE[ph.id](st).map(x => "<li>" + x + "</li>").join("");
+  $("#c-guide").innerHTML = `<ul class="guide">${items}</ul>`;
+  const page = ph.id === "fight" && st.fight.sent ? st.fight.sent.page : ph.page;
+  const other = page === "roller.html" ? "field.html" : "roller.html";
+  const alt = bit(ph.id === "fight", `<button type="button" data-open="${other}">Open the ${PAGE_NAMES[other].toLowerCase()} instead</button>`);
+  const travel = bit(ph.id === "aftermath", '<button type="button" data-open="travel.html">Open the travel map</button>');
+  $("#c-actions").innerHTML = `<button type="button" class="primary" data-open="${page}">Open the ${PAGE_NAMES[page].toLowerCase()}</button>${alt}${travel}
+    <span style="flex:1"></span><button type="button" id="c-next">Done: on to ${phaseOf(NEXT[ph.id]).name.toLowerCase()}</button>`;
+  $("#c-status").innerHTML = statusRows(st);
+  $("#c-log").innerHTML = [...REC.log].reverse().map(e => `<li class="${e.vis === "public" ? "" : "gm"}"><b>${e.round ? "Day " + e.round : "–"}</b>${esc(phaseOf(e.data.phase).name)} · ${esc(e.data.text)}${e.vis === "public" ? "" : ' <span class="muted">(GM)</span>'}</li>`).join("")
+    || '<li class="muted">Nothing yet. The log fills as the campaign moves from phase to phase; add notes of your own.</li>';
+}
+
+$("#c-phases").addEventListener("click", e => { const b = e.target.closest("button[data-phase]"); if (b){ setPhase(b.dataset.phase, "chosen by the GM"); $("#c-notice").hidden = true; render(); show(phaseOf(b.dataset.phase).page) } });
+$("#c-actions").addEventListener("click", e => {
+  const o = e.target.closest("button[data-open]");
+  if (o) return show(o.dataset.open);
+  if (e.target.id === "c-next"){ const next = NEXT[REC.phase]; setPhase(next); $("#c-notice").hidden = true; render(); show(phaseOf(next).page) }
+});
+$("#c-name").addEventListener("change", e => { REC.name = e.target.value.trim(); saveRecord() });
+$("#c-add-note").addEventListener("click", () => {
+  const t = $("#c-note").value.trim();
+  if (!t) return;
+  note(t, $("#c-note-gm").checked);
+  $("#c-note").value = "";
+  render();
+});
+$("#c-note").addEventListener("keydown", e => { if (e.key === "Enter") $("#c-add-note").click() });
+$("#c-frame").addEventListener("load", showing);
+window.addEventListener("storage", e => { if (!e.key || e.key.startsWith(CAMPAIGN.PREFIX)) render() });   // a page in the frame wrote: look again
+setInterval(render, 3000);                             // and now and then, in case a write was missed
+
+/* ---------- the whole game as a file ---------- */
+$("#c-save").addEventListener("click", () => {
+  const f = CAMPAIGN.saveFile(CAMPAIGN.read(localStorage), REC.name);
+  const blob = new Blob([JSON.stringify(f, null, 1)], { type: "application/json" });
+  const a = document.createElement("a"), stamp = f.saved.slice(0, 16).replaceAll(":", "-");
+  a.href = URL.createObjectURL(blob);
+  a.download = `grave-wounds-${(REC.name || "campaign").replaceAll(/[^\w-]+/g, "-").toLowerCase()}-${stamp}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  $("#c-saved").textContent = `Saved ${Object.keys(f.keys).length} pages' state at ${f.saved.slice(11, 16)}.`;
+});
+$("#c-load").addEventListener("change", async e => {
+  const file = e.target.files[0]; if (!file) return;
+  try {
+    const keys = CAMPAIGN.checkFile(JSON.parse(await file.text()));
+    if (!confirm(`Load this saved game? Every page's state in this browser (the team, the maps, the fights, the campaign's log) is replaced by the file's ${Object.keys(keys).length} entries.`)) return;
+    for (const k of Object.keys(CAMPAIGN.read(localStorage))) localStorage.removeItem(k);
+    for (const [k, v] of Object.entries(keys)) localStorage.setItem(k, v);
+    loadRecord(); note(`Loaded the saved game ${file.name}`); render();
+    $("#c-frame").contentWindow?.location.reload();
+    $("#c-saved").textContent = `Loaded ${file.name}.`;
+  } catch (err){ $("#c-saved").textContent = `Could not load it: ${err.message}` }
+  finally { e.target.value = "" }
+});
+$("#c-new").addEventListener("click", () => {
+  if (!confirm("Start a new campaign log? The pages keep what they hold (the team, the maps, the fights); to clear those, use each page, or load a saved game.")) return;
+  REC = freshRecord(); saveRecord(); note("A new campaign"); $("#c-notice").hidden = true; render(); show("team.html");
+});
+
+loadRecord();
+render();
+show(phaseOf(REC.phase).page);
+</script>

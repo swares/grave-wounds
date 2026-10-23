@@ -3,6 +3,7 @@
     python build.py            -> dist/tables.pdf, dist/tables.md,
                                   dist/gravewounds-data.json, dist/roller.html, dist/travel.html,
                                   dist/field.html, dist/team.html, dist/rules.html (the rule book),
+                                  dist/campaign.html (the GM's console over the pages),
                                   index.html (start page for GitHub Pages)
 """
 from __future__ import annotations
@@ -2046,6 +2047,13 @@ def jobs_bundle(d, eid: str) -> dict | None:
     return {"jobs": [{k: j[k] for k in keep if k in j} for j in jobs(d, eid)["jobs"]], "trouble": J["trouble"]}
 
 
+def campaign_bundle(d) -> dict:
+    """What the campaign page needs: the maps' and eras' names, to say where the campaign stands."""
+    return {"generated": date.today().isoformat(),
+            "maps": {mid: {"name": m.get("name") or mid, "start_date": m.get("start_date")} for mid, m in d.maps.items()},
+            "eras": {eid: e.get("name") or eid for eid, e in d.teams.items()}}
+
+
 def team_bundle(d) -> dict:
     """What the team builder needs: every era's tables and old-wound location ranges (TD.eras;
     the page points TD.era and TD.ranges at the one chosen), and the names, kits and weapons its
@@ -2120,6 +2128,10 @@ def main() -> int:
     (DIST / "team.html").write_text(ghtml.replace("/*__TEAM_DATA__*/null", json.dumps(team_bundle(d), separators=(",", ":"))), encoding="utf-8")
     from gravewounds.rulebook import render as rule_book
     (DIST / "rules.html").write_text(rule_book(d, ROOT), encoding="utf-8")
+    ctpl = (ROOT / "templates" / "campaign.html").read_text(encoding="utf-8")       # the GM's console over the pages
+    chtml = ctpl.replace("/*__CAMPAIGN_JS__*/", (ROOT / "templates" / "campaign.js").read_text(encoding="utf-8"))
+    chtml = chtml.replace("/*__GAMELOG_JS__*/", (ROOT / "templates" / "gamelog.js").read_text(encoding="utf-8"))
+    (DIST / "campaign.html").write_text(chtml.replace("/*__CAMPAIGN_DATA__*/null", json.dumps(campaign_bundle(d), separators=(",", ":"))), encoding="utf-8")
     (ROOT / "index.html").write_text(index_page(d), encoding="utf-8")
     print("Built:", ", ".join(p.name for p in sorted(DIST.iterdir())), "+ index.html")
     return 0

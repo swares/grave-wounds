@@ -71,6 +71,11 @@ lifts mines with its men, carries them up in its vehicles, limbers, tows and unl
 aircraft (smoke, illumination at night, counter-battery fire, and moving batteries that are
 under it). See [docs/units.md](docs/units.md).
 
+**Campaign:** `dist/campaign.html` is the GM's console over the pages: muster, march, fight,
+aftermath and downtime, what to do in each, where the team, the map and the fight stand, the
+campaign's log, and the whole game saved to a file and loaded back. It follows the pages by itself
+when a fight is sent from the travel map or won. See [docs/campaign.md](docs/campaign.md).
+
 **Rule book:** `dist/rules.html` teaches the game: making a team, the fight, wounds, first
 aid and recovery, battles of hundreds, the march and the camp, and weather and works,
 following one team from the road to Towton into camp; then the other eras, guns and fire
