@@ -103,6 +103,14 @@ regions:
     names: [Hans, Karl, Werner, Günter, Heinz, Walter, Kurt, Helmut, Gerhard, Herbert, Wilhelm, Rudolf, Erich, Otto, Friedrich, Horst]
     bynames: [Müller, Schmidt, Schneider, Fischer, Weber, Meyer, Wagner, Becker, Schulz, Hoffmann, Koch, Richter]
     no_women: "German women served as auxiliaries and nurses, not in these careers."
+  - id: italy
+    name: "Italy (1940-1943)"
+    short: "Italian"
+    table: owens-wwii
+    colours: ["#8a7c55", "#7a6e4a", "#6b6040", "#e6e0d2"]
+    names: [Giuseppe, Giovanni, Antonio, Mario, Luigi, Francesco, Angelo, Vincenzo, Pietro, Salvatore, Carlo, Domenico, Bruno, Aldo, Renato, Umberto]
+    bynames: [Rossi, Russo, Ferrari, Esposito, Bianchi, Romano, Colombo, Ricci, Marino, Greco, Bruno, Gallo]
+    no_women: "Italian women served as Red Cross nurses, not in these careers."
   - id: soviet
     name: "The Soviet Union"
     table: owens-wwii

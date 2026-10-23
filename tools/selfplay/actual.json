@@ -37,6 +37,7 @@
  "redan-1855-june": {"won": 1, "objective": "held", "losses": "British 1,400", "short": "The columns are swept by grape in the open; the attack is called off"},
  "redan-1855": {"won": 1, "objective": "taken, then lost", "losses": "British heavy", "short": "British reach the salient, stall on the parapet, and are thrown back"},
  "sidon-1253": {"won": 1, "objective": null, "losses": "garrison heavy", "short": "The Damascenes break into the unfinished walls and cut the garrison down"},
+ "snipe-1942": {"won": 0, "objective": "held", "losses": "Axis armour far heavier", "short": "The six-pounders hold the hollow from dawn to dark; some 32 tanks and 5 SP guns burnt out round it for 72 British killed and wounded"},
  "towton-1461": {"won": 0, "objective": null, "losses": "Lancastrians far heavier", "short": "Hours of fighting; Norfolk arrives; the Lancastrian line breaks and is slaughtered in the rout"},
  "visby-1361": {"won": 1, "objective": null, "losses": "Gotlanders far heavier", "short": "The Danish professionals crush the Gotland levies"},
  "wagon-box-1867": {"won": 0, "objective": "held", "losses": "US 3 killed; warriors more", "short": "Breech-loaders hold the corral against mounted and foot attacks"},

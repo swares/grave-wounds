@@ -255,6 +255,21 @@ redan-1855-june:
     - "Russian infantry behind the breastwork"
     - "Riflemen on the line to the west"
     - "Riflemen on the line to the east"
+snipe-1942:
+  source: "https://en.wikipedia.org/wiki/Defence_of_Outpost_Snipe"
+  hold:
+    - "239 Battery's six-pounders (north and north-east)"
+    - "A Company's six-pounders (north-west and north)"
+    - "C Company's six-pounders (south-west)"
+    - "B Company's six-pounders (south-east)"
+    - "A Company's riflemen"
+    - "C Company's riflemen"
+    - "B Company's riflemen"
+    - "The carriers (scout and carrier platoons)"
+    - "7th Field Squadron's sappers"
+  withdraw:
+    - {unit: "47th RTR (Shermans and Crusaders)", at: 166, to: E}   # 09:00: 47th and 41st RTR pull back behind the ridge (Wikipedia; NZ official history)
+    - {unit: "41st RTR", at: 166, to: E}   # 09:00: 47th and 41st RTR pull back behind the ridge (Wikipedia; NZ official history)
 wagon-box-1867:
   source: "https://www.wyohistory.org/encyclopedia/wagon-box-fight-1867"
   hold:

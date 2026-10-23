@@ -490,21 +490,23 @@ conflicts:
       - "Military Wiki, 'Stahlhelm' (introduction of German and Allied steel helmets)."
 
   "WWII":
-    period: "1939-1945 (Bougainville 1943-45; Italy 1943-45)"
-    map: {bbox: [-10, -20, 170, 60], sites: [{name: Italy (Cassino), lat: 41.49, lon: 13.81}, {name: Bougainville, lat: -6.20, lon: 155.40}]}
+    period: "1939-1945 (El Alamein 1942; Bougainville 1943-45; Italy 1943-45)"
+    map: {bbox: [-10, -20, 170, 60], sites: [{name: El Alamein (Snipe), lat: 30.82, lon: 28.76}, {name: Italy (Cassino), lat: 41.49, lon: 13.81}, {name: Bougainville, lat: -6.20, lon: 155.40}]}
     summary: >
       The Allies against the Axis. This group's tables come from two theatres: the
       jungle campaign on Bougainville in the Solomon Islands (US Marines and Army against
       the Imperial Japanese Army) and the Italian campaign (US, British and Commonwealth
       forces against the German army). Mortars and artillery caused half of the
-      Bougainville wounds.
+      Bougainville wounds. The game's other front, North Africa, uses the Owens table too: at
+      Snipe, by El Alamein, on 27 October 1942 a British motor battalion's six-pounders held a
+      hollow in the desert against German and Italian tanks from dawn to dark.
     sides:
       - name: "Allies"
         who: "US Army and Marine Corps; British and Commonwealth armies in Italy; the Australian army, which took over Bougainville from late 1944."
         armour: "Steel helmets (M1, Brodie) for all infantry, no body armour. Bomber crews wore steel-plate flak vests from 1943."
         look: {colour: "#5d6449", helmet: m1}
       - name: "Axis"
-        who: "Imperial Japanese Army; German Wehrmacht."
+        who: "Imperial Japanese Army; German Wehrmacht; the Italian Regio Esercito in North Africa."
         armour: "Steel helmets (Japanese Type 90, German Stahlhelm); no infantry body armour."
         look: {colour: "#6f7569", helmet: stahlhelm}
     examples:
@@ -514,9 +516,12 @@ conflicts:
       - {name: "US bomber waist gunner", side: "Allies", kit: aircrew_flak, weapon: machine_gun, notes: "Flak vest and helmet; not an infantry kit.", image: {file: "B-17 waist gunner LCCN2004661756.jpg", caption: "B-17 waist gunner, wartime drawing, 1942 (Library of Congress)"}}
       - {name: "British infantryman, Italy", side: "Allies", kit: ww2_rifleman, weapon: rifle_service, notes: "Brodie helmet, Lee-Enfield; Eighth Army.", look: {colour: "#7a6e48", helmet: brodie}, image: {file: "The British Army in Italy, April 1944 TR1708.jpg", caption: "Corporal of the Duke of Cornwall's Light Infantry in Italy, April 1944"}}
       - {name: "Australian infantryman, Bougainville 1945", side: "Allies", kit: none, weapon: pistol_smg, notes: "Often a slouch hat rather than a helmet in the jungle; Owen submachine gun.", look: {colour: "#5d6449", hat: slouch}, image: {file: "AWM 078546 Australian 42nd Battalion patrol on Bougainville.jpg", caption: "Australian 42nd Battalion patrol on Bougainville, January 1945"}}
+      - {name: "British rifleman, Snipe", side: "Allies", kit: ww2_rifleman, weapon: rifle_service, notes: "2nd Rifle Brigade, a motor battalion: Brodie helmet, Lee-Enfield, dug in by a six-pounder in the soft sand."}
+      - {name: "Italian tank crewman, Littorio", side: "Axis", kit: none, weapon: pistol_smg, notes: "A carrista of the 133rd Tank Regiment's M14/41s: leather helmet, Beretta pistol."}
       - {name: "German paratrooper, Cassino", side: "Axis", kit: ww2_rifleman, weapon: pistol_smg, notes: "Rimless paratrooper helmet, MP 40; fought as infantry.", look: {helmet: fj}, image: {file: "Bundesarchiv Bild 146-1974-006-62, Bei Monte Cassino, Fallschirmjäger.jpg", caption: "German paratrooper near Monte Cassino, February 1944 (Bundesarchiv)"}}
     sources:
       - "Borden Institute, Weapons Effects and War Wounds, Table 1-1 (Bougainville causes of injury)."
+      - "Project doc snipe-research (Snipe: Wikipedia after Pitt and Latimer, the New Zealand official history, the US Intelligence Bulletin)."
 
   "Korea":
     period: "1950-1953"

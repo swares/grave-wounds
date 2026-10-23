@@ -265,6 +265,8 @@ armies:
                    others: [[english, 60, [20, 60]], [french, 5, [5, 40]]]}
     germany: {own: [[german, 95], [polish, 5]], enemy: russian,
               others: [[german, 60, [20, 60]], [french, 15, [5, 40]], [english, 10, [5, 40]], [russian, 5, [5, 30]]]}
+    italy: {own: [[italian, 100]], enemy: english,
+            others: [[german, 10, [5, 40]], [english, 5, [5, 30]], [arabic, 5, [5, 30]], [french, 5, [10, 40]]]}   # shares our estimate; dialects (Sicilian, Sardinian, Friulian) counted as Italian
     soviet: {own: [[russian, 75], [ukrainian, 15], [uzbek, 10]], enemy: german,
              others: [[russian, 60, [10, 50]], [german, 10, [5, 30]]]}
     japan: {own: [[japanese, 100]], enemy: english,
@@ -352,6 +354,7 @@ maps:                          # the tongue (or tongues, main first) of the peop
   serbia-1915: albanian        # Kosovo, Albania and western Macedonia, where the retreat went; its towns name their own (Serbian, Bulgarian, Turkish...)
   sevastopol-1855: russian
   sidon-1253: arabic
+  snipe-1942: arabic          # the Bedouin of the coast; the desert by Snipe was empty of villages
   towton-1461: english
   visby-1361: gutnish
   wanat-2008: nuristani

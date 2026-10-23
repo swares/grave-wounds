@@ -1508,14 +1508,14 @@ Confidence: **Historical - taken directly from a source** · Armour: **already r
 Sources:
 - Borden Institute, Weapons Effects and War Wounds, ch. 1, Table 1-2: anatomical distribution of primary penetrating wounds (%): head/neck/face 17, thorax 4, abdomen 2, extremity 70, other 7.
 
-# WWII (1939-1945 (Bougainville 1943-45; Italy 1943-45))
+# WWII (1939-1945 (El Alamein 1942; Bougainville 1943-45; Italy 1943-45))
 
-The Allies against the Axis. This group's tables come from two theatres: the jungle campaign on Bougainville in the Solomon Islands (US Marines and Army against the Imperial Japanese Army) and the Italian campaign (US, British and Commonwealth forces against the German army). Mortars and artillery caused half of the Bougainville wounds.
+The Allies against the Axis. This group's tables come from two theatres: the jungle campaign on Bougainville in the Solomon Islands (US Marines and Army against the Imperial Japanese Army) and the Italian campaign (US, British and Commonwealth forces against the German army). Mortars and artillery caused half of the Bougainville wounds. The game's other front, North Africa, uses the Owens table too: at Snipe, by El Alamein, on 27 October 1942 a British motor battalion's six-pounders held a hollow in the desert against German and Italian tanks from dawn to dark.
 
 | Side | Who | Armour |
 |---|---|---|
 | Allies | US Army and Marine Corps; British and Commonwealth armies in Italy; the Australian army, which took over Bougainville from late 1944. | Steel helmets (M1, Brodie) for all infantry, no body armour. Bomber crews wore steel-plate flak vests from 1943. |
-| Axis | Imperial Japanese Army; German Wehrmacht. | Steel helmets (Japanese Type 90, German Stahlhelm); no infantry body armour. |
+| Axis | Imperial Japanese Army; German Wehrmacht; the Italian Regio Esercito in North Africa. | Steel helmets (Japanese Type 90, German Stahlhelm); no infantry body armour. |
 
 **Example combatants**
 
@@ -1527,9 +1527,11 @@ The Allies against the Axis. This group's tables come from two theatres: the jun
 | US bomber waist gunner | Allies | Aircrew flak vest and helmet (WWII bomber crew) | Machine gun | Flak vest and helmet; not an infantry kit. | [B-17 waist gunner, wartime drawing, 1942 (Library of Congress)](https://commons.wikimedia.org/wiki/File:B-17_waist_gunner_LCCN2004661756.jpg) |
 | British infantryman, Italy | Allies | Steel helmet only (1915-1950s rifleman) | Service rifle (bolt or semi-auto, 1914-53) | Brodie helmet, Lee-Enfield; Eighth Army. | [Corporal of the Duke of Cornwall's Light Infantry in Italy, April 1944](https://commons.wikimedia.org/wiki/File:The_British_Army_in_Italy%2C_April_1944_TR1708.jpg) |
 | Australian infantryman, Bougainville 1945 | Allies | Unarmoured | Pistol or submachine gun | Often a slouch hat rather than a helmet in the jungle; Owen submachine gun. | [Australian 42nd Battalion patrol on Bougainville, January 1945](https://commons.wikimedia.org/wiki/File:AWM_078546_Australian_42nd_Battalion_patrol_on_Bougainville.jpg) |
+| British rifleman, Snipe | Allies | Steel helmet only (1915-1950s rifleman) | Service rifle (bolt or semi-auto, 1914-53) | 2nd Rifle Brigade, a motor battalion: Brodie helmet, Lee-Enfield, dug in by a six-pounder in the soft sand. |  |
+| Italian tank crewman, Littorio | Axis | Unarmoured | Pistol or submachine gun | A carrista of the 133rd Tank Regiment's M14/41s: leather helmet, Beretta pistol. |  |
 | German paratrooper, Cassino | Axis | Steel helmet only (1915-1950s rifleman) | Pistol or submachine gun | Rimless paratrooper helmet, MP 40; fought as infantry. | [German paratrooper near Monte Cassino, February 1944 (Bundesarchiv)](https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_146-1974-006-62%2C_Bei_Monte_Cassino%2C_Fallschirmj%C3%A4ger.jpg) |
 
-Sources: Borden Institute, Weapons Effects and War Wounds, Table 1-1 (Bougainville causes of injury).
+Sources: Borden Institute, Weapons Effects and War Wounds, Table 1-1 (Bougainville causes of injury). Project doc snipe-research (Snipe: Wikipedia after Pitt and Latimer, the New Zealand official history, the US Intelligence Bulletin).
 
 **Quick-play: men down per 100 tries**
 
@@ -5477,6 +5479,9 @@ Penalties add up; each total is capped at -60%.
 | Western Portugal, Atlantic Mediterranean | high/low °F | 57/41 | 59/43 | 64/46 | 66/48 | 72/54 | 77/57 | 82/61 | 82/61 | 79/59 | 72/54 | 63/46 | 59/43 |
 |  | (°C) | 14/5 | 15/6 | 18/8 | 19/9 | 22/12 | 25/14 | 28/16 | 28/16 | 26/15 | 22/12 | 17/8 | 15/6 |
 |  | wet days | 12 | 11 | 9 | 10 | 8 | 4 | 2 | 2 | 5 | 10 | 12 | 13 |
+| Egyptian Mediterranean coast, desert | high/low °F | 64/46 | 66/46 | 70/50 | 75/54 | 81/59 | 84/66 | 86/70 | 88/72 | 86/68 | 82/63 | 73/55 | 68/50 |
+|  | (°C) | 18/8 | 19/8 | 21/10 | 24/12 | 27/15 | 29/19 | 30/21 | 31/22 | 30/20 | 28/17 | 23/13 | 20/10 |
+|  | wet days | 6 | 4 | 3 | 1 | 1 | 0 | 0 | 0 | 0 | 1 | 3 | 5 |
 | Upper Jordan valley, hot and dry | high/low °F | 64/48 | 66/48 | 72/52 | 79/57 | 88/64 | 93/70 | 99/75 | 100/77 | 95/73 | 88/66 | 77/57 | 68/50 |
 |  | (°C) | 18/9 | 19/9 | 22/11 | 26/14 | 31/18 | 34/21 | 37/24 | 38/25 | 35/23 | 31/19 | 25/14 | 20/10 |
 |  | wet days | 11 | 9 | 7 | 3 | 1 | 0 | 0 | 0 | 0 | 2 | 5 | 9 |
@@ -6837,21 +6842,21 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Army auxiliary | 71-85 | Watch | Tracked raiders on the rangefinder at night. |
 | Army auxiliary | 86-00 | Dodge | Was on the gun site when the bombs fell. * |
 
-| Career | The United States in Europe | US Marines and Army in the Pacific | The British Commonwealth | Germany | The Soviet Union | Japan |
-|---|---|---|---|---|---|---|
-| Rifleman | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
-| Machine gunner | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg |
-| Grenadier or anti-tank man | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
-| Sniper or scout | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
-| Combat engineer or sapper | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
-| Medic or stretcher-bearer | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
-| Radio operator or signaller | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
-| Corporal or sergeant | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
-| Junior officer | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
-| Paratrooper or commando | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
-| Tank crewman | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
-| Army nurse | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch |
-| Army auxiliary | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch | Unarmoured; punch |
+| Career | The United States in Europe | US Marines and Army in the Pacific | The British Commonwealth | Germany | Italian | The Soviet Union | Japan |
+|---|---|---|---|---|---|---|---|
+| Rifleman | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
+| Machine gunner | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg | Steel helmet only; mg |
+| Grenadier or anti-tank man | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
+| Sniper or scout | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
+| Combat engineer or sapper | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
+| Medic or stretcher-bearer | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
+| Radio operator or signaller | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle | Steel helmet only; rifle |
+| Corporal or sergeant | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
+| Junior officer | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
+| Paratrooper or commando | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
+| Tank crewman | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg | Steel helmet only; pistol/smg |
+| Army nurse | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch |
+| Army auxiliary | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch | No armour; punch |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|

@@ -77,6 +77,19 @@ assigned:
   source:
     url: https://forum.axishistory.com/viewtopic.php?p=2360083
     note: 1942 replacement figures
+- id: draft_class
+  name: A man of the next draft class
+  regions:
+  - italy
+  careers: any
+  terms: 1
+  wait:
+  - 30
+  - 120
+  what: Italy's men served 18 months by law, held on for the duration in war; each year's draft class reported in April and was trained before it was sent overseas.
+  source:
+    url: https://mobile.lonesentry.com/articles/intelligence-report/italian-soldier.html
+    note: US Intelligence Bulletin, December 1942 (the wait is our estimate)
 - id: field_replacement
   name: A man from a field replacement unit
   regions:

@@ -53,7 +53,7 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
   Jacob's Ford (1179), Crécy (1346), Aljubarrota (1385), Agincourt (1415), Towton (1461), Dornach (1499), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
   Lane (1814), Sevastopol (1855, two battlefields), First Bull Run (1861), Fort Phil Kearny (1866-67, with two battlefields), Mons
-  (1914), Beaumont-Hamel (1916), the Serbian retreat (1915, the Babuna pass), Hill 700 on Bougainville (1944), Anzio and Cisterna (1944), Osan (1950), Chipyong-ni
+  (1914), Beaumont-Hamel (1916), Snipe at El Alamein (1942), the Serbian retreat (1915, the Babuna pass), Hill 700 on Bougainville (1944), Anzio and Cisterna (1944), Osan (1950), Chipyong-ni
   (1951), the Ia Drang (1965), Mogadishu (1993), Wanat (2008), Cassino (1944, three battlefields), the Chosin Reservoir (1950), Kapyong (1951), Heartbreak Ridge (1951), Pork Chop Hill (1953), Hue (1968), Khe Sanh (1968), Dak To (1967), Hamburger Hill (1969), Goose Green (1982), 73 Easting (1991), Grozny (1995), Fallujah (2004) and COP Keating (2009) have both a campaign map and a battlefield. The rest of Italy, the rest of the Gulf War (1991) and Northern Ireland
   still play on the generic valley and open ground (the unit rules for them are in: machine
   guns, extended order, artillery and mortars on call, suppression). Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
@@ -266,6 +266,30 @@ When an item is done, delete it here and note it in the pull request that closes
   paper were not read in full; the Ayyubid ranks (amir, mamluk, halqa) are not a ladder of their
   own; Kurdish and Persian are new tongues with estimated shares. In self-play the storming column
   does not go in through the breach.
+- **Snipe and Italy, first cut.** The El Alamein map of the northern sector (1 km, from 26 October
+  1942), the Snipe battlefield (27 October, first light to dark, the 19 six-pounders by company
+  sector against the German and Italian armour, 24th Armoured Brigade coming and going), a new
+  Egyptian coast climate, and Italy (1940-1943) as a Second World War army: Italian names, the Owens
+  WWII table, lire at about 0.96 a day (a private's $1.51 a month in the US Intelligence Bulletin of
+  December 1942, at 5.26 cents a lira: our arithmetic), the next draft class as replacements, Italian
+  as its tongue (project doc "snipe-research"). Still left out: no grid reference or survey for Kidney,
+  Snipe or Woodcock (derived from Wikipedia's distances to Aqqaqir; Wikipedia's own Snipe point is 24
+  km off); the guns one by one (only by company sector), the hollow's depth and the ridges; which way
+  each Axis attack came and the strength of those the accounts do not number (ours); whether the
+  armies moved their clocks back to GMT+2 at midnight on 26/27 October (the field keeps GMT+3,
+  which the sources' times fit); the friendly fire of 47th RTR and the 11th RHA's Priests, the
+  British artillery (its observer lost at 04:00), Toms's jeep run and the ammunition crisis (the
+  rules' 40 rounds a gun, never refilled here); the Italian names and ranks are our reading, its ages
+  take the British 18 to 41, its pay steps the American, its war supplement and any prices were not
+  found; the M13s, M14s and Semoventi play as light armour and the Panzers as heavy, all with the
+  tank kind's one gun; the camelthorn is not drawn (the rules' scrub keeps tanks out). No desert or
+  tank-crew wound table yet: Chute's 1942 Eighth Army report on tank casualties (every casualty of
+  one regiment by crew position, injury and cause; about 30% flash burns; 15-25% hit after bailing
+  out) would make one, but it lies in an archive not reached; until then the Owens table stands.
+  In self-play the battalion does not hold (0 of 3: every British unit gone by about 10:30, 40% of
+  its men down to the Axis 14%; in fact 72 of under 300 hit and some 37 tanks and SP guns burnt
+  out): the first use of anti-tank guns on a battlefield, a lead for the self-play review, not
+  tuned here.
 - **Beaumont-Hamel and the Newfoundland Regiment, first cut.** The Somme map from Doullens to
   Bapaume (1 km, from 30 June 1916), the battlefield on the ground of the Newfoundland Park (the
   87th Brigade at 07:30, the Newfoundlanders at 09:15, the Essex at 09:55), and Newfoundland as a
