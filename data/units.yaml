@@ -1073,7 +1073,7 @@ commander:
   #   upright under two machine guns and lost 30 men in two exchanges; in 1982 it went to ground.
   #   Fire and movement became standard infantry practice from 1917-18; the Germans at Mons in
   #   1914 came on in close order and took the losses. Design choice.
-  bounds_all: [WWII, Korea, Vietnam, Late 20th century, Iraq & Afghanistan]
+  bounds_all: []
   # leave_disabled: attacking, a vehicle unit with some vehicles still able to move abandons its
   #   immobilised ones and goes on (their crews bail out, as the GM's Abandon). Self-play: at 73
   #   Easting a platoon with one M1 immobilised stayed where it was for the rest of the battle.
