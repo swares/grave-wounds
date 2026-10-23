@@ -4247,7 +4247,7 @@ function noTarget(us, i, ctx, off){                // no enemy to go for: attack
   return toward(us, i, null, ctx, attack ? "advance" : "fall_back");
 }
 function attackObjective(us, i, t, ctx, off){      // attacking with a target: at the objective it holds; else its best order, or an advance when that is only to stand or turn and the target is not guarding the objective
-  if (off <= objectiveRadii(ctx[1])[0]) return bestOrder(us, i, t, [ctx[0], ctx[1], "hold", ctx[3], ctx[4]]);
+  if (off <= objectiveRadii(ctx[1])[0] && offObjective(knownAt(us, t, ctx[3]), objectiveOf(ctx[1])) > objectiveRadii(ctx[1])[0]) return bestOrder(us, i, t, [ctx[0], ctx[1], "hold", ctx[3], ctx[4]]);
   const o = bestOrder(us, i, t, ctx);
   if ((o !== null && o.act !== "turn") || guards(knownAt(us, t, ctx[3]), ctx[1])) return o;
   return toward(us, i, t, ctx, "advance") || o;
