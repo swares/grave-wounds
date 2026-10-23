@@ -88,7 +88,7 @@ iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
 
   <section class="panel" aria-labelledby="h-log">
     <div class="toolbar" style="justify-content:space-between"><h2 id="h-log">Campaign log</h2>
-      <span class="toolbar"><input type="text" id="c-note" placeholder="A note for the log" style="width:24em">
+      <span class="toolbar"><label for="c-note" class="muted" style="position:absolute;left:-9999px">A note for the log</label><input type="text" id="c-note" placeholder="A note for the log" style="width:24em">
         <label class="muted" style="display:inline-flex;gap:4px;align-items:center"><input type="checkbox" id="c-note-gm" checked> GM only</label>
         <button type="button" class="small" id="c-add-note">Add note</button></span></div>
     <ol class="log" id="c-log" aria-label="The campaign's log, newest first"></ol>

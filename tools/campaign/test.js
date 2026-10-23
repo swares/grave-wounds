@@ -74,7 +74,8 @@ check("a save file holds every entry as stored, but never the narrator's", () =>
   const raw = C.read(store(pages)), f = C.saveFile({ ...raw, "gravewounds-narrator": "{}" }, "Towton");
   assert.equal(f.format, "grave-wounds-save");
   assert.ok(!("gravewounds-narrator" in f.keys));
-  const back = C.checkFile(JSON.parse(JSON.stringify(f)));
+  const text = JSON.stringify(f);                  // as the file is written, then read back
+  const back = C.checkFile(JSON.parse(text));
   assert.deepEqual(back, raw);
 });
 check("a file that is not a save, or a damaged one, is refused", () => {

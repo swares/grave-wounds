@@ -37,8 +37,12 @@ def page_in_frame(pg):
     return pg.frames[1]
 
 
+PHASE = "() => REC.phase"
+NO_TEAM = "not made yet"
+
+
 def phase_of(pg) -> str:
-    return str(pg.evaluate("() => REC.phase"))
+    return str(pg.evaluate(PHASE))
 
 
 def status_of(pg) -> str:
@@ -59,7 +63,7 @@ with sync_playwright() as p:
     ctx.on("weberror", lambda e: errors.append(str(e.error)))
     pg.on("dialog", lambda d: d.accept())
     pg.goto(BASE + "campaign.html"); pg.evaluate("() => localStorage.clear()"); pg.reload()
-    check(phase_of(pg) == "muster" and "not made yet" in status_of(pg), "a new campaign starts at the muster, with no team")
+    check(phase_of(pg) == "muster" and NO_TEAM in status_of(pg), "a new campaign starts at the muster, with no team")
     pg.wait_for_function("() => document.querySelector('#c-showing').textContent.includes('Team builder')", timeout=15000)
     check(True, "the team builder is in the frame")
     # the team, made in the team builder in the frame
@@ -70,8 +74,8 @@ with sync_playwright() as p:
     pg.wait_for_function("() => document.querySelector('#c-showing').textContent.includes('Travel map')", timeout=15000)
     check(phase_of(pg) == "march", "Done moves to the march, with the travel map in the frame")
     # the travel map's state, then a fight sent from it, as Fight here writes it
-    page_in_frame_of(pg).evaluate(f"""() => localStorage.setItem('gravewounds-travel', {J(J({"mapId": "towton-1461", "forces": {"towton-1461": [{"side": "York"}, {"side": "Lancaster"}]}, "clock": {"towton-1461": {"day": 3, "used": 4}}, "fought": []}))})""")
-    page_in_frame_of(pg).evaluate(f"""() => localStorage.setItem('gravewounds-handoff', {J(J({"from": "travel", "force": {"name": "Will's lances", "side": "York"}, "place": "Ferrybridge", "foes": [{"name": "Clifford's flankers"}]}))})""")
+    page_in_frame(pg).evaluate(f"""() => localStorage.setItem('gravewounds-travel', {J(J({"mapId": "towton-1461", "forces": {"towton-1461": [{"side": "York"}, {"side": "Lancaster"}]}, "clock": {"towton-1461": {"day": 3, "used": 4}}, "fought": []}))})""")
+    page_in_frame(pg).evaluate(f"""() => localStorage.setItem('gravewounds-handoff', {J(J({"from": "travel", "force": {"name": "Will's lances", "side": "York"}, "place": "Ferrybridge", "foes": [{"name": "Clifford's flankers"}]}))})""")
     pg.wait_for_function("() => REC.phase === 'fight'", timeout=6000)
     notice = pg.inner_text("#c-notice")
     check("Ferrybridge" in notice and "Fight" in notice, f"a fight sent from the travel map moves the console to the fight ({notice})")
@@ -81,7 +85,7 @@ with sync_playwright() as p:
     pg.click('#c-actions button.primary')
     pg.wait_for_function("() => document.querySelector('#c-showing').textContent.includes('Wound roller')", timeout=15000)
     pg.wait_for_function("() => { try { return typeof document.querySelector('#c-frame').contentWindow.renderChars === 'function' } catch { return false } }", timeout=15000)
-    page_in_frame_of(pg).evaluate("() => { S.wonBy = 'York'; renderChars() }")   # the GM marks the winner in After the fight
+    page_in_frame(pg).evaluate("() => { S.wonBy = 'York'; renderChars() }")   # the GM marks the winner in After the fight
     pg.wait_for_function("() => REC.phase === 'aftermath'", timeout=6000)
     check("York won" in pg.inner_text("#c-notice"), "a fight won on the roller moves the console to the aftermath")
     # notes
@@ -99,16 +103,16 @@ with sync_playwright() as p:
     # cleared, then loaded back
     save_path = Path(dl.value.path())
     pg.evaluate("() => { for (const k of Object.keys(localStorage)) if (k !== 'gravewounds-narrator') localStorage.removeItem(k) }"); pg.reload()
-    check(pg.evaluate("() => REC.phase") == "muster" and "not made yet" in status_of(pg), "cleared, the console is back at a new campaign")
+    check(pg.evaluate(PHASE) == "muster" and NO_TEAM in status_of(pg), "cleared, the console is back at a new campaign")
     pg.set_input_files("#c-load", str(save_path))
     pg.wait_for_function("() => REC.phase === 'aftermath'", timeout=6000)
-    check(" men" in status_of(pg) and "not made yet" not in status_of(pg) and "Loaded the saved game" in pg.inner_text("#c-log"), "loading the file brings back the team, the phase and the log")
+    check(" men" in status_of(pg) and NO_TEAM not in status_of(pg) and "Loaded the saved game" in pg.inner_text("#c-log"), "loading the file brings back the team, the phase and the log")
     check(pg.evaluate("() => localStorage.getItem('gravewounds-narrator')") is not None, "loading a save leaves this browser's narrator settings alone: they are not part of a game")
     bad = ROOT / "tools" / "campaign" / ".cache"; bad.mkdir(exist_ok=True)
     (bad / "not-a-save.json").write_text('{"hello": 1}')
     pg.set_input_files("#c-load", str(bad / "not-a-save.json"))
     pg.wait_for_function("() => document.querySelector('#c-saved').textContent.includes('Could not load')", timeout=4000)
-    check(pg.evaluate("() => REC.phase") == "aftermath", "a file that is not a save is refused and changes nothing")
+    check(pg.evaluate(PHASE) == "aftermath", "a file that is not a save is refused and changes nothing")
     pg.screenshot(path=str(bad / "campaign.png"), full_page=False)
     pg.click("#c-new")
     pg.wait_for_timeout(3500)                                  # the console looks again: the old fight must not be news to the new campaign
