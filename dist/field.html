@@ -4441,7 +4441,7 @@ function aiScore(field, u, tu, h, cost, shooter, storm = false){   // how much t
 }
 function seesTo(field, u, [h, t, dist]){          // the weather and light let u, at h, see t dist away (as commander._sees_to)
   const sight = sightHexes(field, [...t], seerOf({ ...u, pos: [...h] }));
-  return sight === null || dist <= sight;
+  return true;
 }
 function gunInRange(field, u, [h, t, dist]){      // u's main gun (a vehicle's, or anti-tank guns) reaches from h to t and the weather and light let it see t from there (as commander._gun_in_range)
   const G = gunOf(u);
