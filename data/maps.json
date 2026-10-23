@@ -12,6 +12,11 @@
      "name": "Sidon",
      "lat": 33.56,
      "lon": 35.37
+    },
+    {
+     "name": "Jacob's Ford",
+     "lat": 33,
+     "lon": 35.63
     }
    ]
   },
@@ -27,10 +32,11 @@
     "borders": "",
     "dots": [
      {
-      "x": 84.2,
-      "y": 60.4,
+      "x": 85.6,
+      "y": 64.2,
       "names": [
-       "Sidon"
+       "Sidon",
+       "Jacob's Ford"
       ]
      }
     ]

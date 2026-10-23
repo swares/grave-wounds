@@ -77,6 +77,20 @@ assigned:
     url: https://revistas.um.es/medievalismo/article/download/505001/316321/1787521
     note: Martín Vera, La lanza bajomedieval castellana (2021), table 3; the wait is a guess
   approx: true
+- id: iqta_trooper
+  name: A trooper from an amir's land grant
+  regions:
+  - ayyubid
+  careers: any
+  terms: 1
+  wait:
+  - 30
+  - 180
+  what: An amir held the revenue of land (iqta') and owed a set number of equipped horsemen for it; a mamluk was bought young, trained and freed into his master's regiment.
+  source:
+    url: https://en.wikipedia.org/wiki/Ayyubid_dynasty
+    note: the iqta' and the jamakiyya; the wait is a guess
+  approx: true
 - id: swiss_auszug
   name: A man of his canton's next levy (Auszug)
   regions:

@@ -311,6 +311,15 @@ export const UNIT_SIZES = {
     "North Vietnamese RPG teams": "platoon",
     "North Vietnamese machine guns": "section",
   },
+  "jacobsford-1179": {
+    "Templar knights and their squires": "company",
+    "Sergeants (the fifteen companies)": "battalion",
+    "Crossbowmen and archers": "battalion",
+    "The storming column (Farrukh-Shah)": "battalion",
+    "Archers north of the castle": "battalion",
+    "Archers across the river": "battalion",
+    "Volunteers and foot (the second wave)": "regiment",
+  },
   "kapyong-1951": {
     "A Company, 3 RAR (the north spur)": "company",
     "D Company, 3 RAR (the summit)": "company",

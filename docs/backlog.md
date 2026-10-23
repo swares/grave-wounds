@@ -51,7 +51,7 @@ When an item is done, delete it here and note it in the pull request that closes
 - **The travel clock, simplified.** Meetings are only between the forces' hexes: no
   scouting reach, and no seeing a dust cloud or campfires from further off.
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
-  Aljubarrota (1385), Agincourt (1415), Towton (1461), Dornach (1499), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
+  Jacob's Ford (1179), Aljubarrota (1385), Agincourt (1415), Towton (1461), Dornach (1499), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
   Lane (1814), Sevastopol (1855, two battlefields), First Bull Run (1861), Fort Phil Kearny (1866-67, with two battlefields), Mons
   (1914), the Serbian retreat (1915, the Babuna pass), Hill 700 on Bougainville (1944), Anzio and Cisterna (1944), Osan (1950), Chipyong-ni
   (1951), the Ia Drang (1965), Mogadishu (1993), Wanat (2008), Cassino (1944, three battlefields), the Chosin Reservoir (1950), Kapyong (1951), Heartbreak Ridge (1951), Pork Chop Hill (1953), Hue (1968), Khe Sanh (1968), Dak To (1967), Hamburger Hill (1969), Goose Green (1982), 73 Easting (1991), Grozny (1995), Fallujah (2004) and COP Keating (2009) have both a campaign map and a battlefield. The rest of Italy, the rest of the Gulf War (1991) and Northern Ireland
@@ -255,6 +255,17 @@ When an item is done, delete it here and note it in the pull request that closes
   or the king (the team keeps him); no drift without events
   (Pendragon's winter check); and Visby, the Napoleonic marshals, Korea, Vietnam, the Falklands and
   Chechnya had no patronage sources.
+- **Jacob's Ford and the Ayyubids, first cut.** The siege of 1179 on a 1 km map and the storm of
+  the castle as a battlefield, on Sidon's tables, and the Ayyubids as a medieval army (project doc
+  "jacobsford-research"). Still left out: no Ayyubid pay or dinar-dirham rate was found (the Acre
+  crossbowman's third of a bezant a day stands in), no strength for Saladin's army or his camp's
+  place, no source for how far Baldwin's relief came; the siege before the storm (the outer
+  works, the mangonels, the two mines) is not played, nor the timber wall that burned behind the
+  breach; the mine's place at the north-east corner rests on secondary sources; Raphael's full
+  excavation report (the siege, the bones, the arrowheads) and Mitchell, Nagar and Ellenblum's
+  paper were not read in full; the Ayyubid ranks (amir, mamluk, halqa) are not a ladder of their
+  own; Kurdish and Persian are new tongues with estimated shares. In self-play the storming column
+  does not go in through the breach.
 - **Dornach, the Swiss and the Landsknechte, first cut.** The medieval era runs to c.1500 for
   the Swabian War: the Dornach campaign map and battlefield, the ossuary crania as a bone-evidence
   table (Cooper 2010: 417 skull wounds by kind and side, the region of each our tally from her

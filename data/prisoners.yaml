@@ -47,6 +47,8 @@ eras:
     - {id: noble, name: "A man of rank, held for ransom", capture: [10, 40], release: 5, hazard: 1, ransom: {years: 1.5, upkeep: 0.2}, escape: 0, home: 10, recapture: 10}
     - {id: iberia, name: "Portugal and Castile, 1383-93: held for ransom or the peace", capture: [30, 70], release: 3, hazard: 3, ransom: {years: 1, upkeep: 0.2}, escape: 0, home: 20, recapture: 10,
        note: "About 1,000 Castilians were held at Santarém after Aljubarrota, starving until the king sent bread; López de Ayala was held three years; the treaty of 1393 freed all prisoners within six months without ransom. Monteiro, Prisoners of War in Portugal, c.1350-1450 (2017)"}
+    - {id: ayyubid, name: "Taken by Saladin's army (1179-87)", capture: [50, 85], release: 5, hazard: 3, ransom: {years: 1, upkeep: 0.2}, escape: 0, home: 10, recapture: 30,
+       note: "After Jacob's Ford some 700 were taken, many killed on the road by volunteers and the rest led to Damascus; Saladin had the apostates and the bowmen put to death, and after Hattin the Templars and Hospitallers. Knights and barons were ransomed; commoners sold (Barber; Imad ad-Din)"}
     - {id: no_quarter, name: "The Swabian War, 1499: no quarter sworn", capture: [70, 90], release: 20, hazard: 1, ransom: {years: 1, upkeep: 0.2}, escape: 0, home: 20, recapture: 30,
        note: "The Swiss swore on 11 March 1499 to take no prisoners in battle, and the wounded at Dornach were killed where they lay; away from the fighting nobles were held for ransom and peasants let go on oath (Winkler 2020)"}
     - {id: rout, name: "Caught in the rout by the countryfolk", capture: [70, 95], release: 5, hazard: 3, escape: 0, home: 0, recapture: 30,

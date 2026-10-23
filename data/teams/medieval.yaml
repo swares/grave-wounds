@@ -170,6 +170,20 @@ regions:
       closed: "The Landsknechte's baggage train carried women and children under the Hurenweibel: they made camp, cooked and nursed. These tables have no record of them in the army's other careers."
       source: "Burschel, Landsknechte (DHM, Eisenkleider): the Tross of women, children, sutlers and diggers; mostly a 16th-century picture. No count for Fürstenberg's army. Names: our reading."
 
+  - id: ayyubid
+    name: "Ayyubids (c.1180)"
+    table: sidon-1253-all-hits
+    colours: ["#e6e0d2", "#2e5a3a", "#d9b44a", "#5a3a2a"]
+    names: [Yusuf, Umar, Ali, Muhammad, Ahmad, Isa, Ibrahim, Uthman, Ayyub, Shirkuh, Sunqur, Qaymaz, Aybak, Qaraqush, Jawali, "Lu'lu'"]
+    bynames: [al-Kurdi, al-Turkmani, al-Dimashqi, al-Halabi, al-Misri, al-Hakkari, al-Asadi, al-Salahi, al-Mihrani, al-Humaydi]
+    women:
+      share: null
+      careers: [townswoman]
+      shares: {townswoman: 100}
+      names: [Fatima, "Rabi'a", Zumurrud, Khadija, "A'isha", Zaynab, Maryam, Sitt al-Sham, Dayfa, Ghaziya]
+      closed: "No women are recorded in either camp at Jacob's Ford; these tables have no record of them in the army's other careers."
+      source: "Ayyubid princesses endowed colleges (Sitt al-Sham, Rabi'a Khatun), and Shajar al-Durr took command in 1249-50 (Wikipedia, Ayyubid dynasty); women were ransomed at half a man's rate at Jerusalem in 1187. The common names are our reading; only the khatuns are attested."
+
 # Origins: d100, 5 each. gain: a skill (+gain); trait and drawback: a characteristic (+/-10)
 # or a skill (+/-gain).
 origins:
@@ -272,7 +286,7 @@ careers:
     wound: 20
     wound_weapon: sword
     kit: {default: hauberk, baltic: gotland_armoured, england: brigandine_sallet, france: transitional}
-    weapon: {default: spear}
+    weapon: {default: spear, ayyubid: bow}
     mounted: true            # his followers fight on the field map as a mounted unit
     terms:
       - {to: 20, skill: polearm, text: "Rode in a charge with couched spears."}

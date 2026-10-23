@@ -22,8 +22,8 @@
 
 conflicts:
   "Crusades":
-    period: "Sidon, 1253 or 1260"
-    map: {bbox: [30.5, 29.5, 39.5, 37.5], sites: [{name: Sidon, lat: 33.56, lon: 35.37}]}
+    period: "Jacob's Ford, 1179; Sidon, 1253 or 1260"
+    map: {bbox: [30.5, 29.5, 39.5, 37.5], sites: [{name: Sidon, lat: 33.56, lon: 35.37}, {name: "Jacob's Ford", lat: 33.00, lon: 35.63}]}
     summary: >
       From 1099 to 1291 Frankish crusader states held the coast of the Levant. Sidon, a
       walled port in today's Lebanon, was sacked twice in the 13th century: in 1253 by an
@@ -31,7 +31,10 @@ conflicts:
       describes the king helping to bury the rotting dead), and in 1260 by the Mongols
       under Kitbuqa. Two mass graves in the town ditch near St Louis' castle, dated to
       the mid-13th century, hold at least 25 men, Europeans and locals, killed in one of
-      these attacks; their bones show sword, axe and mace wounds, many from behind.
+      these attacks; their bones show sword, axe and mace wounds, many from behind. In
+      August 1179 Saladin stormed the unfinished Templar castle at Jacob's Ford on the upper
+      Jordan, mining its north-east corner; five of its garrison's dead have been studied,
+      too few for a table of their own, and the siege rolls on Sidon's.
     sides:
       - name: "Defenders of Sidon"
         who: "Frankish knights and sergeants, crossbowmen and townsmen of mixed European and Near Eastern descent."
@@ -42,6 +45,8 @@ conflicts:
         armour: "Horsemen in mail or lamellar with round shields, lance, sword, mace and bow; Mongol horse archers in lamellar or padded coats."
         look: {colour: "#b3812f", trousers: "#5c4a3a", hat: turban, beard: beard, shield: round}
     examples:
+      - {name: "Templar knight, 1179", side: "Defenders of Sidon", kit: hauberk, weapon: sword, notes: "One of the 80 knights at Jacob's Ford; the five skeletons' blade wounds are all on the left side."}
+      - {name: "Ayyubid archer, 1179", side: "Attackers", kit: gambeson, weapon: bow, notes: "Hundreds of arrowheads lie on the castle's east and west fronts."}
       - {name: "Frankish knight", side: "Defenders of Sidon", kit: hauberk, weapon: sword, look: {helmet: closed}, notes: "Mail hauberk, great helm and shield.", image: {file: "Crusaders-middle-ages.jpg", caption: "Knights in battle, from the Crusader (Morgan) Bible, France, 1240s"}}
       - {name: "Frankish sergeant", side: "Defenders of Sidon", kit: hauberk, weapon: axe, notes: "Heavy blade wounds at Sidon point to swords and axes.", image: {file: "Morgan-bible-fl-29.jpg", caption: "Armoured foot and horse soldiers, from the Crusader (Morgan) Bible, France, 1240s"}}
       - {name: "Crossbowman", side: "Defenders of Sidon", kit: gambeson, weapon: crossbow, notes: "Padded coat; the town's walls were still being rebuilt in 1253."}
@@ -51,6 +56,7 @@ conflicts:
     sources:
       - "Mikulski R.N.R. et al., 'Weapon injuries in the crusader mass graves from a 13th century attack on the port city of Sidon (Lebanon)', PLoS ONE 16(8): e0256517 (2021)."
       - "Joinville, Life of Saint Louis, on Louis IX burying the dead of Sidon (1253)."
+      - "Barber M., 'Frontier warfare in the Latin Kingdom of Jerusalem: the campaign of Jacob's Ford, 1178-79' (1998); Mitchell P.D., Nagar Y. and Ellenblum R., International Journal of Osteoarchaeology 16 (2006); project doc jacobsford-research."
 
   "Visby 1361":
     period: "27 July 1361"
