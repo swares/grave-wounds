@@ -1231,5 +1231,5 @@ The first did nothing at Keating: shaken and still flanked, the barracks checked
 and broke the next exchange. Built: a unit holding a position (in a bunker, dug in, behind works,
 in buildings or rubble, or gone to ground in cover) is not flanked (`morale.posture_flank`). The
 morale targets did not move. Mogadishu's Somali losses fell from 27% to 13% (their militia hold
-buildings): to look at. Measured against main after #306, with Beaumont-Hamel (#307, not on the
-branch) left out.
+buildings): to look at. Measured again once rebased on main after #308 (44 battlefields): 756 of
+1,056 from 753, with the same changes (Snipe and Beaumont-Hamel unchanged).
