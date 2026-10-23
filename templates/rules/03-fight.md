@@ -21,16 +21,25 @@ hexes about {{hex_yd}} yards ({{hex_m}} m) across.
    tenth of the chance is a **critical**: it cannot be defended.
 4. **Defence.** The defender may roll d100 against his defence (Parry or Dodge), less his
    own penalties. Equal or under, the blow misses.
-5. **Where it lands.** Roll d100 on the era's hit-location table for the place, and on the
-   weapon's table for how it wounds: a cut, a thrust (pierce), a crushing blow, a bullet.
+5. **Where it lands.** Roll d100 on the era's hit-location table for the place. How it
+   wounds (a cut, a thrust, a crushing blow, a bullet) is the attacker's choice with a
+   cut-and-thrust weapon ({{choose_weapons}}): he declares his blow before he rolls, **cut**
+   or **thrust**, or a **crushing** blow with a weapon that has one (a poleaxe's hammer). Any other weapon strikes with its main way of wounding (a bow pierces, a mace
+   crushes); a burst of shell or grenade wounds by its fragments, and on a critical by its
+   blast, a crushing blow.
 6. **How bad.** The margin sets the severity: under {{band_serious}} **light**, from
    {{band_serious}} **serious**, from {{band_critical}} (or on a critical) **critical**.
    Firearms have their own bands for the body and the limbs. A hit by a margin of
    {{graze}} or less, if it is not a critical, only **grazes**: its bleeding and pain are
    a step less, and it calls for no stop check.
 7. **Armour.** The armour on that place lowers the severity a step at a time against that
-   kind of blow, if its coverage roll says the blow met it. Some weapons are made to beat
-   armour: a war bow's heavy arrows go through mail and a jack as if they were not there.
+   kind of blow. Some armour covers only part of a place (a jack's sleeves stop at the
+   elbow, a plate covers the middle of the chest), shown on the sheet as the share it covers,
+   in tens. Read the **units digit of the attack roll** (0 counts as 10): at or under the
+   cover's tens the blow met the armour; above, it found a gap. No die is rolled for it. Some
+   weapons are made to beat armour: a war bow's heavy arrows go through mail and a jack as if
+   they were not there. Mail turns a cut better than a thrust, so against a mailed man the
+   thrust is the better choice.
 8. **The wound.** Look up the wound for the place, the kind of blow and the severity, and
    write it down. Its effects are in [the next chapter](#wounds).
 9. **The stop check.** A {{stop_sev}} wound that carries **shock** (most do; many limb wounds
@@ -82,6 +91,11 @@ die.
     type your own dice into it. Remember that most enemies want to live too: a side that
     breaks runs, and a man who is down asks for quarter. A fight is usually decided in a
     minute.
+
+    An enemy without a sheet does not choose his blow: on paper he strikes with his weapon's
+    main way (a sword cuts, a spear thrusts), and the roller and the field map roll the mix
+    his kind of weapon was recorded with. In the roller, pick the declared blow under **Blow**
+    for a player's man; leave it at *rolled* for everyone else.
 
 ## Wounds and movement {#wounds-moving}
 

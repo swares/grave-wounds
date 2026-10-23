@@ -18,14 +18,20 @@ the Python engine and the printed tables read them from there, so change them th
    the effective chance is a critical, and a critical cannot be defended.
 4. **Defence.** Optional: d100 against parry or dodge % minus wound penalties. Equal or
    under avoids the blow.
-5. **Location and mechanism.** Roll on the era's hit-location table and the weapon's
-   mechanism table.
+5. **Location and blow.** Roll on the era's hit-location table. A cut-and-thrust weapon
+   (sword, spear, bill, halberd, poleaxe, dagger, sabre, bayonet) strikes the blow the
+   attacker declares: cut, thrust, or a crushing blow with a bill, halberd or poleaxe. Any
+   other weapon strikes with its main mechanism. Unnamed fighters strike with the main
+   mechanism on paper; the roller and the field map roll their mix.
 6. **Severity from the margin.** Default: light below 20, serious from 20, critical from
    50 or on a critical roll. Firearms use their own bands by body zone.
 7. **Graze.** A hit by a margin of 2 or less, if not a critical, only grazes. The wound's
    bleed and pain drop one step each, and it calls for no stop check.
 8. **Armour.** The armour on the location lowers severity by its steps against the
-   mechanism. A gap in coverage means no armour.
+   mechanism. Where it covers only part of the location (a sleeve to the elbow, a plate on the
+   chest), the attack roll's units digit (0 is 10) says whether the blow met it: at or under
+   its cover in tens (a 70% sleeve on 1-7) it did; above, it found a gap and there is no armour.
+   No extra roll.
 9. **Wound.** Record it. Its bleed, pain, impairments and lethality clock take effect.
 10. **Stop check.** A serious or critical wound calls for d100 against the fighter's
     Nerve, if the wound is marked for one (most are; some limb wounds are not). The target

@@ -273,6 +273,25 @@ def armor_steps(d: Data, material: str, mechanism: str, weapon_id: str | None) -
     return max(0, steps - defeat)
 
 
+def cover_digit(attack_roll: int | None, rng: random.Random) -> tuple[int, bool]:
+    """The tens of coverage a hit is read at: the attack roll's units digit (0 counts as 10),
+    or a d10 when there is no attack roll. Returns (digit, rolled)."""
+    if attack_roll is not None:
+        return (attack_roll % 10) or 10, False
+    return rng.randint(1, 10), True
+
+
+def meets_layer(layers: list[tuple[str, int, int]], digit: int):
+    """The armour layer a hit read at this digit meets, or None for a gap (covers are in tens)."""
+    return next((ly for ly in layers if ly[1] <= digit * 10 <= ly[2]), None)
+
+
+def main_mechanism(d: Data, weapon_id: str) -> str:
+    """The weapon's largest mechanism: what an unnamed fighter strikes with on paper."""
+    mech = d.weapons[weapon_id]["mechanisms"]
+    return max((m for m in MECHANISMS if mech.get(m)), key=lambda m: mech[m])
+
+
 def reduce_severity(severity: str, steps: int) -> str:
     return SEV_LADDER[max(0, SEV_LADDER.index(severity) - steps)]
 
@@ -283,9 +302,12 @@ def reduce_severity(severity: str, steps: int) -> str:
 def roll_hit(d: Data, table_id: str, weapon_id: str, severity: str | None = None,
              rng: random.Random | None = None, mods=None, called: str | None = None,
              kit: str | None = None, margin: int | None = None, critical: bool = False,
-             shield: bool | None = None) -> dict:
+             shield: bool | None = None, mechanism: str | None = None,
+             attack_roll: int | None = None) -> dict:
     """Roll location, mechanism and severity for a hit. If `margin` is given (from an attack
-    roll made with gravewounds.combat), severity comes from the margin of success instead."""
+    roll made with gravewounds.combat), severity comes from the margin of success instead.
+    `mechanism` is a blow the attacker chose (one of the weapon's mechanisms); without it the
+    mechanism is rolled. Armour coverage is read on `attack_roll`'s units digit (a d10 if none)."""
     rng = rng or random.Random()
     if kit and kit not in d.armor["kits"]:
         raise KeyError(f"unknown armour kit {kit}")
@@ -302,8 +324,13 @@ def roll_hit(d: Data, table_id: str, weapon_id: str, severity: str | None = None
         second = lookup(ranges, r_loc2)
         if d.loc[loc_id]["zone"] != called and d.loc[second]["zone"] == called:
             loc_id = second
-    r_mech = rng.randint(1, 100)
-    mech = lookup(mechanism_ranges(d, weapon_id), r_mech)
+    if mechanism is not None:
+        if not d.weapons[weapon_id]["mechanisms"].get(mechanism):
+            raise KeyError(f"weapon {weapon_id} cannot strike a {mechanism} blow")
+        r_mech, mech = None, mechanism
+    else:
+        r_mech = rng.randint(1, 100)
+        mech = lookup(mechanism_ranges(d, weapon_id), r_mech)
     r_sev = None
     if margin is not None:
         from .combat import margin_severity
@@ -317,8 +344,8 @@ def roll_hit(d: Data, table_id: str, weapon_id: str, severity: str | None = None
     layers = armor_at(d, kit, loc_id)
     if layers:
         whole = len(layers) == 1 and layers[0][1] == 1 and layers[0][2] == 100
-        r_cov = None if whole else rng.randint(1, 100)
-        hit = layers[0] if whole else next((ly for ly in layers if ly[1] <= r_cov <= ly[2]), None)
+        r_cov = None if whole else cover_digit(attack_roll, rng)[0]
+        hit = layers[0] if whole else meets_layer(layers, r_cov)
         material = hit[0] if hit else None
         steps = armor_steps(d, material, mech, weapon_id) if hit else 0
         final = reduce_severity(severity, steps)

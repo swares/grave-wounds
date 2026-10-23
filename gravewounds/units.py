@@ -53,10 +53,12 @@ def _hurt(t: dict, sev: str, fx: dict, down: bool) -> None:
     t["hurt"][k] = t["hurt"].get(k, 0) + 1
 
 
-def _wound(d: Data, att: dict, dfd: dict, margin: int, critical: bool, rng: random.Random, t: dict) -> None:
-    """One blow that got through: roll it, then the stop check and death."""
+def _wound(d: Data, att: dict, dfd: dict, margin: int, critical: bool, rng: random.Random, t: dict,
+           attack_roll: int | None = None) -> None:
+    """One blow that got through: roll it (armour read on the attack roll's units digit), then
+    the stop check and death."""
     h = roll_hit(d, att["table"], att["weapon"], rng=rng, kit=dfd.get("kit"), margin=margin,
-                 critical=critical, shield=dfd.get("shield"))
+                 critical=critical, shield=dfd.get("shield"), attack_roll=attack_roll)
     sev, modern = h["severity"], att["weapon"] in d.units["modern_fire"]["weapons"]
     if sev == "stopped":
         t["stopped"] += 1
@@ -149,7 +151,7 @@ def _blows(d: Data, att: dict, dfd: dict, n: int, atk: int, dfn: int, rng: rando
         if not critical and dfn > 0 and rng.randint(1, 100) <= dfn:
             t["parried"] += 1
             continue
-        _wound(d, att, dfd, atk - r, critical, rng, t)
+        _wound(d, att, dfd, atk - r, critical, rng, t, r)
     return t
 
 
@@ -188,7 +190,7 @@ def _quick_rates(d: Data, att: dict, dfd: dict, atk, dfn) -> dict:
         if not critical and dfn > 0 and own.randint(1, 100) <= dfn:
             t["parried"] += 1
             continue
-        _wound(d, att, dfd, atk - r, critical, own, t)
+        _wound(d, att, dfd, atk - r, critical, own, t, r)
     rates = {k: v / S for k, v in t.items() if k not in ("hurt", "blows")}
     rates["hurt"] = {k: v / S for k, v in t["hurt"].items()}
     _QUICK[key] = rates
@@ -320,7 +322,8 @@ def _hero_blow(d: Data, att: dict, hero: dict, r: int, atk: int, crit_at: int, s
     dfn = 0 if _held(hero) == "stunned" else hero["defence"] + shift - hero_penalties(d, hero)[1]
     if not critical and dfn > 0 and rng.randint(1, 100) <= dfn:
         return
-    h = roll_hit(d, att["table"], att["weapon"], rng=rng, kit=hero.get("kit"), margin=atk - r, critical=critical)
+    h = roll_hit(d, att["table"], att["weapon"], rng=rng, kit=hero.get("kit"), margin=atk - r, critical=critical,
+                 attack_roll=r)
     sev = h["severity"]
     if sev == "stopped":
         return

@@ -167,6 +167,7 @@ def values(d: Data) -> dict:
         "pain_step": CB["pain_step"], "pain_cap": T["pain_cap"], "pain_cap_pct": T["pain_cap"] * CB["pain_step"],
         "cap": CB["cap"], "crit_tenth": round(1 / CB["critical_fraction"]), "graze": CB["graze_margin"],
         "band_serious": CB["margin_bands"]["default"]["serious"], "band_critical": CB["margin_bands"]["default"]["critical"],
+        "choose_weapons": _choose_weapons(d),
         "crit_stop": SC["critical_penalty"], "fail1": res[0]["upto"], "fail2": res[1]["upto"], "rounds1": res[0]["rounds"],
         "stunned_def": CB["states"]["stunned"]["defence"],
         "blood_pool": T["blood_pool"], "blood_per": CH["blood"]["per"],
@@ -595,6 +596,12 @@ def example(d: Data) -> dict:
               a_skills=", ".join(f"{names[k]} {arch['skills'][k]}" for k in ("bow", "dodge", "fieldcraft", "stealth")))
     ex.update(_shot(d, arch), **_cut(d, arch), **_camp(d, arch, leech))
     return ex
+
+
+def _choose_weapons(d: Data) -> str:
+    """The cut-and-thrust weapons (weapons.yaml choose), named for the text: 'sword, bill or spear'."""
+    names = sorted({w.get("short", w["name"]).lower() for w in d.weapons.values() if w.get("choose")})
+    return ", ".join(names[:-1]) + " or " + names[-1] if len(names) > 1 else "".join(names)
 
 
 def _career(d: Data, c: dict) -> str:

@@ -24,9 +24,12 @@
 #
 # Kit slots match body.yaml armour slots. A slot is:
 #   a material id                              - covers every hit there
-#   {material: id, cover: N}                   - d100 01-N meets armour, the rest is a gap
-#   [{material: a, cover: N}, {material: b}]   - layers: 01-N hits material a, the next
+#   {material: id, cover: N}                   - N% of hits there meet armour, the rest find a gap
+#   [{material: a, cover: N}, {material: b}]   - layers: the first N% hit material a, the next
 #                                                band (default: all the rest) hits b
+# Covers are in tens (checked): there is no coverage roll. The attack roll's units digit
+# (0 counts as 10) decides it: at or under N/10 meets the first layer, the next tens the
+# next layer, and above the last a gap. With no attack roll the software rolls a d10.
 
 materials:
   # --- medieval -------------------------------------------------------------
@@ -181,7 +184,7 @@ kits:
     name: "Pikeman: morion and corslet"
     group: musket
     look: {helmet: morion}
-    slots: {helm: {material: plate, cover: 85}, torso_upper: cuirass, torso_lower: {material: cuirass, cover: 60}, leg: {material: plate, cover: 35}}
+    slots: {helm: {material: plate, cover: 80}, torso_upper: cuirass, torso_lower: {material: cuirass, cover: 60}, leg: {material: plate, cover: 40}}
     notes: "Open helmet, breast and back plates and short tassets. Many pikemen left the armour behind on campaign."
 
   - id: cuirassier
@@ -200,7 +203,7 @@ kits:
   - id: acw_steel_vest
     name: "Private steel vest (Civil War, 1862)"
     group: modern
-    slots: {torso_upper: {material: steel_vest, cover: 85}, torso_lower: {material: steel_vest, cover: 50}}
+    slots: {torso_upper: {material: steel_vest, cover: 80}, torso_lower: {material: steel_vest, cover: 50}}
     notes: "Atwater and G&D Cook vests, sold by the thousand in 1862; about 8 lb, most were thrown away on the march."
 
   - id: ww1_sentry
@@ -232,7 +235,7 @@ kits:
   - id: vietnam_usmc
     name: "M1 helmet, Doron vest (USMC M1951/M1955, 1951-75)"
     group: modern
-    slots: {helm: steel_helmet, torso_upper: [{material: doron, cover: 75}, {material: nylon_flak}],
+    slots: {helm: steel_helmet, torso_upper: [{material: doron, cover: 80}, {material: nylon_flak}],
             torso_lower: {material: doron, cover: 70}}
     notes: "Doron fibreglass plates over the chest, sides and back; nylon over the upper torso. Stopped .45 ACP at the muzzle, not rifle rounds."
 
@@ -246,7 +249,7 @@ kits:
   - id: ranger_1993
     name: "Ranger Body Armor, front plate only (Mogadishu 1993)"
     group: modern
-    slots: {helm: kevlar_helmet, torso_upper: [{material: sapi, cover: 35}, {material: kevlar_soft}],
+    slots: {helm: kevlar_helmet, torso_upper: [{material: sapi, cover: 40}, {material: kevlar_soft}],
             torso_lower: {material: kevlar_soft, cover: 70}}
     notes: "IIIA soft vest with a single ceramic plate in front; the first version had no back plate, so only about half the usual plate coverage."
 
@@ -255,16 +258,16 @@ kits:
     group: modern
     look: {helmet: ach}
     slots: {helm: kevlar_helmet, gorget: {material: kevlar_soft, cover: 60},
-            torso_upper: [{material: sapi, cover: 65}, {material: kevlar_soft}],
+            torso_upper: [{material: sapi, cover: 60}, {material: kevlar_soft}],
             torso_lower: {material: kevlar_soft, cover: 70}, skirt: {material: kevlar_soft, cover: 50},
             pauldron: {material: kevlar_soft, cover: 50}}
-    notes: "Plates cover the centre of the chest and back (about 65% of upper-torso hits); soft Kevlar elsewhere on the vest. Neck, groin and shoulder pieces were not always worn."
+    notes: "Plates cover the centre of the chest and back (about 65% of upper-torso hits, 60% in play); soft Kevlar elsewhere on the vest. Neck, groin and shoulder pieces were not always worn."
 
   - id: plate_carrier
     name: "Plate carrier, ESAPI plates, helmet (2010s-)"
     group: modern
     look: {helmet: ach}
-    slots: {helm: kevlar_helmet, torso_upper: {material: esapi, cover: 65}, torso_lower: {material: kevlar_soft, cover: 25}}
+    slots: {helm: kevlar_helmet, torso_upper: {material: esapi, cover: 60}, torso_lower: {material: kevlar_soft, cover: 20}}
     notes: "Lighter than a full vest: plates over the vital area, soft side panels only. Outside the plates is a gap."
 
   - id: police_iiia

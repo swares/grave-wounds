@@ -35,6 +35,7 @@ def _main(argv=None) -> int:
     r.add_argument("-n", type=int, default=1, help="number of hits")
     r.add_argument("--mod", action="append", default=[], help="situation modifier id (repeatable; they stack)")
     r.add_argument("--called", choices=["head", "torso", "arms", "legs"], help="called shot zone")
+    r.add_argument("--blow", choices=["cut", "pierce", "crush"], help="the blow a cut-and-thrust weapon's wielder declares (else rolled)")
     r.add_argument("--armor", help="target armour kit id")
     r.add_argument("--shield", choices=["kit", "yes", "no"],
                    help="does the target carry a shield? 'kit' takes it from --armor; matters on tables that assume one (Visby)")
@@ -249,7 +250,7 @@ def _main(argv=None) -> int:
         rng = random.Random(a.seed)
         from .combat import attack_roll, defence_roll
         for _ in range(a.n):
-            margin = crit = None
+            margin = crit = aroll = None
             if a.attack is not None:
                 ar_ = attack_roll(d, a.attack, rng.randint(1, 100), a.att_penalty)
                 tag = " CRITICAL" if ar_["critical"] else ""
@@ -262,7 +263,7 @@ def _main(argv=None) -> int:
                     print(f"Defence: d100 {fmt(dr['roll'])} vs {dr['effective']}% - " + ("defended" if dr["defended"] else "failed"))
                     if dr["defended"]:
                         continue
-                margin, crit = ar_["margin"], ar_["critical"]
+                margin, crit, aroll = ar_["margin"], ar_["critical"], ar_["roll"]
             shield = None
             if a.shield == "yes":
                 shield = True
@@ -270,19 +271,23 @@ def _main(argv=None) -> int:
                 shield = False
             elif a.shield == "kit":
                 shield = bool((d.armor["kits"].get(a.armor or "none") or {}).get("shield", False))
-            h = roll_hit(d, a.table, a.weapon, a.severity, rng, a.mod, a.called, a.armor, margin, bool(crit), shield)
+            if a.blow and not d.weapons[a.weapon].get("choose"):
+                raise SystemExit(f"{a.weapon} is not a cut-and-thrust weapon: its blow is not chosen")
+            h = roll_hit(d, a.table, a.weapon, a.severity, rng, a.mod, a.called, a.armor, margin, bool(crit), shield,
+                         mechanism=a.blow, attack_roll=aroll)
             rl = h["rolls"]
             loc_roll = fmt(rl["location"]) + (f"/{fmt(rl['location2'])}" if rl["location2"] else "")
             sev_roll = f" (d100 {fmt(rl['severity'])})" if rl["severity"] else ""
             ar = h["armor"]
             sev_txt = ar["from"] if ar else h["severity"]
             print(f"{h['location_name']} (d100 {loc_roll}) - "
-                  f"{h['mechanism']} (d100 {fmt(rl['mechanism'])}) - {sev_txt}{sev_roll}"
+                  f"{h['mechanism']} ({'declared' if rl['mechanism'] is None else 'd100 ' + fmt(rl['mechanism'])}) - {sev_txt}{sev_roll}"
                   + (" - graze: bleed and pain one step lower, no stop check" if h.get("graze") else ""))
             if h["table"] != a.table:
                 print(f"    (close combat: location rolled on {d.tables[h['table']]['name']})")
             if ar:
-                cov = f", cover d100 {fmt(ar['cover_roll'])}" if ar["cover_roll"] else ""
+                cov = (f", {'attack units digit' if aroll is not None else 'cover d10'} {ar['cover_roll'] % 10}"
+                       if ar["cover_roll"] else "")
                 if not ar["covered"]:
                     print(f"    Armour: gap, not covered{cov}")
                 else:
