@@ -4422,8 +4422,8 @@ function rejects(m, charge, hold){                // a move it will not make: il
 }
 function stayOrder(us, i, t, f, shooter){         // on the ground it stays down; else turn to the target, or go to ground under fire with a modern weapon
   const u = us[i], C = UD.commander;
-  if (u.prone) return null;
   if (f !== u.facing) return { act: "turn", target: t, facing: f };
+  if (u.prone) return null;
   const dig = shooter && !u.vehicle && C.ground_with.includes(u.weapon) && (C.cover[u.quality] ?? 0) > 0 && underFire(us, i);   // vehicles do not go to ground
   return dig ? { act: "ground", target: t } : null;
 }
