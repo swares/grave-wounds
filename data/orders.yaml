@@ -98,6 +98,19 @@ cisterna-1944:
     - "Machine guns in the farmhouses (far east)"
     - "Riflemen in haystacks and dugouts (west)"
     - "Riflemen in haystacks and dugouts (east)"
+crecy-1346:
+  source: "https://en.wikipedia.org/wiki/Battle_of_Cr%C3%A9cy"
+  hold:
+    - "The Prince's archers, right"
+    - "The Prince of Wales's men-at-arms (with Warwick)"
+    - "Welsh spearmen with the Prince"
+    - "The Prince's archers, left"
+    - "Arundel's archers, right"
+    - "Arundel's men-at-arms (the second battle)"
+    - "Arundel's archers, left"
+    - "Edward III's men-at-arms (by the windmill)"
+    - "Edward III's archers"
+    - "The King's spearmen"
 dakto-1967:
   fight_on: [1]   # as X-Ray (the project's surrender notes)
   source: "https://VIRTUALWALL.org/units/hill875.htm;"

@@ -25,7 +25,7 @@ valley, the Agincourt campaign of 1415 (Harfleur to Calais) and the Serbian retr
 (Kraljevo to the Adriatic), both on 3-mile (5 km) hexes, the
 Towton campaign of 1461 (Pontefract to York), Valdemar IV's invasion of Gotland in 1361
 (the landing to Visby), the Lützen campaign of 1632 (Naumburg to Leipzig), the raid on
-Sidon in 1253 (Banias to the coast), the siege of Jacob's Ford in 1179 (Tiberias to Banias), the Aljubarrota campaign of 1385 (Leiria to Alcobaça), the Dornach campaign of 1499 (Basel to Liestal), the Albuera campaign of 1811 (Badajoz to Santa
+Sidon in 1253 (Banias to the coast), the siege of Jacob's Ford in 1179 (Tiberias to Banias), the Crécy campaign of 1346 (the Somme to Crécy), the Aljubarrota campaign of 1385 (Leiria to Alcobaça), the Dornach campaign of 1499 (Basel to Liestal), the Albuera campaign of 1811 (Badajoz to Santa
 Marta), the Cowpens campaign of 1781 (the Pacolet to the Broad), the Niagara campaign of 1814
 (Fort Erie to Fort George), the siege of Sevastopol in 1855 (Kamiesh to the Chernaya), the First Bull Run campaign of 1861 (Fairfax to Gainesville),
 Fort Phil Kearny on the Bozeman Trail in 1866-67, Mons in 1914 (Condé to Binche), the
@@ -57,7 +57,7 @@ does most of the killing. Named characters still fight one by one. The field map
 `dist/field.html`, puts units on 11-yard (10 m) hexes: each side moves, then every melee and volley
 is resolved together, with flank and rear, morale and the pursuit, batteries of guns firing
 round shot, canister and shell (bounding on over firm ground, at named targets, ordered shot, split sections, cut fuses and canister into a charge, until the rounds run out), machine guns, artillery and mortars on call with suppression, tanks, infantry fighting vehicles and carriers (with their riders) against rockets and guided missiles, on painted ground
-with the battle map's works and weather, or on a real battlefield (Sidon, the castle at Jacob's Ford, Visby, Aljubarrota, Agincourt, Towton, Dornach, Lützen, Albuera, Cowpens,
+with the battle map's works and weather, or on a real battlefield (Sidon, the castle at Jacob's Ford, Visby, Crécy, Aljubarrota, Agincourt, Towton, Dornach, Lützen, Albuera, Cowpens,
 Lundy's Lane, the Great Redan at Sevastopol (June and September 1855), First Bull Run, the Fetterman Fight, the Wagon Box Fight, Mons 1914, the Babuna pass in 1915, Hill 700 on
 Bougainville, the Rangers at Cisterna, Task Force Smith at Osan, the perimeter at Chipyong-ni, landing zone X-Ray, the crash sites in Mogadishu, the patrol base at Wanat, Cassino's ridges and ruins, Fox Hill at Toktong Pass, Hill 504 at Kapyong, Hill 931 on Heartbreak Ridge, Pork Chop Hill, the new city at Hue, Hill 861A at Khe Sanh, Hill 875 at Dak To, Hamburger Hill, Darwin Hill at Goose Green, the rise at 73 Easting, the railway station in Grozny, the Jolan in Fallujah, or Combat Outpost Keating, with both armies drawn up). A fight on the travel
 map can be fought there, and its wounded go back to camp, where wound fever can take

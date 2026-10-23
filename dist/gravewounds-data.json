@@ -6349,6 +6349,10 @@
    "chipyong-1951": "korean",
    "chosin-1950": "korean",
    "cowpens-1781": "english",
+   "crecy-1346": [
+    "picard",
+    "french"
+   ],
    "dornach-1499": "german",
    "dakto-1967": "montagnard",
    "easting73-1991": "arabic",
@@ -31974,7 +31978,7 @@
    ]
   },
   "Hundred Years' War": {
-   "period": "1337-1453 (Aljubarrota, 14 August 1385; Agincourt, 25 October 1415)",
+   "period": "1337-1453 (Cr\u00e9cy, 26 August 1346; Aljubarrota, 14 August 1385; Agincourt, 25 October 1415)",
    "map": {
     "bbox": [
      -10,
@@ -31983,6 +31987,11 @@
      52
     ],
     "sites": [
+     {
+      "name": "Cr\u00e9cy",
+      "lat": 50.26,
+      "lon": 1.9
+     },
      {
       "name": "Aljubarrota",
       "lat": 39.64,
@@ -31995,8 +32004,26 @@
      }
     ]
    },
-   "summary": "England and France fought on and off from 1337 to 1453, and drew in their allies: in Iberia, the war of 1383-85 for the Portuguese crown set Castile and its French allies against Jo\u00e3o of Avis and his English. At Aljubarrota on 14 August 1385 the Portuguese, about a third as many, dug pits and ditches across a narrow plateau between two valleys, fought on foot with English archers and crossbowmen on their wings, and broke the French and Castilian attack in under an hour before sunset. The leg bones of at least 414 men lie in an ossuary on the field, the only battle grave of medieval Iberia yet studied.\n",
+   "summary": "England and France fought on and off from 1337 to 1453, and drew in their allies. At Cr\u00e9cy on 26 August 1346 Edward III's army, dismounted on a slope above the Vall\u00e9e des Clercs with its archers on the wings, broke the Genoese crossbowmen and charge after charge of French horse into the night; the heralds counted 1,542 French knights and squires dead. In Iberia, the war of 1383-85 for the Portuguese crown set Castile and its French allies against Jo\u00e3o of Avis and his English. At Aljubarrota on 14 August 1385 the Portuguese, about a third as many, dug pits and ditches across a narrow plateau between two valleys, fought on foot with English archers and crossbowmen on their wings, and broke the French and Castilian attack in under an hour before sunset. The leg bones of at least 414 men lie in an ossuary on the field, the only battle grave of medieval Iberia yet studied.\n",
    "sides": [
+    {
+     "name": "England and Wales (1346)",
+     "who": "Edward III and the Prince of Wales: some 14,000 by Ayton's count, 2,500 men-at-arms, 5,000 longbowmen, 3,000 hobelars and mounted archers and 3,500 spearmen, many of them Welsh.",
+     "armour": "Men-at-arms in mail and a coat of plates with bascinets, fighting on foot; archers and spearmen in padded aketons, an iron cap or none.",
+     "look": {
+      "colour": "#b03a2e",
+      "trousers": "#e8e0cc"
+     }
+    },
+    {
+     "name": "France and Genoa (1346)",
+     "who": "Philip VI: about 12,000 men-at-arms (Edward III's letter; Sumption) and some 6,000 Genoese crossbowmen under Ottone Doria and Carlo Grimaldi; most of the foot never came up.",
+     "armour": "Mail and a coat of plates, bascinets, many with snouted visors; the Genoese in padded jacks, their pavises left on the road.",
+     "look": {
+      "colour": "#2c3e8c",
+      "trousers": "#d8c06a"
+     }
+    },
     {
      "name": "Portugal and England",
      "who": "Jo\u00e3o I and the Constable Nuno \u00c1lvares Pereira: 1,700 lances, 800 crossbowmen and 4,000 foot by Fern\u00e3o Lopes, with about 700 English and Gascons, some 300 of them archers.",
@@ -32017,6 +32044,41 @@
     }
    ],
    "examples": [
+    {
+     "name": "English archer",
+     "side": "England and Wales (1346)",
+     "kit": "gambeson",
+     "weapon": "longbow",
+     "notes": "A county foot archer at 3d a day, on the wing of the Prince's battle with 72 arrows."
+    },
+    {
+     "name": "Welsh spearman",
+     "side": "England and Wales (1346)",
+     "kit": "gambeson",
+     "weapon": "spear",
+     "notes": "At 2d a day; one of the knife-men who killed the fallen French nobles."
+    },
+    {
+     "name": "English man-at-arms",
+     "side": "England and Wales (1346)",
+     "kit": "transitional",
+     "weapon": "spear",
+     "notes": "Dismounted in the Prince's battle, his horse in the park behind."
+    },
+    {
+     "name": "Genoese crossbowman",
+     "side": "France and Genoa (1346)",
+     "kit": "gambeson",
+     "weapon": "crossbow",
+     "notes": "Sent in first after a long march, without his pavise, his string wet from the shower."
+    },
+    {
+     "name": "French man-at-arms",
+     "side": "France and Genoa (1346)",
+     "kit": "transitional",
+     "weapon": "spear",
+     "notes": "With Alen\u00e7on's battle, which rode down the Genoese to get at the English."
+    },
     {
      "name": "Portuguese man-at-arms",
      "side": "Portugal and England",
@@ -32056,7 +32118,8 @@
    "sources": [
     "Monteiro J.G., Aljubarrota Revisitada (Coimbra, 2001; open access), and 'The Battle of Aljubarrota (1385): a reassessment', Journal of Medieval Military History VII (2009).",
     "P\u00e9rez Fern\u00e1ndez \u00c1. et al., 'Perimortem fractures in the osteological collection of Aljubarrota (Portugal)', Journal of Anthropological Archaeology 40 (2015); Cunha E. and Silva A.M., International Journal of Osteoarchaeology 7 (1997).",
-    "Project docs aljubarrota-research and iberia1385-research."
+    "Ayton A. and Preston P., The Battle of Cr\u00e9cy, 1346 (Woodbridge, 2005); Sumption J., Trial by Battle (London, 1990).",
+    "Project docs crecy-research, aljubarrota-research and iberia1385-research."
    ]
   },
   "Wars of the Roses": {

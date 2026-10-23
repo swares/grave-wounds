@@ -51,7 +51,7 @@ When an item is done, delete it here and note it in the pull request that closes
 - **The travel clock, simplified.** Meetings are only between the forces' hexes: no
   scouting reach, and no seeing a dust cloud or campfires from further off.
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
-  Jacob's Ford (1179), Aljubarrota (1385), Agincourt (1415), Towton (1461), Dornach (1499), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
+  Jacob's Ford (1179), Crécy (1346), Aljubarrota (1385), Agincourt (1415), Towton (1461), Dornach (1499), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
   Lane (1814), Sevastopol (1855, two battlefields), First Bull Run (1861), Fort Phil Kearny (1866-67, with two battlefields), Mons
   (1914), the Serbian retreat (1915, the Babuna pass), Hill 700 on Bougainville (1944), Anzio and Cisterna (1944), Osan (1950), Chipyong-ni
   (1951), the Ia Drang (1965), Mogadishu (1993), Wanat (2008), Cassino (1944, three battlefields), the Chosin Reservoir (1950), Kapyong (1951), Heartbreak Ridge (1951), Pork Chop Hill (1953), Hue (1968), Khe Sanh (1968), Dak To (1967), Hamburger Hill (1969), Goose Green (1982), 73 Easting (1991), Grozny (1995), Fallujah (2004) and COP Keating (2009) have both a campaign map and a battlefield. The rest of Italy, the rest of the Gulf War (1991) and Northern Ireland
@@ -266,6 +266,26 @@ When an item is done, delete it here and note it in the pull request that closes
   paper were not read in full; the Ayyubid ranks (amir, mamluk, halqa) are not a ladder of their
   own; Kurdish and Persian are new tongues with estimated shares. In self-play the storming column
   does not go in through the breach.
+- **Crécy, first cut.** The campaign map from the Somme to Crécy (1 km, from the crossing at
+  Blanchetaque on 24 August 1346) and the battlefield on the traditional site (Cassini's, 1757)
+  with Preston's steep bank along the east side of the Vallée des Clercs (project doc
+  "crecy-research"). Only the battlefield's units wear 1346 kit (the coat of plates and mail,
+  padded aketons, Genoese crossbows without pavises); the team builder's England and France are
+  still c.1415. Still left out: the 1346 pay is not in the purse. The Calais muster roll (Todd,
+  after the 1346 roll) has an earl at 6s 8d a day, a banneret 4s, a knight 2s, an esquire 12d, a
+  mounted archer or hobelar 6d, a foot archer 3d and a Welsh spearman 2d; no French daily gages
+  under Philip VI, no Genoese pay per man, and no sterling-tournois rate for 1346 were found. The
+  battle: the bank plays as an earth bank (the rules have no edge that horses cannot cross, so it
+  slows the French rather than stopping their horse); which way the French came into the valley is
+  our reading of Preston, whose chapter was not read; the terraces on the English slope are from
+  an unsourced guide; the English guns (about 100 ribalds under the carts, by Sumption) are not
+  on the field; the Genoese are 6,000 by Villani and Sumption, against Schnerb's doubt of about
+  2,000; the battle is cut at 21:00, where Knighton has the charges go on to midnight; no
+  capture rule keeps prisoners near none while the Oriflamme was up; the fight on 27 August in
+  the fog, against the late levies of Rouen and Beauvais, is not played; Livingston's site (2015),
+  about 5 km south by Domvast, is a place on the map but not a battlefield; Wadicourt, the
+  windmill and the ford have only approximate coordinates, and the 1346 coast, forest edge and
+  roads are drawn by hand.
 - **Dornach, the Swiss and the Landsknechte, first cut.** The medieval era runs to c.1500 for
   the Swabian War: the Dornach campaign map and battlefield, the ossuary crania as a bone-evidence
   table (Cooper 2010: 417 skull wounds by kind and side, the region of each our tally from her

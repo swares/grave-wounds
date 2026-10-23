@@ -181,7 +181,24 @@ export const UNIT_SIZES = {
     "Legion dragoons, left": "platoon",
     "Legion dragoons (reserve)": "company",
   },
-  "dakto-1967": {
+  "crecy-1346": {
+    "The Prince's archers, right": "battalion",
+    "The Prince of Wales's men-at-arms (with Warwick)": "battalion",
+    "Welsh spearmen with the Prince": "battalion",
+    "The Prince's archers, left": "battalion",
+    "Arundel's archers, right": "battalion",
+    "Arundel's men-at-arms (the second battle)": "battalion",
+    "Arundel's archers, left": "battalion",
+    "Edward III's men-at-arms (by the windmill)": "battalion",
+    "Edward III's archers": "regiment",
+    "The King's spearmen": "regiment",
+    "The Genoese crossbowmen (Doria and Grimaldi)": "brigade",
+    "Alençon's men-at-arms": "regiment",
+    "John of Bohemia and his knights": "battalion",
+    "Lorraine, Blois and Flanders": "regiment",
+    "Philip VI's battle": "regiment",
+    "French foot on the road": "regiment",
+  },  "dakto-1967": {
     "C Company, 2/503 Infantry (up the slope)": "company",
     "D Company, 2/503 Infantry (up the slope)": "company",
     "A Company, 2/503 Infantry (cutting the landing zone behind)": "company",
@@ -191,6 +208,7 @@ export const UNIT_SIZES = {
     "North Vietnamese company behind them (from the west)": "company",
     "North Vietnamese machine guns": "section",
   },
+
   "dornach-1499": {
     "Solothurn's vanguard (Niklaus Conrad)": "battalion",
     "Solothurn's halberdiers": "battalion",
