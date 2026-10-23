@@ -744,6 +744,15 @@ morale:
   #   Measured on 24 runs of every battlefield: 652 of 888 from 642, X-Ray 9 to 18, the morale
   #   targets unchanged. false: only works, bunkers, digging in and ground that hides men count.
   posture_cover: true
+  # posture_hand: a unit holding a position (as posture) and not flanked has lost the exchange in
+  #   contact only if it lost more men hand to hand than it put down hand to hand; men lost to fire
+  #   from afar still count toward the quarter-down and shock checks. At the June Redan the 600
+  #   Russians behind the parapet checked, and broke, over men lost to British rifles 180 m off,
+  #   which their smoothbores could not answer, while the fight at the parapet was even. Units in
+  #   the open and attackers count every loss (the French at Agincourt broke under the archery
+  #   while at the English line). Measured on 24 runs of every battlefield: 671 of 912 from 658,
+  #   the June Redan 2 to 14.
+  posture_hand: true
   shaken_by: 20
   mods:
     leader: 10                # a named leader with the unit, up and fighting

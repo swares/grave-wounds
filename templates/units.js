@@ -618,7 +618,8 @@ function failedState(mo, u, by){
 function morale(u, roll){                       // {check, target, state}
   const M = UD.morale;
   if (u.state === "broken") return { check: false, target: null, state: "broken" };
-  const losing = (u.lost || 0) > (u.dealt || 0) && u.contact;
+  const byHand = !!M.posture_hand && u.holds && !u.flanked;   // holding a position: lost the fight hand to hand, not men lost to fire from afar (morale.posture_hand)
+  const losing = (byHand ? (u.hand_lost || 0) > (u.hand_dealt || 0) : (u.lost || 0) > (u.dealt || 0)) && u.contact;
   const attrition = u.down >= M.trigger * u.start && (u.lost > 0 || !(u.holds && !u.flanked));   // past a quarter down: every exchange in the open; holding a position, only when it lost men (morale.posture)
   const struck = attrition || u.lost >= M.shock * Math.max(1, u.men) || u.flanked || losing;
   const rally = u.state === "shaken" && !u.contact;
@@ -1911,8 +1912,9 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   const under = new Array(n).fill(false);          // under shellfire or machine-gun fire this exchange (suppression)
   minesAll(us, table, rng, acc, log, field);
   for (const c of closingFire(us, field)) fireBattery(us, table, rng, acc, log, c);
-  const from = log.length;
-  strikeAll(us, table, rng, acc, log, field, [...acc.lost]);
+  const from = log.length, lost0 = [...acc.lost], dealt0 = [...acc.dealt];
+  strikeAll(us, table, rng, acc, log, field, lost0);
+  acc.hand = { lost: acc.lost.map((x, i) => x - lost0[i]), dealt: acc.dealt.map((x, i) => x - dealt0[i]) };   // hand to hand this exchange (morale.posture_hand)
   const fought = new Set(log.slice(from).filter(l => l.kind === "melee").flatMap(l => [l.att, l.dfd]));
   shootAll(us, table, rng, acc, log, field, under);
   indirectAll(us, table, rng, acc, log, field, under);
@@ -2216,7 +2218,7 @@ function moraleAll(us, occ, before, acc, rng, table, field = null){
     const [down, lost] = vehicleLosses(u, before[i], acc.lost[i]);
     const unit = { quality: u.quality, start: u.start, down, lost, dealt: acc.dealt[i], men: before[i], state: u.state,
       leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out",
-      holds: !!M.posture && !!u.holding && holdsPosition(us, i, field) };
+      holds: !!M.posture && !!u.holding && holdsPosition(us, i, field), hand_lost: acc.hand.lost[i], hand_dealt: acc.hand.dealt[i] };
     const m = morale(unit, rng.randint(1, 100));
     if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state });
     if (m.state === "broken") broke.push(i);
