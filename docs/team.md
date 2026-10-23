@@ -17,7 +17,7 @@ Aljubarrota, Agincourt, Towton and Dornach battlefields. The team comes from one
 | France (c.1415) | Towton 1461 (the nearest records) | full plate, brigandines, jacks |
 | Portugal (c.1385) | Towton 1461 (the nearest records) | mail and plates, padded jacks, crossbows; its archers the English with it (longbows) |
 | Castile (c.1385) | Towton 1461 (the nearest records) | mail and plates, padded jacks, crossbows |
-| Swiss Confederates (c.1499) | Dornach 1499 (Towton's body, the Dornach skulls' head) | pikes in breastplate and sallet, halberds (as the poleaxe) in jacks, handguns |
+| Swiss Confederates (c.1499) | Dornach 1499 (Towton's body, the Dornach skulls' head) | pikes in breastplate and sallet, halberds in jacks, handguns |
 | Swabian League and Landsknechte (c.1499) | Dornach 1499 | pikes in jacks, knights in full plate, handguns |
 
 ## Five steps

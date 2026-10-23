@@ -119,6 +119,8 @@ items:
   - {id: longbow, name: "Longbow", cat: weapon, price: [96, 160], when: "16th c.", weapon: [longbow, bow], source: {url: *bvm, note: "Roberts, 16th-century prices"}}
   - {id: war_axe, name: "War axe", cat: weapon, price: [48, 144], weapon: axe, approx: true}
   - {id: bill, name: "Bill", cat: weapon, price: [48, 96], weapon: bill, approx: true}
+  - {id: halberd, name: "Halberd", cat: weapon, price: [72, 144], weapon: halberd, approx: true}
+  - {id: handgun, name: "Handgun (with match, powder and ball)", cat: weapon, price: [480, 960], weapon: handgun, approx: true}
   - {id: spear, name: "Spear", cat: weapon, price: [24, 96], weapon: spear, approx: true}
   - {id: bow_stave, name: "Bow stave", cat: weapon, price: [20, 76], when: "1483", source: {url: "https://en.wikipedia.org/wiki/English_longbow", note: "Wikipedia, English longbow"}}
   - {id: dagger, name: "Dagger", cat: weapon, price: [16, 48], weapon: dagger, approx: true}

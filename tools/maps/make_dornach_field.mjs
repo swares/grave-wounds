@@ -53,8 +53,8 @@ for (let c = 22; c <= 82; c += 6) wagons.push([c, 108], [c + 3, 112]);
 // ---------- the armies (pos is the middle of the front row; "south" here is west, down the slope) ----------
 const CH = { side: 0, facing: S }, IM = { side: 1, facing: N };
 const PIKES = { quality: "veteran", weapon: "pike", kit: "brigandine_sallet", formation: "close", mounted: false };
-const HALBERDS = { quality: "veteran", weapon: "poleaxe", kit: "jack_sallet", formation: "close", mounted: false };
-const GUNS_HAND = { quality: "regular", weapon: "matchlock_musket", kit: "none", formation: "open", mounted: false };
+const HALBERDS = { quality: "veteran", weapon: "halberd", kit: "jack_sallet", formation: "close", mounted: false };
+const GUNS_HAND = { quality: "regular", weapon: "handgun", kit: "none", formation: "open", mounted: false };
 const LANDSKNECHTE = { quality: "regular", weapon: "pike", kit: "jack_sallet", formation: "close", mounted: false };
 const LEVIES = { quality: "green", weapon: "spear", kit: "gambeson", formation: "close", mounted: false };
 const HORSE = { quality: "veteran", weapon: "spear", kit: "full_plate", formation: "close", mounted: true };

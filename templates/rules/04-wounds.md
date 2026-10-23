@@ -42,7 +42,7 @@ A wounded fighter fights worse. Add up:
 Attack and defence penalties are each capped at −{{cap}}%. A fighter with no usable hand
 cannot hold a weapon. A fighter with **either** arm hurt (an arm wound, a lost grip, a
 useless hand or arm) cannot attack with a two-handed weapon (bows, crossbows, long guns,
-bills, pikes and poleaxes): he can only defend until he takes up something he can use in
+bills, halberds, pikes and poleaxes): he can only defend until he takes up something he can use in
 one hand.
 
 ## First aid {#first-aid}

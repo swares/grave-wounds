@@ -2503,8 +2503,12 @@
     "kg": 0.9
    },
    {
-    "match": "poleaxe|\\bbill\\b|war axe|\\bpike\\b",
+    "match": "poleaxe|halberd|\\bbill\\b|war axe|\\bpike\\b",
     "kg": 2.5
+   },
+   {
+    "match": "handgun",
+    "kg": 5
    },
    {
     "match": "spear",
@@ -7277,6 +7281,50 @@
     }
    ]
   },
+  "halberd": {
+   "id": "halberd",
+   "name": "Halberd (axe blade, spike and hook)",
+   "short": "Halberd",
+   "two_handed": true,
+   "icon": "bill",
+   "reach": 2,
+   "era": "1400s-1600s",
+   "melee": "armed",
+   "melee_table": "dornach-1499-all-hits",
+   "mechanisms": {
+    "cut": 55,
+    "pierce": 35,
+    "crush": 10
+   },
+   "zone_bias": {
+    "head": 1.2
+   },
+   "armor_defeat": {
+    "pierce": 1
+   },
+   "confidence": "extrapolated",
+   "notes": "The Swiss weapon of the 15th century, 5-8 feet long (Winkler after Elgger): an axe blade to cut, a spike to thrust and a hook to drag a horseman down; the halberdiers were the least armoured men in the Swiss line. The spike ignores a step of armour against pierce (a design estimate). On the Dornach evidence it rolls on the cuts, which Cooper finds fit sword or halberd and cannot tell apart.\n",
+   "mech_ranges": [
+    {
+     "id": "cut",
+     "pct": 55,
+     "lo": 1,
+     "hi": 55
+    },
+    {
+     "id": "pierce",
+     "pct": 35,
+     "lo": 56,
+     "hi": 90
+    },
+    {
+     "id": "crush",
+     "pct": 10,
+     "lo": 91,
+     "hi": 100
+    }
+   ]
+  },
   "bow": {
    "id": "bow",
    "name": "Bow (war arrows)",
@@ -7755,6 +7803,35 @@
    "zone_bias": {},
    "confidence": "historical",
    "notes": "Heavy infantry musket fired from a rest or the shoulder; a lead ball of about .70-.80 calibre. On the L\u00fctzen table it uses the 32 recorded gunshot injuries (mostly carbines and pistols; no source separates musket hits).",
+   "mech_ranges": [
+    {
+     "id": "ballistic",
+     "pct": 100,
+     "lo": 1,
+     "hi": 100
+    }
+   ]
+  },
+  "handgun": {
+   "id": "handgun",
+   "name": "Handgun (early arquebus, c.1450-1520)",
+   "short": "Handgun",
+   "two_handed": true,
+   "icon": "long_gun",
+   "range": [
+    12,
+    25,
+    50
+   ],
+   "ignition": "match",
+   "era": "1450s-1520s",
+   "threat": "rifle",
+   "mechanisms": {
+    "ballistic": 100
+   },
+   "zone_bias": {},
+   "confidence": "extrapolated",
+   "notes": "The Swiss and Landsknecht handgun of about 1500 (B\u00fcchse, Hakenb\u00fcchse), fired with a match; the Swiss reckoned its reach at 150-200 paces (Winkler after Elgger), and it was less accurate than the later musket, so its range bands are shorter (a design estimate). A Willisau muster of 1490 had 50 guns to 400 pikes and halberds. It is offered on the Dornach tables: on the skull table it rolls on the five gunshot wounds, on the gameplay table as the rest of its weights.\n",
    "mech_ranges": [
     {
      "id": "ballistic",
@@ -11092,11 +11169,13 @@
    ],
    "weapons": [
     "sword",
+    "halberd",
     "poleaxe",
     "pike",
     "spear",
     "spiked_club",
     "crossbow",
+    "handgun",
     "matchlock_musket",
     "dagger",
     "bayonet",
@@ -11107,20 +11186,24 @@
    ],
    "own_weapons": [
     "sword",
+    "halberd",
     "poleaxe",
     "pike",
     "spear",
     "spiked_club",
     "crossbow",
+    "handgun",
     "matchlock_musket"
    ],
    "resolve": {
     "sword": "dornach-1499-crania",
+    "halberd": "dornach-1499-crania",
     "poleaxe": "dornach-1499-crania",
     "pike": "dornach-1499-crania",
     "spear": "dornach-1499-crania",
     "spiked_club": "dornach-1499-crania",
     "crossbow": "dornach-1499-crania",
+    "handgun": "dornach-1499-crania",
     "matchlock_musket": "dornach-1499-crania",
     "dagger": "dornach-1499-crania",
     "bayonet": "peninsular-1808-14-officers",
@@ -11185,6 +11268,62 @@
      1.0,
      1.0,
      1.0
+    ],
+    "halberd": [
+     1.0327959763696442,
+     0.9614529907308046,
+     1.0418719211822658,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.6630094043887147,
+     0.9945141065830722,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "handgun": [
+     0.4157248157248158,
+     1.3681940700808624,
+     3.021428571428571,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
     ],
     "matchlock_musket": [
      0.4157248157248158,
@@ -11360,7 +11499,7 @@
    "weapon_bias": "sourced",
    "assumes_shield": false,
    "battle": "Swabian War",
-   "confidence_note": "From 417 perimortem injuries on 102 of 106 crania (315 cut, 69 point, 28 blunt, 5 gunshot) and 6 on 4 of 33 femora (Cooper 2010). Skull wounds are shared between the left and right of the skull by the author's sides for each kind (Table 28), midline ones evenly; the face's share is our tally from her catalogue. Swords and halberds (the poleaxe) roll on the cuts, pikes and spears on the point wounds (thrust, stab and crossbow bolt counted together), the war hammer (spiked club) on the blunt ones, the handgun on the gunshot ones; others on all together.\n",
+   "confidence_note": "From 417 perimortem injuries on 102 of 106 crania (315 cut, 69 point, 28 blunt, 5 gunshot) and 6 on 4 of 33 femora (Cooper 2010). Skull wounds are shared between the left and right of the skull by the author's sides for each kind (Table 28), midline ones evenly; the face's share is our tally from her catalogue. Swords and halberds (and the poleaxe) roll on the cuts, pikes and spears on the point wounds (thrust, stab and crossbow bolt counted together), the war hammer (spiked club) on the blunt ones, the handgun (and the matchlock) on the gunshot ones; others on all together.\n",
    "regions": [
     {
      "label": "Skull, left (178)",
@@ -11461,6 +11600,7 @@
    ],
    "weapons": [
     "sword",
+    "halberd",
     "poleaxe",
     "pike",
     "spear",
@@ -11471,6 +11611,7 @@
     "bow",
     "longbow",
     "crossbow",
+    "handgun",
     "matchlock_musket",
     "artillery_smoothbore",
     "bayonet",
@@ -11480,6 +11621,7 @@
    ],
    "own_weapons": [
     "sword",
+    "halberd",
     "poleaxe",
     "pike",
     "spear",
@@ -11490,11 +11632,13 @@
     "bow",
     "longbow",
     "crossbow",
+    "handgun",
     "matchlock_musket",
     "artillery_smoothbore"
    ],
    "resolve": {
     "sword": "dornach-1499-all-hits",
+    "halberd": "dornach-1499-all-hits",
     "poleaxe": "dornach-1499-all-hits",
     "pike": "dornach-1499-all-hits",
     "spear": "dornach-1499-all-hits",
@@ -11505,6 +11649,7 @@
     "bow": "dornach-1499-all-hits",
     "longbow": "dornach-1499-all-hits",
     "crossbow": "dornach-1499-all-hits",
+    "handgun": "dornach-1499-all-hits",
     "matchlock_musket": "dornach-1499-all-hits",
     "artillery_smoothbore": "dornach-1499-all-hits",
     "bayonet": "peninsular-1808-14-officers",
@@ -11680,6 +11825,62 @@
      0.5,
      0.5,
      0.5
+    ],
+    "halberd": [
+     1.2,
+     1.2,
+     1.2,
+     1.2,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "handgun": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
     ],
     "longbow": [
      1.0,
@@ -31848,8 +32049,15 @@
      "name": "Swiss halberdier",
      "side": "Swiss Confederates",
      "kit": "jack_sallet",
-     "weapon": "poleaxe",
-     "notes": "The halberd (as the poleaxe); the cuts on the Dornach skulls fit sword or halberd."
+     "weapon": "halberd",
+     "notes": "The halberd; the cuts on the Dornach skulls fit sword or halberd."
+    },
+    {
+     "name": "Swiss handgunner",
+     "side": "Swiss Confederates",
+     "kit": "none",
+     "weapon": "handgun",
+     "notes": "About one man in nine at a Willisau muster of 1490 carried a gun."
     },
     {
      "name": "Landsknecht",

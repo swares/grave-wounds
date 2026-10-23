@@ -263,7 +263,7 @@ When an item is done, delete it here and note it in the pull request that closes
   "dornach-wounds-research"). Still left out: no Swiss pay for 1499 (papal pay of 1485 stands in;
   the Swiss and Rhenish gulden taken as equal), no prices for pikes, halberds, handguns or armour,
   St. Gallen prices for the rest, no ransom sums, no name counts (the names are our reading), no
-  Landsknecht ages; the halberd plays as the poleaxe and the handgun as the matchlock; the ranks
+  Landsknecht ages; the halberd and the handgun are their own weapons, with design-estimate figures (no wound count separates them); the ranks
   are the medieval ladder, not Hauptmann, Venner and Rottmeister. The battle: the imperial army's
   strength is 10,000 to 16,000 by source and its split among its parts is ours, the Ramstel and
   Blood Hill are not located, when the Welsche Garde and the Bernese main body came in is our

@@ -7,16 +7,16 @@ context: "Skulls and thigh bones of men killed when the Swiss Confederates fell 
 variant: evidence
 native: armed
 weapon_bias: sourced
-weapons: [sword, poleaxe, pike, spear, spiked_club, crossbow, matchlock_musket]
+weapons: [sword, halberd, poleaxe, pike, spear, spiked_club, crossbow, handgun, matchlock_musket]
 modifiers: [weapon_side, attacker_higher, attacker_lower, target_down, target_fleeing, flanked, target_warding]
 confidence: historical
 confidence_note: >
   From 417 perimortem injuries on 102 of 106 crania (315 cut, 69 point, 28 blunt, 5 gunshot) and
   6 on 4 of 33 femora (Cooper 2010). Skull wounds are shared between the left and right of the
   skull by the author's sides for each kind (Table 28), midline ones evenly; the face's share is
-  our tally from her catalogue. Swords and halberds (the poleaxe) roll on the cuts, pikes and
+  our tally from her catalogue. Swords and halberds (and the poleaxe) roll on the cuts, pikes and
   spears on the point wounds (thrust, stab and crossbow bolt counted together), the war hammer
-  (spiked club) on the blunt ones, the handgun on the gunshot ones; others on all together.
+  (spiked club) on the blunt ones, the handgun (and the matchlock) on the gunshot ones; others on all together.
 armor_note: >
   Armour is already in these numbers, and so is what was kept: the ossuary held only skulls and
   thigh bones, so this table can show nothing of the neck, the body or the arms. Few skulls show
@@ -44,6 +44,7 @@ weapon_regions:
     - {label: "Face (22)", locs: [face], count: 22}
     - {label: "Right thigh (3)", locs: [thigh_r], count: 3}
     - {label: "Left thigh (1)", locs: [thigh_l], count: 1}
+  halberd: *cut
   poleaxe: *cut
   pike: &point
     - {label: "Skull, left (31)", locs: [skull_l], count: 31}
@@ -59,7 +60,8 @@ weapon_regions:
     - {label: "Skull, right (15)", locs: [skull_r], count: 15}
     - {label: "Skull, midline (2)", locs: [skull_l, skull_r], count: 2}
     - {label: "Face (1)", locs: [face], count: 1}
-  matchlock_musket:
+  handgun: &shot
     - {label: "Skull, left (1)", locs: [skull_l], count: 1}
     - {label: "Skull, right (3)", locs: [skull_r], count: 3}
     - {label: "Face (1)", locs: [face], count: 1}
+  matchlock_musket: *shot
