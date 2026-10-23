@@ -204,6 +204,11 @@ def stop_rules(d) -> list[str]:
         f"Failed {'; '.join(res)}. Defend only and stunned fighters cannot attack"
         + (f"; stunned also -{stunned}% defence." if stunned else ".")
         + f" Pain above {d.wounds['tracking']['pain_cap']} steps calls for a stop check every round.",
+        "<b>Lethality (player characters only):</b> "
+        + "; ".join(f"{p['name']}: {p['fate']} fate a season, Blood ×{p['blood']:g}, "
+                    + ("stop check only for critical wounds" if p["stop_critical_only"] else (f"+{p['stop_bonus']} Nerve on the stop check" if p["stop_bonus"] else "stop check as anyone"))
+                    for p in d.wounds["lethality"]["presets"].values())
+        + ". A fate point lowers a wound a step, rolls again a stop, recovery or wound-fever roll, or spares a capture or captivity roll that would kill.",
         f"<b>Team morale:</b> at the end of each round, a side with {int(M['trigger'] * 100)}% or more of its fighters down rolls d100 "
         f"against the best Nerve among those still up (its leader's, if he is up), +{M['leader_present']} with a leader up, "
         f"-{M['leader_down']} if a leader is down, -{M['heavy_losses']} once {int(M['heavy'] * 100)}% are down. Over: the side breaks and runs or surrenders.",
@@ -2089,21 +2094,23 @@ def main() -> int:
     camp_js = (ROOT / "templates" / "camp.js").read_text(encoding="utf-8")
     works_js = (ROOT / "templates" / "works.js").read_text(encoding="utf-8")
     measure_js = (ROOT / "templates" / "measure.js").read_text(encoding="utf-8")
-    html = html.replace(CAMP_MARK, camp_js).replace("/*__WORKS_JS__*/", works_js).replace(MEASURE_MARK, measure_js)
+    lethal_js = (ROOT / "templates" / "lethality.js").read_text(encoding="utf-8").replace(
+        "/*__LETHAL_DATA__*/null", json.dumps({"default": d.wounds["lethality"]["default"], "presets": d.wounds["lethality"]["presets"]}, separators=(",", ":")))
+    html = html.replace(CAMP_MARK, camp_js).replace("/*__WORKS_JS__*/", works_js).replace(MEASURE_MARK, measure_js).replace("/*__LETHAL_JS__*/", lethal_js)
     html = html.replace("/*__GRAVEWOUNDS_DATA__*/null", json.dumps(b, separators=(",", ":")))
     (DIST / "roller.html").write_text(html, encoding="utf-8")
     tb = travel_bundle(d)
     ttpl = (ROOT / "templates" / "travel.html").read_text(encoding="utf-8")
     events_js = (ROOT / "templates" / "events.js").read_text(encoding="utf-8")
-    thtml = ttpl.replace("/*__PURSE_JS__*/", purse_js).replace("/*__EVENTS_JS__*/", events_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
+    thtml = ttpl.replace("/*__PURSE_JS__*/", purse_js).replace("/*__LETHAL_JS__*/", lethal_js).replace("/*__EVENTS_JS__*/", events_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
     (DIST / "travel.html").write_text(thtml, encoding="utf-8")
     units_js = (ROOT / "templates" / "units.js").read_text(encoding="utf-8")
     ftpl = (ROOT / "templates" / "field.html").read_text(encoding="utf-8")
-    fhtml = ftpl.replace("/*__WORKS_JS__*/", works_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(field_bundle(d), separators=(",", ":")))
+    fhtml = ftpl.replace("/*__WORKS_JS__*/", works_js).replace("/*__LETHAL_JS__*/", lethal_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(field_bundle(d), separators=(",", ":")))
     (DIST / "field.html").write_text(fhtml, encoding="utf-8")
     team_js = (ROOT / "templates" / "team.js").read_text(encoding="utf-8")
     gtpl = (ROOT / "templates" / "team.html").read_text(encoding="utf-8")
-    ghtml = gtpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>")).replace("/*__PURSE_JS__*/", purse_js).replace("/*__TEAM_JS__*/", team_js)
+    ghtml = gtpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>")).replace("/*__LETHAL_JS__*/", lethal_js).replace("/*__PURSE_JS__*/", purse_js).replace("/*__TEAM_JS__*/", team_js)
     (DIST / "team.html").write_text(ghtml.replace("/*__TEAM_DATA__*/null", json.dumps(team_bundle(d), separators=(",", ":"))), encoding="utf-8")
     from gravewounds.rulebook import render as rule_book
     (DIST / "rules.html").write_text(rule_book(d, ROOT), encoding="utf-8")

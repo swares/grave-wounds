@@ -27,6 +27,9 @@ h1{font:700 clamp(1.5rem,3.4vw,2.2rem)/1.1 var(--display);margin:0;letter-spacin
 h2{font:700 1.05rem/1.2 var(--display);margin:0;letter-spacing:.04em;color:var(--steel)}
 .sub{color:var(--muted);font-size:.92rem;margin:0;max-width:72ch}
 nav a{color:var(--blood);font-size:.9rem;margin-left:14px}
+.units-toggle{display:inline-flex;gap:0;vertical-align:middle}
+.units-toggle button{border-radius:0;margin-left:-1px}.units-toggle button:first-child{border-radius:3px 0 0 3px}.units-toggle button:last-child{border-radius:0 3px 3px 0}
+.units-toggle button[aria-pressed="true"]{background:var(--steel);color:var(--panel);border-color:var(--steel)}
 .grid{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:18px;align-items:start}
 @media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
@@ -377,7 +380,7 @@ if (typeof module !== "undefined") module.exports = FIG;
       <h1>Grave Wounds Team Builder</h1>
       <p class="sub">A team of four to six, a few rolls each: characteristics, where each comes from, the years served and what they left behind, and kit. Send the team to the wound roller to fight: their skills fill in attack and defence there.</p>
     </div>
-    <nav><a href="roller.html">Wound roller</a><a href="travel.html">Travel map</a><a href="field.html">Field map</a><a href="rules.html">Rule book</a><a href="../index.html">Start page</a></nav>
+    <nav><span class="units-toggle" id="lethal-toggle" title="Lethality for player characters (the GM's setting, shared by every page)"></span><a href="roller.html">Wound roller</a><a href="travel.html">Travel map</a><a href="field.html">Field map</a><a href="rules.html">Rule book</a><a href="../index.html">Start page</a></nav>
   </header>
 
   <div class="grid">
@@ -1198,6 +1201,54 @@ function ktRenews(name){                          // boots or clothing, if this 
   return null;
 }
 
+/* Lethality: the GM's setting for how much the player characters (the team builder's sheeted
+   men, the field map's heroes) are spared. One setting for all pages, remembered in the
+   browser like US | Metric; wounds.yaml lethality holds the presets. build.py puts this file
+   into each page at its LETHAL_JS marker. */
+const LETHAL_KEY = "gravewounds-lethality";
+const LETHALITY = {"default":"standard","presets":{"gritty":{"name":"Gritty","fate":0,"blood":1.0,"stop_bonus":0,"stop_critical_only":false,"desc":"Player characters are as fragile as anyone."},"standard":{"name":"Standard","fate":1,"blood":1.5,"stop_bonus":20,"stop_critical_only":false,"desc":"A little luck and a little more blood for the team."},"heroic":{"name":"Heroic","fate":3,"blood":2.0,"stop_bonus":0,"stop_critical_only":true,"desc":"The team survives what would kill other men, mostly."}}};            // {default, presets: {id: {name, fate, blood, stop_bonus, stop_critical_only, desc}}}
+let lethalId = LETHALITY.default;
+try{ const v = localStorage.getItem(LETHAL_KEY); if (v && LETHALITY.presets[v]) lethalId = v }catch(e){ /* storage off: the default */ }
+const lethalSetting = () => ({ id: lethalId, ...LETHALITY.presets[lethalId] });
+// A player character's Blood pool under the setting (as gravewounds.combat.blood_pool with a preset).
+const pcPool = pool => Math.floor(pool * lethalSetting().blood);
+// A player character's Nerve for a stop check on a wound of this severity, or null if the
+// setting spares him the check (as gravewounds.combat.pc_stop).
+function pcNerve(nerve, sev){
+  const L = lethalSetting();
+  if (L.stop_critical_only && sev !== "critical") return null;
+  return nerve + L.stop_bonus;
+}
+// Fate points: what he has spent this season is kept with his experience, by his purse id (the
+// shared gravewounds-xp store, as xp.js), and End of season clears it. What he has left is the
+// setting's fate less that, so turning the dial changes it at once.
+const FATE_KEY = "gravewounds-xp";
+function fateRead(){ try{ return JSON.parse(localStorage.getItem(FATE_KEY) || "{}") || {} }catch(e){ return {} } }
+function fateLeft(pid){ return pid ? Math.max(0, lethalSetting().fate - ((fateRead()[pid] || {}).fate_spent || 0)) : 0 }
+function fateSpend(pid, why, n = 1){             // spend n of his fate points; false if he has too few
+  if (!pid || fateLeft(pid) < n) return false;
+  const all = fateRead(), x = (all[pid] ||= { ticks: {}, served: 0 });
+  x.fate_spent = (x.fate_spent || 0) + n;
+  (x.fate_log ||= []).push(why);
+  try{ localStorage.setItem(FATE_KEY, JSON.stringify(all)) }catch(e){ return false /* storage off: it cannot be kept */ }
+  return true;
+}
+// The Gritty | Standard | Heroic switch in a page's header. onChange redraws the page.
+function lethalToggle(el, onChange){
+  const draw = () => {
+    el.innerHTML = Object.entries(LETHALITY.presets).map(([id, p]) => `<button type="button" class="small" data-lethal="${id}" aria-pressed="${lethalId === id}" title="${p.desc} Player characters: ${p.fate} fate a season, Blood ×${p.blood}${p.stop_critical_only ? ", stop check only for critical wounds" : p.stop_bonus ? `, +${p.stop_bonus} Nerve on the stop check` : ""}.">${p.name}</button>`).join("");
+  };
+  el.addEventListener("click", e => {
+    const b = e.target.closest("button[data-lethal]");
+    if (!b || b.dataset.lethal === lethalId) return;
+    lethalId = b.dataset.lethal;
+    try{ localStorage.setItem(LETHAL_KEY, lethalId) }catch(err){ /* storage off: the choice lasts while the page is open */ }
+    draw();
+    onChange();
+  });
+  draw();
+}
+
 /* Character generation: same rules as gravewounds/team.py, from the team bundle TD that build.py
    writes into the team builder page (TD.era: the era's tables; TD.ranges: old-wound location
    ranges by region and weapon; TD.locs, TD.weapons, TD.kits). The dice are taken in the same
@@ -1764,7 +1815,7 @@ function renderSlots(){
 const oldMarks = c => c.old.map(w => ({ loc: w.loc, sev: w.kind === "lasting" ? "serious" : "light", old: true }));
 function fightLine(c){                          // as gravewounds.team.fight_line: Blood, initiative, toil, and as leader, morale
   const F = TD.fight, C = F.chr, s = c.stats, load = C.toil.load[c.kit] || "light";
-  const bits = [`Blood ${F.blood_pool + Math.floor((s.end - 50) / C.blood.per)}`, `initiative d${C.initiative.die}+${Math.floor(s.agi / C.initiative.agi_per)}`,
+  const L = lethalSetting(), bits = [`Blood ${pcPool(F.blood_pool + Math.floor((s.end - 50) / C.blood.per))} (${L.name}; fate ${fateLeft(c.pid)} of ${L.fate})`, `initiative d${C.initiative.die}+${Math.floor(s.agi / C.initiative.agi_per)}`,
     `tires after ${Math.max(1, Math.floor((C.toil.blows[load] * s.str + 25) / 50))} exchanges hand to hand`];
   if (c.leader){ const m = Math.floor((s.pres - 50) / C.presence.per); bits.push(`leading, morale ${m >= 0 ? "+" : ""}${m}`) }
   return bits.join(", ");
@@ -2129,6 +2180,10 @@ function payRansom(c){                              // from his own purse, or th
 }
 function rollCapture(k){
   const c = S.prisoners[k], P = c.prison, r = prCapture(T.id, P.ctx, P.circ, realDice.randint(1, 100));
+  if (r.result === "killed" && fateSpend(c.pid, "spared when taken")){   // a player character's fate saves his life: held instead
+    P.stage = "held";
+    return prLog(`${c.name}: would have been killed when taken (d100 ${r.roll}, ${r.total}); fate spent, he is spared and held.`);
+  }
   if (r.result === "killed") return prDies(c, `was killed when taken (d100 ${r.roll}, ${r.total})`);
   if (r.result === "stripped"){
     P.stripped = true;
@@ -2146,6 +2201,7 @@ function seasonOutcome(c, r){                       // what a season's roll mean
     const broke = P.parole ? ", breaking his parole" : "";
     return prRejoin(c, P.serving ? "deserts the captor's ranks" : "escapes and gets home" + broke);
   }
+  if (r.out === "died" && fateSpend(c.pid, "lived through a season held")) return prLog(`${c.name} would have died in captivity (${r.why}); fate spent, he lives through the season.`);
   if (r.out === "died") return prDies(c, r.why);
   if (r.rolls.break === undefined) return;
   prLog(`${c.name} tries to escape: ${r.rolls.home === undefined ? "caught before he was out" : "out, but retaken"}.`);
@@ -2697,8 +2753,9 @@ function endSeason(){
       const owedText = owed ? ", " + cash(owed) + " owed" : "";
       if (paid || owed) line = line.replace(/\.$/, "") + `; pay ${cash(paid)}${owedText}.`;
     }
+    if (x.fate_spent) line = line.replace(/\.$/, "") + `; his fate comes back (${x.fate_spent} spent).`;
     lines.push(line);
-    all[c.pid] = { ticks: {}, served: 0, army: 0, owed: 0, hard: 0 };
+    all[c.pid] = { ticks: {}, served: 0, army: 0, owed: 0, hard: 0 };   // and his fate points spent this season (lethality.js) are back
   }
   for (const [c, roll] of found){                 // found out under or over age: sent home
     const why = c.lied === "under" ? "found under age" : "found over age";
@@ -3235,6 +3292,7 @@ function init(){
     }
   });
   $("#sheets").addEventListener("change", e => { const lx = e.target.closest("input[data-loadx]"); if (lx){ S.team[+lx.dataset.loadx].loadExtra = Math.max(0, +lx.value || 0); return render() } const n = e.target.closest("input[data-name]"); if (n){ S.team[+n.dataset.name].name = n.value.trim() || S.team[+n.dataset.name].name; save() } });
+  lethalToggle($("#lethal-toggle"), () => render());
   render();
 }
 init();

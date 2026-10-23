@@ -281,6 +281,11 @@ def tables(d: Data) -> dict:
                         for k, v in sorted(((int(k), v) for k, v in T["bleed_per_round"].items()))])
     out["impair"] = _md(["Impairment", "What it does", "Attack", "Defence"], _impair_rows(d))
     out["track"] = _md(["Step", "In a fight"], _track_rows(d))
+    LT = d.wounds["lethality"]
+    out["lethality"] = _md(["Setting", "Fate a season", "Blood", "Stop check", "What it feels like"], [
+        [p["name"] + (" (the pages' default)" if k == LT["default"] else ""), str(p["fate"]), f"×{p['blood']:g}",
+         "only for critical wounds" if p["stop_critical_only"] else (f"+{p['stop_bonus']} Nerve" if p["stop_bonus"] else "as anyone"),
+         p["desc"]] for k, p in LT["presets"].items()])
     R = d.disease["recovery"]
     out["recovery"] = _md(["What", "To the roll"], [
         ["Care: no camp", f"{R['care']['none']:+d}"], ["Care: a camp", f"{R['care']['field']:+d}"], ["Care: quarters in houses", f"{R['care']['shelter']:+d}"],

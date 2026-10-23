@@ -27,6 +27,9 @@ h1{font:700 clamp(1.5rem,3.4vw,2.2rem)/1.1 var(--display);margin:0;letter-spacin
 h2{font:700 1.05rem/1.2 var(--display);margin:0;letter-spacing:.04em;color:var(--steel)}
 .sub{color:var(--muted);font-size:.92rem;margin:0;max-width:72ch}
 nav a{color:var(--blood);font-size:.9rem;margin-left:14px}
+.units-toggle{display:inline-flex;gap:0;vertical-align:middle}
+.units-toggle button{border-radius:0;margin-left:-1px}.units-toggle button:first-child{border-radius:3px 0 0 3px}.units-toggle button:last-child{border-radius:0 3px 3px 0}
+.units-toggle button[aria-pressed="true"]{background:var(--steel);color:var(--panel);border-color:var(--steel)}
 .grid{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:18px;align-items:start}
 @media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
@@ -115,7 +118,7 @@ label.radio input{margin-top:4px}
       <h1>Grave Wounds Team Builder</h1>
       <p class="sub">A team of four to six, a few rolls each: characteristics, where each comes from, the years served and what they left behind, and kit. Send the team to the wound roller to fight: their skills fill in attack and defence there.</p>
     </div>
-    <nav><a href="roller.html">Wound roller</a><a href="travel.html">Travel map</a><a href="field.html">Field map</a><a href="rules.html">Rule book</a><a href="../index.html">Start page</a></nav>
+    <nav><span class="units-toggle" id="lethal-toggle" title="Lethality for player characters (the GM's setting, shared by every page)"></span><a href="roller.html">Wound roller</a><a href="travel.html">Travel map</a><a href="field.html">Field map</a><a href="rules.html">Rule book</a><a href="../index.html">Start page</a></nav>
   </header>
 
   <div class="grid">
@@ -176,6 +179,7 @@ label.radio input{margin-top:4px}
 <script>
 const TD = /*__TEAM_DATA__*/null;
 /*__PURSE_JS__*/
+/*__LETHAL_JS__*/
 /*__TEAM_JS__*/
 
 /* ---------- the page ---------- */
@@ -340,7 +344,7 @@ function renderSlots(){
 const oldMarks = c => c.old.map(w => ({ loc: w.loc, sev: w.kind === "lasting" ? "serious" : "light", old: true }));
 function fightLine(c){                          // as gravewounds.team.fight_line: Blood, initiative, toil, and as leader, morale
   const F = TD.fight, C = F.chr, s = c.stats, load = C.toil.load[c.kit] || "light";
-  const bits = [`Blood ${F.blood_pool + Math.floor((s.end - 50) / C.blood.per)}`, `initiative d${C.initiative.die}+${Math.floor(s.agi / C.initiative.agi_per)}`,
+  const L = lethalSetting(), bits = [`Blood ${pcPool(F.blood_pool + Math.floor((s.end - 50) / C.blood.per))} (${L.name}; fate ${fateLeft(c.pid)} of ${L.fate})`, `initiative d${C.initiative.die}+${Math.floor(s.agi / C.initiative.agi_per)}`,
     `tires after ${Math.max(1, Math.floor((C.toil.blows[load] * s.str + 25) / 50))} exchanges hand to hand`];
   if (c.leader){ const m = Math.floor((s.pres - 50) / C.presence.per); bits.push(`leading, morale ${m >= 0 ? "+" : ""}${m}`) }
   return bits.join(", ");
@@ -705,6 +709,10 @@ function payRansom(c){                              // from his own purse, or th
 }
 function rollCapture(k){
   const c = S.prisoners[k], P = c.prison, r = prCapture(T.id, P.ctx, P.circ, realDice.randint(1, 100));
+  if (r.result === "killed" && fateSpend(c.pid, "spared when taken")){   // a player character's fate saves his life: held instead
+    P.stage = "held";
+    return prLog(`${c.name}: would have been killed when taken (d100 ${r.roll}, ${r.total}); fate spent, he is spared and held.`);
+  }
   if (r.result === "killed") return prDies(c, `was killed when taken (d100 ${r.roll}, ${r.total})`);
   if (r.result === "stripped"){
     P.stripped = true;
@@ -722,6 +730,7 @@ function seasonOutcome(c, r){                       // what a season's roll mean
     const broke = P.parole ? ", breaking his parole" : "";
     return prRejoin(c, P.serving ? "deserts the captor's ranks" : "escapes and gets home" + broke);
   }
+  if (r.out === "died" && fateSpend(c.pid, "lived through a season held")) return prLog(`${c.name} would have died in captivity (${r.why}); fate spent, he lives through the season.`);
   if (r.out === "died") return prDies(c, r.why);
   if (r.rolls.break === undefined) return;
   prLog(`${c.name} tries to escape: ${r.rolls.home === undefined ? "caught before he was out" : "out, but retaken"}.`);
@@ -1273,8 +1282,9 @@ function endSeason(){
       const owedText = owed ? ", " + cash(owed) + " owed" : "";
       if (paid || owed) line = line.replace(/\.$/, "") + `; pay ${cash(paid)}${owedText}.`;
     }
+    if (x.fate_spent) line = line.replace(/\.$/, "") + `; his fate comes back (${x.fate_spent} spent).`;
     lines.push(line);
-    all[c.pid] = { ticks: {}, served: 0, army: 0, owed: 0, hard: 0 };
+    all[c.pid] = { ticks: {}, served: 0, army: 0, owed: 0, hard: 0 };   // and his fate points spent this season (lethality.js) are back
   }
   for (const [c, roll] of found){                 // found out under or over age: sent home
     const why = c.lied === "under" ? "found under age" : "found over age";
@@ -1811,6 +1821,7 @@ function init(){
     }
   });
   $("#sheets").addEventListener("change", e => { const lx = e.target.closest("input[data-loadx]"); if (lx){ S.team[+lx.dataset.loadx].loadExtra = Math.max(0, +lx.value || 0); return render() } const n = e.target.closest("input[data-name]"); if (n){ S.team[+n.dataset.name].name = n.value.trim() || S.team[+n.dataset.name].name; save() } });
+  lethalToggle($("#lethal-toggle"), () => render());
   render();
 }
 init();

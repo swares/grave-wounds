@@ -232,7 +232,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
       <h1>Grave Wounds Roller</h1>
       <p class="sub">d100 hit locations weighted by real wound records, from the Crusades to Iraq and Afghanistan, plus knife and unarmed fighting. System-agnostic wounds, armour and wounded fighters.</p>
     </div>
-    <span class="hdr-right"><span class="units-toggle" id="units-toggle" title="Units for distances and temperatures"></span><a class="navlink" href="team.html">Team builder</a><a class="navlink" href="travel.html">Travel map</a><a class="navlink" href="field.html">Field map</a><a class="navlink" href="rules.html">Rule book</a><span class="badge" id="conf">fitted weights</span></span>
+    <span class="hdr-right"><span class="units-toggle" id="lethal-toggle" title="Lethality for player characters (the GM's setting, shared by every page)"></span><span class="units-toggle" id="units-toggle" title="Units for distances and temperatures"></span><a class="navlink" href="team.html">Team builder</a><a class="navlink" href="travel.html">Travel map</a><a class="navlink" href="field.html">Field map</a><a class="navlink" href="rules.html">Rule book</a><span class="badge" id="conf">fitted weights</span></span>
   </header>
 
   <section class="panel" aria-labelledby="h-map" id="map-panel">
@@ -526,7 +526,9 @@ function writeNamed(all){ try{ localStorage.setItem(NAMED_KEY, JSON.stringify(al
 let NAMED = readNamed();
 const sheetEnd = c => (c.sheet && c.sheet.stats && Number.isFinite(c.sheet.stats.end) ? c.sheet.stats.end : DZR.endurance);
 const enduranceOf = c => (Number.isFinite(c.endurance) ? c.endurance : sheetEnd(c));
-const poolOf = c => bloodPool(enduranceOf(c));       // his Blood pool, from his Endurance
+const isPC = c => !!(c && c.sheet);                  // a player character: a team-builder sheet (the GM's lethality, lethality.js, spares him)
+const poolOf = c => { const p = bloodPool(enduranceOf(c)); return isPC(c) ? pcPool(p) : p };   // his Blood pool, from his Endurance (a player character's under the lethality)
+const pcFate = c => (isPC(c) ? fateLeft(c.sheet.pid) : 0);   // fate points he has left this season
 function sickOf(c){                               // {step, did} at his worst showing step, {incubating}, {dead}, or null
   const n = c.uid ? NAMED[c.uid] : null;
   if (!n) return null;
@@ -1160,6 +1162,7 @@ const hkey = h => h[0] + "," + h[1];
 function edgeKey(a, b){ const [x, y] = [a, b].slice().sort((p, q) => p[1] - q[1] || p[0] - q[0]); return hkey(x) + "|" + hkey(y) }
 const WXD = DATA.weather, WD_WEAPONS = DATA.weapons;
 /*__MEASURE_JS__*/
+/*__LETHAL_JS__*/
 /*__WORKS_JS__*/
 /*__CAMP_JS__*/
 // Weather in battle
@@ -2872,7 +2875,7 @@ function renderChars(){
         ${sheetLine(c)}
         ${penLine(cp)}</div></div>
       <div class="bar" title="Blood ${c.blood} of ${poolOf(c)}"><i style="width:${Math.max(0, st.frac * 100)}%"></i></div>
-      <div class="stat"><span>Blood <b>${c.blood}</b>/${poolOf(c)}</span><span>Bleeding ${st.bleed.toFixed(1)}/round</span><span class="${painCls}">Pain −${Math.min(st.pain, TRK.pain_cap) * 10}%${st.pain > TRK.pain_cap ? " · stop check each round" : ""}</span></div>
+      <div class="stat"><span>Blood <b>${c.blood}</b>/${poolOf(c)}${isPC(c) ? ` · fate ${pcFate(c)}` : ""}</span><span>Bleeding ${st.bleed.toFixed(1)}/round</span><span class="${painCls}">Pain −${Math.min(st.pain, TRK.pain_cap) * 10}%${st.pain > TRK.pain_cap ? " · stop check each round" : ""}</span></div>
       <div class="stat"><span class="${lethCls}">Worst untreated: ${st.worst}</span><span>${st.th ? st.th.effect : "Steady"}</span><span class="muted">${c.rounds} round${c.rounds === 1 ? "" : "s"} elapsed</span></div>
       <ul class="wounds">${c.wounds.map((w, j) => `<li data-j="${j}">
         <div class="w1"><span><b>${LOC[w.loc].name}</b> · ${w.sev} ${w.mech}</span><span class="pips" title="bleed">B${w.fx.bleed} P${w.fx.pain}</span></div>
@@ -3007,9 +3010,10 @@ function fieldHero(h){                         // one hero back from the field m
   c.downs = h.downs || 0;                        // the enemies he put down there: a deed at two
   if (h.won !== undefined){ c.fieldWon = !!h.won; S.afterOpen = true }   // the field map says whose side held the field
   fieldMarks(c, h);
+  if (h.fate_spent && isPC(c)) fateSpend(c.sheet.pid, "on the field map", h.fate_spent);   // what his luck did there (lethality.js)
   if (h.state === "dead" || h.state === "prisoner") markLost(c.sheet && c.sheet.pid, h.state === "dead" ? "killed" : "taken prisoner");   // the team builder replaces him
   const what = h.wounds.map(w => `${w.graze ? "graze" : w.sev} (${LOC[w.loc].name.toLowerCase()})`).join(", ") || "unhurt";
-  return `${c.name}: ${what}${{ dead: ", killed", down: ", down", prisoner: ", taken prisoner" }[h.state] || ""}`;
+  return `${c.name}: ${what}${{ dead: ", killed", down: ", down", prisoner: ", taken prisoner" }[h.state] || ""}${h.fate_spent ? ` (fate spent: ${h.fate_spent})` : ""}`;
 }
 function applyFieldHeroes(){                 // heroes back from the field map: their wounds onto their records
   let r = null;
@@ -3023,6 +3027,38 @@ function applyHit(c, h){ if (!h.fx) return false; c.wounds.push({ loc:h.loc, mec
 // Stop check for a wound just applied. Returns a line for the log, or "" if none was needed.
 const painOf = c => c.wounds.reduce((a, w) => a + w.fx.pain, 0);
 // Apply a stop-check result to a fighter (a worse result replaces a milder one) and describe it.
+function fateButtons(){                          // the player's choice to spend a fate point on the wound just applied (lethality.js)
+  const o = S.fateOffer, c = o && S.chars.find(x => x.id === o.id), w = c && c.wounds[o.w];
+  if (!w || pcFate(c) <= 0) return "";
+  return `<span class="fate-offer"> ${c.name} has ${pcFate(c)} fate: <button class="small" data-fate="lower" title="One severity step less: ${w.sev} to ${LADDER[LADDER.indexOf(w.sev) - 1]}">Wound a step less</button>${o.failed ? ` <button class="small" data-fate="stop" title="Roll the stop check again">Reroll stop check</button>` : ""}</span>`;
+}
+function spendFate(kind){                         // a fate point spent on the last wound: a step less, or the stop check again
+  const o = S.fateOffer, c = o && S.chars.find(x => x.id === o.id), w = c && c.wounds[o.w];
+  if (!w) return;
+  const where = LOC[w.loc].name.toLowerCase();
+  if (!fateSpend(c.sheet.pid, kind === "lower" ? `${where}: ${w.sev} a step less` : `${where}: stop check again`)) return;
+  let line;
+  if (kind === "lower"){
+    const sev = LADDER[LADDER.indexOf(w.sev) - 1];
+    if (sev === "stopped"){ c.wounds.splice(o.w, 1); line = `${c.name}: fate spent, the ${where} wound is turned (no wound)` }
+    else {
+      const fx = JSON.parse(JSON.stringify(DATA.wounds[`${LOC[w.loc].class}|${w.mech}|${sev}`]));
+      w.sev = sev; w.fx = w.graze ? grazeFx(fx) : fx;
+      line = `${c.name}: fate spent, the ${where} wound is ${sev}`;
+    }
+    if (sev === "stopped" || !(CMB.stop_check.severities.includes(sev) && w.fx.shock)){ c.state = o.prevState; o.failed = false }   // the lighter wound calls for no stop check
+  } else {
+    c.state = o.prevState;
+    const r = applyStopCheck(c, w);
+    o.failed = /failed by/.test(r);
+    line = `${c.name}: fate spent, ${plainText(r) || "no stop check"}`;
+  }
+  if (fateWoundGone(c, o)) S.fateOffer = null;
+  (S.pending = S.pending || []).push(line);
+  $("#apply-msg").innerHTML = line + fateButtons();
+  renderChars();
+}
+const fateWoundGone = (c, o) => !c.wounds[o.w] || c.wounds.length <= o.w;
 function stopResult(c, r, why){
   const head = `${c.name}: stop check${why} d100 ${d2(r.roll)} vs ${r.target}`;
   if (r.passed) return `${head} \u2014 fights on`;
@@ -3031,9 +3067,14 @@ function stopResult(c, r, why){
   return `${head} (failed by ${r.fail_by}) \u2014 <span class="${r.state === "out" ? "ev-bad" : "ev-warn"}">${CMB.states[r.state].name.toLowerCase()}${r.rounds ? ` for ${r.rounds} rounds` : ""}</span>`;
 }
 // Stop check for a wound just applied (if it calls for one).
+function stopNerve(c, sev){                       // his Nerve for a stop check: a player character's lethality adds to it, or spares him (null)
+  return isPC(c) ? pcNerve(nerveOf(c), sev) : nerveOf(c);
+}
 function applyStopCheck(c, w){
   if (penalties(c).flags.includes("out")) return "";
-  const r = stopCheck(nerveOf(c), w.sev, painOf(c), readDie("#in-stop") ?? d100(), c.blood / poolOf(c), !!w.fx.shock);
+  const nerve = stopNerve(c, w.sev);
+  if (nerve === null) return CMB.stop_check.severities.includes(w.sev) && w.fx.shock ? `${c.name}: no stop check (${lethalSetting().name}: only for critical wounds)` : "";
+  const r = stopCheck(nerve, w.sev, painOf(c), readDie("#in-stop") ?? d100(), c.blood / poolOf(c), !!w.fx.shock);
   $("#in-stop").value = "";
   return r ? stopResult(c, r, "") : "";
 }
@@ -3042,7 +3083,9 @@ function painChecks(){
   const out = [];
   for (const c of S.chars){
     if (penalties(c).flags.includes("out")) continue;
-    const r = painCheck(nerveOf(c), painOf(c), readDie("#in-stop") ?? d100(), c.blood / poolOf(c));
+    const nerve = stopNerve(c, CMB.stop_check.pain_round_as);
+    if (nerve === null) continue;
+    const r = painCheck(nerve, painOf(c), readDie("#in-stop") ?? d100(), c.blood / poolOf(c));
     if (!r) continue;
     $("#in-stop").value = "";
     out.push(stopResult(c, r, " (pain)"));
@@ -3111,16 +3154,19 @@ function init(){
     else if (applyHit(c, h)){
       h.applied = true;
       msg = `Added ${h.graze ? "grazing " : ""}${LOC[h.loc].name.toLowerCase()} wound to ${c.name}.`;
+      const prevState = c.state ? { ...c.state } : null;
       line = applyStopCheck(c, c.wounds[c.wounds.length - 1]);
+      S.fateOffer = isPC(c) ? { id: c.id, w: c.wounds.length - 1, prevState, failed: /failed by/.test(line) } : null;
       (S.pending = S.pending || []).push(`${c.name}: ${h.graze ? "grazed" : h.sev} ${LOC[h.loc].name.toLowerCase()}`, ...(line ? [line] : []));
       countCoup(attackerChar(), c, h.weapon);              // a Plains man's blow landed: a coup
       strainFor(c, ["serious", "critical"].includes(h.sev) ? "wounded_badly" : "wounded");
       if (!wasDown && isDown(c)){ creditDown(attackerChar(), c); strainOnDown(c) }
     } else msg = `Armour stopped that blow: nothing to add to ${c.name}.`;
-    $("#apply-msg").innerHTML = msg + (line ? `<br>${line}` : "");
+    $("#apply-msg").innerHTML = msg + (line ? `<br>${line}` : "") + fateButtons();
     if (h.free && isFreePair()){ S.hit = { ...h, free: false }; freeDone("") }
     renderChars();
   };
+  $("#apply-msg").addEventListener("click", e => { const b = e.target.closest("button[data-fate]"); if (b) spendFate(b.dataset.fate) });
   $("#btn-next").onclick = nextFighter;
   $("#btn-round").onclick = () => { S.turn = null; S.tm = null; S.free = []; advance(1) };      // a new round: no one has acted yet
   $("#btn-minute").onclick = () => { S.turn = null; S.tm = null; S.free = []; advance(10) };
@@ -3186,6 +3232,10 @@ function init(){
   else startExamples();
   applyFieldHeroes();
   unitToggle($("#units-toggle"), () => { renderResult(); renderChars() });
+  lethalToggle($("#lethal-toggle"), () => {      // a new lethality: an unhurt player character's Blood is his new pool; a hurt one keeps what he has, up to it
+    for (const c of S.chars.filter(isPC)) c.blood = c.wounds.length ? Math.min(c.blood, poolOf(c)) : poolOf(c);
+    save(); renderResult(); renderChars();
+  });
   const att = attackerChar();
   S.weapon = att && att.weapon && DATA.tables[S.table].weapons.includes(att.weapon) ? att.weapon : "sword"; fillWeapons();
   renderMods(); syncArmor(); rollHit(); renderChars(); shadeFigure(); renderTable(); renderHistory();

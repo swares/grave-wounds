@@ -19,6 +19,10 @@ morale. Each fighter has a side, a leader flag and a Nerve rating. A hex battle 
 the fighters' positions, with movement, leaving contact, and weapon reach and range. The
 one-page rules are in [docs/combat.md](docs/combat.md).
 
+**Lethality:** every page has a **Gritty | Standard | Heroic** switch, the GM's setting for how
+much the player characters are spared: fate points a season, more Blood, and an easier stop check.
+Followers and enemies are never spared. See the rule book's *Lethality*.
+
 **Travel map:** `dist/travel.html` marches forces from camp to the field across 0.6-mile (1 km) hexes
 of terrain, with planned routes, marching days and terrain painting. It comes with a test
 valley, the Agincourt campaign of 1415 (Harfleur to Calais) and the Serbian retreat of 1915

@@ -40,7 +40,9 @@ the Python engine and the printed tables read them from there, so change them th
 10. **Wound.** Record it. Its bleed, pain, impairments and lethality clock take effect.
 11. **Stop check.** A serious or critical wound calls for d100 against the fighter's
     Nerve, if the wound is marked for one (most are; some limb wounds are not). The target
-    is Nerve minus his pain and blood-loss penalties, and −10 more for a critical wound.
+    is Nerve minus his pain and blood-loss penalties, and −10 more for a critical wound. A player
+    character's lethality setting may add to his Nerve or spare him the check below critical, and
+    his fate points can lower a wound a step or roll the check again (rule book, Lethality).
     - Equal or under: he fights on.
     - Failed by 1–20: **defend only** for 2 rounds.
     - Failed by 21–40: **stunned** for 2 rounds (cannot attack, −50% defence).

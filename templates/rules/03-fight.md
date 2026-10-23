@@ -48,7 +48,8 @@ hexes about {{hex_yd}} yards ({{hex_m}} m) across.
    write it down. Its effects are in [the next chapter](#wounds).
 9. **The stop check.** A {{stop_sev}} wound that carries **shock** (most do; many limb wounds
    do not) calls for a d100 against the wounded man's **Nerve**, less his pain and blood-loss
-   penalties, and {{crit_stop}} more for a critical wound:
+   penalties, and {{crit_stop}} more for a critical wound (a player character's
+   [lethality](#lethality) may add to his Nerve, or spare him the check below critical):
 
 {{table:stop}}
 

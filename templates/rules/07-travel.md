@@ -194,7 +194,8 @@ Fieldcraft to get home; retaken, he may be killed for it, and every recapture ma
 harsher); then the **death** check at his captors' rate (doubled in a hard winter, halved for an
 officer kept apart, a quarter for an officer on parole). Each season adds Strain, two in a harsh
 camp (3% a season or worse), where he also loses a point of Endurance. Released, ransomed or
-escaped, he rejoins the team.
+escaped, he rejoins the team. A player character with a fate point left is spared a roll that would
+kill him, when taken or in captivity: he is held instead ([Lethality](#lethality)).
 
 {{table:prisoners}}
 

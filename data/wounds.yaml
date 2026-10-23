@@ -450,3 +450,25 @@ combat:
     - {band: short, penalty: 0}
     - {band: medium, penalty: 20}
     - {band: long, penalty: 40}
+
+# Lethality (Grave Wounds): the GM sets it before play, one setting for the whole game (the
+# pages share it, like US | Metric). It touches only player characters (the team builder's
+# sheeted men, the field map's heroes): followers, enemies and bystanders stay as fragile as
+# real people. The wound data never changes.
+#   fate         - fate points each player character has; spent ones come back at End of
+#                  season. One spent lowers a wound a severity step, or rerolls a stop check, a
+#                  recovery check, a wound-fever roll or a capture or captivity roll. The roller
+#                  asks; pages that run on their own (travel nights, field-map heroes, captivity)
+#                  spend one only to save a life.
+#   blood        - his Blood pool is multiplied by this (rounded down).
+#   stop_bonus   - added to his Nerve for the stop check.
+#   stop_critical_only - he makes the stop check only for critical wounds.
+lethality:
+  default: standard
+  presets:
+    gritty:   {name: "Gritty",   fate: 0, blood: 1.0, stop_bonus: 0,  stop_critical_only: false,
+               desc: "Player characters are as fragile as anyone."}
+    standard: {name: "Standard", fate: 1, blood: 1.5, stop_bonus: 20, stop_critical_only: false,
+               desc: "A little luck and a little more blood for the team."}
+    heroic:   {name: "Heroic",   fate: 3, blood: 2.0, stop_bonus: 0,  stop_critical_only: true,
+               desc: "The team survives what would kill other men, mostly."}

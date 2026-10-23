@@ -94,6 +94,7 @@ tbody tr:nth-child(even){background:var(--panel)}
 <li><a href="#need">What you need</a></li>
 <li><a href="#roll">The one roll</a></li>
 <li><a href="#time">Time</a></li>
+<li><a href="#lethality">Lethality</a></li>
 <li><a href="#characteristics">Characteristics and skills</a></li>
 <li><a href="#skills">Using skills</a></li>
 <li><a href="#tongues">Tongues</a></li>
@@ -325,6 +326,63 @@ are the game's own; where a die is rolled, the book says what came up.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="lethality">Lethality</h2>
+<p>Before play the GM sets how hard the game is on the <strong>player characters</strong>: the men made in the
+team builder, and the heroes they become on the field map. Followers, enemies and bystanders are
+never spared: they stay as fragile as real people, and the wound tables never change. One setting
+holds for the whole game; every page has a <strong>Gritty | Standard | Heroic</strong> switch in its header,
+and they share it.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Fate a season</th>
+<th>Blood</th>
+<th>Stop check</th>
+<th>What it feels like</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gritty</td>
+<td>0</td>
+<td>×1</td>
+<td>as anyone</td>
+<td>Player characters are as fragile as anyone.</td>
+</tr>
+<tr>
+<td>Standard (the pages' default)</td>
+<td>1</td>
+<td>×1.5</td>
+<td>+20 Nerve</td>
+<td>A little luck and a little more blood for the team.</td>
+</tr>
+<tr>
+<td>Heroic</td>
+<td>3</td>
+<td>×2</td>
+<td>only for critical wounds</td>
+<td>The team survives what would kill other men, mostly.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Fate.</strong> A player character has the setting's fate points each season; the ones he spends come
+back at End of season. One fate point, spent after the dice:</p>
+<ul>
+<li>lowers a wound he has just taken one severity step (a light wound turned is no wound at all);</li>
+<li>rolls again a stop check, a recovery check or a wound-fever roll he has just failed;</li>
+<li>spares him a capture or captivity roll that would kill him (he is held instead).</li>
+</ul>
+<p>In the roller the player chooses, with the buttons under the hit. The pages that run on their own
+(the travel map's nights, the field map's heroes, the team builder's captives) spend one only to
+save a life, and say so in the log.</p>
+<p>The examples in this book are at Gritty: a player character's Blood and stop checks as anyone's.</p>
+<div class="admonition gm">
+<p class="admonition-title">For the GM</p>
+<p>Gritty is the game the wound records describe. Standard is the place to start a first
+campaign: a team that has a little luck and a little more blood learns the game before it
+loses its leader. Heroic suits a story about the team rather than about the war.</p>
+</div>
 <h2 id="characteristics">Characteristics and skills</h2>
 <p>Every character has six <strong>characteristics</strong>, from 15 to 95:
 <strong>Strength</strong>, <strong>Agility</strong>, <strong>Endurance</strong>, <strong>Wits</strong>, <strong>Nerve</strong> and <strong>Presence</strong>. Fifty is an
@@ -1444,7 +1502,8 @@ hexes about 2 yards (2 m) across.</p>
    write it down. Its effects are in <a href="#wounds">the next chapter</a>.</li>
 <li><strong>The stop check.</strong> A serious and critical wound that carries <strong>shock</strong> (most do; many limb wounds
    do not) calls for a d100 against the wounded man's <strong>Nerve</strong>, less his pain and blood-loss
-   penalties, and 10 more for a critical wound:</li>
+   penalties, and 10 more for a critical wound (a player character's
+   <a href="#lethality">lethality</a> may add to his Nerve, or spare him the check below critical):</li>
 </ol>
 <table>
 <thead>
@@ -1566,7 +1625,8 @@ all of a fighter's wounds:</p>
 </ul>
 <h2 id="blood">Blood</h2>
 <p>Every fighter has a <strong>Blood</strong> pool: 20, plus (Endurance − 50) ÷ 10,
-rounded down (16 at Endurance 15, 24 at 95). Each wound bleeds away
+rounded down (16 at Endurance 15, 24 at 95). A player character's pool is
+multiplied by the <a href="#lethality">lethality</a> setting. Each wound bleeds away
 Blood at its rate:</p>
 <table>
 <thead>
@@ -1889,6 +1949,8 @@ wounds with the force's own wounded.</p>
 <li>Fail: it holds; at <strong>deadly</strong>, he dies.</li>
 <li>Fail by 30 or more: one step <strong>worse</strong>.</li>
 </ul>
+<p>A player character may spend a fate point to roll a failed check again, or a wound-fever roll
+that went against him (<a href="#lethality">Lethality</a>).</p>
 <p>A wound that reaches <em>healed</em> leaves a scar on his sheet and figure.</p>
 <h2 id="fever">Wound fever</h2>
 <p>3 to 5 days after the fight, each wound turns septic or it does not:
@@ -3176,7 +3238,8 @@ Fieldcraft to get home; retaken, he may be killed for it, and every recapture ma
 harsher); then the <strong>death</strong> check at his captors' rate (doubled in a hard winter, halved for an
 officer kept apart, a quarter for an officer on parole). Each season adds Strain, two in a harsh
 camp (3% a season or worse), where he also loses a point of Endurance. Released, ransomed or
-escaped, he rejoins the team.</p>
+escaped, he rejoins the team. A player character with a fate point left is spared a roll that would
+kill him, when taken or in captivity: he is held instead (<a href="#lethality">Lethality</a>).</p>
 <table>
 <thead>
 <tr>
@@ -10675,6 +10738,7 @@ stoppages take, as the rank rules say):</p>
 <h3 class="ix-letter">F</h3>
 <p class="ix"><b>Falling out</b>: <a href="#events">On the road</a></p>
 <p class="ix"><b>Falls</b>: <a href="#hazards">Water, heights and pursuit</a></p>
+<p class="ix"><b>Fate</b>: <a href="#lethality">Lethality</a></p>
 <p class="ix"><b>Fatigue</b>: <a href="#exchange">An exchange</a></p>
 <p class="ix"><b>Field</b>: <a href="#after">After the battle</a></p>
 <p class="ix"><b>Find a billet</b>: <a href="#skills">Using skills</a></p>
@@ -10698,6 +10762,7 @@ stoppages take, as the rank rules say):</p>
 <p class="ix"><b>Going to ground</b>: <a href="#modern-infantry">Modern infantry</a></p>
 <p class="ix"><b>Grave</b>: <a href="#camp">Into camp</a>, <a href="#sickness">Sickness</a></p>
 <p class="ix"><b>Grazes</b>: <a href="#turn">A fighter's turn</a></p>
+<p class="ix"><b>Gritty | Standard | Heroic</b>: <a href="#lethality">Lethality</a></p>
 <p class="ix"><b>Ground fire</b>: <a href="#aircraft">Aircraft</a></p>
 <p class="ix"><b>Guns</b>: <a href="#commander">The enemy commander</a></p>
 <h3 class="ix-letter">H</h3>
@@ -10815,6 +10880,7 @@ stoppages take, as the rank rules say):</p>
 <p class="ix"><b>Pay</b>: <a href="#rank">Rank, pay and loot</a></p>
 <p class="ix"><b>Pay is in arrears</b>: <a href="#events">On the road</a></p>
 <p class="ix"><b>Pinned</b>: <a href="#modern-infantry">Modern infantry</a></p>
+<p class="ix"><b>Player characters</b>: <a href="#lethality">Lethality</a></p>
 <p class="ix"><b>Presence</b>: <a href="#characteristics">Characteristics and skills</a></p>
 <p class="ix"><b>Promotion</b>: <a href="#rank">Rank, pay and loot</a></p>
 <p class="ix"><b>Provost</b>: <a href="#rank">Rank, pay and loot</a></p>

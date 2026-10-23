@@ -61,6 +61,34 @@ The game's clock changes with what the team is doing:
 | Week | | Wounds healing in camp; catching disease |
 | Season | about {{xp_season}} days | Experience: ticked skills roll to rise |
 
+## Lethality {#lethality}
+
+Before play the GM sets how hard the game is on the **player characters**: the men made in the
+team builder, and the heroes they become on the field map. Followers, enemies and bystanders are
+never spared: they stay as fragile as real people, and the wound tables never change. One setting
+holds for the whole game; every page has a **Gritty | Standard | Heroic** switch in its header,
+and they share it.
+
+{{table:lethality}}
+
+**Fate.** A player character has the setting's fate points each season; the ones he spends come
+back at End of season. One fate point, spent after the dice:
+
+- lowers a wound he has just taken one severity step (a light wound turned is no wound at all);
+- rolls again a stop check, a recovery check or a wound-fever roll he has just failed;
+- spares him a capture or captivity roll that would kill him (he is held instead).
+
+In the roller the player chooses, with the buttons under the hit. The pages that run on their own
+(the travel map's nights, the field map's heroes, the team builder's captives) spend one only to
+save a life, and say so in the log.
+
+The examples in this book are at Gritty: a player character's Blood and stop checks as anyone's.
+
+!!! gm "For the GM"
+    Gritty is the game the wound records describe. Standard is the place to start a first
+    campaign: a team that has a little luck and a little more blood learns the game before it
+    loses its leader. Heroic suits a story about the team rather than about the war.
+
 ## Characteristics and skills {#characteristics}
 
 Every character has six **characteristics**, from {{stat_lo}} to {{stat_hi}}:
