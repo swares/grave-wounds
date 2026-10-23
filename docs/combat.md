@@ -293,6 +293,15 @@ count goes on from there.
     ticked, the script plays on after each Next fighter. **Undo the script** puts the page back as
     it was before the script's last step.
   - In the event log the script's moves are public; why it chose them is for the GM.
+- **Screen** (in the Run the fight panel) shows the page as the GM sees it (everything) or as one
+  side does. On a side's screen an enemy's card shows his name, side, kit, weapon, where he has
+  been hit and whether he is down or shaken, but not his Blood, his wounds' effects, his
+  penalties or his Nerve. His attack and defence % are blurred in the roll form; a blow on him
+  shows where it landed, not how badly; the Apply message says only where he was hit and whether
+  he fell; the round log leaves out his Blood, wounds and stop checks; and the event log shows
+  that side's view only. In solo play (one side yours, the rest the script's) Run the fight
+  starts on your side's screen. It is a screen filter, not a lock: the rules do not change, and
+  the GM can switch back. Online, a player's page would be sent only this view.
   - The script's choices are design guesses, not calibrated against any record.
     `python3 tools/gm/selfplay.py` plays it against itself on a spread of tables and checks every
     fight runs to an end; `node tools/gm/test.js` checks its choices one by one.
