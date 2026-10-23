@@ -1187,3 +1187,21 @@ the account says came next, the Americans retaking it by the afternoon. A holdin
 counter-attacks into its own objective. The stalemates had been scoring as held by accident.
 To do: the retake, with sourced timing and strength, or a general rule for holders retaking a
 lost objective.
+
+## Lützen after the contested objective: run-to-run spread, 22 October 2026
+
+Lützen went from 20 to 17 of 24 with #305. Measured again on 96 runs of Lützen alone (seeds 1
+to 96), from main before and after #305, and with each of its two fixes alone:
+
+| Page | Runs matched |
+|---|---|
+| main before #305 | 76 of 96 |
+| attackers go on attacking a contested objective | 82 |
+| units on the ground turn to their target | 76 (no unit at Lützen lies down) |
+| main after #305 (both) | 82 |
+
+The contested-objective fix is what changes Lützen, and over 96 runs it gains six. Seeds 1 to 24
+lost three, so the rest gained nine: that drop was the runs' own spread. With the fix the Swedes
+clear the windmill battery and the run ends once they hold it with every phase begun (exchange
+424), where before many runs went on to the limit with Imperial men still on the hill. The
+Imperialists lose about 27% rather than 34%, since the run ends sooner. Nothing to change.
