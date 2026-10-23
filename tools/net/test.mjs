@@ -31,14 +31,14 @@ await check("a long message is cut into pieces and put back together", () => {
   const msg = { html: "x".repeat(150000), n: 7 };
   const ps = NET.pieces(msg, 40000), feed = NET.joiner();
   assert.equal(ps.length, Math.ceil(JSON.stringify(msg).length / 40000));
-  const got = ps.map(feed);
+  const got = ps.map(piece => feed(piece));
   assert.ok(got.slice(0, -1).every(m => m === null));
   assert.deepEqual(got.at(-1), msg);
 });
 await check("pieces of two messages mixed, and out of order, still make two messages", () => {
   const a = NET.pieces({ who: "a", pad: "a".repeat(250) }, 100), b = NET.pieces({ who: "b", pad: "b".repeat(250) }, 100), feed = NET.joiner();
   const mixed = [a[2], b[0], a[0], b[2], b[1], a[1], ...a.slice(3), ...b.slice(3)];
-  const whole = mixed.map(feed).filter(Boolean);
+  const whole = mixed.map(piece => feed(piece)).filter(Boolean);
   assert.deepEqual(whole.map(m => m.who).sort((x, y) => x.localeCompare(y)), ["a", "b"]);
 });
 await check("a short message is one piece, under the channel's limit", () => {

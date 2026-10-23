@@ -3760,7 +3760,10 @@ const NET_COMMANDS = {                              // each choice a player may 
   next: ({ may }) => { if (may.acting){ nextFighter(); gmKick() } },
   skip: ({ may }) => { if (may.free) freeDone("skipped") },
   roll: ({ may, m }) => { if (may.roll) netRoll(m) },
-  stray: ({ side }) => { const mine = S.chars.find(x => x.id === S.hit?.att && sideOf(x) === side); if (S.hit?.stray?.hit && mine) strayHit() },
+  stray: ({ side }) => {                            // his missed shot gone into a man in the way
+    const striker = S.chars.find(x => x.id === S.hit?.att);
+    if (S.hit?.stray?.hit && striker && sideOf(striker) === side) strayHit();
+  },
 };
 function netCommand(p, m){                          // a player's choice: made only if it is his to make now
   if (!m || typeof m.t !== "string" || !Object.hasOwn(NET_COMMANDS, m.t)) return;
