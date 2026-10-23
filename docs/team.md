@@ -6,8 +6,8 @@ on the team builder page, `dist/team.html`. The tables are in `data/teams/` (one
 era) and in the printed tables (*Team generation*). Every table, event and trait is written for
 this game. The names are common period names.
 
-The first table set covers the medieval era, c.1250-1460, the era of the Sidon, Visby,
-Aljubarrota, Agincourt and Towton battlefields. The team comes from one of six regions:
+The first table set covers the medieval era, c.1250-1500, the era of the Sidon, Visby,
+Aljubarrota, Agincourt, Towton and Dornach battlefields. The team comes from one of eight regions:
 
 | Region | Wound table | Kit and weapons |
 | --- | --- | --- |
@@ -17,6 +17,8 @@ Aljubarrota, Agincourt and Towton battlefields. The team comes from one of six r
 | France (c.1415) | Towton 1461 (the nearest records) | full plate, brigandines, jacks |
 | Portugal (c.1385) | Towton 1461 (the nearest records) | mail and plates, padded jacks, crossbows; its archers the English with it (longbows) |
 | Castile (c.1385) | Towton 1461 (the nearest records) | mail and plates, padded jacks, crossbows |
+| Swiss Confederates (c.1499) | Dornach 1499 (Towton's body, the Dornach skulls' head) | pikes in breastplate and sallet, halberds (as the poleaxe) in jacks, handguns |
+| Swabian League and Landsknechte (c.1499) | Dornach 1499 | pikes in jacks, knights in full plate, handguns |
 
 ## Five steps
 
