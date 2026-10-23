@@ -1125,3 +1125,21 @@ Still open: Goose Green (2 Para still loses about half: its bounds go in before 
 pinned) and 73 Easting (once the tanks close inside the 200 m the Iraqis see in the sandstorm,
 BMP and T-72 flank shots knock them out); Keating and Wanat, which lose in both variants, to
 one of the other fixes.
+
+## Keating and Wanat after the fire-and-movement fixes, 22 October 2026
+
+Both lost runs to the fixes of #302 (Keating 23 to 19, Wanat 18 to 15) with or without "every
+advance goes to ground". Each of the other fixes was undone in turn and measured on 24 runs of
+every battlefield, against main after #302 (704 of 984):
+
+| Undone | Runs matched | Keating | Wanat | Elsewhere |
+|---|---|---|---|---|
+| (main) | 704 | 19 | 15 | |
+| A unit fired on has drawn fire | 695 | 22 | 13 | Hue 6 to 0, Grozny 7 to 4, Babuna 8 to 6, Pork Chop 16 to 14 |
+| Small arms in range only within sight | 705 | 20 | 13 | Lützen 20 to 17 (fog); Chipyong-ni 22 to 24, Mogadishu 18 to 20 |
+
+Keating's loss is the drawing-fire rule: the insurgents storming the outpost now go to ground
+when fired on even if no one fell, and break in less often. The rule is worth nine runs elsewhere
+(all six of Hue's), so it stays. Wanat's is no single fix: undoing either makes it a little worse,
+and a swing of three in 24 runs is within the runs' own spread (about two either way). Kept as
+built; Keating's insurgents and their bounds are left to a later look.
