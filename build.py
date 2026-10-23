@@ -2099,9 +2099,10 @@ def main() -> int:
         "/*__LETHAL_DATA__*/null", json.dumps({"default": d.wounds["lethality"]["default"], "presets": d.wounds["lethality"]["presets"]}, separators=(",", ":")))
     strike_js = (ROOT / "templates" / "strike.js").read_text(encoding="utf-8")       # the strike's rules, with no page
     fighter_js = (ROOT / "templates" / "fighter.js").read_text(encoding="utf-8")     # the scripted fighter's choices
+    net_js = (ROOT / "templates" / "net.js").read_text(encoding="utf-8")             # play online: codes and the data channel
     gamelog_js = (ROOT / "templates" / "gamelog.js").read_text(encoding="utf-8")     # the event log and who sees what
     html = html.replace(CAMP_MARK, camp_js).replace("/*__WORKS_JS__*/", works_js).replace(MEASURE_MARK, measure_js).replace("/*__LETHAL_JS__*/", lethal_js)
-    html = html.replace("/*__STRIKE_JS__*/", strike_js).replace("/*__GAMELOG_JS__*/", gamelog_js).replace("/*__FIGHTER_JS__*/", fighter_js)
+    html = html.replace("/*__STRIKE_JS__*/", strike_js).replace("/*__GAMELOG_JS__*/", gamelog_js).replace("/*__FIGHTER_JS__*/", fighter_js).replace("/*__NET_JS__*/", net_js)
     html = html.replace("/*__GRAVEWOUNDS_DATA__*/null", json.dumps(b, separators=(",", ":")))
     (DIST / "roller.html").write_text(html, encoding="utf-8")
     tb = travel_bundle(d)

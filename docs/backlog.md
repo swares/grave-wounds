@@ -21,8 +21,11 @@ When an item is done, delete it here and note it in the pull request that closes
   chosen in full; the roller's other rolls
   (initiative, bleeding and morale each round, first aid, hazards, tongues, loot) are made as
   before and not logged; the log is a record, not yet the save (the last 500 events); a strike's
-  public part is fixed, not a GM setting; the field and travel pages have no log. Next: play
-  over WebRTC with the GM's page as host, sending each player only his side's view.
+  public part is fixed, not a GM setting; the field and travel pages have no log. Play online
+  (first cut): the GM's page is the host over WebRTC, codes passed by hand. Still left out: a
+  signalling service (room codes instead of copy and paste), a TURN relay for strict networks,
+  rejoining without a new invitation, sending only what changed (whole panels now), a player's
+  first aid, works and the other panels from his page, and the field and travel pages online.
 - **Lethality, first cut.** Gritty | Standard | Heroic for player characters (wounds.yaml
   lethality): fate a season, Blood and the stop check, on every page. Still left out: fate does
   not save a man from drowning, a fall or the other hazards; the roller offers fate only on the hit
